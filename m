@@ -2,28 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DC80282BAF
-	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 18:13:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B75D7282BB0
+	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 18:13:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726140AbgJDQNP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 12:13:15 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42540 "EHLO vps0.lunn.ch"
+        id S1726175AbgJDQNW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Oct 2020 12:13:22 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:42560 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726083AbgJDQNN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 4 Oct 2020 12:13:13 -0400
+        id S1726107AbgJDQNO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 4 Oct 2020 12:13:14 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1kP6dJ-0003eR-8M; Sun, 04 Oct 2020 18:13:09 +0200
+        id 1kP6dJ-0003eT-AH; Sun, 04 Oct 2020 18:13:09 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     David Miller <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH net-next v3 3/7] net: dsa: Register devlink ports before calling DSA driver setup()
-Date:   Sun,  4 Oct 2020 18:12:53 +0200
-Message-Id: <20201004161257.13945-4-andrew@lunn.ch>
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH net-next v3 4/7] net: devlink: Add support for port regions
+Date:   Sun,  4 Oct 2020 18:12:54 +0200
+Message-Id: <20201004161257.13945-5-andrew@lunn.ch>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201004161257.13945-1-andrew@lunn.ch>
 References: <20201004161257.13945-1-andrew@lunn.ch>
@@ -33,275 +34,474 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DSA drivers want to create regions on devlink ports as well as the
-devlink device instance, in order to export registers and other tables
-per port. To keep all this code together in the drivers, have the
-devlink ports registered early, so the setup() method can setup both
-device and port devlink regions.
+Allow regions to be registered to a devlink port. The same netlink API
+is used, but the port index is provided to indicate when a region is a
+port region as opposed to a device region.
 
-v3:
-Remove dp->setup
-Move common code out of switch statement.
-Fix wrong goto
-
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Tested-by: Vladimir Oltean <olteanv@gmail.com>
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- include/net/dsa.h |   1 +
- net/dsa/dsa2.c    | 125 ++++++++++++++++++++++++++--------------------
- 2 files changed, 73 insertions(+), 53 deletions(-)
+ include/net/devlink.h |  27 +++++
+ net/core/devlink.c    | 250 +++++++++++++++++++++++++++++++++++++-----
+ 2 files changed, 251 insertions(+), 26 deletions(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 8b0696e08cac..049140b2f593 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -215,6 +215,7 @@ struct dsa_port {
- 	u8			stp_state;
- 	struct net_device	*bridge_dev;
- 	struct devlink_port	devlink_port;
-+	bool			devlink_port_setup;
- 	struct phylink		*pl;
- 	struct phylink_config	pl_config;
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 89ede1ce3a3a..237ba5e29a3b 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -110,6 +110,7 @@ struct devlink_port_attrs {
+ struct devlink_port {
+ 	struct list_head list;
+ 	struct list_head param_list;
++	struct list_head region_list;
+ 	struct devlink *devlink;
+ 	unsigned int index;
+ 	bool registered;
+@@ -591,6 +592,26 @@ struct devlink_region_ops {
+ 	void *priv;
+ };
  
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 2c149fb36928..183003e45762 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -251,47 +251,19 @@ static void dsa_tree_teardown_default_cpu(struct dsa_switch_tree *dst)
++/**
++ * struct devlink_port_region_ops - Region operations for a port
++ * @name: region name
++ * @destructor: callback used to free snapshot memory when deleting
++ * @snapshot: callback to request an immediate snapshot. On success,
++ *            the data variable must be updated to point to the snapshot data.
++ *            The function will be called while the devlink instance lock is
++ *            held.
++ * @priv: Pointer to driver private data for the region operation
++ */
++struct devlink_port_region_ops {
++	const char *name;
++	void (*destructor)(const void *data);
++	int (*snapshot)(struct devlink_port *port,
++			const struct devlink_port_region_ops *ops,
++			struct netlink_ext_ack *extack,
++			u8 **data);
++	void *priv;
++};
++
+ struct devlink_fmsg;
+ struct devlink_health_reporter;
  
- static int dsa_port_setup(struct dsa_port *dp)
- {
--	struct dsa_switch *ds = dp->ds;
--	struct dsa_switch_tree *dst = ds->dst;
--	const unsigned char *id = (const unsigned char *)&dst->index;
--	const unsigned char len = sizeof(dst->index);
- 	struct devlink_port *dlp = &dp->devlink_port;
- 	bool dsa_port_link_registered = false;
--	bool devlink_port_registered = false;
--	struct devlink_port_attrs attrs = {};
--	struct devlink *dl = ds->devlink;
- 	bool dsa_port_enabled = false;
- 	int err = 0;
+@@ -1445,7 +1466,13 @@ struct devlink_region *
+ devlink_region_create(struct devlink *devlink,
+ 		      const struct devlink_region_ops *ops,
+ 		      u32 region_max_snapshots, u64 region_size);
++struct devlink_region *
++devlink_port_region_create(struct devlink_port *port,
++			   const struct devlink_port_region_ops *ops,
++			   u32 region_max_snapshots, u64 region_size);
+ void devlink_region_destroy(struct devlink_region *region);
++void devlink_port_region_destroy(struct devlink_region *region);
++
+ int devlink_region_snapshot_id_get(struct devlink *devlink, u32 *id);
+ void devlink_region_snapshot_id_put(struct devlink *devlink, u32 id);
+ int devlink_region_snapshot_create(struct devlink_region *region,
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 20224fd1ebaf..65b8ac8b5fba 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -347,8 +347,12 @@ devlink_sb_tc_index_get_from_info(struct devlink_sb *devlink_sb,
  
--	attrs.phys.port_number = dp->index;
--	memcpy(attrs.switch_id.id, id, len);
--	attrs.switch_id.id_len = len;
--
- 	if (dp->setup)
- 		return 0;
- 
- 	switch (dp->type) {
- 	case DSA_PORT_TYPE_UNUSED:
--		memset(dlp, 0, sizeof(*dlp));
--		attrs.flavour = DEVLINK_PORT_FLAVOUR_UNUSED;
--		devlink_port_attrs_set(dlp, &attrs);
--		err = devlink_port_register(dl, dlp, dp->index);
--		if (err)
--			break;
--
--		devlink_port_registered = true;
--
- 		dsa_port_disable(dp);
- 		break;
- 	case DSA_PORT_TYPE_CPU:
--		memset(dlp, 0, sizeof(*dlp));
--		attrs.flavour = DEVLINK_PORT_FLAVOUR_CPU;
--		devlink_port_attrs_set(dlp, &attrs);
--		err = devlink_port_register(dl, dlp, dp->index);
--		if (err)
--			break;
--		devlink_port_registered = true;
--
- 		err = dsa_port_link_register_of(dp);
- 		if (err)
- 			break;
-@@ -304,14 +276,6 @@ static int dsa_port_setup(struct dsa_port *dp)
- 
- 		break;
- 	case DSA_PORT_TYPE_DSA:
--		memset(dlp, 0, sizeof(*dlp));
--		attrs.flavour = DEVLINK_PORT_FLAVOUR_DSA;
--		devlink_port_attrs_set(dlp, &attrs);
--		err = devlink_port_register(dl, dlp, dp->index);
--		if (err)
--			break;
--		devlink_port_registered = true;
--
- 		err = dsa_port_link_register_of(dp);
- 		if (err)
- 			break;
-@@ -324,14 +288,6 @@ static int dsa_port_setup(struct dsa_port *dp)
- 
- 		break;
- 	case DSA_PORT_TYPE_USER:
--		memset(dlp, 0, sizeof(*dlp));
--		attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
--		devlink_port_attrs_set(dlp, &attrs);
--		err = devlink_port_register(dl, dlp, dp->index);
--		if (err)
--			break;
--		devlink_port_registered = true;
--
- 		dp->mac = of_get_mac_address(dp->dn);
- 		err = dsa_slave_create(dp);
- 		if (err)
-@@ -345,8 +301,6 @@ static int dsa_port_setup(struct dsa_port *dp)
- 		dsa_port_disable(dp);
- 	if (err && dsa_port_link_registered)
- 		dsa_port_link_unregister_of(dp);
--	if (err && devlink_port_registered)
--		devlink_port_unregister(dlp);
- 	if (err)
- 		return err;
- 
-@@ -355,30 +309,66 @@ static int dsa_port_setup(struct dsa_port *dp)
- 	return 0;
+ struct devlink_region {
+ 	struct devlink *devlink;
++	struct devlink_port *port;
+ 	struct list_head list;
+-	const struct devlink_region_ops *ops;
++	union {
++		const struct devlink_region_ops *ops;
++		const struct devlink_port_region_ops *port_ops;
++	};
+ 	struct list_head snapshot_list;
+ 	u32 max_snapshots;
+ 	u32 cur_snapshots;
+@@ -374,6 +378,19 @@ devlink_region_get_by_name(struct devlink *devlink, const char *region_name)
+ 	return NULL;
  }
  
--static void dsa_port_teardown(struct dsa_port *dp)
-+static int dsa_port_devlink_setup(struct dsa_port *dp)
++static struct devlink_region *
++devlink_port_region_get_by_name(struct devlink_port *port,
++				const char *region_name)
++{
++	struct devlink_region *region;
++
++	list_for_each_entry(region, &port->region_list, list)
++		if (!strcmp(region->ops->name, region_name))
++			return region;
++
++	return NULL;
++}
++
+ static struct devlink_snapshot *
+ devlink_region_snapshot_get_by_id(struct devlink_region *region, u32 id)
  {
- 	struct devlink_port *dlp = &dp->devlink_port;
-+	struct dsa_switch_tree *dst = dp->ds->dst;
-+	struct devlink_port_attrs attrs = {};
-+	struct devlink *dl = dp->ds->devlink;
-+	const unsigned char *id;
-+	unsigned char len;
-+	int err;
+@@ -3926,6 +3943,11 @@ static int devlink_nl_region_fill(struct sk_buff *msg, struct devlink *devlink,
+ 	if (err)
+ 		goto nla_put_failure;
  
-+	id = (const unsigned char *)&dst->index;
-+	len = sizeof(dst->index);
++	if (region->port)
++		if (nla_put_u32(msg, DEVLINK_ATTR_PORT_INDEX,
++				region->port->index))
++			goto nla_put_failure;
 +
-+	attrs.phys.port_number = dp->index;
-+	memcpy(attrs.switch_id.id, id, len);
-+	attrs.switch_id.id_len = len;
-+	memset(dlp, 0, sizeof(*dlp));
+ 	err = nla_put_string(msg, DEVLINK_ATTR_REGION_NAME, region->ops->name);
+ 	if (err)
+ 		goto nla_put_failure;
+@@ -3973,6 +3995,11 @@ devlink_nl_region_notify_build(struct devlink_region *region,
+ 	if (err)
+ 		goto out_cancel_msg;
+ 
++	if (region->port)
++		if (nla_put_u32(msg, DEVLINK_ATTR_PORT_INDEX,
++				region->port->index))
++			goto out_cancel_msg;
 +
-+	switch (dp->type) {
-+	case DSA_PORT_TYPE_UNUSED:
-+		attrs.flavour = DEVLINK_PORT_FLAVOUR_UNUSED;
-+		break;
-+	case DSA_PORT_TYPE_CPU:
-+		attrs.flavour = DEVLINK_PORT_FLAVOUR_CPU;
-+		break;
-+	case DSA_PORT_TYPE_DSA:
-+		attrs.flavour = DEVLINK_PORT_FLAVOUR_DSA;
-+		break;
-+	case DSA_PORT_TYPE_USER:
-+		attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
-+		break;
+ 	err = nla_put_string(msg, DEVLINK_ATTR_REGION_NAME,
+ 			     region->ops->name);
+ 	if (err)
+@@ -4219,16 +4246,30 @@ static int devlink_nl_cmd_region_get_doit(struct sk_buff *skb,
+ 					  struct genl_info *info)
+ {
+ 	struct devlink *devlink = info->user_ptr[0];
++	struct devlink_port *port = NULL;
+ 	struct devlink_region *region;
+ 	const char *region_name;
+ 	struct sk_buff *msg;
++	unsigned int index;
+ 	int err;
+ 
+ 	if (!info->attrs[DEVLINK_ATTR_REGION_NAME])
+ 		return -EINVAL;
+ 
++	if (info->attrs[DEVLINK_ATTR_PORT_INDEX]) {
++		index = nla_get_u32(info->attrs[DEVLINK_ATTR_PORT_INDEX]);
++
++		port = devlink_port_get_by_index(devlink, index);
++		if (!port)
++			return -ENODEV;
 +	}
 +
-+	devlink_port_attrs_set(dlp, &attrs);
-+	err = devlink_port_register(dl, dlp, dp->index);
+ 	region_name = nla_data(info->attrs[DEVLINK_ATTR_REGION_NAME]);
+-	region = devlink_region_get_by_name(devlink, region_name);
++	if (port)
++		region = devlink_port_region_get_by_name(port, region_name);
++	else
++		region = devlink_region_get_by_name(devlink, region_name);
 +
-+	if (!err)
-+		dp->devlink_port_setup = true;
+ 	if (!region)
+ 		return -EINVAL;
+ 
+@@ -4247,10 +4288,75 @@ static int devlink_nl_cmd_region_get_doit(struct sk_buff *skb,
+ 	return genlmsg_reply(msg, info);
+ }
+ 
++static int devlink_nl_cmd_region_get_port_dumpit(struct sk_buff *msg,
++						 struct netlink_callback *cb,
++						 struct devlink_port *port,
++						 int *idx,
++						 int start)
++{
++	struct devlink_region *region;
++	int err = 0;
 +
++	list_for_each_entry(region, &port->region_list, list) {
++		if (*idx < start) {
++			(*idx)++;
++			continue;
++		}
++		err = devlink_nl_region_fill(msg, port->devlink,
++					     DEVLINK_CMD_REGION_GET,
++					     NETLINK_CB(cb->skb).portid,
++					     cb->nlh->nlmsg_seq,
++					     NLM_F_MULTI, region);
++		if (err)
++			goto out;
++		(*idx)++;
++	}
++
++out:
 +	return err;
 +}
 +
-+static void dsa_port_teardown(struct dsa_port *dp)
++static int devlink_nl_cmd_region_get_devlink_dumpit(struct sk_buff *msg,
++						    struct netlink_callback *cb,
++						    struct devlink *devlink,
++						    int *idx,
++						    int start)
 +{
- 	if (!dp->setup)
- 		return;
- 
- 	switch (dp->type) {
- 	case DSA_PORT_TYPE_UNUSED:
--		devlink_port_unregister(dlp);
- 		break;
- 	case DSA_PORT_TYPE_CPU:
- 		dsa_port_disable(dp);
- 		dsa_tag_driver_put(dp->tag_ops);
--		devlink_port_unregister(dlp);
- 		dsa_port_link_unregister_of(dp);
- 		break;
- 	case DSA_PORT_TYPE_DSA:
- 		dsa_port_disable(dp);
--		devlink_port_unregister(dlp);
- 		dsa_port_link_unregister_of(dp);
- 		break;
- 	case DSA_PORT_TYPE_USER:
--		devlink_port_unregister(dlp);
- 		if (dp->slave) {
- 			dsa_slave_destroy(dp->slave);
- 			dp->slave = NULL;
-@@ -389,6 +379,15 @@ static void dsa_port_teardown(struct dsa_port *dp)
- 	dp->setup = false;
- }
- 
-+static void dsa_port_devlink_teardown(struct dsa_port *dp)
-+{
-+	struct devlink_port *dlp = &dp->devlink_port;
++	struct devlink_region *region;
++	struct devlink_port *port;
++	int err = 0;
 +
-+	if (dp->devlink_port_setup)
-+		devlink_port_unregister(dlp);
-+	dp->devlink_port_setup = false;
-+}
-+
- static int dsa_devlink_info_get(struct devlink *dl,
- 				struct devlink_info_req *req,
- 				struct netlink_ext_ack *extack)
-@@ -408,6 +407,7 @@ static const struct devlink_ops dsa_devlink_ops = {
- static int dsa_switch_setup(struct dsa_switch *ds)
- {
- 	struct dsa_devlink_priv *dl_priv;
-+	struct dsa_port *dp;
- 	int err;
- 
- 	if (ds->setup)
-@@ -433,9 +433,20 @@ static int dsa_switch_setup(struct dsa_switch *ds)
- 	if (err)
- 		goto free_devlink;
- 
-+	/* Setup devlink port instances now, so that the switch
-+	 * setup() can register regions etc, against the ports
-+	 */
-+	list_for_each_entry(dp, &ds->dst->ports, list) {
-+		if (dp->ds == ds) {
-+			err = dsa_port_devlink_setup(dp);
-+			if (err)
-+				goto unregister_devlink_ports;
++	mutex_lock(&devlink->lock);
++	list_for_each_entry(region, &devlink->region_list, list) {
++		if (*idx < start) {
++			(*idx)++;
++			continue;
 +		}
++		err = devlink_nl_region_fill(msg, devlink,
++					     DEVLINK_CMD_REGION_GET,
++					     NETLINK_CB(cb->skb).portid,
++					     cb->nlh->nlmsg_seq,
++					     NLM_F_MULTI, region);
++		if (err)
++			goto out;
++		(*idx)++;
 +	}
 +
- 	err = dsa_switch_register_notifier(ds);
- 	if (err)
--		goto unregister_devlink;
-+		goto unregister_devlink_ports;
- 
- 	err = ds->ops->setup(ds);
- 	if (err < 0)
-@@ -463,7 +474,10 @@ static int dsa_switch_setup(struct dsa_switch *ds)
- 
- unregister_notifier:
- 	dsa_switch_unregister_notifier(ds);
--unregister_devlink:
-+unregister_devlink_ports:
-+	list_for_each_entry(dp, &ds->dst->ports, list)
-+		if (dp->ds == ds)
-+			dsa_port_devlink_teardown(dp);
- 	devlink_unregister(ds->devlink);
- free_devlink:
- 	devlink_free(ds->devlink);
-@@ -474,6 +488,8 @@ static int dsa_switch_setup(struct dsa_switch *ds)
- 
- static void dsa_switch_teardown(struct dsa_switch *ds)
- {
-+	struct dsa_port *dp;
++	list_for_each_entry(port, &devlink->port_list, list) {
++		err = devlink_nl_cmd_region_get_port_dumpit(msg, cb, port, idx,
++							    start);
++		if (err)
++			goto out;
++	}
 +
- 	if (!ds->setup)
- 		return;
++out:
++	mutex_unlock(&devlink->lock);
++	return err;
++}
++
+ static int devlink_nl_cmd_region_get_dumpit(struct sk_buff *msg,
+ 					    struct netlink_callback *cb)
+ {
+-	struct devlink_region *region;
+ 	struct devlink *devlink;
+ 	int start = cb->args[0];
+ 	int idx = 0;
+@@ -4260,25 +4366,10 @@ static int devlink_nl_cmd_region_get_dumpit(struct sk_buff *msg,
+ 	list_for_each_entry(devlink, &devlink_list, list) {
+ 		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
+ 			continue;
+-
+-		mutex_lock(&devlink->lock);
+-		list_for_each_entry(region, &devlink->region_list, list) {
+-			if (idx < start) {
+-				idx++;
+-				continue;
+-			}
+-			err = devlink_nl_region_fill(msg, devlink,
+-						     DEVLINK_CMD_REGION_GET,
+-						     NETLINK_CB(cb->skb).portid,
+-						     cb->nlh->nlmsg_seq,
+-						     NLM_F_MULTI, region);
+-			if (err) {
+-				mutex_unlock(&devlink->lock);
+-				goto out;
+-			}
+-			idx++;
+-		}
+-		mutex_unlock(&devlink->lock);
++		err = devlink_nl_cmd_region_get_devlink_dumpit(msg, cb, devlink,
++							       &idx, start);
++		if (err)
++			goto out;
+ 	}
+ out:
+ 	mutex_unlock(&devlink_mutex);
+@@ -4291,8 +4382,10 @@ static int devlink_nl_cmd_region_del(struct sk_buff *skb,
+ {
+ 	struct devlink *devlink = info->user_ptr[0];
+ 	struct devlink_snapshot *snapshot;
++	struct devlink_port *port = NULL;
+ 	struct devlink_region *region;
+ 	const char *region_name;
++	unsigned int index;
+ 	u32 snapshot_id;
  
-@@ -486,6 +502,9 @@ static void dsa_switch_teardown(struct dsa_switch *ds)
- 		ds->ops->teardown(ds);
+ 	if (!info->attrs[DEVLINK_ATTR_REGION_NAME] ||
+@@ -4302,7 +4395,19 @@ static int devlink_nl_cmd_region_del(struct sk_buff *skb,
+ 	region_name = nla_data(info->attrs[DEVLINK_ATTR_REGION_NAME]);
+ 	snapshot_id = nla_get_u32(info->attrs[DEVLINK_ATTR_REGION_SNAPSHOT_ID]);
  
- 	if (ds->devlink) {
-+		list_for_each_entry(dp, &ds->dst->ports, list)
-+			if (dp->ds == ds)
-+				dsa_port_devlink_teardown(dp);
- 		devlink_unregister(ds->devlink);
- 		devlink_free(ds->devlink);
- 		ds->devlink = NULL;
+-	region = devlink_region_get_by_name(devlink, region_name);
++	if (info->attrs[DEVLINK_ATTR_PORT_INDEX]) {
++		index = nla_get_u32(info->attrs[DEVLINK_ATTR_PORT_INDEX]);
++
++		port = devlink_port_get_by_index(devlink, index);
++		if (!port)
++			return -ENODEV;
++	}
++
++	if (port)
++		region = devlink_port_region_get_by_name(port, region_name);
++	else
++		region = devlink_region_get_by_name(devlink, region_name);
++
+ 	if (!region)
+ 		return -EINVAL;
+ 
+@@ -4319,9 +4424,11 @@ devlink_nl_cmd_region_new(struct sk_buff *skb, struct genl_info *info)
+ {
+ 	struct devlink *devlink = info->user_ptr[0];
+ 	struct devlink_snapshot *snapshot;
++	struct devlink_port *port = NULL;
+ 	struct nlattr *snapshot_id_attr;
+ 	struct devlink_region *region;
+ 	const char *region_name;
++	unsigned int index;
+ 	u32 snapshot_id;
+ 	u8 *data;
+ 	int err;
+@@ -4332,7 +4439,20 @@ devlink_nl_cmd_region_new(struct sk_buff *skb, struct genl_info *info)
+ 	}
+ 
+ 	region_name = nla_data(info->attrs[DEVLINK_ATTR_REGION_NAME]);
+-	region = devlink_region_get_by_name(devlink, region_name);
++
++	if (info->attrs[DEVLINK_ATTR_PORT_INDEX]) {
++		index = nla_get_u32(info->attrs[DEVLINK_ATTR_PORT_INDEX]);
++
++		port = devlink_port_get_by_index(devlink, index);
++		if (!port)
++			return -ENODEV;
++	}
++
++	if (port)
++		region = devlink_port_region_get_by_name(port, region_name);
++	else
++		region = devlink_region_get_by_name(devlink, region_name);
++
+ 	if (!region) {
+ 		NL_SET_ERR_MSG_MOD(info->extack, "The requested region does not exist");
+ 		return -EINVAL;
+@@ -4368,7 +4488,12 @@ devlink_nl_cmd_region_new(struct sk_buff *skb, struct genl_info *info)
+ 		}
+ 	}
+ 
+-	err = region->ops->snapshot(devlink, region->ops, info->extack, &data);
++	if (port)
++		err = region->port_ops->snapshot(port, region->port_ops,
++						 info->extack, &data);
++	else
++		err = region->ops->snapshot(devlink, region->ops,
++					    info->extack, &data);
+ 	if (err)
+ 		goto err_snapshot_capture;
+ 
+@@ -4490,10 +4615,12 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
+ 	const struct genl_dumpit_info *info = genl_dumpit_info(cb);
+ 	u64 ret_offset, start_offset, end_offset = U64_MAX;
+ 	struct nlattr **attrs = info->attrs;
++	struct devlink_port *port = NULL;
+ 	struct devlink_region *region;
+ 	struct nlattr *chunks_attr;
+ 	const char *region_name;
+ 	struct devlink *devlink;
++	unsigned int index;
+ 	void *hdr;
+ 	int err;
+ 
+@@ -4514,8 +4641,21 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
+ 		goto out_unlock;
+ 	}
+ 
++	if (info->attrs[DEVLINK_ATTR_PORT_INDEX]) {
++		index = nla_get_u32(info->attrs[DEVLINK_ATTR_PORT_INDEX]);
++
++		port = devlink_port_get_by_index(devlink, index);
++		if (!port)
++			return -ENODEV;
++	}
++
+ 	region_name = nla_data(attrs[DEVLINK_ATTR_REGION_NAME]);
+-	region = devlink_region_get_by_name(devlink, region_name);
++
++	if (port)
++		region = devlink_port_region_get_by_name(port, region_name);
++	else
++		region = devlink_region_get_by_name(devlink, region_name);
++
+ 	if (!region) {
+ 		err = -EINVAL;
+ 		goto out_unlock;
+@@ -4552,6 +4692,11 @@ static int devlink_nl_cmd_region_read_dumpit(struct sk_buff *skb,
+ 	if (err)
+ 		goto nla_put_failure;
+ 
++	if (region->port)
++		if (nla_put_u32(skb, DEVLINK_ATTR_PORT_INDEX,
++				region->port->index))
++			goto nla_put_failure;
++
+ 	err = nla_put_string(skb, DEVLINK_ATTR_REGION_NAME, region_name);
+ 	if (err)
+ 		goto nla_put_failure;
+@@ -7666,6 +7811,7 @@ int devlink_port_register(struct devlink *devlink,
+ 	mutex_init(&devlink_port->reporters_lock);
+ 	list_add_tail(&devlink_port->list, &devlink->port_list);
+ 	INIT_LIST_HEAD(&devlink_port->param_list);
++	INIT_LIST_HEAD(&devlink_port->region_list);
+ 	mutex_unlock(&devlink->lock);
+ 	INIT_DELAYED_WORK(&devlink_port->type_warn_dw, &devlink_port_type_warn);
+ 	devlink_port_type_warn_schedule(devlink_port);
+@@ -7689,6 +7835,7 @@ void devlink_port_unregister(struct devlink_port *devlink_port)
+ 	list_del(&devlink_port->list);
+ 	mutex_unlock(&devlink->lock);
+ 	WARN_ON(!list_empty(&devlink_port->reporter_list));
++	WARN_ON(!list_empty(&devlink_port->region_list));
+ 	mutex_destroy(&devlink_port->reporters_lock);
+ }
+ EXPORT_SYMBOL_GPL(devlink_port_unregister);
+@@ -8768,6 +8915,57 @@ devlink_region_create(struct devlink *devlink,
+ }
+ EXPORT_SYMBOL_GPL(devlink_region_create);
+ 
++/**
++ *	devlink_port_region_create - create a new address region for a port
++ *
++ *	@port: devlink port
++ *	@ops: region operations and name
++ *	@region_max_snapshots: Maximum supported number of snapshots for region
++ *	@region_size: size of region
++ */
++struct devlink_region *
++devlink_port_region_create(struct devlink_port *port,
++			   const struct devlink_port_region_ops *ops,
++			   u32 region_max_snapshots, u64 region_size)
++{
++	struct devlink *devlink = port->devlink;
++	struct devlink_region *region;
++	int err = 0;
++
++	if (WARN_ON(!ops) || WARN_ON(!ops->destructor))
++		return ERR_PTR(-EINVAL);
++
++	mutex_lock(&devlink->lock);
++
++	if (devlink_port_region_get_by_name(port, ops->name)) {
++		err = -EEXIST;
++		goto unlock;
++	}
++
++	region = kzalloc(sizeof(*region), GFP_KERNEL);
++	if (!region) {
++		err = -ENOMEM;
++		goto unlock;
++	}
++
++	region->devlink = devlink;
++	region->port = port;
++	region->max_snapshots = region_max_snapshots;
++	region->port_ops = ops;
++	region->size = region_size;
++	INIT_LIST_HEAD(&region->snapshot_list);
++	list_add_tail(&region->list, &port->region_list);
++	devlink_nl_region_notify(region, NULL, DEVLINK_CMD_REGION_NEW);
++
++	mutex_unlock(&devlink->lock);
++	return region;
++
++unlock:
++	mutex_unlock(&devlink->lock);
++	return ERR_PTR(err);
++}
++EXPORT_SYMBOL_GPL(devlink_port_region_create);
++
+ /**
+  *	devlink_region_destroy - destroy address region
+  *
 -- 
 2.28.0
 
