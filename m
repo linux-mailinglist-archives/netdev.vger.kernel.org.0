@@ -2,221 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98248282D3D
-	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 21:23:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 799C7282D3C
+	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 21:23:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726512AbgJDTXs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 15:23:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60828 "EHLO
+        id S1726685AbgJDTXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Oct 2020 15:23:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726813AbgJDTXc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 15:23:32 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B64DC0613CF
-        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 12:23:32 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id w21so5078484pfc.7
-        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 12:23:32 -0700 (PDT)
+        with ESMTP id S1726294AbgJDTXd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 15:23:33 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 640A7C0613D0
+        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 12:23:33 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id t14so4334255pgl.10
+        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 12:23:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Vf4h/v0f9xFEjUd6u9Fu+p9uJGql5+ReFzx6/FwYIUg=;
-        b=JtLW8wD0AXvW5Ci9ygNmkqmjVxuIhjxBmkhE4n2giv3U0/vtwcCkqk/AQlUkbMz6Lc
-         Fyo5a3tMmvQ2gVt09B1ViCibyEItTqTo+fraitduZaVlaL4zgMn+tpJLQ5wFDjLOc999
-         fWxBk1ev+S4WHvasMLF7dIHuU6J68W0DIJjoE=
+        bh=HUmvziSH10+NSBA4K69lu3ErQwLVzy6PHh7gve51sqI=;
+        b=KIimXRHEAbj/dCXmHsHKEvtmtYvHmXnE/N0mVDd4x2gQHPo397byeSf45Zpni/VLm+
+         jt2RCrjunk0peWE6eA4JfcKR8JLe8HKOA8ZEQoVUAFZrpheIyTXUIUpZNYXDfgIS9KMF
+         j/gXoepD+nYXHsSG9M54ptEqbmhQ5tkAhkkGY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Vf4h/v0f9xFEjUd6u9Fu+p9uJGql5+ReFzx6/FwYIUg=;
-        b=ta5+ctun8paGCuCfXIVrlouk6+JWpzk+MkCBOytFHZL2Cri3pdb4narw29JtIj9pn4
-         N1CmbdVBhsfokXeg9v1K9pcObCm5/7YxKsyrVuaVlPWq07bPlp5sf/q8XbFQcwEB3YA3
-         bicjivNACWN+ZIKgnPj83RKYA0M0XW8jPEUpAMF1zf7K0p1UTuO/IBXI7cgoP5THrc0Q
-         qSux/STyb9C27rwqamlcl3URIJM0r/dbxlUPsPHpkAl2gKsUbL6ElWWUN5Xla0iOAqwc
-         ZXQOOT53wRrjEdVE2BQ8W7qvcYROs9HylQ7eMFjQmz3YJDusnIu5+pdxFZZrYQPImRoC
-         Vf8w==
-X-Gm-Message-State: AOAM5327zPmI/6wvugt0EckdkUy2s00cDTz4oCKZImYhaIqA2mY9HJwe
-        /tGp9SO9JTX4SCNpkQlhbGm5cg==
-X-Google-Smtp-Source: ABdhPJzs4kC2c3hpsVjgY08L78fNpvAb+R7C4IETo+7UhE9BWn9pxZi9OhRNjGBIOf2+gspz/dOkmg==
-X-Received: by 2002:a63:a0f:: with SMTP id 15mr10958218pgk.242.1601839411284;
-        Sun, 04 Oct 2020 12:23:31 -0700 (PDT)
+        bh=HUmvziSH10+NSBA4K69lu3ErQwLVzy6PHh7gve51sqI=;
+        b=Kjlz7ueSo2PFI2J3dQpHzXOsnN/CjZf13LrjxpjoPNGcHi4/I4pofBmq08ZUjVi3UB
+         ePr0DNPCJc0C8gMWr9wInLXWhkOoUJUhb0cuqH9HawIPNg+ZzkBQ/Sive1QOCy0IQt+Z
+         v9k6woXefT6cA5Gov3STK63gEUJ/BminVSsaY/ulT8YI7N0CRnPH4mpgO1XTtGxhnQY3
+         gncALPiLXKPfXKcqITo1bf9hU3XowOfGG4io/Rg6FXL710CSswHMMCSsvRDKTqNFrE4/
+         ywYKLmv6+HftBIYzJdq63QBawXT9H63R9xWkmHo5/6y1MCh2YX82YBObXZcaVrwu8wP5
+         xpeQ==
+X-Gm-Message-State: AOAM533HU98Y78s4atcobPJbab+sAozhjp9HSHh1shnUJskI7p+qyJeC
+        uLykyjUBqu3YqngaF2MQ48u2jVtV+/0mHQ==
+X-Google-Smtp-Source: ABdhPJz1YI5f39B5TnYL42MQk3dvCLx0fH0U7Fm8x0IxkFBWPHTCBaadK74ISWyU5bRVeAGyEGZ65w==
+X-Received: by 2002:a65:6086:: with SMTP id t6mr11077390pgu.146.1601839412622;
+        Sun, 04 Oct 2020 12:23:32 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 138sm9824234pfu.180.2020.10.04.12.23.30
+        by smtp.gmail.com with ESMTPSA id 138sm9824234pfu.180.2020.10.04.12.23.31
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 04 Oct 2020 12:23:30 -0700 (PDT)
+        Sun, 04 Oct 2020 12:23:31 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 07/11] bnxt_en: Refactor bnxt_init_one_rx_ring().
-Date:   Sun,  4 Oct 2020 15:22:57 -0400
-Message-Id: <1601839381-10446-8-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
+        Edwin Peer <edwin.peer@broadcom.com>
+Subject: [PATCH net-next 08/11] bnxt_en: Implement RX ring reset in response to buffer errors.
+Date:   Sun,  4 Oct 2020 15:22:58 -0400
+Message-Id: <1601839381-10446-9-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1601839381-10446-1-git-send-email-michael.chan@broadcom.com>
 References: <1601839381-10446-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000002112a105b0dd4d25"
+        boundary="0000000000003611d305b0dd4d45"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000002112a105b0dd4d25
+--0000000000003611d305b0dd4d45
 
-bnxt_init_one_rx_ring() includes logic to initialize the BDs for one RX
-ring and to allocate the buffers.  Separate the allocation logic into a
-new bnxt_alloc_one_rx_ring() function.  The allocation function will be
-used later to allocate new buffers for one specified RX ring when we
-reset that RX ring.
+On some older chips, it is necessary to do a reset when we get buffer
+errors associated with an RX ring.  These buffer errors may become
+frequent if the RX ring underruns under heavy traffic.  The current
+code does a global reset of all reasources when this happens.  This
+works but creates a big disruption of all rings when one RX ring is
+having problem.  This patch implements a localized RX ring reset of
+just the RX ring having the issue.  All other rings including all
+TX rings will not be affected by this single RX ring reset.
+
+Only the older chips prior to the P5 class supports this reset.
+Because it is not a global reset, packets may still be arriving
+while we are calling firmware to reset that ring.  We need to be
+sure that we don't post any buffers during this time while the
+ring is undergoing reset.  After firmware completes successfully,
+the ring will be in the reset state with no buffers and we can start
+filling it with new buffers and posting them.
 
 Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 96 ++++++++++++-----------
- 1 file changed, 50 insertions(+), 46 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 79 +++++++++++++++++++++--
+ 1 file changed, 75 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 6d7e197c875c..ef0267060a46 100644
+index ef0267060a46..31877fb4ddd9 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -3163,31 +3163,16 @@ static void bnxt_init_rxbd_pages(struct bnxt_ring_struct *ring, u32 type)
- 	}
- }
- 
--static int bnxt_init_one_rx_ring(struct bnxt *bp, int ring_nr)
-+static int bnxt_alloc_one_rx_ring(struct bnxt *bp, int ring_nr)
+@@ -1172,7 +1172,10 @@ static void bnxt_sched_reset(struct bnxt *bp, struct bnxt_rx_ring_info *rxr)
  {
-+	struct bnxt_rx_ring_info *rxr = &bp->rx_ring[ring_nr];
- 	struct net_device *dev = bp->dev;
--	struct bnxt_rx_ring_info *rxr;
--	struct bnxt_ring_struct *ring;
--	u32 prod, type;
-+	u32 prod;
- 	int i;
- 
--	type = (bp->rx_buf_use_size << RX_BD_LEN_SHIFT) |
--		RX_BD_TYPE_RX_PACKET_BD | RX_BD_FLAGS_EOP;
--
--	if (NET_IP_ALIGN == 2)
--		type |= RX_BD_FLAGS_SOP;
--
--	rxr = &bp->rx_ring[ring_nr];
--	ring = &rxr->rx_ring_struct;
--	bnxt_init_rxbd_pages(ring, type);
--
--	if (BNXT_RX_PAGE_MODE(bp) && bp->xdp_prog) {
--		bpf_prog_add(bp->xdp_prog, 1);
--		rxr->xdp_prog = bp->xdp_prog;
--	}
- 	prod = rxr->rx_prod;
- 	for (i = 0; i < bp->rx_ring_size; i++) {
--		if (bnxt_alloc_rx_data(bp, rxr, prod, GFP_KERNEL) != 0) {
-+		if (bnxt_alloc_rx_data(bp, rxr, prod, GFP_KERNEL)) {
- 			netdev_warn(dev, "init'ed rx ring %d with %d/%d skbs only\n",
- 				    ring_nr, i, bp->rx_ring_size);
- 			break;
-@@ -3195,22 +3180,13 @@ static int bnxt_init_one_rx_ring(struct bnxt *bp, int ring_nr)
- 		prod = NEXT_RX(prod);
+ 	if (!rxr->bnapi->in_reset) {
+ 		rxr->bnapi->in_reset = true;
+-		set_bit(BNXT_RESET_TASK_SP_EVENT, &bp->sp_event);
++		if (bp->flags & BNXT_FLAG_CHIP_P5)
++			set_bit(BNXT_RESET_TASK_SP_EVENT, &bp->sp_event);
++		else
++			set_bit(BNXT_RST_RING_SP_EVENT, &bp->sp_event);
+ 		bnxt_queue_sp_work(bp);
  	}
- 	rxr->rx_prod = prod;
--	ring->fw_ring_id = INVALID_HW_RING_ID;
--
--	ring = &rxr->rx_agg_ring_struct;
--	ring->fw_ring_id = INVALID_HW_RING_ID;
- 
- 	if (!(bp->flags & BNXT_FLAG_AGG_RINGS))
- 		return 0;
- 
--	type = ((u32)BNXT_RX_PAGE_SIZE << RX_BD_LEN_SHIFT) |
--		RX_BD_TYPE_RX_AGG_BD | RX_BD_FLAGS_SOP;
--
--	bnxt_init_rxbd_pages(ring, type);
--
- 	prod = rxr->rx_agg_prod;
- 	for (i = 0; i < bp->rx_agg_ring_size; i++) {
--		if (bnxt_alloc_rx_page(bp, rxr, prod, GFP_KERNEL) != 0) {
-+		if (bnxt_alloc_rx_page(bp, rxr, prod, GFP_KERNEL)) {
- 			netdev_warn(dev, "init'ed rx ring %d with %d/%d pages only\n",
- 				    ring_nr, i, bp->rx_ring_size);
- 			break;
-@@ -3219,30 +3195,58 @@ static int bnxt_init_one_rx_ring(struct bnxt *bp, int ring_nr)
- 	}
- 	rxr->rx_agg_prod = prod;
- 
--	if (bp->flags & BNXT_FLAG_TPA) {
--		if (rxr->rx_tpa) {
--			u8 *data;
--			dma_addr_t mapping;
-+	if (rxr->rx_tpa) {
-+		dma_addr_t mapping;
-+		u8 *data;
- 
--			for (i = 0; i < bp->max_tpa; i++) {
--				data = __bnxt_alloc_rx_data(bp, &mapping,
--							    GFP_KERNEL);
--				if (!data)
--					return -ENOMEM;
-+		for (i = 0; i < bp->max_tpa; i++) {
-+			data = __bnxt_alloc_rx_data(bp, &mapping, GFP_KERNEL);
-+			if (!data)
-+				return -ENOMEM;
- 
--				rxr->rx_tpa[i].data = data;
--				rxr->rx_tpa[i].data_ptr = data + bp->rx_offset;
--				rxr->rx_tpa[i].mapping = mapping;
--			}
--		} else {
--			netdev_err(bp->dev, "No resource allocated for LRO/GRO\n");
--			return -ENOMEM;
-+			rxr->rx_tpa[i].data = data;
-+			rxr->rx_tpa[i].data_ptr = data + bp->rx_offset;
-+			rxr->rx_tpa[i].mapping = mapping;
+ 	rxr->rx_next_cons = 0xffff;
+@@ -1773,8 +1776,8 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
+ 		if (rx_err & RX_CMPL_ERRORS_BUFFER_ERROR_MASK) {
+ 			bnapi->cp_ring.sw_stats.rx.rx_buf_errors++;
+ 			if (!(bp->flags & BNXT_FLAG_CHIP_P5)) {
+-				netdev_warn(bp->dev, "RX buffer error %x\n",
+-					    rx_err);
++				netdev_warn_once(bp->dev, "RX buffer error %x\n",
++						 rx_err);
+ 				bnxt_sched_reset(bp, rxr);
+ 			}
  		}
+@@ -2250,7 +2253,7 @@ static void __bnxt_poll_work_done(struct bnxt *bp, struct bnxt_napi *bnapi)
+ 		bnapi->tx_pkts = 0;
  	}
--
- 	return 0;
+ 
+-	if (bnapi->events & BNXT_RX_EVENT) {
++	if ((bnapi->events & BNXT_RX_EVENT) && !(bnapi->in_reset)) {
+ 		struct bnxt_rx_ring_info *rxr = bnapi->rx_ring;
+ 
+ 		if (bnapi->events & BNXT_AGG_EVENT)
+@@ -10510,6 +10513,23 @@ static void bnxt_dbg_dump_states(struct bnxt *bp)
+ 	}
  }
  
-+static int bnxt_init_one_rx_ring(struct bnxt *bp, int ring_nr)
++static int bnxt_hwrm_rx_ring_reset(struct bnxt *bp, int ring_nr)
 +{
-+	struct bnxt_rx_ring_info *rxr;
-+	struct bnxt_ring_struct *ring;
-+	u32 type;
++	struct bnxt_rx_ring_info *rxr = &bp->rx_ring[ring_nr];
++	struct hwrm_ring_reset_input req = {0};
++	struct bnxt_napi *bnapi = rxr->bnapi;
++	struct bnxt_cp_ring_info *cpr;
++	u16 cp_ring_id;
 +
-+	type = (bp->rx_buf_use_size << RX_BD_LEN_SHIFT) |
-+		RX_BD_TYPE_RX_PACKET_BD | RX_BD_FLAGS_EOP;
-+
-+	if (NET_IP_ALIGN == 2)
-+		type |= RX_BD_FLAGS_SOP;
-+
-+	rxr = &bp->rx_ring[ring_nr];
-+	ring = &rxr->rx_ring_struct;
-+	bnxt_init_rxbd_pages(ring, type);
-+
-+	if (BNXT_RX_PAGE_MODE(bp) && bp->xdp_prog) {
-+		bpf_prog_add(bp->xdp_prog, 1);
-+		rxr->xdp_prog = bp->xdp_prog;
-+	}
-+	ring->fw_ring_id = INVALID_HW_RING_ID;
-+
-+	ring = &rxr->rx_agg_ring_struct;
-+	ring->fw_ring_id = INVALID_HW_RING_ID;
-+
-+	if ((bp->flags & BNXT_FLAG_AGG_RINGS)) {
-+		type = ((u32)BNXT_RX_PAGE_SIZE << RX_BD_LEN_SHIFT) |
-+			RX_BD_TYPE_RX_AGG_BD | RX_BD_FLAGS_SOP;
-+
-+		bnxt_init_rxbd_pages(ring, type);
-+	}
-+
-+	return bnxt_alloc_one_rx_ring(bp, ring_nr);
++	cpr = &bnapi->cp_ring;
++	cp_ring_id = cpr->cp_ring_struct.fw_ring_id;
++	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_RING_RESET, cp_ring_id, -1);
++	req.ring_type = RING_RESET_REQ_RING_TYPE_RX_RING_GRP;
++	req.ring_id = cpu_to_le16(bp->grp_info[bnapi->index].fw_grp_id);
++	return hwrm_send_message_silent(bp, &req, sizeof(req),
++					HWRM_CMD_TIMEOUT);
 +}
 +
- static void bnxt_init_cp_rings(struct bnxt *bp)
+ static void bnxt_reset_task(struct bnxt *bp, bool silent)
  {
- 	int i, j;
+ 	if (!silent)
+@@ -10645,6 +10665,54 @@ static void bnxt_reset(struct bnxt *bp, bool silent)
+ 	bnxt_rtnl_unlock_sp(bp);
+ }
+ 
++/* Only called from bnxt_sp_task() */
++static void bnxt_rx_ring_reset(struct bnxt *bp)
++{
++	int i;
++
++	bnxt_rtnl_lock_sp(bp);
++	if (!test_bit(BNXT_STATE_OPEN, &bp->state)) {
++		bnxt_rtnl_unlock_sp(bp);
++		return;
++	}
++	/* Disable and flush TPA before resetting the RX ring */
++	if (bp->flags & BNXT_FLAG_TPA)
++		bnxt_set_tpa(bp, false);
++	for (i = 0; i < bp->rx_nr_rings; i++) {
++		struct bnxt_rx_ring_info *rxr = &bp->rx_ring[i];
++		struct bnxt_cp_ring_info *cpr;
++		int rc;
++
++		if (!rxr->bnapi->in_reset)
++			continue;
++
++		rc = bnxt_hwrm_rx_ring_reset(bp, i);
++		if (rc) {
++			if (rc == -EINVAL || rc == -EOPNOTSUPP)
++				netdev_info_once(bp->dev, "RX ring reset not supported by firmware, falling back to global reset\n");
++			else
++				netdev_warn(bp->dev, "RX ring reset failed, rc = %d, falling back to global reset\n",
++					    rc);
++			bnxt_reset_task(bp, false);
++			break;
++		}
++		bnxt_free_one_rx_ring_skbs(bp, i);
++		rxr->rx_prod = 0;
++		rxr->rx_agg_prod = 0;
++		rxr->rx_sw_agg_prod = 0;
++		rxr->rx_next_cons = 0;
++		rxr->bnapi->in_reset = false;
++		bnxt_alloc_one_rx_ring(bp, i);
++		cpr = &rxr->bnapi->cp_ring;
++		if (bp->flags & BNXT_FLAG_AGG_RINGS)
++			bnxt_db_write(bp, &rxr->rx_agg_db, rxr->rx_agg_prod);
++		bnxt_db_write(bp, &rxr->rx_db, rxr->rx_prod);
++	}
++	if (bp->flags & BNXT_FLAG_TPA)
++		bnxt_set_tpa(bp, true);
++	bnxt_rtnl_unlock_sp(bp);
++}
++
+ static void bnxt_fw_reset_close(struct bnxt *bp)
+ {
+ 	bnxt_ulp_stop(bp);
+@@ -10933,6 +11001,9 @@ static void bnxt_sp_task(struct work_struct *work)
+ 	if (test_and_clear_bit(BNXT_RESET_TASK_SILENT_SP_EVENT, &bp->sp_event))
+ 		bnxt_reset(bp, true);
+ 
++	if (test_and_clear_bit(BNXT_RST_RING_SP_EVENT, &bp->sp_event))
++		bnxt_rx_ring_reset(bp);
++
+ 	if (test_and_clear_bit(BNXT_FW_RESET_NOTIFY_SP_EVENT, &bp->sp_event))
+ 		bnxt_devlink_health_report(bp, BNXT_FW_RESET_NOTIFY_SP_EVENT);
+ 
 -- 
 2.18.1
 
 
---0000000000002112a105b0dd4d25
+--0000000000003611d305b0dd4d45
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -286,14 +284,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgIaxIc4thqTTp
-K8G/aqRRd9ZQ+Ipl2BgJ5MKllNCUtOMwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAxMDA0MTkyMzMxWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgdMqUSZUcvwGV
+FPNMzA+F40rDjtbYsGmiOdl9Tpe35q4wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAxMDA0MTkyMzMzWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAKJjy1ehwiTtzBPuAPEIv59AvvDvuaQg
-BJroJ1mI2xESwr+ycHWv7RVLWMPdIiiitk42I4fyH/U2GoHLuTGIh6GJn9Ta+keJGiHm/NdmlFpX
-iZamQxuICkFY/LGSCq7n2SbFzs5qbfwfvy1Sq8AlJWyAKm4LKUwikg6WBKNylM6VTNij9/WU+4gh
-7Pr0qlcb2iL2S7GkIiq2DlHF81GlsCvF5USMcLqtCqDqGN1OldysvEPv33nWT/6Vs2jSPiTh4NsR
-e9lvWnPNASm2GHwww3SPOlPVtUweE8iGC/FuGng+Suey604Y/YmJ9vItpeUXGCMOF+qHpxlo6aoL
-jvcojHI=
---0000000000002112a105b0dd4d25--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAHzIocW6qeYCYNJGoPh1GGfNcQ1YMXgt
+vDyRf8emqBXhi2Jiy2OUiy0ASQUEQuQblq3LxVYN8YWLWhY9X+bBMn1e8hphma88+vyejUJhAZQU
+3Th47zem335OqZBc6PwL/kECPigIuKKgl/fp+5Sg3/q5UCygPjuJBazcKizzW63x9Ga6cE9/tjfl
+zn68ji7Q/xveV0+R2YQ4bYyNSYtCKWazyEFXBhnG5bGW59WgH3yW7yi+PW5rrOH7vWh3sr1fL/GW
+GUXsQLmo/ZGtMEQwB/rPw3mFpT69HZHrSKmPu8RJT3PqpgaBUKJKntGwCMDA00lXl9n7MJ6AxOsw
+mhUeTjU=
+--0000000000003611d305b0dd4d45--
