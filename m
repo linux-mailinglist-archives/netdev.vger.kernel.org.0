@@ -2,98 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4036282B0C
-	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 15:38:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CE8F282B14
+	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 16:01:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726113AbgJDNiH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 09:38:07 -0400
-Received: from wnew4-smtp.messagingengine.com ([64.147.123.18]:59935 "EHLO
-        wnew4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725927AbgJDNiF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 09:38:05 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.west.internal (Postfix) with ESMTP id 0C75646D;
-        Sun,  4 Oct 2020 09:38:03 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 04 Oct 2020 09:38:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=TkjPeK
-        asb5N6JohTnx9KDQE5/E9yuGBJrhsKlkBNVeo=; b=ooTt8woDBcCoHur37dtX3z
-        DFYE2hRn859ip2nadVAvsS7HdDRUM14tecBxA9kqo+zU6jxpTjpwZ5lzyQNL+ThI
-        fSC37F2KLMGQ8K8BaJOjZwDFwbnmiDyicWsK1ofRodKwcwx0TP/tHGCdDaL2P6lS
-        U/tb6y0K1ZevKtZfE3AMHOs4Q3jJOkhRJ2EMSaLgXAWSfHFEQk0OrDFvGMaUsHvJ
-        u1JbYSacyn+kVhniDOwEUBA7i1fMEZicbJ8bI5zrixRwxvLMfYUSW9tb0PVwT6OU
-        +WSobv/BhfEN8l9Z9H0rCwA0FFcq4GcUqqhEq16ed0lWufz9bfbSnTV5o3qhoTBg
-        ==
-X-ME-Sender: <xms:OdB5X9oZ_jUeP0r5WJACPnjciCfb0Nbf-3QcCr2zEfjw_WAU5-6j_A>
-    <xme:OdB5X_r5WHF3ikD5Yduz636JDRvSvwEclUmk3W3kZB3I0kEwTscCHHRtW1xvEuws4
-    uS3DDuCZpkVc-k>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrgedtgdejtdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necukfhppeekgedrvddvledrfeejrddugeeknecuvehluhhsthgvrhfuihiivgeptdenuc
-    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:OdB5X6NjUWmOG-z_4MBsMXVRktu7p7eAT4vDaOJpEtjM3_sqAugANg>
-    <xmx:OdB5X45KU3Ckct2GkeMWmHS9b4N55NPXZNjDDJiNlM2kHKWBWulYeA>
-    <xmx:OdB5X84WnsOGfelAj_va5h2ESUmG-kDA-fLkcw3619A722yfcjUcAw>
-    <xmx:O9B5X7b2PHGZJv63S7hX_q8977ESDVCU3k7ukM_7n4UgeW-ksN-_swIZB6k>
-Received: from localhost (igld-84-229-37-148.inter.net.il [84.229.37.148])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 08B263280059;
-        Sun,  4 Oct 2020 09:38:00 -0400 (EDT)
-Date:   Sun, 4 Oct 2020 16:37:57 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "saeedm@nvidia.com" <saeedm@nvidia.com>,
-        "ayal@nvidia.com" <ayal@nvidia.com>,
-        "mlxsw@nvidia.com" <mlxsw@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [RFC PATCH net-next v2] ethtool: Improve compatibility between
- netlink and ioctl interfaces
-Message-ID: <20201004133757.GA2189885@shredder>
-References: <20201004101707.2177320-1-idosch@idosch.org>
- <07b469aea4494fdeb11f4915459540a4@AcuMS.aculab.com>
+        id S1726107AbgJDOAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Oct 2020 10:00:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:54935 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725927AbgJDOAv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 10:00:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1601820050;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Fm94G5MtLGooNgL+Wfv2prTlsVAS1DxhSlOCsJvBYgg=;
+        b=i/O1lKxo+c+u3Peqk0NfO6cYS0fcZJuEypbJDern3mfw5/fH/8x+Ij2oz/WopMouH9K+XQ
+        mD8Cm3RhL9TDYBLfvAAGyrXQPnz7rSSxYTJVcwWUno4YQCszORSvhxs+UASTby6eNs/38r
+        Pq4fEGpP5BofnuBXzBQDK8YahhpXwCE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-499-LntC8MZdNtyY3hiG1A4fZg-1; Sun, 04 Oct 2020 10:00:48 -0400
+X-MC-Unique: LntC8MZdNtyY3hiG1A4fZg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 745B11084C86;
+        Sun,  4 Oct 2020 14:00:47 +0000 (UTC)
+Received: from new-host-6 (unknown [10.40.192.25])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C6BCB10013BD;
+        Sun,  4 Oct 2020 14:00:45 +0000 (UTC)
+Message-ID: <71bd92d07f21cbca5176e39774463b0ac135ad45.camel@redhat.com>
+Subject: Re: [PATCH net] net/core: check length before updating Ethertype
+ in skb_mpls_{push,pop}
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Guillaume Nault <gnault@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Martin Varghese <martin.varghese@nokia.com>
+In-Reply-To: <71ec98d51cc4aab7615061336fb1498ad16cda30.1601667845.git.gnault@redhat.com>
+References: <71ec98d51cc4aab7615061336fb1498ad16cda30.1601667845.git.gnault@redhat.com>
+Organization: red hat
+Content-Type: text/plain; charset="UTF-8"
+Date:   Sun, 04 Oct 2020 16:00:44 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <07b469aea4494fdeb11f4915459540a4@AcuMS.aculab.com>
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 04, 2020 at 12:46:31PM +0000, David Laight wrote:
-> From: Ido Schimmel
-> > Sent: 04 October 2020 11:17
-> > 
-> > With the ioctl interface, when autoneg is enabled, but without
-> > specifying speed, duplex or link modes, the advertised link modes are
-> > set to the supported link modes by the ethtool user space utility.
-> ...
-> > Fix this incompatibility problem by introducing a new flag in the
-> > ethtool netlink request header: 'ETHTOOL_FLAG_LEGACY'. The purpose of
-> > the flag is to indicate to the kernel that it needs to be compatible
-> > with the legacy ioctl interface. A patch to the ethtool user space
-> > utility will make sure the flag is always set.
+On Fri, 2020-10-02 at 21:53 +0200, Guillaume Nault wrote:
+> Openvswitch allows to drop a packet's Ethernet header, therefore
+> skb_mpls_push() and skb_mpls_pop() might be called with ethernet=true
+> and mac_len=0. In that case the pointer passed to skb_mod_eth_type()
+> doesn't point to an Ethernet header and the new Ethertype is written at
+> unexpected locations.
 > 
-> You need to do that the other way around.
-> You can't assume the kernel and application are updated
-> at the same time.
+> Fix this by verifying that mac_len is big enough to contain an Ethernet
+> header.
+> 
+> Fixes: fa4e0f8855fc ("net/sched: fix corrupted L2 header with MPLS 'push' and 'pop' actions")
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
+> ---
+> Notes:
+>   - Found by code inspection.
+>   - Using commit fa4e0f8855fc for the Fixes tag because mac_len is
+>     needed for the test. The problem probably exists since openvswitch
+>     can pop the Ethernet header though.
+> 
+>  net/core/skbuff.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thanks, David. In case ethtool is updated without updating the kernel we
-will indeed get an error:
 
-# ethtool -s eth0 autoneg on
-netlink error: unrecognized request flags (offset 36)
-netlink error: Operation not supported
+Acked-by: Davide Caratti <dcaratti@redhat.com>
 
-Will wait for Michal's comments before doing another round.
+thanks!
+
+-- 
+davide
+
+
