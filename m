@@ -2,33 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0F19282A59
-	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 13:06:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6827F282A5D
+	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 13:11:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726001AbgJDLGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 07:06:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41470 "EHLO
+        id S1726015AbgJDLLJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Oct 2020 07:11:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725932AbgJDLGb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 07:06:31 -0400
+        with ESMTP id S1725825AbgJDLLE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 07:11:04 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F06C0613CE
-        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 04:06:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3823CC0613CE
+        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 04:11:04 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kP1qN-0000UL-NQ; Sun, 04 Oct 2020 13:06:19 +0200
+        id 1kP1uo-0000mC-Ky; Sun, 04 Oct 2020 13:10:54 +0200
 Received: from [IPv6:2a03:f580:87bc:d400:fc36:ae63:3b35:518b] (unknown [IPv6:2a03:f580:87bc:d400:fc36:ae63:3b35:518b])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id B1FB6571D48;
-        Sun,  4 Oct 2020 11:06:14 +0000 (UTC)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id AD3DA571D4E;
+        Sun,  4 Oct 2020 11:10:52 +0000 (UTC)
 Subject: Re: [PATCH v3 5/7] can: dev: add a helper function to calculate the
  duration of one bit
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         linux-can@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
@@ -41,7 +42,7 @@ Cc:     Oliver Neukum <oneukum@suse.com>,
         "open list:USB ACM DRIVER" <linux-usb@vger.kernel.org>
 References: <20201002154219.4887-1-mailhol.vincent@wanadoo.fr>
  <20201002154219.4887-6-mailhol.vincent@wanadoo.fr>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
+ <49660a42-9465-a519-6dd4-0f80795b0aca@pengutronix.de>
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
  zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
@@ -102,15 +103,15 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
  HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
  xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
-Message-ID: <49660a42-9465-a519-6dd4-0f80795b0aca@pengutronix.de>
-Date:   Sun, 4 Oct 2020 13:06:09 +0200
+Message-ID: <b061ed85-582e-50f6-9e7f-da54ed913837@pengutronix.de>
+Date:   Sun, 4 Oct 2020 13:10:47 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20201002154219.4887-6-mailhol.vincent@wanadoo.fr>
+In-Reply-To: <49660a42-9465-a519-6dd4-0f80795b0aca@pengutronix.de>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="P1bLlkMoGDRCGjbltFWf9Kxwgcrtronrj"
+ boundary="Au1g7qhsajtJ3rHsms802Ho64raVFmd6I"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -120,8 +121,8 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---P1bLlkMoGDRCGjbltFWf9Kxwgcrtronrj
-Content-Type: multipart/mixed; boundary="kuD8BCZsIJtNW8FfoNg0Blx3C0CIPhP7q";
+--Au1g7qhsajtJ3rHsms802Ho64raVFmd6I
+Content-Type: multipart/mixed; boundary="CVh1Q0BrKYAPkqENWGjuEhi8a9asKIYgh";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
 To: Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
@@ -133,134 +134,63 @@ Cc: Oliver Neukum <oneukum@suse.com>,
  Masahiro Yamada <masahiroy@kernel.org>,
  Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
  "open list:USB ACM DRIVER" <linux-usb@vger.kernel.org>
-Message-ID: <49660a42-9465-a519-6dd4-0f80795b0aca@pengutronix.de>
+Message-ID: <b061ed85-582e-50f6-9e7f-da54ed913837@pengutronix.de>
 Subject: Re: [PATCH v3 5/7] can: dev: add a helper function to calculate the
  duration of one bit
 References: <20201002154219.4887-1-mailhol.vincent@wanadoo.fr>
  <20201002154219.4887-6-mailhol.vincent@wanadoo.fr>
-In-Reply-To: <20201002154219.4887-6-mailhol.vincent@wanadoo.fr>
+ <49660a42-9465-a519-6dd4-0f80795b0aca@pengutronix.de>
+In-Reply-To: <49660a42-9465-a519-6dd4-0f80795b0aca@pengutronix.de>
 
---kuD8BCZsIJtNW8FfoNg0Blx3C0CIPhP7q
+--CVh1Q0BrKYAPkqENWGjuEhi8a9asKIYgh
 Content-Type: text/plain; charset=utf-8
 Content-Language: de-DE
 Content-Transfer-Encoding: quoted-printable
 
-On 10/2/20 5:41 PM, Vincent Mailhol wrote:
-> Rename macro CAN_CALC_SYNC_SEG to CAN_SYNC_SEG and make it available
-> through include/linux/can/dev.h
->=20
-> Add an helper function can_bit_time() which returns the duration (in
-> time quanta) of one CAN bit.
->=20
-> Rationale for this patch: the sync segment and the bit time are two
-> concepts which are defined in the CAN ISO standard. Device drivers for
-> CAN might need those.
->=20
-> Please refer to ISO 11898-1:2015, section 11.3.1.1 "Bit time" for
-> additional information.
->=20
-> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> ---
->=20
-> Changes in v3: None
->=20
-> Changes in v2: None
-> ---
->  drivers/net/can/dev.c   | 13 ++++++-------
->  include/linux/can/dev.h | 15 +++++++++++++++
->  2 files changed, 21 insertions(+), 7 deletions(-)
->=20
-> diff --git a/drivers/net/can/dev.c b/drivers/net/can/dev.c
-> index 8c3e11820e03..6070b4ab3bd8 100644
-> --- a/drivers/net/can/dev.c
-> +++ b/drivers/net/can/dev.c
-> @@ -60,7 +60,6 @@ EXPORT_SYMBOL_GPL(can_len2dlc);
-> =20
->  #ifdef CONFIG_CAN_CALC_BITTIMING
->  #define CAN_CALC_MAX_ERROR 50 /* in one-tenth of a percent */
-> -#define CAN_CALC_SYNC_SEG 1
-> =20
->  /* Bit-timing calculation derived from:
->   *
-> @@ -86,8 +85,8 @@ can_update_sample_point(const struct can_bittiming_co=
-nst *btc,
->  	int i;
-> =20
->  	for (i =3D 0; i <=3D 1; i++) {
-> -		tseg2 =3D tseg + CAN_CALC_SYNC_SEG -
-> -			(sample_point_nominal * (tseg + CAN_CALC_SYNC_SEG)) /
-> +		tseg2 =3D tseg + CAN_SYNC_SEG -
-> +			(sample_point_nominal * (tseg + CAN_SYNC_SEG)) /
->  			1000 - i;
->  		tseg2 =3D clamp(tseg2, btc->tseg2_min, btc->tseg2_max);
->  		tseg1 =3D tseg - tseg2;
-> @@ -96,8 +95,8 @@ can_update_sample_point(const struct can_bittiming_co=
-nst *btc,
->  			tseg2 =3D tseg - tseg1;
->  		}
-> =20
-> -		sample_point =3D 1000 * (tseg + CAN_CALC_SYNC_SEG - tseg2) /
-> -			(tseg + CAN_CALC_SYNC_SEG);
-> +		sample_point =3D 1000 * (tseg + CAN_SYNC_SEG - tseg2) /
-> +			(tseg + CAN_SYNC_SEG);
->  		sample_point_error =3D abs(sample_point_nominal - sample_point);
-> =20
->  		if (sample_point <=3D sample_point_nominal &&
-> @@ -145,7 +144,7 @@ static int can_calc_bittiming(struct net_device *de=
-v, struct can_bittiming *bt,
->  	/* tseg even =3D round down, odd =3D round up */
->  	for (tseg =3D (btc->tseg1_max + btc->tseg2_max) * 2 + 1;
->  	     tseg >=3D (btc->tseg1_min + btc->tseg2_min) * 2; tseg--) {
-> -		tsegall =3D CAN_CALC_SYNC_SEG + tseg / 2;
-> +		tsegall =3D CAN_SYNC_SEG + tseg / 2;
-> =20
->  		/* Compute all possible tseg choices (tseg=3Dtseg1+tseg2) */
->  		brp =3D priv->clock.freq / (tsegall * bt->bitrate) + tseg % 2;
-> @@ -223,7 +222,7 @@ static int can_calc_bittiming(struct net_device *de=
-v, struct can_bittiming *bt,
-> =20
->  	/* real bitrate */
->  	bt->bitrate =3D priv->clock.freq /
-> -		(bt->brp * (CAN_CALC_SYNC_SEG + tseg1 + tseg2));
-> +		(bt->brp * (CAN_SYNC_SEG + tseg1 + tseg2));
-> =20
->  	return 0;
->  }
-> diff --git a/include/linux/can/dev.h b/include/linux/can/dev.h
-> index 791c452d98e1..77c3ea49b8fb 100644
-> --- a/include/linux/can/dev.h
-> +++ b/include/linux/can/dev.h
-> @@ -82,6 +82,21 @@ struct can_priv {
->  #endif
->  };
-> =20
-> +#define CAN_SYNC_SEG 1
-> +
-> +/*
-> + * can_bit_time() - Duration of one bit
-> + *
-> + * Please refer to ISO 11898-1:2015, section 11.3.1.1 "Bit time" for
-> + * additional information.
-> + *
-> + * Return: the number of time quanta in one bit.
-> + */
-> +static inline int can_bit_time(struct can_bittiming *bt)
+On 10/4/20 1:06 PM, Marc Kleine-Budde wrote:
+> On 10/2/20 5:41 PM, Vincent Mailhol wrote:
+>> Rename macro CAN_CALC_SYNC_SEG to CAN_SYNC_SEG and make it available
+>> through include/linux/can/dev.h
+>>
+>> Add an helper function can_bit_time() which returns the duration (in
+>> time quanta) of one CAN bit.
+>>
+>> Rationale for this patch: the sync segment and the bit time are two
+>> concepts which are defined in the CAN ISO standard. Device drivers for=
 
-make it return an unsigned int
-make the bt pointer const
+>> CAN might need those.
+>>
+>> Please refer to ISO 11898-1:2015, section 11.3.1.1 "Bit time" for
+>> additional information.
+>>
+>> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 
-> +{
-> +	return CAN_SYNC_SEG + bt->prop_seg + bt->phase_seg1 + bt->phase_seg2;=
+[...]
 
-> +}
-> +
->  /*
->   * get_can_dlc(value) - helper macro to cast a given data length code =
-(dlc)
->   * to u8 and ensure the dlc value to be max. 8 bytes.
+>> index 791c452d98e1..77c3ea49b8fb 100644
+>> --- a/include/linux/can/dev.h
+>> +++ b/include/linux/can/dev.h
+>> @@ -82,6 +82,21 @@ struct can_priv {
+>>  #endif
+>>  };
+>> =20
+>> +#define CAN_SYNC_SEG 1
+>> +
+>> +/*
+>> + * can_bit_time() - Duration of one bit
+>> + *
+>> + * Please refer to ISO 11898-1:2015, section 11.3.1.1 "Bit time" for
+>> + * additional information.
+>> + *
+>> + * Return: the number of time quanta in one bit.
+>> + */
+>> +static inline int can_bit_time(struct can_bittiming *bt)
 >=20
+> make it return an unsigned int
+> make the bt pointer const
 
-tnx,
+I'll change this while applying the patch.
+
 Marc
 
 --=20
@@ -270,23 +200,23 @@ Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---kuD8BCZsIJtNW8FfoNg0Blx3C0CIPhP7q--
+--CVh1Q0BrKYAPkqENWGjuEhi8a9asKIYgh--
 
---P1bLlkMoGDRCGjbltFWf9Kxwgcrtronrj
+--Au1g7qhsajtJ3rHsms802Ho64raVFmd6I
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl95rKEACgkQqclaivrt
-76nNqAf/Yqv5BenuwGeUEUfjqLdv3j5eEAstISItQt3Gv2lMpI7V3l7/w9Uqjuku
-tgRSb2hTfSde19RVNX1C0n+mIl6wJ1nKUYqOEgCqZTA0OYQVgafWhVP+sWf6H6+z
-wyFkx9KCPVwlA+SE8FzQm0kzgIqNKKRoSEuaBOBpNgMFR4E3ym5G4d2RaPGCb3oo
-bhqNjW9lfcMat+43C+e8To2xRvuiAhf4LPR0mepT9d3oF+CC86aFSwroTl2zSQYy
-BmlcqCJd5MpZguZ8N6Uuxz9Dso78U3VhQB+NdxDzPqU/mvYDCUSIMAq4R9Dfn4mo
-HADgnntCEraELzWTOWXPykfmzSYfSw==
-=Te1n
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl95rbcACgkQqclaivrt
+76mJ2Af+KsXxhV3+6XtL4GTb/XCU9MIS9O33JIB0nbDsbpD0HbG+fhJPmefJOYNj
+QFTwki/VYz9T3Qo9PMnI0tX89bC2PtcMYshT3tTuZnsgXPST78W84M9CyoDVYbHA
+LzygdmD7ji8nv2pqrJb9Jpz37JDUyAaaN2IT8oIwLJuiXl0szrlrrxwc8uchKwv1
+R8Ql1LuGC71COcGTC3IGqDRJS3f0ED1O3y1Vt0t4UGbAcJ6XBggIr5EFprVlXX33
+i8ycgAlGuLTHMlrJ35DKvil7QmQNhYqhL9daa/EI/0wGuYeBL0JvclFIWpgQX8Hi
+rFc+ERKuH9EWv0tUc68YrxP2UBT7Ow==
+=wnPs
 -----END PGP SIGNATURE-----
 
---P1bLlkMoGDRCGjbltFWf9Kxwgcrtronrj--
+--Au1g7qhsajtJ3rHsms802Ho64raVFmd6I--
