@@ -2,80 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09CE3282DAB
-	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 23:07:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0D74282DBF
+	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 23:24:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726552AbgJDVHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 17:07:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48448 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726313AbgJDVHq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 17:07:46 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65091C0613CE
-        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 14:07:45 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id k18so6808014wmj.5
-        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 14:07:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+I9MVQYvY5q8kWw2c3ow6ilGJUOAUj4CPLX0tIObKIo=;
-        b=IHibMZmFgazTN6C19STcvKfxeHeB27aZgV18pLZE5mFx3cHnnlFPFvoP259mUwzFjJ
-         VvRBpdNfOeKJ5yVCvjkmZEkZ6fdVexNoOL7RhGZGBRKJTQvjohnkuwgaUw4X1EuE1d/A
-         0xbLHDI7CESYTddgJvF5qG9cmj8Z+ErLnjODDIdcDz9dlK5eyEpQeXzUfYvRyJF7nIm9
-         iHkqduILU2WvfTFguTNPFNAOvejreD/qv06tW177LFQUR6caREHzfDm18ZoD9ahMl8nO
-         XJVfPojF7zgQ/h1OGkdGaUDLz8q5kdiUaxNRMl/h6/JAiX4Cmqt9RyYIAofpNoyaobfo
-         HQwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+I9MVQYvY5q8kWw2c3ow6ilGJUOAUj4CPLX0tIObKIo=;
-        b=O20JY4JcA9KsR3NiMsvjYuFyORKxJe1U7Gc5rmGx8UWC9zTcIt6AZ/JR69F1vc/VC/
-         JoQ+7yBVtqz+F4aERINNtjQ40pFr07XiOypuAeeuQ9cNMWNZDx06S/2BnLGW13nx5bze
-         Exdihz1tw4BAh3EmA608tF3Zq00L/As9oVu4FA6Xu0CEL3bQ36Xyyw1vN/u7maCL3TeE
-         nnXlfdGUWwGqeuzjHndp5nmjgWZ40EB+CW5Lqi66W42+OyczhqmDPjZq5FNZrPGFbqVo
-         YXyNwMEPHW4AKPgnT5HZLDb16TbGtnsF2hgvFWGVPOBK/Xt/HZZOLNdQ2UTKd4aPahNE
-         6/IQ==
-X-Gm-Message-State: AOAM533ufnrEaefFAHh4ecx8BNggNYltZ+5aIdlPE/vmJsMo+HOVHZ6K
-        A9k1Wcy/qDkpRbvro1JI2DY=
-X-Google-Smtp-Source: ABdhPJwsxLXWj2EQbb+6m8D7e+7xhOffonJ+OLEM3jaEHwhFSM78PaKGU8Pw1XMM9PxjCal76xtV4A==
-X-Received: by 2002:a7b:c317:: with SMTP id k23mr12919806wmj.44.1601845664162;
-        Sun, 04 Oct 2020 14:07:44 -0700 (PDT)
-Received: from skbuf ([188.26.229.171])
-        by smtp.gmail.com with ESMTPSA id p67sm10554657wmp.11.2020.10.04.14.07.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Oct 2020 14:07:43 -0700 (PDT)
-Date:   Mon, 5 Oct 2020 00:07:42 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next v3 7/7] net: dsa: mv88e6xxx: Add per port
- devlink regions
-Message-ID: <20201004210742.nxumrvdzqjah25xe@skbuf>
-References: <20201004161257.13945-1-andrew@lunn.ch>
- <20201004161257.13945-8-andrew@lunn.ch>
+        id S1726398AbgJDVYP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Oct 2020 17:24:15 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:43516 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726313AbgJDVYP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 17:24:15 -0400
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id C01CD1C0B76; Sun,  4 Oct 2020 23:24:12 +0200 (CEST)
+Date:   Sun, 4 Oct 2020 23:24:12 +0200
+From:   Pavel Machek <pavel@denx.de>
+To:     ashiduka@fujitsu.com, sergei.shtylyov@gmail.com,
+        davem@davemloft.net, yoshihiro.shimoda.uh@renesas.com,
+        damm+renesas@opensource.se, tho.vu.wh@rvc.renesas.com,
+        kazuya.mizuguchi.ks@renesas.com, horms+renesas@verge.net.au,
+        fabrizio.castro@bp.renesas.com, netdev@vger.kernel.org
+Cc:     Chris.Paterson2@renesas.com
+Subject: ravb ethernet failures in 4.19.148 and -cip kernels
+Message-ID: <20201004212412.GA12452@duo.ucw.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="bg08WKrSYDhXBjb5"
 Content-Disposition: inline
-In-Reply-To: <20201004161257.13945-8-andrew@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 04, 2020 at 06:12:57PM +0200, Andrew Lunn wrote:
-> Add a devlink region to return the per port registers.
-> 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> ---
 
-Sorry for the wrong "while (port-- >= 0)" advice given in v2.
-"while (port-- > 0)" is definitely the correct idiom, which is what you
-are using here.
+--bg08WKrSYDhXBjb5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Hi!
+
+It seems
+
+commit fb3a780e7a76cf8efb055f8322ec039923cee41f
+Author: Yuusuke Ashizuka <ashiduka@fujitsu.com>
+Date:   Thu Aug 20 18:43:07 2020 +0900
+
+    ravb: Fixed to be able to unload modules
+
+causes problems in at least -cip-rt kernels. (I'd have to verify it is
+present in -cip and plain -stable). Symptoms are like this:
+
+[    2.798301] [drm] Cannot find any crtc or sizes
+[    2.805866] hctosys: unable to open rtc device (rtc0)
+[    2.811937] libphy: ravb_mii: probed
+[    2.821001] RTL8211E Gigabit Ethernet e6800000.ethernet-ffffffff:00: att=
+ached PHY driver [RTL8211E Gigabit Ethernet] (mii_bus:phy_addr=3De6800000.e=
+thernet-ffffffff:00, irq=3D190)
+[    2.838052] RTL8211E Gigabit Ethernet e6800000.ethernet-ffffffff:00: Mas=
+ter/Slave resolution failed, maybe conflicting manual settings?
+[   12.841484] Waiting up to 110 more seconds for network.
+[   22.853482] Waiting up to 100 more seconds for network.
+[   32.865482] Waiting up to 90 more seconds for network.
+[   42.877482] Waiting up to 80 more seconds for network.
+[   52.889482] Waiting up to 70 more seconds for network.
+[   62.901482] Waiting up to 60 more seconds for network.
+[   72.913482] Waiting up to 50 more seconds for network.
+[   82.925482] Waiting up to 40 more seconds for network.
+[   92.937482] Waiting up to 30 more seconds for network.
+[  102.949482] Waiting up to 20 more seconds for network.
+[  112.961482] Waiting up to 10 more seconds for network.
+[  122.861490] Sending DHCP requests ...... timed out!
+[  209.890289] IP-Config: Retrying forever (NFS root)...
+[  209.895535] libphy: ravb_mii: probed
+[  209.899386] mdio_bus e6800000.ethernet-ffffffff: MDIO device at address =
+0 is missing.
+[  209.910604] ravb e6800000.ethernet eth0: failed to connect PHY
+[  209.916705] IP-Config: Failed to open eth0
+[  219.925483] Waiting up to 110 more seconds for network.
+[  229.937481] Waiting up to 100 more seconds for network.
+[  239.949481] Waiting up to 90 more seconds for network.
+[  249.961481] Waiting up to 80 more seconds for network.
+
+Full log is available at
+https://lava.ciplatform.org/scheduler/job/56398 .
+
+Reverting the above patch fixes the problems.
+
+If you have any ideas what could be going on there, let me know.
+
+Best regards,
+									Pavel
+--=20
+(english) http://www.livejournal.com/~pavelmachek
+(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
+g.html
+
+--bg08WKrSYDhXBjb5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCX3o9fAAKCRAw5/Bqldv6
+8joZAJ4jZQDbzFRUEZdRL5mGuj7lbhVZwgCglv7GPY10Cu2MsOW26cbB9ZchBE0=
+=Doaa
+-----END PGP SIGNATURE-----
+
+--bg08WKrSYDhXBjb5--
