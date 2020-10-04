@@ -2,108 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13CCA282D9C
-	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 22:56:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C365C282D9B
+	for <lists+netdev@lfdr.de>; Sun,  4 Oct 2020 22:55:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726570AbgJDUz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 16:55:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46636 "EHLO
+        id S1726523AbgJDUz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Oct 2020 16:55:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726345AbgJDUz7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 16:55:59 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E36C0613CE;
-        Sun,  4 Oct 2020 13:55:59 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id h6so3778096pgk.4;
-        Sun, 04 Oct 2020 13:55:59 -0700 (PDT)
+        with ESMTP id S1726345AbgJDUz5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 16:55:57 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 022BAC0613CE
+        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 13:55:56 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id k10so7345143wru.6
+        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 13:55:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pdvIIyxIuMTWPTkysqTwPpBrn7TuPnPJbCEXdGhmjXA=;
-        b=RXs+HjiFGShmJ1wccK4uLdFWOSKbcxMcxA8COMUvEfPHgcT97pzYi9/nO6rI1bFdIL
-         hsNx3tyJbH2aofisNie/6oQSUoozVNJLaYAu6KlF7NSsjrKxUXQugtL64Ee3NOKCcGmp
-         qfKroWi2W7fOgKSY6fpZlOQqccdC0kHZjW88fyhr4BULhpWTkg3etdlysXu0YW9bKl2b
-         7j5Uy+FRiDQDfm9wOqF0X6O1FvVwNi7iOy2LVIBx/96MoVMYg0Nj71fy77t+L76eoX4h
-         w+WU/yLoDq42JxwSKV+TJf9a8wtslAeXCns/ZHDf2h+XXL3EnBo266soKVAa5JJCYxcK
-         KAaw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fuz3VnS7gqSToWKpKAn9vH3vGA/DDBL2++eeVTZGySE=;
+        b=j9v9tOz8/eiiqkNQ6IrKc2b2vv7a3UQdT3Bs7hgg1ul5SnJRWqJeMur29Qz9kwW/vA
+         2hX4s2se6hkBHgqEMgZbdnKOLD7tX463R8dGzOFpaUI4u0DKTU2j0YvpS+WCsnTdALpu
+         9NLbcgU/Uu1MWP7BnEW6WVvjwkLEtnVIxtbN3LMawGL8QYnxXlti7r5JQci30liTL6zz
+         xqbXAggsmv9Gbft4xGKWA8V1GcMf3XjnNSkJyaLrU4Zeuo+VuYW3IpO0CrRKs+WeIFqP
+         eDdOwSAD8lg8SUO1u13zlSZmRXBFABA7562OIywTZ7iq6naN1niFwuED7lWHFxXSuO/2
+         mLZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pdvIIyxIuMTWPTkysqTwPpBrn7TuPnPJbCEXdGhmjXA=;
-        b=Fn3vjvKA6bvkyYbtu1Zzznn3FovEMFi8S7EtZgn0m84Jf6dlV0CYbVieG3BI6JxAcz
-         OerQjgOO15tthuc2CM+NgsdFGwWVHy4PqQj4aukgPMkwrNXejYnX0v/LyKu3YnBor5Q1
-         W/RUECjBb+CTJLEk4D69szCaQTeL/UlMwVh6BsHVbORVQb8t065xl67NvaQG5aFX0eNx
-         4IWaPg+FLfgvuBtV8E1DdNoQZP5CnszJpODqbVOuiK+T08xeckYLQKCR8wbgF6d7LvaV
-         CSv4eb4YxfCfhEL47uA1Pm062nBb76lfIRIkukQnax9gzApIT49zqZWeTNHCK6n2M9Hh
-         QTaw==
-X-Gm-Message-State: AOAM5333wLSiovnMmRl1le83pH4E096mOx1D3KxKgTjqvHcSkVC4C1+v
-        lI8uqD7kJEs3nezz2aHhmHw=
-X-Google-Smtp-Source: ABdhPJwkVdTzeLRWaTwuE8jAGC/0IdkS4W0EMUIfqLH2ZZNDgkobsQUe+R2RbfrfafluMXAuq2ly8g==
-X-Received: by 2002:a62:1844:0:b029:152:80d3:8647 with SMTP id 65-20020a6218440000b029015280d38647mr1751507pfy.18.1601844958883;
-        Sun, 04 Oct 2020 13:55:58 -0700 (PDT)
-Received: from localhost.localdomain ([49.207.217.69])
-        by smtp.gmail.com with ESMTPSA id c3sm9772626pfn.23.2020.10.04.13.55.54
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fuz3VnS7gqSToWKpKAn9vH3vGA/DDBL2++eeVTZGySE=;
+        b=hLf/d6W+AcZ4W/EQieAan0DwnVO8M47ePSyypVY1u+RedQd9561RAr474tz7Fkizhe
+         IfjMPc4/NwIlabfV7E+eeNGXJ+tGZvo0AsYVQgrMm+il+Zl2PatwufQHI5RLy+mHaMaM
+         /gAfFTow6wJFPxA1/sG7KW7ooctD4jbbXWlNyQcKjQLM4B8oqKSycr0qAUI5RsmLONfS
+         lfuzO1MbGXJg/q/VdILKqVMYwiIiBiY5KtD7HsoUr41UCXMuBTyO78ZCqDjLzdWkYHNJ
+         4ayhDEHZ/zPzEm9zEsQsAnttPehtbKG37ZCbV0psf2wPOHDd7P4qv61v2Dxu0VULMqlT
+         4Htg==
+X-Gm-Message-State: AOAM533YmVtwnbQZXplRsGQTX3as+KYOoPtNfCeUyrNGrzsSDrUPFbxl
+        llBJ7UR6pwW6wh+QqL6/ttg=
+X-Google-Smtp-Source: ABdhPJxF4/SYps5qcB1tBsJNn1r1+HYtpUgE1VJ7ThT2XeNnb+NaeIf2tONhaFYkkKZvRbQ+0JyZag==
+X-Received: by 2002:a5d:4b86:: with SMTP id b6mr13744185wrt.173.1601844954676;
+        Sun, 04 Oct 2020 13:55:54 -0700 (PDT)
+Received: from skbuf ([188.26.229.171])
+        by smtp.gmail.com with ESMTPSA id m10sm10157035wmc.9.2020.10.04.13.55.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 04 Oct 2020 13:55:57 -0700 (PDT)
-From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
-Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
-        Anant Thazhemadam <anant.thazhemadam@gmail.com>,
-        syzbot+69b804437cfec30deac3@syzkaller.appspotmail.com,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: team: fix memory leak in __team_options_register
-Date:   Mon,  5 Oct 2020 02:25:36 +0530
-Message-Id: <20201004205536.4734-1-anant.thazhemadam@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 04 Oct 2020 13:55:54 -0700 (PDT)
+Date:   Sun, 4 Oct 2020 23:55:53 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jiri Pirko <jiri@nvidia.com>, Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next v3 3/7] net: dsa: Register devlink ports before
+ calling DSA driver setup()
+Message-ID: <20201004205553.ableh6nowaudeu6o@skbuf>
+References: <20201004161257.13945-1-andrew@lunn.ch>
+ <20201004161257.13945-4-andrew@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201004161257.13945-4-andrew@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The variable "i" isn't initialized back correctly after the first loop
-under the label inst_rollback gets executed.
+On Sun, Oct 04, 2020 at 06:12:53PM +0200, Andrew Lunn wrote:
+> DSA drivers want to create regions on devlink ports as well as the
+> devlink device instance, in order to export registers and other tables
+> per port. To keep all this code together in the drivers, have the
+> devlink ports registered early, so the setup() method can setup both
+> device and port devlink regions.
+> 
+> v3:
+> Remove dp->setup
+> Move common code out of switch statement.
+> Fix wrong goto
+> 
+> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+> ---
 
-The value of "i" is assigned to be option_count - 1, and the ensuing 
-loop (under alloc_rollback) begins by initializing i--. 
-Thus, the value of i when the loop begins execution will now become 
-i = option_count - 2.
-
-Thus, when kfree(dst_opts[i]) is called in the second loop in this 
-order, (i.e., inst_rollback followed by alloc_rollback), 
-dst_optsp[option_count - 2] is the first element freed, and 
-dst_opts[option_count - 1] does not get freed, and thus, a memory 
-leak is caused.
-
-This memory leak can be fixed, by assigning i = option_count (instead of
-option_count - 1).
-
-Fixes: 80f7c6683fe0 ("team: add support for per-port options")
-Reported-by: syzbot+69b804437cfec30deac3@syzkaller.appspotmail.com
-Tested-by: syzbot+69b804437cfec30deac3@syzkaller.appspotmail.com
-Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
----
- drivers/net/team/team.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index 8c1e02752ff6..8986f3ffffe4 100644
---- a/drivers/net/team/team.c
-+++ b/drivers/net/team/team.c
-@@ -287,7 +287,7 @@ static int __team_options_register(struct team *team,
- 	for (i--; i >= 0; i--)
- 		__team_option_inst_del_option(team, dst_opts[i]);
- 
--	i = option_count - 1;
-+	i = option_count;
- alloc_rollback:
- 	for (i--; i >= 0; i--)
- 		kfree(dst_opts[i]);
--- 
-2.25.1
-
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Tested-by: Vladimir Oltean <olteanv@gmail.com>
