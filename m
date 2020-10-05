@@ -2,102 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 550F328347F
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 13:01:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6BE728348F
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 13:01:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726497AbgJELB3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 07:01:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50218 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725891AbgJELB1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Oct 2020 07:01:27 -0400
-Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726535AbgJELBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 07:01:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35472 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725973AbgJELBm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 07:01:42 -0400
+Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7600C0613A7;
+        Mon,  5 Oct 2020 04:01:41 -0700 (PDT)
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 831DF20578;
-        Mon,  5 Oct 2020 11:01:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601895686;
-        bh=zT1ggZQfYdTWKaaKhhfthWc1Wmu2z51MEgqhMdjk+B0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SD/Qgw9FIMuzORoe+m+VTXdFP3akbnWWNU81Odi9c5GKdU7J+GKmby2c8netpfgmA
-         adZ1oHsaoFEdzavqQfYQskxWQibYcQ5HrNcWX5oNl7SvediEUDK9mfzz+po5gPOLGv
-         GYaHousl0JgdpMqFSA4SRgxVcsLFkSnV03Ue+OnE=
-Date:   Mon, 5 Oct 2020 12:00:22 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4C4d2X0Sj2zKmfS;
+        Mon,  5 Oct 2020 13:01:40 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mailbox.org; h=
+        content-transfer-encoding:content-type:content-type:mime-version
+        :references:in-reply-to:message-id:subject:subject:from:from
+        :date:date:received; s=mail20150812; t=1601895696; bh=o3HxPvGqld
+        CRgVtM4Sy6fX5yWv5raTGaR2SS3W63W+Q=; b=qp78uueXsZ/g9OoB56feIrn50D
+        Q/AgySvgcTE447pi1TBYF1+yiwtX5aJHBhvm1W4xHK+TM3IRa1GKHXXR/XW/xchs
+        a3HtylztP14OgjLXtpCM9ADbjgiA2YvPSsiefGqaPnuAy73evyEAXQJaZ1NQEtbm
+        OsYhGXj68CngpPRdP7yfYUwma5a+U/IpuNAnqGwZc2bQCj5fUhJqG7haKumautEY
+        c8VahOF+f6WUOd5xVh5U0YbHPywbcAMF/eXE35GCExX1AUpQQyP/CpCXC/jDiNRt
+        H+9GcX/CZPVWN++8L0q1CtOR9NrHjoAYdl2qtxdfa1gNssIUy9db/1EBouIA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+        t=1601895698;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kWnCdaMX4m6FP+4F2JIZtLXjwih40j5+zMm1qnrssO8=;
+        b=Lh1fHDwDcB+U5pnRK0QJy+X6Ru+c9ELt/a/frBGfs+b7qHaZxPtYD/s2fAozSdqECdvyxX
+        JOtjkvaAqOS+ElQ0z+QpXCqkUcZ2H5k2pHLXIlfiPg6eEwsyTEgk6ktDx+DbjjB/ASJT45
+        mbmezoHFG9baMPHsZucL2W6MUcF/c+vlWNspwtlL2soK0BsTigAq6YRKsfHKHZtuHXP2kU
+        4u5T5h8wajNr0SvaUDoEAUljCMk1Vhirst2qgqSxmQlo2coUxgnAvTGLe0L9Divvnb7hS2
+        2z4O2dghTK1yzoqu5AhA+vGoidQsFtZP1oqxqbq8tBtFh67ve7s8pZHXbqsG4g==
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+Received: from smtp2.mailbox.org ([80.241.60.241])
+        by spamfilter06.heinlein-hosting.de (spamfilter06.heinlein-hosting.de [80.241.56.125]) (amavisd-new, port 10030)
+        with ESMTP id 7vyDWm21A5AE; Mon,  5 Oct 2020 13:01:36 +0200 (CEST)
+Date:   Mon, 5 Oct 2020 13:01:34 +0200
+From:   Wilken Gottwalt <wilken.gottwalt@mailbox.org>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     linux-kernel@vger.kernel.org,
+        =?ISO-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
         "David S. Miller" <davem@davemloft.net>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-spi@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-mips@vger.kernel.org, linux-mmc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-serial@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Another round of adding missing
- 'additionalProperties'
-Message-ID: <20201005110022.GB5139@sirena.org.uk>
-References: <20201002234143.3570746-1-robh@kernel.org>
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH 2/2] usb: serial: option: add Cellient MPL200 card
+Message-ID: <20201005130134.459b4de9@monster.powergraphx.local>
+In-Reply-To: <20201005082045.GL5141@localhost>
+References: <cover.1601715478.git.wilken.gottwalt@mailbox.org>
+        <3db5418fe9e516f4b290736c5a199c9796025e3c.1601715478.git.wilken.gottwalt@mailbox.org>
+        <20201005082045.GL5141@localhost>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="6sX45UoQRIJXqkqR"
-Content-Disposition: inline
-In-Reply-To: <20201002234143.3570746-1-robh@kernel.org>
-X-Cookie: Most of your faults are not your fault.
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -5.91 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 1F8E3171C
+X-Rspamd-UID: 888c58
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 5 Oct 2020 10:20:45 +0200
+Johan Hovold <johan@kernel.org> wrote:
 
---6sX45UoQRIJXqkqR
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> On Sat, Oct 03, 2020 at 11:40:29AM +0200, Wilken Gottwalt wrote:
+> > Add usb ids of the Cellient MPL200 card.
+> > 
+> > Signed-off-by: Wilken Gottwalt <wilken.gottwalt@mailbox.org>
+> > ---
+> >  drivers/usb/serial/option.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+> > index 0c6f160a214a..a65e620b2277 100644
+> > --- a/drivers/usb/serial/option.c
+> > +++ b/drivers/usb/serial/option.c
+> > @@ -528,6 +528,7 @@ static void option_instat_callback(struct urb *urb);
+> >  /* Cellient products */
+> >  #define CELLIENT_VENDOR_ID			0x2692
+> >  #define CELLIENT_PRODUCT_MEN200			0x9005
+> > +#define CELLIENT_PRODUCT_MPL200			0x9025
+> >  
+> >  /* Hyundai Petatel Inc. products */
+> >  #define PETATEL_VENDOR_ID			0x1ff4
+> > @@ -1982,6 +1983,8 @@ static const struct usb_device_id option_ids[] = {
+> >  	{ USB_DEVICE_AND_INTERFACE_INFO(MEDIATEK_VENDOR_ID, MEDIATEK_PRODUCT_DC_4COM2, 0xff,
+> > 0x02, 0x01) }, { USB_DEVICE_AND_INTERFACE_INFO(MEDIATEK_VENDOR_ID, MEDIATEK_PRODUCT_DC_4COM2,
+> > 0xff, 0x00, 0x00) }, { USB_DEVICE(CELLIENT_VENDOR_ID, CELLIENT_PRODUCT_MEN200) },
+> > +	{ USB_DEVICE(CELLIENT_VENDOR_ID, CELLIENT_PRODUCT_MPL200),
+> > +	  .driver_info = RSVD(1) | RSVD(4) },
+> 
+> Would you mind posting the output of "lsusb -v" for this device?
 
-On Fri, Oct 02, 2020 at 06:41:43PM -0500, Rob Herring wrote:
+I would like to, but unfortunately I lost access to this really rare hardware
+about a month ago. It is a Qualcomm device (0x05c6:0x9025) with a slightly
+modified firmware to rebrand it as a Cellient product with a different vendor
+id. How to proceed here, if I have no access to it anymore? Drop it?
 
-> Another round of wack-a-mole. The json-schema default is additional
-> unknown properties are allowed, but for DT all properties should be
-> defined.
+> >  	{ USB_DEVICE(PETATEL_VENDOR_ID, PETATEL_PRODUCT_NP10T_600A) },
+> >  	{ USB_DEVICE(PETATEL_VENDOR_ID, PETATEL_PRODUCT_NP10T_600E) },
+> >  	{ USB_DEVICE_AND_INTERFACE_INFO(TPLINK_VENDOR_ID, TPLINK_PRODUCT_LTE, 0xff, 0x00,
+> > 0x00) },	/* TP-Link LTE Module */
+> 
+> Johan
 
-Acked-by: Mark Brown <broonie@kernel.org>
-
---6sX45UoQRIJXqkqR
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl96/MYACgkQJNaLcl1U
-h9DVIAf/YahMxzxRA1HRo6CR552Pzfu8pWuFTeWzZTi4iIVW4oR/TUvjaBuMBAZF
-jIi3Kk2yR9lW+bCaPvUIjXsdB31S0iHgXORKR9ByRsx4fZS4MC/x9KFlv/v5dziQ
-nMO+lF+vyZQrYQrfwQmBJ5JdbeM9r2Oh+tUBcsKZkPsvg10glGuisr1mO1CEaEuL
-zcz31MfKpdGbLUEOlPzruZ5uNt0/FHU6FxOusAGW9lkYx+c7GjNWtdDh8h7gzd1n
-SzrDKnBlTWCZ+Owy2r9hJS6ow+fIjoYDT+Xtp6AvrSk9oJ6hggQ6NyxPpesZWbKV
-3Kfe7+KGLuHI4AMEU0u/czJWmNdEJw==
-=5yDb
------END PGP SIGNATURE-----
-
---6sX45UoQRIJXqkqR--
+greetings,
+Will
