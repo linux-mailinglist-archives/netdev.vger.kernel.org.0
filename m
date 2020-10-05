@@ -2,73 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E8286283FA0
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 21:28:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FEBB283FA2
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 21:29:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729367AbgJET2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 15:28:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57656 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725785AbgJET2W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 15:28:22 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CBFCC0613CE
-        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 12:28:22 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kPW9h-00HOQo-0A; Mon, 05 Oct 2020 21:28:17 +0200
-Message-ID: <d5824faed8a748dc2f73dab16f914377cf972bc4.camel@sipsolutions.net>
-Subject: Re: [PATCH net-next 6/6] ethtool: specify which header flags are
- supported per command
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kernel-team@fb.com,
-        jiri@resnulli.us, andrew@lunn.ch, mkubecek@suse.cz
-Date:   Mon, 05 Oct 2020 21:28:16 +0200
-In-Reply-To: <20201005122544.70aad7f5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1729382AbgJET3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 15:29:00 -0400
+Received: from mx2.suse.de ([195.135.220.15]:46436 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725785AbgJET3A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Oct 2020 15:29:00 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id EBABEACC8;
+        Mon,  5 Oct 2020 19:28:58 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 73F2D6035C; Mon,  5 Oct 2020 21:28:57 +0200 (CEST)
+Date:   Mon, 5 Oct 2020 21:28:57 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, kernel-team@fb.com, jiri@resnulli.us,
+        andrew@lunn.ch, dsahern@gmail.com, pablo@netfilter.org
+Subject: Re: [PATCH net-next 5/6] netlink: add mask validation
+Message-ID: <20201005192857.2pvd6oj3nzps6n2y@lion.mk-sys.cz>
 References: <20201005155753.2333882-1-kuba@kernel.org>
-         <20201005155753.2333882-7-kuba@kernel.org>
-         <1dc47668cc015c5a1bff10072e64e55a3436cbb7.camel@sipsolutions.net>
-         <20201005122544.70aad7f5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+ <20201005155753.2333882-6-kuba@kernel.org>
+ <c28aa386c1a998c1bc1a35580f016e129f58a5e3.camel@sipsolutions.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c28aa386c1a998c1bc1a35580f016e129f58a5e3.camel@sipsolutions.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2020-10-05 at 12:25 -0700, Jakub Kicinski wrote:
-> On Mon, 05 Oct 2020 20:58:57 +0200 Johannes Berg wrote:
-> > On Mon, 2020-10-05 at 08:57 -0700, Jakub Kicinski wrote:
-> > > @@ -47,19 +61,16 @@ int ethnl_parse_header_dev_get(struct ethnl_req_info *req_info,
-> > >  		NL_SET_ERR_MSG(extack, "request header missing");
-> > >  		return -EINVAL;
-> > >  	}
-> > > +	/* Use most permissive header policy here, ops should specify their
-> > > +	 * actual header policy via NLA_POLICY_NESTED(), and the real
-> > > +	 * validation will happen in genetlink code.
-> > > +	 */
-> > >  	ret = nla_parse_nested(tb, ETHTOOL_A_HEADER_MAX, header,
-> > > -			       ethnl_header_policy, extack);
-> > > +			       ethnl_header_policy_stats, extack);  
-> > 
-> > Would it make sense to just remove the validation here? It's already
-> > done, so it just costs extra cycles and can't really fail, and if there
-> > are more diverse policies in the future this might also very quickly get
-> > out of hand?
+On Mon, Oct 05, 2020 at 09:05:23PM +0200, Johannes Berg wrote:
+> On Mon, 2020-10-05 at 08:57 -0700, Jakub Kicinski wrote:
 > 
-> I was slightly worried I missed a command and need last line of defence,
+> > +static int nla_validate_mask(const struct nla_policy *pt,
+> > +			     const struct nlattr *nla,
+> > +			     struct netlink_ext_ack *extack)
+> > +{
+> > +	u64 value;
+> > +
+> > +	switch (pt->type) {
+> > +	case NLA_U8:
+> > +		value = nla_get_u8(nla);
+> > +		break;
+> > +	case NLA_U16:
+> > +		value = nla_get_u16(nla);
+> > +		break;
+> > +	case NLA_U32:
+> > +		value = nla_get_u32(nla);
+> > +		break;
+> > +	case NLA_U64:
+> > +		value = nla_get_u64(nla);
+> > +		break;
+> > +	default:
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	if (value & ~(u64)pt->mask) {
+> > +		NL_SET_ERR_MSG_ATTR(extack, nla, "reserved bit set");
+> > +		return -EINVAL;
+> 
+> You had an export of the valid bits there in ethtool, using the cookie.
+> Just pointing out you lost it now. I'm not sure I like using the cookie,
+> that seems a bit strange, but we could easily define a different attr?
 
-Ah. I was just about to suggest to put it into the family policy/maxattr
-but that won't work of course since this is nested.
+The idea behind the cookie was that if new userspace sends a request
+with multiple flags which may not be supported by an old kernel, getting
+only -EOPNOTSUPP (and badattr pointing to the flags) would not be very
+helpful as multiple iteration would be necessary to find out which flags
+are supported and which not.
 
-But actually what you _could_ put there is a dummy policy (non-NULL
-pointer) with a maxattr of 0, and then all attrs will be completely
-rejected for a command where the policy was missed.
+> OTOH, one can always query the policy export too (which hopefully got
+> wired up) so it wouldn't really matter much.
 
-Not if you missed the NLA_POLICY_NESTED() link, though.
+But yes, if userspace can get supported flags from policy dump, it can
+check them in advance and either bail out (if one of essential flags is
+unsupported) or send only supported flags.
 
-johannes
+I'm not exactly happy with the prospect of having to do a full policy
+dump before each such request, thought.
 
+Michal
