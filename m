@@ -2,93 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5F7E2833D1
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 12:07:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F17762833E1
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 12:16:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725981AbgJEKHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 06:07:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55306 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725946AbgJEKHg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 06:07:36 -0400
-Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35176C0613CE;
-        Mon,  5 Oct 2020 03:07:36 -0700 (PDT)
-Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 095A7Eld017632
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Mon, 5 Oct 2020 12:07:15 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1601892435; bh=PqmCIbdmGhzQjUN7EiP+m0+p7uGY3mf6YJwZ9pKQlyY=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=M8CCDT0uuaWsIR4WtnFhfSmKkCp0+1fGkT7oNM0BUlkg+BNSA8Xbdoquqo2DGm6wq
-         +zA4nLazFyPe8I6Cslr90X/Srm7AjF/hmfBMNyHn4jkF7PllyPi13zMnzulD69SHV3
-         hN+A1E7AfVGpBSmicYtxITfv4ltzyQNtdRjKXIJM=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.94)
-        (envelope-from <bjorn@mork.no>)
-        id 1kPNOi-000oZA-E0; Mon, 05 Oct 2020 12:07:12 +0200
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Wilken Gottwalt <wilken.gottwalt@mailbox.org>
-Cc:     linux-kernel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH 1/2] usb: serial: qmi_wwan: add Cellient MPL200 card
-Organization: m
-References: <cover.1601715478.git.wilken.gottwalt@mailbox.org>
-        <4688927cbf36fe0027340ea5e0c3aaf1445ba256.1601715478.git.wilken.gottwalt@mailbox.org>
-        <87d01yovq5.fsf@miraculix.mork.no>
-        <20201004203042.093ac473@monster.powergraphx.local>
-Date:   Mon, 05 Oct 2020 12:07:12 +0200
-In-Reply-To: <20201004203042.093ac473@monster.powergraphx.local> (Wilken
-        Gottwalt's message of "Sun, 4 Oct 2020 20:30:42 +0200")
-Message-ID: <87eemdnfzj.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.3 (gnu/linux)
+        id S1725954AbgJEKQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 06:16:44 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:49936 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725887AbgJEKQn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 06:16:43 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 095AGcYj102005;
+        Mon, 5 Oct 2020 05:16:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1601892998;
+        bh=BIrAyC/UllJ2D7vPxFH2SxwI4Y1wK41La+DILzDaZXg=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=i3Fi3UA4zcaZl2QMUO/HHF4fp7UWhw8/fZwhZxX9UXbiv4M6ifiJ79W2PjUjOs+74
+         bcXYZjQotAhH/8FmAJAn8HpqWyApLd6HCRtakxClDGRLa7z7vmIsbpqkbMNLzuuH5B
+         bw6xGHxa2SN3PGPO7JwEIld8TJfkd8LC8LOeTW6o=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 095AGcug018599
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 5 Oct 2020 05:16:38 -0500
+Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 5 Oct
+ 2020 05:16:38 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Mon, 5 Oct 2020 05:16:38 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 095AGZrs103006;
+        Mon, 5 Oct 2020 05:16:35 -0500
+Subject: Re: [PATCH net-next 0/8] net: ethernet: ti: am65-cpsw: add multi port
+ support in mac-only mode
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-omap@vger.kernel.org>,
+        Murali Karicheri <m-karicheri2@ti.com>
+References: <20201001105258.2139-1-grygorii.strashko@ti.com>
+ <20201001160847.3b5d91f1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <c758885c-6834-e689-2356-81291e4628e8@ti.com>
+ <20201002160421.59363229@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201002160752.1166cffe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <c67c1bb3-b71e-848a-7c03-f68830605dee@ti.com>
+Date:   Mon, 5 Oct 2020 13:16:34 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.102.4 at canardo
-X-Virus-Status: Clean
+In-Reply-To: <20201002160752.1166cffe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wilken Gottwalt <wilken.gottwalt@mailbox.org> writes:
-
-> Oh sorry, looks like I got it mixed up a bit. It was my first attempt to =
-submit
-> a patch set. Which is the best way to resubmit an update if the other par=
-t of
-> the patch set gets accepted? The documentation about re-/submitting patch=
- sets
-> is a bit thin.
-
-I see that Johan already has answered this.  Just wanted to add that you
-don't need to worry about doing anything wrong.  It was not my intention
-to scare you :-) Fixing up and resending patches is a natural part of
-the patch submission process.  Don't be afraid to resubmit.  The worst
-that can happen is that you'll be asked to fix up something else.
-That's not a problem.
-
-The most important part is to make it clear that a resubmission replaces
-an earlier version of the same patch.  This should be visible in the
-subject.  E.g by using a revision number inside the brackes, like
-
-  [PATCH v2] net: qmi_wwan: add Cellient MPL200 card
-
-This tells us that the patch is a revised "v2" of an earlier patch, and
-that it replaces "v1".  Patches without an explicit revision will then
-be assumed to be "v1".
-
-If you are sending a series, then the whole series should usually be
-resubmitted with the new revsion number.  Even patches without any
-changes. The cover letter should then also summarize the changes for
-each revisions.  But as Johan said: The USB serial and net patches go
-through different trees and are therefore best handled as standalone
-patches, even if they deal with the same USB composite device.=20
 
 
-Bj=C3=B8rn
+On 03/10/2020 02:07, Jakub Kicinski wrote:
+> On Fri, 2 Oct 2020 16:04:21 -0700 Jakub Kicinski wrote:
+>> On Fri, 2 Oct 2020 12:56:43 +0300 Grygorii Strashko wrote:
+>>> On 02/10/2020 02:08, Jakub Kicinski wrote:
+>>>> On Thu, 1 Oct 2020 13:52:50 +0300 Grygorii Strashko wrote:
+>>>>> This series adds multi-port support in mac-only mode (multi MAC mode) to TI
+>>>>> AM65x CPSW driver in preparation for enabling support for multi-port devices,
+>>>>> like Main CPSW0 on K3 J721E SoC or future CPSW3g on K3 AM64x SoC.
+>>>>>
+>>>>> The multi MAC mode is implemented by configuring every enabled port in "mac-only"
+>>>>> mode (all ingress packets are sent only to the Host port and egress packets
+>>>>> directed to target Ext. Port) and creating separate net_device for
+>>>>> every enabled Ext. port.
+>>>>
+>>>> Do I get it right that you select the mode based on platform? Can the
+>>>> other mode still be supported on these platforms?
+>>>>
+>>>> Is this a transition to normal DSA mode where ports always have netdevs?
+>>>
+>>> The idea here is to start in multi mac mode by default, as we still
+>>> have pretty high demand for this. Then, and we are working on it, the
+>>> switchdev mode is going to be introduces (not DSA). The switch
+>>> between modes will happen by using devlink option - the approach is
+>>> similar to what was used for Sitara CPSW cpsw_new.c driver [1].
+>>
+>> What's unclear from the patches is whether the default configuration
+>> for already supported platforms will change?
+>>
+>> All the patches sound like they are "in preparation for support of K3
+>> J721E" etc. So this is just code restructuring with no user-visible
+>> changes?
+> 
+> Another way of putting the question perhaps would be - is num_ports
+> always 1 for existing platforms?
+> 
+
+Yes. Sorry for confusion - all now supported K3 CPSW instances have 1 external port and
+these changes should not have affect on them.
+
+-- 
+Best regards,
+grygorii
