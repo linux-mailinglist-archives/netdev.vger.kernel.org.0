@@ -2,93 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D1202831CB
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 10:21:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D6DB2831F2
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 10:26:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726200AbgJEIUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 04:20:53 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:34012 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725885AbgJEIUw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 04:20:52 -0400
-Received: by mail-lj1-f194.google.com with SMTP id v23so6583079ljd.1;
-        Mon, 05 Oct 2020 01:20:50 -0700 (PDT)
+        id S1726141AbgJEI0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 04:26:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39652 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725898AbgJEI0j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 04:26:39 -0400
+Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 212D7C0613A7
+        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 01:26:38 -0700 (PDT)
+Received: by mail-vs1-xe42.google.com with SMTP id w25so3763894vsk.9
+        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 01:26:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=41Y6sjMmjcMlV2JauZyN/TxOh6umZ/keewCU2mb8LIc=;
+        b=AXAmvxEcZgWulidtPjWzcdr2Qm2OYOtZA0wDa8FmovT91MPeLRIwIVCT8lx9v5UNlG
+         SctQfxm1GmrUHlaNPX+RFUQtBHXdidJ0/CU1C9clQS0l30cTxEkteaWVnvPQuLuFSdee
+         4MV2Fpon9L5TsVQGS1K3gSKttvhofJOiwA9P0bVAeb/tNn5WAcwRk5Be/IAOdU2QkdYn
+         VFrey16k5OCZxA1L7Q1xqspPxsd/+WYGgx9scKUGZYuyhxSBuKF1PhH1KfSOoQx2J5OY
+         401UuKSNx0/BKxG4Vky36hMzFvsFJwDUWIuAQewHgLK5qqZWGGWEkqztdK9+VC+FKpcj
+         S9OA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Zy+RVKGXgvEDv9SWGZIt64ElwiOMLO61wV0TmNcr85s=;
-        b=Qdb9Q0ze6F6f4SReqvZUV1e8d2l2b3bfUogTr2ojE8n5VB3YLtg20KuZ+g+SLAc/4v
-         QN8if6VaDrSgLAlLt8YlCEPaHhT5d7EQzz5OuQjV/thK0levQga0b1+rMiEhjzFt84Se
-         TiS8TxfrqhcQpNCgFYgmLbD812hrB61oUa9PLCnYtkNBlA52rmM3C3U0rNdsHb6WjtzL
-         0/Mt1ikJptGjKCHL2ZWUNwcpnzsSHfkh1GqJlLMyPDAxeGbz9yJ/kFL4ZVW8t6Lcu6YM
-         LhX/GUaCplK0V6qhIL9N+3ZyMQLeJucB66ri4Qb1lVJommDUBqZ0T0Ey3SFiU9SNX1cm
-         K4UQ==
-X-Gm-Message-State: AOAM532jWAUvkbUXklPjxc4Z2BnzAaxCqbp2WwPLZ+qcpGb+1VFuObkx
-        5loGXLy8StXB8Cb2A+pJ8jI=
-X-Google-Smtp-Source: ABdhPJyZ1lf9ATP7ryn44YsTW33y6bjFLorhJ/Dn0x8l+17c4xIsroXx2/JzYuLTrFGAVO2S/9ZEhg==
-X-Received: by 2002:a2e:575d:: with SMTP id r29mr3952094ljd.183.1601886049672;
-        Mon, 05 Oct 2020 01:20:49 -0700 (PDT)
-Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
-        by smtp.gmail.com with ESMTPSA id q5sm3234768lfo.200.2020.10.05.01.20.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Oct 2020 01:20:48 -0700 (PDT)
-Received: from johan by xi.terra with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1kPLjh-0001Tb-Jj; Mon, 05 Oct 2020 10:20:45 +0200
-Date:   Mon, 5 Oct 2020 10:20:45 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Wilken Gottwalt <wilken.gottwalt@mailbox.org>
-Cc:     linux-kernel@vger.kernel.org,
-        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hovold <johan@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH 2/2] usb: serial: option: add Cellient MPL200 card
-Message-ID: <20201005082045.GL5141@localhost>
-References: <cover.1601715478.git.wilken.gottwalt@mailbox.org>
- <3db5418fe9e516f4b290736c5a199c9796025e3c.1601715478.git.wilken.gottwalt@mailbox.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=41Y6sjMmjcMlV2JauZyN/TxOh6umZ/keewCU2mb8LIc=;
+        b=LKxljyJVsBptuJ8X7BT8qOXYIXGZpX0+S/9ap8Dc5n1pcrBmOnkHHb/335PI84Hbpd
+         X+4R2IemgAhHLv5oqZIBmtUMwr7kxLNRsmsx4uaBT1uUv75+P5fDgL/kZXy0amkDmSGJ
+         srTHGb5y2YKR0MhI7A4nKi4Mo9gW205ydc8LeK36FFxPCvSyxuh+dcBCL2tE949F99vf
+         rfDWCB7eSVXn2lHms82y26gx0ldqKhrFe3wcnmd1KHIxRaxdFiR2d9Y20AoBe/lCRLd0
+         HQPr5iBvIZF68FxI38Dat7zaQ5iuhNzHtlnAJqhQlM+Tt2GDwcffbpdj1ujsNCnehKwn
+         sCrw==
+X-Gm-Message-State: AOAM5305k+uWajMbHO8vnay7qlMlsprCQ0bCDVZZ70YUSJj6MmtPMNTU
+        4sSORlKxyu5Kq0fj9rLsn3b/0A3MMaSl+FmEMhltJw==
+X-Google-Smtp-Source: ABdhPJxlPMGygHVTcnGIf5MQvmk2y9YM/OMFZ7y/LPtKUwwQZxTgA80YvlEMQPDfoWIYZailBQzIdWarus99WB2IvNI=
+X-Received: by 2002:a67:ec9a:: with SMTP id h26mr6751269vsp.34.1601886397228;
+ Mon, 05 Oct 2020 01:26:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3db5418fe9e516f4b290736c5a199c9796025e3c.1601715478.git.wilken.gottwalt@mailbox.org>
+References: <20201002234143.3570746-1-robh@kernel.org>
+In-Reply-To: <20201002234143.3570746-1-robh@kernel.org>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Mon, 5 Oct 2020 10:26:01 +0200
+Message-ID: <CAPDyKFq=ZUiYhm0-K5ZVYS1FH2O5e-+Gt6Dftf=LmL9ABa7CaA@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: Another round of adding missing 'additionalProperties'
+To:     Rob Herring <robh@kernel.org>
+Cc:     DTML <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-spi@vger.kernel.org,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-leds@vger.kernel.org,
+        Linux Media Mailing List <linux-media@vger.kernel.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-mips@vger.kernel.org,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        linux-remoteproc@vger.kernel.org, linux-serial@vger.kernel.org,
+        alsa-devel@alsa-project.org,
+        Linux USB List <linux-usb@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 03, 2020 at 11:40:29AM +0200, Wilken Gottwalt wrote:
-> Add usb ids of the Cellient MPL200 card.
-> 
-> Signed-off-by: Wilken Gottwalt <wilken.gottwalt@mailbox.org>
+On Sat, 3 Oct 2020 at 01:41, Rob Herring <robh@kernel.org> wrote:
+>
+> Another round of wack-a-mole. The json-schema default is additional
+> unknown properties are allowed, but for DT all properties should be
+> defined.
+>
+> Cc: Thierry Reding <thierry.reding@gmail.com>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Stephen Boyd <sboyd@kernel.org>
+> Cc: Shawn Guo <shawnguo@kernel.org>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Baolin Wang <baolin.wang7@gmail.com>
+> Cc: Guenter Roeck <linux@roeck-us.net>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+> Cc: Lee Jones <lee.jones@linaro.org>
+> Cc: Ulf Hansson <ulf.hansson@linaro.org>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Liam Girdwood <lgirdwood@gmail.com>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
+> Cc: linux-clk@vger.kernel.org
+> Cc: dri-devel@lists.freedesktop.org
+> Cc: linux-spi@vger.kernel.org
+> Cc: linux-gpio@vger.kernel.org
+> Cc: linux-hwmon@vger.kernel.org
+> Cc: linux-iio@vger.kernel.org
+> Cc: openipmi-developer@lists.sourceforge.net
+> Cc: linux-leds@vger.kernel.org
+> Cc: linux-media@vger.kernel.org
+> Cc: linux-rockchip@lists.infradead.org
+> Cc: linux-stm32@st-md-mailman.stormreply.com
+> Cc: linux-mips@vger.kernel.org
+> Cc: linux-mmc@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Cc: linux-pci@vger.kernel.org
+> Cc: linux-pm@vger.kernel.org
+> Cc: linux-remoteproc@vger.kernel.org
+> Cc: linux-serial@vger.kernel.org
+> Cc: alsa-devel@alsa-project.org
+> Cc: linux-usb@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
 > ---
->  drivers/usb/serial/option.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
-> index 0c6f160a214a..a65e620b2277 100644
-> --- a/drivers/usb/serial/option.c
-> +++ b/drivers/usb/serial/option.c
-> @@ -528,6 +528,7 @@ static void option_instat_callback(struct urb *urb);
->  /* Cellient products */
->  #define CELLIENT_VENDOR_ID			0x2692
->  #define CELLIENT_PRODUCT_MEN200			0x9005
-> +#define CELLIENT_PRODUCT_MPL200			0x9025
->  
->  /* Hyundai Petatel Inc. products */
->  #define PETATEL_VENDOR_ID			0x1ff4
-> @@ -1982,6 +1983,8 @@ static const struct usb_device_id option_ids[] = {
->  	{ USB_DEVICE_AND_INTERFACE_INFO(MEDIATEK_VENDOR_ID, MEDIATEK_PRODUCT_DC_4COM2, 0xff, 0x02, 0x01) },
->  	{ USB_DEVICE_AND_INTERFACE_INFO(MEDIATEK_VENDOR_ID, MEDIATEK_PRODUCT_DC_4COM2, 0xff, 0x00, 0x00) },
->  	{ USB_DEVICE(CELLIENT_VENDOR_ID, CELLIENT_PRODUCT_MEN200) },
-> +	{ USB_DEVICE(CELLIENT_VENDOR_ID, CELLIENT_PRODUCT_MPL200),
-> +	  .driver_info = RSVD(1) | RSVD(4) },
+>
+> I'll take this thru the DT tree.
+>
 
-Would you mind posting the output of "lsusb -v" for this device?
+[...]
 
->  	{ USB_DEVICE(PETATEL_VENDOR_ID, PETATEL_PRODUCT_NP10T_600A) },
->  	{ USB_DEVICE(PETATEL_VENDOR_ID, PETATEL_PRODUCT_NP10T_600E) },
->  	{ USB_DEVICE_AND_INTERFACE_INFO(TPLINK_VENDOR_ID, TPLINK_PRODUCT_LTE, 0xff, 0x00, 0x00) },	/* TP-Link LTE Module */
+>  .../bindings/mmc/mmc-pwrseq-emmc.yaml         |  2 ++
+>  .../bindings/mmc/mmc-pwrseq-sd8787.yaml       |  2 ++
+>  .../bindings/mmc/mmc-pwrseq-simple.yaml       |  2 ++
 
-Johan
+Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
+
+Kind regards
+Uffe
