@@ -2,118 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63AA72837EC
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 16:37:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57CDB283881
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 16:49:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726330AbgJEOhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 10:37:21 -0400
-Received: from www62.your-server.de ([213.133.104.62]:57326 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725936AbgJEOhT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 10:37:19 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kPRc2-0006Yg-51; Mon, 05 Oct 2020 16:37:14 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kPRc1-000QdQ-TA; Mon, 05 Oct 2020 16:37:13 +0200
-Subject: Re: [PATCH bpf-next] libbpf: fix compatibility problem in
- xsk_socket__create
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
-        magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
-        netdev@vger.kernel.org, jonathan.lemon@gmail.com
-Cc:     bpf@vger.kernel.org, ciara.loftus@intel.com
-References: <1601645787-16944-1-git-send-email-magnus.karlsson@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <75f034e8-09c4-9f43-03ed-84f003a036d3@iogearbox.net>
-Date:   Mon, 5 Oct 2020 16:37:13 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726410AbgJEOsz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 10:48:55 -0400
+Received: from mail-eopbgr80049.outbound.protection.outlook.com ([40.107.8.49]:19171
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725994AbgJEOsz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Oct 2020 10:48:55 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=L24rGYxwbt+Xc2+rcb8enYAvgyKTbwUKZPzKh9mEe0N5vmnIuJaV/Whfa9H4F9Xn8phA6tuIOERWZN8FQ/PekkcttponD7a2lKstLiw8EbLHS79/9pAcI7O1jLGCZ6clTBOAeCozpa8Vc5OMawJ+oWUUr5icbyxdHKFV45XbWfyuNyBIcWv9c9iX8fvOMJmzguYTizwr6tWas9ru1nZ1lJc5SKyRaB8DP8PxapycjOthAfIEARzq956vWuuMst17uPt2QzFvu2n1/4c9rFkaR408yNcf6+Qe1iT7pC/+9VVrM9lorbS6ejQ68hIbV8vCrs1o9914O2dk15b7ZKndNw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tijcSyNYgBcrMIy5TFwCrA8gZcFfG8ZwxmCaw9xsYIY=;
+ b=h9tNfQv92kE25E1eWtUJuxd+mry9piPa3iWAhiDoiJRH6odhyJAqT6SOraLrdSkNZ+yYUYSTYuYeV2zs4Ze2fgktAgPqLogh8WiDcK+KlJGw0OEeM/h6Y7bIWgyDCgIGuGxppZXmEbPz5DqM0VTk2TTyTHyWNFbMWJUeaVzCSzXsfb4klN1s3EccrEmmjSH1OIhF5NJP7UiJ5S9OfXcSbppbpGrnMlmNIO1AwADgT9i7DugxepBydL3zlbH21ae4/jJ6Nqk/rSrclVXFWg3Bsqv9CENoqRG+jPXC/nW23SV5pajQDLHfSET+jCCAmvvzhIMx0+kL9uqXO0jG+To4nQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tijcSyNYgBcrMIy5TFwCrA8gZcFfG8ZwxmCaw9xsYIY=;
+ b=DRti31rpv/23oTiaUQ2SjIPMNwyLRs3qV2O+2VPHY9j6xMMWXPkcxgzBOAKo4kHPyZvR2fzCtmg0sXmEm/qdbJFzpw3EK7uanmhWyCJ9OvICA31coVd/vbo/1NOYn6BkSY9VKOOFwRaY1x2pCBbRJ0iAdXtj37utgL6Bz52H9I0=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
+ by VI1PR0402MB3710.eurprd04.prod.outlook.com (2603:10a6:803:25::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.32; Mon, 5 Oct
+ 2020 14:48:52 +0000
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3433.044; Mon, 5 Oct 2020
+ 14:48:51 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Cc:     willemdebruijn.kernel@gmail.com
+Subject: [PATCH net-next] net: always dump full packets with skb_dump
+Date:   Mon,  5 Oct 2020 17:48:38 +0300
+Message-Id: <20201005144838.851988-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [188.26.229.171]
+X-ClientProxiedBy: AM0PR10CA0044.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:150::24) To VI1PR04MB5696.eurprd04.prod.outlook.com
+ (2603:10a6:803:e7::13)
 MIME-Version: 1.0
-In-Reply-To: <1601645787-16944-1-git-send-email-magnus.karlsson@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25947/Sun Oct  4 15:55:07 2020)
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (188.26.229.171) by AM0PR10CA0044.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:150::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.38 via Frontend Transport; Mon, 5 Oct 2020 14:48:50 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: f18bd8ac-d10e-4ffe-0e94-08d8693dc5cd
+X-MS-TrafficTypeDiagnostic: VI1PR0402MB3710:
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB37109026244311D2CAE56379E00C0@VI1PR0402MB3710.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: D8o+eOaKdXHQyg9uQlf5mzp9vrbUiwylrjQTvJSfpE5itf8TmCNia1kvXtb8y6HUz61Eyr/bWYHXwe5iMj+A22BPEmkXs0ek3avGxVrKI/4lTsmn3buUH9Pu0/3ctWYZd91JMPwX9u2IkGjVr/ERXOpyVdgD3bnP4NX+dCUpUUBTNXp/lawUdUBogaHQdpDHz+UoKk49o0x4fgpcizqjpreCwdcxXMNyFnw+U0dUaSO0dwCC8k127wJaOPTxq6eeEaNM19/wPUyAyf0KcRjr75cmFuQUXj0weGpkgKFbTB47mHN/L/iCFNlXqn+b8NyIncKn4t8QHfejpWGEeE1LYemPxHZ2GN//FthC/oNtcpDopqPPhwFK1c1cPb6CimjY
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(376002)(346002)(136003)(396003)(39860400002)(6666004)(4326008)(6512007)(66556008)(66476007)(66946007)(1076003)(83380400001)(8936002)(6506007)(186003)(16526019)(26005)(86362001)(44832011)(316002)(478600001)(52116002)(8676002)(5660300002)(36756003)(6486002)(2906002)(2616005)(69590400008)(956004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 4gU5ysmEjXW6d+FIMt9omYcBGcgis+Cdtx0m3Zk4HWj2sD6gdcjlLSZdrdKFsjrnJlnMQziOWSRLR0zpJ4DE5WBGYQAl8fSszAEfR6KJot7IoxtEFneLH3kq0w9FtQ+LGWQckPuBuQgAKO7XO2fsTAs5sxNnFYdQiP3td8Zcpih/REQP9i9dCal8ke9J40a63c8adbkZtsIP6nmbKoshvLdK90uL+keP8Yq+E9B5j49G3w2I99L7fMt9CSKllGcx9zgSExL6NPhHm8CEaHSaI190B85sgoN9MpS8DucaK5m/fRLiO5/02185Pd2TybeZCzLr9ivN/+1wvHtmWGKuPGJx8kvQcxYGcwCaHu0SMN4QS3BkJ/41c173swEcobUuqfId3SfgqRu91CwO3FpoVU+rvGCramStNuz3tuDSbtliGDrBNOkPnwlfK0VNu4m4ziZdaIXGwICrkq4qtwCXxi1xUykzI5UUoFVtw4vtCmL+FAO+h+UYsEbIwyjcQanY7bgHoQG6KCJoyFfTOdgzHkGSVwJCNInOwq/n7ErRlLNBC3oANnOoz5KunCmC4BZC9lPoAGgXqs87mDr2YHG1V9UY0k03IUa6S0JfR/mYHlSHew/no2LIYqL3uT5g/auf/uOzWQRFkvoVMG0G5St7hQ==
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f18bd8ac-d10e-4ffe-0e94-08d8693dc5cd
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2020 14:48:50.7815
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KAGtw3R24CIybrv9n9mJai58GswKKexp+vxh0bUBxepXsTF25hSY2Q9y5y8uROQ8lXzcACWP0sgcmOIG/vj3Og==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3710
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/2/20 3:36 PM, Magnus Karlsson wrote:
-> From: Magnus Karlsson <magnus.karlsson@intel.com>
-> 
-> Fix a compatibility problem when the old XDP_SHARED_UMEM mode is used
-> together with the xsk_socket__create() call. In the old XDP_SHARED_UMEM
-> mode, only sharing of the same device and queue id was allowed, and in
-> this mode, the fill ring and completion ring were shared between the
-> AF_XDP sockets. Therfore, it was perfectly fine to call the
-> xsk_socket__create() API for each socket and not use the new
-> xsk_socket__create_shared() API. This behaviour was ruined by the
-> commit introducing XDP_SHARED_UMEM support between different devices
-> and/or queue ids. This patch restores the ability to use
-> xsk_socket__create in these circumstances so that backward
-> compatibility is not broken.
-> 
-> We also make sure that a user that uses the
-> xsk_socket__create_shared() api for the first socket in the old
-> XDP_SHARED_UMEM mode above, gets and error message if the user tries
-> to feed a fill ring or a completion ring that is not the same as the
-> ones used for the umem registration. Previously, libbpf would just
-> have silently ignored the supplied fill and completion rings and just
-> taken them from the umem. Better to provide an error to the user.
-> 
-> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and devices")
-> ---
->   tools/lib/bpf/xsk.c | 14 +++++++++++++-
->   1 file changed, 13 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> index 30b4ca5..5b61932 100644
-> --- a/tools/lib/bpf/xsk.c
-> +++ b/tools/lib/bpf/xsk.c
-> @@ -705,7 +705,7 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
->   	struct xsk_ctx *ctx;
->   	int err, ifindex;
->   
-> -	if (!umem || !xsk_ptr || !(rx || tx) || !fill || !comp)
-> +	if (!umem || !xsk_ptr || !(rx || tx))
->   		return -EFAULT;
->   
->   	xsk = calloc(1, sizeof(*xsk));
-> @@ -735,12 +735,24 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
->   
->   	ctx = xsk_get_ctx(umem, ifindex, queue_id);
->   	if (!ctx) {
-> +		if (!fill || !comp) {
-> +			err = -EFAULT;
-> +			goto out_socket;
-> +		}
-> +
->   		ctx = xsk_create_ctx(xsk, umem, ifindex, ifname, queue_id,
->   				     fill, comp);
->   		if (!ctx) {
->   			err = -ENOMEM;
->   			goto out_socket;
->   		}
-> +	} else if ((fill && ctx->fill != fill) || (comp && ctx->comp != comp)) {
-> +		/* If the xsk_socket__create_shared() api is used for the first socket
-> +		 * registration, then make sure the fill and completion rings supplied
-> +		 * are the same as the ones used to register the umem. If not, bail out.
-> +		 */
-> +		err = -EINVAL;
-> +		goto out_socket;
+Currently skb_dump has a restriction to only dump full packet for the
+first 5 socket buffers, then only headers will be printed. Remove this
+arbitrary and confusing restriction, which is only documented vaguely
+("up to") in the comments above the prototype.
 
-This looks buggy. You got a valid ctx in this path which was ctx->refcount++'ed. By just
-going to out_socket you'll leak this libbpf internal refcount.
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+ net/core/skbuff.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
->   	}
->   	xsk->ctx = ctx;
->   
-> 
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index e0774471f56d..720076a6e2b1 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -712,11 +712,10 @@ EXPORT_SYMBOL(kfree_skb_list);
+  *
+  * Must only be called from net_ratelimit()-ed paths.
+  *
+- * Dumps up to can_dump_full whole packets if full_pkt, headers otherwise.
++ * Dumps whole packets if full_pkt, only headers otherwise.
+  */
+ void skb_dump(const char *level, const struct sk_buff *skb, bool full_pkt)
+ {
+-	static atomic_t can_dump_full = ATOMIC_INIT(5);
+ 	struct skb_shared_info *sh = skb_shinfo(skb);
+ 	struct net_device *dev = skb->dev;
+ 	struct sock *sk = skb->sk;
+@@ -725,9 +724,6 @@ void skb_dump(const char *level, const struct sk_buff *skb, bool full_pkt)
+ 	int headroom, tailroom;
+ 	int i, len, seg_len;
+ 
+-	if (full_pkt)
+-		full_pkt = atomic_dec_if_positive(&can_dump_full) >= 0;
+-
+ 	if (full_pkt)
+ 		len = skb->len;
+ 	else
+-- 
+2.25.1
 
