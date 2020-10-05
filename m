@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18EA9284265
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 00:08:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 503F5284263
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 00:08:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727096AbgJEWIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 18:08:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48272 "EHLO mail.kernel.org"
+        id S1727081AbgJEWH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 18:07:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48228 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727032AbgJEWHw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Oct 2020 18:07:52 -0400
+        id S1727033AbgJEWHx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Oct 2020 18:07:53 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.6])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AD09820791;
-        Mon,  5 Oct 2020 22:07:51 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 387E020FC3;
+        Mon,  5 Oct 2020 22:07:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1601935672;
-        bh=rLAzRrPzCIffbWgQ6B3m159jDopLPkqEUnliW2Fc1Yg=;
+        bh=WQnKXSKPLIKDnuzCLIldEZZmDCVZwO9gzQXmmU0z9dY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CuWvBGlu9HeYUuBCp56A69zw0EEzjoYqCcaXHVamIqMAnDsVtaqJ4LNQtbugAGyNy
-         UmnUv5fU5sBUOXhzzOY9OcoJ7M1vurH1qZRvWBGLBDuzL8rOzR6vyuf4BRiIxgjhHq
-         eRfZR0yFTd1OyzKWNzomkX+FCOrqW2J4Msg9AwXM=
+        b=qGABpLH0bznL0QJnNS6bqhOsGJjQIFmgSjA1ZyYyPpSoPiKRBvbshhdV3Ch1ZtpPS
+         eHsNbRND7VAcea9cPFKj6rWPTE9eqJ+1bpiL/Y7qt3WqdU39UZLC+lAZforCeId79a
+         SlrdGtwC1j87JnZfiKYFz1OP4i1S6pZQUdf31tD0=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kernel-team@fb.com,
         johannes@sipsolutions.net, jiri@resnulli.us, andrew@lunn.ch,
-        mkubecek@suse.cz, Jakub Kicinski <kuba@kernel.org>,
-        dsahern@gmail.com, pablo@netfilter.org
-Subject: [PATCH net-next v2 6/7] netlink: add mask validation
-Date:   Mon,  5 Oct 2020 15:07:38 -0700
-Message-Id: <20201005220739.2581920-7-kuba@kernel.org>
+        mkubecek@suse.cz, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v2 7/7] ethtool: specify which header flags are supported per command
+Date:   Mon,  5 Oct 2020 15:07:39 -0700
+Message-Id: <20201005220739.2581920-8-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201005220739.2581920-1-kuba@kernel.org>
 References: <20201005220739.2581920-1-kuba@kernel.org>
@@ -41,163 +40,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We don't have good validation policy for existing unsigned int attrs
-which serve as flags (for new ones we could use NLA_BITFIELD32).
-With increased use of policy dumping having the validation be
-expressed as part of the policy is important. Add validation
-policy in form of a mask of supported/valid bits.
+Perform header flags validation through the policy.
 
-Support u64 in the uAPI to be future-proof, but really for now
-the embedded mask member can only hold 32 bits, so anything with
-bit 32+ set will always fail validation.
+Only pause command supports ETHTOOL_FLAG_STATS. Create a separate
+policy to be able to express that in policy dumps to user space.
+
+Note that even though the core will validate the header policy,
+it cannot record multiple layers of attributes and we have to
+re-parse header sub-attrs. When doing so we could skip attribute
+validation, or use most permissive policy. Opt for the former.
+
+We will no longer return the extack cookie for flags but since
+we only added first new flag in this release it's not expected
+that any user space had a chance to make use of it.
+
+v2: - remove the re-validation in ethnl_parse_header_dev_get()
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: jiri@resnulli.us
-CC: dsahern@gmail.com
-CC: pablo@netfilter.org
----
- include/net/netlink.h        | 10 ++++++++++
- include/uapi/linux/netlink.h |  2 ++
- lib/nlattr.c                 | 36 ++++++++++++++++++++++++++++++++++++
- net/netlink/policy.c         |  8 ++++++++
- 4 files changed, 56 insertions(+)
+ net/ethtool/netlink.c | 29 +++++++++++++++++++----------
+ net/ethtool/netlink.h |  1 +
+ net/ethtool/pause.c   |  2 +-
+ 3 files changed, 21 insertions(+), 11 deletions(-)
 
-diff --git a/include/net/netlink.h b/include/net/netlink.h
-index c5aa46f379bc..2b9e41075f19 100644
---- a/include/net/netlink.h
-+++ b/include/net/netlink.h
-@@ -200,6 +200,7 @@ enum nla_policy_validation {
- 	NLA_VALIDATE_RANGE_WARN_TOO_LONG,
- 	NLA_VALIDATE_MIN,
- 	NLA_VALIDATE_MAX,
-+	NLA_VALIDATE_MASK,
- 	NLA_VALIDATE_RANGE_PTR,
- 	NLA_VALIDATE_FUNCTION,
+diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
+index 57b5bbb7f48f..066608488af8 100644
+--- a/net/ethtool/netlink.c
++++ b/net/ethtool/netlink.c
+@@ -9,11 +9,24 @@ static struct genl_family ethtool_genl_family;
+ static bool ethnl_ok __read_mostly;
+ static u32 ethnl_bcast_seq;
+ 
++#define ETHTOOL_FLAGS_BASIC (ETHTOOL_FLAG_COMPACT_BITSETS |	\
++			     ETHTOOL_FLAG_OMIT_REPLY)
++#define ETHTOOL_FLAGS_STATS (ETHTOOL_FLAGS_BASIC | ETHTOOL_FLAG_STATS)
++
+ const struct nla_policy ethnl_header_policy[] = {
+ 	[ETHTOOL_A_HEADER_DEV_INDEX]	= { .type = NLA_U32 },
+ 	[ETHTOOL_A_HEADER_DEV_NAME]	= { .type = NLA_NUL_STRING,
+ 					    .len = ALTIFNAMSIZ - 1 },
+-	[ETHTOOL_A_HEADER_FLAGS]	= { .type = NLA_U32 },
++	[ETHTOOL_A_HEADER_FLAGS]	= NLA_POLICY_MASK(NLA_U32,
++							  ETHTOOL_FLAGS_BASIC),
++};
++
++const struct nla_policy ethnl_header_policy_stats[] = {
++	[ETHTOOL_A_HEADER_DEV_INDEX]	= { .type = NLA_U32 },
++	[ETHTOOL_A_HEADER_DEV_NAME]	= { .type = NLA_NUL_STRING,
++					    .len = ALTIFNAMSIZ - 1 },
++	[ETHTOOL_A_HEADER_FLAGS]	= NLA_POLICY_MASK(NLA_U32,
++							  ETHTOOL_FLAGS_STATS),
  };
-@@ -317,6 +318,7 @@ struct nla_policy {
- 	u16		len;
- 	union {
- 		const u32 bitfield32_valid;
-+		const u32 mask;
- 		const char *reject_message;
- 		const struct nla_policy *nested_policy;
- 		struct netlink_range_validation *range;
-@@ -368,6 +370,8 @@ struct nla_policy {
- 	(tp == NLA_S8 || tp == NLA_S16 || tp == NLA_S32 || tp == NLA_S64)
  
- #define __NLA_ENSURE(condition) BUILD_BUG_ON_ZERO(!(condition))
-+#define NLA_ENSURE_UINT_TYPE(tp)			\
-+	(__NLA_ENSURE(__NLA_IS_UINT_TYPE(tp)) + tp)
- #define NLA_ENSURE_UINT_OR_BINARY_TYPE(tp)		\
- 	(__NLA_ENSURE(__NLA_IS_UINT_TYPE(tp) ||	\
- 		      tp == NLA_MSECS ||		\
-@@ -416,6 +420,12 @@ struct nla_policy {
- 	.max = _max,					\
- }
- 
-+#define NLA_POLICY_MASK(tp, _mask) {			\
-+	.type = NLA_ENSURE_UINT_TYPE(tp),		\
-+	.validation_type = NLA_VALIDATE_MASK,		\
-+	.mask = _mask,					\
-+}
-+
- #define NLA_POLICY_VALIDATE_FN(tp, fn, ...) {		\
- 	.type = NLA_ENSURE_NO_VALIDATION_PTR(tp),	\
- 	.validation_type = NLA_VALIDATE_FUNCTION,	\
-diff --git a/include/uapi/linux/netlink.h b/include/uapi/linux/netlink.h
-index eac8a6a648ea..d02e472ba54c 100644
---- a/include/uapi/linux/netlink.h
-+++ b/include/uapi/linux/netlink.h
-@@ -331,6 +331,7 @@ enum netlink_attribute_type {
-  *	the index, if limited inside the nesting (U32)
-  * @NL_POLICY_TYPE_ATTR_BITFIELD32_MASK: valid mask for the
-  *	bitfield32 type (U32)
-+ * @NL_POLICY_TYPE_ATTR_MASK: mask of valid bits for unsigned integers (U64)
-  * @NL_POLICY_TYPE_ATTR_PAD: pad attribute for 64-bit alignment
-  */
- enum netlink_policy_type_attr {
-@@ -346,6 +347,7 @@ enum netlink_policy_type_attr {
- 	NL_POLICY_TYPE_ATTR_POLICY_MAXTYPE,
- 	NL_POLICY_TYPE_ATTR_BITFIELD32_MASK,
- 	NL_POLICY_TYPE_ATTR_PAD,
-+	NL_POLICY_TYPE_ATTR_MASK,
- 
- 	/* keep last */
- 	__NL_POLICY_TYPE_ATTR_MAX,
-diff --git a/lib/nlattr.c b/lib/nlattr.c
-index 80ff9fe83696..9c99f5daa4d2 100644
---- a/lib/nlattr.c
-+++ b/lib/nlattr.c
-@@ -323,6 +323,37 @@ static int nla_validate_int_range(const struct nla_policy *pt,
+ /**
+@@ -46,19 +59,15 @@ int ethnl_parse_header_dev_get(struct ethnl_req_info *req_info,
+ 		NL_SET_ERR_MSG(extack, "request header missing");
+ 		return -EINVAL;
  	}
- }
++	/* No validation here, command policy should have a nested policy set
++	 * for the header, therefore validation should have already been done.
++	 */
+ 	ret = nla_parse_nested(tb, ARRAY_SIZE(ethnl_header_policy) - 1, header,
+-			       ethnl_header_policy, extack);
++			       NULL, extack);
+ 	if (ret < 0)
+ 		return ret;
+-	if (tb[ETHTOOL_A_HEADER_FLAGS]) {
++	if (tb[ETHTOOL_A_HEADER_FLAGS])
+ 		flags = nla_get_u32(tb[ETHTOOL_A_HEADER_FLAGS]);
+-		if (flags & ~ETHTOOL_FLAG_ALL) {
+-			NL_SET_ERR_MSG_ATTR(extack, tb[ETHTOOL_A_HEADER_FLAGS],
+-					    "unrecognized request flags");
+-			nl_set_extack_cookie_u32(extack, ETHTOOL_FLAG_ALL);
+-			return -EOPNOTSUPP;
+-		}
+-	}
  
-+static int nla_validate_mask(const struct nla_policy *pt,
-+			     const struct nlattr *nla,
-+			     struct netlink_ext_ack *extack)
-+{
-+	u64 value;
-+
-+	switch (pt->type) {
-+	case NLA_U8:
-+		value = nla_get_u8(nla);
-+		break;
-+	case NLA_U16:
-+		value = nla_get_u16(nla);
-+		break;
-+	case NLA_U32:
-+		value = nla_get_u32(nla);
-+		break;
-+	case NLA_U64:
-+		value = nla_get_u64(nla);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	if (value & ~(u64)pt->mask) {
-+		NL_SET_ERR_MSG_ATTR(extack, nla, "reserved bit set");
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
- static int validate_nla(const struct nlattr *nla, int maxtype,
- 			const struct nla_policy *policy, unsigned int validate,
- 			struct netlink_ext_ack *extack, unsigned int depth)
-@@ -503,6 +534,11 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
- 		if (err)
- 			return err;
- 		break;
-+	case NLA_VALIDATE_MASK:
-+		err = nla_validate_mask(pt, nla, extack);
-+		if (err)
-+			return err;
-+		break;
- 	case NLA_VALIDATE_FUNCTION:
- 		if (pt->validate) {
- 			err = pt->validate(nla, extack);
-diff --git a/net/netlink/policy.c b/net/netlink/policy.c
-index cf23c0151721..ee26d01328ee 100644
---- a/net/netlink/policy.c
-+++ b/net/netlink/policy.c
-@@ -263,6 +263,14 @@ int netlink_policy_dump_write(struct sk_buff *skb,
- 		else
- 			type = NL_ATTR_TYPE_U64;
+ 	devname_attr = tb[ETHTOOL_A_HEADER_DEV_NAME];
+ 	if (tb[ETHTOOL_A_HEADER_DEV_INDEX]) {
+diff --git a/net/ethtool/netlink.h b/net/ethtool/netlink.h
+index 281d793d4557..3f5719786b0f 100644
+--- a/net/ethtool/netlink.h
++++ b/net/ethtool/netlink.h
+@@ -346,6 +346,7 @@ extern const struct ethnl_request_ops ethnl_eee_request_ops;
+ extern const struct ethnl_request_ops ethnl_tsinfo_request_ops;
  
-+		if (pt->validation_type == NLA_VALIDATE_MASK) {
-+			if (nla_put_u64_64bit(skb, NL_POLICY_TYPE_ATTR_MASK,
-+					      pt->mask,
-+					      NL_POLICY_TYPE_ATTR_PAD))
-+				goto nla_put_failure;
-+			break;
-+		}
-+
- 		nla_get_range_unsigned(pt, &range);
+ extern const struct nla_policy ethnl_header_policy[ETHTOOL_A_HEADER_FLAGS + 1];
++extern const struct nla_policy ethnl_header_policy_stats[ETHTOOL_A_HEADER_FLAGS + 1];
+ extern const struct nla_policy ethnl_strset_get_policy[ETHTOOL_A_STRSET_STRINGSETS + 1];
+ extern const struct nla_policy ethnl_linkinfo_get_policy[ETHTOOL_A_LINKINFO_HEADER + 1];
+ extern const struct nla_policy ethnl_linkinfo_set_policy[ETHTOOL_A_LINKINFO_TP_MDIX_CTRL + 1];
+diff --git a/net/ethtool/pause.c b/net/ethtool/pause.c
+index bf4013afd8b2..09998dc5c185 100644
+--- a/net/ethtool/pause.c
++++ b/net/ethtool/pause.c
+@@ -18,7 +18,7 @@ struct pause_reply_data {
  
- 		if (nla_put_u64_64bit(skb, NL_POLICY_TYPE_ATTR_MIN_VALUE_U,
+ const struct nla_policy ethnl_pause_get_policy[] = {
+ 	[ETHTOOL_A_PAUSE_HEADER]		=
+-		NLA_POLICY_NESTED(ethnl_header_policy),
++		NLA_POLICY_NESTED(ethnl_header_policy_stats),
+ };
+ 
+ static void ethtool_stats_init(u64 *stats, unsigned int n)
 -- 
 2.26.2
 
