@@ -2,22 +2,22 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 808B8284108
+	by mail.lfdr.de (Postfix) with ESMTP id F3A7D284109
 	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 22:35:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729126AbgJEUe4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 16:34:56 -0400
-Received: from mailrelay115.isp.belgacom.be ([195.238.20.142]:49351 "EHLO
+        id S1728734AbgJEUfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 16:35:24 -0400
+Received: from mailrelay115.isp.belgacom.be ([195.238.20.142]:49393 "EHLO
         mailrelay115.isp.belgacom.be" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725901AbgJEUe4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 16:34:56 -0400
-IronPort-SDR: 5zb/ogqFKYZYSSJ7DzNsEki1SA7h5zRcHEVPkyWZTXVYH2OFKQ2J7c5AoTavzi8kklTcG4qXkH
- g8nFjZZ0Qjz/qWz7nHHRWe9w/P4BLjZh8nwiqmwssSd40sCBy+ChV7mu5WDJ8nW/71Q4sPpbb5
- MGZ3BLL6+4bzVM1z32q92OpYF5ZLqkqewTQw/Adrr2Rc5qtPwz0jfTcH1z/XfPsS2ZkS59Akkv
- Rxpy4Jkq1v40E97uYHmXj9N8QNGoakuyuzEFwiRas4WBRDgwJ8WtcOolAuN16vpzFnEAPuNOBc
- rN4=
+        by vger.kernel.org with ESMTP id S1725901AbgJEUfY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 16:35:24 -0400
+IronPort-SDR: 3j7vIEqw4oUy9+ktbwqeJp/JZR1dToNBtZJlZZIB+hfTqV++roT2YOBD09MAhR4p4cwpKqcfQ+
+ ihiSOAitIy9M3FlmsekrIUPl8IEHp6VO2IuMH9F4Rf7jsZvKesqtF0NaS11jn99OvGS/pPUa4k
+ EOVW+yMtpEIemvaqWl2et4UAYFT20UULqWTN5bc1Zzag7lPS0gsfBPWXQpCkpzQgv8YNiAqaM1
+ eJCUnajL3eZOvO7VIEZkoRLZrgAfRTdbrisHi+NdJhGewhxlqnUK2eql9uz5P45GoaIETCWQxB
+ 6TY=
 X-Belgacom-Dynamic: yes
-IronPort-PHdr: =?us-ascii?q?9a23=3A0Yt3uhRQZFMIborLYA5QVpFwa9psv+yvbD5Q0Y?=
+IronPort-PHdr: =?us-ascii?q?9a23=3A1V6AqBTkm5NyMcIHfp84V8IRbdpsv+yvbD5Q0Y?=
  =?us-ascii?q?Iujvd0So/mwa6zbBSN2/xhgRfzUJnB7Loc0qyK6v+mBTZLuM3Y+Fk5M7V0Hy?=
  =?us-ascii?q?cfjssXmwFySOWkMmbcaMDQUiohAc5ZX0Vk9XzoeWJcGcL5ekGA6ibqtW1aFR?=
  =?us-ascii?q?rwLxd6KfroEYDOkcu3y/qy+5rOaAlUmTaxe7x/IAi0oAnLucQan4RuJrs/xx?=
@@ -42,24 +42,24 @@ IronPort-PHdr: =?us-ascii?q?9a23=3A0Yt3uhRQZFMIborLYA5QVpFwa9psv+yvbD5Q0Y?=
  =?us-ascii?q?d0HZ2MlB3P0jCrCLxdw7KCDpIc6aHN2XXtYcxwnSWVnJI9hkUrF5McfVatgb?=
  =?us-ascii?q?RyolDe?=
 X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2DgAgDggntf/xCltltgHAEBAQEBAQc?=
- =?us-ascii?q?BARIBAQQEAQFHgUiBHoJRX40/klaKWYctCwEBAQEBAQEBATUBAgQBAYRKgjs?=
- =?us-ascii?q?mOBMCAwEBAQMCBQEBBgEBAQEBAQUEAYYPRYI3IoNHCwEjI4E/EoMmglgpqhc?=
- =?us-ascii?q?zhBCBRINHgUKBOIgyhRqBQT+EX4o0BLdNgnGDE4RrklQPIqEfLZJnoimBek0?=
- =?us-ascii?q?gGIMkUBkNjisXjiZCMDcCBgoBAQMJVwE9AY0yAQE?=
-X-IPAS-Result: =?us-ascii?q?A2DgAgDggntf/xCltltgHAEBAQEBAQcBARIBAQQEAQFHg?=
- =?us-ascii?q?UiBHoJRX40/klaKWYctCwEBAQEBAQEBATUBAgQBAYRKgjsmOBMCAwEBAQMCB?=
- =?us-ascii?q?QEBBgEBAQEBAQUEAYYPRYI3IoNHCwEjI4E/EoMmglgpqhczhBCBRINHgUKBO?=
- =?us-ascii?q?IgyhRqBQT+EX4o0BLdNgnGDE4RrklQPIqEfLZJnoimBek0gGIMkUBkNjisXj?=
- =?us-ascii?q?iZCMDcCBgoBAQMJVwE9AY0yAQE?=
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2C8CADggntf/xCltltgHAEBAQEBAQc?=
+ =?us-ascii?q?BARIBAQQEAQFHgUgCgRyCUV+NP5JWilmFMYF8CwEBAQEBAQEBATUBAgQBAYR?=
+ =?us-ascii?q?KgjsmOgQNAgMBAQEDAgUBAQYBAQEBAQEFBAGGD0WCNyKDRwsBIyOBPxKDJoJ?=
+ =?us-ascii?q?YKaoXM4QQgUSDR4FCgTiIMoUagUE/gRGDToo0BLdNgnGDE4RrklQPIqEfLZJ?=
+ =?us-ascii?q?noiwNgWpNIBiDJFAZDY4rF44mQjA3AgYKAQEDCVcBPQGNMgEB?=
+X-IPAS-Result: =?us-ascii?q?A2C8CADggntf/xCltltgHAEBAQEBAQcBARIBAQQEAQFHg?=
+ =?us-ascii?q?UgCgRyCUV+NP5JWilmFMYF8CwEBAQEBAQEBATUBAgQBAYRKgjsmOgQNAgMBA?=
+ =?us-ascii?q?QEDAgUBAQYBAQEBAQEFBAGGD0WCNyKDRwsBIyOBPxKDJoJYKaoXM4QQgUSDR?=
+ =?us-ascii?q?4FCgTiIMoUagUE/gRGDToo0BLdNgnGDE4RrklQPIqEfLZJnoiwNgWpNIBiDJ?=
+ =?us-ascii?q?FAZDY4rF44mQjA3AgYKAQEDCVcBPQGNMgEB?=
 Received: from 16.165-182-91.adsl-dyn.isp.belgacom.be (HELO localhost.localdomain) ([91.182.165.16])
-  by relay.skynet.be with ESMTP; 05 Oct 2020 22:34:54 +0200
+  by relay.skynet.be with ESMTP; 05 Oct 2020 22:35:21 +0200
 From:   Fabian Frederick <fabf@skynet.be>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     Fabian Frederick <fabf@skynet.be>
-Subject: [PATCH 2/9 net-next] vxlan: use dev_sw_netstats_rx_add()
-Date:   Mon,  5 Oct 2020 22:34:28 +0200
-Message-Id: <20201005203428.55178-1-fabf@skynet.be>
+Subject: [PATCH 3/9 net-next] geneve: use dev_sw_netstats_rx_add()
+Date:   Mon,  5 Oct 2020 22:34:58 +0200
+Message-Id: <20201005203458.55228-1-fabf@skynet.be>
 X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -71,35 +71,38 @@ use new helper for netstats settings
 
 Signed-off-by: Fabian Frederick <fabf@skynet.be>
 ---
- drivers/net/vxlan.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ drivers/net/geneve.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
-index be3bf233a809e..1a557aeba32b4 100644
---- a/drivers/net/vxlan.c
-+++ b/drivers/net/vxlan.c
-@@ -1826,7 +1826,6 @@ static bool vxlan_ecn_decapsulate(struct vxlan_sock *vs, void *oiph,
- /* Callback from net/ipv4/udp.c to receive packets */
- static int vxlan_rcv(struct sock *sk, struct sk_buff *skb)
+diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+index 974a244f45ba0..d07008a818df6 100644
+--- a/drivers/net/geneve.c
++++ b/drivers/net/geneve.c
+@@ -217,7 +217,6 @@ static void geneve_rx(struct geneve_dev *geneve, struct geneve_sock *gs,
  {
+ 	struct genevehdr *gnvh = geneve_hdr(skb);
+ 	struct metadata_dst *tun_dst = NULL;
 -	struct pcpu_sw_netstats *stats;
- 	struct vxlan_dev *vxlan;
- 	struct vxlan_sock *vs;
- 	struct vxlanhdr unparsed;
-@@ -1940,12 +1939,7 @@ static int vxlan_rcv(struct sock *sk, struct sk_buff *skb)
- 		goto drop;
- 	}
+ 	unsigned int len;
+ 	int err = 0;
+ 	void *oiph;
+@@ -296,13 +295,9 @@ static void geneve_rx(struct geneve_dev *geneve, struct geneve_sock *gs,
  
--	stats = this_cpu_ptr(vxlan->dev->tstats);
--	u64_stats_update_begin(&stats->syncp);
--	stats->rx_packets++;
--	stats->rx_bytes += skb->len;
--	u64_stats_update_end(&stats->syncp);
--
-+	dev_sw_netstats_rx_add(vxlan->dev, skb->len);
- 	gro_cells_receive(&vxlan->gro_cells, skb);
- 
- 	rcu_read_unlock();
+ 	len = skb->len;
+ 	err = gro_cells_receive(&geneve->gro_cells, skb);
+-	if (likely(err == NET_RX_SUCCESS)) {
+-		stats = this_cpu_ptr(geneve->dev->tstats);
+-		u64_stats_update_begin(&stats->syncp);
+-		stats->rx_packets++;
+-		stats->rx_bytes += len;
+-		u64_stats_update_end(&stats->syncp);
+-	}
++	if (likely(err == NET_RX_SUCCESS))
++		dev_sw_netstats_rx_add(geneve->dev, len);
++
+ 	return;
+ drop:
+ 	/* Consume bad packet */
 -- 
 2.28.0
 
