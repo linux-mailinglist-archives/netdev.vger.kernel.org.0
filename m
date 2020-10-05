@@ -2,306 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28B5D283CF1
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 18:58:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 813FF283D26
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 19:14:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727348AbgJEQ6s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 12:58:48 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:47652 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726320AbgJEQ6r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 12:58:47 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 095GrcN0008109
-        for <netdev@vger.kernel.org>; Mon, 5 Oct 2020 09:58:47 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=facebook; bh=crS2MNwP7DjxYVyJCkL8M5svDqLbBGLiWgq4QuNOrDQ=;
- b=S8Cnjm8GDF+/JQgVAxhbp6KlwTFAKx911rZTRQISvGkrsa3TAeiMVSIpUIDWR8uJhGcd
- 30zIInQP80p+PSJrRbHq999ytaAnXpKUAtXIqRt63K3FX2jM+B1pRa4UYh7ElVZ70jlD
- SGBr0qSgY4X2r4xPNJjR8rwot5pjkVdNqaw= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 33y9jnnh47-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 09:58:47 -0700
-Received: from intmgw001.08.frc2.facebook.com (2620:10d:c085:108::8) by
- mail.thefacebook.com (2620:10d:c085:11d::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 5 Oct 2020 09:58:46 -0700
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id EE1F462E514C; Mon,  5 Oct 2020 09:58:44 -0700 (PDT)
-From:   Song Liu <songliubraving@fb.com>
-To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
-CC:     <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <john.fastabend@gmail.com>, <kpsingh@chromium.org>,
-        Song Liu <songliubraving@fb.com>
-Subject: [PATCH v2 bpf-next] bpf: use raw_spin_trylock() for pcpu_freelist_push/pop in NMI
-Date:   Mon, 5 Oct 2020 09:58:38 -0700
-Message-ID: <20201005165838.3735218-1-songliubraving@fb.com>
-X-Mailer: git-send-email 2.24.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-10-05_12:2020-10-05,2020-10-05 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0
- mlxlogscore=999 phishscore=0 clxscore=1015 mlxscore=0 spamscore=0
- adultscore=0 suspectscore=0 priorityscore=1501 bulkscore=0
- lowpriorityscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2010050125
-X-FB-Internal: deliver
+        id S1728226AbgJEROs convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 5 Oct 2020 13:14:48 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:43400 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726691AbgJEROs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 13:14:48 -0400
+Received: from marcel-macbook.fritz.box (p4fefc7f4.dip0.t-ipconnect.de [79.239.199.244])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 1AAE3CED28;
+        Mon,  5 Oct 2020 19:21:46 +0200 (CEST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
+Subject: Re: [PATCH] Revert "Bluetooth: Update resolving list when updating
+ whitelist"
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20201005161149.GA2378402@kroah.com>
+Date:   Mon, 5 Oct 2020 19:14:44 +0200
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Sathish Narsimman <sathish.narasimman@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <0C92E812-BF43-46A6-A069-3F7F3278FBB4@holtmann.org>
+References: <20201003135449.GA2691@kroah.com>
+ <A1C95238-CBCB-4FD4-B46D-A62AED0C77E5@holtmann.org>
+ <20201003160713.GA1512229@kroah.com>
+ <AABC2831-4E88-41A2-8A20-1BFC88895686@holtmann.org>
+ <20201004105124.GA2429@kroah.com>
+ <3F7BDD50-DEA3-4CB0-A9A0-69E7EE2923D5@holtmann.org>
+ <20201005083624.GA2442@kroah.com>
+ <220D3B4E-D73E-43AD-8FF8-887D1A628235@holtmann.org>
+ <20201005124018.GA800868@kroah.com>
+ <824BC92C-5035-4B80-80E7-298508E4ADD7@holtmann.org>
+ <20201005161149.GA2378402@kroah.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+X-Mailer: Apple Mail (2.3608.120.23.2.1)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Recent improvements in LOCKDEP highlighted a potential A-A deadlock with
-pcpu_freelist in NMI:
+Hi Greg,
 
-./tools/testing/selftests/bpf/test_progs -t stacktrace_build_id_nmi
+>>>>>>>>>>> This reverts commit 0eee35bdfa3b472cc986ecc6ad76293fdcda59e2 as it
+>>>>>>>>>>> breaks all bluetooth connections on my machine.
+>>>>>>>>>>> 
+>>>>>>>>>>> Cc: Marcel Holtmann <marcel@holtmann.org>
+>>>>>>>>>>> Cc: Sathish Narsimman <sathish.narasimman@intel.com>
+>>>>>>>>>>> Fixes: 0eee35bdfa3b ("Bluetooth: Update resolving list when updating whitelist")
+>>>>>>>>>>> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>>>>>>>>>> ---
+>>>>>>>>>>> net/bluetooth/hci_request.c | 41 ++-----------------------------------
+>>>>>>>>>>> 1 file changed, 2 insertions(+), 39 deletions(-)
+>>>>>>>>>>> 
+>>>>>>>>>>> This has been bugging me for since 5.9-rc1, when all bluetooth devices
+>>>>>>>>>>> stopped working on my desktop system.  I finally got the time to do
+>>>>>>>>>>> bisection today, and it came down to this patch.  Reverting it on top of
+>>>>>>>>>>> 5.9-rc7 restored bluetooth devices and now my input devices properly
+>>>>>>>>>>> work.
+>>>>>>>>>>> 
+>>>>>>>>>>> As it's almost 5.9-final, any chance this can be merged now to fix the
+>>>>>>>>>>> issue?
+>>>>>>>>>> 
+>>>>>>>>>> can you be specific what breaks since our guys and I also think the
+>>>>>>>>>> ChromeOS guys have been testing these series of patches heavily.
+>>>>>>>>> 
+>>>>>>>>> My bluetooth trackball does not connect at all.  With this reverted, it
+>>>>>>>>> all "just works".
+>>>>>>>>> 
+>>>>>>>>> Same I think for a Bluetooth headset, can check that again if you really
+>>>>>>>>> need me to, but the trackball is reliable here.
+>>>>>>>>> 
+>>>>>>>>>> When you run btmon does it indicate any errors?
+>>>>>>>>> 
+>>>>>>>>> How do I run it and where are the errors displayed?
+>>>>>>>> 
+>>>>>>>> you can do btmon -w trace.log and just let it run like tcdpump.
+>>>>>>> 
+>>>>>>> Ok, attached.
+>>>>>>> 
+>>>>>>> The device is not connecting, and then I open the gnome bluetooth dialog
+>>>>>>> and it scans for devices in the area, but does not connect to my
+>>>>>>> existing devices at all.
+>>>>>>> 
+>>>>>>> Any ideas?
+>>>>>> 
+>>>>>> the trace file is from -rc7 or from -rc7 with this patch reverted?
+>>>>>> 
+>>>>>> I asked, because I see no hint that anything goes wrong. However I have a suspicion if you bisected it to this patch.
+>>>>>> 
+>>>>>> diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+>>>>>> index e0269192f2e5..94c0daa9f28d 100644
+>>>>>> --- a/net/bluetooth/hci_request.c
+>>>>>> +++ b/net/bluetooth/hci_request.c
+>>>>>> @@ -732,7 +732,7 @@ static int add_to_white_list(struct hci_request *req,
+>>>>>>              return -1;
+>>>>>> 
+>>>>>>      /* White list can not be used with RPAs */
+>>>>>> -       if (!allow_rpa && !use_ll_privacy(hdev) &&
+>>>>>> +       if (!allow_rpa &&
+>>>>>>          hci_find_irk_by_addr(hdev, &params->addr, params->addr_type)) {
+>>>>>>              return -1;
+>>>>>>      }
+>>>>>> @@ -812,7 +812,7 @@ static u8 update_white_list(struct hci_request *req)
+>>>>>>              }
+>>>>>> 
+>>>>>>              /* White list can not be used with RPAs */
+>>>>>> -               if (!allow_rpa && !use_ll_privacy(hdev) &&
+>>>>>> +               if (!allow_rpa &&
+>>>>>>                  hci_find_irk_by_addr(hdev, &b->bdaddr, b->bdaddr_type)) {
+>>>>>>                      return 0x00;
+>>>>>>              }
+>>>>>> 
+>>>>>> 
+>>>>>> If you just do the above, does thing work for you again?
+>>>>> 
+>>>>> Corrupted white-space issues aside, yes, it works!
+>>>> 
+>>>> I just pasted it from a different terminal ;)
+>>>> 
+>>>>> I am running 5.9-rc8 with just this change on it and my tracball works
+>>>>> just fine.
+>>>>> 
+>>>>>> My suspicion is that the use_ll_privacy check is the wrong one here. It only checks if hardware feature is available, not if it is also enabled.
+>>>>> 
+>>>>> How would one go about enabling such a hardware feature if they wanted
+>>>>> to?  :)
+>>>> 
+>>>> I need to understand what is going wrong for you. I have a suspicion,
+>>>> but first I need to understand what kind of device you have. I hope
+>>>> the trace file is enough.
+>>> 
+>>> If you need any other information, just let me know, this is a USB
+>>> Bluetooth controller from Intel:
+>>> 
+>>> 	$ lsusb | grep Blue
+>>> 	Bus 009 Device 002: ID 8087:0029 Intel Corp. AX200 Bluetooth
+>>> 
+>>> And the output of usb-devices for it:
+>>> 	T:  Bus=09 Lev=01 Prnt=01 Port=04 Cnt=01 Dev#=  2 Spd=12  MxCh= 0
+>>> 	D:  Ver= 2.01 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
+>>> 	P:  Vendor=8087 ProdID=0029 Rev=00.01
+>>> 	C:  #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=100mA
+>>> 	I:  If#=0x0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+>>> 	I:  If#=0x1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
+>> 
+>> I already figured out that it is one of our controllers. The trace file gives it away.
+>> 
+>> So my suspicion is that the device you want to connect to uses RPA (aka random addresses). And we added support for resolving them in the firmware. Your hardware does support that, but the host side is not fully utilizing it and thus your device is filtered out.
+> 
+> Dude, get an email client that line-wraps :)
+> 
+>> If I am not mistaken, then the use_ll_privacy() check in these two specific places need to be replaced with LL Privacy Enabled check. And then the allow_rpa condition will do its job as expected.
+>> 
+>> We can confirm this if you send me a trace with the patch applied.
+> 
+> Want me to disconnect the device and then reconnect it using
+> bluetootctl?  I'll go do that now...
+> 
+> Ok, it's attached, I did:
+> 
+> $ bluetoothctl disconnect F1:85:91:79:73:70
+> Attempting to disconnect from F1:85:91:79:73:70
+> [CHG] Device F1:85:91:79:73:70 ServicesResolved: no
+> Successful disconnected
+> 
+> And then the gnome bluetooth daemon (or whatever it has) reconnected it
+> automatically, so you can see the connection happen, and some movements
+> in the log.
+> 
+> If there's anything else you need, just let me know.
 
-[   18.984807] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-[   18.984807] WARNING: inconsistent lock state
-[   18.984808] 5.9.0-rc6-01771-g1466de1330e1 #2967 Not tainted
-[   18.984809] --------------------------------
-[   18.984809] inconsistent {INITIAL USE} -> {IN-NMI} usage.
-[   18.984810] test_progs/1990 [HC2[2]:SC0[0]:HE0:SE1] takes:
-[   18.984810] ffffe8ffffc219c0 (&head->lock){....}-{2:2}, at:
-__pcpu_freelist_pop+0xe3/0x180
-[   18.984813] {INITIAL USE} state was registered at:
-[   18.984814]   lock_acquire+0x175/0x7c0
-[   18.984814]   _raw_spin_lock+0x2c/0x40
-[   18.984815]   __pcpu_freelist_pop+0xe3/0x180
-[   18.984815]   pcpu_freelist_pop+0x31/0x40
-[   18.984816]   htab_map_alloc+0xbbf/0xf40
-[   18.984816]   __do_sys_bpf+0x5aa/0x3ed0
-[   18.984817]   do_syscall_64+0x2d/0x40
-[   18.984818]   entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[   18.984818] irq event stamp: 12
-[ ... ]
-[   18.984822] other info that might help us debug this:
-[   18.984823]  Possible unsafe locking scenario:
-[   18.984823]
-[   18.984824]        CPU0
-[   18.984824]        ----
-[   18.984824]   lock(&head->lock);
-[   18.984826]   <Interrupt>
-[   18.984826]     lock(&head->lock);
-[   18.984827]
-[   18.984828]  *** DEADLOCK ***
-[   18.984828]
-[   18.984829] 2 locks held by test_progs/1990:
-[ ... ]
-[   18.984838]  <NMI>
-[   18.984838]  dump_stack+0x9a/0xd0
-[   18.984839]  lock_acquire+0x5c9/0x7c0
-[   18.984839]  ? lock_release+0x6f0/0x6f0
-[   18.984840]  ? __pcpu_freelist_pop+0xe3/0x180
-[   18.984840]  _raw_spin_lock+0x2c/0x40
-[   18.984841]  ? __pcpu_freelist_pop+0xe3/0x180
-[   18.984841]  __pcpu_freelist_pop+0xe3/0x180
-[   18.984842]  pcpu_freelist_pop+0x17/0x40
-[   18.984842]  ? lock_release+0x6f0/0x6f0
-[   18.984843]  __bpf_get_stackid+0x534/0xaf0
-[   18.984843]  bpf_prog_1fd9e30e1438d3c5_oncpu+0x73/0x350
-[   18.984844]  bpf_overflow_handler+0x12f/0x3f0
+so the trace file indicates that you are using static addresses and not RPAs. Now I am confused.
 
-This is because pcpu_freelist_head.lock is accessed in both NMI and
-non-NMI context. Fix this issue by using raw_spin_trylock() in NMI.
+What is the content of /sys/kernel/debug/bluetooth/hci0/identity_resolving_keys?
 
-Since NMI interrupts non-NMI context, when NMI context tries to lock the
-raw_spinlock, non-NMI context of the same cpu may already have locked a
-lock and is blocked from unlocking the lock. For a system with N cpus,
-there could be N NMIs at the same time, and they may block N non-NMI
-raw_spinlocks. This is tricky for pcpu_freelist_push(), where unlike
-_pop(), failing _push() means leaking memory. This issue is more likely t=
-o
-trigger in non-SMP system.
+The only way I can explain this if you have an entry in that file, but the device is not using it.
 
-Fix this issue with an extra list, pcpu_freelist.extralist. The extralist
-is primarily used to take _push() when raw_spin_trylock() failed on all
-the per cpu lists. It should be empty most of the time. The following
-table summarizes the behavior of pcpu_freelist in NMI and non-NMI:
+If you have btmgmt (from bluez.git) you can try "./tools/btmgmt irks” to clear that list and try again.
 
-non-NMI pop(): 	use _lock(); check per cpu lists first;
-                if all per cpu lists are empty, check extralist;
-                if extralist is empty, return NULL.
+Regards
 
-non-NMI push(): use _lock(); only push to per cpu lists.
-
-NMI pop():    use _trylock(); check per cpu lists first;
-              if all per cpu lists are locked or empty, check extralist;
-              if extralist is locked or empty, return NULL.
-
-NMI push():   use _trylock(); check per cpu lists first;
-              if all per cpu lists are locked; try push to extralist;
-              if extralist is also locked, keep trying on per cpu lists.
-
-Reported-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Song Liu <songliubraving@fb.com>
-
----
-Changes v1 =3D> v2:
-1. Update commit log. (Daniel)
----
- kernel/bpf/percpu_freelist.c | 101 +++++++++++++++++++++++++++++++++--
- kernel/bpf/percpu_freelist.h |   1 +
- 2 files changed, 97 insertions(+), 5 deletions(-)
-
-diff --git a/kernel/bpf/percpu_freelist.c b/kernel/bpf/percpu_freelist.c
-index b367430e611c7..3d897de890612 100644
---- a/kernel/bpf/percpu_freelist.c
-+++ b/kernel/bpf/percpu_freelist.c
-@@ -17,6 +17,8 @@ int pcpu_freelist_init(struct pcpu_freelist *s)
- 		raw_spin_lock_init(&head->lock);
- 		head->first =3D NULL;
- 	}
-+	raw_spin_lock_init(&s->extralist.lock);
-+	s->extralist.first =3D NULL;
- 	return 0;
- }
-=20
-@@ -40,12 +42,50 @@ static inline void ___pcpu_freelist_push(struct pcpu_=
-freelist_head *head,
- 	raw_spin_unlock(&head->lock);
- }
-=20
-+static inline bool pcpu_freelist_try_push_extra(struct pcpu_freelist *s,
-+						struct pcpu_freelist_node *node)
-+{
-+	if (!raw_spin_trylock(&s->extralist.lock))
-+		return false;
-+
-+	pcpu_freelist_push_node(&s->extralist, node);
-+	raw_spin_unlock(&s->extralist.lock);
-+	return true;
-+}
-+
-+static inline void ___pcpu_freelist_push_nmi(struct pcpu_freelist *s,
-+					     struct pcpu_freelist_node *node)
-+{
-+	int cpu, orig_cpu;
-+
-+	orig_cpu =3D cpu =3D raw_smp_processor_id();
-+	while (1) {
-+		struct pcpu_freelist_head *head;
-+
-+		head =3D per_cpu_ptr(s->freelist, cpu);
-+		if (raw_spin_trylock(&head->lock)) {
-+			pcpu_freelist_push_node(head, node);
-+			raw_spin_unlock(&head->lock);
-+			return;
-+		}
-+		cpu =3D cpumask_next(cpu, cpu_possible_mask);
-+		if (cpu >=3D nr_cpu_ids)
-+			cpu =3D 0;
-+
-+		/* cannot lock any per cpu lock, try extralist */
-+		if (cpu =3D=3D orig_cpu &&
-+		    pcpu_freelist_try_push_extra(s, node))
-+			return;
-+	}
-+}
-+
- void __pcpu_freelist_push(struct pcpu_freelist *s,
- 			struct pcpu_freelist_node *node)
- {
--	struct pcpu_freelist_head *head =3D this_cpu_ptr(s->freelist);
--
--	___pcpu_freelist_push(head, node);
-+	if (in_nmi())
-+		___pcpu_freelist_push_nmi(s, node);
-+	else
-+		___pcpu_freelist_push(this_cpu_ptr(s->freelist), node);
- }
-=20
- void pcpu_freelist_push(struct pcpu_freelist *s,
-@@ -81,7 +121,7 @@ void pcpu_freelist_populate(struct pcpu_freelist *s, v=
-oid *buf, u32 elem_size,
- 	}
- }
-=20
--struct pcpu_freelist_node *__pcpu_freelist_pop(struct pcpu_freelist *s)
-+static struct pcpu_freelist_node *___pcpu_freelist_pop(struct pcpu_freel=
-ist *s)
- {
- 	struct pcpu_freelist_head *head;
- 	struct pcpu_freelist_node *node;
-@@ -102,8 +142,59 @@ struct pcpu_freelist_node *__pcpu_freelist_pop(struc=
-t pcpu_freelist *s)
- 		if (cpu >=3D nr_cpu_ids)
- 			cpu =3D 0;
- 		if (cpu =3D=3D orig_cpu)
--			return NULL;
-+			break;
-+	}
-+
-+	/* per cpu lists are all empty, try extralist */
-+	raw_spin_lock(&s->extralist.lock);
-+	node =3D s->extralist.first;
-+	if (node)
-+		s->extralist.first =3D node->next;
-+	raw_spin_unlock(&s->extralist.lock);
-+	return node;
-+}
-+
-+static struct pcpu_freelist_node *
-+___pcpu_freelist_pop_nmi(struct pcpu_freelist *s)
-+{
-+	struct pcpu_freelist_head *head;
-+	struct pcpu_freelist_node *node;
-+	int orig_cpu, cpu;
-+
-+	orig_cpu =3D cpu =3D raw_smp_processor_id();
-+	while (1) {
-+		head =3D per_cpu_ptr(s->freelist, cpu);
-+		if (raw_spin_trylock(&head->lock)) {
-+			node =3D head->first;
-+			if (node) {
-+				head->first =3D node->next;
-+				raw_spin_unlock(&head->lock);
-+				return node;
-+			}
-+			raw_spin_unlock(&head->lock);
-+		}
-+		cpu =3D cpumask_next(cpu, cpu_possible_mask);
-+		if (cpu >=3D nr_cpu_ids)
-+			cpu =3D 0;
-+		if (cpu =3D=3D orig_cpu)
-+			break;
- 	}
-+
-+	/* cannot pop from per cpu lists, try extralist */
-+	if (!raw_spin_trylock(&s->extralist.lock))
-+		return NULL;
-+	node =3D s->extralist.first;
-+	if (node)
-+		s->extralist.first =3D node->next;
-+	raw_spin_unlock(&s->extralist.lock);
-+	return node;
-+}
-+
-+struct pcpu_freelist_node *__pcpu_freelist_pop(struct pcpu_freelist *s)
-+{
-+	if (in_nmi())
-+		return ___pcpu_freelist_pop_nmi(s);
-+	return ___pcpu_freelist_pop(s);
- }
-=20
- struct pcpu_freelist_node *pcpu_freelist_pop(struct pcpu_freelist *s)
-diff --git a/kernel/bpf/percpu_freelist.h b/kernel/bpf/percpu_freelist.h
-index fbf8a8a289791..3c76553cfe571 100644
---- a/kernel/bpf/percpu_freelist.h
-+++ b/kernel/bpf/percpu_freelist.h
-@@ -13,6 +13,7 @@ struct pcpu_freelist_head {
-=20
- struct pcpu_freelist {
- 	struct pcpu_freelist_head __percpu *freelist;
-+	struct pcpu_freelist_head extralist;
- };
-=20
- struct pcpu_freelist_node {
---=20
-2.24.1
+Marcel
 
