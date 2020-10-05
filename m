@@ -2,97 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BF32283EED
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 20:43:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A0F4283EF0
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 20:45:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727304AbgJESnX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 14:43:23 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:51788 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725940AbgJESnW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 14:43:22 -0400
-Received: from localhost.localdomain (redhouse.blr.asicdesigners.com [10.193.185.57])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 095IhFDK015506;
-        Mon, 5 Oct 2020 11:43:16 -0700
-From:   Rohit Maheshwari <rohitm@chelsio.com>
-To:     kuba@kernel.org, netdev@vger.kernel.org, davem@davemloft.net
-Cc:     secdev@chelsio.com, Rohit Maheshwari <rohitm@chelsio.com>
-Subject: [PATCH net v2] net/tls: sendfile fails with ktls offload
-Date:   Tue,  6 Oct 2020 00:13:13 +0530
-Message-Id: <20201005184313.3887-1-rohitm@chelsio.com>
-X-Mailer: git-send-email 2.18.1
+        id S1728648AbgJESpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 14:45:19 -0400
+Received: from mga12.intel.com ([192.55.52.136]:53468 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725940AbgJESpS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Oct 2020 14:45:18 -0400
+IronPort-SDR: 3FSZuNeWLE69Oj/NonUN39167rJ+Db7PVeOia6VtIR7AZxYdapNZH/DW2pPbFLHkXxQPV1fyXB
+ HnAtbkRqlqQg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9765"; a="143228411"
+X-IronPort-AV: E=Sophos;i="5.77,340,1596524400"; 
+   d="scan'208";a="143228411"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2020 11:45:10 -0700
+IronPort-SDR: E6pQ9YDI43zkKwK8oS0eoACx4mVqkzMEAalzHvSyvUD1wuPoyXtTbVSvzXE55meb2TUd8mVs0Q
+ dOtLAfd3R2ag==
+X-IronPort-AV: E=Sophos;i="5.77,340,1596524400"; 
+   d="scan'208";a="310164830"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.255.65.178]) ([10.255.65.178])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2020 11:45:09 -0700
+Subject: Re: [PATCH net-next 03/16] devlink: Add devlink reload limit option
+To:     Moshe Shemesh <moshe@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1601560759-11030-1-git-send-email-moshe@mellanox.com>
+ <1601560759-11030-4-git-send-email-moshe@mellanox.com>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <150136a2-f391-b588-3d6e-d97cd11e4cf2@intel.com>
+Date:   Mon, 5 Oct 2020 11:45:06 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.1
+MIME-Version: 1.0
+In-Reply-To: <1601560759-11030-4-git-send-email-moshe@mellanox.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-At first when sendpage gets called, if there is more data, 'more' in
-tls_push_data() gets set which later sets pending_open_record_frags, but
-when there is no more data in file left, and last time tls_push_data()
-gets called, pending_open_record_frags doesn't get reset. And later when
-2 bytes of encrypted alert comes as sendmsg, it first checks for
-pending_open_record_frags, and since this is set, it creates a record with
-0 data bytes to encrypt, meaning record length is prepend_size + tag_size
-only, which causes problem.
- We should set/reset pending_open_record_frags based on more bit.
 
-Also incase if tls_do_allocation() fails, and if record len is only
-prepend_size, then destroy the record.
 
-v1->v2:
-- handle tls_do_allocation() failure handling.
+On 10/1/2020 6:59 AM, Moshe Shemesh wrote:
+> Add reload limit to demand restrictions on reload actions.
+> Reload limits supported:
+> no_reset: No reset allowed, no down time allowed, no link flap and no
+>           configuration is lost.
+> 
+> By default reload limit is unspecified and so no constrains on reload
+> actions are required.
 
-Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
----
- net/tls/tls_device.c | 27 +++++++++++++--------------
- 1 file changed, 13 insertions(+), 14 deletions(-)
+Nit: I think the spelling for the noun here would be "constraints"? Same
+for a comment in the header file.
 
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index b74e2741f74f..f3efd53e31cf 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -463,17 +463,16 @@ static int tls_push_data(struct sock *sk,
- 			if (!record)
- 				break;
- handle_error:
--			if (record_type != TLS_RECORD_TYPE_DATA) {
--				/* avoid sending partial
--				 * record with type !=
--				 * application_data
--				 */
--				size = orig_size;
--				destroy_record(record);
--				ctx->open_record = NULL;
--			} else if (record->len > prot->prepend_size) {
-+			/* avoid sending partial record with type !=
-+			 * application_data
-+			 */
-+			if (record_type == TLS_RECORD_TYPE_DATA &&
-+			    record->len > prot->prepend_size)
- 				goto last_record;
--			}
-+
-+			size = orig_size;
-+			destroy_record(record);
-+			ctx->open_record = NULL;
- 
- 			break;
- 		}
-@@ -492,11 +491,11 @@ static int tls_push_data(struct sock *sk,
- 		if (!size) {
- last_record:
- 			tls_push_record_flags = flags;
--			if (more) {
--				tls_ctx->pending_open_record_frags =
--						!!record->num_frags;
-+			/* set/clear pending_open_record_frags based on more */
-+			tls_ctx->pending_open_record_frags = !!more;
-+
-+			if (more)
- 				break;
--			}
- 
- 			done = true;
- 		}
--- 
-2.18.1
+> 
+> Some combinations of action and limit are invalid. For example, driver
+> can not reinitialize its entities without any downtime.
+> 
 
+Good to see that checked in the core code.
+
+> The no_reset reload limit will have usecase in this patchset to
+> implement restricted fw_activate on mlx5.
+> 
+> Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
+> ---
+
+Other than the spelling hit and things pointed out by others, this looks
+good to me.
+
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
