@@ -2,104 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB80D284235
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 23:39:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B705C28434A
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 02:22:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726714AbgJEVjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 17:39:24 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:40942 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726693AbgJEVjX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 17:39:23 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 095LY6dl152074;
-        Mon, 5 Oct 2020 21:39:18 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=Vnwe+J4HHzmNTUOjoBPWeNeO4kQiUOlBVNSU7B+umR4=;
- b=MhJeOq5Lw0InBOb/HCB7g4vcPq0stujIevs/OhMOPW8WLhqnwkUe/XYNlpHWdZLGvL1E
- gDgCfexWQPqJY00AdSHT/av6Tz0bFWJ0eiZMnSDJvuTbVWB38PUpWP/G6CnZ+/pOVN4L
- kidntXmbS0iCslegVAd/cVPnuH5CMRka/vzsPy8R4HNbYN+27maZErxyT+aFSyovuI35
- g8EU/yFowjud6VdknHZaCVgjr6wf9NOjzrVCmKRygYMzNTP3GLtgr67HURgAdTQp+945
- CZl4r8cTr/67CUzWhjOjHAhSC2ZVoIgENirfe5dbB1EnkDcFoQgfMPzSovy4c61XHtkx 5g== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by aserp2130.oracle.com with ESMTP id 33xetar4jr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 05 Oct 2020 21:39:18 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 095LYlnc003805;
-        Mon, 5 Oct 2020 21:39:18 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3020.oracle.com with ESMTP id 33y36x1drq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 05 Oct 2020 21:39:18 +0000
-Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 095LdHn7020551;
-        Mon, 5 Oct 2020 21:39:18 GMT
-Received: from [10.159.155.16] (/10.159.155.16)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 05 Oct 2020 14:39:17 -0700
-Subject: Re: [PATCH 1/1] net/rds: suppress page allocation failure error in
- recv buffer refill
-To:     David Miller <davem@davemloft.net>
-Cc:     santosh.shilimkar@oracle.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, aruna.ramakrishna@oracle.com,
-        rama.nichanamatlu@oracle.com
-References: <1601669145-13604-1-git-send-email-manjunath.b.patil@oracle.com>
- <20201003.172647.2111926819782777286.davem@davemloft.net>
-From:   Manjunath Patil <manjunath.b.patil@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <be52df74-493e-c17b-5013-a55391417297@oracle.com>
-Date:   Mon, 5 Oct 2020 14:39:16 -0700
+        id S1725912AbgJFAWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 20:22:21 -0400
+Received: from mga04.intel.com ([192.55.52.120]:52450 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725861AbgJFAWV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Oct 2020 20:22:21 -0400
+IronPort-SDR: rxyEtF/3xzvdTJyy3Ogh5+rwm6f4lmk9DQD5MdikkSCvfuAxNnks1N74SzduGZktCn4Sn94s2m
+ DIG8mtDNucIA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9765"; a="161661798"
+X-IronPort-AV: E=Sophos;i="5.77,341,1596524400"; 
+   d="scan'208";a="161661798"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP; 05 Oct 2020 17:22:19 -0700
+IronPort-SDR: lF/hjPdCIR6cwUIFN5AQ4dlbmt+q+8kIjzjLWyrVpQl4aGGRV64/Hwiinos+KyxIWcN/P1A3NN
+ h5WqMSL/dUAQ==
+X-IronPort-AV: E=Sophos;i="5.77,341,1596524400"; 
+   d="scan'208";a="327158462"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.255.65.178]) ([10.255.65.178])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2020 14:52:53 -0700
+Subject: Re: [PATCH net-next 1/6] ethtool: wire up get policies to ops
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kernel-team@fb.com,
+        jiri@resnulli.us, andrew@lunn.ch, mkubecek@suse.cz
+References: <20201005155753.2333882-1-kuba@kernel.org>
+ <20201005155753.2333882-2-kuba@kernel.org>
+ <631a2328a95d0dd06d901cdb411c3eb06f90bda7.camel@sipsolutions.net>
+ <20201005121622.55607210@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <de5a03325d397fe559ce6c6182dfedc0cdad2c3b.camel@sipsolutions.net>
+ <20201005123120.7e8caa84@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <3e793f3b5c99bb4a5584d621b1dd5b30e62d81f2.camel@sipsolutions.net>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <5c91beb0-8b25-0d2f-87b3-3ada27e51e73@intel.com>
+Date:   Mon, 5 Oct 2020 14:52:32 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.3.1
 MIME-Version: 1.0
-In-Reply-To: <20201003.172647.2111926819782777286.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <3e793f3b5c99bb4a5584d621b1dd5b30e62d81f2.camel@sipsolutions.net>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9765 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 adultscore=0
- bulkscore=0 spamscore=0 malwarescore=0 suspectscore=0 phishscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2010050153
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9765 signatures=668680
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 spamscore=0 mlxscore=0
- clxscore=1011 priorityscore=1501 adultscore=0 mlxlogscore=999 phishscore=0
- impostorscore=0 malwarescore=0 suspectscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2010050153
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks David for your feedback.
 
-I will submit v3 of this patch removing the warning.
 
--Manjunath
-On 10/3/2020 5:26 PM, David Miller wrote:
-> From: Manjunath Patil <manjunath.b.patil@oracle.com>
-> Date: Fri,  2 Oct 2020 13:05:45 -0700
->
->> RDS/IB tries to refill the recv buffer in softirq context using
->> GFP_NOWAIT flag. However alloc failure is handled by queueing a work to
->> refill the recv buffer with GFP_KERNEL flag. This means failure to
->> allocate with GFP_NOWAIT isn't fatal. Do not print the PAF warnings if
->> softirq context fails to refill the recv buffer, instead print rate
->> limited warnings.
+On 10/5/2020 12:33 PM, Johannes Berg wrote:
+> On Mon, 2020-10-05 at 12:31 -0700, Jakub Kicinski wrote:
+> 
+>> Yea, I think we're both confused. Agreed with the above.
 >>
->> Signed-off-by: Manjunath Patil <manjunath.b.patil@oracle.com>
->> Reviewed-by: Aruna Ramakrishna <aruna.ramakrishna@oracle.com>
-> Honestly I don't think the subsystem should print any warning at all.
->
-> Either it's a softirq failure, and that's ok because you will push
-> the allocation to GFP_KERNEL via a work job.  Or it's a GFP_KERNEL
-> failure in non-softirq context and the kernel will print a warning
-> and a stack backtrace from the memory allocator.
->
-> Therefore, please remove all of the warnings in the rds code.
->
-> Thanks.
+>> Are you suggesting:
+>>
+>> const struct nla_policy policy[/* no size */] = {
+>> 	[HEADER]	= NLA_POLICY(...)
+>> 	[OTHER_ATTR]	= NLA_POLICY(...)
+>> };
+>>
+>> extern const struct nla_policy policy[/* no size */];
+>>
+>> op = {
+>> 	.policy = policy,
+>> 	.max_attr = OTHER_ATTR,
+>> }
+> 
+> No, that'd be awkward, for the reason you stated below.
+> 
+>> What I'm saying is that my preference would be:
+>>
+>> const struct nla_policy policy[OTHER_ATTR + 1] = {
+>> 	[HEADER]	= NLA_POLICY(...)
+>> 	[OTHER_ATTR]	= NLA_POLICY(...)
+>> };
+>>
+>> extern const struct nla_policy policy[OTHER_ATTR + 1];
+>>
+>> op = {
+>> 	.policy = policy,
+>> 	.max_attr = ARRAY_SIZE(policy) - 1,
+>> }
+>>
+>> Since it's harder to forget to update the op (you don't have to update
+>> op, and compiler will complain about the extern out of sync).
+> 
+> Yeah.
+> 
+> I was thinking the third way ;-)
+> 
+> const struct nla_policy policy[] = {
+> 	[HEADER]	= NLA_POLICY(...)
+> 	[OTHER_ATTR]	= NLA_POLICY(...)
+> };
+> 
+> op = {
+> 	.policy = policy,
+> 	.maxattr = ARRAY_SIZE(policy) - 1,
+> };
+> 
+> 
+> Now you can freely add any attributes, and, due to strict validation,
+> anything not specified in the policy will be rejected, whether by being
+> out of range (> maxattr) or not specified (NLA_UNSPEC).
+> 
+> johannes
+> 
 
+This is what I was thinking of as well.
