@@ -2,82 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B076128395D
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 17:16:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 808FC283B21
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 17:40:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727023AbgJEPQQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 11:16:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46752 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726617AbgJEPQQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 11:16:16 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F32C0613CE
-        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 08:16:15 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id l11so802649wmh.2
-        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 08:16:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=6wind.com; s=google;
-        h=reply-to:subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8P/Y+cdQgU4hGcdJmbgViUyKjvisofzjM0HdBo0hzYg=;
-        b=WI9PQTnbI0KSSwVoL1D66SDULtmtnJXAmSCSjQDIGBPS8zHDouW/45ViQKBD9fFC2v
-         ZcYfmcHWn3s3B8Vs9uHJy/hcbLK8SAJEXEJrs0qq/sff0mp68SCbWVPOLeWj8SzWhD6m
-         vmxDG1ZnWFHKZoDvbPYAhA3Vx3til7Kxox0hIFE3m0U1X2azCyauZmnuw2sHtETtS9AL
-         IszpqKPV0/wuNIMCMRTGxk2/NHulexUcBk2lmeRe+cn2QjgSOkAXiBMWCA8ysUIuUomy
-         BWqWxRU9nRG/ZUhhaklmtUMMl/zpY97MH/7wmslgF//ZZjf1Zoay3LbS5jVIXrX7x9Q/
-         y1Fg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:reply-to:subject:to:cc:references:from
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=8P/Y+cdQgU4hGcdJmbgViUyKjvisofzjM0HdBo0hzYg=;
-        b=fHcphlzvijHvWqM6/KGOUrlzmQImbfd6IkXlQk9Hb6d4NVIKumzsHeJxTlEasFc6Op
-         FUXtSmNwBk8+WXgYLNR+TXtbXOKr04Sfcj9Q1iL7vYzCTPVI+dP97kW1zQMUYyf5ZDCn
-         UbkXLj85yFq4esa/5kUfq7ZPmPduZmR2h8vsMcH2mnAKB59dDkgFn455xiLUrfZS7RDd
-         S3XFDLm6RGl6vuQDdRyauVIRnYR3xU1PIWtVozxozsqdH1T8mY6C7/16Tj9goLJzyfY+
-         JoMdwhBwVqsrfIw8VY76iAVs2o6L/LbGl/3NNfTSPbQPHcrdVDXByzLX50AL20NL/Bnp
-         2zHQ==
-X-Gm-Message-State: AOAM531uv4SWkWXuDxExygffdr54dhz3D9Z4rbqn3CVDiPWclYVn69aW
-        rQxw8jS8zXphn0tvMRQx5Z+Z3MRFmD+Tig==
-X-Google-Smtp-Source: ABdhPJyzVDa6SKJ+ULjxiOgqwDSPF1nh42mka7H+ShD2rLXs4iad+Z3hXbIOALYykHXPV+/abLP/OA==
-X-Received: by 2002:a1c:ed09:: with SMTP id l9mr76120wmh.89.1601910974099;
-        Mon, 05 Oct 2020 08:16:14 -0700 (PDT)
-Received: from ?IPv6:2a01:e0a:410:bb00:d146:d085:7412:4af5? ([2a01:e0a:410:bb00:d146:d085:7412:4af5])
-        by smtp.gmail.com with ESMTPSA id o129sm49488wmb.25.2020.10.05.08.16.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 05 Oct 2020 08:16:12 -0700 (PDT)
-Reply-To: nicolas.dichtel@6wind.com
-Subject: Re: [PATCH net 08/12] ipv6: advertise IFLA_LINK_NETNSID when dumping
- ipv6 addresses
-To:     Sabrina Dubroca <sd@queasysnail.net>
-Cc:     netdev@vger.kernel.org
-References: <cover.1600770261.git.sd@queasysnail.net>
- <00ecfc1804b58d8dbb23b8a6e7e5c0646f0100e1.1600770261.git.sd@queasysnail.net>
- <40925424-06ff-c0c5-0456-c7a9d58dff91@6wind.com>
- <20201002090323.GC3565727@bistromath.localdomain>
-From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Organization: 6WIND
-Message-ID: <acfa6911-f00e-fae8-cbc4-4b008ad7c793@6wind.com>
-Date:   Mon, 5 Oct 2020 17:16:10 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728705AbgJEPjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 11:39:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42716 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727972AbgJEPjW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Oct 2020 11:39:22 -0400
+Received: from earth.universe (dyndsl-095-033-158-146.ewe-ip-backbone.de [95.33.158.146])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1CD5C2085B;
+        Mon,  5 Oct 2020 15:39:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601912361;
+        bh=YDa9qgcYN/rLvsHl7wxHnDzXxyPxrajJMh139W2bTQc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Yt3ruZa68573tch0c/Ho1ALzHfCpTDMLesbdlPmWRDYNKB50IT55EoZp87fsRkzgz
+         7+6j5JNoNjJ3AsqOjA1un0djegx8x339kHr5uakI101R3J4o5G+KgoyioglXZXg5dL
+         Bxy38eyfhsJbMySPsKZTFlatV3r6LR8AuCR8oLYA=
+Received: by earth.universe (Postfix, from userid 1000)
+        id 1CDCB3C0C87; Mon,  5 Oct 2020 17:39:19 +0200 (CEST)
+Date:   Mon, 5 Oct 2020 17:39:19 +0200
+From:   Sebastian Reichel <sre@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
+        linux-iio@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, alsa-devel@alsa-project.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>, linux-clk@vger.kernel.org,
+        linux-leds@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-rockchip@lists.infradead.org, linux-serial@vger.kernel.org,
+        linux-mips@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-gpio@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        openipmi-developer@lists.sourceforge.net,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-hwmon@vger.kernel.org, Stephen Boyd <sboyd@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, linux-mmc@vger.kernel.org,
+        Liam Girdwood <lgirdwood@gmail.com>, linux-spi@vger.kernel.org,
+        Vinod Koul <vkoul@kernel.org>, netdev@vger.kernel.org,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH] dt-bindings: Another round of adding missing
+ 'additionalProperties'
+Message-ID: <20201005153919.llmcjbz4hiqvzd4x@earth.universe>
+References: <20201002234143.3570746-1-robh@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20201002090323.GC3565727@bistromath.localdomain>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ruzfmjzmyxibtjj5"
+Content-Disposition: inline
+In-Reply-To: <20201002234143.3570746-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 02/10/2020 à 11:03, Sabrina Dubroca a écrit :
-[snip]
-> I guess I could push the rcu_read_lock down into veth and vxcan's
-> handlers instead of the rcu_dereference_rtnl change in patch 6 and
-> adding this rcu_read_lock.
-> 
-Yes, I think it would avoid having this problem later, when someone else will
-use this helper.
+
+--ruzfmjzmyxibtjj5
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, Oct 02, 2020 at 06:41:43PM -0500, Rob Herring wrote:
+> Another round of wack-a-mole. The json-schema default is additional
+> unknown properties are allowed, but for DT all properties should be
+> defined.
+>=20
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>=20
+> I'll take this thru the DT tree.
+>=20
+>  [...]
+>  .../bindings/power/supply/cw2015_battery.yaml |  2 ++
+>  .../bindings/power/supply/rohm,bd99954.yaml   |  8 ++++++++
+> [...]
+
+Acked-by: Sebastian Reichel <sre@kernel.org>
+
+-- Sebastian
+
+--ruzfmjzmyxibtjj5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAl97PhAACgkQ2O7X88g7
++pqkbg/9HQHD97P7Thh0rG2tNf/oTuwqdbqpGz8XffiIbWso3SaAukPavFc/b34T
+Bhf9ldAe4Jy7Sz8qDavKYO8qMWOF8av5Je5ajNG3fFmRAO28Jz1vcRsxn7JiTvlU
+SnlrNgxMlppGfzCt59G/IH6GyJVUVhZduf1HhaterbutugRNLE6LKY85rtwPlCR6
+d4+sJE+gKYJmNhxj1XYyVrXoWQs22IA8nJggb2g2l5nHfFolffKHFRXTX5Ax7WFL
+vhm/uSgz/4T9RyObm3lx4ODSSZqC3oc1E0DR3jf97rWH6xGUVFuJoAtE5ZpS5AJt
+uC3k2QQJ8mCt5fUA+khtnS4DIsF07uOzd5Hbex8NcXiFnlO/9GYWlmGXxlAnhdrk
+vSk8jlPgslc4xKpae1y8DFQiMndd9+1g0b4ZOJ6RnhaNpnOoFOIIPmC2ViRnQ8/0
+kv5w7Hop2CIxAYj3Jk1IzlmtbmJeQt39ya7uHNJhV2ISd8P3AmrkcNedPd8OV7MO
+7DrV+n/aKjH2gLYX0+377iH59APbluDQd64e+iDir2L5PP4BWXmyMOGqZ+Od7ScJ
+YT7hlpoKPVwZ1lqta77S7LDpYrRtyv8Ce5EsFineimEc1b4N51GTMh6lDPIGVcXz
+Xa1GC6kpGXU9Cx39fOb5K64cnrJ5Whplgiyv+4xd1suU1q25CZM=
+=XHTx
+-----END PGP SIGNATURE-----
+
+--ruzfmjzmyxibtjj5--
