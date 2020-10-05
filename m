@@ -2,77 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FF262831A2
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 10:13:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07C8A2831C2
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 10:19:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726137AbgJEINc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 04:13:32 -0400
-Received: from relmlor1.renesas.com ([210.160.252.171]:21606 "EHLO
-        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726017AbgJEINb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 04:13:31 -0400
-X-IronPort-AV: E=Sophos;i="5.77,338,1596466800"; 
-   d="scan'208";a="58929006"
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 05 Oct 2020 17:13:29 +0900
-Received: from localhost.localdomain (unknown [10.226.36.204])
-        by relmlir5.idc.renesas.com (Postfix) with ESMTP id AF63840061A8;
-        Mon,  5 Oct 2020 17:13:26 +0900 (JST)
-From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        id S1726058AbgJEITv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 04:19:51 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:35263 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725885AbgJEITu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 04:19:50 -0400
+Received: by mail-lf1-f67.google.com with SMTP id w11so9803249lfn.2;
+        Mon, 05 Oct 2020 01:19:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Q4XZrXEeQD517Aqzlbe9SxhNn9MS2ME8Yf3Gk4LM/sc=;
+        b=Z0eTS6wkdakt7z8JAuccJ3Bo/6i9KkIAnCR/lVi130QkTevqXszRWzOGBDRIWQeux/
+         PcImaqDeDYKn7EqqgON0tHwD0SM4XASHx8RIIl67ucQxDCmVTJFGEnut0QdXF85NzoAO
+         Bdq4vwKGXUSjsdLDThF3aQi85uduV8gzzTKP2alGzONOdRLVYw832Zm98R2bTQem/8g5
+         Ae3l9rKQ866HZMqD3+82ehM4XRhXqEm2S9WlXVvVXUM4MbF9FgR0RY2804OXjo0qAMrv
+         oCI0Hkm5fgqfsKmk3E7jYeVhhe4MiuUeU58t92TETlw4ZIadmWNL/dV4zwFHYNAjKFZH
+         ecFw==
+X-Gm-Message-State: AOAM530bMyH95brR8KFs3gDQmQnV5wucIfLMLqLD4SFZJEmkPycfyyjz
+        aIeTiI+UQ3CCjPbwhARM1Gs=
+X-Google-Smtp-Source: ABdhPJzBO+i0G1WlEF/XcGMfyolfNZxzJtOqB8x0vXbXApEAKorWqT2Xqz9AF+kZWMnBtTWOyZs8SQ==
+X-Received: by 2002:a05:6512:31d:: with SMTP id t29mr2351786lfp.327.1601885989265;
+        Mon, 05 Oct 2020 01:19:49 -0700 (PDT)
+Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
+        by smtp.gmail.com with ESMTPSA id a28sm264798lfi.60.2020.10.05.01.19.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Oct 2020 01:19:48 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.93.0.4)
+        (envelope-from <johan@kernel.org>)
+        id 1kPLii-0001TC-FA; Mon, 05 Oct 2020 10:19:45 +0200
+Date:   Mon, 5 Oct 2020 10:19:44 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Wilken Gottwalt <wilken.gottwalt@mailbox.org>
+Cc:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        linux-kernel@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: [RESEND PATCH v2 2/2] dt-bindings: can: rcar_can: Document r8a774e1 support
-Date:   Mon,  5 Oct 2020 09:13:19 +0100
-Message-Id: <20201005081319.29322-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201005081319.29322-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20201005081319.29322-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH 1/2] usb: serial: qmi_wwan: add Cellient MPL200 card
+Message-ID: <20201005081944.GK5141@localhost>
+References: <cover.1601715478.git.wilken.gottwalt@mailbox.org>
+ <4688927cbf36fe0027340ea5e0c3aaf1445ba256.1601715478.git.wilken.gottwalt@mailbox.org>
+ <87d01yovq5.fsf@miraculix.mork.no>
+ <20201004203042.093ac473@monster.powergraphx.local>
+ <20201005080612.GI5141@localhost>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201005080612.GI5141@localhost>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document SoC specific bindings for RZ/G2H (R8A774E1) SoC.
+On Mon, Oct 05, 2020 at 10:06:12AM +0200, Johan Hovold wrote:
+> On Sun, Oct 04, 2020 at 08:30:42PM +0200, Wilken Gottwalt wrote:
 
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Reviewed-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Acked-by: Rob Herring <robh@kernel.org>
----
- Documentation/devicetree/bindings/net/can/rcar_can.txt | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+> > Oh sorry, looks like I got it mixed up a bit. It was my first attempt to submit
+> > a patch set. Which is the best way to resubmit an update if the other part of
+> > the patch set gets accepted? The documentation about re-/submitting patch sets
+> > is a bit thin.
+> 
+> Just send these as individual patches (not a series) as they are
+> independent and go through separate trees.
+> 
+> Also, I never received the USB serial patch, only this one, so you need
+> to resend both anyway.
 
-diff --git a/Documentation/devicetree/bindings/net/can/rcar_can.txt b/Documentation/devicetree/bindings/net/can/rcar_can.txt
-index 85c6551b602a..21d6780874cc 100644
---- a/Documentation/devicetree/bindings/net/can/rcar_can.txt
-+++ b/Documentation/devicetree/bindings/net/can/rcar_can.txt
-@@ -9,6 +9,7 @@ Required properties:
- 	      "renesas,can-r8a774a1" if CAN controller is a part of R8A774A1 SoC.
- 	      "renesas,can-r8a774b1" if CAN controller is a part of R8A774B1 SoC.
- 	      "renesas,can-r8a774c0" if CAN controller is a part of R8A774C0 SoC.
-+	      "renesas,can-r8a774e1" if CAN controller is a part of R8A774E1 SoC.
- 	      "renesas,can-r8a7778" if CAN controller is a part of R8A7778 SoC.
- 	      "renesas,can-r8a7779" if CAN controller is a part of R8A7779 SoC.
- 	      "renesas,can-r8a7790" if CAN controller is a part of R8A7790 SoC.
-@@ -37,8 +38,8 @@ Required properties:
- - pinctrl-0: pin control group to be used for this controller.
- - pinctrl-names: must be "default".
- 
--Required properties for R8A774A1, R8A774B1, R8A774C0, R8A7795, R8A7796,
--R8A77965, R8A77990, and R8A77995:
-+Required properties for R8A774A1, R8A774B1, R8A774C0, R8A774E1, R8A7795,
-+R8A7796, R8A77965, R8A77990, and R8A77995:
- For the denoted SoCs, "clkp2" can be CANFD clock. This is a div6 clock and can
- be used by both CAN and CAN FD controller at the same time. It needs to be
- scaled to maximum frequency if any of these controllers use it. This is done
--- 
-2.17.1
+Found it flagged spam, so no need to resend that one.
 
+Just resend the networking one with a v2 prefix. In general, you could
+mention in a changelog in the cover letter that you've removed patches
+that have already been applied.
+
+Johan
