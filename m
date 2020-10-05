@@ -2,100 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25D2F2835B7
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 14:18:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECD9E2835BA
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 14:19:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726317AbgJEMST (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 08:18:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47310 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725970AbgJEMST (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 08:18:19 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1272C0613CE
-        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 05:18:18 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id k10so9298818wru.6
-        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 05:18:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9bbkLmqsGFegNG0ldfQK4cwI5yP6xy9ZwsyIxzLr2+k=;
-        b=bJXCxENKxN0YjKNjI+Px8XuEUqcna05jHeVL6wlke2M1w0U1mY9dou6HQQycrQ+U4H
-         9/h4rl3jHWPMirDiREAV6Uu29gGbqIeZOCbYDl952N4lZqlJnBAKturIM5P7yMGzockf
-         8Hn4K/bn2jVcwIYhjV9I4Jk6cbrGmByt65gaWH470kB8ZPR7XydudT+SkeUeMOEIzTQ9
-         ynKd4ypjvtP3Eg1eW3u8HZk0MTg4qiOuwo4zDZ+jJ8M9rBi4+mIgyMDPX1vwDtsnEyY5
-         MA41Ve2cNZ7psS9U9clPzQPTXRBglPbNxNOgOfrbnFcZoMs04yCW2AsiuVCmupqOKf3R
-         WHOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9bbkLmqsGFegNG0ldfQK4cwI5yP6xy9ZwsyIxzLr2+k=;
-        b=cny1TSEvYZ2FkdkkPne3wxwRKcNzUcYVgab28r+beTqAKFxMKMazQRvNlwp+5jclQU
-         YbYnc0lv6OPrSHzXVdaIz8Unuv7gIMuHlT68S/w8hYUW/Nt47Zt8qfYH4lHBzyfYmD1S
-         9puH5HixPwvQ7aTh5BDK/H6FnbdiHmhZ9m3nLvkQdnP1VFCpYluozMukdHT+H21lfGPp
-         m3vue8JGO/TbMN7/v+VQAIAyvN8Q+os5s+pMaMfj89Ha8KPOtMtZoXhvmqvos1OWYAUK
-         rLB3FzZ6cDB2xnWpuHORlZxxrLkEP7Na/eKjupUrhit+uBBP9Q5Z2uR3HCAHlSypu64i
-         dvdQ==
-X-Gm-Message-State: AOAM533+YJYH8mgxDXemxZW9TMv4WseuYDqVuuY5iVzLEsHK5IESoLX7
-        9Iow6dlyI2fdNagta98NwFT/Og==
-X-Google-Smtp-Source: ABdhPJy3Vtfk3XyAkY9PZHloMzZiAILa1njNOCS+o8g5KjjLlnecQ0zriR9i8lPY2GbFfvPaA8NoDw==
-X-Received: by 2002:a5d:6886:: with SMTP id h6mr18021616wru.374.1601900297402;
-        Mon, 05 Oct 2020 05:18:17 -0700 (PDT)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id u15sm12143712wml.21.2020.10.05.05.18.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Oct 2020 05:18:16 -0700 (PDT)
-Date:   Mon, 5 Oct 2020 14:18:13 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Moshe Shemesh <moshe@nvidia.com>
-Cc:     Moshe Shemesh <moshe@mellanox.com>,
+        id S1726504AbgJEMTg convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 5 Oct 2020 08:19:36 -0400
+Received: from coyote.holtmann.net ([212.227.132.17]:49734 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725939AbgJEMTf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 08:19:35 -0400
+Received: from marcel-macpro.fritz.box (p4fefc7f4.dip0.t-ipconnect.de [79.239.199.244])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 6F7CECED23;
+        Mon,  5 Oct 2020 14:26:33 +0200 (CEST)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
+Subject: Re: [PATCH] Revert "Bluetooth: Update resolving list when updating
+ whitelist"
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20201005083624.GA2442@kroah.com>
+Date:   Mon, 5 Oct 2020 14:19:32 +0200
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Sathish Narsimman <sathish.narasimman@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 03/16] devlink: Add devlink reload limit option
-Message-ID: <20201005121813.GA6617@nanopsycho>
-References: <1601560759-11030-1-git-send-email-moshe@mellanox.com>
- <1601560759-11030-4-git-send-email-moshe@mellanox.com>
- <20201003075100.GC3159@nanopsycho.orion>
- <f91809cf-268d-64de-8a19-12305a3c11e0@nvidia.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f91809cf-268d-64de-8a19-12305a3c11e0@nvidia.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
+Message-Id: <220D3B4E-D73E-43AD-8FF8-887D1A628235@holtmann.org>
+References: <20201003135449.GA2691@kroah.com>
+ <A1C95238-CBCB-4FD4-B46D-A62AED0C77E5@holtmann.org>
+ <20201003160713.GA1512229@kroah.com>
+ <AABC2831-4E88-41A2-8A20-1BFC88895686@holtmann.org>
+ <20201004105124.GA2429@kroah.com>
+ <3F7BDD50-DEA3-4CB0-A9A0-69E7EE2923D5@holtmann.org>
+ <20201005083624.GA2442@kroah.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+X-Mailer: Apple Mail (2.3608.120.23.2.1)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sun, Oct 04, 2020 at 08:42:47AM CEST, moshe@nvidia.com wrote:
->
->On 10/3/2020 10:51 AM, Jiri Pirko wrote:
->> Thu, Oct 01, 2020 at 03:59:06PM CEST, moshe@mellanox.com wrote:
+Hi Greg,
+
+>>>>>>> This reverts commit 0eee35bdfa3b472cc986ecc6ad76293fdcda59e2 as it
+>>>>>>> breaks all bluetooth connections on my machine.
+>>>>>>> 
+>>>>>>> Cc: Marcel Holtmann <marcel@holtmann.org>
+>>>>>>> Cc: Sathish Narsimman <sathish.narasimman@intel.com>
+>>>>>>> Fixes: 0eee35bdfa3b ("Bluetooth: Update resolving list when updating whitelist")
+>>>>>>> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>>>>>> ---
+>>>>>>> net/bluetooth/hci_request.c | 41 ++-----------------------------------
+>>>>>>> 1 file changed, 2 insertions(+), 39 deletions(-)
+>>>>>>> 
+>>>>>>> This has been bugging me for since 5.9-rc1, when all bluetooth devices
+>>>>>>> stopped working on my desktop system.  I finally got the time to do
+>>>>>>> bisection today, and it came down to this patch.  Reverting it on top of
+>>>>>>> 5.9-rc7 restored bluetooth devices and now my input devices properly
+>>>>>>> work.
+>>>>>>> 
+>>>>>>> As it's almost 5.9-final, any chance this can be merged now to fix the
+>>>>>>> issue?
+>>>>>> 
+>>>>>> can you be specific what breaks since our guys and I also think the
+>>>>>> ChromeOS guys have been testing these series of patches heavily.
+>>>>> 
+>>>>> My bluetooth trackball does not connect at all.  With this reverted, it
+>>>>> all "just works".
+>>>>> 
+>>>>> Same I think for a Bluetooth headset, can check that again if you really
+>>>>> need me to, but the trackball is reliable here.
+>>>>> 
+>>>>>> When you run btmon does it indicate any errors?
+>>>>> 
+>>>>> How do I run it and where are the errors displayed?
+>>>> 
+>>>> you can do btmon -w trace.log and just let it run like tcdpump.
+>>> 
+>>> Ok, attached.
+>>> 
+>>> The device is not connecting, and then I open the gnome bluetooth dialog
+>>> and it scans for devices in the area, but does not connect to my
+>>> existing devices at all.
+>>> 
+>>> Any ideas?
 >> 
->> [...]
+>> the trace file is from -rc7 or from -rc7 with this patch reverted?
 >> 
->> > enum devlink_attr {
->> > 	/* don't change the order or add anything between, this is ABI! */
->> > 	DEVLINK_ATTR_UNSPEC,
->> > @@ -507,6 +524,7 @@ enum devlink_attr {
->> > 
->> > 	DEVLINK_ATTR_RELOAD_ACTION,		/* u8 */
->> > 	DEVLINK_ATTR_RELOAD_ACTIONS_PERFORMED,	/* u64 */
->> > +	DEVLINK_ATTR_RELOAD_LIMIT,	/* u8 */
->> Hmm, why there could be specified only single "limit"? I believe this
->> should be a bitfield. Same for the internal api to the driver.
->
->
->Why bitfield ? Either the user asks for a specific limit or he doesn't ask
->for any (unspecified).
+>> I asked, because I see no hint that anything goes wrong. However I have a suspicion if you bisected it to this patch.
+>> 
+>> diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
+>> index e0269192f2e5..94c0daa9f28d 100644
+>> --- a/net/bluetooth/hci_request.c
+>> +++ b/net/bluetooth/hci_request.c
+>> @@ -732,7 +732,7 @@ static int add_to_white_list(struct hci_request *req,
+>>                return -1;
+>> 
+>>        /* White list can not be used with RPAs */
+>> -       if (!allow_rpa && !use_ll_privacy(hdev) &&
+>> +       if (!allow_rpa &&
+>>            hci_find_irk_by_addr(hdev, &params->addr, params->addr_type)) {
+>>                return -1;
+>>        }
+>> @@ -812,7 +812,7 @@ static u8 update_white_list(struct hci_request *req)
+>>                }
+>> 
+>>                /* White list can not be used with RPAs */
+>> -               if (!allow_rpa && !use_ll_privacy(hdev) &&
+>> +               if (!allow_rpa &&
+>>                    hci_find_irk_by_addr(hdev, &b->bdaddr, b->bdaddr_type)) {
+>>                        return 0x00;
+>>                }
+>> 
+>> 
+>> If you just do the above, does thing work for you again?
+> 
+> Corrupted white-space issues aside, yes, it works!
 
-He can ask for multiple limits: No_link_flag , no_something_else. Could
-be totally unrelated limitations. Let's just have the UAPI ready for
-this once we define it from scratch.
+I just pasted it from a different terminal ;)
 
+> I am running 5.9-rc8 with just this change on it and my tracball works
+> just fine.
+> 
+>> My suspicion is that the use_ll_privacy check is the wrong one here. It only checks if hardware feature is available, not if it is also enabled.
+> 
+> How would one go about enabling such a hardware feature if they wanted
+> to?  :)
 
->
->If the user doesn't need limitation he will not specify a limit.
->
->> [...]
+I need to understand what is going wrong for you. I have a suspicion, but first I need to understand what kind of device you have. I hope the trace file is enough.
+
+> Anyway, feel free to put:
+> 
+> Tested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> 
+> on the above patch and hopefully get it to Linus for 5.9-final.
+
+Sadly, it is a poor hot-needle fix.
+
+Regards
+
+Marcel
+
