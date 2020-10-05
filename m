@@ -2,75 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9555D2834B3
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 13:13:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DE9F283510
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 13:36:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725996AbgJELNl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 07:13:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56994 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725843AbgJELNl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Oct 2020 07:13:41 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CEAB3206CB;
-        Mon,  5 Oct 2020 11:13:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601896419;
-        bh=rV6FZ5HcH0jsFcGRFxfWXDBV0w4UyK4mdxTIfWVbAuk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=e3PCs6WDdBiAnytTs+N4EjM6gonnqp6DbF58e5GsDCW9EWXmUxSEbhj7FlYAApAkQ
-         3t55bi4HaWLs/NQgL43PPKS9oDiHoxamY7b324sKGbU04EQAio24J75ZBrgXmp6VfZ
-         2nbG2H+KeI6RfQL+uTx+jL0QFLgHG/vW0bmayfpw=
-Date:   Mon, 5 Oct 2020 13:14:24 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-can@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Oliver Neukum <oneukum@suse.com>, linux-usb@vger.kernel.org,
+        id S1726017AbgJELgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 07:36:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40886 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725891AbgJELgm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 07:36:42 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D691C0613CE;
+        Mon,  5 Oct 2020 04:36:41 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id 34so5798124pgo.13;
+        Mon, 05 Oct 2020 04:36:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Sf17c7HvXf8uNuzV8+ZjY1/GkdlrtyTHe3Oz9ln6I+8=;
+        b=GEqNnyO/GWOFkvGTnhpXCXZ8mgcQUckcXR88hlywAimwgJhnWZ9OhnTM2KEmXWN4zj
+         R7I7zZWnejdpaiNmie85D9stM0etKWhBAPEo58lszbhRYNy2G4Q1VCR4IWGOYgnOB79l
+         iVafOq99O6Ufkz2jmqrLsAwGfg6olCut9mjm5JA4DyCBdt07BsH7EwJFHbNN85fz0Bjd
+         an0GZugO0aQcahZxKXzWLe103B6JONhEHdDJO5F+l6HqtVVJlyRTvGrdSugKs+l3aH1m
+         E/K97pg9o9psk5BGOZHAi641YaoHiKZoCRkU4lzIUfVZ9xmRj+A5FgrurmLovpa87uCE
+         IjdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Sf17c7HvXf8uNuzV8+ZjY1/GkdlrtyTHe3Oz9ln6I+8=;
+        b=jWdlrIkz//eBvAeUWBlZIdcTyFNJtZaKNUSptBSeeeAChZ4AA20RGqie5sWyFeWeoi
+         JoRevI1qzF/tX+zGOwhATmxeoLL+ZKBDOUNnI14g3JGEwF+GIMzN53xrxsdzN+JxhgGD
+         6/jLFhVyIBX8tc5i+p0xUCMo7UjgFwwTu0KUNypyaRGtsRnGOoNhMbKeiEGPYK7z5t4V
+         gjEYzYEhXggKX+5LNOqpYuCXsd6jBZlefrglKJ5mOOGn8KEbFf9Q303B18WkAnvU5QGF
+         mlr4EFtRsbaHDiaMzO41dJPeahXWiBzMQ22nWPlgJyBUAB49mEMXtl1WPaTygCKROtTl
+         A+tQ==
+X-Gm-Message-State: AOAM533J3UraND8c5gnPWhepAl2MlXE5ENyaeyYTjPyWYLuad14wmSPB
+        YfCzVQq6vpS4uqMjwObMBvwxoCjMmIBInQ==
+X-Google-Smtp-Source: ABdhPJzpUesusDh3wP10bYr0k8QIwo2tBQUz1xY/lhN9izPtibifDzHCTYqPnwhAyt9quq3LtFO+aA==
+X-Received: by 2002:a63:5c2:: with SMTP id 185mr6626366pgf.395.1601897800542;
+        Mon, 05 Oct 2020 04:36:40 -0700 (PDT)
+Received: from [192.168.1.5] ([159.192.164.48])
+        by smtp.googlemail.com with ESMTPSA id v3sm8058232pju.44.2020.10.05.04.36.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 05 Oct 2020 04:36:40 -0700 (PDT)
+Subject: Re: [PATCH 2/2] usb: serial: option: add Cellient MPL200 card
+To:     Johan Hovold <johan@kernel.org>,
+        Wilken Gottwalt <wilken.gottwalt@mailbox.org>
+Cc:     linux-kernel@vger.kernel.org,
+        =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: Re: [PATCH v3 7/7] usb: cdc-acm: add quirk to blacklist ETAS ES58X
- devices
-Message-ID: <20201005111424.GA361897@kroah.com>
-References: <20200926175810.278529-1-mailhol.vincent@wanadoo.fr>
- <20201002154219.4887-1-mailhol.vincent@wanadoo.fr>
- <20201002154219.4887-8-mailhol.vincent@wanadoo.fr>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org
+References: <cover.1601715478.git.wilken.gottwalt@mailbox.org>
+ <3db5418fe9e516f4b290736c5a199c9796025e3c.1601715478.git.wilken.gottwalt@mailbox.org>
+ <20201005082045.GL5141@localhost>
+ <20201005130134.459b4de9@monster.powergraphx.local>
+ <20201005110638.GP5141@localhost>
+From:   Lars Melin <larsm17@gmail.com>
+Message-ID: <5222246c-08d7-dcf8-248d-c1fefc72c46f@gmail.com>
+Date:   Mon, 5 Oct 2020 18:36:36 +0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201002154219.4887-8-mailhol.vincent@wanadoo.fr>
+In-Reply-To: <20201005110638.GP5141@localhost>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 03, 2020 at 12:41:51AM +0900, Vincent Mailhol wrote:
-> The ES58X devices has a CDC ACM interface (used for debug
-> purpose). During probing, the device is thus recognized as USB Modem
-> (CDC ACM), preventing the etas-es58x module to load:
->   usbcore: registered new interface driver etas_es58x
->   usb 1-1.1: new full-speed USB device number 14 using xhci_hcd
->   usb 1-1.1: New USB device found, idVendor=108c, idProduct=0159, bcdDevice= 1.00
->   usb 1-1.1: New USB device strings: Mfr=1, Product=2, SerialNumber=3
->   usb 1-1.1: Product: ES581.4
->   usb 1-1.1: Manufacturer: ETAS GmbH
->   usb 1-1.1: SerialNumber: 2204355
->   cdc_acm 1-1.1:1.0: No union descriptor, testing for castrated device
->   cdc_acm 1-1.1:1.0: ttyACM0: USB ACM device
+On 10/5/2020 18:06, Johan Hovold wrote:
+> On Mon, Oct 05, 2020 at 01:01:34PM +0200, Wilken Gottwalt wrote:
+>> On Mon, 5 Oct 2020 10:20:45 +0200
+>> Johan Hovold <johan@kernel.org> wrote:
+>>
+>>> On Sat, Oct 03, 2020 at 11:40:29AM +0200, Wilken Gottwalt wrote:
+>>>> Add usb ids of the Cellient MPL200 card.
+>>>>
+>>>> Signed-off-by: Wilken Gottwalt <wilken.gottwalt@mailbox.org>
+>>>> ---
 > 
-> Thus, these have been added to the ignore list in
-> drivers/usb/class/cdc-acm.c
+>>>> @@ -1982,6 +1983,8 @@ static const struct usb_device_id option_ids[] = {
+>>>>   	{ USB_DEVICE_AND_INTERFACE_INFO(MEDIATEK_VENDOR_ID, MEDIATEK_PRODUCT_DC_4COM2, 0xff,
+>>>> 0x02, 0x01) }, { USB_DEVICE_AND_INTERFACE_INFO(MEDIATEK_VENDOR_ID, MEDIATEK_PRODUCT_DC_4COM2,
+>>>> 0xff, 0x00, 0x00) }, { USB_DEVICE(CELLIENT_VENDOR_ID, CELLIENT_PRODUCT_MEN200) },
+>>>> +	{ USB_DEVICE(CELLIENT_VENDOR_ID, CELLIENT_PRODUCT_MPL200),
+>>>> +	  .driver_info = RSVD(1) | RSVD(4) },
+>>>
+>>> Would you mind posting the output of "lsusb -v" for this device?
+>>
+>> I would like to, but unfortunately I lost access to this really rare hardware
+>> about a month ago. It is a Qualcomm device (0x05c6:0x9025) with a slightly
+>> modified firmware to rebrand it as a Cellient product with a different vendor
+>> id. How to proceed here, if I have no access to it anymore? Drop it?
 > 
-> N.B. Future firmware release of the ES58X will remove the CDC-ACM
-> interface.
+> No, that's ok, I've applied the patch now. It's just that in case we
+> ever need to revisit the handling of quirky devices, it has proven
+> useful to have a record the descriptors.
+> 
+> Do you remember the interface layout and why you blacklisted interface
+> 1?
+> 
+> Johan
+> 
 
-I'll queue this up now, as it's needed no matter what the status of the
-other patches in this series.
+It is very likely that Cellient has replaced the VID with their own and 
+kept the PID, it is something other mfgrs has done when buying modules 
+from Qualcomm's series of devices with predefined composition.
 
-thanks,
+The MS Windows driver for 05c6:9025 describes the interfaces as:
 
-greg k-h
+MI_00 Qualcomm HS-USB Diagnostics 9025
+MI_01 Android Composite ADB Interface
+MI_02 Qualcomm HS-USB Android Modem 9025
+MI_03 Qualcomm HS-USB NMEA 9025
+MI_04 Qualcomm Wireless HS-USB Ethernet Adapter 9025
+MI_05 USB Mass Storage Device
+
+where the net interface is for QMI/RMNET.
+It fully matches the blacklisting Wilken has done for 2692:9025
+
+br
+Lars
+
+
+
+
+
