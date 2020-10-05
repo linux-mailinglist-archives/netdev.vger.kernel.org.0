@@ -2,146 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECD9E2835BA
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 14:19:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39B822835D8
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 14:34:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726504AbgJEMTg convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 5 Oct 2020 08:19:36 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:49734 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725939AbgJEMTf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 08:19:35 -0400
-Received: from marcel-macpro.fritz.box (p4fefc7f4.dip0.t-ipconnect.de [79.239.199.244])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 6F7CECED23;
-        Mon,  5 Oct 2020 14:26:33 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
-Subject: Re: [PATCH] Revert "Bluetooth: Update resolving list when updating
- whitelist"
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20201005083624.GA2442@kroah.com>
-Date:   Mon, 5 Oct 2020 14:19:32 +0200
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Sathish Narsimman <sathish.narasimman@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <220D3B4E-D73E-43AD-8FF8-887D1A628235@holtmann.org>
-References: <20201003135449.GA2691@kroah.com>
- <A1C95238-CBCB-4FD4-B46D-A62AED0C77E5@holtmann.org>
- <20201003160713.GA1512229@kroah.com>
- <AABC2831-4E88-41A2-8A20-1BFC88895686@holtmann.org>
- <20201004105124.GA2429@kroah.com>
- <3F7BDD50-DEA3-4CB0-A9A0-69E7EE2923D5@holtmann.org>
- <20201005083624.GA2442@kroah.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-X-Mailer: Apple Mail (2.3608.120.23.2.1)
+        id S1725940AbgJEMeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 08:34:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49802 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725891AbgJEMeX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 08:34:23 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26FD9C0613CE
+        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 05:34:23 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id u21so11681060eja.2
+        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 05:34:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qxIM+Azyb1VsZswOjCvZT3l2JIQin8UOK8Z87bzS0Ns=;
+        b=pX5Kw3rnlsFhLsDrONJzmC+gBdE27p8XbCk8deOQ/mJJqevznkAKMBxB90xglPdl31
+         FTmK2JtNtGJQsv1jOtleg8URST0MmH8OqdDPuW2SQ0rA3XcSmgTzObvt24dQZ0AkCRcj
+         5KRdaw3cjy1tIV/XZ7qZTzOrGqu/5AH0fGJ6tvJfC15EfkklOv1y9jpfI/174mrSejwL
+         lAWB9LacClVhY1AZX2O8GB0z3s9ITgOfUkR7yrEElHH//9ysu5ERGZNtoaMSFmuKV2Y9
+         dw/55M17h9NHUjwJDM+PbVBtVPsgElQjrq5qwf3waNeCg819ljmjccMBCSgLbzROfQH4
+         SaaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qxIM+Azyb1VsZswOjCvZT3l2JIQin8UOK8Z87bzS0Ns=;
+        b=LuOKfhlBGGJYZBJ5rK5LELZ3H1lhuM/7yYkTZFEUcHab+OkiHyN63QquMeigYuVE6T
+         l62my1iM+ldfXRCBvWhq0M89LEIyJc4BSBAMsHrfZ8Pymbo1MzkbXijxaPjZogpNpJLZ
+         827ks6M9ct7d4PqOW528Z/ItQemAoOkLBLy5eWzbateYkUcX2raNnL5J0Nq7PSCQxqLB
+         3iObkFCLKYYU9yV/77auxTCSMIUTP8AM/WlKfEjZyPl6liG3kt9e+siL6tj3WgzIgrmp
+         telSLSX1fFRq3jLe+IgNbIhfuNop0LFlkE/eqsyq29G1LRrp4EJLvhjYVj8HuZhxEHAd
+         KLQQ==
+X-Gm-Message-State: AOAM530S5TfeGOmEQSBOyWHj6gwX0+1j46RHos6nyHMhIT5ahhj/TEh+
+        pC4yVCa6GBDsH7sLYoOC7y8=
+X-Google-Smtp-Source: ABdhPJwF7wMmfbLy6r80Up7pYFzzVLldE7pRPeHqo5QpFPyqJHtB2xAWYTfbq6QrPvB/voNwXNiq5g==
+X-Received: by 2002:a17:906:c007:: with SMTP id e7mr15241603ejz.55.1601901261722;
+        Mon, 05 Oct 2020 05:34:21 -0700 (PDT)
+Received: from skbuf ([188.26.229.171])
+        by smtp.gmail.com with ESMTPSA id r11sm3483251edi.91.2020.10.05.05.34.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Oct 2020 05:34:21 -0700 (PDT)
+Date:   Mon, 5 Oct 2020 15:34:19 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
+Cc:     davem@davemloft.net, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, andrew@lunn.ch, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 4/4] net: dsa: set
+ configure_vlan_while_not_filtering to true by default
+Message-ID: <20201005123419.goprl5sirpt7g3gf@skbuf>
+References: <20200907182910.1285496-1-olteanv@gmail.com>
+ <20200907182910.1285496-5-olteanv@gmail.com>
+ <87y2lkshhn.fsf@kurt>
+ <20200908102956.ked67svjhhkxu4ku@skbuf>
+ <87o8llrr0b.fsf@kurt>
+ <20201002081527.d635bjrvr6hhdrns@skbuf>
+ <20201003075229.gxlndx7eh3vggxl7@skbuf>
+ <87zh537idk.fsf@kurt>
+ <20201004105617.5cclmtmrfrerpg7w@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201004105617.5cclmtmrfrerpg7w@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Greg,
-
->>>>>>> This reverts commit 0eee35bdfa3b472cc986ecc6ad76293fdcda59e2 as it
->>>>>>> breaks all bluetooth connections on my machine.
->>>>>>> 
->>>>>>> Cc: Marcel Holtmann <marcel@holtmann.org>
->>>>>>> Cc: Sathish Narsimman <sathish.narasimman@intel.com>
->>>>>>> Fixes: 0eee35bdfa3b ("Bluetooth: Update resolving list when updating whitelist")
->>>>>>> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->>>>>>> ---
->>>>>>> net/bluetooth/hci_request.c | 41 ++-----------------------------------
->>>>>>> 1 file changed, 2 insertions(+), 39 deletions(-)
->>>>>>> 
->>>>>>> This has been bugging me for since 5.9-rc1, when all bluetooth devices
->>>>>>> stopped working on my desktop system.  I finally got the time to do
->>>>>>> bisection today, and it came down to this patch.  Reverting it on top of
->>>>>>> 5.9-rc7 restored bluetooth devices and now my input devices properly
->>>>>>> work.
->>>>>>> 
->>>>>>> As it's almost 5.9-final, any chance this can be merged now to fix the
->>>>>>> issue?
->>>>>> 
->>>>>> can you be specific what breaks since our guys and I also think the
->>>>>> ChromeOS guys have been testing these series of patches heavily.
->>>>> 
->>>>> My bluetooth trackball does not connect at all.  With this reverted, it
->>>>> all "just works".
->>>>> 
->>>>> Same I think for a Bluetooth headset, can check that again if you really
->>>>> need me to, but the trackball is reliable here.
->>>>> 
->>>>>> When you run btmon does it indicate any errors?
->>>>> 
->>>>> How do I run it and where are the errors displayed?
->>>> 
->>>> you can do btmon -w trace.log and just let it run like tcdpump.
->>> 
->>> Ok, attached.
->>> 
->>> The device is not connecting, and then I open the gnome bluetooth dialog
->>> and it scans for devices in the area, but does not connect to my
->>> existing devices at all.
->>> 
->>> Any ideas?
->> 
->> the trace file is from -rc7 or from -rc7 with this patch reverted?
->> 
->> I asked, because I see no hint that anything goes wrong. However I have a suspicion if you bisected it to this patch.
->> 
->> diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
->> index e0269192f2e5..94c0daa9f28d 100644
->> --- a/net/bluetooth/hci_request.c
->> +++ b/net/bluetooth/hci_request.c
->> @@ -732,7 +732,7 @@ static int add_to_white_list(struct hci_request *req,
->>                return -1;
->> 
->>        /* White list can not be used with RPAs */
->> -       if (!allow_rpa && !use_ll_privacy(hdev) &&
->> +       if (!allow_rpa &&
->>            hci_find_irk_by_addr(hdev, &params->addr, params->addr_type)) {
->>                return -1;
->>        }
->> @@ -812,7 +812,7 @@ static u8 update_white_list(struct hci_request *req)
->>                }
->> 
->>                /* White list can not be used with RPAs */
->> -               if (!allow_rpa && !use_ll_privacy(hdev) &&
->> +               if (!allow_rpa &&
->>                    hci_find_irk_by_addr(hdev, &b->bdaddr, b->bdaddr_type)) {
->>                        return 0x00;
->>                }
->> 
->> 
->> If you just do the above, does thing work for you again?
+On Sun, Oct 04, 2020 at 01:56:17PM +0300, Vladimir Oltean wrote:
+> On Sat, Oct 03, 2020 at 11:45:27AM +0200, Kurt Kanzenbach wrote:
+> > Maybe next week.
 > 
-> Corrupted white-space issues aside, yes, it works!
+> The merge window opens next week. This means you can still resend as
+> RFC, but it can only be accepted in net-next after ~2 weeks.
 
-I just pasted it from a different terminal ;)
+False alarm, looks like we have an rc8. I guess that means you can
+resend some time this week.
 
-> I am running 5.9-rc8 with just this change on it and my tracball works
-> just fine.
-> 
->> My suspicion is that the use_ll_privacy check is the wrong one here. It only checks if hardware feature is available, not if it is also enabled.
-> 
-> How would one go about enabling such a hardware feature if they wanted
-> to?  :)
-
-I need to understand what is going wrong for you. I have a suspicion, but first I need to understand what kind of device you have. I hope the trace file is enough.
-
-> Anyway, feel free to put:
-> 
-> Tested-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> 
-> on the above patch and hopefully get it to Linus for 5.9-final.
-
-Sadly, it is a poor hot-needle fix.
-
-Regards
-
-Marcel
-
+Thanks,
+-Vladimir
