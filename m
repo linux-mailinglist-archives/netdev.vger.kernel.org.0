@@ -2,152 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAEC72836E4
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 15:51:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E41D928371B
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 15:59:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726105AbgJENvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 09:51:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33454 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725911AbgJENvN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 09:51:13 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D10C0613CE
-        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 06:51:12 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id z22so50948wmi.0
-        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 06:51:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wDRIWf511AA+n0OVIkBQqbWj1k3YolTpn5XVrCGU1LM=;
-        b=NLrvksTRYyANUjRMl0/PncYSpmdM8dL7Oal4bQxvX0iZflvhUx52C4icrZzYZvDv3F
-         z+RF4dx1wc1Vwbf6old6vhbQne45mxlhFgDoEnnYvvX3h3MGNs0mhoJLpvQctpst4ifX
-         doV4RcFvNEqhORjJ2zI1UPjfR1xqMjUX42XuP5VWTr9N1zgyVGHrYu4xOW+OUuZ6eDDM
-         6pLkZ93YkIVUHg5QNy8IqYq6gutdiYzheuiE5rUxbigNpxaT2CWsyATutT8hXvGCuU0J
-         fZqkWrJKVwnkE6HxS2amutjv4XCILdOUkZTiFWA7aTEzvq3PiSKokUFLHK8fH0OGo/+q
-         PQsw==
+        id S1726335AbgJEN7T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 09:59:19 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:46968 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725903AbgJEN7S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 09:59:18 -0400
+Received: by mail-oi1-f195.google.com with SMTP id u126so8754289oif.13;
+        Mon, 05 Oct 2020 06:59:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wDRIWf511AA+n0OVIkBQqbWj1k3YolTpn5XVrCGU1LM=;
-        b=NBe+cuQFnw/t0mFvETfPz9sTLTSUN/Gwf4Ldo5JqzlthJAJf8KzS1ZVSGJXoKgPr9j
-         T8CEfdbwxGqzewS0Nr8+mcjMNwYqTzzgpKGbyiP01lJaBBc05w5gQg0xAAjtuCbTQYLl
-         mDgpC9lvKT+tRIrvYdTuiID01u0VZUoGdtUM2SSvJIvtMT8xM/4GIob88fk9BSlSd0hc
-         BQVXtWYzVHlDPiG2HCvrLD9AR27wcvZFDq8RmWfxjnAO+7XDbYvFtyb/z97uvuh3bail
-         8jn7zS3KtmBUYYOLG++uytADXDI9mAUXMfdqHKHe7xmAAxP6vh2w0Y8b4Y4Y0JBHJGHz
-         IavA==
-X-Gm-Message-State: AOAM532kgQ3qLDQx7026mZ7UT4W6yq2EH2jJFdXTbmUdxVYlaCPiwNez
-        Him8tCn7xVEwb+J3BI8D0/mbvxeCEII3ZI2fzdlvEw==
-X-Google-Smtp-Source: ABdhPJwtMoF2vEYMrabfTmHXkSn8gv/KYpnpOp2JDYlHdjdIpVCHOLgFSErADKK+OBpEypQxttOjPlRvZkxNV6K3378=
-X-Received: by 2002:a7b:c04a:: with SMTP id u10mr3847419wmc.83.1601905870999;
- Mon, 05 Oct 2020 06:51:10 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=r6JYKyeY4BtCnuSOeZu+oMqaX/WYd8ly12y0glDjlmA=;
+        b=nWS3cZN7HOHeOEGuTwfevJG+pFo2kGkw1oQSP6QRQLY1Z9/MlnA2hxIm8n/j60tjf5
+         oeoHm3Ipbv5K01EUMLfOQ9D/3IVucSUiY1cpLLFjWryz/vGgJ6LdIVGvUfTse36yJ0h9
+         zagI+kauiQKGdVnOakPG/Tf10eRMM2EIj+G6l/nNK/RVBrHmPvT1NA/Hr7bskRu36Q5i
+         2UQIQ3PTdYsZrVTg6UhL6aZpKNtePN99dByc9TlFrsp6P4trKQOpfil+R80fKY/92KDl
+         0jXmt8DRdMvIt1kR8pjN53TpAU5UBkSSgUwfxjH+7uuC4cfySDQvafOm3hnIjJEzl+zY
+         +/FA==
+X-Gm-Message-State: AOAM530q+Ub5WzkI/xohGvyADnNca5W8yUuLOW91yEXWLcsaL0Q3303y
+        Cur1jSzxjSEIHjSDKjwhHIDEm7LQLywR
+X-Google-Smtp-Source: ABdhPJwmZFooFtrhYHH5LpdnwFIThcHkHpCUBDQspUSg7d16eB/oE7GlnV3Mjgm1ErzqQKKckkouOA==
+X-Received: by 2002:aca:ba07:: with SMTP id k7mr9054689oif.159.1601906357388;
+        Mon, 05 Oct 2020 06:59:17 -0700 (PDT)
+Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id 39sm824887otn.57.2020.10.05.06.59.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Oct 2020 06:59:16 -0700 (PDT)
+Received: (nullmailer pid 92964 invoked by uid 1000);
+        Mon, 05 Oct 2020 13:59:15 -0000
+Date:   Mon, 5 Oct 2020 08:59:15 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     =?utf-8?Q?=C5=81ukasz?= Stelmach <l.stelmach@samsung.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        devicetree@vger.kernel.org, jim.cromie@gmail.com,
+        linux-samsung-soc@vger.kernel.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        =?utf-8?Q?Bart=C5=82omiej_=C5=BBolnierkiewicz?= 
+        <b.zolnierkie@samsung.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Kukjin Kim <kgene@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 1/4] dt-bindings: net: Add bindings for AX88796C SPI
+ Ethernet Adapter
+Message-ID: <20201005135915.GA92530@bogus>
+References: <20201002192210.19967-1-l.stelmach@samsung.com>
+ <CGME20201002192215eucas1p2c1d2baebfe2a9caa11d88175a2899fea@eucas1p2.samsung.com>
+ <20201002192210.19967-2-l.stelmach@samsung.com>
 MIME-Version: 1.0
-References: <20201005134813.2051883-1-eric.dumazet@gmail.com>
-In-Reply-To: <20201005134813.2051883-1-eric.dumazet@gmail.com>
-From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Mon, 5 Oct 2020 09:50:34 -0400
-Message-ID: <CACSApvYuLnfMupbn3yBK=0yHC-MXx-20-3D4oy_gqJW6Ynkn=A@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: fix receive window update in tcp_add_backlog()
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexandre Ferrieux <alexandre.ferrieux@orange.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201002192210.19967-2-l.stelmach@samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 5, 2020 at 9:48 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
-> From: Eric Dumazet <edumazet@google.com>
->
-> We got reports from GKE customers flows being reset by netfilter
-> conntrack unless nf_conntrack_tcp_be_liberal is set to 1.
->
-> Traces seemed to suggest ACK packet being dropped by the
-> packet capture, or more likely that ACK were received in the
-> wrong order.
->
->  wscale=7, SYN and SYNACK not shown here.
->
->  This ACK allows the sender to send 1871*128 bytes from seq 51359321 :
->  New right edge of the window -> 51359321+1871*128=51598809
->
->  09:17:23.389210 IP A > B: Flags [.], ack 51359321, win 1871, options [nop,nop,TS val 10 ecr 999], length 0
->
->  09:17:23.389212 IP B > A: Flags [.], seq 51422681:51424089, ack 1577, win 268, options [nop,nop,TS val 999 ecr 10], length 1408
->  09:17:23.389214 IP A > B: Flags [.], ack 51422681, win 1376, options [nop,nop,TS val 10 ecr 999], length 0
->  09:17:23.389253 IP B > A: Flags [.], seq 51424089:51488857, ack 1577, win 268, options [nop,nop,TS val 999 ecr 10], length 64768
->  09:17:23.389272 IP A > B: Flags [.], ack 51488857, win 859, options [nop,nop,TS val 10 ecr 999], length 0
->  09:17:23.389275 IP B > A: Flags [.], seq 51488857:51521241, ack 1577, win 268, options [nop,nop,TS val 999 ecr 10], length 32384
->
->  Receiver now allows to send 606*128=77568 from seq 51521241 :
->  New right edge of the window -> 51521241+606*128=51598809
->
->  09:17:23.389296 IP A > B: Flags [.], ack 51521241, win 606, options [nop,nop,TS val 10 ecr 999], length 0
->
->  09:17:23.389308 IP B > A: Flags [.], seq 51521241:51553625, ack 1577, win 268, options [nop,nop,TS val 999 ecr 10], length 32384
->
->  It seems the sender exceeds RWIN allowance, since 51611353 > 51598809
->
->  09:17:23.389346 IP B > A: Flags [.], seq 51553625:51611353, ack 1577, win 268, options [nop,nop,TS val 999 ecr 10], length 57728
->  09:17:23.389356 IP B > A: Flags [.], seq 51611353:51618393, ack 1577, win 268, options [nop,nop,TS val 999 ecr 10], length 7040
->
->  09:17:23.389367 IP A > B: Flags [.], ack 51611353, win 0, options [nop,nop,TS val 10 ecr 999], length 0
->
->  netfilter conntrack is not happy and sends RST
->
->  09:17:23.389389 IP A > B: Flags [R], seq 92176528, win 0, length 0
->  09:17:23.389488 IP B > A: Flags [R], seq 174478967, win 0, length 0
->
->  Now imagine ACK were delivered out of order and tcp_add_backlog() sets window based on wrong packet.
->  New right edge of the window -> 51521241+859*128=51631193
->
-> Normally TCP stack handles OOO packets just fine, but it
-> turns out tcp_add_backlog() does not. It can update the window
-> field of the aggregated packet even if the ACK sequence
-> of the last received packet is too old.
->
-> Many thanks to Alexandre Ferrieux for independently reporting the issue
-> and suggesting a fix.
->
-> Fixes: 4f693b55c3d2 ("tcp: implement coalescing on backlog queue")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: Alexandre Ferrieux <alexandre.ferrieux@orange.com>
-
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
-
-Thanks for the fix!
-
+On Fri, 02 Oct 2020 21:22:07 +0200, Łukasz Stelmach wrote:
+> Add bindings for AX88796C SPI Ethernet Adapter.
+> 
+> Signed-off-by: Łukasz Stelmach <l.stelmach@samsung.com>
 > ---
->  net/ipv4/tcp_ipv4.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-> index 5084333b5ab647ca8ed296235a1ed6573693b250..592c7396272315c864372c158a7bc8850c6ddc61 100644
-> --- a/net/ipv4/tcp_ipv4.c
-> +++ b/net/ipv4/tcp_ipv4.c
-> @@ -1788,12 +1788,12 @@ bool tcp_add_backlog(struct sock *sk, struct sk_buff *skb)
->
->         __skb_pull(skb, hdrlen);
->         if (skb_try_coalesce(tail, skb, &fragstolen, &delta)) {
-> -               thtail->window = th->window;
-> -
->                 TCP_SKB_CB(tail)->end_seq = TCP_SKB_CB(skb)->end_seq;
->
-> -               if (after(TCP_SKB_CB(skb)->ack_seq, TCP_SKB_CB(tail)->ack_seq))
-> +               if (likely(!before(TCP_SKB_CB(skb)->ack_seq, TCP_SKB_CB(tail)->ack_seq))) {
->                         TCP_SKB_CB(tail)->ack_seq = TCP_SKB_CB(skb)->ack_seq;
-> +                       thtail->window = th->window;
-> +               }
->
->                 /* We have to update both TCP_SKB_CB(tail)->tcp_flags and
->                  * thtail->fin, so that the fast path in tcp_rcv_established()
-> --
-> 2.28.0.806.g8561365e88-goog
->
+>  .../bindings/net/asix,ax88796c-spi.yaml       | 76 +++++++++++++++++++
+>  .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
+>  2 files changed, 78 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/asix,ax88796c-spi.yaml
+> 
+
+
+My bot found errors running 'make dt_binding_check' on your patch:
+
+Error: Documentation/devicetree/bindings/net/asix,ax88796c-spi.example.dts:23.29-30 syntax error
+FATAL ERROR: Unable to parse input tree
+make[1]: *** [scripts/Makefile.lib:342: Documentation/devicetree/bindings/net/asix,ax88796c-spi.example.dt.yaml] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1366: dt_binding_check] Error 2
+
+
+See https://patchwork.ozlabs.org/patch/1376051
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure dt-schema is up to date:
+
+pip3 install git+https://github.com/devicetree-org/dt-schema.git@master --upgrade
+
+Please check and re-submit.
+
