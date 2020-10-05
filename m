@@ -2,168 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B8F7283D51
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 19:32:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C257283D60
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 19:36:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727258AbgJERcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 13:32:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39606 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726807AbgJERcI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 13:32:08 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B28CC0613CE
-        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 10:32:08 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id i3so194549pjz.4
-        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 10:32:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Htxoj4DaPCPw1cEp7kynonjuidcBDrm2IFv1RoI9pXE=;
-        b=t3bjIhsR7/XIujfSmVGkLJwWGn7zVArg+PhxfELAVL6HGcsXVQx3Oe1cm7r1U9flch
-         C0KzX94ahcoRpK5VmIYbF7M9150cVPj/42JrZDQLn/VaE4FTtXWawYYVHMJgRgFyGdWp
-         EdkwMkdYe5AsQifdFykX8kYpdsyBmtRjH4I7YefP6/TJLJ98i2en63CiXtfCbuJpb2hT
-         0B8hPYtznaBKtk9hQZqY7WTsEqolbepexHOuqcTAMhZSEOXLheLW9MM1iwC+UQEdZUhL
-         aA9pUMMZnmFDNWI2nlCvYoAVUpBZxyIJfKeLlv6U+Ux20l+oMTnc/qV0HEbkGuZnTryX
-         heDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Htxoj4DaPCPw1cEp7kynonjuidcBDrm2IFv1RoI9pXE=;
-        b=QmfpUbeHCUyaVoAL0kseodX1Cukw0naLcJUlU2V8KuBvIg68DTqcZ71l0tJmAvCbtu
-         HxgJAIipJVEb/ffuK7ZGNZJuCydmmNh8J+FhpTWTH5iGeTvHBCWkvcC0r1RyKqeGdrSr
-         R1ZxwBOD6D7OgK5OjKh3G0jXLnygJwwiBzAGLejePDlv0DVRgTPT5QdGu0QZue0Gja9j
-         CJTjnXGYyPRByLd3oa7gquOgT6gghXDjK8vKk4FR+zsGW62xn3BAPJWsfM4uaDx6Hslz
-         YOG5UWYGKL0rLXNo/HZ4bnrx2TdZ3GmnggkQc23MnncgpuVCNgCDfZDvrvMLNwKRGvFr
-         nUSw==
-X-Gm-Message-State: AOAM533LPNE/tcHRCkPff0ffpKnXrpku/qoMc2iTq7iN4PYEPiJnzk2i
-        znjkSdL2AFEWaBhNyuU8ucJNr5ywMkeKyTUHf7FLdg==
-X-Google-Smtp-Source: ABdhPJxWmcDMAtPD4+Xw7wkKskniMTu7T/NjhfmseiAjEso3zM1XgQ4+WDk7GzYI6fGPs72VmD7wb3CoA1EZsu39ARo=
-X-Received: by 2002:a17:90a:3b48:: with SMTP id t8mr523485pjf.32.1601919127643;
- Mon, 05 Oct 2020 10:32:07 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201001011232.4050282-1-andrew@lunn.ch> <20201001011232.4050282-2-andrew@lunn.ch>
- <CAKwvOdnVC8F1=QT03W5Zh9pJdTxxNfRcqXeob5_b4CXycvG1+g@mail.gmail.com> <20201002014411.GG4067422@lunn.ch>
-In-Reply-To: <20201002014411.GG4067422@lunn.ch>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 5 Oct 2020 10:31:57 -0700
-Message-ID: <CAKwvOdmdfwWsRtJHtJ16B0RMyoxUi1587OKnyunQd5gfwmnGsA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/2] Makefile.extrawarn: Add symbol for W=1
- warnings for today
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
+        id S1728327AbgJERgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 13:36:36 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:47834 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727344AbgJERgg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 13:36:36 -0400
+Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1kPUPT-0002Z5-LX; Mon, 05 Oct 2020 17:36:27 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id 089435FEE7; Mon,  5 Oct 2020 10:36:26 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 015479FB5C;
+        Mon,  5 Oct 2020 10:36:25 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Jarod Wilson <jarod@redhat.com>
+cc:     David Miller <davem@davemloft.net>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+        Thomas Davis <tadavis@lbl.gov>, Netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 6/6] bonding: make Kconfig toggle to disable legacy interfaces
+In-reply-to: <CAKfmpSd9NaBFhBsS=3zS5R5LeaVzguZjkwuvxSLYNT-Hwvj5Zw@mail.gmail.com>
+References: <20201002174001.3012643-7-jarod@redhat.com> <20201002121317.474c95f0@hermes.local> <CAKfmpSc3-j2GtQtdskEb8BQvB6q_zJPcZc2GhG8t+M3yFxS4MQ@mail.gmail.com> <20201002.155718.1670574240166749204.davem@davemloft.net> <CAKfmpSd9NaBFhBsS=3zS5R5LeaVzguZjkwuvxSLYNT-Hwvj5Zw@mail.gmail.com>
+Comments: In-reply-to Jarod Wilson <jarod@redhat.com>
+   message dated "Sat, 03 Oct 2020 15:48:26 -0400."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <15655.1601919385.1@famine>
+Date:   Mon, 05 Oct 2020 10:36:25 -0700
+Message-ID: <15656.1601919385@famine>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 1, 2020 at 6:44 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Thu, Oct 01, 2020 at 04:09:43PM -0700, Nick Desaulniers wrote:
-> > On Wed, Sep 30, 2020 at 6:12 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> > >
-> > > There is a movement to try to make more and more of /drivers W=1
-> > > clean. But it will only stay clean if new warnings are quickly
-> > > detected and fixed, ideally by the developer adding the new code.
-> > >
-> > > To allow subdirectories to sign up to being W=1 clean for a given
-> > > definition of W=1, export the current set of additional compile flags
-> > > using the symbol KBUILD_CFLAGS_W1_20200930. Subdirectory Makefiles can
-> > > then use:
-> > >
-> > > subdir-ccflags-y := $(KBUILD_CFLAGS_W1_20200930)
-> > >
-> > > To indicate they want to W=1 warnings as defined on 20200930.
-> > >
-> > > Additional warnings can be added to the W=1 definition. This will not
-> > > affect KBUILD_CFLAGS_W1_20200930 and hence no additional warnings will
-> > > start appearing unless W=1 is actually added to the command
-> > > line. Developers can then take their time to fix any new W=1 warnings,
-> > > and then update to the latest KBUILD_CFLAGS_W1_<DATESTAMP> symbol.
-> >
-> > I'm not a fan of this approach.  Are DATESTAMP configs just going to
-> > keep being added? Is it going to complicate isolating the issue from a
-> > randconfig build?  If we want more things to build warning-free at
-> > W=1, then why don't we start moving warnings from W=1 into the
-> > default, until this is no W=1 left?  That way we're cutting down on
-> > the kernel's configuration combinatorial explosion, rather than adding
-> > to it?
->
-> Hi Nick
->
-> I don't see randconfig being an issue. driver/net/ethernet would
-> always be build W=1, by some stable definition of W=1. randconfig
-> would not enable or disable additional warnings. It to make it clear,
-> KBUILD_CFLAGS_W1_20200930 is not a Kconfig option you can select. It
-> is a Makefile constant, a list of warnings which define what W=1 means
-> on that specific day. See patch 1/2.
->
-> I see a few issues with moving individual warnings from W=1 to the
-> default:
->
-> One of the comments for v1 of this patchset is that we cannot
-> introduce new warnings in the build. The complete tree needs to clean
-> of a particularly warning, before it can be added to the default list.
-> But that is not how people are cleaning up code, nor how the
-> infrastructure is designed. Those doing the cleanup are not take the
-> first from the list, -Wextra and cleanup up the whole tree for that
-> one warnings. They are rather enabling W=1 on a subdirectory, and
-> cleanup up all warnings on that subdirectory. So using this approach,
-> in order to move a warning from W=1 to the default, we are going to
-> have to get the entire tree W=1 clean, and move them all the warnings
-> are once.
+Jarod Wilson <jarod@redhat.com> wrote:
 
-Sorry, to be more specific about my concern; I like the idea of
-exporting the W=* flags, then selectively applying them via
-subdir-ccflags-y.  I don't like the idea of supporting W=1 as defined
-at a precise point in time via multiple date specific symbols.  If
-someone adds something to W=1, then they should need to ensure subdirs
-build warning-free, so I don't think you need to "snapshot" W=1 based
-on what it looked like on 20200930.
-
+>On Fri, Oct 2, 2020 at 6:57 PM David Miller <davem@davemloft.net> wrote:
+>>
+>> From: Jarod Wilson <jarod@redhat.com>
+>> Date: Fri, 2 Oct 2020 16:23:46 -0400
+>>
+>> > I'd had a bit of feedback that people would rather see both, and be
+>> > able to toggle off the old ones, rather than only having one or the
+>> > other, depending on the toggle, so I thought I'd give this a try. I
+>> > kind of liked the one or the other route, but I see the problems with
+>> > that too.
+>>
+>> Please keep everything for the entire deprecation period, unconditionally.
 >
-> People generally don't care about the tree as a whole. They care about
-> their own corner. The idea of fixing one warning thought the whole
-> tree is 'slicing and dicing' the kernel the wrong way. As we have seen
-> with the recent work with W=1, the more natural way to slice/dice the
-> kernel is by subdirectories.
+>Okay, so 100% drop the Kconfig flag patch, but duplicate sysfs
+>interface names are acceptable, correct? Then what about the procfs
+>file having duplicate Slave and Port lines? Just leave them all as
+>Slave?
 
-I'm not sure I agree with this paragraph. ^  If a warning is not
-enabled by default implicitly, then someone would need to clean the
-tree to turn it on.  It's very messy to apply it on a child directory,
-then try to work up.  We've done multiple tree wide warning cleanups
-and it's not too bad.
+	My preference is to not alter the existing sysfs / proc behavior
+at all, and instead create a netlink / iproute UAPI that becomes the
+"preferred" UAPI going forward.  Any new functionality would only be
+added to netlink as incentive to switch.
 
->
-> I do however understand the fear that we end up with lots of
-> KBUILD_CFLAGS_W1_<DATESTAMP> constants. So i looked at the git history
-> of script/Makefile.extrawarn. These are historically the symbols we
-> would have, if we started this idea 1/1/2018:
->
-> KBUILD_CFLAGS_W1_20200326    # CLANG only change
-> KBUILD_CFLAGS_W1_20190907
-> KBUILD_CFLAGS_W1_20190617    # CLANG only change
-> KBUILD_CFLAGS_W1_20190614    # CLANG only change
-> KBUILD_CFLAGS_W1_20190509
-> KBUILD_CFLAGS_W1_20180919
-> KBUILD_CFLAGS_W1_20180111
->
-> So not too many.
+	I don't see the value in adding duplicate fields, as userspace
+code that parses them will not be portable if it only checks for the new
+field name.  Then, down the road, deleting the old names will break the
+userspace code that was never updated (which will likely be most of it).
 
-It's a useful visualization.  I still would prefer W=1 to get enabled
-by default if all of the CI systems have flushed out the existing
-warnings.  That way we have one less combination of things to test;
-not more.
---
-Thanks,
-~Nick Desaulniers
+	I would rather see a single clean break from proc and sysfs to
+netlink in one step than a piecemeal addition and removal from the
+existing UAPI.  That makes for a much clearer flag day event for end
+users.  By this I mean leave proc / sysfs as-is today, and then after a
+suitable deprecation period, remove it wholesale (rather than a compile
+time option).
+
+	-J
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
