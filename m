@@ -2,67 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0512284168
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 22:37:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48E5028417B
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 22:37:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729903AbgJEUg4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 16:36:56 -0400
-Received: from mailrelay115.isp.belgacom.be ([195.238.20.142]:49513 "EHLO
+        id S1729581AbgJEUhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 16:37:14 -0400
+Received: from mailrelay115.isp.belgacom.be ([195.238.20.142]:49542 "EHLO
         mailrelay115.isp.belgacom.be" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729273AbgJEUgo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 16:36:44 -0400
-IronPort-SDR: f7Q7fvpmyrrJVFvQljq0BqxY68CaasLHQmz7uRmNqj3UqszYMyuyz8xq2ZLMncDv97/J8eTC5k
- 0jSxWhshSrG2Ckd3/WpfMrBb/fPaz/qPHhLgf6BCkhxAbu/TxJfVvPxmP4UdZGD5QXEIt8n0xQ
- Wt3/U0y5/HAS7elxM6xrGndXaf1XQY/tNyElKBcqKSIGNBesyri/xb1AMktuOu9mpBMbEQoZcj
- yRWYt4RftR8xYy+qN+PBUT1z8dBb0KAxhCNsK49Q1rjtzCJgiw+OqquQEPJiAEmgcWjZDlE2e7
- 5bw=
+        by vger.kernel.org with ESMTP id S1729231AbgJEUhI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 16:37:08 -0400
+IronPort-SDR: xfM8e/s1NvphrdxcbvW6sCe8mwA2VxAVB2FptAZCmpWkWCXmm9cEOK64z/Fqccf/7JTBwzxAfp
+ +CAkOZ2wflT2+WExnAGHPkLK2LZ5KDc95IUQRvPoSh1zzcoEeTUKY+/b7pSeVEfQXEVwkj1NFx
+ B8AS0xNzsCnzSqa4k43iafdxfOsda1AG2lYRtmUsuNwm/FQkEdnA1ctvPJSFGPbvD9RwauvAuY
+ UNdwH2YgL0dsdSICRhUP8eNsUo2EbbS+hLJiikRPMiun68jM484x6+yPVIoV646Dhz4VLFmQ/h
+ HKk=
 X-Belgacom-Dynamic: yes
-IronPort-PHdr: =?us-ascii?q?9a23=3ADUCfjhey+gtNpqUgnqmsULVhlGMj4u6mDksu8p?=
- =?us-ascii?q?Mizoh2WeGdxc26bRyN2/xhgRfzUJnB7Loc0qyK6v+mBTZLuM3Y+Fk5M7V0Hy?=
- =?us-ascii?q?cfjssXmwFySOWkMmbcaMDQUiohAc5ZX0Vk9XzoeWJcGcL5ekGA6ibqtW1aFR?=
- =?us-ascii?q?rwLxd6KfroEYDOkcu3y/qy+5rOaAlUmTaxe7x/IAi0oAnLucQan4RuJrs/xx?=
- =?us-ascii?q?fUv3BFZ/lYyWR0KFyJgh3y/N2w/Jlt8yRRv/Iu6ctNWrjkcqo7ULJVEi0oP3?=
- =?us-ascii?q?g668P3uxbDSxCP5mYHXWUNjhVIGQnF4wrkUZr3ryD3q/By2CiePc3xULA0RT?=
- =?us-ascii?q?Gv5LplRRP0lCsKMSMy/WfKgcJyka1bugqsqRxhzYDJbo+bN/1wcazSc94BWW?=
- =?us-ascii?q?ZMXdxcWzBbD4+gc4cCCfcKM+ZCr4n6olsDtRuwChO3C+Pu0DBIgGL9060g0+?=
- =?us-ascii?q?s/DA7JwhYgH9MSv3TXsd74M6kSXvquw6nG1jjDdPBW2Df76IfWbhAtu+qDUq?=
- =?us-ascii?q?xpfMfX1EIgGB/LgE+Kpoz5IzOayP4Ns26D4uRuVu+ij24ppgBxrzSxyMoiip?=
- =?us-ascii?q?TEip4IxlzY9Ch3z4k7KMC2RUNlfNOpEJlduj+VOYdqTM0sTGVltiY6xLEYvZ?=
- =?us-ascii?q?O2ejUBxpc/xxPHb/GLbpKE7g/gWeqPOzt0mXNodbKlixqv8EWtzPD3WNOu31?=
- =?us-ascii?q?ZQtCVFl8HBtnUK1xPO9MeKUuB9/kK92TaX0ADT9/1ELVg0laXFL54hxaY9lp?=
- =?us-ascii?q?4UsUvfBCD2nEX2jKiNdkU44OSo7+Pnban8qZ+YKoB0jQT+Pb4vmsy5Geg4Mw?=
- =?us-ascii?q?4OUHaH+emk0LDv4Ff1TKhJg/EoiKXVrZHXKMQBqqKkAgJZyoMj5Ay+Dzei3t?=
- =?us-ascii?q?QYh34HLFdddRKJlYfmIF/OLevjDfe8g1Wslilkx+zcMrL6HJrBNmLDn6v5fb?=
- =?us-ascii?q?Zh905czxI+ws1F6JJKFL4BJen+VVLru9zGEBA5Ngi0w+HpCNVhzI8eX3yAAr?=
- =?us-ascii?q?OBOqPIrVCI/v4vI/WLZIINuzb9NuMq6OT1gH86h1AdZ6+p0oUTaHyiGfRmOU?=
- =?us-ascii?q?qZa2L2gtgdCWcKohY+TOvyhV2ETzFTe2u9ULwi5jwgFoKmApnMRpq3jLyCwi?=
- =?us-ascii?q?i7BJtWaX5CClyWFnfobYqEUe8WaC2OOs9hjiAEVb+5Ro8iyBGvtQn6xKR7Lu?=
- =?us-ascii?q?fP/y0Yrozv2MJ05+3VjxE+7yZ7ANiH32GXUmF+hnkISCMu3KBjvUx9zU+O0K?=
- =?us-ascii?q?h/g/xDFdxT6e5JUgU7NZPHy+x6CtbyWh/Of9uQSVamWsumDDArQtI22d8ObF?=
- =?us-ascii?q?53G8++gRDbwyqqH7gVmqSFBJMu6a3c0WP8J91+y3fG0qkukUUmTtFUOmK41e?=
- =?us-ascii?q?ZD8F3fDpDElm2VnrincKAb0jKL8mqfiSKNoUtReA19S6PIWTYYfESS5dL0+k?=
- =?us-ascii?q?/PUZewBrk9dAhM08iPLu1NcNK6o09BQaLNMd7famT5tX29CRuSx7iPJN7kcm?=
- =?us-ascii?q?8T9D7eGU4Jj0YZ8CDVZkAFGi69rjeGX3RVHlX1bha0/A=3D=3D?=
+IronPort-PHdr: =?us-ascii?q?9a23=3ARtwPrBHqZQfNcwxVw1VFkJ1GYnF86YWxBRYc79?=
+ =?us-ascii?q?8ds5kLTJ76ps64bnLW6fgltlLVR4KTs6sC17OJ9fy6EjVbuN6oizMrSNR0TR?=
+ =?us-ascii?q?gLiMEbzUQLIfWuLgnFFsPsdDEwB89YVVVorDmROElRH9viNRWJ+iXhpTEdFQ?=
+ =?us-ascii?q?/iOgVrO+/7BpDdj9it1+C15pbffxhEiCCybL9vLhi6twrcutcZjYd/JKs91w?=
+ =?us-ascii?q?bCr2dVdehR2W5mP0+YkQzm5se38p5j8iBQtOwk+sVdT6j0fLk2QKJBAjg+PG?=
+ =?us-ascii?q?87+MPktR/YTQuS/XQcSXkZkgBJAwfe8h73WIr6vzbguep83CmaOtD2TawxVD?=
+ =?us-ascii?q?+/4apnVAPkhSEaPDM/7WrZiNF/jLhDrRyhuRJx3oDaboKSOvVxca3QZs8WSG?=
+ =?us-ascii?q?lbU8pNTSFNHp+wYo0SBOQBJ+ZYqIz9qkMOoxSkHgasBfngyjlVjXH2x601zf?=
+ =?us-ascii?q?kuHh/c3AwhA90Os2nfodL7NKgISu+1wrLFzS7Ab/JW3zfy9pTIfgo6rv6SRL?=
+ =?us-ascii?q?99d9faxkYzGQ3flFqQtZDlMC2P1uQLq2WV4eltWOavhWMmqwx9vDaiyMcxh4?=
+ =?us-ascii?q?XVm44Z1lHJ+yp2zosoK9C1VlN2bN6mHZZOuC+WK4V4TMwmTm9ouCg21LkLtJ?=
+ =?us-ascii?q?imdyYJ0JQq3xrSZ+Gdf4SV4R/vSvydLSp5iX9lYr6zmhe//E69wePmTMa0yk?=
+ =?us-ascii?q?xFri9dn9nJsXACygLc59CcSvt44kehwTGP1x3P6u1cIUA7i67bK5k5z740kZ?=
+ =?us-ascii?q?ocrV7MHiv2mEXxl6+Wal8o+uyv6+v7eLrmooKTN4hxig7kM6QunNSzAeU+Mg?=
+ =?us-ascii?q?cQQ2iW4eCx2KD58UHkQ7hGkOc6nrTYvZ3aP8gXu6+0DxdQ0ok56ha/Czmm0M?=
+ =?us-ascii?q?4fnXkCNF9FdgiIgJPnO1zVO/D4Dve+g1Kynzd33fzJJaPuDo3XLnffiLfhYa?=
+ =?us-ascii?q?p960lExQUu199f+YxbCrQaLf3uQEDxqsLXDho9MwyzzebnFM9x1oUAVmKTGq?=
+ =?us-ascii?q?WZKr/dsUeU5uIzJOmBfIwVuCvmJPc//PPujmE2mUUbfaa32Zsbcne4Hu5pI0?=
+ =?us-ascii?q?+Be3rjns8BEXsWvgo5VOHqjkONUSJOaHmsQaIx/S87CI24AofZXIytg6KO3D?=
+ =?us-ascii?q?29HpJIYmBKEFeMEW3nd4+cQfcDdDqSItN9kjwDTbWhUJMh2g+gtA/01bVnKP?=
+ =?us-ascii?q?DY+i4ctZ35z9h1/PPclQsu9TFvFMSSzX2CT3xynmwWWz86xrxwoUt4yl2by6?=
+ =?us-ascii?q?h3n+RYFcBP5/NOSgo6NYDTz/ZhBN/sQALBYsyESFmhQtWgHD4xScgxz8UUbE?=
+ =?us-ascii?q?ZlAdqiiArM0zCtA78PmLyHHoY78r/E1XjrO8l902rG1LUmj1Q+TMtAL3aphq?=
+ =?us-ascii?q?Bk+gjIBI7Ik0OZmLi2dagGxyHC6jTL8W3bsEhGXQtYXazbUHUbYUXK69L0+g?=
+ =?us-ascii?q?eKTKKkAJwkPxFHxMrELbFFLpXvgElKSenLJtvTeSSyln22CBLOwamDP6TwfG?=
+ =?us-ascii?q?BI8izXCUEC2y4J8HqLLwk1BW/1rWvUAhR1FkPpbl+q++Qo+yDzdVM90wzfNx?=
+ =?us-ascii?q?4p7LGy4BNA3fE=3D?=
 X-IronPort-Anti-Spam-Filtered: true
 X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2DgAgDggntf/xCltltgHAEBAQEBAQc?=
  =?us-ascii?q?BARIBAQQEAQFHgUiBHoJRX40/klaKWYctCwEBAQEBAQEBATUBAgQBAYRKgjs?=
  =?us-ascii?q?mOBMCAwEBAQMCBQEBBgEBAQEBAQUEAYYPRYI3IoNHCwEjI4E/EoMmglgpqhc?=
- =?us-ascii?q?zhBCBRINHgUKBOIgyhRqBQT+EX4o0BLdNgnGDE4RrklQPIqEfLZJnm2KGR4F?=
- =?us-ascii?q?6TSAYgyRQGQ2caEIwNwIGCgEBAwlXAT0BjTIBAQ?=
+ =?us-ascii?q?zhBCBRINHgUKBOIgyhRqBQT+EX4o0BLdNgnGDE4RrklQPIqEfLZJnoimBek0?=
+ =?us-ascii?q?gGIMkUBkNjisXjiZCMDcCBgoBAQMJVwE9AY0yAQE?=
 X-IPAS-Result: =?us-ascii?q?A2DgAgDggntf/xCltltgHAEBAQEBAQcBARIBAQQEAQFHg?=
  =?us-ascii?q?UiBHoJRX40/klaKWYctCwEBAQEBAQEBATUBAgQBAYRKgjsmOBMCAwEBAQMCB?=
  =?us-ascii?q?QEBBgEBAQEBAQUEAYYPRYI3IoNHCwEjI4E/EoMmglgpqhczhBCBRINHgUKBO?=
- =?us-ascii?q?IgyhRqBQT+EX4o0BLdNgnGDE4RrklQPIqEfLZJnm2KGR4F6TSAYgyRQGQ2ca?=
- =?us-ascii?q?EIwNwIGCgEBAwlXAT0BjTIBAQ?=
+ =?us-ascii?q?IgyhRqBQT+EX4o0BLdNgnGDE4RrklQPIqEfLZJnoimBek0gGIMkUBkNjisXj?=
+ =?us-ascii?q?iZCMDcCBgoBAQMJVwE9AY0yAQE?=
 Received: from 16.165-182-91.adsl-dyn.isp.belgacom.be (HELO localhost.localdomain) ([91.182.165.16])
-  by relay.skynet.be with ESMTP; 05 Oct 2020 22:36:42 +0200
+  by relay.skynet.be with ESMTP; 05 Oct 2020 22:37:06 +0200
 From:   Fabian Frederick <fabf@skynet.be>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+Cc:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
         Fabian Frederick <fabf@skynet.be>
-Subject: [PATCH 6/9 net-next] ipv6: use dev_sw_netstats_rx_add()
-Date:   Mon,  5 Oct 2020 22:36:19 +0200
-Message-Id: <20201005203619.55383-1-fabf@skynet.be>
+Subject: [PATCH 7/9 net-next] xfrm: use dev_sw_netstats_rx_add()
+Date:   Mon,  5 Oct 2020 22:36:34 +0200
+Message-Id: <20201005203634.55435-1-fabf@skynet.be>
 X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -74,27 +75,28 @@ use new helper for netstats settings
 
 Signed-off-by: Fabian Frederick <fabf@skynet.be>
 ---
- net/ipv6/ip6_vti.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ net/xfrm/xfrm_interface.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/net/ipv6/ip6_vti.c b/net/ipv6/ip6_vti.c
-index fac01b80a1040..5f9c4fdc120d6 100644
---- a/net/ipv6/ip6_vti.c
-+++ b/net/ipv6/ip6_vti.c
-@@ -347,7 +347,6 @@ static int vti6_rcv_cb(struct sk_buff *skb, int err)
+diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+index eb8181987620d..8f8631eafe784 100644
+--- a/net/xfrm/xfrm_interface.c
++++ b/net/xfrm/xfrm_interface.c
+@@ -210,7 +210,6 @@ static void xfrmi_scrub_packet(struct sk_buff *skb, bool xnet)
+ static int xfrmi_rcv_cb(struct sk_buff *skb, int err)
  {
- 	unsigned short family;
- 	struct net_device *dev;
--	struct pcpu_sw_netstats *tstats;
- 	struct xfrm_state *x;
  	const struct xfrm_mode *inner_mode;
- 	struct ip6_tnl *t = XFRM_TUNNEL_SKB_CB(skb)->tunnel.ip6;
-@@ -390,12 +389,7 @@ static int vti6_rcv_cb(struct sk_buff *skb, int err)
+-	struct pcpu_sw_netstats *tstats;
+ 	struct net_device *dev;
+ 	struct xfrm_state *x;
+ 	struct xfrm_if *xi;
+@@ -255,13 +254,7 @@ static int xfrmi_rcv_cb(struct sk_buff *skb, int err)
+ 	}
  
- 	skb_scrub_packet(skb, !net_eq(t->net, dev_net(skb->dev)));
- 	skb->dev = dev;
+ 	xfrmi_scrub_packet(skb, xnet);
 -
 -	tstats = this_cpu_ptr(dev->tstats);
+-
 -	u64_stats_update_begin(&tstats->syncp);
 -	tstats->rx_packets++;
 -	tstats->rx_bytes += skb->len;
