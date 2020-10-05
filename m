@@ -2,69 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 739CB28318C
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 10:10:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 971CA283196
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 10:13:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725987AbgJEIKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 04:10:07 -0400
-Received: from mail-io1-f79.google.com ([209.85.166.79]:50652 "EHLO
-        mail-io1-f79.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725940AbgJEIKG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 04:10:06 -0400
-Received: by mail-io1-f79.google.com with SMTP id b16so4276647iod.17
-        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 01:10:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=wVHJQXmamaTzNpIjudJa+tJEi3PnCwIpctdvTdQM7gU=;
-        b=JyAfEyaJQ+VCKkVYaLPW0cd9ICrQ+NrYxqaPbn2XF/UmhlEMMQkFb0gw44wsjZ7MLK
-         E8ZWzuOTKSWEaG35BRcXFP+EY3VM6Nr8VWwlawbGK2QCO15u16hDmGM3w3FIFAwlPZwX
-         dbiTMGWZFw807t6x/3uj6d4GV4BYidCKzPe3cUJlz5lNuqnOltmrnBP1hoeU+ni7PZ07
-         Z++chZee4cdV2DkrQfKG5nV3aplhhtPlL77jjuN/e5FcT4gbF/vbSSHZ057aR+VTNtux
-         NLvuTyJOC3OQjI27jY9z9r0Va/iKElepdnLbCvH/8Ax7SGMiYVOnZ7W6ghfasTkXaflI
-         ifiQ==
-X-Gm-Message-State: AOAM532F2Fb1vkozLPVpzn4MkQXo6pr6LI+m7VZ87uXrpjpOTFZm3PXr
-        2EfpZ6+Gs1Kx9QUAZ/WEljze/1JoWLTSZIViAIeuAvDuaDUc
-X-Google-Smtp-Source: ABdhPJwLFvux9XYUgBTicBVZllZd+7+bLCC5QFjPKgmFSYx/o/20y7IdqANtYLl/dIXDmonWHbc42u2/up4MKxAISa6o88CQ0kNC
-MIME-Version: 1.0
-X-Received: by 2002:a02:887:: with SMTP id 129mr12505574jac.130.1601885405765;
- Mon, 05 Oct 2020 01:10:05 -0700 (PDT)
-Date:   Mon, 05 Oct 2020 01:10:05 -0700
-In-Reply-To: <000000000000b3d57105b05ab856@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000094e3c805b0e802a8@google.com>
-Subject: Re: BUG: unable to handle kernel paging request in tcf_action_dump_terse
-From:   syzbot <syzbot+5f66662adc70969940fd@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, hdanton@sina.com, jhs@mojatatu.com,
-        jiri@resnulli.us, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+        id S1726000AbgJEINZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 04:13:25 -0400
+Received: from relmlor1.renesas.com ([210.160.252.171]:21606 "EHLO
+        relmlie5.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725887AbgJEINZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 04:13:25 -0400
+X-IronPort-AV: E=Sophos;i="5.77,338,1596466800"; 
+   d="scan'208";a="58928994"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 05 Oct 2020 17:13:23 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id C01F5400619F;
+        Mon,  5 Oct 2020 17:13:20 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [RESEND PATCH v2 0/2] dt-bindings: can: document R8A774E1
+Date:   Mon,  5 Oct 2020 09:13:17 +0100
+Message-Id: <20201005081319.29322-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+Hi All,
 
-commit 0fedc63fadf0404a729e73a35349481c8009c02f
-Author: Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed Sep 23 03:56:24 2020 +0000
+I am re-sending this patch set as this has been missed previously.
+It is exactly same as [1].
 
-    net_sched: commit action insertions together
+DT maintainers have already acked the patches.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=12c20657900000
-start commit:   2172e358 Add linux-next specific files for 20201002
-git tree:       linux-next
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=11c20657900000
-console output: https://syzkaller.appspot.com/x/log.txt?x=16c20657900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=70698f530a7e856f
-dashboard link: https://syzkaller.appspot.com/bug?extid=5f66662adc70969940fd
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=142fd4af900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16ffcdeb900000
+[1] https://www.spinics.net/lists/netdev/msg679244.html
 
-Reported-by: syzbot+5f66662adc70969940fd@syzkaller.appspotmail.com
-Fixes: 0fedc63fadf0 ("net_sched: commit action insertions together")
+Cheers,
+Prabhakar
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Changes for v2:
+* Added R8A774E1 to the list of SoCs that can use CANFD through "clkp2".
+* Added R8A774E1 to the list of SoCs that can use the CANFD clock
+
+Lad Prabhakar (2):
+  dt-bindings: can: rcar_canfd: Document r8a774e1 support
+  dt-bindings: can: rcar_can: Document r8a774e1 support
+
+ Documentation/devicetree/bindings/net/can/rcar_can.txt   | 5 +++--
+ Documentation/devicetree/bindings/net/can/rcar_canfd.txt | 5 +++--
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+-- 
+2.17.1
+
