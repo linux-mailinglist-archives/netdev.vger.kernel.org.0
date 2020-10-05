@@ -2,87 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C257283D60
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 19:36:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA495283D66
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 19:36:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728327AbgJERgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 13:36:36 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:47834 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727344AbgJERgg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 13:36:36 -0400
-Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <jay.vosburgh@canonical.com>)
-        id 1kPUPT-0002Z5-LX; Mon, 05 Oct 2020 17:36:27 +0000
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id 089435FEE7; Mon,  5 Oct 2020 10:36:26 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 015479FB5C;
-        Mon,  5 Oct 2020 10:36:25 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Jarod Wilson <jarod@redhat.com>
-cc:     David Miller <davem@davemloft.net>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Davis <tadavis@lbl.gov>, Netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v2 6/6] bonding: make Kconfig toggle to disable legacy interfaces
-In-reply-to: <CAKfmpSd9NaBFhBsS=3zS5R5LeaVzguZjkwuvxSLYNT-Hwvj5Zw@mail.gmail.com>
-References: <20201002174001.3012643-7-jarod@redhat.com> <20201002121317.474c95f0@hermes.local> <CAKfmpSc3-j2GtQtdskEb8BQvB6q_zJPcZc2GhG8t+M3yFxS4MQ@mail.gmail.com> <20201002.155718.1670574240166749204.davem@davemloft.net> <CAKfmpSd9NaBFhBsS=3zS5R5LeaVzguZjkwuvxSLYNT-Hwvj5Zw@mail.gmail.com>
-Comments: In-reply-to Jarod Wilson <jarod@redhat.com>
-   message dated "Sat, 03 Oct 2020 15:48:26 -0400."
-X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+        id S1728463AbgJERgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 13:36:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40350 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727344AbgJERgx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 13:36:53 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CBB8C0613CE
+        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 10:36:53 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id u6so10047443iow.9
+        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 10:36:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QEhNeqE2jCOAsEwTKodA8eAmV7E43ESviSFVdgKMdRc=;
+        b=Is65unyTHAXLv09OSYHbRePdwCc7l4IKtGsbz7zS+nJ6WMABIBdpkSUAJCqYHagwbE
+         4013Ssr5YLWGWuYxypDUfHTzN3ZS4hlv7qDazy1TJz5H9f7Ua5vhBThiw0S9XuflQi7k
+         8MSuperBTfCOOPGBHF9Ct3R24b43x2Txczj0Q2yyaPy8SGhV14MWq3wX6SteTEDBLcrt
+         tZZqyMZ2yWZikobInvV2r5rRf+nZc89yM4ZUTJpHx5xtqZkV5pDfymFJzu3ua9E/YPIv
+         EX84pe13sKLRhdY5Xy6A/V7sydIOkcjtLAzALYPltaayplG1bYXnijWss2qg1YFdSsv9
+         DIYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QEhNeqE2jCOAsEwTKodA8eAmV7E43ESviSFVdgKMdRc=;
+        b=iiCrW2Y5E9KANdttYOp8FjyaTbw8hljZ3mKNOtbfNuFMY5gQBzo2a5bFU7LdKAY1iy
+         HvWCMJiZiXn6ukFvVzgRf/CI3QNaPj1Tk4NwO8nfihfcDuJNCf2t61jIrLQO97KE0yuL
+         fcPAhinUAax5FaMPqWp0PjMjJ58bovZuM72F/UEEXapXmigLyIn4PqvWzVH3LMgT+elM
+         31jlz0eN9l+DorpoBjlGazY8czOtle3fMaAd5NpTryole+7t99pv3vuRVClxb86l8RYF
+         ryAe/8EplWEKF1otJrUaOQjnsDevXed7bbv4sqAoRxnTOReKbWRvA3wUEVfez+EBnVFB
+         Qdug==
+X-Gm-Message-State: AOAM533fP9Jz9YsqnUzz2ojSiaxh0yRr9r73G5ORPjdSQupDsgHle9I0
+        CnuVTMxUY8BQUjl9po5Odzs1UJrPpjnmCsjfhjRHVg==
+X-Google-Smtp-Source: ABdhPJxzXMjpLbbnB7WQJR0r3ek4593dRvwyFwWug+fohLYkK/UU4nFJuZKV3x/oUp2zFTjGCs+e5Kak5DQcuZM8NlE=
+X-Received: by 2002:a6b:b2cb:: with SMTP id b194mr800311iof.132.1601919412350;
+ Mon, 05 Oct 2020 10:36:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <15655.1601919385.1@famine>
-Date:   Mon, 05 Oct 2020 10:36:25 -0700
-Message-ID: <15656.1601919385@famine>
+References: <20201001020504.18151-1-bimmy.pujari@intel.com>
+ <20201001020504.18151-2-bimmy.pujari@intel.com> <20201001053501.mp6uqtan2bkhdgck@ast-mbp.dhcp.thefacebook.com>
+ <BY5PR11MB4354F2C9189C169C0CE40A9B86300@BY5PR11MB4354.namprd11.prod.outlook.com>
+ <CAADnVQJmmY_HER23=3bxCrrsbJoNs1Ue__P24KHj3YY1EkzuKQ@mail.gmail.com>
+In-Reply-To: <CAADnVQJmmY_HER23=3bxCrrsbJoNs1Ue__P24KHj3YY1EkzuKQ@mail.gmail.com>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Date:   Mon, 5 Oct 2020 10:36:40 -0700
+Message-ID: <CANP3RGfyG9_vj5FkgJz2HV+8voLqP3N+6Qi5hpkqJntF0YSy-A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v7 2/2] selftests/bpf: Selftest for real time helper
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     "Pujari, Bimmy" <bimmy.pujari@intel.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mchehab@kernel.org" <mchehab@kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "Nikravesh, Ashkan" <ashkan.nikravesh@intel.com>,
+        "Alvarez, Daniel A" <daniel.a.alvarez@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jarod Wilson <jarod@redhat.com> wrote:
+> Don't bother. This helper is no go.
 
->On Fri, Oct 2, 2020 at 6:57 PM David Miller <davem@davemloft.net> wrote:
->>
->> From: Jarod Wilson <jarod@redhat.com>
->> Date: Fri, 2 Oct 2020 16:23:46 -0400
->>
->> > I'd had a bit of feedback that people would rather see both, and be
->> > able to toggle off the old ones, rather than only having one or the
->> > other, depending on the toggle, so I thought I'd give this a try. I
->> > kind of liked the one or the other route, but I see the problems with
->> > that too.
->>
->> Please keep everything for the entire deprecation period, unconditionally.
->
->Okay, so 100% drop the Kconfig flag patch, but duplicate sysfs
->interface names are acceptable, correct? Then what about the procfs
->file having duplicate Slave and Port lines? Just leave them all as
->Slave?
+I disagree on the 'no go' -- I do think we should have this helper.
 
-	My preference is to not alter the existing sysfs / proc behavior
-at all, and instead create a netlink / iproute UAPI that becomes the
-"preferred" UAPI going forward.  Any new functionality would only be
-added to netlink as incentive to switch.
+The problem is it should only be used in some limited circumstances -
+for example when processing packets coming in off the wire with real
+times in them...  For example for something like measuring delay of
+ntp frames.  This is of course testable but annoying (create a fake
+ntp frame with gettimeofday injected timestamp in it, run it through
+bpf, see what processing delay it reports).
 
-	I don't see the value in adding duplicate fields, as userspace
-code that parses them will not be portable if it only checks for the new
-field name.  Then, down the road, deleting the old names will break the
-userspace code that was never updated (which will likely be most of it).
-
-	I would rather see a single clean break from proc and sysfs to
-netlink in one step than a piecemeal addition and removal from the
-existing UAPI.  That makes for a much clearer flag day event for end
-users.  By this I mean leave proc / sysfs as-is today, and then after a
-suitable deprecation period, remove it wholesale (rather than a compile
-time option).
-
-	-J
-
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+Lets not make bpf even harder to use then it already is...
