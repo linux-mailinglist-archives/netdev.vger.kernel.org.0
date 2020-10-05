@@ -2,147 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6FAB28421B
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 23:28:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08DDE284349
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 02:21:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726398AbgJEV2Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 17:28:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47846 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725616AbgJEV2Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 17:28:24 -0400
-Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D77CC0613CE;
-        Mon,  5 Oct 2020 14:28:22 -0700 (PDT)
-Received: by mail-qk1-x742.google.com with SMTP id q5so14060435qkc.2;
-        Mon, 05 Oct 2020 14:28:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2HGNGlBJw7bi6Ui2XR2LPCsGN9UVzIY2LSrHY7U7TDc=;
-        b=uiSyf3v1GH479lnM34ILNDcDtWlIKGdvsV7swBh6+UQF61+Cvx9PQVbv10W03ex7bY
-         y7X1B+P5emDihY69OrH3aDW1iXOxTtJVf2+K9bs3V0M35ky0zbOrOW0b+XqMDG40nzsw
-         +I8MWuCRC2ZetVYR8CpY73BgkAiXmJtETzTPpBi7k0zRQr3xMvLPmZmLs8ZND7ZqPbtC
-         xu9fae+JABrxBua8kuuwQPKj62ir+/Oi60Cga72WxRGRQg3OgGqMAM5p/SMYVGqDpHZn
-         C4l2e1dhw7/8rz0Yfi+HW5ujFEW63fq7fXUKvJEaScGOkK5Y+rhnerUDdSYdFhuVjuok
-         V85w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2HGNGlBJw7bi6Ui2XR2LPCsGN9UVzIY2LSrHY7U7TDc=;
-        b=Tvwpj1XygJaa9Sr101hNykJsL9YclX4gifFyf4B1Xdzv8AmAE6BJrDLjiQcWhLfF92
-         aqTZ78J1YTOiLzJ0bPCoOjEnQ4Xqe2yoeZTPmz3NuMlY/v85cwe1FDnybUnqid7666qO
-         O4zRlndlf7Lc3Zd6OI+i+NJh9B8iwVR2Mkwxoq+Bj1U5wR2BE/oF2rYvghtJFJRf5J6L
-         FIhS8w4Db3DmQEpTRFw6U/dfxAgSPxXkic3Hud+38I+1oRNuCeyatOKfuViOof9DJfXr
-         nz8BYfRVKzkQpR2E1PaHepY6tdW0+62W56FduPIIrqkmUUEAJkSkobr93G/Q2y5OBzVj
-         IEXA==
-X-Gm-Message-State: AOAM532I/yxkXsPIGCxrVacxCMoKAavOcEcVvk6YbcDBnIO5rVPhg1+4
-        xRPhGy7smaxedla0mxLRNxfCAL6/fbbC/5BrPNk=
-X-Google-Smtp-Source: ABdhPJwIuuoHqD6t4QarPaFZTS/CD0ycIp8P/TuD3y7MYAzk0LRoSRlM8Tus3Ud5nFLelPIx7pNsJ8z+dgdXlZI5La8=
-X-Received: by 2002:a25:2687:: with SMTP id m129mr2574144ybm.425.1601933301808;
- Mon, 05 Oct 2020 14:28:21 -0700 (PDT)
+        id S1725970AbgJFAUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 20:20:22 -0400
+Received: from mga05.intel.com ([192.55.52.43]:37454 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725870AbgJFAUV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Oct 2020 20:20:21 -0400
+IronPort-SDR: GbVy/zscRoDYwbRY199tf8wdm6pdwi78MmlwYYNFAs97C5pyvO/KFimM9zGdcdkWfmIUqImrS4
+ wpwLtVDyIsHA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9765"; a="248983793"
+X-IronPort-AV: E=Sophos;i="5.77,341,1596524400"; 
+   d="scan'208";a="248983793"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga105.fm.intel.com with ESMTP; 05 Oct 2020 17:20:19 -0700
+IronPort-SDR: kWu67G0hJ/r3jLZxx7doQFvQ99Cj1S4qtbaTk3K9WOovGfBXhhjiA1x1eACnzUj7wJlCGRwtL6
+ uHMlFvl/p6ow==
+X-IronPort-AV: E=Sophos;i="5.77,341,1596524400"; 
+   d="scan'208";a="327153157"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.255.65.178]) ([10.255.65.178])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2020 14:33:58 -0700
+Subject: Re: [PATCH net-next 1/6] ethtool: wire up get policies to ops
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kernel-team@fb.com,
+        jiri@resnulli.us, andrew@lunn.ch, mkubecek@suse.cz
+References: <20201005155753.2333882-1-kuba@kernel.org>
+ <20201005155753.2333882-2-kuba@kernel.org>
+ <631a2328a95d0dd06d901cdb411c3eb06f90bda7.camel@sipsolutions.net>
+ <20201005121622.55607210@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <de5a03325d397fe559ce6c6182dfedc0cdad2c3b.camel@sipsolutions.net>
+ <20201005123120.7e8caa84@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <f5fdf3bf-a30f-50eb-c9d1-7f3776af1391@intel.com>
+Date:   Mon, 5 Oct 2020 14:33:41 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.1
 MIME-Version: 1.0
-References: <20201002075750.1978298-1-liuhangbin@gmail.com>
- <20201003085505.3388332-1-liuhangbin@gmail.com> <20201003085505.3388332-4-liuhangbin@gmail.com>
-In-Reply-To: <20201003085505.3388332-4-liuhangbin@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 5 Oct 2020 14:28:10 -0700
-Message-ID: <CAEf4BzYh4kSOJmjVrmZ2VLiO9GsZPiSpFXkXevy74_ByS6S12A@mail.gmail.com>
-Subject: Re: [PATCHv2 bpf 3/3] selftest/bpf: test pinning map with reused map fd
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201005123120.7e8caa84@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 3, 2020 at 1:55 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
->
-> This add a test to make sure that we can still pin maps with
-> reused map fd.
->
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-> ---
->  .../selftests/bpf/prog_tests/pinning.c        | 46 ++++++++++++++++++-
->  1 file changed, 45 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/pinning.c b/tools/testing/selftests/bpf/prog_tests/pinning.c
-> index 041952524c55..299f99ef92b2 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/pinning.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/pinning.c
-> @@ -37,7 +37,7 @@ void test_pinning(void)
->         struct stat statbuf = {};
->         struct bpf_object *obj;
->         struct bpf_map *map;
-> -       int err;
-> +       int err, map_fd;
->         DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts,
->                 .pin_root_path = custpath,
->         );
-> @@ -213,6 +213,50 @@ void test_pinning(void)
->         if (CHECK(err, "stat custpinpath", "err %d errno %d\n", err, errno))
->                 goto out;
->
-> +       /* remove the custom pin path to re-test it with reuse fd below */
-> +       err = unlink(custpinpath);
-> +       if (CHECK(err, "unlink custpinpath", "err %d errno %d\n", err, errno))
-> +               goto out;
-> +
-> +       err = rmdir(custpath);
-> +       if (CHECK(err, "rmdir custpindir", "err %d errno %d\n", err, errno))
-> +               goto out;
-> +
-> +       bpf_object__close(obj);
-> +
-> +       /* test pinning at custom path with reuse fd */
-> +       obj = bpf_object__open_file(file, NULL);
-> +       if (CHECK_FAIL(libbpf_get_error(obj))) {
 
-please use CHECK, might try new ASSERT_OK_PTR(obj, "obj_open") as well
 
-> +               obj = NULL;
-> +               goto out;
-> +       }
-> +
-> +       map_fd = bpf_create_map(BPF_MAP_TYPE_ARRAY, sizeof(__u32),
-> +                               sizeof(__u64), 1, 0);
-> +       if (CHECK(map_fd < 0, "create pinmap manually", "fd %d\n", map_fd))
-> +               goto out;
-> +
-> +       map = bpf_object__find_map_by_name(obj, "pinmap");
-> +       if (CHECK(!map, "find map", "NULL map"))
+On 10/5/2020 12:31 PM, Jakub Kicinski wrote:
+> On Mon, 05 Oct 2020 21:21:36 +0200 Johannes Berg wrote:
+>>>> But with the difference it seems to me that it'd be possible to get this
+>>>> mixed up?  
+>>>
+>>> Right, I prefer not to have the unnecessary NLA_REJECTS, so my thinking
+>>> was - use the format I like for the new code, but leave the existing
+>>> rejects for a separate series / discussion.
+>>>
+>>> If we remove the rejects we still need something like
+>>>
+>>> extern struct nla_policy policy[lastattr + 1];  
+>>
+>> Not sure I understand? You're using strict validation (I think), so
+>> attrs that are out of range will be rejected same as NLA_REJECT (well,
+>> with a different message) in __nla_validate_parse():
+>>
+>>         nla_for_each_attr(nla, head, len, rem) {
+>>                 u16 type = nla_type(nla);
+>>
+>>                 if (type == 0 || type > maxtype) {
+>>                         if (validate & NL_VALIDATE_MAXTYPE) {
+>>                                 NL_SET_ERR_MSG_ATTR(extack, nla,
+>>                                                     "Unknown attribute type");
+>>                                 return -EINVAL;
+>>                         }
+>>
+>>
+>> In fact, if you're using strict validation even the default
+>> (0==NLA_UNSPEC) will be rejected, just like NLA_REJECT.
+>>
+>>
+>> Or am I confused somewhere?
+> 
+> Yea, I think we're both confused. Agreed with the above.
+> 
+> Are you suggesting:
+> 
+> const struct nla_policy policy[/* no size */] = {
+> 	[HEADER]	= NLA_POLICY(...)
+> 	[OTHER_ATTR]	= NLA_POLICY(...)
+> };
+> 
+> extern const struct nla_policy policy[/* no size */];
+> 
+> op = {
+> 	.policy = policy,
+> 	.max_attr = OTHER_ATTR,
+> }
+> 
 
-here and below you are not closing map_fd on error
+Why can't .max_attr here just be derived from ARRAY_SIZE? In this
+example, ARRAY_SIZE should return 2, so max_attr would be ARRAY_SIZE - 1.
 
-> +               goto out;
-> +
-> +       err = bpf_map__reuse_fd(map, map_fd);
-> +       if (CHECK(err, "reuse pinmap fd", "err %d errno %d\n", err, errno))
-> +               goto out;
-> +
-> +       err = bpf_map__set_pin_path(map, custpinpath);
-> +       if (CHECK(err, "set pin path", "err %d errno %d\n", err, errno))
-> +               goto out;
-> +
-> +       err = bpf_object__load(obj);
-> +       if (CHECK(err, "custom load", "err %d errno %d\n", err, errno))
-> +               goto out;
-> +
-> +       /* check that pinmap was pinned at the custom path */
-> +       err = stat(custpinpath, &statbuf);
-> +       if (CHECK(err, "stat custpinpath", "err %d errno %d\n", err, errno))
-> +               goto out;
-> +
->  out:
->         unlink(pinpath);
->         unlink(nopinpath);
-> --
-> 2.25.4
->
+Well, I guess HEADER/OTHER_ATTR could make this a sparse array... in
+which case it might not work?
+
+> ?
+> 
+> What I'm saying is that my preference would be:
+> 
+> const struct nla_policy policy[OTHER_ATTR + 1] = {
+> 	[HEADER]	= NLA_POLICY(...)
+> 	[OTHER_ATTR]	= NLA_POLICY(...)
+> };
+> 
+> extern const struct nla_policy policy[OTHER_ATTR + 1];
+> 
+> op = {
+> 	.policy = policy,
+> 	.max_attr = ARRAY_SIZE(policy) - 1,
+> }
+> 
+> Since it's harder to forget to update the op (you don't have to update
+> op, and compiler will complain about the extern out of sync).
+> 
+Ahh.. Ok so I guess what you're doing here is defining the array size as
+OTHER_ATTR + 1, so that ARRAY_SIZE() - 1 guarantees to equal
+OTHER_ATTR.. so as long as OTHER_ATTR is the largest element in the array...
+
+But wouldn't that be the case in the previous example where array size
+is automatically determined... as long as you keep the index ordering in
+ascending order, then the size of the array would be 1 larger than the
+last element...
