@@ -2,104 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03BD4283275
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 10:48:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A38CB28329A
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 10:54:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725983AbgJEIs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 04:48:29 -0400
-Received: from mail-io1-f78.google.com ([209.85.166.78]:42077 "EHLO
-        mail-io1-f78.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725909AbgJEIs0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 04:48:26 -0400
-Received: by mail-io1-f78.google.com with SMTP id w3so4330221iou.9
-        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 01:48:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=G6GsEG0RkZVPyjNqFfG3gKAiPzYx/YvR1ErOT0J12wk=;
-        b=P44PLIaz2EmHfhcazwPVfQa+NLupQsdNyrY49aIbA4exFI+TK/h+xa+sck5WRqUszL
-         3WhGryikQsI03dKWt7QKpUbyg9KJMWb3cVDWW4ZZnlUyBR6qcYVbXuZ97YqxqvIi4Xzo
-         e0m1GWrIrNzzrhEHPOmCQQHz5olNi1mN5l+y68bkoyB8L/gkrn307bplynnchqVl0m0F
-         kqpdhuf9V0lORF0pgl5C1wPKE/EsFBMO3ldjezmEM1NShmBw87lc/grGi1Dlj6ebtIEn
-         Bd+WEBViPlh4S9yIEdaBpUNRgUpW60DSStIUzIQJDX0JL6t5VDzz6wzCHABRGHrOsevl
-         P6KQ==
-X-Gm-Message-State: AOAM532oc5jK4og4d+4Hcf7P9ty4edKFbQytwCKvXy1kMLHTa0May/ef
-        ikAGVLJja3PH+ppZjZraPxHWUnBiyxzoedxwaDUGnL488rLx
-X-Google-Smtp-Source: ABdhPJxw2ZHnZrRMBSuA1WY+gur9HBw2dHlqtd6vUguLvgBjUDr/uw/WblqcEjpQDK1G6HYqIVz6onKMWuISYP6z3YVBcHt47jO4
+        id S1725947AbgJEIyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 04:54:51 -0400
+Received: from mail-bn8nam12on2056.outbound.protection.outlook.com ([40.107.237.56]:35808
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725880AbgJEIyv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Oct 2020 04:54:51 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fBII3GRSqcgRvwR4FlK3y4aFBCatAy8qTS+Mmw0KblQ37romfiGAf8GIBc8iTc/E3auwqhbCwVllU/SEBCM2z4J2l3XUxX/9NrcZtggIM4Tg8VoBYhjEfgY9aAvmEgD+iDjTbJPHuaT1arc97H6q0taZorOLjeFpaVmqsom2Qw+6VxApmpb0pQQZtjjUmH1li/14ZUEUo0MSfuvwjsqGbUPt1if3M8tlMN7ImNnbPjMyoLl76Oja9iMThNPIFL5L2GPMjJSEtYYKlDMZwUoxT793gke6h5EWQpXw4BtOYNhVkpEmGmJLMesw06Nw24JKlz+ehVCXFlyJoh+11VsiSg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kSfaiBjwNO3ZGs1jPHC5IhFsyin4ToQtC0CFtfn9YqE=;
+ b=JLCrbNjY9TQ43uSdb0chBR2s/F1HDChYi3s9J4WMYC2CeRQPnsNrWSpH8YKL7pC/1tegAJ5FMOIupm8DnrdfFxoUiAfptAAxLEw3AXVjasFgSZfj/4Vl5QCHkdIbognjGvuwE2kKmVTOkcqnxuVuyEFa5gAOL2I5slg2+80rweyqqZ92E9DT+m+k6WMYFynEXjMJFIfzacDrRDr/L/BTqZpJ11bnSKkPLI2/rYMVn+sgvF9RHVjsGWYloCpOdDBjfhkntRMAn9PSL4ga7Nk2YoDOjE3XjCQc+8dzBYMXFoOG2irDLRJWfR98rmDCq1ZqSiC7P5U04SSUYr6Sda0RxA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synaptics.com; dmarc=pass action=none
+ header.from=synaptics.com; dkim=pass header.d=synaptics.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=Synaptics.onmicrosoft.com; s=selector2-Synaptics-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kSfaiBjwNO3ZGs1jPHC5IhFsyin4ToQtC0CFtfn9YqE=;
+ b=Yem8D/spiwFuyhZa11syteeoaDyi3/WybkTzIsYO5t6JccMHglsXfpbeAH5zXqOoYu5/PnRQD5W2PE1IzUYTfbit25/5I3DWc4bvSm6fG8V4tDpq9AXVlR5s/LfgT+6oW0nr3dqIIi1mUOeOc5VrGHtHSyaQ+r45hnHxvduhhUg=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=synaptics.com;
+Received: from DM6PR03MB4555.namprd03.prod.outlook.com (2603:10b6:5:102::17)
+ by DM6PR03MB5292.namprd03.prod.outlook.com (2603:10b6:5:240::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.32; Mon, 5 Oct
+ 2020 08:54:47 +0000
+Received: from DM6PR03MB4555.namprd03.prod.outlook.com
+ ([fe80::e494:740f:155:4a38]) by DM6PR03MB4555.namprd03.prod.outlook.com
+ ([fe80::e494:740f:155:4a38%7]) with mapi id 15.20.3433.044; Mon, 5 Oct 2020
+ 08:54:47 +0000
+Date:   Mon, 5 Oct 2020 16:53:56 +0800
+From:   Jisheng Zhang <Jisheng.Zhang@synaptics.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC] net: phy: add shutdown hook to struct phy_driver
+Message-ID: <20201005165356.7b34906a@xhacker.debian>
+In-Reply-To: <379683c5-3ce5-15a6-20c4-53a698f0a3d0@gmail.com>
+References: <20200930174419.345cc9b4@xhacker.debian>
+        <20200930190911.GU3996795@lunn.ch>
+        <bab6c68f-8ed7-26b7-65ed-a65c7210e691@gmail.com>
+        <20200930201135.GX3996795@lunn.ch>
+        <379683c5-3ce5-15a6-20c4-53a698f0a3d0@gmail.com>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [124.74.246.114]
+X-ClientProxiedBy: TYCPR01CA0118.jpnprd01.prod.outlook.com
+ (2603:1096:405:4::34) To DM6PR03MB4555.namprd03.prod.outlook.com
+ (2603:10b6:5:102::17)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:130e:: with SMTP id g14mr5716639ilr.205.1601887705328;
- Mon, 05 Oct 2020 01:48:25 -0700 (PDT)
-Date:   Mon, 05 Oct 2020 01:48:25 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a5738205b0e88b7d@google.com>
-Subject: WARNING in __ib_unregister_device
-From:   syzbot <syzbot+8f167a5e27d042b88f5e@syzkaller.appspotmail.com>
-To:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, rafael@kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from xhacker.debian (124.74.246.114) by TYCPR01CA0118.jpnprd01.prod.outlook.com (2603:1096:405:4::34) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.34 via Frontend Transport; Mon, 5 Oct 2020 08:54:44 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f745486c-dae2-4e8c-2f22-08d8690c4fc7
+X-MS-TrafficTypeDiagnostic: DM6PR03MB5292:
+X-Microsoft-Antispam-PRVS: <DM6PR03MB5292737EB93E4FF3D61114D7ED0C0@DM6PR03MB5292.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: hx8piUoPc3wfgRIz8sZFrDsSYBGWSf+9y63LsY1c85hKK0mUx+r+foPc1H02aJgHgYOVAAyoeoQW8CJJSrfx99WSxTzd8NdgnpbEd8P2v6SPVHYnm+3yk+xiRgse+oMluIQzPxKFLvSJQ56OXbL9ay7KrxgTiwsJSwPiX6GekgNpQo3v8M2KA+vMkp2v1Z8UU8zR9+Mm3Qratj9s/sZjo9mOeYYZbMi5ygs8Qiws7wURyPC3Fh67YUhBr7jAxKL5RDOFHFGk+CjKZEBpwu5h40n7AMyvQQUuy7LGFxORzflGJ4yVzbd/CZN1+1zw0sGb
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR03MB4555.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(39850400004)(366004)(346002)(376002)(136003)(1076003)(8936002)(86362001)(2906002)(6916009)(83380400001)(6666004)(5660300002)(66946007)(54906003)(66476007)(66556008)(52116002)(186003)(26005)(956004)(16526019)(4326008)(6506007)(7696005)(53546011)(478600001)(55016002)(9686003)(8676002)(316002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: FrlmHqJQU8cCMm95Oh/kdPKmjmpccPawwezKmGaFIhOxsBNnvrrb8Lngt1+6+RCMdgEcJOvLYD8APrlLKAPeqd+xAnDH6x3L2cTXyQUmMgyXq9QNd6jsyr/YIQ/G6z1De/RMnfiHVMAqsG4EmAbDixq2XMxUcxqwSIyJ8tLi1vLQuXPGkiEE+PtDXGRa1ZfwQpMua/dRIcs/UK5pdLy4tBZRTn/OSqw3S6Qb8/GnPGmQjc//qJNx2UnzThiA1b68RxQwby34K8yoGSbI0RO0mOsXBfTmVo+40KFERL2CcXYL9fVvoA+ZSfFekuYyUc9lZkq1+JYXnEdixg+rUKaXXvfc4Y0Pq3+ApYKcCXlNzJCtV6kGGlwLkKJ1qH8Y4UzcNzTAvErFuQ8qB6ZhF7cdR2JLs7PEXcU8R9IqtkchktJwFpil/aGeRC/ihudomIPQpnsdtUUTl+QcT6aAv8/KeaKUvWk8cwGexjoMGzxIlFhIGetfHD2q8SJ2LzjacHPp2sdvvtcfzp3UzJ6sL9iWRxfh5WjaZxg2fzJzvCOg1/TqPlhPreRTWPWkLvEPyPM9gm84+y4oedAHonqN7rzvJcOL2HC6XzkIZKyxdqyNLQjFwVoSFisG4MEr0FMDLpdyRAb889k8q33cLNVzEPFhFg==
+X-OriginatorOrg: synaptics.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f745486c-dae2-4e8c-2f22-08d8690c4fc7
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR03MB4555.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2020 08:54:47.4551
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 335d1fbc-2124-4173-9863-17e7051a2a0e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uj04q38Zzy8nXS4/iwgQpm60Ea6TcWAS+FJh6Am7jXo8ijbdcJ91DpD4HpuFtIHemgoSBb70y7r1NLOIhYTDdQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR03MB5292
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
-syzbot found the following issue on:
-
-HEAD commit:    f5083d0c drivers/net/wan/hdlc_fr: Improvements to the code..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=11546beb900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=1e6c5266df853ae
-dashboard link: https://syzkaller.appspot.com/bug?extid=8f167a5e27d042b88f5e
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+8f167a5e27d042b88f5e@syzkaller.appspotmail.com
-
-smc: removing ib device syz1
-------------[ cut here ]------------
-sysfs group 'power' not found for kobject 'syz1'
-WARNING: CPU: 1 PID: 30473 at fs/sysfs/group.c:279 sysfs_remove_group+0x126/0x170 fs/sysfs/group.c:279
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 1 PID: 30473 Comm: kworker/u4:0 Not tainted 5.9.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events_unbound ib_unregister_work
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x198/0x1fd lib/dump_stack.c:118
- panic+0x382/0x7fb kernel/panic.c:231
- __warn.cold+0x20/0x4b kernel/panic.c:600
- report_bug+0x1bd/0x210 lib/bug.c:198
- handle_bug+0x38/0x90 arch/x86/kernel/traps.c:234
- exc_invalid_op+0x14/0x40 arch/x86/kernel/traps.c:254
- asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:536
-RIP: 0010:sysfs_remove_group+0x126/0x170 fs/sysfs/group.c:279
-Code: 48 89 d9 49 8b 14 24 48 b8 00 00 00 00 00 fc ff df 48 c1 e9 03 80 3c 01 00 75 37 48 8b 33 48 c7 c7 c0 31 9b 88 e8 8c ae 58 ff <0f> 0b eb 98 e8 a1 69 ca ff e9 01 ff ff ff 48 89 df e8 94 69 ca ff
-RSP: 0018:ffffc9001599fbd8 EFLAGS: 00010286
-RAX: 0000000000000000 RBX: ffffffff88fa00e0 RCX: 0000000000000000
-RDX: ffff888065092380 RSI: ffffffff815f7935 RDI: fffff52002b33f6d
-RBP: 0000000000000000 R08: 0000000000000001 R09: ffff8880ae531927
-R10: 0000000000000000 R11: 0000000000000000 R12: ffff8880666c46d8
-R13: ffffffff88fa0680 R14: ffff8880a6adb100 R15: ffff8880aa071800
- dpm_sysfs_remove+0x97/0xb0 drivers/base/power/sysfs.c:801
- device_del+0x18b/0xd90 drivers/base/core.c:3080
- __ib_unregister_device+0xb5/0x1a0 drivers/infiniband/core/device.c:1464
- ib_unregister_work+0x15/0x30 drivers/infiniband/core/device.c:1569
- process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+On Wed, 30 Sep 2020 13:23:29 -0700 Florian Fainelli wrote:
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> On 9/30/2020 1:11 PM, Andrew Lunn wrote:
+> > On Wed, Sep 30, 2020 at 01:07:19PM -0700, Florian Fainelli wrote:  
+> >>
+> >>
+> >> On 9/30/2020 12:09 PM, Andrew Lunn wrote:  
+> >>> On Wed, Sep 30, 2020 at 05:47:43PM +0800, Jisheng Zhang wrote:  
+> >>>> Hi,
+> >>>>
+> >>>> A GE phy supports pad isolation which can save power in WOL mode. But once the
+> >>>> isolation is enabled, the MAC can't send/receive pkts to/from the phy because
+> >>>> the phy is "isolated". To make the PHY work normally, I need to move the
+> >>>> enabling isolation to suspend hook, so far so good. But the isolation isn't
+> >>>> enabled in system shutdown case, to support this, I want to add shutdown hook
+> >>>> to net phy_driver, then also enable the isolation in the shutdown hook. Is
+> >>>> there any elegant solution?  
+> >>>  
+> >>>> Or we can break the assumption: ethernet can still send/receive pkts after
+> >>>> enabling WoL, no?  
+> >>>
+> >>> That is not an easy assumption to break. The MAC might be doing WOL,
+> >>> so it needs to be able to receive packets.
+> >>>
+> >>> What you might be able to assume is, if this PHY device has had WOL
+> >>> enabled, it can assume the MAC does not need to send/receive after
+> >>> suspend. The problem is, phy_suspend() will not call into the driver
+> >>> is WOL is enabled, so you have no idea when you can isolate the MAC
+> >>> from the PHY.
+> >>>
+> >>> So adding a shutdown in mdio_driver_register() seems reasonable.  But
+> >>> you need to watch out for ordering. Is the MDIO bus driver still
+> >>> running?  
+> >>
+> >> If your Ethernet MAC controller implements a shutdown callback and that
+> >> callback takes care of unregistering the network device which should also
+> >> ensure that phy_disconnect() gets called, then your PHY's suspend function
+> >> will be called.  
+> >
+> > Hi Florian
+> >
+> > I could be missing something here, but:
+> >
+> > phy_suspend does not call into the PHY driver if WOL is enabled. So
+> > Jisheng needs a way to tell the PHY it should isolate itself from the
+> > MAC, and suspend is not that.  
+> 
+> I missed that part, that's right if WoL is enabled at the PHY level then
+> the suspend callback is not called, how about we change that and we
+> always call the PHY's suspend callback? This would require that we audit
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Hi all,
+
+The PHY's suspend callback usually calls genphy_suspend() which will set
+BMCR_PDOWN bit, this may break WoL. I think this is one the reason why
+we ignore the phydrv->suspend() when WoL is enabled. If we goes to this
+directly, it looks like we need to change each phy's suspend implementation,
+I.E if WoL is enabled, ignore genphy_suspend() and do possible isolation;
+If WoL is disabled, keep the code path as is.
+
+So compared with the shutdown hook, which direction is better?
+
+Thanks in advance,
+Jisheng
+
+> every driver that defines both .suspend and .set_wol but there are not
+> that many.
+> 
+> Adding an additional callback to the PHY driver does not really scale
+> and it would require us to be extra careful and also plumb the MDIO bus
+> shutdown.
+> --
+> Florian
+
