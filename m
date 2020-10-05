@@ -2,105 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 373FE282E91
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 02:46:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35E1B282E9B
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 03:21:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725849AbgJEAp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Oct 2020 20:45:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53462 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725836AbgJEAp0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Oct 2020 20:45:26 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AB01C0613CE
-        for <netdev@vger.kernel.org>; Sun,  4 Oct 2020 17:45:26 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id o20so5584645pfp.11
-        for <netdev@vger.kernel.org>; Sun, 04 Oct 2020 17:45:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ZfCvM0LuBUn6L3/rkXI1nPyO1nCP2wxfVU3p8Z/BC/Q=;
-        b=OMzigPdB3QapQt6QjiObT9D1Xttv6+uLfLbBTSMO9tsku6YvMYVk+2y96JjT+IZU7f
-         ovIgIMKfthn6pQ5TJn8clwfkvumAgRD+NCQmWZBwUMBrRNo1W97ziSRHqq/rLvNcUEAu
-         VQCgUSt8RU0TGZHP2aAT1LDNiG9/9AM8EUvb/ULnHzL1wIQABSsYfRVSZnFqPbFevmFW
-         t3fpFlMzbTu6Bic+bTyejjZ/3aw+hsbnoqYoEiZZ90faMkfqFK5swPgg5ooc62ipQO2O
-         39d1X/bV2aBGleCtM7/o0WMkuP8ioqK97hecEXKgH/KDA1iJq/quBFipreq6d7sthbVE
-         3vig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ZfCvM0LuBUn6L3/rkXI1nPyO1nCP2wxfVU3p8Z/BC/Q=;
-        b=Oux/FjQSB46OwWMkrzqEynM3oPzmeKX82055bVR0/wC3XDVagUsPNNUEH8tQpi4W7e
-         lEwmSFMAEGD71amjrDo+/MLNrH6vZF33C7UwgzSvtwJ8KlVxHEOmaDSw9VCoRlCxJtn0
-         3ofByCVm3ncDMuX+17o2Glefh4b2/KjO8peheXdLbkXFFzRfaZTFOZaH02qexc990Mo4
-         isOWpzXnQP2bTtRsWBp0hAWWmWpcCVWc1anSVNcEppYnyWSfofz+fpjc/QbB6p+YG3ik
-         iO/Zwaj3dSxXh4D8dBP5+zk91cQwQ5vyWlgv9sQ8LxvztpWXlpVWPjVe5sOjp+jWLU2p
-         FpAQ==
-X-Gm-Message-State: AOAM533Aq1mbraZwEKulIoPSBOxWVwBtF+oFybk2ztgMHMiBlYtdKUnE
-        PYTQEtdKItmVQ2M6Sp+KExo=
-X-Google-Smtp-Source: ABdhPJxLrVmxXgXsKTa1SJDiWwKmuF01p3vAzbm42eKV0ftbDC6X/oDhOwIvHjOOBwfv0TFEkYq6Yw==
-X-Received: by 2002:a65:6410:: with SMTP id a16mr2890171pgv.123.1601858725702;
-        Sun, 04 Oct 2020 17:45:25 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id k24sm9980545pfg.148.2020.10.04.17.45.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 04 Oct 2020 17:45:25 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: dsa: propagate switchdev vlan_filtering
- prepare phase to drivers
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jonathan McDowell <noodles@earth.li>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>
-References: <20201002220646.3826555-1-vladimir.oltean@nxp.com>
- <20201004205943.rfblrsivuf47d2m6@skbuf>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <5f93783f-a92e-6c1c-5b4a-20031129771d@gmail.com>
-Date:   Sun, 4 Oct 2020 17:45:22 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.3.1
-MIME-Version: 1.0
-In-Reply-To: <20201004205943.rfblrsivuf47d2m6@skbuf>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1725852AbgJEBU7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Oct 2020 21:20:59 -0400
+Received: from mga01.intel.com ([192.55.52.88]:17886 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725841AbgJEBU7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 4 Oct 2020 21:20:59 -0400
+IronPort-SDR: LSr29OYfDq1+L6o7eelotgcO/TZabaioLy6Gf6o9rvMIYpwP6RZR96+vJ5+vXFMNcgYndOD6+h
+ 3GH15J07BOAQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9764"; a="181436391"
+X-IronPort-AV: E=Sophos;i="5.77,337,1596524400"; 
+   d="scan'208";a="181436391"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Oct 2020 18:20:57 -0700
+IronPort-SDR: j4iZwiqbvExWJITcZgv32UwvN8ORWUr7UJ0Y/xSMMxJMRfQA6+0pry+o3ukjZUDKo5rI9A/RZ4
+ dMeqSWp4iJKA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,337,1596524400"; 
+   d="scan'208";a="515833964"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+  by fmsmga006.fm.intel.com with ESMTP; 04 Oct 2020 18:20:57 -0700
+Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Sun, 4 Oct 2020 18:20:57 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Sun, 4 Oct 2020 18:20:57 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.100)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Sun, 4 Oct 2020 18:20:56 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OHi96FL44yorqvcajTXIlXz/QFWo0W70HgXXz0uirMBJGvpspka3AwgCUoFEnHCBrM5anWV8cxJ/qgk87ALjHJHo/2oRH56N33StGY97P9osvHJTjM8Y/JOw2iwu0TwB3YWlyQkTsPwkaZSqtXOV/tSJiP7IKuqIqNfpzeP2YH9T8wsicT7OgEkWZmUfAQZzKyDNQXAyx5t00axp9gkT5VQ125pI/sYPd9YouHU8gd6YpLhe0GIiyP3tr/+xg7dpxbelUJPoVC3+P/ft3gd7zEXFhr8JnAzo9IlgnFrqiBXJlO/nMmDgPPo626LQ5lTDmLu5LiAGsUtN9a0YsE8aYQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cbDbgMc5/wyIZLM//Cdk5J9hgBxDOexLuQn5L00bOFY=;
+ b=fqrPbkHyEQP/Bq5GI1dv64/7nT/BqwEuudigSsHCix7S8sVGac3VYRbZdXgWupuNlzfoiX+5GdbItc4ZScSoiRDkr8qGnRJsuAQ2S9gQq+lCvtwBfUQKoPL44K44/+cSy+e0V0eAHYUoMAWLChqnz1cut1isumjh0DXFLULb6ff3Yuz1GRzCbqy3JCMBu4lykLjMeQ7OJH8kljOapPlgpi32s1jg+gqp/K9dbPTZ6ZtS4IakHtBsWAeahcfOGS2avhUopqHjY9KUl/8SdCIDyFRox4sONCLQEC07hDYQE1I+7z5fLUTuDeVRpJU8rKHF5spHFvynoffQKZy63RDJKw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=cbDbgMc5/wyIZLM//Cdk5J9hgBxDOexLuQn5L00bOFY=;
+ b=iBl/0ZRDrK45X6rGlB5+hNpcMAKqUtdXplTCTQC6cAj+pH4ukMuav3XDycyNO1v6Yqkck/AeK/f9RSntNUBK2uTzyYDWb+fil/qv9jIcE/7wsr002oSSXX+WNxFwxUt3+0YXRKup+0dTbEWv6wEg4m/I6EuHAm1E+kca4lh/j/Y=
+Received: from DM6PR11MB2841.namprd11.prod.outlook.com (2603:10b6:5:c8::32) by
+ DM6PR11MB2841.namprd11.prod.outlook.com (2603:10b6:5:c8::32) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3433.35; Mon, 5 Oct 2020 01:20:56 +0000
+Received: from DM6PR11MB2841.namprd11.prod.outlook.com
+ ([fe80::6d8e:9b06:ef72:2a]) by DM6PR11MB2841.namprd11.prod.outlook.com
+ ([fe80::6d8e:9b06:ef72:2a%5]) with mapi id 15.20.3433.044; Mon, 5 Oct 2020
+ 01:20:56 +0000
+From:   "Ertman, David M" <david.m.ertman@intel.com>
+To:     Greg KH <gregkh@linuxfoundation.org>,
+        Leon Romanovsky <leon@kernel.org>
+CC:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        linux-netdev <netdev@vger.kernel.org>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>
+Subject: RE: [PATCH 0/6] Ancillary bus implementation and SOF multi-client
+ support
+Thread-Topic: [PATCH 0/6] Ancillary bus implementation and SOF multi-client
+ support
+Thread-Index: AQHWl7C/GP+6Fa69bEybT9V7+O61hamFmSAAgAABmgCAAqDu8A==
+Date:   Mon, 5 Oct 2020 01:20:55 +0000
+Message-ID: <DM6PR11MB28413A331010FFCB9A02A4E1DD0C0@DM6PR11MB2841.namprd11.prod.outlook.com>
+References: <20201001050534.890666-1-david.m.ertman@intel.com>
+ <20201003090452.GF3094@unreal> <20201003091036.GA118157@kroah.com>
+In-Reply-To: <20201003091036.GA118157@kroah.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+authentication-results: linuxfoundation.org; dkim=none (message not signed)
+ header.d=none;linuxfoundation.org; dmarc=none action=none
+ header.from=intel.com;
+x-originating-ip: [50.38.47.144]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 24b484b8-9121-401f-2bf9-08d868cce8d4
+x-ms-traffictypediagnostic: DM6PR11MB2841:
+x-microsoft-antispam-prvs: <DM6PR11MB28417C2D3D90E9792BF90E1ADD0C0@DM6PR11MB2841.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: LiXRhUUy2TUoiQYctxi1qnUXRwqkVklUId8EzM/D3sGnAvSKmQQF0cHH/YdxxB4pC+HZMF6VuLcUC3i1LAeyL5wkg4aciSYvEMB6uwn0MsYfrOSDKQShmbQ09Wbsr8gFfPXt7y2SGC+rpmKbrlAmfK4Vm8XYxT14qpdNRKSEDs0fVIfSKA5VDabphTkowvQLd3SflhCB1z3J8eBE32c2ghUyTx7mDpzPpmgYDN6Z150KUA02BTdWEfJFh5iNCBxn1nTuTX52Dt+PNl0Nz1A2WqBkQeYlMPxaI6usyYQbIUiB9iMndluPMjb8fRMfX2Kx9B++HHegA7XhyhIf46a1mvlS1MoQdJnSDQWVH7EBsXLVPcx4PToOlAbRW5K4PuttI/OmR78TZA484ZI/9WrRyA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2841.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(366004)(136003)(346002)(39860400002)(4326008)(83080400001)(66476007)(76116006)(66946007)(478600001)(2906002)(64756008)(8676002)(110136005)(54906003)(66556008)(66446008)(83380400001)(7696005)(186003)(53546011)(6506007)(316002)(26005)(966005)(8936002)(86362001)(33656002)(52536014)(71200400001)(55016002)(9686003)(5660300002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: 6k4jCLKZp96kTFUkm2xV1srqJebEVMunuwSop3QHevsnoqJ0f9+wheFI6j/nPTWqIW7yIms1rTXZFg8x+w+M1cXzCxQI4y+5Kn6GnvNusrcQVmgpdaGlgRJxrU0kh2Aefj1vBpTjnS3YKe7qp1xaozG6Nja7YpkvlxR7kPLaWyTu93/WabxlvCqK2fyfNbdtmCcA1XGIcuGOAXy8HVuEAF/AsS10ElqGLDxlxhDW3UKaLBzfB7HA69vRsxNVFwSBba6SYnR2AiPhIquuX5L9auNKCcYUrD49DgbEyiS99NGOJYwdBXzLDAu7dVdGdGobwu09DzkrVRpzkjSSW9X0cE994rs+rGHDbINCpdZvllu9vEUDAFwg8ebG3vktRJuY6QZw/FEIUk4/SIi0+A8ruc+zcI23NLLgJ43OpS7njNu+iIcgVXxYbbyIRTbuZwkqTDR9Gn6nvcJROUpj2MaoTx8MsrASWcDIWh7tjBGmJETTQ0AAymWzSIWJUl3/xlC18r2N8l76ORDOB1SfoN2GNLZBmYMBclk9QhVcb/ghp/UB1b+thWp7wDksAleY8q1cTH4vS1iQ3c5m52U13D2mZGklxyQTufuy2NlslUm7yqbaGa2oH5q0kvEgUWekHh5H+XSL9kgg96RpLrmr+67Ntg==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2841.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24b484b8-9121-401f-2bf9-08d868cce8d4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Oct 2020 01:20:56.0002
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: BgJe9lsdm3OP8R250faL12wcYt/RA0Jiel042JVeZbl22bizm0KAfDDPQ9BUFw5T796PVwaCQQRy0Y64skhXyFsEjD/EQKbu4xrzAZ8mP8A=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB2841
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> -----Original Message-----
+> From: Greg KH <gregkh@linuxfoundation.org>
+> Sent: Saturday, October 3, 2020 2:11 AM
+> To: Leon Romanovsky <leon@kernel.org>
+> Cc: Ertman, David M <david.m.ertman@intel.com>; linux-
+> rdma@vger.kernel.org; linux-netdev <netdev@vger.kernel.org>; alsa-
+> devel@alsa-project.org
+> Subject: Re: [PATCH 0/6] Ancillary bus implementation and SOF multi-clien=
+t
+> support
+>=20
+> On Sat, Oct 03, 2020 at 12:04:52PM +0300, Leon Romanovsky wrote:
+> > Hi Dave,
+> >
+> > I don't know why did you send this series separately to every mailing
+> > list, but it is not correct thing to do.
+> >
+> > RDMA ML and discussion:
+> > https://lore.kernel.org/linux-rdma/20201001050534.890666-1-
+> david.m.ertman@intel.com/T/#t
+> > Netdev ML (completely separated):
+> > https://lore.kernel.org/netdev/20201001050851.890722-1-
+> david.m.ertman@intel.com/
+> > Alsa ML (separated too):
+> > https://lore.kernel.org/alsa-devel/20200930225051.889607-1-
+> david.m.ertman@intel.com/
+>=20
+> Seems like the goal was to spread it around to different places so that
+> no one could strongly object or review it :(
+>=20
+> greg k-h
 
+This was my first time sending a patchset to more than one mailing list
+and I screwed it up.
 
-On 10/4/2020 1:59 PM, Vladimir Oltean wrote:
-> On Sat, Oct 03, 2020 at 01:06:46AM +0300, Vladimir Oltean wrote:
-> [...]
->> ---
->> The API for this one was chosen to be different than the one for
->> .port_vlan_add and .port_vlan_prepare because
->> (a) the list of dsa_switch_ops is growing bigger but in this case there
->>      is no justification for it. For example there are some drivers that
->>      don't do anything in .port_vlan_prepare, and likewise, they may not
->>      need to do anything in .port_vlan_filtering_prepare either
->> (b) the DSA API should be as close as possible to the switchdev API
->>      except when there's a strong reason for that not to be the case. In
->>      this situation, I don't see why it would be different.
-> 
-> I understand that this new function prototype is not to everyone's
-> taste?
+I will be sending a v2 soon (Monday maybe?) and I will be sending it to=20
+all CC's and mailing list in one send so that everyone will see everyone's
+response.
 
-Just need more time to review, have not looked at it yet.
---
-Florian
+Sorry for the mistake.
+
+-DaveE.
