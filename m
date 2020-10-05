@@ -2,268 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1453283DED
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 20:01:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80307283DF6
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 20:04:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727069AbgJESBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 14:01:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53320 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725940AbgJESBY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Oct 2020 14:01:24 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D8DF3207EA;
-        Mon,  5 Oct 2020 18:01:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601920883;
-        bh=SvfOHrgq/Gu/7vm6La5YQZsdWKuhmYGTUvYOQkZth7E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=V7ozeGlNj2Jh16fPvS1nnoICpZhkVOQvbjX4LzNt/NW4RZRFOWuaMxdLi/G8F1Vbx
-         +gKwonw4VOwO0KsSwrhzkMwuZ61w5aGKR2+wRZINTWgLutCmXwJ17eoypQzDHGctFL
-         75hU1fNjNtDhB1zHNqaOdzCLT4n5La/37aw8Fwk8=
-Date:   Mon, 5 Oct 2020 20:02:08 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Sathish Narsimman <sathish.narasimman@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Revert "Bluetooth: Update resolving list when updating
- whitelist"
-Message-ID: <20201005180208.GA2739@kroah.com>
-References: <AABC2831-4E88-41A2-8A20-1BFC88895686@holtmann.org>
- <20201004105124.GA2429@kroah.com>
- <3F7BDD50-DEA3-4CB0-A9A0-69E7EE2923D5@holtmann.org>
- <20201005083624.GA2442@kroah.com>
- <220D3B4E-D73E-43AD-8FF8-887D1A628235@holtmann.org>
- <20201005124018.GA800868@kroah.com>
- <824BC92C-5035-4B80-80E7-298508E4ADD7@holtmann.org>
- <20201005161149.GA2378402@kroah.com>
- <0C92E812-BF43-46A6-A069-3F7F3278FBB4@holtmann.org>
- <20201005173835.GB2388217@kroah.com>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="VS++wcV0S1rZb1Fb"
+        id S1727261AbgJESEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 14:04:40 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:58732 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726248AbgJESEk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 14:04:40 -0400
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 095I4Lmp018023;
+        Mon, 5 Oct 2020 11:04:25 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=R7AB2CBbs/E0R9L5fhij3LhdG84JIkG1snMomGCPz50=;
+ b=ePgS0cWRRDq+KPog4jAgyFHcF+IvFYFrk78XAlLQCMNbKgpg++VA7R5PaylUqnr91jTk
+ mh/VRcN9ZNgXJbsCkBGp03If5VQasdu9Yra/eTWqz4guTwHm+j5K5/Dphw2NT83bGRh5
+ Cgjh/xoy7cMdNwUpANhn2zdmUo06hVBjQ2s= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 33xptn0p9d-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 05 Oct 2020 11:04:25 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.198) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 5 Oct 2020 11:03:59 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lMKYJSmZn/PkXdhDZIcUcGu/TgrrFBAb3mBZrehncOh2v7H8lNrqCUan0XInw4nVt/jaeiS2I+GmZNGXA7AUES9rOuNMWGw8iTsJPgTLceLma7R8Wd5vhsUSzS145WgkigAXIaj3DbM/9tIU/DswOEcvs8teTR5j2iT/RDz9ZG4nMBlhRnDk5Z0zKxQRbc9j082+C9AZ9VLeHzSdEN4Hvyq5hWrD7n2WH9TGQjmUEonAE/INe6fVOp6tqK6vLSE3bKlld2VXZ+fVF/fQZ+uOEbBtEcn/y3b5DrpsnItuHtd0xw+r05W0i5hVdV3aWn/Fhrmm0pd6/n4omYvLjg0gag==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=R7AB2CBbs/E0R9L5fhij3LhdG84JIkG1snMomGCPz50=;
+ b=Fo44sYa3zYm5/9T3m/5O+lC9x3W5DYlgNS1ypTguHSGqeXiwx4/s10S5C5WrJMLKXM3VmFbQ48gf9YTDQ+5gBxOr0RF9HRR/ad3L0uAsKUe0RDGf12aIOmOlY+3WSL+6yGOVJlu33Gt1SSDDpiGyYpWb35NpXsBn83KXk7RaBbULJqd1LaoiTXgz9o3Rhy9lRs8qaXDN8BTyOmUQsa0RvEXjlhohIMtMhnKb9Xg/Z2HuJRnoMXwFtuxOP2EB1tOhILRhn6gqcfA+M+8FfuRsFqMKNbyKpRjx7JxD7U5+noPzaDBkz0MAmidFY6H09EuLHDtP2yzbJRPWQY4dQmMt0g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=R7AB2CBbs/E0R9L5fhij3LhdG84JIkG1snMomGCPz50=;
+ b=h8SA19+JVyW2vApNukOH8qn74NQt3k8CBDpGSTpt4THPFyvqnd22IioNwmVe7D8RyLvmZyBeKbBDuLV+UuezaHMUMb5+qgGio8359vunpva/IQvla0nqh4kOOyUCXINWrLLj76bVfVxBrZiABKY4uMNXKHRz3CNgowm+Mm2DSIk=
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+ by BYAPR15MB3046.namprd15.prod.outlook.com (2603:10b6:a03:fa::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.32; Mon, 5 Oct
+ 2020 18:03:58 +0000
+Received: from BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::c13c:fca9:5e04:9bfb]) by BY5PR15MB3571.namprd15.prod.outlook.com
+ ([fe80::c13c:fca9:5e04:9bfb%3]) with mapi id 15.20.3433.044; Mon, 5 Oct 2020
+ 18:03:58 +0000
+Date:   Mon, 5 Oct 2020 11:03:46 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Song Liu <songliubraving@fb.com>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <kernel-team@fb.com>, <ast@kernel.org>, <daniel@iogearbox.net>,
+        <john.fastabend@gmail.com>, <kpsingh@chromium.org>
+Subject: Re: [PATCH v2 bpf-next] bpf: use raw_spin_trylock() for
+ pcpu_freelist_push/pop in NMI
+Message-ID: <20201005180346.gs2iznki5jnslqqp@kafai-mbp.dhcp.thefacebook.com>
+References: <20201005165838.3735218-1-songliubraving@fb.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201005173835.GB2388217@kroah.com>
+In-Reply-To: <20201005165838.3735218-1-songliubraving@fb.com>
+X-Originating-IP: [2620:10d:c090:400::5:1eab]
+X-ClientProxiedBy: CO2PR07CA0052.namprd07.prod.outlook.com (2603:10b6:100::20)
+ To BY5PR15MB3571.namprd15.prod.outlook.com (2603:10b6:a03:1f6::32)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp.dhcp.thefacebook.com (2620:10d:c090:400::5:1eab) by CO2PR07CA0052.namprd07.prod.outlook.com (2603:10b6:100::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.34 via Frontend Transport; Mon, 5 Oct 2020 18:03:57 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 90c03140-41ce-48bd-8cbc-08d869590811
+X-MS-TrafficTypeDiagnostic: BYAPR15MB3046:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB30468E985BC2E09309CD7C01D50C0@BYAPR15MB3046.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:3173;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8Zy8sKDLdWknkc2lbIB3u9SH19FjHXloq2fejBhv0tM7P7uLnz6XNObEkErUjY8WZlZdIRekgJskc9V7cC8Q3sXS1i2CZbH6vGPMIqIw6Z9MBCQnHyOd+9iEeLGzp3KPGflDZtAoZA8meuIKJfdg5AquYRdFg5uI0nAbYHWqfKkhwwpuA1Ba98pOHoWliiCZWK744A4ijQVjcOGe4yZJuv2E1TospuMScDtDp6HWimFHbc/kPPjux8wS7CxD1bodi8fc1kwgd9g2b11pVo9QmpY1dlJ5bDV4aHoUX+YmIRQfwMCc7xpXatgtYISbb7BXlUopA9xcKkT8d76k1yjzwA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR15MB3571.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(39860400002)(136003)(366004)(376002)(346002)(55016002)(1076003)(478600001)(186003)(9686003)(16526019)(6506007)(66476007)(6636002)(66946007)(66556008)(86362001)(6666004)(5660300002)(2906002)(8676002)(4326008)(6862004)(7696005)(52116002)(8936002)(316002)(83380400001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: 98RtUjkCSiR7sBO1eXeFNj5ALhwFf/6m1/UD3Y19E8sHNBRTay9JYi+T2ikVdim0Qnrsdx9MbBqmoOUGTEHhflKsk97aLcjKBujTCaOn3LvPUekt3IbDoGqTBtplW4ous3XiIKlL4rgTLzBZ51CVs+DueRgTNY978BGr7Dl7+ks791x1OooUN3MrAm/B2/ehynUvd+1vbkF4caSTw5xlDIxXDk16W5D/gdMBhRfNM8JNtbVXK35i4wo9nf1Dr0PtMRnEOXx3Ad5ituxt0euogVD2K0BKDMNBwAWZfbHU2fuPLTkKrwHGFuJfKNMfaUy5oiN72wJade6ATaHX2xA9Yjx6FBVcKQ6GEsfKQXHoaIl16vyWJP4MEmZGeYpgD94MKImof5DQMdk9bD2Bip6SjBIyTGPkeefMbYdjxAeBzrSaq8oTzOB2MJ3o1ajQRP19MdRPE48R0KeZcfiweZj7eZaBvYN4xm8WACSYwgdJ+Jb1T2vtu3RG/jWFrZYOr49uYvAKpkLa7XOYYue5Qqv/6z4hDdkOFdJFXQlppLpndxZ6AXxwI1v5r3SPxefMnfF86Qc+g1OhCV58eDPR3aDagUlMG8IEvS5+m5GeabN16G2fVQ5Moexh5TP1tbxX/I/aS3fqlPdxl7VAJDI1XBRt0JiCmKrDXd602/fu0y2t4r4=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 90c03140-41ce-48bd-8cbc-08d869590811
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR15MB3571.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Oct 2020 18:03:58.2977
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QjfK73Q48o0ezAnGmFoE30H/DzoWIqAXZEjePLAV0FgFEQLJ4eNWGp7YD65SLmVp
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3046
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-10-05_14:2020-10-05,2020-10-05 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ spamscore=0 mlxlogscore=999 clxscore=1015 suspectscore=1 adultscore=0
+ impostorscore=0 malwarescore=0 bulkscore=0 phishscore=0 mlxscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2010050133
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---VS++wcV0S1rZb1Fb
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-
-On Mon, Oct 05, 2020 at 07:38:35PM +0200, Greg Kroah-Hartman wrote:
-> On Mon, Oct 05, 2020 at 07:14:44PM +0200, Marcel Holtmann wrote:
-> > Hi Greg,
-> > 
-> > >>>>>>>>>>> This reverts commit 0eee35bdfa3b472cc986ecc6ad76293fdcda59e2 as it
-> > >>>>>>>>>>> breaks all bluetooth connections on my machine.
-> > >>>>>>>>>>> 
-> > >>>>>>>>>>> Cc: Marcel Holtmann <marcel@holtmann.org>
-> > >>>>>>>>>>> Cc: Sathish Narsimman <sathish.narasimman@intel.com>
-> > >>>>>>>>>>> Fixes: 0eee35bdfa3b ("Bluetooth: Update resolving list when updating whitelist")
-> > >>>>>>>>>>> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > >>>>>>>>>>> ---
-> > >>>>>>>>>>> net/bluetooth/hci_request.c | 41 ++-----------------------------------
-> > >>>>>>>>>>> 1 file changed, 2 insertions(+), 39 deletions(-)
-> > >>>>>>>>>>> 
-> > >>>>>>>>>>> This has been bugging me for since 5.9-rc1, when all bluetooth devices
-> > >>>>>>>>>>> stopped working on my desktop system.  I finally got the time to do
-> > >>>>>>>>>>> bisection today, and it came down to this patch.  Reverting it on top of
-> > >>>>>>>>>>> 5.9-rc7 restored bluetooth devices and now my input devices properly
-> > >>>>>>>>>>> work.
-> > >>>>>>>>>>> 
-> > >>>>>>>>>>> As it's almost 5.9-final, any chance this can be merged now to fix the
-> > >>>>>>>>>>> issue?
-> > >>>>>>>>>> 
-> > >>>>>>>>>> can you be specific what breaks since our guys and I also think the
-> > >>>>>>>>>> ChromeOS guys have been testing these series of patches heavily.
-> > >>>>>>>>> 
-> > >>>>>>>>> My bluetooth trackball does not connect at all.  With this reverted, it
-> > >>>>>>>>> all "just works".
-> > >>>>>>>>> 
-> > >>>>>>>>> Same I think for a Bluetooth headset, can check that again if you really
-> > >>>>>>>>> need me to, but the trackball is reliable here.
-> > >>>>>>>>> 
-> > >>>>>>>>>> When you run btmon does it indicate any errors?
-> > >>>>>>>>> 
-> > >>>>>>>>> How do I run it and where are the errors displayed?
-> > >>>>>>>> 
-> > >>>>>>>> you can do btmon -w trace.log and just let it run like tcdpump.
-> > >>>>>>> 
-> > >>>>>>> Ok, attached.
-> > >>>>>>> 
-> > >>>>>>> The device is not connecting, and then I open the gnome bluetooth dialog
-> > >>>>>>> and it scans for devices in the area, but does not connect to my
-> > >>>>>>> existing devices at all.
-> > >>>>>>> 
-> > >>>>>>> Any ideas?
-> > >>>>>> 
-> > >>>>>> the trace file is from -rc7 or from -rc7 with this patch reverted?
-> > >>>>>> 
-> > >>>>>> I asked, because I see no hint that anything goes wrong. However I have a suspicion if you bisected it to this patch.
-> > >>>>>> 
-> > >>>>>> diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-> > >>>>>> index e0269192f2e5..94c0daa9f28d 100644
-> > >>>>>> --- a/net/bluetooth/hci_request.c
-> > >>>>>> +++ b/net/bluetooth/hci_request.c
-> > >>>>>> @@ -732,7 +732,7 @@ static int add_to_white_list(struct hci_request *req,
-> > >>>>>>              return -1;
-> > >>>>>> 
-> > >>>>>>      /* White list can not be used with RPAs */
-> > >>>>>> -       if (!allow_rpa && !use_ll_privacy(hdev) &&
-> > >>>>>> +       if (!allow_rpa &&
-> > >>>>>>          hci_find_irk_by_addr(hdev, &params->addr, params->addr_type)) {
-> > >>>>>>              return -1;
-> > >>>>>>      }
-> > >>>>>> @@ -812,7 +812,7 @@ static u8 update_white_list(struct hci_request *req)
-> > >>>>>>              }
-> > >>>>>> 
-> > >>>>>>              /* White list can not be used with RPAs */
-> > >>>>>> -               if (!allow_rpa && !use_ll_privacy(hdev) &&
-> > >>>>>> +               if (!allow_rpa &&
-> > >>>>>>                  hci_find_irk_by_addr(hdev, &b->bdaddr, b->bdaddr_type)) {
-> > >>>>>>                      return 0x00;
-> > >>>>>>              }
-> > >>>>>> 
-> > >>>>>> 
-> > >>>>>> If you just do the above, does thing work for you again?
-> > >>>>> 
-> > >>>>> Corrupted white-space issues aside, yes, it works!
-> > >>>> 
-> > >>>> I just pasted it from a different terminal ;)
-> > >>>> 
-> > >>>>> I am running 5.9-rc8 with just this change on it and my tracball works
-> > >>>>> just fine.
-> > >>>>> 
-> > >>>>>> My suspicion is that the use_ll_privacy check is the wrong one here. It only checks if hardware feature is available, not if it is also enabled.
-> > >>>>> 
-> > >>>>> How would one go about enabling such a hardware feature if they wanted
-> > >>>>> to?  :)
-> > >>>> 
-> > >>>> I need to understand what is going wrong for you. I have a suspicion,
-> > >>>> but first I need to understand what kind of device you have. I hope
-> > >>>> the trace file is enough.
-> > >>> 
-> > >>> If you need any other information, just let me know, this is a USB
-> > >>> Bluetooth controller from Intel:
-> > >>> 
-> > >>> 	$ lsusb | grep Blue
-> > >>> 	Bus 009 Device 002: ID 8087:0029 Intel Corp. AX200 Bluetooth
-> > >>> 
-> > >>> And the output of usb-devices for it:
-> > >>> 	T:  Bus=09 Lev=01 Prnt=01 Port=04 Cnt=01 Dev#=  2 Spd=12  MxCh= 0
-> > >>> 	D:  Ver= 2.01 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
-> > >>> 	P:  Vendor=8087 ProdID=0029 Rev=00.01
-> > >>> 	C:  #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=100mA
-> > >>> 	I:  If#=0x0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-> > >>> 	I:  If#=0x1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-> > >> 
-> > >> I already figured out that it is one of our controllers. The trace file gives it away.
-> > >> 
-> > >> So my suspicion is that the device you want to connect to uses RPA (aka random addresses). And we added support for resolving them in the firmware. Your hardware does support that, but the host side is not fully utilizing it and thus your device is filtered out.
-> > > 
-> > > Dude, get an email client that line-wraps :)
-> > > 
-> > >> If I am not mistaken, then the use_ll_privacy() check in these two specific places need to be replaced with LL Privacy Enabled check. And then the allow_rpa condition will do its job as expected.
-> > >> 
-> > >> We can confirm this if you send me a trace with the patch applied.
-> > > 
-> > > Want me to disconnect the device and then reconnect it using
-> > > bluetootctl?  I'll go do that now...
-> > > 
-> > > Ok, it's attached, I did:
-> > > 
-> > > $ bluetoothctl disconnect F1:85:91:79:73:70
-> > > Attempting to disconnect from F1:85:91:79:73:70
-> > > [CHG] Device F1:85:91:79:73:70 ServicesResolved: no
-> > > Successful disconnected
-> > > 
-> > > And then the gnome bluetooth daemon (or whatever it has) reconnected it
-> > > automatically, so you can see the connection happen, and some movements
-> > > in the log.
-> > > 
-> > > If there's anything else you need, just let me know.
-> > 
-> > so the trace file indicates that you are using static addresses and not RPAs. Now I am confused.
-> > 
-> > What is the content of /sys/kernel/debug/bluetooth/hci0/identity_resolving_keys?
+On Mon, Oct 05, 2020 at 09:58:38AM -0700, Song Liu wrote:
+> Recent improvements in LOCKDEP highlighted a potential A-A deadlock with
+> pcpu_freelist in NMI:
 > 
-> f1:85:91:79:73:70 (type 1) f02567096e8537e5dac1cadf548fa750 00:00:00:00:00:00
-
-I rebooted, and the same value was there.
-
-> > The only way I can explain this if you have an entry in that file, but the device is not using it.
-> > 
-> > If you have btmgmt (from bluez.git) you can try "./tools/btmgmt irks” to clear that list and try again.
+> ./tools/testing/selftests/bpf/test_progs -t stacktrace_build_id_nmi
 > 
-> Ok, I did that, and reconnected, this is still with the kernel that has
-> the patch.  Want me to reboot to a "clean" 5.9-rc8?
-
-I rebooted into a clean 5.9-rc8 and the device does not connect.
-
-So I did the following to trace this:
-
-$ sudo btmgmt irks
-Identity Resolving Keys successfully loaded
-$ sudo cat /sys/kernel/debug/bluetooth/hci0/identity_resolving_keys
-$ bluetoothctl connect F1:85:91:79:73:70
-Attempting to connect to F1:85:91:79:73:70
-Failed to connect: org.bluez.Error.Failed
-
-and ran another btmon session to see this, it is attached.
-
-thanks,
-
-greg k-h
-
---VS++wcV0S1rZb1Fb
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: attachment; filename="trace.log"
-Content-Transfer-Encoding: quoted-printable
-
-btsnoop=00=00=00=00=01=00=00=07=D1=00=00=00!=00=00=00!=FF=FF=00=0C=00=00=00=
-=00=00=E2=8E=A3L=07=A5=EFLinux version 5.9.0-rc8 (x86_64)=00=00=00=00!=00=
-=00=00!=FF=FF=00=0C=00=00=00=00=00=E2=8E=A3L=07=A5=F2Bluetooth subsystem ve=
-rsion 2.22=00=00=00=00=10=00=00=00=10=00=00=00=00=00=00=00=00=00=E2=8E=A3L=
-=07=A5=F3=00=01pe=F6=85=E0Phci0=00=00=00=00=00=00=00=00=00=00=00=00=00=00=
-=00=08=00=00=00=00=00=E2=8E=A3L=07=A5=F4=00=00=00=08=00=00=00=08=00=00=00
-=00=00=00=00=00=E2=8E=A3L=07=A5=F4pe=F6=85=E0P=02=00=00=00=00=1E=00=00=00=
-=1E=FF=FF=00=0E=00=00=00=00=00=E2=8E=A3L=07=A5=F6=01=00=00=00=02=00=01=12=
-=00=01=00=00=00=10bluetoothd=00=00=00=00=00=00=00=00=00=1E=00=00=00=1E=FF=
-=FF=00=0E=00=00=00=00=00=E2=8E=A3L@=0Ff=02=00=00=00=02=00=01=12=00=01=00=00=
-=00=10btmgmt=00=00=00=00=00=00=00=00=00=00=00=00=00=08=00=00=00=08=00=00=00=
-=10=00=00=00=00=00=E2=8E=A3L@=0F=8E=02=00=00=000=00=00=00=00=00=00	=00=00=
-=00	=00=00=00=11=00=00=00=00=00=E2=8E=A3L@=0F=92=02=00=00=00=01=000=00=00=
-=00=00=00=04=00=00=00=04=FF=FF=00=0F=00=00=00=00=00=E2=8E=A3L@=0F=A8=02=00=
-=00=00=00=00=00	=00=00=00	=00=00=00=02=00=00=00=00=00=E2=8E=A3L{=E9=DDB =06=
-=00=00=00=00=00=00=00=00=00=06=00=00=00=06=00=00=00=03=00=00=00=00=00=E2=8E=
-=A3L~=02r=0E=04=02B =00=00=00=00=0B=00=00=00=0B=00=00=00=02=00=00=00=00=00=
-=E2=8E=A3L~=03'A =08=00=01=01=00`=000=00=00=00=00=06=00=00=00=06=00=00=00=
-=03=00=00=00=00=00=E2=8E=A3L~=0D=CC=0E=04=01A =00=00=00=00	=00=00=00	=00=00=
-=00=02=00=00=00=00=00=E2=8E=A3L~=0E=16B =06=01=01=00=00=00=00=00=00=00=06=
-=00=00=00=06=00=00=00=03=00=00=00=00=00=E2=8E=A3L~=1BD=0E=04=02B =00=00=00=
-=00	=00=00=00	=00=00=00=02=00=00=00=00=00=E2=8E=A3M=16=CC=81B =06=00=00=00=
-=00=00=00=00=00=00=06=00=00=00=06=00=00=00=03=00=00=00=00=00=E2=8E=A3M=18=
-=ACU=0E=04=02B =00=00=00=00=0B=00=00=00=0B=00=00=00=02=00=00=00=00=00=E2=8E=
-=A3M=18=AC=85A =08=00=01=01=00`=00`=00=00=00=00=06=00=00=00=06=00=00=00=03=
-=00=00=00=00=00=E2=8E=A3M=18=B8=08=0E=04=01A =00=00=00=00	=00=00=00	=00=00=
-=00=02=00=00=00=00=00=E2=8E=A3M=18=B8,B =06=01=01=00=00=00=00=00=00=00=06=
-=00=00=00=06=00=00=00=03=00=00=00=00=00=E2=8E=A3M=18=C7=A8=0E=04=02B =00=00=
-=00=00	=00=00=00	=00=00=00=02=00=00=00=00=00=E2=8E=A3O=89=922B =06=00=00=00=
-=00=00=00=00=00=00=06=00=00=00=06=00=00=00=03=00=00=00=00=00=E2=8E=A3O=8B=
-=928=0E=04=02B =00=00=00=00=0B=00=00=00=0B=00=00=00=02=00=00=00=00=00=E2=8E=
-=A3O=8B=92=E7A =08=00=01=01=00`=000=00=00=00=00=06=00=00=00=06=00=00=00=03=
-=00=00=00=00=00=E2=8E=A3O=8B=9B=BB=0E=04=01A =00=00=00=00	=00=00=00	=00=00=
-=00=02=00=00=00=00=00=E2=8E=A3O=8B=9B=DFB =06=01=01=00=00=00=00=00=00=00=06=
-=00=00=00=06=00=00=00=03=00=00=00=00=00=E2=8E=A3O=8B=AB\=0E=04=02B =00
---VS++wcV0S1rZb1Fb--
+> [   18.984807] ================================
+> [   18.984807] WARNING: inconsistent lock state
+> [   18.984808] 5.9.0-rc6-01771-g1466de1330e1 #2967 Not tainted
+> [   18.984809] --------------------------------
+> [   18.984809] inconsistent {INITIAL USE} -> {IN-NMI} usage.
+> [   18.984810] test_progs/1990 [HC2[2]:SC0[0]:HE0:SE1] takes:
+> [   18.984810] ffffe8ffffc219c0 (&head->lock){....}-{2:2}, at:
+> __pcpu_freelist_pop+0xe3/0x180
+> [   18.984813] {INITIAL USE} state was registered at:
+> [   18.984814]   lock_acquire+0x175/0x7c0
+> [   18.984814]   _raw_spin_lock+0x2c/0x40
+> [   18.984815]   __pcpu_freelist_pop+0xe3/0x180
+> [   18.984815]   pcpu_freelist_pop+0x31/0x40
+> [   18.984816]   htab_map_alloc+0xbbf/0xf40
+> [   18.984816]   __do_sys_bpf+0x5aa/0x3ed0
+> [   18.984817]   do_syscall_64+0x2d/0x40
+> [   18.984818]   entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> [   18.984818] irq event stamp: 12
+> [ ... ]
+> [   18.984822] other info that might help us debug this:
+> [   18.984823]  Possible unsafe locking scenario:
+> [   18.984823]
+> [   18.984824]        CPU0
+> [   18.984824]        ----
+> [   18.984824]   lock(&head->lock);
+> [   18.984826]   <Interrupt>
+> [   18.984826]     lock(&head->lock);
+> [   18.984827]
+> [   18.984828]  *** DEADLOCK ***
+> [   18.984828]
+> [   18.984829] 2 locks held by test_progs/1990:
+> [ ... ]
+> [   18.984838]  <NMI>
+> [   18.984838]  dump_stack+0x9a/0xd0
+> [   18.984839]  lock_acquire+0x5c9/0x7c0
+> [   18.984839]  ? lock_release+0x6f0/0x6f0
+> [   18.984840]  ? __pcpu_freelist_pop+0xe3/0x180
+> [   18.984840]  _raw_spin_lock+0x2c/0x40
+> [   18.984841]  ? __pcpu_freelist_pop+0xe3/0x180
+> [   18.984841]  __pcpu_freelist_pop+0xe3/0x180
+> [   18.984842]  pcpu_freelist_pop+0x17/0x40
+> [   18.984842]  ? lock_release+0x6f0/0x6f0
+> [   18.984843]  __bpf_get_stackid+0x534/0xaf0
+> [   18.984843]  bpf_prog_1fd9e30e1438d3c5_oncpu+0x73/0x350
+> [   18.984844]  bpf_overflow_handler+0x12f/0x3f0
+> 
+> This is because pcpu_freelist_head.lock is accessed in both NMI and
+> non-NMI context. Fix this issue by using raw_spin_trylock() in NMI.
+> 
+> Since NMI interrupts non-NMI context, when NMI context tries to lock the
+> raw_spinlock, non-NMI context of the same cpu may already have locked a
+> lock and is blocked from unlocking the lock. For a system with N cpus,
+> there could be N NMIs at the same time, and they may block N non-NMI
+> raw_spinlocks. This is tricky for pcpu_freelist_push(), where unlike
+> _pop(), failing _push() means leaking memory. This issue is more likely to
+> trigger in non-SMP system.
+> 
+> Fix this issue with an extra list, pcpu_freelist.extralist. The extralist
+> is primarily used to take _push() when raw_spin_trylock() failed on all
+> the per cpu lists. It should be empty most of the time. The following
+> table summarizes the behavior of pcpu_freelist in NMI and non-NMI:
+> 
+> non-NMI pop(): 	use _lock(); check per cpu lists first;
+>                 if all per cpu lists are empty, check extralist;
+>                 if extralist is empty, return NULL.
+> 
+> non-NMI push(): use _lock(); only push to per cpu lists.
+> 
+> NMI pop():    use _trylock(); check per cpu lists first;
+>               if all per cpu lists are locked or empty, check extralist;
+>               if extralist is locked or empty, return NULL.
+> 
+> NMI push():   use _trylock(); check per cpu lists first;
+>               if all per cpu lists are locked; try push to extralist;
+>               if extralist is also locked, keep trying on per cpu lists.
+> 
+> Reported-by: Alexei Starovoitov <ast@kernel.org>
+> Signed-off-by: Song Liu <songliubraving@fb.com>
+> 
+> ---
+> Changes v1 => v2:
+> 1. Update commit log. (Daniel)
+Acked-by: Martin KaFai Lau <kafai@fb.com>
