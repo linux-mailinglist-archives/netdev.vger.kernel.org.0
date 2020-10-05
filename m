@@ -2,192 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 813FF283D26
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 19:14:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B8F7283D51
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 19:32:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728226AbgJEROs convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 5 Oct 2020 13:14:48 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:43400 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726691AbgJEROs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 13:14:48 -0400
-Received: from marcel-macbook.fritz.box (p4fefc7f4.dip0.t-ipconnect.de [79.239.199.244])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 1AAE3CED28;
-        Mon,  5 Oct 2020 19:21:46 +0200 (CEST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.1\))
-Subject: Re: [PATCH] Revert "Bluetooth: Update resolving list when updating
- whitelist"
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20201005161149.GA2378402@kroah.com>
-Date:   Mon, 5 Oct 2020 19:14:44 +0200
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Sathish Narsimman <sathish.narasimman@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1727258AbgJERcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 13:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39606 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726807AbgJERcI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 13:32:08 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B28CC0613CE
+        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 10:32:08 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id i3so194549pjz.4
+        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 10:32:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Htxoj4DaPCPw1cEp7kynonjuidcBDrm2IFv1RoI9pXE=;
+        b=t3bjIhsR7/XIujfSmVGkLJwWGn7zVArg+PhxfELAVL6HGcsXVQx3Oe1cm7r1U9flch
+         C0KzX94ahcoRpK5VmIYbF7M9150cVPj/42JrZDQLn/VaE4FTtXWawYYVHMJgRgFyGdWp
+         EdkwMkdYe5AsQifdFykX8kYpdsyBmtRjH4I7YefP6/TJLJ98i2en63CiXtfCbuJpb2hT
+         0B8hPYtznaBKtk9hQZqY7WTsEqolbepexHOuqcTAMhZSEOXLheLW9MM1iwC+UQEdZUhL
+         aA9pUMMZnmFDNWI2nlCvYoAVUpBZxyIJfKeLlv6U+Ux20l+oMTnc/qV0HEbkGuZnTryX
+         heDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Htxoj4DaPCPw1cEp7kynonjuidcBDrm2IFv1RoI9pXE=;
+        b=QmfpUbeHCUyaVoAL0kseodX1Cukw0naLcJUlU2V8KuBvIg68DTqcZ71l0tJmAvCbtu
+         HxgJAIipJVEb/ffuK7ZGNZJuCydmmNh8J+FhpTWTH5iGeTvHBCWkvcC0r1RyKqeGdrSr
+         R1ZxwBOD6D7OgK5OjKh3G0jXLnygJwwiBzAGLejePDlv0DVRgTPT5QdGu0QZue0Gja9j
+         CJTjnXGYyPRByLd3oa7gquOgT6gghXDjK8vKk4FR+zsGW62xn3BAPJWsfM4uaDx6Hslz
+         YOG5UWYGKL0rLXNo/HZ4bnrx2TdZ3GmnggkQc23MnncgpuVCNgCDfZDvrvMLNwKRGvFr
+         nUSw==
+X-Gm-Message-State: AOAM533LPNE/tcHRCkPff0ffpKnXrpku/qoMc2iTq7iN4PYEPiJnzk2i
+        znjkSdL2AFEWaBhNyuU8ucJNr5ywMkeKyTUHf7FLdg==
+X-Google-Smtp-Source: ABdhPJxWmcDMAtPD4+Xw7wkKskniMTu7T/NjhfmseiAjEso3zM1XgQ4+WDk7GzYI6fGPs72VmD7wb3CoA1EZsu39ARo=
+X-Received: by 2002:a17:90a:3b48:: with SMTP id t8mr523485pjf.32.1601919127643;
+ Mon, 05 Oct 2020 10:32:07 -0700 (PDT)
+MIME-Version: 1.0
+References: <20201001011232.4050282-1-andrew@lunn.ch> <20201001011232.4050282-2-andrew@lunn.ch>
+ <CAKwvOdnVC8F1=QT03W5Zh9pJdTxxNfRcqXeob5_b4CXycvG1+g@mail.gmail.com> <20201002014411.GG4067422@lunn.ch>
+In-Reply-To: <20201002014411.GG4067422@lunn.ch>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 5 Oct 2020 10:31:57 -0700
+Message-ID: <CAKwvOdmdfwWsRtJHtJ16B0RMyoxUi1587OKnyunQd5gfwmnGsA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/2] Makefile.extrawarn: Add symbol for W=1
+ warnings for today
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-bluetooth <linux-bluetooth@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: 8BIT
-Message-Id: <0C92E812-BF43-46A6-A069-3F7F3278FBB4@holtmann.org>
-References: <20201003135449.GA2691@kroah.com>
- <A1C95238-CBCB-4FD4-B46D-A62AED0C77E5@holtmann.org>
- <20201003160713.GA1512229@kroah.com>
- <AABC2831-4E88-41A2-8A20-1BFC88895686@holtmann.org>
- <20201004105124.GA2429@kroah.com>
- <3F7BDD50-DEA3-4CB0-A9A0-69E7EE2923D5@holtmann.org>
- <20201005083624.GA2442@kroah.com>
- <220D3B4E-D73E-43AD-8FF8-887D1A628235@holtmann.org>
- <20201005124018.GA800868@kroah.com>
- <824BC92C-5035-4B80-80E7-298508E4ADD7@holtmann.org>
- <20201005161149.GA2378402@kroah.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-X-Mailer: Apple Mail (2.3608.120.23.2.1)
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Greg,
+On Thu, Oct 1, 2020 at 6:44 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Thu, Oct 01, 2020 at 04:09:43PM -0700, Nick Desaulniers wrote:
+> > On Wed, Sep 30, 2020 at 6:12 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> > >
+> > > There is a movement to try to make more and more of /drivers W=1
+> > > clean. But it will only stay clean if new warnings are quickly
+> > > detected and fixed, ideally by the developer adding the new code.
+> > >
+> > > To allow subdirectories to sign up to being W=1 clean for a given
+> > > definition of W=1, export the current set of additional compile flags
+> > > using the symbol KBUILD_CFLAGS_W1_20200930. Subdirectory Makefiles can
+> > > then use:
+> > >
+> > > subdir-ccflags-y := $(KBUILD_CFLAGS_W1_20200930)
+> > >
+> > > To indicate they want to W=1 warnings as defined on 20200930.
+> > >
+> > > Additional warnings can be added to the W=1 definition. This will not
+> > > affect KBUILD_CFLAGS_W1_20200930 and hence no additional warnings will
+> > > start appearing unless W=1 is actually added to the command
+> > > line. Developers can then take their time to fix any new W=1 warnings,
+> > > and then update to the latest KBUILD_CFLAGS_W1_<DATESTAMP> symbol.
+> >
+> > I'm not a fan of this approach.  Are DATESTAMP configs just going to
+> > keep being added? Is it going to complicate isolating the issue from a
+> > randconfig build?  If we want more things to build warning-free at
+> > W=1, then why don't we start moving warnings from W=1 into the
+> > default, until this is no W=1 left?  That way we're cutting down on
+> > the kernel's configuration combinatorial explosion, rather than adding
+> > to it?
+>
+> Hi Nick
+>
+> I don't see randconfig being an issue. driver/net/ethernet would
+> always be build W=1, by some stable definition of W=1. randconfig
+> would not enable or disable additional warnings. It to make it clear,
+> KBUILD_CFLAGS_W1_20200930 is not a Kconfig option you can select. It
+> is a Makefile constant, a list of warnings which define what W=1 means
+> on that specific day. See patch 1/2.
+>
+> I see a few issues with moving individual warnings from W=1 to the
+> default:
+>
+> One of the comments for v1 of this patchset is that we cannot
+> introduce new warnings in the build. The complete tree needs to clean
+> of a particularly warning, before it can be added to the default list.
+> But that is not how people are cleaning up code, nor how the
+> infrastructure is designed. Those doing the cleanup are not take the
+> first from the list, -Wextra and cleanup up the whole tree for that
+> one warnings. They are rather enabling W=1 on a subdirectory, and
+> cleanup up all warnings on that subdirectory. So using this approach,
+> in order to move a warning from W=1 to the default, we are going to
+> have to get the entire tree W=1 clean, and move them all the warnings
+> are once.
 
->>>>>>>>>>> This reverts commit 0eee35bdfa3b472cc986ecc6ad76293fdcda59e2 as it
->>>>>>>>>>> breaks all bluetooth connections on my machine.
->>>>>>>>>>> 
->>>>>>>>>>> Cc: Marcel Holtmann <marcel@holtmann.org>
->>>>>>>>>>> Cc: Sathish Narsimman <sathish.narasimman@intel.com>
->>>>>>>>>>> Fixes: 0eee35bdfa3b ("Bluetooth: Update resolving list when updating whitelist")
->>>>>>>>>>> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->>>>>>>>>>> ---
->>>>>>>>>>> net/bluetooth/hci_request.c | 41 ++-----------------------------------
->>>>>>>>>>> 1 file changed, 2 insertions(+), 39 deletions(-)
->>>>>>>>>>> 
->>>>>>>>>>> This has been bugging me for since 5.9-rc1, when all bluetooth devices
->>>>>>>>>>> stopped working on my desktop system.  I finally got the time to do
->>>>>>>>>>> bisection today, and it came down to this patch.  Reverting it on top of
->>>>>>>>>>> 5.9-rc7 restored bluetooth devices and now my input devices properly
->>>>>>>>>>> work.
->>>>>>>>>>> 
->>>>>>>>>>> As it's almost 5.9-final, any chance this can be merged now to fix the
->>>>>>>>>>> issue?
->>>>>>>>>> 
->>>>>>>>>> can you be specific what breaks since our guys and I also think the
->>>>>>>>>> ChromeOS guys have been testing these series of patches heavily.
->>>>>>>>> 
->>>>>>>>> My bluetooth trackball does not connect at all.  With this reverted, it
->>>>>>>>> all "just works".
->>>>>>>>> 
->>>>>>>>> Same I think for a Bluetooth headset, can check that again if you really
->>>>>>>>> need me to, but the trackball is reliable here.
->>>>>>>>> 
->>>>>>>>>> When you run btmon does it indicate any errors?
->>>>>>>>> 
->>>>>>>>> How do I run it and where are the errors displayed?
->>>>>>>> 
->>>>>>>> you can do btmon -w trace.log and just let it run like tcdpump.
->>>>>>> 
->>>>>>> Ok, attached.
->>>>>>> 
->>>>>>> The device is not connecting, and then I open the gnome bluetooth dialog
->>>>>>> and it scans for devices in the area, but does not connect to my
->>>>>>> existing devices at all.
->>>>>>> 
->>>>>>> Any ideas?
->>>>>> 
->>>>>> the trace file is from -rc7 or from -rc7 with this patch reverted?
->>>>>> 
->>>>>> I asked, because I see no hint that anything goes wrong. However I have a suspicion if you bisected it to this patch.
->>>>>> 
->>>>>> diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
->>>>>> index e0269192f2e5..94c0daa9f28d 100644
->>>>>> --- a/net/bluetooth/hci_request.c
->>>>>> +++ b/net/bluetooth/hci_request.c
->>>>>> @@ -732,7 +732,7 @@ static int add_to_white_list(struct hci_request *req,
->>>>>>              return -1;
->>>>>> 
->>>>>>      /* White list can not be used with RPAs */
->>>>>> -       if (!allow_rpa && !use_ll_privacy(hdev) &&
->>>>>> +       if (!allow_rpa &&
->>>>>>          hci_find_irk_by_addr(hdev, &params->addr, params->addr_type)) {
->>>>>>              return -1;
->>>>>>      }
->>>>>> @@ -812,7 +812,7 @@ static u8 update_white_list(struct hci_request *req)
->>>>>>              }
->>>>>> 
->>>>>>              /* White list can not be used with RPAs */
->>>>>> -               if (!allow_rpa && !use_ll_privacy(hdev) &&
->>>>>> +               if (!allow_rpa &&
->>>>>>                  hci_find_irk_by_addr(hdev, &b->bdaddr, b->bdaddr_type)) {
->>>>>>                      return 0x00;
->>>>>>              }
->>>>>> 
->>>>>> 
->>>>>> If you just do the above, does thing work for you again?
->>>>> 
->>>>> Corrupted white-space issues aside, yes, it works!
->>>> 
->>>> I just pasted it from a different terminal ;)
->>>> 
->>>>> I am running 5.9-rc8 with just this change on it and my tracball works
->>>>> just fine.
->>>>> 
->>>>>> My suspicion is that the use_ll_privacy check is the wrong one here. It only checks if hardware feature is available, not if it is also enabled.
->>>>> 
->>>>> How would one go about enabling such a hardware feature if they wanted
->>>>> to?  :)
->>>> 
->>>> I need to understand what is going wrong for you. I have a suspicion,
->>>> but first I need to understand what kind of device you have. I hope
->>>> the trace file is enough.
->>> 
->>> If you need any other information, just let me know, this is a USB
->>> Bluetooth controller from Intel:
->>> 
->>> 	$ lsusb | grep Blue
->>> 	Bus 009 Device 002: ID 8087:0029 Intel Corp. AX200 Bluetooth
->>> 
->>> And the output of usb-devices for it:
->>> 	T:  Bus=09 Lev=01 Prnt=01 Port=04 Cnt=01 Dev#=  2 Spd=12  MxCh= 0
->>> 	D:  Ver= 2.01 Cls=e0(wlcon) Sub=01 Prot=01 MxPS=64 #Cfgs=  1
->>> 	P:  Vendor=8087 ProdID=0029 Rev=00.01
->>> 	C:  #Ifs= 2 Cfg#= 1 Atr=e0 MxPwr=100mA
->>> 	I:  If#=0x0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
->>> 	I:  If#=0x1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
->> 
->> I already figured out that it is one of our controllers. The trace file gives it away.
->> 
->> So my suspicion is that the device you want to connect to uses RPA (aka random addresses). And we added support for resolving them in the firmware. Your hardware does support that, but the host side is not fully utilizing it and thus your device is filtered out.
-> 
-> Dude, get an email client that line-wraps :)
-> 
->> If I am not mistaken, then the use_ll_privacy() check in these two specific places need to be replaced with LL Privacy Enabled check. And then the allow_rpa condition will do its job as expected.
->> 
->> We can confirm this if you send me a trace with the patch applied.
-> 
-> Want me to disconnect the device and then reconnect it using
-> bluetootctl?  I'll go do that now...
-> 
-> Ok, it's attached, I did:
-> 
-> $ bluetoothctl disconnect F1:85:91:79:73:70
-> Attempting to disconnect from F1:85:91:79:73:70
-> [CHG] Device F1:85:91:79:73:70 ServicesResolved: no
-> Successful disconnected
-> 
-> And then the gnome bluetooth daemon (or whatever it has) reconnected it
-> automatically, so you can see the connection happen, and some movements
-> in the log.
-> 
-> If there's anything else you need, just let me know.
+Sorry, to be more specific about my concern; I like the idea of
+exporting the W=* flags, then selectively applying them via
+subdir-ccflags-y.  I don't like the idea of supporting W=1 as defined
+at a precise point in time via multiple date specific symbols.  If
+someone adds something to W=1, then they should need to ensure subdirs
+build warning-free, so I don't think you need to "snapshot" W=1 based
+on what it looked like on 20200930.
 
-so the trace file indicates that you are using static addresses and not RPAs. Now I am confused.
+>
+> People generally don't care about the tree as a whole. They care about
+> their own corner. The idea of fixing one warning thought the whole
+> tree is 'slicing and dicing' the kernel the wrong way. As we have seen
+> with the recent work with W=1, the more natural way to slice/dice the
+> kernel is by subdirectories.
 
-What is the content of /sys/kernel/debug/bluetooth/hci0/identity_resolving_keys?
+I'm not sure I agree with this paragraph. ^  If a warning is not
+enabled by default implicitly, then someone would need to clean the
+tree to turn it on.  It's very messy to apply it on a child directory,
+then try to work up.  We've done multiple tree wide warning cleanups
+and it's not too bad.
 
-The only way I can explain this if you have an entry in that file, but the device is not using it.
+>
+> I do however understand the fear that we end up with lots of
+> KBUILD_CFLAGS_W1_<DATESTAMP> constants. So i looked at the git history
+> of script/Makefile.extrawarn. These are historically the symbols we
+> would have, if we started this idea 1/1/2018:
+>
+> KBUILD_CFLAGS_W1_20200326    # CLANG only change
+> KBUILD_CFLAGS_W1_20190907
+> KBUILD_CFLAGS_W1_20190617    # CLANG only change
+> KBUILD_CFLAGS_W1_20190614    # CLANG only change
+> KBUILD_CFLAGS_W1_20190509
+> KBUILD_CFLAGS_W1_20180919
+> KBUILD_CFLAGS_W1_20180111
+>
+> So not too many.
 
-If you have btmgmt (from bluez.git) you can try "./tools/btmgmt irks” to clear that list and try again.
-
-Regards
-
-Marcel
-
+It's a useful visualization.  I still would prefer W=1 to get enabled
+by default if all of the CI systems have flushed out the existing
+warnings.  That way we have one less combination of things to test;
+not more.
+--
+Thanks,
+~Nick Desaulniers
