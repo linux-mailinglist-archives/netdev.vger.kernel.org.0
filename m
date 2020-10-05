@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D17428410A
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 22:35:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4D4A284131
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 22:37:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729206AbgJEUfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 16:35:41 -0400
-Received: from mailrelay115.isp.belgacom.be ([195.238.20.142]:49414 "EHLO
+        id S1728734AbgJEUgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 16:36:12 -0400
+Received: from mailrelay115.isp.belgacom.be ([195.238.20.142]:49467 "EHLO
         mailrelay115.isp.belgacom.be" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725901AbgJEUfk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 16:35:40 -0400
-IronPort-SDR: iV/6qVTijZF9FGv5C+vBkRl/DzMIj/Mob6Aa5MbG27kimPkBv35oaW9GiP/jpLlTcc/1qi1TDC
- MlwviKtVJLhC/0Oy43UtaKnv0Ig0s8c2r+7q0mCISBpGhoqPx9OgwuYMjL3WJpKqtTrjgmrkux
- ahEZHkNpDk730fpIYq2GtO0ALAMsFjReLU3Omxm5KzTRMUNGS2thhWKaqZ52YJOF+3U2KQLaWc
- HmG1AKwinT65xxrnOLNenkyL/fE6feQGK4c+oiat+VEW9QuTlxtnm2LYLwUxUj6VuHZx+lgfT2
- ukM=
+        by vger.kernel.org with ESMTP id S1725864AbgJEUgM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 16:36:12 -0400
+IronPort-SDR: iyoHWhF0CvKnOQjjHNp6VQqthifw0gpxVK6tEJ5Iwp4D0TcgwJmU4yOkhhiVkKVEejjG0FfAjF
+ pYEflkJdiyF0k7bUBJJXQxBZtGCH7vSG4G1T263Wrppuu+tscmDhF9k1qRmPIHBQSgPcwKOTh2
+ zBy7uht0P9k88k4Yk3dvNmgEO4yDmHMZw6xT7FX9l9A2Y8ysBhxX424gNe/a1uwO3OrRMtsPlp
+ +Z0lYDEC1val80y85LD8VNrlLokE1QlfEUdovlIry5WTxTvlPfcTQYNOY+8FvmteqRQOe4VTiO
+ kaQ=
 X-Belgacom-Dynamic: yes
-IronPort-PHdr: =?us-ascii?q?9a23=3AwndjwBfRQq2ncymabO8FBPn7lGMj4u6mDksu8p?=
- =?us-ascii?q?Mizoh2WeGdxcWyZB7h7PlgxGXEQZ/co6odzbaP7Oa8AydZus/JmUtBWaQEbw?=
+IronPort-PHdr: =?us-ascii?q?9a23=3AnonfNxYE0pGCq3+84mZhjub/LSx+4OfEezUN45?=
+ =?us-ascii?q?9isYplN5qZpsyzZB7h7PlgxGXEQZ/co6odzbaP7Oa8AydZus/JmUtBWaQEbw?=
  =?us-ascii?q?UCh8QSkl5oK+++Imq/EsTXaTcnFt9JTl5v8iLzG0FUHMHjew+a+SXqvnYdFR?=
  =?us-ascii?q?rlKAV6OPn+FJLMgMSrzeCy/IDYbxlViDanbr5+MRe7oR/eu8UIjoduN6g8xg?=
  =?us-ascii?q?bUqXZUZupawn9lK0iOlBjm/Mew+5Bj8yVUu/0/8sNLTLv3caclQ7FGFToqK2?=
@@ -36,30 +36,33 @@ IronPort-PHdr: =?us-ascii?q?9a23=3AwndjwBfRQq2ncymabO8FBPn7lGMj4u6mDksu8p?=
  =?us-ascii?q?ph605b0Ac80MpQ54xKBbEEO//8R1X+tMLGAR88Nwy0xOjnCMln2oMYR22PHr?=
  =?us-ascii?q?eTMLnOvl+Q+uIvP+6MaZcWuDbgMPcq/eXjjXwnll8He6mmw58XZGq/HvR8LE?=
  =?us-ascii?q?WTeWDsjcsZEWcWogo+S/TniFucXj5Penm9Qbw86yolCIKpE4jDXJqhgL+f0y?=
- =?us-ascii?q?ehGJ1ZeGRGBkqLEXfyeIWOQ+0MZz6KIs99jjwEUqCsS4E72h61ug/30KFnLu?=
- =?us-ascii?q?nU+y0eq53jyMJ56PbNmkJ6yTshA82D3mSlQ2hqk2YMQDEqmqZyvQg1yUqJ2I?=
- =?us-ascii?q?B7juZeGNgV4OlGFk88OILQwvJSFd//QETCc82PRVLgRc+pUh8rSddk7dYEYk?=
- =?us-ascii?q?97U/u4gxzOxSuhAPdBmbWBCrQv8bPa0mS3LcsrmCWO77Uok1RzGpgHDmahnK?=
- =?us-ascii?q?MqrwU=3D?=
+ =?us-ascii?q?ehGJ1ZeGRGBkqLEXfyeIWOQ+0MZz6KIs99jjwEUqCsS5c72h61sA/6zKFqLu?=
+ =?us-ascii?q?zK9S0Eu5Lj1dx15/HNmhEo7zB0CN6d026VRWFugmwIXyM23Lx4oUFlzleMy6?=
+ =?us-ascii?q?Z4g/tCFdxc+fxESQg6NZjBz+x/DNDyXAHBfsyTRFahWNWmDik7TsgtzN8Wf0?=
+ =?us-ascii?q?Z9B9KigwjN3yWwGLAVmaeGBIc38qPc2Xj+Odp9x2zd26Y/3BEaRZ5DPHOrg4?=
+ =?us-ascii?q?Zz/hbeAorOnVnfkau2MewfwSTE3GSO12yDuAdfSgE0GaPIQXwSeGPIotnjoE?=
+ =?us-ascii?q?DPVbmjDfIgKAQS59SFL/5kY9fohFMOau3uNNnEYmmy0zO+DByG7qiPfYznZy?=
+ =?us-ascii?q?MX0XOOWwA/jwkP8CPeZkAFDSC7rjeGAQ=3D=3D?=
 X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2C8CADggntf/xCltltgHAEBAQEBAQc?=
- =?us-ascii?q?BARIBAQQEAQFHgUgCgRyCUV+NP5JWilmFMYF8CwEBAQEBAQEBATUBAgQBAYR?=
- =?us-ascii?q?KgjsmOgQNAgMBAQEDAgUBAQYBAQEBAQEFBAGGD0WCNyKDRwsBIyOBPxKDJoJ?=
- =?us-ascii?q?YKaoXM4QQgUSDR4FCgTiIMoUagUE/gRGDToo0BLdNgnGDE4RrklQPIqEfLZJ?=
- =?us-ascii?q?nm2KGSgyBa00gGIMkUBkNnGhCMDcCBgoBAQMJVwE9AY0yAQE?=
-X-IPAS-Result: =?us-ascii?q?A2C8CADggntf/xCltltgHAEBAQEBAQcBARIBAQQEAQFHg?=
- =?us-ascii?q?UgCgRyCUV+NP5JWilmFMYF8CwEBAQEBAQEBATUBAgQBAYRKgjsmOgQNAgMBA?=
- =?us-ascii?q?QEDAgUBAQYBAQEBAQEFBAGGD0WCNyKDRwsBIyOBPxKDJoJYKaoXM4QQgUSDR?=
- =?us-ascii?q?4FCgTiIMoUagUE/gRGDToo0BLdNgnGDE4RrklQPIqEfLZJnm2KGSgyBa00gG?=
- =?us-ascii?q?IMkUBkNnGhCMDcCBgoBAQMJVwE9AY0yAQE?=
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2DgAgDggntf/xCltltgHAEBAQEBAQc?=
+ =?us-ascii?q?BARIBAQQEAQFHgUiBHoJRX40/klaKWYctCwEBAQEBAQEBATUBAgQBAYRKgjs?=
+ =?us-ascii?q?mOBMCAwEBAQMCBQEBBgEBAQEBAQUEAYYPRYI3IoNHCwEjI4E/EoMmglgpqhc?=
+ =?us-ascii?q?zhBCBRINHgUKBOIgyhRqBQT+EX4o0BLdNgnGDE4RrklQPIqEfLZJnoimBek0?=
+ =?us-ascii?q?gGIMkUBkNnGhCMDcCBgoBAQMJVwE9AY0yAQE?=
+X-IPAS-Result: =?us-ascii?q?A2DgAgDggntf/xCltltgHAEBAQEBAQcBARIBAQQEAQFHg?=
+ =?us-ascii?q?UiBHoJRX40/klaKWYctCwEBAQEBAQEBATUBAgQBAYRKgjsmOBMCAwEBAQMCB?=
+ =?us-ascii?q?QEBBgEBAQEBAQUEAYYPRYI3IoNHCwEjI4E/EoMmglgpqhczhBCBRINHgUKBO?=
+ =?us-ascii?q?IgyhRqBQT+EX4o0BLdNgnGDE4RrklQPIqEfLZJnoimBek0gGIMkUBkNnGhCM?=
+ =?us-ascii?q?DcCBgoBAQMJVwE9AY0yAQE?=
 Received: from 16.165-182-91.adsl-dyn.isp.belgacom.be (HELO localhost.localdomain) ([91.182.165.16])
-  by relay.skynet.be with ESMTP; 05 Oct 2020 22:35:38 +0200
+  by relay.skynet.be with ESMTP; 05 Oct 2020 22:36:10 +0200
 From:   Fabian Frederick <fabf@skynet.be>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     Fabian Frederick <fabf@skynet.be>
-Subject: [PATCH 4/9 net-next] bareudp: use dev_sw_netstats_rx_add()
-Date:   Mon,  5 Oct 2020 22:35:15 +0200
-Message-Id: <20201005203515.55280-1-fabf@skynet.be>
+Cc:     pablo@netfilter.org, laforge@gnumonks.org,
+        Fabian Frederick <fabf@skynet.be>
+Subject: [PATCH 5/9 net-next] gtp: use dev_sw_netstats_rx_add()
+Date:   Mon,  5 Oct 2020 22:35:46 +0200
+Message-Id: <20201005203546.55332-1-fabf@skynet.be>
 X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -71,38 +74,35 @@ use new helper for netstats settings
 
 Signed-off-by: Fabian Frederick <fabf@skynet.be>
 ---
- drivers/net/bareudp.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ drivers/net/gtp.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
-index 841910f1db655..ff0bea1554f9b 100644
---- a/drivers/net/bareudp.c
-+++ b/drivers/net/bareudp.c
-@@ -54,7 +54,6 @@ struct bareudp_dev {
- static int bareudp_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
+diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
+index c09fe18c6c52d..030a1a5afe05a 100644
+--- a/drivers/net/gtp.c
++++ b/drivers/net/gtp.c
+@@ -182,8 +182,6 @@ static bool gtp_check_ms(struct sk_buff *skb, struct pdp_ctx *pctx,
+ static int gtp_rx(struct pdp_ctx *pctx, struct sk_buff *skb,
+ 			unsigned int hdrlen, unsigned int role)
  {
- 	struct metadata_dst *tun_dst = NULL;
 -	struct pcpu_sw_netstats *stats;
- 	struct bareudp_dev *bareudp;
- 	unsigned short family;
- 	unsigned int len;
-@@ -160,13 +159,9 @@ static int bareudp_udp_encap_recv(struct sock *sk, struct sk_buff *skb)
+-
+ 	if (!gtp_check_ms(skb, pctx, hdrlen, role)) {
+ 		netdev_dbg(pctx->dev, "No PDP ctx for this MS\n");
+ 		return 1;
+@@ -204,11 +202,7 @@ static int gtp_rx(struct pdp_ctx *pctx, struct sk_buff *skb,
  
- 	len = skb->len;
- 	err = gro_cells_receive(&bareudp->gro_cells, skb);
--	if (likely(err == NET_RX_SUCCESS)) {
--		stats = this_cpu_ptr(bareudp->dev->tstats);
--		u64_stats_update_begin(&stats->syncp);
--		stats->rx_packets++;
--		stats->rx_bytes += len;
--		u64_stats_update_end(&stats->syncp);
--	}
-+	if (likely(err == NET_RX_SUCCESS))
-+		dev_sw_netstats_rx_add(bareudp->dev, len);
-+
+ 	skb->dev = pctx->dev;
+ 
+-	stats = this_cpu_ptr(pctx->dev->tstats);
+-	u64_stats_update_begin(&stats->syncp);
+-	stats->rx_packets++;
+-	stats->rx_bytes += skb->len;
+-	u64_stats_update_end(&stats->syncp);
++	dev_sw_netstats_rx_add(pctx->dev, skb->len);
+ 
+ 	netif_rx(skb);
  	return 0;
- drop:
- 	/* Consume bad packet */
 -- 
 2.28.0
 
