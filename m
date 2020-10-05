@@ -2,137 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D78B828355F
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 14:07:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25D2F2835B7
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 14:18:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726073AbgJEMHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 08:07:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45596 "EHLO
+        id S1726317AbgJEMST (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 08:18:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725954AbgJEMHa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 08:07:30 -0400
-Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [IPv6:2001:67c:2050::465:103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9ABC0613CE;
-        Mon,  5 Oct 2020 05:07:29 -0700 (PDT)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4C4fVS3Tt8zKm5Q;
-        Mon,  5 Oct 2020 14:07:28 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mailbox.org; h=
-        content-transfer-encoding:content-type:content-type:mime-version
-        :references:in-reply-to:message-id:subject:subject:from:from
-        :date:date:received; s=mail20150812; t=1601899645; bh=uW44uYPrhB
-        Ak9bdc1yCwjJpGoZBR7+lNRqJgmDKEtuQ=; b=g/g/Egz1LWJ8/l/+iPloHI1gWt
-        YWjY4ZCxMZ7f35deW9qVtVKgv/B66cw68Jw54rZQ8bBh0QXeGifK6C/MELPrEq5H
-        49mfdl63pk8naBbXlDmp44LFsT68ChZ+k8qeJjW3xnnRf8votgc2eXZTE0Vi4MHD
-        394mywM4dvYPW6SRMEbOiPE2J8EFk5pDcPytI6++as3Qjah0Ow8oPuHOnIH/8wzB
-        IDy44OJIlSDFwCfL2Pyw6j64NqwrwzmDh8NqlgSAuu1VXhc2rBa7YhmbvJCcqMLt
-        B0nkF+YReEI8ewXx8fI1oVJNp2P1+M+d9r6uinM07X+L80IvpNQYZMAylcAQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-        t=1601899646;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=RYy9CaSjXdLF8peC9exJg+yhvC7heRaR3PJTeXb8sjM=;
-        b=C5C1Bq/J8CI8e8FJNy+sV0Uy1CWdz8LhfEpw8jyMV61mWBXGdJuOqMykgE/7FGlMc2hwMU
-        vVU7HD/pjvXxEwYRNw1scd8eSfY2jIbI1PoZR97xf3NuaVY8EpxinXCBQQjFbsYMA0lrq1
-        NSJgOeA86gboKG9hhU3zuCts755QjDs3glpLLcIVdFeNt0FguAmvpfPfMCxSLYHUxw0ZUg
-        0ESYKXY0sXlsDwo2LsAN+gMY6osYgOwrPHZCWoUvOOScF52+qJQYYybzNEkqhYGv4tDPWp
-        ECUA6PjvceY26kc/zYH6DcZp9f8k/t8gLTHlRsYV2WBiVzBuC0FOu7EbvgKLcQ==
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Received: from smtp1.mailbox.org ([80.241.60.240])
-        by gerste.heinlein-support.de (gerste.heinlein-support.de [91.198.250.173]) (amavisd-new, port 10030)
-        with ESMTP id VqJVNEQz4qN1; Mon,  5 Oct 2020 14:07:25 +0200 (CEST)
-Date:   Mon, 5 Oct 2020 14:07:23 +0200
-From:   Wilken Gottwalt <wilken.gottwalt@mailbox.org>
-To:     Lars Melin <larsm17@gmail.com>
-Cc:     Johan Hovold <johan@kernel.org>, linux-kernel@vger.kernel.org,
-        =?ISO-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        with ESMTP id S1725970AbgJEMST (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 08:18:19 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1272C0613CE
+        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 05:18:18 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id k10so9298818wru.6
+        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 05:18:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=9bbkLmqsGFegNG0ldfQK4cwI5yP6xy9ZwsyIxzLr2+k=;
+        b=bJXCxENKxN0YjKNjI+Px8XuEUqcna05jHeVL6wlke2M1w0U1mY9dou6HQQycrQ+U4H
+         9/h4rl3jHWPMirDiREAV6Uu29gGbqIeZOCbYDl952N4lZqlJnBAKturIM5P7yMGzockf
+         8Hn4K/bn2jVcwIYhjV9I4Jk6cbrGmByt65gaWH470kB8ZPR7XydudT+SkeUeMOEIzTQ9
+         ynKd4ypjvtP3Eg1eW3u8HZk0MTg4qiOuwo4zDZ+jJ8M9rBi4+mIgyMDPX1vwDtsnEyY5
+         MA41Ve2cNZ7psS9U9clPzQPTXRBglPbNxNOgOfrbnFcZoMs04yCW2AsiuVCmupqOKf3R
+         WHOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9bbkLmqsGFegNG0ldfQK4cwI5yP6xy9ZwsyIxzLr2+k=;
+        b=cny1TSEvYZ2FkdkkPne3wxwRKcNzUcYVgab28r+beTqAKFxMKMazQRvNlwp+5jclQU
+         YbYnc0lv6OPrSHzXVdaIz8Unuv7gIMuHlT68S/w8hYUW/Nt47Zt8qfYH4lHBzyfYmD1S
+         9puH5HixPwvQ7aTh5BDK/H6FnbdiHmhZ9m3nLvkQdnP1VFCpYluozMukdHT+H21lfGPp
+         m3vue8JGO/TbMN7/v+VQAIAyvN8Q+os5s+pMaMfj89Ha8KPOtMtZoXhvmqvos1OWYAUK
+         rLB3FzZ6cDB2xnWpuHORlZxxrLkEP7Na/eKjupUrhit+uBBP9Q5Z2uR3HCAHlSypu64i
+         dvdQ==
+X-Gm-Message-State: AOAM533+YJYH8mgxDXemxZW9TMv4WseuYDqVuuY5iVzLEsHK5IESoLX7
+        9Iow6dlyI2fdNagta98NwFT/Og==
+X-Google-Smtp-Source: ABdhPJy3Vtfk3XyAkY9PZHloMzZiAILa1njNOCS+o8g5KjjLlnecQ0zriR9i8lPY2GbFfvPaA8NoDw==
+X-Received: by 2002:a5d:6886:: with SMTP id h6mr18021616wru.374.1601900297402;
+        Mon, 05 Oct 2020 05:18:17 -0700 (PDT)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id u15sm12143712wml.21.2020.10.05.05.18.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Oct 2020 05:18:16 -0700 (PDT)
+Date:   Mon, 5 Oct 2020 14:18:13 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Moshe Shemesh <moshe@nvidia.com>
+Cc:     Moshe Shemesh <moshe@mellanox.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH 2/2] usb: serial: option: add Cellient MPL200 card
-Message-ID: <20201005140723.56f6c434@monster.powergraphx.local>
-In-Reply-To: <5222246c-08d7-dcf8-248d-c1fefc72c46f@gmail.com>
-References: <cover.1601715478.git.wilken.gottwalt@mailbox.org>
-        <3db5418fe9e516f4b290736c5a199c9796025e3c.1601715478.git.wilken.gottwalt@mailbox.org>
-        <20201005082045.GL5141@localhost>
-        <20201005130134.459b4de9@monster.powergraphx.local>
-        <20201005110638.GP5141@localhost>
-        <5222246c-08d7-dcf8-248d-c1fefc72c46f@gmail.com>
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 03/16] devlink: Add devlink reload limit option
+Message-ID: <20201005121813.GA6617@nanopsycho>
+References: <1601560759-11030-1-git-send-email-moshe@mellanox.com>
+ <1601560759-11030-4-git-send-email-moshe@mellanox.com>
+ <20201003075100.GC3159@nanopsycho.orion>
+ <f91809cf-268d-64de-8a19-12305a3c11e0@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-MBO-SPAM-Probability: 
-X-Rspamd-Score: -5.98 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 8B9A91824
-X-Rspamd-UID: 543473
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f91809cf-268d-64de-8a19-12305a3c11e0@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 5 Oct 2020 18:36:36 +0700
-Lars Melin <larsm17@gmail.com> wrote:
+Sun, Oct 04, 2020 at 08:42:47AM CEST, moshe@nvidia.com wrote:
+>
+>On 10/3/2020 10:51 AM, Jiri Pirko wrote:
+>> Thu, Oct 01, 2020 at 03:59:06PM CEST, moshe@mellanox.com wrote:
+>> 
+>> [...]
+>> 
+>> > enum devlink_attr {
+>> > 	/* don't change the order or add anything between, this is ABI! */
+>> > 	DEVLINK_ATTR_UNSPEC,
+>> > @@ -507,6 +524,7 @@ enum devlink_attr {
+>> > 
+>> > 	DEVLINK_ATTR_RELOAD_ACTION,		/* u8 */
+>> > 	DEVLINK_ATTR_RELOAD_ACTIONS_PERFORMED,	/* u64 */
+>> > +	DEVLINK_ATTR_RELOAD_LIMIT,	/* u8 */
+>> Hmm, why there could be specified only single "limit"? I believe this
+>> should be a bitfield. Same for the internal api to the driver.
+>
+>
+>Why bitfield ? Either the user asks for a specific limit or he doesn't ask
+>for any (unspecified).
 
-> On 10/5/2020 18:06, Johan Hovold wrote:
-> > On Mon, Oct 05, 2020 at 01:01:34PM +0200, Wilken Gottwalt wrote:
-> >> On Mon, 5 Oct 2020 10:20:45 +0200
-> >> Johan Hovold <johan@kernel.org> wrote:
-> >>
-> >>> On Sat, Oct 03, 2020 at 11:40:29AM +0200, Wilken Gottwalt wrote:
-> >>>> Add usb ids of the Cellient MPL200 card.
-> >>>>
-> >>>> Signed-off-by: Wilken Gottwalt <wilken.gottwalt@mailbox.org>
-> >>>> ---
-> > 
-> >>>> @@ -1982,6 +1983,8 @@ static const struct usb_device_id option_ids[] = {
-> >>>>   	{ USB_DEVICE_AND_INTERFACE_INFO(MEDIATEK_VENDOR_ID, MEDIATEK_PRODUCT_DC_4COM2,
-> >>>> 0xff, 0x02, 0x01) }, { USB_DEVICE_AND_INTERFACE_INFO(MEDIATEK_VENDOR_ID,
-> >>>> MEDIATEK_PRODUCT_DC_4COM2, 0xff, 0x00, 0x00) }, { USB_DEVICE(CELLIENT_VENDOR_ID,
-> >>>> CELLIENT_PRODUCT_MEN200) },
-> >>>> +	{ USB_DEVICE(CELLIENT_VENDOR_ID, CELLIENT_PRODUCT_MPL200),
-> >>>> +	  .driver_info = RSVD(1) | RSVD(4) },
-> >>>
-> >>> Would you mind posting the output of "lsusb -v" for this device?
-> >>
-> >> I would like to, but unfortunately I lost access to this really rare hardware
-> >> about a month ago. It is a Qualcomm device (0x05c6:0x9025) with a slightly
-> >> modified firmware to rebrand it as a Cellient product with a different vendor
-> >> id. How to proceed here, if I have no access to it anymore? Drop it?
-> > 
-> > No, that's ok, I've applied the patch now. It's just that in case we
-> > ever need to revisit the handling of quirky devices, it has proven
-> > useful to have a record the descriptors.
-> > 
-> > Do you remember the interface layout and why you blacklisted interface
-> > 1?
-> > 
-> > Johan
-> > 
-> 
-> It is very likely that Cellient has replaced the VID with their own and 
-> kept the PID, it is something other mfgrs has done when buying modules 
-> from Qualcomm's series of devices with predefined composition.
-> 
-> The MS Windows driver for 05c6:9025 describes the interfaces as:
-> 
-> MI_00 Qualcomm HS-USB Diagnostics 9025
-> MI_01 Android Composite ADB Interface
-> MI_02 Qualcomm HS-USB Android Modem 9025
-> MI_03 Qualcomm HS-USB NMEA 9025
-> MI_04 Qualcomm Wireless HS-USB Ethernet Adapter 9025
-> MI_05 USB Mass Storage Device
-> 
-> where the net interface is for QMI/RMNET.
-> It fully matches the blacklisting Wilken has done for 2692:9025
+He can ask for multiple limits: No_link_flag , no_something_else. Could
+be totally unrelated limitations. Let's just have the UAPI ready for
+this once we define it from scratch.
 
-Does your device have a GPS connector? Mine had not and I'm not sure
-if the description of MI_01 is actually correct. I remember looking at
-this port and seeing bogus NMEA data.
 
-greetings,
-Will
+>
+>If the user doesn't need limitation he will not specify a limit.
+>
+>> [...]
