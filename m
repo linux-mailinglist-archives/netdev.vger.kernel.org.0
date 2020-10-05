@@ -2,104 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D29A1284352
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 02:25:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB8CD284270
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 00:21:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726337AbgJFAYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 20:24:47 -0400
-Received: from mga14.intel.com ([192.55.52.115]:34643 "EHLO mga14.intel.com"
+        id S1726885AbgJEWVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 18:21:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51158 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725846AbgJFAYr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Oct 2020 20:24:47 -0400
-IronPort-SDR: CVzQcgZ6BpnlaOQh6wOzb44jIWf5Fhf/9+c949fbTWT0Vt5+Hf/EYd2+z6qjeyj2Tyxq0DUEsh
- 7U4ZPg+11fnA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9765"; a="163504455"
-X-IronPort-AV: E=Sophos;i="5.77,341,1596524400"; 
-   d="scan'208";a="163504455"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga103.fm.intel.com with ESMTP; 05 Oct 2020 17:24:46 -0700
-IronPort-SDR: 00AjKOwUKxVMBmYrd3hsVd0p3m2TXdqTspLHzmsGGTBF5KJnxlnT1lqYp+hbVl7bx5jEDHFwbo
- pMCh7jgNDBPA==
-X-IronPort-AV: E=Sophos;i="5.77,341,1596524400"; 
-   d="scan'208";a="327164068"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.255.65.178]) ([10.255.65.178])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Oct 2020 15:14:14 -0700
-Subject: Re: [PATCH net-next] net: always dump full packets with skb_dump
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     willemdebruijn.kernel@gmail.com
-References: <20201005144838.851988-1-vladimir.oltean@nxp.com>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <bcf0a19d-a8c9-a9a2-7bcf-a97205aa4d05@intel.com>
-Date:   Mon, 5 Oct 2020 15:13:54 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.1
+        id S1725861AbgJEWVM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Oct 2020 18:21:12 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A9B92206CB;
+        Mon,  5 Oct 2020 22:21:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1601936472;
+        bh=8k6woZ6m6AbXlUy4wQY8SPP2viDp8VHvNTGjZxVlidQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Ru616cAdktdTvqGVsk/Hqx0jsg3UngsUTBXY4bFcz8sp8c7erlY79lnupeezH4iGp
+         Q7cz2LJMXEiy8agmmSsJYKELfTLbht5DrZFCGCXiz1znkfNiKWtYmZV/H+nWX/24h5
+         z5GLhq80HIHQsrg2UO2ES49L8OmO5WX4pN+G5EFo=
+Date:   Mon, 5 Oct 2020 15:21:10 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, davem@davemloft.net,
+        netdev@vger.kernel.org, kernel-team@fb.com, jiri@resnulli.us,
+        andrew@lunn.ch, dsahern@gmail.com, pablo@netfilter.org
+Subject: Re: [PATCH net-next 5/6] netlink: add mask validation
+Message-ID: <20201005152110.42b8e71e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <667995b1fe577e6c6c562856fe85cb1a853acb68.camel@sipsolutions.net>
+References: <20201005155753.2333882-1-kuba@kernel.org>
+        <20201005155753.2333882-6-kuba@kernel.org>
+        <c28aa386c1a998c1bc1a35580f016e129f58a5e3.camel@sipsolutions.net>
+        <20201005192857.2pvd6oj3nzps6n2y@lion.mk-sys.cz>
+        <93103e3d9496ea0e3e3b9e7f9850c9b12f2397b6.camel@sipsolutions.net>
+        <20201005124029.5ebe684d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <37c768d663f7f3158f1bfae6d7e1aa86e76e9880.camel@sipsolutions.net>
+        <667995b1fe577e6c6c562856fe85cb1a853acb68.camel@sipsolutions.net>
 MIME-Version: 1.0
-In-Reply-To: <20201005144838.851988-1-vladimir.oltean@nxp.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 10/5/2020 7:48 AM, Vladimir Oltean wrote:
-> Currently skb_dump has a restriction to only dump full packet for the
-> first 5 socket buffers, then only headers will be printed. Remove this
-> arbitrary and confusing restriction, which is only documented vaguely
-> ("up to") in the comments above the prototype.
+On Mon, 05 Oct 2020 22:12:25 +0200 Johannes Berg wrote:
+> On Mon, 2020-10-05 at 21:53 +0200, Johannes Berg wrote:
+> > Hm. I like that idea.
+> > 
+> > If we have NLMSGERR_ATTR_OFFS we could accompany that with the sub-
+> > policy for that particular attribute, something like
+> > 
+> > [NLMSGERR_ATTR_POLICY] = nested {
+> >   [NL_POLICY_TYPE_ATTR_TYPE] = ...
+> >   [NL_POLICY_TYPE_ATTR_MASK] = ...
+> > }
+> > 
+> > which we could basically do by factoring out the inner portion of
+> > netlink_policy_dump_write():
+> > 
+> > 	attr = nla_nest_start(skb, state->attr_idx);
+> > 	if (!attr)
+> > 		goto nla_put_failure;
+> > 	...
+> > 	nla_nest_end(skb, attr);
+> > 
+> > from there into a separate function, give it the pt and the nested
+> > attribute (what's "state->attr_idx" here) as arguments, and then we call
+> > it with NLMSGERR_ATTR_POLICY from here, and with "state->attr_idx" from
+> > netlink_policy_dump_write() :-)
+> > 
+> > Nice, easy & useful, maybe I'll code it up tomorrow.  
 > 
-
-So, this limitation appeared very clearly in the original commit,
-6413139dfc64 ("skbuff: increase verbosity when dumping skb data")..
-
-Searching the netdev list, that patch links back to this one as the
-original idea:
-
-https://patchwork.ozlabs.org/project/netdev/patch/20181121021309.6595-2-xiyou.wangcong@gmail.com/
-
-I can't find any further justification on that limit. I suppose the
-primary reasoning being if you somehow call this function in a loop this
-would avoid dumping the entire packet over and over?
-
-Thanks,
-Jake
-
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  net/core/skbuff.c | 6 +-----
->  1 file changed, 1 insertion(+), 5 deletions(-)
+> OK I thought about it a bit more and looked at the code, and it's not
+> actually possible to do easily right now, because we can't actually
+> point to the bad attribute from the general lib/nlattr.c code ...
 > 
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index e0774471f56d..720076a6e2b1 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -712,11 +712,10 @@ EXPORT_SYMBOL(kfree_skb_list);
->   *
->   * Must only be called from net_ratelimit()-ed paths.
->   *
-> - * Dumps up to can_dump_full whole packets if full_pkt, headers otherwise.
-> + * Dumps whole packets if full_pkt, only headers otherwise.
->   */
->  void skb_dump(const char *level, const struct sk_buff *skb, bool full_pkt)
->  {
-> -	static atomic_t can_dump_full = ATOMIC_INIT(5);
->  	struct skb_shared_info *sh = skb_shinfo(skb);
->  	struct net_device *dev = skb->dev;
->  	struct sock *sk = skb->sk;
-> @@ -725,9 +724,6 @@ void skb_dump(const char *level, const struct sk_buff *skb, bool full_pkt)
->  	int headroom, tailroom;
->  	int i, len, seg_len;
->  
-> -	if (full_pkt)
-> -		full_pkt = atomic_dec_if_positive(&can_dump_full) >= 0;
-> -
->  	if (full_pkt)
->  		len = skb->len;
->  	else
+> Why? Because we don't know right now, e.g. for nla_validate(), where in
+> the message we started validation, i.e. the offset of the "head" inside
+> the particular message.
 > 
+> For nlmsg_parse() and friends that's a bit easier, but it needs more
+> rejiggering than I'm willing to do tonight ;)
+
+I thought we'd record the const struct nla_policy *tp for the failing
+attr in struct netlink_ext_ack and output based on that.
