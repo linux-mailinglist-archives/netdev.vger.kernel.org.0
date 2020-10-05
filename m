@@ -2,193 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C32C283FFF
-	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 22:00:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E67628403F
+	for <lists+netdev@lfdr.de>; Mon,  5 Oct 2020 22:04:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729550AbgJET7n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 15:59:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34242 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729536AbgJET7n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 15:59:43 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E84FC0613CE;
-        Mon,  5 Oct 2020 12:59:43 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id c6so54336plr.9;
-        Mon, 05 Oct 2020 12:59:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=v5MvUxw3ZB12lg7pYNQ9g8Q6+t1ltW3gSsaG6iUl7NA=;
-        b=pBSnV8GHp99nHecDrhbFq2Q5/I3f9S/LZlX1Vus5qfyg1xT3yt6VO05moym/CfogKl
-         8C76S1L9KdcZBWegnBP0XNzb4jEDVyxwCMHX4fiaN72HPWuzLF1pM6QYpT/cJC8mvS2A
-         BtZSpQoVEWo+ivbmprv3wp3pbWWxd93OR5O9/GIojsUupswDGE0LcGwu1A4UpNtCTpd/
-         BHoodD36Eer+wymMKfG8qCbO93ZeUizIIHoSEmH9iH46fgwCsdsf5vOTralNymeawi16
-         akNRkAnXh3anwCpXdMhyoGhH5KmOSTYoXJ6eVKx+/yrOUVuyVQlZn9huOQwishNu5+R8
-         dlyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=v5MvUxw3ZB12lg7pYNQ9g8Q6+t1ltW3gSsaG6iUl7NA=;
-        b=E6bMlJFgydfsUDUQ4NuLu++YS93QjcGI/pYm1dkMYQ/Aj2vaB5YbCAeUGi5pNfK9q9
-         +hx77DFjn8mPpGBKiH00h2jJ8GYNRvaRRea27yZOoKkOmQh11Ui24hGnn3T3uo9uYxyG
-         SJH2wwr9AJzhXgwzSLKzoDRPEgyw8WR7JLMzsjfi/9X1pWigpplD8gu3R6ag2ZREQHW8
-         lkuQMqwMrrG9rwScAxXSfH98PjMalEQH8SuSggfWrtpYPT7zFqW/JtJ0OUEs5ST0kb3o
-         ZDPfRjEW9/h3h10GCALuYT8sANUJV02l7TDWJlJ+LFltbzKrFJMmE/c5c1prhLJrqwGL
-         Yr4g==
-X-Gm-Message-State: AOAM533ask3tk8CSiPSY1xAObN6DOBvzKxKw0y1C2yAA/nXTNTIrT9/q
-        Osj5MfjJvuMg6wveTt1W3MaqDBADp597aA==
-X-Google-Smtp-Source: ABdhPJx9AWJfslURrqrpa2/s6kozXsl9A1u3rf3SFBpZ4BNZ8nUInlemdxkAR16VWwVxadlJPv8VRQ==
-X-Received: by 2002:a17:90a:5d94:: with SMTP id t20mr1092379pji.20.1601927982179;
-        Mon, 05 Oct 2020 12:59:42 -0700 (PDT)
-Received: from [10.230.29.112] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id ne16sm401296pjb.11.2020.10.05.12.59.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 05 Oct 2020 12:59:41 -0700 (PDT)
-To:     Christian Eggers <ceggers@arri.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-References: <20201005160829.5607-1-ceggers@arri.de>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH] net: dsa: microchip: fix race condition
-Message-ID: <66fce8e0-f6ae-488d-25c8-648606703778@gmail.com>
-Date:   Mon, 5 Oct 2020 12:59:39 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.3.1
+        id S1729601AbgJEUEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 16:04:06 -0400
+Received: from mout.kundenserver.de ([212.227.126.131]:34787 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729424AbgJEUEG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 16:04:06 -0400
+Received: from mail-qt1-f173.google.com ([209.85.160.173]) by
+ mrelayeu.kundenserver.de (mreue012 [212.227.15.129]) with ESMTPSA (Nemesis)
+ id 1My6xz-1kaqMd3GVr-00zWYu; Mon, 05 Oct 2020 22:04:04 +0200
+Received: by mail-qt1-f173.google.com with SMTP id q26so5491620qtb.5;
+        Mon, 05 Oct 2020 13:04:04 -0700 (PDT)
+X-Gm-Message-State: AOAM532EtAeC5I6DAStJQMyuLwhcDJWHMFQi9+gGca33oHdiqs99MWj6
+        2Znd3RAKx+M9Xkg9zlwgAsCbwIrl/rRLyiz0B/I=
+X-Google-Smtp-Source: ABdhPJzRHa8pk/FFvESpj+qFo0eHK+5D8ySj4hzAie0Biq5vtin25V5oB0EHJ7egA1kRq9ETWIvxczZP5mr18QYmZ9A=
+X-Received: by 2002:ac8:1ba6:: with SMTP id z35mr1607120qtj.204.1601928243553;
+ Mon, 05 Oct 2020 13:04:03 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20201005160829.5607-1-ceggers@arri.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20201001011232.4050282-1-andrew@lunn.ch> <20201001011232.4050282-2-andrew@lunn.ch>
+ <CAKwvOdnVC8F1=QT03W5Zh9pJdTxxNfRcqXeob5_b4CXycvG1+g@mail.gmail.com>
+ <20201002014411.GG4067422@lunn.ch> <CAKwvOdmdfwWsRtJHtJ16B0RMyoxUi1587OKnyunQd5gfwmnGsA@mail.gmail.com>
+ <20201005194913.GC56634@lunn.ch>
+In-Reply-To: <20201005194913.GC56634@lunn.ch>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Mon, 5 Oct 2020 22:03:47 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1qS8kaXNqAtqMKpWGx05DHVHMYwKBD_j-Zs+DHbL5CNw@mail.gmail.com>
+Message-ID: <CAK8P3a1qS8kaXNqAtqMKpWGx05DHVHMYwKBD_j-Zs+DHbL5CNw@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/2] Makefile.extrawarn: Add symbol for W=1
+ warnings for today
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:091A2ya5H90JNy8I08QrsMLH47xCuJZ8v6k4BsqmG8D5FEVFO80
+ j+bEL7GuzXYS9eUsNMZZN2zxIOfiVU0TR8k8xeUXfy+gQX5AYB4BcCmBsbw9DHHIKJYRZEv
+ kaN97kKed0WceDJj1daEm8bIKFhsSBROYYw70zV0b8hXIga0cE4s6nVPqhy9HSDORLx+BjA
+ 1INjksjxIY5qjVH6wZ6Fw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:dy/mO+HP9UU=:O5WW7HvRFJoKsRCbqSE3UX
+ YMGIHzyHVlILQ1eEsEZnFEirZ/7hNhIEI7VAtSwQzQT1YMwHTmIb8GT+l1IorLATfsDmuThTO
+ ojgoazJCdTIGSQd1AFcrR3K8d9L8vp+s02gkStMo7TqaYER8Ij1qlPCpjH0esbe9vl1iEdzHI
+ WCKQOBQfgqafeNyz76KB+sMVhUbU3lH2Of9tu9mtSOEoaZ1kwOV6QgkQw5vSJQstjatygyp32
+ gMiR4mqmHsbMnvIJpxirZlCRKLnb1SvjcslpVxDRuXT7RACOoAtVjc8pC9wkI4PAXFArSrw6N
+ ZSL0rI6fPW8ciRj2UjEQr1RrvvmV4MokEZJ43zGEyXeUAQBPJq6jQBER/ESNrUIoE9weot4HQ
+ fq86u1G0SRUJJAo+4+su9syJTc0IctsGv4ZEfgzWatJ15NiQPN0Pr+EkQaqGwRf7UFRrb0f78
+ 1cVYvetPhqPopw8ucDLOk5H35VWZFcmT2yFC4UMRDNwzBP7nmIgVD+tMy71EOWrfA7J68s8ai
+ 3IYlTnLukdGqbfRzp08M9yFIPe3WGmLHn801Qlief/n+VVgJ0iyeGeQaXZ4XeXoHMELD7Tz1t
+ fySKoE0qcJHiTrR2CqdB7GUoNLERG2zXcYYxpDqzr2schNIZgIjQNbk7kMoT5YjepKEr/bORN
+ +gDrgkR81a27GIhezZ7gEwwahMsgvTV1iKPMCKG5Ss8Sa7byXWDILWqOF/7LFwDhcItnjGfce
+ U7MsWjeRkZiaK29tRFjLpMlsIs5oU+cgVPEqKZ2NBJQRirYdtTF0SKu/kRrCmI6bcCgvAn1Yi
+ csY7ESXesDKAYF81LGdrSmD8iQ70fGIai54aMyz6Fl+w0uOUzNfPkxQ82qsry1sNsXVjTIG
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Oct 5, 2020 at 9:49 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > Sorry, to be more specific about my concern; I like the idea of
+> > exporting the W=* flags, then selectively applying them via
+> > subdir-ccflags-y.  I don't like the idea of supporting W=1 as defined
+> > at a precise point in time via multiple date specific symbols.  If
+> > someone adds something to W=1, then they should need to ensure subdirs
+> > build warning-free, so I don't think you need to "snapshot" W=1 based
+> > on what it looked like on 20200930.
+>
+> That then contradicts what Masahiro Yamada said to the first version i
+> posted:
+>
+> https://www.spinics.net/lists/netdev/msg685284.html
+> > With this patch series applied, where should we add -Wfoo-bar?
+> > Adding it to W=1 would emit warnings under drivers/net/ since W=1 is
+> > now the default for the net subsystem.
+>
+> The idea with the date stamps was to allow new warnings to be added to
+> W=1 without them immediately causing warnings on normal builds. You
+> are saying that whoever adds a new warning to W=1 needs to cleanup the
+> tree which is already W=1 clean? That might have the side effect that
+> no more warnings are added to W=1 :-(
 
+It depends a lot on what portion of the kernel gets enabled for W=1.
 
-On 10/5/2020 9:08 AM, Christian Eggers wrote:
-> Between queuing the delayed work and finishing the setup of the dsa
-> ports, the process may sleep in request_module() and the queued work may
-> be executed prior the initialization of the DSA ports is finished. In
-> ksz_mib_read_work(), a NULL dereference will happen within
-> netof_carrier_ok(dp->slave).
-> 
-> Not queuing the delayed work in ksz_init_mib_timer() make things even
-> worse because the work will now be queued for immediate execution
-> (instead of 2000 ms) in ksz_mac_link_down() via
-> dsa_port_link_register_of().
-> 
-> Solution:
-> 1. Do not queue (only initialize) delayed work in ksz_init_mib_timer().
-> 2. Only queue delayed work in ksz_mac_link_down() if init is completed.
-> 3. Queue work once in ksz_switch_register(), after dsa_register_switch()
-> has completed.
-> 
-> Signed-off-by: Christian Eggers <ceggers@arri.de>
-> Cc: stable@vger.kernel.org
+As long as it's only drivers that are actively maintained, and they
+make up a fairly small portion of all code, it should not be a problem
+to find someone to fix useful warnings.
 
-This looks fine to me and the analysis appears to be correct, don't you 
-need to pair the test for dev->mib_read_internal being non zero with 
-setting it to zero in ksz_switch_unregister()?
+The only reason to add a flag to W=1 would be that the bugs it reports
+are important enough to look at the false positives and address
+those as well. Whoever decided to enable W=1 by default for their
+subsystem should then also be interested in adding the new warnings.
 
-You would also most likely want to add a Fixes: tag such that this can 
-be back ported to stable trees?
+If I wanted to add a new flag to W=1 and this introduces output
+for allmodconfig, I would start by mailing that output to the
+respective maintainers.
 
-> ---
-> Call tree:
-> ksz9477_i2c_probe()
-> \--ksz9477_switch_register()
->     \--ksz_switch_register()
->        +--dsa_register_switch()
->        |  \--dsa_switch_probe()
->        |     \--dsa_tree_setup()
->        |        \--dsa_tree_setup_switches()
->        |           +--dsa_switch_setup()
->        |           |  +--ksz9477_setup()
->        |           |  |  \--ksz_init_mib_timer()
->        |           |  |     |--/* Start the timer 2 seconds later. */
->        |           |  |     \--schedule_delayed_work(&dev->mib_read, msecs_to_jiffies(2000));
->        |           |  \--__mdiobus_register()
->        |           |     \--mdiobus_scan()
->        |           |        \--get_phy_device()
->        |           |           +--get_phy_id()
->        |           |           \--phy_device_create()
->        |           |              |--/* sleeping, ksz_mib_read_work() can be called meanwhile */
->        |           |              \--request_module()
->        |           |
->        |           \--dsa_port_setup()
->        |              +--/* Called for non-CPU ports */
->        |              +--dsa_slave_create()
->        |              |  +--/* Too late, ksz_mib_read_work() may be called beforehand */
->        |              |  \--port->slave = ...
->        |             ...
->        |              +--Called for CPU port */
->        |              \--dsa_port_link_register_of()
->        |                 \--ksz_mac_link_down()
->        |                    +--/* mib_read must be initialized here */
->        |                    +--/* work is already scheduled, so it will be executed after 2000 ms */
->        |                    \--schedule_delayed_work(&dev->mib_read, 0);
->        \-- /* here port->slave is setup properly, scheduling the delayed work should be safe */
-> 
-> static void ksz_mib_read_work()
-> \--netif_carrier_ok(dp->slave);  dp->slave has not been initialized yet
-> 
-> 
->   drivers/net/dsa/microchip/ksz_common.c | 16 +++++++++-------
->   1 file changed, 9 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-> index 8e755b50c9c1..a94d2278b95c 100644
-> --- a/drivers/net/dsa/microchip/ksz_common.c
-> +++ b/drivers/net/dsa/microchip/ksz_common.c
-> @@ -103,14 +103,8 @@ void ksz_init_mib_timer(struct ksz_device *dev)
->   
->   	INIT_DELAYED_WORK(&dev->mib_read, ksz_mib_read_work);
->   
-> -	/* Read MIB counters every 30 seconds to avoid overflow. */
-> -	dev->mib_read_interval = msecs_to_jiffies(30000);
-> -
->   	for (i = 0; i < dev->mib_port_cnt; i++)
->   		dev->dev_ops->port_init_cnt(dev, i);
-> -
-> -	/* Start the timer 2 seconds later. */
-> -	schedule_delayed_work(&dev->mib_read, msecs_to_jiffies(2000));
->   }
->   EXPORT_SYMBOL_GPL(ksz_init_mib_timer);
->   
-> @@ -143,7 +137,9 @@ void ksz_mac_link_down(struct dsa_switch *ds, int port, unsigned int mode,
->   
->   	/* Read all MIB counters when the link is going down. */
->   	p->read = true;
-> -	schedule_delayed_work(&dev->mib_read, 0);
-> +	/* timer started */
-> +	if (dev->mib_read_interval)
-> +		schedule_delayed_work(&dev->mib_read, 0);
->   }
->   EXPORT_SYMBOL_GPL(ksz_mac_link_down);
->   
-> @@ -446,6 +442,12 @@ int ksz_switch_register(struct ksz_device *dev,
->   		return ret;
->   	}
->   
-> +	/* Read MIB counters every 30 seconds to avoid overflow. */
-> +	dev->mib_read_interval = msecs_to_jiffies(30000);
-> +
-> +	/* Start the MIB timer. */
-> +	schedule_delayed_work(&dev->mib_read, 0);
-> +
->   	return 0;
->   }
->   EXPORT_SYMBOL(ksz_switch_register);
-> 
-
--- 
-Florian
+        Arnd
