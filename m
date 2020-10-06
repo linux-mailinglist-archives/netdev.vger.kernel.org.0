@@ -2,72 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F41F2848D4
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 10:53:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3D632848DB
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 10:56:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726115AbgJFIxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 04:53:41 -0400
-Received: from www62.your-server.de ([213.133.104.62]:57228 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbgJFIxk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 04:53:40 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kPiiu-0008NA-2X; Tue, 06 Oct 2020 10:53:28 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kPiit-0000Io-S3; Tue, 06 Oct 2020 10:53:27 +0200
-Subject: Re: linux-next: build failure after merge of the net-next tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Christoph Hellwig <hch@lst.de>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>
-References: <20201006145847.14093e47@canb.auug.org.au>
- <20201006051301.GA5917@lst.de> <20201006164124.1dfa2543@canb.auug.org.au>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <173e6f80-2211-a614-2953-0f3df35491a9@iogearbox.net>
-Date:   Tue, 6 Oct 2020 10:53:27 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1726181AbgJFI4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 04:56:48 -0400
+Received: from mx2.suse.de ([195.135.220.15]:45466 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725891AbgJFI4s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Oct 2020 04:56:48 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 491D6AD08;
+        Tue,  6 Oct 2020 08:56:46 +0000 (UTC)
+Message-ID: <0b0de451147224657e5ac42d755c05447ee530b0.camel@suse.de>
+Subject: Re: INFO: task hung in hub_port_init
+From:   Oliver Neukum <oneukum@suse.de>
+To:     syzbot <syzbot+74d6ef051d3d2eacf428@syzkaller.appspotmail.com>,
+        coreteam@netfilter.org, davem@davemloft.net,
+        gregkh@linuxfoundation.org, gustavoars@kernel.org,
+        ingrassia@epigenesys.com, kaber@trash.net,
+        kadlec@blackhole.kfki.hu, linux-kernel@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        niklas.soderlund+renesas@ragnatech.se, pablo@netfilter.org,
+        sergei.shtylyov@cogentembedded.com, syzkaller-bugs@googlegroups.com
+Date:   Tue, 06 Oct 2020 10:56:40 +0200
+In-Reply-To: <0000000000004831d405b0fc41d2@google.com>
+References: <0000000000004831d405b0fc41d2@google.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 
 MIME-Version: 1.0
-In-Reply-To: <20201006164124.1dfa2543@canb.auug.org.au>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25948/Mon Oct  5 16:02:22 2020)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/6/20 7:41 AM, Stephen Rothwell wrote:
-> On Tue, 6 Oct 2020 07:13:01 +0200 Christoph Hellwig <hch@lst.de> wrote:
->>
->> On Tue, Oct 06, 2020 at 02:58:47PM +1100, Stephen Rothwell wrote:
->>> Hi all,
->>>
->>> After merging the net-next tree, today's linux-next build (x86_64
->>> allmodconfig) failed like this:
->>
->> It actually doesn't need that or the two other internal headers.
->> Bjoern has a fixed, and it was supposed to be queued up according to
->> patchwork.
+Am Dienstag, den 06.10.2020, 01:19 -0700 schrieb syzbot:
+
+Hi,
+
+> HEAD commit:    d3d45f82 Merge tag 'pinctrl-v5.9-2' of git://git.kernel.or..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=14c3b3db900000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=89ab6a0c48f30b49
+> dashboard link: https://syzkaller.appspot.com/bug?extid=74d6ef051d3d2eacf428
+> compiler:       gcc (GCC) 10.1.0-syz 20200507
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=153bf5bd900000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=124c92af900000
 > 
-> Yeah, it is in the bpf-next tree but not merged into the net-next tree
-> yet.
+> The issue was bisected to:
+> 
+> commit 6dcf45e514974a1ff10755015b5e06746a033e5f
+> Author: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+> Date:   Mon Jan 9 15:34:04 2017 +0000
+> 
+>     sh_eth: use correct name for ECMR_MPDE bit
 
-Yep, applied yesterday. Given a3cf77774abf ("dma-mapping: merge <linux/dma-noncoherent.h>
-into <linux/dma-map-ops.h>") is in dma-mapping tree and not yet affecting bpf-next
-nor net-next, we were planning to ship bpf-next at the usual cadence this week, so it'll
-be in net-next end of week for sure. (If there is urgent reason to have it in net-next
-today, please let us know of course.)
+I am afraid this has bisected a race condition into neverland.
 
-Thanks,
-Daniel
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=152bb760500000
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=172bb760500000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=132bb760500000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+74d6ef051d3d2eacf428@syzkaller.appspotmail.com
+> Fixes: 6dcf45e51497 ("sh_eth: use correct name for ECMR_MPDE bit")
+> 
+> INFO: task kworker/0:0:5 blocked for more than 143 seconds.
+>       Not tainted 5.9.0-rc7-syzkaller #0
+> "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+> task:kworker/0:0     state:D stack:27664 pid:    5 ppid:     2 flags:0x00004000
+> Workqueue: usb_hub_wq hub_event
+> Call Trace:
+>  context_switch kernel/sched/core.c:3778 [inline]
+>  __schedule+0xec9/0x2280 kernel/sched/core.c:4527
+>  schedule+0xd0/0x2a0 kernel/sched/core.c:4602
+
+By this time urb_dequeue() has been killed and has returned.
+
+>  usb_kill_urb.part.0+0x197/0x220 drivers/usb/core/urb.c:696
+>  usb_kill_urb+0x7c/0x90 drivers/usb/core/urb.c:691
+>  usb_start_wait_urb+0x24a/0x2b0 drivers/usb/core/message.c:64
+>  usb_internal_control_msg drivers/usb/core/message.c:102 [inline]
+>  usb_control_msg+0x31c/0x4a0 drivers/usb/core/message.c:153
+>  hub_port_init+0x11ae/0x2d80 drivers/usb/core/hub.c:4689
+>  hub_port_connect drivers/usb/core/hub.c:5140 [inline]
+>  hub_port_connect_change drivers/usb/core/hub.c:5348 [inline]
+>  port_event drivers/usb/core/hub.c:5494 [inline]
+> 
+
+This looks like it should.
+
+Which HC driver are you using for these tests? It looks like
+the HCD is not acting on urb_dequeue(), rather than a locking
+issue.
+
+	Regards
+		Oliver
+
+
