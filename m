@@ -2,98 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E6E9284805
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 10:01:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 138C8284814
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 10:04:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726821AbgJFIBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 04:01:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60510 "EHLO
+        id S1726849AbgJFIEc convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 6 Oct 2020 04:04:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbgJFIBA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 04:01:00 -0400
-X-Greylist: delayed 508 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 06 Oct 2020 01:01:00 PDT
-Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C14F4C061755
-        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 01:01:00 -0700 (PDT)
-Received: from localhost.localdomain (p200300e9d72c3c4353f06c511a49ff67.dip0.t-ipconnect.de [IPv6:2003:e9:d72c:3c43:53f0:6c51:1a49:ff67])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: stefan@datenfreihafen.org)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id 45B16C2A64;
-        Tue,  6 Oct 2020 09:52:28 +0200 (CEST)
-Subject: Re: [RESEND net-next 4/8] net: mac802154: convert tasklets to use new
- tasklet_setup() API
-To:     Allen Pais <allen.lkml@gmail.com>, davem@davemloft.net
-Cc:     gerrit@erg.abdn.ac.uk, kuba@kernel.org, edumazet@google.com,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        johannes@sipsolutions.net, alex.aring@gmail.com,
-        santosh.shilimkar@oracle.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        netdev@vger.kernel.org, Romain Perier <romain.perier@gmail.com>,
-        Allen Pais <apais@linux.microsoft.com>
-References: <20201006063201.294959-1-allen.lkml@gmail.com>
- <20201006063201.294959-5-allen.lkml@gmail.com>
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-Message-ID: <b8600bac-e8b9-4281-dcef-bd7e8d4669f0@datenfreihafen.org>
-Date:   Tue, 6 Oct 2020 09:52:26 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        with ESMTP id S1725891AbgJFIEa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 04:04:30 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24DEC061755
+        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 01:04:29 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kPhxR-0005dC-HG; Tue, 06 Oct 2020 10:04:25 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kPhxQ-0000LH-CK; Tue, 06 Oct 2020 10:04:24 +0200
+Date:   Tue, 6 Oct 2020 10:04:24 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     David Jander <david@protonic.nl>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
+        Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: PHY reset question
+Message-ID: <20201006080424.GA6988@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20201006063201.294959-5-allen.lkml@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 10:01:28 up 32 days, 22:09, 214 users,  load average: 14.90, 14.27,
+ 15.13
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
+Hello PHY experts,
 
-On 06.10.20 08:31, Allen Pais wrote:
-> In preparation for unconditionally passing the
-> struct tasklet_struct pointer to all tasklet
-> callbacks, switch to using the new tasklet_setup()
-> and from_tasklet() to pass the tasklet pointer explicitly.
-> 
-> Signed-off-by: Romain Perier <romain.perier@gmail.com>
-> Signed-off-by: Allen Pais <apais@linux.microsoft.com>
-> ---
->   net/mac802154/main.c | 8 +++-----
->   1 file changed, 3 insertions(+), 5 deletions(-)
-> 
-> diff --git a/net/mac802154/main.c b/net/mac802154/main.c
-> index 06ea0f8bf..520cedc59 100644
-> --- a/net/mac802154/main.c
-> +++ b/net/mac802154/main.c
-> @@ -20,9 +20,9 @@
->   #include "ieee802154_i.h"
->   #include "cfg.h"
->   
-> -static void ieee802154_tasklet_handler(unsigned long data)
-> +static void ieee802154_tasklet_handler(struct tasklet_struct *t)
->   {
-> -	struct ieee802154_local *local = (struct ieee802154_local *)data;
-> +	struct ieee802154_local *local = from_tasklet(local, t, tasklet);
->   	struct sk_buff *skb;
->   
->   	while ((skb = skb_dequeue(&local->skb_queue))) {
-> @@ -91,9 +91,7 @@ ieee802154_alloc_hw(size_t priv_data_len, const struct ieee802154_ops *ops)
->   	INIT_LIST_HEAD(&local->interfaces);
->   	mutex_init(&local->iflist_mtx);
->   
-> -	tasklet_init(&local->tasklet,
-> -		     ieee802154_tasklet_handler,
-> -		     (unsigned long)local);
-> +	tasklet_setup(&local->tasklet, ieee802154_tasklet_handler);
->   
->   	skb_queue_head_init(&local->skb_queue);
->   
-> 
+Short version:
+what is the proper way to handle the PHY reset before identifying PHY?
 
+Long version:
+I stumbled over following issue:
+If PHY reset is registered within PHY node. Then, sometimes,  we will not be
+able to identify it (read PHY ID), because PHY is under reset.
 
-Acked-by: Stefan Schmidt <stefan@datenfreihafen.org>
+mdio {
+	compatible = "virtual,mdio-gpio";
 
-regards
-Stefan Schmidt
+	[...]
+
+	/* Microchip KSZ8081 */
+	usbeth_phy: ethernet-phy@3 {
+		reg = <0x3>;
+
+		interrupts-extended = <&gpio5 12 IRQ_TYPE_LEVEL_LOW>;
+		reset-gpios = <&gpio5 11 GPIO_ACTIVE_LOW>;
+		reset-assert-us = <500>;
+		reset-deassert-us = <1000>;
+	};
+
+	[...]
+};
+
+On simple boards with one PHY per MDIO bus, it is easy to workaround by using
+phy-reset-gpios withing MAC node (illustrated in below DT example), instead of
+using reset-gpios within PHY node (see above DT example).
+
+&fec {
+	[...]
+	phy-mode = "rmii";
+	phy-reset-gpios = <&gpio4 12 GPIO_ACTIVE_LOW>;
+	[...]
+};
+
+On boards with multiple PHYs (for example attached to a switch) and separate
+reset lines to each PHY, it becomes more challenging. In my case, after power
+cycle the system is working as expected:
+- pinmux is configured to GPIO mode with internal pull-up
+- GPIO is by default in input state. So the internal pull-up will automatically
+  dessert the PHY reset.
+
+On reboot, the system will assert the reset. GPIO configuration will survive the
+reboot and PHYs will stay in the reset state, and not detected by the system.
+
+So far I have following options/workarounds:
+- do all needed configurations in the bootloader.
+  Disadvantage:
+  - not clear at which init level it should be done?
+    1. Boot ROM script (in case of iMX). One fix per each board. Ease to forget.
+    2. Pre bootloader. Same as 1.
+    3. GPIO driver in the bootloader. What if some configuration was done in
+       1. or 2.?
+  - we will go back to the same problem if we jumped to Kexec
+
+- Use compatible ("compatible = "ethernet-phy-id0022.1560") in the devicetree,
+  so that reading the PHYID is not needed
+  - easy to solve.
+  Disadvantage:
+  - losing PHY auto-detection capability
+  - need a new devicetree if different PHY is used (for example in different
+    board revision)
+
+- modify PHY framework to deassert reset before identifying the PHY. 
+  Disadvantages?
+
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
