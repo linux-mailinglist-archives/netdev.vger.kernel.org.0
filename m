@@ -2,108 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B93D2845DC
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 08:13:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF4BD2845F0
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 08:22:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727137AbgJFGM6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 02:12:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43712 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726022AbgJFGM5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 02:12:57 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A276FC0613A7
-        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 23:12:57 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id 34so7379345pgo.13
-        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 23:12:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=A7J+7LCMnngWYfExdQcrScC+YWq3P/NsolST99HIK/M=;
-        b=m2DZsMyadUBNsPBDJrwZe0cFIrZACVrKSfXIOmz2msgb47fIswXmLfh1OFeiutAtzM
-         y01YzCDMdZSYvecVqqHJdhRyLtDOAn+r9/kA+tMa9m5rP1MMk+MT9brT8oNvcwqPAkcC
-         we14/GMlv+uKEkieQgPXUxTphDTY3nfLum2hIXlvrg1VF5lrZ+2Wry4X29m92b3AK+dW
-         zfvtgrd2GgXru/fTdevxI9mesIepAMtwCqhJpjmMFBkchj17eRJfseJv5kkqLq5yfvdd
-         DmN8+sctVsjgRFj2p6DcxuOTtKIkZvB0eROwYcHm3hmjAVxHKEm6nMh8gsgdds5jE7Ew
-         2bEQ==
+        id S1726921AbgJFGWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 02:22:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55938 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726022AbgJFGWY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 02:22:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1601965343;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=cABuv5tFxr+o7caWDmev7YzIrHPEZqeTI2swVLejHzc=;
+        b=BfhLJYnf8ukMkQocxyxef+lefAoQzXdoTTcmCn501GCBkLlNbXdc4Ec8RXa6hVvx6R1FLq
+        wrLvf6BcqUCI6umKRh+0dvZO0uPy4uct5+6N6TFSsEpl0ZHCQHjsCB8/6EmD8aFUujEWbT
+        XVOEWR5hcDDby3YOcqmHwb4DLjZLohA=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-150-ieny6rzbO_q39g3NQRAiww-1; Tue, 06 Oct 2020 02:22:21 -0400
+X-MC-Unique: ieny6rzbO_q39g3NQRAiww-1
+Received: by mail-wr1-f70.google.com with SMTP id r16so4921904wrm.18
+        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 23:22:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=A7J+7LCMnngWYfExdQcrScC+YWq3P/NsolST99HIK/M=;
-        b=fws7d8S4fQ5UUB7egU63iGsL5F1EFcaw4/tL6Rdoe0tL+Pls8ytfgxIPgwOhnRoa88
-         10WhmqGq5wdkDAthUhpZWkbF9zYZ5soFQiqy6m4BAS5G/VLtaSnVHsxQNYg7O+tHGDVh
-         3yPH3ZAcjaFptDr2qKEze+cFdNpCXjmCcYFKSquwOHTHg1DrMis7qGc5BsyRTC6vxnJ5
-         HHXzYAsTdDz+BgwPxxK1RvmWL9tD6DQ8yyRZ8oXH26GhYi99fZdLMQxXGsx+cgkxRKKP
-         bBpd3u1K7S1thR+1FH6fNSC0F5P3bowpFGp3jzvouEfn/z2ujA/AX15IoD2WLYM11G2u
-         iJvA==
-X-Gm-Message-State: AOAM533OAg+/LQiCqMTZc+KQfhwFlMNlcplv3NHCmT4iEsTRcJj+9F72
-        U5NLCuVaol1+UKTUjT4P+wk=
-X-Google-Smtp-Source: ABdhPJyKvtv8lbNKWYSS7vgVs64tEdTZGkobL44Db7eJM+4pL8DuIh6Axh41kbpRRnEoOJu6auppQA==
-X-Received: by 2002:a62:1e81:0:b029:142:2dad:a68 with SMTP id e123-20020a621e810000b02901422dad0a68mr3264658pfe.5.1601964777162;
-        Mon, 05 Oct 2020 23:12:57 -0700 (PDT)
-Received: from localhost.localdomain ([49.207.203.202])
-        by smtp.gmail.com with ESMTPSA id c12sm2046410pfj.164.2020.10.05.23.12.53
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=cABuv5tFxr+o7caWDmev7YzIrHPEZqeTI2swVLejHzc=;
+        b=OePvYenL6jaif+rE4FRjBzfnE9oh+wHhZ0lqCC/fLXm2nQzyaDkpWYh74Nu/9yUh4a
+         CjMHdf+jRNgnKdHFKt/XCpLC3dO/+7yukw3YGbpYBqiTWWPejPTwGgY0kN0bakRQellH
+         /1xzzSVyK2EqEF8EuwAMQkfxmaTQAWMHeUDiG3u9MLBcROYh9iyGAPMDaK5TH/bTMNyX
+         I+e3c2el56PVhG16Tk2cuRw3VdYKYJyDdnHggeEtgpiHq1YC+BVF+g1sSEN/LY5ENfFU
+         dWGNfjbH462FgC9aRbiDSlLj7GVrHP93DTvTAmlSmeO4EBUn+EwEYbHFQLl8GWKbu2uc
+         m65Q==
+X-Gm-Message-State: AOAM5308zVT5JqzZCB9WoE45XLniRzpIpDiXjF4uflnJaJW51vKu8/OB
+        +wcU0axIGwj4awYFzyGKxspS3eTlTvkNG5QdCbetuoPurevibiulV7tShHG0TnlVkq9McUse1oR
+        FyGd/viMdaKCMMMDs
+X-Received: by 2002:a1c:6341:: with SMTP id x62mr2960292wmb.70.1601965339970;
+        Mon, 05 Oct 2020 23:22:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx2gvNV1LSmLX/+VDO4Yf2Zjs3i0Rf5UDSyb4S9V6nUVLErBUxWwCSSzaYv4MAqhHcHl83azg==
+X-Received: by 2002:a1c:6341:: with SMTP id x62mr2960267wmb.70.1601965339738;
+        Mon, 05 Oct 2020 23:22:19 -0700 (PDT)
+Received: from redhat.com (bzq-79-179-71-128.red.bezeqint.net. [79.179.71.128])
+        by smtp.gmail.com with ESMTPSA id g83sm2388409wmf.15.2020.10.05.23.22.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Oct 2020 23:12:56 -0700 (PDT)
-From:   Allen Pais <allen.lkml@gmail.com>
-To:     davem@davemloft.net
-Cc:     m.grzeschik@pengutronix.de, kuba@kernel.org, paulus@samba.org,
-        oliver@neukum.org, woojung.huh@microchip.com,
-        UNGLinuxDriver@microchip.com, petkan@nucleusys.com,
-        netdev@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>,
-        Romain Perier <romain.perier@gmail.com>
-Subject: [next-next v3 10/10] net: rtl8150: convert tasklets to use new tasklet_setup() API
-Date:   Tue,  6 Oct 2020 11:41:59 +0530
-Message-Id: <20201006061159.292340-11-allen.lkml@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201006061159.292340-1-allen.lkml@gmail.com>
-References: <20201006061159.292340-1-allen.lkml@gmail.com>
+        Mon, 05 Oct 2020 23:22:18 -0700 (PDT)
+Date:   Tue, 6 Oct 2020 02:22:15 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Si-Wei Liu <siwliu.kernel@gmail.com>
+Cc:     elic@nvidia.com, jasowang@redhat.com, netdev@vger.kernel.org,
+        joao.m.martins@oracle.com, boris.ostrovsky@oracle.com,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        Si-Wei Liu <si-wei.liu@oracle.com>
+Subject: Re: [PATCH] vdpa/mlx5: should keep avail_index despite device status
+Message-ID: <20201006022133-mutt-send-email-mst@kernel.org>
+References: <1601583511-15138-1-git-send-email-si-wei.liu@oracle.com>
+ <CAPWQSg1y8uvpiwxxp_ONGFs8GeuOY09q3AShfLCmhv77ePma-Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPWQSg1y8uvpiwxxp_ONGFs8GeuOY09q3AShfLCmhv77ePma-Q@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Allen Pais <apais@linux.microsoft.com>
+On Fri, Oct 02, 2020 at 01:17:00PM -0700, Si-Wei Liu wrote:
+> + Eli.
+> 
+> On Thu, Oct 1, 2020 at 2:02 PM Si-Wei Liu <si-wei.liu@oracle.com> wrote:
+> >
+> > A VM with mlx5 vDPA has below warnings while being reset:
+> >
+> > vhost VQ 0 ring restore failed: -1: Resource temporarily unavailable (11)
+> > vhost VQ 1 ring restore failed: -1: Resource temporarily unavailable (11)
+> >
+> > We should allow userspace emulating the virtio device be
+> > able to get to vq's avail_index, regardless of vDPA device
+> > status. Save the index that was last seen when virtq was
+> > stopped, so that userspace doesn't complain.
+> >
+> > Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
 
-In preparation for unconditionally passing the
-struct tasklet_struct pointer to all tasklet
-callbacks, switch to using the new tasklet_setup()
-and from_tasklet() to pass the tasklet pointer explicitly.
+Eli can you review this pls? I need to send a pull request to Linux by
+tomorrow - do we want to include this?
 
-Signed-off-by: Romain Perier <romain.perier@gmail.com>
-Signed-off-by: Allen Pais <apais@linux.microsoft.com>
----
- drivers/net/usb/rtl8150.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/usb/rtl8150.c b/drivers/net/usb/rtl8150.c
-index 733f120c8..d8f3b44ef 100644
---- a/drivers/net/usb/rtl8150.c
-+++ b/drivers/net/usb/rtl8150.c
-@@ -589,9 +589,9 @@ static void free_skb_pool(rtl8150_t *dev)
- 		dev_kfree_skb(dev->rx_skb_pool[i]);
- }
- 
--static void rx_fixup(unsigned long data)
-+static void rx_fixup(struct tasklet_struct *t)
- {
--	struct rtl8150 *dev = (struct rtl8150 *)data;
-+	struct rtl8150 *dev = from_tasklet(dev, t, tl);
- 	struct sk_buff *skb;
- 	int status;
- 
-@@ -890,7 +890,7 @@ static int rtl8150_probe(struct usb_interface *intf,
- 		return -ENOMEM;
- 	}
- 
--	tasklet_init(&dev->tl, rx_fixup, (unsigned long)dev);
-+	tasklet_setup(&dev->tl, rx_fixup);
- 	spin_lock_init(&dev->rx_pool_lock);
- 
- 	dev->udev = udev;
--- 
-2.25.1
+> > ---
+> >  drivers/vdpa/mlx5/net/mlx5_vnet.c | 20 ++++++++++++++------
+> >  1 file changed, 14 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > index 70676a6..74264e59 100644
+> > --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> > @@ -1133,15 +1133,17 @@ static void suspend_vq(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_virtqueue *m
+> >         if (!mvq->initialized)
+> >                 return;
+> >
+> > -       if (query_virtqueue(ndev, mvq, &attr)) {
+> > -               mlx5_vdpa_warn(&ndev->mvdev, "failed to query virtqueue\n");
+> > -               return;
+> > -       }
+> >         if (mvq->fw_state != MLX5_VIRTIO_NET_Q_OBJECT_STATE_RDY)
+> >                 return;
+> >
+> >         if (modify_virtqueue(ndev, mvq, MLX5_VIRTIO_NET_Q_OBJECT_STATE_SUSPEND))
+> >                 mlx5_vdpa_warn(&ndev->mvdev, "modify to suspend failed\n");
+> > +
+> > +       if (query_virtqueue(ndev, mvq, &attr)) {
+> > +               mlx5_vdpa_warn(&ndev->mvdev, "failed to query virtqueue\n");
+> > +               return;
+> > +       }
+> > +       mvq->avail_idx = attr.available_index;
+> >  }
+> >
+> >  static void suspend_vqs(struct mlx5_vdpa_net *ndev)
+> > @@ -1411,8 +1413,14 @@ static int mlx5_vdpa_get_vq_state(struct vdpa_device *vdev, u16 idx, struct vdpa
+> >         struct mlx5_virtq_attr attr;
+> >         int err;
+> >
+> > -       if (!mvq->initialized)
+> > -               return -EAGAIN;
+> > +       /* If the virtq object was destroyed, use the value saved at
+> > +        * the last minute of suspend_vq. This caters for userspace
+> > +        * that cares about emulating the index after vq is stopped.
+> > +        */
+> > +       if (!mvq->initialized) {
+> > +               state->avail_index = mvq->avail_idx;
+> > +               return 0;
+> > +       }
+> >
+> >         err = query_virtqueue(ndev, mvq, &attr);
+> >         if (err) {
+> > --
+> > 1.8.3.1
+> >
 
