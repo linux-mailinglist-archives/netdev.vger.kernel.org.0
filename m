@@ -2,110 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E362284616
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 08:33:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17DCE284626
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 08:37:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727143AbgJFGdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 02:33:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46846 "EHLO
+        id S1726991AbgJFGhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 02:37:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725962AbgJFGdG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 02:33:06 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20042C0613A7
-        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 23:33:06 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id 34so7405060pgo.13
-        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 23:33:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=eJt7odAAaoqJqWkvl4bKx65VokapE4qYrDJxFhJYjJA=;
-        b=dPDR/JVQFZzCu+zBqWIXwHnMGUjjvBiTtV4F2YMhkbPGwapUbqqW4CHwIZXF4Od5qZ
-         shjMNpsWSb8ZdbBCpE4WNX+srWsQvegWIH8CZh8YHq1/TcdHyigEwn7SZoqCNi/0sYQ6
-         kDNpJni/LBV3sFTbKj5RizoM69Pom+P0xO8XesRIQsSp7Idu6vSBtD2Fi6IhF14+cbmA
-         zpMz5ibXQfyhPh1zFsyZ/1XvWETDcXLTOJAwCjYZtQIxwEbrISAD/VOjRdvZa/Osybjn
-         LTV0n/7dvZaSLiE8Y04ViTbRZjjFJGgVfdG8CptgokB4aTyVGOr7QimbzmIUhAHsiTOK
-         /zEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=eJt7odAAaoqJqWkvl4bKx65VokapE4qYrDJxFhJYjJA=;
-        b=P5Ues7E/0jot8xJyVMtr3M3hWviaqdbTDNEEcNVxNtHj+qThER3HyGt0EU5/NcZuao
-         TxoNJbDJCB6Q9yDHOeyJQMsDztibFIfE2eEpv/8rra4UkyjJ3MjFa72mZO+06KSFrtab
-         4ZwoaCIpARo/6nY/mTsHGbCyl6RBY0mrMxSIIdUjngZOsb/BRzyE47D3eRh5kAB7MfEK
-         TeYVSyGitgLT/PyWdn5o5CZrU4kjGJNHh4SSueUIUevSA0zSOowktxOQIbugU5Gzx5dz
-         v6ekQhUKrRt8CLt4UnS8eB/PhpGesBs/PWbRqQGzDVp951S+IX3kwMlC3jnAn0irLBUP
-         FSjw==
-X-Gm-Message-State: AOAM531EFLAva96qTQ1+/MRgyaSrR2QTdP+cVmzcwdjuVpwW6P4x9ZAj
-        9DTDMDlFnmwkQzAkyz6anp8=
-X-Google-Smtp-Source: ABdhPJwrn0Sk5bzuKiFaMzIWSSxKVjMXvMVanGsOBYlenrrJe1quGZxuHRtej9G7B68BRFvIpkbRzg==
-X-Received: by 2002:aa7:96fb:0:b029:152:879f:4782 with SMTP id i27-20020aa796fb0000b0290152879f4782mr2986303pfq.45.1601965985724;
-        Mon, 05 Oct 2020 23:33:05 -0700 (PDT)
-Received: from localhost.localdomain ([49.207.203.202])
-        by smtp.gmail.com with ESMTPSA id 124sm2047361pfd.132.2020.10.05.23.33.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Oct 2020 23:33:05 -0700 (PDT)
-From:   Allen Pais <allen.lkml@gmail.com>
-To:     davem@davemloft.net
-Cc:     gerrit@erg.abdn.ac.uk, kuba@kernel.org, edumazet@google.com,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        johannes@sipsolutions.net, alex.aring@gmail.com,
-        stefan@datenfreihafen.org, santosh.shilimkar@oracle.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        netdev@vger.kernel.org, Allen Pais <allen.lkml@gmail.com>,
-        Romain Perier <romain.perier@gmail.com>,
-        Allen Pais <apais@linux.microsoft.com>
-Subject: [RESEND net-next 8/8] net: xfrm: convert tasklets to use new tasklet_setup() API
-Date:   Tue,  6 Oct 2020 12:02:01 +0530
-Message-Id: <20201006063201.294959-9-allen.lkml@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201006063201.294959-1-allen.lkml@gmail.com>
-References: <20201006063201.294959-1-allen.lkml@gmail.com>
+        with ESMTP id S1725962AbgJFGhR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 02:37:17 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 465CEC0613A7
+        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 23:37:17 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1kPgar-0004pN-UO; Tue, 06 Oct 2020 08:37:02 +0200
+Message-ID: <3418a5af0030a7d4aa447fd8d6ef75b0a6cb3259.camel@sipsolutions.net>
+Subject: Re: [PATCH net-next 5/6] netlink: add mask validation
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, davem@davemloft.net,
+        netdev@vger.kernel.org, kernel-team@fb.com, jiri@resnulli.us,
+        andrew@lunn.ch, dsahern@gmail.com, pablo@netfilter.org
+Date:   Tue, 06 Oct 2020 08:37:01 +0200
+In-Reply-To: <20201005152110.42b8e71e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201005155753.2333882-1-kuba@kernel.org>
+         <20201005155753.2333882-6-kuba@kernel.org>
+         <c28aa386c1a998c1bc1a35580f016e129f58a5e3.camel@sipsolutions.net>
+         <20201005192857.2pvd6oj3nzps6n2y@lion.mk-sys.cz>
+         <93103e3d9496ea0e3e3b9e7f9850c9b12f2397b6.camel@sipsolutions.net>
+         <20201005124029.5ebe684d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <37c768d663f7f3158f1bfae6d7e1aa86e76e9880.camel@sipsolutions.net>
+         <667995b1fe577e6c6c562856fe85cb1a853acb68.camel@sipsolutions.net>
+         <20201005152110.42b8e71e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In preparation for unconditionally passing the
-struct tasklet_struct pointer to all tasklet
-callbacks, switch to using the new tasklet_setup()
-and from_tasklet() to pass the tasklet pointer explicitly.
+On Mon, 2020-10-05 at 15:21 -0700, Jakub Kicinski wrote:
 
-Signed-off-by: Romain Perier <romain.perier@gmail.com>
-Signed-off-by: Allen Pais <apais@linux.microsoft.com>
----
- net/xfrm/xfrm_input.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+> > > Nice, easy & useful, maybe I'll code it up tomorrow.  
+> > 
+> > OK I thought about it a bit more and looked at the code, and it's not
+> > actually possible to do easily right now, because we can't actually
+> > point to the bad attribute from the general lib/nlattr.c code ...
+> > 
+> > Why? Because we don't know right now, e.g. for nla_validate(), where in
+> > the message we started validation, i.e. the offset of the "head" inside
+> > the particular message.
+> > 
+> > For nlmsg_parse() and friends that's a bit easier, but it needs more
+> > rejiggering than I'm willing to do tonight ;)
+> 
+> I thought we'd record the const struct nla_policy *tp for the failing
+> attr in struct netlink_ext_ack and output based on that.
 
-diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index 37456d022..be6351e3f 100644
---- a/net/xfrm/xfrm_input.c
-+++ b/net/xfrm/xfrm_input.c
-@@ -760,9 +760,9 @@ int xfrm_input_resume(struct sk_buff *skb, int nexthdr)
- }
- EXPORT_SYMBOL(xfrm_input_resume);
- 
--static void xfrm_trans_reinject(unsigned long data)
-+static void xfrm_trans_reinject(struct tasklet_struct *t)
- {
--	struct xfrm_trans_tasklet *trans = (void *)data;
-+	struct xfrm_trans_tasklet *trans = from_tasklet(trans, t, tasklet);
- 	struct sk_buff_head queue;
- 	struct sk_buff *skb;
- 
-@@ -818,7 +818,6 @@ void __init xfrm_input_init(void)
- 
- 		trans = &per_cpu(xfrm_trans_tasklet, i);
- 		__skb_queue_head_init(&trans->queue);
--		tasklet_init(&trans->tasklet, xfrm_trans_reinject,
--			     (unsigned long)trans);
-+		tasklet_setup(&trans->tasklet, xfrm_trans_reinject);
- 	}
- }
--- 
-2.25.1
+We could, but it's a bit useless if you know "which" attribute caused
+the issue, but you don't know where it was in the message? That way you
+wouldn't know the nesting level etc.
+
+I mean, we actually have that problem today - the generic lib/nlattr.c
+policy violation doesn't tell you where exactly the problem occurred, so
+it'd be good to fix that regardless.
+
+johannes
 
