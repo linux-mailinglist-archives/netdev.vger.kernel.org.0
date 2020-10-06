@@ -2,94 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A4F5284604
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 08:28:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76C97284602
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 08:27:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726938AbgJFG2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 02:28:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32391 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726022AbgJFG2r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 02:28:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601965726;
+        id S1727040AbgJFG1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 02:27:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45992 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726957AbgJFG1p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 02:27:45 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60F34C0613A7;
+        Mon,  5 Oct 2020 23:27:45 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1601965663;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=f8EEeFHl54ekBi2EYp8/Pctg0a03FhMC0u46rQIjQ6s=;
-        b=NXxgx1OBb3e/HR0Yu98E8MST1QOdwPVzKnvElu88sxrGzJEWuWEk9627lvnJmV7tqUfL79
-        ZU+PCUGUZzlGFL8uNBlDvfu5EFSGOFAn9jEhj+O+vIg8q3yhOROz9RXrqa/+SYj1Y4vhK/
-        KvCICRXfgsKWaSLgPTf/6wNrgLd8A5E=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-267-8LP2dlVbM_mrrnqpTowQQQ-1; Tue, 06 Oct 2020 02:28:42 -0400
-X-MC-Unique: 8LP2dlVbM_mrrnqpTowQQQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BA54018A0764;
-        Tue,  6 Oct 2020 06:28:41 +0000 (UTC)
-Received: from gerbillo.redhat.com (ovpn-112-231.ams2.redhat.com [10.36.112.231])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7F1CF5D9D2;
-        Tue,  6 Oct 2020 06:28:40 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>, mptcp@lists.01.org
-Subject: [PATCH net-next] mptcp: fix infinite loop on recvmsg()/worker() race.
-Date:   Tue,  6 Oct 2020 08:27:34 +0200
-Message-Id: <5a2464d778499bdc2ced43b56569008030b470bc.1601965539.git.pabeni@redhat.com>
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SG1hX4RpJ2cgd0+twelFInFVuEr0F5kpEMUoLXcxSFM=;
+        b=HTKIpbi5M+5siFbJCoYh7ovIqLgttVuCH3/hd07/EojDYenNQv6iF4yfpMR7cFBtDpKYE0
+        85dysrQ8gmaDWd9kC/q9WeS8SWiq70241NZ6p+Y5BSGqp1Fiis45mNEHrq3l8UbbBX+or3
+        yA63BmZoe98eqh2ruu34eiQ8eHTUb6r1aC7FeBdIkjOyNfImmYltRV0oqsvis7tWVfYr+9
+        CAEUW02z2st8u2ffz5DMxY1S8M90HgNeQ5v1hyPN8d3HyZAe7FtLLTylrbnzZp1zbdG0oU
+        MFK89TUUjZX95hudQTdqw37WQV82Mh4OusIJ8tZ4b7yen5tInVQN8wUT0k+vig==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1601965663;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SG1hX4RpJ2cgd0+twelFInFVuEr0F5kpEMUoLXcxSFM=;
+        b=XjgLGnKOJLTSMt+Lja6e7mLfPf6iIIYzb8lYq0ARL4r0wv4XH2mJDF2ZMftmO1Gmd4ATFG
+        /45SUtm0lscx1cBg==
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH net-next v6 4/7] net: dsa: hellcreek: Add support for hardware timestamping
+In-Reply-To: <20201004143000.blb3uxq3kwr6zp3z@skbuf>
+References: <20201004112911.25085-1-kurt@linutronix.de> <20201004112911.25085-5-kurt@linutronix.de> <20201004143000.blb3uxq3kwr6zp3z@skbuf>
+Date:   Tue, 06 Oct 2020 08:27:42 +0200
+Message-ID: <87imbn98dd.fsf@kurt>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If recvmsg() and the workqueue race to dequeue the data
-pending on some subflow, the current mapping for such
-subflow covers several skbs and some of them have not
-reached yet the received, either the worker or recvmsg()
-can find a subflow with the data_avail flag set - since
-the current mapping is valid and in sequence - but no
-skbs in the receive queue - since the other entity just
-processed them.
+--=-=-=
+Content-Type: text/plain
 
-The above will lead to an unbounded loop in __mptcp_move_skbs()
-and a subsequent hang of any task trying to acquiring the msk
-socket lock.
+On Sun Oct 04 2020, Vladimir Oltean wrote:
+> On Sun, Oct 04, 2020 at 01:29:08PM +0200, Kurt Kanzenbach wrote:
+>> +/* Enabling/disabling TX and RX HW timestamping for different PTP messages is
+>> + * not available in the switch. Thus, this function only serves as a check if
+>> + * the user requested what is actually available or not
+>> + */
+>
+> Correct me if I'm wrong, but to the user it makes zero difference
+> whether the hardware takes timestamps or not.
 
-This change addresses the issue stopping the __mptcp_move_skbs()
-loop as soon as we detect the above race (empty receive queue
-with data_avail set).
+Why not? I think it makes a difference to the user b/o the precision.
 
-Reported-and-tested-by: syzbot+fcf8ca5817d6e92c6567@syzkaller.appspotmail.com
-Fixes: ab174ad8ef76 ("mptcp: move ooo skbs into msk out of order queue.")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/protocol.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+> What matters is whether the skb will be delivered to the stack with a
+> hardware timestamp or not, so you should definitely accept a
+> hwtstamp_config with TX and RX timestamping disabled.
+>
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index f483eab0081a..42928db28351 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -471,8 +471,15 @@ static bool __mptcp_move_skbs_from_subflow(struct mptcp_sock *msk,
- 				mptcp_subflow_get_map_offset(subflow);
- 
- 		skb = skb_peek(&ssk->sk_receive_queue);
--		if (!skb)
-+		if (!skb) {
-+			/* if no data is found, a racing workqueue/recvmsg
-+			 * already processed the new data, stop here or we
-+			 * can enter an infinite loop
-+			 */
-+			if (!moved)
-+				done = true;
- 			break;
-+		}
- 
- 		if (__mptcp_check_fallback(msk)) {
- 			/* if we are running under the workqueue, TCP could have
--- 
-2.26.2
+Sorry, I cannot follow you here.
 
+Thanks,
+Kurt
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl98Dl4ACgkQeSpbgcuY
+8KabdxAA0SgprQl2AgyD0AY/qVDLxy1XHCf0QhEZEoDKWIHX3ijEoZ0Dni1WsOwF
+dXnvL/ZQb2mcdrl+uJcN5ypMlBi+m5N7leV+RBO6juLDA8dp8ychKxCrhVtC3/sF
+fsj/vS7NHfXMJS1/CuBYcPX+YUpbzJpRVvDtd2E8FZYTyuKRDLrGIB8plEtltDv6
+aS/WC3EfExvKz1JFrtDSyR+4W6SIB2rLUFmG86P7w5304fFnmznLfwDHIEFPFZcv
+RY9zAjgv2tPLJyQ81gzCPsAlz/QUTsDgwoTc8DFsmsxcVTC9jOxNIuCpOUWnvtBD
+c/2ufJBmgsU0y7e1l3Z/Us3pvpTGpYI+b1OFsuiwOWBaQPc6J5IZi6A/KrtoWWDH
+mlH3yJPMyc7wRsjggS81jjgk1oNqkI+wDQ9imPrGiRi2/0Kz717uiiaJy9E2fDKw
+wE2r9o591w+eb7MlK6bEBZnnYAtwxsSvEMlqRmvbgYk+ZwOO59RSuUG+1ivqJ62+
+Tu99v2bd8aMgVIQOxcMaLNRwe/K5q6gjEDC/tfvtS+tol+HPKVOLPUbXOIH2PmKv
+McW9qVbILMyR5GMSbFJGpsYIITTbfllBxThCgSRxyeT32ezFSaK7/8lShN16QR2a
+tqmr8IkDt/VYwFzpSOtzkg38NK3ko/RUkJO578fclSNePEybXW0=
+=qmWw
+-----END PGP SIGNATURE-----
+--=-=-=--
