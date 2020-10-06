@@ -2,225 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52C9B284B81
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 14:19:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FAF2284B9E
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 14:28:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726267AbgJFMT5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 08:19:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:45447 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726133AbgJFMT5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 08:19:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601986794;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ssEr4+KLefz7b8l1r3pzqPIGmW5IWXQ0wdsCMzIi4Wk=;
-        b=KIgI2gK2hrvHmHqjm33iPyITpvw1+2lkuyxo9pLbOZX5cnIuf+d0Z4OtaqooUY4U4jrm/T
-        k7QMYVBZtzCc8ZW8rSkGWpAfTvbhDp4Lnrh0nke5v9j1qcnrbfIfeBN/QQVjLAFYT7N9bZ
-        dmSH4EEwGA6eiakfoAYD2OYfTs+0vGE=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-574-Kqbz3Dn-POSIxhFfMRVhzQ-1; Tue, 06 Oct 2020 08:19:51 -0400
-X-MC-Unique: Kqbz3Dn-POSIxhFfMRVhzQ-1
-Received: by mail-ed1-f71.google.com with SMTP id y1so6016240edw.16
-        for <netdev@vger.kernel.org>; Tue, 06 Oct 2020 05:19:51 -0700 (PDT)
+        id S1726335AbgJFM2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 08:28:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45288 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726241AbgJFM2a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 08:28:30 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91D5DC061755;
+        Tue,  6 Oct 2020 05:28:30 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id y20so1140294pll.12;
+        Tue, 06 Oct 2020 05:28:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=34g3MdNJVEk4Coh+a8Qqghb5lgYQKjZyNrJqboaybe0=;
+        b=n3gBGG5oo+3Yazlcbz9JapTBnucdsFoIi8Bu1shJ3izqdc74CCAmrl3Q6dlEXb988t
+         4fTjce8E/f4K/gwK/SWgWKlSEqphQAv34UHVrnnBY4k/1l/JGIMDxH/jGsdAYmobyW8I
+         NqVlQiS9gzsYwC5/3SE6i9xYwLdebx8z1SvLoaNLEqW3IoYUlBNfE4j9xlABvgxRC2Ac
+         TB1aPdfp918cizEmSNsbJ4vOrenJnC5vwdNDIahuLzwYu+uM49LKDtt/Fc61xQwF75w4
+         Jp7NwjyGENiuPAdif6xN4pblLVMF39wEjuTg2ELcuJY2TtD+rCPI1/VwSiaR54LiLeEl
+         3BVg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ssEr4+KLefz7b8l1r3pzqPIGmW5IWXQ0wdsCMzIi4Wk=;
-        b=mnqpaqmjwg/uD5ZE51h/h/kHbLPmjYRBfFEt4dXc3UEBNB90SxAm0MkDrOVwcrBL5C
-         9MpJhSBz1kt4oIfQ8LcTQliIO74x2z1QqHsI5YAMRbNYo4Hr/BV5jVnCr2fcjzXqDrpf
-         Sysur2ScFpQbU8GuYHF8AH3aOax77tW9pQpva8urDiCBvtZBV4kjch4vcNF6KvzjwIsr
-         hLW0hBG0PugLE6qbE76HfpXNI5spV8O8Kv4GuRP/BnKb1bWjj+yD4SubOEZqMIa6QgL6
-         BzLjAym3zheBn2tYyXxysz3ESJcJSgiNHSsF5j+PonM1vb1i1b+JxoeFEv87eLM1CxXZ
-         AdIw==
-X-Gm-Message-State: AOAM531Ld/FfK9LmlfL13GfCfW9blTygM4Bp8X8pi8pBygwy6AAXsmA0
-        Qf1fWii6McXQpzJOBi2YhiD3mTuihKUr0EIu6qJkplALT+P9yVHgFqA3OWXfurWZoVcMz74SvcW
-        /SIjwYg0qt9w2llTvm/pg75xwIMZBmuRH
-X-Received: by 2002:a05:6402:8:: with SMTP id d8mr4897349edu.15.1601986790275;
-        Tue, 06 Oct 2020 05:19:50 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyDqkzZfE7Znj5a06vmJwL8nLrgqfEU7mZxj94m9TdbsEixdrMxP43YIuE3jjMAU+YY7eqSkM+OG0yKfapkqsE=
-X-Received: by 2002:a05:6402:8:: with SMTP id d8mr4897325edu.15.1601986789921;
- Tue, 06 Oct 2020 05:19:49 -0700 (PDT)
+        bh=34g3MdNJVEk4Coh+a8Qqghb5lgYQKjZyNrJqboaybe0=;
+        b=BmvQeo4iYst3Bq3Nqd5/QXG2R42ocXALc6ssl4qrTYYs7zmi9YbOFzrT772PHPHG70
+         NQsig9DwmEBdbHJB+ooGVBfVLtbEA64Xl49Im8ThJVcZrsSfneguaSKYau9Bs51CHmfP
+         Va9iCW15K4ZUxrV/SjGbj0R9I4XzkDi51WsyMr0Fn6OObs3u5XJk72DvHwHG1G8gLj7o
+         0X4iWJcctShcMpb6shxrmhdNyUCm/qwYNhIkiAkgN/2S/11y0K2swRhFGgbmc/J0jfmM
+         EIlCBoCKczxyaxIiziKgq0PgERg0I4Wn2qaF9d6fxjiSFAeFWS9T9ZC8nwGxUUhWfK23
+         LTwg==
+X-Gm-Message-State: AOAM533O/eqE0zAkfWecnaMQ0sRjWjrr5bxko0C3aMeH8DIm/57iN9kb
+        5VJAg/SSpcr8yoFm1oPKy4mL5ABD3l07OR8rvzs=
+X-Google-Smtp-Source: ABdhPJwB4Cxh6Xm29QPguQme76vU2edavYDHuq6X+ZxPViM44IF+dUd9+3Dnh1l8VAq0zq3NsEbxACQ/9UzjmB8IOP0=
+X-Received: by 2002:a17:90a:d80e:: with SMTP id a14mr3984745pjv.168.1601987310087;
+ Tue, 06 Oct 2020 05:28:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20201006083355.121018-1-nusiddiq@redhat.com> <20201006111606.GA18203@breakpoint.cc>
-In-Reply-To: <20201006111606.GA18203@breakpoint.cc>
-From:   Numan Siddique <nusiddiq@redhat.com>
-Date:   Tue, 6 Oct 2020 17:49:38 +0530
-Message-ID: <CAH=CPzr58cyTFUre=3LrJh6=NyjWKqnmNBBSz0ogRjefDXEq6w@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: openvswitch: Add support to lookup invalid
- packet in ct action.
-To:     Florian Westphal <fw@strlen.de>
-Cc:     ovs dev <dev@openvswitch.org>, netdev <netdev@vger.kernel.org>,
-        davem@davemloft.net, Aaron Conole <aconole@redhat.com>,
-        Pravin B Shelar <pshelar@ovn.org>
+References: <1601645787-16944-1-git-send-email-magnus.karlsson@gmail.com> <75f034e8-09c4-9f43-03ed-84f003a036d3@iogearbox.net>
+In-Reply-To: <75f034e8-09c4-9f43-03ed-84f003a036d3@iogearbox.net>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 6 Oct 2020 14:28:19 +0200
+Message-ID: <CAJ8uoz0oG=q5ERODhfcvBhZcswGpufp=zUvpG617SkxRP_AaLg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] libbpf: fix compatibility problem in xsk_socket__create
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Ciara Loftus <ciara.loftus@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 6, 2020 at 4:46 PM Florian Westphal <fw@strlen.de> wrote:
+On Mon, Oct 5, 2020 at 4:37 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
 >
-> nusiddiq@redhat.com <nusiddiq@redhat.com> wrote:
-> > From: Numan Siddique <nusiddiq@redhat.com>
+> On 10/2/20 3:36 PM, Magnus Karlsson wrote:
+> > From: Magnus Karlsson <magnus.karlsson@intel.com>
 > >
-> > For a tcp packet which is part of an existing committed connection,
-> > nf_conntrack_in() will return err and set skb->_nfct to NULL if it is
-> > out of tcp window. ct action for this packet will set the ct_state
-> > to +inv which is as expected.
->
-> This is because from conntrack p.o.v., such TCP packet is NOT part of
-> the existing connection.
->
-> For example, because it is considered part of a previous incarnation
-> of the same connection.
->
-> > But a controller cannot add an OVS flow as
+> > Fix a compatibility problem when the old XDP_SHARED_UMEM mode is used
+> > together with the xsk_socket__create() call. In the old XDP_SHARED_UMEM
+> > mode, only sharing of the same device and queue id was allowed, and in
+> > this mode, the fill ring and completion ring were shared between the
+> > AF_XDP sockets. Therfore, it was perfectly fine to call the
+> > xsk_socket__create() API for each socket and not use the new
+> > xsk_socket__create_shared() API. This behaviour was ruined by the
+> > commit introducing XDP_SHARED_UMEM support between different devices
+> > and/or queue ids. This patch restores the ability to use
+> > xsk_socket__create in these circumstances so that backward
+> > compatibility is not broken.
 > >
-> > table=21,priority=100,ct_state=+inv, actions=drop
+> > We also make sure that a user that uses the
+> > xsk_socket__create_shared() api for the first socket in the old
+> > XDP_SHARED_UMEM mode above, gets and error message if the user tries
+> > to feed a fill ring or a completion ring that is not the same as the
+> > ones used for the umem registration. Previously, libbpf would just
+> > have silently ignored the supplied fill and completion rings and just
+> > taken them from the umem. Better to provide an error to the user.
 > >
-> > to drop such packets. That is because when ct action is executed on other
-> > packets which are not part of existing committed connections, ct_state
-> > can be set to invalid. Few such cases are:
-> >    - ICMP reply packets.
->
-> Can you elaborate? Echo reply should not be invalid. Conntrack should
-> mark it as established (unless such echo reply came out of the blue).
-
-Hi Florian,
-
-Thanks for providing the comments.
-
-Sorry for not being very clear.
-
-Let me brief about the present problem we see in OVN (which is a
-controller using ovs)
-
-When a VM/container sends a packet (in the ingress direction), we don't send all
-the packets to conntrack. If a packet is destined to an OVN load
-balancer virtual ip,
-only then we send the packet to conntrack in the ingress direction and
-then we do dnat
-to the backend.
-
-Eg. in the ingress direction
-
-table=1, match = (ip && ip4.dst == VIP) action = ct(table=2)
-tablle=2, ct_state=+new+trk && ip4.dst == VIP, action = ct(commit,
-nat=BACKEND_IP)
-...
-..
-
-However for the egress direction (when the packet is to be delivered
-to the VM/container),
-we send all the packets to conntrack and if the ct.est is set, we do
-undnat before delivering
-the packet to the VM/container.
-...
-table=40, match = ip, action = ct(table=41)
-table=41, match = ct_state=+est+trk, action = ct(nat)
-...
-
-What I mean here is that, since we send all the packets in the egress
-pipeline to conntrack,
-we can't add a flow like - match = ct_state=+inv, action = drop.
-
-i.e When a VM/container sends an ICMP request packet, it will not be
-sent to conntrack, but
-the reply ICMP will be sent to conntrack and it will be marked as invalid.
-
-So is the case with TCP, the TCP SYN from the VM is not sent to
-conntrack, but the SYN/ACK
-from the server would be sent to conntrack and it will be marked as invalid.
-
->
-> >    - TCP SYN/ACK packets during connection establishment.
->
-> SYN/ACK should also be established state.
-> INVALID should only be matched for packets that were never seen
-> by conntrack, or that are deemed out of date / corrupted.
->
-> > To distinguish between an invalid packet part of committed connection
-> > and others, this patch introduces as a new ct attribute
-> > OVS_CT_ATTR_LOOKUP_INV. If this is set in the ct action (without commit),
-> > it tries to find the ct entry and if present, sets the ct_state to
-> > +inv,+trk and also sets the mark and labels associated with the
-> > connection.
+> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+> > Fixes: 2f6324a3937f ("libbpf: Support shared umems between queues and devices")
+> > ---
+> >   tools/lib/bpf/xsk.c | 14 +++++++++++++-
+> >   1 file changed, 13 insertions(+), 1 deletion(-)
 > >
-> > With this,  a controller can add flows like
+> > diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+> > index 30b4ca5..5b61932 100644
+> > --- a/tools/lib/bpf/xsk.c
+> > +++ b/tools/lib/bpf/xsk.c
+> > @@ -705,7 +705,7 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
+> >       struct xsk_ctx *ctx;
+> >       int err, ifindex;
 > >
-> > ....
-> > ....
-> > table=20,ip, action=ct(table=21, lookup_invalid)
-> > table=21,priority=100,ct_state=+inv+trk,ct_label=0x2/0x2 actions=drop
-> > table=21,ip, actions=resubmit(,22)
-> > ....
-> > ....
+> > -     if (!umem || !xsk_ptr || !(rx || tx) || !fill || !comp)
+> > +     if (!umem || !xsk_ptr || !(rx || tx))
+> >               return -EFAULT;
+> >
+> >       xsk = calloc(1, sizeof(*xsk));
+> > @@ -735,12 +735,24 @@ int xsk_socket__create_shared(struct xsk_socket **xsk_ptr,
+> >
+> >       ctx = xsk_get_ctx(umem, ifindex, queue_id);
+> >       if (!ctx) {
+> > +             if (!fill || !comp) {
+> > +                     err = -EFAULT;
+> > +                     goto out_socket;
+> > +             }
+> > +
+> >               ctx = xsk_create_ctx(xsk, umem, ifindex, ifname, queue_id,
+> >                                    fill, comp);
+> >               if (!ctx) {
+> >                       err = -ENOMEM;
+> >                       goto out_socket;
+> >               }
+> > +     } else if ((fill && ctx->fill != fill) || (comp && ctx->comp != comp)) {
+> > +             /* If the xsk_socket__create_shared() api is used for the first socket
+> > +              * registration, then make sure the fill and completion rings supplied
+> > +              * are the same as the ones used to register the umem. If not, bail out.
+> > +              */
+> > +             err = -EINVAL;
+> > +             goto out_socket;
 >
-> What exactly is the feature/problem that needs to be solved?
-> I suspect this would help me to provide better feedback than the
-> semi-random comments below .... :-)
->
-> My only problem with how conntrack does things ATM is that the ruleset
-> cannot distinguish:
->
-> 1. packet was not even seen by conntrack
-> 2. packet matches existing connection, but is "bad", for example:
->   - contradicting tcp flags
->   - out of window
->   - invalid checksum
+> This looks buggy. You got a valid ctx in this path which was ctx->refcount++'ed. By just
+> going to out_socket you'll leak this libbpf internal refcount.
 
-We want the below to be solved (using OVS flows) :
-  - If the packet is marked as invalid due to (2) which you mentioned above,
-    we would like to read the ct_mark and ct_label fields as the packet is
-    part of existing connection, so that we can add an OVS flow like
+Yes, you are correct. Thanks for spotting. It jumps to the wrong
+label. It should be:
 
-ct_state=+inv+trk,ct_label=0x2 actions=drop
+goto out_put_ctx;
 
-Right now it is not possible.
+so that ctx refcount is decreased. Will submit a v2.
 
-This patch does another lookup if skb->_nfct is NULL after
-nf_conntrack_in() to check
-if (2) is the case. If the lookup is successful, it updates the ct flow
-key with the ct_mark and ct_label. This is made optional using a
-netlink attribute.
-
-I'm not sure if it's possible for nf_conntrack_in() to provide this
-information for
-its callers so that the caller can come to know that the state is
-invalid because of (2).
-
-I tested by setting 'be_liberal' sysctl flag and since skb->_nfct was
-set for (2), OVS
-datapath module set the ct_state to +est.
-
-Thanks
-Numan
-
-
+> >       }
+> >       xsk->ctx = ctx;
+> >
+> >
 >
-> There are a few sysctls to modify default behaviour, e.g. relax window
-> checks, or ignore/skip checksum validation.
->
-> The other problem i see (solveable for sure by yet-another-sysctl but i
-> see that as last-resort) is usual compatibility problem:
->
-> ct state invalid drop
-> ct mark gt 0 accept
->
-> If standard netfilter conntrack were to set skb->_nfct e.g. even if
-> state is invalid, we could still make the above work via some internal
-> flag.
->
-> But if you reverse it, you get different behaviour:
->
-> ct mark gt 0 accept
-> ct state invalid drop
->
-> First rule might now accept out-of-window packet even when "be_liberal"
-> sysctl is off.
->
-
