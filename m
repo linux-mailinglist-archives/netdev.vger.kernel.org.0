@@ -2,220 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 529A7284936
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 11:20:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7ED80284A1D
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 12:06:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725947AbgJFJUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 05:20:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44512 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbgJFJUZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 05:20:25 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E227C061755;
-        Tue,  6 Oct 2020 02:20:21 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id h24so10003668ejg.9;
-        Tue, 06 Oct 2020 02:20:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=QEFUhgHBOGUBmIFPYBdTtbDlyFkBZQsVm2M2SQfag20=;
-        b=X6JDQ/+vK4NlW0uam0kIo5dDU2yaW14FFvDo8fgi1nqM/ySY7cCfb6NuRjgHeB9A8e
-         PUMOYnojSuM39wr96UMhnfv5H9xKanhTGvgg55kzrH39mqDrLoJaVYi7FDSY/dh7hcO/
-         9I8Tqb4D9Nko2ZdU0EfGGWP8mnEN6EkpWrqIyVpMMsLlJfkigv7vuURTc0YFPHHgMCrP
-         PTBSVEUCv3tg+jO4a3tNBJmFub0fSgyZdYw+YLmGfky2ZGFnAv9aqAB5cZIBVtmGJL+U
-         Q56iGL7gvhOs/kKCDSgBelnBleN1cLIRj5CZXiTF0WNIkNpYx7Xo7jVs2Y8THtfu+yKy
-         VlTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=QEFUhgHBOGUBmIFPYBdTtbDlyFkBZQsVm2M2SQfag20=;
-        b=U8/7NEk6ONS5/JmrFedzACCf+ubxjjpTVove3IFZStxQFLfsJpoYP6Kc+OdlEfIgKk
-         4uJpcq4oEByNKpZV6X0mWalo2QmPWP2wAUIqKIdVZhLiuQEd+5Qm2w7IlCQK6Y9mukU8
-         fujXmBmOd8FkkIxOscrToBIC5kIH3AH1XYH0wO/PHI7jsvcO5ZvrRMJ83qwxfMjPyocC
-         dXYzf4Ih42DMMP4iInztLnICnBiy6T/Od/IscOoq8Rtcorp0+niwQfj1e76q8Y4Ld7P0
-         UqAiSLW+Ed6NvI/Z4EAibdQTuXBAoRG1jX+ewgc4gaUhTAaugrmQi59rdz+Ju9N+5SEJ
-         dpxg==
-X-Gm-Message-State: AOAM530jxThgeCnoDsvodJZlYOJrgMXopLPiJeQs0WutxfKaqCGlfrZa
-        4RcBwPhIUELDlqVNXHSqWFY=
-X-Google-Smtp-Source: ABdhPJztHMPHPpGnKB7qzmaUOockFNekVz54rqjcEM3VR9d4csUbvGcMyZEtJGtOifqKXe1if8keBA==
-X-Received: by 2002:a17:906:249a:: with SMTP id e26mr4162116ejb.484.1601976019077;
-        Tue, 06 Oct 2020 02:20:19 -0700 (PDT)
-Received: from skbuf ([188.26.229.171])
-        by smtp.gmail.com with ESMTPSA id h22sm1707064ejc.80.2020.10.06.02.20.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Oct 2020 02:20:18 -0700 (PDT)
-Date:   Tue, 6 Oct 2020 12:20:17 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH net-next v6 2/7] net: dsa: Add DSA driver for Hirschmann
- Hellcreek switches
-Message-ID: <20201006092017.znfuwvye25vsu4z7@skbuf>
-References: <20201004112911.25085-1-kurt@linutronix.de>
- <20201004112911.25085-3-kurt@linutronix.de>
- <20201004125601.aceiu4hdhrawea5z@skbuf>
- <87lfgj997g.fsf@kurt>
+        id S1726131AbgJFKGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 06:06:00 -0400
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:58759 "EHLO
+        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725891AbgJFKGA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 06:06:00 -0400
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20201006100557euoutp017799a9f09821bc6f09d4accb2aabeaf5~7XzEn44UE2991329913euoutp017;
+        Tue,  6 Oct 2020 10:05:57 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20201006100557euoutp017799a9f09821bc6f09d4accb2aabeaf5~7XzEn44UE2991329913euoutp017
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1601978757;
+        bh=5JUiMXdtyYDow+LKrwQF5SXJmKEWJKERlqlIFrloBl0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=C+vdm0yYLX9HE7KWc2PAzTDxuAxSXBMGWl6UssMx+qlZcDTJO/9o3PboDbaPF3IbQ
+         zCQm/xpwnRuzFcI7QZ+rozDO91za71rx/6Vk7EAj7CD8p5zRanN7dKssRn23Vg11uT
+         rW68gPahWJLa6380lqs5n0URTKeJlmfD+jYjfASA=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20201006100556eucas1p2eb2b320d7976769704adbacb85e06d87~7XzEWFxXI2186021860eucas1p2V;
+        Tue,  6 Oct 2020 10:05:56 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges2new.samsung.com (EUCPMTA) with SMTP id 84.57.05997.4814C7F5; Tue,  6
+        Oct 2020 11:05:56 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20201006100556eucas1p2b69f76968a7a5901b5e9c66338c388d4~7XzD9tEv02292322923eucas1p2Z;
+        Tue,  6 Oct 2020 10:05:56 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20201006100556eusmtrp1b45fa85b293a58a3d3039a398796abb7~7XzD8rhp_0933209332eusmtrp1q;
+        Tue,  6 Oct 2020 10:05:56 +0000 (GMT)
+X-AuditID: cbfec7f4-65dff7000000176d-c5-5f7c4184f046
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id 7F.23.06017.4814C7F5; Tue,  6
+        Oct 2020 11:05:56 +0100 (BST)
+Received: from localhost (unknown [106.120.51.46]) by eusmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20201006100556eusmtip199f7c32641bfc8aabe10e0d5451de7e4~7XzDzo0LK1557715577eusmtip18;
+        Tue,  6 Oct 2020 10:05:56 +0000 (GMT)
+From:   Lukasz Stelmach <l.stelmach@samsung.com>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>, jim.cromie@gmail.com,
+        linux-arm-kernel@lists.infradead.org,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-samsung-soc\@vger.kernel.org" 
+        <linux-samsung-soc@vger.kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        =?utf-8?Q?Bart=C5=82omiej_=C5=BBolnierkiewi?= =?utf-8?Q?cz?= 
+        <b.zolnierkie@samsung.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH v2 3/4] ARM: dts: exynos: Add Ethernet to Artik 5 board
+Date:   Tue, 06 Oct 2020 12:05:39 +0200
+In-Reply-To: <CAJKOXPfQHzFb8uUzu2_X=7Jvk9P-z-jahi6csggpZvGsEhNm6Q@mail.gmail.com>
+        (Krzysztof Kozlowski's message of "Sat, 3 Oct 2020 12:13:54 +0200")
+Message-ID: <dleftj362rekjw.fsf%l.stelmach@samsung.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87lfgj997g.fsf@kurt>
+Content-Type: multipart/signed; boundary="=-=-="; micalg="pgp-sha256";
+        protocol="application/pgp-signature"
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Sa0hTYRjHeXfO2Y7S7HVaPlmUjPxQmSuTOmWFXT4ciEK6gBSmKw9e2qZs
+        WVmR1zTDG5qla5WaVBpq6ZiXnMUSrcTNWmiFEmWUaTbC7pi006vQt//zPP/f/32fl5elFD8Y
+        fzZBd1TQ69QapdSTtnT/sq/M3nI6etX3llDOMWyjuLvljQxncmTT3LUuO8MNTAwxXNHIOMU5
+        HHdkXL+lkOGaRgYYztluknLljk4JZyuzIq6+a1jGdVfO585au2Thc3nnwFOKN9e+lPBtxmEZ
+        31SXJ+Wba9L4ttZJCV9orkP8ZNPiCHa/58ZYQZNwTNCrNsd4xtuMpbLkgvknMsoypOlo2vs8
+        8mABh8KF2l+S88iTVeBbCF4Vf6dJ8RXBN7uLIcUkAtfrImoWyR19Q5HBTQSNuRMz/AcEL7Ks
+        bp5lpTgY6usjRcAXL4PBPz/+JVHYRUP/oBOJHh+8Ax48wqKkcSA8z9wtWjzwJQQZv4cYkZXj
+        dVB8zyQR9Ty8Hsyjr2Wk7w2PK97RoqawFiocn5AIA65i4d3FRokYCng7nMsKIJf2gbEes4zo
+        RdBbmk8TSxqUlqwlaD4Ci+knTTxhMGT/LSV6Cwz35cz4veDFhDc51gtKLJco0pbDuRwFcS+F
+        hqKOmRR/KBi7hYjmIbd5BJGXqkHgvNpGF6MA43/bGP/bxuiOpdwv19iuIu0VcKNqnCJ6EzQ0
+        uOhKxNQhPyHFoI0TDCE64XiwQa01pOjigg8naZuQ+wv2Tvd8bUXtU4dsCLNIOUce4HsqWsGo
+        jxlStTa01J309s7tfuRP65J0gtJXvrWv96BCHqtOPSnok6L1KRrBYEMLWVrpJ19T/TFKgePU
+        R4UjgpAs6GenEtbDPx2FhezrSOxc0iPAgs682hzYYA9NTKir1gTtTfw89kXxsKx0qqRZbekc
+        3XnfftF7unpqQeZI5ZVn5k1p3JKQt0w4FXYgylYwtDZ8f3dMWMueSDYQIjZvU6U/Uc0Zw9uv
+        Z7reWzM1uwayrKrioJYzfpfLjjQ4kxVXsu/aA3JNeS5WSRvi1auXU3qD+i96/M6VigMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrPIsWRmVeSWpSXmKPExsVy+t/xu7otjjXxBvu/SFmcv3uI2WLjjPWs
+        FnPOt7BYzD9yjtXi2ts7rBb9j18zW5w/v4Hd4sK2PlaLTY+vsVpc3jWHzWLG+X1MFoem7mW0
+        WHvkLrvFsQViFq17j7A78HtcvnaR2WPLyptMHjtn3WX32LSqk81j85J6j507PjN59G1Zxejx
+        eZNcAEeUnk1RfmlJqkJGfnGJrVK0oYWRnqGlhZ6RiaWeobF5rJWRqZK+nU1Kak5mWWqRvl2C
+        XsahWZPZC3rFKhqnNrI1MP4T7GLk5JAQMJFof/GQuYuRi0NIYCmjxPLmHaxdjBxACSmJlXPT
+        IWqEJf5c62KDqHnKKLFm3RNmkBo2AT2JtWsjQGpEBDQlrv/9zgpSwyzwkUXi+/OX7CA1wgLe
+        EgdOCIDUCAkESDy+/p4NJMwioCpxpSkIpJxTYDqjROOvO6wgNbwC5hITds9hArFFBSwltry4
+        zw4RF5Q4OfMJC4jNLJAt8XX1c+YJjAKzkKRmIUnNAlrBDHTS+l36EGFtiWULXzND2LYS69a9
+        Z1nAyLqKUSS1tDg3PbfYSK84Mbe4NC9dLzk/dxMjMIK3Hfu5ZQdj17vgQ4wCHIxKPLwKItXx
+        QqyJZcWVuYcYVYDGPNqw+gKjFEtefl6qkgiv09nTcUK8KYmVValF+fFFpTmpxYcYTYH+nMgs
+        JZqcD0w6eSXxhqaG5haWhubG5sZmFkrivB0CB2OEBNITS1KzU1MLUotg+pg4OKUaGAUXtfDM
+        vPDhWExMeV/x7i0hxn1Gwo/iZk54lPJrs/YJ5U3uCWdPzfx5b46e2EftuH+na5eeV3r9PHdS
+        UfdWJ82yzvwuHqdJH75/0HlqcW2xgY7WGZMtn361mfIvYDR0lhUvfqUt8Dn+znxfh9r+Bsep
+        GicXfdp43eVNTojYzEn8fo/OTWhoOKnEUpyRaKjFXFScCACLEgJMAgMAAA==
+X-CMS-MailID: 20201006100556eucas1p2b69f76968a7a5901b5e9c66338c388d4
+X-Msg-Generator: CA
+X-RootMTR: 20201006100556eucas1p2b69f76968a7a5901b5e9c66338c388d4
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20201006100556eucas1p2b69f76968a7a5901b5e9c66338c388d4
+References: <CAJKOXPfQHzFb8uUzu2_X=7Jvk9P-z-jahi6csggpZvGsEhNm6Q@mail.gmail.com>
+        <CGME20201006100556eucas1p2b69f76968a7a5901b5e9c66338c388d4@eucas1p2.samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 06, 2020 at 08:09:39AM +0200, Kurt Kanzenbach wrote:
-> On Sun Oct 04 2020, Vladimir Oltean wrote:
-> > I don't think this works.
-> >
-> > ip link add br0 type bridge vlan_filtering 1
-> > ip link set swp0 master br0
-> > bridge vlan add dev swp0 vid 100
-> > ip link set br0 type bridge vlan_filtering 0
-> > bridge vlan del dev swp0 vid 100
-> > ip link set br0 type bridge vlan_filtering 1
-> >
-> > The expectation would be that swp0 blocks vid 100 now, but with your
-> > scheme it doesn't (it is not unapplied, and not unqueued either, because
-> > it was never queued in the first place).
-> 
-> Yes, that's correct. So, I think we have to queue not only the addition
-> of VLANs, but rather the "action" itself such as add or del. And then
-> apply all pending actions whenever vlan_filtering is set.
+--=-=-=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-Please remind me why you have to queue a VLAN addition/removal and can't
-do it straight away? Is it because of private VID 2 and 3, which need to
-be deleted first then re-added from the bridge VLAN group?
+It was <2020-10-03 sob 12:13>, when Krzysztof Kozlowski wrote:
+> On Fri, 2 Oct 2020 at 21:22, =C5=81ukasz Stelmach <l.stelmach@samsung.com=
+> wrote:
+>>
+>> Add node for ax88796c ethernet chip.
+>>
+>> Signed-off-by: =C5=81ukasz Stelmach <l.stelmach@samsung.com>
+>> ---
+>>  arch/arm/boot/dts/exynos3250-artik5-eval.dts | 21 ++++++++++++++++++++
+>>  1 file changed, 21 insertions(+)
+>>
+>> diff --git a/arch/arm/boot/dts/exynos3250-artik5-eval.dts b/arch/arm/boo=
+t/dts/exynos3250-artik5-eval.dts
+>> index 20446a846a98..7f115c348a2a 100644
+>> --- a/arch/arm/boot/dts/exynos3250-artik5-eval.dts
+>> +++ b/arch/arm/boot/dts/exynos3250-artik5-eval.dts
+>> @@ -37,3 +37,24 @@ &mshc_2 {
+>>  &serial_2 {
+>>         status =3D "okay";
+>>  };
+>> +
+>> +&spi_0 {
+>> +       status =3D "okay";
+>> +       cs-gpios =3D <&gpx3 4 GPIO_ACTIVE_LOW>, <0>;
+>> +
+>> +       assigned-clocks        =3D <&cmu CLK_MOUT_MPLL>, <&cmu CLK_DIV_M=
+PLL_PRE>, <&cmu CLK_MOUT_SPI0>,    <&cmu CLK_DIV_SPI0>,  <&cmu CLK_DIV_SPI0=
+_PRE>, <&cmu CLK_SCLK_SPI0>;
+>
+> No spaces before or after '=3D'.
+>
 
-> >> +static int hellcreek_port_bridge_join(struct dsa_switch *ds, int port,
-> >> +				      struct net_device *br)
-> >> +{
-> >> +	struct hellcreek *hellcreek = ds->priv;
-> >> +	int i;
-> >> +
-> >> +	dev_dbg(hellcreek->dev, "Port %d joins a bridge\n", port);
-> >> +
-> >> +	/* Configure port's vid to all other ports as egress untagged */
-> >> +	for (i = 0; i < ds->num_ports; ++i) {
-> >> +		if (!dsa_is_user_port(ds, i))
-> >> +			continue;
-> >> +
-> >> +		if (i == port)
-> >> +			continue;
-> >> +
-> >> +		hellcreek_apply_vlan(hellcreek, i, port, false, true);
-> >> +	}
-> >
-> > I think this is buggy when joining a VLAN filtering bridge. Your ports
-> > will pass frames with VID=2 with no problem, even without the user
-> > specifying 'bridge vlan add dev swp0 vid 2', and that's an issue. My
-> > understanding is that VLANs 1, 2, 3 stop having any sort of special
-> > meaning when the upper bridge has vlan_filtering=1.
-> 
-> Yes, that understanding is correct. So, what happens is when a port is
-> joining a VLAN filtering bridge is:
-> 
-> |root@tsn:~# ip link add name br0 type bridge
-> |root@tsn:~# ip link set dev br0 type bridge vlan_filtering 1
-> |root@tsn:~# ip link set dev lan0 master br0
-> |[  209.375055] br0: port 1(lan0) entered blocking state
-> |[  209.380073] br0: port 1(lan0) entered disabled state
-> |[  209.385340] hellcreek ff240000.switch: Port 2 joins a bridge
-> |[  209.391584] hellcreek ff240000.switch: Apply VLAN: port=3 vid=2 pvid=0 untagged=1
-> |[  209.399439] device lan0 entered promiscuous mode
-> |[  209.404043] device eth0 entered promiscuous mode
-> |[  209.409204] hellcreek ff240000.switch: Enable VLAN filtering on port 2
-> |[  209.415716] hellcreek ff240000.switch: Unapply VLAN: port=2 vid=2
-> |[  209.421840] hellcreek ff240000.switch: Unapply VLAN: port=0 vid=2
+You mean " =3D ", don't you?
 
-Now I understand even less. If the entire purpose of
-hellcreek_setup_vlan_membership is to isolate lan0 from lan1, then why
-do you even bother to install vid 2 to port=3 (lan1) when joining a
-bridge, be it vlan_filtering or not? In bridged mode, they don't need
-a unique pvid, it only complicates the implementation. They can have the
-pvid from the bridge VLAN group.
+>> + assigned-clock-parents =3D <&cmu CLK_FOUT_MPLL>, <&cmu
+>> CLK_MOUT_MPLL>, <&cmu CLK_DIV_MPLL_PRE>, <&cmu CLK_MOUT_SPI0>, <&cmu
+>> CLK_DIV_SPI0>, <&cmu CLK_DIV_SPI0_PRE>;
+>
+> This line is still too long. Please wrap it at 80. Checkpatch should
+> complain about it... so it seems you did not run it. Please fix all
+> checkpatch issues.
 
-> |[  209.428170] hellcreek ff240000.switch: Apply queued VLANs: port2
-> |[  209.434158] hellcreek ff240000.switch: Apply VLAN: port=2 vid=0 pvid=0 untagged=0
-> |[  209.441649] hellcreek ff240000.switch: Clear queued VLANs: port2
-> |[  209.447920] hellcreek ff240000.switch: Apply queued VLANs: port0
-> |[  209.453910] hellcreek ff240000.switch: Apply VLAN: port=0 vid=0 pvid=0 untagged=0
-> |[  209.461402] hellcreek ff240000.switch: Clear queued VLANs: port0
-> |[  209.467620] hellcreek ff240000.switch: VLAN prepare for port 2
-> |[  209.473476] hellcreek ff240000.switch: VLAN prepare for port 0
-> |[  209.479534] hellcreek ff240000.switch: Add VLANs (1 -- 1) on port 2, untagged, PVID
-> |[  209.487164] hellcreek ff240000.switch: Apply VLAN: port=2 vid=1 pvid=1 untagged=1
-> |[  209.494659] hellcreek ff240000.switch: Add VLANs (1 -- 1) on port 0, untagged, no PVID
-> |[  209.502794] hellcreek ff240000.switch: Apply VLAN: port=0 vid=1 pvid=0 untagged=1
-> |root@tsn:~# bridge vlan show
+My idea was too keep assigned-clocks and assigned-clock-parrent lines
+aligned, so it is clearly visible which parrent applies to which
+clock. Is it inappropriate?
 
-This is by no means a good indicator for anything. It shows the bridge
-VLAN groups, not the hardware database.
+>> +
+>> +       ax88796c@0 {
+>> +               compatible =3D "asix,ax88796c";
+>> +               local-mac-address =3D [00 00 00 00 00 00]; /* Filled in =
+by a boot-loader */
+>> +               interrupt-parent =3D <&gpx2>;
+>> +               interrupts =3D <0 IRQ_TYPE_LEVEL_LOW>;
+>> +               spi-max-frequency =3D <40000000>;
+>> +               reg =3D <0x0>;
+>
+> Put reg after compatible.
 
-> |port    vlan ids
-> |lan0     1 PVID Egress Untagged
-> |
-> |br0      1 PVID Egress Untagged
-> 
-> ... which looks correct to me. The VLAN 2 is unapplied as expected. Or?
+Done.
 
-Ok, it gets applied in .port_bridge_join and unapplied in .port_vlan_filtering,
-which is a convoluted way of doing nothing.
+=2D-=20
+=C5=81ukasz Stelmach
+Samsung R&D Institute Poland
+Samsung Electronics
 
-> >
-> > And how do you deal with the case where swp1 and swp2 are bridged and
-> > have the VLAN 3 installed via 'bridge vlan', but swp3 isn't bridged?
-> > Will swp1/swp2 communicate with swp3? If yes, that's a problem.
-> 
-> There is no swp3. Currently there are only two ports and either they are
-> bridged or not.
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-So this answers my question of whether the tunnel port is a user port or
-not, ok.
+-----BEGIN PGP SIGNATURE-----
 
-How about other hardware revisions? Is this going to be a 2-port switch
-forever? Your solution will indeed work for 2 ports (as long as you
-address the other feedback from v5 w.r.t. declaring the ports as "always
-filtering" and rejecting invalid 8021q uppers, which I don't see here),
-but it will not scale for 3 ports, due to the fact that the bridge can
-install a VLAN on a lan2 port, without knowing that it is in fact the
-private pvid of lan1 or lan0.
-
-> >> +static int __hellcreek_fdb_del(struct hellcreek *hellcreek,
-> >> +			       const struct hellcreek_fdb_entry *entry)
-> >> +{
-> >> +	dev_dbg(hellcreek->dev, "Delete FDB entry: MAC=%pM!\n", entry->mac);
-> >> +
-> >
-> > Do these dev_dbg statements bring much value at all, even to you?
-> 
-> Yes, they do. See the log snippet above.
-> 
-
-If you want to dump the hardware database you can look at the devlink
-regions that Andrew added very recently. Much more reliable than
-following the order of operations in the log.
-
-> >> +static const struct hellcreek_platform_data de1soc_r1_pdata = {
-> >> +	.num_ports	 = 4,
-> >> +	.is_100_mbits	 = 1,
-> >> +	.qbv_support	 = 1,
-> >> +	.qbv_on_cpu_port = 1,
-> >
-> > Why does this matter?
-> 
-> Because Qbv on the CPU port is a feature and not all switch variants
-> have that. It will matter as soon as TAPRIO is implemented.
-
-How do you plan to install a tc-taprio qdisc on the CPU port?
+iQEzBAEBCAAdFiEEXpuyqjq9kGEVr9UQsK4enJilgBAFAl98QXMACgkQsK4enJil
+gBCpCgf/R6al+tgJMpuq2oB4aL37iQz9ge4mMpYBZUXCrvE8t8iQEkqErdvIXrm2
+g8fi2NzXvN9oSvbPxEyFhD02iKvq1jarrvlbXt5M3tAhDn6+brC8ih/fzaucwtOv
+8VW5w+fC50CD/M8rHguR+bccITef+PTBjgoHBnF5dTG6V+7pbS9inmKMf1HjnQuq
+xGbZGZjYoHJrZewcqKtFQ8GHZsPwlgZtHTept4RT67qW5HpHyg80WthtjvFPOL7G
+0RyDhxn3qhtQsHFfEDvQ+lyBtYhN2MPC91Gc2e1JeX2gFA2IEgib+z8SdJlv8vZg
+FABAbdlANeKXhr5OrYTARVl4D6029A==
+=eFCo
+-----END PGP SIGNATURE-----
+--=-=-=--
