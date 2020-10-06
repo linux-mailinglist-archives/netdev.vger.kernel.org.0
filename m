@@ -2,103 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C07552851A9
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 20:35:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92C942851B9
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 20:40:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726860AbgJFSfn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 14:35:43 -0400
-Received: from mga01.intel.com ([192.55.52.88]:41092 "EHLO mga01.intel.com"
+        id S1726826AbgJFSkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 14:40:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37148 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726826AbgJFSfm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Oct 2020 14:35:42 -0400
-IronPort-SDR: oBc1qEO6CbQvoTr+mi81dpgXHpeH+B/ZT42Ey3Z6H2Z7Mi1yM/lp4GWQE6TqEuiSiFvDFHy0gn
- o8g8rFwOEF8g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9765"; a="182080692"
-X-IronPort-AV: E=Sophos;i="5.77,343,1596524400"; 
-   d="scan'208";a="182080692"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Oct 2020 11:35:39 -0700
-IronPort-SDR: HdVbTfOcjG7elY9ZVtCoWq9nW0ZjwMAp5bPyeduGT8Mjh9db+f0whfYbGxf58u6omlQg1uyODo
- yQKoLlPmb9mA==
-X-IronPort-AV: E=Sophos;i="5.77,343,1596524400"; 
-   d="scan'208";a="342429016"
-Received: from unknown (HELO rsridh2-mobl1) ([10.212.228.88])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Oct 2020 11:35:36 -0700
-Message-ID: <cb6e2b44e396a6281e12b21253775b9cccf6784d.camel@linux.intel.com>
-Subject: Re: [PATCH v2 1/6] Add ancillary bus support
-From:   Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-To:     Leon Romanovsky <leon@kernel.org>, Parav Pandit <parav@nvidia.com>
-Cc:     "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "parav@mellanox.com" <parav@mellanox.com>,
-        "tiwai@suse.de" <tiwai@suse.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        "fred.oh@linux.intel.com" <fred.oh@linux.intel.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        "dan.j.williams@intel.com" <dan.j.williams@intel.com>,
-        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kiran.patil@intel.com" <kiran.patil@intel.com>
-Date:   Tue, 06 Oct 2020 11:35:35 -0700
-In-Reply-To: <20201006172650.GO1874917@unreal>
-References: <20201005182446.977325-1-david.m.ertman@intel.com>
-         <20201005182446.977325-2-david.m.ertman@intel.com>
-         <20201006071821.GI1874917@unreal>
-         <b4f6b5d1-2cf4-ae7a-3e57-b66230a58453@linux.intel.com>
-         <20201006170241.GM1874917@unreal>
-         <BY5PR12MB43228E8DAA0B56BCF43AF3EFDC0D0@BY5PR12MB4322.namprd12.prod.outlook.com>
-         <20201006172650.GO1874917@unreal>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.3-0ubuntu1 
+        id S1726760AbgJFSkE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Oct 2020 14:40:04 -0400
+Content-Type: text/plain; charset="utf-8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602009603;
+        bh=IvQjVIfH5DIF1Fmqf9y3gxCvit8dsCG7mjBBuxGwlX8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=kd+qO0cgY5QR2Rft2AgJQw0Z6bSFRoN0gs2Eh7VE1MwQRimTjk06qZUXMQISQTwsT
+         khRNsg/01gl4yYr2d0ZeEp9iwrNz2KFL+PnyxkuUxGmxgmjt7ox/PegEK9FisDoWqB
+         w2NJRjBNAw8HICLHRbZqR+ed+uKheCbSbNEIZhPQ=
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCHv3 bpf 0/3] Fix pining maps after reuse map fd
+From:   patchwork-bot+bpf@kernel.org
+Message-Id: <160200960357.8676.14578405115856230926.git-patchwork-notify@kernel.org>
+Date:   Tue, 06 Oct 2020 18:40:03 +0000
+References: <20201006021345.3817033-1-liuhangbin@gmail.com>
+In-Reply-To: <20201006021345.3817033-1-liuhangbin@gmail.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        andrii.nakryiko@gmail.com, netdev@vger.kernel.org, toke@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-10-06 at 20:26 +0300, Leon Romanovsky wrote:
-> On Tue, Oct 06, 2020 at 05:09:09PM +0000, Parav Pandit wrote:
-> > > From: Leon Romanovsky <leon@kernel.org>
-> > > Sent: Tuesday, October 6, 2020 10:33 PM
-> > > 
-> > > On Tue, Oct 06, 2020 at 10:18:07AM -0500, Pierre-Louis Bossart
-> > > wrote:
-> > > > Thanks for the review Leon.
-> > > > 
-> > > > > > Add support for the Ancillary Bus, ancillary_device and
-> > > > > > ancillary_driver.
-> > > > > > It enables drivers to create an ancillary_device and bind
-> > > > > > an
-> > > > > > ancillary_driver to it.
-> > > > > 
-> > > > > I was under impression that this name is going to be changed.
-> > > > 
-> > > > It's part of the opens stated in the cover letter.
-> > > 
-> > > ok, so what are the variants?
-> > > system bus (sysbus), sbsystem bus (subbus), crossbus ?
-> > Since the intended use of this bus is to
-> > (a) create sub devices that represent 'functional separation' and
-> > (b) second use case for subfunctions from a pci device,
-> > 
-> > I proposed below names in v1 of this patchset.
-> > 
-> > (a) subdev_bus
-> 
-> It sounds good, just can we avoid "_" in the name and call it subdev?
-> 
-> > (b) subfunction_bus
+Hello:
 
-While we're still discussing names, may I also suggest simply "software
-bus" instead?
+This series was applied to bpf/bpf-next.git (refs/heads/master):
 
-Thanks,Ranjani
+On Tue,  6 Oct 2020 10:13:42 +0800 you wrote:
+> When a user reuse map fd after creating a map manually and set the
+> pin_path, then load the object via libbpf. bpf_object__create_maps()
+> will skip pinning map if map fd exist. Fix it by add moving bpf creation
+> to else condition and go on checking map pin_path after that.
+> 
+> v3:
+> for selftest: use CHECK() for bpf_object__open_file() and close map fd on error
+> 
+> [...]
+
+Here is the summary with links:
+  - [PATCHv3,1/3] libbpf: close map fd if init map slots failed
+    https://git.kernel.org/bpf/bpf-next/c/a0f2b7acb4b1
+  - [PATCHv3,2/3] libbpf: check if pin_path was set even map fd exist
+    https://git.kernel.org/bpf/bpf-next/c/2c193d32caee
+  - [PATCHv3,3/3] selftest/bpf: test pinning map with reused map fd
+    https://git.kernel.org/bpf/bpf-next/c/44c4aa2bd151
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
