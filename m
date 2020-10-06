@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C67A285255
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 21:21:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE4A8285285
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 21:34:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727100AbgJFTVJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 15:21:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52440 "EHLO
+        id S1727212AbgJFTe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 15:34:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727013AbgJFTVF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 15:21:05 -0400
+        with ESMTP id S1727013AbgJFTe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 15:34:26 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02661C061755
-        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 12:21:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B700C061755
+        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 12:34:26 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kPsW6-0002A3-Ik; Tue, 06 Oct 2020 21:20:54 +0200
+        id 1kPsj5-0003ZN-Dy; Tue, 06 Oct 2020 21:34:19 +0200
 Received: from [IPv6:2a03:f580:87bc:d400:5d91:2e2e:81e1:aa2d] (unknown [IPv6:2a03:f580:87bc:d400:5d91:2e2e:81e1:aa2d])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
          client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 0047F5736E9;
-        Tue,  6 Oct 2020 19:20:52 +0000 (UTC)
-Subject: Re: [RESEND PATCH v2 0/2] dt-bindings: can: document R8A774E1
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 1B25C573700;
+        Tue,  6 Oct 2020 19:34:16 +0000 (UTC)
+Subject: Re: [PATCH 0/3] can: xilinx_can: Some minor changes
+To:     Michal Simek <michal.simek@xilinx.com>,
+        linux-kernel@vger.kernel.org, monstr@monstr.eu, git@xilinx.com
+Cc:     Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>
-References: <20201005081319.29322-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <cover.1600073396.git.michal.simek@xilinx.com>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
@@ -100,15 +99,15 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
  HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
  xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
-Message-ID: <648c76bc-f585-f069-de86-0ad9de17c52e@pengutronix.de>
-Date:   Tue, 6 Oct 2020 21:20:47 +0200
+Message-ID: <c3b4ac47-6317-03db-f840-16acdfb25d76@pengutronix.de>
+Date:   Tue, 6 Oct 2020 21:34:13 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20201005081319.29322-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <cover.1600073396.git.michal.simek@xilinx.com>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="kEey2E19m6qvqDZbFHFkLOzbqHnyhBEtb"
+ boundary="0z5WZTgETCLdli8CdlFkaSzMdLSpmjXGs"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -118,55 +117,48 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---kEey2E19m6qvqDZbFHFkLOzbqHnyhBEtb
-Content-Type: multipart/mixed; boundary="VmZVycGsqpbGhKfrXMhjXIBSvCKv31dcI";
+--0z5WZTgETCLdli8CdlFkaSzMdLSpmjXGs
+Content-Type: multipart/mixed; boundary="cBd2KVlXsRXBLXuKUZEeQgVrnMpKeRcX1";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
- Wolfgang Grandegger <wg@grandegger.com>,
+To: Michal Simek <michal.simek@xilinx.com>, linux-kernel@vger.kernel.org,
+ monstr@monstr.eu, git@xilinx.com
+Cc: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
  "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
- Rob Herring <robh+dt@kernel.org>, linux-can@vger.kernel.org,
- netdev@vger.kernel.org, devicetree@vger.kernel.org,
- linux-renesas-soc@vger.kernel.org
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>,
- linux-kernel@vger.kernel.org, Prabhakar <prabhakar.csengg@gmail.com>
-Message-ID: <648c76bc-f585-f069-de86-0ad9de17c52e@pengutronix.de>
-Subject: Re: [RESEND PATCH v2 0/2] dt-bindings: can: document R8A774E1
-References: <20201005081319.29322-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <20201005081319.29322-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ Naga Sureshkumar Relli <naga.sureshkumar.relli@xilinx.com>,
+ Wolfgang Grandegger <wg@grandegger.com>,
+ linux-arm-kernel@lists.infradead.org, linux-can@vger.kernel.org,
+ netdev@vger.kernel.org
+Message-ID: <c3b4ac47-6317-03db-f840-16acdfb25d76@pengutronix.de>
+Subject: Re: [PATCH 0/3] can: xilinx_can: Some minor changes
+References: <cover.1600073396.git.michal.simek@xilinx.com>
+In-Reply-To: <cover.1600073396.git.michal.simek@xilinx.com>
 
---VmZVycGsqpbGhKfrXMhjXIBSvCKv31dcI
+--cBd2KVlXsRXBLXuKUZEeQgVrnMpKeRcX1
 Content-Type: text/plain; charset=utf-8
 Content-Language: de-DE
 Content-Transfer-Encoding: quoted-printable
 
-On 10/5/20 10:13 AM, Lad Prabhakar wrote:
-> Hi All,
+On 9/14/20 10:49 AM, Michal Simek wrote:
+> Hi,
 >=20
-> I am re-sending this patch set as this has been missed previously.
-> It is exactly same as [1].
->=20
-> DT maintainers have already acked the patches.
->=20
-> [1] https://www.spinics.net/lists/netdev/msg679244.html
->=20
-> Cheers,
-> Prabhakar
->=20
-> Changes for v2:
-> * Added R8A774E1 to the list of SoCs that can use CANFD through "clkp2"=
+> recently some small patches come to our internal tree. We started to us=
+e
+> coverity which found 2 issues (last two patches) which is simply to fix=
 =2E
-> * Added R8A774E1 to the list of SoCs that can use the CANFD clock
 >=20
-> Lad Prabhakar (2):
->   dt-bindings: can: rcar_canfd: Document r8a774e1 support
->   dt-bindings: can: rcar_can: Document r8a774e1 support
+> Thanks,
+> Michal
 >=20
->  Documentation/devicetree/bindings/net/can/rcar_can.txt   | 5 +++--
->  Documentation/devicetree/bindings/net/can/rcar_canfd.txt | 5 +++--
->  2 files changed, 6 insertions(+), 4 deletions(-)
+>=20
+> Srinivas Neeli (3):
+>   can: xilinx_can: Limit CANFD brp to 2
+>   can: xilinx_can: Check return value of set_reset_mode
+>   can: xilinx_can: Fix incorrect variable and initialize with a default=
 
-Added both to linux-can-next.
+>     value
+
+Applied to linux-can-next.
 
 Tnx,
 Marc
@@ -178,23 +170,23 @@ Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---VmZVycGsqpbGhKfrXMhjXIBSvCKv31dcI--
+--cBd2KVlXsRXBLXuKUZEeQgVrnMpKeRcX1--
 
---kEey2E19m6qvqDZbFHFkLOzbqHnyhBEtb
+--0z5WZTgETCLdli8CdlFkaSzMdLSpmjXGs
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl98w48ACgkQqclaivrt
-76krewf/Z5weWvxL2dFoZRpQD9XLl5FmpTYQ6KjxC+uYUokboyTrfVXd0gTopFT1
-nB+0QvRKS0PsqgyywzFVsxqYIY65PZxWyWslIeBfMFDliX1uK0wScKqlSykhrt+0
-s9osPw6vICZllm2HUTI6LUDGVvirlI+tuvOjU2uzKGqvSF3GPFWwvsO20X2MY3Zj
-vW6Lg8K9bvEfuaVjakSYUvFHR9DST9pUyu7jKjbAujS/Nf4y8Rm199j9YFIS5Yk6
-P7QSfD8vkBNYRdlnrKA8QOZ6i16hnN3ZmAyQgtQjJN3obU1sIeOmN18ZZqvFLA8y
-4B7fux6dF1BVp9HTAVjfpZqLKIQLQw==
-=UDpK
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl98xrUACgkQqclaivrt
+76mPDAgAk9NuDb2PQ+COt4mqhBcCJiV9dXlF2Sg6AkL1tXC6QKTcKhN1i7TIj5+9
+xll5KNn3ZmEjiLgOtYlfSQu+rytAQ75uwyrGgIbxCuvdIE4EkDV8POKkQuGf1SaJ
+3N8csixcLac+WJvqK0YxmoFswULbydTt1isX09bG/CGREOLdORt+okejVxjh+ai/
+bQl+vR6EF06pXSqY7c8CbQsy/v6/YU3SxtI0tn/2PSiVCppKHyysMSX8TxrxAIG5
++dXU2dtniAFRzvJICDWjbEEfm/ACtTy/K4tI/XrCCfJljroJ/wlrr7vYCHJ9ETBr
+j/2uZUbo6IPeXWwEVoCNQyUbl0IsJg==
+=HawR
 -----END PGP SIGNATURE-----
 
---kEey2E19m6qvqDZbFHFkLOzbqHnyhBEtb--
+--0z5WZTgETCLdli8CdlFkaSzMdLSpmjXGs--
