@@ -2,115 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E1A22853FE
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 23:41:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ECE1285425
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 23:52:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727304AbgJFVlS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 17:41:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40950 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725947AbgJFVlS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Oct 2020 17:41:18 -0400
-Received: from localhost (cha74-h07-176-172-165-181.dsl.sta.abo.bbox.fr [176.172.165.181])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A895B208B6;
-        Tue,  6 Oct 2020 21:41:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602020477;
-        bh=9wLduu0HibYTvQ1PxET1bwvOHmceqeDnpLGd3eg73zU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=2gCpOuwlb9OCrTs8XdwbsjCC4BukoUfz0Mvac17ZIGhzrZJLjfCkNYUOHOHUoqqri
-         OIOiw9PbygkXW73CcQougUiK/NjNN+08X/TVwhkLEOiN9KU6jcrRLND5yoQwFZvivV
-         kkF0BPaHRf4ooYAz0mS3oP3jWuSjTIeE9AhIWZDA=
-Date:   Tue, 6 Oct 2020 23:41:13 +0200
-From:   Frederic Weisbecker <frederic@kernel.org>
-To:     Alex Belits <abelits@marvell.com>
-Cc:     "mingo@kernel.org" <mingo@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-api@vger.kernel.org" <linux-api@vger.kernel.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "will@kernel.org" <will@kernel.org>,
-        Prasun Kapoor <pkapoor@marvell.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [EXT] Re: [PATCH v4 10/13] task_isolation: don't interrupt CPUs
- with tick_nohz_full_kick_cpu()
-Message-ID: <20201006214113.GA38684@lothringen>
-References: <04be044c1bcd76b7438b7563edc35383417f12c8.camel@marvell.com>
- <5acf7502c071c0d1365ba5e5940e003a7da6521f.camel@marvell.com>
- <20201001144454.GB6595@lothringen>
- <ab85fd564686845648d08779b1d4ecc3ab440b2a.camel@marvell.com>
+        id S1727617AbgJFVwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 17:52:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47538 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727584AbgJFVwN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 17:52:13 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79553C061755
+        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 14:52:13 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id i3so5839pjz.4
+        for <netdev@vger.kernel.org>; Tue, 06 Oct 2020 14:52:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Nlw0ahtZWujrYrGl2/K59bEegsMjQXCr5mWmoSIM/6Q=;
+        b=BF2tf9jisEHSeaDLbhJqZVD2dXA8UHYfq7rahgloODstyPvycmqEwdNF/vaqGP1BUJ
+         ESdbvsgyksI3pG+W8tJCqdeYz8tSbGQ+Xp9ihow93lgK9nGGEcNK5Tw8MgdZ0FtYskEZ
+         /0NRVR+t8jBBQZVrXqbG3ruH24XPzNTzWPKAAtbl+eHSB/PeRK9GrDrTDkvfDLNJxivk
+         g+asLMqaSdR+rZrLZTZrwIwB+0TC3lIICekjSV8niVxoyQ38fTKLNjmxvw7hhSIhzKY9
+         trhA4TzjmIHnXpyHOKNlI+bycknFQVrrjTzrpySGo/HSey48ClNo32Hs5p56uYq8cfN3
+         i3YQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Nlw0ahtZWujrYrGl2/K59bEegsMjQXCr5mWmoSIM/6Q=;
+        b=AjlwXuPeLPEJvfnGUxV+ubJ+GFKJyOdeR0nnWRpAq3hbdjfQne3kyElp+KRL7JAVhM
+         j9bBILuoT9m4Ee5MlK8kalYRzJpXza808rG1O67iIArnJM+xZo368rlsz+Y4c8MVJMWt
+         /NWOw/AqMvofsvaIyANBL1Bg++Lnv0DiU9MNBZgHfCeDLOvss6gtkTMVYlDoUNRKWe0p
+         M2qSCdMmhnZni+UWPpqEAfGtFfq4F/eXTgeusrI6JvhWz7XUsix3DT4fhY2woTRCeJrz
+         R6uR0k/iVcB7e9tAirv4Cas2DpyVJJjkISm0XgSyeZ8DGrjgHUQ8vgb9eFhlWTVDBL2k
+         s++g==
+X-Gm-Message-State: AOAM532JIFb28MJ54d2+/VtrqTJIVDWS9vTMS8Pz/dvm7NXy+PnD2YFT
+        KkffevgBPOsQWkiYPpwagVL+UGIbay2CnA==
+X-Google-Smtp-Source: ABdhPJxDS3iqBuSuFnfeFZ7FACKjenfjqzn2L57Cmblufsq40of5QQRsM0wQgXklE4CVAK7XauUDsA==
+X-Received: by 2002:a17:902:7441:b029:d3:eaa4:8f35 with SMTP id e1-20020a1709027441b02900d3eaa48f35mr3176plt.74.1602021133051;
+        Tue, 06 Oct 2020 14:52:13 -0700 (PDT)
+Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id g21sm167169pfh.30.2020.10.06.14.52.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Oct 2020 14:52:12 -0700 (PDT)
+Date:   Tue, 6 Oct 2020 14:52:04 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Samanta Navarro <ferivoz@riseup.net>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH] man: fix typos
+Message-ID: <20201006145204.032647c9@hermes.local>
+In-Reply-To: <20201004114259.nwnu3j4uuaryjvx4@localhost>
+References: <20201004114259.nwnu3j4uuaryjvx4@localhost>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ab85fd564686845648d08779b1d4ecc3ab440b2a.camel@marvell.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 04, 2020 at 03:22:09PM +0000, Alex Belits wrote:
-> 
-> On Thu, 2020-10-01 at 16:44 +0200, Frederic Weisbecker wrote:
-> > > @@ -268,7 +269,8 @@ static void tick_nohz_full_kick(void)
-> > >   */
-> > >  void tick_nohz_full_kick_cpu(int cpu)
-> > >  {
-> > > -	if (!tick_nohz_full_cpu(cpu))
-> > > +	smp_rmb();
-> > 
-> > What is it ordering?
-> 
-> ll_isol_flags will be read in task_isolation_on_cpu(), that accrss
-> should be ordered against writing in
-> task_isolation_kernel_enter(), fast_task_isolation_cpu_cleanup()
-> and task_isolation_start().
-> 
-> Since task_isolation_on_cpu() is often called for multiple CPUs in a
-> sequence, it would be wasteful to include a barrier inside it.
+On Sun, 4 Oct 2020 11:42:59 +0000
+Samanta Navarro <ferivoz@riseup.net> wrote:
 
-Then I think you meant a full barrier: smp_mb()
+Looks good overall.
 
-> 
-> > > +	if (!tick_nohz_full_cpu(cpu) || task_isolation_on_cpu(cpu))
-> > >  		return;
-> > 
-> > You can't simply ignore an IPI. There is always a reason for a
-> > nohz_full CPU
-> > to be kicked. Something triggered a tick dependency. It can be posix
-> > cpu timers
-> > for example, or anything.
-> 
-> I realize that this is unusual, however the idea is that while the task
-> is running in isolated mode in userspace, we assume that from this CPUs
-> point of view whatever is happening in kernel, can wait until CPU is
-> back in kernel and when it first enters kernel from this mode, it
-> should "catch up" with everything that happened in its absence.
-> task_isolation_kernel_enter() is supposed to do that, so by the time
-> anything should be done involving the rest of the kernel, CPU is back
-> to normal.
+Take the "a" off in the gso_max_segs part.
 
-You can't assume that. If something needs the tick, this can't wait.
-If the user did something wrong, such as setting a posix cpu timer
-to an isolated task, that's his fault and the kernel has to stick with
-correctness and kick that task out of isolation mode.
-
-> 
-> It is application's responsibility to avoid triggering things that
-> break its isolation
-
-Precisely.
-
-> so the application assumes that everything that
-> involves entering kernel will not be available while it is isolated.
-
-We can't do things that way and just ignore IPIs. You need to solve the
-source of the noise, not the symptoms.
-
-Thanks.
+Please resubmit this patch with proper Developer's Certificate of Origin
+(a.k.a. Signed-off-by).
