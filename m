@@ -2,145 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 621A9285178
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 20:18:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C27F0285191
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 20:28:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726823AbgJFSSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 14:18:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726760AbgJFSSJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 14:18:09 -0400
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE69BC061755;
-        Tue,  6 Oct 2020 11:18:09 -0700 (PDT)
-Received: by mail-yb1-xb41.google.com with SMTP id v60so9658306ybi.10;
-        Tue, 06 Oct 2020 11:18:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VysxtNhPQhXZy3gNg3Z4uRahv5tdiKC/RdAYMAu0FwA=;
-        b=UUvRRztgSlCV0pK2P3zg+4DO+RcBzBD3TUc2MGbQzi0+GClDupAjE6yEcmi2owwrlu
-         2Zizl7TL7nk64yPrvLoi4CeHGtNh/jZKLO0FHGns00r2Yba69vkjlTXPzRIxqpKOttVc
-         rYsXaK+Y4MOxNMqueLYOsyrOOwKuXeQxLNyzHmxgrxD9vsokOfsFfpDXglofkep8AygY
-         fKqdQjfrxaYJOoDOhK+myqCOuunLWwMG0TD9Iag8uGR7LkspKxKJgibXOzt9NC8d5Ekl
-         U1D3ihmMJRCt8lzya49COijv8XzOQ5iZRHx4cTgQzafDeK7058J7pEi0vaWPNttEZDSA
-         Gxeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VysxtNhPQhXZy3gNg3Z4uRahv5tdiKC/RdAYMAu0FwA=;
-        b=dcN5bD0kxmsjitoeQLCElGRlCFKiDQXd2cRX4hUP3Q/JyQGK/ye4fOycHz+L34rLz0
-         p49cMEFgZ33kq4z46QwM7iDyjiRgT0QccllK+optQ0HmezKdtO1fMPDB1c6/DfZSgy35
-         4DnUCpQRhp74OWRfYPx47iVQEXEUo/z/024zyoOflOJPjSYFgy4OFn5gn+y5XCK8D8UI
-         nb1mbeFCxUIvxZRjUb6krzUiqvLCY1JOGcCht01Rvxyc55yQ0YI8r3C6tw3GqFSXXKSR
-         o/hxYdkJos7yb0lRHqf5qwvR5hlEI0fmGpFldZki2sAVbUs3xpIqxty8ylSHmFt3yRof
-         r72g==
-X-Gm-Message-State: AOAM533pkTZS4NaU365mbsgohuN3COHQmzSZ1jCAM2xZmNkUra5qJRNH
-        qUdDBt27FDGqUWWWVolyoTXoYhrSgcKkkIigfVo=
-X-Google-Smtp-Source: ABdhPJyVNeLFasM169AMMdirQwwUj58ADOa4jqNtRyWgHRiSbgQm0A69M2imvN8++U8d36TG8I+a1BvjqcJ6vI/Yv78=
-X-Received: by 2002:a25:2596:: with SMTP id l144mr8476311ybl.510.1602008288863;
- Tue, 06 Oct 2020 11:18:08 -0700 (PDT)
+        id S1726810AbgJFS2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 14:28:52 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:52218 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726759AbgJFS2w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 14:28:52 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 096IOu8Y012997;
+        Tue, 6 Oct 2020 18:28:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=6+95rsR9Z5CjnDrnTBVtpeRBJgt9yjv4jhnHQhmfouo=;
+ b=P7oF4q8zxf2Q23cohhSEQNdGXSDxa1t5zKv/jbcxspBlc7BMHD0TceE38/jHiIn7AqyD
+ f6c+0cv5CAKDroQwH4kzpJIA/Yd3BX8hH+2Z11VB0r/Ld2tck78gnLnBXfhFpMv23zlC
+ G3bs4B1sogMTojT52qkklmDX0rTYgY/3RyRdbaf57TghEyTV/V+1oc1lvKqOPb17k5TI
+ GaLWd6MfF8CWI9kWbl8OA7+zx7qh99ub1lzzC4emxOmz30sYdRn1A/Y88r3gib9Pq5NX
+ SFpp1CYrjFIYBnGzmkjWTLzGWUw+ED17nlgHV1oTi4EGAADbYwv9gk7trBVhf3jpA2bj sw== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2120.oracle.com with ESMTP id 33xhxmwmm5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 06 Oct 2020 18:28:37 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 096ILMsQ016127;
+        Tue, 6 Oct 2020 18:26:36 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3030.oracle.com with ESMTP id 33y2vnd2n7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 06 Oct 2020 18:26:36 +0000
+Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 096IQZ1c003553;
+        Tue, 6 Oct 2020 18:26:35 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 06 Oct 2020 11:26:35 -0700
+Date:   Tue, 6 Oct 2020 21:26:28 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     Colin King <colin.king@canonical.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH][next] net: phy: dp83869: fix unsigned comparisons
+ against less than zero values
+Message-ID: <20201006182628.GI4282@kadam>
+References: <20201002165422.94328-1-colin.king@canonical.com>
+ <1ffbf497-cb07-4302-8a79-236338f00383@ti.com>
 MIME-Version: 1.0
-References: <20201002010633.3706122-1-andriin@fb.com> <20201002010633.3706122-2-andriin@fb.com>
- <20201006180839.lvoigzpmr32rrroj@ast-mbp>
-In-Reply-To: <20201006180839.lvoigzpmr32rrroj@ast-mbp>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 6 Oct 2020 11:17:58 -0700
-Message-ID: <CAEf4BzaF+pLa0vGFaQCfLrF=9pjqYmkUhSC7d8yS2-Dv3DCsMA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/3] libbpf: support safe subset of load/store
- instruction resizing with CO-RE
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Tony Ambardar <tony.ambardar@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1ffbf497-cb07-4302-8a79-236338f00383@ti.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9766 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxlogscore=999
+ malwarescore=0 suspectscore=0 spamscore=0 phishscore=0 bulkscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2010060118
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9766 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 malwarescore=0 bulkscore=0
+ impostorscore=0 lowpriorityscore=0 suspectscore=0 phishscore=0
+ mlxlogscore=999 adultscore=0 clxscore=1015 spamscore=0 priorityscore=1501
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2010060118
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 6, 2020 at 11:08 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Thu, Oct 01, 2020 at 06:06:31PM -0700, Andrii Nakryiko wrote:
-> > Add support for patching instructions of the following form:
-> >   - rX = *(T *)(rY + <off>);
-> >   - *(T *)(rX + <off>) = rY;
-> >   - *(T *)(rX + <off>) = <imm>, where T is one of {u8, u16, u32, u64}.
->
-> llvm doesn't generate ST instruction. It never did.
-> STX is generated, but can it actually be used with relocations?
+On Fri, Oct 02, 2020 at 12:26:49PM -0500, Dan Murphy wrote:
+> Colin
+> 
+> On 10/2/20 11:54 AM, Colin King wrote:
+> > From: Colin Ian King <colin.king@canonical.com>
+> > 
+> > Currently the comparisons of u16 integers value and sopass_val with
+> > less than zero for error checking is always false because the values
+> > are unsigned. Fix this by making these variables int.  This does not
+> > affect the shift and mask operations performed on these variables
+> > 
+> > Addresses-Coverity: ("Unsigned compared against zero")
+> > Fixes: 49fc23018ec6 ("net: phy: dp83869: support Wake on LAN")
+> > Signed-off-by: Colin Ian King <colin.king@canonical.com>
+> > ---
+> >   drivers/net/phy/dp83869.c | 2 +-
+> >   1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/net/phy/dp83869.c b/drivers/net/phy/dp83869.c
+> > index 0aee5f645b71..cf6dec7b7d8e 100644
+> > --- a/drivers/net/phy/dp83869.c
+> > +++ b/drivers/net/phy/dp83869.c
+> > @@ -305,7 +305,7 @@ static int dp83869_set_wol(struct phy_device *phydev,
+> >   static void dp83869_get_wol(struct phy_device *phydev,
+> >   			    struct ethtool_wolinfo *wol)
+> >   {
+> > -	u16 value, sopass_val;
+> > +	int value, sopass_val;
+> >   	wol->supported = (WAKE_UCAST | WAKE_BCAST | WAKE_MAGIC |
+> >   			WAKE_MAGICSECURE);
+> 
+> Wonder why this was not reported before as the previous comparison issue
+> reported by zero day.
 
-interesting, so whe you do `some_struct->some_field = 123;` Clang will still do:
+It was reported on Sep 25.  I forward those zero day bot emails.
 
-r1 = 123;
-*(u32 *)(r2 + 0) = r1;
+https://lore.kernel.org/lkml/20200925123858.GX18329@kadam/
 
-?
+regards,
+dan carpenter
 
-I'll add a test with constant and see what gets generated.
-
-To answer the second part, unless someone is willing to manually
-generate .BTF.ext for assembly instruction, then no, you can't really
-use it with CO-RE relocation.
-
-> Looking at the test in patch 3... it's testing LDX only.
-> ST/STX suppose to work by analogy, but would be good to have a test.
-> At least of STX.
-
-yep, will add.
-
->
-> > +static int insn_mem_sz_to_bytes(struct bpf_insn *insn)
-> > +{
-> > +     switch (BPF_SIZE(insn->code)) {
-> > +     case BPF_DW: return 8;
-> > +     case BPF_W: return 4;
-> > +     case BPF_H: return 2;
-> > +     case BPF_B: return 1;
-> > +     default: return -1;
-> > +     }
-> > +}
-> > +
-> > +static int insn_bytes_to_mem_sz(__u32 sz)
-> > +{
-> > +     switch (sz) {
-> > +     case 8: return BPF_DW;
-> > +     case 4: return BPF_W;
-> > +     case 2: return BPF_H;
-> > +     case 1: return BPF_B;
-> > +     default: return -1;
-> > +     }
-> > +}
->
-> filter.h has these two helpers. They're named bytes_to_bpf_size() and bpf_size_to_bytes().
-> I guess we cannot really share kernel and libbpf implementation, but
-> could you please name them the same way so it's easier to follow
-> for folks who read both kernel and libbpf code?
-
-yes, of course. I actually spent some time searching for them, but
-couldn't find them in kernel code. I remembered seeing them
-previously, but it never occurred to me to chekc filter.h.
-
->
-> > +             if (res->new_sz != res->orig_sz) {
-> > +                     mem_sz = insn_mem_sz_to_bytes(insn);
-> > +                     if (mem_sz != res->orig_sz) {
-> > +                             pr_warn("prog '%s': relo #%d: insn #%d (LDX/ST/STX) unexpected mem size: got %u, exp %u\n",
-> > +                                     prog->name, relo_idx, insn_idx, mem_sz, res->orig_sz);
-> > +                             return -EINVAL;
-> > +                     }
-> > +
-> > +                     mem_sz = insn_bytes_to_mem_sz(res->new_sz);
-> > +                     if (mem_sz < 0) {
->
-> Please use new variable here appropriately named.
-> Few lines above mem_sz is in bytes while here it's encoding opcode.
-
-ok
