@@ -2,87 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9973E284C94
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 15:32:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02079284C9E
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 15:40:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726137AbgJFNcZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 09:32:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55120 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725902AbgJFNcZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 09:32:25 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F620C061755;
-        Tue,  6 Oct 2020 06:32:25 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id ce10so17649004ejc.5;
-        Tue, 06 Oct 2020 06:32:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7VmO0GWEeQu+5/FHhJJ0ViDsI8bgkt7sXQ8SBKLqT7Q=;
-        b=CEsWyuLIG5cUbt1LkjWL2gKqTVVrxHXaxRmy1UKeZUmroje5umwxXGVY+9VCw41pts
-         aKWjhl1pfzli/PnJgfE+7TrV+PjXMyW0Lb/GJlT1L6xxdOUmqtYluEAvSLgDq2VlGZkW
-         /0+qh7fUf+BsaGUmX589Vy4G76c7XC6HZtlPwsI0te/bZ8Rm/rJxhkSkJ3OdfVk/RRMA
-         pcKbQidhPV5eorIw5Zu4aujfU4JTdha8pQMWzGs1RafcYMjxA+ZfdDtqEmUqX+fVd+aW
-         dUPVSl2EYcbty1P5WvWADizRJ6IiEreUSaIRSeuTxFte3cyy5/Ye6z3sB/QL4crivDOE
-         HVuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7VmO0GWEeQu+5/FHhJJ0ViDsI8bgkt7sXQ8SBKLqT7Q=;
-        b=lFEXIz27WKW7gBoSUbvnOenQ6wFDSSlNtxylqgjHoY+tGtgN2ovDBD3jUpOw1j/xWU
-         793wNqKKUT4VKEXTEjMJFGbwCx43E7dYSekviUTyTojdS98vff28L/dLXQ0hXTBiJhli
-         JsfUEuf0fn8eW2N+nwtZiUcc92qiIr2o2QHG4D9Pee8Yt6+zSo2mMPYBpjq+hSS7LHc1
-         hv3Nzpo73f57FZ9eZ/96/Uw4PClL4olr4mGRXNwQCebASmRv8EDe7h+Hq6S/k4wPL+Ah
-         L2x92vJ0UDhvXRMdfyuGf3Vv/pgmWxQ9XVrwKd3rB5JUnpL2XLwHxjw858PPkwURlTG3
-         g9Sg==
-X-Gm-Message-State: AOAM530ZGXPp4v2/Y8AW1QCG17zcPYLO8jVw/tnW4pP8sHUC/CX1HhkV
-        /duALudjjAlckmPlXmGHcoKr1btuC/U=
-X-Google-Smtp-Source: ABdhPJysYa/u3LR8k8bykfaXy3Y6WLk+DXq33UTpn06SBE9y8brg/in3TFydx4MYkAlVom0us2ej6A==
-X-Received: by 2002:a17:906:2962:: with SMTP id x2mr5220083ejd.188.1601991143873;
-        Tue, 06 Oct 2020 06:32:23 -0700 (PDT)
-Received: from skbuf ([188.26.229.171])
-        by smtp.gmail.com with ESMTPSA id cn21sm2318593edb.14.2020.10.06.06.32.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Oct 2020 06:32:23 -0700 (PDT)
-Date:   Tue, 6 Oct 2020 16:32:22 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH net-next v6 4/7] net: dsa: hellcreek: Add support for
- hardware timestamping
-Message-ID: <20201006133222.74w3r2jwwhq5uop5@skbuf>
-References: <20201004112911.25085-1-kurt@linutronix.de>
- <20201004112911.25085-5-kurt@linutronix.de>
- <20201004143000.blb3uxq3kwr6zp3z@skbuf>
- <87imbn98dd.fsf@kurt>
- <20201006072847.pjygwwtgq72ghsiq@skbuf>
- <87tuv77a83.fsf@kurt>
+        id S1725970AbgJFNkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 09:40:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:39781 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725906AbgJFNkM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 09:40:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1601991611;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dMSX3M4ms1Pfyuj4AFtJd//I37UaeKB5Z21Mn27FVzA=;
+        b=ZOXvTzNW2jCNfpZmn7LBB+9V8jGv3OulJ4IXeNuK7l0P+7jZb1WpHfjYElVwaA/bhH3wCI
+        YGtRXj9hSGH0Es2/9kw0VIf/a9S+YsXbE0CuXNmDrL2Qr48BbcvH8Z+8KTFBSBp9DrwSTo
+        2lwyaT2CCf9AgqLrTa4eozfiQupPpVs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-214-a50WqnLVMfilPYw22XVeiw-1; Tue, 06 Oct 2020 09:40:09 -0400
+X-MC-Unique: a50WqnLVMfilPYw22XVeiw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 041E6805F11;
+        Tue,  6 Oct 2020 13:40:07 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-116-196.rdu2.redhat.com [10.10.116.196])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6E1E660C5C;
+        Tue,  6 Oct 2020 13:40:05 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20201006.061910.2028674026807610400.davem@davemloft.net>
+References: <20201006.061910.2028674026807610400.davem@davemloft.net> <160191472433.3050642.12600839710302704718.stgit@warthog.procyon.org.uk>
+To:     David Miller <davem@davemloft.net>
+Cc:     dhowells@redhat.com, netdev@vger.kernel.org,
+        marc.dionne@auristor.com, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 0/6] rxrpc: Miscellaneous fixes
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87tuv77a83.fsf@kurt>
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3385883.1601991604.1@warthog.procyon.org.uk>
+Date:   Tue, 06 Oct 2020 14:40:04 +0100
+Message-ID: <3385884.1601991604@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 06, 2020 at 03:30:36PM +0200, Kurt Kanzenbach wrote:
-> That's the point. The user (or anybody else) cannot disable hardware
-> stamping, because it is always performed. So, why should it be allowed
-> to disable it even when it cannot be disabled?
+David Miller <davem@davemloft.net> wrote:
 
-Because your driver's user can attach a PTP PHY to your switch port, and
-the network stack doesn't support multiple TX timestamps attached to the
-same skb. They'll want the TX timestamp from the PHY and not from your
-switch.
+> I think the ".txt" at the end of the branch name is a mistake.
+
+Sigh.  That's the name of the file with the cover message in it (named for the
+tag).  I need to adjust my script yet more to check not only that the tag name
+is in there, but that it also doesn't have any bits on the end.
+
+David
+
