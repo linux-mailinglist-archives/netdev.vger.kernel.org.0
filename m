@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE286284BA9
+	by mail.lfdr.de (Postfix) with ESMTP id 0D8AA284BA8
 	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 14:32:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726519AbgJFMcL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 08:32:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45846 "EHLO
+        id S1726530AbgJFMcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 08:32:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726241AbgJFMcL (ORCPT
+        with ESMTP id S1726499AbgJFMcL (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 08:32:11 -0400
 Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1789C061755
-        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 05:32:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25707C0613D1
+        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 05:32:11 -0700 (PDT)
 Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
         (Exim 4.94)
         (envelope-from <johannes@sipsolutions.net>)
-        id 1kPm8W-000EQw-TC; Tue, 06 Oct 2020 14:32:09 +0200
+        id 1kPm8X-000EQw-7P; Tue, 06 Oct 2020 14:32:09 +0200
 From:   Johannes Berg <johannes@sipsolutions.net>
 To:     netdev@vger.kernel.org
 Cc:     dsahern@gmail.com, Jakub Kicinski <kuba@kernel.org>,
         Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 1/2] netlink: policy: refactor per-attr policy writing
-Date:   Tue,  6 Oct 2020 14:32:01 +0200
-Message-Id: <20201006142714.00c563dc22b5.Id092e96bbd4df7102eea602baf20a409bff3b9b0@changeid>
+Subject: [PATCH 2/2] netlink: export policy in extended ACK
+Date:   Tue,  6 Oct 2020 14:32:02 +0200
+Message-Id: <20201006142714.3c8b8db03517.I6dae2c514a6abc924ee8b3e2befb0d51b086cf70@changeid>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201006123202.57898-1-johannes@sipsolutions.net>
 References: <20201006123202.57898-1-johannes@sipsolutions.net>
@@ -36,129 +36,265 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Johannes Berg <johannes.berg@intel.com>
 
-Refactor the per-attribute policy writing into a new
-helper function, to be used later for dumping out the
-policy of a rejected attribute.
+Add a new attribute NLMSGERR_ATTR_POLICY to the extended ACK
+to advertise the policy, e.g. if an attribute was out of range,
+you'll know the range that's permissible.
+
+Add new NL_SET_ERR_MSG_ATTR_POL() and NL_SET_ERR_MSG_ATTR_POL()
+macros to set this, since realistically it's only useful to do
+this when the bad attribute (offset) is also returned.
+
+Use it in lib/nlattr.c which practically does all the policy
+validation.
 
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 ---
- net/netlink/policy.c | 79 ++++++++++++++++++++++++++++----------------
- 1 file changed, 51 insertions(+), 28 deletions(-)
+ include/linux/netlink.h      | 30 ++++++++++++++++++++----------
+ include/net/netlink.h        |  3 +++
+ include/uapi/linux/netlink.h |  2 ++
+ lib/nlattr.c                 | 35 ++++++++++++++++++-----------------
+ net/netlink/af_netlink.c     |  6 ++++++
+ net/netlink/policy.c         | 17 +++++++++++++++++
+ 6 files changed, 66 insertions(+), 27 deletions(-)
 
-diff --git a/net/netlink/policy.c b/net/netlink/policy.c
-index cf23c0151721..bb4e3ffb4924 100644
---- a/net/netlink/policy.c
-+++ b/net/netlink/policy.c
-@@ -196,49 +196,33 @@ bool netlink_policy_dump_loop(struct netlink_policy_dump_state *state)
- 	return !netlink_policy_dump_finished(state);
+diff --git a/include/linux/netlink.h b/include/linux/netlink.h
+index e3e49f0e5c13..666cd0390699 100644
+--- a/include/linux/netlink.h
++++ b/include/linux/netlink.h
+@@ -68,12 +68,14 @@ netlink_kernel_create(struct net *net, int unit, struct netlink_kernel_cfg *cfg)
+  * @_msg: message string to report - don't access directly, use
+  *	%NL_SET_ERR_MSG
+  * @bad_attr: attribute with error
++ * @policy: policy for a bad attribute
+  * @cookie: cookie data to return to userspace (for success)
+  * @cookie_len: actual cookie data length
+  */
+ struct netlink_ext_ack {
+ 	const char *_msg;
+ 	const struct nlattr *bad_attr;
++	const struct nla_policy *policy;
+ 	u8 cookie[NETLINK_MAX_COOKIE_LEN];
+ 	u8 cookie_len;
+ };
+@@ -95,21 +97,29 @@ struct netlink_ext_ack {
+ #define NL_SET_ERR_MSG_MOD(extack, msg)			\
+ 	NL_SET_ERR_MSG((extack), KBUILD_MODNAME ": " msg)
+ 
+-#define NL_SET_BAD_ATTR(extack, attr) do {		\
+-	if ((extack))					\
++#define NL_SET_BAD_ATTR_POLICY(extack, attr, pol) do {	\
++	if ((extack)) {					\
+ 		(extack)->bad_attr = (attr);		\
++		(extack)->policy = (pol);		\
++	}						\
+ } while (0)
+ 
+-#define NL_SET_ERR_MSG_ATTR(extack, attr, msg) do {	\
+-	static const char __msg[] = msg;		\
+-	struct netlink_ext_ack *__extack = (extack);	\
+-							\
+-	if (__extack) {					\
+-		__extack->_msg = __msg;			\
+-		__extack->bad_attr = (attr);		\
+-	}						\
++#define NL_SET_BAD_ATTR(extack, attr) NL_SET_BAD_ATTR_POLICY(extack, attr, NULL)
++
++#define NL_SET_ERR_MSG_ATTR_POL(extack, attr, pol, msg) do {	\
++	static const char __msg[] = msg;			\
++	struct netlink_ext_ack *__extack = (extack);		\
++								\
++	if (__extack) {						\
++		__extack->_msg = __msg;				\
++		__extack->bad_attr = (attr);			\
++		__extack->policy = (pol);			\
++	}							\
+ } while (0)
+ 
++#define NL_SET_ERR_MSG_ATTR(extack, attr, msg)		\
++	NL_SET_ERR_MSG_ATTR_POL(extack, attr, NULL, msg)
++
+ static inline void nl_set_extack_cookie_u64(struct netlink_ext_ack *extack,
+ 					    u64 cookie)
+ {
+diff --git a/include/net/netlink.h b/include/net/netlink.h
+index 5a5ff97cc596..6c9b08c0f071 100644
+--- a/include/net/netlink.h
++++ b/include/net/netlink.h
+@@ -1946,6 +1946,9 @@ int netlink_policy_dump_get_policy_idx(struct netlink_policy_dump_state *state,
+ bool netlink_policy_dump_loop(struct netlink_policy_dump_state *state);
+ int netlink_policy_dump_write(struct sk_buff *skb,
+ 			      struct netlink_policy_dump_state *state);
++int netlink_policy_dump_write_attr(struct sk_buff *skb,
++				   const struct nla_policy *pt,
++				   int nestattr);
+ void netlink_policy_dump_free(struct netlink_policy_dump_state *state);
+ 
+ #endif
+diff --git a/include/uapi/linux/netlink.h b/include/uapi/linux/netlink.h
+index eac8a6a648ea..b9c28c558698 100644
+--- a/include/uapi/linux/netlink.h
++++ b/include/uapi/linux/netlink.h
+@@ -129,6 +129,7 @@ struct nlmsgerr {
+  * @NLMSGERR_ATTR_COOKIE: arbitrary subsystem specific cookie to
+  *	be used - in the success case - to identify a created
+  *	object or operation or similar (binary)
++ * @NLMSGERR_ATTR_POLICY: policy for a rejected attribute
+  * @__NLMSGERR_ATTR_MAX: number of attributes
+  * @NLMSGERR_ATTR_MAX: highest attribute number
+  */
+@@ -137,6 +138,7 @@ enum nlmsgerr_attrs {
+ 	NLMSGERR_ATTR_MSG,
+ 	NLMSGERR_ATTR_OFFS,
+ 	NLMSGERR_ATTR_COOKIE,
++	NLMSGERR_ATTR_POLICY,
+ 
+ 	__NLMSGERR_ATTR_MAX,
+ 	NLMSGERR_ATTR_MAX = __NLMSGERR_ATTR_MAX - 1
+diff --git a/lib/nlattr.c b/lib/nlattr.c
+index 80ff9fe83696..cdd78c52c3c4 100644
+--- a/lib/nlattr.c
++++ b/lib/nlattr.c
+@@ -96,8 +96,8 @@ static int nla_validate_array(const struct nlattr *head, int len, int maxtype,
+ 			continue;
+ 
+ 		if (nla_len(entry) < NLA_HDRLEN) {
+-			NL_SET_ERR_MSG_ATTR(extack, entry,
+-					    "Array element too short");
++			NL_SET_ERR_MSG_ATTR_POL(extack, entry, policy,
++						"Array element too short");
+ 			return -ERANGE;
+ 		}
+ 
+@@ -195,8 +195,8 @@ static int nla_validate_range_unsigned(const struct nla_policy *pt,
+ 		pr_warn_ratelimited("netlink: '%s': attribute type %d has an invalid length.\n",
+ 				    current->comm, pt->type);
+ 		if (validate & NL_VALIDATE_STRICT_ATTRS) {
+-			NL_SET_ERR_MSG_ATTR(extack, nla,
+-					    "invalid attribute length");
++			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
++						"invalid attribute length");
+ 			return -EINVAL;
+ 		}
+ 
+@@ -208,11 +208,11 @@ static int nla_validate_range_unsigned(const struct nla_policy *pt,
+ 		bool binary = pt->type == NLA_BINARY;
+ 
+ 		if (binary)
+-			NL_SET_ERR_MSG_ATTR(extack, nla,
+-					    "binary attribute size out of range");
++			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
++						"binary attribute size out of range");
+ 		else
+-			NL_SET_ERR_MSG_ATTR(extack, nla,
+-					    "integer out of range");
++			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
++						"integer out of range");
+ 
+ 		return -ERANGE;
+ 	}
+@@ -291,8 +291,8 @@ static int nla_validate_int_range_signed(const struct nla_policy *pt,
+ 	nla_get_range_signed(pt, &range);
+ 
+ 	if (value < range.min || value > range.max) {
+-		NL_SET_ERR_MSG_ATTR(extack, nla,
+-				    "integer out of range");
++		NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
++					"integer out of range");
+ 		return -ERANGE;
+ 	}
+ 
+@@ -346,8 +346,8 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
+ 		pr_warn_ratelimited("netlink: '%s': attribute type %d has an invalid length.\n",
+ 				    current->comm, type);
+ 		if (validate & NL_VALIDATE_STRICT_ATTRS) {
+-			NL_SET_ERR_MSG_ATTR(extack, nla,
+-					    "invalid attribute length");
++			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
++						"invalid attribute length");
+ 			return -EINVAL;
+ 		}
+ 	}
+@@ -355,14 +355,14 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
+ 	if (validate & NL_VALIDATE_NESTED) {
+ 		if ((pt->type == NLA_NESTED || pt->type == NLA_NESTED_ARRAY) &&
+ 		    !(nla->nla_type & NLA_F_NESTED)) {
+-			NL_SET_ERR_MSG_ATTR(extack, nla,
+-					    "NLA_F_NESTED is missing");
++			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
++						"NLA_F_NESTED is missing");
+ 			return -EINVAL;
+ 		}
+ 		if (pt->type != NLA_NESTED && pt->type != NLA_NESTED_ARRAY &&
+ 		    pt->type != NLA_UNSPEC && (nla->nla_type & NLA_F_NESTED)) {
+-			NL_SET_ERR_MSG_ATTR(extack, nla,
+-					    "NLA_F_NESTED not expected");
++			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
++						"NLA_F_NESTED not expected");
+ 			return -EINVAL;
+ 		}
+ 	}
+@@ -514,7 +514,8 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
+ 
+ 	return 0;
+ out_err:
+-	NL_SET_ERR_MSG_ATTR(extack, nla, "Attribute failed policy validation");
++	NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
++				"Attribute failed policy validation");
+ 	return err;
  }
  
--/**
-- * netlink_policy_dump_write - write current policy dump attributes
-- * @skb: the message skb to write to
-- * @state: the policy dump state
-- *
-- * Returns: 0 on success, an error code otherwise
-- */
--int netlink_policy_dump_write(struct sk_buff *skb,
--			      struct netlink_policy_dump_state *state)
-+static int
-+__netlink_policy_dump_write_attr(struct netlink_policy_dump_state *state,
-+				  struct sk_buff *skb,
-+				  const struct nla_policy *pt,
-+				  int nestattr)
- {
--	const struct nla_policy *pt;
--	struct nlattr *policy, *attr;
- 	enum netlink_attribute_type type;
--	bool again;
--
--send_attribute:
--	again = false;
--
--	pt = &state->policies[state->policy_idx].policy[state->attr_idx];
-+	struct nlattr *attr;
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index df675a8e1918..8273d5e70594 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -2420,6 +2420,9 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
+ 		tlvlen += nla_total_size(sizeof(u32));
+ 	if (nlk_has_extack && extack && extack->cookie_len)
+ 		tlvlen += nla_total_size(extack->cookie_len);
++	/* the max policy content is currently ~44 bytes for range min/max */
++	if (err && nlk_has_extack && extack && extack->policy)
++		tlvlen += 64;
  
--	policy = nla_nest_start(skb, state->policy_idx);
--	if (!policy)
--		return -ENOBUFS;
--
--	attr = nla_nest_start(skb, state->attr_idx);
-+	attr = nla_nest_start(skb, nestattr);
- 	if (!attr)
--		goto nla_put_failure;
-+		return -ENOBUFS;
+ 	if (tlvlen)
+ 		flags |= NLM_F_ACK_TLVS;
+@@ -2452,6 +2455,9 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
+ 		if (extack->cookie_len)
+ 			WARN_ON(nla_put(skb, NLMSGERR_ATTR_COOKIE,
+ 					extack->cookie_len, extack->cookie));
++		if (extack->policy)
++			netlink_policy_dump_write_attr(skb, extack->policy,
++						       NLMSGERR_ATTR_POLICY);
+ 	}
  
- 	switch (pt->type) {
- 	default:
- 	case NLA_UNSPEC:
- 	case NLA_REJECT:
- 		/* skip - use NLA_MIN_LEN to advertise such */
--		nla_nest_cancel(skb, policy);
--		again = true;
--		goto next;
-+		nla_nest_cancel(skb, attr);
-+		return -ENODATA;
- 	case NLA_NESTED:
- 		type = NL_ATTR_TYPE_NESTED;
- 		fallthrough;
- 	case NLA_NESTED_ARRAY:
- 		if (pt->type == NLA_NESTED_ARRAY)
- 			type = NL_ATTR_TYPE_NESTED_ARRAY;
--		if (pt->nested_policy && pt->len &&
-+		if (state && pt->nested_policy && pt->len &&
- 		    (nla_put_u32(skb, NL_POLICY_TYPE_ATTR_POLICY_IDX,
- 				 netlink_policy_dump_get_policy_idx(state,
- 								    pt->nested_policy,
-@@ -341,8 +325,47 @@ int netlink_policy_dump_write(struct sk_buff *skb,
- 	if (nla_put_u32(skb, NL_POLICY_TYPE_ATTR_TYPE, type))
- 		goto nla_put_failure;
+ 	nlmsg_end(skb, rep);
+diff --git a/net/netlink/policy.c b/net/netlink/policy.c
+index bb4e3ffb4924..b19f2a3f2533 100644
+--- a/net/netlink/policy.c
++++ b/net/netlink/policy.c
+@@ -332,6 +332,23 @@ __netlink_policy_dump_write_attr(struct netlink_policy_dump_state *state,
+ 	return -ENOBUFS;
+ }
  
--	/* finish and move state to next attribute */
- 	nla_nest_end(skb, attr);
-+	return 0;
-+nla_put_failure:
-+	nla_nest_cancel(skb, attr);
-+	return -ENOBUFS;
++/**
++ * netlink_policy_dump_write_attr - write a given attribute policy
++ * @skb: the message skb to write to
++ * @pt: the attribute's policy
++ * @nestattr: the nested attribute ID to use
++ *
++ * Returns: 0 on success, an error code otherwise; -%ENODATA is
++ *	    special, indicating that there's no policy data and
++ *	    the attribute is generally rejected.
++ */
++int netlink_policy_dump_write_attr(struct sk_buff *skb,
++				   const struct nla_policy *pt,
++				   int nestattr)
++{
++	return __netlink_policy_dump_write_attr(NULL, skb, pt, nestattr);
 +}
 +
-+/**
-+ * netlink_policy_dump_write - write current policy dump attributes
-+ * @skb: the message skb to write to
-+ * @state: the policy dump state
-+ *
-+ * Returns: 0 on success, an error code otherwise
-+ */
-+int netlink_policy_dump_write(struct sk_buff *skb,
-+			      struct netlink_policy_dump_state *state)
-+{
-+	const struct nla_policy *pt;
-+	struct nlattr *policy;
-+	int err;
-+	bool again;
-+
-+send_attribute:
-+	again = false;
-+
-+	pt = &state->policies[state->policy_idx].policy[state->attr_idx];
-+
-+	policy = nla_nest_start(skb, state->policy_idx);
-+	if (!policy)
-+		return -ENOBUFS;
-+
-+	err = __netlink_policy_dump_write_attr(state, skb, pt, state->attr_idx);
-+	if (err == -ENODATA) {
-+		nla_nest_cancel(skb, policy);
-+		again = true;
-+		goto next;
-+	} else if (err) {
-+		goto nla_put_failure;
-+	}
-+
-+	/* finish and move state to next attribute */
- 	nla_nest_end(skb, policy);
- 
- next:
+ /**
+  * netlink_policy_dump_write - write current policy dump attributes
+  * @skb: the message skb to write to
 -- 
 2.26.2
 
