@@ -2,60 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7091284EA3
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 17:10:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84844284EF0
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 17:27:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726087AbgJFPKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 11:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41960 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725970AbgJFPKs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 11:10:48 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13DD9C061755
-        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 08:10:48 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kPoc1-000JIX-BY; Tue, 06 Oct 2020 17:10:45 +0200
-Message-ID: <0f534e06a9b2248cc4a5ae941caf7772a864a68f.camel@sipsolutions.net>
-Subject: Re: [PATCH 2/2] netlink: export policy in extended ACK
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, Jakub Kicinski <kuba@kernel.org>
-Date:   Tue, 06 Oct 2020 17:10:44 +0200
-In-Reply-To: <20201006142714.3c8b8db03517.I6dae2c514a6abc924ee8b3e2befb0d51b086cf70@changeid>
-References: <20201006123202.57898-1-johannes@sipsolutions.net>
-         <20201006142714.3c8b8db03517.I6dae2c514a6abc924ee8b3e2befb0d51b086cf70@changeid>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1726103AbgJFP15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 11:27:57 -0400
+Received: from mga12.intel.com ([192.55.52.136]:33659 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725902AbgJFP14 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Oct 2020 11:27:56 -0400
+IronPort-SDR: QeDM/ScQrcW2A+HZNRbbrBs6431VhL8Qeh83rsOSjF0a8XrNi4Ch8LTEXdn5yOjNhjejNGAJ5r
+ FKugDPss33HA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9765"; a="143926600"
+X-IronPort-AV: E=Sophos;i="5.77,343,1596524400"; 
+   d="scan'208";a="143926600"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Oct 2020 08:18:11 -0700
+IronPort-SDR: jyseSU0pg3l97W6nWc2ghmP+1PlhkgiTtjpSWzlQToieuZXfHvP5XeXyhpnzuq+dfIx1uY6gyr
+ n6Y0n91f/yMQ==
+X-IronPort-AV: E=Sophos;i="5.77,343,1596524400"; 
+   d="scan'208";a="460840058"
+Received: from mforsman-mobl.amr.corp.intel.com (HELO [10.212.97.68]) ([10.212.97.68])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Oct 2020 08:18:08 -0700
+Subject: Re: [PATCH v2 1/6] Add ancillary bus support
+To:     Leon Romanovsky <leon@kernel.org>,
+        Dave Ertman <david.m.ertman@intel.com>
+Cc:     alsa-devel@alsa-project.org, parav@mellanox.com, tiwai@suse.de,
+        netdev@vger.kernel.org, ranjani.sridharan@linux.intel.com,
+        fred.oh@linux.intel.com, linux-rdma@vger.kernel.org,
+        dledford@redhat.com, broonie@kernel.org, jgg@nvidia.com,
+        gregkh@linuxfoundation.org, kuba@kernel.org,
+        dan.j.williams@intel.com, shiraz.saleem@intel.com,
+        davem@davemloft.net, kiran.patil@intel.com
+References: <20201005182446.977325-1-david.m.ertman@intel.com>
+ <20201005182446.977325-2-david.m.ertman@intel.com>
+ <20201006071821.GI1874917@unreal>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Message-ID: <b4f6b5d1-2cf4-ae7a-3e57-b66230a58453@linux.intel.com>
+Date:   Tue, 6 Oct 2020 10:18:07 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <20201006071821.GI1874917@unreal>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry, hat to run out earlier and forgot to comment here.
+Thanks for the review Leon.
 
-On Tue, 2020-10-06 at 14:32 +0200, Johannes Berg wrote:
+>> Add support for the Ancillary Bus, ancillary_device and ancillary_driver.
+>> It enables drivers to create an ancillary_device and bind an
+>> ancillary_driver to it.
 > 
-> +	/* the max policy content is currently ~44 bytes for range min/max */
-> +	if (err && nlk_has_extack && extack && extack->policy)
-> +		tlvlen += 64;
+> I was under impression that this name is going to be changed.
 
-So I'm not really happy with this. I counted 44 bytes content (so 48
-bytes for the nested attribute) for the biggest that we have now, but if
-we ever implement e.g. dumping out the reject string for NLA_REJECT
-(though not sure anyone even uses that?) then it'd be more variable.
+It's part of the opens stated in the cover letter.
 
-I couldn't really come up with any better idea, but I believe we do need
-to size the skb fairly well to return the original one ...
+[...]
 
-The only solution I _could_ think of was to allocate another skb, put
-the attribute into it, check the length, and then later append it to the
-message ... but that seemed kinda ugly.
+>> +	const struct my_driver my_drv = {
+>> +		.ancillary_drv = {
+>> +			.driver = {
+>> +				.name = "myancillarydrv",
+> 
+> Why do we need to give control over driver name to the driver authors?
+> It can be problematic if author puts name that already exists.
 
-Any preferences?
+Good point. When I used the ancillary_devices for my own SoundWire test, 
+the driver name didn't seem specifically meaningful but needed to be set 
+to something, what mattered was the id_table. Just thinking aloud, maybe 
+we can add prefixing with KMOD_BUILD, as we've done already to avoid 
+collisions between device names?
 
-johannes
+[...]
 
+>> +int __ancillary_device_add(struct ancillary_device *ancildev, const char *modname)
+>> +{
+>> +	struct device *dev = &ancildev->dev;
+>> +	int ret;
+>> +
+>> +	if (!modname) {
+>> +		pr_err("ancillary device modname is NULL\n");
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	ret = dev_set_name(dev, "%s.%s.%d", modname, ancildev->name, ancildev->id);
+>> +	if (ret) {
+>> +		pr_err("ancillary device dev_set_name failed: %d\n", ret);
+>> +		return ret;
+>> +	}
+>> +
+>> +	ret = device_add(dev);
+>> +	if (ret)
+>> +		dev_err(dev, "adding ancillary device failed!: %d\n", ret);
+>> +
+>> +	return ret;
+>> +}
+> 
+> Sorry, but this is very strange API that requires users to put
+> internal call to "dev" that is buried inside "struct ancillary_device".
+> 
+> For example in your next patch, you write this "put_device(&cdev->ancildev.dev);"
+> 
+> I'm pretty sure that the amount of bugs in error unwind will be
+> astonishing, so if you are doing wrappers over core code, better do not
+> pass complexity to the users.
+
+In initial reviews, there was pushback on adding wrappers that don't do 
+anything except for a pointer indirection.
+
+Others had concerns that the API wasn't balanced and blurring layers.
+
+Both points have merits IMHO. Do we want wrappers for everything and 
+completely hide the low-level device?
+
+> 
+>> +EXPORT_SYMBOL_GPL(__ancillary_device_add);
+>> +
+>> +static int ancillary_probe_driver(struct device *dev)
+>> +{
+>> +	struct ancillary_driver *ancildrv = to_ancillary_drv(dev->driver);
+>> +	struct ancillary_device *ancildev = to_ancillary_dev(dev);
+>> +	int ret;
+>> +
+>> +	ret = dev_pm_domain_attach(dev, true);
+>> +	if (ret) {
+>> +		dev_warn(dev, "Failed to attach to PM Domain : %d\n", ret);
+>> +		return ret;
+>> +	}
+>> +
+>> +	ret = ancildrv->probe(ancildev, ancillary_match_id(ancildrv->id_table, ancildev));
+> 
+> I don't think that you need to call ->probe() if ancillary_match_id()
+> returned NULL and probably that check should be done before
+> dev_pm_domain_attach().
+
+we'll look into this.
+
+> 
+>> +	if (ret)
+>> +		dev_pm_domain_detach(dev, true);
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static int ancillary_remove_driver(struct device *dev)
+>> +{
+>> +	struct ancillary_driver *ancildrv = to_ancillary_drv(dev->driver);
+>> +	struct ancillary_device *ancildev = to_ancillary_dev(dev);
+>> +	int ret;
+>> +
+>> +	ret = ancildrv->remove(ancildev);
+>> +	dev_pm_domain_detach(dev, true);
+>> +
+>> +	return ret;
+> 
+> You returned an error to user and detached from PM, what will user do
+> with this information? Should user ignore it? retry?
+
+That comment was also provided in earlier reviews. In practice the error 
+is typically ignored so there was a suggestion to move the return type 
+to void, that could be done if this was desired by the majority.
+
+[...]
+
+>> diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
+>> index 5b08a473cdba..7d596dc30833 100644
+>> --- a/include/linux/mod_devicetable.h
+>> +++ b/include/linux/mod_devicetable.h
+>> @@ -838,4 +838,12 @@ struct mhi_device_id {
+>>   	kernel_ulong_t driver_data;
+>>   };
+>>
+>> +#define ANCILLARY_NAME_SIZE 32
+>> +#define ANCILLARY_MODULE_PREFIX "ancillary:"
+>> +
+>> +struct ancillary_device_id {
+>> +	char name[ANCILLARY_NAME_SIZE];
+> 
+> I hope that this be enough.
+
+Are you suggesting a different value to allow for a longer string?
