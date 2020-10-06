@@ -2,120 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE638284AB3
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 13:16:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39A10284AF1
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 13:30:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725962AbgJFLQR convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 6 Oct 2020 07:16:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34084 "EHLO
+        id S1726060AbgJFLax (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 07:30:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725891AbgJFLQR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 07:16:17 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F9CEC061755
-        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 04:16:17 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1kPkww-0004p1-KD; Tue, 06 Oct 2020 13:16:06 +0200
-Date:   Tue, 6 Oct 2020 13:16:06 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     nusiddiq@redhat.com
-Cc:     dev@openvswitch.org, netdev@vger.kernel.org, davem@davemloft.net,
-        Aaron Conole <aconole@redhat.com>,
-        Pravin B Shelar <pshelar@ovn.org>
-Subject: Re: [PATCH net-next] net: openvswitch: Add support to lookup invalid
- packet in ct action.
-Message-ID: <20201006111606.GA18203@breakpoint.cc>
-References: <20201006083355.121018-1-nusiddiq@redhat.com>
+        with ESMTP id S1725946AbgJFLax (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 07:30:53 -0400
+Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5025C061755
+        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 04:30:52 -0700 (PDT)
+Received: by mail-vs1-xe41.google.com with SMTP id h2so556039vso.10
+        for <netdev@vger.kernel.org>; Tue, 06 Oct 2020 04:30:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2av8CIeJ1tjw+CJ315Srm02NP2c8fTtKuMf2KV4sEek=;
+        b=B4pkG+HOwHikbZlypMnpD05EWj8JVCmUwW/CxET9qptgsl6y6pS9CDTOj01KxVM1Bz
+         LORmecRPYD11YDACooSnykS01QR+T3pCwSlRMFbFmS0AWRrM7rRHP/nW5NqI8cJGWTxs
+         jovkUb/piqyO/i8EobDFd6z0BPeY92ve+2pFod8zd9uXZsqKQr/+0RCA5F8/ABmKTmTh
+         /E9vQcv83lWkYmNIIKaJUrSzWY+FF1Y5SpS2ZxHOFYk94YaPweA0gM40P7pa+unu3M+0
+         jmc8eSwMp2qJXQBkHcc19njxvmPDaMOP+YgRVVZLlJBVl/eDtukjXKSQXomihca9KLOs
+         u/9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2av8CIeJ1tjw+CJ315Srm02NP2c8fTtKuMf2KV4sEek=;
+        b=BtmKiUdVCN/NuK85szy8a6Og6+NNyRwBVDiapBPmbobVki/XopiGT8JIScmb8FS04u
+         QScKShj3OWzpwMV/BJRbT1X3eRj7nj6TtjdPmmUOE0DzsRXAgA8lNfnsUFvQBS56Cfsi
+         mqFOB16c69r4t4lSNjIY80fgZgpJzvVSa5xozH11jJgloaKG5gOgntjzq5khKqtG7CXD
+         wQy070Wa8IshftDKpiRkCODOcX+XgR74/QIDgChoT6CkeE+XE6BZhm+g00lNiq8jubGj
+         rHLVZ5FCJmw7sVjuy5ZwkDnzPXMpNqKK+pvMxq2NsSu6Qa0MT9dfwzYods8CLgBjZ1is
+         d6AA==
+X-Gm-Message-State: AOAM530k6zVry0fscgdVis1W95R2qPOi6V+sl0W1/3jLzLvPS6S6HPJ5
+        99vF/0to5UAnleTcREVSWRjiYqOrk50=
+X-Google-Smtp-Source: ABdhPJweNaM8Gw1EI3JOPD99xfgjr2uPzRyGZqXfRTHU1/VCmQCNYyBzYz50hESdUx3w6lHyq2HrEg==
+X-Received: by 2002:a67:fd7a:: with SMTP id h26mr2644167vsa.27.1601983851239;
+        Tue, 06 Oct 2020 04:30:51 -0700 (PDT)
+Received: from mail-vs1-f49.google.com (mail-vs1-f49.google.com. [209.85.217.49])
+        by smtp.gmail.com with ESMTPSA id w201sm424307vke.47.2020.10.06.04.30.49
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Oct 2020 04:30:50 -0700 (PDT)
+Received: by mail-vs1-f49.google.com with SMTP id a16so5887639vsp.12
+        for <netdev@vger.kernel.org>; Tue, 06 Oct 2020 04:30:49 -0700 (PDT)
+X-Received: by 2002:a67:fb96:: with SMTP id n22mr1817038vsr.13.1601983848871;
+ Tue, 06 Oct 2020 04:30:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <20201006083355.121018-1-nusiddiq@redhat.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20201005144838.851988-1-vladimir.oltean@nxp.com> <bcf0a19d-a8c9-a9a2-7bcf-a97205aa4d05@intel.com>
+In-Reply-To: <bcf0a19d-a8c9-a9a2-7bcf-a97205aa4d05@intel.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 6 Oct 2020 07:30:13 -0400
+X-Gmail-Original-Message-ID: <CA+FuTScXC+t_sETOTCvjrALCmq3y4mrcX8CxyFBcLyJk3XH4Rg@mail.gmail.com>
+Message-ID: <CA+FuTScXC+t_sETOTCvjrALCmq3y4mrcX8CxyFBcLyJk3XH4Rg@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: always dump full packets with skb_dump
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-nusiddiq@redhat.com <nusiddiq@redhat.com> wrote:
-> From: Numan Siddique <nusiddiq@redhat.com>
-> 
-> For a tcp packet which is part of an existing committed connection,
-> nf_conntrack_in() will return err and set skb->_nfct to NULL if it is
-> out of tcp window. ct action for this packet will set the ct_state
-> to +inv which is as expected.
+On Mon, Oct 5, 2020 at 8:25 PM Jacob Keller <jacob.e.keller@intel.com> wrote:
+>
+>
+>
+> On 10/5/2020 7:48 AM, Vladimir Oltean wrote:
+> > Currently skb_dump has a restriction to only dump full packet for the
+> > first 5 socket buffers, then only headers will be printed. Remove this
+> > arbitrary and confusing restriction, which is only documented vaguely
+> > ("up to") in the comments above the prototype.
+> >
+>
+> So, this limitation appeared very clearly in the original commit,
+> 6413139dfc64 ("skbuff: increase verbosity when dumping skb data")..
+>
+> Searching the netdev list, that patch links back to this one as the
+> original idea:
+>
+> https://patchwork.ozlabs.org/project/netdev/patch/20181121021309.6595-2-xiyou.wangcong@gmail.com/
+>
+> I can't find any further justification on that limit. I suppose the
+> primary reasoning being if you somehow call this function in a loop this
+> would avoid dumping the entire packet over and over?
 
-This is because from conntrack p.o.v., such TCP packet is NOT part of
-the existing connection.
+Not in a loop per se, but indeed to avoid unbounded writing to the kernel log.
 
-For example, because it is considered part of a previous incarnation
-of the same connection.
+skb_dump is called from skb_warn_bad_offload and netdev_rx_csum_fault.
+Previously when these were triggered, a few example bad packets were
+sufficient to debug the issue.
 
-> But a controller cannot add an OVS flow as
-> 
-> table=21,priority=100,ct_state=+inv, actions=drop
-> 
-> to drop such packets. That is because when ct action is executed on other
-> packets which are not part of existing committed connections, ct_state
-> can be set to invalid. Few such cases are:
->    - ICMP reply packets.
-
-Can you elaborate? Echo reply should not be invalid. Conntrack should
-mark it as established (unless such echo reply came out of the blue).
-
->    - TCP SYN/ACK packets during connection establishment.
-
-SYN/ACK should also be established state.
-INVALID should only be matched for packets that were never seen
-by conntrack, or that are deemed out of date / corrupted.
-
-> To distinguish between an invalid packet part of committed connection
-> and others, this patch introduces as a new ct attribute
-> OVS_CT_ATTR_LOOKUP_INV. If this is set in the ct action (without commit),
-> it tries to find the ct entry and if present, sets the ct_state to
-> +inv,+trk and also sets the mark and labels associated with the
-> connection.
-> 
-> With this,  a controller can add flows like
-> 
-> ....
-> ....
-> table=20,ip, action=ct(table=21, lookup_invalid)
-> table=21,priority=100,ct_state=+inv+trk,ct_label=0x2/0x2 actions=drop
-> table=21,ip, actions=resubmit(,22)
-> ....
-> ....
-
-What exactly is the feature/problem that needs to be solved?
-I suspect this would help me to provide better feedback than the
-semi-random comments below .... :-)
-
-My only problem with how conntrack does things ATM is that the ruleset
-cannot distinguish:
-
-1. packet was not even seen by conntrack
-2. packet matches existing connection, but is "bad", for example:
-  - contradicting tcp flags
-  - out of window
-  - invalid checksum
-
-There are a few sysctls to modify default behaviour, e.g. relax window
-checks, or ignore/skip checksum validation.
-
-The other problem i see (solveable for sure by yet-another-sysctl but i
-see that as last-resort) is usual compatibility problem:
-
-ct state invalid drop
-ct mark gt 0 accept
-
-If standard netfilter conntrack were to set skb->_nfct e.g. even if
-state is invalid, we could still make the above work via some internal
-flag.
-
-But if you reverse it, you get different behaviour:
-
-ct mark gt 0 accept
-ct state invalid drop
-
-First rule might now accept out-of-window packet even when "be_liberal"
-sysctl is off.
+A full dump can add a lot of data to the kernel log, so I limited to
+what is strictly needed.
