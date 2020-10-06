@@ -2,69 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2E6A284481
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 06:10:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 389392844D3
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 06:29:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726139AbgJFEKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 00:10:44 -0400
-Received: from smtprelay0024.hostedemail.com ([216.40.44.24]:40432 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725874AbgJFEKo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 00:10:44 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 393D91DF1;
-        Tue,  6 Oct 2020 04:10:43 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3867:3870:3871:3872:3874:4250:4321:4605:5007:7576:10004:10400:10848:11026:11232:11657:11658:11914:12043:12048:12296:12297:12438:12740:12760:12895:13019:13069:13161:13229:13311:13357:13439:14181:14659:14721:21080:21627:30029:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
-X-HE-Tag: view38_5e06219271c3
-X-Filterd-Recvd-Size: 2228
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf07.hostedemail.com (Postfix) with ESMTPA;
-        Tue,  6 Oct 2020 04:10:41 +0000 (UTC)
-Message-ID: <50eab5822b5c0557a5e7a8f5ab8ee42f5bdea0ec.camel@perches.com>
-Subject: Re: [PATCH] rtlwifi: rtl8192se: remove duplicated
- legacy_httxpowerdiff
-From:   Joe Perches <joe@perches.com>
-To:     Chris Chiu <chiu@endlessos.org>, pkshih@realtek.com,
-        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 05 Oct 2020 21:10:40 -0700
-In-Reply-To: <20201006035928.5566-1-chiu@endlessm.com>
-References: <20201006035928.5566-1-chiu@endlessm.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.4-0ubuntu1 
-MIME-Version: 1.0
+        id S1726861AbgJFE3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 00:29:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56044 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725945AbgJFE3p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 00:29:45 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EBBBC0613A7;
+        Mon,  5 Oct 2020 21:29:45 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id u19so11662410ion.3;
+        Mon, 05 Oct 2020 21:29:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=e3La3o/PaCpx3r0ht4G/d6LvHRWphH0B2pGDFYrXkpI=;
+        b=ouTfOSoegCuoJ63G5XuAAIot2C7Nt6oHxcRv05bweNVqa4OIcVdxI12KSsiQDsAAz2
+         XvpdvdvyER9SCP4iTFJiBhXrH7qQDTKdUaIgNLlYDZmRlpw33FWCa5mnC2GYWPnvE1Qo
+         Lw+Icf7N8rjbiSzywDlfvJyu+b/8AtLADSP0knadxRfPb+hjPuMAW5jkvrpr2liAebjw
+         LXtpDE7prUZBYH6lfgpW8sB9kxylnUj7fOvih6OYrdS45Nw18RtMEw5NdZ7iZI7gdggL
+         WkkCg97AzA2j9azGFSKaXaDRaczy09ECWjWTF3cqRhPWKprHcJVYP5Y87CgumhiNuYoL
+         C2Yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=e3La3o/PaCpx3r0ht4G/d6LvHRWphH0B2pGDFYrXkpI=;
+        b=LTtTX4E7dWqbR/IxeNe9mQd1rJu/8zDAA65LbqrOP1uDymQHdGbxTlIgyEbpOaG/DM
+         ZTWQHmqydnD0LS555svzhx60kLyaL40nFFwA4k8b6O3qP7UoQDemui7MMDRy0M7KBkw9
+         iFecxeqqjV4BjroyxWqMtak3NRE5VhmNF3tRO5k/lNbPoj0ZEbXHu+LG6eguP1w3kTIu
+         SkOsrQfWYUxs7KecGMRUTZdIsj2CVNO3l1kwb4U/TGVoj6Qu6ApWKftDJuvcDymzGQU/
+         VMQo6D1deMmOOZGozKYk0Br93nSJXeOQxEOtBTvuefSfi6/gI0heeBDwUldMyHVhd7ni
+         nZWw==
+X-Gm-Message-State: AOAM530ySssVC56LvpzVPaD+KwCJcYFvHnCPI7Y+XH0zFwyUu2/d5Myv
+        /pfMNM6D8+vtZ/tjLeTrUXU=
+X-Google-Smtp-Source: ABdhPJzPdPSN2LUhlBVng95AzZLUoQU+Epnodjx6nFq3/o5jti/GCGVqWjVwjbwqJ3XSnb0VDhK2Iw==
+X-Received: by 2002:a02:c785:: with SMTP id n5mr2975946jao.128.1601958584489;
+        Mon, 05 Oct 2020 21:29:44 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id m18sm1033864ili.85.2020.10.05.21.29.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Oct 2020 21:29:43 -0700 (PDT)
+Date:   Mon, 05 Oct 2020 21:29:36 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        shayagr@amazon.com, sameehj@amazon.com, dsahern@kernel.org,
+        echaudro@redhat.com
+Message-ID: <5f7bf2b0bf899_4f19a2083f@john-XPS-13-9370.notmuch>
+In-Reply-To: <20201005222454.GB3501@localhost.localdomain>
+References: <cover.1601648734.git.lorenzo@kernel.org>
+ <5f77467dbc1_38b0208ef@john-XPS-13-9370.notmuch>
+ <20201002160623.GA40027@lore-desk>
+ <5f776c14d69b3_a6402087e@john-XPS-13-9370.notmuch>
+ <20201005115247.72429157@carbon>
+ <5f7b8e7a5ebfc_4f19a208ba@john-XPS-13-9370.notmuch>
+ <20201005222454.GB3501@localhost.localdomain>
+Subject: Re: [PATCH v4 bpf-next 00/13] mvneta: introduce XDP multi-buffer
+ support
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-10-06 at 11:59 +0800, Chris Chiu wrote:
-> From: Chris Chiu <chiu@endlessos.org>
+Lorenzo Bianconi wrote:
+> [...]
 > 
-> The legacy_httxpowerdiff in rtl8192se is pretty much the same as
-> the legacy_ht_txpowerdiff for other chips. Use the same name to
-> keep the consistency.
+> > 
+> > In general I see no reason to populate these fields before the XDP
+> > program runs. Someone needs to convince me why having frags info before
+> > program runs is useful. In general headers should be preserved and first
+> > frag already included in the data pointers. If users start parsing further
+> > they might need it, but this series doesn't provide a way to do that
+> > so IMO without those helpers its a bit difficult to debate.
 > 
-> Signed-off-by: Chris Chiu <chiu@endlessos.org>
-> ---
->  drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c | 2 +-
->  drivers/net/wireless/realtek/rtlwifi/rtl8192se/rf.c | 2 +-
->  drivers/net/wireless/realtek/rtlwifi/wifi.h         | 1 -
->  3 files changed, 2 insertions(+), 3 deletions(-)
+> We need to populate the skb_shared_info before running the xdp program in order to
+> allow the ebpf sanbox to access this data. If we restrict the access to the first
+> buffer only I guess we can avoid to do that but I think there is a value allowing
+> the xdp program to access this data.
 
-Then can't all the struct definitions that include legacy_ht_txpowerdiff
-other than wifi.h delete it too?
+I agree. We could also only populate the fields if the program accesses
+the fields.
 
-$ git grep -P -n '\blegacy_ht_?txpower' -- '*.h'
-drivers/net/wireless/realtek/rtlwifi/rtl8188ee/phy.h:162:       u8 legacy_ht_txpowerdiff;
-drivers/net/wireless/realtek/rtlwifi/rtl8192c/phy_common.h:155: u8 legacy_ht_txpowerdiff;
-drivers/net/wireless/realtek/rtlwifi/rtl8723ae/phy.h:140:       u8 legacy_ht_txpowerdiff;
-drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.h:170:       u8 legacy_ht_txpowerdiff;
-drivers/net/wireless/realtek/rtlwifi/wifi.h:1969:       u8 legacy_httxpowerdiff;        /* Legacy to HT rate power diff */
-drivers/net/wireless/realtek/rtlwifi/wifi.h:1980:       u8 legacy_ht_txpowerdiff;       /*Legacy to HT rate power diff */
+> A possible optimization can be access the shared_info only once before running
+> the ebpf program constructing the shared_info using a struct allocated on the
+> stack.
 
+Seems interesting, might be a good idea.
+
+> Moreover we can define a "xdp_shared_info" struct to alias the skb_shared_info
+> one in order to have most on frags elements in the first "shared_info" cache line.
+> 
+> > 
+> > Specifically for XDP_TX case we can just flip the descriptors from RX
+> > ring to TX ring and keep moving along. This is going to be ideal on
+> > 40/100Gbps nics.
+> > 
+> > I'm not arguing that its likely possible to put some prefetch logic
+> > in there and keep the pipe full, but I would need to see that on
+> > a 100gbps nic to be convinced the details here are going to work. Or
+> > at minimum a 40gbps nic.
+> > 
+> > > 
+> > > 
+> 
+> [...]
+> 
+> > Not against it, but these things are a bit tricky. Couple things I still
+> > want to see/understand
+> > 
+> >  - Lets see a 40gbps use a prefetch and verify it works in practice
+> >  - Explain why we can't just do this after XDP program runs
+> 
+> how can we allow the ebpf program to access paged data if we do not do that?
+
+I don't see an easy way, but also this series doesn't have the data
+access support.
+
+Its hard to tell until we get at least a 40gbps nic if my concern about
+performance is real or not. Prefetching smartly could resolve some of the
+issue I guess.
+
+If the Intel folks are working on it I think waiting would be great. Otherwise
+at minimum drop the helpers and be prepared to revert things if needed.
+
+> 
+> >  - How will we read data in the frag list if we need to parse headers
+> >    inside the frags[].
+> > 
+> > The above would be best to answer now rather than later IMO.
+> > 
+> > Thanks,
+> > John
+> 
+> Regards,
+> Lorenzo
 
 
