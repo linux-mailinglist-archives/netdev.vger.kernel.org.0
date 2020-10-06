@@ -2,41 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B852B28481A
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 10:08:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BD6A28481F
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 10:08:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726769AbgJFIIZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 04:08:25 -0400
-Received: from mail-il1-f206.google.com ([209.85.166.206]:34170 "EHLO
-        mail-il1-f206.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726002AbgJFIIZ (ORCPT
+        id S1726890AbgJFIIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 04:08:30 -0400
+Received: from mail-io1-f78.google.com ([209.85.166.78]:49805 "EHLO
+        mail-io1-f78.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726006AbgJFIIZ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 04:08:25 -0400
-Received: by mail-il1-f206.google.com with SMTP id f89so6498313ill.1
+Received: by mail-io1-f78.google.com with SMTP id 140so3834899iou.16
         for <netdev@vger.kernel.org>; Tue, 06 Oct 2020 01:08:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=evtElNGqHX5N518w23DxEdOLqquM8mOgio/iHrWwqt4=;
-        b=NNE7q9hYDJb5v8QHfuPE763QHB+WTZD1DK9ovud1bmVJJqzK+50D2aYVi7fxTuvshr
-         vEVnB39zUzzH9EbswyjYSEy84nyaA30yMaxjSC4rz2H6ZqhM/NUm7KUcW5iZXtXWlh/H
-         JvNylTYoOSL/glqKaTZvvbWyJasLmxstHn6lMFv/jw/NDYO8/mEVqo8qVj8x/SH+OakT
-         PmgvfNKA3Oq+Sbs1DJe29uhgEojYHCrV9W5y+ZFuTIRq8yVwJpJ76/7TdDctSl73e6wM
-         0+VZz93NBr9fksUG+hBZi/TkRL/8XHSXfOuhRKFJtK5E0SlfcMKdacunS4hi+z8FR8KQ
-         7hoQ==
-X-Gm-Message-State: AOAM533zxl71wgxHuugITu2MU/NRfKBxFFcYOKsiuUQ97CGBszEcHBlt
-        IXw2QwzIdXdflhUQA6ye/lDTy4yweIEhwQ+ktWVm7gMhJAyL
-X-Google-Smtp-Source: ABdhPJyYejaxvp6kprhFYjYKXBDzF+uADGsrF1Ql+wakuviBPIa48x8Am8vcJEhIILtI6PreVCZCpv4fxg/oXitpeMmCw32XBs32
+        bh=vsr+coIcVgClKoMDt/6umhRFqiKF3X7GLy13qBxsSLY=;
+        b=hsLyu07TWKhKd9rDHTbqVr6D1zUhCGbCOdr5+bvRI1kzziYjejXuP6OcdH+boq6tzI
+         tRVBndc+UN39Hc7An/E0NwX1xEdwN3zlcAksf1TLniJmkBICzkjxszZzYxR0jZNzW2HA
+         Bzxg6BWcPPNV1C7Sl7FXWQtpsykU17S87EjcY0RpaHhKo6BuiE0Ey5znApgVYhEghYTP
+         C5OzB6bDwJpSTHUM8bolsTBWOWuDpNBGqKC4tLQoAeD7U8scxCv06BHxwEuYu8iihAZS
+         plq5m24RRk1nop33TgKwKsAImlarKManXIrmp/zw+lqJRYkpKURjbBPCrfu8q62UPtI0
+         4KKA==
+X-Gm-Message-State: AOAM532EzRE6sB+1v20lD2Sbfz/4taP1GvV+LnH2GAmKfD9bwFyHgNU4
+        HZTfJpU1YN8+TwveGojIuPbZkglS6f95Utdus/buRX4SI2h/
+X-Google-Smtp-Source: ABdhPJwkcuklznSh8d1ENaTIB5adIDKUraspGVNC3cc2nSICp4wdmBfo9/Uss/WSm6WrakPgBuYzdmk9xBnTZjiUcjhs7FewyqNH
 MIME-Version: 1.0
-X-Received: by 2002:a6b:3f88:: with SMTP id m130mr154540ioa.78.1601971704014;
+X-Received: by 2002:a6b:e714:: with SMTP id b20mr127393ioh.109.1601971704270;
  Tue, 06 Oct 2020 01:08:24 -0700 (PDT)
 Date:   Tue, 06 Oct 2020 01:08:24 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000005bac7a05b0fc1ad1@google.com>
-Subject: WARNING in ieee80211_probe_client
-From:   syzbot <syzbot+999fac712d84878a7379@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
+Message-ID: <0000000000005f92b905b0fc1a5d@google.com>
+Subject: WARNING in ieee80211_check_rate_mask
+From:   syzbot <syzbot+be0e03ca215b06199629@syzkaller.appspotmail.com>
+To:     clang-built-linux@googlegroups.com, davem@davemloft.net,
+        johannes@sipsolutions.net, kuba@kernel.org,
         linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        natechancellor@gmail.com, ndesaulniers@google.com,
         netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
@@ -49,20 +51,21 @@ syzbot found the following issue on:
 
 HEAD commit:    c2568c8c Merge branch 'net-Constify-struct-genl_small_ops'
 git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=14051a2b900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=16e2fb4d900000
 kernel config:  https://syzkaller.appspot.com/x/.config?x=1e6c5266df853ae
-dashboard link: https://syzkaller.appspot.com/bug?extid=999fac712d84878a7379
+dashboard link: https://syzkaller.appspot.com/bug?extid=be0e03ca215b06199629
 compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1776330b900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=171f17ff900000
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1790e83b900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=111a5bc7900000
 
 IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+999fac712d84878a7379@syzkaller.appspotmail.com
+Reported-by: syzbot+be0e03ca215b06199629@syzkaller.appspotmail.com
 
+netlink: 20 bytes leftover after parsing attributes in process `syz-executor823'.
 ------------[ cut here ]------------
-WARNING: CPU: 0 PID: 6910 at net/mac80211/cfg.c:3620 ieee80211_probe_client+0x6ed/0x7f0 net/mac80211/cfg.c:3620
+WARNING: CPU: 1 PID: 6878 at net/mac80211/rate.c:281 ieee80211_check_rate_mask+0x1af/0x220 net/mac80211/rate.c:281
 Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 6910 Comm: syz-executor290 Not tainted 5.9.0-rc6-syzkaller #0
+CPU: 1 PID: 6878 Comm: syz-executor823 Not tainted 5.9.0-rc6-syzkaller #0
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
 Call Trace:
  __dump_stack lib/dump_stack.c:77 [inline]
@@ -73,16 +76,17 @@ Call Trace:
  handle_bug+0x38/0x90 arch/x86/kernel/traps.c:234
  exc_invalid_op+0x14/0x40 arch/x86/kernel/traps.c:254
  asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:536
-RIP: 0010:ieee80211_probe_client+0x6ed/0x7f0 net/mac80211/cfg.c:3620
-Code: f9 48 c7 c2 20 77 61 89 be 7b 02 00 00 48 c7 c7 80 77 61 89 c6 05 4c 44 80 03 01 e8 82 1a 85 f9 e9 e3 f9 ff ff e8 13 25 9f f9 <0f> 0b 41 bc ea ff ff ff e9 51 fe ff ff e8 91 e8 e0 f9 e9 de fc ff
-RSP: 0018:ffffc900056e74f0 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffff888093710000 RCX: ffffffff87d761d8
-RDX: ffff888092e18280 RSI: ffffffff87d7629d RDI: 0000000000000005
-RBP: ffff88809a47e020 R08: 0000000000000001 R09: ffffffff8d10d9e7
-R10: 0000000000000000 R11: 0000000000000000 R12: ffff888089750c80
-R13: 0000000000000000 R14: 0000000000000001 R15: 0000000000000000
- rdev_probe_client net/wireless/rdev-ops.h:929 [inline]
- nl80211_probe_client+0x3b7/0xc80 net/wireless/nl80211.c:12734
+RIP: 0010:ieee80211_check_rate_mask+0x1af/0x220 net/mac80211/rate.c:281
+Code: 45 85 ff 0f 84 86 0c 00 00 48 83 c4 10 5b 5d 41 5c 41 5d 41 5e 41 5f e9 bf 8c a1 f9 e8 ba 8c a1 f9 0f 0b eb e4 e8 b1 8c a1 f9 <0f> 0b eb db e8 e8 4f e3 f9 e9 f6 fe ff ff 48 89 ef e8 db 4f e3 f9
+RSP: 0018:ffffc900055274b0 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: ffff88808a7d0c00 RCX: ffffffff87d4fa14
+RDX: ffff888091b2e000 RSI: ffffffff87d4faff RDI: 0000000000000005
+RBP: 0000000000000000 R08: ffff88808a7d1e58 R09: ffff888091b2e900
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 00000000ffffffff R14: ffff88808a7d0c00 R15: 0000000000000000
+ ieee80211_change_bss+0x53c/0xc20 net/mac80211/cfg.c:2314
+ rdev_change_bss net/wireless/rdev-ops.h:394 [inline]
+ nl80211_set_bss+0x76c/0xc70 net/wireless/nl80211.c:7009
  genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
  genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
  genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
@@ -98,13 +102,13 @@ R13: 0000000000000000 R14: 0000000000000001 R15: 0000000000000000
  __sys_sendmsg+0xe5/0x1b0 net/socket.c:2440
  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x442169
-Code: e8 ac 00 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 07 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fff7f75b898 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000442169
-RDX: 0000000000000000 RSI: 00000000200002c0 RDI: 0000000000000004
-RBP: 000000306e616c77 R08: 0000002000000000 R09: 0000002000000000
-R10: 0000002000000000 R11: 0000000000000246 R12: 000000000000ee9b
+RIP: 0033:0x4419c9
+Code: e8 dc 05 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 0d fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffdbf57fbe8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00000000004419c9
+RDX: 0000000000000000 RSI: 0000000020000140 RDI: 0000000000000004
+RBP: 000000306e616c77 R08: 0000000000000000 R09: 0000002000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000032
 R13: 0000000000000000 R14: 000000000000000c R15: 0000000000000004
 Kernel Offset: disabled
 Rebooting in 86400 seconds..
