@@ -2,124 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 67CE9284472
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 05:59:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6D9A284478
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 05:59:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726995AbgJFD6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Oct 2020 23:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51312 "EHLO
+        id S1727065AbgJFD7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Oct 2020 23:59:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725977AbgJFD6w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 23:58:52 -0400
-Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29761C0613CE;
-        Mon,  5 Oct 2020 20:58:52 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4C53c84q97z9sTK;
-        Tue,  6 Oct 2020 14:58:48 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1601956729;
-        bh=iWcvZufCX12F8E6C2qQJJzj37lQzvnAo1HzQn3tI6Ew=;
-        h=Date:From:To:Cc:Subject:From;
-        b=h1C2vyTYHFhG9P8BBJmDM+h1xGcNLnZ0P7V3xKT9tvwjUTT38XCZ1Gmw5m9lJjIUW
-         copf6yKlgRQHc27VuadxJurUby8Mj+Rh4zIJxU3EbJ6S2Tm2onh3H0U0Hqpg0mNw+z
-         BfbhONNi0D0vBXUAm6FwVqf1EFshQgRjg0Dw5KmqvlvlRm2ZteAAd++I69rDiLQLdu
-         LKJBzogripmKTFMUa6lZ8vANjB5ChX0soViCHtUrLjvlX0clF0CTfhBZ1NbvO4Ezki
-         styUDI1nkKH4a1wTYhURh0u9iyEj/wp4GrMmJigpTI1CL4roWRquQUImB5kz7Hky1g
-         Pd9IPaEG1IzkQ==
-Date:   Tue, 6 Oct 2020 14:58:47 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Christoph Hellwig <hch@lst.de>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>
-Subject: linux-next: build failure after merge of the net-next tree
-Message-ID: <20201006145847.14093e47@canb.auug.org.au>
+        with ESMTP id S1726645AbgJFD7k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Oct 2020 23:59:40 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C0AC0613A7
+        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 20:59:40 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id h2so563931pll.11
+        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 20:59:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=endlessos-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AwQgWzWi8pW4lGFBA/hNXn44tp/wqyyuzS23wCHudYY=;
+        b=WN2jLYS6d66X6qKUYp9LHZ0kkOpP4DlC4ERhY0B2thBryPz0dFWJZ0MvKDmd7HCRTk
+         +Ui1TI7bInIXJzpW29t5spz8EkOUqFrRbL/mtwthHAPr7mlfdoi7ONZ2gbPTaJP7KPnA
+         xSnlXzVRJEiVDpvaXNKn/H8VFm6LcmfDbdP9dYBxXCH7DTKRJBS+MgFr+DHaoxDYs5ny
+         b7VmjywRDYcGu76G8XmxCtLo++Lhr29SgFYA22c9Sp6DvJF4cPiWWOXOtRL1HNtanBYF
+         AB43xwz+/TFajficUTK9peGERcwgCSeEOKu3k+MhxxPVS4NGznBdbydoEiqVuVt6Rs9g
+         ssHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=AwQgWzWi8pW4lGFBA/hNXn44tp/wqyyuzS23wCHudYY=;
+        b=aEY5lMYYQWnxmsGOrOaDSn3QbVBQsZAPMch0pNJqrv+1hMkbXR8/NZs8GRI38G/ZXM
+         JMOK2UOdbHc8YPYuVlK1RWMX/kqpPA+IqYctxVXsLwvcVUB2/w5K4WTpR87rrU6agdzy
+         uqVAAAY/AbI8r3yYovBom9xbusk+iYoJQH0sD4KD4E16XHNzYwB5OwdhYw1+AJjzx0tJ
+         Q/cFPYY6oJRkzTc0q+ms6m6bexGLgMOyuCWEM2Wu0VgfuWdI4ORiwLul91e3gVCZqMsI
+         aAZswnEhDu0OYKBxfgAC3aMyK+V0U0qTNsjOz9pRc01Wa1SxKwGjtSRQ3ncpePS7VsWC
+         K1hA==
+X-Gm-Message-State: AOAM532dx3YeiIp0A2jxZum3ggrjafm0ulx2Z+6F45oLZ2W8f79u7Rkj
+        trSGUCrx3LhA677tqZabOaUyxGkZ8n6x//8c
+X-Google-Smtp-Source: ABdhPJwxeQePmlkOqsSZMu0AnnoQqt62AYUlhHtNR3aTgcgxKS6eopsUdGayn73I2AS5/7QT2bpLUQ==
+X-Received: by 2002:a17:90a:2c05:: with SMTP id m5mr2518492pjd.9.1601956780021;
+        Mon, 05 Oct 2020 20:59:40 -0700 (PDT)
+Received: from localhost.localdomain (111-240-119-203.dynamic-ip.hinet.net. [111.240.119.203])
+        by smtp.gmail.com with ESMTPSA id u18sm1238540pgk.18.2020.10.05.20.59.37
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 05 Oct 2020 20:59:39 -0700 (PDT)
+From:   Chris Chiu <chiu@endlessos.org>
+X-Google-Original-From: Chris Chiu <chiu@endlessm.com>
+To:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chris Chiu <chiu@endlessos.org>
+Subject: [PATCH] rtlwifi: rtl8192se: remove duplicated legacy_httxpowerdiff
+Date:   Tue,  6 Oct 2020 11:59:28 +0800
+Message-Id: <20201006035928.5566-1-chiu@endlessm.com>
+X-Mailer: git-send-email 2.21.1 (Apple Git-122.3)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/GOR2XLLXM54SlDFaOXrQc09";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/GOR2XLLXM54SlDFaOXrQc09
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: Chris Chiu <chiu@endlessos.org>
 
-Hi all,
+The legacy_httxpowerdiff in rtl8192se is pretty much the same as
+the legacy_ht_txpowerdiff for other chips. Use the same name to
+keep the consistency.
 
-After merging the net-next tree, today's linux-next build (x86_64
-allmodconfig) failed like this:
-
-net/xdp/xsk_buff_pool.c:7:10: fatal error: linux/dma-noncoherent.h: No such=
- file or directory
-    7 | #include <linux/dma-noncoherent.h>
-      |          ^~~~~~~~~~~~~~~~~~~~~~~~~
-
-Caused by commit
-
-  1c1efc2af158 ("xsk: Create and free buffer pool independently from umem")
-
-interacting with commit
-
-  a3cf77774abf ("dma-mapping: merge <linux/dma-noncoherent.h> into <linux/d=
-ma-map-ops.h>")
-
-from the dma-mapping tree.
-
-I have applied teh following merge fix patch.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Tue, 6 Oct 2020 14:53:30 +1100
-Subject: [PATCH] xsk: fix up for "dma-mapping: merge <linux/dma-noncoherent=
-.h>
- into <linux/dma-map-ops.h>"
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Chris Chiu <chiu@endlessos.org>
 ---
- net/xdp/xsk_buff_pool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c | 2 +-
+ drivers/net/wireless/realtek/rtlwifi/rtl8192se/rf.c | 2 +-
+ drivers/net/wireless/realtek/rtlwifi/wifi.h         | 1 -
+ 3 files changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
-index e63fadd000db..dbed16648607 100644
---- a/net/xdp/xsk_buff_pool.c
-+++ b/net/xdp/xsk_buff_pool.c
-@@ -4,7 +4,7 @@
- #include <net/xdp_sock.h>
- #include <net/xdp_sock_drv.h>
- #include <linux/dma-direct.h>
--#include <linux/dma-noncoherent.h>
-+#include <linux/dma-map-ops.h>
- #include <linux/swiotlb.h>
-=20
- #include "xsk_queue.h"
---=20
-2.28.0
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
+index 81313e0ca834..0cdcddfebca9 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
+@@ -1906,7 +1906,7 @@ static void _rtl92se_read_adapter_info(struct ieee80211_hw *hw)
+ 	 * index diff of legacy to HT OFDM rate. */
+ 	tempval = hwinfo[EEPROM_RFIND_POWERDIFF] & 0xff;
+ 	rtlefuse->eeprom_txpowerdiff = tempval;
+-	rtlefuse->legacy_httxpowerdiff =
++	rtlefuse->legacy_ht_txpowerdiff =
+ 		rtlefuse->txpwr_legacyhtdiff[RF90_PATH_A][0];
+ 
+ 	RTPRINT(rtlpriv, FINIT, INIT_TXPOWER,
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/rf.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/rf.c
+index a37855f57e76..54576566083c 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/rf.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/rf.c
+@@ -25,7 +25,7 @@ static void _rtl92s_get_powerbase(struct ieee80211_hw *hw, u8 *p_pwrlevel,
+ 
+ 	/* We only care about the path A for legacy. */
+ 	if (rtlefuse->eeprom_version < 2) {
+-		pwrbase0 = pwrlevel[0] + (rtlefuse->legacy_httxpowerdiff & 0xf);
++		pwrbase0 = pwrlevel[0] + (rtlefuse->legacy_ht_txpowerdiff & 0xf);
+ 	} else {
+ 		legacy_pwrdiff = rtlefuse->txpwr_legacyhtdiff
+ 						[RF90_PATH_A][chnl - 1];
+diff --git a/drivers/net/wireless/realtek/rtlwifi/wifi.h b/drivers/net/wireless/realtek/rtlwifi/wifi.h
+index 13421cf2d201..0a516c3c7cea 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/wifi.h
++++ b/drivers/net/wireless/realtek/rtlwifi/wifi.h
+@@ -1966,7 +1966,6 @@ struct rtl_efuse {
+ 
+ 	u8 txpwr_safetyflag;			/* Band edge enable flag */
+ 	u16 eeprom_txpowerdiff;
+-	u8 legacy_httxpowerdiff;	/* Legacy to HT rate power diff */
+ 	u8 antenna_txpwdiff[3];
+ 
+ 	u8 eeprom_regulatory;
+-- 
+2.20.1
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/GOR2XLLXM54SlDFaOXrQc09
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl9763cACgkQAVBC80lX
-0Gxj4gf/ZtndFDmPS9Mp3VF4QxjujNTo5QCp5q/ZejkSYif1YuECt41iMBYw5a/i
-9rFE3Ftn7MKaJc4OAqopm2RhFtceSQm6FrluKyeKcFOla7a7dvOa+aoS3Lv3MnXe
-Ha7Ab5TH3KqygD2txXAtTX2b8rIPUHQ5dP6LG/7zkWj8LdaVFzaBzJcz2zuKBG1O
-CcuJjc6iKjjVT/zIecwWGeyOVU6+KQwgQoZX6GbnF+vy21F9BGC2Xe9RZOFlYgjL
-83YIOGc9+oDQELmJNcM8jLoJZen5UCi1sMhQC/Cxdm/3BSDkzqP1cRlRVV+uIE8K
-+8K23TBseF1h1Z0/eO614aAqV7nm2Q==
-=peB6
------END PGP SIGNATURE-----
-
---Sig_/GOR2XLLXM54SlDFaOXrQc09--
