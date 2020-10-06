@@ -2,66 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63D1D284C81
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 15:26:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AD15284C8F
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 15:30:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725962AbgJFN0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 09:26:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54186 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725902AbgJFN0U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 09:26:20 -0400
-Received: from shards.monkeyblade.net (shards.monkeyblade.net [IPv6:2620:137:e000::1:9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F40CC061755
-        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 06:26:20 -0700 (PDT)
-Received: from localhost (unknown [IPv6:2601:601:9f00:477::3d5])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 5E4A6127C85A6;
-        Tue,  6 Oct 2020 06:09:31 -0700 (PDT)
-Date:   Tue, 06 Oct 2020 06:26:18 -0700 (PDT)
-Message-Id: <20201006.062618.628708952352439429.davem@davemloft.net>
-To:     johannes@sipsolutions.net
-Cc:     kuba@kernel.org, netdev@vger.kernel.org, kernel-team@fb.com,
-        jiri@resnulli.us, andrew@lunn.ch, mkubecek@suse.cz
-Subject: Re: [PATCH net-next v2 0/7] ethtool: allow dumping policies to
- user space
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <7586c9e77f6aa43e598103ccc25b43415752507d.camel@sipsolutions.net>
-References: <20201005220739.2581920-1-kuba@kernel.org>
-        <7586c9e77f6aa43e598103ccc25b43415752507d.camel@sipsolutions.net>
-X-Mailer: Mew version 6.8 on Emacs 27.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [2620:137:e000::1:9]); Tue, 06 Oct 2020 06:09:31 -0700 (PDT)
+        id S1726078AbgJFNak (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 09:30:40 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:36622 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725906AbgJFNaj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 09:30:39 -0400
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1601991037;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=D14GHO551n00o35j4i4oNag0nB6Oa+ReNbjC4f4QnRM=;
+        b=KJoRaQFx2fkWjY1n08L+eUeB2E8Vds+L6O78ZIesdggekkSPwHX0WRGbTyzUiHkQfxgG+4
+        x10fkxiiUZ3olUiaPU+7K0F6TMF9y2Bvcj1OtOfK4bu5yW9uH09lEzuJSDiCzSHdiMW9iw
+        j7g5AB1ygRk9xIz1SmWELvA0elelgBCgzR9hnY5E5iZwSYxeF3HuYza+MV5GUu3E6/jCTy
+        lMlRMMSQlfXszJUCibCpo0Jsls6OlEuBGwB4afCeiyOXXZEFgCiv1nHEYXdYirHHNAYM9/
+        /x9ObnxdgWln8vvokOXIeMRdxsr4WYlTIAJWElDyLawPEwZKA2i7cFc9D0ue5w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1601991037;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=D14GHO551n00o35j4i4oNag0nB6Oa+ReNbjC4f4QnRM=;
+        b=aWJLZAYkjAoChONyNIQxKm+Uo+G0Q9ont2VHZIp5ee3/CleZ0DYBFoLoADXPG7V+oCs/Fu
+        P2se8HhJTepD8GBg==
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH net-next v6 4/7] net: dsa: hellcreek: Add support for hardware timestamping
+In-Reply-To: <20201006072847.pjygwwtgq72ghsiq@skbuf>
+References: <20201004112911.25085-1-kurt@linutronix.de> <20201004112911.25085-5-kurt@linutronix.de> <20201004143000.blb3uxq3kwr6zp3z@skbuf> <87imbn98dd.fsf@kurt> <20201006072847.pjygwwtgq72ghsiq@skbuf>
+Date:   Tue, 06 Oct 2020 15:30:36 +0200
+Message-ID: <87tuv77a83.fsf@kurt>
+MIME-Version: 1.0
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes@sipsolutions.net>
-Date: Tue, 06 Oct 2020 08:43:17 +0200
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-> On Mon, 2020-10-05 at 15:07 -0700, Jakub Kicinski wrote:
->> Hi!
->> 
->> This series wires up ethtool policies to ops, so they can be
->> dumped to user space for feature discovery.
->> 
->> First patch wires up GET commands, and second patch wires up SETs.
->> 
->> The policy tables are trimmed to save space and LoC.
->> 
->> Next - take care of linking up nested policies for the header
->> (which is the policy what we actually care about). And once header
->> policy is linked make sure that attribute range validation for flags
->> is done by policy, not a conditions in the code. New type of policy
->> is needed to validate masks (patch 6).
->> 
->> Netlink as always staying a step ahead of all the other kernel
->> API interfaces :)
- ...
-> Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
+On Tue Oct 06 2020, Vladimir Oltean wrote:
+> On Tue, Oct 06, 2020 at 08:27:42AM +0200, Kurt Kanzenbach wrote:
+>> On Sun Oct 04 2020, Vladimir Oltean wrote:
+>> > On Sun, Oct 04, 2020 at 01:29:08PM +0200, Kurt Kanzenbach wrote:
+>> >> +/* Enabling/disabling TX and RX HW timestamping for different PTP me=
+ssages is
+>> >> + * not available in the switch. Thus, this function only serves as a=
+ check if
+>> >> + * the user requested what is actually available or not
+>> >> + */
+>> >
+>> > Correct me if I'm wrong, but to the user it makes zero difference
+>> > whether the hardware takes timestamps or not.
+>>=20
+>> Why not? I think it makes a difference to the user b/o the precision.
+>>=20
+>> > What matters is whether the skb will be delivered to the stack with a
+>> > hardware timestamp or not, so you should definitely accept a
+>> > hwtstamp_config with TX and RX timestamping disabled.
+>> >
+>>=20
+>> Sorry, I cannot follow you here.
+>
+> What I meant to say is that there is no reason you should refuse the
+> disabling of hardware timestamping. Even if that operation does not
+> really prevent the hardware from taking the timestamps, you simply
+> ignore the timestamps in the driver.
 
-Series applied, thanks everyone.
+That's the point. The user (or anybody else) cannot disable hardware
+stamping, because it is always performed. So, why should it be allowed
+to disable it even when it cannot be disabled?
+
+Thanks,
+Kurt
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl98cXwACgkQeSpbgcuY
+8KYMPA/+Ok6bgkcf1CGwZ6605uQlw88RZd2y0HS3vZuUlW9L6K7nVKbXa0wvC6d7
+HnZH5/zn+TGgp36eHrTCtrJWN0aLsZxISlpHhyy8ONjiA1vrsP1r+kHmzyV4OJ48
+l3Aezy9pYjDfCryo76SSTVC0c4zKe9Jw2tEZyARLPL22Te3dZUZ7b46unX9Tgy8k
+zLIvGN1ftxq6eadNMLh5KdcE+pgXyPfIrfVzS7n7V2YWL4ygerriBi1sU9X8MfHd
+h9KxdrziyvXtdTJqYPxJy8FdDLzb61RnohubOc7GK8NIDCp+O23+eR83Ab4K5Ow1
+ez5XBIeQp7aujA23MzbNm6jzt3J38HXTdVzmYFZaAtaYowEGD9qgCGUklTXjQOWV
+NTTjEpf2byzyxcrfiC5PKZAbu9UD8c/BEyXVYKfpbVgE5d1oJWkjhLwrp4R193CE
+EnxSx0uInygkz2qIv6xeJGocQ0+2D7jWcp1f8iuXx9F0yxFePXofuDf72rpAZKV6
+NbAjOzUeKE8Vd4z/XiUFFAbYzAaQwM1BHEaptUoXd4AOxCBIiD5OTRXhO8KD0EMP
+j0FEqxjnnhrMd+TM49IjfBXRgASO7IhjTRo0/PCLisAzoa3yfQTYDiSYoTRirsC0
+pygRaHt86ErlW0Mj40mg/i1PRybqwmaDL1mS0SKTK6l7GTYS86M=
+=6LRI
+-----END PGP SIGNATURE-----
+--=-=-=--
