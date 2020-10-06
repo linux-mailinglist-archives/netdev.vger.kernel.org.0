@@ -2,103 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76C97284602
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 08:27:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4645828460E
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 08:32:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727040AbgJFG1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 02:27:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45992 "EHLO
+        id S1726869AbgJFGcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 02:32:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726957AbgJFG1p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 02:27:45 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60F34C0613A7;
-        Mon,  5 Oct 2020 23:27:45 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601965663;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=SG1hX4RpJ2cgd0+twelFInFVuEr0F5kpEMUoLXcxSFM=;
-        b=HTKIpbi5M+5siFbJCoYh7ovIqLgttVuCH3/hd07/EojDYenNQv6iF4yfpMR7cFBtDpKYE0
-        85dysrQ8gmaDWd9kC/q9WeS8SWiq70241NZ6p+Y5BSGqp1Fiis45mNEHrq3l8UbbBX+or3
-        yA63BmZoe98eqh2ruu34eiQ8eHTUb6r1aC7FeBdIkjOyNfImmYltRV0oqsvis7tWVfYr+9
-        CAEUW02z2st8u2ffz5DMxY1S8M90HgNeQ5v1hyPN8d3HyZAe7FtLLTylrbnzZp1zbdG0oU
-        MFK89TUUjZX95hudQTdqw37WQV82Mh4OusIJ8tZ4b7yen5tInVQN8wUT0k+vig==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601965663;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=SG1hX4RpJ2cgd0+twelFInFVuEr0F5kpEMUoLXcxSFM=;
-        b=XjgLGnKOJLTSMt+Lja6e7mLfPf6iIIYzb8lYq0ARL4r0wv4XH2mJDF2ZMftmO1Gmd4ATFG
-        /45SUtm0lscx1cBg==
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH net-next v6 4/7] net: dsa: hellcreek: Add support for hardware timestamping
-In-Reply-To: <20201004143000.blb3uxq3kwr6zp3z@skbuf>
-References: <20201004112911.25085-1-kurt@linutronix.de> <20201004112911.25085-5-kurt@linutronix.de> <20201004143000.blb3uxq3kwr6zp3z@skbuf>
-Date:   Tue, 06 Oct 2020 08:27:42 +0200
-Message-ID: <87imbn98dd.fsf@kurt>
+        with ESMTP id S1725962AbgJFGcN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 02:32:13 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB3EC0613A7
+        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 23:32:13 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id g10so5184358pfc.8
+        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 23:32:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kGjGBafNoGOY6eDR1x9jqFwwiBuEnKGcLreZdxEqbiM=;
+        b=u+B30qCS/DM3XA5ngzQuXlilOzBVaveyC3opuHcGWH0by7I8W1x3rIBRjD6g4GYRDq
+         Qi8C+xkNj/jZi/F/GIKt5IItloFcUmpSwp+7rKckNHtm0MT9lJyzBV/peJh99mL4kKHL
+         PAkAV3bluwQ8SkcacmYrelduaehQpEyWm6kiQn/JnDRzxH4Z3d34n9rocVrVCQrEwOX9
+         uqJ7wJCahEOXoKc5AB9EgaQcYvOIPyEQAa7v+/ytg0aoGrI2pITF9uVdAJS36SIf+2X2
+         BqEg/fhY2DHII7NDmW8uz8YbbcR9G4BZ1dC5AFuYJojH/dFAVEygpxZC/tSpzdgGEyB1
+         vK2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kGjGBafNoGOY6eDR1x9jqFwwiBuEnKGcLreZdxEqbiM=;
+        b=X7HHkKCfi0kK70AULm8IFQvaNfs9g9LLw2WDkbcEqGm7vCdYqUdxZF0Jl7QKWLp1DZ
+         27VNh2ybaMvChTgVN3Ays2PjIDK3sOKL7iXeKIY3sOSznIP2J192ptTsE7cJcR5+UGG3
+         PUzYHvN6+bTMK7nV/q4NGi0eVBLqL+gZdGy7pSthVbuvrpBdDlcN7PGQOKzYY42O99Gf
+         FvSoo+CgLTnOVntUi8ZdQDKKtklPNASpVCt0fLtVJum7Aoqdod8N7XSKXuCmkNbh48gx
+         /0zJQD6WmpkAynFL/jR8mvpEeMzy52Wx70w2WoK9vabj8izU8HhmEhTIJLY2+g26Mfiz
+         GZsw==
+X-Gm-Message-State: AOAM532Pb9fm9vCVxhZNn/3f2V+/tEe0dLkWJxy+EdVds0/8ypyBEqu1
+        3E158+sF+U452jDUk9yc62A=
+X-Google-Smtp-Source: ABdhPJzSaWqPhCu/ShHRxhYz3SDbMo+ZMmHhmwiEQiNRhCTVh8qlATUXOKbITNNmV170ljB1BW4QFw==
+X-Received: by 2002:a65:4c8a:: with SMTP id m10mr2624045pgt.403.1601965933173;
+        Mon, 05 Oct 2020 23:32:13 -0700 (PDT)
+Received: from localhost.localdomain ([49.207.203.202])
+        by smtp.gmail.com with ESMTPSA id 124sm2047361pfd.132.2020.10.05.23.32.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 05 Oct 2020 23:32:12 -0700 (PDT)
+From:   Allen Pais <allen.lkml@gmail.com>
+To:     davem@davemloft.net
+Cc:     gerrit@erg.abdn.ac.uk, kuba@kernel.org, edumazet@google.com,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        johannes@sipsolutions.net, alex.aring@gmail.com,
+        stefan@datenfreihafen.org, santosh.shilimkar@oracle.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        netdev@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>
+Subject: [RESEND net-next 0/8] net: convert tasklets to use new
+Date:   Tue,  6 Oct 2020 12:01:53 +0530
+Message-Id: <20201006063201.294959-1-allen.lkml@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+From: Allen Pais <apais@linux.microsoft.com>
 
-On Sun Oct 04 2020, Vladimir Oltean wrote:
-> On Sun, Oct 04, 2020 at 01:29:08PM +0200, Kurt Kanzenbach wrote:
->> +/* Enabling/disabling TX and RX HW timestamping for different PTP messages is
->> + * not available in the switch. Thus, this function only serves as a check if
->> + * the user requested what is actually available or not
->> + */
->
-> Correct me if I'm wrong, but to the user it makes zero difference
-> whether the hardware takes timestamps or not.
+Commit 12cc923f1ccc ("tasklet: Introduce new initialization API")'
+introduced a new tasklet initialization API. This series converts
+all the net/* drivers to use the new tasklet_setup() API
 
-Why not? I think it makes a difference to the user b/o the precision.
+The following series is based on net-next.git(8b0308fe3)
 
-> What matters is whether the skb will be delivered to the stack with a
-> hardware timestamp or not, so you should definitely accept a
-> hwtstamp_config with TX and RX timestamping disabled.
->
 
-Sorry, I cannot follow you here.
+Allen Pais (8):
+  net: dccp: convert tasklets to use new tasklet_setup() API
+  net: ipv4: convert tasklets to use new tasklet_setup() API
+  net: mac80211: convert tasklets to use new tasklet_setup() API
+  net: mac802154: convert tasklets to use new tasklet_setup() API
+  net: rds: convert tasklets to use new tasklet_setup() API
+  net: sched: convert tasklets to use new tasklet_setup() API
+  net: smc: convert tasklets to use new tasklet_setup() API
+  net: xfrm: convert tasklets to use new tasklet_setup() API
 
-Thanks,
-Kurt
+ net/dccp/timer.c           | 10 +++++-----
+ net/ipv4/tcp_output.c      |  8 +++-----
+ net/mac80211/ieee80211_i.h |  4 ++--
+ net/mac80211/main.c        | 14 +++++---------
+ net/mac80211/tx.c          |  5 +++--
+ net/mac80211/util.c        |  5 +++--
+ net/mac802154/main.c       |  8 +++-----
+ net/rds/ib_cm.c            | 14 ++++++--------
+ net/sched/sch_atm.c        |  9 +++++----
+ net/smc/smc_cdc.c          |  6 +++---
+ net/smc/smc_wr.c           | 14 ++++++--------
+ net/xfrm/xfrm_input.c      |  7 +++----
+ 12 files changed, 47 insertions(+), 57 deletions(-)
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+-- 
+2.25.1
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl98Dl4ACgkQeSpbgcuY
-8KabdxAA0SgprQl2AgyD0AY/qVDLxy1XHCf0QhEZEoDKWIHX3ijEoZ0Dni1WsOwF
-dXnvL/ZQb2mcdrl+uJcN5ypMlBi+m5N7leV+RBO6juLDA8dp8ychKxCrhVtC3/sF
-fsj/vS7NHfXMJS1/CuBYcPX+YUpbzJpRVvDtd2E8FZYTyuKRDLrGIB8plEtltDv6
-aS/WC3EfExvKz1JFrtDSyR+4W6SIB2rLUFmG86P7w5304fFnmznLfwDHIEFPFZcv
-RY9zAjgv2tPLJyQ81gzCPsAlz/QUTsDgwoTc8DFsmsxcVTC9jOxNIuCpOUWnvtBD
-c/2ufJBmgsU0y7e1l3Z/Us3pvpTGpYI+b1OFsuiwOWBaQPc6J5IZi6A/KrtoWWDH
-mlH3yJPMyc7wRsjggS81jjgk1oNqkI+wDQ9imPrGiRi2/0Kz717uiiaJy9E2fDKw
-wE2r9o591w+eb7MlK6bEBZnnYAtwxsSvEMlqRmvbgYk+ZwOO59RSuUG+1ivqJ62+
-Tu99v2bd8aMgVIQOxcMaLNRwe/K5q6gjEDC/tfvtS+tol+HPKVOLPUbXOIH2PmKv
-McW9qVbILMyR5GMSbFJGpsYIITTbfllBxThCgSRxyeT32ezFSaK7/8lShN16QR2a
-tqmr8IkDt/VYwFzpSOtzkg38NK3ko/RUkJO578fclSNePEybXW0=
-=qmWw
------END PGP SIGNATURE-----
---=-=-=--
