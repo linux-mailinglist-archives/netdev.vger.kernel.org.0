@@ -2,66 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C681C28510F
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 19:42:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90075285121
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 19:45:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726745AbgJFRmc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 13:42:32 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:53549 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726197AbgJFRmc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 13:42:32 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <colin.king@canonical.com>)
-        id 1kPqyn-0007TZ-M2; Tue, 06 Oct 2020 17:42:25 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] ath11k: fix memory leak of 'combinations'
-Date:   Tue,  6 Oct 2020 18:42:25 +0100
-Message-Id: <20201006174225.545919-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.27.0
+        id S1726766AbgJFRpw convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 6 Oct 2020 13:45:52 -0400
+Received: from mga02.intel.com ([134.134.136.20]:29297 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725925AbgJFRpu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Oct 2020 13:45:50 -0400
+IronPort-SDR: 5zxbtfxqBv1h0t6H6lVh7fVtMWJmGaGfaNcv/Fws6tbBrpekXOZ1/PUdxz9ONLm9aYpKwxxS5u
+ t/SLM4+fijGA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9765"; a="151530378"
+X-IronPort-AV: E=Sophos;i="5.77,343,1596524400"; 
+   d="scan'208";a="151530378"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Oct 2020 10:45:46 -0700
+IronPort-SDR: p2zLtZq8QrsYooxe9aWXVEy0jeqWU1a5IsPjcCtcmiCTScD85iGD5A25ihB/Cz66yPNTT2kM5w
+ xJ+Nj42tuFCw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,343,1596524400"; 
+   d="scan'208";a="460905673"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga004.jf.intel.com with ESMTP; 06 Oct 2020 10:45:42 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 6 Oct 2020 10:45:42 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 6 Oct 2020 10:45:42 -0700
+Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
+ fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.1713.004;
+ Tue, 6 Oct 2020 10:45:41 -0700
+From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
+To:     Leon Romanovsky <leon@kernel.org>,
+        "Ertman, David M" <david.m.ertman@intel.com>
+CC:     "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        "tiwai@suse.de" <tiwai@suse.de>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "jgg@nvidia.com" <jgg@nvidia.com>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "ranjani.sridharan@linux.intel.com" 
+        <ranjani.sridharan@linux.intel.com>,
+        "pierre-louis.bossart@linux.intel.com" 
+        <pierre-louis.bossart@linux.intel.com>,
+        "fred.oh@linux.intel.com" <fred.oh@linux.intel.com>,
+        "parav@mellanox.com" <parav@mellanox.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "Patil, Kiran" <kiran.patil@intel.com>
+Subject: RE: [PATCH v2 1/6] Add ancillary bus support
+Thread-Topic: [PATCH v2 1/6] Add ancillary bus support
+Thread-Index: AQHWm0x+bCEx5k0iU0+RSRzmm941iKmLSYGA//+QDSA=
+Date:   Tue, 6 Oct 2020 17:45:41 +0000
+Message-ID: <b78f8cc808204ce58c52a38139146b35@intel.com>
+References: <20201005182446.977325-1-david.m.ertman@intel.com>
+ <20201005182446.977325-2-david.m.ertman@intel.com>
+ <20201006172317.GN1874917@unreal>
+In-Reply-To: <20201006172317.GN1874917@unreal>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+x-originating-ip: [10.1.200.100]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
-
-Currently the error return path when 'limits' fails to allocate
-does not free the memory allocated for 'combinations'. Fix this
-by adding a kfree before returning.
-
-Addresses-Coverity: ("Resource leak")
-Fixes: 2626c269702e ("ath11k: add interface_modes to hw_params")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/wireless/ath/ath11k/mac.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 3f63a7bd6b59..7f8dd47d2333 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -6041,8 +6041,10 @@ static int ath11k_mac_setup_iface_combinations(struct ath11k *ar)
- 	n_limits = 2;
- 
- 	limits = kcalloc(n_limits, sizeof(*limits), GFP_KERNEL);
--	if (!limits)
-+	if (!limits) {
-+		kfree(combinations);
- 		return -ENOMEM;
-+	}
- 
- 	limits[0].max = 1;
- 	limits[0].types |= BIT(NL80211_IFTYPE_STATION);
--- 
-2.27.0
-
+> Subject: Re: [PATCH v2 1/6] Add ancillary bus support
+> 
+> On Mon, Oct 05, 2020 at 11:24:41AM -0700, Dave Ertman wrote:
+> > Add support for the Ancillary Bus, ancillary_device and ancillary_driver.
+> > It enables drivers to create an ancillary_device and bind an
+> > ancillary_driver to it.
+> >
+> > The bus supports probe/remove shutdown and suspend/resume callbacks.
+> > Each ancillary_device has a unique string based id; driver binds to an
+> > ancillary_device based on this id through the bus.
+> >
+> > Co-developed-by: Kiran Patil <kiran.patil@intel.com>
+> > Signed-off-by: Kiran Patil <kiran.patil@intel.com>
+> > Co-developed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+> > Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+> > Co-developed-by: Fred Oh <fred.oh@linux.intel.com>
+> > Signed-off-by: Fred Oh <fred.oh@linux.intel.com>
+> > Reviewed-by: Pierre-Louis Bossart
+> > <pierre-louis.bossart@linux.intel.com>
+> > Reviewed-by: Shiraz Saleem <shiraz.saleem@intel.com>
+> > Reviewed-by: Parav Pandit <parav@mellanox.com>
+> > Reviewed-by: Dan Williams <dan.j.williams@intel.com>
+> > Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
+> > ---
+> 
+> <...>
+> 
+> > +/**
+> > + * __ancillary_driver_register - register a driver for ancillary bus
+> > +devices
+> > + * @ancildrv: ancillary_driver structure
+> > + * @owner: owning module/driver
+> > + */
+> > +int __ancillary_driver_register(struct ancillary_driver *ancildrv,
+> > +struct module *owner) {
+> > +	if (WARN_ON(!ancildrv->probe) || WARN_ON(!ancildrv->remove) ||
+> > +	    WARN_ON(!ancildrv->shutdown) || WARN_ON(!ancildrv->id_table))
+> > +		return -EINVAL;
+> 
+> In our driver ->shutdown is empty, it will be best if ancillary bus will do "if (-
+> >remove) ..->remove()" pattern.
+> 
+I prefer that too if its possible. We will look into it.
