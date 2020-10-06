@@ -2,81 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CC15284FC6
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 18:24:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82721284FD1
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 18:29:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726171AbgJFQYl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 12:24:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53388 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726127AbgJFQYk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 12:24:40 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B1F6C061755;
-        Tue,  6 Oct 2020 09:24:40 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id l17so14175746edq.12;
-        Tue, 06 Oct 2020 09:24:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=PNhxeCuyNFBdBGInaH8ev8Srj6p1W2m97GeyV41AyQI=;
-        b=sle4UsdqcBRbvIj6a4BJZzp2B9PJVjlFFNxpHUCvK30/0zWRVH5yohBu9lQxEv23xA
-         L2aFHJzQBXphiyKnaE60arHMc7JBHVaqVYvr2i3OYi1GFAE5Vd2VKqeTqWWtYmXfRrgX
-         HboxO9hP7+Unao8UAoVSAkKT1eBjtxR66unwxWPX2rh7BHBFPYrNII99XH4seKAlEqmd
-         bVNUkiWKrmeeOuLrQHLoKPEP3l7qkCCTvNNMLlMK+iFLc7PK3EviCRDaifnZ9ONkXPTF
-         gncwE2hqv0IpSJbDLuqedAWOCnT20Xhaf5duJaII9cev+ozFBmOmAO7IlHPNb8yYffU3
-         tJOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=PNhxeCuyNFBdBGInaH8ev8Srj6p1W2m97GeyV41AyQI=;
-        b=ufNUSnuuvA4eadOOrnsk34bIqSsa1X2FR6GQuboZKpYAjLyoE9rBSl4Y8nj+/gCy/K
-         BhWArg1eEJvE81qVo5eKqSjZ2Cya+sXbJPvslnGQME0kfYBbk8RZsICyZTZWUUP9lWxW
-         QoWJ/4uuxd7ZoJxFnUY9rTKM2SiY8RrhhwP9Gax+LMxykLNzQf85yThVRt6ElWr9VmJM
-         xooVCsHOEIazC0YlorJRtWKZTKu3EAHUqPnT+mbYVOi8CyDGCBtEvx6buAGvUh3t07BH
-         qKLRYMTmz0KsK2llLU7AmQ0zE+qjkQ4wmXpZn9kNQWdHTEC+Xy/4PUu5seJroM34EG+/
-         5rGQ==
-X-Gm-Message-State: AOAM531rD9iKOlZzTsjwoc/Lumjk2e9VK5qKZfGktLAJfFc9hq6yHdcR
-        JrDQ39PLQpHiOrWnWGfMUbkT6HWozls=
-X-Google-Smtp-Source: ABdhPJyFcYCaMMn0It9YzEmn+OCvvN5eA+pkzBCkSiXCrnmNQXSMHgh9sq+WMX1SIHTbBMs9hEb8yg==
-X-Received: by 2002:aa7:d891:: with SMTP id u17mr6287457edq.188.1602001478377;
-        Tue, 06 Oct 2020 09:24:38 -0700 (PDT)
-Received: from skbuf ([188.26.229.171])
-        by smtp.gmail.com with ESMTPSA id l26sm2403503ejc.96.2020.10.06.09.24.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Oct 2020 09:24:37 -0700 (PDT)
-Date:   Tue, 6 Oct 2020 19:24:36 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [net v2] net: dsa: microchip: fix race condition
-Message-ID: <20201006162436.ri5ifcqr5xsec3m3@skbuf>
-References: <20201006155651.21473-1-ceggers@arri.de>
- <20201006162125.ulftqdiufdxjesn7@skbuf>
+        id S1726064AbgJFQ3T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 12:29:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:31622 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725902AbgJFQ3T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 12:29:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602001757;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=eMCynJ13o3ado4OW8hiqU8BCYQxG79YR/H2z2pIbBrQ=;
+        b=QIVniDgckQCjNTyrWeEGkWqlje/XxMuKjFPDY7X612jRe8XJUnCNCB+8CeHIJ+GyF6C16T
+        uzwQ9fnPv4dXlz/fex6NArK5mIR+bJPLridpSw0NJUeVqOduaXxEqfHb7SAiM1KmcfRFYY
+        kLpyk32QCmmfWoiSmF0CNRqy2jXXico=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-120-NwLnfClSPi64cIiN3U8aOA-1; Tue, 06 Oct 2020 12:29:16 -0400
+X-MC-Unique: NwLnfClSPi64cIiN3U8aOA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AEB8418A8223;
+        Tue,  6 Oct 2020 16:29:14 +0000 (UTC)
+Received: from new-host-6.redhat.com (unknown [10.40.194.242])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BF6841A8EC;
+        Tue,  6 Oct 2020 16:29:12 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
+Cc:     mptcp@lists.01.org, Christoph Paasch <cpaasch@apple.com>,
+        pabeni@redhat.com, Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: [PATCH net] net: mptcp: make DACK4/DACK8 usage consistent among all subflows
+Date:   Tue,  6 Oct 2020 18:26:17 +0200
+Message-Id: <70c96303d6d9931aae1b1028aed016d807df0e20.1602001119.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201006162125.ulftqdiufdxjesn7@skbuf>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 06, 2020 at 07:21:25PM +0300, Vladimir Oltean wrote:
-> You forgot to copy Florian's review tag from v1.
+using packetdrill it's possible to observe the same MPTCP DSN being acked
+by different subflows with DACK4 and DACK8. This is in contrast with what
+specified in RFC8684 §3.3.2: if an MPTCP endpoint transmits a 64-bit wide
+DSN, it MUST be acknowledged with a 64-bit wide DACK. Fix 'use_64bit_ack'
+variable to make it a property of MPTCP sockets, not TCP subflows.
 
-Ah, Florian did not leave a review tag in v1. Just a comment:
+Fixes: a0c1d0eafd1e ("mptcp: Use 32-bit DATA_ACK when possible")
+Acked-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Davide Caratti <dcaratti@redhat.com>
+---
+ net/mptcp/options.c  | 2 +-
+ net/mptcp/protocol.h | 2 +-
+ net/mptcp/subflow.c  | 3 +--
+ 3 files changed, 3 insertions(+), 4 deletions(-)
 
-> don't you need to pair the test for dev->mib_read_internal being non
-> zero with setting it to zero in ksz_switch_unregister()?
+diff --git a/net/mptcp/options.c b/net/mptcp/options.c
+index 888bbbbb3e8a..9d7fa93fe0cf 100644
+--- a/net/mptcp/options.c
++++ b/net/mptcp/options.c
+@@ -516,7 +516,7 @@ static bool mptcp_established_options_dss(struct sock *sk, struct sk_buff *skb,
+ 		return ret;
+ 	}
+ 
+-	if (subflow->use_64bit_ack) {
++	if (READ_ONCE(msk->use_64bit_ack)) {
+ 		ack_size = TCPOLEN_MPTCP_DSS_ACK64;
+ 		opts->ext_copy.data_ack = READ_ONCE(msk->ack_seq);
+ 		opts->ext_copy.ack64 = 1;
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 20f04ac85409..285dd8b2b43a 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -202,6 +202,7 @@ struct mptcp_sock {
+ 	bool		fully_established;
+ 	bool		rcv_data_fin;
+ 	bool		snd_data_fin_enable;
++	bool		use_64bit_ack; /* Set when we received a 64-bit DSN */
+ 	spinlock_t	join_list_lock;
+ 	struct work_struct work;
+ 	struct list_head conn_list;
+@@ -294,7 +295,6 @@ struct mptcp_subflow_context {
+ 		backup : 1,
+ 		data_avail : 1,
+ 		rx_eof : 1,
+-		use_64bit_ack : 1, /* Set when we received a 64-bit DSN */
+ 		can_ack : 1;	    /* only after processing the remote a key */
+ 	u32	remote_nonce;
+ 	u64	thmac;
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 6f035af1c9d2..91bef7bfffa6 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -769,12 +769,11 @@ static enum mapping_status get_mapping_status(struct sock *ssk,
+ 	if (!mpext->dsn64) {
+ 		map_seq = expand_seq(subflow->map_seq, subflow->map_data_len,
+ 				     mpext->data_seq);
+-		subflow->use_64bit_ack = 0;
+ 		pr_debug("expanded seq=%llu", subflow->map_seq);
+ 	} else {
+ 		map_seq = mpext->data_seq;
+-		subflow->use_64bit_ack = 1;
+ 	}
++	WRITE_ONCE(mptcp_sk(subflow->conn)->use_64bit_ack, !!mpext->dsn64);
+ 
+ 	if (subflow->map_valid) {
+ 		/* Allow replacing only with an identical map */
+-- 
+2.26.2
 
-I may be wrong, but I don't think that setting the interval to zero in
-unregister() would change anything.
