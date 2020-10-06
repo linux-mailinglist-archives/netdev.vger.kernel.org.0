@@ -2,224 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BD292848AB
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 10:35:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F5892848B5
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 10:37:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726433AbgJFIfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 04:35:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:52794 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725946AbgJFIfE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 04:35:04 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601973262;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=RS1bQCjlVM88OcptMus2+kqpEPdF91Jre0Fco1efMUw=;
-        b=aqaLzvI0qtoFg7a7KN1aN4RrzSocWYRw8DK0PvSKYASY182VgkVKUpgOX1T9s+xAGKm+Gn
-        1Sz423ZU8OJfzjF8QETzNOzZJldrSNzNX7E1kgvQxv5gCyogoOOtKGaNDhVHROWYT8S7Oj
-        OqFuyG2dBY95LAgvdVEqXjTzd4bwfk4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-203-ocmj1lczNJSG1z8XdAPGsA-1; Tue, 06 Oct 2020 04:34:20 -0400
-X-MC-Unique: ocmj1lczNJSG1z8XdAPGsA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 70D54801817;
-        Tue,  6 Oct 2020 08:34:19 +0000 (UTC)
-Received: from nusiddiq.home.org.com (unknown [10.67.116.10])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 667D378818;
-        Tue,  6 Oct 2020 08:34:16 +0000 (UTC)
-From:   nusiddiq@redhat.com
-To:     dev@openvswitch.org, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Aaron Conole <aconole@redhat.com>,
-        Numan Siddique <nusiddiq@redhat.com>,
-        Pravin B Shelar <pshelar@ovn.org>
-Subject: [PATCH net-next] net: openvswitch: Add support to lookup invalid packet in ct action.
-Date:   Tue,  6 Oct 2020 14:03:55 +0530
-Message-Id: <20201006083355.121018-1-nusiddiq@redhat.com>
+        id S1726317AbgJFIhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 04:37:39 -0400
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:47635 "EHLO
+        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726006AbgJFIhg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 04:37:36 -0400
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20201006083750euoutp0156bb0a38c7048b066e8ceefa99fe55f5~7WmJJcB9F1715117151euoutp01B;
+        Tue,  6 Oct 2020 08:37:50 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20201006083750euoutp0156bb0a38c7048b066e8ceefa99fe55f5~7WmJJcB9F1715117151euoutp01B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1601973470;
+        bh=TdvBo++lhM54zLH1A/JrQp3BZQVVNjq7JuuhRMXlT9M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uO0Ngoe87nDx/YBi454j3tBG1IjBK3deLoufSlUN6IadxmGR1caWa3Jnl+exnV6OY
+         G9BXe0yO9ACG9DIpRk8/P5f4VAMIHyT+kKlls5Pp4q14oWRlYcCwJ3PIqUi+nphOnu
+         2dSbIGDiRJpHPMtKsmQ6BxatEa5s2eaCjdbhl7pM=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20201006083750eucas1p2464a3247610bac05f98ff689fe698260~7WmI3xM6v1792317923eucas1p23;
+        Tue,  6 Oct 2020 08:37:50 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id 41.35.06318.EDC2C7F5; Tue,  6
+        Oct 2020 09:37:50 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+        20201006083749eucas1p160a3bed4cdb67cc8e05ca4a57d8907ca~7WmIbzr_v1178011780eucas1p1x;
+        Tue,  6 Oct 2020 08:37:49 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20201006083749eusmtrp13d2caf5f65551a21acfc9988bff525ca~7WmIbBHvu2257422574eusmtrp1B;
+        Tue,  6 Oct 2020 08:37:49 +0000 (GMT)
+X-AuditID: cbfec7f5-38bff700000018ae-13-5f7c2cde5da3
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms1.samsung.com (EUCPMTA) with SMTP id 39.86.06314.DDC2C7F5; Tue,  6
+        Oct 2020 09:37:49 +0100 (BST)
+Received: from localhost (unknown [106.120.51.46]) by eusmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20201006083749eusmtip159a049b94167cbb073a26456cfccab04~7WmIQPs2y2825428254eusmtip1P;
+        Tue,  6 Oct 2020 08:37:49 +0000 (GMT)
+From:   Lukasz Stelmach <l.stelmach@samsung.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, jim.cromie@gmail.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        =?utf-8?Q?Bart=C5=82omiej_=C5=BBolnierkiewi?= =?utf-8?Q?cz?= 
+        <b.zolnierkie@samsung.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH v2 0/4] AX88796C SPI Ethernet Adapter
+Date:   Tue, 06 Oct 2020 10:37:34 +0200
+In-Reply-To: <20201002194544.GH3996795@lunn.ch> (Andrew Lunn's message of
+        "Fri, 2 Oct 2020 21:45:44 +0200")
+Message-ID: <dleftj7ds3eomp.fsf%l.stelmach@samsung.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: multipart/signed; boundary="=-=-="; micalg="pgp-sha256";
+        protocol="application/pgp-signature"
+X-Brightmail-Tracker: H4sIAAAAAAAAA02SbUhTURiAObv37l616XVavZmEDPuuVVR2ywyzftyCyPpTmGkrLyq5qZuf
+        fZCWRYnOUKO2BmqUX6nlmktNrYYosnQLdaWoRSqVFhWWZYS0eRL695z3PO/X4TCE9Cflx8Sr
+        UgS1SpEgE7uT5o6ZnvUj685Fb3yXI+VswxaCq7/1gOIMthySK2nvoTjH5yGKKxidJDib7SHN
+        2c1aijOOOiiut9kg5m7Z2kSc5UYr4mrbh2muo3QRd7m1nQ714nsdLwneVDUg4pv0wzRvrL4m
+        5h/dvcA3NU6JeK2pGvFTxmXhTIT7zhghIT5NUG/YdcI97rnjGZU04JbxpnkIZaEmJhe5McBu
+        ge7fWjIXuTNSthJBSdGgCB++I6jvnqHwYQrBkLWBnE/RD9pFLpayFQjGysKw9B7B17sNRC5i
+        GDErh9raoy7Hlw2A4q4/c4UItoaEyZnauWQfdju8yOkRu5hkl0O9vgm52I1VQv+lmrlmEnYb
+        PJnW0i5e6PRNH97QOO4NXbqxOYdw+jrbJ+RqAKyOgT7DTeQaAti9MF3vhYf2gYlOE43ZH6xF
+        eSRWLkBRYRBOzUNgNvz6t2QwDPX8FmPeDXlPZ8XY94TXn71xW08oNN8kcFgCV69IsR0IdQUt
+        /6r4Qf5EJcLMw9vSnzR+qosI+spr6OsoQP/fNvr/ttE7yxLsanjQvAGH10J52SSBOQTq6r6Q
+        pYiqRouFVI0yVtBsVgnpco1CqUlVxcpPJSqNyPkFrbOdPxpR25+TFsQySLZAkrHobLSUUqRp
+        MpUWFOis9O7hfTvyI1WJKkHmKwnrtkZJJTGKzDOCOjFanZogaCxoKUPKFks23/l4XMrGKlKE
+        04KQJKjnb0WMm18WqvYPLf/0YyrNw3/JN+tB3e2YEtKesL/ofJI5+NC69HRdb6RMKFsZV9HW
+        PJ59QxmYlV2Rv+qAMplN7veJLng1FvEsoy7Tvuqxx9b4kJHxY1WFe4qvvvRenbQv/OLAvV0j
+        Pl7hIy07Qi6ZglZEXtF+n+bzDx+R98mjErv7r5EoQjHrkJGaOMWmNYRao/gL+ElwzooDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrPIsWRmVeSWpSXmKPExsVy+t/xu7p3dWriDW6/NrQ4f/cQs8XGGetZ
+        Leacb2GxmH/kHKvFtbd3WC36H79mtjh/fgO7xYVtfawWmx5fY7W4vGsOm8WM8/uYLA5N3cto
+        sfbIXXaLYwvELFr3HmF34Pe4fO0is8eWlTeZPHbOusvusWlVJ5vH5iX1Hjt3fGby6NuyitHj
+        8ya5AI4oPZui/NKSVIWM/OISW6VoQwsjPUNLCz0jE0s9Q2PzWCsjUyV9O5uU1JzMstQifbsE
+        vYyD1w6wFtzkrLi/6w5jA+NOji5GTg4JAROJWbcuMHUxcnEICSxllPixope5i5EDKCElsXJu
+        OkSNsMSfa11sEDVPGSX27N3EBFLDJqAnsXZtBEiNiICCxJSTf1hBbGaB9SwSqydxgtjCApYS
+        Z1rOsYHYQkDlby6+YASxWQRUJTbO2glmcwrkSlxtXsMCYvMKmEvs/tbHDmKLAvVueXGfHSIu
+        KHFy5hMWiPnZEl9XP2eewCgwC0lqFpLULKDrmAU0Jdbv0ocIa0ssW/iaGcK2lVi37j3LAkbW
+        VYwiqaXFuem5xYZ6xYm5xaV56XrJ+bmbGIERvO3Yz807GC9tDD7EKMDBqMTDqyBSHS/EmlhW
+        XJl7iFEFaMyjDasvMEqx5OXnpSqJ8DqdPR0nxJuSWFmVWpQfX1Sak1p8iNEU6M+JzFKiyfnA
+        pJNXEm9oamhuYWlobmxubGahJM7bIXAwRkggPbEkNTs1tSC1CKaPiYNTqoGRqfVSfKnpOc6Q
+        tTPXlic0m7xmPl/7QZS/5WexWk8ES87shr8tDFxe9cUdG1XD/rnyP/HVzUj0m31g8q4n9SGp
+        i1Kv3M+OOD1jufz06zekxOxXxEzI7ln676Vfa0nQtqAiKbfjhn0b/8lWXV8foHxqDk9ylJr7
+        /p6S8q8/6hw/yG8pZ3vfuFyJpTgj0VCLuag4EQAFr0HdAgMAAA==
+X-CMS-MailID: 20201006083749eucas1p160a3bed4cdb67cc8e05ca4a57d8907ca
+X-Msg-Generator: CA
+X-RootMTR: 20201006083749eucas1p160a3bed4cdb67cc8e05ca4a57d8907ca
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20201006083749eucas1p160a3bed4cdb67cc8e05ca4a57d8907ca
+References: <20201002194544.GH3996795@lunn.ch>
+        <CGME20201006083749eucas1p160a3bed4cdb67cc8e05ca4a57d8907ca@eucas1p1.samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Numan Siddique <nusiddiq@redhat.com>
+--=-=-=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-For a tcp packet which is part of an existing committed connection,
-nf_conntrack_in() will return err and set skb->_nfct to NULL if it is
-out of tcp window. ct action for this packet will set the ct_state
-to +inv which is as expected.
+It was <2020-10-02 pi=C4=85 21:45>, when Andrew Lunn wrote:
+> On Fri, Oct 02, 2020 at 09:22:06PM +0200, =C5=81ukasz Stelmach wrote:
+>> This is a driver for AX88796C Ethernet Adapter connected in SPI mode as
+>> found on ARTIK5 evaluation board. The driver has been ported from a
+>> v3.10.9 vendor kernel for ARTIK5 board.
+>
+> Hi =C5=81ukasz
+>
+> Please include a brief list of changes since the previous version.
+>
 
-But a controller cannot add an OVS flow as
+It can be found at the bottom of the message.
 
-table=21,priority=100,ct_state=+inv, actions=drop
+=2D-=20
+=C5=81ukasz Stelmach
+Samsung R&D Institute Poland
+Samsung Electronics
 
-to drop such packets. That is because when ct action is executed on other
-packets which are not part of existing committed connections, ct_state
-can be set to invalid. Few such cases are:
-   - ICMP reply packets.
-   - TCP SYN/ACK packets during connection establishment.
-   - SCTP INIT ACK, COOKIE ACK, DATA and DATA ACK packets.
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-To distinguish between an invalid packet part of committed connection
-and others, this patch introduces as a new ct attribute
-OVS_CT_ATTR_LOOKUP_INV. If this is set in the ct action (without commit),
-it tries to find the ct entry and if present, sets the ct_state to
-+inv,+trk and also sets the mark and labels associated with the
-connection.
+-----BEGIN PGP SIGNATURE-----
 
-With this,  a controller can add flows like
-
-....
-....
-table=20,ip, action=ct(table=21, lookup_invalid)
-table=21,priority=100,ct_state=+inv+trk,ct_label=0x2/0x2 actions=drop
-table=21,ip, actions=resubmit(,22)
-....
-....
-
-CC: Pravin B Shelar <pshelar@ovn.org>
-Signed-off-by: Numan Siddique <nusiddiq@redhat.com>
----
-
-RFC -> PATCH
-------
-  * Changed the patch from RFC to a formal one. No other changes.
-
- include/uapi/linux/openvswitch.h |  4 +++
- net/openvswitch/conntrack.c      | 47 ++++++++++++++++++++++++--------
- 2 files changed, 40 insertions(+), 11 deletions(-)
-
-diff --git a/include/uapi/linux/openvswitch.h b/include/uapi/linux/openvswitch.h
-index 8300cc29dec8..db942986c5b7 100644
---- a/include/uapi/linux/openvswitch.h
-+++ b/include/uapi/linux/openvswitch.h
-@@ -768,6 +768,9 @@ struct ovs_action_hash {
-  * respectively.  Remaining bits control the changes for which an event is
-  * delivered on the NFNLGRP_CONNTRACK_UPDATE group.
-  * @OVS_CT_ATTR_TIMEOUT: Variable length string defining conntrack timeout.
-+ * @OVS_CT_ATTR_LOOKUP_INV: If present, looks up and sets the state, mark and
-+ * labels for an invalid packet (eg. out of tcp window) if it is part of
-+ * committed connection.
-  */
- enum ovs_ct_attr {
- 	OVS_CT_ATTR_UNSPEC,
-@@ -782,6 +785,7 @@ enum ovs_ct_attr {
- 	OVS_CT_ATTR_EVENTMASK,  /* u32 mask of IPCT_* events. */
- 	OVS_CT_ATTR_TIMEOUT,	/* Associate timeout with this connection for
- 				 * fine-grain timeout tuning. */
-+	OVS_CT_ATTR_LOOKUP_INV, /* No argument. */
- 	__OVS_CT_ATTR_MAX
- };
- 
-diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
-index e6fe26a9c892..a6f96d9b4452 100644
---- a/net/openvswitch/conntrack.c
-+++ b/net/openvswitch/conntrack.c
-@@ -62,6 +62,7 @@ struct ovs_conntrack_info {
- 	u8 nat : 3;                 /* enum ovs_ct_nat */
- 	u8 force : 1;
- 	u8 have_eventmask : 1;
-+	u8 lookup_invalid : 1;
- 	u16 family;
- 	u32 eventmask;              /* Mask of 1 << IPCT_*. */
- 	struct md_mark mark;
-@@ -601,12 +602,13 @@ ovs_ct_get_info(const struct nf_conntrack_tuple_hash *h)
-  *
-  * Must be called with rcu_read_lock.
-  *
-- * On success, populates skb->_nfct and returns the connection.  Returns NULL
-- * if there is no existing entry.
-+ * On success, populates skb->_nfct if 'skb_set_ct' is true and returns the
-+ * connection.  Returns NULL if there is no existing entry.
-  */
- static struct nf_conn *
- ovs_ct_find_existing(struct net *net, const struct nf_conntrack_zone *zone,
--		     u8 l3num, struct sk_buff *skb, bool natted)
-+		     u8 l3num, struct sk_buff *skb, bool natted,
-+		     bool skb_set_ct)
- {
- 	struct nf_conntrack_tuple tuple;
- 	struct nf_conntrack_tuple_hash *h;
-@@ -636,14 +638,17 @@ ovs_ct_find_existing(struct net *net, const struct nf_conntrack_zone *zone,
- 
- 	ct = nf_ct_tuplehash_to_ctrack(h);
- 
--	/* Inverted packet tuple matches the reverse direction conntrack tuple,
--	 * select the other tuplehash to get the right 'ctinfo' bits for this
--	 * packet.
--	 */
--	if (natted)
--		h = &ct->tuplehash[!h->tuple.dst.dir];
-+	if (skb_set_ct) {
-+		/* Inverted packet tuple matches the reverse direction
-+		 * conntrack tuple, select the other tuplehash to get the
-+		 * right 'ctinfo' bits for this packet.
-+		 */
-+		if (natted)
-+			h = &ct->tuplehash[!h->tuple.dst.dir];
-+
-+		nf_ct_set(skb, ct, ovs_ct_get_info(h));
-+	}
- 
--	nf_ct_set(skb, ct, ovs_ct_get_info(h));
- 	return ct;
- }
- 
-@@ -669,7 +674,7 @@ struct nf_conn *ovs_ct_executed(struct net *net,
- 	if (*ct_executed || (!key->ct_state && info->force)) {
- 		ct = ovs_ct_find_existing(net, &info->zone, info->family, skb,
- 					  !!(key->ct_state &
--					  OVS_CS_F_NAT_MASK));
-+					  OVS_CS_F_NAT_MASK), true);
- 	}
- 
- 	return ct;
-@@ -1033,6 +1038,20 @@ static int __ovs_ct_lookup(struct net *net, struct sw_flow_key *key,
- 		    ovs_ct_helper(skb, info->family) != NF_ACCEPT) {
- 			return -EINVAL;
- 		}
-+	} else if (info->lookup_invalid) {
-+		/* nf_conntrack_in() sets skb->_nfct to NULL if the packet is
-+		 * invalid (eg. out of tcp window) even if it belongs to
-+		 * an existing connection. Check if there is an existing entry
-+		 * and if so, update the key with the mark and ct_labels.
-+		 */
-+		ct = ovs_ct_find_existing(net, &info->zone, info->family, skb,
-+					  false, false);
-+		if (ct) {
-+			u8 state;
-+
-+			state = OVS_CS_F_TRACKED | OVS_CS_F_INVALID;
-+			__ovs_ct_update_key(key, state, &info->zone, ct);
-+		}
- 	}
- 
- 	return 0;
-@@ -1602,6 +1621,9 @@ static int parse_ct(const struct nlattr *attr, struct ovs_conntrack_info *info,
- 			}
- 			break;
- #endif
-+		case OVS_CT_ATTR_LOOKUP_INV:
-+			info->lookup_invalid = true;
-+			break;
- 
- 		default:
- 			OVS_NLERR(log, "Unknown conntrack attr (%d)",
-@@ -1819,6 +1841,9 @@ int ovs_ct_action_to_attr(const struct ovs_conntrack_info *ct_info,
- 		if (nla_put_string(skb, OVS_CT_ATTR_TIMEOUT, ct_info->timeout))
- 			return -EMSGSIZE;
- 	}
-+	if (ct_info->lookup_invalid &&
-+	    nla_put_flag(skb, OVS_CT_ATTR_LOOKUP_INV))
-+		return -EMSGSIZE;
- 
- #if IS_ENABLED(CONFIG_NF_NAT)
- 	if (ct_info->nat && !ovs_ct_nat_to_attr(ct_info, skb))
--- 
-2.26.2
-
+iQEzBAEBCAAdFiEEXpuyqjq9kGEVr9UQsK4enJilgBAFAl98LM4ACgkQsK4enJil
+gBDBGwf7BniLxZulD4q6SgaXv9GawdRNFVpHg9TEqudOoo75bI7Xlr0nd8pn0xJz
+G3MF6+Kj5Z0aeAifXP0vk1GF898GGkyGnE8mefuQNLkvrAYNpDPsrBd+JXU0WIR7
+O+8VYUhdrqp4ip2153dXHtda15kplCubyGgCvDpEO8G+FOhOiHZZQMfPMD1si9F5
+IY9BVyRiACFwEbaEh7D+cyueZSINMMAy613VeavrMVlfsVAAfMbL+qlYQF5JPkld
+EtDg3OMHNYLUZs/6pXcNI1JFObqPbODGjHQTruuW2GGoy3fE5uZ27I26YxvXKOfg
+teDYJXQbyVv7gRNBPtbSUYHylUlkLA==
+=z8rr
+-----END PGP SIGNATURE-----
+--=-=-=--
