@@ -2,111 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39491284B0B
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 13:43:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E511284B0F
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 13:45:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726074AbgJFLn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 07:43:29 -0400
-Received: from mail-db8eur05on2046.outbound.protection.outlook.com ([40.107.20.46]:55392
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725947AbgJFLn1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Oct 2020 07:43:27 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZX7YqrfjiOMHhe/1DkUHNMsACcgpdFwX2HbYo8RavhPP8xSlXhQgWlSxpI3/GpMQlgkl5z8iuUfkZdPZntK9b8gRWQjzNfZmVlh6WVPYtS+xrltiI93fAsClj1IA1EHA7wvFZzchmf4KG3LtMjCxWyBV+NdSynOxw5XEw2uUjwfPebpIlLylt7cXsqyahaqMhcAGOms5/1tq3ecfVCbKfK+8B10f3bTH1re+wAaZr81zL/tN59ltJE9RZ1yPr9+yRX9gm8DuQQH9eYoQkrWO9ea+6lrXPlS8D8pCSaHKCtNSohsGj+85j0PArGnv/h3Bbs1C2KOMuZ812EcqUcz19g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Zlnmm3DWnJXqqvzJtR6br1hXNaZ9tTPQv9VeDUm37TU=;
- b=PY4AOuAOubjt4B7YiW67ByipJScQuukFWC8BAtI+Vq9EVMjOHr2iGRAaADLyL5vMXh0Nb/2tSQuKcbN+l2wyw8/6G33YtkVHwe223g5t5O5aiKKBo3+1RbuH/5Xb0ucLPmto9WjjPbTFRyKby4dRKjk8GTr380RPA8aO0ZF0a9XAGa4R1g5W9sfNzD0mt/6nxMcdjhX6gP0+CTWQ0E8Dvc4liv06aOAAuJcqoPgiz6ErA8wryn7c8vGDKkL+0QvU4VkobjKWsDm+7uRQanM6XwFJTvvlBJji65fo5BYqySTDk6r3N7lufwH83ffEQOzCOmnwuvmb91A5cpqopbeAVw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Zlnmm3DWnJXqqvzJtR6br1hXNaZ9tTPQv9VeDUm37TU=;
- b=T0TjppMBTlCfdVLH2YLgrhVy+3wE9PQsD4PKOiRx0P+SrWWO8YXCrqivJNsPY/OjJAkwx0Y1jz7qr9TFYY29uQitcsBuWcWc6PoNNyu65SArA/6OlPqPqxSd7dOGIVODymqdzUDeOq4L5cw8Bxj01feUdCBR+ZE2fJvMWt+haX4=
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VE1PR04MB7327.eurprd04.prod.outlook.com (2603:10a6:800:1ac::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.39; Tue, 6 Oct
- 2020 11:43:23 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3433.044; Tue, 6 Oct 2020
- 11:43:23 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-CC:     Jacob Keller <jacob.e.keller@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
+        id S1726143AbgJFLpy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 07:45:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:40641 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725947AbgJFLpy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 07:45:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1601984752;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dm2UtfzYXYdSOQnTVEkNER947es3Z2MFYURE38j/5RI=;
+        b=Vvd8i5rhUBBoKmnst88WMI8r5Qub+7gXkUE44Dv0l5jDxkJXjsIwIBxoVz47R0aK/V3G0/
+        povEz9Df8rHtx/Rj3jKbm3ePA3kpcFcUgw15sOgokMYcT0vg+hjuNtfpH/KUKBzXnulgq/
+        odbD7L3UfK5I2VJsQxnNbnEpcqO14lE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-540-WVH2UPTRPj2t91wPEgNP5g-1; Tue, 06 Oct 2020 07:45:48 -0400
+X-MC-Unique: WVH2UPTRPj2t91wPEgNP5g-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 95FAF107AFD1;
+        Tue,  6 Oct 2020 11:45:46 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.30])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AD1FC702E7;
+        Tue,  6 Oct 2020 11:45:36 +0000 (UTC)
+Date:   Tue, 6 Oct 2020 13:45:35 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Maciej =?UTF-8?B?xbtlbmN6eWtvd3NraQ==?= <maze@google.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        BPF-dev-list <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shaun Crampton <shaun@tigera.io>,
         David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next] net: always dump full packets with skb_dump
-Thread-Topic: [PATCH net-next] net: always dump full packets with skb_dump
-Thread-Index: AQHWmyajuY7XLNsKGUiuu//ZVVgxHamJk1IAgADefYCAAAOsAA==
-Date:   Tue, 6 Oct 2020 11:43:23 +0000
-Message-ID: <20201006114322.aq276lij2ovhdtts@skbuf>
-References: <20201005144838.851988-1-vladimir.oltean@nxp.com>
- <bcf0a19d-a8c9-a9a2-7bcf-a97205aa4d05@intel.com>
- <CA+FuTScXC+t_sETOTCvjrALCmq3y4mrcX8CxyFBcLyJk3XH4Rg@mail.gmail.com>
-In-Reply-To: <CA+FuTScXC+t_sETOTCvjrALCmq3y4mrcX8CxyFBcLyJk3XH4Rg@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.26.229.171]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 81d78672-0ff6-4e70-ef0b-08d869ed07ce
-x-ms-traffictypediagnostic: VE1PR04MB7327:
-x-microsoft-antispam-prvs: <VE1PR04MB73278C62185B8F97F31AE86DE00D0@VE1PR04MB7327.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: +mEGgSSlzXc8en0Fl/49YAHn7rrsUyvGfB+Ew9badPwDRQgU0oP42dSF/x+WZgxe4Z4uuPKyEyFOgdARC4hU/8FHfNqNJxlwgSpeqkKx9l7A2mmzuBfD6uyaz4DgQcPajIFW634fBZrn1XblX8AiXgMB2mw6DLQbkhS+fSLME3M2246Rv/CYNXLl1t0Ko9C3E/l+4L0n1DwthkzE4vOX13X2f/55bAEUyDfnBqQkrer+Au1ByyJR0c0GeR/vsFBiYfoPaekaNKJ4HRWp/zd+2Juj3yB9yhSAja6/PkbDTub27Hf91Tkgj9osl1usmFCF2eB8jdIEKX/6Wg7dpgx65Q==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(39860400002)(346002)(136003)(366004)(396003)(376002)(33716001)(4326008)(2906002)(71200400001)(86362001)(9686003)(6512007)(54906003)(5660300002)(66476007)(66446008)(64756008)(66556008)(66946007)(6486002)(76116006)(478600001)(8936002)(316002)(83380400001)(4744005)(6916009)(1076003)(8676002)(186003)(44832011)(6506007)(26005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: 10PvL3taFkoWLFz/x6iqH8H2Zl5CSUR1ZMZ3qeinb7FQ4/gKnw/RGtXWiXz3KaqIHIFw83F1hIwdPKLdllYhsdtxexj61dYhinQTCzK821KuwbokMS1tYIkDUF6yQ1sl9ASfwHR3wbj0IXHcgvQpCm9UmWfFe4pN/HAKVAVtUvppOH2awEZzupxxO2vRaKGXJLXyPondsjXp3TeAx0qD1O/Iw7X/RWzFozGA5FKffyfK59bB7kDzNG4X642Tpu1QR2xEpBl69PIedwnpiNt+aomV3xICHBdqNojUS96KlDI/QkP38KMalaA5DpOGRepdcSiRGKo8HUyKlfzEf7hkBOEbfw/BX56FJFlX1SXEttVp6KlfhFwZcq+4YK9VvCq6Heb9xFKioxAQMUc6e8u7kGcFZWPJag6Y9QCu6vtV7eCHfy4nfhykolpcVPoFwUVKPZkKba6mX5FjT4yAsDhu89Mi0rZblb7D4450Bucc66UVTZCP+f61HhAqywdSQmQtOS2vGZBJ2HgRD7Bgm6OynwNlbV/SFcq4DjsIEBCpjbz7HAHo9YCusZVFniSdP1jV45gDSm8/5re6ilOGPFbkatuuU4nN8fSkJbyrFsIuoBgJkdjrwkcW9m6/5SQewRUJ1HuZHcdnRu46JAQL2PDDlw==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <6D738176FC6996478D55A6F6CE1EDD31@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        Marek Majkowski <marek@cloudflare.com>, brouer@redhat.com
+Subject: Re: BPF redirect API design issue for BPF-prog MTU feedback?
+Message-ID: <20201006134535.08e1dbe5@carbon>
+In-Reply-To: <5f68eb19cc0a2_17370208c9@john-XPS-13-9370.notmuch>
+References: <20200917143846.37ce43a0@carbon>
+        <CANP3RGcxM-Cno=Qw5Lut9DgmV=1suXqetnybA9RgxmW3KmwivQ@mail.gmail.com>
+        <56ccfc21195b19d5b25559aca4cef5c450d0c402.camel@kernel.org>
+        <20200918120016.7007f437@carbon>
+        <CANP3RGfUj-KKHHQtbggiZ4V-Xrr_sk+TWyN5FgYUGZS6rOX1yw@mail.gmail.com>
+        <CACAyw9-v_o+gPUpC-R9SXsfzMywrdGsWV13Nk=tx2aS-fEBFYg@mail.gmail.com>
+        <20200921144953.6456d47d@carbon>
+        <340f209d-58d4-52a6-0804-7102d80c1468@iogearbox.net>
+        <5f68eb19cc0a2_17370208c9@john-XPS-13-9370.notmuch>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 81d78672-0ff6-4e70-ef0b-08d869ed07ce
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Oct 2020 11:43:23.0973
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: S5leTCmNFAgTHPxU5keWjL+weU6mSKk85RfMUNsbdtoFBf24MTk7/IIFoP8JKQJ3ttSL5uc1bGPe7AnA/YsDpQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7327
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 06, 2020 at 07:30:13AM -0400, Willem de Bruijn wrote:
-> skb_dump is called from skb_warn_bad_offload and netdev_rx_csum_fault.
-> Previously when these were triggered, a few example bad packets were
-> sufficient to debug the issue.
+On Mon, 21 Sep 2020 11:04:09 -0700
+John Fastabend <john.fastabend@gmail.com> wrote:
 
-Yes, and it's only netdev_rx_csum_fault that matters, because
-skb_warn_bad_offload calls with full_pkt=3Dfalse anyway.
+> Daniel Borkmann wrote:
+> > On 9/21/20 2:49 PM, Jesper Dangaard Brouer wrote: =20
+> > > On Mon, 21 Sep 2020 11:37:18 +0100
+> > > Lorenz Bauer <lmb@cloudflare.com> wrote: =20
+> > >> On Sat, 19 Sep 2020 at 00:06, Maciej =C5=BBenczykowski <maze@google.=
+com> wrote: =20
+> > >>>    =20
+> > >>>> This is a good point.  As bpf_skb_adjust_room() can just be run af=
+ter
+> > >>>> bpf_redirect() call, then a MTU check in bpf_redirect() actually
+> > >>>> doesn't make much sense.  As clever/bad BPF program can then avoid=
+ the
+> > >>>> MTU check anyhow.  This basically means that we have to do the MTU
+> > >>>> check (again) on kernel side anyhow to catch such clever/bad BPF
+> > >>>> programs.  (And I don't like wasting cycles on doing the same chec=
+k two
+> > >>>> times). =20
+> > >>>
+> > >>> If you get rid of the check in bpf_redirect() you might as well get
+> > >>> rid of *all* the checks for excessive mtu in all the helpers that
+> > >>> adjust packet size one way or another way.  They *all* then become
+> > >>> useless overhead.
+> > >>>
+[...]
+> >=20
+> > Sorry for jumping in late here... one thing that is not clear to me is =
+that if
+> > we are fully sure that skb is dropped by stack anyway due to invalid MT=
+U (redirect
+> > to ingress does this via dev_forward_skb(), it's not fully clear to me =
+whether it's
+> > also the case for the dev_queue_xmiy()), then why not dropping all the =
+MTU checks
+> > aside from SKB_MAX_ALLOC sanity check for BPF helpers and have somethin=
+g like a
+> > device object (similar to e.g. TCP sockets) exposed to BPF prog where w=
+e can retrieve
+> > the object and read dev->mtu from the prog, so the BPF program could th=
+en do the
+> > "exception" handling internally w/o extra prog needed (we also already =
+expose whether
+> > skb is GSO or not).
+> >=20
+> > Thanks,
+> > Daniel =20
+>=20
+> My $.02 is MTU should only apply to transmitted packets so redirect to
+> ingress should be OK. Then on transmit shouldn't the user know the MTU
+> on their devices?
 
-During the times when I had netdev_rx_csum_fault triggered, it was
-pretty bad anyway. I don't think that full_pkt getting unset after 5
-skbs made too big of a difference.
+I like the point that "MTU should only apply to transmitted packets".=20
+=20
+> I'm for dropping all the MTU checks and if a driver tosses a packet then
+> the user should be more careful. Having a bpf helper to check MTU of a
+> dev seems useful although the workaround would be a map the user could
+> put the max MTU in. Of course that would be a bit fragile if the BPF prog=
+ram
+> and person managing MTU are not in-sync.
 
-> A full dump can add a lot of data to the kernel log, so I limited to
-> what is strictly needed.
+I'm coding this up. Dropping all the MTU checks in helpers, but adding
+helper to lookup/check the MTU.  I've also extended the bpf_fib_lookup
+to return MTU value (it already does MTU check), as it can be more
+specific.
 
-Yes, well my expectation is that other people are using skb_dump for
-debugging, even beyond those 2 callers in the mainline kernel. And when
-they want to dump with full_pkt=3Dtrue, they really want to dump with
-full_pkt=3Dtrue.
+The problematic code path seems to be when TC-ingress redirect packet
+to egress on another netdev, then the normal netstack MTU checks are
+skipped and driver level will not catch any MTU violation (only checked
+ixgbe code path).
 
-Thanks,
--Vladimir=
+First I looked at adding MTU check in the egress code path of
+skb_do_redirect() prior to calling dev_queue_xmit(), but I found this
+to be the wrong approach.  This is because it is still possible to run
+another BPF egress program that will shrink/consume headers, which will
+make packet comply with netdev MTU. This use-case might already be in
+production use (allowed if ingress MTU is larger than egress MTU).
+
+Instead I'm currently coding up doing the MTU check after
+sch_handle_egress() step, for the cases that require this.
+
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
