@@ -2,299 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D8AA284BA8
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 14:32:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0589284BBB
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 14:37:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726530AbgJFMcM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 08:32:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45848 "EHLO
+        id S1726506AbgJFMhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 08:37:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726499AbgJFMcL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 08:32:11 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25707C0613D1
-        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 05:32:11 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kPm8X-000EQw-7P; Tue, 06 Oct 2020 14:32:09 +0200
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     dsahern@gmail.com, Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH 2/2] netlink: export policy in extended ACK
-Date:   Tue,  6 Oct 2020 14:32:02 +0200
-Message-Id: <20201006142714.3c8b8db03517.I6dae2c514a6abc924ee8b3e2befb0d51b086cf70@changeid>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201006123202.57898-1-johannes@sipsolutions.net>
-References: <20201006123202.57898-1-johannes@sipsolutions.net>
+        with ESMTP id S1726460AbgJFMhK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 08:37:10 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4040C061755;
+        Tue,  6 Oct 2020 05:37:09 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id md26so17369063ejb.10;
+        Tue, 06 Oct 2020 05:37:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=zr+fQKfJH41b+OmkEnAMDd8D3Gr3FwM6XTSvtfE1Tr4=;
+        b=FmpVcAMq12e5hWuc/bTAY8dcJpXMlSOCB6kb+9/U9bPX89D8fDkuAEBD7Y6mxTza78
+         CjQEdzoxUGU+9UNJYMbG4waBGFxaLDHf6Xd/s2A/Ftc1eK98fdWh4KOdkat9gicdldtU
+         OJ4/WpF0VNQa+Nm+3AGo4pV1WuhT2Xk5iZHAQmKtSPxoeFP2RVhMc6Vcx2+PuhVkEQRu
+         EUh/SgiH47nhBRQE4piQPVzFNVUzfxVi7EPYp9Pg+IBCJsLipPb8H8k6WH33WHR6C40B
+         4GSmFaAwpP+AtViSD/dGGr1wb+1P3MORwaX/cL17Tpg2bmVTg8xRQFbDc3+iD9tk02Fp
+         Tl3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zr+fQKfJH41b+OmkEnAMDd8D3Gr3FwM6XTSvtfE1Tr4=;
+        b=Fpzv8XGHY2x3RsQ13dsEr+Wv0cai4f9W+lkuRXVm2zgbiu4GY3UusGARJDXdahjWVK
+         4IpRswJqMsBg590LPVAAf3nzNk8QpddQznEE5F9idviPLEZpuplCY7QqxPF2tgj3J3mX
+         05hxlsgLeSTOBT5Udr0rXPTf/3KGU1ycs51lnW5fxrWPUMVHLFfguw8yVJmoLXo7HuwM
+         /eyveSzzlXR3b+9LRMKrh/Ogl6Tlj77YdoS6VwhpKr9yas9Ga1jF3T5g3Ge4Y0stzXyb
+         fa8wMZnIOTknTR3Qx5iwadRWmGh5ONcI/sM0YQ2R16NBOZcsWKN9ki8cq37iisQ+5YQw
+         bWpA==
+X-Gm-Message-State: AOAM533gYXLhYL2tKamoc/+P75YOqJsFIBT1OJVrRsY6bxOy9uTeA5Bj
+        2cBZJ+d2CZ2VqseVlMZA9Xc=
+X-Google-Smtp-Source: ABdhPJyQO+OnJR1BVsiUMfSD32qkPU11dLARGI4NNYHyS+2Y5bPlr1k9gkKxOWneMHdrc818DeepFQ==
+X-Received: by 2002:a17:906:685a:: with SMTP id a26mr5183847ejs.458.1601987827595;
+        Tue, 06 Oct 2020 05:37:07 -0700 (PDT)
+Received: from skbuf ([188.26.229.171])
+        by smtp.gmail.com with ESMTPSA id l26sm2007784ejc.96.2020.10.06.05.37.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Oct 2020 05:37:07 -0700 (PDT)
+Date:   Tue, 6 Oct 2020 15:37:05 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH net-next v6 2/7] net: dsa: Add DSA driver for Hirschmann
+ Hellcreek switches
+Message-ID: <20201006123705.bnrborrpms6vaegz@skbuf>
+References: <20201004112911.25085-1-kurt@linutronix.de>
+ <20201004112911.25085-3-kurt@linutronix.de>
+ <20201004125601.aceiu4hdhrawea5z@skbuf>
+ <87lfgj997g.fsf@kurt>
+ <20201006092017.znfuwvye25vsu4z7@skbuf>
+ <878scj8xxr.fsf@kurt>
+ <20201006113237.73rzvw34anilqh4d@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201006113237.73rzvw34anilqh4d@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+On Tue, Oct 06, 2020 at 02:32:37PM +0300, Vladimir Oltean wrote:
+> - The .port_vlan_add will always install the VLAN to the hardware
+>   database, no queuing if there's no reason for it (and I can't see any.
+>   Your hardware seems to be sane enough to not drop a VLAN-tagged frame,
+>   and forward it correctly on egress, as long as you call
+>   hellcreek_setup_ingressflt with enable=false, am I right? or does the
+>   VLAN still need to be installed into the egress port?).
 
-Add a new attribute NLMSGERR_ATTR_POLICY to the extended ACK
-to advertise the policy, e.g. if an attribute was out of range,
-you'll know the range that's permissible.
+I don't know if this goes without saying or not, but of course, if you
+can't enforce correct behavior with a vlan_filtering=0 bridge (i.e.
+"ingressflt" will only help the VLAN-tagged frames to be accepted on
+ingress, but they will be nonetheless dropped on egress due to no valid
+destinations), then you should reject that setting in the 2 places where
+vlan_filtering can be enabled:
 
-Add new NL_SET_ERR_MSG_ATTR_POL() and NL_SET_ERR_MSG_ATTR_POL()
-macros to set this, since realistically it's only useful to do
-this when the bad attribute (offset) is also returned.
+(a) in .port_prechangeupper, you should make sure that if the upper is a
+    bridge, then br_vlan_enabled() must be true.
+(b) in .port_vlan_filtering, you should reject enabled=false from the
+    switchdev_trans_ph_prepare(trans) state.
 
-Use it in lib/nlattr.c which practically does all the policy
-validation.
+Again, this isn't about implementing every possible combination, just
+about making sure that the user isn't led into believing that a certain
+setting works when in reality it doesn't.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
----
- include/linux/netlink.h      | 30 ++++++++++++++++++++----------
- include/net/netlink.h        |  3 +++
- include/uapi/linux/netlink.h |  2 ++
- lib/nlattr.c                 | 35 ++++++++++++++++++-----------------
- net/netlink/af_netlink.c     |  6 ++++++
- net/netlink/policy.c         | 17 +++++++++++++++++
- 6 files changed, 66 insertions(+), 27 deletions(-)
+> @@ -2006,10 +2006,22 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
+>  	switch (event) {
+>  	case NETDEV_PRECHANGEUPPER: {
+>  		struct netdev_notifier_changeupper_info *info = ptr;
+> +		struct dsa_switch *ds;
+> +		struct dsa_port *dp;
+> +		int err;
+>  
+>  		if (!dsa_slave_dev_check(dev))
+>  			return dsa_prevent_bridging_8021q_upper(dev, ptr);
+>  
+> +		dp = dsa_slave_to_port(dev);
+> +		ds = dp->ds;
+> +
+> +		if (ds->ops->port_prechangeupper) {
+> +			err = ds->ops->port_prechangeupper(ds, dp->index, ptr);
+> +			if (err)
+> +				return err;
 
-diff --git a/include/linux/netlink.h b/include/linux/netlink.h
-index e3e49f0e5c13..666cd0390699 100644
---- a/include/linux/netlink.h
-+++ b/include/linux/netlink.h
-@@ -68,12 +68,14 @@ netlink_kernel_create(struct net *net, int unit, struct netlink_kernel_cfg *cfg)
-  * @_msg: message string to report - don't access directly, use
-  *	%NL_SET_ERR_MSG
-  * @bad_attr: attribute with error
-+ * @policy: policy for a bad attribute
-  * @cookie: cookie data to return to userspace (for success)
-  * @cookie_len: actual cookie data length
-  */
- struct netlink_ext_ack {
- 	const char *_msg;
- 	const struct nlattr *bad_attr;
-+	const struct nla_policy *policy;
- 	u8 cookie[NETLINK_MAX_COOKIE_LEN];
- 	u8 cookie_len;
- };
-@@ -95,21 +97,29 @@ struct netlink_ext_ack {
- #define NL_SET_ERR_MSG_MOD(extack, msg)			\
- 	NL_SET_ERR_MSG((extack), KBUILD_MODNAME ": " msg)
- 
--#define NL_SET_BAD_ATTR(extack, attr) do {		\
--	if ((extack))					\
-+#define NL_SET_BAD_ATTR_POLICY(extack, attr, pol) do {	\
-+	if ((extack)) {					\
- 		(extack)->bad_attr = (attr);		\
-+		(extack)->policy = (pol);		\
-+	}						\
- } while (0)
- 
--#define NL_SET_ERR_MSG_ATTR(extack, attr, msg) do {	\
--	static const char __msg[] = msg;		\
--	struct netlink_ext_ack *__extack = (extack);	\
--							\
--	if (__extack) {					\
--		__extack->_msg = __msg;			\
--		__extack->bad_attr = (attr);		\
--	}						\
-+#define NL_SET_BAD_ATTR(extack, attr) NL_SET_BAD_ATTR_POLICY(extack, attr, NULL)
-+
-+#define NL_SET_ERR_MSG_ATTR_POL(extack, attr, pol, msg) do {	\
-+	static const char __msg[] = msg;			\
-+	struct netlink_ext_ack *__extack = (extack);		\
-+								\
-+	if (__extack) {						\
-+		__extack->_msg = __msg;				\
-+		__extack->bad_attr = (attr);			\
-+		__extack->policy = (pol);			\
-+	}							\
- } while (0)
- 
-+#define NL_SET_ERR_MSG_ATTR(extack, attr, msg)		\
-+	NL_SET_ERR_MSG_ATTR_POL(extack, attr, NULL, msg)
-+
- static inline void nl_set_extack_cookie_u64(struct netlink_ext_ack *extack,
- 					    u64 cookie)
- {
-diff --git a/include/net/netlink.h b/include/net/netlink.h
-index 5a5ff97cc596..6c9b08c0f071 100644
---- a/include/net/netlink.h
-+++ b/include/net/netlink.h
-@@ -1946,6 +1946,9 @@ int netlink_policy_dump_get_policy_idx(struct netlink_policy_dump_state *state,
- bool netlink_policy_dump_loop(struct netlink_policy_dump_state *state);
- int netlink_policy_dump_write(struct sk_buff *skb,
- 			      struct netlink_policy_dump_state *state);
-+int netlink_policy_dump_write_attr(struct sk_buff *skb,
-+				   const struct nla_policy *pt,
-+				   int nestattr);
- void netlink_policy_dump_free(struct netlink_policy_dump_state *state);
- 
- #endif
-diff --git a/include/uapi/linux/netlink.h b/include/uapi/linux/netlink.h
-index eac8a6a648ea..b9c28c558698 100644
---- a/include/uapi/linux/netlink.h
-+++ b/include/uapi/linux/netlink.h
-@@ -129,6 +129,7 @@ struct nlmsgerr {
-  * @NLMSGERR_ATTR_COOKIE: arbitrary subsystem specific cookie to
-  *	be used - in the success case - to identify a created
-  *	object or operation or similar (binary)
-+ * @NLMSGERR_ATTR_POLICY: policy for a rejected attribute
-  * @__NLMSGERR_ATTR_MAX: number of attributes
-  * @NLMSGERR_ATTR_MAX: highest attribute number
-  */
-@@ -137,6 +138,7 @@ enum nlmsgerr_attrs {
- 	NLMSGERR_ATTR_MSG,
- 	NLMSGERR_ATTR_OFFS,
- 	NLMSGERR_ATTR_COOKIE,
-+	NLMSGERR_ATTR_POLICY,
- 
- 	__NLMSGERR_ATTR_MAX,
- 	NLMSGERR_ATTR_MAX = __NLMSGERR_ATTR_MAX - 1
-diff --git a/lib/nlattr.c b/lib/nlattr.c
-index 80ff9fe83696..cdd78c52c3c4 100644
---- a/lib/nlattr.c
-+++ b/lib/nlattr.c
-@@ -96,8 +96,8 @@ static int nla_validate_array(const struct nlattr *head, int len, int maxtype,
- 			continue;
- 
- 		if (nla_len(entry) < NLA_HDRLEN) {
--			NL_SET_ERR_MSG_ATTR(extack, entry,
--					    "Array element too short");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, entry, policy,
-+						"Array element too short");
- 			return -ERANGE;
- 		}
- 
-@@ -195,8 +195,8 @@ static int nla_validate_range_unsigned(const struct nla_policy *pt,
- 		pr_warn_ratelimited("netlink: '%s': attribute type %d has an invalid length.\n",
- 				    current->comm, pt->type);
- 		if (validate & NL_VALIDATE_STRICT_ATTRS) {
--			NL_SET_ERR_MSG_ATTR(extack, nla,
--					    "invalid attribute length");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+						"invalid attribute length");
- 			return -EINVAL;
- 		}
- 
-@@ -208,11 +208,11 @@ static int nla_validate_range_unsigned(const struct nla_policy *pt,
- 		bool binary = pt->type == NLA_BINARY;
- 
- 		if (binary)
--			NL_SET_ERR_MSG_ATTR(extack, nla,
--					    "binary attribute size out of range");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+						"binary attribute size out of range");
- 		else
--			NL_SET_ERR_MSG_ATTR(extack, nla,
--					    "integer out of range");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+						"integer out of range");
- 
- 		return -ERANGE;
- 	}
-@@ -291,8 +291,8 @@ static int nla_validate_int_range_signed(const struct nla_policy *pt,
- 	nla_get_range_signed(pt, &range);
- 
- 	if (value < range.min || value > range.max) {
--		NL_SET_ERR_MSG_ATTR(extack, nla,
--				    "integer out of range");
-+		NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+					"integer out of range");
- 		return -ERANGE;
- 	}
- 
-@@ -346,8 +346,8 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
- 		pr_warn_ratelimited("netlink: '%s': attribute type %d has an invalid length.\n",
- 				    current->comm, type);
- 		if (validate & NL_VALIDATE_STRICT_ATTRS) {
--			NL_SET_ERR_MSG_ATTR(extack, nla,
--					    "invalid attribute length");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+						"invalid attribute length");
- 			return -EINVAL;
- 		}
- 	}
-@@ -355,14 +355,14 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
- 	if (validate & NL_VALIDATE_NESTED) {
- 		if ((pt->type == NLA_NESTED || pt->type == NLA_NESTED_ARRAY) &&
- 		    !(nla->nla_type & NLA_F_NESTED)) {
--			NL_SET_ERR_MSG_ATTR(extack, nla,
--					    "NLA_F_NESTED is missing");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+						"NLA_F_NESTED is missing");
- 			return -EINVAL;
- 		}
- 		if (pt->type != NLA_NESTED && pt->type != NLA_NESTED_ARRAY &&
- 		    pt->type != NLA_UNSPEC && (nla->nla_type & NLA_F_NESTED)) {
--			NL_SET_ERR_MSG_ATTR(extack, nla,
--					    "NLA_F_NESTED not expected");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+						"NLA_F_NESTED not expected");
- 			return -EINVAL;
- 		}
- 	}
-@@ -514,7 +514,8 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
- 
- 	return 0;
- out_err:
--	NL_SET_ERR_MSG_ATTR(extack, nla, "Attribute failed policy validation");
-+	NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+				"Attribute failed policy validation");
- 	return err;
- }
- 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index df675a8e1918..8273d5e70594 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -2420,6 +2420,9 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
- 		tlvlen += nla_total_size(sizeof(u32));
- 	if (nlk_has_extack && extack && extack->cookie_len)
- 		tlvlen += nla_total_size(extack->cookie_len);
-+	/* the max policy content is currently ~44 bytes for range min/max */
-+	if (err && nlk_has_extack && extack && extack->policy)
-+		tlvlen += 64;
- 
- 	if (tlvlen)
- 		flags |= NLM_F_ACK_TLVS;
-@@ -2452,6 +2455,9 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
- 		if (extack->cookie_len)
- 			WARN_ON(nla_put(skb, NLMSGERR_ATTR_COOKIE,
- 					extack->cookie_len, extack->cookie));
-+		if (extack->policy)
-+			netlink_policy_dump_write_attr(skb, extack->policy,
-+						       NLMSGERR_ATTR_POLICY);
- 	}
- 
- 	nlmsg_end(skb, rep);
-diff --git a/net/netlink/policy.c b/net/netlink/policy.c
-index bb4e3ffb4924..b19f2a3f2533 100644
---- a/net/netlink/policy.c
-+++ b/net/netlink/policy.c
-@@ -332,6 +332,23 @@ __netlink_policy_dump_write_attr(struct netlink_policy_dump_state *state,
- 	return -ENOBUFS;
- }
- 
-+/**
-+ * netlink_policy_dump_write_attr - write a given attribute policy
-+ * @skb: the message skb to write to
-+ * @pt: the attribute's policy
-+ * @nestattr: the nested attribute ID to use
-+ *
-+ * Returns: 0 on success, an error code otherwise; -%ENODATA is
-+ *	    special, indicating that there's no policy data and
-+ *	    the attribute is generally rejected.
-+ */
-+int netlink_policy_dump_write_attr(struct sk_buff *skb,
-+				   const struct nla_policy *pt,
-+				   int nestattr)
-+{
-+	return __netlink_policy_dump_write_attr(NULL, skb, pt, nestattr);
-+}
-+
- /**
-  * netlink_policy_dump_write - write current policy dump attributes
-  * @skb: the message skb to write to
--- 
-2.26.2
+Correction: this should return notifier_from_errno(err).
 
+> +		}
+> +
+>  		if (is_vlan_dev(info->upper_dev))
+>  			return dsa_slave_check_8021q_upper(dev, ptr);
+>  		break;
+> -- 
+> 2.25.1
