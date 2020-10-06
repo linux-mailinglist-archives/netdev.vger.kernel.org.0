@@ -2,98 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E5A22852EB
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 22:10:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AFD02852F9
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 22:17:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727225AbgJFUKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 16:10:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59942 "EHLO
+        id S1727186AbgJFUR0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 16:17:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727208AbgJFUKJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 16:10:09 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611ABC0613D2
-        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 13:10:09 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id a3so19473898ejy.11
-        for <netdev@vger.kernel.org>; Tue, 06 Oct 2020 13:10:09 -0700 (PDT)
+        with ESMTP id S1726012AbgJFURZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 16:17:25 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EA55C0613D2
+        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 13:17:25 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id ce10so19530934ejc.5
+        for <netdev@vger.kernel.org>; Tue, 06 Oct 2020 13:17:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=U1LNP3VHSA1pU/Vo32I8UbLHtFi+8EjnDoznnO3hZbw=;
-        b=jABCf4I3f6QeC8MbvXs6Ie6Me+K+qiXHhIe1o+Wn5UuiP8Yau3DYygTnnMGdmQuLAI
-         V/BNyC8Ktvx9/Ye3/FYxXSLjNE6rO/P81y+Ynk3cl614daoJcs25tcvoWIvdPa6HTV7G
-         Z1ZHc9cZ8tO8rRMVG2DrFOdJhM4nZPYYHlikjhJChVylnZGoqO6V5QPfLx/uV/NVu+9a
-         wm2VklMND/8FjMwbs7iCfPTFYSZodmMjIMp/zVIJZY14L6G1MpxgD0MG7Olsx/X1ysJe
-         EAiNSLKYhf6HtH1h3XYPkfiIECOsIl6U05upgsSsRFVG4keoMJOmhGUlUc4aOMC7HTw7
-         qrSA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5D/KhjYZ/F6OUNTmASsZK9nvaTQ/z+uGyjhYNK/ZLao=;
+        b=syAFmJ6PHpLQ9fBKdlbTtyFbIIYk45rz96pMdgVFxTy7qX0h51U+ZxMNsnSRSU2GJy
+         7xcG1DinKA8nylHJjK2+tQGvVOXqBIvE8CJz0i3hmzBJv3nPx3uPHeWDDUwLlNTcdQ4c
+         qKtvJo8YYYhrJ1lLkBDZpBjPniVJRV6A8ZosbeMOVDmKUTcajvaLe72Zv/iSEpkWdi7r
+         M0smO2oXTKmzTEw2bOehubTqJDBIiEPRKFepcmoBNYKrb3l2zxFP9ab1lnEJlo7okgJH
+         cds/M4qXZq/8w0CcTu3h8RuVh57fVOv+9DlEAqbbeIt5NYmRVz/y2cLkl5pNtyt/uBxT
+         9NjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=U1LNP3VHSA1pU/Vo32I8UbLHtFi+8EjnDoznnO3hZbw=;
-        b=kZAkdAGESRv7BEaGuC5Kkpm6A8/txgZpezZ6vmnyDNfZNSHulZZ+6Ws8jQuS0sQAEt
-         uT7SE+CqK8kLq6e1VkE8DsAxzRmB0fovma4hMEGriGUc5lebd9JrY/OKZ40gbJ6H1OFk
-         qT4eR6XCpEySV3yRnkv9i9ifGrEj27dTYVg6s77Bs1IQwyDDI7YDH3aaqIJ5GzbGpepT
-         CjQD3rQ6NNpUhZFDgaCPXiGatz7ziaABUI2GmXVkLeKQ4ch14Gc6SKM9EZFXSaX4jBNu
-         7UKtr5KgjAmFTesMhVj97yb33WZumEUtBYiDWcYAXe9KOI1z/oAJaW4K7KryQuBYjoAY
-         6lfw==
-X-Gm-Message-State: AOAM533/Of/uRn5XRMGVnXzCa1RVUlp8/eywFaA5YQtiz6cJBImUHnoY
-        I1Nji3svnxNbpkJ9Pqb8P62f3Qz7uqrVTg==
-X-Google-Smtp-Source: ABdhPJxceORrkMEJuoZU1/A39Nw1YqBihCDrXAKB2W8z/aw3rfx5jT7QfczRXYc45mjwCSXdrx6JFw==
-X-Received: by 2002:a17:906:e10e:: with SMTP id gj14mr1420287ejb.134.1602015007833;
-        Tue, 06 Oct 2020 13:10:07 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f00:6a00:dc1a:256e:66bd:f0d1? (p200300ea8f006a00dc1a256e66bdf0d1.dip0.t-ipconnect.de. [2003:ea:8f00:6a00:dc1a:256e:66bd:f0d1])
-        by smtp.googlemail.com with ESMTPSA id bt16sm2849532ejb.89.2020.10.06.13.10.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Oct 2020 13:10:07 -0700 (PDT)
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH RFC] net: add helper eth_set_protocol
-Message-ID: <027ab4c5-57e8-10b8-816a-17c783f82323@gmail.com>
-Date:   Tue, 6 Oct 2020 22:10:00 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5D/KhjYZ/F6OUNTmASsZK9nvaTQ/z+uGyjhYNK/ZLao=;
+        b=bedobftt9Mr0nprmbn/j0nm7H3irzarFYWz3PxkxtzGAjjbSSTnzhNbggHwHNXt5og
+         BGHCABkbPi1X5gVrNzDLcFus8zqfBNpZUv1rY7Ne/EiO4oyMwMo0AgCOkJIFqpFT5w7u
+         LGgH/jfVJOweHHX/r9mbYoDenAWbtzWAh029yHCWdDXjVZPU3hbThIxtsTUWPr4M8Xy6
+         DujVUqXfkfh9P7nhm4ERVMT8g/sMo5ae85wB44ZrSbvcNNZsfGTsFOaEuWKuogu+c2UY
+         KB+B7cQDkC/F4lFWyqIZjs0ItosddGUafc0K39Dw/SkFi1u5DGMp4AvFd0dLTObhE8J0
+         Ifzg==
+X-Gm-Message-State: AOAM532mF43H2R9yBQwWQ9/fMXOsh3aH307uIoKsrGw9PP1EHiFqrQzA
+        HHeYNURQpWfJaFf/SGaawZAq6WT3DJzSz1AMmJoTRQ==
+X-Google-Smtp-Source: ABdhPJx+AZ5o3eCgoq4q+6PjDXINFIUIJE5Lw9X2W3HZ87fOvOk/cHg1VfIGCTbUJXMe1/ribhgrE6IY0RMLjypdmbE=
+X-Received: by 2002:a17:906:7d52:: with SMTP id l18mr1343800ejp.220.1602015443789;
+ Tue, 06 Oct 2020 13:17:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200929235049.2533242-1-haoluo@google.com> <20200929235049.2533242-2-haoluo@google.com>
+ <CAADnVQKc4m6X62udhpPE3EBBvuOA2ngyWSOKQ7fc-rtqdeQj6w@mail.gmail.com>
+In-Reply-To: <CAADnVQKc4m6X62udhpPE3EBBvuOA2ngyWSOKQ7fc-rtqdeQj6w@mail.gmail.com>
+From:   Hao Luo <haoluo@google.com>
+Date:   Tue, 6 Oct 2020 13:17:12 -0700
+Message-ID: <CA+khW7jKU733tUHCMou0X8ivsSJSHCWT7+aq3AqssH5C74n+PQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 1/6] bpf: Introduce pseudo_btf_id
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In all cases I've seen eth_type_trans() is used as in the new helper.
-Biggest benefit is improved readability when replacing statements like
-the following:
-desc->skb->protocol = eth_type_trans(desc->skb, priv->dev);
+Ack. Will do.
 
-Coccinelle tells me that using the new helper tree-wide would touch
-313 files. Therefore I'd like to check for feedback before bothering
-100+ maintainers.
-
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- include/linux/etherdevice.h | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/include/linux/etherdevice.h b/include/linux/etherdevice.h
-index 2e5debc03..c7f89b1bf 100644
---- a/include/linux/etherdevice.h
-+++ b/include/linux/etherdevice.h
-@@ -64,6 +64,11 @@ static const u8 eth_reserved_addr_base[ETH_ALEN] __aligned(2) =
- { 0x01, 0x80, 0xc2, 0x00, 0x00, 0x00 };
- #define eth_stp_addr eth_reserved_addr_base
- 
-+static inline void eth_set_protocol(struct sk_buff *skb, struct net_device *dev)
-+{
-+	skb->protocol = eth_type_trans(skb, dev);
-+}
-+
- /**
-  * is_link_local_ether_addr - Determine if given Ethernet address is link-local
-  * @addr: Pointer to a six-byte array containing the Ethernet address
--- 
-2.28.0
-
+On Tue, Oct 6, 2020 at 12:05 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Tue, Sep 29, 2020 at 4:50 PM Hao Luo <haoluo@google.com> wrote:
+> >
+> > -       ret = replace_map_fd_with_map_ptr(env);
+> > -       if (ret < 0)
+> > -               goto skip_full_check;
+> > -
+> >         if (bpf_prog_is_dev_bound(env->prog->aux)) {
+> >                 ret = bpf_prog_offload_verifier_prep(env->prog);
+> >                 if (ret)
+> > @@ -11662,6 +11757,10 @@ int bpf_check(struct bpf_prog **prog, union bpf_attr *attr,
+> >         if (ret)
+> >                 goto skip_full_check;
+> >
+> > +       ret = resolve_pseudo_ldimm64(env);
+> > +       if (ret < 0)
+> > +               goto skip_full_check;
+> > +
+>
+> Hao,
+>
+> this change broke several tests in test_verifier:
+> #21/u empty prog FAIL
+> Unexpected error message!
+>     EXP: unknown opcode 00
+>     RES: last insn is not an exit or jmp
+>
+> #656/u test5 ld_imm64 FAIL
+> Unexpected error message!
+>     EXP: invalid bpf_ld_imm64 insn
+>     RES: last insn is not an exit or jmp
+>
+> #656/p test5 ld_imm64 FAIL
+> Unexpected error message!
+>     EXP: invalid bpf_ld_imm64 insn
+>     RES: last insn is not an exit or jmp
+>
+> Please send a fix.
+> Thanks
