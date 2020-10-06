@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 847812845DA
+	by mail.lfdr.de (Postfix) with ESMTP id F199B2845DB
 	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 08:12:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727119AbgJFGMt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 02:12:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43688 "EHLO
+        id S1727130AbgJFGMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 02:12:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726022AbgJFGMs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 02:12:48 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4FE9C0613A7
-        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 23:12:48 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id az3so1045304pjb.4
-        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 23:12:48 -0700 (PDT)
+        with ESMTP id S1726022AbgJFGMx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 02:12:53 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 566ADC0613A7
+        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 23:12:53 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id x5so700087plo.6
+        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 23:12:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=JhX2wxus5RbdcHbbl5XkDhw1vYd+kb0KjLnVSS0LP+k=;
-        b=dD5vCNIjptEVROer9MwJHrcyBz0bVYx2/OGMOOLxSKy1GupS18mtiqwu1Na6wcaL41
-         kxZuZ1eqOEf+zZ9OgVsriaSahb5AYbnCZEfclaUZR0+llILL1zXCvHrDQbdTt5EuF1d9
-         Ws/zkyppoz/wp1+6W9wHK9yOl7Se6FUU1HxZJYJEJo21de4LcdkMz7sDaX8iQRgS3s3s
-         fY10VynAj7WeS1lZSdVYyCkqDXvojlmwrHQqYHEyOlX3GNB0G9p12eUBMXelB4aAg/5P
-         JHbggaCo0mhn1QQgwP/bD3Ql7v4VdYORlj/UGn/qqiguUn2xYs6+vKaScxjxbcdk6WQf
-         /pbw==
+        bh=UMPpQ9MhQnwTKESiOifs7VirxYRe8QqZDvNFjPxNfCc=;
+        b=Np0o5EiL4SptCTmvPTNuloCPef6mbyDXFXpNTBPdw4ZKCF2WEwXweC1Q3Br5rZqNTB
+         b0e9ROtXIdcbP9vA/g5F9OllVp8jHH0iR8NyKfRCPBmfrpoQ2u20NyD1HS5nQqd6ZVn0
+         +/7On01l4nWTFrslFAHh33oo/tbcNpYZ/rj9jx4QccCTaYLnWX9AV2dMBAflkMeU/jAE
+         KuyEci8TckMP7l4i+CLoWy8aIlsmunWAaWtn1MkIqUAb1Uxv2bIG6YqGumgcZ+Pp+GTQ
+         Gd8n9JtMFMJuEFv0hZNuZOOR/mL8yfH83+vFDonzaHWao7rwVQ42xcMQ5+aOXOmnSt+R
+         WxIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=JhX2wxus5RbdcHbbl5XkDhw1vYd+kb0KjLnVSS0LP+k=;
-        b=grqfync6+uk1R7S8wuEHCGLonqzKB6t8aYP5BapG/M+8BcQ+mQGDwzzWLwoWZh7GSD
-         liqp5NrbciWMgJtHUusQclW4wW95HAw2XzbMUCwiEgRhGsQQQTYv7fcQxGb6NGB9j7L/
-         iH7W8XyCXNPC/IeTV0LYvU7GJ67/uklWWqOaGlwFh+Zjyvd0qI7B+UTw86+lEcbEURMA
-         49BWqn604pdD5aZk6LtKutIEH5kGcubD+3JjxYbsf3ozX7j1a1VM116AMHrr8WZhBplX
-         XGFTNKSOgK9cryGyFDtpan1XivCQ4Cyi0PWi0x/4XAOtzi7t6klU1ZWs/z06a+tzyqJL
-         M5CA==
-X-Gm-Message-State: AOAM530Ep1Ki78B9Rts6fOtnZP2/D9Ni9i01aKXobW0e/urkmpNq/NEi
-        XlzsX8gE8G4Gqx+rUgcnve+9mqOVL70=
-X-Google-Smtp-Source: ABdhPJz7Ak3KAoI5SoMD81GHj9wKnJtO0ArbZefys2C5eUg4DhlMPZ+QJMTR+/AQa1JpVzUhVVgrKw==
-X-Received: by 2002:a17:90a:4b84:: with SMTP id i4mr2793174pjh.132.1601964768319;
-        Mon, 05 Oct 2020 23:12:48 -0700 (PDT)
+        bh=UMPpQ9MhQnwTKESiOifs7VirxYRe8QqZDvNFjPxNfCc=;
+        b=Ls2c4MzLOFS5/pMR5r7aUfs39u9WywPyIGPx08++VAzHLqiMXk6i5lqP+N3GRYVUjz
+         +8XuU1uWkSys8qHljFcPBO0M+tdqHto2ZKDvfWHX8kR3xlLqbIkhKLJi4gzeumznFUJD
+         WgTktXqCOTbx8E2zwxnABUZbpcphzvuJDEyWAAzLufAbjnRECQnaojA3PN5PR9SvfGH9
+         MJ7BaoPUOVNAamcTX69pRlLnsGKFRqO+rR2ZF1rHVEI2gLflv++aruk7Ro8Em0L8Du0b
+         0gt4H1GJUISbyRNUUPxWGQ+Xz5Q6KpBkh3OLzsYF5dtTAjGK4SyXLiY3ozcULZ23YJ2j
+         gXzQ==
+X-Gm-Message-State: AOAM532KZRGHSRpWOwJEFflXtTYbAuopaN6g/B8adpH6NkTcoDTyqnHz
+        4S8SaaVt8GKKbAjRm9VSa6J/cXddeSY=
+X-Google-Smtp-Source: ABdhPJxFeuL/6JdgRphp2QChYb/kx2avOX/19jrcjnY1SRJMqaUbqQQs4HpereFw6IPtkw2qpJASVQ==
+X-Received: by 2002:a17:902:d90e:b029:d2:8cba:8f02 with SMTP id c14-20020a170902d90eb02900d28cba8f02mr1839923plz.38.1601964772941;
+        Mon, 05 Oct 2020 23:12:52 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.203.202])
-        by smtp.gmail.com with ESMTPSA id c12sm2046410pfj.164.2020.10.05.23.12.44
+        by smtp.gmail.com with ESMTPSA id c12sm2046410pfj.164.2020.10.05.23.12.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Oct 2020 23:12:47 -0700 (PDT)
+        Mon, 05 Oct 2020 23:12:52 -0700 (PDT)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     davem@davemloft.net
 Cc:     m.grzeschik@pengutronix.de, kuba@kernel.org, paulus@samba.org,
@@ -54,9 +54,9 @@ Cc:     m.grzeschik@pengutronix.de, kuba@kernel.org, paulus@samba.org,
         UNGLinuxDriver@microchip.com, petkan@nucleusys.com,
         netdev@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [next-next v3 08/10] net: pegasus: convert tasklets to use new tasklet_setup() API
-Date:   Tue,  6 Oct 2020 11:41:57 +0530
-Message-Id: <20201006061159.292340-9-allen.lkml@gmail.com>
+Subject: [next-next v3 09/10] net: r8152: convert tasklets to use new tasklet_setup() API
+Date:   Tue,  6 Oct 2020 11:41:58 +0530
+Message-Id: <20201006061159.292340-10-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201006061159.292340-1-allen.lkml@gmail.com>
 References: <20201006061159.292340-1-allen.lkml@gmail.com>
@@ -76,37 +76,36 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <apais@linux.microsoft.com>
 ---
- drivers/net/usb/pegasus.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/usb/r8152.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
-index 060a8a03e..8eb4af405 100644
---- a/drivers/net/usb/pegasus.c
-+++ b/drivers/net/usb/pegasus.c
-@@ -584,12 +584,12 @@ static void read_bulk_callback(struct urb *urb)
- 	tasklet_schedule(&pegasus->rx_tl);
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index b1770489a..2d706cdbf 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -2410,11 +2410,9 @@ static void tx_bottom(struct r8152 *tp)
+ 	} while (res == 0);
  }
  
--static void rx_fixup(unsigned long data)
-+static void rx_fixup(struct tasklet_struct *t)
+-static void bottom_half(unsigned long data)
++static void bottom_half(struct tasklet_struct *t)
  {
- 	pegasus_t *pegasus;
- 	int status;
+-	struct r8152 *tp;
+-
+-	tp = (struct r8152 *)data;
++	struct r8152 *tp = from_tasklet(tp, t, tx_tl);
  
--	pegasus = (pegasus_t *) data;
-+	pegasus = from_tasklet(pegasus, t, rx_tl);
- 	if (pegasus->flags & PEGASUS_UNPLUG)
+ 	if (test_bit(RTL8152_UNPLUG, &tp->flags))
  		return;
+@@ -6730,7 +6728,7 @@ static int rtl8152_probe(struct usb_interface *intf,
+ 	mutex_init(&tp->control);
+ 	INIT_DELAYED_WORK(&tp->schedule, rtl_work_func_t);
+ 	INIT_DELAYED_WORK(&tp->hw_phy_work, rtl_hw_phy_work_func_t);
+-	tasklet_init(&tp->tx_tl, bottom_half, (unsigned long)tp);
++	tasklet_setup(&tp->tx_tl, bottom_half);
+ 	tasklet_disable(&tp->tx_tl);
  
-@@ -1160,7 +1160,7 @@ static int pegasus_probe(struct usb_interface *intf,
- 		goto out1;
- 	}
- 
--	tasklet_init(&pegasus->rx_tl, rx_fixup, (unsigned long) pegasus);
-+	tasklet_setup(&pegasus->rx_tl, rx_fixup);
- 
- 	INIT_DELAYED_WORK(&pegasus->carrier_check, check_carrier);
- 
+ 	netdev->netdev_ops = &rtl8152_netdev_ops;
 -- 
 2.25.1
 
