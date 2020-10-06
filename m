@@ -2,131 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FBAE28547B
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 00:24:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7F7D2854D2
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 01:00:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726849AbgJFWYU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 18:24:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52478 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726171AbgJFWYU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 18:24:20 -0400
-Received: from mail-out.m-online.net (mail-out.m-online.net [IPv6:2001:a60:0:28:0:1:25:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5ACCC061755;
-        Tue,  6 Oct 2020 15:24:19 -0700 (PDT)
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4C5X7k3F8Tz1s8vN;
-        Wed,  7 Oct 2020 00:24:17 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4C5X7j2nldz1qql5;
-        Wed,  7 Oct 2020 00:24:17 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id Y9zUkKaVGMCi; Wed,  7 Oct 2020 00:24:14 +0200 (CEST)
-X-Auth-Info: Ii+nhy4Y3fudnAwmzlaCA1OAbSKRBjLZTPNCq8y+MYw=
-Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Wed,  7 Oct 2020 00:24:14 +0200 (CEST)
-Subject: Re: PHY reset question
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     David Jander <david@protonic.nl>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de
-References: <20201006080424.GA6988@pengutronix.de>
- <2cc5ea02-707e-dbb5-c081-4c5202bd5815@gmail.com>
- <42d4c4b2-d3ea-9130-ef7f-3d1955116fdc@denx.de>
- <0687984c-5768-7c71-5796-8e16169f5192@gmail.com>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <59dced0b-3630-3a40-435a-bfa99e23df0e@denx.de>
-Date:   Wed, 7 Oct 2020 00:24:13 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1727297AbgJFXAg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 19:00:36 -0400
+Received: from mga07.intel.com ([134.134.136.100]:42903 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727060AbgJFXAg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Oct 2020 19:00:36 -0400
+IronPort-SDR: mYUQV1vBZ2gjkJFVSxYa9rVxJhmCAZPv/Gwog0nDoyX4cjPzaBtMEuTLdFHx9EpUjHcDQ4RLuj
+ o/sPlH666cwg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9766"; a="228875315"
+X-IronPort-AV: E=Sophos;i="5.77,344,1596524400"; 
+   d="scan'208";a="228875315"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Oct 2020 16:00:34 -0700
+IronPort-SDR: IGzinGzUpXRkoZu/3OVWRGjsYep8rHv8d+kK9exIYzF/sy3f243n8m5FyV5ogAwLUUIudYBIkB
+ ts4ojNSJu9/Q==
+X-IronPort-AV: E=Sophos;i="5.77,344,1596524400"; 
+   d="scan'208";a="297357237"
+Received: from ccarpent-mobl.amr.corp.intel.com ([10.255.229.108])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Oct 2020 16:00:34 -0700
+Date:   Tue, 6 Oct 2020 16:00:33 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+X-X-Sender: mjmartin@ccarpent-mobl.amr.corp.intel.com
+To:     Paolo Abeni <pabeni@redhat.com>
+cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        mptcp@lists.01.org
+Subject: Re: [PATCH net-next] mptcp: fix infinite loop on recvmsg()/worker()
+ race.
+In-Reply-To: <5a2464d778499bdc2ced43b56569008030b470bc.1601965539.git.pabeni@redhat.com>
+Message-ID: <alpine.OSX.2.23.453.2010061600080.22542@ccarpent-mobl.amr.corp.intel.com>
+References: <5a2464d778499bdc2ced43b56569008030b470bc.1601965539.git.pabeni@redhat.com>
+User-Agent: Alpine 2.23 (OSX 453 2020-06-18)
 MIME-Version: 1.0
-In-Reply-To: <0687984c-5768-7c71-5796-8e16169f5192@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII; format=flowed
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/6/20 11:11 PM, Florian Fainelli wrote:
-> 
-> 
-> On 10/6/2020 1:24 PM, Marek Vasut wrote:
->> On 10/6/20 9:36 PM, Florian Fainelli wrote:
->> [...]
->>>> - Use compatible ("compatible = "ethernet-phy-id0022.1560") in the
->>>> devicetree,
->>>>     so that reading the PHYID is not needed
->>>>     - easy to solve.
->>>>     Disadvantage:
->>>>     - losing PHY auto-detection capability
->>>>     - need a new devicetree if different PHY is used (for example in
->>>> different
->>>>       board revision)
->>>
->>> Or you can punt that to the boot loader to be able to tell the
->>> difference and populate different compatible, or even manage the PHY
->>> reset to be able to read the actual PHY OUI. To me that is still the
->>> best solution around.
->>
->> Wasn't there some requirement for Linux to be bootloader-independent ?
-> 
-> What kind of dependency does this create here? The fact that Linux is
-> capable of parsing a compatible string of the form
-> "ethernet-phyAAAA.BBBB" is not something that is exclusively applicable
-> to Linux. Linux just so happens to support that, but so could FreeBSD or
-> any OS for that matter.
-> 
-> This is exactly the way firmware should be going, that is to describe
-> accurately the hardware, while making the life of the OS much easier
-> when it can. If we supported ACPI that is exactly what would have to
-> happen IMHO.
+On Tue, 6 Oct 2020, Paolo Abeni wrote:
 
-I should have been more specific, I meant the part where bootloader
-should handle the PHY reset. If the kernel code depends on the fact that
-the bootloader did PHY reset, then it depends on the bootloader
-behavior, and I think that used to be frowned upon.
+> If recvmsg() and the workqueue race to dequeue the data
+> pending on some subflow, the current mapping for such
+> subflow covers several skbs and some of them have not
+> reached yet the received, either the worker or recvmsg()
+> can find a subflow with the data_avail flag set - since
+> the current mapping is valid and in sequence - but no
+> skbs in the receive queue - since the other entity just
+> processed them.
+>
+> The above will lead to an unbounded loop in __mptcp_move_skbs()
+> and a subsequent hang of any task trying to acquiring the msk
+> socket lock.
+>
+> This change addresses the issue stopping the __mptcp_move_skbs()
+> loop as soon as we detect the above race (empty receive queue
+> with data_avail set).
+>
+> Reported-and-tested-by: syzbot+fcf8ca5817d6e92c6567@syzkaller.appspotmail.com
+> Fixes: ab174ad8ef76 ("mptcp: move ooo skbs into msk out of order queue.")
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> ---
+> net/mptcp/protocol.c | 9 ++++++++-
+> 1 file changed, 8 insertions(+), 1 deletion(-)
 
->> Some systems cannot replace their bootloaders, e.g. if the bootloader is
->> in ROM, so this might not be a solution.
-> 
-> It is always possible to chain load a field updateable boot loader
+Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 
-Not always, but that's another discussion.
-
->, and
-> even when that is not desirable you could devise a solution that allows
-> to utilize say a slightly different DTB that you could append to the
-> kernel. Again, if you want to use strictly the same DTB, then you have
-> to do what I just suggested and have the boot loader absorb some of this
-> complexit
-
-That sounds like moving the problem one level down without really
-solving it, the bootloader will have this exact same problem -- how does
-it determine that the PHY needs reset if it cannot reads its ID ?
-
->>>> - modify PHY framework to deassert reset before identifying the PHY.
->>>>     Disadvantages?
->>
->> If this happens on MX6 with FEC, can you please try these two patches?
->>
->> https://patchwork.ozlabs.org/project/netdev/patch/20201006135253.97395-1-marex@denx.de/
->>
->>
->> https://patchwork.ozlabs.org/project/netdev/patch/20201006202029.254212-1-marex@denx.de/
->>
-> 
-> Your patches are not scaling across multiple Ethernet MAC drivers
-> unfortunately, so I am not sure this should be even remotely considered
-> a viable solution.
-
-Sorry for that . Since Oleksij was running into this problem on MX6 and
-I had similar issue on MX6 with LAN8710 PHY, I thought this might be
-helpful.
+--
+Mat Martineau
+Intel
