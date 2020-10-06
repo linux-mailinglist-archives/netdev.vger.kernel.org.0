@@ -2,141 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D5C53285381
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 22:56:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D622285387
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 22:56:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727305AbgJFU4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 16:56:12 -0400
-Received: from mx3.securetransport.de ([116.203.31.6]:52260 "EHLO
-        mx3.securetransport.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727166AbgJFU4M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 16:56:12 -0400
-X-Greylist: delayed 601 seconds by postgrey-1.27 at vger.kernel.org; Tue, 06 Oct 2020 16:56:11 EDT
-Received: from mail.dh-electronics.com (business-24-134-97-169.pool2.vodafone-ip.de [24.134.97.169])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx3.securetransport.de (Postfix) with ESMTPSA id CF2D95DDFF;
-        Tue,  6 Oct 2020 22:45:38 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
-        s=dhelectronicscom; t=1602017139;
-        bh=R4NL/sDTi0byg2CU6DOF2Z0Vu02sJlShbQ+0TANq80U=;
-        h=From:To:CC:Subject:Date:From;
-        b=XBKX3iw++BGZg0xLLcI8fw+HCwt/IRom6y+7eaWPYpLXSW3WNsE6HyxVv84Qk6zxe
-         CenIz7DHa0tMfXhcNsJEXMKoAd3xhprdH+LE60OtTK4ss1NZMK5uAm8EiwtJB3JNTl
-         mRULAiv/CulOPbkmXYiMA9TlK1VS/rMnWDE8bSWlgc112S9DrkC+lk7+u4JG4BkCJI
-         Rqq+eLR42UrxCOAkaOsiusmlUfAJ+0oN3KDx5BNJXxZ2qaeP6AKozcZMeT4IpTLTae
-         Sc5Zeo3dkfpOtRJkDUiGUjaWY6ZRTeBM6VX4oVOlP92tKPAX9joKt7z+9AFJ1OV8kn
-         5tmFNa67DNyDQ==
-Received: from DHPWEX01.DH-ELECTRONICS.ORG (2001:470:76a7:2::30) by
- DHPWEX01.DH-ELECTRONICS.ORG (2001:470:76a7:2::30) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.659.4;
- Tue, 6 Oct 2020 22:45:30 +0200
-Received: from DHPWEX01.DH-ELECTRONICS.ORG ([fe80::6ced:fa7f:9a9c:e579]) by
- DHPWEX01.DH-ELECTRONICS.ORG ([fe80::6ced:fa7f:9a9c:e579%6]) with mapi id
- 15.02.0659.006; Tue, 6 Oct 2020 22:45:30 +0200
-From:   Christoph Niedermaier <cniedermaier@dh-electronics.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Richard Leitner <richard.leitner@skidata.com>,
-        Shawn Guo <shawnguo@kernel.org>, 'Marek Vasut' <marex@denx.de>,
-        Christoph Niedermaier <cniedermaier@dh-electronics.com>
-Subject: RE: [PATCH] net: fec: Fix phy_device lookup for
- phy_reset_after_clk_enable() [Klartext]
-Thread-Topic: [PATCH] net: fec: Fix phy_device lookup for
- phy_reset_after_clk_enable() [Klartext]
-Thread-Index: AdacIaCISjyNtCxjQvmT6uTEexR7kg==
-Date:   Tue, 6 Oct 2020 20:45:30 +0000
-Message-ID: <6c67262d252d42fdaae8ff4736748b3b@dh-electronics.com>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.64.2.18]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727407AbgJFU4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 16:56:38 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:43978 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727333AbgJFU4i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 16:56:38 -0400
+Received: by mail-oi1-f196.google.com with SMTP id l85so14136733oih.10;
+        Tue, 06 Oct 2020 13:56:37 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=r1EDS9hP94pSaepHlZqoGv/Cu3THmPsqinmN68CAVG8=;
+        b=s0FPGaIaYXFK/71T5LJNWTMtNLSx/zfc3QC1SKSu0rDYDOuwg2KkuZWDXu1r51q7EE
+         cHHu0vDrN/65LmkO3xB+IzZ5zvxdJLbvpyRntZbB6woBn+BtGcrxIWoUwtb5agT/akUT
+         CFC/KvBuYTt9zl/o3PON31AX2m9ywm2xdTmUX9oxhp+Iun9lYHCOX3oTPcKQFf4zG53W
+         SE+L9Dw2CXHfI8aI+lmeK2KPlxN2LZ0yA19Lei3vQEhGd9dxn3ne7dJHRisM4Od6lLIk
+         /19JOhHtyvaCYULxB9ghd74rFVcw6LVT+yxceHuT/YHuaFsaQY0Nbaj50MSvOX6s8XSe
+         IIhw==
+X-Gm-Message-State: AOAM530PG2JIxcLzCR0wBISY1O9/tcz8UfsL70xGngUDgDdB6YOMkKQL
+        jRHCdksLS8ZeVAZD7lkWZA==
+X-Google-Smtp-Source: ABdhPJy8srMSpakwQkHXvvBvJMUOwLH/IgDfxY6lJ4nNDWohsqtQ1w+RXjIULZLVY5P5s3xRLzAIPQ==
+X-Received: by 2002:aca:b206:: with SMTP id b6mr103714oif.54.1602017796955;
+        Tue, 06 Oct 2020 13:56:36 -0700 (PDT)
+Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id p8sm1766340oip.29.2020.10.06.13.56.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Oct 2020 13:56:36 -0700 (PDT)
+Received: (nullmailer pid 2824764 invoked by uid 1000);
+        Tue, 06 Oct 2020 20:56:35 -0000
+Date:   Tue, 6 Oct 2020 15:56:35 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, shawnguo@kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v2 01/10] dt-bindings: net: add the dpaa2-mac
+ DTS definition
+Message-ID: <20201006205635.GA2810492@bogus>
+References: <20201002210737.27645-1-ioana.ciornei@nxp.com>
+ <20201002210737.27645-2-ioana.ciornei@nxp.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201002210737.27645-2-ioana.ciornei@nxp.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
-Sent: Tuesday, October 6, 2020 10:20 PM
-
-> The phy_reset_after_clk_enable() is always called with ndev->phydev,
-> however that pointer may be NULL even though the PHY device instance
-> already exists and is sufficient to perform the PHY reset.
->=20
-> If the PHY still is not bound to the MAC, but there is OF PHY node
-> and a matching PHY device instance already, use the OF PHY node to
-> obtain the PHY device instance, and then use that PHY device instance
-> when triggering the PHY reset.
->=20
-> Fixes: 1b0a83ac04e3 ("net: fec: add phy_reset_after_clk_enable() support"=
-)
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: NXP Linux Team <linux-imx@nxp.com>
-> Cc: Richard Leitner <richard.leitner@skidata.com>
-> Cc: Shawn Guo <shawnguo@kernel.org>
+On Sat, Oct 03, 2020 at 12:07:28AM +0300, Ioana Ciornei wrote:
+> Add a documentation entry for the DTS bindings needed and supported by
+> the dpaa2-mac driver.
+> 
+> Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 > ---
->  drivers/net/ethernet/freescale/fec_main.c | 22 ++++++++++++++++++++--
->  1 file changed, 20 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/freescale/fec_main.c
-> b/drivers/net/ethernet/freescale/fec_main.c
-> index 2d5433301843..5a4b20941aeb 100644
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -1912,6 +1912,24 @@ static int fec_enet_mdio_write(struct mii_bus *bus=
-,
-> int mii_id, int regnum,
->         return ret;
->  }
->=20
-> +static void fec_enet_phy_reset_after_clk_enable(struct net_device *ndev)
-> +{
-> +       struct fec_enet_private *fep =3D netdev_priv(ndev);
-> +       struct phy_device *phy_dev =3D ndev->phydev;
-> +
-> +       /*
-> +        * If the PHY still is not bound to the MAC, but there is
-> +        * OF PHY node and a matching PHY device instance already,
-> +        * use the OF PHY node to obtain the PHY device instance,
-> +        * and then use that PHY device instance when triggering
-> +        * the PHY reset.
-> +        */
-> +       if (!phy_dev && fep->phy_node)
-> +               phy_dev =3D of_phy_find_device(fep->phy_node);
-> +
-> +       phy_reset_after_clk_enable(phy_dev);
-> +}
-> +
->  static int fec_enet_clk_enable(struct net_device *ndev, bool enable)
->  {
->         struct fec_enet_private *fep =3D netdev_priv(ndev);
-> @@ -1938,7 +1956,7 @@ static int fec_enet_clk_enable(struct net_device
-> *ndev, bool enable)
->                 if (ret)
->                         goto failed_clk_ref;
->=20
-> -               phy_reset_after_clk_enable(ndev->phydev);
-> +               fec_enet_phy_reset_after_clk_enable(ndev);
->         } else {
->                 clk_disable_unprepare(fep->clk_enet_out);
->                 if (fep->clk_ptp) {
-> @@ -2987,7 +3005,7 @@ fec_enet_open(struct net_device *ndev)
->          * phy_reset_after_clk_enable() before because the PHY wasn't
-> probed.
->          */
->         if (reset_again)
-> -               phy_reset_after_clk_enable(ndev->phydev);
-> +               fec_enet_phy_reset_after_clk_enable(ndev);
->=20
->         /* Probe and connect to PHY when open the interface */
->         ret =3D fec_enet_mii_probe(ndev);
-> --
-> 2.28.0
+> Changes in v2:
+>  - new patch
+> 
+>  .../devicetree/bindings/net/dpaa2-mac.yaml    | 55 +++++++++++++++++++
 
-Tested-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+Use the compatible string for the filename.
+
+>  1 file changed, 55 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/dpaa2-mac.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/net/dpaa2-mac.yaml b/Documentation/devicetree/bindings/net/dpaa2-mac.yaml
+> new file mode 100644
+> index 000000000000..744b0590278d
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/dpaa2-mac.yaml
+> @@ -0,0 +1,55 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/dpaa2-mac.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: DPAA2 MAC bindings
+> +
+> +maintainers:
+> +  - Ioana Ciornei <ioana.ciornei@nxp.com>
+> +
+> +description:
+> +  This binding represents the DPAA2 MAC objects found on the fsl-mc bus and
+> +  located under the 'dpmacs' node for the fsl-mc bus DTS node.
+
+Need $ref to ethernet-controller.yaml
+
+> +
+> +properties:
+> +  compatible:
+> +    const: "fsl,qoriq-mc-dpmac"
+
+Don't need quotes.
+
+> +
+> +  reg:
+> +    maxItems: 1
+> +    description: The DPMAC number
+> +
+> +  phy-handle: true
+> +
+> +  phy-connection-type: true
+> +
+> +  phy-mode: true
+> +
+> +  pcs-handle:
+> +    $ref: /schemas/types.yaml#definitions/phandle
+> +    description:
+> +      A reference to a node representing a PCS PHY device found on
+> +      the internal MDIO bus.
+
+Perhaps use the 'phys' binding? (Too many PHYs with ethernet...)
+
+This would be the on-chip XAUI/SerDes phy? That's typically 'phys' where 
+as 'phy-handle' is ethernet PHY. 
+
+> +
+> +  managed: true
+> +
+> +required:
+> +  - reg
+
+addtionalProperties: false
+
+> +
+> +examples:
+> +  - |
+> +    dpmacs {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +
+> +      dpmac@4 {
+
+ethernet@4
+
+> +        compatible = "fsl,qoriq-mc-dpmac";
+> +        reg = <0x4>;
+> +        phy-handle = <&mdio1_phy6>;
+> +        phy-connection-type = "qsgmii";
+> +        managed = "in-band-status";
+> +        pcs-handle = <&pcs3_1>;
+> +      };
+> +    };
+> -- 
+> 2.28.0
+> 
