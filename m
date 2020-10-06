@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F07B284F5F
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 18:03:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D657284F62
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 18:03:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726258AbgJFQDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 12:03:08 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:45002 "EHLO
+        id S1726330AbgJFQDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 12:03:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30465 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726012AbgJFQDI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 12:03:08 -0400
+        by vger.kernel.org with ESMTP id S1726012AbgJFQDK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 12:03:10 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1602000186;
+        s=mimecast20190719; t=1602000189;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ikvHl0SMuAAx/2hFVp4naP5TxS0bA5ToBBRXWlR8ERk=;
-        b=SY3VFdzGDs3xzmIK3yLnTzxWCYhoU/1U6n/Bi6ral/0PQeqbK7wkl86zMpXHuZvVCyUrln
-        TSiO5SepInJlb2QFTHL8tTiv5oSU++pyr9IdioaFlmNnrSPAWdcsKCFNLdspR59//PtC/w
-        a7JozuvhyoZ/jqTSNowJ7UKkS2lSZs4=
+        bh=r1vnxEOpc2l6CZLTs7vwT29PBX18fOw2LtuEUa+wsMA=;
+        b=dy23KBqFV3XgUS7nokcb/IoVh+2yA9ucaQL2e3m/lEbF7YWqHEKrKu16EFVVPwADh0JJSt
+        Q+gYxxqjHp/WIWm2JWlSHFDgI1TNvmQJKXawBPNTyatN7CJPzXsETZ3XFCMG7xWWXnBiQR
+        gpRU/3UDCRQ9dGaO9bXSzAc/Tv8CQ/E=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-167-Yjyv-txZOraGpX8NOONDWQ-1; Tue, 06 Oct 2020 12:03:03 -0400
-X-MC-Unique: Yjyv-txZOraGpX8NOONDWQ-1
+ us-mta-383-jFldLrklMn26nNqWqBeCbA-1; Tue, 06 Oct 2020 12:03:05 -0400
+X-MC-Unique: jFldLrklMn26nNqWqBeCbA-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0699D8030B7;
-        Tue,  6 Oct 2020 16:03:01 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3448AADC22;
+        Tue,  6 Oct 2020 16:03:03 +0000 (UTC)
 Received: from firesoul.localdomain (unknown [10.40.208.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 95F856115F;
-        Tue,  6 Oct 2020 16:02:57 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AC26060E1C;
+        Tue,  6 Oct 2020 16:03:02 +0000 (UTC)
 Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 9D4F930736C8B;
-        Tue,  6 Oct 2020 18:02:56 +0200 (CEST)
-Subject: [PATCH bpf-next V1 2/6] bpf: bpf_fib_lookup return MTU value as
- output when looked up
+        by firesoul.localdomain (Postfix) with ESMTP id B51FB30736C8B;
+        Tue,  6 Oct 2020 18:03:01 +0200 (CEST)
+Subject: [PATCH bpf-next V1 3/6] bpf: add BPF-helper for reading MTU from
+ net_device via ifindex
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     bpf@vger.kernel.org
 Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
@@ -47,8 +47,8 @@ Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
         Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
         John Fastabend <john.fastabend@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>
-Date:   Tue, 06 Oct 2020 18:02:56 +0200
-Message-ID: <160200017655.719143.17344942455389603664.stgit@firesoul>
+Date:   Tue, 06 Oct 2020 18:03:01 +0200
+Message-ID: <160200018165.719143.3249298786187115149.stgit@firesoul>
 In-Reply-To: <160200013701.719143.12665708317930272219.stgit@firesoul>
 References: <160200013701.719143.12665708317930272219.stgit@firesoul>
 User-Agent: StGit/0.19
@@ -60,123 +60,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The BPF-helpers for FIB lookup (bpf_xdp_fib_lookup and bpf_skb_fib_lookup)
-can perform MTU check and return BPF_FIB_LKUP_RET_FRAG_NEEDED.  The BPF-prog
-don't know the MTU value that caused this rejection.
+FIXME: add description.
 
-If the BPF-prog wants to implement PMTU (Path MTU Discovery) (rfc1191) it
-need to know this MTU value for the ICMP packet.
-
-Patch change lookup and result struct bpf_fib_lookup, to contain this MTU
-value as output via a union with 'tot_len' as this is the value used for
-the MTU lookup.
+FIXME: IMHO we can create a better BPF-helper named bpf_mtu_check()
+instead of bpf_mtu_lookup(), because a flag can be used for requesting
+GRO segment size checking.  The ret value of bpf_mtu_check() says
+if MTU was violoated, but also return MTU via pointer arg to allow
+BPF-progs to do own logic.
 
 Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 ---
- include/uapi/linux/bpf.h |   11 +++++++++--
- net/core/filter.c        |   17 ++++++++++++-----
- 2 files changed, 21 insertions(+), 7 deletions(-)
+ include/uapi/linux/bpf.h |   13 +++++++++++
+ net/core/filter.c        |   56 ++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 69 insertions(+)
 
 diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index c446394135be..50ce65e37b16 100644
+index 50ce65e37b16..29b335cb96ef 100644
 --- a/include/uapi/linux/bpf.h
 +++ b/include/uapi/linux/bpf.h
-@@ -2216,6 +2216,9 @@ union bpf_attr {
-  *		* > 0 one of **BPF_FIB_LKUP_RET_** codes explaining why the
-  *		  packet is not forwarded or needs assist from full stack
-  *
-+ *		If lookup fails with BPF_FIB_LKUP_RET_FRAG_NEEDED, then the MTU
-+ *		was exceeded and result params->mtu contains the MTU.
+@@ -3718,6 +3718,18 @@ union bpf_attr {
+  *		never return NULL.
+  *	Return
+  *		A pointer pointing to the kernel percpu variable on this cpu.
 + *
-  * long bpf_sock_hash_update(struct bpf_sock_ops *skops, struct bpf_map *map, void *key, u64 flags)
-  *	Description
-  *		Add an entry to, or update a sockhash *map* referencing sockets.
-@@ -4844,9 +4847,13 @@ struct bpf_fib_lookup {
- 	__be16	sport;
- 	__be16	dport;
++ * int bpf_mtu_lookup(void *ctx, u32 ifindex, u64 flags)
++ *	Description
++ *		Lookup MTU of net device based on ifindex.  The Linux kernel
++ *		route table can configure MTUs on a more specific per route
++ *		level, which is not provided by this helper. For route level
++ *		MTU checks use the **bpf_fib_lookup**\ () helper.
++ *
++ *		*ctx* is either **struct xdp_md** for XDP programs or
++ *		**struct sk_buff** tc cls_act programs.
++ *	Return
++ *		On success, MTU size is returned. On error, a negative value.
+  */
+ #define __BPF_FUNC_MAPPER(FN)		\
+ 	FN(unspec),			\
+@@ -3875,6 +3887,7 @@ union bpf_attr {
+ 	FN(redirect_neigh),		\
+ 	FN(bpf_per_cpu_ptr),            \
+ 	FN(bpf_this_cpu_ptr),		\
++	FN(mtu_lookup),			\
+ 	/* */
  
--	/* total length of packet from network header - used for MTU check */
--	__u16	tot_len;
-+	union {	/* used for MTU check */
-+		/* input to lookup */
-+		__u16	tot_len; /* total length of packet from network hdr */
- 
-+		/* output: MTU value (if requested check_mtu) */
-+		__u16	mtu;
-+	};
- 	/* input: L3 device index for lookup
- 	 * output: device index from FIB lookup
- 	 */
+ /* integer value in 'imm' field of BPF_CALL instruction selects which helper
 diff --git a/net/core/filter.c b/net/core/filter.c
-index fed239e77bdc..d84723f347c0 100644
+index d84723f347c0..49ae3b80027b 100644
 --- a/net/core/filter.c
 +++ b/net/core/filter.c
-@@ -5185,13 +5185,14 @@ static const struct bpf_func_proto bpf_skb_get_xfrm_state_proto = {
- #if IS_ENABLED(CONFIG_INET) || IS_ENABLED(CONFIG_IPV6)
- static int bpf_fib_set_fwd_params(struct bpf_fib_lookup *params,
- 				  const struct neighbour *neigh,
--				  const struct net_device *dev)
-+				  const struct net_device *dev, u32 mtu)
- {
- 	memcpy(params->dmac, neigh->ha, ETH_ALEN);
- 	memcpy(params->smac, dev->dev_addr, ETH_ALEN);
- 	params->h_vlan_TCI = 0;
- 	params->h_vlan_proto = 0;
- 	params->ifindex = dev->ifindex;
-+	params->mtu = mtu;
+@@ -5512,6 +5512,58 @@ static const struct bpf_func_proto bpf_skb_fib_lookup_proto = {
+ 	.arg4_type	= ARG_ANYTHING,
+ };
  
- 	return 0;
- }
-@@ -5275,8 +5276,10 @@ static int bpf_ipv4_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
- 
- 	if (check_mtu) {
- 		mtu = ip_mtu_from_fib_result(&res, params->ipv4_dst);
--		if (params->tot_len > mtu)
-+		if (params->tot_len > mtu) {
-+			params->mtu = mtu; /* union with tot_len */
- 			return BPF_FIB_LKUP_RET_FRAG_NEEDED;
-+		}
- 	}
- 
- 	nhc = res.nhc;
-@@ -5309,7 +5312,7 @@ static int bpf_ipv4_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
- 	if (!neigh)
- 		return BPF_FIB_LKUP_RET_NO_NEIGH;
- 
--	return bpf_fib_set_fwd_params(params, neigh, dev);
-+	return bpf_fib_set_fwd_params(params, neigh, dev, mtu);
- }
- #endif
- 
-@@ -5401,8 +5404,10 @@ static int bpf_ipv6_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
- 
- 	if (check_mtu) {
- 		mtu = ipv6_stub->ip6_mtu_from_fib6(&res, dst, src);
--		if (params->tot_len > mtu)
-+		if (params->tot_len > mtu) {
-+			params->mtu = mtu; /* union with tot_len */
- 			return BPF_FIB_LKUP_RET_FRAG_NEEDED;
-+		}
- 	}
- 
- 	if (res.nh->fib_nh_lws)
-@@ -5421,7 +5426,7 @@ static int bpf_ipv6_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
- 	if (!neigh)
- 		return BPF_FIB_LKUP_RET_NO_NEIGH;
- 
--	return bpf_fib_set_fwd_params(params, neigh, dev);
-+	return bpf_fib_set_fwd_params(params, neigh, dev, mtu);
- }
- #endif
- 
-@@ -5490,6 +5495,8 @@ BPF_CALL_4(bpf_skb_fib_lookup, struct sk_buff *, skb,
- 		dev = dev_get_by_index_rcu(net, params->ifindex);
- 		if (!is_skb_forwardable(dev, skb))
- 			rc = BPF_FIB_LKUP_RET_FRAG_NEEDED;
++static int bpf_mtu_lookup(struct net *netns, u32 ifindex, u64 flags)
++{
++	struct net_device *dev;
 +
-+		params->mtu = dev->mtu; /* union with tot_len */
- 	}
- 
- 	return rc;
++	// XXX: Do we even need flags?
++	// Flag idea: get ctx dev->mtu for XDP_TX or redir out-same-dev
++	if (flags)
++		return -EINVAL;
++
++	dev = dev_get_by_index_rcu(netns, ifindex);
++	if (!dev)
++		return -ENODEV;
++
++	return dev->mtu;
++}
++
++BPF_CALL_3(bpf_skb_mtu_lookup, struct sk_buff *, skb,
++	   u32, ifindex, u64, flags)
++{
++	struct net *netns = dev_net(skb->dev);
++
++	return bpf_mtu_lookup(netns, ifindex, flags);
++}
++
++BPF_CALL_3(bpf_xdp_mtu_lookup, struct xdp_buff *, xdp,
++	   u32, ifindex, u64, flags)
++{
++	struct net *netns = dev_net(xdp->rxq->dev);
++	// XXX: Handle if this runs in devmap prog (then is rxq invalid?)
++
++	return bpf_mtu_lookup(netns, ifindex, flags);
++}
++
++static const struct bpf_func_proto bpf_skb_mtu_lookup_proto = {
++	.func		= bpf_skb_mtu_lookup,
++	.gpl_only	= true,
++	.ret_type	= RET_INTEGER,
++	.arg1_type      = ARG_PTR_TO_CTX,
++	.arg2_type      = ARG_ANYTHING,
++	.arg3_type      = ARG_ANYTHING,
++};
++
++static const struct bpf_func_proto bpf_xdp_mtu_lookup_proto = {
++	.func		= bpf_xdp_mtu_lookup,
++	.gpl_only	= true,
++	.ret_type	= RET_INTEGER,
++	.arg1_type      = ARG_PTR_TO_CTX,
++	.arg2_type      = ARG_ANYTHING,
++	.arg3_type      = ARG_ANYTHING,
++};
++
++
+ #if IS_ENABLED(CONFIG_IPV6_SEG6_BPF)
+ static int bpf_push_seg6_encap(struct sk_buff *skb, u32 type, void *hdr, u32 len)
+ {
+@@ -7075,6 +7127,8 @@ tc_cls_act_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_get_socket_uid_proto;
+ 	case BPF_FUNC_fib_lookup:
+ 		return &bpf_skb_fib_lookup_proto;
++	case BPF_FUNC_mtu_lookup:
++		return &bpf_skb_mtu_lookup_proto;
+ 	case BPF_FUNC_sk_fullsock:
+ 		return &bpf_sk_fullsock_proto;
+ 	case BPF_FUNC_sk_storage_get:
+@@ -7144,6 +7198,8 @@ xdp_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+ 		return &bpf_xdp_adjust_tail_proto;
+ 	case BPF_FUNC_fib_lookup:
+ 		return &bpf_xdp_fib_lookup_proto;
++	case BPF_FUNC_mtu_lookup:
++		return &bpf_xdp_mtu_lookup_proto;
+ #ifdef CONFIG_INET
+ 	case BPF_FUNC_sk_lookup_udp:
+ 		return &bpf_xdp_sk_lookup_udp_proto;
 
 
