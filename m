@@ -2,84 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A16662851EC
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 20:53:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5277285209
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 21:05:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726896AbgJFSxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 14:53:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48142 "EHLO
+        id S1726963AbgJFTFf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 15:05:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726854AbgJFSxS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 14:53:18 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F199C061755
-        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 11:53:18 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id 7so8481430pgm.11
-        for <netdev@vger.kernel.org>; Tue, 06 Oct 2020 11:53:18 -0700 (PDT)
+        with ESMTP id S1726760AbgJFTFf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 15:05:35 -0400
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4213C061755;
+        Tue,  6 Oct 2020 12:05:34 -0700 (PDT)
+Received: by mail-lf1-x141.google.com with SMTP id u8so16266563lff.1;
+        Tue, 06 Oct 2020 12:05:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=6LnJQb6SFUk0QHP9b1BAak/eeY2fLSfwl5wJ5GeVUGk=;
-        b=ue49t4Us56IbY7sgjyVRUxbaadOAssx+RLhA0VPcD/frrCW7cfvIjMg1UYj/Y/Tzi8
-         R+7FuUTBwEyX90CcMIGOM1oENYVBbyiXf1Rc1cNfnQ193ko+kVpfRivW/Bq5thyhqtOX
-         KQ3aQwpQ7bqdrYoezryK2RUP9ccXjtG9gmwHknzakcJxFKTxWMdI1Y40Al9CKbsxbU/D
-         9R22UVu73mTfibCIlaafE5dLSlAlAtf5nhSYaXkSDbjMR0mIujL9flBos+2N65GCdFK7
-         /rNp8d3oSLW442oyE3V+pVgwVS1FKQjjl+Z40xSnCwLXVJ5qFWnEnrmsMbHz1dIYpyrG
-         F5QQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dbgm9EPpdn69MOQOGW1NmOkPRWAvrhHZv3YgGUWUYO4=;
+        b=nCuVvffNUqX3JHoJTL9N3FEG+N30Jd67eXqBiN11gRdobkj619iU7qnZfhWN2CSEyh
+         IyJhCzb9gliT0Hm24v2E+9076qVfyt08uSMi6g502CXaooTTt/s/riIq+fnwdt+LvWw0
+         xg3lQ5LM38VN/83InIxsW33CTndDLDt+uLVSrAjiy/Hfbj5tuhMO1vb46/88sGJbPmoQ
+         oLcQokDa8/8s7nHNZYPUE2LqIkKukXI64kI/Bg3Yltk58eNsCaVVZTNWK8AliJwUJCjF
+         znWN2uG/Bfym9eoD6L5xgV4Nl6YUxKrN5p3FXF+KqjJ34pWwSGy2ypFvtUCAWjcmOC3O
+         x2RQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=6LnJQb6SFUk0QHP9b1BAak/eeY2fLSfwl5wJ5GeVUGk=;
-        b=Z30nDrxeu5VU+qmafwaFCNZ6n0LXzbfHdAkUOFj5G6MfbMHJzzERXUs/VS9DrMw/Vw
-         2xryoh4gR9uf5ArmoEippHJSbPuebkeASZFVwT02PalLvkkRBAwES4J8pimWNgQssCfx
-         ZnXwvsWb8QKXRsMiPVlz1dwRen6eRyaI7zyY5tcV4C8kn8xwXQcH0iAdLg0PjOYccrCm
-         fHcowRTSnyFnzCXcZeR2rTQygqlgNeezEvZXIwvg1GxvOXLvNuOR8rBUiUYZVm7MpUOI
-         FzEXzbPsjopP7q0pz6YCbiUIWnRCR4qc2LfAXA+4FNttX+gHPNoJJMRf2oI6sJnEnFqd
-         BIxw==
-X-Gm-Message-State: AOAM5308yDCT57FbvUAfN9lVzxAQ/cQYjmnBWjiDr/tsMwo/laDNJJmw
-        eS57v9vDxZ1nSKLSCQeoFkDNcpF7ze9Qng==
-X-Google-Smtp-Source: ABdhPJxtwFn9STJJeRBhHGs7nMk8Ba+uxc0RKb9NWFsqXFh+foj/IbtDtG/umiCmCrw7ClbsF8Cqow==
-X-Received: by 2002:aa7:9e4a:0:b029:152:54d1:bffa with SMTP id z10-20020aa79e4a0000b029015254d1bffamr5728764pfq.6.1602010397634;
-        Tue, 06 Oct 2020 11:53:17 -0700 (PDT)
-Received: from [192.168.0.16] ([97.115.184.170])
-        by smtp.gmail.com with ESMTPSA id k206sm5409304pfd.126.2020.10.06.11.53.16
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Oct 2020 11:53:17 -0700 (PDT)
-To:     Netdev <netdev@vger.kernel.org>
-From:   Gregory Rose <gvrose8192@gmail.com>
-Subject:  net: Initialize return value in gro_cells_receive
-Message-ID: <e595fd44-cf8a-ce14-8cc8-e3ecd4e8922a@gmail.com>
-Date:   Tue, 6 Oct 2020 11:53:15 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dbgm9EPpdn69MOQOGW1NmOkPRWAvrhHZv3YgGUWUYO4=;
+        b=Uzxp3uARMDC6WwQV5yzziD44cjP0oQxNtUcj1kUG2Y0cjCKXpUrPDwViVnD1iAe4lZ
+         zeFtufERoLvtc0vXWGfqsh9p24f93moAEFqpCZ57D49cEBguJ0S47xnfElTdP+cIguR3
+         k+Bzj+aVXM6/kp+62PjQ24nXaP5Nnh70ot6COJbfj4exvcJWxF6YEIgXDyOObbGrswOO
+         Tpv4Xk7IEuPtH0+HO8xMxQ8Qa06yCmz60XxmGuZtc/MqTQMKUbeh+lxwqv7z8ijNEZTT
+         6Ikp1mDECjVCSoLDFPyYW0geUcI02wDrfBq5gGBjaq3YDiR/GC/58g5i7jjPnTauAA01
+         tkFA==
+X-Gm-Message-State: AOAM532jgeylR6abF9/s0LHMjW7elemkIo8gH115puiODQ46NysOzWoD
+        +rtAYa5lxWgere7ximHUHucPJJKbkt2cqNvun4U=
+X-Google-Smtp-Source: ABdhPJwjRtjH65ntww7uSgF852KSTpZTpwRT5o9+a5Afmw3wub9NAuaJ2GJkzguay1vK1/vQdch8KAwchaYlo+9Ohr4=
+X-Received: by 2002:a19:8457:: with SMTP id g84mr890012lfd.500.1602011132919;
+ Tue, 06 Oct 2020 12:05:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20200929235049.2533242-1-haoluo@google.com> <20200929235049.2533242-2-haoluo@google.com>
+In-Reply-To: <20200929235049.2533242-2-haoluo@google.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 6 Oct 2020 12:05:21 -0700
+Message-ID: <CAADnVQKc4m6X62udhpPE3EBBvuOA2ngyWSOKQ7fc-rtqdeQj6w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 1/6] bpf: Introduce pseudo_btf_id
+To:     Hao Luo <haoluo@google.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 'res' return value is uninitalized and may be returned with
-some random value.  Initialize to NET_RX_DROP as the default
-return value.
+On Tue, Sep 29, 2020 at 4:50 PM Hao Luo <haoluo@google.com> wrote:
+>
+> -       ret = replace_map_fd_with_map_ptr(env);
+> -       if (ret < 0)
+> -               goto skip_full_check;
+> -
+>         if (bpf_prog_is_dev_bound(env->prog->aux)) {
+>                 ret = bpf_prog_offload_verifier_prep(env->prog);
+>                 if (ret)
+> @@ -11662,6 +11757,10 @@ int bpf_check(struct bpf_prog **prog, union bpf_attr *attr,
+>         if (ret)
+>                 goto skip_full_check;
+>
+> +       ret = resolve_pseudo_ldimm64(env);
+> +       if (ret < 0)
+> +               goto skip_full_check;
+> +
 
-Signed-off-by: Greg Rose <gvrose8192@gmail.com>
+Hao,
 
-diff --git a/net/core/gro_cells.c b/net/core/gro_cells.c
-index e095fb871d91..4e835960db07 100644
---- a/net/core/gro_cells.c
-+++ b/net/core/gro_cells.c
-@@ -13,7 +13,7 @@ int gro_cells_receive(struct gro_cells *gcells, struct 
-sk_buff *skb)
-  {
-         struct net_device *dev = skb->dev;
-         struct gro_cell *cell;
--       int res;
-+       int res = NET_RX_DROP;
+this change broke several tests in test_verifier:
+#21/u empty prog FAIL
+Unexpected error message!
+    EXP: unknown opcode 00
+    RES: last insn is not an exit or jmp
 
-         rcu_read_lock();
-         if (unlikely(!(dev->flags & IFF_UP)))
+#656/u test5 ld_imm64 FAIL
+Unexpected error message!
+    EXP: invalid bpf_ld_imm64 insn
+    RES: last insn is not an exit or jmp
+
+#656/p test5 ld_imm64 FAIL
+Unexpected error message!
+    EXP: invalid bpf_ld_imm64 insn
+    RES: last insn is not an exit or jmp
+
+Please send a fix.
+Thanks
