@@ -2,162 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B56F82851EA
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 20:52:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A16662851EC
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 20:53:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726878AbgJFSwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 14:52:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47976 "EHLO
+        id S1726896AbgJFSxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 14:53:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726760AbgJFSwP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 14:52:15 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0FEFC061755
-        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 11:52:15 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1kPs4C-000777-98; Tue, 06 Oct 2020 20:52:04 +0200
-Date:   Tue, 6 Oct 2020 20:52:04 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Numan Siddique <nusiddiq@redhat.com>
-Cc:     Florian Westphal <fw@strlen.de>, ovs dev <dev@openvswitch.org>,
-        netdev <netdev@vger.kernel.org>, davem@davemloft.net,
-        Aaron Conole <aconole@redhat.com>,
-        Pravin B Shelar <pshelar@ovn.org>
-Subject: Re: [PATCH net-next] net: openvswitch: Add support to lookup invalid
- packet in ct action.
-Message-ID: <20201006185204.GG5213@breakpoint.cc>
-References: <20201006083355.121018-1-nusiddiq@redhat.com>
- <20201006111606.GA18203@breakpoint.cc>
- <CAH=CPzr58cyTFUre=3LrJh6=NyjWKqnmNBBSz0ogRjefDXEq6w@mail.gmail.com>
+        with ESMTP id S1726854AbgJFSxS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 14:53:18 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F199C061755
+        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 11:53:18 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id 7so8481430pgm.11
+        for <netdev@vger.kernel.org>; Tue, 06 Oct 2020 11:53:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=6LnJQb6SFUk0QHP9b1BAak/eeY2fLSfwl5wJ5GeVUGk=;
+        b=ue49t4Us56IbY7sgjyVRUxbaadOAssx+RLhA0VPcD/frrCW7cfvIjMg1UYj/Y/Tzi8
+         R+7FuUTBwEyX90CcMIGOM1oENYVBbyiXf1Rc1cNfnQ193ko+kVpfRivW/Bq5thyhqtOX
+         KQ3aQwpQ7bqdrYoezryK2RUP9ccXjtG9gmwHknzakcJxFKTxWMdI1Y40Al9CKbsxbU/D
+         9R22UVu73mTfibCIlaafE5dLSlAlAtf5nhSYaXkSDbjMR0mIujL9flBos+2N65GCdFK7
+         /rNp8d3oSLW442oyE3V+pVgwVS1FKQjjl+Z40xSnCwLXVJ5qFWnEnrmsMbHz1dIYpyrG
+         F5QQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=6LnJQb6SFUk0QHP9b1BAak/eeY2fLSfwl5wJ5GeVUGk=;
+        b=Z30nDrxeu5VU+qmafwaFCNZ6n0LXzbfHdAkUOFj5G6MfbMHJzzERXUs/VS9DrMw/Vw
+         2xryoh4gR9uf5ArmoEippHJSbPuebkeASZFVwT02PalLvkkRBAwES4J8pimWNgQssCfx
+         ZnXwvsWb8QKXRsMiPVlz1dwRen6eRyaI7zyY5tcV4C8kn8xwXQcH0iAdLg0PjOYccrCm
+         fHcowRTSnyFnzCXcZeR2rTQygqlgNeezEvZXIwvg1GxvOXLvNuOR8rBUiUYZVm7MpUOI
+         FzEXzbPsjopP7q0pz6YCbiUIWnRCR4qc2LfAXA+4FNttX+gHPNoJJMRf2oI6sJnEnFqd
+         BIxw==
+X-Gm-Message-State: AOAM5308yDCT57FbvUAfN9lVzxAQ/cQYjmnBWjiDr/tsMwo/laDNJJmw
+        eS57v9vDxZ1nSKLSCQeoFkDNcpF7ze9Qng==
+X-Google-Smtp-Source: ABdhPJxtwFn9STJJeRBhHGs7nMk8Ba+uxc0RKb9NWFsqXFh+foj/IbtDtG/umiCmCrw7ClbsF8Cqow==
+X-Received: by 2002:aa7:9e4a:0:b029:152:54d1:bffa with SMTP id z10-20020aa79e4a0000b029015254d1bffamr5728764pfq.6.1602010397634;
+        Tue, 06 Oct 2020 11:53:17 -0700 (PDT)
+Received: from [192.168.0.16] ([97.115.184.170])
+        by smtp.gmail.com with ESMTPSA id k206sm5409304pfd.126.2020.10.06.11.53.16
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Oct 2020 11:53:17 -0700 (PDT)
+To:     Netdev <netdev@vger.kernel.org>
+From:   Gregory Rose <gvrose8192@gmail.com>
+Subject:  net: Initialize return value in gro_cells_receive
+Message-ID: <e595fd44-cf8a-ce14-8cc8-e3ecd4e8922a@gmail.com>
+Date:   Tue, 6 Oct 2020 11:53:15 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAH=CPzr58cyTFUre=3LrJh6=NyjWKqnmNBBSz0ogRjefDXEq6w@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Numan Siddique <nusiddiq@redhat.com> wrote:
-> On Tue, Oct 6, 2020 at 4:46 PM Florian Westphal <fw@strlen.de> wrote:
-> >
-> > nusiddiq@redhat.com <nusiddiq@redhat.com> wrote:
-> > > From: Numan Siddique <nusiddiq@redhat.com>
-> > >
-> > > For a tcp packet which is part of an existing committed connection,
-> > > nf_conntrack_in() will return err and set skb->_nfct to NULL if it is
-> > > out of tcp window. ct action for this packet will set the ct_state
-> > > to +inv which is as expected.
-> >
-> > This is because from conntrack p.o.v., such TCP packet is NOT part of
-> > the existing connection.
-> >
-> > For example, because it is considered part of a previous incarnation
-> > of the same connection.
-> >
-> > > But a controller cannot add an OVS flow as
-> > >
-> > > table=21,priority=100,ct_state=+inv, actions=drop
-> > >
-> > > to drop such packets. That is because when ct action is executed on other
-> > > packets which are not part of existing committed connections, ct_state
-> > > can be set to invalid. Few such cases are:
-> > >    - ICMP reply packets.
-> >
-> > Can you elaborate? Echo reply should not be invalid. Conntrack should
-> > mark it as established (unless such echo reply came out of the blue).
-> 
-> Hi Florian,
-> 
-> Thanks for providing the comments.
-> 
-> Sorry for not being very clear.
-> 
-> Let me brief about the present problem we see in OVN (which is a
-> controller using ovs)
-> 
-> When a VM/container sends a packet (in the ingress direction), we don't send all
-> the packets to conntrack. If a packet is destined to an OVN load
-> balancer virtual ip,
-> only then we send the packet to conntrack in the ingress direction and
-> then we do dnat
-> to the backend.
+The 'res' return value is uninitalized and may be returned with
+some random value.  Initialize to NET_RX_DROP as the default
+return value.
 
-Ah, okay.  That explains the INVALID then, but in that case I think this
-patch/direction is less desirable from conntrack point of view.
+Signed-off-by: Greg Rose <gvrose8192@gmail.com>
 
-More below.
+diff --git a/net/core/gro_cells.c b/net/core/gro_cells.c
+index e095fb871d91..4e835960db07 100644
+--- a/net/core/gro_cells.c
++++ b/net/core/gro_cells.c
+@@ -13,7 +13,7 @@ int gro_cells_receive(struct gro_cells *gcells, struct 
+sk_buff *skb)
+  {
+         struct net_device *dev = skb->dev;
+         struct gro_cell *cell;
+-       int res;
++       int res = NET_RX_DROP;
 
-> table=1, match = (ip && ip4.dst == VIP) action = ct(table=2)
-> tablle=2, ct_state=+new+trk && ip4.dst == VIP, action = ct(commit,
-> nat=BACKEND_IP)
-> ...
-> ..
-> 
-> However for the egress direction (when the packet is to be delivered
-> to the VM/container),
-> we send all the packets to conntrack and if the ct.est is set, we do
-> undnat before delivering
-> the packet to the VM/container.
-> ...
-> table=40, match = ip, action = ct(table=41)
-> table=41, match = ct_state=+est+trk, action = ct(nat)
-> ...
-> 
-> What I mean here is that, since we send all the packets in the egress
-> pipeline to conntrack,
-> we can't add a flow like - match = ct_state=+inv, action = drop.
-
-Basically this is like a normal routing/netfitler (no ovs), where
-the machine in question only sees unidirectional traffic (reply packets
-taking different route).
-
-> i.e When a VM/container sends an ICMP request packet, it will not be
-> sent to conntrack, but
-> the reply ICMP will be sent to conntrack and it will be marked as invalid.
-
-Yes.  For plain netfilter, the solution would be to accept INVALID icmp
-replies in the iptables/nftables ruleset.
-
-> So is the case with TCP, the TCP SYN from the VM is not sent to
-> conntrack, but the SYN/ACK
-> from the server would be sent to conntrack and it will be marked as invalid.
-
-Right.
-
-> > 1. packet was not even seen by conntrack
-> > 2. packet matches existing connection, but is "bad", for example:
-> >   - contradicting tcp flags
-> >   - out of window
-> >   - invalid checksum
-> 
-> We want the below to be solved (using OVS flows) :
->   - If the packet is marked as invalid due to (2) which you mentioned above,
->     we would like to read the ct_mark and ct_label fields as the packet is
->     part of existing connection, so that we can add an OVS flow like
->
-> ct_state=+inv+trk,ct_label=0x2 actions=drop
-
-Wouldn't it make more sense to let tcp conntrack skip the in-window
-check?  AFAIU thats the only problem and its identical to other cases
-that we have at the moment, for example, conntrack supports mid-stream
-pickup (on by default) which also disables tcp window checks.
-
-> I tested by setting 'be_liberal' sysctl flag and since skb->_nfct was
-> set for (2), OVS
-> datapath module set the ct_state to +est.
-
-Yes.  This flag can be set programatically on a per-ct basis.
-
-See nft_flow_offload_eval() for example (BE_LIBERAL).
-Given we now have multiple places that set this I think it would make
-sense to add a helper, say, e.g.
-
-void nf_ct_tcp_be_liberal(struct nf_conn *ct);
-?
-
-(Or perhaps nf_ct_tcp_disable_window_checks() , might be more
- clear/descriptive as to what this is doing).
-
-Do you think that this resolves the OVN problem?
+         rcu_read_lock();
+         if (unlikely(!(dev->flags & IFF_UP)))
