@@ -2,238 +2,271 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5106284C79
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 15:23:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8F3A284C7B
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 15:23:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726087AbgJFNXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 09:23:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:40827 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725891AbgJFNXQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 09:23:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1601990593;
+        id S1726100AbgJFNXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 09:23:42 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:36574 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725891AbgJFNXm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 09:23:42 -0400
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1601990618;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=NsNemPoDuPESIwthUg6LIILwq1aFxyoLhIfcZ08Mx1s=;
-        b=IJcnDvJP+DcB6QEYGaGW/3QNHgQqHQMkR+zwDTj5jQw98F/pKd4buTi8MCefnzAgIbBCDv
-        bjiXq07WdToShtOkPVOP085gkBRoy/ikGjjfZFQRQ74E1juj9U7sfVG3JP68oNTIcJKE/0
-        guEjsSXeFJesu+BJi63uG9HYClCPoUw=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-70-Z7mKOI81NWG_1-fFTNGnLA-1; Tue, 06 Oct 2020 09:23:12 -0400
-X-MC-Unique: Z7mKOI81NWG_1-fFTNGnLA-1
-Received: by mail-ej1-f70.google.com with SMTP id x22so3738936ejs.17
-        for <netdev@vger.kernel.org>; Tue, 06 Oct 2020 06:23:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NsNemPoDuPESIwthUg6LIILwq1aFxyoLhIfcZ08Mx1s=;
-        b=XlU14BUWga2A4PueLddixmFSnw22kv6SX0RsgFZ8Qz4L4FVz0hsYA5bDIWk3rqI8wX
-         DrGhnzg5l0CktEhhXUoRq0rIkrltnb4Ub8BpN2BROdTbABNeKfPJCTOMBL2sujUMByFV
-         WpJB9TJpaNRMVZ7OmWVfYm1C/vtINWX2y362SrJShD4WXIqcOIn/I5FnNvsaTeg8LmWc
-         mpVJUEDZXhJULyGvYcmAWEhtlRT/4J34I6Uj8sOmqIYYRhClVTnEsX/sRdzB3O+tlxWM
-         EDYTizFAjPhmn92TzJZiWAZDUBmNdaumirw5wUxI1U5JDan+y7NN1lippKAXHnTIK4ea
-         UNJg==
-X-Gm-Message-State: AOAM5326cYywl1Ws6iyVKKPf5UbLPMD7mqjRqGwFKSg3p9YhdaMGZuyG
-        W/cHCvuWdpOYSqaWOvkDJTfDj0Vbl6pFd6W4zWR2PJb6VLr0kn95ucIrn00SviDEuj3/kpz/HIG
-        Kp5p9wo2PoJRxjd/5czdblnqcD0bI6mRa
-X-Received: by 2002:a05:6402:d3:: with SMTP id i19mr5607410edu.320.1601990590619;
-        Tue, 06 Oct 2020 06:23:10 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx1LfdYlZ2D2ehQMRrL3HaSvFq+E5XIyfgzfLiUW6I4rTdEk5oACOE0+rUh5d6NFqH5unJLjwa7OMXP+f+xaxA=
-X-Received: by 2002:a05:6402:d3:: with SMTP id i19mr5607372edu.320.1601990590281;
- Tue, 06 Oct 2020 06:23:10 -0700 (PDT)
+        bh=AXPEm95Bw/hixuvgwVIQM5OVIsxZxlO6A4MwZv+vsgE=;
+        b=ciNlZwxLQdimj4ytMtKHIkqjhpazYOBRcGeTe09KVp7u29AetCSxxJu6n4dc4Z/1IHwnHX
+        7mHQFp4hOeb/0EDOMrKz4IIiAAxOzUa3gR9OtZIQGaUv1W0S1dwknKeVMrHA/ZbJ80TUXY
+        lKy3im/iocNwCSm+e48gggSyGvjxv/vkiyBqtMTbA7P4xCrvlqte44b8fsUEF2aCR5/WWW
+        r6f72y4zEciLOcX0wkBBGPb+GNIORwtXOsCQDDAHlkv6msn5oHdFU+ZQE9XYEBs0W4dDGN
+        F+Fz55M1UkTLlWHE0HCQ6831wut0KmaGi3ytp2qNIfMBnCo22h8bUZPmc6BqTA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1601990618;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=AXPEm95Bw/hixuvgwVIQM5OVIsxZxlO6A4MwZv+vsgE=;
+        b=ae05X2w1w7lWEJ6gJf2LXb7WIFuU17FX89OgcFqSURq9FYvyoZ4HVne8/jZVtHrzoU+N/V
+        rhw4j/SvacjNf9Bg==
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH net-next v6 2/7] net: dsa: Add DSA driver for Hirschmann Hellcreek switches
+In-Reply-To: <20201006113237.73rzvw34anilqh4d@skbuf>
+References: <20201004112911.25085-1-kurt@linutronix.de> <20201004112911.25085-3-kurt@linutronix.de> <20201004125601.aceiu4hdhrawea5z@skbuf> <87lfgj997g.fsf@kurt> <20201006092017.znfuwvye25vsu4z7@skbuf> <878scj8xxr.fsf@kurt> <20201006113237.73rzvw34anilqh4d@skbuf>
+Date:   Tue, 06 Oct 2020 15:23:36 +0200
+Message-ID: <87wo037ajr.fsf@kurt>
 MIME-Version: 1.0
-References: <20201006083355.121018-1-nusiddiq@redhat.com> <20201006111606.GA18203@breakpoint.cc>
- <CAH=CPzr58cyTFUre=3LrJh6=NyjWKqnmNBBSz0ogRjefDXEq6w@mail.gmail.com>
-In-Reply-To: <CAH=CPzr58cyTFUre=3LrJh6=NyjWKqnmNBBSz0ogRjefDXEq6w@mail.gmail.com>
-From:   Numan Siddique <nusiddiq@redhat.com>
-Date:   Tue, 6 Oct 2020 18:52:58 +0530
-Message-ID: <CAH=CPzo6Y75S5TQGyr48ef3tcva_rGDBwkn1GygXLjpZbgjuZQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: openvswitch: Add support to lookup invalid
- packet in ct action.
-To:     Florian Westphal <fw@strlen.de>
-Cc:     ovs dev <dev@openvswitch.org>, netdev <netdev@vger.kernel.org>,
-        davem@davemloft.net, Aaron Conole <aconole@redhat.com>,
-        Pravin B Shelar <pshelar@ovn.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 6, 2020 at 5:49 PM Numan Siddique <nusiddiq@redhat.com> wrote:
->
-> On Tue, Oct 6, 2020 at 4:46 PM Florian Westphal <fw@strlen.de> wrote:
-> >
-> > nusiddiq@redhat.com <nusiddiq@redhat.com> wrote:
-> > > From: Numan Siddique <nusiddiq@redhat.com>
-> > >
-> > > For a tcp packet which is part of an existing committed connection,
-> > > nf_conntrack_in() will return err and set skb->_nfct to NULL if it is
-> > > out of tcp window. ct action for this packet will set the ct_state
-> > > to +inv which is as expected.
-> >
-> > This is because from conntrack p.o.v., such TCP packet is NOT part of
-> > the existing connection.
-> >
-> > For example, because it is considered part of a previous incarnation
-> > of the same connection.
-> >
-> > > But a controller cannot add an OVS flow as
-> > >
-> > > table=21,priority=100,ct_state=+inv, actions=drop
-> > >
-> > > to drop such packets. That is because when ct action is executed on other
-> > > packets which are not part of existing committed connections, ct_state
-> > > can be set to invalid. Few such cases are:
-> > >    - ICMP reply packets.
-> >
-> > Can you elaborate? Echo reply should not be invalid. Conntrack should
-> > mark it as established (unless such echo reply came out of the blue).
->
-> Hi Florian,
->
-> Thanks for providing the comments.
->
-> Sorry for not being very clear.
->
-> Let me brief about the present problem we see in OVN (which is a
-> controller using ovs)
->
-> When a VM/container sends a packet (in the ingress direction), we don't send all
-> the packets to conntrack. If a packet is destined to an OVN load
-> balancer virtual ip,
-> only then we send the packet to conntrack in the ingress direction and
-> then we do dnat
-> to the backend.
->
-> Eg. in the ingress direction
->
-> table=1, match = (ip && ip4.dst == VIP) action = ct(table=2)
-> tablle=2, ct_state=+new+trk && ip4.dst == VIP, action = ct(commit,
-> nat=BACKEND_IP)
-> ...
-> ..
->
-> However for the egress direction (when the packet is to be delivered
-> to the VM/container),
-> we send all the packets to conntrack and if the ct.est is set, we do
-> undnat before delivering
-> the packet to the VM/container.
-> ...
-> table=40, match = ip, action = ct(table=41)
-> table=41, match = ct_state=+est+trk, action = ct(nat)
-> ...
->
-> What I mean here is that, since we send all the packets in the egress
-> pipeline to conntrack,
-> we can't add a flow like - match = ct_state=+inv, action = drop.
->
-> i.e When a VM/container sends an ICMP request packet, it will not be
-> sent to conntrack, but
-> the reply ICMP will be sent to conntrack and it will be marked as invalid.
->
-> So is the case with TCP, the TCP SYN from the VM is not sent to
-> conntrack, but the SYN/ACK
-> from the server would be sent to conntrack and it will be marked as invalid.
->
-> >
-> > >    - TCP SYN/ACK packets during connection establishment.
-> >
-> > SYN/ACK should also be established state.
-> > INVALID should only be matched for packets that were never seen
-> > by conntrack, or that are deemed out of date / corrupted.
-> >
-> > > To distinguish between an invalid packet part of committed connection
-> > > and others, this patch introduces as a new ct attribute
-> > > OVS_CT_ATTR_LOOKUP_INV. If this is set in the ct action (without commit),
-> > > it tries to find the ct entry and if present, sets the ct_state to
-> > > +inv,+trk and also sets the mark and labels associated with the
-> > > connection.
-> > >
-> > > With this,  a controller can add flows like
-> > >
-> > > ....
-> > > ....
-> > > table=20,ip, action=ct(table=21, lookup_invalid)
-> > > table=21,priority=100,ct_state=+inv+trk,ct_label=0x2/0x2 actions=drop
-> > > table=21,ip, actions=resubmit(,22)
-> > > ....
-> > > ....
-> >
-> > What exactly is the feature/problem that needs to be solved?
-> > I suspect this would help me to provide better feedback than the
-> > semi-random comments below .... :-)
-> >
-> > My only problem with how conntrack does things ATM is that the ruleset
-> > cannot distinguish:
-> >
-> > 1. packet was not even seen by conntrack
-> > 2. packet matches existing connection, but is "bad", for example:
-> >   - contradicting tcp flags
-> >   - out of window
-> >   - invalid checksum
->
-> We want the below to be solved (using OVS flows) :
->   - If the packet is marked as invalid due to (2) which you mentioned above,
->     we would like to read the ct_mark and ct_label fields as the packet is
->     part of existing connection, so that we can add an OVS flow like
->
-> ct_state=+inv+trk,ct_label=0x2 actions=drop
->
-> Right now it is not possible.
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-I forgot to mention the side effect of it. Since the tcp out of window packet
-is set as +inv, this packet is delivered to the VM/container without undnat
-and because of this VM/container resets the connection.
+On Tue Oct 06 2020, Vladimir Oltean wrote:
+> Yes, that's what I said, and it's not wrong because there's a big IF ther=
+e.
+> But first of all, whatever you do has to work, no matter how you do it.
+>
+> DSA can at any moment call your .port_vlan_add method either from the
+> bridge or from the 8021q module. And you need to make sure that you:
+>
+> - offer the correct services to these layers. Meaning:
+>   (a) a bridge with vlan_filtering=3D0 does not expect its offloading
+>       ports to filter (drop) by VLAN ID. The only thing that changed
+>       after the configure_vlan_while_not_filtering patch was that now,
+>       DSA drivers are supposed to make sure that the VLAN database can
+>       accept .port_vlan_add calls that were made during the time that
+>       vlan_filtering was 0. These VLANs are supposed to make no
+>       difference to the data path until vlan_filtering is switched to 1.
 
-Thanks
-Numan
+Does this mean that tagged traffic is forwarded no matter what? That
+doesn't work with the current implementation, because the VLAN tags are
+interpreted by default. There's a global flag to put the switch in VLAN
+unaware mode. But it's global and not per bridge or port.
 
+>   (b) a bridge with vlan_filtering=3D1 with offloading expects that VLANs
+>       from its VLAN group are tagged according to their flags, and
+>       forwarded to the other ports that are members of that VLAN group,
+>       and VLANs from outside its VLAN group are dropped in hardware.
+>   (c) 8021q uppers receive traffic tagged with their VLAN ID
+>
+> - still keep port separation where that's needed (i.e. in standalone
+>   mode). Ports that are not under a bridge do not perform autonomous L2
+>   forwarding on their own.
+>
+> Because port separation is only a concern in standalone mode, I expect
+> that you only call hellcreek_setup_vlan_membership when entering
+> standalone mode.
+>
+> So:
+> - neither the bridge nor the 8021q module cannot offload a VLAN on a
+>   port that is the private pvid of any other standalone port. Maybe this
+>   would not even be visible if you would configure those private pvids
+>   as 4095, 4094, etc, but you should definitely enfore the restriction.
+> - IF you let the bridge or 8021q module use a private pvid of a
+>   standalone port during the time that said port did not need it, then
+>   you should restore that private pvid when the bridge or 8021q upper is
+>   removed. This is the part that seems to be causing problems.
+> - in standalone mode, you can't let 8021q uppers request the same VLAN
+>   from different ports, as that would break separation.
+>
+> I am thinking:
+> If you _don't_ ever let the private pvids of the standalone ports
+> overlap with the valid range for the bridge and 8021q module, then you
+> don't need to care whether the bridge or 8021q module could delete a
+> private pvid of yours (because you wouldn't let them install it in the
+> first place). So you solve half the problem.
 
+So you're saying private VLANs can be used but the user or the other
+kernel modules shouldn't be allowed to use them to simplify the
+implementation?  Makes sense to me.
 
 >
-> This patch does another lookup if skb->_nfct is NULL after
-> nf_conntrack_in() to check
-> if (2) is the case. If the lookup is successful, it updates the ct flow
-> key with the ct_mark and ct_label. This is made optional using a
-> netlink attribute.
+> Otherwise said:
+> If you reject VLANs 4095 and 4094 in the .port_vlan_prepare callback,
+> you'll be left with 4094 usable VLANs for the bridge on each port, or
+> 4094 VLANs usable for the 8021q module in total (but mutually exclusive
+> either on one port or the other). So you lose exactly 2 VLANs, and you
+> simplify the driver implementation.
 >
-> I'm not sure if it's possible for nf_conntrack_in() to provide this
-> information for
-> its callers so that the caller can come to know that the state is
-> invalid because of (2).
+> - The .port_vlan_prepare will check whether the VLAN is 4095 or 4094,
+>   and if it is, refuse it.
 >
-> I tested by setting 'be_liberal' sysctl flag and since skb->_nfct was
-> set for (2), OVS
-> datapath module set the ct_state to +est.
->
-> Thanks
-> Numan
->
->
-> >
-> > There are a few sysctls to modify default behaviour, e.g. relax window
-> > checks, or ignore/skip checksum validation.
-> >
-> > The other problem i see (solveable for sure by yet-another-sysctl but i
-> > see that as last-resort) is usual compatibility problem:
-> >
-> > ct state invalid drop
-> > ct mark gt 0 accept
-> >
-> > If standard netfilter conntrack were to set skb->_nfct e.g. even if
-> > state is invalid, we could still make the above work via some internal
-> > flag.
-> >
-> > But if you reverse it, you get different behaviour:
-> >
-> > ct mark gt 0 accept
-> > ct state invalid drop
-> >
-> > First rule might now accept out-of-window packet even when "be_liberal"
-> > sysctl is off.
-> >
+> - The .port_vlan_add will always install the VLAN to the hardware
+>   database, no queuing if there's no reason for it (and I can't see any.
+>   Your hardware seems to be sane enough to not drop a VLAN-tagged frame,
+>   and forward it correctly on egress, as long as you call
+>   hellcreek_setup_ingressflt with enable=3Dfalse, am I right? or does the
+>   VLAN still need to be installed into the egress port?).
 
+The egress port has to member to that VLAN.
+
+>
+> - The .port_vlan_del will always delete the VLAN from the hardware.
+>
+> - The .port_bridge_join will:
+>   (a) disable the VLAN ingress filtering that you need for standalone
+>       mode. Let the bridge re-enable it if it needs.
+>   (b) delete VLAN 4094 or 4095 from the port's database. It bothers you
+>       in bridged mode.
+>
+> - The .port_bridge_leave will:
+>   (a) re-enable the VLAN ingress filtering for standalone mode.
+>   (b) reinstall VLAN 4094 or 4095 into the port's database. You need it
+>       for isolation in standalone mode.
+>
+> Am I missing something? The rules are relatively simple and intuitive
+> (until they aren't!), I'm not trying to impose a certain implementation,
+> sorry if that's what you understood, I'm just trying to make sure that
+> the rules are observed in the simplest way possible.
+
+And I'm trying to understand what the rules are... Thanks for detailed
+explanation.
+
+>
+> You'll also need something along the lines of this patch, that's what I
+> was hoping to see from you:
+>
+> ----------------------[ cut here ]----------------------
+> From 151271ebeebe520ff997bdc08a3e776fbefce17c Mon Sep 17 00:00:00 2001
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Date: Tue, 6 Oct 2020 14:06:54 +0300
+> Subject: [PATCH] net: dsa: give drivers the chance to veto certain upper
+>  devices
+>
+> Some switches rely on unique pvids to ensure port separation in
+> standalone mode, because they don't have a port forwarding matrix
+> configurable in hardware. So, setups like a group of 2 uppers with the
+> same VLAN, swp0.100 and swp1.100, will cause traffic tagged with VLAN
+> 100 to be autonomously forwarded between these switch ports, in spite
+> of there being no bridge between swp0 and swp1.
+>
+> These drivers need to prevent this from happening. They need to have
+> VLAN filtering enabled in standalone mode (so they'll drop frames tagged
+> with unknown VLANs) and they can only accept an 8021q upper on a port as
+> long as it isn't installed on any other port too. So give them the
+> chance to veto bad user requests.
+>
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  include/net/dsa.h |  6 ++++++
+>  net/dsa/slave.c   | 12 ++++++++++++
+>  2 files changed, 18 insertions(+)
+>
+> diff --git a/include/net/dsa.h b/include/net/dsa.h
+> index c0185660881c..17e4bb9170e7 100644
+> --- a/include/net/dsa.h
+> +++ b/include/net/dsa.h
+> @@ -534,6 +534,12 @@ struct dsa_switch_ops {
+>  	void	(*get_regs)(struct dsa_switch *ds, int port,
+>  			    struct ethtool_regs *regs, void *p);
+>=20=20
+> +	/*
+> +	 * Upper device tracking.
+> +	 */
+> +	int	(*port_prechangeupper)(struct dsa_switch *ds, int port,
+> +				       struct netdev_notifier_changeupper_info *info);
+> +
+>  	/*
+>  	 * Bridge integration
+>  	 */
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index e7c1d62fde99..919dbc1bcf6c 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -2006,10 +2006,22 @@ static int dsa_slave_netdevice_event(struct notif=
+ier_block *nb,
+>  	switch (event) {
+>  	case NETDEV_PRECHANGEUPPER: {
+>  		struct netdev_notifier_changeupper_info *info =3D ptr;
+> +		struct dsa_switch *ds;
+> +		struct dsa_port *dp;
+> +		int err;
+>=20=20
+>  		if (!dsa_slave_dev_check(dev))
+>  			return dsa_prevent_bridging_8021q_upper(dev, ptr);
+>=20=20
+> +		dp =3D dsa_slave_to_port(dev);
+> +		ds =3D dp->ds;
+> +
+> +		if (ds->ops->port_prechangeupper) {
+> +			err =3D ds->ops->port_prechangeupper(ds, dp->index, ptr);
+> +			if (err)
+> +				return err;
+> +		}
+> +
+>  		if (is_vlan_dev(info->upper_dev))
+>  			return dsa_slave_check_8021q_upper(dev, ptr);
+>  		break;
+> --=20
+> 2.25.1
+>
+> ----------------------[ cut here ]----------------------
+>
+> And then you'll implement this callback and reject 8021q uppers (see the
+> dsa_slave_check_8021q_upper function for how) with equal VLANs on
+> another port. Maybe that's one place where you can keep a VLAN list. But
+> that's an implementation detail which should be best left to you to
+> figure out.
+
+OK.
+
+Thanks,
+Kurt
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl98b9gACgkQeSpbgcuY
+8Ka5mA//dPauQLy9178sBMJ2xg2ttPoM8GlTNtqxzu6hAOS1fZ1AM6Napnw5AyCl
+0ScOuaEO2sYIIbE4cEFJ5f6O2p27e8MlieKTamiiaRLVEllLe8h20JXRdDTO0Pj5
+qLpEIlaB5/q36MKj3HAn584CxXO3PGKYNCnCfuR/b2kGgTEZQG5nuU/AlVMsAYUf
+2ozqNNVMWE2G1tkdOXus824hiY2Wmxx+zjuIiH8emXXO9pHA4a1TV5UIY3rlfTkd
+KntWwpG6LfILeWpEip6spot/hTmvtfMVjrk2bZSctnb8mk5aid7ubzLxyeCcBzsw
+rzh25RNIdxWX1QLDGmB+6GU/wvDISaEH27PKVLqLNBnMwyDzF8Vk+jA9Pp0z3aYv
+sTIU3I32rCfimnp6VLd9LuhlZLcBHLzkV7r2gcaSuyDYLuV7lMi3fpNyfBNH2Gxy
+CsEmv63wiRyA7Wv/TbA4I9ISpMYbajrSWB+Gaw+dQSSiYb8Ux/uvI3aMfkkojvxd
+sIiWxrreKeX81R2zpfFz+JLD9n+P/BvLcPIbkmihI+m5U7cgTkONvhfNhFlphgPi
+jkVDw27UVg2sNp+w0cyf/1qrIspEsZqX7mggtqH9HL/pocXmyewe83K+KJe9zWD5
+BpVbRqOfsxrDvvrG5GtArbB6vWpOqyq84nm9GbQKAyxYizSouyE=
+=vfn8
+-----END PGP SIGNATURE-----
+--=-=-=--
