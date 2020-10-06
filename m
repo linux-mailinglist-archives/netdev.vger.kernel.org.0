@@ -2,120 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27511285234
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 21:15:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5274B285249
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 21:19:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727019AbgJFTPV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 15:15:21 -0400
-Received: from mx2.securetransport.de ([188.68.39.254]:42366 "EHLO
-        mx2.securetransport.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726924AbgJFTPV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 15:15:21 -0400
-X-Greylist: delayed 437 seconds by postgrey-1.27 at vger.kernel.org; Tue, 06 Oct 2020 15:15:19 EDT
-Received: from mail.dh-electronics.com (business-24-134-97-169.pool2.vodafone-ip.de [24.134.97.169])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx2.securetransport.de (Postfix) with ESMTPSA id F2B7F5E8DA;
-        Tue,  6 Oct 2020 21:07:23 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dh-electronics.com;
-        s=dhelectronicscom; t=1602011247;
-        bh=BmT0vZRW9XgQdo3qxJ8++9jtUBid7lvJhQ1LFw9FAOY=;
-        h=From:To:CC:Subject:Date:From;
-        b=SqeCcpNg+olHdPmeJQ8ZD4eT4KZvs9Y5ZJhaqX4Hp6xk/dzottg5Jh9/CC3WmkDjs
-         KxK1emrjcqnvAn6R6CZVOirL/cWOm4LLPZu4QtsoykZ1pQseOdtS+VppKykcdxW3T/
-         RVDoEqnPjrv2Gja66sxhALCSA/X6nJtVHU5qc51JDIgt7iuZNnq3tymCbJQIi0e08n
-         6SqFDiKS/T85K4jNjVx/Xi6EaQ0wH9GPAHUqkhUw8cRAz1ZbL6ki5XZg8oV7oEWcmC
-         qgYz7rtYADKB5doONgZ3vh00CTjFsAiX4CCKpRHFZa84UJhJIYnkCPd64Su1EalAOV
-         U9X426sDpkIag==
-Received: from DHPWEX01.DH-ELECTRONICS.ORG (2001:470:76a7:2::30) by
- DHPWEX01.DH-ELECTRONICS.ORG (2001:470:76a7:2::30) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.659.4;
- Tue, 6 Oct 2020 21:07:14 +0200
-Received: from DHPWEX01.DH-ELECTRONICS.ORG ([fe80::6ced:fa7f:9a9c:e579]) by
- DHPWEX01.DH-ELECTRONICS.ORG ([fe80::6ced:fa7f:9a9c:e579%6]) with mapi id
- 15.02.0659.006; Tue, 6 Oct 2020 21:07:14 +0200
-From:   Christoph Niedermaier <cniedermaier@dh-electronics.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Richard Leitner <richard.leitner@skidata.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "NXP Linux Team" <linux-imx@nxp.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        "'Marek Vasut'" <marex@denx.de>,
-        Christoph Niedermaier <cniedermaier@dh-electronics.com>
-Subject: RE: [PATCH][RESEND] net: fec: Fix PHY init after
- phy_reset_after_clk_enable() [Klartext]
-Thread-Topic: [PATCH][RESEND] net: fec: Fix PHY init after
- phy_reset_after_clk_enable() [Klartext]
-Thread-Index: AdacE6O5bmOhz8xbSye/pXhDA6DR9w==
-Date:   Tue, 6 Oct 2020 19:07:14 +0000
-Message-ID: <f3ff40567ee44fc3a14b2ae8a9b18180@dh-electronics.com>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.64.2.18]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727080AbgJFTTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 15:19:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52216 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727038AbgJFTTi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 15:19:38 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A507BC061755
+        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 12:19:38 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kPsUe-0001mt-I1; Tue, 06 Oct 2020 21:19:24 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:5d91:2e2e:81e1:aa2d] (unknown [IPv6:2a03:f580:87bc:d400:5d91:2e2e:81e1:aa2d])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id A44285736DF;
+        Tue,  6 Oct 2020 19:19:13 +0000 (UTC)
+Subject: Re: [PATCH 2/3] dt-bindings: can: rcar_can: Add r8a7742 support
+To:     "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Cc:     Rob Herring <robh@kernel.org>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, linux-can@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+References: <20200816190732.6905-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20200816190732.6905-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20200825022102.GA3808062@bogus>
+ <CA+V-a8tFqsWE+vhF4R3-Ce0MjamPkWdwYSm8pAVN9AXSUq4d=g@mail.gmail.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <4ad66cd3-7c81-d83c-4c91-e9348a951028@pengutronix.de>
+Date:   Tue, 6 Oct 2020 21:19:09 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
+In-Reply-To: <CA+V-a8tFqsWE+vhF4R3-Ce0MjamPkWdwYSm8pAVN9AXSUq4d=g@mail.gmail.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="dxxBE5NOmk4pvu6T04oZaFIQ9X2ISSkJu"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
-Sent: Tuesday, October 6, 2020 3:53 PM
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--dxxBE5NOmk4pvu6T04oZaFIQ9X2ISSkJu
+Content-Type: multipart/mixed; boundary="nbOh468bs11BFXaW07qkgNPGXBteKDalK";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: "Lad, Prabhakar" <prabhakar.csengg@gmail.com>,
+ "David S. Miller" <davem@davemloft.net>
+Cc: Rob Herring <robh@kernel.org>,
+ Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+ Magnus Damm <magnus.damm@gmail.com>, Linus Walleij
+ <linus.walleij@linaro.org>, Rob Herring <robh+dt@kernel.org>,
+ Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, Wolfgang Grandegger <wg@grandegger.com>,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
+ linux-can@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+ Geert Uytterhoeven <geert+renesas@glider.be>
+Message-ID: <4ad66cd3-7c81-d83c-4c91-e9348a951028@pengutronix.de>
+Subject: Re: [PATCH 2/3] dt-bindings: can: rcar_can: Add r8a7742 support
+References: <20200816190732.6905-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20200816190732.6905-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20200825022102.GA3808062@bogus>
+ <CA+V-a8tFqsWE+vhF4R3-Ce0MjamPkWdwYSm8pAVN9AXSUq4d=g@mail.gmail.com>
+In-Reply-To: <CA+V-a8tFqsWE+vhF4R3-Ce0MjamPkWdwYSm8pAVN9AXSUq4d=g@mail.gmail.com>
 
-> The phy_reset_after_clk_enable() does a PHY reset, which means the PHY
-> loses its register settings. The fec_enet_mii_probe() starts the PHY
-> and does the necessary calls to configure the PHY via PHY framework,
-> and loads the correct register settings into the PHY. Therefore,
-> fec_enet_mii_probe() should be called only after the PHY has been
-> reset, not before as it is now.
->=20
-> Fixes: 1b0a83ac04e3 ("net: fec: add phy_reset_after_clk_enable() support"=
-)
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Tested-by: Richard Leitner <richard.leitner@skidata.com>
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: Christoph Niedermaier <cniedermaier@dh-electronics.com>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: NXP Linux Team <linux-imx@nxp.com>
-> Cc: Richard Leitner <richard.leitner@skidata.com>
-> Cc: Shawn Guo <shawnguo@kernel.org>
-> ---
->  drivers/net/ethernet/freescale/fec_main.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/freescale/fec_main.c
-> b/drivers/net/ethernet/freescale/fec_main.c
-> index c043afb38b6e..2d5433301843 100644
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -2983,17 +2983,17 @@ fec_enet_open(struct net_device *ndev)
->         /* Init MAC prior to mii bus probe */
->         fec_restart(ndev);
->=20
-> -       /* Probe and connect to PHY when open the interface */
-> -       ret =3D fec_enet_mii_probe(ndev);
-> -       if (ret)
-> -               goto err_enet_mii_probe;
-> -
->         /* Call phy_reset_after_clk_enable() again if it failed during
->          * phy_reset_after_clk_enable() before because the PHY wasn't
-> probed.
->          */
->         if (reset_again)
->                 phy_reset_after_clk_enable(ndev->phydev);
->=20
-> +       /* Probe and connect to PHY when open the interface */
-> +       ret =3D fec_enet_mii_probe(ndev);
-> +       if (ret)
-> +               goto err_enet_mii_probe;
-> +
->         if (fep->quirks & FEC_QUIRK_ERR006687)
->                 imx6q_cpuidle_fec_irqs_used();
->=20
-> --
-> 2.28.0
+--nbOh468bs11BFXaW07qkgNPGXBteKDalK
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-Tested-by: Christoph Niedermaier <cniedermaier@dh-electronics.com>
+On 10/6/20 9:36 AM, Lad, Prabhakar wrote:
+> On Tue, Aug 25, 2020 at 3:21 AM Rob Herring <robh@kernel.org> wrote:
+>>
+>> On Sun, 16 Aug 2020 20:07:31 +0100, Lad Prabhakar wrote:
+>>> Document RZ/G1H (r8a7742) SoC specific bindings. The R8A7742 CAN modu=
+le
+>>> is identical to R-Car Gen2 family.
+>>>
+>>> No driver change is needed due to the fallback compatible value
+>>> "renesas,rcar-gen2-can".
+>>>
+>>> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com=
+>
+>>> Reviewed-by: Chris Paterson <Chris.Paterson2@renesas.com>
+>>> ---
+>>>  Documentation/devicetree/bindings/net/can/rcar_can.txt | 3 ++-
+>>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>>
+>>
+>> Acked-by: Rob Herring <robh@kernel.org>
+>>
+> Could you please pick up this patch. It has been acked by the
+> maintainers. Let me know if you want me to RESEND this patch.
+
+Added this patch to linux-can-next.
+
+Tnx,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--nbOh468bs11BFXaW07qkgNPGXBteKDalK--
+
+--dxxBE5NOmk4pvu6T04oZaFIQ9X2ISSkJu
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl98wy0ACgkQqclaivrt
+76ln4Qf/WCSgqd3PqbxwMwYPx+VV54vnaroFMm1IrMupW194qR8bkGEyvA/FpjX2
+hPkagev4CzLTwd72FmXJyfGzbF2YZrr0nWIrvOt4h3oSiBqBt4BgU/WVLv9SjJhb
+8V0MdbuJL9nYajwCjiPsDOpR1urhWllL9WB6hQAI9MpZY5eY/AHiVNxbDSTbiDNT
+2Enq+FrgOGgI0U2+xFkFigE1/tO1GQ48vv7UtP1j8qc8VB67mDbqi+hJOcSO9Umg
+ic+atoJEZhg4w3jmxlDqrZ8aQXPuUUxMODXJFte/NRat/XoP9gZAziohVmd0Q2Tw
+8iNpXTGeeIgdXJT3SN+2RY0BPc60uQ==
+=uCEV
+-----END PGP SIGNATURE-----
+
+--dxxBE5NOmk4pvu6T04oZaFIQ9X2ISSkJu--
