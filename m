@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 989D22845D7
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 08:12:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E9682845D8
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 08:12:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727092AbgJFGMf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 02:12:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43648 "EHLO
+        id S1727104AbgJFGMj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 02:12:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726022AbgJFGMf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 02:12:35 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 257CBC0613A7
-        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 23:12:35 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id h2so698191pll.11
-        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 23:12:35 -0700 (PDT)
+        with ESMTP id S1726022AbgJFGMj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 02:12:39 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 327C3C0613A7
+        for <netdev@vger.kernel.org>; Mon,  5 Oct 2020 23:12:39 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id 34so7378935pgo.13
+        for <netdev@vger.kernel.org>; Mon, 05 Oct 2020 23:12:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=NapLG5xGSA6zL7J4CktPjbhy5S9DFmPYUCoV49Bbr34=;
-        b=CdbnlBWKTZovz9tvPQs8fjsXRAFxLTlVK4XKsSxC9O/bRuYM9Ii//y7Olj636xrYr9
-         ckNNFawu5S5apOOU/c+fwJtb03iK5Qt6kS7DWDujsbwKVrBfT8gQHvR0liIidcctl7i6
-         dwBn68BLo0YM0Yyto9rvZnq3kmIFwaBzo2aCsAqcAi47y1uBtHeOvab6Yjbd250Pewij
-         vEzaKf8KLNjK6qdPJU/CDRXECkWX7awtMO6xIC0EfO8WtLQoy0CLpOU4ccYAXTO3s7Vi
-         mwPpiRMWPJVpcs6h6d2G6L+rN4s81UbcP8RnJZ7nyZggUWNRhyQJ1rVKnfKALgS6pG6x
-         Pwmw==
+        bh=BNLKh6X7abDI2ONK24Z9VMkrZsBSfKxmcrOIvLnwVgE=;
+        b=ujxaciNgyIGB2h3LssEMVCVlBX94zrlLu3fJguod2tJ+HTSb0vQzi2rQRcUNEj/Tcw
+         Yg0FtZgWxBVn8gJj/ElBiAjqWa8R0SL5MLouMjckVL0qjY5XQnqD/++i1qSKzvcRBSI1
+         wMIqpx4GHU2K4z0MTs++uEKjttwG+qTOEa9eG4JsAnh5Fb+pHSI716lhUzpag9cCsGHl
+         LaGKzy1ZwmKBpKbeLMEsA/DlmGXzRbsCo1Oqv4o9wwX9pm8zQWejhqaBTyNTEVdlU8KT
+         JUHUuYEoXE7u0kqFmGe12nbI85kObwfktG98Zr/FI8GOPzX9EFfL7Z0YjiDzSm6MWTJ+
+         egMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=NapLG5xGSA6zL7J4CktPjbhy5S9DFmPYUCoV49Bbr34=;
-        b=AF9w7AbP4i+AbgpGasGxi+9+eAnpewkTXNxXVHfGZiSy3yNQIvRhma3p/QNgo42VKW
-         bmJaoXHIo5ynANSplgOxYQTnLuuYPk5j12wKmcC3BxEX/ITWUZl8J60G0wICDY2yN1FA
-         JcylOaQuDW6Cei6dlu7wbK6uOgp6qLENMMe6T9M7DKHD0Z6rPdBMiJGOcKnTbawMEjBq
-         q9kDl2FHDaj81TZ7rT3dScIhjg5nfPBBuEDkzs2lSS1gcCfhEp62oGqAJCiZ1EaZs79p
-         BW7g9ooXzc5eVFgiSUlFOcp1Yv66OwyLSNG99jt/dX1XawQle8aaZIEhU4GIeJBLgykc
-         pxfw==
-X-Gm-Message-State: AOAM532TOelWpBIU8E1LC6d/NGDRJK2FMxyQhC6ncknUNUYpagepU9in
-        xcxSy0rvLTepG8iCCGiuMgs=
-X-Google-Smtp-Source: ABdhPJxPE0A1OVr8iMMrhTVelXa4bjkxigLnFGwSmZyqsZ9giWhc3rDaBC4Rs91EciDvKR60MQMH3w==
-X-Received: by 2002:a17:90a:e64c:: with SMTP id ep12mr2803977pjb.43.1601964754720;
-        Mon, 05 Oct 2020 23:12:34 -0700 (PDT)
+        bh=BNLKh6X7abDI2ONK24Z9VMkrZsBSfKxmcrOIvLnwVgE=;
+        b=I5gXPjbB6wzD7Q58HH80I7Kg9eOGIcnnyZrJwErNLSa1rt00uTTZpTFvMU7sMFgmtS
+         Qpp15YFD+Ud7EqySNcCKOE3W2nRk1qlsMDmaEVAowmhRVYHsmm1MQCaB/teaIzyVHRfx
+         0M0IJSrXIqRfkEEIGQMP6ULBA6858V4RoAGKQmsFw6DFxGd7MfWFJf0iJ2rdn8LYHfKa
+         niZ0WxLZFr2eH6E0GD9g09QOhu4wubjADlQmsp5vZZ4bw4VFdblKtnX0pzyQ1g8o2i/h
+         oLuzk2RYPdVCZ24W4gQqvYimvFnl22Z9fdlanphaVoR+E8/rTs+90NjGZRP8jjOUVMAq
+         lb/A==
+X-Gm-Message-State: AOAM533PvPV7MSuOFsZeviBLQKwdFTZc10AS9AL6Tp3WHVfHgkvrFWmi
+        gI26tALioPs5kwXougL4mKg=
+X-Google-Smtp-Source: ABdhPJz2tMp3zxw37SP4I5yMK7z3BDlb5PY+j6FZWwodBZKmQkb4W27TxZQgRiKzqiy0+eqkho1sMg==
+X-Received: by 2002:a65:6a0a:: with SMTP id m10mr1391227pgu.162.1601964758788;
+        Mon, 05 Oct 2020 23:12:38 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.203.202])
-        by smtp.gmail.com with ESMTPSA id c12sm2046410pfj.164.2020.10.05.23.12.30
+        by smtp.gmail.com with ESMTPSA id c12sm2046410pfj.164.2020.10.05.23.12.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 05 Oct 2020 23:12:34 -0700 (PDT)
+        Mon, 05 Oct 2020 23:12:38 -0700 (PDT)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     davem@davemloft.net
 Cc:     m.grzeschik@pengutronix.de, kuba@kernel.org, paulus@samba.org,
@@ -54,9 +54,9 @@ Cc:     m.grzeschik@pengutronix.de, kuba@kernel.org, paulus@samba.org,
         UNGLinuxDriver@microchip.com, petkan@nucleusys.com,
         netdev@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [next-next v3 05/10] net: cdc_ncm: convert tasklets to use new tasklet_setup() API
-Date:   Tue,  6 Oct 2020 11:41:54 +0530
-Message-Id: <20201006061159.292340-6-allen.lkml@gmail.com>
+Subject: [next-next v3 06/10] net: hso: convert tasklets to use new tasklet_setup() API
+Date:   Tue,  6 Oct 2020 11:41:55 +0530
+Message-Id: <20201006061159.292340-7-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201006061159.292340-1-allen.lkml@gmail.com>
 References: <20201006061159.292340-1-allen.lkml@gmail.com>
@@ -76,43 +76,38 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <apais@linux.microsoft.com>
 ---
- drivers/net/usb/cdc_ncm.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/usb/hso.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-index e04f58853..57a95ef90 100644
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -61,7 +61,7 @@ static bool prefer_mbim;
- module_param(prefer_mbim, bool, 0644);
- MODULE_PARM_DESC(prefer_mbim, "Prefer MBIM setting on dual NCM/MBIM functions");
- 
--static void cdc_ncm_txpath_bh(unsigned long param);
-+static void cdc_ncm_txpath_bh(struct tasklet_struct *t);
- static void cdc_ncm_tx_timeout_start(struct cdc_ncm_ctx *ctx);
- static enum hrtimer_restart cdc_ncm_tx_timer_cb(struct hrtimer *hr_timer);
- static struct usb_driver cdc_ncm_driver;
-@@ -815,7 +815,7 @@ int cdc_ncm_bind_common(struct usbnet *dev, struct usb_interface *intf, u8 data_
- 
- 	hrtimer_init(&ctx->tx_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
- 	ctx->tx_timer.function = &cdc_ncm_tx_timer_cb;
--	tasklet_init(&ctx->bh, cdc_ncm_txpath_bh, (unsigned long)dev);
-+	tasklet_setup(&ctx->bh, cdc_ncm_txpath_bh);
- 	atomic_set(&ctx->stop, 0);
- 	spin_lock_init(&ctx->mtx);
- 
-@@ -1468,9 +1468,9 @@ static enum hrtimer_restart cdc_ncm_tx_timer_cb(struct hrtimer *timer)
- 	return HRTIMER_NORESTART;
- }
- 
--static void cdc_ncm_txpath_bh(unsigned long param)
-+static void cdc_ncm_txpath_bh(struct tasklet_struct *t)
+diff --git a/drivers/net/usb/hso.c b/drivers/net/usb/hso.c
+index 2bb28db89..3b08a6b5d 100644
+--- a/drivers/net/usb/hso.c
++++ b/drivers/net/usb/hso.c
+@@ -1213,9 +1213,10 @@ static void hso_std_serial_read_bulk_callback(struct urb *urb)
+  * This needs to be a tasklet otherwise we will
+  * end up recursively calling this function.
+  */
+-static void hso_unthrottle_tasklet(unsigned long data)
++static void hso_unthrottle_tasklet(struct tasklet_struct *t)
  {
--	struct usbnet *dev = (struct usbnet *)param;
-+	struct usbnet *dev = from_tasklet(dev, t, bh);
- 	struct cdc_ncm_ctx *ctx = (struct cdc_ncm_ctx *)dev->data[0];
+-	struct hso_serial *serial = (struct hso_serial *)data;
++	struct hso_serial *serial = from_tasklet(serial, t,
++						 unthrottle_tasklet);
+ 	unsigned long flags;
  
- 	spin_lock_bh(&ctx->mtx);
+ 	spin_lock_irqsave(&serial->serial_lock, flags);
+@@ -1264,9 +1265,8 @@ static int hso_serial_open(struct tty_struct *tty, struct file *filp)
+ 		serial->rx_state = RX_IDLE;
+ 		/* Force default termio settings */
+ 		_hso_serial_set_termios(tty, NULL);
+-		tasklet_init(&serial->unthrottle_tasklet,
+-			     hso_unthrottle_tasklet,
+-			     (unsigned long)serial);
++		tasklet_setup(&serial->unthrottle_tasklet,
++			      hso_unthrottle_tasklet);
+ 		result = hso_start_serial_device(serial->parent, GFP_KERNEL);
+ 		if (result) {
+ 			hso_stop_serial_device(serial->parent);
 -- 
 2.25.1
 
