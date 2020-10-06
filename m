@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00B6A284FA9
+	by mail.lfdr.de (Postfix) with ESMTP id 9C6F4284FAA
 	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 18:16:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726138AbgJFQQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 12:16:33 -0400
+        id S1726319AbgJFQQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 12:16:39 -0400
 Received: from mga04.intel.com ([192.55.52.120]:58074 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725970AbgJFQQd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Oct 2020 12:16:33 -0400
-IronPort-SDR: V/20mc1Sn9GfXO/FVQ9PIl/g2bF/vZNZJLW3dI+5MUVWE2kRQ2B4klrkNduzmol+oT1Jd7egKt
- azGxddKz9Zkw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9765"; a="161938618"
+        id S1726164AbgJFQQe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Oct 2020 12:16:34 -0400
+IronPort-SDR: BeJeMJUwVpu/AIIH+HGB9duLyAwVEEM5Hk8ytkNxCrneMxIq0DhKK386yslSadQkwbsl9sK2Vt
+ wCWCBkLS8W0Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9765"; a="161938666"
 X-IronPort-AV: E=Sophos;i="5.77,343,1596524400"; 
-   d="scan'208";a="161938618"
+   d="scan'208";a="161938666"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Oct 2020 09:06:39 -0700
-IronPort-SDR: H8Xe/8tGV9mu9bEzuirarxuexnEAMYA1IUaCIvcO5OBD020IGv8TROaacCtx1z27164tKSfAcf
- 0RVdTrdaGk4w==
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Oct 2020 09:06:41 -0700
+IronPort-SDR: gLn2PNcREqB/Sc+uCkPZAOEbyu8ce7RrryXA8dwkkpgJryON4hyb1tco+VEN+VBMZE8WXFeZtj
+ c165vqiOexUw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.77,343,1596524400"; 
-   d="scan'208";a="460862552"
+   d="scan'208";a="460862565"
 Received: from climb.png.intel.com ([10.221.118.165])
-  by orsmga004.jf.intel.com with ESMTP; 06 Oct 2020 09:06:33 -0700
+  by orsmga004.jf.intel.com with ESMTP; 06 Oct 2020 09:06:37 -0700
 From:   Voon Weifeng <weifeng.voon@intel.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>
@@ -40,10 +40,12 @@ Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         Seow Chen Yong <chen.yong.seow@intel.com>,
         Mark Gross <mgross@linux.intel.com>,
         Wong Vee Khee <vee.khee.wong@intel.com>
-Subject: [PATCH v1 net-next] net: stmmac: Enable EEE HW LPI timer with auto SW/HW auto switch
-Date:   Wed,  7 Oct 2020 00:06:32 +0800
-Message-Id: <20201006160633.23470-1-weifeng.voon@intel.com>
+Subject: [PATCH v1 net-next] net: stmmac: Enable EEE HW LPI timer with auto SW/HW switching
+Date:   Wed,  7 Oct 2020 00:06:33 +0800
+Message-Id: <20201006160633.23470-2-weifeng.voon@intel.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20201006160633.23470-1-weifeng.voon@intel.com>
+References: <20201006160633.23470-1-weifeng.voon@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -61,12 +63,11 @@ Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
 ---
  drivers/net/ethernet/stmicro/stmmac/common.h  |  3 ++
  drivers/net/ethernet/stmicro/stmmac/dwmac4.h  |  2 ++
- .../net/ethernet/stmicro/stmmac/dwmac4_core.c | 24 +++++++++++++++
+ .../net/ethernet/stmicro/stmmac/dwmac4_core.c | 24 ++++++++++++++
  drivers/net/ethernet/stmicro/stmmac/hwif.h    |  3 ++
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  1 +
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 30 +++++++++++++++++--
- include/linux/stmmac.h                        |  1 +
- 7 files changed, 62 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  2 ++
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 31 +++++++++++++++++--
+ 6 files changed, 62 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
 index df7de50497a0..f59c4a1c1674 100644
@@ -176,10 +177,18 @@ index e2dca9b6e992..b40b2e0667bb 100644
  	stmmac_do_void_callback(__priv, mac, set_eee_timer, __args)
  #define stmmac_set_eee_pls(__priv, __args...) \
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index 014a816c9d0b..9c5c16709dc3 100644
+index 727e68dfaf1c..072e36852f63 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -266,6 +266,7 @@ int stmmac_dvr_probe(struct device *device,
+@@ -207,6 +207,7 @@ struct stmmac_priv {
+ 	int tx_lpi_timer;
+ 	int tx_lpi_enabled;
+ 	int eee_tw_timer;
++	bool eee_sw_timer_en;
+ 	unsigned int mode;
+ 	unsigned int chain_mode;
+ 	int extend_desc;
+@@ -268,6 +269,7 @@ int stmmac_dvr_probe(struct device *device,
  		     struct stmmac_resources *res);
  void stmmac_disable_eee_mode(struct stmmac_priv *priv);
  bool stmmac_eee_init(struct stmmac_priv *priv);
@@ -188,14 +197,14 @@ index 014a816c9d0b..9c5c16709dc3 100644
  int stmmac_reinit_ringparam(struct net_device *dev, u32 rx_size, u32 tx_size);
  
 diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 4779826b997d..779e95e458e6 100644
+index 220626a8d499..908df3cb12cd 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
 @@ -327,6 +327,11 @@ static void stmmac_enable_eee_mode(struct stmmac_priv *priv)
   */
  void stmmac_disable_eee_mode(struct stmmac_priv *priv)
  {
-+	if (!priv->plat->eee_timer) {
++	if (!priv->eee_sw_timer_en) {
 +		stmmac_lpi_entry_timer_enable(priv, LPI_ET_DISABLE);
 +		return;
 +	}
@@ -204,7 +213,7 @@ index 4779826b997d..779e95e458e6 100644
  	del_timer_sync(&priv->eee_ctrl_timer);
  	priv->tx_path_in_lpi_mode = false;
 @@ -347,6 +352,16 @@ static void stmmac_eee_ctrl_timer(struct timer_list *t)
- 	mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(eee_timer));
+ 	mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(priv->tx_lpi_timer));
  }
  
 +void stmmac_lpi_entry_timer_enable(struct stmmac_priv *priv, bool en)
@@ -212,7 +221,7 @@ index 4779826b997d..779e95e458e6 100644
 +	int tx_lpi_timer;
 +
 +	/* Clear/set the SW EEE timer flag based on LPI ET enablement */
-+	priv->plat->eee_timer = en ? 0 : 1;
++	priv->eee_sw_timer_en = en ? 0 : 1;
 +	tx_lpi_timer  = en ? priv->tx_lpi_timer : 0;
 +	stmmac_set_eee_lpi_timer(priv, priv->hw, tx_lpi_timer);
 +}
@@ -226,54 +235,44 @@ index 4779826b997d..779e95e458e6 100644
  			netdev_dbg(priv->dev, "disable EEE\n");
 +			stmmac_lpi_entry_timer_enable(priv, LPI_ET_DISABLE);
  			del_timer_sync(&priv->eee_ctrl_timer);
- 			stmmac_set_eee_timer(priv, priv->hw, 0, tx_lpi_timer);
+ 			stmmac_set_eee_timer(priv, priv->hw, 0, eee_tw_timer);
  		}
-@@ -390,6 +406,15 @@ bool stmmac_eee_init(struct stmmac_priv *priv)
- 				     tx_lpi_timer);
+@@ -389,7 +405,15 @@ bool stmmac_eee_init(struct stmmac_priv *priv)
+ 				     eee_tw_timer);
  	}
  
+-	mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(priv->tx_lpi_timer));
 +	if (priv->plat->has_gmac4 && priv->tx_lpi_timer <= STMMAC_ET_MAX) {
 +		del_timer_sync(&priv->eee_ctrl_timer);
 +		priv->tx_path_in_lpi_mode = false;
 +		stmmac_lpi_entry_timer_enable(priv, LPI_ET_ENABLE);
 +	} else {
 +		stmmac_lpi_entry_timer_enable(priv, LPI_ET_DISABLE);
-+		mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(tx_lpi_timer));
++		mod_timer(&priv->eee_ctrl_timer,
++			  STMMAC_LPI_T(priv->tx_lpi_timer));
 +	}
-+
+ 
  	mutex_unlock(&priv->lock);
  	netdev_dbg(priv->dev, "Energy-Efficient Ethernet initialized\n");
- 	return true;
-@@ -2041,7 +2066,8 @@ static int stmmac_tx_clean(struct stmmac_priv *priv, int budget, u32 queue)
+@@ -2044,7 +2068,8 @@ static int stmmac_tx_clean(struct stmmac_priv *priv, int budget, u32 queue)
  		netif_tx_wake_queue(netdev_get_tx_queue(priv->dev, queue));
  	}
  
 -	if ((priv->eee_enabled) && (!priv->tx_path_in_lpi_mode)) {
 +	if (priv->eee_enabled && !priv->tx_path_in_lpi_mode &&
-+	    priv->plat->eee_timer) {
++	    priv->eee_sw_timer_en) {
  		stmmac_enable_eee_mode(priv);
- 		mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(eee_timer));
+ 		mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(priv->tx_lpi_timer));
  	}
-@@ -3299,7 +3325,7 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
+@@ -3306,7 +3331,7 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
  	tx_q = &priv->tx_queue[queue];
  	first_tx = tx_q->cur_tx;
  
 -	if (priv->tx_path_in_lpi_mode)
-+	if (priv->tx_path_in_lpi_mode && priv->plat->eee_timer)
++	if (priv->tx_path_in_lpi_mode && priv->eee_sw_timer_en)
  		stmmac_disable_eee_mode(priv);
  
  	/* Manage oversized TCP frames for GMAC4 device */
-diff --git a/include/linux/stmmac.h b/include/linux/stmmac.h
-index 00e83c877496..dc688e6cc362 100644
---- a/include/linux/stmmac.h
-+++ b/include/linux/stmmac.h
-@@ -200,5 +200,6 @@ struct plat_stmmacenet_data {
- 	int has_xgmac;
- 	bool vlan_fail_q_en;
- 	u8 vlan_fail_q;
-+	bool eee_timer;
- };
- #endif
 -- 
 2.17.1
 
