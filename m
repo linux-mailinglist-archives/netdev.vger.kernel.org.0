@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 346C8284E66
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 16:56:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 323CD284E63
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 16:55:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726572AbgJFOzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 10:55:48 -0400
-Received: from esa4.microchip.iphmx.com ([68.232.154.123]:45069 "EHLO
-        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726517AbgJFOzo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 10:55:44 -0400
+        id S1726616AbgJFOzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 10:55:49 -0400
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:32918 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726525AbgJFOzq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 10:55:46 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1601996144; x=1633532144;
+  t=1601996146; x=1633532146;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=BNr0fzGMsgnTYsz95Ukwo9ZEuwPvE9qmtjZvnPjh5/M=;
-  b=ry4TjXq5BQSqIgD90pDTrH8rXNwNlzz+9/2jORtwGzsxscsNQO7NmIij
-   0wEux2gYlw7uh01ExEoRSDp+uP+niz7h/j4CScfqIIDbBoNqizT6ZbMK4
-   74Gsm2A/9JxKVSZgEbx8TV20xn4wxO5rwkqKyCHnnn7NDrefnMmTWL5uO
-   SMq/t8pRFIkASbmX4baQNjRplnzn9nUazQjq3UR+ssQcNpRlEMpHcjBKO
-   JnEuuc8Xs37J9z2NRdxl5KIEx06Pvzfj8KNzpOsiPgiml1v8lAG0Ak58K
-   Fzd5H/YpTGGiV8ez0KnI3RxktBWdN9Woa7kCCfdUHE8UmUVN9rsNFhjL4
+  bh=FHI9pF1PqUVmJKyaV+8zX2DLW8NZ18t1BrTCAp6IIdc=;
+  b=xTEG65pg1CbaEw64KtnUoRYQaju5T3qF0fGPSLSx+N5K3qGmwgG8lhil
+   yT2x2Hol952VXR6S3xzJaOKPOHvnit8OTkehGEATq4KUMpvxxjv7nSBEi
+   4umCVx/i44BU2pZBRfaSsKmjQ847pVNb+RE/RHREry9F2CDto05/STDgL
+   KXsniuhimDgyRyjluld/Y1TWu5QNAXo7wyPSV4baz1uB0E3v0o2sFKdsO
+   rxWQsy20AAI29g+Ngc7/s9t25b+u4nokbKVHIEBqW4FpXw6ebwml6lc4u
+   WmofQZB91MjJN60OKBcLqoahYVsZg3eSG45hBH9KxYHb5nqmGxgQyRILX
    w==;
-IronPort-SDR: 6MmLTAzIx6pd/qXcpi5Xpe4ia3/Xug22oHk9Tpmdev4MeyyfeGeJp4RlfiBA1LK+5lz/DF7lyk
- VDlsbt+dZzle8fq+CEBRA0I8UKLQTosjcDvR4B0GK+mi8A5zVBezcLj40t5LXJBMNlYEO2Uv0d
- qn4mr9HzfGBcZ/AUx27xaXiYMmxbFDYgYjhsshtqEah7ZRfY9L/DddnybePTDAKp0LClUHiZB7
- 5aiRKQDvEnMahT90Mhvyrk7s46VbEV5WJeo/m8w776GlBXhMNYmTTimK2Ci4I149gPYdjnP7FM
- 5RI=
+IronPort-SDR: bYTjLNM32XCgMafyI5xnJwq3FCVkix9WK8CBrGQhm7BGZt8a+5+6yMmkqpTzpw6k4WgRgcApj1
+ 6laqznpqhW8wVRDftB+ew5BBMGtsJFIGgDzh7J1KkdZoX/CsTGgpBfe8mR3WEp2Q7sTnS4cxqp
+ 547FniPIm/TXFw0CCvv1xhTrTEBAgbJvQGXo4oymn/N6RA/tkTWDZd0cpT5lfE/hKf4jLh5Vwa
+ pNiP51GmeQSN4Rn3JQIG6CiNQAkIehpwoa+XpGPMbKEO82nHVkMcnOU1nncSTlZN/9VE9wQLOF
+ Exc=
 X-IronPort-AV: E=Sophos;i="5.77,343,1596524400"; 
-   d="scan'208";a="89282776"
+   d="scan'208";a="94386884"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Oct 2020 07:55:43 -0700
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 06 Oct 2020 07:55:45 -0700
 Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 6 Oct 2020 07:55:32 -0700
+ 15.1.1979.3; Tue, 6 Oct 2020 07:55:45 -0700
 Received: from soft-test08.microsemi.net (10.10.115.15) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Tue, 6 Oct 2020 07:55:40 -0700
+ 15.1.1979.3 via Frontend Transport; Tue, 6 Oct 2020 07:55:43 -0700
 From:   Henrik Bjoernlund <henrik.bjoernlund@microchip.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <roopa@nvidia.com>,
         <nikolay@nvidia.com>, <jiri@resnulli.us>, <idosch@mellanox.com>,
@@ -47,9 +47,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <roopa@nvidia.com>,
         <bridge@lists.linux-foundation.org>, <UNGLinuxDriver@microchip.com>
 CC:     Henrik Bjoernlund <henrik.bjoernlund@microchip.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [net-next v3 1/9] net: bridge: extend the process of special frames
-Date:   Tue, 6 Oct 2020 14:53:30 +0000
-Message-ID: <20201006145338.1956886-2-henrik.bjoernlund@microchip.com>
+Subject: [net-next v3 2/9] bridge: cfm: Add BRIDGE_CFM to Kconfig.
+Date:   Tue, 6 Oct 2020 14:53:31 +0000
+Message-ID: <20201006145338.1956886-3-henrik.bjoernlund@microchip.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201006145338.1956886-1-henrik.bjoernlund@microchip.com>
 References: <20201006145338.1956886-1-henrik.bjoernlund@microchip.com>
@@ -60,196 +60,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch extends the processing of frames in the bridge. Currently MRP
-frames needs special processing and the current implementation doesn't
-allow a nice way to process different frame types. Therefore try to
-improve this by adding a list that contains frame types that need
-special processing. This list is iterated for each input frame and if
-there is a match based on frame type then these functions will be called
-and decide what to do with the frame. It can process the frame then the
-bridge doesn't need to do anything or don't process so then the bridge
-will do normal forwarding.
+This makes it possible to include or exclude the CFM
+protocol according to 802.1Q section 12.14.
 
-Reviewed-by: Horatiu Vultur  <horatiu.vultur@microchip.com>
 Signed-off-by: Henrik Bjoernlund  <henrik.bjoernlund@microchip.com>
+Reviewed-by: Horatiu Vultur  <horatiu.vultur@microchip.com>
 ---
- net/bridge/br_device.c  |  1 +
- net/bridge/br_input.c   | 31 ++++++++++++++++++++++++++++++-
- net/bridge/br_mrp.c     | 19 +++++++++++++++----
- net/bridge/br_private.h | 18 ++++++++++++------
- 4 files changed, 58 insertions(+), 11 deletions(-)
+ net/bridge/Kconfig      | 11 +++++++++++
+ net/bridge/br_device.c  |  3 +++
+ net/bridge/br_private.h |  3 +++
+ 3 files changed, 17 insertions(+)
 
+diff --git a/net/bridge/Kconfig b/net/bridge/Kconfig
+index 80879196560c..3c8ded7d3e84 100644
+--- a/net/bridge/Kconfig
++++ b/net/bridge/Kconfig
+@@ -73,3 +73,14 @@ config BRIDGE_MRP
+ 	  Say N to exclude this support and reduce the binary size.
+ 
+ 	  If unsure, say N.
++
++config BRIDGE_CFM
++	bool "CFM protocol"
++	depends on BRIDGE
++	help
++	  If you say Y here, then the Ethernet bridge will be able to run CFM
++	  protocol according to 802.1Q section 12.14
++
++	  Say N to exclude this support and reduce the binary size.
++
++	  If unsure, say N.
 diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
-index 9a2fb4aa1a10..206c4ba51cd2 100644
+index 206c4ba51cd2..2a3b316f32eb 100644
 --- a/net/bridge/br_device.c
 +++ b/net/bridge/br_device.c
-@@ -473,6 +473,7 @@ void br_dev_setup(struct net_device *dev)
- 	spin_lock_init(&br->lock);
- 	INIT_LIST_HEAD(&br->port_list);
- 	INIT_HLIST_HEAD(&br->fdb_list);
-+	INIT_HLIST_HEAD(&br->frame_type_list);
+@@ -476,6 +476,9 @@ void br_dev_setup(struct net_device *dev)
+ 	INIT_HLIST_HEAD(&br->frame_type_list);
  #if IS_ENABLED(CONFIG_BRIDGE_MRP)
  	INIT_LIST_HEAD(&br->mrp_list);
++#endif
++#if IS_ENABLED(CONFIG_BRIDGE_CFM)
++	INIT_HLIST_HEAD(&br->mep_list);
  #endif
-diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index 59a318b9f646..8b2638cb550d 100644
---- a/net/bridge/br_input.c
-+++ b/net/bridge/br_input.c
-@@ -254,6 +254,21 @@ static int nf_hook_bridge_pre(struct sk_buff *skb, struct sk_buff **pskb)
- 	return RX_HANDLER_CONSUMED;
- }
+ 	spin_lock_init(&br->hash_lock);
  
-+/* Return 0 if the frame was not processed otherwise 1
-+ * note: already called with rcu_read_lock
-+ */
-+static int br_process_frame_type(struct net_bridge_port *p,
-+				 struct sk_buff *skb)
-+{
-+	struct br_frame_type *tmp;
-+
-+	hlist_for_each_entry_rcu(tmp, &p->br->frame_type_list, list)
-+		if (unlikely(tmp->type == skb->protocol))
-+			return tmp->frame_handler(p, skb);
-+
-+	return 0;
-+}
-+
- /*
-  * Return NULL if skb is handled
-  * note: already called with rcu_read_lock
-@@ -343,7 +358,7 @@ static rx_handler_result_t br_handle_frame(struct sk_buff **pskb)
- 		}
- 	}
- 
--	if (unlikely(br_mrp_process(p, skb)))
-+	if (unlikely(br_process_frame_type(p, skb)))
- 		return RX_HANDLER_PASS;
- 
- forward:
-@@ -380,3 +395,17 @@ rx_handler_func_t *br_get_rx_handler(const struct net_device *dev)
- 
- 	return br_handle_frame;
- }
-+
-+void br_add_frame(struct net_bridge *br, struct br_frame_type *ft)
-+{
-+	hlist_add_head_rcu(&ft->list, &br->frame_type_list);
-+}
-+
-+void br_del_frame(struct net_bridge *br, struct br_frame_type *ft)
-+{
-+	struct br_frame_type *tmp;
-+
-+	hlist_for_each_entry(tmp, &br->frame_type_list, list)
-+		if (ft == tmp)
-+			hlist_del_rcu(&ft->list);
-+}
-diff --git a/net/bridge/br_mrp.c b/net/bridge/br_mrp.c
-index b36689e6e7cb..f94d72bb7c32 100644
---- a/net/bridge/br_mrp.c
-+++ b/net/bridge/br_mrp.c
-@@ -6,6 +6,13 @@
- static const u8 mrp_test_dmac[ETH_ALEN] = { 0x1, 0x15, 0x4e, 0x0, 0x0, 0x1 };
- static const u8 mrp_in_test_dmac[ETH_ALEN] = { 0x1, 0x15, 0x4e, 0x0, 0x0, 0x3 };
- 
-+static int br_mrp_process(struct net_bridge_port *p, struct sk_buff *skb);
-+
-+static struct br_frame_type mrp_frame_type __read_mostly = {
-+	.type = cpu_to_be16(ETH_P_MRP),
-+	.frame_handler = br_mrp_process,
-+};
-+
- static bool br_mrp_is_ring_port(struct net_bridge_port *p_port,
- 				struct net_bridge_port *s_port,
- 				struct net_bridge_port *port)
-@@ -445,6 +452,9 @@ static void br_mrp_del_impl(struct net_bridge *br, struct br_mrp *mrp)
- 
- 	list_del_rcu(&mrp->list);
- 	kfree_rcu(mrp, rcu);
-+
-+	if (list_empty(&br->mrp_list))
-+		br_del_frame(br, &mrp_frame_type);
- }
- 
- /* Adds a new MRP instance.
-@@ -493,6 +503,9 @@ int br_mrp_add(struct net_bridge *br, struct br_mrp_instance *instance)
- 	spin_unlock_bh(&br->lock);
- 	rcu_assign_pointer(mrp->s_port, p);
- 
-+	if (list_empty(&br->mrp_list))
-+		br_add_frame(br, &mrp_frame_type);
-+
- 	INIT_DELAYED_WORK(&mrp->test_work, br_mrp_test_work_expired);
- 	INIT_DELAYED_WORK(&mrp->in_test_work, br_mrp_in_test_work_expired);
- 	list_add_tail_rcu(&mrp->list, &br->mrp_list);
-@@ -1172,15 +1185,13 @@ static int br_mrp_rcv(struct net_bridge_port *p,
-  * normal forwarding.
-  * note: already called with rcu_read_lock
-  */
--int br_mrp_process(struct net_bridge_port *p, struct sk_buff *skb)
-+static int br_mrp_process(struct net_bridge_port *p, struct sk_buff *skb)
- {
- 	/* If there is no MRP instance do normal forwarding */
- 	if (likely(!(p->flags & BR_MRP_AWARE)))
- 		goto out;
- 
--	if (unlikely(skb->protocol == htons(ETH_P_MRP)))
--		return br_mrp_rcv(p, skb, p->dev);
--
-+	return br_mrp_rcv(p, skb, p->dev);
- out:
- 	return 0;
- }
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 345118e35c42..3e62ce2ef8a5 100644
+index 3e62ce2ef8a5..95c82fce9959 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -480,6 +480,8 @@ struct net_bridge {
- #endif
- 	struct hlist_head		fdb_list;
- 
-+	struct hlist_head		frame_type_list;
-+
+@@ -485,6 +485,9 @@ struct net_bridge {
  #if IS_ENABLED(CONFIG_BRIDGE_MRP)
  	struct list_head		mrp_list;
  #endif
-@@ -755,6 +757,16 @@ int nbp_backup_change(struct net_bridge_port *p, struct net_device *backup_dev);
- int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb);
- rx_handler_func_t *br_get_rx_handler(const struct net_device *dev);
++#if IS_ENABLED(CONFIG_BRIDGE_CFM)
++	struct hlist_head		mep_list;
++#endif
+ };
  
-+struct br_frame_type {
-+	__be16			type;
-+	int			(*frame_handler)(struct net_bridge_port *port,
-+						 struct sk_buff *skb);
-+	struct hlist_node	list;
-+};
-+
-+void br_add_frame(struct net_bridge *br, struct br_frame_type *ft);
-+void br_del_frame(struct net_bridge *br, struct br_frame_type *ft);
-+
- static inline bool br_rx_handler_check_rcu(const struct net_device *dev)
- {
- 	return rcu_dereference(dev->rx_handler) == br_get_rx_handler(dev);
-@@ -1417,7 +1429,6 @@ extern int (*br_fdb_test_addr_hook)(struct net_device *dev, unsigned char *addr)
- #if IS_ENABLED(CONFIG_BRIDGE_MRP)
- int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
- 		 struct nlattr *attr, int cmd, struct netlink_ext_ack *extack);
--int br_mrp_process(struct net_bridge_port *p, struct sk_buff *skb);
- bool br_mrp_enabled(struct net_bridge *br);
- void br_mrp_port_del(struct net_bridge *br, struct net_bridge_port *p);
- int br_mrp_fill_info(struct sk_buff *skb, struct net_bridge *br);
-@@ -1429,11 +1440,6 @@ static inline int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
- 	return -EOPNOTSUPP;
- }
- 
--static inline int br_mrp_process(struct net_bridge_port *p, struct sk_buff *skb)
--{
--	return 0;
--}
--
- static inline bool br_mrp_enabled(struct net_bridge *br)
- {
- 	return false;
+ struct br_input_skb_cb {
 -- 
 2.28.0
 
