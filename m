@@ -2,154 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D55A284BBF
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 14:39:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44F6C284BC5
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 14:41:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726482AbgJFMjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 08:39:54 -0400
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:13857 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726362AbgJFMjx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 08:39:53 -0400
+        id S1726597AbgJFMlC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 08:41:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47212 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726362AbgJFMlB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 08:41:01 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92656C061755;
+        Tue,  6 Oct 2020 05:41:01 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id y198so10074661qka.0;
+        Tue, 06 Oct 2020 05:41:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1601987993; x=1633523993;
-  h=from:to:cc:date:message-id:references:in-reply-to:
-   content-transfer-encoding:mime-version:subject;
-  bh=cWScEf2H0N07zMQ3DijjChI3ei1wf5ykE77iwjqAp9c=;
-  b=WxG4j5KuEaloLswczX2aXeQJ4rGJxrA/L0ExJg3Ik0zPvuuIe/7aZutE
-   XtYBfZQXKKtN0SQ1y2UaksGqoPyDCCjBL7oUOHga8wSeLeHJeEzCh0iVA
-   8qvEt5cqRe5I0l0DOaO9trl7fkinlk8Wjpt4O1Uty2ewJWuPZMlh6iaJW
-   Q=;
-X-IronPort-AV: E=Sophos;i="5.77,343,1596499200"; 
-   d="scan'208";a="81962596"
-Subject: RE: [PATCH v4 bpf-next 00/13] mvneta: introduce XDP multi-buffer support
-Thread-Topic: [PATCH v4 bpf-next 00/13] mvneta: introduce XDP multi-buffer support
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2b-5bdc5131.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 06 Oct 2020 12:39:49 +0000
-Received: from EX13D28EUB002.ant.amazon.com (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
-        by email-inbound-relay-2b-5bdc5131.us-west-2.amazon.com (Postfix) with ESMTPS id D8C0DA1823;
-        Tue,  6 Oct 2020 12:39:47 +0000 (UTC)
-Received: from EX13D11EUB003.ant.amazon.com (10.43.166.58) by
- EX13D28EUB002.ant.amazon.com (10.43.166.97) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 6 Oct 2020 12:39:46 +0000
-Received: from EX13D11EUB003.ant.amazon.com ([10.43.166.58]) by
- EX13D11EUB003.ant.amazon.com ([10.43.166.58]) with mapi id 15.00.1497.006;
- Tue, 6 Oct 2020 12:39:46 +0000
-From:   "Jubran, Samih" <sameehj@amazon.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "Agroskin, Shay" <shayagr@amazon.com>,
-        "dsahern@kernel.org" <dsahern@kernel.org>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "lorenzo.bianconi@redhat.com" <lorenzo.bianconi@redhat.com>,
-        "echaudro@redhat.com" <echaudro@redhat.com>
-Thread-Index: AQHWmMpYHdcS8+W5uEiUVfwUzD8TrKmEbwiAgABKxoCABc+m8A==
-Date:   Tue, 6 Oct 2020 12:39:36 +0000
-Deferred-Delivery: Tue, 6 Oct 2020 12:39:29 +0000
-Message-ID: <ba4b2f1ef9ea434292e14f03da6bf908@EX13D11EUB003.ant.amazon.com>
-References: <cover.1601648734.git.lorenzo@kernel.org>
- <5f77467dbc1_38b0208ef@john-XPS-13-9370.notmuch>
- <5c22ee38-e2c3-0724-5033-603d19c4169f@iogearbox.net>
-In-Reply-To: <5c22ee38-e2c3-0724-5033-603d19c4169f@iogearbox.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.43.164.68]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20161025;
+        h=from:subject:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=JaPcxTzHOUYSQCnzELOojEKcjmTrX8LESVFQagjWhck=;
+        b=HOJNvrVoZQZdk40LnRGQYDH8TyQKVGQFHrekgmxL28a1RKktojXVKlLt1v8A8tobgQ
+         rzStEJ0fXQged/50vnIu6n39N3w4LJa0JqDJry21gsqWlpo+Mepm57yCt/TZPoWZXepH
+         5zz3r2F5xZkfdPP9Wr6oRk6rYhASD5kLXXgKhe4sTfbAVCAj7/JLCJtF11g92FjMO1o9
+         xx/KZMH6WlbLfhNIeZGEQwJ4GmE7oprcBjMMzZOujky1aFZYuPQUNimZI/4NbewQF/SZ
+         pbD/JylWg/DKZnZwLe/hcG4wKrtaffvKDtIZsGJHkC7FJtGEsquZTPEoP+Q2wQkI79Dv
+         uqhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:subject:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=JaPcxTzHOUYSQCnzELOojEKcjmTrX8LESVFQagjWhck=;
+        b=KFOZbJvt74HANy1FV6YuocyUxCiqKvECnlrn3IvdyB7VJh/7AM5NJ2uSZXR5kJ9bo/
+         5JmY2n/GqekYwQ4buxKUg4uT9KybLK3BlOpoQ/0BG7F3EMGIDN0zUnoTJobAKR+ADN01
+         VxNW929E8bf2wgMoOgABDFjFnV4eZTdfjK1/CkjKGIDy4KSdYMtNzoJ8b58qJLEdg9AG
+         OEFKCNPJ0MrNdX9G4ftfFQ76YovKg68H5Y0pGI3lHKf1cO6FlJiGJgoaqC582xcq39F0
+         aWleTNSxj4x3FKwqtCTsPCFf4yMwvuylfGbhg+SFYQzCtAfOUbC/hZeyqIf0eQIiE4xE
+         W4RQ==
+X-Gm-Message-State: AOAM533bWu+T9wutHRv9BTUYCPfqcjJAfy5I57RrfVArK70Rcc/S+UXV
+        VjJTI8oMt3qiUUZyAM9Wh6M=
+X-Google-Smtp-Source: ABdhPJzwWbtY06hLKwxuR0LFgyHV8RZT87PYv1SxqOJUhSGqN46nXcpIwo0odOCSItAMJ740qHzxvQ==
+X-Received: by 2002:a37:5144:: with SMTP id f65mr5193131qkb.351.1601988060707;
+        Tue, 06 Oct 2020 05:41:00 -0700 (PDT)
+Received: from ?IPv6:2620:10d:c0a8:1102::1844? ([2620:10d:c091:480::1:e46d])
+        by smtp.gmail.com with ESMTPSA id s3sm203856qkj.27.2020.10.06.05.40.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Oct 2020 05:40:59 -0700 (PDT)
+From:   Jes Sorensen <jes.sorensen@gmail.com>
+X-Google-Original-From: Jes Sorensen <Jes.Sorensen@gmail.com>
+Subject: Re: [RFC] Status of orinoco_usb
+To:     Arend Van Spriel <arend.vanspriel@broadcom.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+References: <20201002103517.fhsi5gaepzbzo2s4@linutronix.de>
+ <20201002113725.GB3292884@kroah.com>
+ <20201002115358.6aqemcn5vqc5yqtw@linutronix.de>
+ <20201002120625.GA3341753@kroah.com> <877ds4damx.fsf@codeaurora.org>
+ <0c67580b-1bed-423b-2f00-49eae20046aa@broadcom.com>
+Message-ID: <7f6e7c37-b7d6-1da4-6a3d-257603afd2ae@gmail.com>
+Date:   Tue, 6 Oct 2020 08:40:57 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
+In-Reply-To: <0c67580b-1bed-423b-2f00-49eae20046aa@broadcom.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogRGFuaWVsIEJvcmttYW5u
-IDxkYW5pZWxAaW9nZWFyYm94Lm5ldD4NCj4gU2VudDogRnJpZGF5LCBPY3RvYmVyIDIsIDIwMjAg
-MTA6NTMgUE0NCj4gVG86IEpvaG4gRmFzdGFiZW5kIDxqb2huLmZhc3RhYmVuZEBnbWFpbC5jb20+
-OyBMb3JlbnpvIEJpYW5jb25pDQo+IDxsb3JlbnpvQGtlcm5lbC5vcmc+OyBicGZAdmdlci5rZXJu
-ZWwub3JnOyBuZXRkZXZAdmdlci5rZXJuZWwub3JnDQo+IENjOiBkYXZlbUBkYXZlbWxvZnQubmV0
-OyBrdWJhQGtlcm5lbC5vcmc7IGFzdEBrZXJuZWwub3JnOyBBZ3Jvc2tpbiwNCj4gU2hheSA8c2hh
-eWFnckBhbWF6b24uY29tPjsgSnVicmFuLCBTYW1paCA8c2FtZWVoakBhbWF6b24uY29tPjsNCj4g
-ZHNhaGVybkBrZXJuZWwub3JnOyBicm91ZXJAcmVkaGF0LmNvbTsgbG9yZW56by5iaWFuY29uaUBy
-ZWRoYXQuY29tOw0KPiBlY2hhdWRyb0ByZWRoYXQuY29tDQo+IFN1YmplY3Q6IFJFOiBbRVhURVJO
-QUxdIFtQQVRDSCB2NCBicGYtbmV4dCAwMC8xM10gbXZuZXRhOiBpbnRyb2R1Y2UgWERQDQo+IG11
-bHRpLWJ1ZmZlciBzdXBwb3J0DQo+IA0KPiBDQVVUSU9OOiBUaGlzIGVtYWlsIG9yaWdpbmF0ZWQg
-ZnJvbSBvdXRzaWRlIG9mIHRoZSBvcmdhbml6YXRpb24uIERvIG5vdCBjbGljaw0KPiBsaW5rcyBv
-ciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5b3UgY2FuIGNvbmZpcm0gdGhlIHNlbmRlciBhbmQg
-a25vdyB0aGUNCj4gY29udGVudCBpcyBzYWZlLg0KPiANCj4gDQo+IA0KPiBPbiAxMC8yLzIwIDU6
-MjUgUE0sIEpvaG4gRmFzdGFiZW5kIHdyb3RlOg0KPiA+IExvcmVuem8gQmlhbmNvbmkgd3JvdGU6
-DQo+ID4+IFRoaXMgc2VyaWVzIGludHJvZHVjZSBYRFAgbXVsdGktYnVmZmVyIHN1cHBvcnQuIFRo
-ZSBtdm5ldGEgZHJpdmVyIGlzDQo+ID4+IHRoZSBmaXJzdCB0byBzdXBwb3J0IHRoZXNlIG5ldyAi
-bm9uLWxpbmVhciIgeGRwX3tidWZmLGZyYW1lfS4NCj4gPj4gUmV2aWV3ZXJzIHBsZWFzZSBmb2N1
-cyBvbiBob3cgdGhlc2UgbmV3IHR5cGVzIG9mIHhkcF97YnVmZixmcmFtZX0NCj4gPj4gcGFja2V0
-cyB0cmF2ZXJzZSB0aGUgZGlmZmVyZW50IGxheWVycyBhbmQgdGhlIGxheW91dCBkZXNpZ24uIEl0
-IGlzIG9uDQo+ID4+IHB1cnBvc2UgdGhhdCBCUEYtaGVscGVycyBhcmUga2VwdCBzaW1wbGUsIGFz
-IHdlIGRvbid0IHdhbnQgdG8gZXhwb3NlDQo+ID4+IHRoZSBpbnRlcm5hbCBsYXlvdXQgdG8gYWxs
-b3cgbGF0ZXIgY2hhbmdlcy4NCj4gPj4NCj4gPj4gRm9yIG5vdywgdG8ga2VlcCB0aGUgZGVzaWdu
-IHNpbXBsZSBhbmQgdG8gbWFpbnRhaW4gcGVyZm9ybWFuY2UsIHRoZQ0KPiA+PiBYRFAgQlBGLXBy
-b2cgKHN0aWxsKSBvbmx5IGhhdmUgYWNjZXNzIHRvIHRoZSBmaXJzdC1idWZmZXIuIEl0IGlzIGxl
-ZnQNCj4gPj4gZm9yIGxhdGVyIChhbm90aGVyIHBhdGNoc2V0KSB0byBhZGQgcGF5bG9hZCBhY2Nl
-c3MgYWNyb3NzIG11bHRpcGxlIGJ1ZmZlcnMuDQo+ID4+IFRoaXMgcGF0Y2hzZXQgc2hvdWxkIHN0
-aWxsIGFsbG93IGZvciB0aGVzZSBmdXR1cmUgZXh0ZW5zaW9ucy4gVGhlDQo+ID4+IGdvYWwgaXMg
-dG8gbGlmdCB0aGUgWERQIE1UVSByZXN0cmljdGlvbiB0aGF0IGNvbWVzIHdpdGggWERQLCBidXQN
-Cj4gPj4gbWFpbnRhaW4gc2FtZSBwZXJmb3JtYW5jZSBhcyBiZWZvcmUuDQo+ID4+DQo+ID4+IFRo
-ZSBtYWluIGlkZWEgZm9yIHRoZSBuZXcgbXVsdGktYnVmZmVyIGxheW91dCBpcyB0byByZXVzZSB0
-aGUgc2FtZQ0KPiA+PiBsYXlvdXQgdXNlZCBmb3Igbm9uLWxpbmVhciBTS0IuIFRoaXMgcmVseSBv
-biB0aGUgInNrYl9zaGFyZWRfaW5mbyINCj4gPj4gc3RydWN0IGF0IHRoZSBlbmQgb2YgdGhlIGZp
-cnN0IGJ1ZmZlciB0byBsaW5rIHRvZ2V0aGVyIHN1YnNlcXVlbnQNCj4gPj4gYnVmZmVycy4gS2Vl
-cGluZyB0aGUgbGF5b3V0IGNvbXBhdGlibGUgd2l0aCBTS0JzIGlzIGFsc28gZG9uZSB0byBlYXNl
-DQo+ID4+IGFuZCBzcGVlZHVwIGNyZWF0aW5nIGFuIFNLQiBmcm9tIGFuIHhkcF97YnVmZixmcmFt
-ZX0uIENvbnZlcnRpbmcNCj4gPj4geGRwX2ZyYW1lIHRvIFNLQiBhbmQgZGVsaXZlciBpdCB0byB0
-aGUgbmV0d29yayBzdGFjayBpcyBzaG93biBpbg0KPiA+PiBjcHVtYXAgY29kZSAocGF0Y2ggMTMv
-MTMpLg0KPiA+DQo+ID4gVXNpbmcgdGhlIGVuZCBvZiB0aGUgYnVmZmVyIGZvciB0aGUgc2tiX3No
-YXJlZF9pbmZvIHN0cnVjdCBpcyBnb2luZyB0bw0KPiA+IGJlY29tZSBkcml2ZXIgQVBJIHNvIHVu
-d2luZGluZyBpdCBpZiBpdCBwcm92ZXMgdG8gYmUgYSBwZXJmb3JtYW5jZQ0KPiA+IGlzc3VlIGlz
-IGdvaW5nIHRvIGJlIHVnbHkuIFNvIHNhbWUgcXVlc3Rpb24gYXMgYmVmb3JlLCBmb3IgdGhlIHVz
-ZQ0KPiA+IGNhc2Ugd2hlcmUgd2UgcmVjZWl2ZSBwYWNrZXQgYW5kIGRvIFhEUF9UWCB3aXRoIGl0
-IGhvdyBkbyB3ZSBhdm9pZA0KPiA+IGNhY2hlIG1pc3Mgb3ZlcmhlYWQ/IFRoaXMgaXMgbm90IGp1
-c3QgYSBoeXBvdGhldGljYWwgdXNlIGNhc2UsIHRoZQ0KPiA+IEZhY2Vib29rIGxvYWQgYmFsYW5j
-ZXIgaXMgZG9pbmcgdGhpcyBhcyB3ZWxsIGFzIENpbGl1bSBhbmQgYWxsb3dpbmcNCj4gPiB0aGlz
-IHdpdGggbXVsdGktYnVmZmVyIHBhY2tldHMgPjE1MDBCIHdvdWxkIGJlIHVzZWZ1bC4NCj4gWy4u
-Ll0NCj4gDQo+IEZ1bGx5IGFncmVlLiBNeSBvdGhlciBxdWVzdGlvbiB3b3VsZCBiZSBpZiBzb21l
-b25lIGVsc2UgcmlnaHQgbm93IGlzIGluIHRoZQ0KPiBwcm9jZXNzIG9mIGltcGxlbWVudGluZyB0
-aGlzIHNjaGVtZSBmb3IgYSA0MEcrIE5JQz8gTXkgY29uY2VybiBpcyB0aGUNCj4gbnVtYmVycyBi
-ZWxvdyBhcmUgcmF0aGVyIG9uIHRoZSBsb3dlciBlbmQgb2YgdGhlIHNwZWN0cnVtLCBzbyBJIHdv
-dWxkIGxpa2UNCj4gdG8gc2VlIGEgY29tcGFyaXNvbiBvZiBYRFAgYXMtaXMgdG9kYXkgdnMgWERQ
-IG11bHRpLWJ1ZmYgb24gYSBoaWdoZXIgZW5kIE5JQw0KPiBzbyB0aGF0IHdlIGhhdmUgYSBwaWN0
-dXJlIGhvdyB3ZWxsIHRoZSBjdXJyZW50IGRlc2lnbmVkIHNjaGVtZSB3b3JrcyB0aGVyZQ0KPiBh
-bmQgaW50byB3aGljaCBwZXJmb3JtYW5jZSBpc3N1ZSB3ZSdsbCBydW4gZS5nLg0KPiB1bmRlciB0
-eXBpY2FsIFhEUCBMNCBsb2FkIGJhbGFuY2VyIHNjZW5hcmlvIHdpdGggWERQX1RYLiBJIHRoaW5r
-IHRoaXMgd291bGQNCj4gYmUgY3J1Y2lhbCBiZWZvcmUgdGhlIGRyaXZlciBBUEkgYmVjb21lcyAn
-c29ydCBvZicgc2V0IGluIHN0b25lIHdoZXJlIG90aGVycw0KPiBzdGFydCB0byBhZGFwdGluZyBp
-dCBhbmQgY2hhbmdpbmcgZGVzaWduIGJlY29tZXMgcGFpbmZ1bC4gRG8gZW5hIGZvbGtzIGhhdmUN
-Cj4gYW4gaW1wbGVtZW50YXRpb24gcmVhZHkgYXMgd2VsbD8gQW5kIHdoYXQgYWJvdXQgdmlydGlv
-X25ldCwgZm9yIGV4YW1wbGUsDQo+IGFueW9uZSBjb21taXR0aW5nIHRoZXJlIHRvbz8gVHlwaWNh
-bGx5IGZvciBzdWNoIGZlYXR1cmVzIHRvIGxhbmQgaXMgdG8gcmVxdWlyZQ0KPiBhdCBsZWFzdCAy
-IGRyaXZlcnMgaW1wbGVtZW50aW5nIGl0Lg0KPg0KDQpXZSAoRU5BKSBleHBlY3QgdG8gaGF2ZSBY
-RFAgTUIgaW1wbGVtZW50YXRpb24gd2l0aCBwZXJmb3JtYW5jZSByZXN1bHRzIGluIGFyb3VuZCA0
-LTYgd2Vla3MuDQoNCj4gPj4gVHlwaWNhbCB1c2UgY2FzZXMgZm9yIHRoaXMgc2VyaWVzIGFyZToN
-Cj4gPj4gLSBKdW1iby1mcmFtZXMNCj4gPj4gLSBQYWNrZXQgaGVhZGVyIHNwbGl0IChwbGVhc2Ug
-c2VlIEdvb2dsZSAgIHMgdXNlLWNhc2UgQCBOZXREZXZDb25mDQo+ID4+IDB4MTQsIFswXSkNCj4g
-Pj4gLSBUU08NCj4gPj4NCj4gPj4gTW9yZSBpbmZvIGFib3V0IHRoZSBtYWluIGlkZWEgYmVoaW5k
-IHRoaXMgYXBwcm9hY2ggY2FuIGJlIGZvdW5kIGhlcmUNCj4gWzFdWzJdLg0KPiA+Pg0KPiA+PiBX
-ZSBjYXJyaWVkIG91dCBzb21lIHRocm91Z2hwdXQgdGVzdHMgaW4gYSBzdGFuZGFyZCBsaW5lYXIg
-ZnJhbWUNCj4gPj4gc2NlbmFyaW8gaW4gb3JkZXIgdG8gdmVyaWZ5IHdlIGRpZCBub3QgaW50cm9k
-dWNlZCBhbnkgcGVyZm9ybWFuY2UNCj4gPj4gcmVncmVzc2lvbiBhZGRpbmcgeGRwIG11bHRpLWJ1
-ZmYgc3VwcG9ydCB0byBtdm5ldGE6DQo+ID4+DQo+ID4+IG9mZmVyZWQgbG9hZCBpcyB+IDEwMDBL
-cHBzLCBwYWNrZXQgc2l6ZSBpcyA2NEIsIG12bmV0YSBkZXNjcmlwdG9yDQo+ID4+IHNpemUgaXMg
-b25lIFBBR0UNCj4gPj4NCj4gPj4gY29tbWl0OiA4Nzk0NTZiZWRiZTUgKCJuZXQ6IG12bmV0YTog
-YXZvaWQgcG9zc2libGUgY2FjaGUgbWlzc2VzIGluDQo+IG12bmV0YV9yeF9zd2JtIikNCj4gPj4g
-LSB4ZHAtcGFzczogICAgICB+MTYyS3Bwcw0KPiA+PiAtIHhkcC1kcm9wOiAgICAgIH43MDFLcHBz
-DQo+ID4+IC0geGRwLXR4OiAgICAgICAgfjE4NUtwcHMNCj4gPj4gLSB4ZHAtcmVkaXJlY3Q6ICB+
-MjAyS3Bwcw0KPiA+Pg0KPiA+PiBtdm5ldGEgeGRwIG11bHRpLWJ1ZmY6DQo+ID4+IC0geGRwLXBh
-c3M6ICAgICAgfjE2M0twcHMNCj4gPj4gLSB4ZHAtZHJvcDogICAgICB+NzM5S3Bwcw0KPiA+PiAt
-IHhkcC10eDogICAgICAgIH4xODJLcHBzDQo+ID4+IC0geGRwLXJlZGlyZWN0OiAgfjIwMktwcHMN
-Cj4gWy4uLl0NCg==
+On 10/6/20 3:45 AM, Arend Van Spriel wrote:
+> + Jes
+> 
+> On 10/5/2020 4:12 PM, Kalle Valo wrote:
+>> Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
+>>
+>>> On Fri, Oct 02, 2020 at 01:53:58PM +0200, Sebastian Andrzej Siewior
+>>> wrote:
+>>>> On 2020-10-02 13:37:25 [+0200], Greg Kroah-Hartman wrote:
+>>>>>> Is it possible to end up here in softirq context or is this a relic?
+>>>>>
+>>>>> I think it's a relic of where USB host controllers completed their
+>>>>> urbs
+>>>>> in hard-irq mode.  The BH/tasklet change is a pretty recent change.
+>>>>
+>>>> But the BH thingy for HCDs went in v3.12 for EHCI. XHCI was v5.5. My
+>>>> guess would be that people using orinoco USB are on EHCI :)
+>>>
+>>> USB 3 systems run XHCI, which has a USB 2 controller in it, so these
+>>> types of things might not have been noticed yet.  Who knows :)
+>>>
+>>>>>> Should it be removed?
+>>>>>
+>>>>> We can move it out to drivers/staging/ and then drop it to see if
+>>>>> anyone
+>>>>> complains that they have the device and is willing to test any
+>>>>> changes.
+>>>>
+>>>> Not sure moving is easy since it depends on other files in that folder.
+>>>> USB is one interface next to PCI for instance. Unless you meant to move
+>>>> the whole driver including all interfaces.
+>>>> I was suggesting to remove the USB bits.
+>>>
+>>> I forgot this was tied into other code, sorry.  I don't know what to
+>>> suggest other than maybe try to fix it up the best that you can, and
+>>> let's see if anyone notices...
+>>
+>> That's what I would suggest as well.
+>>
+>> These drivers for ancient hardware are tricky. Even if there doesn't
+>> seem to be any users on the driver sometimes people pop up reporting
+>> that it's still usable. We had that recently with one another wireless
+>> driver (forgot the name already).
+> 
+> Quite a while ago I shipped an orinoco dongle to Jes Sorensen which he
+> wanted to use for some intern project if I recall correctly. Guess that
+> idea did not fly yet.
+
+I had an outreachy intern who worked on some of it, so I shipped all my
+Orinoco hardware to her. We never made as much progress as I had hoped,
+and I haven't had time to work on it since.
+
+Cheers,
+Jes
+
