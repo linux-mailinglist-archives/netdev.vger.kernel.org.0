@@ -2,96 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FB1E284D64
-	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 16:13:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC77F284D65
+	for <lists+netdev@lfdr.de>; Tue,  6 Oct 2020 16:13:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726235AbgJFONf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 10:13:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33166 "EHLO
+        id S1726299AbgJFONl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 10:13:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725902AbgJFONf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 10:13:35 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC02C061755;
-        Tue,  6 Oct 2020 07:13:35 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1601993613;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7bNY+7IvY0BxuXZP41nveX41kn9y9lBubZMrI95BJDw=;
-        b=wmnQ+MBlRG1wCrfkMbT4goA4tzmuYFobKthzI5UI5WecDvDhvhhP5HcmkBJIVaRR9D5q75
-        7nMN/A4Hz1EfWGyV2Kt7ppcuXFhPdXXWcdlVPEcXPIZqlS4tDRNN2JhOFd138MzyWJaTKs
-        YvLo43AH/s71DohKaOt2dW+oxGyn2NBjX3d9pGDmI0O+FJnYh52IEGkPwospjcXqKPPPKC
-        7nPDvVjnHaRE/CJFpGKnf4gCzqWw3w1ms7UC1to0ZW0fS/tUG4hmonMbwIne0epyIj6jOa
-        rcJHW31HLmYz+fhufJkqg3IyAaVY/B7EjEWD/tbkJJDEsmmvUBaBSYJ7INCE0Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1601993613;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7bNY+7IvY0BxuXZP41nveX41kn9y9lBubZMrI95BJDw=;
-        b=m7+uMS1oe6DwOJM+nddhZqga2mpNKFTwCCu7FzkKjWRk7r6ovh6PFSg8HdUaq7V+u6sTUf
-        YYx1gZvHYlhn2zAw==
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH net-next v6 2/7] net: dsa: Add DSA driver for Hirschmann Hellcreek switches
-In-Reply-To: <20201006135631.73rm3gka7r7krwca@skbuf>
-References: <20201004112911.25085-1-kurt@linutronix.de> <20201004112911.25085-3-kurt@linutronix.de> <20201004125601.aceiu4hdhrawea5z@skbuf> <87lfgj997g.fsf@kurt> <20201006092017.znfuwvye25vsu4z7@skbuf> <878scj8xxr.fsf@kurt> <20201006113237.73rzvw34anilqh4d@skbuf> <87wo037ajr.fsf@kurt> <20201006135631.73rm3gka7r7krwca@skbuf>
-Date:   Tue, 06 Oct 2020 16:13:32 +0200
-Message-ID: <87lfgj788j.fsf@kurt>
+        with ESMTP id S1725902AbgJFONl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 10:13:41 -0400
+Received: from proxima.lasnet.de (proxima.lasnet.de [IPv6:2a01:4f8:121:31eb:3::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE56C061755
+        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 07:13:40 -0700 (PDT)
+Received: from localhost.localdomain (p200300e9d72c3c4353f06c511a49ff67.dip0.t-ipconnect.de [IPv6:2003:e9:d72c:3c43:53f0:6c51:1a49:ff67])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: stefan@datenfreihafen.org)
+        by proxima.lasnet.de (Postfix) with ESMTPSA id C1285C3D16;
+        Tue,  6 Oct 2020 16:13:37 +0200 (CEST)
+Subject: Re: [PATCH v5 25/52] docs: net: ieee802154.rst: fix C expressions
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-wpan@vger.kernel.org, netdev@vger.kernel.org
+References: <cover.1601992016.git.mchehab+huawei@kernel.org>
+ <6ba1d137516e4a144a4fd398934d62b94d31446d.1601992016.git.mchehab+huawei@kernel.org>
+From:   Stefan Schmidt <stefan@datenfreihafen.org>
+Message-ID: <ec4c5132-8b45-d2e7-b414-003000def8f8@datenfreihafen.org>
+Date:   Tue, 6 Oct 2020 16:13:37 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+In-Reply-To: <6ba1d137516e4a144a4fd398934d62b94d31446d.1601992016.git.mchehab+huawei@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-
-On Tue Oct 06 2020, Vladimir Oltean wrote:
-> On Tue, Oct 06, 2020 at 03:23:36PM +0200, Kurt Kanzenbach wrote:
->> So you're saying private VLANs can be used but the user or the other
->> kernel modules shouldn't be allowed to use them to simplify the
->> implementation?  Makes sense to me.
->
-> It would be interesting to see if you could simply turn off VLAN
-> awareness in standalone mode, and still use unique pvids per port.
-> Then you would have no further restriction for VLAN-tagged traffic with
-> unknown VLANs or with 8021q uppers having the same VLAN ID on multiple
-> ports.
-
-True. That needs to be tested.
 
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl98e4wACgkQeSpbgcuY
-8KaZCQ//fEuJwtN8fFzqEN7r+5f9ZA9tPoXweRGEyzHT2LG2xT5vIJb7Fo66VDjG
-/LLMsUVewzZpxQZY6ZUGCDFmoA4wrs331GElmEkUbOgogS4V3G+nYRV3MXlPnh5A
-HySW5gIBQTVBJqvAbOz4UU1dbEuogA9Wm2iwOWglbuXnOM7LGbZ4Np3grguoJX+6
-HRsm6Hhycuun6c3MEqtQyyAvMu1odnMm0Yc1+t9kb76zu5Fp8CsuS5/YKK12Feed
-Q+y7AhjmrsSyINUoIIk8aS0cr9VWzdHexOFFvvzueQpI4Saz8sutch1i8cyV7/YQ
-iobtox0bq8HBLox4AaxpRMQ3vOjbiyazoeOuzIKc4q5B8z9PTqi8pxihCtp33cmp
-adIyB2hGBeJuwxFAR4HVmA+SgCx8y+I0+hs+nzFl4JkzI6Z5FikaacvHasoTsB5c
-mSL2iXTUmqgDcXKDed28R0TZd7Zil40iKpp6j2FUjGd5/6pDGReZSYOiNFzBvSNh
-+eJVCQupiFy/247SzIyz5wbXcHV9yQ/YHFwDomT1dMwlIRAW5DwaM0y4HGXwPbLc
-Q/V0yrqAytbAcdlME+gz8ORh949hObvxy2KhMYwGKkaImcwpMKTpf5cwPpW/fDTy
-qoCHdZUMmg6dBu9q+UxB4GEG7QZg9wzDbN/y4seJi60s5xo6USk=
-=5PxH
------END PGP SIGNATURE-----
---=-=-=--
+On 06.10.20 16:03, Mauro Carvalho Chehab wrote:
+> There are some warnings produced with Sphinx 3.x:
+> 
+> 	Documentation/networking/ieee802154.rst:29: WARNING: Error in declarator or parameters
+> 	Invalid C declaration: Expecting "(" in parameters. [error at 7]
+> 	  int sd = socket(PF_IEEE802154, SOCK_DGRAM, 0);
+> 	  -------^
+> 	Documentation/networking/ieee802154.rst:134: WARNING: Invalid C declaration: Expected end of definition. [error at 81]
+> 	  void ieee802154_rx_irqsafe(struct ieee802154_hw *hw, struct sk_buff *skb, u8 lqi):
+> 	  ---------------------------------------------------------------------------------^
+> 	Documentation/networking/ieee802154.rst:139: WARNING: Invalid C declaration: Expected end of definition. [error at 95]
+> 	  void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb, bool ifs_handling):
+> 	  -----------------------------------------------------------------------------------------------^
+> 	Documentation/networking/ieee802154.rst:158: WARNING: Invalid C declaration: Expected end of definition. [error at 35]
+> 	  int start(struct ieee802154_hw *hw):
+> 	  -----------------------------------^
+> 	Documentation/networking/ieee802154.rst:162: WARNING: Invalid C declaration: Expected end of definition. [error at 35]
+> 	  void stop(struct ieee802154_hw *hw):
+> 	  -----------------------------------^
+> 	Documentation/networking/ieee802154.rst:166: WARNING: Invalid C declaration: Expected end of definition. [error at 61]
+> 	  int xmit_async(struct ieee802154_hw *hw, struct sk_buff *skb):
+> 	  -------------------------------------------------------------^
+> 	Documentation/networking/ieee802154.rst:171: WARNING: Invalid C declaration: Expected end of definition. [error at 43]
+> 	  int ed(struct ieee802154_hw *hw, u8 *level):
+> 	  -------------------------------------------^
+> 	Documentation/networking/ieee802154.rst:176: WARNING: Invalid C declaration: Expected end of definition. [error at 62]
+> 	  int set_channel(struct ieee802154_hw *hw, u8 page, u8 channel):
+> 	  --------------------------------------------------------------^
+> 
+> Caused by some bad c:function: prototypes. Fix them.
+> 
+> Acked-by: David S. Miller <davem@davemloft.net>
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+> ---
+>   Documentation/networking/ieee802154.rst | 18 ++++++++++--------
+>   1 file changed, 10 insertions(+), 8 deletions(-)
+> 
+> diff --git a/Documentation/networking/ieee802154.rst b/Documentation/networking/ieee802154.rst
+> index 6f4bf8447a21..f27856d77c8b 100644
+> --- a/Documentation/networking/ieee802154.rst
+> +++ b/Documentation/networking/ieee802154.rst
+> @@ -26,7 +26,9 @@ The stack is composed of three main parts:
+>   Socket API
+>   ==========
+>   
+> -.. c:function:: int sd = socket(PF_IEEE802154, SOCK_DGRAM, 0);
+> +::
+> +
+> +    int sd = socket(PF_IEEE802154, SOCK_DGRAM, 0);
+>   
+>   The address family, socket addresses etc. are defined in the
+>   include/net/af_ieee802154.h header or in the special header
+> @@ -131,12 +133,12 @@ Register PHY in the system.
+>   
+>   Freeing registered PHY.
+>   
+> -.. c:function:: void ieee802154_rx_irqsafe(struct ieee802154_hw *hw, struct sk_buff *skb, u8 lqi):
+> +.. c:function:: void ieee802154_rx_irqsafe(struct ieee802154_hw *hw, struct sk_buff *skb, u8 lqi)
+>   
+>   Telling 802.15.4 module there is a new received frame in the skb with
+>   the RF Link Quality Indicator (LQI) from the hardware device.
+>   
+> -.. c:function:: void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb, bool ifs_handling):
+> +.. c:function:: void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb, bool ifs_handling)
+>   
+>   Telling 802.15.4 module the frame in the skb is or going to be
+>   transmitted through the hardware device
+> @@ -155,25 +157,25 @@ operations structure at least::
+>           ...
+>      };
+>   
+> -.. c:function:: int start(struct ieee802154_hw *hw):
+> +.. c:function:: int start(struct ieee802154_hw *hw)
+>   
+>   Handler that 802.15.4 module calls for the hardware device initialization.
+>   
+> -.. c:function:: void stop(struct ieee802154_hw *hw):
+> +.. c:function:: void stop(struct ieee802154_hw *hw)
+>   
+>   Handler that 802.15.4 module calls for the hardware device cleanup.
+>   
+> -.. c:function:: int xmit_async(struct ieee802154_hw *hw, struct sk_buff *skb):
+> +.. c:function:: int xmit_async(struct ieee802154_hw *hw, struct sk_buff *skb)
+>   
+>   Handler that 802.15.4 module calls for each frame in the skb going to be
+>   transmitted through the hardware device.
+>   
+> -.. c:function:: int ed(struct ieee802154_hw *hw, u8 *level):
+> +.. c:function:: int ed(struct ieee802154_hw *hw, u8 *level)
+>   
+>   Handler that 802.15.4 module calls for Energy Detection from the hardware
+>   device.
+>   
+> -.. c:function:: int set_channel(struct ieee802154_hw *hw, u8 page, u8 channel):
+> +.. c:function:: int set_channel(struct ieee802154_hw *hw, u8 page, u8 channel)
+>   
+>   Set radio for listening on specific channel of the hardware device.
+>   
+> 
