@@ -2,94 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9222C2864A4
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 18:39:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80D8B286540
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 18:51:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727692AbgJGQi6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 12:38:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51804 "EHLO
+        id S1727948AbgJGQvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 12:51:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726702AbgJGQi6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 12:38:58 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 714F9C061755;
-        Wed,  7 Oct 2020 09:38:58 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id h2so1257608pll.11;
-        Wed, 07 Oct 2020 09:38:58 -0700 (PDT)
+        with ESMTP id S1726138AbgJGQvQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 12:51:16 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C211C061755
+        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 09:51:16 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id x22so1626058pfo.12
+        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 09:51:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=eleMNIQb7gHtATh1xUcvTG7HUCdElenFbTTcPyhDSnc=;
-        b=tRTmiTM9jwWvOTzvDET4KhQtnAoz2ZUQqrBD5kuSR/B1ypVTwD/0yixJDGXLWwl4qo
-         CPED75gI9buKhnlEwn4nK0ZJTVeIgra8iUeuIId/cWA3kfKZPlqtxHWKd5UdIlczxY0l
-         IHKK9tUf7becvMeUDXnTMFzipMoVuArErHNuFRr1TcGc7+rSSOjG3vsIpGuCKIEnL55D
-         +T/nc9ugENV/4avggtpnWNKbmhAOD5ffcbx4Vm8hZPxp/KPr2Nk3Mh7BgcqqW+EVD3U3
-         wy79Nipf9NtEkwFW8AisuuUxd2uBx2EOHS+FQzIjK9PhPFOLNRwYSj8dAAI7jeAZ6zfp
-         SIQg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=8nKvd4lpu9L+XjnWJLp5IXIS3kkZ7itOyedqI+btxy0=;
+        b=LkZRYrttCcNdKKgsrJ/zRTjAGdS17UdsXGN0hmH0PJbWiMAnEdSTWPCiRGdnypQTlu
+         VAszkgMWRFtuXFiRoZ6aFFz0IidqG3eroE5Q0bc7upSuLEy+SCgrwAd71yvwcDhlFLOE
+         1pn5WvG14sGG0sgxwZ+O0rJB36UNrI7cSF6QphAUERkpBtrCGlfITzo/CEmQ/qDoSf51
+         7EZZZkNzQtVyIKIjiGApaUCG8Rl6MOcMt2+YKlh6n+uOfHkItYTvKy7G69Bet/HyoHTI
+         McvJKMKm3HXg4Lm+zkXXk9aaUrg1a7MbYftes0+ZzCLezmWGhSTdNvdYXLpe7Vawl4t0
+         PISQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=eleMNIQb7gHtATh1xUcvTG7HUCdElenFbTTcPyhDSnc=;
-        b=RzfPQUQLSZ804+VXPJWx2CtwbO420eGYHrvc65SfbKpcuhOxUJUJxoLaliGe44L4++
-         7H5/HIyBqYqyZKyiXIWmxdavB+ddLGYQpOjIJgrQ9Q2GSP2LXJdAHtm9FzEJ5MGgVuDt
-         pPuHstdrQWZUeQ/S1x0lJlWYRWDv8LOMqWOasoqE2PbVHc6uFRVCUyjB/JFWIuik0CVZ
-         TnIOYdQ2mRwJCD//ys288SnU0PtJrTacQIDu4hqpDOh3s6SIXctFbFRrtLRHYwwR9IQd
-         Y0snjFPxWhDHk6jdxfKP16Z6N79lvcfwjEmrGu6b10jjg51Y1PUJYT+PJ9H/TLDzfI5X
-         EtSg==
-X-Gm-Message-State: AOAM530uCouKhSWcbfKqckyOyc9q6XrFjyQ1GjmKrNC8B4UJy8abApEq
-        bJCHCvqkC2JBRDnZZTOEJgo=
-X-Google-Smtp-Source: ABdhPJz0GT8qO12nu0i8QQACgcARFrYLfleCdraKFW8xrzsUprTU5cx8o0DOy0ROBpeZpWg/j5/UoQ==
-X-Received: by 2002:a17:902:6ac7:b029:d3:9c6b:9311 with SMTP id i7-20020a1709026ac7b02900d39c6b9311mr3553394plt.0.1602088738055;
-        Wed, 07 Oct 2020 09:38:58 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([72.164.175.30])
-        by smtp.googlemail.com with ESMTPSA id u18sm4142621pgk.18.2020.10.07.09.38.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Oct 2020 09:38:57 -0700 (PDT)
-Subject: Re: [PATCH bpf-next V1 2/6] bpf: bpf_fib_lookup return MTU value as
- output when looked up
-To:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>
-Cc:     bpf <bpf@vger.kernel.org>, Linux NetDev <netdev@vger.kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Shaun Crampton <shaun@tigera.io>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Marek Majkowski <marek@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Ahern <dsahern@kernel.org>
-References: <160200013701.719143.12665708317930272219.stgit@firesoul>
- <160200017655.719143.17344942455389603664.stgit@firesoul>
- <CANP3RGfeh=a=h2C4voLtfWtvKG7ezaPb7y6r0W1eOjA2ZoNHaw@mail.gmail.com>
- <20201007094228.5919998b@carbon>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <23e087e7-066c-2228-8df7-3a6b81ad2ba0@gmail.com>
-Date:   Wed, 7 Oct 2020 09:38:56 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.1
+        bh=8nKvd4lpu9L+XjnWJLp5IXIS3kkZ7itOyedqI+btxy0=;
+        b=ngLhltqrtRwtCuefcH1TX/HI1wOegHmykgW6yqxyKVbdpySoGuxVO0ydwYv6i2ESSb
+         4iTt6e7oIRRUUtH970HgWSKP7DF7bpHMoye2oEv5RbivWB1iphlBPc+1qbJka/spdOVV
+         jWBiknseShINpFhqnOgNtsRyPInDNR+gd4EdlTv4WI+RV8ByMwBgtKrbk+3JTpuFG5rk
+         sGcI5anZrO2pKaKF7QC0l86U97miBV2XZqvZ+0uUyIdYzL48naSZiCFLhkw2ro6hLdTV
+         0CEGKIl8+ChcLJdh7thaF6BhuA+uJqzasXf0ni2v2SQoSetGNf+FH3Kfzdo86+oJmRYc
+         DLfg==
+X-Gm-Message-State: AOAM533Rwkic5YqZkYvdOHZL6kdAmS61Qm6ecXRGK0EcI3rz2fHQ/gki
+        fMJrMAN+ctq51AoDXNGFAvQ=
+X-Google-Smtp-Source: ABdhPJyfSGC4aaO8YngLxFYYmXuTu9PuaWM24lB4RJLEy4DJZtnRHEtL/Nj+KWnc/rVLMsLd3rJbnQ==
+X-Received: by 2002:a62:2985:0:b029:142:2501:35d3 with SMTP id p127-20020a6229850000b0290142250135d3mr3820473pfp.51.1602089475869;
+        Wed, 07 Oct 2020 09:51:15 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7220:84ff:fe09:1424])
+        by smtp.gmail.com with ESMTPSA id v3sm3032470pju.44.2020.10.07.09.51.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Oct 2020 09:51:15 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Allen Pais <allen.lkml@gmail.com>
+Subject: [PATCH net-next] net/sched: get rid of qdisc->padded
+Date:   Wed,  7 Oct 2020 09:51:11 -0700
+Message-Id: <20201007165111.172419-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.28.0.806.g8561365e88-goog
 MIME-Version: 1.0
-In-Reply-To: <20201007094228.5919998b@carbon>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/7/20 12:42 AM, Jesper Dangaard Brouer wrote:
-> 
-> The struct bpf_fib_lookup is exactly 1 cache-line (64 bytes) for
-> performance reasons.  I do believe that it can be extended, as Ahern
-> designed the BPF-helper API cleverly via a plen (detail below signature).
+From: Eric Dumazet <edumazet@google.com>
 
-Yes, I kept it to 64B for performance reasons which is why most fields
-have 1 value on input and another on output.
+kmalloc() of sufficiently big portion of memory is cache-aligned
+in regular conditions. If some debugging options are used,
+there is no reason qdisc structures would need 64-byte alignment
+if most other kernel structures are not aligned.
 
-Technically it can be extended, but any cost in doing so should be
-abosrbed by the new feature(s). Meaning, users just doing a fib lookup
-based on current API should not take a hit with the extra size.
+This get rid of QDISC_ALIGN and QDISC_ALIGNTO.
+
+Addition of privdata field will help implementing
+the reverse of qdisc_priv() and documents where
+the private data is.
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Cong Wang <xiyou.wangcong@gmail.com>
+Cc: Allen Pais <allen.lkml@gmail.com>
+---
+ include/net/pkt_sched.h   |  5 +----
+ include/net/sch_generic.h |  5 ++++-
+ net/sched/sch_generic.c   | 23 +++++------------------
+ 3 files changed, 10 insertions(+), 23 deletions(-)
+
+diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+index ac8c890a2657e35546ec51fe8b8a993a2bd0c91b..4ed32e6b020145afb015c3c07d2ec3a613f1311d 100644
+--- a/include/net/pkt_sched.h
++++ b/include/net/pkt_sched.h
+@@ -19,12 +19,9 @@ struct qdisc_walker {
+ 	int	(*fn)(struct Qdisc *, unsigned long cl, struct qdisc_walker *);
+ };
+ 
+-#define QDISC_ALIGNTO		64
+-#define QDISC_ALIGN(len)	(((len) + QDISC_ALIGNTO-1) & ~(QDISC_ALIGNTO-1))
+-
+ static inline void *qdisc_priv(struct Qdisc *q)
+ {
+-	return (char *) q + QDISC_ALIGN(sizeof(struct Qdisc));
++	return &q->privdata;
+ }
+ 
+ /* 
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 6c762457122fd0091cb0f2bf41bda73babc4ac12..d8fd8676fc724110630904909f64d7789f3a4b47 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -91,7 +91,7 @@ struct Qdisc {
+ 	struct net_rate_estimator __rcu *rate_est;
+ 	struct gnet_stats_basic_cpu __percpu *cpu_bstats;
+ 	struct gnet_stats_queue	__percpu *cpu_qstats;
+-	int			padded;
++	int			pad;
+ 	refcount_t		refcnt;
+ 
+ 	/*
+@@ -112,6 +112,9 @@ struct Qdisc {
+ 	/* for NOLOCK qdisc, true if there are no enqueued skbs */
+ 	bool			empty;
+ 	struct rcu_head		rcu;
++
++	/* private data */
++	long privdata[] ____cacheline_aligned;
+ };
+ 
+ static inline void qdisc_refcount_inc(struct Qdisc *qdisc)
+diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
+index 54c417244642a1445c618e6adf0e38b2d4f84565..49eae93d1489dc3513b41c237ca3f572e21ff203 100644
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -802,9 +802,8 @@ struct Qdisc *qdisc_alloc(struct netdev_queue *dev_queue,
+ 			  const struct Qdisc_ops *ops,
+ 			  struct netlink_ext_ack *extack)
+ {
+-	void *p;
+ 	struct Qdisc *sch;
+-	unsigned int size = QDISC_ALIGN(sizeof(*sch)) + ops->priv_size;
++	unsigned int size = sizeof(*sch) + ops->priv_size;
+ 	int err = -ENOBUFS;
+ 	struct net_device *dev;
+ 
+@@ -815,22 +814,10 @@ struct Qdisc *qdisc_alloc(struct netdev_queue *dev_queue,
+ 	}
+ 
+ 	dev = dev_queue->dev;
+-	p = kzalloc_node(size, GFP_KERNEL,
+-			 netdev_queue_numa_node_read(dev_queue));
++	sch = kzalloc_node(size, GFP_KERNEL, netdev_queue_numa_node_read(dev_queue));
+ 
+-	if (!p)
++	if (!sch)
+ 		goto errout;
+-	sch = (struct Qdisc *) QDISC_ALIGN((unsigned long) p);
+-	/* if we got non aligned memory, ask more and do alignment ourself */
+-	if (sch != p) {
+-		kfree(p);
+-		p = kzalloc_node(size + QDISC_ALIGNTO - 1, GFP_KERNEL,
+-				 netdev_queue_numa_node_read(dev_queue));
+-		if (!p)
+-			goto errout;
+-		sch = (struct Qdisc *) QDISC_ALIGN((unsigned long) p);
+-		sch->padded = (char *) sch - (char *) p;
+-	}
+ 	__skb_queue_head_init(&sch->gso_skb);
+ 	__skb_queue_head_init(&sch->skb_bad_txq);
+ 	qdisc_skb_head_init(&sch->q);
+@@ -873,7 +860,7 @@ struct Qdisc *qdisc_alloc(struct netdev_queue *dev_queue,
+ 
+ 	return sch;
+ errout1:
+-	kfree(p);
++	kfree(sch);
+ errout:
+ 	return ERR_PTR(err);
+ }
+@@ -941,7 +928,7 @@ void qdisc_free(struct Qdisc *qdisc)
+ 		free_percpu(qdisc->cpu_qstats);
+ 	}
+ 
+-	kfree((char *) qdisc - qdisc->padded);
++	kfree(qdisc);
+ }
+ 
+ static void qdisc_free_cb(struct rcu_head *head)
+-- 
+2.28.0.806.g8561365e88-goog
 
