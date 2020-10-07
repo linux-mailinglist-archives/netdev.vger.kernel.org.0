@@ -2,487 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BF4C28691B
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 22:30:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1C35286916
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 22:30:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728599AbgJGUa4 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 7 Oct 2020 16:30:56 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:47916 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727776AbgJGUa4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 16:30:56 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 097KSiOZ017760
-        for <netdev@vger.kernel.org>; Wed, 7 Oct 2020 13:30:54 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 33xmypddqr-20
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 13:30:54 -0700
-Received: from intmgw003.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+        id S1728593AbgJGUaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 16:30:23 -0400
+Received: from mga18.intel.com ([134.134.136.126]:31206 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726434AbgJGUaX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Oct 2020 16:30:23 -0400
+IronPort-SDR: XKXKECC4ISWJS9bRVvqEpXQqJqD2FRXeQwCiRDqmq4ukWTOzgq6AxqAbKIeNdlNjPLRO2HutvP
+ hmJWmv7n4A3w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9767"; a="152922415"
+X-IronPort-AV: E=Sophos;i="5.77,348,1596524400"; 
+   d="scan'208";a="152922415"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2020 13:30:21 -0700
+IronPort-SDR: LKoVg6oLOLTnIXlF6noBjhEmjzoecyFwFjahuWSfKokdP9Uusgk8RyNBPmEtF6NrfvqrwmGOwM
+ 69mD3xSk9K+A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,348,1596524400"; 
+   d="scan'208";a="344449839"
+Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
+  by orsmga008.jf.intel.com with ESMTP; 07 Oct 2020 13:30:21 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 7 Oct 2020 13:30:03 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id AF5212EC7B90; Wed,  7 Oct 2020 13:29:56 -0700 (PDT)
-From:   Andrii Nakryiko <andrii@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Tony Ambardar <tony.ambardar@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: [PATCH v2 bpf-next 4/4] selftests/bpf: validate libbpf's auto-sizing of LD/ST/STX instructions
-Date:   Wed, 7 Oct 2020 13:29:46 -0700
-Message-ID: <20201007202946.3684483-5-andrii@kernel.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20201007202946.3684483-1-andrii@kernel.org>
-References: <20201007202946.3684483-1-andrii@kernel.org>
+ 15.1.1713.5; Wed, 7 Oct 2020 13:30:21 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 7 Oct 2020 13:30:20 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Wed, 7 Oct 2020 13:30:19 -0700
+Received: from NAM04-BN3-obe.outbound.protection.outlook.com (104.47.46.52) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Wed, 7 Oct 2020 13:30:17 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=JZuikl+LFOq4zRmBhvkKnMvTr+CuUru3jHjcmBcQW8hNVLpmg3Y1TaSomSK4KPtffnGLbntUen8VdheKWD+FqpOtmSqsN47RJCXzxVltIZdhO1TaBk1x2+u6ahAYqC36+8rXmVq/tk/7LL6lHP0ovoUS3cHJyk2lmc/z+sQ11VWDnsCxreoMlkw/2/PjMXJ48eCx7vDd5MjhlNs5nH87mN007l0umBzKQOYfeXv95YxcJJpSmvulRwrHX0ipxp+klzoh1AjCcsv89TJeyAgyIUSc82WXwKmnch/e9hJ1BvIyOduOfFdvLkV45D/W7/8WOTqtp0wsL8XJQpK3gUKGvg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2KNGaWoBUiY1CJzRM6H73eBn11l5+XAFgHswwpk2GxI=;
+ b=BUNg9zgyQbwxUvg+geMxKjPFvhM62wQUxUFybfgj1K/RE5pLvjECNUurMvMAfVkBsrJ/iuhPsU94zVyld/qfcdjsAkeZPQgWAXw2pri2yf4w2qGdJjrMGdEnSbQwiegxfLoGwT/4PPGEsA2vVu00nzlEQj/nho1uDFpcxjphYDZKbFW18/hmHWp8mQ0uBAnY8CcWT2CMtlogEdIMKA9PI7SZb+W/OGF8iMBDzfju08ilbeqBuLS3rT6QMoMRSjeuJOr5r+akBVzpsgLO8gxZT6Wwtn7HRRrwP2k6fb9OH9DKc3UDED6KnuRMVlsaJh6IV5jUjLHU6bNmw2cETZsL9g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2KNGaWoBUiY1CJzRM6H73eBn11l5+XAFgHswwpk2GxI=;
+ b=SX1KuWFp5fSpLzu52Uj2IU0KWjaHFoUF+OkfOW20O4Xmjg8JQAKun5oNWH81G0gXgkNRzbM4xAFApOFAOsmcQjBGYQy2UA/aCtprAs4QBu+rVxX/c26Q8V3hYQ9gQRLYy4kXr+TLp2wXm3B6AJAnA92Ncw7oA/W4MN/0O3O7058=
+Received: from DM6PR11MB2841.namprd11.prod.outlook.com (2603:10b6:5:c8::32) by
+ DM6PR11MB3978.namprd11.prod.outlook.com (2603:10b6:5:19a::14) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3433.35; Wed, 7 Oct 2020 20:30:09 +0000
+Received: from DM6PR11MB2841.namprd11.prod.outlook.com
+ ([fe80::6d8e:9b06:ef72:2a]) by DM6PR11MB2841.namprd11.prod.outlook.com
+ ([fe80::6d8e:9b06:ef72:2a%5]) with mapi id 15.20.3433.044; Wed, 7 Oct 2020
+ 20:30:09 +0000
+From:   "Ertman, David M" <david.m.ertman@intel.com>
+To:     Leon Romanovsky <leon@kernel.org>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+CC:     "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        "parav@mellanox.com" <parav@mellanox.com>,
+        "tiwai@suse.de" <tiwai@suse.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ranjani.sridharan@linux.intel.com" 
+        <ranjani.sridharan@linux.intel.com>,
+        "fred.oh@linux.intel.com" <fred.oh@linux.intel.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "jgg@nvidia.com" <jgg@nvidia.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Patil, Kiran" <kiran.patil@intel.com>
+Subject: RE: [PATCH v2 1/6] Add ancillary bus support
+Thread-Topic: [PATCH v2 1/6] Add ancillary bus support
+Thread-Index: AQHWm06cVdQZOfJAqUq6P9wAQIqk66mKKyCAgACGDICAAB03gIABy3BQ
+Date:   Wed, 7 Oct 2020 20:30:09 +0000
+Message-ID: <DM6PR11MB284100953A60E523A45770FBDD0A0@DM6PR11MB2841.namprd11.prod.outlook.com>
+References: <20201005182446.977325-1-david.m.ertman@intel.com>
+ <20201005182446.977325-2-david.m.ertman@intel.com>
+ <20201006071821.GI1874917@unreal>
+ <b4f6b5d1-2cf4-ae7a-3e57-b66230a58453@linux.intel.com>
+ <20201006170241.GM1874917@unreal>
+In-Reply-To: <20201006170241.GM1874917@unreal>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [50.38.47.144]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7934de14-a0ca-4006-f8c7-08d86affc91d
+x-ms-traffictypediagnostic: DM6PR11MB3978:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr,ExtFwd
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR11MB3978C158CBEC4615E665C309DD0A0@DM6PR11MB3978.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2803;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: OByvu22VU/hV2AkQCfKJOmnXZHgULwwqJzSH/gZdknMqr6Hlwdm2dRKgXJhuDLo8/VP5kVfRhfrccYXJ+G0j6OKis5yXc8mO6Vq2h0eUQ4yWCrkQB/V9IDz/1ZBmMLp0A1xyOYvyZnUExGgqycqVNhK5l4RhKoIxUpHKnGqlP6pRVQ7CiKscb2WaPTv18uCereoSGOjiBqPrdVkcohhbuxoCvBj7xDl12Pr2b5FOC8443ulJ761f9cU8brnBDw0vHJbZq/swMaGGLpmaCCmG2qQS6z6sdYminfMKRLB0CnDYrrUarEe8OsN8pnikMYmn7ASLPR+6Xio93azZR/VmMQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2841.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(39860400002)(136003)(366004)(376002)(346002)(7416002)(53546011)(52536014)(26005)(6506007)(33656002)(8936002)(186003)(66476007)(7696005)(83380400001)(110136005)(5660300002)(55016002)(76116006)(66446008)(66556008)(64756008)(9686003)(316002)(54906003)(86362001)(478600001)(4326008)(71200400001)(2906002)(8676002)(66946007);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: 1GUJtv7s+lECJrdjDpE9jzPxYyb480C2KdNWnOlyJ1Kxqw0kGma+jIXstPmMrhkbixTzlROY6Q34e6ActUBnfcyIg8zWDy30C8iQGTbCgYf1cPSva7arBc5Ar8G6/s5NOTvWeht1qgRCmyTI8JwNVWGxIR6l1vjUYArLzWwQhgW2lQTCBCy7oemPwCo+Qth+lO8q7yNPAddUQwX9bdIMyzk2gw+qVbGed0J1EM0d3dAUWbYdZIn/NjvDbjPQ/A4FJQdUMTCI8x2HtYTZhbP9Oxj4zo82OTtU7vTa+qQ0cW/EWx6Lgb50mqa027iV52QGffh0Nrd4pewSeI8e3CF+sDoGbnKBl37TBFLnnPIkrDT2YM3X/IyBj03pFW5qMD6EXYOjH2l3dZnGEqN/Jib08FAP45r4o6O0sUfHeX1xaxOinSZ6lzgfvmZBeOa9/vEuNgYiPM3yAD2/6jWtIP7S1na1jtB5HTCsgjjmDuYtvfk2jjUhl7uW9PQug/pINGrsoL8Hqnkj5D2K5zqQVw84o+EOT48qTbtr0dXdV5C+lak0Pcd1MkCs7HqmJoiABsUVYgdjIeWT02xnRq92oW4yEwAfKK5HSfsZoDdHVMq4N0oPxPrqBCaM1SShXME7X/eN4/e9bPPwoJZRthzwNUb1XA==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-FB-Internal: Safe
-Content-Type: text/plain
-Content-Transfer-Encoding: 8BIT
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-10-07_10:2020-10-07,2020-10-07 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- clxscore=1015 adultscore=0 bulkscore=0 mlxlogscore=741 spamscore=0
- mlxscore=0 phishscore=0 malwarescore=0 impostorscore=0 suspectscore=25
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2010070131
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2841.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7934de14-a0ca-4006-f8c7-08d86affc91d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Oct 2020 20:30:09.5215
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Ss8M4qOambIYOmEgbyDhfaZoINSPXd5yjoE736oe1XYvHW2WGD0t1L05UJkIqteWZAmL4vAppoAI6FbWEqxYiNVD1zhvq1KALv+c1Tvx26Q=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3978
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andrii Nakryiko <andriin@fb.com>
+> -----Original Message-----
+> From: Leon Romanovsky <leon@kernel.org>
+> Sent: Tuesday, October 6, 2020 10:03 AM
+> To: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+> Cc: Ertman, David M <david.m.ertman@intel.com>; alsa-devel@alsa-
+> project.org; parav@mellanox.com; tiwai@suse.de; netdev@vger.kernel.org;
+> ranjani.sridharan@linux.intel.com; fred.oh@linux.intel.com; linux-
+> rdma@vger.kernel.org; dledford@redhat.com; broonie@kernel.org;
+> jgg@nvidia.com; gregkh@linuxfoundation.org; kuba@kernel.org; Williams,
+> Dan J <dan.j.williams@intel.com>; Saleem, Shiraz
+> <shiraz.saleem@intel.com>; davem@davemloft.net; Patil, Kiran
+> <kiran.patil@intel.com>
+> Subject: Re: [PATCH v2 1/6] Add ancillary bus support
+>=20
+> On Tue, Oct 06, 2020 at 10:18:07AM -0500, Pierre-Louis Bossart wrote:
+> > Thanks for the review Leon.
 
-Add selftests validating libbpf's auto-resizing of load/store instructions
-when used with CO-RE relocations. An explicit and manual approach with using
-bpf_core_read() is also demonstrated and tested. Separate BPF program is
-supposed to fail due to using signed integers of sizes that differ from
-kernel's sizes.
+[...]
 
-To reliably simulate 32-bit BTF (i.e., the one with sizeof(long) ==
-sizeof(void *) == 4), selftest generates its own custom BTF and passes it as
-a replacement for real kernel BTF. This allows to test 32/64-bitness mix on
-all architectures.
+> > > > +EXPORT_SYMBOL_GPL(__ancillary_device_add);
+> > > > +
+> > > > +static int ancillary_probe_driver(struct device *dev)
+> > > > +{
+> > > > +	struct ancillary_driver *ancildrv =3D to_ancillary_drv(dev->drive=
+r);
+> > > > +	struct ancillary_device *ancildev =3D to_ancillary_dev(dev);
+> > > > +	int ret;
+> > > > +
+> > > > +	ret =3D dev_pm_domain_attach(dev, true);
+> > > > +	if (ret) {
+> > > > +		dev_warn(dev, "Failed to attach to PM Domain : %d\n", ret);
+> > > > +		return ret;
+> > > > +	}
+> > > > +
+> > > > +	ret =3D ancildrv->probe(ancildev, ancillary_match_id(ancildrv-
+> >id_table, ancildev));
+> > >
+> > > I don't think that you need to call ->probe() if ancillary_match_id()
+> > > returned NULL and probably that check should be done before
+> > > dev_pm_domain_attach().
+> >
+> > we'll look into this.
+> >
 
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
----
- .../selftests/bpf/prog_tests/core_autosize.c  | 225 ++++++++++++++++++
- .../selftests/bpf/progs/test_core_autosize.c  | 172 +++++++++++++
- 2 files changed, 397 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/core_autosize.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_core_autosize.c
+AKAIK, this callback is only accessed from the bus subsystem after a succes=
+sful
+return from ancillary_match().
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/core_autosize.c b/tools/testing/selftests/bpf/prog_tests/core_autosize.c
-new file mode 100644
-index 000000000000..981c251453d9
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/core_autosize.c
-@@ -0,0 +1,225 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2020 Facebook */
-+
-+#include <test_progs.h>
-+#include <bpf/btf.h>
-+
-+/* real layout and sizes according to test's (32-bit) BTF
-+ * needs to be defined before skeleton is included */
-+struct test_struct___real {
-+	unsigned int ptr; /* can't use `void *`, it is always 8 byte in BPF target */
-+	unsigned int val2;
-+	unsigned long long val1;
-+	unsigned short val3;
-+	unsigned char val4;
-+	unsigned char _pad;
-+};
-+
-+#include "test_core_autosize.skel.h"
-+
-+static int duration = 0;
-+
-+static struct {
-+	unsigned long long ptr_samesized;
-+	unsigned long long val1_samesized;
-+	unsigned long long val2_samesized;
-+	unsigned long long val3_samesized;
-+	unsigned long long val4_samesized;
-+	struct test_struct___real output_samesized;
-+
-+	unsigned long long ptr_downsized;
-+	unsigned long long val1_downsized;
-+	unsigned long long val2_downsized;
-+	unsigned long long val3_downsized;
-+	unsigned long long val4_downsized;
-+	struct test_struct___real output_downsized;
-+
-+	unsigned long long ptr_probed;
-+	unsigned long long val1_probed;
-+	unsigned long long val2_probed;
-+	unsigned long long val3_probed;
-+	unsigned long long val4_probed;
-+
-+	unsigned long long ptr_signed;
-+	unsigned long long val1_signed;
-+	unsigned long long val2_signed;
-+	unsigned long long val3_signed;
-+	unsigned long long val4_signed;
-+	struct test_struct___real output_signed;
-+} out;
-+
-+void test_core_autosize(void)
-+{
-+	char btf_file[] = "/tmp/core_autosize.btf.XXXXXX";
-+	int err, fd = -1, zero = 0;
-+	int char_id, short_id, int_id, long_long_id, void_ptr_id, id;
-+	struct test_core_autosize* skel = NULL;
-+	struct bpf_object_load_attr load_attr = {};
-+	struct bpf_program *prog;
-+	struct bpf_map *bss_map;
-+	struct btf *btf = NULL;
-+	size_t written;
-+	const void *raw_data;
-+	__u32 raw_sz;
-+	FILE *f = NULL;
-+
-+	btf = btf__new_empty();
-+	if (!ASSERT_OK_PTR(btf, "empty_btf"))
-+		return;
-+	/* Emit the following struct with 32-bit pointer size:
-+	 *
-+	 * struct test_struct {
-+	 *     void *ptr;
-+	 *     unsigned long val2;
-+	 *     unsigned long long val1;
-+	 *     unsigned short val3;
-+	 *     unsigned char val4;
-+	 *     char: 8;
-+	 * };
-+	 *
-+	 * This struct is going to be used as the "kernel BTF" for this test.
-+	 * It's equivalent memory-layout-wise to test_struct__real above.
-+	 */
-+
-+	/* force 32-bit pointer size */
-+	btf__set_pointer_size(btf, 4);
-+
-+	char_id = btf__add_int(btf, "unsigned char", 1, 0);
-+	ASSERT_EQ(char_id, 1, "char_id");
-+	short_id = btf__add_int(btf, "unsigned short", 2, 0);
-+	ASSERT_EQ(short_id, 2, "short_id");
-+	/* "long unsigned int" of 4 byte size tells BTF that sizeof(void *) == 4 */
-+	int_id = btf__add_int(btf, "long unsigned int", 4, 0);
-+	ASSERT_EQ(int_id, 3, "int_id");
-+	long_long_id = btf__add_int(btf, "unsigned long long", 8, 0);
-+	ASSERT_EQ(long_long_id, 4, "long_long_id");
-+	void_ptr_id = btf__add_ptr(btf, 0);
-+	ASSERT_EQ(void_ptr_id, 5, "void_ptr_id");
-+
-+	id = btf__add_struct(btf, "test_struct", 20 /* bytes */);
-+	ASSERT_EQ(id, 6, "struct_id");
-+	err = btf__add_field(btf, "ptr", void_ptr_id, 0, 0);
-+	err = err ?: btf__add_field(btf, "val2", int_id, 32, 0);
-+	err = err ?: btf__add_field(btf, "val1", long_long_id, 64, 0);
-+	err = err ?: btf__add_field(btf, "val3", short_id, 128, 0);
-+	err = err ?: btf__add_field(btf, "val4", char_id, 144, 0);
-+	ASSERT_OK(err, "struct_fields");
-+
-+	fd = mkstemp(btf_file);
-+	if (CHECK(fd < 0, "btf_tmp", "failed to create file: %d\n", fd))
-+		goto cleanup;
-+	f = fdopen(fd, "w");
-+	if (!ASSERT_OK_PTR(f, "btf_fdopen"))
-+		goto cleanup;
-+
-+	raw_data = btf__get_raw_data(btf, &raw_sz);
-+	if (!ASSERT_OK_PTR(raw_data, "raw_data"))
-+		goto cleanup;
-+	written = fwrite(raw_data, 1, raw_sz, f);
-+	if (CHECK(written != raw_sz, "btf_write", "written: %zu, errno: %d\n", written, errno))
-+		goto cleanup;
-+	fflush(f);
-+	fclose(f);
-+	f = NULL;
-+	close(fd);
-+	fd = -1;
-+
-+	/* open and load BPF program with custom BTF as the kernel BTF */
-+	skel = test_core_autosize__open();
-+	if (!ASSERT_OK_PTR(skel, "skel_open"))
-+		return;
-+
-+	/* disable handle_signed() for now */
-+	prog = bpf_object__find_program_by_name(skel->obj, "handle_signed");
-+	if (!ASSERT_OK_PTR(prog, "prog_find"))
-+		goto cleanup;
-+	bpf_program__set_autoload(prog, false);
-+
-+	load_attr.obj = skel->obj;
-+	load_attr.target_btf_path = btf_file;
-+	err = bpf_object__load_xattr(&load_attr);
-+	if (!ASSERT_OK(err, "prog_load"))
-+		goto cleanup;
-+
-+	prog = bpf_object__find_program_by_name(skel->obj, "handle_samesize");
-+	if (!ASSERT_OK_PTR(prog, "prog_find"))
-+		goto cleanup;
-+	skel->links.handle_samesize = bpf_program__attach(prog);
-+	if (!ASSERT_OK_PTR(skel->links.handle_samesize, "prog_attach"))
-+		goto cleanup;
-+
-+	prog = bpf_object__find_program_by_name(skel->obj, "handle_downsize");
-+	if (!ASSERT_OK_PTR(prog, "prog_find"))
-+		goto cleanup;
-+	skel->links.handle_downsize = bpf_program__attach(prog);
-+	if (!ASSERT_OK_PTR(skel->links.handle_downsize, "prog_attach"))
-+		goto cleanup;
-+
-+	prog = bpf_object__find_program_by_name(skel->obj, "handle_probed");
-+	if (!ASSERT_OK_PTR(prog, "prog_find"))
-+		goto cleanup;
-+	skel->links.handle_probed = bpf_program__attach(prog);
-+	if (!ASSERT_OK_PTR(skel->links.handle_probed, "prog_attach"))
-+		goto cleanup;
-+
-+	usleep(1);
-+
-+	bss_map = bpf_object__find_map_by_name(skel->obj, "test_cor.bss");
-+	if (!ASSERT_OK_PTR(bss_map, "bss_map_find"))
-+		goto cleanup;
-+
-+	err = bpf_map_lookup_elem(bpf_map__fd(bss_map), &zero, (void *)&out);
-+	if (!ASSERT_OK(err, "bss_lookup"))
-+		goto cleanup;
-+
-+	ASSERT_EQ(out.ptr_samesized, 0x01020304, "ptr_samesized");
-+	ASSERT_EQ(out.val1_samesized, 0x1020304050607080, "val1_samesized");
-+	ASSERT_EQ(out.val2_samesized, 0x0a0b0c0d, "val2_samesized");
-+	ASSERT_EQ(out.val3_samesized, 0xfeed, "val3_samesized");
-+	ASSERT_EQ(out.val4_samesized, 0xb9, "val4_samesized");
-+	ASSERT_EQ(out.output_samesized.ptr, 0x01020304, "ptr_samesized");
-+	ASSERT_EQ(out.output_samesized.val1, 0x1020304050607080, "val1_samesized");
-+	ASSERT_EQ(out.output_samesized.val2, 0x0a0b0c0d, "val2_samesized");
-+	ASSERT_EQ(out.output_samesized.val3, 0xfeed, "val3_samesized");
-+	ASSERT_EQ(out.output_samesized.val4, 0xb9, "val4_samesized");
-+
-+	ASSERT_EQ(out.ptr_downsized, 0x01020304, "ptr_downsized");
-+	ASSERT_EQ(out.val1_downsized, 0x1020304050607080, "val1_downsized");
-+	ASSERT_EQ(out.val2_downsized, 0x0a0b0c0d, "val2_downsized");
-+	ASSERT_EQ(out.val3_downsized, 0xfeed, "val3_downsized");
-+	ASSERT_EQ(out.val4_downsized, 0xb9, "val4_downsized");
-+	ASSERT_EQ(out.output_downsized.ptr, 0x01020304, "ptr_downsized");
-+	ASSERT_EQ(out.output_downsized.val1, 0x1020304050607080, "val1_downsized");
-+	ASSERT_EQ(out.output_downsized.val2, 0x0a0b0c0d, "val2_downsized");
-+	ASSERT_EQ(out.output_downsized.val3, 0xfeed, "val3_downsized");
-+	ASSERT_EQ(out.output_downsized.val4, 0xb9, "val4_downsized");
-+
-+	ASSERT_EQ(out.ptr_probed, 0x01020304, "ptr_probed");
-+	ASSERT_EQ(out.val1_probed, 0x1020304050607080, "val1_probed");
-+	ASSERT_EQ(out.val2_probed, 0x0a0b0c0d, "val2_probed");
-+	ASSERT_EQ(out.val3_probed, 0xfeed, "val3_probed");
-+	ASSERT_EQ(out.val4_probed, 0xb9, "val4_probed");
-+
-+	test_core_autosize__destroy(skel);
-+	skel = NULL;
-+
-+	/* now re-load with handle_signed() enabled, it should fail loading */
-+	skel = test_core_autosize__open();
-+	if (!ASSERT_OK_PTR(skel, "skel_open"))
-+		return;
-+
-+	load_attr.obj = skel->obj;
-+	load_attr.target_btf_path = btf_file;
-+	err = bpf_object__load_xattr(&load_attr);
-+	if (!ASSERT_ERR(err, "bad_prog_load"))
-+		goto cleanup;
-+
-+cleanup:
-+	if (f)
-+		fclose(f);
-+	if (fd >= 0)
-+		close(fd);
-+	remove(btf_file);
-+	btf__free(btf);
-+	test_core_autosize__destroy(skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/test_core_autosize.c b/tools/testing/selftests/bpf/progs/test_core_autosize.c
-new file mode 100644
-index 000000000000..e999f2e2ea22
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_core_autosize.c
-@@ -0,0 +1,172 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+
-+#include <linux/bpf.h>
-+#include <stdint.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_core_read.h>
-+
-+char _license[] SEC("license") = "GPL";
-+
-+/* fields of exactly the same size */
-+struct test_struct___samesize {
-+	void *ptr;
-+	unsigned long long val1;
-+	unsigned int val2;
-+	unsigned short val3;
-+	unsigned char val4;
-+} __attribute((preserve_access_index));
-+
-+/* unsigned fields that have to be downsized by libbpf */
-+struct test_struct___downsize {
-+	void *ptr;
-+	unsigned long val1;
-+	unsigned long val2;
-+	unsigned long val3;
-+	unsigned long val4;
-+	/* total sz: 40 */
-+} __attribute__((preserve_access_index));
-+
-+/* fields with signed integers of wrong size, should be rejected */
-+struct test_struct___signed {
-+	void *ptr;
-+	long val1;
-+	long val2;
-+	long val3;
-+	long val4;
-+} __attribute((preserve_access_index));
-+
-+/* real layout and sizes according to test's (32-bit) BTF */
-+struct test_struct___real {
-+	unsigned int ptr; /* can't use `void *`, it is always 8 byte in BPF target */
-+	unsigned int val2;
-+	unsigned long long val1;
-+	unsigned short val3;
-+	unsigned char val4;
-+	unsigned char _pad;
-+	/* total sz: 20 */
-+};
-+
-+struct test_struct___real input = {
-+	.ptr = 0x01020304,
-+	.val1 = 0x1020304050607080,
-+	.val2 = 0x0a0b0c0d,
-+	.val3 = 0xfeed,
-+	.val4 = 0xb9,
-+	._pad = 0xff, /* make sure no accidental zeros are present */
-+};
-+
-+unsigned long long ptr_samesized = 0;
-+unsigned long long val1_samesized = 0;
-+unsigned long long val2_samesized = 0;
-+unsigned long long val3_samesized = 0;
-+unsigned long long val4_samesized = 0;
-+struct test_struct___real output_samesized = {};
-+
-+unsigned long long ptr_downsized = 0;
-+unsigned long long val1_downsized = 0;
-+unsigned long long val2_downsized = 0;
-+unsigned long long val3_downsized = 0;
-+unsigned long long val4_downsized = 0;
-+struct test_struct___real output_downsized = {};
-+
-+unsigned long long ptr_probed = 0;
-+unsigned long long val1_probed = 0;
-+unsigned long long val2_probed = 0;
-+unsigned long long val3_probed = 0;
-+unsigned long long val4_probed = 0;
-+
-+unsigned long long ptr_signed = 0;
-+unsigned long long val1_signed = 0;
-+unsigned long long val2_signed = 0;
-+unsigned long long val3_signed = 0;
-+unsigned long long val4_signed = 0;
-+struct test_struct___real output_signed = {};
-+
-+SEC("raw_tp/sys_exit")
-+int handle_samesize(void *ctx)
-+{
-+	struct test_struct___samesize *in = (void *)&input;
-+	struct test_struct___samesize *out = (void *)&output_samesized;
-+
-+	ptr_samesized = (unsigned long long)in->ptr;
-+	val1_samesized = in->val1;
-+	val2_samesized = in->val2;
-+	val3_samesized = in->val3;
-+	val4_samesized = in->val4;
-+
-+	out->ptr = in->ptr;
-+	out->val1 = in->val1;
-+	out->val2 = in->val2;
-+	out->val3 = in->val3;
-+	out->val4 = in->val4;
-+
-+	return 0;
-+}
-+
-+SEC("raw_tp/sys_exit")
-+int handle_downsize(void *ctx)
-+{
-+	struct test_struct___downsize *in = (void *)&input;
-+	struct test_struct___downsize *out = (void *)&output_downsized;
-+
-+	ptr_downsized = (unsigned long long)in->ptr;
-+	val1_downsized = in->val1;
-+	val2_downsized = in->val2;
-+	val3_downsized = in->val3;
-+	val4_downsized = in->val4;
-+
-+	out->ptr = in->ptr;
-+	out->val1 = in->val1;
-+	out->val2 = in->val2;
-+	out->val3 = in->val3;
-+	out->val4 = in->val4;
-+
-+	return 0;
-+}
-+
-+SEC("raw_tp/sys_enter")
-+int handle_probed(void *ctx)
-+{
-+	struct test_struct___downsize *in = (void *)&input;
-+	__u64 tmp;
-+
-+	tmp = 0;
-+	bpf_core_read(&tmp, bpf_core_field_size(in->ptr), &in->ptr);
-+	ptr_probed = tmp;
-+
-+	tmp = 0;
-+	bpf_core_read(&tmp, bpf_core_field_size(in->val1), &in->val1);
-+	val1_probed = tmp;
-+
-+	tmp = 0;
-+	bpf_core_read(&tmp, bpf_core_field_size(in->val2), &in->val2);
-+	val2_probed = tmp;
-+
-+	tmp = 0;
-+	bpf_core_read(&tmp, bpf_core_field_size(in->val3), &in->val3);
-+	val3_probed = tmp;
-+
-+	tmp = 0;
-+	bpf_core_read(&tmp, bpf_core_field_size(in->val4), &in->val4);
-+	val4_probed = tmp;
-+
-+	return 0;
-+}
-+
-+SEC("raw_tp/sys_enter")
-+int handle_signed(void *ctx)
-+{
-+	struct test_struct___signed *in = (void *)&input;
-+	struct test_struct___signed *out = (void *)&output_signed;
-+
-+	val2_signed = in->val2;
-+	val3_signed = in->val3;
-+	val4_signed = in->val4;
-+
-+	out->val2= in->val2;
-+	out->val3= in->val3;
-+	out->val4= in->val4;
-+
-+	return 0;
-+}
--- 
-2.24.1
-
+-DaveE
