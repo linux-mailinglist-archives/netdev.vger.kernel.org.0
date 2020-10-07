@@ -2,106 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0A1728626A
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 17:45:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBB04286283
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 17:46:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728260AbgJGPo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 11:44:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43434 "EHLO
+        id S1728780AbgJGPqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 11:46:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727005AbgJGPo4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 11:44:56 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE40CC061755;
-        Wed,  7 Oct 2020 08:44:56 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id ds1so1229160pjb.5;
-        Wed, 07 Oct 2020 08:44:56 -0700 (PDT)
+        with ESMTP id S1728769AbgJGPqV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 11:46:21 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44D37C0613D2
+        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 08:46:21 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id n18so2768921wrs.5
+        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 08:46:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OopvoL5bmYi+0qGhF3VP83b68UDgKQrkU07BBY2nqsU=;
-        b=Ig/V6oAtwr/rda438Rz4wdMGeHF553yyGeIjxYz9QCthXwy0yvoevXQ6NpwmseSPuV
-         CNlUq05As99tyk81B67xqF9YFCHxzedVnIssvfxH44QkoFOvs4xv/ykeQrf9AkZd7798
-         JXXL6M8aO47whWXB2WV/GIPXPXMANYDolePAAFhSw9zQL8nvFG4AU8RcJVfiV9VLY2wK
-         s8pmXOv2E0zj37KmflRfe8LhAxjJGc4iNlXAhlqa22NBs/kcwtkTbTEnuuFBiY+W06tv
-         kv8Sd1jYdH/kWrRf+8R0MbJz+dRQB7z7NxXKTmHfKo0XdSQAPlmQvdNB2+p2coe+Z3M9
-         T1kQ==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=YzPiSX7AQ1L9YnXrnLU91iAOqoFafCUH8YuU1FCjhMc=;
+        b=HmuQOSO5fQzzPoNooQ98zkg3PTY6swd4ETESnICsiJr6LKNVV0WEsV8kBq9p+YJSZl
+         14LLqkPF7gSHmgpFN3Rv7Wid+GDiKlRXAQqkDDRLkcL8D3b3nX+R243/oeNaHvpaGCsw
+         HCXmyxlDIFx4qPL3IxeI9ZLisjCcZC/HKgGSHoTT2hEdLXjjSbbsoEjPEgcMGtSwDnmS
+         p+NrMcNj/QklFSMbPoX2hLQOSlbEjBKBTsiEx4nNGYXKCJC7HWv1493vmlE9QYCls3Fp
+         VjGyamtXkRoQKfKsziofoTvhBEy92/v2Bbt8RbwTmLGvzaiINVBHBn92Z1BBiCF+V7Ha
+         TrZg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OopvoL5bmYi+0qGhF3VP83b68UDgKQrkU07BBY2nqsU=;
-        b=PDFae633qPyRC9VKlWUTkYGzVu/E7uL6Ub6qrJqKDp++n0GlYYeem7i2qkKynIPJ6h
-         VXheR+Dec4AVxVZSVnbQvC1U2RaEqk02MUGqzxGtERHkgCsjWLLO3R0hXclnHk6qCpKB
-         3RHh9H22+nFWylTch7RYp7YRyWo25udhEk44Le6f85ZJvwcF6xflFAEmcENQ/V61kPTR
-         pqM2hEm8An0TlYpmo1iJ+1j5hLVeT8Sm4rdTNl65POhVp9GvmN9ANXbzofk62/Yy5ivZ
-         I30zQkQNVzeLlwlucikr1cLiCRqnIzwF/hlvNXMgOQefI9tbpRs9XYmuh/+w/RgoKi0d
-         icww==
-X-Gm-Message-State: AOAM5301A/MhgOPPioknRmx246a5V+hwKtepd8E/IkpD6fulA5g+Z/MN
-        OjQytV98jjubgODJmpxB3TR4rra4rG2qPQ==
-X-Google-Smtp-Source: ABdhPJyi7dDLCLtbgKVzaWHV9rqYxTGP9mA6JVYSD9c0RBIUN12Z2wPgdGtKHPZfocfmjrL5dEwhmQ==
-X-Received: by 2002:a17:90b:4b05:: with SMTP id lx5mr3263313pjb.42.1602085496169;
-        Wed, 07 Oct 2020 08:44:56 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id e8sm3745514pgj.8.2020.10.07.08.44.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Oct 2020 08:44:55 -0700 (PDT)
-To:     Marco Felsch <m.felsch@pengutronix.de>,
-        Marek Vasut <marex@denx.de>, Rob Herring <robh+dt@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
-        kernel@pengutronix.de, David Jander <david@protonic.nl>
-References: <20201006080424.GA6988@pengutronix.de>
- <2cc5ea02-707e-dbb5-c081-4c5202bd5815@gmail.com>
- <42d4c4b2-d3ea-9130-ef7f-3d1955116fdc@denx.de>
- <0687984c-5768-7c71-5796-8e16169f5192@gmail.com>
- <20201007081410.jk5fi6x5w3ab3726@pengutronix.de>
- <7edb2e01-bec5-05b0-aa47-caf6e214e5a0@denx.de>
- <20201007090636.t5rsus3tnkwuekjj@pengutronix.de>
- <2b6a1616-beb8-fd12-9932-1e7d1ef04769@denx.de>
- <20201007104757.fntgjiwt4tst3w3f@pengutronix.de>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: PHY reset question
-Message-ID: <c6bce70b-c97a-1696-2113-61bd3ba6ae99@gmail.com>
-Date:   Wed, 7 Oct 2020 08:44:53 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.3.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YzPiSX7AQ1L9YnXrnLU91iAOqoFafCUH8YuU1FCjhMc=;
+        b=ClmZtBXT0eSNPMsIseHqLNtY++1+BTcV//KAecu8CeLXPmYM4JE5sVCVvQ0rDSbjK8
+         h5JKZO4aSgbYsENnPz5DgTxKrRuhp+Znv25Mg9MD6cvsQlcOLuA8FupiD0raCHXRdtun
+         5KZJQWzX9F+qJQWbVQQIMCYUABfSLbLDl/DBLk/H9rxYSEu7VyNid+uLHNys2kRvxDME
+         QSpdmqIL7Okk90n7HOMHrEP7TNtn0XHFIJ5984RvUhaFgz8aHhArp7xBGc4THdBJknJc
+         z1nzNFbpK96Oi5JEwBz847K10JSQxmHENWzV0DJpXY1CDcUKrOC+97UCo3skHwMewfhi
+         DPrg==
+X-Gm-Message-State: AOAM533ysVSAuk56aNwz1zqTP6TlQPUy6GJTXmzndEv5uYTbokOJGf2a
+        XlwOVGZwrO1/3hvoMAi5lQugPQ==
+X-Google-Smtp-Source: ABdhPJwAUva8Y6sfFj4UDNguAWXZjtX41JdpwwGKDeXgg/qMbYOvETz04L0/DLuh/b5zsSxQC9ixew==
+X-Received: by 2002:adf:91a4:: with SMTP id 33mr4521604wri.170.1602085579687;
+        Wed, 07 Oct 2020 08:46:19 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id p21sm3253767wmc.28.2020.10.07.08.46.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Oct 2020 08:46:19 -0700 (PDT)
+Date:   Wed, 7 Oct 2020 17:46:18 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Moshe Shemesh <moshe@mellanox.com>, f@nanopsycho
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 04/16] devlink: Add reload stats
+Message-ID: <20201007154618.GB3064@nanopsycho>
+References: <1602050457-21700-1-git-send-email-moshe@mellanox.com>
+ <1602050457-21700-5-git-send-email-moshe@mellanox.com>
 MIME-Version: 1.0
-In-Reply-To: <20201007104757.fntgjiwt4tst3w3f@pengutronix.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1602050457-21700-5-git-send-email-moshe@mellanox.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Wed, Oct 07, 2020 at 08:00:45AM CEST, moshe@mellanox.com wrote:
+>Add reload stats to hold the history per reload action type and limit.
+>
+>For example, the number of times fw_activate has been performed on this
+>device since the driver module was added or if the firmware activation
+>was performed with or without reset.
+>
+>Add devlink notification on stats update.
+>
+>Expose devlink reload stats to the user through devlink dev get command.
+>
+>Examples:
+>$ devlink dev show
+>pci/0000:82:00.0:
+>  stats:
+>      reload:
+>        driver_reinit 2 fw_activate 1 fw_activate_no_reset 0
+>pci/0000:82:00.1:
+>  stats:
+>      reload:
+>        driver_reinit 1 fw_activate 0 fw_activate_no_reset 0
+>
+>$ devlink dev show -jp
+>{
+>    "dev": {
+>        "pci/0000:82:00.0": {
+>            "stats": {
+>                "reload": {
+>                    "driver_reinit": 2,
+>                    "fw_activate": 1,
+>                    "fw_activate_no_reset": 0
+>                }
+>            }
+>        },
+>        "pci/0000:82:00.1": {
+>            "stats": {
+>                "reload": {
+>                    "driver_reinit": 1,
+>                    "fw_activate": 0,
+>                    "fw_activate_no_reset": 0
+>                }
+>            }
+>        }
+>    }
+>}
+>
+>Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
 
-
-On 10/7/2020 3:47 AM, Marco Felsch wrote:
-> Florian did you send a new version of those patches?
-
-I did not because we had a good conversation with Rob over IRC and the 
-conclusion was that the only solution that scaled across drivers, 
-subsystems and type of resources (regulators, clocks, resets, etc.) was 
-to have a compatible string for the given device that contains the ID. 
-For Ethernet PHY or MDIO device nodes that is "ethernet-phyAAAA.BBBB".
-
-When the bus determines the presence of such a compatible string it 
-needs to bypass the dynamic identification of the device and needs to 
-bind the PHY driver and the device instance directly. MDIO does that, 
-and so does I2C and SPI AFAICT with the modalias/compatible (there is 
-not a standardized way to runtime detect an I2C or SPI client anyway), 
-while PCI and USB do not, but arguably could in the future.
-
-For the specific use case that I had which required turning on a clock 
-to the Ethernet PHY, I ended up modifying the firmware to provide that 
-compatible string "ethernetAAAA.BBBB" and have the driver request the 
-clock from its probe function:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/drivers/net/phy/bcm7xxx.c?id=ba4ee3c053659119472135231dbef8f6880ce1fb
--- 
-Florian
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
