@@ -2,118 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D54C0285D0D
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 12:39:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26090285D25
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 12:47:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728110AbgJGKjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 06:39:53 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:42738 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727767AbgJGKjx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 06:39:53 -0400
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1602067191;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DyTO6nNH3VT0YkDiBwoY6iLnyasMfYs/rQZg2axs0do=;
-        b=iPYPKOAqg3ZavBsrgasT9+vNkcqGOs9XW+mdvnpa0hLk/Vt2FtKmHQZCuAZ4OtHLcIFloa
-        CYfNQ6hhCKc4ThAWDtrBFflmKMi+KdfuG1l2hwF47vUwGxmEL5i3z7STc3GvaM5Na85nEV
-        1SXnISWJf/lpt7Nf15ydpK0K+nbiCdoyUcg6zgJW6ju1QQcZ07xiXW8hrJa+3joLj2sxwz
-        DE4r9loTtWm6PRMj37nTB10DL9hCuIvE07DP1kuqOmd/Knn8d4A3WSfmq0uU8KDCkbcwkE
-        SvgOeaoMVOge6oztDs0YSF4IO5iRbmjyMxom2bQD53YXToalVVc+uNolzG5Zkg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1602067191;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=DyTO6nNH3VT0YkDiBwoY6iLnyasMfYs/rQZg2axs0do=;
-        b=ajgj4QkIIQpu2oCJw+9X5U6pVrjt0bdQtRXZ5FNcgXLpcTYpneJ7XTHP87ecKK6FoWeKX9
-        4GMPiFwz2/ZBihDw==
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH net-next v6 4/7] net: dsa: hellcreek: Add support for hardware timestamping
-In-Reply-To: <20201006140102.6q7ep2w62jnilb22@skbuf>
-References: <20201004112911.25085-1-kurt@linutronix.de> <20201004112911.25085-5-kurt@linutronix.de> <20201004143000.blb3uxq3kwr6zp3z@skbuf> <87imbn98dd.fsf@kurt> <20201006072847.pjygwwtgq72ghsiq@skbuf> <87tuv77a83.fsf@kurt> <20201006133222.74w3r2jwwhq5uop5@skbuf> <87r1qb790w.fsf@kurt> <20201006140102.6q7ep2w62jnilb22@skbuf>
-Date:   Wed, 07 Oct 2020 12:39:49 +0200
-Message-ID: <87lfgiqpze.fsf@kurt>
+        id S1728156AbgJGKrs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 06:47:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59596 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726096AbgJGKrs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Oct 2020 06:47:48 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1379A2080A;
+        Wed,  7 Oct 2020 10:47:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602067667;
+        bh=ypHuWEORZOd/WB0A59+GuMja9IpjkFsgpZYtSN82i70=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=i5lu5v9E6ShQSnaKi5m774fN+R8LkMGqsIbJqZ0hxjrCpMh/+evJ9zG35KLe1MqrZ
+         664eCGmEyMzHwkIiaLEOneceUPNqvoPqZKl574oDkDEVPzz2tlN1jwd6ZEXug+JDXn
+         N52P5s6/lDeVw5Xk57fMayiVmb4x2rF5ZXhMq9I0=
+Date:   Wed, 7 Oct 2020 13:47:43 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     David Miller <davem@davemloft.net>, kuba@kernel.org,
+        netdev@vger.kernel.org, kernel-team@fb.com, jiri@resnulli.us,
+        andrew@lunn.ch, mkubecek@suse.cz,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH net-next v2 0/7] ethtool: allow dumping policies to user
+ space
+Message-ID: <20201007104743.GA3678159@unreal>
+References: <20201005220739.2581920-1-kuba@kernel.org>
+ <7586c9e77f6aa43e598103ccc25b43415752507d.camel@sipsolutions.net>
+ <20201006.062618.628708952352439429.davem@davemloft.net>
+ <20201007062754.GU1874917@unreal>
+ <cf5fdfa13cce37fe7dcf46a4e3a113a64c927047.camel@sipsolutions.net>
+ <20201007082437.GV1874917@unreal>
+ <7f26de5605d4d19eda19f35b2a239d7098fad7b3.camel@sipsolutions.net>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7f26de5605d4d19eda19f35b2a239d7098fad7b3.camel@sipsolutions.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-
-On Tue Oct 06 2020, Vladimir Oltean wrote:
-> On Tue, Oct 06, 2020 at 03:56:31PM +0200, Kurt Kanzenbach wrote:
->> On Tue Oct 06 2020, Vladimir Oltean wrote:
->> > On Tue, Oct 06, 2020 at 03:30:36PM +0200, Kurt Kanzenbach wrote:
->> >> That's the point. The user (or anybody else) cannot disable hardware
->> >> stamping, because it is always performed. So, why should it be allowed
->> >> to disable it even when it cannot be disabled?
->> >
->> > Because your driver's user can attach a PTP PHY to your switch port, a=
-nd
->> > the network stack doesn't support multiple TX timestamps attached to t=
-he
->> > same skb. They'll want the TX timestamp from the PHY and not from your
->> > switch.
->>=20
->> Yeah, sure. That use case makes sense. What's the problem exactly?
+On Wed, Oct 07, 2020 at 10:29:01AM +0200, Johannes Berg wrote:
+> On Wed, 2020-10-07 at 11:24 +0300, Leon Romanovsky wrote:
+> > On Wed, Oct 07, 2020 at 09:30:51AM +0200, Johannes Berg wrote:
+> > > On Wed, 2020-10-07 at 09:27 +0300, Leon Romanovsky wrote:
+> > > > This series and my guess that it comes from ff419afa4310 ("ethtool: trim policy tables")
+> > > > generates the following KASAN out-of-bound error.
+> > >
+> > > Interesting. I guess that is
+> > >
+> > > 	req_info->counts_only = tb[ETHTOOL_A_STRSET_COUNTS_ONLY];
+> > >
+> > > which basically means that before you never actually *use* the
+> > > ETHTOOL_A_STRSET_COUNTS_ONLY flag, but of course it shouldn't be doing
+> > > this ...
+> > >
+> > > Does this fix it?
+> >
+> > Yes, it fixed KASAN, but it we got new failure after that.
 >
-> The SO_TIMESTAMPING / SO_TIMESTAMPNS cmsg socket API simply doesn't have
-> any sort of identification for a hardware TX timestamp (where it came
-> from).
+> Good.
+>
+> I'm not very familiar with ethtool netlink tbh :)
+>
+> > 11:07:51 player_id: 1 shell.py:62 [LinuxEthtoolAgent] DEBUG : running command(/opt/mellanox/ethtool/sbin/ethtool --set-channels eth2 combined 3) with pid: 13409
+> > 11:07:51 player_id: 1 protocol.py:605 [OpSetChannels] ERROR : RC:1, STDERR:
+> > netlink error: Unknown attribute type (offset 36)
+> > netlink error: Invalid argument
+>
+> That's even stranger, since strict validation should've meant this was
+> always rejected? Hmm.
+>
+> Oh, copy/paste error I guess, try this:
 
-This is sounds like a problem. For instance the hellcreek switch has
-actually three ptp hardware clocks and the time stamping can be
-configured to use either one of them. How would the user space
-distinguish what time stamp is taken by which clock? This is not a
-problem at the moment, because currently only the synchronized clock is
-exported to user space. See change log of this patch.
+Thanks, it fixed and everything passed.
 
-> So when you'll poll for TX timestamps, you'll receive a TX
-> timestamp from the PHY and another one from the switch, and those will
-> be in a race with one another, so you won't know which one is which.
 
-OK. So what happens if the driver will accept to disable hardware
-timestamping? Is there anything else that needs to be implemented? Are
-there (good) examples?
 
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl99mvUACgkQeSpbgcuY
-8KYpYA/+NZ7x6UiwCygVWpIliPBWn1e5Z8sYKM2LClYibjm32fUKUbxj3JyPGg9F
-vmhcRp6eFX+AItyhzd6NG+whOa72HyxQDCi7JvW52NHavnOlpmeeKu+g9bc9rTxJ
-ihd7DR4lHt+wpDM/8khGX4yQMFkjbAAN62nDziVPhHAVQFKOvLmLj7ns0q4HpcVw
-Atq+idodnY0qWrm0byWDn1OrVbKHkw2hmYgmsBH//bdjA7fspsCgoWxU3A5aF70l
-u4dB5zj7bcTS/osxZeYocWBlbEuLdzzt+4eqPVdYUuwh69bBaCwPvDXXmF9ot6jp
-xrMaLmgnhil+zverXQNKMY8KNXfNtAAg10XM/av4Uqf/pSgAlEzQ3HHC9qUTd+m4
-Tfv+bpVOu24PdnwMkvwhGYXn9s3GNCe1w9nMeftabqKIg322XE39azgTNLy/l27x
-+kiLOKkU1IaibGKNbSKErRB1PH3gQIMNfn3VCvYnpvRB4ezCH2T0v7ldpntIUBui
-mH/q850jNaV0ig9n/Ju9vuZUwKefU0745qa1KMTNqu2oH/AQ5WOpboQ4X9U0NBy1
-W+Tbl0ub0v27SNkAiVzkfeGRH4b6l+OASCryEIOc+NU26zfXp/dczAYXCEXdRvRG
-unBwF5t6zEk2Nin/Hf/dQh/XH0w3BfreM4snHQ/t6kyYvsxQNcU=
-=r52S
------END PGP SIGNATURE-----
---=-=-=--
+>
+> diff --git a/net/ethtool/netlink.c b/net/ethtool/netlink.c
+> index 8a85a4e6be9b..50d3c8896f91 100644
+> --- a/net/ethtool/netlink.c
+> +++ b/net/ethtool/netlink.c
+> @@ -830,8 +830,8 @@ static const struct genl_ops ethtool_genl_ops[] = {
+>  		.cmd	= ETHTOOL_MSG_CHANNELS_SET,
+>  		.flags	= GENL_UNS_ADMIN_PERM,
+>  		.doit	= ethnl_set_channels,
+> -		.policy = ethnl_channels_get_policy,
+> -		.maxattr = ARRAY_SIZE(ethnl_channels_get_policy) - 1,
+> +		.policy = ethnl_channels_set_policy,
+> +		.maxattr = ARRAY_SIZE(ethnl_channels_set_policy) - 1,
+>  	},
+>  	{
+>  		.cmd	= ETHTOOL_MSG_COALESCE_GET,
+>
+> johannes
+>
