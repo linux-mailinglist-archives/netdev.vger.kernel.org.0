@@ -2,77 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB1EB286496
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 18:35:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0BC9528649E
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 18:37:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727922AbgJGQfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 12:35:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51302 "EHLO
+        id S1726504AbgJGQhu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 12:37:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727234AbgJGQfn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 12:35:43 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97FDC061755;
-        Wed,  7 Oct 2020 09:35:41 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id a200so1612982pfa.10;
-        Wed, 07 Oct 2020 09:35:41 -0700 (PDT)
+        with ESMTP id S1726105AbgJGQht (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 12:37:49 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3124AC061755
+        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 09:37:48 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id z1so2954437wrt.3
+        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 09:37:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JlHSp96jwdaBdct47RiHB7NkTtoShuj526Rv157w8ss=;
-        b=AEEkToo+xI/uX/gPobrYsYoRONOlzjQZcIE0nrz9YHQ1ZGPecQ7FBeUaODednrZ66r
-         Mwmk3eQv/BDSWaOhY6s1yF4QpPH/EfBe+3i3WdVI3OqTGPcUkPjjHiuP3hmWGCKQW57d
-         H+YhKHzFNJOqcwaOJhHB9bwXcf9Whdx3swygfwx/JVy4vz7h6Y/CQbQjCvCEfF8fHnOi
-         rCWIVKzrpeUB4we5mZuRXXB+jrg0u8BMlVA2xDQiVnsK3cRwTQJeCsinFEiGl3LUIUCe
-         dF1yttZsf1Uu52piAfRevAhJnqesFErk1QtHPt4gXU1+f3KnpiYrGIxHXc1F8ypYH4qV
-         mDyQ==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=slinBX2NAQyePyuzTo17S6np5p2MyRZE8ge6rGClDsE=;
+        b=mCkvP2JqXlEi7eia3dH9Fmzx1o2gwguFpU2CZmYIP8Tzf2UVoPNvpxn02Fqti7Ftxz
+         V9Q6oXweDs9Ju8VgBVDqdSQaz2auhml6cCqFOXs7wjpiyhIfYgq38dshRdopFZ1I+UoJ
+         9pdzNCrbF6Mth7DY7bH+g3mXrIzqWJtAVflLWZHUBZUH2e/U8uecpDp0bwTvzlXKKf+y
+         xWVFaPASjNMJSgbFG35Yyhghb6QPUxGS3rxNq5W8/pFYyv6lDJCl9yel5kwbqWKWD16X
+         2kK+SVYG/boHnpAW8E17viFi/6kW6PtTdRiOhSP/ZCX3B+yWtZTJlXUfuWrBLRQ0Zq8I
+         rkFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=JlHSp96jwdaBdct47RiHB7NkTtoShuj526Rv157w8ss=;
-        b=PnRk0Fe9iQYgAMgUvfPhU5adFMnJBZBZxAQ+X1vMDeRBlch9gdYv89Z+fC2/wVHBn1
-         cJx26Ev0ExvHy5LcEBGLHnKMEhfpcjV8m4fRg1qBn5DWfAzT3ld5sEZbkN6SdoGUbR85
-         MK0YQV8H80GPUZDVEK5mOFlcJtXnKAVNkk0uWB8LK6o5jaCIFrtlYgGffyaOL+Ym9w6s
-         1cp8fdKAkkXDLyHNyM1dR8hQt5KFb8RHsijz52ni2+TwNOpC1Wd2ow9CjJZWlqQlUKza
-         f/9cWz5aUHrbX+kLdwxwuWzafkm6GxGftipOJMrlriGc6xbR97Y3ZRS5nCfMzH0+mnLV
-         YbYw==
-X-Gm-Message-State: AOAM532RDJafAQdwdNUklJ1FidS588XxeInNezTfBiZRz0qWTTumFJZh
-        8JMl9wFnivMC/cwc8MJGL/s=
-X-Google-Smtp-Source: ABdhPJy8G4BEoqwWZDL52de8879SFellCj8lLZ2IxrsIOhLmYg9xfEnMC/jjiL5K2jlzthqN59LuBw==
-X-Received: by 2002:a63:5a11:: with SMTP id o17mr3589843pgb.287.1602088541346;
-        Wed, 07 Oct 2020 09:35:41 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([72.164.175.30])
-        by smtp.googlemail.com with ESMTPSA id q15sm4013229pgr.27.2020.10.07.09.35.40
+        bh=slinBX2NAQyePyuzTo17S6np5p2MyRZE8ge6rGClDsE=;
+        b=d6urJxnZIbZIfhJNl38jZ+h8vykokNAspY3oKoca7NwV778wY9qoeCvcHuJHxJI+xT
+         h1uywdFxw9NNSD1FOZ1clqtHJaHJOCXbsM2APM9CkXe1M7iOs0D2XRTTQV8EEunbHPUI
+         Sv0KkWj3+aCVhwBloNDkl1sCom7C6AkEMmR2UyAOs0rVtOekgWEdUKrjH/AX+BOw1WS3
+         GFEgJp+TfRhepFb/txB+9D3vPqLfgf5lyOOEeTZITlc0a8qTbihvsXp3oXWX3RkfEDdn
+         S0oqno5kErfJTZ9MDQ7CwnfCe05L0gL00FV5c5a4kPa5umSDmPK8sJmEefFj7vEXCerA
+         rMfw==
+X-Gm-Message-State: AOAM532VfkZKTUH7tRfcdvmw8e9YJepTC7oB/rgUS/g9IbKEZDXtmK8l
+        a0BYmS/qX219q3MgJcDew+jw8bqTSe4=
+X-Google-Smtp-Source: ABdhPJzw0QObcpZ0yQmDqd4QYrxgJWbf4GTxNZFGTuSQT7i8m70ukiccRoAJTtdu5PB8cJ7f/sj6Dw==
+X-Received: by 2002:a5d:6ac6:: with SMTP id u6mr4471154wrw.65.1602088666572;
+        Wed, 07 Oct 2020 09:37:46 -0700 (PDT)
+Received: from [192.168.8.147] ([37.172.158.5])
+        by smtp.gmail.com with ESMTPSA id u2sm3802827wre.7.2020.10.07.09.37.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Oct 2020 09:35:40 -0700 (PDT)
-Subject: Re: [PATCH bpf-next V1 3/6] bpf: add BPF-helper for reading MTU from
- net_device via ifindex
-To:     =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        bpf <bpf@vger.kernel.org>, Linux NetDev <netdev@vger.kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Shaun Crampton <shaun@tigera.io>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Marek Majkowski <marek@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>
-References: <160200013701.719143.12665708317930272219.stgit@firesoul>
- <160200018165.719143.3249298786187115149.stgit@firesoul>
- <20201006183302.337a9502@carbon>
- <20201006181858.6003de94@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CANP3RGe3S4eF=xVkQ22o=sxtW991jmNfq-bVtbKQQaszsLNZSA@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <a8b0dd01-bd6a-2a28-154e-c30a79ce3c83@gmail.com>
-Date:   Wed, 7 Oct 2020 09:35:39 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.1
+        Wed, 07 Oct 2020 09:37:46 -0700 (PDT)
+Subject: Re: net: Initialize return value in gro_cells_receive
+To:     Gregory Rose <gvrose8192@gmail.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Netdev <netdev@vger.kernel.org>
+References: <e595fd44-cf8a-ce14-8cc8-e3ecd4e8922a@gmail.com>
+ <9c6415e4-9d3b-2ba9-494a-c24316ec60c4@gmail.com>
+ <03e2fd9c-e4c9-cff4-90c9-99ea9d3a5713@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <d1e206e5-7049-82bb-3507-6f0436e47fa8@gmail.com>
+Date:   Wed, 7 Oct 2020 18:37:44 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <CANP3RGe3S4eF=xVkQ22o=sxtW991jmNfq-bVtbKQQaszsLNZSA@mail.gmail.com>
+In-Reply-To: <03e2fd9c-e4c9-cff4-90c9-99ea9d3a5713@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -80,11 +69,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/6/20 6:24 PM, Maciej Żenczykowski wrote:
+
+
+On 10/7/20 5:50 PM, Gregory Rose wrote:
 > 
-> FYI: It would be nice to have a similar function to return a device's
-> L2 header size (ie. 14 for ethernet) and/or hwtype.
+> 
+> On 10/7/2020 1:21 AM, Eric Dumazet wrote:
+>>
+>>
+>> On 10/6/20 8:53 PM, Gregory Rose wrote:
+>>> The 'res' return value is uninitalized and may be returned with
+>>> some random value.  Initialize to NET_RX_DROP as the default
+>>> return value.
+>>>
+>>> Signed-off-by: Greg Rose <gvrose8192@gmail.com>
+>>>
+>>> diff --git a/net/core/gro_cells.c b/net/core/gro_cells.c
+>>> index e095fb871d91..4e835960db07 100644
+>>> --- a/net/core/gro_cells.c
+>>> +++ b/net/core/gro_cells.c
+>>> @@ -13,7 +13,7 @@ int gro_cells_receive(struct gro_cells *gcells, struct sk_buff *skb)
+>>>   {
+>>>          struct net_device *dev = skb->dev;
+>>>          struct gro_cell *cell;
+>>> -       int res;
+>>> +       int res = NET_RX_DROP;
+>>>
+>>>          rcu_read_lock();
+>>>          if (unlikely(!(dev->flags & IFF_UP)))
+>>
+>> I do not think this is needed.
+>>
+>> Also, when/if sending a patch fixing a bug, we require a Fixes: tag.
+>>
+>> Thanks.
+>>
+> If it's not needed then feel free to ignore it.  It just looked like
+> the unlikely case returns without setting the return value.
 
-Why does that need to be looked up via a helper? It's a static number
-for a device and can plumbed to a program in a number of ways.
+Can you elaborate ? I do not see this problem in current upstream code.
 
+If a compiler gave you a warning, please give its version, thanks.
