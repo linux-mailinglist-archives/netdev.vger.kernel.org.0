@@ -2,349 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51D04286688
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 20:07:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73A012866A9
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 20:15:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727783AbgJGSHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 14:07:44 -0400
-Received: from mga07.intel.com ([134.134.136.100]:11995 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726181AbgJGSHn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Oct 2020 14:07:43 -0400
-IronPort-SDR: xVX7EDKEmvRm1h+6jKCT8Yh53uynJSowWDUcP2k7JkYbbNP4Eo6XzJFetm/9vFImqTShlp0Vey
- G7CO70yJH5Og==
-X-IronPort-AV: E=McAfee;i="6000,8403,9767"; a="229214981"
-X-IronPort-AV: E=Sophos;i="5.77,347,1596524400"; 
-   d="scan'208";a="229214981"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2020 11:07:19 -0700
-IronPort-SDR: xmDZwynQXHyAq4eX/jG3QiHc8BErQkNjemAWkHGqMPdz1sBkJ9HiZDvQ7r+k6hFgurkmnAES+l
- pDzmC4A+1dzw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,347,1596524400"; 
-   d="scan'208";a="297698931"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
-  by fmsmga008.fm.intel.com with ESMTP; 07 Oct 2020 11:07:18 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 7 Oct 2020 11:07:17 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 7 Oct 2020 11:07:17 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Wed, 7 Oct 2020 11:07:17 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.174)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.1713.5; Wed, 7 Oct 2020 11:07:16 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MCeqevbija4woGfu/fKKPZBIZFAg5DDcdICRaykB8oJyOF2fxUiBeXC+Fc96NzlqcRReIBODZcdoC++LN8gpNqwwGPfCiI9R0CMsxV5KB4FiqhjJ5aUMFVJJvx9Mh54gupW9l5dpzTpMFEZEqK2v2ChiIGmd4PI1GvkRQ/OmpCSvMiqUx5oJhOkNRIfQYidceVxc+nBXXk7q1ql6Shziw1L75UcVsZ6pWmErFsJIXH26P9DHb9aZgjb3VF+GHRyRBtAFY7Hhgk4gXZWScYYbMC13+9dY84pMo/BqSyudimCqa3ij4ZLe33SnyE/J0umINkCFrObcx1PM3+SN8ywEbQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UYeBXYG7TkA57/BLx92pgLLTpMiXYAvaCAQGRuL7zxA=;
- b=OmfZQ/caO49ghsYkhJM0dFSF24c47SbkYEx/Xn2RwkhMdhZ60LusFgnIBuTVLOCawJt28uvMjLoOWRdGkWmZ+fE+ji2O+Aa+sXxnMiyV3CDPMqHbP12gmmwvKs+yWhlg+asiadM/Lq5LM+tKwLi/zoN6Z66w9kMzN4F1lLp01lmfcr+/WPvrYQr8sRwq1ixxfbSwAqn6ebjX9qrjfvxRRy9meIsVPyXFzIT1lioiya8zN1gW+RWZXzy7t9cqTnu2giRqorHXAJsd3+BxP9HV8ORjmPWcYUr0dTtoFPACbYaTp8A7SE7ocKPhP9o4KJUBVsDxiul7rM1tpwb5K68o0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UYeBXYG7TkA57/BLx92pgLLTpMiXYAvaCAQGRuL7zxA=;
- b=tzCM/MRJTZeq738RRee1ZK9Hm+ONxOOlk+pcjar38vfxx9DAn9i3frQ63zFXZ1uoplCHtuvFQ0qPxVtF1MmcReDKx4bIWje/fi63evRuEZIYX4OQrFXAqWz6CRV9v4qLeKfU/cHood2Yb75EDQbeS4/yGlXxSNx/ndsVcW+0PBM=
-Received: from DM6PR11MB2841.namprd11.prod.outlook.com (2603:10b6:5:c8::32) by
- DM6PR11MB3835.namprd11.prod.outlook.com (2603:10b6:5:139::32) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3455.23; Wed, 7 Oct 2020 18:06:30 +0000
-Received: from DM6PR11MB2841.namprd11.prod.outlook.com
- ([fe80::6d8e:9b06:ef72:2a]) by DM6PR11MB2841.namprd11.prod.outlook.com
- ([fe80::6d8e:9b06:ef72:2a%5]) with mapi id 15.20.3433.044; Wed, 7 Oct 2020
- 18:06:30 +0000
-From:   "Ertman, David M" <david.m.ertman@intel.com>
-To:     Leon Romanovsky <leon@kernel.org>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-CC:     "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        "parav@mellanox.com" <parav@mellanox.com>,
-        "tiwai@suse.de" <tiwai@suse.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ranjani.sridharan@linux.intel.com" 
-        <ranjani.sridharan@linux.intel.com>,
-        "fred.oh@linux.intel.com" <fred.oh@linux.intel.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "jgg@nvidia.com" <jgg@nvidia.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Patil, Kiran" <kiran.patil@intel.com>
-Subject: RE: [PATCH v2 1/6] Add ancillary bus support
-Thread-Topic: [PATCH v2 1/6] Add ancillary bus support
-Thread-Index: AQHWm06cVdQZOfJAqUq6P9wAQIqk66mKKyCAgACGDICAAB03gIABoskg
-Date:   Wed, 7 Oct 2020 18:06:30 +0000
-Message-ID: <DM6PR11MB2841C531FC27DB41E078C52BDD0A0@DM6PR11MB2841.namprd11.prod.outlook.com>
-References: <20201005182446.977325-1-david.m.ertman@intel.com>
- <20201005182446.977325-2-david.m.ertman@intel.com>
- <20201006071821.GI1874917@unreal>
- <b4f6b5d1-2cf4-ae7a-3e57-b66230a58453@linux.intel.com>
- <20201006170241.GM1874917@unreal>
-In-Reply-To: <20201006170241.GM1874917@unreal>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [50.38.47.144]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 77bac927-18dd-4882-88b4-08d86aebb801
-x-ms-traffictypediagnostic: DM6PR11MB3835:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr,ExtFwd
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR11MB3835CF4610C46C2B10FE4B1FDD0A0@DM6PR11MB3835.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: gEYtARMwTiJbGcqDnoVel36XE1hlwRwkMHdfMOXQcnK4JUM6CWL4YhDjrf+XLnpcTmxJVL55YwDsU+tIg3jS7CIKtUZEuajye4p6QuUasqXGFWbDwaJ0RrUXo/hqKpfMCyW1hEeNKAtUj1LkzA5nY57xYcHXdTo+wbpp8OAWxrGyawVBbbPygNTH6hov+Zt8QbcuokWubEeHu+Lq8uldCHY2+g4iOKOUy2zRTuDPfzROXud/hidVvuGvDa9xABTlEQ+vL8lBqK+rwu5OB/ZVh7xEHKL68Mokk3TsaZoCBwROhqf60CSmQ4t0VhNUhwnbTcG43oCVqeDRTAXuZRgVIw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB2841.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(346002)(136003)(366004)(39860400002)(376002)(2906002)(186003)(76116006)(4326008)(71200400001)(7696005)(64756008)(66556008)(66946007)(5660300002)(66476007)(316002)(9686003)(66446008)(26005)(6506007)(54906003)(8936002)(55016002)(53546011)(52536014)(86362001)(7416002)(8676002)(83380400001)(33656002)(478600001)(110136005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: MFBywZcwUEjSnOkWzZHMu6gtUxp6c3xz2X2jrzjf/H7VC/sAtzzWWap3FtJPOinBDApcMVqCAqQByingIUtxJSH/nQZaF6bUoUh3hYWN/zWg6NQEa/HeLk+qKwxo9+mEXbJf3+P/j1FsL5TTlNVWBwFBGJ+uoIwazwWkdSBX7gg1hJyTbpzxtwoV2fTPhLIKbu8G6p6clZ52THPU4ev71TZXRC8AVvmgHbdVkpV0UCo+H3KqSpxhHHnB/Eo0vW6UKXEXUpIfkM4t7E9i37n25mFTrIpfIRcnz6RSd8s6R9C3IY2WiA1xbP6KMV45nebSDMm324Uk5nT6LV4fZBCcbgNhqWNDzZCrl2kufYGuqoBdbWMX4tv+iKSDRRxqJmM54IrwGwPKZVIkH515Md9BEz1UcPA5i+7mrmowOW8yCXy0DXzGREuUxBVPvJRs0QitSYG4mzfaw3IlaaHN/NkChUG6mpALZXuuIll/aRGreRuCx8PTNz0DvqfuAGV8372KIAKqZelHP4sXblMNo2wvEFmVV5cjxjq0qNqf+4nZf9G5mUFcHdfAmZakF1GRW+MoDSQrHmW8qE5/2UQh1hD3+ZaTYweoQrsfxiTyFbzy/eCQh7QKvBqQjx/nJRjz1vqjiPAs2SXoteDIzMVXja+zYw==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1728849AbgJGSOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 14:14:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:54955 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727237AbgJGSO3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 14:14:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602094467;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=ARzrUT1YSKBK/c3o/UWxshPKkI8c4ivs8VjyiPUC74k=;
+        b=cbSxt6POeM7bI5kzCgnhKVAqc9N/py4r5PxrobxZBX143q3DGmLpgrWf92eF9pqxkqD+lE
+        M7+Ph/uwN/RxIRhLiMg7WW/1TSSW6gi2gPwNwbo1LdfTQ8aURduMES7Cq0xtewWYQHcgLc
+        bmHi+eOFSdQ9bW3GO5hzgJMQqZT4N2U=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-310-xOsYuMNkORGIqBkAFgomfw-1; Wed, 07 Oct 2020 14:14:25 -0400
+X-MC-Unique: xOsYuMNkORGIqBkAFgomfw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 52E3764141;
+        Wed,  7 Oct 2020 18:14:24 +0000 (UTC)
+Received: from hpe-dl360pgen9-01.klab.eng.bos.redhat.com (hpe-dl360pgen9-01.klab.eng.bos.redhat.com [10.16.160.31])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E5CA075120;
+        Wed,  7 Oct 2020 18:14:20 +0000 (UTC)
+From:   Jarod Wilson <jarod@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Jarod Wilson <jarod@redhat.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
+Subject: [PATCH net-next v3 0/5] bonding: rename bond components
+Date:   Wed,  7 Oct 2020 14:14:04 -0400
+Message-Id: <20201007181409.1275639-1-jarod@redhat.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB2841.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77bac927-18dd-4882-88b4-08d86aebb801
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Oct 2020 18:06:30.8603
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Dul88mk7UPVs+xwUEE7t2iMN9Dx3fMSp56YFdF0oeBzKrP8iVespRXx7JSB8JTj7TrznC9E1bLQtVpnb01jF+KU9BZp//VwiLWzengIXvOA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3835
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Leon Romanovsky <leon@kernel.org>
-> Sent: Tuesday, October 6, 2020 10:03 AM
-> To: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-> Cc: Ertman, David M <david.m.ertman@intel.com>; alsa-devel@alsa-
-> project.org; parav@mellanox.com; tiwai@suse.de; netdev@vger.kernel.org;
-> ranjani.sridharan@linux.intel.com; fred.oh@linux.intel.com; linux-
-> rdma@vger.kernel.org; dledford@redhat.com; broonie@kernel.org;
-> jgg@nvidia.com; gregkh@linuxfoundation.org; kuba@kernel.org; Williams,
-> Dan J <dan.j.williams@intel.com>; Saleem, Shiraz
-> <shiraz.saleem@intel.com>; davem@davemloft.net; Patil, Kiran
-> <kiran.patil@intel.com>
-> Subject: Re: [PATCH v2 1/6] Add ancillary bus support
->=20
-> On Tue, Oct 06, 2020 at 10:18:07AM -0500, Pierre-Louis Bossart wrote:
-> > Thanks for the review Leon.
-> >
-> > > > Add support for the Ancillary Bus, ancillary_device and ancillary_d=
-river.
-> > > > It enables drivers to create an ancillary_device and bind an
-> > > > ancillary_driver to it.
-> > >
-> > > I was under impression that this name is going to be changed.
-> >
-> > It's part of the opens stated in the cover letter.
->=20
-> ok, so what are the variants?
-> system bus (sysbus), sbsystem bus (subbus), crossbus ?
->=20
-> >
-> > [...]
-> >
-> > > > +	const struct my_driver my_drv =3D {
-> > > > +		.ancillary_drv =3D {
-> > > > +			.driver =3D {
-> > > > +				.name =3D "myancillarydrv",
-> > >
-> > > Why do we need to give control over driver name to the driver authors=
-?
-> > > It can be problematic if author puts name that already exists.
-> >
-> > Good point. When I used the ancillary_devices for my own SoundWire test=
-,
-> the
-> > driver name didn't seem specifically meaningful but needed to be set to
-> > something, what mattered was the id_table. Just thinking aloud, maybe w=
-e
-> can
-> > add prefixing with KMOD_BUILD, as we've done already to avoid collision=
-s
-> > between device names?
->=20
-> IMHO, it shouldn't be controlled by the drivers at all and need to have
-> kernel module name hardwired. Users will use it later for various
-> bind/unbind/autoprobe tricks and it will give predictability for them.
->=20
-> >
-> > [...]
-> >
-> > > > +int __ancillary_device_add(struct ancillary_device *ancildev, cons=
-t
-> char *modname)
-> > > > +{
-> > > > +	struct device *dev =3D &ancildev->dev;
-> > > > +	int ret;
-> > > > +
-> > > > +	if (!modname) {
-> > > > +		pr_err("ancillary device modname is NULL\n");
-> > > > +		return -EINVAL;
-> > > > +	}
-> > > > +
-> > > > +	ret =3D dev_set_name(dev, "%s.%s.%d", modname, ancildev->name,
-> ancildev->id);
-> > > > +	if (ret) {
-> > > > +		pr_err("ancillary device dev_set_name failed: %d\n", ret);
-> > > > +		return ret;
-> > > > +	}
-> > > > +
-> > > > +	ret =3D device_add(dev);
-> > > > +	if (ret)
-> > > > +		dev_err(dev, "adding ancillary device failed!: %d\n", ret);
-> > > > +
-> > > > +	return ret;
-> > > > +}
-> > >
-> > > Sorry, but this is very strange API that requires users to put
-> > > internal call to "dev" that is buried inside "struct ancillary_device=
-".
-> > >
-> > > For example in your next patch, you write this "put_device(&cdev-
-> >ancildev.dev);"
-> > >
-> > > I'm pretty sure that the amount of bugs in error unwind will be
-> > > astonishing, so if you are doing wrappers over core code, better do n=
-ot
-> > > pass complexity to the users.
-> >
-> > In initial reviews, there was pushback on adding wrappers that don't do
-> > anything except for a pointer indirection.
-> >
-> > Others had concerns that the API wasn't balanced and blurring layers.
->=20
-> Are you talking about internal review or public?
-> If it is public, can I get a link to it?
->=20
-> >
-> > Both points have merits IMHO. Do we want wrappers for everything and
-> > completely hide the low-level device?
->=20
-> This API is partially obscures low level driver-core code and needs to
-> provide clear and proper abstractions without need to remember about
-> put_device. There is already _add() interface why don't you do
-> put_device() in it?
->=20
+The bonding driver's use of master and slave, while largely understood
+in technical circles, poses a barrier for inclusion to some potential
+members of the development and user community, due to the historical
+context of masters and slaves, particularly in the United States. This
+is a first full pass at replacing those phrases with more socially
+inclusive ones, opting for bond to replace master and port to
+replace slave, which is congruent with the bridge and team drivers.
 
-The pushback Pierre is referring to was during our mid-tier internal review=
-.  It was
-primarily a concern of Parav as I recall, so he can speak to his reasoning.
+There are a few problems with this change. First up, "port" is used in
+the bonding 802.3ad code, so the first step here is to rename port to
+ad_port, so we can reuse port. Second, we have the issue of not wanting
+to break any existing userspace, which I believe this patchset
+accomplishes, preserving all existing sysfs and procfs interfaces, and
+adding module parameter aliases where necessary.
 
-What we originally had was a single API call (ancillary_device_register) th=
-at started
-with a call to device_initialize(), and every error path out of the functio=
-n performed
-a put_device().
+Third, we do still have the issue of ease of backporting fixes to
+-stable trees. I've not had a huge amount of time to spend on it, but
+brief forays into coccinelle didn't really pay off (since it's meant to
+operate on code, not patches), and the best solution I can come up with
+is providing a shell script someone could run over git-format-patch
+output before git-am'ing the result to a -stable tree, though scripting
+these changes in the first place turned out to be not the best thing to
+do anyway, due to subtle cases where use of master or slave can NOT yet
+be replaced, so a large amount of work was done by hand, inspection,
+trial and error, which is why this set is a lot longer in coming than
+I'd originally hoped. I don't expect -stable backports to be horrible to
+figure out one way or another though, and I don't believe that a bit of
+inconvenience on that front is enough to warrant not making these
+changes.
 
-Is this the model you have in mind?
+See here for further details on Red Hat's commitment to this work:
+https://www.redhat.com/en/blog/making-open-source-more-inclusive-eradicating-problematic-language
 
--DaveE
+As far as testing goes, I've manually operated on various bonds while
+working on this code, and have run it through multiple lnst test runs,
+which exercises the existing sysfs interfaces fairly extensively. As far
+as I can tell through testing and inspection, there is no breakage of
+any existing interfaces with this set.
 
-> >
-> > >
-> > > > +EXPORT_SYMBOL_GPL(__ancillary_device_add);
-> > > > +
-> > > > +static int ancillary_probe_driver(struct device *dev)
-> > > > +{
-> > > > +	struct ancillary_driver *ancildrv =3D to_ancillary_drv(dev->drive=
-r);
-> > > > +	struct ancillary_device *ancildev =3D to_ancillary_dev(dev);
-> > > > +	int ret;
-> > > > +
-> > > > +	ret =3D dev_pm_domain_attach(dev, true);
-> > > > +	if (ret) {
-> > > > +		dev_warn(dev, "Failed to attach to PM Domain : %d\n", ret);
-> > > > +		return ret;
-> > > > +	}
-> > > > +
-> > > > +	ret =3D ancildrv->probe(ancildev, ancillary_match_id(ancildrv-
-> >id_table, ancildev));
-> > >
-> > > I don't think that you need to call ->probe() if ancillary_match_id()
-> > > returned NULL and probably that check should be done before
-> > > dev_pm_domain_attach().
-> >
-> > we'll look into this.
-> >
-> > >
-> > > > +	if (ret)
-> > > > +		dev_pm_domain_detach(dev, true);
-> > > > +
-> > > > +	return ret;
-> > > > +}
-> > > > +
-> > > > +static int ancillary_remove_driver(struct device *dev)
-> > > > +{
-> > > > +	struct ancillary_driver *ancildrv =3D to_ancillary_drv(dev->drive=
-r);
-> > > > +	struct ancillary_device *ancildev =3D to_ancillary_dev(dev);
-> > > > +	int ret;
-> > > > +
-> > > > +	ret =3D ancildrv->remove(ancildev);
-> > > > +	dev_pm_domain_detach(dev, true);
-> > > > +
-> > > > +	return ret;
-> > >
-> > > You returned an error to user and detached from PM, what will user do
-> > > with this information? Should user ignore it? retry?
-> >
-> > That comment was also provided in earlier reviews. In practice the erro=
-r is
-> > typically ignored so there was a suggestion to move the return type to =
-void,
-> > that could be done if this was desired by the majority.
->=20
-> +1 from me.
->=20
-> >
-> > [...]
-> >
-> > > > diff --git a/include/linux/mod_devicetable.h
-> b/include/linux/mod_devicetable.h
-> > > > index 5b08a473cdba..7d596dc30833 100644
-> > > > --- a/include/linux/mod_devicetable.h
-> > > > +++ b/include/linux/mod_devicetable.h
-> > > > @@ -838,4 +838,12 @@ struct mhi_device_id {
-> > > >   	kernel_ulong_t driver_data;
-> > > >   };
-> > > >
-> > > > +#define ANCILLARY_NAME_SIZE 32
-> > > > +#define ANCILLARY_MODULE_PREFIX "ancillary:"
-> > > > +
-> > > > +struct ancillary_device_id {
-> > > > +	char name[ANCILLARY_NAME_SIZE];
-> > >
-> > > I hope that this be enough.
-> >
-> > Are you suggesting a different value to allow for a longer string?
->=20
-> I have no idea, but worried that there were no checks at all if name is
-> more than 32. Maybe compiler warn about it?
->=20
-> Thanks
+v2: legacy module parameters are retained this time, and we're trying
+out bond/port instead of aggregator/link in place of master/slave. The
+procfs interface legacy output is also duplicated or dropped, depending
+on Kconfig, rather than being replaced.
+
+v3: remove Kconfig knob, leave sysfs and procfs interfaces entirely
+untouched, but update documentation to reference their deprecated
+nature, explain the name changes, add references to NetworkManager,
+include more netlink/iproute2 examples and make note of netlink
+being the preferred interface for userspace interaction with bonds.
+
+Cc: Jay Vosburgh <j.vosburgh@gmail.com>
+Cc: Veaceslav Falico <vfalico@gmail.com>
+Cc: Andy Gospodarek <andy@greyhouse.net>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Thomas Davis <tadavis@lbl.gov>
+Cc: netdev@vger.kernel.org
+
+Jarod Wilson (5):
+  bonding: rename 802.3ad's struct port to ad_port
+  bonding: replace use of the term master where possible
+  bonding: rename slave to port where possible
+  bonding: rename bonding_sysfs_slave.c to _port.c
+  bonding: update Documentation for port/bond terminology
+
+ .clang-format                                 |    4 +-
+ Documentation/networking/bonding.rst          |  578 ++--
+ drivers/infiniband/core/cma.c                 |    2 +-
+ drivers/infiniband/core/lag.c                 |    2 +-
+ drivers/infiniband/core/roce_gid_mgmt.c       |   10 +-
+ drivers/infiniband/hw/mlx4/main.c             |    2 +-
+ drivers/net/bonding/Makefile                  |    2 +-
+ drivers/net/bonding/bond_3ad.c                | 1701 ++++++------
+ drivers/net/bonding/bond_alb.c                |  689 ++---
+ drivers/net/bonding/bond_debugfs.c            |    2 +-
+ drivers/net/bonding/bond_main.c               | 2339 +++++++++--------
+ drivers/net/bonding/bond_netlink.c            |  114 +-
+ drivers/net/bonding/bond_options.c            |  258 +-
+ drivers/net/bonding/bond_procfs.c             |   86 +-
+ drivers/net/bonding/bond_sysfs.c              |   78 +-
+ drivers/net/bonding/bond_sysfs_port.c         |  185 ++
+ drivers/net/bonding/bond_sysfs_slave.c        |  176 --
+ .../ethernet/chelsio/cxgb3/cxgb3_offload.c    |    2 +-
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    |   14 +-
+ .../ethernet/mellanox/mlx5/core/en/rep/bond.c |    4 +-
+ .../net/ethernet/mellanox/mlx5/core/en_tc.c   |    2 +-
+ .../ethernet/netronome/nfp/flower/lag_conf.c  |    2 +-
+ .../ethernet/qlogic/netxen/netxen_nic_main.c  |   12 +-
+ include/linux/netdevice.h                     |   22 +-
+ include/net/bond_3ad.h                        |   42 +-
+ include/net/bond_alb.h                        |   74 +-
+ include/net/bond_options.h                    |   18 +-
+ include/net/bonding.h                         |  362 +--
+ include/net/lag.h                             |    2 +-
+ 29 files changed, 3479 insertions(+), 3305 deletions(-)
+ create mode 100644 drivers/net/bonding/bond_sysfs_port.c
+ delete mode 100644 drivers/net/bonding/bond_sysfs_slave.c
+
+-- 
+2.27.0
+
