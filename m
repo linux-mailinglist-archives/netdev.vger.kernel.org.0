@@ -2,168 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 64698286960
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 22:47:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3BE62869B7
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 22:58:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728124AbgJGUrt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 16:47:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33578 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727817AbgJGUrt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Oct 2020 16:47:49 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ED98620782;
-        Wed,  7 Oct 2020 20:47:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602103668;
-        bh=QkyYBwYAU0gbcgieGpN8QBhSkiPhbX6uskPmAzkOR4E=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oYncJtbUkQrwNOc2HFdtVvcxKKmpAV0uUVzfaSSe4oOYdg6pZ2QC3MSTuXP3vtRDA
-         rW0LaMz4sFrN9VhDI4VcCJXq9DVvfQuHuZscf3iv5SWNAE2egE9cyaSPtgCSDcfpN/
-         4WBa9K8uzK0yAyTbGjqmTgWWmmiPTCcctiXd+UPg=
-Date:   Wed, 7 Oct 2020 13:47:46 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Pooja Trivedi <poojatrivedi@gmail.com>
-Cc:     linux-crypto@vger.kernel.org,
-        Mallesham Jatharakonda <mallesh537@gmail.com>,
-        Josh Tway <josh.tway@stackpath.com>, netdev@vger.kernel.org
-Subject: Re: [RFC 1/1] net/tls(TLS_SW): Handle -ENOSPC error return from
- device/AES-NI
-Message-ID: <20201007134746.069d7f2f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAOrEdsnCbcKiNoyHB=mX2h8soG1txX+aynZaFLNhtwMZWTDkEg@mail.gmail.com>
-References: <CAOrEdsmKn7_YWcWZ_b7+mL-uJC8m_=tU70q3aZTOzEDYw7j4ng@mail.gmail.com>
-        <CAOrEdsnCbcKiNoyHB=mX2h8soG1txX+aynZaFLNhtwMZWTDkEg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1728624AbgJGU57 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 16:57:59 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:36736 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728017AbgJGU56 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 16:57:58 -0400
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 097KUoEg161459;
+        Wed, 7 Oct 2020 16:57:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id; s=pp1;
+ bh=EfcyN5PvowzSKa1Mu7qMdhHNBki0r19JqlRsZsRveEA=;
+ b=ml2h4lqgS5zzyN3vnwn8a+p9v2XgD6xJMUVtUPzUyN1SqIUP3d6EF4gYKWFPUrCwtTk2
+ TEK8YTSvjDIZdaiZfNX7SwmmW4B0Xswbr06gOdbYwqaw16kkZdZPA3uUql5zcLr8SIY4
+ HuopB7KGjybHsBPfOJC3FSocMH2YDFw95IY/g8W73ZVNJkZGrTVoBDlFvs8lzh9MdDV8
+ +XXl8tRIwaN/HPvoEqgN+gAiGM8lr5H4noJTilcFP9Q9S/5rtOxbHZpx+zZ4VT2vdXk6
+ KD8s3+FkyUM+mzh5yz6iAmSktSOHDK4iEibu3ldq2o4rV6jwbxxcrZFP2EFOA12id++Y Lw== 
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 341jehvnny-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 07 Oct 2020 16:57:56 -0400
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 097Kvs6F019351;
+        Wed, 7 Oct 2020 20:57:54 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma01fra.de.ibm.com with ESMTP id 33xgx7te1j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 07 Oct 2020 20:57:54 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 097Kvpmw33096176
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 7 Oct 2020 20:57:51 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 699F0AE056;
+        Wed,  7 Oct 2020 20:57:51 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2455AAE053;
+        Wed,  7 Oct 2020 20:57:51 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed,  7 Oct 2020 20:57:51 +0000 (GMT)
+From:   Karsten Graul <kgraul@linux.ibm.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
+        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
+        ubraun@linux.ibm.com
+Subject: [PATCH net-next 0/3] net/smc: updates 2020-10-07
+Date:   Wed,  7 Oct 2020 22:57:40 +0200
+Message-Id: <20201007205743.83535-1-kgraul@linux.ibm.com>
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-10-07_10:2020-10-07,2020-10-07 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
+ mlxlogscore=756 impostorscore=0 spamscore=0 mlxscore=0 priorityscore=1501
+ lowpriorityscore=0 suspectscore=1 adultscore=0 phishscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2010070127
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 7 Oct 2020 15:19:47 -0400 Pooja Trivedi wrote:
-> When an -ENOSPC error code is returned by the crypto device or AES-NI
-> layer, TLS SW path sets an EBADMSG on the socket causing the
-> application to fail.  In an attempt to address the -ENOSPC in the TLS
-> SW path, changes were made in tls_sw_sendpage path to trim current
-> payload off the plain and encrypted messages, and send a 'zero bytes
-> copied' return to the application.  The following diff shows those
-> changes:
-> 
-> diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-> index 9a3d9fedd7aa..4dce4668cb07 100644
-> --- a/net/tls/tls_sw.c
-> +++ b/net/tls/tls_sw.c
-> @@ -762,7 +762,7 @@ static int tls_push_record(struct sock *sk, int flags,
->   rc = tls_do_encryption(sk, tls_ctx, ctx, req,
->         msg_pl->sg.size + prot->tail_size, i);
->   if (rc < 0) {
-> -               if (rc != -EINPROGRESS) {
-> +              if ((rc != -EINPROGRESS) && (rc != -ENOSPC)) {
->                             tls_err_abort(sk, EBADMSG);
->                             if (split) {
-> 
-> tls_ctx->pending_open_record_frags = true;
-> 
-> @@ -1073,8 +1073,15 @@ int tls_sw_sendmsg(struct sock *sk, struct
-> msghdr *msg, size_t size)
->   else if (ret == -ENOMEM)
->                goto wait_for_memory;
->   else if (ret != -EAGAIN) {
-> -              if (ret == -ENOSPC)
-> +             if (ret == -ENOSPC) {
->                           ret = 0;
->                           copied -= try_to_copy;
->                           iov_iter_revert(&msg->msg_iter,
-> msg_pl->sg.size - orig_size);
->                           tls_trim_both_msgs(sk, orig_size);
->                }
->                goto send_end;
->      }
->   }
-> 
-> @@ -1150,6 +1157,7 @@ static int tls_sw_do_sendpage(struct sock *sk,
-> struct page *page,
->   ssize_t copied = 0;
->   bool full_record;
->   int record_room;
-> + int orig_size;
->   int ret = 0;
->   bool eor;
-> 
-> @@ -1175,7 +1183,7 @@ static int tls_sw_do_sendpage(struct sock *sk,
-> struct page *page,
->   }
-> 
->   msg_pl = &rec->msg_plaintext;
-> -
-> + orig_size = msg_pl->sg.size;
->   full_record = false;
->   record_room = TLS_MAX_PAYLOAD_SIZE - msg_pl->sg.size;
->   copy = size;
-> 
-> @@ -1219,8 +1227,12 @@ static int tls_sw_do_sendpage(struct sock *sk,
-> struct page *page,
-> 
->   else if (ret == -ENOMEM)
->              goto wait_for_memory;
->   else if (ret != -EAGAIN) {
-> -            if (ret == -ENOSPC)
-> +           if (ret == -ENOSPC) {
-> +                      tls_trim_both_msgs(sk, orig_size);
->                         copied -= copy;
->                         ret = 0;
->               }
->               goto sendpage_end;
->    }
->   }
-> 
-> 
-> However, when above patch was tried, the application tried to send
-> remaining data based on the offset as expected, but encryption failed
-> due to data integrity issues.  Further debugging revealed that
-> sk_msg_trim(), called by tls_trim_both_msgs() does not update the page
-> frag offset.  It seems like sk_msg_trim() needs to subtract the trim
-> length from the pfrag->offset corresponding to how the sk_msg_alloc()
-> call increments the pfrag-->offset with the length it charges to the
-> socket via sk_mem_charge().
-> When sk_msg_trim() calls sk_mem_uncharge() to uncharge trim length off
-> the socket, it should also perform
->            pfrag->offset -= trim;
+Please apply the following patch series for smc to netdev's net-next tree.
 
-Let's CC netdev. It's a bit surprising to me that pfrag->offset matters
-here, we're basically "wasting" a bit of the page but why would that
-cause data integrity issues?
+Patch 1 and 2 address warnings from static code checkers, and patch 3 handles
+a case when all proposed ISM V2 devices fail to init and no V1 devices are
+tried afterwards.
 
-> While the sk_msg_trim() pfrag->offset subtraction change hasn't been
-> tried yet, the following hack in TLS layer has been tried and has
-> correctly worked. This proves that the above observation/theory
-> regarding pfrag->offset update would be the fix:
-> 
-> 
-> +                                       if (ret == -ENOSPC) {
-> +                                               struct page_frag *pfrag;
-> +                                               tls_trim_both_msgs(sk,
-> orig_size);
-> +
-> +                                               copied -= copy;
-> +                                               pfrag = sk_page_frag(sk);
-> +                                               pfrag->offset -= copy;
-> 
-> 
-> What are your thoughts on the best way to fix the issue?
-> sk_msg_trim() seems like the most logical place, but
-> suggestions/comments/questions are welcome.
-> 
-> Another thing to think about is whether -EBUSY should be handled
-> similarly. Vendors have differences and the conditions under which
-> these error codes are returned are not very consistent when the sidecar
-> device path is involved.
+Karsten Graul (3):
+  net/smc: consolidate unlocking in same function
+  net/smc: cleanup buffer usage in smc_listen_work()
+  net/smc: restore smcd_version when all ISM V2 devices failed to init
 
-Why would the driver return EBUSY from an async API? What's the caller
-supposed to do with that?
+ net/smc/af_smc.c | 92 +++++++++++++++++++++++++-----------------------
+ 1 file changed, 48 insertions(+), 44 deletions(-)
 
+-- 
+2.17.1
 
-While we have you - weren't you sending a sendpage() fix at some point?
-Did that get lost?
