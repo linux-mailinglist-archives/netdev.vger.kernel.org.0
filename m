@@ -2,167 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12CE628576E
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 05:55:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9285F28577E
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 06:15:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727028AbgJGDzi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 23:55:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46870 "EHLO
+        id S1726307AbgJGEPW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 00:15:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725970AbgJGDzh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 23:55:37 -0400
+        with ESMTP id S1725970AbgJGEPV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 00:15:21 -0400
 Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5B9FC061755
-        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 20:55:37 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id g10so563364pfc.8
-        for <netdev@vger.kernel.org>; Tue, 06 Oct 2020 20:55:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF3A3C061755;
+        Tue,  6 Oct 2020 21:15:21 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id d6so586234pfn.9;
+        Tue, 06 Oct 2020 21:15:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=89p52txoW1oSargTnktdznI9WU0QDYleW+J6gra6b/U=;
-        b=V1riVKcU4vcFZq0xN/Mbu1a6Upbte8/v1kLJnjz89zwUzv3pjtoEx792LWocKxAglw
-         QpbF4iw1IwELxP52xv0X7L/DQqOB2eyi50dvjZxd7J4tsv4TvHi9HOR+q8z1NOTQWLBz
-         fCUcXsC3dwbwEfB61jI7Ax9wKDsMsprA+QlfVTFShyrXmTe4NO8D5ltZ4ov98M+Vwlil
-         sy5I8o/NBVQTMRZ9uaZJ7Ifj2dR43xx24QpvL4k89WkZAOh4JKWE10v1VEMp53TDRSNo
-         JPSyFp74/46zt7dtRjwK3DWHO79Hz7M2AwL5TxnJMrdQ7Lq5o/JAGZ4M3PeIb1Y/u22P
-         pWSg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=16jAAdowUmY3bd4fX8MyftEZPxZRFgyOmLiavi/4938=;
+        b=W0fhlkzUsnEts6yP/a7j39y+37WmNQHB25nBzBDmxMB4efUuQGNQJgfC4zm4UQqio/
+         cUl9j5b/dvQQGCZ88ECt5ksETPGdxRfMG587+m6TfkaAbPIpH+ya4KTLYE0Md/yZeJFc
+         x01Q1Ms+OsYDdb1WwlDGQtCKQKhG0BeqA+pUgFHxFmCrQFEA/YFjz9JFFLgwL4jh0spz
+         WpajXTa4bvyjj0Vx2/5Vx8KyObV2vBRdna8RtLATYTElvqo3YD8YIiycJrns5WynR6PT
+         xj7bMgZcbnmy29kx2ShKhrfzJ+/0LYcZ6ClCFw+0ySiKHjd+2TTZQnAJSEW1xwxFC7dG
+         qOow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=89p52txoW1oSargTnktdznI9WU0QDYleW+J6gra6b/U=;
-        b=QCAUd/uram7XUajKa1V41tfKbwV0CayeQua4aqtrxYlhM7doIIa7tYDGkgGsajvIgD
-         +MOI1wqj3R7vmliQiMwph7xZx0Qz59Q91a8y+ALSIgj0DPUWXiC8eh4rtyBOEXHnElne
-         9rEAz+x5ozWInVZXRVBeHsqcYVj8O2RMKfXNQkaF7C4x/Eh9HcvUsZxoTNbvgsTqGnHD
-         jpFWjQvEfAcS+ijO2TZiWvcsvUdhX1hGll9L4YzhwFy4VEU/umazyI0rk2Ch4pT/7SZk
-         USdEYXfABsuBrPXR50o9T4/eCm04C/jOMJFIvSeJgUjepngxAwt1Vze7oLYiJsIQJqE4
-         knbA==
-X-Gm-Message-State: AOAM532y3i2XE5GJYnS1IFKhVUv8M+bj2GUSxWH37yG2zvof1qOJsvzO
-        bPPLgmbBaCsEHAc5iNBFeOOPVGp3K59n/w==
-X-Google-Smtp-Source: ABdhPJxbFR4OaGHJG8vNLBHzduygWLyEXZ1UaH/ityar5HytZQwM9UXNvdkhXha9baFVfOjPrir8ng==
-X-Received: by 2002:a63:e61:: with SMTP id 33mr1214763pgo.394.1602042937004;
-        Tue, 06 Oct 2020 20:55:37 -0700 (PDT)
-Received: from localhost.localdomain.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id d12sm748246pgd.93.2020.10.06.20.55.34
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=16jAAdowUmY3bd4fX8MyftEZPxZRFgyOmLiavi/4938=;
+        b=sOU0Xgm3BBTbkSi55t1yTYAAqR0T7juGoIY2gyWG/Qux5SmIZqAEAiz8bwHIg51Okl
+         FvRSXlPk63A/qKtC851Ghx5LxFuqTjp5H+QKRcyyToEXinfSNLO+MyJ6zb3t8miKxP3z
+         7KD+fMj8Sb8epPLx5P/H8d6U+BzCeTzXowcuGLYj7rQYeGM2+L/bNfsjtUvZYUKdiGHT
+         x+EMwB8I3wNPeuyqPeYqVTwhLL6g1aY1PRyApl4ia4TQyrTmM1nkLSi4bjHTRPbpXeFu
+         ZbvCKBP+qazu8Hrl4wHBdgUeMjdR7clgdorsbixJ9xTuwj3tk8qsEiNBev+/9cgM2TIj
+         9GFw==
+X-Gm-Message-State: AOAM532D5kXEaOxLXaNoJJBSHlI5OxeuLeQJdsLVsp0w50BAffy1mLww
+        sWxjX9PZkcUpJUhqpV6F2tI=
+X-Google-Smtp-Source: ABdhPJybGI6XhUCvLbTKQmqgkWcNL+aDr87/o6t/BjFMs1XgrAkDlHVkoRIFErEt62cLmOvELJCprA==
+X-Received: by 2002:a63:3d88:: with SMTP id k130mr1360646pga.30.1602044121354;
+        Tue, 06 Oct 2020 21:15:21 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:400::5:9c77])
+        by smtp.gmail.com with ESMTPSA id i126sm893691pfc.48.2020.10.06.21.15.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Oct 2020 20:55:36 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net 2/2] IPv6: reply ICMP error if the first fragment don't include all headers
-Date:   Wed,  7 Oct 2020 11:55:02 +0800
-Message-Id: <20201007035502.3928521-3-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20201007035502.3928521-1-liuhangbin@gmail.com>
-References: <20201007035502.3928521-1-liuhangbin@gmail.com>
+        Tue, 06 Oct 2020 21:15:20 -0700 (PDT)
+Date:   Tue, 6 Oct 2020 21:15:18 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        john fastabend <john.fastabend@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 1/3] bpf: Propagate scalar ranges through
+ register assignments.
+Message-ID: <20201007041517.6wperlh6dqrk7xjc@ast-mbp>
+References: <20201006200955.12350-1-alexei.starovoitov@gmail.com>
+ <20201006200955.12350-2-alexei.starovoitov@gmail.com>
+ <CAEf4BzbRLLJ=r3LJfQbkkXtXgNqQL3Sr01ibhOaxNN-QDqiXdw@mail.gmail.com>
+ <20201007021842.2lwngvsvj2hbuzh5@ast-mbp>
+ <CAEf4Bza=7GzvXJinkwO1XcASg7ahHranmNRmXEzU-KzOg9wVCw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4Bza=7GzvXJinkwO1XcASg7ahHranmNRmXEzU-KzOg9wVCw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Based on RFC 8200, Section 4.5 Fragment Header:
+On Tue, Oct 06, 2020 at 08:31:23PM -0700, Andrii Nakryiko wrote:
+> 
+> > 'linked' is also wrong. The regs are exactly equal.
+> > In case of pkt and other pointers two regs will have the same id
+> > as well, but they will not be equal. Here these two scalars are equal
+> > otherwise doing *reg = *known_reg would be wrong.
+> 
+> Ok, I guess it also means that "reg->type == SCALAR_VALUE" checks
+> below are unnecessary as well, because if known_reg->id matches, that
+> means register states are exactly the same.
+> > > > +               for (j = 0; j < MAX_BPF_REG; j++) {
+> > > > +                       reg = &state->regs[j];
+> > > > +                       if (reg->type == SCALAR_VALUE && reg->id == known_reg->id)
 
-  -  If the first fragment does not include all headers through an
-     Upper-Layer header, then that fragment should be discarded and
-     an ICMP Parameter Problem, Code 3, message should be sent to
-     the source of the fragment, with the Pointer field set to zero.
+Right. The type check is technically unnecessary. It's a safety net in case id
+assignment goes wrong plus it makes it easier to understand the logic.
 
-As the packet may be any kind of L4 protocol, I only checked if there
-has Upper-Layer header by pskb_may_pull(skb, offset + 1).
+> > > Even if yes, it probably would be more
+> > > straightforward to call appropriate updates in the respective if
+> > > branches (it's just a single line for each register, so not like it's
+> > > duplicating tons of code).
+> >
+> > You mean inside reg_set_min_max() and inside reg_combine_min_max() ?
+> > That won't work because find_equal_scalars() needs access to the whole
+> > bpf_verifier_state and not just bpf_reg_state.
+> 
+> No, I meant something like this, few lines above:
+> 
+> if (BPF_SRC(insn->code) == BPF_X) {
+> 
+>     if (dst_reg->type == SCALAR_VALUE && src_reg->type == SCALAR_VALUE) {
+>         if (...)
+>         else if (...)
+>         else
+> 
+>         /* both src/dst regs in both this/other branches could have
+> been updated */
+>         find_equal_scalars(this_branch, src_reg);
+>         find_equal_scalars(this_branch, dst_reg);
+>         find_equal_scalars(other_branch, &other_branch_regs[insn->src_reg])
+>         find_equal_scalars(other_branch, &other_branch_regs[insn->dst_reg])
+>     }
+> } else if (dst_reg->type == SCALAR_VALUE) {
+>     reg_set_min_max(...);
+> 
+>     /* only dst_reg in both branches could have been updated */
+>     find_equal_scalars(this_branch, dst_reg);
+>     find_equal_scalars(other_branch, &other_branch_regs[insn->dst_reg]);
+> }
+> 
+> 
+> This keeps find_equal_scalars() for relevant registers very close to
+> places where those registers are updated, instead of jumping back and
+> forth between the complicated if  after it, and double-checking under
+> which circumstances dst_reg can be updated, for example.
 
-As the 1st truncated fragment may also be ICMP message, I also add
-a check in ICMP code is_ineligible() to let fragment packet with nexthdr
-ICMP but no ICMP header return false.
-
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- net/ipv6/icmp.c      | 13 ++++++++++++-
- net/ipv6/ip6_input.c | 20 +++++++++++++++++++-
- 2 files changed, 31 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
-index a4e4912ad607..03060c8f463d 100644
---- a/net/ipv6/icmp.c
-+++ b/net/ipv6/icmp.c
-@@ -145,7 +145,9 @@ static bool is_ineligible(const struct sk_buff *skb)
- 	int ptr = (u8 *)(ipv6_hdr(skb) + 1) - skb->data;
- 	int len = skb->len - ptr;
- 	__u8 nexthdr = ipv6_hdr(skb)->nexthdr;
-+	unsigned int offs = 0;
- 	__be16 frag_off;
-+	bool is_frag;
- 
- 	if (len < 0)
- 		return true;
-@@ -153,12 +155,21 @@ static bool is_ineligible(const struct sk_buff *skb)
- 	ptr = ipv6_skip_exthdr(skb, ptr, &nexthdr, &frag_off);
- 	if (ptr < 0)
- 		return false;
-+
-+	is_frag = (ipv6_find_hdr(skb, &offs, NEXTHDR_FRAGMENT, &frag_off, NULL) == NEXTHDR_FRAGMENT);
-+
- 	if (nexthdr == IPPROTO_ICMPV6) {
- 		u8 _type, *tp;
- 		tp = skb_header_pointer(skb,
- 			ptr+offsetof(struct icmp6hdr, icmp6_type),
- 			sizeof(_type), &_type);
--		if (!tp || !(*tp & ICMPV6_INFOMSG_MASK))
-+
-+		/* Based on RFC 8200, Section 4.5 Fragment Header, return
-+		 * false if this is a fragment packet with no icmp header info.
-+		 */
-+		if (!tp && is_frag)
-+			return false;
-+		else if (!tp || !(*tp & ICMPV6_INFOMSG_MASK))
- 			return true;
- 	}
- 	return false;
-diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-index e96304d8a4a7..637d8d59e058 100644
---- a/net/ipv6/ip6_input.c
-+++ b/net/ipv6/ip6_input.c
-@@ -146,8 +146,11 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
- 				    struct net *net)
- {
- 	const struct ipv6hdr *hdr;
--	u32 pkt_len;
- 	struct inet6_dev *idev;
-+	__be16 frag_off;
-+	u32 pkt_len;
-+	int offset;
-+	u8 nexthdr;
- 
- 	if (skb->pkt_type == PACKET_OTHERHOST) {
- 		kfree_skb(skb);
-@@ -282,6 +285,21 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
- 		}
- 	}
- 
-+	/* RFC 8200, Section 4.5 Fragment Header:
-+	 * If the first fragment does not include all headers through an
-+	 * Upper-Layer header, then that fragment should be discarded and
-+	 * an ICMP Parameter Problem, Code 3, message should be sent to
-+	 * the source of the fragment, with the Pointer field set to zero.
-+	 */
-+	nexthdr = hdr->nexthdr;
-+	offset = ipv6_skip_exthdr(skb, skb_transport_offset(skb), &nexthdr, &frag_off);
-+	if (frag_off == htons(IP6_MF) && !pskb_may_pull(skb, offset + 1)) {
-+		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INHDRERRORS);
-+		icmpv6_param_prob(skb, ICMPV6_HDR_INCOMP, 0);
-+		rcu_read_unlock();
-+		return NULL;
-+	}
-+
- 	rcu_read_unlock();
- 
- 	/* Must drop socket now because of tproxy. */
--- 
-2.25.4
-
+I see it differently.
+I don't like moving if (reg->id) into find_equal_scalars(). Otherwise it would
+have to be named something like try_find_equal_scalars(). And even with such
+"try_" prefix it's still not clean. It's my general dislike of defensive
+programming. I prefer all functions to be imperative: "do" vs "try_do".
+There are exception from the rule, of course. Like kfree() that accepts NULL.
+That's fine.
+In this case I think if (type == SCALAR && id != 0) should be done by the caller.
+Note that's different from __update_reg_bounds().
+There the bounds may or may not change, but the action is performed.
+What you're proposing it to make find_equal_scalars() accept any kind
+of register and do the action only if argument is actual scalar
+and its "id != 0". That's exactly the defensive programming
+that I feel make programmers sloppier.
+Note that's not the same as mark_reg_unknown() doing
+if (WARN_ON(regno >= MAX_BPF_REG)) check. I hope the difference is clear.
