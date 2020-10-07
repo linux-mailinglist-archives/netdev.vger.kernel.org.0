@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A17702863AF
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 18:23:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 133952863B9
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 18:23:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728234AbgJGQXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 12:23:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:36804 "EHLO
+        id S1728300AbgJGQXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 12:23:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37268 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728015AbgJGQXK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 12:23:10 -0400
+        by vger.kernel.org with ESMTP id S1728250AbgJGQXS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 12:23:18 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1602087788;
+        s=mimecast20190719; t=1602087796;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=slv34YzMOjRKcThCr0qZMAMqWuUetWu/HzyWsLS+KEs=;
-        b=iYp5i7Jb1m7dccQKXUrZY7JXIDDZkWzxgOkezlKALz9FZVgK8OJqs5iN+MGD629QNYmMFL
-        Moujvr02knmzkksaDaMCGov4D3Jr108IGeOcwjP/huUbVDC27qJJ5XYaoyvRAaOGoynhto
-        68Y32VV1CZ+jnaWwgM9Y1FiArP2A7rU=
+        bh=8Ro78EIE2Bfl88QCMw0YeVuJsEGrocBOtGtIYfj6Qfk=;
+        b=ep1L+D7k4wVDdaWir+Q3ECxLqE3jftDhmS3fKavE4V6pn/0vEFC1V/sHsuZ2MPY+0LMuBO
+        jDXkCS90bQaDL7fuHD29JgB4ESFRjLy0zFhrar9Ve0cZR1HwMf/fi/qcQDZmamY+l8QOQU
+        4EkgLFKzNTIa2YikGkewtuxOW/7r//A=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-385-jAryO5TQN3Wpx_KOcJ9TNg-1; Wed, 07 Oct 2020 12:23:04 -0400
-X-MC-Unique: jAryO5TQN3Wpx_KOcJ9TNg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+ us-mta-565-4wyycvdoMOefr3hG9xMz2A-1; Wed, 07 Oct 2020 12:23:12 -0400
+X-MC-Unique: 4wyycvdoMOefr3hG9xMz2A-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 360B18070EE;
-        Wed,  7 Oct 2020 16:23:02 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B9B6D10BBEC6;
+        Wed,  7 Oct 2020 16:23:09 +0000 (UTC)
 Received: from firesoul.localdomain (unknown [10.40.208.18])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B74166EF45;
-        Wed,  7 Oct 2020 16:23:01 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CEFD91001B2B;
+        Wed,  7 Oct 2020 16:23:06 +0000 (UTC)
 Received: from [192.168.42.3] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id BEBB330736C8B;
-        Wed,  7 Oct 2020 18:23:00 +0200 (CEST)
-Subject: [PATCH bpf-next V2 5/6] bpf: Add MTU check for TC-BPF packets after
- egress hook
+        by firesoul.localdomain (Postfix) with ESMTP id D536130736C8B;
+        Wed,  7 Oct 2020 18:23:05 +0200 (CEST)
+Subject: [PATCH bpf-next V2 6/6] bpf: drop MTU check when doing TC-BPF
+ redirect to ingress
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     bpf@vger.kernel.org
 Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
@@ -47,123 +47,91 @@ Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
         Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
         John Fastabend <john.fastabend@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com
-Date:   Wed, 07 Oct 2020 18:23:00 +0200
-Message-ID: <160208778070.798237.16265441131909465819.stgit@firesoul>
+Date:   Wed, 07 Oct 2020 18:23:05 +0200
+Message-ID: <160208778579.798237.7257307543620328206.stgit@firesoul>
 In-Reply-To: <160208770557.798237.11181325462593441941.stgit@firesoul>
 References: <160208770557.798237.11181325462593441941.stgit@firesoul>
 User-Agent: StGit/0.19
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MTU should only apply to transmitted packets.
+The use-case for dropping the MTU check when TC-BPF ingress redirecting a
+packet, is described by Eyal Birger in email[0]. The summary is the
+ability to increase packet size (e.g. with IPv6 headers for NAT64) and
+ingress redirect packet and let normal netstack fragment packet as needed.
 
-When TC-ingress redirect packet to egress on another netdev, then the
-normal netstack MTU checks are skipped (and driver level will not catch
-any MTU violation, checked ixgbe).
-
-This patch choose not to add MTU check in the egress code path of
-skb_do_redirect() prior to calling dev_queue_xmit(), because it is still
-possible to run another BPF egress program that will shrink/consume
-headers, which will make packet comply with netdev MTU. This use-case
-might already be in production use (if ingress MTU is larger than egress).
-
-Instead do the MTU check after sch_handle_egress() step, for the cases
-that require this.
-
-The cases need a bit explaining. Ingress to egress redirected packets
-could be detected via skb->tc_at_ingress bit, but it is not reliable,
-because sch_handle_egress() could steal the packet and redirect this
-(again) to another egress netdev, which will then have the
-skb->tc_at_ingress cleared. There is also the case of TC-egress prog
-increase packet size and then redirect it egress. Thus, it is more
-reliable to do the MTU check for any redirected packet (both ingress and
-egress), which is available via skb_is_redirected() in earlier patch.
-Also handle case where egress BPF-prog increased size.
-
-One advantage of this approach is that it ingress-to-egress BPF-prog can
-send information via packet data. With the MTU checks removed in the
-helpers, and also not done in skb_do_redirect() call, this allows for an
-ingress BPF-prog to communicate with an egress BPF-prog via packet data,
-as long as egress BPF-prog remove this prior to transmitting packet.
-
-Troubleshooting: MTU violations are recorded in TX dropped counter, and
-kprobe on dev_queue_xmit() have retval -EMSGSIZE.
+[0] https://lore.kernel.org/netdev/CAHsH6Gug-hsLGHQ6N0wtixdOa85LDZ3HNRHVd0opR=19Qo4W4Q@mail.gmail.com/
 
 Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 ---
- net/core/dev.c |   24 ++++++++++++++++++++++--
- 1 file changed, 22 insertions(+), 2 deletions(-)
+ include/linux/netdevice.h |    5 +++--
+ net/core/dev.c            |    2 +-
+ net/core/filter.c         |   12 ++++++++++--
+ 3 files changed, 14 insertions(+), 5 deletions(-)
 
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 28cfa53daf72..58fb7b4869ba 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3866,10 +3866,11 @@ bool is_skb_forwardable(const struct net_device *dev,
+ 			const struct sk_buff *skb);
+ 
+ static __always_inline int ____dev_forward_skb(struct net_device *dev,
+-					       struct sk_buff *skb)
++					       struct sk_buff *skb,
++					       const bool mtu_check)
+ {
+ 	if (skb_orphan_frags(skb, GFP_ATOMIC) ||
+-	    unlikely(!is_skb_forwardable(dev, skb))) {
++	    (mtu_check && unlikely(!is_skb_forwardable(dev, skb)))) {
+ 		atomic_long_inc(&dev->rx_dropped);
+ 		kfree_skb(skb);
+ 		return NET_RX_DROP;
 diff --git a/net/core/dev.c b/net/core/dev.c
-index b433098896b2..19406013f93e 100644
+index 19406013f93e..bae95ae9aa96 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -3870,6 +3870,7 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
- 	switch (tcf_classify(skb, miniq->filter_list, &cl_res, false)) {
- 	case TC_ACT_OK:
- 	case TC_ACT_RECLASSIFY:
-+		*ret = NET_XMIT_SUCCESS;
- 		skb->tc_index = TC_H_MIN(cl_res.classid);
- 		break;
- 	case TC_ACT_SHOT:
-@@ -4064,9 +4065,12 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+@@ -2209,7 +2209,7 @@ EXPORT_SYMBOL_GPL(is_skb_forwardable);
+ 
+ int __dev_forward_skb(struct net_device *dev, struct sk_buff *skb)
  {
- 	struct net_device *dev = skb->dev;
- 	struct netdev_queue *txq;
-+#ifdef CONFIG_NET_CLS_ACT
-+	bool mtu_check = false;
-+#endif
-+	bool again = false;
- 	struct Qdisc *q;
- 	int rc = -ENOMEM;
--	bool again = false;
+-	int ret = ____dev_forward_skb(dev, skb);
++	int ret = ____dev_forward_skb(dev, skb, true);
  
- 	skb_reset_mac_header(skb);
+ 	if (likely(!ret)) {
+ 		skb->protocol = eth_type_trans(skb, dev);
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 54b779e34f83..5516d4efe225 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -2083,13 +2083,21 @@ static const struct bpf_func_proto bpf_csum_level_proto = {
  
-@@ -4082,14 +4086,28 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
- 
- 	qdisc_pkt_len_init(skb);
- #ifdef CONFIG_NET_CLS_ACT
-+	mtu_check = skb_is_redirected(skb);
- 	skb->tc_at_ingress = 0;
- # ifdef CONFIG_NET_EGRESS
- 	if (static_branch_unlikely(&egress_needed_key)) {
-+		unsigned int len_orig = skb->len;
+ static inline int __bpf_rx_skb(struct net_device *dev, struct sk_buff *skb)
+ {
+-	return dev_forward_skb(dev, skb);
++	int ret = ____dev_forward_skb(dev, skb, false);
 +
- 		skb = sch_handle_egress(skb, &rc, dev);
- 		if (!skb)
- 			goto out;
-+		/* BPF-prog ran and could have changed packet size beyond MTU */
-+		if (rc == NET_XMIT_SUCCESS && skb->len > len_orig)
-+			mtu_check = true;
- 	}
- # endif
-+	/* MTU-check only happens on "last" net_device in a redirect sequence
-+	 * (e.g. above sch_handle_egress can steal SKB and skb_do_redirect it
-+	 * either ingress or egress to another device).
-+	 */
-+	if (mtu_check && !is_skb_forwardable(dev, skb)) {
-+		rc = -EMSGSIZE;
-+		goto drop;
++	if (likely(!ret)) {
++		skb->protocol = eth_type_trans(skb, dev);
++		skb_postpull_rcsum(skb, eth_hdr(skb), ETH_HLEN);
++		ret = netif_rx(skb);
 +	}
- #endif
- 	/* If device/qdisc don't need skb->dst, release it right now while
- 	 * its hot in this cpu cache.
-@@ -4157,7 +4175,9 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
++
++	return ret;
+ }
  
- 	rc = -ENETDOWN;
- 	rcu_read_unlock_bh();
--
-+#ifdef CONFIG_NET_CLS_ACT
-+drop:
-+#endif
- 	atomic_long_inc(&dev->tx_dropped);
- 	kfree_skb_list(skb);
- 	return rc;
+ static inline int __bpf_rx_skb_no_mac(struct net_device *dev,
+ 				      struct sk_buff *skb)
+ {
+-	int ret = ____dev_forward_skb(dev, skb);
++	int ret = ____dev_forward_skb(dev, skb, false);
+ 
+ 	if (likely(!ret)) {
+ 		skb->dev = dev;
 
 
