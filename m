@@ -2,83 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CDB7285A34
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 10:14:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C601285A52
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 10:21:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727514AbgJGIOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 04:14:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58312 "EHLO
+        id S1727872AbgJGIVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 04:21:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726463AbgJGIOR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 04:14:17 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03761C061755
-        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 01:14:17 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1kQ4aR-0003Yj-DZ; Wed, 07 Oct 2020 10:14:11 +0200
-Received: from mfe by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <mfe@pengutronix.de>)
-        id 1kQ4aQ-0007hj-72; Wed, 07 Oct 2020 10:14:10 +0200
-Date:   Wed, 7 Oct 2020 10:14:10 +0200
-From:   Marco Felsch <m.felsch@pengutronix.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Marek Vasut <marex@denx.de>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
-        kernel@pengutronix.de, David Jander <david@protonic.nl>
-Subject: Re: PHY reset question
-Message-ID: <20201007081410.jk5fi6x5w3ab3726@pengutronix.de>
-References: <20201006080424.GA6988@pengutronix.de>
- <2cc5ea02-707e-dbb5-c081-4c5202bd5815@gmail.com>
- <42d4c4b2-d3ea-9130-ef7f-3d1955116fdc@denx.de>
- <0687984c-5768-7c71-5796-8e16169f5192@gmail.com>
+        with ESMTP id S1727570AbgJGIVY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 04:21:24 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B44DC061755
+        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 01:21:24 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id n15so1102118wrq.2
+        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 01:21:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=zd/E/JMvNyL5IHVPifyXLUZ5n8AMRVkFyGYTVNw04LA=;
+        b=AeMhy1Kj+u6jPSo+Pex3GETjm+tKi/q/LqkgxXiGX72r5Sf0JfZZA4fGajWWidwrzt
+         9Fm7S3P+5v6tFCZqS/ngKkcsiZTf5UzettXmUt+7g/rcvAsBhzpeGHjRF3aD76OY7HyI
+         h9VCeumdobQmhczDHwCK5J+SzMmSvf+iO/fjHoQuXvIOoh+A5BlvpNb8/HF3O+Nv1xsf
+         ukjkm4E/awRatMq7NgvwLvRF9GzKOx85sO16877K94mWPHOINuEa+3Xmgaw2WrDB1IwJ
+         S5aYR8ElK1gLbEKYlfjXf46+rPIw4ESIE8z/+P53ZwhPFyNUWinqiZZV24WBqx0YZiCl
+         CgXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zd/E/JMvNyL5IHVPifyXLUZ5n8AMRVkFyGYTVNw04LA=;
+        b=r+h6NrtCJoaBW3SQ8Uo6vao4jpGBq1Spn6Oy+2rHdQkWBhZ7260y6Y4MPp3uk4kHKs
+         7vaidd7YZTW7ru0Z8wIImbCddpupos6ruvq1L8FAYD2LlwhbXZdHQcWp7tipLxES/BCf
+         5br8DNntlk+Aaq2utP6HvS/3lNtg8IKG05vs3DtsLJJhFWNqxyswO9dlOrTURUl78XsJ
+         hB7/fVD95X7Z0oGWpRBIhNr4r3c4v8xBxra5zXux9J3EVuJs5akld61rb/HdjE6V8A71
+         6c3+Q9DGKqKkv6pgI7vCyyZ47FtgNpa4JmwZI5s8Qzp/prqlRFKwrrYFzLW4bfcQBlJH
+         8laA==
+X-Gm-Message-State: AOAM531/ewWKfz3ESPXBbBYciLAwcTtnAmmW/6MchmJ3ePF1I0auPyfl
+        B+HkPap/i/Dxg2pRRyav17aAPbe9NPk=
+X-Google-Smtp-Source: ABdhPJwCscporiKc1dPxK66Dnai2G/QoP352X2MQlTqUmTnZ8/gFfv3Uh9EDyaN3wYOBb5RWxwg9dw==
+X-Received: by 2002:a5d:634d:: with SMTP id b13mr2215074wrw.324.1602058882315;
+        Wed, 07 Oct 2020 01:21:22 -0700 (PDT)
+Received: from [192.168.8.147] ([37.172.192.62])
+        by smtp.gmail.com with ESMTPSA id n9sm334446wrq.72.2020.10.07.01.21.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 07 Oct 2020 01:21:21 -0700 (PDT)
+Subject: Re: net: Initialize return value in gro_cells_receive
+To:     Gregory Rose <gvrose8192@gmail.com>,
+        Netdev <netdev@vger.kernel.org>
+References: <e595fd44-cf8a-ce14-8cc8-e3ecd4e8922a@gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <9c6415e4-9d3b-2ba9-494a-c24316ec60c4@gmail.com>
+Date:   Wed, 7 Oct 2020 10:21:20 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0687984c-5768-7c71-5796-8e16169f5192@gmail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 10:07:33 up 326 days, 23:26, 362 users,  load average: 0.15, 0.21,
- 0.14
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: mfe@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <e595fd44-cf8a-ce14-8cc8-e3ecd4e8922a@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marek,
 
-On 20-10-06 14:11, Florian Fainelli wrote:
-> On 10/6/2020 1:24 PM, Marek Vasut wrote:
 
-...
-
-> > If this happens on MX6 with FEC, can you please try these two patches?
-> > 
-> > https://patchwork.ozlabs.org/project/netdev/patch/20201006135253.97395-1-marex@denx.de/
-> > 
-> > https://patchwork.ozlabs.org/project/netdev/patch/20201006202029.254212-1-marex@denx.de/
+On 10/6/20 8:53 PM, Gregory Rose wrote:
+> The 'res' return value is uninitalized and may be returned with
+> some random value.  Initialize to NET_RX_DROP as the default
+> return value.
 > 
-> Your patches are not scaling across multiple Ethernet MAC drivers
-> unfortunately, so I am not sure this should be even remotely considered a
-> viable solution.
+> Signed-off-by: Greg Rose <gvrose8192@gmail.com>
+> 
+> diff --git a/net/core/gro_cells.c b/net/core/gro_cells.c
+> index e095fb871d91..4e835960db07 100644
+> --- a/net/core/gro_cells.c
+> +++ b/net/core/gro_cells.c
+> @@ -13,7 +13,7 @@ int gro_cells_receive(struct gro_cells *gcells, struct sk_buff *skb)
+>  {
+>         struct net_device *dev = skb->dev;
+>         struct gro_cell *cell;
+> -       int res;
+> +       int res = NET_RX_DROP;
+> 
+>         rcu_read_lock();
+>         if (unlikely(!(dev->flags & IFF_UP)))
 
-Recently I added clk support for the smcs driver [1] and dropped the
-PHY_RST_AFTER_CLK_EN flag for LAN8710/20 devices because I had the same
-issues. Hope this will help you too.
+I do not think this is needed.
 
-[1] https://www.spinics.net/lists/netdev/msg682080.html
+Also, when/if sending a patch fixing a bug, we require a Fixes: tag.
 
-Regards,
-  Marco
+Thanks.
