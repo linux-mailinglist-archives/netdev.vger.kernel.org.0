@@ -2,115 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AD5D285BCD
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 11:20:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88369285BEB
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 11:31:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727226AbgJGJUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 05:20:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40392 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726218AbgJGJUq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 05:20:46 -0400
-Received: from mail-out.m-online.net (mail-out.m-online.net [IPv6:2001:a60:0:28:0:1:25:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B783C061755;
-        Wed,  7 Oct 2020 02:20:46 -0700 (PDT)
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4C5pj84kjPz1sQDL;
-        Wed,  7 Oct 2020 11:20:43 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4C5pj74HJQz1qrgF;
-        Wed,  7 Oct 2020 11:20:43 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id VYMMc1HgUkul; Wed,  7 Oct 2020 11:20:41 +0200 (CEST)
-X-Auth-Info: W9/37Ni918RcIcyXzdA0+Qdvp/oiccIGBrSH+KMYhBM=
-Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727300AbgJGJbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 05:31:45 -0400
+Received: from mailout06.rmx.de ([94.199.90.92]:33419 "EHLO mailout06.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726989AbgJGJbp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Oct 2020 05:31:45 -0400
+Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Wed,  7 Oct 2020 11:20:41 +0200 (CEST)
-Subject: Re: PHY reset question
-To:     Marco Felsch <m.felsch@pengutronix.de>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        Russell King <linux@armlinux.org.uk>,
-        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
-        kernel@pengutronix.de, David Jander <david@protonic.nl>
-References: <20201006080424.GA6988@pengutronix.de>
- <2cc5ea02-707e-dbb5-c081-4c5202bd5815@gmail.com>
- <42d4c4b2-d3ea-9130-ef7f-3d1955116fdc@denx.de>
- <0687984c-5768-7c71-5796-8e16169f5192@gmail.com>
- <20201007081410.jk5fi6x5w3ab3726@pengutronix.de>
- <7edb2e01-bec5-05b0-aa47-caf6e214e5a0@denx.de>
- <20201007090636.t5rsus3tnkwuekjj@pengutronix.de>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <2b6a1616-beb8-fd12-9932-1e7d1ef04769@denx.de>
-Date:   Wed, 7 Oct 2020 11:20:40 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        by mailout06.rmx.de (Postfix) with ESMTPS id 4C5pxn1Rn0z9w8y;
+        Wed,  7 Oct 2020 11:31:41 +0200 (CEST)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin01.retarus.com (Postfix) with ESMTPS id 4C5px03DLtz2xGR;
+        Wed,  7 Oct 2020 11:31:00 +0200 (CEST)
+Received: from N95HX1G2.wgnetz.xx (192.168.54.119) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Wed, 7 Oct
+ 2020 11:31:00 +0200
+From:   Christian Eggers <ceggers@arri.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "Vladimir Oltean" <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Christian Eggers <ceggers@arri.de>
+Subject: [PATCH net-next] net: dsa: microchip: add ksz9563 to ksz9477 I2C driver
+Date:   Wed, 7 Oct 2020 11:30:49 +0200
+Message-ID: <20201007093049.13078-1-ceggers@arri.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20201007090636.t5rsus3tnkwuekjj@pengutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.54.119]
+X-RMX-ID: 20201007-113100-4C5px03DLtz2xGR-0@kdin01
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/7/20 11:06 AM, Marco Felsch wrote:
-> On 20-10-07 10:23, Marek Vasut wrote:
->> On 10/7/20 10:14 AM, Marco Felsch wrote:
->>> Hi Marek,
->>
->> Hi,
->>
->> [...]
->>
->>> On 20-10-06 14:11, Florian Fainelli wrote:
->>>> On 10/6/2020 1:24 PM, Marek Vasut wrote:
->>>
->>> ...
->>>
->>>>> If this happens on MX6 with FEC, can you please try these two patches?
->>>>>
->>>>> https://patchwork.ozlabs.org/project/netdev/patch/20201006135253.97395-1-marex@denx.de/
->>>>>
->>>>> https://patchwork.ozlabs.org/project/netdev/patch/20201006202029.254212-1-marex@denx.de/
->>>>
->>>> Your patches are not scaling across multiple Ethernet MAC drivers
->>>> unfortunately, so I am not sure this should be even remotely considered a
->>>> viable solution.
->>>
->>> Recently I added clk support for the smcs driver [1] and dropped the
->>> PHY_RST_AFTER_CLK_EN flag for LAN8710/20 devices because I had the same
->>> issues. Hope this will help you too.
->>>
->>> [1] https://www.spinics.net/lists/netdev/msg682080.html
->>
->> I feel this might be starting to go a bit off-topic here,
-> 
-> You're right, just wanted to provide you a link :)
+Add support for the KSZ9563 3-Port Gigabit Ethernet Switch to the
+ksz9477 driver. The KSZ9563 supports both SPI (already in) and I2C. The
+ksz9563 is already in the device tree binding documentation.
 
-Can you CC me on the next version of those patches ? I seems the LAN8710
-is causing grief to many.
+Signed-off-by: Christian Eggers <ceggers@arri.de>
+---
+ drivers/net/dsa/microchip/ksz9477_i2c.c | 1 +
+ 1 file changed, 1 insertion(+)
 
->> but isn't the
->> last patch 5/5 breaking existing setups ?
-> 
-> IMHO the solution proposed using the PHY_RST_AFTER_CLK_EN was wrong so
-> we needed to fix that. Yes we need to take care of DT backward
-> compatibility but we still must be able to fix wrong behaviours within
-> the driver. I could also argue that PHY_RST_AFTER_CLK_EN solution was
-> breaking exisitng setups too.
-> 
->> The LAN8710 surely does need
->> clock enabled before the reset line is toggled.
-> 
-> Yep and therefore you can specify it yet within the DT.
+diff --git a/drivers/net/dsa/microchip/ksz9477_i2c.c b/drivers/net/dsa/microchip/ksz9477_i2c.c
+index 7951f52d860d..4e053a25d077 100644
+--- a/drivers/net/dsa/microchip/ksz9477_i2c.c
++++ b/drivers/net/dsa/microchip/ksz9477_i2c.c
+@@ -80,6 +80,7 @@ static const struct of_device_id ksz9477_dt_ids[] = {
+ 	{ .compatible = "microchip,ksz9477" },
+ 	{ .compatible = "microchip,ksz9897" },
+ 	{ .compatible = "microchip,ksz9893" },
++	{ .compatible = "microchip,ksz9563" },
+ 	{ .compatible = "microchip,ksz9567" },
+ 	{},
+ };
+-- 
+Christian Eggers
+Embedded software developer
 
-So the idea is that the PHY enables the clock for itself . And if the
-MAC doesn't export these clock as clk to which you can refer to in DT,
-then you still need the PHY_RST_AFTER_CLK_EN flag, so the MAC can deal
-with enabling the clock ? Or is the idea to fix the MAC drivers too ?
+Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
+Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
+Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
+
