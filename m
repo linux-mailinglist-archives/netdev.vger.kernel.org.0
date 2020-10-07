@@ -2,369 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8229286776
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 20:37:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD42D286782
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 20:39:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727242AbgJGShl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 14:37:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42208 "EHLO
+        id S1728108AbgJGSjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 14:39:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726111AbgJGShk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 14:37:40 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694C8C061755
-        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 11:37:40 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kQEJg-0017ki-VG; Wed, 07 Oct 2020 20:37:33 +0200
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH v3 2/2] netlink: export policy in extended ACK
-Date:   Wed,  7 Oct 2020 20:37:24 +0200
-Message-Id: <20201007203610.c79c3f5a63e3.I6dae2c514a6abc924ee8b3e2befb0d51b086cf70@changeid>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201007183724.246725-1-johannes@sipsolutions.net>
-References: <20201007183724.246725-1-johannes@sipsolutions.net>
+        with ESMTP id S1728098AbgJGSjf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 14:39:35 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2757C061755
+        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 11:39:35 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id l126so1831019pfd.5
+        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 11:39:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=Aeu4XnUWo5a9Lyi0KDv1sY5uf0vSSrrLI/ufir8Fw9M=;
+        b=uHwHexZf5yaDqKpuq7Zm1JILxGR9lk7CvpVnNgDcmUKS83/5hPTbAmsDVAoHT4L9vI
+         bRmGlmBkjMB1gmSRfIpVWNSSfzAThP02JZpgcKGJORuqO912kgDvpoYfdS2uLLmlKq8E
+         x9hPlP9DZvD2qWsRahbjt6zj6ZpMxl5l3GQD5cUEnm5gATfV+JOqkDQloLYWBKAD4iyV
+         V3T9tjF/080JaNKhN/4EmQf/IE2bOiX512LWb8PgEhmpJpQjhhyhJ6zs5GHbD+xGLBnn
+         9njVOVreqxtXMPvNP+FqL2IfhbIfDHQnZwCGD5r+lJcsM3aOEK+nRDdI4cbDdun6eCId
+         TKyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Aeu4XnUWo5a9Lyi0KDv1sY5uf0vSSrrLI/ufir8Fw9M=;
+        b=AiMdBzM7S82lza16v3evnSLNh04o1bKehbawf4DqFxHiCRPm2hmIc341AERQ2HtoBn
+         UZSZ/RPk+gKvZsEdk9XZlK+ukBAZJZ9qP+M1Z/sphXZCjZuW22r0B20m1ls7qErEDQvX
+         ibXmHy0zyPsChdH7ZTx8H5Ft8QXYYvnjlaiLqavPZ7/3kimx2rygHQeLr67FAT1BVQb2
+         ao8V8WKP3gVZulR03DBkR5s7/tYJKwy2kbHMps3v96UU8i+sG2hhuqqCh9cUOpyAxmQp
+         PWtTdaKkjkovZpyM4CZ7j3GCrtDMOXb3EozYb3SyMBTlKSnNCMsfjJ4yXq34GdKfkYdE
+         NVLg==
+X-Gm-Message-State: AOAM531mQLxtwTCcFfT1XcMeXX7ZzZ+e30KCk34olzbGGI2HsRW4rDNR
+        ydRg+nGb1IXIKtlbyCW4/o24cy7YXME+Rg==
+X-Google-Smtp-Source: ABdhPJyJ4auNddQU1auPk9aWIYz9OtuBMCHHCqtXuSTEUBREIMhPjkFI1bnMPni4YkqITe32I8QpVg==
+X-Received: by 2002:a62:158c:0:b029:152:6669:ac75 with SMTP id 134-20020a62158c0000b02901526669ac75mr4040818pfv.5.1602095974867;
+        Wed, 07 Oct 2020 11:39:34 -0700 (PDT)
+Received: from [192.168.0.16] ([97.115.184.170])
+        by smtp.gmail.com with ESMTPSA id z28sm4254698pfq.81.2020.10.07.11.39.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 07 Oct 2020 11:39:34 -0700 (PDT)
+Subject: Re: net: Initialize return value in gro_cells_receive
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Netdev <netdev@vger.kernel.org>
+References: <e595fd44-cf8a-ce14-8cc8-e3ecd4e8922a@gmail.com>
+ <9c6415e4-9d3b-2ba9-494a-c24316ec60c4@gmail.com>
+ <03e2fd9c-e4c9-cff4-90c9-99ea9d3a5713@gmail.com>
+ <d1e206e5-7049-82bb-3507-6f0436e47fa8@gmail.com>
+From:   Gregory Rose <gvrose8192@gmail.com>
+Message-ID: <00d334dd-6b48-e0e0-bb8d-b643890f4de1@gmail.com>
+Date:   Wed, 7 Oct 2020 11:39:32 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
+In-Reply-To: <d1e206e5-7049-82bb-3507-6f0436e47fa8@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
 
-Add a new attribute NLMSGERR_ATTR_POLICY to the extended ACK
-to advertise the policy, e.g. if an attribute was out of range,
-you'll know the range that's permissible.
 
-Add new NL_SET_ERR_MSG_ATTR_POL() and NL_SET_ERR_MSG_ATTR_POL()
-macros to set this, since realistically it's only useful to do
-this when the bad attribute (offset) is also returned.
+On 10/7/2020 9:37 AM, Eric Dumazet wrote:
+> 
+> 
+> On 10/7/20 5:50 PM, Gregory Rose wrote:
+>>
+>>
+>> On 10/7/2020 1:21 AM, Eric Dumazet wrote:
+>>>
+>>>
+>>> On 10/6/20 8:53 PM, Gregory Rose wrote:
+>>>> The 'res' return value is uninitalized and may be returned with
+>>>> some random value.  Initialize to NET_RX_DROP as the default
+>>>> return value.
+>>>>
+>>>> Signed-off-by: Greg Rose <gvrose8192@gmail.com>
+>>>>
+>>>> diff --git a/net/core/gro_cells.c b/net/core/gro_cells.c
+>>>> index e095fb871d91..4e835960db07 100644
+>>>> --- a/net/core/gro_cells.c
+>>>> +++ b/net/core/gro_cells.c
+>>>> @@ -13,7 +13,7 @@ int gro_cells_receive(struct gro_cells *gcells, struct sk_buff *skb)
+>>>>    {
+>>>>           struct net_device *dev = skb->dev;
+>>>>           struct gro_cell *cell;
+>>>> -       int res;
+>>>> +       int res = NET_RX_DROP;
+>>>>
+>>>>           rcu_read_lock();
+>>>>           if (unlikely(!(dev->flags & IFF_UP)))
+>>>
+>>> I do not think this is needed.
+>>>
+>>> Also, when/if sending a patch fixing a bug, we require a Fixes: tag.
+>>>
+>>> Thanks.
+>>>
+>> If it's not needed then feel free to ignore it.  It just looked like
+>> the unlikely case returns without setting the return value.
+> 
+> Can you elaborate ? I do not see this problem in current upstream code.
+> 
+> If a compiler gave you a warning, please give its version, thanks.
+> 
 
-Use it in lib/nlattr.c which practically does all the policy
-validation.
+No, it's my misreading of the code - it jumps to the drop that is in the
+middle of an if statement, sets res to NET_RX_DROP there and then jumps 
+to the unlock label.
 
-v2:
- - add and use netlink_policy_dump_attr_size_estimate()
-v3:
- - remove redundant break
+My apologies.
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
----
- include/linux/netlink.h      | 30 +++++++++++------
- include/net/netlink.h        |  4 +++
- include/uapi/linux/netlink.h |  2 ++
- lib/nlattr.c                 | 35 ++++++++++----------
- net/netlink/af_netlink.c     |  5 +++
- net/netlink/policy.c         | 62 ++++++++++++++++++++++++++++++++++++
- 6 files changed, 111 insertions(+), 27 deletions(-)
-
-diff --git a/include/linux/netlink.h b/include/linux/netlink.h
-index e3e49f0e5c13..666cd0390699 100644
---- a/include/linux/netlink.h
-+++ b/include/linux/netlink.h
-@@ -68,12 +68,14 @@ netlink_kernel_create(struct net *net, int unit, struct netlink_kernel_cfg *cfg)
-  * @_msg: message string to report - don't access directly, use
-  *	%NL_SET_ERR_MSG
-  * @bad_attr: attribute with error
-+ * @policy: policy for a bad attribute
-  * @cookie: cookie data to return to userspace (for success)
-  * @cookie_len: actual cookie data length
-  */
- struct netlink_ext_ack {
- 	const char *_msg;
- 	const struct nlattr *bad_attr;
-+	const struct nla_policy *policy;
- 	u8 cookie[NETLINK_MAX_COOKIE_LEN];
- 	u8 cookie_len;
- };
-@@ -95,21 +97,29 @@ struct netlink_ext_ack {
- #define NL_SET_ERR_MSG_MOD(extack, msg)			\
- 	NL_SET_ERR_MSG((extack), KBUILD_MODNAME ": " msg)
- 
--#define NL_SET_BAD_ATTR(extack, attr) do {		\
--	if ((extack))					\
-+#define NL_SET_BAD_ATTR_POLICY(extack, attr, pol) do {	\
-+	if ((extack)) {					\
- 		(extack)->bad_attr = (attr);		\
-+		(extack)->policy = (pol);		\
-+	}						\
- } while (0)
- 
--#define NL_SET_ERR_MSG_ATTR(extack, attr, msg) do {	\
--	static const char __msg[] = msg;		\
--	struct netlink_ext_ack *__extack = (extack);	\
--							\
--	if (__extack) {					\
--		__extack->_msg = __msg;			\
--		__extack->bad_attr = (attr);		\
--	}						\
-+#define NL_SET_BAD_ATTR(extack, attr) NL_SET_BAD_ATTR_POLICY(extack, attr, NULL)
-+
-+#define NL_SET_ERR_MSG_ATTR_POL(extack, attr, pol, msg) do {	\
-+	static const char __msg[] = msg;			\
-+	struct netlink_ext_ack *__extack = (extack);		\
-+								\
-+	if (__extack) {						\
-+		__extack->_msg = __msg;				\
-+		__extack->bad_attr = (attr);			\
-+		__extack->policy = (pol);			\
-+	}							\
- } while (0)
- 
-+#define NL_SET_ERR_MSG_ATTR(extack, attr, msg)		\
-+	NL_SET_ERR_MSG_ATTR_POL(extack, attr, NULL, msg)
-+
- static inline void nl_set_extack_cookie_u64(struct netlink_ext_ack *extack,
- 					    u64 cookie)
- {
-diff --git a/include/net/netlink.h b/include/net/netlink.h
-index 2b9e41075f19..7356f41d23ba 100644
---- a/include/net/netlink.h
-+++ b/include/net/netlink.h
-@@ -1957,6 +1957,10 @@ int netlink_policy_dump_get_policy_idx(struct netlink_policy_dump_state *state,
- bool netlink_policy_dump_loop(struct netlink_policy_dump_state *state);
- int netlink_policy_dump_write(struct sk_buff *skb,
- 			      struct netlink_policy_dump_state *state);
-+int netlink_policy_dump_attr_size_estimate(const struct nla_policy *pt);
-+int netlink_policy_dump_write_attr(struct sk_buff *skb,
-+				   const struct nla_policy *pt,
-+				   int nestattr);
- void netlink_policy_dump_free(struct netlink_policy_dump_state *state);
- 
- #endif
-diff --git a/include/uapi/linux/netlink.h b/include/uapi/linux/netlink.h
-index d02e472ba54c..c3816ff7bfc3 100644
---- a/include/uapi/linux/netlink.h
-+++ b/include/uapi/linux/netlink.h
-@@ -129,6 +129,7 @@ struct nlmsgerr {
-  * @NLMSGERR_ATTR_COOKIE: arbitrary subsystem specific cookie to
-  *	be used - in the success case - to identify a created
-  *	object or operation or similar (binary)
-+ * @NLMSGERR_ATTR_POLICY: policy for a rejected attribute
-  * @__NLMSGERR_ATTR_MAX: number of attributes
-  * @NLMSGERR_ATTR_MAX: highest attribute number
-  */
-@@ -137,6 +138,7 @@ enum nlmsgerr_attrs {
- 	NLMSGERR_ATTR_MSG,
- 	NLMSGERR_ATTR_OFFS,
- 	NLMSGERR_ATTR_COOKIE,
-+	NLMSGERR_ATTR_POLICY,
- 
- 	__NLMSGERR_ATTR_MAX,
- 	NLMSGERR_ATTR_MAX = __NLMSGERR_ATTR_MAX - 1
-diff --git a/lib/nlattr.c b/lib/nlattr.c
-index 9c99f5daa4d2..74019c8ebf6b 100644
---- a/lib/nlattr.c
-+++ b/lib/nlattr.c
-@@ -96,8 +96,8 @@ static int nla_validate_array(const struct nlattr *head, int len, int maxtype,
- 			continue;
- 
- 		if (nla_len(entry) < NLA_HDRLEN) {
--			NL_SET_ERR_MSG_ATTR(extack, entry,
--					    "Array element too short");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, entry, policy,
-+						"Array element too short");
- 			return -ERANGE;
- 		}
- 
-@@ -195,8 +195,8 @@ static int nla_validate_range_unsigned(const struct nla_policy *pt,
- 		pr_warn_ratelimited("netlink: '%s': attribute type %d has an invalid length.\n",
- 				    current->comm, pt->type);
- 		if (validate & NL_VALIDATE_STRICT_ATTRS) {
--			NL_SET_ERR_MSG_ATTR(extack, nla,
--					    "invalid attribute length");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+						"invalid attribute length");
- 			return -EINVAL;
- 		}
- 
-@@ -208,11 +208,11 @@ static int nla_validate_range_unsigned(const struct nla_policy *pt,
- 		bool binary = pt->type == NLA_BINARY;
- 
- 		if (binary)
--			NL_SET_ERR_MSG_ATTR(extack, nla,
--					    "binary attribute size out of range");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+						"binary attribute size out of range");
- 		else
--			NL_SET_ERR_MSG_ATTR(extack, nla,
--					    "integer out of range");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+						"integer out of range");
- 
- 		return -ERANGE;
- 	}
-@@ -291,8 +291,8 @@ static int nla_validate_int_range_signed(const struct nla_policy *pt,
- 	nla_get_range_signed(pt, &range);
- 
- 	if (value < range.min || value > range.max) {
--		NL_SET_ERR_MSG_ATTR(extack, nla,
--				    "integer out of range");
-+		NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+					"integer out of range");
- 		return -ERANGE;
- 	}
- 
-@@ -377,8 +377,8 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
- 		pr_warn_ratelimited("netlink: '%s': attribute type %d has an invalid length.\n",
- 				    current->comm, type);
- 		if (validate & NL_VALIDATE_STRICT_ATTRS) {
--			NL_SET_ERR_MSG_ATTR(extack, nla,
--					    "invalid attribute length");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+						"invalid attribute length");
- 			return -EINVAL;
- 		}
- 	}
-@@ -386,14 +386,14 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
- 	if (validate & NL_VALIDATE_NESTED) {
- 		if ((pt->type == NLA_NESTED || pt->type == NLA_NESTED_ARRAY) &&
- 		    !(nla->nla_type & NLA_F_NESTED)) {
--			NL_SET_ERR_MSG_ATTR(extack, nla,
--					    "NLA_F_NESTED is missing");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+						"NLA_F_NESTED is missing");
- 			return -EINVAL;
- 		}
- 		if (pt->type != NLA_NESTED && pt->type != NLA_NESTED_ARRAY &&
- 		    pt->type != NLA_UNSPEC && (nla->nla_type & NLA_F_NESTED)) {
--			NL_SET_ERR_MSG_ATTR(extack, nla,
--					    "NLA_F_NESTED not expected");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+						"NLA_F_NESTED not expected");
- 			return -EINVAL;
- 		}
- 	}
-@@ -550,7 +550,8 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
- 
- 	return 0;
- out_err:
--	NL_SET_ERR_MSG_ATTR(extack, nla, "Attribute failed policy validation");
-+	NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+				"Attribute failed policy validation");
- 	return err;
- }
- 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index df675a8e1918..daca50d6bb12 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -2420,6 +2420,8 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
- 		tlvlen += nla_total_size(sizeof(u32));
- 	if (nlk_has_extack && extack && extack->cookie_len)
- 		tlvlen += nla_total_size(extack->cookie_len);
-+	if (err && nlk_has_extack && extack && extack->policy)
-+		tlvlen += netlink_policy_dump_attr_size_estimate(extack->policy);
- 
- 	if (tlvlen)
- 		flags |= NLM_F_ACK_TLVS;
-@@ -2452,6 +2454,9 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
- 		if (extack->cookie_len)
- 			WARN_ON(nla_put(skb, NLMSGERR_ATTR_COOKIE,
- 					extack->cookie_len, extack->cookie));
-+		if (extack->policy)
-+			netlink_policy_dump_write_attr(skb, extack->policy,
-+						       NLMSGERR_ATTR_POLICY);
- 	}
- 
- 	nlmsg_end(skb, rep);
-diff --git a/net/netlink/policy.c b/net/netlink/policy.c
-index 4383436759e2..118e9b035b09 100644
---- a/net/netlink/policy.c
-+++ b/net/netlink/policy.c
-@@ -196,12 +196,55 @@ bool netlink_policy_dump_loop(struct netlink_policy_dump_state *state)
- 	return !netlink_policy_dump_finished(state);
- }
- 
-+int netlink_policy_dump_attr_size_estimate(const struct nla_policy *pt)
-+{
-+	/* nested + type */
-+	int common = 2 * nla_attr_size(sizeof(u32));
-+
-+	switch (pt->type) {
-+	case NLA_UNSPEC:
-+	case NLA_REJECT:
-+		/* these actually don't need any space */
-+		return 0;
-+	case NLA_NESTED:
-+	case NLA_NESTED_ARRAY:
-+		/* common, policy idx, policy maxattr */
-+		return common + 2 * nla_attr_size(sizeof(u32));
-+	case NLA_U8:
-+	case NLA_U16:
-+	case NLA_U32:
-+	case NLA_U64:
-+	case NLA_MSECS:
-+	case NLA_S8:
-+	case NLA_S16:
-+	case NLA_S32:
-+	case NLA_S64:
-+		/* maximum is common, u64 min/max with padding */
-+		return common +
-+		       2 * (nla_attr_size(0) + nla_attr_size(sizeof(u64)));
-+		break;
-+	case NLA_BITFIELD32:
-+		return common + nla_attr_size(sizeof(u32));
-+	case NLA_STRING:
-+	case NLA_NUL_STRING:
-+	case NLA_BINARY:
-+		/* maximum is common, u32 min-length/max-length */
-+		return common + 2 * nla_attr_size(sizeof(u32));
-+	case NLA_FLAG:
-+		return common;
-+	}
-+
-+	/* this should then cause a warning later */
-+	return 0;
-+}
-+
- static int
- __netlink_policy_dump_write_attr(struct netlink_policy_dump_state *state,
- 				 struct sk_buff *skb,
- 				 const struct nla_policy *pt,
- 				 int nestattr)
- {
-+	int estimate = netlink_policy_dump_attr_size_estimate(pt);
- 	enum netlink_attribute_type type;
- 	struct nlattr *attr;
- 
-@@ -334,12 +377,31 @@ __netlink_policy_dump_write_attr(struct netlink_policy_dump_state *state,
- 		goto nla_put_failure;
- 
- 	nla_nest_end(skb, attr);
-+	WARN_ON(attr->nla_len > estimate);
-+
- 	return 0;
- nla_put_failure:
- 	nla_nest_cancel(skb, attr);
- 	return -ENOBUFS;
- }
- 
-+/**
-+ * netlink_policy_dump_write_attr - write a given attribute policy
-+ * @skb: the message skb to write to
-+ * @pt: the attribute's policy
-+ * @nestattr: the nested attribute ID to use
-+ *
-+ * Returns: 0 on success, an error code otherwise; -%ENODATA is
-+ *	    special, indicating that there's no policy data and
-+ *	    the attribute is generally rejected.
-+ */
-+int netlink_policy_dump_write_attr(struct sk_buff *skb,
-+				   const struct nla_policy *pt,
-+				   int nestattr)
-+{
-+	return __netlink_policy_dump_write_attr(NULL, skb, pt, nestattr);
-+}
-+
- /**
-  * netlink_policy_dump_write - write current policy dump attributes
-  * @skb: the message skb to write to
--- 
-2.26.2
-
+- Greg
