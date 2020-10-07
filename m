@@ -2,237 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FA6A286ADD
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 00:27:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14779286AF2
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 00:37:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728846AbgJGW1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 18:27:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49680 "EHLO
+        id S1728875AbgJGWhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 18:37:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728275AbgJGW1h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 18:27:37 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BF4C061755;
-        Wed,  7 Oct 2020 15:27:37 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id p11so1761790pld.5;
-        Wed, 07 Oct 2020 15:27:37 -0700 (PDT)
+        with ESMTP id S1728742AbgJGWhH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 18:37:07 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29855C061755;
+        Wed,  7 Oct 2020 15:37:07 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id u6so4218171iow.9;
+        Wed, 07 Oct 2020 15:37:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=NnZ1n8E65Otvm1/bxPZ6xNlcltAne+x5NWUhCP57djM=;
-        b=lO3bFrY7g6GqVV8Vj0lq7yLgsIYpiYLLcApW3qUo0BXyrp/drxWYTWtUwqCopsZbff
-         JSp5M7Lmd8sNgTvq1pQc/zu2Pe03pLri7i3NL1eu4nP3L9/QACklaFMPU6EOkHhKhguZ
-         QhkXIjanKGg2EgE48w4Lxxz35XoepwXW+0Kracbd6oxYEORch7+zK1wppC5xHHZOLkKO
-         rNRJRpc743bbUM9TwBGGgDOjT4V5Czklknx62l3rH6wBbgXGNBNA21272bZQXIA49gz3
-         uDK8k8OsquY1nElJkqRxlNK57WwWyKPhaFz4FfSwoSDyp50DVs4KQ6QQEgHWtUlCbnvE
-         mnAQ==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=+nCZGaCKql0nmWslwGogtqp1JQBKN8StPxSFOo545Nc=;
+        b=cQl+zYM87AlFkL4GDXnM1vzw9Ux/JZjkbrVqQayOBh7zEUPwXxQLEq7j7e+8+lPW+/
+         /LmPZdZ0ksdAuUcZmkdJpz0zR4DUSoj2YTkXYZyE7pg+qRyB8Cbmpx2+l+VVfp2sEStX
+         qLowK5l9ArN5rApwCqCeR1RFsXIBSBspBsQMQNqZ0Y7e+D7d+FxnA3Xww52mOtd3VnWY
+         bBOYxCIcDVehnL/EuOEXdzRXrcHnyi6IOBSPwPLilZDSYpB/2q6Qq0zqBr+3KTw9hZCC
+         QV9w81mIc3tnrp0TOmnLUoTiS1k6GhYbOmwiSNzht/ynY88MNXbUiXg9xltHiNzga8yM
+         9/yA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=NnZ1n8E65Otvm1/bxPZ6xNlcltAne+x5NWUhCP57djM=;
-        b=oBz5o8d24QCSCpnNne0PurCFjPuT143Qo2haSKVnW1flhoqPmpWSjBJjrPvkU7CKgp
-         t4XiArc6Egj+2+GflEuur7X31OEVD0RB37EvMIVxaAioI1kixbxJM2fundw7prfvTuKR
-         zylqmHgS3Bp1nMEPcixsryHz4K6ZJ6hmxpVkKmVsKCnyGHgVKyKHExETmXZM1Oh+nSjf
-         kRPvpYFhcw1FMmsxHIEpSJmLC+5Od4mX3GOOetPoloEeHD1iH8LKQNC+PT/WZ3WRf3vK
-         f+RPm2hAJLikevmA9o+J/gReNgG84W+mv5DxaKlnJAkVys48XYRiiWK4QEHtJgSCTW+i
-         MLxA==
-X-Gm-Message-State: AOAM533jaMyUvbbDHohnCgef9EiPJneYbr7Knvh931p57FHEFfi9S55W
-        Oyuz3Yg7AcgfvwCJDuSOeRsD4OAb47aXaQ==
-X-Google-Smtp-Source: ABdhPJy7zpwvS9KzSa6rYQr5xI/dHZdWmtCIj3nLSqlVhlFZfIgEI1Q/ryTrnEwAlU0Mf9JcFPC8yg==
-X-Received: by 2002:a17:902:9884:b029:d2:4276:1b64 with SMTP id s4-20020a1709029884b02900d242761b64mr4927538plp.76.1602109656875;
-        Wed, 07 Oct 2020 15:27:36 -0700 (PDT)
-Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id d6sm296090pjr.51.2020.10.07.15.27.35
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 07 Oct 2020 15:27:36 -0700 (PDT)
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, john.fastabend@gmail.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH bpf-next] selftests/bpf: Additional asm tests for the verifier regalloc tracking.
-Date:   Wed,  7 Oct 2020 15:27:34 -0700
-Message-Id: <20201007222734.93364-1-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.13.5
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=+nCZGaCKql0nmWslwGogtqp1JQBKN8StPxSFOo545Nc=;
+        b=QCeYkWWYfSQAilG7wI3Sr9NEm16KaQWD3l0ENGtFOW0NlFgRmC3EuF30kfWSWoGg1j
+         PQN4pvSinsUUHPw9GAnE/iFCdliu6Arw41DvHzYzCvNbMognR6kwl24LjxeXSMdGZpih
+         5re3wLRWtOcdh2zFCgVvAtDYqZYmZG/OE8wNY5eUrdHq1GL70giMWQk/8Sx9GmfgqyND
+         hi6oYnQD49sBq/kLECZxB2neJ0FJWHFcoCTh2ynjHPJNlnsP9GSupkGZkNk9U3thHcWo
+         LR/f0Di4lEpPrOFvKZTpy71DGAMnSEnquZhlzioIilYDwyhduhvFKo5jM+V9WMnTt5/W
+         hNjw==
+X-Gm-Message-State: AOAM531MivAcj7PAuAG+GXenApxsDKjlsFXzLtgpq0ZKIq9RSVESsfYe
+        w8vv6nl+92Fj42jn2ToJTzk=
+X-Google-Smtp-Source: ABdhPJwPeX0EkdeZ6flmXCvR6Rb1gA5vcYwM7e1RhctXzHWnP5P2L4oY8jvDkhWHV4V/aYKM+cOKVg==
+X-Received: by 2002:a02:a196:: with SMTP id n22mr4755191jah.104.1602110226326;
+        Wed, 07 Oct 2020 15:37:06 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id l4sm1676859ilk.14.2020.10.07.15.37.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Oct 2020 15:37:05 -0700 (PDT)
+Date:   Wed, 07 Oct 2020 15:36:58 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com
+Message-ID: <5f7e430ae158b_1a8312084d@john-XPS-13-9370.notmuch>
+In-Reply-To: <7aeb6082-48a3-9b71-2e2c-10adeb5ee79a@iogearbox.net>
+References: <160208770557.798237.11181325462593441941.stgit@firesoul>
+ <160208778070.798237.16265441131909465819.stgit@firesoul>
+ <7aeb6082-48a3-9b71-2e2c-10adeb5ee79a@iogearbox.net>
+Subject: Re: [PATCH bpf-next V2 5/6] bpf: Add MTU check for TC-BPF packets
+ after egress hook
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexei Starovoitov <ast@kernel.org>
+Daniel Borkmann wrote:
+> On 10/7/20 6:23 PM, Jesper Dangaard Brouer wrote:
+> [...]
+> >   net/core/dev.c |   24 ++++++++++++++++++++++--
+> >   1 file changed, 22 insertions(+), 2 deletions(-)
 
-Add asm tests for register allocator tracking logic implemented in the patches:
-https://lore.kernel.org/bpf/20201006200955.12350-1-alexei.starovoitov@gmail.com/T/#t
+Couple high-level comments. Whats the problem with just letting the driver
+consume the packet? I would chalk it up to a buggy BPF program that is
+sending these packets. The drivers really shouldn't panic or do anything
+horrible under this case because even today I don't think we can be
+100% certain MTU on skb matches set MTU. Imagine the case where I change
+the MTU from 9kB->1500B there will be some skbs in-flight with the larger
+length and some with the shorter. If the drivers panic/fault or otherwise
+does something else horrible thats not going to be friendly in general case
+regardless of what BPF does. And seeing this type of config is all done
+async its tricky (not practical) to flush any skbs in-flight.
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
- .../testing/selftests/bpf/verifier/regalloc.c | 159 ++++++++++++++++++
- 1 file changed, 159 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/verifier/regalloc.c
+I've spent many hours debugging these types of feature flag, mtu
+change bugs on the driver side I'm not sure it can be resolved by
+the stack easily. Better to just build drivers that can handle it IMO.
 
-diff --git a/tools/testing/selftests/bpf/verifier/regalloc.c b/tools/testing/selftests/bpf/verifier/regalloc.c
-new file mode 100644
-index 000000000000..e9b6c6fdecd2
---- /dev/null
-+++ b/tools/testing/selftests/bpf/verifier/regalloc.c
-@@ -0,0 +1,159 @@
-+{
-+	"regalloc 1",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_LD_MAP_FD(BPF_REG_1, 0),
-+	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 8),
-+	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
-+	BPF_EMIT_CALL(BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_0),
-+	BPF_JMP_IMM(BPF_JSGT, BPF_REG_0, 20, 4),
-+	BPF_JMP_IMM(BPF_JSLT, BPF_REG_2, 0, 3),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_0),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_2),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_7, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.fixup_map_hash_48b = { 4 },
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
-+},
-+{
-+	"regalloc 2",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_LD_MAP_FD(BPF_REG_1, 0),
-+	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 8),
-+	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
-+	BPF_EMIT_CALL(BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_0),
-+	BPF_JMP_IMM(BPF_JSGT, BPF_REG_0, 24, 4),
-+	BPF_JMP_IMM(BPF_JSLT, BPF_REG_2, 0, 3),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_0),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_2),
-+	BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_7, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.fixup_map_hash_48b = { 4 },
-+	.result = REJECT,
-+	.errstr = "invalid access to map value, value_size=48 off=48 size=1",
-+	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
-+},
-+{
-+	"regalloc 3",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_LD_MAP_FD(BPF_REG_1, 0),
-+	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 9),
-+	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
-+	BPF_EMIT_CALL(BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_0),
-+	BPF_JMP_IMM(BPF_JSGT, BPF_REG_0, 20, 5),
-+	BPF_MOV64_IMM(BPF_REG_3, 0),
-+	BPF_JMP_REG(BPF_JSGE, BPF_REG_3, BPF_REG_2, 3),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_0),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_2),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_7, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.fixup_map_hash_48b = { 4 },
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
-+},
-+{
-+	"regalloc 4",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_LD_MAP_FD(BPF_REG_1, 0),
-+	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 9),
-+	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
-+	BPF_EMIT_CALL(BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_0),
-+	BPF_JMP_IMM(BPF_JSGT, BPF_REG_0, 22, 5),
-+	BPF_MOV64_IMM(BPF_REG_3, 0),
-+	BPF_JMP_REG(BPF_JSGE, BPF_REG_3, BPF_REG_2, 3),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_0),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_2),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_7, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.fixup_map_hash_48b = { 4 },
-+	.result = REJECT,
-+	.errstr = "invalid access to map value, value_size=48 off=44 size=8",
-+	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
-+},
-+{
-+	"regalloc 5",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_LD_MAP_FD(BPF_REG_1, 0),
-+	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 11),
-+	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
-+	BPF_EMIT_CALL(BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_0),
-+	BPF_JMP_IMM(BPF_JSGT, BPF_REG_0, 20, 7),
-+	/* r0 has upper bound that should propagate into r2 */
-+	BPF_STX_MEM(BPF_DW, BPF_REG_10, BPF_REG_2, -8), /* spill r2 */
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_MOV64_IMM(BPF_REG_2, 0), /* clear r0 and r2 */
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_3, BPF_REG_10, -8), /* fill r3 */
-+	BPF_JMP_REG(BPF_JSGE, BPF_REG_0, BPF_REG_3, 2),
-+	/* r3 has lower and upper bounds */
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_3),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_7, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.fixup_map_hash_48b = { 4 },
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
-+},
-+{
-+	"regalloc 6",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_LD_MAP_FD(BPF_REG_1, 0),
-+	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 11),
-+	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
-+	BPF_EMIT_CALL(BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_0),
-+	BPF_JMP_IMM(BPF_JSGT, BPF_REG_0, 48, 7),
-+	/* r0 has upper bound that should propagate into r2 */
-+	BPF_STX_MEM(BPF_DW, BPF_REG_10, BPF_REG_2, -8), /* spill r2 */
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_MOV64_IMM(BPF_REG_2, 0), /* clear r0 and r2 */
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_3, BPF_REG_10, -8), /* fill r3 */
-+	BPF_JMP_REG(BPF_JSGE, BPF_REG_0, BPF_REG_3, 2),
-+	/* r3 has lower and upper bounds */
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_3),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_7, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.fixup_map_hash_48b = { 4 },
-+	.result = REJECT,
-+	.errstr = "invalid access to map value, value_size=48 off=48 size=8",
-+	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
-+},
--- 
-2.23.0
+Do we know if sending >MTU size skbs to drivers causes problems in real
+cases? I haven't tried on the NICs I have here, but I expect they should
+be fine. Fine here being system keeps running as expected. Dropping the
+skb either on TX or RX side is expected. Even with this change though
+its possible for the skb to slip through if I configure MTU on a live
+system.
+
+> > 
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index b433098896b2..19406013f93e 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -3870,6 +3870,7 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
+> >   	switch (tcf_classify(skb, miniq->filter_list, &cl_res, false)) {
+> >   	case TC_ACT_OK:
+> >   	case TC_ACT_RECLASSIFY:
+> > +		*ret = NET_XMIT_SUCCESS;
+> >   		skb->tc_index = TC_H_MIN(cl_res.classid);
+> >   		break;
+> >   	case TC_ACT_SHOT:
+> > @@ -4064,9 +4065,12 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+> >   {
+> >   	struct net_device *dev = skb->dev;
+> >   	struct netdev_queue *txq;
+> > +#ifdef CONFIG_NET_CLS_ACT
+> > +	bool mtu_check = false;
+> > +#endif
+> > +	bool again = false;
+> >   	struct Qdisc *q;
+> >   	int rc = -ENOMEM;
+> > -	bool again = false;
+> >   
+> >   	skb_reset_mac_header(skb);
+> >   
+> > @@ -4082,14 +4086,28 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+> >   
+> >   	qdisc_pkt_len_init(skb);
+> >   #ifdef CONFIG_NET_CLS_ACT
+> > +	mtu_check = skb_is_redirected(skb);
+> >   	skb->tc_at_ingress = 0;
+> >   # ifdef CONFIG_NET_EGRESS
+> >   	if (static_branch_unlikely(&egress_needed_key)) {
+> > +		unsigned int len_orig = skb->len;
+> > +
+> >   		skb = sch_handle_egress(skb, &rc, dev);
+> >   		if (!skb)
+> >   			goto out;
+> > +		/* BPF-prog ran and could have changed packet size beyond MTU */
+> > +		if (rc == NET_XMIT_SUCCESS && skb->len > len_orig)
+> > +			mtu_check = true;
+> >   	}
+> >   # endif
+> > +	/* MTU-check only happens on "last" net_device in a redirect sequence
+> > +	 * (e.g. above sch_handle_egress can steal SKB and skb_do_redirect it
+> > +	 * either ingress or egress to another device).
+> > +	 */
+> 
+> Hmm, quite some overhead in fast path. Also, won't this be checked multiple times
+> on stacked devices? :( Moreover, this missed the fact that 'real' qdiscs can have
+> filters attached too, this would come after this check. Can't this instead be in
+> driver layer for those that really need it? I would probably only drop the check
+> as done in 1/6 and allow the BPF prog to do the validation if needed.
+
+Any checks like this should probably go in validate_xmit_skb_list() this is
+where we check other things GSO, checksum, etc. that depend on drivers. Worse
+case we could add a netif_needs_mtu() case in validate_xmit_skb if drivers
+really can't handle >MTU size.
+
+> 
+> > +	if (mtu_check && !is_skb_forwardable(dev, skb)) {
+> > +		rc = -EMSGSIZE;
+> > +		goto drop;
+> > +	}
+> >   #endif
+> >   	/* If device/qdisc don't need skb->dst, release it right now while
+> >   	 * its hot in this cpu cache.
+> > @@ -4157,7 +4175,9 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+> >   
+> >   	rc = -ENETDOWN;
+> >   	rcu_read_unlock_bh();
+> > -
+> > +#ifdef CONFIG_NET_CLS_ACT
+> > +drop:
+> > +#endif
+> >   	atomic_long_inc(&dev->tx_dropped);
+> >   	kfree_skb_list(skb);
+> >   	return rc;
+> > 
+
 
