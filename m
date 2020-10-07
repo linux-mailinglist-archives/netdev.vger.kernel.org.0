@@ -2,99 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24EE92858A9
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 08:29:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACED82858C2
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 08:40:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727147AbgJGG3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 02:29:43 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:18636 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726562AbgJGG3n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 02:29:43 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0976T6QK013959
-        for <netdev@vger.kernel.org>; Tue, 6 Oct 2020 23:29:42 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : content-type : content-transfer-encoding :
- mime-version; s=facebook; bh=sLui42BnNkRqlJsx4joO6DBykPUYfOkBZnRIOo3kdh4=;
- b=goXrvAP+C/nImLe4CqZjozlQKXeRDU+GxemkbfY+DbDirkCGsia3ajxZPYRgy/moQuqp
- qTlIfT4/YEjsggarh6QrlfP2vK5Wc5t8tf6CvqhPJBzjNlSm4IPPMNq5ApIARfD4Rilr
- DKLSO/jngrmTxwEaRaOCBy8kZDKwZ/OG8A8= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 341408rums-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 06 Oct 2020 23:29:42 -0700
-Received: from intmgw001.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 6 Oct 2020 23:29:41 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 6F2B537058FB; Tue,  6 Oct 2020 23:29:33 -0700 (PDT)
-From:   Yonghong Song <yhs@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Song Liu <songliubraving@fb.com>
-Subject: [PATCH bpf-next] bpf: fix build failure for kernel/trace/bpf_trace.c with CONFIG_NET=n
-Date:   Tue, 6 Oct 2020 23:29:33 -0700
-Message-ID: <20201007062933.3425899-1-yhs@fb.com>
-X-Mailer: git-send-email 2.24.1
-X-FB-Internal: Safe
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S1727250AbgJGGkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 02:40:18 -0400
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:10169 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725970AbgJGGkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 02:40:17 -0400
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5f7d62650000>; Tue, 06 Oct 2020 23:38:29 -0700
+Received: from mtl-vdi-166.wap.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 7 Oct
+ 2020 06:40:15 +0000
+Date:   Wed, 7 Oct 2020 09:40:11 +0300
+From:   Eli Cohen <elic@nvidia.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        <virtualization@lists.linux-foundation.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     <saeedm@nvidia.com>, <elic@nvidia.com>
+Subject: [PATCH] vdpa/mlx5: Fix dependency on MLX5_CORE
+Message-ID: <20201007064011.GA50074@mtl-vdi-166.wap.labs.mlnx>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-10-07_04:2020-10-06,2020-10-07 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0 mlxscore=0
- mlxlogscore=636 impostorscore=0 lowpriorityscore=0 suspectscore=0
- adultscore=0 spamscore=0 clxscore=1015 priorityscore=1501 phishscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2010070042
-X-FB-Internal: deliver
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1602052709; bh=vnyinnQREiRArIfp9ytJFBUdYLsYXb3A1DrGRuaZsM4=;
+        h=Date:From:To:CC:Subject:Message-ID:MIME-Version:Content-Type:
+         Content-Disposition:User-Agent:X-Originating-IP:X-ClientProxiedBy;
+        b=fSu6d00xpIVylKDqerp4ILMfXST/wTc2zMCzjFsmRs7EbfzdKVGNNriu53B+tNuha
+         Q/oWXt5CPbLcW9tB7vJKMyPJW0SrgIEEtqVI3m8dw7AktszlKM6NB5eF8KMppYdb+V
+         9ZfNTtuNZfZvdY14rNwOs2MQlHrOwFcjSy+xdfvJMEqr1IO3PsPyHPpsO47J+L2qgL
+         wrUmvoHpLJ9gdcoKhCuJiQDNNDRopGM2mlexTZmoAT48GaI0tcmWfAsHNzBj/BRVkl
+         9QMjoPARinmOOrjUaOLvgBqhn2RvpUuE+Kzz0kyuLzYgob/fVRCQmC+ySWSsn/uzpa
+         T4rmHQl+HH5HA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When CONFIG_NET is not defined, I hit the following build error:
-    kernel/trace/bpf_trace.o:(.rodata+0x110): undefined reference to `bpf_p=
-rog_test_run_raw_tp'
+Remove propmt for selecting MLX5_VDPA by the user and modify
+MLX5_VDPA_NET to select MLX5_VDPA. Also modify MLX5_VDPA_NET to depend
+on mlx5_core.
 
-Commit 1b4d60ec162f ("bpf: Enable BPF_PROG_TEST_RUN for raw_tracepoint")
-added test_run support for raw_tracepoint in /kernel/trace/bpf_trace.c.
-But the test_run function bpf_prog_test_run_raw_tp is defined in
-net/bpf/test_run.c, only available with CONFIG_NET=3Dy.
+This fixes an issue where configuration sets 'y' for MLX5_VDPA_NET while
+MLX5_CORE is compiled as a module causing link errors.
 
-Adding a CONFIG_NET guard for
-    .test_run =3D bpf_prog_test_run_raw_tp;
-fixed the above build issue.
-
-Fixes: 1b4d60ec162f ("bpf: Enable BPF_PROG_TEST_RUN for raw_tracepoint")
-Cc: Song Liu <songliubraving@fb.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 device")s
+Signed-off-by: Eli Cohen <elic@nvidia.com>
 ---
- kernel/trace/bpf_trace.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/vdpa/Kconfig | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-Note: I found the above issue when I reviewed the following patch:
-      https://lore.kernel.org/bpf/fcf3f659-027e-517f-086d-deb3ad33d953@fb.c=
-om/T
-
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index a136a6a63a71..a2a4535b6277 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -1780,7 +1780,9 @@ const struct bpf_verifier_ops raw_tracepoint_verifier=
-_ops =3D {
- };
-=20
- const struct bpf_prog_ops raw_tracepoint_prog_ops =3D {
-+#ifdef CONFIG_NET
- 	.test_run =3D bpf_prog_test_run_raw_tp,
-+#endif
- };
-=20
- const struct bpf_verifier_ops tracing_verifier_ops =3D {
---=20
-2.24.1
+diff --git a/drivers/vdpa/Kconfig b/drivers/vdpa/Kconfig
+index a8c7607fdc90..1872dff1d3c6 100644
+--- a/drivers/vdpa/Kconfig
++++ b/drivers/vdpa/Kconfig
+@@ -29,9 +29,7 @@ config IFCVF
+ 	  be called ifcvf.
+ 
+ config MLX5_VDPA
+-	bool "MLX5 VDPA support library for ConnectX devices"
+-	depends on MLX5_CORE
+-	default n
++	bool
+ 	help
+ 	  Support library for Mellanox VDPA drivers. Provides code that is
+ 	  common for all types of VDPA drivers. The following drivers are planned:
+@@ -39,7 +37,8 @@ config MLX5_VDPA
+ 
+ config MLX5_VDPA_NET
+ 	tristate "vDPA driver for ConnectX devices"
+-	depends on MLX5_VDPA
++	select MLX5_VDPA
++	depends on MLX5_CORE
+ 	default n
+ 	help
+ 	  VDPA network driver for ConnectX6 and newer. Provides offloading
+-- 
+2.28.0
 
