@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48654285C9B
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 12:12:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1F4B285C9C
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 12:12:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727946AbgJGKMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 06:12:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48438 "EHLO
+        id S1727956AbgJGKMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 06:12:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727297AbgJGKMs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 06:12:48 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F067BC061755
-        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 03:12:47 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id g29so1093347pgl.2
-        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 03:12:47 -0700 (PDT)
+        with ESMTP id S1727297AbgJGKMy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 06:12:54 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A82D4C061755
+        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 03:12:54 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id l126so1069674pfd.5
+        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 03:12:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=X7q08WJPRaUgkdBI6ZeZlBDNumfcd2QVr0PmpHExqCk=;
-        b=BFA9QnF6jpkTX99GpicyN62oLT0R2hhveyUCW3leYcQjAX13zQTTNOgwG0shvYfDHk
-         J1wWdBocVjyDqJPDWq6192owzS2VUEN2zunPPLL24cMzRGGFDSGCy3j/q10UkqU4tEE8
-         AAHSTTLE+MfDh8RYMC+yKrqWm/sBc75uncSDgmccrrrrktl9uM+2aI4S8ve4F5jFlioJ
-         lwyThCfRiPEdtHCGBEmDQZKSio3L2qiYcDyHRO0gEVMxrbm7v+Z9R/Y02TnZTU0wVwu1
-         F//w+MEBE7mTGtBtyTM93/g9qzylFNJco+BpMMxSQsWc0VvuRQuEspUDCubl4zVWYTKc
-         dnoQ==
+        bh=Z5OunPFStjs4HMvaYm8EjgeNUx/EpSL1WD0hDTrNWbI=;
+        b=Ekk7lGunnVJ8afXxNlM8fL1IENf2Lxco3hR/XucFGqzRNzq7h7qEtefWqIT1p++Sy/
+         jZdc1o4pK2NfnDBR8BMiD70Gbtn5fuR3ud2FrO3bwnGhQ/pIkp+z5QA6IBcQFJ2TkBCU
+         tRxg0TZA3vqp0AOT4AVsFyrVelS1Ex/bxPAXb7/gXm8e1MpDvQbBWjIRP6WKCp/vbjzv
+         9C8KxvYMkgPxihNkHPI7qYCftMqHKvhVZbT0U+i4KXZCsHSXEmkiwT6Ffy3FCHpv0b4U
+         JEF91iFeaCVQB0qKIa3wLn9i+B4wW5hdF/jQPouv5YXTEwJbmBW27nNjxm7HszG91Wl6
+         nm9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=X7q08WJPRaUgkdBI6ZeZlBDNumfcd2QVr0PmpHExqCk=;
-        b=rAK+267a1Rmaj/TnohEkv0i8QzwhdtOXRkthc/LvjULng/pw3SAoX5471ezyG+tGbL
-         p6oSPB20Xj1+LOqH/ElRpnDMfwB6gwBew96rKtp6em+X2f1rYrjSJOw+oQ1sgZUEtkkm
-         VT07Dvn+YYcUYUDRUV0cHhU1sH8F7wdXswibZI4QhWRf573L+ZnT1hG2eC6W/EmCNPdN
-         0YDBPR91GAxcejbmuLgqL2HSCUd5c3SJpP1znUxesAtjwejpFKII5TzWdPQawt1KM+hv
-         VGrD7UXiLXWW9npEwlPjOba1ezdh8dk61C4DyDgliit2K/UuHOYaUXW7wYBNfzH9TJqu
-         wxFA==
-X-Gm-Message-State: AOAM530/GmZO3E7tCjyNs37PX9IbC+m4ntjhCNtBJoXks1+tMi0UjLie
-        9TGFcKF2IVR0Q5QCfgxIUpo=
-X-Google-Smtp-Source: ABdhPJxDdJoZigi7hmNcKWivfWP6qRPYwJf+fz8i2s84XVIHy0iglls19j9ioXFEERxQXiGuk1+GmQ==
-X-Received: by 2002:a62:1a95:0:b029:151:d47e:119b with SMTP id a143-20020a621a950000b0290151d47e119bmr2371754pfa.46.1602065567562;
-        Wed, 07 Oct 2020 03:12:47 -0700 (PDT)
+        bh=Z5OunPFStjs4HMvaYm8EjgeNUx/EpSL1WD0hDTrNWbI=;
+        b=mV6sqF0f2mpNgnHatN64PU/uheyTvcz1yi82EOlad1HjFR66Tpr1U3F/DiqNn1swTF
+         xedSgDVtNwd8gzdz+Th7kbq4qOQoYwcJlNMh7c61eksUalB5SjSXov5XbPZR36jkzfdm
+         ADQULB6EqNWWBswkOkjpj9I6hPuGackK9BXnczYY1TNpV0HAbBAP3j8Hw4Mtm1VPkT/i
+         2dYaNEm2acSs5L9CcfbY9PPa4PPWCqDeO/+Kko8JBUMEIWACw1zeicEGB3Im5N6NSPip
+         1XycXGP5qKrRP6REEDiHogwHYlhEDT05sL2hErz9p+/JXfjKkL6G6DH4YwFdQG/M9QXE
+         AQ5Q==
+X-Gm-Message-State: AOAM531BLdJ92KDBva6BhXcYOQpmAEfC5i4EUuq80/v92d5ftYO7Yd77
+        isp4YpNrhEiVlULi/wevuJE=
+X-Google-Smtp-Source: ABdhPJy7vkzDkf1PP/n/7I1jJdS9EzLrE0uIK7vW/UQhDSaOoEAkqo+ga0zJWiNl6XhuYB2AThNGsw==
+X-Received: by 2002:a62:6044:0:b029:151:1a04:895 with SMTP id u65-20020a6260440000b02901511a040895mr2337057pfb.34.1602065574264;
+        Wed, 07 Oct 2020 03:12:54 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.204.22])
-        by smtp.gmail.com with ESMTPSA id q24sm1105291pgb.12.2020.10.07.03.12.41
+        by smtp.gmail.com with ESMTPSA id q24sm1105291pgb.12.2020.10.07.03.12.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Oct 2020 03:12:47 -0700 (PDT)
+        Wed, 07 Oct 2020 03:12:53 -0700 (PDT)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     davem@davemloft.net
 Cc:     gerrit@erg.abdn.ac.uk, kuba@kernel.org, edumazet@google.com,
@@ -57,9 +57,9 @@ Cc:     gerrit@erg.abdn.ac.uk, kuba@kernel.org, edumazet@google.com,
         steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
         netdev@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>,
         Romain Perier <romain.perier@gmail.com>
-Subject: [net-next v2 2/8] net: ipv4: convert tasklets to use new tasklet_setup() API
-Date:   Wed,  7 Oct 2020 15:42:13 +0530
-Message-Id: <20201007101219.356499-3-allen.lkml@gmail.com>
+Subject: [net-next v2 3/8] net: mac80211: convert tasklets to use new tasklet_setup() API
+Date:   Wed,  7 Oct 2020 15:42:14 +0530
+Message-Id: <20201007101219.356499-4-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201007101219.356499-1-allen.lkml@gmail.com>
 References: <20201007101219.356499-1-allen.lkml@gmail.com>
@@ -79,36 +79,104 @@ and from_tasklet() to pass the tasklet pointer explicitly.
 Signed-off-by: Romain Perier <romain.perier@gmail.com>
 Signed-off-by: Allen Pais <apais@linux.microsoft.com>
 ---
- net/ipv4/tcp_output.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ net/mac80211/ieee80211_i.h |  4 ++--
+ net/mac80211/main.c        | 14 +++++---------
+ net/mac80211/tx.c          |  5 +++--
+ net/mac80211/util.c        |  5 +++--
+ 4 files changed, 13 insertions(+), 15 deletions(-)
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index bf48cd73e..6e998d428 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -1038,9 +1038,9 @@ static void tcp_tsq_handler(struct sock *sk)
-  * transferring tsq->head because tcp_wfree() might
-  * interrupt us (non NAPI drivers)
-  */
--static void tcp_tasklet_func(unsigned long data)
-+static void tcp_tasklet_func(struct tasklet_struct *t)
- {
--	struct tsq_tasklet *tsq = (struct tsq_tasklet *)data;
-+	struct tsq_tasklet *tsq = from_tasklet(tsq,  t, tasklet);
- 	LIST_HEAD(list);
- 	unsigned long flags;
- 	struct list_head *q, *n;
-@@ -1125,9 +1125,7 @@ void __init tcp_tasklet_init(void)
- 		struct tsq_tasklet *tsq = &per_cpu(tsq_tasklet, i);
+diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
+index c3e357857..6d083a146 100644
+--- a/net/mac80211/ieee80211_i.h
++++ b/net/mac80211/ieee80211_i.h
+@@ -1795,7 +1795,7 @@ static inline bool ieee80211_sdata_running(struct ieee80211_sub_if_data *sdata)
  
- 		INIT_LIST_HEAD(&tsq->head);
--		tasklet_init(&tsq->tasklet,
--			     tcp_tasklet_func,
--			     (unsigned long)tsq);
-+		tasklet_setup(&tsq->tasklet, tcp_tasklet_func);
- 	}
+ /* tx handling */
+ void ieee80211_clear_tx_pending(struct ieee80211_local *local);
+-void ieee80211_tx_pending(unsigned long data);
++void ieee80211_tx_pending(struct tasklet_struct *t);
+ netdev_tx_t ieee80211_monitor_start_xmit(struct sk_buff *skb,
+ 					 struct net_device *dev);
+ netdev_tx_t ieee80211_subif_start_xmit(struct sk_buff *skb,
+@@ -2143,7 +2143,7 @@ void ieee80211_txq_remove_vlan(struct ieee80211_local *local,
+ 			       struct ieee80211_sub_if_data *sdata);
+ void ieee80211_fill_txq_stats(struct cfg80211_txq_stats *txqstats,
+ 			      struct txq_info *txqi);
+-void ieee80211_wake_txqs(unsigned long data);
++void ieee80211_wake_txqs(struct tasklet_struct *t);
+ void ieee80211_send_auth(struct ieee80211_sub_if_data *sdata,
+ 			 u16 transaction, u16 auth_alg, u16 status,
+ 			 const u8 *extra, size_t extra_len, const u8 *bssid,
+diff --git a/net/mac80211/main.c b/net/mac80211/main.c
+index 523380aed..48ab05186 100644
+--- a/net/mac80211/main.c
++++ b/net/mac80211/main.c
+@@ -220,9 +220,9 @@ u32 ieee80211_reset_erp_info(struct ieee80211_sub_if_data *sdata)
+ 	       BSS_CHANGED_ERP_SLOT;
  }
  
+-static void ieee80211_tasklet_handler(unsigned long data)
++static void ieee80211_tasklet_handler(struct tasklet_struct *t)
+ {
+-	struct ieee80211_local *local = (struct ieee80211_local *) data;
++	struct ieee80211_local *local = from_tasklet(local, t, tasklet);
+ 	struct sk_buff *skb;
+ 
+ 	while ((skb = skb_dequeue(&local->skb_queue)) ||
+@@ -733,16 +733,12 @@ struct ieee80211_hw *ieee80211_alloc_hw_nm(size_t priv_data_len,
+ 		skb_queue_head_init(&local->pending[i]);
+ 		atomic_set(&local->agg_queue_stop[i], 0);
+ 	}
+-	tasklet_init(&local->tx_pending_tasklet, ieee80211_tx_pending,
+-		     (unsigned long)local);
++	tasklet_setup(&local->tx_pending_tasklet, ieee80211_tx_pending);
+ 
+ 	if (ops->wake_tx_queue)
+-		tasklet_init(&local->wake_txqs_tasklet, ieee80211_wake_txqs,
+-			     (unsigned long)local);
++		tasklet_setup(&local->wake_txqs_tasklet, ieee80211_wake_txqs);
+ 
+-	tasklet_init(&local->tasklet,
+-		     ieee80211_tasklet_handler,
+-		     (unsigned long) local);
++	tasklet_setup(&local->tasklet, ieee80211_tasklet_handler);
+ 
+ 	skb_queue_head_init(&local->skb_queue);
+ 	skb_queue_head_init(&local->skb_queue_unreliable);
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index 8ba10a48d..a50c0edb1 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -4406,9 +4406,10 @@ static bool ieee80211_tx_pending_skb(struct ieee80211_local *local,
+ /*
+  * Transmit all pending packets. Called from tasklet.
+  */
+-void ieee80211_tx_pending(unsigned long data)
++void ieee80211_tx_pending(struct tasklet_struct *t)
+ {
+-	struct ieee80211_local *local = (struct ieee80211_local *)data;
++	struct ieee80211_local *local = from_tasklet(local, t,
++						     tx_pending_tasklet);
+ 	unsigned long flags;
+ 	int i;
+ 	bool txok;
+diff --git a/net/mac80211/util.c b/net/mac80211/util.c
+index 493420604..a25e47750 100644
+--- a/net/mac80211/util.c
++++ b/net/mac80211/util.c
+@@ -386,9 +386,10 @@ _ieee80211_wake_txqs(struct ieee80211_local *local, unsigned long *flags)
+ 	rcu_read_unlock();
+ }
+ 
+-void ieee80211_wake_txqs(unsigned long data)
++void ieee80211_wake_txqs(struct tasklet_struct *t)
+ {
+-	struct ieee80211_local *local = (struct ieee80211_local *)data;
++	struct ieee80211_local *local = from_tasklet(local, t,
++						     wake_txqs_tasklet);
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&local->queue_stop_reason_lock, flags);
 -- 
 2.25.1
 
