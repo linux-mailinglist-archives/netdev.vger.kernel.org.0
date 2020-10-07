@@ -2,389 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CC4E286204
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 17:24:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D25F528620A
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 17:25:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728207AbgJGPYY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 11:24:24 -0400
-Received: from mail-dm6nam12on2040.outbound.protection.outlook.com ([40.107.243.40]:42049
-        "EHLO NAM12-DM6-obe.outbound.protection.outlook.com"
+        id S1727494AbgJGPZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 11:25:19 -0400
+Received: from mail-am6eur05on2103.outbound.protection.outlook.com ([40.107.22.103]:47836
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726100AbgJGPYX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Oct 2020 11:24:23 -0400
+        id S1726100AbgJGPZS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Oct 2020 11:25:18 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=a72I6WY55tsoBtD7KDcoFT5dSphUeZTM/NxLVNSQnaHp1ULfkRX7ogS9hu3F3tyRofwU5WjRliGNB9uLPwEuzQo9g2P7JnBgJPxY/CFHY4rCtqgFrMGiKY52XT8A2qM1L85ILfxw7n8WJpUi0npvwJ3+SHLm+ad0tFF5dSQuk9eNlg9euxgYtxhAIYneaQbe2k6VpgqeoN6FLsfSnYNvy7By/OJQAbJ+JrHNidq2kUUKq5VggrTk6SEIPpIJx5UD/nWmwGpg0I0uHSZimnmWs9c3vvrWXS55Q31Ar7yM2plPY37LHQRw5Fj4I3MOvLcQ9FcEZToOJuuDS3kD6qGVAw==
+ b=gCSpWhShHbh8tr/uVTeAbs2CCd43fv6cEa2vJHdCaZJqKBKyG1hQ9dUV58SfbldYn7HGFq9qWkzujPYN4wTyBHQtu7373snP41A78+LikAzbruR1y6dHTbx8sCEsW7PB+5k/XM4BpuHDnLnDHfU/jOnIFGtX/wpH1T4x00t9EPgd5JyBVmERHwlB8srOP4OqsBvYEh8CxEZhuNSC3sfHp0fd2tYRS/AaVayt39lmVGhwSdYG4brCeRrQ6DAgfap7NM/G8gVNwxj9sdSYC6RWZmI3PZhR8g84JKG4rZHx/5o4YtNsRtdIjFkFyleBSinAuPn4sem0vyq6+O8j2U3EOA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zMdkDw6WGKvuQR/64AXppGlMZ9L6qEooQ89iwyuWPgc=;
- b=lhMS50E78KY6Q15+gJIBSiGggTf50gDzUqR6vHsxJCQ1E8NvpRBDjQju1bWztxtmquMuMnrqtj24tTRpCiDD0U9uwpU5NZ+q3k0VDUrKbQuswUaL73LUmjzsaVlk+KFNGJsAfO9CsOsAN1TELPwyqYPnu0X+v1blfp3lIFTzSw15US1893RFcDaN4/CLhgEJrqBXqTGfaQf7kHOp3UPHsjNEH7i0FL0ys0Z6ubeN9OqSYS/dm89zwasiNsAodF0ellw78Hvq+chg/j8CLj5jT5E7JDEFhKDTAi+aLdGh+2Ziy/GMdqQPXmHBMg3AVYYDgcqC5ahPRaoV4V+nk/obzQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=none action=none header.from=amd.com; dkim=none (message not signed);
- arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
+ bh=EcfG989Rx8eykg23mANVBlEzi26Vbf8qZLzrdjeArJI=;
+ b=dBLkhu3yiVXZyIfNrK9KY+rUn1TGcta+L4MkLTTDYxH5JpzsRCrD5IWp7Pzz9D5yvj/HxIeeGBKQLCKC8IvzMuTBd4I25F5ExDC27+FLzbG9aTTOaPdWP4kYD8cdJvD4Ak7/owoDUucA7WcA1b1douuuFHwSbdYHIn87I/BBdA+hItzKLvj8iw5rzP4Lw4KrL/fYMYgmpRcSZsMwx/GYVuxycP+BB3hjwRKEaHHIjEuCANtkQesWLov3iwKmLR2ZHgLFXzfbt0OTEFyoyeeNE16iyvndVAwAM+Z2cTEh1CqGHN5bd5hE4PQ0MYRKQhzCdc1T8moXNZ9bfUlDQwDlBg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=voleatech.de; dmarc=pass action=none header.from=voleatech.de;
+ dkim=pass header.d=voleatech.de; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=voleatech.de;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zMdkDw6WGKvuQR/64AXppGlMZ9L6qEooQ89iwyuWPgc=;
- b=f2PrxOfJnT6B9/xG15CxrA/b71smdvHPxCXYOQDHtfCmFmmKyki0Zr3TxgWHGxbUZm3mHB0t3FclH/G54xWzBjEHTeSvPbCrlVE+lbiOWO/+L7n0zcOU+vqURIWzAJg5jZ3y34uHHL8j4eX8DudQhRIdo7AvWFGm//RI1z1OwW4=
-Received: from BN7PR06CA0048.namprd06.prod.outlook.com (2603:10b6:408:34::25)
- by MW3PR12MB4428.namprd12.prod.outlook.com (2603:10b6:303:57::15) with
+ bh=EcfG989Rx8eykg23mANVBlEzi26Vbf8qZLzrdjeArJI=;
+ b=XB4BbFOTwjPu2rA7t8QK+A6kGhNxdMAz4g+20TPRSCVpEKT7Ac9Rk1qmKepQecdSlGENNzOuJkkMOMSkNo36WnwgIfUeAkQm612sKbgNOog/3n2bJX+EeY+Y0002I2drGzCjaBtGuv4zufUcHCV0IQa0/S/bTyAslE//fVXeEZM=
+Authentication-Results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=voleatech.de;
+Received: from AM8PR05MB7251.eurprd05.prod.outlook.com (2603:10a6:20b:1d4::23)
+ by AM0PR05MB6082.eurprd05.prod.outlook.com (2603:10a6:208:125::24) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.36; Wed, 7 Oct
- 2020 15:24:16 +0000
-Received: from BN8NAM11FT023.eop-nam11.prod.protection.outlook.com
- (2603:10b6:408:34:cafe::64) by BN7PR06CA0048.outlook.office365.com
- (2603:10b6:408:34::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.21 via Frontend
- Transport; Wed, 7 Oct 2020 15:24:16 +0000
-X-MS-Exchange-Authentication-Results: spf=none (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=amd.com;
-Received-SPF: None (protection.outlook.com: amd.com does not designate
- permitted sender hosts)
-Received: from SATLEXMB02.amd.com (165.204.84.17) by
- BN8NAM11FT023.mail.protection.outlook.com (10.13.177.103) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.3455.23 via Frontend Transport; Wed, 7 Oct 2020 15:24:16 +0000
-Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB02.amd.com
- (10.181.40.143) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Wed, 7 Oct 2020
- 10:24:15 -0500
-Received: from SATLEXMB02.amd.com (10.181.40.143) by SATLEXMB03.amd.com
- (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Wed, 7 Oct 2020
- 10:24:15 -0500
-Received: from yuho-dev.amd.com (10.180.168.240) by SATLEXMB02.amd.com
- (10.181.40.143) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Wed, 7 Oct 2020 10:24:15 -0500
-From:   Kenny Ho <Kenny.Ho@amd.com>
-To:     <linux-fsdevel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <cgroups@vger.kernel.org>,
-        <alexander.deucher@amd.com>, <amd-gfx@lists.freedesktop.org>,
-        <y2kenny@gmail.com>
-CC:     Kenny Ho <Kenny.Ho@amd.com>
-Subject: [RFC] Add BPF_PROG_TYPE_CGROUP_IOCTL
-Date:   Wed, 7 Oct 2020 11:23:55 -0400
-Message-ID: <20201007152355.2446741-1-Kenny.Ho@amd.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.21; Wed, 7 Oct
+ 2020 15:25:15 +0000
+Received: from AM8PR05MB7251.eurprd05.prod.outlook.com
+ ([fe80::f132:2cc:34f2:5e4]) by AM8PR05MB7251.eurprd05.prod.outlook.com
+ ([fe80::f132:2cc:34f2:5e4%7]) with mapi id 15.20.3433.045; Wed, 7 Oct 2020
+ 15:25:15 +0000
+From:   sven.auhagen@voleatech.de
+To:     anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com, sandeep.penigalapati@intel.com,
+        brouer@redhat.com
+Subject: [PATCH 0/7] igb: xdp patches followup
+Date:   Wed,  7 Oct 2020 17:24:59 +0200
+Message-Id: <20201007152506.66217-1-sven.auhagen@voleatech.de>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
+X-Originating-IP: [109.193.235.168]
+X-ClientProxiedBy: AM0PR05CA0077.eurprd05.prod.outlook.com
+ (2603:10a6:208:136::17) To AM8PR05MB7251.eurprd05.prod.outlook.com
+ (2603:10a6:20b:1d4::23)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from svensmacbookair.sven.lan (109.193.235.168) by AM0PR05CA0077.eurprd05.prod.outlook.com (2603:10a6:208:136::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.21 via Frontend Transport; Wed, 7 Oct 2020 15:25:14 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d2d70dde-348a-4899-4293-08d86ad50d93
-X-MS-TrafficTypeDiagnostic: MW3PR12MB4428:
-X-Microsoft-Antispam-PRVS: <MW3PR12MB4428E83C19966FAE8B7E4A4C830A0@MW3PR12MB4428.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Office365-Filtering-Correlation-Id: 161129ce-461e-4c50-3b7e-08d86ad530a0
+X-MS-TrafficTypeDiagnostic: AM0PR05MB6082:
+X-Microsoft-Antispam-PRVS: <AM0PR05MB608256103A6B79D69E5BD600EF0A0@AM0PR05MB6082.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: E28xFklBCKzHf8bishkOhzE0jUJTiCVTcu2/5kpuNo/UB1xJ4xVITiOQQPkxRVUzYHRemUdi3UlbACTNR9ntv8xwM1fR42+ZWfdtS1CyotQEMyOEzFNBpypXK8zti8QFgwqGVeG4qJtFlA77VWtcfRHTEvtMNv3FDzl74awIdztPrho3Hh9dJ1mXlidYtbIM7Bfvg2igXkgHKilZXNxrLg0Q8opPi/Qie9w7dW621YBDZIubbaI4DBYZMRLjwBhrEr03HASAK9g0lWir3rxiSMve6VTyfsGBpzAqSnXXwxc/MjEmkKHJax+qSk3zJaHlvmkBcDc0XzQts3k3LZADyai6LK+sj44DC2Eusv/gafe6ot7FihiI0vWHgLJHYfuhUvAEgGuSo+2D+CfGO/w7zI32KU95TM0h/G+4SvMyy8A=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SATLEXMB02.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(4636009)(396003)(39850400004)(346002)(136003)(376002)(46966005)(4326008)(83380400001)(1076003)(6666004)(110136005)(316002)(82740400003)(81166007)(478600001)(7696005)(8936002)(47076004)(2906002)(36756003)(5660300002)(2616005)(356005)(336012)(8676002)(26005)(426003)(186003)(82310400003)(70206006)(70586007)(86362001)(2101003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2020 15:24:16.0828
+X-Microsoft-Antispam-Message-Info: e/+xVf4I+crFV2s9wYMIe/PaQ4t3IXo9Jmjvsp66sUtHa1Vt5wIHz9QEDNtt7AE3HsCml+V1zW7pMF0kxdarcC58t6IdZus2CNm/TzWAwBFDVDGoqfd5cCF/Z00CQKVclEDFQfF5SSayrlMo+E0dsHeeQpGwX75ytWKv62UHo+vOBa00W2xJlOfPwU+5WUxXLEcOGw9R+FwRFfQf/kxWlqyW7TymNnfah52Q9y4hQIB+dJcnxAwxCuIV+eAcuf3d2lyIZn7sCB7JpAWoMXz+JQOWsJAVHiDE2D+oukLSyoeiGHQwZ/OXeonYNelez0oURkikfSEMrUreQUK7Eivyhw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR05MB7251.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(39830400003)(136003)(366004)(346002)(376002)(186003)(66476007)(16526019)(2906002)(26005)(6486002)(5660300002)(9686003)(66946007)(6512007)(6506007)(83380400001)(4744005)(6666004)(52116002)(66556008)(8936002)(36756003)(316002)(86362001)(8676002)(956004)(2616005)(1076003)(478600001)(4326008);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: ZGYo1QVm7/5tD2Giu9ry2a8K+hNX+PysToGci1VT0LyQDG6COqonoioV612+3ZQEiEWtVqeatbRRGWO+5acmctEOFSM8PYwnlyi0mb2Npb6Pe1Cpyvz5qQHFkLednWdar3TZNxvQ+/L1HH3G/6vY6hhUfaOpDvbGPi+qj55cN2M5iKOC8jLNZyAmDEpV2/AzSZGy0A+pF25ma7CU5O3MgGge4LSVvStZxVnTotTT4G5BTQ+eotnqzIxghnopV7kkBxt///5/e85i/EqKOtSDX+fGFpxJzU3z+q1ZWNB10gmgajBhxj8jUMP1qf/AWv9X2SCkP8Sa5qONYp90XIT4E0zC4q5c28jRhTgkoL68Z/N6swUcqvFyHKlDqFs94/PCQQiAeN0WBA6KpWMaKpimsqScaZz6C1V1JVLLc3qTpTzkvht1cqUt1axdg5IlAQRY99PcWwEz3ZkntfmrxcqoVnBl2/h5ScS+FNZ2SE1Wozt0P0WGFTaxJOz0HkEjJXOeDtfHNexV2dx0w+PKNoD2Kd5g83Q2TR1W+3sfwe1QDu7xyBKGxpHTXrM8u9Lt/XIPy8dxhg5Epm+4DG59ssRNPz4iQJvcu5ao0b9OfnHb2A9rEdLEwlgiOZ0Lmh3K6bj+CkWEtY9TAcUSjE1L5TmdXA==
+X-OriginatorOrg: voleatech.de
+X-MS-Exchange-CrossTenant-Network-Message-Id: 161129ce-461e-4c50-3b7e-08d86ad530a0
+X-MS-Exchange-CrossTenant-AuthSource: AM8PR05MB7251.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2020 15:25:15.1262
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d2d70dde-348a-4899-4293-08d86ad50d93
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB02.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT023.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR12MB4428
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: b82a99f6-7981-4a72-9534-4d35298f847b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KctNmdu5Fh9zYXRCeJXs9l58h2Ej38eEZMXZhQJcL5jYOBzDOE2SeMePxg4p2sC6F+pe6SH3z4OL7fb5fVoqLZFDGvE8SNhJOSykEEsTL5M=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6082
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a skeleton implementation to invite comments and generate
-discussion around the idea of introducing a bpf-cgroup program type to
-control ioctl access.  This is modelled after
-BPF_PROG_TYPE_CGROUP_DEVICE.  The premise is to allow system admins to
-write bpf programs to block some ioctl access, potentially in conjunction
-with data collected by other bpf programs stored in some bpf maps and
-with bpf_spin_lock.
+From: Sven Auhagen <sven.auhagen@voleatech.de>
 
-For example, a bpf program has been accumulating resource usaging
-statistic and a second bpf program of BPF_PROG_TYPE_CGROUP_IOCTL would
-block access to previously mentioned resource via ioctl when the stats
-stored in a bpf map reaches certain threshold.
+This patch series addresses some of the comments that came back
+after the igb XDP patch was accepted.
+Most of it is code cleanup.
+The last patch contains a fix for a tx queue timeout
+that can occur when using xdp.
 
-Like BPF_PROG_TYPE_CGROUP_DEVICE, the default is permissive (i.e.,
-ioctls are not blocked if no bpf program is present for the cgroup.) to
-maintain current interface behaviour when this functionality is unused.
+Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
 
-Performance impact to ioctl calls is minimal as bpf's in-kernel verifier
-ensure attached bpf programs cannot crash and always terminate quickly.
+Sven Auhagen (7):
+  igb: XDP xmit back fix error code
+  igb: take vlan double header into account
+  igb: XDP extack message on error
+  igb: skb add metasize for xdp
+  igb: use igb_rx_buffer_flip
+  igb: use xdp_do_flush
+  igb: avoid transmit queue timeout in xdp path
 
-TODOs:
-- correct usage of the verifier
-- toolings
-- samples
-- device driver may provide helper functions that take
-bpf_cgroup_ioctl_ctx and return something more useful for specific
-device
+ drivers/net/ethernet/intel/igb/igb.h      |   5 +
+ drivers/net/ethernet/intel/igb/igb_main.c | 119 ++++++++++------------
+ 2 files changed, 61 insertions(+), 63 deletions(-)
 
-Signed-off-by: Kenny Ho <Kenny.Ho@amd.com>
----
- fs/ioctl.c                 |  5 +++
- include/linux/bpf-cgroup.h | 14 ++++++++
- include/linux/bpf_types.h  |  2 ++
- include/uapi/linux/bpf.h   |  8 +++++
- kernel/bpf/cgroup.c        | 66 ++++++++++++++++++++++++++++++++++++++
- kernel/bpf/syscall.c       |  7 ++++
- kernel/bpf/verifier.c      |  1 +
- 7 files changed, 103 insertions(+)
-
-diff --git a/fs/ioctl.c b/fs/ioctl.c
-index 4e6cc0a7d69c..a3925486d417 100644
---- a/fs/ioctl.c
-+++ b/fs/ioctl.c
-@@ -19,6 +19,7 @@
- #include <linux/falloc.h>
- #include <linux/sched/signal.h>
- #include <linux/fiemap.h>
-+#include <linux/cgroup.h>
- 
- #include "internal.h"
- 
-@@ -45,6 +46,10 @@ long vfs_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
- 	if (!filp->f_op->unlocked_ioctl)
- 		goto out;
- 
-+	error = BPF_CGROUP_RUN_PROG_IOCTL(filp, cmd, arg);
-+	if (error)
-+		goto out;
-+
- 	error = filp->f_op->unlocked_ioctl(filp, cmd, arg);
- 	if (error == -ENOIOCTLCMD)
- 		error = -ENOTTY;
-diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
-index 64f367044e25..a5f0b0a8f82b 100644
---- a/include/linux/bpf-cgroup.h
-+++ b/include/linux/bpf-cgroup.h
-@@ -134,6 +134,9 @@ int __cgroup_bpf_run_filter_sock_ops(struct sock *sk,
- int __cgroup_bpf_check_dev_permission(short dev_type, u32 major, u32 minor,
- 				      short access, enum bpf_attach_type type);
- 
-+int __cgroup_bpf_check_ioctl_permission(struct file *filp, unsigned int cmd, unsigned long arg,
-+				        enum bpf_attach_type type);
-+
- int __cgroup_bpf_run_filter_sysctl(struct ctl_table_header *head,
- 				   struct ctl_table *table, int write,
- 				   void **buf, size_t *pcount, loff_t *ppos,
-@@ -346,6 +349,16 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- 	__ret;								       \
- })
- 
-+#define BPF_CGROUP_RUN_PROG_IOCTL(filp, cmd, arg)       	              \
-+({									      \
-+	int __ret = 0;							      \
-+	if (cgroup_bpf_enabled)						      \
-+		__ret = __cgroup_bpf_check_ioctl_permission(filp, cmd, arg,   \
-+							    BPF_CGROUP_IOCTL);\
-+									      \
-+	__ret;								      \
-+})
-+
- int cgroup_bpf_prog_attach(const union bpf_attr *attr,
- 			   enum bpf_prog_type ptype, struct bpf_prog *prog);
- int cgroup_bpf_prog_detach(const union bpf_attr *attr,
-@@ -429,6 +442,7 @@ static inline int bpf_percpu_cgroup_storage_update(struct bpf_map *map,
- 				       optlen, max_optlen, retval) ({ retval; })
- #define BPF_CGROUP_RUN_PROG_SETSOCKOPT(sock, level, optname, optval, optlen, \
- 				       kernel_optval) ({ 0; })
-+#define BPF_CGROUP_RUN_PROG_IOCTL(type,major,minor,access) ({ 0; })
- 
- #define for_each_cgroup_storage_type(stype) for (; false; )
- 
-diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
-index a52a5688418e..3055e7e4918c 100644
---- a/include/linux/bpf_types.h
-+++ b/include/linux/bpf_types.h
-@@ -56,6 +56,8 @@ BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SYSCTL, cg_sysctl,
- 	      struct bpf_sysctl, struct bpf_sysctl_kern)
- BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SOCKOPT, cg_sockopt,
- 	      struct bpf_sockopt, struct bpf_sockopt_kern)
-+BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_IOCTL, cg_ioctl,
-+	      struct bpf_cgroup_ioctl_ctx, struct bpf_cgroup_ioctl_ctx)
- #endif
- #ifdef CONFIG_BPF_LIRC_MODE2
- BPF_PROG_TYPE(BPF_PROG_TYPE_LIRC_MODE2, lirc_mode2,
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index b6238b2209b7..6a908e13d3a3 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -197,6 +197,7 @@ enum bpf_prog_type {
- 	BPF_PROG_TYPE_EXT,
- 	BPF_PROG_TYPE_LSM,
- 	BPF_PROG_TYPE_SK_LOOKUP,
-+	BPF_PROG_TYPE_CGROUP_IOCTL,
- };
- 
- enum bpf_attach_type {
-@@ -238,6 +239,7 @@ enum bpf_attach_type {
- 	BPF_XDP_CPUMAP,
- 	BPF_SK_LOOKUP,
- 	BPF_XDP,
-+	BPF_CGROUP_IOCTL,
- 	__MAX_BPF_ATTACH_TYPE
- };
- 
-@@ -4276,6 +4278,12 @@ struct bpf_cgroup_dev_ctx {
- 	__u32 minor;
- };
- 
-+struct bpf_cgroup_ioctl_ctx {
-+	__u64 filp;
-+	__u32 cmd;
-+	__u32 arg;
-+};
-+
- struct bpf_raw_tracepoint_args {
- 	__u64 args[0];
- };
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index 83ff127ef7ae..0958bae3b0b7 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -1203,6 +1203,72 @@ const struct bpf_verifier_ops cg_dev_verifier_ops = {
- 	.is_valid_access	= cgroup_dev_is_valid_access,
- };
- 
-+int __cgroup_bpf_check_ioctl_permission(struct file *filp, unsigned int cmd, unsigned long arg,
-+				      enum bpf_attach_type type)
-+{
-+	struct cgroup *cgrp;
-+	struct bpf_cgroup_ioctl_ctx ctx = {
-+		.filp = filp,
-+		.cmd = cmd,
-+		.arg = arg,
-+	};
-+	int allow = 1;
-+
-+	rcu_read_lock();
-+	cgrp = task_dfl_cgroup(current);
-+	allow = BPF_PROG_RUN_ARRAY(cgrp->bpf.effective[type], &ctx,
-+				   BPF_PROG_RUN);
-+	rcu_read_unlock();
-+
-+	return !allow;
-+}
-+
-+static const struct bpf_func_proto *
-+cgroup_ioctl_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
-+{
-+	return cgroup_base_func_proto(func_id, prog);
-+}
-+
-+static bool cgroup_ioctl_is_valid_access(int off, int size,
-+				       enum bpf_access_type type,
-+				       const struct bpf_prog *prog,
-+				       struct bpf_insn_access_aux *info)
-+{
-+	const int size_default = sizeof(__u32);
-+
-+	if (type == BPF_WRITE)
-+		return false;
-+
-+	if (off < 0 || off + size > sizeof(struct bpf_cgroup_ioctl_ctx))
-+		return false;
-+	/* The verifier guarantees that size > 0. */
-+	if (off % size != 0)
-+		return false;
-+
-+	switch (off) {
-+	case bpf_ctx_range(struct bpf_cgroup_ioctl_ctx, filp):
-+		bpf_ctx_record_field_size(info, size_default);
-+		if (!bpf_ctx_narrow_access_ok(off, size, size_default))
-+			return false;
-+		break;
-+	case bpf_ctx_range(struct bpf_cgroup_ioctl_ctx, cmd):
-+	case bpf_ctx_range(struct bpf_cgroup_ioctl_ctx, arg):
-+	default:
-+		if (size != size_default)
-+			return false;
-+	}
-+
-+	return true;
-+}
-+
-+const struct bpf_prog_ops cg_ioctl_prog_ops = {
-+};
-+
-+const struct bpf_verifier_ops cg_ioctl_verifier_ops = {
-+	.get_func_proto		= cgroup_ioctl_func_proto,
-+	.is_valid_access	= cgroup_ioctl_is_valid_access,
-+};
-+
- /**
-  * __cgroup_bpf_run_filter_sysctl - Run a program on sysctl
-  *
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 86299a292214..6984a62c96f4 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -2054,6 +2054,7 @@ static bool is_net_admin_prog_type(enum bpf_prog_type prog_type)
- 	case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
- 	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
- 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
-+	case BPF_PROG_TYPE_CGROUP_IOCTL:
- 	case BPF_PROG_TYPE_SOCK_OPS:
- 	case BPF_PROG_TYPE_EXT: /* extends any prog */
- 		return true;
-@@ -2806,6 +2807,8 @@ attach_type_to_prog_type(enum bpf_attach_type attach_type)
- 		return BPF_PROG_TYPE_SOCK_OPS;
- 	case BPF_CGROUP_DEVICE:
- 		return BPF_PROG_TYPE_CGROUP_DEVICE;
-+	case BPF_CGROUP_IOCTL:
-+		return BPF_PROG_TYPE_CGROUP_IOCTL;
- 	case BPF_SK_MSG_VERDICT:
- 		return BPF_PROG_TYPE_SK_MSG;
- 	case BPF_SK_SKB_STREAM_PARSER:
-@@ -2878,6 +2881,7 @@ static int bpf_prog_attach(const union bpf_attr *attr)
- 	case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
- 	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
- 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
-+	case BPF_PROG_TYPE_CGROUP_IOCTL:
- 	case BPF_PROG_TYPE_SOCK_OPS:
- 		ret = cgroup_bpf_prog_attach(attr, ptype, prog);
- 		break;
-@@ -2915,6 +2919,7 @@ static int bpf_prog_detach(const union bpf_attr *attr)
- 	case BPF_PROG_TYPE_CGROUP_SOCK_ADDR:
- 	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
- 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
-+	case BPF_PROG_TYPE_CGROUP_IOCTL:
- 	case BPF_PROG_TYPE_SOCK_OPS:
- 		return cgroup_bpf_prog_detach(attr, ptype);
- 	default:
-@@ -2958,6 +2963,7 @@ static int bpf_prog_query(const union bpf_attr *attr,
- 	case BPF_CGROUP_SYSCTL:
- 	case BPF_CGROUP_GETSOCKOPT:
- 	case BPF_CGROUP_SETSOCKOPT:
-+	case BPF_CGROUP_IOCTL:
- 		return cgroup_bpf_prog_query(attr, uattr);
- 	case BPF_LIRC_MODE2:
- 		return lirc_prog_query(attr, uattr);
-@@ -3914,6 +3920,7 @@ static int link_create(union bpf_attr *attr)
- 	case BPF_PROG_TYPE_CGROUP_DEVICE:
- 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
- 	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
-+	case BPF_PROG_TYPE_CGROUP_IOCTL:
- 		ret = cgroup_bpf_link_attach(attr, prog);
- 		break;
- 	case BPF_PROG_TYPE_TRACING:
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index ef938f17b944..af68f463e828 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -7419,6 +7419,7 @@ static int check_return_code(struct bpf_verifier_env *env)
- 	case BPF_PROG_TYPE_CGROUP_DEVICE:
- 	case BPF_PROG_TYPE_CGROUP_SYSCTL:
- 	case BPF_PROG_TYPE_CGROUP_SOCKOPT:
-+	case BPF_PROG_TYPE_CGROUP_IOCTL:
- 		break;
- 	case BPF_PROG_TYPE_RAW_TRACEPOINT:
- 		if (!env->prog->aux->attach_btf_id)
 -- 
-2.25.1
+2.20.1
 
