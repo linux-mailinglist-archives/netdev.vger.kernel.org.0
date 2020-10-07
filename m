@@ -2,115 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D368285BF2
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 11:35:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88210285BF3
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 11:36:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727235AbgJGJfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 05:35:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42698 "EHLO
+        id S1727300AbgJGJgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 05:36:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726218AbgJGJfp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 05:35:45 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BA24C061755
-        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 02:35:45 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id d3so1578923wma.4
-        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 02:35:45 -0700 (PDT)
+        with ESMTP id S1726218AbgJGJgf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 05:36:35 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E9BC061755
+        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 02:36:35 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id a23so497619ljp.5
+        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 02:36:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=eJpxoMZMd7eF0KuEyvDDYFrCUUxVRbT72I6NAxy9SQ4=;
-        b=FECIFstkk4KY2rd2tirvGm3ZoLpn6b4zAg87Ik/reauR+VencQJNn0zkS5kHR+Msx+
-         t+JbsIXCRU2iQNxRVNs0b7YpyQz9rjTvQeA6T0GJs+qTIulu89bMyPP8egC0flo/vgU3
-         OqvpH8kMmFETz0wuDppUBy68gpFBw6D2an1Pa3ityeKllGR7CwHulpsGssBsHcHXDZq2
-         5WTA4WUmnpDqtaXYouSNjId4ZEH5pyQysQbl+rOZVvLpFVFQwePR2gCUfNjTftQIoamk
-         XIMovGII2pmk+dm/eLcyAEOcDDYGsQD7WcUfsYwV+5/mT0Kxjguh9yzW4jS6CTZlX3MA
-         Yr0Q==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=at6Slu7caP6r6MuR/pxVFga5/oQNMJKTeLYuZoWjeXw=;
+        b=b8yoq45KLsYCpKlbDPXqg0PKklK/9XPqRT8HJ0bU9bQP6oAYafDxIMxYkkzNYiaUSz
+         yNIH0cGsA9mF6Px3zXQlVN1iCOMHxr6whU/xWEPQWMoBYPWFd/IN/SXX+3+A0Uzz2cjg
+         LUrUO5ahIClHQJELl+xrWsYTX8Wn9PPwSCAICV+tsQyI+zMcoBTQZHBjTiOWJpiQYrHq
+         /LArZMrL00NLtzWyF9A/3zPgrrHgDrikyW1YYBYPWxKGNFMlJ86qb4fHyTSMYsHwkKv0
+         NYGjy/GoXbp2yY2z8j48yCpnKBRNwKrxHsG1miAonTaaqb3oQZVAb4GqIG7Z+DwPsjpj
+         TmcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=eJpxoMZMd7eF0KuEyvDDYFrCUUxVRbT72I6NAxy9SQ4=;
-        b=H0jn2+vIT7ykLgrbEoXkoFzlXNJV5U7ej/7X2rXhYSWv5Kw6of8DJx7Wg254qCJ+NH
-         bGayJh9w/y7ATLpiR5N+X4DtFNgXOk8foXaWxrYS9txSWK0s9fzK5jBGIX/fKMxJDSk/
-         j/Z4oF0+/RBu+m8HPGT4PMRoxFtmLBxFfNbq0AC8DfHhb/VN3WbVTKQsJzXceeT0M6C5
-         RvmAMJClJQZnm0TdP5GJ/OX0xU+jiAcWqiUCvNsH4DgqQ5xOQWA+E/0KGe2U+jEZec7b
-         LBYiy1G0v57UJcMJsnYR74J/fv7wkiI46cSyyYQqAJHXI4PHIA/BO6Te2FlleVyVw3L7
-         8B7Q==
-X-Gm-Message-State: AOAM533XRXI1cUYg0Z71BCiZPFyy9w+Of8Gz0gqDCmwWqxWAsVsUtpRt
-        yIyJCDYDGP22aD5uKblt4ipe56ZMDY0=
-X-Google-Smtp-Source: ABdhPJzAtcaxhes2a7G3s0jvGpX3PRDEps6BL1wHqvbGlM13+tKCRVm26UyrRmu9hiKaBRRkb2TdzQ==
-X-Received: by 2002:a1c:bcd5:: with SMTP id m204mr2247267wmf.26.1602063343887;
-        Wed, 07 Oct 2020 02:35:43 -0700 (PDT)
-Received: from [192.168.8.147] ([37.172.192.62])
-        by smtp.gmail.com with ESMTPSA id t124sm1972336wmg.31.2020.10.07.02.35.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Oct 2020 02:35:43 -0700 (PDT)
-Subject: Re: [PATCH net 2/2] IPv6: reply ICMP error if the first fragment
- don't include all headers
-To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>
-References: <20201007035502.3928521-1-liuhangbin@gmail.com>
- <20201007035502.3928521-3-liuhangbin@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <91f5b71e-416d-ebf1-750b-3e1d5cf6b732@gmail.com>
-Date:   Wed, 7 Oct 2020 11:35:41 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=at6Slu7caP6r6MuR/pxVFga5/oQNMJKTeLYuZoWjeXw=;
+        b=F3BSM2/z4zHYSFKo7sr9pNxbvAOhCZko9wP7v2N92WRpUXyB6YzR6mjgB/Qkl0ChmH
+         aAVegJGyqFVTei1sXRSa4smy0FwsKoGaHSoYAotnSTuc8f4iQqL6LDaOYsJtcC9BZtuS
+         Sq8k0nAoF7BlVgntRspnWKWoHK6C2tHG9qN3FSvXbVSjMIPKa3WQJ0TmNSC7VqPvDWMa
+         SjkX5DKgwkupuyraqrfQFS2N8gVFJ83w+x5+x7Ue78QnsvMDl2r195OTpXRVazOZMRve
+         be6mAyZzZ4RXeec29hUc5t0T3vvmumXns5jkj0mM4iWK/kXF/xXfExRPlYYjPWNXOdyh
+         pcBA==
+X-Gm-Message-State: AOAM533fALkUgo/AlUJndUY7pwpesIwRN9aoZJAUIZTrX8d9GiAbuELC
+        ouYX/0Ol/ctrC1SXcpQOQDwdZVwQCMCDZjmEItjJCw==
+X-Google-Smtp-Source: ABdhPJxMdxL+fHaSLpO3vK3yASxEsrJcC3kMJ2R39aH0+SqmgokuS6kFscI5tGmj/zmGwocE3uKsLczI5DnAh859RIQ=
+X-Received: by 2002:a2e:4e01:: with SMTP id c1mr815254ljb.144.1602063393619;
+ Wed, 07 Oct 2020 02:36:33 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20201007035502.3928521-3-liuhangbin@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20201006193453.4069-1-linus.walleij@linaro.org> <202010070626.DHqRvzc2-lkp@intel.com>
+In-Reply-To: <202010070626.DHqRvzc2-lkp@intel.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 7 Oct 2020 11:36:22 +0200
+Message-ID: <CACRpkdbgyjBX-6fk55DK1oXbBE5y1iSGb9-vRO9hvNAbpmpnoQ@mail.gmail.com>
+Subject: Re: [net-next PATCH v2] net: dsa: rtl8366rb: Roof MTU for switch
+To:     kernel test robot <lkp@intel.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>, kbuild-all@lists.01.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Oct 7, 2020 at 12:19 AM kernel test robot <lkp@intel.com> wrote:
 
+> I love your patch! Yet something to improve:
+>
+> [auto build test ERROR on net-next/master]
 
-On 10/7/20 5:55 AM, Hangbin Liu wrote:
+Ooops fixing syntax without checking semantics, will respin.
 
->  		kfree_skb(skb);
-> @@ -282,6 +285,21 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
->  		}
->  	}
->  
-> +	/* RFC 8200, Section 4.5 Fragment Header:
-> +	 * If the first fragment does not include all headers through an
-> +	 * Upper-Layer header, then that fragment should be discarded and
-> +	 * an ICMP Parameter Problem, Code 3, message should be sent to
-> +	 * the source of the fragment, with the Pointer field set to zero.
-> +	 */
-> +	nexthdr = hdr->nexthdr;
-> +	offset = ipv6_skip_exthdr(skb, skb_transport_offset(skb), &nexthdr, &frag_off);
-> +	if (frag_off == htons(IP6_MF) && !pskb_may_pull(skb, offset + 1)) {
-> +		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INHDRERRORS);
-> +		icmpv6_param_prob(skb, ICMPV6_HDR_INCOMP, 0);
-> +		rcu_read_unlock();
-> +		return NULL;
-> +	}
-> +
->  	rcu_read_unlock();
->  
->  	/* Must drop socket now because of tproxy. */
-> 
-
-Ouch, this is quite a buggy patch.
-
-I doubt we want to add yet another ipv6_skip_exthdr() call in IPv6 fast path.
-
-Surely the presence of NEXTHDR_FRAGMENT is already tested elsewhere ?
-
-Also, ipv6_skip_exthdr() does not pull anything in skb->head, it would be strange
-to force a pull of hundreds of bytes just because you want to check if an extra byte is there,
-if the packet could be forwarded as is, without additional memory allocations.
-
-Testing skb->len should be more than enough at this stage.
-
-Also ipv6_skip_exthdr() can return an error.
+Yours,
+Linus Walleij
