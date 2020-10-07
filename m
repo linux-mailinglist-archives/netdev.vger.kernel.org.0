@@ -2,100 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD306285C6B
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 12:06:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A97BF285C99
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 12:12:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727972AbgJGKGy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 06:06:54 -0400
-Received: from mail-db8eur05on2089.outbound.protection.outlook.com ([40.107.20.89]:65377
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726598AbgJGKGx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Oct 2020 06:06:53 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=IpzXRhSil5z2qI7HSn4MiTHNp04vY/IkrcDpdrJX5VnWqwKcUgP+V57DqZBjkRdOCVyKvn6Y0x/GhYVLixUNHfsAf3EDueHqkBhWeD6z5MofkW7LPhEgM6YTCqJmfjKUKfdaZ2l0dv7PMa1b+UGG2zuUeZMaBJcv/1HDbGIc8/Rcx/cCzwSx1bijX/uGRp7NaeVDLdNIJaytFf4uZxocV0i+7ow8JlNrwhCrgF8TDh0zgqte+BZTulKLxCfc8LMaXHvnOdqyzgM7vdMY/ElOYJ0sIfFteNiVB/tu2VsfGqvMU6yUjvlLkBdQqM26oVc2kDV84wbMlseCGz24C0eqng==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Iw9uOpsl5aXab4KX9k8oDHUUwuHyCpdDLMXxeNADGsY=;
- b=cVUAds6I7Cpr12aEnSB3MTMd9WHCssqS72eRGcts4FU2XQJYqiOU6ljiKRl+6+BDHIaqBoDsrjmyuLHd8ZdXPh2VyWjRzP0l0fIMSot3pWJJoWSPwuFhIflnhHdaX+t+xnjeDEUTDB93WAqQ4Ds8wB7oy2iR1Y3XJCJEq1jPFkIrwdCSgMPa6tSClhTmjahBovsEqTxZpgV/eM+fF+HMlIQlcrIEexI8y8OCLksEHMaL2ktg2+rRgDkxxLmMFkhgIHrX4JlC+oJC/DzecSQyjATBMDqsPdontUHaiAjdwewa1Mgp+HtTbMHrwUVmclo4tCBaCA+QA3AkmvDs68b3NQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Iw9uOpsl5aXab4KX9k8oDHUUwuHyCpdDLMXxeNADGsY=;
- b=LU5NRIAC/95cprNKJngfJSfZntKXH0pQIlOPQbVfHPlCHTvaep0gLFnSwlce+HKXU4m/vTtvCDUkZEY58s2IEtQiQagjUymD4ICXJIoS0igJz+Qg+WUciSowgvqVgNH+xn0PxpcRjbzOLTJASEgF0YrXLZKN6buUd4hg70DefbA=
-Received: from AM0PR04MB6754.eurprd04.prod.outlook.com (2603:10a6:208:170::28)
- by AM0PR04MB4116.eurprd04.prod.outlook.com (2603:10a6:208:5e::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.21; Wed, 7 Oct
- 2020 10:06:49 +0000
-Received: from AM0PR04MB6754.eurprd04.prod.outlook.com
- ([fe80::21b9:fda3:719f:f37b]) by AM0PR04MB6754.eurprd04.prod.outlook.com
- ([fe80::21b9:fda3:719f:f37b%3]) with mapi id 15.20.3455.022; Wed, 7 Oct 2020
- 10:06:49 +0000
-From:   Claudiu Manoil <claudiu.manoil@nxp.com>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: RE: [PATCH net-next 4/4] enetc: Migrate to PHYLINK and PCS_LYNX
-Thread-Topic: [PATCH net-next 4/4] enetc: Migrate to PHYLINK and PCS_LYNX
-Thread-Index: AQHWmyPOS7KmvbhZkkOlRbGxPpEGhKmKGBUAgAHUEzA=
-Date:   Wed, 7 Oct 2020 10:06:49 +0000
-Message-ID: <AM0PR04MB67547E9C44B1203314D5AF04960A0@AM0PR04MB6754.eurprd04.prod.outlook.com>
-References: <20201005142818.15110-1-claudiu.manoil@nxp.com>
- <20201005142818.15110-5-claudiu.manoil@nxp.com>
- <20201006060859.hapkjgcv4pwzhkrv@skbuf>
-In-Reply-To: <20201006060859.hapkjgcv4pwzhkrv@skbuf>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: nxp.com; dkim=none (message not signed)
- header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.27.120.177]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: b46680b7-fe16-45a2-7bd0-08d86aa8b525
-x-ms-traffictypediagnostic: AM0PR04MB4116:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR04MB411657F22F8922934BE31EE2960A0@AM0PR04MB4116.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4714;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7d/sYvPL76fG84yZ3aEvtU4o/sWsvcivQzu0A0eWyZlz1Ck64tn1EaOy10DMA6iT9gmpC29UqmePJFm2+3ss+bClUb81cBBFFvBj6e3h/SIJBq0VEEy11Nnu4ZtjCaUfHzsjzBohZwmlizOvTLuAIBX+vdXTQwmGR4QlHAgc/ubM1KKOaqJBaNS8Pe+rNQGHzKuOvPI4d6xe7/x/EnL8WI1mxHLviErdWFmF1LfyrozI4pJqEU6wQ6+gSrz/ET+56KDxxC7tF4V4CrrMw5n6m5neUA7AVqlUwTqjzcLoLrCUdMPLUIi6QUv3gYa+Znb7awPE0ZN3P6tY8bTLCKylIg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6754.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(136003)(376002)(396003)(366004)(7696005)(52536014)(83380400001)(71200400001)(2906002)(66476007)(64756008)(66446008)(66556008)(6506007)(186003)(26005)(76116006)(66946007)(86362001)(33656002)(6862004)(8936002)(6636002)(4326008)(44832011)(9686003)(5660300002)(55016002)(478600001)(54906003)(316002)(4744005)(8676002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: oj1r1iBs9BkmWPPUY1VWNuHLocJQ/+f2QkkG+7eDVc4/DLj32ZOU35lQjhgfyBJeaEgi1tFYbNad+Zn4IR5Zbebsnj03eMc2lVC3Oj5dKUnlYpTjcwz/OopnoR9RImX6hRZcXnvMQkqQpmxZUWqNF/teCQY6K4SI0zxw4TybNhYM5fay6T9NwTWSBhl0AybqZp9VKjMu28+1MF6aN3xMBlcDi7b30AVTzwOg+4ikkP6uIgBU+OghV8PYeoXk/1n8GZb7mcNFvnPlJbl0/r4JH7cKnOsh0mdEtqXYbJRHQG/Trq5NSiBcyaglZMlzLGkXZU5kU2tO35K1cAgas+ggG9X/mxuwDKUEUy5Q9J008PtPhNjrASgETiXsRFqmUsXJvQxCTN7bbA1pY6YnociwYNE+9wuLb+Qxi6FvK6YlNvxM7HhpskfzzdYxws4TKIGTiRe8D5bLlRwtkTtDoqdmifbrGOrhpzgV6OnwCWvJNr+xyINqRHgh8QzguR6glyHB1RY/PLcE3S2QAJIDYXTYnImminKKQ+RsrBE0vn8Z4d3cj5LYAfs7n8BuqfIPKjm/s2S5edf88PEceXFdlcPlLUb2mR/ljaXQ+YzacYl9ucEKQ3fA/aTa0zlRMti4oo82xgFTFBGwIS3hoe54mw1ixg==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727908AbgJGKMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 06:12:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48398 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727297AbgJGKMe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 06:12:34 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 297C4C061755
+        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 03:12:34 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id bb1so767911plb.2
+        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 03:12:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XJqtU+qSTs9Z6nT0yW60YoHpdGiXKLBzWgmdn/Juk24=;
+        b=ezNQm3H3MCV8A6tafhprk3ckyJK8Y6IvMfWLo+vo5/JBoU319EJSeTY4QpLj3QZzbK
+         deHLN8wYMRM1boDbNuNrBIv8zT2h5U9yLM1IlU9vkiyKdwlu0aIChrg8vUNmodDYYlxc
+         OlGp5w2QmfXrcbDXR2sCjID0Fz9pMVmU47Lwapw25RSZ+onyjdvo17dmKyQbne5cHGDw
+         G97NeltJUXWuyXKDSf3ksM2UXKX5MRbFPDndTJYRcWEjG6bj7YanQl1apwoSVxBpILVs
+         rPNAc+RmFdFDg7D6qFikmnxigOit7nG66hYVOAYVw/JZj/X4PIxVQAJtSwKCOe0BMiJa
+         NS0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XJqtU+qSTs9Z6nT0yW60YoHpdGiXKLBzWgmdn/Juk24=;
+        b=YWNJkR82fUe1lX67rna6xsMiWcdHK/i0TivRZ7mcLdPitPYjvAbbuc948frALwIrEF
+         5GNNq+B6tUlev1vs8UvUPupfdzXcBb6C41PKJB+mSs5nahyrdF/2M8NIVHbCqkXm5Y/u
+         RONPwYc0Vokn4TKrT7feBdcxfJYNHzkiTGT8zltClqAK8azrNkk986G+AfdMK/3q8i8Y
+         9u3V6B10YzoCw9ufvQwYIzbGDGzoxMa3wpFtq3scjwXGm8WRf6vO9ph7ficd27gKqq+a
+         h0+m1XWX8oHtoxUg2jvYEvYDOK1lCCXtpfC0kU+lV6m3Bf/tLKsMBuNmwwNEXE/PavuF
+         ur+Q==
+X-Gm-Message-State: AOAM530DZp1F9y67C6ogBmjsMbBut0faw112xn7VjWb3uBKEDR9BdFmH
+        6Ut3a5gTWuR11DUSjAT/yLk=
+X-Google-Smtp-Source: ABdhPJyNTNVma6GtHLzpoB7zvMqbbLDZXATXw5CUAiCQkSGlVhEXjPRNVCcn4Go+aTxGINuKoiBfeA==
+X-Received: by 2002:a17:902:7e82:b029:d3:f3b5:d99a with SMTP id z2-20020a1709027e82b02900d3f3b5d99amr1351856pla.7.1602065553694;
+        Wed, 07 Oct 2020 03:12:33 -0700 (PDT)
+Received: from localhost.localdomain ([49.207.204.22])
+        by smtp.gmail.com with ESMTPSA id q24sm1105291pgb.12.2020.10.07.03.12.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Oct 2020 03:12:33 -0700 (PDT)
+From:   Allen Pais <allen.lkml@gmail.com>
+To:     davem@davemloft.net
+Cc:     gerrit@erg.abdn.ac.uk, kuba@kernel.org, edumazet@google.com,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        johannes@sipsolutions.net, alex.aring@gmail.com,
+        stefan@datenfreihafen.org, santosh.shilimkar@oracle.com,
+        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        netdev@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>
+Subject: [net-next v2 0/8] net: convert tasklets to use new
+Date:   Wed,  7 Oct 2020 15:42:11 +0530
+Message-Id: <20201007101219.356499-1-allen.lkml@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6754.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b46680b7-fe16-45a2-7bd0-08d86aa8b525
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Oct 2020 10:06:49.8508
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: W5GvKzrhrTt4aLrguinx4mvbRRYTZnI19h5KnsQ/JzuRhDyKOO2kUr789bUCAZ5d9W36dobDq65s9lhd52Fuag==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4116
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->-----Original Message-----
->From: Ioana Ciornei <ioana.ciornei@nxp.com>
->Sent: Tuesday, October 6, 2020 9:09 AM
-[...]
->
->Shouldn't the driver reject any interface mode which it does not support?
->Either here in the validate callback or directly where the pf->if_mode is =
-set.
->
+From: Allen Pais <apais@linux.microsoft.com>
 
-Agreed on the 2 findings. v2 sent. Thanks Ioana.
+Commit 12cc923f1ccc ("tasklet: Introduce new initialization API")'
+introduced a new tasklet initialization API. This series converts
+all the net/* drivers to use the new tasklet_setup() API
+
+The following series is based on net-next (9faebeb2d)
+
+v1:
+  fix kerneldoc
+
+Allen Pais (8):
+  net: dccp: convert tasklets to use new tasklet_setup() API
+  net: ipv4: convert tasklets to use new tasklet_setup() API
+  net: mac80211: convert tasklets to use new tasklet_setup() API
+  net: mac802154: convert tasklets to use new tasklet_setup() API
+  net: rds: convert tasklets to use new tasklet_setup() API
+  net: sched: convert tasklets to use new tasklet_setup() API
+  net: smc: convert tasklets to use new tasklet_setup() API
+  net: xfrm: convert tasklets to use new tasklet_setup() API
+
+ net/dccp/timer.c           | 12 ++++++------
+ net/ipv4/tcp_output.c      |  8 +++-----
+ net/mac80211/ieee80211_i.h |  4 ++--
+ net/mac80211/main.c        | 14 +++++---------
+ net/mac80211/tx.c          |  5 +++--
+ net/mac80211/util.c        |  5 +++--
+ net/mac802154/main.c       |  8 +++-----
+ net/rds/ib_cm.c            | 14 ++++++--------
+ net/sched/sch_atm.c        |  9 +++++----
+ net/smc/smc_cdc.c          |  6 +++---
+ net/smc/smc_wr.c           | 14 ++++++--------
+ net/xfrm/xfrm_input.c      |  7 +++----
+ 12 files changed, 48 insertions(+), 58 deletions(-)
+
+-- 
+2.25.1
+
