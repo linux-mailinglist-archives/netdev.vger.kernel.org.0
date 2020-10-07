@@ -2,172 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB8EE285B5E
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 10:56:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2E52285B8C
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 11:06:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727927AbgJGI4Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 04:56:16 -0400
-Received: from mailout10.rmx.de ([94.199.88.75]:44944 "EHLO mailout10.rmx.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726218AbgJGI4Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Oct 2020 04:56:16 -0400
-Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mailout10.rmx.de (Postfix) with ESMTPS id 4C5p8r19lqz31fP;
-        Wed,  7 Oct 2020 10:56:12 +0200 (CEST)
-Received: from mta.arri.de (unknown [217.111.95.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by kdin02.retarus.com (Postfix) with ESMTPS id 4C5p832qV1z2TTL1;
-        Wed,  7 Oct 2020 10:55:31 +0200 (CEST)
-Received: from N95HX1G2.wgnetz.xx (192.168.54.119) by mta.arri.de
- (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Wed, 7 Oct
- 2020 10:55:31 +0200
-From:   Christian Eggers <ceggers@arri.de>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Christian Eggers <ceggers@arri.de>
-Subject: [net v3] net: dsa: microchip: fix race condition
-Date:   Wed, 7 Oct 2020 10:55:23 +0200
-Message-ID: <20201007085523.11757-1-ceggers@arri.de>
-X-Mailer: git-send-email 2.26.2
+        id S1726469AbgJGJGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 05:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38206 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726103AbgJGJGk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 05:06:40 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C21C061755
+        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 02:06:40 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1kQ5PB-0004Zl-6b; Wed, 07 Oct 2020 11:06:37 +0200
+Received: from mfe by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1kQ5PA-00010R-Eh; Wed, 07 Oct 2020 11:06:36 +0200
+Date:   Wed, 7 Oct 2020 11:06:36 +0200
+From:   Marco Felsch <m.felsch@pengutronix.de>
+To:     Marek Vasut <marex@denx.de>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
+        kernel@pengutronix.de, David Jander <david@protonic.nl>
+Subject: Re: PHY reset question
+Message-ID: <20201007090636.t5rsus3tnkwuekjj@pengutronix.de>
+References: <20201006080424.GA6988@pengutronix.de>
+ <2cc5ea02-707e-dbb5-c081-4c5202bd5815@gmail.com>
+ <42d4c4b2-d3ea-9130-ef7f-3d1955116fdc@denx.de>
+ <0687984c-5768-7c71-5796-8e16169f5192@gmail.com>
+ <20201007081410.jk5fi6x5w3ab3726@pengutronix.de>
+ <7edb2e01-bec5-05b0-aa47-caf6e214e5a0@denx.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.54.119]
-X-RMX-ID: 20201007-105531-4C5p832qV1z2TTL1-0@kdin02
-X-RMX-SOURCE: 217.111.95.66
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7edb2e01-bec5-05b0-aa47-caf6e214e5a0@denx.de>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 10:55:55 up 327 days, 14 min, 363 users,  load average: 0.16, 0.09,
+ 0.06
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Between queuing the delayed work and finishing the setup of the dsa
-ports, the process may sleep in request_module() (via
-phy_device_create()) and the queued work may be executed prior to the
-switch net devices being registered. In ksz_mib_read_work(), a NULL
-dereference will happen within netof_carrier_ok(dp->slave).
+On 20-10-07 10:23, Marek Vasut wrote:
+> On 10/7/20 10:14 AM, Marco Felsch wrote:
+> > Hi Marek,
+> 
+> Hi,
+> 
+> [...]
+> 
+> > On 20-10-06 14:11, Florian Fainelli wrote:
+> >> On 10/6/2020 1:24 PM, Marek Vasut wrote:
+> > 
+> > ...
+> > 
+> >>> If this happens on MX6 with FEC, can you please try these two patches?
+> >>>
+> >>> https://patchwork.ozlabs.org/project/netdev/patch/20201006135253.97395-1-marex@denx.de/
+> >>>
+> >>> https://patchwork.ozlabs.org/project/netdev/patch/20201006202029.254212-1-marex@denx.de/
+> >>
+> >> Your patches are not scaling across multiple Ethernet MAC drivers
+> >> unfortunately, so I am not sure this should be even remotely considered a
+> >> viable solution.
+> > 
+> > Recently I added clk support for the smcs driver [1] and dropped the
+> > PHY_RST_AFTER_CLK_EN flag for LAN8710/20 devices because I had the same
+> > issues. Hope this will help you too.
+> > 
+> > [1] https://www.spinics.net/lists/netdev/msg682080.html
+> 
+> I feel this might be starting to go a bit off-topic here,
 
-Not queuing the delayed work in ksz_init_mib_timer() makes things even
-worse because the work will now be queued for immediate execution
-(instead of 2000 ms) in ksz_mac_link_down() via
-dsa_port_link_register_of().
+You're right, just wanted to provide you a link :)
 
-Call tree:
-ksz9477_i2c_probe()
-\--ksz9477_switch_register()
-   \--ksz_switch_register()
-      +--dsa_register_switch()
-      |  \--dsa_switch_probe()
-      |     \--dsa_tree_setup()
-      |        \--dsa_tree_setup_switches()
-      |           +--dsa_switch_setup()
-      |           |  +--ksz9477_setup()
-      |           |  |  \--ksz_init_mib_timer()
-      |           |  |     |--/* Start the timer 2 seconds later. */
-      |           |  |     \--schedule_delayed_work(&dev->mib_read, msecs_to_jiffies(2000));
-      |           |  \--__mdiobus_register()
-      |           |     \--mdiobus_scan()
-      |           |        \--get_phy_device()
-      |           |           +--get_phy_id()
-      |           |           \--phy_device_create()
-      |           |              |--/* sleeping, ksz_mib_read_work() can be called meanwhile */
-      |           |              \--request_module()
-      |           |
-      |           \--dsa_port_setup()
-      |              +--/* Called for non-CPU ports */
-      |              +--dsa_slave_create()
-      |              |  +--/* Too late, ksz_mib_read_work() may be called beforehand */
-      |              |  \--port->slave = ...
-      |             ...
-      |              +--Called for CPU port */
-      |              \--dsa_port_link_register_of()
-      |                 \--ksz_mac_link_down()
-      |                    +--/* mib_read must be initialized here */
-      |                    +--/* work is already scheduled, so it will be executed after 2000 ms */
-      |                    \--schedule_delayed_work(&dev->mib_read, 0);
-      \-- /* here port->slave is setup properly, scheduling the delayed work should be safe */
+> but isn't the
+> last patch 5/5 breaking existing setups ?
 
-Solution:
-1. Do not queue (only initialize) delayed work in ksz_init_mib_timer().
-2. Only queue delayed work in ksz_mac_link_down() if init is completed.
-3. Queue work once in ksz_switch_register(), after dsa_register_switch()
-has completed.
+IMHO the solution proposed using the PHY_RST_AFTER_CLK_EN was wrong so
+we needed to fix that. Yes we need to take care of DT backward
+compatibility but we still must be able to fix wrong behaviours within
+the driver. I could also argue that PHY_RST_AFTER_CLK_EN solution was
+breaking exisitng setups too.
 
-Fixes: 7c6ff470aa86 ("net: dsa: microchip: add MIB counter reading support")
-Signed-off-by: Christian Eggers <ceggers@arri.de>
----
-v3:
----------
-- Use 12 digts for commit id in "Fixes:" tag
+> The LAN8710 surely does need
+> clock enabled before the reset line is toggled.
 
-v2:
----------
-- no changes in the patch itself
-- use correct subject-prefix
-- changed wording of commit description
-- added call tree to commit description
-- added "Fixes:" tag
+Yep and therefore you can specify it yet within the DT.
 
- drivers/net/dsa/microchip/ksz_common.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 8e755b50c9c1..a94d2278b95c 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -103,14 +103,8 @@ void ksz_init_mib_timer(struct ksz_device *dev)
- 
- 	INIT_DELAYED_WORK(&dev->mib_read, ksz_mib_read_work);
- 
--	/* Read MIB counters every 30 seconds to avoid overflow. */
--	dev->mib_read_interval = msecs_to_jiffies(30000);
--
- 	for (i = 0; i < dev->mib_port_cnt; i++)
- 		dev->dev_ops->port_init_cnt(dev, i);
--
--	/* Start the timer 2 seconds later. */
--	schedule_delayed_work(&dev->mib_read, msecs_to_jiffies(2000));
- }
- EXPORT_SYMBOL_GPL(ksz_init_mib_timer);
- 
-@@ -143,7 +137,9 @@ void ksz_mac_link_down(struct dsa_switch *ds, int port, unsigned int mode,
- 
- 	/* Read all MIB counters when the link is going down. */
- 	p->read = true;
--	schedule_delayed_work(&dev->mib_read, 0);
-+	/* timer started */
-+	if (dev->mib_read_interval)
-+		schedule_delayed_work(&dev->mib_read, 0);
- }
- EXPORT_SYMBOL_GPL(ksz_mac_link_down);
- 
-@@ -446,6 +442,12 @@ int ksz_switch_register(struct ksz_device *dev,
- 		return ret;
- 	}
- 
-+	/* Read MIB counters every 30 seconds to avoid overflow. */
-+	dev->mib_read_interval = msecs_to_jiffies(30000);
-+
-+	/* Start the MIB timer. */
-+	schedule_delayed_work(&dev->mib_read, 0);
-+
- 	return 0;
- }
- EXPORT_SYMBOL(ksz_switch_register);
--- 
-Christian Eggers
-Embedded software developer
-
-Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
-Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
-Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
-Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
-
+Regards,
+  Marco
