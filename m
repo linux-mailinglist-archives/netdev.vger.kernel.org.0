@@ -2,254 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18F3D2857D4
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 06:38:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D5D42857DE
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 06:42:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726388AbgJGEia (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 00:38:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53384 "EHLO
+        id S1727005AbgJGEmc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 00:42:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727069AbgJGEi1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 00:38:27 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5CD4C0613D2
-        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 21:38:25 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id b2so1140774ilr.1
-        for <netdev@vger.kernel.org>; Tue, 06 Oct 2020 21:38:25 -0700 (PDT)
+        with ESMTP id S1726276AbgJGEmc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 00:42:32 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16892C061755;
+        Tue,  6 Oct 2020 21:42:31 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id x8so837178ybe.12;
+        Tue, 06 Oct 2020 21:42:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=KoWN3z7qMFRYwlT/swD/uz2iy+XEdvNl4brWLiTEUGc=;
-        b=ZE848Q0dFaos8hqbNqRIhxn6jteIUdnTUdkXqQ7v/ZeXhPVF43NM/bL2unVN5j1ajY
-         0olql6hWV9AXKf64yomqZfL/ATxFW4zsu6fv8Y0FppXA7NCP9Q8LKDdCcoa5JNBoTxhi
-         zr01GpirXzSo7I1SwYDwVeqnmQT7GZGkrg9Pk=
+        bh=ER3n4y5l+BIR7COGZq3W4AhY/HZv97oMqIkAEHsJQ0M=;
+        b=XW6y6MH4AfHt8gLG/heOmCPwKGJ96C3ry3ZZN45Eh42jjwe8STuem7CbsbyAftZb7v
+         GsJwOTdP3OydfULNM4RFn4Y+HCE8hiS7JacpQ4v3Q/8D18NwgNlHROAlhZWZxn/Xutl0
+         Fd1UXHTPz5xGcxgl4VdcC2byhHV8Mb21QcQk4a/aTXwoyudk4N1zFmKCGsL+KOmZdYdO
+         xIh6AJPGflI8I4lNX/pHopXf/1Njbwp/BFmhHGVR6Y5C+VZulKp9rpx1GBR+OUvSXLKx
+         aFXlJ65Tn+/UUtHvx4A/koHADM79vBaQX1Ymype5cGxMcUWVyNfVWSA4aYfctZzw95Z2
+         wv/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=KoWN3z7qMFRYwlT/swD/uz2iy+XEdvNl4brWLiTEUGc=;
-        b=HtU2trj7BAt/5meTNzVEO1DyVoIKwj2OZcugydXePm2iaFJaPni8M18xmJsuINs3Jc
-         zC2jzzo5gSTVNav2CCq9iUXMAL18t5KZZO4moaT6tYvRKEbT7fjKxxZmAX2kYwboPgeU
-         mH+A+2ucJ9GT3tKI39eijwOd+EzkPVhrIxHjdcWUl6NXh6Hl25nsWk7x15kHqS85ajxa
-         Q5eC2quf15ig9/ayY+hSU1nwyrQQp/pOE+s9JdChXc4MnedNcZp2me340w4txaoEQs2M
-         nUXxc4F/YYnKpFnJX+4dWY/UDM6yegXE2c5h9+UXksErQxIAiInbILV0D5+zwxNHXVNI
-         eQsQ==
-X-Gm-Message-State: AOAM5313pbMUEAfIhOI5+HrIZzmXSPrsmAmQ0QvGdiLd2MXQVZBfoATK
-        DBm7csr5+KE4egS9MheRMcO7uIVOe1PzsA==
-X-Google-Smtp-Source: ABdhPJwIKxQfnE4sPk2qqTk2lBgPEW5phbTjDs+GctA6EsMvpUqD/a3fH0Qfemv8KrQN04Fn750Q2w==
-X-Received: by 2002:a92:d490:: with SMTP id p16mr1285551ilg.202.1602045504795;
-        Tue, 06 Oct 2020 21:38:24 -0700 (PDT)
-Received: from mail-io1-f53.google.com (mail-io1-f53.google.com. [209.85.166.53])
-        by smtp.gmail.com with ESMTPSA id x7sm477826ilq.52.2020.10.06.21.38.23
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Oct 2020 21:38:23 -0700 (PDT)
-Received: by mail-io1-f53.google.com with SMTP id y13so1014871iow.4
-        for <netdev@vger.kernel.org>; Tue, 06 Oct 2020 21:38:23 -0700 (PDT)
-X-Received: by 2002:a5d:8752:: with SMTP id k18mr941313iol.27.1602045503184;
- Tue, 06 Oct 2020 21:38:23 -0700 (PDT)
+        bh=ER3n4y5l+BIR7COGZq3W4AhY/HZv97oMqIkAEHsJQ0M=;
+        b=JurDaPnj2R3ICYZ8GoT3Sy6Rxwwjwf2hHmfVz3HtDEHJHc/9hc83fdJhss8tdjnQoz
+         WtjfsqgLFBFYvT3KbUkwTPQDUhQEJSM5m89ZYKUC8XQZlotY1pIIEUq71AWkyiVhMaRi
+         BiqMoQnXBdG3XqzFkMU4DieOfrxOqCInNOSOWs6Flsa89/PGPiBpBOdxCco6nLc5+tyI
+         TzR17waHjqHCG2Z1RpbcNFnyiwX9u16FBg1iyc7moP1KUvgrFal+ekDjFx826n01zQTC
+         U/kyUjalx9Vs5drkD5M/MqK1yy1SfgN57Aar0Zqw2EZMtVQn0iq1Xtv7jTkZg0AvtgGD
+         7QTA==
+X-Gm-Message-State: AOAM531O7gA8I0ycgIlmTv/0DRhlk+wKmnaSxplNZJw9glwIGc1R4u0J
+        vqh1oGHqmIZmYvZ6djblHKZl8gd6vF6o1yfaA6OyUHmUMzjD2A==
+X-Google-Smtp-Source: ABdhPJwLKpSvEz6xnehRQTsGUlVrdUYdkuw/X4/B0/VRYgdMJTgWH39T+YQJC/L1Hv1bpRuehrq8YQoqe0rTM1CB/xs=
+X-Received: by 2002:a25:cbc4:: with SMTP id b187mr2056709ybg.260.1602045750305;
+ Tue, 06 Oct 2020 21:42:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200929080324.632523-1-tientzu@chromium.org>
-In-Reply-To: <20200929080324.632523-1-tientzu@chromium.org>
-From:   Claire Chang <tientzu@chromium.org>
-Date:   Wed, 7 Oct 2020 12:38:12 +0800
-X-Gmail-Original-Message-ID: <CALiNf28k5C48_ivAeRW7sSEEXp0gd-h_1n03YH6jQhYhaCXUDA@mail.gmail.com>
-Message-ID: <CALiNf28k5C48_ivAeRW7sSEEXp0gd-h_1n03YH6jQhYhaCXUDA@mail.gmail.com>
-Subject: Re: [PATCH v2] Bluetooth: Move force_bredr_smp debugfs into hci_debugfs_create_bredr
-To:     marcel@holtmann.org, johan.hedberg@gmail.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, BlueZ <linux-bluetooth@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
+References: <20201006200955.12350-1-alexei.starovoitov@gmail.com>
+ <20201006200955.12350-2-alexei.starovoitov@gmail.com> <CAEf4BzbRLLJ=r3LJfQbkkXtXgNqQL3Sr01ibhOaxNN-QDqiXdw@mail.gmail.com>
+ <20201007021842.2lwngvsvj2hbuzh5@ast-mbp> <CAEf4Bza=7GzvXJinkwO1XcASg7ahHranmNRmXEzU-KzOg9wVCw@mail.gmail.com>
+ <20201007041517.6wperlh6dqrk7xjc@ast-mbp>
+In-Reply-To: <20201007041517.6wperlh6dqrk7xjc@ast-mbp>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 6 Oct 2020 21:42:18 -0700
+Message-ID: <CAEf4BzY1kKrB-GRmMCvEVy64KhpT=jao7voQuvXkKw4woMe8cA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/3] bpf: Propagate scalar ranges through
+ register assignments.
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        john fastabend <john.fastabend@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, Oct 6, 2020 at 9:15 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Tue, Oct 06, 2020 at 08:31:23PM -0700, Andrii Nakryiko wrote:
+> >
+> > > 'linked' is also wrong. The regs are exactly equal.
+> > > In case of pkt and other pointers two regs will have the same id
+> > > as well, but they will not be equal. Here these two scalars are equal
+> > > otherwise doing *reg = *known_reg would be wrong.
+> >
+> > Ok, I guess it also means that "reg->type == SCALAR_VALUE" checks
+> > below are unnecessary as well, because if known_reg->id matches, that
+> > means register states are exactly the same.
+> > > > > +               for (j = 0; j < MAX_BPF_REG; j++) {
+> > > > > +                       reg = &state->regs[j];
+> > > > > +                       if (reg->type == SCALAR_VALUE && reg->id == known_reg->id)
+>
+> Right. The type check is technically unnecessary. It's a safety net in case id
+> assignment goes wrong plus it makes it easier to understand the logic.
+>
+> > > > Even if yes, it probably would be more
+> > > > straightforward to call appropriate updates in the respective if
+> > > > branches (it's just a single line for each register, so not like it's
+> > > > duplicating tons of code).
+> > >
+> > > You mean inside reg_set_min_max() and inside reg_combine_min_max() ?
+> > > That won't work because find_equal_scalars() needs access to the whole
+> > > bpf_verifier_state and not just bpf_reg_state.
+> >
+> > No, I meant something like this, few lines above:
+> >
+> > if (BPF_SRC(insn->code) == BPF_X) {
+> >
+> >     if (dst_reg->type == SCALAR_VALUE && src_reg->type == SCALAR_VALUE) {
+> >         if (...)
+> >         else if (...)
+> >         else
+> >
+> >         /* both src/dst regs in both this/other branches could have
+> > been updated */
+> >         find_equal_scalars(this_branch, src_reg);
+> >         find_equal_scalars(this_branch, dst_reg);
+> >         find_equal_scalars(other_branch, &other_branch_regs[insn->src_reg])
+> >         find_equal_scalars(other_branch, &other_branch_regs[insn->dst_reg])
+> >     }
+> > } else if (dst_reg->type == SCALAR_VALUE) {
+> >     reg_set_min_max(...);
+> >
+> >     /* only dst_reg in both branches could have been updated */
+> >     find_equal_scalars(this_branch, dst_reg);
+> >     find_equal_scalars(other_branch, &other_branch_regs[insn->dst_reg]);
+> > }
+> >
+> >
+> > This keeps find_equal_scalars() for relevant registers very close to
+> > places where those registers are updated, instead of jumping back and
+> > forth between the complicated if  after it, and double-checking under
+> > which circumstances dst_reg can be updated, for example.
+>
+> I see it differently.
+> I don't like moving if (reg->id) into find_equal_scalars(). Otherwise it would
+> have to be named something like try_find_equal_scalars(). And even with such
+> "try_" prefix it's still not clean. It's my general dislike of defensive
+> programming. I prefer all functions to be imperative: "do" vs "try_do".
+> There are exception from the rule, of course. Like kfree() that accepts NULL.
+> That's fine.
+> In this case I think if (type == SCALAR && id != 0) should be done by the caller.
 
-This patch is to fix the kernel error
-[   46.271811] debugfs: File 'force_bredr_smp' in directory 'hci0'
-already present!
+There is no need to do (type == SCALAR) check, see pseudo-code above.
+In all cases where find_equal_scalars() is called we know already that
+register is SCALAR.
 
-When powering off and on the bluetooth, the smp_register will try to create the
-force_bredr_smp entry again.
-Move the creation to hci_debugfs_create_bredr so the force_bredr_smp entry will
-only be created when HCI_SETUP and HCI_CONFIG are not set.
+As for `if (reg->id)` being moved inside find_equal_scalars(). I
+didn't mean it as a defensive measure. It just allows to keep
+higher-level logic in check_cond_jmp_op() a bit more linear.
 
-Thanks,
-Claire
+Also, regarding "try_find_equal_scalars". It's not try/attempt to do
+this, it's do it, similarly to __update_reg_bounds() you explained
+below. It's just known_reg->id == 0 is a guarantee that there are no
+other equal registers, so we can skip the work. But of course one can
+look at this differently. I just prefer less nested ifs, if it's
+possible to avoid them.
 
-On Tue, Sep 29, 2020 at 4:03 PM Claire Chang <tientzu@chromium.org> wrote:
->
-> Avoid multiple attempts to create the debugfs entry, force_bredr_smp,
-> by moving it from the SMP registration to the BR/EDR controller init
-> section. hci_debugfs_create_bredr is only called when HCI_SETUP and
-> HCI_CONFIG is not set.
->
-> Signed-off-by: Claire Chang <tientzu@chromium.org>
-> ---
-> v2: correct a typo in commit message
->
->  net/bluetooth/hci_debugfs.c | 50 +++++++++++++++++++++++++++++++++++++
->  net/bluetooth/smp.c         | 44 ++------------------------------
->  net/bluetooth/smp.h         |  2 ++
->  3 files changed, 54 insertions(+), 42 deletions(-)
->
-> diff --git a/net/bluetooth/hci_debugfs.c b/net/bluetooth/hci_debugfs.c
-> index 5e8af2658e44..4626e0289a97 100644
-> --- a/net/bluetooth/hci_debugfs.c
-> +++ b/net/bluetooth/hci_debugfs.c
-> @@ -494,6 +494,45 @@ static int auto_accept_delay_get(void *data, u64 *val)
->  DEFINE_SIMPLE_ATTRIBUTE(auto_accept_delay_fops, auto_accept_delay_get,
->                         auto_accept_delay_set, "%llu\n");
->
-> +static ssize_t force_bredr_smp_read(struct file *file,
-> +                                   char __user *user_buf,
-> +                                   size_t count, loff_t *ppos)
-> +{
-> +       struct hci_dev *hdev = file->private_data;
-> +       char buf[3];
-> +
-> +       buf[0] = hci_dev_test_flag(hdev, HCI_FORCE_BREDR_SMP) ? 'Y' : 'N';
-> +       buf[1] = '\n';
-> +       buf[2] = '\0';
-> +       return simple_read_from_buffer(user_buf, count, ppos, buf, 2);
-> +}
-> +
-> +static ssize_t force_bredr_smp_write(struct file *file,
-> +                                    const char __user *user_buf,
-> +                                    size_t count, loff_t *ppos)
-> +{
-> +       struct hci_dev *hdev = file->private_data;
-> +       bool enable;
-> +       int err;
-> +
-> +       err = kstrtobool_from_user(user_buf, count, &enable);
-> +       if (err)
-> +               return err;
-> +
-> +       err = smp_force_bredr(hdev, enable);
-> +       if (err)
-> +               return err;
-> +
-> +       return count;
-> +}
-> +
-> +static const struct file_operations force_bredr_smp_fops = {
-> +       .open           = simple_open,
-> +       .read           = force_bredr_smp_read,
-> +       .write          = force_bredr_smp_write,
-> +       .llseek         = default_llseek,
-> +};
-> +
->  static int idle_timeout_set(void *data, u64 val)
->  {
->         struct hci_dev *hdev = data;
-> @@ -589,6 +628,17 @@ void hci_debugfs_create_bredr(struct hci_dev *hdev)
->         debugfs_create_file("voice_setting", 0444, hdev->debugfs, hdev,
->                             &voice_setting_fops);
->
-> +       /* If the controller does not support BR/EDR Secure Connections
-> +        * feature, then the BR/EDR SMP channel shall not be present.
-> +        *
-> +        * To test this with Bluetooth 4.0 controllers, create a debugfs
-> +        * switch that allows forcing BR/EDR SMP support and accepting
-> +        * cross-transport pairing on non-AES encrypted connections.
-> +        */
-> +       if (!lmp_sc_capable(hdev))
-> +               debugfs_create_file("force_bredr_smp", 0644, hdev->debugfs,
-> +                                   hdev, &force_bredr_smp_fops);
-> +
->         if (lmp_ssp_capable(hdev)) {
->                 debugfs_create_file("ssp_debug_mode", 0444, hdev->debugfs,
->                                     hdev, &ssp_debug_mode_fops);
-> diff --git a/net/bluetooth/smp.c b/net/bluetooth/smp.c
-> index 433227f96c73..8b817e4358fd 100644
-> --- a/net/bluetooth/smp.c
-> +++ b/net/bluetooth/smp.c
-> @@ -3353,31 +3353,8 @@ static void smp_del_chan(struct l2cap_chan *chan)
->         l2cap_chan_put(chan);
->  }
->
-> -static ssize_t force_bredr_smp_read(struct file *file,
-> -                                   char __user *user_buf,
-> -                                   size_t count, loff_t *ppos)
-> +int smp_force_bredr(struct hci_dev *hdev, bool enable)
->  {
-> -       struct hci_dev *hdev = file->private_data;
-> -       char buf[3];
-> -
-> -       buf[0] = hci_dev_test_flag(hdev, HCI_FORCE_BREDR_SMP) ? 'Y': 'N';
-> -       buf[1] = '\n';
-> -       buf[2] = '\0';
-> -       return simple_read_from_buffer(user_buf, count, ppos, buf, 2);
-> -}
-> -
-> -static ssize_t force_bredr_smp_write(struct file *file,
-> -                                    const char __user *user_buf,
-> -                                    size_t count, loff_t *ppos)
-> -{
-> -       struct hci_dev *hdev = file->private_data;
-> -       bool enable;
-> -       int err;
-> -
-> -       err = kstrtobool_from_user(user_buf, count, &enable);
-> -       if (err)
-> -               return err;
-> -
->         if (enable == hci_dev_test_flag(hdev, HCI_FORCE_BREDR_SMP))
->                 return -EALREADY;
->
-> @@ -3399,16 +3376,9 @@ static ssize_t force_bredr_smp_write(struct file *file,
->
->         hci_dev_change_flag(hdev, HCI_FORCE_BREDR_SMP);
->
-> -       return count;
-> +       return 0;
->  }
->
-> -static const struct file_operations force_bredr_smp_fops = {
-> -       .open           = simple_open,
-> -       .read           = force_bredr_smp_read,
-> -       .write          = force_bredr_smp_write,
-> -       .llseek         = default_llseek,
-> -};
-> -
->  int smp_register(struct hci_dev *hdev)
->  {
->         struct l2cap_chan *chan;
-> @@ -3433,17 +3403,7 @@ int smp_register(struct hci_dev *hdev)
->
->         hdev->smp_data = chan;
->
-> -       /* If the controller does not support BR/EDR Secure Connections
-> -        * feature, then the BR/EDR SMP channel shall not be present.
-> -        *
-> -        * To test this with Bluetooth 4.0 controllers, create a debugfs
-> -        * switch that allows forcing BR/EDR SMP support and accepting
-> -        * cross-transport pairing on non-AES encrypted connections.
-> -        */
->         if (!lmp_sc_capable(hdev)) {
-> -               debugfs_create_file("force_bredr_smp", 0644, hdev->debugfs,
-> -                                   hdev, &force_bredr_smp_fops);
-> -
->                 /* Flag can be already set here (due to power toggle) */
->                 if (!hci_dev_test_flag(hdev, HCI_FORCE_BREDR_SMP))
->                         return 0;
-> diff --git a/net/bluetooth/smp.h b/net/bluetooth/smp.h
-> index 121edadd5f8d..fc35a8bf358e 100644
-> --- a/net/bluetooth/smp.h
-> +++ b/net/bluetooth/smp.h
-> @@ -193,6 +193,8 @@ bool smp_irk_matches(struct hci_dev *hdev, const u8 irk[16],
->  int smp_generate_rpa(struct hci_dev *hdev, const u8 irk[16], bdaddr_t *rpa);
->  int smp_generate_oob(struct hci_dev *hdev, u8 hash[16], u8 rand[16]);
->
-> +int smp_force_bredr(struct hci_dev *hdev, bool enable);
-> +
->  int smp_register(struct hci_dev *hdev);
->  void smp_unregister(struct hci_dev *hdev);
->
-> --
-> 2.28.0.618.gf4bc123cb7-goog
->
+But all this is not that important. I suggested, you declined, let's move on.
+
+> Note that's different from __update_reg_bounds().
+> There the bounds may or may not change, but the action is performed.
+> What you're proposing it to make find_equal_scalars() accept any kind
+> of register and do the action only if argument is actual scalar
+> and its "id != 0". That's exactly the defensive programming
+> that I feel make programmers sloppier.
+
+:) I see a little bit of an irony between this anti-defensive
+programming manifesto and "safety net in case id assignment goes
+wrong" above.
+
+> Note that's not the same as mark_reg_unknown() doing
+> if (WARN_ON(regno >= MAX_BPF_REG)) check. I hope the difference is clear.
