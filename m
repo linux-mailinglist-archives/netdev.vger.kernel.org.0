@@ -2,90 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AA11286A66
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 23:43:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4B7C286A54
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 23:37:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728683AbgJGVn2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 17:43:28 -0400
-Received: from mga18.intel.com ([134.134.136.126]:41772 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727798AbgJGVn2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Oct 2020 17:43:28 -0400
-IronPort-SDR: VL8goQBCXiXKu9rmcwjwflq9YmZunEnsacWFYiC/na7B3Ymm5a/TdM+hZEjeCLEcITSJFuVO2c
- E7TvlzfaP0ow==
-X-IronPort-AV: E=McAfee;i="6000,8403,9767"; a="152961188"
-X-IronPort-AV: E=Sophos;i="5.77,348,1596524400"; 
-   d="scan'208";a="152961188"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2020 14:43:27 -0700
-IronPort-SDR: rzAFdb7eJgVBxgOL4FDBl6elDihkHP4lg/Kb+uFwugVAdIWgxZuxPhb8P5GiVTzCmNWHF5Pnyh
- qiBKQNesWi6g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,348,1596524400"; 
-   d="scan'208";a="461527289"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga004.jf.intel.com with ESMTP; 07 Oct 2020 14:43:24 -0700
-Date:   Wed, 7 Oct 2020 23:35:49 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     sven.auhagen@voleatech.de
-Cc:     anthony.l.nguyen@intel.com, davem@davemloft.net,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        sandeep.penigalapati@intel.com, brouer@redhat.com
-Subject: Re: [PATCH 7/7] igb: avoid transmit queue timeout in xdp path
-Message-ID: <20201007213549.GF48010@ranger.igk.intel.com>
-References: <20201007152506.66217-1-sven.auhagen@voleatech.de>
- <20201007152506.66217-8-sven.auhagen@voleatech.de>
+        id S1728691AbgJGVhG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 17:37:06 -0400
+Received: from www62.your-server.de ([213.133.104.62]:45678 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726013AbgJGVhE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 17:37:04 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kQH7N-0001ts-Tx; Wed, 07 Oct 2020 23:37:01 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kQH7N-0005FC-Kf; Wed, 07 Oct 2020 23:37:01 +0200
+Subject: Re: [PATCH bpf-next V2 5/6] bpf: Add MTU check for TC-BPF packets
+ after egress hook
+To:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com
+References: <160208770557.798237.11181325462593441941.stgit@firesoul>
+ <160208778070.798237.16265441131909465819.stgit@firesoul>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <7aeb6082-48a3-9b71-2e2c-10adeb5ee79a@iogearbox.net>
+Date:   Wed, 7 Oct 2020 23:37:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201007152506.66217-8-sven.auhagen@voleatech.de>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <160208778070.798237.16265441131909465819.stgit@firesoul>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25950/Wed Oct  7 15:55:10 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 07, 2020 at 05:25:06PM +0200, sven.auhagen@voleatech.de wrote:
-> From: Sven Auhagen <sven.auhagen@voleatech.de>
+On 10/7/20 6:23 PM, Jesper Dangaard Brouer wrote:
+[...]
+>   net/core/dev.c |   24 ++++++++++++++++++++++--
+>   1 file changed, 22 insertions(+), 2 deletions(-)
 > 
-> Since we share the transmit queue with the slow path,
-> it is possible that we run into a transmit queue timeout.
-> This will reset the queue.
-> This happens under high load when the fast path is using the
-> transmit queue pretty much exclusively.
-
-Please mention in the commit message *how* you are fixing this issue.
-
-> 
-> Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
-> ---
->  drivers/net/ethernet/intel/igb/igb_main.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> index 6a2828b96eef..d84a99359e95 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> @@ -2916,6 +2916,8 @@ static int igb_xdp_xmit_back(struct igb_adapter *adapter, struct xdp_buff *xdp)
->  
->  	nq = txring_txq(tx_ring);
->  	__netif_tx_lock(nq, cpu);
-> +	/* Avoid transmit queue timeout since we share it with the slow path */
-> +	nq->trans_start = jiffies;
->  	ret = igb_xmit_xdp_ring(adapter, tx_ring, xdpf);
->  	__netif_tx_unlock(nq);
->  
-> @@ -2948,6 +2950,9 @@ static int igb_xdp_xmit(struct net_device *dev, int n,
->  	nq = txring_txq(tx_ring);
->  	__netif_tx_lock(nq, cpu);
->  
-> +	/* Avoid transmit queue timeout since we share it with the slow path */
-> +	nq->trans_start = jiffies;
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index b433098896b2..19406013f93e 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -3870,6 +3870,7 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
+>   	switch (tcf_classify(skb, miniq->filter_list, &cl_res, false)) {
+>   	case TC_ACT_OK:
+>   	case TC_ACT_RECLASSIFY:
+> +		*ret = NET_XMIT_SUCCESS;
+>   		skb->tc_index = TC_H_MIN(cl_res.classid);
+>   		break;
+>   	case TC_ACT_SHOT:
+> @@ -4064,9 +4065,12 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+>   {
+>   	struct net_device *dev = skb->dev;
+>   	struct netdev_queue *txq;
+> +#ifdef CONFIG_NET_CLS_ACT
+> +	bool mtu_check = false;
+> +#endif
+> +	bool again = false;
+>   	struct Qdisc *q;
+>   	int rc = -ENOMEM;
+> -	bool again = false;
+>   
+>   	skb_reset_mac_header(skb);
+>   
+> @@ -4082,14 +4086,28 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+>   
+>   	qdisc_pkt_len_init(skb);
+>   #ifdef CONFIG_NET_CLS_ACT
+> +	mtu_check = skb_is_redirected(skb);
+>   	skb->tc_at_ingress = 0;
+>   # ifdef CONFIG_NET_EGRESS
+>   	if (static_branch_unlikely(&egress_needed_key)) {
+> +		unsigned int len_orig = skb->len;
 > +
->  	for (i = 0; i < n; i++) {
->  		struct xdp_frame *xdpf = frames[i];
->  		int err;
-> -- 
-> 2.20.1
+>   		skb = sch_handle_egress(skb, &rc, dev);
+>   		if (!skb)
+>   			goto out;
+> +		/* BPF-prog ran and could have changed packet size beyond MTU */
+> +		if (rc == NET_XMIT_SUCCESS && skb->len > len_orig)
+> +			mtu_check = true;
+>   	}
+>   # endif
+> +	/* MTU-check only happens on "last" net_device in a redirect sequence
+> +	 * (e.g. above sch_handle_egress can steal SKB and skb_do_redirect it
+> +	 * either ingress or egress to another device).
+> +	 */
+
+Hmm, quite some overhead in fast path. Also, won't this be checked multiple times
+on stacked devices? :( Moreover, this missed the fact that 'real' qdiscs can have
+filters attached too, this would come after this check. Can't this instead be in
+driver layer for those that really need it? I would probably only drop the check
+as done in 1/6 and allow the BPF prog to do the validation if needed.
+
+> +	if (mtu_check && !is_skb_forwardable(dev, skb)) {
+> +		rc = -EMSGSIZE;
+> +		goto drop;
+> +	}
+>   #endif
+>   	/* If device/qdisc don't need skb->dst, release it right now while
+>   	 * its hot in this cpu cache.
+> @@ -4157,7 +4175,9 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+>   
+>   	rc = -ENETDOWN;
+>   	rcu_read_unlock_bh();
+> -
+> +#ifdef CONFIG_NET_CLS_ACT
+> +drop:
+> +#endif
+>   	atomic_long_inc(&dev->tx_dropped);
+>   	kfree_skb_list(skb);
+>   	return rc;
 > 
