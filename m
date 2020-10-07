@@ -2,132 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78525285813
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 07:13:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F09AD285830
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 07:42:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726411AbgJGFNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 01:13:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58808 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726041AbgJGFNj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 01:13:39 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6967C061755;
-        Tue,  6 Oct 2020 22:13:39 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id 7so624271pgm.11;
-        Tue, 06 Oct 2020 22:13:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=HcUrC2h912Ise4NnCqH2Ml1ksM1fqY/57tAY9LEMA9c=;
-        b=ZB4SE7EXlvfHWy3qozaXROQKgeDBeCMp10YiwJOlvrqSsf8vKFxZ4hVtG7OmI4Z0Rb
-         jVyMSbYEgdjErd6IL2HpId4FUXtQzlTglCWg2HoiWLrrqnLe+z49Mj/wvdkPHght5s+9
-         cFIL5iFak7h4kp2X2VqC3pUiXoXlxarezWtFjyS7yXHTqQSA1iezQqD3qee+wTVuPqpp
-         tuxKPqktml7n/xP/GNx0LA/7nU0XwHshPlPaboh062aMe1x5xPveSnhWHS2hlDwhvG86
-         FsHAdh0f477/AleFSFrvpJPfeSx0aH2blODuinHp3iwyFpZH1yW2niFkgtgOHxTfkUBe
-         jwqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HcUrC2h912Ise4NnCqH2Ml1ksM1fqY/57tAY9LEMA9c=;
-        b=DcjO3mhrxMn5Ty21dlmTGn0N4xGTfQThQbDlpvhmzTEABBc3SPcBqvYUBLEy8zcNBJ
-         Go/mANQDuMUIi9C149vYyEyaHQGzjtKYc9STj8vdfrwlFbT5/r7U4DpXMRiwi9alGME9
-         FZI87mcO83srN3RzJUnililN2u5elRwNAm+eV+sxR3DTSIV6ibnSYdhaSRdeOWLsxKoM
-         11WZ6RIhNmrUS126WaS9RlkCy45CWxIvC5/xpagwWDbB0ywtm+8FMQFQj+sfFLwx3F5J
-         xK93pQ5jdPLkRAQrR0ZotO/sSyLyGJ8If+U/VyGR4szR0XC7iBTqxafei0YOwQMUhd9s
-         N2Rg==
-X-Gm-Message-State: AOAM532/Aj757N9dGdiHMIEOK+ajBD056brZPcWuzyk1e+clvfP50qKt
-        +DePHH/t9vLTqT10mcFI0Fs=
-X-Google-Smtp-Source: ABdhPJzIxaIGz2QbQUkCOwturiObL6vXGcQqDA2u5A53i7+zYKxc4E+PrdieQNhwoWhXqU2kVIRA2g==
-X-Received: by 2002:a65:64c1:: with SMTP id t1mr1450985pgv.55.1602047619179;
-        Tue, 06 Oct 2020 22:13:39 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:9c77])
-        by smtp.gmail.com with ESMTPSA id c201sm1100685pfb.216.2020.10.06.22.13.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Oct 2020 22:13:38 -0700 (PDT)
-Date:   Tue, 6 Oct 2020 22:13:35 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        john fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 1/3] bpf: Propagate scalar ranges through
- register assignments.
-Message-ID: <20201007051335.z6lwkinpsyxmpfam@ast-mbp>
-References: <20201006200955.12350-1-alexei.starovoitov@gmail.com>
- <20201006200955.12350-2-alexei.starovoitov@gmail.com>
- <CAEf4BzbRLLJ=r3LJfQbkkXtXgNqQL3Sr01ibhOaxNN-QDqiXdw@mail.gmail.com>
- <20201007021842.2lwngvsvj2hbuzh5@ast-mbp>
- <CAEf4Bza=7GzvXJinkwO1XcASg7ahHranmNRmXEzU-KzOg9wVCw@mail.gmail.com>
- <20201007041517.6wperlh6dqrk7xjc@ast-mbp>
- <CAEf4BzY1kKrB-GRmMCvEVy64KhpT=jao7voQuvXkKw4woMe8cA@mail.gmail.com>
+        id S1726438AbgJGFls (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 01:41:48 -0400
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:14732 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726009AbgJGFls (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 01:41:48 -0400
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5f7d550f0000>; Tue, 06 Oct 2020 22:41:35 -0700
+Received: from [10.21.180.193] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 7 Oct
+ 2020 05:41:31 +0000
+Subject: Re: [PATCH net-next 05/16] devlink: Add remote reload stats
+To:     Jacob Keller <jacob.e.keller@intel.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Moshe Shemesh <moshe@mellanox.com>
+CC:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+References: <1601560759-11030-1-git-send-email-moshe@mellanox.com>
+ <1601560759-11030-6-git-send-email-moshe@mellanox.com>
+ <20201003090542.GF3159@nanopsycho.orion>
+ <9ea0e668-3613-18dc-e1e0-c6dfbd803906@nvidia.com>
+ <f0ae9141-3ed2-f296-b3ae-84408a87b2d9@intel.com>
+From:   Moshe Shemesh <moshe@nvidia.com>
+Message-ID: <2cd57697-a1e1-cab8-6a7d-f139b5af1420@nvidia.com>
+Date:   Wed, 7 Oct 2020 08:41:28 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzY1kKrB-GRmMCvEVy64KhpT=jao7voQuvXkKw4woMe8cA@mail.gmail.com>
+In-Reply-To: <f0ae9141-3ed2-f296-b3ae-84408a87b2d9@intel.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: quoted-printable
+Content-Language: en-US
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1602049295; bh=9upe5PRTkXHVgj06Gi2i1YyoRi+xygsiFggdIlcwuA8=;
+        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
+         MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:
+         Content-Language:X-Originating-IP:X-ClientProxiedBy;
+        b=OibxIPubHJOw6TU1hp1ECGcKaEP3ZfuvqwPvRpBCI11bQvxwbA1eYgpioxoM8ztAG
+         9TRiRqRiVZAtriDlijYKFy2o5eNaemVacEl/yqLGVy0xrwSklbkrGEhvtoxddm9Psc
+         wAUTan+SvqyvAgS0Tj9ueMB4IWaseyMm+ipOx5udl2C74n510DWtuW0FjTFqZCpU72
+         k3NjKkD/ZtZfbobvgUS7ORsZ+AQCIhyDwvWQo5RNdRuY8mgIEsEoGTQueLqP2IVxox
+         l/XDIEabAaDR1tTVfgRtiYZUwqeSWbOhoDVnA6knRSMyLdO+5us7sBC5fHFfZlM7r9
+         Tqz1cHNvQLrAQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 06, 2020 at 09:42:18PM -0700, Andrii Nakryiko wrote:
-> > I see it differently.
-> > I don't like moving if (reg->id) into find_equal_scalars(). Otherwise it would
-> > have to be named something like try_find_equal_scalars(). And even with such
-> > "try_" prefix it's still not clean. It's my general dislike of defensive
-> > programming. I prefer all functions to be imperative: "do" vs "try_do".
-> > There are exception from the rule, of course. Like kfree() that accepts NULL.
-> > That's fine.
-> > In this case I think if (type == SCALAR && id != 0) should be done by the caller.
-> 
-> There is no need to do (type == SCALAR) check, see pseudo-code above.
-> In all cases where find_equal_scalars() is called we know already that
-> register is SCALAR.
-> 
-> As for `if (reg->id)` being moved inside find_equal_scalars(). I
-> didn't mean it as a defensive measure. It just allows to keep
-> higher-level logic in check_cond_jmp_op() a bit more linear.
-> 
-> Also, regarding "try_find_equal_scalars". It's not try/attempt to do
-> this, it's do it, similarly to __update_reg_bounds() you explained
-> below. It's just known_reg->id == 0 is a guarantee that there are no
-> other equal registers, so we can skip the work. But of course one can
-> look at this differently. I just prefer less nested ifs, if it's
-> possible to avoid them.
-> 
-> But all this is not that important. I suggested, you declined, let's move on.
-> 
-> > Note that's different from __update_reg_bounds().
-> > There the bounds may or may not change, but the action is performed.
-> > What you're proposing it to make find_equal_scalars() accept any kind
-> > of register and do the action only if argument is actual scalar
-> > and its "id != 0". That's exactly the defensive programming
-> > that I feel make programmers sloppier.
-> 
-> :) I see a little bit of an irony between this anti-defensive
-> programming manifesto and "safety net in case id assignment goes
-> wrong" above.
-> 
-> > Note that's not the same as mark_reg_unknown() doing
-> > if (WARN_ON(regno >= MAX_BPF_REG)) check. I hope the difference is clear.
 
-Looks like the difference between defensive programming and safety net checks
-was not clear. The safety net in mark_reg_unknown() will be triggered when
-things really go wrong. I don't think I've ever seen in production code. I only
-saw it during the development when my code was badly broken. That check is to
-prevent security issues in case a bug sneaks in. The defensive programming lets
-a function accept incorrect arguments. That's normal behavior of such function.
-Because of such design choice the programers will routinely pass invalid args.
-That's kfree() checking for NULL and the only exception I can remember in the
-kernel code base. Arguably NULL is not an invalid value in this case. When
-people talk about defensive programming the NULL check is brought up as an
-example, but I think it's important to understand it at deeper level.
-Letting function accept any register only to
-> prefer less nested ifs, if it's possible to avoid them
-is the same thing. It's making code sloppier for esthetics of less nested if-s.
-There are plenty of projects and people that don't mind such coding style and
-find it easier to program. That's a disagreement in coding philosophy. It's ok
-to disagree, but it's important to understand those coding differences.
+On 10/5/2020 10:12 PM, Jacob Keller wrote:
+>
+> On 10/4/2020 12:09 AM, Moshe Shemesh wrote:
+>> On 10/3/2020 12:05 PM, Jiri Pirko wrote:
+>>> Thu, Oct 01, 2020 at 03:59:08PM CEST, moshe@mellanox.com wrote:
+>>>> Add remote reload stats to hold the history of actions performed due
+>>>> devlink reload commands initiated by remote host. For example, in case
+>>>> firmware activation with reset finished successfully but was initiated
+>>>> by remote host.
+>>>>
+>>>> The function devlink_remote_reload_actions_performed() is exported to
+>>>> enable drivers update on remote reload actions performed as it was not
+>>>> initiated by their own devlink instance.
+>>>>
+>>>> Expose devlink remote reload stats to the user through devlink dev get
+>>>> command.
+>>>>
+>>>> Examples:
+>>>> $ devlink dev show
+>>>> pci/0000:82:00.0:
+>>>>    stats:
+>>>>        reload_stats:
+>>>>          driver_reinit 2
+>>>>          fw_activate 1
+>>>>          fw_activate_no_reset 0
+>>>>        remote_reload_stats:
+>>>>          driver_reinit 0
+>>>>          fw_activate 0
+>>>>          fw_activate_no_reset 0
+>>>> pci/0000:82:00.1:
+>>>>    stats:
+>>>>        reload_stats:
+>>>>          driver_reinit 1
+>>>>          fw_activate 0
+>>>>          fw_activate_no_reset 0
+>>>>        remote_reload_stats:
+>>>>          driver_reinit 1
+>>>>          fw_activate 1
+>>>>          fw_activate_no_reset 0
+>>>>
+>>>> $ devlink dev show -jp
+>>>> {
+>>>>      "dev": {
+>>>>          "pci/0000:82:00.0": {
+>>>>              "stats": {
+>>>>                  "reload_stats": [ {
+>>>>                          "driver_reinit": 2
+>>>>                      },{
+>>>>                          "fw_activate": 1
+>>>>                      },{
+>>>>                          "fw_activate_no_reset": 0
+>>>>                      } ],
+>>>>                  "remote_reload_stats": [ {
+>>>>                          "driver_reinit": 0
+>>>>                      },{
+>>>>                          "fw_activate": 0
+>>>>                      },{
+>>>>                          "fw_activate_no_reset": 0
+>>>>                      } ]
+>>>>              }
+>>>>          },
+>>>>          "pci/0000:82:00.1": {
+>>>>              "stats": {
+>>>>                  "reload_stats": [ {
+>>>>                          "driver_reinit": 1
+>>>>                      },{
+>>>>                          "fw_activate": 0
+>>>>                      },{
+>>>>                          "fw_activate_no_reset": 0
+>>>>                      } ],
+>>>>                  "remote_reload_stats": [ {
+>>>>                          "driver_reinit": 1
+>>>>                      },{
+>>>>                          "fw_activate": 1
+>>>>                      },{
+>>>>                          "fw_activate_no_reset": 0
+>>>>                      } ]
+>>>>              }
+>>>>          }
+>>>>      }
+>>>> }
+>>>>
+>>>> Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
+>>>> ---
+>>>> RFCv5 -> v1:
+>>>> - Resplit this patch and the previous one by remote/local reload stats
+>>>> instead of set/get reload stats
+>>>> - Rename reload_action_stats to reload_stats
+>>>> RFCv4 -> RFCv5:
+>>>> - Add remote actions stats
+>>>> - If devlink reload is not supported, show only remote_stats
+>>>> RFCv3 -> RFCv4:
+>>>> - Renamed DEVLINK_ATTR_RELOAD_ACTION_CNT to
+>>>>    DEVLINK_ATTR_RELOAD_ACTION_STAT
+>>>> - Add stats per action per limit level
+>>>> RFCv2 -> RFCv3:
+>>>> - Add reload actions counters instead of supported reload actions
+>>>>    (reload actions counters are only for supported action so no need f=
+or
+>>>>     both)
+>>>> RFCv1 -> RFCv2:
+>>>> - Removed DEVLINK_ATTR_RELOAD_DEFAULT_LEVEL
+>>>> - Removed DEVLINK_ATTR_RELOAD_LEVELS_INFO
+>>>> - Have actions instead of levels
+>>>> ---
+>>>> include/net/devlink.h        |  1 +
+>>>> include/uapi/linux/devlink.h |  1 +
+>>>> net/core/devlink.c           | 49 +++++++++++++++++++++++++++++++-----
+>>>> 3 files changed, 45 insertions(+), 6 deletions(-)
+>>>>
+>>>> diff --git a/include/net/devlink.h b/include/net/devlink.h
+>>>> index 0f3bd23b6c04..a4ccb83bbd2c 100644
+>>>> --- a/include/net/devlink.h
+>>>> +++ b/include/net/devlink.h
+>>>> @@ -42,6 +42,7 @@ struct devlink {
+>>>>      const struct devlink_ops *ops;
+>>>>      struct xarray snapshot_ids;
+>>>>      u32 reload_stats[DEVLINK_RELOAD_STATS_ARRAY_SIZE];
+>>>> +   u32 remote_reload_stats[DEVLINK_RELOAD_STATS_ARRAY_SIZE];
+>>> Perhaps a nested struct  {} stats?
+>> I guess you mean struct that holds these two arrays.
+>>>>      struct device *dev;
+>>>>      possible_net_t _net;
+>>>>      struct mutex lock; /* Serializes access to devlink instance speci=
+fic objects such as
+>>>> diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink=
+.h
+>>>> index 97e0137f6201..f9887d8afdc7 100644
+>>>> --- a/include/uapi/linux/devlink.h
+>>>> +++ b/include/uapi/linux/devlink.h
+>>>> @@ -530,6 +530,7 @@ enum devlink_attr {
+>>>>      DEVLINK_ATTR_RELOAD_STATS,              /* nested */
+>>>>      DEVLINK_ATTR_RELOAD_STATS_ENTRY,        /* nested */
+>>>>      DEVLINK_ATTR_RELOAD_STATS_VALUE,        /* u32 */
+>>>> +   DEVLINK_ATTR_REMOTE_RELOAD_STATS,       /* nested */
+>>>>
+>>>>      /* add new attributes above here, update the policy in devlink.c =
+*/
+>>>>
+>>>> diff --git a/net/core/devlink.c b/net/core/devlink.c
+>>>> index 05516f1e4c3e..3b6bd3b4d346 100644
+>>>> --- a/net/core/devlink.c
+>>>> +++ b/net/core/devlink.c
+>>>> @@ -523,28 +523,35 @@ static int devlink_reload_stat_put(struct sk_buf=
+f *msg, enum devlink_reload_acti
+>>>>      return -EMSGSIZE;
+>>>> }
+>>>>
+>>>> -static int devlink_reload_stats_put(struct sk_buff *msg, struct devli=
+nk *devlink)
+>>>> +static int devlink_reload_stats_put(struct sk_buff *msg, struct devli=
+nk *devlink, bool is_remote)
+>>>> {
+>>>>      struct nlattr *reload_stats_attr;
+>>>>      int i, j, stat_idx;
+>>>>      u32 value;
+>>>>
+>>>> -   reload_stats_attr =3D nla_nest_start(msg, DEVLINK_ATTR_RELOAD_STAT=
+S);
+>>>> +   if (!is_remote)
+>>>> +           reload_stats_attr =3D nla_nest_start(msg, DEVLINK_ATTR_REL=
+OAD_STATS);
+>>>> +   else
+>>>> +           reload_stats_attr =3D nla_nest_start(msg, DEVLINK_ATTR_REM=
+OTE_RELOAD_STATS);
+>>>>
+>>>>      if (!reload_stats_attr)
+>>>>              return -EMSGSIZE;
+>>>>
+>>>>      for (j =3D 0; j <=3D DEVLINK_RELOAD_LIMIT_MAX; j++) {
+>>>> -           if (j !=3D DEVLINK_RELOAD_LIMIT_UNSPEC &&
+>>>> +           if (!is_remote && j !=3D DEVLINK_RELOAD_LIMIT_UNSPEC &&
+>>> I don't follow the check "!is_remote" here,
+>>
+>> We agreed that remote stats should be shown also for non supported
+>> actions and limits, because its remote. So it makes this condition
+>> different for remote stats. Rethinking about it, maybe that's wrong. I
+>> mean if we had here reload actions as a result of remote driver, they
+>> have common device, so it has to be the same type of driver and support
+>> same actions/limits, right ?
+>>
+> Obviously it runs the same device but.. technically, couldn't the remote
+> device be running a different version of the driver? i.e. what if it
+> supports some new mode that this host doesn't yet understand? (or does
+> understand but has a driver which doesn't yet?)
+
+
+Yes, also there is a possibility that one host function has privilege to=20
+do an action that the other doesn't have.=C2=A0 I see there are reasons to=
+=20
+keep this diff between remote stats and local. I will keep it. Thanks.
+
