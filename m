@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A97BF285C99
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 12:12:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9B65285C9A
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 12:12:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727908AbgJGKMe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 06:12:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48398 "EHLO
+        id S1727927AbgJGKMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 06:12:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727297AbgJGKMe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 06:12:34 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 297C4C061755
-        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 03:12:34 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id bb1so767911plb.2
-        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 03:12:34 -0700 (PDT)
+        with ESMTP id S1727297AbgJGKMl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 06:12:41 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49FEFC061755
+        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 03:12:41 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id 7so1058245pgm.11
+        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 03:12:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XJqtU+qSTs9Z6nT0yW60YoHpdGiXKLBzWgmdn/Juk24=;
-        b=ezNQm3H3MCV8A6tafhprk3ckyJK8Y6IvMfWLo+vo5/JBoU319EJSeTY4QpLj3QZzbK
-         deHLN8wYMRM1boDbNuNrBIv8zT2h5U9yLM1IlU9vkiyKdwlu0aIChrg8vUNmodDYYlxc
-         OlGp5w2QmfXrcbDXR2sCjID0Fz9pMVmU47Lwapw25RSZ+onyjdvo17dmKyQbne5cHGDw
-         G97NeltJUXWuyXKDSf3ksM2UXKX5MRbFPDndTJYRcWEjG6bj7YanQl1apwoSVxBpILVs
-         rPNAc+RmFdFDg7D6qFikmnxigOit7nG66hYVOAYVw/JZj/X4PIxVQAJtSwKCOe0BMiJa
-         NS0A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=T/XYKCC2zWQ/TXZqr1X46RbRC8zh9kKIy6k3ZDTLGg4=;
+        b=lVZ/qrgve8Q9Jc76SriBF6hRydhVuF4Geccethf7NFSzCI4i2yMoCfgy52f78hQub4
+         BEUZ4HRwanXO2UY/WCEULbwYo67Pma6jbnauvrW0YDRTG/mUSyh9oCJl3g1lkJYhsjG+
+         4Z2Q4yRZzC02FfQjFD19FXAXwlvOSn04H7Slh2pSQjC64ZbCmLDtVawYI3FdpQl1fVGh
+         gOlaRpUgwBoWaNaY14qohanl6Pq07KJXnXTSg/ondVsFVFO1ACqOdSXIOwvYHwot+goh
+         4mMO5xt/MroIXolBqxymX+zR3Dp5cZySEmRBbjNOGJNa5D1s+/sZM+ES5I4xRO3KUDVZ
+         dsGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XJqtU+qSTs9Z6nT0yW60YoHpdGiXKLBzWgmdn/Juk24=;
-        b=YWNJkR82fUe1lX67rna6xsMiWcdHK/i0TivRZ7mcLdPitPYjvAbbuc948frALwIrEF
-         5GNNq+B6tUlev1vs8UvUPupfdzXcBb6C41PKJB+mSs5nahyrdF/2M8NIVHbCqkXm5Y/u
-         RONPwYc0Vokn4TKrT7feBdcxfJYNHzkiTGT8zltClqAK8azrNkk986G+AfdMK/3q8i8Y
-         9u3V6B10YzoCw9ufvQwYIzbGDGzoxMa3wpFtq3scjwXGm8WRf6vO9ph7ficd27gKqq+a
-         h0+m1XWX8oHtoxUg2jvYEvYDOK1lCCXtpfC0kU+lV6m3Bf/tLKsMBuNmwwNEXE/PavuF
-         ur+Q==
-X-Gm-Message-State: AOAM530DZp1F9y67C6ogBmjsMbBut0faw112xn7VjWb3uBKEDR9BdFmH
-        6Ut3a5gTWuR11DUSjAT/yLk=
-X-Google-Smtp-Source: ABdhPJyNTNVma6GtHLzpoB7zvMqbbLDZXATXw5CUAiCQkSGlVhEXjPRNVCcn4Go+aTxGINuKoiBfeA==
-X-Received: by 2002:a17:902:7e82:b029:d3:f3b5:d99a with SMTP id z2-20020a1709027e82b02900d3f3b5d99amr1351856pla.7.1602065553694;
-        Wed, 07 Oct 2020 03:12:33 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=T/XYKCC2zWQ/TXZqr1X46RbRC8zh9kKIy6k3ZDTLGg4=;
+        b=N6lVzg4jX/DaDryMvQIc1NONHi9D+njG1XvckPP+04fCa3iGuhwdVQloix6km+MWS0
+         5QdqN8z7NCfWykUPO4i2HsxIeTpHRWn4/HkZCRooAXSJK3uOEQFG9HL24PrU0k7qXI4V
+         e0aXrdz/nfpLgQxQvQufvcVCnyjKAjm8Xa1WKEwo0mZgCJTuQLb2hlN6VuyHUXjQCq80
+         SXF5L/6DNVrbO/bx1hETEZyA9im31S6etnFosKx7cjW7SYO1Az7+IN9bMNb77ItqgpE5
+         XFUWICRiB0Evr2Ar/ddqKeW29peHCyxJh9TP+VGPkJBu+C/1WZkWZrt7Gfulne4lUcDE
+         ZgWw==
+X-Gm-Message-State: AOAM532zrIyWveQpby84vJgDuxbAWjAVKJDTRM0Vivyp4WbVnZ28fNLV
+        A3J1dxc1PG9XLgYvskX/dhQ=
+X-Google-Smtp-Source: ABdhPJwJwnBu4hpjodFdybJVBSz3n18feV03BrSGzAtlWbrcvMuU0akny3MHHf9KDg4VJhL7tUokTQ==
+X-Received: by 2002:a63:29c8:: with SMTP id p191mr2337835pgp.45.1602065560716;
+        Wed, 07 Oct 2020 03:12:40 -0700 (PDT)
 Received: from localhost.localdomain ([49.207.204.22])
-        by smtp.gmail.com with ESMTPSA id q24sm1105291pgb.12.2020.10.07.03.12.27
+        by smtp.gmail.com with ESMTPSA id q24sm1105291pgb.12.2020.10.07.03.12.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Oct 2020 03:12:33 -0700 (PDT)
+        Wed, 07 Oct 2020 03:12:40 -0700 (PDT)
 From:   Allen Pais <allen.lkml@gmail.com>
 To:     davem@davemloft.net
 Cc:     gerrit@erg.abdn.ac.uk, kuba@kernel.org, edumazet@google.com,
@@ -55,11 +55,14 @@ Cc:     gerrit@erg.abdn.ac.uk, kuba@kernel.org, edumazet@google.com,
         stefan@datenfreihafen.org, santosh.shilimkar@oracle.com,
         jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
         steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        netdev@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>
-Subject: [net-next v2 0/8] net: convert tasklets to use new
-Date:   Wed,  7 Oct 2020 15:42:11 +0530
-Message-Id: <20201007101219.356499-1-allen.lkml@gmail.com>
+        netdev@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>,
+        Romain Perier <romain.perier@gmail.com>
+Subject: [net-next v2 1/8] net: dccp: convert tasklets to use new tasklet_setup() API
+Date:   Wed,  7 Oct 2020 15:42:12 +0530
+Message-Id: <20201007101219.356499-2-allen.lkml@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20201007101219.356499-1-allen.lkml@gmail.com>
+References: <20201007101219.356499-1-allen.lkml@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -68,39 +71,58 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Allen Pais <apais@linux.microsoft.com>
 
-Commit 12cc923f1ccc ("tasklet: Introduce new initialization API")'
-introduced a new tasklet initialization API. This series converts
-all the net/* drivers to use the new tasklet_setup() API
+In preparation for unconditionally passing the
+struct tasklet_struct pointer to all tasklet
+callbacks, switch to using the new tasklet_setup()
+and from_tasklet() to pass the tasklet pointer explicitly.
 
-The following series is based on net-next (9faebeb2d)
+Signed-off-by: Romain Perier <romain.perier@gmail.com>
+Signed-off-by: Allen Pais <apais@linux.microsoft.com>
+---
+ net/dccp/timer.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-v1:
-  fix kerneldoc
-
-Allen Pais (8):
-  net: dccp: convert tasklets to use new tasklet_setup() API
-  net: ipv4: convert tasklets to use new tasklet_setup() API
-  net: mac80211: convert tasklets to use new tasklet_setup() API
-  net: mac802154: convert tasklets to use new tasklet_setup() API
-  net: rds: convert tasklets to use new tasklet_setup() API
-  net: sched: convert tasklets to use new tasklet_setup() API
-  net: smc: convert tasklets to use new tasklet_setup() API
-  net: xfrm: convert tasklets to use new tasklet_setup() API
-
- net/dccp/timer.c           | 12 ++++++------
- net/ipv4/tcp_output.c      |  8 +++-----
- net/mac80211/ieee80211_i.h |  4 ++--
- net/mac80211/main.c        | 14 +++++---------
- net/mac80211/tx.c          |  5 +++--
- net/mac80211/util.c        |  5 +++--
- net/mac802154/main.c       |  8 +++-----
- net/rds/ib_cm.c            | 14 ++++++--------
- net/sched/sch_atm.c        |  9 +++++----
- net/smc/smc_cdc.c          |  6 +++---
- net/smc/smc_wr.c           | 14 ++++++--------
- net/xfrm/xfrm_input.c      |  7 +++----
- 12 files changed, 48 insertions(+), 58 deletions(-)
-
+diff --git a/net/dccp/timer.c b/net/dccp/timer.c
+index a934d2932..db768f223 100644
+--- a/net/dccp/timer.c
++++ b/net/dccp/timer.c
+@@ -215,13 +215,14 @@ static void dccp_delack_timer(struct timer_list *t)
+ 
+ /**
+  * dccp_write_xmitlet  -  Workhorse for CCID packet dequeueing interface
+- * @data: Socket to act on
++ * @t: pointer to the tasklet associated with this handler
+  *
+  * See the comments above %ccid_dequeueing_decision for supported modes.
+  */
+-static void dccp_write_xmitlet(unsigned long data)
++static void dccp_write_xmitlet(struct tasklet_struct *t)
+ {
+-	struct sock *sk = (struct sock *)data;
++	struct dccp_sock *dp = from_tasklet(dp, t, dccps_xmitlet);
++	struct sock *sk = &dp->dccps_inet_connection.icsk_inet.sk;
+ 
+ 	bh_lock_sock(sk);
+ 	if (sock_owned_by_user(sk))
+@@ -235,16 +236,15 @@ static void dccp_write_xmitlet(unsigned long data)
+ static void dccp_write_xmit_timer(struct timer_list *t)
+ {
+ 	struct dccp_sock *dp = from_timer(dp, t, dccps_xmit_timer);
+-	struct sock *sk = &dp->dccps_inet_connection.icsk_inet.sk;
+ 
+-	dccp_write_xmitlet((unsigned long)sk);
++	dccp_write_xmitlet(&dp->dccps_xmitlet);
+ }
+ 
+ void dccp_init_xmit_timers(struct sock *sk)
+ {
+ 	struct dccp_sock *dp = dccp_sk(sk);
+ 
+-	tasklet_init(&dp->dccps_xmitlet, dccp_write_xmitlet, (unsigned long)sk);
++	tasklet_setup(&dp->dccps_xmitlet, dccp_write_xmitlet);
+ 	timer_setup(&dp->dccps_xmit_timer, dccp_write_xmit_timer, 0);
+ 	inet_csk_init_xmit_timers(sk, &dccp_write_timer, &dccp_delack_timer,
+ 				  &dccp_keepalive_timer);
 -- 
 2.25.1
 
