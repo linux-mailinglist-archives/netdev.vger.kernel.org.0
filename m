@@ -2,104 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78D1E285848
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 07:56:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83819285860
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 08:02:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727235AbgJGF4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 01:56:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37096 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726218AbgJGF4T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 01:56:19 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4586BC061755
-        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 22:56:19 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id n2so1295342oij.1
-        for <netdev@vger.kernel.org>; Tue, 06 Oct 2020 22:56:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=uCYIv1aG1Ow3v8NaIy9nF+T32jE5nfUoWtjKZq5rTyo=;
-        b=S9xbGYRu8NICCmApzKWzDoR3WKjaR6Jr7R+V679n6ga7muUgONPfunyele7AsAv0OE
-         aYUQZ9BMAdo9NxSdP5mz93yTz+3E7v8yHgAJX3125CE0S/Kflr6tXh4xwGzj1aKYPSF3
-         wWXJXpexYLj+wg2ljlCVfwnx6IW047jWszywhtcWkc4QSiKBpqTVgcSOx2RxOhDz9wvn
-         byshWPOBEumJbcLpRrmigNqHvGcQQu4T6W0C8NdE6XZ4QcJboWF/fCqfyN2pFqgk7Jz9
-         fJ8YUUecd6Wxy1jfi7xm/J/7A7u0ti+VX3WfrCDziKJThDWOPDqbe+xuS6zpdHA72IjY
-         EX6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=uCYIv1aG1Ow3v8NaIy9nF+T32jE5nfUoWtjKZq5rTyo=;
-        b=p7Qu+fMtAhvtycEWt5SRm1Q4fN32VjEPDg7Whx09QeQ0Py5jXedrpH9aA9npJEsdF7
-         VfbeNeHPFIbmldOkkDZwip/3w4RLAfYD/DBfxtEeDB3drlNiYaTJjPUJDmn7LS6XhhS/
-         gXBsA/3JVqTS3zubYTx4fmdX/DMnQXvdad5BKr4L6TkLkHWJdLOkfcSc0wfELjmrNDJU
-         jUEAIMrQqzmcDy3vMf7NqYL+b0LmBup7iZJh/IrOy6HGXsUpghFQhl3UtTO4TzAofD07
-         ctSuSNi1tQpZm6jUd/O75rKCQPIhCb1IX/OtgYzDuf5CQ7dAi0OP3wdMmh/0nxDtmz5K
-         ZWOA==
-X-Gm-Message-State: AOAM530p3mDDhaW8ArXLZ3DnMqhNkStTXksdBl8qAYTnbWpwCxHil9Lx
-        5mExT0lBjAv15mUWhX+LjyRAapSBmEW97w==
-X-Google-Smtp-Source: ABdhPJwLdHcXR1PlSIvcBSZcFu2nMdLlUuWD9g/PqE6vxKO1ELl9ANMumPHOIi6BapfMheV27vx8mw==
-X-Received: by 2002:aca:42c2:: with SMTP id p185mr984975oia.55.1602050178057;
-        Tue, 06 Oct 2020 22:56:18 -0700 (PDT)
-Received: from Davids-MBP.attlocal.net ([2600:1700:3eca:200:4df6:ae94:ee53:9573])
-        by smtp.googlemail.com with ESMTPSA id v18sm1261546ooq.11.2020.10.06.22.56.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 06 Oct 2020 22:56:17 -0700 (PDT)
-Subject: Re: [iproute2-next v2 1/1] devlink: display elapsed time during flash
- update
-To:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shannon Nelson <snelson@pensando.io>
-References: <20200930234012.137020-1-jacob.e.keller@intel.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <5ebd3324-1acc-8d9b-2f45-7c4878ad7acc@gmail.com>
-Date:   Tue, 6 Oct 2020 22:56:15 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.1
-MIME-Version: 1.0
-In-Reply-To: <20200930234012.137020-1-jacob.e.keller@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1727593AbgJGGBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 02:01:52 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:34516 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727377AbgJGGB2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 02:01:28 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from moshe@mellanox.com)
+        with SMTP; 7 Oct 2020 09:01:14 +0300
+Received: from dev-l-vrt-136.mtl.labs.mlnx (dev-l-vrt-136.mtl.labs.mlnx [10.234.136.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 09761Esh018747;
+        Wed, 7 Oct 2020 09:01:14 +0300
+Received: from dev-l-vrt-136.mtl.labs.mlnx (localhost [127.0.0.1])
+        by dev-l-vrt-136.mtl.labs.mlnx (8.14.7/8.14.7) with ESMTP id 09761EeE021763;
+        Wed, 7 Oct 2020 09:01:14 +0300
+Received: (from moshe@localhost)
+        by dev-l-vrt-136.mtl.labs.mlnx (8.14.7/8.14.7/Submit) id 09761Bcg021761;
+        Wed, 7 Oct 2020 09:01:11 +0300
+From:   Moshe Shemesh <moshe@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Moshe Shemesh <moshe@mellanox.com>
+Subject: [PATCH net-next v2 00/16] Add devlink reload action and limit options
+Date:   Wed,  7 Oct 2020 09:00:41 +0300
+Message-Id: <1602050457-21700-1-git-send-email-moshe@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/30/20 4:40 PM, Jacob Keller wrote:
-> @@ -3124,12 +3140,19 @@ static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
->  		done = mnl_attr_get_u64(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_DONE]);
->  	if (tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TOTAL])
->  		total = mnl_attr_get_u64(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TOTAL]);
-> +	if (tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TIMEOUT])
-> +		ctx->status_msg_timeout = mnl_attr_get_u64(tb[DEVLINK_ATTR_FLASH_UPDATE_STATUS_TIMEOUT]);
-> +	else
-> +		ctx->status_msg_timeout = 0;
->  
->  	if (!nullstrcmp(msg, ctx->last_msg) &&
->  	    !nullstrcmp(component, ctx->last_component) &&
->  	    ctx->last_pc && ctx->not_first) {
->  		pr_out_tty("\b\b\b\b\b"); /* clean percentage */
->  	} else {
-> +		/* only update the last status timestamp if the message changed */
-> +		gettimeofday(&ctx->time_of_last_status, NULL);
+Introduce new options on devlink reload API to enable the user to select
+the reload action required and constrains limits on these actions that he
+may want to ensure. Complete support for reload actions in mlx5.
+The following reload actions are supported:
+  driver_reinit: driver entities re-initialization, applying devlink-param
+                 and devlink-resource values.
+  fw_activate: firmware activate.
 
-gettimeofday/REALCLOCK should not be used for measuring time differences.
+The uAPI is backward compatible, if the reload action option is omitted
+from the reload command, the driver reinit action will be used.
+Note that when required to do firmware activation some drivers may need
+to reload the driver. On the other hand some drivers may need to reset
+the firmware to reinitialize the driver entities. Therefore, the devlink
+reload command returns the actions which were actually performed.
 
-> +
->  		if (ctx->not_first)
->  			pr_out("\n");
->  		if (component) {
-> @@ -3155,11 +3178,72 @@ static int cmd_dev_flash_status_cb(const struct nlmsghdr *nlh, void *data)
->  	return MNL_CB_STOP;
->  }
->  
-> +static void cmd_dev_flash_time_elapsed(struct cmd_dev_flash_status_ctx *ctx)
-> +{
-> +	struct timeval now, res;
-> +
-> +	gettimeofday(&now, NULL);
-> +	timersub(&now, &ctx->time_of_last_status, &res);
-> +
+By default reload actions are not limited and driver implementation may
+include reset or downtime as needed to perform the actions.
+However, if reload limit is selected, the driver should perform only if
+it can do it while keeping the limit constraints.
+Reload limit added:
+  no_reset: No reset allowed, no down time allowed, no link flap and no
+            configuration is lost.
+
+Each driver which supports devlink reload command should expose the
+reload actions and limits supported.
+
+Add reload stats to hold the history per reload action per limit.
+For example, the number of times fw_activate has been done on this
+device since the driver module was added or if the firmware activation
+was done with or without reset.
+
+Patch 1 changes devlink_reload_supported() param type to enable using
+        it before allocating devlink.
+Patch 2-3 add the new API reload action and reload limit options to
+          devlink reload.
+Patch 4-5 add reload stats and remote reload stats. These stats are
+          exposed through devlink dev get.
+Patches 6-11 add support on mlx5 for devlink reload action fw_activate
+            and handle the firmware reset events.
+Patches 12-13 add devlink enable remote dev reset parameter and use it
+             in mlx5.
+Patches 14-15 mlx5 add devlink reload limit no_reset support for
+              fw_activate reload action.
+Patch 16 adds documentation file devlink-reload.rst 
+
+
+Moshe Shemesh (16):
+  devlink: Change devlink_reload_supported() param type
+  devlink: Add reload action option to devlink reload command
+  devlink: Add devlink reload limit option
+  devlink: Add reload stats
+  devlink: Add remote reload stats
+  net/mlx5: Add functions to set/query MFRL register
+  net/mlx5: Set cap for pci sync for fw update event
+  net/mlx5: Handle sync reset request event
+  net/mlx5: Handle sync reset now event
+  net/mlx5: Handle sync reset abort event
+  net/mlx5: Add support for devlink reload action fw activate
+  devlink: Add enable_remote_dev_reset generic parameter
+  net/mlx5: Add devlink param enable_remote_dev_reset support
+  net/mlx5: Add support for fw live patch event
+  net/mlx5: Add support for devlink reload limit no reset
+  devlink: Add Documentation/networking/devlink/devlink-reload.rst
+
+ .../networking/devlink/devlink-params.rst     |   6 +
+ .../networking/devlink/devlink-reload.rst     |  81 +++
+ Documentation/networking/devlink/index.rst    |   1 +
+ drivers/net/ethernet/mellanox/mlx4/main.c     |   7 +-
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/devlink.c | 108 +++-
+ .../mellanox/mlx5/core/diag/fw_tracer.c       |  52 ++
+ .../mellanox/mlx5/core/diag/fw_tracer.h       |   1 +
+ .../ethernet/mellanox/mlx5/core/fw_reset.c    | 463 ++++++++++++++++++
+ .../ethernet/mellanox/mlx5/core/fw_reset.h    |  21 +
+ .../net/ethernet/mellanox/mlx5/core/health.c  |  35 +-
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  16 +
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   2 +
+ drivers/net/ethernet/mellanox/mlxsw/core.c    |  10 +-
+ drivers/net/netdevsim/dev.c                   |   6 +-
+ include/linux/mlx5/device.h                   |   1 +
+ include/linux/mlx5/driver.h                   |   2 +
+ include/net/devlink.h                         |  23 +-
+ include/uapi/linux/devlink.h                  |  34 ++
+ net/core/devlink.c                            | 337 ++++++++++++-
+ 20 files changed, 1169 insertions(+), 39 deletions(-)
+ create mode 100644 Documentation/networking/devlink/devlink-reload.rst
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h
+
+-- 
+2.18.2
+
