@@ -2,123 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22CF92869F0
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 23:14:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 082FD2869D5
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 23:08:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728669AbgJGVNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 17:13:53 -0400
-Received: from mga14.intel.com ([192.55.52.115]:35211 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728621AbgJGVNw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Oct 2020 17:13:52 -0400
-IronPort-SDR: 9ilKvOG2cVw6p2FpoM4276qYODBFsODqKwEysK63feovhPUEMMh/CN8q41bQp3asRbGtUBjn2R
- aa1eg5Hqx+8Q==
-X-IronPort-AV: E=McAfee;i="6000,8403,9767"; a="164358307"
-X-IronPort-AV: E=Sophos;i="5.77,348,1596524400"; 
-   d="scan'208";a="164358307"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2020 14:13:52 -0700
-IronPort-SDR: wHyGVH/JtGjfRKq9/6gWjX5L7dCn8rcEFQ7EHJcxVa47SkQmSVrLV9lTsdIoYx5TLiaA69qxKq
- 1cFs613qAW0A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,348,1596524400"; 
-   d="scan'208";a="311931450"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga003.jf.intel.com with ESMTP; 07 Oct 2020 14:13:49 -0700
-Date:   Wed, 7 Oct 2020 23:06:15 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     sven.auhagen@voleatech.de
-Cc:     anthony.l.nguyen@intel.com, davem@davemloft.net,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
-        sandeep.penigalapati@intel.com, brouer@redhat.com
-Subject: Re: [PATCH 2/7] igb: take vlan double header into account
-Message-ID: <20201007210615.GA48010@ranger.igk.intel.com>
-References: <20201007152506.66217-1-sven.auhagen@voleatech.de>
- <20201007152506.66217-3-sven.auhagen@voleatech.de>
+        id S1728229AbgJGVIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 17:08:16 -0400
+Received: from aserp2130.oracle.com ([141.146.126.79]:60274 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726105AbgJGVIP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 17:08:15 -0400
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 097L4Cs4055252;
+        Wed, 7 Oct 2020 21:08:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=corp-2020-01-29;
+ bh=g//sBCYth5gJxNzkzjtOhl9eL1n4LCL9IlTHxw7AMZg=;
+ b=UNZXgnIzi1kENr5SkIsW2QCKMIg3z7focUgEv4ZxvrawZJvF5+PCW6GwfrwP7QQ1HXp0
+ tnc5qxCoL4pIOFUynN2/VoXNco0ef9+NI36mgWlSP45DfnDXZJOunUW2mUhWuNyyVH9w
+ IcukxspqJnomDkETTm5HPcsnyxmxJSZQEhAWWgLx2034/0AkWllw1kcwbIAkAJcJk9OM
+ 2Sm+W1eKvnilMroulUBcAqeKQ2+TZw5IW3N8y+Y9g3W8wR+Dvht0TqAdeUOUoE0K2Nip
+ OzGnNIX6t82Q0zkp+WEcaMQ0r75KZoFJUq9f7H7ImiqeTWaRGbriPwIuB+S3qQDOmbRq zA== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2130.oracle.com with ESMTP id 33xetb4hcn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 07 Oct 2020 21:08:08 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 097L6Dxo006327;
+        Wed, 7 Oct 2020 21:08:07 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3030.oracle.com with ESMTP id 33y3802rrj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 07 Oct 2020 21:08:07 +0000
+Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 097L86B6014481;
+        Wed, 7 Oct 2020 21:08:06 GMT
+Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.147.25.63])
+        by userp3030.oracle.com with ESMTP id 33y3802rqu-1;
+        Wed, 07 Oct 2020 21:08:06 +0000
+From:   Vijayendra Suman <vijayendra.suman@oracle.com>
+To:     pabeni@redhat.com
+Cc:     a.fatoum@pengutronix.de, kernel@pengutronix.de,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        somasundaram.krishnasamy@oracle.com,
+        ramanan.govindarajan@oracle.com,
+        Vijayendra Suman <vijayendra.suman@oracle.com>
+Subject: Re: [BUG] pfifo_fast may cause out-of-order CAN frame transmission
+Date:   Wed,  7 Oct 2020 14:07:44 -0700
+Message-Id: <20201007210744.8546-1-vijayendra.suman@oracle.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <13e8950e8537e549f6afb6e254ec75a7462ce648.camel@redhat.com>
+References: <13e8950e8537e549f6afb6e254ec75a7462ce648.camel@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201007152506.66217-3-sven.auhagen@voleatech.de>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9767 signatures=668680
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0 spamscore=0 mlxscore=0
+ clxscore=1011 priorityscore=1501 adultscore=0 mlxlogscore=999 phishscore=0
+ impostorscore=0 malwarescore=0 suspectscore=3 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
+ definitions=main-2010070136
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 07, 2020 at 05:25:01PM +0200, sven.auhagen@voleatech.de wrote:
-> From: Sven Auhagen <sven.auhagen@voleatech.de>
-> 
-> Increase the packet header padding to include double VLAN tagging.
-> This patch uses a macro for this.
-> 
-> Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
-> ---
->  drivers/net/ethernet/intel/igb/igb.h      | 5 +++++
->  drivers/net/ethernet/intel/igb/igb_main.c | 7 +++----
->  2 files changed, 8 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/igb/igb.h b/drivers/net/ethernet/intel/igb/igb.h
-> index 0286d2fceee4..7afb67cf9b94 100644
-> --- a/drivers/net/ethernet/intel/igb/igb.h
-> +++ b/drivers/net/ethernet/intel/igb/igb.h
-> @@ -138,6 +138,8 @@ struct vf_mac_filter {
->  /* this is the size past which hardware will drop packets when setting LPE=0 */
->  #define MAXIMUM_ETHERNET_VLAN_SIZE 1522
->  
-> +#define IGB_ETH_PKT_HDR_PAD	(ETH_HLEN + ETH_FCS_LEN + (VLAN_HLEN * 2))
-> +
->  /* Supported Rx Buffer Sizes */
->  #define IGB_RXBUFFER_256	256
->  #define IGB_RXBUFFER_1536	1536
-> @@ -247,6 +249,9 @@ enum igb_tx_flags {
->  #define IGB_SFF_ADDRESSING_MODE		0x4
->  #define IGB_SFF_8472_UNSUP		0x00
->  
-> +/* TX ressources are shared between XDP and netstack
-> + * and we need to tag the buffer type to distinguish them
-> + */
+[PATCH] Patch with Network Performance Improvment qperf:tcp_lat
 
-s/ressources/resources/
+Check Performed for __QDISC_STATE_DEACTIVATED before checking BYPASS flag 
 
-This comment sort of does not belong to this commit but I'm not sure what
-place would be better.
+qperf tcp_lat 65536bytes over an ib_switch 
 
->  enum igb_tx_buf_type {
->  	IGB_TYPE_SKB = 0,
->  	IGB_TYPE_XDP,
-> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> index 08cc6f59aa2e..0a9198037b98 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> @@ -2826,7 +2826,7 @@ static int igb_setup_tc(struct net_device *dev, enum tc_setup_type type,
->  
->  static int igb_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
->  {
-> -	int i, frame_size = dev->mtu + ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN;
-> +	int i, frame_size = dev->mtu + IGB_ETH_PKT_HDR_PAD;
->  	struct igb_adapter *adapter = netdev_priv(dev);
->  	bool running = netif_running(dev);
->  	struct bpf_prog *old_prog;
-> @@ -3950,8 +3950,7 @@ static int igb_sw_init(struct igb_adapter *adapter)
->  	/* set default work limits */
->  	adapter->tx_work_limit = IGB_DEFAULT_TX_WORK;
->  
-> -	adapter->max_frame_size = netdev->mtu + ETH_HLEN + ETH_FCS_LEN +
-> -				  VLAN_HLEN;
-> +	adapter->max_frame_size = netdev->mtu + IGB_ETH_PKT_HDR_PAD;
->  	adapter->min_frame_size = ETH_ZLEN + ETH_FCS_LEN;
->  
->  	spin_lock_init(&adapter->nfc_lock);
-> @@ -6491,7 +6490,7 @@ static void igb_get_stats64(struct net_device *netdev,
->  static int igb_change_mtu(struct net_device *netdev, int new_mtu)
->  {
->  	struct igb_adapter *adapter = netdev_priv(netdev);
-> -	int max_frame = new_mtu + ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN;
-> +	int max_frame = new_mtu + IGB_ETH_PKT_HDR_PAD;
->  
->  	if (adapter->xdp_prog) {
->  		int i;
-> -- 
-> 2.20.1
-> 
+For 64K packet Performance improvment is around 47 % and performance deviation 
+is reduced to 5 % which was 27 % prior to this patch.
+
+As mentioned by Paolo, With  "net: dev: introduce support for sch BYPASS for lockless qdisc" commit
+there may be out of order packet issue.
+Is there any update to solve out of order packet issue.
+
+qperf Counters for tcp_lat for 60 sec and packet size 64k
+
+With Below Patch
+1. 53817 
+2. 54100 
+3. 57016 
+4. 59410 
+5. 62017 
+6. 54625 
+7. 55770 
+8. 54015 
+9. 54406 
+10. 53137
+
+Without Patch [Upstream Stream]
+1. 83742 
+2. 107320 
+3. 82807 
+4. 105384 
+5. 77406 
+6. 132665 
+7. 117566 
+8. 109279 
+9. 94959 
+10. 82331 
+11. 91614 
+12. 104701 
+13. 91123 
+14. 93908 
+15. 200485 
+
+With UnRevert of commit 379349e9bc3b42b8b2f8f7a03f64a97623fff323 
+[Revert "net: dev: introduce support for sch BYPASS for lockless qdisc"] 
+
+1. 65550
+2. 64285
+3. 64110
+4. 64300
+5. 64645
+6. 63928
+7. 63574
+8. 65024
+9. 65153
+10. 64281
+
+Signed-off-by: Vijayendra Suman <vijayendra.suman@oracle.com>
+---
+ net/core/dev.c | 27 ++++++++++-----------------
+ 1 file changed, 10 insertions(+), 17 deletions(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 40bbb5e43f5d..6cc8e0209b20 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3384,35 +3384,27 @@ static inline int __dev_xmit_skb(struct sk_buff *skb, struct Qdisc *q,
+ 				 struct net_device *dev,
+ 				 struct netdev_queue *txq)
+ {
+ 	struct sk_buff *to_free = NULL;
+ 	bool contended;
+-	int rc;
++	int rc = NET_XMIT_SUCCESS;
+ 
+ 	qdisc_calculate_pkt_len(skb, q);
+ 
+ 	if (q->flags & TCQ_F_NOLOCK) {
+-		if ((q->flags & TCQ_F_CAN_BYPASS) && READ_ONCE(q->empty) &&
+-		    qdisc_run_begin(q)) {
+-			if (unlikely(test_bit(__QDISC_STATE_DEACTIVATED,
+-					      &q->state))) {
+-				__qdisc_drop(skb, &to_free);
+-				rc = NET_XMIT_DROP;
+-				goto end_run;
+-			}
+-			qdisc_bstats_cpu_update(q, skb);
+-
+-			rc = NET_XMIT_SUCCESS;
++		if (unlikely(test_bit(__QDISC_STATE_DEACTIVATED, &q->state))) {
++			__qdisc_drop(skb, &to_free);
++			rc = NET_XMIT_DROP;
++		} else if ((q->flags & TCQ_F_CAN_BYPASS) && READ_ONCE(q->empty) &&
++				qdisc_run_begin(q)) {
++			qdisc_bstats_update(q, skb);
+ 			if (sch_direct_xmit(skb, q, dev, txq, NULL, true))
+ 				__qdisc_run(q);
+-
+-end_run:
+ 			qdisc_run_end(q);
+ 		} else {
+ 			rc = q->enqueue(skb, q, &to_free) & NET_XMIT_MASK;
+ 			qdisc_run(q);
+ 		}
+-
+ 		if (unlikely(to_free))
+ 			kfree_skb_list(to_free);
+ 		return rc;
+-- 
+2.27.0
+
