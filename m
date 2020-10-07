@@ -2,120 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93B3F2855A2
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 02:56:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5030285634
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 03:19:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726830AbgJGA4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 20:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47564 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726672AbgJGA4c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 20:56:32 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFCAFC061755;
-        Tue,  6 Oct 2020 17:56:31 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id 67so555911ybt.6;
-        Tue, 06 Oct 2020 17:56:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V3zqpSMPS8gtKxeX3TbkFq5u4mIeEj4U3nOHYlCoGeo=;
-        b=vGg+OypGRkCqFLX2djYv0TqEfRRV5vwCvcmreBa0IP6X4OCUNlzLbPZGt7kqBJRhP8
-         NA0aeHDYnnC7+NYpdXdTK3xpLrhK5I5yBLyIeomDUM2Ku2FObiInUTYvEb6Aw67l28rR
-         PQXcksLDGdbMvWZ3zInbLnE2ifSjyzT2cHtioqywwrmToBz4fbzN51OnJdQItyjOfOIz
-         thbUgt/T2M0KpZhQyEpsOtZQ4LQN8TzfIeBkbXyodKw85XAzOH8wqAm0hq/a8/+i9lyC
-         rJ1wXjh0K4LJVR95wmDfzhvSJNo2uDymq23u6Ykvx39FFUFn7+47tI5pHv1UrE0vtunK
-         NIoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V3zqpSMPS8gtKxeX3TbkFq5u4mIeEj4U3nOHYlCoGeo=;
-        b=G+IqccQwAxl1EzgxDl9tEFLEraLr2EyhT49KDf6Qwopvp1U+TIWko2JGAhwik74K2U
-         7rL+bbavHYd3ex+uV41qPSB/I4plZNO+isZi9kH9gwEnHKnwfJ1HupDIjU50rNOxpyh/
-         Xae1TiYujUQ8XSxldth7RFs94jRGtmlOLGvmyHsOH4+K64Bnp8fk6y1k6H1dCkzJsfmp
-         ctfty4eP5ymndxXQHiiJEc72R0XBtn43BmQR0k4FzSj1IPIOwecCH86LbkxWU4kmp3Jb
-         x0l1edFrMWlJwuzDYqXBsaALKU4q6T3CABJGJUSxnhnzNLcjJPDQzgacoyb7CtZP6wVC
-         z2BA==
-X-Gm-Message-State: AOAM533BtKg68zJxNiFhessJaCsc4CSS2IfTo/xyjPJ2pAqKvW8Dk7K2
-        p1FGvUK5W+xeyY/mu+7SCgQahYpjgL9jxdnNGcM=
-X-Google-Smtp-Source: ABdhPJwtV3QALkbyCX1DdAt++HauBCU2BBlMN7Ar7/rvkWYaWmdUHQs74Ixqo8P6GBcdptOpS+zttr1maEotqb+NfzM=
-X-Received: by 2002:a25:730a:: with SMTP id o10mr1235486ybc.403.1602032190986;
- Tue, 06 Oct 2020 17:56:30 -0700 (PDT)
+        id S1726873AbgJGBTB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 21:19:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33326 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726073AbgJGBTB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Oct 2020 21:19:01 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 10F2620782;
+        Wed,  7 Oct 2020 01:19:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602033540;
+        bh=26dCdgz5eceYB7U+NkO7SKdBQ0YKwIYF/J77niJk95A=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LfWiWBXkdnLlvtvlwLOnHVFblbSNnuO5mofEDaLUCA/uL18i1fwvNgQRT5akwNU+d
+         nTUj2QAnLDm2Gfo33l2fq10KlGymX42R1HR2etawKFMAvWA2R6Z2dX3Gq8qnDEsk5E
+         k+9vqEzUNnpjaFxU6LMg2iqS4MXgLkkNoXLWSB6U=
+Date:   Tue, 6 Oct 2020 18:18:58 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [PATCH bpf-next V1 3/6] bpf: add BPF-helper for reading MTU
+ from net_device via ifindex
+Message-ID: <20201006181858.6003de94@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201006183302.337a9502@carbon>
+References: <160200013701.719143.12665708317930272219.stgit@firesoul>
+        <160200018165.719143.3249298786187115149.stgit@firesoul>
+        <20201006183302.337a9502@carbon>
 MIME-Version: 1.0
-References: <20201006231706.2744579-1-haoluo@google.com> <CAEf4BzY1ggHq6UGkHQ_S=0_US=bLPc9u+9pyeUP2hWb_3kWN+w@mail.gmail.com>
- <CA+khW7hVh4PJHtZSNG-_ZPxthQdvKSxoL4P17GZn5NdQxjnHxA@mail.gmail.com>
-In-Reply-To: <CA+khW7hVh4PJHtZSNG-_ZPxthQdvKSxoL4P17GZn5NdQxjnHxA@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 6 Oct 2020 17:56:20 -0700
-Message-ID: <CAEf4BzakCTkR2E1EPgAKEgdBqwLif3HOZWCypE0h-Z9oS5zrkg@mail.gmail.com>
-Subject: Re: [PATCH] bpf: Fix test_verifier after introducing resolve_pseudo_ldimm64
-To:     Hao Luo <haoluo@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 6, 2020 at 5:51 PM Hao Luo <haoluo@google.com> wrote:
->
-> On Tue, Oct 6, 2020 at 5:43 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Tue, Oct 6, 2020 at 4:45 PM Hao Luo <haoluo@google.com> wrote:
-> > >
-> > > Commit 4976b718c355 ("bpf: Introduce pseudo_btf_id") switched
-> > > the order of check_subprogs() and resolve_pseudo_ldimm() in
-> > > the verifier. Now an empty prog and the prog of a single
-> > > invalid ldimm expect to see the error "last insn is not an
-> > > exit or jmp" instead, because the check for subprogs comes
-> > > first. Fix the expection of the error message.
-> > >
-> > > Tested:
-> > >  # ./test_verifier
-> > >  Summary: 1130 PASSED, 538 SKIPPED, 0 FAILED
-> > >  and the full set of bpf selftests.
-> > >
-> > > Fixes: 4976b718c355 ("bpf: Introduce pseudo_btf_id")
-> > > Signed-off-by: Hao Luo <haoluo@google.com>
-> > > ---
-> [...]
-> > > diff --git a/tools/testing/selftests/bpf/verifier/ld_imm64.c b/tools/testing/selftests/bpf/verifier/ld_imm64.c
-> > > index 3856dba733e9..f300ba62edd0 100644
-> > > --- a/tools/testing/selftests/bpf/verifier/ld_imm64.c
-> > > +++ b/tools/testing/selftests/bpf/verifier/ld_imm64.c
-> > > @@ -55,7 +55,7 @@
-> > >         .insns = {
-> > >         BPF_RAW_INSN(BPF_LD | BPF_IMM | BPF_DW, 0, 0, 0, 0),
-> > >         },
-> > > -       .errstr = "invalid bpf_ld_imm64 insn",
-> > > +       .errstr = "last insn is not an exit or jmp",
-> >
-> > but this completely defeats the purpose of the test; better add
-> > BPF_EXIT_INSN() after ldimm64 instruction to actually get to
-> > validation of ldimm64
-> >
->
-> Actually there is already a test (test4) that covers this case. So it
-> makes sense to remove it, I think. I will resend with this change.
+On Tue, 6 Oct 2020 18:33:02 +0200 Jesper Dangaard Brouer wrote:
+> > +static const struct bpf_func_proto bpf_xdp_mtu_lookup_proto = {
+> > +	.func		= bpf_xdp_mtu_lookup,
+> > +	.gpl_only	= true,
+> > +	.ret_type	= RET_INTEGER,
+> > +	.arg1_type      = ARG_PTR_TO_CTX,
+> > +	.arg2_type      = ARG_ANYTHING,
+> > +	.arg3_type      = ARG_ANYTHING,
+> > +};
+> > +
+> > +
 
-ah, this test validates that half of ldimm64 at the very end won't
-cause any troubles to verifier... Yeah, I guess now it's pointless
-because it can never be the very last instruction.
+FWIW
 
->
-> > >         .result = REJECT,
-> > >  },
-> > >  {
-> > > --
-> > > 2.28.0.806.g8561365e88-goog
-> > >
+CHECK: Please don't use multiple blank lines
+#112: FILE: net/core/filter.c:5566:
++
++
