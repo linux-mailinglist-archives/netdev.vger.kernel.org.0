@@ -2,145 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A7C528568E
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 04:04:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70806285693
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 04:08:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726851AbgJGCEH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Oct 2020 22:04:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58036 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725970AbgJGCEH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Oct 2020 22:04:07 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E467C061755;
-        Tue,  6 Oct 2020 19:04:05 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id e10so449624pfj.1;
-        Tue, 06 Oct 2020 19:04:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YVgLx9s8FS6ZnB/Q1x0oH2itI4S+Z8rpG77clg3XEYU=;
-        b=vNiheKN/RmY3/A5S0iCEm1yKt9sTv5ZeAEJWP2GJHlcOvKxJPm0Wt0YMfhbbxhp1Hy
-         1yXwIsyQHquXZRR0PBXYti5THI1hgV53kDS1Pj7pxjxipIpZn1QMyJg/4RU4V3yhKK97
-         TXPl/4lhS6UY/KMdCWaA4KTHl5yaoawpAL774q8STnmFETrlj1hHgX4I7mD/pAM+i/BI
-         r+OTh7DfIs6B0T+44fwavIl0yMsBUd2o3gmDcBipA5uDfSksbFwkTH3FPpYf1Y4v40sV
-         YzXBzYa5oFvaH339iGZNGRqrI84b1XccTjz/7N6G8NNYCnyqIpGsq2lafZGgsQNsw1JK
-         Nhew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YVgLx9s8FS6ZnB/Q1x0oH2itI4S+Z8rpG77clg3XEYU=;
-        b=gJhXW+GZHglEZdYP6F7BMcqsJvkvXfS/vz785E8pzlZpfydJ7WW+T5AZjOJ/MaBo1D
-         DidYg3PBZT4CvbVD/dAHwpit8M6Qwjw+bWEZKad8t8E+yO33Rv5SC7vVElq+/zv/hrOx
-         G34FvTGqHej4zwIV/ew3IzMMiBAUENJLkB6U0HiW5MedJgCTh7BNo4jfcEqiCfiEQMnO
-         WoTDTtd8Uw8KvNDphUJhKeYGs87D8a1tVge5ogZTEvGZ5TggXqkhWxyIzMkUmw7qJ+OK
-         7PY29xSUgZa3IIfM6HRxDKYEobmat+5V19RvAFN2lZ8VCHiS/F6lfjUQG7g3ugaNTmXh
-         6kfw==
-X-Gm-Message-State: AOAM5324BJlkZtAlt53dtWyJFAPUmZ+NNAFV4tHojHiuGYrxBPkGQ6uf
-        BCMH6806AuKvXh2MgR2B5LRSOCLxOok=
-X-Google-Smtp-Source: ABdhPJz/L1QE7e266HoohCyqgpZgAEN0fgdOUqR8LRkMwNPYdCRwb3cgbIjWxtnO+c2K4ZygYnMRCg==
-X-Received: by 2002:a63:1849:: with SMTP id 9mr919662pgy.393.1602036244852;
-        Tue, 06 Oct 2020 19:04:04 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:9c77])
-        by smtp.gmail.com with ESMTPSA id q8sm529616pfu.173.2020.10.06.19.04.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Oct 2020 19:04:04 -0700 (PDT)
-Date:   Tue, 6 Oct 2020 19:04:01 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Hao Luo <haoluo@google.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>
-Subject: Re: [PATCH v2] selftests/bpf: Fix test_verifier after introducing
- resolve_pseudo_ldimm64
-Message-ID: <20201007020401.wsbeli3dbz7fumal@ast-mbp>
-References: <20201007012313.2778426-1-haoluo@google.com>
+        id S1726590AbgJGCIU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Oct 2020 22:08:20 -0400
+Received: from ozlabs.org ([203.11.71.1]:34679 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725970AbgJGCIU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Oct 2020 22:08:20 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4C5d694KBLz9sSG;
+        Wed,  7 Oct 2020 13:08:17 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1602036497;
+        bh=JYAiyTM40zSDyus2/9je1I8wA9ZePbLcDmG6dt6zgZM=;
+        h=Date:From:To:Cc:Subject:From;
+        b=MQlXzIWxh/0l9yS3Y0Dps2P9aaFA3lb9ZG5eD4icw1vzS1k+9L8t1IfpdvzI5O89R
+         a20IqV3Ebw6mUmuFmgg+kKJzct2IwjB232xXswIp+r+gv/qAewlKvi+tUAmUemeTex
+         9nmx4moCsk0zDIk7lSdjk4LS7sV2ZRbgXHdTt0YBMKP8kwZd10FlCOp80IPho1RMZl
+         Vvi3SuGov4rFDKlGJk/R6LuXlSSq9sNLtsjPQNPsLLz6EcYfjLAf8zAw+N+wXZwdWk
+         /v99AFqB4Fgtmclf6w3cvG3ZZGSgpXjeanIHDna9uem4WZix5jK0PtwdXKEd/ftnXd
+         dOfalmLXTR7Ug==
+Date:   Wed, 7 Oct 2020 13:08:13 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     David Howells <dhowells@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: linux-next: manual merge of the net-next tree with the net tree
+Message-ID: <20201007130813.2f00ceba@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201007012313.2778426-1-haoluo@google.com>
+Content-Type: multipart/signed; boundary="Sig_/9/UCw1UskAGq1UFgDWqi.=5";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 06, 2020 at 06:23:13PM -0700, Hao Luo wrote:
-> Commit 4976b718c355 ("bpf: Introduce pseudo_btf_id") switched
-> the order of check_subprogs() and resolve_pseudo_ldimm() in
-> the verifier. Now an empty prog expects to see the error "last
-> insn is not an the prog of a single invalid ldimm exit or jmp"
-> instead, because the check for subprogs comes first. It's now
-> pointless to validate that half of ldimm64 won't be the last
-> instruction.
-> 
-> Tested:
->  # ./test_verifier
->  Summary: 1129 PASSED, 537 SKIPPED, 0 FAILED
->  and the full set of bpf selftests.
-> 
-> Fixes: 4976b718c355 ("bpf: Introduce pseudo_btf_id")
-> Signed-off-by: Hao Luo <haoluo@google.com>
-> ---
-> Changelog in v2:
->  - Remove the original test_verifier ld_imm64 test4
->  - Updated commit message.
-> 
->  tools/testing/selftests/bpf/verifier/basic.c  |  2 +-
->  .../testing/selftests/bpf/verifier/ld_imm64.c | 24 +++++++------------
->  2 files changed, 9 insertions(+), 17 deletions(-)
-> 
-> diff --git a/tools/testing/selftests/bpf/verifier/basic.c b/tools/testing/selftests/bpf/verifier/basic.c
-> index b8d18642653a..de84f0d57082 100644
-> --- a/tools/testing/selftests/bpf/verifier/basic.c
-> +++ b/tools/testing/selftests/bpf/verifier/basic.c
-> @@ -2,7 +2,7 @@
->  	"empty prog",
->  	.insns = {
->  	},
-> -	.errstr = "unknown opcode 00",
-> +	.errstr = "last insn is not an exit or jmp",
->  	.result = REJECT,
->  },
->  {
-> diff --git a/tools/testing/selftests/bpf/verifier/ld_imm64.c b/tools/testing/selftests/bpf/verifier/ld_imm64.c
-> index 3856dba733e9..ed6a34991216 100644
-> --- a/tools/testing/selftests/bpf/verifier/ld_imm64.c
-> +++ b/tools/testing/selftests/bpf/verifier/ld_imm64.c
-> @@ -54,21 +54,13 @@
->  	"test5 ld_imm64",
->  	.insns = {
->  	BPF_RAW_INSN(BPF_LD | BPF_IMM | BPF_DW, 0, 0, 0, 0),
-> -	},
-> -	.errstr = "invalid bpf_ld_imm64 insn",
-> -	.result = REJECT,
-> -},
-> -{
-> -	"test6 ld_imm64",
-> -	.insns = {
-> -	BPF_RAW_INSN(BPF_LD | BPF_IMM | BPF_DW, 0, 0, 0, 0),
->  	BPF_RAW_INSN(0, 0, 0, 0, 0),
->  	BPF_EXIT_INSN(),
->  	},
->  	.result = ACCEPT,
->  },
->  {
-> -	"test7 ld_imm64",
-> +	"test6 ld_imm64",
->  	.insns = {
->  	BPF_RAW_INSN(BPF_LD | BPF_IMM | BPF_DW, 0, 0, 0, 1),
->  	BPF_RAW_INSN(0, 0, 0, 0, 1),
-> @@ -78,7 +70,7 @@
->  	.retval = 1,
->  },
->  {
-> -	"test8 ld_imm64",
-> +	"test7 ld_imm64",
+--Sig_/9/UCw1UskAGq1UFgDWqi.=5
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-imo that's too much churn to rename all of them.
-Just delete one.
+Hi all,
+
+Today's linux-next merge of the net-next tree got a conflict in:
+
+  net/rxrpc/conn_event.c
+
+between commit:
+
+  fa1d113a0f96 ("rxrpc: Fix some missing _bh annotations on locking conn->s=
+tate_lock")
+
+from the net tree and commit:
+
+  245500d853e9 ("rxrpc: Rewrite the client connection manager")
+
+from the net-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc net/rxrpc/conn_event.c
+index 64ace2960ecc,0628dad2bdea..000000000000
+--- a/net/rxrpc/conn_event.c
++++ b/net/rxrpc/conn_event.c
+@@@ -339,8 -341,8 +341,8 @@@ static int rxrpc_process_event(struct r
+  		if (ret < 0)
+  			return ret;
+ =20
+- 		spin_lock(&conn->channel_lock);
++ 		spin_lock(&conn->bundle->channel_lock);
+ -		spin_lock(&conn->state_lock);
+ +		spin_lock_bh(&conn->state_lock);
+ =20
+  		if (conn->state =3D=3D RXRPC_CONN_SERVICE_CHALLENGING) {
+  			conn->state =3D RXRPC_CONN_SERVICE;
+@@@ -349,12 -351,12 +351,12 @@@
+  				rxrpc_call_is_secure(
+  					rcu_dereference_protected(
+  						conn->channels[loop].call,
+- 						lockdep_is_held(&conn->channel_lock)));
++ 						lockdep_is_held(&conn->bundle->channel_lock)));
+  		} else {
+ -			spin_unlock(&conn->state_lock);
+ +			spin_unlock_bh(&conn->state_lock);
+  		}
+ =20
+- 		spin_unlock(&conn->channel_lock);
++ 		spin_unlock(&conn->bundle->channel_lock);
+  		return 0;
+ =20
+  	default:
+
+--Sig_/9/UCw1UskAGq1UFgDWqi.=5
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl99Iw0ACgkQAVBC80lX
+0GySKAf+OrlyC+PiBSf0QBPmc1ryZgoGmTfP+mmhZP98simciFZHZimmbtx2PRp6
+R0NMSN7Jc81+8yf8G4tjZV401Cy7r3jMN8kDc3o9HLud//RYkK3DhObdLAmOccjh
+Y3KCEqOd6FWy4hPJyqKfS1tiqxIY/AmMFXQRt9+YieFc8O4WsiPCo7usR+MjyEQV
+V1ktMPgO9n5sveHSzrJluLagXYzJOnGlyLaY7e/nv3rcQi7vo6nznwmSWafLZMnk
+JAnFNbRMpJODCXxDr/CSk/f0OGxtZq72+uQc7P60JiTc2BQKlsQD6bJVaau8z++O
+fqt4tgpcT6sWUtuP8SJDf/t0Meg7fA==
+=/ooz
+-----END PGP SIGNATURE-----
+
+--Sig_/9/UCw1UskAGq1UFgDWqi.=5--
