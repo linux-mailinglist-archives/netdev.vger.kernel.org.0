@@ -2,84 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA3F1286B56
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 01:00:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31CCE286B5B
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 01:11:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728008AbgJGW74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 18:59:56 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:25436 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727814AbgJGW7z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 18:59:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1602111594;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9c9S4SWxbR/XjvJgV1ymG/+riVpePux161h+CAa6XqI=;
-        b=h5D7EDAw3vRDCzlLsCMZzpLvMGWMFn6gCOgWGkm9uKpcYe/mklMX98nUHntWofYDmDQ7ne
-        pj16PgBZ6BlhGEm1Gbw2EaZhbJqf7/w8eoWucEIfOeNkf8NUtlCimmQjuTYeO9OTikE07S
-        xIbVv5xfdE1mRScLpcYZ7dUZ94bKq3s=
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
- [209.85.161.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-377-yc3shf3kNh2ey8nhZ8V9xA-1; Wed, 07 Oct 2020 18:59:52 -0400
-X-MC-Unique: yc3shf3kNh2ey8nhZ8V9xA-1
-Received: by mail-oo1-f70.google.com with SMTP id t14so1709459ooq.8
-        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 15:59:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9c9S4SWxbR/XjvJgV1ymG/+riVpePux161h+CAa6XqI=;
-        b=q+xYrzbDieWig86eQyMTiJqbyrimsGfgBlrUKNi8jlLyTjYT/wOFZRFYM8MD26ifUD
-         doJ+LM/v7r4qPBgqxtroe4+uQOqwMIVb9EX1WDJ7bD47cWrFTyxuzrr4Ul0m386cH6Of
-         7xghc3ZWcHd+9mAGHRTii68psGOjbjKMPNUYqBG187Q9SJxrUBMlfjkPtv3yJX/OFSp0
-         IdEkuM1ik5tNlVVF61bRNWY/5WuB//F2JBsMkF7ZXZRS/l9elp6cTkXrs4hAAhtKrgWe
-         ASp5uwcJ17b3pBu+xKScVrKezpqzCi0xxISJvJb8IMEImskrlGGZ+xi8bW++F6Y4YvlU
-         ACbw==
-X-Gm-Message-State: AOAM532xc12/QsQBpYnuuhA0kGETcYx0FVEDXFkGP6Njd9AvsZbFzhgB
-        h58ARLy7WnAOnkf0pqp4bw34Ov8pKpA4nnjhRXGZRbI7I0mJCZ4rM3XmKbxFjXmUg7VjrPin2Vf
-        /QFf4JTS70ihLMKkUwv1cQzqjrrl7wmQc
-X-Received: by 2002:a9d:6645:: with SMTP id q5mr3307297otm.172.1602111592151;
-        Wed, 07 Oct 2020 15:59:52 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx1KrevTuJVjt3NgOB/LB+vZ+qvcmIrgXsSuR0YnpmgF/WC3wEbanx1gqBRbc/BBYE5oIdAHWDziNUURQeMtvE=
-X-Received: by 2002:a9d:6645:: with SMTP id q5mr3307288otm.172.1602111591924;
- Wed, 07 Oct 2020 15:59:51 -0700 (PDT)
+        id S1728136AbgJGXLF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 19:11:05 -0400
+Received: from mga05.intel.com ([192.55.52.43]:53903 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727345AbgJGXLF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Oct 2020 19:11:05 -0400
+IronPort-SDR: EFbMVyVEuuS+FzjIutjIi5hUTgjyL2yGikUe6MzuYb7QvOy99oPki0FfrJEC5A0V3fNPWwhh+g
+ F5imvllHGuJQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9767"; a="249880361"
+X-IronPort-AV: E=Sophos;i="5.77,348,1596524400"; 
+   d="scan'208";a="249880361"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2020 16:11:05 -0700
+IronPort-SDR: cMk2vy+jkLSXwLGIxTxGe7EyAl2xEvBOM/830pD1r5B8a38Rl6BRj0oMT+eqwk2XZRNOfQkvcD
+ 4+5CESy+3kkQ==
+X-IronPort-AV: E=Sophos;i="5.77,348,1596524400"; 
+   d="scan'208";a="461557630"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2020 16:11:05 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next 0/3][pull request] 40GbE Intel Wired LAN Driver Updates 2020-10-07
+Date:   Wed,  7 Oct 2020 16:10:47 -0700
+Message-Id: <20201007231050.1438704-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20201007181409.1275639-1-jarod@redhat.com> <20201007181409.1275639-6-jarod@redhat.com>
-In-Reply-To: <20201007181409.1275639-6-jarod@redhat.com>
-From:   Jarod Wilson <jarod@redhat.com>
-Date:   Wed, 7 Oct 2020 18:59:41 -0400
-Message-ID: <CAKfmpSeSWNKEoxtYP9sY30wDUFaSAk76GghmBhTefLo07ThHiw@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 5/5] bonding: update Documentation for
- port/bond terminology
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Davis <tadavis@lbl.gov>, Netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 7, 2020 at 2:14 PM Jarod Wilson <jarod@redhat.com> wrote:
->
-> Swap in port/bond terminology where appropriate, leaving all legacy sysfs
-> and procfs interface mentions in place, but marked as deprecated.
-> Additionally, add more netlink/iproute2 documentation, and note that this
-> is the preferred method of interfacing with the bonding driver. While
-> we're at it, also make some mention of NetworkManager's existence.
+This series contains updates to i40e and e1000 drivers.
 
-I neglected to update the ToC and put in some leading #'s that I
-should have, so there will be at least one more revision of this set,
-but would appreciate feedback on this version of the Documentation
-update with respect to preservation of existing interface names,
-explaining the changes, and deprecation.
+Jaroslaw adds support for changing FEC on i40e if the firmware supports it.
+
+Aleksandr fixes setting and reporting of VF MAC address under various
+circumstances for i40e.
+
+Jesse fixes a kbuild-bot warning regarding ternary operator on e1000. 
+
+The following are changes since commit 9faebeb2d80065926dfbc09cb73b1bb7779a89cd:
+  Merge branch 'ethtool-allow-dumping-policies-to-user-space'
+and are available in the git repository at:
+  https://github.com/anguy11/next-queue.git 40GbE
+
+Aleksandr Loktionov (1):
+  i40e: Fix MAC address setting for a VF via Host/VM
+
+Jaroslaw Gawin (1):
+  i40e: Allow changing FEC settings on X722 if supported by FW
+
+Jesse Brandeburg (1):
+  e1000: remove unused and incorrect code
+
+ drivers/net/ethernet/intel/e1000/e1000_hw.c   | 10 +------
+ drivers/net/ethernet/intel/i40e/i40e_adminq.c |  6 +++++
+ .../net/ethernet/intel/i40e/i40e_adminq_cmd.h |  2 ++
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    | 22 +++++++++++++---
+ drivers/net/ethernet/intel/i40e/i40e_main.c   | 19 ++++++++++++++
+ drivers/net/ethernet/intel/i40e/i40e_type.h   |  1 +
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.c    | 26 +++++++++++++++++--
+ 7 files changed, 72 insertions(+), 14 deletions(-)
 
 -- 
-Jarod Wilson
-jarod@redhat.com
+2.26.2
 
