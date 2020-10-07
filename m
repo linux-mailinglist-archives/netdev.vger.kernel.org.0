@@ -2,95 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C601285A52
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 10:21:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98A1A285A63
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 10:23:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727872AbgJGIVZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 04:21:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59410 "EHLO
+        id S1727921AbgJGIXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 04:23:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727570AbgJGIVY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 04:21:24 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B44DC061755
-        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 01:21:24 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id n15so1102118wrq.2
-        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 01:21:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=zd/E/JMvNyL5IHVPifyXLUZ5n8AMRVkFyGYTVNw04LA=;
-        b=AeMhy1Kj+u6jPSo+Pex3GETjm+tKi/q/LqkgxXiGX72r5Sf0JfZZA4fGajWWidwrzt
-         9Fm7S3P+5v6tFCZqS/ngKkcsiZTf5UzettXmUt+7g/rcvAsBhzpeGHjRF3aD76OY7HyI
-         h9VCeumdobQmhczDHwCK5J+SzMmSvf+iO/fjHoQuXvIOoh+A5BlvpNb8/HF3O+Nv1xsf
-         ukjkm4E/awRatMq7NgvwLvRF9GzKOx85sO16877K94mWPHOINuEa+3Xmgaw2WrDB1IwJ
-         S5aYR8ElK1gLbEKYlfjXf46+rPIw4ESIE8z/+P53ZwhPFyNUWinqiZZV24WBqx0YZiCl
-         CgXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=zd/E/JMvNyL5IHVPifyXLUZ5n8AMRVkFyGYTVNw04LA=;
-        b=r+h6NrtCJoaBW3SQ8Uo6vao4jpGBq1Spn6Oy+2rHdQkWBhZ7260y6Y4MPp3uk4kHKs
-         7vaidd7YZTW7ru0Z8wIImbCddpupos6ruvq1L8FAYD2LlwhbXZdHQcWp7tipLxES/BCf
-         5br8DNntlk+Aaq2utP6HvS/3lNtg8IKG05vs3DtsLJJhFWNqxyswO9dlOrTURUl78XsJ
-         hB7/fVD95X7Z0oGWpRBIhNr4r3c4v8xBxra5zXux9J3EVuJs5akld61rb/HdjE6V8A71
-         6c3+Q9DGKqKkv6pgI7vCyyZ47FtgNpa4JmwZI5s8Qzp/prqlRFKwrrYFzLW4bfcQBlJH
-         8laA==
-X-Gm-Message-State: AOAM531/ewWKfz3ESPXBbBYciLAwcTtnAmmW/6MchmJ3ePF1I0auPyfl
-        B+HkPap/i/Dxg2pRRyav17aAPbe9NPk=
-X-Google-Smtp-Source: ABdhPJwCscporiKc1dPxK66Dnai2G/QoP352X2MQlTqUmTnZ8/gFfv3Uh9EDyaN3wYOBb5RWxwg9dw==
-X-Received: by 2002:a5d:634d:: with SMTP id b13mr2215074wrw.324.1602058882315;
-        Wed, 07 Oct 2020 01:21:22 -0700 (PDT)
-Received: from [192.168.8.147] ([37.172.192.62])
-        by smtp.gmail.com with ESMTPSA id n9sm334446wrq.72.2020.10.07.01.21.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Oct 2020 01:21:21 -0700 (PDT)
-Subject: Re: net: Initialize return value in gro_cells_receive
-To:     Gregory Rose <gvrose8192@gmail.com>,
-        Netdev <netdev@vger.kernel.org>
-References: <e595fd44-cf8a-ce14-8cc8-e3ecd4e8922a@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <9c6415e4-9d3b-2ba9-494a-c24316ec60c4@gmail.com>
-Date:   Wed, 7 Oct 2020 10:21:20 +0200
+        with ESMTP id S1725976AbgJGIXV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 04:23:21 -0400
+Received: from mail-out.m-online.net (mail-out.m-online.net [IPv6:2001:a60:0:28:0:1:25:1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24D22C061755;
+        Wed,  7 Oct 2020 01:23:21 -0700 (PDT)
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4C5nQt4mBFz1rtMh;
+        Wed,  7 Oct 2020 10:23:17 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4C5nQs42wZz1qrg7;
+        Wed,  7 Oct 2020 10:23:17 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id tQTGD6EF-HpS; Wed,  7 Oct 2020 10:23:15 +0200 (CEST)
+X-Auth-Info: YXCZjV5dOMn4jgIRwSTJvLxhPaV22tlJrmyTW7fudiU=
+Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Wed,  7 Oct 2020 10:23:15 +0200 (CEST)
+Subject: Re: PHY reset question
+To:     Marco Felsch <m.felsch@pengutronix.de>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org, mkl@pengutronix.de,
+        kernel@pengutronix.de, David Jander <david@protonic.nl>
+References: <20201006080424.GA6988@pengutronix.de>
+ <2cc5ea02-707e-dbb5-c081-4c5202bd5815@gmail.com>
+ <42d4c4b2-d3ea-9130-ef7f-3d1955116fdc@denx.de>
+ <0687984c-5768-7c71-5796-8e16169f5192@gmail.com>
+ <20201007081410.jk5fi6x5w3ab3726@pengutronix.de>
+From:   Marek Vasut <marex@denx.de>
+Message-ID: <7edb2e01-bec5-05b0-aa47-caf6e214e5a0@denx.de>
+Date:   Wed, 7 Oct 2020 10:23:14 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <e595fd44-cf8a-ce14-8cc8-e3ecd4e8922a@gmail.com>
+In-Reply-To: <20201007081410.jk5fi6x5w3ab3726@pengutronix.de>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 10/7/20 10:14 AM, Marco Felsch wrote:
+> Hi Marek,
 
+Hi,
 
-On 10/6/20 8:53 PM, Gregory Rose wrote:
-> The 'res' return value is uninitalized and may be returned with
-> some random value.  Initialize to NET_RX_DROP as the default
-> return value.
+[...]
+
+> On 20-10-06 14:11, Florian Fainelli wrote:
+>> On 10/6/2020 1:24 PM, Marek Vasut wrote:
 > 
-> Signed-off-by: Greg Rose <gvrose8192@gmail.com>
+> ...
 > 
-> diff --git a/net/core/gro_cells.c b/net/core/gro_cells.c
-> index e095fb871d91..4e835960db07 100644
-> --- a/net/core/gro_cells.c
-> +++ b/net/core/gro_cells.c
-> @@ -13,7 +13,7 @@ int gro_cells_receive(struct gro_cells *gcells, struct sk_buff *skb)
->  {
->         struct net_device *dev = skb->dev;
->         struct gro_cell *cell;
-> -       int res;
-> +       int res = NET_RX_DROP;
+>>> If this happens on MX6 with FEC, can you please try these two patches?
+>>>
+>>> https://patchwork.ozlabs.org/project/netdev/patch/20201006135253.97395-1-marex@denx.de/
+>>>
+>>> https://patchwork.ozlabs.org/project/netdev/patch/20201006202029.254212-1-marex@denx.de/
+>>
+>> Your patches are not scaling across multiple Ethernet MAC drivers
+>> unfortunately, so I am not sure this should be even remotely considered a
+>> viable solution.
 > 
->         rcu_read_lock();
->         if (unlikely(!(dev->flags & IFF_UP)))
+> Recently I added clk support for the smcs driver [1] and dropped the
+> PHY_RST_AFTER_CLK_EN flag for LAN8710/20 devices because I had the same
+> issues. Hope this will help you too.
+> 
+> [1] https://www.spinics.net/lists/netdev/msg682080.html
 
-I do not think this is needed.
-
-Also, when/if sending a patch fixing a bug, we require a Fixes: tag.
-
-Thanks.
+I feel this might be starting to go a bit off-topic here, but isn't the
+last patch 5/5 breaking existing setups ? The LAN8710 surely does need
+clock enabled before the reset line is toggled.
