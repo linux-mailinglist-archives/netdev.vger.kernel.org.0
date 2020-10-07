@@ -2,92 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B93CA2863E1
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 18:27:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EF0A28647C
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 18:33:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727857AbgJGQ1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 12:27:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49930 "EHLO
+        id S1727789AbgJGQdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 12:33:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726138AbgJGQ0y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 12:26:54 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DDD7C061755
-        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 09:26:54 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id e2so3091310wme.1
-        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 09:26:54 -0700 (PDT)
+        with ESMTP id S1726138AbgJGQd2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 12:33:28 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 366E2C061755;
+        Wed,  7 Oct 2020 09:33:28 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id a1so1313557pjd.1;
+        Wed, 07 Oct 2020 09:33:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=HNrPfVPWEOgSBysddesMcyNlIkodpRatozMw85/sqpQ=;
-        b=hynYI2LN4XGDQL9R/Dn9NmsaZkvQkR8Fd711Gt5TSscaQC8Ogxa+RY2WeQXeBvUNu8
-         6p1XW8n9vJGWdMj4gMMfYTN0gWzcB98XvjgSUJTYBQ1+afC6cg8j+LmUjjwRi9Eeh//+
-         bxXb1/0pdJ6vPQbsCKZTm+uKe7tv8rQJRPawMw0DZTH43XzCe9iPp7TY8QlzYe53kGE1
-         BbpWPakNjdtVLK9t/pwRhOCqwX6PJhijByEXJtRbRGtGFzKMw85TXt4if02/nRC/GK2W
-         e5IIu2kdjxVvAPAd7XQbQjVE2bfARHOmwKNIWcC49tSvaiJR9CHJ5dyOKY33qmgqAe2H
-         LdHg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=neU5+rAlGsZASSKfQw8Msj4tZFoTKJRf6eBesCf7slo=;
+        b=oCLbJLkoPvZKRuHhrwoQlvFapOpQthkWGLXWH6A8aLxwxAd11xlR8VbqkKL13Ne0kU
+         SIcPmoUUmBzqwAdnwP8XE8u3HRTDDgkUasoRdBmVS7Rebksq7dUSlJEzUUUhH6ipSfEd
+         TcHrSFRzuNlvu0p/GL2c4uQ3X+FPKf1Nh/Pbku/sRQXiWKTANMkJHHrpGReX5yk9EVVg
+         fAuLuZIv7hz9S0L+DeIzBTmQdEEiZqldk9Y/AL5+NxICNql4P4HzouQ6LJw/ILrvvmSv
+         /F/WqpOwV8GFafViny5wJmDbRKgz9ukOOfSSUtF/e3SVwhYVSGVNgjivgQzPqZCJfZoe
+         d6tQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=HNrPfVPWEOgSBysddesMcyNlIkodpRatozMw85/sqpQ=;
-        b=Pc4b7uzhsXBbhe31Y6Hs5DU1c9YlRKiM4nWhTJmv3TxnhAnYXhras73Heu4p6Gg+fj
-         xrlAdoOI6YZGGaUM1Rx7kaB7EEf4RotUF060UFsu8jy8F3H4/JRrVJJNwoNc4TXTiQ0/
-         RFiQGr2fgRDy3UyUJnAJlgA+B65NYDAuEm8jLp/YQJxysb49hMeBww/PootJGKH2iG7q
-         cnR4BJlGL0uVZLsqzoVDlTGv5+n1oSvjwsP9w3v/IpRNjCGwU4x6RFW72jgxS5ojrnNh
-         fYNMDjZ7RYJnuMMJ7YgjtG/Lh60GeCsoeUOs++SZEV40MGZfHbIj5j+bed8Bicdh7jre
-         Y/nQ==
-X-Gm-Message-State: AOAM531spSrr0Q8YqpFXfLhb2vil7FtYs2RJA1OcD4Ym7yuqpiTXr/fA
-        Myu0OvdVA5SNbp2gGRlnmOCBLtVsWEQwN5lERhZkoeA+
-X-Google-Smtp-Source: ABdhPJxJdoftzlQ/1qD1AMxIs8+VhjP5f9hJX04+Ketyitrp5qnD6GRmNBIFOzdChjOBC7LcUqEXFDzklvtSelimSwc=
-X-Received: by 2002:a1c:4683:: with SMTP id t125mr4299620wma.110.1602088013225;
- Wed, 07 Oct 2020 09:26:53 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=neU5+rAlGsZASSKfQw8Msj4tZFoTKJRf6eBesCf7slo=;
+        b=hqK2jXvM0MMzR0biWA2/ZKoL0D1E7ohP2p7X4YW/bXD7qHQwHreFPF1+3YTuaVKfAu
+         2CoEzkNRoy3Qa7S3/wmThcJxWBML6UMlj+Gz56cr0mh2gGNUrT9G1TW6h9sqbFLNV6IH
+         7PafSBx3ssEBtMpp+KjSJz1wAnvHNHOYgynErQN4UHvjYZNJMOud5AjhCusp9mX5FJ2u
+         euQxGtPzNVS0FcPxUHk+Qv9OZj80dbodkyiLNxdaGyu0b0n3lVNTaMFvdRm41hPR/tHW
+         rdp12yX+efenPc1wtJCPUVZGoFh35fOjH1iO3kLx+f9LAn/6hdhtroY2nqaVXyd5AwgM
+         BQgg==
+X-Gm-Message-State: AOAM531rTJ+mdsQH1WCSgckDABQ72mdmUqz2N8XGPHgi8o9+h46c7Uok
+        Spj8vqCZbEUuxPvrfmbz4AM=
+X-Google-Smtp-Source: ABdhPJyZTFhjvoEjRRhD4UsTl8p6ocmeuNvTd86T0R0yQHgC9h9nDO/Ixdo017eaIlZn9t3He+Cqog==
+X-Received: by 2002:a17:90b:23c4:: with SMTP id md4mr3589710pjb.12.1602088407840;
+        Wed, 07 Oct 2020 09:33:27 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([72.164.175.30])
+        by smtp.googlemail.com with ESMTPSA id m5sm4019578pgn.28.2020.10.07.09.33.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 07 Oct 2020 09:33:27 -0700 (PDT)
+Subject: Re: [PATCH bpf-next v7 2/2] selftests/bpf: Selftest for real time
+ helper
+To:     =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     "Pujari, Bimmy" <bimmy.pujari@intel.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mchehab@kernel.org" <mchehab@kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "Nikravesh, Ashkan" <ashkan.nikravesh@intel.com>,
+        "Alvarez, Daniel A" <daniel.a.alvarez@intel.com>
+References: <20201001020504.18151-1-bimmy.pujari@intel.com>
+ <20201001020504.18151-2-bimmy.pujari@intel.com>
+ <20201001053501.mp6uqtan2bkhdgck@ast-mbp.dhcp.thefacebook.com>
+ <BY5PR11MB4354F2C9189C169C0CE40A9B86300@BY5PR11MB4354.namprd11.prod.outlook.com>
+ <CAADnVQJmmY_HER23=3bxCrrsbJoNs1Ue__P24KHj3YY1EkzuKQ@mail.gmail.com>
+ <CANP3RGfyG9_vj5FkgJz2HV+8voLqP3N+6Qi5hpkqJntF0YSy-A@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <59b4dd07-16c5-f831-d27f-8c5d4f50d534@gmail.com>
+Date:   Wed, 7 Oct 2020 09:33:26 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.1
 MIME-Version: 1.0
-References: <20200730054130.16923-1-steffen.klassert@secunet.com>
- <20200730054130.16923-11-steffen.klassert@secunet.com> <c79acf02-f6a9-8833-fca4-94f990c1f1f3@6wind.com>
- <CADvbK_c6gbV-F9Lv6aiT6JbGGJD96ExWxTj_SWerJsvwvzOoXQ@mail.gmail.com>
- <621ebebc-c73d-b707-3faf-c315e45cf4a4@6wind.com> <2df6aeeb-bad8-e148-d5de-d7a30207cd4c@6wind.com>
-In-Reply-To: <2df6aeeb-bad8-e148-d5de-d7a30207cd4c@6wind.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 8 Oct 2020 00:26:41 +0800
-Message-ID: <CADvbK_cmcLqOyuDjBTizj7x-nUf6HoWu1pO8S9XL1Dc63=ZWwA@mail.gmail.com>
-Subject: Re: [PATCH 10/19] xfrm: interface: support IP6IP6 and IP6IP tunnels
- processing with .cb_handler
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        David Miller <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        network dev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CANP3RGfyG9_vj5FkgJz2HV+8voLqP3N+6Qi5hpkqJntF0YSy-A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 7, 2020 at 11:40 PM Nicolas Dichtel
-<nicolas.dichtel@6wind.com> wrote:
->
-> Le 05/10/2020 =C3=A0 17:11, Nicolas Dichtel a =C3=A9crit :
-> > Le 03/10/2020 =C3=A0 11:41, Xin Long a =C3=A9crit :
-> > [snip]
-> >> When xfrmi processes the ipip packets, it does the state lookup and xf=
-rmi
-> >> device lookup both in xfrm_input(). When either of them fails, instead=
- of
-> >> returning err and continuing the next .handler in tunnel4_rcv(), it wo=
-uld
-> >> drop the packet and return 0.
-> >>
-> >> It's kinda the same as xfrm_tunnel_rcv() and xfrm6_tunnel_rcv().
-> >>
-> >> So the safe fix is to lower the priority of xfrmi .handler but it shou=
-ld
-> >> still be higher than xfrm_tunnel_rcv() and xfrm6_tunnel_rcv(). Having
-> >> xfrmi loaded will only break IPCOMP, and it's expected. I'll post a fi=
-x:
-> > Thanks. This patch fixes my test cases.
-> Do you think that you will have time to send the patch before the release=
- (v5.9)
-> goes out?
-Sure, I will do it tomorrow.
+On 10/5/20 10:36 AM, Maciej Żenczykowski wrote:
+>> Don't bother. This helper is no go.
+> 
+> I disagree on the 'no go' -- I do think we should have this helper.
+
++1
+
+> 
+> Lets not make bpf even harder to use then it already is...
+> 
+
+Logging is done using time of day; that is not a posix mistake but a
+real need. Users do not file complaints based on a server's boot time or
+some random monotonic time; they report a problem based on time-of-day.
+Allowing bpf programs to timeofday makes it easier to troubleshoot and
+correlate kernel side events to userspace logs.
