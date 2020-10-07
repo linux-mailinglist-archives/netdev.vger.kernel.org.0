@@ -2,185 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14779286AF2
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 00:37:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B627286B40
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 00:50:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728875AbgJGWhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 18:37:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51126 "EHLO
+        id S1727772AbgJGWuu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 18:50:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728742AbgJGWhH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 18:37:07 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29855C061755;
-        Wed,  7 Oct 2020 15:37:07 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id u6so4218171iow.9;
-        Wed, 07 Oct 2020 15:37:07 -0700 (PDT)
+        with ESMTP id S1726312AbgJGWuu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 18:50:50 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D475C061755;
+        Wed,  7 Oct 2020 15:50:49 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id a2so3089394ybj.2;
+        Wed, 07 Oct 2020 15:50:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=+nCZGaCKql0nmWslwGogtqp1JQBKN8StPxSFOo545Nc=;
-        b=cQl+zYM87AlFkL4GDXnM1vzw9Ux/JZjkbrVqQayOBh7zEUPwXxQLEq7j7e+8+lPW+/
-         /LmPZdZ0ksdAuUcZmkdJpz0zR4DUSoj2YTkXYZyE7pg+qRyB8Cbmpx2+l+VVfp2sEStX
-         qLowK5l9ArN5rApwCqCeR1RFsXIBSBspBsQMQNqZ0Y7e+D7d+FxnA3Xww52mOtd3VnWY
-         bBOYxCIcDVehnL/EuOEXdzRXrcHnyi6IOBSPwPLilZDSYpB/2q6Qq0zqBr+3KTw9hZCC
-         QV9w81mIc3tnrp0TOmnLUoTiS1k6GhYbOmwiSNzht/ynY88MNXbUiXg9xltHiNzga8yM
-         9/yA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8auL7BlLpZwNGFy4TVlksOEwt9gszvZuRk/pdniRQIc=;
+        b=K02g3nQInuRSEntRE/EcbNVbhrweWkSgci4CXBtWBJ3tCBwi+ACl3nOrDie6t1FE3H
+         O81ZgMSdLgWEpPrblbMaXUVDM00T3cr7xBRkxR17BVRzu5iGAjo5yYuEkXFNtk8ZOgeB
+         rVk9d/62E/OgIhqZT1KPnNa2KdKgFrOJaIKHM1PF+FI3h/EorH1/FwIaBLiYXA2QH2c4
+         OteUo32f4uOMhH6utjAIS6i8OGZGbqK1GeNjczuH5eWhWAYwzHFI7TieJLqHY4tsZjLg
+         u7y1IFwr5DiwXeCtiAuiiUyty9T7h8T5pzmEkP7CMyvb2AM2g8I5ICl8W+yvQfVjCaIf
+         edag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=+nCZGaCKql0nmWslwGogtqp1JQBKN8StPxSFOo545Nc=;
-        b=QCeYkWWYfSQAilG7wI3Sr9NEm16KaQWD3l0ENGtFOW0NlFgRmC3EuF30kfWSWoGg1j
-         PQN4pvSinsUUHPw9GAnE/iFCdliu6Arw41DvHzYzCvNbMognR6kwl24LjxeXSMdGZpih
-         5re3wLRWtOcdh2zFCgVvAtDYqZYmZG/OE8wNY5eUrdHq1GL70giMWQk/8Sx9GmfgqyND
-         hi6oYnQD49sBq/kLECZxB2neJ0FJWHFcoCTh2ynjHPJNlnsP9GSupkGZkNk9U3thHcWo
-         LR/f0Di4lEpPrOFvKZTpy71DGAMnSEnquZhlzioIilYDwyhduhvFKo5jM+V9WMnTt5/W
-         hNjw==
-X-Gm-Message-State: AOAM531MivAcj7PAuAG+GXenApxsDKjlsFXzLtgpq0ZKIq9RSVESsfYe
-        w8vv6nl+92Fj42jn2ToJTzk=
-X-Google-Smtp-Source: ABdhPJwPeX0EkdeZ6flmXCvR6Rb1gA5vcYwM7e1RhctXzHWnP5P2L4oY8jvDkhWHV4V/aYKM+cOKVg==
-X-Received: by 2002:a02:a196:: with SMTP id n22mr4755191jah.104.1602110226326;
-        Wed, 07 Oct 2020 15:37:06 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id l4sm1676859ilk.14.2020.10.07.15.37.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Oct 2020 15:37:05 -0700 (PDT)
-Date:   Wed, 07 Oct 2020 15:36:58 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
-        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com
-Message-ID: <5f7e430ae158b_1a8312084d@john-XPS-13-9370.notmuch>
-In-Reply-To: <7aeb6082-48a3-9b71-2e2c-10adeb5ee79a@iogearbox.net>
-References: <160208770557.798237.11181325462593441941.stgit@firesoul>
- <160208778070.798237.16265441131909465819.stgit@firesoul>
- <7aeb6082-48a3-9b71-2e2c-10adeb5ee79a@iogearbox.net>
-Subject: Re: [PATCH bpf-next V2 5/6] bpf: Add MTU check for TC-BPF packets
- after egress hook
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8auL7BlLpZwNGFy4TVlksOEwt9gszvZuRk/pdniRQIc=;
+        b=q0TIbrHlt68Mw3WzwPxdxCqzsQbSfN7EjFnOYC1caGJtaJD0OYxQun62c94+DI/9D3
+         fdPpbKNqIrvH9r6n4otU4rr/GIIg+sGw8wkLpwtYT0sS2rYDzhtXIrCXf/sp/FhCG5M2
+         2CsUCxk1CRDV3KytxIXD/r4dURLfgqpcJmMgDK1XQSxDqFo8jx+PNrAjYNZDh7KqshGw
+         AKPX8qg1NF6mFvOEnI2jJ6AXPUxst6aW6PrstEucO2o2vBkeZKgWX9g5isfSOiX619/s
+         0qudQStwbB0qWFaoJhVF3ut9zaW7n6e976Hq2m7UYpHSYvxdoNrSYJNNTJgkvjKjeL1I
+         Vz0A==
+X-Gm-Message-State: AOAM532T3flvprRDnFGTaWOpOxnEKm3/NuC0IDGBFONugebKE4df6T4a
+        HUFy1M9YCwTbWv1WTZNd1otCH5k5rhT6mVbcu/Q=
+X-Google-Smtp-Source: ABdhPJxSuhYfbeyxoKvCvNJG61AnWM/ZK0KHbWNmekd7aP31Xgj25uOGzGm1He32B6wK7cKNZJ8i9NjkFA1Lz8Dlo1Q=
+X-Received: by 2002:a25:2596:: with SMTP id l144mr7080323ybl.510.1602111048702;
+ Wed, 07 Oct 2020 15:50:48 -0700 (PDT)
+MIME-Version: 1.0
+References: <20201007222734.93364-1-alexei.starovoitov@gmail.com>
+In-Reply-To: <20201007222734.93364-1-alexei.starovoitov@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 7 Oct 2020 15:50:37 -0700
+Message-ID: <CAEf4BzaHuHAcjfnNvBKzxgdjY3DpSsiVKJUXEjp7mg=WL--Bzw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: Additional asm tests for the
+ verifier regalloc tracking.
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        john fastabend <john.fastabend@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann wrote:
-> On 10/7/20 6:23 PM, Jesper Dangaard Brouer wrote:
-> [...]
-> >   net/core/dev.c |   24 ++++++++++++++++++++++--
-> >   1 file changed, 22 insertions(+), 2 deletions(-)
+On Wed, Oct 7, 2020 at 3:28 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> From: Alexei Starovoitov <ast@kernel.org>
+>
+> Add asm tests for register allocator tracking logic implemented in the patches:
+> https://lore.kernel.org/bpf/20201006200955.12350-1-alexei.starovoitov@gmail.com/T/#t
+>
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
 
-Couple high-level comments. Whats the problem with just letting the driver
-consume the packet? I would chalk it up to a buggy BPF program that is
-sending these packets. The drivers really shouldn't panic or do anything
-horrible under this case because even today I don't think we can be
-100% certain MTU on skb matches set MTU. Imagine the case where I change
-the MTU from 9kB->1500B there will be some skbs in-flight with the larger
-length and some with the shorter. If the drivers panic/fault or otherwise
-does something else horrible thats not going to be friendly in general case
-regardless of what BPF does. And seeing this type of config is all done
-async its tricky (not practical) to flush any skbs in-flight.
+I actually read through that assembly :) LGTM.
 
-I've spent many hours debugging these types of feature flag, mtu
-change bugs on the driver side I'm not sure it can be resolved by
-the stack easily. Better to just build drivers that can handle it IMO.
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
-Do we know if sending >MTU size skbs to drivers causes problems in real
-cases? I haven't tried on the NICs I have here, but I expect they should
-be fine. Fine here being system keeps running as expected. Dropping the
-skb either on TX or RX side is expected. Even with this change though
-its possible for the skb to slip through if I configure MTU on a live
-system.
+>  .../testing/selftests/bpf/verifier/regalloc.c | 159 ++++++++++++++++++
+>  1 file changed, 159 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/verifier/regalloc.c
+>
 
-> > 
-> > diff --git a/net/core/dev.c b/net/core/dev.c
-> > index b433098896b2..19406013f93e 100644
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -3870,6 +3870,7 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
-> >   	switch (tcf_classify(skb, miniq->filter_list, &cl_res, false)) {
-> >   	case TC_ACT_OK:
-> >   	case TC_ACT_RECLASSIFY:
-> > +		*ret = NET_XMIT_SUCCESS;
-> >   		skb->tc_index = TC_H_MIN(cl_res.classid);
-> >   		break;
-> >   	case TC_ACT_SHOT:
-> > @@ -4064,9 +4065,12 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
-> >   {
-> >   	struct net_device *dev = skb->dev;
-> >   	struct netdev_queue *txq;
-> > +#ifdef CONFIG_NET_CLS_ACT
-> > +	bool mtu_check = false;
-> > +#endif
-> > +	bool again = false;
-> >   	struct Qdisc *q;
-> >   	int rc = -ENOMEM;
-> > -	bool again = false;
-> >   
-> >   	skb_reset_mac_header(skb);
-> >   
-> > @@ -4082,14 +4086,28 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
-> >   
-> >   	qdisc_pkt_len_init(skb);
-> >   #ifdef CONFIG_NET_CLS_ACT
-> > +	mtu_check = skb_is_redirected(skb);
-> >   	skb->tc_at_ingress = 0;
-> >   # ifdef CONFIG_NET_EGRESS
-> >   	if (static_branch_unlikely(&egress_needed_key)) {
-> > +		unsigned int len_orig = skb->len;
-> > +
-> >   		skb = sch_handle_egress(skb, &rc, dev);
-> >   		if (!skb)
-> >   			goto out;
-> > +		/* BPF-prog ran and could have changed packet size beyond MTU */
-> > +		if (rc == NET_XMIT_SUCCESS && skb->len > len_orig)
-> > +			mtu_check = true;
-> >   	}
-> >   # endif
-> > +	/* MTU-check only happens on "last" net_device in a redirect sequence
-> > +	 * (e.g. above sch_handle_egress can steal SKB and skb_do_redirect it
-> > +	 * either ingress or egress to another device).
-> > +	 */
-> 
-> Hmm, quite some overhead in fast path. Also, won't this be checked multiple times
-> on stacked devices? :( Moreover, this missed the fact that 'real' qdiscs can have
-> filters attached too, this would come after this check. Can't this instead be in
-> driver layer for those that really need it? I would probably only drop the check
-> as done in 1/6 and allow the BPF prog to do the validation if needed.
-
-Any checks like this should probably go in validate_xmit_skb_list() this is
-where we check other things GSO, checksum, etc. that depend on drivers. Worse
-case we could add a netif_needs_mtu() case in validate_xmit_skb if drivers
-really can't handle >MTU size.
-
-> 
-> > +	if (mtu_check && !is_skb_forwardable(dev, skb)) {
-> > +		rc = -EMSGSIZE;
-> > +		goto drop;
-> > +	}
-> >   #endif
-> >   	/* If device/qdisc don't need skb->dst, release it right now while
-> >   	 * its hot in this cpu cache.
-> > @@ -4157,7 +4175,9 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
-> >   
-> >   	rc = -ENETDOWN;
-> >   	rcu_read_unlock_bh();
-> > -
-> > +#ifdef CONFIG_NET_CLS_ACT
-> > +drop:
-> > +#endif
-> >   	atomic_long_inc(&dev->tx_dropped);
-> >   	kfree_skb_list(skb);
-> >   	return rc;
-> > 
-
-
+[...]
