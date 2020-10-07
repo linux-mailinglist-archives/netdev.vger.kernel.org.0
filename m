@@ -2,120 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 718462869BB
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 22:58:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB6B52869C0
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 22:59:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728637AbgJGU6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 16:58:04 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:58704 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728613AbgJGU6A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 16:58:00 -0400
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 097KVuKf050022;
-        Wed, 7 Oct 2020 16:57:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references; s=pp1;
- bh=yhh+Y9v/JCR/uvPDCqNhT/8coyWYfD9DDsj4+WZykB0=;
- b=GXBFMRYv7bblCK3MycheTk97INcYucflRIFPgP1j/eEcr9piQqm3+aZyUw8mUs9qijsD
- G2UVqTQod+Yvn6WQuOGtscHFDriBKMgUA30lvKTA3jbTBTkiCFGjpvkiuABUj5sTSD6M
- 2+RlU9dfLu0If/7lhvW9XpJn3PJFs6RP+J5VExU0oM59kdVcFIh0NMUmpzbYKTAfq/9T
- +1+1xzqYom60NLBSU/7LDw+C0kixEO2+r60Z32z8zoRGGiEO9Zv0fuVhsXV5pHKPTSnh
- RSHOja1jhBgL3+h3GuujqGJWBviY9bu0seXoCohsxGVSOSyk6v6Cy9OzaJHCuunT0LId sA== 
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 341kvna4j0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 07 Oct 2020 16:57:57 -0400
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
-        by ppma06fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 097KulWV032754;
-        Wed, 7 Oct 2020 20:57:55 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma06fra.de.ibm.com with ESMTP id 33xgjhadmw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 07 Oct 2020 20:57:55 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 097KvqGF24707502
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 7 Oct 2020 20:57:52 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4F020AE045;
-        Wed,  7 Oct 2020 20:57:52 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 133C9AE04D;
-        Wed,  7 Oct 2020 20:57:52 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed,  7 Oct 2020 20:57:52 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
-        ubraun@linux.ibm.com
-Subject: [PATCH net-next 3/3] net/smc: restore smcd_version when all ISM V2 devices failed to init
-Date:   Wed,  7 Oct 2020 22:57:43 +0200
-Message-Id: <20201007205743.83535-4-kgraul@linux.ibm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201007205743.83535-1-kgraul@linux.ibm.com>
-References: <20201007205743.83535-1-kgraul@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-10-07_10:2020-10-07,2020-10-07 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 clxscore=1015 priorityscore=1501 malwarescore=0
- impostorscore=0 suspectscore=1 bulkscore=0 phishscore=0 mlxscore=0
- spamscore=0 mlxlogscore=999 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2010070127
+        id S1728313AbgJGU7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 16:59:32 -0400
+Received: from mga01.intel.com ([192.55.52.88]:64568 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726013AbgJGU7b (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Oct 2020 16:59:31 -0400
+IronPort-SDR: u6ujo6C3eLb9HTZFxVubVhv2IH6VSZTh0SS/zzHP8WdPSAviBAxeWtciFZ8YUanvh3TpKIM7M5
+ +DQm+5y154pw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9767"; a="182578295"
+X-IronPort-AV: E=Sophos;i="5.77,348,1596524400"; 
+   d="scan'208";a="182578295"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2020 13:59:31 -0700
+IronPort-SDR: blahSc5fD490yQjY09s2bxXJZwKaRwtkEPoF7rGqNKXzjTddO0QJ+BQivrdZRqVZFO9bRdIk9N
+ UItRhzMd83BQ==
+X-IronPort-AV: E=Sophos;i="5.77,348,1596524400"; 
+   d="scan'208";a="528161440"
+Received: from unknown (HELO [10.135.3.161]) ([10.135.3.161])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Oct 2020 13:59:29 -0700
+Subject: Re: [PATCH v2 1/6] Add ancillary bus support
+To:     "Ertman, David M" <david.m.ertman@intel.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>
+Cc:     "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        "parav@mellanox.com" <parav@mellanox.com>,
+        "tiwai@suse.de" <tiwai@suse.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ranjani.sridharan@linux.intel.com" 
+        <ranjani.sridharan@linux.intel.com>,
+        "fred.oh@linux.intel.com" <fred.oh@linux.intel.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Patil, Kiran" <kiran.patil@intel.com>
+References: <20201005182446.977325-1-david.m.ertman@intel.com>
+ <20201005182446.977325-2-david.m.ertman@intel.com>
+ <20201006071821.GI1874917@unreal>
+ <b4f6b5d1-2cf4-ae7a-3e57-b66230a58453@linux.intel.com>
+ <20201006170241.GM1874917@unreal>
+ <DM6PR11MB2841C531FC27DB41E078C52BDD0A0@DM6PR11MB2841.namprd11.prod.outlook.com>
+ <20201007192610.GD3964015@unreal>
+ <BY5PR12MB43221A308CE750FACEB0A806DC0A0@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <DM6PR11MB28415A8E53B5FFC276D5A2C4DD0A0@DM6PR11MB2841.namprd11.prod.outlook.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Message-ID: <c90316f5-a5a9-fe22-ec11-a30a54ff0a9d@linux.intel.com>
+Date:   Wed, 7 Oct 2020 15:59:28 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <DM6PR11MB28415A8E53B5FFC276D5A2C4DD0A0@DM6PR11MB2841.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Field ini->smcd_version is set to SMC_V2 before calling
-smc_listen_ism_init(). This clears the V1 bit that may be set. When all
-matching ISM V2 devices fail to initialize then the smcd_version field
-needs to get restored to allow any possible V1 devices to initialize.
-And be consistent, always go to the not_found label when no device was
-found.
 
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
----
- net/smc/af_smc.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index f481f0ed2b78..82be0bd0f6e8 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -1481,11 +1481,12 @@ static void smc_find_ism_v2_device_serv(struct smc_sock *new_smc,
- 	struct smc_clc_v2_extension *smc_v2_ext;
- 	struct smc_clc_msg_smcd *pclc_smcd;
- 	unsigned int matches = 0;
-+	u8 smcd_version;
- 	u8 *eid = NULL;
- 	int i;
- 
- 	if (!(ini->smcd_version & SMC_V2) || !smcd_indicated(ini->smc_type_v2))
--		return;
-+		goto not_found;
- 
- 	pclc_smcd = smc_get_clc_msg_smcd(pclc);
- 	smc_v2_ext = smc_get_clc_v2_ext(pclc);
-@@ -1519,6 +1520,7 @@ static void smc_find_ism_v2_device_serv(struct smc_sock *new_smc,
- 	}
- 
- 	/* separate - outside the smcd_dev_list.lock */
-+	smcd_version = ini->smcd_version;
- 	for (i = 0; i < matches; i++) {
- 		ini->smcd_version = SMC_V2;
- 		ini->is_smcd = true;
-@@ -1528,6 +1530,8 @@ static void smc_find_ism_v2_device_serv(struct smc_sock *new_smc,
- 			continue;
- 		return; /* matching and usable V2 ISM device found */
- 	}
-+	/* no V2 ISM device could be initialized */
-+	ini->smcd_version = smcd_version;	/* restore original value */
- 
- not_found:
- 	ini->smcd_version &= ~SMC_V2;
--- 
-2.17.1
+>> Below is most simple, intuitive and matching with core APIs for name and
+>> design pattern wise.
+>> init()
+>> {
+>> 	err = ancillary_device_initialize();
+>> 	if (err)
+>> 		return ret;
+>>
+>> 	err = ancillary_device_add();
+>> 	if (ret)
+>> 		goto err_unwind;
+>>
+>> 	err = some_foo();
+>> 	if (err)
+>> 		goto err_foo;
+>> 	return 0;
+>>
+>> err_foo:
+>> 	ancillary_device_del(adev);
+>> err_unwind:
+>> 	ancillary_device_put(adev->dev);
+>> 	return err;
+>> }
+>>
+>> cleanup()
+>> {
+>> 	ancillary_device_de(adev);
+>> 	ancillary_device_put(adev);
+>> 	/* It is common to have a one wrapper for this as
+>> ancillary_device_unregister().
+>> 	 * This will match with core device_unregister() that has precise
+>> documentation.
+>> 	 * but given fact that init() code need proper error unwinding, like
+>> above,
+>> 	 * it make sense to have two APIs, and no need to export another
+>> symbol for unregister().
+>> 	 * This pattern is very easy to audit and code.
+>> 	 */
+>> }
+> 
+> I like this flow +1
+> 
+> But ... since the init() function is performing both device_init and
+> device_add - it should probably be called ancillary_device_register,
+> and we are back to a single exported API for both register and
+> unregister.
 
+Kind reminder that we introduced the two functions to allow the caller 
+to know if it needed to free memory when initialize() fails, and it 
+didn't need to free memory when add() failed since put_device() takes 
+care of it. If you have a single init() function it's impossible to know 
+which behavior to select on error.
+
+I also have a case with SoundWire where it's nice to first initialize, 
+then set some data and then add.
+
+> 
+> At that point, do we need wrappers on the primitives init, add, del,
+> and put?
+> 
+> -DaveE
+> 
