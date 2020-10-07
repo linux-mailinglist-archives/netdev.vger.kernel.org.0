@@ -2,138 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26CF0285884
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 08:12:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A5CC2858A5
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 08:28:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727257AbgJGGMa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 02:12:30 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:2014 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725970AbgJGGM3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 02:12:29 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09769EoO019431;
-        Tue, 6 Oct 2020 23:12:11 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : mime-version :
- content-type : content-transfer-encoding; s=facebook;
- bh=CCuwuhPUVe0JbLq1Yb86OvZBbtDOI9wc9UKvvmM715g=;
- b=SvTw0xdNfv7jakLyTuIqKC2O8x5LhLBaVAYKKh9EB6RcOnLxzXpa2wB/CenQ7tCmRfOH
- Exs+ymUBU8JzIXuZd7qJVt5qN08zY+Vi7k5y0fMr3r4J/BZA/lTBUSgqQ2ajqg+o8puO
- NEXA9ZYrytbHTgxiFJVFt4KRW4njREqd1y4= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 341408rt6q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 06 Oct 2020 23:12:11 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 6 Oct 2020 23:12:10 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ivhh4qeuB20Nl8lm+odUzmODqQ+JuFriKTpfK02Y84vSzDhETiXyN/ClHAQT+MHS8ahUig1NO9ZCpCI8Dh/Wc9uvGet4ISHm2Yof+5SzfKHa6Fo9glrOkjRZA93mbJIHH9t3UHHswJ+t3x6sWq61wtkUGS3nKUQXxm2N50GKmCDkX9ljQ/2gXi0pPm+qBaChHZiCiwqV07ZOO9gWAAiCBpAUkibWxq93iyLhXE3Uv/aDDDODQ+TJDIPbhVKQcKQy2TIPmHRacPg8OfKkspfwRBa+OMeQd1W1fyxSilNnrNcBMqkcx5/d6QfVVAMYdX41bvQz3QJXsghOFoFbHtgVMA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CCuwuhPUVe0JbLq1Yb86OvZBbtDOI9wc9UKvvmM715g=;
- b=R+P0iXMBHI3pqZrxONQeL5JVVsK5zdqhFU/WvJ+Qgy7E5b/XBerVZfTa6JEsPjPUwahfr3xKdfrGluby5bpT36qa7w/lHhOS7lLTLhUzUi61nlwr4U3w15RKsOZOdKvwaOB8VdcxvR18NAxjXzCtZbdrmL+DEl6E4ybkIsY09q3GHkhp/Pi1B3VUXMwW1VKd9b9cMroa3y6z0q19eW+DRUbf7AxLrZ9R9XabsVBSSTy1z1u/8S/jR6WRQJomp8EL0oLtRWjN9ijslipFREiRxXEI2UmtMJaCG0Bav24OraQiLKfJ0C8bz18B7oASf3rbvmniyY7xHNIXqgOnHiX+xA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CCuwuhPUVe0JbLq1Yb86OvZBbtDOI9wc9UKvvmM715g=;
- b=Hp/2OncLaZatEiVSgycVWvRctX/I3RdzPz0Zja9tEEh+vExfrXqzcvERG2Vio9JNKFFNumltV8Xsw2oA3lV4r32MY0Sg1kLRmxjsQmUymYtAY0fdlYgwA4veX/AhVgcKKd0990QQT7TTklcsyuUvFyLvWRRgnaL1JTmJ8V/nsTw=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB2885.namprd15.prod.outlook.com (2603:10b6:a03:f5::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.21; Wed, 7 Oct
- 2020 06:12:08 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::8887:dd68:f497:ea42]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::8887:dd68:f497:ea42%3]) with mapi id 15.20.3455.023; Wed, 7 Oct 2020
- 06:12:08 +0000
-Subject: Re: [PATCH bpf-next] kernel/bpf/verifier: fix build when NET is not
- enabled
-To:     Randy Dunlap <rdunlap@infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>, <linux-next@vger.kernel.org>
-References: <20201007021613.13646-1-rdunlap@infradead.org>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <fcf3f659-027e-517f-086d-deb3ad33d953@fb.com>
-Date:   Tue, 6 Oct 2020 23:12:05 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.1
-In-Reply-To: <20201007021613.13646-1-rdunlap@infradead.org>
-Content-Language: en-US
-X-Originating-IP: [2620:10d:c090:400::5:757]
-X-ClientProxiedBy: MWHPR1201CA0004.namprd12.prod.outlook.com
- (2603:10b6:301:4a::14) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
+        id S1726986AbgJGG17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 02:27:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46272 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725970AbgJGG17 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Oct 2020 02:27:59 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A9B30206F0;
+        Wed,  7 Oct 2020 06:27:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602052078;
+        bh=HvKM/5mrBEtK9U0bZHFZTSm86pWu8D5grViHfRuNPNI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ouRi779x1PbrzCw7QS9+tIdPjOROFgrh4E+UVe2g5yzPQzyXa5n/9k0XQsL62xS8T
+         xVqJLk1VUstRDqhs+7MH62WMPzAbCIevfikI1hw7f0ZO5v/xeL5cvysk1wxocz8qt4
+         C6pOo5bCUtMD8BDuH/lfNrhHyO8wyTWc4ppA1CWY=
+Date:   Wed, 7 Oct 2020 09:27:54 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     David Miller <davem@davemloft.net>, johannes@sipsolutions.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, kernel-team@fb.com, jiri@resnulli.us,
+        andrew@lunn.ch, mkubecek@suse.cz,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH net-next v2 0/7] ethtool: allow dumping policies to user
+ space
+Message-ID: <20201007062754.GU1874917@unreal>
+References: <20201005220739.2581920-1-kuba@kernel.org>
+ <7586c9e77f6aa43e598103ccc25b43415752507d.camel@sipsolutions.net>
+ <20201006.062618.628708952352439429.davem@davemloft.net>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21cf::121a] (2620:10d:c090:400::5:757) by MWHPR1201CA0004.namprd12.prod.outlook.com (2603:10b6:301:4a::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3412.20 via Frontend Transport; Wed, 7 Oct 2020 06:12:07 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b6b2cadc-d086-4040-60cc-08d86a87ebf7
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2885:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB28859330F640B19B5009DD89D30A0@BYAPR15MB2885.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:1122;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: EkbaaBChl8HNdTfFYKI1tOPSpuyJfeHFoehlPem+jGgyteki8MSCQ+P6Ak9/n/j4n/w2FI/pN+BfnLphlnUAhYvWTEMA/2KDteT7u6UuuKw+CQtbjh28wjsVvAMwC0ponLkIiDbM3yaF5hpcItZDg+G95uR/g+FRq6lRXnJARlOV462nx3kihTE7fcT8nrya10y0U9bbgORGKHmtNu6/8G1yelzEUkgrpXn+Gcvf2xplMPAb5uD9aHj7GkOxC7SmrUj+kEcp/m216DAZNE46BlPUPzV0DfHMJguWPC5mFA7r2/yJgLkVDchoYbcXd3a1HZwU/mESB5zePQObjobAZyu3Hti5UnXmcjJVBjk/M5uDt2Aa7TQmvfA64vCR80ZD
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(376002)(346002)(366004)(39860400002)(136003)(16526019)(4744005)(2616005)(478600001)(66946007)(86362001)(66476007)(66556008)(31686004)(8936002)(52116002)(5660300002)(8676002)(186003)(6486002)(36756003)(316002)(4326008)(2906002)(31696002)(53546011)(54906003)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: fP0bY5l3/aml0LYD+GFwjBje1UOQQ4p0pfPu/YksT0JInrgy+vqU8+coPw/+dJH9XoFvS6W8MUL4zss0PT4leH5GkJCj/iPyHSsGTJl16yYYAvugV9imTSc4nekPczFeFGkPs/grl5BxmjJ0Ak0eF1Dez/7g8gopcgOc+zHXah/vV+HwtfziaiHZNi5ytXX6DmRFWpVdQhjzHS/EykWi2U1A9zM4Gan8SKP0NWIsLiW8hrqyD5O8UOvQuXroZ2Uw3UAMckx0MyB5+6jPTk6yygF4OgOOcmZ3wDFZkuwbkGiszvAW3F7HjSJqeceiji8L0sdIAIhrxKjvEGLK8Livcdo2SCyNmEhjqhLZSBEkACCHXCCd0t7Ky6EOP5yWb8glQHKDFgcb8MtDNH1pAe3JkawMQhCPcjscrFYteQ5f7BgLoFpFz90xgR+2U7imIVwjwWp0QSUtUnQoGTy08RljEEX8WGCafPkVuvc8cLxzzrSjX9baMhjG/kcx2UMLusVmD2FvkxBYOOSEadhLxtL2xtXvNQhY42fX0hMdlO01B1Knw+lFmATePvl1nKszejT5k4m0yoKnut0WolsmReH2qq+cSkwxB798kA6MqYkvknaEsYfOCj3xyJsTWfV4wNf4W8qEBJOnLX9v7ylaPXcDMnJxSUW9TLuhgrGempCdOsA=
-X-MS-Exchange-CrossTenant-Network-Message-Id: b6b2cadc-d086-4040-60cc-08d86a87ebf7
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2020 06:12:08.7390
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: amY895ViZDg8PWByYUaZNlE9Czh9ToVtW/loHRI97pA3e/ngSviU25Ynw090eK/Z
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2885
-X-OriginatorOrg: fb.com
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-10-07_04:2020-10-06,2020-10-07 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 malwarescore=0 mlxscore=0
- mlxlogscore=999 impostorscore=0 lowpriorityscore=0 suspectscore=0
- adultscore=0 spamscore=0 clxscore=1011 priorityscore=1501 phishscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2010070041
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201006.062618.628708952352439429.davem@davemloft.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Oct 06, 2020 at 06:26:18AM -0700, David Miller wrote:
+> From: Johannes Berg <johannes@sipsolutions.net>
+> Date: Tue, 06 Oct 2020 08:43:17 +0200
+>
+> > On Mon, 2020-10-05 at 15:07 -0700, Jakub Kicinski wrote:
+> >> Hi!
+> >>
+> >> This series wires up ethtool policies to ops, so they can be
+> >> dumped to user space for feature discovery.
+> >>
+> >> First patch wires up GET commands, and second patch wires up SETs.
+> >>
+> >> The policy tables are trimmed to save space and LoC.
+> >>
+> >> Next - take care of linking up nested policies for the header
+> >> (which is the policy what we actually care about). And once header
+> >> policy is linked make sure that attribute range validation for flags
+> >> is done by policy, not a conditions in the code. New type of policy
+> >> is needed to validate masks (patch 6).
+> >>
+> >> Netlink as always staying a step ahead of all the other kernel
+> >> API interfaces :)
+>  ...
+> > Reviewed-by: Johannes Berg <johannes@sipsolutions.net>
+>
+> Series applied, thanks everyone.
 
+Hi Dave, Johannes and Jakub
 
-On 10/6/20 7:16 PM, Randy Dunlap wrote:
-> Fix build errors in kernel/bpf/verifier.c when CONFIG_NET is
-> not enabled.
-> 
-> ../kernel/bpf/verifier.c:3995:13: error: ‘btf_sock_ids’ undeclared here (not in a function); did you mean ‘bpf_sock_ops’?
->    .btf_id = &btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON],
-> 
-> ../kernel/bpf/verifier.c:3995:26: error: ‘BTF_SOCK_TYPE_SOCK_COMMON’ undeclared here (not in a function); did you mean ‘PTR_TO_SOCK_COMMON’?
->    .btf_id = &btf_sock_ids[BTF_SOCK_TYPE_SOCK_COMMON],
-> 
-> Fixes: 1df8f55a37bd ("bpf: Enable bpf_skc_to_* sock casting helper to networking prog type")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: netdev@vger.kernel.org
-> Cc: bpf@vger.kernel.org
-> Cc: Martin KaFai Lau <kafai@fb.com>
-> Cc: linux-next@vger.kernel.org
+This series and my guess that it comes from ff419afa4310 ("ethtool: trim policy tables")
+generates the following KASAN out-of-bound error.
 
-Acked-by: Yonghong Song <yhs@fb.com>
+ [ 187.278416] ==================================================================
+ [  187.282872] BUG: KASAN: slab-out-of-bounds in strset_parse_request+0x3ef/0x480
+ [  187.284499] Read of size 8 at addr ffff88828db2b158 by task ethtool/3949
+ [  187.285927]
+ [  187.286406] CPU: 0 PID: 3949 Comm: ethtool Not tainted 5.9.0-rc8_master_8f9ef66 #1
+ [  187.288135] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
+ [  187.290526] Call Trace:
+ [  187.291190]  dump_stack+0x9a/0xd0
+ [  187.292028]  ? strset_parse_request+0x3ef/0x480
+ [  187.293069]  print_address_description.constprop.0+0x1c/0x220
+ [  187.294331]  ? nla_get_range_signed+0x540/0x540
+ [  187.295373]  ? strset_parse_request+0x3ef/0x480
+ [  187.296421]  ? strset_parse_request+0x3ef/0x480
+ [  187.297458]  kasan_report.cold+0x1f/0x37
+ [  187.298387]  ? strset_parse_request+0x3ef/0x480
+ [  187.299422]  strset_parse_request+0x3ef/0x480
+ [  187.300434]  ? ethnl_default_dumpit+0xcd0/0xcd0
+ [  187.301483]  ? strset_cleanup_data+0xd0/0xd0
+ [  187.302489]  ethnl_default_parse+0xb3/0x110
+ [  187.303476]  ethnl_default_doit+0x223/0x950
+ [  187.304454]  ? ethnl_reply_init+0x1b0/0x1b0
+ [  187.305433]  ? __nla_parse+0x22/0x25
+ [  187.306292]  ? genl_family_rcv_msg_attrs_parse.constprop.0+0x15e/0x230
+ [  187.307708]  genl_family_rcv_msg_doit+0x1e9/0x2f0
+ [  187.308797]  ? genl_family_rcv_msg_attrs_parse.constprop.0+0x230/0x230
+ [  187.310218]  ? register_lock_class+0x1650/0x1650
+ [  187.311273]  genl_rcv_msg+0x27f/0x4a0
+ [  187.312166]  ? genl_get_cmd+0x3c0/0x3c0
+ [  187.313074]  ? lock_acquire+0x1da/0x9c0
+ [  187.313978]  ? genl_rcv+0x15/0x40
+ [  187.314788]  ? ethnl_reply_init+0x1b0/0x1b0
+ [  187.315766]  ? ethnl_default_parse+0x110/0x110
+ [  187.316781]  ? ethnl_fill_reply_header.part.0+0x2d0/0x2d0
+ [  187.317998]  ? get_order+0x20/0x20
+ [  187.318840]  ? check_flags+0x60/0x60
+ [  187.319712]  netlink_rcv_skb+0x124/0x350
+ [  187.320642]  ? genl_get_cmd+0x3c0/0x3c0
+ [  187.321558]  ? netlink_ack+0x8b0/0x8b0
+ [  187.322462]  ? __might_fault+0xef/0x1a0
+ [  187.323383]  genl_rcv+0x24/0x40
+ [  187.324199]  netlink_unicast+0x433/0x700
+ [  187.325157]  ? netlink_attachskb+0x6f0/0x6f0
+ [  187.326151]  ? __alloc_skb+0x32a/0x530
+ [  187.327048]  netlink_sendmsg+0x6f1/0xbd0
+ [  187.328010]  ? netlink_unicast+0x700/0x700
+ [  187.328996]  ? netlink_unicast+0x700/0x700
+ [  187.329953]  sock_sendmsg+0xb0/0xe0
+ [  187.330824]  __sys_sendto+0x193/0x240
+ [  187.331736]  ? __x64_sys_getpeername+0xb0/0xb0
+ [  187.332781]  ? do_raw_spin_unlock+0x54/0x220
+ [  187.333794]  ? __up_read+0x1a1/0x7b0
+ [  187.334738]  __x64_sys_sendto+0xdd/0x1b0
+ [  187.335718]  ? syscall_enter_from_user_mode+0x1d/0x50
+ [  187.336889]  do_syscall_64+0x2d/0x40
+ [  187.337744]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+ [  187.338949] RIP: 0033:0x7fe429352efa
+ [  187.339870] Code: d8 64 89 02 48 c7 c0 ff ff ff ff eb b8 0f 1f 00 f3 0f 1e fa 41 89 ca 64 8b 04 25 18 00 00 00 85 c0 75 15 b8 2c 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 76 c3 0f 1f 44 00 00 55 48 83 ec 30 44 89 4c
+ [  187.343971] RSP: 002b:00007ffc105fc268 EFLAGS: 00000246 ORIG_RAX: 000000000000002c
+ [  187.345764] RAX: ffffffffffffffda RBX: 000000000198c430 RCX: 00007fe429352efa
+ [  187.347386] RDX: 0000000000000028 RSI: 000000000198c4a0 RDI: 0000000000000004
+ [  187.349015] RBP: 000000000198c4a0 R08: 00007fe42941e000 R09: 000000000000000c
+ [  187.350637] R10: 0000000000000000 R11: 0000000000000246 R12: 000000000042f4f0
+ [  187.352239] R13: 000000000197c3a0 R14: 000000000197c2a0 R15: 000000000197c3a0
+ [  187.353791]
+ [  187.354283] Allocated by task 3949:
+ [  187.355145]  kasan_save_stack+0x1b/0x40
+ [  187.356067]  __kasan_kmalloc.constprop.0+0xc2/0xd0
+ [  187.357182]  genl_family_rcv_msg_attrs_parse.constprop.0+0xb5/0x230
+ [  187.358567]  genl_family_rcv_msg_doit+0xc7/0x2f0
+ [  187.359651]  genl_rcv_msg+0x27f/0x4a0
+ [  187.360519]  netlink_rcv_skb+0x124/0x350
+ [  187.361464]  genl_rcv+0x24/0x40
+ [  187.362260]  netlink_unicast+0x433/0x700
+ [  187.363177]  netlink_sendmsg+0x6f1/0xbd0
+ [  187.364096]  sock_sendmsg+0xb0/0xe0
+ [  187.364959]  __sys_sendto+0x193/0x240
+ [  187.365885]  __x64_sys_sendto+0xdd/0x1b0
+ [  187.366797]  do_syscall_64+0x2d/0x40
+ [  187.367695]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+ [  187.368900]
+ [  187.369400] The buggy address belongs to the object at ffff88828db2b140
+ [  187.369400]  which belongs to the cache kmalloc-32 of size 32
+ [  187.372134] The buggy address is located 24 bytes inside of
+ [  187.372134]  32-byte region [ffff88828db2b140, ffff88828db2b160)
+ [  187.374713] The buggy address belongs to the page:
+ [  187.375884] page:00000000980aee13 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff88828db2bc80 pfn:0x28db2b
+ [  187.378286] flags: 0x8000000000000200(slab)
+ [  187.379318] raw: 8000000000000200 ffffea0009be8a80 0000001b0000001b ffff8882a3043a40
+ [  187.381156] raw: ffff88828db2bc80 0000000080400039 00000001ffffffff 0000000000000000
+ [  187.382973] page dumped because: kasan: bad access detected
+ [  187.384252]
+ [  187.384747] Memory state around the buggy address:
+ [  187.385825]  ffff88828db2b000: fb fb fb fb fc fc fc fc fb fb fb fb fc fc fc fc
+ [  187.387479]  ffff88828db2b080: fb fb fb fb fc fc fc fc 00 00 00 fc fc fc fc fc
+ [  187.389103] >ffff88828db2b100: fb fb fb fb fc fc fc fc 00 00 00 fc fc fc fc fc
+ [  187.390707]                                                     ^
+ [  187.392050]  ffff88828db2b180: fa fb fb fb fc fc fc fc fa fb fb fb fc fc fc fc
+ [  187.393693]  ffff88828db2b200: fa fb fb fb fc fc fc fc fa fb fb fb fc fc fc fc
+ [  187.395314] ==================================================================
