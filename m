@@ -2,103 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61513286827
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 21:18:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12300286844
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 21:26:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728085AbgJGTSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 15:18:44 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:59764 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728034AbgJGTSo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 15:18:44 -0400
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 097J1hHd019060;
-        Wed, 7 Oct 2020 15:17:53 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=pp1;
- bh=7P/5mBZR7aY3ru8bEZ9ozUoe6QXM0JhJIdOb1/L4mG4=;
- b=jxI8xyJckufceGD72CVj0p4ySi7dywye46ijahPEfTSa33SF1OGgLMHLQwBx1j5CQIE2
- GaMZwLKS7knNhI508NASWhMdx45ck29HIBVDAMDi40ZPSVQ1oRVfvMuEx/O13ImR3A6m
- kglVcaeoqIED+4wZvNCGQyAft997ttjWukEu2s4NBtH7dKEsP/jShIAaBTbN5OyHtSrO
- vlF9VtCYDRlhNepNYpsZu7TogYuwAvp+1Xia3KBz1bXNN/GpVEZ73RgqidLmwB94FTes
- v+/EC5GC086K5tkSoS1dEThcNFiNk0kdxhJ18DUKmt+fwAwTJYtuSfOhlSUo5segAkUG iA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 341k8u0qxh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 07 Oct 2020 15:17:53 -0400
-Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 097J1lGn019614;
-        Wed, 7 Oct 2020 15:17:52 -0400
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 341k8u0qwd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 07 Oct 2020 15:17:52 -0400
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 097J9LxK019727;
-        Wed, 7 Oct 2020 19:17:50 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma03fra.de.ibm.com with ESMTP id 33xgx7tcky-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 07 Oct 2020 19:17:49 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 097JHlaJ19399126
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 7 Oct 2020 19:17:47 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6B60FA4053;
-        Wed,  7 Oct 2020 19:17:47 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6FCB3A4040;
-        Wed,  7 Oct 2020 19:17:46 +0000 (GMT)
-Received: from LAPTOP-VCUDA2TK (unknown [9.145.39.190])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Wed,  7 Oct 2020 19:17:46 +0000 (GMT)
-Date:   Wed, 7 Oct 2020 21:17:46 +0200
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     Allen Pais <allen.lkml@gmail.com>
-Cc:     davem@davemloft.net, gerrit@erg.abdn.ac.uk, kuba@kernel.org,
-        edumazet@google.com, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        johannes@sipsolutions.net, alex.aring@gmail.com,
-        stefan@datenfreihafen.org, santosh.shilimkar@oracle.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        netdev@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>,
-        Romain Perier <romain.perier@gmail.com>
-Subject: Re: [net-next v2 7/8] net: smc: convert tasklets to use new
- tasklet_setup() API
-Message-Id: <20201007211746.721cfa50717c169a90386aa4@linux.ibm.com>
-In-Reply-To: <20201007101219.356499-8-allen.lkml@gmail.com>
-References: <20201007101219.356499-1-allen.lkml@gmail.com>
-        <20201007101219.356499-8-allen.lkml@gmail.com>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.30; i686-pc-mingw32)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-10-07_10:2020-10-07,2020-10-07 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
- priorityscore=1501 malwarescore=0 clxscore=1011 adultscore=0 bulkscore=0
- impostorscore=0 mlxlogscore=804 mlxscore=0 spamscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2006250000
- definitions=main-2010070118
+        id S1728314AbgJGT0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 15:26:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58306 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726671AbgJGT0P (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Oct 2020 15:26:15 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C41192173E;
+        Wed,  7 Oct 2020 19:26:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602098774;
+        bh=9Efq9BJM0KiSLLuORpyyMZ3t9JH6nYm17qQk8rQ+PLI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qgUBgA3R7+nTAqG++g8VKyGQRyilQJ6UoRyHiVUvMT4DZpk9MbV2HSNwVFUJak3/I
+         xepI6uJRdeQo5JbXMjMsFZ9HSv/GWk4iAuGOz0HfoKwKw67rYF+T164DG/upF8atkw
+         GdbDbu56q2++rrZ4BGpT0Z++xOfgecjJcuvXKd/E=
+Date:   Wed, 7 Oct 2020 22:26:10 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "Ertman, David M" <david.m.ertman@intel.com>
+Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        "parav@mellanox.com" <parav@mellanox.com>,
+        "tiwai@suse.de" <tiwai@suse.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ranjani.sridharan@linux.intel.com" 
+        <ranjani.sridharan@linux.intel.com>,
+        "fred.oh@linux.intel.com" <fred.oh@linux.intel.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "jgg@nvidia.com" <jgg@nvidia.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Patil, Kiran" <kiran.patil@intel.com>
+Subject: Re: [PATCH v2 1/6] Add ancillary bus support
+Message-ID: <20201007192610.GD3964015@unreal>
+References: <20201005182446.977325-1-david.m.ertman@intel.com>
+ <20201005182446.977325-2-david.m.ertman@intel.com>
+ <20201006071821.GI1874917@unreal>
+ <b4f6b5d1-2cf4-ae7a-3e57-b66230a58453@linux.intel.com>
+ <20201006170241.GM1874917@unreal>
+ <DM6PR11MB2841C531FC27DB41E078C52BDD0A0@DM6PR11MB2841.namprd11.prod.outlook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DM6PR11MB2841C531FC27DB41E078C52BDD0A0@DM6PR11MB2841.namprd11.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  7 Oct 2020 15:42:18 +0530
-Allen Pais <allen.lkml@gmail.com> wrote:
+On Wed, Oct 07, 2020 at 06:06:30PM +0000, Ertman, David M wrote:
+> > -----Original Message-----
+> > From: Leon Romanovsky <leon@kernel.org>
+> > Sent: Tuesday, October 6, 2020 10:03 AM
+> > To: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+> > Cc: Ertman, David M <david.m.ertman@intel.com>; alsa-devel@alsa-
+> > project.org; parav@mellanox.com; tiwai@suse.de; netdev@vger.kernel.org;
+> > ranjani.sridharan@linux.intel.com; fred.oh@linux.intel.com; linux-
+> > rdma@vger.kernel.org; dledford@redhat.com; broonie@kernel.org;
+> > jgg@nvidia.com; gregkh@linuxfoundation.org; kuba@kernel.org; Williams,
+> > Dan J <dan.j.williams@intel.com>; Saleem, Shiraz
+> > <shiraz.saleem@intel.com>; davem@davemloft.net; Patil, Kiran
+> > <kiran.patil@intel.com>
+> > Subject: Re: [PATCH v2 1/6] Add ancillary bus support
+> >
+> > On Tue, Oct 06, 2020 at 10:18:07AM -0500, Pierre-Louis Bossart wrote:
+> > > Thanks for the review Leon.
+> > >
+> > > > > Add support for the Ancillary Bus, ancillary_device and ancillary_driver.
+> > > > > It enables drivers to create an ancillary_device and bind an
+> > > > > ancillary_driver to it.
+> > > >
+> > > > I was under impression that this name is going to be changed.
+> > >
+> > > It's part of the opens stated in the cover letter.
+> >
+> > ok, so what are the variants?
+> > system bus (sysbus), sbsystem bus (subbus), crossbus ?
+> >
+> > >
+> > > [...]
+> > >
+> > > > > +	const struct my_driver my_drv = {
+> > > > > +		.ancillary_drv = {
+> > > > > +			.driver = {
+> > > > > +				.name = "myancillarydrv",
+> > > >
+> > > > Why do we need to give control over driver name to the driver authors?
+> > > > It can be problematic if author puts name that already exists.
+> > >
+> > > Good point. When I used the ancillary_devices for my own SoundWire test,
+> > the
+> > > driver name didn't seem specifically meaningful but needed to be set to
+> > > something, what mattered was the id_table. Just thinking aloud, maybe we
+> > can
+> > > add prefixing with KMOD_BUILD, as we've done already to avoid collisions
+> > > between device names?
+> >
+> > IMHO, it shouldn't be controlled by the drivers at all and need to have
+> > kernel module name hardwired. Users will use it later for various
+> > bind/unbind/autoprobe tricks and it will give predictability for them.
+> >
+> > >
+> > > [...]
+> > >
+> > > > > +int __ancillary_device_add(struct ancillary_device *ancildev, const
+> > char *modname)
+> > > > > +{
+> > > > > +	struct device *dev = &ancildev->dev;
+> > > > > +	int ret;
+> > > > > +
+> > > > > +	if (!modname) {
+> > > > > +		pr_err("ancillary device modname is NULL\n");
+> > > > > +		return -EINVAL;
+> > > > > +	}
+> > > > > +
+> > > > > +	ret = dev_set_name(dev, "%s.%s.%d", modname, ancildev->name,
+> > ancildev->id);
+> > > > > +	if (ret) {
+> > > > > +		pr_err("ancillary device dev_set_name failed: %d\n", ret);
+> > > > > +		return ret;
+> > > > > +	}
+> > > > > +
+> > > > > +	ret = device_add(dev);
+> > > > > +	if (ret)
+> > > > > +		dev_err(dev, "adding ancillary device failed!: %d\n", ret);
+> > > > > +
+> > > > > +	return ret;
+> > > > > +}
+> > > >
+> > > > Sorry, but this is very strange API that requires users to put
+> > > > internal call to "dev" that is buried inside "struct ancillary_device".
+> > > >
+> > > > For example in your next patch, you write this "put_device(&cdev-
+> > >ancildev.dev);"
+> > > >
+> > > > I'm pretty sure that the amount of bugs in error unwind will be
+> > > > astonishing, so if you are doing wrappers over core code, better do not
+> > > > pass complexity to the users.
+> > >
+> > > In initial reviews, there was pushback on adding wrappers that don't do
+> > > anything except for a pointer indirection.
+> > >
+> > > Others had concerns that the API wasn't balanced and blurring layers.
+> >
+> > Are you talking about internal review or public?
+> > If it is public, can I get a link to it?
+> >
+> > >
+> > > Both points have merits IMHO. Do we want wrappers for everything and
+> > > completely hide the low-level device?
+> >
+> > This API is partially obscures low level driver-core code and needs to
+> > provide clear and proper abstractions without need to remember about
+> > put_device. There is already _add() interface why don't you do
+> > put_device() in it?
+> >
+>
+> The pushback Pierre is referring to was during our mid-tier internal review.  It was
+> primarily a concern of Parav as I recall, so he can speak to his reasoning.
+>
+> What we originally had was a single API call (ancillary_device_register) that started
+> with a call to device_initialize(), and every error path out of the function performed
+> a put_device().
+>
+> Is this the model you have in mind?
 
-> From: Allen Pais <apais@linux.microsoft.com>
-> 
-> In preparation for unconditionally passing the
-> struct tasklet_struct pointer to all tasklet
-> callbacks, switch to using the new tasklet_setup()
-> and from_tasklet() to pass the tasklet pointer explicitly.
-> 
+I don't like this flow:
+ancillary_device_initialize()
+if (ancillary_ancillary_device_add()) {
+  put_device(....)
+  ancillary_device_unregister()
+  return err;
+}
 
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+And prefer this flow:
+ancillary_device_initialize()
+if (ancillary_device_add()) {
+  ancillary_device_unregister()
+  return err;
+}
 
--- 
-Karsten
+In this way, the ancillary users won't need to do non-intuitive put_device();
+
+Thanks
