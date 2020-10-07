@@ -2,89 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF352286B8B
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 01:34:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 263E0286B95
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 01:44:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728136AbgJGXeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 19:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59844 "EHLO
+        id S1728054AbgJGXoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 19:44:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726408AbgJGXeG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 19:34:06 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75273C061755;
-        Wed,  7 Oct 2020 16:34:06 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id j76so3135201ybg.3;
-        Wed, 07 Oct 2020 16:34:06 -0700 (PDT)
+        with ESMTP id S1726408AbgJGXoW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 19:44:22 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2FC6C061755;
+        Wed,  7 Oct 2020 16:44:22 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id z5so4028229ilq.5;
+        Wed, 07 Oct 2020 16:44:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kaCT7dYjwn0iby+pZpZ0as46gkP09c55vm9iTwuQ43k=;
-        b=VvL6KeqH2M7cjLYRe2GMebHS7XeJ14btFEbO46x7Ib+XdiWOCJeCg6MsDeZBItqVIF
-         TBjQlB72EUETmExH+9e6p8ZBJ3cDpzV59ULVF+l3M25ovwbEBoljqEDeo/WTxbPY23Nb
-         WRmudN4jHtMuvhecpAY75x7H56SKVh70jR+hbFZ+nClGbIJKoNAoHAnBYbrl0s8Z0KCK
-         bZS9HMEMnzUGuAa0FmMfslfmT8M5XtIPl3Ira24XnPhdC6ILrz3ZoqENe+39xmIVKLHf
-         QTblIK7jwKx3ceyikGZeZnshZVAtC6ooaeKxTVuBl6/668i0hbvAFCFL82yjQDIwGQh8
-         43Mw==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=SZ0JhaCIGHS14xbgQZAAz+ODt1cKAexG8cxga0f0jOQ=;
+        b=jMmED/YNSN6yJ/a9nVfNTJfLVn5NGU/+ZzE5ZvDJEuhU9ilbyzhpT2J+j2dapfrANX
+         DpbsxNA1H3cncm8wc8rOjsOdj13tCawzJasB54fNk2C99whIBnenocpIS6oAG5XaylvV
+         WyaOMqU9tbmiFVWsGBJYTaxM1HSN/0VyMoHUv3ZL977n8+24psPDO+Af/deeg3aQ1/9s
+         8idQuJvfNIIuS+l5CS9V6x2DApE2gLqr8f2P52R41icLFLAuKGEtucVgFsEMyfMqeiyF
+         A/2lYrpRqKuA7CXMFzG/9Mn5DI2/EfsKSrtDJ7NrSRcOM+kSFdDFT8TRDQ9egKcakajM
+         2GzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kaCT7dYjwn0iby+pZpZ0as46gkP09c55vm9iTwuQ43k=;
-        b=YZcysWMTngRjP1d3xdOO6AAHv1VoqJisj6saYzmtiH+yO6LFvMig7MlhVl6hPypwc/
-         dYDlTbQXOdjJ3o1o1RTl8vBre+kEXxdnG5cLl1piSN3dJXHC/gTe7uiVouGYX4xmieFb
-         QvoJEOfFEYTqM9DQYelHLWjPMI9zxxQU6beEsAD8Nr22zAGfBjQhhxZyE43GCFDnvKm0
-         BnYmzJ51E2qN0ALk3FVwGTAkKI9fzIhtalgh5ZCITiCusecf0dbCmrDTJZtwiEk+xRgf
-         JWQ8DDcsD/UFIJbHfKkeMMrau9oQRGmBfTZx+8FaSYh4fTaZHEi8khdAZyx71FwK6Zp0
-         msGw==
-X-Gm-Message-State: AOAM530LNjCq3f7Yb051DCGfkJyovGbg/BuFkTMfyDENc0WlH02sMD26
-        wTz4ffxqO5ZoiR7GaYV0gUYrY8uZe6qOx1r9NUw=
-X-Google-Smtp-Source: ABdhPJzNOvPoWvIHesHaM3vcc0NnSFa2zdDkhroQrjoSDf/aGv3jVz9s7dHFckBh3mGi6yNOYkb4YX8mToCCBPV/rWs=
-X-Received: by 2002:a25:2596:: with SMTP id l144mr7255708ybl.510.1602113645664;
- Wed, 07 Oct 2020 16:34:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201007202946.3684483-1-andrii@kernel.org> <20201007202946.3684483-5-andrii@kernel.org>
- <20201007232957.nrmqryypzc44rqcd@ast-mbp>
-In-Reply-To: <20201007232957.nrmqryypzc44rqcd@ast-mbp>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 7 Oct 2020 16:33:54 -0700
-Message-ID: <CAEf4BzbHQ__QtEjCssXqE-uHCAmTvQHRB4gOYC2-8Up5_s7B8g@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 4/4] selftests/bpf: validate libbpf's
- auto-sizing of LD/ST/STX instructions
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Tony Ambardar <tony.ambardar@gmail.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=SZ0JhaCIGHS14xbgQZAAz+ODt1cKAexG8cxga0f0jOQ=;
+        b=Fi88t8eELw6e3uB6C6kd8tP+zVieoudkd99eOB80hqX37pqo3Xlu43ju1JiEfP2KzG
+         TFDGLfrLP/7km1UZZVETv2JI+P2Nw6FyWu8o9pa0bkjuhRZk0r0uznQdvNcJJJCZnMh/
+         WsI8fWQiyln4haEeV+sq3pkZ/erql8V79NXrjfeGrlxgE4dtLso1DlMWbvAz7C8Rkvv6
+         Geq++7L0/J+5Py4/t5z/ygzZvW2SdMTEEe9wDO8+y2u89WoGWrwaC0tzLWE6TkaoCTpT
+         pQONFG6K28phuh8YFVkYI0lkWqqV7ftZnfvMwJX0XJdvx9+xOlle/zqn1UNUQSs01IoT
+         QcaA==
+X-Gm-Message-State: AOAM5310Xci5Wro2tKgAyibMbCx1yUKtm3rzQo27sQ5Lsm2wcgiF/LGK
+        Iqgn69Fv/FjCCZVe7GLiU2M=
+X-Google-Smtp-Source: ABdhPJyqkrfqQnxoy1/Y08GYe+4rRCm4DAHiEufPMLhJhvzcNKiFoib5AodADoA8KOteuWI6pSN6+w==
+X-Received: by 2002:a92:9fd5:: with SMTP id z82mr4625539ilk.262.1602114261903;
+        Wed, 07 Oct 2020 16:44:21 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id f2sm1687318ilr.13.2020.10.07.16.44.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Oct 2020 16:44:20 -0700 (PDT)
+Date:   Wed, 07 Oct 2020 16:44:14 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        davem@davemloft.net
+Cc:     daniel@iogearbox.net, john.fastabend@gmail.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+Message-ID: <5f7e52ce81308_1a83120890@john-XPS-13-9370.notmuch>
+In-Reply-To: <20201006200955.12350-2-alexei.starovoitov@gmail.com>
+References: <20201006200955.12350-1-alexei.starovoitov@gmail.com>
+ <20201006200955.12350-2-alexei.starovoitov@gmail.com>
+Subject: RE: [PATCH bpf-next 1/3] bpf: Propagate scalar ranges through
+ register assignments.
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 7, 2020 at 4:30 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Wed, Oct 07, 2020 at 01:29:46PM -0700, Andrii Nakryiko wrote:
-> > diff --git a/tools/testing/selftests/bpf/progs/test_core_autosize.c b/tools/testing/selftests/bpf/progs/test_core_autosize.c
-> > new file mode 100644
-> > index 000000000000..e999f2e2ea22
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/progs/test_core_autosize.c
-> > @@ -0,0 +1,172 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +// Copyright (c) 2019 Facebook
->
-> The year is wrong.
-> Also Copyright should be in /* */
-> The // exception is only for SPDX and only in .c
-> .h should have both in /* */
+Alexei Starovoitov wrote:
+> From: Alexei Starovoitov <ast@kernel.org>
+> 
+> The llvm register allocator may use two different registers representing the
+> same virtual register. In such case the following pattern can be observed:
+> 1047: (bf) r9 = r6
+> 1048: (a5) if r6 < 0x1000 goto pc+1
+> 1050: ...
+> 1051: (a5) if r9 < 0x2 goto pc+66
+> 1052: ...
+> 1053: (bf) r2 = r9 /* r2 needs to have upper and lower bounds */
+> 
+> In order to track this information without backtracking allocate ID
+> for scalars in a similar way as it's done for find_good_pkt_pointers().
+> 
+> When the verifier encounters r9 = r6 assignment it will assign the same ID
+> to both registers. Later if either register range is narrowed via conditional
+> jump propagate the register state into the other register.
+> 
+> Clear register ID in adjust_reg_min_max_vals() for any alu instruction.
 
-argh, copy/paste from test_core_reloc.c
+Do we also need to clear the register ID on reg0 for CALL ops into a
+helper?
 
-We have plenty of those '//' vs '/* */' issues with SPDX and
-Copyrights in selftests. Might be a good idea to finally fix all that.
+Looks like check_helper_call might mark reg0 as a scalar, but I don't
+see where it would clear the reg->id? Did I miss it. Either way maybe
+a comment here would help make it obvious how CALLs are handled?
+
+Thanks,
+John
+
+> 
+> Newly allocated register ID is ignored for scalars in regsafe() and doesn't
+> affect state pruning. mark_reg_unknown() also clears the ID.
+> 
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
+>  kernel/bpf/verifier.c                         | 38 +++++++++++++++++++
+>  .../testing/selftests/bpf/prog_tests/align.c  | 16 ++++----
+>  .../bpf/verifier/direct_packet_access.c       |  2 +-
+>  3 files changed, 47 insertions(+), 9 deletions(-)
+> 
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 01120acab09a..09e17b483b0b 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -6432,6 +6432,8 @@ static int adjust_reg_min_max_vals(struct bpf_verifier_env *env,
+>  	src_reg = NULL;
+>  	if (dst_reg->type != SCALAR_VALUE)
+>  		ptr_reg = dst_reg;
+> +	else
+> +		dst_reg->id = 0;
+>  	if (BPF_SRC(insn->code) == BPF_X) {
+>  		src_reg = &regs[insn->src_reg];
+>  		if (src_reg->type != SCALAR_VALUE) {
+> @@ -6565,6 +6567,8 @@ static int check_alu_op(struct bpf_verifier_env *env, struct bpf_insn *insn)
+>  				/* case: R1 = R2
+>  				 * copy register state to dest reg
+>  				 */
+> +				if (src_reg->type == SCALAR_VALUE)
+> +					src_reg->id = ++env->id_gen;
+>  				*dst_reg = *src_reg;
+>  				dst_reg->live |= REG_LIVE_WRITTEN;
+>  				dst_reg->subreg_def = DEF_NOT_SUBREG;
+> @@ -7365,6 +7369,30 @@ static bool try_match_pkt_pointers(const struct bpf_insn *insn,
+>  	return true;
+>  }
