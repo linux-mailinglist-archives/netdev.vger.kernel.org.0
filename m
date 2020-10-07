@@ -2,114 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2C28286543
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 18:52:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EAAC28655E
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 19:01:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727858AbgJGQwX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 12:52:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53982 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726105AbgJGQwV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 12:52:21 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D429C061755
-        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 09:52:21 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id z1so3006438wrt.3
-        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 09:52:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Yc9MaL0c9x4ZAj0rCSwlVTFP8A4zM0HM+kBLxmgmvIE=;
-        b=cLA1ZMrJiELy3+TSWAXBZ/IAV5Uyu1GYurX03Gt8oh6viQNoXJvWUOrkhPgks2VBsO
-         /e7LtBYPsqXUZiCAZ6oqc2iBEqS4iRlrS1Fq6FLc3fo46nGuZEStc19TzKGdcflyQ2lE
-         oZ8PsjGrVa6UmLs0yZ4V+/tfxNjh+0EQntGXAtYbmOB+7CSrntkPKAW8/jwoNSyE9wvv
-         S0j6glEaaU51LeecCoGcA+MdD4Hyeypd+QxEuVowlutWwXCbByjzIgwllObeQn5nDEQn
-         wCYl2Ag5Mi9ka0WCKFnkbxWYf3wQuNqnfYNPb4/667WyNl5SK2akomU6XDqvnRDYUjk0
-         OfTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Yc9MaL0c9x4ZAj0rCSwlVTFP8A4zM0HM+kBLxmgmvIE=;
-        b=UDFP0Sk97whjN7WKQR5mUhiRSVaIXBnefXKxQJaC47U6xkB0Uc9S2zfFp/q3twZP99
-         poIhpfNtdXSiCY0cNhGzB7Thp2FGjQlkmj+V5r3eGoWzQmHjXeZsa/GYXb3P+W+YE5Cc
-         u6OGDPWWtQUHN4uX8G+fstpiB6YwUIjuhz7KshJFG0x7/QQfYnzV6R4u73MKacOy0uKS
-         3dA45Yoo97JNOwrXW0XbrYekBIJKH5hjBqVx1V0ksYW8n1P0j9MtLLZKYI3pqE4G0J2O
-         NOXstJnPYDwly20YdiOVGTCgC8+JYkso0kZAX01lGKkmUHvUqtTvrk4BM8+xqNB5RvKb
-         K74g==
-X-Gm-Message-State: AOAM5321yg77h8WdZznEt0Q8Cataku24YQI5Yb7SInOnydi5i21nTkhP
-        ByFqTcywa4QjIGZ6opNVdxQ=
-X-Google-Smtp-Source: ABdhPJzo393TH/5PE8SlPxzF1W3Ror2++sKJEdCHkYgfnpolUbMJOpcxg4jhmWFlM8qxNh4lokGpEg==
-X-Received: by 2002:adf:8541:: with SMTP id 59mr4580018wrh.61.1602089540344;
-        Wed, 07 Oct 2020 09:52:20 -0700 (PDT)
-Received: from [192.168.8.147] ([37.172.158.5])
-        by smtp.gmail.com with ESMTPSA id z11sm3550364wrh.70.2020.10.07.09.52.17
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 07 Oct 2020 09:52:19 -0700 (PDT)
-Subject: Re: [net-next v2 6/8] net: sched: convert tasklets to use new
- tasklet_setup() API
-To:     Allen Pais <allen.lkml@gmail.com>, davem@davemloft.net
-Cc:     gerrit@erg.abdn.ac.uk, kuba@kernel.org, edumazet@google.com,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        johannes@sipsolutions.net, alex.aring@gmail.com,
-        stefan@datenfreihafen.org, santosh.shilimkar@oracle.com,
-        jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        netdev@vger.kernel.org, Allen Pais <apais@linux.microsoft.com>,
-        Romain Perier <romain.perier@gmail.com>
-References: <20201007101219.356499-1-allen.lkml@gmail.com>
- <20201007101219.356499-7-allen.lkml@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <5f057822-0d9a-0643-6a1e-118e306c6bb1@gmail.com>
-Date:   Wed, 7 Oct 2020 18:52:17 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1727876AbgJGRBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 13:01:23 -0400
+Received: from out2.virusfree.cz ([79.133.37.44]:49551 "EHLO out2.virusfree.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726138AbgJGRBW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Oct 2020 13:01:22 -0400
+X-Greylist: delayed 400 seconds by postgrey-1.27 at vger.kernel.org; Wed, 07 Oct 2020 13:01:22 EDT
+Received: (qmail 32405 invoked from network); 7 Oct 2020 18:54:39 +0200
+Received: from out2.virusfree.cz by out2.virusfree.cz
+ (VF-Scanner: Clear:RC:0(2001:67c:1591::6):SC:0(-2.3/5.0):CC:0:;
+ processed in 0.7 s); 07 Oct 2020 16:54:39 +0000
+X-VF-Scanner-Mail-From: tc@excello.cz
+X-VF-Scanner-Rcpt-To: netdev@vger.kernel.org
+X-VF-Scanner-ID: 20201007165438.493894.32376.out2.virusfree.cz.0
+X-Spam-Report: SA_TESTS
+  0.1 RCVD_IN_BAD            RBL: Received via a relay in BAD VF mirror
+                             [89.203.223.14 listed in bad.virusfree.cz]
+ -2.9 RSPAMD_CHECK           RSPAMD: message is HAM with score -2.8900
+  0.8 BAYES_50               BODY: Bayes spam probability is 40 to 60%
+                             [score: 0.4626]
+ -0.3 CRM114_CHECK           CRM114: message is UNSURE with crm114-score 1.080
+X-Spam-Status: No, hits=-2.3, required=5.0
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=excello.cz; h=
+        date:message-id:from:to:subject:reply-to; q=dns/txt; s=default;
+         t=1602089678; bh=QU+sXI/g81OSzIbMDTIK7aOsHxH9GkCQwQnFAxM4Qq0=; b=
+        iVhfEjbxTCya9I4Rbr8xw1qrLSWX6OlTO6TAlTCWKop5r8g8I6Oq3grW0Nj9dsiV
+        tuAJfkao1ntuniIljRgnE8F9SDtU+/KmxdcQHFwfYM4i5g4aLq4smfBGoEbG6J9+
+        JvkAC3hjajoSrxwNh1xlfK1xoRqQ6+cwcI9AzfWscys=
+Received: from posta.excello.cz (2001:67c:1591::6)
+  by out2.virusfree.cz with ESMTPS (TLSv1.3, TLS_AES_256_GCM_SHA384); 7 Oct 2020 18:54:38 +0200
+Received: from localhost.localdomain (unknown [89.203.223.14])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by posta.excello.cz (Postfix) with ESMTPSA id F3F429D3C87;
+        Wed,  7 Oct 2020 18:54:37 +0200 (CEST)
+Message-ID: <77e01ed3609e390e06d536d0c30eb8925a312071.camel@excello.cz>
+Subject: Re: [PATCH net] tg3: Fix soft lockup when tg3_reset_task() fails.
+From:   Tomas Charvat <tc@excello.cz>
+To:     CABb8VeHA8yEmi-iDs3O-eRfOucWqGM+9p6gj87NLdjeQHfJROA@mail.gmail.com
+Cc:     netdev <netdev@vger.kernel.org>
+Date:   Wed, 07 Oct 2020 18:54:37 +0200
+Organization: Excello s.r.o.
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-In-Reply-To: <20201007101219.356499-7-allen.lkml@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Greetings, 
+tg3 with kernel 5.4.69 is able to get into state, that its reseting
+link forever. From mii-tools -w XXX I can see, that link is going up
+and down every 3-8 seconds. 
+Take down/up interface doesnt help.
+However there is no any error in dmesg or anywhere else.
 
+Tested kernel is not modular, only reboot helped.
+NIC details are:
+driver=tg3 driverversion=3.137 firmware=5720-v1.39 NCSI v1.5.1.0
 
-On 10/7/20 12:12 PM, Allen Pais wrote:
-> From: Allen Pais <apais@linux.microsoft.com>
-> 
-> In preparation for unconditionally passing the
-> struct tasklet_struct pointer to all tasklet
-> callbacks, switch to using the new tasklet_setup()
-> and from_tasklet() to pass the tasklet pointer explicitly.
-> 
-> Signed-off-by: Romain Perier <romain.perier@gmail.com>
-> Signed-off-by: Allen Pais <apais@linux.microsoft.com>
-> ---
->  net/sched/sch_atm.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
-> 
-> diff --git a/net/sched/sch_atm.c b/net/sched/sch_atm.c
-> index 1c281cc81..0a4452178 100644
-> --- a/net/sched/sch_atm.c
-> +++ b/net/sched/sch_atm.c
-> @@ -466,10 +466,11 @@ drop: __maybe_unused
->   * non-ATM interfaces.
->   */
->  
-> -static void sch_atm_dequeue(unsigned long data)
-> +static void sch_atm_dequeue(struct tasklet_struct *t)
->  {
-> -	struct Qdisc *sch = (struct Qdisc *)data;
-> -	struct atm_qdisc_data *p = qdisc_priv(sch);
-> +	struct atm_qdisc_data *p = from_tasklet(p, t, task);
-> +	struct Qdisc *sch = (struct Qdisc *)((char *) p -
-> +					     QDISC_ALIGN(sizeof(struct Qdisc)));
-
-Oh well. I would rather get rid of QDISC_ALIGN() completely, instead
-of spreading it all over the places.
-
-I have sent https://patchwork.ozlabs.org/project/netdev/patch/20201007165111.172419-1-eric.dumazet@gmail.com/
+Best regards
+-- 
+Tomas Charvat <tc@excello.cz>
+Excello s.r.o.
 
