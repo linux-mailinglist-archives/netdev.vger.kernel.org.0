@@ -2,126 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59DDB2858B0
-	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 08:31:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A19EE28587C
+	for <lists+netdev@lfdr.de>; Wed,  7 Oct 2020 08:08:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727376AbgJGGbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 02:31:09 -0400
-Received: from paleale.coelho.fi ([176.9.41.70]:54200 "EHLO
-        farmhouse.coelho.fi" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726564AbgJGGbJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 02:31:09 -0400
-X-Greylist: delayed 1786 seconds by postgrey-1.27 at vger.kernel.org; Wed, 07 Oct 2020 02:31:07 EDT
-Received: from 91-156-6-193.elisa-laajakaista.fi ([91.156.6.193] helo=[192.168.100.69])
-        by farmhouse.coelho.fi with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <luca@coelho.fi>)
-        id 1kQ2Vk-002QAG-Oj; Wed, 07 Oct 2020 09:01:13 +0300
-Message-ID: <27f10117a4f26d6f1f528d8e03fe753614dbef1a.camel@coelho.fi>
-From:   Luca Coelho <luca@coelho.fi>
-To:     Kalle Valo <kvalo@codeaurora.org>, Lee Jones <lee.jones@linaro.org>
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Date:   Wed, 07 Oct 2020 09:01:10 +0300
-In-Reply-To: <87lfgjbzin.fsf@codeaurora.org>
-References: <20200910065431.657636-1-lee.jones@linaro.org>
-         <20201002090353.GS6148@dell> <87362rdhv2.fsf@codeaurora.org>
-         <20201006065617.GX6148@dell> <87lfgjbzin.fsf@codeaurora.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.4-2 
+        id S1727110AbgJGGIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 02:08:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38920 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726803AbgJGGIK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 02:08:10 -0400
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B5A4C061755
+        for <netdev@vger.kernel.org>; Tue,  6 Oct 2020 23:08:10 -0700 (PDT)
+Received: by mail-ot1-x331.google.com with SMTP id 60so1217577otw.3
+        for <netdev@vger.kernel.org>; Tue, 06 Oct 2020 23:08:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=dIuoMnIxdSghVzpH0OwkNRFp6OlAQK3NM/6kBQEe0ro=;
+        b=qRREHBDHZ9TYqiv9dzdV4YbYtN5FURL5YxGhNSoFyGHbP7vZOQuh2ZIw+RB0Z14j9W
+         HBlRAFhkt/DnvoEsPu5xQzSarLCyRez5yn+B9vJoNzctfm9D8mvhnckSUkCeYCMLlGsb
+         GtiY3rNQLOp2pltntK6l9s4wMEz5sVx8QyneYqSWTRdMFkytvYio6CLXNR7KEIhRhBWC
+         yvL92E4weYM9+YnX6G5ck2R+sJTi5if1SnozXmyXk53ZgWtqr/3Eur7OCRgtHsk+QhEp
+         idQZPn4pG4a1qGmm/L2H9XW9gGPfbuLlccMBNp1M9gPxvUq8PIo6FxcFim1MU9uqFN/L
+         t74g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dIuoMnIxdSghVzpH0OwkNRFp6OlAQK3NM/6kBQEe0ro=;
+        b=cpUgF8sAkuTgTsLPSRLO1ZQNW5f8S/J7CpbwNc30W8pOef7zFFEkKhYPLyeSNy7/qK
+         Ia7cfEQFSRcjrzdS7Q0Twl0U3w3bFpTQF+johx2JrWdSt/+qHYkQT0DKeQo8jhNRuqF5
+         oUnQpF4joQv0nIcpNKZoPuBQnsJYv9QAqmkVfSpz+njgz2X3ZmY94Ym/SN/vnRWzLf6U
+         0PR6M4RQpUveDysowvcmVlhK6774dnBsFryuxbKuPRfj+zy3E2h7ydNJd8AZM7W7hsvW
+         veMDVMuhr+/zTHkMYDHfEAE8ZEwRVQaXZBrBGfX0mcMzRzWlpTFPtRlduBrskra79B6o
+         18jQ==
+X-Gm-Message-State: AOAM530nGXujeuZwaHDvQuUjL2K7fLc+DyVi1upKfKgqai7zTbmLNMsL
+        H23FedxWP/jGLEPJc8FqJlM=
+X-Google-Smtp-Source: ABdhPJz72rYE0DrKhKB5quR4MDUDnbu61tZid8pAzkfK8xwDmOhLyBGB6FHKt8YTPW90mW+/RSmUBg==
+X-Received: by 2002:a9d:719b:: with SMTP id o27mr633459otj.290.1602050889982;
+        Tue, 06 Oct 2020 23:08:09 -0700 (PDT)
+Received: from Davids-MBP.attlocal.net ([2600:1700:3eca:200:4df6:ae94:ee53:9573])
+        by smtp.googlemail.com with ESMTPSA id k23sm630ool.5.2020.10.06.23.08.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 06 Oct 2020 23:08:09 -0700 (PDT)
+Subject: Re: [iproute2-next v2] devlink: support setting the overwrite mask
+ attribute
+To:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org
+Cc:     dsahern@gmail.com
+References: <20200930210547.3598309-1-jacob.e.keller@intel.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <b5926764-a68e-fa44-4b18-7e82a8880bf2@gmail.com>
+Date:   Tue, 6 Oct 2020 23:08:08 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.1
 MIME-Version: 1.0
+In-Reply-To: <20200930210547.3598309-1-jacob.e.keller@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on farmhouse.coelho.fi
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=5.0 tests=ALL_TRUSTED,BAYES_00,
-        TVD_RCVD_IP autolearn=ham autolearn_force=no version=3.4.4
-Subject: Re: [PATCH v2 00/29] [Set 1,2,3] Rid W=1 warnings in Wireless
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-10-06 at 10:10 +0300, Kalle Valo wrote:
-> Lee Jones <lee.jones@linaro.org> writes:
+On 9/30/20 2:05 PM, Jacob Keller wrote:
+> The recently added DEVLINK_ATTR_FLASH_UPDATE_OVERWRITE_MASK allows
+> userspace to indicate how a device should handle subsections of a flash
+> component when updating. For example, a flash component might contain
+> vital data such as PCIe serial number or configuration fields such as
+> settings that control device bootup.
 > 
-> > On Tue, 06 Oct 2020, Kalle Valo wrote:
-> > 
-> > > Lee Jones <lee.jones@linaro.org> writes:
-> > > 
-> > > > On Thu, 10 Sep 2020, Lee Jones wrote:
-> > > > 
-> > > > > This is a rebased/re-worked set of patches which have been
-> > > > > previously posted to the mailing list(s).
-> > > > > 
-> > > > > This set is part of a larger effort attempting to clean-up W=1
-> > > > > kernel builds, which are currently overwhelmingly riddled with
-> > > > > niggly little warnings.
-> > > > > 
-> > > > > There are quite a few W=1 warnings in the Wireless.  My plan
-> > > > > is to work through all of them over the next few weeks.
-> > > > > Hopefully it won't be too long before drivers/net/wireless
-> > > > > builds clean with W=1 enabled.
-> > > > > 
-> > > > > Lee Jones (29):
-> > > > >   iwlwifi: dvm: Demote non-compliant kernel-doc headers
-> > > > >   iwlwifi: rs: Demote non-compliant kernel-doc headers
-> > > > >   iwlwifi: dvm: tx: Demote non-compliant kernel-doc headers
-> > > > >   iwlwifi: dvm: lib: Demote non-compliant kernel-doc headers
-> > > > >   iwlwifi: calib: Demote seemingly unintentional kerneldoc header
-> > > > >   wil6210: Fix a couple of formatting issues in 'wil6210_debugfs_init'
-> > > > >   iwlwifi: dvm: sta: Demote a bunch of nonconformant kernel-doc headers
-> > > > >   iwlwifi: mvm: ops: Remove unused static struct 'iwl_mvm_debug_names'
-> > > > >   iwlwifi: dvm: Demote a couple of nonconformant kernel-doc headers
-> > > > >   iwlwifi: mvm: utils: Fix some doc-rot
-> > > > >   iwlwifi: dvm: scan: Demote a few nonconformant kernel-doc headers
-> > > > >   iwlwifi: dvm: rxon: Demote non-conformant kernel-doc headers
-> > > > >   iwlwifi: mvm: tx: Demote misuse of kernel-doc headers
-> > > > >   iwlwifi: dvm: devices: Fix function documentation formatting issues
-> > > > >   iwlwifi: iwl-drv: Provide descriptions debugfs dentries
-> > > > >   wil6210: wmi: Fix formatting and demote non-conforming function
-> > > > >     headers
-> > > > >   wil6210: interrupt: Demote comment header which is clearly not
-> > > > >     kernel-doc
-> > > > >   wil6210: txrx: Demote obvious abuse of kernel-doc
-> > > > >   wil6210: txrx_edma: Demote comments which are clearly not kernel-doc
-> > > > >   wil6210: pmc: Demote a few nonconformant kernel-doc function headers
-> > > > >   wil6210: wil_platform: Demote kernel-doc header to standard comment
-> > > > >     block
-> > > > >   wil6210: wmi: Correct misnamed function parameter 'ptr_'
-> > > > >   ath6kl: wmi: Remove unused variable 'rate'
-> > > > >   ath9k: ar9002_initvals: Remove unused array
-> > > > >     'ar9280PciePhy_clkreq_off_L1_9280'
-> > > > >   ath9k: ar9001_initvals: Remove unused array 'ar5416Bank6_9100'
-> > > > >   ath9k: ar5008_initvals: Remove unused table entirely
-> > > > >   ath9k: ar5008_initvals: Move ar5416Bank{0,1,2,3,7} to where they are
-> > > > >     used
-> > > > >   brcmsmac: phytbl_lcn: Remove unused array 'dot11lcn_gain_tbl_rev1'
-> > > > >   brcmsmac: phy_lcn: Remove unused variable
-> > > > >     'lcnphy_rx_iqcomp_table_rev0'
-> > > > 
-> > > > What's happening with all of these iwlwifi patches?
-> > > > 
-> > > > Looks like they are still not applied.
-> > > 
-> > > Luca (CCed) takes iwlwifi patches to his iwlwifi tree.
-> > 
-> > Thanks Kalle.
-> > 
-> > Luca,
-> > 
-> >   Do you know why these patches have not been applied yet?  Do you
-> > plan on applying them this week?  -rc1 is not due for release for
-> > nearly 3 weeks now that Linus tagged an -rc8.
+> The overwrite mask allows specifying whether the device should overwrite
+> these subsections when updating from the provided image. If nothing is
+> specified, then the update is expected to preserve all vital fields and
+> configuration.
 > 
-> I can also take Lee's patches directly to wireless-drivers-next, if
-> that's easier for Luca.
+> Add support for specifying the overwrite mask using the new "overwrite"
+> option to the flash command line.
+> 
+> By specifying "overwrite identifiers", the user request that the flash
+> update should overwrite any settings in the updated flash component with
+> settings from the provided flash image
+> 
+>   $devlink dev flash pci/0000:af:00.0 file flash_image.bin overwrite identifiers
+> 
+> By specifying "overwrite settings" the user requests that the flash update
+> should overwrite any settings in the updated flash component with setting
+> values from the provided flash image.
+> 
+>   $devlink dev flash pci/0000:af:00.0 file flash_image.bin overwrite settings
+> 
+> These options may be combined, in which case both subsections will be sent
+> in the overwrite mask, resulting in a request to overwrite all settings and
+> identifiers stored in the updated flash components.
+> 
+>   $devlink dev flash pci/0000:af:00.0 file flash_image.bin overwrite settings overwrite identifiers
+> 
+> Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+> ---
+>  devlink/devlink.c | 48 +++++++++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 46 insertions(+), 2 deletions(-)
+> 
 
-Hi,
+applied to iproute2-next. Thanks
 
-Yes, please take these patches directly.  It simplifies things.
-
-Thanks!
-
---
-Cheers,
-Luca.
 
