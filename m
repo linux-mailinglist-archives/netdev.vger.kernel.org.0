@@ -2,88 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19CCE287B09
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 19:34:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACD95287B0D
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 19:34:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732116AbgJHRd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 13:33:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57198 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729179AbgJHRd4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 13:33:56 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 122D5C061755
-        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 10:33:55 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id o17so1523724ioh.9
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 10:33:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Iaeoc6Z+j37l5fM3/LyJnM1wsdflxCQu9r5PHg7l2V8=;
-        b=PPpppjTaYufAXFGB4G5C3WnHczN9a0elI/v2I77ce7Wxk2yalWhX4SmYIqEAe5TUxw
-         +I7KHdt5zDInMGzvbIXNtqI8Ezh4dvfkn/C4c1gIqAMgKpqGwXRfvP4qvkNYBO+rN3a1
-         sA2GEKcio/GaVqs0aRtr9Jnt99la06etOqyOALHjCNxCPZ9+cDlB//j5OGoiYBb+sI4v
-         YmnLhXo9pWa2+dkC3KVkO7S9xWd8RTEpvDSrc9eSOKkSQ/LcEujn1awLNd11SKMyzApA
-         pNkgeoChKz+q2zqdq/2IYQrMeRo1uKJNGW3DNgoVibHLgf+VQMjSRFD6qkyhXS8tYRGp
-         erFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Iaeoc6Z+j37l5fM3/LyJnM1wsdflxCQu9r5PHg7l2V8=;
-        b=ULS/x5atcAvf47HLWPggSEpj0GTBbliJ9AYRsBq139AUM1NAyJlRifTwX+nmrikUxQ
-         MRRevyLveBbjDXXT32TuLmj5gXtrhSImqwWU9uA0zvxcaOlZEGXm/uhTzPPKQ8ZPOGWM
-         bcQfM5ZsLeoq+51+vrRji3cSroLjGi0Yow9mrbprXmAS+NNoeyt8qydJ07FLwh9jNp9I
-         9CWzLvGoWDZPUyKUAeedtz5z8KQqFDnb4I9BEnu9fC9ZJwmsP+9VeWNBOBoqZOHJb60i
-         9F+zlVt9Rfl0FGja/VNgAo/5HyRdQMQPrK1kk56y+29DGwBApfG1Vno+r6XGJSBpUORa
-         tOGA==
-X-Gm-Message-State: AOAM5320Bd2gT3JcWI1h4mQkKgjHOHbcRsZhZc9NleGdvk83PG0NIVyM
-        Iz9u+7ZEleiC2+g7cvZ//qD0kZh2mPI3i0CvZif2WomlNopIsg==
-X-Google-Smtp-Source: ABdhPJxskURl0Ygx8QqzgR3khSNO6Kg+BZ+gtfwC6gRTCkfZOFwbnaEZuhkJyPY1th5SufLEJC1Nph0sXChA0zT82qs=
-X-Received: by 2002:a6b:b446:: with SMTP id d67mr2723243iof.134.1602178434104;
- Thu, 08 Oct 2020 10:33:54 -0700 (PDT)
+        id S1732123AbgJHReN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 13:34:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44860 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731239AbgJHReN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Oct 2020 13:34:13 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 15F9422200;
+        Thu,  8 Oct 2020 17:34:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602178453;
+        bh=63DTW0twuIItvb7O3xebhv72lILnFJnpspI5gSKhfRI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Dxvxi6pcuMOLkGek/f4uGNd4GEMI/9i9CouD6eyoUuBYSXHGPAEKF9Cip6+fPBcUo
+         Qmp7PEa5W1GWHuOyo8CpYQt6ZyNzbmp2GqgSSp82IUEC0aFYboZK5PBLUstqiEYq/2
+         dHu57bCmf6UyjEv81vtqTz9xbeLTkaupke9qgfGA=
+Date:   Thu, 8 Oct 2020 10:34:10 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        syzbot+3f3837e61a48d32b495f@syzkaller.appspotmail.com,
+        Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: Re: [Patch net] can: initialize skbcnt in j1939_tp_tx_dat_new()
+Message-ID: <20201008103410.4fea97a5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201008061821.24663-1-xiyou.wangcong@gmail.com>
+References: <20201008061821.24663-1-xiyou.wangcong@gmail.com>
 MIME-Version: 1.0
-References: <20201008012154.11149-1-xiyou.wangcong@gmail.com> <CA+FuTSeMYFh3tY9cJN6h02E+r3BST=w74+pD=zraLXsmJTLZXA@mail.gmail.com>
-In-Reply-To: <CA+FuTSeMYFh3tY9cJN6h02E+r3BST=w74+pD=zraLXsmJTLZXA@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 8 Oct 2020 10:33:43 -0700
-Message-ID: <CAM_iQpWCR84sD6dZBforgt4cg-Jya91D6EynDo2y2sC7vi-vMg@mail.gmail.com>
-Subject: Re: [Patch net] ip_gre: set dev->hard_header_len properly
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        syzbot <syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com>,
-        William Tu <u9012063@gmail.com>, Xie He <xie.he.0141@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 8, 2020 at 4:49 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Wed, Oct 7, 2020 at 9:22 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > GRE tunnel has its own header_ops, ipgre_header_ops, and sets it
-> > conditionally. When it is set, it assumes the outer IP header is
-> > already created before ipgre_xmit().
-> >
-> > This is not true when we send packets through a raw packet socket,
-> > where L2 headers are supposed to be constructed by user. Packet
-> > socket calls dev_validate_header() to validate the header. But
-> > GRE tunnel does not set dev->hard_header_len, so that check can
-> > be simply bypassed, therefore uninit memory could be passed down
-> > to ipgre_xmit().
->
-> If dev->hard_header_len is zero, the packet socket will not reserve
-> room for the link layer header, so skb->data points to network_header.
-> But I don't see any uninitialized packet data?
+On Wed,  7 Oct 2020 23:18:21 -0700 Cong Wang wrote:
+> This fixes an uninit-value warning:
+> BUG: KMSAN: uninit-value in can_receive+0x26b/0x630 net/can/af_can.c:650
+> 
+> Reported-and-tested-by: syzbot+3f3837e61a48d32b495f@syzkaller.appspotmail.com
+> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+> Cc: Robin van der Gracht <robin@protonic.nl>
+> Cc: Oleksij Rempel <linux@rempel-privat.de>
+> Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+> Cc: Oliver Hartkopp <socketcan@hartkopp.net>
+> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+> ---
+>  net/can/j1939/transport.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+> index 0cec4152f979..88cf1062e1e9 100644
+> --- a/net/can/j1939/transport.c
+> +++ b/net/can/j1939/transport.c
+> @@ -580,6 +580,7 @@ sk_buff *j1939_tp_tx_dat_new(struct j1939_priv *priv,
+>  	skb->dev = priv->ndev;
+>  	can_skb_reserve(skb);
+>  	can_skb_prv(skb)->ifindex = priv->ndev->ifindex;
+> +	can_skb_prv(skb)->skbcnt = 0;
+>  	/* reserve CAN header */
+>  	skb_reserve(skb, offsetof(struct can_frame, data));
 
-The uninit data is allocated by packet_alloc_skb(), if dev->hard_header_len
-is 0 and 'len' is anything between [0, tunnel->hlen + sizeof(struct iphdr)),
-dev_validate_header() still returns true obviously but only 'len'
-bytes are copied
-from user-space by skb_copy_datagram_from_iter(). Therefore, those bytes
-within range (len, tunnel->hlen + sizeof(struct iphdr)] are uninitialized.
+Thanks! Looks like there is another can_skb_reserve(skb) on line 1489,
+is that one fine?
 
-Thanks.
+Marc - should I take this directly into net, in case there is a last
+minute PR to Linus for 5.9?
