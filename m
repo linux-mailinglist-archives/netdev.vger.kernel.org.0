@@ -2,52 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFF8E287E14
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 23:37:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03BDD287E1E
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 23:40:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730022AbgJHVhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 17:37:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46016 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729966AbgJHVhq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Oct 2020 17:37:46 -0400
-Subject: Re: [GIT PULL] Networking
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602193066;
-        bh=r392DO3w/yePYwR9c1w7PXZ33gYcHF1iE0DJ8ctdYQo=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=Y/i1xSYjRGWMhv3N/A5hPxHgancDPas/TdYUikmXw4YIecZhtSeTT8szb9/6uYO4K
-         j2m7EJUi8d0VTbLJyD2g5QI5MkslAB31bW37ESvjLqc+MafRvRbt6LRlRxxL59qku7
-         xtv5tJ57bmyj57QyAjrCZoc3LbM/f8bFy56ySw/A=
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20201008132329.7eaa0d77@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20201008132329.7eaa0d77@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-PR-Tracked-List-Id: <netdev.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20201008132329.7eaa0d77@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git refs/heads/master
-X-PR-Tracked-Commit-Id: 28802e7c0c9954218d1830f7507edc9d49b03a00
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 6288c1d8024eebb7a1ccdbab80f6e857ac94eeb0
-Message-Id: <160219306641.23094.17685367320772018805.pr-tracker-bot@kernel.org>
-Date:   Thu, 08 Oct 2020 21:37:46 +0000
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        id S1727050AbgJHVk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 17:40:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38824 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725922AbgJHVk2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 17:40:28 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D23EC0613D2
+        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 14:40:28 -0700 (PDT)
+Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kQdeE-0001aU-Ur; Thu, 08 Oct 2020 23:40:27 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: pull-request: can 2020-10-08
+Date:   Thu,  8 Oct 2020 23:40:19 +0200
+Message-Id: <20201008214022.2044402-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.28.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:205:1d::14
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The pull request you sent on Thu, 8 Oct 2020 13:23:29 -0700:
+Subject: pull-request: can 2020-10-08
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git refs/heads/master
+Hello Jakub, hello David,
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/6288c1d8024eebb7a1ccdbab80f6e857ac94eeb0
+as Jakub pointed out, in case there is a last minute PR to Linux, please take
+this pull request into net/master for 5.9.
 
-Thank you!
+The first patch is part of my pull request "linux-can-fixes-for-5.9-20201006",
+so consider that one obsolete and take this instead.
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+The first patch is by Lucas Stach and fixes m_can driver by removing an
+erroneous call to m_can_class_suspend() in runtime suspend. Which causes the
+pinctrl state to get stuck on the "sleep" state, which breaks all CAN
+functionality on SoCs where this state is defined.
+
+The last two patches target the j1939 protocol: Cong Wang fixes a syzbot
+finding of an uninitialized variable in the j1939 transport protocol. I
+contribute a patch, that fixes the initialization of a same uninitialized
+variable in a different function.
+
+regards,
+Marc
+
+---
+
+The following changes since commit d91dc434f2baa592e9793597421231174d57bbbf:
+
+  Merge tag 'rxrpc-fixes-20201005' of git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs (2020-10-06 06:18:20 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-5.9-20201008
+
+for you to fetch changes up to 13ba4c434422837d7c8c163f9c8d854e67bf3c99:
+
+  net: j1939: j1939_session_fresh_new(): fix missing initialization of skbcnt (2020-10-08 23:28:09 +0200)
+
+----------------------------------------------------------------
+linux-can-fixes-for-5.9-20201008
+
+----------------------------------------------------------------
+Cong Wang (1):
+      can: j1935: j1939_tp_tx_dat_new(): fix missing initialization of skbcnt
+
+Lucas Stach (1):
+      can: m_can_platform: don't call m_can_class_suspend in runtime suspend
+
+Marc Kleine-Budde (1):
+      net: j1939: j1939_session_fresh_new(): fix missing initialization of skbcnt
+
+ drivers/net/can/m_can/m_can_platform.c | 2 --
+ net/can/j1939/transport.c              | 2 ++
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+
