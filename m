@@ -2,78 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 594B12876BA
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 17:08:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 478292876BD
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 17:09:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730859AbgJHPIs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 11:08:48 -0400
-Received: from www62.your-server.de ([213.133.104.62]:36928 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730854AbgJHPIr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 11:08:47 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kQXX9-0008Fp-NI; Thu, 08 Oct 2020 17:08:43 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kQXX9-000GNz-HO; Thu, 08 Oct 2020 17:08:43 +0200
-Subject: Re: [PATCH bpf-next] bpf_fib_lookup: return target ifindex even if
- neighbour lookup fails
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        ast@fb.com
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        David Ahern <dsahern@gmail.com>
-References: <20201008145314.116800-1-toke@redhat.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <bf190e76-b178-d915-8d0d-811905d38fd2@iogearbox.net>
-Date:   Thu, 8 Oct 2020 17:08:43 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1730867AbgJHPJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 11:09:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34568 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730854AbgJHPJR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 11:09:17 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B499C061755
+        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 08:09:17 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id n18so7021658wrs.5
+        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 08:09:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=oy+y4/BHmibXgcUqENbjlPsY7pAVTgfIL8xv2GwPysU=;
+        b=jxQjWL7ZySeHB68avyotxL6RznZCGQvKA9147m/2AkTClG9J+u+8t3caLnAbMZ8ybV
+         J1g/ZxOXe2Dr9QYnWJVJTQ/z17TPA5Mm0y048rJV7eCQm3Q1mV7Kj4Ij+tXwYy31WxGt
+         +NM2POUpj0oLxmJH2j2hxl6pAcj90/GlCM7SGE0t+kdABx4LcagwPoONLUgPf0Eg34nm
+         bzdTaJb/97SFEpiVgmyGhXy+DckrmIXV2phpO6yNKSMosH5iLauq0Jq2djt3iczhLiKf
+         zW8PtrxceLQqzDS+o+zOocGuWL31irvznQB8l7s7qpa4DHIrFcT3GdO/ytQG9gD3Cd4v
+         b27w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=oy+y4/BHmibXgcUqENbjlPsY7pAVTgfIL8xv2GwPysU=;
+        b=p4fi0U7DJcbs6j362vnHgTwl/Vi6ot22xYsPE7Q+ipdlm1PuYzQ6JOceDbUZtXjCCv
+         aPRnpwp/O2ZLmJSFbPYb82hEabcKP3U9XElPzNy1mD1rZrvhTTRB8mUS2ZXLD5snC3BB
+         Q/3LZwNGcVsDXQPJVR5y4f9Oh+emKXo5aCKK/1bSKd+4An8/MnAOJQ8j67UFQm58m69S
+         kSV1v//Hk6Toc0X2r7OelJMl37MxtBzBEAPVPBKWPJbXrhTFB6UbkxAaOspFPsz9D/kL
+         eSu+dwWPhS0B9Y7uWnxf1CYyGS8mndCYPMYKO7rzkFXza8qmt3Rkc/w9FC6W3bkgUky4
+         0DfA==
+X-Gm-Message-State: AOAM532o+zsFoTn3qZMor7EzrmhJzXdbGSxSSVrMABk4fmk5hlXyVBeG
+        2xKKo85xfW1evvQUcJczsZA=
+X-Google-Smtp-Source: ABdhPJwsZsEJXPouCu8dRG9PCpeKjpvr72KQb9TVkH+opcf5Mtrw4fFFv1ufO4udjt5x3IvrDfkFAA==
+X-Received: by 2002:a5d:668b:: with SMTP id l11mr9565047wru.89.1602169756051;
+        Thu, 08 Oct 2020 08:09:16 -0700 (PDT)
+Received: from [192.168.8.147] ([37.165.121.66])
+        by smtp.gmail.com with ESMTPSA id k5sm7351851wmb.19.2020.10.08.08.09.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Oct 2020 08:09:15 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 3/7] ethtool: trim policy tables
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kernel-team@fb.com, jiri@resnulli.us,
+        andrew@lunn.ch, mkubecek@suse.cz
+References: <20201005220739.2581920-1-kuba@kernel.org>
+ <20201005220739.2581920-4-kuba@kernel.org>
+ <7d89d3a5-884c-5aba-1248-55f9cbecbd89@gmail.com>
+ <11e6b06a5d58fd1a9d108bc9c40b348311b024ba.camel@sipsolutions.net>
+ <b81f33293406f7d0bcb45ab502c528442125997b.camel@sipsolutions.net>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <c989c579-01b2-3527-bc57-3f88250ca011@gmail.com>
+Date:   Thu, 8 Oct 2020 17:09:13 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20201008145314.116800-1-toke@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <b81f33293406f7d0bcb45ab502c528442125997b.camel@sipsolutions.net>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25951/Thu Oct  8 15:53:03 2020)
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/8/20 4:53 PM, Toke Høiland-Jørgensen wrote:
-> The bpf_fib_lookup() helper performs a neighbour lookup for the destination
-> IP and returns BPF_FIB_LKUP_NO_NEIGH if this fails, with the expectation
-> that the BPF program will pass the packet up the stack in this case.
-> However, with the addition of bpf_redirect_neigh() that can be used instead
-> to perform the neighbour lookup.
-> 
-> However, for that we still need the target ifindex, and since
-> bpf_fib_lookup() already has that at the time it performs the neighbour
-> lookup, there is really no reason why it can't just return it in any case.
-> With this fix, a BPF program can do the following to perform a redirect
-> based on the routing table that will succeed even if there is no neighbour
-> entry:
-> 
-> 	ret = bpf_fib_lookup(skb, &fib_params, sizeof(fib_params), 0);
-> 	if (ret == BPF_FIB_LKUP_RET_SUCCESS) {
-> 		__builtin_memcpy(eth->h_dest, fib_params.dmac, ETH_ALEN);
-> 		__builtin_memcpy(eth->h_source, fib_params.smac, ETH_ALEN);
-> 
-> 		return bpf_redirect(fib_params.ifindex, 0);
-> 	} else if (ret == BPF_FIB_LKUP_RET_NO_NEIGH) {
-> 		return bpf_redirect_neigh(fib_params.ifindex, 0);
-> 	}
-> 
-> Cc: David Ahern <dsahern@gmail.com>
-> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 
-ACK, this looks super useful! Could you also add a new flag which would skip
-neighbor lookup in the helper while at it (follow-up would be totally fine from
-my pov since both are independent from each other)?
 
-Thanks,
-Daniel
+On 10/8/20 11:15 AM, Johannes Berg wrote:
+> On Thu, 2020-10-08 at 11:13 +0200, Johannes Berg wrote:
+> 
+>>> This implies that all policy tables must be 'complete'.
+> 
+> Also, yes they had to be complete already, perhaps *except* for NLA_FLAG
+> like this below use ...
+> 
+>>> So when later strset_parse_request() does :
+>>>
+>>> req_info->counts_only = tb[ETHTOOL_A_STRSET_COUNTS_ONLY];
+>>>
+>> Here was the fix
+>> https://lore.kernel.org/netdev/20201007125348.a74389e18168.Ieab7a871e27b9698826e75dc9e825e4ddbc852b1@changeid/
+> 
+> Sorry, wrong link
+> 
+> https://lore.kernel.org/netdev/20201007125348.a0b250308599.Ie9b429e276d064f28ce12db01fffa430e5c770e0@changeid/
+> 
+> johannes
+> 
+
+SGTM, thanks !
