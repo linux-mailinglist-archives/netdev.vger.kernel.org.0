@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9B8B2873A8
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 13:57:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D0272873A9
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 13:57:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726273AbgJHL5T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 07:57:19 -0400
+        id S1726432AbgJHL5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 07:57:25 -0400
 Received: from mail-eopbgr00087.outbound.protection.outlook.com ([40.107.0.87]:40513
         "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725852AbgJHL5T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Oct 2020 07:57:19 -0400
+        id S1725871AbgJHL5W (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Oct 2020 07:57:22 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L3VEX8xcCJtdg9m1SYHc3CcggtSo6kXZLsqBCeJPn3A/3MEAdvofSsa3FKVkp3sRQnIvNjJG+E9ClS4cWi522Ln+3YAG4D3PcNKglhp/Nk3txTa1BeuvQ9u430HufSLLQo/LAUOMGJVPfcgoRiYUOAAxbgy3oSBsCAsNr9sQB20akV1phIP/MHGufpa6JwWnPxcuwyRViWEowSrSG/VSYUYWUwJTs5Ga9kE+ROTBZOg1YGtTBXN8HEvlMwd8lljmbVJeJQhwh6WdXb5+B/YYK2SS9+hKUmbTxbh7NoY46Oyl+/Of+rBp7qHxCE8dn+jN2kC1SNGkIQeXA7RhABP+aA==
+ b=O+q/L5KkF3nUg23NeEKUVFG2AzHVrSh+MF894WtieYQNy+kaR3TpKCKYsWqGMJERmXg027DVUwBFL4q4P4RPduz2O9XiJd2VGPBeacMK2b2W1LYSfZcRTE4d15VSLhafcCwaYLmbWS7XmwHx0qKrJX8tY/Tz2IPw2/OoBm13sx5k2L37rDaqW+oQ1zI8uLCUl/BzVoT1q7LhIUbKsAIj6gNDWLfWk1wM8GpihDAAgdXGiVHfmcIo+Qc8KT7V4ZfK/GOcTzb66Oc8PIHFvb95ZZcYOm0OL9OHX1TFHo+xYO5RbI/ZlzZDxllPPzDkJNunyFMoic+XbUj5RAYtYHLo0Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NvGlvzWb3yzEdsp4OMqjzwOT9gGOQOtoiETQOyMKzSo=;
- b=TngIypIERZmD+8eyv4WxAveNHZanPO7XDa88Dil7zOny/7jwAKxTTZvtAQ784ddfBas4cy9WCl0g5szXjtV+gIH5CKJ7uXHa1V6L+RWXnvt54c5gXrNunOWbzAhRCoJNCbtwFc/rA/1Vq+7TJcX/WFO7QDJ4IGsnnzNYyXF3GFRhxazrsW+8xJgwZqUjbcev1JF+H0cUuQZPItDtvJVZ8gSftraiK5yKdERfH/4tErnVBfX/Hw+i9QWc7kuRxV37lKQb24s1WXeAigWZytBxqyCUXRLVA743CTBA5llxJdSNuWAH3utxHaHeleCwW5owoRhsYO/3P8gOLdW0m5b4Vg==
+ bh=Sq5yUpxapp/rFj2WUKdCrM+aKZM7pzszDmW71PtA1g8=;
+ b=iO3CperwInIbkscpfTnE/uw79TvP3aM6ykO/vzUZC2M9Xm+H74uOBO/Jw3CKxPVsCAnzL7fcogF+g5nSKT8rjrBBy9InsElqyeFFJkSgsp7zHnL0lQH2GERVM3pr9kYoezaVf7ykiyZeosCZ3bo+kJv0/4pHpNGjfLlayiFVCVl79z716sL6VCi+65N+nz/swrbrm6q3df/mj5V6zGb/Myqr6cnXHgiHzy4xp/L3ygLoFCrX8BLfjMQM8gyrEkh2UMx4ZruwoRiz5Jifk5bUlnE4yDQbX89cn7lYY+DTf9qcst33YufCg+Ft3GeQrVxFpeP8IW+bCVtSf7s7kqXVFQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NvGlvzWb3yzEdsp4OMqjzwOT9gGOQOtoiETQOyMKzSo=;
- b=G/GXKon10qoCll/WdOvS+9aXpoyiXFVx1waaY0gH69lHi1Haq9SWhgHrfSYsYGTlBAKLkSPrG/Ye67NB0iWqItG3oQONc9GVhXt49Z06TpykV/nO0m5Oy3Cr7OIguRuZEq+CE8k0H05eCPGiHs9rgxDk4XEsTkAJ20PpGEWsZF4=
+ bh=Sq5yUpxapp/rFj2WUKdCrM+aKZM7pzszDmW71PtA1g8=;
+ b=TW5XRUWLjSDksj7k6vB38c2mhx/gu9/HLektQSdqHeFsrp6aIVu4nTFFakhUNnjtvSA5bwYCDzUhSPDHjXS0nWQjyYO12+nmR1FLYurwDG8OAOPu24SI22RbHn7InACOkFSWUEg1G9386DGL4brMGZLzMLqSJcwHqzJSBYpATS4=
 Authentication-Results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
  by VI1PR0402MB3709.eurprd04.prod.outlook.com (2603:10a6:803:1e::27) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.23; Thu, 8 Oct
- 2020 11:57:12 +0000
+ 2020 11:57:14 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3455.024; Thu, 8 Oct 2020
- 11:57:12 +0000
+ 11:57:14 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     davem@davemloft.net
 Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
@@ -45,9 +45,9 @@ Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
         xiaoliang.yang_1@nxp.com, hongbo.wang@nxp.com,
         netdev@vger.kernel.org, kuba@kernel.org,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next 1/3] net: mscc: ocelot: offload VLAN mangle action to VCAP IS1
-Date:   Thu,  8 Oct 2020 14:56:58 +0300
-Message-Id: <20201008115700.255648-2-vladimir.oltean@nxp.com>
+Subject: [PATCH net-next 2/3] net: dsa: tag_ocelot: use VLAN information from tagging header when available
+Date:   Thu,  8 Oct 2020 14:56:59 +0300
+Message-Id: <20201008115700.255648-3-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201008115700.255648-1-vladimir.oltean@nxp.com>
 References: <20201008115700.255648-1-vladimir.oltean@nxp.com>
@@ -58,155 +58,103 @@ X-ClientProxiedBy: AM4PR05CA0010.eurprd05.prod.outlook.com (2603:10a6:205::23)
  To VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.26.229.171) by AM4PR05CA0010.eurprd05.prod.outlook.com (2603:10a6:205::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.21 via Frontend Transport; Thu, 8 Oct 2020 11:57:11 +0000
+Received: from localhost.localdomain (188.26.229.171) by AM4PR05CA0010.eurprd05.prod.outlook.com (2603:10a6:205::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.21 via Frontend Transport; Thu, 8 Oct 2020 11:57:12 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: d03e92b8-f7a6-4d4e-ae72-08d86b814ab4
+X-MS-Office365-Filtering-Correlation-Id: af29af94-a957-46e5-f131-08d86b814b9c
 X-MS-TrafficTypeDiagnostic: VI1PR0402MB3709:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB3709C6539A864D953625BBE1E00B0@VI1PR0402MB3709.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB370928FF9DA9651409C15684E00B0@VI1PR0402MB3709.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: o6k03Z1MYXCvAX/SbtT4m2s1kvshEYTq0aNjVOS3sHC92er6zrwpNf2+z7goYGGeqDpR3144gUs77YhGMaks8qZaeZPGYoU9fprDN+t4uLzT5NkzJgWUHdKmDtXu4dvraD9Vhg+HBRbaam+jbFlz4ugpjODOVGdfggwXWtCdepWWgmnu8VwgbmRZmemiUA60a5rPj3FBVOAANQpUDWyADmM8IkG3CyI/6fYgjGzSaN5txYx86VeHhxzTGBmUNn5ZtwYlP9KRpeCIdK+cJJTERK//1wDQ8YDhk2/OuaUbpSDICCiIdbInSsyK4N6IbcmtbY9H+ZZe5Gq70uZV1sBFqt7/QWc7YTLVjjrAHzbzB9izGxhZP+U2OGzAsk2PvdmD
+X-Microsoft-Antispam-Message-Info: nsD83+803cUj3tLjuHuHKdnHa3JGSPOtJq9aMp8P9DnaUjfnJb6BFeUfN6fJKsBh1Acz3RDT1ldSvGLTHj89AppsshONy+4LjKyLtpqOwRVfp7NcPOTVDBI+RuCZyeSRBeJKTjNf6V5qAxG2wrP/9sNPxOI6ZJCFw/VtMhMNXxRPrVsuoAcetQMpkUNH88ndTXzpz80G6qAETnezW+SjflXWUpdgxlqcjYbEnGZVVQstx2euvBM1xPVZ/JS/xH0XFL2YIc7OPdBfqjjopIcllF+loMPe9IfSNynC/xnCLt8yvLOovbIcQh8Sn8R9AXuL4NjLzN1Q16sx7NE35U0A+3k1nBzWNSydsY/lEKh7gC0OU+SYwKWtN9codN6H1QDf
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(136003)(396003)(376002)(39860400002)(346002)(4326008)(6916009)(66946007)(6486002)(8936002)(83380400001)(86362001)(26005)(36756003)(6506007)(16526019)(2906002)(478600001)(44832011)(66476007)(186003)(66556008)(8676002)(6666004)(956004)(1076003)(52116002)(5660300002)(316002)(69590400008)(2616005)(6512007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: 7SwPO4g0m2X6dGoPFpwXikAyK2yQ0sDCIp0rQXcP2C12whdu0CDkzf+4aZdioTZ9xcg7gKpBZz1vRAam8Tyiq8a8YB9KbuhLUccHUSVlNVMqTfwFrBHTAtUbx0eZOn0yd4BaoItU4xGbgQPIvq4ce6hXOPvQkAtDRCyup1vM4QoNp4mzZzm4Oe1G7BKZtuyRIPR2HTNvXtR5cMrn59f0BeV9eSkLTLAjAn/+U4NYav8A8R8LAys2bB5bwSpPcwb/TnGZVPIieIqMHb77cZ+1G+NtV4Dt8MXX8hssdpUo0URB+eVy9jCXt2n244cjf5xIxmwS1Whd68p4vBQiiqKn+MHNYyAq8QVn2urV4FST32vTyHRQi1tnVd58ATTVsbe1EBlDC2VhGBxwoY5IcPw28lGcNYyxxVZfgtfZTzcTuw8vFZJoVhmHTuBFSLr4VtiuuOnzgjdjOc6XjAvWYL+yUC2ekGaYCnltApCcKRGlflSypPi26CBansXy0ROBRsXgHAgGwntEcckUnRhEZM45bwT8TZ17bSqxhsA5rz0TCSQnDhtFN/p0dMD8XDZp0jZqbuUikRbUTcVNaVEd2QICk0Zgm9huENCu5LetUD3o2sKgGonkNQ/vK5e1fYYjzBt4K8lRoOn/ZhwPGelSjZJwow==
+X-MS-Exchange-AntiSpam-MessageData: +HhSeuWe1AQUVytpaFqHMeHm7qF4dqO/vqdsPUFp92mWXTACunl3lWUI5QnLeqJraKIXgifVCxDK59dF5VopkkVZu2jXW62+t/DmIS8qP2jnM4k4IWBayeQtv6QjQ5/CrKXNglumeB1VKTFOado3OJ9weBrKTOac0o5RBC9Y9xV4gbwyyn7uQU3prZk6jr4UBnxknlB63PfBVhqcnGMwSyv4qf7RTUAMhbkgocEYyV8ZKVcT2eJOIJ4thfAKODhMerLVXkSlTRd2EdMnpOswzuLaBNmcxLzFOeawyCzqo2IDBFb4HfPh5Ol/RA8StoYLskW2Rj+3ckgRasOfowv2wAF9mcLDS3hb0jU1UMv+8q1Gmjf6kG7WLIBY0lVkHRPvk4/I+zJx+F93u39Sf134brhDuXyTLKOTX8vpyomu8gn94FYwD3W7Du5LCAVNszPOy9MQAtce6krLTQvergDJSz7/jB99/55WfhX8eV3qayO0WbsFvQVqB/QiK6Wa7c4ArUvqdpRIna7poYGqDzgnmtB4bpYcd2KBXRM1Ig04WNkD+YWW25AvID6REKjFWBM+zOxoeq7rAgJvUta4TQWT0T3ftYnCAbSzvcjSNyIgZH91SlMdrXjvY8skWSCTBWaoe5Ju6JHvKkCgFa2bV9dcWA==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d03e92b8-f7a6-4d4e-ae72-08d86b814ab4
+X-MS-Exchange-CrossTenant-Network-Message-Id: af29af94-a957-46e5-f131-08d86b814b9c
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Oct 2020 11:57:12.3602
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Oct 2020 11:57:13.9093
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: bXMEyKaKZROyqlKLJWNILts3QagEjQzqQiWDSB9UUOAtrphF65QplJmF3fQKH704dg40rtTmfrGj8PG79YfzqA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: HLhHKdYO2x1WAN3rHr6br6nCFLIPC9eRGe087GtOcZOkhkY6d4lOdpeKsMzZ1kQH98jpqnmRzP9Bg2YsWtDN9w==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3709
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The VCAP_IS1_ACT_VID_REPLACE_ENA action, from the VCAP IS1 ingress TCAM,
-changes the classified VLAN.
-
-We are only exposing this ability for switch ports that are under VLAN
-aware bridges. This is because in standalone ports mode and under a
-bridge with vlan_filtering=0, the ocelot driver configures the switch to
-operate as VLAN-unaware, so the classified VLAN is not derived from the
-802.1Q header from the packet, but instead is always equal to the
-port-based VLAN ID of the ingress port. We _can_ still change the
-classified VLAN for packets when operating in this mode, but the end
-result will most likely be a drop, since both the ingress and the egress
-port need to be members of the modified VLAN. And even if we install the
-new classified VLAN into the VLAN table of the switch, the result would
-still not be as expected: we wouldn't see, on the output port, the
-modified VLAN tag, but the original one, even though the classified VLAN
-was indeed modified. This is because of how the hardware works: on
-egress, what is pushed to the frame is a "port tag", which gives us the
-following options:
-
-- Tag all frames with port tag (derived from the classified VLAN)
-- Tag all frames with port tag, except if the classified VLAN is 0 or
-  equal to the native VLAN of the egress port
-- No port tag
-
-Needless to say, in VLAN-unaware mode we are disabling the port tag.
-Otherwise, the existing VLAN tag would be ignored, and a second VLAN
-tag (the port tag), holding the classified VLAN, would be pushed
-(instead of replacing the existing 802.1Q tag). This is definitely not
-what the user wanted when installing a "vlan modify" action.
-
-So it is simply not worth bothering with VLAN modify rules under other
-configurations except when the ports are fully VLAN-aware.
+When the Extraction Frame Header contains a valid classified VLAN, use
+that instead of the VLAN header present in the packet.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/mscc/ocelot.c        | 15 +++++++++++-
- drivers/net/ethernet/mscc/ocelot_flower.c | 29 ++++++++++++++++++++---
- 2 files changed, 40 insertions(+), 4 deletions(-)
+ net/dsa/tag_ocelot.c | 34 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index a965a554ff8b..3c4aa6a0c397 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -205,8 +205,21 @@ int ocelot_port_vlan_filtering(struct ocelot *ocelot, int port,
- 	struct ocelot_port *ocelot_port = ocelot->ports[port];
- 	u32 val;
- 
--	if (switchdev_trans_ph_prepare(trans))
-+	if (switchdev_trans_ph_prepare(trans)) {
-+		struct ocelot_vcap_block *block = &ocelot->block[VCAP_IS1];
-+		struct ocelot_vcap_filter *filter;
-+
-+		list_for_each_entry(filter, &block->rules, list) {
-+			if (filter->ingress_port_mask & BIT(port) &&
-+			    filter->action.vid_replace_ena) {
-+				dev_err(ocelot->dev,
-+					"Cannot change VLAN state with vlan modify rules active\n");
-+				return -EBUSY;
-+			}
-+		}
-+
- 		return 0;
-+	}
- 
- 	ocelot_port->vlan_aware = vlan_aware;
- 
-diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
-index 0ea6d4f411cb..729495a1a77e 100644
---- a/drivers/net/ethernet/mscc/ocelot_flower.c
-+++ b/drivers/net/ethernet/mscc/ocelot_flower.c
-@@ -142,10 +142,11 @@ ocelot_find_vcap_filter_that_points_at(struct ocelot *ocelot, int chain)
- 	return NULL;
- }
- 
--static int ocelot_flower_parse_action(struct ocelot *ocelot, bool ingress,
--				      struct flow_cls_offload *f,
-+static int ocelot_flower_parse_action(struct ocelot *ocelot, int port,
-+				      bool ingress, struct flow_cls_offload *f,
- 				      struct ocelot_vcap_filter *filter)
+diff --git a/net/dsa/tag_ocelot.c b/net/dsa/tag_ocelot.c
+index ec16badb7812..3b468aca5c53 100644
+--- a/net/dsa/tag_ocelot.c
++++ b/net/dsa/tag_ocelot.c
+@@ -184,9 +184,14 @@ static struct sk_buff *ocelot_rcv(struct sk_buff *skb,
+ 				  struct net_device *netdev,
+ 				  struct packet_type *pt)
  {
-+	struct ocelot_port *ocelot_port = ocelot->ports[port];
- 	struct netlink_ext_ack *extack = f->common.extack;
- 	bool allow_missing_goto_target = false;
- 	const struct flow_action_entry *a;
-@@ -266,6 +267,28 @@ static int ocelot_flower_parse_action(struct ocelot *ocelot, bool ingress,
- 			}
- 			filter->type = OCELOT_VCAP_FILTER_OFFLOAD;
- 			break;
-+		case FLOW_ACTION_VLAN_MANGLE:
-+			if (filter->block_id != VCAP_IS1) {
-+				NL_SET_ERR_MSG_MOD(extack,
-+						   "VLAN modify action can only be offloaded to VCAP IS1");
-+				return -EOPNOTSUPP;
-+			}
-+			if (filter->goto_target != -1) {
-+				NL_SET_ERR_MSG_MOD(extack,
-+						   "Last action must be GOTO");
-+				return -EOPNOTSUPP;
-+			}
-+			if (!ocelot_port->vlan_aware) {
-+				NL_SET_ERR_MSG_MOD(extack,
-+						   "Can only modify VLAN under VLAN aware bridge");
-+				return -EOPNOTSUPP;
-+			}
-+			filter->action.vid_replace_ena = true;
-+			filter->action.pcp_dei_ena = true;
-+			filter->action.vid = a->vlan.vid;
-+			filter->action.pcp = a->vlan.prio;
-+			filter->type = OCELOT_VCAP_FILTER_OFFLOAD;
-+			break;
- 		case FLOW_ACTION_PRIORITY:
- 			if (filter->block_id != VCAP_IS1) {
- 				NL_SET_ERR_MSG_MOD(extack,
-@@ -601,7 +624,7 @@ static int ocelot_flower_parse(struct ocelot *ocelot, int port, bool ingress,
- 	filter->prio = f->common.prio;
- 	filter->id = f->cookie;
++	struct dsa_port *cpu_dp = netdev->dsa_ptr;
++	struct dsa_switch *ds = cpu_dp->ds;
++	struct ocelot *ocelot = ds->priv;
+ 	u64 src_port, qos_class;
++	u64 vlan_tci, tag_type;
+ 	u8 *start = skb->data;
+ 	u8 *extraction;
++	u16 vlan_tpid;
  
--	ret = ocelot_flower_parse_action(ocelot, ingress, f, filter);
-+	ret = ocelot_flower_parse_action(ocelot, port, ingress, f, filter);
- 	if (ret)
- 		return ret;
+ 	/* Revert skb->data by the amount consumed by the DSA master,
+ 	 * so it points to the beginning of the frame.
+@@ -214,6 +219,8 @@ static struct sk_buff *ocelot_rcv(struct sk_buff *skb,
+ 
+ 	packing(extraction, &src_port,  46, 43, OCELOT_TAG_LEN, UNPACK, 0);
+ 	packing(extraction, &qos_class, 19, 17, OCELOT_TAG_LEN, UNPACK, 0);
++	packing(extraction, &tag_type,  16, 16, OCELOT_TAG_LEN, UNPACK, 0);
++	packing(extraction, &vlan_tci,  15,  0, OCELOT_TAG_LEN, UNPACK, 0);
+ 
+ 	skb->dev = dsa_master_find_slave(netdev, 0, src_port);
+ 	if (!skb->dev)
+@@ -228,6 +235,33 @@ static struct sk_buff *ocelot_rcv(struct sk_buff *skb,
+ 	skb->offload_fwd_mark = 1;
+ 	skb->priority = qos_class;
+ 
++	/* Ocelot switches copy frames unmodified to the CPU. However, it is
++	 * possible for the user to request a VLAN modification through
++	 * VCAP_IS1_ACT_VID_REPLACE_ENA. In this case, what will happen is that
++	 * the VLAN ID field from the Extraction Header gets updated, but the
++	 * 802.1Q header does not (the classified VLAN only becomes visible on
++	 * egress through the "port tag" of front-panel ports).
++	 * So, for traffic extracted by the CPU, we want to pick up the
++	 * classified VLAN and manually replace the existing 802.1Q header from
++	 * the packet with it, so that the operating system is always up to
++	 * date with the result of tc-vlan actions.
++	 * NOTE: In VLAN-unaware mode, we don't want to do that, we want the
++	 * frame to remain unmodified, because the classified VLAN is always
++	 * equal to the pvid of the ingress port and should not be used for
++	 * processing.
++	 */
++	vlan_tpid = tag_type ? ETH_P_8021AD : ETH_P_8021Q;
++
++	if (ocelot->ports[src_port]->vlan_aware &&
++	    eth_hdr(skb)->h_proto == htons(vlan_tpid)) {
++		u16 dummy_vlan_tci;
++
++		skb_push_rcsum(skb, ETH_HLEN);
++		__skb_vlan_pop(skb, &dummy_vlan_tci);
++		skb_pull_rcsum(skb, ETH_HLEN);
++		__vlan_hwaccel_put_tag(skb, htons(vlan_tpid), vlan_tci);
++	}
++
+ 	return skb;
+ }
  
 -- 
 2.25.1
