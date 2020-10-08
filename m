@@ -2,106 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C600287A79
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 19:01:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34B1B287AAF
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 19:11:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729778AbgJHRA4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 13:00:56 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:34518 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728014AbgJHRAz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 13:00:55 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 098H0oeN031355;
-        Thu, 8 Oct 2020 12:00:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1602176450;
-        bh=Fb5y0qYnS2/v0qcuhEtz+otsFlzC+73Oa2AqokeyOWs=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=Di3863Ag9nQCexzB7RA/eMhlvfurs36GS/1wTyikPdhbhgVxj15bE+xbR7KaXPPDP
-         EU7jc36EtG6V/kfGmwKwxZM8uIOvMxT/OtH0l2ULioOtdY4vKD1eEfxvXBhuc+zgOM
-         dP/kmt+VX+kQvfIU1e2/FhAye7KDtlaXVGg4wIZQ=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 098H0ox7062737
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 8 Oct 2020 12:00:50 -0500
-Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 8 Oct
- 2020 12:00:50 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 8 Oct 2020 12:00:50 -0500
-Received: from [10.250.67.147] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 098H0na1024161;
-        Thu, 8 Oct 2020 12:00:49 -0500
-Subject: Re: [PATCH net-next 2/2] net: phy: dp83td510: Add support for the
- DP83TD510 Ethernet PHY
-To:     Heiner Kallweit <hkallweit1@gmail.com>, <davem@davemloft.net>,
-        <andrew@lunn.ch>, <f.fainelli@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <20201008162347.5290-1-dmurphy@ti.com>
- <20201008162347.5290-3-dmurphy@ti.com>
- <62bbff66-c2f0-df0c-82c2-7bd8b9d63220@gmail.com>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <2baf2f6a-bad1-d008-fa11-3389c6b38f5b@ti.com>
-Date:   Thu, 8 Oct 2020 12:00:49 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1731721AbgJHRLT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 13:11:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53706 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727698AbgJHRLS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 13:11:18 -0400
+Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FD8EC061755;
+        Thu,  8 Oct 2020 10:11:18 -0700 (PDT)
+Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 098HAwl6024526
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Thu, 8 Oct 2020 19:10:58 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1602177059; bh=OxK0uNCFU41rDdxF9mmkmvjXR4Q9mKDgiWKQwJ+2lbY=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=SJePg4Aqp/WKar/cQIk7vC5flUEuRbXyB6x1pvsV845LtZejxfoGcFkZoC39ORuvb
+         cRM+pL+7vgwcaWsuOybhCdUUCFzC/Lz4E8CTcm+ngJ5VOp0O/hoEm/ya3TLIdMvPU3
+         EjRY9uogSZBNaS0b74lF6M+kTMWvrmkoqjXUk9pw=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.94)
+        (envelope-from <bjorn@mork.no>)
+        id 1kQZRR-001ACp-L3; Thu, 08 Oct 2020 19:10:57 +0200
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Wilken Gottwalt <wilken.gottwalt@mailbox.org>,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] net: usb: qmi_wwan: add Cellient MPL200 card
+Organization: m
+References: <cover.1602140720.git.wilken.gottwalt@mailbox.org>
+        <f5858ed121df35460ef17591152d606a78aa65db.1602140720.git.wilken.gottwalt@mailbox.org>
+        <87d01ti1jb.fsf@miraculix.mork.no>
+        <20201008095616.35a21c00@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Date:   Thu, 08 Oct 2020 19:10:57 +0200
+In-Reply-To: <20201008095616.35a21c00@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        (Jakub Kicinski's message of "Thu, 8 Oct 2020 09:56:16 -0700")
+Message-ID: <87v9fkhcda.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.3 (gnu/linux)
 MIME-Version: 1.0
-In-Reply-To: <62bbff66-c2f0-df0c-82c2-7bd8b9d63220@gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.102.4 at canardo
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Heiner
+Jakub Kicinski <kuba@kernel.org> writes:
 
-On 10/8/20 11:51 AM, Heiner Kallweit wrote:
-> On 08.10.2020 18:23, Dan Murphy wrote:
->> The DP83TD510E is an ultra-low power Ethernet physical layer transceiver
->> that supports 10M single pair cable.
->>
->> The device supports both 2.4-V p2p and 1-V p2p output voltage as defined
->> by IEEE 802.3cg 10Base-T1L specfications. These modes can be forced via
->> the device tree or the device is defaulted to auto negotiation to
->> determine the proper p2p voltage.
->>
->> Signed-off-by: Dan Murphy <dmurphy@ti.com>
->> ---
->>   drivers/net/phy/Kconfig     |   6 +
+> I'm guessing that I'm supposed to take this patch into the networking
+> tree, correct?
 
-<snip>
+Correct.
+
+> Is this net or net-next candidate? Bj=C3=B8rn?
+
+Sorry, should have made that explicit. This is for net + stable
+
+Thanks.
 
 
->> +static struct phy_driver dp83td510_driver[] = {
->> +	{
->> +		PHY_ID_MATCH_MODEL(DP83TD510E_PHY_ID),
->> +		.name		= "TI DP83TD510E",
->> +		.probe          = dp83td510_probe,
->> +		.config_init	= dp83td510_config_init,
->> +		.soft_reset	= dp83td510_phy_reset,
->> +		.features	= PHY_BASIC_FEATURES,
-> Per default phylib uses genphy_read_abilities() to auto-detect
-> the features. Doesn't your PHY support the needed clause 22
-> standard registers? Or are they incorrectly populated?
->
-> Maybe better than setting PHY_BASIC_FEATURES and then removing
-> unsuported features in dp83td510_config_init() would be to
-> implement phy_driver callback get_features. Then you can set
-> the supported fatures directly.
->
-Thanks for the review.  I will have to look at this maybe the call back 
-will be better.
-
-I will probably post v2 after net-next opens for 5.10.
-
-I wanted to get some reviews on this patch before net-next closes for 
-the merge window.
-
-Dan
-
+Bj=C3=B8rn
