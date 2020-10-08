@@ -2,111 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 413AD2873F0
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 14:20:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 636D32873F5
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 14:23:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729757AbgJHMT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 08:19:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36560 "EHLO
+        id S1729820AbgJHMXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 08:23:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729739AbgJHMT4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 08:19:56 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82631C061755;
-        Thu,  8 Oct 2020 05:19:54 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id e10so3864789pfj.1;
-        Thu, 08 Oct 2020 05:19:54 -0700 (PDT)
+        with ESMTP id S1729745AbgJHMXY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 08:23:24 -0400
+Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16A36C0613D2
+        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 05:23:24 -0700 (PDT)
+Received: by mail-vs1-xe43.google.com with SMTP id v23so346229vsp.6
+        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 05:23:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=QK7x4WnMDD1w1AJigxZca0jvkUm/6wXO+3vn95iqnN0=;
-        b=ah5DZbSny0r8zD0poMrz7u2KbugGuHbiELrKWzDy7luR9o49V1lzS7Ippkm2TDz7GD
-         JvRELWTqlBeqQ02BgSm5dNckoFTqY5QrcbDMkPBr0E/wNgbO63Piu/9A8Xh3X3y3Y2Nz
-         pfqiPSjXxMDUnv+9AUcHbuGLRHR5sBA+RG6Cg66KNbJiVJQPAslnxhPI3mMDJSK54056
-         CUV/qNslf+7yEl1+Wjtxgv6lEcyeTJ9oi4nnw0kNEuBaxoXMMK+KP+6G5Yp3bYEcjK0F
-         d69386wwX9db+jCIr6pSByetkcpL0YWa45+phiPvoeJ10I0e+ItSydAsBX0WPHO7iRXQ
-         FTTw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6yaLQlxNw70bRGmpr47sIPOg0JWUbIqHrAviNgxR9U8=;
+        b=ZV/udlGzIl/jBrUJkuN1KwkLbErRiww1AXfbdYjhu4aftSNTMtV4+PM1BRjHauZxfp
+         HbtfbtxaCjWO7kt3kz8IqDCxFVt6zufkjs0R5JcP1kz9I5bfIyMblsiuAEvsfk4IJitP
+         k7F6hH3KcaYkZgb85VTdANYMENGpTOqykJwHPOTx+/h7Lk61QKg66tm/uB+lty3qHwiW
+         GEqGpwFCwllORWVB21LnPAoTOZk+p4jhax1BUnlUQoHo1whWYCl7pItcKd+vz4XSCK5I
+         gNwxPHcFXodJUNDYPYp7haWTvUmJiATg0vIwrH1GHoNVL4t1C2nyWafuHOFtVW9XD5+C
+         tTzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=QK7x4WnMDD1w1AJigxZca0jvkUm/6wXO+3vn95iqnN0=;
-        b=PGzMCyVSO9ErrXbC+9/+QekqDVHMc+R0J4+P8VDnZA0vVZCSbQCV1d3bDy1DeeKryu
-         Bb/RpQMpU75cqtFu95M78sVNhi9c3zo7SiKenhwuJAb7gA+WmqyhiuBanarWgPS9pVnM
-         /R/bri5V2ibXqZphYthGE2OpLpbpBX8cbwLq6NhFFBF16N1Kol/wKhwQ/L/BHs3lxYDh
-         sDqH2PybjaoXjK2KylclodD+A9pUjh3tABWAhLpMxiFK1vhMZc+QsTJ0nixu4wGE4Rba
-         F5PRK9V3HoAEZM6V7ksGJ4jDKC6oGE9amT1MjnVIJO3eL1SVayuaWcieFnT/pBypFQ6k
-         7cHA==
-X-Gm-Message-State: AOAM530ZcsG850wltHSUu6mLHG4YkrCZLkPsxCSwTng9Y54CiLCynNQW
-        Q5vxqdgo4cLHdAs+UcMbFPqxKWbHH6Ag
-X-Google-Smtp-Source: ABdhPJy+OvvEdPcMzlBntde+cxsU2+kLyABp3rjbzeAEnj8gMImZKC8vY6ovtHlmqMTewoBcOEnXuA==
-X-Received: by 2002:a17:90a:bc2:: with SMTP id x2mr3876963pjd.54.1602159594117;
-        Thu, 08 Oct 2020 05:19:54 -0700 (PDT)
-Received: from localhost.localdomain ([47.242.140.181])
-        by smtp.gmail.com with ESMTPSA id c7sm7233914pfj.84.2020.10.08.05.19.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Oct 2020 05:19:53 -0700 (PDT)
-From:   Pujin Shi <shipujin.t@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Ursula Braun <ubraun@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, hankinsea@gmail.com,
-        Pujin Shi <shipujin.t@gmail.com>
-Subject: [PATCH 2/2] net: smc: fix missing brace warning for old compilers
-Date:   Thu,  8 Oct 2020 20:19:29 +0800
-Message-Id: <20201008121929.1270-2-shipujin.t@gmail.com>
-X-Mailer: git-send-email 2.18.4
-In-Reply-To: <20201008121929.1270-1-shipujin.t@gmail.com>
-References: <20201008121929.1270-1-shipujin.t@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6yaLQlxNw70bRGmpr47sIPOg0JWUbIqHrAviNgxR9U8=;
+        b=t2o3b5IwF40ZpXdKldH/6cUno7jEBHUjEHe77f/4NEY5q0GvTF+5w6wtdYZj6Hn/do
+         9enJ2nQuJ80kzzU7El3G1A8Me1tqavFBJN6W/+WdZPi8GSr9oh4GZaZAMFQGq/K0xlGC
+         hmd+ZaIP0fK7pjyMqLaBCkAg+Np+IaD+S0H9Q6yyKEAZWjz9QxJaV+NfqtuaqNROq2Xv
+         vJabNrSact0EAeBRa1tZZccJWB37eyNzAPEzQiPQqxCYCpRJXWDB/lQJZ5xsEqH0J+av
+         0LTunGQxLbla9yRK+RxASJUELufZKnwgOzGep5tb30beR02uGl98RKMRGBvrqALD47x0
+         LAeg==
+X-Gm-Message-State: AOAM530RJMT5ZX89D5tKUD25yNk/4JubfNRgWwN8nX+1iceHZaKAVd1O
+        6NA1DHYcCMT/qIJDz9d033HNmV5pcsI=
+X-Google-Smtp-Source: ABdhPJwFkIn6Lj7BsbMY+J3jJppdZBTOrzeFW571H2IG7PCrRLfpTcVlys7TZwnbHjtQuoOaa5hlWA==
+X-Received: by 2002:a67:6c86:: with SMTP id h128mr4262889vsc.42.1602159802431;
+        Thu, 08 Oct 2020 05:23:22 -0700 (PDT)
+Received: from mail-vs1-f52.google.com (mail-vs1-f52.google.com. [209.85.217.52])
+        by smtp.gmail.com with ESMTPSA id f3sm695887vkk.32.2020.10.08.05.23.21
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Oct 2020 05:23:21 -0700 (PDT)
+Received: by mail-vs1-f52.google.com with SMTP id r1so1899297vsi.12
+        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 05:23:21 -0700 (PDT)
+X-Received: by 2002:a67:d84:: with SMTP id 126mr4218029vsn.51.1602159800489;
+ Thu, 08 Oct 2020 05:23:20 -0700 (PDT)
+MIME-Version: 1.0
+References: <20201008115808.91850-1-coiby.xu@gmail.com> <20201008115808.91850-2-coiby.xu@gmail.com>
+In-Reply-To: <20201008115808.91850-2-coiby.xu@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 8 Oct 2020 08:22:44 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSdEK+0nBCd5KAYpbEECmSvjoMEgcEOtM+ZKFF4QQKuAfw@mail.gmail.com>
+Message-ID: <CA+FuTSdEK+0nBCd5KAYpbEECmSvjoMEgcEOtM+ZKFF4QQKuAfw@mail.gmail.com>
+Subject: Re: [PATCH v1 1/6] staging: qlge: Initialize devlink health dump
+ framework for the dlge driver
+To:     Coiby Xu <coiby.xu@gmail.com>
+Cc:     devel@driverdev.osuosl.org,
+        Benjamin Poirier <benjamin.poirier@gmail.com>,
+        Shung-Hsi Yu <shung-hsi.yu@suse.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
+        <GR-Linux-NIC-Dev@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For older versions of gcc, the array = {0}; will cause warnings:
+On Thu, Oct 8, 2020 at 7:58 AM Coiby Xu <coiby.xu@gmail.com> wrote:
+>
+> Initialize devlink health dump framework for the dlge driver so the
+> coredump could be done via devlink.
+>
+> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
 
-net/smc/smc_llc.c: In function 'smc_llc_add_link_local':
-net/smc/smc_llc.c:1212:9: warning: missing braces around initializer [-Wmissing-braces]
-  struct smc_llc_msg_add_link add_llc = {0};
-         ^
-net/smc/smc_llc.c:1212:9: warning: (near initialization for 'add_llc.hd') [-Wmissing-braces]
-net/smc/smc_llc.c: In function 'smc_llc_srv_delete_link_local':
-net/smc/smc_llc.c:1245:9: warning: missing braces around initializer [-Wmissing-braces]
-  struct smc_llc_msg_del_link del_llc = {0};
-         ^
-net/smc/smc_llc.c:1245:9: warning: (near initialization for 'del_llc.hd') [-Wmissing-braces]
+> @@ -4556,6 +4559,13 @@ static int qlge_probe(struct pci_dev *pdev,
+>         struct ql_adapter *qdev = NULL;
+>         static int cards_found;
+>         int err = 0;
+> +       struct devlink *devlink;
+> +       struct qlge_devlink *ql_devlink;
+> +
+> +       devlink = devlink_alloc(&qlge_devlink_ops, sizeof(struct qlge_devlink));
+> +       if (!devlink)
+> +               return -ENOMEM;
+> +       ql_devlink = devlink_priv(devlink);
+>
+>         ndev = alloc_etherdev_mq(sizeof(struct ql_adapter),
+>                                  min(MAX_CPUS,
 
-2 warnings generated
+need to goto devlink_free instead of return -ENOMEM here, too.
 
-Fixes: 4dadd151b265 ("net/smc: enqueue local LLC messages")
-Signed-off-by: Pujin Shi <shipujin.t@gmail.com>
----
- net/smc/smc_llc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> @@ -4614,6 +4624,16 @@ static int qlge_probe(struct pci_dev *pdev,
+>                 free_netdev(ndev);
+>                 return err;
 
-diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
-index d09d9d2d0bfd..85df0ef60500 100644
---- a/net/smc/smc_llc.c
-+++ b/net/smc/smc_llc.c
-@@ -1209,7 +1209,7 @@ static void smc_llc_process_srv_add_link(struct smc_link_group *lgr)
- /* enqueue a local add_link req to trigger a new add_link flow */
- void smc_llc_add_link_local(struct smc_link *link)
- {
--	struct smc_llc_msg_add_link add_llc = {0};
-+	struct smc_llc_msg_add_link add_llc = {};
- 
- 	add_llc.hd.length = sizeof(add_llc);
- 	add_llc.hd.common.type = SMC_LLC_ADD_LINK;
-@@ -1242,7 +1242,7 @@ static void smc_llc_add_link_work(struct work_struct *work)
-  */
- void smc_llc_srv_delete_link_local(struct smc_link *link, u8 del_link_id)
- {
--	struct smc_llc_msg_del_link del_llc = {0};
-+	struct smc_llc_msg_del_link del_llc = {};
- 
- 	del_llc.hd.length = sizeof(del_llc);
- 	del_llc.hd.common.type = SMC_LLC_DELETE_LINK;
--- 
-2.18.1
+and here
 
+>         }
+> +
+> +       err = devlink_register(devlink, &pdev->dev);
+> +       if (err) {
+> +               goto devlink_free;
+> +       }
+> +
+> +       qlge_health_create_reporters(ql_devlink);
+> +       ql_devlink->qdev = qdev;
+> +       ql_devlink->ndev = ndev;
+> +       qdev->ql_devlink = ql_devlink;
+>         /* Start up the timer to trigger EEH if
+>          * the bus goes dead
+>          */
+> @@ -4624,6 +4644,10 @@ static int qlge_probe(struct pci_dev *pdev,
+>         atomic_set(&qdev->lb_count, 0);
+>         cards_found++;
+>         return 0;
+> +
+> +devlink_free:
+> +       devlink_free(devlink);
+> +       return err;
+>  }
