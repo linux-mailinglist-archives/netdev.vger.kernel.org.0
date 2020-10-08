@@ -2,91 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 792F62875C7
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 16:12:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 990C22875F1
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 16:22:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730472AbgJHOMl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 10:12:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54044 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730319AbgJHOMl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 10:12:41 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24020C061755;
-        Thu,  8 Oct 2020 07:12:41 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id w21so68690plq.3;
-        Thu, 08 Oct 2020 07:12:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=Mg0NsaEQzdvSh0ImH0acDVC5DgUluqcOLV+Kh6DIKuc=;
-        b=ArvgXq0qpQFqB4D3ihquKaJx9DRs0tUKf7t0+6kkbKVGXsBXgsZemb6gF8F+1kWD7K
-         1MnzZJfchRIcdz3C6T0sR/SrbcotU2FFWQntS1waiM1aSu53QojRwleA84pfafCllkt+
-         Avhmz6ohcV7+VIH3Pg9/X/tg0YcOY2ieiZ5KjCiBrWRZpr+lsh0gjLnFGtjOufjX6tu5
-         6NMLMDB2q+sUJVNRTrBx5CcGKc6Itt9vXkohDCEdgbFURknEQpMc32Z6cw5vwyQUVQVA
-         ARPskEzMj4b1xCMNZY4Ahj8xYPWOr6AaYKr6sYIBIxR3u64lKv5u5yz1mRZqTDKO+7F3
-         D4xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Mg0NsaEQzdvSh0ImH0acDVC5DgUluqcOLV+Kh6DIKuc=;
-        b=R7WorBXG+GPWkX6KB1mJDdu9NkkbUVukkJjEDtdrVkzPrSDhbJw05OHt2wnOyxEz2k
-         rwPwjCMmBnMin0m/2u1yCgDXhcHuDwZAryL1IIWh9Ul1K9U7V0227UmVAbqgl1cLNPXV
-         3gFaJGpkwY/FhjUGJTCsGIA0OUp33/W8DQAQNxZW46QE8sZqZcnimwR0aP9+fZ0UgrJG
-         k7Xznc6twKYtOqJUdHpi17jcwIueFqBL45MAxPyoxe7P7ZHEaybZZzEBvDmo2niPto8V
-         cBfvtL6LJeCWkNeFHWUrhuBV8zyPXPkLN2nwBIf1YqqxpdnJLnYC17LVLtKAgygcrY/k
-         X4kQ==
-X-Gm-Message-State: AOAM533jwXSVkAtI+J4aSDvCwqgrSYDbaEufQ++7xplF3PsG51Vc/Qi1
-        kJNMPc8dJjhZiU7FqFCTP7Q=
-X-Google-Smtp-Source: ABdhPJy8zdWPheddoSx3e5JMrSy6LFT9TD9IXXIi1Rn+QmGUfUFb/VeXa/GSWywHILZThV3U9xOYvw==
-X-Received: by 2002:a17:902:46b:b029:d2:aa9a:847f with SMTP id 98-20020a170902046bb02900d2aa9a847fmr7631753ple.24.1602166360747;
-        Thu, 08 Oct 2020 07:12:40 -0700 (PDT)
-Received: from localhost.localdomain (fmdmzpr03-ext.fm.intel.com. [192.55.54.38])
-        by smtp.gmail.com with ESMTPSA id ne16sm7356811pjb.11.2020.10.08.07.12.37
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 08 Oct 2020 07:12:40 -0700 (PDT)
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com
-Cc:     bpf@vger.kernel.org
-Subject: [PATCH bpf-next] xsk: introduce padding between ring pointers
-Date:   Thu,  8 Oct 2020 16:12:18 +0200
-Message-Id: <1602166338-21378-1-git-send-email-magnus.karlsson@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        id S1730567AbgJHOWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 10:22:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58902 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730419AbgJHOWo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Oct 2020 10:22:44 -0400
+Received: from embeddedor (187-162-31-110.static.axtel.net [187.162.31.110])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id ECE0421927;
+        Thu,  8 Oct 2020 14:22:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602166963;
+        bh=KDEJPtg4GCj2nUViE9QbImj5+H801SK8UcvbqYFPt40=;
+        h=Date:From:To:Cc:Subject:From;
+        b=dkw+U/5aTdErQuwkXw9TFCiWbgAD/NX5FqdoJsBFlEluC7gfjtVrIOjMq6mHIFPzf
+         KtDX5n+udZeXL0qWJ5tK2YK/ywZxXXqPH/no09LonORk7a1XSEnkWD4xKAK5gWPv4l
+         2bcL386ptRLMvNw0nvN+WOtplqVGCVoOQcF73RmQ=
+Date:   Thu, 8 Oct 2020 09:28:06 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Sunil Goutham <sgoutham@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] net: thunderx: Use struct_size() helper in kmalloc()
+Message-ID: <20201008142806.GA22162@embeddedor>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+Make use of the new struct_size() helper instead of the offsetof() idiom.
 
-Introduce one cache line worth of padding between the producer and
-consumer pointers in all the lockless rings. This so that the HW
-adjacency prefetcher will not prefetch the consumer pointer when the
-producer pointer is used and vice versa. This improves throughput
-performance for the l2fwd sample app with 2% on my machine with HW
-prefetching turned on.
-
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- net/xdp/xsk_queue.h | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/cavium/thunder/nicvf_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
-index dc1dd5e..3c235d2 100644
---- a/net/xdp/xsk_queue.h
-+++ b/net/xdp/xsk_queue.h
-@@ -15,6 +15,10 @@
- 
- struct xdp_ring {
- 	u32 producer ____cacheline_aligned_in_smp;
-+	/* Hinder the adjacent cache prefetcher to prefetch the consumer pointer if the producer
-+	 * pointer is touched and vice versa.
-+	 */
-+	u32 pad ____cacheline_aligned_in_smp;
- 	u32 consumer ____cacheline_aligned_in_smp;
- 	u32 flags;
- };
+diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_main.c b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
+index 0a94c396173b..f3b7b443f964 100644
+--- a/drivers/net/ethernet/cavium/thunder/nicvf_main.c
++++ b/drivers/net/ethernet/cavium/thunder/nicvf_main.c
+@@ -2065,8 +2065,8 @@ static void nicvf_set_rx_mode(struct net_device *netdev)
+ 			mode |= BGX_XCAST_MCAST_FILTER;
+ 			/* here we need to copy mc addrs */
+ 			if (netdev_mc_count(netdev)) {
+-				mc_list = kmalloc(offsetof(typeof(*mc_list),
+-							   mc[netdev_mc_count(netdev)]),
++				mc_list = kmalloc(struct_size(mc_list, mc,
++							      netdev_mc_count(netdev)),
+ 						  GFP_ATOMIC);
+ 				if (unlikely(!mc_list))
+ 					return;
 -- 
-2.7.4
+2.27.0
 
