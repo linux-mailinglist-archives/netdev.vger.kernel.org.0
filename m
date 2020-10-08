@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86901287827
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 17:52:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7086E287829
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 17:52:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729981AbgJHPwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 11:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41380 "EHLO
+        id S1731393AbgJHPwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 11:52:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729982AbgJHPwo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 11:52:44 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C15DC061755;
-        Thu,  8 Oct 2020 08:52:43 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id o25so4672024pgm.0;
-        Thu, 08 Oct 2020 08:52:43 -0700 (PDT)
+        with ESMTP id S1730221AbgJHPwq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 11:52:46 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 767BBC0613D2;
+        Thu,  8 Oct 2020 08:52:46 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id y20so2945311pll.12;
+        Thu, 08 Oct 2020 08:52:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=OiqcYn8C690f/neGDt4mRrF3Bc386zYmtSC6n8vND08=;
-        b=LsdKc4++rY9KdzG2eQMffwjpcL3jE/TVR+tKr25HBcSVaZT9ZNEycN7W0/MPPng6X3
-         iDDvoGHUIevFl+EuCUDc6bkRcfpADd1KNyNxrh0ul0FXmL7iLQq5Uoy68iFOrEHHxZhK
-         AgY9pylM0D7u3TkK9So4+kUqy/nI6QOkYiD6E2zrmZ4ORzBFMHS00vLqZKoufeCPjyC+
-         FwApGVCJQ0BEflMWC1G90r3bVeLUiTa6bSSM+S+ZZHmE5UE7nY0clYY0yeoCQ7oGKsVI
-         RYp0zoNLDV75MdgUhe97qlQ2tCfCZ/4lCtOW+nJbJS+2bKNfCKrtOadIRdyl+Q1HZMd5
-         gHkQ==
+        bh=DykZRLkCtQ9htd/aPPi1KevQSJPPLl8ioPLoUg7iCDU=;
+        b=I6ruV0aT0SbKbNmivtTsSc3QbkRbeqPsS51ghGqK9eiPkZMg3QjJStW025Prflt4yc
+         5t3GBn7dq+YTFhaBRtQMjqxbzHjSTSFlsIV5Icxo2F2moEOEds0sEMRIwoeVoT7j0VOp
+         S/mRYijrhRhVH8qiMP47upCFqrWgA/le2gaYZUdQlrkYmQY3f4+sydP3hGcrx60iSt3Q
+         GkZonckP4MqYqULzu1AtDCbhCN9hxdiYHkwiSEV03s3UMKXKaf7Ix4S98Mdz+l3pEv/C
+         e72eUPxZ4eHZsvgN2KohV6/CkZKOOgqGzl1Yyzhc2ao+yap0bWyEnOUx+BpuDHINElXh
+         wfSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=OiqcYn8C690f/neGDt4mRrF3Bc386zYmtSC6n8vND08=;
-        b=dy5+ngvC/vLAmgKBjJ9DllbiSV7jR40kTHehDGbssM08UN6iE/Ud3+YAroTmNHsEKu
-         DShtTCRp6RStsyvlxDVG/IB2XxK7aXt4yOoWQNDzGwMIh26/YlHizwIAjN9AxP2mbGzT
-         MwohJ4de3eLMCXm9xyng8wcjAr1V1xARCG0c9D7dMPtvoXzvWBKhqqsLzfDyenpNnFCL
-         Yb4D3Ld6dtMfCRk75HCW47xrdcfoeFEP5VXYMuF54dR31xtNWC7a4cMlhJf/xYYcauXJ
-         2IpGnFI3+kCBLolQKZpPWy0WO9ehnGjEqxF8Gk+2eHiBfQhgAFenR1MLbPnLtTrVMzct
-         vKMQ==
-X-Gm-Message-State: AOAM530TltV2/LtjzFU3wVRaucOXQIUtOIXCwXQtiGE0W4cJKtV9c5Et
-        cHzz0fjwnkVbWet+jz+6R/7TGG+syG8=
-X-Google-Smtp-Source: ABdhPJyy4XfywKmvZelf/Uewqka1VPy7GC7vP1JJFp7yuxPdV+lTGIns3HgMHlflxZ/fzAX9+kVjWA==
-X-Received: by 2002:a17:90b:8c:: with SMTP id bb12mr5432411pjb.48.1602172362974;
-        Thu, 08 Oct 2020 08:52:42 -0700 (PDT)
+        bh=DykZRLkCtQ9htd/aPPi1KevQSJPPLl8ioPLoUg7iCDU=;
+        b=sNAQ3rRNRzx6thadpdZDEZypkq3RXkpAdnVHGJqojUf2/ClMTytu7t/4cZb3X6T/m4
+         HX7nriOfStsj97jU+qOCEkmpqAnuekH1z30/Put65dRGfJr0V3IezPGY46A6exaS1KXC
+         x4cb+o8QHMLar1fj7GqCVls/RKKUFCrEmlDTCqFtwyFUg0uYdzjHhOdr7XYO66LgLZAy
+         6UNF6mELYkS/VFUhn0AWxtWt8AXaOsZHwMLsALtHuouA1TC6l4sfAuQSA5RrEYv4Emgo
+         LAbWM1VuLDyvtxT5lwxi6KUZV7VLHM8Fja/kdUGxutnL+iFq0p3yEIy1zE+NWUgbIR8K
+         i/Mw==
+X-Gm-Message-State: AOAM533XunxXcbyuYeiuxKbgl0seQmZHzt9iqPX2cktxll97gHBBhEnX
+        DzUyHF/gveOx0/d8Roxd3iY=
+X-Google-Smtp-Source: ABdhPJxY7ImE16iT/WCwS+04dw4rq1gkRdo2bGfhtCm8ChQuCPLEtIvdcka7sVONMT+GjoDeE3bT5w==
+X-Received: by 2002:a17:902:7c0d:b029:d3:de09:a3 with SMTP id x13-20020a1709027c0db02900d3de0900a3mr8007289pll.52.1602172366048;
+        Thu, 08 Oct 2020 08:52:46 -0700 (PDT)
 Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id f1sm5917929pjh.20.2020.10.08.08.52.40
+        by smtp.gmail.com with ESMTPSA id f1sm5917929pjh.20.2020.10.08.08.52.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Oct 2020 08:52:42 -0700 (PDT)
+        Thu, 08 Oct 2020 08:52:45 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     ap420073@gmail.com, linux-wireless@vger.kernel.org,
         wil6210@qti.qualcomm.com, b43-dev@lists.infradead.org,
         linux-bluetooth@vger.kernel.org
-Subject: [PATCH net 007/117] mac80211: set KEY_CONF_OPS.owner to THIS_MODULE
-Date:   Thu,  8 Oct 2020 15:50:19 +0000
-Message-Id: <20201008155209.18025-7-ap420073@gmail.com>
+Subject: [PATCH net 008/117] mac80211: set STA_OPS.owner to THIS_MODULE
+Date:   Thu,  8 Oct 2020 15:50:20 +0000
+Message-Id: <20201008155209.18025-8-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201008155209.18025-1-ap420073@gmail.com>
 References: <20201008155209.18025-1-ap420073@gmail.com>
@@ -65,24 +65,24 @@ If THIS_MODULE is not set, the module would be removed while debugfs is
 being used.
 It eventually makes kernel panic.
 
-Fixes: 8f20fc24986a ("[MAC80211]: embed key conf in key, fix driver interface")
+Fixes: e9f207f0ff90 ("[MAC80211]: Add debugfs attributes.")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
- net/mac80211/debugfs_key.c | 1 +
+ net/mac80211/debugfs_sta.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/net/mac80211/debugfs_key.c b/net/mac80211/debugfs_key.c
-index b5fe68b683e7..d7c0c28045ef 100644
---- a/net/mac80211/debugfs_key.c
-+++ b/net/mac80211/debugfs_key.c
-@@ -55,6 +55,7 @@ static const struct file_operations key_ ##name## _ops = {		\
- 	.read = key_conf_##name##_read,					\
+diff --git a/net/mac80211/debugfs_sta.c b/net/mac80211/debugfs_sta.c
+index 829dcad69c2c..d3366989c6f9 100644
+--- a/net/mac80211/debugfs_sta.c
++++ b/net/mac80211/debugfs_sta.c
+@@ -34,6 +34,7 @@ static const struct file_operations sta_ ##name## _ops = {		\
+ 	.read = sta_##name##_read,					\
  	.open = simple_open,						\
  	.llseek = generic_file_llseek,					\
 +	.owner = THIS_MODULE,						\
  }
  
- #define KEY_CONF_FILE(name, format)					\
+ #define STA_OPS_RW(name)						\
 -- 
 2.17.1
 
