@@ -2,241 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F873286EB5
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 08:32:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B04B286ED1
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 08:47:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727278AbgJHGcZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 02:32:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39262 "EHLO
+        id S1728008AbgJHGro (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 02:47:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726148AbgJHGcZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 02:32:25 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB24C0613D2
-        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 23:32:24 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id l24so4637548edj.8
-        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 23:32:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=T6WCoZxdckvRKJGdL/C3+abKBroTkwq+Cv2M9Ea/Upw=;
-        b=J4wJLz4nBMEzbf100ACCB/Bd6uCESFEe6h/ytp/fArQhp+PqEe6wDNBMpvMNG7tPm1
-         8IlEZA152jqzUOs6tnpnlk9r5hco7RRH8D3Ys47wsFfBqr0vAGaDNpOcdp75K6zTdqUO
-         btR7tlOjqlvspO/XktdBts7wPM3RD3JTzWTMNiBYXpck7KJ8h1FFQ9JBx8hhH999iEiZ
-         Xou5bS/nlxSA6PeH3Q6IFmiNZ4Yu2ZTrgVuCE+7/rjIZyGork2J185AvO0JaKNF/L5nR
-         0BFJ48dVKdHw+UF20XqPOYqKkwKoP/y6pTGI3uWQcL5BuVVbvl4tfwaK/ldWnnLsteDB
-         akYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=T6WCoZxdckvRKJGdL/C3+abKBroTkwq+Cv2M9Ea/Upw=;
-        b=mdPXVnH9uThP1CMi/AhjUxUw2FdqJbdkU0LKexRZpbMYnB6xEIXctoD1X3mBuYNj2H
-         i92hFVmZGMsl1K2s4bo55NxuIxL0mIIs5TCjjiXSZyP+BWFm9YSZQezR9xXcRx9F7ocb
-         KZ9+oARu/RRY4lS4C7CSS62HCkIIVW1WAt5rTMHaPlpEflupzb4kTeIt/ef9bZtoBjxx
-         xgvXwmUdWEfOIB+deGvMWJQP2yGewsT+UCa2npl5fzvPMKKoAgz5jYEqYA0g6QU+065v
-         c/psdgitnBdqgwuW6c4ReDZ7KoxgFJXNWlepU1Od/x0pTZuOw372npJOZqB80az3sXuu
-         PGyg==
-X-Gm-Message-State: AOAM532sYoPCgl56PuruIA17ByhBTjL41BO+15u/eWoBK4+7S6k6xLyv
-        80lpQjP02KxFzDdcggX/0KkkTuBhQlBuS9/mdI/Fnw==
-X-Google-Smtp-Source: ABdhPJwgpM7H3h1DInduR4J71279wEVfVZ4kQCu4JvRNed2XMja6KyKSjQxlhH+H4bkYZVxCQ6SA/D1UOI3UnDXcONQ=
-X-Received: by 2002:a50:9fa8:: with SMTP id c37mr7437375edf.233.1602138743085;
- Wed, 07 Oct 2020 23:32:23 -0700 (PDT)
+        with ESMTP id S1726013AbgJHGro (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 02:47:44 -0400
+Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3F49C061755;
+        Wed,  7 Oct 2020 23:47:43 -0700 (PDT)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4C6MG439PFzKmkc;
+        Thu,  8 Oct 2020 08:47:40 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mailbox.org; h=
+        content-transfer-encoding:content-type:content-type:mime-version
+        :references:in-reply-to:message-id:subject:subject:from:from
+        :date:date:received; s=mail20150812; t=1602139656; bh=jUXIoA5ofK
+        SgFEFV/CVi6d3U/mI3bQmSkxB6+AzdIGo=; b=wSgAvT7wi+74v14rK9gjrPgDk7
+        /ilBkjmV1lJfxwV98SPh5rI/Jq8mtvEMe+7R7BRQMfv6ZOAj80JyOHZOVfdbI+Jx
+        0thjDKr37vpwbaD+5CCdpBJG3opObBpAYmD/vx+udoW1SZtt+pUf8ZYLCS8WVo5m
+        8yJ2rDlha7sf3lB7Mpz6EqRWu5GVL+nlK3fyl/q4eZ3ZVa9A5Ku5NGSxtBnYSah0
+        OjtfU4OEIzfxE/qLHnKgpYZ9IJMAmwD1VLG+LhNFGeTjgFH+lQhyAvk9fqQUe2eC
+        Eqdsl2n8QXvXjmuMfoTlIaz7Bosc7nnCbAeI2lda4qmoGX3NxuOA9i+y/KIQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
+        t=1602139658;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ab538Rm1sSZQYzulkykYNmyxv6Ukn8i2E6k9sTNN+ro=;
+        b=YEl1FfPwNQERwDiAEDB3Y0oZRSdAM7ZAoM7hpV7IG9bmL+7jyjTkoXZbvX+t4MxXLarzr7
+        NE4R5HWO9cbx16RtypjuE9ngEFbGYnp+btjglLz6KBlNk3nNIv6NAfj6dTb+v6lxJCEk8N
+        yac9fpL1PjDfr0+c2kRm/kmGjttM270nZ6tX0KSf2TDI5edR3Uey6ZlDP/Bzx+GNZ+j369
+        6X9+uDO+heig7gH+NvRSXJrHt/dNROie+w9RjulO1CDGjHVWtxabulWj+dwFSCPivPoDQD
+        bl6LbiV0eF8+6/QCZjtRLOSo9tTTJ9XtR6wKR8FAp4N0K2x8i8V2fnuTf/nHrg==
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+Received: from smtp1.mailbox.org ([80.241.60.240])
+        by spamfilter06.heinlein-hosting.de (spamfilter06.heinlein-hosting.de [80.241.56.125]) (amavisd-new, port 10030)
+        with ESMTP id gqVnwssnlTsi; Thu,  8 Oct 2020 08:47:36 +0200 (CEST)
+Date:   Thu, 8 Oct 2020 08:47:33 +0200
+From:   Wilken Gottwalt <wilken.gottwalt@mailbox.org>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     Lars Melin <larsm17@gmail.com>, linux-kernel@vger.kernel.org,
+        =?ISO-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH 2/2] usb: serial: option: add Cellient MPL200 card
+Message-ID: <20201008084733.41ba3cec@monster.powergraphx.local>
+In-Reply-To: <20201006070201.GB26280@localhost>
+References: <cover.1601715478.git.wilken.gottwalt@mailbox.org>
+        <3db5418fe9e516f4b290736c5a199c9796025e3c.1601715478.git.wilken.gottwalt@mailbox.org>
+        <20201005082045.GL5141@localhost>
+        <20201005130134.459b4de9@monster.powergraphx.local>
+        <20201005110638.GP5141@localhost>
+        <5222246c-08d7-dcf8-248d-c1fefc72c46f@gmail.com>
+        <20201005140723.56f6c434@monster.powergraphx.local>
+        <20201006070201.GB26280@localhost>
 MIME-Version: 1.0
-References: <20201005182446.977325-1-david.m.ertman@intel.com>
- <20201005182446.977325-2-david.m.ertman@intel.com> <20201006071821.GI1874917@unreal>
- <b4f6b5d1-2cf4-ae7a-3e57-b66230a58453@linux.intel.com> <20201006170241.GM1874917@unreal>
- <DM6PR11MB2841C531FC27DB41E078C52BDD0A0@DM6PR11MB2841.namprd11.prod.outlook.com>
- <20201007192610.GD3964015@unreal> <BY5PR12MB43221A308CE750FACEB0A806DC0A0@BY5PR12MB4322.namprd12.prod.outlook.com>
- <DM6PR11MB28415A8E53B5FFC276D5A2C4DD0A0@DM6PR11MB2841.namprd11.prod.outlook.com>
- <20201008052137.GA13580@unreal>
-In-Reply-To: <20201008052137.GA13580@unreal>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Wed, 7 Oct 2020 23:32:11 -0700
-Message-ID: <CAPcyv4gz=mMTfLO4mAa34MEEXgg77o1AWrT6aguLYODAWxbQDQ@mail.gmail.com>
-Subject: Re: [PATCH v2 1/6] Add ancillary bus support
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "Ertman, David M" <david.m.ertman@intel.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        "parav@mellanox.com" <parav@mellanox.com>,
-        "tiwai@suse.de" <tiwai@suse.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ranjani.sridharan@linux.intel.com" 
-        <ranjani.sridharan@linux.intel.com>,
-        "fred.oh@linux.intel.com" <fred.oh@linux.intel.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Patil, Kiran" <kiran.patil@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -7.08 / 15.00 / 15.00
+X-Rspamd-Queue-Id: D1652181D
+X-Rspamd-UID: cd4ae1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 7, 2020 at 10:21 PM Leon Romanovsky <leon@kernel.org> wrote:
->
-> On Wed, Oct 07, 2020 at 08:46:45PM +0000, Ertman, David M wrote:
-> > > -----Original Message-----
-> > > From: Parav Pandit <parav@nvidia.com>
-> > > Sent: Wednesday, October 7, 2020 1:17 PM
-> > > To: Leon Romanovsky <leon@kernel.org>; Ertman, David M
-> > > <david.m.ertman@intel.com>
-> > > Cc: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>; alsa-
-> > > devel@alsa-project.org; parav@mellanox.com; tiwai@suse.de;
-> > > netdev@vger.kernel.org; ranjani.sridharan@linux.intel.com;
-> > > fred.oh@linux.intel.com; linux-rdma@vger.kernel.org;
-> > > dledford@redhat.com; broonie@kernel.org; Jason Gunthorpe
-> > > <jgg@nvidia.com>; gregkh@linuxfoundation.org; kuba@kernel.org; Williams,
-> > > Dan J <dan.j.williams@intel.com>; Saleem, Shiraz
-> > > <shiraz.saleem@intel.com>; davem@davemloft.net; Patil, Kiran
-> > > <kiran.patil@intel.com>
-> > > Subject: RE: [PATCH v2 1/6] Add ancillary bus support
-> > >
-> > >
-> > > > From: Leon Romanovsky <leon@kernel.org>
-> > > > Sent: Thursday, October 8, 2020 12:56 AM
-> > > >
-> > > > > > This API is partially obscures low level driver-core code and needs
-> > > > > > to provide clear and proper abstractions without need to remember
-> > > > > > about put_device. There is already _add() interface why don't you do
-> > > > > > put_device() in it?
-> > > > > >
-> > > > >
-> > > > > The pushback Pierre is referring to was during our mid-tier internal
-> > > > > review.  It was primarily a concern of Parav as I recall, so he can speak to
-> > > his
-> > > > reasoning.
-> > > > >
-> > > > > What we originally had was a single API call
-> > > > > (ancillary_device_register) that started with a call to
-> > > > > device_initialize(), and every error path out of the function performed a
-> > > > put_device().
-> > > > >
-> > > > > Is this the model you have in mind?
-> > > >
-> > > > I don't like this flow:
-> > > > ancillary_device_initialize()
-> > > > if (ancillary_ancillary_device_add()) {
-> > > >   put_device(....)
-> > > >   ancillary_device_unregister()
-> > > Calling device_unregister() is incorrect, because add() wasn't successful.
-> > > Only put_device() or a wrapper ancillary_device_put() is necessary.
-> > >
-> > > >   return err;
-> > > > }
-> > > >
-> > > > And prefer this flow:
-> > > > ancillary_device_initialize()
-> > > > if (ancillary_device_add()) {
-> > > >   ancillary_device_unregister()
-> > > This is incorrect and a clear deviation from the current core APIs that adds the
-> > > confusion.
-> > >
-> > > >   return err;
-> > > > }
-> > > >
-> > > > In this way, the ancillary users won't need to do non-intuitive put_device();
-> > >
-> > > Below is most simple, intuitive and matching with core APIs for name and
-> > > design pattern wise.
-> > > init()
-> > > {
-> > >     err = ancillary_device_initialize();
-> > >     if (err)
-> > >             return ret;
-> > >
-> > >     err = ancillary_device_add();
-> > >     if (ret)
-> > >             goto err_unwind;
-> > >
-> > >     err = some_foo();
-> > >     if (err)
-> > >             goto err_foo;
-> > >     return 0;
-> > >
-> > > err_foo:
-> > >     ancillary_device_del(adev);
-> > > err_unwind:
-> > >     ancillary_device_put(adev->dev);
-> > >     return err;
-> > > }
-> > >
-> > > cleanup()
-> > > {
-> > >     ancillary_device_de(adev);
-> > >     ancillary_device_put(adev);
-> > >     /* It is common to have a one wrapper for this as
-> > > ancillary_device_unregister().
-> > >      * This will match with core device_unregister() that has precise
-> > > documentation.
-> > >      * but given fact that init() code need proper error unwinding, like
-> > > above,
-> > >      * it make sense to have two APIs, and no need to export another
-> > > symbol for unregister().
-> > >      * This pattern is very easy to audit and code.
-> > >      */
-> > > }
-> >
-> > I like this flow +1
-> >
-> > But ... since the init() function is performing both device_init and
-> > device_add - it should probably be called ancillary_device_register,
-> > and we are back to a single exported API for both register and
-> > unregister.
-> >
-> > At that point, do we need wrappers on the primitives init, add, del,
-> > and put?
->
-> Let me summarize.
-> 1. You are not providing driver/core API but simplification and obfuscation
-> of basic primitives and structures. This is new layer. There is no room for
-> a claim that we must to follow internal API.
+On Tue, 6 Oct 2020 09:02:01 +0200
+Johan Hovold <johan@kernel.org> wrote:
 
-Yes, this a driver core api, Greg even questioned why it was in
-drivers/bus instead of drivers/base which I think makes sense.
+> On Mon, Oct 05, 2020 at 02:07:23PM +0200, Wilken Gottwalt wrote:
+> > On Mon, 5 Oct 2020 18:36:36 +0700 Lars Melin <larsm17@gmail.com> wrote:
+> > > On 10/5/2020 18:06, Johan Hovold wrote:
+> 
+> > > > Do you remember the interface layout and why you blacklisted interface
+> > > > 1?
+> 
+> > > It is very likely that Cellient has replaced the VID with their own and 
+> > > kept the PID, it is something other mfgrs has done when buying modules 
+> > > from Qualcomm's series of devices with predefined composition.
+> > > 
+> > > The MS Windows driver for 05c6:9025 describes the interfaces as:
+> > > 
+> > > MI_00 Qualcomm HS-USB Diagnostics 9025
+> > > MI_01 Android Composite ADB Interface
+> > > MI_02 Qualcomm HS-USB Android Modem 9025
+> > > MI_03 Qualcomm HS-USB NMEA 9025
+> > > MI_04 Qualcomm Wireless HS-USB Ethernet Adapter 9025
+> > > MI_05 USB Mass Storage Device
+> > > 
+> > > where the net interface is for QMI/RMNET.
+> > > It fully matches the blacklisting Wilken has done for 2692:9025
+> > 
+> > Does your device have a GPS connector? Mine had not and I'm not sure
+> > if the description of MI_01 is actually correct. I remember looking at
+> > this port and seeing bogus NMEA data.
+> 
+> Well if it's NMEA then the interface shouldn't be blacklisted (even if
+> the values are bogus on your device), but if it's ADB it should be as
+> that is handled by userspace.
+> 
+> Here's some lsusb output from a Cellient MPL200 that still uses the
+> Qualcomm VID:
+> 
+> 	https://www.mail-archive.com/modemmanager-devel@lists.freedesktop.org/msg04523.html
+> 
+> which gives some support to Lars's hypothesis. I guess we'll just keep
+> the first interface reserved.
 
-> 2. API should be symmetric. If you call to _register()/_add(), you will need
-> to call to _unregister()/_del(). Please don't add obscure _put().
+Lars and Johan are right here. I found an older external Gobi driver
+where I actually added comments saying interface 1 is ADB and interface 3
+is NMEA delivering only zeroed values because of the missing antenna
+connector, at least for the models I had access to.
 
-It's not obscure it's a long standing semantic for how to properly
-handle device_add() failures. Especially in this case where there is
-no way to have something like a common auxiliary_device_alloc() that
-will work for everyone the only other option is require all device
-destruction to go through the provided release method (put_device())
-after a device_add() failure.
-
-> 3. You can't "ask" from users to call internal calls (put_device) over internal
-> fields in ancillary_device.
-
-Sure it can. platform_device_add() requires a put_device() on failure,
-but also note how platform_device_add() *requires*
-platform_device_alloc() be used to create the device. That
-inflexibility is something this auxiliary bus is trying to avoid.
-
-> 4. This API should be clear to drivers authors, "device_add()" call (and
-> semantic) is not used by the drivers (git grep " device_add(" drivers/).
-
-This shows 141 instances for me, so I'm not sure what you're getting at?
-
-Look, this api is meant to be a replacement for places where platform
-devices were being abused. The device_initialize() + customize device
-+ device_add() organization has the flexibility needed to let users
-customize naming and other parts of device creation in a way that a
-device_register() flow, or platform_device_{register,add} in
-particular, did not.
-
-If the concern is that you'd like to have an auxiliary_device_put()
-for symmetry that would need to come with the same warning as
-commented on platform_device_put(), i.e. that's it's really only
-vanity symmetry to be used in error paths. The semantics of
-device_add() and device_put() on failure are long established, don't
-invent new behavior for auxiliary_device_add() and
-auxiliary_device_put() / put_device().
+Will
