@@ -2,170 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19CFB287B14
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 19:35:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ED37287B21
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 19:45:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731283AbgJHRfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 13:35:15 -0400
-Received: from nat-hk.nvidia.com ([203.18.50.4]:38114 "EHLO nat-hk.nvidia.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726361AbgJHRfP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Oct 2020 13:35:15 -0400
-Received: from HKMAIL101.nvidia.com (Not Verified[10.18.92.9]) by nat-hk.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5f7f4dcf0002>; Fri, 09 Oct 2020 01:35:11 +0800
-Received: from HKMAIL103.nvidia.com (10.18.16.12) by HKMAIL101.nvidia.com
- (10.18.16.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 8 Oct
- 2020 17:35:07 +0000
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.170)
- by HKMAIL103.nvidia.com (10.18.16.12) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Thu, 8 Oct 2020 17:35:06 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GgqNJ68M35LXgxpVdoiWuoWA8hraHFojouyWtJcdJAP2VMv6gKRBom2Sn1ulLzz3ftIX3Ztjb6NUyxoYDg4tDg8qiuO63yI3Bued7/+mPHeRtRiXOXLbqCYud81/Ksb50Tgnei8LyezJhkgIO1NTaGzax5+LgJwYXjkcu0ZOIy5dhOW2blFvT1Vtg30GIFvXFHUY/Ev4A0hnD/41CJsIrLCm7YTijqbS66wi3NKbQNVQlmQqUu0B/aPtDyxGRBXYC0fXU4Gg3jnzpxSj4fTz+gzR0uB3CONor5PND/WI4fzcbcIdZn5iZBfsUob5bY3EHsXY4wXiGtIcpR6ixYSJvw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p/XYNbGXdUedIdhFtfG4Yy4sPas7KYERmhPGXWwA68g=;
- b=lF5tlVpz62xI8xh+U4drXPje/5/pQ+4DTcmaqf8I2OTxUbshMsyQPqhznT48Fvb0NCZdnL+PH0NzfpxkQ2luPTYAwnsltn89eGbHHUgSWzzLVpV3TON3rAAJufLm6z3lKX5l5AGV8XEQhtjnBJrbmcLiWjd4pgMvSqTcXAiG4UsKfLZQvA+3EU3rXxIg9qIK8z9nuGyhNC+uGkKcru727O5NGJyR3YBhoK2nCQAqLLzCgibvrSb215/03oqkI9qJYg8MiIwEfhglyF4t2rJY8CJHDJKP+vzGirBpBfhoosFc6+7c9JzSZrAwNlfuZYM9KirvaLaJZFkVHC8aRThU4A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from BY5PR12MB4322.namprd12.prod.outlook.com (2603:10b6:a03:20a::20)
- by BY5PR12MB4324.namprd12.prod.outlook.com (2603:10b6:a03:209::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.23; Thu, 8 Oct
- 2020 17:35:05 +0000
-Received: from BY5PR12MB4322.namprd12.prod.outlook.com
- ([fe80::3c25:6e4c:d506:6105]) by BY5PR12MB4322.namprd12.prod.outlook.com
- ([fe80::3c25:6e4c:d506:6105%6]) with mapi id 15.20.3455.023; Thu, 8 Oct 2020
- 17:35:05 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     "Ertman, David M" <david.m.ertman@intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Leon Romanovsky <leon@kernel.org>
-CC:     "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        "parav@mellanox.com" <parav@mellanox.com>,
-        "tiwai@suse.de" <tiwai@suse.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ranjani.sridharan@linux.intel.com" 
-        <ranjani.sridharan@linux.intel.com>,
-        "fred.oh@linux.intel.com" <fred.oh@linux.intel.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Patil, Kiran" <kiran.patil@intel.com>
-Subject: RE: [PATCH v2 1/6] Add ancillary bus support
-Thread-Topic: [PATCH v2 1/6] Add ancillary bus support
-Thread-Index: AQHWm05cPW7H51WMukmCocLPE63Nf6mKKyGAgACGC4CAAB03gIABpCoAgAAWQgCAAAuCMIAACwKAgAADjQCAAAZvgIAAB6yAgABvlmCAANAogIAACvlQ
-Date:   Thu, 8 Oct 2020 17:35:04 +0000
-Message-ID: <BY5PR12MB43223FE33A906FF4AA0C46A4DC0B0@BY5PR12MB4322.namprd12.prod.outlook.com>
-References: <20201005182446.977325-1-david.m.ertman@intel.com>
- <20201005182446.977325-2-david.m.ertman@intel.com>
- <20201006071821.GI1874917@unreal>
- <b4f6b5d1-2cf4-ae7a-3e57-b66230a58453@linux.intel.com>
- <20201006170241.GM1874917@unreal>
- <DM6PR11MB2841C531FC27DB41E078C52BDD0A0@DM6PR11MB2841.namprd11.prod.outlook.com>
- <20201007192610.GD3964015@unreal>
- <BY5PR12MB43221A308CE750FACEB0A806DC0A0@BY5PR12MB4322.namprd12.prod.outlook.com>
- <DM6PR11MB28415A8E53B5FFC276D5A2C4DD0A0@DM6PR11MB2841.namprd11.prod.outlook.com>
- <c90316f5-a5a9-fe22-ec11-a30a54ff0a9d@linux.intel.com>
- <DM6PR11MB284147D4BC3FD081B9F0B8BBDD0A0@DM6PR11MB2841.namprd11.prod.outlook.com>
- <c88b0339-48c6-d804-6fbd-b2fc6fa826d6@linux.intel.com>
- <BY5PR12MB43222FD5959E490E331D680ADC0B0@BY5PR12MB4322.namprd12.prod.outlook.com>
- <DM6PR11MB284193A69F553272DA501C52DD0B0@DM6PR11MB2841.namprd11.prod.outlook.com>
-In-Reply-To: <DM6PR11MB284193A69F553272DA501C52DD0B0@DM6PR11MB2841.namprd11.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
-x-originating-ip: [49.207.195.6]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6dda4c55-a0b2-4063-4175-08d86bb07e58
-x-ms-traffictypediagnostic: BY5PR12MB4324:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BY5PR12MB43241FE037524E9F393976CDDC0B0@BY5PR12MB4324.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 0ElJTLTHc2AuEGhfPs98TUNY0P5Rtx+ejQb+QLzTV8Pt9mM6ZsF40mrZjRrGYjH7rDSjeniepozgJspkYsoNAJBPXmcd54MYmNAr6codhRjfWqs+SeGH/0+Q7RDIgbNrLkXfdlOmwshln+SanFi4Euxa7p4S4BJNp+XmAjGepUu7chCkZ4i3TE0z9ePx6j0r7a91aekXhxVQMt8qYOsyS8LUweIiYzZz2eHI7mZWk5883n2rZLaWW5PjyMgmAFk3FmTNgvHuzjxQ/Qpfv5FUxuv+rzd31An7Ak3WJcuw6x1SDVCrsld7RnnGayQTkbpUgScaREaxHjhWzBYNx1eh/Q==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4322.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(376002)(366004)(136003)(396003)(5660300002)(71200400001)(4326008)(52536014)(66446008)(66946007)(66476007)(76116006)(64756008)(55016002)(7416002)(66556008)(9686003)(8676002)(110136005)(33656002)(26005)(2906002)(316002)(6506007)(55236004)(86362001)(478600001)(186003)(8936002)(83380400001)(7696005)(54906003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: jPE9hJI25NMyOdG7ZNOm1KKee5mFnXO7szBis5H+Kl23fY7WZRejtbEunJyEyOP4HVnHHRJt/xBySKaWd7AaI72xl/pFp+6pkOm8giejDFgoXwGZ2PC9YFanDxKb2HZd3fLZFxG50462t2xJKNAoQXZhgvqg2EngsSmOmDK9Z4yq75ne7g9yrmUUMFb4t/glU9DeePe4l5k/HQ93uQDsPFgNorB0UaDF3zUN4lBDTdZVan/lYunDukzQ0pQzAhA6K1aJqxefbE9/1cTcl8acuYSKJLsDaDqcfd5s9wcV0mb3PCQ5L9vYHwVLO9LXc69GSIKqcPop58nPQvIRdBuRJFaV0ABFHGiw/Wz95LYTh0TJM+zoHn1qAVlnIZdEO238XDz9sePxIXpd5TNPPR/ceK6D1h6QFVx4NTGCJtMO0XFCvaQGpzgff0TTMxXqXy/O2lh4hU0Dkl/+GR0paM7KOm+yNKhvUfs28n1YPP552oO3jSN1HcnSv+hHb6ycRiZEmtLlKJ0jVT+jnJ6jnSyzGigrtZoukL+YfHEj9o66ZEuUrWc04z6dkxYsP+YFLKJDg0HLtwy1JCjLIHR60Z68aZmjfI7odO6H5GwsIbQqfqXkEU1aQEFqpswnZZpcH/tgyLlxWnIjRpYwgLBNfGWz6g==
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1730506AbgJHRpK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 13:45:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58940 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725888AbgJHRpK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 13:45:10 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA6E4C061755
+        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 10:45:08 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id k25so7178901ioh.7
+        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 10:45:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7c6P9y8oZCFRMDjIeQQPduGoLHcjK1nCsIFHGMh/gMM=;
+        b=XGf1phL3L92ks5nPZoiatj0bOhxvaKSRhFWZ6Bnt4a3j2YM74VXQ+3sflnEPvWAX7Z
+         li9Tj7em8GONUbAozHl5a9kh54CF0wexOAO1SIycenSmYmPHCifNQFoF6BxH34uOF3VO
+         8TJezo4zvnGthphAGjVrWQhwYdQATX170Qk/GoL0ELNPjg3AYaRr2+Uu9oJe4j6H9yqV
+         rIs9PtzPhJpFy40vSmjc+2RX7XOXWWsWcRizXNf890lCMMOzam34sqbtqXWYLdfkA2Pe
+         Cu8rjrRUUq7VIMB9gB3nEak6IiNsF5s61hUagLkz6KXItbbL7FLdu1vqtIJ4mcubuybt
+         zI5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7c6P9y8oZCFRMDjIeQQPduGoLHcjK1nCsIFHGMh/gMM=;
+        b=uBwulgv26Nn7J/2sIlLcvzArBrmpMCbX6FFcStsmgjfBQDEFMi1EXgv033eXtY5KJX
+         Z2y0f9cUgA3B38zXQhQKW7yXHKE34gX6hlE/suDC13fbmKqi2rK93eqR3qYzcPyMwc6E
+         Ad4uI196GRaDsqbKEpUf0mJ9E+Zf1UcmGifkIRs8BUNAzOjx46lHrWtKLa5XH/bKVZSY
+         U10Tew5VTm/2Kf+r2+fKF53H4j5hsoXzmKdNRqdm97TxVj6Q3L3PhHOgETZuk0Ig5XMK
+         UHiTaR3zVWouiRvp8Tg1CltXfhlW3nFuQevGaGoxC3ZVUrezko+7RzDt1XBK3m1SEjFF
+         jjzg==
+X-Gm-Message-State: AOAM532fGpPwKhMpRcL6aE12MfYZAircVc/VhnRdFJM63X/qrAbJoFK7
+        4JO4VSQ9zweiYyfWf+nrywNLt8R4jM325s32DYQExC6kr1yvCg==
+X-Google-Smtp-Source: ABdhPJxdFfn+S77W/rpoow6//gEGrsKxV7L1Q7ExxMqfDp99/TtK93XNKpRMx8+nzg3tyBlKvCOlwOY7cubg9XtJQn4=
+X-Received: by 2002:a6b:1542:: with SMTP id 63mr6722773iov.64.1602179107861;
+ Thu, 08 Oct 2020 10:45:07 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4322.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6dda4c55-a0b2-4063-4175-08d86bb07e58
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Oct 2020 17:35:04.9799
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: aAQbfw+psQEcUYQEYYCpy2y5c7ApTT+cBEdhCjr6Il66AjNHJUMGJsysskNODdSygiwFiJAuefnsGKGVG/0vog==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4324
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1602178511; bh=p/XYNbGXdUedIdhFtfG4Yy4sPas7KYERmhPGXWwA68g=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
-         CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
-         In-Reply-To:Accept-Language:Content-Language:X-MS-Has-Attach:
-         X-MS-TNEF-Correlator:authentication-results:x-originating-ip:
-         x-ms-publictraffictype:x-ms-office365-filtering-correlation-id:
-         x-ms-traffictypediagnostic:x-ms-exchange-transport-forked:
-         x-microsoft-antispam-prvs:x-ms-oob-tlc-oobclassifiers:
-         x-ms-exchange-senderadcheck:x-microsoft-antispam:
-         x-microsoft-antispam-message-info:x-forefront-antispam-report:
-         x-ms-exchange-antispam-messagedata:Content-Type:
-         Content-Transfer-Encoding:MIME-Version:
-         X-MS-Exchange-CrossTenant-AuthAs:
-         X-MS-Exchange-CrossTenant-AuthSource:
-         X-MS-Exchange-CrossTenant-Network-Message-Id:
-         X-MS-Exchange-CrossTenant-originalarrivaltime:
-         X-MS-Exchange-CrossTenant-fromentityheader:
-         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
-         X-MS-Exchange-CrossTenant-userprincipalname:
-         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=rnnGNNzr35uJKRhPyGmOlDZuqJFKuffGSfsJaxQeXYIEL+bF79WoY/eBqbwePXPF4
-         Qyio2/hyYq03s5+r+Auiu2dBdzL4E98mtNQR4QYH1OqNyUx3NcAFqRObyFeY/rJ7Mu
-         rdY0SVgle/eZFHpBzQ8fsL5NAX00J9mgPoHNoF0ml5U+t52CgimARLooATtgfuhxFk
-         GvHrbzRGGU3HvyfxYikA1rYZDyVgkgwdI5KCBXGT8hnncxWZkV/k7c5H7Hu8Ob/MyQ
-         TPxR8xhxbNnl/2blOBVQTgVyKu/5mVIe7Rj6AIhCIAOzR7ZJdviuqpCOSUcs3dR2T5
-         UPMwtAfAr+ClA==
+References: <20201008041250.22642-1-xiyou.wangcong@gmail.com> <CADvbK_dwh4SFL1KbX=GhxW_O=cZLoPcXC9RjYpZd4=tWrm0LBA@mail.gmail.com>
+In-Reply-To: <CADvbK_dwh4SFL1KbX=GhxW_O=cZLoPcXC9RjYpZd4=tWrm0LBA@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 8 Oct 2020 10:44:56 -0700
+Message-ID: <CAM_iQpW+3w28v6VVvAPrtmKh_Y7UXfFvna9ey77f9m3mDn7tZQ@mail.gmail.com>
+Subject: Re: [Patch net] tipc: fix the skb_unshare() in tipc_buf_append()
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        syzbot <syzbot+e96a7ba46281824cc46a@syzkaller.appspotmail.com>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gRnJvbTogRXJ0bWFuLCBEYXZpZCBNIDxkYXZpZC5tLmVydG1hbkBpbnRlbC5jb20+DQo+
-IFNlbnQ6IFRodXJzZGF5LCBPY3RvYmVyIDgsIDIwMjAgMTA6MjQgUE0NCg0KPiA+IEZyb206IFBh
-cmF2IFBhbmRpdCA8cGFyYXZAbnZpZGlhLmNvbT4NCj4gPiBTZW50OiBXZWRuZXNkYXksIE9jdG9i
-ZXIgNywgMjAyMCA5OjU2IFBNDQoNCg0KPiA+IC8qKg0KPiA+ICAqIGFuY2lsbGFyX2RldmljZV9y
-ZWdpc3RlcigpIC0gcmVnaXN0ZXIgYW4gYW5jaWxsYXJ5IGRldmljZQ0KPiA+ICAqIE5PVEU6IF9f
-bmV2ZXIgZGlyZWN0bHkgZnJlZSBAYWRldiBhZnRlciBjYWxsaW5nIHRoaXMgZnVuY3Rpb24sIGV2
-ZW4NCj4gPiBpZiBpdCByZXR1cm5lZA0KPiA+ICAqIGFuIGVycm9yLiBBbHdheXMgdXNlIGFuY2ls
-bGFyeV9kZXZpY2VfcHV0KCkgdG8gZ2l2ZSB1cCB0aGUNCj4gPiByZWZlcmVuY2UgaW5pdGlhbGl6
-ZWQgYnkgdGhpcyBmdW5jdGlvbi4NCj4gPiAgKiBUaGlzIG5vdGUgbWF0Y2hlcyB3aXRoIHRoZSBj
-b3JlIGFuZCBjYWxsZXIga25vd3MgZXhhY3RseSB3aGF0IHRvIGJlDQo+IGRvbmUuDQo+ID4gICov
-DQo+ID4gYW5jaWxsYXJ5X2RldmljZV9yZWdpc3RlcigpDQo+ID4gew0KPiA+IAlkZXZpY2VfaW5p
-dGlhbGl6ZSgmYWRldi0+ZGV2KTsNCj4gPiAJaWYgKCFkZXYtPnBhcmVudCB8fCAhYWRldi0+bmFt
-ZSkNCj4gPiAJCXJldHVybiAtRUlOVkFMOw0KPiA+IAlpZiAoIWRldi0+cmVsZWFzZSAmJiAhKGRl
-di0+dHlwZSAmJiBkZXYtPnR5cGUtPnJlbGVhc2UpKSB7DQo+ID4gCQkvKiBjb3JlIGlzIGFscmVh
-ZHkgY2FwYWJsZSBhbmQgdGhyb3dzIHRoZSB3YXJuaW5nIHdoZW4NCj4gcmVsZWFzZQ0KPiA+IGNh
-bGxiYWNrIGlzIG5vdCBzZXQuDQo+ID4gCQkgKiBJdCBpcyBkb25lIGF0IGRyaXZlcnMvYmFzZS9j
-b3JlLmM6MTc5OC4NCj4gPiAJCSAqIEZvciBOVUxMIHJlbGVhc2UgaXQgc2F5cywgImRvZXMgbm90
-IGhhdmUgYSByZWxlYXNlKCkNCj4gZnVuY3Rpb24sIGl0DQo+ID4gaXMgYnJva2VuIGFuZCBtdXN0
-IGJlIGZpeGVkIg0KPiA+IAkJICovDQo+ID4gCQlyZXR1cm4gLUVJTlZBTDsNCj4gPiAJfQ0KPiBU
-aGF0IGNvZGUgaXMgaW4gZGV2aWNlX3JlbGVhc2UoKS4gIEJlY2F1c2Ugb2YgdGhpcyBjaGVjayB3
-ZSB3aWxsIG5ldmVyIGhpdCB0aGF0DQo+IGNvZGUuDQo+IA0KPiBXZSBlaXRoZXIgbmVlZCB0byBs
-ZWF2ZSB0aGUgZXJyb3IgbWVzc2FnZSBoZXJlLCBvciBpZiB3ZSBhcmUgZ29pbmcgdG8gcmVseSBv
-bg0KPiB0aGUgY29yZSB0byBmaW5kIHRoaXMgY29uZGl0aW9uIGF0IHRoZSBlbmQgb2YgdGhlIHBy
-b2Nlc3MsIHRoZW4gd2UgbmVlZCB0bw0KPiBjb21wbGV0ZWx5IHJlbW92ZSB0aGlzIGNoZWNrIGZy
-b20gdGhlIHJlZ2lzdHJhdGlvbiBmbG93Lg0KPiANClllcy4gU2luY2UgdGhlIGNvcmUgaXMgY2hl
-Y2tpbmcgaXQsIGFuY2lsbGFyeSBidXMgZG9lc24ndCBuZWVkIHRvIGNoZWNrIGhlcmUgYW5kIHJl
-bGVhc2UgY2FsbGJhY2sgY2hlY2sgY2FuIGJlIHJlbW92ZWQuDQoNCj4gLURhdmVFDQo=
+On Thu, Oct 8, 2020 at 1:45 AM Xin Long <lucien.xin@gmail.com> wrote:
+>
+> On Thu, Oct 8, 2020 at 12:12 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> >
+> > skb_unshare() drops a reference count on the old skb unconditionally,
+> > so in the failure case, we end up freeing the skb twice here.
+> > And because the skb is allocated in fclone and cloned by caller
+> > tipc_msg_reassemble(), the consequence is actually freeing the
+> > original skb too, thus triggered the UAF by syzbot.
+> Do you mean:
+>                 frag = skb_clone(skb, GFP_ATOMIC);
+> frag = skb_unshare(frag) will free the 'skb' too?
+
+Yes, more precisely, I mean:
+
+new = skb_clone(old)
+kfree_skb(new)
+kfree_skb(new)
+
+would free 'old' eventually when 'old' is a fast clone. The skb_clone()
+sets ->fclone_ref to 2 and returns the clone, whose skb->fclone is
+SKB_FCLONE_CLONE. So, the first call of kfree_skbmem() will
+just decrease ->fclone_ref by 1, but the second call will trigger
+kmem_cache_free() which frees _both_  skb's.
+
+Thanks.
