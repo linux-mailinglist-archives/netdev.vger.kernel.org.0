@@ -2,94 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E72F62879C2
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 18:13:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D2C52879C5
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 18:14:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730762AbgJHQNc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 12:13:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:42271 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730596AbgJHQN1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 12:13:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1602173606;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=M5rKlvyqoDFzwipoeIl60H9emhyCrrxKsQPGoqtwZ9M=;
-        b=EpYxopIoc5XxU0cz9/gdgUYyudi+Esa4CwbXVwU2CEcMzLoRFOtzghSDobmeS1wnmpUZr0
-        xNnYACGyye8vfj+CwpRjlkFzKTesZAw7LEBuPYnxpgfICfYpBctmrrjEsWq5+A7Z10tpkF
-        JWDisYTMaHLZ0npBO/esTWwOiuFhA7o=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-9-j20hkdD8N7KaClBXpnB_5A-1; Thu, 08 Oct 2020 12:13:22 -0400
-X-MC-Unique: j20hkdD8N7KaClBXpnB_5A-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 33A1387952A;
-        Thu,  8 Oct 2020 16:13:20 +0000 (UTC)
-Received: from steredhat.redhat.com (ovpn-112-116.ams2.redhat.com [10.36.112.116])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2B8855C1BD;
-        Thu,  8 Oct 2020 16:13:11 +0000 (UTC)
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     mst@redhat.com
-Cc:     netdev@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Rusty Russell <rusty@rustcorp.com.au>, stable@vger.kernel.org,
-        Jason Wang <jasowang@redhat.com>
-Subject: [PATCH] vringh: fix __vringh_iov() when riov and wiov are different
-Date:   Thu,  8 Oct 2020 18:13:11 +0200
-Message-Id: <20201008161311.114398-1-sgarzare@redhat.com>
+        id S1730796AbgJHQOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 12:14:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44960 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729164AbgJHQO3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 12:14:29 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D24BFC061755;
+        Thu,  8 Oct 2020 09:14:29 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1kQYYa-001jkw-PM; Thu, 08 Oct 2020 18:14:16 +0200
+Message-ID: <62f6c2bd11ed8b25c1cd4462ebc6db870adc4229.camel@sipsolutions.net>
+Subject: Re: [PATCH net 000/117] net: avoid to remove module when its
+ debugfs is being used
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     David Laight <David.Laight@ACULAB.COM>,
+        'Taehee Yoo' <ap420073@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Nicolai Stange <nicstange@gmail.com>
+Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "wil6210@qti.qualcomm.com" <wil6210@qti.qualcomm.com>,
+        "brcm80211-dev-list@cypress.com" <brcm80211-dev-list@cypress.com>,
+        "b43-dev@lists.infradead.org" <b43-dev@lists.infradead.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>
+Date:   Thu, 08 Oct 2020 18:14:15 +0200
+In-Reply-To: <1cbb69d83188424e99b2d2482848ae64@AcuMS.aculab.com> (sfid-20201008_181146_072575_728542C7)
+References: <20201008155048.17679-1-ap420073@gmail.com>
+         <1cbb69d83188424e99b2d2482848ae64@AcuMS.aculab.com>
+         (sfid-20201008_181146_072575_728542C7)
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If riov and wiov are both defined and they point to different
-objects, only riov is initialized. If the wiov is not initialized
-by the caller, the function fails returning -EINVAL and printing
-"Readable desc 0x... after writable" error message.
+On Thu, 2020-10-08 at 15:59 +0000, David Laight wrote:
+> From: Taehee Yoo
+> > Sent: 08 October 2020 16:49
+> > 
+> > When debugfs file is opened, its module should not be removed until
+> > it's closed.
+> > Because debugfs internally uses the module's data.
+> > So, it could access freed memory.
+> > 
+> > In order to avoid panic, it just sets .owner to THIS_MODULE.
+> > So that all modules will be held when its debugfs file is opened.
+> 
+> Can't you fix it in common code?
 
-Let's replace the 'else if' clause with 'if' to initialize both
-riov and wiov if they are not NULL.
+Yeah I was just wondering that too - weren't the proxy_fops even already
+intended to fix this?
 
-As checkpatch pointed out, we also avoid crashing the kernel
-when riov and wiov are both NULL, replacing BUG() with WARN_ON()
-and returning -EINVAL.
+The modules _should_ be removing the debugfs files, and then the
+proxy_fops should kick in, no?
 
-Fixes: f87d0fbb5798 ("vringh: host-side implementation of virtio rings.")
-Cc: stable@vger.kernel.org
-Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
----
- drivers/vhost/vringh.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+So where's the issue?
 
-diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-index e059a9a47cdf..8bd8b403f087 100644
---- a/drivers/vhost/vringh.c
-+++ b/drivers/vhost/vringh.c
-@@ -284,13 +284,14 @@ __vringh_iov(struct vringh *vrh, u16 i,
- 	desc_max = vrh->vring.num;
- 	up_next = -1;
- 
-+	/* You must want something! */
-+	if (WARN_ON(!riov && !wiov))
-+		return -EINVAL;
-+
- 	if (riov)
- 		riov->i = riov->used = 0;
--	else if (wiov)
-+	if (wiov)
- 		wiov->i = wiov->used = 0;
--	else
--		/* You must want something! */
--		BUG();
- 
- 	for (;;) {
- 		void *addr;
--- 
-2.26.2
+johannes
 
