@@ -2,220 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E32D3287155
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 11:20:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F39E2871AF
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 11:37:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726692AbgJHJUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 05:20:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37190 "EHLO
+        id S1729003AbgJHJhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 05:37:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725845AbgJHJUC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 05:20:02 -0400
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FCF0C061755
-        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 02:20:02 -0700 (PDT)
-Received: by mail-lf1-x144.google.com with SMTP id j30so3275129lfp.4
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 02:20:02 -0700 (PDT)
+        with ESMTP id S1726019AbgJHJha (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 05:37:30 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49470C061755;
+        Thu,  8 Oct 2020 02:37:30 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id v12so5809269wmh.3;
+        Thu, 08 Oct 2020 02:37:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Aenfnq234FRChKgUT5OjT+xM8Qs4UZ2ucpQgqC/E35Q=;
-        b=rgeyMVRX9RYd4809Xqlhja+7CILkO5kFanXMJKXPMtOUxDe8s268WOy1noM3NohtcR
-         ogC71VpodaWcxfS4QRzCvMoZXf97J67Pb52UemGHCjzy1VmGH+3M+Uo+JfgpYxX5gmj7
-         E2/+BTTUIXtvsNjy7UL1tsKJR35w7vIB3WenR1fiUzNbfI0LDz1v+gOnCfqexWJGRCNO
-         BZt7YPQrGIuMN26bz4e4zHz4h7RGlS+P50Rc5278vjJAoArWXXdOcOZkzNj/cm4H5uKO
-         AjE3hxgzC+WgbH0kuOQfJJhftSCe5QFfdgYtlMdLFkaN2CPlJZY4FV3aq+mx9PWMvxJ2
-         xJAw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WfZJ4f2PED/NL55ktLAB5sz7CinG8dyvq/2/COAICyY=;
+        b=Zdl5hRdgNQKZY1PSYNQ8pK8SFtKE7VNZcrlPUTpH8T9Q/xeIBDe6B/uWlbniJISByc
+         6AwwDeg2fdhhl4A1KzoSCI5no87P446Ky8TcxNad8j1VnZinYKAG2pZa7i5g+E08bbtq
+         UW8qoFuRhgFBnjxAoos9XZJUbBX5uZ1zeaddIPV1AkSu4musL+ZIC9UEjVMhBy+BycgE
+         kfBXl2I+byaE494f6bUdZ7rBNBSGQNptUFcl03L7d4N6WjmpLRWfJvlqeFE9pSGEkeSh
+         UHeyZFGINg71bM8I1fCQITyCcgdTduh23hvRFXfx8+/f9uATGrnVT5xicGfLt94kHASB
+         PjjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Aenfnq234FRChKgUT5OjT+xM8Qs4UZ2ucpQgqC/E35Q=;
-        b=e2YY0Fija3q9L0R8XzuJT0HmSbhTYRVgb8y/bVfIaYVkQZHEpIrGhFPL/KapFn2P4R
-         BnZUVSzkCXj9PtUaMoNixA2QlaBI6cmi1uqvr/1GMJxtc+4XIKNRu4l5kuyBf6i/h+Ot
-         jnEHvP7GkAFV0b2PFAYkoj2wzmMOvKvOlWgRk+77w9naBIOYQH2vXlP8zNVX6IHVuyTk
-         coDAkDtec/UHris7LiUv6cM0LQuLQKrwbPis87hlu/QIVFwIREKQHoTi1zq98l7HPkDN
-         6PUsLiVUOj580ESk4W4ns/eq/dk7QJVJhtH54G7w4WfZV9HtGxvgLV9m6ET1B+/gdF9B
-         pdtA==
-X-Gm-Message-State: AOAM532wL9Y+sxIWLOZe+hfClWaiGjQ5b/HyxdNCnNiez9OlvcV6xsKM
-        ErBepHiKQhYV8dArU/EuX+p3HQ==
-X-Google-Smtp-Source: ABdhPJyN7T9x5zuVBA5gqfFWl2XcJsskkye4PL0sC7YifB/NampW01WxEKQmdcd2QI86MPjajhtlpg==
-X-Received: by 2002:ac2:4281:: with SMTP id m1mr2199992lfh.574.1602148799880;
-        Thu, 08 Oct 2020 02:19:59 -0700 (PDT)
-Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
-        by smtp.gmail.com with ESMTPSA id b21sm773888lfb.52.2020.10.08.02.19.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Oct 2020 02:19:59 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
-Cc:     Linus Walleij <linus.walleij@linaro.org>
-Subject: [net-next PATCH v3] net: dsa: rtl8366rb: Roof MTU for switch
-Date:   Thu,  8 Oct 2020 11:19:55 +0200
-Message-Id: <20201008091955.44692-1-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.26.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WfZJ4f2PED/NL55ktLAB5sz7CinG8dyvq/2/COAICyY=;
+        b=fqc0sMch240EWAdd3cGFg7zLMfFnQkPUNJBpska1T10xAvWzJXnpe8tepq77OsJYCM
+         LasUcFSHXcrSD5zK8YwiC13ZMs10yaFP2FejkDUy56nauuLc2R2mVKWqGUst+A5EcVHl
+         sfA/r95UyevflPDP2h9IaF8VJ++y7RRk/qSQADntCe+kRJVFP8k4oY46MZRHFWuvAkxr
+         oL1JjECKo85dx0cEEuZD+gn/37qceOEd9YQzuUhJt23hURgU5YhE9bYFtg5ZeV7GMO5A
+         3VQWxX248LXkxuUtreRLqSjgxIQ7XulYWk1Zm3tr9DxCYieWPG3meiRjXw72UsaASMfc
+         L8hg==
+X-Gm-Message-State: AOAM5318vbQBI4eIrutJ7DdsRb0shGzQeAUvGN3M1x2N/nVIO6EIkLhB
+        kCGtux4bDY3/FkT4/E0Mhs1YgBd5Xv0H6R1q4cc=
+X-Google-Smtp-Source: ABdhPJzFcy4mK6bJmMYFxpaZyEo+yPhpxPHh2sNMK6umqOwlFd4WvO6vWoHyEep6TDB1Fj18G+a0Drf/3sYFkbR28vc=
+X-Received: by 2002:a1c:81ce:: with SMTP id c197mr7670840wmd.111.1602149848958;
+ Thu, 08 Oct 2020 02:37:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <7ff312f910ada8893fa4db57d341c628d1122640.1601387231.git.lucien.xin@gmail.com>
+ <202009300218.2AcHEN0L-lkp@intel.com> <20201003040824.GG70998@localhost.localdomain>
+ <CADvbK_cPX1f5jrGsKuvya7ssOFPTsG7daBCkOP-NGN9hpzf5Vw@mail.gmail.com>
+ <CADvbK_eXnzjDCypRkep9JqxBFV=cMXNkSZr4nyAaMiDc1VGXJg@mail.gmail.com>
+ <CADvbK_fzASk9dLbHLNtLLc+uS7hLz6nDi2CESgN55Yh-o92+rQ@mail.gmail.com> <20201005190114.GL70998@localhost.localdomain>
+In-Reply-To: <20201005190114.GL70998@localhost.localdomain>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 8 Oct 2020 17:37:17 +0800
+Message-ID: <CADvbK_fmWxXzHjvmCf-BoDiXrj6FAOR5MR4=SiLCy3Q31E2-ZA@mail.gmail.com>
+Subject: Re: [PATCH net-next 11/15] sctp: add udphdr to overhead when udp_port
+ is set
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     kernel test robot <lkp@intel.com>,
+        network dev <netdev@vger.kernel.org>,
+        linux-sctp@vger.kernel.org, kbuild-all@lists.01.org,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Michael Tuexen <tuexen@fh-muenster.de>,
+        davem <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The MTU setting for this DSA switch is global so we need
-to keep track of the MTU set for each port, then as soon
-as any MTU changes, roof the MTU to the biggest common
-denominator and poke that into the switch MTU setting.
+On Tue, Oct 6, 2020 at 3:01 AM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
+>
+> On Sat, Oct 03, 2020 at 08:24:34PM +0800, Xin Long wrote:
+> > On Sat, Oct 3, 2020 at 7:23 PM Xin Long <lucien.xin@gmail.com> wrote:
+> > >
+> > > On Sat, Oct 3, 2020 at 4:12 PM Xin Long <lucien.xin@gmail.com> wrote:
+> > > >
+> > > > On Sat, Oct 3, 2020 at 12:08 PM Marcelo Ricardo Leitner
+> > > > <marcelo.leitner@gmail.com> wrote:
+> > > > >
+> > > > > On Wed, Sep 30, 2020 at 03:00:42AM +0800, kernel test robot wrote:
+> > > > > > Hi Xin,
+> > > > > >
+> > > > > > Thank you for the patch! Yet something to improve:
+> > > > >
+> > > > > I wonder how are you planning to fix this. It is quite entangled.
+> > > > > This is not performance critical. Maybe the cleanest way out is to
+> > > > > move it to a .c file.
+> > > > >
+> > > > > Adding a
+> > > > > #if defined(CONFIG_IP_SCTP) || defined(CONFIG_IP_SCTP_MODULE)
+> > > > > in there doesn't seem good.
+> > > > >
+> > > > > >    In file included from include/net/sctp/checksum.h:27,
+> > > > > >                     from net/netfilter/nf_nat_proto.c:16:
+> > > > > >    include/net/sctp/sctp.h: In function 'sctp_mtu_payload':
+> > > > > > >> include/net/sctp/sctp.h:583:31: error: 'struct net' has no member named 'sctp'; did you mean 'ct'?
+> > > > > >      583 |   if (sock_net(&sp->inet.sk)->sctp.udp_port)
+> > > > > >          |                               ^~~~
+> > > > > >          |                               ct
+> > > > > >
+> > > > Here is actually another problem, I'm still thinking how to fix it.
+> > > >
+> > > > Now sctp_mtu_payload() returns different value depending on
+> > > > net->sctp.udp_port. but net->sctp.udp_port can be changed by
+> > > > "sysctl -w" anytime. so:
+>
+> Good point.
+>
+> > > >
+> > > > In sctp_packet_config() it gets overhead/headroom by calling
+> > > > sctp_mtu_payload(). When 'udp_port' is 0, it's IP+MAC header
+> > > > size. Then if 'udp_port' is changed to 9899 by 'sysctl -w',
+> > > > udphdr will also be added to the packet in sctp_v4_xmit(),
+> > > > and later the headroom may not be enough for IP+MAC headers.
+> > > >
+> > > > I'm thinking to add sctp_sock->udp_port, and it'll be set when
+> > > > the sock is created with net->udp_port. but not sure if we should
+> > > > update sctp_sock->udp_port with  net->udp_port when sending packets?
+>
+> I don't think so,
+>
+> > > something like:
+> ...
+> > diff --git a/net/sctp/output.c b/net/sctp/output.c
+> > index 6614c9fdc51e..c96b13ec72f4 100644
+> > --- a/net/sctp/output.c
+> > +++ b/net/sctp/output.c
+> > @@ -91,6 +91,14 @@ void sctp_packet_config(struct sctp_packet *packet,
+> > __u32 vtag,
+> >         if (asoc) {
+> >                 sk = asoc->base.sk;
+> >                 sp = sctp_sk(sk);
+> > +
+> > +               if (unlikely(sp->udp_port != sock_net(sk)->sctp.udp_port)) {
+>
+> RFC6951 has:
+>
+> 6.1.  Get or Set the Remote UDP Encapsulation Port Number
+>       (SCTP_REMOTE_UDP_ENCAPS_PORT)
+> ...
+>    sue_assoc_id:  This parameter is ignored for one-to-one style
+>       sockets.  For one-to-many style sockets, the application may fill
+>       in an association identifier or SCTP_FUTURE_ASSOC for this query.
+>       It is an error to use SCTP_{CURRENT|ALL}_ASSOC in sue_assoc_id.
+>
+>    sue_address:  This specifies which address is of interest.  If a
+>       wildcard address is provided, it applies only to future paths.
+>
+> So I'm not seeing a reason to have a system wide knob that takes
+> effect in run time like this.
+> Enable, start apps, and they keep behaving as initially configured.
+> Need to disable? Restart the apps/sockets.
+>
+> Thoughts?
+Right, not to update it on tx path makes more sense. Thanks.
 
-To achieve this we need a per-chip-variant state container
-for the RTL8366RB to use for the RTL8366RB-specific
-stuff. Other SMI switches does seem to have per-port
-MTU setting capabilities.
-
-Fixes: 5f4a8ef384db ("net: dsa: rtl8366rb: Support setting MTU")
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v2->v3:
-- Fix the reverse-christmas-tree properly by also making it
-  compile :/
-ChangeLog v1->v2:
-- Fix a reverse-christmas-tree variable order issue.
----
- drivers/net/dsa/realtek-smi-core.c |  3 ++-
- drivers/net/dsa/realtek-smi-core.h |  2 ++
- drivers/net/dsa/rtl8366rb.c        | 38 ++++++++++++++++++++++++++----
- 3 files changed, 38 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/net/dsa/realtek-smi-core.c b/drivers/net/dsa/realtek-smi-core.c
-index fae188c60191..8e49d4f85d48 100644
---- a/drivers/net/dsa/realtek-smi-core.c
-+++ b/drivers/net/dsa/realtek-smi-core.c
-@@ -394,9 +394,10 @@ static int realtek_smi_probe(struct platform_device *pdev)
- 	var = of_device_get_match_data(dev);
- 	np = dev->of_node;
- 
--	smi = devm_kzalloc(dev, sizeof(*smi), GFP_KERNEL);
-+	smi = devm_kzalloc(dev, sizeof(*smi) + var->chip_data_sz, GFP_KERNEL);
- 	if (!smi)
- 		return -ENOMEM;
-+	smi->chip_data = (void *)smi + sizeof(*smi);
- 	smi->map = devm_regmap_init(dev, NULL, smi,
- 				    &realtek_smi_mdio_regmap_config);
- 	if (IS_ERR(smi->map)) {
-diff --git a/drivers/net/dsa/realtek-smi-core.h b/drivers/net/dsa/realtek-smi-core.h
-index 6f2dab7e33d6..bc7bd47fb037 100644
---- a/drivers/net/dsa/realtek-smi-core.h
-+++ b/drivers/net/dsa/realtek-smi-core.h
-@@ -71,6 +71,7 @@ struct realtek_smi {
- 	int			vlan4k_enabled;
- 
- 	char			buf[4096];
-+	void			*chip_data; /* Per-chip extra variant data */
- };
- 
- /**
-@@ -111,6 +112,7 @@ struct realtek_smi_variant {
- 	unsigned int clk_delay;
- 	u8 cmd_read;
- 	u8 cmd_write;
-+	size_t chip_data_sz;
- };
- 
- /* SMI core calls */
-diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
-index 053bf5041f8d..28f510a580be 100644
---- a/drivers/net/dsa/rtl8366rb.c
-+++ b/drivers/net/dsa/rtl8366rb.c
-@@ -311,6 +311,13 @@
- #define RTL8366RB_GREEN_FEATURE_TX	BIT(0)
- #define RTL8366RB_GREEN_FEATURE_RX	BIT(2)
- 
-+/**
-+ * struct rtl8366rb - RTL8366RB-specific data
-+ */
-+struct rtl8366rb {
-+	unsigned int max_mtu[RTL8366RB_NUM_PORTS];
-+};
-+
- static struct rtl8366_mib_counter rtl8366rb_mib_counters[] = {
- 	{ 0,  0, 4, "IfInOctets"				},
- 	{ 0,  4, 4, "EtherStatsOctets"				},
-@@ -712,6 +719,7 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
- {
- 	struct realtek_smi *smi = ds->priv;
- 	const u16 *jam_table;
-+	struct rtl8366rb *rb;
- 	u32 chip_ver = 0;
- 	u32 chip_id = 0;
- 	int jam_size;
-@@ -719,6 +727,8 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
- 	int ret;
- 	int i;
- 
-+	rb = smi->chip_data;
-+
- 	ret = regmap_read(smi->map, RTL8366RB_CHIP_ID_REG, &chip_id);
- 	if (ret) {
- 		dev_err(smi->dev, "unable to read chip id\n");
-@@ -871,6 +881,9 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
- 				 RTL8366RB_SGCR_MAX_LENGTH_1536);
- 	if (ret)
- 		return ret;
-+	for (i = 0; i < RTL8366RB_NUM_PORTS; i++)
-+		/* layer 2 size, see rtl8366rb_change_mtu() */
-+		rb->max_mtu[i] = 1532;
- 
- 	/* Enable learning for all ports */
- 	ret = regmap_write(smi->map, RTL8366RB_SSCR0, 0);
-@@ -1112,20 +1125,36 @@ rtl8366rb_port_disable(struct dsa_switch *ds, int port)
- static int rtl8366rb_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
- {
- 	struct realtek_smi *smi = ds->priv;
-+	struct rtl8366rb *rb;
-+	unsigned int max_mtu;
- 	u32 len;
-+	int i;
-+
-+	/* Cache the per-port MTU setting */
-+	rb = smi->chip_data;
-+	rb->max_mtu[port] = new_mtu;
- 
--	/* The first setting, 1522 bytes, is max IP packet 1500 bytes,
-+	/* Roof out the MTU for the entire switch to the greatest
-+	 * common denominator: the biggest set for any one port will
-+	 * be the biggest MTU for the switch.
-+	 *
-+	 * The first setting, 1522 bytes, is max IP packet 1500 bytes,
- 	 * plus ethernet header, 1518 bytes, plus CPU tag, 4 bytes.
- 	 * This function should consider the parameter an SDU, so the
- 	 * MTU passed for this setting is 1518 bytes. The same logic
- 	 * of subtracting the DSA tag of 4 bytes apply to the other
- 	 * settings.
- 	 */
--	if (new_mtu <= 1518)
-+	max_mtu = 1518;
-+	for (i = 0; i < RTL8366RB_NUM_PORTS; i++) {
-+		if (rb->max_mtu[i] > max_mtu)
-+			max_mtu = rb->max_mtu[i];
-+	}
-+	if (max_mtu <= 1518)
- 		len = RTL8366RB_SGCR_MAX_LENGTH_1522;
--	else if (new_mtu > 1518 && new_mtu <= 1532)
-+	else if (max_mtu > 1518 && max_mtu <= 1532)
- 		len = RTL8366RB_SGCR_MAX_LENGTH_1536;
--	else if (new_mtu > 1532 && new_mtu <= 1548)
-+	else if (max_mtu > 1532 && max_mtu <= 1548)
- 		len = RTL8366RB_SGCR_MAX_LENGTH_1552;
- 	else
- 		len = RTL8366RB_SGCR_MAX_LENGTH_16000;
-@@ -1508,5 +1537,6 @@ const struct realtek_smi_variant rtl8366rb_variant = {
- 	.clk_delay = 10,
- 	.cmd_read = 0xa9,
- 	.cmd_write = 0xa8,
-+	.chip_data_sz = sizeof(struct rtl8366rb),
- };
- EXPORT_SYMBOL_GPL(rtl8366rb_variant);
--- 
-2.26.2
-
+>
+> > +                       __u16 port = sock_net(sk)->sctp.udp_port;
+> > +
+> > +                       if (!sp->udp_port || !port)
+> > +                               sctp_assoc_update_frag_point(asoc);
+> > +                       sp->udp_port = port;
+> > +               }
+> >         }
