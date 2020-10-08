@@ -2,60 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85F99286CDB
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 04:38:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB3E6286D17
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 05:19:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728268AbgJHCia (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 22:38:30 -0400
-Received: from sonic312-10.consmr.mail.ne1.yahoo.com ([66.163.191.241]:42041
-        "EHLO sonic312-10.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728225AbgJHCi3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 22:38:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1602124706; bh=q/UmU7EtSiP+23uHOg8VlE+g23CI2A1cDj54tJPDCyA=; h=Date:From:Reply-To:Subject:References:From:Subject; b=Ng2GkCeZkCHmsUpvJqmkTRVQuanuvkSICTLkGZkmbVIxK1REjajX0/69X14niigdetY0NBSB11NxQd+A1e1GhjfG9re+u9iw7Pq69XFhQBd9fpzcW53k7o/z1+V6YEQvXi3lIdkHv9CsI7ZNb6pDHuWrFzInOeY3RPLZeHzKWje4nkaudlDQZqTJSFYh6KMZCbw24bf5ZLrTWNlOsA6EfuyJ5r+ngvPo1jRV5Z2HriwEStKyE9NMLgBPnYKiykphI+hf7kfVfo5CwVjlhyYmhA2aoJBzJInqbfYtEH5dQsCs1xzLkarwO4WzwLu1xRJSmDO6QNEtsvELq/M0mBoQEQ==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1602124706; bh=6ke0movnO0AUXBFCunNGEEzEuLeixKbxUQpoXOsOrc7=; h=Date:From:Subject; b=BvVGVhKfmN6gAEObtkOAOds6T9iWRR1/bL0QCr2heRfk8Kl5NP7UQ4NNDBTB/Yj510HOsWuCSEy+lYJQgVktcf/Z+H+eN7Sn8yXVaVQ5KJp9QpQM9i0Pj4Zfwrltq+Xe+fGv+FKjeR6xxAKARltet8jiIHHMI6F8oL/4lJQBHkgXVvEsJkV021zdmn0MKy49DR/LOZgyhvJHzmPORC2y4aovYtGWPOX7gWR85tdgP5RsXhIqeF7iWrhNUKE7pHDtLiVli2mKSg7i+9V3c51i2KoBLpmCUuQgAxD3UfmLW+i7ZDs2PsbiRpD+iiOCM+fF8dWwwEimDdZQmJh1yMDRWw==
-X-YMail-OSG: mHSr4N4VM1kfMbX5OVQ51Am_vMq..vTm61ZZQH19uTVCFgvbeQRsAge_0GyEpmt
- xJWWmRM5vaz5xijsiVi1.LHSF9xlMvHPCxKSBGu15H5Rxd5r9w.Tgs0Hptq.mZtEusIaHCQlBF4E
- QhHovnkRt9Jq5RHQhq.Mb64oeGjPgFblFM79HRHJ2bUfHMAtiegIJ_izBr7AQOlnki9eM8YvJ9Xe
- 5w56PoOZBh7RzGhMdWHQncDo_smrfmqUZ5qYyQ577jZiOipPWx9HkoF4KsZfXQcYCnCRXtjVnSym
- ZJfNGz7BSmNHip5OMYBYESzqWg6xnYYUu89Yu9it3V6ylYgim_0Nq4nktTUFjXUvd0RkbMNDA59W
- HJSncpLYdE1poOevU2PDIqxikfBa36Gqf20u6ubz75sHyu3.nNOXTcqjGRF6U8nwlaV.qgMC5ysF
- hoqX5g3qqTW12dqFkvUn3fhzW3QIDU3_t3SVSaDh9mULy4EyIXbDusYk2u8M63_UCBY8xBthv_Et
- bdoBmJT9.bE7Ejse0IFRxarTFSfOMF54nMHleeIg2yI6wEatpmn.PQBtZ4PlfxP_V.hQbu7IsZoQ
- 2dxtwPgCY5UyrYUkO2nw_nTBO6TL_sg8VHwdIYVZL0Q84RHj5WQ_uT3FE9Z7d0dVnNR.sMplcvQZ
- 5s0uk_5glzFlKqr1ybwN04zL6N_O7dreVT5a_KYO0.dbf4iZ99lBWFBi52HpWqdt0sXTiJUbbJn2
- d8.hmB2itKWH4xA77PAfumYXujFs46Ge7VEjwnk0i1hYlGko9l6br74nh2F9bD8_Mpoulu8siIrQ
- yckd7vr1Jwt0ezAYYrklv6QIH_vAVZRbHgQDIY1e_iX87d2eDLX4faytrUWVeCltzEGUe7qcZYqu
- Y_ZhyFYTIRFAW0_vgI8sYLyDNLd6lc2GflOI7xcX8Digd75OdP_Q5lfzB3_gYAc_1.099d0ndbsh
- XRaeJ5BNr2TxZhmDQCX8j3iP7LwqUL6gS.rJRbgAUbYgPgnKFEbqrh3c4U9dHcIKdd151OV29CoF
- ML3gfmL1LMXjVWeHHMdddBtI9a9m9B.H5u5hzcMdoD4Q3YQlHk_sj3TMxcT0.QFPJETubKJY8wnX
- co_hD8yhifkj6H0thKgjONQ1yUqEyeli5J.kqIqCQoL50ph8dQkWbmGCMrmWVII2zL2ziHOr0EnO
- UstQruEe2zLctlgakMV8Z6ahIQ6hu4aGq9fJilCqBe84MthpGvQTW3e_4kVl8_Zbow6CmaUW7c61
- labdudXoHSamzuyhALL_WKULZT9wxIvQvTl4_wTnjl0h3ieZJBWkptpzpVxPo6C23ufFA_rZZ1AE
- jh.L0U0vM4QtuXIfoJyqvRzteHGev_sdZ0_EBYtTgRLgjlAk.BO.vD0JuRZd0A3xm2OT.l9TysAq
- jeHh9lApX54_OmCmX7GC7bhI6qjAC.iXN8e96JboG5Zogi6Ff2gBYodvNsHBylOgpjapc_Ee8SlV
- vuw--
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic312.consmr.mail.ne1.yahoo.com with HTTP; Thu, 8 Oct 2020 02:38:26 +0000
-Date:   Thu, 8 Oct 2020 02:36:25 +0000 (UTC)
-From:   "Mrs. Maureen Hinckley" <mau52@fdco.in>
-Reply-To: maurhinck14@gmail.com
-Message-ID: <342583894.519567.1602124585840@mail.yahoo.com>
-Subject: RE
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        id S1727916AbgJHDTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 23:19:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37978 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727449AbgJHDTx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 23:19:53 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C38AC061755;
+        Wed,  7 Oct 2020 20:19:53 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id z5so4372950ilq.5;
+        Wed, 07 Oct 2020 20:19:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=12Ohgsb8MdluAyFnYSu/ivuZxO+BZjEffQYvTHhSSj8=;
+        b=dpPIX4yrE2w2tIUQb3jhdIAfIgI+JNNAtsZjHLqEt1aKUGn1jJrlKmVohDy1ivaGiZ
+         WSEJZzlUr4CyrEx5GtK4Hz2xy6CJCiRILz/LF3gd1kPDnlGvYrbjWkxoUj9HVcaPWSiB
+         QxcI2/smJPJBkHD3avDhDyVm4f7N4h/rKfANzo5bSRnWXZlB/XySyiwESNoMp6YpC7Nr
+         EoMYLxelRWO9cGSJ79JkOj1Tjpxky7HOmN3qmKWNLGE6fHy9Poo7dOcogjG+cIFUyC58
+         FNmukjYkxhUBG40u1Sf7RivQ5sEokQ2Vvgaz4oMd4Tm8omvqpQMAXjcYKNY7Qz/A6kw9
+         vyZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=12Ohgsb8MdluAyFnYSu/ivuZxO+BZjEffQYvTHhSSj8=;
+        b=n5YCgyGwJ78cRnSdYBAmT3amMwLc5uZ83W0pghfVu/9cg24eCp395KoPpSUP27AjKd
+         BhqY6jgayWmVzxWtVvZxwCh4RIsNtsAb0LoniuPOQ5vhZjiq5I3kcr766Optr3+KFfGV
+         qPzYAHTpWovdYvVJW5YxX0OnZ1PISBHP2LaJNqEvY/F0/xuRINYFQCSCNcO7cBe3AtPK
+         gI58OOWFGy0XHI1YG9IZ6ftZgNdiKlXQJ+Eu9sMltjhX9V0ZStSsF7IREoFqNXJm5ppS
+         oJNwrz6ykLVuO8Tg4dNxj/EZ9WYGPyuYAqwiRqTAVMQeAWAXUilgdf4ssiAd0iZuA7UF
+         B6aQ==
+X-Gm-Message-State: AOAM5316yLw8dEktAFBeXXv/QVM0NAckjGy7ASY2yrGxIa74/UdKKGz9
+        8QDkOdBy42/I4j9nbtDtMmcbU7CgPXzH/w==
+X-Google-Smtp-Source: ABdhPJxgeGq3PNw4FCspmsLuagv1ulzThmDqzv43RKXadjIp5fizAbpoUIU5H/meky+bM/Ypyot3XQ==
+X-Received: by 2002:a92:4188:: with SMTP id o130mr4766050ila.27.1602127192579;
+        Wed, 07 Oct 2020 20:19:52 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id c18sm2051602ild.35.2020.10.07.20.19.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Oct 2020 20:19:51 -0700 (PDT)
+Date:   Wed, 07 Oct 2020 20:19:39 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     =?UTF-8?B?TWFjaWVqIMW7ZW5jenlrb3dza2k=?= <maze@google.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        bpf <bpf@vger.kernel.org>, Linux NetDev <netdev@vger.kernel.org>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Shaun Crampton <shaun@tigera.io>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eyal Birger <eyal.birger@gmail.com>
+Message-ID: <5f7e854b111fc_2acac2087e@john-XPS-13-9370.notmuch>
+In-Reply-To: <CANP3RGdcqmcrxWDKPsZ8A0+qK1hzD0tZvRFsVMPvSCNDk+LrHA@mail.gmail.com>
+References: <160208770557.798237.11181325462593441941.stgit@firesoul>
+ <160208778070.798237.16265441131909465819.stgit@firesoul>
+ <7aeb6082-48a3-9b71-2e2c-10adeb5ee79a@iogearbox.net>
+ <5f7e430ae158b_1a8312084d@john-XPS-13-9370.notmuch>
+ <CANP3RGdcqmcrxWDKPsZ8A0+qK1hzD0tZvRFsVMPvSCNDk+LrHA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next V2 5/6] bpf: Add MTU check for TC-BPF packets
+ after egress hook
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-References: <342583894.519567.1602124585840.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.16795 YMailNodin Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.135 Safari/537.36
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Maciej =C5=BBenczykowski wrote:
+> On Wed, Oct 7, 2020 at 3:37 PM John Fastabend <john.fastabend@gmail.com=
+> wrote:
+> >
+> > Daniel Borkmann wrote:
+> > > On 10/7/20 6:23 PM, Jesper Dangaard Brouer wrote:
+> > > [...]
+> > > >   net/core/dev.c |   24 ++++++++++++++++++++++--
+> > > >   1 file changed, 22 insertions(+), 2 deletions(-)
+> >
+> > Couple high-level comments. Whats the problem with just letting the d=
+river
+> > consume the packet? I would chalk it up to a buggy BPF program that i=
+s
+> > sending these packets. The drivers really shouldn't panic or do anyth=
+ing
+> > horrible under this case because even today I don't think we can be
+> > 100% certain MTU on skb matches set MTU. Imagine the case where I cha=
+nge
+> > the MTU from 9kB->1500B there will be some skbs in-flight with the la=
+rger
+> > length and some with the shorter. If the drivers panic/fault or other=
+wise
+> > does something else horrible thats not going to be friendly in genera=
+l case
+> > regardless of what BPF does. And seeing this type of config is all do=
+ne
+> > async its tricky (not practical) to flush any skbs in-flight.
+> >
+> > I've spent many hours debugging these types of feature flag, mtu
+> > change bugs on the driver side I'm not sure it can be resolved by
+> > the stack easily. Better to just build drivers that can handle it IMO=
+.
+> >
+> > Do we know if sending >MTU size skbs to drivers causes problems in re=
+al
+> > cases? I haven't tried on the NICs I have here, but I expect they sho=
+uld
+> > be fine. Fine here being system keeps running as expected. Dropping t=
+he
+> > skb either on TX or RX side is expected. Even with this change though=
 
+> > its possible for the skb to slip through if I configure MTU on a live=
 
-I am Maureen Hinckley and my foundation is donating (Five hundred and fifty=
- thousand USD) to you. Contact us via my email at (maurhinck14@gmail.com) f=
-or further details.
+> > system.
+> =
 
-Best Regards,
-Mrs. Maureen Hinckley,
-Copyright =C2=A92020 The Maureen Hinckley Foundation All Rights Reserved.
+> I wholeheartedly agree with the above.
+> =
+
+> Ideally the only >mtu check should happen at driver admittance.
+> But again ideally it should happen in some core stack location not in
+> the driver itself.
+
+Ideally maybe, but IMO we should just let the skb go to the driver
+and let the driver sort it out. Even if this means pushing the packet
+onto the wire then the switch will drop it or the receiver, etc. A
+BPF program can do lots of horrible things that should never be
+on the wire otherwise. MTU is just one of them, but sending corrupted
+payloads, adding bogus headers, checksums etc. so I don't think we can
+reasonable protect against all of them.
+
+Of course if the driver is going to hang/panic then something needs
+to be done. Perhaps a needs_mtu_check feature flag, although thats
+not so nice either so perhaps drivers just need to handle it themselves.
+Also even today the case could happen without BPF as best I can tell
+so the drivers should be prepared for it.
+
+> However, due to both gso and vlan offload, even this is not trivial to =
+do...
+> The mtu is L3, but drivers/hardware/the wire usually care about L2...
+> (because ultimately that's what gets received and must fit in receive b=
+uffers)=
