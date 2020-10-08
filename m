@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34BBB2877D4
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 17:47:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F4192877D5
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 17:47:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731123AbgJHPrS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 11:47:18 -0400
-Received: from mout.kundenserver.de ([217.72.192.75]:60635 "EHLO
+        id S1731112AbgJHPrR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 11:47:17 -0400
+Received: from mout.kundenserver.de ([217.72.192.73]:52335 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729355AbgJHPrG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 11:47:06 -0400
+        with ESMTP id S1725912AbgJHPrI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 11:47:08 -0400
 Received: from localhost.localdomain ([192.30.34.233]) by
  mrelayeu.kundenserver.de (mreue107 [212.227.15.145]) with ESMTPA (Nemesis) id
- 1N6szR-1kQzFZ04GF-018Kqj; Thu, 08 Oct 2020 17:46:30 +0200
+ 1MlO5j-1knTx10mGD-00ljlP; Thu, 08 Oct 2020 17:46:34 +0200
 From:   Arnd Bergmann <arnd@arndb.de>
 To:     linux-kernel@vger.kernel.org
 Cc:     Arnd Bergmann <arnd@arndb.de>,
@@ -26,1007 +26,308 @@ Cc:     Arnd Bergmann <arnd@arndb.de>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 2/3] net: remove am79c961a driver
-Date:   Thu,  8 Oct 2020 17:46:00 +0200
-Message-Id: <20201008154601.1901004-3-arnd@arndb.de>
+Subject: [PATCH 3/3] timekeeping: remove arch_gettimeoffset
+Date:   Thu,  8 Oct 2020 17:46:01 +0200
+Message-Id: <20201008154601.1901004-4-arnd@arndb.de>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201008154601.1901004-1-arnd@arndb.de>
 References: <20201008154601.1901004-1-arnd@arndb.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:s5O0sfhALFOb6+MRPFncANZrRW2qs6RHVZ/1MLuDghwJe3O6uSK
- 9zGBW3yymqlfPKMtksHktLqM1ERSGI3bh4viORN9b/mA0FoGkO46IrVY3cIORA8na1CUiw3
- usPD/+P1vXPzEYlW4iY2xa6wgP8CL83g8I4b4Kjr6SbL8CgA+HQlRDVOwif9JarKcHz7FzI
- n0714RtA8QwtjlUZnv+dw==
+X-Provags-ID: V03:K1:lVCdrFN7aQtlv6ZLGG8sl4e7NVP8pYMq8t6Xp+LJmjGAqhjv355
+ q4MgoarNqMA1MJyZGed8HUrhDPimCTN51GlWReO5q938qYnnJ3n34VxHZTUldqH9EZoXYCz
+ AKYv8aP/4MsxwQI5Lk9y+uLVThE/ETykexqkuMiiu3dLoKmukX+yP4DqW0iuyTDHDK5E5m6
+ z4o9pz7nEEHZ2+IsY2liw==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:UoB1ODQKRvE=:6OHk+5JixKLOTohxYHzYSO
- /X0cHra6Ztz7t/QMKAnsLYq3eowoTBMnHe+rHwIpW9WVikp63ooZydh24W4lV2EKv0Lf2T8NT
- JEP7BZ/hQDToPy7gG0JqQxefEFKPhzSNSCnZ/27I6+LrnjOSAe6Nn8mHvIeTksnMZPb4jJX9R
- cFTY2NMHYFI7H/HE+EbapHlCRNOjVEMgu1FVwH8WosOK6SfooReX2Yw3e005aJTVFVqYl4gcl
- yCb7iu3Wsk6tR53tJYbeo+7E6hQahfvxzhnjeZAzeZEO2ZEuEK3HEjrTdaQRD7/TwTCNRYhoh
- ZjMJIQ85Ze2o3hvEDVCT/gpwppGBPqGWrmaHpbeEaADnXYOce0x7BnkXGSEYyUEPYDpO/nuV9
- n/P6O0Kd3XiU2r/rk+7syhfLld/x/alingoiles4NOUrhW6FHNgyNUsgGKsnLuLE6zPS7aC/L
- +FW92KHYBgjm2bSM4fpc/QMAw+fhU73fFSCijD/5YBaZc7AjmuIC7u0jDwlYfYmjqYYRxpL7e
- UMMtefAD7w2h3Gl975yxG5zr64h4W5rP0+FktwrLXMitwXbqFzYumIynnu5/xlxTb0+S9gOO1
- NFXfyJveY4dbNn8oINKTNKXhaFRqEN7TTTEW6wESHmJy+XdNEMJIVrOEelhwoKhqo/4PxYwCu
- JmyIHit+HzXw8C0ZbNVTaBr+Z5eOTtFjikrxMh7ZFUVrfsFlhms+0gXFC97S6+4CkNuGQ+osM
- Cg4V0dPet/CmpDgi4hSMU0mO5OOcFjSJD69qmSwgmL6ODX3WZ2dWqQhjzpjRlmBkgCo6J3t69
- C/gwLueM6d5CLaua8q/6qhx2P7GvK+wlbtcAp0YwaiRpsE84nMeAwkI9ho8CtWtDtG0zYei
+X-UI-Out-Filterresults: notjunk:1;V03:K0:F4i4G34RXK0=:2SwHRDvPFj+/gX7jtv1jIC
+ agUS9ThPenwjFcPnOWf+ki8+JW/uOsQMWH3KWlJAXfJHmZ11KNq6Gu01qoj0TpuNM1w2RXdMw
+ Y3UZRJsQ+VRH7inR2qtzjC2pJVQgHa3fXiNjHhoDJ3uEEhrDFeU1iADqCSeZiD3mpmYDjisb3
+ kskbjNruhSs4Ofdgbmr7zmZ+uoIP/Xa5FgDZZYc9Evmy8TAcILUNPqPMjldxqQ5grJQUfbH23
+ 3+dDgvAEQh1hztnhkyIA6OImlGmXAERGumb+ND+ivsXwTuGWWw990ITI77v/hfTGDTlDUWHs2
+ MxLRFjWBuU6kz3G+c7Z2AGT2WU/aKHxXQHegziU209jfpnWvBJqBtb8EcYm+W1ucLPNf+1NZr
+ M6RsOQgLRHdU7Xm/I1R/g57a69N57WBV1crJvP2FNjpt7Ug4s+4ZUSG0fTdYWFiQjBzjTmd5w
+ +LcAhZHyRjxt0rfYy28VJ9aJCIGW2qBjWSRkWsdU89HmXctPMRSApvmRcrTN4kFgUXM0gcWKs
+ +HLxOW39VVcO7Bp/HWuAH957//NF/UFVOmuXsYuoperjo5bPqVMrXrYjFlmwjglLD4VigIp55
+ z+WUERNVfsmEvb8nUKXrpKHXAoi3rOx9+YLpe/TzQpB7F+/fNWuRg8I0shfHrEnDhbz0SqaYc
+ o26bEsKayQL7DtDOgB9HgkTA0k8OhvmSmNZVAuG1NHFpAVtY7UUVvatlMkfPFVShUZ9CO3NIx
+ onMSHMA0U+4jbo6cthUcZJC5LLLFi124y55zG9kCNF7HvB2Q6KfaX8pWYPAtOa7Q/yH5zo9oO
+ Nig6QaFe9O4MAQMGQix/u4D8QDd7uG4cpzG111fdntyGqst2otcbZdoG7sy0hys2l1EfK53
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This driver was only used on the EBSA110 platform, which is now
-getting removed, so the driver is no longer needed either.
+With Arm EBSA110 gone, nothing uses it any more, so the corresponding
+code and the Kconfig option can be removed.
 
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/ethernet/amd/Kconfig     |  10 +-
- drivers/net/ethernet/amd/Makefile    |   1 -
- drivers/net/ethernet/amd/am79c961a.c | 763 ---------------------------
- drivers/net/ethernet/amd/am79c961a.h | 143 -----
- 4 files changed, 1 insertion(+), 916 deletions(-)
- delete mode 100644 drivers/net/ethernet/amd/am79c961a.c
- delete mode 100644 drivers/net/ethernet/amd/am79c961a.h
+ .../time/modern-timekeeping/arch-support.txt  | 33 -------------------
+ drivers/Makefile                              |  2 --
+ drivers/clocksource/Kconfig                   |  2 +-
+ include/linux/time.h                          | 13 --------
+ kernel/time/Kconfig                           |  9 -----
+ kernel/time/clocksource.c                     |  8 -----
+ kernel/time/timekeeping.c                     | 25 +-------------
+ kernel/trace/Kconfig                          |  2 --
+ 8 files changed, 2 insertions(+), 92 deletions(-)
+ delete mode 100644 Documentation/features/time/modern-timekeeping/arch-support.txt
 
-diff --git a/drivers/net/ethernet/amd/Kconfig b/drivers/net/ethernet/amd/Kconfig
-index db7d956a9c9b..d0b0609bbe23 100644
---- a/drivers/net/ethernet/amd/Kconfig
-+++ b/drivers/net/ethernet/amd/Kconfig
-@@ -8,7 +8,7 @@ config NET_VENDOR_AMD
- 	default y
- 	depends on DIO || MACH_DECSTATION || MVME147 || ATARI || SUN3 || \
- 		   SUN3X || SBUS || PCI || ZORRO || (ISA && ISA_DMA_API) || \
--		   (ARM && ARCH_EBSA110) || ISA || EISA || PCMCIA || ARM64
-+		   ISA || EISA || PCMCIA || ARM64
+diff --git a/Documentation/features/time/modern-timekeeping/arch-support.txt b/Documentation/features/time/modern-timekeeping/arch-support.txt
+deleted file mode 100644
+index a84c3b9d9a94..000000000000
+--- a/Documentation/features/time/modern-timekeeping/arch-support.txt
++++ /dev/null
+@@ -1,33 +0,0 @@
+-#
+-# Feature name:          modern-timekeeping
+-#         Kconfig:       !ARCH_USES_GETTIMEOFFSET
+-#         description:   arch does not use arch_gettimeoffset() anymore
+-#
+-    -----------------------
+-    |         arch |status|
+-    -----------------------
+-    |       alpha: |  ok  |
+-    |         arc: |  ok  |
+-    |         arm: | TODO |
+-    |       arm64: |  ok  |
+-    |         c6x: |  ok  |
+-    |        csky: |  ok  |
+-    |       h8300: |  ok  |
+-    |     hexagon: |  ok  |
+-    |        ia64: |  ok  |
+-    |        m68k: |  ok  |
+-    |  microblaze: |  ok  |
+-    |        mips: |  ok  |
+-    |       nds32: |  ok  |
+-    |       nios2: |  ok  |
+-    |    openrisc: |  ok  |
+-    |      parisc: |  ok  |
+-    |     powerpc: |  ok  |
+-    |       riscv: |  ok  |
+-    |        s390: |  ok  |
+-    |          sh: |  ok  |
+-    |       sparc: |  ok  |
+-    |          um: |  ok  |
+-    |         x86: |  ok  |
+-    |      xtensa: |  ok  |
+-    -----------------------
+diff --git a/drivers/Makefile b/drivers/Makefile
+index c0cd1b9075e3..4ff1e4459512 100644
+--- a/drivers/Makefile
++++ b/drivers/Makefile
+@@ -135,9 +135,7 @@ obj-$(CONFIG_INFINIBAND)	+= infiniband/
+ obj-y				+= firmware/
+ obj-$(CONFIG_CRYPTO)		+= crypto/
+ obj-$(CONFIG_SUPERH)		+= sh/
+-ifndef CONFIG_ARCH_USES_GETTIMEOFFSET
+ obj-y				+= clocksource/
+-endif
+ obj-$(CONFIG_DCA)		+= dca/
+ obj-$(CONFIG_HID)		+= hid/
+ obj-$(CONFIG_PPC_PS3)		+= ps3/
+diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
+index 68b087bff59c..764936bfcb2c 100644
+--- a/drivers/clocksource/Kconfig
++++ b/drivers/clocksource/Kconfig
+@@ -563,7 +563,7 @@ config CLKSRC_QCOM
+ 
+ config CLKSRC_VERSATILE
+ 	bool "ARM Versatile (Express) reference platforms clock source" if COMPILE_TEST
+-	depends on GENERIC_SCHED_CLOCK && !ARCH_USES_GETTIMEOFFSET
++	depends on GENERIC_SCHED_CLOCK
+ 	select TIMER_OF
+ 	default y if (ARCH_VEXPRESS || ARCH_VERSATILE) && ARM
  	help
- 	  If you have a network (Ethernet) chipset belonging to this class,
- 	  say Y.
-@@ -75,14 +75,6 @@ config ARIADNE
- 	  To compile this driver as a module, choose M here: the module
- 	  will be called ariadne.
+diff --git a/include/linux/time.h b/include/linux/time.h
+index b142cb5f5a53..16cf4522d6f3 100644
+--- a/include/linux/time.h
++++ b/include/linux/time.h
+@@ -21,19 +21,6 @@ extern time64_t mktime64(const unsigned int year, const unsigned int mon,
+ 			const unsigned int day, const unsigned int hour,
+ 			const unsigned int min, const unsigned int sec);
  
--config ARM_AM79C961A
--	bool "ARM EBSA110 AM79C961A support"
--	depends on ARM && ARCH_EBSA110
--	select CRC32
--	help
--	  If you wish to compile a kernel for the EBSA-110, then you should
--	  always answer Y to this.
--
- config ATARILANCE
- 	tristate "Atari LANCE support"
- 	depends on ATARI
-diff --git a/drivers/net/ethernet/amd/Makefile b/drivers/net/ethernet/amd/Makefile
-index 45f86822a5f7..0d2f478b49a5 100644
---- a/drivers/net/ethernet/amd/Makefile
-+++ b/drivers/net/ethernet/amd/Makefile
-@@ -5,7 +5,6 @@
- 
- obj-$(CONFIG_A2065) += a2065.o
- obj-$(CONFIG_AMD8111_ETH) += amd8111e.o
--obj-$(CONFIG_ARM_AM79C961A) += am79c961a.o
- obj-$(CONFIG_ARIADNE) += ariadne.o
- obj-$(CONFIG_ATARILANCE) += atarilance.o
- obj-$(CONFIG_DECLANCE) += declance.o
-diff --git a/drivers/net/ethernet/amd/am79c961a.c b/drivers/net/ethernet/amd/am79c961a.c
-deleted file mode 100644
-index 1c53408f5d47..000000000000
---- a/drivers/net/ethernet/amd/am79c961a.c
-+++ /dev/null
-@@ -1,763 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-only
--/*
-- *  linux/drivers/net/ethernet/amd/am79c961a.c
-- *
-- *  by Russell King <rmk@arm.linux.org.uk> 1995-2001.
-- *
-- * Derived from various things including skeleton.c
-- *
-- * This is a special driver for the am79c961A Lance chip used in the
-- * Intel (formally Digital Equipment Corp) EBSA110 platform.  Please
-- * note that this can not be built as a module (it doesn't make sense).
+-/* Some architectures do not supply their own clocksource.
+- * This is mainly the case in architectures that get their
+- * inter-tick times by reading the counter on their interval
+- * timer. Since these timers wrap every tick, they're not really
+- * useful as clocksources. Wrapping them to act like one is possible
+- * but not very efficient. So we provide a callout these arches
+- * can implement for use with the jiffies clocksource to provide
+- * finer then tick granular time.
 - */
--#include <linux/kernel.h>
--#include <linux/types.h>
--#include <linux/interrupt.h>
--#include <linux/ioport.h>
--#include <linux/slab.h>
--#include <linux/string.h>
--#include <linux/errno.h>
--#include <linux/netdevice.h>
--#include <linux/etherdevice.h>
--#include <linux/delay.h>
--#include <linux/init.h>
--#include <linux/crc32.h>
--#include <linux/bitops.h>
--#include <linux/platform_device.h>
--#include <linux/io.h>
+-#ifdef CONFIG_ARCH_USES_GETTIMEOFFSET
+-extern u32 (*arch_gettimeoffset)(void);
+-#endif
 -
--#include <mach/hardware.h>
+ #ifdef CONFIG_POSIX_TIMERS
+ extern void clear_itimer(void);
+ #else
+diff --git a/kernel/time/Kconfig b/kernel/time/Kconfig
+index a09b1d61df6a..51d298ccbe05 100644
+--- a/kernel/time/Kconfig
++++ b/kernel/time/Kconfig
+@@ -26,10 +26,6 @@ config CLOCKSOURCE_VALIDATE_LAST_CYCLE
+ config GENERIC_TIME_VSYSCALL
+ 	bool
+ 
+-# Old style timekeeping
+-config ARCH_USES_GETTIMEOFFSET
+-	bool
 -
--#define TX_BUFFERS 15
--#define RX_BUFFERS 25
+ # The generic clock events infrastructure
+ config GENERIC_CLOCKEVENTS
+ 	bool
+@@ -72,7 +68,6 @@ config TICK_ONESHOT
+ 
+ config NO_HZ_COMMON
+ 	bool
+-	depends on !ARCH_USES_GETTIMEOFFSET && GENERIC_CLOCKEVENTS
+ 	select TICK_ONESHOT
+ 
+ choice
+@@ -87,7 +82,6 @@ config HZ_PERIODIC
+ 
+ config NO_HZ_IDLE
+ 	bool "Idle dynticks system (tickless idle)"
+-	depends on !ARCH_USES_GETTIMEOFFSET && GENERIC_CLOCKEVENTS
+ 	select NO_HZ_COMMON
+ 	help
+ 	  This option enables a tickless idle system: timer interrupts
+@@ -99,7 +93,6 @@ config NO_HZ_IDLE
+ config NO_HZ_FULL
+ 	bool "Full dynticks system (tickless)"
+ 	# NO_HZ_COMMON dependency
+-	depends on !ARCH_USES_GETTIMEOFFSET && GENERIC_CLOCKEVENTS
+ 	# We need at least one periodic CPU for timekeeping
+ 	depends on SMP
+ 	depends on HAVE_CONTEXT_TRACKING
+@@ -158,7 +151,6 @@ config CONTEXT_TRACKING_FORCE
+ 
+ config NO_HZ
+ 	bool "Old Idle dynticks config"
+-	depends on !ARCH_USES_GETTIMEOFFSET && GENERIC_CLOCKEVENTS
+ 	help
+ 	  This is the old config entry that enables dynticks idle.
+ 	  We keep it around for a little while to enforce backward
+@@ -166,7 +158,6 @@ config NO_HZ
+ 
+ config HIGH_RES_TIMERS
+ 	bool "High Resolution Timer Support"
+-	depends on !ARCH_USES_GETTIMEOFFSET && GENERIC_CLOCKEVENTS
+ 	select TICK_ONESHOT
+ 	help
+ 	  This option enables high resolution timer support. If your
+diff --git a/kernel/time/clocksource.c b/kernel/time/clocksource.c
+index 02441ead3c3b..cce484a2cc7c 100644
+--- a/kernel/time/clocksource.c
++++ b/kernel/time/clocksource.c
+@@ -705,8 +705,6 @@ static inline void clocksource_update_max_deferment(struct clocksource *cs)
+ 						&cs->max_cycles);
+ }
+ 
+-#ifndef CONFIG_ARCH_USES_GETTIMEOFFSET
 -
--#include "am79c961a.h"
+ static struct clocksource *clocksource_find_best(bool oneshot, bool skipcur)
+ {
+ 	struct clocksource *cs;
+@@ -798,12 +796,6 @@ static void clocksource_select_fallback(void)
+ 	__clocksource_select(true);
+ }
+ 
+-#else /* !CONFIG_ARCH_USES_GETTIMEOFFSET */
+-static inline void clocksource_select(void) { }
+-static inline void clocksource_select_fallback(void) { }
 -
--static irqreturn_t
--am79c961_interrupt (int irq, void *dev_id);
+-#endif
 -
--static unsigned int net_debug = NET_DEBUG;
--
--static const char version[] =
--	"am79c961 ethernet driver (C) 1995-2001 Russell King v0.04\n";
--
--/* --------------------------------------------------------------------------- */
--
--#ifdef __arm__
--static void write_rreg(u_long base, u_int reg, u_int val)
--{
--	asm volatile(
--	"strh	%1, [%2]	@ NET_RAP\n\t"
--	"strh	%0, [%2, #-4]	@ NET_RDP"
--	:
--	: "r" (val), "r" (reg), "r" (ISAIO_BASE + 0x0464));
--}
--
--static inline unsigned short read_rreg(u_long base_addr, u_int reg)
--{
--	unsigned short v;
--	asm volatile(
--	"strh	%1, [%2]	@ NET_RAP\n\t"
--	"ldrh	%0, [%2, #-4]	@ NET_RDP"
--	: "=r" (v)
--	: "r" (reg), "r" (ISAIO_BASE + 0x0464));
--	return v;
--}
--
--static inline void write_ireg(u_long base, u_int reg, u_int val)
--{
--	asm volatile(
--	"strh	%1, [%2]	@ NET_RAP\n\t"
--	"strh	%0, [%2, #8]	@ NET_IDP"
--	:
--	: "r" (val), "r" (reg), "r" (ISAIO_BASE + 0x0464));
--}
--
--static inline unsigned short read_ireg(u_long base_addr, u_int reg)
--{
--	u_short v;
--	asm volatile(
--	"strh	%1, [%2]	@ NAT_RAP\n\t"
--	"ldrh	%0, [%2, #8]	@ NET_IDP\n\t"
--	: "=r" (v)
--	: "r" (reg), "r" (ISAIO_BASE + 0x0464));
--	return v;
--}
--
--#define am_writeword(dev,off,val) __raw_writew(val, ISAMEM_BASE + ((off) << 1))
--#define am_readword(dev,off)      __raw_readw(ISAMEM_BASE + ((off) << 1))
--
--static void
--am_writebuffer(struct net_device *dev, u_int offset, unsigned char *buf, unsigned int length)
--{
--	offset = ISAMEM_BASE + (offset << 1);
--	length = (length + 1) & ~1;
--	if ((int)buf & 2) {
--		asm volatile("strh	%2, [%0], #4"
--		 : "=&r" (offset) : "0" (offset), "r" (buf[0] | (buf[1] << 8)));
--		buf += 2;
--		length -= 2;
--	}
--	while (length > 8) {
--		register unsigned int tmp asm("r2"), tmp2 asm("r3");
--		asm volatile(
--			"ldmia	%0!, {%1, %2}"
--			: "+r" (buf), "=&r" (tmp), "=&r" (tmp2));
--		length -= 8;
--		asm volatile(
--			"strh	%1, [%0], #4\n\t"
--			"mov	%1, %1, lsr #16\n\t"
--			"strh	%1, [%0], #4\n\t"
--			"strh	%2, [%0], #4\n\t"
--			"mov	%2, %2, lsr #16\n\t"
--			"strh	%2, [%0], #4"
--		: "+r" (offset), "=&r" (tmp), "=&r" (tmp2));
--	}
--	while (length > 0) {
--		asm volatile("strh	%2, [%0], #4"
--		 : "=&r" (offset) : "0" (offset), "r" (buf[0] | (buf[1] << 8)));
--		buf += 2;
--		length -= 2;
--	}
--}
--
--static void
--am_readbuffer(struct net_device *dev, u_int offset, unsigned char *buf, unsigned int length)
--{
--	offset = ISAMEM_BASE + (offset << 1);
--	length = (length + 1) & ~1;
--	if ((int)buf & 2) {
--		unsigned int tmp;
--		asm volatile(
--			"ldrh	%2, [%0], #4\n\t"
--			"strb	%2, [%1], #1\n\t"
--			"mov	%2, %2, lsr #8\n\t"
--			"strb	%2, [%1], #1"
--		: "=&r" (offset), "=&r" (buf), "=r" (tmp): "0" (offset), "1" (buf));
--		length -= 2;
--	}
--	while (length > 8) {
--		register unsigned int tmp asm("r2"), tmp2 asm("r3"), tmp3;
--		asm volatile(
--			"ldrh	%2, [%0], #4\n\t"
--			"ldrh	%4, [%0], #4\n\t"
--			"ldrh	%3, [%0], #4\n\t"
--			"orr	%2, %2, %4, lsl #16\n\t"
--			"ldrh	%4, [%0], #4\n\t"
--			"orr	%3, %3, %4, lsl #16\n\t"
--			"stmia	%1!, {%2, %3}"
--		: "=&r" (offset), "=&r" (buf), "=r" (tmp), "=r" (tmp2), "=r" (tmp3)
--		: "0" (offset), "1" (buf));
--		length -= 8;
--	}
--	while (length > 0) {
--		unsigned int tmp;
--		asm volatile(
--			"ldrh	%2, [%0], #4\n\t"
--			"strb	%2, [%1], #1\n\t"
--			"mov	%2, %2, lsr #8\n\t"
--			"strb	%2, [%1], #1"
--		: "=&r" (offset), "=&r" (buf), "=r" (tmp) : "0" (offset), "1" (buf));
--		length -= 2;
--	}
--}
+ /*
+  * clocksource_done_booting - Called near the end of core bootup
+  *
+diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
+index 4c47f388a83f..cf99a9a00716 100644
+--- a/kernel/time/timekeeping.c
++++ b/kernel/time/timekeeping.c
+@@ -352,13 +352,6 @@ static void tk_setup_internals(struct timekeeper *tk, struct clocksource *clock)
+ 
+ /* Timekeeper helper functions. */
+ 
+-#ifdef CONFIG_ARCH_USES_GETTIMEOFFSET
+-static u32 default_arch_gettimeoffset(void) { return 0; }
+-u32 (*arch_gettimeoffset)(void) = default_arch_gettimeoffset;
 -#else
--#error Not compatible
+-static inline u32 arch_gettimeoffset(void) { return 0; }
 -#endif
 -
--static int
--am79c961_ramtest(struct net_device *dev, unsigned int val)
--{
--	unsigned char *buffer = kmalloc (65536, GFP_KERNEL);
--	int i, error = 0, errorcount = 0;
--
--	if (!buffer)
--		return 0;
--	memset (buffer, val, 65536);
--	am_writebuffer(dev, 0, buffer, 65536);
--	memset (buffer, val ^ 255, 65536);
--	am_readbuffer(dev, 0, buffer, 65536);
--	for (i = 0; i < 65536; i++) {
--		if (buffer[i] != val && !error) {
--			printk ("%s: buffer error (%02X %02X) %05X - ", dev->name, val, buffer[i], i);
--			error = 1;
--			errorcount ++;
--		} else if (error && buffer[i] == val) {
--			printk ("%05X\n", i);
--			error = 0;
--		}
--	}
--	if (error)
--		printk ("10000\n");
--	kfree (buffer);
--	return errorcount;
--}
--
--static void am79c961_mc_hash(char *addr, u16 *hash)
--{
--	int idx, bit;
--	u32 crc;
--
--	crc = ether_crc_le(ETH_ALEN, addr);
--
--	idx = crc >> 30;
--	bit = (crc >> 26) & 15;
--
--	hash[idx] |= 1 << bit;
--}
--
--static unsigned int am79c961_get_rx_mode(struct net_device *dev, u16 *hash)
--{
--	unsigned int mode = MODE_PORT_10BT;
--
--	if (dev->flags & IFF_PROMISC) {
--		mode |= MODE_PROMISC;
--		memset(hash, 0xff, 4 * sizeof(*hash));
--	} else if (dev->flags & IFF_ALLMULTI) {
--		memset(hash, 0xff, 4 * sizeof(*hash));
--	} else {
--		struct netdev_hw_addr *ha;
--
--		memset(hash, 0, 4 * sizeof(*hash));
--
--		netdev_for_each_mc_addr(ha, dev)
--			am79c961_mc_hash(ha->addr, hash);
--	}
--
--	return mode;
--}
--
--static void
--am79c961_init_for_open(struct net_device *dev)
--{
--	struct dev_priv *priv = netdev_priv(dev);
--	unsigned long flags;
--	unsigned char *p;
--	u_int hdr_addr, first_free_addr;
--	u16 multi_hash[4], mode = am79c961_get_rx_mode(dev, multi_hash);
--	int i;
--
--	/*
--	 * Stop the chip.
--	 */
--	spin_lock_irqsave(&priv->chip_lock, flags);
--	write_rreg (dev->base_addr, CSR0, CSR0_BABL|CSR0_CERR|CSR0_MISS|CSR0_MERR|CSR0_TINT|CSR0_RINT|CSR0_STOP);
--	spin_unlock_irqrestore(&priv->chip_lock, flags);
--
--	write_ireg (dev->base_addr, 5, 0x00a0); /* Receive address LED */
--	write_ireg (dev->base_addr, 6, 0x0081); /* Collision LED */
--	write_ireg (dev->base_addr, 7, 0x0090); /* XMIT LED */
--	write_ireg (dev->base_addr, 2, 0x0000); /* MODE register selects media */
--
--	for (i = LADRL; i <= LADRH; i++)
--		write_rreg (dev->base_addr, i, multi_hash[i - LADRL]);
--
--	for (i = PADRL, p = dev->dev_addr; i <= PADRH; i++, p += 2)
--		write_rreg (dev->base_addr, i, p[0] | (p[1] << 8));
--
--	write_rreg (dev->base_addr, MODE, mode);
--	write_rreg (dev->base_addr, POLLINT, 0);
--	write_rreg (dev->base_addr, SIZERXR, -RX_BUFFERS);
--	write_rreg (dev->base_addr, SIZETXR, -TX_BUFFERS);
--
--	first_free_addr = RX_BUFFERS * 8 + TX_BUFFERS * 8 + 16;
--	hdr_addr = 0;
--
--	priv->rxhead = 0;
--	priv->rxtail = 0;
--	priv->rxhdr = hdr_addr;
--
--	for (i = 0; i < RX_BUFFERS; i++) {
--		priv->rxbuffer[i] = first_free_addr;
--		am_writeword (dev, hdr_addr, first_free_addr);
--		am_writeword (dev, hdr_addr + 2, RMD_OWN);
--		am_writeword (dev, hdr_addr + 4, (-1600));
--		am_writeword (dev, hdr_addr + 6, 0);
--		first_free_addr += 1600;
--		hdr_addr += 8;
--	}
--	priv->txhead = 0;
--	priv->txtail = 0;
--	priv->txhdr = hdr_addr;
--	for (i = 0; i < TX_BUFFERS; i++) {
--		priv->txbuffer[i] = first_free_addr;
--		am_writeword (dev, hdr_addr, first_free_addr);
--		am_writeword (dev, hdr_addr + 2, TMD_STP|TMD_ENP);
--		am_writeword (dev, hdr_addr + 4, 0xf000);
--		am_writeword (dev, hdr_addr + 6, 0);
--		first_free_addr += 1600;
--		hdr_addr += 8;
--	}
--
--	write_rreg (dev->base_addr, BASERXL, priv->rxhdr);
--	write_rreg (dev->base_addr, BASERXH, 0);
--	write_rreg (dev->base_addr, BASETXL, priv->txhdr);
--	write_rreg (dev->base_addr, BASERXH, 0);
--	write_rreg (dev->base_addr, CSR0, CSR0_STOP);
--	write_rreg (dev->base_addr, CSR3, CSR3_IDONM|CSR3_BABLM|CSR3_DXSUFLO);
--	write_rreg (dev->base_addr, CSR4, CSR4_APAD_XMIT|CSR4_MFCOM|CSR4_RCVCCOM|CSR4_TXSTRTM|CSR4_JABM);
--	write_rreg (dev->base_addr, CSR0, CSR0_IENA|CSR0_STRT);
--}
--
--static void am79c961_timer(struct timer_list *t)
--{
--	struct dev_priv *priv = from_timer(priv, t, timer);
--	struct net_device *dev = priv->dev;
--	unsigned int lnkstat, carrier;
--	unsigned long flags;
--
--	spin_lock_irqsave(&priv->chip_lock, flags);
--	lnkstat = read_ireg(dev->base_addr, ISALED0) & ISALED0_LNKST;
--	spin_unlock_irqrestore(&priv->chip_lock, flags);
--	carrier = netif_carrier_ok(dev);
--
--	if (lnkstat && !carrier) {
--		netif_carrier_on(dev);
--		printk("%s: link up\n", dev->name);
--	} else if (!lnkstat && carrier) {
--		netif_carrier_off(dev);
--		printk("%s: link down\n", dev->name);
--	}
--
--	mod_timer(&priv->timer, jiffies + msecs_to_jiffies(500));
--}
--
--/*
-- * Open/initialize the board.
-- */
--static int
--am79c961_open(struct net_device *dev)
--{
--	struct dev_priv *priv = netdev_priv(dev);
--	int ret;
--
--	ret = request_irq(dev->irq, am79c961_interrupt, 0, dev->name, dev);
--	if (ret)
--		return ret;
--
--	am79c961_init_for_open(dev);
--
--	netif_carrier_off(dev);
--
--	priv->timer.expires = jiffies;
--	add_timer(&priv->timer);
--
--	netif_start_queue(dev);
--
--	return 0;
--}
--
--/*
-- * The inverse routine to am79c961_open().
-- */
--static int
--am79c961_close(struct net_device *dev)
--{
--	struct dev_priv *priv = netdev_priv(dev);
--	unsigned long flags;
--
--	del_timer_sync(&priv->timer);
--
--	netif_stop_queue(dev);
--	netif_carrier_off(dev);
--
--	spin_lock_irqsave(&priv->chip_lock, flags);
--	write_rreg (dev->base_addr, CSR0, CSR0_STOP);
--	write_rreg (dev->base_addr, CSR3, CSR3_MASKALL);
--	spin_unlock_irqrestore(&priv->chip_lock, flags);
--
--	free_irq (dev->irq, dev);
--
--	return 0;
--}
--
--/*
-- * Set or clear promiscuous/multicast mode filter for this adapter.
-- */
--static void am79c961_setmulticastlist (struct net_device *dev)
--{
--	struct dev_priv *priv = netdev_priv(dev);
--	unsigned long flags;
--	u16 multi_hash[4], mode = am79c961_get_rx_mode(dev, multi_hash);
--	int i, stopped;
--
--	spin_lock_irqsave(&priv->chip_lock, flags);
--
--	stopped = read_rreg(dev->base_addr, CSR0) & CSR0_STOP;
--
--	if (!stopped) {
--		/*
--		 * Put the chip into suspend mode
--		 */
--		write_rreg(dev->base_addr, CTRL1, CTRL1_SPND);
--
--		/*
--		 * Spin waiting for chip to report suspend mode
--		 */
--		while ((read_rreg(dev->base_addr, CTRL1) & CTRL1_SPND) == 0) {
--			spin_unlock_irqrestore(&priv->chip_lock, flags);
--			nop();
--			spin_lock_irqsave(&priv->chip_lock, flags);
--		}
--	}
--
--	/*
--	 * Update the multicast hash table
--	 */
--	for (i = 0; i < ARRAY_SIZE(multi_hash); i++)
--		write_rreg(dev->base_addr, i + LADRL, multi_hash[i]);
--
--	/*
--	 * Write the mode register
--	 */
--	write_rreg(dev->base_addr, MODE, mode);
--
--	if (!stopped) {
--		/*
--		 * Put the chip back into running mode
--		 */
--		write_rreg(dev->base_addr, CTRL1, 0);
--	}
--
--	spin_unlock_irqrestore(&priv->chip_lock, flags);
--}
--
--static void am79c961_timeout(struct net_device *dev, unsigned int txqueue)
--{
--	printk(KERN_WARNING "%s: transmit timed out, network cable problem?\n",
--		dev->name);
--
--	/*
--	 * ought to do some setup of the tx side here
--	 */
--
--	netif_wake_queue(dev);
--}
--
--/*
-- * Transmit a packet
-- */
--static netdev_tx_t
--am79c961_sendpacket(struct sk_buff *skb, struct net_device *dev)
--{
--	struct dev_priv *priv = netdev_priv(dev);
--	unsigned int hdraddr, bufaddr;
--	unsigned int head;
--	unsigned long flags;
--
--	head = priv->txhead;
--	hdraddr = priv->txhdr + (head << 3);
--	bufaddr = priv->txbuffer[head];
--	head += 1;
--	if (head >= TX_BUFFERS)
--		head = 0;
--
--	am_writebuffer (dev, bufaddr, skb->data, skb->len);
--	am_writeword (dev, hdraddr + 4, -skb->len);
--	am_writeword (dev, hdraddr + 2, TMD_OWN|TMD_STP|TMD_ENP);
--	priv->txhead = head;
--
--	spin_lock_irqsave(&priv->chip_lock, flags);
--	write_rreg (dev->base_addr, CSR0, CSR0_TDMD|CSR0_IENA);
--	spin_unlock_irqrestore(&priv->chip_lock, flags);
--
--	/*
--	 * If the next packet is owned by the ethernet device,
--	 * then the tx ring is full and we can't add another
--	 * packet.
--	 */
--	if (am_readword(dev, priv->txhdr + (priv->txhead << 3) + 2) & TMD_OWN)
--		netif_stop_queue(dev);
--
--	dev_consume_skb_any(skb);
--
--	return NETDEV_TX_OK;
--}
--
--/*
-- * If we have a good packet(s), get it/them out of the buffers.
-- */
--static void
--am79c961_rx(struct net_device *dev, struct dev_priv *priv)
--{
--	do {
--		struct sk_buff *skb;
--		u_int hdraddr;
--		u_int pktaddr;
--		u_int status;
--		int len;
--
--		hdraddr = priv->rxhdr + (priv->rxtail << 3);
--		pktaddr = priv->rxbuffer[priv->rxtail];
--
--		status = am_readword (dev, hdraddr + 2);
--		if (status & RMD_OWN) /* do we own it? */
--			break;
--
--		priv->rxtail ++;
--		if (priv->rxtail >= RX_BUFFERS)
--			priv->rxtail = 0;
--
--		if ((status & (RMD_ERR|RMD_STP|RMD_ENP)) != (RMD_STP|RMD_ENP)) {
--			am_writeword (dev, hdraddr + 2, RMD_OWN);
--			dev->stats.rx_errors++;
--			if (status & RMD_ERR) {
--				if (status & RMD_FRAM)
--					dev->stats.rx_frame_errors++;
--				if (status & RMD_CRC)
--					dev->stats.rx_crc_errors++;
--			} else if (status & RMD_STP)
--				dev->stats.rx_length_errors++;
--			continue;
--		}
--
--		len = am_readword(dev, hdraddr + 6);
--		skb = netdev_alloc_skb(dev, len + 2);
--
--		if (skb) {
--			skb_reserve(skb, 2);
--
--			am_readbuffer(dev, pktaddr, skb_put(skb, len), len);
--			am_writeword(dev, hdraddr + 2, RMD_OWN);
--			skb->protocol = eth_type_trans(skb, dev);
--			netif_rx(skb);
--			dev->stats.rx_bytes += len;
--			dev->stats.rx_packets++;
--		} else {
--			am_writeword (dev, hdraddr + 2, RMD_OWN);
--			dev->stats.rx_dropped++;
--			break;
--		}
--	} while (1);
--}
--
--/*
-- * Update stats for the transmitted packet
-- */
--static void
--am79c961_tx(struct net_device *dev, struct dev_priv *priv)
--{
--	do {
--		short len;
--		u_int hdraddr;
--		u_int status;
--
--		hdraddr = priv->txhdr + (priv->txtail << 3);
--		status = am_readword (dev, hdraddr + 2);
--		if (status & TMD_OWN)
--			break;
--
--		priv->txtail ++;
--		if (priv->txtail >= TX_BUFFERS)
--			priv->txtail = 0;
--
--		if (status & TMD_ERR) {
--			u_int status2;
--
--			dev->stats.tx_errors++;
--
--			status2 = am_readword (dev, hdraddr + 6);
--
--			/*
--			 * Clear the error byte
--			 */
--			am_writeword (dev, hdraddr + 6, 0);
--
--			if (status2 & TST_RTRY)
--				dev->stats.collisions += 16;
--			if (status2 & TST_LCOL)
--				dev->stats.tx_window_errors++;
--			if (status2 & TST_LCAR)
--				dev->stats.tx_carrier_errors++;
--			if (status2 & TST_UFLO)
--				dev->stats.tx_fifo_errors++;
--			continue;
--		}
--		dev->stats.tx_packets++;
--		len = am_readword (dev, hdraddr + 4);
--		dev->stats.tx_bytes += -len;
--	} while (priv->txtail != priv->txhead);
--
--	netif_wake_queue(dev);
--}
--
--static irqreturn_t
--am79c961_interrupt(int irq, void *dev_id)
--{
--	struct net_device *dev = (struct net_device *)dev_id;
--	struct dev_priv *priv = netdev_priv(dev);
--	u_int status, n = 100;
--	int handled = 0;
--
--	do {
--		status = read_rreg(dev->base_addr, CSR0);
--		write_rreg(dev->base_addr, CSR0, status &
--			   (CSR0_IENA|CSR0_TINT|CSR0_RINT|
--			    CSR0_MERR|CSR0_MISS|CSR0_CERR|CSR0_BABL));
--
--		if (status & CSR0_RINT) {
--			handled = 1;
--			am79c961_rx(dev, priv);
--		}
--		if (status & CSR0_TINT) {
--			handled = 1;
--			am79c961_tx(dev, priv);
--		}
--		if (status & CSR0_MISS) {
--			handled = 1;
--			dev->stats.rx_dropped++;
--		}
--		if (status & CSR0_CERR) {
--			handled = 1;
--			mod_timer(&priv->timer, jiffies);
--		}
--	} while (--n && status & (CSR0_RINT | CSR0_TINT));
--
--	return IRQ_RETVAL(handled);
--}
--
--#ifdef CONFIG_NET_POLL_CONTROLLER
--static void am79c961_poll_controller(struct net_device *dev)
--{
--	unsigned long flags;
--	local_irq_save(flags);
--	am79c961_interrupt(dev->irq, dev);
--	local_irq_restore(flags);
--}
--#endif
--
--/*
-- * Initialise the chip.  Note that we always expect
-- * to be entered with interrupts enabled.
-- */
--static int
--am79c961_hw_init(struct net_device *dev)
--{
--	struct dev_priv *priv = netdev_priv(dev);
--
--	spin_lock_irq(&priv->chip_lock);
--	write_rreg (dev->base_addr, CSR0, CSR0_STOP);
--	write_rreg (dev->base_addr, CSR3, CSR3_MASKALL);
--	spin_unlock_irq(&priv->chip_lock);
--
--	am79c961_ramtest(dev, 0x66);
--	am79c961_ramtest(dev, 0x99);
--
--	return 0;
--}
--
--static void __init am79c961_banner(void)
--{
--	static unsigned version_printed;
--
--	if (net_debug && version_printed++ == 0)
--		printk(KERN_INFO "%s", version);
--}
--static const struct net_device_ops am79c961_netdev_ops = {
--	.ndo_open		= am79c961_open,
--	.ndo_stop		= am79c961_close,
--	.ndo_start_xmit		= am79c961_sendpacket,
--	.ndo_set_rx_mode	= am79c961_setmulticastlist,
--	.ndo_tx_timeout		= am79c961_timeout,
--	.ndo_validate_addr	= eth_validate_addr,
--	.ndo_set_mac_address	= eth_mac_addr,
--#ifdef CONFIG_NET_POLL_CONTROLLER
--	.ndo_poll_controller	= am79c961_poll_controller,
--#endif
--};
--
--static int am79c961_probe(struct platform_device *pdev)
--{
--	struct resource *res;
--	struct net_device *dev;
--	struct dev_priv *priv;
--	int i, ret;
--
--	res = platform_get_resource(pdev, IORESOURCE_IO, 0);
--	if (!res)
--		return -ENODEV;
--
--	dev = alloc_etherdev(sizeof(struct dev_priv));
--	ret = -ENOMEM;
--	if (!dev)
+ static inline u64 timekeeping_delta_to_ns(const struct tk_read_base *tkr, u64 delta)
+ {
+ 	u64 nsec;
+@@ -366,8 +359,7 @@ static inline u64 timekeeping_delta_to_ns(const struct tk_read_base *tkr, u64 de
+ 	nsec = delta * tkr->mult + tkr->xtime_nsec;
+ 	nsec >>= tkr->shift;
+ 
+-	/* If arch requires, add in get_arch_timeoffset() */
+-	return nsec + arch_gettimeoffset();
++	return nsec;
+ }
+ 
+ static inline u64 timekeeping_get_ns(const struct tk_read_base *tkr)
+@@ -707,16 +699,8 @@ static void timekeeping_forward_now(struct timekeeper *tk)
+ 	tk->tkr_raw.cycle_last  = cycle_now;
+ 
+ 	tk->tkr_mono.xtime_nsec += delta * tk->tkr_mono.mult;
+-
+-	/* If arch requires, add in get_arch_timeoffset() */
+-	tk->tkr_mono.xtime_nsec += (u64)arch_gettimeoffset() << tk->tkr_mono.shift;
+-
+-
+ 	tk->tkr_raw.xtime_nsec += delta * tk->tkr_raw.mult;
+ 
+-	/* If arch requires, add in get_arch_timeoffset() */
+-	tk->tkr_raw.xtime_nsec += (u64)arch_gettimeoffset() << tk->tkr_raw.shift;
+-
+ 	tk_normalize_xtime(tk);
+ }
+ 
+@@ -2062,19 +2046,12 @@ static void timekeeping_advance(enum timekeeping_adv_mode mode)
+ 	if (unlikely(timekeeping_suspended))
+ 		goto out;
+ 
+-#ifdef CONFIG_ARCH_USES_GETTIMEOFFSET
+-	offset = real_tk->cycle_interval;
+-
+-	if (mode != TK_ADV_TICK)
 -		goto out;
--
--	SET_NETDEV_DEV(dev, &pdev->dev);
--
--	priv = netdev_priv(dev);
--
--	/*
--	 * Fixed address and IRQ lines here.
--	 * The PNP initialisation should have been
--	 * done by the ether bootp loader.
--	 */
--	dev->base_addr = res->start;
--	ret = platform_get_irq(pdev, 0);
--
--	if (ret < 0) {
--		ret = -ENODEV;
--		goto nodev;
--	}
--	dev->irq = ret;
--
--	ret = -ENODEV;
--	if (!request_region(dev->base_addr, 0x18, dev->name))
--		goto nodev;
--
--	/*
--	 * Reset the device.
--	 */
--	inb(dev->base_addr + NET_RESET);
--	udelay(5);
--
--	/*
--	 * Check the manufacturer part of the
--	 * ether address.
--	 */
--	if (inb(dev->base_addr) != 0x08 ||
--	    inb(dev->base_addr + 2) != 0x00 ||
--	    inb(dev->base_addr + 4) != 0x2b)
--	    	goto release;
--
--	for (i = 0; i < 6; i++)
--		dev->dev_addr[i] = inb(dev->base_addr + i * 2) & 0xff;
--
--	am79c961_banner();
--
--	spin_lock_init(&priv->chip_lock);
--	priv->dev = dev;
--	timer_setup(&priv->timer, am79c961_timer, 0);
--
--	if (am79c961_hw_init(dev))
--		goto release;
--
--	dev->netdev_ops = &am79c961_netdev_ops;
--
--	ret = register_netdev(dev);
--	if (ret == 0) {
--		printk(KERN_INFO "%s: ether address %pM\n",
--		       dev->name, dev->dev_addr);
--		return 0;
--	}
--
--release:
--	release_region(dev->base_addr, 0x18);
--nodev:
--	free_netdev(dev);
--out:
--	return ret;
--}
--
--static struct platform_driver am79c961_driver = {
--	.probe		= am79c961_probe,
--	.driver		= {
--		.name	= "am79c961",
--	},
--};
--
--static int __init am79c961_init(void)
--{
--	return platform_driver_register(&am79c961_driver);
--}
--
--__initcall(am79c961_init);
-diff --git a/drivers/net/ethernet/amd/am79c961a.h b/drivers/net/ethernet/amd/am79c961a.h
-deleted file mode 100644
-index 73679e053ceb..000000000000
---- a/drivers/net/ethernet/amd/am79c961a.h
-+++ /dev/null
-@@ -1,143 +0,0 @@
--/* SPDX-License-Identifier: GPL-2.0-only */
--/*
-- * linux/drivers/net/ethernet/amd/am79c961a.h
-- */
--
--#ifndef _LINUX_am79c961a_H
--#define _LINUX_am79c961a_H
--
--/* use 0 for production, 1 for verification, >2 for debug. debug flags: */
--#define DEBUG_TX	 2
--#define DEBUG_RX	 4
--#define DEBUG_INT	 8
--#define DEBUG_IC	16
--#ifndef NET_DEBUG
--#define NET_DEBUG 	0
+-#else
+ 	offset = clocksource_delta(tk_clock_read(&tk->tkr_mono),
+ 				   tk->tkr_mono.cycle_last, tk->tkr_mono.mask);
+ 
+ 	/* Check if there's really nothing to do */
+ 	if (offset < real_tk->cycle_interval && mode == TK_ADV_TICK)
+ 		goto out;
 -#endif
--
--#define NET_UID		0
--#define NET_RDP		0x10
--#define NET_RAP		0x12
--#define NET_RESET	0x14
--#define NET_IDP		0x16
--
--/*
-- * RAP registers
-- */
--#define CSR0		0
--#define CSR0_INIT	0x0001
--#define CSR0_STRT	0x0002
--#define CSR0_STOP	0x0004
--#define CSR0_TDMD	0x0008
--#define CSR0_TXON	0x0010
--#define CSR0_RXON	0x0020
--#define CSR0_IENA	0x0040
--#define CSR0_INTR	0x0080
--#define CSR0_IDON	0x0100
--#define CSR0_TINT	0x0200
--#define CSR0_RINT	0x0400
--#define CSR0_MERR	0x0800
--#define CSR0_MISS	0x1000
--#define CSR0_CERR	0x2000
--#define CSR0_BABL	0x4000
--#define CSR0_ERR	0x8000
--
--#define CSR3		3
--#define CSR3_EMBA	0x0008
--#define CSR3_DXMT2PD	0x0010
--#define CSR3_LAPPEN	0x0020
--#define CSR3_DXSUFLO	0x0040
--#define CSR3_IDONM	0x0100
--#define CSR3_TINTM	0x0200
--#define CSR3_RINTM	0x0400
--#define CSR3_MERRM	0x0800
--#define CSR3_MISSM	0x1000
--#define CSR3_BABLM	0x4000
--#define CSR3_MASKALL	0x5F00
--
--#define CSR4		4
--#define CSR4_JABM	0x0001
--#define CSR4_JAB	0x0002
--#define CSR4_TXSTRTM	0x0004
--#define CSR4_TXSTRT	0x0008
--#define CSR4_RCVCCOM	0x0010
--#define CSR4_RCVCCO	0x0020
--#define CSR4_MFCOM	0x0100
--#define CSR4_MFCO	0x0200
--#define CSR4_ASTRP_RCV	0x0400
--#define CSR4_APAD_XMIT	0x0800
--
--#define CTRL1		5
--#define CTRL1_SPND	0x0001
--
--#define LADRL		8
--#define LADRM1		9
--#define LADRM2		10
--#define LADRH		11
--#define PADRL		12
--#define PADRM		13
--#define PADRH		14
--
--#define MODE		15
--#define MODE_DISRX	0x0001
--#define MODE_DISTX	0x0002
--#define MODE_LOOP	0x0004
--#define MODE_DTCRC	0x0008
--#define MODE_COLL	0x0010
--#define MODE_DRETRY	0x0020
--#define MODE_INTLOOP	0x0040
--#define MODE_PORT_AUI	0x0000
--#define MODE_PORT_10BT	0x0080
--#define MODE_DRXPA	0x2000
--#define MODE_DRXBA	0x4000
--#define MODE_PROMISC	0x8000
--
--#define BASERXL		24
--#define BASERXH		25
--#define BASETXL		30
--#define BASETXH		31
--
--#define POLLINT		47
--
--#define SIZERXR		76
--#define SIZETXR		78
--
--#define CSR_MFC		112
--
--#define RMD_ENP		0x0100
--#define RMD_STP		0x0200
--#define RMD_CRC		0x0800
--#define RMD_FRAM	0x2000
--#define RMD_ERR		0x4000
--#define RMD_OWN		0x8000
--
--#define TMD_ENP		0x0100
--#define TMD_STP		0x0200
--#define TMD_MORE	0x1000
--#define TMD_ERR		0x4000
--#define TMD_OWN		0x8000
--
--#define TST_RTRY	0x0400
--#define TST_LCAR	0x0800
--#define TST_LCOL	0x1000
--#define TST_UFLO	0x4000
--#define TST_BUFF	0x8000
--
--#define ISALED0		0x0004
--#define ISALED0_LNKST	0x8000
--
--struct dev_priv {
--    unsigned long	rxbuffer[RX_BUFFERS];
--    unsigned long	txbuffer[TX_BUFFERS];
--    unsigned char	txhead;
--    unsigned char	txtail;
--    unsigned char	rxhead;
--    unsigned char	rxtail;
--    unsigned long	rxhdr;
--    unsigned long	txhdr;
--    spinlock_t		chip_lock;
--    struct timer_list	timer;
--    struct net_device   *dev;
--};
--
--#endif
+ 
+ 	/* Do some additional sanity checking */
+ 	timekeeping_check_update(tk, offset);
+diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
+index a4020c0b4508..b74099f990bf 100644
+--- a/kernel/trace/Kconfig
++++ b/kernel/trace/Kconfig
+@@ -253,7 +253,6 @@ config IRQSOFF_TRACER
+ 	bool "Interrupts-off Latency Tracer"
+ 	default n
+ 	depends on TRACE_IRQFLAGS_SUPPORT
+-	depends on !ARCH_USES_GETTIMEOFFSET
+ 	select TRACE_IRQFLAGS
+ 	select GENERIC_TRACER
+ 	select TRACER_MAX_TRACE
+@@ -277,7 +276,6 @@ config IRQSOFF_TRACER
+ config PREEMPT_TRACER
+ 	bool "Preemption-off Latency Tracer"
+ 	default n
+-	depends on !ARCH_USES_GETTIMEOFFSET
+ 	depends on PREEMPTION
+ 	select GENERIC_TRACER
+ 	select TRACER_MAX_TRACE
 -- 
 2.27.0
 
