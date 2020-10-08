@@ -2,164 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F39E2871AF
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 11:37:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B74532871C3
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 11:44:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729003AbgJHJhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 05:37:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39872 "EHLO
+        id S1729021AbgJHJop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 05:44:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726019AbgJHJha (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 05:37:30 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49470C061755;
-        Thu,  8 Oct 2020 02:37:30 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id v12so5809269wmh.3;
-        Thu, 08 Oct 2020 02:37:30 -0700 (PDT)
+        with ESMTP id S1725849AbgJHJoo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 05:44:44 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56D2BC061755;
+        Thu,  8 Oct 2020 02:44:44 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id g4so5192321edk.0;
+        Thu, 08 Oct 2020 02:44:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WfZJ4f2PED/NL55ktLAB5sz7CinG8dyvq/2/COAICyY=;
-        b=Zdl5hRdgNQKZY1PSYNQ8pK8SFtKE7VNZcrlPUTpH8T9Q/xeIBDe6B/uWlbniJISByc
-         6AwwDeg2fdhhl4A1KzoSCI5no87P446Ky8TcxNad8j1VnZinYKAG2pZa7i5g+E08bbtq
-         UW8qoFuRhgFBnjxAoos9XZJUbBX5uZ1zeaddIPV1AkSu4musL+ZIC9UEjVMhBy+BycgE
-         kfBXl2I+byaE494f6bUdZ7rBNBSGQNptUFcl03L7d4N6WjmpLRWfJvlqeFE9pSGEkeSh
-         UHeyZFGINg71bM8I1fCQITyCcgdTduh23hvRFXfx8+/f9uATGrnVT5xicGfLt94kHASB
-         PjjA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fK7DrchbZqdfBsz7y7likbfCz9mOIC+hUmwv4mdi41I=;
+        b=VtfYuM7C35JVasrzkGJzP87ITCw5uEORLEzJDW7x+JivMNz7muJdVVM4ctIREjXzoQ
+         9FRH/oWZvfG6qROEz7vjPYtCwwXdSX8lkoxg/Bz/oKlGtGQxWvM46bcU0+qXGdMQp2+n
+         5U6yz6vae+OC+qNbrkB/jUdCTnPeKnQM6HWOqaYXeKMXLeATUXo6F8tZWuyckdZcba7r
+         JrFW7hlb6Emgdd3F2l73FO3IiPYgo/diQY+avgHD9Rz8xNy5ZfT/Tzl1akPwiy0YQNRX
+         17QWIFdtHh7fhAmuvliQdeRg+2GuSTsoD/RpsSefKpLi+LIOc6bJobe92hNJuomh9pn9
+         C/HA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WfZJ4f2PED/NL55ktLAB5sz7CinG8dyvq/2/COAICyY=;
-        b=fqc0sMch240EWAdd3cGFg7zLMfFnQkPUNJBpska1T10xAvWzJXnpe8tepq77OsJYCM
-         LasUcFSHXcrSD5zK8YwiC13ZMs10yaFP2FejkDUy56nauuLc2R2mVKWqGUst+A5EcVHl
-         sfA/r95UyevflPDP2h9IaF8VJ++y7RRk/qSQADntCe+kRJVFP8k4oY46MZRHFWuvAkxr
-         oL1JjECKo85dx0cEEuZD+gn/37qceOEd9YQzuUhJt23hURgU5YhE9bYFtg5ZeV7GMO5A
-         3VQWxX248LXkxuUtreRLqSjgxIQ7XulYWk1Zm3tr9DxCYieWPG3meiRjXw72UsaASMfc
-         L8hg==
-X-Gm-Message-State: AOAM5318vbQBI4eIrutJ7DdsRb0shGzQeAUvGN3M1x2N/nVIO6EIkLhB
-        kCGtux4bDY3/FkT4/E0Mhs1YgBd5Xv0H6R1q4cc=
-X-Google-Smtp-Source: ABdhPJzFcy4mK6bJmMYFxpaZyEo+yPhpxPHh2sNMK6umqOwlFd4WvO6vWoHyEep6TDB1Fj18G+a0Drf/3sYFkbR28vc=
-X-Received: by 2002:a1c:81ce:: with SMTP id c197mr7670840wmd.111.1602149848958;
- Thu, 08 Oct 2020 02:37:28 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fK7DrchbZqdfBsz7y7likbfCz9mOIC+hUmwv4mdi41I=;
+        b=RyUxcSD73/EsXyBkIdtdu0FdkJ/IVRhgydBSyNHImUs4ZVYnfe5vZQkCdvYMRfGDr+
+         zIad4fuDEfjO1uOnUHvgmTyFK98fpOcFzBpQ8iJOjp2o7vewKRXwuNGFpAR+LK10x1Ay
+         JwQR9GimcDV61ezo5374AAfHBPW83ZLGgDjpMHupIp1WicVIPoBtO6Vbr/RHqG9ENCs1
+         qivc9KbJc35HrQkG/jGqTZRwhm6BomIWV3pBs54VYc5jnfq00Y38lo0M3mI6ODTFSV08
+         1HQqKANjZNwEAccB0OJBKMUP9DiRrYtI+BoQZgJ7UMczXvZW2K5jxrMM1vn2arPC+NFm
+         wQxw==
+X-Gm-Message-State: AOAM532TEhOr27x9VkuoiNem7qw23WIU9ZOvL2yBSubjw92GGKG1Kbzp
+        zdfz3l3sBFTV4J8tE1YPPXk=
+X-Google-Smtp-Source: ABdhPJxXbEx+g9sV5+NKVNFiaHg4G7F2F8qMDXQe772KKfOI7pVX+F31T3eHInm9sRL1xLbB6V+GZA==
+X-Received: by 2002:a05:6402:384:: with SMTP id o4mr8062191edv.387.1602150282845;
+        Thu, 08 Oct 2020 02:44:42 -0700 (PDT)
+Received: from skbuf ([188.26.229.171])
+        by smtp.gmail.com with ESMTPSA id pj5sm3701206ejb.118.2020.10.08.02.44.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Oct 2020 02:44:42 -0700 (PDT)
+Date:   Thu, 8 Oct 2020 12:44:40 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH net-next v6 4/7] net: dsa: hellcreek: Add support for
+ hardware timestamping
+Message-ID: <20201008094440.oede2fucgpgcfx6a@skbuf>
+References: <20201004143000.blb3uxq3kwr6zp3z@skbuf>
+ <87imbn98dd.fsf@kurt>
+ <20201006072847.pjygwwtgq72ghsiq@skbuf>
+ <87tuv77a83.fsf@kurt>
+ <20201006133222.74w3r2jwwhq5uop5@skbuf>
+ <87r1qb790w.fsf@kurt>
+ <20201006140102.6q7ep2w62jnilb22@skbuf>
+ <87lfgiqpze.fsf@kurt>
+ <20201007105458.gdbrwyzfjfaygjke@skbuf>
+ <87362pjev0.fsf@kurt>
 MIME-Version: 1.0
-References: <7ff312f910ada8893fa4db57d341c628d1122640.1601387231.git.lucien.xin@gmail.com>
- <202009300218.2AcHEN0L-lkp@intel.com> <20201003040824.GG70998@localhost.localdomain>
- <CADvbK_cPX1f5jrGsKuvya7ssOFPTsG7daBCkOP-NGN9hpzf5Vw@mail.gmail.com>
- <CADvbK_eXnzjDCypRkep9JqxBFV=cMXNkSZr4nyAaMiDc1VGXJg@mail.gmail.com>
- <CADvbK_fzASk9dLbHLNtLLc+uS7hLz6nDi2CESgN55Yh-o92+rQ@mail.gmail.com> <20201005190114.GL70998@localhost.localdomain>
-In-Reply-To: <20201005190114.GL70998@localhost.localdomain>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 8 Oct 2020 17:37:17 +0800
-Message-ID: <CADvbK_fmWxXzHjvmCf-BoDiXrj6FAOR5MR4=SiLCy3Q31E2-ZA@mail.gmail.com>
-Subject: Re: [PATCH net-next 11/15] sctp: add udphdr to overhead when udp_port
- is set
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     kernel test robot <lkp@intel.com>,
-        network dev <netdev@vger.kernel.org>,
-        linux-sctp@vger.kernel.org, kbuild-all@lists.01.org,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Michael Tuexen <tuexen@fh-muenster.de>,
-        davem <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87362pjev0.fsf@kurt>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 6, 2020 at 3:01 AM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Sat, Oct 03, 2020 at 08:24:34PM +0800, Xin Long wrote:
-> > On Sat, Oct 3, 2020 at 7:23 PM Xin Long <lucien.xin@gmail.com> wrote:
-> > >
-> > > On Sat, Oct 3, 2020 at 4:12 PM Xin Long <lucien.xin@gmail.com> wrote:
-> > > >
-> > > > On Sat, Oct 3, 2020 at 12:08 PM Marcelo Ricardo Leitner
-> > > > <marcelo.leitner@gmail.com> wrote:
-> > > > >
-> > > > > On Wed, Sep 30, 2020 at 03:00:42AM +0800, kernel test robot wrote:
-> > > > > > Hi Xin,
-> > > > > >
-> > > > > > Thank you for the patch! Yet something to improve:
-> > > > >
-> > > > > I wonder how are you planning to fix this. It is quite entangled.
-> > > > > This is not performance critical. Maybe the cleanest way out is to
-> > > > > move it to a .c file.
-> > > > >
-> > > > > Adding a
-> > > > > #if defined(CONFIG_IP_SCTP) || defined(CONFIG_IP_SCTP_MODULE)
-> > > > > in there doesn't seem good.
-> > > > >
-> > > > > >    In file included from include/net/sctp/checksum.h:27,
-> > > > > >                     from net/netfilter/nf_nat_proto.c:16:
-> > > > > >    include/net/sctp/sctp.h: In function 'sctp_mtu_payload':
-> > > > > > >> include/net/sctp/sctp.h:583:31: error: 'struct net' has no member named 'sctp'; did you mean 'ct'?
-> > > > > >      583 |   if (sock_net(&sp->inet.sk)->sctp.udp_port)
-> > > > > >          |                               ^~~~
-> > > > > >          |                               ct
-> > > > > >
-> > > > Here is actually another problem, I'm still thinking how to fix it.
-> > > >
-> > > > Now sctp_mtu_payload() returns different value depending on
-> > > > net->sctp.udp_port. but net->sctp.udp_port can be changed by
-> > > > "sysctl -w" anytime. so:
->
-> Good point.
->
-> > > >
-> > > > In sctp_packet_config() it gets overhead/headroom by calling
-> > > > sctp_mtu_payload(). When 'udp_port' is 0, it's IP+MAC header
-> > > > size. Then if 'udp_port' is changed to 9899 by 'sysctl -w',
-> > > > udphdr will also be added to the packet in sctp_v4_xmit(),
-> > > > and later the headroom may not be enough for IP+MAC headers.
-> > > >
-> > > > I'm thinking to add sctp_sock->udp_port, and it'll be set when
-> > > > the sock is created with net->udp_port. but not sure if we should
-> > > > update sctp_sock->udp_port with  net->udp_port when sending packets?
->
-> I don't think so,
->
-> > > something like:
-> ...
-> > diff --git a/net/sctp/output.c b/net/sctp/output.c
-> > index 6614c9fdc51e..c96b13ec72f4 100644
-> > --- a/net/sctp/output.c
-> > +++ b/net/sctp/output.c
-> > @@ -91,6 +91,14 @@ void sctp_packet_config(struct sctp_packet *packet,
-> > __u32 vtag,
-> >         if (asoc) {
-> >                 sk = asoc->base.sk;
-> >                 sp = sctp_sk(sk);
-> > +
-> > +               if (unlikely(sp->udp_port != sock_net(sk)->sctp.udp_port)) {
->
-> RFC6951 has:
->
-> 6.1.  Get or Set the Remote UDP Encapsulation Port Number
->       (SCTP_REMOTE_UDP_ENCAPS_PORT)
-> ...
->    sue_assoc_id:  This parameter is ignored for one-to-one style
->       sockets.  For one-to-many style sockets, the application may fill
->       in an association identifier or SCTP_FUTURE_ASSOC for this query.
->       It is an error to use SCTP_{CURRENT|ALL}_ASSOC in sue_assoc_id.
->
->    sue_address:  This specifies which address is of interest.  If a
->       wildcard address is provided, it applies only to future paths.
->
-> So I'm not seeing a reason to have a system wide knob that takes
-> effect in run time like this.
-> Enable, start apps, and they keep behaving as initially configured.
-> Need to disable? Restart the apps/sockets.
->
-> Thoughts?
-Right, not to update it on tx path makes more sense. Thanks.
+On Thu, Oct 08, 2020 at 10:34:11AM +0200, Kurt Kanzenbach wrote:
+> On Wed Oct 07 2020, Vladimir Oltean wrote:
+> > On Wed, Oct 07, 2020 at 12:39:49PM +0200, Kurt Kanzenbach wrote:
+> >> For instance the hellcreek switch has actually three ptp hardware
+> >> clocks and the time stamping can be configured to use either one of
+> >> them.
+> >
+> > The sja1105 also has a corrected and an uncorrected PTP clock that can
+> > take timestamps. Initially I had thought I'd be going to spend some time
+> > figuring out multi-PHC support, but now I don't see any practical reason
+> > to use the uncorrected PHC for anything.
+> 
+> Just out of curiosity: How do you implement 802.1AS then? My
+> understanding is that the free-running clock has to be used for the
 
->
-> > +                       __u16 port = sock_net(sk)->sctp.udp_port;
-> > +
-> > +                       if (!sp->udp_port || !port)
-> > +                               sctp_assoc_update_frag_point(asoc);
-> > +                       sp->udp_port = port;
-> > +               }
-> >         }
+Has to be? I couldn't find that wording in IEEE 802.1AS-2011.
+
+> calculation of the peer delays and such meaning there should be a way to
+> get access to both PHCs or having some form of cross timestamping
+> available.
+> 
+> The hellcreek switch can take cross snapshots of all three ptp clocks in
+> hardware for that purpose.
+
+Well, at the end of the day, all the other TSN offloads (tc-taprio,
+tc-gate) will still have to use the synchronized PTP clock, so what
+we're doing is we're simply letting that clock be synchronized by ptp4l.
+
+> >> > So when you'll poll for TX timestamps, you'll receive a TX
+> >> > timestamp from the PHY and another one from the switch, and those will
+> >> > be in a race with one another, so you won't know which one is which.
+> >> 
+> >> OK. So what happens if the driver will accept to disable hardware
+> >> timestamping? Is there anything else that needs to be implemented? Are
+> >> there (good) examples?
+> >
+> > It needs to not call skb_complete_tx_timestamp() and friends.
+> >
+> > For PHY timestamping, it also needs to invoke the correct methods for RX
+> > and for TX, where the PHY timestamping hooks will get called. I don't
+> > think that DSA is compatible yet with PHY timestamping, but it is
+> > probably a trivial modification.
+> 
+> Hmm? If DSA doesn't support PHY timestamping how are other DSA drivers
+> dealing with it then? I'm getting really confused.
+
+They aren't dealing with it, of course.
+
+> Furthermore, there is no hellcreek hardware available with timestamping
+> capable PHYs. How am I supposed to even test this?
+> 
+> For now, until there is hardware available, PHY timestamping is not
+> supported with the hellcreek switch.
+
+I was just pointing out that this is something you'll certainly have to
+change if somebody will want PHY timestamping.
+
+Even without hardware, you _could_ probably test that DSA is doing the
+right thing by simply adding the PTP timestamping ops to a PHY driver
+that you own, and inject dummy timestamps. The expectation becomes that
+user space gets those dummy timestamps, and not the ones emitted by your
+switch.
