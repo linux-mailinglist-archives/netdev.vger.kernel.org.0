@@ -2,112 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACB75287D25
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 22:31:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85FA1287D33
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 22:32:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730435AbgJHUa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 16:30:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:52115 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730429AbgJHUa6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 16:30:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1602189057;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=lgT/Pao2dhRy7r2cOmOSyyn/G9gLMf1e4iWJG7ETJJY=;
-        b=M2zZYYdJ5+q+9TleHTorYoPeLeaQ/nhamfBEfqyigEje8LU5drjh6BmyAOpV+aVx+XGfx5
-        4X5eo7mbSVR9yA90vRjWjRWEHmxQ2cbzdo/DTxpi6Zpzcz8AAm2aKKC+kqTyQq6Ut6F14D
-        hzjlO1nKEtxYHCUWWHgT5KogDayU0CQ=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-332-OUUmGZirOvqVOOmU4MOAJw-1; Thu, 08 Oct 2020 16:30:55 -0400
-X-MC-Unique: OUUmGZirOvqVOOmU4MOAJw-1
-Received: by mail-wm1-f69.google.com with SMTP id b20so4442668wmj.1
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 13:30:55 -0700 (PDT)
+        id S1730462AbgJHUc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 16:32:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56562 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725988AbgJHUc1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 16:32:27 -0400
+Received: from mail-vk1-xa31.google.com (mail-vk1-xa31.google.com [IPv6:2607:f8b0:4864:20::a31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A85FC0613D2
+        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 13:32:27 -0700 (PDT)
+Received: by mail-vk1-xa31.google.com with SMTP id l23so571952vkm.1
+        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 13:32:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VdAcJeFgVToEY9pT6Lize6/WNs7Rm8Ru5oXG52nT+gc=;
+        b=FqSlDGpA+4qW4CsF+DMsJAdTjsVCD6qnvRKGzw2zFy8GY4b1uchr5xEK6EGyjQLOjt
+         PhexLpfFrX1WdmdU29mjv3PC5D913sEPrMbeKwu8tBtnFNPQnuUfcCEtCwRI7OHmvkO3
+         /YoLUTKj5Xgh77aN+a650MxfLyF4x5r2XlojxmodvJWOYpO5yITftxaz3p9DoDLPImIW
+         M4bsmcF/Lxb6vrEjZT5R+jtLdZaMioR+zfCE8B60tZ9zLxE9wNnzCtMrgA4tSDr0K1eJ
+         h2bJ3E2md2VHMZeOgEFlCA7DGTXKLKX3Ed/kvZKGmcOFiFCnekbpBG35Fk/KHn+H2koK
+         yEbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=lgT/Pao2dhRy7r2cOmOSyyn/G9gLMf1e4iWJG7ETJJY=;
-        b=XFyktQ76+I8W9lJ4dh+W+MfpkCgCiwvrULsJiaUb3j77PwAKXnj9YMwQwwNC1W2fWh
-         qaqXrboGFEfTQXssQLvf59azRYx9kfaQ9CLYaEtTKqJAtxGB7aqYenvZE7m8U0kkfANP
-         Ny7JB+Y/9NgSxXwqPpw/79z1F9ntBn/QWFDfRMF2FDqtPhQsQCe6sBeHkKVNaAVayqX0
-         /IzOnD7ZIaCLwP+p+fKRC6obne6E+bLbTn4Qz/NQjJ6upMl6h/HIAOW/ViLBWqiCVrQ6
-         68Ne5OZ++jwDxl5+gfAV+UkSX8y123DXhuiLGyYFjtpvm7uMB7faQ1yUrWRpv1toEREE
-         nE1A==
-X-Gm-Message-State: AOAM531TdJp1StBtJJYmT7H8D88z6hUxEKvOP6RTpwgKKCLJO/yapm8a
-        2Cfp90eZbb92e8iYWG5FN1F4U3WBlOgNl63SigQSBfs/1iNGndX4GdVQqTs/06QhXhwxlDKnn+a
-        QgrEuelWtTHMOQ0xa
-X-Received: by 2002:a7b:c305:: with SMTP id k5mr10972363wmj.102.1602189054221;
-        Thu, 08 Oct 2020 13:30:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz39hXz1Of1vVfE+ExLOVbu6aOgDjiquQ4GfgQ/XcsmEw8zvuDHbrPJdW4dVAvGz1TOUqEloQ==
-X-Received: by 2002:a7b:c305:: with SMTP id k5mr10972350wmj.102.1602189054015;
-        Thu, 08 Oct 2020 13:30:54 -0700 (PDT)
-Received: from redhat.com (bzq-79-179-71-128.red.bezeqint.net. [79.179.71.128])
-        by smtp.gmail.com with ESMTPSA id a81sm9549014wmf.32.2020.10.08.13.30.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Oct 2020 13:30:53 -0700 (PDT)
-Date:   Thu, 8 Oct 2020 16:30:51 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        elic@nvidia.com, groug@kaod.org, jasowang@redhat.com,
-        lkp@intel.com, michael.christie@oracle.com, mst@redhat.com,
-        si-wei.liu@oracle.com, stable@vger.kernel.org
-Subject: [GIT PULL] vhost,vdpa: last minute fixes
-Message-ID: <20201008163051-mutt-send-email-mst@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VdAcJeFgVToEY9pT6Lize6/WNs7Rm8Ru5oXG52nT+gc=;
+        b=d9YoyrX65LpcbAyDU2rcUkQzGLgjo4hQzfMzsNaqqnLFYfO7sAo0NcwIBI21F953pl
+         JIGm/V+q+nVMUZf//1VHp0Q3j099XJnEIMHcjS/KRyQoM9N3ENp6w033CMAXDg1CYR1G
+         u7IcPUoIrBioTY10lIIh1wpPNqDrjtaBEeD1WM1Pk5f7VJjcXkAsO51RDo0Z3b+812Ux
+         vOUUsBfsSE+dLcV2YqlZTQq5dFGEs9cf6SJ5TPmrd7lTJIqTu54P+BD5hwyfQmy3d87X
+         LkKkSBpShDJb1SKjpHoMtnTvXa8jUHnrTAwTfRVzhavseup+VXF7wD9cKjcX4Hhtg+2I
+         qGhQ==
+X-Gm-Message-State: AOAM533BTfblEocubCXK+sdlEPJMZKxtEC/Mz8ThPFNQ2L8iF6hzIB+N
+        kNmLvSHYGmwMGcVXQ8AtqrewFOEkep4=
+X-Google-Smtp-Source: ABdhPJz9DtusYdDCzunsJYaH0i8C06mHOjzVmzkG0gUZfYD6OCaXLxy9sZ68nCm1vBE6zuyPR2DCXg==
+X-Received: by 2002:a1f:b24d:: with SMTP id b74mr2255921vkf.2.1602189145741;
+        Thu, 08 Oct 2020 13:32:25 -0700 (PDT)
+Received: from mail-vs1-f53.google.com (mail-vs1-f53.google.com. [209.85.217.53])
+        by smtp.gmail.com with ESMTPSA id t6sm842568vke.28.2020.10.08.13.32.24
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Oct 2020 13:32:24 -0700 (PDT)
+Received: by mail-vs1-f53.google.com with SMTP id 5so3794736vsu.5
+        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 13:32:24 -0700 (PDT)
+X-Received: by 2002:a67:d84:: with SMTP id 126mr5928479vsn.51.1602189143799;
+ Thu, 08 Oct 2020 13:32:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mutt-Fcc: =sent
+References: <20201008012154.11149-1-xiyou.wangcong@gmail.com>
+ <CA+FuTSeMYFh3tY9cJN6h02E+r3BST=w74+pD=zraLXsmJTLZXA@mail.gmail.com>
+ <CAM_iQpWCR84sD6dZBforgt4cg-Jya91D6EynDo2y2sC7vi-vMg@mail.gmail.com>
+ <CA+FuTSdKa1Q36ONbsGOMqXDCUiiDNsA6rkqyrzB+eXJj=MyRKA@mail.gmail.com>
+ <CAJht_ENnmYRh-RomBodJE0HoFzaLQhD+DKEu2WWST+B43JxWcQ@mail.gmail.com>
+ <CA+FuTSdWYDs5u+3VzpTA1-Xs1OiVzv8QiKGTH4GUYrvXFfGT_A@mail.gmail.com> <CAJht_ENMFY_HwaJDjvxZbQgcDv7btC+bU6gzdjyddY-JS=a6Lg@mail.gmail.com>
+In-Reply-To: <CAJht_ENMFY_HwaJDjvxZbQgcDv7btC+bU6gzdjyddY-JS=a6Lg@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 8 Oct 2020 16:31:48 -0400
+X-Gmail-Original-Message-ID: <CA+FuTScizeZC-ndVvXj4VyArth2gnxoh3kTSoe5awGoiFXtkBA@mail.gmail.com>
+Message-ID: <CA+FuTScizeZC-ndVvXj4VyArth2gnxoh3kTSoe5awGoiFXtkBA@mail.gmail.com>
+Subject: Re: [Patch net] ip_gre: set dev->hard_header_len properly
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        syzbot <syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com>,
+        William Tu <u9012063@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit a127c5bbb6a8eee851cbdec254424c480b8edd75:
+On Thu, Oct 8, 2020 at 4:11 PM Xie He <xie.he.0141@gmail.com> wrote:
+>
+> On Thu, Oct 8, 2020 at 12:20 PM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > On Thu, Oct 8, 2020 at 3:17 PM Xie He <xie.he.0141@gmail.com> wrote:
+> > >
+> > > However, there's something I don't understand in the GRE code. The
+> > > ipgre_header function only creates an IP header (20 bytes) + a GRE
+> > > base header (4 bytes), but pushes and returns "t->hlen +
+> > > sizeof(*iph)". What is t->hlen?
+> >
+> > GRE is variable length depending on flags:
+> >
+> >         tunnel->tun_hlen = gre_calc_hlen(tunnel->parms.o_flags);
+> >
+> >
+> > > It seems to me it is the sum of
+> > > t->tun_hlen and t->encap_hlen. What are these two?
+>
+> OK. I understand that t->tun_hlen is the GRE header length. What is
+> t->encap_hlen?
 
-  vhost-vdpa: fix backend feature ioctls (2020-09-24 05:54:36 -0400)
+I've looked at that closely either.
 
-are available in the Git repository at:
+Appears to be to account for additional FOU/GUE encap:
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+"
+commit 56328486539ddd07cbaafec7a542a2c8a3043623
+Author: Tom Herbert <therbert@google.com>
+Date:   Wed Sep 17 12:25:58 2014 -0700
+    net: Changes to ip_tunnel to support foo-over-udp encapsulation
 
-for you to fetch changes up to aff90770e54cdb40228f2ab339339e95d0aa0c9a:
+    This patch changes IP tunnel to support (secondary) encapsulation,
+    Foo-over-UDP. Changes include:
 
-  vdpa/mlx5: Fix dependency on MLX5_CORE (2020-10-08 16:02:00 -0400)
+    1) Adding tun_hlen as the tunnel header length, encap_hlen as the
+       encapsulation header length, and hlen becomes the grand total
+       of these.
+    2) Added common netlink define to support FOU encapsulation.
+    3) Routines to perform FOU encapsulation.
 
-----------------------------------------------------------------
-vhost,vdpa: last minute fixes
-
-Some last minute fixes. The last two of them haven't been in next but
-they do seem kind of obvious, very small and safe, fix bugs reported in
-the field, and they are both in a new mlx5 vdpa driver, so it's not like
-we can introduce regressions.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-Eli Cohen (1):
-      vdpa/mlx5: Fix dependency on MLX5_CORE
-
-Greg Kurz (3):
-      vhost: Don't call access_ok() when using IOTLB
-      vhost: Use vhost_get_used_size() in vhost_vring_set_addr()
-      vhost: Don't call log_access_ok() when using IOTLB
-
-Mike Christie (1):
-      vhost vdpa: fix vhost_vdpa_open error handling
-
-Si-Wei Liu (3):
-      vhost-vdpa: fix vhost_vdpa_map() on error condition
-      vhost-vdpa: fix page pinning leakage in error path
-      vdpa/mlx5: should keep avail_index despite device status
-
- drivers/vdpa/Kconfig              |   7 +--
- drivers/vdpa/mlx5/net/mlx5_vnet.c |  20 ++++--
- drivers/vhost/vdpa.c              | 127 +++++++++++++++++++++++---------------
- drivers/vhost/vhost.c             |  33 +++++++---
- 4 files changed, 117 insertions(+), 70 deletions(-)
-
+    Signed-off-by: Tom Herbert <therbert@google.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+"
