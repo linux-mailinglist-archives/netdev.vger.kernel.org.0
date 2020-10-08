@@ -2,195 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8C43287EC3
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 00:41:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF154287EC8
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 00:44:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730535AbgJHWlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 18:41:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48232 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725857AbgJHWle (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 18:41:34 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 441E8C0613D2
-        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 15:41:34 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id x7so210588eje.8
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 15:41:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WKAAq4D39s8StG/M1lO07+d0CiCysI9oSAC/9fh4N/g=;
-        b=y0e6dbaEHBOEaWBMLIsBwYXUrCmlIkVZjzL674Ojaz3MoNegh7jFicauDQc7uBzpmV
-         I8yR3KOjLE9xrw+FQgK0qsWXwBXab8/hiy0NJqBkldVk/7XjIM1+v4qGGG+xtHxNVUb8
-         crL5loR9gnnIkU1SFWJPBsRrF7Kp4uEsLLC/Mby2tx47G9iLQJERgds1HG9c2nbm3WHp
-         vABJiB/JlPYSjmkLQ98xiY4tHPb3+htluy89bDn32BMR9eaxVeghDrvlGCI+GnSmNopp
-         ez5qNI+eYRxA7+EXip3YNmdPasWUqPYcfMJ7oJE3r4lJ8nzmaelpH7HOajw6gPobWE0C
-         daig==
+        id S1730613AbgJHWoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 18:44:18 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:52933 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730566AbgJHWoS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 18:44:18 -0400
+Received: by mail-wm1-f65.google.com with SMTP id e23so950535wme.2
+        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 15:44:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WKAAq4D39s8StG/M1lO07+d0CiCysI9oSAC/9fh4N/g=;
-        b=fRgr6CT9OOFzMVBVcEun90YQxs+rLg3ZREMftlqzSoid9K4TfRK+LN6mypkl1j1mft
-         w21kLYcjuB9NAR2wNJTJXSHKkuH/n05skQIGqz4pGylFiUfjiPnyW4NDmTPtFMBf+beZ
-         9P1AQeKwyFA1r0Ra7m237d5vLp7v7j8kTZaD2ldBGrxkNO1cHHnf1ScSpvOG1UgcpYSX
-         Cu3AGaQrDtqY9nFP2XG33JV4D647//l8JY/yH2qXszh3YzIQGo+UBPMbRIul/P8//Cd0
-         ZPjxj6M9h2vE68Dp33APkJU7MNwqmjPVKKM/FgrqMu89AOyqSiGRn+mOqQd/OC1y0zEd
-         gI4g==
-X-Gm-Message-State: AOAM530y/Z2OUfsaLsXsYLp60Wqm0MbjfzJ8uwSd6RtfjEHC+AYwNkP+
-        Jqd9kUBjT4TKu6MsDEjpVXqyZ+zkiIYRPnPn9QQzgg==
-X-Google-Smtp-Source: ABdhPJzn83obXIaxacWoR+1oBmm3WlzAU5EGjnIfldcPJdG8BK/orzWfCwt859OcsJxummItwWCyBowjIZCEM2ZM9Ow=
-X-Received: by 2002:a17:906:4306:: with SMTP id j6mr11588545ejm.523.1602196892931;
- Thu, 08 Oct 2020 15:41:32 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=QoGWFApjFmPwuVg12KwUBchVevUx69KKitnsFYiHYbc=;
+        b=XijbzW5yypHVqzB4frDYal3/2qipFZT2VkIBFUBWd0hkMiqeoziF3bPNxejFqQPtP3
+         tiE08nxPza+BCKNJt9khL5hfaGkZ5Pn0PMHD9WsykOTR7sHCs/UhPMeyHv1e6e4BK3IO
+         7NHq1fpmDeNTfGP6p7VR5fmtvtk+it+JjOkRhJnoQEx2Gn268hY0/Gy22sPpLplKKsNW
+         5K63EEnTlXlEODWNGd9J0LkYTKaERW2aFXVvdKzJxmH8aI6J7vsqm4UDhJHxWgLYL7sa
+         ugE97tbBkZQgzCXgXaghxvJVMQIn6nQSonskzZvp2a+nLMVjpcuf5uAlA9g1s/KVvAr8
+         4ocw==
+X-Gm-Message-State: AOAM532F/3/eqQQ3UVi6oahagCuYNsT88OPUm9jC3vq90Z7nlhCoOW5M
+        gKxMrrWWdrcCRvybvu1rT/Q=
+X-Google-Smtp-Source: ABdhPJzgcX5y4mU2wOcsCl5+4e1DVM3ehj2OxfpvOLh3sIZTwoDl6cDzFfMQUx5uVXrz88K3ILsGfA==
+X-Received: by 2002:a7b:c189:: with SMTP id y9mr10450864wmi.141.1602197053671;
+        Thu, 08 Oct 2020 15:44:13 -0700 (PDT)
+Received: from ?IPv6:2601:647:4802:9070:68d6:3fd5:5a8b:9959? ([2601:647:4802:9070:68d6:3fd5:5a8b:9959])
+        by smtp.gmail.com with ESMTPSA id 40sm9600575wrc.46.2020.10.08.15.44.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Oct 2020 15:44:13 -0700 (PDT)
+Subject: Re: [PATCH net-next RFC v1 07/10] nvme-tcp : Recalculate crc in the
+ end of the capsule
+To:     Boris Pismenny <borisp@mellanox.com>, kuba@kernel.org,
+        davem@davemloft.net, saeedm@nvidia.com, hch@lst.de, axboe@fb.com,
+        kbusch@kernel.org, viro@zeniv.linux.org.uk, edumazet@google.com
+Cc:     Yoray Zack <yorayz@mellanox.com>,
+        Ben Ben-Ishay <benishay@mellanox.com>,
+        boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
+        netdev@vger.kernel.org, Or Gerlitz <ogerlitz@mellanox.com>
+References: <20200930162010.21610-1-borisp@mellanox.com>
+ <20200930162010.21610-8-borisp@mellanox.com>
+From:   Sagi Grimberg <sagi@grimberg.me>
+Message-ID: <a17cf1ca-4183-8f6c-8470-9d45febb755b@grimberg.me>
+Date:   Thu, 8 Oct 2020 15:44:07 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20201005182446.977325-1-david.m.ertman@intel.com>
- <20201005182446.977325-2-david.m.ertman@intel.com> <20201006172317.GN1874917@unreal>
- <DM6PR11MB2841976B8E89C980CCC29AD2DD0B0@DM6PR11MB2841.namprd11.prod.outlook.com>
-In-Reply-To: <DM6PR11MB2841976B8E89C980CCC29AD2DD0B0@DM6PR11MB2841.namprd11.prod.outlook.com>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Thu, 8 Oct 2020 15:41:21 -0700
-Message-ID: <CAPcyv4hoS7ZT_PPrXqFBzEHBKL-O4x1jHtY8x9WWesCPA=2E0g@mail.gmail.com>
-Subject: Re: [PATCH v2 1/6] Add ancillary bus support
-To:     "Ertman, David M" <david.m.ertman@intel.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        "tiwai@suse.de" <tiwai@suse.de>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "jgg@nvidia.com" <jgg@nvidia.com>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "ranjani.sridharan@linux.intel.com" 
-        <ranjani.sridharan@linux.intel.com>,
-        "pierre-louis.bossart@linux.intel.com" 
-        <pierre-louis.bossart@linux.intel.com>,
-        "fred.oh@linux.intel.com" <fred.oh@linux.intel.com>,
-        "parav@mellanox.com" <parav@mellanox.com>,
-        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        "Patil, Kiran" <kiran.patil@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200930162010.21610-8-borisp@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 8, 2020 at 3:04 PM Ertman, David M <david.m.ertman@intel.com> wrote:
->
-> > -----Original Message-----
-> > From: Leon Romanovsky <leon@kernel.org>
-> > Sent: Tuesday, October 6, 2020 10:23 AM
-> > To: Ertman, David M <david.m.ertman@intel.com>
-> > Cc: alsa-devel@alsa-project.org; tiwai@suse.de; broonie@kernel.org; linux-
-> > rdma@vger.kernel.org; jgg@nvidia.com; dledford@redhat.com;
-> > netdev@vger.kernel.org; davem@davemloft.net; kuba@kernel.org;
-> > gregkh@linuxfoundation.org; ranjani.sridharan@linux.intel.com; pierre-
-> > louis.bossart@linux.intel.com; fred.oh@linux.intel.com;
-> > parav@mellanox.com; Saleem, Shiraz <shiraz.saleem@intel.com>; Williams,
-> > Dan J <dan.j.williams@intel.com>; Patil, Kiran <kiran.patil@intel.com>
-> > Subject: Re: [PATCH v2 1/6] Add ancillary bus support
-> >
-> > On Mon, Oct 05, 2020 at 11:24:41AM -0700, Dave Ertman wrote:
-> > > Add support for the Ancillary Bus, ancillary_device and ancillary_driver.
-> > > It enables drivers to create an ancillary_device and bind an
-> > > ancillary_driver to it.
-> > >
-> > > The bus supports probe/remove shutdown and suspend/resume callbacks.
-> > > Each ancillary_device has a unique string based id; driver binds to
-> > > an ancillary_device based on this id through the bus.
-> > >
-> > > Co-developed-by: Kiran Patil <kiran.patil@intel.com>
-> > > Signed-off-by: Kiran Patil <kiran.patil@intel.com>
-> > > Co-developed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-> > > Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-> > > Co-developed-by: Fred Oh <fred.oh@linux.intel.com>
-> > > Signed-off-by: Fred Oh <fred.oh@linux.intel.com>
-> > > Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-> > > Reviewed-by: Shiraz Saleem <shiraz.saleem@intel.com>
-> > > Reviewed-by: Parav Pandit <parav@mellanox.com>
-> > > Reviewed-by: Dan Williams <dan.j.williams@intel.com>
-> > > Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
-> > > ---
-> >
-> > <...>
-> >
-> > > +/**
-> > > + * __ancillary_driver_register - register a driver for ancillary bus devices
-> > > + * @ancildrv: ancillary_driver structure
-> > > + * @owner: owning module/driver
-> > > + */
-> > > +int __ancillary_driver_register(struct ancillary_driver *ancildrv, struct
-> > module *owner)
-> > > +{
-> > > +   if (WARN_ON(!ancildrv->probe) || WARN_ON(!ancildrv->remove)
-> > ||
-> > > +       WARN_ON(!ancildrv->shutdown) || WARN_ON(!ancildrv-
-> > >id_table))
-> > > +           return -EINVAL;
-> >
-> > In our driver ->shutdown is empty, it will be best if ancillary bus will
-> > do "if (->remove) ..->remove()" pattern.
-> >
->
-> Yes, looking it over, only the probe needs to mandatory.  I will change the others to the
-> conditional model, and adjust the WARN_ONs.
->
->
-> > > +
-> > > +   ancildrv->driver.owner = owner;
-> > > +   ancildrv->driver.bus = &ancillary_bus_type;
-> > > +   ancildrv->driver.probe = ancillary_probe_driver;
-> > > +   ancildrv->driver.remove = ancillary_remove_driver;
-> > > +   ancildrv->driver.shutdown = ancillary_shutdown_driver;
-> > > +
-> >
-> > I think that this part is wrong, probe/remove/shutdown functions should
-> > come from ancillary_bus_type.
->
-> From checking other usage cases, this is the model that is used for probe, remove,
-> and shutdown in drivers.  Here is the example from Greybus.
->
-> int greybus_register_driver(struct greybus_driver *driver, struct module *owner,
->                             const char *mod_name)
-> {
->         int retval;
->
->         if (greybus_disabled())
->                 return -ENODEV;
->
->         driver->driver.bus = &greybus_bus_type;
->         driver->driver.name = driver->name;
->         driver->driver.probe = greybus_probe;
->         driver->driver.remove = greybus_remove;
->         driver->driver.owner = owner;
->         driver->driver.mod_name = mod_name;
->
->
-> > You are overwriting private device_driver
-> > callbacks that makes impossible to make container_of of ancillary_driver
-> > to chain operations.
-> >
->
-> I am sorry, you lost me here.  you cannot perform container_of on the callbacks
-> because they are pointers, but if you are referring to going from device_driver
-> to the auxiliary_driver, that is what happens in auxiliary_probe_driver in the
-> very beginning.
->
-> static int auxiliary_probe_driver(struct device *dev)
-> 145 {
-> 146         struct auxiliary_driver *auxdrv = to_auxiliary_drv(dev->driver);
-> 147         struct auxiliary_device *auxdev = to_auxiliary_dev(dev);
->
-> Did I miss your meaning?
 
-I think you're misunderstanding the cases when the
-bus_type.{probe,remove} is used vs the driver.{probe,remove}
-callbacks. The bus_type callbacks are to implement a pattern where the
-'probe' and 'remove' method are typed to the bus device type. For
-example 'struct pci_dev *' instead of raw 'struct device *'. See this
-conversion of dax bus as an example of going from raw 'struct device
-*' typed probe/remove to dax-device typed probe/remove:
+> crc offload of the nvme capsule. Check if all the skb bits
+> are on, and if not recalculate the crc in SW and check it.
 
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=75797273189d
+Can you clarify in the patch description that this is only
+for pdu data digest and not header digest?
+
+> 
+> This patch reworks the receive-side crc calculation to always
+> run at the end, so as to keep a single flow for both offload
+> and non-offload. This change simplifies the code, but it may degrade
+> performance for non-offload crc calculation.
+
+??
+
+ From my scan it doeesn't look like you do that.. Am I missing something?
+Can you explain?
+
+> 
+> Signed-off-by: Boris Pismenny <borisp@mellanox.com>
+> Signed-off-by: Ben Ben-Ishay <benishay@mellanox.com>
+> Signed-off-by: Or Gerlitz <ogerlitz@mellanox.com>
+> Signed-off-by: Yoray Zack <yorayz@mellanox.com>
+> ---
+>   drivers/nvme/host/tcp.c | 66 ++++++++++++++++++++++++++++++++++++-----
+>   1 file changed, 58 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
+> index 7bd97f856677..9a620d1dacb4 100644
+> --- a/drivers/nvme/host/tcp.c
+> +++ b/drivers/nvme/host/tcp.c
+> @@ -94,6 +94,7 @@ struct nvme_tcp_queue {
+>   	size_t			data_remaining;
+>   	size_t			ddgst_remaining;
+>   	unsigned int		nr_cqe;
+> +	bool			crc_valid;
+>   
+>   	/* send state */
+>   	struct nvme_tcp_request *request;
+> @@ -233,6 +234,41 @@ static inline size_t nvme_tcp_pdu_last_send(struct nvme_tcp_request *req,
+>   	return nvme_tcp_pdu_data_left(req) <= len;
+>   }
+>   
+> +static inline bool nvme_tcp_device_ddgst_ok(struct nvme_tcp_queue *queue)
+
+Maybe call it nvme_tcp_ddp_ddgst_ok?
+
+> +{
+> +	return queue->crc_valid;
+> +}
+> +
+> +static inline void nvme_tcp_device_ddgst_update(struct nvme_tcp_queue *queue,
+> +						struct sk_buff *skb)
+
+Maybe call it nvme_tcp_ddp_ddgst_update?
+
+> +{
+> +	if (queue->crc_valid)
+> +#ifdef CONFIG_TCP_DDP_CRC
+> +		queue->crc_valid = skb->ddp_crc;
+> +#else
+> +		queue->crc_valid = false;
+> +#endif
+> +}
+> +
+> +static void nvme_tcp_crc_recalculate(struct nvme_tcp_queue *queue,
+> +				     struct nvme_tcp_data_pdu *pdu)
+
+Maybe call it nvme_tcp_ddp_ddgst_recalc?
+
+> +{
+> +	struct nvme_tcp_request *req;
+> +	struct request *rq;
+> +
+> +	rq = blk_mq_tag_to_rq(nvme_tcp_tagset(queue), pdu->command_id);
+> +	if (!rq)
+> +		return;
+> +	req = blk_mq_rq_to_pdu(rq);
+> +	crypto_ahash_init(queue->rcv_hash);
+> +	req->ddp.sg_table.sgl = req->ddp.first_sgl;
+> +	/* req->ddp.sg_table is allocated and filled in nvme_tcp_setup_ddp */
+> +	ahash_request_set_crypt(queue->rcv_hash, req->ddp.sg_table.sgl, NULL,
+> +				le32_to_cpu(pdu->data_length));
+> +	crypto_ahash_update(queue->rcv_hash);
+> +}
+> +
+> +
+>   #ifdef CONFIG_TCP_DDP
+>   
+>   bool nvme_tcp_resync_request(struct sock *sk, u32 seq, u32 flags);
+> @@ -706,6 +742,7 @@ static void nvme_tcp_init_recv_ctx(struct nvme_tcp_queue *queue)
+>   	queue->pdu_offset = 0;
+>   	queue->data_remaining = -1;
+>   	queue->ddgst_remaining = 0;
+> +	queue->crc_valid = true;
+>   }
+>   
+>   static void nvme_tcp_error_recovery(struct nvme_ctrl *ctrl)
+> @@ -955,6 +992,8 @@ static int nvme_tcp_recv_data(struct nvme_tcp_queue *queue, struct sk_buff *skb,
+>   	struct nvme_tcp_request *req;
+>   	struct request *rq;
+>   
+> +	if (test_bit(NVME_TCP_Q_OFFLOADS, &queue->flags))
+> +		nvme_tcp_device_ddgst_update(queue, skb);
+
+Is the queue->data_digest condition missing here?
+
+>   	rq = blk_mq_tag_to_rq(nvme_tcp_tagset(queue), pdu->command_id);
+>   	if (!rq) {
+>   		dev_err(queue->ctrl->ctrl.device,
+> @@ -992,7 +1031,7 @@ static int nvme_tcp_recv_data(struct nvme_tcp_queue *queue, struct sk_buff *skb,
+>   		recv_len = min_t(size_t, recv_len,
+>   				iov_iter_count(&req->iter));
+>   
+> -		if (queue->data_digest)
+> +		if (queue->data_digest && !test_bit(NVME_TCP_Q_OFFLOADS, &queue->flags))
+>   			ret = skb_copy_and_hash_datagram_iter(skb, *offset,
+>   				&req->iter, recv_len, queue->rcv_hash);
+
+This is the skb copy and hash, not clear why you say that you move this
+to the end...
+
+>   		else
+> @@ -1012,7 +1051,6 @@ static int nvme_tcp_recv_data(struct nvme_tcp_queue *queue, struct sk_buff *skb,
+>   
+>   	if (!queue->data_remaining) {
+>   		if (queue->data_digest) {
+> -			nvme_tcp_ddgst_final(queue->rcv_hash, &queue->exp_ddgst);
+
+If I instead do:
+			if (!test_bit(NVME_TCP_Q_OFFLOADS,
+                                       &queue->flags))
+				nvme_tcp_ddgst_final(queue->rcv_hash,
+						     &queue->exp_ddgst);
+
+Does that help the mess in nvme_tcp_recv_ddgst?
+
+>   			queue->ddgst_remaining = NVME_TCP_DIGEST_LENGTH;
+>   		} else {
+>   			if (pdu->hdr.flags & NVME_TCP_F_DATA_SUCCESS) {
+> @@ -1033,8 +1071,11 @@ static int nvme_tcp_recv_ddgst(struct nvme_tcp_queue *queue,
+>   	char *ddgst = (char *)&queue->recv_ddgst;
+>   	size_t recv_len = min_t(size_t, *len, queue->ddgst_remaining);
+>   	off_t off = NVME_TCP_DIGEST_LENGTH - queue->ddgst_remaining;
+> +	bool ddgst_offload_fail;
+>   	int ret;
+>   
+> +	if (test_bit(NVME_TCP_Q_OFFLOADS, &queue->flags))
+> +		nvme_tcp_device_ddgst_update(queue, skb);
+>   	ret = skb_copy_bits(skb, *offset, &ddgst[off], recv_len);
+>   	if (unlikely(ret))
+>   		return ret;
+> @@ -1045,12 +1086,21 @@ static int nvme_tcp_recv_ddgst(struct nvme_tcp_queue *queue,
+>   	if (queue->ddgst_remaining)
+>   		return 0;
+>   
+> -	if (queue->recv_ddgst != queue->exp_ddgst) {
+> -		dev_err(queue->ctrl->ctrl.device,
+> -			"data digest error: recv %#x expected %#x\n",
+> -			le32_to_cpu(queue->recv_ddgst),
+> -			le32_to_cpu(queue->exp_ddgst));
+> -		return -EIO;
+> +	ddgst_offload_fail = !nvme_tcp_device_ddgst_ok(queue);
+> +	if (!test_bit(NVME_TCP_Q_OFFLOADS, &queue->flags) ||
+> +	    ddgst_offload_fail) {
+> +		if (test_bit(NVME_TCP_Q_OFFLOADS, &queue->flags) &&
+> +		    ddgst_offload_fail)
+> +			nvme_tcp_crc_recalculate(queue, pdu);
+> +
+> +		nvme_tcp_ddgst_final(queue->rcv_hash, &queue->exp_ddgst);
+> +		if (queue->recv_ddgst != queue->exp_ddgst) {
+> +			dev_err(queue->ctrl->ctrl.device,
+> +				"data digest error: recv %#x expected %#x\n",
+> +				le32_to_cpu(queue->recv_ddgst),
+> +				le32_to_cpu(queue->exp_ddgst));
+> +			return -EIO;
+
+This gets convoluted here...
+
+> +		}
+>   	}
+>   
+>   	if (pdu->hdr.flags & NVME_TCP_F_DATA_SUCCESS) {
+> 
