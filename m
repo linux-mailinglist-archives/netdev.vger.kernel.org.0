@@ -2,370 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE2632872B5
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 12:45:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAEDD2872BF
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 12:46:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729556AbgJHKp3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 06:45:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50308 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729547AbgJHKp1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 06:45:27 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EFEAC061755
-        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 03:45:27 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kQTQI-001Xrf-MP; Thu, 08 Oct 2020 12:45:22 +0200
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes.berg@intel.com>
-Subject: [PATCH v5 2/2] netlink: export policy in extended ACK
-Date:   Thu,  8 Oct 2020 12:45:17 +0200
-Message-Id: <20201008124306.a97446d63f8f.I6dae2c514a6abc924ee8b3e2befb0d51b086cf70@changeid>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201008104517.44312-1-johannes@sipsolutions.net>
-References: <20201008104517.44312-1-johannes@sipsolutions.net>
+        id S1729591AbgJHKq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 06:46:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:54578 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729571AbgJHKqZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 06:46:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602153983;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/1s2AOQ8c8V+Fh7lGuyVZZ09B+PUmg+jBpS2SsvH9XY=;
+        b=ENsk83Aiq30lkS4hTdzAUrLLMY5nqX9wgX7v0QKHrUT98UKzvtFVTGM5MuNeoYHYMsB9WP
+        XBNAqUvb5PFaxubMS00/vMBnjKtr2P/LZlwDRwvKvKg6XD4KyHTincmGwWtQjEHqKbl/Eb
+        oLM0lrUSz6UeC5oyQbwslBPShjxYJVE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-333-qWcHv-RvPXCue3sAczM7NQ-1; Thu, 08 Oct 2020 06:46:19 -0400
+X-MC-Unique: qWcHv-RvPXCue3sAczM7NQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 883851054F8A;
+        Thu,  8 Oct 2020 10:46:16 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.22])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 23FE15C1DC;
+        Thu,  8 Oct 2020 10:46:05 +0000 (UTC)
+Date:   Thu, 8 Oct 2020 12:46:04 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Shay Agroskin <shayagr@amazon.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <ast@kernel.org>, <daniel@iogearbox.net>, <sameehj@amazon.com>,
+        <john.fastabend@gmail.com>, <dsahern@kernel.org>,
+        <lorenzo.bianconi@redhat.com>, <echaudro@redhat.com>,
+        brouer@redhat.com
+Subject: Re: [PATCH v4 bpf-next 09/13] bpf: introduce multibuff support to
+ bpf_prog_test_run_xdp()
+Message-ID: <20201008124604.05db39e8@carbon>
+In-Reply-To: <pj41zl362puop5.fsf@u68c7b5b1d2d758.ant.amazon.com>
+References: <cover.1601648734.git.lorenzo@kernel.org>
+        <d6ed575afaf89fc35e233af5ccd063da944b4a3a.1601648734.git.lorenzo@kernel.org>
+        <pj41zl362puop5.fsf@u68c7b5b1d2d758.ant.amazon.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+On Thu, 8 Oct 2020 11:06:14 +0300
+Shay Agroskin <shayagr@amazon.com> wrote:
 
-Add a new attribute NLMSGERR_ATTR_POLICY to the extended ACK
-to advertise the policy, e.g. if an attribute was out of range,
-you'll know the range that's permissible.
+> Lorenzo Bianconi <lorenzo@kernel.org> writes:
+> 
+> > Introduce the capability to allocate a xdp multi-buff in
+> > bpf_prog_test_run_xdp routine. This is a preliminary patch to 
+> > introduce
+> > the selftests for new xdp multi-buff ebpf helpers
+> >
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  net/bpf/test_run.c | 51  ++++++++++++++++++++++++++++++++++++++--------
+> >  1 file changed, 43 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+> > index bd291f5f539c..ec7286cd051b 100644
+> > --- a/net/bpf/test_run.c
+> > +++ b/net/bpf/test_run.c
+> > @@ -617,44 +617,79 @@ int bpf_prog_test_run_xdp(struct bpf_prog 
+> > *prog, const union bpf_attr *kattr,
+> >  {
+> >  	u32 tailroom = SKB_DATA_ALIGN(sizeof(struct 
+> >  skb_shared_info));
+> >  	u32 headroom = XDP_PACKET_HEADROOM;
+> > -	u32 size = kattr->test.data_size_in;
+> >  	u32 repeat = kattr->test.repeat;
+> >  	struct netdev_rx_queue *rxqueue;
+> > +	struct skb_shared_info *sinfo;
+> >  	struct xdp_buff xdp = {};
+> > +	u32 max_data_sz, size;
+> >  	u32 retval, duration;
+> > -	u32 max_data_sz;
+> > +	int i, ret, data_len;
+> >  	void *data;
+> > -	int ret;
+> >  
+> >  	if (kattr->test.ctx_in || kattr->test.ctx_out)
+> >  		return -EINVAL;
+> >  
+> > -	/* XDP have extra tailroom as (most) drivers use full page 
+> > */
+> >  	max_data_sz = 4096 - headroom - tailroom;  
+> 
+> For the sake of consistency, can this 4096 be changed to PAGE_SIZE 
+> ?
 
-Add new NL_SET_ERR_MSG_ATTR_POL() and NL_SET_ERR_MSG_ATTR_POL()
-macros to set this, since realistically it's only useful to do
-this when the bad attribute (offset) is also returned.
+The size 4096 is explicitly use, because the selftest xdp_adjust_tail
+expect this, else it will fail on ARCHs with 64K PAGE_SIZE.  It also
+seems excessive to create 64K packets for testing XDP.
 
-Use it in lib/nlattr.c which practically does all the policy
-validation.
+See: tools/testing/selftests/bpf/prog_tests/xdp_adjust_tail.c
 
-v2:
- - add and use netlink_policy_dump_attr_size_estimate()
-v3:
- - remove redundant break
-v4:
- - really remove redundant break ... sorry
+> Same as in
+>      data_len = min_t(int, kattr->test.data_size_in - size, 
+>      PAGE_SIZE);
+> 
+> expression below
 
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
----
- include/linux/netlink.h      | 30 ++++++++++++------
- include/net/netlink.h        |  4 +++
- include/uapi/linux/netlink.h |  2 ++
- lib/nlattr.c                 | 35 +++++++++++----------
- net/netlink/af_netlink.c     |  5 +++
- net/netlink/policy.c         | 61 ++++++++++++++++++++++++++++++++++++
- 6 files changed, 110 insertions(+), 27 deletions(-)
 
-diff --git a/include/linux/netlink.h b/include/linux/netlink.h
-index e3e49f0e5c13..666cd0390699 100644
---- a/include/linux/netlink.h
-+++ b/include/linux/netlink.h
-@@ -68,12 +68,14 @@ netlink_kernel_create(struct net *net, int unit, struct netlink_kernel_cfg *cfg)
-  * @_msg: message string to report - don't access directly, use
-  *	%NL_SET_ERR_MSG
-  * @bad_attr: attribute with error
-+ * @policy: policy for a bad attribute
-  * @cookie: cookie data to return to userspace (for success)
-  * @cookie_len: actual cookie data length
-  */
- struct netlink_ext_ack {
- 	const char *_msg;
- 	const struct nlattr *bad_attr;
-+	const struct nla_policy *policy;
- 	u8 cookie[NETLINK_MAX_COOKIE_LEN];
- 	u8 cookie_len;
- };
-@@ -95,21 +97,29 @@ struct netlink_ext_ack {
- #define NL_SET_ERR_MSG_MOD(extack, msg)			\
- 	NL_SET_ERR_MSG((extack), KBUILD_MODNAME ": " msg)
- 
--#define NL_SET_BAD_ATTR(extack, attr) do {		\
--	if ((extack))					\
-+#define NL_SET_BAD_ATTR_POLICY(extack, attr, pol) do {	\
-+	if ((extack)) {					\
- 		(extack)->bad_attr = (attr);		\
-+		(extack)->policy = (pol);		\
-+	}						\
- } while (0)
- 
--#define NL_SET_ERR_MSG_ATTR(extack, attr, msg) do {	\
--	static const char __msg[] = msg;		\
--	struct netlink_ext_ack *__extack = (extack);	\
--							\
--	if (__extack) {					\
--		__extack->_msg = __msg;			\
--		__extack->bad_attr = (attr);		\
--	}						\
-+#define NL_SET_BAD_ATTR(extack, attr) NL_SET_BAD_ATTR_POLICY(extack, attr, NULL)
-+
-+#define NL_SET_ERR_MSG_ATTR_POL(extack, attr, pol, msg) do {	\
-+	static const char __msg[] = msg;			\
-+	struct netlink_ext_ack *__extack = (extack);		\
-+								\
-+	if (__extack) {						\
-+		__extack->_msg = __msg;				\
-+		__extack->bad_attr = (attr);			\
-+		__extack->policy = (pol);			\
-+	}							\
- } while (0)
- 
-+#define NL_SET_ERR_MSG_ATTR(extack, attr, msg)		\
-+	NL_SET_ERR_MSG_ATTR_POL(extack, attr, NULL, msg)
-+
- static inline void nl_set_extack_cookie_u64(struct netlink_ext_ack *extack,
- 					    u64 cookie)
- {
-diff --git a/include/net/netlink.h b/include/net/netlink.h
-index 2b9e41075f19..7356f41d23ba 100644
---- a/include/net/netlink.h
-+++ b/include/net/netlink.h
-@@ -1957,6 +1957,10 @@ int netlink_policy_dump_get_policy_idx(struct netlink_policy_dump_state *state,
- bool netlink_policy_dump_loop(struct netlink_policy_dump_state *state);
- int netlink_policy_dump_write(struct sk_buff *skb,
- 			      struct netlink_policy_dump_state *state);
-+int netlink_policy_dump_attr_size_estimate(const struct nla_policy *pt);
-+int netlink_policy_dump_write_attr(struct sk_buff *skb,
-+				   const struct nla_policy *pt,
-+				   int nestattr);
- void netlink_policy_dump_free(struct netlink_policy_dump_state *state);
- 
- #endif
-diff --git a/include/uapi/linux/netlink.h b/include/uapi/linux/netlink.h
-index d02e472ba54c..c3816ff7bfc3 100644
---- a/include/uapi/linux/netlink.h
-+++ b/include/uapi/linux/netlink.h
-@@ -129,6 +129,7 @@ struct nlmsgerr {
-  * @NLMSGERR_ATTR_COOKIE: arbitrary subsystem specific cookie to
-  *	be used - in the success case - to identify a created
-  *	object or operation or similar (binary)
-+ * @NLMSGERR_ATTR_POLICY: policy for a rejected attribute
-  * @__NLMSGERR_ATTR_MAX: number of attributes
-  * @NLMSGERR_ATTR_MAX: highest attribute number
-  */
-@@ -137,6 +138,7 @@ enum nlmsgerr_attrs {
- 	NLMSGERR_ATTR_MSG,
- 	NLMSGERR_ATTR_OFFS,
- 	NLMSGERR_ATTR_COOKIE,
-+	NLMSGERR_ATTR_POLICY,
- 
- 	__NLMSGERR_ATTR_MAX,
- 	NLMSGERR_ATTR_MAX = __NLMSGERR_ATTR_MAX - 1
-diff --git a/lib/nlattr.c b/lib/nlattr.c
-index 9c99f5daa4d2..74019c8ebf6b 100644
---- a/lib/nlattr.c
-+++ b/lib/nlattr.c
-@@ -96,8 +96,8 @@ static int nla_validate_array(const struct nlattr *head, int len, int maxtype,
- 			continue;
- 
- 		if (nla_len(entry) < NLA_HDRLEN) {
--			NL_SET_ERR_MSG_ATTR(extack, entry,
--					    "Array element too short");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, entry, policy,
-+						"Array element too short");
- 			return -ERANGE;
- 		}
- 
-@@ -195,8 +195,8 @@ static int nla_validate_range_unsigned(const struct nla_policy *pt,
- 		pr_warn_ratelimited("netlink: '%s': attribute type %d has an invalid length.\n",
- 				    current->comm, pt->type);
- 		if (validate & NL_VALIDATE_STRICT_ATTRS) {
--			NL_SET_ERR_MSG_ATTR(extack, nla,
--					    "invalid attribute length");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+						"invalid attribute length");
- 			return -EINVAL;
- 		}
- 
-@@ -208,11 +208,11 @@ static int nla_validate_range_unsigned(const struct nla_policy *pt,
- 		bool binary = pt->type == NLA_BINARY;
- 
- 		if (binary)
--			NL_SET_ERR_MSG_ATTR(extack, nla,
--					    "binary attribute size out of range");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+						"binary attribute size out of range");
- 		else
--			NL_SET_ERR_MSG_ATTR(extack, nla,
--					    "integer out of range");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+						"integer out of range");
- 
- 		return -ERANGE;
- 	}
-@@ -291,8 +291,8 @@ static int nla_validate_int_range_signed(const struct nla_policy *pt,
- 	nla_get_range_signed(pt, &range);
- 
- 	if (value < range.min || value > range.max) {
--		NL_SET_ERR_MSG_ATTR(extack, nla,
--				    "integer out of range");
-+		NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+					"integer out of range");
- 		return -ERANGE;
- 	}
- 
-@@ -377,8 +377,8 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
- 		pr_warn_ratelimited("netlink: '%s': attribute type %d has an invalid length.\n",
- 				    current->comm, type);
- 		if (validate & NL_VALIDATE_STRICT_ATTRS) {
--			NL_SET_ERR_MSG_ATTR(extack, nla,
--					    "invalid attribute length");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+						"invalid attribute length");
- 			return -EINVAL;
- 		}
- 	}
-@@ -386,14 +386,14 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
- 	if (validate & NL_VALIDATE_NESTED) {
- 		if ((pt->type == NLA_NESTED || pt->type == NLA_NESTED_ARRAY) &&
- 		    !(nla->nla_type & NLA_F_NESTED)) {
--			NL_SET_ERR_MSG_ATTR(extack, nla,
--					    "NLA_F_NESTED is missing");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+						"NLA_F_NESTED is missing");
- 			return -EINVAL;
- 		}
- 		if (pt->type != NLA_NESTED && pt->type != NLA_NESTED_ARRAY &&
- 		    pt->type != NLA_UNSPEC && (nla->nla_type & NLA_F_NESTED)) {
--			NL_SET_ERR_MSG_ATTR(extack, nla,
--					    "NLA_F_NESTED not expected");
-+			NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+						"NLA_F_NESTED not expected");
- 			return -EINVAL;
- 		}
- 	}
-@@ -550,7 +550,8 @@ static int validate_nla(const struct nlattr *nla, int maxtype,
- 
- 	return 0;
- out_err:
--	NL_SET_ERR_MSG_ATTR(extack, nla, "Attribute failed policy validation");
-+	NL_SET_ERR_MSG_ATTR_POL(extack, nla, pt,
-+				"Attribute failed policy validation");
- 	return err;
- }
- 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index df675a8e1918..daca50d6bb12 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -2420,6 +2420,8 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
- 		tlvlen += nla_total_size(sizeof(u32));
- 	if (nlk_has_extack && extack && extack->cookie_len)
- 		tlvlen += nla_total_size(extack->cookie_len);
-+	if (err && nlk_has_extack && extack && extack->policy)
-+		tlvlen += netlink_policy_dump_attr_size_estimate(extack->policy);
- 
- 	if (tlvlen)
- 		flags |= NLM_F_ACK_TLVS;
-@@ -2452,6 +2454,9 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
- 		if (extack->cookie_len)
- 			WARN_ON(nla_put(skb, NLMSGERR_ATTR_COOKIE,
- 					extack->cookie_len, extack->cookie));
-+		if (extack->policy)
-+			netlink_policy_dump_write_attr(skb, extack->policy,
-+						       NLMSGERR_ATTR_POLICY);
- 	}
- 
- 	nlmsg_end(skb, rep);
-diff --git a/net/netlink/policy.c b/net/netlink/policy.c
-index 4383436759e2..8d7c900e27f4 100644
---- a/net/netlink/policy.c
-+++ b/net/netlink/policy.c
-@@ -196,12 +196,54 @@ bool netlink_policy_dump_loop(struct netlink_policy_dump_state *state)
- 	return !netlink_policy_dump_finished(state);
- }
- 
-+int netlink_policy_dump_attr_size_estimate(const struct nla_policy *pt)
-+{
-+	/* nested + type */
-+	int common = 2 * nla_attr_size(sizeof(u32));
-+
-+	switch (pt->type) {
-+	case NLA_UNSPEC:
-+	case NLA_REJECT:
-+		/* these actually don't need any space */
-+		return 0;
-+	case NLA_NESTED:
-+	case NLA_NESTED_ARRAY:
-+		/* common, policy idx, policy maxattr */
-+		return common + 2 * nla_attr_size(sizeof(u32));
-+	case NLA_U8:
-+	case NLA_U16:
-+	case NLA_U32:
-+	case NLA_U64:
-+	case NLA_MSECS:
-+	case NLA_S8:
-+	case NLA_S16:
-+	case NLA_S32:
-+	case NLA_S64:
-+		/* maximum is common, u64 min/max with padding */
-+		return common +
-+		       2 * (nla_attr_size(0) + nla_attr_size(sizeof(u64)));
-+	case NLA_BITFIELD32:
-+		return common + nla_attr_size(sizeof(u32));
-+	case NLA_STRING:
-+	case NLA_NUL_STRING:
-+	case NLA_BINARY:
-+		/* maximum is common, u32 min-length/max-length */
-+		return common + 2 * nla_attr_size(sizeof(u32));
-+	case NLA_FLAG:
-+		return common;
-+	}
-+
-+	/* this should then cause a warning later */
-+	return 0;
-+}
-+
- static int
- __netlink_policy_dump_write_attr(struct netlink_policy_dump_state *state,
- 				 struct sk_buff *skb,
- 				 const struct nla_policy *pt,
- 				 int nestattr)
- {
-+	int estimate = netlink_policy_dump_attr_size_estimate(pt);
- 	enum netlink_attribute_type type;
- 	struct nlattr *attr;
- 
-@@ -334,12 +376,31 @@ __netlink_policy_dump_write_attr(struct netlink_policy_dump_state *state,
- 		goto nla_put_failure;
- 
- 	nla_nest_end(skb, attr);
-+	WARN_ON(attr->nla_len > estimate);
-+
- 	return 0;
- nla_put_failure:
- 	nla_nest_cancel(skb, attr);
- 	return -ENOBUFS;
- }
- 
-+/**
-+ * netlink_policy_dump_write_attr - write a given attribute policy
-+ * @skb: the message skb to write to
-+ * @pt: the attribute's policy
-+ * @nestattr: the nested attribute ID to use
-+ *
-+ * Returns: 0 on success, an error code otherwise; -%ENODATA is
-+ *	    special, indicating that there's no policy data and
-+ *	    the attribute is generally rejected.
-+ */
-+int netlink_policy_dump_write_attr(struct sk_buff *skb,
-+				   const struct nla_policy *pt,
-+				   int nestattr)
-+{
-+	return __netlink_policy_dump_write_attr(NULL, skb, pt, nestattr);
-+}
-+
- /**
-  * netlink_policy_dump_write - write current policy dump attributes
-  * @skb: the message skb to write to
+
 -- 
-2.26.2
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
