@@ -2,101 +2,304 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F22AB286FAD
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 09:40:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 566D1286FBF
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 09:45:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728007AbgJHHk0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 03:40:26 -0400
-Received: from mail-io1-f80.google.com ([209.85.166.80]:52874 "EHLO
-        mail-io1-f80.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727819AbgJHHkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 03:40:20 -0400
-Received: by mail-io1-f80.google.com with SMTP id e10so3159730ioq.19
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 00:40:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=sY2IwiMHaNHjrlHF4HKmprZAKOkbqITB/BHAQtltvXw=;
-        b=a5D0Ujio9vzjKQhrK0IQDWJ3tS8KIisX9CTVSOjbhqHYp3IcChn7b5MTfPPAb459DG
-         1WNKJGzhhQcS2UXOYXwYRMQBljtKeim9ZlGpXANNtth1LdQ/VSWT7GVkG9OOxIAK85ZG
-         N1TNaS1df6mgj2b/F20OmOtQ5avtEOP47gAjo8177A8mMaK7NxNnPCiUUys/Z9PZpFXR
-         gElCtPxR22FHxLh6GXAJNr39UvRWm4lkwLrODJF8cVulSQ4nHqSvaiawm+1+BpFbvhau
-         HM9z4lXSU4hqRM/DcGGqOf4M3PFmaNyOFGABO7Sc0fmns4vLfz0ZjK8NwTgNh3sf5x0k
-         dwqA==
-X-Gm-Message-State: AOAM5310wLAj0O50Byp67wEopH3DAB0QnfDz0dBHGsMrappn/Bi+8ndG
-        3VxLqgoKuYV5ZO3KjK+ZSN0QEjV6XA8RUuaDoOcqOPLwT0Zt
-X-Google-Smtp-Source: ABdhPJwu338smk3gnI3WmrD/qM6p1msBcGtR1Ta0xpsNG36bwiBcJaaXiNnNP6YdutsZLGdAJD1QSK7cyG98n9+UUaew2TcaV5Gs
+        id S1727556AbgJHHpb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 03:45:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60648 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725899AbgJHHpb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Oct 2020 03:45:31 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8022A2184D;
+        Thu,  8 Oct 2020 07:45:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602143129;
+        bh=+A3n7H3O5azOT0yuWuSQEJaGjEMj2yrOA1vdPMkMRvM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=zfYN+6wmABEIs4mVD+B02xxfmqC+M9b2ZR08NDrxvTqg7Qm0dWsSlPwz5tnK4Mf6N
+         O4n89Y7QQHF9jweRbr0HWoQba3uuea/f615itJEwjCPkKwVKKFNUTpu/k9pa2DToqX
+         +ipjKIkKhQQR6QD29rFsUZovHTHFC//9D4sd3NH4=
+Date:   Thu, 8 Oct 2020 10:45:25 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Parav Pandit <parav@nvidia.com>
+Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        "parav@mellanox.com" <parav@mellanox.com>,
+        "tiwai@suse.de" <tiwai@suse.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ranjani.sridharan@linux.intel.com" 
+        <ranjani.sridharan@linux.intel.com>,
+        "fred.oh@linux.intel.com" <fred.oh@linux.intel.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Patil, Kiran" <kiran.patil@intel.com>
+Subject: Re: [PATCH v2 1/6] Add ancillary bus support
+Message-ID: <20201008074525.GJ13580@unreal>
+References: <DM6PR11MB2841C531FC27DB41E078C52BDD0A0@DM6PR11MB2841.namprd11.prod.outlook.com>
+ <20201007192610.GD3964015@unreal>
+ <BY5PR12MB43221A308CE750FACEB0A806DC0A0@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <DM6PR11MB28415A8E53B5FFC276D5A2C4DD0A0@DM6PR11MB2841.namprd11.prod.outlook.com>
+ <c90316f5-a5a9-fe22-ec11-a30a54ff0a9d@linux.intel.com>
+ <DM6PR11MB284147D4BC3FD081B9F0B8BBDD0A0@DM6PR11MB2841.namprd11.prod.outlook.com>
+ <c88b0339-48c6-d804-6fbd-b2fc6fa826d6@linux.intel.com>
+ <BY5PR12MB43222FD5959E490E331D680ADC0B0@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <20201008052623.GB13580@unreal>
+ <BY5PR12MB4322D48FADAAAD66DE7159D7DC0B0@BY5PR12MB4322.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:b5c2:: with SMTP id e185mr4988645iof.106.1602142818040;
- Thu, 08 Oct 2020 00:40:18 -0700 (PDT)
-Date:   Thu, 08 Oct 2020 00:40:18 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000008c848805b123f174@google.com>
-Subject: WARNING in ieee80211_ibss_csa_beacon
-From:   syzbot <syzbot+b6c9fe29aefe68e4ad34@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <BY5PR12MB4322D48FADAAAD66DE7159D7DC0B0@BY5PR12MB4322.namprd12.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Oct 08, 2020 at 07:14:17AM +0000, Parav Pandit wrote:
+>
+>
+> > From: Leon Romanovsky <leon@kernel.org>
+> > Sent: Thursday, October 8, 2020 10:56 AM
+> >
+> > On Thu, Oct 08, 2020 at 04:56:01AM +0000, Parav Pandit wrote:
+> > >
+> > >
+> > > > From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+> > > > Sent: Thursday, October 8, 2020 3:20 AM
+> > > >
+> > > >
+> > > > On 10/7/20 4:22 PM, Ertman, David M wrote:
+> > > > >> -----Original Message-----
+> > > > >> From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+> > > > >> Sent: Wednesday, October 7, 2020 1:59 PM
+> > > > >> To: Ertman, David M <david.m.ertman@intel.com>; Parav Pandit
+> > > > >> <parav@nvidia.com>; Leon Romanovsky <leon@kernel.org>
+> > > > >> Cc: alsa-devel@alsa-project.org; parav@mellanox.com;
+> > > > >> tiwai@suse.de; netdev@vger.kernel.org;
+> > > > >> ranjani.sridharan@linux.intel.com;
+> > > > >> fred.oh@linux.intel.com; linux-rdma@vger.kernel.org;
+> > > > >> dledford@redhat.com; broonie@kernel.org; Jason Gunthorpe
+> > > > >> <jgg@nvidia.com>; gregkh@linuxfoundation.org; kuba@kernel.org;
+> > > > >> Williams, Dan J <dan.j.williams@intel.com>; Saleem, Shiraz
+> > > > >> <shiraz.saleem@intel.com>; davem@davemloft.net; Patil, Kiran
+> > > > >> <kiran.patil@intel.com>
+> > > > >> Subject: Re: [PATCH v2 1/6] Add ancillary bus support
+> > > > >>
+> > > > >>
+> > > > >>
+> > > > >>>> Below is most simple, intuitive and matching with core APIs for
+> > > > >>>> name and design pattern wise.
+> > > > >>>> init()
+> > > > >>>> {
+> > > > >>>> 	err = ancillary_device_initialize();
+> > > > >>>> 	if (err)
+> > > > >>>> 		return ret;
+> > > > >>>>
+> > > > >>>> 	err = ancillary_device_add();
+> > > > >>>> 	if (ret)
+> > > > >>>> 		goto err_unwind;
+> > > > >>>>
+> > > > >>>> 	err = some_foo();
+> > > > >>>> 	if (err)
+> > > > >>>> 		goto err_foo;
+> > > > >>>> 	return 0;
+> > > > >>>>
+> > > > >>>> err_foo:
+> > > > >>>> 	ancillary_device_del(adev);
+> > > > >>>> err_unwind:
+> > > > >>>> 	ancillary_device_put(adev->dev);
+> > > > >>>> 	return err;
+> > > > >>>> }
+> > > > >>>>
+> > > > >>>> cleanup()
+> > > > >>>> {
+> > > > >>>> 	ancillary_device_de(adev);
+> > > > >>>> 	ancillary_device_put(adev);
+> > > > >>>> 	/* It is common to have a one wrapper for this as
+> > > > >>>> ancillary_device_unregister().
+> > > > >>>> 	 * This will match with core device_unregister() that has
+> > > > >>>> precise documentation.
+> > > > >>>> 	 * but given fact that init() code need proper error
+> > > > >>>> unwinding, like above,
+> > > > >>>> 	 * it make sense to have two APIs, and no need to export
+> > > > >>>> another symbol for unregister().
+> > > > >>>> 	 * This pattern is very easy to audit and code.
+> > > > >>>> 	 */
+> > > > >>>> }
+> > > > >>>
+> > > > >>> I like this flow +1
+> > > > >>>
+> > > > >>> But ... since the init() function is performing both device_init
+> > > > >>> and device_add - it should probably be called
+> > > > >>> ancillary_device_register, and we are back to a single exported
+> > > > >>> API for both register and unregister.
+> > > > >>
+> > > > >> Kind reminder that we introduced the two functions to allow the
+> > > > >> caller to know if it needed to free memory when initialize()
+> > > > >> fails, and it didn't need to free memory when add() failed since
+> > > > >> put_device() takes care of it. If you have a single init()
+> > > > >> function it's impossible to know which behavior to select on error.
+> > > > >>
+> > > > >> I also have a case with SoundWire where it's nice to first
+> > > > >> initialize, then set some data and then add.
+> > > > >>
+> > > > >
+> > > > > The flow as outlined by Parav above does an initialize as the
+> > > > > first step, so every error path out of the function has to do a
+> > > > > put_device(), so you would never need to manually free the memory
+> > > > > in
+> > > > the setup function.
+> > > > > It would be freed in the release call.
+> > > >
+> > > > err = ancillary_device_initialize(); if (err)
+> > > > 	return ret;
+> > > >
+> > > > where is the put_device() here? if the release function does any
+> > > > sort of kfree, then you'd need to do it manually in this case.
+> > > Since device_initialize() failed, put_device() cannot be done here.
+> > > So yes, pseudo code should have shown, if (err) {
+> > > 	kfree(adev);
+> > > 	return err;
+> > > }
+> > >
+> > > If we just want to follow register(), unregister() pattern,
+> > >
+> > > Than,
+> > >
+> > > ancillar_device_register() should be,
+> > >
+> > > /**
+> > >  * ancillar_device_register() - register an ancillary device
+> > >  * NOTE: __never directly free @adev after calling this function, even
+> > > if it returned
+> > >  * an error. Always use ancillary_device_put() to give up the reference
+> > initialized by this function.
+> > >  * This note matches with the core and caller knows exactly what to be
+> > done.
+> > >  */
+> > > ancillary_device_register()
+> > > {
+> > > 	device_initialize(&adev->dev);
+> > > 	if (!dev->parent || !adev->name)
+> > > 		return -EINVAL;
+> > > 	if (!dev->release && !(dev->type && dev->type->release)) {
+> > > 		/* core is already capable and throws the warning when
+> > release callback is not set.
+> > > 		 * It is done at drivers/base/core.c:1798.
+> > > 		 * For NULL release it says, "does not have a release()
+> > function, it is broken and must be fixed"
+> > > 		 */
+> > > 		return -EINVAL;
+> > > 	}
+> > > 	err = dev_set_name(adev...);
+> > > 	if (err) {
+> > > 		/* kobject_release() -> kobject_cleanup() are capable to
+> > detect if name is set/ not set
+> > > 		  * and free the const if it was set.
+> > > 		  */
+> > > 		return err;
+> > > 	}
+> > > 	err = device_add(&adev->dev);
+> > > 	If (err)
+> > > 		return err;
+> > > }
+> > >
+> > > Caller code:
+> > > init()
+> > > {
+> > > 	adev = kzalloc(sizeof(*foo_adev)..);
+> > > 	if (!adev)
+> > > 		return -ENOMEM;
+> > > 	err = ancillary_device_register(&adev);
+> > > 	if (err)
+> > > 		goto err;
+> > >
+> > > err:
+> > > 	ancillary_device_put(&adev);
+> > > 	return err;
+> > > }
+> > >
+> > > cleanup()
+> > > {
+> > > 	ancillary_device_unregister(&adev);
+> > > }
+> > >
+> > > Above pattern is fine too matching the core.
+> > >
+> > > If I understand Leon correctly, he prefers simple register(), unregister()
+> > pattern.
+> > > If, so it should be explicit register(), unregister() API.
+> >
+> > This is my summary
+> > https://lore.kernel.org/linux-rdma/20201008052137.GA13580@unreal
+> > The API should be symmetric.
+> >
+>
+> I disagree to your below point.
+> > 1. You are not providing driver/core API but simplification and obfuscation
+> > of basic primitives and structures. This is new layer. There is no room for
+> > a claim that we must to follow internal API.
+> If ancillary bus has
+> ancillary_device_add(), it cannot do device_initialize() and device_add() in both.
+>
+> I provided two examples and what really matters is a given patchset uses (need to use) which pattern,
+> initialize() + add(), or register() + unregister().
+>
+> As we all know that API is not added for future. It is the future patch extends it.
+> So lets wait for Pierre to reply if soundwire can follow register(), unregister() sequence.
+> This way same APIs can service both use-cases.
+>
+> Regarding,
+> > 3. You can't "ask" from users to call internal calls (put_device) over internal
+> > fields in ancillary_device.
+> In that case if should be ancillary_device_put() ancillary_device_release().
+>
+> Or we should follow the patten of ib_alloc_device [1],
+> ancillary_device_alloc()
+>     -> kzalloc(adev + dev) with compile time assert check like rdma and vdpa subsystem.
+>     ->device_initialize()
+> ancillary_device_add()
+>
+> ancillar_device_de() <- balances with add
+> ancillary_device_dealloc() <-- balances with device_alloc(), which does the put_device() + free the memory allocated in alloc().
+>
+> This approach of [1] also eliminates exposing adev.dev.release = <drivers_release_method_to_free_adev> in drivers.
+> And container_of() benefit also continues..
+>
+> [1] https://elixir.bootlin.com/linux/v5.9-rc8/source/include/rdma/ib_verbs.h#L2791
+>
 
-syzbot found the following issue on:
+My code looks like this, probably yours looks the same.
 
-HEAD commit:    c85fb28b Merge tag 'arm64-fixes' of git://git.kernel.org/p..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=15b2b400500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=de7f697da23057c7
-dashboard link: https://syzkaller.appspot.com/bug?extid=b6c9fe29aefe68e4ad34
-compiler:       clang version 10.0.0 (https://github.com/llvm/llvm-project/ c2443155a0fb245c8f17f2c1c72b6ea391e86e81)
+  247                 priv->adev[i] = kzalloc(sizeof(*priv->adev[i]), GFP_KERNEL);
+  248                 if (!priv->adev[i])
+  249                         goto init_err;
+  250
+  251                 adev = &priv->adev[i]->adev;
+  252                 adev->id = idx;
+  253                 adev->name = mlx5_adev_devices[i].suffix;
+  254                 adev->dev.parent = dev->device;
+  255                 adev->dev.release = adev_release;
+  256                 priv->adev[i]->mdev = dev;
+  257
+  258                 ret = ancillary_device_initialize(adev);
+  259                 if (ret)
+  260                         goto init_err;
+  261
+  262                 ret = ancillary_device_add(adev);
+  263                 if (ret) {
+  264                         put_device(&adev->dev);
+  265                         goto add_err;
+  266                 }
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+b6c9fe29aefe68e4ad34@syzkaller.appspotmail.com
-
-WARNING: CPU: 1 PID: 11321 at net/mac80211/ibss.c:504 ieee80211_ibss_csa_beacon+0x4e9/0x5a0 net/mac80211/ibss.c:504
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 11321 Comm: kworker/u4:0 Not tainted 5.9.0-rc8-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: phy10 ieee80211_csa_finalize_work
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x1d6/0x29e lib/dump_stack.c:118
- panic+0x2c0/0x800 kernel/panic.c:231
- __warn+0x227/0x250 kernel/panic.c:600
- report_bug+0x1b1/0x2e0 lib/bug.c:198
- handle_bug+0x42/0x80 arch/x86/kernel/traps.c:234
- exc_invalid_op+0x16/0x40 arch/x86/kernel/traps.c:254
- asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:536
-RIP: 0010:ieee80211_ibss_csa_beacon+0x4e9/0x5a0 net/mac80211/ibss.c:504
-Code: e8 fc 29 8b f9 b8 f4 ff ff ff eb 0a e8 f0 29 8b f9 b8 00 01 00 00 48 83 c4 30 5b 41 5c 41 5d 41 5e 41 5f 5d c3 e8 d7 29 8b f9 <0f> 0b b8 ea ff ff ff eb e3 e8 c9 29 8b f9 0f 0b e9 88 fb ff ff 48
-RSP: 0018:ffffc9000ab5fbf8 EFLAGS: 00010293
-RAX: ffffffff87e9d419 RBX: ffff88804cc20580 RCX: ffff888016268280
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000000
-RBP: ffff88804cc23490 R08: dffffc0000000000 R09: fffffbfff16c82b4
-R10: fffffbfff16c82b4 R11: 0000000000000000 R12: ffff8880a21a18c0
-R13: ffff8880a21a18ba R14: ffff8880a21a0c00 R15: ffff8880a21a18e0
- ieee80211_set_after_csa_beacon net/mac80211/cfg.c:3043 [inline]
- __ieee80211_csa_finalize net/mac80211/cfg.c:3099 [inline]
- ieee80211_csa_finalize+0x46f/0x960 net/mac80211/cfg.c:3122
- ieee80211_csa_finalize_work+0xfb/0x140 net/mac80211/cfg.c:3147
- process_one_work+0x789/0xfc0 kernel/workqueue.c:2269
- worker_thread+0xaa4/0x1460 kernel/workqueue.c:2415
- kthread+0x37e/0x3a0 drivers/block/aoe/aoecmd.c:1234
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
-
-
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Thanks
