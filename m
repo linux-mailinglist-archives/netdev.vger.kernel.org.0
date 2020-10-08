@@ -2,135 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62B4F287493
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 14:54:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B8342874BF
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 15:02:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730139AbgJHMyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 08:54:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41974 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729722AbgJHMyg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 08:54:36 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B67E9C061755;
-        Thu,  8 Oct 2020 05:54:36 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id g10so3918178pfc.8;
-        Thu, 08 Oct 2020 05:54:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8meL6RsN+cQ5MfWybhWX8LZbSYR56saTZEuAfFrW37I=;
-        b=MNxaefSDb5f3vIg4Lst3iWOgaZaMjjWpLJWXogXWWAxdWIhS3+NRWI0ioK2RBwjCVv
-         qxU8ozWRvEirnoM2YCiD/ccN43hPzChWEm9P33DYUGNG2AG5kwZvUGpxKohpCWxOwh9A
-         c31poOrXukG0LLjMG1XlkmC8YcDDHqndByu6Coz1/1ri3ZGZ09gIcknZjQLTNrAyBDOh
-         ToEHDLdJuziD/NjDy0Lkol4zfcKLb7Hbcg9qHXN4H+j8rJhRJk/EpTZ64Mqv5fPoTd4v
-         QSZNO/DzuYtoyp8q0gyO3gJowews5cBDW5FZbPvOuSeo86vSJmf33ILnnyi17ZY7koyF
-         kJkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8meL6RsN+cQ5MfWybhWX8LZbSYR56saTZEuAfFrW37I=;
-        b=btgk9EljWOIGKfyBBm/wTP/ElF6AeqNGglFfDDmUbP6Je2bemTkHGAPpUA44Q+i3PV
-         fkiTN0HiD9uP12yzNfO83Bru5CJ++vvCAXBlsGvVER4GgbfSIW7cgcclkVl6cQfLtuwi
-         tI4PkL/HhEJjFTeQpyd5JXH3kts1qP8Fvx/7WKAFJJUYkzH0fYMDX7ayhciur6qANdUG
-         7swaTmbyqaPb8SQnVelzqlw9mjy3k0zUzuAEkNZSOLOYZwTtmiQwNNjcZD5q4ZJoiqUL
-         qmTtqyviOSOlgx3xXKgT1u1pk4fR6g+UT/3WYovlfnMZmuxrAM6k+Bzs+SBEKjZPvcD4
-         KOGA==
-X-Gm-Message-State: AOAM530t8ygtxHULSNLtOC/iTv0BeyouCkpqxL5z89hhSZhHKIUZwPud
-        Iyf0ReVoFNmfhPCRmEmUhGQ=
-X-Google-Smtp-Source: ABdhPJzzcHMuMTR79tIKe0/516uV2gJ/dDXiVrsaLzXkMhmuAv3nIFO7XUbuGe9s+jw9Iz2S77H1LA==
-X-Received: by 2002:a63:29c8:: with SMTP id p191mr7188723pgp.45.1602161676335;
-        Thu, 08 Oct 2020 05:54:36 -0700 (PDT)
-Received: from localhost ([2001:e42:102:1532:160:16:113:140])
-        by smtp.gmail.com with ESMTPSA id a18sm6956102pgw.50.2020.10.08.05.54.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Oct 2020 05:54:35 -0700 (PDT)
-From:   Coiby Xu <coiby.xu@gmail.com>
-X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
-Date:   Thu, 8 Oct 2020 20:54:28 +0800
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     devel@driverdev.osuosl.org,
-        Benjamin Poirier <benjamin.poirier@gmail.com>,
-        Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v1 1/6] staging: qlge: Initialize devlink health dump
- framework for the dlge driver
-Message-ID: <20201008125428.ppyqjefow4oepvxb@Rk>
-References: <20201008115808.91850-1-coiby.xu@gmail.com>
- <20201008115808.91850-2-coiby.xu@gmail.com>
- <CA+FuTSdEK+0nBCd5KAYpbEECmSvjoMEgcEOtM+ZKFF4QQKuAfw@mail.gmail.com>
+        id S1730238AbgJHNCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 09:02:42 -0400
+Received: from mx.hs-offenburg.de ([141.79.11.25]:53158 "EHLO
+        mx.hs-offenburg.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729869AbgJHNCl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 09:02:41 -0400
+X-Greylist: delayed 387 seconds by postgrey-1.27 at vger.kernel.org; Thu, 08 Oct 2020 09:02:39 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by mx.hs-offenburg.de (Postfix) with ESMTP id 524E6732FA01;
+        Thu,  8 Oct 2020 14:56:10 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=hs-offenburg.de;
+         h=content-transfer-encoding:mime-version:user-agent
+        :content-type:content-type:references:in-reply-to:date:date:from
+        :from:subject:subject:message-id:received:received; s=default;
+         t=1602161769; x=1603025770; bh=XkqmOKW+XIirgzCXLOBYOliZX8Nwgd/g
+        wIDmBWDe3XA=; b=ZrZR7p01oX3psUP4NrE7syIPjfyC+CBJ8gcUKCpLpCnFN4uN
+        kNiUU0efGm+1/ARjtltGzkvD1FktcgnsnFzrSvaKcPIKQh5GNUbofxNljZYGd3ya
+        MGRHck4z31M0r5O16LPS3wO12zbYcoNsSc+iByFeq8PVW4cATUAdHi6Doac=
+X-Virus-Scanned: amavisd-new at hs-offenburg.de
+Received: from mx.hs-offenburg.de ([127.0.0.1])
+        by localhost (mx.hs-offenburg.de [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id XdD_Bk_1I2uT; Thu,  8 Oct 2020 14:56:09 +0200 (CEST)
+Received: from h25-119.emi.hs-offenburg.de (unknown [141.79.25.119])
+        by mx.hs-offenburg.de (Postfix) with ESMTPSA id 5FDE0732F9FE;
+        Thu,  8 Oct 2020 14:56:09 +0200 (CEST)
+Message-ID: <f040ba36070dd1e07b05cc63a392d8267ce4efe2.camel@hs-offenburg.de>
+Subject: Re: [PATCH net-next v6 4/7] net: dsa: hellcreek: Add support for
+ hardware timestamping
+From:   Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>
+To:     Kurt Kanzenbach <kurt@linutronix.de>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        ilias.apalodimas@linaro.org
+Date:   Thu, 08 Oct 2020 14:55:57 +0200
+In-Reply-To: <87lfghhw9u.fsf@kurt>
+References: <20201004143000.blb3uxq3kwr6zp3z@skbuf> <87imbn98dd.fsf@kurt>
+         <20201006072847.pjygwwtgq72ghsiq@skbuf> <87tuv77a83.fsf@kurt>
+         <20201006133222.74w3r2jwwhq5uop5@skbuf> <87r1qb790w.fsf@kurt>
+         <20201006140102.6q7ep2w62jnilb22@skbuf> <87lfgiqpze.fsf@kurt>
+         <20201007105458.gdbrwyzfjfaygjke@skbuf> <87362pjev0.fsf@kurt>
+         <20201008094440.oede2fucgpgcfx6a@skbuf> <87lfghhw9u.fsf@kurt>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5-1.1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <CA+FuTSdEK+0nBCd5KAYpbEECmSvjoMEgcEOtM+ZKFF4QQKuAfw@mail.gmail.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 08, 2020 at 08:22:44AM -0400, Willem de Bruijn wrote:
->On Thu, Oct 8, 2020 at 7:58 AM Coiby Xu <coiby.xu@gmail.com> wrote:
->>
->> Initialize devlink health dump framework for the dlge driver so the
->> coredump could be done via devlink.
->>
->> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
->
->> @@ -4556,6 +4559,13 @@ static int qlge_probe(struct pci_dev *pdev,
->>         struct ql_adapter *qdev = NULL;
->>         static int cards_found;
->>         int err = 0;
->> +       struct devlink *devlink;
->> +       struct qlge_devlink *ql_devlink;
->> +
->> +       devlink = devlink_alloc(&qlge_devlink_ops, sizeof(struct qlge_devlink));
->> +       if (!devlink)
->> +               return -ENOMEM;
->> +       ql_devlink = devlink_priv(devlink);
->>
->>         ndev = alloc_etherdev_mq(sizeof(struct ql_adapter),
->>                                  min(MAX_CPUS,
->
->need to goto devlink_free instead of return -ENOMEM here, too.
->
->> @@ -4614,6 +4624,16 @@ static int qlge_probe(struct pci_dev *pdev,
->>                 free_netdev(ndev);
->>                 return err;
->
->and here
->
-Thank you for reviewing this work and the speedy feedback! I'll fix it
-in v2.
->>         }
->> +
->> +       err = devlink_register(devlink, &pdev->dev);
->> +       if (err) {
->> +               goto devlink_free;
->> +       }
->> +
->> +       qlge_health_create_reporters(ql_devlink);
->> +       ql_devlink->qdev = qdev;
->> +       ql_devlink->ndev = ndev;
->> +       qdev->ql_devlink = ql_devlink;
->>         /* Start up the timer to trigger EEH if
->>          * the bus goes dead
->>          */
->> @@ -4624,6 +4644,10 @@ static int qlge_probe(struct pci_dev *pdev,
->>         atomic_set(&qdev->lb_count, 0);
->>         cards_found++;
->>         return 0;
->> +
->> +devlink_free:
->> +       devlink_free(devlink);
->> +       return err;
->>  }
+Hello dears,
 
---
-Best regards,
-Coiby
+On Thu, 2020-10-08 at 12:01 +0200, Kurt Kanzenbach wrote:
+> On Thu Oct 08 2020, Vladimir Oltean wrote:
+> > On Thu, Oct 08, 2020 at 10:34:11AM +0200, Kurt Kanzenbach wrote:
+> > > On Wed Oct 07 2020, Vladimir Oltean wrote:
+> > > > On Wed, Oct 07, 2020 at 12:39:49PM +0200, Kurt Kanzenbach
+> > > > wrote:
+> > > > > For instance the hellcreek switch has actually three ptp
+> > > > > hardware
+> > > > > clocks and the time stamping can be configured to use either
+> > > > > one of
+> > > > > them.
+> > > > 
+> > > > The sja1105 also has a corrected and an uncorrected PTP clock
+> > > > that can
+> > > > take timestamps. Initially I had thought I'd be going to spend
+> > > > some time
+> > > > figuring out multi-PHC support, but now I don't see any
+> > > > practical reason
+> > > > to use the uncorrected PHC for anything.
+> > > 
+> > > Just out of curiosity: How do you implement 802.1AS then? My
+> > > understanding is that the free-running clock has to be used for
+> > > the
+> > 
+> > Has to be? I couldn't find that wording in IEEE 802.1AS-2011.
+> 
+> It doesn't has to be, it *should* be. That's at least the outcome we
+> had
+> after lots of discussions. Actually Kamil (on Cc) is the expert on
+> this
+> topic.
+
+According to 802.1AS-2011 (10.1.1): "The LocalClock entity is a free-
+running clock (see 3.3) that provides a common time to the time-aware
+system, relative to an arbitrary epoch.", "... All timestamps are taken
+relative to the LocalClock entity". The same statement holds true for
+802.1AS-2020 (10.1.2.1).
+
+> > > calculation of the peer delays and such meaning there should be a
+> > > way to
+> > > get access to both PHCs or having some form of cross timestamping
+> > > available.
+> > > 
+> > > The hellcreek switch can take cross snapshots of all three ptp
+> > > clocks in
+> > > hardware for that purpose.
+> > 
+> > Well, at the end of the day, all the other TSN offloads (tc-taprio,
+> > tc-gate) will still have to use the synchronized PTP clock, so what
+> > we're doing is we're simply letting that clock be synchronized by
+> > ptp4l.
+> 
+> Yes, the synchronized clock is of course needed for the traffic
+> scheduling and so on. This is what we do here in this code as well.
+> Only
+> the synchronized one is exported to user space and used. However, the
+> multi PHCs issue should be addressed as well at some point.
+> 
+> > > > > > So when you'll poll for TX timestamps, you'll receive a TX
+> > > > > > timestamp from the PHY and another one from the switch, and
+> > > > > > those will
+> > > > > > be in a race with one another, so you won't know which one
+> > > > > > is which.
+> > > > > 
+> > > > > OK. So what happens if the driver will accept to disable
+> > > > > hardware
+> > > > > timestamping? Is there anything else that needs to be
+> > > > > implemented? Are
+> > > > > there (good) examples?
+> > > > 
+> > > > It needs to not call skb_complete_tx_timestamp() and friends.
+> > > > 
+> > > > For PHY timestamping, it also needs to invoke the correct
+> > > > methods for RX
+> > > > and for TX, where the PHY timestamping hooks will get called. I
+> > > > don't
+> > > > think that DSA is compatible yet with PHY timestamping, but it
+> > > > is
+> > > > probably a trivial modification.
+> > > 
+> > > Hmm? If DSA doesn't support PHY timestamping how are other DSA
+> > > drivers
+> > > dealing with it then? I'm getting really confused.
+> > 
+> > They aren't dealing with it, of course.
+> > 
+> > > Furthermore, there is no hellcreek hardware available with
+> > > timestamping
+> > > capable PHYs. How am I supposed to even test this?
+> > > 
+> > > For now, until there is hardware available, PHY timestamping is
+> > > not
+> > > supported with the hellcreek switch.
+> > 
+> > I was just pointing out that this is something you'll certainly
+> > have to
+> > change if somebody will want PHY timestamping.
+> 
+> Understood.
+> 
+> > Even without hardware, you _could_ probably test that DSA is doing
+> > the
+> > right thing by simply adding the PTP timestamping ops to a PHY
+> > driver
+> > that you own, and inject dummy timestamps. The expectation becomes
+> > that
+> > user space gets those dummy timestamps, and not the ones emitted by
+> > your
+> > switch.
+> 
+> Of course it can be mocked. Whenever somebody wants to do PHY
+> timestamping with a hellcreek switch this issue can be re-visited.
+> 
+> Thanks,
+> Kurt
+
