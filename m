@@ -2,193 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF5A228706F
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 10:06:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B6AC287074
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 10:07:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728403AbgJHIGv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 04:06:51 -0400
-Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:35656 "EHLO
-        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728395AbgJHIGu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 04:06:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1602144409; x=1633680409;
-  h=references:from:to:cc:subject:in-reply-to:date:
-   message-id:mime-version;
-  bh=bg3O7qEGH1fNCK+zQ+U6E2nWrjAtawJmaEIw/54CrhU=;
-  b=fYQ5l0P700TOncHISyku0k7RlBKOfqFnqfhJ9Fz3nfKAdxFjyBg2fI45
-   fHuhN6+SMLdNDjtGxVlrir1VpbeIQ0PTZ3Ff9/MyDieg6jjLaG44URgac
-   BYMrWVMmq/vEdaSxcO/81Zz4dB/tl6DN14nCYFoiFcIiByhyPPmpI1dAS
-   4=;
-X-IronPort-AV: E=Sophos;i="5.77,350,1596499200"; 
-   d="scan'208";a="82535724"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-98acfc19.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 08 Oct 2020 08:06:43 +0000
-Received: from EX13D28EUC001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-1d-98acfc19.us-east-1.amazon.com (Postfix) with ESMTPS id 3A62DA1F3D;
-        Thu,  8 Oct 2020 08:06:39 +0000 (UTC)
-Received: from u68c7b5b1d2d758.ant.amazon.com.amazon.com (10.43.162.231) by
- EX13D28EUC001.ant.amazon.com (10.43.164.4) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 8 Oct 2020 08:06:33 +0000
-References: <cover.1601648734.git.lorenzo@kernel.org>
- <d6ed575afaf89fc35e233af5ccd063da944b4a3a.1601648734.git.lorenzo@kernel.org>
-User-agent: mu4e 1.4.12; emacs 27.1
-From:   Shay Agroskin <shayagr@amazon.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-CC:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <sameehj@amazon.com>,
-        <john.fastabend@gmail.com>, <dsahern@kernel.org>,
-        <brouer@redhat.com>, <lorenzo.bianconi@redhat.com>,
-        <echaudro@redhat.com>
-Subject: Re: [PATCH v4 bpf-next 09/13] bpf: introduce multibuff support to
- bpf_prog_test_run_xdp()
-In-Reply-To: <d6ed575afaf89fc35e233af5ccd063da944b4a3a.1601648734.git.lorenzo@kernel.org>
-Date:   Thu, 8 Oct 2020 11:06:14 +0300
-Message-ID: <pj41zl362puop5.fsf@u68c7b5b1d2d758.ant.amazon.com>
+        id S1728491AbgJHIHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 04:07:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54234 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725966AbgJHIHl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 04:07:41 -0400
+Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26CDC061755;
+        Thu,  8 Oct 2020 01:07:40 -0700 (PDT)
+Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 09887LOr003713
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Thu, 8 Oct 2020 10:07:21 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1602144441; bh=tV+r+n/6hptr1Cjyk7c2jxN8WJX6lDayGAgagQDk9Xw=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=DXGPI+o/dUVXiVieloQ1PRWctameELzK7jd/ESotw2hhcSjZmyntimMD5vBp6N4Ec
+         CVnpb23wimIavRSTEEJoPujYT0Q+H0EvLy3Ig70Xm0DBvPx9PLlQ93S7nZpp4Kfj9q
+         bTcul6ptT6eokqWwArwCKcpvlPdVMpNY/ePJSY28=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.94)
+        (envelope-from <bjorn@mork.no>)
+        id 1kQQxM-0017cV-Le; Thu, 08 Oct 2020 10:07:20 +0200
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Wilken Gottwalt <wilken.gottwalt@mailbox.org>
+Cc:     linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] net: usb: qmi_wwan: add Cellient MPL200 card
+Organization: m
+References: <cover.1602140720.git.wilken.gottwalt@mailbox.org>
+        <f5858ed121df35460ef17591152d606a78aa65db.1602140720.git.wilken.gottwalt@mailbox.org>
+Date:   Thu, 08 Oct 2020 10:07:20 +0200
+In-Reply-To: <f5858ed121df35460ef17591152d606a78aa65db.1602140720.git.wilken.gottwalt@mailbox.org>
+        (Wilken Gottwalt's message of "Thu, 8 Oct 2020 09:21:38 +0200")
+Message-ID: <87d01ti1jb.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.3 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
-X-Originating-IP: [10.43.162.231]
-X-ClientProxiedBy: EX13D01UWB002.ant.amazon.com (10.43.161.136) To
- EX13D28EUC001.ant.amazon.com (10.43.164.4)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.102.4 at canardo
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Wilken Gottwalt <wilken.gottwalt@mailbox.org> writes:
 
-Lorenzo Bianconi <lorenzo@kernel.org> writes:
-
-> Introduce the capability to allocate a xdp multi-buff in
-> bpf_prog_test_run_xdp routine. This is a preliminary patch to 
-> introduce
-> the selftests for new xdp multi-buff ebpf helpers
+> Add usb ids of the Cellient MPL200 card.
 >
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> Signed-off-by: Wilken Gottwalt <wilken.gottwalt@mailbox.org>
 > ---
->  net/bpf/test_run.c | 51 
->  ++++++++++++++++++++++++++++++++++++++--------
->  1 file changed, 43 insertions(+), 8 deletions(-)
+>  drivers/net/usb/qmi_wwan.c | 1 +
+>  1 file changed, 1 insertion(+)
 >
-> diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-> index bd291f5f539c..ec7286cd051b 100644
-> --- a/net/bpf/test_run.c
-> +++ b/net/bpf/test_run.c
-> @@ -617,44 +617,79 @@ int bpf_prog_test_run_xdp(struct bpf_prog 
-> *prog, const union bpf_attr *kattr,
->  {
->  	u32 tailroom = SKB_DATA_ALIGN(sizeof(struct 
->  skb_shared_info));
->  	u32 headroom = XDP_PACKET_HEADROOM;
-> -	u32 size = kattr->test.data_size_in;
->  	u32 repeat = kattr->test.repeat;
->  	struct netdev_rx_queue *rxqueue;
-> +	struct skb_shared_info *sinfo;
->  	struct xdp_buff xdp = {};
-> +	u32 max_data_sz, size;
->  	u32 retval, duration;
-> -	u32 max_data_sz;
-> +	int i, ret, data_len;
->  	void *data;
-> -	int ret;
->  
->  	if (kattr->test.ctx_in || kattr->test.ctx_out)
->  		return -EINVAL;
->  
-> -	/* XDP have extra tailroom as (most) drivers use full page 
-> */
->  	max_data_sz = 4096 - headroom - tailroom;
+> diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+> index 07c42c0719f5..5ca1356b8656 100644
+> --- a/drivers/net/usb/qmi_wwan.c
+> +++ b/drivers/net/usb/qmi_wwan.c
+> @@ -1375,6 +1375,7 @@ static const struct usb_device_id products[] =3D {
+>  	{QMI_QUIRK_SET_DTR(0x2cb7, 0x0104, 4)},	/* Fibocom NL678 series */
+>  	{QMI_FIXED_INTF(0x0489, 0xe0b4, 0)},	/* Foxconn T77W968 LTE */
+>  	{QMI_FIXED_INTF(0x0489, 0xe0b5, 0)},	/* Foxconn T77W968 LTE with eSIM s=
+upport*/
+> +	{QMI_FIXED_INTF(0x2692, 0x9025, 4)},    /* Cellient MPL200 (rebranded Q=
+ualcomm 05c6:9025) */
+>=20=20
+>  	/* 4. Gobi 1000 devices */
+>  	{QMI_GOBI1K_DEVICE(0x05c6, 0x9212)},	/* Acer Gobi Modem Device */
 
-For the sake of consistency, can this 4096 be changed to PAGE_SIZE 
-?
-Same as in
-     data_len = min_t(int, kattr->test.data_size_in - size, 
-     PAGE_SIZE);
 
-expression below
+Thanks.  Looks nice now.
 
-> +	size = min_t(u32, kattr->test.data_size_in, max_data_sz);
-> +	data_len = size;
->  
-> -	data = bpf_test_init(kattr, kattr->test.data_size_in,
-> -			     max_data_sz, headroom, tailroom);
-> +	data = bpf_test_init(kattr, size, max_data_sz, headroom, 
-> tailroom);
->  	if (IS_ERR(data))
->  		return PTR_ERR(data);
->  
->  	xdp.data_hard_start = data;
->  	xdp.data = data + headroom;
->  	xdp.data_meta = xdp.data;
-> -	xdp.data_end = xdp.data + size;
-> +	xdp.data_end = xdp.data + data_len;
->  	xdp.frame_sz = headroom + max_data_sz + tailroom;
->  
-> +	sinfo = xdp_get_shared_info_from_buff(&xdp);
-> +	if (unlikely(kattr->test.data_size_in > size)) {
-> +		void __user *data_in = 
-> u64_to_user_ptr(kattr->test.data_in);
-> +
-> +		while (size < kattr->test.data_size_in) {
-> +			skb_frag_t *frag = 
-> &sinfo->frags[sinfo->nr_frags];
-> +			struct page *page;
-> +			int data_len;
-> +
-> +			page = alloc_page(GFP_KERNEL);
-> +			if (!page) {
-> +				ret = -ENOMEM;
-> +				goto out;
-> +			}
-> +
-> +			__skb_frag_set_page(frag, page);
-> +			data_len = min_t(int, 
-> kattr->test.data_size_in - size,
-> +					 PAGE_SIZE);
-> +			skb_frag_size_set(frag, data_len);
-> +			if (copy_from_user(page_address(page), 
-> data_in + size,
-> +					   data_len)) {
-> +				ret = -EFAULT;
-> +				goto out;
-> +			}
-> +			sinfo->nr_frags++;
-> +			size += data_len;
-> +		}
-> +		xdp.mb = 1;
-> +	}
-> +
->  	rxqueue = 
->  __netif_get_rx_queue(current->nsproxy->net_ns->loopback_dev, 
->  0);
->  	xdp.rxq = &rxqueue->xdp_rxq;
->  	bpf_prog_change_xdp(NULL, prog);
->  	ret = bpf_test_run(prog, &xdp, repeat, &retval, &duration, 
->  true);
->  	if (ret)
->  		goto out;
-> +
->  	if (xdp.data != data + headroom || xdp.data_end != 
->  xdp.data + size)
-> -		size = xdp.data_end - xdp.data;
-> +		size += xdp.data_end - xdp.data - data_len;
-
-Can we please drop the variable shadowing of data_len ? This is 
-confusing since the initial value of data_len is correct in the 
-`size` calculation, while its value inside the while loop it not.
-
-This seem to be syntactically correct, but I think it's better 
-practice to avoid shadowing here.
-
-> +
->  	ret = bpf_test_finish(kattr, uattr, xdp.data, size, 
->  retval, duration);
->  out:
->  	bpf_prog_change_xdp(prog, NULL);
-> +	for (i = 0; i < sinfo->nr_frags; i++)
-> +		__free_page(skb_frag_page(&sinfo->frags[i]));
->  	kfree(data);
-> +
->  	return ret;
->  }
-
+Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
