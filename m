@@ -2,153 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB3E6286D17
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 05:19:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6AE65286D2C
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 05:31:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727916AbgJHDTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 23:19:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37978 "EHLO
+        id S1727857AbgJHDbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Oct 2020 23:31:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727449AbgJHDTx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 23:19:53 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C38AC061755;
-        Wed,  7 Oct 2020 20:19:53 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id z5so4372950ilq.5;
-        Wed, 07 Oct 2020 20:19:53 -0700 (PDT)
+        with ESMTP id S1727449AbgJHDbN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 23:31:13 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C00CC061755
+        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 20:31:13 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id 7so3049468pgm.11
+        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 20:31:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=12Ohgsb8MdluAyFnYSu/ivuZxO+BZjEffQYvTHhSSj8=;
-        b=dpPIX4yrE2w2tIUQb3jhdIAfIgI+JNNAtsZjHLqEt1aKUGn1jJrlKmVohDy1ivaGiZ
-         WSEJZzlUr4CyrEx5GtK4Hz2xy6CJCiRILz/LF3gd1kPDnlGvYrbjWkxoUj9HVcaPWSiB
-         QxcI2/smJPJBkHD3avDhDyVm4f7N4h/rKfANzo5bSRnWXZlB/XySyiwESNoMp6YpC7Nr
-         EoMYLxelRWO9cGSJ79JkOj1Tjpxky7HOmN3qmKWNLGE6fHy9Poo7dOcogjG+cIFUyC58
-         FNmukjYkxhUBG40u1Sf7RivQ5sEokQ2Vvgaz4oMd4Tm8omvqpQMAXjcYKNY7Qz/A6kw9
-         vyZg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Es3m/cmjQjKxJAujsQdOQ0HD+2pxPVO7acZ1i2IhzqM=;
+        b=AtISJzcwEiIn05QZ830HD6kYdZpbUl7fsKCg510A/rjSQxCSwJwtdBoKVPfedZSgDq
+         L2pXZLdn4GUsYqb6ItD38QzRS7WwPEun7eh3oxoL0hN0coV/k8WixBXvgPEa8y5Gy3E9
+         OiUK4+d60w1ynA4GhvNTxgXw1iSN1ie/Y1CvKpMB/k6qx9dPBNHOnDRcgXgHEELymQqv
+         yTHkBjtF9DPIbKve+TefVj0a1RTSDUEcYGwW1in8pQ+P5V46M/AFLiWeiZ74m5rLVUF0
+         DmFOF8ZT+/o9XEEiCQxgZBY5QVqEECn+tcbhuaMt9uAMPYE0sjzwbk1Lrom0MjfBnOkR
+         cWyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=12Ohgsb8MdluAyFnYSu/ivuZxO+BZjEffQYvTHhSSj8=;
-        b=n5YCgyGwJ78cRnSdYBAmT3amMwLc5uZ83W0pghfVu/9cg24eCp395KoPpSUP27AjKd
-         BhqY6jgayWmVzxWtVvZxwCh4RIsNtsAb0LoniuPOQ5vhZjiq5I3kcr766Optr3+KFfGV
-         qPzYAHTpWovdYvVJW5YxX0OnZ1PISBHP2LaJNqEvY/F0/xuRINYFQCSCNcO7cBe3AtPK
-         gI58OOWFGy0XHI1YG9IZ6ftZgNdiKlXQJ+Eu9sMltjhX9V0ZStSsF7IREoFqNXJm5ppS
-         oJNwrz6ykLVuO8Tg4dNxj/EZ9WYGPyuYAqwiRqTAVMQeAWAXUilgdf4ssiAd0iZuA7UF
-         B6aQ==
-X-Gm-Message-State: AOAM5316yLw8dEktAFBeXXv/QVM0NAckjGy7ASY2yrGxIa74/UdKKGz9
-        8QDkOdBy42/I4j9nbtDtMmcbU7CgPXzH/w==
-X-Google-Smtp-Source: ABdhPJxgeGq3PNw4FCspmsLuagv1ulzThmDqzv43RKXadjIp5fizAbpoUIU5H/meky+bM/Ypyot3XQ==
-X-Received: by 2002:a92:4188:: with SMTP id o130mr4766050ila.27.1602127192579;
-        Wed, 07 Oct 2020 20:19:52 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id c18sm2051602ild.35.2020.10.07.20.19.50
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Es3m/cmjQjKxJAujsQdOQ0HD+2pxPVO7acZ1i2IhzqM=;
+        b=LLOjTV33yPBpkKjsP5ajjSmXxzARnHWZYJC1Nc4DpFIepc0tAGOxf8HG8ebEKqlOKg
+         9HGfiKcg9qPF/N0ZJ4KG2FEe13xVfzKrdpjIrX2tnUyFPmem6sPXNy7hdg7xRr3GgpXj
+         +10uOZv4XuqbNLQnysLOoRRMfn6BzgTwpzQMLwa5WDOLGX/SQwNe4wbH+8wWc0YlASLL
+         NAZveBQN5ZJ9AR0Cs65LAjUkVxFHnwdh5soMlmUvsQacBZx61zKstR9cOCmjtyYjSqKz
+         qnUQTK9zWZa9OJG/dOaRg6LQ9z1tNpCZscmeQNgVdPG/LJYTnhAnESFK9ApvNHisy9qS
+         cNyA==
+X-Gm-Message-State: AOAM531MwPTYhJbiIjOPlyhG+cRFzGP3tKd0na1ZBPebpVoP99IqSuy1
+        v3vwbGjBKHQXus9hHsMjesU=
+X-Google-Smtp-Source: ABdhPJzPLpkEVKyVQPa47WuMz2qnD1twlx2wixT5euunbgsZzNy/Q6plvIieu2UgGLUR7PJXCrDLAw==
+X-Received: by 2002:a17:90b:3649:: with SMTP id nh9mr5848400pjb.123.1602127872434;
+        Wed, 07 Oct 2020 20:31:12 -0700 (PDT)
+Received: from athina.mtv.corp.google.com ([2620:15c:211:0:a28c:fdff:fee1:f370])
+        by smtp.gmail.com with ESMTPSA id 32sm5241161pgu.17.2020.10.07.20.31.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Oct 2020 20:19:51 -0700 (PDT)
-Date:   Wed, 07 Oct 2020 20:19:39 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     =?UTF-8?B?TWFjaWVqIMW7ZW5jenlrb3dza2k=?= <maze@google.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        bpf <bpf@vger.kernel.org>, Linux NetDev <netdev@vger.kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Shaun Crampton <shaun@tigera.io>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eyal Birger <eyal.birger@gmail.com>
-Message-ID: <5f7e854b111fc_2acac2087e@john-XPS-13-9370.notmuch>
-In-Reply-To: <CANP3RGdcqmcrxWDKPsZ8A0+qK1hzD0tZvRFsVMPvSCNDk+LrHA@mail.gmail.com>
-References: <160208770557.798237.11181325462593441941.stgit@firesoul>
- <160208778070.798237.16265441131909465819.stgit@firesoul>
- <7aeb6082-48a3-9b71-2e2c-10adeb5ee79a@iogearbox.net>
- <5f7e430ae158b_1a8312084d@john-XPS-13-9370.notmuch>
- <CANP3RGdcqmcrxWDKPsZ8A0+qK1hzD0tZvRFsVMPvSCNDk+LrHA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next V2 5/6] bpf: Add MTU check for TC-BPF packets
- after egress hook
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        Wed, 07 Oct 2020 20:31:11 -0700 (PDT)
+From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
+To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Lorenzo Colitti <lorenzo@google.com>,
+        Sunmeet Gill <sgill@quicinc.com>,
+        Vinay Paradkar <vparadka@qti.qualcomm.com>,
+        Tyler Wear <twear@quicinc.com>,
+        David Ahern <dsahern@kernel.org>
+Subject: [PATCH 1/2] net/ipv6: always honour route mtu during forwarding
+Date:   Wed,  7 Oct 2020 20:31:01 -0700
+Message-Id: <20201008033102.623894-1-zenczykowski@gmail.com>
+X-Mailer: git-send-email 2.28.0.806.g8561365e88-goog
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Maciej =C5=BBenczykowski wrote:
-> On Wed, Oct 7, 2020 at 3:37 PM John Fastabend <john.fastabend@gmail.com=
-> wrote:
-> >
-> > Daniel Borkmann wrote:
-> > > On 10/7/20 6:23 PM, Jesper Dangaard Brouer wrote:
-> > > [...]
-> > > >   net/core/dev.c |   24 ++++++++++++++++++++++--
-> > > >   1 file changed, 22 insertions(+), 2 deletions(-)
-> >
-> > Couple high-level comments. Whats the problem with just letting the d=
-river
-> > consume the packet? I would chalk it up to a buggy BPF program that i=
-s
-> > sending these packets. The drivers really shouldn't panic or do anyth=
-ing
-> > horrible under this case because even today I don't think we can be
-> > 100% certain MTU on skb matches set MTU. Imagine the case where I cha=
-nge
-> > the MTU from 9kB->1500B there will be some skbs in-flight with the la=
-rger
-> > length and some with the shorter. If the drivers panic/fault or other=
-wise
-> > does something else horrible thats not going to be friendly in genera=
-l case
-> > regardless of what BPF does. And seeing this type of config is all do=
-ne
-> > async its tricky (not practical) to flush any skbs in-flight.
-> >
-> > I've spent many hours debugging these types of feature flag, mtu
-> > change bugs on the driver side I'm not sure it can be resolved by
-> > the stack easily. Better to just build drivers that can handle it IMO=
-.
-> >
-> > Do we know if sending >MTU size skbs to drivers causes problems in re=
-al
-> > cases? I haven't tried on the NICs I have here, but I expect they sho=
-uld
-> > be fine. Fine here being system keeps running as expected. Dropping t=
-he
-> > skb either on TX or RX side is expected. Even with this change though=
+From: Maciej Żenczykowski <maze@google.com>
 
-> > its possible for the skb to slip through if I configure MTU on a live=
+This matches the new ipv4 behaviour as of commit:
+  commit 02a1b175b0e92d9e0fa5df3957ade8d733ceb6a0
+  Author: Maciej Żenczykowski <maze@google.com>
+  Date:   Wed Sep 23 13:18:15 2020 -0700
 
-> > system.
-> =
+  net/ipv4: always honour route mtu during forwarding
 
-> I wholeheartedly agree with the above.
-> =
+The reasoning is similar: There doesn't seem to be any reason
+why you would want to ignore route mtu.
 
-> Ideally the only >mtu check should happen at driver admittance.
-> But again ideally it should happen in some core stack location not in
-> the driver itself.
+There are two potential sources of ipv6 route mtu:
+  - manually configured by NET_ADMIN, since you configured
+    a route mtu explicitly you probably know best...
+  - derived from mtu information from RA messages,
+    but this is the network telling you what will work,
+    again presumably whatever network admin configured
+    the RA content knows best what the network conditions are.
 
-Ideally maybe, but IMO we should just let the skb go to the driver
-and let the driver sort it out. Even if this means pushing the packet
-onto the wire then the switch will drop it or the receiver, etc. A
-BPF program can do lots of horrible things that should never be
-on the wire otherwise. MTU is just one of them, but sending corrupted
-payloads, adding bogus headers, checksums etc. so I don't think we can
-reasonable protect against all of them.
+One could argue that RAs can be spoofed, but if we get spoofed
+RAs we're *already* screwed, and erroneous mtu information is
+less dangerous then the erroneous routes themselves...
+(The proper place to do RA filtering is in the switch/router)
 
-Of course if the driver is going to hang/panic then something needs
-to be done. Perhaps a needs_mtu_check feature flag, although thats
-not so nice either so perhaps drivers just need to handle it themselves.
-Also even today the case could happen without BPF as best I can tell
-so the drivers should be prepared for it.
+Additionally, a reduction from 1500 to 1280 (min ipv6 mtu) is
+not very noticable on performance (especially with gro/gso/tso),
+while packets getting lost (due to rx buffer overruns) or
+generating icmpv6 packet too big errors and needing to be
+retransmitted is very noticable (guaranteed impact of full rtt)
 
-> However, due to both gso and vlan offload, even this is not trivial to =
-do...
-> The mtu is L3, but drivers/hardware/the wire usually care about L2...
-> (because ultimately that's what gets received and must fit in receive b=
-uffers)=
+It is pretty common to have a higher device mtu to allow receiving
+large (jumbo) frames, while having some routes via that interface
+(potentially including the default route to the internet) specify
+a lower mtu.
+
+There might also be use cases around xfrm/ipsec/tunnels.
+Especially for something like sit/6to4/6rd, where you may have one
+sit device, but traffic through it will flow over different
+underlying paths and thus is per subnet and not per device.
+
+(Note that this function does not honour pmtu, which can be spoofed
+via icmpv6 messages, but see also ip6_mtu_from_fib6() which honours
+pmtu for ipv6 'locked mtu' routes)
+
+Signed-off-by: Maciej Żenczykowski <maze@google.com>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Cc: Lorenzo Colitti <lorenzo@google.com>
+Cc: Sunmeet Gill (Sunny) <sgill@quicinc.com>
+Cc: Vinay Paradkar <vparadka@qti.qualcomm.com>
+Cc: Tyler Wear <twear@quicinc.com>
+Cc: David Ahern <dsahern@kernel.org>
+---
+ include/net/ip6_route.h | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
+
+diff --git a/include/net/ip6_route.h b/include/net/ip6_route.h
+index 2a5277758379..598415743f46 100644
+--- a/include/net/ip6_route.h
++++ b/include/net/ip6_route.h
+@@ -311,19 +311,13 @@ static inline bool rt6_duplicate_nexthop(struct fib6_info *a, struct fib6_info *
+ static inline unsigned int ip6_dst_mtu_forward(const struct dst_entry *dst)
+ {
+ 	struct inet6_dev *idev;
+-	unsigned int mtu;
++	unsigned int mtu = dst_metric_raw(dst, RTAX_MTU);
++	if (mtu)
++		return mtu;
+ 
+-	if (dst_metric_locked(dst, RTAX_MTU)) {
+-		mtu = dst_metric_raw(dst, RTAX_MTU);
+-		if (mtu)
+-			return mtu;
+-	}
+-
+-	mtu = IPV6_MIN_MTU;
+ 	rcu_read_lock();
+ 	idev = __in6_dev_get(dst->dev);
+-	if (idev)
+-		mtu = idev->cnf.mtu6;
++	mtu = idev ? idev->cnf.mtu6 : IPV6_MIN_MTU;
+ 	rcu_read_unlock();
+ 
+ 	return mtu;
+-- 
+2.28.0.806.g8561365e88-goog
+
