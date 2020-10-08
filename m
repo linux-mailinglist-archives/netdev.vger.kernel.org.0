@@ -2,103 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41691287309
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 13:02:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39E5028731B
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 13:06:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728630AbgJHLCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 07:02:16 -0400
-Received: from z5.mailgun.us ([104.130.96.5]:17299 "EHLO z5.mailgun.us"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726164AbgJHLCN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Oct 2020 07:02:13 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1602154932; h=Content-Transfer-Encoding: Content-Type:
- MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
- To: From: Sender; bh=eJBexxd8ncXOiQfY+iAAWapiGqaBRPOkeIcaQjW/Sdw=; b=uIhigipyjx5lAbsjRcPw7nJMz+Xjt4YoaiuXpSu06c31gWBldvcwI1YmraFeapleROj9jZAd
- H1YrRvfwl+rS9mQFNH2/SZZLT+4CC0WksUNm9M7gtn73Jbz2CYnJEKChyk7fdAQdqJLGJ2nS
- kZr1HSfHXx3bdepa/RqlPW4n/Uk=
-X-Mailgun-Sending-Ip: 104.130.96.5
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
- 5f7ef170856d9308b50ff987 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 08 Oct 2020 11:01:04
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 0C905C433F1; Thu,  8 Oct 2020 11:01:04 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1729748AbgJHLGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 07:06:50 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:47963 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725852AbgJHLGs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 07:06:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602155207;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=F8qhO75Bqse1Dybd3b485G4TSpgL9h8SxeBa6huwTzo=;
+        b=bEUN5bDjS/AGjONA4RLeHW/vBfBJJkf4Cm7gOdv+KCQytQBb/yKaxe3R0EyG4fHLzCukN/
+        D0OpFxhdHjRkcYILATEEp0zyi1XE1HLMLNr8S629LZfWKgroqypAG0VGDwrrCdGJa4UJis
+        88ILtBXeq0fGxywN76rsGTUMDXuUPRs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-69-d6SroyxLMaiOr5dTpbYglg-1; Thu, 08 Oct 2020 07:06:45 -0400
+X-MC-Unique: d6SroyxLMaiOr5dTpbYglg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id C6B91C433CA;
-        Thu,  8 Oct 2020 11:01:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C6B91C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 0/7] wfx: move out from the staging area
-References: <20201007101943.749898-1-Jerome.Pouiller@silabs.com>
-        <20201007105513.GA1078344@kroah.com> <87ft6p2n0h.fsf@codeaurora.org>
-        <16184307.3FagCOgvEJ@pc-42>
-Date:   Thu, 08 Oct 2020 14:00:59 +0300
-In-Reply-To: <16184307.3FagCOgvEJ@pc-42> (=?utf-8?B?IkrDqXLDtG1l?=
- Pouiller"'s message of "Thu,
-        08 Oct 2020 12:10:08 +0200")
-Message-ID: <87tuv50yok.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6226284A5EF;
+        Thu,  8 Oct 2020 11:06:43 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.22])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E8B6F10023A7;
+        Thu,  8 Oct 2020 11:06:33 +0000 (UTC)
+Date:   Thu, 8 Oct 2020 13:06:32 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Maciej =?UTF-8?B?xbtlbmN6eWtvd3NraQ==?= <maze@google.com>
+Cc:     bpf <bpf@vger.kernel.org>, Linux NetDev <netdev@vger.kernel.org>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Shaun Crampton <shaun@tigera.io>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Marek Majkowski <marek@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eyal Birger <eyal.birger@gmail.com>, brouer@redhat.com
+Subject: Re: [PATCH bpf-next V2 1/6] bpf: Remove MTU check in
+ __bpf_skb_max_len
+Message-ID: <20201008130632.0c407bad@carbon>
+In-Reply-To: <CANP3RGeU4sMjgAjXHVRc0ES9as0tG2kBUw6jRZhz6vLTTtVEVA@mail.gmail.com>
+References: <160208770557.798237.11181325462593441941.stgit@firesoul>
+        <160208776033.798237.4028465222836713720.stgit@firesoul>
+        <CANP3RGeU4sMjgAjXHVRc0ES9as0tG2kBUw6jRZhz6vLTTtVEVA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com> writes:
+On Wed, 7 Oct 2020 16:46:10 -0700
+Maciej =C5=BBenczykowski <maze@google.com> wrote:
 
-> On Thursday 8 October 2020 09:30:06 CEST Kalle Valo wrote:
-> [...]
->> Yes, the driver needs to be reviewed in linux-wireless list. I recommend
->> submitting the whole driver in a patchset with one file per patch, which
->> seems to be the easiest way to review a full driver. The final move will
->> be in just one commit moving the driver, just like patch 7 does here. As
->> an example see how wilc1000 review was done.
->
-> I see. I suppose it is still a bit complicated to review? Maybe I could
-> try to make things easier.
->
-> For my submission to staging/ I had taken time to split the driver in an
-> understandable series of patches[1]. I think it was easier to review than
-> just sending files one by one. I could do the same thing for the
-> submission to linux-wireless. It would ask me a bit of work but, since I
-> already have a template, it is conceivable.
->
-> Do you think it is worth it, or it would be an unnecessary effort?
->
-> [1]
-> https://lore.kernel.org/driverdev-devel/20190919142527.31797-1-Jerome.Pou=
-iller@silabs.com/
->      or commits a7a91ca5a23d^..40115bbc40e2
+> >  static u32 __bpf_skb_max_len(const struct sk_buff *skb)
+> >  {
+> > -       return skb->dev ? skb->dev->mtu + skb->dev->hard_header_len :
+> > -                         SKB_MAX_ALLOC;
+> > +       return IP_MAX_MTU;
+> >  } =20
+>=20
+> Shouldn't we just delete this helper instead and replace call sites?
 
-I don't know how others think, but I prefer to review new drivers "one
-file per patch" style as I get to see the big picture easily. And
-besides, splitting the driver like that would be a huge job for you. I
-don't think it's worth your time in this case. And making changes in the
-driver during review process becomes even more complex.
+It does seem wrong to pass argument skb into this function, as it is
+no-longer used...
+
+Guess I can simply replace __bpf_skb_max_len with IP_MAX_MTU.
 
 --=20
-https://patchwork.kernel.org/project/linux-wireless/list/
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
