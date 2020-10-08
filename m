@@ -2,136 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FCF8287632
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 16:37:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 636B528763E
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 16:39:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729835AbgJHOhs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 10:37:48 -0400
-Received: from mail-vi1eur05on2080.outbound.protection.outlook.com ([40.107.21.80]:21984
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729770AbgJHOhs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Oct 2020 10:37:48 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FvXnDgG5yrJqzxw10cz7Icc470amBCjKeisLATrgaDTS72FSQfGr7M2uon+XJxhZ9JhNAhtudxUppb0NFJyiIHuiabHGXbSuyAhV06rxcEAo+WcIXrlXOyXtYAw7h4x3F3h/2BxlJO8b/ob8nokQCowDif2DH63XK+56fMU0GEorXWlsUUS0Ltubi2Wxt6JcE5l1oWbrkXZVh8JTT86bMx2/xETD92SJV6cac0tCAgXA883f9fZ+C7aYW1J4DRgkyqDw3mkP9IT0LwcU/bZEpelsNH8bGNigJmfs1B/zv/H3Cm7q9pWbXH8Dx7exEdkw6CkvSaOJ2Ht0C7e2X9MB0A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lFfdn0tUXe518f9ZnDff6DZ5J/H9qDn969qk1PZwifo=;
- b=c76P6FPjyFxwHIccN1IR4Cg7jGwhh1PFuphnvUwd7CyesBWsNBosDZzgLOf+CxsUvJq+J7uYsc4E4wnte5+nBE2EVMjak6kap70dGT9srCgvejY+i60GR03BLRTJIo//tprtzq+PZkxdsuMWC+MUZiVw3QeOO8FDOIeg6t0LXwhMfXvfPCdqXKWdhEnIRGbdSM3FMXuaN/F/c6lFuZBX9iB9ukUBqNt3D8X1ZSQm4rkFmPOsVHyhGocKfmn+fhOPzlj6Hx5iClvulDNMmFmv+FflZIvYu+MQ6pnifSOwp3Aoq48+dCulYgRmfmuLR4HaRQ29cQuKZZHanTDsnHOgQQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lFfdn0tUXe518f9ZnDff6DZ5J/H9qDn969qk1PZwifo=;
- b=M8gq9SH4cN4RvwLJPs5C+G2OmA0J8v7eg7V60djyfgxnmEJaXnPKPs+POaBqcw7ueN2ZjfrwnLkiBqVk6usmUf9OnylXvv2+BY+UJGeFETZYxKCGvxs8mdyyKsgTvHM56qQo+ZMh2Cioz/JSTU0Ton0b/g7f9n65lsMO6Z4sTyk=
-Received: from AM6PR04MB3976.eurprd04.prod.outlook.com (2603:10a6:209:3f::17)
- by AM6PR04MB4325.eurprd04.prod.outlook.com (2603:10a6:209:47::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.23; Thu, 8 Oct
- 2020 14:37:44 +0000
-Received: from AM6PR04MB3976.eurprd04.prod.outlook.com
- ([fe80::38f4:5b8f:1ffd:71b2]) by AM6PR04MB3976.eurprd04.prod.outlook.com
- ([fe80::38f4:5b8f:1ffd:71b2%3]) with mapi id 15.20.3455.023; Thu, 8 Oct 2020
- 14:37:44 +0000
-From:   "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        Camelia Alexandra Groza <camelia.groza@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>
-Subject: RE: [PATCH] dpaa_eth: enable NETIF_MSG_HW by default
-Thread-Topic: [PATCH] dpaa_eth: enable NETIF_MSG_HW by default
-Thread-Index: AQHWnWsJ7wvNaIoRG0GlKg5WTkNhjqmNxf9g
-Date:   Thu, 8 Oct 2020 14:37:44 +0000
-Message-ID: <AM6PR04MB39762E887745C2CAC34F9098EC0B0@AM6PR04MB3976.eurprd04.prod.outlook.com>
-References: <20201008120312.258644-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20201008120312.258644-1-vladimir.oltean@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: nxp.com; dkim=none (message not signed)
- header.d=none;nxp.com; dmarc=none action=none header.from=oss.nxp.com;
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [82.76.227.167]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: edfbf9b6-b522-41b5-0dcc-08d86b97b82d
-x-ms-traffictypediagnostic: AM6PR04MB4325:
-x-ms-exchange-sharedmailbox-routingagent-processed: True
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM6PR04MB43252F6EBE1DA0EC1CB02FF2AD0B0@AM6PR04MB4325.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: KupozJwf36dbb0sQ+A/2EH6kT6nRnh3OgdrCC9JTwT6Gq3sEOQGVmCdqGH1Ew5rinBJcfixYpioPEqXVi8lbbp3IWAIak0PT/FDsI6jO9DNn+J28qO725G8YbO/N50XT+sDw+uWQb4UHsnBLPeV+NyDAjAZ1JQTln+t6qpaeRfg3L5zGREcPa5r6SNe9nSi4GYYO3zqTl9NBn6BPKD0I7DdcgXv6pU+mP1woKSmj238ydBwm1WjBwcwxT38/Dw7iGcMZxQdjdgVpLycv+cMR2v9l2xOGX+BVtVigGe4Ag/T4gLJnPXCjqIkeQNwiErS3KVHt3y1PDuHlE3ksU4njHw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB3976.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(396003)(136003)(346002)(376002)(39850400004)(26005)(83380400001)(53546011)(7696005)(316002)(110136005)(4326008)(54906003)(5660300002)(6506007)(478600001)(66446008)(64756008)(66556008)(66476007)(66946007)(76116006)(86362001)(71200400001)(52536014)(2906002)(9686003)(186003)(8936002)(33656002)(55016002)(8676002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: oy06cRYQUP0slAMxpJ71P2cWIzPjangq+xZX/OryeGoh6GdkM8NkCzxP1C57FQrabQAOer5LaNxCnAy2lLbk7cjfHsbASI+XptFkayAsLe0U8YBpci/kbxX1Lcs0zugzyggQK4QStNItyhIkC+3g2PRuKCH0okTRRg+vMm1dM2aCeROXGhangOG70XBcosAUxXz9044WJyRuoaVQ2a72ORLsnhjfp+3Y3KwVzsrspLX9RQ2bwBAESHeS5QUT2uWs8rhqCGTzd8tdAnT9jAFhA81wZfRxOUyOaUVWnRD21Lgrzsjaw6pZh+NzgR7Kc6PyhZ/uv2tNBOJov7cN1LjIQZXSjUo3Vhse5vaKEKi/5W4GxtoG4Rj5AWUulq2tdiacvqSn8ib1uzZy+GJgF7J42GLAbReXGW3aJd0zviDzFR2NDY3cH1lYAwIt7e3MGLO2o9YfM+XL/sqWqGkDVdCFuIIOBFmJMBSRcdwRac7ruXzj5tTmtX259bo0Fe71yBVs2fGMZ1OzfKJQd/bY0c+KOnBwZhFSN5GkyKDDHElxlP5nfZC5Akcn6x3P4Xi45maubJjAmxTbS2q3nyB0ZZBMuYNU4Lqik9tQBiglbVs76iNEalm2B9Juo93g6DZWRhjgTGB4c/DpjYV+nEKklwDRyg==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB3976.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: edfbf9b6-b522-41b5-0dcc-08d86b97b82d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Oct 2020 14:37:44.5570
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: TZ35LlDno1HOdlbbrzxgfxVhIAblRv2atunWJOxQxmM6NVoNT3u4to6nzkNU90yJyonZhjepdMfVVKq+PoRX3w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB4325
+        id S1730703AbgJHOjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 10:39:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58094 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730668AbgJHOjA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 10:39:00 -0400
+Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2EBEC061755;
+        Thu,  8 Oct 2020 07:38:59 -0700 (PDT)
+Received: by mail-il1-x142.google.com with SMTP id q7so5878337ile.8;
+        Thu, 08 Oct 2020 07:38:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=d2Racxx6iK0pNc2CLbu137mr5AeTeYJhXKRP7tG7ObI=;
+        b=uH9ooBSwFLCzXJjZmu3FhYNfCKZaVqLSsAWCOqMpGdMOW0H8I0+gIHcoBnmZLqXO80
+         3Fj2HVMRd6tZJFQMRTVXxi33HqPtenuyBrnDbXRrx9tV84dAFQBpmQXLltyyi2m6Pgog
+         ptprKAFE9hY8G05t76nAdjzTdbtZHU/V3MjVsZE92Y9P6hAV+OJQDCQv7mapxl3S8bvf
+         uLigFGztwl35HjM0SlloNibTtAfL3gd16/NzUeWpQ/A7rgbF2g+6r79llEIVwPzze31b
+         QMn7xseRV2wecfvli84FaJBgSe/K6XqQ8vTTyOY+xmKYyHTdejYLD29Gpfab8d6YtojU
+         Ir/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=d2Racxx6iK0pNc2CLbu137mr5AeTeYJhXKRP7tG7ObI=;
+        b=pFa+O05Qsaz5U0N1r/Qml/btH903ibTOxCAn/emfgZxxdg7gEhzbdDDsFTGi0yTxRP
+         0/S9rF19KRRZKeyhAaSdAPUPs4H6Y1h8r6xDhA5h0Jwgy2DKAdgBx/dqq6S7Yha/ioS3
+         JN8bwIiLaG5M3LupyfY5i0hKwh1GibY+q8q73mfcD1tWQliqOHn3+q8I2OtfSGdI968E
+         7zmhL5yjCoB+7m32qf7jhy/TmSceInKJLqY9ZGP9VtJ7QC7IHzpvxDXycNhEFJKEg/Sw
+         I/A6XbPe8j0vFYkOxReSW2qrkqYY+gTlUxutk/wRSAN5GEGrNBCtBhCorUZBqDHOCJT4
+         5l/w==
+X-Gm-Message-State: AOAM530TI0px0EOzumPUqKUBjLvjkNem3DNTWd2NyGJHfZq2SizzylUu
+        2ugahmym7ip+Ny0GSuG8rig=
+X-Google-Smtp-Source: ABdhPJwJIX3vRYewkNikOIhqH0ZLyaCY/9UC2nV/gLUAr1kAjdu1C7LtGgbISgalrlhPJYey+09j1g==
+X-Received: by 2002:a92:a307:: with SMTP id a7mr6261969ili.97.1602167939157;
+        Thu, 08 Oct 2020 07:38:59 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id v15sm2778539ile.37.2020.10.08.07.38.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Oct 2020 07:38:58 -0700 (PDT)
+Date:   Thu, 08 Oct 2020 07:38:50 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
+        sameehj@amazon.com, dsahern@kernel.org,
+        Eelco Chaudron <echaudro@redhat.com>,
+        Tirthendu Sarkar <tirtha@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Message-ID: <5f7f247acf860_2007208c9@john-XPS-13-9370.notmuch>
+In-Reply-To: <20201006152845.GC43823@lore-desk>
+References: <cover.1601648734.git.lorenzo@kernel.org>
+ <5f77467dbc1_38b0208ef@john-XPS-13-9370.notmuch>
+ <20201002160623.GA40027@lore-desk>
+ <5f776c14d69b3_a6402087e@john-XPS-13-9370.notmuch>
+ <20201005115247.72429157@carbon>
+ <5f7b8e7a5ebfc_4f19a208ba@john-XPS-13-9370.notmuch>
+ <20201005222454.GB3501@localhost.localdomain>
+ <5f7bf2b0bf899_4f19a2083f@john-XPS-13-9370.notmuch>
+ <20201006093011.36375745@carbon>
+ <20201006152845.GC43823@lore-desk>
+Subject: Re: [PATCH v4 bpf-next 00/13] mvneta: introduce XDP multi-buffer
+ support
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> To: davem@davemloft.net
-> Subject: [PATCH] dpaa_eth: enable NETIF_MSG_HW by default
->=20
-> From: Maxim Kochetkov <fido_max@inbox.ru>
->=20
-> When packets are received on the error queue, this function under
-> net_ratelimit():
->=20
-> netif_err(priv, hw, net_dev, "Err FD status =3D 0x%08x\n");
->=20
-> does not get printed. Instead we only see:
->=20
-> [ 3658.845592] net_ratelimit: 244 callbacks suppressed
-> [ 3663.969535] net_ratelimit: 230 callbacks suppressed
-> [ 3669.085478] net_ratelimit: 228 callbacks suppressed
->=20
-> Enabling NETIF_MSG_HW fixes this issue, and we can see some information
-> about the frame descriptors of packets.
->=20
-> Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> index fdff3b4723ba..06cc863f4dd6 100644
-> --- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> +++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-> @@ -87,7 +87,7 @@ MODULE_PARM_DESC(tx_timeout, "The Tx timeout in ms");
->=20
->  #define DPAA_MSG_DEFAULT (NETIF_MSG_DRV | NETIF_MSG_PROBE | \
->  			  NETIF_MSG_LINK | NETIF_MSG_IFUP | \
-> -			  NETIF_MSG_IFDOWN)
-> +			  NETIF_MSG_IFDOWN | NETIF_MSG_HW)
->=20
->  #define DPAA_INGRESS_CS_THRESHOLD 0x10000000
->  /* Ingress congestion threshold on FMan ports
-> --
-> 2.25.1
+Lorenzo Bianconi wrote:
+> > On Mon, 05 Oct 2020 21:29:36 -0700
+> > John Fastabend <john.fastabend@gmail.com> wrote:
+> > 
+> > > Lorenzo Bianconi wrote:
+> > > > [...]
+> > > >   
+> > > > > 
+> > > > > In general I see no reason to populate these fields before the XDP
+> > > > > program runs. Someone needs to convince me why having frags info before
+> > > > > program runs is useful. In general headers should be preserved and first
+> > > > > frag already included in the data pointers. If users start parsing further
+> > > > > they might need it, but this series doesn't provide a way to do that
+> > > > > so IMO without those helpers its a bit difficult to debate.  
+> > > > 
+> > > > We need to populate the skb_shared_info before running the xdp program in order to
+> > > > allow the ebpf sanbox to access this data. If we restrict the access to the first
+> > > > buffer only I guess we can avoid to do that but I think there is a value allowing
+> > > > the xdp program to access this data.  
+> > > 
+> > > I agree. We could also only populate the fields if the program accesses
+> > > the fields.
+> > 
+> > Notice, a driver will not initialize/use the shared_info area unless
+> > there are more segments.  And (we have already established) the xdp->mb
+> > bit is guarding BPF-prog from accessing shared_info area. 
+> > 
+> > > > A possible optimization can be access the shared_info only once before running
+> > > > the ebpf program constructing the shared_info using a struct allocated on the
+> > > > stack.  
+> > > 
+> > > Seems interesting, might be a good idea.
+> > 
+> > It *might* be a good idea ("alloc" shared_info on stack), but we should
+> > benchmark this.  The prefetch trick might be fast enough.  But also
+> > keep in mind the performance target, as with large size frames the
+> > packet-per-sec we need to handle dramatically drop.
+> 
+> right. I guess we need to define a workload we want to run for the
+> xdp multi-buff use-case (e.g. if MTU is 9K we will have ~3 frames
+> for each packets and # of pps will be much slower)
 
-Reviewed-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
+Right. Or configuring header split which would give 2 buffers with a much
+smaller packet size. This would give some indication of the overhead. Then
+we would likely want to look at XDP_TX and XDP_REDIRECT cases. At least
+those would be my use cases.
+
+> 
+> > 
+> > 
+> 
+> [...]
+> 
+> > 
+> > I do think it makes sense to drop the helpers for now, and focus on how
+> > this new multi-buffer frame type is handled in the existing code, and do
+> > some benchmarking on higher speed NIC, before the BPF-helper start to
+> > lockdown/restrict what we can change/revert as they define UAPI.
+> 
+> ack, I will drop them in v5.
+> 
+> Regards,
+> Lorenzo
+> 
+> > 
+> > E.g. existing code that need to handle this is existing helper
+> > bpf_xdp_adjust_tail, which is something I have broad up before and even
+> > described in[1].  Lets make sure existing code works with proposed
+> > design, before introducing new helpers (and this makes it easier to
+> > revert).
+> > 
+> > [1] https://github.com/xdp-project/xdp-project/blob/master/areas/core/xdp-multi-buffer01-design.org#xdp-tail-adjust
+> > -- 
+> > Best regards,
+> >   Jesper Dangaard Brouer
+> >   MSc.CS, Principal Kernel Engineer at Red Hat
+> >   LinkedIn: http://www.linkedin.com/in/brouer
+> > 
+
 
