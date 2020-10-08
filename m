@@ -2,77 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF0082879E6
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 18:23:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17B2F2879E8
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 18:24:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730617AbgJHQXo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 12:23:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46394 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726012AbgJHQXn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 12:23:43 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9AAAC061755
-        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 09:23:43 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id s7so7569249qkh.11
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 09:23:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3qGoVViPLcC2LJuxmI8xfDdStrAjTNHZLwV5FYlRu7k=;
-        b=PYb8ki3AnrDvUMld1hOr56VMYtqjch5fFfg6qNaghS5C2OcwbpOBC2SJH6WivbiSKE
-         pv8k3Eu49V8n9NlsKqkVJOQrmeo2gQZonXtOmeCYVrrIdA1KwHUscO/KT3yZN33+QdrA
-         evpmX81008d3mGFz+xLVL//NTGPd+lKqBE23NdozNG822hBlvt+Rk+lT8qsOc/XTOQ8Z
-         6ygSZhvw3Pg4kr+xSoN8cW8+AMxOOsTuy1xkTRVPe1tZE8ttx0jQDdhsqxCUWcNwXvyf
-         DJUSFWM2IO8Vj9LR19haZl0rh3/9R0ni21r45bMdAdo6OLP+Lx99plzvponHYZmmiP2v
-         IR0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3qGoVViPLcC2LJuxmI8xfDdStrAjTNHZLwV5FYlRu7k=;
-        b=D7B/iwNca+ugldaL8i3wJJSCDNKC9k6rYJJ7AzrK5HOgFXVMlqZPwBvITLWBfzCXc5
-         HqqZ7aSg7Glmjs5szuP1HgC4XBrOXAcp0BVwSy9/3VoWJEpAFc8kalsLg8UxUXxSNbCI
-         9xVdAjNLRMTlo9NclF8uXXQ4G03WyzkeytnFVxSGrm1F0nZ2Qo+gtcxElN9hpofjzzTJ
-         m6XNz9rqXtvdqmJVeIIuOtO+dzb6QUZVjtr28VeBWrhn6EjZE7PJ6OLvY14wZwGZ1MtC
-         +Q6XnESY6seBshfNRNR2gYW2uRr9Ws89RHwt+N5OE09fRjWHP+EkGdsYAOZJJw3D4VI7
-         98fA==
-X-Gm-Message-State: AOAM530zsTmNGb0GHQcGDzqVL2u8NSvKFvFA1mUI3ADkHvX9gVPZSGsP
-        VygOtwTyR/xp+/Em2bD7jgw=
-X-Google-Smtp-Source: ABdhPJz1oH51wG0e4oZceOqkgf7bYKQ9jJu7MJ8eQJo0ni1tb8e5WZ1/H1+xAbLpmW14IZXoJfytMA==
-X-Received: by 2002:a37:b283:: with SMTP id b125mr2050457qkf.407.1602174222837;
-        Thu, 08 Oct 2020 09:23:42 -0700 (PDT)
-Received: from localhost.localdomain ([177.220.172.121])
-        by smtp.gmail.com with ESMTPSA id z3sm4108336qkf.92.2020.10.08.09.23.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Oct 2020 09:23:41 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 98EDDC317F; Thu,  8 Oct 2020 13:23:38 -0300 (-03)
-Date:   Thu, 8 Oct 2020 13:23:38 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Vlad Yasevich <vyasevich@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>
-Subject: Re: [PATCH net] sctp: fix sctp_auth_init_hmacs() error path
-Message-ID: <20201008162338.GB70997@localhost.localdomain>
-References: <20201008083831.521769-1-eric.dumazet@gmail.com>
+        id S1730730AbgJHQX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 12:23:56 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:53674 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726012AbgJHQXz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 12:23:55 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 098GNpqi016489;
+        Thu, 8 Oct 2020 11:23:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1602174231;
+        bh=1qreb2kVtUQKe4lI6IV2IRG5ZuGQneUy3UDTv28QzTA=;
+        h=From:To:CC:Subject:Date;
+        b=FdGRTTNsDZ2SrvPtzK29tN06l41/wHLe4sWLTIfkD0TRfAayNm40qb/G0O5XgUKbj
+         D2aXNen9ig6dlRvVxRUmqLQ7JWLct5J1zclQ2Oyhb0eNYXUnlD0oBrIdraDRH4vl5K
+         aKBHhJkDuKkwTy7s+ZOGOsLhc7GSE+RVZlA7r0Yc=
+Received: from DFLE113.ent.ti.com (dfle113.ent.ti.com [10.64.6.34])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 098GNoBa120158
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 8 Oct 2020 11:23:50 -0500
+Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 8 Oct
+ 2020 11:23:50 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 8 Oct 2020 11:23:50 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 098GNnG1070069;
+        Thu, 8 Oct 2020 11:23:50 -0500
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <davem@davemloft.net>, <andrew@lunn.ch>, <f.fainelli@gmail.com>,
+        <hkallweit1@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Dan Murphy <dmurphy@ti.com>
+Subject: [PATCH net-next 0/2] DP83TD510 Single Pair 10Mbps Ethernet PHY
+Date:   Thu, 8 Oct 2020 11:23:45 -0500
+Message-ID: <20201008162347.5290-1-dmurphy@ti.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201008083831.521769-1-eric.dumazet@gmail.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 08, 2020 at 01:38:31AM -0700, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> After freeing ep->auth_hmacs we have to clear the pointer
-> or risk use-after-free as reported by syzbot:
-> 
+Hello
 
-Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+The DP83TD510 is an Ethernet PHY supporting single pair of twisted wires. The
+PHY is capable of 10Mbps communication over long distances and exceeds the
+IEEE 802.3cg 10BASE-T1L single-pair Ethernet specification.  The PHY supports
+various voltage level signalling and can be forced to support a specific
+voltage or allowed to perfrom auto negotiation on the voltage level. The
+default for the PHY is auto negotiation but if the PHY is forced to a specific
+voltage then the LP must also support the same voltage.
+
+Dan
+
+Dan Murphy (2):
+  dt-bindings: dp83td510: Add binding for DP83TD510 Ethernet PHY
+  net: phy: dp83td510: Add support for the DP83TD510 Ethernet PHY
+
+ .../devicetree/bindings/net/ti,dp83td510.yaml |  70 +++
+ drivers/net/phy/Kconfig                       |   6 +
+ drivers/net/phy/Makefile                      |   1 +
+ drivers/net/phy/dp83td510.c                   | 583 ++++++++++++++++++
+ 4 files changed, 660 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/ti,dp83td510.yaml
+ create mode 100644 drivers/net/phy/dp83td510.c
+
+-- 
+2.28.0.585.ge1cfff676549
+
