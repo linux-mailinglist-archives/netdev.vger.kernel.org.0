@@ -2,357 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99E1C287259
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 12:17:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3E3428725B
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 12:18:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729338AbgJHKRp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 06:17:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50910 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729210AbgJHKRo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Oct 2020 06:17:44 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C2DDC2076B;
-        Thu,  8 Oct 2020 10:17:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602152262;
-        bh=jnzPcjlckmhKzqEG8+iGrWISe7UZj+mwIWSZMDd+HC8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=R0BAMywuKP/3WYWluorvqbOkEZdZTMSjU7Oe3EOYUSFguVokX6WYT7OUj5DN0soxB
-         AhAbWQYAt1zDoKoVVwyye+FaTThbyAnK7QsQAmqDHv1aZ4k6gBC7aEMMl10vIgpM7L
-         fTPltMCWepXGQc2Vn42MB8F+CStVKC9Jhay8ydws=
-Date:   Thu, 8 Oct 2020 13:17:37 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        "parav@mellanox.com" <parav@mellanox.com>,
-        "tiwai@suse.de" <tiwai@suse.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ranjani.sridharan@linux.intel.com" 
-        <ranjani.sridharan@linux.intel.com>,
-        "fred.oh@linux.intel.com" <fred.oh@linux.intel.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "Williams, Dan J" <dan.j.williams@intel.com>,
-        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        id S1729387AbgJHKSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 06:18:11 -0400
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:14859 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729210AbgJHKSL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 06:18:11 -0400
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5f7ee72a0002>; Thu, 08 Oct 2020 03:17:14 -0700
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 8 Oct
+ 2020 10:18:10 +0000
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.177)
+ by HQMAIL101.nvidia.com (172.20.187.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Thu, 8 Oct 2020 10:18:10 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NKg3UlXJBdgX7r02udMRDRshhTjhP08gXgmkrU5s18uBLPupZn7VYt7t87E/Do0v9tmrCJ1x88gBX/B4PJCwbBXrJIe9/tXttcQC1mIcuaDPJWdEmfjuWSubX7ZS6NtjZD7FNdKgT4aHInjwaga86gIDHlfIIYtmJeogqwWg+DLBGk0y9lWXI9CEOawz3RFnk8PCdqyhqZ1SPWkJDzfN7oHEff5hht+Qu9RoHZdsD/BngmYY9nYyCch3kNXBffZcW0ZHF3h8pqZ1IHGBYZmb5szf4ykirPujesfgdY13abRVp4asLKXb0Eo9eTbDCwjo/wfSumgF2Z5P+2F9aThIHQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=v7QK+x48Nahz9E245zPp0yBfsIPiIH5jtK/dW+p4mzo=;
+ b=OWo6LoLlyBr8fkjsvZyI+4leOl2CKbkCBm5WFCHYq9xdprYnRPEV/SRigyTBA+JTpngaGg4jkcTt6LOMc7Er9486PUs8HCsmP8euvbJ092XSh0M+p4GieIkUXmlFgO7ciQdpA0G0Jm7vOgggF0XuFX3BNzjcDIUANXVqDEUOTAlGsA62+sbKSutlofdAe6Ny0yL8bUBmpYSg62vmzkEWIBmEcnSZBFfyuCfrDiDgqH+pctG1sx/npYWrrykZivUcWcHWN0IpmNSyGJRg6PS/jGhWbx5DVmPD7b5Wg0O7irLGGbK7bQ7chiVj+TQZJjzm0d+qZn0K0kHMRSi7RsoQng==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM5PR1201MB0010.namprd12.prod.outlook.com (2603:10b6:3:e3::23)
+ by DM6PR12MB3004.namprd12.prod.outlook.com (2603:10b6:5:11b::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.21; Thu, 8 Oct
+ 2020 10:18:09 +0000
+Received: from DM5PR1201MB0010.namprd12.prod.outlook.com
+ ([fe80::4517:3a8d:9dff:3b62]) by DM5PR1201MB0010.namprd12.prod.outlook.com
+ ([fe80::4517:3a8d:9dff:3b62%9]) with mapi id 15.20.3455.024; Thu, 8 Oct 2020
+ 10:18:09 +0000
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+To:     "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>,
+        "henrik.bjoernlund@microchip.com" <henrik.bjoernlund@microchip.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
-        "Patil, Kiran" <kiran.patil@intel.com>
-Subject: Re: [PATCH v2 1/6] Add ancillary bus support
-Message-ID: <20201008101737.GL13580@unreal>
-References: <BY5PR12MB43221A308CE750FACEB0A806DC0A0@BY5PR12MB4322.namprd12.prod.outlook.com>
- <DM6PR11MB28415A8E53B5FFC276D5A2C4DD0A0@DM6PR11MB2841.namprd11.prod.outlook.com>
- <c90316f5-a5a9-fe22-ec11-a30a54ff0a9d@linux.intel.com>
- <DM6PR11MB284147D4BC3FD081B9F0B8BBDD0A0@DM6PR11MB2841.namprd11.prod.outlook.com>
- <c88b0339-48c6-d804-6fbd-b2fc6fa826d6@linux.intel.com>
- <BY5PR12MB43222FD5959E490E331D680ADC0B0@BY5PR12MB4322.namprd12.prod.outlook.com>
- <20201008052623.GB13580@unreal>
- <BY5PR12MB4322D48FADAAAD66DE7159D7DC0B0@BY5PR12MB4322.namprd12.prod.outlook.com>
- <20201008074525.GJ13580@unreal>
- <BY5PR12MB4322658669FFC396D8EE5D84DC0B0@BY5PR12MB4322.namprd12.prod.outlook.com>
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Roopa Prabhu <roopa@nvidia.com>
+CC:     "horatiu.vultur@microchip.com" <horatiu.vultur@microchip.com>
+Subject: Re: [PATCH net] bridge: Netlink interface fix.
+Thread-Topic: [PATCH net] bridge: Netlink interface fix.
+Thread-Index: AQHWnKKpyTxrd+oPIUur9lgPN8/sf6mMOMkAgAFGlAA=
+Date:   Thu, 8 Oct 2020 10:18:09 +0000
+Message-ID: <585c251204d3c09150e9fcb60f560c599567688a.camel@nvidia.com>
+References: <20201007120700.2152699-1-henrik.bjoernlund@microchip.com>
+         <32183f25a3d7ee8c148db42fbed9dd2a6e0a1f92.camel@nvidia.com>
+In-Reply-To: <32183f25a3d7ee8c148db42fbed9dd2a6e0a1f92.camel@nvidia.com>
+Reply-To: Nikolay Aleksandrov <nikolay@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.34.4 (3.34.4-1.fc31) 
+authentication-results: lists.linux-foundation.org; dkim=none (message not
+ signed) header.d=none;lists.linux-foundation.org; dmarc=none action=none
+ header.from=nvidia.com;
+x-originating-ip: [84.238.136.197]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ec8a3db8-7b77-4e75-241d-08d86b7374a2
+x-ms-traffictypediagnostic: DM6PR12MB3004:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR12MB3004D580F59A01F1B3FE38F0DF0B0@DM6PR12MB3004.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: lTC2woOBFmGBtEcJ3gOVnTti5JuH8xwmjfq3bIqH/GTgH+FP7psLzHFlyEMe2gwjGZDgtiX+4zes4Wfq/3gIkBqwhYUmJe1X7KF6ilqvEMB2QHC01546u+Re4MIL0r0MiOHlefBoJERRj+iarMSTmgxf0gfEsnyJ5Us2NrCSRG3Su8j09euJ6BQo4HJFLZ0kO8ZMDyUz2zHOkT9mN1T3mWmC1YQ+yy8VUkvHsyjJ9/IglJdLu0u/qjHAEBKYinNPekSVsu/3HKIdLq6yx2AsTUKuPoaYn0QsAvSZwgz4N5TXb8+fx9NdFdIx7sCxyQ6m7rDg1PtItpD77NBO11PBEg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1201MB0010.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(376002)(136003)(396003)(39860400002)(8676002)(2906002)(8936002)(6506007)(26005)(3450700001)(71200400001)(6636002)(6512007)(36756003)(186003)(5660300002)(86362001)(83380400001)(4326008)(64756008)(66556008)(2616005)(6486002)(66476007)(66946007)(66446008)(110136005)(316002)(91956017)(478600001)(76116006);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 2u4ZNxeK5sV6WUBhM3NE7eQZ3EZOAPGVTcLMNotgJzej8DTZDxhBiz7v3a76ePPMyswtSBcfE364tN/TlwGN+FiDoIYo6pnCfNRWNANpse4dQuLm5GlRF058Rvk6lo7gN3yPeEVhtLXI4QsCFrz1UvRMZVXAetZOvU06HLvxiQhYPVf4BI64LQoNwQ59ADCG70/HrGVZyDm3R0p9hEA7jXu+3JGWxFcNfNnnv/3vFQQe4eaFlnjvOjYt2RX0c8vddoRLkGWhszJ4QlURYsTWvzL187YQPWyDAwgRvGPPiTy6cEE3O69EV4j1/YOwjCQ80Z0bdwT0tvO7gquycfNMtXuxRLIs0ssbb1kTV7jt1o8bRh9vou6d2of7F49FA6f15d+U4zWb72GvgIb9S2WJS6gBgBFWZfFtwk2oMxRGjxeHs+/4uieFu9iHYYZukaRPwY9oBDuuAjBuIZjbUeCBZU4tpYAEF3xQro1+EnQ0aMPkT9Va1f2U2VuQ14TDu7UC7f30PBi0q6tS4xMjiKsBwdOh0DU10QzliqrjJP9K+4+iPIn9RohKm21XIdIUQHzkmDREDF+Vsspqys70jGMVTouOed4aRi5MRix1vmlSVNpgZSG6wyX82X8P4Y1qQ3bec5IzIREdBgnKiVJpmarM6A==
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <A6370466707DB64D8F28135E50738949@namprd12.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BY5PR12MB4322658669FFC396D8EE5D84DC0B0@BY5PR12MB4322.namprd12.prod.outlook.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR1201MB0010.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ec8a3db8-7b77-4e75-241d-08d86b7374a2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Oct 2020 10:18:09.3580
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: IAY1haTGAlBCA3kG+w0TJQQYhWL5mNfrssxueAu7rHNYFfCIVfcAXhvnQ+rQecKePbz4q07PAlMenfMxyp1cvA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3004
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1602152234; bh=v7QK+x48Nahz9E245zPp0yBfsIPiIH5jtK/dW+p4mzo=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
+         CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
+         In-Reply-To:Reply-To:Accept-Language:Content-Language:
+         X-MS-Has-Attach:X-MS-TNEF-Correlator:user-agent:
+         authentication-results:x-originating-ip:x-ms-publictraffictype:
+         x-ms-office365-filtering-correlation-id:x-ms-traffictypediagnostic:
+         x-ms-exchange-transport-forked:x-microsoft-antispam-prvs:
+         x-ms-oob-tlc-oobclassifiers:x-ms-exchange-senderadcheck:
+         x-microsoft-antispam:x-microsoft-antispam-message-info:
+         x-forefront-antispam-report:x-ms-exchange-antispam-messagedata:
+         Content-Type:Content-ID:Content-Transfer-Encoding:MIME-Version:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-originalarrivaltime:
+         X-MS-Exchange-CrossTenant-fromentityheader:
+         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+         X-MS-Exchange-CrossTenant-userprincipalname:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=A4VKAk8H+SgDUJT0Ag1lSF++LbohS7xZBjsBpalvPjJ6Bg0yUOn+fD8Pm/YvC0sO0
+         7UcXsT7SEaf6xN3c/M3sYLJJQwOJEB/wo/ztmBDX2CTG9ouvm4hDzwDsLwuTZZGqWD
+         NiodIHLhsCP53+Xw+1V6m1x/IVwrcSpNt0hF7lGAlw0B0u5Eqz/5C+IxpgyungGcfm
+         FEpKabBuDCAgnAwsEqFlMm+hfCdzm4UnAcCi88hSfgZYsDIyIA7tA4WlinWdd2MUaQ
+         ZqZg55VoEzzouZO2yPxr4i1evw0IzEiiaJChD/UJTMg+46u9k3RyfHJIcqP5G30OR+
+         dOEetmiUAIbSg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 08, 2020 at 09:45:29AM +0000, Parav Pandit wrote:
->
->
-> > From: Leon Romanovsky <leon@kernel.org>
-> > Sent: Thursday, October 8, 2020 1:15 PM
-> >
-> > On Thu, Oct 08, 2020 at 07:14:17AM +0000, Parav Pandit wrote:
-> > >
-> > >
-> > > > From: Leon Romanovsky <leon@kernel.org>
-> > > > Sent: Thursday, October 8, 2020 10:56 AM
-> > > >
-> > > > On Thu, Oct 08, 2020 at 04:56:01AM +0000, Parav Pandit wrote:
-> > > > >
-> > > > >
-> > > > > > From: Pierre-Louis Bossart
-> > > > > > <pierre-louis.bossart@linux.intel.com>
-> > > > > > Sent: Thursday, October 8, 2020 3:20 AM
-> > > > > >
-> > > > > >
-> > > > > > On 10/7/20 4:22 PM, Ertman, David M wrote:
-> > > > > > >> -----Original Message-----
-> > > > > > >> From: Pierre-Louis Bossart
-> > > > > > >> <pierre-louis.bossart@linux.intel.com>
-> > > > > > >> Sent: Wednesday, October 7, 2020 1:59 PM
-> > > > > > >> To: Ertman, David M <david.m.ertman@intel.com>; Parav Pandit
-> > > > > > >> <parav@nvidia.com>; Leon Romanovsky <leon@kernel.org>
-> > > > > > >> Cc: alsa-devel@alsa-project.org; parav@mellanox.com;
-> > > > > > >> tiwai@suse.de; netdev@vger.kernel.org;
-> > > > > > >> ranjani.sridharan@linux.intel.com;
-> > > > > > >> fred.oh@linux.intel.com; linux-rdma@vger.kernel.org;
-> > > > > > >> dledford@redhat.com; broonie@kernel.org; Jason Gunthorpe
-> > > > > > >> <jgg@nvidia.com>; gregkh@linuxfoundation.org;
-> > > > > > >> kuba@kernel.org; Williams, Dan J <dan.j.williams@intel.com>;
-> > > > > > >> Saleem, Shiraz <shiraz.saleem@intel.com>;
-> > > > > > >> davem@davemloft.net; Patil, Kiran <kiran.patil@intel.com>
-> > > > > > >> Subject: Re: [PATCH v2 1/6] Add ancillary bus support
-> > > > > > >>
-> > > > > > >>
-> > > > > > >>
-> > > > > > >>>> Below is most simple, intuitive and matching with core APIs
-> > > > > > >>>> for name and design pattern wise.
-> > > > > > >>>> init()
-> > > > > > >>>> {
-> > > > > > >>>> 	err = ancillary_device_initialize();
-> > > > > > >>>> 	if (err)
-> > > > > > >>>> 		return ret;
-> > > > > > >>>>
-> > > > > > >>>> 	err = ancillary_device_add();
-> > > > > > >>>> 	if (ret)
-> > > > > > >>>> 		goto err_unwind;
-> > > > > > >>>>
-> > > > > > >>>> 	err = some_foo();
-> > > > > > >>>> 	if (err)
-> > > > > > >>>> 		goto err_foo;
-> > > > > > >>>> 	return 0;
-> > > > > > >>>>
-> > > > > > >>>> err_foo:
-> > > > > > >>>> 	ancillary_device_del(adev);
-> > > > > > >>>> err_unwind:
-> > > > > > >>>> 	ancillary_device_put(adev->dev);
-> > > > > > >>>> 	return err;
-> > > > > > >>>> }
-> > > > > > >>>>
-> > > > > > >>>> cleanup()
-> > > > > > >>>> {
-> > > > > > >>>> 	ancillary_device_de(adev);
-> > > > > > >>>> 	ancillary_device_put(adev);
-> > > > > > >>>> 	/* It is common to have a one wrapper for this as
-> > > > > > >>>> ancillary_device_unregister().
-> > > > > > >>>> 	 * This will match with core device_unregister() that has
-> > > > > > >>>> precise documentation.
-> > > > > > >>>> 	 * but given fact that init() code need proper error
-> > > > > > >>>> unwinding, like above,
-> > > > > > >>>> 	 * it make sense to have two APIs, and no need to export
-> > > > > > >>>> another symbol for unregister().
-> > > > > > >>>> 	 * This pattern is very easy to audit and code.
-> > > > > > >>>> 	 */
-> > > > > > >>>> }
-> > > > > > >>>
-> > > > > > >>> I like this flow +1
-> > > > > > >>>
-> > > > > > >>> But ... since the init() function is performing both
-> > > > > > >>> device_init and device_add - it should probably be called
-> > > > > > >>> ancillary_device_register, and we are back to a single
-> > > > > > >>> exported API for both register and unregister.
-> > > > > > >>
-> > > > > > >> Kind reminder that we introduced the two functions to allow
-> > > > > > >> the caller to know if it needed to free memory when
-> > > > > > >> initialize() fails, and it didn't need to free memory when
-> > > > > > >> add() failed since
-> > > > > > >> put_device() takes care of it. If you have a single init()
-> > > > > > >> function it's impossible to know which behavior to select on error.
-> > > > > > >>
-> > > > > > >> I also have a case with SoundWire where it's nice to first
-> > > > > > >> initialize, then set some data and then add.
-> > > > > > >>
-> > > > > > >
-> > > > > > > The flow as outlined by Parav above does an initialize as the
-> > > > > > > first step, so every error path out of the function has to do
-> > > > > > > a put_device(), so you would never need to manually free the
-> > > > > > > memory in
-> > > > > > the setup function.
-> > > > > > > It would be freed in the release call.
-> > > > > >
-> > > > > > err = ancillary_device_initialize(); if (err)
-> > > > > > 	return ret;
-> > > > > >
-> > > > > > where is the put_device() here? if the release function does any
-> > > > > > sort of kfree, then you'd need to do it manually in this case.
-> > > > > Since device_initialize() failed, put_device() cannot be done here.
-> > > > > So yes, pseudo code should have shown, if (err) {
-> > > > > 	kfree(adev);
-> > > > > 	return err;
-> > > > > }
-> > > > >
-> > > > > If we just want to follow register(), unregister() pattern,
-> > > > >
-> > > > > Than,
-> > > > >
-> > > > > ancillar_device_register() should be,
-> > > > >
-> > > > > /**
-> > > > >  * ancillar_device_register() - register an ancillary device
-> > > > >  * NOTE: __never directly free @adev after calling this function,
-> > > > > even if it returned
-> > > > >  * an error. Always use ancillary_device_put() to give up the
-> > > > > reference
-> > > > initialized by this function.
-> > > > >  * This note matches with the core and caller knows exactly what
-> > > > > to be
-> > > > done.
-> > > > >  */
-> > > > > ancillary_device_register()
-> > > > > {
-> > > > > 	device_initialize(&adev->dev);
-> > > > > 	if (!dev->parent || !adev->name)
-> > > > > 		return -EINVAL;
-> > > > > 	if (!dev->release && !(dev->type && dev->type->release)) {
-> > > > > 		/* core is already capable and throws the warning when
-> > > > release callback is not set.
-> > > > > 		 * It is done at drivers/base/core.c:1798.
-> > > > > 		 * For NULL release it says, "does not have a release()
-> > > > function, it is broken and must be fixed"
-> > > > > 		 */
-> > > > > 		return -EINVAL;
-> > > > > 	}
-> > > > > 	err = dev_set_name(adev...);
-> > > > > 	if (err) {
-> > > > > 		/* kobject_release() -> kobject_cleanup() are capable to
-> > > > detect if name is set/ not set
-> > > > > 		  * and free the const if it was set.
-> > > > > 		  */
-> > > > > 		return err;
-> > > > > 	}
-> > > > > 	err = device_add(&adev->dev);
-> > > > > 	If (err)
-> > > > > 		return err;
-> > > > > }
-> > > > >
-> > > > > Caller code:
-> > > > > init()
-> > > > > {
-> > > > > 	adev = kzalloc(sizeof(*foo_adev)..);
-> > > > > 	if (!adev)
-> > > > > 		return -ENOMEM;
-> > > > > 	err = ancillary_device_register(&adev);
-> > > > > 	if (err)
-> > > > > 		goto err;
-> > > > >
-> > > > > err:
-> > > > > 	ancillary_device_put(&adev);
-> > > > > 	return err;
-> > > > > }
-> > > > >
-> > > > > cleanup()
-> > > > > {
-> > > > > 	ancillary_device_unregister(&adev);
-> > > > > }
-> > > > >
-> > > > > Above pattern is fine too matching the core.
-> > > > >
-> > > > > If I understand Leon correctly, he prefers simple register(),
-> > > > > unregister()
-> > > > pattern.
-> > > > > If, so it should be explicit register(), unregister() API.
-> > > >
-> > > > This is my summary
-> > > > https://lore.kernel.org/linux-rdma/20201008052137.GA13580@unreal
-> > > > The API should be symmetric.
-> > > >
-> > >
-> > > I disagree to your below point.
-> > > > 1. You are not providing driver/core API but simplification and
-> > > > obfuscation of basic primitives and structures. This is new layer.
-> > > > There is no room for a claim that we must to follow internal API.
-> > > If ancillary bus has
-> > > ancillary_device_add(), it cannot do device_initialize() and device_add() in
-> > both.
-> > >
-> > > I provided two examples and what really matters is a given patchset
-> > > uses (need to use) which pattern,
-> > > initialize() + add(), or register() + unregister().
-> > >
-> > > As we all know that API is not added for future. It is the future patch
-> > extends it.
-> > > So lets wait for Pierre to reply if soundwire can follow register(),
-> > unregister() sequence.
-> > > This way same APIs can service both use-cases.
-> > >
-> > > Regarding,
-> > > > 3. You can't "ask" from users to call internal calls (put_device)
-> > > > over internal fields in ancillary_device.
-> > > In that case if should be ancillary_device_put() ancillary_device_release().
-> > >
-> > > Or we should follow the patten of ib_alloc_device [1],
-> > > ancillary_device_alloc()
-> > >     -> kzalloc(adev + dev) with compile time assert check like rdma and vdpa
-> > subsystem.
-> > >     ->device_initialize()
-> > > ancillary_device_add()
-> > >
-> > > ancillar_device_de() <- balances with add
-> > > ancillary_device_dealloc() <-- balances with device_alloc(), which does the
-> > put_device() + free the memory allocated in alloc().
-> > >
-> > > This approach of [1] also eliminates exposing adev.dev.release =
-> > <drivers_release_method_to_free_adev> in drivers.
-> > > And container_of() benefit also continues..
-> > >
-> > > [1]
-> > > https://elixir.bootlin.com/linux/v5.9-rc8/source/include/rdma/ib_verbs
-> > > .h#L2791
-> > >
-> >
-> > My code looks like this, probably yours looks the same.
-> >
-> >   247                 priv->adev[i] = kzalloc(sizeof(*priv->adev[i]), GFP_KERNEL);
-> >   248                 if (!priv->adev[i])
-> >   249                         goto init_err;
-> >   250
-> >   251                 adev = &priv->adev[i]->adev;
-> >   252                 adev->id = idx;
-> >   253                 adev->name = mlx5_adev_devices[i].suffix;
-> >   254                 adev->dev.parent = dev->device;
-> >   255                 adev->dev.release = adev_release;
-> >   256                 priv->adev[i]->mdev = dev;
-> >   257
-> >   258                 ret = ancillary_device_initialize(adev);
-> >   259                 if (ret)
-> >   260                         goto init_err;
-> >   261
-> >   262                 ret = ancillary_device_add(adev);
-> >   263                 if (ret) {
-> >   264                         put_device(&adev->dev);
-> >   265                         goto add_err;
-> >   266                 }
->
-> Yes, subfunction code is also very similar.
-> You expressed concerned that you didn't like put_device() at [1].
-> But in above code is touching adev->dev.{parent, release} is ok?
-
-Yes, "adev->dev.{parent, release}" is not ok, but at least it doesn't
-complicate error unwinding. This is why I didn't say anything about it.
-
-> >   254                 adev->dev.parent = dev->device;
-> >   255                 adev->dev.release = adev_release;
->
-> If not,
->
-> We can make it elegant by doing,
-
-I like your idea, IMHO it is more clear and less error prone.
-
-Thanks
-
->
-> the patten of ib_alloc_device [1],
-> ancillary_device_alloc()
->     -> kzalloc(adev + dev) with compile time assert check like rdma and vdpa subsystem.
->     ->device_initialize()
-> ancillary_device_add()
->
-> ancillar_device_de() <- balances with add
-> ancillary_device_dealloc() <-- balances with device_alloc(), which does the put_device() + free the memory allocated in alloc().
->
-> This approach of [2] also eliminates exposing adev.dev.release = <drivers_release_method_to_free_adev> in drivers.
-> And container_of() benefit also continues..
->
-> [1] https://lore.kernel.org/linux-rdma/20201007192610.GD3964015@unreal/
-> [2] https://elixir.bootlin.com/linux/v5.9-rc8/source/include/rdma/ib_verbs.h#L2791
+T24gV2VkLCAyMDIwLTEwLTA3IGF0IDE0OjQ5ICswMDAwLCBOaWtvbGF5IEFsZWtzYW5kcm92IHdy
+b3RlOg0KPiBPbiBXZWQsIDIwMjAtMTAtMDcgYXQgMTI6MDcgKzAwMDAsIEhlbnJpayBCam9lcm5s
+dW5kIHdyb3RlOg0KPiA+IFRoaXMgY29tbWl0IGlzIGNvcnJlY3RpbmcgTkVUTElOSyBicl9maWxs
+X2lmaW5mbygpIHRvIGJlIGFibGUgdG8NCj4gPiBoYW5kbGUgJ2ZpbHRlcl9tYXNrJyB3aXRoIG11
+bHRpcGxlIGZsYWdzIGFzc2VydGVkLg0KPiA+IA0KPiA+IEZpeGVzOiAzNmE4ZThlMjY1NDIwICgi
+YnJpZGdlOiBFeHRlbmQgYnJfZmlsbF9pZmluZm8gdG8gcmV0dXJuIE1QUiBzdGF0dXMiKQ0KPiA+
+IA0KPiA+IFNpZ25lZC1vZmYtYnk6IEhlbnJpayBCam9lcm5sdW5kIDxoZW5yaWsuYmpvZXJubHVu
+ZEBtaWNyb2NoaXAuY29tPg0KPiA+IFJldmlld2VkLWJ5OiBIb3JhdGl1IFZ1bHR1ciA8aG9yYXRp
+dS52dWx0dXJAbWljcm9jaGlwLmNvbT4NCj4gPiBTdWdnZXN0ZWQtYnk6IE5pa29sYXkgQWxla3Nh
+bmRyb3YgPG5pa29sYXlAbnZpZGlhLmNvbT4NCj4gPiBUZXN0ZWQtYnk6IEhvcmF0aXUgVnVsdHVy
+IDxob3JhdGl1LnZ1bHR1ckBtaWNyb2NoaXAuY29tPg0KPiA+IC0tLQ0KPiA+ICBuZXQvYnJpZGdl
+L2JyX25ldGxpbmsuYyB8IDI2ICsrKysrKysrKysrLS0tLS0tLS0tLS0tLS0tDQo+ID4gIDEgZmls
+ZSBjaGFuZ2VkLCAxMSBpbnNlcnRpb25zKCspLCAxNSBkZWxldGlvbnMoLSkNCj4gPiANCj4gDQo+
+IFRoZSBwYXRjaCBsb29rcyBnb29kLCBwbGVhc2UgZG9uJ3Qgc2VwYXJhdGUgdGhlIEZpeGVzIHRh
+ZyBmcm9tIHRoZSBvdGhlcnMuDQo+IEFja2VkLWJ5OiBOaWtvbGF5IEFsZWtzYW5kcm92IDxuaWtv
+bGF5QG52aWRpYS5jb20+DQo+IA0KDQpUQkgsIHRoaXMgZG9lcyBjaGFuZ2UgYSB1c2VyIGZhY2lu
+ZyBhcGkgKHRoZSBhdHRyaWJ1dGUgbmVzdGluZyksIGJ1dCBJIHRoaW5rDQppbiB0aGlzIGNhc2Ug
+aXQncyBhY2NlcHRhYmxlIGR1ZSB0byB0aGUgZm9ybWF0IGJlaW5nIHdyb25nIGFuZCBNUlAgYmVp
+bmcgbmV3LCBzbw0KSSBkb3VidCBhbnlvbmUgaXMgeWV0IGR1bXBpbmcgaXQgbWl4ZWQgd2l0aCB2
+bGFuIGZpbHRlcl9tYXNrIGFuZCBjaGVja2luZyBmb3INCnR3byBpZGVudGljYWwgYXR0cmlidXRl
+cywgaS5lLiBpbiB0aGUgb2xkL2Jyb2tlbiBjYXNlIHBhcnNpbmcgdGhlIGF0dHJpYnV0ZXMNCmlu
+dG8gYSB0YWJsZSB3b3VsZCBoaWRlIG9uZSBvZiB0aGVtIGFuZCB5b3UnZCBoYXZlIHRvIHdhbGsg
+b3ZlciBhbGwgYXR0cmlidXRlcw0KdG8gY2F0Y2ggdGhhdC4NCg0KDQo=
