@@ -2,31 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C179A287E22
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 23:40:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEFA1287E1F
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 23:40:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730246AbgJHVkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1730260AbgJHVkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 8 Oct 2020 17:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38834 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725922AbgJHVkb (ORCPT
+        with ESMTP id S1727560AbgJHVkb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 17:40:31 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB26C0613D2
-        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 14:40:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 440D9C0613D4
+        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 14:40:31 -0700 (PDT)
 Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
         by metis.ext.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kQdeF-0001aU-LO; Thu, 08 Oct 2020 23:40:27 +0200
+        id 1kQdeH-0001aU-7D; Thu, 08 Oct 2020 23:40:29 +0200
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Lucas Stach <l.stach@pengutronix.de>,
-        Dan Murphy <dmurphy@ti.com>,
+        kernel@pengutronix.de, Cong Wang <xiyou.wangcong@gmail.com>,
+        syzbot+3f3837e61a48d32b495f@syzkaller.appspotmail.com,
+        Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 1/3] can: m_can_platform: don't call m_can_class_suspend in runtime suspend
-Date:   Thu,  8 Oct 2020 23:40:20 +0200
-Message-Id: <20201008214022.2044402-2-mkl@pengutronix.de>
+Subject: [PATCH 2/3] can: j1935: j1939_tp_tx_dat_new(): fix missing initialization of skbcnt
+Date:   Thu,  8 Oct 2020 23:40:21 +0200
+Message-Id: <20201008214022.2044402-3-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201008214022.2044402-1-mkl@pengutronix.de>
 References: <20201008214022.2044402-1-mkl@pengutronix.de>
@@ -40,41 +43,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lucas Stach <l.stach@pengutronix.de>
+From: Cong Wang <xiyou.wangcong@gmail.com>
 
-    0704c5743694 can: m_can_platform: remove unnecessary m_can_class_resume() call
+This fixes an uninit-value warning:
+BUG: KMSAN: uninit-value in can_receive+0x26b/0x630 net/can/af_can.c:650
 
-removed the m_can_class_resume() call in the runtime resume path to get
-rid of a infinite recursion, so the runtime resume now only handles the device
-clocks.
-
-Unfortunately it did not remove the complementary m_can_class_suspend() call in
-the runtime suspend function, so those paths are now unbalanced, which causes
-the pinctrl state to get stuck on the "sleep" state, which breaks all CAN
-functionality on SoCs where this state is defined. Remove the
-m_can_class_suspend() call to fix this.
-
-Fixes: 0704c5743694 can: m_can_platform: remove unnecessary m_can_class_resume() call
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-Link: https://lore.kernel.org/r/20200811081545.19921-1-l.stach@pengutronix.de
-Acked-by: Dan Murphy <dmurphy@ti.com>
+Reported-and-tested-by: syzbot+3f3837e61a48d32b495f@syzkaller.appspotmail.com
+Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+Cc: Robin van der Gracht <robin@protonic.nl>
+Cc: Oleksij Rempel <linux@rempel-privat.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Oliver Hartkopp <socketcan@hartkopp.net>
+Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+Link: https://lore.kernel.org/r/20201008061821.24663-1-xiyou.wangcong@gmail.com
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/m_can/m_can_platform.c | 2 --
- 1 file changed, 2 deletions(-)
+ net/can/j1939/transport.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/can/m_can/m_can_platform.c b/drivers/net/can/m_can/m_can_platform.c
-index 38ea5e600fb8..e6d0cb9ee02f 100644
---- a/drivers/net/can/m_can/m_can_platform.c
-+++ b/drivers/net/can/m_can/m_can_platform.c
-@@ -144,8 +144,6 @@ static int __maybe_unused m_can_runtime_suspend(struct device *dev)
- 	struct net_device *ndev = dev_get_drvdata(dev);
- 	struct m_can_classdev *mcan_class = netdev_priv(ndev);
- 
--	m_can_class_suspend(dev);
--
- 	clk_disable_unprepare(mcan_class->cclk);
- 	clk_disable_unprepare(mcan_class->hclk);
+diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+index 0cec4152f979..88cf1062e1e9 100644
+--- a/net/can/j1939/transport.c
++++ b/net/can/j1939/transport.c
+@@ -580,6 +580,7 @@ sk_buff *j1939_tp_tx_dat_new(struct j1939_priv *priv,
+ 	skb->dev = priv->ndev;
+ 	can_skb_reserve(skb);
+ 	can_skb_prv(skb)->ifindex = priv->ndev->ifindex;
++	can_skb_prv(skb)->skbcnt = 0;
+ 	/* reserve CAN header */
+ 	skb_reserve(skb, offsetof(struct can_frame, data));
  
 -- 
 2.28.0
