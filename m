@@ -2,88 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2505D286E65
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 08:04:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6014286E9D
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 08:19:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728409AbgJHGEv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 02:04:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34992 "EHLO
+        id S1727754AbgJHGSb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 02:18:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726245AbgJHGEv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 02:04:51 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CAC2C061755
-        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 23:04:51 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id q7so4611057ile.8
-        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 23:04:51 -0700 (PDT)
+        with ESMTP id S1726148AbgJHGSa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 02:18:30 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0796C061755
+        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 23:18:29 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id a200so3112363pfa.10
+        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 23:18:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=1/JrwZbWD8gxzMYYn0C09QwjCEs5M+FCAqsslvVKM9U=;
-        b=ukCz1suJtlvB2kOlernkr8M64mz0J825j0PLVaqJzqwcFXvpcjyTv9g4mHlD2BtsVF
-         B4zsXsLJ3WfH7MT9aN/sYPl7i4h4ANJyCx8KMWrtlhtoOwGjjqAY6PsTeuGg7W7V+iic
-         Vj+/F0QAjJrzSC+HVo3w8UN6JhmONPpCelJrad8xtyM8EwV/2lPrcgozYpA72UpImpU2
-         JkPl0El5bmdkSNV0SF7mSTHtRguZDj1xOGC6cv8QSo0kKzqnX1RPsq5ZhAbnXZx9s+dC
-         Pzrd2ID/Y4n0FNTB6ln2lHzxKfl1Pi0jl+sWnQasl/1eVmvHe3QXh8Gaub5USHmtXbOF
-         rNZA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=x8r0Ekdmnh3+RzeyD0hVh8+L0tzoK+Jsn3mZ0fzXsqo=;
+        b=op+2MJS/Wcxxi+bZlIBN4cgXExImYdPBAkHb4+vr+Rz62oLTPzg27aLSuO8EZWL2Yt
+         hH8Aqa7QLJR7ClT0ASg53/NnIqPoYH37f6WrnpmTr6qxwbw7JteH5WGJp5cNlS5VErWw
+         OYgZSN1Asgh64UgZz4OaJCGEV7+Sw6DAZrloLQLUOQW1E5f3U7SstaiVMVLCfTEWP7G0
+         OSHL06u0ZQgxpaf8EkDZVQ1X1mkpsteUofYRXKMEKLCDQBGodH6qeKSKPbi7WquIZysc
+         3bMTVF10ujrWfpb2Mx/SW+iH9moagKK2UHyKeKmrWzyV38J7FsBUVuKHKS4Eb+w6x3CA
+         gJlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=1/JrwZbWD8gxzMYYn0C09QwjCEs5M+FCAqsslvVKM9U=;
-        b=fIMdoTw42302yGs7RT6yR+vfBPkYJ3G6rrlDB4ikIr9YLcCPs/SYCxikLycCfKkSw4
-         KxQi6atR0ggBP5zhmkEftrP0Csui1Fi4cF4q+JWviYwDvodIy4Z35Y2h0Ipo/Amd2U9z
-         lY0+N7iPtKAkFW/MMJi7m2QoxSkBbdfGSzvx5I/1296fW9VAFJSxkiu5VH4YXor6kQ8c
-         bn8GJkAoVI9lKKJQlVpLvP6U4B3BLY5xeb5+Wenv2SdOwZC9+jMISpC5BZWkz8wHacZS
-         2gkWeMMudIhHD3q/ukWDVvG/H+1nRbGc2ZdUp84ei7lpn5DybnRDMNkbCdmMA48wUpPg
-         6/qQ==
-X-Gm-Message-State: AOAM533tdzsKtCc+fuW/Y8CYJgllsuHPLYAMQ5W7RzUMA07I58G/GukC
-        i3gEolwouKP0MAOOcSwL0pNSsqTmhILq80MHqGWTGg==
-X-Google-Smtp-Source: ABdhPJxDwFYqajhmkNSV1r1r+UPxMLiiyIRChk5ZQm4NBllcIZ6+6RRU453DpoYdouz9q3rsnQS9xS0enzlKEPlj66k=
-X-Received: by 2002:a05:6e02:547:: with SMTP id i7mr5865126ils.0.1602137090443;
- Wed, 07 Oct 2020 23:04:50 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=x8r0Ekdmnh3+RzeyD0hVh8+L0tzoK+Jsn3mZ0fzXsqo=;
+        b=cUP0jKjSfgegG/5/yh+Ta8hKZmRDph3WW1Kq7RiaJW3Esixi6CzagplEcPBFTHscY2
+         BehD1dDnb4bw3+647ZMXTQUB/I3JMvZwhiMq/KSckhaMW70jmr6tEv/Z4pZ/f2SWX5bk
+         Y4COtwr6jZm37dRVnaTY3k8IZ4v1pL9ox8YH3mEQ9Op8D71TBeNHVeETwcmI7H/tKC2u
+         BZhkS8/RObNHywPXcAc5nHKjqXL3qp0Oap9FMnWzHoj0Jzdd4tcvgL72EvGBTcZS9qgy
+         i/XmNFYrbBGN/kGcdOONeNzZBsS9HhpyrbJRi7RRi5uY/7cVhpyrfdwKOnYIohTWucdI
+         ukIA==
+X-Gm-Message-State: AOAM5323BHlxS0UhUpqYAnNBSpACHooUFtPEGz6ursVHpZQSUoEWzg1g
+        pHl+zL1dO/m3AUTT4LSjcQJZX2YZdwxpfw==
+X-Google-Smtp-Source: ABdhPJx47CHwU46dGQUfZBOGVy4Mbcp9++s7I5JcuTxDhxo/I9zWmdjwONZ2GSEaUiZfmpgeKvrXLw==
+X-Received: by 2002:a62:3882:0:b029:152:127a:e852 with SMTP id f124-20020a6238820000b0290152127ae852mr6265884pfa.21.1602137908978;
+        Wed, 07 Oct 2020 23:18:28 -0700 (PDT)
+Received: from unknown.linux-6brj.site ([2600:1700:65a0:ab60::46])
+        by smtp.gmail.com with ESMTPSA id n2sm5340707pja.41.2020.10.07.23.18.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Oct 2020 23:18:28 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        syzbot+3f3837e61a48d32b495f@syzkaller.appspotmail.com,
+        Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [Patch net] can: initialize skbcnt in j1939_tp_tx_dat_new()
+Date:   Wed,  7 Oct 2020 23:18:21 -0700
+Message-Id: <20201008061821.24663-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-References: <20201008033102.623894-1-zenczykowski@gmail.com>
-In-Reply-To: <20201008033102.623894-1-zenczykowski@gmail.com>
-From:   Lorenzo Colitti <lorenzo@google.com>
-Date:   Thu, 8 Oct 2020 15:04:39 +0900
-Message-ID: <CAKD1Yr3idc3zz1AT5kmqBE4A9QaOYVF-XvU9zh29gW66tjHQ3g@mail.gmail.com>
-Subject: Re: [PATCH 1/2] net/ipv6: always honour route mtu during forwarding
-To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>, Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Sunmeet Gill <sgill@quicinc.com>,
-        Vinay Paradkar <vparadka@qti.qualcomm.com>,
-        Tyler Wear <twear@quicinc.com>,
-        David Ahern <dsahern@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 8, 2020 at 12:31 PM Maciej =C5=BBenczykowski
-<zenczykowski@gmail.com> wrote:
-> diff --git a/include/net/ip6_route.h b/include/net/ip6_route.h
-> index 2a5277758379..598415743f46 100644
-> --- a/include/net/ip6_route.h
-> +++ b/include/net/ip6_route.h
-> @@ -311,19 +311,13 @@ static inline bool rt6_duplicate_nexthop(struct fib=
-6_info *a, struct fib6_info *
->  static inline unsigned int ip6_dst_mtu_forward(const struct dst_entry *d=
-st)
->  {
->         struct inet6_dev *idev;
-> -       unsigned int mtu;
-> +       unsigned int mtu =3D dst_metric_raw(dst, RTAX_MTU);
-> +       if (mtu)
-> +               return mtu;
+This fixes an uninit-value warning:
+BUG: KMSAN: uninit-value in can_receive+0x26b/0x630 net/can/af_can.c:650
 
-What should happen here if mtu is less than idev->cnf.mtu6? Should the
-code pick the minimum? If not: will picking the higher value work, or
-will the packet be dropped? I suppose we already have this problem
-today if the administrator configures a route with a locked MTU.
+Reported-and-tested-by: syzbot+3f3837e61a48d32b495f@syzkaller.appspotmail.com
+Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
+Cc: Robin van der Gracht <robin@protonic.nl>
+Cc: Oleksij Rempel <linux@rempel-privat.de>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Oliver Hartkopp <socketcan@hartkopp.net>
+Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+---
+ net/can/j1939/transport.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
+index 0cec4152f979..88cf1062e1e9 100644
+--- a/net/can/j1939/transport.c
++++ b/net/can/j1939/transport.c
+@@ -580,6 +580,7 @@ sk_buff *j1939_tp_tx_dat_new(struct j1939_priv *priv,
+ 	skb->dev = priv->ndev;
+ 	can_skb_reserve(skb);
+ 	can_skb_prv(skb)->ifindex = priv->ndev->ifindex;
++	can_skb_prv(skb)->skbcnt = 0;
+ 	/* reserve CAN header */
+ 	skb_reserve(skb, offsetof(struct can_frame, data));
+ 
+-- 
+2.28.0
+
