@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3BFC287ECA
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 00:47:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 283C1287EF2
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 01:00:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730578AbgJHWrq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 18:47:46 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:55775 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725857AbgJHWrp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 18:47:45 -0400
-Received: by mail-wm1-f67.google.com with SMTP id d4so7950962wmd.5
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 15:47:44 -0700 (PDT)
+        id S1730088AbgJHXAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 19:00:40 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:41507 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729973AbgJHXAj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 19:00:39 -0400
+Received: by mail-wr1-f65.google.com with SMTP id w5so8296288wrp.8
+        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 16:00:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=myET8DqnZqvbDgPBngwcFUQxMHa6/4RcZksUikkSMe8=;
-        b=jCPTRWNE2G7Atdg4zROv7ujA05R2Kg4YujvV+ccLW/+PX/jz/fF5s+f82aAmVQFBvp
-         FZsxpIMDSJ5BB3aHBihIr4B09FBYSYAlEbnMnGFKOF1RTMnTaPb+oisb6k2645GAkXwL
-         GGLrNuhotFjCA+mdvqzQZhDUH7D4nKffYxlHGLr2G3LKhxTp3dN3kT4Pj+z7duzQOqBI
-         F6tBJEc4pz3Jq/qlqFyEuRug2N+9egYmF5YAzDSHMrD5OcbVjoX/mzN7Q9rxVGqR0VrV
-         PL/NfLhe/AfIpXMTI+/v9y9XVnyZpXsOdR9rMK38ce+cHzUsrxKHchOuF/uzF5qPbLfj
-         5JoQ==
-X-Gm-Message-State: AOAM533YWjjZuk9GdwJmDqSqFxvxZJ5eXNsyOjq47eX4HPUwDK66W92p
-        c5u5/Gpb6y//FuDSqoSyn5Y=
-X-Google-Smtp-Source: ABdhPJyT43XB0vMUH89OAuDnOhzflLVRD7yxBGR62gVIcWU1MGydvxwjPXNofkMxxcCcVaoBH0gnBw==
-X-Received: by 2002:a7b:c935:: with SMTP id h21mr10377582wml.99.1602197263796;
-        Thu, 08 Oct 2020 15:47:43 -0700 (PDT)
+        bh=38f/duVbixFUEajq4NL1BIVEfot3FVrKIDXch2dCmrg=;
+        b=lWb2Ib3htGNqrDWhzE3C8KK0jkO1BFAmIfzE9ZCYa2qVgQEjv2YGtILfd9dSlLrhXD
+         L8QLO+FhdenYupvWyv/XHTaiw1/Z2iOYGanL9SBfdRqmtF6VjmDDl0fK1kX4aFf6OW+c
+         IB42ZYaZl52o9xncvs0LpkwDBTJCDAAItnbgvq2/PVdUAGIYCxqBLmI/HRhhLZHgbMYg
+         X9lIhbR5RIjD6agdr4tGFp5fIubRm7PL5Ma2/qxTc3i/DlhOh/9SOH+8bjXQ6DdiOqK8
+         z6GGZGBIU5mT3iCX6gaHI8EzCMQy2tbQ4CMIIJ9SHTMhYSWH0KYmZHP7QyfsLfomMOMB
+         Ln0w==
+X-Gm-Message-State: AOAM530IoU/wqtBV44rPYcYPkbiDlzmBMuJdZQl5Rrj0cMz0q8oU7BfB
+        +Ab3wBC8hkXe0k899RfU6AY=
+X-Google-Smtp-Source: ABdhPJyYQV8orChJxD9Awr46bhR7KBjokewpm63kTc6Qy9IJH68cZDl9tMp4Q06Mjtf4d/bmdvOl3g==
+X-Received: by 2002:a05:6000:110f:: with SMTP id z15mr11170990wrw.87.1602198036164;
+        Thu, 08 Oct 2020 16:00:36 -0700 (PDT)
 Received: from ?IPv6:2601:647:4802:9070:68d6:3fd5:5a8b:9959? ([2601:647:4802:9070:68d6:3fd5:5a8b:9959])
-        by smtp.gmail.com with ESMTPSA id q20sm8805434wmc.39.2020.10.08.15.47.39
+        by smtp.gmail.com with ESMTPSA id c16sm9788515wrx.31.2020.10.08.16.00.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Oct 2020 15:47:43 -0700 (PDT)
-Subject: Re: [PATCH net-next RFC v1 08/10] nvme-tcp: Deal with netdevice DOWN
- events
+        Thu, 08 Oct 2020 16:00:35 -0700 (PDT)
+Subject: Re: [PATCH net-next RFC v1 06/10] nvme-tcp: Add DDP data-path
+From:   Sagi Grimberg <sagi@grimberg.me>
 To:     Boris Pismenny <borisp@mellanox.com>, kuba@kernel.org,
         davem@davemloft.net, saeedm@nvidia.com, hch@lst.de, axboe@fb.com,
         kbusch@kernel.org, viro@zeniv.linux.org.uk, edumazet@google.com
@@ -44,119 +44,59 @@ Cc:     Yoray Zack <yorayz@mellanox.com>,
         boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
         netdev@vger.kernel.org, Or Gerlitz <ogerlitz@mellanox.com>
 References: <20200930162010.21610-1-borisp@mellanox.com>
- <20200930162010.21610-9-borisp@mellanox.com>
-From:   Sagi Grimberg <sagi@grimberg.me>
-Message-ID: <67e29f83-5bab-4abd-44c0-9c5ae29d5784@grimberg.me>
-Date:   Thu, 8 Oct 2020 15:47:37 -0700
+ <20200930162010.21610-7-borisp@mellanox.com>
+ <5a23d221-fd3e-5802-ce68-7edec55068bb@grimberg.me>
+Message-ID: <24ea956e-40a2-8b7b-cf8a-b604e7cd5644@grimberg.me>
+Date:   Thu, 8 Oct 2020 16:00:30 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200930162010.21610-9-borisp@mellanox.com>
+In-Reply-To: <5a23d221-fd3e-5802-ce68-7edec55068bb@grimberg.me>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+>>   static
+>>   int nvme_tcp_offload_socket(struct nvme_tcp_queue *queue,
+>>                   struct nvme_tcp_config *config)
+>> @@ -630,6 +720,7 @@ static void nvme_tcp_error_recovery(struct 
+>> nvme_ctrl *ctrl)
+>>   static int nvme_tcp_process_nvme_cqe(struct nvme_tcp_queue *queue,
+>>           struct nvme_completion *cqe)
+>>   {
+>> +    struct nvme_tcp_request *req;
+>>       struct request *rq;
+>>       rq = blk_mq_tag_to_rq(nvme_tcp_tagset(queue), cqe->command_id);
+>> @@ -641,8 +732,15 @@ static int nvme_tcp_process_nvme_cqe(struct 
+>> nvme_tcp_queue *queue,
+>>           return -EINVAL;
+>>       }
+>> -    if (!nvme_try_complete_req(rq, cqe->status, cqe->result))
+>> -        nvme_complete_rq(rq);
+>> +    req = blk_mq_rq_to_pdu(rq);
+>> +    if (req->offloaded) {
+>> +        req->status = cqe->status;
+>> +        req->result = cqe->result;
+>> +        nvme_tcp_teardown_ddp(queue, cqe->command_id, rq);
+>> +    } else {
+>> +        if (!nvme_try_complete_req(rq, cqe->status, cqe->result))
+>> +            nvme_complete_rq(rq);
+>> +    }
 
-On 9/30/20 9:20 AM, Boris Pismenny wrote:
-> From: Or Gerlitz <ogerlitz@mellanox.com>
-> 
-> For ddp setup/teardown and resync, the offloading logic
-> uses HW resources at the NIC driver such as SQ and CQ.
-> 
-> These resources are destroyed when the netdevice does down
-> and hence we must stop using them before the NIC driver
-> destroyes them.
-> 
-> Use netdevice notifier for that matter -- offloaded connections
-> are stopped before the stack continues to call the NIC driver
-> close ndo.
-> 
-> We use the existing recovery flow which has the advantage
-> of resuming the offload once the connection is re-set.
-> 
-> Since the recovery flow runs in a separate/dedicated WQ
-> we need to wait in the notifier code for an ACK that all
-> offloaded queues were stopped which means that the teardown
-> queue offload ndo was called and the NIC doesn't have any
-> resources related to that connection any more.
-> 
-> This also buys us proper handling for the UNREGISTER event
-> b/c our offloading starts in the UP state, and down is always
-> there between up to unregister.
-> 
-> Signed-off-by: Or Gerlitz <ogerlitz@mellanox.com>
-> Signed-off-by: Boris Pismenny <borisp@mellanox.com>
-> Signed-off-by: Ben Ben-Ishay <benishay@mellanox.com>
-> Signed-off-by: Yoray Zack <yorayz@mellanox.com>
-> ---
->   drivers/nvme/host/tcp.c | 39 +++++++++++++++++++++++++++++++++++++--
->   1 file changed, 37 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/nvme/host/tcp.c b/drivers/nvme/host/tcp.c
-> index 9a620d1dacb4..7569b47f0414 100644
-> --- a/drivers/nvme/host/tcp.c
-> +++ b/drivers/nvme/host/tcp.c
-> @@ -144,6 +144,7 @@ struct nvme_tcp_ctrl {
->   
->   static LIST_HEAD(nvme_tcp_ctrl_list);
->   static DEFINE_MUTEX(nvme_tcp_ctrl_mutex);
-> +static struct notifier_block nvme_tcp_netdevice_nb;
->   static struct workqueue_struct *nvme_tcp_wq;
->   static const struct blk_mq_ops nvme_tcp_mq_ops;
->   static const struct blk_mq_ops nvme_tcp_admin_mq_ops;
-> @@ -412,8 +413,6 @@ int nvme_tcp_offload_limits(struct nvme_tcp_queue *queue,
->   		queue->ctrl->ctrl.max_segments = limits->max_ddp_sgl_len;
->   		queue->ctrl->ctrl.max_hw_sectors =
->   			limits->max_ddp_sgl_len << (ilog2(SZ_4K) - 9);
-> -	} else {
-> -		queue->ctrl->offloading_netdev = NULL;
+Oh forgot to ask,
 
-Squash this change to the patch that introduced it.
+We have places in the driver that we may complete (cancel) one
+or more requests from the error recovery or timeout flow. We
+first prevent future incoming RX on the socket such that we
+can safely cancel requests. This may break with the deferred
+completion in ddp_teardown_done.
 
->   	}
->   
->   	dev_put(netdev);
-> @@ -1992,6 +1991,8 @@ static int nvme_tcp_alloc_admin_queue(struct nvme_ctrl *ctrl)
->   {
->   	int ret;
->   
-> +	to_tcp_ctrl(ctrl)->offloading_netdev = NULL;
-> +
->   	ret = nvme_tcp_alloc_queue(ctrl, 0, NVME_AQ_DEPTH);
->   	if (ret)
->   		return ret;
-> @@ -2885,6 +2886,26 @@ static struct nvme_ctrl *nvme_tcp_create_ctrl(struct device *dev,
->   	return ERR_PTR(ret);
->   }
->   
-> +static int nvme_tcp_netdev_event(struct notifier_block *this,
-> +				 unsigned long event, void *ptr)
-> +{
-> +	struct net_device *ndev = netdev_notifier_info_to_dev(ptr);
-> +	struct nvme_tcp_ctrl *ctrl;
-> +
-> +	switch (event) {
-> +	case NETDEV_GOING_DOWN:
-> +		mutex_lock(&nvme_tcp_ctrl_mutex);
-> +		list_for_each_entry(ctrl, &nvme_tcp_ctrl_list, list) {
-> +			if (ndev != ctrl->offloading_netdev)
-> +				continue;
-> +			nvme_tcp_error_recovery(&ctrl->ctrl);
-> +		}
-> +		mutex_unlock(&nvme_tcp_ctrl_mutex);
-> +		flush_workqueue(nvme_reset_wq);
+If I have a request that is waiting for ddp_teardown_done do
+I have a way to tell the HW to never call ddp_teardown_done
+on a specific socket?
 
-Worth a small comment that this we want the err_work to complete
-here. So if someone changes workqueues he may see this.
-
-> +	}
-> +	return NOTIFY_DONE;
-> +}
-> +
->   static struct nvmf_transport_ops nvme_tcp_transport = {
->   	.name		= "tcp",
->   	.module		= THIS_MODULE,
+If so the place to is in nvme_tcp_stop_queue.
