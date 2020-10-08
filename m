@@ -2,59 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A67328756E
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 15:50:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E27628756C
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 15:50:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730410AbgJHNut (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1730424AbgJHNut (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 8 Oct 2020 09:50:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50638 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730396AbgJHNus (ORCPT
+        with ESMTP id S1730399AbgJHNus (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 09:50:48 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40E63C061755
-        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 06:50:47 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id md26so8197138ejb.10
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 06:50:47 -0700 (PDT)
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A5C2C0613D2
+        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 06:50:48 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id ce10so8225290ejc.5
+        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 06:50:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YxmUOOq9dBLc1oFqoSYbKvUo8gg1Zr5jjxr8KVlfmnM=;
-        b=APviLhvFYsfQ0BAz2H5aTnqcEg7n7OcWV2Se6kCv1vhjM2UtMrcYAqJSdTgu++Q0Jp
-         c4/a7EBvrZejpCn7ZCQV4Gfze+k1guy+8TnGFgOCYOcSOnQqxBLP0H0rAozk050hu/nH
-         bBRbNy5qYOMh43G7brqqHJeXOAfF8qOtD69U6jqn5UxIadg4HGVweywJrcOZM9BSuc8e
-         DVu3TQ7Z/F1cPUaTecMR/nu9xsPFrUJOAyrvtTY37MWoP5W2s/Qr3SxVJ2//8kNc/Vpo
-         2DoyOTG1G5QBp0ukvHRVRz1yzAtep4aonDaOrJdZcI8Kz0JsmQRU3e5m+jly0GOrzpBP
-         eTzQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=b2AV8YXRBWPkekGUIXzfbnQPT4fBp6YeQuxKMHW1txQ=;
+        b=sKBziavh1v+2QOa6E5K+BojfkIsyNDW6MqZJswp3a15wGJlUMaDKyO8SooXDvprTPS
+         +wIArUS06N+ThbmfPrRVWxNz3xsmlJEo2pSnz0HIWIXV5X2i3Ww4j9RJbZCcLCrJcoAl
+         ubp07y1P93a8wykRwNggkdD4HSWPtqBvUoOHmwKs9W+mqTR5uDU1QXEWgfPjoIGkXrPG
+         90MIvq5x/uxvT85Wc6yGbvok5m7I9JwLQ51fCeu70d7n2TlYG/MAdYN+9+9huzt/kTxT
+         ZTPKq4b88+LrQm3nb+iMj3qO7govwNbLmPpabAYn8lIvLQHu14GHhsczGYkp5+D1RPZD
+         kk2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=YxmUOOq9dBLc1oFqoSYbKvUo8gg1Zr5jjxr8KVlfmnM=;
-        b=rUnByUJY4zy049a0tCgxTSIFHBXfXvzoVUWLe1wotyVbF5xMfUGFuIlAN/gplxTvgz
-         brE617yrQMABvBbsm8DY6NHlw8tfeABeOopshCkEY1Ld2MUfNK25QKe99nMDzeA5/dIv
-         IonDM/OCS3paA9C1tIBg+wWs+97LTZRtEEq751vrA8efRrwr69jTLB5GxC6d4GXSAAcN
-         DSIYKypV61fRbmetxEXtSjDioFJC6gjmdZWpjVt6PrfaRz5wHVlQV7tb5zpHklh5blCy
-         s5Mz8mVF3Suotzew5dvZk7yJT7+Ne2KLMcQ1AXKtmHq/XxRbW0DpR1wT/ougk3rVUvht
-         tRbw==
-X-Gm-Message-State: AOAM530km8NCHW3DfTRYwndneVfz0Lw/Z422jO1ZVtX8G5odTRn4c2rD
-        f+HKddsyJI8OLSFeLouVjXLXkWFeEdcTojGp
-X-Google-Smtp-Source: ABdhPJwcX2sAffUNFHt330k8My+FHfm6M4duJHwJ47NGG786ib1H095JUDDxWRoIFPzqkYmMVYkEVA==
-X-Received: by 2002:a17:906:4941:: with SMTP id f1mr9077405ejt.417.1602165045569;
-        Thu, 08 Oct 2020 06:50:45 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=b2AV8YXRBWPkekGUIXzfbnQPT4fBp6YeQuxKMHW1txQ=;
+        b=uoF0Rnyp1GVmTS4Fh908i9/vCzYxWFBF3OfLZ15pKujOU6X+gMwbBO2n58yaXaxJJH
+         Nr7cXSDvOXhve+sqi6ijZcqsPdZJZ5XEBD1iMwqIUycl5/j8PazzqpAxCoKzrJO8yLk6
+         XGfmv+mN31qa1++sdaGDxdevCGhqu+ZM1oCel6igpLk7ZnEXeIOXmQV6WGZi4cYGnVci
+         01cx6guxS6VHyrANohorzxuzlxGEhLyVvFSWGtTY4Dzcr/SuuIDhqGVO0Qyj/MDkYoBW
+         kqVyfuv+QzBN/D+/CO4S5zV4beY6UnxBWZO52PkYT8nY+tD4l3Qiy+KqTfp1xWzou9+5
+         pk4Q==
+X-Gm-Message-State: AOAM5334NUPdmVykcd/R0gJAay6NORk6IXRX+hgPLDmCbfrA1VnsWHpO
+        6xA7NWaupbLadkK8yBJ1OV9BboBjx/dKOfqW
+X-Google-Smtp-Source: ABdhPJzPvtC6COt2PAmygnhdklAeweGtMNoDrbDLIyLjj9wqZ1DwdwdXSxz6yc1mpwfXfOZHYFtmWQ==
+X-Received: by 2002:a17:906:715a:: with SMTP id z26mr8887247ejj.300.1602165046694;
+        Thu, 08 Oct 2020 06:50:46 -0700 (PDT)
 Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id w21sm4169617ejo.70.2020.10.08.06.50.44
+        by smtp.gmail.com with ESMTPSA id w21sm4169617ejo.70.2020.10.08.06.50.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Oct 2020 06:50:44 -0700 (PDT)
+        Thu, 08 Oct 2020 06:50:46 -0700 (PDT)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     roopa@nvidia.com, dsahern@gmail.com,
         Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH iproute2-next 0/6] bridge: mdb: add support for IGMPv3/MLDv2 attributes
-Date:   Thu,  8 Oct 2020 16:50:18 +0300
-Message-Id: <20201008135024.1515468-1-razor@blackwall.org>
+Subject: [PATCH iproute2-next 1/6] bridge: mdb: add support for source address
+Date:   Thu,  8 Oct 2020 16:50:19 +0300
+Message-Id: <20201008135024.1515468-2-razor@blackwall.org>
 X-Mailer: git-send-email 2.25.4
+In-Reply-To: <20201008135024.1515468-1-razor@blackwall.org>
+References: <20201008135024.1515468-1-razor@blackwall.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -63,38 +65,143 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-Hi,
-This set adds support for IGMPv3/MLDv2 attributes, they're mostly
-read-only at the moment. The only new "set" option is the source address
-for S,G entries. It is added in patch 01 (see the patch commit message for
-an example). Patch 02 shows a missing flag (fast_leave) for
-completeness, then patch 03 shows the new IGMPv3/MLDv2 flags:
-added_by_star_ex and blocked. Patches 04-06 show the new extra
-information about the entry's state when IGMPv3/MLDv2 are enabled. That
-includes its filter mode (include/exclude), source list with timers and
-origin protocol (currently only static/kernel), in order to show the new
-information the user must use "-d"/show_details.
-Here's the output of a few IGMPv3 entries:
- dev bridge port ens12 grp 239.0.0.1 src 20.21.22.23 temp filter_mode include proto kernel  blocked    0.00
- dev bridge port ens12 grp 239.0.0.1 src 8.9.10.11 temp filter_mode include proto kernel  blocked    0.00
- dev bridge port ens12 grp 239.0.0.1 src 1.2.3.1 temp filter_mode include proto kernel  blocked    0.00
- dev bridge port ens12 grp 239.0.0.1 temp filter_mode exclude source_list 20.21.22.23/0.00,8.9.10.11/0.00,1.2.3.1/0.00 proto kernel    26.65
+This patch adds the user-space control and dump of mdb entry source
+address. When setting the new MDBA_SET_ENTRY_ATTRS nested attribute is
+used and inside is added MDBE_ATTR_SOURCE based on the address family.
+When dumping we look for MDBA_MDB_EATTR_SOURCE and if present we add the
+"src x.x.x.x" output. The source address will be always shown as it's
+needed to match the entry to modify it from user-space.
 
-Thanks,
- Nik
+Example:
+ $ bridge mdb add dev bridge port ens13 grp 239.0.0.1 src 1.2.3.4 permanent vid 100
+ $ bridge mdb show
+ dev bridge port ens13 grp 239.0.0.1 src 1.2.3.4 permanent vid 100
 
-Nikolay Aleksandrov (6):
-  bridge: mdb: add support for source address
-  bridge: mdb: print fast_leave flag
-  bridge: mdb: show igmpv3/mldv2 flags
-  bridge: mdb: print filter mode when available
-  bridge: mdb: print source list when available
-  bridge: mdb: print protocol when available
+Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
+---
+ bridge/mdb.c      | 38 ++++++++++++++++++++++++++++++++------
+ man/man8/bridge.8 |  8 ++++++++
+ 2 files changed, 40 insertions(+), 6 deletions(-)
 
- bridge/mdb.c      | 123 ++++++++++++++++++++++++++++++++++++++++------
- man/man8/bridge.8 |   8 +++
- 2 files changed, 117 insertions(+), 14 deletions(-)
-
+diff --git a/bridge/mdb.c b/bridge/mdb.c
+index 928ae56d29a7..01c8a6e389a8 100644
+--- a/bridge/mdb.c
++++ b/bridge/mdb.c
+@@ -31,7 +31,7 @@ static unsigned int filter_index, filter_vlan;
+ static void usage(void)
+ {
+ 	fprintf(stderr,
+-		"Usage: bridge mdb { add | del } dev DEV port PORT grp GROUP [permanent | temp] [vid VID]\n"
++		"Usage: bridge mdb { add | del } dev DEV port PORT grp GROUP [src SOURCE] [permanent | temp] [vid VID]\n"
+ 		"       bridge mdb {show} [ dev DEV ] [ vid VID ]\n");
+ 	exit(-1);
+ }
+@@ -118,16 +118,16 @@ static void br_print_router_ports(FILE *f, struct rtattr *attr,
+ static void print_mdb_entry(FILE *f, int ifindex, const struct br_mdb_entry *e,
+ 			    struct nlmsghdr *n, struct rtattr **tb)
+ {
++	const void *grp, *src;
+ 	SPRINT_BUF(abuf);
+ 	const char *dev;
+-	const void *src;
+ 	int af;
+ 
+ 	if (filter_vlan && e->vid != filter_vlan)
+ 		return;
+ 
+ 	af = e->addr.proto == htons(ETH_P_IP) ? AF_INET : AF_INET6;
+-	src = af == AF_INET ? (const void *)&e->addr.u.ip4 :
++	grp = af == AF_INET ? (const void *)&e->addr.u.ip4 :
+ 			      (const void *)&e->addr.u.ip6;
+ 	dev = ll_index_to_name(ifindex);
+ 
+@@ -140,8 +140,13 @@ static void print_mdb_entry(FILE *f, int ifindex, const struct br_mdb_entry *e,
+ 
+ 	print_color_string(PRINT_ANY, ifa_family_color(af),
+ 			    "grp", " grp %s",
+-			    inet_ntop(af, src, abuf, sizeof(abuf)));
+-
++			    inet_ntop(af, grp, abuf, sizeof(abuf)));
++	if (tb && tb[MDBA_MDB_EATTR_SOURCE]) {
++		src = (const void *)RTA_DATA(tb[MDBA_MDB_EATTR_SOURCE]);
++		print_color_string(PRINT_ANY, ifa_family_color(af),
++				   "src", " src %s",
++				   inet_ntop(af, src, abuf, sizeof(abuf)));
++	}
+ 	print_string(PRINT_ANY, "state", " %s",
+ 			   (e->state & MDB_PERMANENT) ? "permanent" : "temp");
+ 
+@@ -378,8 +383,8 @@ static int mdb_modify(int cmd, int flags, int argc, char **argv)
+ 		.n.nlmsg_type = cmd,
+ 		.bpm.family = PF_BRIDGE,
+ 	};
++	char *d = NULL, *p = NULL, *grp = NULL, *src = NULL;
+ 	struct br_mdb_entry entry = {};
+-	char *d = NULL, *p = NULL, *grp = NULL;
+ 	short vid = 0;
+ 
+ 	while (argc > 0) {
+@@ -400,6 +405,9 @@ static int mdb_modify(int cmd, int flags, int argc, char **argv)
+ 		} else if (strcmp(*argv, "vid") == 0) {
+ 			NEXT_ARG();
+ 			vid = atoi(*argv);
++		} else if (strcmp(*argv, "src") == 0) {
++			NEXT_ARG();
++			src = *argv;
+ 		} else {
+ 			if (matches(*argv, "help") == 0)
+ 				usage();
+@@ -431,6 +439,24 @@ static int mdb_modify(int cmd, int flags, int argc, char **argv)
+ 
+ 	entry.vid = vid;
+ 	addattr_l(&req.n, sizeof(req), MDBA_SET_ENTRY, &entry, sizeof(entry));
++	if (src) {
++		struct rtattr *nest = addattr_nest(&req.n, sizeof(req),
++						   MDBA_SET_ENTRY_ATTRS);
++		struct in6_addr src_ip6;
++		__be32 src_ip4;
++
++		nest->rta_type |= NLA_F_NESTED;
++		if (!inet_pton(AF_INET, src, &src_ip4)) {
++			if (!inet_pton(AF_INET6, src, &src_ip6)) {
++				fprintf(stderr, "Invalid source address \"%s\"\n", src);
++				return -1;
++			}
++			addattr_l(&req.n, sizeof(req), MDBE_ATTR_SOURCE, &src_ip6, sizeof(src_ip6));
++		} else {
++			addattr32(&req.n, sizeof(req), MDBE_ATTR_SOURCE, src_ip4);
++		}
++		addattr_nest_end(&req.n, nest);
++	}
+ 
+ 	if (rtnl_talk(&rth, &req.n, NULL) < 0)
+ 		return -1;
+diff --git a/man/man8/bridge.8 b/man/man8/bridge.8
+index b06005763bc2..84b9b70c7dea 100644
+--- a/man/man8/bridge.8
++++ b/man/man8/bridge.8
+@@ -116,6 +116,8 @@ bridge \- show / manipulate bridge addresses and devices
+ .I PORT
+ .B grp
+ .IR GROUP " [ "
++.B src
++.IR SOURCE " ] [ "
+ .BR permanent " | " temp " ] [ "
+ .B vid
+ .IR VID " ] "
+@@ -694,6 +696,12 @@ the port.
+ - the mdb entry is temporary (default)
+ .sp
+ 
++.TP
++.BI src " SOURCE"
++optional source IP address of a sender for this multicast group. If IGMPv3 for IPv4, or
++MLDv2 for IPv6 respectively, are enabled it will be included in the lookup when
++forwarding multicast traffic.
++
+ .TP
+ .BI vid " VID"
+ the VLAN ID which is known to have members of this multicast group.
 -- 
 2.25.4
 
