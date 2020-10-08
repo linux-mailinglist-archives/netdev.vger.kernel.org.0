@@ -2,130 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0602C287B51
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 20:00:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8202F287B52
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 20:00:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730145AbgJHR76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 13:59:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33022 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730070AbgJHR75 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 13:59:57 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1884C061755;
-        Thu,  8 Oct 2020 10:59:55 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id b138so2871987yba.5;
-        Thu, 08 Oct 2020 10:59:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6njneO7slKj5/+PMT+PB84NeoG+y8vzhAQwBKhkl3W8=;
-        b=PSkLaVGXzzVjeXXjx1PHLFwPcSe1HGGkAt55mSQ1O5sI7Jx4VY8/aZDMvkIXdBNrdX
-         sgdFPqxfisAD+ysTgJCfLCYBACHXxV4e5mb0uT3iWCwcx/k4yM2zGGA6l8recMfnRt5l
-         CP1UaO8vcE6mROqlcBXx/26EyV+RfHbuOae8IA2SrJwh+7Sk0GMTbZG+7d/0efEPiljc
-         4ZHb5CuvILlVvKru1zI06gG99vFxXFJ7WElKq6AQgCfcBN4R978Ps84RCiIVQ4cl4z5Z
-         N1wIWylUHvVu+zSATK+WPolNb4GT/K8tSl+z+u3/9rdDA/9VFqCDPfmF6pOfxeQzgoFW
-         3lUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6njneO7slKj5/+PMT+PB84NeoG+y8vzhAQwBKhkl3W8=;
-        b=bDW1Z7hN8I8kdUgSy4V0n8qG3Axh1/kMfkp/4NE7BOknJ2sxcnoOV+qu7TtLe7Rqc5
-         k3C2ZQNx48hQO3grADx66NLkvu/OaPvNXG8Fle5zPpvqZk+mWYwHuajkQ/Nebac+XJSI
-         k7S16poNs/knrwn0LmFWizds93nLESWNSmwtsHpAVLQSN+Ekh8nA0ARGFoKe0FkZ2+h4
-         QOe6ZO/7MFQtj52SSzItChFGRjBoEM0J3pY+2o9fm2uDtt7h8o8mJHGJYFF58K2ipegk
-         quxB/YwTB+kvf383E+HIR3RBP2ijRHULPxCaHYLvDyJvesjCBMY9VG8p8AAfPTZ8AtP2
-         x+OQ==
-X-Gm-Message-State: AOAM531QeOuvXEN6A+HSYC3e5+E2hWGHM8PPqXDQrdzNcrA3UWdgoxbA
-        +zmpoxRTvDeoP+HKwqQnxf1QbXPMuORFDPMCAks=
-X-Google-Smtp-Source: ABdhPJzonQjnJ/NIGKZvf5cFO2VayxaAzMpGI3PmM0jpSBZce8cuuWa1Rc0qC/0LCqonl5k0Ac1eljj/M4Xe2oRYjhQ=
-X-Received: by 2002:a25:c7c6:: with SMTP id w189mr2882035ybe.403.1602179995090;
- Thu, 08 Oct 2020 10:59:55 -0700 (PDT)
+        id S1730278AbgJHSAs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 14:00:48 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:29200 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726012AbgJHSAs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 14:00:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602180046;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bjHPKGOfVh6sifK4tgf5EgBctNrQVGMRGH/KZfEsLJA=;
+        b=KMICiN/vUtX1P5HjFHSEQMyFXqJvTLsYyzh+jZ+cO8UOLexXarmyzNBW6j4eKl4y0k+Eas
+        j5cILR/xBzoau4QNM19wE8SeSa108g5trMmUxYaBQi1WjZZQIvpYMQ0+JCDsESO3zRfsoq
+        5/f/tMPnxeYUUkeOElbL15Vizl9hVio=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-558-S2I1I93WPjuEI9ps1H7Yvw-1; Thu, 08 Oct 2020 14:00:42 -0400
+X-MC-Unique: S2I1I93WPjuEI9ps1H7Yvw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 62307101FFA2;
+        Thu,  8 Oct 2020 18:00:41 +0000 (UTC)
+Received: from [10.10.116.249] (ovpn-116-249.rdu2.redhat.com [10.10.116.249])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 62D2060CD1;
+        Thu,  8 Oct 2020 18:00:40 +0000 (UTC)
+Subject: Re: [net] tipc: fix NULL pointer dereference in tipc_named_rcv
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Hoang Huu Le <hoang.h.le@dektech.com.au>
+Cc:     maloy@donjonn.com, ying.xue@windriver.com,
+        tipc-discussion@lists.sourceforge.net, netdev@vger.kernel.org
+References: <20201008073156.116136-1-hoang.h.le@dektech.com.au>
+ <20201008102514.1184c315@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jon Maloy <jmaloy@redhat.com>
+Message-ID: <54320213-5b9b-4648-fa6b-553d2acb298e@redhat.com>
+Date:   Thu, 8 Oct 2020 14:00:39 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-References: <20201002010633.3706122-1-andriin@fb.com> <CAKQ-crhUT07SXZ16NK4_2RtpNA+kvm7VtB5fdo4qSV4Qi4GJ_g@mail.gmail.com>
- <CAEf4Bzb7kE5x=Ow=XHMb1wmt0Tjw-qqoL-yihAWx5s10Dk9chQ@mail.gmail.com> <CAKQ-crhMomcb9v3LAnqrBFLp1=m8bh4ZBnD7O_oH2XsU2faMAg@mail.gmail.com>
-In-Reply-To: <CAKQ-crhMomcb9v3LAnqrBFLp1=m8bh4ZBnD7O_oH2XsU2faMAg@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 8 Oct 2020 10:59:44 -0700
-Message-ID: <CAEf4BzYByy8DZz+nB6RcAgRytXLRjWfM=_xBJRF2+jfxsFVdog@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/3] libbpf: auto-resize relocatable LOAD/STORE instructions
-To:     Luka Perkov <luka.perkov@sartura.hr>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Tony Ambardar <tony.ambardar@gmail.com>,
-        Juraj Vijtiuk <juraj.vijtiuk@sartura.hr>,
-        Luka Oreskovic <luka.oreskovic@sartura.hr>,
-        Sven Fijan <sven.fijan@sartura.hr>,
-        David Marcinkovic <david.marcinkovic@sartura.hr>,
-        Jakov Petrina <jakov.petrina@sartura.hr>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201008102514.1184c315@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 8, 2020 at 3:34 AM Luka Perkov <luka.perkov@sartura.hr> wrote:
->
-> Hello Andrii,
->
-> On Wed, Oct 7, 2020 at 8:01 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Wed, Oct 7, 2020 at 10:56 AM Luka Perkov <luka.perkov@sartura.hr> wrote:
-> > >
-> > > Hello Andrii,
-> > >
-> > > On Fri, Oct 2, 2020 at 3:09 AM Andrii Nakryiko <andriin@fb.com> wrote:
-> > > > Patch set implements logic in libbpf to auto-adjust memory size (1-, 2-, 4-,
-> > > > 8-bytes) of load/store (LD/ST/STX) instructions which have BPF CO-RE field
-> > > > offset relocation associated with it. In practice this means transparent
-> > > > handling of 32-bit kernels, both pointer and unsigned integers. Signed
-> > > > integers are not relocatable with zero-extending loads/stores, so libbpf
-> > > > poisons them and generates a warning. If/when BPF gets support for sign-extending
-> > > > loads/stores, it would be possible to automatically relocate them as well.
-> > > >
-> > > > All the details are contained in patch #1 comments and commit message.
-> > > > Patch #2 is a simple change in libbpf to make advanced testing with custom BTF
-> > > > easier. Patch #3 validates correct uses of auto-resizable loads, as well as
-> > > > check that libbpf fails invalid uses.
-> > > >
-> > > > I'd really appreciate folks that use BPF on 32-bit architectures to test this
-> > > > out with their BPF programs and report if there are any problems with the
-> > > > approach.
-> > > >
-> > > > Cc: Luka Perkov <luka.perkov@sartura.hr>
-> > >
-> > > First, thank you for the support and sending this series. It took us a
-> > > bit longer to run the tests as our target hardware still did not fully
-> > > get complete mainline support and we had to rebase our patches. These
-> > > are not related to BPF.
-> > >
-> > > Related to this patch, we have tested various BPF programs with this
-> > > patch, and can confirm that it fixed previous issues with pointer
-> > > offsets that we had and reported at:
-> > >
-> > > https://lore.kernel.org/r/CA+XBgLU=8PFkP8S32e4gpst0=R4MFv8rZA5KaO+cEPYSnTRYYw@mail.gmail.com/.
-> > >
-> > > Most of our programs now work and we are currently debugging other
-> > > programs that still aren't working. We are still not sure if the
-> > > remaining issues are related to this or not, but will let you know
-> > > sometime this week after further and more detailed investigation.
-> > >
-> >
-> > Ok, great, thanks for the update.
->
-> Just to update you that we have identified that the problem was a
-> known issue with JIT as we had enabled the BPF_JIT_ALWAYS_ON.
->
-> That said, it would be great to see this series included in 5.10 :)
 
-This is purely a libbpf feature, completely agnostic to kernel
-versions. So you'll get this with upcoming libbpf 0.2.0 release.
 
+On 10/8/20 1:25 PM, Jakub Kicinski wrote:
+> On Thu,  8 Oct 2020 14:31:56 +0700 Hoang Huu Le wrote:
+>> diff --git a/net/tipc/name_distr.c b/net/tipc/name_distr.c
+>> index 2f9c148f17e2..fe4edce459ad 100644
+>> --- a/net/tipc/name_distr.c
+>> +++ b/net/tipc/name_distr.c
+>> @@ -327,8 +327,13 @@ static struct sk_buff *tipc_named_dequeue(struct sk_buff_head *namedq,
+>>   	struct tipc_msg *hdr;
+>>   	u16 seqno;
+>>   
+>> +	spin_lock_bh(&namedq->lock);
+>>   	skb_queue_walk_safe(namedq, skb, tmp) {
+>> -		skb_linearize(skb);
+>> +		if (unlikely(skb_linearize(skb))) {
+>> +			__skb_unlink(skb, namedq);
+>> +			kfree_skb(skb);
+>> +			continue;
+>> +		}
+>>   		hdr = buf_msg(skb);
+>>   		seqno = msg_named_seqno(hdr);
+>>   		if (msg_is_last_bulk(hdr)) {
+>> @@ -338,12 +343,14 @@ static struct sk_buff *tipc_named_dequeue(struct sk_buff_head *namedq,
+>>   
+>>   		if (msg_is_bulk(hdr) || msg_is_legacy(hdr)) {
+>>   			__skb_unlink(skb, namedq);
+>> +			spin_unlock_bh(&namedq->lock);
+>>   			return skb;
+>>   		}
+>>   
+>>   		if (*open && (*rcv_nxt == seqno)) {
+>>   			(*rcv_nxt)++;
+>>   			__skb_unlink(skb, namedq);
+>> +			spin_unlock_bh(&namedq->lock);
+>>   			return skb;
+>>   		}
+>>   
+>> @@ -353,6 +360,7 @@ static struct sk_buff *tipc_named_dequeue(struct sk_buff_head *namedq,
+>>   			continue;
+>>   		}
+>>   	}
+>> +	spin_unlock_bh(&namedq->lock);
+>>   	return NULL;
+>>   }
+>>   
+>> diff --git a/net/tipc/node.c b/net/tipc/node.c
+>> index cf4b239fc569..d269ebe382e1 100644
+>> --- a/net/tipc/node.c
+>> +++ b/net/tipc/node.c
+>> @@ -1496,7 +1496,7 @@ static void node_lost_contact(struct tipc_node *n,
+>>   
+>>   	/* Clean up broadcast state */
+>>   	tipc_bcast_remove_peer(n->net, n->bc_entry.link);
+>> -	__skb_queue_purge(&n->bc_entry.namedq);
+>> +	skb_queue_purge(&n->bc_entry.namedq);
+> Patch looks fine, but I'm not sure why not hold
+> spin_unlock_bh(&tn->nametbl_lock) here instead?
 >
-> Thanks,
-> Luka
+> Seems like node_lost_contact() should be relatively rare,
+> so adding another lock to tipc_named_dequeue() is not the
+> right trade off.
+Actually, I agree with previous speaker here. We already have the 
+nametbl_lock when tipc_named_dequeue() is called, and the same lock is 
+accessible from no.c where node_lost_contact() is executed. The patch 
+and the code becomes simpler.
+I suggest you post a v2 of this one.
+
+///jon
+
+>>   	/* Abort any ongoing link failover */
+>>   	for (i = 0; i < MAX_BEARERS; i++) {
+
