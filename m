@@ -2,61 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0453287EF7
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 01:05:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 615DD287F07
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 01:20:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730304AbgJHXFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 19:05:50 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:50280 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727324AbgJHXFu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 19:05:50 -0400
-Received: by mail-wm1-f65.google.com with SMTP id 13so8019708wmf.0
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 16:05:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=dB20HVoUg946vxWKworaTCw4p2EkZ/5MfYI2isxQJwk=;
-        b=Lhk3zA9SVZqs0F+/sYqU3C3nc5hdKSshoqNPL094g9B9Sxzb0VlCWnTj3A0kWu//P6
-         EEqaijVaEyr4bWtmHcJMS5zaGl9e/up8SY1YfaCo3fUxeBeoXC0ukK2kgmDvnuRwvdZy
-         qhTehIpUIhgjyhwwya3mNXuqVnQHYQUnBouae2H0arCD3yM74c7ai+Rp2TGAJB4f4kKS
-         WTxi0a9Sh+Ed12atEStiD+sJnxVOhtYR/vRDzruC01eLGN7p26p+6GBuxVNGz4kn4C1I
-         LK03AUSGzq8YcYriGirje3WzfjsAgVK6HKQNowkVt37kGnR0N0RAzrsjI6lqJb9tPzLI
-         NUBA==
-X-Gm-Message-State: AOAM530YZT/Q4SQYZxt0kJOowRkl4bfyOvvzq/sX9M+Uv+geUm5nt45x
-        3B+cpUA18Rwv4kIRT/lFloo=
-X-Google-Smtp-Source: ABdhPJxjKwf6S8u3irrDfOz65cWcm+G1mYwsrii+c86Y9kKVV7M7ZASZWXK7rvskf7M2lD2fWgbXLw==
-X-Received: by 2002:a1c:4c13:: with SMTP id z19mr10087258wmf.121.1602198348995;
-        Thu, 08 Oct 2020 16:05:48 -0700 (PDT)
-Received: from ?IPv6:2601:647:4802:9070:68d6:3fd5:5a8b:9959? ([2601:647:4802:9070:68d6:3fd5:5a8b:9959])
-        by smtp.gmail.com with ESMTPSA id j101sm10006355wrj.9.2020.10.08.16.05.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Oct 2020 16:05:48 -0700 (PDT)
-Subject: Re: [PATCH net-next RFC v1 01/10] iov_iter: Skip copy in
- memcpy_to_page if src==dst
-To:     Boris Pismenny <borisp@mellanox.com>, kuba@kernel.org,
-        davem@davemloft.net, saeedm@nvidia.com, hch@lst.de, axboe@fb.com,
-        kbusch@kernel.org, viro@zeniv.linux.org.uk, edumazet@google.com
-Cc:     Yoray Zack <yorayz@mellanox.com>,
-        Ben Ben-Ishay <benishay@mellanox.com>,
-        boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
-        netdev@vger.kernel.org, Or Gerlitz <ogerlitz@mellanox.com>
-References: <20200930162010.21610-1-borisp@mellanox.com>
- <20200930162010.21610-2-borisp@mellanox.com>
-From:   Sagi Grimberg <sagi@grimberg.me>
-Message-ID: <3820c19e-0fea-9345-0e0e-692119f7aa84@grimberg.me>
-Date:   Thu, 8 Oct 2020 16:05:43 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1730845AbgJHXUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 19:20:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34138 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728996AbgJHXUm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Oct 2020 19:20:42 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C5C3C22248;
+        Thu,  8 Oct 2020 23:20:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602199242;
+        bh=vvnH2PaDk3gOcQ6D7zmoJKnsocatisTaL3f+E4VNtKk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=UyVcJi53yrUDSe4c0zAeepE7KVhkQnJgttLZMwKbBn05n/+a0vUI4/vMXng2QhWU+
+         up8izGjfQd3AZeNC2yYHy1NC9UBtldKmqk1rpr1jWQcHAe70WGB+p8CrA+/dqZw4rx
+         0lQ85YygvKlWEZ/8nClMYvv+NbEmaMJqhS2e3AR0=
+Date:   Thu, 8 Oct 2020 16:20:40 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     netdev@vger.kernel.org, Leon Romanovsky <leon@kernel.org>,
+        Johannes Berg <johannes.berg@intel.com>
+Subject: Re: [PATCH 1/2] ethtool: strset: allow ETHTOOL_A_STRSET_COUNTS_ONLY
+ attr
+Message-ID: <20201008162040.69789744@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201007125348.a0b250308599.Ie9b429e276d064f28ce12db01fffa430e5c770e0@changeid>
+References: <20201007125348.a0b250308599.Ie9b429e276d064f28ce12db01fffa430e5c770e0@changeid>
 MIME-Version: 1.0
-In-Reply-To: <20200930162010.21610-2-borisp@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-You probably want Al to have a look at this..
+On Wed,  7 Oct 2020 12:53:50 +0200 Johannes Berg wrote:
+> From: Johannes Berg <johannes.berg@intel.com>
+> 
+> The ETHTOOL_A_STRSET_COUNTS_ONLY flag attribute was previously
+> not allowed to be used, but now due to the policy size reduction
+> we would access the tb[] array out of bounds since we tried to
+> check for the attribute despite it not being accepted.
+> 
+> Fix both issues by adding it correctly to the appropriate policy.
+> 
+> Fixes: ff419afa4310 ("ethtool: trim policy tables")
+> Fixes: 71921690f974 ("ethtool: provide string sets with STRSET_GET request")
+> Reported-by: Leon Romanovsky <leon@kernel.org>
+> Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+
+Applied both, thanks!
