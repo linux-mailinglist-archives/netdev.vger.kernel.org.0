@@ -2,125 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B32372871F9
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 11:51:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51D50287222
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 12:01:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729358AbgJHJvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 05:51:05 -0400
-Received: from z5.mailgun.us ([104.130.96.5]:58441 "EHLO z5.mailgun.us"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729254AbgJHJvE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Oct 2020 05:51:04 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1602150664; h=Content-Transfer-Encoding: Content-Type:
- MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
- To: From: Sender; bh=nlXSo1WC6dBplvW6l8S+mM5RRz5OBfe21tJnXYaiLbs=; b=dY57ec3Mh1fj9yqbpjCHzOH0jfx0y+HMke9p4BQHa+PajGkJ23Mcs/d1BFhhlylEvsGbyMbJ
- h+U2lzwCH7BAg/ePxBkaNlAnaU1XevwYoJ5JDJ/l5g5jpB8W2yUlQNpyKtRc06cfzliKNitd
- HmTMatZuBhTaz6ofBxCOjUY1YSA=
-X-Mailgun-Sending-Ip: 104.130.96.5
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
- 5f7ee107aad2c3cd1caf0157 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 08 Oct 2020 09:51:03
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 465B6C433FE; Thu,  8 Oct 2020 09:51:03 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 9E5BAC433CB;
-        Thu,  8 Oct 2020 09:51:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 9E5BAC433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Jerome Pouiller <Jerome.Pouiller@silabs.com>,
-        devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 0/7] wfx: move out from the staging area
-References: <20201007101943.749898-1-Jerome.Pouiller@silabs.com>
-        <20201007105513.GA1078344@kroah.com> <87ft6p2n0h.fsf@codeaurora.org>
-Date:   Thu, 08 Oct 2020 12:50:58 +0300
-In-Reply-To: <87ft6p2n0h.fsf@codeaurora.org> (Kalle Valo's message of "Thu, 08
-        Oct 2020 10:30:06 +0300")
-Message-ID: <877ds12ghp.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1729352AbgJHKBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 06:01:05 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:49544 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728996AbgJHKBF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 06:01:05 -0400
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1602151262;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YlY2PCfKX4Q4U4zU0hxRIXZu0KsMCr/9DHvRarIxCYM=;
+        b=wWZg1kAtZPnnplaoh3ise45nwUu56ACbWLgD6xMkOlWZNsw/rXgs6aB2ZqbzryivxFmAOU
+        uFy5Z/EhS1gCsS4QLFYGAS7aePu7QhMtmqco1xwhM+qnZqUdPiBRdsAbq83h/cyExE93x2
+        Qinxz3M4eMj+24TfiQfI21SYrq0+d66cJfQGWopC6Ldt4rZh9cRMh941mRRk3uvusJ1wUv
+        lLXubfJJ5srqLT+kYlC76jVKNBDdYNjxJ7M/HSyCcZrYHcMCNx8OjvNAMRLt7sVi9fYXXB
+        xR07JobsFtOn8w5TG0jRcfiaIuMb5TBkONIg+FPCXRk9KrU+VI/tTG/7n1uBUw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1602151262;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YlY2PCfKX4Q4U4zU0hxRIXZu0KsMCr/9DHvRarIxCYM=;
+        b=XfBri8WtKbFjqo1mFGHGfxvRZK+cmOp45NZIXGfM27wpQVPcI3ce+bnumUsbG/m9uMqGE0
+        ejSmaD5zuES2LHAw==
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH net-next v6 4/7] net: dsa: hellcreek: Add support for hardware timestamping
+In-Reply-To: <20201008094440.oede2fucgpgcfx6a@skbuf>
+References: <20201004143000.blb3uxq3kwr6zp3z@skbuf> <87imbn98dd.fsf@kurt> <20201006072847.pjygwwtgq72ghsiq@skbuf> <87tuv77a83.fsf@kurt> <20201006133222.74w3r2jwwhq5uop5@skbuf> <87r1qb790w.fsf@kurt> <20201006140102.6q7ep2w62jnilb22@skbuf> <87lfgiqpze.fsf@kurt> <20201007105458.gdbrwyzfjfaygjke@skbuf> <87362pjev0.fsf@kurt> <20201008094440.oede2fucgpgcfx6a@skbuf>
+Date:   Thu, 08 Oct 2020 12:01:01 +0200
+Message-ID: <87lfghhw9u.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Kalle Valo <kvalo@codeaurora.org> writes:
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-> Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
+On Thu Oct 08 2020, Vladimir Oltean wrote:
+> On Thu, Oct 08, 2020 at 10:34:11AM +0200, Kurt Kanzenbach wrote:
+>> On Wed Oct 07 2020, Vladimir Oltean wrote:
+>> > On Wed, Oct 07, 2020 at 12:39:49PM +0200, Kurt Kanzenbach wrote:
+>> >> For instance the hellcreek switch has actually three ptp hardware
+>> >> clocks and the time stamping can be configured to use either one of
+>> >> them.
+>> >
+>> > The sja1105 also has a corrected and an uncorrected PTP clock that can
+>> > take timestamps. Initially I had thought I'd be going to spend some ti=
+me
+>> > figuring out multi-PHC support, but now I don't see any practical reas=
+on
+>> > to use the uncorrected PHC for anything.
+>>=20
+>> Just out of curiosity: How do you implement 802.1AS then? My
+>> understanding is that the free-running clock has to be used for the
 >
->> On Wed, Oct 07, 2020 at 12:19:36PM +0200, Jerome Pouiller wrote:
->>> From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
->>>=20
->>> I think the wfx driver is now mature enough to be accepted in the
->>> drivers/net/wireless directory.
->>>=20
->>> There is still one item on the TODO list. It is an idea to improve the =
-rate
->>> control in some particular cases[1]. However, the current performances =
-of the
->>> driver seem to satisfy everyone. In add, the suggested change is large =
-enough.
->>> So, I would prefer to implement it only if it really solves an issue. I=
- think it
->>> is not an obstacle to move the driver out of the staging area.
->>>=20
->>> In order to comply with the last rules for the DT bindings, I have conv=
-erted the
->>> documentation to yaml. I am moderately happy with the result. Especiall=
-y, for
->>> the description of the binding. Any comments are welcome.
->>>=20
->>> The series also update the copyrights dates of the files. I don't know =
-exactly
->>> how this kind of changes should be sent. It's a bit weird to change all=
- the
->>> copyrights in one commit, but I do not see any better way.
->>>=20
->>> I also include a few fixes I have found these last weeks.
->>>=20
->>> [1] https://lore.kernel.org/lkml/3099559.gv3Q75KnN1@pc-42
->>
->> I'll take the first 6 patches here, the last one you should work with
->> the wireless maintainers to get reviewed.
->>
->> Maybe that might want to wait until after 5.10-rc1 is out, with all of
->> these changes in it, making it an easier move.
+> Has to be? I couldn't find that wording in IEEE 802.1AS-2011.
+
+It doesn't has to be, it *should* be. That's at least the outcome we had
+after lots of discussions. Actually Kamil (on Cc) is the expert on this
+topic.
+
 >
-> Yes, the driver needs to be reviewed in linux-wireless list. I recommend
-> submitting the whole driver in a patchset with one file per patch, which
-> seems to be the easiest way to review a full driver. The final move will
-> be in just one commit moving the driver, just like patch 7 does here. As
-> an example see how wilc1000 review was done.
+>> calculation of the peer delays and such meaning there should be a way to
+>> get access to both PHCs or having some form of cross timestamping
+>> available.
+>>=20
+>> The hellcreek switch can take cross snapshots of all three ptp clocks in
+>> hardware for that purpose.
 >
-> Device tree bindings needs to be reviewed by the DT maintainer so CC
-> devicetree on that patch.
+> Well, at the end of the day, all the other TSN offloads (tc-taprio,
+> tc-gate) will still have to use the synchronized PTP clock, so what
+> we're doing is we're simply letting that clock be synchronized by
+> ptp4l.
 
-BTW, I wrote some instructions for new wireless drivers:
+Yes, the synchronized clock is of course needed for the traffic
+scheduling and so on. This is what we do here in this code as well. Only
+the synchronized one is exported to user space and used. However, the
+multi PHCs issue should be addressed as well at some point.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes#new_driver
+>
+>> >> > So when you'll poll for TX timestamps, you'll receive a TX
+>> >> > timestamp from the PHY and another one from the switch, and those w=
+ill
+>> >> > be in a race with one another, so you won't know which one is which.
+>> >>=20
+>> >> OK. So what happens if the driver will accept to disable hardware
+>> >> timestamping? Is there anything else that needs to be implemented? Are
+>> >> there (good) examples?
+>> >
+>> > It needs to not call skb_complete_tx_timestamp() and friends.
+>> >
+>> > For PHY timestamping, it also needs to invoke the correct methods for =
+RX
+>> > and for TX, where the PHY timestamping hooks will get called. I don't
+>> > think that DSA is compatible yet with PHY timestamping, but it is
+>> > probably a trivial modification.
+>>=20
+>> Hmm? If DSA doesn't support PHY timestamping how are other DSA drivers
+>> dealing with it then? I'm getting really confused.
+>
+> They aren't dealing with it, of course.
+>
+>> Furthermore, there is no hellcreek hardware available with timestamping
+>> capable PHYs. How am I supposed to even test this?
+>>=20
+>> For now, until there is hardware available, PHY timestamping is not
+>> supported with the hellcreek switch.
+>
+> I was just pointing out that this is something you'll certainly have to
+> change if somebody will want PHY timestamping.
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
+Understood.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+>
+> Even without hardware, you _could_ probably test that DSA is doing the
+> right thing by simply adding the PTP timestamping ops to a PHY driver
+> that you own, and inject dummy timestamps. The expectation becomes that
+> user space gets those dummy timestamps, and not the ones emitted by your
+> switch.
+
+Of course it can be mocked. Whenever somebody wants to do PHY
+timestamping with a hellcreek switch this issue can be re-visited.
+
+Thanks,
+Kurt
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl9+410ACgkQeSpbgcuY
+8KZc4RAApMcJksbhvJ3h+InmLV0zBPwEhm+pi54GM6pcMgEU2pVU3p7V4u4sECeE
+YtI3vANceVAYOeoFJKCV2mRQkZHNlUbUm6UoJ/cplRJk8d2bqNNBj1iRUfvdxN5M
+i+tVJ6LQCSePZNhCkL3VFBCpe5J08qC1OrWFOFBLUcvFsaNpP7keIC0AxGd1Ls+h
+ISIGrC0RP+dz2ehhAZmeKRI9ype6d2CzV34JtfR+cTlwLrHlndoBSF19f4YrfDbl
+D/fjhAR/ubleveAlhFK4J0TgLz2eFP8c0YSYJ5ZCgxds3XFVxiGLz9Iki3Pv7J7b
+6ZK+eroPmNEwcmapMHIDVMSZffVJ13OZdKr/lR/tVuo04U8xM+sEe8nnJAaNIFh2
+n8hz3ptWfF+7WRpexasB4/FEtBz5HUqT06Bn6pwYz+fgYU0Biro4FGVON7zJVdI8
+DJwD8lORPQbfIzhD+6em7bdtmokmZQj+DsBsN4a/k6NmFOro7HUee0/BpvAeG30X
+/ZZXIbe+RISZdvMB0K5CPvo6LT1LPqhIDC/shm3g9FdsXtcXLQj97Rw6DQQfsRVq
+Ofcs0pFyclS1j8QMqtN2cDH4AQcVbD3Fu5Snqq1ekXN0WTIg0wKxRevK8SS9uH3N
+IKEYgHvWS67CgPRssQ/9vnSjA6B+D4agaNNQpTFnYRX9/rlaE9s=
+=+53N
+-----END PGP SIGNATURE-----
+--=-=-=--
