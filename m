@@ -2,126 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 733842879FD
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 18:31:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F4A3287A08
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 18:35:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730161AbgJHQbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 12:31:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47552 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726029AbgJHQbN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 12:31:13 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B93C061755
-        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 09:31:13 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id 7so4731116pgm.11
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 09:31:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=oiJYtPu41HGw8+LXAzTx3b0LlTOWLZ98J+XiMdVn0j4=;
-        b=j6ni/qUVUkGcGcp0kwEFRyzbRqH27FD/7RiRSphtG5+u/v50nk4M518DLlgMhyFoEZ
-         YHd4plQ7LosVM+82i2y5IpaT2dXTx6ZiMYMOWyY/07eH0CPDNzls93+SuI1wHdbYLqfX
-         rEHRV6Mn6gLS1OFOk5JUcx9ORgq55KmVmpr6+Xxw/olFGn3CERi7EHNwxDhg5Qxdjf2f
-         awBv4UQwL6JCFgsAB7INJqkYrGAOY/W3hCTv3Js95BDJgnIpwboNpRH0P6EKF1vGutXb
-         AI5F5POXKnCK3ZsUUFWveTQJ48wY/TprAEsd1lhFo/xlxx89EKsTHDYV6v13e5+1qnFF
-         89cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=oiJYtPu41HGw8+LXAzTx3b0LlTOWLZ98J+XiMdVn0j4=;
-        b=lwDJRSKs0PaRbdjwofL+GC9nKDNe1ynEixVZKz9XGXuNnMJCCZss7fv4DV7rB90/cz
-         PzyqrQPPJwtiovIfzbxdY3p9gewK1vZZgFu34eyVUX1sbXwbblFNVRWAjmKHlcGvtY/v
-         CeHgfii12iMPb9YLa0fWMP8/g5YhxLFihxJggLz4iK5cgTHReiyPFRtaNma1mvvoklL8
-         eADGOHViK1Y9aMIt3eaXs9v6SxOXyKr+2zKSjhTXxIMQKLqfq2IT6QkCUTgn2Nm/lFQK
-         DnVmyzbOZcCZkksbqeis+NWL4fitn9FdRnnf0YES5vVCTodjfPEwgT0ZZvOELiUL0IRT
-         yoJQ==
-X-Gm-Message-State: AOAM532TopktYFeUmkcvLcx1tifofiywAOv80JPVhft5NgsIcZ5e0C6h
-        +/R8xQLez+/9tAbJxoVbO2A=
-X-Google-Smtp-Source: ABdhPJz4AORo6fiBMRWuKByrIwuSrU5scaZUcOxJTyI5OWd8z++qgFUWEY8OsZcKrW8ATduHYvCVRg==
-X-Received: by 2002:a17:90a:d489:: with SMTP id s9mr4496178pju.50.1602174672791;
-        Thu, 08 Oct 2020 09:31:12 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([72.164.175.30])
-        by smtp.googlemail.com with ESMTPSA id kv19sm7691896pjb.22.2020.10.08.09.31.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Oct 2020 09:31:11 -0700 (PDT)
-Subject: Re: [PATCH 1/2] net/ipv6: always honour route mtu during forwarding
-To:     =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <zenczykowski@gmail.com>,
-        =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Lorenzo Colitti <lorenzo@google.com>,
-        Sunmeet Gill <sgill@quicinc.com>,
-        Vinay Paradkar <vparadka@qti.qualcomm.com>,
-        Tyler Wear <twear@quicinc.com>,
-        David Ahern <dsahern@kernel.org>
-References: <20201008033102.623894-1-zenczykowski@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <902c6608-dbf8-2ba9-4202-c43dac322b3e@gmail.com>
-Date:   Thu, 8 Oct 2020 09:31:11 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.1
+        id S1730570AbgJHQfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 12:35:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57234 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726029AbgJHQfT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Oct 2020 12:35:19 -0400
+Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0103E221FE;
+        Thu,  8 Oct 2020 16:35:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602174919;
+        bh=Qlahj53lYVNiYg7AJ2rpRjvr+jIGD1GKJKKVML4NVdo=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=JVjGIr/dcnN1xksiqNbG+5EbegsU/oIDX9jUBqAS8FdCiPm8u2/qWXBDB5A5SPFTI
+         BT867zshbo4KKSkX6On8oFk14J9agHw/y0p3/tUCfKwANiGzETo77Iy2nIexDbM5qM
+         XppPODIVfAmfdTX/Ba5zWmqqdjewjp/z+lEODdI8=
+Received: by mail-ot1-f51.google.com with SMTP id f37so6007514otf.12;
+        Thu, 08 Oct 2020 09:35:18 -0700 (PDT)
+X-Gm-Message-State: AOAM5308ejA7VVCA00+mx+0sroV9fwEpwbzYWpWLV5uN5ahWHAnVE86b
+        dUjU8i1XFHZM0WrdY7mp/KRXwgjhtFWTsRO6Xw==
+X-Google-Smtp-Source: ABdhPJzz60BjsjQ+DWcXVfNZRYE1T6Qcp8v32Xy9DdbXcoosuL4xmpiD0xFSdwduI7ZjY+c1MvZxTW+StDleIYmrSl8=
+X-Received: by 2002:a9d:1c90:: with SMTP id l16mr5952657ota.192.1602174918204;
+ Thu, 08 Oct 2020 09:35:18 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20201008033102.623894-1-zenczykowski@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20201008144706.8212-1-calvin.johnson@oss.nxp.com>
+In-Reply-To: <20201008144706.8212-1-calvin.johnson@oss.nxp.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Thu, 8 Oct 2020 11:35:07 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqLf0UJNmx8OgpDye2zfFNZyJJ8gbr3nbmGyiMg81RoHOg@mail.gmail.com>
+Message-ID: <CAL_JsqLf0UJNmx8OgpDye2zfFNZyJJ8gbr3nbmGyiMg81RoHOg@mail.gmail.com>
+Subject: Re: [net-next PATCH v1] net: phy: Move of_mdio from drivers/of to drivers/net/mdio
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Grant Likely <grant.likely@arm.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        netdev <netdev@vger.kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:ACPI FOR ARM64 (ACPI/arm64)" <linux-acpi@vger.kernel.org>,
+        linux.cj@gmail.com, "David S. Miller" <davem@davemloft.net>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/7/20 8:31 PM, Maciej Żenczykowski wrote:
-> From: Maciej Żenczykowski <maze@google.com>
-> 
-> This matches the new ipv4 behaviour as of commit:
->   commit 02a1b175b0e92d9e0fa5df3957ade8d733ceb6a0
->   Author: Maciej Żenczykowski <maze@google.com>
->   Date:   Wed Sep 23 13:18:15 2020 -0700
-> 
->   net/ipv4: always honour route mtu during forwarding
+On Thu, Oct 8, 2020 at 9:47 AM Calvin Johnson
+<calvin.johnson@oss.nxp.com> wrote:
+>
+> Better place for of_mdio.c is drivers/net/mdio.
+> Move of_mdio.c from drivers/of to drivers/net/mdio
 
-just summarize that as:
-commit 02a1b175b0e9 ("net/ipv4: always honour route mtu during forwarding")
+One thing off my todo list. I'd started this ages ago[1].
 
+>
+> Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+> ---
+>
+>  MAINTAINERS                        | 2 +-
+>  drivers/net/mdio/Kconfig           | 8 ++++++++
+>  drivers/net/mdio/Makefile          | 2 ++
+>  drivers/{of => net/mdio}/of_mdio.c | 0
+>  drivers/of/Kconfig                 | 7 -------
+>  drivers/of/Makefile                | 1 -
+>  6 files changed, 11 insertions(+), 9 deletions(-)
+>  rename drivers/{of => net/mdio}/of_mdio.c (100%)
 
+of_mdio.c is really a combination of mdio and phylib functions, so it
+should be split up IMO. With that, I think you can get rid of
+CONFIG_OF_MDIO. See my branch[1] for what I had in mind. But that can
+be done after this if the net maintainers prefer.
 
-> diff --git a/include/net/ip6_route.h b/include/net/ip6_route.h
-> index 2a5277758379..598415743f46 100644
-> --- a/include/net/ip6_route.h
-> +++ b/include/net/ip6_route.h
-> @@ -311,19 +311,13 @@ static inline bool rt6_duplicate_nexthop(struct fib6_info *a, struct fib6_info *
->  static inline unsigned int ip6_dst_mtu_forward(const struct dst_entry *dst)
->  {
->  	struct inet6_dev *idev;
-> -	unsigned int mtu;
-> +	unsigned int mtu = dst_metric_raw(dst, RTAX_MTU);
+Acked-by: Rob Herring <robh@kernel.org>
 
-newline here for readability
+Rob
 
-> +	if (mtu)
-> +		return mtu;
->  
-> -	if (dst_metric_locked(dst, RTAX_MTU)) {
-> -		mtu = dst_metric_raw(dst, RTAX_MTU);
-> -		if (mtu)
-> -			return mtu;
-> -	}
-> -
-> -	mtu = IPV6_MIN_MTU;
->  	rcu_read_lock();
->  	idev = __in6_dev_get(dst->dev);
-> -	if (idev)
-> -		mtu = idev->cnf.mtu6;
-> +	mtu = idev ? idev->cnf.mtu6 : IPV6_MIN_MTU;
->  	rcu_read_unlock();
->  
->  	return mtu;
-> 
-
-besides the nit comments, the change looks fine to me. Please add test
-cases to tools/testing/selftests/net/pmtu.sh for this change.
+[1] git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git dt/move-net
