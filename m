@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C5ECB2871E9
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 11:50:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B66B52871EB
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 11:50:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729314AbgJHJtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 05:49:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41778 "EHLO
+        id S1729320AbgJHJt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 05:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725887AbgJHJtv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 05:49:51 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 506FEC061755;
-        Thu,  8 Oct 2020 02:49:50 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id o8so2506609pll.4;
-        Thu, 08 Oct 2020 02:49:50 -0700 (PDT)
+        with ESMTP id S1725887AbgJHJt6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 05:49:58 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99D60C061755;
+        Thu,  8 Oct 2020 02:49:58 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id 7so3810835pgm.11;
+        Thu, 08 Oct 2020 02:49:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=r065IKyXdFJ5GMOudMqVr03VgbZjGBH5pw37dEIt8yw=;
-        b=FlDv+QExgF/i45sOO63T3sCZjZ8SD5VvUI/DB97k295irQH+pN0HARRIzlr10+2pD4
-         HXq6ESJc8IgrMRAPadgk6nt7f0VJd8OvkSiHd4jQf9e8/hVT1cq1wd+B+K0ZtbJFxEzu
-         FlpafJpAMUzwRE7rWHBm9SQbbp+5dXaeAWWGTz/9CwgGSbkEP1bkOLue45Z06lM02WW3
-         kI09OchFishQdRQNQrY7HFHIw5rsZvAnH2vN19enYi/MRW+az9LbFSBLJy3wnxL93W3s
-         Mwg4Z3Kvdh/J0yNdC5Yrrwwa8tz1yt1sI1kVVltT9EOYFvo2Swy3AFuFsk7K9tdIldXK
-         jqdw==
+        bh=ccnTdRi301/TdXAApcTfL39DiVa+OmKFQ/8+9UDuAeU=;
+        b=CwwMaLDXlQDIPgkCCSE5DGBmA08149Qmw8ypvNRq+0GVsbzUxVxN38K632z4xEu84X
+         9AmDjy/14yeotECYm3bSzuwOhBMnOirW46nhHaGieTUxkR72nQhFGM+tP+LgzPfMqzGE
+         CJozn1wKvK8VMJ2mLDWic/JK9Z/FDpjhaopIbPAmg8KgEwd/zNUoY0GjUvVSC1RoaY/n
+         bcuY72bFjfvb8YC1aPhJNVX/kDFJNIWgHyR64Ys1u/VkTxy8j2iVnnxnzFraRwtI75jW
+         eYR83+WGpGp9zXLQnLzclHNk+be2yK/jTwHlHvqilhNWw4LPQMMcp0CnWeWxbQq6NlBv
+         6Zmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=r065IKyXdFJ5GMOudMqVr03VgbZjGBH5pw37dEIt8yw=;
-        b=HfL+bWlHmIZKAk1pAWc3V4IaQCsgylSyuvPwS1snjNBSuy0ramZd9NIYEBq94h6HFQ
-         ebb4HZq9KwtUi/MIohagpDYeKa2ZzpL0b8plIZXCvoHm7tPEufkmgpBH4XDDR2ueHodi
-         FJ0n8GpzASQKWcTDY87ztPYhbJbOQEVrcjDp0fJnI7w+Z8i10BA8i+fhinzq9bzi+4CO
-         /RAXmi9z6sAg2GYHzsSyRi6VO5xJzHhjkASJZzu4LXV2pzK+LRvnuG+gfQ2yqXhWbmjj
-         Co+n5z+8o3aXwgG8EVN+UvazroqZo9bura4bFiQtzklgcYgFlg71hFoQizDrCpZq5cpe
-         fN3w==
-X-Gm-Message-State: AOAM533voGW9mPoZMQjRE/eJUE9m6JiRYNRVLblt1xhDJrGM5gO7/OL2
-        gvlGlZA6uvklOYYJ4tMRhvvhnQ9jekA=
-X-Google-Smtp-Source: ABdhPJwnklnf2845eRn/TNO/4TW0SgYIc9M5xfZYMuQ4s4yGMDSRu64/thCQEe4BG76zktXa+7ezHw==
-X-Received: by 2002:a17:902:aa90:b029:d3:b2d3:44ef with SMTP id d16-20020a170902aa90b02900d3b2d344efmr6790987plr.60.1602150589570;
-        Thu, 08 Oct 2020 02:49:49 -0700 (PDT)
+        bh=ccnTdRi301/TdXAApcTfL39DiVa+OmKFQ/8+9UDuAeU=;
+        b=SSO+IgQyFhgZsC63B/RBiByZIIw+iyfKQw3GkcCJc5v9/yTS34DwblaTG2b0/2cMET
+         34dLxG9gQWXGspcbphRZiH2/kNHEW4iKYFrtMwF3JO6eA0AhWR8sM2diqUAczBARttFs
+         EYsA/Wvpa/yWa5+etXLrre0S7q7Ji7gPgHBjt5ALMb/zy73x0p/gB6i3RlXnWXucTDy9
+         Ho8CETbTvL1en7ird2XU0mo3/YwkmpAs4mSjnFR8LKj/WTecO9Uk95YBct4wxzLIQyeE
+         qkgwkZzQ42PWPqrT/ALvF8fAO0FI7DPuqOnZ6E4JUx43ssgfrVtvW7Hig4+NBloALI6G
+         eOdw==
+X-Gm-Message-State: AOAM530938wj1Vfnma9np2jIIHd+JejM9afZzXXzPRm3I18jeETOtlGi
+        6KYeQMjbb57va2Dv5OuuCSn/r1ShJ5Y=
+X-Google-Smtp-Source: ABdhPJxBazcIs7wzMgTLEWikewpcizbM2KE4uXwChCeV6kDT60ppFSGuIpuYhDKcYjacOHOGJyoumw==
+X-Received: by 2002:a17:90b:50a:: with SMTP id r10mr3010722pjz.231.1602150597916;
+        Thu, 08 Oct 2020 02:49:57 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id o17sm6110166pji.30.2020.10.08.02.49.48
+        by smtp.gmail.com with ESMTPSA id fv13sm6407198pjb.50.2020.10.08.02.49.56
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 08 Oct 2020 02:49:49 -0700 (PDT)
+        Thu, 08 Oct 2020 02:49:57 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Neil Horman <nhorman@tuxdriver.com>,
         Michael Tuexen <tuexen@fh-muenster.de>, davem@davemloft.net
-Subject: [PATCHv2 net-next 11/17] sctp: add udphdr to overhead when udp_port is set
-Date:   Thu,  8 Oct 2020 17:48:07 +0800
-Message-Id: <1128490426bfb52572ba338e7a631658da49f34c.1602150362.git.lucien.xin@gmail.com>
+Subject: [PATCHv2 net-next 12/17] sctp: call sk_setup_caps in sctp_packet_transmit instead
+Date:   Thu,  8 Oct 2020 17:48:08 +0800
+Message-Id: <ad362276ba90a8af3178f19aba15a7e67107652f.1602150362.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <92d28810a72dee9d0d49e7433b65027cb52de191.1602150362.git.lucien.xin@gmail.com>
+In-Reply-To: <1128490426bfb52572ba338e7a631658da49f34c.1602150362.git.lucien.xin@gmail.com>
 References: <cover.1602150362.git.lucien.xin@gmail.com>
  <052acb63198c44df41c5db17f8397eeb7c8bacfe.1602150362.git.lucien.xin@gmail.com>
  <c36b016ee429980b9585144f4f9af31bcda467ee.1602150362.git.lucien.xin@gmail.com>
@@ -68,78 +68,59 @@ References: <cover.1602150362.git.lucien.xin@gmail.com>
  <bcb5453d0f8abd3d499c8af467340ade1698af11.1602150362.git.lucien.xin@gmail.com>
  <bdbd57b89b92716d17fecce1f658c60cca261bee.1602150362.git.lucien.xin@gmail.com>
  <92d28810a72dee9d0d49e7433b65027cb52de191.1602150362.git.lucien.xin@gmail.com>
+ <1128490426bfb52572ba338e7a631658da49f34c.1602150362.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1602150362.git.lucien.xin@gmail.com>
 References: <cover.1602150362.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sctp_mtu_payload() is for calculating the frag size before making
-chunks from a msg. So we should only add udphdr size to overhead
-when udp socks are listening, as only then sctp can handle the
-incoming sctp over udp packets and outgoing sctp over udp packets
-will be possible.
+sk_setup_caps() was originally called in Commit 90017accff61 ("sctp:
+Add GSO support"), as:
 
-Note that we can't do this according to transport->encap_port, as
-different transports may be set to different values, while the
-chunks were made before choosing the transport, we could not be
-able to meet all rfc6951#section-5.6 recommends.
+  "We have to refresh this in case we are xmiting to more than one
+   transport at a time"
 
-v1->v2:
-  - Add udp_port for sctp_sock to avoid a potential race issue, it
-    will be used in xmit path in the next patch.
+This actually happens in the loop of sctp_outq_flush_transports(),
+and it shouldn't be tied to gso, so move it out of gso part and
+before sctp_packet_pack().
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- include/net/sctp/sctp.h    | 7 +++++--
- include/net/sctp/structs.h | 1 +
- net/sctp/socket.c          | 1 +
- 3 files changed, 7 insertions(+), 2 deletions(-)
+ net/sctp/output.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/include/net/sctp/sctp.h b/include/net/sctp/sctp.h
-index bfd87a0..86f74f2 100644
---- a/include/net/sctp/sctp.h
-+++ b/include/net/sctp/sctp.h
-@@ -578,10 +578,13 @@ static inline __u32 sctp_mtu_payload(const struct sctp_sock *sp,
- {
- 	__u32 overhead = sizeof(struct sctphdr) + extra;
+diff --git a/net/sctp/output.c b/net/sctp/output.c
+index 1441eaf..fb16500 100644
+--- a/net/sctp/output.c
++++ b/net/sctp/output.c
+@@ -508,12 +508,6 @@ static int sctp_packet_pack(struct sctp_packet *packet,
+ 					sizeof(struct inet6_skb_parm)));
+ 		skb_shinfo(head)->gso_segs = pkt_count;
+ 		skb_shinfo(head)->gso_size = GSO_BY_FRAGS;
+-		rcu_read_lock();
+-		if (skb_dst(head) != tp->dst) {
+-			dst_hold(tp->dst);
+-			sk_setup_caps(sk, tp->dst);
+-		}
+-		rcu_read_unlock();
+ 		goto chksum;
+ 	}
  
--	if (sp)
-+	if (sp) {
- 		overhead += sp->pf->af->net_header_len;
--	else
-+		if (sp->udp_port)
-+			overhead += sizeof(struct udphdr);
-+	} else {
- 		overhead += sizeof(struct ipv6hdr);
+@@ -593,6 +587,13 @@ int sctp_packet_transmit(struct sctp_packet *packet, gfp_t gfp)
+ 	}
+ 	skb_dst_set(head, dst);
+ 
++	rcu_read_lock();
++	if (__sk_dst_get(sk) != tp->dst) {
++		dst_hold(tp->dst);
++		sk_setup_caps(sk, tp->dst);
 +	}
- 
- 	if (WARN_ON_ONCE(mtu && mtu <= overhead))
- 		mtu = overhead;
-diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
-index 81464ae..80f7149 100644
---- a/include/net/sctp/structs.h
-+++ b/include/net/sctp/structs.h
-@@ -178,6 +178,7 @@ struct sctp_sock {
- 	 */
- 	__u32 hbinterval;
- 
-+	__be16 udp_port;
- 	__be16 encap_port;
- 
- 	/* This is the max_retrans value for new associations. */
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index c9e86f5..192ab9a 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -4926,6 +4926,7 @@ static int sctp_init_sock(struct sock *sk)
- 	 * be modified via SCTP_PEER_ADDR_PARAMS
- 	 */
- 	sp->hbinterval  = net->sctp.hb_interval;
-+	sp->udp_port    = htons(net->sctp.udp_port);
- 	sp->encap_port  = htons(net->sctp.encap_port);
- 	sp->pathmaxrxt  = net->sctp.max_retrans_path;
- 	sp->pf_retrans  = net->sctp.pf_retrans;
++	rcu_read_unlock();
++
+ 	/* pack up chunks */
+ 	pkt_count = sctp_packet_pack(packet, head, gso, gfp);
+ 	if (!pkt_count) {
 -- 
 2.1.0
 
