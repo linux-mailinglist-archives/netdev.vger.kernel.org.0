@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCB7A286F32
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 09:21:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0C56286F3F
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 09:21:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726469AbgJHHVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 03:21:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46738 "EHLO
+        id S1726859AbgJHHVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 03:21:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725899AbgJHHVL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 03:21:11 -0400
+        with ESMTP id S1725899AbgJHHVp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 03:21:45 -0400
 Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B153FC061755;
-        Thu,  8 Oct 2020 00:21:10 -0700 (PDT)
-Received: from smtp2.mailbox.org (smtp2.mailbox.org [80.241.60.241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF5F0C061755;
+        Thu,  8 Oct 2020 00:21:45 -0700 (PDT)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4C6N0h0VSRzQjbW;
-        Thu,  8 Oct 2020 09:21:08 +0200 (CEST)
+        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4C6N1M6wHZzQjbW;
+        Thu,  8 Oct 2020 09:21:43 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mailbox.org; h=
-        content-disposition:content-type:content-type:mime-version
-        :message-id:subject:subject:from:from:date:date:received; s=
-        mail20150812; t=1602141664; bh=PKoZnQyBTs7N4cjS78lIcx/SklABDL2O2
-        xTMl/vXlJs=; b=qPwwPW1KWYlyJqCUU97CxFCQeel+P3mzup2zXntKL0+sBXTaE
-        hC+lyl8mitezmudsxeMEcjjzX+VMLkrMsyVQlX04bJvJmY91q6m7B8X4DA6OXY5l
-        JVbsdbDRDW24zZ8i4EHssyMrK8loLT6XAKRkC5yVZdiqWpNhuqaoVPIsISotE/zw
-        hKJ47NpXq67aMRRbejlHXhUOkJlIti6SPR+VFIyKwRv1cAe29xKpQn7hjvXK1TmE
-        t7fr8GbAoeg1AJE81odysnq3jMvTgX7tFi3UJ4K40hBKXy5H8+/Ps0fg4DSu3ItV
-        /mx+SHET/P3AWFNhTJp3mf62GONle6JI/WUBg==
+        in-reply-to:content-disposition:content-type:content-type
+        :mime-version:references:message-id:subject:subject:from:from
+        :date:date:received; s=mail20150812; t=1602141700; bh=zyDz1+ViD4
+        X4GEpN3D5om2c9OFBTBsXd//uJEZm7Xtg=; b=GmEMpsb0YMu63wFC0mFcfeoZCy
+        /1og38lyci7usBibtdmR6Byza4RPaIfXHX0xwW0IaSGYEoy/R62Jzz40bjysI7SS
+        5Sj/68kAoooXSR2qG/2S/5W96GGClNJAPiEsQoGc2cCnoZOLUXRLYMv513RYj0eH
+        tKtvhM5FSCdJQQp4QHtYkbC3RRf6qqewXrPwkKcZ5/38Aocp4DVmOo0qEqIZ646+
+        CerRBnXq4MwMrV9Q8z7loU1tydYauLkw274DY2cwNWTQLnRy42NskUeHzjcz8ae0
+        B5/uKWL2Kaznleb71zfr+orr6ARMtV9CvTyoYaro316XKmhDNcDTxQu4d3aQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailbox.org; s=mail20150812;
-        t=1602141666;
+        t=1602141702;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=9Knu4Ep4Kfr7cANVhKoFkLeEDR8oemZsbxSM7NSRHcM=;
-        b=AmyE3xFZRrJKUR1axtwJxm8GIgZBqMbyaOPwcvazdM0/Ea7ErRrOpXjR/stn7i05G3kX3o
-        dCp1TtbXaEpiFC1W5qvmasiW1X2b9TAUtIjCIu0PEMk0I2aWz8n2wf/kcMoHPLbehC2bl9
-        qPkC2Rp5JuCebNPK9QPAIWTzJRJwXHT+t/blX8o93H2eH1m00U1+q4FnesF9avGzbz/9ZV
-        VkcPXjeDoheSOah9D2trg17RpWvD9S5w/8KVVXl5c0RXM6RVyaBs1PL7wI8gY7Zvy78Upp
-        8o0YB/fvByBoqxIvTsA7p+v0Curae7wg4bcumIt2HnSpZu5ElrU2vh8diiFTEA==
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=0yuQpyOp1cOPijKH3KbjZ0G1rEfKqPtI1bSlIEuxGGE=;
+        b=WloNyJBeI+dhm2eJjNiYIrAhrwcpcQZ6pNz2MnsHvO9NQ8cxE2UxqVu++glW/VlOMokzWO
+        Wi2ky4w9+UHsSZRZh41+r4WYAzVv/XGqwGVYz68WTXreUKvi9DblXbsniHCAaVCVaLFKxX
+        PQpP2Fo/MvG2wAVPDENz584EuPUMlX7VEu6l8KZ5RMTqdxDUj+4LH0COL+az7CDLuAtZFM
+        2szDEBlh0b4HqqIfOAKTTTSxjOUSeLQGff6qS07Mok79eEecOHK9FS0wAHqBPvV0p1p0bv
+        LYhZFBSr7gHjvR73SiUGu5Z1wBZ3xac2svW+da5IdKAagNVoM1F2ICd6XyBH4Q==
 X-Virus-Scanned: amavisd-new at heinlein-support.de
-Received: from smtp2.mailbox.org ([80.241.60.241])
-        by spamfilter03.heinlein-hosting.de (spamfilter03.heinlein-hosting.de [80.241.56.117]) (amavisd-new, port 10030)
-        with ESMTP id 66DS9MrA3ZW8; Thu,  8 Oct 2020 09:21:04 +0200 (CEST)
-Date:   Thu, 8 Oct 2020 09:21:02 +0200
+Received: from smtp1.mailbox.org ([80.241.60.240])
+        by spamfilter04.heinlein-hosting.de (spamfilter04.heinlein-hosting.de [80.241.56.122]) (amavisd-new, port 10030)
+        with ESMTP id I57ARDSTi1Qy; Thu,  8 Oct 2020 09:21:40 +0200 (CEST)
+Date:   Thu, 8 Oct 2020 09:21:38 +0200
 From:   Wilken Gottwalt <wilken.gottwalt@mailbox.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
@@ -53,35 +54,40 @@ Cc:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
         Johan Hovold <johan@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         netdev@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: [PATCH v2 0/2] add Cellient MPL200 card
-Message-ID: <cover.1602140720.git.wilken.gottwalt@mailbox.org>
+Subject: [PATCH v2 1/2] net: usb: qmi_wwan: add Cellient MPL200 card
+Message-ID: <f5858ed121df35460ef17591152d606a78aa65db.1602140720.git.wilken.gottwalt@mailbox.org>
+References: <cover.1602140720.git.wilken.gottwalt@mailbox.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <cover.1602140720.git.wilken.gottwalt@mailbox.org>
 X-MBO-SPAM-Probability: 
-X-Rspamd-Score: -2.69 / 15.00 / 15.00
-X-Rspamd-Queue-Id: DF053EF7
-X-Rspamd-UID: e74cae
+X-Rspamd-Score: -3.52 / 15.00 / 15.00
+X-Rspamd-Queue-Id: D5AFD17DB
+X-Rspamd-UID: a47df1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the Cellient MPL200 card to usb/qmi_wwan and serial/option. The
-serial/option patch got already applied.
+Add usb ids of the Cellient MPL200 card.
 
-Changes v2:
-Picked proper subject for qmi_wwan patch, moved the MPL200 device to
-the section of the combined devices and changed the comment about the
-device to be more precise.
+Signed-off-by: Wilken Gottwalt <wilken.gottwalt@mailbox.org>
+---
+ drivers/net/usb/qmi_wwan.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Wilken Gottwalt (2):
-  net: usb: qmi_wwan: add Cellient MPL200 card
-  usb: serial: option: add Cellient MPL200 card
-
- drivers/net/usb/qmi_wwan.c  | 1 +
- drivers/usb/serial/option.c | 3 +++
- 2 files changed, 4 insertions(+)
-
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 07c42c0719f5..5ca1356b8656 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -1375,6 +1375,7 @@ static const struct usb_device_id products[] = {
+ 	{QMI_QUIRK_SET_DTR(0x2cb7, 0x0104, 4)},	/* Fibocom NL678 series */
+ 	{QMI_FIXED_INTF(0x0489, 0xe0b4, 0)},	/* Foxconn T77W968 LTE */
+ 	{QMI_FIXED_INTF(0x0489, 0xe0b5, 0)},	/* Foxconn T77W968 LTE with eSIM support*/
++	{QMI_FIXED_INTF(0x2692, 0x9025, 4)},    /* Cellient MPL200 (rebranded Qualcomm 05c6:9025) */
+ 
+ 	/* 4. Gobi 1000 devices */
+ 	{QMI_GOBI1K_DEVICE(0x05c6, 0x9212)},	/* Acer Gobi Modem Device */
 -- 
 2.28.0
 
