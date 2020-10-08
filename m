@@ -2,100 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E25D287AE8
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 19:23:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82BE7287AF3
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 19:25:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731978AbgJHRXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 13:23:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55528 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729476AbgJHRXC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 13:23:02 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3118C061755;
-        Thu,  8 Oct 2020 10:23:01 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id o25so4897343pgm.0;
-        Thu, 08 Oct 2020 10:23:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=3V0mLS0s4CJgn1kQBjygX8jXur/PK/9Sdmb5D/NO1oU=;
-        b=JC8+1YPK8N6nuYWVLgduPvVvTE1LrLt0G7RdJZtZtLuM9HuV8QwXwwZ9E18f9Z9agP
-         IcQaJhcpE7uKzn2BBBVHzCSgE19QbQ07TFooWh5RqP3uW9v9p40dY4i8rrDaxmH7JU4p
-         v40Mw4e4pQt9+V+410WxEyNypNtN8sxJN/xR6nz8rI6MBq6JHwPFfr9Z02V80VPkjsbB
-         ixmRxgp31pUIBKZ5aogmc0UOQV2fgySM/hKT0UZN5uW8M0383tzQD+Srb0KBeXUGBSS9
-         V1xEdPhOp/HNuph4Va6ealWryHDsxXh97XhlBcaSMWBpic1PKxCLJpypRi/ueo+spYdr
-         /zXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=3V0mLS0s4CJgn1kQBjygX8jXur/PK/9Sdmb5D/NO1oU=;
-        b=WfhAwaIxT8OZMbi4SEAf/GVJOpxVKcotDPc0v49A2q/V2SJhE0MvTKPj6hlJ+vl2GT
-         yjavJpQ5tXUj53Qj5sMl/2WICKozYihO+3YTEsEaLbZsODORoGeI7pnhOfvMO9HY0M09
-         VpHJN3ejoOLEZ5XI2+Plle7vvZNuE7BL7JtU2RQacSgamDk2o/Oe1HxB6Zc2pdGrjCtj
-         X6un1i/2nuExce8hLdomsBAdmxgRNAadGFcZc1y6v2ndf59ZXA7t4Swl4Xw7AE9pI/TE
-         AfOmJ7XZ/lUbfttELxgso8GlekhDPzafhmBxT214DNgc6q8/SZGU+Q2GbhWkuh6jHm2O
-         CLDA==
-X-Gm-Message-State: AOAM5338Hk0A26IHZNL3tHJPH24GWfo7w21yDtNSH6eb5N2N8ujKV5cP
-        +QCt1y4xXXH4xDFAKAdHzD63lK7O1xU=
-X-Google-Smtp-Source: ABdhPJyxqP0R3hkoCHwwqlFgg3FNgBRx7TQaadovUF0A0CTVq+33dW3HxDDXCwcytZUHaEXCuIQ65w==
-X-Received: by 2002:a05:6a00:888:b029:13f:f7eb:578c with SMTP id q8-20020a056a000888b029013ff7eb578cmr8754273pfj.10.1602177781205;
-        Thu, 08 Oct 2020 10:23:01 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([72.164.175.30])
-        by smtp.googlemail.com with ESMTPSA id j8sm6230113pfj.68.2020.10.08.10.23.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Oct 2020 10:23:00 -0700 (PDT)
-Subject: Re: [PATCH bpf-next] bpf_fib_lookup: return target ifindex even if
- neighbour lookup fails
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        daniel@iogearbox.net, ast@fb.com
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
-References: <20201008145314.116800-1-toke@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <da1b5e5f-edb3-4384-c748-8170f51f6f6d@gmail.com>
-Date:   Thu, 8 Oct 2020 10:22:59 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.1
+        id S1730998AbgJHRZS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 13:25:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42152 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725923AbgJHRZR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Oct 2020 13:25:17 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B0390204EF;
+        Thu,  8 Oct 2020 17:25:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602177917;
+        bh=gOVHS1ICX8ZT/5rhmADXZCHjUtxW9FSl2u2ObxJnfLw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kHZdPERl5GDikb/wcLQ+5+ORarbCMWyJHp7zzeeKJh1dJlZhD1VGJvwLEPaTlGQut
+         Ha628XD17MbeJGXur7MU6y5YhPD2FsE2v5cm3VFLdZuIznQzrigwCziBSu6Qh1pyIz
+         A8vjug96YqJ3nJMy67vWYwRrtziCXm0vFJjjS8yM=
+Date:   Thu, 8 Oct 2020 10:25:14 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hoang Huu Le <hoang.h.le@dektech.com.au>
+Cc:     jmaloy@redhat.com, maloy@donjonn.com, ying.xue@windriver.com,
+        tipc-discussion@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: Re: [net] tipc: fix NULL pointer dereference in tipc_named_rcv
+Message-ID: <20201008102514.1184c315@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201008073156.116136-1-hoang.h.le@dektech.com.au>
+References: <20201008073156.116136-1-hoang.h.le@dektech.com.au>
 MIME-Version: 1.0
-In-Reply-To: <20201008145314.116800-1-toke@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/8/20 7:53 AM, Toke Høiland-Jørgensen wrote:
-> The bpf_fib_lookup() helper performs a neighbour lookup for the destination
-> IP and returns BPF_FIB_LKUP_NO_NEIGH if this fails, with the expectation
-> that the BPF program will pass the packet up the stack in this case.
-> However, with the addition of bpf_redirect_neigh() that can be used instead
-> to perform the neighbour lookup.
-> 
-> However, for that we still need the target ifindex, and since
-> bpf_fib_lookup() already has that at the time it performs the neighbour
-> lookup, there is really no reason why it can't just return it in any case.
-> With this fix, a BPF program can do the following to perform a redirect
-> based on the routing table that will succeed even if there is no neighbour
-> entry:
-> 
-> 	ret = bpf_fib_lookup(skb, &fib_params, sizeof(fib_params), 0);
-> 	if (ret == BPF_FIB_LKUP_RET_SUCCESS) {
-> 		__builtin_memcpy(eth->h_dest, fib_params.dmac, ETH_ALEN);
-> 		__builtin_memcpy(eth->h_source, fib_params.smac, ETH_ALEN);
-> 
-> 		return bpf_redirect(fib_params.ifindex, 0);
-> 	} else if (ret == BPF_FIB_LKUP_RET_NO_NEIGH) {
-> 		return bpf_redirect_neigh(fib_params.ifindex, 0);
-> 	}
-> 
+On Thu,  8 Oct 2020 14:31:56 +0700 Hoang Huu Le wrote:
+> diff --git a/net/tipc/name_distr.c b/net/tipc/name_distr.c
+> index 2f9c148f17e2..fe4edce459ad 100644
+> --- a/net/tipc/name_distr.c
+> +++ b/net/tipc/name_distr.c
+> @@ -327,8 +327,13 @@ static struct sk_buff *tipc_named_dequeue(struct sk_buff_head *namedq,
+>  	struct tipc_msg *hdr;
+>  	u16 seqno;
+>  
+> +	spin_lock_bh(&namedq->lock);
+>  	skb_queue_walk_safe(namedq, skb, tmp) {
+> -		skb_linearize(skb);
+> +		if (unlikely(skb_linearize(skb))) {
+> +			__skb_unlink(skb, namedq);
+> +			kfree_skb(skb);
+> +			continue;
+> +		}
+>  		hdr = buf_msg(skb);
+>  		seqno = msg_named_seqno(hdr);
+>  		if (msg_is_last_bulk(hdr)) {
+> @@ -338,12 +343,14 @@ static struct sk_buff *tipc_named_dequeue(struct sk_buff_head *namedq,
+>  
+>  		if (msg_is_bulk(hdr) || msg_is_legacy(hdr)) {
+>  			__skb_unlink(skb, namedq);
+> +			spin_unlock_bh(&namedq->lock);
+>  			return skb;
+>  		}
+>  
+>  		if (*open && (*rcv_nxt == seqno)) {
+>  			(*rcv_nxt)++;
+>  			__skb_unlink(skb, namedq);
+> +			spin_unlock_bh(&namedq->lock);
+>  			return skb;
+>  		}
+>  
+> @@ -353,6 +360,7 @@ static struct sk_buff *tipc_named_dequeue(struct sk_buff_head *namedq,
+>  			continue;
+>  		}
+>  	}
+> +	spin_unlock_bh(&namedq->lock);
+>  	return NULL;
+>  }
+>  
+> diff --git a/net/tipc/node.c b/net/tipc/node.c
+> index cf4b239fc569..d269ebe382e1 100644
+> --- a/net/tipc/node.c
+> +++ b/net/tipc/node.c
+> @@ -1496,7 +1496,7 @@ static void node_lost_contact(struct tipc_node *n,
+>  
+>  	/* Clean up broadcast state */
+>  	tipc_bcast_remove_peer(n->net, n->bc_entry.link);
+> -	__skb_queue_purge(&n->bc_entry.namedq);
+> +	skb_queue_purge(&n->bc_entry.namedq);
 
-There are a lot of assumptions in this program flow and redundant work.
-fib_lookup is generic and allows the caller to control the input
-parameters. direct_neigh does a fib lookup based on network header data
-from the skb.
+Patch looks fine, but I'm not sure why not hold
+spin_unlock_bh(&tn->nametbl_lock) here instead?
 
-I am fine with the patch, but users need to be aware of the subtle details.
+Seems like node_lost_contact() should be relatively rare,
+so adding another lock to tipc_named_dequeue() is not the
+right trade off.
+
+>  	/* Abort any ongoing link failover */
+>  	for (i = 0; i < MAX_BEARERS; i++) {
+
