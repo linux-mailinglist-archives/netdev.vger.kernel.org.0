@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 965242872C5
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 12:46:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D76F72872C7
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 12:48:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729602AbgJHKqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 06:46:51 -0400
-Received: from z5.mailgun.us ([104.130.96.5]:32842 "EHLO z5.mailgun.us"
+        id S1729590AbgJHKsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 06:48:10 -0400
+Received: from m42-4.mailgun.net ([69.72.42.4]:39275 "EHLO m42-4.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729592AbgJHKqt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Oct 2020 06:46:49 -0400
+        id S1726028AbgJHKsK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Oct 2020 06:48:10 -0400
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1602154009; h=Date: Message-Id: Cc: To: References:
+ s=smtp; t=1602154089; h=Date: Message-Id: Cc: To: References:
  In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=vSIBoUltBzERS6y2ZxsSsX/nq3b4lLc6UgpZFPvxNKA=;
- b=Hnu6+nEwb7LZ5gD/FEXELxuMVOGCl9VbWZBuZKz3xU9bcoW3cX1lTLnWMCS7Ax+iG19PhLxP
- zl1b1/4vE91OAkJiRe8nIdVfAxo8z9n7VvW6cDKBkBu4hzCGMkgcGTcEuJBz2uZdVXy968ve
- 7QuhOb5NuNo3sdQ6BI4effT98As=
-X-Mailgun-Sending-Ip: 104.130.96.5
+ Content-Type: Sender; bh=XF8bfasQgbyhvaE6NI3D51L1dNMgM/d3H7Cbk/K588w=;
+ b=QG0G5AN3CLSFLtfInt+R/PxedPMN6crW0SxVdBJ4DG4dkKVq+oaG7cq11Zw9MHBzlUlQ68HN
+ ZRHTR2zng7L5FZ+BYKYGsrq74pvjoLXlFHieLiCsRFpl35Bo/rHwf0cxdkzziiydNufAjeK4
+ 6hOEUoB1AeXqggW0GhMzyXzMlHo=
+X-Mailgun-Sending-Ip: 69.72.42.4
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
- 5f7eee1406d81bc48d29235c (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 08 Oct 2020 10:46:44
+ smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
+ 5f7eee6857b88ccb562e5ee4 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 08 Oct 2020 10:48:08
  GMT
 Sender: kvalo=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id DF562C433A1; Thu,  8 Oct 2020 10:46:43 +0000 (UTC)
+        id 87109C433FF; Thu,  8 Oct 2020 10:48:08 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -39,63 +39,46 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 53F36C433CB;
-        Thu,  8 Oct 2020 10:46:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 53F36C433CB
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 5603AC433F1;
+        Thu,  8 Oct 2020 10:48:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 5603AC433F1
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: mwifiex: fix double free
+Subject: Re: [PATCH] rtlwifi: rtl8192se: remove duplicated
+ legacy_httxpowerdiff
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20201004131931.29782-1-trix@redhat.com>
-References: <20201004131931.29782-1-trix@redhat.com>
-To:     trix@redhat.com
-Cc:     amitkarwar@gmail.com, ganapathi.bhat@nxp.com,
-        huxinming820@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        natechancellor@gmail.com, ndesaulniers@google.com,
-        linville@tuxdriver.com, nishants@marvell.com, rramesh@marvell.com,
-        bzhao@marvell.com, frankh@marvell.com,
+In-Reply-To: <20201006035928.5566-1-chiu@endlessm.com>
+References: <20201006035928.5566-1-chiu@endlessm.com>
+To:     Chris Chiu <chiu@endlessos.org>
+Cc:     pkshih@realtek.com, davem@davemloft.net, kuba@kernel.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Tom Rix <trix@redhat.com>
+        linux-kernel@vger.kernel.org, Chris Chiu <chiu@endlessos.org>
 User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20201008104643.DF562C433A1@smtp.codeaurora.org>
-Date:   Thu,  8 Oct 2020 10:46:43 +0000 (UTC)
+Message-Id: <20201008104808.87109C433FF@smtp.codeaurora.org>
+Date:   Thu,  8 Oct 2020 10:48:08 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-trix@redhat.com wrote:
+Chris Chiu <chiu@endlessos.org> wrote:
 
-> From: Tom Rix <trix@redhat.com>
+> From: Chris Chiu <chiu@endlessos.org>
 > 
-> clang static analysis reports this problem:
+> The legacy_httxpowerdiff in rtl8192se is pretty much the same as
+> the legacy_ht_txpowerdiff for other chips. Use the same name to
+> keep the consistency.
 > 
-> sdio.c:2403:3: warning: Attempt to free released memory
->         kfree(card->mpa_rx.buf);
->         ^~~~~~~~~~~~~~~~~~~~~~~
-> 
-> When mwifiex_init_sdio() fails in its first call to
-> mwifiex_alloc_sdio_mpa_buffer, it falls back to calling it
-> again.  If the second alloc of mpa_tx.buf fails, the error
-> handler will try to free the old, previously freed mpa_rx.buf.
-> Reviewing the code, it looks like a second double free would
-> happen with mwifiex_cleanup_sdio().
-> 
-> So set both pointers to NULL when they are freed.
-> 
-> Fixes: 5e6e3a92b9a4 ("wireless: mwifiex: initial commit for Marvell mwifiex driver")
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> Reviewed-by: Brian Norris <briannorris@chromium.org>
+> Signed-off-by: Chris Chiu <chiu@endlessos.org>
 
 Patch applied to wireless-drivers-next.git, thanks.
 
-53708f4fd9cf mwifiex: fix double free
+8b2426c50f20 rtlwifi: rtl8192se: remove duplicated legacy_httxpowerdiff
 
 -- 
-https://patchwork.kernel.org/patch/11815655/
+https://patchwork.kernel.org/patch/11818043/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
