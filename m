@@ -2,101 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F26DE287CC5
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 22:03:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49EB1287CEC
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 22:17:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729895AbgJHUC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 16:02:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51966 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729877AbgJHUC4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 16:02:56 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43F6BC0613D2
-        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 13:02:56 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id o9so2472522ilo.0
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 13:02:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EpFqPi/WffB740uEvA80XvaKjJGc1YrmBO/U3WKT3uc=;
-        b=qJH2yWmRIMLZQcn9zTNgJh5eiSHwX3BbFv3xg/VC2LkJSBZQ1143aYpFmQ7+QeLbOi
-         zi/B/BCOlrvMOmZgKthveSTei381zf16XqXNYCrKQzYjKs5VIbj1fNKL/46N86K4gq5J
-         dObEFswQGBXW0Rng47V5SV3uyvQ643wx9StcViAXx6pWQezaJai/mpVbf28S8WliflQ1
-         1Vz06/NgL1rHViH+h65x4Dz3FeBUbKa3If+1dna5mwdQSDwNkBlnVA4C67gO3gDISDG0
-         6AyfTZWXZyt5BFlV2+vy6hIIkvq4JqmNp7jHhYdX/e9qQRWq32ASZApXctxkTZBOJA0l
-         0uUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EpFqPi/WffB740uEvA80XvaKjJGc1YrmBO/U3WKT3uc=;
-        b=I1mjmRtCufA3cLgpp38a5h/WhVlCve09x84MdxnLs06zoOnyct+DuEh4QzyFA5FWs/
-         lWi8n8vJh+JK4XYCFEpglOT2srXq3hBhfCORG7a8l6HAqvGOBd6pmiDUj4Bg0fnu9bpo
-         TZA4DYWvtXFoVQP0Wsyb5KFD8BuSAV6DbFRCSUZ0nuPUiMJ+3DW8Sz/EUF4c6PNrtBk2
-         tx/2ZyhzmLeJsIFynvDAWTNEr6XhKKvGKYuxpEAaXb86K/UFfKU+jA8oFaJWVhY81lP+
-         jZTo4As92AwTjw20yPIbdyPja4ZzgBGdwaQ52+B9q3Lpdf3uT5rzofyy2/P0gXwfnJ5Z
-         8bXw==
-X-Gm-Message-State: AOAM531AIV0NAyt6OU063n/gN7wMKLfTI2jeRzuacFgJrxhoflgZBgRX
-        ZinJgN+DjLFs45T5ywAhdN1UiBtG1CIyGoYWVjA=
-X-Google-Smtp-Source: ABdhPJytNGdqx217iwP5BFdieo/eqCBD+SnhTcUIUS9CeOYOiwHBKII9DTj7XOaP0xxrnDZ54D2w52GchdK0xgizXpg=
-X-Received: by 2002:a92:7751:: with SMTP id s78mr5401483ilc.144.1602187375550;
- Thu, 08 Oct 2020 13:02:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201008061821.24663-1-xiyou.wangcong@gmail.com> <20201008103410.4fea97a5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201008103410.4fea97a5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 8 Oct 2020 13:02:44 -0700
-Message-ID: <CAM_iQpUBzszbhg0jr9aXZFwTOM0XXRo4rFoFEXPoLRoUw_4doQ@mail.gmail.com>
-Subject: Re: [Patch net] can: initialize skbcnt in j1939_tp_tx_dat_new()
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzbot+3f3837e61a48d32b495f@syzkaller.appspotmail.com,
-        Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+        id S1730115AbgJHURN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 16:17:13 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:33476 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730096AbgJHURN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 16:17:13 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 098KFi99019273
+        for <netdev@vger.kernel.org>; Thu, 8 Oct 2020 20:17:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id; s=corp-2020-01-29;
+ bh=YzCW17HvF28kHl210+6Yn/DL47BhC9bM5ymnBPKfbPM=;
+ b=d6dKbQ71XLQVN39DTvJshXgmxCL8krPZSwWkNBUmzI9LOBoCUcqk/YJ/DoRzXAXIjkrb
+ q+++Wl7UID4nqcOjTNWv+XDGrbqRuyBCPIocn+vammGu9kd4UUSMWIoRooh5PnD9fPxQ
+ dNeQf1cmc9d4/g2AijBmxRmENtIrQjDVTMlG4oiCAL92zp3uZxkyPcAw46zRBTpIcraD
+ bTJrOaSCihti6m14CQXBfRK3HK0o8BPLpVwkL81FBGGpfnOMNILLMtpA4DyJwo7y1deX
+ UgVPO/kABOpg1tPDStlfwags/XrvMsi8rpqy4lGoQir+2DeCj8gXj0NvYAm+7BYVf2t5 jw== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2120.oracle.com with ESMTP id 3429jmg17j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL)
+        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 20:17:12 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 098KC2YB044334
+        for <netdev@vger.kernel.org>; Thu, 8 Oct 2020 20:15:11 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3030.oracle.com with ESMTP id 3429kk02hn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK)
+        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 20:15:11 +0000
+Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 098KFAnD030876
+        for <netdev@vger.kernel.org>; Thu, 8 Oct 2020 20:15:10 GMT
+Received: from oracle.com (/10.129.135.37)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 08 Oct 2020 13:15:10 -0700
+From:   rao.shoaib@oracle.com
+To:     netdev@vger.kernel.org
+Cc:     Rao Shoaib <rao.shoaib@oracle.com>
+Subject: [RFC net-next af_unix v1 0/1] Allow delivery of SIGURG on AF_UNIX streams socket
+Date:   Thu,  8 Oct 2020 13:03:57 -0700
+Message-Id: <1602187438-12464-1-git-send-email-rao.shoaib@oracle.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9768 signatures=668681
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=1 mlxlogscore=999
+ spamscore=0 adultscore=0 mlxscore=0 malwarescore=0 phishscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2010080141
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9768 signatures=668681
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 spamscore=0 suspectscore=1
+ clxscore=1015 phishscore=0 lowpriorityscore=0 impostorscore=0
+ malwarescore=0 mlxlogscore=999 priorityscore=1501 mlxscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2010080142
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 8, 2020 at 10:34 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed,  7 Oct 2020 23:18:21 -0700 Cong Wang wrote:
-> > This fixes an uninit-value warning:
-> > BUG: KMSAN: uninit-value in can_receive+0x26b/0x630 net/can/af_can.c:650
-> >
-> > Reported-and-tested-by: syzbot+3f3837e61a48d32b495f@syzkaller.appspotmail.com
-> > Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-> > Cc: Robin van der Gracht <robin@protonic.nl>
-> > Cc: Oleksij Rempel <linux@rempel-privat.de>
-> > Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-> > Cc: Oliver Hartkopp <socketcan@hartkopp.net>
-> > Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-> > Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
-> > ---
-> >  net/can/j1939/transport.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> >
-> > diff --git a/net/can/j1939/transport.c b/net/can/j1939/transport.c
-> > index 0cec4152f979..88cf1062e1e9 100644
-> > --- a/net/can/j1939/transport.c
-> > +++ b/net/can/j1939/transport.c
-> > @@ -580,6 +580,7 @@ sk_buff *j1939_tp_tx_dat_new(struct j1939_priv *priv,
-> >       skb->dev = priv->ndev;
-> >       can_skb_reserve(skb);
-> >       can_skb_prv(skb)->ifindex = priv->ndev->ifindex;
-> > +     can_skb_prv(skb)->skbcnt = 0;
-> >       /* reserve CAN header */
-> >       skb_reserve(skb, offsetof(struct can_frame, data));
->
-> Thanks! Looks like there is another can_skb_reserve(skb) on line 1489,
-> is that one fine?
+From: Rao Shoaib <rao.shoaib@oracle.com>
 
-I don't know, I only attempt to address the syzbot report. To me,
-it at least does not harm to fix that one too. I am fine either way.
+The use of AF_UNIX sockets is on the rise. We have a case where thousands
+of processes connect locally to a database and issue queries that are
+serviced by a pool of threads. Communication is done over AF_UNIX
+sockets. Currently, there is no way for the submitter to signal the
+servicing thread about an urgent condition such as abandoning
+the query. This patch addresses that requirement by adding support for
+MSG_OOB flag for AF_UNIX sockets. On receipt of such a flag,
+the kernel sends a SIGURG to the peer.
 
-Thanks.
+Rao Shoaib (1):
+  af_unix: Allow delivery of SIGURG on AF_UNIX streams socket
+
+ net/unix/af_unix.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+-- 
+1.8.3.1
+
