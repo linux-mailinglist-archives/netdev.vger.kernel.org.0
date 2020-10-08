@@ -2,180 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B8342874BF
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 15:02:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B393B28749F
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 14:58:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730238AbgJHNCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 09:02:42 -0400
-Received: from mx.hs-offenburg.de ([141.79.11.25]:53158 "EHLO
-        mx.hs-offenburg.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729869AbgJHNCl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 09:02:41 -0400
-X-Greylist: delayed 387 seconds by postgrey-1.27 at vger.kernel.org; Thu, 08 Oct 2020 09:02:39 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by mx.hs-offenburg.de (Postfix) with ESMTP id 524E6732FA01;
-        Thu,  8 Oct 2020 14:56:10 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=hs-offenburg.de;
-         h=content-transfer-encoding:mime-version:user-agent
-        :content-type:content-type:references:in-reply-to:date:date:from
-        :from:subject:subject:message-id:received:received; s=default;
-         t=1602161769; x=1603025770; bh=XkqmOKW+XIirgzCXLOBYOliZX8Nwgd/g
-        wIDmBWDe3XA=; b=ZrZR7p01oX3psUP4NrE7syIPjfyC+CBJ8gcUKCpLpCnFN4uN
-        kNiUU0efGm+1/ARjtltGzkvD1FktcgnsnFzrSvaKcPIKQh5GNUbofxNljZYGd3ya
-        MGRHck4z31M0r5O16LPS3wO12zbYcoNsSc+iByFeq8PVW4cATUAdHi6Doac=
-X-Virus-Scanned: amavisd-new at hs-offenburg.de
-Received: from mx.hs-offenburg.de ([127.0.0.1])
-        by localhost (mx.hs-offenburg.de [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id XdD_Bk_1I2uT; Thu,  8 Oct 2020 14:56:09 +0200 (CEST)
-Received: from h25-119.emi.hs-offenburg.de (unknown [141.79.25.119])
-        by mx.hs-offenburg.de (Postfix) with ESMTPSA id 5FDE0732F9FE;
-        Thu,  8 Oct 2020 14:56:09 +0200 (CEST)
-Message-ID: <f040ba36070dd1e07b05cc63a392d8267ce4efe2.camel@hs-offenburg.de>
-Subject: Re: [PATCH net-next v6 4/7] net: dsa: hellcreek: Add support for
- hardware timestamping
-From:   Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>
-To:     Kurt Kanzenbach <kurt@linutronix.de>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        ilias.apalodimas@linaro.org
-Date:   Thu, 08 Oct 2020 14:55:57 +0200
-In-Reply-To: <87lfghhw9u.fsf@kurt>
-References: <20201004143000.blb3uxq3kwr6zp3z@skbuf> <87imbn98dd.fsf@kurt>
-         <20201006072847.pjygwwtgq72ghsiq@skbuf> <87tuv77a83.fsf@kurt>
-         <20201006133222.74w3r2jwwhq5uop5@skbuf> <87r1qb790w.fsf@kurt>
-         <20201006140102.6q7ep2w62jnilb22@skbuf> <87lfgiqpze.fsf@kurt>
-         <20201007105458.gdbrwyzfjfaygjke@skbuf> <87362pjev0.fsf@kurt>
-         <20201008094440.oede2fucgpgcfx6a@skbuf> <87lfghhw9u.fsf@kurt>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5-1.1 
+        id S1730128AbgJHM6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 08:58:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42532 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729722AbgJHM6L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 08:58:11 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EFB3C061755
+        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 05:58:11 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id s47so4956514qth.4
+        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 05:58:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DCfBohSv/2MYChEHos/NCDqxdJBntx3sdb+fm8tsEY0=;
+        b=LvJza0GzHu6y51xoNmw4ielaDyKM+H+Ggf+iwnGDefC+tgECk2rwwK87hgn/g1LF20
+         SY1slwNikRBjo4h/D07JNG5nsJz7+6tZNsPnoa6gbRe0jaucMEntntG2/8L52CNPGQ4W
+         gY7d7x6904g2kPFtZGIIjwI/fbjjjsK+2t5v6/k6ZNlq763g7ADmSaT03WXiEpFTw9Fe
+         O0GkW4Z0bnTnxuGlNUIScgo1WolHnwVsz+6Q7QqXzy/qE7imNtC5wGk3ShBmApgN24s8
+         O9ylfz6tWAZ5WJ+Kn33UWzxzjG4XmbNNRUsPUuUqjThGAaC+LQ7Gaz7koVNyD+izhrJJ
+         FauQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=DCfBohSv/2MYChEHos/NCDqxdJBntx3sdb+fm8tsEY0=;
+        b=WKUd6Qv/pgqNil78rLRfu7YSFDv4ty1fFUAl1er2bFQhIExMIi/6QBYakw+TKzdcdu
+         F9J7fBokHzfJxDtUKoqF5rPT3SsrkZkizjU3KqHR6Rlia0NkyVOuTcXthQpfNrDRlA3w
+         cVtnLjqK6w6uhzafKhEAeqYVcMs8aHif+3ygqjvBDZLG3fEw7HuJMge3M8fugOC8gWyq
+         7YyFmwnd+TMZwLItXzw0vzpRxvssJl+tlEXtkXk+m8NeGEEdnv2HuaCIyereAAT1qPJN
+         OLvbu2GFeV/FX7gBvoMIL+1jHHTSZIBF5Y+O3+7A7hXNWjrJURSlu2n7hss5CoXiDSru
+         cG4A==
+X-Gm-Message-State: AOAM531ym3px9wBW7uxOre7/M5KpYwhImbyoa/cnYl7zdWxTj9WjnjU6
+        SvkPCqhs0E63YO0v5CV7kHYC1A==
+X-Google-Smtp-Source: ABdhPJxi7k0ukR46O4WyBZ4ho2E25v/A7wyEZgQfyTFwMl11pTFF+3HOhaJQ+cEAYBltBtQKpVFTSg==
+X-Received: by 2002:ac8:5a10:: with SMTP id n16mr8228605qta.164.1602161890301;
+        Thu, 08 Oct 2020 05:58:10 -0700 (PDT)
+Received: from [192.168.2.28] (bras-base-kntaon1617w-grc-10-184-147-165-106.dsl.bell.ca. [184.147.165.106])
+        by smtp.googlemail.com with ESMTPSA id f76sm3823933qke.19.2020.10.08.05.58.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Oct 2020 05:58:09 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next v2 2/2] tc: implement support for terse dump
+To:     David Ahern <dsahern@gmail.com>, Vlad Buslov <vladbu@nvidia.com>,
+        stephen@networkplumber.org, xiyou.wangcong@gmail.com
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@resnulli.us,
+        ivecera@redhat.com, Vlad Buslov <vladbu@mellanox.com>
+References: <20200930165924.16404-1-vladbu@nvidia.com>
+ <20200930165924.16404-3-vladbu@nvidia.com>
+ <9961ad12-dc8f-55fc-3f9d-8e1aaca82327@gmail.com>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <ff969d59-53e0-aca3-2de8-9be41d6d7804@mojatatu.com>
+Date:   Thu, 8 Oct 2020 08:58:07 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
+In-Reply-To: <9961ad12-dc8f-55fc-3f9d-8e1aaca82327@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello dears,
+On 2020-10-07 9:40 p.m., David Ahern wrote:
+> On 9/30/20 9:59 AM, Vlad Buslov wrote:
+>> From: Vlad Buslov <vladbu@mellanox.com>
+>>
+>> Implement support for classifier/action terse dump using new TCA_DUMP_FLAGS
+>> tlv with only available flag value TCA_DUMP_FLAGS_TERSE. Set the flag when
+>> user requested it with following example CLI (-br for 'brief'):
+>>
+>>> tc -s -br filter show dev ens1f0 ingress
+>>
+>> In terse mode dump only outputs essential data needed to identify the
+>> filter and action (handle, cookie, etc.) and stats, if requested by the
+>> user. The intention is to significantly improve rule dump rate by omitting
+>> all static data that do not change after rule is created.
+>>
+> 
+> I really want to get agreement from other heavy tc users about what the
+> right information is for a brief mode.
 
-On Thu, 2020-10-08 at 12:01 +0200, Kurt Kanzenbach wrote:
-> On Thu Oct 08 2020, Vladimir Oltean wrote:
-> > On Thu, Oct 08, 2020 at 10:34:11AM +0200, Kurt Kanzenbach wrote:
-> > > On Wed Oct 07 2020, Vladimir Oltean wrote:
-> > > > On Wed, Oct 07, 2020 at 12:39:49PM +0200, Kurt Kanzenbach
-> > > > wrote:
-> > > > > For instance the hellcreek switch has actually three ptp
-> > > > > hardware
-> > > > > clocks and the time stamping can be configured to use either
-> > > > > one of
-> > > > > them.
-> > > > 
-> > > > The sja1105 also has a corrected and an uncorrected PTP clock
-> > > > that can
-> > > > take timestamps. Initially I had thought I'd be going to spend
-> > > > some time
-> > > > figuring out multi-PHC support, but now I don't see any
-> > > > practical reason
-> > > > to use the uncorrected PHC for anything.
-> > > 
-> > > Just out of curiosity: How do you implement 802.1AS then? My
-> > > understanding is that the free-running clock has to be used for
-> > > the
-> > 
-> > Has to be? I couldn't find that wording in IEEE 802.1AS-2011.
-> 
-> It doesn't has to be, it *should* be. That's at least the outcome we
-> had
-> after lots of discussions. Actually Kamil (on Cc) is the expert on
-> this
-> topic.
+Vlad, would have been helpful in your commit log to show both
+terse vs no terse (or at least the terse output). Cant tell short
+of patching and testing. Having said that:
+The differentiation via TCA_DUMP_FLAGS_TERSE in the request
+is in my opinion sufficient to accept the patch.
+Also, assuming you have tested with outstanding tc tests for the
+first patch i think it looks reasoan
 
-According to 802.1AS-2011 (10.1.1): "The LocalClock entity is a free-
-running clock (see 3.3) that provides a common time to the time-aware
-system, relative to an arbitrary epoch.", "... All timestamps are taken
-relative to the LocalClock entity". The same statement holds true for
-802.1AS-2020 (10.1.2.1).
-
-> > > calculation of the peer delays and such meaning there should be a
-> > > way to
-> > > get access to both PHCs or having some form of cross timestamping
-> > > available.
-> > > 
-> > > The hellcreek switch can take cross snapshots of all three ptp
-> > > clocks in
-> > > hardware for that purpose.
-> > 
-> > Well, at the end of the day, all the other TSN offloads (tc-taprio,
-> > tc-gate) will still have to use the synchronized PTP clock, so what
-> > we're doing is we're simply letting that clock be synchronized by
-> > ptp4l.
-> 
-> Yes, the synchronized clock is of course needed for the traffic
-> scheduling and so on. This is what we do here in this code as well.
-> Only
-> the synchronized one is exported to user space and used. However, the
-> multi PHCs issue should be addressed as well at some point.
-> 
-> > > > > > So when you'll poll for TX timestamps, you'll receive a TX
-> > > > > > timestamp from the PHY and another one from the switch, and
-> > > > > > those will
-> > > > > > be in a race with one another, so you won't know which one
-> > > > > > is which.
-> > > > > 
-> > > > > OK. So what happens if the driver will accept to disable
-> > > > > hardware
-> > > > > timestamping? Is there anything else that needs to be
-> > > > > implemented? Are
-> > > > > there (good) examples?
-> > > > 
-> > > > It needs to not call skb_complete_tx_timestamp() and friends.
-> > > > 
-> > > > For PHY timestamping, it also needs to invoke the correct
-> > > > methods for RX
-> > > > and for TX, where the PHY timestamping hooks will get called. I
-> > > > don't
-> > > > think that DSA is compatible yet with PHY timestamping, but it
-> > > > is
-> > > > probably a trivial modification.
-> > > 
-> > > Hmm? If DSA doesn't support PHY timestamping how are other DSA
-> > > drivers
-> > > dealing with it then? I'm getting really confused.
-> > 
-> > They aren't dealing with it, of course.
-> > 
-> > > Furthermore, there is no hellcreek hardware available with
-> > > timestamping
-> > > capable PHYs. How am I supposed to even test this?
-> > > 
-> > > For now, until there is hardware available, PHY timestamping is
-> > > not
-> > > supported with the hellcreek switch.
-> > 
-> > I was just pointing out that this is something you'll certainly
-> > have to
-> > change if somebody will want PHY timestamping.
-> 
-> Understood.
-> 
-> > Even without hardware, you _could_ probably test that DSA is doing
-> > the
-> > right thing by simply adding the PTP timestamping ops to a PHY
-> > driver
-> > that you own, and inject dummy timestamps. The expectation becomes
-> > that
-> > user space gets those dummy timestamps, and not the ones emitted by
-> > your
-> > switch.
-> 
-> Of course it can be mocked. Whenever somebody wants to do PHY
-> timestamping with a hellcreek switch this issue can be re-visited.
-> 
-> Thanks,
-> Kurt
-
+cheers,
+jamal
