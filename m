@@ -2,62 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7C802879C8
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 18:14:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C6992879E5
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 18:23:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725922AbgJHQOn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 12:14:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47838 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728859AbgJHQOm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Oct 2020 12:14:42 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BF3A921D7D;
-        Thu,  8 Oct 2020 16:14:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602173682;
-        bh=bM5ahj/gZtgfxTO4eposlFzm3ykzO1VrYEGMdCeVYRo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=wf3lejOgfjnGnsAPppAmjMDRpgg4mrzVgyTL4Cy+D+0EqNyCp+qpZ1LQ7KPJDDaeG
-         9bFqO5vZ4qd4BP23qUuogOMXKHaLs87uDWeSNOxOtCg/i+z0vfcnVTv3rTYGwaRm3a
-         xgujHiK9uXxDS9AbH8Du7kEICyCNFEy+4ESTyQIA=
-Date:   Thu, 8 Oct 2020 09:14:37 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>
-Subject: Re: [net-next PATCH v3] net: dsa: rtl8366rb: Roof MTU for switch
-Message-ID: <20201008091437.559e3d6c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201008091955.44692-1-linus.walleij@linaro.org>
-References: <20201008091955.44692-1-linus.walleij@linaro.org>
+        id S1730243AbgJHQXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 12:23:07 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:59816 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726012AbgJHQXG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 12:23:06 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 098GN0hK064790;
+        Thu, 8 Oct 2020 11:23:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1602174180;
+        bh=1qreb2kVtUQKe4lI6IV2IRG5ZuGQneUy3UDTv28QzTA=;
+        h=From:To:CC:Subject:Date;
+        b=qcJEN7rzGZBrbcL+YNrBxEtyuZX7TbNE2GAwgXqUeR1V4ArIMFBLcWQRI/xWEBXNc
+         HW7hLGkrh65LmdXlbDeKX/Y3GCOvL7P3i3s5x7BPmXzxdAtf2y5fz2iY9eOuTYbZBH
+         5oulFjnU4cKY9YcxSsfx6NrHfe7EGl4WHjTAW2Zk=
+Received: from DFLE114.ent.ti.com (dfle114.ent.ti.com [10.64.6.35])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 098GN0lq003833
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 8 Oct 2020 11:23:00 -0500
+Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE114.ent.ti.com
+ (10.64.6.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 8 Oct
+ 2020 11:23:00 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 8 Oct 2020 11:23:00 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 098GMw1r067942;
+        Thu, 8 Oct 2020 11:22:59 -0500
+From:   Dan Murphy <dmurphy@ti.com>
+To:     <davem@davemloft.net>, <andrew@lunn.ch>, <f.fainelli@gmail.com>,
+        <hkallweit1@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Dan Murphy <dmurphy@ti.com>
+Subject: [PATCH net-next 0/2] DP83TD510 Single Pair 10Mbps Ethernet PHY
+Date:   Thu, 8 Oct 2020 11:22:36 -0500
+Message-ID: <20201008162238.5083-1-dmurphy@ti.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  8 Oct 2020 11:19:55 +0200 Linus Walleij wrote:
-> diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
-> index 053bf5041f8d..28f510a580be 100644
-> --- a/drivers/net/dsa/rtl8366rb.c
-> +++ b/drivers/net/dsa/rtl8366rb.c
-> @@ -311,6 +311,13 @@
->  #define RTL8366RB_GREEN_FEATURE_TX	BIT(0)
->  #define RTL8366RB_GREEN_FEATURE_RX	BIT(2)
->  
-> +/**
-> + * struct rtl8366rb - RTL8366RB-specific data
-> + */
-> +struct rtl8366rb {
-> +	unsigned int max_mtu[RTL8366RB_NUM_PORTS];
-> +};
+Hello
 
-If you make the comment kdoc, you gotta describe all fields (or mark
-'em private) otherwise:
+The DP83TD510 is an Ethernet PHY supporting single pair of twisted wires. The
+PHY is capable of 10Mbps communication over long distances and exceeds the
+IEEE 802.3cg 10BASE-T1L single-pair Ethernet specification.  The PHY supports
+various voltage level signalling and can be forced to support a specific
+voltage or allowed to perfrom auto negotiation on the voltage level. The
+default for the PHY is auto negotiation but if the PHY is forced to a specific
+voltage then the LP must also support the same voltage.
 
-drivers/net/dsa/rtl8366rb.c:319: warning: Function parameter or member 'max_mtu' not described in 'rtl8366rb'
+Dan
+
+Dan Murphy (2):
+  dt-bindings: dp83td510: Add binding for DP83TD510 Ethernet PHY
+  net: phy: dp83td510: Add support for the DP83TD510 Ethernet PHY
+
+ .../devicetree/bindings/net/ti,dp83td510.yaml |  70 +++
+ drivers/net/phy/Kconfig                       |   6 +
+ drivers/net/phy/Makefile                      |   1 +
+ drivers/net/phy/dp83td510.c                   | 583 ++++++++++++++++++
+ 4 files changed, 660 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/ti,dp83td510.yaml
+ create mode 100644 drivers/net/phy/dp83td510.c
+
+-- 
+2.28.0.585.ge1cfff676549
+
