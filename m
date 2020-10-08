@@ -2,109 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90DA9287D81
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 22:54:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF6F6287D8B
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 22:57:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728833AbgJHUyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 16:54:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59966 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725882AbgJHUyY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 16:54:24 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7305C0613D2
-        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 13:54:23 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id 33so7171325edq.13
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 13:54:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=N3Jho3iwITPtL0KLezyuFs3CjfZDF/9f1vMr3Rswfa0=;
-        b=gHmJSsTQWm1jSBMnlT6CXBwQxeK/ACOixsjgLkN4E8UzUDixWXD1R+CuKadq+FLVq2
-         fdpHp5PMoU2JZgE35Am/0cApYGqBEJ9Y4rCebT3eHxIJDOI6Wpfg0edi4LUv1kMbC4eQ
-         3iq0U2MNzUec0l7QOoYjj0D3En2exkKYWDyDrUEdhSQpzmfFKpfSLDHWNI43tMiEFLwh
-         1eCLiyvhgEa4T+LQFgJwtTzv65Oqsa2lPVcdx4q6VaNfVUmOFmS92Ee37lkXy8u4drox
-         2yxa2AdnlDWpOUdAEim0gHGuSCUAu/T+LANYgB7QYbvUuxx5ZlvCIpl+LOQzTu53yDeN
-         V1Kw==
+        id S1730836AbgJHU5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 16:57:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:36273 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725931AbgJHU5y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 16:57:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602190673;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=98YAahm8Cm7X3j4oM917dZyzd2CrTbVmRZhlcb9BHnI=;
+        b=gC5RThajBCGnRn3ZDgM7FUQ52zo4pd8eiMpznT80z64RVS9GyQW7LPPj6PgneYsuBcgvkF
+        cJA5UeABEywfM9McDow68wvAf44UKQd9f0YqtNEuTZru6p7l420lXrlDPFkfL/Fs9r5cYR
+        uk/GbSSAo3B8m3Xs46Vug39kMRa+tHQ=
+Received: from mail-ua1-f69.google.com (mail-ua1-f69.google.com
+ [209.85.222.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-472-l-hF8b5WMsuk75NO_F2VMA-1; Thu, 08 Oct 2020 16:57:51 -0400
+X-MC-Unique: l-hF8b5WMsuk75NO_F2VMA-1
+Received: by mail-ua1-f69.google.com with SMTP id y12so1625772uac.7
+        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 13:57:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=N3Jho3iwITPtL0KLezyuFs3CjfZDF/9f1vMr3Rswfa0=;
-        b=JTpMHFnuPKsrXaUwFzaHeLgCLuFGnrUADv/RVWxSb3Tv5u0grnzY4EqFGG7ZBbaclL
-         O4YxzPk3dItsEsPYDCtMxtdL+mHHOmWSySKJ0DIMkyM0zq9b3zKFKrgDWMcoXCkY1R8e
-         O+MAVtQ57c0naZXTgnUOmq8sYJBdV5L+3oQWYu5xrLc9nIkOcCk3Jx/jBM3/BtX4voyD
-         20N9DBzO9bezuXQuhCs0f7sarAT3B6ynmO26QcB+i6JsHg1iir/wH6BY9/ZhPZvns4IS
-         JEsVNPzWp+MEFfwOs3gG3JFs+d/4bSOUpKW3+CJRjz0IgAVkyA2kLFYETDFJHU91h6Bq
-         qVjA==
-X-Gm-Message-State: AOAM533FVvB73rjuDZCiaDsDJjuJGUpa5yK7zazfK6eVPftJSgV7U/El
-        8uIUJE4BKV73zSdjIfwRagaZxthvDLsDfw==
-X-Google-Smtp-Source: ABdhPJwiLfgrRrau+S7tXVF5TC8OYVnoKDgKqjfCA8c5hq+DOTAXcq9HzngFCehGjCVO4L9ezM4jYQ==
-X-Received: by 2002:a50:d987:: with SMTP id w7mr11026091edj.113.1602190462344;
-        Thu, 08 Oct 2020 13:54:22 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f00:6a00:28bc:8b04:587d:85d4? (p200300ea8f006a0028bc8b04587d85d4.dip0.t-ipconnect.de. [2003:ea:8f00:6a00:28bc:8b04:587d:85d4])
-        by smtp.googlemail.com with ESMTPSA id bu23sm4792682edb.69.2020.10.08.13.54.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Oct 2020 13:54:21 -0700 (PDT)
-Subject: Re: [Bug 209423] WARN_ON_ONCE() at rtl8169_tso_csum_v2()
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <bug-209423-201211-atteo0d1ZY@https.bugzilla.kernel.org/>
- <80adc922-f667-a1ab-35a6-02bf1acfd5a1@gmail.com>
- <CANn89i+ZC5y_n_kQTm4WCWZsYaph4E2vtC9k_caE6dkuQrXdPQ@mail.gmail.com>
- <733a6e54-f03c-0076-1bdc-9b0d4ec1038c@gmail.com>
- <CANn89iJ2zqH=_fvJQ8dhG4nBVnKNB7SjHnHDLv+0iR7UwgxTsw@mail.gmail.com>
- <b6ff841a-320c-5592-1c2b-650e18dfe3e0@gmail.com>
- <CANn89iJ2KxQKZmT2ShVZRTjdgyYkF_2ZWBraTZE4TJVtUKh--Q@mail.gmail.com>
- <9e4b2b1f-c2d9-dbd0-c7ce-49007ddd7af2@gmail.com>
- <CANn89iJwwDCkdmFFAkXav+HNJQEEKZsp8PKvEuHc4gNJ=4iCoQ@mail.gmail.com>
- <77541223-8eaf-512c-1930-558e8d23eb33@gmail.com>
- <CANn89i+dtetSScxtSRWX8BEgcW_uJ7vzvb+8sW57b7DJ3r=fXQ@mail.gmail.com>
- <dbad301f-7ee8-c861-294c-2c0fac33810a@gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <186242a7-4e63-dccc-0879-1069823f079a@gmail.com>
-Date:   Thu, 8 Oct 2020 22:54:17 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=98YAahm8Cm7X3j4oM917dZyzd2CrTbVmRZhlcb9BHnI=;
+        b=OCQJ0ctejRfyXrK3/e6QlEdJbic0ZYfIOFyKG/6v9fvu5a3jWWiCwa3C7mO2mRo6Rh
+         YaqTo6nUU7jDrCHhOk0JEkZ5k6agcMdl3rFPL8ct0OOmMEmG4ZU1JXE1SgvA+HCA7zd+
+         AJzuestVovt/SoVeEGIAZoP3Q3YIW4Gm/VwoiN+J1hsXaZtaOjpe+SfS8W6CNmrBk5Rv
+         yEbIcnlicAbl/PhwUMZWYqmwnokHlQmrqOoN9qW7K41znr1vLwMBMa3MBykaDZsNSBfb
+         D7ctvChjqVWh0QYDWRqHcRbfQ6jCshs+FAi6UibfxovutRqa8VdapkOGXc67mzH4aVwd
+         ViBQ==
+X-Gm-Message-State: AOAM532gcRMavRjiFJlx9L08E9IFkuhSqI8wfl6yama/DjjvEeRKiA86
+        w686pF8kYgSN3cxCgwxMO5u+A+7UhYJEOyiNjvgxTstdw1h8SIs/PhxP+u4+z0Z9CnUo7/CBmJ6
+        l91Lj8EazHV1VNoMt
+X-Received: by 2002:a05:6102:30b2:: with SMTP id y18mr6043498vsd.51.1602190670904;
+        Thu, 08 Oct 2020 13:57:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwl62iRU2I+0hZas3qXVggXJusiCKXH/8uEZdY+4D+fE4swFs9yYsv66jRXkToI6I4mRolgvQ==
+X-Received: by 2002:a05:6102:30b2:: with SMTP id y18mr6043484vsd.51.1602190670583;
+        Thu, 08 Oct 2020 13:57:50 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id m125sm854438vkh.15.2020.10.08.13.57.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Oct 2020 13:57:49 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 46D201837DC; Thu,  8 Oct 2020 22:57:47 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     David Ahern <dsahern@gmail.com>, daniel@iogearbox.net, ast@fb.com
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH bpf-next] bpf_fib_lookup: return target ifindex even if
+ neighbour lookup fails
+In-Reply-To: <da1b5e5f-edb3-4384-c748-8170f51f6f6d@gmail.com>
+References: <20201008145314.116800-1-toke@redhat.com>
+ <da1b5e5f-edb3-4384-c748-8170f51f6f6d@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 08 Oct 2020 22:57:47 +0200
+Message-ID: <87d01se8qc.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <dbad301f-7ee8-c861-294c-2c0fac33810a@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08.10.2020 21:07, Eric Dumazet wrote:
-> 
-> 
-> On 10/8/20 8:50 PM, Eric Dumazet wrote:
->>
->>
->> OK, it would be nice to know what is the input interface
->>
->> if4 -> look at "ip link | grep 4:"
->>
->> Then identifying the driver that built such a strange packet (32000
->> bytes allocated in skb->head)
->>
->> ethtool -i ifname
->>
-> 
-> According to https://bugzilla.kernel.org/show_bug.cgi?id=209423
-> 
-> iif4 is the tun200 interface used by openvpn.
-> 
-> So this might be a tun bug, or lack of proper SKB_GSO_DODGY validation
-> in our stack for buggy/malicious packets.
-> 
-> 
+David Ahern <dsahern@gmail.com> writes:
 
-Following old commit sounds like it might be related:
-622e0ca1cd4d ("gro: Fix bogus gso_size on the first fraglist entry")
+> On 10/8/20 7:53 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> The bpf_fib_lookup() helper performs a neighbour lookup for the destinat=
+ion
+>> IP and returns BPF_FIB_LKUP_NO_NEIGH if this fails, with the expectation
+>> that the BPF program will pass the packet up the stack in this case.
+>> However, with the addition of bpf_redirect_neigh() that can be used inst=
+ead
+>> to perform the neighbour lookup.
+>>=20
+>> However, for that we still need the target ifindex, and since
+>> bpf_fib_lookup() already has that at the time it performs the neighbour
+>> lookup, there is really no reason why it can't just return it in any cas=
+e.
+>> With this fix, a BPF program can do the following to perform a redirect
+>> based on the routing table that will succeed even if there is no neighbo=
+ur
+>> entry:
+>>=20
+>> 	ret =3D bpf_fib_lookup(skb, &fib_params, sizeof(fib_params), 0);
+>> 	if (ret =3D=3D BPF_FIB_LKUP_RET_SUCCESS) {
+>> 		__builtin_memcpy(eth->h_dest, fib_params.dmac, ETH_ALEN);
+>> 		__builtin_memcpy(eth->h_source, fib_params.smac, ETH_ALEN);
+>>=20
+>> 		return bpf_redirect(fib_params.ifindex, 0);
+>> 	} else if (ret =3D=3D BPF_FIB_LKUP_RET_NO_NEIGH) {
+>> 		return bpf_redirect_neigh(fib_params.ifindex, 0);
+>> 	}
+>>=20
+>
+> There are a lot of assumptions in this program flow and redundant work.
+> fib_lookup is generic and allows the caller to control the input
+> parameters. direct_neigh does a fib lookup based on network header data
+> from the skb.
+>
+> I am fine with the patch, but users need to be aware of the subtle detail=
+s.
 
-This code however was removed later in 58025e46ea2d ("net: gro: remove
-obsolete code from skb_gro_receive()")
+Yeah, I'm aware they are not equivalent; the code above was just meant
+as a minimal example motivating the patch. If you think it's likely to
+confuse people to have this example in the commit message, I can remove
+it?
+
+-Toke
+
