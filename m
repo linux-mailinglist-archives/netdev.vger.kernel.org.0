@@ -2,115 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD201287C07
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 21:04:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8565C287C0C
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 21:06:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729494AbgJHTEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 15:04:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42998 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726006AbgJHTEj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 15:04:39 -0400
-Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com [IPv6:2607:f8b0:4864:20::e2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5AA8C061755
-        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 12:04:39 -0700 (PDT)
-Received: by mail-vs1-xe2b.google.com with SMTP id x185so3661807vsb.1
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 12:04:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QGE0pxv70aIldxUeZF5iAxoTyZgre/aBj5qPSL/tqUA=;
-        b=FT9f+WIk7crurF5wAqHaM+dumnycaOOKEMIitEkSaMy+riLzK1ByMMm2SfKPpXFy32
-         Hn4C3KF2RpdasIKE9KgIrv+rr1+Z+vJlVaI73NKS0+17/l7t1yQZjdFS9PRZtJdKP96G
-         mvmPp6pF56IczM+YupQUKwUZofTSwGpkHJH9hPBupZLFQb7QcmBKzJhkpLsocFcjTlR3
-         wPEVy44F80nraZFrtJaT5FmZg4UNN1goGcVNsQkuORWayDbo/fDvvsibCORBDeJFQ2wR
-         9Aht8lA8AiH0aqjpU/kJdjGCi4DFRbW2WB1YK8NOcvRQbVkRTQuntJlaiK/YmNnR69se
-         0f+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QGE0pxv70aIldxUeZF5iAxoTyZgre/aBj5qPSL/tqUA=;
-        b=EFiG4q+tdZdwX359SjvZN2q7l1vRT66uh9G3DDIt7Tg8VT2zTkq/yuVRo5TDt8WRYj
-         s4R3qIAnBz2M9YXl6SiGbU2wk0LlWIV2TtgycJvvySGfs9z9PhuimIhzLx7iy57IIim3
-         AB0WSVx8vNWQL19npkpoWgGChZ3h0ohbViqTL34xfV549qCL3YRiqTsybzCNkbfQjc0+
-         jYVc+Ont2xgrXzXMo+aKE7/hQvmhPropMy3lZoD4c8YAHZwNEUQxljI36UzTkaXYfFBr
-         lUmX/8oJ6LSFiaI5m3qWa2k3YQp5wcQfzYjkT5wE2jGDjCxs8cObvU0tCv4v3LHupN/K
-         R3lQ==
-X-Gm-Message-State: AOAM531dcDIRuUutSiQUB4g76ogcLva3kH6Y9uWw5o7jJTIyYZP286rE
-        VOYZMBGkypHaxyZ718BLNz896/qYKKw=
-X-Google-Smtp-Source: ABdhPJxodac5pRjd4e1VUUJb5k15uNpWmEHNeBMPRSKORM39/nDNnV7VlgR93j06JkjrMHV5ktopRw==
-X-Received: by 2002:a67:ef1b:: with SMTP id j27mr1983640vsr.1.1602183877672;
-        Thu, 08 Oct 2020 12:04:37 -0700 (PDT)
-Received: from mail-ua1-f51.google.com (mail-ua1-f51.google.com. [209.85.222.51])
-        by smtp.gmail.com with ESMTPSA id a10sm761827vsm.28.2020.10.08.12.04.36
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Oct 2020 12:04:36 -0700 (PDT)
-Received: by mail-ua1-f51.google.com with SMTP id c1so2226034uap.3
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 12:04:36 -0700 (PDT)
-X-Received: by 2002:ab0:2a43:: with SMTP id p3mr5852134uar.122.1602183876196;
- Thu, 08 Oct 2020 12:04:36 -0700 (PDT)
+        id S1729461AbgJHTGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 15:06:19 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:49462 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725887AbgJHTGS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 15:06:18 -0400
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 098J25k1057440
+        for <netdev@vger.kernel.org>; Thu, 8 Oct 2020 15:06:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=228q5yjoSn2ctgoeyscmzJK2F5eRBd7TtadVgF7tLpw=;
+ b=GQvuAoOPyFrGIpR1cCGQW+UZBErt8YyXLWLOqOPWQUhGhMxbShyTrHVn4zuWE3NNPn7T
+ 9TYHqvLYxFKOfC84vWBPA+3EPSGU7ZGajdn/ShXiE0sIeuRDSBo5nZ0VP9mzjjDkfv9u
+ xsYmT9q8suU5ic9Xh/3yoTdposei2BP9cm0t03D69kULz2nA3THY/gOa7hEGbFLCr2va
+ 1mKENk0yMYFWx1MOC1u9aOYY9eWfYyd0tyWXcGR7Q/WyD/VoyK/b0h3DzY/Czp+YLcVC
+ jyMjnW1C9nRMGr4ZEs71CHqACj9xx/5nFvrcych5msd3mbQKGXwc88iLCulhKJtXzvFR jg== 
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3428hc06et-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 15:06:18 -0400
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 098IqQIK005592
+        for <netdev@vger.kernel.org>; Thu, 8 Oct 2020 19:06:17 GMT
+Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
+        by ppma03wdc.us.ibm.com with ESMTP id 33xgx99ed9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 19:06:17 +0000
+Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
+        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 098J66Vd63701502
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 8 Oct 2020 19:06:06 GMT
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5C5A6BE058;
+        Thu,  8 Oct 2020 19:06:13 +0000 (GMT)
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E13A0BE051;
+        Thu,  8 Oct 2020 19:06:11 +0000 (GMT)
+Received: from oc8377887825.ibm.com (unknown [9.160.28.108])
+        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu,  8 Oct 2020 19:06:11 +0000 (GMT)
+From:   David Wilder <dwilder@us.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     tlfalcon@linux.ibm.com, cris.forno@ibm.com,
+        pradeeps@linux.vnet.ibm.com, wilder@us.ibm.com
+Subject: [ PATCH v1 0/2] ibmveth gso fix. 
+Date:   Thu,  8 Oct 2020 12:05:36 -0700
+Message-Id: <20201008190538.6223-1-dwilder@us.ibm.com>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-References: <20201008012154.11149-1-xiyou.wangcong@gmail.com>
- <CA+FuTSeMYFh3tY9cJN6h02E+r3BST=w74+pD=zraLXsmJTLZXA@mail.gmail.com> <CAM_iQpWCR84sD6dZBforgt4cg-Jya91D6EynDo2y2sC7vi-vMg@mail.gmail.com>
-In-Reply-To: <CAM_iQpWCR84sD6dZBforgt4cg-Jya91D6EynDo2y2sC7vi-vMg@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 8 Oct 2020 15:04:01 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSdKa1Q36ONbsGOMqXDCUiiDNsA6rkqyrzB+eXJj=MyRKA@mail.gmail.com>
-Message-ID: <CA+FuTSdKa1Q36ONbsGOMqXDCUiiDNsA6rkqyrzB+eXJj=MyRKA@mail.gmail.com>
-Subject: Re: [Patch net] ip_gre: set dev->hard_header_len properly
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        syzbot <syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com>,
-        William Tu <u9012063@gmail.com>, Xie He <xie.he.0141@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-10-08_12:2020-10-08,2020-10-08 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
+ priorityscore=1501 lowpriorityscore=0 bulkscore=0 malwarescore=0
+ mlxlogscore=547 clxscore=1011 suspectscore=1 mlxscore=0 impostorscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2010080133
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 8, 2020 at 1:34 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Thu, Oct 8, 2020 at 4:49 AM Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
-> >
-> > On Wed, Oct 7, 2020 at 9:22 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > >
-> > > GRE tunnel has its own header_ops, ipgre_header_ops, and sets it
-> > > conditionally. When it is set, it assumes the outer IP header is
-> > > already created before ipgre_xmit().
-> > >
-> > > This is not true when we send packets through a raw packet socket,
-> > > where L2 headers are supposed to be constructed by user. Packet
-> > > socket calls dev_validate_header() to validate the header. But
-> > > GRE tunnel does not set dev->hard_header_len, so that check can
-> > > be simply bypassed, therefore uninit memory could be passed down
-> > > to ipgre_xmit().
-> >
-> > If dev->hard_header_len is zero, the packet socket will not reserve
-> > room for the link layer header, so skb->data points to network_header.
-> > But I don't see any uninitialized packet data?
->
-> The uninit data is allocated by packet_alloc_skb(), if dev->hard_header_len
-> is 0 and 'len' is anything between [0, tunnel->hlen + sizeof(struct iphdr)),
-> dev_validate_header() still returns true obviously but only 'len'
-> bytes are copied
-> from user-space by skb_copy_datagram_from_iter(). Therefore, those bytes
-> within range (len, tunnel->hlen + sizeof(struct iphdr)] are uninitialized.
+The ibmveth driver is a virtual Ethernet driver used on IBM pSeries systems.
+Gso packets can be sent between LPARS (virtual hosts) without segmentation,
+by flagging gso packets using one of two methods depending on the firmware
+version. Some gso packet may not be correctly identified by the receiver.
+This patch-set corrects this issue.
 
-With dev->hard_header_len of zero, packet_alloc_skb() only allocates len bytes.
+Signed-off-by: David Wilder <dwilder@us.ibm.com>
+Reviewed-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+Reviewed-by: Cristobal Forno <cris.forno@ibm.com>
+Reviewed-by: Pradeep Satyanarayana <pradeeps@linux.vnet.ibm.com>
 
-With SOCK_RAW, the writer is expected to write the ip and gre header
-and include these in the send len argument. The only difference I see
-is that with hard_header_len the data starts reserve bytes before
-skb_network_header, and an additional tail has been allocated that is
-not used.
+David Wilder (2):
+  ibmveth: Switch order of ibmveth_helper calls.
+  ibmveth: Identify ingress large send packets.
 
-But this also fixes a potentially more serious bug. With SOCK_DGRAM,
-dev_hard_header/ipgre_header just assumes that there is enough room in
-the packet to skb_push(skb, t->hlen + sizeof(*iph)). Which may be
-false if this header length had not been reserved.
+ drivers/net/ethernet/ibm/ibmveth.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-Though I've mainly looked at packet_snd. Perhaps you are referring to
-tpacket_snd?
+-- 
+1.8.3.1
+
