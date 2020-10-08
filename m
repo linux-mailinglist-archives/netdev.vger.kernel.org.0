@@ -2,151 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7EC32871CB
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 11:47:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 939092871D1
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 11:48:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729215AbgJHJrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 05:47:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41332 "EHLO
+        id S1729225AbgJHJsX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 05:48:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725849AbgJHJrD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 05:47:03 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DAC6C061755
-        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 02:47:03 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id e2so5841013wme.1
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 02:47:03 -0700 (PDT)
+        with ESMTP id S1725849AbgJHJsW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 05:48:22 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE29C061755;
+        Thu,  8 Oct 2020 02:48:22 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id h6so3835912pgk.4;
+        Thu, 08 Oct 2020 02:48:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=tnyJtZWB/849Iu1W7i4nRtPfi4erjYR23is3KbtCKRY=;
-        b=IBwyjxkA6HtkGKLfGY9Am8ckyoaxgHoQXbOp8in1VtcypuL49xA1LJncF7sxL73lBw
-         VO0rLbn05sElPef7R0q7UGil39WqMYGR020pKrYzPset3wMNVssjQdwlBRSajJ0Ei1cJ
-         voWw0Y48VenwkVDJfqDBxp07l9gTDG40N8OS7qClfK5XSzZNS0tY52d8qFAcs3cDr+cc
-         rIHtgajFAgN1Eqh6z8FLRdbaXsmtyXgVeTutprmbXnX7+K4R7J7e7nTTZv2afn5FCbSd
-         CoFvluAM6M7c3CJ+DA0KV8Gdk2CYy1FM/IIf+PSiAeS3AWTceI+/bk0TZNlqH59jG0Kz
-         7n8Q==
+        h=from:to:cc:subject:date:message-id;
+        bh=ZEpfchtPlSN6NaVHvp0J/53pPQ0OVmTy9xX4+EJUKNw=;
+        b=fPjd5S4WWhVW89Mtfqs1QjrCL/kXd0fKNXZ1eRFm+xBSOnSEEwxS0Oy5WlSDhp76bH
+         LVfK5CizUWFTie8TSKdluLiDnsmq/8BFjQBAzSR+Bj+jfrKjVWMKIiHguypiSTZm8Uax
+         Vy0419viQKehfTizIOANr7fRYQfCr7pqtwclXanA6CpW3lZwAYwtvC6/KjBYsOftzH6B
+         fgNvTXboHcp9Z8vwhh6afC07GtP+/4LGCbfIYozSvRDj4wZFv6UdqJz73NiW93Ugnam8
+         WfSZIZS0HCY5+FI2vYw1I8vO779Kr3XX5FDTRg8sF1bW8lHDPMjr7aSZHuc0WrxJenpD
+         iwQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=tnyJtZWB/849Iu1W7i4nRtPfi4erjYR23is3KbtCKRY=;
-        b=Ta6k0xy5yFGrLdDS7I4I9uhnpWRiRo3/KEjzxZ2mLFnqA3KbHfPWsWL1K91B7aqqli
-         HPIeJNYQyDpgyNKRxq26kvu85mJUQeXSHB0iJE+JGpiKLnRQxDLlzLo5BHDCwzViJRv1
-         WfZd03kRs6X1815nDRjKNaekovIZaP1SPfYasnRbC0GhckWlpXYa4+nqvPQS8JkRt/Mn
-         b4bqjUr8PKyg5y13tmm9dDvJ9+yAPOMOa3u2/kTQL6rnDH3T68B1KEwJgP3yZmVaSyIZ
-         q5m/PQTo9dsFWOz/raNUMy1HyUVtftWDpdvkxOYTK0CRNrBp14WZ4wuGy9wVoxVaBbp0
-         73bA==
-X-Gm-Message-State: AOAM533Zu8dXPC69fb7MgaOnpVbWyLUvRUCEGjpjqsFPa8PwIONZNToJ
-        hHknylUUP0MzDtlkXxNvOiE=
-X-Google-Smtp-Source: ABdhPJxr8YqjX2F79ClYSOFEQ8J5QlUhFDI5YeCTYbTETwVHByGyttibQI3ldqkN3TKh8K9UaJpAxQ==
-X-Received: by 2002:a1c:9ec1:: with SMTP id h184mr7941730wme.180.1602150422079;
-        Thu, 08 Oct 2020 02:47:02 -0700 (PDT)
-Received: from [192.168.8.147] ([37.173.145.65])
-        by smtp.gmail.com with ESMTPSA id w7sm6031255wmc.43.2020.10.08.02.47.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Oct 2020 02:47:01 -0700 (PDT)
-Subject: Re: [PATCH net 2/2] IPv6: reply ICMP error if the first fragment
- don't include all headers
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>
-References: <20201007035502.3928521-1-liuhangbin@gmail.com>
- <20201007035502.3928521-3-liuhangbin@gmail.com>
- <91f5b71e-416d-ebf1-750b-3e1d5cf6b732@gmail.com>
- <20201008083034.GI2531@dhcp-12-153.nay.redhat.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <f7272dda-0383-c7d0-1a8a-4a70a1aadb77@gmail.com>
-Date:   Thu, 8 Oct 2020 11:47:00 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-MIME-Version: 1.0
-In-Reply-To: <20201008083034.GI2531@dhcp-12-153.nay.redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=ZEpfchtPlSN6NaVHvp0J/53pPQ0OVmTy9xX4+EJUKNw=;
+        b=NFlUff4b2KA/573wtrE8SiCVnAx1ldsT/FiutUpk7MJ0Zm9MgLW9ra5wyBauKoxMBD
+         95X7C8yieZSDvZq0uso5z61OAkKQ0QsF2SvWDUgqyFsKVnAXSIGPEZxf//GYw9F6Uw93
+         C8d/tUhnLZIXsr/mfDW5OtkibK17ktAsZzYhapr3zUXlPOQC2LWBGvrV1m/yyyDvMMNo
+         nVMveOoSOevOcHRq6vD1dd9RBUkRjq3QyMkPI91lF1z+VugElJxcytE2akz2XGM1OqPl
+         yiHshu3ch8IfFM51BALjQg/b+tKZIySGQz9G/QjYw6quGeHU7mhIrOM8QRuO8SOqNLDJ
+         w+9g==
+X-Gm-Message-State: AOAM531tIIH2ksxxEvmqB3jDam4/sy7inJ4QtisnHCaLeeOwGwaiDCX0
+        ySfV/R32EMp31qPoVJ470Pm9ocWZdrg=
+X-Google-Smtp-Source: ABdhPJy+OpasCQZdBOEAM5N8VMaT3gCDh1YhXgPHLZmit4wUE18iez6W45eddUuHw+Un7K9tscB3TA==
+X-Received: by 2002:a17:90a:ff06:: with SMTP id ce6mr7074588pjb.38.1602150501732;
+        Thu, 08 Oct 2020 02:48:21 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id c7sm6646476pfj.84.2020.10.08.02.48.20
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 08 Oct 2020 02:48:21 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Michael Tuexen <tuexen@fh-muenster.de>, davem@davemloft.net
+Subject: [PATCHv2 net-next 00/17] sctp: Implement RFC6951: UDP Encapsulation of SCTP
+Date:   Thu,  8 Oct 2020 17:47:56 +0800
+Message-Id: <cover.1602150362.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Description From the RFC:
 
+   The Main Reasons:
 
-On 10/8/20 10:30 AM, Hangbin Liu wrote:
-> Hi Eric,
-> 
-> Thanks for the comments. I should add "RFC" in subject next time for the
-> uncertain fix patch.
-> 
-> On Wed, Oct 07, 2020 at 11:35:41AM +0200, Eric Dumazet wrote:
->>
->>
->> On 10/7/20 5:55 AM, Hangbin Liu wrote:
->>
->>>  		kfree_skb(skb);
->>> @@ -282,6 +285,21 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
->>>  		}
->>>  	}
->>>  
->>> +	/* RFC 8200, Section 4.5 Fragment Header:
->>> +	 * If the first fragment does not include all headers through an
->>> +	 * Upper-Layer header, then that fragment should be discarded and
->>> +	 * an ICMP Parameter Problem, Code 3, message should be sent to
->>> +	 * the source of the fragment, with the Pointer field set to zero.
->>> +	 */
->>> +	nexthdr = hdr->nexthdr;
->>> +	offset = ipv6_skip_exthdr(skb, skb_transport_offset(skb), &nexthdr, &frag_off);
->>> +	if (frag_off == htons(IP6_MF) && !pskb_may_pull(skb, offset + 1)) {
->>> +		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INHDRERRORS);
->>> +		icmpv6_param_prob(skb, ICMPV6_HDR_INCOMP, 0);
->>> +		rcu_read_unlock();
->>> +		return NULL;
->>> +	}
->>> +
->>>  	rcu_read_unlock();
->>>  
->>>  	/* Must drop socket now because of tproxy. */
->>>
->>
->> Ouch, this is quite a buggy patch.
->>
->> I doubt we want to add yet another ipv6_skip_exthdr() call in IPv6 fast path.
->>
->> Surely the presence of NEXTHDR_FRAGMENT is already tested elsewhere ?
-> 
-> Would you like to help point where NEXTHDR_FRAGMENT was tested before IPv6
-> defragment?
-I think we have to ask the question : Should routers enforce the rule, or
-only end points ?
+   o  To allow SCTP traffic to pass through legacy NATs, which do not
+      provide native SCTP support as specified in [BEHAVE] and
+      [NATSUPP].
 
-End points must handle NEXTHDR_FRAGMENT, in ipv6_frag_rcv()
+   o  To allow SCTP to be implemented on hosts that do not provide
+      direct access to the IP layer.  In particular, applications can
+      use their own SCTP implementation if the operating system does not
+      provide one.
 
+   Implementation Notes:
 
-> 
->>
->> Also, ipv6_skip_exthdr() does not pull anything in skb->head, it would be strange
->> to force a pull of hundreds of bytes just because you want to check if an extra byte is there,
->> if the packet could be forwarded as is, without additional memory allocations.
->>
->> Testing skb->len should be more than enough at this stage.
-> 
-> Ah, yes, I shouldn't call pskb_may_pull here.
->>
->> Also ipv6_skip_exthdr() can return an error.
-> 
-> it returns -1 as error, If we tested it by (offset + 1 > skb->len), does
-> that count as an error handler?
+   UDP-encapsulated SCTP is normally communicated between SCTP stacks
+   using the IANA-assigned UDP port number 9899 (sctp-tunneling) on both
+   ends.  There are circumstances where other ports may be used on
+   either end, and it might be required to use ports other than the
+   registered port.
 
-If there is an error, then you want to send the ICMP, right ?
+   Each SCTP stack uses a single local UDP encapsulation port number as
+   the destination port for all its incoming SCTP packets, this greatly
+   simplifies implementation design.
 
-The (offset + 1) expression will become 0, and surely the test will be false,
-so you wont send the ICMP...
+   An SCTP implementation supporting UDP encapsulation MUST maintain a
+   remote UDP encapsulation port number per destination address for each
+   SCTP association.  Again, because the remote stack may be using ports
+   other than the well-known port, each port may be different from each
+   stack.  However, because of remapping of ports by NATs, the remote
+   ports associated with different remote IP addresses may not be
+   identical, even if they are associated with the same stack.
 
-> 
-> Thanks
-> Hangbin
-> 
+   Because the well-known port might not be used, implementations need
+   to allow other port numbers to be specified as a local or remote UDP
+   encapsulation port number through APIs.
+
+Patches:
+
+   This patchset is using the udp4/6 tunnel APIs to implement the UDP
+   Encapsulation of SCTP with not much change in SCTP protocol stack
+   and with all current SCTP features keeped in Linux Kernel.
+
+   1 - 4: Fix some UDP issues that may be triggered by SCTP over UDP.
+   5 - 7: Process incoming UDP encapsulated packets and ICMP packets.
+   8 -10: Remote encap port's update by sysctl, sockopt and packets.
+   11-14: Process outgoing pakects with UDP encapsulated and its GSO.
+   15-16: Add the part from draft-tuexen-tsvwg-sctp-udp-encaps-cons-03.
+      17: Enable this feature.
+
+Tests:
+
+  - lksctp-tools/src/func_tests with UDP Encapsulation enabled/disabled:
+
+      Both make v4test and v6test passed.
+
+  - sctp-tests with UDP Encapsulation enabled/disabled:
+
+      repeatability/procdumps/sctpdiag/gsomtuchange/extoverflow/
+      sctphashtable passed. Others failed as expected due to those
+      "iptables -p sctp" rules.
+
+  - netperf on lo/netns/virtio_net, with gso enabled/disabled and
+    with ip_checksum enabled/disabled, with UDP Encapsulation
+    enabled/disabled:
+
+      No clear performance dropped.
+
+v1->v2:
+  - Fix some incorrect code in the patches 5,6,8,10,11,13,14,17, suggested
+    by Marcelo.
+  - Append two patches 15-16 to add the Additional Considerations for UDP
+    Encapsulation of SCTP from draft-tuexen-tsvwg-sctp-udp-encaps-cons-03,
+    noticed by Michael.
+
+Xin Long (17):
+  udp: check udp sock encap_type in __udp_lib_err
+  udp6: move the mss check after udp gso tunnel processing
+  udp: do checksum properly in skb_udp_tunnel_segment
+  udp: support sctp over udp in skb_udp_tunnel_segment
+  sctp: create udp4 sock and add its encap_rcv
+  sctp: create udp6 sock and set its encap_rcv
+  sctp: add encap_err_lookup for udp encap socks
+  sctp: add encap_port for netns sock asoc and transport
+  sctp: add SCTP_REMOTE_UDP_ENCAPS_PORT sockopt
+  sctp: allow changing transport encap_port by peer packets
+  sctp: add udphdr to overhead when udp_port is set
+  sctp: call sk_setup_caps in sctp_packet_transmit instead
+  sctp: support for sending packet over udp4 sock
+  sctp: support for sending packet over udp6 sock
+  sctp: add the error cause for new encapsulation port restart
+  sctp: handle the init chunk matching an existing asoc
+  sctp: enable udp tunneling socks
+
+ include/linux/sctp.h         |  20 ++++++
+ include/net/netns/sctp.h     |   8 +++
+ include/net/sctp/constants.h |   2 +
+ include/net/sctp/sctp.h      |   9 ++-
+ include/net/sctp/sm.h        |   4 ++
+ include/net/sctp/structs.h   |  14 ++--
+ include/uapi/linux/sctp.h    |   7 ++
+ net/ipv4/udp.c               |   2 +-
+ net/ipv4/udp_offload.c       |  16 +++--
+ net/ipv6/udp.c               |   2 +-
+ net/ipv6/udp_offload.c       | 154 +++++++++++++++++++++----------------------
+ net/sctp/associola.c         |   4 ++
+ net/sctp/ipv6.c              |  44 +++++++++----
+ net/sctp/output.c            |  22 +++----
+ net/sctp/protocol.c          | 148 +++++++++++++++++++++++++++++++++++++----
+ net/sctp/sm_make_chunk.c     |  21 ++++++
+ net/sctp/sm_statefuns.c      |  52 +++++++++++++++
+ net/sctp/socket.c            | 112 +++++++++++++++++++++++++++++++
+ net/sctp/sysctl.c            |  59 +++++++++++++++++
+ 19 files changed, 572 insertions(+), 128 deletions(-)
+
+-- 
+2.1.0
+
