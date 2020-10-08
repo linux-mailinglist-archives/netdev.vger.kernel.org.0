@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6534A2878B8
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 17:56:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2B5E2878B6
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 17:56:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730774AbgJHPzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 11:55:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41946 "EHLO
+        id S1730045AbgJHPzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 11:55:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731738AbgJHPze (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 11:55:34 -0400
+        with ESMTP id S1731752AbgJHPzh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 11:55:37 -0400
 Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74839C0613D4;
-        Thu,  8 Oct 2020 08:55:34 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id a200so4327147pfa.10;
-        Thu, 08 Oct 2020 08:55:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DDFBC0613D5;
+        Thu,  8 Oct 2020 08:55:37 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id 144so4341020pfb.4;
+        Thu, 08 Oct 2020 08:55:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Gm0EkTGTsyJArgWHylori1G+cwITsA//QEoUuazW48k=;
-        b=qryhqfZHWmNk6RmdcJZqyG8aLGm3XBVUt+stDUxnPYnXM19PT0Z67X5ST7RQnPg1AD
-         hQ08ugL7VG6kEIl1LolLxHFOlVwN6EiSaa3uVZULMqMut3f20HctfUWE9UqoPL5FjRgs
-         MfcirWqSbB/LHool8yy6KDVabIPsFB1LuefYilcOjD8buTbubxKX2mBhfOSY4SgnI0GE
-         g+veAbAZ67HHZWZEtAgme1qhD4pZXIgJnOUM/7kcXoceUKyXMokTH83/w/F4oXHHFgOb
-         OLWt0JJk4uceWaB6ECXEbxlVaHR2a+WIwxVzqpPLvRLD3twkSMjs9NsyjKooniiTr8kW
-         Gklg==
+        bh=DGOaXKZuYMRxXqw/nigolWlIyNCcj/It8YDCP3N+ZrI=;
+        b=EatfWGQijW1G0IOoDyekMIhIJcBb/RrNQ2vGXKVIuRDkXTGrrNf9vqFTZeGoT8frUY
+         0sH6R53YFyQKKpa3949Twg20JxrAG0AtRsBhglyLahBslHZeNJ0DxnQBxnOWTBUkXIo6
+         QbagPMtJufS0H3x5z88K/leRtD+dskGqmBi4jt9CuM/O/fi7rBpHd4t6yYD2oEXY4/i+
+         w93YSiBlwWaaWH9yti/NncKs+5nxLB3g6WtyWASANmxsmfUtGjbwVx1Q8vUMxeYNqNGj
+         ovuhMnz+GW5usYugPTylX9XXCTYIF9t6Ud+wj7p2Pp95NToZebed2jL+VTpiKK09HoPW
+         rD5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Gm0EkTGTsyJArgWHylori1G+cwITsA//QEoUuazW48k=;
-        b=odey4NfuQrjlezTo2ffzvcjK8sWj3dMuyyHGC/+FBtSNbkvq2QdnRW/r7j1m1IGFgm
-         VRVW4LucPIFro6VLP1xsqluG8aBXtM0DZiRzyLm6QgsWUZGewg/1Dxcz410BzCuW7AK8
-         ATfeWQCsQumE/23OYPtLiCdpv94MPTTM4qn3/6Al2H2wI6+JeFLRDHEvfwivo7iv5aaA
-         fhV4s22Z9azrekyN2UV+gzD6HWjX4UPiSVCeCZSn9R0zZBqz2ujXlHMQs1RohpUM520K
-         sR2J+hwbk/oLX//1HXf8/KLhRNwhbXrqNQ4sM5qBtlj4XvBs6wlBW0SNKsYjSSQR8m4S
-         6DEA==
-X-Gm-Message-State: AOAM532Jh7EztRLTtfjRN0aL9QZugUvJ4Cr3WtPQZMBfYwOkoOPpWWD7
-        cK+vK72AYKSHPDs4T9rL05I=
-X-Google-Smtp-Source: ABdhPJxn6on3Jkv5lysvn4Dv6XhEOsU5sgzuOvOw1r4qxwqVfsY1CpaT5ryFUBh0GXjJ/DSr6zorOA==
-X-Received: by 2002:a63:68e:: with SMTP id 136mr7846351pgg.211.1602172533813;
-        Thu, 08 Oct 2020 08:55:33 -0700 (PDT)
+        bh=DGOaXKZuYMRxXqw/nigolWlIyNCcj/It8YDCP3N+ZrI=;
+        b=VVLvWsv5NYCgOEOpHq2yBNoh2Km7/zhk3RB8efiqb3KeYVnSh4N+Vmu1MFDKhXWTWt
+         sFa1m2jm0p9PTGxSnxKtrWEW/hlNmf515H4N6zQyfTQwCOQ+jSqPYNKxZ/8029iiTHFt
+         WY7wD/2kNTxUMvdFndp8u8af0zhdN0qYvY0b60TBFHR0A3R0pObwl8MJg6+hPDt5lvv7
+         Xhim+MrUeq7GE4HsRLmp6FhUPUnaLa1vnH0BeO/C29jIqYCR5vuBgyBa9HC8w76hPiDu
+         B5cPNPZSk2aOJ9bw0YjfdVgVKOYdNOHGIQnYpqAEYlGWHc2O8OUaCNIRsFcDBvD1/hai
+         0XmA==
+X-Gm-Message-State: AOAM530y7muvsPMWV+E1PF4Hx+UFr+GKhsvHwd6QW7nga5w19O+MFZ/b
+        emcdnWeZJjvmZvKnNX2vy4M=
+X-Google-Smtp-Source: ABdhPJxKXmIfHYCJzAX/yuHfNublcu97tDKzbzVvc0nTHUuaPVY/M/1Olf2xWmSi77Ol2KejeoMrSw==
+X-Received: by 2002:aa7:9048:0:b029:152:883a:9a94 with SMTP id n8-20020aa790480000b0290152883a9a94mr8170865pfo.24.1602172537206;
+        Thu, 08 Oct 2020 08:55:37 -0700 (PDT)
 Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id f1sm5917929pjh.20.2020.10.08.08.55.31
+        by smtp.gmail.com with ESMTPSA id f1sm5917929pjh.20.2020.10.08.08.55.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Oct 2020 08:55:33 -0700 (PDT)
+        Thu, 08 Oct 2020 08:55:36 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     ap420073@gmail.com, linux-wireless@vger.kernel.org,
         wil6210@qti.qualcomm.com, b43-dev@lists.infradead.org,
         linux-bluetooth@vger.kernel.org
-Subject: [PATCH net 062/117] iwlagn: set DEBUGFS_READ_WRITE_FILE_OPS.owner to THIS_MODULE
-Date:   Thu,  8 Oct 2020 15:51:14 +0000
-Message-Id: <20201008155209.18025-62-ap420073@gmail.com>
+Subject: [PATCH net 063/117] rtlwifi: set file_ops_common.owner to THIS_MODULE
+Date:   Thu,  8 Oct 2020 15:51:15 +0000
+Message-Id: <20201008155209.18025-63-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201008155209.18025-1-ap420073@gmail.com>
 References: <20201008155209.18025-1-ap420073@gmail.com>
@@ -65,24 +65,24 @@ If THIS_MODULE is not set, the module would be removed while debugfs is
 being used.
 It eventually makes kernel panic.
 
-Fixes: 87e5666c0722 ("iwlagn: transport handler can register debugfs entries")
+Fixes: 610247f46feb ("rtlwifi: Improve debugging by using debugfs")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
- drivers/net/wireless/intel/iwlwifi/pcie/trans.c | 1 +
+ drivers/net/wireless/realtek/rtlwifi/debug.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-index 7c13184fc8e7..f228e362b71f 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/trans.c
-@@ -2522,6 +2522,7 @@ static const struct file_operations iwl_dbgfs_##name##_ops = {		\
- 	.read = iwl_dbgfs_##name##_read,				\
- 	.open = simple_open,						\
- 	.llseek = generic_file_llseek,					\
-+	.owner = THIS_MODULE,						\
+diff --git a/drivers/net/wireless/realtek/rtlwifi/debug.c b/drivers/net/wireless/realtek/rtlwifi/debug.c
+index 55db71c766fe..0a368b1dd1b5 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/debug.c
++++ b/drivers/net/wireless/realtek/rtlwifi/debug.c
+@@ -89,6 +89,7 @@ static const struct file_operations file_ops_common = {
+ 	.read = seq_read,
+ 	.llseek = seq_lseek,
+ 	.release = single_release,
++	.owner = THIS_MODULE,
  };
  
- struct iwl_dbgfs_tx_queue_priv {
+ static int rtl_debug_get_mac_page(struct seq_file *m, void *v)
 -- 
 2.17.1
 
