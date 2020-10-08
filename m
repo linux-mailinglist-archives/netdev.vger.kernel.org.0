@@ -2,168 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51D50287222
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 12:01:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F109287225
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 12:01:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729352AbgJHKBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 06:01:05 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:49544 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728996AbgJHKBF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 06:01:05 -0400
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1602151262;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=YlY2PCfKX4Q4U4zU0hxRIXZu0KsMCr/9DHvRarIxCYM=;
-        b=wWZg1kAtZPnnplaoh3ise45nwUu56ACbWLgD6xMkOlWZNsw/rXgs6aB2ZqbzryivxFmAOU
-        uFy5Z/EhS1gCsS4QLFYGAS7aePu7QhMtmqco1xwhM+qnZqUdPiBRdsAbq83h/cyExE93x2
-        Qinxz3M4eMj+24TfiQfI21SYrq0+d66cJfQGWopC6Ldt4rZh9cRMh941mRRk3uvusJ1wUv
-        lLXubfJJ5srqLT+kYlC76jVKNBDdYNjxJ7M/HSyCcZrYHcMCNx8OjvNAMRLt7sVi9fYXXB
-        xR07JobsFtOn8w5TG0jRcfiaIuMb5TBkONIg+FPCXRk9KrU+VI/tTG/7n1uBUw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1602151262;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=YlY2PCfKX4Q4U4zU0hxRIXZu0KsMCr/9DHvRarIxCYM=;
-        b=XfBri8WtKbFjqo1mFGHGfxvRZK+cmOp45NZIXGfM27wpQVPcI3ce+bnumUsbG/m9uMqGE0
-        ejSmaD5zuES2LHAw==
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH net-next v6 4/7] net: dsa: hellcreek: Add support for hardware timestamping
-In-Reply-To: <20201008094440.oede2fucgpgcfx6a@skbuf>
-References: <20201004143000.blb3uxq3kwr6zp3z@skbuf> <87imbn98dd.fsf@kurt> <20201006072847.pjygwwtgq72ghsiq@skbuf> <87tuv77a83.fsf@kurt> <20201006133222.74w3r2jwwhq5uop5@skbuf> <87r1qb790w.fsf@kurt> <20201006140102.6q7ep2w62jnilb22@skbuf> <87lfgiqpze.fsf@kurt> <20201007105458.gdbrwyzfjfaygjke@skbuf> <87362pjev0.fsf@kurt> <20201008094440.oede2fucgpgcfx6a@skbuf>
-Date:   Thu, 08 Oct 2020 12:01:01 +0200
-Message-ID: <87lfghhw9u.fsf@kurt>
+        id S1729369AbgJHKBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 06:01:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43598 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725916AbgJHKBk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 06:01:40 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7B7C061755;
+        Thu,  8 Oct 2020 03:01:39 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id j136so5875752wmj.2;
+        Thu, 08 Oct 2020 03:01:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5FMwqEysj71xGZc3vvhV5fgnvajcS5sw4lmVrAr2enY=;
+        b=uqSgo9yIzV1QwZLucpJE/Lobd+a4bUm9KbsD0UJ8CQgBOyOmJ9ME8ZrMmwZq5u1oV2
+         t2s3oXfGf5V4mgJsA8IZXvXWc0HvzQkz26cMJR7v+S6knxUGSG3ZgA0TcmPL8e9efBKN
+         AB+jb/KTclcVAGmYgkocuHlW/EhC6kXa1ijGvRPK10UoATAAqVMm6iFkiNo3NGFOJRpN
+         RoEr5ww9DYQKrOX5fLn5JmytBzlWof8a8WclYO7ZvhURBlcJ86rnrwAg8MEnWhliEF7d
+         Rc4ciRyQWmwSLWqk7jCkOP9qN1Dqy3myMAtyvRh9qNzWmPF3UmzKDJUo56rCas8beTTb
+         CCjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5FMwqEysj71xGZc3vvhV5fgnvajcS5sw4lmVrAr2enY=;
+        b=ngSD2YbAxijH40ghruvWHWihvk8WX2qyfppA5EY8hACcXHBuG8N87fzuF0XNgjgRWy
+         MgQU/9nqyndT8t6ZlwWrQWkKBZLdkutIKkfNYUORDbcL5pG2UMTpdcjbtxb/CxGu8TtN
+         vgqAEed1MfnSlRXaI87Vp+wIYwezsGBekGFhWn6FVptrR7NMw4y09C3VzcXKhb6Ye6W1
+         QzkB5XfSJ8wfRfsPaDT44mFrtlX+E1NbqR/s+d6XF02YB4xARCUoKhuwq16ve17QhrKS
+         29zO6Z3EgFwhfBLY1OLAmES5LhMe4MkpUQKtbiTpni0Llpde8GNhleFUdA/P183qGqAn
+         bZGQ==
+X-Gm-Message-State: AOAM533qSnVRoR02DlByrvcnrf/d5fJQ3+kVLqD/sgdvFWBaO7Dpv6yY
+        pFWS7JbJboxLp5RGrNd5DMyQ6XKQs0li5+cMAS1BGSIFFPE=
+X-Google-Smtp-Source: ABdhPJxKHT7mecyhrjG8S633VieOm3I6adQoltxR4KiOmPyLb2uwCtfDzbfFZXzvK6A+1FCj90BBZllhcr6YxrcOfTY=
+X-Received: by 2002:a1c:4683:: with SMTP id t125mr8119995wma.110.1602151298123;
+ Thu, 08 Oct 2020 03:01:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+References: <052acb63198c44df41c5db17f8397eeb7c8bacfe.1602150362.git.lucien.xin@gmail.com>
+ <cover.1602150362.git.lucien.xin@gmail.com> <c36b016ee429980b9585144f4f9af31bcda467ee.1602150362.git.lucien.xin@gmail.com>
+ <483d9eec159b22172fe04dacd58d7f88dfc2f301.1602150362.git.lucien.xin@gmail.com>
+In-Reply-To: <483d9eec159b22172fe04dacd58d7f88dfc2f301.1602150362.git.lucien.xin@gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Thu, 8 Oct 2020 18:01:06 +0800
+Message-ID: <CADvbK_fwrM627cxt59SDkS5uuaRsDhpZ2X_BZsqdHJ9D8t+H+A@mail.gmail.com>
+Subject: Re: [PATCHv2 net-next 03/17] udp: do checksum properly in skb_udp_tunnel_segment
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Michael Tuexen <tuexen@fh-muenster.de>,
+        davem <davem@davemloft.net>, Tom Herbert <tom@herbertland.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+CCing Tom Herbert
 
-On Thu Oct 08 2020, Vladimir Oltean wrote:
-> On Thu, Oct 08, 2020 at 10:34:11AM +0200, Kurt Kanzenbach wrote:
->> On Wed Oct 07 2020, Vladimir Oltean wrote:
->> > On Wed, Oct 07, 2020 at 12:39:49PM +0200, Kurt Kanzenbach wrote:
->> >> For instance the hellcreek switch has actually three ptp hardware
->> >> clocks and the time stamping can be configured to use either one of
->> >> them.
->> >
->> > The sja1105 also has a corrected and an uncorrected PTP clock that can
->> > take timestamps. Initially I had thought I'd be going to spend some ti=
-me
->> > figuring out multi-PHC support, but now I don't see any practical reas=
-on
->> > to use the uncorrected PHC for anything.
->>=20
->> Just out of curiosity: How do you implement 802.1AS then? My
->> understanding is that the free-running clock has to be used for the
+On Thu, Oct 8, 2020 at 5:48 PM Xin Long <lucien.xin@gmail.com> wrote:
 >
-> Has to be? I couldn't find that wording in IEEE 802.1AS-2011.
-
-It doesn't has to be, it *should* be. That's at least the outcome we had
-after lots of discussions. Actually Kamil (on Cc) is the expert on this
-topic.
-
+> This patch fixes two things:
 >
->> calculation of the peer delays and such meaning there should be a way to
->> get access to both PHCs or having some form of cross timestamping
->> available.
->>=20
->> The hellcreek switch can take cross snapshots of all three ptp clocks in
->> hardware for that purpose.
+>   When skb->ip_summed == CHECKSUM_PARTIAL, skb_checksum_help() should be
+>   called do the checksum, instead of gso_make_checksum(), which is used
+>   to do the checksum for current proto after calling skb_segment(), not
+>   after the inner proto's gso_segment().
 >
-> Well, at the end of the day, all the other TSN offloads (tc-taprio,
-> tc-gate) will still have to use the synchronized PTP clock, so what
-> we're doing is we're simply letting that clock be synchronized by
-> ptp4l.
-
-Yes, the synchronized clock is of course needed for the traffic
-scheduling and so on. This is what we do here in this code as well. Only
-the synchronized one is exported to user space and used. However, the
-multi PHCs issue should be addressed as well at some point.
-
+>   When offload_csum is disabled, the hardware will not do the checksum
+>   for the current proto, udp. So instead of calling gso_make_checksum(),
+>   it should calculate checksum for udp itself.
 >
->> >> > So when you'll poll for TX timestamps, you'll receive a TX
->> >> > timestamp from the PHY and another one from the switch, and those w=
-ill
->> >> > be in a race with one another, so you won't know which one is which.
->> >>=20
->> >> OK. So what happens if the driver will accept to disable hardware
->> >> timestamping? Is there anything else that needs to be implemented? Are
->> >> there (good) examples?
->> >
->> > It needs to not call skb_complete_tx_timestamp() and friends.
->> >
->> > For PHY timestamping, it also needs to invoke the correct methods for =
-RX
->> > and for TX, where the PHY timestamping hooks will get called. I don't
->> > think that DSA is compatible yet with PHY timestamping, but it is
->> > probably a trivial modification.
->>=20
->> Hmm? If DSA doesn't support PHY timestamping how are other DSA drivers
->> dealing with it then? I'm getting really confused.
+> Cc: Tom Herbert <tom@herbertland.com>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> ---
+>  net/ipv4/udp_offload.c | 11 ++++++-----
+>  1 file changed, 6 insertions(+), 5 deletions(-)
 >
-> They aren't dealing with it, of course.
+> diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+> index e67a66f..c0b010b 100644
+> --- a/net/ipv4/udp_offload.c
+> +++ b/net/ipv4/udp_offload.c
+> @@ -131,14 +131,15 @@ static struct sk_buff *__skb_udp_tunnel_segment(struct sk_buff *skb,
+>                 uh->check = ~csum_fold(csum_add(partial,
+>                                        (__force __wsum)htonl(len)));
 >
->> Furthermore, there is no hellcreek hardware available with timestamping
->> capable PHYs. How am I supposed to even test this?
->>=20
->> For now, until there is hardware available, PHY timestamping is not
->> supported with the hellcreek switch.
+> -               if (skb->encapsulation || !offload_csum) {
+> -                       uh->check = gso_make_checksum(skb, ~uh->check);
+> -                       if (uh->check == 0)
+> -                               uh->check = CSUM_MANGLED_0;
+> -               } else {
+> +               if (skb->encapsulation)
+> +                       skb_checksum_help(skb);
+> +
+> +               if (offload_csum) {
+>                         skb->ip_summed = CHECKSUM_PARTIAL;
+>                         skb->csum_start = skb_transport_header(skb) - skb->head;
+>                         skb->csum_offset = offsetof(struct udphdr, check);
+> +               } else {
+> +                       uh->check = csum_fold(skb_checksum(skb, udp_offset, len, 0));
+>                 }
+>         } while ((skb = skb->next));
+>  out:
+> --
+> 2.1.0
 >
-> I was just pointing out that this is something you'll certainly have to
-> change if somebody will want PHY timestamping.
-
-Understood.
-
->
-> Even without hardware, you _could_ probably test that DSA is doing the
-> right thing by simply adding the PTP timestamping ops to a PHY driver
-> that you own, and inject dummy timestamps. The expectation becomes that
-> user space gets those dummy timestamps, and not the ones emitted by your
-> switch.
-
-Of course it can be mocked. Whenever somebody wants to do PHY
-timestamping with a hellcreek switch this issue can be re-visited.
-
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl9+410ACgkQeSpbgcuY
-8KZc4RAApMcJksbhvJ3h+InmLV0zBPwEhm+pi54GM6pcMgEU2pVU3p7V4u4sECeE
-YtI3vANceVAYOeoFJKCV2mRQkZHNlUbUm6UoJ/cplRJk8d2bqNNBj1iRUfvdxN5M
-i+tVJ6LQCSePZNhCkL3VFBCpe5J08qC1OrWFOFBLUcvFsaNpP7keIC0AxGd1Ls+h
-ISIGrC0RP+dz2ehhAZmeKRI9ype6d2CzV34JtfR+cTlwLrHlndoBSF19f4YrfDbl
-D/fjhAR/ubleveAlhFK4J0TgLz2eFP8c0YSYJ5ZCgxds3XFVxiGLz9Iki3Pv7J7b
-6ZK+eroPmNEwcmapMHIDVMSZffVJ13OZdKr/lR/tVuo04U8xM+sEe8nnJAaNIFh2
-n8hz3ptWfF+7WRpexasB4/FEtBz5HUqT06Bn6pwYz+fgYU0Biro4FGVON7zJVdI8
-DJwD8lORPQbfIzhD+6em7bdtmokmZQj+DsBsN4a/k6NmFOro7HUee0/BpvAeG30X
-/ZZXIbe+RISZdvMB0K5CPvo6LT1LPqhIDC/shm3g9FdsXtcXLQj97Rw6DQQfsRVq
-Ofcs0pFyclS1j8QMqtN2cDH4AQcVbD3Fu5Snqq1ekXN0WTIg0wKxRevK8SS9uH3N
-IKEYgHvWS67CgPRssQ/9vnSjA6B+D4agaNNQpTFnYRX9/rlaE9s=
-=+53N
------END PGP SIGNATURE-----
---=-=-=--
