@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A6F62871F0
+	by mail.lfdr.de (Postfix) with ESMTP id F34C92871F2
 	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 11:50:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729329AbgJHJuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 05:50:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41842 "EHLO
+        id S1729333AbgJHJuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 05:50:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725887AbgJHJuN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 05:50:13 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BB3C061755;
-        Thu,  8 Oct 2020 02:50:13 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id 144so3549179pfb.4;
-        Thu, 08 Oct 2020 02:50:13 -0700 (PDT)
+        with ESMTP id S1725887AbgJHJuV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 05:50:21 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3BC9C061755;
+        Thu,  8 Oct 2020 02:50:21 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id e10so3566607pfj.1;
+        Thu, 08 Oct 2020 02:50:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=zpcgNpTt1Eopd9QaDKGy8sWqns6Rwfi4+2UKE6Sn+wQ=;
-        b=JSJqqg3E7gXGgbVdJAiyQkDh8yVQCW7EVdbcUpGBbH4WrXgGZhLTWrJmajUTmhPoEi
-         mLuNKfTO5i1ghIgxb+4Ac+q57baqp0G6PBbpB6PV+awHWxltHN+Hvki9twl0pq018nSP
-         AjhtxJyhxvtDFUyp3jfTkoZOE5F0+38Z4XjTOSrbJ5ClrfT9ZcQMJBH7cVjQYh8kp+Ot
-         EfXqHJbEj2DgZ0hC/C5D6KBWmzj0sNGANUN1iA4HfOSqoFIxmqMR1VAAhaHPAwQisfju
-         RY2l+4vf5GM3svUeJyHnIrAxqjFfOBYadHjMKPPx8daOmUvgnjWOboO6F8FK8D+6Ies4
-         e3WA==
+        bh=eHpfgVHKRbBtzp3y6GtZn9feVuuP00yNLAtwJLjoQHM=;
+        b=QrPNjt0RO8DT5b3ueEDCjwQvh4/pPPUm5KptSzNpUva9O9Gz7bXkCdCi6XhqM9HWmY
+         Uyd89mkV6WQabi2OOCXTh8bIuMPnuTVqS/nRHike2RVZbIfztY/BIm4GkzrWnk7WZ9wX
+         zyPva/0GiObrsWdKNwg+/vqLkfDIU837PsiTyjQsaBjc5Nvg4o4vY1erd5XUJ3k0mwpS
+         fqec49mv7PNgC14l+IuYo6grm6B/O1H345qr23+e1Cbc7+U+0SxjfP9Uhe4zOEm3CwqT
+         NAVmoFuhg5j24Yd+ia9esoZlQLo+qyv8+ntz+n3TRr11BogKlBX9h7Dgi1bzlNKxsN/5
+         bFhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=zpcgNpTt1Eopd9QaDKGy8sWqns6Rwfi4+2UKE6Sn+wQ=;
-        b=KvwSwG522L7JjnfOyUYxtWr8jtUwvijFh8BRkZUGIxc40T+0toVcjAOERbCmw7SnTI
-         4X3k6RHK6NfAio82bf2JUSAWTFgg/D6zS5DFm0WzzTo5qUG2nxX1WARbBOHdbQr57uaI
-         qIpCCC9ABZHUTWsT2gabLGaCG63lTHpf5bgCC1IjazSiXhdKyWeWIR5OcE/x2hd6xWyw
-         8Hi1rqPEzuiMV0727zQSMbpwb4BbcqTy9h2dEpj2l8mNafjehPL7Qqrwxnno5q8kCXte
-         uUwv0ZWdA1AxEXezUDjCJnwFig8y8cD4+H4WX90xqiBM3mF/awFjaPK9MFvFpRMbCDE5
-         E/2w==
-X-Gm-Message-State: AOAM531WhsrxPvcf2TZKAeB2vCFN85j1bfG9FbyiZEf/ZY91O/ykwNZ6
-        4OjPMzwK+RCE8903IiunS5sdt/H7eJA=
-X-Google-Smtp-Source: ABdhPJzhlaX/UapeJvm9Od3aYl3WQ6Up7e3sAJ9GUv2QQvWGlktPYrx8XGJm79YvoReBORwfmO9pzQ==
-X-Received: by 2002:a17:90a:e697:: with SMTP id s23mr6984491pjy.16.1602150612658;
-        Thu, 08 Oct 2020 02:50:12 -0700 (PDT)
+        bh=eHpfgVHKRbBtzp3y6GtZn9feVuuP00yNLAtwJLjoQHM=;
+        b=CnnoMzGeSfdMIg7/nBD8iAAypMy4dh2sMxVFGnVc9MeVt2t2cERnetaqIKHJ8mepNG
+         goeD2HmbhPAhK4bRs8BEddrk869uMUrIdtPso1jnV7C2tVNWwqnfTmGf9faHSA1jZiHJ
+         huCzdGM9h5wB0xDl1lXOOkHUjMHO8i2AC111qyIIlh7W5AD0BZ24FCDAekHP7mRfcuIK
+         ggv/MjtV8262X381pM6K7HcYacc/3Mx4W7h785S9d1WOn1aYMGd/yYMRbZTRn8tMPjmP
+         QTx4jioHhueHa/iqFVY57yZwQN4ArFCmlHShgUPoBAND5SbuxbPIYiSOqKofiN8iuUSD
+         xprw==
+X-Gm-Message-State: AOAM533s+zJG3iAZqNjB4Riyk2/OWPO/n8PmNUIMy9dAP2MS5yhI4lTq
+        2xZK8P2TJNNR2hHGtCps9Aa8O6rtGpY=
+X-Google-Smtp-Source: ABdhPJwjjz3XPgKnnUFvCBYB3q0QoS4/vwzxZYzS87QbKM/0wo23sACHz2wVP9sOEcUi4jP/EICGlw==
+X-Received: by 2002:a17:90a:d57:: with SMTP id 23mr7201642pju.232.1602150621092;
+        Thu, 08 Oct 2020 02:50:21 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id gk14sm6198727pjb.41.2020.10.08.02.50.11
+        by smtp.gmail.com with ESMTPSA id y7sm6428069pgk.73.2020.10.08.02.50.19
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 08 Oct 2020 02:50:12 -0700 (PDT)
+        Thu, 08 Oct 2020 02:50:20 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Neil Horman <nhorman@tuxdriver.com>,
         Michael Tuexen <tuexen@fh-muenster.de>, davem@davemloft.net
-Subject: [PATCHv2 net-next 14/17] sctp: support for sending packet over udp6 sock
-Date:   Thu,  8 Oct 2020 17:48:10 +0800
-Message-Id: <5c0e9cf835f54c11f7e3014cab926bf10a47298d.1602150362.git.lucien.xin@gmail.com>
+Subject: [PATCHv2 net-next 15/17] sctp: add the error cause for new encapsulation port restart
+Date:   Thu,  8 Oct 2020 17:48:11 +0800
+Message-Id: <8815067eea44ffd7274b0038e48c2618c2e77916.1602150362.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <1d1b2e92f958add640d5be1e6eaec1ac5e4581ce.1602150362.git.lucien.xin@gmail.com>
+In-Reply-To: <5c0e9cf835f54c11f7e3014cab926bf10a47298d.1602150362.git.lucien.xin@gmail.com>
 References: <cover.1602150362.git.lucien.xin@gmail.com>
  <052acb63198c44df41c5db17f8397eeb7c8bacfe.1602150362.git.lucien.xin@gmail.com>
  <c36b016ee429980b9585144f4f9af31bcda467ee.1602150362.git.lucien.xin@gmail.com>
@@ -71,106 +71,110 @@ References: <cover.1602150362.git.lucien.xin@gmail.com>
  <1128490426bfb52572ba338e7a631658da49f34c.1602150362.git.lucien.xin@gmail.com>
  <ad362276ba90a8af3178f19aba15a7e67107652f.1602150362.git.lucien.xin@gmail.com>
  <1d1b2e92f958add640d5be1e6eaec1ac5e4581ce.1602150362.git.lucien.xin@gmail.com>
+ <5c0e9cf835f54c11f7e3014cab926bf10a47298d.1602150362.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1602150362.git.lucien.xin@gmail.com>
 References: <cover.1602150362.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This one basically does the similar things in sctp_v6_xmit as does for
-udp4 sock in the last patch, just note that:
-
-  1. label needs to be calculated, as it's the param of
-     udp_tunnel6_xmit_skb().
-
-  2. The 'nocheck' param of udp_tunnel6_xmit_skb() is false, as
-     required by RFC.
-
-v1->v2:
-  - Use sp->udp_port instead in sctp_v6_xmit(), which is more safe.
+This patch is to add the function to make the abort chunk with
+the error cause for new encapsulation port restart, defined
+on Section 4.4 in draft-tuexen-tsvwg-sctp-udp-encaps-cons-03.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- net/sctp/ipv6.c | 43 ++++++++++++++++++++++++++++++++-----------
- 1 file changed, 32 insertions(+), 11 deletions(-)
+ include/linux/sctp.h     | 20 ++++++++++++++++++++
+ include/net/sctp/sm.h    |  3 +++
+ net/sctp/sm_make_chunk.c | 20 ++++++++++++++++++++
+ 3 files changed, 43 insertions(+)
 
-diff --git a/net/sctp/ipv6.c b/net/sctp/ipv6.c
-index a064bf2..814754d 100644
---- a/net/sctp/ipv6.c
-+++ b/net/sctp/ipv6.c
-@@ -55,6 +55,7 @@
- #include <net/inet_common.h>
- #include <net/inet_ecn.h>
- #include <net/sctp/sctp.h>
-+#include <net/udp_tunnel.h>
+diff --git a/include/linux/sctp.h b/include/linux/sctp.h
+index 7673123..bb19265 100644
+--- a/include/linux/sctp.h
++++ b/include/linux/sctp.h
+@@ -482,11 +482,13 @@ enum sctp_error {
+ 	 *  11  Restart of an association with new addresses
+ 	 *  12  User Initiated Abort
+ 	 *  13  Protocol Violation
++	 *  14  Restart of an Association with New Encapsulation Port
+ 	 */
  
- #include <linux/uaccess.h>
+ 	SCTP_ERROR_RESTART         = cpu_to_be16(0x0b),
+ 	SCTP_ERROR_USER_ABORT      = cpu_to_be16(0x0c),
+ 	SCTP_ERROR_PROTO_VIOLATION = cpu_to_be16(0x0d),
++	SCTP_ERROR_NEW_ENCAP_PORT  = cpu_to_be16(0x0e),
  
-@@ -191,33 +192,53 @@ static int sctp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
- 	return ret;
+ 	/* ADDIP Section 3.3  New Error Causes
+ 	 *
+@@ -793,4 +795,22 @@ enum {
+ 	SCTP_FLOWLABEL_VAL_MASK = 0xfffff
+ };
+ 
++/* UDP Encapsulation
++ * draft-tuexen-tsvwg-sctp-udp-encaps-cons-03.html#section-4-4
++ *
++ *   The error cause indicating an "Restart of an Association with
++ *   New Encapsulation Port"
++ *
++ * 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++ * |        Cause Code = 14        |       Cause Length = 8        |
++ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
++ * |   Current Encapsulation Port  |     New Encapsulation Port    |
++ * +-------------------------------+-------------------------------+
++ */
++struct sctp_new_encap_port_hdr {
++	__be16 cur_port;
++	__be16 new_port;
++};
++
+ #endif /* __LINUX_SCTP_H__ */
+diff --git a/include/net/sctp/sm.h b/include/net/sctp/sm.h
+index a499341..fd223c9 100644
+--- a/include/net/sctp/sm.h
++++ b/include/net/sctp/sm.h
+@@ -221,6 +221,9 @@ struct sctp_chunk *sctp_make_violation_paramlen(
+ struct sctp_chunk *sctp_make_violation_max_retrans(
+ 					const struct sctp_association *asoc,
+ 					const struct sctp_chunk *chunk);
++struct sctp_chunk *sctp_make_new_encap_port(
++					const struct sctp_association *asoc,
++					const struct sctp_chunk *chunk);
+ struct sctp_chunk *sctp_make_heartbeat(const struct sctp_association *asoc,
+ 				       const struct sctp_transport *transport);
+ struct sctp_chunk *sctp_make_heartbeat_ack(const struct sctp_association *asoc,
+diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
+index 21d0ff1..3bf1399 100644
+--- a/net/sctp/sm_make_chunk.c
++++ b/net/sctp/sm_make_chunk.c
+@@ -1142,6 +1142,26 @@ struct sctp_chunk *sctp_make_violation_max_retrans(
+ 	return retval;
  }
  
--static int sctp_v6_xmit(struct sk_buff *skb, struct sctp_transport *transport)
-+static int sctp_v6_xmit(struct sk_buff *skb, struct sctp_transport *t)
- {
-+	struct dst_entry *dst = dst_clone(t->dst);
-+	struct flowi6 *fl6 = &t->fl.u.ip6;
- 	struct sock *sk = skb->sk;
- 	struct ipv6_pinfo *np = inet6_sk(sk);
--	struct flowi6 *fl6 = &transport->fl.u.ip6;
- 	__u8 tclass = np->tclass;
--	int res;
-+	__be32 label;
- 
- 	pr_debug("%s: skb:%p, len:%d, src:%pI6 dst:%pI6\n", __func__, skb,
- 		 skb->len, &fl6->saddr, &fl6->daddr);
- 
--	if (transport->dscp & SCTP_DSCP_SET_MASK)
--		tclass = transport->dscp & SCTP_DSCP_VAL_MASK;
-+	if (t->dscp & SCTP_DSCP_SET_MASK)
-+		tclass = t->dscp & SCTP_DSCP_VAL_MASK;
- 
- 	if (INET_ECN_is_capable(tclass))
- 		IP6_ECN_flow_xmit(sk, fl6->flowlabel);
- 
--	if (!(transport->param_flags & SPP_PMTUD_ENABLE))
-+	if (!(t->param_flags & SPP_PMTUD_ENABLE))
- 		skb->ignore_df = 1;
- 
- 	SCTP_INC_STATS(sock_net(sk), SCTP_MIB_OUTSCTPPACKS);
- 
--	rcu_read_lock();
--	res = ip6_xmit(sk, skb, fl6, sk->sk_mark, rcu_dereference(np->opt),
--		       tclass, sk->sk_priority);
--	rcu_read_unlock();
--	return res;
-+	if (!t->encap_port || !sctp_sk(sk)->udp_port) {
-+		int res;
++struct sctp_chunk *sctp_make_new_encap_port(const struct sctp_association *asoc,
++					    const struct sctp_chunk *chunk)
++{
++	struct sctp_new_encap_port_hdr nep;
++	struct sctp_chunk *retval;
 +
-+		skb_dst_set(skb, dst);
-+		rcu_read_lock();
-+		res = ip6_xmit(sk, skb, fl6, sk->sk_mark,
-+			       rcu_dereference(np->opt),
-+			       tclass, sk->sk_priority);
-+		rcu_read_unlock();
-+		return res;
-+	}
++	retval = sctp_make_abort(asoc, chunk,
++				 sizeof(struct sctp_errhdr) + sizeof(nep));
++	if (!retval)
++		goto nodata;
 +
-+	if (skb_is_gso(skb))
-+		skb_shinfo(skb)->gso_type |= SKB_GSO_UDP_TUNNEL_CSUM;
++	sctp_init_cause(retval, SCTP_ERROR_NEW_ENCAP_PORT, sizeof(nep));
++	nep.cur_port = htons(SCTP_INPUT_CB(chunk->skb)->encap_port);
++	nep.new_port = htons(chunk->transport->encap_port);
++	sctp_addto_chunk(retval, sizeof(nep), &nep);
 +
-+	skb->encapsulation = 1;
-+	skb_reset_inner_mac_header(skb);
-+	skb_reset_inner_transport_header(skb);
-+	skb_set_inner_ipproto(skb, IPPROTO_SCTP);
-+	label = ip6_make_flowlabel(sock_net(sk), skb, fl6->flowlabel, true, fl6);
++nodata:
++	return retval;
++}
 +
-+	return udp_tunnel6_xmit_skb(dst, sk, skb, NULL, &fl6->saddr,
-+				    &fl6->daddr, tclass, ip6_dst_hoplimit(dst),
-+				    label, sctp_sk(sk)->udp_port, t->encap_port, false);
- }
- 
- /* Returns the dst cache entry for the given source and destination ip
+ /* Make a HEARTBEAT chunk.  */
+ struct sctp_chunk *sctp_make_heartbeat(const struct sctp_association *asoc,
+ 				       const struct sctp_transport *transport)
 -- 
 2.1.0
 
