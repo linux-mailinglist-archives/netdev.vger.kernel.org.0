@@ -2,113 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8457C286F0F
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 09:16:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 829F0286F25
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 09:20:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726160AbgJHHQO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 03:16:14 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:38278 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725852AbgJHHQO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 03:16:14 -0400
-Received: by mail-lj1-f196.google.com with SMTP id a23so3821653ljp.5;
-        Thu, 08 Oct 2020 00:16:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=axxcjrN6jheBIbfDrV/Ff/WSbvxOpFA8SBhcP4k8xkg=;
-        b=b3PPdy/R3rB+LAyaNh52R7THCmfZbGbXx6bTMoSZViLXn3DysDBGGcoGqAC5TB6yxE
-         CV4LiYNiTuTOsfxU6lVFDWEA1++ueDnE7YqvnUwVva1YROuwqxtdsnql/dWMVvJ1kTx9
-         +YLyHFG0IM0pbdaMCy29AoUb6ld1xtXy6d8npRi6YbNiiFeSUGQZivI5pEL+GIHbPth0
-         BLUiXOK4+oAg/bymfXg/i3nOkGkY1aVe/i9ApL8GQ0Rv7oTcsMGmxugH6MDJYaJSin3+
-         8OpmJOLDszxw+AAfhJ+a9jrq4r84i3dYwUxtMHwkGD9YFebUeeCpUOLoKwY8i8mppKMR
-         CM6Q==
-X-Gm-Message-State: AOAM53234s/STlQJK5jdklVdMfKeyB1WVFtCnChOS8S3p0qkEezWUjcE
-        8YG5Sbmm/9HA0GLFWS42jBzp7/DRYVE=
-X-Google-Smtp-Source: ABdhPJyKujpONsm8tNbjrZfTqlzdWi4CYLN384q7YoRJmIQ/EzWQnvBbKIx1FgS3kWD0W4gB95jCKg==
-X-Received: by 2002:a2e:9602:: with SMTP id v2mr2500461ljh.455.1602141370876;
-        Thu, 08 Oct 2020 00:16:10 -0700 (PDT)
-Received: from xi.terra (c-beaee455.07-184-6d6c6d4.bbcust.telenor.se. [85.228.174.190])
-        by smtp.gmail.com with ESMTPSA id t21sm704792ljh.65.2020.10.08.00.16.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Oct 2020 00:16:09 -0700 (PDT)
-Received: from johan by xi.terra with local (Exim 4.93.0.4)
-        (envelope-from <johan@kernel.org>)
-        id 1kQQ9k-0004uj-Hk; Thu, 08 Oct 2020 09:16:04 +0200
-Date:   Thu, 8 Oct 2020 09:16:04 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Wilken Gottwalt <wilken.gottwalt@mailbox.org>
-Cc:     Johan Hovold <johan@kernel.org>, Lars Melin <larsm17@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org
-Subject: Re: [PATCH 2/2] usb: serial: option: add Cellient MPL200 card
-Message-ID: <20201008071604.GG26280@localhost>
-References: <cover.1601715478.git.wilken.gottwalt@mailbox.org>
- <3db5418fe9e516f4b290736c5a199c9796025e3c.1601715478.git.wilken.gottwalt@mailbox.org>
- <20201005082045.GL5141@localhost>
- <20201005130134.459b4de9@monster.powergraphx.local>
- <20201005110638.GP5141@localhost>
- <5222246c-08d7-dcf8-248d-c1fefc72c46f@gmail.com>
- <20201005140723.56f6c434@monster.powergraphx.local>
- <20201006070201.GB26280@localhost>
- <20201008084733.41ba3cec@monster.powergraphx.local>
+        id S1726831AbgJHHUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 03:20:19 -0400
+Received: from m42-4.mailgun.net ([69.72.42.4]:59971 "EHLO m42-4.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725909AbgJHHUS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Oct 2020 03:20:18 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1602141617; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=xcv5dzo+anLNvdgtjCcQMqFVFBWCEf27U/6mqW7B/Po=; b=PvfRLZiYO/Ub5Bp2Mqn2sCX2XW5p0YyDU6UUUtoq98GKaPNPdhV5WCffBYKty0sGKlPz7ndq
+ eV8lwYDohFlcc9h9SXLGekkaUYi5WgdDtvlWVx/94/SiRUqvdGdWnKJ5awUpS3ASbD0rLMig
+ nVflCaDBIYjMAdrVI3690zJ+6yQ=
+X-Mailgun-Sending-Ip: 69.72.42.4
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
+ 5f7ebdb1aad2c3cd1c7df9a7 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 08 Oct 2020 07:20:17
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id D6CA1C43391; Thu,  8 Oct 2020 07:20:16 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 450B5C433FE;
+        Thu,  8 Oct 2020 07:20:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 450B5C433FE
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Luca Coelho <luca@coelho.fi>
+Cc:     Lee Jones <lee.jones@linaro.org>, davem@davemloft.net,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 00/29] [Set 1,2,3] Rid W=1 warnings in Wireless
+References: <20200910065431.657636-1-lee.jones@linaro.org>
+        <20201002090353.GS6148@dell> <87362rdhv2.fsf@codeaurora.org>
+        <20201006065617.GX6148@dell> <87lfgjbzin.fsf@codeaurora.org>
+        <27f10117a4f26d6f1f528d8e03fe753614dbef1a.camel@coelho.fi>
+Date:   Thu, 08 Oct 2020 10:20:11 +0300
+In-Reply-To: <27f10117a4f26d6f1f528d8e03fe753614dbef1a.camel@coelho.fi> (Luca
+        Coelho's message of "Wed, 07 Oct 2020 09:01:10 +0300")
+Message-ID: <87k0w12nh0.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201008084733.41ba3cec@monster.powergraphx.local>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 08, 2020 at 08:47:33AM +0200, Wilken Gottwalt wrote:
-> On Tue, 6 Oct 2020 09:02:01 +0200
-> Johan Hovold <johan@kernel.org> wrote:
-> 
-> > On Mon, Oct 05, 2020 at 02:07:23PM +0200, Wilken Gottwalt wrote:
-> > > On Mon, 5 Oct 2020 18:36:36 +0700 Lars Melin <larsm17@gmail.com> wrote:
+Luca Coelho <luca@coelho.fi> writes:
 
-> > > > It is very likely that Cellient has replaced the VID with their own and 
-> > > > kept the PID, it is something other mfgrs has done when buying modules 
-> > > > from Qualcomm's series of devices with predefined composition.
-> > > > 
-> > > > The MS Windows driver for 05c6:9025 describes the interfaces as:
-> > > > 
-> > > > MI_00 Qualcomm HS-USB Diagnostics 9025
-> > > > MI_01 Android Composite ADB Interface
-> > > > MI_02 Qualcomm HS-USB Android Modem 9025
-> > > > MI_03 Qualcomm HS-USB NMEA 9025
-> > > > MI_04 Qualcomm Wireless HS-USB Ethernet Adapter 9025
-> > > > MI_05 USB Mass Storage Device
-> > > > 
-> > > > where the net interface is for QMI/RMNET.
-> > > > It fully matches the blacklisting Wilken has done for 2692:9025
-> > > 
-> > > Does your device have a GPS connector? Mine had not and I'm not sure
-> > > if the description of MI_01 is actually correct. I remember looking at
-> > > this port and seeing bogus NMEA data.
-> > 
-> > Well if it's NMEA then the interface shouldn't be blacklisted (even if
-> > the values are bogus on your device), but if it's ADB it should be as
-> > that is handled by userspace.
-> > 
-> > Here's some lsusb output from a Cellient MPL200 that still uses the
-> > Qualcomm VID:
-> > 
-> > 	https://www.mail-archive.com/modemmanager-devel@lists.freedesktop.org/msg04523.html
-> > 
-> > which gives some support to Lars's hypothesis. I guess we'll just keep
-> > the first interface reserved.
-> 
-> Lars and Johan are right here. I found an older external Gobi driver
-> where I actually added comments saying interface 1 is ADB and interface 3
-> is NMEA delivering only zeroed values because of the missing antenna
-> connector, at least for the models I had access to.
+> On Tue, 2020-10-06 at 10:10 +0300, Kalle Valo wrote:
+>> Lee Jones <lee.jones@linaro.org> writes:
+>> 
+>> > On Tue, 06 Oct 2020, Kalle Valo wrote:
+>> > 
+>> > > Lee Jones <lee.jones@linaro.org> writes:
+>> > > 
+>> > > > On Thu, 10 Sep 2020, Lee Jones wrote:
+>> > > > 
+>> > > > > This is a rebased/re-worked set of patches which have been
+>> > > > > previously posted to the mailing list(s).
+>> > > > > 
+>> > > > > This set is part of a larger effort attempting to clean-up W=1
+>> > > > > kernel builds, which are currently overwhelmingly riddled with
+>> > > > > niggly little warnings.
+>> > > > > 
+>> > > > > There are quite a few W=1 warnings in the Wireless.  My plan
+>> > > > > is to work through all of them over the next few weeks.
+>> > > > > Hopefully it won't be too long before drivers/net/wireless
+>> > > > > builds clean with W=1 enabled.
+>> > > > > 
+>> > > > > Lee Jones (29):
+>> > > > >   iwlwifi: dvm: Demote non-compliant kernel-doc headers
+>> > > > >   iwlwifi: rs: Demote non-compliant kernel-doc headers
+>> > > > >   iwlwifi: dvm: tx: Demote non-compliant kernel-doc headers
+>> > > > >   iwlwifi: dvm: lib: Demote non-compliant kernel-doc headers
+>> > > > >   iwlwifi: calib: Demote seemingly unintentional kerneldoc header
+>> > > > >   wil6210: Fix a couple of formatting issues in 'wil6210_debugfs_init'
+>> > > > >   iwlwifi: dvm: sta: Demote a bunch of nonconformant kernel-doc headers
+>> > > > >   iwlwifi: mvm: ops: Remove unused static struct 'iwl_mvm_debug_names'
+>> > > > >   iwlwifi: dvm: Demote a couple of nonconformant kernel-doc headers
+>> > > > >   iwlwifi: mvm: utils: Fix some doc-rot
+>> > > > >   iwlwifi: dvm: scan: Demote a few nonconformant kernel-doc headers
+>> > > > >   iwlwifi: dvm: rxon: Demote non-conformant kernel-doc headers
+>> > > > >   iwlwifi: mvm: tx: Demote misuse of kernel-doc headers
+>> > > > >   iwlwifi: dvm: devices: Fix function documentation formatting issues
+>> > > > >   iwlwifi: iwl-drv: Provide descriptions debugfs dentries
+>> > > > >   wil6210: wmi: Fix formatting and demote non-conforming function
+>> > > > >     headers
+>> > > > >   wil6210: interrupt: Demote comment header which is clearly not
+>> > > > >     kernel-doc
+>> > > > >   wil6210: txrx: Demote obvious abuse of kernel-doc
+>> > > > >   wil6210: txrx_edma: Demote comments which are clearly not kernel-doc
+>> > > > >   wil6210: pmc: Demote a few nonconformant kernel-doc function headers
+>> > > > >   wil6210: wil_platform: Demote kernel-doc header to standard comment
+>> > > > >     block
+>> > > > >   wil6210: wmi: Correct misnamed function parameter 'ptr_'
+>> > > > >   ath6kl: wmi: Remove unused variable 'rate'
+>> > > > >   ath9k: ar9002_initvals: Remove unused array
+>> > > > >     'ar9280PciePhy_clkreq_off_L1_9280'
+>> > > > >   ath9k: ar9001_initvals: Remove unused array 'ar5416Bank6_9100'
+>> > > > >   ath9k: ar5008_initvals: Remove unused table entirely
+>> > > > >   ath9k: ar5008_initvals: Move ar5416Bank{0,1,2,3,7} to where they are
+>> > > > >     used
+>> > > > >   brcmsmac: phytbl_lcn: Remove unused array 'dot11lcn_gain_tbl_rev1'
+>> > > > >   brcmsmac: phy_lcn: Remove unused variable
+>> > > > >     'lcnphy_rx_iqcomp_table_rev0'
+>> > > > 
+>> > > > What's happening with all of these iwlwifi patches?
+>> > > > 
+>> > > > Looks like they are still not applied.
+>> > > 
+>> > > Luca (CCed) takes iwlwifi patches to his iwlwifi tree.
+>> > 
+>> > Thanks Kalle.
+>> > 
+>> > Luca,
+>> > 
+>> >   Do you know why these patches have not been applied yet?  Do you
+>> > plan on applying them this week?  -rc1 is not due for release for
+>> > nearly 3 weeks now that Linus tagged an -rc8.
+>> 
+>> I can also take Lee's patches directly to wireless-drivers-next, if
+>> that's easier for Luca.
+>
+> Yes, please take these patches directly.  It simplifies things.
 
-Great, thanks for confirming.
+Ok, I have assigned all Lee's pending iwlwifi patches to me on
+patchwork.
 
-Johan
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
