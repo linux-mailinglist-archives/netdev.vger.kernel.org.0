@@ -2,116 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A1FD286D2D
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 05:31:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 406F4286D79
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 06:13:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728023AbgJHDbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Oct 2020 23:31:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39710 "EHLO
+        id S1726216AbgJHEM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 00:12:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727449AbgJHDbP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Oct 2020 23:31:15 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032CBC061755
-        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 20:31:15 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id o9so2060382plx.10
-        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 20:31:14 -0700 (PDT)
+        with ESMTP id S1725858AbgJHEM7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 00:12:59 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52B3EC061755
+        for <netdev@vger.kernel.org>; Wed,  7 Oct 2020 21:12:59 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id w21so2895976pfc.7
+        for <netdev@vger.kernel.org>; Wed, 07 Oct 2020 21:12:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qYTaebhwD+erOEN/Ss5QNd8/JzEr8NVtI+Cry0U9/J4=;
-        b=mLp0RlTxXt5NrvVoQ09KJNfQjdHfvuzfFZBeaPQVKQInYeJLNO3OqQ9ANqhcBDE8Cr
-         rbthLngDlSZsznmQVg7+ELG4wMygZ12Hv0Op268BsIHxXnaMRnbt0dxhmC3PEd9AcKns
-         BeQBvdMt4RbmHf83AHxmVvJ4r20ZlqtUTsi6gLoyqjTpwQFsabfOjB1CJfhh2yCcbQnD
-         z76Dr+qqdHwrgPOCTXSY5APtDk64kt2aeJprlYnaS2tI3OowjUV0QMpFPNsawj80N2QM
-         PG21Iqv76v8N2MtwkA4n7qP8s+wdKLEoPJv9hfJjZS6kiP4Ozk2RjYu0YK3V29uQIHn7
-         HEag==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HDukyJf1vnIrECGggCnitSTaUfyKs5M10q768959Fr4=;
+        b=Gj4Vea9fkLopFhSLRgWYWVUFdNuPHHeR4q29zqLCLXU4p7K1VTzm6RVeat3O+JqGk6
+         AimFPPjx0nnOgPYuLDRvHCU1mXBqiUsecbKx7XaiHJYqPfd0v+j0giMzwR1LEVfI6SJw
+         V60OxqrH+79Qb5jdtwuJdZXfk6X2n9Mu5rdGrTxti2zJrI+hKuJo4JhVZB8MZrqrMTl5
+         L7b44bPnLb4R/TiFUSq1rc81mwu9LKF009VDBo6EZAsqE3Q/Jc4EOjO7bXqNL70DSXQP
+         VNVOzNjOWZMQLT9OWfwRCh6jE1jmIrjqrcv79+At5M6tvX2CPvGpi9VUOGSYknK+es+P
+         SwXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qYTaebhwD+erOEN/Ss5QNd8/JzEr8NVtI+Cry0U9/J4=;
-        b=Nrr/7Dc2B03eBOPQcWIWhEJgugjryEh6g2oAtUEnMezgMW+7J3c2/lhuQmyr67PYVl
-         qYaJr9ELA3BqI9yyEcf3QffeiiCDO9/rteQaTnJWhc9UBjIm48iOvIKgmezIuhWOjl7S
-         s/TMq+e3+NnHyHbdT79h98bmlzKUcd5nHXP9hWmeb6XreVro+v8DsbbzCmmoBlQEwNge
-         sc/SOZzxdfEk6c1RqGcv10HMbTyb6w69S88HSK2vxZMPwdMPcm3zPxWySYhoUlYYGsfZ
-         ZjKJyIHpnzCsuqQNdtBHS2i7f8m5XrI1Yaxoy+GwosAs11338EU7AE0V31JZZaxFDxm7
-         Sp+g==
-X-Gm-Message-State: AOAM532hDdSm6jBQQLRDqqL6HNQ0JKkA8lE7XnJMdDFWmeU9lQTHKDWv
-        Ezq9HCaQ0uYfhY+9Kw+oNDQ=
-X-Google-Smtp-Source: ABdhPJyq5t4/i6HJfeHcR5f2VKgFGMUifCI4Kw+mey/s5CzfmYfBAgpY7jT3ieMdVAQnUn/yBEBTpg==
-X-Received: by 2002:a17:902:8ec7:b029:d2:42fe:37de with SMTP id x7-20020a1709028ec7b02900d242fe37demr5557902plo.23.1602127874522;
-        Wed, 07 Oct 2020 20:31:14 -0700 (PDT)
-Received: from athina.mtv.corp.google.com ([2620:15c:211:0:a28c:fdff:fee1:f370])
-        by smtp.gmail.com with ESMTPSA id 32sm5241161pgu.17.2020.10.07.20.31.13
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HDukyJf1vnIrECGggCnitSTaUfyKs5M10q768959Fr4=;
+        b=SK4z1hYcHvxEZvuX7eZHgg2jHx4+689xEpT8ULAWknWvuiOUKPfHlVGQClTqaW7hze
+         ZYhAZl2tIok9Ssglbs3A33CwWgOfTd4EkZ+5l0MlNx4eyIzsXt8oZpWqB+OGHas/ILxn
+         CPy9rFrFW7aGliBeT9+fF9Esh6wNvxYxFy66XjGV5Cj26dFAsS66J6t/btN897Mqr3Eu
+         i36qoWYxsfRdzjqaESWV0Xn5F0CpkU9qjWYAkhZdUmHacrjWaiHK4+YxQ09Yb4cnlRIw
+         bYu7G6DQmmoFjgJ7IYC5brMHyoeSdXvjn9U1uQ6pjzgIvGIY5YZ6w53iV0saX8akvPnW
+         2YVw==
+X-Gm-Message-State: AOAM533a4phZu656Tgk9E63ho3TPzG++JUZ8xqiJVm3MrvDohQMnFGCS
+        BMH6i9W7M9MQhB96jcGzfJy18NIHe4Et/w==
+X-Google-Smtp-Source: ABdhPJyFND+2eIxiO4zxkB22M4zoRmUA/9agxvgDHDqQIQyYUL4R7Gb8rVIX+bUjEV/vsjiYgLkGuw==
+X-Received: by 2002:a62:1686:0:b029:155:3b11:b454 with SMTP id 128-20020a6216860000b02901553b11b454mr2285822pfw.47.1602130378397;
+        Wed, 07 Oct 2020 21:12:58 -0700 (PDT)
+Received: from unknown.linux-6brj.site ([2600:1700:65a0:ab60::46])
+        by smtp.gmail.com with ESMTPSA id j5sm1217901pjb.56.2020.10.07.21.12.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Oct 2020 20:31:13 -0700 (PDT)
-From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
-To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>
-Subject: [PATCH 2/2] net/ipv6: ensure ip6_dst_mtu_forward() returns at least IPV6_MIN_MTU
-Date:   Wed,  7 Oct 2020 20:31:02 -0700
-Message-Id: <20201008033102.623894-2-zenczykowski@gmail.com>
-X-Mailer: git-send-email 2.28.0.806.g8561365e88-goog
-In-Reply-To: <20201008033102.623894-1-zenczykowski@gmail.com>
-References: <20201008033102.623894-1-zenczykowski@gmail.com>
+        Wed, 07 Oct 2020 21:12:57 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        syzbot+e96a7ba46281824cc46a@syzkaller.appspotmail.com,
+        Xin Long <lucien.xin@gmail.com>, Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>
+Subject: [Patch net] tipc: fix the skb_unshare() in tipc_buf_append()
+Date:   Wed,  7 Oct 2020 21:12:50 -0700
+Message-Id: <20201008041250.22642-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
+skb_unshare() drops a reference count on the old skb unconditionally,
+so in the failure case, we end up freeing the skb twice here.
+And because the skb is allocated in fclone and cloned by caller
+tipc_msg_reassemble(), the consequence is actually freeing the
+original skb too, thus triggered the UAF by syzbot.
 
-This is basically just a refactor.
+Fix this by replacing this skb_unshare() with skb_cloned()+skb_copy().
 
-But it does affect (a presumably buggy) call site in:
-  net/netfilter/nf_flow_table_core.c
-  flow_offload_fill_route()
-
-Signed-off-by: Maciej Żenczykowski <maze@google.com>
+Fixes: ff48b6222e65 ("tipc: use skb_unshare() instead in tipc_buf_append()")
+Reported-and-tested-by: syzbot+e96a7ba46281824cc46a@syzkaller.appspotmail.com
+Cc: Xin Long <lucien.xin@gmail.com>
+Cc: Jon Maloy <jmaloy@redhat.com>
+Cc: Ying Xue <ying.xue@windriver.com>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
 ---
- include/net/ip6_route.h | 4 ++--
- net/ipv6/ip6_output.c   | 2 --
- 2 files changed, 2 insertions(+), 4 deletions(-)
+ net/tipc/msg.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/ip6_route.h b/include/net/ip6_route.h
-index 598415743f46..25c113dd88ea 100644
---- a/include/net/ip6_route.h
-+++ b/include/net/ip6_route.h
-@@ -313,14 +313,14 @@ static inline unsigned int ip6_dst_mtu_forward(const struct dst_entry *dst)
- 	struct inet6_dev *idev;
- 	unsigned int mtu = dst_metric_raw(dst, RTAX_MTU);
- 	if (mtu)
--		return mtu;
-+		return max(mtu, (unsigned)IPV6_MIN_MTU);
- 
- 	rcu_read_lock();
- 	idev = __in6_dev_get(dst->dev);
- 	mtu = idev ? idev->cnf.mtu6 : IPV6_MIN_MTU;
- 	rcu_read_unlock();
- 
--	return mtu;
-+	return max(mtu, (unsigned)IPV6_MIN_MTU);
- }
- 
- u32 ip6_mtu_from_fib6(const struct fib6_result *res,
-diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
-index c78e67d7747f..bc85f92adaf9 100644
---- a/net/ipv6/ip6_output.c
-+++ b/net/ipv6/ip6_output.c
-@@ -540,8 +540,6 @@ int ip6_forward(struct sk_buff *skb)
- 	}
- 
- 	mtu = ip6_dst_mtu_forward(dst);
--	if (mtu < IPV6_MIN_MTU)
--		mtu = IPV6_MIN_MTU;
- 
- 	if (ip6_pkt_too_big(skb, mtu)) {
- 		/* Again, force OUTPUT device used as source address */
+diff --git a/net/tipc/msg.c b/net/tipc/msg.c
+index 52e93ba4d8e2..681224401871 100644
+--- a/net/tipc/msg.c
++++ b/net/tipc/msg.c
+@@ -150,7 +150,8 @@ int tipc_buf_append(struct sk_buff **headbuf, struct sk_buff **buf)
+ 	if (fragid == FIRST_FRAGMENT) {
+ 		if (unlikely(head))
+ 			goto err;
+-		frag = skb_unshare(frag, GFP_ATOMIC);
++		if (skb_cloned(frag))
++			frag = skb_copy(frag, GFP_ATOMIC);
+ 		if (unlikely(!frag))
+ 			goto err;
+ 		head = *headbuf = frag;
 -- 
-2.28.0.806.g8561365e88-goog
+2.28.0
 
