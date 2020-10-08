@@ -2,130 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC7DE2870B7
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 10:30:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A49D2870B9
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 10:31:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728806AbgJHIaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 04:30:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57796 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726499AbgJHIaq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 04:30:46 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B50C061755
-        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 01:30:45 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id b193so2774825pga.6
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 01:30:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LX8I2fijecv7KRtCEc4VPXXR4257RwUjHtPyJPvY9W0=;
-        b=XYGdOyrNNQJRQ6hJBuUKwkDbFKksOH1ePxlFL2Rx+eOIhm3bi5NmExBXoAB2ihVHps
-         HblBBTqJ/DAftYDSl8iHU9h3gXnEmmMCF1IulxObLV9M++SXh0jCfOKrFqlCnNo6m1NZ
-         70ObngpeM2gpfLX1Zz1FLKc/buW8NfQDO3pGprgaCispLIHHnLtuJnOfd3Am5UGNVaRW
-         eGe5u1LD2K5BxkfzUTtuGGK1cBoJ+0dcaQRMUT6n2CF/hvS6dOYQDo7TkIrzoesz5wST
-         cUTGp8BWIytcvar4hNMStvsdEDiE7REmyIVFFbUgJolrHkZ3l0qMmMMnv5tV3CQ1+oUV
-         mATg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LX8I2fijecv7KRtCEc4VPXXR4257RwUjHtPyJPvY9W0=;
-        b=dtiCPoYz5p+YZnghpqHloV/YCYYoVYtUavj08b1M7ROcjjNRPOxWZNppgaKH4MB4jK
-         p3UHHl5sHLvTi8yz65jOxa3fsApcUQFyGng1xuGZTdeaCceP39f0iV9oIhI0LseeE7mb
-         vp1Nn0CN2cUFtts4iWbxUEh9R4AJqPfKYn9wEkPxN73p+dQjb4cm8AAGNFk2hrK3Mkbi
-         9db3tK/K/zG3IzqI/wU5pEcAbSvw6q2hvl1uQrHr2FKQNddjdjpDmDgxgU0ukc61wg9C
-         +PsUz+D54+HegaXS8DvyaenqwUVB/RQapTTKLnekLYFqTWdiSROUgrBajKhvrLnOnFGP
-         xX6w==
-X-Gm-Message-State: AOAM5312r08oBlDXx9mQfHZTHlEaVw5vOXYJz/iQJn0RKNMpuxV8H+5+
-        aMtqwZ1a0MrYjgWmUDws9Lo=
-X-Google-Smtp-Source: ABdhPJwt+2ryNOul78QEOWthG/Etk4wPdoj7M884f+QWiKb8l7QXbeJugvbo4bJWjGA1eGCpbZJclA==
-X-Received: by 2002:a17:90a:6443:: with SMTP id y3mr6793013pjm.150.1602145845557;
-        Thu, 08 Oct 2020 01:30:45 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id o20sm6799143pgh.63.2020.10.08.01.30.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Oct 2020 01:30:44 -0700 (PDT)
-Date:   Thu, 8 Oct 2020 16:30:34 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>
-Subject: Re: [PATCH net 2/2] IPv6: reply ICMP error if the first fragment
- don't include all headers
-Message-ID: <20201008083034.GI2531@dhcp-12-153.nay.redhat.com>
-References: <20201007035502.3928521-1-liuhangbin@gmail.com>
- <20201007035502.3928521-3-liuhangbin@gmail.com>
- <91f5b71e-416d-ebf1-750b-3e1d5cf6b732@gmail.com>
+        id S1728833AbgJHIaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 04:30:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:35562 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728818AbgJHIav (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 04:30:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602145850;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9/f5s+wAMUDBHNK2s/ajMrq33GrAKbQrX3IMSK9ziUU=;
+        b=DC3drF17dOoGz0HVmaEjL2+kRDkej3r66XEFsFC3HS1V2qk/4annc+K2l/Vo1v/sIfyL/o
+        pH3SLt4A3DpsaTOlKGnFjnQabcHNqm7N4EmQVLnkiNrqI2EAPq3X9y3Pim1roB8BNpNMZW
+        LNGJlGvNiZSPVcCe2o5Qc8Jz1TGcE4U=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-524-AfpjLmSKMbuxo7CHm3l-zg-1; Thu, 08 Oct 2020 04:30:45 -0400
+X-MC-Unique: AfpjLmSKMbuxo7CHm3l-zg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C686910866AC;
+        Thu,  8 Oct 2020 08:30:42 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.22])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BEDA36EF5D;
+        Thu,  8 Oct 2020 08:30:35 +0000 (UTC)
+Date:   Thu, 8 Oct 2020 10:30:34 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        brouer@redhat.com
+Subject: Re: [PATCH bpf-next V2 5/6] bpf: Add MTU check for TC-BPF packets
+ after egress hook
+Message-ID: <20201008103034.55c1b8bb@carbon>
+In-Reply-To: <7aeb6082-48a3-9b71-2e2c-10adeb5ee79a@iogearbox.net>
+References: <160208770557.798237.11181325462593441941.stgit@firesoul>
+        <160208778070.798237.16265441131909465819.stgit@firesoul>
+        <7aeb6082-48a3-9b71-2e2c-10adeb5ee79a@iogearbox.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <91f5b71e-416d-ebf1-750b-3e1d5cf6b732@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+On Wed, 7 Oct 2020 23:37:00 +0200
+Daniel Borkmann <daniel@iogearbox.net> wrote:
 
-Thanks for the comments. I should add "RFC" in subject next time for the
-uncertain fix patch.
-
-On Wed, Oct 07, 2020 at 11:35:41AM +0200, Eric Dumazet wrote:
-> 
-> 
-> On 10/7/20 5:55 AM, Hangbin Liu wrote:
-> 
-> >  		kfree_skb(skb);
-> > @@ -282,6 +285,21 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
-> >  		}
-> >  	}
-> >  
-> > +	/* RFC 8200, Section 4.5 Fragment Header:
-> > +	 * If the first fragment does not include all headers through an
-> > +	 * Upper-Layer header, then that fragment should be discarded and
-> > +	 * an ICMP Parameter Problem, Code 3, message should be sent to
-> > +	 * the source of the fragment, with the Pointer field set to zero.
-> > +	 */
-> > +	nexthdr = hdr->nexthdr;
-> > +	offset = ipv6_skip_exthdr(skb, skb_transport_offset(skb), &nexthdr, &frag_off);
-> > +	if (frag_off == htons(IP6_MF) && !pskb_may_pull(skb, offset + 1)) {
-> > +		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INHDRERRORS);
-> > +		icmpv6_param_prob(skb, ICMPV6_HDR_INCOMP, 0);
-> > +		rcu_read_unlock();
-> > +		return NULL;
-> > +	}
-> > +
-> >  	rcu_read_unlock();
-> >  
-> >  	/* Must drop socket now because of tproxy. */
+> On 10/7/20 6:23 PM, Jesper Dangaard Brouer wrote:
+> [...]
+> >   net/core/dev.c |   24 ++++++++++++++++++++++--
+> >   1 file changed, 22 insertions(+), 2 deletions(-)
 > > 
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index b433098896b2..19406013f93e 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -3870,6 +3870,7 @@ sch_handle_egress(struct sk_buff *skb, int *ret, struct net_device *dev)
+> >   	switch (tcf_classify(skb, miniq->filter_list, &cl_res, false)) {
+> >   	case TC_ACT_OK:
+> >   	case TC_ACT_RECLASSIFY:
+> > +		*ret = NET_XMIT_SUCCESS;
+> >   		skb->tc_index = TC_H_MIN(cl_res.classid);
+> >   		break;
+> >   	case TC_ACT_SHOT:
+> > @@ -4064,9 +4065,12 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+> >   {
+> >   	struct net_device *dev = skb->dev;
+> >   	struct netdev_queue *txq;
+> > +#ifdef CONFIG_NET_CLS_ACT
+> > +	bool mtu_check = false;
+> > +#endif
+> > +	bool again = false;
+> >   	struct Qdisc *q;
+> >   	int rc = -ENOMEM;
+> > -	bool again = false;
+> >   
+> >   	skb_reset_mac_header(skb);
+> >   
+> > @@ -4082,14 +4086,28 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+> >   
+> >   	qdisc_pkt_len_init(skb);
+> >   #ifdef CONFIG_NET_CLS_ACT
+> > +	mtu_check = skb_is_redirected(skb);
+> >   	skb->tc_at_ingress = 0;
+> >   # ifdef CONFIG_NET_EGRESS
+> >   	if (static_branch_unlikely(&egress_needed_key)) {
+> > +		unsigned int len_orig = skb->len;
+> > +
+> >   		skb = sch_handle_egress(skb, &rc, dev);
+> >   		if (!skb)
+> >   			goto out;
+> > +		/* BPF-prog ran and could have changed packet size beyond MTU */
+> > +		if (rc == NET_XMIT_SUCCESS && skb->len > len_orig)
+> > +			mtu_check = true;
+> >   	}
+> >   # endif
+> > +	/* MTU-check only happens on "last" net_device in a redirect sequence
+> > +	 * (e.g. above sch_handle_egress can steal SKB and skb_do_redirect it
+> > +	 * either ingress or egress to another device).
+> > +	 */  
 > 
-> Ouch, this is quite a buggy patch.
-> 
-> I doubt we want to add yet another ipv6_skip_exthdr() call in IPv6 fast path.
-> 
-> Surely the presence of NEXTHDR_FRAGMENT is already tested elsewhere ?
+> Hmm, quite some overhead in fast path. 
 
-Would you like to help point where NEXTHDR_FRAGMENT was tested before IPv6
-defragment?
+Not really, normal fast-path already call is_skb_forwardable(). And it
+already happens in existing code, ingress redirect code, which I remove
+calling in patch 6.
 
+(I have considered inlining is_skb_forwardable as a optimization for
+general netstack dev_forward_skb)
+
+> Also, won't this be checked multiple times on stacked devices? :(
+
+I don't think it will be checked multiple times, because we have a
+skb_reset_redirect() in ingress path (just after sch_handle_ingress()).
+
+> Moreover, this missed the fact that 'real' qdiscs can have
+> filters attached too, this would come after this check. Can't this instead be in
+> driver layer for those that really need it? I would probably only drop the check
+> as done in 1/6 and allow the BPF prog to do the validation if needed.
+
+See other reply, this is likely what we will end-up with.
+
+> > +	if (mtu_check && !is_skb_forwardable(dev, skb)) {
+> > +		rc = -EMSGSIZE;
+> > +		goto drop;
+> > +	}
+> >   #endif
+> >   	/* If device/qdisc don't need skb->dst, release it right now while
+> >   	 * its hot in this cpu cache.
+> > @@ -4157,7 +4175,9 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+> >   
+> >   	rc = -ENETDOWN;
+> >   	rcu_read_unlock_bh();
+> > -
+> > +#ifdef CONFIG_NET_CLS_ACT
+> > +drop:
+> > +#endif
+> >   	atomic_long_inc(&dev->tx_dropped);
+> >   	kfree_skb_list(skb);
+> >   	return rc;
+> >   
 > 
-> Also, ipv6_skip_exthdr() does not pull anything in skb->head, it would be strange
-> to force a pull of hundreds of bytes just because you want to check if an extra byte is there,
-> if the packet could be forwarded as is, without additional memory allocations.
-> 
-> Testing skb->len should be more than enough at this stage.
 
-Ah, yes, I shouldn't call pskb_may_pull here.
-> 
-> Also ipv6_skip_exthdr() can return an error.
 
-it returns -1 as error, If we tested it by (offset + 1 > skb->len), does
-that count as an error handler?
 
-Thanks
-Hangbin
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
