@@ -2,148 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A3E3428725B
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 12:18:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E56C28729A
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 12:34:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729387AbgJHKSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 06:18:11 -0400
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:14859 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729210AbgJHKSL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 06:18:11 -0400
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5f7ee72a0002>; Thu, 08 Oct 2020 03:17:14 -0700
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 8 Oct
- 2020 10:18:10 +0000
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.177)
- by HQMAIL101.nvidia.com (172.20.187.10) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Thu, 8 Oct 2020 10:18:10 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NKg3UlXJBdgX7r02udMRDRshhTjhP08gXgmkrU5s18uBLPupZn7VYt7t87E/Do0v9tmrCJ1x88gBX/B4PJCwbBXrJIe9/tXttcQC1mIcuaDPJWdEmfjuWSubX7ZS6NtjZD7FNdKgT4aHInjwaga86gIDHlfIIYtmJeogqwWg+DLBGk0y9lWXI9CEOawz3RFnk8PCdqyhqZ1SPWkJDzfN7oHEff5hht+Qu9RoHZdsD/BngmYY9nYyCch3kNXBffZcW0ZHF3h8pqZ1IHGBYZmb5szf4ykirPujesfgdY13abRVp4asLKXb0Eo9eTbDCwjo/wfSumgF2Z5P+2F9aThIHQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v7QK+x48Nahz9E245zPp0yBfsIPiIH5jtK/dW+p4mzo=;
- b=OWo6LoLlyBr8fkjsvZyI+4leOl2CKbkCBm5WFCHYq9xdprYnRPEV/SRigyTBA+JTpngaGg4jkcTt6LOMc7Er9486PUs8HCsmP8euvbJ092XSh0M+p4GieIkUXmlFgO7ciQdpA0G0Jm7vOgggF0XuFX3BNzjcDIUANXVqDEUOTAlGsA62+sbKSutlofdAe6Ny0yL8bUBmpYSg62vmzkEWIBmEcnSZBFfyuCfrDiDgqH+pctG1sx/npYWrrykZivUcWcHWN0IpmNSyGJRg6PS/jGhWbx5DVmPD7b5Wg0O7irLGGbK7bQ7chiVj+TQZJjzm0d+qZn0K0kHMRSi7RsoQng==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM5PR1201MB0010.namprd12.prod.outlook.com (2603:10b6:3:e3::23)
- by DM6PR12MB3004.namprd12.prod.outlook.com (2603:10b6:5:11b::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.21; Thu, 8 Oct
- 2020 10:18:09 +0000
-Received: from DM5PR1201MB0010.namprd12.prod.outlook.com
- ([fe80::4517:3a8d:9dff:3b62]) by DM5PR1201MB0010.namprd12.prod.outlook.com
- ([fe80::4517:3a8d:9dff:3b62%9]) with mapi id 15.20.3455.024; Thu, 8 Oct 2020
- 10:18:09 +0000
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-To:     "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        "henrik.bjoernlund@microchip.com" <henrik.bjoernlund@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Roopa Prabhu <roopa@nvidia.com>
-CC:     "horatiu.vultur@microchip.com" <horatiu.vultur@microchip.com>
-Subject: Re: [PATCH net] bridge: Netlink interface fix.
-Thread-Topic: [PATCH net] bridge: Netlink interface fix.
-Thread-Index: AQHWnKKpyTxrd+oPIUur9lgPN8/sf6mMOMkAgAFGlAA=
-Date:   Thu, 8 Oct 2020 10:18:09 +0000
-Message-ID: <585c251204d3c09150e9fcb60f560c599567688a.camel@nvidia.com>
-References: <20201007120700.2152699-1-henrik.bjoernlund@microchip.com>
-         <32183f25a3d7ee8c148db42fbed9dd2a6e0a1f92.camel@nvidia.com>
-In-Reply-To: <32183f25a3d7ee8c148db42fbed9dd2a6e0a1f92.camel@nvidia.com>
-Reply-To: Nikolay Aleksandrov <nikolay@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.34.4 (3.34.4-1.fc31) 
-authentication-results: lists.linux-foundation.org; dkim=none (message not
- signed) header.d=none;lists.linux-foundation.org; dmarc=none action=none
- header.from=nvidia.com;
-x-originating-ip: [84.238.136.197]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ec8a3db8-7b77-4e75-241d-08d86b7374a2
-x-ms-traffictypediagnostic: DM6PR12MB3004:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR12MB3004D580F59A01F1B3FE38F0DF0B0@DM6PR12MB3004.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: lTC2woOBFmGBtEcJ3gOVnTti5JuH8xwmjfq3bIqH/GTgH+FP7psLzHFlyEMe2gwjGZDgtiX+4zes4Wfq/3gIkBqwhYUmJe1X7KF6ilqvEMB2QHC01546u+Re4MIL0r0MiOHlefBoJERRj+iarMSTmgxf0gfEsnyJ5Us2NrCSRG3Su8j09euJ6BQo4HJFLZ0kO8ZMDyUz2zHOkT9mN1T3mWmC1YQ+yy8VUkvHsyjJ9/IglJdLu0u/qjHAEBKYinNPekSVsu/3HKIdLq6yx2AsTUKuPoaYn0QsAvSZwgz4N5TXb8+fx9NdFdIx7sCxyQ6m7rDg1PtItpD77NBO11PBEg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR1201MB0010.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(376002)(136003)(396003)(39860400002)(8676002)(2906002)(8936002)(6506007)(26005)(3450700001)(71200400001)(6636002)(6512007)(36756003)(186003)(5660300002)(86362001)(83380400001)(4326008)(64756008)(66556008)(2616005)(6486002)(66476007)(66946007)(66446008)(110136005)(316002)(91956017)(478600001)(76116006);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: 2u4ZNxeK5sV6WUBhM3NE7eQZ3EZOAPGVTcLMNotgJzej8DTZDxhBiz7v3a76ePPMyswtSBcfE364tN/TlwGN+FiDoIYo6pnCfNRWNANpse4dQuLm5GlRF058Rvk6lo7gN3yPeEVhtLXI4QsCFrz1UvRMZVXAetZOvU06HLvxiQhYPVf4BI64LQoNwQ59ADCG70/HrGVZyDm3R0p9hEA7jXu+3JGWxFcNfNnnv/3vFQQe4eaFlnjvOjYt2RX0c8vddoRLkGWhszJ4QlURYsTWvzL187YQPWyDAwgRvGPPiTy6cEE3O69EV4j1/YOwjCQ80Z0bdwT0tvO7gquycfNMtXuxRLIs0ssbb1kTV7jt1o8bRh9vou6d2of7F49FA6f15d+U4zWb72GvgIb9S2WJS6gBgBFWZfFtwk2oMxRGjxeHs+/4uieFu9iHYYZukaRPwY9oBDuuAjBuIZjbUeCBZU4tpYAEF3xQro1+EnQ0aMPkT9Va1f2U2VuQ14TDu7UC7f30PBi0q6tS4xMjiKsBwdOh0DU10QzliqrjJP9K+4+iPIn9RohKm21XIdIUQHzkmDREDF+Vsspqys70jGMVTouOed4aRi5MRix1vmlSVNpgZSG6wyX82X8P4Y1qQ3bec5IzIREdBgnKiVJpmarM6A==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A6370466707DB64D8F28135E50738949@namprd12.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1729171AbgJHKey (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 06:34:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48682 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725912AbgJHKex (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 06:34:53 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45F54C061755
+        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 03:34:53 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id dt13so7347662ejb.12
+        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 03:34:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sartura-hr.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Xk1UawkGscrdgyTTdSmArkeO7Pere7VwZLuC1AwgAxQ=;
+        b=YOHSLaz4bydXyJ7BWWL1O6Xcre8rBne+Xu+denGCa6Ya2ZB/qnacxBnhkqaLdFe3+5
+         paGQZkYkjJcJmZH7LZmPdP8HUJCOi2/SXtgW4KtUfMkOH3HZQnALBmpt7/ljJ7MsBQ+8
+         pmFaNw529K8cLy3AG8UBqP9O48VYPmCWVNn0vApt16v+kHWgwmxbKLGe68/pBOtKXr0f
+         NTPpIQUcOMdM2oiEDXYBAJ+K7+RWW3wzISohZtWQ592FZzSoWlZHKBF6o5/rV5KiKq58
+         dMMnhNNZlMlNSvb98HK/0cFQtKI1sptpfkU4G/kYwZF2VWLsy8Pk6uD65fkGNmWpMJsd
+         Sw6g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Xk1UawkGscrdgyTTdSmArkeO7Pere7VwZLuC1AwgAxQ=;
+        b=Eoz7rBaho3yLf9wddXgKXLRamMW2sstbQTJNMRtHakvn5B5Lg192LgpVwPEA913N7u
+         FVhfzha49gvzQgcvtleiOL24E/1vh3LSqKDo1PgVzV530jvEJC/f9/EUI5jo+DfayHFi
+         EOomFb7ucjoApCpiwhQ+2iT0NG4HtHp/JYELTEs0DjX81JhpfxoNmFO5+iop8q2ap/JT
+         M7Jk7w+znW568JLsW2peU4GvRmMeDHaxKF2hbg0Dqwt6m7pR4KvueAdXhUqLza643lSa
+         hIl0/HsMqUXLdcY5iAe3dxnIRh+R1DHAplrRLR4S4hnE/aOedghaDe+dnYa4jAwhd10D
+         ZmKg==
+X-Gm-Message-State: AOAM531Dgip+qr2H2XMa5XXCPm2pmHWhZ2IPsur8jtBOr4OnbYLBaCFu
+        7Z7dzfjLyDUBaUHgW7JHjV/3xxtV+T0rcSR4QbpDsAZWihjj0agf
+X-Google-Smtp-Source: ABdhPJygODbT8Wy9l2d7FOrsdSQH7N26yw4nFAuGY6k5vZlb7tGt9KmD3PsZeNjmX4N5b1ARhbmKpBUCNV8Wc/wNJNg=
+X-Received: by 2002:a17:906:270f:: with SMTP id z15mr7908192ejc.6.1602153291904;
+ Thu, 08 Oct 2020 03:34:51 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR1201MB0010.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ec8a3db8-7b77-4e75-241d-08d86b7374a2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Oct 2020 10:18:09.3580
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: IAY1haTGAlBCA3kG+w0TJQQYhWL5mNfrssxueAu7rHNYFfCIVfcAXhvnQ+rQecKePbz4q07PAlMenfMxyp1cvA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3004
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1602152234; bh=v7QK+x48Nahz9E245zPp0yBfsIPiIH5jtK/dW+p4mzo=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
-         CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
-         In-Reply-To:Reply-To:Accept-Language:Content-Language:
-         X-MS-Has-Attach:X-MS-TNEF-Correlator:user-agent:
-         authentication-results:x-originating-ip:x-ms-publictraffictype:
-         x-ms-office365-filtering-correlation-id:x-ms-traffictypediagnostic:
-         x-ms-exchange-transport-forked:x-microsoft-antispam-prvs:
-         x-ms-oob-tlc-oobclassifiers:x-ms-exchange-senderadcheck:
-         x-microsoft-antispam:x-microsoft-antispam-message-info:
-         x-forefront-antispam-report:x-ms-exchange-antispam-messagedata:
-         Content-Type:Content-ID:Content-Transfer-Encoding:MIME-Version:
-         X-MS-Exchange-CrossTenant-AuthAs:
-         X-MS-Exchange-CrossTenant-AuthSource:
-         X-MS-Exchange-CrossTenant-Network-Message-Id:
-         X-MS-Exchange-CrossTenant-originalarrivaltime:
-         X-MS-Exchange-CrossTenant-fromentityheader:
-         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
-         X-MS-Exchange-CrossTenant-userprincipalname:
-         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=A4VKAk8H+SgDUJT0Ag1lSF++LbohS7xZBjsBpalvPjJ6Bg0yUOn+fD8Pm/YvC0sO0
-         7UcXsT7SEaf6xN3c/M3sYLJJQwOJEB/wo/ztmBDX2CTG9ouvm4hDzwDsLwuTZZGqWD
-         NiodIHLhsCP53+Xw+1V6m1x/IVwrcSpNt0hF7lGAlw0B0u5Eqz/5C+IxpgyungGcfm
-         FEpKabBuDCAgnAwsEqFlMm+hfCdzm4UnAcCi88hSfgZYsDIyIA7tA4WlinWdd2MUaQ
-         ZqZg55VoEzzouZO2yPxr4i1evw0IzEiiaJChD/UJTMg+46u9k3RyfHJIcqP5G30OR+
-         dOEetmiUAIbSg==
+References: <20201002010633.3706122-1-andriin@fb.com> <CAKQ-crhUT07SXZ16NK4_2RtpNA+kvm7VtB5fdo4qSV4Qi4GJ_g@mail.gmail.com>
+ <CAEf4Bzb7kE5x=Ow=XHMb1wmt0Tjw-qqoL-yihAWx5s10Dk9chQ@mail.gmail.com>
+In-Reply-To: <CAEf4Bzb7kE5x=Ow=XHMb1wmt0Tjw-qqoL-yihAWx5s10Dk9chQ@mail.gmail.com>
+From:   Luka Perkov <luka.perkov@sartura.hr>
+Date:   Thu, 8 Oct 2020 12:34:41 +0200
+Message-ID: <CAKQ-crhMomcb9v3LAnqrBFLp1=m8bh4ZBnD7O_oH2XsU2faMAg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 0/3] libbpf: auto-resize relocatable LOAD/STORE instructions
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Tony Ambardar <tony.ambardar@gmail.com>,
+        Juraj Vijtiuk <juraj.vijtiuk@sartura.hr>,
+        Luka Oreskovic <luka.oreskovic@sartura.hr>,
+        Sven Fijan <sven.fijan@sartura.hr>,
+        David Marcinkovic <david.marcinkovic@sartura.hr>,
+        Jakov Petrina <jakov.petrina@sartura.hr>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDIwLTEwLTA3IGF0IDE0OjQ5ICswMDAwLCBOaWtvbGF5IEFsZWtzYW5kcm92IHdy
-b3RlOg0KPiBPbiBXZWQsIDIwMjAtMTAtMDcgYXQgMTI6MDcgKzAwMDAsIEhlbnJpayBCam9lcm5s
-dW5kIHdyb3RlOg0KPiA+IFRoaXMgY29tbWl0IGlzIGNvcnJlY3RpbmcgTkVUTElOSyBicl9maWxs
-X2lmaW5mbygpIHRvIGJlIGFibGUgdG8NCj4gPiBoYW5kbGUgJ2ZpbHRlcl9tYXNrJyB3aXRoIG11
-bHRpcGxlIGZsYWdzIGFzc2VydGVkLg0KPiA+IA0KPiA+IEZpeGVzOiAzNmE4ZThlMjY1NDIwICgi
-YnJpZGdlOiBFeHRlbmQgYnJfZmlsbF9pZmluZm8gdG8gcmV0dXJuIE1QUiBzdGF0dXMiKQ0KPiA+
-IA0KPiA+IFNpZ25lZC1vZmYtYnk6IEhlbnJpayBCam9lcm5sdW5kIDxoZW5yaWsuYmpvZXJubHVu
-ZEBtaWNyb2NoaXAuY29tPg0KPiA+IFJldmlld2VkLWJ5OiBIb3JhdGl1IFZ1bHR1ciA8aG9yYXRp
-dS52dWx0dXJAbWljcm9jaGlwLmNvbT4NCj4gPiBTdWdnZXN0ZWQtYnk6IE5pa29sYXkgQWxla3Nh
-bmRyb3YgPG5pa29sYXlAbnZpZGlhLmNvbT4NCj4gPiBUZXN0ZWQtYnk6IEhvcmF0aXUgVnVsdHVy
-IDxob3JhdGl1LnZ1bHR1ckBtaWNyb2NoaXAuY29tPg0KPiA+IC0tLQ0KPiA+ICBuZXQvYnJpZGdl
-L2JyX25ldGxpbmsuYyB8IDI2ICsrKysrKysrKysrLS0tLS0tLS0tLS0tLS0tDQo+ID4gIDEgZmls
-ZSBjaGFuZ2VkLCAxMSBpbnNlcnRpb25zKCspLCAxNSBkZWxldGlvbnMoLSkNCj4gPiANCj4gDQo+
-IFRoZSBwYXRjaCBsb29rcyBnb29kLCBwbGVhc2UgZG9uJ3Qgc2VwYXJhdGUgdGhlIEZpeGVzIHRh
-ZyBmcm9tIHRoZSBvdGhlcnMuDQo+IEFja2VkLWJ5OiBOaWtvbGF5IEFsZWtzYW5kcm92IDxuaWtv
-bGF5QG52aWRpYS5jb20+DQo+IA0KDQpUQkgsIHRoaXMgZG9lcyBjaGFuZ2UgYSB1c2VyIGZhY2lu
-ZyBhcGkgKHRoZSBhdHRyaWJ1dGUgbmVzdGluZyksIGJ1dCBJIHRoaW5rDQppbiB0aGlzIGNhc2Ug
-aXQncyBhY2NlcHRhYmxlIGR1ZSB0byB0aGUgZm9ybWF0IGJlaW5nIHdyb25nIGFuZCBNUlAgYmVp
-bmcgbmV3LCBzbw0KSSBkb3VidCBhbnlvbmUgaXMgeWV0IGR1bXBpbmcgaXQgbWl4ZWQgd2l0aCB2
-bGFuIGZpbHRlcl9tYXNrIGFuZCBjaGVja2luZyBmb3INCnR3byBpZGVudGljYWwgYXR0cmlidXRl
-cywgaS5lLiBpbiB0aGUgb2xkL2Jyb2tlbiBjYXNlIHBhcnNpbmcgdGhlIGF0dHJpYnV0ZXMNCmlu
-dG8gYSB0YWJsZSB3b3VsZCBoaWRlIG9uZSBvZiB0aGVtIGFuZCB5b3UnZCBoYXZlIHRvIHdhbGsg
-b3ZlciBhbGwgYXR0cmlidXRlcw0KdG8gY2F0Y2ggdGhhdC4NCg0KDQo=
+Hello Andrii,
+
+On Wed, Oct 7, 2020 at 8:01 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Wed, Oct 7, 2020 at 10:56 AM Luka Perkov <luka.perkov@sartura.hr> wrote:
+> >
+> > Hello Andrii,
+> >
+> > On Fri, Oct 2, 2020 at 3:09 AM Andrii Nakryiko <andriin@fb.com> wrote:
+> > > Patch set implements logic in libbpf to auto-adjust memory size (1-, 2-, 4-,
+> > > 8-bytes) of load/store (LD/ST/STX) instructions which have BPF CO-RE field
+> > > offset relocation associated with it. In practice this means transparent
+> > > handling of 32-bit kernels, both pointer and unsigned integers. Signed
+> > > integers are not relocatable with zero-extending loads/stores, so libbpf
+> > > poisons them and generates a warning. If/when BPF gets support for sign-extending
+> > > loads/stores, it would be possible to automatically relocate them as well.
+> > >
+> > > All the details are contained in patch #1 comments and commit message.
+> > > Patch #2 is a simple change in libbpf to make advanced testing with custom BTF
+> > > easier. Patch #3 validates correct uses of auto-resizable loads, as well as
+> > > check that libbpf fails invalid uses.
+> > >
+> > > I'd really appreciate folks that use BPF on 32-bit architectures to test this
+> > > out with their BPF programs and report if there are any problems with the
+> > > approach.
+> > >
+> > > Cc: Luka Perkov <luka.perkov@sartura.hr>
+> >
+> > First, thank you for the support and sending this series. It took us a
+> > bit longer to run the tests as our target hardware still did not fully
+> > get complete mainline support and we had to rebase our patches. These
+> > are not related to BPF.
+> >
+> > Related to this patch, we have tested various BPF programs with this
+> > patch, and can confirm that it fixed previous issues with pointer
+> > offsets that we had and reported at:
+> >
+> > https://lore.kernel.org/r/CA+XBgLU=8PFkP8S32e4gpst0=R4MFv8rZA5KaO+cEPYSnTRYYw@mail.gmail.com/.
+> >
+> > Most of our programs now work and we are currently debugging other
+> > programs that still aren't working. We are still not sure if the
+> > remaining issues are related to this or not, but will let you know
+> > sometime this week after further and more detailed investigation.
+> >
+>
+> Ok, great, thanks for the update.
+
+Just to update you that we have identified that the problem was a
+known issue with JIT as we had enabled the BPF_JIT_ALWAYS_ON.
+
+That said, it would be great to see this series included in 5.10 :)
+
+Thanks,
+Luka
