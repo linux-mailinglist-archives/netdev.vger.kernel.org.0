@@ -2,129 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 360D228738F
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 13:49:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3750928738E
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 13:49:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726534AbgJHLtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 07:49:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60068 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725802AbgJHLtU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 07:49:20 -0400
-Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C48E1C061755
-        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 04:49:19 -0700 (PDT)
-Received: by mail-vs1-xe42.google.com with SMTP id u74so2875648vsc.2
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 04:49:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=j478tL9uSphQq1TvChx1R1NBjx64ACTnjONxY65DT6A=;
-        b=RqwXhoXa9slVJBS/4vL1H/4fNwO9WZeZJoYZ0TarJ+SOchrolLUBaI5ZlSE/xXMHty
-         +qKJ2DYUS5oZTJZMzimMg3CDIm+Az9adAPJiJkCE1Thj472heZAl5UGHUG1gqfvQeTj7
-         Ry4Tj09Y+VqtVuwF0K0uinSlTsqkVdgm4tTsO68di9uaFeQkJ+WW7mS1CZwzk/2QwVSD
-         9Gy1CL0Udmr60C8mKvojSRTRZpbtc9N9OKByDpvkXn70frjkmjODm2+AVmYf7vulthMG
-         bPpD2vY7os9r5P90qky4Wnpb4idpl9XMECB8Zk23/vAZ9G/+yHMU4D7b2XSsgTSd+ZJh
-         tfkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=j478tL9uSphQq1TvChx1R1NBjx64ACTnjONxY65DT6A=;
-        b=TTlGYHkmB1dB590j0Y1YXTN1VfBHP7fuvb+jCKVezvgwMt8pkktOSD74vCc0bfIaTK
-         iG4+8XmFOXkWlH5dxQ5o/nyVpdWK2ADWOnWNbt6Kd4BqGgk+lUFIIn9dcKLm2Ch56O/b
-         IhETrEblTNbxiAFhfG72/+gakgWhRrSohlGVo4cqXpBfIdueymdvInHCxxBqjwkSOoPb
-         wC5gAFJ7cBdadPBJISmtjAWTD9pK4BwRclVE2neBNvDGv319gcePydyXECQacSXPswDM
-         XjmuLoLiuk0H1Wl35I7uUNizUd+ljfcM+u0orc84hlamdw8X3fOL29Z98nRd4m3zyKb+
-         ksdg==
-X-Gm-Message-State: AOAM530Fk7kHcDDojL5rkkyGocQhwd6y1D6YKC1uUw25+8D3GVIKMm8k
-        5CGXUmVa09YKK483IVRsD1TMbBF56ls=
-X-Google-Smtp-Source: ABdhPJyIHXslum4f/TgM9DVBM9eQH9KmDtOhvh8u2vLyNlCk7U+AHrrMs4PctLhkVWYNZdc2O3HDiw==
-X-Received: by 2002:a05:6102:2c1:: with SMTP id h1mr4509249vsh.3.1602157758434;
-        Thu, 08 Oct 2020 04:49:18 -0700 (PDT)
-Received: from mail-vs1-f42.google.com (mail-vs1-f42.google.com. [209.85.217.42])
-        by smtp.gmail.com with ESMTPSA id 93sm257412uah.19.2020.10.08.04.49.17
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Oct 2020 04:49:17 -0700 (PDT)
-Received: by mail-vs1-f42.google.com with SMTP id x185so2887088vsb.1
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 04:49:17 -0700 (PDT)
-X-Received: by 2002:a67:8a8a:: with SMTP id m132mr4148508vsd.14.1602157756834;
- Thu, 08 Oct 2020 04:49:16 -0700 (PDT)
+        id S1726118AbgJHLtM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 07:49:12 -0400
+Received: from mx1.riseup.net ([198.252.153.129]:38038 "EHLO mx1.riseup.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725802AbgJHLtL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Oct 2020 07:49:11 -0400
+Received: from capuchin.riseup.net (capuchin-pn.riseup.net [10.0.1.176])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (Client CN "*.riseup.net", Issuer "Sectigo RSA Domain Validation Secure Server CA" (not verified))
+        by mx1.riseup.net (Postfix) with ESMTPS id 4C6Txy447NzFpGq;
+        Thu,  8 Oct 2020 04:49:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
+        t=1602157750; bh=bx+z4djcQXXcXTC2wXtv0tky6q8JFgHlAHAJ/PSS6n0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TkrHHdQL/FGlhYCKeBjcCNqZ3eY/O46sM+tEC/0Zy+41bz81zu2SorLksSGJpbyQb
+         Wksi/RfULBLZ8uRacm29z4YhH5jo0hoJqwZxz0jaZtvROFMaKwGfNeR9tARQY58cJZ
+         bcpIe7cmLeV4PUaw8iS5lHgAbvQwUz4JUefDhYaE=
+X-Riseup-User-ID: E7919AFDA53B4FBE4F51337DB00D70AA293804BDC3EB866079C70C765874343A
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+         by capuchin.riseup.net (Postfix) with ESMTPSA id 4C6Txx0ntqz8tjQ;
+        Thu,  8 Oct 2020 04:49:08 -0700 (PDT)
+Date:   Thu, 8 Oct 2020 11:49:05 +0000
+From:   Samanta Navarro <ferivoz@riseup.net>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH] man: fix typos
+Message-ID: <20201008114905.kldf7hlln74urhaf@localhost>
+References: <20201004114259.nwnu3j4uuaryjvx4@localhost>
+ <20201006145204.032647c9@hermes.local>
 MIME-Version: 1.0
-References: <20201008012154.11149-1-xiyou.wangcong@gmail.com>
-In-Reply-To: <20201008012154.11149-1-xiyou.wangcong@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 8 Oct 2020 07:48:40 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSeMYFh3tY9cJN6h02E+r3BST=w74+pD=zraLXsmJTLZXA@mail.gmail.com>
-Message-ID: <CA+FuTSeMYFh3tY9cJN6h02E+r3BST=w74+pD=zraLXsmJTLZXA@mail.gmail.com>
-Subject: Re: [Patch net] ip_gre: set dev->hard_header_len properly
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com,
-        William Tu <u9012063@gmail.com>, Xie He <xie.he.0141@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201006145204.032647c9@hermes.local>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 7, 2020 at 9:22 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> GRE tunnel has its own header_ops, ipgre_header_ops, and sets it
-> conditionally. When it is set, it assumes the outer IP header is
-> already created before ipgre_xmit().
->
-> This is not true when we send packets through a raw packet socket,
-> where L2 headers are supposed to be constructed by user. Packet
-> socket calls dev_validate_header() to validate the header. But
-> GRE tunnel does not set dev->hard_header_len, so that check can
-> be simply bypassed, therefore uninit memory could be passed down
-> to ipgre_xmit().
+Signed-off-by: Samanta Navarro <ferivoz@riseup.net>
+---
+ man/man8/ip-link.8.in   | 14 +++++++-------
+ man/man8/ip-neighbour.8 |  6 +++---
+ man/man8/tc-actions.8   |  2 +-
+ man/man8/tc-pie.8       |  4 ++--
+ 4 files changed, 13 insertions(+), 13 deletions(-)
 
-If dev->hard_header_len is zero, the packet socket will not reserve
-room for the link layer header, so skb->data points to network_header.
-But I don't see any uninitialized packet data?
+diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
+index f451ecf..62d2d9f 100644
+--- a/man/man8/ip-link.8.in
++++ b/man/man8/ip-link.8.in
+@@ -391,7 +391,7 @@ packet the new device should accept.
+ 
+ .TP
+ .BI gso_max_segs " SEGMENTS "
+-specifies the recommended maximum number of a Generic Segment Offload
++specifies the recommended maximum number of Generic Segment Offload
+ segments the new device should accept.
+ 
+ .TP
+@@ -441,7 +441,7 @@ the following additional arguments are supported:
+ - either 802.1Q or 802.1ad.
+ 
+ .BI id " VLANID "
+-- specifies the VLAN Identifer to use. Note that numbers with a leading " 0 " or " 0x " are interpreted as octal or hexadeimal, respectively.
++- specifies the VLAN Identifier to use. Note that numbers with a leading " 0 " or " 0x " are interpreted as octal or hexadecimal, respectively.
+ 
+ .BR reorder_hdr " { " on " | " off " } "
+ - specifies whether ethernet headers are reordered or not (default is
+@@ -572,7 +572,7 @@ the following additional arguments are supported:
+ .in +8
+ .sp
+ .BI  id " VNI "
+-- specifies the VXLAN Network Identifer (or VXLAN Segment
++- specifies the VXLAN Network Identifier (or VXLAN Segment
+ Identifier) to use.
+ 
+ .BI dev " PHYS_DEV"
+@@ -1237,7 +1237,7 @@ the following additional arguments are supported:
+ .in +8
+ .sp
+ .BI  id " VNI "
+-- specifies the Virtual Network Identifer to use.
++- specifies the Virtual Network Identifier to use.
+ 
+ .sp
+ .BI remote " IPADDR"
+@@ -2147,7 +2147,7 @@ loaded under
+ .B xdpgeneric object "|" pinned
+ then the kernel will use the generic XDP variant instead of the native one.
+ .B xdpdrv
+-has the opposite effect of requestsing that the automatic fallback to the
++has the opposite effect of requesting that the automatic fallback to the
+ generic XDP variant be disabled and in case driver is not XDP-capable error
+ should be returned.
+ .B xdpdrv
+@@ -2466,7 +2466,7 @@ specifies the master device which enslaves devices to show.
+ .TP
+ .BI vrf " NAME "
+ .I NAME
+-speficies the VRF which enslaves devices to show.
++specifies the VRF which enslaves devices to show.
+ 
+ .TP
+ .BI type " TYPE "
+@@ -2497,7 +2497,7 @@ specifies the device to display address-family statistics for.
+ 
+ .PP
+ .I "TYPE"
+-specifies which help of link type to dislpay.
++specifies which help of link type to display.
+ 
+ .SS
+ .I GROUP
+diff --git a/man/man8/ip-neighbour.8 b/man/man8/ip-neighbour.8
+index f71f18b..a27f9ef 100644
+--- a/man/man8/ip-neighbour.8
++++ b/man/man8/ip-neighbour.8
+@@ -85,11 +85,11 @@ the interface to which this neighbour is attached.
+ 
+ .TP
+ .BI proxy
+-indicates whether we are proxying for this neigbour entry
++indicates whether we are proxying for this neighbour entry
+ 
+ .TP
+ .BI router
+-indicates whether neigbour is a router
++indicates whether neighbour is a router
+ 
+ .TP
+ .BI extern_learn
+@@ -244,7 +244,7 @@ lookup a neighbour entry to a destination given a device
+ 
+ .TP
+ .BI proxy
+-indicates whether we should lookup a proxy neigbour entry
++indicates whether we should lookup a proxy neighbour entry
+ 
+ .TP
+ .BI to " ADDRESS " (default)
+diff --git a/man/man8/tc-actions.8 b/man/man8/tc-actions.8
+index 6f1c201..80df577 100644
+--- a/man/man8/tc-actions.8
++++ b/man/man8/tc-actions.8
+@@ -253,7 +253,7 @@ should proceed after executing the action. Any of the following are valid:
+ .RS
+ .TP
+ .B reclassify
+-Restart the classifiction by jumping back to the first filter attached to
++Restart the classification by jumping back to the first filter attached to
+ the action's parent.
+ .TP
+ .B pipe
+diff --git a/man/man8/tc-pie.8 b/man/man8/tc-pie.8
+index 0db97d1..5a8c782 100644
+--- a/man/man8/tc-pie.8
++++ b/man/man8/tc-pie.8
+@@ -40,7 +40,7 @@ aims to control delay. The main design goals are
+ PIE is designed to control delay effectively. First, an average dequeue rate is
+ estimated based on the standing queue. The rate is used to calculate the current
+ delay. Then, on a periodic basis, the delay is used to calculate the dropping
+-probabilty. Finally, on arrival, a packet is dropped (or marked) based on this
++probability. Finally, on arrival, a packet is dropped (or marked) based on this
+ probability.
+ 
+ PIE makes adjustments to the probability based on the trend of the delay i.e.
+@@ -52,7 +52,7 @@ growth and are determined through control theoretic approaches. alpha determines
+ the deviation between the current and target latency changes probability. beta exerts
+ additional adjustments depending on the latency trend.
+ 
+-The drop probabilty is used to mark packets in ecn mode. However, as in RED,
++The drop probability is used to mark packets in ecn mode. However, as in RED,
+ beyond 10% packets are dropped based on this probability. The bytemode is used
+ to drop packets proportional to the packet size.
+ 
+-- 
+2.28.0
 
-> Fix this by setting dev->hard_header_len whenever sets header_ops,
-> as dev->hard_header_len is supposed to be the length of the header
-> created by dev->header_ops->create() anyway.
-
-Agreed. Xie has made similar changes to lapbether recently in
-commit c7ca03c216ac.
-
-> Reported-and-tested-by: syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com
-> Cc: William Tu <u9012063@gmail.com>
-> Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
-> ---
->  net/ipv4/ip_gre.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
-> index 4e31f23e4117..43b62095559e 100644
-> --- a/net/ipv4/ip_gre.c
-> +++ b/net/ipv4/ip_gre.c
-> @@ -987,10 +987,12 @@ static int ipgre_tunnel_init(struct net_device *dev)
->                                 return -EINVAL;
->                         dev->flags = IFF_BROADCAST;
->                         dev->header_ops = &ipgre_header_ops;
-> +                       dev->hard_header_len = tunnel->hlen + sizeof(*iph);
->                 }
->  #endif
->         } else if (!tunnel->collect_md) {
->                 dev->header_ops = &ipgre_header_ops;
-> +               dev->hard_header_len = tunnel->hlen + sizeof(*iph);
-
-Unrelated to this patch, I do wonder if ipgre_header does the
-right thing when tunnel->hlen > sizeof(gre_base_hdr),
-i.e., for gre tunnels with optional fields.
-
-Currently it appears to not initialize those.
-
->         }
->
->         return ip_tunnel_init(dev);
-> --
-> 2.28.0
->
