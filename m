@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87F4228797D
-	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 18:01:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 882B3287963
+	for <lists+netdev@lfdr.de>; Thu,  8 Oct 2020 17:59:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732063AbgJHQAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 12:00:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42024 "EHLO
+        id S1731139AbgJHP7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 11:59:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730843AbgJHPz7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 11:55:59 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6793DC061755;
-        Thu,  8 Oct 2020 08:55:59 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id b26so4349085pff.3;
-        Thu, 08 Oct 2020 08:55:59 -0700 (PDT)
+        with ESMTP id S1729939AbgJHP4C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 11:56:02 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A674C0613D2;
+        Thu,  8 Oct 2020 08:56:02 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id c6so2962059plr.9;
+        Thu, 08 Oct 2020 08:56:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=FEsMF5rTN2yDtTQSXVQ9G9SgxRThZwfhT1vI5VStmZk=;
-        b=AXIfH/n5nHLhvpqBNvB1kVQg8+mejpXHXLE8WeJgvAfm9/QBOsDiC6i33wUxdhBv2S
-         wcOh4yzNnRX28Mk5QFR7GJG1FdPDeBNZE2PZzBRSA4WsnN6XVOmT0G61S667smH4D+rV
-         Zz7zjNAcn7rKhyXd1C6X0NwT5sc0P+xUxJRWQ04IqNvkQ0nDB253gEtx9Q9DrAsNLk8K
-         rj52PRwStC/OeRuMHUo1OcmiVs7aj94qFjXpSp40bqKWB05FDck5+dlShYZNOxhTkSBL
-         9RGFh5yIQauKmZpAmsRl07AECKrR9T3pfce1Y5ckC3g8ngaTXPji9HE9EN1GCSeYTEXR
-         km0A==
+        bh=7Q32D5CWrjwlnU0wFJzUstmYpsSOyuhF8U8ZNzuPadE=;
+        b=h7pyCSiTlX8XM1WRQJ9/R2+ZZZnGwZIiuqK3yUyp7OgBNmW6vW1h21GTIlEVsf6ieY
+         VRGKVK4E3EXU0BE34y5VaAA5IBY4LIikXg4qVWkGwd/8bSq9a+V14PeYPmltSPEXzOfE
+         Ezis5ElkTrG0bX1PmViYVq9Kok37d2FphmId3lmdhIiA6Qg8pcYtupwNH6k7i3jgqrG2
+         Dbmc5zI++f9royums9F9f5v7P6TrIhJUZWqepOZa9L5v9rp/QhewDt3zZNfwmb5N4quU
+         f2/k6hVUEwtEdeFhUVRhFaF2ptxSEyMiEv5H+QX16HDixtRlqrgYJrfgQoEvF69uHslX
+         LeUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=FEsMF5rTN2yDtTQSXVQ9G9SgxRThZwfhT1vI5VStmZk=;
-        b=ta6BsTkXWhpJTn5R60fMt8VWU+mL1zvqYQowjxh689mZYgmfUgQe5VU/WmRszUkxAC
-         dlUZj9D+1BxItoZFAvuuyxvLMZlvN7Ozb4lilqY7z4pBjixEY7WU622zd5FQ/eyz3ZP5
-         FyTYpFCcWXCYd0XSUlA8xkTL+Hmnr5WQNSJYFdTZynqkRXDtIdImobNNoKjf2/adlpEa
-         +YzQRsnSoRruTxS6Io8PjsHBwfNGuywldpqlz9ndA95BmsFoDxRJaSXFs1Hzr7PemwHV
-         I2/Mr34HgN2p0g3sAGTbuDo6WXNOUa1lZblJ7sPML55jX3pwOT2wlIoa8BHEsW3z3mxm
-         L9ig==
-X-Gm-Message-State: AOAM530uHKwK4qs/3++1sBT056rjb87TPjdu+ivT36wJIdFOPZKc+5Ew
-        OZDt9wSm6DPt3+TEm278gR0=
-X-Google-Smtp-Source: ABdhPJyGq5iUC4jQ4EIlM5oj2J9lEyWkLCej77pSpfaniCR8P6eGJcYYSEjE4JfZD0TX/ChrYXzFNQ==
-X-Received: by 2002:a17:90a:46c2:: with SMTP id x2mr9019845pjg.60.1602172558950;
-        Thu, 08 Oct 2020 08:55:58 -0700 (PDT)
+        bh=7Q32D5CWrjwlnU0wFJzUstmYpsSOyuhF8U8ZNzuPadE=;
+        b=P9kCpdKCzLmjWzLxl9NHFWQsc4l6B7jSDrgAaetBkCs1RIJml0oPWTu0fLNvrTntQS
+         gvBq2wksgGEGgzYMlCSNMQAB+md+HZEW9b7EvSft+VBaP97SN1Kt1yDoR6R1SdvbmuLl
+         oEGeZ6k3adxY2blkODsXpytB+Tot27kBCWO4kGYR/O1dkz9h/NeqrVhggVUINa9cSTS/
+         WkT9GgFF4HloHqd6YtGsxfEcpwxuDXeiXF8BVyQaYCUh9YnZb7EAQmYYLapDTd4HKkvZ
+         6xGkJuKtvcrGN9wM2vvWrKpL65qeMkZrg49K8M6w2NfohuXnKlCJ5uobvMvVdU8Etvsj
+         Y0EA==
+X-Gm-Message-State: AOAM532A8CQrYiXpo4pTcEVjl275j7Co6hmn8/DgJXyUFHKVtrmKYxRi
+        joAjaS00kvRgSJK8R8XBlao=
+X-Google-Smtp-Source: ABdhPJwOIkjWdNRLnU/2bKUSHy1DURHSTQ1Lf2WEKTxeRb3DOyv25ADtQciN8r8fxGGYFltxyFhPTw==
+X-Received: by 2002:a17:902:d88e:b029:d0:89f4:6222 with SMTP id b14-20020a170902d88eb02900d089f46222mr8442136plz.10.1602172562022;
+        Thu, 08 Oct 2020 08:56:02 -0700 (PDT)
 Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id f1sm5917929pjh.20.2020.10.08.08.55.56
+        by smtp.gmail.com with ESMTPSA id f1sm5917929pjh.20.2020.10.08.08.55.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Oct 2020 08:55:58 -0700 (PDT)
+        Thu, 08 Oct 2020 08:56:01 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     ap420073@gmail.com, linux-wireless@vger.kernel.org,
         wil6210@qti.qualcomm.com, b43-dev@lists.infradead.org,
         linux-bluetooth@vger.kernel.org
-Subject: [PATCH net 070/117] ath10k: set fops_btcoex.owner to THIS_MODULE
-Date:   Thu,  8 Oct 2020 15:51:22 +0000
-Message-Id: <20201008155209.18025-70-ap420073@gmail.com>
+Subject: [PATCH net 071/117] ath10k: set fops_enable_extd_tx_stats.owner to THIS_MODULE
+Date:   Thu,  8 Oct 2020 15:51:23 +0000
+Message-Id: <20201008155209.18025-71-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201008155209.18025-1-ap420073@gmail.com>
 References: <20201008155209.18025-1-ap420073@gmail.com>
@@ -65,26 +65,26 @@ If THIS_MODULE is not set, the module would be removed while debugfs is
 being used.
 It eventually makes kernel panic.
 
-Fixes: 844fa5722712 ("ath10k: debugfs file to enable Bluetooth coexistence feature")
+Fixes: 348cd95c8196 ("ath10k: add debugfs entry to enable extended tx stats")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
  drivers/net/wireless/ath/ath10k/debug.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/wireless/ath/ath10k/debug.c b/drivers/net/wireless/ath/ath10k/debug.c
-index 9789ef98d25b..d1f8cf0d5604 100644
+index d1f8cf0d5604..8829232e2b34 100644
 --- a/drivers/net/wireless/ath/ath10k/debug.c
 +++ b/drivers/net/wireless/ath/ath10k/debug.c
-@@ -2041,7 +2041,8 @@ static ssize_t ath10k_read_btcoex(struct file *file, char __user *ubuf,
- static const struct file_operations fops_btcoex = {
- 	.read = ath10k_read_btcoex,
- 	.write = ath10k_write_btcoex,
+@@ -2097,7 +2097,8 @@ static ssize_t ath10k_read_enable_extd_tx_stats(struct file *file,
+ static const struct file_operations fops_enable_extd_tx_stats = {
+ 	.read = ath10k_read_enable_extd_tx_stats,
+ 	.write = ath10k_write_enable_extd_tx_stats,
 -	.open = simple_open
 +	.open = simple_open,
 +	.owner = THIS_MODULE,
  };
  
- static ssize_t ath10k_write_enable_extd_tx_stats(struct file *file,
+ static ssize_t ath10k_write_peer_stats(struct file *file,
 -- 
 2.17.1
 
