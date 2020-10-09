@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7A02288CEA
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 17:38:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEAE0288CE8
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 17:38:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389383AbgJIPgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 11:36:36 -0400
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:31560 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2389384AbgJIPge (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 11:36:34 -0400
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 099FV3Th023632;
-        Fri, 9 Oct 2020 08:36:17 -0700
+        id S2389428AbgJIPga (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 11:36:30 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:62916 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2389257AbgJIPg3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 11:36:29 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 099FUNXU019449;
+        Fri, 9 Oct 2020 08:36:22 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=pfpt0220;
- bh=kTxyd3UDiOXiohVAAemSNEtdB1fYJI8HLWgo5Yl6Vts=;
- b=Fty1cE7vEtfREGaJPLY0cH6PVWg2iPKvTfzoYvZ/ClVSAgW7bGqVXIoOD0V+59JmwFl4
- HhPTPXkBttlfimHZonR4BT75QvbRnKc8nCJkfZ5qiX5beKBjn+3jxrBjCRvX1UmrnLVo
- ia/EDDgt86jbzdGv+P5zK3kvcKNoL+WgprriwOx2AOe/MWjy59CXgzkBArJ3HaKPTpgd
- o6k9r/6LIShWqBUu6oMYXfypINBxOi4SuGmS0O2R9QdChTNowmk0b2CiHS+tr8NbDkyV
- f6ZDweZLFyhMLmCqNzMCh5u4ob4/nu4iNVrDayn4XcdU5ngaGTejyzKcvzMYxiehY6CX sQ== 
-Received: from sc-exch02.marvell.com ([199.233.58.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 3429hh34s9-1
+ bh=QyDaJSXmnoIW8oLQ7m9G06SgsKd2RazohkjAIiusBPE=;
+ b=K8UYnlRZ35uUZi5T3deA3HkYB26TKDXiTZ3kDdLR+NZI24gZZ/8bDr0HMP3vbMJ68ecf
+ eqV2qHEblpOoPjwniIl/LYVwOAIC+5dAnFzkua+P/rEUyWVK9a8gEfXcY/e72Ec+42tr
+ T60jUBN1zxRXUw0ugSn95VzhabzfNN+0ow3vFrBAP9PR3kxIPxgAbiMSmiZmv0DVblUv
+ eU0TMJ0uLJ6OYwSZ0svw+bJZUhxFetXTDQufx1HBHZ7uQmmkC3Pdh+QTt+65HnOcovtZ
+ r3rr6QRzZhvbGrK8q5aJ+RaWIetNTSbQzBUuawsopup+QuRFiGo1Hbw0+xWbdRZpErPZ Jg== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 3429h8bbya-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 09 Oct 2020 08:36:17 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
- (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 9 Oct
- 2020 08:36:15 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 9 Oct
- 2020 08:36:14 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 9 Oct 2020 08:36:14 -0700
+        Fri, 09 Oct 2020 08:36:22 -0700
+Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 9 Oct
+ 2020 08:36:21 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 9 Oct
+ 2020 08:36:20 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 9 Oct 2020 08:36:21 -0700
 Received: from hyd1schalla-dt.marvell.com (hyd1schalla-dt.marvell.com [10.29.8.39])
-        by maili.marvell.com (Postfix) with ESMTP id D02AA3F703F;
-        Fri,  9 Oct 2020 08:36:10 -0700 (PDT)
+        by maili.marvell.com (Postfix) with ESMTP id 2557B3F704D;
+        Fri,  9 Oct 2020 08:36:16 -0700 (PDT)
 From:   Srujana Challa <schalla@marvell.com>
 To:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
         <kuba@kernel.org>, <sgoutham@marvell.com>, <gakula@marvell.com>,
         <sbhatta@marvell.com>, <schandran@marvell.com>,
         <pathreya@marvell.com>, Srujana Challa <schalla@marvell.com>
-Subject: [PATCH v4,net-next,12/13] crypto: octeontx2: add support to process the crypto request
-Date:   Fri, 9 Oct 2020 21:04:20 +0530
-Message-ID: <20201009153421.30562-13-schalla@marvell.com>
+Subject: [PATCH v4,net-next,13/13] crypto: octeontx2: register with linux crypto framework
+Date:   Fri, 9 Oct 2020 21:04:21 +0530
+Message-ID: <20201009153421.30562-14-schalla@marvell.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201009153421.30562-1-schalla@marvell.com>
 References: <20201009153421.30562-1-schalla@marvell.com>
@@ -60,1047 +60,1979 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Attach LFs to CPT VF to process the crypto requests and register LF
-interrupts.
+CPT offload module utilises the linux crypto framework to offload
+crypto processing. This patch registers supported algorithms by
+calling registration functions provided by the kernel crypto API.
+
+The module currently supports:
+- AES block cipher in CBC,ECB,XTS and CFB mode.
+- 3DES block cipher in CBC and ECB mode.
+- AEAD algorithms.
+  authenc(hmac(sha1),cbc(aes)),
+  authenc(hmac(sha256),cbc(aes)),
+  authenc(hmac(sha384),cbc(aes)),
+  authenc(hmac(sha512),cbc(aes)),
+  authenc(hmac(sha1),ecb(cipher_null)),
+  authenc(hmac(sha256),ecb(cipher_null)),
+  authenc(hmac(sha384),ecb(cipher_null)),
+  authenc(hmac(sha512),ecb(cipher_null)),
+  rfc4106(gcm(aes)).
 
 Signed-off-by: Suheil Chandran <schandran@marvell.com>
 Signed-off-by: Srujana Challa <schalla@marvell.com>
 ---
- drivers/crypto/marvell/octeontx2/Makefile     |   2 +-
- .../marvell/octeontx2/otx2_cpt_reqmgr.h       | 145 +++++
- drivers/crypto/marvell/octeontx2/otx2_cptlf.h |   7 +
- .../marvell/octeontx2/otx2_cptvf_main.c       | 196 +++++++
- .../marvell/octeontx2/otx2_cptvf_mbox.c       |  26 +
- .../marvell/octeontx2/otx2_cptvf_reqmgr.c     | 532 ++++++++++++++++++
- 6 files changed, 907 insertions(+), 1 deletion(-)
- create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_reqmgr.c
+ drivers/crypto/marvell/Kconfig                |    4 +
+ drivers/crypto/marvell/octeontx2/Makefile     |    3 +-
+ .../marvell/octeontx2/otx2_cpt_reqmgr.h       |    1 +
+ .../marvell/octeontx2/otx2_cptvf_algs.c       | 1665 +++++++++++++++++
+ .../marvell/octeontx2/otx2_cptvf_algs.h       |  170 ++
+ .../marvell/octeontx2/otx2_cptvf_main.c       |   13 +-
+ .../marvell/octeontx2/otx2_cptvf_reqmgr.c     |    7 +
+ 7 files changed, 1861 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.h
 
+diff --git a/drivers/crypto/marvell/Kconfig b/drivers/crypto/marvell/Kconfig
+index 1440ec9e1fb4..2efbd79180ce 100644
+--- a/drivers/crypto/marvell/Kconfig
++++ b/drivers/crypto/marvell/Kconfig
+@@ -40,8 +40,12 @@ config CRYPTO_DEV_OCTEONTX2_CPT
+ 	tristate "Marvell OcteonTX2 CPT driver"
+ 	depends on ARM64 || COMPILE_TEST
+ 	depends on PCI_MSI && 64BIT
++	depends on CRYPTO_LIB_AES
+ 	select OCTEONTX2_MBOX
+ 	select CRYPTO_DEV_MARVELL
++	select CRYPTO_SKCIPHER
++	select CRYPTO_HASH
++	select CRYPTO_AEAD
+ 	help
+ 		This driver allows you to utilize the Marvell Cryptographic
+ 		Accelerator Unit(CPT) found in OcteonTX2 series of processors.
 diff --git a/drivers/crypto/marvell/octeontx2/Makefile b/drivers/crypto/marvell/octeontx2/Makefile
-index ef6fb2ab3571..41c0a5832b3f 100644
+index 41c0a5832b3f..b9c6201019e0 100644
 --- a/drivers/crypto/marvell/octeontx2/Makefile
 +++ b/drivers/crypto/marvell/octeontx2/Makefile
-@@ -4,6 +4,6 @@ obj-$(CONFIG_CRYPTO_DEV_OCTEONTX2_CPT) += octeontx2-cpt.o octeontx2-cptvf.o
+@@ -4,6 +4,7 @@ obj-$(CONFIG_CRYPTO_DEV_OCTEONTX2_CPT) += octeontx2-cpt.o octeontx2-cptvf.o
  octeontx2-cpt-objs := otx2_cptpf_main.o otx2_cptpf_mbox.o \
  		      otx2_cpt_mbox_common.o otx2_cptpf_ucode.o otx2_cptlf.o
  octeontx2-cptvf-objs := otx2_cptvf_main.o otx2_cptvf_mbox.o otx2_cptlf.o \
--			otx2_cpt_mbox_common.o
-+			otx2_cpt_mbox_common.o otx2_cptvf_reqmgr.o
+-			otx2_cpt_mbox_common.o otx2_cptvf_reqmgr.o
++			otx2_cpt_mbox_common.o otx2_cptvf_reqmgr.o \
++			otx2_cptvf_algs.o
  
  ccflags-y += -I$(srctree)/drivers/net/ethernet/marvell/octeontx2/af
 diff --git a/drivers/crypto/marvell/octeontx2/otx2_cpt_reqmgr.h b/drivers/crypto/marvell/octeontx2/otx2_cpt_reqmgr.h
-index 9184f91c68c1..5e191434ab98 100644
+index 5e191434ab98..60e57a13166f 100644
 --- a/drivers/crypto/marvell/octeontx2/otx2_cpt_reqmgr.h
 +++ b/drivers/crypto/marvell/octeontx2/otx2_cpt_reqmgr.h
-@@ -10,6 +10,22 @@
- /* Completion code size and initial value */
- #define OTX2_CPT_COMPLETION_CODE_SIZE 8
- #define OTX2_CPT_COMPLETION_CODE_INIT OTX2_CPT_COMP_E_NOTDONE
-+/*
-+ * Maximum total number of SG buffers is 100, we divide it equally
-+ * between input and output
-+ */
-+#define OTX2_CPT_MAX_SG_IN_CNT  50
-+#define OTX2_CPT_MAX_SG_OUT_CNT 50
-+
-+/* DMA mode direct or SG */
-+#define OTX2_CPT_DMA_MODE_DIRECT 0
-+#define OTX2_CPT_DMA_MODE_SG     1
-+
-+/* Context source CPTR or DPTR */
-+#define OTX2_CPT_FROM_CPTR 0
-+#define OTX2_CPT_FROM_DPTR 1
-+
-+#define OTX2_CPT_MAX_REQ_SIZE 65535
+@@ -192,5 +192,6 @@ struct otx2_cptlf_wqe;
+ int otx2_cpt_do_request(struct pci_dev *pdev, struct otx2_cpt_req_info *req,
+ 			int cpu_num);
+ void otx2_cpt_post_process(struct otx2_cptlf_wqe *wqe);
++int otx2_cpt_get_kcrypto_eng_grp_num(struct pci_dev *pdev);
  
- union otx2_cpt_opcode {
- 	u16 flags;
-@@ -19,6 +35,13 @@ union otx2_cpt_opcode {
- 	} s;
- };
- 
-+struct otx2_cptvf_request {
-+	u32 param1;
-+	u32 param2;
-+	u16 dlen;
-+	union otx2_cpt_opcode opcode;
-+};
-+
- /*
-  * CPT_INST_S software command definitions
-  * Words EI (0-3)
-@@ -48,4 +71,126 @@ struct otx2_cpt_iq_command {
- 	union otx2_cpt_iq_cmd_word3 cptr;
- };
- 
-+struct otx2_cpt_pending_entry {
-+	void *completion_addr;	/* Completion address */
-+	void *info;
-+	/* Kernel async request callback */
-+	void (*callback)(int status, void *arg1, void *arg2);
-+	struct crypto_async_request *areq; /* Async request callback arg */
-+	u8 resume_sender;	/* Notify sender to resume sending requests */
-+	u8 busy;		/* Entry status (free/busy) */
-+};
-+
-+struct otx2_cpt_pending_queue {
-+	struct otx2_cpt_pending_entry *head; /* Head of the queue */
-+	u32 front;		/* Process work from here */
-+	u32 rear;		/* Append new work here */
-+	u32 pending_count;	/* Pending requests count */
-+	u32 qlen;		/* Queue length */
-+	spinlock_t lock;	/* Queue lock */
-+};
-+
-+struct otx2_cpt_buf_ptr {
-+	u8 *vptr;
-+	dma_addr_t dma_addr;
-+	u16 size;
-+};
-+
-+union otx2_cpt_ctrl_info {
-+	u32 flags;
-+	struct {
-+#if defined(__BIG_ENDIAN_BITFIELD)
-+		u32 reserved_6_31:26;
-+		u32 grp:3;	/* Group bits */
-+		u32 dma_mode:2;	/* DMA mode */
-+		u32 se_req:1;	/* To SE core */
-+#else
-+		u32 se_req:1;	/* To SE core */
-+		u32 dma_mode:2;	/* DMA mode */
-+		u32 grp:3;	/* Group bits */
-+		u32 reserved_6_31:26;
-+#endif
-+	} s;
-+};
-+
-+struct otx2_cpt_req_info {
-+	/* Kernel async request callback */
-+	void (*callback)(int status, void *arg1, void *arg2);
-+	struct crypto_async_request *areq; /* Async request callback arg */
-+	struct otx2_cptvf_request req;/* Request information (core specific) */
-+	union otx2_cpt_ctrl_info ctrl;/* User control information */
-+	struct otx2_cpt_buf_ptr in[OTX2_CPT_MAX_SG_IN_CNT];
-+	struct otx2_cpt_buf_ptr out[OTX2_CPT_MAX_SG_OUT_CNT];
-+	u8 *iv_out;     /* IV to send back */
-+	u16 rlen;	/* Output length */
-+	u8 in_cnt;	/* Number of input buffers */
-+	u8 out_cnt;	/* Number of output buffers */
-+	u8 req_type;	/* Type of request */
-+	u8 is_enc;	/* Is a request an encryption request */
-+	u8 is_trunc_hmac;/* Is truncated hmac used */
-+};
-+
-+struct otx2_cpt_inst_info {
-+	struct otx2_cpt_pending_entry *pentry;
-+	struct otx2_cpt_req_info *req;
-+	struct pci_dev *pdev;
-+	void *completion_addr;
-+	u8 *out_buffer;
-+	u8 *in_buffer;
-+	dma_addr_t dptr_baddr;
-+	dma_addr_t rptr_baddr;
-+	dma_addr_t comp_baddr;
-+	unsigned long time_in;
-+	u32 dlen;
-+	u32 dma_len;
-+	u8 extra_time;
-+};
-+
-+struct otx2_cpt_sglist_component {
-+	__be16 len0;
-+	__be16 len1;
-+	__be16 len2;
-+	__be16 len3;
-+	__be64 ptr0;
-+	__be64 ptr1;
-+	__be64 ptr2;
-+	__be64 ptr3;
-+};
-+
-+static inline void otx2_cpt_info_destroy(struct pci_dev *pdev,
-+					 struct otx2_cpt_inst_info *info)
-+{
-+	struct otx2_cpt_req_info *req;
-+	int i;
-+
-+	if (info->dptr_baddr)
-+		dma_unmap_single(&pdev->dev, info->dptr_baddr,
-+				 info->dma_len, DMA_BIDIRECTIONAL);
-+
-+	if (info->req) {
-+		req = info->req;
-+		for (i = 0; i < req->out_cnt; i++) {
-+			if (req->out[i].dma_addr)
-+				dma_unmap_single(&pdev->dev,
-+						 req->out[i].dma_addr,
-+						 req->out[i].size,
-+						 DMA_BIDIRECTIONAL);
-+		}
-+
-+		for (i = 0; i < req->in_cnt; i++) {
-+			if (req->in[i].dma_addr)
-+				dma_unmap_single(&pdev->dev,
-+						 req->in[i].dma_addr,
-+						 req->in[i].size,
-+						 DMA_BIDIRECTIONAL);
-+		}
-+	}
-+	kzfree(info);
-+}
-+
-+struct otx2_cptlf_wqe;
-+int otx2_cpt_do_request(struct pci_dev *pdev, struct otx2_cpt_req_info *req,
-+			int cpu_num);
-+void otx2_cpt_post_process(struct otx2_cptlf_wqe *wqe);
-+
  #endif /* __OTX2_CPT_REQMGR_H */
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptlf.h b/drivers/crypto/marvell/octeontx2/otx2_cptlf.h
-index edf404f039cf..18cedfb06131 100644
---- a/drivers/crypto/marvell/octeontx2/otx2_cptlf.h
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptlf.h
-@@ -80,6 +80,7 @@ struct otx2_cptlf_info {
- 	u8 slot;                                /* Slot number of this LF */
- 
- 	struct otx2_cpt_inst_queue iqueue;/* Instruction queue */
-+	struct otx2_cpt_pending_queue pqueue; /* Pending queue */
- 	struct otx2_cptlf_wqe *wqe;       /* Tasklet work info */
- };
- 
-@@ -91,6 +92,7 @@ struct otx2_cptlfs_info {
- 	struct otx2_mbox *mbox;
- 	u8 are_lfs_attached;	/* Whether CPT LFs are attached */
- 	u8 lfs_num;		/* Number of CPT LFs */
-+	u8 kcrypto_eng_grp_num;	/* Kernel crypto engine group number */
- 	atomic_t state;         /* LF's state. started/reset */
- };
- 
-@@ -333,6 +335,11 @@ static inline void otx2_cpt_send_cmd(union otx2_cpt_inst_s *cptinst,
- 	} while (!ret);
- }
- 
-+static inline bool otx2_cptlf_started(struct otx2_cptlfs_info *lfs)
-+{
-+	return atomic_read(&lfs->state) == OTX2_CPTLF_STARTED;
-+}
-+
- int otx2_cptlf_init(struct otx2_cptlfs_info *lfs, u8 eng_grp_msk, int pri,
- 		    int lfs_num);
- void otx2_cptlf_shutdown(struct otx2_cptlfs_info *lfs);
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf_main.c b/drivers/crypto/marvell/octeontx2/otx2_cptvf_main.c
-index 73f0f0721a18..6798e42dfade 100644
---- a/drivers/crypto/marvell/octeontx2/otx2_cptvf_main.c
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf_main.c
-@@ -3,6 +3,7 @@
- 
- #include "otx2_cpt_common.h"
- #include "otx2_cptvf.h"
-+#include "otx2_cptlf.h"
- #include <rvu_reg.h>
- 
- #define OTX2_CPTVF_DRV_NAME "octeontx2-cptvf"
-@@ -94,6 +95,193 @@ static void cptvf_pfvf_mbox_destroy(struct otx2_cptvf_dev *cptvf)
- 	otx2_mbox_destroy(&cptvf->pfvf_mbox);
- }
- 
-+static void cptlf_work_handler(unsigned long data)
-+{
-+	otx2_cpt_post_process((struct otx2_cptlf_wqe *) data);
-+}
-+
-+static void cleanup_tasklet_work(struct otx2_cptlfs_info *lfs)
-+{
-+	int i;
-+
-+	for (i = 0; i <  lfs->lfs_num; i++) {
-+		if (!lfs->lf[i].wqe)
-+			continue;
-+
-+		tasklet_kill(&lfs->lf[i].wqe->work);
-+		kfree(lfs->lf[i].wqe);
-+		lfs->lf[i].wqe = NULL;
-+	}
-+}
-+
-+static int init_tasklet_work(struct otx2_cptlfs_info *lfs)
-+{
-+	struct otx2_cptlf_wqe *wqe;
-+	int i, ret = 0;
-+
-+	for (i = 0; i < lfs->lfs_num; i++) {
-+		wqe = kzalloc(sizeof(struct otx2_cptlf_wqe), GFP_KERNEL);
-+		if (!wqe) {
-+			ret = -ENOMEM;
-+			goto cleanup_tasklet;
-+		}
-+
-+		tasklet_init(&wqe->work, cptlf_work_handler, (u64) wqe);
-+		wqe->lfs = lfs;
-+		wqe->lf_num = i;
-+		lfs->lf[i].wqe = wqe;
-+	}
-+	return 0;
-+cleanup_tasklet:
-+	cleanup_tasklet_work(lfs);
-+	return ret;
-+}
-+
-+static void free_pending_queues(struct otx2_cptlfs_info *lfs)
-+{
-+	int i;
-+
-+	for (i = 0; i < lfs->lfs_num; i++) {
-+		kfree(lfs->lf[i].pqueue.head);
-+		lfs->lf[i].pqueue.head = NULL;
-+	}
-+}
-+
-+static int alloc_pending_queues(struct otx2_cptlfs_info *lfs)
-+{
-+	int size, ret, i;
-+
-+	if (!lfs->lfs_num)
-+		return -EINVAL;
-+
-+	for (i = 0; i < lfs->lfs_num; i++) {
-+		lfs->lf[i].pqueue.qlen = OTX2_CPT_INST_QLEN_MSGS;
-+		size = lfs->lf[i].pqueue.qlen *
-+		       sizeof(struct otx2_cpt_pending_entry);
-+
-+		lfs->lf[i].pqueue.head = kzalloc(size, GFP_KERNEL);
-+		if (!lfs->lf[i].pqueue.head) {
-+			ret = -ENOMEM;
-+			goto error;
-+		}
-+
-+		/* Initialize spin lock */
-+		spin_lock_init(&lfs->lf[i].pqueue.lock);
-+	}
-+	return 0;
-+error:
-+	free_pending_queues(lfs);
-+	return ret;
-+}
-+
-+static void lf_sw_cleanup(struct otx2_cptlfs_info *lfs)
-+{
-+	cleanup_tasklet_work(lfs);
-+	free_pending_queues(lfs);
-+}
-+
-+static int lf_sw_init(struct otx2_cptlfs_info *lfs)
-+{
-+	int ret;
-+
-+	ret = alloc_pending_queues(lfs);
-+	if (ret) {
-+		dev_err(&lfs->pdev->dev,
-+			"Allocating pending queues failed\n");
-+		return ret;
-+	}
-+	ret = init_tasklet_work(lfs);
-+	if (ret) {
-+		dev_err(&lfs->pdev->dev,
-+			"Tasklet work init failed\n");
-+		goto pending_queues_free;
-+	}
-+	return 0;
-+
-+pending_queues_free:
-+	free_pending_queues(lfs);
-+	return ret;
-+}
-+
-+static void cptvf_lf_shutdown(struct otx2_cptlfs_info *lfs)
-+{
-+	atomic_set(&lfs->state, OTX2_CPTLF_IN_RESET);
-+
-+	/* Remove interrupts affinity */
-+	otx2_cptlf_free_irqs_affinity(lfs);
-+	/* Disable instruction queue */
-+	otx2_cptlf_disable_iqueues(lfs);
-+	/* Unregister LFs interrupts */
-+	otx2_cptlf_unregister_interrupts(lfs);
-+	/* Cleanup LFs software side */
-+	lf_sw_cleanup(lfs);
-+	/* Send request to detach LFs */
-+	otx2_cpt_detach_rsrcs_msg(lfs);
-+}
-+
-+static int cptvf_lf_init(struct otx2_cptvf_dev *cptvf)
-+{
-+	struct otx2_cptlfs_info *lfs = &cptvf->lfs;
-+	struct device *dev = &cptvf->pdev->dev;
-+	int ret, lfs_num;
-+	u8 eng_grp_msk;
-+
-+	/* Get engine group number for symmetric crypto */
-+	cptvf->lfs.kcrypto_eng_grp_num = OTX2_CPT_INVALID_CRYPTO_ENG_GRP;
-+	ret = otx2_cptvf_send_eng_grp_num_msg(cptvf, OTX2_CPT_SE_TYPES);
-+	if (ret)
-+		return ret;
-+
-+	if (cptvf->lfs.kcrypto_eng_grp_num == OTX2_CPT_INVALID_CRYPTO_ENG_GRP) {
-+		dev_err(dev, "Engine group for kernel crypto not available\n");
-+		ret = -ENOENT;
-+		return ret;
-+	}
-+	eng_grp_msk = 1 << cptvf->lfs.kcrypto_eng_grp_num;
-+
-+	lfs->reg_base = cptvf->reg_base;
-+	lfs->pdev = cptvf->pdev;
-+	lfs->mbox = &cptvf->pfvf_mbox;
-+
-+	lfs_num = num_online_cpus();
-+	ret = otx2_cptlf_init(lfs, eng_grp_msk, OTX2_CPT_QUEUE_HI_PRIO,
-+			      lfs_num);
-+	if (ret)
-+		return ret;
-+
-+	/* Get msix offsets for attached LFs */
-+	ret = otx2_cpt_msix_offset_msg(lfs);
-+	if (ret)
-+		goto cleanup_lf;
-+
-+	/* Initialize LFs software side */
-+	ret = lf_sw_init(lfs);
-+	if (ret)
-+		goto cleanup_lf;
-+
-+	/* Register LFs interrupts */
-+	ret = otx2_cptlf_register_interrupts(lfs);
-+	if (ret)
-+		goto cleanup_lf_sw;
-+
-+	/* Set interrupts affinity */
-+	ret = otx2_cptlf_set_irqs_affinity(lfs);
-+	if (ret)
-+		goto unregister_intr;
-+
-+	atomic_set(&lfs->state, OTX2_CPTLF_STARTED);
-+
-+	return 0;
-+unregister_intr:
-+	otx2_cptlf_unregister_interrupts(lfs);
-+cleanup_lf_sw:
-+	lf_sw_cleanup(lfs);
-+cleanup_lf:
-+	otx2_cptlf_shutdown(lfs);
-+
-+	return ret;
-+}
-+
- static int otx2_cptvf_probe(struct pci_dev *pdev,
- 			    const struct pci_device_id *ent)
- {
-@@ -156,7 +344,14 @@ static int otx2_cptvf_probe(struct pci_dev *pdev,
- 	if (ret)
- 		goto destroy_pfvf_mbox;
- 
-+	/* Initialize CPT LFs */
-+	ret = cptvf_lf_init(cptvf);
-+	if (ret)
-+		goto unregister_interrupts;
-+
- 	return 0;
-+unregister_interrupts:
-+	cptvf_disable_pfvf_mbox_intrs(cptvf);
- destroy_pfvf_mbox:
- 	cptvf_pfvf_mbox_destroy(cptvf);
- clear_drvdata:
-@@ -173,6 +368,7 @@ static void otx2_cptvf_remove(struct pci_dev *pdev)
- 		dev_err(&pdev->dev, "Invalid CPT VF device.\n");
- 		return;
- 	}
-+	cptvf_lf_shutdown(&cptvf->lfs);
- 	/* Disable PF-VF mailbox interrupt */
- 	cptvf_disable_pfvf_mbox_intrs(cptvf);
- 	/* Destroy PF-VF mbox */
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf_mbox.c b/drivers/crypto/marvell/octeontx2/otx2_cptvf_mbox.c
-index 417099a86742..092a5ab18417 100644
---- a/drivers/crypto/marvell/octeontx2/otx2_cptvf_mbox.c
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf_mbox.c
-@@ -28,6 +28,7 @@ static void process_pfvf_mbox_mbox_msg(struct otx2_cptvf_dev *cptvf,
- 				       struct mbox_msghdr *msg)
- {
- 	struct otx2_cptlfs_info *lfs = &cptvf->lfs;
-+	struct otx2_cpt_egrp_num_rsp *rsp_grp;
- 	struct cpt_rd_wr_reg_msg *rsp_reg;
- 	struct msix_offset_rsp *rsp_msix;
- 	int i;
-@@ -75,6 +76,10 @@ static void process_pfvf_mbox_mbox_msg(struct otx2_cptvf_dev *cptvf,
- 		if (!rsp_reg->is_write)
- 			*rsp_reg->ret_val = rsp_reg->val;
- 		break;
-+	case MBOX_MSG_GET_ENG_GRP_NUM:
-+		rsp_grp = (struct otx2_cpt_egrp_num_rsp *) msg;
-+		cptvf->lfs.kcrypto_eng_grp_num = rsp_grp->eng_grp_num;
-+		break;
- 	default:
- 		dev_err(&cptvf->pdev->dev, "Unsupported msg %d received.\n",
- 			msg->id);
-@@ -111,3 +116,24 @@ void otx2_cptvf_pfvf_mbox_handler(struct work_struct *work)
- 	}
- 	otx2_mbox_reset(pfvf_mbox, 0);
- }
-+
-+int otx2_cptvf_send_eng_grp_num_msg(struct otx2_cptvf_dev *cptvf, int eng_type)
-+{
-+	struct otx2_mbox *mbox = &cptvf->pfvf_mbox;
-+	struct pci_dev *pdev = cptvf->pdev;
-+	struct otx2_cpt_egrp_num_msg *req;
-+
-+	req = (struct otx2_cpt_egrp_num_msg *)
-+	      otx2_mbox_alloc_msg_rsp(mbox, 0, sizeof(*req),
-+				      sizeof(struct otx2_cpt_egrp_num_rsp));
-+	if (req == NULL) {
-+		dev_err(&pdev->dev, "RVU MBOX failed to get message.\n");
-+		return -EFAULT;
-+	}
-+	req->hdr.id = MBOX_MSG_GET_ENG_GRP_NUM;
-+	req->hdr.sig = OTX2_MBOX_REQ_SIG;
-+	req->hdr.pcifunc = OTX2_CPT_RVU_PFFUNC(cptvf->vf_id, 0);
-+	req->eng_type = eng_type;
-+
-+	return otx2_cpt_send_mbox_msg(mbox, pdev);
-+}
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf_reqmgr.c b/drivers/crypto/marvell/octeontx2/otx2_cptvf_reqmgr.c
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
 new file mode 100644
-index 000000000000..05fd59082b5a
+index 000000000000..765e61bcf96c
 --- /dev/null
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf_reqmgr.c
-@@ -0,0 +1,532 @@
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
+@@ -0,0 +1,1665 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/* Copyright (C) 2020 Marvell. */
 +
++#include <crypto/aes.h>
++#include <crypto/authenc.h>
++#include <crypto/cryptd.h>
++#include <crypto/des.h>
++#include <crypto/internal/aead.h>
++#include <crypto/sha.h>
++#include <crypto/xts.h>
++#include <crypto/gcm.h>
++#include <crypto/scatterwalk.h>
++#include <linux/rtnetlink.h>
++#include <linux/sort.h>
++#include <linux/module.h>
 +#include "otx2_cptvf.h"
-+#include "otx2_cpt_common.h"
++#include "otx2_cptvf_algs.h"
++#include "otx2_cpt_reqmgr.h"
 +
-+/* SG list header size in bytes */
-+#define SG_LIST_HDR_SIZE	8
++/* Size of salt in AES GCM mode */
++#define AES_GCM_SALT_SIZE 4
++/* Size of IV in AES GCM mode */
++#define AES_GCM_IV_SIZE 8
++/* Size of ICV (Integrity Check Value) in AES GCM mode */
++#define AES_GCM_ICV_SIZE 16
++/* Offset of IV in AES GCM mode */
++#define AES_GCM_IV_OFFSET 8
++#define CONTROL_WORD_LEN 8
++#define KEY2_OFFSET 48
++#define DMA_MODE_FLAG(dma_mode) \
++	(((dma_mode) == OTX2_CPT_DMA_MODE_SG) ? (1 << 7) : 0)
 +
-+/* Default timeout when waiting for free pending entry in us */
-+#define CPT_PENTRY_TIMEOUT	1000
-+#define CPT_PENTRY_STEP		50
++/* Truncated SHA digest size */
++#define SHA1_TRUNC_DIGEST_SIZE 12
++#define SHA256_TRUNC_DIGEST_SIZE 16
++#define SHA384_TRUNC_DIGEST_SIZE 24
++#define SHA512_TRUNC_DIGEST_SIZE 32
 +
-+/* Default threshold for stopping and resuming sender requests */
-+#define CPT_IQ_STOP_MARGIN	128
-+#define CPT_IQ_RESUME_MARGIN	512
++static DEFINE_MUTEX(mutex);
++static int is_crypto_registered;
 +
-+/* Default command timeout in seconds */
-+#define CPT_COMMAND_TIMEOUT	4
-+#define CPT_TIME_IN_RESET_COUNT 5
++struct cpt_device_desc {
++	struct pci_dev *dev;
++	int num_queues;
++};
 +
-+static void otx2_cpt_dump_sg_list(struct pci_dev *pdev,
-+				  struct otx2_cpt_req_info *req)
++struct cpt_device_table {
++	atomic_t count;
++	struct cpt_device_desc desc[OTX2_CPT_MAX_LFS_NUM];
++};
++
++static struct cpt_device_table se_devices = {
++	.count = ATOMIC_INIT(0)
++};
++
++static inline int get_se_device(struct pci_dev **pdev, int *cpu_num)
 +{
-+	int i;
++	int count;
 +
-+	pr_debug("Gather list size %d\n", req->in_cnt);
-+	for (i = 0; i < req->in_cnt; i++) {
-+		pr_debug("Buffer %d size %d, vptr 0x%p, dmaptr 0x%p\n", i,
-+			 req->in[i].size, req->in[i].vptr,
-+			 (void *) req->in[i].dma_addr);
-+		pr_debug("Buffer hexdump (%d bytes)\n",
-+			 req->in[i].size);
-+		print_hex_dump_debug("", DUMP_PREFIX_NONE, 16, 1,
-+				     req->in[i].vptr, req->in[i].size, false);
-+	}
-+	pr_debug("Scatter list size %d\n", req->out_cnt);
-+	for (i = 0; i < req->out_cnt; i++) {
-+		pr_debug("Buffer %d size %d, vptr 0x%p, dmaptr 0x%p\n", i,
-+			 req->out[i].size, req->out[i].vptr,
-+			 (void *) req->out[i].dma_addr);
-+		pr_debug("Buffer hexdump (%d bytes)\n", req->out[i].size);
-+		print_hex_dump_debug("", DUMP_PREFIX_NONE, 16, 1,
-+				     req->out[i].vptr, req->out[i].size, false);
-+	}
-+}
-+
-+static inline struct otx2_cpt_pending_entry *get_free_pending_entry(
-+					struct otx2_cpt_pending_queue *q,
-+					int qlen)
-+{
-+	struct otx2_cpt_pending_entry *ent = NULL;
-+
-+	ent = &q->head[q->rear];
-+	if (unlikely(ent->busy))
-+		return NULL;
-+
-+	q->rear++;
-+	if (unlikely(q->rear == qlen))
-+		q->rear = 0;
-+
-+	return ent;
-+}
-+
-+static inline u32 modulo_inc(u32 index, u32 length, u32 inc)
-+{
-+	if (WARN_ON(inc > length))
-+		inc = length;
-+
-+	index += inc;
-+	if (unlikely(index >= length))
-+		index -= length;
-+
-+	return index;
-+}
-+
-+static inline void free_pentry(struct otx2_cpt_pending_entry *pentry)
-+{
-+	pentry->completion_addr = NULL;
-+	pentry->info = NULL;
-+	pentry->callback = NULL;
-+	pentry->areq = NULL;
-+	pentry->resume_sender = false;
-+	pentry->busy = false;
-+}
-+
-+static inline int setup_sgio_components(struct pci_dev *pdev,
-+					struct otx2_cpt_buf_ptr *list,
-+					int buf_count, u8 *buffer)
-+{
-+	struct otx2_cpt_sglist_component *sg_ptr = NULL;
-+	int ret = 0, i, j;
-+	int components;
-+
-+	if (unlikely(!list)) {
-+		dev_err(&pdev->dev, "Input list pointer is NULL\n");
-+		return -EFAULT;
-+	}
-+
-+	for (i = 0; i < buf_count; i++) {
-+		if (unlikely(!list[i].vptr))
-+			continue;
-+		list[i].dma_addr = dma_map_single(&pdev->dev, list[i].vptr,
-+						  list[i].size,
-+						  DMA_BIDIRECTIONAL);
-+		if (unlikely(dma_mapping_error(&pdev->dev, list[i].dma_addr))) {
-+			dev_err(&pdev->dev, "Dma mapping failed\n");
-+			ret = -EIO;
-+			goto sg_cleanup;
-+		}
-+	}
-+	components = buf_count / 4;
-+	sg_ptr = (struct otx2_cpt_sglist_component *)buffer;
-+	for (i = 0; i < components; i++) {
-+		sg_ptr->len0 = cpu_to_be16(list[i * 4 + 0].size);
-+		sg_ptr->len1 = cpu_to_be16(list[i * 4 + 1].size);
-+		sg_ptr->len2 = cpu_to_be16(list[i * 4 + 2].size);
-+		sg_ptr->len3 = cpu_to_be16(list[i * 4 + 3].size);
-+		sg_ptr->ptr0 = cpu_to_be64(list[i * 4 + 0].dma_addr);
-+		sg_ptr->ptr1 = cpu_to_be64(list[i * 4 + 1].dma_addr);
-+		sg_ptr->ptr2 = cpu_to_be64(list[i * 4 + 2].dma_addr);
-+		sg_ptr->ptr3 = cpu_to_be64(list[i * 4 + 3].dma_addr);
-+		sg_ptr++;
-+	}
-+	components = buf_count % 4;
-+
-+	switch (components) {
-+	case 3:
-+		sg_ptr->len2 = cpu_to_be16(list[i * 4 + 2].size);
-+		sg_ptr->ptr2 = cpu_to_be64(list[i * 4 + 2].dma_addr);
-+		fallthrough;
-+	case 2:
-+		sg_ptr->len1 = cpu_to_be16(list[i * 4 + 1].size);
-+		sg_ptr->ptr1 = cpu_to_be64(list[i * 4 + 1].dma_addr);
-+		fallthrough;
-+	case 1:
-+		sg_ptr->len0 = cpu_to_be16(list[i * 4 + 0].size);
-+		sg_ptr->ptr0 = cpu_to_be64(list[i * 4 + 0].dma_addr);
-+		break;
-+	default:
-+		break;
-+	}
-+	return ret;
-+
-+sg_cleanup:
-+	for (j = 0; j < i; j++) {
-+		if (list[j].dma_addr) {
-+			dma_unmap_single(&pdev->dev, list[j].dma_addr,
-+					 list[j].size, DMA_BIDIRECTIONAL);
-+		}
-+
-+		list[j].dma_addr = 0;
-+	}
-+	return ret;
-+}
-+
-+static inline struct otx2_cpt_inst_info *info_create(struct pci_dev *pdev,
-+					      struct otx2_cpt_req_info *req,
-+					      gfp_t gfp)
-+{
-+	int align = OTX2_CPT_DMA_MINALIGN;
-+	struct otx2_cpt_inst_info *info;
-+	u32 dlen, align_dlen, info_len;
-+	u16 g_sz_bytes, s_sz_bytes;
-+	u32 total_mem_len;
-+
-+	if (unlikely(req->in_cnt > OTX2_CPT_MAX_SG_IN_CNT ||
-+		     req->out_cnt > OTX2_CPT_MAX_SG_OUT_CNT)) {
-+		dev_err(&pdev->dev, "Error too many sg components\n");
-+		return NULL;
-+	}
-+
-+	g_sz_bytes = ((req->in_cnt + 3) / 4) *
-+		      sizeof(struct otx2_cpt_sglist_component);
-+	s_sz_bytes = ((req->out_cnt + 3) / 4) *
-+		      sizeof(struct otx2_cpt_sglist_component);
-+
-+	dlen = g_sz_bytes + s_sz_bytes + SG_LIST_HDR_SIZE;
-+	align_dlen = ALIGN(dlen, align);
-+	info_len = ALIGN(sizeof(*info), align);
-+	total_mem_len = align_dlen + info_len + sizeof(union otx2_cpt_res_s);
-+
-+	info = kzalloc(total_mem_len, gfp);
-+	if (unlikely(!info))
-+		return NULL;
-+
-+	info->dlen = dlen;
-+	info->in_buffer = (u8 *)info + info_len;
-+
-+	((u16 *)info->in_buffer)[0] = req->out_cnt;
-+	((u16 *)info->in_buffer)[1] = req->in_cnt;
-+	((u16 *)info->in_buffer)[2] = 0;
-+	((u16 *)info->in_buffer)[3] = 0;
-+	cpu_to_be64s((u64 *)info->in_buffer);
-+
-+	/* Setup gather (input) components */
-+	if (setup_sgio_components(pdev, req->in, req->in_cnt,
-+				  &info->in_buffer[8])) {
-+		dev_err(&pdev->dev, "Failed to setup gather list\n");
-+		goto destroy_info;
-+	}
-+
-+	if (setup_sgio_components(pdev, req->out, req->out_cnt,
-+				  &info->in_buffer[8 + g_sz_bytes])) {
-+		dev_err(&pdev->dev, "Failed to setup scatter list\n");
-+		goto destroy_info;
-+	}
-+
-+	info->dma_len = total_mem_len - info_len;
-+	info->dptr_baddr = dma_map_single(&pdev->dev, info->in_buffer,
-+					  info->dma_len, DMA_BIDIRECTIONAL);
-+	if (unlikely(dma_mapping_error(&pdev->dev, info->dptr_baddr))) {
-+		dev_err(&pdev->dev, "DMA Mapping failed for cpt req\n");
-+		goto destroy_info;
-+	}
-+	/*
-+	 * Get buffer for union otx2_cpt_res_s response
-+	 * structure and its physical address
-+	 */
-+	info->completion_addr = info->in_buffer + align_dlen;
-+	info->comp_baddr = info->dptr_baddr + align_dlen;
-+
-+	return info;
-+destroy_info:
-+	otx2_cpt_info_destroy(pdev, info);
-+	return NULL;
-+}
-+
-+static int process_request(struct pci_dev *pdev, struct otx2_cpt_req_info *req,
-+			   struct otx2_cpt_pending_queue *pqueue,
-+			   struct otx2_cptlf_info *lf)
-+{
-+	struct otx2_cptvf_request *cpt_req = &req->req;
-+	struct otx2_cpt_pending_entry *pentry = NULL;
-+	union otx2_cpt_ctrl_info *ctrl = &req->ctrl;
-+	struct otx2_cpt_inst_info *info = NULL;
-+	union otx2_cpt_res_s *result = NULL;
-+	struct otx2_cpt_iq_command iq_cmd;
-+	union otx2_cpt_inst_s cptinst;
-+	int retry, ret = 0;
-+	u8 resume_sender;
-+	gfp_t gfp;
-+
-+	gfp = (req->areq->flags & CRYPTO_TFM_REQ_MAY_SLEEP) ? GFP_KERNEL :
-+							      GFP_ATOMIC;
-+	if (unlikely(!otx2_cptlf_started(lf->lfs)))
++	count = atomic_read(&se_devices.count);
++	if (count < 1)
 +		return -ENODEV;
 +
-+	info = info_create(pdev, req, gfp);
-+	if (unlikely(!info)) {
-+		dev_err(&pdev->dev, "Setting up cpt inst info failed");
-+		return -ENOMEM;
-+	}
-+	cpt_req->dlen = info->dlen;
-+
-+	result = info->completion_addr;
-+	result->s.compcode = OTX2_CPT_COMPLETION_CODE_INIT;
-+
-+	spin_lock_bh(&pqueue->lock);
-+	pentry = get_free_pending_entry(pqueue, pqueue->qlen);
-+	retry = CPT_PENTRY_TIMEOUT / CPT_PENTRY_STEP;
-+	while (unlikely(!pentry) && retry--) {
-+		spin_unlock_bh(&pqueue->lock);
-+		udelay(CPT_PENTRY_STEP);
-+		spin_lock_bh(&pqueue->lock);
-+		pentry = get_free_pending_entry(pqueue, pqueue->qlen);
-+	}
-+
-+	if (unlikely(!pentry)) {
-+		ret = -ENOSPC;
-+		goto destroy_info;
-+	}
-+
++	*cpu_num = get_cpu();
 +	/*
-+	 * Check if we are close to filling in entire pending queue,
-+	 * if so then tell the sender to stop/sleep by returning -EBUSY
-+	 * We do it only for context which can sleep (GFP_KERNEL)
++	 * On OcteonTX2 platform CPT instruction queue is bound to each
++	 * local function LF, in turn LFs can be attached to PF
++	 * or VF therefore we always use first device. We get maximum
++	 * performance if one CPT queue is available for each cpu
++	 * otherwise CPT queues need to be shared between cpus.
 +	 */
-+	if (gfp == GFP_KERNEL &&
-+	    pqueue->pending_count > (pqueue->qlen - CPT_IQ_STOP_MARGIN)) {
-+		pentry->resume_sender = true;
-+	} else
-+		pentry->resume_sender = false;
-+	resume_sender = pentry->resume_sender;
-+	pqueue->pending_count++;
++	if (*cpu_num >= se_devices.desc[0].num_queues)
++		*cpu_num %= se_devices.desc[0].num_queues;
++	*pdev = se_devices.desc[0].dev;
 +
-+	pentry->completion_addr = info->completion_addr;
-+	pentry->info = info;
-+	pentry->callback = req->callback;
-+	pentry->areq = req->areq;
-+	pentry->busy = true;
-+	info->pentry = pentry;
-+	info->time_in = jiffies;
-+	info->req = req;
++	put_cpu();
 +
-+	/* Fill in the command */
-+	iq_cmd.cmd.u = 0;
-+	iq_cmd.cmd.s.opcode = cpu_to_be16(cpt_req->opcode.flags);
-+	iq_cmd.cmd.s.param1 = cpu_to_be16(cpt_req->param1);
-+	iq_cmd.cmd.s.param2 = cpu_to_be16(cpt_req->param2);
-+	iq_cmd.cmd.s.dlen   = cpu_to_be16(cpt_req->dlen);
-+
-+	/* 64-bit swap for microcode data reads, not needed for addresses*/
-+	cpu_to_be64s(&iq_cmd.cmd.u);
-+	iq_cmd.dptr = info->dptr_baddr;
-+	iq_cmd.rptr = 0;
-+	iq_cmd.cptr.u = 0;
-+	iq_cmd.cptr.s.grp = ctrl->s.grp;
-+
-+	/* Fill in the CPT_INST_S type command for HW interpretation */
-+	otx2_cpt_fill_inst(&cptinst, &iq_cmd, info->comp_baddr);
-+
-+	/* Print debug info if enabled */
-+	otx2_cpt_dump_sg_list(pdev, req);
-+	pr_debug("Cpt_inst_s hexdump (%d bytes)\n", OTX2_CPT_INST_SIZE);
-+	print_hex_dump_debug("", 0, 16, 1, &cptinst, OTX2_CPT_INST_SIZE, false);
-+	pr_debug("Dptr hexdump (%d bytes)\n", cpt_req->dlen);
-+	print_hex_dump_debug("", 0, 16, 1, info->in_buffer,
-+			     cpt_req->dlen, false);
-+
-+	/* Send CPT command */
-+	otx2_cpt_send_cmd(&cptinst, 1, lf);
-+
-+	/*
-+	 * We allocate and prepare pending queue entry in critical section
-+	 * together with submitting CPT instruction to CPT instruction queue
-+	 * to make sure that order of CPT requests is the same in both
-+	 * pending and instruction queues
-+	 */
-+	spin_unlock_bh(&pqueue->lock);
-+
-+	ret = resume_sender ? -EBUSY : -EINPROGRESS;
-+	return ret;
-+destroy_info:
-+	spin_unlock_bh(&pqueue->lock);
-+	otx2_cpt_info_destroy(pdev, info);
-+	return ret;
-+}
-+
-+int otx2_cpt_do_request(struct pci_dev *pdev, struct otx2_cpt_req_info *req,
-+			int cpu_num)
-+{
-+	struct otx2_cptvf_dev *cptvf = pci_get_drvdata(pdev);
-+	struct otx2_cptlfs_info *lfs = &cptvf->lfs;
-+
-+	return process_request(lfs->pdev, req, &lfs->lf[cpu_num].pqueue,
-+			       &lfs->lf[cpu_num]);
-+}
-+
-+static int cpt_process_ccode(struct pci_dev *pdev,
-+			     union otx2_cpt_res_s *cpt_status,
-+			     struct otx2_cpt_inst_info *info,
-+			     u32 *res_code)
-+{
-+	u8 uc_ccode = cpt_status->s.uc_compcode;
-+	u8 ccode = cpt_status->s.compcode;
-+
-+	switch (ccode) {
-+	case OTX2_CPT_COMP_E_FAULT:
-+		dev_err(&pdev->dev,
-+			"Request failed with DMA fault\n");
-+		otx2_cpt_dump_sg_list(pdev, info->req);
-+		break;
-+
-+	case OTX2_CPT_COMP_E_HWERR:
-+		dev_err(&pdev->dev,
-+			"Request failed with hardware error\n");
-+		otx2_cpt_dump_sg_list(pdev, info->req);
-+		break;
-+
-+	case OTX2_CPT_COMP_E_INSTERR:
-+		dev_err(&pdev->dev,
-+			"Request failed with instruction error\n");
-+		otx2_cpt_dump_sg_list(pdev, info->req);
-+		break;
-+
-+	case OTX2_CPT_COMP_E_NOTDONE:
-+		/* check for timeout */
-+		if (time_after_eq(jiffies, info->time_in +
-+				  CPT_COMMAND_TIMEOUT * HZ))
-+			dev_warn(&pdev->dev,
-+				 "Request timed out 0x%p", info->req);
-+		else if (info->extra_time < CPT_TIME_IN_RESET_COUNT) {
-+			info->time_in = jiffies;
-+			info->extra_time++;
-+		}
-+		return 1;
-+
-+	case OTX2_CPT_COMP_E_GOOD:
-+		/*
-+		 * Check microcode completion code, it is only valid
-+		 * when completion code is CPT_COMP_E::GOOD
-+		 */
-+		if (uc_ccode != OTX2_CPT_UCC_SUCCESS) {
-+			/*
-+			 * If requested hmac is truncated and ucode returns
-+			 * s/g write length error then we report success
-+			 * because ucode writes as many bytes of calculated
-+			 * hmac as available in gather buffer and reports
-+			 * s/g write length error if number of bytes in gather
-+			 * buffer is less than full hmac size.
-+			 */
-+			if (info->req->is_trunc_hmac &&
-+			    uc_ccode == OTX2_CPT_UCC_SG_WRITE_LENGTH) {
-+				*res_code = 0;
-+				break;
-+			}
-+
-+			dev_err(&pdev->dev,
-+				"Request failed with software error code 0x%x\n",
-+				cpt_status->s.uc_compcode);
-+			otx2_cpt_dump_sg_list(pdev, info->req);
-+			break;
-+		}
-+		/* Request has been processed with success */
-+		*res_code = 0;
-+		break;
-+
-+	default:
-+		dev_err(&pdev->dev,
-+			"Request returned invalid status %d\n", ccode);
-+		break;
-+	}
 +	return 0;
 +}
 +
-+static inline void process_pending_queue(struct pci_dev *pdev,
-+					 struct otx2_cpt_pending_queue *pqueue)
++static inline int validate_hmac_cipher_null(struct otx2_cpt_req_info *cpt_req)
 +{
-+	struct otx2_cpt_pending_entry *resume_pentry = NULL;
-+	void (*callback)(int status, void *arg, void *req);
-+	struct otx2_cpt_pending_entry *pentry = NULL;
-+	union otx2_cpt_res_s *cpt_status = NULL;
-+	struct otx2_cpt_inst_info *info = NULL;
-+	struct otx2_cpt_req_info *req = NULL;
-+	struct crypto_async_request *areq;
-+	u32 res_code, resume_index;
++	struct otx2_cpt_req_ctx *rctx;
++	struct aead_request *req;
++	struct crypto_aead *tfm;
 +
-+	while (1) {
-+		spin_lock_bh(&pqueue->lock);
-+		pentry = &pqueue->head[pqueue->front];
++	req = container_of(cpt_req->areq, struct aead_request, base);
++	tfm = crypto_aead_reqtfm(req);
++	rctx = aead_request_ctx(req);
++	if (memcmp(rctx->fctx.hmac.s.hmac_calc,
++		   rctx->fctx.hmac.s.hmac_recv,
++		   crypto_aead_authsize(tfm)) != 0)
++		return -EBADMSG;
 +
-+		if (WARN_ON(!pentry)) {
-+			spin_unlock_bh(&pqueue->lock);
-+			break;
++	return 0;
++}
++
++static void otx2_cpt_aead_callback(int status, void *arg1, void *arg2)
++{
++	struct otx2_cpt_inst_info *inst_info = arg2;
++	struct crypto_async_request *areq = arg1;
++	struct otx2_cpt_req_info *cpt_req;
++	struct pci_dev *pdev;
++
++	if (inst_info) {
++		cpt_req = inst_info->req;
++		if (!status) {
++			/*
++			 * When selected cipher is NULL we need to manually
++			 * verify whether calculated hmac value matches
++			 * received hmac value
++			 */
++			if (cpt_req->req_type ==
++			    OTX2_CPT_AEAD_ENC_DEC_NULL_REQ &&
++			    !cpt_req->is_enc)
++				status = validate_hmac_cipher_null(cpt_req);
 +		}
++		pdev = inst_info->pdev;
++		otx2_cpt_info_destroy(pdev, inst_info);
++	}
++	if (areq)
++		areq->complete(areq, status);
++}
 +
-+		res_code = -EINVAL;
-+		if (unlikely(!pentry->busy)) {
-+			spin_unlock_bh(&pqueue->lock);
-+			break;
-+		}
++static void output_iv_copyback(struct crypto_async_request *areq)
++{
++	struct otx2_cpt_req_info *req_info;
++	struct otx2_cpt_req_ctx *rctx;
++	struct skcipher_request *sreq;
++	struct crypto_skcipher *stfm;
++	struct otx2_cpt_enc_ctx *ctx;
++	u32 start, ivsize;
 +
-+		if (unlikely(!pentry->callback)) {
-+			dev_err(&pdev->dev, "Callback NULL\n");
-+			goto process_pentry;
-+		}
++	sreq = container_of(areq, struct skcipher_request, base);
++	stfm = crypto_skcipher_reqtfm(sreq);
++	ctx = crypto_skcipher_ctx(stfm);
++	if (ctx->cipher_type == OTX2_CPT_AES_CBC ||
++	    ctx->cipher_type == OTX2_CPT_DES3_CBC) {
++		rctx = skcipher_request_ctx(sreq);
++		req_info = &rctx->cpt_req;
++		ivsize = crypto_skcipher_ivsize(stfm);
++		start = sreq->cryptlen - ivsize;
 +
-+		info = pentry->info;
-+		if (unlikely(!info)) {
-+			dev_err(&pdev->dev, "Pending entry post arg NULL\n");
-+			goto process_pentry;
-+		}
-+
-+		req = info->req;
-+		if (unlikely(!req)) {
-+			dev_err(&pdev->dev, "Request NULL\n");
-+			goto process_pentry;
-+		}
-+
-+		cpt_status = pentry->completion_addr;
-+		if (unlikely(!cpt_status)) {
-+			dev_err(&pdev->dev, "Completion address NULL\n");
-+			goto process_pentry;
-+		}
-+
-+		if (cpt_process_ccode(pdev, cpt_status, info, &res_code)) {
-+			spin_unlock_bh(&pqueue->lock);
-+			return;
-+		}
-+		info->pdev = pdev;
-+
-+process_pentry:
-+		/*
-+		 * Check if we should inform sending side to resume
-+		 * We do it CPT_IQ_RESUME_MARGIN elements in advance before
-+		 * pending queue becomes empty
-+		 */
-+		resume_index = modulo_inc(pqueue->front, pqueue->qlen,
-+					  CPT_IQ_RESUME_MARGIN);
-+		resume_pentry = &pqueue->head[resume_index];
-+		if (resume_pentry &&
-+		    resume_pentry->resume_sender) {
-+			resume_pentry->resume_sender = false;
-+			callback = resume_pentry->callback;
-+			areq = resume_pentry->areq;
-+
-+			if (callback) {
-+				spin_unlock_bh(&pqueue->lock);
-+
-+				/*
-+				 * EINPROGRESS is an indication for sending
-+				 * side that it can resume sending requests
-+				 */
-+				callback(-EINPROGRESS, areq, info);
-+				spin_lock_bh(&pqueue->lock);
++		if (req_info->is_enc) {
++			scatterwalk_map_and_copy(sreq->iv, sreq->dst, start,
++						 ivsize, 0);
++		} else {
++			if (sreq->src != sreq->dst) {
++				scatterwalk_map_and_copy(sreq->iv, sreq->src,
++							 start, ivsize, 0);
++			} else {
++				memcpy(sreq->iv, req_info->iv_out, ivsize);
++				kfree(req_info->iv_out);
 +			}
 +		}
-+
-+		callback = pentry->callback;
-+		areq = pentry->areq;
-+		free_pentry(pentry);
-+
-+		pqueue->pending_count--;
-+		pqueue->front = modulo_inc(pqueue->front, pqueue->qlen, 1);
-+		spin_unlock_bh(&pqueue->lock);
-+
-+		/*
-+		 * Call callback after current pending entry has been
-+		 * processed, we don't do it if the callback pointer is
-+		 * invalid.
-+		 */
-+		if (callback)
-+			callback(res_code, areq, info);
 +	}
 +}
 +
-+void otx2_cpt_post_process(struct otx2_cptlf_wqe *wqe)
++static void otx2_cpt_skcipher_callback(int status, void *arg1, void *arg2)
 +{
-+	process_pending_queue(wqe->lfs->pdev,
-+			      &wqe->lfs->lf[wqe->lf_num].pqueue);
++	struct otx2_cpt_inst_info *inst_info = arg2;
++	struct crypto_async_request *areq = arg1;
++	struct pci_dev *pdev;
++
++	if (areq) {
++		if (!status)
++			output_iv_copyback(areq);
++		if (inst_info) {
++			pdev = inst_info->pdev;
++			otx2_cpt_info_destroy(pdev, inst_info);
++		}
++		areq->complete(areq, status);
++	}
++}
++
++static inline void update_input_data(struct otx2_cpt_req_info *req_info,
++				     struct scatterlist *inp_sg,
++				     u32 nbytes, u32 *argcnt)
++{
++	req_info->req.dlen += nbytes;
++
++	while (nbytes) {
++		u32 len = (nbytes < inp_sg->length) ? nbytes : inp_sg->length;
++		u8 *ptr = sg_virt(inp_sg);
++
++		req_info->in[*argcnt].vptr = (void *)ptr;
++		req_info->in[*argcnt].size = len;
++		nbytes -= len;
++		++(*argcnt);
++		inp_sg = sg_next(inp_sg);
++	}
++}
++
++static inline void update_output_data(struct otx2_cpt_req_info *req_info,
++				      struct scatterlist *outp_sg,
++				      u32 offset, u32 nbytes, u32 *argcnt)
++{
++	u32 len, sg_len;
++	u8 *ptr;
++
++	req_info->rlen += nbytes;
++
++	while (nbytes) {
++		sg_len = outp_sg->length - offset;
++		len = (nbytes < sg_len) ? nbytes : sg_len;
++		ptr = sg_virt(outp_sg);
++
++		req_info->out[*argcnt].vptr = (void *) (ptr + offset);
++		req_info->out[*argcnt].size = len;
++		nbytes -= len;
++		++(*argcnt);
++		offset = 0;
++		outp_sg = sg_next(outp_sg);
++	}
++}
++
++static inline int create_ctx_hdr(struct skcipher_request *req, u32 enc,
++				 u32 *argcnt)
++{
++	struct crypto_skcipher *stfm = crypto_skcipher_reqtfm(req);
++	struct otx2_cpt_req_ctx *rctx = skcipher_request_ctx(req);
++	struct otx2_cpt_enc_ctx *ctx = crypto_skcipher_ctx(stfm);
++	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
++	struct otx2_cpt_fc_ctx *fctx = &rctx->fctx;
++	int ivsize = crypto_skcipher_ivsize(stfm);
++	u32 start = req->cryptlen - ivsize;
++	gfp_t flags;
++
++	flags = (req->base.flags & CRYPTO_TFM_REQ_MAY_SLEEP) ?
++			GFP_KERNEL : GFP_ATOMIC;
++	req_info->ctrl.s.dma_mode = OTX2_CPT_DMA_MODE_SG;
++	req_info->ctrl.s.se_req = 1;
++
++	req_info->req.opcode.s.major = OTX2_CPT_MAJOR_OP_FC |
++				DMA_MODE_FLAG(OTX2_CPT_DMA_MODE_SG);
++	if (enc) {
++		req_info->req.opcode.s.minor = 2;
++	} else {
++		req_info->req.opcode.s.minor = 3;
++		if ((ctx->cipher_type == OTX2_CPT_AES_CBC ||
++		    ctx->cipher_type == OTX2_CPT_DES3_CBC) &&
++		    req->src == req->dst) {
++			req_info->iv_out = kmalloc(ivsize, flags);
++			if (!req_info->iv_out)
++				return -ENOMEM;
++
++			scatterwalk_map_and_copy(req_info->iv_out, req->src,
++						 start, ivsize, 0);
++		}
++	}
++	/* Encryption data length */
++	req_info->req.param1 = req->cryptlen;
++	/* Authentication data length */
++	req_info->req.param2 = 0;
++
++	fctx->enc.enc_ctrl.e.enc_cipher = ctx->cipher_type;
++	fctx->enc.enc_ctrl.e.aes_key = ctx->key_type;
++	fctx->enc.enc_ctrl.e.iv_source = OTX2_CPT_FROM_CPTR;
++
++	if (ctx->cipher_type == OTX2_CPT_AES_XTS)
++		memcpy(fctx->enc.encr_key, ctx->enc_key, ctx->key_len * 2);
++	else
++		memcpy(fctx->enc.encr_key, ctx->enc_key, ctx->key_len);
++
++	memcpy(fctx->enc.encr_iv, req->iv, crypto_skcipher_ivsize(stfm));
++
++	cpu_to_be64s(&fctx->enc.enc_ctrl.u);
++
++	/*
++	 * Storing  Packet Data Information in offset
++	 * Control Word First 8 bytes
++	 */
++	req_info->in[*argcnt].vptr = (u8 *)&rctx->ctrl_word;
++	req_info->in[*argcnt].size = CONTROL_WORD_LEN;
++	req_info->req.dlen += CONTROL_WORD_LEN;
++	++(*argcnt);
++
++	req_info->in[*argcnt].vptr = (u8 *)fctx;
++	req_info->in[*argcnt].size = sizeof(struct otx2_cpt_fc_ctx);
++	req_info->req.dlen += sizeof(struct otx2_cpt_fc_ctx);
++
++	++(*argcnt);
++
++	return 0;
++}
++
++static inline int create_input_list(struct skcipher_request *req, u32 enc,
++				    u32 enc_iv_len)
++{
++	struct otx2_cpt_req_ctx *rctx = skcipher_request_ctx(req);
++	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
++	u32 argcnt =  0;
++	int ret;
++
++	ret = create_ctx_hdr(req, enc, &argcnt);
++	if (ret)
++		return ret;
++
++	update_input_data(req_info, req->src, req->cryptlen, &argcnt);
++	req_info->in_cnt = argcnt;
++
++	return 0;
++}
++
++static inline void create_output_list(struct skcipher_request *req,
++				      u32 enc_iv_len)
++{
++	struct otx2_cpt_req_ctx *rctx = skcipher_request_ctx(req);
++	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
++	u32 argcnt = 0;
++
++	/*
++	 * OUTPUT Buffer Processing
++	 * AES encryption/decryption output would be
++	 * received in the following format
++	 *
++	 * ------IV--------|------ENCRYPTED/DECRYPTED DATA-----|
++	 * [ 16 Bytes/     [   Request Enc/Dec/ DATA Len AES CBC ]
++	 */
++	update_output_data(req_info, req->dst, 0, req->cryptlen, &argcnt);
++	req_info->out_cnt = argcnt;
++}
++
++static inline int cpt_enc_dec(struct skcipher_request *req, u32 enc)
++{
++	struct crypto_skcipher *stfm = crypto_skcipher_reqtfm(req);
++	struct otx2_cpt_req_ctx *rctx = skcipher_request_ctx(req);
++	struct otx2_cpt_enc_ctx *ctx = crypto_skcipher_ctx(stfm);
++	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
++	u32 enc_iv_len = crypto_skcipher_ivsize(stfm);
++	struct pci_dev *pdev;
++	int status, cpu_num;
++
++	if (!req->cryptlen)
++		return 0;
++
++	if (req->cryptlen > OTX2_CPT_MAX_REQ_SIZE ||
++	    !IS_ALIGNED(req->cryptlen, ctx->enc_align_len))
++		return -EINVAL;
++
++	/* Clear control words */
++	rctx->ctrl_word.flags = 0;
++	rctx->fctx.enc.enc_ctrl.u = 0;
++
++	status = create_input_list(req, enc, enc_iv_len);
++	if (status)
++		return status;
++	create_output_list(req, enc_iv_len);
++
++	status = get_se_device(&pdev, &cpu_num);
++	if (status)
++		return status;
++
++	req_info->callback = otx2_cpt_skcipher_callback;
++	req_info->areq = &req->base;
++	req_info->req_type = OTX2_CPT_ENC_DEC_REQ;
++	req_info->is_enc = enc;
++	req_info->is_trunc_hmac = false;
++	req_info->ctrl.s.grp = otx2_cpt_get_kcrypto_eng_grp_num(pdev);
++
++	/*
++	 * We perform an asynchronous send and once
++	 * the request is completed the driver would
++	 * intimate through registered call back functions
++	 */
++	status = otx2_cpt_do_request(pdev, req_info, cpu_num);
++
++	return status;
++}
++
++static int otx2_cpt_skcipher_encrypt(struct skcipher_request *req)
++{
++	return cpt_enc_dec(req, true);
++}
++
++static int otx2_cpt_skcipher_decrypt(struct skcipher_request *req)
++{
++	return cpt_enc_dec(req, false);
++}
++
++static int otx2_cpt_skcipher_xts_setkey(struct crypto_skcipher *tfm,
++				       const u8 *key, u32 keylen)
++{
++	struct otx2_cpt_enc_ctx *ctx = crypto_skcipher_ctx(tfm);
++	const u8 *key2 = key + (keylen / 2);
++	const u8 *key1 = key;
++	int ret;
++
++	ret = xts_check_key(crypto_skcipher_tfm(tfm), key, keylen);
++	if (ret)
++		return ret;
++	ctx->key_len = keylen;
++	ctx->enc_align_len = 1;
++	memcpy(ctx->enc_key, key1, keylen / 2);
++	memcpy(ctx->enc_key + KEY2_OFFSET, key2, keylen / 2);
++	ctx->cipher_type = OTX2_CPT_AES_XTS;
++	switch (ctx->key_len) {
++	case 2 * AES_KEYSIZE_128:
++		ctx->key_type = OTX2_CPT_AES_128_BIT;
++		break;
++	case 2 * AES_KEYSIZE_256:
++		ctx->key_type = OTX2_CPT_AES_256_BIT;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int cpt_des_setkey(struct crypto_skcipher *tfm, const u8 *key,
++			  u32 keylen, u8 cipher_type)
++{
++	struct otx2_cpt_enc_ctx *ctx = crypto_skcipher_ctx(tfm);
++
++	if (keylen != DES3_EDE_KEY_SIZE)
++		return -EINVAL;
++
++	ctx->key_len = keylen;
++	ctx->cipher_type = cipher_type;
++	ctx->enc_align_len = 8;
++
++	memcpy(ctx->enc_key, key, keylen);
++
++	return 0;
++}
++
++static int cpt_aes_setkey(struct crypto_skcipher *tfm, const u8 *key,
++			  u32 keylen, u8 cipher_type)
++{
++	struct otx2_cpt_enc_ctx *ctx = crypto_skcipher_ctx(tfm);
++
++	switch (keylen) {
++	case AES_KEYSIZE_128:
++		ctx->key_type = OTX2_CPT_AES_128_BIT;
++		break;
++	case AES_KEYSIZE_192:
++		ctx->key_type = OTX2_CPT_AES_192_BIT;
++		break;
++	case AES_KEYSIZE_256:
++		ctx->key_type = OTX2_CPT_AES_256_BIT;
++		break;
++	default:
++		return -EINVAL;
++	}
++	if (cipher_type == OTX2_CPT_AES_CBC || cipher_type == OTX2_CPT_AES_ECB)
++		ctx->enc_align_len = 16;
++	else
++		ctx->enc_align_len = 1;
++
++	ctx->key_len = keylen;
++	ctx->cipher_type = cipher_type;
++
++	memcpy(ctx->enc_key, key, keylen);
++
++	return 0;
++}
++
++static int otx2_cpt_skcipher_cbc_aes_setkey(struct crypto_skcipher *tfm,
++					    const u8 *key, u32 keylen)
++{
++	return cpt_aes_setkey(tfm, key, keylen, OTX2_CPT_AES_CBC);
++}
++
++static int otx2_cpt_skcipher_ecb_aes_setkey(struct crypto_skcipher *tfm,
++					    const u8 *key, u32 keylen)
++{
++	return cpt_aes_setkey(tfm, key, keylen, OTX2_CPT_AES_ECB);
++}
++
++static int otx2_cpt_skcipher_cfb_aes_setkey(struct crypto_skcipher *tfm,
++					    const u8 *key, u32 keylen)
++{
++	return cpt_aes_setkey(tfm, key, keylen, OTX2_CPT_AES_CFB);
++}
++
++static int otx2_cpt_skcipher_cbc_des3_setkey(struct crypto_skcipher *tfm,
++					     const u8 *key, u32 keylen)
++{
++	return cpt_des_setkey(tfm, key, keylen, OTX2_CPT_DES3_CBC);
++}
++
++static int otx2_cpt_skcipher_ecb_des3_setkey(struct crypto_skcipher *tfm,
++					     const u8 *key, u32 keylen)
++{
++	return cpt_des_setkey(tfm, key, keylen, OTX2_CPT_DES3_ECB);
++}
++
++static int otx2_cpt_enc_dec_init(struct crypto_skcipher *tfm)
++{
++	struct otx2_cpt_enc_ctx *ctx = crypto_skcipher_ctx(tfm);
++
++	memset(ctx, 0, sizeof(*ctx));
++	/*
++	 * Additional memory for ablkcipher_request is
++	 * allocated since the cryptd daemon uses
++	 * this memory for request_ctx information
++	 */
++	crypto_skcipher_set_reqsize(tfm, sizeof(struct otx2_cpt_req_ctx) +
++					sizeof(struct skcipher_request));
++
++	return 0;
++}
++
++static int cpt_aead_init(struct crypto_aead *tfm, u8 cipher_type, u8 mac_type)
++{
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(tfm);
++
++	ctx->cipher_type = cipher_type;
++	ctx->mac_type = mac_type;
++
++	/*
++	 * When selected cipher is NULL we use HMAC opcode instead of
++	 * FLEXICRYPTO opcode therefore we don't need to use HASH algorithms
++	 * for calculating ipad and opad
++	 */
++	if (ctx->cipher_type != OTX2_CPT_CIPHER_NULL) {
++		switch (ctx->mac_type) {
++		case OTX2_CPT_SHA1:
++			ctx->hashalg = crypto_alloc_shash("sha1", 0,
++							  CRYPTO_ALG_ASYNC);
++			if (IS_ERR(ctx->hashalg))
++				return PTR_ERR(ctx->hashalg);
++			break;
++
++		case OTX2_CPT_SHA256:
++			ctx->hashalg = crypto_alloc_shash("sha256", 0,
++							  CRYPTO_ALG_ASYNC);
++			if (IS_ERR(ctx->hashalg))
++				return PTR_ERR(ctx->hashalg);
++			break;
++
++		case OTX2_CPT_SHA384:
++			ctx->hashalg = crypto_alloc_shash("sha384", 0,
++							  CRYPTO_ALG_ASYNC);
++			if (IS_ERR(ctx->hashalg))
++				return PTR_ERR(ctx->hashalg);
++			break;
++
++		case OTX2_CPT_SHA512:
++			ctx->hashalg = crypto_alloc_shash("sha512", 0,
++							  CRYPTO_ALG_ASYNC);
++			if (IS_ERR(ctx->hashalg))
++				return PTR_ERR(ctx->hashalg);
++			break;
++		}
++	}
++	switch (ctx->cipher_type) {
++	case OTX2_CPT_AES_CBC:
++	case OTX2_CPT_AES_ECB:
++		ctx->enc_align_len = 16;
++		break;
++	case OTX2_CPT_DES3_CBC:
++	case OTX2_CPT_DES3_ECB:
++		ctx->enc_align_len = 8;
++		break;
++	case OTX2_CPT_AES_GCM:
++	case OTX2_CPT_CIPHER_NULL:
++		ctx->enc_align_len = 1;
++		break;
++	}
++	crypto_aead_set_reqsize(tfm, sizeof(struct otx2_cpt_req_ctx));
++
++	return 0;
++}
++
++static int otx2_cpt_aead_cbc_aes_sha1_init(struct crypto_aead *tfm)
++{
++	return cpt_aead_init(tfm, OTX2_CPT_AES_CBC, OTX2_CPT_SHA1);
++}
++
++static int otx2_cpt_aead_cbc_aes_sha256_init(struct crypto_aead *tfm)
++{
++	return cpt_aead_init(tfm, OTX2_CPT_AES_CBC, OTX2_CPT_SHA256);
++}
++
++static int otx2_cpt_aead_cbc_aes_sha384_init(struct crypto_aead *tfm)
++{
++	return cpt_aead_init(tfm, OTX2_CPT_AES_CBC, OTX2_CPT_SHA384);
++}
++
++static int otx2_cpt_aead_cbc_aes_sha512_init(struct crypto_aead *tfm)
++{
++	return cpt_aead_init(tfm, OTX2_CPT_AES_CBC, OTX2_CPT_SHA512);
++}
++
++static int otx2_cpt_aead_ecb_null_sha1_init(struct crypto_aead *tfm)
++{
++	return cpt_aead_init(tfm, OTX2_CPT_CIPHER_NULL, OTX2_CPT_SHA1);
++}
++
++static int otx2_cpt_aead_ecb_null_sha256_init(struct crypto_aead *tfm)
++{
++	return cpt_aead_init(tfm, OTX2_CPT_CIPHER_NULL, OTX2_CPT_SHA256);
++}
++
++static int otx2_cpt_aead_ecb_null_sha384_init(struct crypto_aead *tfm)
++{
++	return cpt_aead_init(tfm, OTX2_CPT_CIPHER_NULL, OTX2_CPT_SHA384);
++}
++
++static int otx2_cpt_aead_ecb_null_sha512_init(struct crypto_aead *tfm)
++{
++	return cpt_aead_init(tfm, OTX2_CPT_CIPHER_NULL, OTX2_CPT_SHA512);
++}
++
++static int otx2_cpt_aead_gcm_aes_init(struct crypto_aead *tfm)
++{
++	return cpt_aead_init(tfm, OTX2_CPT_AES_GCM, OTX2_CPT_MAC_NULL);
++}
++
++static void otx2_cpt_aead_exit(struct crypto_aead *tfm)
++{
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(tfm);
++
++	kfree(ctx->ipad);
++	kfree(ctx->opad);
++	if (ctx->hashalg)
++		crypto_free_shash(ctx->hashalg);
++	kfree(ctx->sdesc);
++}
++
++static int otx2_cpt_aead_gcm_set_authsize(struct crypto_aead *tfm,
++					  unsigned int authsize)
++{
++	if (crypto_rfc4106_check_authsize(authsize))
++		return -EINVAL;
++
++	tfm->authsize = authsize;
++	return 0;
++}
++
++static int otx2_cpt_aead_set_authsize(struct crypto_aead *tfm,
++				      unsigned int authsize)
++{
++	tfm->authsize = authsize;
++
++	return 0;
++}
++
++static int otx2_cpt_aead_null_set_authsize(struct crypto_aead *tfm,
++					   unsigned int authsize)
++{
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(tfm);
++
++	ctx->is_trunc_hmac = true;
++	tfm->authsize = authsize;
++
++	return 0;
++}
++
++static struct otx2_cpt_sdesc *alloc_sdesc(struct crypto_shash *alg)
++{
++	struct otx2_cpt_sdesc *sdesc;
++	int size;
++
++	size = sizeof(struct shash_desc) + crypto_shash_descsize(alg);
++	sdesc = kmalloc(size, GFP_KERNEL);
++	if (!sdesc)
++		return NULL;
++
++	sdesc->shash.tfm = alg;
++
++	return sdesc;
++}
++
++static inline void swap_data32(void *buf, u32 len)
++{
++	cpu_to_be32_array(buf, buf, len / 4);
++}
++
++static inline void swap_data64(void *buf, u32 len)
++{
++	u64 *src = buf;
++	int i = 0;
++
++	for (i = 0 ; i < len / 8; i++, src++)
++		cpu_to_be64s(src);
++}
++
++static int copy_pad(u8 mac_type, u8 *out_pad, u8 *in_pad)
++{
++	struct sha512_state *sha512;
++	struct sha256_state *sha256;
++	struct sha1_state *sha1;
++
++	switch (mac_type) {
++	case OTX2_CPT_SHA1:
++		sha1 = (struct sha1_state *) in_pad;
++		swap_data32(sha1->state, SHA1_DIGEST_SIZE);
++		memcpy(out_pad, &sha1->state, SHA1_DIGEST_SIZE);
++		break;
++
++	case OTX2_CPT_SHA256:
++		sha256 = (struct sha256_state *) in_pad;
++		swap_data32(sha256->state, SHA256_DIGEST_SIZE);
++		memcpy(out_pad, &sha256->state, SHA256_DIGEST_SIZE);
++		break;
++
++	case OTX2_CPT_SHA384:
++	case OTX2_CPT_SHA512:
++		sha512 = (struct sha512_state *) in_pad;
++		swap_data64(sha512->state, SHA512_DIGEST_SIZE);
++		memcpy(out_pad, &sha512->state, SHA512_DIGEST_SIZE);
++		break;
++
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int aead_hmac_init(struct crypto_aead *cipher)
++{
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(cipher);
++	int state_size = crypto_shash_statesize(ctx->hashalg);
++	int ds = crypto_shash_digestsize(ctx->hashalg);
++	int bs = crypto_shash_blocksize(ctx->hashalg);
++	int authkeylen = ctx->auth_key_len;
++	u8 *ipad = NULL, *opad = NULL;
++	int ret = 0, icount = 0;
++
++	ctx->sdesc = alloc_sdesc(ctx->hashalg);
++	if (!ctx->sdesc)
++		return -ENOMEM;
++
++	ctx->ipad = kzalloc(bs, GFP_KERNEL);
++	if (!ctx->ipad) {
++		ret = -ENOMEM;
++		goto calc_fail;
++	}
++
++	ctx->opad = kzalloc(bs, GFP_KERNEL);
++	if (!ctx->opad) {
++		ret = -ENOMEM;
++		goto calc_fail;
++	}
++
++	ipad = kzalloc(state_size, GFP_KERNEL);
++	if (!ipad) {
++		ret = -ENOMEM;
++		goto calc_fail;
++	}
++
++	opad = kzalloc(state_size, GFP_KERNEL);
++	if (!opad) {
++		ret = -ENOMEM;
++		goto calc_fail;
++	}
++
++	if (authkeylen > bs) {
++		ret = crypto_shash_digest(&ctx->sdesc->shash, ctx->key,
++					  authkeylen, ipad);
++		if (ret)
++			goto calc_fail;
++
++		authkeylen = ds;
++	} else {
++		memcpy(ipad, ctx->key, authkeylen);
++	}
++
++	memset(ipad + authkeylen, 0, bs - authkeylen);
++	memcpy(opad, ipad, bs);
++
++	for (icount = 0; icount < bs; icount++) {
++		ipad[icount] ^= 0x36;
++		opad[icount] ^= 0x5c;
++	}
++
++	/*
++	 * Partial Hash calculated from the software
++	 * algorithm is retrieved for IPAD & OPAD
++	 */
++
++	/* IPAD Calculation */
++	crypto_shash_init(&ctx->sdesc->shash);
++	crypto_shash_update(&ctx->sdesc->shash, ipad, bs);
++	crypto_shash_export(&ctx->sdesc->shash, ipad);
++	ret = copy_pad(ctx->mac_type, ctx->ipad, ipad);
++	if (ret)
++		goto calc_fail;
++
++	/* OPAD Calculation */
++	crypto_shash_init(&ctx->sdesc->shash);
++	crypto_shash_update(&ctx->sdesc->shash, opad, bs);
++	crypto_shash_export(&ctx->sdesc->shash, opad);
++	ret = copy_pad(ctx->mac_type, ctx->opad, opad);
++	if (ret)
++		goto calc_fail;
++
++	kfree(ipad);
++	kfree(opad);
++
++	return 0;
++
++calc_fail:
++	kfree(ctx->ipad);
++	ctx->ipad = NULL;
++	kfree(ctx->opad);
++	ctx->opad = NULL;
++	kfree(ipad);
++	kfree(opad);
++	kfree(ctx->sdesc);
++	ctx->sdesc = NULL;
++
++	return ret;
++}
++
++static int otx2_cpt_aead_cbc_aes_sha_setkey(struct crypto_aead *cipher,
++					    const unsigned char *key,
++					    unsigned int keylen)
++{
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(cipher);
++	struct crypto_authenc_key_param *param;
++	int enckeylen = 0, authkeylen = 0;
++	struct rtattr *rta = (void *)key;
++	int status;
++
++	if (!RTA_OK(rta, keylen))
++		return -EINVAL;
++
++	if (rta->rta_type != CRYPTO_AUTHENC_KEYA_PARAM)
++		return -EINVAL;
++
++	if (RTA_PAYLOAD(rta) < sizeof(*param))
++		return -EINVAL;
++
++	param = RTA_DATA(rta);
++	enckeylen = be32_to_cpu(param->enckeylen);
++	key += RTA_ALIGN(rta->rta_len);
++	keylen -= RTA_ALIGN(rta->rta_len);
++	if (keylen < enckeylen)
++		return -EINVAL;
++
++	if (keylen > OTX2_CPT_MAX_KEY_SIZE)
++		return -EINVAL;
++
++	authkeylen = keylen - enckeylen;
++	memcpy(ctx->key, key, keylen);
++
++	switch (enckeylen) {
++	case AES_KEYSIZE_128:
++		ctx->key_type = OTX2_CPT_AES_128_BIT;
++		break;
++	case AES_KEYSIZE_192:
++		ctx->key_type = OTX2_CPT_AES_192_BIT;
++		break;
++	case AES_KEYSIZE_256:
++		ctx->key_type = OTX2_CPT_AES_256_BIT;
++		break;
++	default:
++		/* Invalid key length */
++		return -EINVAL;
++	}
++
++	ctx->enc_key_len = enckeylen;
++	ctx->auth_key_len = authkeylen;
++
++	status = aead_hmac_init(cipher);
++	if (status)
++		return status;
++
++	return 0;
++}
++
++static int otx2_cpt_aead_ecb_null_sha_setkey(struct crypto_aead *cipher,
++					     const unsigned char *key,
++					     unsigned int keylen)
++{
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(cipher);
++	struct crypto_authenc_key_param *param;
++	struct rtattr *rta = (void *)key;
++	int enckeylen = 0;
++
++	if (!RTA_OK(rta, keylen))
++		return -EINVAL;
++
++	if (rta->rta_type != CRYPTO_AUTHENC_KEYA_PARAM)
++		return -EINVAL;
++
++	if (RTA_PAYLOAD(rta) < sizeof(*param))
++		return -EINVAL;
++
++	param = RTA_DATA(rta);
++	enckeylen = be32_to_cpu(param->enckeylen);
++	key += RTA_ALIGN(rta->rta_len);
++	keylen -= RTA_ALIGN(rta->rta_len);
++	if (enckeylen != 0)
++		return -EINVAL;
++
++	if (keylen > OTX2_CPT_MAX_KEY_SIZE)
++		return -EINVAL;
++
++	memcpy(ctx->key, key, keylen);
++	ctx->enc_key_len = enckeylen;
++	ctx->auth_key_len = keylen;
++
++	return 0;
++}
++
++static int otx2_cpt_aead_gcm_aes_setkey(struct crypto_aead *cipher,
++					const unsigned char *key,
++					unsigned int keylen)
++{
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(cipher);
++
++	/*
++	 * For aes gcm we expect to get encryption key (16, 24, 32 bytes)
++	 * and salt (4 bytes)
++	 */
++	switch (keylen) {
++	case AES_KEYSIZE_128 + AES_GCM_SALT_SIZE:
++		ctx->key_type = OTX2_CPT_AES_128_BIT;
++		ctx->enc_key_len = AES_KEYSIZE_128;
++		break;
++	case AES_KEYSIZE_192 + AES_GCM_SALT_SIZE:
++		ctx->key_type = OTX2_CPT_AES_192_BIT;
++		ctx->enc_key_len = AES_KEYSIZE_192;
++		break;
++	case AES_KEYSIZE_256 + AES_GCM_SALT_SIZE:
++		ctx->key_type = OTX2_CPT_AES_256_BIT;
++		ctx->enc_key_len = AES_KEYSIZE_256;
++		break;
++	default:
++		/* Invalid key and salt length */
++		return -EINVAL;
++	}
++
++	/* Store encryption key and salt */
++	memcpy(ctx->key, key, keylen);
++
++	return 0;
++}
++
++static inline int create_aead_ctx_hdr(struct aead_request *req, u32 enc,
++				      u32 *argcnt)
++{
++	struct otx2_cpt_req_ctx *rctx = aead_request_ctx(req);
++	struct crypto_aead *tfm = crypto_aead_reqtfm(req);
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(tfm);
++	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
++	struct otx2_cpt_fc_ctx *fctx = &rctx->fctx;
++	int mac_len = crypto_aead_authsize(tfm);
++	int ds;
++
++	rctx->ctrl_word.e.enc_data_offset = req->assoclen;
++
++	switch (ctx->cipher_type) {
++	case OTX2_CPT_AES_CBC:
++		if (req->assoclen > 248 || !IS_ALIGNED(req->assoclen, 8))
++			return -EINVAL;
++
++		fctx->enc.enc_ctrl.e.iv_source = OTX2_CPT_FROM_CPTR;
++		/* Copy encryption key to context */
++		memcpy(fctx->enc.encr_key, ctx->key + ctx->auth_key_len,
++		       ctx->enc_key_len);
++		/* Copy IV to context */
++		memcpy(fctx->enc.encr_iv, req->iv, crypto_aead_ivsize(tfm));
++
++		ds = crypto_shash_digestsize(ctx->hashalg);
++		if (ctx->mac_type == OTX2_CPT_SHA384)
++			ds = SHA512_DIGEST_SIZE;
++		if (ctx->ipad)
++			memcpy(fctx->hmac.e.ipad, ctx->ipad, ds);
++		if (ctx->opad)
++			memcpy(fctx->hmac.e.opad, ctx->opad, ds);
++		break;
++
++	case OTX2_CPT_AES_GCM:
++		if (crypto_ipsec_check_assoclen(req->assoclen))
++			return -EINVAL;
++
++		fctx->enc.enc_ctrl.e.iv_source = OTX2_CPT_FROM_DPTR;
++		/* Copy encryption key to context */
++		memcpy(fctx->enc.encr_key, ctx->key, ctx->enc_key_len);
++		/* Copy salt to context */
++		memcpy(fctx->enc.encr_iv, ctx->key + ctx->enc_key_len,
++		       AES_GCM_SALT_SIZE);
++
++		rctx->ctrl_word.e.iv_offset = req->assoclen - AES_GCM_IV_OFFSET;
++		break;
++
++	default:
++		/* Unknown cipher type */
++		return -EINVAL;
++	}
++	cpu_to_be64s(&rctx->ctrl_word.flags);
++
++	req_info->ctrl.s.dma_mode = OTX2_CPT_DMA_MODE_SG;
++	req_info->ctrl.s.se_req = 1;
++	req_info->req.opcode.s.major = OTX2_CPT_MAJOR_OP_FC |
++				 DMA_MODE_FLAG(OTX2_CPT_DMA_MODE_SG);
++	if (enc) {
++		req_info->req.opcode.s.minor = 2;
++		req_info->req.param1 = req->cryptlen;
++		req_info->req.param2 = req->cryptlen + req->assoclen;
++	} else {
++		req_info->req.opcode.s.minor = 3;
++		req_info->req.param1 = req->cryptlen - mac_len;
++		req_info->req.param2 = req->cryptlen + req->assoclen - mac_len;
++	}
++
++	fctx->enc.enc_ctrl.e.enc_cipher = ctx->cipher_type;
++	fctx->enc.enc_ctrl.e.aes_key = ctx->key_type;
++	fctx->enc.enc_ctrl.e.mac_type = ctx->mac_type;
++	fctx->enc.enc_ctrl.e.mac_len = mac_len;
++	cpu_to_be64s(&fctx->enc.enc_ctrl.u);
++
++	/*
++	 * Storing Packet Data Information in offset
++	 * Control Word First 8 bytes
++	 */
++	req_info->in[*argcnt].vptr = (u8 *)&rctx->ctrl_word;
++	req_info->in[*argcnt].size = CONTROL_WORD_LEN;
++	req_info->req.dlen += CONTROL_WORD_LEN;
++	++(*argcnt);
++
++	req_info->in[*argcnt].vptr = (u8 *)fctx;
++	req_info->in[*argcnt].size = sizeof(struct otx2_cpt_fc_ctx);
++	req_info->req.dlen += sizeof(struct otx2_cpt_fc_ctx);
++	++(*argcnt);
++
++	return 0;
++}
++
++static inline void create_hmac_ctx_hdr(struct aead_request *req, u32 *argcnt,
++				      u32 enc)
++{
++	struct otx2_cpt_req_ctx *rctx = aead_request_ctx(req);
++	struct crypto_aead *tfm = crypto_aead_reqtfm(req);
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(tfm);
++	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
++
++	req_info->ctrl.s.dma_mode = OTX2_CPT_DMA_MODE_SG;
++	req_info->ctrl.s.se_req = 1;
++	req_info->req.opcode.s.major = OTX2_CPT_MAJOR_OP_HMAC |
++				 DMA_MODE_FLAG(OTX2_CPT_DMA_MODE_SG);
++	req_info->is_trunc_hmac = ctx->is_trunc_hmac;
++
++	req_info->req.opcode.s.minor = 0;
++	req_info->req.param1 = ctx->auth_key_len;
++	req_info->req.param2 = ctx->mac_type << 8;
++
++	/* Add authentication key */
++	req_info->in[*argcnt].vptr = ctx->key;
++	req_info->in[*argcnt].size = round_up(ctx->auth_key_len, 8);
++	req_info->req.dlen += round_up(ctx->auth_key_len, 8);
++	++(*argcnt);
++}
++
++static inline int create_aead_input_list(struct aead_request *req, u32 enc)
++{
++	struct otx2_cpt_req_ctx *rctx = aead_request_ctx(req);
++	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
++	u32 inputlen =  req->cryptlen + req->assoclen;
++	u32 status, argcnt = 0;
++
++	status = create_aead_ctx_hdr(req, enc, &argcnt);
++	if (status)
++		return status;
++	update_input_data(req_info, req->src, inputlen, &argcnt);
++	req_info->in_cnt = argcnt;
++
++	return 0;
++}
++
++static inline void create_aead_output_list(struct aead_request *req, u32 enc,
++					   u32 mac_len)
++{
++	struct otx2_cpt_req_ctx *rctx = aead_request_ctx(req);
++	struct otx2_cpt_req_info *req_info =  &rctx->cpt_req;
++	u32 argcnt = 0, outputlen = 0;
++
++	if (enc)
++		outputlen = req->cryptlen +  req->assoclen + mac_len;
++	else
++		outputlen = req->cryptlen + req->assoclen - mac_len;
++
++	update_output_data(req_info, req->dst, 0, outputlen, &argcnt);
++	req_info->out_cnt = argcnt;
++}
++
++static inline void create_aead_null_input_list(struct aead_request *req,
++					       u32 enc, u32 mac_len)
++{
++	struct otx2_cpt_req_ctx *rctx = aead_request_ctx(req);
++	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
++	u32 inputlen, argcnt = 0;
++
++	if (enc)
++		inputlen =  req->cryptlen + req->assoclen;
++	else
++		inputlen =  req->cryptlen + req->assoclen - mac_len;
++
++	create_hmac_ctx_hdr(req, &argcnt, enc);
++	update_input_data(req_info, req->src, inputlen, &argcnt);
++	req_info->in_cnt = argcnt;
++}
++
++static inline int create_aead_null_output_list(struct aead_request *req,
++					       u32 enc, u32 mac_len)
++{
++	struct otx2_cpt_req_ctx *rctx = aead_request_ctx(req);
++	struct otx2_cpt_req_info *req_info =  &rctx->cpt_req;
++	struct scatterlist *dst;
++	u8 *ptr = NULL;
++	int argcnt = 0, status, offset;
++	u32 inputlen;
++
++	if (enc)
++		inputlen =  req->cryptlen + req->assoclen;
++	else
++		inputlen =  req->cryptlen + req->assoclen - mac_len;
++
++	/*
++	 * If source and destination are different
++	 * then copy payload to destination
++	 */
++	if (req->src != req->dst) {
++
++		ptr = kmalloc(inputlen, (req_info->areq->flags &
++					 CRYPTO_TFM_REQ_MAY_SLEEP) ?
++					 GFP_KERNEL : GFP_ATOMIC);
++		if (!ptr)
++			return -ENOMEM;
++
++		status = sg_copy_to_buffer(req->src, sg_nents(req->src), ptr,
++					   inputlen);
++		if (status != inputlen) {
++			status = -EINVAL;
++			goto error_free;
++		}
++		status = sg_copy_from_buffer(req->dst, sg_nents(req->dst), ptr,
++					     inputlen);
++		if (status != inputlen) {
++			status = -EINVAL;
++			goto error_free;
++		}
++		kfree(ptr);
++	}
++
++	if (enc) {
++		/*
++		 * In an encryption scenario hmac needs
++		 * to be appended after payload
++		 */
++		dst = req->dst;
++		offset = inputlen;
++		while (offset >= dst->length) {
++			offset -= dst->length;
++			dst = sg_next(dst);
++			if (!dst)
++				return -ENOENT;
++		}
++
++		update_output_data(req_info, dst, offset, mac_len, &argcnt);
++	} else {
++		/*
++		 * In a decryption scenario calculated hmac for received
++		 * payload needs to be compare with hmac received
++		 */
++		status = sg_copy_buffer(req->src, sg_nents(req->src),
++					rctx->fctx.hmac.s.hmac_recv, mac_len,
++					inputlen, true);
++		if (status != mac_len)
++			return -EINVAL;
++
++		req_info->out[argcnt].vptr = rctx->fctx.hmac.s.hmac_calc;
++		req_info->out[argcnt].size = mac_len;
++		argcnt++;
++	}
++
++	req_info->out_cnt = argcnt;
++	return 0;
++
++error_free:
++	kfree(ptr);
++	return status;
++}
++
++static int cpt_aead_enc_dec(struct aead_request *req, u8 reg_type, u8 enc)
++{
++	struct otx2_cpt_req_ctx *rctx = aead_request_ctx(req);
++	struct otx2_cpt_req_info *req_info = &rctx->cpt_req;
++	struct crypto_aead *tfm = crypto_aead_reqtfm(req);
++	struct otx2_cpt_aead_ctx *ctx = crypto_aead_ctx(tfm);
++	struct pci_dev *pdev;
++	int status, cpu_num;
++
++	/* Clear control words */
++	rctx->ctrl_word.flags = 0;
++	rctx->fctx.enc.enc_ctrl.u = 0;
++
++	req_info->callback = otx2_cpt_aead_callback;
++	req_info->areq = &req->base;
++	req_info->req_type = reg_type;
++	req_info->is_enc = enc;
++	req_info->is_trunc_hmac = false;
++
++	switch (reg_type) {
++	case OTX2_CPT_AEAD_ENC_DEC_REQ:
++		status = create_aead_input_list(req, enc);
++		if (status)
++			return status;
++		create_aead_output_list(req, enc, crypto_aead_authsize(tfm));
++		break;
++
++	case OTX2_CPT_AEAD_ENC_DEC_NULL_REQ:
++		create_aead_null_input_list(req, enc,
++					    crypto_aead_authsize(tfm));
++		status = create_aead_null_output_list(req, enc,
++						crypto_aead_authsize(tfm));
++		if (status)
++			return status;
++		break;
++
++	default:
++		return -EINVAL;
++	}
++	if (!req_info->req.param1 ||
++	    (req_info->req.param1 > OTX2_CPT_MAX_REQ_SIZE) ||
++	    (req_info->req.param2 > OTX2_CPT_MAX_REQ_SIZE) ||
++	    !IS_ALIGNED(req_info->req.param1, ctx->enc_align_len))
++		return -EINVAL;
++
++	status = get_se_device(&pdev, &cpu_num);
++	if (status)
++		return status;
++
++	req_info->ctrl.s.grp = otx2_cpt_get_kcrypto_eng_grp_num(pdev);
++
++	/*
++	 * We perform an asynchronous send and once
++	 * the request is completed the driver would
++	 * intimate through registered call back functions
++	 */
++	status = otx2_cpt_do_request(pdev, req_info, cpu_num);
++
++	return status;
++}
++
++static int otx2_cpt_aead_encrypt(struct aead_request *req)
++{
++	return cpt_aead_enc_dec(req, OTX2_CPT_AEAD_ENC_DEC_REQ, true);
++}
++
++static int otx2_cpt_aead_decrypt(struct aead_request *req)
++{
++	return cpt_aead_enc_dec(req, OTX2_CPT_AEAD_ENC_DEC_REQ, false);
++}
++
++static int otx2_cpt_aead_null_encrypt(struct aead_request *req)
++{
++	return cpt_aead_enc_dec(req, OTX2_CPT_AEAD_ENC_DEC_NULL_REQ, true);
++}
++
++static int otx2_cpt_aead_null_decrypt(struct aead_request *req)
++{
++	return cpt_aead_enc_dec(req, OTX2_CPT_AEAD_ENC_DEC_NULL_REQ, false);
++}
++
++static struct skcipher_alg otx2_cpt_skciphers[] = { {
++	.base.cra_name = "xts(aes)",
++	.base.cra_driver_name = "cpt_xts_aes",
++	.base.cra_flags = CRYPTO_ALG_ASYNC,
++	.base.cra_blocksize = AES_BLOCK_SIZE,
++	.base.cra_ctxsize = sizeof(struct otx2_cpt_enc_ctx),
++	.base.cra_alignmask = 7,
++	.base.cra_priority = 4001,
++	.base.cra_module = THIS_MODULE,
++
++	.init = otx2_cpt_enc_dec_init,
++	.ivsize = AES_BLOCK_SIZE,
++	.min_keysize = 2 * AES_MIN_KEY_SIZE,
++	.max_keysize = 2 * AES_MAX_KEY_SIZE,
++	.setkey = otx2_cpt_skcipher_xts_setkey,
++	.encrypt = otx2_cpt_skcipher_encrypt,
++	.decrypt = otx2_cpt_skcipher_decrypt,
++}, {
++	.base.cra_name = "cbc(aes)",
++	.base.cra_driver_name = "cpt_cbc_aes",
++	.base.cra_flags = CRYPTO_ALG_ASYNC,
++	.base.cra_blocksize = AES_BLOCK_SIZE,
++	.base.cra_ctxsize = sizeof(struct otx2_cpt_enc_ctx),
++	.base.cra_alignmask = 7,
++	.base.cra_priority = 4001,
++	.base.cra_module = THIS_MODULE,
++
++	.init = otx2_cpt_enc_dec_init,
++	.ivsize = AES_BLOCK_SIZE,
++	.min_keysize = AES_MIN_KEY_SIZE,
++	.max_keysize = AES_MAX_KEY_SIZE,
++	.setkey = otx2_cpt_skcipher_cbc_aes_setkey,
++	.encrypt = otx2_cpt_skcipher_encrypt,
++	.decrypt = otx2_cpt_skcipher_decrypt,
++}, {
++	.base.cra_name = "ecb(aes)",
++	.base.cra_driver_name = "cpt_ecb_aes",
++	.base.cra_flags = CRYPTO_ALG_ASYNC,
++	.base.cra_blocksize = AES_BLOCK_SIZE,
++	.base.cra_ctxsize = sizeof(struct otx2_cpt_enc_ctx),
++	.base.cra_alignmask = 7,
++	.base.cra_priority = 4001,
++	.base.cra_module = THIS_MODULE,
++
++	.init = otx2_cpt_enc_dec_init,
++	.ivsize = 0,
++	.min_keysize = AES_MIN_KEY_SIZE,
++	.max_keysize = AES_MAX_KEY_SIZE,
++	.setkey = otx2_cpt_skcipher_ecb_aes_setkey,
++	.encrypt = otx2_cpt_skcipher_encrypt,
++	.decrypt = otx2_cpt_skcipher_decrypt,
++}, {
++	.base.cra_name = "cfb(aes)",
++	.base.cra_driver_name = "cpt_cfb_aes",
++	.base.cra_flags = CRYPTO_ALG_ASYNC,
++	.base.cra_blocksize = 1,
++	.base.cra_ctxsize = sizeof(struct otx2_cpt_enc_ctx),
++	.base.cra_alignmask = 7,
++	.base.cra_priority = 4001,
++	.base.cra_module = THIS_MODULE,
++
++	.init = otx2_cpt_enc_dec_init,
++	.ivsize = AES_BLOCK_SIZE,
++	.min_keysize = AES_MIN_KEY_SIZE,
++	.max_keysize = AES_MAX_KEY_SIZE,
++	.setkey = otx2_cpt_skcipher_cfb_aes_setkey,
++	.encrypt = otx2_cpt_skcipher_encrypt,
++	.decrypt = otx2_cpt_skcipher_decrypt,
++}, {
++	.base.cra_name = "cbc(des3_ede)",
++	.base.cra_driver_name = "cpt_cbc_des3_ede",
++	.base.cra_flags = CRYPTO_ALG_ASYNC,
++	.base.cra_blocksize = DES3_EDE_BLOCK_SIZE,
++	.base.cra_ctxsize = sizeof(struct otx2_cpt_enc_ctx),
++	.base.cra_alignmask = 7,
++	.base.cra_priority = 4001,
++	.base.cra_module = THIS_MODULE,
++
++	.init = otx2_cpt_enc_dec_init,
++	.min_keysize = DES3_EDE_KEY_SIZE,
++	.max_keysize = DES3_EDE_KEY_SIZE,
++	.ivsize = DES_BLOCK_SIZE,
++	.setkey = otx2_cpt_skcipher_cbc_des3_setkey,
++	.encrypt = otx2_cpt_skcipher_encrypt,
++	.decrypt = otx2_cpt_skcipher_decrypt,
++}, {
++	.base.cra_name = "ecb(des3_ede)",
++	.base.cra_driver_name = "cpt_ecb_des3_ede",
++	.base.cra_flags = CRYPTO_ALG_ASYNC,
++	.base.cra_blocksize = DES3_EDE_BLOCK_SIZE,
++	.base.cra_ctxsize = sizeof(struct otx2_cpt_enc_ctx),
++	.base.cra_alignmask = 7,
++	.base.cra_priority = 4001,
++	.base.cra_module = THIS_MODULE,
++
++	.init = otx2_cpt_enc_dec_init,
++	.min_keysize = DES3_EDE_KEY_SIZE,
++	.max_keysize = DES3_EDE_KEY_SIZE,
++	.ivsize = 0,
++	.setkey = otx2_cpt_skcipher_ecb_des3_setkey,
++	.encrypt = otx2_cpt_skcipher_encrypt,
++	.decrypt = otx2_cpt_skcipher_decrypt,
++} };
++
++static struct aead_alg otx2_cpt_aeads[] = { {
++	.base = {
++		.cra_name = "authenc(hmac(sha1),cbc(aes))",
++		.cra_driver_name = "cpt_hmac_sha1_cbc_aes",
++		.cra_blocksize = AES_BLOCK_SIZE,
++		.cra_flags = CRYPTO_ALG_ASYNC,
++		.cra_ctxsize = sizeof(struct otx2_cpt_aead_ctx),
++		.cra_priority = 4001,
++		.cra_alignmask = 0,
++		.cra_module = THIS_MODULE,
++	},
++	.init = otx2_cpt_aead_cbc_aes_sha1_init,
++	.exit = otx2_cpt_aead_exit,
++	.setkey = otx2_cpt_aead_cbc_aes_sha_setkey,
++	.setauthsize = otx2_cpt_aead_set_authsize,
++	.encrypt = otx2_cpt_aead_encrypt,
++	.decrypt = otx2_cpt_aead_decrypt,
++	.ivsize = AES_BLOCK_SIZE,
++	.maxauthsize = SHA1_DIGEST_SIZE,
++}, {
++	.base = {
++		.cra_name = "authenc(hmac(sha256),cbc(aes))",
++		.cra_driver_name = "cpt_hmac_sha256_cbc_aes",
++		.cra_blocksize = AES_BLOCK_SIZE,
++		.cra_flags = CRYPTO_ALG_ASYNC,
++		.cra_ctxsize = sizeof(struct otx2_cpt_aead_ctx),
++		.cra_priority = 4001,
++		.cra_alignmask = 0,
++		.cra_module = THIS_MODULE,
++	},
++	.init = otx2_cpt_aead_cbc_aes_sha256_init,
++	.exit = otx2_cpt_aead_exit,
++	.setkey = otx2_cpt_aead_cbc_aes_sha_setkey,
++	.setauthsize = otx2_cpt_aead_set_authsize,
++	.encrypt = otx2_cpt_aead_encrypt,
++	.decrypt = otx2_cpt_aead_decrypt,
++	.ivsize = AES_BLOCK_SIZE,
++	.maxauthsize = SHA256_DIGEST_SIZE,
++}, {
++	.base = {
++		.cra_name = "authenc(hmac(sha384),cbc(aes))",
++		.cra_driver_name = "cpt_hmac_sha384_cbc_aes",
++		.cra_blocksize = AES_BLOCK_SIZE,
++		.cra_flags = CRYPTO_ALG_ASYNC,
++		.cra_ctxsize = sizeof(struct otx2_cpt_aead_ctx),
++		.cra_priority = 4001,
++		.cra_alignmask = 0,
++		.cra_module = THIS_MODULE,
++	},
++	.init = otx2_cpt_aead_cbc_aes_sha384_init,
++	.exit = otx2_cpt_aead_exit,
++	.setkey = otx2_cpt_aead_cbc_aes_sha_setkey,
++	.setauthsize = otx2_cpt_aead_set_authsize,
++	.encrypt = otx2_cpt_aead_encrypt,
++	.decrypt = otx2_cpt_aead_decrypt,
++	.ivsize = AES_BLOCK_SIZE,
++	.maxauthsize = SHA384_DIGEST_SIZE,
++}, {
++	.base = {
++		.cra_name = "authenc(hmac(sha512),cbc(aes))",
++		.cra_driver_name = "cpt_hmac_sha512_cbc_aes",
++		.cra_blocksize = AES_BLOCK_SIZE,
++		.cra_flags = CRYPTO_ALG_ASYNC,
++		.cra_ctxsize = sizeof(struct otx2_cpt_aead_ctx),
++		.cra_priority = 4001,
++		.cra_alignmask = 0,
++		.cra_module = THIS_MODULE,
++	},
++	.init = otx2_cpt_aead_cbc_aes_sha512_init,
++	.exit = otx2_cpt_aead_exit,
++	.setkey = otx2_cpt_aead_cbc_aes_sha_setkey,
++	.setauthsize = otx2_cpt_aead_set_authsize,
++	.encrypt = otx2_cpt_aead_encrypt,
++	.decrypt = otx2_cpt_aead_decrypt,
++	.ivsize = AES_BLOCK_SIZE,
++	.maxauthsize = SHA512_DIGEST_SIZE,
++}, {
++	.base = {
++		.cra_name = "authenc(hmac(sha1),ecb(cipher_null))",
++		.cra_driver_name = "cpt_hmac_sha1_ecb_null",
++		.cra_blocksize = 1,
++		.cra_flags = CRYPTO_ALG_ASYNC,
++		.cra_ctxsize = sizeof(struct otx2_cpt_aead_ctx),
++		.cra_priority = 4001,
++		.cra_alignmask = 0,
++		.cra_module = THIS_MODULE,
++	},
++	.init = otx2_cpt_aead_ecb_null_sha1_init,
++	.exit = otx2_cpt_aead_exit,
++	.setkey = otx2_cpt_aead_ecb_null_sha_setkey,
++	.setauthsize = otx2_cpt_aead_null_set_authsize,
++	.encrypt = otx2_cpt_aead_null_encrypt,
++	.decrypt = otx2_cpt_aead_null_decrypt,
++	.ivsize = 0,
++	.maxauthsize = SHA1_DIGEST_SIZE,
++}, {
++	.base = {
++		.cra_name = "authenc(hmac(sha256),ecb(cipher_null))",
++		.cra_driver_name = "cpt_hmac_sha256_ecb_null",
++		.cra_blocksize = 1,
++		.cra_flags = CRYPTO_ALG_ASYNC,
++		.cra_ctxsize = sizeof(struct otx2_cpt_aead_ctx),
++		.cra_priority = 4001,
++		.cra_alignmask = 0,
++		.cra_module = THIS_MODULE,
++	},
++	.init = otx2_cpt_aead_ecb_null_sha256_init,
++	.exit = otx2_cpt_aead_exit,
++	.setkey = otx2_cpt_aead_ecb_null_sha_setkey,
++	.setauthsize = otx2_cpt_aead_null_set_authsize,
++	.encrypt = otx2_cpt_aead_null_encrypt,
++	.decrypt = otx2_cpt_aead_null_decrypt,
++	.ivsize = 0,
++	.maxauthsize = SHA256_DIGEST_SIZE,
++}, {
++	.base = {
++		.cra_name = "authenc(hmac(sha384),ecb(cipher_null))",
++		.cra_driver_name = "cpt_hmac_sha384_ecb_null",
++		.cra_blocksize = 1,
++		.cra_flags = CRYPTO_ALG_ASYNC,
++		.cra_ctxsize = sizeof(struct otx2_cpt_aead_ctx),
++		.cra_priority = 4001,
++		.cra_alignmask = 0,
++		.cra_module = THIS_MODULE,
++	},
++	.init = otx2_cpt_aead_ecb_null_sha384_init,
++	.exit = otx2_cpt_aead_exit,
++	.setkey = otx2_cpt_aead_ecb_null_sha_setkey,
++	.setauthsize = otx2_cpt_aead_null_set_authsize,
++	.encrypt = otx2_cpt_aead_null_encrypt,
++	.decrypt = otx2_cpt_aead_null_decrypt,
++	.ivsize = 0,
++	.maxauthsize = SHA384_DIGEST_SIZE,
++}, {
++	.base = {
++		.cra_name = "authenc(hmac(sha512),ecb(cipher_null))",
++		.cra_driver_name = "cpt_hmac_sha512_ecb_null",
++		.cra_blocksize = 1,
++		.cra_flags = CRYPTO_ALG_ASYNC,
++		.cra_ctxsize = sizeof(struct otx2_cpt_aead_ctx),
++		.cra_priority = 4001,
++		.cra_alignmask = 0,
++		.cra_module = THIS_MODULE,
++	},
++	.init = otx2_cpt_aead_ecb_null_sha512_init,
++	.exit = otx2_cpt_aead_exit,
++	.setkey = otx2_cpt_aead_ecb_null_sha_setkey,
++	.setauthsize = otx2_cpt_aead_null_set_authsize,
++	.encrypt = otx2_cpt_aead_null_encrypt,
++	.decrypt = otx2_cpt_aead_null_decrypt,
++	.ivsize = 0,
++	.maxauthsize = SHA512_DIGEST_SIZE,
++}, {
++	.base = {
++		.cra_name = "rfc4106(gcm(aes))",
++		.cra_driver_name = "cpt_rfc4106_gcm_aes",
++		.cra_blocksize = 1,
++		.cra_flags = CRYPTO_ALG_ASYNC,
++		.cra_ctxsize = sizeof(struct otx2_cpt_aead_ctx),
++		.cra_priority = 4001,
++		.cra_alignmask = 0,
++		.cra_module = THIS_MODULE,
++	},
++	.init = otx2_cpt_aead_gcm_aes_init,
++	.exit = otx2_cpt_aead_exit,
++	.setkey = otx2_cpt_aead_gcm_aes_setkey,
++	.setauthsize = otx2_cpt_aead_gcm_set_authsize,
++	.encrypt = otx2_cpt_aead_encrypt,
++	.decrypt = otx2_cpt_aead_decrypt,
++	.ivsize = AES_GCM_IV_SIZE,
++	.maxauthsize = AES_GCM_ICV_SIZE,
++} };
++
++static inline int cpt_register_algs(void)
++{
++	int i, err = 0;
++
++	if (!IS_ENABLED(CONFIG_DM_CRYPT)) {
++		for (i = 0; i < ARRAY_SIZE(otx2_cpt_skciphers); i++)
++			otx2_cpt_skciphers[i].base.cra_flags &=
++							~CRYPTO_ALG_DEAD;
++
++		err = crypto_register_skciphers(otx2_cpt_skciphers,
++						ARRAY_SIZE(otx2_cpt_skciphers));
++		if (err)
++			return err;
++	}
++
++	for (i = 0; i < ARRAY_SIZE(otx2_cpt_aeads); i++)
++		otx2_cpt_aeads[i].base.cra_flags &= ~CRYPTO_ALG_DEAD;
++
++	err = crypto_register_aeads(otx2_cpt_aeads,
++				    ARRAY_SIZE(otx2_cpt_aeads));
++	if (err) {
++		crypto_unregister_skciphers(otx2_cpt_skciphers,
++					    ARRAY_SIZE(otx2_cpt_skciphers));
++		return err;
++	}
++
++	return 0;
++}
++
++static inline void cpt_unregister_algs(void)
++{
++	crypto_unregister_skciphers(otx2_cpt_skciphers,
++				    ARRAY_SIZE(otx2_cpt_skciphers));
++	crypto_unregister_aeads(otx2_cpt_aeads, ARRAY_SIZE(otx2_cpt_aeads));
++}
++
++static int compare_func(const void *lptr, const void *rptr)
++{
++	const struct cpt_device_desc *ldesc = (struct cpt_device_desc *) lptr;
++	const struct cpt_device_desc *rdesc = (struct cpt_device_desc *) rptr;
++
++	if (ldesc->dev->devfn < rdesc->dev->devfn)
++		return -1;
++	if (ldesc->dev->devfn > rdesc->dev->devfn)
++		return 1;
++	return 0;
++}
++
++static void swap_func(void *lptr, void *rptr, int size)
++{
++	struct cpt_device_desc *ldesc = lptr;
++	struct cpt_device_desc *rdesc = rptr;
++	struct cpt_device_desc desc;
++
++	desc = *ldesc;
++	*ldesc = *rdesc;
++	*rdesc = desc;
++}
++
++int otx2_cpt_crypto_init(struct pci_dev *pdev, struct module *mod,
++			 int num_queues, int num_devices)
++{
++	int ret = 0;
++	int count;
++
++	mutex_lock(&mutex);
++	count = atomic_read(&se_devices.count);
++	if (count >= OTX2_CPT_MAX_LFS_NUM) {
++		dev_err(&pdev->dev, "No space to add a new device\n");
++		ret = -ENOSPC;
++		goto unlock;
++	}
++	se_devices.desc[count].num_queues = num_queues;
++	se_devices.desc[count++].dev = pdev;
++	atomic_inc(&se_devices.count);
++
++	if (atomic_read(&se_devices.count) == num_devices &&
++	    is_crypto_registered == false) {
++		if (cpt_register_algs()) {
++			dev_err(&pdev->dev,
++				"Error in registering crypto algorithms\n");
++			ret =  -EINVAL;
++			goto unlock;
++		}
++		try_module_get(mod);
++		is_crypto_registered = true;
++	}
++	sort(se_devices.desc, count, sizeof(struct cpt_device_desc),
++	     compare_func, swap_func);
++
++unlock:
++	mutex_unlock(&mutex);
++	return ret;
++}
++
++void otx2_cpt_crypto_exit(struct pci_dev *pdev, struct module *mod)
++{
++	struct cpt_device_table *dev_tbl;
++	bool dev_found = false;
++	int i, j, count;
++
++	mutex_lock(&mutex);
++
++	dev_tbl = &se_devices;
++	count = atomic_read(&dev_tbl->count);
++	for (i = 0; i < count; i++) {
++		if (pdev == dev_tbl->desc[i].dev) {
++			for (j = i; j < count-1; j++)
++				dev_tbl->desc[j] = dev_tbl->desc[j+1];
++			dev_found = true;
++			break;
++		}
++	}
++
++	if (!dev_found) {
++		dev_err(&pdev->dev, "%s device not found\n", __func__);
++		goto unlock;
++	}
++	if (atomic_dec_and_test(&se_devices.count)) {
++		cpt_unregister_algs();
++		module_put(mod);
++		is_crypto_registered = false;
++	}
++unlock:
++	mutex_unlock(&mutex);
++}
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.h b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.h
+new file mode 100644
+index 000000000000..c71e2af24ec3
+--- /dev/null
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.h
+@@ -0,0 +1,170 @@
++/* SPDX-License-Identifier: GPL-2.0-only
++ * Copyright (C) 2020 Marvell.
++ */
++
++#ifndef __OTX2_CPT_ALGS_H
++#define __OTX2_CPT_ALGS_H
++
++#include <crypto/hash.h>
++#include "otx2_cpt_common.h"
++
++#define OTX2_CPT_MAX_ENC_KEY_SIZE    32
++#define OTX2_CPT_MAX_HASH_KEY_SIZE   64
++#define OTX2_CPT_MAX_KEY_SIZE (OTX2_CPT_MAX_ENC_KEY_SIZE + \
++			       OTX2_CPT_MAX_HASH_KEY_SIZE)
++enum otx2_cpt_request_type {
++	OTX2_CPT_ENC_DEC_REQ            = 0x1,
++	OTX2_CPT_AEAD_ENC_DEC_REQ       = 0x2,
++	OTX2_CPT_AEAD_ENC_DEC_NULL_REQ  = 0x3,
++	OTX2_CPT_PASSTHROUGH_REQ	= 0x4
++};
++
++enum otx2_cpt_major_opcodes {
++	OTX2_CPT_MAJOR_OP_MISC = 0x01,
++	OTX2_CPT_MAJOR_OP_FC   = 0x33,
++	OTX2_CPT_MAJOR_OP_HMAC = 0x35,
++};
++
++enum otx2_cpt_cipher_type {
++	OTX2_CPT_CIPHER_NULL = 0x0,
++	OTX2_CPT_DES3_CBC = 0x1,
++	OTX2_CPT_DES3_ECB = 0x2,
++	OTX2_CPT_AES_CBC  = 0x3,
++	OTX2_CPT_AES_ECB  = 0x4,
++	OTX2_CPT_AES_CFB  = 0x5,
++	OTX2_CPT_AES_CTR  = 0x6,
++	OTX2_CPT_AES_GCM  = 0x7,
++	OTX2_CPT_AES_XTS  = 0x8
++};
++
++enum otx2_cpt_mac_type {
++	OTX2_CPT_MAC_NULL = 0x0,
++	OTX2_CPT_MD5      = 0x1,
++	OTX2_CPT_SHA1     = 0x2,
++	OTX2_CPT_SHA224   = 0x3,
++	OTX2_CPT_SHA256   = 0x4,
++	OTX2_CPT_SHA384   = 0x5,
++	OTX2_CPT_SHA512   = 0x6,
++	OTX2_CPT_GMAC     = 0x7
++};
++
++enum otx2_cpt_aes_key_len {
++	OTX2_CPT_AES_128_BIT = 0x1,
++	OTX2_CPT_AES_192_BIT = 0x2,
++	OTX2_CPT_AES_256_BIT = 0x3
++};
++
++union otx2_cpt_encr_ctrl {
++	u64 u;
++	struct {
++#if defined(__BIG_ENDIAN_BITFIELD)
++		u64 enc_cipher:4;
++		u64 reserved_59:1;
++		u64 aes_key:2;
++		u64 iv_source:1;
++		u64 mac_type:4;
++		u64 reserved_49_51:3;
++		u64 auth_input_type:1;
++		u64 mac_len:8;
++		u64 reserved_32_39:8;
++		u64 encr_offset:16;
++		u64 iv_offset:8;
++		u64 auth_offset:8;
++#else
++		u64 auth_offset:8;
++		u64 iv_offset:8;
++		u64 encr_offset:16;
++		u64 reserved_32_39:8;
++		u64 mac_len:8;
++		u64 auth_input_type:1;
++		u64 reserved_49_51:3;
++		u64 mac_type:4;
++		u64 iv_source:1;
++		u64 aes_key:2;
++		u64 reserved_59:1;
++		u64 enc_cipher:4;
++#endif
++	} e;
++};
++
++struct otx2_cpt_cipher {
++	const char *name;
++	u8 value;
++};
++
++struct otx2_cpt_fc_enc_ctx {
++	union otx2_cpt_encr_ctrl enc_ctrl;
++	u8 encr_key[32];
++	u8 encr_iv[16];
++};
++
++union otx2_cpt_fc_hmac_ctx {
++	struct {
++		u8 ipad[64];
++		u8 opad[64];
++	} e;
++	struct {
++		u8 hmac_calc[64]; /* HMAC calculated */
++		u8 hmac_recv[64]; /* HMAC received */
++	} s;
++};
++
++struct otx2_cpt_fc_ctx {
++	struct otx2_cpt_fc_enc_ctx enc;
++	union otx2_cpt_fc_hmac_ctx hmac;
++};
++
++struct otx2_cpt_enc_ctx {
++	u32 key_len;
++	u8 enc_key[OTX2_CPT_MAX_KEY_SIZE];
++	u8 cipher_type;
++	u8 key_type;
++	u8 enc_align_len;
++};
++
++union otx2_cpt_offset_ctrl {
++	u64 flags;
++	struct {
++#if defined(__BIG_ENDIAN_BITFIELD)
++		u64 reserved:32;
++		u64 enc_data_offset:16;
++		u64 iv_offset:8;
++		u64 auth_offset:8;
++#else
++		u64 auth_offset:8;
++		u64 iv_offset:8;
++		u64 enc_data_offset:16;
++		u64 reserved:32;
++#endif
++	} e;
++};
++
++struct otx2_cpt_req_ctx {
++	struct otx2_cpt_req_info cpt_req;
++	union otx2_cpt_offset_ctrl ctrl_word;
++	struct otx2_cpt_fc_ctx fctx;
++};
++
++struct otx2_cpt_sdesc {
++	struct shash_desc shash;
++};
++
++struct otx2_cpt_aead_ctx {
++	u8 key[OTX2_CPT_MAX_KEY_SIZE];
++	struct crypto_shash *hashalg;
++	struct otx2_cpt_sdesc *sdesc;
++	u8 *ipad;
++	u8 *opad;
++	u32 enc_key_len;
++	u32 auth_key_len;
++	u8 cipher_type;
++	u8 mac_type;
++	u8 key_type;
++	u8 is_trunc_hmac;
++	u8 enc_align_len;
++};
++int otx2_cpt_crypto_init(struct pci_dev *pdev, struct module *mod,
++			 int num_queues, int num_devices);
++void otx2_cpt_crypto_exit(struct pci_dev *pdev, struct module *mod);
++
++#endif /* __OTX2_CPT_ALGS_H */
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf_main.c b/drivers/crypto/marvell/octeontx2/otx2_cptvf_main.c
+index 6798e42dfade..46829e9f2efd 100644
+--- a/drivers/crypto/marvell/octeontx2/otx2_cptvf_main.c
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf_main.c
+@@ -4,6 +4,7 @@
+ #include "otx2_cpt_common.h"
+ #include "otx2_cptvf.h"
+ #include "otx2_cptlf.h"
++#include "otx2_cptvf_algs.h"
+ #include <rvu_reg.h>
+ 
+ #define OTX2_CPTVF_DRV_NAME "octeontx2-cptvf"
+@@ -211,6 +212,8 @@ static void cptvf_lf_shutdown(struct otx2_cptlfs_info *lfs)
+ 	otx2_cptlf_free_irqs_affinity(lfs);
+ 	/* Disable instruction queue */
+ 	otx2_cptlf_disable_iqueues(lfs);
++	/* Unregister crypto algorithms */
++	otx2_cpt_crypto_exit(lfs->pdev, THIS_MODULE);
+ 	/* Unregister LFs interrupts */
+ 	otx2_cptlf_unregister_interrupts(lfs);
+ 	/* Cleanup LFs software side */
+@@ -270,8 +273,16 @@ static int cptvf_lf_init(struct otx2_cptvf_dev *cptvf)
+ 		goto unregister_intr;
+ 
+ 	atomic_set(&lfs->state, OTX2_CPTLF_STARTED);
+-
++	/* Register crypto algorithms */
++	ret = otx2_cpt_crypto_init(lfs->pdev, THIS_MODULE, lfs_num, 1);
++	if (ret) {
++		dev_err(&lfs->pdev->dev, "algorithms registration failed\n");
++		goto disable_irqs;
++	}
+ 	return 0;
++
++disable_irqs:
++	otx2_cptlf_free_irqs_affinity(lfs);
+ unregister_intr:
+ 	otx2_cptlf_unregister_interrupts(lfs);
+ cleanup_lf_sw:
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf_reqmgr.c b/drivers/crypto/marvell/octeontx2/otx2_cptvf_reqmgr.c
+index 05fd59082b5a..b8d567ed9168 100644
+--- a/drivers/crypto/marvell/octeontx2/otx2_cptvf_reqmgr.c
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf_reqmgr.c
+@@ -530,3 +530,10 @@ void otx2_cpt_post_process(struct otx2_cptlf_wqe *wqe)
+ 	process_pending_queue(wqe->lfs->pdev,
+ 			      &wqe->lfs->lf[wqe->lf_num].pqueue);
+ }
++
++int otx2_cpt_get_kcrypto_eng_grp_num(struct pci_dev *pdev)
++{
++	struct otx2_cptvf_dev *cptvf = pci_get_drvdata(pdev);
++
++	return cptvf->lfs.kcrypto_eng_grp_num;
 +}
 -- 
 2.28.0
