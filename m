@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8209F289062
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 19:58:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0C61289064
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 19:58:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390253AbgJIR6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 13:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57682 "EHLO
+        id S2390258AbgJIR61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 13:58:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731500AbgJIR6J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 13:58:09 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D6CC0613D2;
-        Fri,  9 Oct 2020 10:58:09 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id n6so10917409ioc.12;
-        Fri, 09 Oct 2020 10:58:09 -0700 (PDT)
+        with ESMTP id S1731500AbgJIR61 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 13:58:27 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1CD8C0613D2;
+        Fri,  9 Oct 2020 10:58:26 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id o9so5404208ilo.0;
+        Fri, 09 Oct 2020 10:58:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:date:message-id:in-reply-to:references
          :user-agent:mime-version:content-transfer-encoding;
-        bh=CM32h5VxYUxOVKW+sj4z4wfLNFtEsf7TkwLYvQvIT2Q=;
-        b=Z4uKpWSEFpCpRzBVq/Ckc+g+MUULVRZqQu9J0uj6ngmhtBw5eTLh4UVShNe6TntjAA
-         2O4SzFVBQ41ZodKsX4VVu2f+VZqCNBHnio2oOAry9kIjIqMaO+36Rhn9RopcVC0B7Elf
-         ROpS4IiMnmSmG5adbI91kuCpSE6v5MBX/6tYVvraf8dcMaVV9plQ1VMwCk/MLApvKJ4k
-         f+kvD6eHz3xx6CJa3VrXa3vrhB/qY1Cl0UU0Eey1g3kq5zGFzHUHzGbSfAZXRklk/tda
-         Cg0QgBIRP/cRatNqhBEdU9Ozv1a+JsTadPTnulrNEmooLLJUf0WPUJOFBH7s/T+2i9ZG
-         hu0A==
+        bh=Kyq+/ml3RrM58lYJGjEIbD5XFfST3owwENK8V6cBEBY=;
+        b=SFWceBkjvvW6Qz79FDVrebFdr9ZI2US3XN9YlfwbjojtCTXRz05RcLjHdjlM1SIGh3
+         Dn8iCEV2RgrwEXiMqgqhOlYyr3gncT4iEN0jmh2vlJ7s60hQQa/+ELAh+g2/4cxFsj/M
+         wBI/1K8B6jxUCCmiWyzN3wRY+DGiWG9l13+qjv1mSJrD2KJxGCUf1XvViISKpGfPsfwd
+         B7eWWZKssuXpnIn5n2rg9rQdx8gOGoNnISOu2e9p8RPQu0dEYjfsNWgP0eRNEL41OU2m
+         HlXTVlNFSVBdsZGBNh1KdWkW2T363twOgW+RG3CUJld3a7lfRdHU/jApDlhzEs4oDJY8
+         CILA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=CM32h5VxYUxOVKW+sj4z4wfLNFtEsf7TkwLYvQvIT2Q=;
-        b=Sy8RA/fq4MRGFrkcFZdcco5R3gW6JZ9bsjWUdGbG6TA1eBPK13kjXwJKY1GdqkyZsu
-         bJqkkE55uajyHw7ZymK4YQeoocYOwZeJZlAx1Iloij9JA0xUQc0CtzgKgc2mjNRyApKf
-         ZHTs33MFd1VJqJC1EHZmf0jbGalxAux8Mg19QvDxUutmryUMzfyKdJT+nsBLnM1zGtWX
-         IEdSxQSMI0Abp7KQOM6GR2iN/iELGpr1Sjugy5eJM/T97lcHu4MWi0Op/EyWvY9PxuoK
-         8J2dRUbaeab3gZ26e+sIfuGqp+37RVQdUhWGVu0VHgb3I1AyW6075asDDyXd1WG2WE8E
-         7spw==
-X-Gm-Message-State: AOAM531mlWoBozjS8y6l8PQbWmLE6kUK8Ccxz1vOUChlZaQKN30CT7O3
-        5BGs7rz98hNaqXcDuihZpOrhPxl3lE3ZXQ==
-X-Google-Smtp-Source: ABdhPJzYZvZU4dFi/b/XkAmb4XegiSDIfmxLKgCPY58N6xtV0GvkWkBN/fEFVGR/uiZ7ej/kIiEKrw==
-X-Received: by 2002:a6b:8bd7:: with SMTP id n206mr9792005iod.13.1602266288495;
-        Fri, 09 Oct 2020 10:58:08 -0700 (PDT)
+        bh=Kyq+/ml3RrM58lYJGjEIbD5XFfST3owwENK8V6cBEBY=;
+        b=JyiRdu/Nv+D94gf4n8wX9GSoQrSieSSHPP5CtvUUlOHHavSHYpT5i9xtwSb7tJa6UY
+         e4mf4I5hyWFapErYVZgIISNQal3QB3NH2duAkEsYrBJU4PDkE+LM2WoZpaiPBHTnfA9b
+         QbJtow5Muul5XZfjkH50mxJWmOefbUJQ82q2QlmMbwV2u9Jxtc5+ur9MfVVx2Tjllj6G
+         dyxbMzs6CKApcoBw1rg7IYY4vLx8lLngbGCH9AUfcr2gQjGMNOvNpic4WBxJhyzXuOmp
+         Ncs6Q5EDYFgG8uabIxMVxr1j4KXO38707dHDmeHzTpJdTy0ycr9pP8O4EH4d6b2VpLW2
+         q2kw==
+X-Gm-Message-State: AOAM5305PAJ5EwE9bYwBn4AeLOM1c5Bc/YISkBhdN7CBzLNle43VqyN/
+        4DiMS145KbpNXbBvYJNunSk=
+X-Google-Smtp-Source: ABdhPJyfQayNnW4pOPMAQWhriZkf9JTyL4SM5RjFJxlKnWxU2xiJvn2gJyqqBZLwxufVCTLBmTxk4g==
+X-Received: by 2002:a92:d4d0:: with SMTP id o16mr9683307ilm.152.1602266306260;
+        Fri, 09 Oct 2020 10:58:26 -0700 (PDT)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id k198sm4742686ilk.80.2020.10.09.10.58.01
+        by smtp.gmail.com with ESMTPSA id v18sm2823134ilo.52.2020.10.09.10.58.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Oct 2020 10:58:07 -0700 (PDT)
-Subject: [bpf-next PATCH v2 2/6] bpf,
- sockmap: On receive programs try to fast track SK_PASS ingress
+        Fri, 09 Oct 2020 10:58:25 -0700 (PDT)
+Subject: [bpf-next PATCH v2 3/6] bpf,
+ sockmap: remove skb_set_owner_w wmem will be taken later from
+ sendpage
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     john.fastabend@gmail.com, alexei.starovoitov@gmail.com,
         daniel@iogearbox.net
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, jakub@cloudflare.com,
         lmb@cloudflare.com
-Date:   Fri, 09 Oct 2020 10:57:56 -0700
-Message-ID: <160226627645.4390.11671193470778624910.stgit@john-Precision-5820-Tower>
+Date:   Fri, 09 Oct 2020 10:58:14 -0700
+Message-ID: <160226629445.4390.448415070225757849.stgit@john-Precision-5820-Tower>
 In-Reply-To: <160226618411.4390.8167055952618723738.stgit@john-Precision-5820-Tower>
 References: <160226618411.4390.8167055952618723738.stgit@john-Precision-5820-Tower>
 User-Agent: StGit/0.17.1-dirty
@@ -66,61 +67,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we receive an skb and the ingress skb verdict program returns
-SK_PASS we currently set the ingress flag and put it on the workqueue
-so it can be turned into a sk_msg and put on the sk_msg ingress queue.
-Then finally telling userspace with data_ready hook.
+The skb_set_owner_w is unnecessary here. The sendpage call will create a
+fresh skb and set the owner correctly from workqueue. Its also not entirely
+harmless because it consumes cycles, but also impacts resource accounting
+by increasing sk_wmem_alloc. This is charging the socket we are going to
+send to for the skb, but we will put it on the workqueue for some time
+before this happens so we are artifically inflating sk_wmem_alloc for
+this period. Further, we don't know how many skbs will be used to send the
+packet or how it will be broken up when sent over the new socket so
+charging it with one big sum is also not correct when the workqueue may
+break it up if facing memory pressure. Seeing we don't know how/when
+this is going to be sent drop the early accounting.
 
-Here we observe that if the workqueue is empty then we can try to
-convert into a sk_msg type and call data_ready directly without
-bouncing through a workqueue. Its a common pattern to have a recv
-verdict program for visibility that always returns SK_PASS. In this
-case unless there is an ENOMEM error or we overrun the socket we
-can avoid the workqueue completely only using it when we fall back
-to error cases caused by memory pressure.
+A later patch will do proper accounting charged on receive socket for
+the case where skbs get enqueued on the workqueue.
 
-By doing this we eliminate another case where data may be dropped
-if errors occur on memory limits in workqueue.
-
-Fixes: 51199405f9672 ("bpf: skb_verdict, support SK_PASS on RX BPF path")
+Fixes: 604326b41a6fb ("bpf, sockmap: convert to generic sk_msg interface")
 Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
- net/core/skmsg.c |   17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+ net/core/skmsg.c |    2 --
+ 1 file changed, 2 deletions(-)
 
 diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 040ae1d75b65..455cf5fa0279 100644
+index 455cf5fa0279..cab596c02412 100644
 --- a/net/core/skmsg.c
 +++ b/net/core/skmsg.c
-@@ -773,6 +773,7 @@ static void sk_psock_verdict_apply(struct sk_psock *psock,
- {
- 	struct tcp_skb_cb *tcp;
- 	struct sock *sk_other;
-+	int err = 0;
- 
- 	switch (verdict) {
- 	case __SK_PASS:
-@@ -784,8 +785,20 @@ static void sk_psock_verdict_apply(struct sk_psock *psock,
- 
- 		tcp = TCP_SKB_CB(skb);
- 		tcp->bpf.flags |= BPF_F_INGRESS;
--		skb_queue_tail(&psock->ingress_skb, skb);
--		schedule_work(&psock->work);
-+
-+		/* If the queue is empty then we can submit directly
-+		 * into the msg queue. If its not empty we have to
-+		 * queue work otherwise we may get OOO data. Otherwise,
-+		 * if sk_psock_skb_ingress errors will be handled by
-+		 * retrying later from workqueue.
-+		 */
-+		if (skb_queue_empty(&psock->ingress_skb)) {
-+			err = sk_psock_skb_ingress(psock, skb);
-+		}
-+		if (err < 0) {
-+			skb_queue_tail(&psock->ingress_skb, skb);
-+			schedule_work(&psock->work);
-+		}
- 		break;
- 	case __SK_REDIRECT:
- 		sk_psock_skb_redirect(skb);
+@@ -728,8 +728,6 @@ static void sk_psock_skb_redirect(struct sk_buff *skb)
+ 	    (ingress &&
+ 	     atomic_read(&sk_other->sk_rmem_alloc) <=
+ 	     sk_other->sk_rcvbuf)) {
+-		if (!ingress)
+-			skb_set_owner_w(skb, sk_other);
+ 		skb_queue_tail(&psock_other->ingress_skb, skb);
+ 		schedule_work(&psock_other->work);
+ 	} else {
 
