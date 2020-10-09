@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF72E289628
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 21:59:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5644728965C
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:00:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390556AbgJIT7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 15:59:34 -0400
-Received: from mga01.intel.com ([192.55.52.88]:3593 "EHLO mga01.intel.com"
+        id S2387449AbgJIUAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 16:00:24 -0400
+Received: from mga11.intel.com ([192.55.52.93]:40547 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391078AbgJITxW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Oct 2020 15:53:22 -0400
-IronPort-SDR: TuW6f/eUiPOWBVUWPJSST+0egNgNIn2HyrjOLitLNnO3XIXYcZZ7k6u/vtD7EeyPkkCEzhJArJ
- zTM7g1ijBJ7w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9769"; a="182976382"
+        id S2388887AbgJITxV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Oct 2020 15:53:21 -0400
+IronPort-SDR: zq5dvuFd6jXpbgXHXDd3kanr7kGVYAspkSVx4KqGtzBddQtGcPnRKRjJwx5QrQv4TFmaka5zeS
+ Gu84SEdAGvPQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9769"; a="162068063"
 X-IronPort-AV: E=Sophos;i="5.77,355,1596524400"; 
-   d="scan'208";a="182976382"
+   d="scan'208";a="162068063"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:53:02 -0700
-IronPort-SDR: bH2kRxXxeY8kuFBN5R8RneSpQbEQLW5eawptefbcIpm8xkU067aWcbaReXxx6/6TDXgDaxiIQ5
- 8lenxDucas2g==
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:53:06 -0700
+IronPort-SDR: +9tLMQNrOc9ZmtQe+NKSSXZyhjRooFfxfongQijBj4blQjg4c6+fJ/ZHkl3bUeAx7HZ0qDTuwd
+ uW08H1SVCXkg==
 X-IronPort-AV: E=Sophos;i="5.77,355,1596524400"; 
-   d="scan'208";a="519847131"
+   d="scan'208";a="343972363"
 Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:53:02 -0700
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:53:05 -0700
 From:   ira.weiny@intel.com
 To:     Andrew Morton <akpm@linux-foundation.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
         Andy Lutomirski <luto@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>
-Cc:     Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.com>,
-        x86@kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
+Cc:     Ira Weiny <ira.weiny@intel.com>, x86@kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
         Dan Williams <dan.j.williams@intel.com>,
         Fenghua Yu <fenghua.yu@intel.com>, linux-doc@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-nvdimm@lists.01.org,
@@ -58,9 +58,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.com>,
         drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
         xen-devel@lists.xenproject.org, linux-cachefs@redhat.com,
         samba-technical@lists.samba.org, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH RFC PKS/PMEM 37/58] fs/ext2: Utilize new kmap_thread()
-Date:   Fri,  9 Oct 2020 12:50:12 -0700
-Message-Id: <20201009195033.3208459-38-ira.weiny@intel.com>
+Subject: [PATCH RFC PKS/PMEM 38/58] fs/isofs: Utilize new kmap_thread()
+Date:   Fri,  9 Oct 2020 12:50:13 -0700
+Message-Id: <20201009195033.3208459-39-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.28.0.rc0.12.gb6a658bd00c9
 In-Reply-To: <20201009195033.3208459-1-ira.weiny@intel.com>
 References: <20201009195033.3208459-1-ira.weiny@intel.com>
@@ -72,42 +72,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-These kmap() calls are localized to a single thread.  To avoid the over
-head of global PKRS update use the new kmap_thread() call instead.
+These kmap() calls are localized to a single thread.  To avoid the over head of
+global PKRS updates use the new kmap_thread() call.
 
-Cc: Jan Kara <jack@suse.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 ---
- fs/ext2/dir.c  | 2 +-
- fs/ext2/ext2.h | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ fs/isofs/compress.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/ext2/dir.c b/fs/ext2/dir.c
-index f3194bf20733..abe97ba458c8 100644
---- a/fs/ext2/dir.c
-+++ b/fs/ext2/dir.c
-@@ -196,7 +196,7 @@ static struct page * ext2_get_page(struct inode *dir, unsigned long n,
- 	struct address_space *mapping = dir->i_mapping;
- 	struct page *page = read_mapping_page(mapping, n, NULL);
- 	if (!IS_ERR(page)) {
--		kmap(page);
-+		kmap_thread(page);
- 		if (unlikely(!PageChecked(page))) {
- 			if (PageError(page) || !ext2_check_page(page, quiet))
- 				goto fail;
-diff --git a/fs/ext2/ext2.h b/fs/ext2/ext2.h
-index 021ec8b42ac3..9bcb6714c255 100644
---- a/fs/ext2/ext2.h
-+++ b/fs/ext2/ext2.h
-@@ -749,7 +749,7 @@ extern struct ext2_dir_entry_2 * ext2_dotdot (struct inode *, struct page **);
- extern void ext2_set_link(struct inode *, struct ext2_dir_entry_2 *, struct page *, struct inode *, int);
- static inline void ext2_put_page(struct page *page)
- {
--	kunmap(page);
-+	kunmap_thread(page);
- 	put_page(page);
- }
+diff --git a/fs/isofs/compress.c b/fs/isofs/compress.c
+index bc12ac7e2312..ddd3fd99d2e1 100644
+--- a/fs/isofs/compress.c
++++ b/fs/isofs/compress.c
+@@ -344,7 +344,7 @@ static int zisofs_readpage(struct file *file, struct page *page)
+ 			pages[i] = grab_cache_page_nowait(mapping, index);
+ 		if (pages[i]) {
+ 			ClearPageError(pages[i]);
+-			kmap(pages[i]);
++			kmap_thread(pages[i]);
+ 		}
+ 	}
  
+@@ -356,7 +356,7 @@ static int zisofs_readpage(struct file *file, struct page *page)
+ 			flush_dcache_page(pages[i]);
+ 			if (i == full_page && err)
+ 				SetPageError(pages[i]);
+-			kunmap(pages[i]);
++			kunmap_thread(pages[i]);
+ 			unlock_page(pages[i]);
+ 			if (i != full_page)
+ 				put_page(pages[i]);
 -- 
 2.28.0.rc0.12.gb6a658bd00c9
 
