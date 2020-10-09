@@ -2,121 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5651288AD1
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 16:26:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06A4A288AD5
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 16:27:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388742AbgJIO0H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 10:26:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52828 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729280AbgJIO0H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 10:26:07 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247DDC0613D2;
-        Fri,  9 Oct 2020 07:26:07 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id x1so9548899eds.1;
-        Fri, 09 Oct 2020 07:26:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cHvy1KQN5hLuKt6ToeI3sdJ0ZRUbDtCJMWu2DR4x78o=;
-        b=Voze/ZFV30MCsweq27VpVXhOCyoYFMibKZjEJwOrtuJLIIo2Ok4RhN+Ie2G+eswXfA
-         1q70MwzV9lDxKwjiAuz1Jk0I1QriZaOPrwrKszjDC+3Z5/DnUEtxm5Vwix28gShZZdKk
-         vBkyETVLN10wqBfnqIQho2OTVci1QbGGZSVyhtMbVsl9JGiQQq/TcMZCoa/ANGahT6Y5
-         +QnQH6J85ytrmM1iD8petUSmD2j5Hs6n/J6L7wHltC+SGlnTXPN/HhVBlzqusY5/KPuj
-         La2A3UayCXMjf+ZUfgqWzkR5XqAwpqIjQGzXSERW6dRxVLccjEJNMt1c/aexKuuP0Lq6
-         apIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cHvy1KQN5hLuKt6ToeI3sdJ0ZRUbDtCJMWu2DR4x78o=;
-        b=XwEu0PfY+XuZjGxRG05QyUJV3+VZ1Jap9CTVH2HeNsF0MPzdcdc2OoCO2LqCh+5YCo
-         aVV25MdQlnScEr+oP8j/9qUN9CJjgjYXgVjDMGq2Jidr7cszYxPMJJhe5TDgFjPuyyVs
-         BL8ciRozjR82gJbcmMod4itUYmHWeLxe55bhRZYTnvRGa6X7vAh4xRlRSMuTvh1AOLkj
-         P596KZbcUmwzqzZfFSRcGktZ8okOsS+7iB9+FqPRvJNGTUr5+htlBd83EVCUKLScziIr
-         W0RPr9jV2s/BFwr4QE6RENHbzeV8xzGRaFl0mx7Z1sSM5xqVNv8QuwY98WJWKY4Ms4Fw
-         r7wA==
-X-Gm-Message-State: AOAM533YUlVI4hHywsbTOflrSSlIdWPDuC3dGJlAn4h74h8/g+Mr+W+s
-        8K4ja2HJjICBjETILRqXvsi4OHf58z9YVSZsCp0=
-X-Google-Smtp-Source: ABdhPJy53WMWN3WNZMoTcdkRBXF6OkwhMxZOCZHBEzZxaaMBvHj+4P42vcVIHzNnpJkFGujfGV6zw914KUB/EBTpruI=
-X-Received: by 2002:a50:e78f:: with SMTP id b15mr15077444edn.104.1602253565716;
- Fri, 09 Oct 2020 07:26:05 -0700 (PDT)
+        id S2388699AbgJIO07 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 10:26:59 -0400
+Received: from mga06.intel.com ([134.134.136.31]:38118 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731698AbgJIO07 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Oct 2020 10:26:59 -0400
+IronPort-SDR: PZeWGUc4SKMfkJgfqc8O9F78yI4BM/W4O9mMYZrQFcCdWANhXC9q3ugSo6GnH1WmprGjH0JAna
+ 7RuPIAOyEytA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9768"; a="227139527"
+X-IronPort-AV: E=Sophos;i="5.77,355,1596524400"; 
+   d="scan'208";a="227139527"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 07:26:57 -0700
+IronPort-SDR: 3ts88toX+FpcSjw/MRIl9XJpFPlGTxsTARgljTKSbiRwG08//VzNz1NdpgGIcGrXsOiuc7viXz
+ hpGhmMNa224Q==
+X-IronPort-AV: E=Sophos;i="5.77,355,1596524400"; 
+   d="scan'208";a="419460732"
+Received: from sjkim-mobl1.amr.corp.intel.com (HELO [10.212.131.60]) ([10.212.131.60])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 07:26:55 -0700
+Subject: Re: [PATCH v2 1/6] Add ancillary bus support
+To:     Dan Williams <dan.j.williams@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>
+Cc:     "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        "parav@mellanox.com" <parav@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "tiwai@suse.de" <tiwai@suse.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ranjani.sridharan@linux.intel.com" 
+        <ranjani.sridharan@linux.intel.com>,
+        "fred.oh@linux.intel.com" <fred.oh@linux.intel.com>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "jgg@nvidia.com" <jgg@nvidia.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Patil, Kiran" <kiran.patil@intel.com>
+References: <20201005182446.977325-1-david.m.ertman@intel.com>
+ <20201005182446.977325-2-david.m.ertman@intel.com>
+ <20201006172317.GN1874917@unreal>
+ <DM6PR11MB2841976B8E89C980CCC29AD2DD0B0@DM6PR11MB2841.namprd11.prod.outlook.com>
+ <CAPcyv4hoS7ZT_PPrXqFBzEHBKL-O4x1jHtY8x9WWesCPA=2E0g@mail.gmail.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Message-ID: <7dbbc51c-2cbd-a7c5-69de-76f190f1d130@linux.intel.com>
+Date:   Fri, 9 Oct 2020 09:26:54 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20201006080424.GA6988@pengutronix.de> <CAOMZO5Ds7mm4dWdt_a+HU=V40zjp006JQJbozRCicx9yiqacgg@mail.gmail.com>
-In-Reply-To: <CAOMZO5Ds7mm4dWdt_a+HU=V40zjp006JQJbozRCicx9yiqacgg@mail.gmail.com>
-From:   Bruno Thomsen <bruno.thomsen@gmail.com>
-Date:   Fri, 9 Oct 2020 16:25:49 +0200
-Message-ID: <CAH+2xPD=CE+pk_cEC=cLv1nebBBg7X+xDpOFANf3rQ4V2+2Cvw@mail.gmail.com>
-Subject: Re: PHY reset question
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>, David Jander <david@protonic.nl>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Marek Vasut <marex@denx.de>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAPcyv4hoS7ZT_PPrXqFBzEHBKL-O4x1jHtY8x9WWesCPA=2E0g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Fabio and Oleksij
 
-Den ons. 7. okt. 2020 kl. 11.50 skrev Fabio Estevam <festevam@gmail.com>:
->
-> Hi Oleksij,
->
-> On Tue, Oct 6, 2020 at 5:05 AM Oleksij Rempel <o.rempel@pengutronix.de> wrote:
-> >
-> > Hello PHY experts,
-> >
-> > Short version:
-> > what is the proper way to handle the PHY reset before identifying PHY?
-> >
-> > Long version:
-> > I stumbled over following issue:
-> > If PHY reset is registered within PHY node. Then, sometimes,  we will not be
-> > able to identify it (read PHY ID), because PHY is under reset.
-> >
-> > mdio {
-> >         compatible = "virtual,mdio-gpio";
-> >
-> >         [...]
-> >
-> >         /* Microchip KSZ8081 */
-> >         usbeth_phy: ethernet-phy@3 {
-> >                 reg = <0x3>;
-> >
-> >                 interrupts-extended = <&gpio5 12 IRQ_TYPE_LEVEL_LOW>;
-> >                 reset-gpios = <&gpio5 11 GPIO_ACTIVE_LOW>;
-> >                 reset-assert-us = <500>;
-> >                 reset-deassert-us = <1000>;
-> >         };
-> >
-> >         [...]
-> > };
-> >
-> > On simple boards with one PHY per MDIO bus, it is easy to workaround by using
-> > phy-reset-gpios withing MAC node (illustrated in below DT example), instead of
-> > using reset-gpios within PHY node (see above DT example).
-> >
-> > &fec {
-> >         [...]
-> >         phy-mode = "rmii";
-> >         phy-reset-gpios = <&gpio4 12 GPIO_ACTIVE_LOW>;
-> >         [...]
->
-> I thought this has been fixed by Bruno's series:
-> https://www.spinics.net/lists/netdev/msg673611.html
 
-Yes, that has fixed the Microchip/Micrel PHY ID auto detection
-issue. I have send a DTS patch v3 that makes use of the newly
-added device tree parameter:
-https://lkml.org/lkml/2020/9/23/595
+>>>> +
+>>>> +   ancildrv->driver.owner = owner;
+>>>> +   ancildrv->driver.bus = &ancillary_bus_type;
+>>>> +   ancildrv->driver.probe = ancillary_probe_driver;
+>>>> +   ancildrv->driver.remove = ancillary_remove_driver;
+>>>> +   ancildrv->driver.shutdown = ancillary_shutdown_driver;
+>>>> +
+>>>
+>>> I think that this part is wrong, probe/remove/shutdown functions should
+>>> come from ancillary_bus_type.
+>>
+>>  From checking other usage cases, this is the model that is used for probe, remove,
+>> and shutdown in drivers.  Here is the example from Greybus.
+>>
+>> int greybus_register_driver(struct greybus_driver *driver, struct module *owner,
+>>                              const char *mod_name)
+>> {
+>>          int retval;
+>>
+>>          if (greybus_disabled())
+>>                  return -ENODEV;
+>>
+>>          driver->driver.bus = &greybus_bus_type;
+>>          driver->driver.name = driver->name;
+>>          driver->driver.probe = greybus_probe;
+>>          driver->driver.remove = greybus_remove;
+>>          driver->driver.owner = owner;
+>>          driver->driver.mod_name = mod_name;
+>>
+>>
+>>> You are overwriting private device_driver
+>>> callbacks that makes impossible to make container_of of ancillary_driver
+>>> to chain operations.
+>>>
+>>
+>> I am sorry, you lost me here.  you cannot perform container_of on the callbacks
+>> because they are pointers, but if you are referring to going from device_driver
+>> to the auxiliary_driver, that is what happens in auxiliary_probe_driver in the
+>> very beginning.
+>>
+>> static int auxiliary_probe_driver(struct device *dev)
+>> 145 {
+>> 146         struct auxiliary_driver *auxdrv = to_auxiliary_drv(dev->driver);
+>> 147         struct auxiliary_device *auxdev = to_auxiliary_dev(dev);
+>>
+>> Did I miss your meaning?
+> 
+> I think you're misunderstanding the cases when the
+> bus_type.{probe,remove} is used vs the driver.{probe,remove}
+> callbacks. The bus_type callbacks are to implement a pattern where the
+> 'probe' and 'remove' method are typed to the bus device type. For
+> example 'struct pci_dev *' instead of raw 'struct device *'. See this
+> conversion of dax bus as an example of going from raw 'struct device
+> *' typed probe/remove to dax-device typed probe/remove:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=75797273189d
 
-/Bruno
+Thanks Dan for the reference, very useful. This doesn't look like a a 
+big change to implement, just wondering about the benefits and 
+drawbacks, if any? I am a bit confused here.
+
+First, was the initial pattern wrong as Leon asserted it? Such code 
+exists in multiple examples in the kernel and there's nothing preventing 
+the use of container_of that I can think of. Put differently, if this 
+code was wrong then there are other existing buses that need to be updated.
+
+Second, what additional functionality does this move from driver to 
+bus_type provide? The commit reference just states 'In preparation for 
+introducing seed devices the dax-bus core needs to be able to intercept 
+->probe() and ->remove() operations", but that doesn't really help me 
+figure out what 'intercept' means. Would you mind elaborating?
+
+And last, the existing probe function does calls dev_pm_domain_attach():
+
+static int ancillary_probe_driver(struct device *dev)
+{
+	struct ancillary_driver *ancildrv = to_ancillary_drv(dev->driver);
+	struct ancillary_device *ancildev = to_ancillary_dev(dev);
+	int ret;
+
+	ret = dev_pm_domain_attach(dev, true);
+
+So the need to access the raw device still exists. Is this still legit 
+if the probe() is moved to the bus_type structure?
+
+I have no objection to this change if it preserves the same 
+functionality and possibly extends it, just wanted to better understand 
+the reasons for the change and in which cases the bus probe() makes more 
+sense than a driver probe().
+
+Thanks for enlightening the rest of us!
+
+
