@@ -2,73 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C659E288786
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 13:03:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73DA62887A6
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 13:14:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387901AbgJILDc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 07:03:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49716 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732761AbgJILDb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 07:03:31 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50BC9C0613D2;
-        Fri,  9 Oct 2020 04:03:31 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1kQqBH-0006lw-QK; Fri, 09 Oct 2020 13:03:23 +0200
-Date:   Fri, 9 Oct 2020 13:03:23 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Jozsef Kadlecsik <kadlec@netfilter.org>
-Cc:     Francesco Ruggeri <fruggeri@arista.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, coreteam@netfilter.org,
-        netfilter-devel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>, fw@strlen.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: Re: [PATCH nf v2] netfilter: conntrack: connection timeout after
- re-register
-Message-ID: <20201009110323.GC5723@breakpoint.cc>
-References: <20201007193252.7009D95C169C@us180.sjc.aristanetworks.com>
- <CA+HUmGhBxBHU85oFfvoAyP=hG17DG2kgO67eawk1aXmSjehOWQ@mail.gmail.com>
- <alpine.DEB.2.23.453.2010090838430.19307@blackhole.kfki.hu>
+        id S2388013AbgJILOc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 07:14:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49174 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388001AbgJILOb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Oct 2020 07:14:31 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9517A22269;
+        Fri,  9 Oct 2020 11:14:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602242071;
+        bh=G9vzUMWmPTENaCSSrT+4scPL8T/yGBTjMpUFtYd6Vxs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bWAlSh8fDVuAw/5bkQmgw6LUbZC3WgWqOAEsSr+hEOg/6L3UCLOk+oEjFHUoUKQ5N
+         /b5CpOf0TXNVPXBk14HcAurw7DUgsBtqMl7s5KaHtfVFoWI8E7lkpVQ+kz1gI0HKT2
+         3eZztaubRPkrx3EnJ2GCchsXLYbEU52sFXG/MScY=
+Date:   Fri, 9 Oct 2020 13:15:17 +0200
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     'Johannes Berg' <johannes@sipsolutions.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "nstange@suse.de" <nstange@suse.de>,
+        "ap420073@gmail.com" <ap420073@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "rafael@kernel.org" <rafael@kernel.org>
+Subject: Re: [RFC] debugfs: protect against rmmod while files are open
+Message-ID: <20201009111517.GA508813@kroah.com>
+References: <4a58caee3b6b8975f4ff632bf6d2a6673788157d.camel@sipsolutions.net>
+ <20201009124113.a723e46a677a.Ib6576679bb8db01eb34d3dce77c4c6899c28ce26@changeid>
+ <2a333c2a50c676c461c1e2da5847dd4024099909.camel@sipsolutions.net>
+ <8fe62082d9774a1fb21894c27e140318@AcuMS.aculab.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.23.453.2010090838430.19307@blackhole.kfki.hu>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <8fe62082d9774a1fb21894c27e140318@AcuMS.aculab.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jozsef Kadlecsik <kadlec@netfilter.org> wrote:
-> > Any comments?
-> > Here is a simple reproducer. The idea is to show that keepalive packets 
-> > in an idle tcp connection will be dropped (and the connection will time 
-> > out) if conntrack hooks are de-registered and then re-registered. The 
-> > reproducer has two files. client_server.py creates both ends of a tcp 
-> > connection, bounces a few packets back and forth, and then blocks on a 
-> > recv on the client side. The client's keepalive is configured to time 
-> > out in 20 seconds. This connection should not time out. test is a bash 
-> > script that creates a net namespace where it sets iptables rules for the 
-> > connection, starts client_server.py, and then clears and restores the 
-> > iptables rules (which causes conntrack hooks to be de-registered and 
-> > re-registered).
+On Fri, Oct 09, 2020 at 10:56:16AM +0000, David Laight wrote:
+> From: Johannes Berg
+> > Sent: 09 October 2020 11:48
+> > 
+> > On Fri, 2020-10-09 at 12:41 +0200, Johannes Berg wrote:
+> > 
+> > > If the fops doesn't have a release method, we don't even need
+> > > to keep a reference to the real_fops, we can just fops_put()
+> > > them already in debugfs remove, and a later full_proxy_release()
+> > > won't call anything anyway - this just crashed/UAFed because it
+> > > used real_fops, not because there was actually a (now invalid)
+> > > release() method.
+> > 
+> > I actually implemented something a bit better than what I described - we
+> > never need a reference to the real_fops for the release method alone,
+> > and that means if the release method is in the kernel image, rather than
+> > a module, it can still be called.
+> > 
+> > That together should reduce the ~117 places you changed in the large
+> > patchset to around a handful.
 > 
-> In my opinion an iptables restore should not cause conntrack hooks to be 
-> de-registered and re-registered, because important TCP initialization 
-> parameters cannot be "restored" later from the packets. Therefore the 
-> proper fix would be to prevent it to happen. Otherwise your patch looks OK 
-> to handle the case when conntrack is intentionally restarted.
+> Is there an equivalent problem for normal cdev opens
+> in any modules?
 
-The repro clears all rules, waits 4 seconds, then restores the ruleset.
-using iptables-restore < FOO; sleep 4; iptables-restore < FOO will
-not result in any unregister ops.
-
-We could make kernel defer unregister via some work queue but i don't
-see what this would help/accomplish (and its questionable of how long it
-should wait).
-
-We could disallow unregister, but that seems silly (forces reboot...).
-
-I think the patch is fine.
+What does cdev have to do with debugfs?
