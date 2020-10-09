@@ -2,71 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1756F289036
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 19:44:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5073028903C
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 19:47:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732196AbgJIRoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 13:44:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55642 "EHLO
+        id S1732799AbgJIRrU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 13:47:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732060AbgJIRoz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 13:44:55 -0400
-Received: from mail-vk1-xa44.google.com (mail-vk1-xa44.google.com [IPv6:2607:f8b0:4864:20::a44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6538C0613D2
-        for <netdev@vger.kernel.org>; Fri,  9 Oct 2020 10:44:53 -0700 (PDT)
-Received: by mail-vk1-xa44.google.com with SMTP id a16so2308150vke.3
-        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 10:44:53 -0700 (PDT)
+        with ESMTP id S1730673AbgJIRrU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 13:47:20 -0400
+Received: from mail-vk1-xa43.google.com (mail-vk1-xa43.google.com [IPv6:2607:f8b0:4864:20::a43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED7FC0613D2
+        for <netdev@vger.kernel.org>; Fri,  9 Oct 2020 10:47:20 -0700 (PDT)
+Received: by mail-vk1-xa43.google.com with SMTP id l23so1252686vkm.1
+        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 10:47:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=fJ14Dg4VkmXZoFhbERfcdHivYMl1FC5I45TKaPl6f3I=;
-        b=HNpZIEJFAoMPpdsPI1Lx0toPZrOinPZS2LHIhLrvj++3dvjX2C0D/Ck03UbRg4M2z2
-         mggHxyw5HOBQwzMtyrr1S1W2Ez5ko0x5ByuRyUwsxNUmqRBEWQfH3EGBVoNMaWhdPl5H
-         ntJ7FISBy8rk/VAsdJyk2UWIOgQh8ZYl0aY3yK5VQ1WlrmGTTk92nMT8QWeBADMK+KeQ
-         /44hWvH++ZOjJs/lmlS5qO9mlPRF+ouZkIhm+wpHRPOo9mkMiifnv1bfzmDOjKJuGGy0
-         suNIXH2y1/UxZxBY7Gi5gxM9IgE7t93fgWI3Vu9vbnZ4rCxTFVtV1UYh0T65cuBOp4u8
-         pwwg==
+        bh=NrplCNhyYjIuAK++3rSBS/2tDTEQRphlqGjzusEVaew=;
+        b=IzhGtF+a2KhIlKIEPEOIa6Qzaio0VWtdjmeg22Pqqaw54j+E9kaavom/B4EbUpYg3h
+         In/6QexWxleZrNSV+/lXJNGd7e+kRW+0Kt1B9EA2I4qcV6v6+47YQ2CuRxvle5n77DQU
+         Sx+akorqUBFB1jm+OT6KjD0ogBv6COBsJgxTnXUGC9/YRhWm6J31+yhOZsZ9r8JFN5YZ
+         U+0bS4HFEw+2Nj/zn0Th/rnJjn9RkdExUJmFuRGXuE6sUYZWL7x+tdsfcpnOdW/Gy5XO
+         QdILGDdYCpv9Dcy3r+TZ190eMWFWVVO9ThpRLNyLneIagmZgcAg3iekFzAZ6Ph4UkpGk
+         l7cg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=fJ14Dg4VkmXZoFhbERfcdHivYMl1FC5I45TKaPl6f3I=;
-        b=C6lyRpAb9nLHhE4Aoz9CCFmRPJIFrq7TzdzbJS02xgsh57SXb1hG6DssG7OaqodyaO
-         j4eDzDSbbu+y4Rt6cImtG/UONJ+oignClHw/of7Mk08jfQzx1OCnfsyQ7wsBZNRDgQYs
-         49P2BpnKNe2tGif/Db3/7SfWO5yViXErGauZgFa/gy0bigCayv/4lcoTXdOs0tNovOGs
-         EuFH31VGXT0dlI9kuOLb6CFO+bywifIQhb6Mn32Um5WUpJXwDfgr5FPHRK6tBlzAuZHW
-         Ydx7FJrsOQLZGTUkL9850JJ+LM5EPHriEOa0Krw4bA3xnqaadopCxbc9Gc7G5PMSAQRk
-         1DVg==
-X-Gm-Message-State: AOAM533oKIKdEBgTp/EadxbzwZuS9zdEt+UT2ihJuxtffXd/H4I9mGsa
-        5JQQXMUoZp+SHO1Bcy7k/bSNP+KGg7g=
-X-Google-Smtp-Source: ABdhPJytI4kofwXJNecTsJd5jcVUbvsHLnD4ZHaBuZo2h8gmJIqxP0Hz2KGsVhk56XGK7ujXO5G+dg==
-X-Received: by 2002:a1f:8c87:: with SMTP id o129mr8477006vkd.2.1602265491981;
-        Fri, 09 Oct 2020 10:44:51 -0700 (PDT)
-Received: from mail-vk1-f173.google.com (mail-vk1-f173.google.com. [209.85.221.173])
-        by smtp.gmail.com with ESMTPSA id r17sm1196471vsf.25.2020.10.09.10.44.50
+        bh=NrplCNhyYjIuAK++3rSBS/2tDTEQRphlqGjzusEVaew=;
+        b=MUuKQPiiu98n+AM8Sftj+27WYaxAvKMBAOBXoAEE4LLEbyAbxW7Zatp5LYzpCrAp0w
+         CAMtnHlJTdfAUp6qcHFLEhF2icef+CJZ8DtEbG5qEVTcAC8R/QZgkvN+btXieAC/gm+F
+         D4wpEkFHopDCvlPfJPWvH+/u8cMh3a5+o6BpCH1HlCwjjy9yR9vEjpgB4yXv/a8ygeBF
+         0vfldPvEIKoME9RpGIF6SAuEA9K+rZAQNtwmPEGsxOpF+3yHSWSgWAunxRmqgxYpDR7z
+         cvTEUFqI6QWlKcVi7c3/Kl0wGP+laSY65ckINcYGeEA6W4YJxXSAnuhUJ3MCC4/v5w2Z
+         cGQg==
+X-Gm-Message-State: AOAM531qJ8BXwt9Gskin9YLmA4FvwUzTpjZl2QmWqh4iXeJa6GiXobpj
+        Ux1GI1U9Kj3hQgpT4RrTuw0r97wENXU=
+X-Google-Smtp-Source: ABdhPJwuMGrVUZktorEyoF++Joc9sPIxMqUfbnVm07FzBWApX7BRto/4b+milKqxz7f0vhvhyGgh2A==
+X-Received: by 2002:a1f:8c0e:: with SMTP id o14mr8479044vkd.2.1602265638395;
+        Fri, 09 Oct 2020 10:47:18 -0700 (PDT)
+Received: from mail-vs1-f54.google.com (mail-vs1-f54.google.com. [209.85.217.54])
+        by smtp.gmail.com with ESMTPSA id p130sm1249667vke.14.2020.10.09.10.47.17
         for <netdev@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 09 Oct 2020 10:44:51 -0700 (PDT)
-Received: by mail-vk1-f173.google.com with SMTP id l23so1250935vkm.1
-        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 10:44:50 -0700 (PDT)
-X-Received: by 2002:a1f:ae85:: with SMTP id x127mr5175020vke.8.1602265489907;
- Fri, 09 Oct 2020 10:44:49 -0700 (PDT)
+        Fri, 09 Oct 2020 10:47:17 -0700 (PDT)
+Received: by mail-vs1-f54.google.com with SMTP id r1so4378136vsi.12
+        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 10:47:17 -0700 (PDT)
+X-Received: by 2002:a67:684e:: with SMTP id d75mr8802635vsc.28.1602265636761;
+ Fri, 09 Oct 2020 10:47:16 -0700 (PDT)
 MIME-Version: 1.0
-References: <20201007231050.1438704-1-anthony.l.nguyen@intel.com> <20201007231050.1438704-4-anthony.l.nguyen@intel.com>
-In-Reply-To: <20201007231050.1438704-4-anthony.l.nguyen@intel.com>
+References: <20201007231050.1438704-1-anthony.l.nguyen@intel.com> <20201007231050.1438704-3-anthony.l.nguyen@intel.com>
+In-Reply-To: <20201007231050.1438704-3-anthony.l.nguyen@intel.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 9 Oct 2020 13:44:13 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSev=N4jDD3jT+JcB1dREkLK12jSi_R6wXOeRsx_1M_dmg@mail.gmail.com>
-Message-ID: <CA+FuTSev=N4jDD3jT+JcB1dREkLK12jSi_R6wXOeRsx_1M_dmg@mail.gmail.com>
-Subject: Re: [net-next 3/3] e1000: remove unused and incorrect code
+Date:   Fri, 9 Oct 2020 13:46:39 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSfX55yiPHZ-Pf051RqMkKbyvHWT86HFB135Tb4kjm6PjQ@mail.gmail.com>
+Message-ID: <CA+FuTSfX55yiPHZ-Pf051RqMkKbyvHWT86HFB135Tb4kjm6PjQ@mail.gmail.com>
+Subject: Re: [net-next 2/3] i40e: Fix MAC address setting for a VF via Host/VM
 To:     Tony Nguyen <anthony.l.nguyen@intel.com>
 Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
         Network Development <netdev@vger.kernel.org>,
         nhorman@redhat.com, sassmann@redhat.com,
-        Aaron Brown <aaron.f.brown@intel.com>
+        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
+        Andrew Bowers <andrewx.bowers@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -74,21 +75,61 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, Oct 7, 2020 at 7:11 PM Tony Nguyen <anthony.l.nguyen@intel.com> wrote:
 >
-> From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> From: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
 >
-> The e1000_clear_vfta function was triggering a warning in kbuild-bot
-> testing. It's actually a bug but has no functional impact.
+> Fix MAC setting flow for the PF driver.
 >
-> drivers/net/ethernet/intel/e1000/e1000_hw.c:4415:58: warning: Same expression in both branches of ternary operator. [duplicateExpressionTernary]
+> Without this change the MAC address setting was interpreted
+> incorrectly in the following use cases:
+> 1) Print incorrect VF MAC or zero MAC
+> ip link show dev $pf
+> 2) Don't preserve MAC between driver reload
+> rmmod iavf; modprobe iavf
+> 3) Update VF MAC when macvlan was set
+> ip link add link $vf address $mac $vf.1 type macvlan
+> 4) Failed to update mac address when VF was trusted
+> ip link set dev $vf address $mac
 >
-> Fix this warning by removing the offending code and simplifying
-> the routine to do exactly what it did before, no functional
-> change.
+> This includes all other configurations including above commands.
 >
-> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-> Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+> Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
+> Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+> Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 > Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+If this is a fix, should it target net and/or is there a commit for a Fixes tag?
 
-(for netdrv)
+> @@ -2740,6 +2744,7 @@ static int i40e_vc_del_mac_addr_msg(struct i40e_vf *vf, u8 *msg)
+>  {
+>         struct virtchnl_ether_addr_list *al =
+>             (struct virtchnl_ether_addr_list *)msg;
+> +       bool was_unimac_deleted = false;
+>         struct i40e_pf *pf = vf->pf;
+>         struct i40e_vsi *vsi = NULL;
+>         i40e_status ret = 0;
+> @@ -2759,6 +2764,8 @@ static int i40e_vc_del_mac_addr_msg(struct i40e_vf *vf, u8 *msg)
+>                         ret = I40E_ERR_INVALID_MAC_ADDR;
+>                         goto error_param;
+>                 }
+> +               if (ether_addr_equal(al->list[i].addr, vf->default_lan_addr.addr))
+> +                       was_unimac_deleted = true;
+>         }
+>         vsi = pf->vsi[vf->lan_vsi_idx];
+>
+> @@ -2779,10 +2786,25 @@ static int i40e_vc_del_mac_addr_msg(struct i40e_vf *vf, u8 *msg)
+>                 dev_err(&pf->pdev->dev, "Unable to program VF %d MAC filters, error %d\n",
+>                         vf->vf_id, ret);
+>
+> +       if (vf->trusted && was_unimac_deleted) {
+> +               struct i40e_mac_filter *f;
+> +               struct hlist_node *h;
+> +               u8 *macaddr = NULL;
+> +               int bkt;
+> +
+> +               /* set last unicast mac address as default */
+> +               spin_lock_bh(&vsi->mac_filter_hash_lock);
+> +               hash_for_each_safe(vsi->mac_filter_hash, bkt, h, f, hlist) {
+> +                       if (is_valid_ether_addr(f->macaddr))
+> +                               macaddr = f->macaddr;
+
+nit: could break here
