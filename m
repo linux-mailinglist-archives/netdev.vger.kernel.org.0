@@ -2,209 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F4D6289C00
-	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 01:01:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F92D289C05
+	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 01:05:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390101AbgJIXBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 19:01:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48252 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731374AbgJIXBc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 19:01:32 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593FEC0613D2;
-        Fri,  9 Oct 2020 16:01:31 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id 67so8425397ybt.6;
-        Fri, 09 Oct 2020 16:01:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vtX2X4esleDi4H0686g5grmieupLoqDr/WDhrszoS9k=;
-        b=skWGPRPs/NS4JT8PpbPfjP9fb1PrDNNKNh4CdhY3OIVZDE74LJvunrqdL99jvQoQhM
-         e90OKYn2gmJMC/RLQwekiqk32rNyDC1S2VDBtNxsVGVseXtJrsVRv//wt2rusoU1j5Bd
-         eT5uTNmDeSIv2mM4ZlBjmxAgkaVBFfh5zsm1xF5jBpX/X18tMqzfp+5ug+MaxLrsKOJt
-         LVPlDeXyL5a/F92eqiqk9lL1g9SJ7LRrRWt2Gz5U2jEzujToRylyJEnzGCnRPgsblUGJ
-         Y1vySz/QrLcJY51CncW7JHyTb3nlPg/Q3FXSFu8lFCar8XBKOAS3OSHhsrYMP/wxs7D7
-         g0uQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vtX2X4esleDi4H0686g5grmieupLoqDr/WDhrszoS9k=;
-        b=fphQ9ZEPyZr8nRQ1HCgImGCs+dlXQRVb9S6ZegY6nvpZdVYgNcRcOAqdpEUGVXhERn
-         AIQ2Rk3/eTaw2rZ/XThvubE/cIdCmvV32b6nFfx8gttEof+GHa4mw/+qEv/eA3O7qi85
-         iUMIDmY7VbN4t98aAuXjVAgE87Nbgb1ACN5KB+sapoidyaseLHA80f0NinD1ME9Wxx0r
-         Dkh2hcOdzjrrI0axQ/aXjJdA6pGp2cAOr19YQWIPopi4Qr1ylhksuDB/FDmGoPJ2ORYQ
-         UtOL3itKxtzOWPhBsHk0l+/ZzZQ9nb5O/Uy2LOshbG8Plxt1W/w6DXTRDPQ6sl2/T3tT
-         YO0A==
-X-Gm-Message-State: AOAM533VUT6q+rifIOOHyvU+RylaQiz83W3h+nS68byzbf5V5fcUjZxN
-        Fn5l38jscrmcufOb4FueKJ5Y+/eC350e2a+50io=
-X-Google-Smtp-Source: ABdhPJxDADFhA9/tVsQuHLcgF8ljXVxIanujq6E5cZNOOay1vm7HiTYruvtEkDjLOgYVGeXXN8GO09wmbaBF7VP2SjI=
-X-Received: by 2002:a25:2687:: with SMTP id m129mr20126658ybm.425.1602284489107;
- Fri, 09 Oct 2020 16:01:29 -0700 (PDT)
+        id S2390100AbgJIXFk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 19:05:40 -0400
+Received: from www62.your-server.de ([213.133.104.62]:35446 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731374AbgJIXFk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 19:05:40 -0400
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kR1SA-0002nU-Vw; Sat, 10 Oct 2020 01:05:35 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kR1SA-0000ZS-R5; Sat, 10 Oct 2020 01:05:34 +0200
+Subject: Re: [PATCH bpf-next v2] bpf_fib_lookup: optionally skip neighbour
+ lookup
+To:     David Ahern <dsahern@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vu?= =?UTF-8?Q?sen?= 
+        <toke@redhat.com>, ast@fb.com
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
+References: <20201009101356.129228-1-toke@redhat.com>
+ <0a463800-a663-3fd3-2e1a-eac5526ed691@gmail.com> <87v9fjckcd.fsf@toke.dk>
+ <4972626e-c86d-8715-0565-20bed680227c@gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <50fc3fee-13b2-11d1-f5b1-e0d8669cd655@iogearbox.net>
+Date:   Sat, 10 Oct 2020 01:05:34 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20201009224007.30447-1-daniel@iogearbox.net> <20201009224007.30447-4-daniel@iogearbox.net>
-In-Reply-To: <20201009224007.30447-4-daniel@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 9 Oct 2020 16:01:18 -0700
-Message-ID: <CAEf4BzYHRi3zBWcVYo=1oB2mcWaW_7HmKsSw6X2PU1deyXXaDw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 3/6] bpf: allow for map-in-map with dynamic
- inner array map entries
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        Yonghong Song <yhs@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <4972626e-c86d-8715-0565-20bed680227c@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25952/Fri Oct  9 15:52:40 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 9, 2020 at 3:40 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> Recent work in f4d05259213f ("bpf: Add map_meta_equal map ops") and 134fede4eecf
-> ("bpf: Relax max_entries check for most of the inner map types") added support
-> for dynamic inner max elements for most map-in-map types. Exceptions were maps
-> like array or prog array where the map_gen_lookup() callback uses the maps'
-> max_entries field as a constant when emitting instructions.
->
-> We recently implemented Maglev consistent hashing into Cilium's load balancer
-> which uses map-in-map with an outer map being hash and inner being array holding
-> the Maglev backend table for each service. This has been designed this way in
-> order to reduce overall memory consumption given the outer hash map allows to
-> avoid preallocating a large, flat memory area for all services. Also, the
-> number of service mappings is not always known a-priori.
->
-> The use case for dynamic inner array map entries is to further reduce memory
-> overhead, for example, some services might just have a small number of back
-> ends while others could have a large number. Right now the Maglev backend table
-> for small and large number of backends would need to have the same inner array
-> map entries which adds a lot of unneeded overhead.
->
-> Dynamic inner array map entries can be realized by avoiding the inlined code
-> generation for their lookup. The lookup will still be efficient since it will
-> be calling into array_map_lookup_elem() directly and thus avoiding retpoline.
-> The patch adds a BPF_F_INNER_MAP flag to map creation which therefore skips
-> inline code generation and relaxes array_map_meta_equal() check to ignore both
-> maps' max_entries.
->
-> Example code generation where inner map is dynamic sized array:
->
->   # bpftool p d x i 125
->   int handle__sys_enter(void * ctx):
->   ; int handle__sys_enter(void *ctx)
->      0: (b4) w1 = 0
->   ; int key = 0;
->      1: (63) *(u32 *)(r10 -4) = r1
->      2: (bf) r2 = r10
->   ;
->      3: (07) r2 += -4
->   ; inner_map = bpf_map_lookup_elem(&outer_arr_dyn, &key);
->      4: (18) r1 = map[id:468]
->      6: (07) r1 += 272
->      7: (61) r0 = *(u32 *)(r2 +0)
->      8: (35) if r0 >= 0x3 goto pc+5
->      9: (67) r0 <<= 3
->     10: (0f) r0 += r1
->     11: (79) r0 = *(u64 *)(r0 +0)
->     12: (15) if r0 == 0x0 goto pc+1
->     13: (05) goto pc+1
->     14: (b7) r0 = 0
->     15: (b4) w6 = -1
->   ; if (!inner_map)
->     16: (15) if r0 == 0x0 goto pc+6
->     17: (bf) r2 = r10
->   ;
->     18: (07) r2 += -4
->   ; val = bpf_map_lookup_elem(inner_map, &key);
->     19: (bf) r1 = r0                               | No inlining but instead
->     20: (85) call array_map_lookup_elem#149280     | call to array_map_lookup_elem()
->   ; return val ? *val : -1;                        | for inner array lookup.
->     21: (15) if r0 == 0x0 goto pc+1
->   ; return val ? *val : -1;
->     22: (61) r6 = *(u32 *)(r0 +0)
->   ; }
->     23: (bc) w0 = w6
->     24: (95) exit
->
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> ---
->  include/linux/bpf.h            |  2 +-
->  include/uapi/linux/bpf.h       |  3 +++
->  kernel/bpf/arraymap.c          | 17 +++++++++++------
->  kernel/bpf/hashtab.c           |  6 +++---
->  kernel/bpf/verifier.c          |  4 +++-
->  net/xdp/xskmap.c               |  2 +-
->  tools/include/uapi/linux/bpf.h |  3 +++
->  7 files changed, 25 insertions(+), 12 deletions(-)
->
+On 10/9/20 11:28 PM, David Ahern wrote:
+> On 10/9/20 11:42 AM, Toke Høiland-Jørgensen wrote:
+>> David Ahern <dsahern@gmail.com> writes:
+>>> On 10/9/20 3:13 AM, Toke Høiland-Jørgensen wrote:
+>>>> The bpf_fib_lookup() helper performs a neighbour lookup for the destination
+>>>> IP and returns BPF_FIB_LKUP_NO_NEIGH if this fails, with the expectation
+>>>> that the BPF program will pass the packet up the stack in this case.
+>>>> However, with the addition of bpf_redirect_neigh() that can be used instead
+>>>> to perform the neighbour lookup, at the cost of a bit of duplicated work.
+>>>>
+>>>> For that we still need the target ifindex, and since bpf_fib_lookup()
+>>>> already has that at the time it performs the neighbour lookup, there is
+>>>> really no reason why it can't just return it in any case. So let's just
+>>>> always return the ifindex, and also add a flag that lets the caller turn
+>>>> off the neighbour lookup entirely in bpf_fib_lookup().
+>>>
+>>> seems really odd to do the fib lookup only to skip the neighbor lookup
+>>> and defer to a second helper to do a second fib lookup and send out.
+>>>
+>>> The better back-to-back calls is to return the ifindex and gateway on
+>>> successful fib lookup regardless of valid neighbor. If the call to
+>>> bpf_redirect_neigh is needed, it can have a flag to skip the fib lookup
+>>> and just redirect to the given nexthop address + ifindex. ie.,
+>>> bpf_redirect_neigh only does neighbor handling in this case.
+>>
+>> Hmm, yeah, I guess it would make sense to cache and reuse the lookup -
+>> maybe stick it in bpf_redirect_info()? However, given the imminent
+> 
+> That is not needed.
+> 
+>> opening of the merge window, I don't see this landing before then. So
+>> I'm going to respin this patch with just the original change to always
+>> return the ifindex, then we can revisit the flags/reuse of the fib
+>> lookup later.
+> 
+> What I am suggesting is a change in API to bpf_redirect_neigh which
+> should be done now, before the merge window, before it comes a locked
+> API. Right now, bpf_redirect_neigh does a lookup to get the nexthop. It
+> should take the gateway as an input argument. If set, then the lookup is
+> not done - only the neighbor redirect.
 
-[...]
-
->         *insn++ = BPF_ALU64_IMM(BPF_ADD, map_ptr, offsetof(struct bpf_array, value));
->         *insn++ = BPF_LDX_MEM(BPF_W, ret, index, 0);
->         if (!map->bypass_spec_v1) {
-> @@ -496,8 +499,10 @@ static int array_map_mmap(struct bpf_map *map, struct vm_area_struct *vma)
->  static bool array_map_meta_equal(const struct bpf_map *meta0,
->                                  const struct bpf_map *meta1)
->  {
-> -       return meta0->max_entries == meta1->max_entries &&
-> -               bpf_map_meta_equal(meta0, meta1);
-> +       if (!bpf_map_meta_equal(meta0, meta1))
-> +               return false;
-> +       return meta0->map_flags & BPF_F_INNER_MAP ? true :
-> +              meta0->max_entries == meta1->max_entries;
-
-even if meta1 doesn't have BPF_F_INNER_MAP, it's ok, because all the
-accesses for map returned from outer map lookup will not inline, is
-that right? So this flag only matters for the inner map's prototype.
-You also mentioned that not inlining array access should still be
-fast. So I wonder, what if we just force non-inlined access for inner
-maps of ARRAY type? Would it be too bad of a hit for existing
-applications?
-
-The benefit would be that everything would just work without a special
-flag. If perf hit isn't prohibitive, it might be worthwhile to
-simplify user experience?
-
->  }
->
->  struct bpf_iter_seq_array_map_info {
-> @@ -1251,7 +1256,7 @@ static void *array_of_map_lookup_elem(struct bpf_map *map, void *key)
->         return READ_ONCE(*inner_map);
->  }
->
-
-[...]
-
->         struct bpf_insn *insn = insn_buf;
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index f3e36eade3d4..76d43ef60e7b 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -11049,6 +11049,8 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
->                         if (insn->imm == BPF_FUNC_map_lookup_elem &&
->                             ops->map_gen_lookup) {
->                                 cnt = ops->map_gen_lookup(map_ptr, insn_buf);
-> +                               if (cnt == -EOPNOTSUPP)
-> +                                       goto patch_map_ops_generic;
->                                 if (cnt == 0 || cnt >= ARRAY_SIZE(insn_buf)) {
-
-should this now check cnt <= 0 instead?
-
-
->                                         verbose(env, "bpf verifier is misconfigured\n");
->                                         return -EINVAL;
-> @@ -11079,7 +11081,7 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
->                                      (int (*)(struct bpf_map *map, void *value))NULL));
->                         BUILD_BUG_ON(!__same_type(ops->map_peek_elem,
->                                      (int (*)(struct bpf_map *map, void *value))NULL));
-> -
-> +patch_map_ops_generic:
->                         switch (insn->imm) {
->                         case BPF_FUNC_map_lookup_elem:
->                                 insn->imm = BPF_CAST_CALL(ops->map_lookup_elem) -
-
-[...]
+Sounds like a reasonable extension, agree. API freeze is not merge win, but
+final v5.10 tag in this case as it always has been. In case it's not in time,
+we can simply just move flags to arg3 and add a reserved param as arg2 which
+must be zero (and thus indicate to perform the lookup as-is). Later we could
+extend to pass params similar as in fib_lookup helper for the gw.
