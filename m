@@ -2,59 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FFE7289942
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:10:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1C8528997A
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:11:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391859AbgJIUKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 16:10:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46272 "EHLO mail.kernel.org"
+        id S2388077AbgJIULk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 16:11:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47162 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391461AbgJIUIv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Oct 2020 16:08:51 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3BDBB2053B;
-        Fri,  9 Oct 2020 20:08:50 +0000 (UTC)
+        id S2390662AbgJIUKD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Oct 2020 16:10:03 -0400
+Content-Type: text/plain; charset="utf-8"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602274130;
-        bh=+b0UCmaVjCJ5quEyA7IpdwMvpZ6JEzMZlAcmNpTuLhY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QyOcojAY7sJxrU8c4l1eyv/lWzJ9W80BxOHse72GrnXQe0mOzQaL84GO6jxBRa9Fl
-         DZ1uWHRpvJk4c0nl5bUqwWKfANgZGG/Bhr9+1qnlXq4ndjEyJeh6D7kaix5ysk6bbr
-         wBvmS4lSrN7StpAI0QtoHbUyCW8JaAw8r7vR4NUA=
-Date:   Fri, 9 Oct 2020 13:08:48 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Christian Eggers <ceggers@arri.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: dsa: microchip: add ksz9563 to ksz9477
- I2C driver
-Message-ID: <20201009130848.0ed59601@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201007132002.GG56634@lunn.ch>
-References: <20201007093049.13078-1-ceggers@arri.de>
-        <20201007132002.GG56634@lunn.ch>
+        s=default; t=1602274203;
+        bh=JVVKQiSpNKj3J1/C2WCrB1KsbLIG0tAQ59TbxzrXjDM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=RAj871Tuktq4KwtJwoJZXJl9QUtimu/+WL+L6dJqvTxNfGfCAnT1NIxHxYwE8POUn
+         Fi/DWFoTPgV3lpmVAmZMBzx6On54Wkh5e+XIbdbGc7gJB72qUq+RvEcZEngxvKV7Kk
+         zgG5gqrMFHPQF1Ol6OtrdoX78G5WK5amV6HtBeGI=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 bpf-next 0/4] bpf: Make the verifier recognize llvm
+ register allocation patterns.
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160227420316.11483.9813871681277848133.git-patchwork-notify@kernel.org>
+Date:   Fri, 09 Oct 2020 20:10:03 +0000
+References: <20201009011240.48506-1-alexei.starovoitov@gmail.com>
+In-Reply-To: <20201009011240.48506-1-alexei.starovoitov@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     davem@davemloft.net, daniel@iogearbox.net,
+        john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@fb.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 7 Oct 2020 15:20:02 +0200 Andrew Lunn wrote:
-> On Wed, Oct 07, 2020 at 11:30:49AM +0200, Christian Eggers wrote:
-> > Add support for the KSZ9563 3-Port Gigabit Ethernet Switch to the
-> > ksz9477 driver. The KSZ9563 supports both SPI (already in) and I2C. The
-> > ksz9563 is already in the device tree binding documentation.
-> > 
-> > Signed-off-by: Christian Eggers <ceggers@arri.de>  
-> 
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Hello:
 
-Applied, thanks!
+This series was applied to bpf/bpf-next.git (refs/heads/master):
+
+On Thu,  8 Oct 2020 18:12:36 -0700 you wrote:
+> From: Alexei Starovoitov <ast@kernel.org>
+> 
+> v1->v2:
+> - fixed 32-bit mov issue spotted by John.
+> - allowed r2=r1; r3=r2; sequence as suggested by John.
+> - added comments, acks, more tests.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2,bpf-next,1/4] bpf: Propagate scalar ranges through register assignments.
+    https://git.kernel.org/bpf/bpf-next/c/75748837b7e5
+  - [v2,bpf-next,2/4] bpf: Track spill/fill of bounded scalars.
+    https://git.kernel.org/bpf/bpf-next/c/5689d49b71ad
+  - [v2,bpf-next,3/4] selftests/bpf: Add profiler test
+    https://git.kernel.org/bpf/bpf-next/c/03d4d13fab3f
+  - [v2,bpf-next,4/4] selftests/bpf: Asm tests for the verifier regalloc tracking.
+    https://git.kernel.org/bpf/bpf-next/c/54fada41e8a1
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
