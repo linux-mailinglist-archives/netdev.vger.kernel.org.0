@@ -2,95 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBF452899FB
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:49:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB7B5289A20
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 23:04:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388117AbgJIUtY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 16:49:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56218 "EHLO
+        id S2391056AbgJIVER (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 17:04:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727311AbgJIUtY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 16:49:24 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D46C0613D2;
-        Fri,  9 Oct 2020 13:49:24 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id k6so11565608ior.2;
-        Fri, 09 Oct 2020 13:49:24 -0700 (PDT)
+        with ESMTP id S2387598AbgJIVER (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 17:04:17 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E265EC0613D2;
+        Fri,  9 Oct 2020 14:04:16 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id y14so7856431pfp.13;
+        Fri, 09 Oct 2020 14:04:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=l6E4B46e2XeP9h+qJ2Ghhmtiv8oTVWyHQipTgIS48gY=;
-        b=mTs3JpJYvoM31Wsn0xENzCmbYma6XACEtukcUiHp2VAdCVorpafI11+3nrJOK9/lRT
-         V34st9fKO3/pGPJEsvOwlnZ10ipwCKYC0I6lmfAkeJdcGf5reNLq4SHHQVzdZdcHyqZ7
-         Lw3n0mvhAX7S9XGA291PmHSF6HSlLS+H+BvNavlX/vPGyrPC8e6BMNPyjLaCgiPgFUBN
-         gg4MClPzy7mlvz7TeOoT1AinBuwYJ58eZCWwJ71d4Oa5HlUkMzBOUv9ijLu/+PVkxgxi
-         pHSb0tUgjwWsnnj+8cHWkMyivNQrOxvqF1NVL0USIJkkavlKLG0ncNwXsjsWOubp9K6Y
-         awIA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=b0lauMfKhb6zk91edBzpHn263yFZvO/3qkAx1smAZKA=;
+        b=QwWZUmpJkuhmaC5Xq7TYRjfTc3D5MIWbV7us1IvU0E3Fa5MYE2T77LFmCU87qbjG5/
+         3eqEuleyp/w1CfxpKkOFktnwjDTyTu/AjVXwmkyI42A6a7u+4SUqLh0hNGnJzaMQ2ObT
+         TfJFZZgheEH4TdaxnBH378Ilswea0pejaSmvsY4Eo1HPskACaHa6iZZVmykZ4mxepjq9
+         aNS9v5210IvXrOZ0NDNJ72jZD7TzETpL7SDUYS/09/UAf+H1w8e5z5MIShqQJZNAKvtP
+         3WpOi/e0OD6VhyNk2NKNNy3ApLYT3HxtnugwK5qOW1HRBs9am6z1NOj/RdaZqIvQ5ZDT
+         LDkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=l6E4B46e2XeP9h+qJ2Ghhmtiv8oTVWyHQipTgIS48gY=;
-        b=MezBC6/9dieQ5245/ERgLvNiP5R1xrvfTdVxnMI+YGGNU7jgukXkhR2qLiIAKl9ndv
-         uQ5MIYHyUQdWBlahWyKsu8xSk5JctQKZ/UKubIilpWhc6hFeiW4XqISP14TiYjJCGcCs
-         kixrpATCA2+M4Dy2wRpDEHYEk5TuZeCvyHlmH0CsM1Wj52kTH73u8blrUdq84sA/vDXB
-         ADSHrWDpcrBKNCfBAdQRM+I9xnXfEgnBy4GW2SQqVQdXJSKVwxRgL59M9Sp3zDthCRm/
-         mKb7WNRLbK8adI7tubkTpFG80/bWJqyYMOpFbxyVqMEEb+lQuOx82Vy2VxEWs8b8V8Gb
-         cPkQ==
-X-Gm-Message-State: AOAM531RXcYc5DL6RGJf+sw4NGuB7l84P/FQsJUCP2hDQxZoci1U+sE3
-        iynBZcDBw5PQ1h9/xyrcq4s=
-X-Google-Smtp-Source: ABdhPJz0mDjWI9cLGZI1APL1SkK/C90ahx8YNdOQKSadUt03k1qQAZbFQ4v0iJX2QgAk2JhI5vXHPw==
-X-Received: by 2002:a5d:9e4e:: with SMTP id i14mr10583360ioi.22.1602276563613;
-        Fri, 09 Oct 2020 13:49:23 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id z20sm3941046ior.2.2020.10.09.13.49.20
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=b0lauMfKhb6zk91edBzpHn263yFZvO/3qkAx1smAZKA=;
+        b=GqkiIdsuiL08aEjcRMOcSNkRgOpTGVVc/5MUZ8fz27uSpqQM51NtzRfjmfOGe6hCo5
+         DE9CB9yRvbXPLUVbmo1zSVPQQl/+A8Jhb2yhUCtXUT6blPSwjVpUZ/6p53bUvFPihuSU
+         Vx8y5OFzc5XHY7OsPo7nv4AWqeHCgD0BSqL4AhMcNr4bxiXuwTDtGqBhYPHPq3vTEvx5
+         m/wxdf+gaasOVnYVhpByVIWKvL2+Nl0hH/vFfIkCqqXn5RZwTW+3IuSngkciy450wLlo
+         omyD3gRarxrtINaclamD0P7QbQVoqoRakOAGOVmzeJJZy/lTG4W8B6KgA0C+dB6/n9KW
+         xqsA==
+X-Gm-Message-State: AOAM5331jqSo6kf1nLmwsUs6F2BY7GUKi3PtNfCFG3hQ9DhpWfNlCzTZ
+        Z3r0g3cOEXtolDR0Vy4Yz14=
+X-Google-Smtp-Source: ABdhPJwFJtwZw5EsEQOIdAYonZOwq/owhR9L05W/eD2nw08SsOIhD4VoN28aU2gNj1FC5q8DOlGTPQ==
+X-Received: by 2002:a17:90a:ad98:: with SMTP id s24mr6594405pjq.199.1602277456401;
+        Fri, 09 Oct 2020 14:04:16 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:400::5:db42])
+        by smtp.gmail.com with ESMTPSA id j8sm10158293pfj.68.2020.10.09.14.04.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Oct 2020 13:49:22 -0700 (PDT)
-Date:   Fri, 09 Oct 2020 13:49:14 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
-        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        eyal.birger@gmail.com
-Message-ID: <5f80ccca63d9_ed74208f8@john-XPS-13-9370.notmuch>
-In-Reply-To: <20201009093319.6140b322@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <160216609656.882446.16642490462568561112.stgit@firesoul>
- <20201009093319.6140b322@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Subject: Re: [PATCH bpf-next V3 0/6] bpf: New approach for BPF MTU handling
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        Fri, 09 Oct 2020 14:04:15 -0700 (PDT)
+Date:   Fri, 9 Oct 2020 14:04:13 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     ast@kernel.org, john.fastabend@gmail.com, yhs@fb.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Subject: Re: [PATCH bpf-next v3 3/6] bpf: allow for map-in-map with dynamic
+ inner array map entries
+Message-ID: <20201009210413.kml5vfefehdzv7ub@ast-mbp>
+References: <20201009204245.27905-1-daniel@iogearbox.net>
+ <20201009204245.27905-4-daniel@iogearbox.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201009204245.27905-4-daniel@iogearbox.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski wrote:
-> On Thu, 08 Oct 2020 16:08:57 +0200 Jesper Dangaard Brouer wrote:
-> > V3: Drop enforcement of MTU in net-core, leave it to drivers
-> 
-> Sorry for being late to the discussion.
-> 
-> I absolutely disagree. We had cases in the past where HW would lock up
-> if it was sent a frame with bad geometry.
-> 
-> We will not be sprinkling validation checks across the drivers because
-> some reconfiguration path may occasionally yield a bad packet, or it's
-> hard to do something right with BPF.
+On Fri, Oct 09, 2020 at 10:42:42PM +0200, Daniel Borkmann wrote:
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index b97bc5abb3b8..593963e40956 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -435,6 +435,11 @@ enum {
+>  
+>  /* Share perf_event among processes */
+>  	BPF_F_PRESERVE_ELEMS	= (1U << 11),
+> +
+> +/* Do not inline (array) map lookups so the array map can be used for
+> + * map in map with dynamic max entries.
+> + */
+> +	BPF_F_NO_INLINE		= (1U << 12),
+>  };
 
-This is a driver bug then. As it stands today drivers may get hit with
-skb with MTU greater than set MTU as best I can tell. Generally I
-expect drivers use MTU to configure RX buffers not sure how it is going
-to be used on TX side? Any examples? I just poked around through the
-driver source to see and seems to confirm its primarily for RX side
-configuration with some drivers throwing the event down to the firmware
-for something that I can't see in the code?
+I'm worried about this one.
+It exposes internal detail into uapi.
+Most users are not even aware of that map_lookup_elem() can be 'inlined'.
 
-I'm not suggestiong sprinkling validation checks across the drivers.
-I'm suggesting if the drivers hang we fix them.
+How about renaming the flag into BPF_F_INNER_MAP ?
+This way if we change the implementation later it will still be sane from uapi pov.
+The comment above the flag can say:
+/* Create a map that is suitable to be an inner map with dynamic max entries  */
+
+Or some other name ?
+May be tomorrow we decide to simply load max_entries value in array_map_gen_lookup().
+The progs will become a bit slower, but it could be fine if we also do another
+optimization at the same time. Like the verifier can detect that 'key' is const
+and optimize it even further. Than slower gen_lookup for inner and all arrays
+will be mitigated by ultra fast lookup when !F_INNER_MAP and key is const.
+For F_INNER_MAP and key is const we could still do better inlining.
