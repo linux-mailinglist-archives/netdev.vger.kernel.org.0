@@ -2,67 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1C8528997A
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:11:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B2282899AE
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:23:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388077AbgJIULk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 16:11:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47162 "EHLO mail.kernel.org"
+        id S1732506AbgJIUXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 16:23:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52658 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390662AbgJIUKD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Oct 2020 16:10:03 -0400
-Content-Type: text/plain; charset="utf-8"
+        id S1726427AbgJIUXZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Oct 2020 16:23:25 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 796BE221FD;
+        Fri,  9 Oct 2020 20:23:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602274203;
-        bh=JVVKQiSpNKj3J1/C2WCrB1KsbLIG0tAQ59TbxzrXjDM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=RAj871Tuktq4KwtJwoJZXJl9QUtimu/+WL+L6dJqvTxNfGfCAnT1NIxHxYwE8POUn
-         Fi/DWFoTPgV3lpmVAmZMBzx6On54Wkh5e+XIbdbGc7gJB72qUq+RvEcZEngxvKV7Kk
-         zgG5gqrMFHPQF1Ol6OtrdoX78G5WK5amV6HtBeGI=
+        s=default; t=1602275004;
+        bh=vCKA5aGghvuvrTk8ECw39QojG+q26rX7YmQI3hO8obg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=K5HV8QiCFywSL9Rnb+21FLM7Qw41Fzr42kPN3FB2ebLHVQ4ePwQC9yUDEB6WwMHEj
+         95HgTOAb13cxCJda4nN/V8OTmNzubv/A00ZiimR42Ml+UDtH4cItLGjJ7EfeHbE049
+         xtRVnT8B3/NyXi0LtqoENGucOdvvcBqajs5npxfM=
+Date:   Fri, 9 Oct 2020 13:23:22 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com
+Subject: Re: [net-next 0/8][pull request] 100GbE Intel Wired LAN Driver
+ Updates 2020-10-07
+Message-ID: <20201009132322.3c6f8306@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201007175447.647867-1-anthony.l.nguyen@intel.com>
+References: <20201007175447.647867-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 bpf-next 0/4] bpf: Make the verifier recognize llvm
- register allocation patterns.
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160227420316.11483.9813871681277848133.git-patchwork-notify@kernel.org>
-Date:   Fri, 09 Oct 2020 20:10:03 +0000
-References: <20201009011240.48506-1-alexei.starovoitov@gmail.com>
-In-Reply-To: <20201009011240.48506-1-alexei.starovoitov@gmail.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     davem@davemloft.net, daniel@iogearbox.net,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@fb.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to bpf/bpf-next.git (refs/heads/master):
-
-On Thu,  8 Oct 2020 18:12:36 -0700 you wrote:
-> From: Alexei Starovoitov <ast@kernel.org>
+On Wed,  7 Oct 2020 10:54:39 -0700 Tony Nguyen wrote:
+> This series contains updates to ice driver only.
 > 
-> v1->v2:
-> - fixed 32-bit mov issue spotted by John.
-> - allowed r2=r1; r3=r2; sequence as suggested by John.
-> - added comments, acks, more tests.
+> Andy Shevchenko changes usage to %*phD format to print small buffer as hex
+> string.
 > 
-> [...]
+> Bruce removes repeated words reported by checkpatch.
+> 
+> Ani changes ice_info_get_dsn() to return void as it always returns
+> success.
+> 
+> Jake adds devlink reporting of fw.app.bundle_id. Moves devlink_port
+> structure to ice_vsi to resolve issues with cleanup. Adds additional
+> debug info for firmware updates.
+> 
+> Bixuan Cui resolves -Wpointer-to-int-cast warnings.
+> 
+> Dan adds additional packet type masks and checks to prevent overwriting
+> existing Flow Director rules.
 
-Here is the summary with links:
-  - [v2,bpf-next,1/4] bpf: Propagate scalar ranges through register assignments.
-    https://git.kernel.org/bpf/bpf-next/c/75748837b7e5
-  - [v2,bpf-next,2/4] bpf: Track spill/fill of bounded scalars.
-    https://git.kernel.org/bpf/bpf-next/c/5689d49b71ad
-  - [v2,bpf-next,3/4] selftests/bpf: Add profiler test
-    https://git.kernel.org/bpf/bpf-next/c/03d4d13fab3f
-  - [v2,bpf-next,4/4] selftests/bpf: Asm tests for the verifier regalloc tracking.
-    https://git.kernel.org/bpf/bpf-next/c/54fada41e8a1
+Applied, thanks!
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> The following are changes since commit 9faebeb2d80065926dfbc09cb73b1bb7779a89cd:
+>   Merge branch 'ethtool-allow-dumping-policies-to-user-space'
+> and are available in the git repository at:
+>   https://github.com/anguy11/next-queue.git 100GbE
 
-
+FWIW I applied the patches from the ML. Let me know if there is a
+reason to use PRs, otherwise I think the patches from the ML are
+easier for both of us - given those are the ones reviewed and build
+tested.
