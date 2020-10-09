@@ -2,80 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44122289035
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 19:44:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1756F289036
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 19:44:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387849AbgJIRoI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 13:44:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55500 "EHLO
+        id S1732196AbgJIRoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 13:44:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387763AbgJIRn7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 13:43:59 -0400
-Received: from mail-il1-x136.google.com (mail-il1-x136.google.com [IPv6:2607:f8b0:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3BC3C0613D2
-        for <netdev@vger.kernel.org>; Fri,  9 Oct 2020 10:43:58 -0700 (PDT)
-Received: by mail-il1-x136.google.com with SMTP id l16so9841911ilt.13
-        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 10:43:58 -0700 (PDT)
+        with ESMTP id S1732060AbgJIRoz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 13:44:55 -0400
+Received: from mail-vk1-xa44.google.com (mail-vk1-xa44.google.com [IPv6:2607:f8b0:4864:20::a44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6538C0613D2
+        for <netdev@vger.kernel.org>; Fri,  9 Oct 2020 10:44:53 -0700 (PDT)
+Received: by mail-vk1-xa44.google.com with SMTP id a16so2308150vke.3
+        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 10:44:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=z4UrjiMrfdMdrpdp4tb/6uQtpZju9u5fpvNjl2Tkkrw=;
-        b=ZYG0KTBZuw55E2J3YofR64IAvP+Qv90L8mfpRBz+u0sL/n7PGDvQzQPDVIfa8i1PMq
-         E2fng5W64eGjY8gw6zvqD8RqMxiv4wiZi+kWWAJXK3tyV6S16tziT7Aq6swRKu7e6eNc
-         o01NxuEWAU9/80xYIZHstYYaxrA7r/AwwL9f642//o7HU+TWLGSfY0jBdGFyKJS/yp9Y
-         DZsevrQEjZ4iqrAwQv4LnNU0qYd+SONMqYUlWnL8sOukjrjWZdBZ80VYPMrHAf7a9kZu
-         J8j9S65Pi53SaRYc4teAXdsiJGIFlW8kbHDE8jFQCnWFb+NWBHNURzl6M6jSekby4RLV
-         C3AA==
+        bh=fJ14Dg4VkmXZoFhbERfcdHivYMl1FC5I45TKaPl6f3I=;
+        b=HNpZIEJFAoMPpdsPI1Lx0toPZrOinPZS2LHIhLrvj++3dvjX2C0D/Ck03UbRg4M2z2
+         mggHxyw5HOBQwzMtyrr1S1W2Ez5ko0x5ByuRyUwsxNUmqRBEWQfH3EGBVoNMaWhdPl5H
+         ntJ7FISBy8rk/VAsdJyk2UWIOgQh8ZYl0aY3yK5VQ1WlrmGTTk92nMT8QWeBADMK+KeQ
+         /44hWvH++ZOjJs/lmlS5qO9mlPRF+ouZkIhm+wpHRPOo9mkMiifnv1bfzmDOjKJuGGy0
+         suNIXH2y1/UxZxBY7Gi5gxM9IgE7t93fgWI3Vu9vbnZ4rCxTFVtV1UYh0T65cuBOp4u8
+         pwwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=z4UrjiMrfdMdrpdp4tb/6uQtpZju9u5fpvNjl2Tkkrw=;
-        b=MQWJHi6+4vZpxW3LHA7MsY9j5rUrGVMOYp7tYFPUbFWraUZMbpEj/TAr06hsULHmn6
-         2gpSB0ca7IsFsoIpvqxwKX9lfrYS45id9J5dSluBogljt/w8b9r8QsSVAXtDXCbxQqbZ
-         E0EoK9cP5iK/XSs9HqrY350we72Xo1dmxb2zwhBdUFuPAZkM3yD3Hf8Uzi60hFDv0uDW
-         7XvPPQ23MfjgkmD0cGgdXBRDu/QzsN7VF87PqiwygoFcr3SFaxpG6bU1MZc4TqSRX8mB
-         MJEJd5n/4FozbFvyKBSClzVvI8YiiUXDSZRyc9fr9hlvDkv0kbIowNgX5MVqC62bNqAq
-         jUDA==
-X-Gm-Message-State: AOAM533ZxsSyRyx8w9wMDFeLIA5UGBmSrOv4lG7OXSiT5Y6D2C+21VVM
-        ks1X5lq6oPSkFcriXpFdW1pWic1f4fNhWXtpswU=
-X-Google-Smtp-Source: ABdhPJyxPrxTpNM35Qwj7n2HbzMrwZehQdRInFSjAWtmvcFGuwBf6cl7khgjsjwNPfr0lCK9XRrT3JMZSigu6oal3O4=
-X-Received: by 2002:a92:d28a:: with SMTP id p10mr11421938ilp.22.1602265438286;
- Fri, 09 Oct 2020 10:43:58 -0700 (PDT)
+        bh=fJ14Dg4VkmXZoFhbERfcdHivYMl1FC5I45TKaPl6f3I=;
+        b=C6lyRpAb9nLHhE4Aoz9CCFmRPJIFrq7TzdzbJS02xgsh57SXb1hG6DssG7OaqodyaO
+         j4eDzDSbbu+y4Rt6cImtG/UONJ+oignClHw/of7Mk08jfQzx1OCnfsyQ7wsBZNRDgQYs
+         49P2BpnKNe2tGif/Db3/7SfWO5yViXErGauZgFa/gy0bigCayv/4lcoTXdOs0tNovOGs
+         EuFH31VGXT0dlI9kuOLb6CFO+bywifIQhb6Mn32Um5WUpJXwDfgr5FPHRK6tBlzAuZHW
+         Ydx7FJrsOQLZGTUkL9850JJ+LM5EPHriEOa0Krw4bA3xnqaadopCxbc9Gc7G5PMSAQRk
+         1DVg==
+X-Gm-Message-State: AOAM533oKIKdEBgTp/EadxbzwZuS9zdEt+UT2ihJuxtffXd/H4I9mGsa
+        5JQQXMUoZp+SHO1Bcy7k/bSNP+KGg7g=
+X-Google-Smtp-Source: ABdhPJytI4kofwXJNecTsJd5jcVUbvsHLnD4ZHaBuZo2h8gmJIqxP0Hz2KGsVhk56XGK7ujXO5G+dg==
+X-Received: by 2002:a1f:8c87:: with SMTP id o129mr8477006vkd.2.1602265491981;
+        Fri, 09 Oct 2020 10:44:51 -0700 (PDT)
+Received: from mail-vk1-f173.google.com (mail-vk1-f173.google.com. [209.85.221.173])
+        by smtp.gmail.com with ESMTPSA id r17sm1196471vsf.25.2020.10.09.10.44.50
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Oct 2020 10:44:51 -0700 (PDT)
+Received: by mail-vk1-f173.google.com with SMTP id l23so1250935vkm.1
+        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 10:44:50 -0700 (PDT)
+X-Received: by 2002:a1f:ae85:: with SMTP id x127mr5175020vke.8.1602265489907;
+ Fri, 09 Oct 2020 10:44:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <20201008012154.11149-1-xiyou.wangcong@gmail.com>
- <CA+FuTSeMYFh3tY9cJN6h02E+r3BST=w74+pD=zraLXsmJTLZXA@mail.gmail.com>
- <CAM_iQpWCR84sD6dZBforgt4cg-Jya91D6EynDo2y2sC7vi-vMg@mail.gmail.com>
- <CA+FuTSdKa1Q36ONbsGOMqXDCUiiDNsA6rkqyrzB+eXJj=MyRKA@mail.gmail.com>
- <CAJht_ENnmYRh-RomBodJE0HoFzaLQhD+DKEu2WWST+B43JxWcQ@mail.gmail.com>
- <CA+FuTSdWYDs5u+3VzpTA1-Xs1OiVzv8QiKGTH4GUYrvXFfGT_A@mail.gmail.com>
- <CAJht_ENMFY_HwaJDjvxZbQgcDv7btC+bU6gzdjyddY-JS=a6Lg@mail.gmail.com>
- <CA+FuTScizeZC-ndVvXj4VyArth2gnxoh3kTSoe5awGoiFXtkBA@mail.gmail.com>
- <CAJht_ENmrPbhfPaD5kkiDVWQsvA_LRndPiCMrS9zdje6sVPk=g@mail.gmail.com>
- <CA+FuTSfhDgn-Qej4HOY-kYWSy8pUsnafMk=ozwtYGfS4W2DNuA@mail.gmail.com>
- <CAJht_ENxoAyUOoiHSbFXEZ6Jf2xqfOmYfQ6Sh-hfmTUk-kTrfQ@mail.gmail.com> <CAJht_EOMQRKWfwhfqwXB3RYA1h463q43ycNjJmaGZm6RS65QGA@mail.gmail.com>
-In-Reply-To: <CAJht_EOMQRKWfwhfqwXB3RYA1h463q43ycNjJmaGZm6RS65QGA@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri, 9 Oct 2020 10:43:47 -0700
-Message-ID: <CAM_iQpWRftQkOfgfMACNR_5YZxvzLJH1aMtmZNj7nJH_Wu-NRw@mail.gmail.com>
-Subject: Re: [Patch net] ip_gre: set dev->hard_header_len properly
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+References: <20201007231050.1438704-1-anthony.l.nguyen@intel.com> <20201007231050.1438704-4-anthony.l.nguyen@intel.com>
+In-Reply-To: <20201007231050.1438704-4-anthony.l.nguyen@intel.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 9 Oct 2020 13:44:13 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSev=N4jDD3jT+JcB1dREkLK12jSi_R6wXOeRsx_1M_dmg@mail.gmail.com>
+Message-ID: <CA+FuTSev=N4jDD3jT+JcB1dREkLK12jSi_R6wXOeRsx_1M_dmg@mail.gmail.com>
+Subject: Re: [net-next 3/3] e1000: remove unused and incorrect code
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Network Development <netdev@vger.kernel.org>,
-        syzbot <syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com>,
-        William Tu <u9012063@gmail.com>
+        nhorman@redhat.com, sassmann@redhat.com,
+        Aaron Brown <aaron.f.brown@intel.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 8, 2020 at 4:40 PM Xie He <xie.he.0141@gmail.com> wrote:
+On Wed, Oct 7, 2020 at 7:11 PM Tony Nguyen <anthony.l.nguyen@intel.com> wrote:
 >
-> I found another possible issue. Shouldn't we update hard_header_len
-> every time t->tun_hlen and t->hlen are updated in ipgre_link_update?
+> From: Jesse Brandeburg <jesse.brandeburg@intel.com>
+>
+> The e1000_clear_vfta function was triggering a warning in kbuild-bot
+> testing. It's actually a bug but has no functional impact.
+>
+> drivers/net/ethernet/intel/e1000/e1000_hw.c:4415:58: warning: Same expression in both branches of ternary operator. [duplicateExpressionTernary]
+>
+> Fix this warning by removing the offending code and simplifying
+> the routine to do exactly what it did before, no functional
+> change.
+>
+> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> Tested-by: Aaron Brown <aaron.f.brown@intel.com>
+> Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 
-Good catch. It should be updated there like ->needed_headroom.
-I will update my patch.
+Acked-by: Willem de Bruijn <willemb@google.com>
 
-Thanks.
+(for netdrv)
