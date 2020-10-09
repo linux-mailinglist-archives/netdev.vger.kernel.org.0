@@ -2,75 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8405B289724
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:02:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D713E2897CC
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:05:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730513AbgJIUCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 16:02:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48516 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388887AbgJIUAu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 16:00:50 -0400
-Received: from mail-qv1-xf41.google.com (mail-qv1-xf41.google.com [IPv6:2607:f8b0:4864:20::f41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94F2C0613D9
-        for <netdev@vger.kernel.org>; Fri,  9 Oct 2020 13:00:32 -0700 (PDT)
-Received: by mail-qv1-xf41.google.com with SMTP id bl9so5337280qvb.10
-        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 13:00:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=arista.com; s=googlenew;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2qC/FqQbzG5/8jBosr6Y+NLl7/pG/587C+U8/pqT5iw=;
-        b=RRUTeULREpVOpNCQWXgAIZtaaHU8E5Qq14J1066Xjyg4JyW+HUwF9cBse1Bm1R4yvF
-         odnAPK0J/+XH5En6zvKFETGOP1FMbcrshZcR4wRbd0JMtk2CJfn9aGg5UNteTQysd1FJ
-         S3euxOGxf2xPj1vwUUU2L+IztRLTks0tkt1bWKWHHOCklQliwV5W67dfYAWKVunbtxfi
-         j28syp4AXrV/3kw8gQNOTUgNLA6WjIhFU6TNExHEV6kET3+rFz5mYpN+8kd7pWnBwVoS
-         zMXfZjguwobHwKpMm5I/i8fOhAeRaU4YfcBNFouYTO3atevtpgWq6lDkTu7XR39ArfeS
-         YDWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2qC/FqQbzG5/8jBosr6Y+NLl7/pG/587C+U8/pqT5iw=;
-        b=sdva1RBUvIPnC7unOvsDgSraKt57Da74eSVarN3n5xRcUvXm7lqAB/TReBHQ33O7eb
-         xetz4EJLWqnyqcqYukVm/XVDXyB76AxKn98hLPNU0i6jnWXt2sq14HsNJk8C6k8vXSGd
-         JeT+8oCZVczjP9Z1BGnWhjONb1PU6sPm/l7n8faFKzHbQ6jlPwx0a7wc8gI+GyIv0O+q
-         z39TL1AbI5mTvFXTgr3vFSPqhAjRjZC5eZmJiPWABdC+A3CL7vPlspFiqs+EJbdR5P19
-         21c1AQwEhUc4ujoBYNjmqX+fk4AiJueZTjrrc/YUtkdZ5gOuDiN37eKlGegYeohMwoyH
-         SScQ==
-X-Gm-Message-State: AOAM532T9S6uv0bjs0Iewp5yElAyP8uoFUXPDetshzRCroWVfgXG1fY9
-        rhZHwfOLt4MOZ9iv8n5XE7DcZ/CyhKC8rqXVhL19Ug==
-X-Google-Smtp-Source: ABdhPJyt2PbWXX+6xs5+udRRLnk5TTa8q6pvQu2pHMe06wvrZ9hObKg6j7VG+fDE+ZYoNUjjCw7tnImmctdGVpBBmmQ=
-X-Received: by 2002:a0c:9a4e:: with SMTP id q14mr14190214qvd.22.1602273632019;
- Fri, 09 Oct 2020 13:00:32 -0700 (PDT)
+        id S1732761AbgJIUFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 16:05:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42930 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390349AbgJIUEp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Oct 2020 16:04:45 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6F83C2225B;
+        Fri,  9 Oct 2020 20:04:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602273885;
+        bh=P9rIsaGo8r5GHy8F04hfa1tm5nUMHfgAzkrVpuFy3o0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fUUBTTR69gVck+KGJ4c+sf3iOjYxWQlVK7eYzFfUzqHDDxCWOPj2t34//gpCwuiZa
+         lqUcXouU2jmbNukBAT8lQxZvIebut/d75Su6nnZgmYd2b+0uXvo/jxCFSV2L680bSl
+         wpGqXKbq0386/8hM4jhejuskIr0ws5ofKcL9jhco=
+Date:   Fri, 9 Oct 2020 13:04:42 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Christian Eggers <ceggers@arri.de>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        George McCollister <george.mccollister@gmail.com>
+Subject: Re: [net v3] net: dsa: microchip: fix race condition
+Message-ID: <20201009130442.7f558756@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201007085523.11757-1-ceggers@arri.de>
+References: <20201007085523.11757-1-ceggers@arri.de>
 MIME-Version: 1.0
-References: <20201007193252.7009D95C169C@us180.sjc.aristanetworks.com>
- <CA+HUmGhBxBHU85oFfvoAyP=hG17DG2kgO67eawk1aXmSjehOWQ@mail.gmail.com>
- <alpine.DEB.2.23.453.2010090838430.19307@blackhole.kfki.hu>
- <20201009110323.GC5723@breakpoint.cc> <alpine.DEB.2.23.453.2010092035550.19307@blackhole.kfki.hu>
- <20201009185552.GF5723@breakpoint.cc> <alpine.DEB.2.23.453.2010092132220.19307@blackhole.kfki.hu>
-In-Reply-To: <alpine.DEB.2.23.453.2010092132220.19307@blackhole.kfki.hu>
-From:   Francesco Ruggeri <fruggeri@arista.com>
-Date:   Fri, 9 Oct 2020 13:00:21 -0700
-Message-ID: <CA+HUmGidgRqPmgCH=g7+H9g+TZAyh1-2y4qfzfZB3DYtHtjdKA@mail.gmail.com>
-Subject: Re: [PATCH nf v2] netfilter: conntrack: connection timeout after re-register
-To:     Jozsef Kadlecsik <kadlec@netfilter.org>
-Cc:     Florian Westphal <fw@strlen.de>,
-        open list <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, coreteam@netfilter.org,
-        netfilter-devel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 9, 2020 at 12:49 PM Jozsef Kadlecsik <kadlec@netfilter.org> wrote:
-> What is the rationale behind "remove the conntrack hooks when there are no
-> rule left referring to conntrack"? Performance optimization?
+On Wed, 7 Oct 2020 10:55:23 +0200 Christian Eggers wrote:
+> Between queuing the delayed work and finishing the setup of the dsa
+> ports, the process may sleep in request_module() (via
+> phy_device_create()) and the queued work may be executed prior to the
+> switch net devices being registered. In ksz_mib_read_work(), a NULL
+> dereference will happen within netof_carrier_ok(dp->slave).
+> 
+> Not queuing the delayed work in ksz_init_mib_timer() makes things even
+> worse because the work will now be queued for immediate execution
+> (instead of 2000 ms) in ksz_mac_link_down() via
+> dsa_port_link_register_of().
+> 
+> Call tree:
+> ksz9477_i2c_probe()
+> \--ksz9477_switch_register()
+>    \--ksz_switch_register()
+>       +--dsa_register_switch()
+>       |  \--dsa_switch_probe()
+>       |     \--dsa_tree_setup()
+>       |        \--dsa_tree_setup_switches()
+>       |           +--dsa_switch_setup()
+>       |           |  +--ksz9477_setup()
+>       |           |  |  \--ksz_init_mib_timer()
+>       |           |  |     |--/* Start the timer 2 seconds later. */
+>       |           |  |     \--schedule_delayed_work(&dev->mib_read, msecs_to_jiffies(2000));
+>       |           |  \--__mdiobus_register()
+>       |           |     \--mdiobus_scan()
+>       |           |        \--get_phy_device()
+>       |           |           +--get_phy_id()
+>       |           |           \--phy_device_create()
+>       |           |              |--/* sleeping, ksz_mib_read_work() can be called meanwhile */
+>       |           |              \--request_module()
+>       |           |
+>       |           \--dsa_port_setup()
+>       |              +--/* Called for non-CPU ports */
+>       |              +--dsa_slave_create()
+>       |              |  +--/* Too late, ksz_mib_read_work() may be called beforehand */
+>       |              |  \--port->slave = ...
+>       |             ...
+>       |              +--Called for CPU port */
+>       |              \--dsa_port_link_register_of()
+>       |                 \--ksz_mac_link_down()
+>       |                    +--/* mib_read must be initialized here */
+>       |                    +--/* work is already scheduled, so it will be executed after 2000 ms */
+>       |                    \--schedule_delayed_work(&dev->mib_read, 0);
+>       \-- /* here port->slave is setup properly, scheduling the delayed work should be safe */
 
-That seems to be the case. See commit 4d3a57f23dec ("netfilter: conntrack:
-do not enable connection tracking unless needed").
+Thanks for this graph, very informative!
 
-Francesco
+> Solution:
+> 1. Do not queue (only initialize) delayed work in ksz_init_mib_timer().
+> 2. Only queue delayed work in ksz_mac_link_down() if init is completed.
+> 3. Queue work once in ksz_switch_register(), after dsa_register_switch()
+> has completed.
+> 
+> Fixes: 7c6ff470aa86 ("net: dsa: microchip: add MIB counter reading support")
+> Signed-off-by: Christian Eggers <ceggers@arri.de>
+
+You should add Florian's and Vladimir's review tags here, under your
+sign-off.
+
+> @@ -143,7 +137,9 @@ void ksz_mac_link_down(struct dsa_switch *ds, int port, unsigned int mode,
+>  
+>  	/* Read all MIB counters when the link is going down. */
+>  	p->read = true;
+> -	schedule_delayed_work(&dev->mib_read, 0);
+> +	/* timer started */
+> +	if (dev->mib_read_interval)
+> +		schedule_delayed_work(&dev->mib_read, 0);
+
+Your patch seems fine, but I wonder what was the original author trying
+to achieve with this schedule_delayed_work(..., 0) call?
+
+The work is supposed to be scheduled at this point, right?
+In that case another call to schedule_delayed_work() is
+simply ignored. 
+
+Judging by the comment it seems like someone was under the impression
+this will reschedule the work to be run immediately, which is not the
+case.
+
+In fact looks like a separate bug introduced in:
+
+469b390e1ba3 ("net: dsa: microchip: use delayed_work instead of timer + work")
+
+>  }
+>  EXPORT_SYMBOL_GPL(ksz_mac_link_down);
+>  
