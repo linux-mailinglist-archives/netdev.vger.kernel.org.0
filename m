@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6C392896AC
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:01:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF72E289628
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 21:59:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390749AbgJIUBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 16:01:17 -0400
-Received: from mga18.intel.com ([134.134.136.126]:42454 "EHLO mga18.intel.com"
+        id S2390556AbgJIT7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 15:59:34 -0400
+Received: from mga01.intel.com ([192.55.52.88]:3593 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389721AbgJITxQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Oct 2020 15:53:16 -0400
-IronPort-SDR: /0PxmQQKh9INXhqYDaA/qd0UIC/Ocy9AjDBS2exom/XczYR4EeFFQ0eDp921T8r9Qs7rCQoehA
- KURfPAOckKjQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9769"; a="153363728"
+        id S2391078AbgJITxW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Oct 2020 15:53:22 -0400
+IronPort-SDR: TuW6f/eUiPOWBVUWPJSST+0egNgNIn2HyrjOLitLNnO3XIXYcZZ7k6u/vtD7EeyPkkCEzhJArJ
+ zTM7g1ijBJ7w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9769"; a="182976382"
 X-IronPort-AV: E=Sophos;i="5.77,355,1596524400"; 
-   d="scan'208";a="153363728"
+   d="scan'208";a="182976382"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:52:59 -0700
-IronPort-SDR: Wf0Bi1Gs1P3ZgILN9Dk8+ODZhbqXc7J3tJZabe+2AUx5fg/nQYQB2E9E/9NHNQgBhyfVAmIu+q
- D7ag8zQ3enrg==
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:53:02 -0700
+IronPort-SDR: bH2kRxXxeY8kuFBN5R8RneSpQbEQLW5eawptefbcIpm8xkU067aWcbaReXxx6/6TDXgDaxiIQ5
+ 8lenxDucas2g==
 X-IronPort-AV: E=Sophos;i="5.77,355,1596524400"; 
-   d="scan'208";a="462300964"
+   d="scan'208";a="519847131"
 Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:52:58 -0700
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:53:02 -0700
 From:   ira.weiny@intel.com
 To:     Andrew Morton <akpm@linux-foundation.org>,
         Thomas Gleixner <tglx@linutronix.de>,
@@ -58,9 +58,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.com>,
         drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
         xen-devel@lists.xenproject.org, linux-cachefs@redhat.com,
         samba-technical@lists.samba.org, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH RFC PKS/PMEM 36/58] fs/ext2: Use ext2_put_page
-Date:   Fri,  9 Oct 2020 12:50:11 -0700
-Message-Id: <20201009195033.3208459-37-ira.weiny@intel.com>
+Subject: [PATCH RFC PKS/PMEM 37/58] fs/ext2: Utilize new kmap_thread()
+Date:   Fri,  9 Oct 2020 12:50:12 -0700
+Message-Id: <20201009195033.3208459-38-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.28.0.rc0.12.gb6a658bd00c9
 In-Reply-To: <20201009195033.3208459-1-ira.weiny@intel.com>
 References: <20201009195033.3208459-1-ira.weiny@intel.com>
@@ -72,97 +72,42 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-There are 3 places in namei.c where the equivalent of ext2_put_page() is
-open coded.  We want to use k[un]map_thread() instead of k[un]map() in
-ext2_[get|put]_page().
-
-Move ext2_put_page() to ext2.h and use it in namei.c in prep for
-converting the k[un]map() code.
+These kmap() calls are localized to a single thread.  To avoid the over
+head of global PKRS update use the new kmap_thread() call instead.
 
 Cc: Jan Kara <jack@suse.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 ---
- fs/ext2/dir.c   |  6 ------
- fs/ext2/ext2.h  |  8 ++++++++
- fs/ext2/namei.c | 15 +++++----------
- 3 files changed, 13 insertions(+), 16 deletions(-)
+ fs/ext2/dir.c  | 2 +-
+ fs/ext2/ext2.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/fs/ext2/dir.c b/fs/ext2/dir.c
-index 70355ab6740e..f3194bf20733 100644
+index f3194bf20733..abe97ba458c8 100644
 --- a/fs/ext2/dir.c
 +++ b/fs/ext2/dir.c
-@@ -66,12 +66,6 @@ static inline unsigned ext2_chunk_size(struct inode *inode)
- 	return inode->i_sb->s_blocksize;
- }
- 
--static inline void ext2_put_page(struct page *page)
--{
--	kunmap(page);
--	put_page(page);
--}
--
- /*
-  * Return the offset into page `page_nr' of the last valid
-  * byte in that page, plus one.
+@@ -196,7 +196,7 @@ static struct page * ext2_get_page(struct inode *dir, unsigned long n,
+ 	struct address_space *mapping = dir->i_mapping;
+ 	struct page *page = read_mapping_page(mapping, n, NULL);
+ 	if (!IS_ERR(page)) {
+-		kmap(page);
++		kmap_thread(page);
+ 		if (unlikely(!PageChecked(page))) {
+ 			if (PageError(page) || !ext2_check_page(page, quiet))
+ 				goto fail;
 diff --git a/fs/ext2/ext2.h b/fs/ext2/ext2.h
-index 5136b7289e8d..021ec8b42ac3 100644
+index 021ec8b42ac3..9bcb6714c255 100644
 --- a/fs/ext2/ext2.h
 +++ b/fs/ext2/ext2.h
-@@ -16,6 +16,8 @@
- #include <linux/blockgroup_lock.h>
- #include <linux/percpu_counter.h>
- #include <linux/rbtree.h>
-+#include <linux/mm.h>
-+#include <linux/highmem.h>
- 
- /* XXX Here for now... not interested in restructing headers JUST now */
- 
-@@ -745,6 +747,12 @@ extern int ext2_delete_entry (struct ext2_dir_entry_2 *, struct page *);
- extern int ext2_empty_dir (struct inode *);
- extern struct ext2_dir_entry_2 * ext2_dotdot (struct inode *, struct page **);
+@@ -749,7 +749,7 @@ extern struct ext2_dir_entry_2 * ext2_dotdot (struct inode *, struct page **);
  extern void ext2_set_link(struct inode *, struct ext2_dir_entry_2 *, struct page *, struct inode *, int);
-+static inline void ext2_put_page(struct page *page)
-+{
-+	kunmap(page);
-+	put_page(page);
-+}
-+
- 
- /* ialloc.c */
- extern struct inode * ext2_new_inode (struct inode *, umode_t, const struct qstr *);
-diff --git a/fs/ext2/namei.c b/fs/ext2/namei.c
-index 5bf2c145643b..ea980f1e2e99 100644
---- a/fs/ext2/namei.c
-+++ b/fs/ext2/namei.c
-@@ -389,23 +389,18 @@ static int ext2_rename (struct inode * old_dir, struct dentry * old_dentry,
- 	if (dir_de) {
- 		if (old_dir != new_dir)
- 			ext2_set_link(old_inode, dir_de, dir_page, new_dir, 0);
--		else {
--			kunmap(dir_page);
--			put_page(dir_page);
--		}
-+		else
-+			ext2_put_page(dir_page);
- 		inode_dec_link_count(old_dir);
- 	}
- 	return 0;
- 
- 
- out_dir:
--	if (dir_de) {
--		kunmap(dir_page);
--		put_page(dir_page);
--	}
-+	if (dir_de)
-+		ext2_put_page(dir_page);
- out_old:
--	kunmap(old_page);
--	put_page(old_page);
-+	ext2_put_page(old_page);
- out:
- 	return err;
+ static inline void ext2_put_page(struct page *page)
+ {
+-	kunmap(page);
++	kunmap_thread(page);
+ 	put_page(page);
  }
+ 
 -- 
 2.28.0.rc0.12.gb6a658bd00c9
 
