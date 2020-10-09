@@ -2,69 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 55181288776
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 12:58:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C659E288786
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 13:03:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387797AbgJIK6N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 06:58:13 -0400
-Received: from mail-io1-f79.google.com ([209.85.166.79]:41009 "EHLO
-        mail-io1-f79.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731977AbgJIK6K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 06:58:10 -0400
-Received: by mail-io1-f79.google.com with SMTP id j21so5836884iog.8
-        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 03:58:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=dWQ9LWp4cwlT/llvEP3Lt5Hhk07N37vidngYWiMcjaQ=;
-        b=pYuDK+SCbSy7giGdPQ51ACofKv1eNiFtjrb+BSTLObjfb9cIPSO0MPnyxqwwBBsKnb
-         b+rY3kcCnW1Hi39zyb9UfCiEWTilUMji0AuK9K/htyTt6BzPYLKV+upM94DxXeNhWvX8
-         8Bior6bixjjItxfxuzUMcK9o/QOn95qg3EjUmG3rSDo/H5Oxm/7dZreh51GMJsDD4gQ0
-         xVQrxZdOsdwRySgoyJj0HGV9cBo+XeLKfbyvamdyuSZFLyK/32yTKgrPfg4j8ZllicKv
-         BvfMrYF16+AUt629xXnO6MjhXWjUts0c32ObyB7SElYiS86GU62OEgBKxOl6E0zZ12kA
-         6rSg==
-X-Gm-Message-State: AOAM530WRSZ4sB3aNRiiN46iCB5wlS6UzFoamosy+6JxFaxdcvRp7OsI
-        MwNru4TkPz+UJ/cwvDGWYH5gLnoRooFJ1MsinTnn6sYGT786
-X-Google-Smtp-Source: ABdhPJwCwWKJ+sFvYCbPhRDxOldxSCciCiHFyzd8zMqs23MB6HP/PEq0ZYaKJ5wgIoWHqXL1Yk2fp+TcOnltEHf5h1bmtU5IOAE1
+        id S2387901AbgJILDc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 07:03:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49716 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732761AbgJILDb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 07:03:31 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50BC9C0613D2;
+        Fri,  9 Oct 2020 04:03:31 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1kQqBH-0006lw-QK; Fri, 09 Oct 2020 13:03:23 +0200
+Date:   Fri, 9 Oct 2020 13:03:23 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Jozsef Kadlecsik <kadlec@netfilter.org>
+Cc:     Francesco Ruggeri <fruggeri@arista.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, coreteam@netfilter.org,
+        netfilter-devel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>, fw@strlen.org,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: Re: [PATCH nf v2] netfilter: conntrack: connection timeout after
+ re-register
+Message-ID: <20201009110323.GC5723@breakpoint.cc>
+References: <20201007193252.7009D95C169C@us180.sjc.aristanetworks.com>
+ <CA+HUmGhBxBHU85oFfvoAyP=hG17DG2kgO67eawk1aXmSjehOWQ@mail.gmail.com>
+ <alpine.DEB.2.23.453.2010090838430.19307@blackhole.kfki.hu>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:927:: with SMTP id o7mr9695171ilt.275.1602241089330;
- Fri, 09 Oct 2020 03:58:09 -0700 (PDT)
-Date:   Fri, 09 Oct 2020 03:58:09 -0700
-In-Reply-To: <000000000000cbef4a05a8ffc4ef@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000f9638c05b13ad2a1@google.com>
-Subject: Re: BUG: using smp_processor_id() in preemptible code in tipc_crypto_xmit
-From:   syzbot <syzbot+263f8c0d007dc09b2dda@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jmaloy@redhat.com, jon.maloy@ericsson.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        tipc-discussion@lists.sourceforge.net, tuong.t.lien@dektech.com.au,
-        ying.xue@windreiver.com, ying.xue@windriver.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.23.453.2010090838430.19307@blackhole.kfki.hu>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
+Jozsef Kadlecsik <kadlec@netfilter.org> wrote:
+> > Any comments?
+> > Here is a simple reproducer. The idea is to show that keepalive packets 
+> > in an idle tcp connection will be dropped (and the connection will time 
+> > out) if conntrack hooks are de-registered and then re-registered. The 
+> > reproducer has two files. client_server.py creates both ends of a tcp 
+> > connection, bounces a few packets back and forth, and then blocks on a 
+> > recv on the client side. The client's keepalive is configured to time 
+> > out in 20 seconds. This connection should not time out. test is a bash 
+> > script that creates a net namespace where it sets iptables rules for the 
+> > connection, starts client_server.py, and then clears and restores the 
+> > iptables rules (which causes conntrack hooks to be de-registered and 
+> > re-registered).
+> 
+> In my opinion an iptables restore should not cause conntrack hooks to be 
+> de-registered and re-registered, because important TCP initialization 
+> parameters cannot be "restored" later from the packets. Therefore the 
+> proper fix would be to prevent it to happen. Otherwise your patch looks OK 
+> to handle the case when conntrack is intentionally restarted.
 
-commit bb8872a1e6bc911869a729240781076ed950764b
-Author: Tuong Lien <tuong.t.lien@dektech.com.au>
-Date:   Sat Aug 29 19:37:55 2020 +0000
+The repro clears all rules, waits 4 seconds, then restores the ruleset.
+using iptables-restore < FOO; sleep 4; iptables-restore < FOO will
+not result in any unregister ops.
 
-    tipc: fix using smp_processor_id() in preemptible
+We could make kernel defer unregister via some work queue but i don't
+see what this would help/accomplish (and its questionable of how long it
+should wait).
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=100f5bb8500000
-start commit:   6a9dc5fd lib: Revert use of fallthrough pseudo-keyword in ..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=978db74cb30aa994
-dashboard link: https://syzkaller.appspot.com/bug?extid=263f8c0d007dc09b2dda
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=131a8c96900000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1747c605900000
+We could disallow unregister, but that seems silly (forces reboot...).
 
-If the result looks correct, please mark the issue as fixed by replying with:
-
-#syz fix: tipc: fix using smp_processor_id() in preemptible
-
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+I think the patch is fine.
