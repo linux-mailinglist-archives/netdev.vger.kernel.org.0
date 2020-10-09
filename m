@@ -2,127 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E57F288100
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 06:05:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6554D288102
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 06:06:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726455AbgJIEFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 00:05:46 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:25215 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726367AbgJIEFp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 00:05:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1602216343;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=YKXcX1Zdg1COG+JHgP7kxCkfawMp8ssx2TcF3Bvm0fI=;
-        b=TTwroaamE2V/V7AqPCfK5KlBszS5iOb37Dk+/jhbbEf5U0a7coi4awOVa4g1Xp127gkhny
-        jrYAOytxgcmThliTRUIhVfRph9aS/j2bhux9QPPYrKn8d5L3+nN+I1cZleQca3FR3OqfOI
-        JJ65iNFwm1VjFwr2e6y2Hip4nYj6Oio=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-294-MQnK_CGjM6qCMDUK3oEmaQ-1; Fri, 09 Oct 2020 00:05:41 -0400
-X-MC-Unique: MQnK_CGjM6qCMDUK3oEmaQ-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 06F5280B70A;
-        Fri,  9 Oct 2020 04:05:40 +0000 (UTC)
-Received: from [10.72.13.133] (ovpn-13-133.pek2.redhat.com [10.72.13.133])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8BB42100164C;
-        Fri,  9 Oct 2020 04:05:20 +0000 (UTC)
-Subject: Re: [PATCH v2] vringh: fix __vringh_iov() when riov and wiov are
- different
-To:     Stefano Garzarella <sgarzare@redhat.com>, mst@redhat.com
-Cc:     kvm@vger.kernel.org, netdev@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Rusty Russell <rusty@rustcorp.com.au>
-References: <20201008204256.162292-1-sgarzare@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <8d84abcb-2f2e-8f24-039f-447e8686b878@redhat.com>
-Date:   Fri, 9 Oct 2020 12:05:15 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1725995AbgJIEF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 00:05:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41702 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726365AbgJIEFt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 00:05:49 -0400
+Received: from mail-ot1-x341.google.com (mail-ot1-x341.google.com [IPv6:2607:f8b0:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8902C0613D2;
+        Thu,  8 Oct 2020 21:05:47 -0700 (PDT)
+Received: by mail-ot1-x341.google.com with SMTP id f37so7762094otf.12;
+        Thu, 08 Oct 2020 21:05:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=rKmOpxLKn+fUEFJJdu19a0RxfbC1QrKPlHniKalLJM8=;
+        b=ZKhI1VxOZ8UmgnlvJBCR2ft7QBPGwgy+q/1ZxtsubVfT1yRuzeOonRm6Zf/K2SDOuk
+         RpaQ6jgH/WOo2Dd+4Wnh96eGyr4GxEKOGJ5NMflTyQCNbzv6pjv2kZXkhPSi43v7zbm+
+         LjsPFDBxlRqXVmlLOr+vrP2Alvpv3ZCAaoaW3lEiirvy2J79CIcuI/TgO8VxfCUQH39P
+         WB9eKZcuYD9kJjLlu2sTUmU6FEDC7lLijcLZ+KvBvW7Z5S4KSjbEGCoEAc/mBF/hAJxc
+         7cJ25Xz1+augKZ+j0zYxuQfi8Ls4ov5ifAcmWkffoGjD8cCNAL1pT4uLGUAzuXss7rVK
+         rUgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=rKmOpxLKn+fUEFJJdu19a0RxfbC1QrKPlHniKalLJM8=;
+        b=F8jq5P6z+gVsD0kIwgs7Ay0C+zoUNrsW2oTuKko/i0URPfkNDpUATJ7Znt791R4+55
+         Ya4gSllncWXNOjHb6hlfu7r5B1zAlUl8lcTl/THOKrd6zYgFfYHJT+8ctKp1/nfrSuAy
+         7KPgePRQfchJWQiFgaeuTWUIReuF1UwvxmU9hhG2igcCNxvIA/frg0Bl0z7lCtNFMOCR
+         qhcrZlAIhFMAErfXsJUEfatEBYlE78oKRbxxgH1Wd+MCfd/0D0DH63bvqqxPzzJBSvvR
+         Nl7RvUbpqeUFV/4J5obmqa3MUsqKjdjcTufwFOxLnylDhe9oRM9JBZ/3MI5ckfBUtHwA
+         +gng==
+X-Gm-Message-State: AOAM530VPJbxta//mi9W3P49QV8zIAQR8IHMuXdDfdlGo9baikgKUKuv
+        DiOwtLp674zq3D7njk2pbXTcNkyKVgE=
+X-Google-Smtp-Source: ABdhPJx498pAuqlafcgDN61i5NNqbTLZF9PDK9gfPDOFzF1Vy58xzhNqzwIOZwdE59jVbRdWRFZ7kg==
+X-Received: by 2002:a9d:3aa:: with SMTP id f39mr7757117otf.29.1602216347227;
+        Thu, 08 Oct 2020 21:05:47 -0700 (PDT)
+Received: from Davids-MBP.attlocal.net ([2600:1700:3eca:200:c514:e4f4:762:f7df])
+        by smtp.googlemail.com with ESMTPSA id y4sm319458oou.38.2020.10.08.21.05.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Oct 2020 21:05:46 -0700 (PDT)
+Subject: Re: [PATCH bpf-next V3 2/6] bpf: bpf_fib_lookup return MTU value as
+ output when looked up
+To:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com
+References: <160216609656.882446.16642490462568561112.stgit@firesoul>
+ <160216614748.882446.6805410687451779968.stgit@firesoul>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <d06ee8a0-79f1-d9c7-ba16-e25f97736c0a@gmail.com>
+Date:   Thu, 8 Oct 2020 21:05:44 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.1
 MIME-Version: 1.0
-In-Reply-To: <20201008204256.162292-1-sgarzare@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <160216614748.882446.6805410687451779968.stgit@firesoul>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2020/10/9 上午4:42, Stefano Garzarella wrote:
-> If riov and wiov are both defined and they point to different
-> objects, only riov is initialized. If the wiov is not initialized
-> by the caller, the function fails returning -EINVAL and printing
-> "Readable desc 0x... after writable" error message.
->
-> This issue happens when descriptors have both readable and writable
-> buffers (eg. virtio-blk devices has virtio_blk_outhdr in the readable
-> buffer and status as last byte of writable buffer) and we call
-> __vringh_iov() to get both type of buffers in two different iovecs.
->
-> Let's replace the 'else if' clause with 'if' to initialize both
-> riov and wiov if they are not NULL.
->
-> As checkpatch pointed out, we also avoid crashing the kernel
-> when riov and wiov are both NULL, replacing BUG() with WARN_ON()
-> and returning -EINVAL.
-
-
-It looks like I met the exact similar issue when developing ctrl vq 
-support (which requires both READ and WRITE descriptor).
-
-While I was trying to fix the issue I found the following comment:
-
-  * Note that you may need to clean up riov and wiov, even on error!
-  */
-int vringh_getdesc_iotlb(struct vringh *vrh,
-
-I saw some driver call vringh_kiov_cleanup().
-
-So I just follow to use that.
-
-I'm not quite sure which one is better.
-
-Thanks
-
-
->
-> Fixes: f87d0fbb5798 ("vringh: host-side implementation of virtio rings.")
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
+On 10/8/20 7:09 AM, Jesper Dangaard Brouer wrote:
+> The BPF-helpers for FIB lookup (bpf_xdp_fib_lookup and bpf_skb_fib_lookup)
+> can perform MTU check and return BPF_FIB_LKUP_RET_FRAG_NEEDED.  The BPF-prog
+> don't know the MTU value that caused this rejection.
+> 
+> If the BPF-prog wants to implement PMTU (Path MTU Discovery) (rfc1191) it
+> need to know this MTU value for the ICMP packet.
+> 
+> Patch change lookup and result struct bpf_fib_lookup, to contain this MTU
+> value as output via a union with 'tot_len' as this is the value used for
+> the MTU lookup.
+> 
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 > ---
->   drivers/vhost/vringh.c | 9 +++++----
->   1 file changed, 5 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-> index e059a9a47cdf..8bd8b403f087 100644
-> --- a/drivers/vhost/vringh.c
-> +++ b/drivers/vhost/vringh.c
-> @@ -284,13 +284,14 @@ __vringh_iov(struct vringh *vrh, u16 i,
->   	desc_max = vrh->vring.num;
->   	up_next = -1;
->   
-> +	/* You must want something! */
-> +	if (WARN_ON(!riov && !wiov))
-> +		return -EINVAL;
-> +
->   	if (riov)
->   		riov->i = riov->used = 0;
-> -	else if (wiov)
-> +	if (wiov)
->   		wiov->i = wiov->used = 0;
-> -	else
-> -		/* You must want something! */
-> -		BUG();
->   
->   	for (;;) {
->   		void *addr;
+>  include/uapi/linux/bpf.h       |   11 +++++++++--
+>  net/core/filter.c              |   17 ++++++++++++-----
+>  tools/include/uapi/linux/bpf.h |   11 +++++++++--
+>  3 files changed, 30 insertions(+), 9 deletions(-)
+> 
+
+Reviewed-by: David Ahern <dsahern@gmail.com>
 
