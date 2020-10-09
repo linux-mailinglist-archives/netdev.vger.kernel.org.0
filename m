@@ -2,122 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 451BA2894C5
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 21:55:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52EA0289914
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:09:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391365AbgJITyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 15:54:52 -0400
-Received: from mga12.intel.com ([192.55.52.136]:29419 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391275AbgJITyL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Oct 2020 15:54:11 -0400
-IronPort-SDR: q1PZMJUmKFKlQ0BClGvwyzOjNwzGSo5B944T29UwXjVfp2YopDniYa7pTU6UFtwNvsti9h6T08
- dfV2TT7Nz02w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9769"; a="144851137"
-X-IronPort-AV: E=Sophos;i="5.77,355,1596524400"; 
-   d="scan'208";a="144851137"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:54:10 -0700
-IronPort-SDR: LoljxrxdEbdUiebRGt6guGtjo6SPfpWGHMJuLgTgYB7BeDU8CJtiGau7DzbQyZ+Y5gpHVnCtT5
- urTwCEpflSRg==
-X-IronPort-AV: E=Sophos;i="5.77,355,1596524400"; 
-   d="scan'208";a="343972696"
-Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:54:09 -0700
-From:   ira.weiny@intel.com
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Ira Weiny <ira.weiny@intel.com>, x86@kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-nvdimm@lists.01.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        kvm@vger.kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kexec@lists.infradead.org, linux-bcache@vger.kernel.org,
-        linux-mtd@lists.infradead.org, devel@driverdev.osuosl.org,
-        linux-efi@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, ceph-devel@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-aio@kvack.org,
-        io-uring@vger.kernel.org, linux-erofs@lists.ozlabs.org,
-        linux-um@lists.infradead.org, linux-ntfs-dev@lists.sourceforge.net,
-        reiserfs-devel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-nilfs@vger.kernel.org, cluster-devel@redhat.com,
-        ecryptfs@vger.kernel.org, linux-cifs@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-rdma@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        xen-devel@lists.xenproject.org, linux-cachefs@redhat.com,
-        samba-technical@lists.samba.org, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH RFC PKS/PMEM 58/58] [dax|pmem]: Enable stray access protection
-Date:   Fri,  9 Oct 2020 12:50:33 -0700
-Message-Id: <20201009195033.3208459-59-ira.weiny@intel.com>
-X-Mailer: git-send-email 2.28.0.rc0.12.gb6a658bd00c9
-In-Reply-To: <20201009195033.3208459-1-ira.weiny@intel.com>
-References: <20201009195033.3208459-1-ira.weiny@intel.com>
+        id S2391381AbgJIUIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 16:08:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46960 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2403957AbgJITvd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 15:51:33 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E2B4C0613D2
+        for <netdev@vger.kernel.org>; Fri,  9 Oct 2020 12:51:33 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id k8so7745980pfk.2
+        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 12:51:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eQP+p2o3bSg4p+m0Ed1H9TagX8PjA07znc4r4rz+S7g=;
+        b=MX1nXM5eS+J7Qu1+AFPVFzYZ4ia4WgHQChNRDMDtRW/mx/n+7XCW3hgibozqJ8Ps+g
+         pztA8Jlq3TsbBVhwZFAnN2hyIkefsQXMwEVzBSfGnk5X3HWimHJh2TxqvmbSZbnu+TA7
+         fydyKi4hnkVlo8Egwm/87qTxpVaeGn7Dr9MFiHsp6FYHO7tOohD8fzvkNW/jEfb0FmNr
+         8RljNlWWOEWSrpBJUQL1h/55ZijcQerL2yWQ13ifw31gWmusHshr74qcQ7cWf9X3OIRJ
+         TTWkeeamgmf/bcrLM0JfjKKyalhxSNAjQot4vZR9oMNlpdzcaMzS4WBnjTyhX3zGeOIQ
+         M6pg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eQP+p2o3bSg4p+m0Ed1H9TagX8PjA07znc4r4rz+S7g=;
+        b=baUCOgFABlDmr1oPictIaUbzgQtjDrnO48DlY0O57oBAca0piAmetmW8d1CIBi51QL
+         XZd6NgVTBD3lduNBMX9cCqOTDsFi1Miyf/gT//VeTwwNpTGOU6Qi49ZTCcmdGe/8pM+5
+         9ilX/VrO2pMHedoxMsGw3JG19oitX+nkKFwPRCg3ZRAKf5VKO4upQnY6Y89HzcvKyz6P
+         vfspVgJRkgPDdGQsB0Z6VG1JGtWngivBITfP/5Zc6QCp1KiL+Cv9a7sgBIdPfUhZmuQe
+         +plo/ua/NjoCdhTs+4QKqLWEJlGgLQCmoqEqCXwhE/1eNsxh4dwd3B3OU2CH4kXkwOwP
+         NaYA==
+X-Gm-Message-State: AOAM533tRoa/XGOJLBngDWguLL/Trb96qvFQ+sEvzCvaJGfJt8f4uWLS
+        32tH7mKNWxYUBMWBVwExc/jM2zJM9BgvEKXE/x9lpcHHdUw=
+X-Google-Smtp-Source: ABdhPJw6ZmZ0o+k/VkQcvq7fV9PTGuQjurqbxRs1/+xxsSXO50w8AFcvKMbbZajxKioyDrVabLNDNAy77GN+lyrxlwk=
+X-Received: by 2002:a63:7347:: with SMTP id d7mr1893371pgn.63.1602273092665;
+ Fri, 09 Oct 2020 12:51:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201008012154.11149-1-xiyou.wangcong@gmail.com>
+ <CA+FuTSeMYFh3tY9cJN6h02E+r3BST=w74+pD=zraLXsmJTLZXA@mail.gmail.com>
+ <CAM_iQpWCR84sD6dZBforgt4cg-Jya91D6EynDo2y2sC7vi-vMg@mail.gmail.com>
+ <CA+FuTSdKa1Q36ONbsGOMqXDCUiiDNsA6rkqyrzB+eXJj=MyRKA@mail.gmail.com>
+ <CAJht_ENnmYRh-RomBodJE0HoFzaLQhD+DKEu2WWST+B43JxWcQ@mail.gmail.com>
+ <CA+FuTSdWYDs5u+3VzpTA1-Xs1OiVzv8QiKGTH4GUYrvXFfGT_A@mail.gmail.com>
+ <CAJht_ENMFY_HwaJDjvxZbQgcDv7btC+bU6gzdjyddY-JS=a6Lg@mail.gmail.com>
+ <CA+FuTScizeZC-ndVvXj4VyArth2gnxoh3kTSoe5awGoiFXtkBA@mail.gmail.com>
+ <CAJht_ENmrPbhfPaD5kkiDVWQsvA_LRndPiCMrS9zdje6sVPk=g@mail.gmail.com>
+ <CA+FuTSfhDgn-Qej4HOY-kYWSy8pUsnafMk=ozwtYGfS4W2DNuA@mail.gmail.com>
+ <CAJht_ENxoAyUOoiHSbFXEZ6Jf2xqfOmYfQ6Sh-hfmTUk-kTrfQ@mail.gmail.com>
+ <CAJht_EOMQRKWfwhfqwXB3RYA1h463q43ycNjJmaGZm6RS65QGA@mail.gmail.com>
+ <CAM_iQpWRftQkOfgfMACNR_5YZxvzLJH1aMtmZNj7nJH_Wu-NRw@mail.gmail.com> <CAJht_ENnYyXbOxtPHD9GHB92U4uonKO_oRZ82g2OR2DaFZ7bBQ@mail.gmail.com>
+In-Reply-To: <CAJht_ENnYyXbOxtPHD9GHB92U4uonKO_oRZ82g2OR2DaFZ7bBQ@mail.gmail.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Fri, 9 Oct 2020 12:51:21 -0700
+Message-ID: <CAJht_EPVyc0uAZc914E3tdgqEc7tDabpAxnBsGrRRFecc+NMwg@mail.gmail.com>
+Subject: Re: [Patch net] ip_gre: set dev->hard_header_len properly
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        syzbot <syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com>,
+        William Tu <u9012063@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ira Weiny <ira.weiny@intel.com>
+On Fri, Oct 9, 2020 at 12:41 PM Xie He <xie.he.0141@gmail.com> wrote:
+>
+> Thanks. But there is still something that I don't understand. What is
+> needed_headroom used for? If we are requesting space for t->encap_hlen
+> and t->tun_hlen in hard_header_len. Do we still need to use
+> needed_headroom?
 
-Protecting against stray writes is particularly important for PMEM
-because, unlike writes to anonymous memory, writes to PMEM persists
-across a reboot.  Thus data corruption could result in permanent loss of
-data.
+It seems to me that the original code includes t->encap_hlen,
+t->tun_hlen, and the IP header length in needed_headroom. (Right?) If
+we are including these in hard_header_len, we need to move them out of
+needed_headroom.
 
-While stray writes are more serious than reads, protection is also
-enabled for reads.  This helps to detect bugs in code which would
-incorrectly access device memory and prevents a more serious machine
-checks should those bug reads from a poison page.
-
-Enable stray access protection by setting the flag in pgmap which
-requests it.  There is no option presented to the user.  If Zone Device
-Access Protection not be supported this flag will have no affect.
-
-Signed-off-by: Ira Weiny <ira.weiny@intel.com>
----
- drivers/dax/device.c  | 2 ++
- drivers/nvdimm/pmem.c | 2 ++
- 2 files changed, 4 insertions(+)
-
-diff --git a/drivers/dax/device.c b/drivers/dax/device.c
-index 1e89513f3c59..e6fb35b4f0fb 100644
---- a/drivers/dax/device.c
-+++ b/drivers/dax/device.c
-@@ -430,6 +430,8 @@ int dev_dax_probe(struct device *dev)
- 	}
- 
- 	dev_dax->pgmap.type = MEMORY_DEVICE_GENERIC;
-+	dev_dax->pgmap.flags |= PGMAP_PROT_ENABLED;
-+
- 	addr = devm_memremap_pages(dev, &dev_dax->pgmap);
- 	if (IS_ERR(addr))
- 		return PTR_ERR(addr);
-diff --git a/drivers/nvdimm/pmem.c b/drivers/nvdimm/pmem.c
-index e4dc1ae990fc..9fcd8338e23f 100644
---- a/drivers/nvdimm/pmem.c
-+++ b/drivers/nvdimm/pmem.c
-@@ -426,6 +426,8 @@ static int pmem_attach_disk(struct device *dev,
- 		return -EBUSY;
- 	}
- 
-+	pmem->pgmap.flags |= PGMAP_PROT_ENABLED;
-+
- 	q = blk_alloc_queue(dev_to_node(dev));
- 	if (!q)
- 		return -ENOMEM;
--- 
-2.28.0.rc0.12.gb6a658bd00c9
-
+> Also, if we update hard_header_len or needed_headroom in
+> ipgre_link_update, would there be racing issues if they are updated
+> while skbs are being sent?
+>
+> If these are indeed issues, it might not be easy to fix this driver.
+> Willem, do you have any thoughts?
