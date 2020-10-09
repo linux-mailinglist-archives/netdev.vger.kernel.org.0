@@ -2,204 +2,288 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31998287F61
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 02:08:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40071287F67
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 02:12:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728819AbgJIAIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 20:08:18 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:51170 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726547AbgJIAIR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 20:08:17 -0400
-Received: by mail-wm1-f65.google.com with SMTP id 13so8103062wmf.0
-        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 17:08:14 -0700 (PDT)
+        id S1730208AbgJIAMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 20:12:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33966 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726293AbgJIAMx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 20:12:53 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02793C0613D2;
+        Thu,  8 Oct 2020 17:12:52 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id k8so5357164pfk.2;
+        Thu, 08 Oct 2020 17:12:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=tDCoNYwagkzJSr2QDS3ZkDLTKptDhAuMhwpgxkIv1zQ=;
+        b=M3a4uGNM6VSWuB00vxUKAsP9geJcLDYmn+gH+hVpKdFgbR15R3knFzX+t9sQhc0IEL
+         NNv1TSx8eG0DuAzcnPllxd9EDoDwRavAkl0LKLFKgPvlSINGmjp6VRI9f7KVuzXm+C8t
+         9yqeqUB/fALfA++aU240d+pnqCw7P6WIc7OSTN/VLSPJjdRSFfXFnf4AiQQJmxqAxl9k
+         uTwPBec9xBseWaJ14RIEP/kTnsbj+BpON+mNZWftJLzFrg2yaeP3chuBQlnHVU5Tbfyl
+         Ux4AZbfFGsHaWl0WeWz0/qItcPJQeyvd+tYsa91Qj5QikOvBafE7APOR8zPWU1wWRFpl
+         83IQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2W762rg4le9nAqp2qQYkPGqt9/HniqTXRFZ7bllOcSE=;
-        b=e1qqGDBppDO9mPQospS9hvmRAVncz0FlYTpA1aAM1h+9v7W2OfzIkRDa/SrqZHcBoT
-         jYdc7xAoDIhSxrJE27lz4Ebv7dke/10A3cPv3q82Jx23jTvelPSm8OmXqAXzKEpravMt
-         TSb89/k7ksKFFUt7BhMjIim12tyjVnO6wihxkm1pIwtZQwAwSriQoNWJzIEx6Z2tn3c7
-         q3Vxhr2RhXXaptJ9GOEVJPISAI6NTa8xJNMVlCWlbqiWMMv9vbNcrmCmEWOzeWi4gmKJ
-         jWteSLk7dlEqgUSZcoHVj6mW/s/m0Y71jtUniKbqu2Mt9vS4aNAEbYS5GTOsn8zFckFv
-         NmeA==
-X-Gm-Message-State: AOAM5302pNMjDtr/f+IqfljQ7Ugx7SSzpay0cVzBK4TbUxKHLxCZHQA2
-        2enKDZJaiwaDQPm2V3sJgZjVvmuDALo=
-X-Google-Smtp-Source: ABdhPJzwlEIarjsxAWlYg/GQLVoEP1LDdmKNVW9I4VGq30eJFPkS+Q8gJVh9OJJEd1eSXa9y9sZ3OA==
-X-Received: by 2002:a7b:c3c5:: with SMTP id t5mr11491970wmj.79.1602202093166;
-        Thu, 08 Oct 2020 17:08:13 -0700 (PDT)
-Received: from ?IPv6:2601:647:4802:9070:68d6:3fd5:5a8b:9959? ([2601:647:4802:9070:68d6:3fd5:5a8b:9959])
-        by smtp.gmail.com with ESMTPSA id z127sm8915684wmc.2.2020.10.08.17.08.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Oct 2020 17:08:12 -0700 (PDT)
-Subject: Re: [PATCH net-next RFC v1 00/10] nvme-tcp receive offloads
-To:     Boris Pismenny <borisp@mellanox.com>, kuba@kernel.org,
-        davem@davemloft.net, saeedm@nvidia.com, hch@lst.de, axboe@fb.com,
-        kbusch@kernel.org, viro@zeniv.linux.org.uk, edumazet@google.com
-Cc:     boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
-        netdev@vger.kernel.org
-References: <20200930162010.21610-1-borisp@mellanox.com>
-From:   Sagi Grimberg <sagi@grimberg.me>
-Message-ID: <42560022-6b2e-327f-2a77-0700132ab730@grimberg.me>
-Date:   Thu, 8 Oct 2020 17:08:06 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=tDCoNYwagkzJSr2QDS3ZkDLTKptDhAuMhwpgxkIv1zQ=;
+        b=gmsqNewjwCYOk2M+BoahdPO4P1hcR8rJ1qOq7nIDnpsMLe9SujgBvTx+bSfNgRlaYP
+         tub+7xfun49dxL2SpI5TmHAFYQF67TQeVFLv9k5mzbKaGchAEwfHCKcRbKBdI00jDYph
+         w1NWXeHWAJ5Xc3doMSZuOdCO8wofwa7rO1t/MitPyZ7pOlS8L1EIA1P3PmKqeuMds7x3
+         XMvZEnfNk9SlhZ9FT+umAc55FvCWkYK3ICJPkZ5aWUQWXahlgxdHy9WkKNNBYRe3FozD
+         1YgrEwIJXxMXJGjvW2zAkcK8Z8q5SvK5wGRSa139EJ3SfqCfTsCrKRtuyrnf+rQ1BGsU
+         FiSg==
+X-Gm-Message-State: AOAM530mfQUwQu06MAQ13xJGt4gIY7f9mUKBM8xcyqPKpSWrO43wIF25
+        QNgf8+0gc/lueYngTuc17BQ=
+X-Google-Smtp-Source: ABdhPJzZqiLRnLN4JBeJPUbDQtcgNNU7byvp64iKGhnvi8gO2Z3NvDKc+MYLYLmjM64ga5vtW7YuMg==
+X-Received: by 2002:a63:ff5d:: with SMTP id s29mr1240282pgk.442.1602202372414;
+        Thu, 08 Oct 2020 17:12:52 -0700 (PDT)
+Received: from localhost ([2001:e42:102:1532:160:16:113:140])
+        by smtp.gmail.com with ESMTPSA id a9sm8945275pjm.40.2020.10.08.17.12.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 08 Oct 2020 17:12:52 -0700 (PDT)
+From:   Coiby Xu <coiby.xu@gmail.com>
+X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
+Date:   Fri, 9 Oct 2020 08:12:45 +0800
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     devel@driverdev.osuosl.org,
+        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
+        <GR-Linux-NIC-Dev@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Shung-Hsi Yu <shung-hsi.yu@suse.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Benjamin Poirier <benjamin.poirier@gmail.com>,
+        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v1 1/6] staging: qlge: Initialize devlink health dump
+ framework for the dlge driver
+Message-ID: <20201009001245.dhtyvhbkdpmaadng@Rk>
+References: <20201008115808.91850-1-coiby.xu@gmail.com>
+ <20201008115808.91850-2-coiby.xu@gmail.com>
+ <20201008133142.GB1042@kadam>
 MIME-Version: 1.0
-In-Reply-To: <20200930162010.21610-1-borisp@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20201008133142.GB1042@kadam>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Oct 08, 2020 at 04:31:42PM +0300, Dan Carpenter wrote:
+>On Thu, Oct 08, 2020 at 07:58:03PM +0800, Coiby Xu wrote:
+>> Initialize devlink health dump framework for the dlge driver so the
+>> coredump could be done via devlink.
+>>
+>> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
+>> ---
+>>  drivers/staging/qlge/Kconfig        |  1 +
+>>  drivers/staging/qlge/Makefile       |  2 +-
+>>  drivers/staging/qlge/qlge.h         |  9 +++++++
+>>  drivers/staging/qlge/qlge_devlink.c | 38 +++++++++++++++++++++++++++++
+>>  drivers/staging/qlge/qlge_devlink.h |  8 ++++++
+>>  drivers/staging/qlge/qlge_main.c    | 28 +++++++++++++++++++++
+>>  6 files changed, 85 insertions(+), 1 deletion(-)
+>>  create mode 100644 drivers/staging/qlge/qlge_devlink.c
+>>  create mode 100644 drivers/staging/qlge/qlge_devlink.h
+>>
+>> diff --git a/drivers/staging/qlge/Kconfig b/drivers/staging/qlge/Kconfig
+>> index a3cb25a3ab80..6d831ed67965 100644
+>> --- a/drivers/staging/qlge/Kconfig
+>> +++ b/drivers/staging/qlge/Kconfig
+>> @@ -3,6 +3,7 @@
+>>  config QLGE
+>>  	tristate "QLogic QLGE 10Gb Ethernet Driver Support"
+>>  	depends on ETHERNET && PCI
+>> +	select NET_DEVLINK
+>>  	help
+>>  	This driver supports QLogic ISP8XXX 10Gb Ethernet cards.
+>>
+>> diff --git a/drivers/staging/qlge/Makefile b/drivers/staging/qlge/Makefile
+>> index 1dc2568e820c..07c1898a512e 100644
+>> --- a/drivers/staging/qlge/Makefile
+>> +++ b/drivers/staging/qlge/Makefile
+>> @@ -5,4 +5,4 @@
+>>
+>>  obj-$(CONFIG_QLGE) += qlge.o
+>>
+>> -qlge-objs := qlge_main.o qlge_dbg.o qlge_mpi.o qlge_ethtool.o
+>> +qlge-objs := qlge_main.o qlge_dbg.o qlge_mpi.o qlge_ethtool.o qlge_devlink.o
+>> diff --git a/drivers/staging/qlge/qlge.h b/drivers/staging/qlge/qlge.h
+>> index b295990e361b..290e754450c5 100644
+>> --- a/drivers/staging/qlge/qlge.h
+>> +++ b/drivers/staging/qlge/qlge.h
+>> @@ -2060,6 +2060,14 @@ struct nic_operations {
+>>  	int (*port_initialize)(struct ql_adapter *qdev);
+>>  };
+>>
+>> +
+>> +
+>
+>Having multiple blank lines in a row leads to a static checker warning.
+>Please run `checkpatch.pl --strict` over your patches.
+>
+>> +struct qlge_devlink {
+>> +        struct ql_adapter *qdev;
+>> +        struct net_device *ndev;
+>> +        struct devlink_health_reporter *reporter;
+>> +};
+>> +
+>>  /*
+>>   * The main Adapter structure definition.
+>>   * This structure has all fields relevant to the hardware.
+>> @@ -2077,6 +2085,7 @@ struct ql_adapter {
+>>  	struct pci_dev *pdev;
+>>  	struct net_device *ndev;	/* Parent NET device */
+>>
+>> +	struct qlge_devlink *ql_devlink;
+>>  	/* Hardware information */
+>>  	u32 chip_rev_id;
+>>  	u32 fw_rev_id;
+>> diff --git a/drivers/staging/qlge/qlge_devlink.c b/drivers/staging/qlge/qlge_devlink.c
+>> new file mode 100644
+>> index 000000000000..aa45e7e368c0
+>> --- /dev/null
+>> +++ b/drivers/staging/qlge/qlge_devlink.c
+>> @@ -0,0 +1,38 @@
+>> +#include "qlge.h"
+>> +#include "qlge_devlink.h"
+>> +
+>> +static int
+>> +qlge_reporter_coredump(struct devlink_health_reporter *reporter,
+>> +			struct devlink_fmsg *fmsg, void *priv_ctx,
+>> +			struct netlink_ext_ack *extack)
+>> +{
+>> +	return 0;
+>> +}
+>> +
+>> +static const struct devlink_health_reporter_ops qlge_reporter_ops = {
+>> +		.name = "dummy",
+>> +		.dump = qlge_reporter_coredump,
+>
+>Indented too far.
+>
+>> +};
+>> +
+>> +int qlge_health_create_reporters(struct qlge_devlink *priv)
+>> +{
+>> +	int err;
+>> +
+>
+>No blanks in the middle of declarations.
+>
+>> +	struct devlink_health_reporter *reporter;
+>> +	struct devlink *devlink;
+>
+>Generally this driver declares variables in "Reverse Christmas Tree"
+>order.  The names are orderred by the length of the line from longest
+>to shortest.
+>
+>	type long_name;
+>	type medium;
+>	type short;
+>
+>> +
+>> +	devlink = priv_to_devlink(priv);
+>> +	reporter =
+>> +		devlink_health_reporter_create(devlink, &qlge_reporter_ops,
+>> +					       0,
+>> +					       priv);
+>
+>Break this up like so:
+>
+>	reporter = devlink_health_reporter_create(devlink, &qlge_reporter_ops,
+>						  0, priv);
+>
+>
+>> +	if (IS_ERR(reporter)) {
+>> +		netdev_warn(priv->ndev,
+>> +			    "Failed to create reporter, err = %ld\n",
+>> +			    PTR_ERR(reporter));
+>> +		return PTR_ERR(reporter);
+>
+>No point in returning an error if the caller doesn't check?
+>
+>> +	}
+>> +	priv->reporter = reporter;
+>> +
+>> +	return err;
+>
+>err is uninitialized.  "return 0;"
+>
+>> +}
+>> diff --git a/drivers/staging/qlge/qlge_devlink.h b/drivers/staging/qlge/qlge_devlink.h
+>> new file mode 100644
+>> index 000000000000..c91f7a29e805
+>> --- /dev/null
+>> +++ b/drivers/staging/qlge/qlge_devlink.h
+>> @@ -0,0 +1,8 @@
+>> +#ifndef QLGE_DEVLINK_H
+>> +#define QLGE_DEVLINK_H
+>> +
+>> +#include <net/devlink.h>
+>> +
+>> +int qlge_health_create_reporters(struct qlge_devlink *priv);
+>> +
+>> +#endif /* QLGE_DEVLINK_H */
+>> diff --git a/drivers/staging/qlge/qlge_main.c b/drivers/staging/qlge/qlge_main.c
+>> index 27da386f9d87..135225530e51 100644
+>> --- a/drivers/staging/qlge/qlge_main.c
+>> +++ b/drivers/staging/qlge/qlge_main.c
+>> @@ -42,6 +42,7 @@
+>>  #include <net/ip6_checksum.h>
+>>
+>>  #include "qlge.h"
+>> +#include "qlge_devlink.h"
+>>
+>>  char qlge_driver_name[] = DRV_NAME;
+>>  const char qlge_driver_version[] = DRV_VERSION;
+>> @@ -4549,6 +4550,8 @@ static void ql_timer(struct timer_list *t)
+>>  	mod_timer(&qdev->timer, jiffies + (5 * HZ));
+>>  }
+>>
+>> +static const struct devlink_ops qlge_devlink_ops;
+>> +
+>>  static int qlge_probe(struct pci_dev *pdev,
+>>  		      const struct pci_device_id *pci_entry)
+>>  {
+>> @@ -4556,6 +4559,13 @@ static int qlge_probe(struct pci_dev *pdev,
+>>  	struct ql_adapter *qdev = NULL;
+>>  	static int cards_found;
+>>  	int err = 0;
+>> +	struct devlink *devlink;
+>> +	struct qlge_devlink *ql_devlink;
+>> +
+>> +	devlink = devlink_alloc(&qlge_devlink_ops, sizeof(struct qlge_devlink));
+>> +	if (!devlink)
+>> +		return -ENOMEM;
+>> +	ql_devlink = devlink_priv(devlink);
+>>
+>>  	ndev = alloc_etherdev_mq(sizeof(struct ql_adapter),
+>>  				 min(MAX_CPUS,
+>> @@ -4614,6 +4624,16 @@ static int qlge_probe(struct pci_dev *pdev,
+>>  		free_netdev(ndev);
+>>  		return err;
+>>  	}
+>> +
+>> +	err = devlink_register(devlink, &pdev->dev);
+>> +	if (err) {
+>> +		goto devlink_free;
+>> +	}
+>
+>Checkpatch warning.
+>
 
+Thank you for the reminding!
 
-On 9/30/20 9:20 AM, Boris Pismenny wrote:
-> This series adds support for nvme-tcp receive offloads
-> which do not mandate the offload of the network stack to the device.
-> Instead, these work together with TCP to offload:
-> 1. copy from SKB to the block layer buffers
-> 2. CRC verification for received PDU
-> 
-> The series implements these as a generic offload infrastructure for storage
-> protocols, which we call TCP Direct Data Placement (TCP_DDP) and TCP DDP CRC,
-> respectively. We use this infrastructure to implement NVMe-TCP offload for copy
-> and CRC. Future implementations can reuse the same infrastructure for other
-> protcols such as iSCSI.
-> 
-> Note:
-> These offloads are similar in nature to the packet-based NIC TLS offloads,
-> which are already upstream (see net/tls/tls_device.c).
-> You can read more about TLS offload here:
-> https://www.kernel.org/doc/html/latest/networking/tls-offload.html
-> 
-> Initialization and teardown:
-> =========================================
-> The offload for IO queues is initialized after the handshake of the
-> NVMe-TCP protocol is finished by calling `nvme_tcp_offload_socket`
-> with the tcp socket of the nvme_tcp_queue:
-> This operation sets all relevant hardware contexts in
-> hardware. If it fails, then the IO queue proceeds as usually with no offload.
-> If it succeeds then `nvme_tcp_setup_ddp` and `nvme_tcp_teardown_ddp` may be
-> called to perform copy offload, and crc offload will be used.
-> This initialization does not change the normal operation of nvme-tcp in any
-> way besides adding the option to call the above mentioned NDO operations.
-> 
-> For the admin queue, nvme-tcp does not initialize the offload.
-> Instead, nvme-tcp calls the driver to configure limits for the controller,
-> such as max_hw_sectors and max_segments; these must be limited to accomodate
-> potential HW resource limits, and to improve performance.
-> 
-> If some error occured, and the IO queue must be closed or reconnected, then
-> offload is teardown and initialized again. Additionally, we handle netdev
-> down events via the existing error recovery flow.
-> 
-> Copy offload works as follows:
-> =========================================
-> The nvme-tcp layer calls the NIC drive to map block layer buffers to ccid using
-> `nvme_tcp_setup_ddp` before sending the read request. When the repsonse is
-> received, then the NIC HW will write the PDU payload directly into the
-> designated buffer, and build an SKB such that it points into the destination
-> buffer; this SKB represents the entire packet received on the wire, but it
-> points to the block layer buffers. Once nvme-tcp attempts to copy data from
-> this SKB to the block layer buffer it can skip the copy by checking in the
-> copying function (memcpy_to_page):
-> if (src == dst) -> skip copy
-> Finally, when the PDU has been processed to completion, the nvme-tcp layer
-> releases the NIC HW context be calling `nvme_tcp_teardown_ddp` which
-> asynchronously unmaps the buffers from NIC HW.
-> 
-> As the last change is to a sensative function, we are careful to place it under
-> static_key which is only enabled when this functionality is actually used for
-> nvme-tcp copy offload.
-> 
-> Asynchronous completion:
-> =========================================
-> The NIC must release its mapping between command IDs and the target buffers.
-> This mapping is released when NVMe-TCP calls the NIC
-> driver (`nvme_tcp_offload_socket`).
-> As completing IOs is performance criticial, we introduce asynchronous
-> completions for NVMe-TCP, i.e. NVMe-TCP calls the NIC, which will later
-> call NVMe-TCP to complete the IO (`nvme_tcp_ddp_teardown_done`).
-> 
-> An alternative approach is to move all the functions related to coping from
-> SKBs to the block layer buffers inside the nvme-tcp code - about 200 LOC.
-> 
-> CRC offload works as follows:
-> =========================================
-> After offload is initialized, we use the SKB's ddp_crc bit to indicate that:
-> "there was no problem with the verification of all CRC fields in this packet's
-> payload". The bit is set to zero if there was an error, or if HW skipped
-> offload for some reason. If *any* SKB in a PDU has (ddp_crc != 1), then software
-> must compute the CRC, and check it. We perform this check, and
-> accompanying software fallback at the end of the processing of a received PDU.
-> 
-> SKB changes:
-> =========================================
-> The CRC offload requires an additional bit in the SKB, which is useful for
-> preventing the coalescing of SKB with different crc offload values. This bit
-> is similar in concept to the "decrypted" bit.
-> 
-> Performance:
-> =========================================
-> The expected performance gain from this offload varies with the block size.
-> We perform a CPU cycles breakdown of the copy/CRC operations in nvme-tcp
-> fio random read workloads:
-> For 4K blocks we see up to 11% improvement for a 100% read fio workload,
-> while for 128K blocks we see upto 52%. If we run nvme-tcp, and skip these
-> operations, then we observe a gain of about 1.1x and 2x respectively.
+>regards,
+>dan carpenter
+>
 
-Nice!
-
-> 
-> Resynchronization:
-> =========================================
-> The resynchronization flow is performed to reset the hardware tracking of
-> NVMe-TCP PDUs within the TCP stream. The flow consists of a request from
-> the driver, regarding a possible location of a PDU header. Followed by
-> a response from the nvme-tcp driver.
-> 
-> This flow is rare, and it should happen only after packet loss or
-> reordering events that involve nvme-tcp PDU headers.
-> 
-> The patches are organized as follows:
-> =========================================
-> Patch 1         the iov_iter change to skip copy if (src == dst)
-> Patches 2-3     the infrastructure for all TCP DDP
->                  and TCP DDP CRC offloads, respectively.
-> Patch 4         exposes the get_netdev_for_sock function from TLS
-> Patch 5         NVMe-TCP changes to call NIC driver on queue init/teardown
-> Patches 6       NVMe-TCP changes to call NIC driver on IO operation
->                  setup/teardown, and support async completions.
-> Patches 7       NVMe-TCP changes to support CRC offload on receive.
->                  Also, this patch moves CRC calculation to the end of PDU
->                  in case offload requires software fallback.
-> Patches 8       NVMe-TCP handling of netdev events: stop the offload if
->                  netdev is going down
-> Patches 9-10    implement support for NVMe-TCP copy and CRC offload in
->                  the mlx5 NIC driver
-> 
-> Testing:
-> =========================================
-> This series was tested using fio with various configurations of IO sizes,
-> depths, MTUs, and with both the SPDK and kernel NVMe-TCP targets.
-> 
-> Future work:
-> =========================================
-> A follow-up series will introduce support for transmit side CRC. Then,
-> we will work on adding support for TLS in NVMe-TCP and combining the
-> two offloads.
-
-Boris, Or and Yoray
-
-Thanks for submitting this work. Overall this looks good to me.
-The model here is not messy at all which is not trivial when it comes to 
-tcp offloads.
-
-Gave you comments in the patches themselves but overall this looks
-good!
-
-Would love to see TLS work from you moving forward.
+--
+Best regards,
+Coiby
