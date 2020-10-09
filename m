@@ -2,111 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32C4A28868C
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 12:07:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70BB428868E
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 12:07:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387461AbgJIKHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 06:07:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40988 "EHLO
+        id S2387471AbgJIKHw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 06:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726357AbgJIKH3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 06:07:29 -0400
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749DBC0613D2;
-        Fri,  9 Oct 2020 03:07:29 -0700 (PDT)
-Received: by mail-lf1-x144.google.com with SMTP id h6so10112322lfj.3;
-        Fri, 09 Oct 2020 03:07:29 -0700 (PDT)
+        with ESMTP id S1726357AbgJIKHv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 06:07:51 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50541C0613D2
+        for <netdev@vger.kernel.org>; Fri,  9 Oct 2020 03:07:50 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id h6so6795643pgk.4
+        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 03:07:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=O6ukwqJEWQ6yr/pMd6fbdg+VpvxJvOj62gBipeVPJmI=;
-        b=Mx05QbYiHRbwrS6Z46jd/WgwBRyTQWIOVq0D6MvRfRvQLhzGw9IylnisjNdELXpLVj
-         zFJSTbwbCMGD/a8K7aCK7kqmIbaka35n0K3nXcZp20ztI95ol2lXyz/XrefDml/bW4Fm
-         0U0aV498Am+AJ+W5VJ09OdWOn8Ou56kDkOfpVbrNeExCGGND9IW9yNuCoqQeV5md5ZA1
-         dfSWhxRk2rsp9jofVc0U01/v5sseCMtb1K1B9QKoBYQ+DHhhEze2VKfChPs7Id8HGYAo
-         uOHXWPDCKbTBALAUUXfMJjBVyzl52StLRhkIi4/fujgXIuz7iamVHH+xcWTSFp+flqwT
-         zo5A==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=PxXPx3Tv3Z2b0eEPLlGvN0NCRLzR/W8Wz8uEBCTf24A=;
+        b=lOoUNullfi7PoIE2nmQf5nTtTjscb8Vuiv3XN+6yBHk2hzvdysNCU2wnTxu2Zon6DD
+         AhhJb4uEMQy78DsaabH4NeHw2C6KIqTqDQrDxve9dI6jJo556KhESiKlrdQ7+cCQxOV8
+         5+taHfi1SotELPUSvFZ3/VD3NeSU9bcsPUMqwq2aoguNq/c3Tb+Ht6KyjKduZ36fOmf+
+         8upK/G0H5oJOhkKSgKzX8M9wXwn3FER8O/TaZ4aecArEI2qu+w1334cBgP4DmfqbTW18
+         AdIfgtVumII8d34Uzjb7CJgma0HkarBC/Yye8PGPYtopfj6WaYDs5WXH9lK2ob69dRIE
+         dyHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=O6ukwqJEWQ6yr/pMd6fbdg+VpvxJvOj62gBipeVPJmI=;
-        b=edXFyd25tem/HJJ/k+GpOAxh/92WsY/ZxZYilJTrkKq0AbS6kOyhA28EKBVCM3MfMv
-         khG0kpgSvBbXoc1pPrrMn64gercp+T67Ag1MbOM3Dy0xy1dbFlDNQNEI3ZxGTRzLYVrQ
-         iUl/IIg9FtIo1+/JODFiBg/qUzk5RgJlqI0AxZuKHo1Dj+ef0UO0jHH/Cc9BBR7DRiVF
-         NrNwvVKqpViqxle+AYfUhEIhevHurD2Fb137v2UqTz79Pvtldzxdv7pdhWWUKYqW7JsZ
-         fhPqAEncG3m3TU3BG2vmdcryNub/Ko1X9ryHBAiHJ6y5d/mZzEmyawMEKQwm9twN1UkE
-         Z7Jg==
-X-Gm-Message-State: AOAM530vDrTn1FEG6yu9cGKNlxXkWY63V2cfJ50i2irZb/esQuLMhZEW
-        r+iKJKrb/MmJy2JUeyu7MdBhrh9BlIPbagbuYdI=
-X-Google-Smtp-Source: ABdhPJyhjAwJPUWrDFg/tvDOHPo4oVGg9qMmLxuELBxFQp2OgX/pQ9sSqfxqsKMaAyItgswPbAXHyS3ixO2RrNsEDGc=
-X-Received: by 2002:ac2:4203:: with SMTP id y3mr3875737lfh.52.1602238047777;
- Fri, 09 Oct 2020 03:07:27 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=PxXPx3Tv3Z2b0eEPLlGvN0NCRLzR/W8Wz8uEBCTf24A=;
+        b=oyHiPD/NkwVTevnwbrA0nHdRQvUmHlnoXtu41Tz4fE2utRDllIGA5ENrbILgbnl4vw
+         2GBd7456OhAlRkoS7SP4JNGcIQ2jj8amFkzlyhypUkDaN2zzX/dJ/e0PuZ++1XCIcsUG
+         UO0MZd12fgOkrIj9xgvtwG5iQylL2YtRPcIrTxISTEY3mtp5zhuMUOfxl1sed+8hnxtU
+         NFsI7rN+nu9qQAdex4J2tNHfIRS6FYDI/YpKQoOOVXdb1klw0f1ftRxFjKPSfa6nAUTG
+         uA61+GoDo7sKZZCyuF0J//6M6iR9F2yJdaK0wzeUM+1iQIvRPHoUEMW6UdOdwbdOAb3p
+         T0nw==
+X-Gm-Message-State: AOAM530MXxH8ymhCJXh39f3DAXIjfO4iDDjFxF8TPGmUdvtgBrdaFIvp
+        lyZ8sMKZFvbUO9+zLG/ihqY=
+X-Google-Smtp-Source: ABdhPJzr++BEgITmLunXMLRBMlfDopIbpX2BUExDLrLVC2JCBpsppAz7eDkAOZpVJFIS33KgP/ygmw==
+X-Received: by 2002:a65:62d5:: with SMTP id m21mr2852081pgv.226.1602238069871;
+        Fri, 09 Oct 2020 03:07:49 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id v21sm11283593pjy.43.2020.10.09.03.07.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Oct 2020 03:07:48 -0700 (PDT)
+Date:   Fri, 9 Oct 2020 18:07:38 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>
+Subject: Re: [PATCH net 2/2] IPv6: reply ICMP error if the first fragment
+ don't include all headers
+Message-ID: <20201009100738.GK2531@dhcp-12-153.nay.redhat.com>
+References: <20201007035502.3928521-1-liuhangbin@gmail.com>
+ <20201007035502.3928521-3-liuhangbin@gmail.com>
+ <91f5b71e-416d-ebf1-750b-3e1d5cf6b732@gmail.com>
+ <20201008083034.GI2531@dhcp-12-153.nay.redhat.com>
+ <f7272dda-0383-c7d0-1a8a-4a70a1aadb77@gmail.com>
 MIME-Version: 1.0
-References: <20201008155048.17679-1-ap420073@gmail.com> <1cbb69d83188424e99b2d2482848ae64@AcuMS.aculab.com>
- <62f6c2bd11ed8b25c1cd4462ebc6db870adc4229.camel@sipsolutions.net>
- <CAMArcTUkC2MzN9MiTu_Qwouj6rFf0g0ac2uZWfSKWHTW9cR8xA@mail.gmail.com> <87r1q8gdqk.fsf@suse.de>
-In-Reply-To: <87r1q8gdqk.fsf@suse.de>
-From:   Taehee Yoo <ap420073@gmail.com>
-Date:   Fri, 9 Oct 2020 19:07:16 +0900
-Message-ID: <CAMArcTWBdqRG11XcFPvPTR2YpwfdDMuQ-_7WGow574QftUEGYA@mail.gmail.com>
-Subject: Re: [PATCH net 000/117] net: avoid to remove module when its debugfs
- is being used
-To:     Nicolai Stange <nstange@suse.de>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        David Laight <David.Laight@aculab.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "wil6210@qti.qualcomm.com" <wil6210@qti.qualcomm.com>,
-        "b43-dev@lists.infradead.org" <b43-dev@lists.infradead.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <f7272dda-0383-c7d0-1a8a-4a70a1aadb77@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 9 Oct 2020 at 14:39, Nicolai Stange <nstange@suse.de> wrote:
->
-
-Hi Nicolai,
-Thank you for the review!
-
-> Taehee Yoo <ap420073@gmail.com> writes:
->
-> > On Fri, 9 Oct 2020 at 01:14, Johannes Berg <johannes@sipsolutions.net> wrote:
-> > On Thu, 2020-10-08 at 15:59 +0000, David Laight wrote:
-> >
-> >> From: Taehee Yoo
-> >> > Sent: 08 October 2020 16:49
-> >> >
-> >> > When debugfs file is opened, its module should not be removed until
-> >> > it's closed.
-> >> > Because debugfs internally uses the module's data.
-> >> > So, it could access freed memory.
->
-> Yes, the file_operations' ->release() to be more specific -- that's not
-> covered by debugfs' proxy fops.
->
->
-> >> > In order to avoid panic, it just sets .owner to THIS_MODULE.
-> >> > So that all modules will be held when its debugfs file is opened.
+On Thu, Oct 08, 2020 at 11:47:00AM +0200, Eric Dumazet wrote:
+> 
+> 
+> On 10/8/20 10:30 AM, Hangbin Liu wrote:
+> >>> @@ -282,6 +285,21 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
+> >>>  		}
+> >>>  	}
+> >>>  
+> >>> +	/* RFC 8200, Section 4.5 Fragment Header:
+> >>> +	 * If the first fragment does not include all headers through an
+> >>> +	 * Upper-Layer header, then that fragment should be discarded and
+> >>> +	 * an ICMP Parameter Problem, Code 3, message should be sent to
+> >>> +	 * the source of the fragment, with the Pointer field set to zero.
+> >>> +	 */
+> >>> +	nexthdr = hdr->nexthdr;
+> >>> +	offset = ipv6_skip_exthdr(skb, skb_transport_offset(skb), &nexthdr, &frag_off);
+> >>> +	if (frag_off == htons(IP6_MF) && !pskb_may_pull(skb, offset + 1)) {
+> >>> +		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INHDRERRORS);
+> >>> +		icmpv6_param_prob(skb, ICMPV6_HDR_INCOMP, 0);
+> >>> +		rcu_read_unlock();
+> >>> +		return NULL;
+> >>> +	}
+> >>> +
+> >>>  	rcu_read_unlock();
+> >>>  
+> >>>  	/* Must drop socket now because of tproxy. */
+> >>>
 > >>
-> >> Can't you fix it in common code?
-> >
-> >> Yeah I was just wondering that too - weren't the proxy_fops even already
-> >> intended to fix this?
-> >
-> > I didn't try to fix this issue in the common code(debugfs).
-> > Because I thought It's a typical pattern of panic and THIS_MODULE
-> > can fix it clearly.
-> > So I couldn't think there is a root reason in the common code.
->
-> That's correct, ->owner should get set properly, c.f. my other mail in
-> this thread.
->
+> >> Ouch, this is quite a buggy patch.
+> >>
+> >> I doubt we want to add yet another ipv6_skip_exthdr() call in IPv6 fast path.
+> >>
+> >> Surely the presence of NEXTHDR_FRAGMENT is already tested elsewhere ?
+> > 
+> > Would you like to help point where NEXTHDR_FRAGMENT was tested before IPv6
+> > defragment?
+> I think we have to ask the question : Should routers enforce the rule, or
+> only end points ?
 
-Thanks a lot for verifying it!
-Taehee
+From IPv6 Core Conformance test[1], it applied to both router and host(It will
+marked specifically if a test only for router).
+
+> 
+> End points must handle NEXTHDR_FRAGMENT, in ipv6_frag_rcv()
+
+Yes, I was also try put the check there, but it looks that would be too late
+if module nf_defrag_ipv6 loaded
+
+> >> Also ipv6_skip_exthdr() can return an error.
+> > 
+> > it returns -1 as error, If we tested it by (offset + 1 > skb->len), does
+> > that count as an error handler?
+> 
+> If there is an error, then you want to send the ICMP, right ?
+
+No, this is only for fragment header with no enough Upper-Layer header, which need
+send ICMP Parameter Problem, Code 3 specifically. For other errors, I guess
+the other code will take care of it.
+
+So for -1 return, I just skipped it.
+> 
+> The (offset + 1) expression will become 0, and surely the test will be false,
+> so you wont send the ICMP...
+
+[1] v6LC.1.3.6: First Fragment Doesn’t Contain All Headers part A, B,
+C and D at https://ipv6ready.org/docs/Core_Conformance_5_0_0.pdf
+
+Thanks
+Hangbin
