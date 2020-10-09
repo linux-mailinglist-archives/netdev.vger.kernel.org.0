@@ -2,116 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 806F7288361
+	by mail.lfdr.de (Postfix) with ESMTP id 10933288360
 	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 09:21:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731886AbgJIHV5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 03:21:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43588 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725908AbgJIHV4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 03:21:56 -0400
-Received: from mail-out.m-online.net (mail-out.m-online.net [IPv6:2001:a60:0:28:0:1:25:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D7CFC0613D2
-        for <netdev@vger.kernel.org>; Fri,  9 Oct 2020 00:21:56 -0700 (PDT)
+        id S1731868AbgJIHV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 03:21:56 -0400
+Received: from mail-out.m-online.net ([212.18.0.9]:49999 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725908AbgJIHVz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 03:21:55 -0400
 Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4C6zz40CLhz1sKj1;
-        Fri,  9 Oct 2020 09:21:44 +0200 (CEST)
+        by mail-out.m-online.net (Postfix) with ESMTP id 4C6zz55S6Dz1r6nY;
+        Fri,  9 Oct 2020 09:21:47 +0200 (CEST)
 Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4C6zyw4zdRz1qrgc;
-        Fri,  9 Oct 2020 09:21:44 +0200 (CEST)
+        by mail.m-online.net (Postfix) with ESMTP id 4C6zyz0T4Fz1qrgj;
+        Fri,  9 Oct 2020 09:21:47 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at mnet-online.de
 Received: from mail.mnet-online.de ([192.168.8.182])
         by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id k_HpLOAIS43b; Fri,  9 Oct 2020 09:21:43 +0200 (CEST)
-X-Auth-Info: jV0RK6JVURhLTawQr16+gnEXCQEQGp+vs06xZxLcngU=
+        with ESMTP id bRFHjs4xAlou; Fri,  9 Oct 2020 09:21:45 +0200 (CEST)
+X-Auth-Info: ShYu8ckela9vfHKCt95Sw20bAy5JpfhzdwpnNNxEm9s=
 Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Fri,  9 Oct 2020 09:21:43 +0200 (CEST)
-Subject: Re: [PATCH] net: fec: Fix phy_device lookup for
+        Fri,  9 Oct 2020 09:21:45 +0200 (CEST)
+Subject: Re: [PATCH][RESEND] net: fec: Fix PHY init after
  phy_reset_after_clk_enable()
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Richard Leitner <richard.leitner@skidata.com>,
         Christoph Niedermaier <cniedermaier@dh-electronics.com>,
         "David S . Miller" <davem@davemloft.net>,
         NXP Linux Team <linux-imx@nxp.com>,
-        Richard Leitner <richard.leitner@skidata.com>,
-        Shawn Guo <shawnguo@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-References: <20201006202029.254212-1-marex@denx.de>
- <110b63bb-9096-7ce0-530f-45dffed09077@gmail.com>
- <9f882603-2419-5931-fe8f-03c2a28ac785@denx.de>
- <20201008174619.282b3482@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        Shawn Guo <shawnguo@kernel.org>
+References: <20201006135253.97395-1-marex@denx.de>
+ <20201008175124.08f3fe5e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 From:   Marek Vasut <marex@denx.de>
-Message-ID: <da024643-e7bc-3470-64ad-96277655f494@denx.de>
-Date:   Fri, 9 Oct 2020 09:20:30 +0200
+Message-ID: <6b600a23-cdf9-827f-2ff8-501ed0f1bdb1@denx.de>
+Date:   Fri, 9 Oct 2020 09:21:06 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20201008174619.282b3482@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201008175124.08f3fe5e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/9/20 2:46 AM, Jakub Kicinski wrote:
-> On Wed, 7 Oct 2020 00:02:42 +0200 Marek Vasut wrote:
->> On 10/6/20 11:09 PM, Florian Fainelli wrote:
->>> On 10/6/2020 1:20 PM, Marek Vasut wrote:  
->>>> The phy_reset_after_clk_enable() is always called with ndev->phydev,
->>>> however that pointer may be NULL even though the PHY device instance
->>>> already exists and is sufficient to perform the PHY reset.
->>>>
->>>> If the PHY still is not bound to the MAC, but there is OF PHY node
->>>> and a matching PHY device instance already, use the OF PHY node to
->>>> obtain the PHY device instance, and then use that PHY device instance
->>>> when triggering the PHY reset.
->>>>
->>>> Fixes: 1b0a83ac04e3 ("net: fec: add phy_reset_after_clk_enable()
->>>> support")
->>>> Signed-off-by: Marek Vasut <marex@denx.de>
-> 
->>>> diff --git a/drivers/net/ethernet/freescale/fec_main.c
->>>> b/drivers/net/ethernet/freescale/fec_main.c
->>>> index 2d5433301843..5a4b20941aeb 100644
->>>> --- a/drivers/net/ethernet/freescale/fec_main.c
->>>> +++ b/drivers/net/ethernet/freescale/fec_main.c
->>>> @@ -1912,6 +1912,24 @@ static int fec_enet_mdio_write(struct mii_bus
->>>> *bus, int mii_id, int regnum,
->>>>       return ret;
->>>>   }
->>>>   +static void fec_enet_phy_reset_after_clk_enable(struct net_device
->>>> *ndev)
->>>> +{
->>>> +    struct fec_enet_private *fep = netdev_priv(ndev);
->>>> +    struct phy_device *phy_dev = ndev->phydev;
->>>> +
->>>> +    /*
->>>> +     * If the PHY still is not bound to the MAC, but there is
->>>> +     * OF PHY node and a matching PHY device instance already,
->>>> +     * use the OF PHY node to obtain the PHY device instance,
->>>> +     * and then use that PHY device instance when triggering
->>>> +     * the PHY reset.
->>>> +     */
->>>> +    if (!phy_dev && fep->phy_node)
->>>> +        phy_dev = of_phy_find_device(fep->phy_node);  
->>>
->>> Don't you need to put the phy_dev reference at some point?  
+On 10/9/20 2:51 AM, Jakub Kicinski wrote:
+> On Tue,  6 Oct 2020 15:52:53 +0200 Marek Vasut wrote:
+>> The phy_reset_after_clk_enable() does a PHY reset, which means the PHY
+>> loses its register settings. The fec_enet_mii_probe() starts the PHY
+>> and does the necessary calls to configure the PHY via PHY framework,
+>> and loads the correct register settings into the PHY. Therefore,
+>> fec_enet_mii_probe() should be called only after the PHY has been
+>> reset, not before as it is now.
 >>
->> Probably, yes.
->>
->> But first, does this approach and this patch even make sense ?
->> I mean, it fixes my problem, but is this right ?
+>> Fixes: 1b0a83ac04e3 ("net: fec: add phy_reset_after_clk_enable() support")
+>> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+>> Tested-by: Richard Leitner <richard.leitner@skidata.com>
+>> Signed-off-by: Marek Vasut <marex@denx.de>
 > 
-> Can you describe your problem in detail?
+> Is moving the reset before fec_enet_mii_probe() the reason you need the
+> second patch?
+> 
+>   net: fec: Fix phy_device lookup for phy_reset_after_clk_enable()
 
-Yes, I tried to do that in the commit message and the extra detailed
-comment above the code. What exactly do you not understand from that?
-
-> To an untrained eye this looks pretty weird.
-
-I see, I'm not quite sure how to address this comment.
+No, the second patch addresses separate issue.
