@@ -2,144 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0B2E288032
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 04:02:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08C4F288053
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 04:21:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729570AbgJICCW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 22:02:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50834 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727781AbgJICCW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 22:02:22 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C52C0613D2;
-        Thu,  8 Oct 2020 19:02:21 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id z1so8571686wrt.3;
-        Thu, 08 Oct 2020 19:02:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jtYY0usC4ljvjDt/q/Hq+d0qiu79u2ckTDddE32ZHjw=;
-        b=RIHjFwmyGjrOsoT8lGz36rK6jDa2e/iPgXesMm212sc/MFFTHw1Nj+Z9ZdvZbwz+pM
-         IrU1/rDRsZY02AWYAmkGLpgZrdEz/W4YMlQRoV217nO25HIuEWENg8ABOXMDGLV4b4kM
-         Bc4D5r21ktBWhOUJC382QRZ/sgFJ3hUjc8G/6k8mmSYjCRUsYIcMTGRPjJuyTibYIrwp
-         14lvMEGUfIesxgUASCfedJ129DuIcb4ElXsfAmwlK0vgDoZKMhVar+TB/5ewGaz99f5f
-         uU+0nxwFZp0BAYO+xI7KpKbXGqJHGw8mjH+Zg8/BlpEXwmYR9PwdsTvuvprXr8PjIjsW
-         82yw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jtYY0usC4ljvjDt/q/Hq+d0qiu79u2ckTDddE32ZHjw=;
-        b=N4bVPCbA+wX9Ld1j3VCDK/95O28ITNkzhRg7OPgZGEW1tyl983sDtO9G73hP1ck/jL
-         4i2evFjzS+XvUnMSGNDc4sjkJYKp9bEABX0w1YqXXMa4EMNNJtvveEG8vTX0woawxSut
-         2LpIfk5dy3uaAz+UF1Ht5LSaFy3HDMyY1O5u8Rc0W1/A99gTzMfDShNEuJiyhoXl9uKs
-         fYV1rk2rIi5sJB/QXj4Uq+IGk1AoREmWI9j6y4vgbX9AC5uS6XgKc7exh588BVwQ1tC1
-         /Uf6/rdwXopTmhCnYpgl4xvMeQ2gbd8fRLA9ckQsTyMkTvsvwh7uk56U0+NoAhW+VGtI
-         P0KA==
-X-Gm-Message-State: AOAM5326cXSBhP3ih/OnppziMQEg7Mc/Sxf1ID0fnBP1qKS/qZ7zr/8+
-        KtsQKVueP8t3ljyZykMAZCGS6xZO63HF1Oe/1UA=
-X-Google-Smtp-Source: ABdhPJwXoxRECHBAaMj+m9L79cv79U241ZDeb1isq+pP0tAtESZH4F6XdACagBkvhV+r3Bo1ZN9RagyV7gpBAwlG6pU=
-X-Received: by 2002:adf:ec06:: with SMTP id x6mr12042381wrn.404.1602208940667;
- Thu, 08 Oct 2020 19:02:20 -0700 (PDT)
+        id S1731090AbgJICVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 22:21:23 -0400
+Received: from mail-eopbgr130047.outbound.protection.outlook.com ([40.107.13.47]:22146
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729724AbgJICVW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Oct 2020 22:21:22 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RM0Vc31ckKy6QiRgt/jP7LvQaYiagkG0MPMkGb2i9JE0rcTwKizKAZkHdjMzIdA4/kLCO1UDcEI4CivtQngo8ve+39S8M58A3y+zFxhxREq7RNAPzoEwHEEKV95jhh2Hs8R5Td9BWLWoY4SRUxv+F4N0VNLKGZeuD19fFhdLgP3OKhiP8XkcksW2uw1XSlIxUkk8kkS8a04OdIzJHIt3F05LP5odR/syXvsI0+zdVUFhD9972jeJXXW520lL2Cb457whDOtC5bGTDFKHgmnbGUmYk/e1FFinbULZeiaRfzxf4Em4yDfhfZ9iAB9lNP677UlZA7tB9knAwZUzMpxbgQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WRoeZA5Ndo4c3LYT1USRIH0ChsPCHGATgXPAxN2ZucI=;
+ b=U9GwE/jIa6WfsxZdFfK7uEC9VECqU8BfSHQTHbpy96foabYhrVRdt9WeCiY166Vk4lX3nBmk+a2TmnJC+3CUTxdFXOcozqU+EmSCCKrrm/ZOeu/G6hQDmIpI1VdI1IYvX3vZ/KVgygm191+c6ZAmBwIeNzzXvWbFGiH3qBlXgInTCVSNXYRZna42nIM2SzxkejqA2DekEBZp+CGSP4HH1lo3CMaH6Yn4n3dgVgDFjPhZ+paFZyZ3JA22TMj2MiLK+yeESTa91OiBP2ayShmwyRLfia2Z0zjZL/KQGZayvOrxj3Ik4yYlQLZ/r6J/bcvM7y1usaSmMMFc165yDpcTzA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WRoeZA5Ndo4c3LYT1USRIH0ChsPCHGATgXPAxN2ZucI=;
+ b=Fth7qVS/k7NctlGdq8XlxR02PSCUA8MKTtvKcs4etxVv+IGm7Wx2nGhGqpugO4DQCxp4p1fW0W6DxuLUCloYOWFtht5WswJV4PDwWk6pCZpiV97Qk9dzE6lIsozAJAvl+Xelpd7LsVnP1u61G0eOwy2Q5Anx5QHXibtF5+hY5I4=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=oss.nxp.com;
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
+ by AM4PR0401MB2355.eurprd04.prod.outlook.com (2603:10a6:200:51::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.35; Fri, 9 Oct
+ 2020 02:21:17 +0000
+Received: from AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::a997:35ae:220c:14ef]) by AM0PR04MB5636.eurprd04.prod.outlook.com
+ ([fe80::a997:35ae:220c:14ef%7]) with mapi id 15.20.3433.044; Fri, 9 Oct 2020
+ 02:21:17 +0000
+Date:   Fri, 9 Oct 2020 07:50:56 +0530
+From:   Calvin Johnson <calvin.johnson@oss.nxp.com>
+To:     Rob Herring <robh+dt@kernel.org>, davem@davemloft.net
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Grant Likely <grant.likely@arm.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        netdev <netdev@vger.kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:ACPI FOR ARM64 (ACPI/arm64)" <linux-acpi@vger.kernel.org>,
+        linux.cj@gmail.com, "David S. Miller" <davem@davemloft.net>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        devicetree@vger.kernel.org
+Subject: Re: [net-next PATCH v1] net: phy: Move of_mdio from drivers/of to
+ drivers/net/mdio
+Message-ID: <20201009022056.GA17999@lsv03152.swis.in-blr01.nxp.com>
+References: <20201008144706.8212-1-calvin.johnson@oss.nxp.com>
+ <CAL_JsqLf0UJNmx8OgpDye2zfFNZyJJ8gbr3nbmGyiMg81RoHOg@mail.gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAL_JsqLf0UJNmx8OgpDye2zfFNZyJJ8gbr3nbmGyiMg81RoHOg@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Originating-IP: [14.142.151.118]
+X-ClientProxiedBy: SG2P153CA0007.APCP153.PROD.OUTLOOK.COM (2603:1096::17) To
+ AM0PR04MB5636.eurprd04.prod.outlook.com (2603:10a6:208:130::22)
 MIME-Version: 1.0
-References: <8ce0fde0d093d62e8969d1788a13921ed1516ad6.1602150362.git.lucien.xin@gmail.com>
- <202010082357.BLEOWVCz-lkp@intel.com>
-In-Reply-To: <202010082357.BLEOWVCz-lkp@intel.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Fri, 9 Oct 2020 10:02:09 +0800
-Message-ID: <CADvbK_f+Z=Z72bHuf0tGbQBAw4+hq5R=r7buxV_dGDgJTt632Q@mail.gmail.com>
-Subject: Re: [PATCHv2 net-next 17/17] sctp: enable udp tunneling socks
-To:     kernel test robot <lkp@intel.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        kbuild-all@lists.01.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Michael Tuexen <tuexen@fh-muenster.de>,
-        davem <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from lsv03152.swis.in-blr01.nxp.com (14.142.151.118) by SG2P153CA0007.APCP153.PROD.OUTLOOK.COM (2603:1096::17) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.11 via Frontend Transport; Fri, 9 Oct 2020 02:21:11 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 3c429851-aa13-43d3-7bed-08d86bfa00b6
+X-MS-TrafficTypeDiagnostic: AM4PR0401MB2355:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM4PR0401MB23553FD12B1B6E7ED00112E3D2080@AM4PR0401MB2355.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2582;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: XtyN0m/2mZuoAM7dYgnCzaJPhtrDG+Tsy9upmpdLwkvmyZRqRGUNupmZ7tBPFSG7Pf60fwXVxdbycOA2xlmKyRl6wWR3mLce9CzLkLh3UJ1ouFIvAittzoRn4S0aHS/orQlXbn/B+QwGyC26Kr8N6vP+W0BOi4trGvzkzwTwydB+YUpm4NMSQ9vju4TcfrG9Mj2yC+P1zPVV8uWzkWo7ciAdpzo6CctmE+6mO6a8WrARioYwXajbNBMi2vUFIskbgblSBHdkOAoAjaQ5egDV/YfXUUjiEaBBQO0F4iBZzN76fvPvMX1BKuo5gowVN8peRNc3FM2sPYm4WzRWLNaP04L8vHD0ssKHYsveCc3bXrOOwGbBPDaGVivSSfa8fSbS
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5636.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(346002)(136003)(39860400002)(396003)(186003)(33656002)(6666004)(55016002)(8936002)(7416002)(8676002)(66476007)(66946007)(16526019)(1006002)(26005)(86362001)(9686003)(316002)(54906003)(956004)(4326008)(478600001)(5660300002)(2906002)(53546011)(83380400001)(1076003)(7696005)(55236004)(66556008)(44832011)(6506007)(52116002)(110426005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 176B8fvERKF6PmtNheNGmocOIe0i0vkad0M0p73bRaQsqmPCW3Zm6wdM+E1/hwNFl8CniXtoet27/C4k5GoJGlyTOVLHwJVdso0ZefzD5LQHoRU11l3xlWkN7A1tEOmHq3oZAfAvyhCQnJFnBE2QoRr+On5/48uiegU88j+7hv3kyIvxhW0XljVHbHqeclalwG35nKYw+PhUaphR/9eSzEdsAG0nLrEo7Cc01K8zs/Ad25g2dkOksLV7uGu/Edtg7YoMT9M57eLqMkopum0k6zpX4art2Aufm02B6Zmf9Mmxy/ZZv6TWr1LrYsZYLSfwRHfM80o3lkx6aB9pKTCNRcMehTWOlnftJ73VL0eOFausXU754ubxx3ClMvIclHdr504n3wyyWzur5BteM1op2f47OXxVxaYjODs0i6cIptfDBAwm00C4e3QUaMlx7bWnAarMeRGFeSR7+s+kHygZ/4fQjgevuOZJIjBLH0xtKGeUP/k5KOJIpTTFvG0pycUDbYPPbwx8IxgBLACEBQwr+G+aTwQxbVf8ft6u0ARw/cKcXdBlJGMmmig9dl5aNHWHD97wNAqZAEZE2BBzLEOqr/wxrOjuXf0ml+vIV/nFrGNKefMnScXY99OXhSF0FTTjj7gyYvqSY2LTPpt9/WHxhg==
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3c429851-aa13-43d3-7bed-08d86bfa00b6
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5636.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Oct 2020 02:21:17.5717
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: brc7FWA7mRPXHuvrS8FZJYDG6Oq0x+6iUDqRKZ1ox9bVXnvl2r1NUoqdpntS0bRXkhPPZF358bXr4WdDYIed4A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0401MB2355
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 8, 2020 at 11:46 PM kernel test robot <lkp@intel.com> wrote:
->
-> Hi Xin,
->
-> Thank you for the patch! Perhaps something to improve:
->
-> [auto build test WARNING on net-next/master]
->
-> url:    https://github.com/0day-ci/linux/commits/Xin-Long/sctp-Implement-RFC6951-UDP-Encapsulation-of-SCTP/20201008-175211
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 9faebeb2d80065926dfbc09cb73b1bb7779a89cd
-> config: i386-randconfig-s002-20201008 (attached as .config)
-> compiler: gcc-9 (Debian 9.3.0-15) 9.3.0
-> reproduce:
->         # apt-get install sparse
->         # sparse version: v0.6.2-218-gc0e96d6d-dirty
->         # https://github.com/0day-ci/linux/commit/7dab31e8c96fab2089a651d5a6d06bcf92b011ad
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Xin-Long/sctp-Implement-RFC6951-UDP-Encapsulation-of-SCTP/20201008-175211
->         git checkout 7dab31e8c96fab2089a651d5a6d06bcf92b011ad
->         # save the attached .config to linux build tree
->         make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' ARCH=i386
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> echo
-> echo "sparse warnings: (new ones prefixed by >>)"
-> echo
-> >> net/sctp/sysctl.c:532:39: sparse: sparse: incorrect type in assignment (different base types) @@     expected restricted __be16 [usertype] udp_port @@     got int udp_port @@
-> >> net/sctp/sysctl.c:532:39: sparse:     expected restricted __be16 [usertype] udp_port
-> >> net/sctp/sysctl.c:532:39: sparse:     got int udp_port
->
-> vim +532 net/sctp/sysctl.c
->
->    500
->    501  static int proc_sctp_do_udp_port(struct ctl_table *ctl, int write,
->    502                                   void *buffer, size_t *lenp, loff_t *ppos)
->    503  {
->    504          struct net *net = current->nsproxy->net_ns;
->    505          unsigned int min = *(unsigned int *)ctl->extra1;
->    506          unsigned int max = *(unsigned int *)ctl->extra2;
->    507          struct ctl_table tbl;
->    508          int ret, new_value;
->    509
->    510          memset(&tbl, 0, sizeof(struct ctl_table));
->    511          tbl.maxlen = sizeof(unsigned int);
->    512
->    513          if (write)
->    514                  tbl.data = &new_value;
->    515          else
->    516                  tbl.data = &net->sctp.udp_port;
->    517
->    518          ret = proc_dointvec(&tbl, write, buffer, lenp, ppos);
->    519          if (write && ret == 0) {
->    520                  struct sock *sk = net->sctp.ctl_sock;
->    521
->    522                  if (new_value > max || new_value < min)
->    523                          return -EINVAL;
->    524
->    525                  net->sctp.udp_port = new_value;
->    526                  sctp_udp_sock_stop(net);
->    527                  ret = sctp_udp_sock_start(net);
->    528                  if (ret)
->    529                          net->sctp.udp_port = 0;
->    530
->    531                  lock_sock(sk);
->  > 532                  sctp_sk(sk)->udp_port = net->sctp.udp_port;
->    533                  release_sock(sk);
->    534          }
->    535
->    536          return ret;
->    537  }
->    538
-I will add the restricted __be16 in these 3 patches.
+Hi Rob,
 
-Thanks.
->
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+On Thu, Oct 08, 2020 at 11:35:07AM -0500, Rob Herring wrote:
+> On Thu, Oct 8, 2020 at 9:47 AM Calvin Johnson
+> <calvin.johnson@oss.nxp.com> wrote:
+> >
+> > Better place for of_mdio.c is drivers/net/mdio.
+> > Move of_mdio.c from drivers/of to drivers/net/mdio
+> 
+> One thing off my todo list. I'd started this ages ago[1].
+> 
+> >
+> > Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+> > ---
+> >
+> >  MAINTAINERS                        | 2 +-
+> >  drivers/net/mdio/Kconfig           | 8 ++++++++
+> >  drivers/net/mdio/Makefile          | 2 ++
+> >  drivers/{of => net/mdio}/of_mdio.c | 0
+> >  drivers/of/Kconfig                 | 7 -------
+> >  drivers/of/Makefile                | 1 -
+> >  6 files changed, 11 insertions(+), 9 deletions(-)
+> >  rename drivers/{of => net/mdio}/of_mdio.c (100%)
+> 
+> of_mdio.c is really a combination of mdio and phylib functions, so it
+> should be split up IMO. With that, I think you can get rid of
+> CONFIG_OF_MDIO. See my branch[1] for what I had in mind. But that can
+> be done after this if the net maintainers prefer.
+> 
+> Acked-by: Rob Herring <robh@kernel.org>
+> 
+> Rob
+> 
+> [1] git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git dt/move-net
+
+Makes sense to me to split of_mdio.c. I can work on it once my current task
+completes.
+
+Regards
+Calvin
