@@ -2,215 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 916B4288DAB
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 18:04:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12B48288DBE
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 18:06:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389582AbgJIQER (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 12:04:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39970 "EHLO
+        id S2389616AbgJIQGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 12:06:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388882AbgJIQEQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 12:04:16 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC2AC0613D2;
-        Fri,  9 Oct 2020 09:04:16 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id f19so7222359pfj.11;
-        Fri, 09 Oct 2020 09:04:16 -0700 (PDT)
+        with ESMTP id S2389144AbgJIQGc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 12:06:32 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80208C0613D2;
+        Fri,  9 Oct 2020 09:06:32 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id dt13so13821469ejb.12;
+        Fri, 09 Oct 2020 09:06:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=fXVs26+o7OprmQfFUNtOyzpup7sKo/CN6TNAkv399Vs=;
-        b=mV2j2FdyVdgZ0U9rqzrbQ8wUmVYmXKN1nFbewMjSNj/+BrUpD12Tz7kr02WE66bUJ/
-         CfSG04SbQ9/kghySp2ofcqdas9s4mw7u42sXFPXQDIMxluIzP5Naer+ajeghVFDfe9/e
-         Tk1ykhERUf0Rmd7nCt32blcdnmYS8RTPKwvTqPkmBA5rASDFjQoyXG3SBvpy628azDcx
-         FnQAnsN1+LR5diaFQFl3GmD8xDdrH1CwEDhvDI9QDOSdeBeM+4wHnsUHlaoS5rGlCrYG
-         lUIwpEIGzKOsppldacoJY4R78uS0RnOrzQ9Fk3dYqHClenB/Egt1GDrEp5OdTUVqblgH
-         ReWg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=mxO+I5LNxrcOwcYvX0IJyyJi/v9s48ckxPqo00HL+Xw=;
+        b=XV+ZUq/hdjuq/ARetFqqjacQh/2BcONSA8rW35fw/sBgoXDcprcPgR6H8drf3Ey1Pb
+         L+GksaUV5G7fhGeMBHTWbmOgZA5sI+gfr08BN2LCuIOvK0Vu1Gs/Z2AxWW+1OA9Pg0+h
+         Q1ETKnshvjGqaUoBTGakzrxvMgWTxwYut+4KYvQlolNriey5VTfQAUwAX2Y6LAo309Js
+         BN3WNNY5bYSedSO9dTY9IpWZJK3dAwBB/+dABgWpa0QDEG6owkzILh0unCZCRgjYn/lA
+         RG2VnG/E+jnlD+FDd2JE30Ijeh3qIRRXHVnQuP2K4pfMfTmY89uzPfFo2k9/JRbMNtKU
+         iZww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fXVs26+o7OprmQfFUNtOyzpup7sKo/CN6TNAkv399Vs=;
-        b=I7sYhClA3Z3eQH2qR2a9bKyop8ZDtRAh97sH4V2heDf3hELTuLdPb6O+ujFmNhzGQl
-         0i0Dw220S1//4E3Bhps9e1dTr4Onx2BfEEbTj/x91zrpAMLwdHVD3qu2K2+ZLKsKYJve
-         ahTfUFLtCawiEBuGewZB/T83M5R5MMmG4D6BLDPiyKp/DESi6z1C4YzHLeGB3EkpkTfv
-         qai9PQXCfVAWCrFXgnvwuFkXgDv+nQtEQjEdtEmrqr7+OA1X90n1n2L3f/nJCwNm/eMh
-         lt1Cn/nZMMXfj64sLvQqzd4ZZ3VhxxMovFJ/55LlfX347aPJOeAgK8LVjl+XjtTPpswu
-         n9sw==
-X-Gm-Message-State: AOAM530ScWRpNSO1yl0hOcjjeu3nJMjBSbwEuEzAn/bZTxQg2utg4QwH
-        B0ZjE17qpGTP+v67IMeyjw==
-X-Google-Smtp-Source: ABdhPJxt6jLY8nctc/I+B0E4qGjZcmndbrd2XrPvBrBe7okR8yI3PZszfAVeWW0FX03sUMJtwqmBRA==
-X-Received: by 2002:a17:90a:3b48:: with SMTP id t8mr5467395pjf.32.1602259456091;
-        Fri, 09 Oct 2020 09:04:16 -0700 (PDT)
-Received: from localhost.localdomain ([182.209.58.45])
-        by smtp.gmail.com with ESMTPSA id y19sm11287435pfp.52.2020.10.09.09.04.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Oct 2020 09:04:15 -0700 (PDT)
-From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Xdp <xdp-newbies@vger.kernel.org>
-Subject: [PATCH bpf-next 3/3] samples: bpf: refactor XDP kern program maps with BTF-defined map
-Date:   Sat, 10 Oct 2020 01:03:53 +0900
-Message-Id: <20201009160353.1529-4-danieltimlee@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201009160353.1529-1-danieltimlee@gmail.com>
-References: <20201009160353.1529-1-danieltimlee@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=mxO+I5LNxrcOwcYvX0IJyyJi/v9s48ckxPqo00HL+Xw=;
+        b=qXhnZYS6+2Ixz27xAdNUlfZo7Y8l4GJ2AgpKSgwn8KU+anqndoRY2zwFA9HmFiXkhn
+         8xkHTji28nYmqgsDnIQQulf65AR7iLIiw8sVS9WHcn2TvvBmOZLwGh+/bfmbsIk/LQMQ
+         CZU9e7eCX8ruMUYYd2dbaCIiAEB9GTnFFPt9KjWL1D9Dt3oHLM7AQRViYgN6kg5KN6lf
+         yxM3lyADGlnCwM8ywE+i3b9L6v4BGC0C9ehpeRoMWRUr2uRRyjo6OsY7fe2Fhk45PEFQ
+         OjaJWIMmocRPuQq7skj37Pt6gQja4AJY1sZfJ0IuK8UBIbuShcEXJThu2mB7sNvvObV/
+         SQtw==
+X-Gm-Message-State: AOAM530W8ciyHTLg3xyAJmdmXrsclzRCXqWqBVw6rbyaVGBaINkfYZSQ
+        LQXshyLpO8DibhfesyJqGpw=
+X-Google-Smtp-Source: ABdhPJxnHXb6Br4QFjWPiyYOdwrFHi55f9ys4UhdL9yDCqWn2sQjviznQIoMH6qg+zFGiiJhaHuRNQ==
+X-Received: by 2002:a17:906:f0d8:: with SMTP id dk24mr14840855ejb.492.1602259591162;
+        Fri, 09 Oct 2020 09:06:31 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f00:6a00:e538:757:aee0:c25f? (p200300ea8f006a00e5380757aee0c25f.dip0.t-ipconnect.de. [2003:ea:8f00:6a00:e538:757:aee0:c25f])
+        by smtp.googlemail.com with ESMTPSA id v14sm867268edy.68.2020.10.09.09.06.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Oct 2020 09:06:30 -0700 (PDT)
+Subject: Re: [PATCH] net: stmmac: Don't call _irqoff() with hardirqs enabled
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     John Keeping <john@metanate.com>, netdev@vger.kernel.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>
+References: <20201008162749.860521-1-john@metanate.com>
+ <8036d473-68bd-7ee7-e2e9-677ff4060bd3@gmail.com>
+ <20201009085805.65f9877a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <725ba7ca-0818-074b-c380-15abaa5d037b@gmail.com>
+Date:   Fri, 9 Oct 2020 18:06:25 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201009085805.65f9877a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Most of the samples were converted to use the new BTF-defined MAP as
-they moved to libbpf, but some of the samples were missing.
-
-Instead of using the previous BPF MAP definition, this commit refactors
-xdp_monitor and xdp_sample_pkts_kern MAP definition with the new
-BTF-defined MAP format.
-
-Also, this commit removes the max_entries attribute at PERF_EVENT_ARRAY
-map type. The libbpf's bpf_object__create_map() will automatically
-set max_entries to the maximum configured number of CPUs on the host.
-
-Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
----
- samples/bpf/xdp_monitor_kern.c     | 60 +++++++++++++++---------------
- samples/bpf/xdp_sample_pkts_kern.c | 14 +++----
- samples/bpf/xdp_sample_pkts_user.c |  1 -
- 3 files changed, 36 insertions(+), 39 deletions(-)
-
-diff --git a/samples/bpf/xdp_monitor_kern.c b/samples/bpf/xdp_monitor_kern.c
-index 3d33cca2d48a..5c955b812c47 100644
---- a/samples/bpf/xdp_monitor_kern.c
-+++ b/samples/bpf/xdp_monitor_kern.c
-@@ -6,21 +6,21 @@
- #include <uapi/linux/bpf.h>
- #include <bpf/bpf_helpers.h>
- 
--struct bpf_map_def SEC("maps") redirect_err_cnt = {
--	.type = BPF_MAP_TYPE_PERCPU_ARRAY,
--	.key_size = sizeof(u32),
--	.value_size = sizeof(u64),
--	.max_entries = 2,
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
-+	__type(key, u32);
-+	__type(value, u64);
-+	__uint(max_entries, 2);
- 	/* TODO: have entries for all possible errno's */
--};
-+} redirect_err_cnt SEC(".maps");
- 
- #define XDP_UNKNOWN	XDP_REDIRECT + 1
--struct bpf_map_def SEC("maps") exception_cnt = {
--	.type		= BPF_MAP_TYPE_PERCPU_ARRAY,
--	.key_size	= sizeof(u32),
--	.value_size	= sizeof(u64),
--	.max_entries	= XDP_UNKNOWN + 1,
--};
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
-+	__type(key, u32);
-+	__type(value, u64);
-+	__uint(max_entries, XDP_UNKNOWN + 1);
-+} exception_cnt SEC(".maps");
- 
- /* Tracepoint format: /sys/kernel/debug/tracing/events/xdp/xdp_redirect/format
-  * Code in:                kernel/include/trace/events/xdp.h
-@@ -129,19 +129,19 @@ struct datarec {
- };
- #define MAX_CPUS 64
- 
--struct bpf_map_def SEC("maps") cpumap_enqueue_cnt = {
--	.type		= BPF_MAP_TYPE_PERCPU_ARRAY,
--	.key_size	= sizeof(u32),
--	.value_size	= sizeof(struct datarec),
--	.max_entries	= MAX_CPUS,
--};
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
-+	__type(key, u32);
-+	__type(value, struct datarec);
-+	__uint(max_entries, MAX_CPUS);
-+} cpumap_enqueue_cnt SEC(".maps");
- 
--struct bpf_map_def SEC("maps") cpumap_kthread_cnt = {
--	.type		= BPF_MAP_TYPE_PERCPU_ARRAY,
--	.key_size	= sizeof(u32),
--	.value_size	= sizeof(struct datarec),
--	.max_entries	= 1,
--};
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
-+	__type(key, u32);
-+	__type(value, struct datarec);
-+	__uint(max_entries, 1);
-+} cpumap_kthread_cnt SEC(".maps");
- 
- /* Tracepoint: /sys/kernel/debug/tracing/events/xdp/xdp_cpumap_enqueue/format
-  * Code in:         kernel/include/trace/events/xdp.h
-@@ -210,12 +210,12 @@ int trace_xdp_cpumap_kthread(struct cpumap_kthread_ctx *ctx)
- 	return 0;
- }
- 
--struct bpf_map_def SEC("maps") devmap_xmit_cnt = {
--	.type		= BPF_MAP_TYPE_PERCPU_ARRAY,
--	.key_size	= sizeof(u32),
--	.value_size	= sizeof(struct datarec),
--	.max_entries	= 1,
--};
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
-+	__type(key, u32);
-+	__type(value, struct datarec);
-+	__uint(max_entries, 1);
-+} devmap_xmit_cnt SEC(".maps");
- 
- /* Tracepoint: /sys/kernel/debug/tracing/events/xdp/xdp_devmap_xmit/format
-  * Code in:         kernel/include/trace/events/xdp.h
-diff --git a/samples/bpf/xdp_sample_pkts_kern.c b/samples/bpf/xdp_sample_pkts_kern.c
-index 33377289e2a8..2fc3ecc9d9aa 100644
---- a/samples/bpf/xdp_sample_pkts_kern.c
-+++ b/samples/bpf/xdp_sample_pkts_kern.c
-@@ -5,14 +5,12 @@
- #include <bpf/bpf_helpers.h>
- 
- #define SAMPLE_SIZE 64ul
--#define MAX_CPUS 128
--
--struct bpf_map_def SEC("maps") my_map = {
--	.type = BPF_MAP_TYPE_PERF_EVENT_ARRAY,
--	.key_size = sizeof(int),
--	.value_size = sizeof(u32),
--	.max_entries = MAX_CPUS,
--};
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
-+	__type(key, int);
-+	__type(value, u32);
-+} my_map SEC(".maps");
- 
- SEC("xdp_sample")
- int xdp_sample_prog(struct xdp_md *ctx)
-diff --git a/samples/bpf/xdp_sample_pkts_user.c b/samples/bpf/xdp_sample_pkts_user.c
-index 991ef6f0880b..4b2a300c750c 100644
---- a/samples/bpf/xdp_sample_pkts_user.c
-+++ b/samples/bpf/xdp_sample_pkts_user.c
-@@ -18,7 +18,6 @@
- 
- #include "perf-sys.h"
- 
--#define MAX_CPUS 128
- static int if_idx;
- static char *if_name;
- static __u32 xdp_flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
--- 
-2.25.1
-
+On 09.10.2020 17:58, Jakub Kicinski wrote:
+> On Fri, 9 Oct 2020 16:54:06 +0200 Heiner Kallweit wrote:
+>> I'm thinking about a __napi_schedule version that disables hard irq's
+>> conditionally, based on variable force_irqthreads, exported by the irq
+>> subsystem. This would allow to behave correctly with threadirqs set,
+>> whilst not loosing the _irqoff benefit with threadirqs unset.
+>> Let me come up with a proposal.
+> 
+> I think you'd need to make napi_schedule_irqoff() behave like that,
+> right?  Are there any uses of napi_schedule_irqoff() that are disabling
+> irqs and not just running from an irq handler?
+> 
+Right, the best approach depends on the answer to the latter question.
+I didn't check this yet, therefore I described the least intrusive approach.
