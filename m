@@ -2,74 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F4CC2880E1
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 05:53:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B942528A783
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 15:30:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731635AbgJIDxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 23:53:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:20936 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729845AbgJIDxJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 23:53:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1602215588;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FU45aSUQ8dscwhSeXeB5RZOeAkKlMDXRAbcGeFJTPSY=;
-        b=hJ0SAcFU7L4PL5D09PEG3KlBSdQeLvpbQQ4ZqUMchiTLOYnLiE18tErojLQ1R9GxTb/6Cz
-        ULujzMpZPVXVfzmSv+ocR1I+qrPVLJWBDIIUbHuERd/OYKRoqFV4hFeIXFhG/x3yAKT5n4
-        RBoShbaP0cdyDRpUo1KsHZ3dWf+3ff0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-529-ZXpxE5hfMKO49E23RlPavw-1; Thu, 08 Oct 2020 23:53:06 -0400
-X-MC-Unique: ZXpxE5hfMKO49E23RlPavw-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 19B5F87950B;
-        Fri,  9 Oct 2020 03:53:05 +0000 (UTC)
-Received: from [10.72.13.133] (ovpn-13-133.pek2.redhat.com [10.72.13.133])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 42A3D6EF58;
-        Fri,  9 Oct 2020 03:52:40 +0000 (UTC)
-Subject: Re: [RFC PATCH 09/24] vdpa: multiple address spaces support
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     mst@redhat.com, lulu@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, rob.miller@broadcom.com,
-        lingshan.zhu@intel.com, eperezma@redhat.com, hanand@xilinx.com,
-        mhabets@solarflare.com, eli@mellanox.com, amorenoz@redhat.com,
-        maxime.coquelin@redhat.com, stefanha@redhat.com,
-        sgarzare@redhat.com
-References: <20200924032125.18619-1-jasowang@redhat.com>
- <20200924032125.18619-10-jasowang@redhat.com>
- <20201001132331.GB32363@mtl-vdi-166.wap.labs.mlnx>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <671aa6b3-c26c-d94a-82a7-0d203ef5b409@redhat.com>
-Date:   Fri, 9 Oct 2020 11:52:39 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S2387918AbgJKNae (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 09:30:34 -0400
+Received: from server.hostvarna.com ([185.219.69.50]:51289 "EHLO
+        mail.hostvarna.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387887AbgJKNae (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 09:30:34 -0400
+X-Greylist: delayed 56689 seconds by postgrey-1.27 at vger.kernel.org; Sun, 11 Oct 2020 09:30:33 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by mail.hostvarna.com (Postfix) with ESMTP id B44A0D691AB;
+        Sat, 10 Oct 2020 16:49:54 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=hostvarna.com; h=
+        x-mailer:content-transfer-encoding:content-type:content-type
+        :mime-version:date:date:subject:subject:from:from:reply-to; s=
+        dkim; t=1602337789; x=1604152190; bh=m3pASy53GgfFwHppvIPHJghbzAH
+        QviKN6bgk+M/PrtE=; b=jca7I6c3iRrtML0Pq7VjtmE6lxqLfryKk43/Zo0+gq9
+        qqvRa7awlswHGKDPiHkfTQp5NzQl55KeiwgFL6VrsNP++kU5ER1/Ns24BpRKrao8
+        CI+ygUsQltxpXVZWELz8Hb6XXwNKVazFxJ74X2paP3dXWqJ0wKK1j9mw7wJUOLNg
+        =
+X-Virus-Scanned: Debian amavisd-new at server.hostvarna.com
+Received: from mail.hostvarna.com ([127.0.0.1])
+        by localhost (mail.hostvarna.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id H_KfFFdbele4; Sat, 10 Oct 2020 16:49:49 +0300 (EEST)
+Received: from User (unknown [176.32.23.85])
+        (Authenticated sender: simona@hostvarna.com)
+        by mail.hostvarna.com (Postfix) with ESMTPA id 28B46D6E9F4;
+        Thu,  8 Oct 2020 21:54:11 +0300 (EEST)
+Reply-To: <maviswanczyko@aol.com>
+From:   "L.  Wanczyk." <simona@hostvarna.com>
+Subject: DONATION .....                       50
+Date:   Thu, 8 Oct 2020 20:53:23 -0700
 MIME-Version: 1.0
-In-Reply-To: <20201001132331.GB32363@mtl-vdi-166.wap.labs.mlnx>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Type: text/plain;
+        charset="Windows-1251"
+Content-Transfer-Encoding: 7bit
+X-Priority: 3
+X-MSMail-Priority: Normal
+X-Mailer: Microsoft Outlook Express 6.00.2800.1081
+X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2800.1081
+Message-Id: <20201010134954.B44A0D691AB@mail.hostvarna.com>
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-On 2020/10/1 下午9:23, Eli Cohen wrote:
->>   
->> +	/* Only support 1 address space */
->> +	if (vdpa->ngroups != 1)
->> +		return -ENOTSUPP;
-> Checkpatch warning:  prefer EOPNOTSUPP
->
+I'm Mrs. Mavis Wanczyk, the mega winner of $758 Million in Mega Millions
+Jackpot, I am donating to 5 random individuals if you get this email then
+your email was selected after a spin ball. I have spread most of my wealth
+over a number of charities and organizations. I have voluntarily decided to
+donate the sum of $ 10 Million USD to you as one of the selected , to verify
+my
+winnings via YouTube page below.
 
-Will fix.
+WATCH ME HERE: https://www.youtube.com/watch?v=7kWnqvJM1mM
 
-Thanks
+THIS IS YOUR DONATION CODE: F207162
+Kindly send your direct telephone and fax number to enable me to reach you
 
+Reply with the DONATION CODE to this email: maviswanczykoo@aol.com
+
+Hope to make you and your family happy.
+
+Regards,
+Mrs. Mavis L. Wanczyk.
