@@ -2,59 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B591289133
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 20:36:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2AAB28913A
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 20:37:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732446AbgJISgS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 14:36:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35390 "EHLO
+        id S1732496AbgJIShQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 14:37:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731643AbgJISgM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 14:36:12 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 569EEC0613D2;
-        Fri,  9 Oct 2020 11:36:11 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id l8so11036389ioh.11;
-        Fri, 09 Oct 2020 11:36:11 -0700 (PDT)
+        with ESMTP id S1726236AbgJISgc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 14:36:32 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD6A9C0613D2;
+        Fri,  9 Oct 2020 11:36:31 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id n6so11050263ioc.12;
+        Fri, 09 Oct 2020 11:36:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=LxGXnht7XM0f6Lg4juMi6AxmK12FOvrzP0jaYwfGoXs=;
-        b=WmCkRtF/KDdhWmebGvaBbCvnOAadAWP2H+4466n01VlOUzD2ZGixgVDy12v/t/IZmy
-         KH0iCL1aHPsvd5fKgs2yKvmT0TIw7oZuBQD9TDmPoo1MLUemjQzOS1PmPthGhqXyni1J
-         K0a47T47Hx5lci2VwGGjnuvGVdSFrRIqIWOJMGq8LBGcaRMvOS4Xh5wShVVpA9AfahSk
-         XZMyLXunAHgUhbF3WL+k/fQmQHugWA1rM8eYsIVcDjlz7sYkgTI81UhHbR702HTAyKOw
-         fHPsp6kiTqM4n5erC8I3IPrj2f7bdyhgiHjfwIVCqDqlv8cdHxoxMlWy9GONgA+b/5Yl
-         5rdA==
+        h=subject:from:to:cc:date:message-id:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=lLa3hBZMn4NHFo7xwpT+WHTGtW+n4KL1Gv/kNX990nc=;
+        b=sRL7lAoFzynAdYHdnMm8WglEKo8v4y1Q8zXpNKH3Thf+SHB6xNoP9uNnV05C50xb0A
+         +nCyhlF77cF3OvrF6ZfqwRzxjNGoAuUdiKoQRnTkiro98h5AkjIGnXaAfHr3i8Uah6wv
+         NXBM5t3EsH0G2fa/jPvOQfo1HWwQV28xugcBUfNPmF/lonIFerkT+HGTAyzP8/zRauZT
+         LBZISk/IxqdsEj/tbT3w2GnkGZtslL+R/+ngdb56oCiJNbb4p46pHVbGlhKmk9fotlKN
+         SSdxDje4ey1E442QE6+MgXu/7VghUAElcvOR+A4yTqWWdBut06SWpcnX0x/HT0cotUiv
+         3R6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=LxGXnht7XM0f6Lg4juMi6AxmK12FOvrzP0jaYwfGoXs=;
-        b=N1bx/Pd5zfbxhZEUpEY+054uf/Vceb49SNjdEd16cSZH3zuTPCn6XxpZ0vwfbzlLLe
-         y/Y3QEPXSsAXd1IayGRSMjFUAuwNJdWm7/YwECogxYumMiOCwv6XoALllSLPHYNKAOI8
-         8Us4lea+XmWL7I6Hevw8cxWDDM7tkIXln8FEC4q6FX9WYmKDilo3KUPOanGHPHs/o/q5
-         wyM2g07XJQFbR7dUwMq3KbwqtDJNkcG3q7iIgZOwik9AFFZH4lbC9ZlUXFtAvs8edB1C
-         KTOxb6X0KITwnfuqfc6c9xm26UovyEBDQ8qPb13Vwymkrt3moDAcePxE9NJwgDP1sQ7l
-         KU8Q==
-X-Gm-Message-State: AOAM5303soN5qxx5APBTYTRUC3hsbBbIChO+gBNFgZm730Jd24/rRjK0
-        ZBIj+2yeCkrBXHqS/UpvnQM=
-X-Google-Smtp-Source: ABdhPJxXdrhcb7+pl7bfO/nRgINvDOo5lxZJtfAf7MbIDFin6FaN2kbwKl+o9zgqXOr5sghX5CZdGw==
-X-Received: by 2002:a05:6602:14c8:: with SMTP id b8mr10040399iow.170.1602268570660;
-        Fri, 09 Oct 2020 11:36:10 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=lLa3hBZMn4NHFo7xwpT+WHTGtW+n4KL1Gv/kNX990nc=;
+        b=BaJzIuIwOX+rOb/4mugG1NGe7tfFcRnjvxqkmy/4HYh99BJpfQrSrrEiePtJ61Jwf9
+         XphbOfsTkwi1PIB9CH5VftANJOKY8IQGHZZ5wRJaueuol88irG3vu1LU4OggvX8d1e0Q
+         9WRkvLqcpkbs4CyWIjc/jXHzd3jnUS9tV4FM3SrzTgidye6ifaf4TesbA64cCrdqsh+4
+         7f8644mKW83MbFybVD0X5/UOGeNKOrIMC/W4Yjh7lNr4sTbX3RULKWBW6Kg7KW3EGzZz
+         fzRCKqomk+SJDpcqzyIfE92zwb2KJO56/t+vdgCCF3MBACPCjeHTjUQvnGkAIAZpW94C
+         JhWg==
+X-Gm-Message-State: AOAM533aKMe4yJgCklNVCRWPKoSzL1ZP0WaN64eYo87Eg3gZlkC8tuOF
+        yH3LtziPYvXWx7r9Db7Tszg=
+X-Google-Smtp-Source: ABdhPJy6lGYejDeSVVOQX1Q6ItQNkph2z2JzgclDW2pgPOM2H2jAof8NKvRN5R+AM2aNtAaBP31Ieg==
+X-Received: by 2002:a05:6602:2fc2:: with SMTP id v2mr1341210iow.19.1602268591014;
+        Fri, 09 Oct 2020 11:36:31 -0700 (PDT)
 Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id z200sm3827979iof.47.2020.10.09.11.36.02
+        by smtp.gmail.com with ESMTPSA id t11sm4809886ill.61.2020.10.09.11.36.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Oct 2020 11:36:10 -0700 (PDT)
-Subject: [bpf-next PATCH v2 0/6] sockmap/sk_skb program memory acct fixes
+        Fri, 09 Oct 2020 11:36:30 -0700 (PDT)
+Subject: [bpf-next PATCH v3 1/6] bpf,
+ sockmap: skb verdict SK_PASS to self already checked rmem limits
 From:   John Fastabend <john.fastabend@gmail.com>
 To:     john.fastabend@gmail.com, alexei.starovoitov@gmail.com,
         daniel@iogearbox.net
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, jakub@cloudflare.com,
         lmb@cloudflare.com
-Date:   Fri, 09 Oct 2020 11:35:53 -0700
-Message-ID: <160226839426.5692.13107801574043388675.stgit@john-Precision-5820-Tower>
+Date:   Fri, 09 Oct 2020 11:36:16 -0700
+Message-ID: <160226857664.5692.668205469388498375.stgit@john-Precision-5820-Tower>
+In-Reply-To: <160226839426.5692.13107801574043388675.stgit@john-Precision-5820-Tower>
+References: <160226839426.5692.13107801574043388675.stgit@john-Precision-5820-Tower>
 User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
@@ -63,77 +66,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Users of sockmap and skmsg trying to build proxys and other tools
-have pointed out to me the error handling can be problematic. If
-the proxy is under-provisioned and/or the BPF admin does not have
-the ability to update/modify memory provisions on the sockets
-its possible data may be dropped. For some things we have retries
-so everything works out OK, but for most things this is likely
-not great. And things go bad.
+For sk_skb case where skb_verdict program returns SK_PASS to continue to
+pass packet up the stack, the memory limits were already checked before
+enqueuing in skb_queue_tail from TCP side. So, lets remove the extra checks
+here. The theory is if the TCP stack believes we have memory to receive
+the packet then lets trust the stack and not double check the limits.
 
-The original design dropped memory accounting on the receive
-socket as early as possible. We did this early in sk_skb
-handling and then charged it to the redirect socket immediately
-after running the BPF program.
+In fact the accounting here can cause a drop if sk_rmem_alloc has increased
+after the stack accepted this packet, but before the duplicate check here.
+And worse if this happens because TCP stack already believes the data has
+been received there is no retransmit.
 
-But, this design caused a fundamental problem. Namely, what should we do
-if we redirect to a socket that has already reached its socket memory
-limits. For proxy use cases the network admin can tune memory limits.
-But, in general we punted on this problem and told folks to simply make
-your memory limits high enough to handle your workload. This is not a
-really good answer. When deploying into environments where we expect this
-to be transparent its no longer the case because we need to tune params.
-In fact its really only viable in cases where we have fine grained
-control over the application. For example a proxy redirecting from an
-ingress socket to an egress socket. The result is I get bug
-reports because its surprising for one, but more importantly also breaks
-some use cases. So lets fix it.
-
-This series cleans up the different cases so that in many common
-modes, such as passing packet up to receive socket, we can simply
-use the underlying assumption that the TCP stack already has done
-memory accounting.
-
-Next instead of trying to do memory accounting against the socket
-we plan to redirect into we keep memory accounting on the receive
-socket until the skb can be put on the redirect socket. This means
-if we do an egress redirect to a socket and sock_writable() returns
-EAGAIN we can requeue the skb on the workqueue and try again. The
-same scenario plays out for ingress. If the skb can not be put on
-the receive queue of the redirect socket than we simply requeue and
-retry. In both cases memory is still accounted for against the
-receiving socket.
-
-This also handles head of line blocking. With the above scheme the
-skb is on a queue associated with the socket it will be sent/recv'd
-on, but the memory accounting is against the received socket. This
-means the receive socket can advance to the next skb and avoid head
-of line blocking. At least until its receive memory on the socket
-runs out. This will put some maximum size on the amount of data any
-socket can enqueue giving us bounds on the skb lists so they can't grow
-indefinitely.
-
-Overall I think this is a win. Tested with test_sockmap.
-
-These are fixes, but I tagged it for bpf-next considering we are
-at -rc8.
-
-v1->v2: Fix uninitialized/unused variables (kernel test robot)
-v2->v3: fix typo in patch2 err=0 needs to be <0 so use err=-EIO
-
+Fixes: 51199405f9672 ("bpf: skb_verdict, support SK_PASS on RX BPF path")
+Signed-off-by: John Fastabend <john.fastabend@gmail.com>
 ---
+ net/core/skmsg.c |   15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
-John Fastabend (6):
-      bpf, sockmap: skb verdict SK_PASS to self already checked rmem limits
-      bpf, sockmap: On receive programs try to fast track SK_PASS ingress
-      bpf, sockmap: remove skb_set_owner_w wmem will be taken later from sendpage
-      bpf, sockmap: remove dropped data on errors in redirect case
-      bpf, sockmap: Remove skb_orphan and let normal skb_kfree do cleanup
-      bpf, sockmap: Add memory accounting so skbs on ingress lists are visible
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index 4b5f7c8fecd1..040ae1d75b65 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -771,6 +771,7 @@ EXPORT_SYMBOL_GPL(sk_psock_tls_strp_read);
+ static void sk_psock_verdict_apply(struct sk_psock *psock,
+ 				   struct sk_buff *skb, int verdict)
+ {
++	struct tcp_skb_cb *tcp;
+ 	struct sock *sk_other;
+ 
+ 	switch (verdict) {
+@@ -780,16 +781,12 @@ static void sk_psock_verdict_apply(struct sk_psock *psock,
+ 		    !sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED)) {
+ 			goto out_free;
+ 		}
+-		if (atomic_read(&sk_other->sk_rmem_alloc) <=
+-		    sk_other->sk_rcvbuf) {
+-			struct tcp_skb_cb *tcp = TCP_SKB_CB(skb);
+ 
+-			tcp->bpf.flags |= BPF_F_INGRESS;
+-			skb_queue_tail(&psock->ingress_skb, skb);
+-			schedule_work(&psock->work);
+-			break;
+-		}
+-		goto out_free;
++		tcp = TCP_SKB_CB(skb);
++		tcp->bpf.flags |= BPF_F_INGRESS;
++		skb_queue_tail(&psock->ingress_skb, skb);
++		schedule_work(&psock->work);
++		break;
+ 	case __SK_REDIRECT:
+ 		sk_psock_skb_redirect(skb);
+ 		break;
 
-
- net/core/skmsg.c |   83 +++++++++++++++++++++++++++++-------------------------
- 1 file changed, 45 insertions(+), 38 deletions(-)
-
---
-Signature
