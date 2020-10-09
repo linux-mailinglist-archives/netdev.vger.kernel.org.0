@@ -2,76 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4312F2884DE
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 10:06:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92907288501
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 10:15:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732542AbgJIIGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 04:06:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50616 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732337AbgJIIGS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 04:06:18 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F37F2C0613D2;
-        Fri,  9 Oct 2020 01:06:17 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kQnPr-00296a-Hh; Fri, 09 Oct 2020 10:06:15 +0200
-Message-ID: <be61c6a38d0f6ca1aa0bc3f0cb45bbb216a12982.camel@sipsolutions.net>
-Subject: Re: [CRAZY-RFF] debugfs: track open files and release on remove
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Greg KH <gregkh@linuxfoundation.org>
+        id S1732595AbgJIIPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 04:15:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40602 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732467AbgJIIPj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Oct 2020 04:15:39 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1BADA2222C;
+        Fri,  9 Oct 2020 08:15:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602231338;
+        bh=bS3V9uZo4PgOtJ1O8yC/OZ2Npybro8w45UriJBmph14=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=AmEQoSqYkxoN7Bun525jzPHg4FMECofYVkMgf1RljW4VMfjMparKGTf6iTk5UI4xh
+         TBsiLIPs7Nv7bkQ8GwShvMmvy/R5exO4rSWqhy2jwoG2Xombp/KU5rUgwBdIgf+sTt
+         cV2YkUZux9zLw55XdPrc9ykH0sbJqyYGCQJGh6xQ=
+Date:   Fri, 9 Oct 2020 10:16:24 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
 Cc:     linux-kernel@vger.kernel.org, nstange@suse.de, ap420073@gmail.com,
         David.Laight@aculab.com, netdev@vger.kernel.org,
         linux-wireless@vger.kernel.org, rafael@kernel.org
-Date:   Fri, 09 Oct 2020 10:06:14 +0200
-In-Reply-To: <20201009080355.GA398994@kroah.com>
+Subject: Re: [CRAZY-RFF] debugfs: track open files and release on remove
+Message-ID: <20201009081624.GA401030@kroah.com>
 References: <87v9fkgf4i.fsf@suse.de>
-         <20201009095306.0d87c3aa13db.Ib3a7019bff15bb6308f6d259473a1648312a4680@changeid>
-         <20201009080355.GA398994@kroah.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+ <20201009095306.0d87c3aa13db.Ib3a7019bff15bb6308f6d259473a1648312a4680@changeid>
+ <20201009080355.GA398994@kroah.com>
+ <be61c6a38d0f6ca1aa0bc3f0cb45bbb216a12982.camel@sipsolutions.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <be61c6a38d0f6ca1aa0bc3f0cb45bbb216a12982.camel@sipsolutions.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-10-09 at 10:03 +0200, Greg KH wrote:
+On Fri, Oct 09, 2020 at 10:06:14AM +0200, Johannes Berg wrote:
+> We used to say the proxy_fops weren't needed and it wasn't an issue, and
+> then still implemented it. Dunno. I'm not really too concerned about it
+> myself, only root can hold the files open and remove modules ...
 
-> For lots of debugfs files, .owner should already be set, if you use the
-> DEFINE_SIMPLE_ATTRIBUTE() or DEFINE_DEBUGFS_ATTRIBUTE() macros.
-> 
-> But yes, not all.
+proxy_fops were needed because devices can be removed from the system at
+any time, causing their debugfs files to want to also be removed.  It
+wasn't because of unloading kernel code.
 
-Right.
+thanks,
 
-You didn't see the original thread:
-
-https://lore.kernel.org/netdev/20201008155048.17679-1-ap420073@gmail.com/
-
-> I thought the proxy-ops stuff was supposed to fix this issue already.
-> Why isn't it, what is broken in them that causes this to still crash?
-
-Well exactly what I described - the proxy_fops *release* doesn't get
-proxied, since we don't have any knowledge of the open files (without
-this patch) when the proxy_fops are redirected to nothing when a file is
-removed.
-
-Nicolai also discussed it a bit here:
-
-https://lore.kernel.org/netdev/87v9fkgf4i.fsf@suse.de/
-
-> And of course, removing kernel modules is never a guaranteed operation,
-> nor is it anything that ever happens automatically, so is this really an
-> issue?  :)
-
-:)
-
-We used to say the proxy_fops weren't needed and it wasn't an issue, and
-then still implemented it. Dunno. I'm not really too concerned about it
-myself, only root can hold the files open and remove modules ...
-
-johannes
-
+greg k-h
