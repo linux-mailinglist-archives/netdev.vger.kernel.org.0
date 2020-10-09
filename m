@@ -2,117 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5D192890D1
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 20:30:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB74A2890E6
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 20:34:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390429AbgJISaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 14:30:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34426 "EHLO
+        id S2390577AbgJISeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 14:34:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388240AbgJISaB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 14:30:01 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11219C0613D2;
-        Fri,  9 Oct 2020 11:30:01 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id b142so7934608ybg.9;
-        Fri, 09 Oct 2020 11:30:01 -0700 (PDT)
+        with ESMTP id S2390548AbgJISdq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 14:33:46 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF4FC0613D5
+        for <netdev@vger.kernel.org>; Fri,  9 Oct 2020 11:33:44 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id q7so10021071ile.8
+        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 11:33:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=wPYR1XCw2CHMtKERpHn+P66N/lX3Kc4UU6HrVKuMVLg=;
-        b=cBdWPln7Bzz/a9GnOWgIBN6QkUjaH5CSD3bi3K/WZfh3LcHuOVPunpURPyg5qiKQQ2
-         B4MzAMZU7fWXHSHhImCOsNkYeRQyiS2LN+/O+kyXhcyrG1FRu7MAtuyIZ1f91aZtSirg
-         eO6lG8vJI15ObWRevYcTW+VYpPt+XFxLOlLzrpfslqDZkeXo30g2IN8lPEURBIKt8azh
-         k7+Dy0LsPCgjEFhXJvBRy0vC71FGiqrCLQiUJ7uAN8pvtiqkGGONrAYPTjhvq+8eImXb
-         5Ca9N3GELpUVfC74hup7MXbEzH0OhdQxNu/kh18GX8l1mX0zlFCD5lLMZzm8rOGK5Qql
-         f8dQ==
+        bh=NginWwcSKqK9kM6/V5DaPE4JtW0hMIAcQ0pfU99Whvs=;
+        b=A3W2nifNlteMroZ5QlhEmA+6TZZW6d31LWV273MXuHDGP2jkeiwWZw2AJsaGf0i8wJ
+         Z9hjYvUGJgF1L2QEdGP+RUwEZOm4fubWc6DOMLXAJAFVrh1xgSVhVJE1b783V/MQYXUv
+         q7EtTtxI8koF6yb0gtOEQPBrXd3OlkN2Rejhz7mrLobBraOJF4s6JriNB0f7vfd2Xq4l
+         odWyPKQa8YOdgnpxbwG+FSKRRO90qODNeHdNpJH8hSle8X4fhya+okU0NNNR01GtT0Bj
+         sf0bSNqVxr3+Q/KnN5XyrumyT3VAFqdJMSBpO9AmPHcXC2ssNDhLvRFbXgsec0kU+R1f
+         8+oA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=wPYR1XCw2CHMtKERpHn+P66N/lX3Kc4UU6HrVKuMVLg=;
-        b=pru5Qc7cXqO5gaHSCeztGQVyIPudf2SL1UN+vxs6ysPk0wocS5pukzD4Ld/ZbhdpgE
-         4IR3n44Z2Kt4yLbm3mMg+wZSAIPpzzx+ddgGduEoy3osEJEtyziU/pOU7fyFQImH1o88
-         bjzQNqpAufdARRXniQ+9uxFGcAqelSKuAquK1Q7dDA4LPYEKildZFYtIMb1KuMTjLHPK
-         Q7kXykj7k62PR0I0JMGTMPLPTLuOzxLyi+IgIZjtLAm5r9d1aaWyCDdFHFRjiytOfYsK
-         b6RGkgLqWu/+9RlaxoiiH1Ug5GDVwlQeGUnRKtk/hxFmE/yDUU5XNAm1td5D2E3aBONv
-         J+TQ==
-X-Gm-Message-State: AOAM532VX8eCfsCJdfYGxjdSWXYiPPoEDOLliisnpjeFreqDX8hDsL02
-        dtxCIS0D6h15Yw97e5ciG5ri0EgiINq5slhnSEY=
-X-Google-Smtp-Source: ABdhPJzc7KQ0asHvWNhe0QOPDN5Aazv4uob54x6oPwpVHbmE04qba53tCDqGfjODwq0oNJNwrCMNuVeCkOYPalmE7u8=
-X-Received: by 2002:a25:2d41:: with SMTP id s1mr18499463ybe.459.1602268200350;
- Fri, 09 Oct 2020 11:30:00 -0700 (PDT)
+        bh=NginWwcSKqK9kM6/V5DaPE4JtW0hMIAcQ0pfU99Whvs=;
+        b=jN6RiunYI5mMcaI9Z/M95crXHCevJto/x69UiUSjQmNXq+kvy7SEZhsH9Z38sFxsaQ
+         ldf/T/EQdWU/4u6nd8sFHK/M2I8VTm1ZrLTht75Or8rWoWmHqqiC6oZQcpkD8gR1tUZX
+         DNnpktRrDO2DBEWYnAHxSpTu2xKvIAPrUT3/ioA+NXLOM53BQXpvU5LjCx+aBM/FeD1f
+         g5XhFMkTO3RB0jhhMbznvc61VxXccoFDkgNsAUcSN0GT1ixp3qamUP1wXuo1y3pD6S/J
+         on9U8XadbLn/Q/WA1CLsfcDxmL22acM1tfW56fuhbDbOFlkxfmrLjrEryzOpvL1C9P/K
+         hf2w==
+X-Gm-Message-State: AOAM530vLZ518O+M6sWvXfGaHNRKji9kjN1xh5QQtKT4Ngc3EGqNfKid
+        RiHEna1JlmKTkmjewpgIYI1aRVHa9xEsZqI7r2iQ2g==
+X-Google-Smtp-Source: ABdhPJxt6mxMvU44yuRLqC9eHk9F62AtoKA50uMUYTCJ/IIpkzAy4745aQ7IMaJPcOSYu+HnbavDRuh8qGPga7dkOt8=
+X-Received: by 2002:a92:ccc2:: with SMTP id u2mr10356666ilq.278.1602268424037;
+ Fri, 09 Oct 2020 11:33:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <20201009160353.1529-1-danieltimlee@gmail.com>
-In-Reply-To: <20201009160353.1529-1-danieltimlee@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 9 Oct 2020 11:29:49 -0700
-Message-ID: <CAEf4BzZJgsd3OkcgULc7_Hxhg_ZcSmp+XT0e--8EMkz9_+5Qxg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 0/3] samples: bpf: Refactor XDP programs with libbpf
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
+References: <160216609656.882446.16642490462568561112.stgit@firesoul>
+ <160216615767.882446.7384364280837100311.stgit@firesoul> <40d7af61-6840-5473-79d7-ea935f6889f4@iogearbox.net>
+In-Reply-To: <40d7af61-6840-5473-79d7-ea935f6889f4@iogearbox.net>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Date:   Fri, 9 Oct 2020 11:33:33 -0700
+Message-ID: <CANP3RGesHkCNTWsWDoU2uJsFjZ4dgnEpp+F-iEmhb9U0-rcT_w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next V3 4/6] bpf: make it possible to identify BPF
+ redirected SKBs
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        bpf <bpf@vger.kernel.org>, Linux NetDev <netdev@vger.kernel.org>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Shaun Crampton <shaun@tigera.io>,
         Lorenzo Bianconi <lorenzo@kernel.org>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Xdp <xdp-newbies@vger.kernel.org>
+        Marek Majkowski <marek@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eyal Birger <eyal.birger@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 9, 2020 at 9:04 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
+> > This change makes it possible to identify SKBs that have been redirected
+> > by TC-BPF (cls_act). This is needed for a number of cases.
+> >
+> > (1) For collaborating with driver ifb net_devices.
+> > (2) For avoiding starting generic-XDP prog on TC ingress redirect.
+> >
+> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 >
-> To avoid confusion caused by the increasing fragmentation of the BPF
-> Loader program, this commit would like to convert the previous bpf_load
-> loader with the libbpf loader.
->
-> Thanks to libbpf's bpf_link interface, managing the tracepoint BPF
-> program is much easier. bpf_program__attach_tracepoint manages the
-> enable of tracepoint event and attach of BPF programs to it with a
-> single interface bpf_link, so there is no need to manage event_fd and
-> prog_fd separately.
->
-> And due to addition of generic bpf_program__attach() to libbpf, it is
-> now possible to attach BPF programs with __attach() instead of
-> explicitly calling __attach_<type>().
->
-> This patchset refactors xdp_monitor with using this libbpf API, and the
-> bpf_load is removed and migrated to libbpf. Also, attach_tracepoint()
-> is replaced with the generic __attach() method in xdp_redirect_cpu.
-> Moreover, maps in kern program have been converted to BTF-defined map.
->
-> Daniel T. Lee (3):
->   samples: bpf: Refactor xdp_monitor with libbpf
->   samples: bpf: Replace attach_tracepoint() to attach() in
->     xdp_redirect_cpu
->   samples: bpf: refactor XDP kern program maps with BTF-defined map
->
->  samples/bpf/Makefile                |   4 +-
->  samples/bpf/xdp_monitor_kern.c      |  60 ++++++------
->  samples/bpf/xdp_monitor_user.c      | 144 +++++++++++++++++++++-------
->  samples/bpf/xdp_redirect_cpu_user.c | 138 +++++++++++++-------------
->  samples/bpf/xdp_sample_pkts_kern.c  |  14 ++-
->  samples/bpf/xdp_sample_pkts_user.c  |   1 -
->  6 files changed, 211 insertions(+), 150 deletions(-)
->
-> --
-> 2.25.1
->
+> Not sure if anyone actually cares about ifb devices, but my worry is that the
+> generic XDP vs tc interaction has been as-is for quite some time so this change
+> in behavior could break in the wild.
 
-Thanks for this clean up, Daniel! It's great! I left a few nits here
-and there in the appropriate patches.
-
-There still seem to be a bunch of users of bpf_load.c, which would be
-nice to get rid of completely. But before you go do that, consider
-integrating BPF skeleton into samples/bpf Makefile. That way instead
-of all those look ups of maps/programs by name, you'd be writing a
-straightforward skel->maps.my_map and similar short and non-failing
-code. This should make the overall time spent on conversion much
-smaller (and more pleasant, IMO).
-
-You've dealt with a lot of samples/bpf reworking, so it should be too
-hard for you to figure out the best way to do this, but check
-selftests/bpf's Makefile, if you need some ideas. Or just ask for
-help. Thanks!
+I'm not at all sure of the interactions/implications here.
+But I do have a request to enable ifb on Android for ingress rate
+limiting and separately we're trying to make XDP work...
+So we might at some point end up with cellular interfaces with xdp
+ebpf (redirect for forwarding/nat/tethering) + ifb + tc ebpf (for
+device local stuff).
+But this is still all very vague and 'ideas only' level.
+(and in general I think I'd like to get rid of the redirect in tc
+ebpf, and leave only xlat64 translation for to-the-device traffic in
+there, so maybe there's no problem anyway??)
