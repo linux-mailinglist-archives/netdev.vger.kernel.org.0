@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4950A289778
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:03:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89DD1289660
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:00:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391175AbgJIUDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 16:03:47 -0400
-Received: from mga07.intel.com ([134.134.136.100]:56781 "EHLO mga07.intel.com"
+        id S2390624AbgJIUAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 16:00:21 -0400
+Received: from mga01.intel.com ([192.55.52.88]:3555 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388726AbgJITwe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Oct 2020 15:52:34 -0400
-IronPort-SDR: k5n5dJgad3PH5z1nKWRCqhUQsH9CIT69v4l8qL7SJaW8QquVIZ7+Rkvin4YtVTXz0/2gWsqL9u
- 0/qOsLBGzxnw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9769"; a="229715221"
+        id S2391072AbgJITxV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Oct 2020 15:53:21 -0400
+IronPort-SDR: PfRGZIAmOh8tdE80idIPd0PyOwzPrEY4WDFLreexyia8j9qcHVdM++IWwhhIaC7Ux2Sv+9U3Wf
+ Uxot3xaU94Mg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9769"; a="182976304"
 X-IronPort-AV: E=Sophos;i="5.77,355,1596524400"; 
-   d="scan'208";a="229715221"
+   d="scan'208";a="182976304"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:52:30 -0700
-IronPort-SDR: R8dnd4Gi4VR6B2jqh++vX5H71gVtYpBk3ChyBwkq2ll0tg176OYljcvG78jHbXA7T9l0eBxuZS
- YLX/odwmLDNw==
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:52:33 -0700
+IronPort-SDR: XHP7HCDttdXyLYHE1MyL2Bm/StJaryejpRmS+iQtfLlXLzP04sJOdLalPQz60Qvt6cf6bIW1lg
+ L4ex5grUzrzg==
 X-IronPort-AV: E=Sophos;i="5.77,355,1596524400"; 
-   d="scan'208";a="329006590"
+   d="scan'208";a="298419726"
 Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:52:29 -0700
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:52:32 -0700
 From:   ira.weiny@intel.com
 To:     Andrew Morton <akpm@linux-foundation.org>,
         Thomas Gleixner <tglx@linutronix.de>,
@@ -33,7 +33,7 @@ To:     Andrew Morton <akpm@linux-foundation.org>,
         Andy Lutomirski <luto@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>
 Cc:     Ira Weiny <ira.weiny@intel.com>,
-        David Howells <dhowells@redhat.com>, x86@kernel.org,
+        Anton Altaparmakov <anton@tuxera.com>, x86@kernel.org,
         Dave Hansen <dave.hansen@linux.intel.com>,
         Dan Williams <dan.j.williams@intel.com>,
         Fenghua Yu <fenghua.yu@intel.com>, linux-doc@vger.kernel.org,
@@ -59,9 +59,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>,
         drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
         xen-devel@lists.xenproject.org, linux-cachefs@redhat.com,
         samba-technical@lists.samba.org, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH RFC PKS/PMEM 28/58] fs/cachefiles: Utilize new kmap_thread()
-Date:   Fri,  9 Oct 2020 12:50:03 -0700
-Message-Id: <20201009195033.3208459-29-ira.weiny@intel.com>
+Subject: [PATCH RFC PKS/PMEM 29/58] fs/ntfs: Utilize new kmap_thread()
+Date:   Fri,  9 Oct 2020 12:50:04 -0700
+Message-Id: <20201009195033.3208459-30-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.28.0.rc0.12.gb6a658bd00c9
 In-Reply-To: <20201009195033.3208459-1-ira.weiny@intel.com>
 References: <20201009195033.3208459-1-ira.weiny@intel.com>
@@ -76,28 +76,34 @@ From: Ira Weiny <ira.weiny@intel.com>
 The kmap() calls in this FS are localized to a single thread.  To avoid
 the over head of global PKRS updates use the new kmap_thread() call.
 
-Cc: David Howells <dhowells@redhat.com>
+Cc: Anton Altaparmakov <anton@tuxera.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 ---
- fs/cachefiles/rdwr.c | 4 ++--
+ fs/ntfs/aops.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/cachefiles/rdwr.c b/fs/cachefiles/rdwr.c
-index 3080cda9e824..2468e5c067ba 100644
---- a/fs/cachefiles/rdwr.c
-+++ b/fs/cachefiles/rdwr.c
-@@ -936,9 +936,9 @@ int cachefiles_write_page(struct fscache_storage *op, struct page *page)
- 		}
+diff --git a/fs/ntfs/aops.c b/fs/ntfs/aops.c
+index bb0a43860ad2..11633d732809 100644
+--- a/fs/ntfs/aops.c
++++ b/fs/ntfs/aops.c
+@@ -1099,7 +1099,7 @@ static int ntfs_write_mst_block(struct page *page,
+ 	if (!nr_bhs)
+ 		goto done;
+ 	/* Map the page so we can access its contents. */
+-	kaddr = kmap(page);
++	kaddr = kmap_thread(page);
+ 	/* Clear the page uptodate flag whilst the mst fixups are applied. */
+ 	BUG_ON(!PageUptodate(page));
+ 	ClearPageUptodate(page);
+@@ -1276,7 +1276,7 @@ static int ntfs_write_mst_block(struct page *page,
+ 		iput(VFS_I(base_tni));
  	}
- 
--	data = kmap(page);
-+	data = kmap_thread(page);
- 	ret = kernel_write(file, data, len, &pos);
+ 	SetPageUptodate(page);
 -	kunmap(page);
 +	kunmap_thread(page);
- 	fput(file);
- 	if (ret != len)
- 		goto error_eio;
+ done:
+ 	if (unlikely(err && err != -ENOMEM)) {
+ 		/*
 -- 
 2.28.0.rc0.12.gb6a658bd00c9
 
