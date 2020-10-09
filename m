@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24170289771
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:03:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62DF928965E
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:00:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391219AbgJIUDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 16:03:48 -0400
-Received: from mga11.intel.com ([192.55.52.93]:40561 "EHLO mga11.intel.com"
+        id S2390651AbgJIUAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 16:00:23 -0400
+Received: from mga14.intel.com ([192.55.52.115]:15567 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390977AbgJITwj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Oct 2020 15:52:39 -0400
-IronPort-SDR: Exjvp/k/vju92C/1HmDJJ3INkGiq2BDsyk1PJOB/fYIXN4StFZXIuvzbkTFTF8uhXPVM7irVri
- H8miumYbiukQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9769"; a="162068015"
+        id S2391075AbgJITxV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Oct 2020 15:53:21 -0400
+IronPort-SDR: CHG01MNstSpG17mDzGS4y9elLRbBJnVOXJxRUg+piAaYWUVMm+uwaS1rsw4JmTP4Aw9xRUutoh
+ mCMDnkWd+amQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9769"; a="164743944"
 X-IronPort-AV: E=Sophos;i="5.77,355,1596524400"; 
-   d="scan'208";a="162068015"
+   d="scan'208";a="164743944"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:52:38 -0700
-IronPort-SDR: y48WLHg756NhaQ3a3jufh8VKJ1E37wUwe8fJ/HzDHZ6hDk/W8p1+XzOieTDyZGUDdKxAAVZp75
- YdcYJzI+gesw==
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:52:41 -0700
+IronPort-SDR: L0Vefok2A93xih84zuFNBu3LKLwMRamDsDkR1F4Gust5uwQPsEktlHxFcxfQt1U0vxS4VptD4d
+ rIp50GoBaQKg==
 X-IronPort-AV: E=Sophos;i="5.77,355,1596524400"; 
-   d="scan'208";a="349957490"
+   d="scan'208";a="345148048"
 Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:52:36 -0700
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:52:40 -0700
 From:   ira.weiny@intel.com
 To:     Andrew Morton <akpm@linux-foundation.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
         Andy Lutomirski <luto@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>
-Cc:     Ira Weiny <ira.weiny@intel.com>, x86@kernel.org,
+Cc:     Ira Weiny <ira.weiny@intel.com>,
+        Hans de Goede <hdegoede@redhat.com>, x86@kernel.org,
         Dave Hansen <dave.hansen@linux.intel.com>,
         Dan Williams <dan.j.williams@intel.com>,
         Fenghua Yu <fenghua.yu@intel.com>, linux-doc@vger.kernel.org,
@@ -58,9 +59,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>, x86@kernel.org,
         drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
         xen-devel@lists.xenproject.org, linux-cachefs@redhat.com,
         samba-technical@lists.samba.org, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH RFC PKS/PMEM 30/58] fs/romfs: Utilize new kmap_thread()
-Date:   Fri,  9 Oct 2020 12:50:05 -0700
-Message-Id: <20201009195033.3208459-31-ira.weiny@intel.com>
+Subject: [PATCH RFC PKS/PMEM 31/58] fs/vboxsf: Utilize new kmap_thread()
+Date:   Fri,  9 Oct 2020 12:50:06 -0700
+Message-Id: <20201009195033.3208459-32-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.28.0.rc0.12.gb6a658bd00c9
 In-Reply-To: <20201009195033.3208459-1-ira.weiny@intel.com>
 References: <20201009195033.3208459-1-ira.weiny@intel.com>
@@ -75,33 +76,60 @@ From: Ira Weiny <ira.weiny@intel.com>
 The kmap() calls in this FS are localized to a single thread.  To avoid
 the over head of global PKRS updates use the new kmap_thread() call.
 
+Cc: Hans de Goede <hdegoede@redhat.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 ---
- fs/romfs/super.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/vboxsf/file.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/fs/romfs/super.c b/fs/romfs/super.c
-index e582d001f792..9050074c6755 100644
---- a/fs/romfs/super.c
-+++ b/fs/romfs/super.c
-@@ -107,7 +107,7 @@ static int romfs_readpage(struct file *file, struct page *page)
- 	void *buf;
- 	int ret;
+diff --git a/fs/vboxsf/file.c b/fs/vboxsf/file.c
+index c4ab5996d97a..d9c7e6b7b4cc 100644
+--- a/fs/vboxsf/file.c
++++ b/fs/vboxsf/file.c
+@@ -216,7 +216,7 @@ static int vboxsf_readpage(struct file *file, struct page *page)
+ 	u8 *buf;
+ 	int err;
  
 -	buf = kmap(page);
 +	buf = kmap_thread(page);
- 	if (!buf)
- 		return -ENOMEM;
  
-@@ -136,7 +136,7 @@ static int romfs_readpage(struct file *file, struct page *page)
- 		SetPageUptodate(page);
+ 	err = vboxsf_read(sf_handle->root, sf_handle->handle, off, &nread, buf);
+ 	if (err == 0) {
+@@ -227,7 +227,7 @@ static int vboxsf_readpage(struct file *file, struct page *page)
+ 		SetPageError(page);
+ 	}
  
- 	flush_dcache_page(page);
 -	kunmap(page);
 +	kunmap_thread(page);
  	unlock_page(page);
- 	return ret;
+ 	return err;
  }
+@@ -268,10 +268,10 @@ static int vboxsf_writepage(struct page *page, struct writeback_control *wbc)
+ 	if (!sf_handle)
+ 		return -EBADF;
+ 
+-	buf = kmap(page);
++	buf = kmap_thread(page);
+ 	err = vboxsf_write(sf_handle->root, sf_handle->handle,
+ 			   off, &nwrite, buf);
+-	kunmap(page);
++	kunmap_thread(page);
+ 
+ 	kref_put(&sf_handle->refcount, vboxsf_handle_release);
+ 
+@@ -302,10 +302,10 @@ static int vboxsf_write_end(struct file *file, struct address_space *mapping,
+ 	if (!PageUptodate(page) && copied < len)
+ 		zero_user(page, from + copied, len - copied);
+ 
+-	buf = kmap(page);
++	buf = kmap_thread(page);
+ 	err = vboxsf_write(sf_handle->root, sf_handle->handle,
+ 			   pos, &nwritten, buf + from);
+-	kunmap(page);
++	kunmap_thread(page);
+ 
+ 	if (err) {
+ 		nwritten = 0;
 -- 
 2.28.0.rc0.12.gb6a658bd00c9
 
