@@ -2,123 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25C32289154
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 20:43:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A7E2289152
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 20:42:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733005AbgJISm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 14:42:58 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:22433 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732816AbgJISm5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 14:42:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1602268976;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=BuHz/agx/D/xUxMUmb9YQz8Olko0BMRD2G5Xk+NMsYA=;
-        b=Nc5+jWFS+cYuG+O1Vo5YVdDjPCz9Xgo2s/LkM+nIolppFA7JMiUmJnqYadoLGlyv7TcA4G
-        Q3/QTbHWYzLVVWNFXIUqHKNj3B/taEsND+vQR4RgVyQ58MsvZLb5YpTQ7qnc16INV/+rOl
-        V+BxwZQ5O+6OHQF9/oEzOOvfiz25acY=
-Received: from mail-vs1-f72.google.com (mail-vs1-f72.google.com
- [209.85.217.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-505-KJBbNiTJM4O0ZtmNw7T3ow-1; Fri, 09 Oct 2020 14:42:54 -0400
-X-MC-Unique: KJBbNiTJM4O0ZtmNw7T3ow-1
-Received: by mail-vs1-f72.google.com with SMTP id l11so1484301vsq.19
-        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 11:42:54 -0700 (PDT)
+        id S1732686AbgJISmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 14:42:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36422 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732380AbgJISmx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 14:42:53 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB8FFC0613D2;
+        Fri,  9 Oct 2020 11:42:51 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id j76so7983483ybg.3;
+        Fri, 09 Oct 2020 11:42:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vHehwStZSh5i29OSgM53P0n9THKydgJyemP9HqZKMOg=;
+        b=XgkhwKKgqt3qpiImVm8XVPpJE9JwANX6cXZDzDvsQJDbMH9NwE3bl5HCsRR9sSPeEa
+         lef0ntlPYXT+rN6qKqr6ltPpX4V7MbNwFkx9zKt0iXo5BD8Z5UYVaq4ugedq2dscOOdz
+         VQlGfzmoRqV/Bs1VMETrU6K9vsRcqDeHgBgEsMsdLsbMkYXE31IL3is/6ktTuQpviXCl
+         9get5r50JOU/uK/kqeHN++p046EVx+2afeqLFxtg63ixa6iXRG7H1vyy1kOUEHr6nNG9
+         xZfxI2dyttYWwNxvF0oknp9Iqgo1fjhP6aFboav4YAk9nuZuHQWvV9G95sjqBWdKzoXX
+         dVSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BuHz/agx/D/xUxMUmb9YQz8Olko0BMRD2G5Xk+NMsYA=;
-        b=lklH523Hky50AtrKuFwtZrcohakZhtNiDLFzYTP6XNoqs44Dni6Z6cMHE7Je8R5bIb
-         TvfRBwG3qgh+4WDkn8uaUY9SfWgXLUVkE/ocko4fLi8B+mqlC/SVWGgRifNaBXk0NTWu
-         wEME9ON1r1J8MrUrF54K5kb1RZnNnP7kKwDdHi4yhB9S2TLfOalQpKh5nS4VzT49Bv/U
-         iw+yAuhe25kKYtJ7WeWyPHIAwAaH49kl1aX9r2p4Jxqs1k55rd7SYce40Qs2ei72hpJG
-         mHubfSNRRkgB2G1aROWZgc54DEHvI1UV6nKAzZS22cTKRZG7zu6rfUgyp67KG+s0qTV+
-         RomQ==
-X-Gm-Message-State: AOAM530rC9xvzi06JihKM22yWEO1cIMS0cZoYUM5Qu6v0J6sgyA2kF2V
-        r/asXGdhtY9S8Szy3WVS3Mm4i3DOVniPPfn3CuFyeg08rvkB6kk2dzbwG+98QO3r/6d5x2MZeIz
-        Zq9dgW24vfgE4US7G
-X-Received: by 2002:a67:ec89:: with SMTP id h9mr8758456vsp.55.1602268974248;
-        Fri, 09 Oct 2020 11:42:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxqui8W8z3EFvE8/xCYAoe4hqPY7vwTnzl3eqMhQ+bGhMjEANnr+OIPvldIDLL0JBJyyrRfMw==
-X-Received: by 2002:a67:ec89:: with SMTP id h9mr8758444vsp.55.1602268973995;
-        Fri, 09 Oct 2020 11:42:53 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id s18sm1249332vkd.51.2020.10.09.11.42.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Oct 2020 11:42:53 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 499201837DC; Fri,  9 Oct 2020 20:42:51 +0200 (CEST)
-From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     daniel@iogearbox.net, ast@fb.com
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        bpf@vger.kernel.org, netdev@vger.kernel.org,
-        David Ahern <dsahern@gmail.com>
-Subject: [PATCH bpf-next v3] bpf_fib_lookup: always return target ifindex
-Date:   Fri,  9 Oct 2020 20:42:34 +0200
-Message-Id: <20201009184234.134214-1-toke@redhat.com>
-X-Mailer: git-send-email 2.28.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vHehwStZSh5i29OSgM53P0n9THKydgJyemP9HqZKMOg=;
+        b=K/1a9B9xtH1LWjzJRNJWRDq5hAQQxsjAmLMEcmk6HPZ64g3t+CBwzITLt3T02N4UtZ
+         YuAeOx3os+3KHS1x0zx9EFroTgYbJpDz0az98aHGiCIE7zmaKAtg2YTv9oDopog2zAbh
+         9rEgScthgeUAPtZnDAoBG9tOo4OA3V22NKKuII1dcnTgswNqS19Qhbzn//qJs84fPGjJ
+         RPKnCaEQTXX09w77/r5qYP7fuc6x9Ru66iWpQevTW41rMFYvzMEYiYly2dAJZobu/IJy
+         Un6J/3V+wR8MICZBbOrPVboB0hNmv9t1xdggsOE25jfQAARdOjN0Qkx0mQoJva+aYCER
+         BlaQ==
+X-Gm-Message-State: AOAM5329OtJ8OuQIcywJQuiackc8CF2JflJ11KpOGG2Mrtr5gDuFdEsJ
+        4uMcgeKMBjgPjMia8sEFBRB6nwuMXfWFaoF89yA=
+X-Google-Smtp-Source: ABdhPJxZZmudMrkApxKvaZDIpkfkM6NPJHwagdz88LFzqSS9TURXqYQFOZquY6Iuu15hG5xMX5TdPBJR1mCYbxN4OxQ=
+X-Received: by 2002:a25:b0d:: with SMTP id 13mr10720009ybl.347.1602268971024;
+ Fri, 09 Oct 2020 11:42:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <cover.1602252399.git.daniel@iogearbox.net> <48cbc4e24968da275d13bd8797fe32986938f398.1602252399.git.daniel@iogearbox.net>
+ <CAEf4BzYVgs0vicVJTeT5yVSrOg=ArJ=BkEoA8KrwdQ8AVQ23Sg@mail.gmail.com> <99c67c05-700e-8f54-7fea-2daa6d19ec9e@iogearbox.net>
+In-Reply-To: <99c67c05-700e-8f54-7fea-2daa6d19ec9e@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 9 Oct 2020 11:42:40 -0700
+Message-ID: <CAEf4Bzb+p8Kum8aX-t7Zzm9VQADZZf=JU0CcqUUTT7Uut_uxzA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 3/6] bpf: allow for map-in-map with dynamic
+ inner array map entries
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The bpf_fib_lookup() helper performs a neighbour lookup for the destination
-IP and returns BPF_FIB_LKUP_NO_NEIGH if this fails, with the expectation
-that the BPF program will pass the packet up the stack in this case.
-However, with the addition of bpf_redirect_neigh() that can be used instead
-to perform the neighbour lookup, at the cost of a bit of duplicated work.
+On Fri, Oct 9, 2020 at 11:35 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 10/9/20 7:42 PM, Andrii Nakryiko wrote:
+> > On Fri, Oct 9, 2020 at 7:13 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> [...]
+> >>   static int percpu_array_map_btf_id;
+> >>   const struct bpf_map_ops percpu_array_map_ops = {
+> >>          .map_meta_equal = bpf_map_meta_equal,
+> >> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> >> index 1110ecd7d1f3..519bf867f065 100644
+> >> --- a/kernel/bpf/syscall.c
+> >> +++ b/kernel/bpf/syscall.c
+> >> @@ -111,7 +111,8 @@ static struct bpf_map *find_and_alloc_map(union bpf_attr *attr)
+> >>          ops = bpf_map_types[type];
+> >>          if (!ops)
+> >>                  return ERR_PTR(-EINVAL);
+> >> -
+> >> +       if (ops->map_swap_ops)
+> >> +               ops = ops->map_swap_ops(attr);
+> >
+> > I'm afraid that this can cause quite a lot of confusion down the road.
+> >
+> > Wouldn't designating -EOPNOTSUPP return code from map_gen_lookup() and
+> > not inlining in that case as if map_gen_lookup() wasn't even defined
+> > be a much smaller and more local (semantically) change that achieves
+> > exactly the same thing? Doesn't seem like switching from u32 to int
+> > for return value would be a big inconvenience for existing
+> > implementations of inlining callbacks, right?
+>
+> I was originally thinking about it, but then decided not to take this path,
+> for example the ops->map_gen_lookup() patching code has sanity checks for
+> the u32 return code on whether we patched 0 or too many instructions, so
 
-For that we still need the target ifindex, and since bpf_fib_lookup()
-already has that at the time it performs the neighbour lookup, there is
-really no reason why it can't just return it in any case. So let's just
-always return the ifindex if the FIB lookup itself succeeds.
+Right, we won't ever need to patch >2 billion instructions, so making
+the return value int shouldn't be a problem. As for not catching
+accidental patched insn == -EOPNOTSUPP, I don't think that's a real
+concern, is it? All the other negative value would trigger loud error.
 
-Cc: David Ahern <dsahern@gmail.com>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
-v3:
-- Get rid of the flag again, to be revisited later (David)
+> if there is anything funky going on in one of the map_gen_lookup() that
+> we'd get a negative code, for example, I don't want to just skip and not
+> have the verifier bark loudly with "bpf verifier is misconfigured", also
+> didn't want to make the logic inside fixup_bpf_calls() even more complex,
+> so the patch here felt simpler & more straight forward to me.
 
-v2:
-- Add flag (Daniel)
-- Remove misleading code example from commit message (David)
+It's not straightforward in the same way as class inheritance and
+overriding methods is not straightforward to follow in general.
+Swapping out entire sets of operations is super confusing, IMO.
 
-net/core/filter.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 5da44b11e1ec..a0c30f3ea7ca 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -5196,7 +5196,6 @@ static int bpf_fib_set_fwd_params(struct bpf_fib_lookup *params,
- 	memcpy(params->smac, dev->dev_addr, ETH_ALEN);
- 	params->h_vlan_TCI = 0;
- 	params->h_vlan_proto = 0;
--	params->ifindex = dev->ifindex;
- 
- 	return 0;
- }
-@@ -5293,6 +5292,7 @@ static int bpf_ipv4_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
- 	dev = nhc->nhc_dev;
- 
- 	params->rt_metric = res.fi->fib_priority;
-+	params->ifindex = dev->ifindex;
- 
- 	/* xdp and cls_bpf programs are run in RCU-bh so
- 	 * rcu_read_lock_bh is not needed here
-@@ -5418,6 +5418,7 @@ static int bpf_ipv6_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
- 
- 	dev = res.nh->fib_nh_dev;
- 	params->rt_metric = res.f6i->fib6_metric;
-+	params->ifindex = dev->ifindex;
- 
- 	/* xdp and cls_bpf programs are run in RCU-bh so rcu_read_lock_bh is
- 	 * not needed here.
--- 
-2.28.0
-
+>
+> Thanks,
+> Daniel
