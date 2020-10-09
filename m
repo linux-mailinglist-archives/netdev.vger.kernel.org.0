@@ -2,87 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB741288698
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 12:12:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11D5128869D
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 12:14:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387510AbgJIKMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 06:12:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41786 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726357AbgJIKMp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 06:12:45 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75B86C0613D2;
-        Fri,  9 Oct 2020 03:12:45 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id x7so2133496eje.8;
-        Fri, 09 Oct 2020 03:12:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Pu6uFYl5g3lWcF1Rf0VrnUrLJTa6VGuUqdl8E16TQmI=;
-        b=JIxKJHC35w3/PF+7f04UAQOW8ZrXMCY89C4aZn0BU9wOCIWohsh5nFBNPbceAsv575
-         NUTUL6jIkD5JaokEejtHZPzRyCgHo77espaNNIsydVTc29T1Osv0+ZLqfKyny7E717t+
-         taqqYZylTX9LbGRW1tSCmHk/wOJBEvzEl4Prdq2hWQf05uB4Gs3Mivn22QdyVZNSO7IF
-         k4ruanWe3DRCjzlRhHytK+RMOHhvKc9O+Q5rrbcWN7M5b2pFb8g1Rbh3BQ1BmSvl4eQg
-         YlDL6b9DJso2CKzuotE7JFYusQbJ/BDFRzf5/n/FtO6l6RM+Bt+sQea7vgWhM8lJpjLs
-         1uow==
+        id S2387526AbgJIKOO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 06:14:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:56539 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726357AbgJIKON (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 06:14:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602238451;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=GKsQVKXFWAoRx2mBzSwxbm8fDt6u1Gvkfg1/QN3aPdk=;
+        b=ZyoPxPIqVmErQFp8Aj1CmPPF0ryjbkwn+VlxwvjuPCpOs6eBv7rqKB69J9/+uuaRVy9p7I
+        Kmza//6kd1CGKPlIuAaaAIpR40XDlurphw56UGsBTxvDDuwQWavBTPpMYTBP782Pxr45gO
+        hVEIw+JmO46JYJn9Oqy/vLgDu1u4XGQ=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-504-UBbBJlpgN4iAccoFZTkOQg-1; Fri, 09 Oct 2020 06:14:09 -0400
+X-MC-Unique: UBbBJlpgN4iAccoFZTkOQg-1
+Received: by mail-wr1-f72.google.com with SMTP id y3so5038887wrl.21
+        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 03:14:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Pu6uFYl5g3lWcF1Rf0VrnUrLJTa6VGuUqdl8E16TQmI=;
-        b=XKBZbu7RULem7CpcLegvNYijfJ99Co1Zx/5ZSyeORUr0ERKhYoi2UqE5WqJsVV4hCN
-         Qz06G3OZesxgTiHM5fjoeLEH/as5fB2CRQohQkJ0SgxVBKaw3oVhkEZEHMfRPVDQHLxq
-         kCafui/Qy7QpzimJmrBRfNNRivS396U5v1luk/8Lqu8ZiTWZrpvy9Z9Fqia2hwNDw/2N
-         A0vGr+/4KMH97wCtw/LpOvHUoRa60VIwOcD7sH2OH7li+Ks4sCimoyBFlSGjd3NgalM7
-         lIl4O0BsjI2MtHcwb8bbEDISQUd7E7ml1WiSv2zXdElyPHt4H6oJ727e7/nOl9jhRDA4
-         xuyg==
-X-Gm-Message-State: AOAM532uVR+Gk92yHtLQ3yRQU8CwxYyOqq6BrrNz554MjMA/A8ivKsPD
-        hNUfMo2w3Id4TE4uDxMAu/c=
-X-Google-Smtp-Source: ABdhPJxp66T3ofOaQiKnvkErLduT7emZPOyZINsZU/nAVBl8G5RKHaZy40JF3sEcWbbrqCq6CWTBcg==
-X-Received: by 2002:a17:906:bc91:: with SMTP id lv17mr13978607ejb.249.1602238364034;
-        Fri, 09 Oct 2020 03:12:44 -0700 (PDT)
-Received: from skbuf ([188.26.229.171])
-        by smtp.gmail.com with ESMTPSA id n22sm6012278eji.106.2020.10.09.03.12.42
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GKsQVKXFWAoRx2mBzSwxbm8fDt6u1Gvkfg1/QN3aPdk=;
+        b=XWB6nIXM55PYSxHWJP03jKlWYU3IAhrRJMlQHzW01HaFDzfCIPu/Ywt2o2vcwINGNK
+         1rZzpb6EDWhODVXwxDN4+rcydb6mv8kYTw1ATE6ax+VfaeytY1aSuXjgr40YTQhe8qj8
+         uQPfXDpPezO4MupTuJJrdAzVBRe8FvgM9K9qI7vc4AmZxtmOYRewpn2fIfwlYPFX737V
+         LrN+vHlDo7mNDaC+aWQ0WylmqtV9eaK76x7dCFPoug9hEl1HmhtKkBAiyAUDfXR/1TtO
+         sDJ3Nzg5bDEssgtslBGFEZKaGAvgt/WKMc93JKi3XwNsoXzxqq2MLnOvabIIgngHbrj1
+         Gzug==
+X-Gm-Message-State: AOAM533WUyO0UfoSobiA8V7H2gbbdkfnmscjsRuziIaex/VNrcQszWkN
+        OedEC3JeeELR68zLFQf+WLrAaMy1QqfldLBj5CaIzi+WKilLsUGQ59fFyrwKzkeaMssNvPKU1TE
+        g4D1tCi0m21CHx8rC
+X-Received: by 2002:adf:fbc5:: with SMTP id d5mr13362789wrs.232.1602238448046;
+        Fri, 09 Oct 2020 03:14:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxsHYiC81Wm90jnrYtCKd/+B9jIwbZtZbICDa1mysEwxZ8zBGzSkYhIfd05jMNwC2f4dJ/ypA==
+X-Received: by 2002:adf:fbc5:: with SMTP id d5mr13362768wrs.232.1602238447788;
+        Fri, 09 Oct 2020 03:14:07 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id 24sm10916050wmg.8.2020.10.09.03.14.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Oct 2020 03:12:43 -0700 (PDT)
-Date:   Fri, 9 Oct 2020 13:12:41 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     John Keeping <john@metanate.com>
-Cc:     netdev@vger.kernel.org,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: stmmac: Don't call _irqoff() with hardirqs enabled
-Message-ID: <20201009101241.qr6blbfyamtuzrwy@skbuf>
-References: <20201008162749.860521-1-john@metanate.com>
- <20201008234609.x3iy65g445hmmt73@skbuf>
- <20201009105945.432de706.john@metanate.com>
+        Fri, 09 Oct 2020 03:14:07 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id A72731837DC; Fri,  9 Oct 2020 12:14:06 +0200 (CEST)
+From:   =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     daniel@iogearbox.net, ast@fb.com
+Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        David Ahern <dsahern@gmail.com>
+Subject: [PATCH bpf-next v2] bpf_fib_lookup: optionally skip neighbour lookup
+Date:   Fri,  9 Oct 2020 12:13:56 +0200
+Message-Id: <20201009101356.129228-1-toke@redhat.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201009105945.432de706.john@metanate.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 09, 2020 at 10:59:45AM +0100, John Keeping wrote:
-> No, it's not, although I would have saved several days debugging if it
-> was!  I backported the lockdep warning to prove that it caught this
-> issue.
->
-> The evidence it is possible to see on vanilla 5.4.x is:
->
-> 	$ trace-cmd report -l
-> 	irq/43-e-280     0....2    74.017658: softirq_raise:        vec=3 [action=NET_RX]
->
-> Note the missing "d" where this should be "0d...2" to indicate hardirqs
-> disabled.
+The bpf_fib_lookup() helper performs a neighbour lookup for the destination
+IP and returns BPF_FIB_LKUP_NO_NEIGH if this fails, with the expectation
+that the BPF program will pass the packet up the stack in this case.
+However, with the addition of bpf_redirect_neigh() that can be used instead
+to perform the neighbour lookup, at the cost of a bit of duplicated work.
 
-Cool, makes sense.
+For that we still need the target ifindex, and since bpf_fib_lookup()
+already has that at the time it performs the neighbour lookup, there is
+really no reason why it can't just return it in any case. So let's just
+always return the ifindex, and also add a flag that lets the caller turn
+off the neighbour lookup entirely in bpf_fib_lookup().
+
+v2:
+- Add flag (Daniel)
+- Remove misleading code example from commit message (David)
+
+Cc: David Ahern <dsahern@gmail.com>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+---
+ include/uapi/linux/bpf.h       | 10 ++++++----
+ net/core/filter.c              | 15 ++++++++++++---
+ tools/include/uapi/linux/bpf.h | 10 ++++++----
+ 3 files changed, 24 insertions(+), 11 deletions(-)
+
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index d83561e8cd2c..9c7c10ce7ace 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -4813,12 +4813,14 @@ struct bpf_raw_tracepoint_args {
+ 	__u64 args[0];
+ };
+ 
+-/* DIRECT:  Skip the FIB rules and go to FIB table associated with device
+- * OUTPUT:  Do lookup from egress perspective; default is ingress
++/* DIRECT:      Skip the FIB rules and go to FIB table associated with device
++ * OUTPUT:      Do lookup from egress perspective; default is ingress
++ * SKIP_NEIGH:  Skip neighbour lookup and return BPF_FIB_LKUP_RET_NO_NEIGH on success
+  */
+ enum {
+-	BPF_FIB_LOOKUP_DIRECT  = (1U << 0),
+-	BPF_FIB_LOOKUP_OUTPUT  = (1U << 1),
++	BPF_FIB_LOOKUP_DIRECT      = (1U << 0),
++	BPF_FIB_LOOKUP_OUTPUT      = (1U << 1),
++	BPF_FIB_LOOKUP_SKIP_NEIGH  = (1U << 2),
+ };
+ 
+ enum {
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 05df73780dd3..1038337bc06c 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -5192,7 +5192,6 @@ static int bpf_fib_set_fwd_params(struct bpf_fib_lookup *params,
+ 	memcpy(params->smac, dev->dev_addr, ETH_ALEN);
+ 	params->h_vlan_TCI = 0;
+ 	params->h_vlan_proto = 0;
+-	params->ifindex = dev->ifindex;
+ 
+ 	return 0;
+ }
+@@ -5289,6 +5288,10 @@ static int bpf_ipv4_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
+ 	dev = nhc->nhc_dev;
+ 
+ 	params->rt_metric = res.fi->fib_priority;
++	params->ifindex = dev->ifindex;
++
++	if (flags & BPF_FIB_LOOKUP_SKIP_NEIGH)
++		return BPF_FIB_LKUP_RET_NO_NEIGH;
+ 
+ 	/* xdp and cls_bpf programs are run in RCU-bh so
+ 	 * rcu_read_lock_bh is not needed here
+@@ -5414,6 +5417,10 @@ static int bpf_ipv6_fib_lookup(struct net *net, struct bpf_fib_lookup *params,
+ 
+ 	dev = res.nh->fib_nh_dev;
+ 	params->rt_metric = res.f6i->fib6_metric;
++	params->ifindex = dev->ifindex;
++
++	if (flags & BPF_FIB_LOOKUP_SKIP_NEIGH)
++		return BPF_FIB_LKUP_RET_NO_NEIGH;
+ 
+ 	/* xdp and cls_bpf programs are run in RCU-bh so rcu_read_lock_bh is
+ 	 * not needed here.
+@@ -5432,7 +5439,8 @@ BPF_CALL_4(bpf_xdp_fib_lookup, struct xdp_buff *, ctx,
+ 	if (plen < sizeof(*params))
+ 		return -EINVAL;
+ 
+-	if (flags & ~(BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT))
++	if (flags & ~(BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT |
++		      BPF_FIB_LOOKUP_SKIP_NEIGH))
+ 		return -EINVAL;
+ 
+ 	switch (params->family) {
+@@ -5469,7 +5477,8 @@ BPF_CALL_4(bpf_skb_fib_lookup, struct sk_buff *, skb,
+ 	if (plen < sizeof(*params))
+ 		return -EINVAL;
+ 
+-	if (flags & ~(BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT))
++	if (flags & ~(BPF_FIB_LOOKUP_DIRECT | BPF_FIB_LOOKUP_OUTPUT |
++		      BPF_FIB_LOOKUP_SKIP_NEIGH))
+ 		return -EINVAL;
+ 
+ 	switch (params->family) {
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index d83561e8cd2c..9c7c10ce7ace 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -4813,12 +4813,14 @@ struct bpf_raw_tracepoint_args {
+ 	__u64 args[0];
+ };
+ 
+-/* DIRECT:  Skip the FIB rules and go to FIB table associated with device
+- * OUTPUT:  Do lookup from egress perspective; default is ingress
++/* DIRECT:      Skip the FIB rules and go to FIB table associated with device
++ * OUTPUT:      Do lookup from egress perspective; default is ingress
++ * SKIP_NEIGH:  Skip neighbour lookup and return BPF_FIB_LKUP_RET_NO_NEIGH on success
+  */
+ enum {
+-	BPF_FIB_LOOKUP_DIRECT  = (1U << 0),
+-	BPF_FIB_LOOKUP_OUTPUT  = (1U << 1),
++	BPF_FIB_LOOKUP_DIRECT      = (1U << 0),
++	BPF_FIB_LOOKUP_OUTPUT      = (1U << 1),
++	BPF_FIB_LOOKUP_SKIP_NEIGH  = (1U << 2),
+ };
+ 
+ enum {
+-- 
+2.28.0
+
