@@ -2,71 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC353288404
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 09:55:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4312F2884DE
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 10:06:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732381AbgJIHzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 03:55:19 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:15198 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1732239AbgJIHzT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Oct 2020 03:55:19 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 3F743A54B8DDE1C5C05E;
-        Fri,  9 Oct 2020 15:55:16 +0800 (CST)
-Received: from huawei.com (10.90.53.225) by DGGEMS407-HUB.china.huawei.com
- (10.3.19.207) with Microsoft SMTP Server id 14.3.487.0; Fri, 9 Oct 2020
- 15:55:05 +0800
-From:   Ye Bin <yebin10@huawei.com>
-To:     <ericvh@gmail.com>, <lucho@ionkov.net>, <asmadeus@codewreck.org>,
-        <davem@davemloft.net>, <kuba@kernel.org>,
-        <v9fs-developer@lists.sourceforge.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Ye Bin <yebin10@huawei.com>
-Subject: [PATCH] 9p/xen: Fix format argument warning
-Date:   Fri, 9 Oct 2020 16:05:52 +0800
-Message-ID: <20201009080552.89918-1-yebin10@huawei.com>
-X-Mailer: git-send-email 2.16.2.dirty
+        id S1732542AbgJIIGS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 04:06:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50616 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732337AbgJIIGS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 04:06:18 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F37F2C0613D2;
+        Fri,  9 Oct 2020 01:06:17 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1kQnPr-00296a-Hh; Fri, 09 Oct 2020 10:06:15 +0200
+Message-ID: <be61c6a38d0f6ca1aa0bc3f0cb45bbb216a12982.camel@sipsolutions.net>
+Subject: Re: [CRAZY-RFF] debugfs: track open files and release on remove
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, nstange@suse.de, ap420073@gmail.com,
+        David.Laight@aculab.com, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, rafael@kernel.org
+Date:   Fri, 09 Oct 2020 10:06:14 +0200
+In-Reply-To: <20201009080355.GA398994@kroah.com>
+References: <87v9fkgf4i.fsf@suse.de>
+         <20201009095306.0d87c3aa13db.Ib3a7019bff15bb6308f6d259473a1648312a4680@changeid>
+         <20201009080355.GA398994@kroah.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.90.53.225]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix follow warnings:
-[net/9p/trans_xen.c:454]: (warning) %u in format string (no. 1) requires
-'unsigned int' but the argument type is 'int'.
-[net/9p/trans_xen.c:460]: (warning) %u in format string (no. 1) requires
-'unsigned int' but the argument type is 'int'.
+On Fri, 2020-10-09 at 10:03 +0200, Greg KH wrote:
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Ye Bin <yebin10@huawei.com>
----
- net/9p/trans_xen.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> For lots of debugfs files, .owner should already be set, if you use the
+> DEFINE_SIMPLE_ATTRIBUTE() or DEFINE_DEBUGFS_ATTRIBUTE() macros.
+> 
+> But yes, not all.
 
-diff --git a/net/9p/trans_xen.c b/net/9p/trans_xen.c
-index bc8807d9281f..f4fea28e05da 100644
---- a/net/9p/trans_xen.c
-+++ b/net/9p/trans_xen.c
-@@ -451,13 +451,13 @@ static int xen_9pfs_front_probe(struct xenbus_device *dev,
- 		char str[16];
- 
- 		BUILD_BUG_ON(XEN_9PFS_NUM_RINGS > 9);
--		sprintf(str, "ring-ref%u", i);
-+		sprintf(str, "ring-ref%d", i);
- 		ret = xenbus_printf(xbt, dev->nodename, str, "%d",
- 				    priv->rings[i].ref);
- 		if (ret)
- 			goto error_xenbus;
- 
--		sprintf(str, "event-channel-%u", i);
-+		sprintf(str, "event-channel-%d", i);
- 		ret = xenbus_printf(xbt, dev->nodename, str, "%u",
- 				    priv->rings[i].evtchn);
- 		if (ret)
--- 
-2.16.2.dirty
+Right.
+
+You didn't see the original thread:
+
+https://lore.kernel.org/netdev/20201008155048.17679-1-ap420073@gmail.com/
+
+> I thought the proxy-ops stuff was supposed to fix this issue already.
+> Why isn't it, what is broken in them that causes this to still crash?
+
+Well exactly what I described - the proxy_fops *release* doesn't get
+proxied, since we don't have any knowledge of the open files (without
+this patch) when the proxy_fops are redirected to nothing when a file is
+removed.
+
+Nicolai also discussed it a bit here:
+
+https://lore.kernel.org/netdev/87v9fkgf4i.fsf@suse.de/
+
+> And of course, removing kernel modules is never a guaranteed operation,
+> nor is it anything that ever happens automatically, so is this really an
+> issue?  :)
+
+:)
+
+We used to say the proxy_fops weren't needed and it wasn't an issue, and
+then still implemented it. Dunno. I'm not really too concerned about it
+myself, only root can hold the files open and remove modules ...
+
+johannes
 
