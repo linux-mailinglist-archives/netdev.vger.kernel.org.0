@@ -2,116 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E13A0288026
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 03:59:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B864528802D
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 04:01:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730874AbgJIB7v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 21:59:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50440 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729285AbgJIB7u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 21:59:50 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7187CC0613D2;
-        Thu,  8 Oct 2020 18:59:50 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id v12so8281432wmh.3;
-        Thu, 08 Oct 2020 18:59:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DoFqJFIxavJSoKhccIwLtfmVgpVXYVJLyinAOFpfL1E=;
-        b=XpCPypviMymEXCkmhl6/mIWPstM//L5uRvLIU/K56Oi3g0OBDyhpKiBRHuy8OYG6jn
-         sI7RIbPFt2grhSaTrVSt8xze+2hrX1tmypg4U7TSNfbMo6t855oVkjWGt1/pCfLfnMF3
-         THIjPimDeLeWwewqC/32GZMVFfUzRwE5O5qHNE5xvFkuZnLPzkIEFVoePyYoK/2tDhau
-         7CPeZEAOTum+DCwcAatySYKG/iT4I6OTlQHpt/6uH3N7Q/EnO30ZCUO3aV5JrkMfZ6Q1
-         9Hq7DEUuwqbQ3sHhLt9iMBCjsjhiQVR5X4Hv87q3oygZgPvodRr4pviCkM+PoNWnOvhT
-         a6YA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DoFqJFIxavJSoKhccIwLtfmVgpVXYVJLyinAOFpfL1E=;
-        b=J/DXLZA1mhW5AcE+c62LQJMozV7IdNjTPcV+ANKs05OTGoAQSGcqhxFAAIY1ktfYTr
-         OihRTlqNSvM2mEYKhb2wewUnMEKqEZnVGU+18ayHk47t/ygzcCgm+uDk3Hg4xMLLYMnY
-         wBGo+WXGGcFAzuSnhSCDW0ww/KltDRIVXWOlRbRGoZn5rB0b1PgrDAa4gjG3kKprU3Ng
-         DIkVCfHdCORmRo5K7H40K0vxbitFOjSN0DAKa+7wp00x5RxK9Ha0FaI0RzGTph48nnkX
-         PblaKOngPIGlKzM5kVAzDkRsHu/0Jr1IMdofWKX6GCkscPsKJkeivTgkzeS85tt9CVyK
-         EyuQ==
-X-Gm-Message-State: AOAM53296N1vINpzBYLkh9HUt8J+fDmy0LpMIw7wWeYGJlmmR+aWeeu7
-        OvrTFUiaKNW6LQVzGlVw/SmUDRFtPEnIDkdAjPY=
-X-Google-Smtp-Source: ABdhPJxRhTmOi+QC4G5S+r0+/VePOxoulpuO1XpwBVa7w2b+o8XcgVKGCDF0IcUDmJDfwebajo6IXf1tukhKIlovlIg=
-X-Received: by 2002:a1c:7e90:: with SMTP id z138mr11321204wmc.122.1602208789095;
- Thu, 08 Oct 2020 18:59:49 -0700 (PDT)
+        id S1730944AbgJICBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 22:01:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:48485 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729347AbgJICB2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 22:01:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602208887;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3s9R39Og5RHDHefHI3q9yhoEDWORC7I7mmgIVvKh3e0=;
+        b=c4ouKCzkZ9qDQ+wRvdXUiYKyXyCd589llLsWmQ9rf7MwhKkOOrU6/K+16/CnaWOLE49LtM
+        hi4YTCbE+ErzMi6KlP/lYkcKR2ImcC6eXq8C9L5fTmVhiLrjqeLLOlyVuSD7T7rtxu97rd
+        lOmZjE54uDh1tKzxZGdtkrPETI+jl50=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-33-q4BrAy5gNG227A1gPlmfPA-1; Thu, 08 Oct 2020 22:01:23 -0400
+X-MC-Unique: q4BrAy5gNG227A1gPlmfPA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F286B427C2;
+        Fri,  9 Oct 2020 02:01:21 +0000 (UTC)
+Received: from [10.72.13.133] (ovpn-13-133.pek2.redhat.com [10.72.13.133])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9BC3B5D9E8;
+        Fri,  9 Oct 2020 02:01:07 +0000 (UTC)
+Subject: Re: [RFC PATCH 05/24] vhost-vdpa: passing iotlb to IOMMU mapping
+ helpers
+To:     Eli Cohen <elic@nvidia.com>
+Cc:     mst@redhat.com, lulu@redhat.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rob.miller@broadcom.com,
+        lingshan.zhu@intel.com, eperezma@redhat.com, hanand@xilinx.com,
+        mhabets@solarflare.com, eli@mellanox.com, amorenoz@redhat.com,
+        maxime.coquelin@redhat.com, stefanha@redhat.com,
+        sgarzare@redhat.com
+References: <20200924032125.18619-1-jasowang@redhat.com>
+ <20200924032125.18619-6-jasowang@redhat.com>
+ <20200930112609.GA223360@mtl-vdi-166.wap.labs.mlnx>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <5f083453-d070-d8a8-1f75-5de1c299cd0b@redhat.com>
+Date:   Fri, 9 Oct 2020 10:01:05 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <af7bd8219b32d7f864eaef8ed8e970fc9bde928c.1602150362.git.lucien.xin@gmail.com>
- <202010090541.hDe5mdXB-lkp@intel.com>
-In-Reply-To: <202010090541.hDe5mdXB-lkp@intel.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Fri, 9 Oct 2020 09:59:37 +0800
-Message-ID: <CADvbK_d3u=M6BwLRDeiPVkCT7awix+Lcw=GOy4UcD=s9FPtpHA@mail.gmail.com>
-Subject: Re: [PATCHv2 net-next 06/17] sctp: create udp6 sock and set its encap_rcv
-To:     kernel test robot <lkp@intel.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        kbuild-all@lists.01.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Michael Tuexen <tuexen@fh-muenster.de>,
-        davem <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20200930112609.GA223360@mtl-vdi-166.wap.labs.mlnx>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 9, 2020 at 5:20 AM kernel test robot <lkp@intel.com> wrote:
->
-> Hi Xin,
->
-> Thank you for the patch! Yet something to improve:
->
-> [auto build test ERROR on net-next/master]
->
-> url:    https://github.com/0day-ci/linux/commits/Xin-Long/sctp-Implement-RFC6951-UDP-Encapsulation-of-SCTP/20201008-175211
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 9faebeb2d80065926dfbc09cb73b1bb7779a89cd
-> config: arm-keystone_defconfig (attached as .config)
-> compiler: arm-linux-gnueabi-gcc (GCC) 9.3.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/0day-ci/linux/commit/60851a8f9ae9fd55f1199581dd78f6030bed63c7
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Xin-Long/sctp-Implement-RFC6951-UDP-Encapsulation-of-SCTP/20201008-175211
->         git checkout 60851a8f9ae9fd55f1199581dd78f6030bed63c7
->         # save the attached .config to linux build tree
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=arm
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
-> All errors (new ones prefixed by >>):
->
->    arm-linux-gnueabi-ld: net/sctp/protocol.o: in function `sctp_udp_sock_start':
->    protocol.c:(.text+0x108c): undefined reference to `udp_sock_create4'
->    arm-linux-gnueabi-ld: protocol.c:(.text+0x10b8): undefined reference to `setup_udp_tunnel_sock'
-> >> arm-linux-gnueabi-ld: protocol.c:(.text+0x111c): undefined reference to `udp_sock_create6'
->    arm-linux-gnueabi-ld: protocol.c:(.text+0x113c): undefined reference to `setup_udp_tunnel_sock'
-> >> arm-linux-gnueabi-ld: protocol.c:(.text+0x1180): undefined reference to `udp_tunnel_sock_release'
->    arm-linux-gnueabi-ld: net/sctp/protocol.o: in function `sctp_udp_sock_stop':
->    protocol.c:(.text+0x11b4): undefined reference to `udp_tunnel_sock_release'
->    arm-linux-gnueabi-ld: protocol.c:(.text+0x11d0): undefined reference to `udp_tunnel_sock_release'
->
-diff --git a/net/sctp/Kconfig b/net/sctp/Kconfig
-index 39d7fa9569f8..5da599ff84a9 100644
---- a/net/sctp/Kconfig
-+++ b/net/sctp/Kconfig
-@@ -11,6 +11,7 @@ menuconfig IP_SCTP
-        select CRYPTO_HMAC
-        select CRYPTO_SHA1
-        select LIBCRC32C
-+       select NET_UDP_TUNNEL
-        help
-          Stream Control Transmission Protocol
 
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+On 2020/9/30 下午7:26, Eli Cohen wrote:
+> On Thu, Sep 24, 2020 at 11:21:06AM +0800, Jason Wang wrote:
+>> To prepare for the ASID support for vhost-vdpa, try to pass IOTLB
+>> object to dma helpers.
+> Maybe it's worth mentioning here that this patch does not change any
+> functionality and is presented as a preparation for passing different
+> iotlb's instead of using dev->iotlb
+
+
+Right, let me add them in the next version.
+
+Thanks
+
+
+>
+>> Signed-off-by: Jason Wang <jasowang@redhat.com>
+>> ---
+>>   drivers/vhost/vdpa.c | 40 ++++++++++++++++++++++------------------
+>>   1 file changed, 22 insertions(+), 18 deletions(-)
+>>
+>> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+>> index 9c641274b9f3..74bef1c15a70 100644
+>> --- a/drivers/vhost/vdpa.c
+>> +++ b/drivers/vhost/vdpa.c
+>> @@ -489,10 +489,11 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+>>   	return r;
+>>   }
+>>   
+>> -static void vhost_vdpa_iotlb_unmap(struct vhost_vdpa *v, u64 start, u64 last)
+>> +static void vhost_vdpa_iotlb_unmap(struct vhost_vdpa *v,
+>> +				   struct vhost_iotlb *iotlb,
+>> +				   u64 start, u64 last)
+>>   {
+>>   	struct vhost_dev *dev = &v->vdev;
+>> -	struct vhost_iotlb *iotlb = dev->iotlb;
+>>   	struct vhost_iotlb_map *map;
+>>   	struct page *page;
+>>   	unsigned long pfn, pinned;
+>> @@ -514,8 +515,9 @@ static void vhost_vdpa_iotlb_unmap(struct vhost_vdpa *v, u64 start, u64 last)
+>>   static void vhost_vdpa_iotlb_free(struct vhost_vdpa *v)
+>>   {
+>>   	struct vhost_dev *dev = &v->vdev;
+>> +	struct vhost_iotlb *iotlb = dev->iotlb;
+>>   
+>> -	vhost_vdpa_iotlb_unmap(v, 0ULL, 0ULL - 1);
+>> +	vhost_vdpa_iotlb_unmap(v, iotlb, 0ULL, 0ULL - 1);
+>>   	kfree(dev->iotlb);
+>>   	dev->iotlb = NULL;
+>>   }
+>> @@ -542,15 +544,14 @@ static int perm_to_iommu_flags(u32 perm)
+>>   	return flags | IOMMU_CACHE;
+>>   }
+>>   
+>> -static int vhost_vdpa_map(struct vhost_vdpa *v,
+>> +static int vhost_vdpa_map(struct vhost_vdpa *v, struct vhost_iotlb *iotlb,
+>>   			  u64 iova, u64 size, u64 pa, u32 perm)
+>>   {
+>> -	struct vhost_dev *dev = &v->vdev;
+>>   	struct vdpa_device *vdpa = v->vdpa;
+>>   	const struct vdpa_config_ops *ops = vdpa->config;
+>>   	int r = 0;
+>>   
+>> -	r = vhost_iotlb_add_range(dev->iotlb, iova, iova + size - 1,
+>> +	r = vhost_iotlb_add_range(iotlb, iova, iova + size - 1,
+>>   				  pa, perm);
+>>   	if (r)
+>>   		return r;
+>> @@ -559,7 +560,7 @@ static int vhost_vdpa_map(struct vhost_vdpa *v,
+>>   		r = ops->dma_map(vdpa, iova, size, pa, perm);
+>>   	} else if (ops->set_map) {
+>>   		if (!v->in_batch)
+>> -			r = ops->set_map(vdpa, dev->iotlb);
+>> +			r = ops->set_map(vdpa, iotlb);
+>>   	} else {
+>>   		r = iommu_map(v->domain, iova, pa, size,
+>>   			      perm_to_iommu_flags(perm));
+>> @@ -568,29 +569,30 @@ static int vhost_vdpa_map(struct vhost_vdpa *v,
+>>   	return r;
+>>   }
+>>   
+>> -static void vhost_vdpa_unmap(struct vhost_vdpa *v, u64 iova, u64 size)
+>> +static void vhost_vdpa_unmap(struct vhost_vdpa *v,
+>> +			     struct vhost_iotlb *iotlb,
+>> +			     u64 iova, u64 size)
+>>   {
+>> -	struct vhost_dev *dev = &v->vdev;
+>>   	struct vdpa_device *vdpa = v->vdpa;
+>>   	const struct vdpa_config_ops *ops = vdpa->config;
+>>   
+>> -	vhost_vdpa_iotlb_unmap(v, iova, iova + size - 1);
+>> +	vhost_vdpa_iotlb_unmap(v, iotlb, iova, iova + size - 1);
+>>   
+>>   	if (ops->dma_map) {
+>>   		ops->dma_unmap(vdpa, iova, size);
+>>   	} else if (ops->set_map) {
+>>   		if (!v->in_batch)
+>> -			ops->set_map(vdpa, dev->iotlb);
+>> +			ops->set_map(vdpa, iotlb);
+>>   	} else {
+>>   		iommu_unmap(v->domain, iova, size);
+>>   	}
+>>   }
+>>   
+>>   static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+>> +					   struct vhost_iotlb *iotlb,
+>>   					   struct vhost_iotlb_msg *msg)
+>>   {
+>>   	struct vhost_dev *dev = &v->vdev;
+>> -	struct vhost_iotlb *iotlb = dev->iotlb;
+>>   	struct page **page_list;
+>>   	unsigned long list_size = PAGE_SIZE / sizeof(struct page *);
+>>   	unsigned int gup_flags = FOLL_LONGTERM;
+>> @@ -644,7 +646,7 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+>>   			if (last_pfn && (this_pfn != last_pfn + 1)) {
+>>   				/* Pin a contiguous chunk of memory */
+>>   				csize = (last_pfn - map_pfn + 1) << PAGE_SHIFT;
+>> -				if (vhost_vdpa_map(v, iova, csize,
+>> +				if (vhost_vdpa_map(v, iotlb, iova, csize,
+>>   						   map_pfn << PAGE_SHIFT,
+>>   						   msg->perm))
+>>   					goto out;
+>> @@ -660,11 +662,12 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+>>   	}
+>>   
+>>   	/* Pin the rest chunk */
+>> -	ret = vhost_vdpa_map(v, iova, (last_pfn - map_pfn + 1) << PAGE_SHIFT,
+>> +	ret = vhost_vdpa_map(v, iotlb, iova,
+>> +			     (last_pfn - map_pfn + 1) << PAGE_SHIFT,
+>>   			     map_pfn << PAGE_SHIFT, msg->perm);
+>>   out:
+>>   	if (ret) {
+>> -		vhost_vdpa_unmap(v, msg->iova, msg->size);
+>> +		vhost_vdpa_unmap(v, iotlb, msg->iova, msg->size);
+>>   		atomic64_sub(npages, &dev->mm->pinned_vm);
+>>   	}
+>>   	mmap_read_unlock(dev->mm);
+>> @@ -678,6 +681,7 @@ static int vhost_vdpa_process_iotlb_msg(struct vhost_dev *dev,
+>>   	struct vhost_vdpa *v = container_of(dev, struct vhost_vdpa, vdev);
+>>   	struct vdpa_device *vdpa = v->vdpa;
+>>   	const struct vdpa_config_ops *ops = vdpa->config;
+>> +	struct vhost_iotlb *iotlb = dev->iotlb;
+>>   	int r = 0;
+>>   
+>>   	r = vhost_dev_check_owner(dev);
+>> @@ -686,17 +690,17 @@ static int vhost_vdpa_process_iotlb_msg(struct vhost_dev *dev,
+>>   
+>>   	switch (msg->type) {
+>>   	case VHOST_IOTLB_UPDATE:
+>> -		r = vhost_vdpa_process_iotlb_update(v, msg);
+>> +		r = vhost_vdpa_process_iotlb_update(v, iotlb, msg);
+>>   		break;
+>>   	case VHOST_IOTLB_INVALIDATE:
+>> -		vhost_vdpa_unmap(v, msg->iova, msg->size);
+>> +		vhost_vdpa_unmap(v, iotlb, msg->iova, msg->size);
+>>   		break;
+>>   	case VHOST_IOTLB_BATCH_BEGIN:
+>>   		v->in_batch = true;
+>>   		break;
+>>   	case VHOST_IOTLB_BATCH_END:
+>>   		if (v->in_batch && ops->set_map)
+>> -			ops->set_map(vdpa, dev->iotlb);
+>> +			ops->set_map(vdpa, iotlb);
+>>   		v->in_batch = false;
+>>   		break;
+>>   	default:
+>> -- 
+>> 2.20.1
+>>
+
