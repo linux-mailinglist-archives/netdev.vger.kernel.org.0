@@ -2,95 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C73828891E
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 14:45:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AE37288926
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 14:48:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731938AbgJIMpY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 08:45:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37264 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729045AbgJIMpY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 08:45:24 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 099E7C0613D2
-        for <netdev@vger.kernel.org>; Fri,  9 Oct 2020 05:45:24 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id o21so7787745qtp.2
-        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 05:45:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8DPjwNAaWWskCPRXavFxZ2WY3wTQksAIyNLpUX46WeM=;
-        b=YfVWM46PNpVHP9ROn09zNgGvQZGRrohy3uVDWSgDCDrsqXglmns+y1euLHdwg6Kzlt
-         HS6DVtVcwH7I+a6Bx3sjpDJhQvQQ/Umh6Dc9dp6YSM+JS5OLLXQH1z/Jjd0e6ifEhQBD
-         9fK4WIUVBggy4IMamUVc36VdiLV+BKTaIEbLnSs02OsizuuKRFnhGcmawaaoG3myQrSP
-         Qa+DOcaF7nUQH9FjC3moPYBtgiyd5vaQS99e2Jgbx0yE1K+KNNbDQc2yM5qXtZrbT0t5
-         T3JR8xIVgXls4mMtbGkkZVe7FG7MeDFgjNRxcKfP2gTdnkJjKpI4tAo5lFRmhw2LGBTI
-         +L0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=8DPjwNAaWWskCPRXavFxZ2WY3wTQksAIyNLpUX46WeM=;
-        b=cM3B5blzVmGpBgL7RkIrQVmuczL4D6cq71NX8oWUT1W7eTdcgkkaCsQG8dUf0e51iV
-         mZogeKk17AVPolItpTWgsTY3Vsk6mIv715OmKLrNE8kNtqYjnG7zA3sNA/0NxQGzzAz7
-         uVazIjY6oUcsKSTexXqQgiOJGGnsxF+U3kJXGbWTLdEcQiCoqJBY9JNty7gkG/U7cEQk
-         2uBGBigHhv7YaNzw+lwDIoQp8+xt3w9Nidx5waDrvL/j/jvDgKn1V0qFHNJ2toxEdtAF
-         OrMo8oQAconG4u7CgyC2bcASmlnKhDnCji3jD067tEbIRhD7KbkLjRhwITVNnNgXBObG
-         0kBg==
-X-Gm-Message-State: AOAM531CD6eNhiOm1mnl6s0mLhkNAEpm5lCIwkrCa36xKfJO88bbzPd7
-        QyeQhsQGTwE6PGm06dDgjxW/yA==
-X-Google-Smtp-Source: ABdhPJzbywAv6yEFJJS6acZcdHU3FpEDy10ctrLH26+Tmjd51GqLOZR1d/uPi0xDu0x4/AsDT9KZ2g==
-X-Received: by 2002:ac8:5c94:: with SMTP id r20mr13355536qta.292.1602247523237;
-        Fri, 09 Oct 2020 05:45:23 -0700 (PDT)
-Received: from [192.168.2.28] (bras-base-kntaon1617w-grc-10-184-147-165-106.dsl.bell.ca. [184.147.165.106])
-        by smtp.googlemail.com with ESMTPSA id d13sm1057730qtw.77.2020.10.09.05.45.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 09 Oct 2020 05:45:22 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next v2 2/2] tc: implement support for terse dump
-To:     Vlad Buslov <vlad@buslov.dev>
-Cc:     David Ahern <dsahern@gmail.com>, Vlad Buslov <vladbu@nvidia.com>,
-        stephen@networkplumber.org, xiyou.wangcong@gmail.com,
-        netdev@vger.kernel.org, davem@davemloft.net, jiri@resnulli.us,
-        ivecera@redhat.com, Vlad Buslov <vladbu@mellanox.com>
-References: <20200930165924.16404-1-vladbu@nvidia.com>
- <20200930165924.16404-3-vladbu@nvidia.com>
- <9961ad12-dc8f-55fc-3f9d-8e1aaca82327@gmail.com>
- <ff969d59-53e0-aca3-2de8-9be41d6d7804@mojatatu.com>
- <87imbk20li.fsf@buslov.dev>
- <81cf5868-be3d-f3b0-9090-01ec38f035e4@mojatatu.com>
- <87ft6n1tp8.fsf@buslov.dev>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <5d4231c5-94d2-4d14-292f-e68d015ea260@mojatatu.com>
-Date:   Fri, 9 Oct 2020 08:45:21 -0400
+        id S1732374AbgJIMr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 08:47:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:26817 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729045AbgJIMr7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 08:47:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602247677;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YrWAUcIR2z0RjFQce9q0hB+1C0e5vjnATMHr6X69LE8=;
+        b=FniPtTp7mJb9oJSN/45cJbZEgrJL6Iz3NuYus317onmZIz0RHQayRS8MBUd1vh8ad1C1Hm
+        Q01fKYd3qVJlW+h/4JIo8dujsgbEC5qM6X1mDbjLWlg/TeQMBowWJZH3kOM2VcC2L24NfL
+        WRF8lT+REx9zUrRi4Fq96KPUcn8Lj9k=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-400-wMjFx77SPV2c9cMOYk_YPQ-1; Fri, 09 Oct 2020 08:47:53 -0400
+X-MC-Unique: wMjFx77SPV2c9cMOYk_YPQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7CE56802B46;
+        Fri,  9 Oct 2020 12:47:52 +0000 (UTC)
+Received: from [10.10.116.249] (ovpn-116-249.rdu2.redhat.com [10.10.116.249])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 812C65576D;
+        Fri,  9 Oct 2020 12:47:51 +0000 (UTC)
+Subject: Re: [net] tipc: fix NULL pointer dereference in tipc_named_rcv
+To:     Hoang Huu Le <hoang.h.le@dektech.com.au>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     "maloy@donjonn.com" <maloy@donjonn.com>,
+        "ying.xue@windriver.com" <ying.xue@windriver.com>,
+        "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20201008073156.116136-1-hoang.h.le@dektech.com.au>
+ <20201008102514.1184c315@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <54320213-5b9b-4648-fa6b-553d2acb298e@redhat.com>
+ <VI1PR05MB46058487F5FE43F6ED539355F1080@VI1PR05MB4605.eurprd05.prod.outlook.com>
+From:   Jon Maloy <jmaloy@redhat.com>
+Message-ID: <c2a9e820-c972-1978-a0b7-e2483fbbca1c@redhat.com>
+Date:   Fri, 9 Oct 2020 08:47:51 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-In-Reply-To: <87ft6n1tp8.fsf@buslov.dev>
+In-Reply-To: <VI1PR05MB46058487F5FE43F6ED539355F1080@VI1PR05MB4605.eurprd05.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-10-09 8:15 a.m., Vlad Buslov wrote:
-> 
-> On Fri 09 Oct 2020 at 15:03, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
 
->> Which test(s)?
->> I see for example d45e mentioning terse but i dont see corresponding
->> code in the iproute2 tree i just pulled.
-> 
-> Yes. The tests d45e and 7c65 were added as a part of kernel series, but
-> corresponding iproute2 patches were never merged. Tests expect original
-> "terse flag" syntax of V1 iproute2 series and will have to be changed to
-> use -brief option instead.
 
-Then i dont see a problem in changing the tests.
-If you are going to send a v3 please include my acked-by.
-Would have been nice to see what terse output would have looked like.
+On 10/9/20 12:12 AM, Hoang Huu Le wrote:
+> Hi Jon,  Jakub,
+>
+> I tried with your comment. But looks like we got into circular locking and deadlock could happen like this:
+>          CPU0                    CPU1
+>          ----                    ----
+>     lock(&n->lock#2);
+>                                  lock(&tn->nametbl_lock);
+>                                  lock(&n->lock#2);
+>     lock(&tn->nametbl_lock);
+>
+>    *** DEADLOCK ***
+>
+> Regards,
+> Hoang
+Ok. So although your solution is not optimal, we know it is safe.
+Again:
+Acked-by: Jon Maloy <jmaloy@redhat.com>
+>> -----Original Message-----
+>> From: Jon Maloy <jmaloy@redhat.com>
+>> Sent: Friday, October 9, 2020 1:01 AM
+>> To: Jakub Kicinski <kuba@kernel.org>; Hoang Huu Le <hoang.h.le@dektech.com.au>
+>> Cc: maloy@donjonn.com; ying.xue@windriver.com; tipc-discussion@lists.sourceforge.net; netdev@vger.kernel.org
+>> Subject: Re: [net] tipc: fix NULL pointer dereference in tipc_named_rcv
+>>
+>>
+>>
+>> On 10/8/20 1:25 PM, Jakub Kicinski wrote:
+>>> On Thu,  8 Oct 2020 14:31:56 +0700 Hoang Huu Le wrote:
+>>>> diff --git a/net/tipc/name_distr.c b/net/tipc/name_distr.c
+>>>> index 2f9c148f17e2..fe4edce459ad 100644
+>>>> --- a/net/tipc/name_distr.c
+>>>> +++ b/net/tipc/name_distr.c
+>>>> @@ -327,8 +327,13 @@ static struct sk_buff *tipc_named_dequeue(struct sk_buff_head *namedq,
+>>>>    	struct tipc_msg *hdr;
+>>>>    	u16 seqno;
+>>>>
+>>>> +	spin_lock_bh(&namedq->lock);
+>>>>    	skb_queue_walk_safe(namedq, skb, tmp) {
+>>>> -		skb_linearize(skb);
+>>>> +		if (unlikely(skb_linearize(skb))) {
+>>>> +			__skb_unlink(skb, namedq);
+>>>> +			kfree_skb(skb);
+>>>> +			continue;
+>>>> +		}
+>>>>    		hdr = buf_msg(skb);
+>>>>    		seqno = msg_named_seqno(hdr);
+>>>>    		if (msg_is_last_bulk(hdr)) {
+>>>> @@ -338,12 +343,14 @@ static struct sk_buff *tipc_named_dequeue(struct sk_buff_head *namedq,
+>>>>
+>>>>    		if (msg_is_bulk(hdr) || msg_is_legacy(hdr)) {
+>>>>    			__skb_unlink(skb, namedq);
+>>>> +			spin_unlock_bh(&namedq->lock);
+>>>>    			return skb;
+>>>>    		}
+>>>>
+>>>>    		if (*open && (*rcv_nxt == seqno)) {
+>>>>    			(*rcv_nxt)++;
+>>>>    			__skb_unlink(skb, namedq);
+>>>> +			spin_unlock_bh(&namedq->lock);
+>>>>    			return skb;
+>>>>    		}
+>>>>
+>>>> @@ -353,6 +360,7 @@ static struct sk_buff *tipc_named_dequeue(struct sk_buff_head *namedq,
+>>>>    			continue;
+>>>>    		}
+>>>>    	}
+>>>> +	spin_unlock_bh(&namedq->lock);
+>>>>    	return NULL;
+>>>>    }
+>>>>
+>>>> diff --git a/net/tipc/node.c b/net/tipc/node.c
+>>>> index cf4b239fc569..d269ebe382e1 100644
+>>>> --- a/net/tipc/node.c
+>>>> +++ b/net/tipc/node.c
+>>>> @@ -1496,7 +1496,7 @@ static void node_lost_contact(struct tipc_node *n,
+>>>>
+>>>>    	/* Clean up broadcast state */
+>>>>    	tipc_bcast_remove_peer(n->net, n->bc_entry.link);
+>>>> -	__skb_queue_purge(&n->bc_entry.namedq);
+>>>> +	skb_queue_purge(&n->bc_entry.namedq);
+>>> Patch looks fine, but I'm not sure why not hold
+>>> spin_unlock_bh(&tn->nametbl_lock) here instead?
+>>>
+>>> Seems like node_lost_contact() should be relatively rare,
+>>> so adding another lock to tipc_named_dequeue() is not the
+>>> right trade off.
+>> Actually, I agree with previous speaker here. We already have the
+>> nametbl_lock when tipc_named_dequeue() is called, and the same lock is
+>> accessible from no.c where node_lost_contact() is executed. The patch
+>> and the code becomes simpler.
+>> I suggest you post a v2 of this one.
+>>
+>> ///jon
+>>
+>>>>    	/* Abort any ongoing link failover */
+>>>>    	for (i = 0; i < MAX_BEARERS; i++) {
 
-cheers,
-jamal
