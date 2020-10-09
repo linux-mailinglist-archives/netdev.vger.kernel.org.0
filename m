@@ -2,82 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFAB12898D0
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:08:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C3A12898C7
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:08:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391338AbgJIUIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 16:08:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49364 "EHLO
+        id S2391570AbgJIUIZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 16:08:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388178AbgJIUF7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 16:05:59 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29AFCC0613D5;
-        Fri,  9 Oct 2020 13:05:59 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1kQyeC-0001He-AQ; Fri, 09 Oct 2020 22:05:48 +0200
-Date:   Fri, 9 Oct 2020 22:05:48 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Jozsef Kadlecsik <kadlec@netfilter.org>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, coreteam@netfilter.org,
-        netfilter-devel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: Re: [PATCH nf v2] netfilter: conntrack: connection timeout after
- re-register
-Message-ID: <20201009200548.GG5723@breakpoint.cc>
-References: <20201007193252.7009D95C169C@us180.sjc.aristanetworks.com>
- <CA+HUmGhBxBHU85oFfvoAyP=hG17DG2kgO67eawk1aXmSjehOWQ@mail.gmail.com>
- <alpine.DEB.2.23.453.2010090838430.19307@blackhole.kfki.hu>
- <20201009110323.GC5723@breakpoint.cc>
- <alpine.DEB.2.23.453.2010092035550.19307@blackhole.kfki.hu>
- <20201009185552.GF5723@breakpoint.cc>
- <alpine.DEB.2.23.453.2010092132220.19307@blackhole.kfki.hu>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.23.453.2010092132220.19307@blackhole.kfki.hu>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        with ESMTP id S2391698AbgJIUHl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 16:07:41 -0400
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D44ACC0613DD;
+        Fri,  9 Oct 2020 13:06:31 -0700 (PDT)
+Received: by mail-il1-x135.google.com with SMTP id l16so10278500ilt.13;
+        Fri, 09 Oct 2020 13:06:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=YZkhJ3zLL3unnY2khtCvmLdTmx+8lDPbcz5UWxUwniw=;
+        b=Oeu8a+jw3ev7MAOvRVTpbMfI9veQqql0gprJSq2RkA+bfwldDqEq7Kpr21KGexB0so
+         ElFlJygzUTm8KocSFdKxd2ATb4ldsgkaDmjsoyxoxHMQH36vrbxxFlIme8Zi7zSavTXY
+         xG6u/lssUUYomhVDpTBYi9W7RuSLK9ri67OnMMnYhwd9ududQtz5hEKchvxsraK46JuJ
+         +7MALPirq2CsWwmyTXSWCzl9/O1WkDHCKM5LLLts94PjkxwfSefuPMlu+NnKe938TtRD
+         A0wiB47Tbup+Tnbo74YR7eYnnWWHODBxOONVFLGw5400MU6sZEz243QfqT9C7EX/oTrP
+         eBKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=YZkhJ3zLL3unnY2khtCvmLdTmx+8lDPbcz5UWxUwniw=;
+        b=eTElh+D17XRLfN65XL5yQnEWv6GrUJ0V28sN898n0Fm2UiQUGsRhC1ttmvI/lfzG2m
+         4iVjhmF+zJhQt/eqQZmDLxitBmHsTTo2gAXOgjS0t1pEvhqiyD/a2n+mxzfwTaoSqqlN
+         zl3tLWY/DakqDhMUirtd8N4734YKUc7m2T4XsdjZ+PAmtKscN8HZZ9yKczDfDaYdaQVP
+         ceCDqxI7+NsWfMD/+1B5eNxjqjimHA3aHLKBmlncdMUmry88GQGDZObRnxsaj4NoN55/
+         QI/moXPA0upTbpjtPn5DWwtZPVRGziUwJ5k8afDkVCg/thB5jOYc1IL/dVBQImZOVuwq
+         hqBA==
+X-Gm-Message-State: AOAM531deZ7BTKck+qm7Dj9w2htrOLE+WXzaybBRZ5ioTSm83DgGrPIf
+        Iwo9dzkZIQahpWnvyBaZ18A=
+X-Google-Smtp-Source: ABdhPJzR9dLH1fWQ6sFv99rqMEKbzjNJKrSR4muSdwWnGbyEMpd8lRnEuu8dQf/dH2mokFvh9ha0ig==
+X-Received: by 2002:a92:ddcb:: with SMTP id d11mr12268425ilr.228.1602273991264;
+        Fri, 09 Oct 2020 13:06:31 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id c9sm2035612iow.1.2020.10.09.13.06.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Oct 2020 13:06:30 -0700 (PDT)
+Date:   Fri, 09 Oct 2020 13:06:22 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        davem@davemloft.net
+Cc:     daniel@iogearbox.net, john.fastabend@gmail.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+Message-ID: <5f80c2be10b0d_ed742081f@john-XPS-13-9370.notmuch>
+In-Reply-To: <20201009011240.48506-5-alexei.starovoitov@gmail.com>
+References: <20201009011240.48506-1-alexei.starovoitov@gmail.com>
+ <20201009011240.48506-5-alexei.starovoitov@gmail.com>
+Subject: RE: [PATCH v2 bpf-next 4/4] selftests/bpf: Asm tests for the verifier
+ regalloc tracking.
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jozsef Kadlecsik <kadlec@netfilter.org> wrote:
-> > The "delay unregister" remark was wrt. the "all rules were deleted"
-> > case, i.e. add a "grace period" rather than acting right away when
-> > conntrack use count did hit 0.
+Alexei Starovoitov wrote:
+> From: Alexei Starovoitov <ast@kernel.org>
 > 
-> Now I understand it, thanks really. The hooks are removed, so conntrack 
-> cannot "see" the packets and the entries become stale. 
-
-Yes.
-
-> What is the rationale behind "remove the conntrack hooks when there are no 
-> rule left referring to conntrack"? Performance optimization? But then the 
-> content of the whole conntrack table could be deleted too... ;-)
-
-Yes, this isn't the case at the moment -- only hooks are removed,
-entries will eventually time out.
-
-> > Conntrack entries are not removed, only the base hooks get unregistered. 
-> > This is a problem for tcp window tracking.
-> > 
-> > When re-register occurs, kernel is supposed to switch the existing 
-> > entries to "loose" mode so window tracking won't flag packets as 
-> > invalid, but apparently this isn't enough to handle keepalive case.
+> Add asm tests for register allocator tracking logic.
 > 
-> "loose" (nf_ct_tcp_loose) mode doesn't disable window tracking, it 
-> enables/disables picking up already established connections. 
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> ---
+>  .../testing/selftests/bpf/verifier/regalloc.c | 243 ++++++++++++++++++
+>  1 file changed, 243 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/verifier/regalloc.c
 > 
-> nf_ct_tcp_be_liberal would disable TCP window checking (but not tracking) 
-> for non RST packets.
 
-You are right, mixup on my part.
+I'm writing some extra tests now for a few things so I'll probably also add
+some to track the bounds for non-const through stack spill today or
+monday.
 
-> But both seems to be modified only via the proc entries.
-
-Yes, we iterate table on re-register and modify the existing entries.
+Acked-by: John Fastabend <john.fastabend@gmail.com>
