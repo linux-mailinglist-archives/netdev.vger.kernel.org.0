@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2290E28819A
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 07:09:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E8602881BF
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 07:39:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729509AbgJIFJE convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 9 Oct 2020 01:09:04 -0400
-Received: from mx2.suse.de ([195.135.220.15]:51020 "EHLO mx2.suse.de"
+        id S1731602AbgJIFjC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 9 Oct 2020 01:39:02 -0400
+Received: from mx2.suse.de ([195.135.220.15]:43540 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725917AbgJIFJD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Oct 2020 01:09:03 -0400
+        id S1729347AbgJIFjC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Oct 2020 01:39:02 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 73697AF48;
-        Fri,  9 Oct 2020 05:09:02 +0000 (UTC)
+        by mx2.suse.de (Postfix) with ESMTP id 135A7ACAC;
+        Fri,  9 Oct 2020 05:39:00 +0000 (UTC)
 From:   Nicolai Stange <nstange@suse.de>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     David Laight <David.Laight@ACULAB.COM>,
-        'Taehee Yoo' <ap420073@gmail.com>,
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     Johannes Berg <johannes@sipsolutions.net>,
+        David Laight <David.Laight@aculab.com>,
         "davem\@davemloft.net" <davem@davemloft.net>,
         "kuba\@kernel.org" <kuba@kernel.org>,
         "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
@@ -32,10 +32,11 @@ Subject: Re: [PATCH net 000/117] net: avoid to remove module when its debugfs is
 References: <20201008155048.17679-1-ap420073@gmail.com>
         <1cbb69d83188424e99b2d2482848ae64@AcuMS.aculab.com>
         <62f6c2bd11ed8b25c1cd4462ebc6db870adc4229.camel@sipsolutions.net>
-Date:   Fri, 09 Oct 2020 07:09:01 +0200
-In-Reply-To: <62f6c2bd11ed8b25c1cd4462ebc6db870adc4229.camel@sipsolutions.net>
-        (Johannes Berg's message of "Thu, 08 Oct 2020 18:14:15 +0200")
-Message-ID: <87v9fkgf4i.fsf@suse.de>
+        <CAMArcTUkC2MzN9MiTu_Qwouj6rFf0g0ac2uZWfSKWHTW9cR8xA@mail.gmail.com>
+Date:   Fri, 09 Oct 2020 07:38:59 +0200
+In-Reply-To: <CAMArcTUkC2MzN9MiTu_Qwouj6rFf0g0ac2uZWfSKWHTW9cR8xA@mail.gmail.com>
+        (Taehee Yoo's message of "Fri, 9 Oct 2020 01:37:26 +0900")
+Message-ID: <87r1q8gdqk.fsf@suse.de>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/25.3 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
@@ -44,68 +45,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Johannes Berg <johannes@sipsolutions.net> writes:
+Taehee Yoo <ap420073@gmail.com> writes:
 
+> On Fri, 9 Oct 2020 at 01:14, Johannes Berg <johannes@sipsolutions.net> wrote:
 > On Thu, 2020-10-08 at 15:59 +0000, David Laight wrote:
+>
 >> From: Taehee Yoo
 >> > Sent: 08 October 2020 16:49
->> > 
+>> >
 >> > When debugfs file is opened, its module should not be removed until
 >> > it's closed.
 >> > Because debugfs internally uses the module's data.
 >> > So, it could access freed memory.
->> > 
+
+Yes, the file_operations' ->release() to be more specific -- that's not
+covered by debugfs' proxy fops.
+
+
 >> > In order to avoid panic, it just sets .owner to THIS_MODULE.
 >> > So that all modules will be held when its debugfs file is opened.
->> 
+>>
 >> Can't you fix it in common code?
+>
+>> Yeah I was just wondering that too - weren't the proxy_fops even already
+>> intended to fix this?
+>
+> I didn't try to fix this issue in the common code(debugfs).
+> Because I thought It's a typical pattern of panic and THIS_MODULE
+> can fix it clearly.
+> So I couldn't think there is a root reason in the common code.
 
-Probably not: it's the call to ->release() that's faulting in the Oops
-quoted in the cover letter and that one can't be protected by the
-core debugfs code, unfortunately.
+That's correct, ->owner should get set properly, c.f. my other mail in
+this thread.
 
-There's a comment in full_proxy_release(), which reads as
-
-	/*
-	 * We must not protect this against removal races here: the
-	 * original releaser should be called unconditionally in order
-	 * not to leak any resources. Releasers must not assume that
-	 * ->i_private is still being meaningful here.
-	 */
-
-> Yeah I was just wondering that too - weren't the proxy_fops even already
-> intended to fix this?
-
-No, as far as file_operations are concerned, the proxy fops's intent was
-only to ensure that the memory the file_operations' ->owner resides in
-is still valid so that try_module_get() won't splat at file open
-(c.f. [1]).
-
-You're right that the default "full" proxy fops do prevent all
-file_operations but ->release() from getting invoked on removed files,
-but the motivation had not been to protect the file_operations
-themselves, but accesses to any stale data associated with removed files
-([2]).
-
-
-> The modules _should_ be removing the debugfs files, and then the
-> proxy_fops should kick in, no?
-
-No, as said, not for ->release(). I haven't looked into the inidividual
-patches here, but setting ->owner indeed sounds like the right thing to
-do.
-
-But you're right that modules should be removing any left debugfs files
-at exit.
 
 Thanks,
 
 Nicolai
-
-
-[1] 9fd4dcece43a ("debugfs: prevent access to possibly dead
-                   file_operations at file open")
-[2] 49d200deaa68 ("debugfs: prevent access to removed files' private data")
 
 -- 
 SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
