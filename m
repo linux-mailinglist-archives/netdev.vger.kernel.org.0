@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3283F2897C6
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:05:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4950A289778
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:03:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391320AbgJIUEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 16:04:30 -0400
-Received: from mga11.intel.com ([192.55.52.93]:40547 "EHLO mga11.intel.com"
+        id S2391175AbgJIUDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 16:03:47 -0400
+Received: from mga07.intel.com ([134.134.136.100]:56781 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389150AbgJITw2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Oct 2020 15:52:28 -0400
-IronPort-SDR: JXvRbqfBSh4WcKKhlWmGAJjVVwBBqA0c3vVa62KiqhYKBoCAMWZ7xt97eKLwzIZS1eytWF28Tv
- 5/HLX+aDaNNA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9769"; a="162067998"
+        id S2388726AbgJITwe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Oct 2020 15:52:34 -0400
+IronPort-SDR: k5n5dJgad3PH5z1nKWRCqhUQsH9CIT69v4l8qL7SJaW8QquVIZ7+Rkvin4YtVTXz0/2gWsqL9u
+ 0/qOsLBGzxnw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9769"; a="229715221"
 X-IronPort-AV: E=Sophos;i="5.77,355,1596524400"; 
-   d="scan'208";a="162067998"
+   d="scan'208";a="229715221"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:52:26 -0700
-IronPort-SDR: enOwdrUvox960YRmC5C0rYPH71vGkXRrRSf++MkJJnBOIwe1z1BLjEriaudfjb7SF8F3v1X02a
- epHq/DZLuLjw==
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:52:30 -0700
+IronPort-SDR: R8dnd4Gi4VR6B2jqh++vX5H71gVtYpBk3ChyBwkq2ll0tg176OYljcvG78jHbXA7T9l0eBxuZS
+ YLX/odwmLDNw==
 X-IronPort-AV: E=Sophos;i="5.77,355,1596524400"; 
-   d="scan'208";a="355863002"
+   d="scan'208";a="329006590"
 Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:52:25 -0700
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:52:29 -0700
 From:   ira.weiny@intel.com
 To:     Andrew Morton <akpm@linux-foundation.org>,
         Thomas Gleixner <tglx@linutronix.de>,
@@ -33,7 +33,7 @@ To:     Andrew Morton <akpm@linux-foundation.org>,
         Andy Lutomirski <luto@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>
 Cc:     Ira Weiny <ira.weiny@intel.com>,
-        Richard Weinberger <richard@nod.at>, x86@kernel.org,
+        David Howells <dhowells@redhat.com>, x86@kernel.org,
         Dave Hansen <dave.hansen@linux.intel.com>,
         Dan Williams <dan.j.williams@intel.com>,
         Fenghua Yu <fenghua.yu@intel.com>, linux-doc@vger.kernel.org,
@@ -59,9 +59,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>,
         drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
         xen-devel@lists.xenproject.org, linux-cachefs@redhat.com,
         samba-technical@lists.samba.org, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH RFC PKS/PMEM 27/58] fs/ubifs: Utilize new kmap_thread()
-Date:   Fri,  9 Oct 2020 12:50:02 -0700
-Message-Id: <20201009195033.3208459-28-ira.weiny@intel.com>
+Subject: [PATCH RFC PKS/PMEM 28/58] fs/cachefiles: Utilize new kmap_thread()
+Date:   Fri,  9 Oct 2020 12:50:03 -0700
+Message-Id: <20201009195033.3208459-29-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.28.0.rc0.12.gb6a658bd00c9
 In-Reply-To: <20201009195033.3208459-1-ira.weiny@intel.com>
 References: <20201009195033.3208459-1-ira.weiny@intel.com>
@@ -76,88 +76,28 @@ From: Ira Weiny <ira.weiny@intel.com>
 The kmap() calls in this FS are localized to a single thread.  To avoid
 the over head of global PKRS updates use the new kmap_thread() call.
 
-Cc: Richard Weinberger <richard@nod.at>
+Cc: David Howells <dhowells@redhat.com>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 ---
- fs/ubifs/file.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ fs/cachefiles/rdwr.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/ubifs/file.c b/fs/ubifs/file.c
-index b77d1637bbbc..a3537447a885 100644
---- a/fs/ubifs/file.c
-+++ b/fs/ubifs/file.c
-@@ -111,7 +111,7 @@ static int do_readpage(struct page *page)
- 	ubifs_assert(c, !PageChecked(page));
- 	ubifs_assert(c, !PagePrivate(page));
+diff --git a/fs/cachefiles/rdwr.c b/fs/cachefiles/rdwr.c
+index 3080cda9e824..2468e5c067ba 100644
+--- a/fs/cachefiles/rdwr.c
++++ b/fs/cachefiles/rdwr.c
+@@ -936,9 +936,9 @@ int cachefiles_write_page(struct fscache_storage *op, struct page *page)
+ 		}
+ 	}
  
--	addr = kmap(page);
-+	addr = kmap_thread(page);
- 
- 	block = page->index << UBIFS_BLOCKS_PER_PAGE_SHIFT;
- 	beyond = (i_size + UBIFS_BLOCK_SIZE - 1) >> UBIFS_BLOCK_SHIFT;
-@@ -174,7 +174,7 @@ static int do_readpage(struct page *page)
- 	SetPageUptodate(page);
- 	ClearPageError(page);
- 	flush_dcache_page(page);
+-	data = kmap(page);
++	data = kmap_thread(page);
+ 	ret = kernel_write(file, data, len, &pos);
 -	kunmap(page);
 +	kunmap_thread(page);
- 	return 0;
- 
- error:
-@@ -182,7 +182,7 @@ static int do_readpage(struct page *page)
- 	ClearPageUptodate(page);
- 	SetPageError(page);
- 	flush_dcache_page(page);
--	kunmap(page);
-+	kunmap_thread(page);
- 	return err;
- }
- 
-@@ -616,7 +616,7 @@ static int populate_page(struct ubifs_info *c, struct page *page,
- 	dbg_gen("ino %lu, pg %lu, i_size %lld, flags %#lx",
- 		inode->i_ino, page->index, i_size, page->flags);
- 
--	addr = zaddr = kmap(page);
-+	addr = zaddr = kmap_thread(page);
- 
- 	end_index = (i_size - 1) >> PAGE_SHIFT;
- 	if (!i_size || page->index > end_index) {
-@@ -692,7 +692,7 @@ static int populate_page(struct ubifs_info *c, struct page *page,
- 	SetPageUptodate(page);
- 	ClearPageError(page);
- 	flush_dcache_page(page);
--	kunmap(page);
-+	kunmap_thread(page);
- 	*n = nn;
- 	return 0;
- 
-@@ -700,7 +700,7 @@ static int populate_page(struct ubifs_info *c, struct page *page,
- 	ClearPageUptodate(page);
- 	SetPageError(page);
- 	flush_dcache_page(page);
--	kunmap(page);
-+	kunmap_thread(page);
- 	ubifs_err(c, "bad data node (block %u, inode %lu)",
- 		  page_block, inode->i_ino);
- 	return -EINVAL;
-@@ -918,7 +918,7 @@ static int do_writepage(struct page *page, int len)
- 	/* Update radix tree tags */
- 	set_page_writeback(page);
- 
--	addr = kmap(page);
-+	addr = kmap_thread(page);
- 	block = page->index << UBIFS_BLOCKS_PER_PAGE_SHIFT;
- 	i = 0;
- 	while (len) {
-@@ -950,7 +950,7 @@ static int do_writepage(struct page *page, int len)
- 	ClearPagePrivate(page);
- 	ClearPageChecked(page);
- 
--	kunmap(page);
-+	kunmap_thread(page);
- 	unlock_page(page);
- 	end_page_writeback(page);
- 	return err;
+ 	fput(file);
+ 	if (ret != len)
+ 		goto error_eio;
 -- 
 2.28.0.rc0.12.gb6a658bd00c9
 
