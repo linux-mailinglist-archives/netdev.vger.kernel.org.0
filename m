@@ -2,114 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07CA0288018
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 03:49:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00D20288024
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 03:59:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730654AbgJIBs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 21:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48778 "EHLO
+        id S1730841AbgJIB7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 21:59:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726499AbgJIBs6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 21:48:58 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CC9AC0613D2;
-        Thu,  8 Oct 2020 18:48:58 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id n18so8567953wrs.5;
-        Thu, 08 Oct 2020 18:48:58 -0700 (PDT)
+        with ESMTP id S1730814AbgJIB7a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 21:59:30 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809FCC0613D2;
+        Thu,  8 Oct 2020 18:59:30 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id k18so8264790wmj.5;
+        Thu, 08 Oct 2020 18:59:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=gnblYWXua1Ayl8hm3qLdli+NxT5jP4ZUCUbzVymdaII=;
-        b=pFZrwF1JWdftRgWormmba7MTSCkHZ58OFAEhMU5+y/iojOBwkQSGpbZCgt2Kymg8av
-         JudT02jPB1EBeUcEgXO7veO+U+AmtJNCpjb8gfwSYXHeuzKY7ktXASnFVXX+vyY9afXB
-         WYN4RtytPp5z9s6YlcvCM+0ixoEbMoIbFzQZmRz08SsPfsW/EQs2kQVBjrBdR4hP5Kuj
-         G2QEgDY64FmKaVs2bSIxNtem8ZLQrSh2h54LEDKlQhpjKAIoyZne2RIVamXlDgeTwZZ+
-         uoJ0tQgM3f7NT1f1HhqD+0DUabXHJmc384IMouNdU0Hjo/74oppdck2O+jB/ht8t6d5i
-         O+Ew==
+        bh=PH8qJjXyJjwPlc1da743kVRsFdYY4mOzElUAKLFycxA=;
+        b=AvOS/p1k2uI0ZUZHJA6POHculGuwPfkTIqkuhQ+NJL/OHFTqOYX54YJ+pF01RYduWi
+         j6MftIfizU38/2kZneMwzb+niNr1xpOEMCRcws2R2FU8iy+apFP3EoKYE03ZTQXUb3F0
+         lu0D+RyD9mBLqNrDhMIu8803WSyPu+krtruufVKztLB0MfTiFZp831tK1mk+yE4MKMw+
+         aBnnKi3XcXots2d9RUOZlPrr8KBJlnY/Rm2aRIXM9ZDQeAcZFqOr/UQ4UMTDA5gZKWDB
+         jH6xbs8czQP7D2U7YekmBfU0a9IfitFVs6jT218zcdSSofLMKPwbN1n0y2o0OF9blKif
+         ihXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=gnblYWXua1Ayl8hm3qLdli+NxT5jP4ZUCUbzVymdaII=;
-        b=Cb3CvxNCCHSBKTpbg84cVf2upXqN78V0mN+W1BYoHxhGsxy05o8ZwZvSZZvE63ah+5
-         UXarzigwR6BNaQbILZYeONQeYApj+vNKBwGJrOcbQKF8mQo4sFtcmKgmkmKHSO7ThpKJ
-         n4E0/WrNGU6L5P3oloBR89CwinG0FA70/HQZ/ce5EX+h/iYC6b+5QuPt2KxUSbWE+xtz
-         BssFNy+LUS49fr68WUPsx5naHJvt6hS7eEfxvYlxYX0Z4NL2Sp+xxxAj0nwEAEp0XTgx
-         DWk0PCZ8D4+7Mg2i4wXRH5NoC0BV4a2WACfASfouf7IKbC0u5FQ57nU1DfUlzRob1+5H
-         ysMQ==
-X-Gm-Message-State: AOAM533VAA8FOOHwJqUroPw5eDa1Jjb9Gs4CMHk6XlQXRvOQbVq3HdBp
-        9k64mYiZ1sg2S1Ue7ezmCcTZrM/+jwRCURud7Mo=
-X-Google-Smtp-Source: ABdhPJzZqs0LQVMLqAx5zy/pMgkHs+q4mWKLirLAbXyVC7Y/U/APi4naOLPRQuLmfVu7brdh+kuBfW84Jgn8nXLH88M=
-X-Received: by 2002:adf:ec06:: with SMTP id x6mr12003385wrn.404.1602208136803;
- Thu, 08 Oct 2020 18:48:56 -0700 (PDT)
+        bh=PH8qJjXyJjwPlc1da743kVRsFdYY4mOzElUAKLFycxA=;
+        b=TKieHq0yJY+O+2RLk3upnQfmPMlfZi1GKnD5birggI6bdvB0qLnFn1D0IcRurd9lsr
+         YgH91mQzYnDH486Qc4zDpfKLytO2Xbf+NYVaCxw3K0aFkXoAmsU7g9aVeWvSU0a7REfz
+         J8oN4k6ScT30AlrHXb+jP4iyQcAiLb0nFiw2B+jQ4Qy1nfh9DP0KcLFDlOVpIS6lm5GO
+         1kGtgCBs7xJIzuB6pa1oCyU4QxhPtORQl7u/j+FwO3OhT4yNDnL1ry3cnWJG49YI2Aoa
+         vT2uH+am/AEH8pg/sMFGQxgskQcJWEVwge3nKZ8I7/Gg+TV7P5sTql3VwWQ9gpAWcm0j
+         8OJw==
+X-Gm-Message-State: AOAM532ROVOOqGdzjvCPYk6oKJybln+TlD/G177HUt01BtRsMbSact/M
+        8Igk9VbAGFEanlxgUOxIEuAteoJDJbPtjKSbgoI=
+X-Google-Smtp-Source: ABdhPJxCOjfpvI6vjgn2q61fiU0UQT7xYSxp2HX01MPw7d46ntT8FefhjOxEg0MMo5Osqm/cyp96AqjiOyf1iHSNATU=
+X-Received: by 2002:a7b:c2a9:: with SMTP id c9mr11494514wmk.87.1602208769149;
+ Thu, 08 Oct 2020 18:59:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1602150362.git.lucien.xin@gmail.com> <052acb63198c44df41c5db17f8397eeb7c8bacfe.1602150362.git.lucien.xin@gmail.com>
- <c36b016ee429980b9585144f4f9af31bcda467ee.1602150362.git.lucien.xin@gmail.com>
- <CA+FuTScNHkYu2F2xPBjLj9ivfLRXVbTPypgjvtEZrebatpJJfQ@mail.gmail.com>
-In-Reply-To: <CA+FuTScNHkYu2F2xPBjLj9ivfLRXVbTPypgjvtEZrebatpJJfQ@mail.gmail.com>
+References: <6f5a15bba0e2b5d3da6be90fd222c5ee41691d32.1602150362.git.lucien.xin@gmail.com>
+ <202010090235.YqoHRhHI-lkp@intel.com>
+In-Reply-To: <202010090235.YqoHRhHI-lkp@intel.com>
 From:   Xin Long <lucien.xin@gmail.com>
-Date:   Fri, 9 Oct 2020 09:48:45 +0800
-Message-ID: <CADvbK_en7mePKdmMaLr9V8hTdmjf2bSVpSrid2CjharJtvD6YQ@mail.gmail.com>
-Subject: Re: [PATCHv2 net-next 02/17] udp6: move the mss check after udp gso
- tunnel processing
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 9 Oct 2020 09:59:18 +0800
+Message-ID: <CADvbK_f2neAmkuHytPJ=Gc7TEf4nHjDZ1k2C_p6MUSBJtK6w5A@mail.gmail.com>
+Subject: Re: [PATCHv2 net-next 05/17] sctp: create udp4 sock and add its encap_rcv
+To:     kernel test robot <lkp@intel.com>
 Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        kbuild-all@lists.01.org,
         Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Neil Horman <nhorman@tuxdriver.com>,
         Michael Tuexen <tuexen@fh-muenster.de>,
-        David Miller <davem@davemloft.net>
+        davem <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 8, 2020 at 8:45 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
+On Fri, Oct 9, 2020 at 2:30 AM kernel test robot <lkp@intel.com> wrote:
 >
-> On Thu, Oct 8, 2020 at 5:48 AM Xin Long <lucien.xin@gmail.com> wrote:
-> >
-> > For some protocol's gso, like SCTP, it's using GSO_BY_FRAGS for
-> > gso_size. When using UDP to encapsulate its packet, it will
-> > return error in udp6_ufo_fragment() as skb->len < gso_size,
-> > and it will never go to the gso tunnel processing.
-> >
-> > So we should move this check after udp gso tunnel processing,
-> > the same as udp4_ufo_fragment() does. While at it, also tidy
-> > the variables up.
+> Hi Xin,
 >
-> Please don't mix a new feature and code cleanup.
-Hi, Willem,
+> Thank you for the patch! Yet something to improve:
+>
+> [auto build test ERROR on net-next/master]
+>
+> url:    https://github.com/0day-ci/linux/commits/Xin-Long/sctp-Implement-RFC6951-UDP-Encapsulation-of-SCTP/20201008-175211
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 9faebeb2d80065926dfbc09cb73b1bb7779a89cd
+> config: arm-keystone_defconfig (attached as .config)
+> compiler: arm-linux-gnueabi-gcc (GCC) 9.3.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/0day-ci/linux/commit/55d6ef371ddfab66c7767da14b490f7576262f1a
+>         git remote add linux-review https://github.com/0day-ci/linux
+>         git fetch --no-tags linux-review Xin-Long/sctp-Implement-RFC6951-UDP-Encapsulation-of-SCTP/20201008-175211
+>         git checkout 55d6ef371ddfab66c7767da14b490f7576262f1a
+>         # save the attached .config to linux build tree
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=arm
+>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All errors (new ones prefixed by >>):
+>
+>    arm-linux-gnueabi-ld: net/sctp/protocol.o: in function `sctp_udp_sock_start':
+> >> protocol.c:(.text+0x1084): undefined reference to `udp_sock_create4'
+> >> arm-linux-gnueabi-ld: protocol.c:(.text+0x10b0): undefined reference to `setup_udp_tunnel_sock'
+>    arm-linux-gnueabi-ld: net/sctp/protocol.o: in function `sctp_udp_sock_stop':
+> >> protocol.c:(.text+0x1108): undefined reference to `udp_tunnel_sock_release'
+diff --git a/net/sctp/Kconfig b/net/sctp/Kconfig
+index 39d7fa9569f8..5da599ff84a9 100644
+--- a/net/sctp/Kconfig
++++ b/net/sctp/Kconfig
+@@ -11,6 +11,7 @@ menuconfig IP_SCTP
+        select CRYPTO_HMAC
+        select CRYPTO_SHA1
+        select LIBCRC32C
++       select NET_UDP_TUNNEL
+        help
+          Stream Control Transmission Protocol
 
-Tidying up variables are not worth a single patch, that's what I was
-thinking. I can leave the variables as it is if you wish in this patch.
-
 >
-> This patch changes almost every line of the function due to
-> indentation changes. But the only relevant part is
->
-> "
->         mss = skb_shinfo(skb)->gso_size;
->         if (unlikely(skb->len <= mss))
->                 goto out;
->
->         if (skb->encapsulation && skb_shinfo(skb)->gso_type &
->             (SKB_GSO_UDP_TUNNEL|SKB_GSO_UDP_TUNNEL_CSUM))
->                 segs = skb_udp_tunnel_segment(skb, features, true);
->         else {
->                 /* irrelevant here */
->         }
->
-> out:
->         return segs;
-> }
-> "
->
-> Is it a sufficient change to just skip the mss check if mss == GSO_BY_FRAGS?
-It is sufficient.
-
-But I think we'd better keep the code here consistent with ipv4's if
-there's no other reason to do 'skb->len <= mss' check at the first.
-
-We can go with if-else as you showed above now, then do a cleanup in
-the future. What do you think?
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
