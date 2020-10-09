@@ -2,42 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D4642892C1
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 21:51:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B416B28990C
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:09:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403954AbgJITvb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 15:51:31 -0400
-Received: from mga11.intel.com ([192.55.52.93]:40417 "EHLO mga11.intel.com"
+        id S2391544AbgJIUIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 16:08:53 -0400
+Received: from mga03.intel.com ([134.134.136.65]:25936 "EHLO mga03.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2403855AbgJITvJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Oct 2020 15:51:09 -0400
-IronPort-SDR: 5U3LdD8JD30Qiz2Xw/HSuDHohT2eTnGXIdf1M2uidm99cBYL2HhALZbtzhz8H9lsGnLyzZh9ts
- a1oLaFItUWyw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9769"; a="162067789"
+        id S2403924AbgJITv3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Oct 2020 15:51:29 -0400
+IronPort-SDR: y57ejaJgVBNlpT3G8VL+eb/8qirNhMK6yqdMgqA2Zofe3N1jmyHJKpOn1cxbYcjftnOrosB3AT
+ yDtdD/JZt5Pw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9769"; a="165592018"
 X-IronPort-AV: E=Sophos;i="5.77,355,1596524400"; 
-   d="scan'208";a="162067789"
+   d="scan'208";a="165592018"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:51:07 -0700
-IronPort-SDR: q86t8daZNt+V6d8RNukEYKSCMEs+oCo1U1vd6Yq1DOlnqrvHVUOvZ3CGMAsBzz1plldsK41yyY
- 6uUXC42AACQg==
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:51:11 -0700
+IronPort-SDR: 7ZsxuYrd4RIh+I9L87qE8QKpDxHdxlIArpw96UL8x0WQ0i4hLag3NZ1m816qhb9i0FMTl4f1za
+ dG2KA2sC/NWA==
 X-IronPort-AV: E=Sophos;i="5.77,355,1596524400"; 
-   d="scan'208";a="317146961"
+   d="scan'208";a="312652519"
 Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:51:06 -0700
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2020 12:51:09 -0700
 From:   ira.weiny@intel.com
 To:     Andrew Morton <akpm@linux-foundation.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
         Andy Lutomirski <luto@kernel.org>,
         Peter Zijlstra <peterz@infradead.org>
-Cc:     Ira Weiny <ira.weiny@intel.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+Cc:     Ira Weiny <ira.weiny@intel.com>, Jens Axboe <axboe@kernel.dk>,
         x86@kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
         Dan Williams <dan.j.williams@intel.com>,
         Fenghua Yu <fenghua.yu@intel.com>, linux-doc@vger.kernel.org,
@@ -63,9 +58,9 @@ Cc:     Ira Weiny <ira.weiny@intel.com>,
         drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
         xen-devel@lists.xenproject.org, linux-cachefs@redhat.com,
         samba-technical@lists.samba.org, intel-wired-lan@lists.osuosl.org
-Subject: [PATCH RFC PKS/PMEM 06/58] kmap: Introduce k[un]map_thread debugging
-Date:   Fri,  9 Oct 2020 12:49:41 -0700
-Message-Id: <20201009195033.3208459-7-ira.weiny@intel.com>
+Subject: [PATCH RFC PKS/PMEM 07/58] drivers/drbd: Utilize new kmap_thread()
+Date:   Fri,  9 Oct 2020 12:49:42 -0700
+Message-Id: <20201009195033.3208459-8-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.28.0.rc0.12.gb6a658bd00c9
 In-Reply-To: <20201009195033.3208459-1-ira.weiny@intel.com>
 References: <20201009195033.3208459-1-ira.weiny@intel.com>
@@ -77,238 +72,84 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-Most kmap() callers use the map within a single thread and have no need
-for the protection domain to be enabled globally.
+The kmap() calls in this driver are localized to a single thread.  To
+avoid the over head of global PKRS updates use the new kmap_thread()
+call.
 
-To differentiate these kmap users, new k[un]map_thread() calls were
-introduced which are thread local.
-
-To aid in debugging the new use of kmap_thread(), add a reference count,
-a check on that count, and tracing to ID where mapping errors occur.
-
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Vincent Guittot <vincent.guittot@linaro.org>
-Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Ben Segall <bsegall@google.com>
-Cc: Mel Gorman <mgorman@suse.de>
+Cc: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 ---
- include/linux/highmem.h            |  5 +++
- include/linux/sched.h              |  5 +++
- include/trace/events/kmap_thread.h | 56 ++++++++++++++++++++++++++++++
- init/init_task.c                   |  3 ++
- kernel/fork.c                      | 15 ++++++++
- lib/Kconfig.debug                  |  8 +++++
- mm/debug.c                         | 23 ++++++++++++
- 7 files changed, 115 insertions(+)
- create mode 100644 include/trace/events/kmap_thread.h
+ drivers/block/drbd/drbd_main.c     |  4 ++--
+ drivers/block/drbd/drbd_receiver.c | 12 ++++++------
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
-diff --git a/include/linux/highmem.h b/include/linux/highmem.h
-index ef7813544719..22d1c000802e 100644
---- a/include/linux/highmem.h
-+++ b/include/linux/highmem.h
-@@ -247,6 +247,10 @@ static inline void kunmap(struct page *page)
- 	__kunmap(page, true);
+diff --git a/drivers/block/drbd/drbd_main.c b/drivers/block/drbd/drbd_main.c
+index 573dbf6f0c31..f0d0c6b0745e 100644
+--- a/drivers/block/drbd/drbd_main.c
++++ b/drivers/block/drbd/drbd_main.c
+@@ -1532,9 +1532,9 @@ static int _drbd_no_send_page(struct drbd_peer_device *peer_device, struct page
+ 	int err;
+ 
+ 	socket = peer_device->connection->data.socket;
+-	addr = kmap(page) + offset;
++	addr = kmap_thread(page) + offset;
+ 	err = drbd_send_all(peer_device->connection, socket, addr, size, msg_flags);
+-	kunmap(page);
++	kunmap_thread(page);
+ 	if (!err)
+ 		peer_device->device->send_cnt += size >> 9;
+ 	return err;
+diff --git a/drivers/block/drbd/drbd_receiver.c b/drivers/block/drbd/drbd_receiver.c
+index 422363daa618..4704bc0564e2 100644
+--- a/drivers/block/drbd/drbd_receiver.c
++++ b/drivers/block/drbd/drbd_receiver.c
+@@ -1951,13 +1951,13 @@ read_in_block(struct drbd_peer_device *peer_device, u64 id, sector_t sector,
+ 	page = peer_req->pages;
+ 	page_chain_for_each(page) {
+ 		unsigned len = min_t(int, ds, PAGE_SIZE);
+-		data = kmap(page);
++		data = kmap_thread(page);
+ 		err = drbd_recv_all_warn(peer_device->connection, data, len);
+ 		if (drbd_insert_fault(device, DRBD_FAULT_RECEIVE)) {
+ 			drbd_err(device, "Fault injection: Corrupting data on receive\n");
+ 			data[0] = data[0] ^ (unsigned long)-1;
+ 		}
+-		kunmap(page);
++		kunmap_thread(page);
+ 		if (err) {
+ 			drbd_free_peer_req(device, peer_req);
+ 			return NULL;
+@@ -1992,7 +1992,7 @@ static int drbd_drain_block(struct drbd_peer_device *peer_device, int data_size)
+ 
+ 	page = drbd_alloc_pages(peer_device, 1, 1);
+ 
+-	data = kmap(page);
++	data = kmap_thread(page);
+ 	while (data_size) {
+ 		unsigned int len = min_t(int, data_size, PAGE_SIZE);
+ 
+@@ -2001,7 +2001,7 @@ static int drbd_drain_block(struct drbd_peer_device *peer_device, int data_size)
+ 			break;
+ 		data_size -= len;
+ 	}
+-	kunmap(page);
++	kunmap_thread(page);
+ 	drbd_free_pages(peer_device->device, page, 0);
+ 	return err;
  }
+@@ -2033,10 +2033,10 @@ static int recv_dless_read(struct drbd_peer_device *peer_device, struct drbd_req
+ 	D_ASSERT(peer_device->device, sector == bio->bi_iter.bi_sector);
  
-+#ifdef CONFIG_DEBUG_KMAP_THREAD
-+void *kmap_thread(struct page *page);
-+void kunmap_thread(struct page *page);
-+#else
- static inline void *kmap_thread(struct page *page)
- {
- 	return __kmap(page, false);
-@@ -255,6 +259,7 @@ static inline void kunmap_thread(struct page *page)
- {
- 	__kunmap(page, false);
- }
-+#endif
- 
- /*
-  * Prevent people trying to call kunmap_atomic() as if it were kunmap()
-diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 25d97ab6c757..4627ea4a49e6 100644
---- a/include/linux/sched.h
-+++ b/include/linux/sched.h
-@@ -1318,6 +1318,11 @@ struct task_struct {
- #ifdef CONFIG_ZONE_DEVICE_ACCESS_PROTECTION
- 	unsigned int			dev_page_access_ref;
- #endif
-+
-+#ifdef CONFIG_DEBUG_KMAP_THREAD
-+	unsigned int			kmap_thread_cnt;
-+#endif
-+
- 	/*
- 	 * New fields for task_struct should be added above here, so that
- 	 * they are included in the randomized portion of task_struct.
-diff --git a/include/trace/events/kmap_thread.h b/include/trace/events/kmap_thread.h
-new file mode 100644
-index 000000000000..e7143cfe0daf
---- /dev/null
-+++ b/include/trace/events/kmap_thread.h
-@@ -0,0 +1,56 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-+
-+/*
-+ * Copyright (c) 2020 Intel Corporation.  All rights reserved.
-+ *
-+ */
-+
-+#undef TRACE_SYSTEM
-+#define TRACE_SYSTEM kmap_thread
-+
-+#if !defined(_TRACE_KMAP_THREAD_H) || defined(TRACE_HEADER_MULTI_READ)
-+#define _TRACE_KMAP_THREAD_H
-+
-+#include <linux/tracepoint.h>
-+
-+DECLARE_EVENT_CLASS(kmap_thread_template,
-+	TP_PROTO(struct task_struct *tsk, struct page *page,
-+		 void *caller_addr, int cnt),
-+	TP_ARGS(tsk, page, caller_addr, cnt),
-+
-+	TP_STRUCT__entry(
-+		__field(int, pid)
-+		__field(struct page *, page)
-+		__field(void *, caller_addr)
-+		__field(int, cnt)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->pid = tsk->pid;
-+		__entry->page = page;
-+		__entry->caller_addr = caller_addr;
-+		__entry->cnt = cnt;
-+	),
-+
-+	TP_printk("PID %d; (%d) %pS %p",
-+		__entry->pid,
-+		__entry->cnt,
-+		__entry->caller_addr,
-+		__entry->page
-+	)
-+);
-+
-+DEFINE_EVENT(kmap_thread_template, kmap_thread,
-+	TP_PROTO(struct task_struct *tsk, struct page *page,
-+		 void *caller_addr, int cnt),
-+	TP_ARGS(tsk, page, caller_addr, cnt));
-+
-+DEFINE_EVENT(kmap_thread_template, kunmap_thread,
-+	TP_PROTO(struct task_struct *tsk, struct page *page,
-+		 void *caller_addr, int cnt),
-+	TP_ARGS(tsk, page, caller_addr, cnt));
-+
-+
-+#endif /* _TRACE_KMAP_THREAD_H */
-+
-+#include <trace/define_trace.h>
-diff --git a/init/init_task.c b/init/init_task.c
-index 9b39f25de59b..19f09965eb34 100644
---- a/init/init_task.c
-+++ b/init/init_task.c
-@@ -212,6 +212,9 @@ struct task_struct init_task
- #ifdef CONFIG_ZONE_DEVICE_ACCESS_PROTECTION
- 	.dev_page_access_ref = 0,
- #endif
-+#ifdef CONFIG_DEBUG_KMAP_THREAD
-+	.kmap_thread_cnt = 0,
-+#endif
- };
- EXPORT_SYMBOL(init_task);
- 
-diff --git a/kernel/fork.c b/kernel/fork.c
-index b6a3ee328a89..2c66e49b7614 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -722,6 +722,17 @@ static inline void put_signal_struct(struct signal_struct *sig)
- 		free_signal_struct(sig);
- }
- 
-+#ifdef CONFIG_DEBUG_KMAP_THREAD
-+static void check_outstanding_kmap_thread(struct task_struct *tsk)
-+{
-+	if (tsk->kmap_thread_cnt)
-+		pr_warn(KERN_ERR "WARNING: PID %d; Failed to kunmap_thread() [cnt %d]\n",
-+			tsk->pid, tsk->kmap_thread_cnt);
-+}
-+#else
-+static void check_outstanding_kmap_thread(struct task_struct *tsk) { }
-+#endif
-+
- void __put_task_struct(struct task_struct *tsk)
- {
- 	WARN_ON(!tsk->exit_state);
-@@ -734,6 +745,7 @@ void __put_task_struct(struct task_struct *tsk)
- 	exit_creds(tsk);
- 	delayacct_tsk_free(tsk);
- 	put_signal_struct(tsk->signal);
-+	check_outstanding_kmap_thread(tsk);
- 
- 	if (!profile_handoff_task(tsk))
- 		free_task(tsk);
-@@ -943,6 +955,9 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
- #endif
- #ifdef CONFIG_ZONE_DEVICE_ACCESS_PROTECTION
- 	tsk->dev_page_access_ref = 0;
-+#endif
-+#ifdef CONFIG_DEBUG_KMAP_THREAD
-+	tsk->kmap_thread_cnt = 0;
- #endif
- 	return tsk;
- 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index f015c09ba5a1..6507b43d5b0c 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -858,6 +858,14 @@ config DEBUG_HIGHMEM
- 	  This option enables additional error checking for high memory
- 	  systems.  Disable for production systems.
- 
-+config DEBUG_KMAP_THREAD
-+	bool "Kmap debugging"
-+	depends on DEBUG_KERNEL
-+	help
-+	  This option enables additional error checking for kernel mapping code
-+	  specifically the k[un]map_thread() calls.  Disable for production
-+	  systems.
-+
- config HAVE_DEBUG_STACKOVERFLOW
- 	bool
- 
-diff --git a/mm/debug.c b/mm/debug.c
-index ca8d1cacdecc..68d186f3570e 100644
---- a/mm/debug.c
-+++ b/mm/debug.c
-@@ -320,3 +320,26 @@ void page_init_poison(struct page *page, size_t size)
- }
- EXPORT_SYMBOL_GPL(page_init_poison);
- #endif		/* CONFIG_DEBUG_VM */
-+
-+#define CREATE_TRACE_POINTS
-+#include <trace/events/kmap_thread.h>
-+
-+#ifdef CONFIG_DEBUG_KMAP_THREAD
-+void *kmap_thread(struct page *page)
-+{
-+	trace_kmap_thread(current, page, __builtin_return_address(0),
-+			  current->kmap_thread_cnt);
-+	current->kmap_thread_cnt++;
-+	return __kmap(page, false);
-+}
-+EXPORT_SYMBOL_GPL(kmap_thread);
-+
-+void kunmap_thread(struct page *page)
-+{
-+	__kunmap(page, false);
-+	current->kmap_thread_cnt--;
-+	trace_kunmap_thread(current, page, __builtin_return_address(0),
-+			    current->kmap_thread_cnt);
-+}
-+EXPORT_SYMBOL_GPL(kunmap_thread);
-+#endif
+ 	bio_for_each_segment(bvec, bio, iter) {
+-		void *mapped = kmap(bvec.bv_page) + bvec.bv_offset;
++		void *mapped = kmap_thread(bvec.bv_page) + bvec.bv_offset;
+ 		expect = min_t(int, data_size, bvec.bv_len);
+ 		err = drbd_recv_all_warn(peer_device->connection, mapped, expect);
+-		kunmap(bvec.bv_page);
++		kunmap_thread(bvec.bv_page);
+ 		if (err)
+ 			return err;
+ 		data_size -= expect;
 -- 
 2.28.0.rc0.12.gb6a658bd00c9
 
