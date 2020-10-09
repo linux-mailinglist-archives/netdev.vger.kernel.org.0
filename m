@@ -2,92 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB74A2890E6
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 20:34:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F199228912E
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 20:36:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390577AbgJISeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 14:34:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390548AbgJISdq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 14:33:46 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF4FC0613D5
-        for <netdev@vger.kernel.org>; Fri,  9 Oct 2020 11:33:44 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id q7so10021071ile.8
-        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 11:33:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NginWwcSKqK9kM6/V5DaPE4JtW0hMIAcQ0pfU99Whvs=;
-        b=A3W2nifNlteMroZ5QlhEmA+6TZZW6d31LWV273MXuHDGP2jkeiwWZw2AJsaGf0i8wJ
-         Z9hjYvUGJgF1L2QEdGP+RUwEZOm4fubWc6DOMLXAJAFVrh1xgSVhVJE1b783V/MQYXUv
-         q7EtTtxI8koF6yb0gtOEQPBrXd3OlkN2Rejhz7mrLobBraOJF4s6JriNB0f7vfd2Xq4l
-         odWyPKQa8YOdgnpxbwG+FSKRRO90qODNeHdNpJH8hSle8X4fhya+okU0NNNR01GtT0Bj
-         sf0bSNqVxr3+Q/KnN5XyrumyT3VAFqdJMSBpO9AmPHcXC2ssNDhLvRFbXgsec0kU+R1f
-         8+oA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NginWwcSKqK9kM6/V5DaPE4JtW0hMIAcQ0pfU99Whvs=;
-        b=jN6RiunYI5mMcaI9Z/M95crXHCevJto/x69UiUSjQmNXq+kvy7SEZhsH9Z38sFxsaQ
-         ldf/T/EQdWU/4u6nd8sFHK/M2I8VTm1ZrLTht75Or8rWoWmHqqiC6oZQcpkD8gR1tUZX
-         DNnpktRrDO2DBEWYnAHxSpTu2xKvIAPrUT3/ioA+NXLOM53BQXpvU5LjCx+aBM/FeD1f
-         g5XhFMkTO3RB0jhhMbznvc61VxXccoFDkgNsAUcSN0GT1ixp3qamUP1wXuo1y3pD6S/J
-         on9U8XadbLn/Q/WA1CLsfcDxmL22acM1tfW56fuhbDbOFlkxfmrLjrEryzOpvL1C9P/K
-         hf2w==
-X-Gm-Message-State: AOAM530vLZ518O+M6sWvXfGaHNRKji9kjN1xh5QQtKT4Ngc3EGqNfKid
-        RiHEna1JlmKTkmjewpgIYI1aRVHa9xEsZqI7r2iQ2g==
-X-Google-Smtp-Source: ABdhPJxt6mxMvU44yuRLqC9eHk9F62AtoKA50uMUYTCJ/IIpkzAy4745aQ7IMaJPcOSYu+HnbavDRuh8qGPga7dkOt8=
-X-Received: by 2002:a92:ccc2:: with SMTP id u2mr10356666ilq.278.1602268424037;
- Fri, 09 Oct 2020 11:33:44 -0700 (PDT)
+        id S1731433AbgJISgK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 14:36:10 -0400
+Received: from www62.your-server.de ([213.133.104.62]:46444 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732766AbgJISfW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 14:35:22 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kQxEb-0006Td-LF; Fri, 09 Oct 2020 20:35:17 +0200
+Received: from [178.196.57.75] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kQxEb-000Kp1-Fc; Fri, 09 Oct 2020 20:35:17 +0200
+Subject: Re: [PATCH bpf-next v2 3/6] bpf: allow for map-in-map with dynamic
+ inner array map entries
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <cover.1602252399.git.daniel@iogearbox.net>
+ <48cbc4e24968da275d13bd8797fe32986938f398.1602252399.git.daniel@iogearbox.net>
+ <CAEf4BzYVgs0vicVJTeT5yVSrOg=ArJ=BkEoA8KrwdQ8AVQ23Sg@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <99c67c05-700e-8f54-7fea-2daa6d19ec9e@iogearbox.net>
+Date:   Fri, 9 Oct 2020 20:35:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <160216609656.882446.16642490462568561112.stgit@firesoul>
- <160216615767.882446.7384364280837100311.stgit@firesoul> <40d7af61-6840-5473-79d7-ea935f6889f4@iogearbox.net>
-In-Reply-To: <40d7af61-6840-5473-79d7-ea935f6889f4@iogearbox.net>
-From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
-Date:   Fri, 9 Oct 2020 11:33:33 -0700
-Message-ID: <CANP3RGesHkCNTWsWDoU2uJsFjZ4dgnEpp+F-iEmhb9U0-rcT_w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next V3 4/6] bpf: make it possible to identify BPF
- redirected SKBs
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        bpf <bpf@vger.kernel.org>, Linux NetDev <netdev@vger.kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Shaun Crampton <shaun@tigera.io>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Marek Majkowski <marek@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eyal Birger <eyal.birger@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAEf4BzYVgs0vicVJTeT5yVSrOg=ArJ=BkEoA8KrwdQ8AVQ23Sg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25952/Fri Oct  9 15:52:40 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > This change makes it possible to identify SKBs that have been redirected
-> > by TC-BPF (cls_act). This is needed for a number of cases.
-> >
-> > (1) For collaborating with driver ifb net_devices.
-> > (2) For avoiding starting generic-XDP prog on TC ingress redirect.
-> >
-> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
->
-> Not sure if anyone actually cares about ifb devices, but my worry is that the
-> generic XDP vs tc interaction has been as-is for quite some time so this change
-> in behavior could break in the wild.
+On 10/9/20 7:42 PM, Andrii Nakryiko wrote:
+> On Fri, Oct 9, 2020 at 7:13 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+[...]
+>>   static int percpu_array_map_btf_id;
+>>   const struct bpf_map_ops percpu_array_map_ops = {
+>>          .map_meta_equal = bpf_map_meta_equal,
+>> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+>> index 1110ecd7d1f3..519bf867f065 100644
+>> --- a/kernel/bpf/syscall.c
+>> +++ b/kernel/bpf/syscall.c
+>> @@ -111,7 +111,8 @@ static struct bpf_map *find_and_alloc_map(union bpf_attr *attr)
+>>          ops = bpf_map_types[type];
+>>          if (!ops)
+>>                  return ERR_PTR(-EINVAL);
+>> -
+>> +       if (ops->map_swap_ops)
+>> +               ops = ops->map_swap_ops(attr);
+> 
+> I'm afraid that this can cause quite a lot of confusion down the road.
+> 
+> Wouldn't designating -EOPNOTSUPP return code from map_gen_lookup() and
+> not inlining in that case as if map_gen_lookup() wasn't even defined
+> be a much smaller and more local (semantically) change that achieves
+> exactly the same thing? Doesn't seem like switching from u32 to int
+> for return value would be a big inconvenience for existing
+> implementations of inlining callbacks, right?
 
-I'm not at all sure of the interactions/implications here.
-But I do have a request to enable ifb on Android for ingress rate
-limiting and separately we're trying to make XDP work...
-So we might at some point end up with cellular interfaces with xdp
-ebpf (redirect for forwarding/nat/tethering) + ifb + tc ebpf (for
-device local stuff).
-But this is still all very vague and 'ideas only' level.
-(and in general I think I'd like to get rid of the redirect in tc
-ebpf, and leave only xlat64 translation for to-the-device traffic in
-there, so maybe there's no problem anyway??)
+I was originally thinking about it, but then decided not to take this path,
+for example the ops->map_gen_lookup() patching code has sanity checks for
+the u32 return code on whether we patched 0 or too many instructions, so
+if there is anything funky going on in one of the map_gen_lookup() that
+we'd get a negative code, for example, I don't want to just skip and not
+have the verifier bark loudly with "bpf verifier is misconfigured", also
+didn't want to make the logic inside fixup_bpf_calls() even more complex,
+so the patch here felt simpler & more straight forward to me.
+
+Thanks,
+Daniel
