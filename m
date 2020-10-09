@@ -2,324 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 753D7287FD3
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 03:12:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E16E5287FF2
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 03:19:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729965AbgJIBMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 21:12:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43236 "EHLO
+        id S1729700AbgJIBTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 21:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729598AbgJIBMv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 21:12:51 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C6FBC0613D5;
-        Thu,  8 Oct 2020 18:12:51 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id q123so5463294pfb.0;
-        Thu, 08 Oct 2020 18:12:51 -0700 (PDT)
+        with ESMTP id S1725997AbgJIBTu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 21:19:50 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39281C0613D2
+        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 18:19:48 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id md26so10713743ejb.10
+        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 18:19:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=vDpdwGTb8iUWFZjaTWPEQf/T2hOZ8LtQp7hjPN2NHiQ=;
-        b=pfH8mHhjC8nXeLruxzef1xLxah5dLlAuhLDIms8OnVwWvgNMPU3IygPNEpIo2VoCSC
-         StGRZ3SaVrr8ZZq5pVVaFYrDjZVPAOloEtSej1bcbm8zTINikKdvwklZwaPih8CIMb3e
-         yEVlbmdj3R0mLcIvGLMzzLlP9DO72AGOvPm9+0Dep1peUOlDcJ13QVauUMgzc+Fji660
-         GBAcW4nWZfswhC0VH3EPcOcTJGTb/n4QiVZ0860/6L9V1AONpACBBQeQgVELxkmCVXIl
-         HdqtVcBXG95Odw/Brf723UO23j86Eg5yFYwaVeNzVzACJHB/DJdiBalkN8m/35Ha6lwD
-         UJDw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=a2HTm3KOv0Z8HJoze2OjkAd2YBNF85LGZH52VXfPgqs=;
+        b=WDNgefohu7er2tk3/lc9Cg3sXN5aHkGNuZ1BLbvwZ2uL3FPN8vb+FOfRJFg5l7LM5d
+         w7bwicv7RuLWhMvXg/yeH1GQkRwbqT1CrqFDGsp8O+fCeg08TaGVwgsxvJt7xI++iTlp
+         eml5xLno2Nv2wi0qwpWub9x/r5T63NohjSrhstlanAEWAJ+xHDCOQPQ5NwJGO6HH2vik
+         ssbLXoSloVED/6ZJxHSgPBuwyqvgtGnaZPBW0M5XX4Zqxga2DV28yMVkS0yZ62Dtq1ze
+         yap3zArJVoaU3RPxz9s1VT96T+N1zZFKgei68SBrNyWijWizC4GHL6ivYbfNxCb9cF1Z
+         aFCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=vDpdwGTb8iUWFZjaTWPEQf/T2hOZ8LtQp7hjPN2NHiQ=;
-        b=Q97z5hPQskjS8ZrIXjYaciPXF/0HxgjsB6moViOnH5X6jtP4sKGVKs4qUpieRz/FMA
-         sDgpdQuL4buKmzlSryY3N/ZiPjnVLXHZCYV4+g0shXvAOsR4ajQcxH+RcEstRKr3XyvK
-         qOP7Qbf9jDfntflaUy3uL/UdVFwo2LlfF9BN0AA3QDwbo6x5U94ffqYu6cCl/WuncJ7S
-         RGljNqccNw1bXyOo5QPW5gwvsm90GvImLD2blg6eXoSDZCmeo8cTyVAbI+B5UDFmWH2x
-         LJzmkSpb+kb91fpb2NWgSCnujrZ70ha63n2p98fKVIYyPPBS8+g3fG9sJrOB+TCZYnBC
-         hk4g==
-X-Gm-Message-State: AOAM5311jpX7mVCGBjilwgWd7fQ7mlWYuVQWZN+7Y69c1WoIdES8PkOu
-        E3y1fk806NJZeldt25i6UJM=
-X-Google-Smtp-Source: ABdhPJx86lMG41mxFJU/GJQ/kaTTAW3ruixNjqEnqP4kb6cgfZ3Wkar2xPGwr2Ew+IqYroy/BETo6A==
-X-Received: by 2002:a17:90a:ff06:: with SMTP id ce6mr1734175pjb.38.1602205970718;
-        Thu, 08 Oct 2020 18:12:50 -0700 (PDT)
-Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id k15sm8275822pfp.217.2020.10.08.18.12.49
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 08 Oct 2020 18:12:49 -0700 (PDT)
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, john.fastabend@gmail.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH v2 bpf-next 4/4] selftests/bpf: Asm tests for the verifier regalloc tracking.
-Date:   Thu,  8 Oct 2020 18:12:40 -0700
-Message-Id: <20201009011240.48506-5-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.13.5
-In-Reply-To: <20201009011240.48506-1-alexei.starovoitov@gmail.com>
-References: <20201009011240.48506-1-alexei.starovoitov@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=a2HTm3KOv0Z8HJoze2OjkAd2YBNF85LGZH52VXfPgqs=;
+        b=iazYrQmCEyaQYDnvLpRfxmJo8+Qva+5EUEV8p3VNhSrJ6fYgp1dCM/ZTajYuBd+FqH
+         vaijglZATOHPwlI8+8klJiIbxj9whM6vQHvdQFh0CWGSkomd3gkT1Ajbn9LQWXwpouPZ
+         ereZpqt/xGU4aEd7etTD5MxtmGu/UbiGeHdNhctFspAJl53qwi2qFxL5KMeiRbR+SzSE
+         Q1T0S9cN0gG69cS5NGQObYDWJUUZp+I2bqB4rPXNAVETBbWzLm2/cyAiy/yQRBSY7nmg
+         55/Njl/+IQ3OteDMkktiKhvR2+NluX+7pPyRTj8gW6J/hDIX+CBB/vc+eh1rAWMMFOP6
+         jC4A==
+X-Gm-Message-State: AOAM531aUxWtSIUO6IjU9isJTfc2gXf6FbPLwYof7OCvxe/dxsGV/GtW
+        Po7BgFnphjRa74uv07jThh1PhYXg+t3aQ5DHL/M=
+X-Google-Smtp-Source: ABdhPJxCRQCoklODuoDgiWCBO3W1quztLP50pmXq22Yavm2mLJO4Lpjxq0l0zEMXa1xkRWmNM/VMUIy6ixMIPpZ9gd4=
+X-Received: by 2002:a17:906:490d:: with SMTP id b13mr11549213ejq.122.1602206386937;
+ Thu, 08 Oct 2020 18:19:46 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200930020300.62245-1-xiangxia.m.yue@gmail.com> <CA+FuTSed1GsGp8a=GnHqV-HUcsOSZ0tb0NCe8360S8Md3MbS3g@mail.gmail.com>
+In-Reply-To: <CA+FuTSed1GsGp8a=GnHqV-HUcsOSZ0tb0NCe8360S8Md3MbS3g@mail.gmail.com>
+From:   Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Date:   Fri, 9 Oct 2020 09:16:14 +0800
+Message-ID: <CAMDZJNWX=3ikS5f0H+xD-dByW2=JHXjvk1=R=CkDLt0TW-orTg@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] virtio-net: ethtool configurable RXCSUM
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexei Starovoitov <ast@kernel.org>
+On Wed, Sep 30, 2020 at 6:05 PM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> On Wed, Sep 30, 2020 at 4:05 AM <xiangxia.m.yue@gmail.com> wrote:
+> >
+> > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> >
+> > Allow user configuring RXCSUM separately with ethtool -K,
+> > reusing the existing virtnet_set_guest_offloads helper
+> > that configures RXCSUM for XDP. This is conditional on
+> > VIRTIO_NET_F_CTRL_GUEST_OFFLOADS.
+> >
+> > If Rx checksum is disabled, LRO should also be disabled.
+> >
+> > Cc: Michael S. Tsirkin <mst@redhat.com>
+> > Cc: Jason Wang <jasowang@redhat.com>
+> > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+>
+> The first patch was merged into net.
+>
+> Please wait until that is merged into net-next, as this depends on the
+> other patch.
+>
+> > ---
+> > v2:
+> > * LRO depends the rx csum
+> > * remove the unnecessary check
+> > ---
+> >  drivers/net/virtio_net.c | 49 ++++++++++++++++++++++++++++++----------
+> >  1 file changed, 37 insertions(+), 12 deletions(-)
+> >
+> > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > index 21b71148c532..5407a0106771 100644
+> > --- a/drivers/net/virtio_net.c
+> > +++ b/drivers/net/virtio_net.c
+> > @@ -68,6 +68,8 @@ static const unsigned long guest_offloads[] = {
+> >                                 (1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
+> >                                 (1ULL << VIRTIO_NET_F_GUEST_UFO))
+> >
+> > +#define GUEST_OFFLOAD_CSUM_MASK (1ULL << VIRTIO_NET_F_GUEST_CSUM)
+> > +
+> >  struct virtnet_stat_desc {
+> >         char desc[ETH_GSTRING_LEN];
+> >         size_t offset;
+> > @@ -2522,29 +2524,49 @@ static int virtnet_get_phys_port_name(struct net_device *dev, char *buf,
+> >         return 0;
+> >  }
+> >
+> > +static netdev_features_t virtnet_fix_features(struct net_device *netdev,
+> > +                                             netdev_features_t features)
+> > +{
+> > +       /* If Rx checksum is disabled, LRO should also be disabled.
+> > +        * That is life. :)
+>
+> Please remove this second line.
+OK
+> > +        */
+> > +       if (!(features & NETIF_F_RXCSUM))
+> > +               features &= ~NETIF_F_LRO;
+> > +
+> > +       return features;
+> > +}
+> > +
+> >  static int virtnet_set_features(struct net_device *dev,
+> >                                 netdev_features_t features)
+> >  {
+> >         struct virtnet_info *vi = netdev_priv(dev);
+> > -       u64 offloads;
+> > +       u64 offloads = vi->guest_offloads &
+> > +                      vi->guest_offloads_capable;
+>
+> When can vi->guest_offloads have bits set outside the mask of
+> vi->guest_offloads_capable?
+In this case, we can use only vi->guest_offloads. and
+guest_offloads_capable will not be used any more.
+so should we remove guest_offloads_capable ?
 
-Add asm tests for register allocator tracking logic.
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
----
- .../testing/selftests/bpf/verifier/regalloc.c | 243 ++++++++++++++++++
- 1 file changed, 243 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/verifier/regalloc.c
-
-diff --git a/tools/testing/selftests/bpf/verifier/regalloc.c b/tools/testing/selftests/bpf/verifier/regalloc.c
-new file mode 100644
-index 000000000000..ac71b824f97a
---- /dev/null
-+++ b/tools/testing/selftests/bpf/verifier/regalloc.c
-@@ -0,0 +1,243 @@
-+{
-+	"regalloc basic",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_LD_MAP_FD(BPF_REG_1, 0),
-+	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 8),
-+	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
-+	BPF_EMIT_CALL(BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_0),
-+	BPF_JMP_IMM(BPF_JSGT, BPF_REG_0, 20, 4),
-+	BPF_JMP_IMM(BPF_JSLT, BPF_REG_2, 0, 3),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_0),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_2),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_7, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.fixup_map_hash_48b = { 4 },
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
-+},
-+{
-+	"regalloc negative",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_LD_MAP_FD(BPF_REG_1, 0),
-+	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 8),
-+	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
-+	BPF_EMIT_CALL(BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_0),
-+	BPF_JMP_IMM(BPF_JSGT, BPF_REG_0, 24, 4),
-+	BPF_JMP_IMM(BPF_JSLT, BPF_REG_2, 0, 3),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_0),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_2),
-+	BPF_LDX_MEM(BPF_B, BPF_REG_0, BPF_REG_7, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.fixup_map_hash_48b = { 4 },
-+	.result = REJECT,
-+	.errstr = "invalid access to map value, value_size=48 off=48 size=1",
-+	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
-+},
-+{
-+	"regalloc src_reg mark",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_LD_MAP_FD(BPF_REG_1, 0),
-+	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 9),
-+	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
-+	BPF_EMIT_CALL(BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_0),
-+	BPF_JMP_IMM(BPF_JSGT, BPF_REG_0, 20, 5),
-+	BPF_MOV64_IMM(BPF_REG_3, 0),
-+	BPF_JMP_REG(BPF_JSGE, BPF_REG_3, BPF_REG_2, 3),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_0),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_2),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_7, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.fixup_map_hash_48b = { 4 },
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
-+},
-+{
-+	"regalloc src_reg negative",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_LD_MAP_FD(BPF_REG_1, 0),
-+	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 9),
-+	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
-+	BPF_EMIT_CALL(BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_0),
-+	BPF_JMP_IMM(BPF_JSGT, BPF_REG_0, 22, 5),
-+	BPF_MOV64_IMM(BPF_REG_3, 0),
-+	BPF_JMP_REG(BPF_JSGE, BPF_REG_3, BPF_REG_2, 3),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_0),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_2),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_7, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.fixup_map_hash_48b = { 4 },
-+	.result = REJECT,
-+	.errstr = "invalid access to map value, value_size=48 off=44 size=8",
-+	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
-+},
-+{
-+	"regalloc and spill",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_LD_MAP_FD(BPF_REG_1, 0),
-+	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 11),
-+	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
-+	BPF_EMIT_CALL(BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_0),
-+	BPF_JMP_IMM(BPF_JSGT, BPF_REG_0, 20, 7),
-+	/* r0 has upper bound that should propagate into r2 */
-+	BPF_STX_MEM(BPF_DW, BPF_REG_10, BPF_REG_2, -8), /* spill r2 */
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_MOV64_IMM(BPF_REG_2, 0), /* clear r0 and r2 */
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_3, BPF_REG_10, -8), /* fill r3 */
-+	BPF_JMP_REG(BPF_JSGE, BPF_REG_0, BPF_REG_3, 2),
-+	/* r3 has lower and upper bounds */
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_3),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_7, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.fixup_map_hash_48b = { 4 },
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
-+},
-+{
-+	"regalloc and spill negative",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_LD_MAP_FD(BPF_REG_1, 0),
-+	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 11),
-+	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
-+	BPF_EMIT_CALL(BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_0),
-+	BPF_JMP_IMM(BPF_JSGT, BPF_REG_0, 48, 7),
-+	/* r0 has upper bound that should propagate into r2 */
-+	BPF_STX_MEM(BPF_DW, BPF_REG_10, BPF_REG_2, -8), /* spill r2 */
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_MOV64_IMM(BPF_REG_2, 0), /* clear r0 and r2 */
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_3, BPF_REG_10, -8), /* fill r3 */
-+	BPF_JMP_REG(BPF_JSGE, BPF_REG_0, BPF_REG_3, 2),
-+	/* r3 has lower and upper bounds */
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_3),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_7, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.fixup_map_hash_48b = { 4 },
-+	.result = REJECT,
-+	.errstr = "invalid access to map value, value_size=48 off=48 size=8",
-+	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
-+},
-+{
-+	"regalloc three regs",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_LD_MAP_FD(BPF_REG_1, 0),
-+	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 10),
-+	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
-+	BPF_EMIT_CALL(BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_0),
-+	BPF_MOV64_REG(BPF_REG_4, BPF_REG_2),
-+	BPF_JMP_IMM(BPF_JSGT, BPF_REG_0, 12, 5),
-+	BPF_JMP_IMM(BPF_JSLT, BPF_REG_2, 0, 4),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_0),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_2),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_4),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_7, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.fixup_map_hash_48b = { 4 },
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
-+},
-+{
-+	"regalloc after call",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_LD_MAP_FD(BPF_REG_1, 0),
-+	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 10),
-+	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
-+	BPF_EMIT_CALL(BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_8, BPF_REG_0),
-+	BPF_MOV64_REG(BPF_REG_9, BPF_REG_0),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 6),
-+	BPF_JMP_IMM(BPF_JSGT, BPF_REG_8, 20, 4),
-+	BPF_JMP_IMM(BPF_JSLT, BPF_REG_9, 0, 3),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_8),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_7, BPF_REG_9),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_7, 0),
-+	BPF_EXIT_INSN(),
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.fixup_map_hash_48b = { 4 },
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
-+},
-+{
-+	"regalloc in callee",
-+	.insns = {
-+	BPF_MOV64_REG(BPF_REG_6, BPF_REG_1),
-+	BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_10),
-+	BPF_ALU64_IMM(BPF_ADD, BPF_REG_2, -8),
-+	BPF_LD_MAP_FD(BPF_REG_1, 0),
-+	BPF_EMIT_CALL(BPF_FUNC_map_lookup_elem),
-+	BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 6),
-+	BPF_MOV64_REG(BPF_REG_7, BPF_REG_0),
-+	BPF_EMIT_CALL(BPF_FUNC_get_prandom_u32),
-+	BPF_MOV64_REG(BPF_REG_1, BPF_REG_0),
-+	BPF_MOV64_REG(BPF_REG_2, BPF_REG_0),
-+	BPF_MOV64_REG(BPF_REG_3, BPF_REG_7),
-+	BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 1, 0, 1),
-+	BPF_EXIT_INSN(),
-+	BPF_JMP_IMM(BPF_JSGT, BPF_REG_1, 20, 5),
-+	BPF_JMP_IMM(BPF_JSLT, BPF_REG_2, 0, 4),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_3, BPF_REG_1),
-+	BPF_ALU64_REG(BPF_ADD, BPF_REG_3, BPF_REG_2),
-+	BPF_LDX_MEM(BPF_DW, BPF_REG_0, BPF_REG_3, 0),
-+	BPF_EXIT_INSN(),
-+	BPF_MOV64_IMM(BPF_REG_0, 0),
-+	BPF_EXIT_INSN(),
-+	},
-+	.fixup_map_hash_48b = { 4 },
-+	.result = ACCEPT,
-+	.prog_type = BPF_PROG_TYPE_TRACEPOINT,
-+},
 -- 
-2.23.0
-
+Best regards, Tonghao
