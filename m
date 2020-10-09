@@ -2,27 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08BD82899E0
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:42:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2442D2899EA
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:43:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390607AbgJIUmx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 16:42:53 -0400
-Received: from www62.your-server.de ([213.133.104.62]:39468 "EHLO
+        id S2390903AbgJIUnI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 16:43:08 -0400
+Received: from www62.your-server.de ([213.133.104.62]:39476 "EHLO
         www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388544AbgJIUmx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 16:42:53 -0400
+        with ESMTP id S2388554AbgJIUm6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 16:42:58 -0400
 Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
         by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89_1)
         (envelope-from <daniel@iogearbox.net>)
-        id 1kQzE1-00084o-G5; Fri, 09 Oct 2020 22:42:49 +0200
+        id 1kQzE1-00084y-UW; Fri, 09 Oct 2020 22:42:50 +0200
 From:   Daniel Borkmann <daniel@iogearbox.net>
 To:     ast@kernel.org
 Cc:     daniel@iogearbox.net, john.fastabend@gmail.com, yhs@fb.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH bpf-next v3 2/6] bpf: add redirect_peer helper
-Date:   Fri,  9 Oct 2020 22:42:41 +0200
-Message-Id: <20201009204245.27905-3-daniel@iogearbox.net>
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Subject: [PATCH bpf-next v3 3/6] bpf: allow for map-in-map with dynamic inner array map entries
+Date:   Fri,  9 Oct 2020 22:42:42 +0200
+Message-Id: <20201009204245.27905-4-daniel@iogearbox.net>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20201009204245.27905-1-daniel@iogearbox.net>
 References: <20201009204245.27905-1-daniel@iogearbox.net>
@@ -34,306 +35,257 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add an efficient ingress to ingress netns switch that can be used out of tc BPF
-programs in order to redirect traffic from host ns ingress into a container
-veth device ingress without having to go via CPU backlog queue [0]. For local
-containers this can also be utilized and path via CPU backlog queue only needs
-to be taken once, not twice. On a high level this borrows from ipvlan which does
-similar switch in __netif_receive_skb_core() and then iterates via another_round.
-This helps to reduce latency for mentioned use cases.
+Recent work in f4d05259213f ("bpf: Add map_meta_equal map ops") and 134fede4eecf
+("bpf: Relax max_entries check for most of the inner map types") added support
+for dynamic inner max elements for most map-in-map types. Exceptions were maps
+like array or prog array where the map_gen_lookup() callback uses the maps'
+max_entries field as a constant when emitting instructions.
 
-Pod to remote pod with redirect(), TCP_RR [1]:
+We recently implemented Maglev consistent hashing into Cilium's load balancer
+which uses map-in-map with an outer map being hash and inner being array holding
+the Maglev backend table for each service. This has been designed this way in
+order to reduce overall memory consumption given the outer hash map allows to
+avoid preallocating a large, flat memory area for all services. Also, the
+number of service mappings is not always known a-priori.
 
-  # percpu_netperf 10.217.1.33
-          RT_LATENCY:         122.450         (per CPU:         122.666         122.401         122.333         122.401 )
-        MEAN_LATENCY:         121.210         (per CPU:         121.100         121.260         121.320         121.160 )
-      STDDEV_LATENCY:         120.040         (per CPU:         119.420         119.910         125.460         115.370 )
-         MIN_LATENCY:          46.500         (per CPU:          47.000          47.000          47.000          45.000 )
-         P50_LATENCY:         118.500         (per CPU:         118.000         119.000         118.000         119.000 )
-         P90_LATENCY:         127.500         (per CPU:         127.000         128.000         127.000         128.000 )
-         P99_LATENCY:         130.750         (per CPU:         131.000         131.000         129.000         132.000 )
+The use case for dynamic inner array map entries is to further reduce memory
+overhead, for example, some services might just have a small number of back
+ends while others could have a large number. Right now the Maglev backend table
+for small and large number of backends would need to have the same inner array
+map entries which adds a lot of unneeded overhead.
 
-    TRANSACTION_RATE:       32666.400         (per CPU:        8152.200        8169.842        8174.439        8169.897 )
+Dynamic inner array map entries can be realized by avoiding the inlined code
+generation for their lookup. The lookup will still be efficient since it will
+be calling into array_map_lookup_elem() directly and thus avoiding retpoline.
+The patch adds a BPF_F_NO_INLINE flag to map creation which therefore skips
+inline code generation and relaxes array_map_meta_equal() check to ignore both
+maps' max_entries.
 
-Pod to remote pod with redirect_peer(), TCP_RR:
+Example code generation where inner map is dynamic sized array:
 
-  # percpu_netperf 10.217.1.33
-          RT_LATENCY:          44.449         (per CPU:          43.767          43.127          45.279          45.622 )
-        MEAN_LATENCY:          45.065         (per CPU:          44.030          45.530          45.190          45.510 )
-      STDDEV_LATENCY:          84.823         (per CPU:          66.770          97.290          84.380          90.850 )
-         MIN_LATENCY:          33.500         (per CPU:          33.000          33.000          34.000          34.000 )
-         P50_LATENCY:          43.250         (per CPU:          43.000          43.000          43.000          44.000 )
-         P90_LATENCY:          46.750         (per CPU:          46.000          47.000          47.000          47.000 )
-         P99_LATENCY:          52.750         (per CPU:          51.000          54.000          53.000          53.000 )
-
-    TRANSACTION_RATE:       90039.500         (per CPU:       22848.186       23187.089       22085.077       21919.130 )
-
-  [0] https://linuxplumbersconf.org/event/7/contributions/674/attachments/568/1002/plumbers_2020_cilium_load_balancer.pdf
-  [1] https://github.com/borkmann/netperf_scripts/blob/master/percpu_netperf
+  # bpftool p d x i 125
+  int handle__sys_enter(void * ctx):
+  ; int handle__sys_enter(void *ctx)
+     0: (b4) w1 = 0
+  ; int key = 0;
+     1: (63) *(u32 *)(r10 -4) = r1
+     2: (bf) r2 = r10
+  ;
+     3: (07) r2 += -4
+  ; inner_map = bpf_map_lookup_elem(&outer_arr_dyn, &key);
+     4: (18) r1 = map[id:468]
+     6: (07) r1 += 272
+     7: (61) r0 = *(u32 *)(r2 +0)
+     8: (35) if r0 >= 0x3 goto pc+5
+     9: (67) r0 <<= 3
+    10: (0f) r0 += r1
+    11: (79) r0 = *(u64 *)(r0 +0)
+    12: (15) if r0 == 0x0 goto pc+1
+    13: (05) goto pc+1
+    14: (b7) r0 = 0
+    15: (b4) w6 = -1
+  ; if (!inner_map)
+    16: (15) if r0 == 0x0 goto pc+6
+    17: (bf) r2 = r10
+  ;
+    18: (07) r2 += -4
+  ; val = bpf_map_lookup_elem(inner_map, &key);
+    19: (bf) r1 = r0                               | No inlining but instead
+    20: (85) call array_map_lookup_elem#149280     | call to array_map_lookup_elem()
+  ; return val ? *val : -1;                        | for inner array lookup.
+    21: (15) if r0 == 0x0 goto pc+1
+  ; return val ? *val : -1;
+    22: (61) r6 = *(u32 *)(r0 +0)
+  ; }
+    23: (bc) w0 = w6
+    24: (95) exit
 
 Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
 ---
- drivers/net/veth.c             |  9 ++++++
- include/linux/netdevice.h      |  4 +++
- include/uapi/linux/bpf.h       | 17 +++++++++++
- net/core/dev.c                 | 15 ++++++++--
- net/core/filter.c              | 54 +++++++++++++++++++++++++++++-----
- tools/include/uapi/linux/bpf.h | 17 +++++++++++
- 6 files changed, 106 insertions(+), 10 deletions(-)
+ include/linux/bpf.h            |  2 +-
+ include/uapi/linux/bpf.h       |  5 +++++
+ kernel/bpf/arraymap.c          | 17 +++++++++++------
+ kernel/bpf/hashtab.c           |  6 +++---
+ kernel/bpf/verifier.c          |  4 +++-
+ net/xdp/xskmap.c               |  2 +-
+ tools/include/uapi/linux/bpf.h |  5 +++++
+ 7 files changed, 29 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index 091e5b4ba042..8c737668008a 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -420,6 +420,14 @@ static int veth_select_rxq(struct net_device *dev)
- 	return smp_processor_id() % dev->real_num_rx_queues;
- }
- 
-+static struct net_device *veth_peer_dev(struct net_device *dev)
-+{
-+	struct veth_priv *priv = netdev_priv(dev);
-+
-+	/* Callers must be under RCU read side. */
-+	return rcu_dereference(priv->peer);
-+}
-+
- static int veth_xdp_xmit(struct net_device *dev, int n,
- 			 struct xdp_frame **frames,
- 			 u32 flags, bool ndo_xmit)
-@@ -1224,6 +1232,7 @@ static const struct net_device_ops veth_netdev_ops = {
- 	.ndo_set_rx_headroom	= veth_set_rx_headroom,
- 	.ndo_bpf		= veth_xdp,
- 	.ndo_xdp_xmit		= veth_ndo_xdp_xmit,
-+	.ndo_get_peer_dev	= veth_peer_dev,
- };
- 
- #define VETH_FEATURES (NETIF_F_SG | NETIF_F_FRAGLIST | NETIF_F_HW_CSUM | \
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 28cfa53daf72..0533f86018dd 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1277,6 +1277,9 @@ struct netdev_net_notifier {
-  * int (*ndo_tunnel_ctl)(struct net_device *dev, struct ip_tunnel_parm *p,
-  *			 int cmd);
-  *	Add, change, delete or get information on an IPv4 tunnel.
-+ * struct net_device *(*ndo_get_peer_dev)(struct net_device *dev);
-+ *	If a device is paired with a peer device, return the peer instance.
-+ *	The caller must be under RCU read context.
-  */
- struct net_device_ops {
- 	int			(*ndo_init)(struct net_device *dev);
-@@ -1484,6 +1487,7 @@ struct net_device_ops {
- 	struct devlink_port *	(*ndo_get_devlink_port)(struct net_device *dev);
- 	int			(*ndo_tunnel_ctl)(struct net_device *dev,
- 						  struct ip_tunnel_parm *p, int cmd);
-+	struct net_device *	(*ndo_get_peer_dev)(struct net_device *dev);
- };
- 
- /**
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index dc63eeed4fd9..2b16bf48aab6 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -82,7 +82,7 @@ struct bpf_map_ops {
+ 	void *(*map_fd_get_ptr)(struct bpf_map *map, struct file *map_file,
+ 				int fd);
+ 	void (*map_fd_put_ptr)(void *ptr);
+-	u32 (*map_gen_lookup)(struct bpf_map *map, struct bpf_insn *insn_buf);
++	int (*map_gen_lookup)(struct bpf_map *map, struct bpf_insn *insn_buf);
+ 	u32 (*map_fd_sys_lookup_elem)(void *ptr);
+ 	void (*map_seq_show_elem)(struct bpf_map *map, void *key,
+ 				  struct seq_file *m);
 diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 4272cc53d478..b97bc5abb3b8 100644
+index b97bc5abb3b8..593963e40956 100644
 --- a/include/uapi/linux/bpf.h
 +++ b/include/uapi/linux/bpf.h
-@@ -3719,6 +3719,22 @@ union bpf_attr {
-  *		never return NULL.
-  *	Return
-  *		A pointer pointing to the kernel percpu variable on this cpu.
-+ *
-+ * long bpf_redirect_peer(u32 ifindex, u64 flags)
-+ * 	Description
-+ * 		Redirect the packet to another net device of index *ifindex*.
-+ * 		This helper is somewhat similar to **bpf_redirect**\ (), except
-+ * 		that the redirection happens to the *ifindex*' peer device and
-+ * 		the netns switch takes place from ingress to ingress without
-+ * 		going through the CPU's backlog queue.
-+ *
-+ * 		The *flags* argument is reserved and must be 0. The helper is
-+ * 		currently only supported for tc BPF program types at the ingress
-+ * 		hook and for veth device types. The peer device must reside in a
-+ * 		different network namespace.
-+ * 	Return
-+ * 		The helper returns **TC_ACT_REDIRECT** on success or
-+ * 		**TC_ACT_SHOT** on error.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -3876,6 +3892,7 @@ union bpf_attr {
- 	FN(redirect_neigh),		\
- 	FN(bpf_per_cpu_ptr),            \
- 	FN(bpf_this_cpu_ptr),		\
-+	FN(redirect_peer),		\
- 	/* */
+@@ -435,6 +435,11 @@ enum {
  
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 9d55bf5d1a65..7dd015823593 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4930,7 +4930,7 @@ EXPORT_SYMBOL_GPL(br_fdb_test_addr_hook);
- 
- static inline struct sk_buff *
- sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
--		   struct net_device *orig_dev)
-+		   struct net_device *orig_dev, bool *another)
- {
- #ifdef CONFIG_NET_CLS_ACT
- 	struct mini_Qdisc *miniq = rcu_dereference_bh(skb->dev->miniq_ingress);
-@@ -4974,7 +4974,11 @@ sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
- 		 * redirecting to another netdev
- 		 */
- 		__skb_push(skb, skb->mac_len);
--		skb_do_redirect(skb);
-+		if (skb_do_redirect(skb) == -EAGAIN) {
-+			__skb_pull(skb, skb->mac_len);
-+			*another = true;
-+			break;
-+		}
- 		return NULL;
- 	case TC_ACT_CONSUMED:
- 		return NULL;
-@@ -5163,7 +5167,12 @@ static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
- skip_taps:
- #ifdef CONFIG_NET_INGRESS
- 	if (static_branch_unlikely(&ingress_needed_key)) {
--		skb = sch_handle_ingress(skb, &pt_prev, &ret, orig_dev);
-+		bool another = false;
+ /* Share perf_event among processes */
+ 	BPF_F_PRESERVE_ELEMS	= (1U << 11),
 +
-+		skb = sch_handle_ingress(skb, &pt_prev, &ret, orig_dev,
-+					 &another);
-+		if (another)
-+			goto another_round;
- 		if (!skb)
- 			goto out;
- 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 5da44b11e1ec..fab951c6be57 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -2380,8 +2380,9 @@ static int __bpf_redirect_neigh(struct sk_buff *skb, struct net_device *dev)
- 
- /* Internal, non-exposed redirect flags. */
- enum {
--	BPF_F_NEIGH = (1ULL << 1),
--#define BPF_F_REDIRECT_INTERNAL	(BPF_F_NEIGH)
-+	BPF_F_NEIGH	= (1ULL << 1),
-+	BPF_F_PEER	= (1ULL << 2),
-+#define BPF_F_REDIRECT_INTERNAL	(BPF_F_NEIGH | BPF_F_PEER)
++/* Do not inline (array) map lookups so the array map can be used for
++ * map in map with dynamic max entries.
++ */
++	BPF_F_NO_INLINE		= (1U << 12),
  };
  
- BPF_CALL_3(bpf_clone_redirect, struct sk_buff *, skb, u32, ifindex, u64, flags)
-@@ -2430,19 +2431,35 @@ EXPORT_PER_CPU_SYMBOL_GPL(bpf_redirect_info);
- int skb_do_redirect(struct sk_buff *skb)
- {
- 	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
-+	struct net *net = dev_net(skb->dev);
- 	struct net_device *dev;
- 	u32 flags = ri->flags;
+ /* Flags for BPF_PROG_QUERY. */
+diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+index bd777dd6f967..f37f46099733 100644
+--- a/kernel/bpf/arraymap.c
++++ b/kernel/bpf/arraymap.c
+@@ -16,7 +16,7 @@
  
--	dev = dev_get_by_index_rcu(dev_net(skb->dev), ri->tgt_index);
-+	dev = dev_get_by_index_rcu(net, ri->tgt_index);
- 	ri->tgt_index = 0;
--	if (unlikely(!dev)) {
--		kfree_skb(skb);
--		return -EINVAL;
-+	ri->flags = 0;
-+	if (unlikely(!dev))
-+		goto out_drop;
-+	if (flags & BPF_F_PEER) {
-+		const struct net_device_ops *ops = dev->netdev_ops;
-+
-+		if (unlikely(!ops->ndo_get_peer_dev ||
-+			     !skb_at_tc_ingress(skb)))
-+			goto out_drop;
-+		dev = ops->ndo_get_peer_dev(dev);
-+		if (unlikely(!dev ||
-+			     !is_skb_forwardable(dev, skb) ||
-+			     net_eq(net, dev_net(dev))))
-+			goto out_drop;
-+		skb->dev = dev;
-+		return -EAGAIN;
- 	}
--
- 	return flags & BPF_F_NEIGH ?
- 	       __bpf_redirect_neigh(skb, dev) :
- 	       __bpf_redirect(skb, dev, flags);
-+out_drop:
-+	kfree_skb(skb);
-+	return -EINVAL;
+ #define ARRAY_CREATE_FLAG_MASK \
+ 	(BPF_F_NUMA_NODE | BPF_F_MMAPABLE | BPF_F_ACCESS_MASK | \
+-	 BPF_F_PRESERVE_ELEMS)
++	 BPF_F_PRESERVE_ELEMS | BPF_F_NO_INLINE)
+ 
+ static void bpf_array_free_percpu(struct bpf_array *array)
+ {
+@@ -62,7 +62,7 @@ int array_map_alloc_check(union bpf_attr *attr)
+ 		return -EINVAL;
+ 
+ 	if (attr->map_type != BPF_MAP_TYPE_ARRAY &&
+-	    attr->map_flags & BPF_F_MMAPABLE)
++	    attr->map_flags & (BPF_F_MMAPABLE | BPF_F_NO_INLINE))
+ 		return -EINVAL;
+ 
+ 	if (attr->map_type != BPF_MAP_TYPE_PERF_EVENT_ARRAY &&
+@@ -214,7 +214,7 @@ static int array_map_direct_value_meta(const struct bpf_map *map, u64 imm,
  }
  
- BPF_CALL_2(bpf_redirect, u32, ifindex, u64, flags)
-@@ -2466,6 +2483,27 @@ static const struct bpf_func_proto bpf_redirect_proto = {
- 	.arg2_type      = ARG_ANYTHING,
- };
- 
-+BPF_CALL_2(bpf_redirect_peer, u32, ifindex, u64, flags)
-+{
-+	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
-+
-+	if (unlikely(flags))
-+		return TC_ACT_SHOT;
-+
-+	ri->flags = BPF_F_PEER;
-+	ri->tgt_index = ifindex;
-+
-+	return TC_ACT_REDIRECT;
-+}
-+
-+static const struct bpf_func_proto bpf_redirect_peer_proto = {
-+	.func           = bpf_redirect_peer,
-+	.gpl_only       = false,
-+	.ret_type       = RET_INTEGER,
-+	.arg1_type      = ARG_ANYTHING,
-+	.arg2_type      = ARG_ANYTHING,
-+};
-+
- BPF_CALL_2(bpf_redirect_neigh, u32, ifindex, u64, flags)
+ /* emit BPF instructions equivalent to C code of array_map_lookup_elem() */
+-static u32 array_map_gen_lookup(struct bpf_map *map, struct bpf_insn *insn_buf)
++static int array_map_gen_lookup(struct bpf_map *map, struct bpf_insn *insn_buf)
  {
- 	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
-@@ -7053,6 +7091,8 @@ tc_cls_act_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 		return &bpf_redirect_proto;
- 	case BPF_FUNC_redirect_neigh:
- 		return &bpf_redirect_neigh_proto;
-+	case BPF_FUNC_redirect_peer:
-+		return &bpf_redirect_peer_proto;
- 	case BPF_FUNC_get_route_realm:
- 		return &bpf_get_route_realm_proto;
- 	case BPF_FUNC_get_hash_recalc:
+ 	struct bpf_array *array = container_of(map, struct bpf_array, map);
+ 	struct bpf_insn *insn = insn_buf;
+@@ -223,6 +223,9 @@ static u32 array_map_gen_lookup(struct bpf_map *map, struct bpf_insn *insn_buf)
+ 	const int map_ptr = BPF_REG_1;
+ 	const int index = BPF_REG_2;
+ 
++	if (map->map_flags & BPF_F_NO_INLINE)
++		return -EOPNOTSUPP;
++
+ 	*insn++ = BPF_ALU64_IMM(BPF_ADD, map_ptr, offsetof(struct bpf_array, value));
+ 	*insn++ = BPF_LDX_MEM(BPF_W, ret, index, 0);
+ 	if (!map->bypass_spec_v1) {
+@@ -496,8 +499,10 @@ static int array_map_mmap(struct bpf_map *map, struct vm_area_struct *vma)
+ static bool array_map_meta_equal(const struct bpf_map *meta0,
+ 				 const struct bpf_map *meta1)
+ {
+-	return meta0->max_entries == meta1->max_entries &&
+-		bpf_map_meta_equal(meta0, meta1);
++	if (!bpf_map_meta_equal(meta0, meta1))
++		return false;
++	return meta0->map_flags & BPF_F_NO_INLINE ? true :
++	       meta0->max_entries == meta1->max_entries;
+ }
+ 
+ struct bpf_iter_seq_array_map_info {
+@@ -1251,7 +1256,7 @@ static void *array_of_map_lookup_elem(struct bpf_map *map, void *key)
+ 	return READ_ONCE(*inner_map);
+ }
+ 
+-static u32 array_of_map_gen_lookup(struct bpf_map *map,
++static int array_of_map_gen_lookup(struct bpf_map *map,
+ 				   struct bpf_insn *insn_buf)
+ {
+ 	struct bpf_array *array = container_of(map, struct bpf_array, map);
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index 3395cf140d22..1815e97d4c9c 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -612,7 +612,7 @@ static void *htab_map_lookup_elem(struct bpf_map *map, void *key)
+  * bpf_prog
+  *   __htab_map_lookup_elem
+  */
+-static u32 htab_map_gen_lookup(struct bpf_map *map, struct bpf_insn *insn_buf)
++static int htab_map_gen_lookup(struct bpf_map *map, struct bpf_insn *insn_buf)
+ {
+ 	struct bpf_insn *insn = insn_buf;
+ 	const int ret = BPF_REG_0;
+@@ -651,7 +651,7 @@ static void *htab_lru_map_lookup_elem_sys(struct bpf_map *map, void *key)
+ 	return __htab_lru_map_lookup_elem(map, key, false);
+ }
+ 
+-static u32 htab_lru_map_gen_lookup(struct bpf_map *map,
++static int htab_lru_map_gen_lookup(struct bpf_map *map,
+ 				   struct bpf_insn *insn_buf)
+ {
+ 	struct bpf_insn *insn = insn_buf;
+@@ -2070,7 +2070,7 @@ static void *htab_of_map_lookup_elem(struct bpf_map *map, void *key)
+ 	return READ_ONCE(*inner_map);
+ }
+ 
+-static u32 htab_of_map_gen_lookup(struct bpf_map *map,
++static int htab_of_map_gen_lookup(struct bpf_map *map,
+ 				  struct bpf_insn *insn_buf)
+ {
+ 	struct bpf_insn *insn = insn_buf;
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 62b804651a48..4ef3584320dc 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -10985,6 +10985,8 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
+ 			if (insn->imm == BPF_FUNC_map_lookup_elem &&
+ 			    ops->map_gen_lookup) {
+ 				cnt = ops->map_gen_lookup(map_ptr, insn_buf);
++				if (cnt == -EOPNOTSUPP)
++					goto patch_map_ops_generic;
+ 				if (cnt == 0 || cnt >= ARRAY_SIZE(insn_buf)) {
+ 					verbose(env, "bpf verifier is misconfigured\n");
+ 					return -EINVAL;
+@@ -11015,7 +11017,7 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
+ 				     (int (*)(struct bpf_map *map, void *value))NULL));
+ 			BUILD_BUG_ON(!__same_type(ops->map_peek_elem,
+ 				     (int (*)(struct bpf_map *map, void *value))NULL));
+-
++patch_map_ops_generic:
+ 			switch (insn->imm) {
+ 			case BPF_FUNC_map_lookup_elem:
+ 				insn->imm = BPF_CAST_CALL(ops->map_lookup_elem) -
+diff --git a/net/xdp/xskmap.c b/net/xdp/xskmap.c
+index 0c5df593bc56..49da2b8ace8b 100644
+--- a/net/xdp/xskmap.c
++++ b/net/xdp/xskmap.c
+@@ -132,7 +132,7 @@ static int xsk_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
+ 	return 0;
+ }
+ 
+-static u32 xsk_map_gen_lookup(struct bpf_map *map, struct bpf_insn *insn_buf)
++static int xsk_map_gen_lookup(struct bpf_map *map, struct bpf_insn *insn_buf)
+ {
+ 	const int ret = BPF_REG_0, mp = BPF_REG_1, index = BPF_REG_2;
+ 	struct bpf_insn *insn = insn_buf;
 diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 4272cc53d478..b97bc5abb3b8 100644
+index b97bc5abb3b8..593963e40956 100644
 --- a/tools/include/uapi/linux/bpf.h
 +++ b/tools/include/uapi/linux/bpf.h
-@@ -3719,6 +3719,22 @@ union bpf_attr {
-  *		never return NULL.
-  *	Return
-  *		A pointer pointing to the kernel percpu variable on this cpu.
-+ *
-+ * long bpf_redirect_peer(u32 ifindex, u64 flags)
-+ * 	Description
-+ * 		Redirect the packet to another net device of index *ifindex*.
-+ * 		This helper is somewhat similar to **bpf_redirect**\ (), except
-+ * 		that the redirection happens to the *ifindex*' peer device and
-+ * 		the netns switch takes place from ingress to ingress without
-+ * 		going through the CPU's backlog queue.
-+ *
-+ * 		The *flags* argument is reserved and must be 0. The helper is
-+ * 		currently only supported for tc BPF program types at the ingress
-+ * 		hook and for veth device types. The peer device must reside in a
-+ * 		different network namespace.
-+ * 	Return
-+ * 		The helper returns **TC_ACT_REDIRECT** on success or
-+ * 		**TC_ACT_SHOT** on error.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -3876,6 +3892,7 @@ union bpf_attr {
- 	FN(redirect_neigh),		\
- 	FN(bpf_per_cpu_ptr),            \
- 	FN(bpf_this_cpu_ptr),		\
-+	FN(redirect_peer),		\
- 	/* */
+@@ -435,6 +435,11 @@ enum {
  
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+ /* Share perf_event among processes */
+ 	BPF_F_PRESERVE_ELEMS	= (1U << 11),
++
++/* Do not inline (array) map lookups so the array map can be used for
++ * map in map with dynamic max entries.
++ */
++	BPF_F_NO_INLINE		= (1U << 12),
+ };
+ 
+ /* Flags for BPF_PROG_QUERY. */
 -- 
 2.17.1
 
