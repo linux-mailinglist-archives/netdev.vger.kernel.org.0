@@ -2,265 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A565A2889CF
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 15:29:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BF54288A02
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 15:49:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388617AbgJIN3Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 09:29:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44074 "EHLO
+        id S2387508AbgJINtN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 09:49:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733128AbgJIN3Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 09:29:24 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 396A5C0613D2
-        for <netdev@vger.kernel.org>; Fri,  9 Oct 2020 06:29:24 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1kQsSS-0000VM-NX; Fri, 09 Oct 2020 15:29:16 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1kQsSP-0001zA-NN; Fri, 09 Oct 2020 15:29:13 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     mkl@pengutronix.de, Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1] dt-bindings: can: flexcan: convert fsl,*flexcan bindings to yaml
-Date:   Fri,  9 Oct 2020 15:29:12 +0200
-Message-Id: <20201009132912.7583-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.28.0
+        with ESMTP id S1732613AbgJINtM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 09:49:12 -0400
+Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA92C0613D2
+        for <netdev@vger.kernel.org>; Fri,  9 Oct 2020 06:49:12 -0700 (PDT)
+Received: by mail-vs1-xe43.google.com with SMTP id v23so2423931vsp.6
+        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 06:49:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xcgKUFX7XcfbXXXU6IJ8NOQNoF8tX9KNcM10Wer9NFI=;
+        b=kSKaUhS3NF5+0MnqrqG9Tel/yOhnje8J8LUX20QIIO1+893CAXqRgMBxJze3kQg/8u
+         widPuRn+6Dp5zw54npeh3GsawVMM6PeHoCbgz7meCFpMhRNt+bymJyiirARl9GDrITp6
+         kDXW75ppyUFTLQ10FaZPWu7PrbKCTe7NJHIrI00AjU3V+Gxo3WJuIMMNna8XD0+ammj+
+         uEripBxUzRLpsOOH86oJsmyHGzmEAlFefiqXEakMNMJd5JOUiXaxIwieJFuh7oxd1oFP
+         kP7YlFj/5wTwAnXnSt86BL8y6d3pV0lckICiIxxgTK/QzYrIssrf7XCswZ3UkDmd/PZI
+         +mnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xcgKUFX7XcfbXXXU6IJ8NOQNoF8tX9KNcM10Wer9NFI=;
+        b=QGSiZErnd6z8dv7bR8MoGz4t9IeXYCyrMnvur+fGxWJcFWYAoBFnUT/9RgEgH7ta7n
+         dz8uSb2ghA57OPB+BUW3KnIQldYdWdQttM8DNxTQZ1ABBVedSS0j2hQcSqs+BFONOnAg
+         52O8xU219zrATkoNM9O8hiXYIIZFqU5Xnk7YJPJq/aNYIdrr/OjZ8wl0sFlHDjq4UxNc
+         jqnHGbnhhLc3iyj1nb1MSOVUqRYxJJkSOjb5Xcgn60ttWkuKmJpHqh2ZAm3ZQNNAux7f
+         3Cj9ILp9Ge+g9TvCyMssB1pU3Zlu+eV0AXDXFBpt/p6ehd9NVuUPbFeA25hK/Y6wLsKH
+         XfGg==
+X-Gm-Message-State: AOAM533xtkJsTYhbCq8ZgsFDQECDYWWCVcgl/G75VO9v3GgPgSrBH5dJ
+        3fdPyMVj4dxzq6Dz3FbDU8GNKfwS1Fg=
+X-Google-Smtp-Source: ABdhPJx/DcPE5f6Y9GJIEDRP4whjx3utUH0gcu9cfS4WlFXRi8Ur+tQdEkTIbeLiRd2f+DdKumFQRw==
+X-Received: by 2002:a05:6102:205c:: with SMTP id q28mr7981563vsr.38.1602251349476;
+        Fri, 09 Oct 2020 06:49:09 -0700 (PDT)
+Received: from mail-vk1-f169.google.com (mail-vk1-f169.google.com. [209.85.221.169])
+        by smtp.gmail.com with ESMTPSA id o145sm1165022vkd.13.2020.10.09.06.49.07
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 09 Oct 2020 06:49:08 -0700 (PDT)
+Received: by mail-vk1-f169.google.com with SMTP id d2so2124008vkd.13
+        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 06:49:07 -0700 (PDT)
+X-Received: by 2002:a1f:ae85:: with SMTP id x127mr4312160vke.8.1602251347387;
+ Fri, 09 Oct 2020 06:49:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20200930020300.62245-1-xiangxia.m.yue@gmail.com>
+ <CA+FuTSed1GsGp8a=GnHqV-HUcsOSZ0tb0NCe8360S8Md3MbS3g@mail.gmail.com> <CAMDZJNWX=3ikS5f0H+xD-dByW2=JHXjvk1=R=CkDLt0TW-orTg@mail.gmail.com>
+In-Reply-To: <CAMDZJNWX=3ikS5f0H+xD-dByW2=JHXjvk1=R=CkDLt0TW-orTg@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 9 Oct 2020 09:48:31 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSeVRhM+q_WuWvBDMk+Ao61y+iJWTukpoLzNCHGfYG9=UA@mail.gmail.com>
+Message-ID: <CA+FuTSeVRhM+q_WuWvBDMk+Ao61y+iJWTukpoLzNCHGfYG9=UA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] virtio-net: ethtool configurable RXCSUM
+To:     Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        virtualization@lists.linux-foundation.org,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to automate the verification of DT nodes convert
-fsl-flexcan.txt to fsl,flexcan.yaml
+On Thu, Oct 8, 2020 at 9:19 PM Tonghao Zhang <xiangxia.m.yue@gmail.com> wrote:
+>
+> On Wed, Sep 30, 2020 at 6:05 PM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > On Wed, Sep 30, 2020 at 4:05 AM <xiangxia.m.yue@gmail.com> wrote:
+> > >
+> > > From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> > >
+> > > Allow user configuring RXCSUM separately with ethtool -K,
+> > > reusing the existing virtnet_set_guest_offloads helper
+> > > that configures RXCSUM for XDP. This is conditional on
+> > > VIRTIO_NET_F_CTRL_GUEST_OFFLOADS.
+> > >
+> > > If Rx checksum is disabled, LRO should also be disabled.
+> > >
+> > > Cc: Michael S. Tsirkin <mst@redhat.com>
+> > > Cc: Jason Wang <jasowang@redhat.com>
+> > > Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> >
+> > The first patch was merged into net.
+> >
+> > Please wait until that is merged into net-next, as this depends on the
+> > other patch.
+> >
+> > > ---
+> > > v2:
+> > > * LRO depends the rx csum
+> > > * remove the unnecessary check
+> > > ---
+> > >  drivers/net/virtio_net.c | 49 ++++++++++++++++++++++++++++++----------
+> > >  1 file changed, 37 insertions(+), 12 deletions(-)
+> > >
+> > > diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > > index 21b71148c532..5407a0106771 100644
+> > > --- a/drivers/net/virtio_net.c
+> > > +++ b/drivers/net/virtio_net.c
+> > > @@ -68,6 +68,8 @@ static const unsigned long guest_offloads[] = {
+> > >                                 (1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
+> > >                                 (1ULL << VIRTIO_NET_F_GUEST_UFO))
+> > >
+> > > +#define GUEST_OFFLOAD_CSUM_MASK (1ULL << VIRTIO_NET_F_GUEST_CSUM)
+> > > +
+> > >  struct virtnet_stat_desc {
+> > >         char desc[ETH_GSTRING_LEN];
+> > >         size_t offset;
+> > > @@ -2522,29 +2524,49 @@ static int virtnet_get_phys_port_name(struct net_device *dev, char *buf,
+> > >         return 0;
+> > >  }
+> > >
+> > > +static netdev_features_t virtnet_fix_features(struct net_device *netdev,
+> > > +                                             netdev_features_t features)
+> > > +{
+> > > +       /* If Rx checksum is disabled, LRO should also be disabled.
+> > > +        * That is life. :)
+> >
+> > Please remove this second line.
+> OK
+> > > +        */
+> > > +       if (!(features & NETIF_F_RXCSUM))
+> > > +               features &= ~NETIF_F_LRO;
+> > > +
+> > > +       return features;
+> > > +}
+> > > +
+> > >  static int virtnet_set_features(struct net_device *dev,
+> > >                                 netdev_features_t features)
+> > >  {
+> > >         struct virtnet_info *vi = netdev_priv(dev);
+> > > -       u64 offloads;
+> > > +       u64 offloads = vi->guest_offloads &
+> > > +                      vi->guest_offloads_capable;
+> >
+> > When can vi->guest_offloads have bits set outside the mask of
+> > vi->guest_offloads_capable?
+> In this case, we can use only vi->guest_offloads. and
+> guest_offloads_capable will not be used any more.
+> so should we remove guest_offloads_capable ?
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- .../bindings/net/can/fsl,flexcan.yaml         | 137 ++++++++++++++++++
- .../bindings/net/can/fsl-flexcan.txt          |  57 --------
- 2 files changed, 137 insertions(+), 57 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml
- delete mode 100644 Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
-
-diff --git a/Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml b/Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml
-new file mode 100644
-index 000000000000..6486047f48b8
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml
-@@ -0,0 +1,137 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/can/fsl,flexcan.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title:
-+  Flexcan CAN controller on Freescale's ARM and PowerPC system-on-a-chip (SOC).
-+
-+maintainers:
-+  - Marc Kleine-Budde <mkl@pengutronix.de>
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - enum:
-+          - fsl,imx8qm-flexcan
-+          - fsl,imx8mp-flexcan
-+          - fsl,imx6q-flexcan
-+          - fsl,imx53-flexcan
-+          - fsl,imx35-flexcan
-+          - fsl,imx28-flexcan
-+          - fsl,imx25-flexcan
-+          - fsl,p1010-flexcan
-+          - fsl,vf610-flexcan
-+          - fsl,ls1021ar2-flexcan
-+          - fsl,lx2160ar1-flexcan
-+      - items:
-+          - enum:
-+              - fsl,imx7d-flexcan
-+              - fsl,imx6ul-flexcan
-+              - fsl,imx6sx-flexcan
-+          - const: fsl,imx6q-flexcan
-+      - items:
-+          - enum:
-+              - fsl,ls1028ar1-flexcan
-+          - const: fsl,lx2160ar1-flexcan
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 2
-+
-+  clock-names:
-+    items:
-+      - const: ipg
-+      - const: per
-+
-+  clock-frequency:
-+    description: |
-+      The oscillator frequency driving the flexcan device, filled in by the
-+      boot loader. This property should only be used the used operating system
-+      doesn't support the clocks and clock-names property.
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+
-+  xceiver-supply:
-+    description: Regulator that powers the CAN transceiver.
-+    maxItems: 1
-+
-+  big-endian:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description: |
-+      This means the registers of FlexCAN controller are big endian. This is
-+      optional property.i.e. if this property is not present in device tree
-+      node then controller is assumed to be little endian. If this property is
-+      present then controller is assumed to be big endian.
-+
-+  fsl,stop-mode:
-+    description: |
-+      Register bits of stop mode control.
-+
-+      The format should be as follows:
-+      <gpr req_gpr req_bit>
-+      gpr is the phandle to general purpose register node.
-+      req_gpr is the gpr register offset of CAN stop request.
-+      req_bit is the bit offset of CAN stop request.
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    items:
-+      items:
-+        - description: The 'gpr' is the phandle to general purpose register node.
-+        - description: The 'req_gpr' is the gpr register offset of CAN stop request.
-+          maximum: 0xff
-+        - description: The 'req_bit' is the bit offset of CAN stop request.
-+          maximum: 0x1f
-+    minItems: 1
-+    maxItems: 1
-+
-+  fsl,clk-source:
-+    description: |
-+      Select the clock source to the CAN Protocol Engine (PE). It's SoC
-+      implementation dependent. Refer to RM for detailed definition. If this
-+      property is not set in device tree node then driver selects clock source 1
-+      by default.
-+      0: clock source 0 (oscillator clock)
-+      1: clock source 1 (peripheral clock)
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    default: 1
-+    minimum: 0
-+    maximum: 1
-+
-+  wakeup-source:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description:
-+      Enable CAN remote wakeup.
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    can@1c000 {
-+        compatible = "fsl,p1010-flexcan";
-+        reg = <0x1c000 0x1000>;
-+        interrupts = <48 0x2>;
-+        interrupt-parent = <&mpic>;
-+        clock-frequency = <200000000>;
-+        fsl,clk-source = <0>;
-+    };
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    flexcan@2090000 {
-+        compatible = "fsl,imx6q-flexcan";
-+        reg = <0x02090000 0x4000>;
-+        interrupts = <0 110 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&clks 1>, <&clks 2>;
-+        clock-names = "ipg", "per";
-+        fsl,stop-mode = <&gpr 0x34 28>;
-+    };
-diff --git a/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt b/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
-deleted file mode 100644
-index e10b6eb955e1..000000000000
---- a/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
-+++ /dev/null
-@@ -1,57 +0,0 @@
--Flexcan CAN controller on Freescale's ARM and PowerPC system-on-a-chip (SOC).
--
--Required properties:
--
--- compatible : Should be "fsl,<processor>-flexcan"
--
--  where <processor> is imx8qm, imx6q, imx28, imx53, imx35, imx25, p1010,
--  vf610, ls1021ar2, lx2160ar1, ls1028ar1.
--
--  The ls1028ar1 must be followed by lx2160ar1, e.g.
--   - "fsl,ls1028ar1-flexcan", "fsl,lx2160ar1-flexcan"
--
--  An implementation should also claim any of the following compatibles
--  that it is fully backwards compatible with:
--
--  - fsl,p1010-flexcan
--
--- reg : Offset and length of the register set for this device
--- interrupts : Interrupt tuple for this device
--
--Optional properties:
--
--- clock-frequency : The oscillator frequency driving the flexcan device
--
--- xceiver-supply: Regulator that powers the CAN transceiver
--
--- big-endian: This means the registers of FlexCAN controller are big endian.
--              This is optional property.i.e. if this property is not present in
--              device tree node then controller is assumed to be little endian.
--              if this property is present then controller is assumed to be big
--              endian.
--
--- fsl,stop-mode: register bits of stop mode control, the format is
--		 <&gpr req_gpr req_bit>.
--		 gpr is the phandle to general purpose register node.
--		 req_gpr is the gpr register offset of CAN stop request.
--		 req_bit is the bit offset of CAN stop request.
--
--- fsl,clk-source: Select the clock source to the CAN Protocol Engine (PE).
--		  It's SoC Implementation dependent. Refer to RM for detailed
--		  definition. If this property is not set in device tree node
--		  then driver selects clock source 1 by default.
--		  0: clock source 0 (oscillator clock)
--		  1: clock source 1 (peripheral clock)
--
--- wakeup-source: enable CAN remote wakeup
--
--Example:
--
--	can@1c000 {
--		compatible = "fsl,p1010-flexcan";
--		reg = <0x1c000 0x1000>;
--		interrupts = <48 0x2>;
--		interrupt-parent = <&mpic>;
--		clock-frequency = <200000000>; // filled in by bootloader
--		fsl,clk-source = <0>; // select clock source 0 for PE
--	};
--- 
-2.28.0
-
+That bitmap stores the capabilities of the device as learned at
+initial device probe. I don't see how it can be removed.
