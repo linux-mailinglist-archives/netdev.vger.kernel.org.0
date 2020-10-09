@@ -2,135 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D713E2897CC
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:05:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFAB12898D0
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 22:08:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732761AbgJIUFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 16:05:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42930 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390349AbgJIUEp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Oct 2020 16:04:45 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6F83C2225B;
-        Fri,  9 Oct 2020 20:04:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602273885;
-        bh=P9rIsaGo8r5GHy8F04hfa1tm5nUMHfgAzkrVpuFy3o0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fUUBTTR69gVck+KGJ4c+sf3iOjYxWQlVK7eYzFfUzqHDDxCWOPj2t34//gpCwuiZa
-         lqUcXouU2jmbNukBAT8lQxZvIebut/d75Su6nnZgmYd2b+0uXvo/jxCFSV2L680bSl
-         wpGqXKbq0386/8hM4jhejuskIr0ws5ofKcL9jhco=
-Date:   Fri, 9 Oct 2020 13:04:42 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        George McCollister <george.mccollister@gmail.com>
-Subject: Re: [net v3] net: dsa: microchip: fix race condition
-Message-ID: <20201009130442.7f558756@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201007085523.11757-1-ceggers@arri.de>
-References: <20201007085523.11757-1-ceggers@arri.de>
+        id S2391338AbgJIUIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 16:08:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49364 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388178AbgJIUF7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 16:05:59 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29AFCC0613D5;
+        Fri,  9 Oct 2020 13:05:59 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1kQyeC-0001He-AQ; Fri, 09 Oct 2020 22:05:48 +0200
+Date:   Fri, 9 Oct 2020 22:05:48 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Jozsef Kadlecsik <kadlec@netfilter.org>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, coreteam@netfilter.org,
+        netfilter-devel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: Re: [PATCH nf v2] netfilter: conntrack: connection timeout after
+ re-register
+Message-ID: <20201009200548.GG5723@breakpoint.cc>
+References: <20201007193252.7009D95C169C@us180.sjc.aristanetworks.com>
+ <CA+HUmGhBxBHU85oFfvoAyP=hG17DG2kgO67eawk1aXmSjehOWQ@mail.gmail.com>
+ <alpine.DEB.2.23.453.2010090838430.19307@blackhole.kfki.hu>
+ <20201009110323.GC5723@breakpoint.cc>
+ <alpine.DEB.2.23.453.2010092035550.19307@blackhole.kfki.hu>
+ <20201009185552.GF5723@breakpoint.cc>
+ <alpine.DEB.2.23.453.2010092132220.19307@blackhole.kfki.hu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.23.453.2010092132220.19307@blackhole.kfki.hu>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 7 Oct 2020 10:55:23 +0200 Christian Eggers wrote:
-> Between queuing the delayed work and finishing the setup of the dsa
-> ports, the process may sleep in request_module() (via
-> phy_device_create()) and the queued work may be executed prior to the
-> switch net devices being registered. In ksz_mib_read_work(), a NULL
-> dereference will happen within netof_carrier_ok(dp->slave).
+Jozsef Kadlecsik <kadlec@netfilter.org> wrote:
+> > The "delay unregister" remark was wrt. the "all rules were deleted"
+> > case, i.e. add a "grace period" rather than acting right away when
+> > conntrack use count did hit 0.
 > 
-> Not queuing the delayed work in ksz_init_mib_timer() makes things even
-> worse because the work will now be queued for immediate execution
-> (instead of 2000 ms) in ksz_mac_link_down() via
-> dsa_port_link_register_of().
+> Now I understand it, thanks really. The hooks are removed, so conntrack 
+> cannot "see" the packets and the entries become stale. 
+
+Yes.
+
+> What is the rationale behind "remove the conntrack hooks when there are no 
+> rule left referring to conntrack"? Performance optimization? But then the 
+> content of the whole conntrack table could be deleted too... ;-)
+
+Yes, this isn't the case at the moment -- only hooks are removed,
+entries will eventually time out.
+
+> > Conntrack entries are not removed, only the base hooks get unregistered. 
+> > This is a problem for tcp window tracking.
+> > 
+> > When re-register occurs, kernel is supposed to switch the existing 
+> > entries to "loose" mode so window tracking won't flag packets as 
+> > invalid, but apparently this isn't enough to handle keepalive case.
 > 
-> Call tree:
-> ksz9477_i2c_probe()
-> \--ksz9477_switch_register()
->    \--ksz_switch_register()
->       +--dsa_register_switch()
->       |  \--dsa_switch_probe()
->       |     \--dsa_tree_setup()
->       |        \--dsa_tree_setup_switches()
->       |           +--dsa_switch_setup()
->       |           |  +--ksz9477_setup()
->       |           |  |  \--ksz_init_mib_timer()
->       |           |  |     |--/* Start the timer 2 seconds later. */
->       |           |  |     \--schedule_delayed_work(&dev->mib_read, msecs_to_jiffies(2000));
->       |           |  \--__mdiobus_register()
->       |           |     \--mdiobus_scan()
->       |           |        \--get_phy_device()
->       |           |           +--get_phy_id()
->       |           |           \--phy_device_create()
->       |           |              |--/* sleeping, ksz_mib_read_work() can be called meanwhile */
->       |           |              \--request_module()
->       |           |
->       |           \--dsa_port_setup()
->       |              +--/* Called for non-CPU ports */
->       |              +--dsa_slave_create()
->       |              |  +--/* Too late, ksz_mib_read_work() may be called beforehand */
->       |              |  \--port->slave = ...
->       |             ...
->       |              +--Called for CPU port */
->       |              \--dsa_port_link_register_of()
->       |                 \--ksz_mac_link_down()
->       |                    +--/* mib_read must be initialized here */
->       |                    +--/* work is already scheduled, so it will be executed after 2000 ms */
->       |                    \--schedule_delayed_work(&dev->mib_read, 0);
->       \-- /* here port->slave is setup properly, scheduling the delayed work should be safe */
-
-Thanks for this graph, very informative!
-
-> Solution:
-> 1. Do not queue (only initialize) delayed work in ksz_init_mib_timer().
-> 2. Only queue delayed work in ksz_mac_link_down() if init is completed.
-> 3. Queue work once in ksz_switch_register(), after dsa_register_switch()
-> has completed.
+> "loose" (nf_ct_tcp_loose) mode doesn't disable window tracking, it 
+> enables/disables picking up already established connections. 
 > 
-> Fixes: 7c6ff470aa86 ("net: dsa: microchip: add MIB counter reading support")
-> Signed-off-by: Christian Eggers <ceggers@arri.de>
+> nf_ct_tcp_be_liberal would disable TCP window checking (but not tracking) 
+> for non RST packets.
 
-You should add Florian's and Vladimir's review tags here, under your
-sign-off.
+You are right, mixup on my part.
 
-> @@ -143,7 +137,9 @@ void ksz_mac_link_down(struct dsa_switch *ds, int port, unsigned int mode,
->  
->  	/* Read all MIB counters when the link is going down. */
->  	p->read = true;
-> -	schedule_delayed_work(&dev->mib_read, 0);
-> +	/* timer started */
-> +	if (dev->mib_read_interval)
-> +		schedule_delayed_work(&dev->mib_read, 0);
+> But both seems to be modified only via the proc entries.
 
-Your patch seems fine, but I wonder what was the original author trying
-to achieve with this schedule_delayed_work(..., 0) call?
-
-The work is supposed to be scheduled at this point, right?
-In that case another call to schedule_delayed_work() is
-simply ignored. 
-
-Judging by the comment it seems like someone was under the impression
-this will reschedule the work to be run immediately, which is not the
-case.
-
-In fact looks like a separate bug introduced in:
-
-469b390e1ba3 ("net: dsa: microchip: use delayed_work instead of timer + work")
-
->  }
->  EXPORT_SYMBOL_GPL(ksz_mac_link_down);
->  
+Yes, we iterate table on re-register and modify the existing entries.
