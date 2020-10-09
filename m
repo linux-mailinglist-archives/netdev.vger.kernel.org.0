@@ -2,127 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFB792886C4
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 12:22:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC0A12886FD
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 12:32:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387586AbgJIKWN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 06:22:13 -0400
-Received: from fallback22.m.smailru.net ([94.100.176.132]:41790 "EHLO
-        fallback22.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725852AbgJIKWN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 06:22:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mail.ru; s=mail2;
-        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:Subject; bh=YcSQ4rsmBfLfJBWniWKYCsnWwlWlYuVtOo+n0oO/a2k=;
-        b=uS0fb6leUOaOyga1vKeGodM4P01km07R/kbT17bSYZtk6Ij2Q3GNDs7W0rUBdp0jrVJN674q0qsuipsreg0qcwJ2Fo+Da+Cm56NyRJHsev7oGyl8N25GJGWT4Cy1r4XdO70z7AvHBLLUkNZMw9eJZYpUaXPAjkX3dCp7Bp7+pK8=;
-Received: from [10.161.64.57] (port=41328 helo=smtp49.i.mail.ru)
-        by fallback22.m.smailru.net with esmtp (envelope-from <abt-admin@mail.ru>)
-        id 1kQpXM-0004FB-QH; Fri, 09 Oct 2020 13:22:09 +0300
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mail.ru; s=mail3;
-        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:Subject:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=YcSQ4rsmBfLfJBWniWKYCsnWwlWlYuVtOo+n0oO/a2k=;
-        b=qd4Fb0UgTwXdpNg7JOObYlViQTotQmFZkzKKLCUXBSs7Qgx9J13LyY2c2zGJNvRc7SRVW0bf6WSMF49h2HLjPZPFj0/7kLL844rF2tmL4QUlv+/O881oeRfNWM++AcTYMzDTQz9VxLnemvXIpHtkcFFWOqmb78ECid3dHEqv1hc=;
-Received: by smtp49.i.mail.ru with esmtpa (envelope-from <abt-admin@mail.ru>)
-        id 1kQpXK-0002e3-MR; Fri, 09 Oct 2020 13:22:07 +0300
-Subject: Re: Fw: [Bug 209427] New: Incorrect timestamp cause packet to be
- dropped
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org,
-        "lvs-devel@vger.kernel.org" <lvs-devel@vger.kernel.org>
-References: <20200929103532.0ecbc3b3@hermes.local>
- <8e1a8be5-4123-ea86-80f2-16027cfa021c@gmail.com>
- <alpine.LFD.2.23.451.2009302010190.4321@ja.home.ssi.bg>
-From:   Evgeny B <abt-admin@mail.ru>
-Message-ID: <cbacae19-8a84-b7a9-8e92-1ca6b22b8b65@mail.ru>
-Date:   Fri, 9 Oct 2020 13:22:03 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.2
+        id S2387690AbgJIKcS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 06:32:18 -0400
+Received: from mailout08.rmx.de ([94.199.90.85]:41460 "EHLO mailout08.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730763AbgJIKcS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Oct 2020 06:32:18 -0400
+Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout08.rmx.de (Postfix) with ESMTPS id 4C74Bk6dDszMt0L;
+        Fri,  9 Oct 2020 12:32:14 +0200 (CEST)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin02.retarus.com (Postfix) with ESMTPS id 4C74BJ1tfXz2TTLg;
+        Fri,  9 Oct 2020 12:31:52 +0200 (CEST)
+Received: from N95HX1G2.wgnetz.xx (192.168.54.145) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Fri, 9 Oct
+ 2020 12:31:52 +0200
+From:   Christian Eggers <ceggers@arri.de>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Deepa Dinamani <deepa.kernel@gmail.com>
+CC:     Willem de Bruijn <willemb@google.com>,
+        Christoph Hellwig <hch@lst.de>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Christian Eggers <ceggers@arri.de>
+Subject: [PATCH net 1/2] socket: fix option SO_TIMESTAMPING_NEW
+Date:   Fri, 9 Oct 2020 12:31:20 +0200
+Message-ID: <20201009103121.1004-1-ceggers@arri.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <alpine.LFD.2.23.451.2009302010190.4321@ja.home.ssi.bg>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-7564579A: B8F34718100C35BD
-X-77F55803: 4F1203BC0FB41BD9E98D7292067252302C0E76C52979D672675FED68DAFAF9FC182A05F538085040B1353DCE880ADEF9C3C0663F9D064B92A2D0DDB3017CBC5D2DED7A9D51D4EAA7
-X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE741C7AE487E378FE7EA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F7900637A0C281720337EDEA8638F802B75D45FF5571747095F342E8C7A0BC55FA0FE5FC2A3BA7DEE59E60A7A00F360CEAE07222728236DEAE86F2AF389733CBF5DBD5E913377AFFFEAFD269176DF2183F8FC7C015BBC38BE64FE4678941B15DA834481FCF19DD082D7633A0E7DDDDC251EA7DABA471835C12D1D977725E5C173C3A84C3E478A468B35FE767117882F4460429728AD0CFFFB425014EFE57002F862A6B6676E601842F6C81A19E625A9149C048EE4B6963042765DA4B043FB282AF95FB6BD8FC6C240DEA76429449624AB7ADAF37B2D370F7B14D4BC40A6AB1C7CE11FEE368E4D7E803FA7AD56136E347CC761E07C4224003CC8364767A15B7713DBEF166A7F4EDE966BC389F9E8FC8737B5C2249A19B99133A7DFEF1089D37D7C0E48F6CCF19DD082D7633A0E7DDDDC251EA7DABAAAE862A0553A39223F8577A6DFFEA7C1E0780EE7D76B22F43847C11F186F3C5E7DDDDC251EA7DABCC89B49CDF41148F53FDB0A1CE3EC88B3B503F486389A921A5CC5B56E945C8DA
-X-C8649E89: C9F3308B376ADA62007398E4665261F3F82E61ED4C5020DADD3A7F250DC433D00D985D1D7D6130E1
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojZW/7Ea6+LmFP66aIomxEVA==
-X-Mailru-Sender: 6CA451E36783D72110B49B6400E2460DF69968408DA9838227B1E1C4B0FF5409281C8A37A933478C413F1E1E6E684AF678274A4A9E9E44FD6F84805CEB291A2816580BC561049AF767EA787935ED9F1B
-X-Mras: Ok
-X-7564579A: 646B95376F6C166E
-X-77F55803: 6242723A09DB00B4033B2E76A2A2E7F3D7C40938B5608F3039AD8672D1456623049FFFDB7839CE9E0091B5866B8777F80339FBF5C0F9CCDAFF56373C44000E25400C2A9CF0F0AA1A
-X-7FA49CB5: 0D63561A33F958A50FE13C2791D718076F569FEE3F07EDC81F96E23A033C91878941B15DA834481FA18204E546F3947C4B6F6234D9065C97F6B57BC7E64490618DEB871D839B7333395957E7521B51C2545D4CF71C94A83E9FA2833FD35BB23D27C277FBC8AE2E8BAA867293B0326636D2E47CDBA5A96583D99E6B68E862FF7A9735652A29929C6C4AD6D5ED66289B5278DA827A17800CE7A8D7235C252B30C7D32BA5DBAC0009BE395957E7521B51C20B4866841D68ED3567F23339F89546C55F5C1EE8F4F765FCB46939A4ECED1D9D75ECD9A6C639B01BBD4B6F7A4D31EC0BC0CAF46E325F83A522CA9DD8327EE493B89ED3C7A628178133F64B4C514AF25EC4224003CC836476C0CAF46E325F83A50BF2EBBBDD9D6B0F2AF38021CC9F462D574AF45C6390F7469DAA53EE0834AAEE
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojZW/7Ea6+LmGxtNJilOvtyQ==
-X-Mailru-MI: 800
-X-Mailru-Sender: A5480F10D64C9005989B929F85CCF0954350F4CECF5A06B70DD0A3C66087E3B68C2DD0A86F9CB7FA7935DC82BA25C6A53DDE9B364B0DF2896BB46F87D5A2245C28CBA8FA03A0F3E1AE208404248635DF
-X-Mras: Ok
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.54.145]
+X-RMX-ID: 20201009-123152-4C74BJ1tfXz2TTLg-0@kdin02
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I just realized all my messages were bounced by mail server, this is 
-last try
+The comparison of optname with SO_TIMESTAMPING_NEW is wrong way around,
+so SOCK_TSTAMP_NEW will first be set and than reset again. Additionally
+move it out of the test for SOF_TIMESTAMPING_RX_SOFTWARE as this seems
+unrelated.
 
+This problem happens on 32 bit platforms were the libc has already
+switched to struct timespec64 (from SO_TIMExxx_OLD to SO_TIMExxx_NEW
+socket options). ptp4l complains with "missing timestamp on transmitted
+peer delay request" because the wrong format is received (and
+discarded).
 
-This fix works, however they should be applied for each of ipvs_xmit 
-functions (e.g. ip_vs_nat_xmit(), ip_vs_dr_xmit(), etc.)
+Fixes: 9718475e6908 ("socket: Add SO_TIMESTAMPING_NEW")
+Signed-off-by: Christian Eggers <ceggers@arri.de>
+---
+ net/core/sock.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-I look forward to seeing the patch in ml-5.x
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 34a8d12e38d7..3926804702c1 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1024,16 +1024,15 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+ 		}
+ 
+ 		sk->sk_tsflags = val;
++		if (optname != SO_TIMESTAMPING_NEW)
++			sock_reset_flag(sk, SOCK_TSTAMP_NEW);
++
+ 		if (val & SOF_TIMESTAMPING_RX_SOFTWARE)
+ 			sock_enable_timestamp(sk,
+ 					      SOCK_TIMESTAMPING_RX_SOFTWARE);
+-		else {
+-			if (optname == SO_TIMESTAMPING_NEW)
+-				sock_reset_flag(sk, SOCK_TSTAMP_NEW);
+-
++		else
+ 			sock_disable_timestamp(sk,
+ 					       (1UL << SOCK_TIMESTAMPING_RX_SOFTWARE));
+-		}
+ 		break;
+ 
+ 	case SO_RCVLOWAT:
+-- 
+Christian Eggers
+Embedded software developer
 
-Thank you!
+Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
+Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
+Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
 
-
-On 9/30/2020 8:17 PM, Julian Anastasov wrote:
-> 	Hello,
->
-> On Wed, 30 Sep 2020, Eric Dumazet wrote:
->
->> On 9/29/20 7:35 PM, Stephen Hemminger wrote:
->>>
->>> then I noticed that in some cases skb->tstamp is equal to real ts whereas in
->>> the regular cases where a packet pass through it's time since kernel boot. This
->>> doesn't make any sense for me as this condition is satisfied constantly
->>>
->>> net/sched/sch_fq.c:439
->>> static bool fq_packet_beyond_horizon(const struct sk_buff *skb,
->>>                                      const struct fq_sched_data *q)
->>> {
->>>          return unlikely((s64)skb->tstamp > (s64)(q->ktime_cache + q->horizon));
->>> }
->>>
->>> Any ideas on what it can be?
->>>
->> Thanks for the detailed report !
->>
->> I suspect ipvs or bridge code needs something similar to the fixes done in
->>
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=de20900fbe1c4fd36de25a7a5a43223254ecf0d0
->>
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=41d1c8839e5f8cb781cc635f12791decee8271b7
->>
->> The reason for that is that skb->tstamp can get a timestamp in input path,
->> with a base which is not CLOCK_MONOTONIC, unfortunately.
->>
->> Whenever a packet is forwarded, its tstamp must be cleared.
->>
->> Can you try :
->>
->> diff --git a/net/netfilter/ipvs/ip_vs_xmit.c b/net/netfilter/ipvs/ip_vs_xmit.c
->> index b00866d777fe0e9ed8018087ebc664c56f29b5c9..11e8ccdae358a89067046efa62ed40308b9e06f9 100644
->> --- a/net/netfilter/ipvs/ip_vs_xmit.c
->> +++ b/net/netfilter/ipvs/ip_vs_xmit.c
->> @@ -952,6 +952,8 @@ ip_vs_prepare_tunneled_skb(struct sk_buff *skb, int skb_af,
->>   
->>          ip_vs_drop_early_demux_sk(skb);
->>   
->> +       skb->tstamp = 0;
->> +
-> 	Should be after all skb_forward_csum() calls in ip_vs_xmit.c
->
->>          if (skb_headroom(skb) < max_headroom || skb_cloned(skb)) {
->>                  new_skb = skb_realloc_headroom(skb, max_headroom);
->>                  if (!new_skb)
-> Regards
->
-> --
-> Julian Anastasov <ja@ssi.bg>
->
