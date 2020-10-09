@@ -2,117 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48A17289177
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 20:52:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 810C5289181
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 20:56:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388154AbgJISw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 14:52:56 -0400
-Received: from z5.mailgun.us ([104.130.96.5]:30780 "EHLO z5.mailgun.us"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388075AbgJISwy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Oct 2020 14:52:54 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1602269574; h=Content-Transfer-Encoding: Content-Type:
- MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
- To: From: Sender; bh=C2ixXtJpszCvMiXVMMBC/Lmu1IAK2pnWzYoTtv0TqiQ=; b=LzsLKldguYco0R5oZxxYAPlw5SRsDcZ4wzUq+6NxHYcKYk6bokMs/Pq6nwL5HP4MzNan6m/f
- SnVsebsN2GtO99l/v4YfftGwmL8WQDoy3lDe3wkimWRS3qcEC/16XMcz3IeTiMM9RW6IDKbn
- fjCqo15PVI2ir3zwi0w1dq3r35M=
-X-Mailgun-Sending-Ip: 104.130.96.5
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
- 5f80b184aad2c3cd1c01b3ec (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 09 Oct 2020 18:52:52
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id F0ECFC43385; Fri,  9 Oct 2020 18:52:51 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 475DEC433C9;
-        Fri,  9 Oct 2020 18:52:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 475DEC433C9
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
-Cc:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: Re: [PATCH 3/8] staging: wfx: standardize the error when vif does not exist
-References: <20201009171307.864608-1-Jerome.Pouiller@silabs.com>
-        <20201009171307.864608-4-Jerome.Pouiller@silabs.com>
-Date:   Fri, 09 Oct 2020 21:52:47 +0300
-In-Reply-To: <20201009171307.864608-4-Jerome.Pouiller@silabs.com> (Jerome
-        Pouiller's message of "Fri, 9 Oct 2020 19:13:02 +0200")
-Message-ID: <87zh4vz0xs.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S2388281AbgJISz7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 14:55:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38444 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388184AbgJISz7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 14:55:59 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325D7C0613D2;
+        Fri,  9 Oct 2020 11:55:59 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1kQxYW-0000rj-1m; Fri, 09 Oct 2020 20:55:52 +0200
+Date:   Fri, 9 Oct 2020 20:55:52 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Jozsef Kadlecsik <kadlec@netfilter.org>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, coreteam@netfilter.org,
+        netfilter-devel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>, fw@strlen.org,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+Subject: Re: [PATCH nf v2] netfilter: conntrack: connection timeout after
+ re-register
+Message-ID: <20201009185552.GF5723@breakpoint.cc>
+References: <20201007193252.7009D95C169C@us180.sjc.aristanetworks.com>
+ <CA+HUmGhBxBHU85oFfvoAyP=hG17DG2kgO67eawk1aXmSjehOWQ@mail.gmail.com>
+ <alpine.DEB.2.23.453.2010090838430.19307@blackhole.kfki.hu>
+ <20201009110323.GC5723@breakpoint.cc>
+ <alpine.DEB.2.23.453.2010092035550.19307@blackhole.kfki.hu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.23.453.2010092035550.19307@blackhole.kfki.hu>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
+Jozsef Kadlecsik <kadlec@netfilter.org> wrote:
+> > The repro clears all rules, waits 4 seconds, then restores the ruleset. 
+> > using iptables-restore < FOO; sleep 4; iptables-restore < FOO will not 
+> > result in any unregister ops.
+> >
+> > We could make kernel defer unregister via some work queue but i don't
+> > see what this would help/accomplish (and its questionable of how long it
+> > should wait).
+> 
+> Sorry, I can't put together the two paragraphs above: in the first you 
+> wrote that no (hook) unregister-register happens and in the second one 
+> that those could be derefed.
 
-> From: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
->
-> Smatch complains:
->
->    drivers/staging/wfx/hif_rx.c:177 hif_scan_complete_indication() warn: =
-potential NULL parameter dereference 'wvif'
->    drivers/staging/wfx/data_tx.c:576 wfx_flush() warn: potential NULL par=
-ameter dereference 'wvif'
->
-> Indeed, if the vif id returned by the device does not exist anymore,
-> wdev_to_wvif() could return NULL.
->
-> In add, the error is not handled uniformly in the code, sometime a
-> WARN() is displayed but code continue, sometime a dev_warn() is
-> displayed, sometime it is just not tested, ...
->
-> This patch standardize that.
->
-> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: J=C3=A9r=C3=B4me Pouiller <jerome.pouiller@silabs.com>
-> ---
->  drivers/staging/wfx/data_tx.c |  5 ++++-
->  drivers/staging/wfx/hif_rx.c  | 34 ++++++++++++++++++++++++----------
->  drivers/staging/wfx/sta.c     |  4 ++++
->  3 files changed, 32 insertions(+), 11 deletions(-)
->
-> diff --git a/drivers/staging/wfx/data_tx.c b/drivers/staging/wfx/data_tx.c
-> index b4d5dd3d2d23..8db0be08daf8 100644
-> --- a/drivers/staging/wfx/data_tx.c
-> +++ b/drivers/staging/wfx/data_tx.c
-> @@ -431,7 +431,10 @@ static void wfx_skb_dtor(struct wfx_vif *wvif, struc=
-t sk_buff *skb)
->  			      sizeof(struct hif_req_tx) +
->  			      req->fc_offset;
->=20=20
-> -	WARN_ON(!wvif);
-> +	if (!wvif) {
-> +		pr_warn("%s: vif associated with the skb does not exist anymore\n", __=
-func__);
-> +		return;
-> +	}
+Sorry, my reply is confusing indeed.
 
-I'm not really a fan of using function names in warning or error
-messages as it clutters the log. In debug messages I think they are ok.
+Matches/targets that need conntrack increment a refcount.
+So, when all rules are flushed, refcount goes down to 0 and conntrack is
+disabled because the hooks get removed..
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
+Just doing iptables-restore doesn't unregister as long as both the old
+and new rulesets need conntrack.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+The "delay unregister" remark was wrt. the "all rules were deleted"
+case, i.e. add a "grace period" rather than acting right away when
+conntrack use count did hit 0.
+
+> > We could disallow unregister, but that seems silly (forces reboot...).
+> > 
+> > I think the patch is fine.
+> 
+> The patch is fine, but why the packets are handled by conntrack (after the 
+> first restore and during the 4s sleep? And then again after the second 
+> restore?) as if all conntrack entries were removed?
+
+Conntrack entries are not removed, only the base hooks get unregistered.
+This is a problem for tcp window tracking.
+
+When re-register occurs, kernel is supposed to switch the existing
+entries to "loose" mode so window tracking won't flag packets as
+invalid, but apparently this isn't enough to handle keepalive case.
