@@ -2,137 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2908E288057
-	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 04:26:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E612828809C
+	for <lists+netdev@lfdr.de>; Fri,  9 Oct 2020 05:08:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731175AbgJIC0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Oct 2020 22:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54558 "EHLO
+        id S1731425AbgJIDIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Oct 2020 23:08:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729724AbgJIC0t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 22:26:49 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69221C0613D2;
-        Thu,  8 Oct 2020 19:26:48 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id w21so5571164pfc.7;
-        Thu, 08 Oct 2020 19:26:48 -0700 (PDT)
+        with ESMTP id S1728854AbgJIDIE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Oct 2020 23:08:04 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E188C0613D2
+        for <netdev@vger.kernel.org>; Thu,  8 Oct 2020 20:08:04 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id e2so8381027wme.1
+        for <netdev@vger.kernel.org>; Thu, 08 Oct 2020 20:08:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ianMI0skgT2+5Mr4X9GRt1HqniVrm6Fh/4YOQB+YSrU=;
-        b=Qeh+BstLg+YnjX9buKFp8NLiYlnG/4bwAvdM9WmKjjyJSh3zxCP+hS6VYiyVpHO9Ia
-         DruigZfmhEzVQabkhHCyWB2ovh9SjKbQ7sSkp9TeNucIE3SL0vChe0FUn46pLVYvJ7t8
-         /VfHeZt+p8oF3iIpTDqkfCdrMm+uSckJJDUF4KFN5frLFAvzpwlFqLp0UogbKMZiZqSQ
-         eXTsSl3wV4I+uoyPVkU7KxSCILLkKvStJdVuBwd8HtCb8aDVNYiQh5T9bihalWFhfUe3
-         XuCyC1WNfAkhNQQh6UAstkaVKEHgm3dG/3SxXbcWL0y338naCtDqecaYnTxlOadan2B0
-         deFg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sOTzLK2/d3FAodsq0P4cDlcAgX0I4W/XvmJSrRY653k=;
+        b=LVAaZfoUWhh2DUHoa0Y3CCYpQiFplJl9kH0ublZGbZXLEOUEup5nwU0OTe+NLvEj8A
+         yg0XXgvG5U3gZwHA/yuEIwM1Xe4BErQxsSCHfY6UghpeE2zEizeCB4B2gq8OeVBHO9xE
+         AcRQ2I0zXJduzTf+YD5Db+OdhofHQKY+dabc6XkMKwmjxvevmOfp/d9Y1bqYmCSBAqhY
+         hV8OnywCfAjxjQsh54pt7mGp2Vdql7tRYc0wW8gwsrzn/5ePaZ6V4p+ARtBE0aTRlZFq
+         b9jOa9LfBobYdD5bvLEMTknCg7i8EPduJkjiFGJv/wvzICEKHU97idO7EyJvSuYg76LS
+         DZUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ianMI0skgT2+5Mr4X9GRt1HqniVrm6Fh/4YOQB+YSrU=;
-        b=X+aftx43+pC1zpjiZL76Rzv6vclSD39rxOq75L3eVAYFoKpt71WdRfZQjuAIzdj7C4
-         U6g9PCxB3vEfDmT+hJhHMvwR3zwv7KAYQCjjgKCeN3Gf2i6ZDJoNYZkPBJlrm92t9vka
-         Vm+iQwexEA/kgmZBdY7pAxkdV5TlOrfMxiAvcY0htYrEBOgYXHf798MU9siwZ9qHFS1p
-         C3b/01wOnnkcJmbkQdCrAiGTCQUut/3S5tNZdFjuhIwaHuJAyiNrifj4EsqKZpgsmlDQ
-         xarGhqcNt5zsHlH6/UesHAwkG3DqQYRPbEnrXk0Jch4vZL9906D/Dze1n3GViclgwLsx
-         KJOQ==
-X-Gm-Message-State: AOAM532F+32foE5hoxoaBVRmRskOiJRivKHK3beTqVz6XajSiqG1fW24
-        A7naa8zlWp4UmaRkixgDQ2BNs4cDL0F+kQ==
-X-Google-Smtp-Source: ABdhPJw2KHvtC3OqHNVaYtkwsG8qrMazjs18l/MgsjU4PGfRxswG0nHXPWzTdaENAWFViCbsUk6tuQ==
-X-Received: by 2002:a17:90b:1a90:: with SMTP id ng16mr2068760pjb.172.1602210407567;
-        Thu, 08 Oct 2020 19:26:47 -0700 (PDT)
-Received: from [10.230.29.112] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id m5sm8442155pjn.19.2020.10.08.19.26.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 08 Oct 2020 19:26:46 -0700 (PDT)
-Subject: Re: [net-next PATCH v1] net: phy: Move of_mdio from drivers/of to
- drivers/net/mdio
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Rob Herring <robh+dt@kernel.org>, davem@davemloft.net
-Cc:     Grant Likely <grant.likely@arm.com>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "open list:ACPI FOR ARM64 (ACPI/arm64)" <linux-acpi@vger.kernel.org>,
-        linux.cj@gmail.com, Frank Rowand <frowand.list@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        devicetree@vger.kernel.org
-References: <20201008144706.8212-1-calvin.johnson@oss.nxp.com>
- <CAL_JsqLf0UJNmx8OgpDye2zfFNZyJJ8gbr3nbmGyiMg81RoHOg@mail.gmail.com>
- <20201009022056.GA17999@lsv03152.swis.in-blr01.nxp.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <2a0f9055-9110-ecc5-aab2-ff6ec9dc157a@gmail.com>
-Date:   Thu, 8 Oct 2020 19:26:44 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.3.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sOTzLK2/d3FAodsq0P4cDlcAgX0I4W/XvmJSrRY653k=;
+        b=FQYg/pZuy0RC6U1MtOFacUT2vxjJ73/9m2EVKpVA+DKgXLnR00L992y12bzntXXKcv
+         VsmHNAec7wQW6LBW/tl//P34vpbQyeItGQ9OR03xt5RBKcpDLcL5QfCRjMZxw+k1yWLf
+         dyhEBxyW8FegETzXFBS297fgATJKD6WWL7Oj8P1g2SHqGZGhvcd5nS72ECI7wzOQeimH
+         If+QW2buOT4+2m8hxzhZ4fBCRlUTZpcTkBeWhclQImZUoq9zAkn0kDcZW1LVHKFIMA0N
+         lxwheQIXkUaE49iciZqoPcPLQZs6NujKNGRcFQ0b95caeuN1ve/QoB1gJaczgJGtkWSk
+         bRHQ==
+X-Gm-Message-State: AOAM530nC5UB+V9VJYnOMR5im6ktouXpDOHX51tdNMRgLadf79grzmi3
+        Sr6oC/wrUcJW53tMJeFIUFLOshjjMrasVV9KCXk=
+X-Google-Smtp-Source: ABdhPJwLYeGV+ReH6P3iSIVB3EmILp4iXkzG+LnJ3qMR1wEq9KuYcZ5YHvvhsQvEkJDYaX2wK4h49TcgvzKKVv0lfVE=
+X-Received: by 2002:a1c:1905:: with SMTP id 5mr12154832wmz.32.1602212882653;
+ Thu, 08 Oct 2020 20:08:02 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20201009022056.GA17999@lsv03152.swis.in-blr01.nxp.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20201008041250.22642-1-xiyou.wangcong@gmail.com>
+ <CADvbK_dwh4SFL1KbX=GhxW_O=cZLoPcXC9RjYpZd4=tWrm0LBA@mail.gmail.com> <CAM_iQpW+3w28v6VVvAPrtmKh_Y7UXfFvna9ey77f9m3mDn7tZQ@mail.gmail.com>
+In-Reply-To: <CAM_iQpW+3w28v6VVvAPrtmKh_Y7UXfFvna9ey77f9m3mDn7tZQ@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Fri, 9 Oct 2020 11:07:51 +0800
+Message-ID: <CADvbK_e1A9BuNKbT_TkeWwxrZv-_jLKJduDn=8Bx24XXKA+w3A@mail.gmail.com>
+Subject: Re: [Patch net] tipc: fix the skb_unshare() in tipc_buf_append()
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        syzbot <syzbot+e96a7ba46281824cc46a@syzkaller.appspotmail.com>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Ying Xue <ying.xue@windriver.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Oct 9, 2020 at 1:45 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> On Thu, Oct 8, 2020 at 1:45 AM Xin Long <lucien.xin@gmail.com> wrote:
+> >
+> > On Thu, Oct 8, 2020 at 12:12 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+> > >
+> > > skb_unshare() drops a reference count on the old skb unconditionally,
+> > > so in the failure case, we end up freeing the skb twice here.
+> > > And because the skb is allocated in fclone and cloned by caller
+> > > tipc_msg_reassemble(), the consequence is actually freeing the
+> > > original skb too, thus triggered the UAF by syzbot.
+> > Do you mean:
+> >                 frag = skb_clone(skb, GFP_ATOMIC);
+> > frag = skb_unshare(frag) will free the 'skb' too?
+>
+> Yes, more precisely, I mean:
+>
+> new = skb_clone(old)
+> kfree_skb(new)
+> kfree_skb(new)
+>
+> would free 'old' eventually when 'old' is a fast clone. The skb_clone()
+> sets ->fclone_ref to 2 and returns the clone, whose skb->fclone is
+> SKB_FCLONE_CLONE. So, the first call of kfree_skbmem() will
+> just decrease ->fclone_ref by 1, but the second call will trigger
+> kmem_cache_free() which frees _both_  skb's.
+Thanks. Didn't notice kfree_skb 'buf' on the err path.
 
-
-On 10/8/2020 7:20 PM, Calvin Johnson wrote:
-> Hi Rob,
-> 
-> On Thu, Oct 08, 2020 at 11:35:07AM -0500, Rob Herring wrote:
->> On Thu, Oct 8, 2020 at 9:47 AM Calvin Johnson
->> <calvin.johnson@oss.nxp.com> wrote:
->>>
->>> Better place for of_mdio.c is drivers/net/mdio.
->>> Move of_mdio.c from drivers/of to drivers/net/mdio
->>
->> One thing off my todo list. I'd started this ages ago[1].
->>
->>>
->>> Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
->>> ---
->>>
->>>   MAINTAINERS                        | 2 +-
->>>   drivers/net/mdio/Kconfig           | 8 ++++++++
->>>   drivers/net/mdio/Makefile          | 2 ++
->>>   drivers/{of => net/mdio}/of_mdio.c | 0
->>>   drivers/of/Kconfig                 | 7 -------
->>>   drivers/of/Makefile                | 1 -
->>>   6 files changed, 11 insertions(+), 9 deletions(-)
->>>   rename drivers/{of => net/mdio}/of_mdio.c (100%)
->>
->> of_mdio.c is really a combination of mdio and phylib functions, so it
->> should be split up IMO. With that, I think you can get rid of
->> CONFIG_OF_MDIO. See my branch[1] for what I had in mind. But that can
->> be done after this if the net maintainers prefer.
->>
->> Acked-by: Rob Herring <robh@kernel.org>
->>
->> Rob
->>
->> [1] git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git dt/move-net
-> 
-> Makes sense to me to split of_mdio.c. I can work on it once my current task
-> completes.
-
-If you could take Rob's patches, given then a round of randconfig build 
-tests and update the MAINTAINERS file (no more drivers/of/of_mdio.c), 
-then this looks like the right approach to me. Thanks!
--- 
-Florian
+Reviewed-by: Xin Long <lucien.xin@gmail.com>
