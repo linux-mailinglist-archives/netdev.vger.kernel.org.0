@@ -2,98 +2,252 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C5CF289F19
-	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 10:03:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A883289F46
+	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 10:20:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729734AbgJJIBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 04:01:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45992 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728994AbgJJIBd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 04:01:33 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D752AC0613CF;
-        Sat, 10 Oct 2020 01:01:32 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id 132so2292123pfz.5;
-        Sat, 10 Oct 2020 01:01:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=KSgS/yaA0WF+r8iYDZJ1qn48JHFSJ548EMw3n9b8mbU=;
-        b=LssJWxpoRbxx7KVR2+T5gSPxakRpYk6ThunpIt+Ve3cPrj5sgsz/qaoCTHtsNkj3HT
-         4xfTln987yLxtBF9PIfnNjeaQcHir7T4LoSGNVAL1UYj+1WcPU3gdvS5mZTYlE072oph
-         ipJ6quiW3LuChTwlIlHeHy4rOFT7kO6tS4T9+Q972sLdjyxHTG+yIkAVO6G4tEiQw+9B
-         PzgafSNPQsXLYKU0ngebl7SaUu44t3KYiA9P/KjygNRwcGGIAqcxdEca4GrJN0e1L3y+
-         no5gO6j8h9Dp/yHYFf6/RKnF8ySQjiT+a36TkMzJOLegLjxACtDcIFWTnijcyaLzQOOA
-         6DBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KSgS/yaA0WF+r8iYDZJ1qn48JHFSJ548EMw3n9b8mbU=;
-        b=RoxJr+rCTfJrZXIldAnKN2HSRhnCgXIDuHL9AH/XNekQxA3bh9/VHtuRwdLrAgDxGg
-         AqBKrU/7ViA2/pH5R03M7zOLVeoXJRei2ZTbf3OGOFEeiBA7h9nvvL9TjV2WhloiyDiE
-         gkbAEdt7cmaP4YUWmjxxRzTDumaQy50y8mTC5cv6QgzoHqMAcxLQqK5NSYf+CSdirdfG
-         g9qgzp0fp6ZTwKWR3DEDbWMkyhrOr7kbJBa2tXstsMx9dQyb+3M0qlrzEq/Outz1TRD0
-         xNCABva034Rn1qX/IdxEx2JVXCIO3ycBz4HGgseTRD2OzJ6Dk6jqRZckTQnZuQFRika+
-         Ovmw==
-X-Gm-Message-State: AOAM5302TXNn/TxrPQrotLwnLR/XCuzxWARmyamu42rUa4NfFvJ5FAml
-        jSuLKH8ZDnzlrQ/CBUyxMbk=
-X-Google-Smtp-Source: ABdhPJzG0ttUOIjGPCl8WvqSp8YIkg1fTjAgioAxSxWF5XuiRy+45rzLYEYO6JrWt5Dl9mBgeP7rfQ==
-X-Received: by 2002:a65:60d0:: with SMTP id r16mr6494572pgv.348.1602316892230;
-        Sat, 10 Oct 2020 01:01:32 -0700 (PDT)
-Received: from f3 (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
-        by smtp.gmail.com with ESMTPSA id 84sm12866551pfx.120.2020.10.10.01.01.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 10 Oct 2020 01:01:31 -0700 (PDT)
-Date:   Sat, 10 Oct 2020 17:01:26 +0900
-From:   Benjamin Poirier <benjamin.poirier@gmail.com>
-To:     Coiby Xu <coiby.xu@gmail.com>
-Cc:     devel@driverdev.osuosl.org, Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
+        id S1730269AbgJJIUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 04:20:06 -0400
+Received: from smtp06.smtpout.orange.fr ([80.12.242.128]:22214 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729929AbgJJINJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 04:13:09 -0400
+Received: from tomoyo.flets-east.jp ([153.230.197.127])
+        by mwinf5d29 with ME
+        id e8Cm230022lQRaH038Cs69; Sat, 10 Oct 2020 10:13:00 +0200
+X-ME-Helo: tomoyo.flets-east.jp
+X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
+X-ME-Date: Sat, 10 Oct 2020 10:13:00 +0200
+X-ME-IP: 153.230.197.127
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-can@vger.kernel.org
+Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Oliver Neukum <oneukum@suse.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 5/6] staging: qlge: clean up debugging code in the
- QL_ALL_DUMP ifdef land
-Message-ID: <20201010080126.GC14495@f3>
-References: <20201008115808.91850-1-coiby.xu@gmail.com>
- <20201008115808.91850-6-coiby.xu@gmail.com>
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "open list:USB ACM DRIVER" <linux-usb@vger.kernel.org>
+Subject: Re: [PATCH v3 6/7] can: usb: etas_es58X: add support for ETAS ES58X CAN USB interfaces
+Date:   Sat, 10 Oct 2020 17:12:11 +0900
+Message-Id: <20201010081211.392860-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <c501e9ea-5412-fa90-b403-d34ca4720c89@pengutronix.de>
+References: <20201002154219.4887-1-mailhol.vincent@wanadoo.fr> <20201002154219.4887-7-mailhol.vincent@wanadoo.fr> <c501e9ea-5412-fa90-b403-d34ca4720c89@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201008115808.91850-6-coiby.xu@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-10-08 19:58 +0800, Coiby Xu wrote:
-> The debugging code in the following ifdef land
->  - QL_ALL_DUMP
->  - QL_REG_DUMP
->  - QL_DEV_DUMP
->  - QL_CB_DUMP
->  - QL_IB_DUMP
->  - QL_OB_DUMP
-> 
-> becomes unnecessary because,
->  - Device status and general registers can be obtained by ethtool.
->  - Coredump can be done via devlink health reporter.
->  - Structure related to the hardware (struct ql_adapter) can be obtained
->    by crash or drgn.
-> 
-> Suggested-by: Benjamin Poirier <benjamin.poirier@gmail.com>
-> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
-> ---
->  drivers/staging/qlge/qlge.h         |  82 ----
->  drivers/staging/qlge/qlge_dbg.c     | 688 ----------------------------
->  drivers/staging/qlge/qlge_ethtool.c |   2 -
->  drivers/staging/qlge/qlge_main.c    |   7 +-
+> Just one header file for now :)
 
-Please also update drivers/staging/qlge/TODO accordingly. There is still
-a lot of debugging code IMO (the netif_printk statements - kernel
-tracing can be used instead of those) but this patch is a substantial
-improvement.
+Thanks for the review, very constructive comments :)
+
+I acknowledge all the trivial fixes (space, new line, // comments,
+naming...), those will be fixed in v4 (will also review other files
+for similar mistakes). In this reply, I will only focus on the points
+which need explanations.
+
+v4 will come a bit later.
+
+
+> > +/* Threshold on consecutive CAN_STATE_ERROR_PASSIVE. If we receive
+> > + * ES58X_CONSECUTIVE_ERR_PASSIVE_MAX times the event
+> > + * ES58X_ERR_CRTL_PASSIVE in a row without any successful Rx or Tx,
+> > + * we force the device to switch to CAN_STATE_BUS_OFF state.
+> > + */
+> > +#define ES58X_CONSECUTIVE_ERR_PASSIVE_MAX 254
+> 
+> Does the device recover from bus off automatically or why is this needed?
+> 
+
+Will be answered below together with your other question on
+@err_passive_before_rtx_success of struct es58x_priv.
+
+> > +
+> > +enum es58x_physical_media {
+> > +	ES58X_MEDIA_HIGH_SPEED = 1,
+> > +	ES58X_MEDIA_FAULT_TOLERANT = 2
+> 
+> You mean with FAULT_TOLERANT you mean ISO 11898-3? According to [1] they should
+> be named low speed.
+
+Two comments:
+ 1/ Yes, this is "low speed". I did not know about the ISO 11898-3,
+    thanks for the hint.
+ 2/ After double checking, this option is not supported by the devices
+    in scope of this driver (other devices of the ESxxx portfolio
+    might support it).
+This option will be removed in v4.
+
+> > +};
+> > +
+> > +enum es58x_samples_per_bit {
+> > +	ES58X_ONE_SAMPLE_PER_BIT = 1,
+> > +
+> > +	/* Some CAN controllers do not support three samples per
+> > +	 * bit. In this case the default value of one sample per bit
+> > +	 * is used, even if the configuration is set to
+> > +	 * ES58X_THREE_SAMPLES_PER_BIT.
+> > +	 */
+> 
+> Can you autodetect the controller and avoid announcing tripple sample mode to
+> the driver framework?
+
+Will be addressed in v4. Your remarks made me realized that some of
+the controller modes might not have been announced correctly. Will
+double check the other CAN_CTRLMODE_* as well.
+
+> > +	ES58X_THREE_SAMPLES_PER_BIT = 2
+> > +};
+> > +
+> > +enum es58x_sync_edge {
+> > +	/* ISO CAN specification defines the use of a single edge
+> > +	 * synchronization. The synchronization should be done on
+> > +	 * recessive to dominant level change.
+> > +	 */
+> > +	ES58X_SINGLE_SYNC_EDGE = 1,
+> > +
+> > +	/* In addition to the ISO CAN specification, a double
+> > +	 * synchronization is also supported: recessive to dominant
+> > +	 * level change and dominant to recessive level change.
+> > +	 */
+> > +	ES58X_DUAL_SYNC_EDGE = 2
+> 
+> >We don't have a setting in the CAN framework for this....
+
+The idea here was just to let know people that the option exists so
+that if someone needs the feature one day, he or she can hack the
+driver for his or her own use.
+
+Is it OK to keep it (maybe with a comment such as "not implemented in
+this driver") or should it be simply removed?
+
+There are other similar references in other files. Will change these
+accordingly to your answer on above question.
+
+> > +/**
+> > + * struct es58x_abstracted_can_frame - Common structure to hold can
+> > + *	frame information.
+> 
+> why do you have an itermediate can frame format? We have the struct can_frame
+> and the skb for this.
+
+The goal of this structure was to factorize code when calculating the
+CAN flags. I will try to rethink this part in v4.
+
+> > +union es58x_urb_cmd {
+> > +	u8 raw_cmd[0];
+> 
+> I have to polish my C, what's an empty array in the beginning of a struct?
+
+This is not a struct but a union (it would indeed make no sense at the
+beginning of a struct).
+
+Because it is in a union, the order of the fields does not make a
+difference (if you prefer this to be at the end, I can fix it).
+
+This field is used to cast the union to an u8 array. Because the
+length is unknown it is declared as empty.
+
+For reference, I could at least find a few other references of union
+starting with an empty array in the kernel. One example here:
+https://elixir.bootlin.com/linux/latest/source/include/linux/bpf.h#L821
+
+> 
+> > +/**
+> > + * struct es58x_priv - All information specific to a can channel.
+> > + * @can: struct can_priv must be the first member (Socket CAN relies
+> > + *	on the fact that function netdev_priv() returns a pointer to
+> > + *	a struct can_priv).
+> > + * @es58x_dev: pointer to the corresponding ES58X device.
+> > + * @echo_skb_spinlock: Spinlock to protect the access to the echo skb
+> > + *	FIFO.
+> > + * @current_packet_idx: Keeps track of the packet indexes.
+> > + * @echo_skb_tail_idx: beginning of the echo skb FIFO, i.e. index of
+> > + *	the first element.
+> > + * @echo_skb_head_idx: end of the echo skb FIFO plus one, i.e. first
+> > + *	free index.
+> > + * @num_echo_skb: actual number of elements in the FIFO. Thus, the end
+> > + *	of the FIFO is echo_skb_head = (echo_skb_tail_idx +
+> > + *	num_echo_skb) % can.echo_skb_max.
+> > + * @tx_urb: Used as a buffer to concatenate the TX messages and to do
+> > + *	a bulk send. Please refer to es58x_start_xmit() for more
+> > + *	details.
+> > + * @tx_can_msg_is_fd: false: all messages in @tx_urb are non-FD CAN,
+> > + *	true: all messages in @tx_urb are CAN-FD. Rationale: ES58X FD
+> > + *	devices do not allow to mix standard and FD CAN in one single
+> > + *	bulk transmission.
+> > + * @tx_can_msg_cnt: Number of messages in @tx_urb.
+> > + * @err_passive_before_rtx_success: The ES58X device might enter in a
+> > + *	state in which it keeps alternating between error passive
+> > + *	and active state. This counter keeps track of the number of
+> > + *	error passive and if it gets bigger than
+> > + *	ES58X_CONSECUTIVE_ERR_PASSIVE_MAX, es58x_rx_err_msg() will
+> > + *	force the status to bus-off.
+> 
+> Is this a bug or a feature?
+
+This is a bug of the device.
+
+Rationale: According to ISO 11898-1, paragraph 12.1.4.2 "Error
+counting", the two only possible scenarios to decrements the error
+counter are "After the successful transmission of a frame" (paragraph
+g) and "After the successful reception of a frame" (paragraph h).
+
+Here, the device switch from error passive state to error active state
+without any successful Tx or Rx of a frame. This means that the error
+counter does not behave as stipulated in the ISO.
+
+When the issue occurs, the only solution would be to set down the
+network. Forcing the bus off allows at least the user to recover (with
+restart or restart-ms).
+
+For information, this issue was only witnessed when the device is
+trying to send frames on a bus which is already at 100% load.
+
+Example to reproduce: have can0 and can1 on the same bus and do:
+cangen -g0 can0
+cangen -g0 can1
+
+Note: development team of the device's firmware was informed of this
+issue and will consider how to fix it.
+
+> > +#define ES58X_SIZEOF_ES58X_DEVICE(es58x_dev_param)			\
+> > +	(offsetof(struct es58x_device, rx_cmd_buf) +			\
+> > +		(es58x_dev_param)->rx_urb_cmd_max_len)
+> 
+> can this be made a static inline?
+
+Yes. Will be fixed in v4.
+
+> > + * Must be a macro in order to retrieve the actual size using
+> > + * sizeof(). Can be use with any of the messages which have a fixed
+> > + * length. Check for an exact match of the size.
+> 
+> You can provide an outer macro that does the sizeof() and then calls the a
+> normal (static inline) function to do the actual work. Applied to the next 3 macros.
+
+OK. Will be fixed in v4.
+
+> > +#define ES58X_SIZEOF_URB_CMD(es58x_urb_cmd_type, msg_field)		\
+> > +	(offsetof(es58x_urb_cmd_type, raw_msg)				\
+> > +		+ sizeof_field(es58x_urb_cmd_type, msg_field)		\
+> > +		+ sizeof_field(es58x_urb_cmd_type,			\
+> > +			reserved_for_crc16_do_not_use))
+> 
+> static inline?
+
+Sorry but this one can not be converted into a static inline: the
+first argument is a type (that will become the first argument of
+offsetof() and sizeof_field()).
+
+
+One more time, thank you for your time and your review!
+
+Yours sincerely,
+Vincent Mailhol
