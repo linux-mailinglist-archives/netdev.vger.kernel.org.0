@@ -2,112 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8B9328A201
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 00:53:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45FCB28A41F
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 01:13:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388167AbgJJWxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 18:53:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59748 "EHLO
+        id S2389145AbgJJWzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 18:55:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729470AbgJJSo1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 14:44:27 -0400
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72855C05BD39;
-        Sat, 10 Oct 2020 09:37:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=MW24HhFwFfGIeQJGLuezuzELB0g5N7HkPqr7uAX0N+s=; b=oScIWqUOiH3J9pqSo9SHSZaKgg
-        G9dV+RYanl2AxUqG2llr4HvArk+ueT9cGvrgm3Qkh1pbG+IkGDLOZQCggUtAarBWTjiPYDDi3cCgr
-        mPJs8/BlMEL1ucx0YiembjuXBi3e3ZHa4OKjNzTsc2k28FSD9USstIqnzNE+oE3FZbvKTMcAyAVN4
-        bSTZwsZ1o1i8ct8E6eujqe2U0GVTJewEeNhJK3TZDoTObSFTsSah9TUMKEPXLWq2xOQ3eyWYkpXJq
-        cFhjzoIoFWn+afqvTSG9cgPUg3q4nZ2r9FrZDQyE2T8sVEl/oUAqes3hG9Lb8NaqyG5zZ2ZX5KyJw
-        YPQtQWCQ==;
-Received: from [2601:1c0:6280:3f0::507c]
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kRHrD-00024R-2j; Sat, 10 Oct 2020 16:36:31 +0000
-Subject: Re: [PATCH] mm: proc: add Sock to /proc/meminfo
-To:     Muchun Song <songmuchun@bytedance.com>, gregkh@linuxfoundation.org,
-        rafael@kernel.org, mst@redhat.com, jasowang@redhat.com,
-        davem@davemloft.net, kuba@kernel.org, adobriyan@gmail.com,
-        akpm@linux-foundation.org, edumazet@google.com,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        shakeelb@google.com, will@kernel.org, mhocko@suse.com, guro@fb.com,
-        neilb@suse.de, rppt@kernel.org, samitolvanen@google.com,
-        kirill.shutemov@linux.intel.com, feng.tang@intel.com,
-        pabeni@redhat.com, willemb@google.com, fw@strlen.de,
-        gustavoars@kernel.org, pablo@netfilter.org, decui@microsoft.com,
-        jakub@cloudflare.com, peterz@infradead.org,
-        christian.brauner@ubuntu.com, ebiederm@xmission.com,
-        tglx@linutronix.de, dave@stgolabs.net, walken@google.com,
-        jannh@google.com, chenqiwu@xiaomi.com, christophe.leroy@c-s.fr,
-        minchan@kernel.org, kafai@fb.com, ast@kernel.org,
-        daniel@iogearbox.net, linmiaohe@huawei.com, keescook@chromium.org
-Cc:     linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org
-References: <20201010103854.66746-1-songmuchun@bytedance.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <f6dfa37f-5991-3e96-93b8-737f60128151@infradead.org>
-Date:   Sat, 10 Oct 2020 09:36:15 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S1731485AbgJJT33 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 15:29:29 -0400
+Received: from mail-vs1-xe43.google.com (mail-vs1-xe43.google.com [IPv6:2607:f8b0:4864:20::e43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDBCC05BD3C
+        for <netdev@vger.kernel.org>; Sat, 10 Oct 2020 09:40:53 -0700 (PDT)
+Received: by mail-vs1-xe43.google.com with SMTP id d19so2545591vso.10
+        for <netdev@vger.kernel.org>; Sat, 10 Oct 2020 09:40:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7jeb16lRM5LMeo1k5VR2Q1IFEg2gMmCB/ThZMz7WgeI=;
+        b=Wjq41WLHmyYE9lcbNu00wdLSv1ai35+oB1KtAB+D0Po5gV57Ay9diDEtHa99UXuqnf
+         LNrnKlPm3eNBr+qWhTU1k7kW9VuWdLEgAQnglDO2/zrPJQe+cdWPDDbnaeXoBXtN4gA5
+         1UuWo36cHMSAsCyLdOdRbMOGY3jxicoqgRQsNM5ZgPq8QIhDfQVDh5aRrl4Tk6PwfS/m
+         R+/BhXv38H/wdJNlQ+IOULr++uyhRf9XRFs6NKB9X/5M+cjLxGH7HfcuqjL2I5NvXjPN
+         oia6zDXQ8RmCkPP6F0aIk+7RU72Hy60XQi/1j7jlsW1eTVz7QU5795XqV1EIYBYP4zrp
+         BOSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7jeb16lRM5LMeo1k5VR2Q1IFEg2gMmCB/ThZMz7WgeI=;
+        b=ASDehXX9dc0RqT4PSb9yCENHa0+kMRncHXdpbQwACvqTBRYvFto2fYPqRg4oZFtpA7
+         CuIx5dCWlakJ3wWK9wqKhYYSek2PbbrV05wPNzvHNRSruGJhdKracEyovcppbxycgx2c
+         SQpK5h35SkJ5hYU4fZnCkwx+1z3PK6QLCnINwhfo2qf34BxZXIGXuAGYIDpqT/Om1xxp
+         k3KlZDTYv6D/rvahjfcMGe0oKdFkkX/PCFfLrLLgeIEtwytI3P/h85+jQhagz9DfD0sh
+         7fkStdC+JdXDT5boNQHNhW4nKRATif3MmWRxrEjBJOiQ6cSQxtd6dD9v2a3dSjoRULBt
+         K/Jg==
+X-Gm-Message-State: AOAM531h3pwf+8qxqjrVCZkf5s5ThtUKhc9EaBuVhA3bmYle90zwBaky
+        4ZqmP3fs5pTm/Za19MVNRk9NrY5pkUY=
+X-Google-Smtp-Source: ABdhPJyEi6h8cHu987lSNXZ5rHeQXUjwOLKpFaSTEChwAFhbSnF3woiX8nnVh68dgjHYQn2LjNN0Cw==
+X-Received: by 2002:a67:2bc5:: with SMTP id r188mr10616423vsr.16.1602348051184;
+        Sat, 10 Oct 2020 09:40:51 -0700 (PDT)
+Received: from mail-vk1-f176.google.com (mail-vk1-f176.google.com. [209.85.221.176])
+        by smtp.gmail.com with ESMTPSA id q23sm1692905vkq.18.2020.10.10.09.40.48
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 10 Oct 2020 09:40:49 -0700 (PDT)
+Received: by mail-vk1-f176.google.com with SMTP id p5so2204472vkm.4
+        for <netdev@vger.kernel.org>; Sat, 10 Oct 2020 09:40:48 -0700 (PDT)
+X-Received: by 2002:a1f:3f4d:: with SMTP id m74mr9927092vka.12.1602348048486;
+ Sat, 10 Oct 2020 09:40:48 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20201010103854.66746-1-songmuchun@bytedance.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20201008190538.6223-1-dwilder@us.ibm.com> <20201008190538.6223-3-dwilder@us.ibm.com>
+In-Reply-To: <20201008190538.6223-3-dwilder@us.ibm.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Sat, 10 Oct 2020 12:40:12 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSc8qw_U=nKR0tM06z99Es8JVKR0P6rQpR=Bkwj1eOtXCw@mail.gmail.com>
+Message-ID: <CA+FuTSc8qw_U=nKR0tM06z99Es8JVKR0P6rQpR=Bkwj1eOtXCw@mail.gmail.com>
+Subject: Re: [ PATCH v1 2/2] ibmveth: Identify ingress large send packets.
+To:     David Wilder <dwilder@us.ibm.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        tlfalcon@linux.ibm.com, cris.forno@ibm.com,
+        pradeeps@linux.vnet.ibm.com, wilder@us.ibm.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On 10/10/20 3:38 AM, Muchun Song wrote:
-> The amount of memory allocated to sockets buffer can become significant.
-> However, we do not display the amount of memory consumed by sockets
-> buffer. In this case, knowing where the memory is consumed by the kernel
-> is very difficult. On our server with 500GB RAM, sometimes we can see
-> 25GB disappear through /proc/meminfo. After our analysis, we found the
-> following memory allocation path which consumes the memory with page_owner
-> enabled.
-> 
->   849698 times:
->   Page allocated via order 3, mask 0x4052c0(GFP_NOWAIT|__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP)
->    __alloc_pages_nodemask+0x11d/0x290
->    skb_page_frag_refill+0x68/0xf0
->    sk_page_frag_refill+0x19/0x70
->    tcp_sendmsg_locked+0x2f4/0xd10
->    tcp_sendmsg+0x29/0xa0
->    sock_sendmsg+0x30/0x40
->    sock_write_iter+0x8f/0x100
->    __vfs_write+0x10b/0x190
->    vfs_write+0xb0/0x190
->    ksys_write+0x5a/0xd0
->    do_syscall_64+0x5d/0x110
->    entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+On Thu, Oct 8, 2020 at 3:06 PM David Wilder <dwilder@us.ibm.com> wrote:
+>
+> Ingress large send packets are identified by either:
+> The IBMVETH_RXQ_LRG_PKT flag in the receive buffer
+> or with a -1 placed in the ip header checksum.
+> The method used depends on firmware version.
+>
+> Signed-off-by: David Wilder <dwilder@us.ibm.com>
+> Reviewed-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+> Reviewed-by: Cristobal Forno <cris.forno@ibm.com>
+> Reviewed-by: Pradeep Satyanarayana <pradeeps@linux.vnet.ibm.com>
 > ---
->  drivers/base/node.c      |  2 ++
->  drivers/net/virtio_net.c |  3 +--
->  fs/proc/meminfo.c        |  1 +
->  include/linux/mmzone.h   |  1 +
->  include/linux/skbuff.h   | 43 ++++++++++++++++++++++++++++++++++++++--
->  kernel/exit.c            |  3 +--
->  mm/page_alloc.c          |  7 +++++--
->  mm/vmstat.c              |  1 +
->  net/core/sock.c          |  8 ++++----
->  net/ipv4/tcp.c           |  3 +--
->  net/xfrm/xfrm_state.c    |  3 +--
->  11 files changed, 59 insertions(+), 16 deletions(-)
+>  drivers/net/ethernet/ibm/ibmveth.c | 13 ++++++++++++-
+>  1 file changed, 12 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
+> index 3935a7e..e357cbe 100644
+> --- a/drivers/net/ethernet/ibm/ibmveth.c
+> +++ b/drivers/net/ethernet/ibm/ibmveth.c
+> @@ -1349,6 +1349,7 @@ static int ibmveth_poll(struct napi_struct *napi, int budget)
+>                         int offset = ibmveth_rxq_frame_offset(adapter);
+>                         int csum_good = ibmveth_rxq_csum_good(adapter);
+>                         int lrg_pkt = ibmveth_rxq_large_packet(adapter);
+> +                       __sum16 iph_check = 0;
+>
+>                         skb = ibmveth_rxq_get_buffer(adapter);
+>
+> @@ -1385,7 +1386,17 @@ static int ibmveth_poll(struct napi_struct *napi, int budget)
+>                         skb_put(skb, length);
+>                         skb->protocol = eth_type_trans(skb, netdev);
+>
+> -                       if (length > netdev->mtu + ETH_HLEN) {
+> +                       /* PHYP without PLSO support places a -1 in the ip
+> +                        * checksum for large send frames.
+> +                        */
+> +                       if (be16_to_cpu(skb->protocol) == ETH_P_IP) {
+> +                               struct iphdr *iph = (struct iphdr *)skb->data;
+> +
+> +                               iph_check = iph->check;
 
-Thanks for finding that.
-
-Please update Documentation/filesystems/proc.rst "meminfo" section also.
-
--- 
-~Randy
-
+Check against truncated/bad packets.
