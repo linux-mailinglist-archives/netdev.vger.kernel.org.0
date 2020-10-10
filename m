@@ -2,80 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 896BB289FA5
-	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 11:51:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23D57289FAE
+	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 11:59:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726541AbgJJJuJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 05:50:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58146 "EHLO mail.kernel.org"
+        id S1726543AbgJJJzC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 05:55:02 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58274 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726761AbgJJJtf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 10 Oct 2020 05:49:35 -0400
+        id S1726384AbgJJJuJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 10 Oct 2020 05:50:09 -0400
 Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8C811206D4;
-        Sat, 10 Oct 2020 09:37:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C05622184D;
+        Sat, 10 Oct 2020 09:50:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602322660;
-        bh=qEv/8rJuvBzSsznkGBS33zRs2V4OUf+87LXb5YdX2+I=;
+        s=default; t=1602323408;
+        bh=RXC5xfWPGap97Kf/8w9E8um1wI1s4p6TDrC8nncf/W8=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=dtZ9I9J0vKwRPkDwHW8WBmWGDTM10AY88wBp3bLQBuvUHQRud+qp5DiL/ceFF3ejE
-         3t7EPsC9kSZrsPO4mLwzAZTLmL8lRTvvvL3XCoWcyWWjN6hT3DuccOjsbqg7DAZPv0
-         DSvR4/Tzh8rM1ajkCHEPzQzfwI5evgrJY9vwENbU=
-Date:   Sat, 10 Oct 2020 11:38:24 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     linux-kernel@vger.kernel.org, nstange@suse.de, ap420073@gmail.com,
-        David.Laight@aculab.com, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, rafael@kernel.org
-Subject: Re: [CRAZY-RFF] debugfs: track open files and release on remove
-Message-ID: <20201010093824.GA986556@kroah.com>
-References: <87v9fkgf4i.fsf@suse.de>
- <20201009095306.0d87c3aa13db.Ib3a7019bff15bb6308f6d259473a1648312a4680@changeid>
- <20201009080355.GA398994@kroah.com>
- <be61c6a38d0f6ca1aa0bc3f0cb45bbb216a12982.camel@sipsolutions.net>
- <20201009081624.GA401030@kroah.com>
- <1ec056cf3ec0953d2d1abaa05e37e89b29c7cc63.camel@sipsolutions.net>
- <20201009084729.GA406522@kroah.com>
- <01fcaf4985f57d97ac03fc0b7deb2c225a2fbca1.camel@sipsolutions.net>
+        b=gE+R6o0WgK+hfLUR6OQqXr8LKb9PIamD5KL6oqMOvRkPZaNzPy8vGdhdPh6t/UhVi
+         h7bVtfOrwctRlEiv5bGHWvS8Qe702zkL3CrGxTrzmdIX3D6X4hILxg29c+qOo1F8wV
+         syyPaWy543VBm7D2tBfb4b0ba+xMexpCi+PCROFQ=
+Date:   Sat, 10 Oct 2020 11:50:52 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Chunfeng Yun <chunfeng.yun@mediatek.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH v2 4/4] dt-bindings: usb: use preferred license tag
+Message-ID: <20201010095052.GA989257@kroah.com>
+References: <3db52d534065dcf28e9a10b8129bea3eced0193e.1602318869.git.chunfeng.yun@mediatek.com>
+ <d76ca8b2d64c7c017e3ddaca8497eb38ee514204.1602318869.git.chunfeng.yun@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <01fcaf4985f57d97ac03fc0b7deb2c225a2fbca1.camel@sipsolutions.net>
+In-Reply-To: <d76ca8b2d64c7c017e3ddaca8497eb38ee514204.1602318869.git.chunfeng.yun@mediatek.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 09, 2020 at 10:48:09AM +0200, Johannes Berg wrote:
-> On Fri, 2020-10-09 at 10:47 +0200, Greg KH wrote:
+On Sat, Oct 10, 2020 at 04:43:14PM +0800, Chunfeng Yun wrote:
+> This is used to fix the checkpach.pl WARNING:SPDX_LICENSE_TAG
 > 
-> > > I think adding the .owner everywhere would be good, and perhaps we can
-> > > somehow put a check somewhere like
-> > > 
-> > > 	WARN_ON(is_module_address((unsigned long)fops) && !fops->owner);
-> > > 
-> > > to prevent the issue in the future?
-> > 
-> > That will fail for all of the debugfs_create_* operations, as there is
-> > only one set of file operations for all of the different files created
-> > with these calls.
+> See bindings/submitting-patches.rst:
+> "DT binding files should be dual licensed. The preferred license tag is
+>  (GPL-2.0-only OR BSD-2-Clause)."
 > 
-> Why would it fail? Those have their fops in the core debugfs code, which
-> might have a .owner assigned but is probably built-in anyway?
-
-Bad choice of terms, it would "fail" in that this type of check would
-never actually work because the debugfs code is built into the kernel,
-and there is no module owner for it.  But the value it is referencing is
-an address in a module.
-
-> > Which, now that I remember it, is why we went down the proxy "solution"
-> > in the first place :(
+> Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+> ---
+> v2: new patch
+> ---
+>  Documentation/devicetree/bindings/usb/usb-hcd.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Not sure I understand. That was related more to (arbitrary) files having
-> to be disappeared rather than anything else?
+> diff --git a/Documentation/devicetree/bindings/usb/usb-hcd.yaml b/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+> index 42b295afdf32..11b9b9ee2b54 100644
+> --- a/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+> +++ b/Documentation/devicetree/bindings/usb/usb-hcd.yaml
+> @@ -1,4 +1,4 @@
+> -# SPDX-License-Identifier: GPL-2.0
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 
-Isn't this the same issue?
+Are you sure you are allowed to change the license of this file?  Last I
+checked, you did not write this file, and so, you can't change the
+license of it.  You need to get the owners of the file to do so.
 
 thanks,
 
