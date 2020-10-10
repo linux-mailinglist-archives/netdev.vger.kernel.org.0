@@ -2,139 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E8EF28A40B
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 01:13:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E69C928A3D6
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 01:11:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389000AbgJJWzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 18:55:12 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53537 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731408AbgJJTTh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 15:19:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1602357571;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=I7EtWAFY7JZkjFe439jiLJXYfP9d4SSV/XXrbixkMTA=;
-        b=TkReu7e5b/qol+4FSg3hsRBuCGy6gAMGfclPL3b2LnVDLdldVgFPQUFMjiPWoQo5MEZqOR
-        xWMFjHUHeVEF665n9Rj/vOLBXXKTubM7s2lprd4mIvow6tyd7spwQR2c36qesSuNzUFM7/
-        YXtDlVUkX73X/Rzd5dND29AsMY9CdwI=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-494-tzf51R3nO9WOhGnYi0Ef6A-1; Sat, 10 Oct 2020 09:42:29 -0400
-X-MC-Unique: tzf51R3nO9WOhGnYi0Ef6A-1
-Received: by mail-ed1-f70.google.com with SMTP id be19so4592660edb.22
-        for <netdev@vger.kernel.org>; Sat, 10 Oct 2020 06:42:29 -0700 (PDT)
+        id S2389759AbgJJWzw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 18:55:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41856 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730932AbgJJTwD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 15:52:03 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA0F9C05BD14;
+        Sat, 10 Oct 2020 06:49:01 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id e10so9392811pfj.1;
+        Sat, 10 Oct 2020 06:49:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kC9TWaG7yp5ewJLHtI5Tz3MDkqf7FFIgPPjwgWQ0j4I=;
+        b=V5dlcnRgTj5UdC+szz9bftOxKaNSU7wBlGhTMz6V2WvyjNqR/IdptvTMgaAi08ICdz
+         WsxnQQoK8yMMJNTpT8nBHcI0SRPEuAViyK0DU80Syo+U0pKWcTDuMTKv7x7h6RkyCpMA
+         /qOCSn0lE8JFcIPr8J3MsxPoB3eBvWSLSdiIxA7gRvQ9sqFOXjwbYJq3OSnhaxJ9eROX
+         8zffhikWDK/hY0e/LWGUzLb9cWx8/XDVaXMV7fcOyzOYX7Ssv3llOTknlvGCS9N2N1wp
+         LysOcPy3yMhgEkF22ssRV5wfVxR8Gx6qZki4m69us9f0XynPSW3tyJhvGKCQOogpijGi
+         Aurg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=I7EtWAFY7JZkjFe439jiLJXYfP9d4SSV/XXrbixkMTA=;
-        b=bCUdlql4cQWBIlHZjAdAqs5xMeA1gx2K77I6u5ukVYzhkkxErujvDZUJaZ9CIGLATt
-         m5WESNENSAi4fW/AsELsp97GxIbnqw9wSaWYWhf71ivh6r3BdKnqA6DIfiPKD8wQwQTq
-         5nzpych5YrJUgu/oJzD28qcs9DO7IiiKqzTiBmSYh6XkIKL5KAMt5l7plHW51EYzg4Ga
-         XAL84geMRMNkEwmVaBFrJyvHqKzq5zVwbsoHXNVbBHQ/lj8tMJXAMyJ12rSwrwHdS5w4
-         KcK+xph55ShA+vWuY/t8Dp72gDZEjZWMtQAmcUh9tULuUHqQJ7LCTLRLK7NeljlhGni1
-         Xwqw==
-X-Gm-Message-State: AOAM533jQI0yZzhuNtxEJxW6Rrwb3fnG+tPJv3jZpZMmK8kjNmZQ8ipf
-        RLuQZsR3SxMh/p6OJ4ieSXcUl8xO3PIBR/ielesl0ISStWEKbI4Wdz2ZTELS4Dl6HWFR2S2Cdq+
-        oLVa49UvEsa1PJvEg
-X-Received: by 2002:a50:9e82:: with SMTP id a2mr4434356edf.117.1602337348418;
-        Sat, 10 Oct 2020 06:42:28 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwRFYyKJ+aPffjXFZCfi9lvWRyUVm5adDV3YDqMCJh+hWfnSgr49bo7ImHn8OwBSsA1PPA7+A==
-X-Received: by 2002:a50:9e82:: with SMTP id a2mr4434330edf.117.1602337348029;
-        Sat, 10 Oct 2020 06:42:28 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id me12sm7940575ejb.108.2020.10.10.06.42.27
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kC9TWaG7yp5ewJLHtI5Tz3MDkqf7FFIgPPjwgWQ0j4I=;
+        b=FDduFAD+FdIiMzM3krOaR7Nvbz3rhHc5BL3+Rj7gAuwUL/oW2mCdN1z4QMIF31hBRy
+         pvBa624WMOFCZIpyli4gC5mI++IGjrsAhPbEI1m0kuO3JB81glcvGSKLToAporTrUzJB
+         G4bqLP5Zksry81pNPyLCFufi2kQClQAzX3JiTR3R8+tysO6SfLqMpRMsqXBeiHthim1u
+         4ekh+ylk80aIuC0wnWtpu+W8UmA8Vhp+5u5pv8wdzw4HKOnruzbU7oL849aOqkevUNtN
+         SB2WLQ2YWXsR6CaUrvTRDT2mBt0nDKG79/wWQQeZ29dVl0qHfoTB3Ua2qzYHZdI15nRE
+         4GDA==
+X-Gm-Message-State: AOAM530ti/vpLf8/zH7cq+BY2TGjBq0pK1R4MQAAND08L1IcT7kxpOmM
+        q9gS8O6CoWITcb4bolzShmg=
+X-Google-Smtp-Source: ABdhPJwQBpFJ3ZD+MYSjv81yJ9YaF1Uz9iMqM4xk8zmnBMZtggfc6h8sY59CITsoLlxlamjwS1v8tg==
+X-Received: by 2002:a17:90a:8007:: with SMTP id b7mr10168719pjn.84.1602337741209;
+        Sat, 10 Oct 2020 06:49:01 -0700 (PDT)
+Received: from f3 (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
+        by smtp.gmail.com with ESMTPSA id gl24sm7323884pjb.50.2020.10.10.06.48.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 10 Oct 2020 06:42:27 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 65D3B1837E5; Sat, 10 Oct 2020 15:42:26 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        David Ahern <dsahern@gmail.com>, ast@fb.com
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2] bpf_fib_lookup: optionally skip neighbour
- lookup
-In-Reply-To: <50fc3fee-13b2-11d1-f5b1-e0d8669cd655@iogearbox.net>
-References: <20201009101356.129228-1-toke@redhat.com>
- <0a463800-a663-3fd3-2e1a-eac5526ed691@gmail.com> <87v9fjckcd.fsf@toke.dk>
- <4972626e-c86d-8715-0565-20bed680227c@gmail.com>
- <50fc3fee-13b2-11d1-f5b1-e0d8669cd655@iogearbox.net>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Sat, 10 Oct 2020 15:42:26 +0200
-Message-ID: <87v9fitcxp.fsf@toke.dk>
+        Sat, 10 Oct 2020 06:49:00 -0700 (PDT)
+Date:   Sat, 10 Oct 2020 22:48:55 +0900
+From:   Benjamin Poirier <benjamin.poirier@gmail.com>
+To:     Coiby Xu <coiby.xu@gmail.com>
+Cc:     devel@driverdev.osuosl.org, Shung-Hsi Yu <shung-hsi.yu@suse.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
+        <GR-Linux-NIC-Dev@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v1 1/6] staging: qlge: Initialize devlink health dump
+ framework for the dlge driver
+Message-ID: <20201010134855.GB17351@f3>
+References: <20201008115808.91850-1-coiby.xu@gmail.com>
+ <20201008115808.91850-2-coiby.xu@gmail.com>
+ <20201010073514.GA14495@f3>
+ <20201010102416.hvbgx3mgyadmu6ui@Rk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201010102416.hvbgx3mgyadmu6ui@Rk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann <daniel@iogearbox.net> writes:
+On 2020-10-10 18:24 +0800, Coiby Xu wrote:
+> On Sat, Oct 10, 2020 at 04:35:14PM +0900, Benjamin Poirier wrote:
+> > On 2020-10-08 19:58 +0800, Coiby Xu wrote:
+> > > Initialize devlink health dump framework for the dlge driver so the
+> > > coredump could be done via devlink.
+> > > 
+> > > Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
+> > > ---
+> > >  drivers/staging/qlge/Kconfig        |  1 +
+> > >  drivers/staging/qlge/Makefile       |  2 +-
+> > >  drivers/staging/qlge/qlge.h         |  9 +++++++
+> > >  drivers/staging/qlge/qlge_devlink.c | 38 +++++++++++++++++++++++++++++
+> > >  drivers/staging/qlge/qlge_devlink.h |  8 ++++++
+> > >  drivers/staging/qlge/qlge_main.c    | 28 +++++++++++++++++++++
+> > >  6 files changed, 85 insertions(+), 1 deletion(-)
+> > >  create mode 100644 drivers/staging/qlge/qlge_devlink.c
+> > >  create mode 100644 drivers/staging/qlge/qlge_devlink.h
+> > > 
+> > > diff --git a/drivers/staging/qlge/Kconfig b/drivers/staging/qlge/Kconfig
+> > > index a3cb25a3ab80..6d831ed67965 100644
+> > > --- a/drivers/staging/qlge/Kconfig
+> > > +++ b/drivers/staging/qlge/Kconfig
+> > > @@ -3,6 +3,7 @@
+> > >  config QLGE
+> > >  	tristate "QLogic QLGE 10Gb Ethernet Driver Support"
+> > >  	depends on ETHERNET && PCI
+> > > +	select NET_DEVLINK
+> > >  	help
+> > >  	This driver supports QLogic ISP8XXX 10Gb Ethernet cards.
+> > > 
+> > > diff --git a/drivers/staging/qlge/Makefile b/drivers/staging/qlge/Makefile
+> > > index 1dc2568e820c..07c1898a512e 100644
+> > > --- a/drivers/staging/qlge/Makefile
+> > > +++ b/drivers/staging/qlge/Makefile
+> > > @@ -5,4 +5,4 @@
+> > > 
+> > >  obj-$(CONFIG_QLGE) += qlge.o
+> > > 
+> > > -qlge-objs := qlge_main.o qlge_dbg.o qlge_mpi.o qlge_ethtool.o
+> > > +qlge-objs := qlge_main.o qlge_dbg.o qlge_mpi.o qlge_ethtool.o qlge_devlink.o
+> > > diff --git a/drivers/staging/qlge/qlge.h b/drivers/staging/qlge/qlge.h
+> > > index b295990e361b..290e754450c5 100644
+> > > --- a/drivers/staging/qlge/qlge.h
+> > > +++ b/drivers/staging/qlge/qlge.h
+> > > @@ -2060,6 +2060,14 @@ struct nic_operations {
+> > >  	int (*port_initialize)(struct ql_adapter *qdev);
+> > >  };
+> > > 
+> > > +
+> > > +
+> > > +struct qlge_devlink {
+> > > +        struct ql_adapter *qdev;
+> > > +        struct net_device *ndev;
+> > 
+> > This member should be removed, it is unused throughout the rest of the
+> > series. Indeed, it's simple to use qdev->ndev and that's what
+> > qlge_reporter_coredump() does.
+> 
+> It reminds me that I forgot to reply to one of your comments in RFC and
+> sorry for that,
+> > > +
+> > > +
+> > > +struct qlge_devlink {
+> > > +        struct ql_adapter *qdev;
+> > > +        struct net_device *ndev;
+> > 
+> > I don't have experience implementing devlink callbacks but looking at
+> > some other devlink users (mlx4, ionic, ice), all of them use devlink
+> > priv space for their main private structure. That would be struct
+> > ql_adapter in this case. Is there a good reason to stray from that
+> > pattern?
 
-> On 10/9/20 11:28 PM, David Ahern wrote:
->> On 10/9/20 11:42 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->>> David Ahern <dsahern@gmail.com> writes:
->>>> On 10/9/20 3:13 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->>>>> The bpf_fib_lookup() helper performs a neighbour lookup for the desti=
-nation
->>>>> IP and returns BPF_FIB_LKUP_NO_NEIGH if this fails, with the expectat=
-ion
->>>>> that the BPF program will pass the packet up the stack in this case.
->>>>> However, with the addition of bpf_redirect_neigh() that can be used i=
-nstead
->>>>> to perform the neighbour lookup, at the cost of a bit of duplicated w=
-ork.
->>>>>
->>>>> For that we still need the target ifindex, and since bpf_fib_lookup()
->>>>> already has that at the time it performs the neighbour lookup, there =
-is
->>>>> really no reason why it can't just return it in any case. So let's ju=
-st
->>>>> always return the ifindex, and also add a flag that lets the caller t=
-urn
->>>>> off the neighbour lookup entirely in bpf_fib_lookup().
->>>>
->>>> seems really odd to do the fib lookup only to skip the neighbor lookup
->>>> and defer to a second helper to do a second fib lookup and send out.
->>>>
->>>> The better back-to-back calls is to return the ifindex and gateway on
->>>> successful fib lookup regardless of valid neighbor. If the call to
->>>> bpf_redirect_neigh is needed, it can have a flag to skip the fib lookup
->>>> and just redirect to the given nexthop address + ifindex. ie.,
->>>> bpf_redirect_neigh only does neighbor handling in this case.
->>>
->>> Hmm, yeah, I guess it would make sense to cache and reuse the lookup -
->>> maybe stick it in bpf_redirect_info()? However, given the imminent
->>=20
->> That is not needed.
->>=20
->>> opening of the merge window, I don't see this landing before then. So
->>> I'm going to respin this patch with just the original change to always
->>> return the ifindex, then we can revisit the flags/reuse of the fib
->>> lookup later.
->>=20
->> What I am suggesting is a change in API to bpf_redirect_neigh which
->> should be done now, before the merge window, before it comes a locked
->> API. Right now, bpf_redirect_neigh does a lookup to get the nexthop. It
->> should take the gateway as an input argument. If set, then the lookup is
->> not done - only the neighbor redirect.
->
-> Sounds like a reasonable extension, agree. API freeze is not merge win, b=
-ut
-> final v5.10 tag in this case as it always has been. In case it's not in t=
-ime,
-> we can simply just move flags to arg3 and add a reserved param as arg2 wh=
-ich
-> must be zero (and thus indicate to perform the lookup as-is). Later we co=
-uld
-> extend to pass params similar as in fib_lookup helper for the gw.
+Thanks for getting back to that comment.
 
-Right, I can take a look at this next week. Feel free to merge (v3 of)
-this patch now, that change will be needed in any case I think...
+> 
+> struct ql_adapter which is created via alloc_etherdev_mq is the
+> private space of struct net_device so we can't use ql_adapter as the
+> the devlink private space simultaneously. Thus struct qlge_devlink is
+> required.
 
--Toke
+Looking at those drivers (mlx4, ionic, ice), the usage of
+alloc_etherdev_mq() is not really an obstacle. Definitely, some members
+would need to be moved from ql_adapter to qlge_devlink to use that
+pattern.
 
+I think, but didn't check in depth, that in those drivers, the devlink
+device is tied to the pci device and can exist independently of the
+netdev, at least in principle.
+
+In any case, I see now that some other drivers (bnxt, liquidio) have a
+pattern similar to what you use so I guess that's acceptable too.
