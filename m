@@ -2,243 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3D6528A248
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 00:56:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D970928A3B3
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 01:10:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390189AbgJJW4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 18:56:47 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.164]:22993 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388235AbgJJUzv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 16:55:51 -0400
-X-Greylist: delayed 352 seconds by postgrey-1.27 at vger.kernel.org; Sat, 10 Oct 2020 16:55:48 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1602363340;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=HnFFJSfWt+x5iyzDrAWWJ7dBQ05FqJKWxjqrCQ02A7k=;
-        b=IzPYa/VRfKrn2ZQhn7z/O6q/CRAZ93I9H6GjTqJBfwWoBTwr6IeayyEXpL4u2CQV5M
-        pCmYqrtN/91EjGb53T4HtSYn7OqCrBcOi4Jp2LF3cDJAZJdUNV8yL23mscBkzISpPa9g
-        qWM1fHZaFY4Dm3Ef0y3y9wNsETmanzAGsTTczIRs1aYjQOMGO8xU0MEJIZ4V38Aa1YEM
-        Q3D/XLzhLHK4qgJAGTti3kGvLcb+mRY9c9wF1KOk/77SUfJeW+KMAr0R9BrfAVcKVXzy
-        DmkADJKDfLfjR+LQco1x4gADnyPsGExgs6JDYdMgKmt5JW3ELVfuJwVu9T4mDiG88/TO
-        AIyw==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjGrp7owjzFK3JbFk1mS0lu8GW2/7Zq6MBXY="
-X-RZG-CLASS-ID: mo00
-Received: from silver.lan
-        by smtp.strato.de (RZmta 47.2.1 DYNA|AUTH)
-        with ESMTPSA id D0b41cw9AKoBMGa
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Sat, 10 Oct 2020 22:50:11 +0200 (CEST)
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-To:     kuba@kernel.org, netdev@vger.kernel.org
-Cc:     mkl@pengutronix.de, davem@davemloft.net, linux-can@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>
-Subject: [PATCH net-next 2/2] can: remove obsolete version strings
-Date:   Sat, 10 Oct 2020 22:49:09 +0200
-Message-Id: <20201010204909.2059-2-socketcan@hartkopp.net>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20201010204909.2059-1-socketcan@hartkopp.net>
-References: <20201010204909.2059-1-socketcan@hartkopp.net>
+        id S1730920AbgJJW4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 18:56:39 -0400
+Received: from www62.your-server.de ([213.133.104.62]:58586 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388219AbgJJUy5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 16:54:57 -0400
+Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kRLtD-0003Ql-QK; Sat, 10 Oct 2020 22:54:51 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     ast@kernel.org
+Cc:     daniel@iogearbox.net, john.fastabend@gmail.com, yhs@fb.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH bpf-next v5 0/6] Follow-up BPF helper improvements
+Date:   Sat, 10 Oct 2020 22:54:41 +0200
+Message-Id: <20201010205447.5610-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25953/Sat Oct 10 15:55:36 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As pointed out by Jakub Kicinski here:
-https://marc.info/?l=linux-can&m=160229286216008
-this patch removes the obsolete version information of the different
-CAN protocols and the AF_CAN core module.
+This series addresses most of the feedback [0] that was to be followed
+up from the last series, that is, UAPI helper comment improvements and
+getting rid of the ifindex obj file hacks in the selftest by using a
+BPF map instead. The __sk_buff data/data_end pointer work, I'm planning
+to do in a later round as well as the mem*() BPF improvements we have
+in Cilium for libbpf. Next, the series adds two features, i) a helper
+called redirect_peer() to improve latency on netns switch, and ii) to
+allow map in map with dynamic inner array map sizes. Selftests for each
+are added as well. For details, please check individual patches, thanks!
 
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
----
- include/linux/can/core.h |  7 -------
- include/net/netns/can.h  |  1 -
- net/can/af_can.c         |  2 +-
- net/can/bcm.c            |  4 +---
- net/can/gw.c             |  4 +---
- net/can/isotp.c          |  4 +---
- net/can/proc.c           | 12 ------------
- net/can/raw.c            |  4 +---
- 8 files changed, 5 insertions(+), 33 deletions(-)
+  [0] https://lore.kernel.org/bpf/cover.1601477936.git.daniel@iogearbox.net/
 
-diff --git a/include/linux/can/core.h b/include/linux/can/core.h
-index 7da9f1f82e8e..5fb8d0e3f9c1 100644
---- a/include/linux/can/core.h
-+++ b/include/linux/can/core.h
-@@ -18,13 +18,6 @@
- #include <linux/skbuff.h>
- #include <linux/netdevice.h>
- 
--#define CAN_VERSION "20170425"
--
--/* increment this number each time you change some user-space interface */
--#define CAN_ABI_VERSION "9"
--
--#define CAN_VERSION_STRING "rev " CAN_VERSION " abi " CAN_ABI_VERSION
--
- #define DNAME(dev) ((dev) ? (dev)->name : "any")
- 
- /**
-diff --git a/include/net/netns/can.h b/include/net/netns/can.h
-index b6ab7d1530d7..52fbd8291a96 100644
---- a/include/net/netns/can.h
-+++ b/include/net/netns/can.h
-@@ -15,7 +15,6 @@ struct can_rcv_lists_stats;
- struct netns_can {
- #if IS_ENABLED(CONFIG_PROC_FS)
- 	struct proc_dir_entry *proc_dir;
--	struct proc_dir_entry *pde_version;
- 	struct proc_dir_entry *pde_stats;
- 	struct proc_dir_entry *pde_reset_stats;
- 	struct proc_dir_entry *pde_rcvlist_all;
-diff --git a/net/can/af_can.c b/net/can/af_can.c
-index b7d0f6500893..6373ab9c5507 100644
---- a/net/can/af_can.c
-+++ b/net/can/af_can.c
-@@ -875,7 +875,7 @@ static __init int can_init(void)
- 		     offsetof(struct can_frame, data) !=
- 		     offsetof(struct canfd_frame, data));
- 
--	pr_info("can: controller area network core (" CAN_VERSION_STRING ")\n");
-+	pr_info("can: controller area network core\n");
- 
- 	rcv_cache = kmem_cache_create("can_receiver", sizeof(struct receiver),
- 				      0, 0, NULL);
-diff --git a/net/can/bcm.c b/net/can/bcm.c
-index 4253915800e6..0e5c37be4a2b 100644
---- a/net/can/bcm.c
-+++ b/net/can/bcm.c
-@@ -81,8 +81,6 @@
- 		     (CAN_EFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG) : \
- 		     (CAN_SFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG))
- 
--#define CAN_BCM_VERSION "20170425"
--
- MODULE_DESCRIPTION("PF_CAN broadcast manager protocol");
- MODULE_LICENSE("Dual BSD/GPL");
- MODULE_AUTHOR("Oliver Hartkopp <oliver.hartkopp@volkswagen.de>");
-@@ -1696,7 +1694,7 @@ static int __init bcm_module_init(void)
- {
- 	int err;
- 
--	pr_info("can: broadcast manager protocol (rev " CAN_BCM_VERSION " t)\n");
-+	pr_info("can: broadcast manager protocol\n");
- 
- 	err = can_proto_register(&bcm_can_proto);
- 	if (err < 0) {
-diff --git a/net/can/gw.c b/net/can/gw.c
-index 49b4e3d91ad6..6b790b6ff8d2 100644
---- a/net/can/gw.c
-+++ b/net/can/gw.c
-@@ -59,7 +59,6 @@
- #include <net/net_namespace.h>
- #include <net/sock.h>
- 
--#define CAN_GW_VERSION "20190810"
- #define CAN_GW_NAME "can-gw"
- 
- MODULE_DESCRIPTION("PF_CAN netlink gateway");
-@@ -1194,8 +1193,7 @@ static __init int cgw_module_init(void)
- 	/* sanitize given module parameter */
- 	max_hops = clamp_t(unsigned int, max_hops, CGW_MIN_HOPS, CGW_MAX_HOPS);
- 
--	pr_info("can: netlink gateway (rev " CAN_GW_VERSION ") max_hops=%d\n",
--		max_hops);
-+	pr_info("can: netlink gateway - max_hops=%d\n",	max_hops);
- 
- 	ret = register_pernet_subsys(&cangw_pernet_ops);
- 	if (ret)
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index bc3a722c200b..5338e990bde1 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -72,8 +72,6 @@
- #include <net/sock.h>
- #include <net/net_namespace.h>
- 
--#define CAN_ISOTP_VERSION "20200928"
--
- MODULE_DESCRIPTION("PF_CAN isotp 15765-2:2016 protocol");
- MODULE_LICENSE("Dual BSD/GPL");
- MODULE_AUTHOR("Oliver Hartkopp <socketcan@hartkopp.net>");
-@@ -1408,7 +1406,7 @@ static __init int isotp_module_init(void)
- {
- 	int err;
- 
--	pr_info("can: isotp protocol (rev " CAN_ISOTP_VERSION ")\n");
-+	pr_info("can: isotp protocol\n");
- 
- 	err = can_proto_register(&isotp_can_proto);
- 	if (err < 0)
-diff --git a/net/can/proc.c b/net/can/proc.c
-index a4eb06c9eb70..550928b8b8a2 100644
---- a/net/can/proc.c
-+++ b/net/can/proc.c
-@@ -54,7 +54,6 @@
-  * proc filenames for the PF_CAN core
-  */
- 
--#define CAN_PROC_VERSION     "version"
- #define CAN_PROC_STATS       "stats"
- #define CAN_PROC_RESET_STATS "reset_stats"
- #define CAN_PROC_RCVLIST_ALL "rcvlist_all"
-@@ -293,12 +292,6 @@ static int can_reset_stats_proc_show(struct seq_file *m, void *v)
- 	return 0;
- }
- 
--static int can_version_proc_show(struct seq_file *m, void *v)
--{
--	seq_printf(m, "%s\n", CAN_VERSION_STRING);
--	return 0;
--}
--
- static inline void can_rcvlist_proc_show_one(struct seq_file *m, int idx,
- 					     struct net_device *dev,
- 					     struct can_dev_rcv_lists *dev_rcv_lists)
-@@ -441,8 +434,6 @@ void can_init_proc(struct net *net)
- 	}
- 
- 	/* own procfs entries from the AF_CAN core */
--	net->can.pde_version = proc_create_net_single(CAN_PROC_VERSION, 0644,
--			net->can.proc_dir, can_version_proc_show, NULL);
- 	net->can.pde_stats = proc_create_net_single(CAN_PROC_STATS, 0644,
- 			net->can.proc_dir, can_stats_proc_show, NULL);
- 	net->can.pde_reset_stats = proc_create_net_single(CAN_PROC_RESET_STATS,
-@@ -471,9 +462,6 @@ void can_init_proc(struct net *net)
-  */
- void can_remove_proc(struct net *net)
- {
--	if (net->can.pde_version)
--		remove_proc_entry(CAN_PROC_VERSION, net->can.proc_dir);
--
- 	if (net->can.pde_stats)
- 		remove_proc_entry(CAN_PROC_STATS, net->can.proc_dir);
- 
-diff --git a/net/can/raw.c b/net/can/raw.c
-index ea70850f9152..6ec8aa1d0da4 100644
---- a/net/can/raw.c
-+++ b/net/can/raw.c
-@@ -55,8 +55,6 @@
- #include <net/sock.h>
- #include <net/net_namespace.h>
- 
--#define CAN_RAW_VERSION CAN_VERSION
--
- MODULE_DESCRIPTION("PF_CAN raw protocol");
- MODULE_LICENSE("Dual BSD/GPL");
- MODULE_AUTHOR("Urs Thuermann <urs.thuermann@volkswagen.de>");
-@@ -885,7 +883,7 @@ static __init int raw_module_init(void)
- {
- 	int err;
- 
--	pr_info("can: raw protocol (rev " CAN_RAW_VERSION ")\n");
-+	pr_info("can: raw protocol\n");
- 
- 	err = can_proto_register(&raw_can_proto);
- 	if (err < 0)
+v4 -> v5:
+  - Replace cnt == -EOPNOTSUPP check with cnt < 0; I've used < 0
+    here as I think it's useful to keep the existing cnt == 0 ||
+    cnt >= ARRAY_SIZE(insn_buf) for error detection (Andrii)
+v3 -> v4:
+  - Rename new array map flag to BPF_F_INNER_MAP (Alexei)
+v2 -> v3:
+  - Remove tab that slipped into uapi helper desc (Jakub)
+  - Rework map in map for array to error from map_gen_lookup (Andrii)
+v1 -> v2:
+  - Fixed selftest comment wrt inner1/inner2 value (Yonghong)
+
+Daniel Borkmann (6):
+  bpf: improve bpf_redirect_neigh helper description
+  bpf: add redirect_peer helper
+  bpf: allow for map-in-map with dynamic inner array map entries
+  bpf, selftests: add test for different array inner map size
+  bpf, selftests: make redirect_neigh test more extensible
+  bpf, selftests: add redirect_peer selftest
+
+ drivers/net/veth.c                            |   9 +
+ include/linux/bpf.h                           |   2 +-
+ include/linux/netdevice.h                     |   4 +
+ include/uapi/linux/bpf.h                      |  30 ++-
+ kernel/bpf/arraymap.c                         |  17 +-
+ kernel/bpf/hashtab.c                          |   6 +-
+ kernel/bpf/verifier.c                         |   4 +-
+ net/core/dev.c                                |  15 +-
+ net/core/filter.c                             |  54 ++++-
+ net/xdp/xskmap.c                              |   2 +-
+ tools/include/uapi/linux/bpf.h                |  30 ++-
+ .../selftests/bpf/prog_tests/btf_map_in_map.c |  39 +++-
+ .../selftests/bpf/progs/test_btf_map_in_map.c |  43 ++++
+ .../selftests/bpf/progs/test_tc_neigh.c       |  40 ++--
+ .../selftests/bpf/progs/test_tc_peer.c        |  45 ++++
+ tools/testing/selftests/bpf/test_tc_neigh.sh  | 168 ---------------
+ .../testing/selftests/bpf/test_tc_redirect.sh | 204 ++++++++++++++++++
+ 17 files changed, 488 insertions(+), 224 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/test_tc_peer.c
+ delete mode 100755 tools/testing/selftests/bpf/test_tc_neigh.sh
+ create mode 100755 tools/testing/selftests/bpf/test_tc_redirect.sh
+
 -- 
-2.28.0
+2.17.1
 
