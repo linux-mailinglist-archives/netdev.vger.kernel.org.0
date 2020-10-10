@@ -2,237 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53B4028A03E
-	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 13:44:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 160CE28A025
+	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 13:14:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729941AbgJJLkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 07:40:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38920 "EHLO
+        id S1729222AbgJJLMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 07:12:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728942AbgJJKUC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 06:20:02 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06461C0613E7;
-        Sat, 10 Oct 2020 03:09:01 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id p13so11961871edi.7;
-        Sat, 10 Oct 2020 03:09:00 -0700 (PDT)
+        with ESMTP id S1729326AbgJJKZ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 06:25:58 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C277DC0613CF;
+        Sat, 10 Oct 2020 03:24:24 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id b26so9103542pff.3;
+        Sat, 10 Oct 2020 03:24:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2u/FYiRZYg0jlbMYQJDVSfy4QaCXsq7tXWs5W7D5VoA=;
-        b=M3Eumw0msG+svHWDgfMyn8t0lD/I/Ri7vS5SQmEPCz5fxCv2x1cHbxGWAc9APCShVr
-         JyEN8UQu+DNlcMMaod7sN/1EIcWopAGAcixecB+9MVohiuBfN0qRvh7ywQ8TJcPwaZzs
-         YGFtiR20V4L458PCs3BqVh0Zo5XXkZ8Q9J4pTSjxUZJTQQ9BMTRKHuDPsRrom5NwrwxX
-         4ozR8TT4A8rcrGRioP+N7rchFL8txMPqP6idg9xAZbm+EUe04ItfXtXnf4IPYdMsaXru
-         sSQRel37IqBfkJZJXjos6LZ9w222/F7KIcgJU8M7BvaM9mu8L4088Z5FRf41z3zIJEUF
-         tOqw==
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kAgtV/zlQ7qrkVa4Spm7AsOCtZ54oLdUWPo/1FrLzu0=;
+        b=Fd/AOEa+CbBqIC2iF30QdGq2192retCk+TPZgJaHBT+CQ9SHE2CaD6qffOm4of7NXa
+         Jn6gkZ9sbB3uIwq+HN1lSc/FAvfLOzyueqUZHqH1W1dxUaWOgvrQhlJYpR9asIc8xNEs
+         NNJlhWJFXdyOwWP3U/1znuX833V8Id7ks0VQFHOUhn71OesHFOZMN8xScQpbf4Q232cL
+         0IbU4m/k9zxnCEUXgthG2NtIuXGpbxmfgn8MdhvKlg1alnAfSaNULkiW3Lzuq9pl05LP
+         +Vt4rd3xTqbW6Ht5w2s8Cx3beWjvs0BjgyYg7p0OuNNgv+5/pzFDGzZF17GmvqDjkmbx
+         JhQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2u/FYiRZYg0jlbMYQJDVSfy4QaCXsq7tXWs5W7D5VoA=;
-        b=qjyEjiC2wbBDky7eH6HPH0Vp5pO3nCiXivnzUmDOHvM+YTFlm+n2obZrJ5yNCc2upu
-         rAfUYam8/WlNe2DJc26uukTtIpjvpHmfU1ZTa3ScQzhmb8ia3X9Ow2DYG7jECCumLEVH
-         rmhQqbKEU+hKor+/o59x1l7o827gOboc2EqcMBNcd5aJG7Sr13o9YZgSN70rp+So0g3c
-         f+a8LsfhWMZa53RgzSTiZjh+Dq8PHnSjbhCx5Orm3az1OZg6ZnoHAiTF5N08CesQXKhc
-         hKVBfufHN9HbsaFCafm2+P5ZtRzt3Ppm/19+cjhKGwag6VLUQI4Bwiziwtnp5NNi+HtM
-         J6Ug==
-X-Gm-Message-State: AOAM530cgZMiZXL+ZEvpO875JRX+/dP+YBF6In6wXhj+hH2Yo+RdonEl
-        zPrCaolkKGwb1dYvY81seQSo6JByQ4IXNVme/qJg7j/0opAZ
-X-Google-Smtp-Source: ABdhPJz8Qo4DZGrU8DHUc5b10nkKSIGd/ZuyqcqtpD0fWUdZgcaWDGoDt1qfQHQqyELaXkvm72rmue4ixWoMXVXM6Q8=
-X-Received: by 2002:a50:cbc7:: with SMTP id l7mr3770872edi.148.1602324539440;
- Sat, 10 Oct 2020 03:08:59 -0700 (PDT)
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kAgtV/zlQ7qrkVa4Spm7AsOCtZ54oLdUWPo/1FrLzu0=;
+        b=duJcDUAiy+5VFIk2LWqW4t5bDQc9P4au3ZJeYcTI/Xd/FO2GBfHNf1Fnv1KX/dUepr
+         MGlasqlw1txR5wbxTgAicntGmTklmC1urkeLZkM4t2PVjT1MDdG38zDhbUJTPM+fN3Bj
+         hdU6qj8jJmNkFSLMF8TRJRDo7Tk9jvt11mgyfNA8O5qjzLbfuCaUPzMudL6/Qh49disJ
+         TlVgLXzspPWKME88wlPQ5bFOM9qP7p9jKwySmo7fX6im9C0kJysZqme9oPyiv6riSsPy
+         VaZKETbEg72zkMxbpfrketgGiQIghUYRKuAXej0srnJ0jh3zMWgrh8Ea7abWvzHZLpBh
+         gErw==
+X-Gm-Message-State: AOAM532wOMPPqPu88Jrsep3igXjuNlIBsnAzK0Nsmjiy8hMBDnfWlHCc
+        brUrlcflbhKSbUhmbsijExM=
+X-Google-Smtp-Source: ABdhPJwG1tv6wFNy3N3iskgS++slfqVQGNmRoe+3mCbntEk6+fX6eR6Nbu4g4GE2X+symJI6Uh/xNw==
+X-Received: by 2002:a63:5b5c:: with SMTP id l28mr6393033pgm.243.1602325464218;
+        Sat, 10 Oct 2020 03:24:24 -0700 (PDT)
+Received: from localhost ([2001:e42:102:1532:160:16:113:140])
+        by smtp.gmail.com with ESMTPSA id jx17sm14821822pjb.10.2020.10.10.03.24.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 10 Oct 2020 03:24:23 -0700 (PDT)
+From:   Coiby Xu <coiby.xu@gmail.com>
+X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
+Date:   Sat, 10 Oct 2020 18:24:16 +0800
+To:     Benjamin Poirier <benjamin.poirier@gmail.com>
+Cc:     devel@driverdev.osuosl.org, Shung-Hsi Yu <shung-hsi.yu@suse.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
+        <GR-Linux-NIC-Dev@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v1 1/6] staging: qlge: Initialize devlink health dump
+ framework for the dlge driver
+Message-ID: <20201010102416.hvbgx3mgyadmu6ui@Rk>
+References: <20201008115808.91850-1-coiby.xu@gmail.com>
+ <20201008115808.91850-2-coiby.xu@gmail.com>
+ <20201010073514.GA14495@f3>
 MIME-Version: 1.0
-References: <20201009160353.1529-1-danieltimlee@gmail.com> <20201009160353.1529-2-danieltimlee@gmail.com>
- <CAEf4BzYNF_BbwXM-HFFSk=ybJRdR=_P1OcVwxZ6dav6_b4BOWw@mail.gmail.com>
-In-Reply-To: <CAEf4BzYNF_BbwXM-HFFSk=ybJRdR=_P1OcVwxZ6dav6_b4BOWw@mail.gmail.com>
-From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-Date:   Sat, 10 Oct 2020 19:08:45 +0900
-Message-ID: <CAEKGpzjcYCgOFCN2f4M-X-mnozTrcayp4jQVb6YB9cYE0M8F8A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/3] samples: bpf: Refactor xdp_monitor with libbpf
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Xdp <xdp-newbies@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20201010073514.GA14495@f3>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 10, 2020 at 3:17 AM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
+On Sat, Oct 10, 2020 at 04:35:14PM +0900, Benjamin Poirier wrote:
+>On 2020-10-08 19:58 +0800, Coiby Xu wrote:
+>> Initialize devlink health dump framework for the dlge driver so the
+>> coredump could be done via devlink.
+>>
+>> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
+>> ---
+>>  drivers/staging/qlge/Kconfig        |  1 +
+>>  drivers/staging/qlge/Makefile       |  2 +-
+>>  drivers/staging/qlge/qlge.h         |  9 +++++++
+>>  drivers/staging/qlge/qlge_devlink.c | 38 +++++++++++++++++++++++++++++
+>>  drivers/staging/qlge/qlge_devlink.h |  8 ++++++
+>>  drivers/staging/qlge/qlge_main.c    | 28 +++++++++++++++++++++
+>>  6 files changed, 85 insertions(+), 1 deletion(-)
+>>  create mode 100644 drivers/staging/qlge/qlge_devlink.c
+>>  create mode 100644 drivers/staging/qlge/qlge_devlink.h
+>>
+>> diff --git a/drivers/staging/qlge/Kconfig b/drivers/staging/qlge/Kconfig
+>> index a3cb25a3ab80..6d831ed67965 100644
+>> --- a/drivers/staging/qlge/Kconfig
+>> +++ b/drivers/staging/qlge/Kconfig
+>> @@ -3,6 +3,7 @@
+>>  config QLGE
+>>  	tristate "QLogic QLGE 10Gb Ethernet Driver Support"
+>>  	depends on ETHERNET && PCI
+>> +	select NET_DEVLINK
+>>  	help
+>>  	This driver supports QLogic ISP8XXX 10Gb Ethernet cards.
+>>
+>> diff --git a/drivers/staging/qlge/Makefile b/drivers/staging/qlge/Makefile
+>> index 1dc2568e820c..07c1898a512e 100644
+>> --- a/drivers/staging/qlge/Makefile
+>> +++ b/drivers/staging/qlge/Makefile
+>> @@ -5,4 +5,4 @@
+>>
+>>  obj-$(CONFIG_QLGE) += qlge.o
+>>
+>> -qlge-objs := qlge_main.o qlge_dbg.o qlge_mpi.o qlge_ethtool.o
+>> +qlge-objs := qlge_main.o qlge_dbg.o qlge_mpi.o qlge_ethtool.o qlge_devlink.o
+>> diff --git a/drivers/staging/qlge/qlge.h b/drivers/staging/qlge/qlge.h
+>> index b295990e361b..290e754450c5 100644
+>> --- a/drivers/staging/qlge/qlge.h
+>> +++ b/drivers/staging/qlge/qlge.h
+>> @@ -2060,6 +2060,14 @@ struct nic_operations {
+>>  	int (*port_initialize)(struct ql_adapter *qdev);
+>>  };
+>>
+>> +
+>> +
+>> +struct qlge_devlink {
+>> +        struct ql_adapter *qdev;
+>> +        struct net_device *ndev;
 >
-> On Fri, Oct 9, 2020 at 9:04 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
-> >
-> > To avoid confusion caused by the increasing fragmentation of the BPF
-> > Loader program, this commit would like to change to the libbpf loader
-> > instead of using the bpf_load.
-> >
-> > Thanks to libbpf's bpf_link interface, managing the tracepoint BPF
-> > program is much easier. bpf_program__attach_tracepoint manages the
-> > enable of tracepoint event and attach of BPF programs to it with a
-> > single interface bpf_link, so there is no need to manage event_fd and
-> > prog_fd separately.
-> >
-> > This commit refactors xdp_monitor with using this libbpf API, and the
-> > bpf_load is removed and migrated to libbpf.
-> >
-> > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> > ---
-> >  samples/bpf/Makefile           |   2 +-
-> >  samples/bpf/xdp_monitor_user.c | 144 ++++++++++++++++++++++++---------
-> >  2 files changed, 108 insertions(+), 38 deletions(-)
-> >
->
-> [...]
->
-> > +static int tp_cnt;
-> > +static int map_cnt;
-> >  static int verbose = 1;
-> >  static bool debug = false;
-> > +struct bpf_map *map_data[NUM_MAP] = { 0 };
-> > +struct bpf_link *tp_links[NUM_TP] = { 0 };
->
-> this syntax means "initialize *only the first element* to 0
-> (explicitly) and the rest of elements to default (which is also 0)".
-> So it's just misleading, use ` = {}`.
->
+>This member should be removed, it is unused throughout the rest of the
+>series. Indeed, it's simple to use qdev->ndev and that's what
+>qlge_reporter_coredump() does.
 
-Thanks for the great review!
+It reminds me that I forgot to reply to one of your comments in RFC and
+sorry for that,
+>> +
+>> +
+>> +struct qlge_devlink {
+>> +        struct ql_adapter *qdev;
+>> +        struct net_device *ndev;
+>
+>I don't have experience implementing devlink callbacks but looking at
+>some other devlink users (mlx4, ionic, ice), all of them use devlink
+>priv space for their main private structure. That would be struct
+>ql_adapter in this case. Is there a good reason to stray from that
+>pattern?
 
-Come to think of it, it could be confusing as you mentioned. I will
-remove the unnecessary initializer in the next patch and resend it.
+struct ql_adapter which is created via alloc_etherdev_mq is the
+private space of struct net_device so we can't use ql_adapter as the
+the devlink private space simultaneously. Thus struct qlge_devlink is
+required.
 
-> >
-> >  static const struct option long_options[] = {
-> >         {"help",        no_argument,            NULL, 'h' },
-> > @@ -41,6 +65,15 @@ static const struct option long_options[] = {
-> >         {0, 0, NULL,  0 }
-> >  };
-> >
-> > +static void int_exit(int sig)
-> > +{
-> > +       /* Detach tracepoints */
-> > +       while (tp_cnt)
-> > +               bpf_link__destroy(tp_links[--tp_cnt]);
-> > +
->
-> see below about proper cleanup
->
-> > +       exit(0);
-> > +}
-> > +
-> >  /* C standard specifies two constants, EXIT_SUCCESS(0) and EXIT_FAILURE(1) */
-> >  #define EXIT_FAIL_MEM  5
-> >
->
-> [...]
->
-> >
-> > -static void print_bpf_prog_info(void)
-> > +static void print_bpf_prog_info(struct bpf_object *obj)
-> >  {
-> > -       int i;
-> > +       struct bpf_program *prog;
-> > +       struct bpf_map *map;
-> > +       int i = 0;
-> >
-> >         /* Prog info */
-> > -       printf("Loaded BPF prog have %d bpf program(s)\n", prog_cnt);
-> > -       for (i = 0; i < prog_cnt; i++) {
-> > -               printf(" - prog_fd[%d] = fd(%d)\n", i, prog_fd[i]);
-> > +       printf("Loaded BPF prog have %d bpf program(s)\n", tp_cnt);
-> > +       bpf_object__for_each_program(prog, obj) {
-> > +               printf(" - prog_fd[%d] = fd(%d)\n", i++, bpf_program__fd(prog));
-> >         }
-> >
-> > +       i = 0;
-> >         /* Maps info */
-> > -       printf("Loaded BPF prog have %d map(s)\n", map_data_count);
-> > -       for (i = 0; i < map_data_count; i++) {
-> > -               char *name = map_data[i].name;
-> > -               int fd     = map_data[i].fd;
-> > +       printf("Loaded BPF prog have %d map(s)\n", map_cnt);
-> > +       bpf_object__for_each_map(map, obj) {
-> > +               const char *name = bpf_map__name(map);
-> > +               int fd           = bpf_map__fd(map);
-> >
-> > -               printf(" - map_data[%d] = fd(%d) name:%s\n", i, fd, name);
-> > +               printf(" - map_data[%d] = fd(%d) name:%s\n", i++, fd, name);
->
-> please move out increment into a separate statement, no need to
-> confuse readers unnecessarily
->
-
-I will fix it at the following patch.
-
-> >         }
-> >
-> >         /* Event info */
-> > -       printf("Searching for (max:%d) event file descriptor(s)\n", prog_cnt);
-> > -       for (i = 0; i < prog_cnt; i++) {
-> > -               if (event_fd[i] != -1)
-> > -                       printf(" - event_fd[%d] = fd(%d)\n", i, event_fd[i]);
-> > +       printf("Searching for (max:%d) event file descriptor(s)\n", tp_cnt);
-> > +       for (i = 0; i < tp_cnt; i++) {
-> > +               int fd = bpf_link__fd(tp_links[i]);
-> > +
-> > +               if (fd != -1)
-> > +                       printf(" - event_fd[%d] = fd(%d)\n", i, fd);
-> >         }
-> >  }
-> >
-> >  int main(int argc, char **argv)
-> >  {
->
-> [...]
->
-> > +       obj = bpf_object__open_file(filename, NULL);
-> > +       if (libbpf_get_error(obj)) {
-> > +               printf("ERROR: opening BPF object file failed\n");
-> > +               obj = NULL;
-> >                 return EXIT_FAILURE;
-> >         }
-> > -       if (!prog_fd[0]) {
-> > -               printf("ERROR - load_bpf_file: %s\n", strerror(errno));
-> > +
-> > +       /* load BPF program */
-> > +       if (bpf_object__load(obj)) {
->
-> would be still good to call bpf_object__close(obj) here, this will
-> avoid warnings about memory leaks, if you run this program under ASAN
->
-> > +               printf("ERROR: loading BPF object file failed\n");
-> >                 return EXIT_FAILURE;
-> >         }
-> >
-> > +       for (type = 0; type < NUM_MAP; type++) {
-> > +               map_data[type] =
-> > +                       bpf_object__find_map_by_name(obj, map_type_strings[type]);
-> > +
-> > +               if (libbpf_get_error(map_data[type])) {
-> > +                       printf("ERROR: finding a map in obj file failed\n");
->
-> same about cleanup, goto into single cleanup place would be
-> appropriate throughout this entire function, probably.
->
-
-Jump to single cleanup will be much more intuitive.
-I will update and send the next version of patch right away.
-
-Thank you for your time and effort for the review.
-
-Best,
-Daniel
-
-> > +                       return EXIT_FAILURE;
-> > +               }
-> > +               map_cnt++;
-> > +       }
-> > +
->
-> [...]
+--
+Best regards,
+Coiby
