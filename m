@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDB4228A026
-	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 13:15:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 346D6289FFD
+	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 12:19:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726461AbgJJLOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 07:14:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39678 "EHLO
+        id S1729013AbgJJKTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 06:19:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729310AbgJJKZ2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 06:25:28 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F1EC0613E4;
-        Sat, 10 Oct 2020 03:00:11 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id g29so9419311pgl.2;
-        Sat, 10 Oct 2020 03:00:11 -0700 (PDT)
+        with ESMTP id S1726533AbgJJKQH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 06:16:07 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 973E7C0613E5;
+        Sat, 10 Oct 2020 03:03:09 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id b193so8506010pga.6;
+        Sat, 10 Oct 2020 03:03:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:date:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=I9AHl5bp5WPLKmxh/1O3ggN7nM3m0zYYXn5K7tm55Tg=;
-        b=Fzygsyj9HGxWtMq/RnjXUGsalngSdHOTFRRv+WAKcop2NmXGD03TrHiPfZHCHfeSDj
-         Efo2CQmVRt1E+BCn/R7xqsYlcdwDw3T+mQMHkfGT0IT7CRQAlRU3XJgDF34dSdmX68w/
-         4x7yc0HAy/DoCMBsX1GUZHI+PjHFvqllqb08dR6dpWbH/bjA0dXsWlUMsA6ZLImftgI3
-         Q0cxevsy4k8VoUU73jYD0qOaJbwUu7MosYtF5W+8wZ3/FjLYF+0RmRrzq69YYPSjepIa
-         FGYGwVmkzWctVC9XNcpGzZepguKSNWe1WgEOqZ8GX9gBVWc+UfFJfVazbsBxcVyu4tdy
-         I0zw==
+        bh=pEEKeQr4AxJsyV0EJXbsIp9rmMhN3mdQEUHeeZ1DQX0=;
+        b=SYKluLk1xiuVXtuBY+vLYX+G1VKNe1UNjHn5wSMbGmDYq7apD5kYy7QBH4bTHDiSHz
+         yFxE/ALQLOFWpvLu1BFpbxH8+5tGXR6QwKiKkgSmZrJGi9YQ/GIGNBi+9hHnElRJ096+
+         /KY6pTs/ZJVNOqyQdz10Xdk61RgqAWHV5qXUFZtbWfhqwTKGMkX5ahJV5BLwQcwi+3jG
+         iZ0R1P7WRt7OSfhLoLkxQdvI2f7x125oJBaqiOPUxGpWItEV4QqJ4WrKcwpNyKP9tChu
+         tMUlardM+xNSHmauqTZeYmzZkl9iqCBlRYBbOajLmo9tlefjaN1Wo5NidFEN/kAG7NGG
+         z1Ew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:date:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=I9AHl5bp5WPLKmxh/1O3ggN7nM3m0zYYXn5K7tm55Tg=;
-        b=XCZtqU3qYfUqY5XxboS0GAiIyI4OG5/VzoVPKJcKk54Y3EAXZZwfsvR5FHLIGNJmt/
-         yAX/EtX/5yIZNjPhksTGP9Bqrea7nI+QbnD8KnCC6OOH49DWBRonkkuRB7HkcvtEeUwG
-         Kta6xoeUsvTH0N1rRJf7gaIvbhS3/yCoEndz+DAN4d5defKanv2ouV7Xq6HRncGwogoV
-         cxYRTkDRIZjXrZMGmVSGZCPktcBNhfqY7SLQtbTxujmoMq1cafNpODgxRc6KNpG8B00A
-         usiT5P1LvrmDxZL6RjLtjJe7D0SWIPYbjm5T0JgdAp3yhKGD4O8MSJ502xJzzyVbXjok
-         DwmQ==
-X-Gm-Message-State: AOAM530QJ5oBNEv3zXxitjaBOAlibJ4Ug33Vg7NFWJfZRj59aWfPASIO
-        lEI3GogadQ5oYjYMOnUm4Y4=
-X-Google-Smtp-Source: ABdhPJy99sRp2/6FtliyUxTv0c9pvD+eJMJ2dVrAf4fS97haV/vaZ/6lN2mDWGt7h8WXIc2rlbswyg==
-X-Received: by 2002:aa7:9358:0:b029:152:b349:8af7 with SMTP id 24-20020aa793580000b0290152b3498af7mr15526536pfn.18.1602324010493;
-        Sat, 10 Oct 2020 03:00:10 -0700 (PDT)
+        bh=pEEKeQr4AxJsyV0EJXbsIp9rmMhN3mdQEUHeeZ1DQX0=;
+        b=M59hqZtU2HNAxM+FEXocx7vPWajGXVZBXQ4pM3i9FYeuI52NcUs9kjLuGdDOaviOgM
+         sMddWmvZq7iS4yVI12TgPNk/ZbGpUSiJ310H7lZeqJtbxk49d+XVz21Bo+39IonPoRAq
+         0EF5JgTvA9SD16hCAsip8G8fx0tvsX2HuFZYL62isXKv6kF8t6FGMS9/ONyct7hRRpsL
+         9sQjvkolgUWX0fEpVB2AAi0JZXiyRwxbT2EasW/CZJQyneh88bwmxGDZK9m7MW8VZn4i
+         6kU/NIsI6F+3tVL0rW5UGv7yU7AQGmkLSycAqUW85vaJ1feHuc+viSPg02nSgWyzz3ct
+         Ud8Q==
+X-Gm-Message-State: AOAM530inV+tCs4B7HNvWDqcKJqyL7s/yeJGwNdPZ3msmX3nKtW1xfT/
+        nRqDye9nyXzwJGle73LVQQ8=
+X-Google-Smtp-Source: ABdhPJw2MPqnrARRlqblzpmpUAYvMLuvf+p9y3d+T4o6tNKqjhiWtMY8ouXNCeLTWZwEJAqZch7IxA==
+X-Received: by 2002:a17:90a:c501:: with SMTP id k1mr9817868pjt.170.1602324189048;
+        Sat, 10 Oct 2020 03:03:09 -0700 (PDT)
 Received: from localhost ([2001:e42:102:1532:160:16:113:140])
-        by smtp.gmail.com with ESMTPSA id b4sm6961319pjz.51.2020.10.10.03.00.09
+        by smtp.gmail.com with ESMTPSA id t13sm13862681pfc.1.2020.10.10.03.03.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 10 Oct 2020 03:00:10 -0700 (PDT)
+        Sat, 10 Oct 2020 03:03:08 -0700 (PDT)
 From:   Coiby Xu <coiby.xu@gmail.com>
 X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
-Date:   Sat, 10 Oct 2020 18:00:02 +0800
+Date:   Sat, 10 Oct 2020 18:02:58 +0800
 To:     Benjamin Poirier <benjamin.poirier@gmail.com>
 Cc:     devel@driverdev.osuosl.org, Shung-Hsi Yu <shung-hsi.yu@suse.com>,
         Manish Chopra <manishc@marvell.com>,
@@ -58,51 +58,135 @@ Cc:     devel@driverdev.osuosl.org, Shung-Hsi Yu <shung-hsi.yu@suse.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>,
         open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 5/6] staging: qlge: clean up debugging code in the
- QL_ALL_DUMP ifdef land
-Message-ID: <20201010100002.6v54yiojnscnuxqv@Rk>
+Subject: Re: [PATCH v1 2/6] staging: qlge: coredump via devlink health
+ reporter
+Message-ID: <20201010100258.px2go6nugsfbwoq7@Rk>
 References: <20201008115808.91850-1-coiby.xu@gmail.com>
- <20201008115808.91850-6-coiby.xu@gmail.com>
- <20201010080126.GC14495@f3>
+ <20201008115808.91850-3-coiby.xu@gmail.com>
+ <20201010074809.GB14495@f3>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20201010080126.GC14495@f3>
+In-Reply-To: <20201010074809.GB14495@f3>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 10, 2020 at 05:01:26PM +0900, Benjamin Poirier wrote:
+On Sat, Oct 10, 2020 at 04:48:09PM +0900, Benjamin Poirier wrote:
 >On 2020-10-08 19:58 +0800, Coiby Xu wrote:
->> The debugging code in the following ifdef land
->>  - QL_ALL_DUMP
->>  - QL_REG_DUMP
->>  - QL_DEV_DUMP
->>  - QL_CB_DUMP
->>  - QL_IB_DUMP
->>  - QL_OB_DUMP
+>>     $ devlink health dump show DEVICE reporter coredump -p -j
+>>     {
+>>         "Core Registers": {
+>>             "segment": 1,
+>>             "values": [ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+>> ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ]
+>>         },
+>>         "Test Logic Regs": {
+>>             "segment": 2,
+>>             "values": [ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ]
+>>         },
+>>         "RMII Registers": {
+>>             "segment": 3,
+>>             "values": [ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ]
+>>         },
+>>         ...
+>>         "Sem Registers": {
+>>             "segment": 50,
+>>             "values": [ 0,0,0,0 ]
+>>         }
+>>     }
 >>
->> becomes unnecessary because,
->>  - Device status and general registers can be obtained by ethtool.
->>  - Coredump can be done via devlink health reporter.
->>  - Structure related to the hardware (struct ql_adapter) can be obtained
->>    by crash or drgn.
->>
->> Suggested-by: Benjamin Poirier <benjamin.poirier@gmail.com>
 >> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
 >> ---
->>  drivers/staging/qlge/qlge.h         |  82 ----
->>  drivers/staging/qlge/qlge_dbg.c     | 688 ----------------------------
->>  drivers/staging/qlge/qlge_ethtool.c |   2 -
->>  drivers/staging/qlge/qlge_main.c    |   7 +-
+>>  drivers/staging/qlge/qlge_devlink.c | 131 ++++++++++++++++++++++++++--
+>>  1 file changed, 125 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/staging/qlge/qlge_devlink.c b/drivers/staging/qlge/qlge_devlink.c
+>> index aa45e7e368c0..91b6600b94a9 100644
+>> --- a/drivers/staging/qlge/qlge_devlink.c
+>> +++ b/drivers/staging/qlge/qlge_devlink.c
+>> @@ -1,16 +1,135 @@
+>>  #include "qlge.h"
+>>  #include "qlge_devlink.h"
+>>
+>> -static int
+>> -qlge_reporter_coredump(struct devlink_health_reporter *reporter,
+>> -			struct devlink_fmsg *fmsg, void *priv_ctx,
+>> -			struct netlink_ext_ack *extack)
+>> +static int fill_seg_(struct devlink_fmsg *fmsg,
 >
->Please also update drivers/staging/qlge/TODO accordingly. There is still
->a lot of debugging code IMO (the netif_printk statements - kernel
->tracing can be used instead of those) but this patch is a substantial
->improvement.
+>Please include the "qlge_" prefix.
+>
+>> +		    struct mpi_coredump_segment_header *seg_header,
+>> +		    u32 *reg_data)
+>>  {
+>> -	return 0;
+>> +	int i;
+>> +	int header_size = sizeof(struct mpi_coredump_segment_header);
+>> +	int regs_num = (seg_header->seg_size - header_size) / sizeof(u32);
+>> +	int err;
+>> +
+>> +	err = devlink_fmsg_pair_nest_start(fmsg, seg_header->description);
+>> +	if (err)
+>> +		return err;
+>> +	err = devlink_fmsg_obj_nest_start(fmsg);
+>> +	if (err)
+>> +		return err;
+>> +	err = devlink_fmsg_u32_pair_put(fmsg, "segment", seg_header->seg_num);
+>> +	if (err)
+>> +		return err;
+>> +	err = devlink_fmsg_arr_pair_nest_start(fmsg, "values");
+>> +	if (err)
+>> +		return err;
+>> +	for (i = 0; i < regs_num; i++) {
+>> +		err = devlink_fmsg_u32_put(fmsg, *reg_data);
+>> +		if (err)
+>> +			return err;
+>> +		reg_data++;
+>> +	}
+>> +	err = devlink_fmsg_obj_nest_end(fmsg);
+>> +	if (err)
+>> +		return err;
+>> +	err = devlink_fmsg_arr_pair_nest_end(fmsg);
+>> +	if (err)
+>> +		return err;
+>> +	err = devlink_fmsg_pair_nest_end(fmsg);
+>> +	return err;
+>> +}
+>> +
+>> +#define fill_seg(seg_hdr, seg_regs)			               \
+>
+>considering that this macro accesses local variables, it is not really
+>"function-like". I think an all-caps name would be better to tip-off the
+>reader.
+>
+Thank you for this suggestion!
 
-Thank you for the reminding! To move qlge out of staging tree would be
-interesting exercise for me:)
+>> +	do {                                                           \
+>> +		err = fill_seg_(fmsg, &dump->seg_hdr, dump->seg_regs); \
+>> +		if (err) {					       \
+>> +			kvfree(dump);                                  \
+>> +			return err;				       \
+>> +		}                                                      \
+>> +	} while (0)
+>> +
+>> +static int qlge_reporter_coredump(struct devlink_health_reporter *reporter,
+>> +				  struct devlink_fmsg *fmsg, void *priv_ctx,
+>> +				  struct netlink_ext_ack *extack)
+>> +{
+>> +	int err = 0;
+>> +
+>> +	struct qlge_devlink *dev = devlink_health_reporter_priv(reporter);
+>
+>Please name this variable ql_devlink, like in qlge_probe().
+
+I happened to find the following text in drivers/staging/qlge/TODO
+> * in terms of namespace, the driver uses either qlge_, ql_ (used by
+>  other qlogic drivers, with clashes, ex: ql_sem_spinlock) or nothing (with
+>  clashes, ex: struct ob_mac_iocb_req). Rename everything to use the "qlge_"
+>  prefix.
+
+So I will adopt qlge_ instead. Besides I prefer qlge_dl to ql_devlink.
 
 --
 Best regards,
