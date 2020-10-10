@@ -2,89 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61619289DA9
-	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 04:50:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B3A7289DFB
+	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 05:37:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730265AbgJJCtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 22:49:20 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:29392 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730430AbgJJCc2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 22:32:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1602297148;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=z0+yMqB5qWuc0BoeYtvqmNWdzEX4ZInq9BnlDhYqt00=;
-        b=iVkUnxlRq4YnQwMXU6gysjZAk1SyGpefN3GTQksDL3/q4iu6OPcyXItSPjPfHxU5JSCf3Z
-        xSwgih/lpGVOuoMplTH1DWJTU5vHikybYFxFvoyJDtO2txARXkaQcO19xU9qvDP+D9I8Ea
-        7lvyv/4hbvtTVm0U3cMT480DQth34Tk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-40-55hpNga7MaCPTcKGrULuZw-1; Fri, 09 Oct 2020 22:32:24 -0400
-X-MC-Unique: 55hpNga7MaCPTcKGrULuZw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1729538AbgJJDgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 23:36:54 -0400
+Received: from bedivere.hansenpartnership.com ([66.63.167.143]:40602 "EHLO
+        bedivere.hansenpartnership.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729606AbgJJC6v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 22:58:51 -0400
+X-Greylist: delayed 913 seconds by postgrey-1.27 at vger.kernel.org; Fri, 09 Oct 2020 22:58:46 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by bedivere.hansenpartnership.com (Postfix) with ESMTP id EFEBF8EE194;
+        Fri,  9 Oct 2020 19:43:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
+        s=20151216; t=1602297797;
+        bh=H8TP93foEqN1ktQ8Zvn50X/i2mF1Mo+G3bAPl3laMS8=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=IKFTIVFzGPRTOXbvF4guFV0idy0d2c5GY0pNpauMNCD265o/8xML504AQiHNNKINI
+         03VTbsdpTlx1IvRxmapAuFqbOyRLRkynjYBLceWgnAFSazyacAGjs/kfFiiin3dxCG
+         9/K3u5C/d7R0kHrIFRdMX77E7sQ6OOI7DSaYWfn4=
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 4_6iIB5MuZrd; Fri,  9 Oct 2020 19:43:16 -0700 (PDT)
+Received: from jarvis (c-73-35-198-56.hsd1.wa.comcast.net [73.35.198.56])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 71949879514;
-        Sat, 10 Oct 2020 02:32:22 +0000 (UTC)
-Received: from [10.72.13.27] (ovpn-13-27.pek2.redhat.com [10.72.13.27])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4D59260BE2;
-        Sat, 10 Oct 2020 02:32:15 +0000 (UTC)
-Subject: Re: [PATCH v3 2/3] vhost: Use vhost_get_used_size() in
- vhost_vring_set_addr()
-To:     Greg Kurz <groug@kaod.org>, "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        qemu-devel@nongnu.org, Laurent Vivier <laurent@vivier.eu>,
-        David Gibson <david@gibson.dropbear.id.au>
-References: <160171888144.284610.4628526949393013039.stgit@bahia.lan>
- <160171932300.284610.11846106312938909461.stgit@bahia.lan>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <5fc896c6-e60d-db0b-f7b0-5b6806d70b8e@redhat.com>
-Date:   Sat, 10 Oct 2020 10:32:13 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 0DE4F8EE120;
+        Fri,  9 Oct 2020 19:43:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
+        s=20151216; t=1602297796;
+        bh=H8TP93foEqN1ktQ8Zvn50X/i2mF1Mo+G3bAPl3laMS8=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=BgjiThamK3sRChTIWem3VqlcTVcZOY3Z2GNJyIwpezgtDJLGW3IszUxOTE+yoCAWv
+         V48K29iXWIdEyZfVjEsU0FSlh3cTrvJt0EqAPo1Ll9Jsfhk5OlUorelNGWOoKpuPOj
+         SS1Y94jSiSEug+8lBRnZGZxsf1hZ1ZG8/+ovIeYw=
+Message-ID: <95d137992900152a0453f7ba37771cb9025121fa.camel@HansenPartnership.com>
+Subject: Re: [PATCH RFC PKS/PMEM 22/58] fs/f2fs: Utilize new kmap_thread()
+From:   James Bottomley <James.Bottomley@HansenPartnership.com>
+To:     Eric Biggers <ebiggers@kernel.org>, ira.weiny@intel.com
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>, linux-aio@kvack.org,
+        linux-efi@vger.kernel.org, kvm@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-mmc@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
+        target-devel@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-kselftest@vger.kernel.org, samba-technical@lists.samba.org,
+        ceph-devel@vger.kernel.org, drbd-dev@lists.linbit.com,
+        devel@driverdev.osuosl.org, linux-cifs@vger.kernel.org,
+        linux-nilfs@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-nvdimm@lists.01.org, linux-rdma@vger.kernel.org,
+        x86@kernel.org, amd-gfx@lists.freedesktop.org,
+        linux-afs@lists.infradead.org, cluster-devel@redhat.com,
+        linux-cachefs@redhat.com, intel-wired-lan@lists.osuosl.org,
+        xen-devel@lists.xenproject.org, linux-ext4@vger.kernel.org,
+        Fenghua Yu <fenghua.yu@intel.com>, ecryptfs@vger.kernel.org,
+        linux-um@lists.infradead.org, intel-gfx@lists.freedesktop.org,
+        linux-erofs@lists.ozlabs.org, reiserfs-devel@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-bcache@vger.kernel.org,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        io-uring@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-ntfs-dev@lists.sourceforge.net, netdev@vger.kernel.org,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net,
+        linux-fsdevel@vger.kernel.org, bpf@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-btrfs@vger.kernel.org
+Date:   Fri, 09 Oct 2020 19:43:13 -0700
+In-Reply-To: <20201009213434.GA839@sol.localdomain>
+References: <20201009195033.3208459-1-ira.weiny@intel.com>
+         <20201009195033.3208459-23-ira.weiny@intel.com>
+         <20201009213434.GA839@sol.localdomain>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 
 MIME-Version: 1.0
-In-Reply-To: <160171932300.284610.11846106312938909461.stgit@bahia.lan>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 2020-10-09 at 14:34 -0700, Eric Biggers wrote:
+> On Fri, Oct 09, 2020 at 12:49:57PM -0700, ira.weiny@intel.com wrote:
+> > From: Ira Weiny <ira.weiny@intel.com>
+> > 
+> > The kmap() calls in this FS are localized to a single thread.  To
+> > avoid the over head of global PKRS updates use the new
+> > kmap_thread() call.
+> > 
+> > Cc: Jaegeuk Kim <jaegeuk@kernel.org>
+> > Cc: Chao Yu <chao@kernel.org>
+> > Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+> > ---
+> >  fs/f2fs/f2fs.h | 8 ++++----
+> >  1 file changed, 4 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/fs/f2fs/f2fs.h b/fs/f2fs/f2fs.h
+> > index d9e52a7f3702..ff72a45a577e 100644
+> > --- a/fs/f2fs/f2fs.h
+> > +++ b/fs/f2fs/f2fs.h
+> > @@ -2410,12 +2410,12 @@ static inline struct page
+> > *f2fs_pagecache_get_page(
+> >  
+> >  static inline void f2fs_copy_page(struct page *src, struct page
+> > *dst)
+> >  {
+> > -	char *src_kaddr = kmap(src);
+> > -	char *dst_kaddr = kmap(dst);
+> > +	char *src_kaddr = kmap_thread(src);
+> > +	char *dst_kaddr = kmap_thread(dst);
+> >  
+> >  	memcpy(dst_kaddr, src_kaddr, PAGE_SIZE);
+> > -	kunmap(dst);
+> > -	kunmap(src);
+> > +	kunmap_thread(dst);
+> > +	kunmap_thread(src);
+> >  }
+> 
+> Wouldn't it make more sense to switch cases like this to
+> kmap_atomic()?
+> The pages are only mapped to do a memcpy(), then they're immediately
+> unmapped.
 
-On 2020/10/3 下午6:02, Greg Kurz wrote:
-> The open-coded computation of the used size doesn't take the event
-> into account when the VIRTIO_RING_F_EVENT_IDX feature is present.
-> Fix that by using vhost_get_used_size().
->
-> Signed-off-by: Greg Kurz <groug@kaod.org>
-> ---
->   drivers/vhost/vhost.c |    3 +--
->   1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index c3b49975dc28..9d2c225fb518 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -1519,8 +1519,7 @@ static long vhost_vring_set_addr(struct vhost_dev *d,
->   		/* Also validate log access for used ring if enabled. */
->   		if ((a.flags & (0x1 << VHOST_VRING_F_LOG)) &&
->   			!log_access_ok(vq->log_base, a.log_guest_addr,
-> -				sizeof *vq->used +
-> -				vq->num * sizeof *vq->used->ring))
-> +				       vhost_get_used_size(vq, vq->num)))
->   			return -EINVAL;
->   	}
->   
->
->
+On a VIPT/VIVT architecture, this is horrendously wasteful.  You're
+taking something that was mapped at colour c_src mapping it to a new
+address src_kaddr, which is likely a different colour and necessitates
+flushing the original c_src, then you copy it to dst_kaddr, which is
+also likely a different colour from c_dst, so dst_kaddr has to be
+flushed on kunmap and c_dst has to be invalidated on kmap.  What we
+should have is an architectural primitive for doing this, something
+like kmemcopy_arch(dst, src).  PIPT architectures can implement it as
+the above (possibly losing kmap if they don't need it) but VIPT/VIVT
+architectures can set up a correctly coloured mapping so they can
+simply copy from c_src to c_dst without any need to flush and the data
+arrives cache hot at c_dst.
 
-Acked-by: Jason Wang <jasowang@redhat.com>
+James
 
 
