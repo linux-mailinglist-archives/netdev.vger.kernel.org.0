@@ -2,93 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C022F28A3EE
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 01:12:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7746B28A41B
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 01:13:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389393AbgJJWzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 18:55:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40198 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732143AbgJJTkV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 15:40:21 -0400
-Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D130BC08E88F
-        for <netdev@vger.kernel.org>; Sat, 10 Oct 2020 09:50:38 -0700 (PDT)
-Received: by mail-vs1-xe44.google.com with SMTP id u74so6740973vsc.2
-        for <netdev@vger.kernel.org>; Sat, 10 Oct 2020 09:50:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Z+Eu+Npy2eRnNxLZJ28JIlRIMLPxL4I+0G8r9QAfYWo=;
-        b=tL3JIAzDeAqk+vK3qzyMAn0pw0E9JptGc86xAyeyog6dtQJZbXfgFrnIcI2wjCMsWS
-         uBhILbtz8+Wps4dlWwYjw5VjfLchX8nb55xKMGgELj71C47Ba6q7dpKYLHO1PUQQrhKe
-         Zi/hz41cahg5d4d/S5iZw9ndUnX2msaxtJsRH74FIcIOkgQWiQQVPUvyH+iGG4Y2lPSS
-         rkUzWGGBfv3g6n2bsvoYdCUO+URJAOceocCpu06AeF3eRvW/o4SwNBUM4oSYHfIhgq3a
-         hVIl199r+fvV/F3J43Ktf/VNt4ksp5Agqo0pOkAJ7KJrmtAa1IiMUoALFM9TKl9KPl1J
-         nAsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Z+Eu+Npy2eRnNxLZJ28JIlRIMLPxL4I+0G8r9QAfYWo=;
-        b=tvDCzmUeYSMSFg59pWqfkducCcGuxsI7Lz8sGW/gG7rP/9CTa/itdR4C42v6QoNfMl
-         wE2wfNtMHalAfSxcaJ+u5PbLTD/HvoUC8pN02Lah+cuCWGEETZDrXOdwhe/Hml3VqsmF
-         UeAB3A1hYGMagAo4G76rDYecD7BCOnjucHVm0K2KSdS4qZIVJXwYwMhQF0jOCyLFkmEq
-         dUE5+nso0/QbElWf1bHGpqxQhRXtJvthq2u827hxO/wsZ/Hf34KT3HPemCwterVGEZNu
-         4hTfK1SsHDoQW/tgpWc8FEgzdEzs/UHXJryQtDxiXPa34/8VWTJB8N9Pn2aV0DJpyaoy
-         bpQw==
-X-Gm-Message-State: AOAM531+GSCRZARPttwoMU68n3w4udXp6noKyc+UXrFvi1t0IupnByyf
-        rLoxxzOR2joAf7YXOOdBJdaGn6ojxto=
-X-Google-Smtp-Source: ABdhPJzAMDeM7CyLR/ByddHjRjnhUxLIVZq8BzkQB+1zlmPni3YvTegvsQyAdfNJcInLHiTJaMiDUQ==
-X-Received: by 2002:a67:684e:: with SMTP id d75mr10825590vsc.28.1602348637178;
-        Sat, 10 Oct 2020 09:50:37 -0700 (PDT)
-Received: from mail-vs1-f44.google.com (mail-vs1-f44.google.com. [209.85.217.44])
-        by smtp.gmail.com with ESMTPSA id l28sm645679vkm.0.2020.10.10.09.50.35
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 10 Oct 2020 09:50:36 -0700 (PDT)
-Received: by mail-vs1-f44.google.com with SMTP id l6so5880723vsr.7
-        for <netdev@vger.kernel.org>; Sat, 10 Oct 2020 09:50:35 -0700 (PDT)
-X-Received: by 2002:a67:684e:: with SMTP id d75mr10825547vsc.28.1602348635377;
- Sat, 10 Oct 2020 09:50:35 -0700 (PDT)
+        id S2389107AbgJJWzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 18:55:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52068 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731413AbgJJTWi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 10 Oct 2020 15:22:38 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 555EB2240C;
+        Sat, 10 Oct 2020 16:51:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602348673;
+        bh=O7G/XCcPTVmLB+LfQ658dP8/bq3RxUpJpXT8EjDdMTA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=u4qTV5kSVp7kUBKH8c/SjkbRQfmUs2QzSqgSymfpt1QlVirFKJq/iU0qqpiwH+4NC
+         0KpT1i2VnRu8Q1HeFm5NKffN3f8efGJWlLi38y/9BdkBWXIiP6GtbVnLht2z3Va9sR
+         2xk8TE1YgDJcaHj8dNu1FWEQbuXVtsUCohz44BrE=
+Date:   Sat, 10 Oct 2020 09:51:11 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Mordechay Goodstein <mordechay.goodstein@intel.com>
+Subject: Re: pull-request: wireless-drivers-next-2020-10-09
+Message-ID: <20201010095111.655b32ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201009160759.A44E1C433FE@smtp.codeaurora.org>
+References: <20201009160759.A44E1C433FE@smtp.codeaurora.org>
 MIME-Version: 1.0
-References: <20201008190538.6223-1-dwilder@us.ibm.com> <20201008190538.6223-2-dwilder@us.ibm.com>
-In-Reply-To: <20201008190538.6223-2-dwilder@us.ibm.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Sat, 10 Oct 2020 12:49:59 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSeGkAE5LxrYBWUYSACrNwt=e_xbmxV3HaRhM_5BiAY_oQ@mail.gmail.com>
-Message-ID: <CA+FuTSeGkAE5LxrYBWUYSACrNwt=e_xbmxV3HaRhM_5BiAY_oQ@mail.gmail.com>
-Subject: Re: [ PATCH v1 1/2] ibmveth: Switch order of ibmveth_helper calls.
-To:     David Wilder <dwilder@us.ibm.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        tlfalcon@linux.ibm.com, cris.forno@ibm.com,
-        pradeeps@linux.vnet.ibm.com, wilder@us.ibm.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 8, 2020 at 3:06 PM David Wilder <dwilder@us.ibm.com> wrote:
->
-> ibmveth_rx_csum_helper() must be called after ibmveth_rx_mss_helper()
-> as ibmveth_rx_csum_helper() may alter ip and tcp checksum values.
->
-> Signed-off-by: David Wilder <dwilder@us.ibm.com>
-> Reviewed-by: Thomas Falcon <tlfalcon@linux.ibm.com>
-> Reviewed-by: Cristobal Forno <cris.forno@ibm.com>
-> Reviewed-by: Pradeep Satyanarayana <pradeeps@linux.vnet.ibm.com>
+On Fri,  9 Oct 2020 16:07:59 +0000 (UTC) Kalle Valo wrote:
+> Hi,
+> 
+> here's a pull request to net-next tree, more info below. Please let me know if
+> there are any problems.
+> 
+> Kalle
+> 
+> The following changes since commit c2568c8c9e636a56abf31da4b28b65d3ded02524:
+> 
+>   Merge branch 'net-Constify-struct-genl_small_ops' (2020-10-04 21:13:36 -0700)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next.git tags/wireless-drivers-next-2020-10-09
+> 
+> for you to fetch changes up to b7d96bca1f004b5f26ee51ea9c9749a28dac8316:
+> 
+>   Revert "iwlwifi: remove wide_cmd_header field" (2020-10-09 18:04:50 +0300)
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+Pulled, thanks Kalle!
 
-(for netdrv)
+Intel folks - do you really need to pack all your structs? 
+Do they come from the device unaligned or something?
 
-At first glance the two features sound independent, but this device
-may pass mss information through the tcp checksum field. Hence that
-must not get overwritten first.
-
-"
-        /* if mss is not set through Large Packet bit/mss in rx buffer,
-         * expect that the mss will be written to the tcp header checksum.
-         */
-"
++/**
++ * struct iwl_statistics_duration_ntfy
++ *
++ * @hdr: general statistics header
++ * @cont_burst_chk_cnt: number of times continuation or
++ *      fragmentation or bursting was checked
++ * @cont_burst_cnt: number of times continuation or fragmentation
++ *      or bursting was successful
++ * @wait_for_silence_timeout_cnt: ???
++ * @reserved: reserved
++ */
++struct iwl_statistics_duration_ntfy {
++       struct iwl_statistics_ntfy_hdr hdr;
++       __le32 cont_burst_chk_cnt;
++       __le32 cont_burst_cnt;
++       __le32 wait_for_silence_timeout_cnt;
++       __le32 reserved;
++} __packed; /* STATISTICS_DURATION_NTFY_API_S_VER_1 */
