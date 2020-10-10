@@ -2,113 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB064289CFF
-	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 03:21:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 724A3289D15
+	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 03:31:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729644AbgJJBUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 21:20:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38998 "EHLO
+        id S1729240AbgJJBbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 21:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729362AbgJJBFn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 21:05:43 -0400
-Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D718C0613D8;
-        Fri,  9 Oct 2020 18:05:43 -0700 (PDT)
-Received: by mail-yb1-xb41.google.com with SMTP id x20so8613330ybs.8;
-        Fri, 09 Oct 2020 18:05:43 -0700 (PDT)
+        with ESMTP id S1729424AbgJJBH5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 21:07:57 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26017C0613D8
+        for <netdev@vger.kernel.org>; Fri,  9 Oct 2020 18:07:56 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id 67so12179506iob.8
+        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 18:07:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=CDAY/7V9d5a7TL2mDtUE2UAJHlprFRYTnmIGetlHh7M=;
-        b=cMkrqUiyczNoV4Ux0HYlsBbl36CDwl8Dd3u1u6omjmMbYNwQv3bo5HhYljg+oMLnzr
-         7iDGRViynYjaPORf0NINnszA3DkBxie3QmHdt1w1eWb7wcvFdo5WVmERtmItGAYyaq+F
-         TVNBAOXMYnsRcOKetl0gJNsbjDlSAemW34tnvizWxP4pKjc4VAvogK97dRiQZhEKJUHz
-         pYMp7MtpXBy6A6BHKB2qLOOrWmRJj8chMxLGhZj6/dK9DlleikbqMyYnTcQxMDPzjEHL
-         U/BKY/ZTAU0xEBkuvvErdhsFcI3dOdXMXrQrxKIwFOvFcg3/9Jh6ktakIsZbJAVtpuQO
-         oVRg==
+        bh=Rc8tqnECubGYldyyTKxBoVCaW5BiCQxv2CE/ih4Dug8=;
+        b=XNwNGF/O0mf0yaNe+/odMJ/ZDbaXCOnDD1I3+IGErlLggP5O3bZ0Xhv8oHusUo35Lz
+         BERLKhfnhh3b6NNxc53HUs3ALBSvWHHrtUnS/EjzZ33BEZOQFvPh+B4yQJebagIkbjEV
+         c9wiJ19XbsbA8CWwvwdApvboaONb4EvUQ102CNSZ37sKECkMjNmzLXTY7yl1srLzq8j7
+         H0xudbqQbotKWSNxYLSz4M8rbyFX9jgWC7OT3ViJyZh6nBC/K7pFDBsTudnNczTe01Bo
+         JLxzuB9axILZqnrx41gORACgq0W8XTA1K9a3f1ubzwMeHryA//tGoQg0zRPbgNJaCDUB
+         b8BA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=CDAY/7V9d5a7TL2mDtUE2UAJHlprFRYTnmIGetlHh7M=;
-        b=fjLxeTZqQV7Y7HqtEtCuX9ohpSPeFS30Be9TrkyE+osPOZVpnKbonhXuJvI1orl6IH
-         evRsiZuiPvBg8ehjXdeze93wSuJ6lGl+JumrAXbzZk6DD2KkQZ9Z3u0O3XSDh5V0dG4F
-         T7/y8kFdWaPf9oOlyznt2bQ4Rc9Rhgne1zIofRxTIut8eQmFstKHBzXgvOO9xg6vUei4
-         Y9ROEVc/+q/L2sLZrU+ZLPi0AAIFT7l1paAIJV5hujm/X0Rm6LqQSYyeVClDVEFGYNoH
-         zDJBCegZej76NIGmZygx0lXvbfs1NEdNJh//+1EBXr0ngcEfmnGayBrcIQ9luNiibatM
-         60pA==
-X-Gm-Message-State: AOAM531Cp5JfsXGeUrkirZur/qI7yE478ODJEcxs1U/8+nzYX6aYY06G
-        hOoiUOEw2+o1KKBafDqHo62cbftiR3pZHps3NzM9aFecImU=
-X-Google-Smtp-Source: ABdhPJxD91j+JNyWq3pOl19fnwsYO++XTbn1+WKJAsFFzionf0414c874P4s74lGSzqWO3U4mNYE2lUjlCv2PILFQAY=
-X-Received: by 2002:a25:cbc4:: with SMTP id b187mr21859998ybg.260.1602291942742;
- Fri, 09 Oct 2020 18:05:42 -0700 (PDT)
+        bh=Rc8tqnECubGYldyyTKxBoVCaW5BiCQxv2CE/ih4Dug8=;
+        b=mgkL5qVL8ztnzMgPsd0hSV48bZezwp4+5QS0irdGlLpjE/flK0DiUMorSiy1Nlu2SA
+         fSnOhB59VB7CbfSwQBrdu5nvsAlfJTRm0yR2IF23vnW80uX9yF4dAgiMWmKZ3Xl1D/mO
+         KIEemZwznXzra6whNSKklv83TiZE2e7mUYuvhxvYVHIhiAZPGLjrIMySff66Ny7AakTY
+         /apL/nDVODVLaVQfsLPMnyYF7Vk11naFdOng67qma5VvXAa2zm2jI82EWL8M873C+N79
+         pa9hTGCAehVjJ25l05H01r1ZWhSDOhOthgJxJGrRshTZwOfon2fCRAttiuxWeLB4uw0w
+         goqw==
+X-Gm-Message-State: AOAM531ftF+u+hu8cr6SV9SJaopV6rI83WxGqFbE6wN/pidIr5tjmz3O
+        SjIMO531RyfEfuEXunUYwEBbyBreUwM7lai0ohI=
+X-Google-Smtp-Source: ABdhPJygJU6/EaDK30C2+AjEgMXLMfzOpwkzpVdMzIESY9dkjaiXxO7uWJgcGe50Tw5wOuFB++dRkWETxVs/jYsX+c8=
+X-Received: by 2002:a6b:b446:: with SMTP id d67mr6901470iof.134.1602292075231;
+ Fri, 09 Oct 2020 18:07:55 -0700 (PDT)
 MIME-Version: 1.0
-References: <20201009224007.30447-1-daniel@iogearbox.net> <20201009224007.30447-4-daniel@iogearbox.net>
- <CAEf4BzYHRi3zBWcVYo=1oB2mcWaW_7HmKsSw6X2PU1deyXXaDw@mail.gmail.com> <f89ec10b-c0b8-8449-f820-730026ca0f3a@iogearbox.net>
-In-Reply-To: <f89ec10b-c0b8-8449-f820-730026ca0f3a@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 9 Oct 2020 18:05:31 -0700
-Message-ID: <CAEf4BzZz03sNVmBxVuUzapm2VwgGkoFZx9rCb2bs5mQx8pBTJQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 3/6] bpf: allow for map-in-map with dynamic
- inner array map entries
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        Yonghong Song <yhs@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <20201008012154.11149-1-xiyou.wangcong@gmail.com>
+ <CA+FuTSeMYFh3tY9cJN6h02E+r3BST=w74+pD=zraLXsmJTLZXA@mail.gmail.com>
+ <CAM_iQpWCR84sD6dZBforgt4cg-Jya91D6EynDo2y2sC7vi-vMg@mail.gmail.com>
+ <CA+FuTSdKa1Q36ONbsGOMqXDCUiiDNsA6rkqyrzB+eXJj=MyRKA@mail.gmail.com>
+ <CAJht_ENnmYRh-RomBodJE0HoFzaLQhD+DKEu2WWST+B43JxWcQ@mail.gmail.com>
+ <CA+FuTSdWYDs5u+3VzpTA1-Xs1OiVzv8QiKGTH4GUYrvXFfGT_A@mail.gmail.com>
+ <CAJht_ENMFY_HwaJDjvxZbQgcDv7btC+bU6gzdjyddY-JS=a6Lg@mail.gmail.com>
+ <CA+FuTScizeZC-ndVvXj4VyArth2gnxoh3kTSoe5awGoiFXtkBA@mail.gmail.com>
+ <CAJht_ENmrPbhfPaD5kkiDVWQsvA_LRndPiCMrS9zdje6sVPk=g@mail.gmail.com>
+ <CA+FuTSfhDgn-Qej4HOY-kYWSy8pUsnafMk=ozwtYGfS4W2DNuA@mail.gmail.com>
+ <CAJht_ENxoAyUOoiHSbFXEZ6Jf2xqfOmYfQ6Sh-hfmTUk-kTrfQ@mail.gmail.com>
+ <CAJht_EOMQRKWfwhfqwXB3RYA1h463q43ycNjJmaGZm6RS65QGA@mail.gmail.com>
+ <CAM_iQpWRftQkOfgfMACNR_5YZxvzLJH1aMtmZNj7nJH_Wu-NRw@mail.gmail.com>
+ <CAJht_ENnYyXbOxtPHD9GHB92U4uonKO_oRZ82g2OR2DaFZ7bBQ@mail.gmail.com>
+ <CAJht_EPVyc0uAZc914E3tdgqEc7tDabpAxnBsGrRRFecc+NMwg@mail.gmail.com> <CAM_iQpU1hU0Wg9sdTwFAG17Gk4-85+=xvZdQeb3oswhBKtAsPA@mail.gmail.com>
+In-Reply-To: <CAM_iQpU1hU0Wg9sdTwFAG17Gk4-85+=xvZdQeb3oswhBKtAsPA@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Fri, 9 Oct 2020 18:07:43 -0700
+Message-ID: <CAM_iQpVhrFZ4DWg9btEpS9+s0QX-b=eSkJJWzPr_KUV-TEkrQw@mail.gmail.com>
+Subject: Re: [Patch net] ip_gre: set dev->hard_header_len properly
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        syzbot <syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com>,
+        William Tu <u9012063@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 9, 2020 at 5:10 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+On Fri, Oct 9, 2020 at 1:38 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
 >
-> On 10/10/20 1:01 AM, Andrii Nakryiko wrote:
-> > On Fri, Oct 9, 2020 at 3:40 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
-> [...]
-> >>          *insn++ = BPF_ALU64_IMM(BPF_ADD, map_ptr, offsetof(struct bpf_array, value));
-> >>          *insn++ = BPF_LDX_MEM(BPF_W, ret, index, 0);
-> >>          if (!map->bypass_spec_v1) {
-> >> @@ -496,8 +499,10 @@ static int array_map_mmap(struct bpf_map *map, struct vm_area_struct *vma)
-> >>   static bool array_map_meta_equal(const struct bpf_map *meta0,
-> >>                                   const struct bpf_map *meta1)
-> >>   {
-> >> -       return meta0->max_entries == meta1->max_entries &&
-> >> -               bpf_map_meta_equal(meta0, meta1);
-> >> +       if (!bpf_map_meta_equal(meta0, meta1))
-> >> +               return false;
-> >> +       return meta0->map_flags & BPF_F_INNER_MAP ? true :
-> >> +              meta0->max_entries == meta1->max_entries;
-> >
-> > even if meta1 doesn't have BPF_F_INNER_MAP, it's ok, because all the
-> > accesses for map returned from outer map lookup will not inline, is
-> > that right? So this flag only matters for the inner map's prototype.
->
-> Not right now, we would have to open code bpf_map_meta_equal() to cut out that
-> bit from the meta0/1 flags comparison. I wouldn't change bpf_map_meta_equal()
-> itself given that bit can be reused for different purpose for other map types.
->
-> > You also mentioned that not inlining array access should still be
-> > fast. So I wonder, what if we just force non-inlined access for inner
-> > maps of ARRAY type? Would it be too bad of a hit for existing
-> > applications?
->
-> Fast in the sense of that we can avoid a retpoline given the direct call
+> Interesting point. I think needed_headroom is 0 until we call
+> ipgre_changelink(), but needed_headroom is already being used
+> in multiple places for skb_cow_head() in the same file, I guess
+> they should be replaced with hard_head_len because for GRE tunnel
+> those are its link-layer header. What makes it more complicated
+> is that header_ops is actually set conditionally, so should be
+> hard_header_len/needed_head_room accordingly.
 
-Ah, ok, then probably an extra flag is necessary.
+Looking a bit deeper, I doubt the ipgre_header_ops->create is necessary,
+because 1) all other tunnels devices do not have it (ip_tunnel_header_ops
+only contains ->parse_protocol); 2) GRE headers are pushed in xmit
+anyway, so at least SOCK_DGRAM does not need it; 3) ipgre_header()
+creates the GRE header, later ipgre_xmit() pulls it back, then __gre_xmit()
+builds GRE header again...
 
-> to array_map_lookup_elem() as opposed to bpf_map_lookup_elem(). In the
-> array_map_gen_lookup() we even have insn level optimizations such as
-> replacing BPF_MUL with BPF_LSH with immediate elem size on power of 2
-> #elems as well as avoiding spectre masking (which the call one has not),
-> presumably for cases like XDP we might want the best implementation if
-> usage allows it.
->
-> > The benefit would be that everything would just work without a special
-> > flag. If perf hit isn't prohibitive, it might be worthwhile to
-> > simplify user experience?
->
-> Taking the above penalty aside for same sized-elems, simplest one would have
-> been to just set inner_map_meta->ops to &array_map_no_inline_ops inside the
-> bpf_map_meta_alloc().
+Please correct me if I am wrong.
+
+Thanks.
