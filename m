@@ -2,151 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 311E528A3B2
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 01:10:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 809A628A3A7
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 01:09:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390107AbgJJW4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 18:56:36 -0400
-Received: from www62.your-server.de ([213.133.104.62]:58618 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388228AbgJJUy5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 16:54:57 -0400
-Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kRLtG-0003RX-D9; Sat, 10 Oct 2020 22:54:54 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     ast@kernel.org
-Cc:     daniel@iogearbox.net, john.fastabend@gmail.com, yhs@fb.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH bpf-next v5 6/6] bpf, selftests: add redirect_peer selftest
-Date:   Sat, 10 Oct 2020 22:54:47 +0200
-Message-Id: <20201010205447.5610-7-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20201010205447.5610-1-daniel@iogearbox.net>
-References: <20201010205447.5610-1-daniel@iogearbox.net>
+        id S2390207AbgJJW4s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 18:56:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53802 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726211AbgJJVJm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 17:09:42 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FDB0C0613D0;
+        Sat, 10 Oct 2020 14:09:42 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id a200so9948555pfa.10;
+        Sat, 10 Oct 2020 14:09:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ec9PVwrrG4wt31+D6ewlM+AL+7A9A3Y/2wI9lVyXaLI=;
+        b=jzBLA5pYP9ANRRty0Q2tPknfb4dcy7phjo7KoXG1ZJJFd45CUUNcxRmYFUz1pLnCfV
+         6sKUhukAL5MToZ7+aE4myHQkmSGoZ6SJAtpyeMu9Gjqjsa1Cmnk50/yVca6AqKZR3NVx
+         e9jY7mL8fjZATbr+aG0jeYpsQFsVFELgN/h8TeSkpSy6yD3J1NisKVwagSNO5i6KTwSF
+         7wohsTYBjgoYzb/nr3RJxZKmu7Rgv//KLEa/Z6hJtyQYP0JSQTyNpdYAbkSmQ3Y92X05
+         RXju+uBSSWrSsVqxepYTniHCyuQQh9an4He6FPTXn+2/YZ7SZTc7SSEitqJMlSheUwtE
+         eQFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ec9PVwrrG4wt31+D6ewlM+AL+7A9A3Y/2wI9lVyXaLI=;
+        b=He1JTsm6nqeNImxuiIKtXFtcY3twZsHEE1YIaZh+Js4wYbaYaU0mfudJl44BsLBjjt
+         vw031Wa4Kulh3OfkLnsm4nh4HFS6/dRdz9QPVibhsrUD4kefMteCs/5hbsR2DphHQR7x
+         GFwWFEjhKO3Lx21SPSY6D6MhnwHfXL2HzAuZtcQMi3l/nsHUQ7NdhPz4dtQdHIOZ/yFU
+         agYMsyRljF0LrHaW4rBI5jKc6bZsomZN954tTQ/WSFcC20VTcimbAu3bPTLMbTglUs5P
+         z3ERSAHVr9i+cuf7Q9Z4PRPq15Zt7IKtm18URfsuc+IY8jXmWlS8djstkilOtUCQoTdV
+         Wg4w==
+X-Gm-Message-State: AOAM5332YiwIsWnB7dafx8CellpVMRUU5ktE+GAA1XnrXqsv0VaQdKjT
+        lvup0sKTUL+kA5foxsIppOU=
+X-Google-Smtp-Source: ABdhPJz9oa00UL45KYiP8Ed4JXeDj4BGCSkwo3hNV7y7qhN6uBnwfYk7/qq6ElDlcYQi8McRJQDdZw==
+X-Received: by 2002:a17:90a:3486:: with SMTP id p6mr12198245pjb.23.1602364181401;
+        Sat, 10 Oct 2020 14:09:41 -0700 (PDT)
+Received: from localhost.localdomain ([45.118.167.204])
+        by smtp.googlemail.com with ESMTPSA id c10sm520701pgl.92.2020.10.10.14.09.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 10 Oct 2020 14:09:40 -0700 (PDT)
+From:   Anmol Karn <anmol.karan123@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     mkubecek@suse.cz, andrew@lunn.ch, f.fainelli@gmail.com,
+        dan.carpenter@oracle.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        syzkaller-bugs@googlegroups.com, anmol.karan123@gmail.com,
+        syzbot+9d1389df89299fa368dc@syzkaller.appspotmail.com
+Subject: [Linux-kernel-mentees] [PATCH net] ethtool: strset: Fix out of bound read in strset_parse_request()
+Date:   Sun, 11 Oct 2020 02:39:29 +0530
+Message-Id: <20201010210929.620244-1-anmol.karan123@gmail.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25953/Sat Oct 10 15:55:36 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Extend the test_tc_redirect test and add a small test that exercises the new
-redirect_peer() helper for the IPv4 and IPv6 case.
+Flag ``ETHTOOL_A_STRSET_COUNTS_ONLY`` tells the kernel to only return the string 
+counts of the sets, but, when req_info->counts_only tries to read the 
+tb[ETHTOOL_A_STRSET_COUNTS_ONLY] it gets out of bound. 
 
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+- net/ethtool/strset.c
+The bug seems to trigger in this line:
+
+req_info->counts_only = tb[ETHTOOL_A_STRSET_COUNTS_ONLY];
+
+Fix it by NULL checking for req_info->counts_only while 
+reading from tb[ETHTOOL_A_STRSET_COUNTS_ONLY].
+
+Reported-by: syzbot+9d1389df89299fa368dc@syzkaller.appspotmail.com 
+Link: https://syzkaller.appspot.com/bug?id=730deff8fe9954a5e317924d9acff98d9c64a770 
+Signed-off-by: Anmol Karn <anmol.karan123@gmail.com>
 ---
- .../selftests/bpf/progs/test_tc_peer.c        | 45 +++++++++++++++++++
- .../testing/selftests/bpf/test_tc_redirect.sh | 25 +++++++----
- 2 files changed, 61 insertions(+), 9 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/test_tc_peer.c
+When I tried to reduce the index of tb[] by 1, the crash reproducer was not working anymore,
+hence it's probably reading from tb[ETHTOOL_A_STRSET_STRINGSETS], but this won't give the 
+strset 'count' and hence is not a plausible fix. But checking for the req_info->counts_only 
+seems legit.
 
-diff --git a/tools/testing/selftests/bpf/progs/test_tc_peer.c b/tools/testing/selftests/bpf/progs/test_tc_peer.c
-new file mode 100644
-index 000000000000..fc84a7685aa2
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_tc_peer.c
-@@ -0,0 +1,45 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <stdint.h>
-+#include <stdbool.h>
-+
-+#include <linux/bpf.h>
-+#include <linux/stddef.h>
-+#include <linux/pkt_cls.h>
-+
-+#include <bpf/bpf_helpers.h>
-+
-+enum {
-+	dev_src,
-+	dev_dst,
-+};
-+
-+struct bpf_map_def SEC("maps") ifindex_map = {
-+	.type		= BPF_MAP_TYPE_ARRAY,
-+	.key_size	= sizeof(int),
-+	.value_size	= sizeof(int),
-+	.max_entries	= 2,
-+};
-+
-+static __always_inline int get_dev_ifindex(int which)
-+{
-+	int *ifindex = bpf_map_lookup_elem(&ifindex_map, &which);
-+
-+	return ifindex ? *ifindex : 0;
-+}
-+
-+SEC("chk_egress") int tc_chk(struct __sk_buff *skb)
-+{
-+	return TC_ACT_SHOT;
-+}
-+
-+SEC("dst_ingress") int tc_dst(struct __sk_buff *skb)
-+{
-+	return bpf_redirect_peer(get_dev_ifindex(dev_src), 0);
-+}
-+
-+SEC("src_ingress") int tc_src(struct __sk_buff *skb)
-+{
-+	return bpf_redirect_peer(get_dev_ifindex(dev_dst), 0);
-+}
-+
-+char __license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/test_tc_redirect.sh b/tools/testing/selftests/bpf/test_tc_redirect.sh
-index 6ad441405132..6d7482562140 100755
---- a/tools/testing/selftests/bpf/test_tc_redirect.sh
-+++ b/tools/testing/selftests/bpf/test_tc_redirect.sh
-@@ -4,9 +4,10 @@
- # This test sets up 3 netns (src <-> fwd <-> dst). There is no direct veth link
- # between src and dst. The netns fwd has veth links to each src and dst. The
- # client is in src and server in dst. The test installs a TC BPF program to each
--# host facing veth in fwd which calls into bpf_redirect_peer() to perform the
--# neigh addr population and redirect; it also installs a dropper prog on the
--# egress side to drop skbs if neigh addrs were not populated.
-+# host facing veth in fwd which calls into i) bpf_redirect_neigh() to perform the
-+# neigh addr population and redirect or ii) bpf_redirect_peer() for namespace
-+# switch from ingress side; it also installs a checker prog on the egress side
-+# to drop unexpected traffic.
+If I have missed something please let me know, and I will work towards fixing it in next version.
+
+ net/ethtool/strset.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/ethtool/strset.c b/net/ethtool/strset.c
+index 82707b662fe4..20a7b36698f3 100644
+--- a/net/ethtool/strset.c
++++ b/net/ethtool/strset.c
+@@ -174,7 +174,8 @@ static int strset_parse_request(struct ethnl_req_info *req_base,
+ 	if (ret < 0)
+ 		return ret;
  
- if [[ $EUID -ne 0 ]]; then
- 	echo "This script must be run as root"
-@@ -166,15 +167,17 @@ hex_mem_str()
- 	perl -e 'print join(" ", unpack("(H2)8", pack("L", @ARGV)))' $1
- }
+-	req_info->counts_only = tb[ETHTOOL_A_STRSET_COUNTS_ONLY];
++	if (req_info->counts_only)
++		req_info->counts_only = tb[ETHTOOL_A_STRSET_COUNTS_ONLY];
+ 	nla_for_each_nested(attr, nest, rem) {
+ 		u32 id;
  
--netns_setup_neigh()
-+netns_setup_bpf()
- {
-+	local obj=$1
-+
- 	ip netns exec ${NS_FWD} tc qdisc add dev veth_src_fwd clsact
--	ip netns exec ${NS_FWD} tc filter add dev veth_src_fwd ingress bpf da obj test_tc_neigh.o sec src_ingress
--	ip netns exec ${NS_FWD} tc filter add dev veth_src_fwd egress  bpf da obj test_tc_neigh.o sec chk_egress
-+	ip netns exec ${NS_FWD} tc filter add dev veth_src_fwd ingress bpf da obj $obj sec src_ingress
-+	ip netns exec ${NS_FWD} tc filter add dev veth_src_fwd egress  bpf da obj $obj sec chk_egress
- 
- 	ip netns exec ${NS_FWD} tc qdisc add dev veth_dst_fwd clsact
--	ip netns exec ${NS_FWD} tc filter add dev veth_dst_fwd ingress bpf da obj test_tc_neigh.o sec dst_ingress
--	ip netns exec ${NS_FWD} tc filter add dev veth_dst_fwd egress  bpf da obj test_tc_neigh.o sec chk_egress
-+	ip netns exec ${NS_FWD} tc filter add dev veth_dst_fwd ingress bpf da obj $obj sec dst_ingress
-+	ip netns exec ${NS_FWD} tc filter add dev veth_dst_fwd egress  bpf da obj $obj sec chk_egress
- 
- 	veth_src=$(ip netns exec ${NS_FWD} cat /sys/class/net/veth_src_fwd/ifindex)
- 	veth_dst=$(ip netns exec ${NS_FWD} cat /sys/class/net/veth_dst_fwd/ifindex)
-@@ -193,5 +196,9 @@ trap netns_cleanup EXIT
- set -e
- 
- netns_setup
--netns_setup_neigh
-+netns_setup_bpf test_tc_neigh.o
-+netns_test_connectivity
-+netns_cleanup
-+netns_setup
-+netns_setup_bpf test_tc_peer.o
- netns_test_connectivity
 -- 
-2.17.1
-
+2.28.0
