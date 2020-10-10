@@ -2,93 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8777E289D5B
-	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 04:06:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B217289D5D
+	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 04:07:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730051AbgJJCFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 22:05:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33528 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729817AbgJJBqC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Oct 2020 21:46:02 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1730073AbgJJCHK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 22:07:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:36348 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729759AbgJJBvK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 21:51:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602294661;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=AkDohCfK7nVkmvX90opUAZF6or9jerCZXTyJ6Vl8gSs=;
+        b=CxDMOm3JrMJnedkWy/xk9QaQxjMgjo5WQADtQq/geUHWemAB4cESFWNrC7iB3Aw69yak2z
+        7vJ+ulMYTGKMRHKZYujwWEdL1Z0+G/c3HslZ3kc+qj5kfEyMAnq7m6FHn1jO3Kbk+MwFX/
+        oTmU/mdCNzcN6s0zD3N9Mjya17YF+qM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-582-mQYwk6YoMRq4w2A_ALxuOQ-1; Fri, 09 Oct 2020 21:48:52 -0400
+X-MC-Unique: mQYwk6YoMRq4w2A_ALxuOQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DCC8122245;
-        Sat, 10 Oct 2020 01:45:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602294358;
-        bh=iTtWEPs7R3iiq6VK1b1OfrjyVJP0Uism8CyeDJiP+1A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=i3/UCdo4sP3wFVvX/GsyGPxSv+NwjzRumeuYLzX3/3SJCoMs2bq/S9SartvMqeZoV
-         1SX+uZiRywSiMnwT0mk9trEnqyUeXfqOr5S87gAFtHsBvy+29SeRG8OiO0D0lwo1cX
-         sHjtwGtujakQCWBgra+Xjitb8AkkTyt2bGyKVatA=
-Date:   Fri, 9 Oct 2020 18:45:56 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Henrik Bjoernlund <henrik.bjoernlund@microchip.com>
-Cc:     <davem@davemloft.net>, <roopa@nvidia.com>, <nikolay@nvidia.com>,
-        <jiri@mellanox.com>, <idosch@mellanox.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>,
-        <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: Re: [PATCH net-next v4 07/10] bridge: cfm: Netlink SET
- configuration Interface.
-Message-ID: <20201009184556.6cfe6fbc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201009143530.2438738-8-henrik.bjoernlund@microchip.com>
-References: <20201009143530.2438738-1-henrik.bjoernlund@microchip.com>
-        <20201009143530.2438738-8-henrik.bjoernlund@microchip.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AB5E0427C8;
+        Sat, 10 Oct 2020 01:48:50 +0000 (UTC)
+Received: from [10.72.13.27] (ovpn-13-27.pek2.redhat.com [10.72.13.27])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 37486614F5;
+        Sat, 10 Oct 2020 01:48:43 +0000 (UTC)
+Subject: Re: [PATCH v3 1/2] vhost-vdpa: fix vhost_vdpa_map() on error
+ condition
+To:     Si-Wei Liu <si-wei.liu@oracle.com>, mst@redhat.com,
+        lingshan.zhu@intel.com
+Cc:     joao.m.martins@oracle.com, boris.ostrovsky@oracle.com,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+References: <1601701330-16837-1-git-send-email-si-wei.liu@oracle.com>
+ <1601701330-16837-2-git-send-email-si-wei.liu@oracle.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <a780b2e2-d8ce-4c27-df6b-47523c356d02@redhat.com>
+Date:   Sat, 10 Oct 2020 09:48:42 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <1601701330-16837-2-git-send-email-si-wei.liu@oracle.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 9 Oct 2020 14:35:27 +0000 Henrik Bjoernlund wrote:
-> +static inline struct mac_addr nla_get_mac(const struct nlattr *nla)
 
-static inlines are generally not needed in C sources and just hide
-unused code. Please drop the inline annotation.
-
-> +{
-> +	struct mac_addr mac;
+On 2020/10/3 下午1:02, Si-Wei Liu wrote:
+> vhost_vdpa_map() should remove the iotlb entry just added
+> if the corresponding mapping fails to set up properly.
+>
+> Fixes: 4c8cf31885f6 ("vhost: introduce vDPA-based backend")
+> Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
+> ---
+>   drivers/vhost/vdpa.c | 3 +++
+>   1 file changed, 3 insertions(+)
+>
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 796fe97..0f27919 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -565,6 +565,9 @@ static int vhost_vdpa_map(struct vhost_vdpa *v,
+>   			      perm_to_iommu_flags(perm));
+>   	}
+>   
+> +	if (r)
+> +		vhost_iotlb_del_range(dev->iotlb, iova, iova + size - 1);
 > +
-> +	nla_memcpy(&mac.addr, nla, sizeof(mac.addr));
-> +
-> +	return mac;
-> +}
-> +
-> +static inline struct br_cfm_maid nla_get_maid(const struct nlattr *nla)
+>   	return r;
+>   }
+>   
 
-ditto
 
-> +{
-> +	struct br_cfm_maid maid;
-> +
-> +	nla_memcpy(&maid.data, nla, sizeof(maid.data));
+Acked-by: Jason Wang <jasowang@redhat.com>
 
-returning a 48B struct from a helper is a little strange, but I guess
-it's not too bad when compiler inlines the thing?
 
-> +	return maid;
-> +}
-> +
-> +static const struct nla_policy
-> +br_cfm_policy[IFLA_BRIDGE_CFM_MAX + 1] = {
-> +	[IFLA_BRIDGE_CFM_UNSPEC]		= { .type = NLA_REJECT },
-
-Not needed, REJECT is treated the same as 0 / uninit, right?
-
-> +	[IFLA_BRIDGE_CFM_MEP_CREATE]		= { .type = NLA_NESTED },
-
-Consider using NLA_POLICY_NESTED() to link up the next layers.
-
-> +	[IFLA_BRIDGE_CFM_MEP_DELETE]		= { .type = NLA_NESTED },
-> +	[IFLA_BRIDGE_CFM_MEP_CONFIG]		= { .type = NLA_NESTED },
-> +	[IFLA_BRIDGE_CFM_CC_CONFIG]		= { .type = NLA_NESTED },
-> +	[IFLA_BRIDGE_CFM_CC_PEER_MEP_ADD]	= { .type = NLA_NESTED },
-> +	[IFLA_BRIDGE_CFM_CC_PEER_MEP_REMOVE]	= { .type = NLA_NESTED },
-> +	[IFLA_BRIDGE_CFM_CC_RDI]		= { .type = NLA_NESTED },
-> +	[IFLA_BRIDGE_CFM_CC_CCM_TX]		= { .type = NLA_NESTED },
-> +};
