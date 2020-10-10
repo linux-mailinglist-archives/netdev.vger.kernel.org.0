@@ -2,92 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E76F289D18
-	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 03:34:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D587289CFA
+	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 03:19:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729348AbgJJBdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 21:33:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729484AbgJJBJd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 21:09:33 -0400
-Received: from mail-ua1-x944.google.com (mail-ua1-x944.google.com [IPv6:2607:f8b0:4864:20::944])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73FEC0613D6
-        for <netdev@vger.kernel.org>; Fri,  9 Oct 2020 17:43:47 -0700 (PDT)
-Received: by mail-ua1-x944.google.com with SMTP id c7so3659893uaq.4
-        for <netdev@vger.kernel.org>; Fri, 09 Oct 2020 17:43:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=O+T6J3hzgOr+sfqzPyYNT2JLTYVihzKsAyiTnBxS+wo=;
-        b=R2GUDGgapHD/0U0DkOG4nn6rwNC0rWOcgW0DWpSp+kfYtfXrEO+lBSUC2XO24MLBcQ
-         h6QunDzPLf9N0FDr2Z1Evvxf+YRmMXR1jqsFp0wXkwb28jQ0bbegI6RGycYwLF04tHN2
-         B3L9GNPVAtJoMSui7Y5sX+GKrz8QjFLOCyMvgjPrDZmrvvm1oZcMLM1f0hBKiSz6CBPb
-         cUIe5gEVkBuBs3f8Gn9ZUMMcFFFLAaGyA5hDhvEGw9nQuBzyNADxEyAi+AEo3HAkk48T
-         JlG27xcih5pDUo+Mh6xTLhO+4yeyN/zxUhKuZ3zJ9NePRdZyjysvhuFX+38vAd/F5zud
-         sR1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=O+T6J3hzgOr+sfqzPyYNT2JLTYVihzKsAyiTnBxS+wo=;
-        b=XPWBSPwCztfkNrzrezn6pE77InuL77/wGQBaX4xF53mwfu+iPvHuOVsxIxbnBlNeBB
-         oaQ69zL0LZ1w57evNKD08Qnx9UTaRSQffda4mZVs2a3xHxtbW+YGgTMcMhnXbjkPfy0M
-         flluuSRynAqe87UJT5WRydbQkHgV678IeHXJDL4+EAweZpCPaGAhF2NlDDsRv2u0QIrn
-         Oi/RqATY+hfvNrgdWM7Gw4SSIPr0HKmNpZY3GxyN+CGfdP00k8XOFlNKVgJYPainXvUa
-         cfXha6HItka6Vt+a/0q/R1Rz2XZIQe7C1mxeiUea/7Ngnz83z3tOAT8fwEJldkZZc3uV
-         RGUA==
-X-Gm-Message-State: AOAM532KwFdXlNVbTxo3lYmqA1W4qqCQugpoF9MRA0me3dU8PFPT9QSu
-        dKtJNfkcJAeNHtN2EcF5fJn1od+jQ7Dc11u62MiwMA==
-X-Google-Smtp-Source: ABdhPJz2EWv35VtaXdfAgtI6hsZ4m4ljsGsezwO7sf3Ku0Y1O+bdmkQebYdRgdDsc7bTa7joJ+rKyisXmitexkLjmoc=
-X-Received: by 2002:ab0:2a43:: with SMTP id p3mr9502803uar.122.1602290626762;
- Fri, 09 Oct 2020 17:43:46 -0700 (PDT)
+        id S1729539AbgJJBS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 21:18:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50242 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729301AbgJJBBY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Oct 2020 21:01:24 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AAEB72076E;
+        Sat, 10 Oct 2020 00:57:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602291472;
+        bh=Xi+GuY+Ub0nJOsqlOxa+qb/oTjzimJdgMqtKwE2hq20=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=xcieWmrBUjOBeKonPtzEwThjAodRQ9IVSJBcnG5ho7Wb3o6N5ac2gVnL4C0sGHj2U
+         NBXnKlyM4M3M2n/p6OKveV0GWyfamse066k6maXOIbIKJNMbU9ESSgi4B6PjdYOGKl
+         vHL8P/jNJhwVHqPPSdR/6V9dfOXhZo5ps86c+SrY=
+Date:   Fri, 9 Oct 2020 17:57:51 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-can@vger.kernel.org, kernel@pengutronix.de,
+        Oliver Hartkopp <socketcan@hartkopp.net>
+Subject: Re: [PATCH 08/17] can: add ISO 15765-2:2016 transport protocol
+Message-ID: <20201009175751.5c54097f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201007213159.1959308-9-mkl@pengutronix.de>
+References: <20201007213159.1959308-1-mkl@pengutronix.de>
+        <20201007213159.1959308-9-mkl@pengutronix.de>
 MIME-Version: 1.0
-References: <20201009103121.1004-1-ceggers@arri.de> <CABeXuvpg4EkuWyOUEU-4F5Hd_iF7pjGX=K8KmMVZGWTt0P_EkQ@mail.gmail.com>
-In-Reply-To: <CABeXuvpg4EkuWyOUEU-4F5Hd_iF7pjGX=K8KmMVZGWTt0P_EkQ@mail.gmail.com>
-From:   Willem de Bruijn <willemb@google.com>
-Date:   Fri, 9 Oct 2020 20:43:09 -0400
-Message-ID: <CA+FuTScqLoAQTVwEJ+OcyTpQ-bbns6G5xq+p-Swc4hR7Hf5RLQ@mail.gmail.com>
-Subject: Re: [PATCH net 1/2] socket: fix option SO_TIMESTAMPING_NEW
-To:     Deepa Dinamani <deepa.kernel@gmail.com>
-Cc:     Christian Eggers <ceggers@arri.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Linux Network Devel Mailing List <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 9, 2020 at 8:30 PM Deepa Dinamani <deepa.kernel@gmail.com> wrote:
->
-> On Fri, Oct 9, 2020 at 3:32 AM Christian Eggers <ceggers@arri.de> wrote:
-> >
-> > The comparison of optname with SO_TIMESTAMPING_NEW is wrong way around,
-> > so SOCK_TSTAMP_NEW will first be set and than reset again. Additionally
-> > move it out of the test for SOF_TIMESTAMPING_RX_SOFTWARE as this seems
-> > unrelated.
->
-> The SOCK_TSTAMP_NEW is reset only in the case when
-> SOF_TIMESTAMPING_RX_SOFTWARE is not set.
-> Note that we only call sock_enable_timestamp() at that time.
->
-> Why would SOCK_TSTAMP_NEW be relevant otherwise?
+On Wed,  7 Oct 2020 23:31:50 +0200 Marc Kleine-Budde wrote:
+> From: Oliver Hartkopp <socketcan@hartkopp.net>
+> 
+> CAN Transport Protocols offer support for segmented Point-to-Point
+> communication between CAN nodes via two defined CAN Identifiers.
+> As CAN frames can only transport a small amount of data bytes
+> (max. 8 bytes for 'classic' CAN and max. 64 bytes for CAN FD) this
+> segmentation is needed to transport longer PDUs as needed e.g. for
+> vehicle diagnosis (UDS, ISO 14229) or IP-over-CAN traffic.
+> This protocol driver implements data transfers according to
+> ISO 15765-2:2016 for 'classic' CAN and CAN FD frame types.
 
-Other timestamps can be configured, such as hardware timestamps.
+A few random things jump out here at a quick scan. Most of them are 
+not important enough to have to be addressed, but please follow up on
+the 'default y' thing ASAP.
 
-As the follow-on patch shows, there is also the issue of overlap
-between SO_TIMESTAMP(NS) and SO_TIMESTAMPING.
+> +/*
+> + * Remark on CAN_ISOTP_DEFAULT_RECV_* values:
+> + *
+> + * We can strongly assume, that the Linux Kernel implementation of
+> + * CAN_ISOTP is capable to run with BS=0, STmin=0 and WFTmax=0.
+> + * But as we like to be able to behave as a commonly available ECU,
+> + * these default settings can be changed via sockopts.
+> + * For that reason the STmin value is intentionally _not_ checked for
+> + * consistency and copied directly into the flow control (FC) frame.
+> + *
 
-Don't select OLD on timestamp disable, which may only disable
-some of the ongoing timestamping.
+spurious empty comment line
 
-Setting based on the syscall is simpler, too. __sock_set_timestamps
-already uses for SO_TIMESTAMP(NS) the valbool approach I
-suggest for SO_TIMESTAMPING.
+> + */
+> +
+> +#endif /* !_UAPI_CAN_ISOTP_H */
+> diff --git a/net/can/Kconfig b/net/can/Kconfig
+> index 25436a715db3..021fe03a8ed6 100644
+> --- a/net/can/Kconfig
+> +++ b/net/can/Kconfig
+> @@ -55,6 +55,19 @@ config CAN_GW
+>  
+>  source "net/can/j1939/Kconfig"
+>  
+> +config CAN_ISOTP
+> +	tristate "ISO 15765-2:2016 CAN transport protocol"
+> +	default y
 
-The fallthrough can also be removed. My rough patch missed that.
+default should not be y unless there is a very good reason.
+I don't see such reason here. This is new functionality, users
+can enable it if they need it.
+
+> +	help
+> +	  CAN Transport Protocols offer support for segmented Point-to-Point
+> +	  communication between CAN nodes via two defined CAN Identifiers.
+> +	  As CAN frames can only transport a small amount of data bytes
+> +	  (max. 8 bytes for 'classic' CAN and max. 64 bytes for CAN FD) this
+> +	  segmentation is needed to transport longer PDUs as needed e.g. for
+> +	  vehicle diagnosis (UDS, ISO 14229) or IP-over-CAN traffic.
+> +	  This protocol driver implements data transfers according to
+> +	  ISO 15765-2:2016 for 'classic' CAN and CAN FD frame types.
+> +
+>  source "drivers/net/can/Kconfig"
+>  
+>  endif
+
+> +#define CAN_ISOTP_VERSION "20200928"
+
+We've been removing such version strings throughout the drivers.
+Kernel version should be sufficient for in-tree modules.
+
+> +static enum hrtimer_restart isotp_tx_timer_handler(struct hrtimer *hrtimer)
+> +{
+> +	struct isotp_sock *so = container_of(hrtimer, struct isotp_sock,
+> +					     txtimer);
+> +	struct sock *sk = &so->sk;
+> +	struct sk_buff *skb;
+> +	struct net_device *dev;
+> +	struct canfd_frame *cf;
+> +	enum hrtimer_restart restart = HRTIMER_NORESTART;
+> +	int can_send_ret;
+> +	int ae = (so->opt.flags & CAN_ISOTP_EXTEND_ADDR) ? 1 : 0;
+> +
+> +	switch (so->tx.state) {
+> +	case ISOTP_WAIT_FC:
+> +	case ISOTP_WAIT_FIRST_FC:
+> +
+> +		/* we did not get any flow control frame in time */
+> +
+> +		/* report 'communication error on send' */
+> +		sk->sk_err = ECOMM;
+> +		if (!sock_flag(sk, SOCK_DEAD))
+> +			sk->sk_error_report(sk);
+> +
+> +		/* reset tx state */
+> +		so->tx.state = ISOTP_IDLE;
+> +		wake_up_interruptible(&so->wait);
+> +		break;
+> +
+> +	case ISOTP_SENDING:
+> +
+> +		/* push out the next segmented pdu */
+> +		dev = dev_get_by_index(sock_net(sk), so->ifindex);
+> +		if (!dev)
+> +			break;
+> +
+> +isotp_tx_burst:
+> +		skb = alloc_skb(so->ll.mtu + sizeof(struct can_skb_priv),
+> +				gfp_any());
+
+This is always in a timer context, so no need for gfp_any(), right?
+
+> +		if (!skb) {
+> +			dev_put(dev);
+> +			break;
+> +		}
+> +
+> +		can_skb_reserve(skb);
+> +		can_skb_prv(skb)->ifindex = dev->ifindex;
+> +		can_skb_prv(skb)->skbcnt = 0;
+> +
+> +		cf = (struct canfd_frame *)skb->data;
+> +		skb_put(skb, so->ll.mtu);
+> +
+> +		/* create consecutive frame */
+> +		isotp_fill_dataframe(cf, so, ae, 0);
+> +
+> +		/* place consecutive frame N_PCI in appropriate index */
+> +		cf->data[ae] = N_PCI_CF | so->tx.sn++;
+> +		so->tx.sn %= 16;
+> +		so->tx.bs++;
+> +
+> +		if (so->ll.mtu == CANFD_MTU)
+> +			cf->flags = so->ll.tx_flags;
+> +
+> +		skb->dev = dev;
+> +		can_skb_set_owner(skb, sk);
+> +
+> +		can_send_ret = can_send(skb, 1);
+> +		if (can_send_ret)
+> +			printk_once(KERN_NOTICE "can-isotp: %s: can_send_ret %d\n",
+> +				    __func__, can_send_ret);
+
+pr_notice_once()
+
+> +
+> +		if (so->tx.idx >= so->tx.len) {
+> +			/* we are done */
+> +			so->tx.state = ISOTP_IDLE;
+> +			dev_put(dev);
+> +			wake_up_interruptible(&so->wait);
+> +			break;
+> +		}
+> +
+> +		if (so->txfc.bs && so->tx.bs >= so->txfc.bs) {
+> +			/* stop and wait for FC */
+> +			so->tx.state = ISOTP_WAIT_FC;
+> +			dev_put(dev);
+> +			hrtimer_set_expires(&so->txtimer,
+> +					    ktime_add(ktime_get(),
+> +						      ktime_set(1, 0)));
+> +			restart = HRTIMER_RESTART;
+> +			break;
+> +		}
+> +
+> +		/* no gap between data frames needed => use burst mode */
+> +		if (!so->tx_gap)
+> +			goto isotp_tx_burst;
+> +
+> +		/* start timer to send next data frame with correct delay */
+> +		dev_put(dev);
+> +		hrtimer_set_expires(&so->txtimer,
+> +				    ktime_add(ktime_get(), so->tx_gap));
+> +		restart = HRTIMER_RESTART;
+> +		break;
+> +
+> +	default:
+> +		WARN_ON_ONCE(1);
+> +	}
+> +
+> +	return restart;
+> +}
