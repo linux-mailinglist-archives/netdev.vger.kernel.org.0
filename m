@@ -2,220 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D587289CFA
-	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 03:19:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB064289CFF
+	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 03:21:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729539AbgJJBS7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 21:18:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50242 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729301AbgJJBBY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Oct 2020 21:01:24 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AAEB72076E;
-        Sat, 10 Oct 2020 00:57:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602291472;
-        bh=Xi+GuY+Ub0nJOsqlOxa+qb/oTjzimJdgMqtKwE2hq20=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=xcieWmrBUjOBeKonPtzEwThjAodRQ9IVSJBcnG5ho7Wb3o6N5ac2gVnL4C0sGHj2U
-         NBXnKlyM4M3M2n/p6OKveV0GWyfamse066k6maXOIbIKJNMbU9ESSgi4B6PjdYOGKl
-         vHL8P/jNJhwVHqPPSdR/6V9dfOXhZo5ps86c+SrY=
-Date:   Fri, 9 Oct 2020 17:57:51 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        linux-can@vger.kernel.org, kernel@pengutronix.de,
-        Oliver Hartkopp <socketcan@hartkopp.net>
-Subject: Re: [PATCH 08/17] can: add ISO 15765-2:2016 transport protocol
-Message-ID: <20201009175751.5c54097f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201007213159.1959308-9-mkl@pengutronix.de>
-References: <20201007213159.1959308-1-mkl@pengutronix.de>
-        <20201007213159.1959308-9-mkl@pengutronix.de>
+        id S1729644AbgJJBUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 21:20:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38998 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729362AbgJJBFn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Oct 2020 21:05:43 -0400
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D718C0613D8;
+        Fri,  9 Oct 2020 18:05:43 -0700 (PDT)
+Received: by mail-yb1-xb41.google.com with SMTP id x20so8613330ybs.8;
+        Fri, 09 Oct 2020 18:05:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CDAY/7V9d5a7TL2mDtUE2UAJHlprFRYTnmIGetlHh7M=;
+        b=cMkrqUiyczNoV4Ux0HYlsBbl36CDwl8Dd3u1u6omjmMbYNwQv3bo5HhYljg+oMLnzr
+         7iDGRViynYjaPORf0NINnszA3DkBxie3QmHdt1w1eWb7wcvFdo5WVmERtmItGAYyaq+F
+         TVNBAOXMYnsRcOKetl0gJNsbjDlSAemW34tnvizWxP4pKjc4VAvogK97dRiQZhEKJUHz
+         pYMp7MtpXBy6A6BHKB2qLOOrWmRJj8chMxLGhZj6/dK9DlleikbqMyYnTcQxMDPzjEHL
+         U/BKY/ZTAU0xEBkuvvErdhsFcI3dOdXMXrQrxKIwFOvFcg3/9Jh6ktakIsZbJAVtpuQO
+         oVRg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CDAY/7V9d5a7TL2mDtUE2UAJHlprFRYTnmIGetlHh7M=;
+        b=fjLxeTZqQV7Y7HqtEtCuX9ohpSPeFS30Be9TrkyE+osPOZVpnKbonhXuJvI1orl6IH
+         evRsiZuiPvBg8ehjXdeze93wSuJ6lGl+JumrAXbzZk6DD2KkQZ9Z3u0O3XSDh5V0dG4F
+         T7/y8kFdWaPf9oOlyznt2bQ4Rc9Rhgne1zIofRxTIut8eQmFstKHBzXgvOO9xg6vUei4
+         Y9ROEVc/+q/L2sLZrU+ZLPi0AAIFT7l1paAIJV5hujm/X0Rm6LqQSYyeVClDVEFGYNoH
+         zDJBCegZej76NIGmZygx0lXvbfs1NEdNJh//+1EBXr0ngcEfmnGayBrcIQ9luNiibatM
+         60pA==
+X-Gm-Message-State: AOAM531Cp5JfsXGeUrkirZur/qI7yE478ODJEcxs1U/8+nzYX6aYY06G
+        hOoiUOEw2+o1KKBafDqHo62cbftiR3pZHps3NzM9aFecImU=
+X-Google-Smtp-Source: ABdhPJxD91j+JNyWq3pOl19fnwsYO++XTbn1+WKJAsFFzionf0414c874P4s74lGSzqWO3U4mNYE2lUjlCv2PILFQAY=
+X-Received: by 2002:a25:cbc4:: with SMTP id b187mr21859998ybg.260.1602291942742;
+ Fri, 09 Oct 2020 18:05:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201009224007.30447-1-daniel@iogearbox.net> <20201009224007.30447-4-daniel@iogearbox.net>
+ <CAEf4BzYHRi3zBWcVYo=1oB2mcWaW_7HmKsSw6X2PU1deyXXaDw@mail.gmail.com> <f89ec10b-c0b8-8449-f820-730026ca0f3a@iogearbox.net>
+In-Reply-To: <f89ec10b-c0b8-8449-f820-730026ca0f3a@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 9 Oct 2020 18:05:31 -0700
+Message-ID: <CAEf4BzZz03sNVmBxVuUzapm2VwgGkoFZx9rCb2bs5mQx8pBTJQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 3/6] bpf: allow for map-in-map with dynamic
+ inner array map entries
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  7 Oct 2020 23:31:50 +0200 Marc Kleine-Budde wrote:
-> From: Oliver Hartkopp <socketcan@hartkopp.net>
-> 
-> CAN Transport Protocols offer support for segmented Point-to-Point
-> communication between CAN nodes via two defined CAN Identifiers.
-> As CAN frames can only transport a small amount of data bytes
-> (max. 8 bytes for 'classic' CAN and max. 64 bytes for CAN FD) this
-> segmentation is needed to transport longer PDUs as needed e.g. for
-> vehicle diagnosis (UDS, ISO 14229) or IP-over-CAN traffic.
-> This protocol driver implements data transfers according to
-> ISO 15765-2:2016 for 'classic' CAN and CAN FD frame types.
+On Fri, Oct 9, 2020 at 5:10 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 10/10/20 1:01 AM, Andrii Nakryiko wrote:
+> > On Fri, Oct 9, 2020 at 3:40 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> [...]
+> >>          *insn++ = BPF_ALU64_IMM(BPF_ADD, map_ptr, offsetof(struct bpf_array, value));
+> >>          *insn++ = BPF_LDX_MEM(BPF_W, ret, index, 0);
+> >>          if (!map->bypass_spec_v1) {
+> >> @@ -496,8 +499,10 @@ static int array_map_mmap(struct bpf_map *map, struct vm_area_struct *vma)
+> >>   static bool array_map_meta_equal(const struct bpf_map *meta0,
+> >>                                   const struct bpf_map *meta1)
+> >>   {
+> >> -       return meta0->max_entries == meta1->max_entries &&
+> >> -               bpf_map_meta_equal(meta0, meta1);
+> >> +       if (!bpf_map_meta_equal(meta0, meta1))
+> >> +               return false;
+> >> +       return meta0->map_flags & BPF_F_INNER_MAP ? true :
+> >> +              meta0->max_entries == meta1->max_entries;
+> >
+> > even if meta1 doesn't have BPF_F_INNER_MAP, it's ok, because all the
+> > accesses for map returned from outer map lookup will not inline, is
+> > that right? So this flag only matters for the inner map's prototype.
+>
+> Not right now, we would have to open code bpf_map_meta_equal() to cut out that
+> bit from the meta0/1 flags comparison. I wouldn't change bpf_map_meta_equal()
+> itself given that bit can be reused for different purpose for other map types.
+>
+> > You also mentioned that not inlining array access should still be
+> > fast. So I wonder, what if we just force non-inlined access for inner
+> > maps of ARRAY type? Would it be too bad of a hit for existing
+> > applications?
+>
+> Fast in the sense of that we can avoid a retpoline given the direct call
 
-A few random things jump out here at a quick scan. Most of them are 
-not important enough to have to be addressed, but please follow up on
-the 'default y' thing ASAP.
+Ah, ok, then probably an extra flag is necessary.
 
-> +/*
-> + * Remark on CAN_ISOTP_DEFAULT_RECV_* values:
-> + *
-> + * We can strongly assume, that the Linux Kernel implementation of
-> + * CAN_ISOTP is capable to run with BS=0, STmin=0 and WFTmax=0.
-> + * But as we like to be able to behave as a commonly available ECU,
-> + * these default settings can be changed via sockopts.
-> + * For that reason the STmin value is intentionally _not_ checked for
-> + * consistency and copied directly into the flow control (FC) frame.
-> + *
-
-spurious empty comment line
-
-> + */
-> +
-> +#endif /* !_UAPI_CAN_ISOTP_H */
-> diff --git a/net/can/Kconfig b/net/can/Kconfig
-> index 25436a715db3..021fe03a8ed6 100644
-> --- a/net/can/Kconfig
-> +++ b/net/can/Kconfig
-> @@ -55,6 +55,19 @@ config CAN_GW
->  
->  source "net/can/j1939/Kconfig"
->  
-> +config CAN_ISOTP
-> +	tristate "ISO 15765-2:2016 CAN transport protocol"
-> +	default y
-
-default should not be y unless there is a very good reason.
-I don't see such reason here. This is new functionality, users
-can enable it if they need it.
-
-> +	help
-> +	  CAN Transport Protocols offer support for segmented Point-to-Point
-> +	  communication between CAN nodes via two defined CAN Identifiers.
-> +	  As CAN frames can only transport a small amount of data bytes
-> +	  (max. 8 bytes for 'classic' CAN and max. 64 bytes for CAN FD) this
-> +	  segmentation is needed to transport longer PDUs as needed e.g. for
-> +	  vehicle diagnosis (UDS, ISO 14229) or IP-over-CAN traffic.
-> +	  This protocol driver implements data transfers according to
-> +	  ISO 15765-2:2016 for 'classic' CAN and CAN FD frame types.
-> +
->  source "drivers/net/can/Kconfig"
->  
->  endif
-
-> +#define CAN_ISOTP_VERSION "20200928"
-
-We've been removing such version strings throughout the drivers.
-Kernel version should be sufficient for in-tree modules.
-
-> +static enum hrtimer_restart isotp_tx_timer_handler(struct hrtimer *hrtimer)
-> +{
-> +	struct isotp_sock *so = container_of(hrtimer, struct isotp_sock,
-> +					     txtimer);
-> +	struct sock *sk = &so->sk;
-> +	struct sk_buff *skb;
-> +	struct net_device *dev;
-> +	struct canfd_frame *cf;
-> +	enum hrtimer_restart restart = HRTIMER_NORESTART;
-> +	int can_send_ret;
-> +	int ae = (so->opt.flags & CAN_ISOTP_EXTEND_ADDR) ? 1 : 0;
-> +
-> +	switch (so->tx.state) {
-> +	case ISOTP_WAIT_FC:
-> +	case ISOTP_WAIT_FIRST_FC:
-> +
-> +		/* we did not get any flow control frame in time */
-> +
-> +		/* report 'communication error on send' */
-> +		sk->sk_err = ECOMM;
-> +		if (!sock_flag(sk, SOCK_DEAD))
-> +			sk->sk_error_report(sk);
-> +
-> +		/* reset tx state */
-> +		so->tx.state = ISOTP_IDLE;
-> +		wake_up_interruptible(&so->wait);
-> +		break;
-> +
-> +	case ISOTP_SENDING:
-> +
-> +		/* push out the next segmented pdu */
-> +		dev = dev_get_by_index(sock_net(sk), so->ifindex);
-> +		if (!dev)
-> +			break;
-> +
-> +isotp_tx_burst:
-> +		skb = alloc_skb(so->ll.mtu + sizeof(struct can_skb_priv),
-> +				gfp_any());
-
-This is always in a timer context, so no need for gfp_any(), right?
-
-> +		if (!skb) {
-> +			dev_put(dev);
-> +			break;
-> +		}
-> +
-> +		can_skb_reserve(skb);
-> +		can_skb_prv(skb)->ifindex = dev->ifindex;
-> +		can_skb_prv(skb)->skbcnt = 0;
-> +
-> +		cf = (struct canfd_frame *)skb->data;
-> +		skb_put(skb, so->ll.mtu);
-> +
-> +		/* create consecutive frame */
-> +		isotp_fill_dataframe(cf, so, ae, 0);
-> +
-> +		/* place consecutive frame N_PCI in appropriate index */
-> +		cf->data[ae] = N_PCI_CF | so->tx.sn++;
-> +		so->tx.sn %= 16;
-> +		so->tx.bs++;
-> +
-> +		if (so->ll.mtu == CANFD_MTU)
-> +			cf->flags = so->ll.tx_flags;
-> +
-> +		skb->dev = dev;
-> +		can_skb_set_owner(skb, sk);
-> +
-> +		can_send_ret = can_send(skb, 1);
-> +		if (can_send_ret)
-> +			printk_once(KERN_NOTICE "can-isotp: %s: can_send_ret %d\n",
-> +				    __func__, can_send_ret);
-
-pr_notice_once()
-
-> +
-> +		if (so->tx.idx >= so->tx.len) {
-> +			/* we are done */
-> +			so->tx.state = ISOTP_IDLE;
-> +			dev_put(dev);
-> +			wake_up_interruptible(&so->wait);
-> +			break;
-> +		}
-> +
-> +		if (so->txfc.bs && so->tx.bs >= so->txfc.bs) {
-> +			/* stop and wait for FC */
-> +			so->tx.state = ISOTP_WAIT_FC;
-> +			dev_put(dev);
-> +			hrtimer_set_expires(&so->txtimer,
-> +					    ktime_add(ktime_get(),
-> +						      ktime_set(1, 0)));
-> +			restart = HRTIMER_RESTART;
-> +			break;
-> +		}
-> +
-> +		/* no gap between data frames needed => use burst mode */
-> +		if (!so->tx_gap)
-> +			goto isotp_tx_burst;
-> +
-> +		/* start timer to send next data frame with correct delay */
-> +		dev_put(dev);
-> +		hrtimer_set_expires(&so->txtimer,
-> +				    ktime_add(ktime_get(), so->tx_gap));
-> +		restart = HRTIMER_RESTART;
-> +		break;
-> +
-> +	default:
-> +		WARN_ON_ONCE(1);
-> +	}
-> +
-> +	return restart;
-> +}
+> to array_map_lookup_elem() as opposed to bpf_map_lookup_elem(). In the
+> array_map_gen_lookup() we even have insn level optimizations such as
+> replacing BPF_MUL with BPF_LSH with immediate elem size on power of 2
+> #elems as well as avoiding spectre masking (which the call one has not),
+> presumably for cases like XDP we might want the best implementation if
+> usage allows it.
+>
+> > The benefit would be that everything would just work without a special
+> > flag. If perf hit isn't prohibitive, it might be worthwhile to
+> > simplify user experience?
+>
+> Taking the above penalty aside for same sized-elems, simplest one would have
+> been to just set inner_map_meta->ops to &array_map_no_inline_ops inside the
+> bpf_map_meta_alloc().
