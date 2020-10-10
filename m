@@ -2,152 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 160CE28A025
-	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 13:14:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5391528A017
+	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 12:58:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729222AbgJJLMO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 07:12:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39684 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729326AbgJJKZ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 06:25:58 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C277DC0613CF;
-        Sat, 10 Oct 2020 03:24:24 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id b26so9103542pff.3;
-        Sat, 10 Oct 2020 03:24:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kAgtV/zlQ7qrkVa4Spm7AsOCtZ54oLdUWPo/1FrLzu0=;
-        b=Fd/AOEa+CbBqIC2iF30QdGq2192retCk+TPZgJaHBT+CQ9SHE2CaD6qffOm4of7NXa
-         Jn6gkZ9sbB3uIwq+HN1lSc/FAvfLOzyueqUZHqH1W1dxUaWOgvrQhlJYpR9asIc8xNEs
-         NNJlhWJFXdyOwWP3U/1znuX833V8Id7ks0VQFHOUhn71OesHFOZMN8xScQpbf4Q232cL
-         0IbU4m/k9zxnCEUXgthG2NtIuXGpbxmfgn8MdhvKlg1alnAfSaNULkiW3Lzuq9pl05LP
-         +Vt4rd3xTqbW6Ht5w2s8Cx3beWjvs0BjgyYg7p0OuNNgv+5/pzFDGzZF17GmvqDjkmbx
-         JhQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kAgtV/zlQ7qrkVa4Spm7AsOCtZ54oLdUWPo/1FrLzu0=;
-        b=duJcDUAiy+5VFIk2LWqW4t5bDQc9P4au3ZJeYcTI/Xd/FO2GBfHNf1Fnv1KX/dUepr
-         MGlasqlw1txR5wbxTgAicntGmTklmC1urkeLZkM4t2PVjT1MDdG38zDhbUJTPM+fN3Bj
-         hdU6qj8jJmNkFSLMF8TRJRDo7Tk9jvt11mgyfNA8O5qjzLbfuCaUPzMudL6/Qh49disJ
-         TlVgLXzspPWKME88wlPQ5bFOM9qP7p9jKwySmo7fX6im9C0kJysZqme9oPyiv6riSsPy
-         VaZKETbEg72zkMxbpfrketgGiQIghUYRKuAXej0srnJ0jh3zMWgrh8Ea7abWvzHZLpBh
-         gErw==
-X-Gm-Message-State: AOAM532wOMPPqPu88Jrsep3igXjuNlIBsnAzK0Nsmjiy8hMBDnfWlHCc
-        brUrlcflbhKSbUhmbsijExM=
-X-Google-Smtp-Source: ABdhPJwG1tv6wFNy3N3iskgS++slfqVQGNmRoe+3mCbntEk6+fX6eR6Nbu4g4GE2X+symJI6Uh/xNw==
-X-Received: by 2002:a63:5b5c:: with SMTP id l28mr6393033pgm.243.1602325464218;
-        Sat, 10 Oct 2020 03:24:24 -0700 (PDT)
-Received: from localhost ([2001:e42:102:1532:160:16:113:140])
-        by smtp.gmail.com with ESMTPSA id jx17sm14821822pjb.10.2020.10.10.03.24.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 10 Oct 2020 03:24:23 -0700 (PDT)
-From:   Coiby Xu <coiby.xu@gmail.com>
-X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
-Date:   Sat, 10 Oct 2020 18:24:16 +0800
-To:     Benjamin Poirier <benjamin.poirier@gmail.com>
-Cc:     devel@driverdev.osuosl.org, Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v1 1/6] staging: qlge: Initialize devlink health dump
- framework for the dlge driver
-Message-ID: <20201010102416.hvbgx3mgyadmu6ui@Rk>
-References: <20201008115808.91850-1-coiby.xu@gmail.com>
- <20201008115808.91850-2-coiby.xu@gmail.com>
- <20201010073514.GA14495@f3>
+        id S1729920AbgJJK5F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 06:57:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29526 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729457AbgJJK0a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 06:26:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602325561;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Kw+DnHBWKnE2kWYlwA6mpWIRZTgnYnvtPVC5fmZhrlg=;
+        b=GTKPozo86gjW39etYZSWYfHfqZL97ZO1EzGrK4IM9SxdEqB1la/Jhn8eLm34xFylqp7CPY
+        k8LVo82mEPiXd5N2DBig30uPmR5xvoSwIWu7BThZv/Q8GBvon91AGMlYfEj7k1Eh6YeNBH
+        8FbW8DURfPOSay8K9D8GfPD2AAt7POw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-113-kH6tjGWMPyGf5iZIfdHzLg-1; Sat, 10 Oct 2020 06:25:56 -0400
+X-MC-Unique: kH6tjGWMPyGf5iZIfdHzLg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 746141005E5A;
+        Sat, 10 Oct 2020 10:25:54 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.22])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5ED1D5D9FC;
+        Sat, 10 Oct 2020 10:25:46 +0000 (UTC)
+Date:   Sat, 10 Oct 2020 12:25:45 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        willemdebruijn.kernel@gmail.com, brouer@redhat.com
+Subject: Re: [PATCH bpf-next V3 1/6] bpf: Remove MTU check in
+ __bpf_skb_max_len
+Message-ID: <20201010122545.5ae12f9c@carbon>
+In-Reply-To: <20b1e1dc-7ce7-dc42-54cd-5c4040ccdb30@iogearbox.net>
+References: <160216609656.882446.16642490462568561112.stgit@firesoul>
+        <160216614239.882446.4447190431655011838.stgit@firesoul>
+        <20b1e1dc-7ce7-dc42-54cd-5c4040ccdb30@iogearbox.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20201010073514.GA14495@f3>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 10, 2020 at 04:35:14PM +0900, Benjamin Poirier wrote:
->On 2020-10-08 19:58 +0800, Coiby Xu wrote:
->> Initialize devlink health dump framework for the dlge driver so the
->> coredump could be done via devlink.
->>
->> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
->> ---
->>  drivers/staging/qlge/Kconfig        |  1 +
->>  drivers/staging/qlge/Makefile       |  2 +-
->>  drivers/staging/qlge/qlge.h         |  9 +++++++
->>  drivers/staging/qlge/qlge_devlink.c | 38 +++++++++++++++++++++++++++++
->>  drivers/staging/qlge/qlge_devlink.h |  8 ++++++
->>  drivers/staging/qlge/qlge_main.c    | 28 +++++++++++++++++++++
->>  6 files changed, 85 insertions(+), 1 deletion(-)
->>  create mode 100644 drivers/staging/qlge/qlge_devlink.c
->>  create mode 100644 drivers/staging/qlge/qlge_devlink.h
->>
->> diff --git a/drivers/staging/qlge/Kconfig b/drivers/staging/qlge/Kconfig
->> index a3cb25a3ab80..6d831ed67965 100644
->> --- a/drivers/staging/qlge/Kconfig
->> +++ b/drivers/staging/qlge/Kconfig
->> @@ -3,6 +3,7 @@
->>  config QLGE
->>  	tristate "QLogic QLGE 10Gb Ethernet Driver Support"
->>  	depends on ETHERNET && PCI
->> +	select NET_DEVLINK
->>  	help
->>  	This driver supports QLogic ISP8XXX 10Gb Ethernet cards.
->>
->> diff --git a/drivers/staging/qlge/Makefile b/drivers/staging/qlge/Makefile
->> index 1dc2568e820c..07c1898a512e 100644
->> --- a/drivers/staging/qlge/Makefile
->> +++ b/drivers/staging/qlge/Makefile
->> @@ -5,4 +5,4 @@
->>
->>  obj-$(CONFIG_QLGE) += qlge.o
->>
->> -qlge-objs := qlge_main.o qlge_dbg.o qlge_mpi.o qlge_ethtool.o
->> +qlge-objs := qlge_main.o qlge_dbg.o qlge_mpi.o qlge_ethtool.o qlge_devlink.o
->> diff --git a/drivers/staging/qlge/qlge.h b/drivers/staging/qlge/qlge.h
->> index b295990e361b..290e754450c5 100644
->> --- a/drivers/staging/qlge/qlge.h
->> +++ b/drivers/staging/qlge/qlge.h
->> @@ -2060,6 +2060,14 @@ struct nic_operations {
->>  	int (*port_initialize)(struct ql_adapter *qdev);
->>  };
->>
->> +
->> +
->> +struct qlge_devlink {
->> +        struct ql_adapter *qdev;
->> +        struct net_device *ndev;
->
->This member should be removed, it is unused throughout the rest of the
->series. Indeed, it's simple to use qdev->ndev and that's what
->qlge_reporter_coredump() does.
+On Fri, 9 Oct 2020 18:12:20 +0200
+Daniel Borkmann <daniel@iogearbox.net> wrote:
 
-It reminds me that I forgot to reply to one of your comments in RFC and
-sorry for that,
->> +
->> +
->> +struct qlge_devlink {
->> +        struct ql_adapter *qdev;
->> +        struct net_device *ndev;
->
->I don't have experience implementing devlink callbacks but looking at
->some other devlink users (mlx4, ionic, ice), all of them use devlink
->priv space for their main private structure. That would be struct
->ql_adapter in this case. Is there a good reason to stray from that
->pattern?
+> On 10/8/20 4:09 PM, Jesper Dangaard Brouer wrote:
+> > Multiple BPF-helpers that can manipulate/increase the size of the SKB uses
+> > __bpf_skb_max_len() as the max-length. This function limit size against
+> > the current net_device MTU (skb->dev->mtu).
+> > 
+> > When a BPF-prog grow the packet size, then it should not be limited to the
+> > MTU. The MTU is a transmit limitation, and software receiving this packet
+> > should be allowed to increase the size. Further more, current MTU check in
+> > __bpf_skb_max_len uses the MTU from ingress/current net_device, which in
+> > case of redirects uses the wrong net_device.
+> > 
+> > Keep a sanity max limit of IP6_MAX_MTU (under CONFIG_IPV6) which is 64KiB
+> > plus 40 bytes IPv6 header size. If compiled without IPv6 use IP_MAX_MTU.
+> > 
+> > V3: replace __bpf_skb_max_len() with define and use IPv6 max MTU size.
+> > 
+> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> > ---
+> >   net/core/filter.c |   16 ++++++++--------
+> >   1 file changed, 8 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/net/core/filter.c b/net/core/filter.c
+> > index 05df73780dd3..ddc1f9ba89d1 100644
+> > --- a/net/core/filter.c
+> > +++ b/net/core/filter.c
+> > @@ -3474,11 +3474,11 @@ static int bpf_skb_net_shrink(struct sk_buff *skb, u32 off, u32 len_diff,
+> >   	return 0;
+> >   }
+> >   
+> > -static u32 __bpf_skb_max_len(const struct sk_buff *skb)
+> > -{
+> > -	return skb->dev ? skb->dev->mtu + skb->dev->hard_header_len :
+> > -			  SKB_MAX_ALLOC;
+> > -}
+> > +#ifdef IP6_MAX_MTU /* Depend on CONFIG_IPV6 */
+> > +#define BPF_SKB_MAX_LEN IP6_MAX_MTU
+> > +#else
+> > +#define BPF_SKB_MAX_LEN IP_MAX_MTU
+> > +#endif  
+> 
+> Shouldn't that check on skb->protocol? The way I understand it is
+> that a number of devices including virtual ones use ETH_MAX_MTU as
+> their dev->max_mtu, so the mtu must be in the range of
+> dev->min_mtu(=ETH_MIN_MTU), dev->max_mtu(=ETH_MAX_MTU).
+> __dev_set_mtu() then sets the user value to dev->mtu in the core if
+> within this range. That means in your case skb->dev->hard_header_len
+> for example is left out, meaning if we go for some constant, that
+> would need to be higher.
 
-struct ql_adapter which is created via alloc_etherdev_mq is the
-private space of struct net_device so we can't use ql_adapter as the
-the devlink private space simultaneously. Thus struct qlge_devlink is
-required.
+Sorry, but I think you have missed the point.  This BPF_SKB_MAX_LEN is
+just a sanity max limit.  We are removing the limit for BPF-progs to
+change the size of the packet (regardless of MTU).
 
---
+This will allow BPF-ingress to increase packet size (up-to this sanity
+limit) and then BPF-egress can decrease packet size again, before
+sending it to the actual dev.  It is up to the BPF-programmer that to
+use this for, but I think this adds good flexibility, instead of being
+limited to the *transmit* size (MTU) of the dev.  This is software why
+have this MTU limit.
+
+-- 
 Best regards,
-Coiby
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
