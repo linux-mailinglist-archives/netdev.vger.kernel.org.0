@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F29328A21E
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 00:55:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCCB928A226
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 00:55:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730734AbgJJWzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 18:55:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36488 "EHLO
+        id S1731176AbgJJWzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 18:55:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729033AbgJJTQT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 15:16:19 -0400
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam08on20619.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e8b::619])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74CE8C05BD2F;
+        with ESMTP id S1731396AbgJJTT2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 15:19:28 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on20603.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eae::603])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D4E1C05BD31;
         Sat, 10 Oct 2020 09:05:25 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WTAJtpTTE7fWry0OMde0CBTdPb65wKs0+pM38mJZnVTyCD84kTBzZeSMdiF1gw928oHJMKkAchc9Gj4mhKV9kRFl+SJpAkYftIP8IPiL4Dil56v3TN7ZpMF+c1Y4wk0G7Lsd5zaCABCMzKlOIpT8bZH+nkDXsa4chXms0Z2tXZxncsOwK+SEBDOT4U0JId/XtGm2AebQF/qBoVH/vaSDHhnxZQIU3/64Zjfu61zBElkzunzwb/tUE5SQOxgMwu6BlTAWLOGVTptPqflcjmSvhhis76V3DmmxC9Cfni6WdIh+OnG6DVZFefyrRC1YlLPI6wTvd3USpTITczz5BgETJg==
+ b=B5G/jRZWuYvH2Y/PNhvUBdraKrIyyjl6XSjrX0nHCP2d5/zdvxqLeqt/qIp1IANmG/YhW0/Pv9A6R//+JoT9Baoe9IVc9Mggh5eH9EHEjqeABbME0Qno0JfKjdYvHSOsImpxHwOi2eIGABh2evTgt/UEBMfuWKWOe5Pk9/wlKGxTXDy5NbecfantnJOwjFo77NP+CK2MfN7er5VSIlmg2UYDQhuuVkUbPyz1iySJxX0E585GQX3+iBXfAzhfdEtPJyk6kLya2VQ7sTHmQsp0vYLwwiNs5vgDk662zqBOp9lEpDSGR4d5YFk2RUpk3TgoHz/Kbzju+oXXjCSJNzhz0w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v+H/+Ujr7nYbzBqxDzAi5w82b0e7jU9DlNYKaS9bbNQ=;
- b=Bj1s/hTQfyjAPZlwUjLgzd/PmgdZDYTTMFdJ0jbRWwVNdOHx36CYhmIBTPnyqoKsyth1Hv8bpq2RmfJph/mOSd+yG3OOVz6qzi0tSrSTQ5tD9MLP2eBwuTxY3J+lNuMppL5AjgdRLPFRgVSWOaNkh/i6BKPAzgabuulF5dxVMY0V+gsQngkWhwXgnWHHLR0q8miC4t2Ll9W7xvM7+/uV7Yr1Tubifp5cYN1n4jcUOG4ANFcxkYIifASV60zTU8zK6ZI/3RCe1A0dlFTNLZ6b2MXwk/QWHt7H3m+GlaVYLqYfWVaGBxOLof+f6Hw2YT4YsxtmvNkVkeT5IuIeRVmH6A==
+ bh=WeCHR3aOHIVU022HvIc/s1OATleKCDgFJm6TAQuURaA=;
+ b=VrRr7pornopZKSstVugMpyc7mrNfo/JOW6yWF437vv0tPUMGYMv4gowQMNm20dG+EAzsxQtby5/0pqJsRvAFFqY6imeRSLO/QF1lhSPwDb2ftg/PTUl1u6yqYblb3BSbKt9YEyZVmrkmQ9gEaSOKSR1Rq+zXqrEaAHs5lu9g2O860pSftKb/TfvCbLH3FvRs5Mty4U2tvXqptOOSCirRoQnmPyBYnfUCLiBF9/LNpVYJ4egSPotZiFAMDDOw5fWW70/9CGb0F0aw/KokDb64dTwSKvVhTs1Ttc5QchlL9Z8LWvI/o+FYlIUpvtVp09QZz+iR8Mtg0m+xP4lS5yti1g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
  dkim=pass header.d=silabs.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v+H/+Ujr7nYbzBqxDzAi5w82b0e7jU9DlNYKaS9bbNQ=;
- b=YyOPDsMa7S19XGCSc67WyvCW1/v62vyCD5F/oLthGmwBTycU6hG0SAx2TAxs9PDLEOOlAaxBE833BqTNRKIHqcc/WBJdpzDospFHLn7gOHxbOOoAAGtJlxdgBegQxcAs3GUX0xkwHbX0e/Q+GO2o5IqlpoY24obdhl8ecjLDC60=
+ bh=WeCHR3aOHIVU022HvIc/s1OATleKCDgFJm6TAQuURaA=;
+ b=Mt0DvkPqHkhrl8XKMspZwEetXcLqz3+YGkbxeC7MyszaNF9zTJoGo/TRc2yiAGuzf0y3Q15qCZjCFeTnT0Wd+buIVWMerCyVY3ukjo1E5X9aIJ+gTWiJQDlpG4TIAHjJe2oC7UHdXaq7aoU0vapPB6GIx+/tYoAn7nSKWi/oA3g=
 Authentication-Results: codeaurora.org; dkim=none (message not signed)
  header.d=none;codeaurora.org; dmarc=none action=none header.from=silabs.com;
 Received: from SN6PR11MB2718.namprd11.prod.outlook.com (2603:10b6:805:63::18)
- by SN6PR11MB2720.namprd11.prod.outlook.com (2603:10b6:805:56::27) with
+ by SN6PR11MB3262.namprd11.prod.outlook.com (2603:10b6:805:bf::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.28; Sat, 10 Oct
- 2020 12:07:18 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.21; Sat, 10 Oct
+ 2020 12:22:19 +0000
 Received: from SN6PR11MB2718.namprd11.prod.outlook.com
  ([fe80::4f5:fbe5:44a7:cb8a]) by SN6PR11MB2718.namprd11.prod.outlook.com
  ([fe80::4f5:fbe5:44a7:cb8a%5]) with mapi id 15.20.3455.028; Sat, 10 Oct 2020
- 12:07:18 +0000
+ 12:22:19 +0000
 From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
 To:     Kalle Valo <kvalo@codeaurora.org>
 Cc:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org,
@@ -47,109 +47,105 @@ Cc:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "David S . Miller" <davem@davemloft.net>,
         Dan Carpenter <dan.carpenter@oracle.com>
-Subject: Re: [PATCH 2/8] staging: wfx: check memory allocation
-Date:   Sat, 10 Oct 2020 14:07:13 +0200
-Message-ID: <2852079.TFTgQsWz4P@pc-42>
+Subject: Re: [PATCH 3/8] staging: wfx: standardize the error when vif does not exist
+Date:   Sat, 10 Oct 2020 14:22:13 +0200
+Message-ID: <2632043.z0MBYUB4Ha@pc-42>
 Organization: Silicon Labs
-In-Reply-To: <874kn31be2.fsf@codeaurora.org>
-References: <20201009171307.864608-1-Jerome.Pouiller@silabs.com> <20201009171307.864608-3-Jerome.Pouiller@silabs.com> <874kn31be2.fsf@codeaurora.org>
+In-Reply-To: <87zh4vz0xs.fsf@codeaurora.org>
+References: <20201009171307.864608-1-Jerome.Pouiller@silabs.com> <20201009171307.864608-4-Jerome.Pouiller@silabs.com> <87zh4vz0xs.fsf@codeaurora.org>
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset="iso-8859-1"
 X-Originating-IP: [82.67.86.106]
-X-ClientProxiedBy: SN6PR01CA0026.prod.exchangelabs.com (2603:10b6:805:b6::39)
- To SN6PR11MB2718.namprd11.prod.outlook.com (2603:10b6:805:63::18)
+X-ClientProxiedBy: DM5PR18CA0070.namprd18.prod.outlook.com
+ (2603:10b6:3:22::32) To SN6PR11MB2718.namprd11.prod.outlook.com
+ (2603:10b6:805:63::18)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from pc-42.localnet (82.67.86.106) by SN6PR01CA0026.prod.exchangelabs.com (2603:10b6:805:b6::39) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.22 via Frontend Transport; Sat, 10 Oct 2020 12:07:16 +0000
+Received: from pc-42.localnet (82.67.86.106) by DM5PR18CA0070.namprd18.prod.outlook.com (2603:10b6:3:22::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.23 via Frontend Transport; Sat, 10 Oct 2020 12:22:16 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 59ecb213-2575-4e4b-c065-08d86d15086e
-X-MS-TrafficTypeDiagnostic: SN6PR11MB2720:
-X-Microsoft-Antispam-PRVS: <SN6PR11MB2720E52955CB85D71113318993090@SN6PR11MB2720.namprd11.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 59e75496-b272-4547-6dad-08d86d172145
+X-MS-TrafficTypeDiagnostic: SN6PR11MB3262:
+X-Microsoft-Antispam-PRVS: <SN6PR11MB3262D0364C2DB35B56E5CB5393090@SN6PR11MB3262.namprd11.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: uNcWdA0NcNXt6QQReFBDEF/yKICYQ7JJPS4M6+9le4kEBXrq/zpyLQ5X6OJ1gW+uoucBZsa/Tkfmfn0zm6JcgEgJWg7QP5ns87jmizyCRitRjxhWSSVBMW89KM1TBG3fL93kWFHpaST6L+R6liU58MEPWJJTF4IVPw7Y6rJNX6KxqU149CjCCEOEbAOPk4JK5yn58WdG1/EEkwLBOcg8KYSP2b4hOxY9QaT/xf79CSWK1JvaK8rjtiu/Nxozpigz1gc3bU5J52Vbe/QX31ncohtY0O+iPLs1ElORAUD2eFaTQRh/h9Np2W3NpotQfryMyNBek6mpRGAJPuYrONOaAm5dW52qBK9cEZ8HNEwpB5NefB/gvIcmcYqv2PwwiWBl
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB2718.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(376002)(39850400004)(366004)(346002)(396003)(2906002)(33716001)(6916009)(478600001)(54906003)(316002)(66476007)(66556008)(52116002)(8676002)(4326008)(6506007)(86362001)(956004)(5660300002)(16526019)(186003)(26005)(9686003)(66574015)(6666004)(83380400001)(6486002)(66946007)(36916002)(6512007)(8936002)(39026012);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: GM0nsDI559CglDX5W1Nsfv+Kp0ab+MSYeJmfvfbtI9sA7/ia4bGOUB2gUQKJgiOmNCfwK/7BfHQGL6B4FB0CludBV4Z1V7GzFuSQ3Y2loN8C+XFuaaR5N7UwKCNbOClXna1zNbx+Oi3f/PdWI0Yxt90BaFYdRhzvDCUsG4W5KOu8O9q59R1TWS0L9nF2x/YASSfGheQfqcnLK9trn6lElR+7uvZCO5St4Wr1ykTOHZU01D3fcvXD6w4t+WyL3gSZPMbxdKzgVXnXC5d8YevoBVzRKGHCgKNPkvmp8OOeuS9NSF9kx+lqEGX5wcMGqxvh5Q5OezpusqxIWw36lMxGat5fQpTjQcbDzYNS3+k5N/lzQVO4J7p8fe6KHUCfeA4j1wmtlId472k1TEew/nK3x/JSDzu4dJM6bdtLxRHsIYT0/Ge5ZAcjyCdcw1DXgCFeQsvnJCJkAcnSnMKQHtj10mlSR1401jnv+6RIhIy454baHWVVz3yvuSYgMJAG+temZ43PViANXZphVglJl2SGwj0cdWdyRjkxKwHlcbja3jborGJg/+/UHP5aZtl/3Rwe92f4ywAhSIPG+Lly8A0U3LTwR4jvdM7CtiXb2RSdLibEugUbJLm29S/JRmB9PKW22xPxPJUpamWsgsB6vzJIRw==
+X-Microsoft-Antispam-Message-Info: dCrsBqI9FsK9s7sltsUfENdTjmQSGO1vgjij1ON6prsouhhVBM/QTNvM1uR7u3r0cNSfirPZVmIf0Oig6PH/wXpBkJE49asToiTnxHBjwbtmXQwvwbLJxwin6fyZvWSxXFHioZvjsd6fkC4iVShvOZGgtzIOL5EgEYeYwjlJ7Z1zgnBNtt3s1SkY2v06/Jh/AL5kRudGgputmDGPAP/dO8mxqNKy3W4R9kpMXT8JLAugMcVCsHIR4zYuHXj4mVOvotvN2AduemjLE0gtusBTmNogHi7M7D5e+k5ykPs86kWWZkOtneyu48GAhcklHLuAdHtfcDMZusEKFeK3PjXzOlYjlLJ6mEP/VOm50j7WDdlOnJf1YXymfrIaefPd7Zu4
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB2718.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(136003)(39850400004)(376002)(346002)(366004)(6512007)(6916009)(16526019)(6506007)(478600001)(36916002)(52116002)(316002)(26005)(33716001)(66946007)(86362001)(9686003)(66476007)(5660300002)(186003)(6486002)(2906002)(4326008)(956004)(8936002)(83380400001)(66556008)(6666004)(8676002)(54906003)(66574015)(39026012);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 3odQRwfMU9yy6iXtnHJVKiy3OjTxT+tifBNDolvXcCvPmBn+miWJJbMyp02jes+wuP6GuvdR4ZrivaInIp0YsjdttkkNjSZE71YKCROefUWDlOUQA8cw0RYqSn/z9C94df90iEylABpr9K6UGAHI/Hbe5HRLL+TZbfRx21qZKJrCEoACqbtw03GJzXXC9kSzPU29NIL/uo+qBRetBzPbUWv9VRSRh+TnL+K3+hMZCip25u0//bi/VxUSIJSjjJtnB4DbtPR1XEy3dUvdv49qGo0cESaN+q8Ix4Cb44F0x4dCNZK+oBtKCwRdvvaJP5MMbCJsVHf6otQO3HCXxo2uASEgrbAlWM/mlpjnjgQ+5cMNhi1lDmVUH+HISDoiDNnBNbXxKUI7+EpMJdvtVjHJtgm1ZD/KJAXl+NIUxGpHvbBBPCABJzXXzXD41fstroWLeouX8O2jCOaVMwhhHSW9hWZQzzDHQgS5RRS+IIjzvXmdK1NQJDP10gQaLO863BScVhppcPf+o4A9tRIY7WrdpTE1mOxMnYyfTfENxL48xaPUww7BW70QbNGoG4r3d5m7SHENQLddsGo2TCBnL+7qMQZM8Fdp0P+Q70OC5wY3NYA9V/rfhV5Ag3XycJjt1GMGM9R6k/BBVXBgCemDy22vyA==
 X-OriginatorOrg: silabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 59ecb213-2575-4e4b-c065-08d86d15086e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 59e75496-b272-4547-6dad-08d86d172145
 X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB2718.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Oct 2020 12:07:18.0169
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Oct 2020 12:22:19.0524
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TKyGxiI+yaGlOLdgGhz+QYBjsblDkjqNFkR+uixYVwQxmSK0IF1uuz/O+7aeQz2JwUIXuFPbKk1aGKZrCQk8OQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB2720
+X-MS-Exchange-CrossTenant-UserPrincipalName: b8Qv/Xvv2HsDbE1ieYLJ09XmH0k8pn0oQ2axvBBbp3mw08V8IbHpSx6Ec5Ir+0zMHZwSzQ530qYjxnY1sfnsRw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB3262
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Friday 9 October 2020 20:51:01 CEST Kalle Valo wrote:
-> CAUTION: This email originated from outside of the organization. Do not c=
-lick links or open attachments unless you recognize the sender and know the=
- content is safe.
->=20
->=20
+On Friday 9 October 2020 20:52:47 CEST Kalle Valo wrote:
 > Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
 >=20
 > > From: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
 > >
 > > Smatch complains:
 > >
-> >    main.c:228 wfx_send_pdata_pds() warn: potential NULL parameter deref=
-erence 'tmp_buf'
-> >    227          tmp_buf =3D kmemdup(pds->data, pds->size, GFP_KERNEL);
-> >    228          ret =3D wfx_send_pds(wdev, tmp_buf, pds->size);
-> >                                          ^^^^^^^
-> >    229          kfree(tmp_buf);
+> >    drivers/staging/wfx/hif_rx.c:177 hif_scan_complete_indication() warn=
+: potential NULL parameter dereference 'wvif'
+> >    drivers/staging/wfx/data_tx.c:576 wfx_flush() warn: potential NULL p=
+arameter dereference 'wvif'
+> >
+> > Indeed, if the vif id returned by the device does not exist anymore,
+> > wdev_to_wvif() could return NULL.
+> >
+> > In add, the error is not handled uniformly in the code, sometime a
+> > WARN() is displayed but code continue, sometime a dev_warn() is
+> > displayed, sometime it is just not tested, ...
+> >
+> > This patch standardize that.
 > >
 > > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 > > Signed-off-by: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
 > > ---
-> >  drivers/staging/wfx/main.c | 8 +++++++-
-> >  1 file changed, 7 insertions(+), 1 deletion(-)
+> >  drivers/staging/wfx/data_tx.c |  5 ++++-
+> >  drivers/staging/wfx/hif_rx.c  | 34 ++++++++++++++++++++++++----------
+> >  drivers/staging/wfx/sta.c     |  4 ++++
+> >  3 files changed, 32 insertions(+), 11 deletions(-)
 > >
-> > diff --git a/drivers/staging/wfx/main.c b/drivers/staging/wfx/main.c
-> > index df11c091e094..a8dc2c033410 100644
-> > --- a/drivers/staging/wfx/main.c
-> > +++ b/drivers/staging/wfx/main.c
-> > @@ -222,12 +222,18 @@ static int wfx_send_pdata_pds(struct wfx_dev *wde=
-v)
-> >       if (ret) {
-> >               dev_err(wdev->dev, "can't load PDS file %s\n",
-> >                       wdev->pdata.file_pds);
-> > -             return ret;
-> > +             goto err1;
-> >       }
-> >       tmp_buf =3D kmemdup(pds->data, pds->size, GFP_KERNEL);
-> > +     if (!tmp_buf) {
-> > +             ret =3D -ENOMEM;
-> > +             goto err2;
+> > diff --git a/drivers/staging/wfx/data_tx.c b/drivers/staging/wfx/data_t=
+x.c
+> > index b4d5dd3d2d23..8db0be08daf8 100644
+> > --- a/drivers/staging/wfx/data_tx.c
+> > +++ b/drivers/staging/wfx/data_tx.c
+> > @@ -431,7 +431,10 @@ static void wfx_skb_dtor(struct wfx_vif *wvif, str=
+uct sk_buff *skb)
+> >                             sizeof(struct hif_req_tx) +
+> >                             req->fc_offset;
+> >
+> > -     WARN_ON(!wvif);
+> > +     if (!wvif) {
+> > +             pr_warn("%s: vif associated with the skb does not exist a=
+nymore\n", __func__);
+> > +             return;
 > > +     }
-> >       ret =3D wfx_send_pds(wdev, tmp_buf, pds->size);
-> >       kfree(tmp_buf);
-> > +err2:
-> >       release_firmware(pds);
-> > +err1:
-> >       return ret;
-> >  }
 >=20
-> A minor style issue but using more descriptive error labels make the
-> code more readable and maintainable, especially in a bigger function.
-> For example, err2 could be called err_release_firmware.
->=20
-> And actually err1 could be removed and the goto replaced with just
-> "return ret;". Then err2 could be renamed to a simple err.
+> I'm not really a fan of using function names in warning or error
+> messages as it clutters the log. In debug messages I think they are ok.
 
-It was the case in the initial code. However, I have preferred to not
-mix 'return' and 'goto' inside the same function. Probably a matter of
-taste.
+In the initial code, I used WARN() that far more clutters the log (I
+have stated that a backtrace won't provide any useful information, so
+pr_warn() was better suited).
 
-Greg has already applied the series, but I don't forget this review. I
-will take it into account in the series I am going to send you (probably
-in the v2, in order to not defer the v1).
+In add, in my mind, these warnings are debug messages. If they appears,
+the user should probably report a bug.
+
+Finally, in this patch, I use the same message several times (ok, not
+this particular one). So the function name is a way to differentiate
+them.
 
 --=20
 J=E9r=F4me Pouiller
