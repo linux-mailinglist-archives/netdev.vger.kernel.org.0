@@ -2,324 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6467128A21B
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 00:55:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F29328A21E
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 00:55:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388973AbgJJWy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 18:54:56 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:57514 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730799AbgJJTOG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 15:14:06 -0400
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09ABWpXx113152
-        for <netdev@vger.kernel.org>; Sat, 10 Oct 2020 07:36:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=in-reply-to : subject :
- from : to : cc : date : mime-version : references :
- content-transfer-encoding : content-type : message-id; s=pp1;
- bh=NiDLo4pOxkTOHNh379y2lMt59tGJeK9BGhibE+AHe30=;
- b=fFl+sWZ60CJNW5vj7Uw0QdIFBZaJLDIK+TmFY7+uXdPQEExbAUVKU05YhKg5dS5u6J9M
- gRTcbWK1ehAiHgiW0QiEErv4vh+5MOV1iJMmz3AgZqVrCWi+Nh1nNGlGLl5qNxYu9TT3
- rsErWvzJTnT/TvD/yGmIkQ5cIJnW2dxyfP5KEerqQF50430xLTdRCdzrzGOBj/IVBjpb
- ZIGntFQpbgC01amsKXwfy1cB65UwCiqnbdgLT6Z6Qd+CSe7yV4n3BXy+qSd8xdiYdQTK
- an7SA2yY6csjDSnstIEkYdPhg6mYvKJGwGGY1NoLkcuzdqKyvDxx/5UGYpv3tzPn6Oq9 ZA== 
-Received: from smtp.notes.na.collabserv.com (smtp.notes.na.collabserv.com [192.155.248.91])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 343b0wh7jg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Sat, 10 Oct 2020 07:36:56 -0400
-Received: from localhost
-        by smtp.notes.na.collabserv.com with smtp.notes.na.collabserv.com ESMTP
-        for <netdev@vger.kernel.org> from <BMT@zurich.ibm.com>;
-        Sat, 10 Oct 2020 11:36:55 -0000
-Received: from us1a3-smtp05.a3.dal06.isc4sb.com (10.146.71.159)
-        by smtp.notes.na.collabserv.com (10.106.227.143) with smtp.notes.na.collabserv.com ESMTP;
-        Sat, 10 Oct 2020 11:36:50 -0000
-Received: from us1a3-mail162.a3.dal06.isc4sb.com ([10.146.71.4])
-          by us1a3-smtp05.a3.dal06.isc4sb.com
-          with ESMTP id 2020101011364991-175970 ;
-          Sat, 10 Oct 2020 11:36:49 +0000 
-In-Reply-To: <20201009195033.3208459-11-ira.weiny@intel.com>
-Subject: Re: [PATCH RFC PKS/PMEM 10/58] drivers/rdma: Utilize new kmap_thread()
-From:   "Bernard Metzler" <BMT@zurich.ibm.com>
-To:     ira.weiny@intel.com
-Cc:     "Andrew Morton" <akpm@linux-foundation.org>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
-        "Andy Lutomirski" <luto@kernel.org>,
-        "Peter Zijlstra" <peterz@infradead.org>,
-        "Mike Marciniszyn" <mike.marciniszyn@intel.com>,
-        "Dennis Dalessandro" <dennis.dalessandro@intel.com>,
-        "Doug Ledford" <dledford@redhat.com>,
-        "Jason Gunthorpe" <jgg@ziepe.ca>,
-        "Faisal Latif" <faisal.latif@intel.com>,
-        "Shiraz Saleem" <shiraz.saleem@intel.com>, x86@kernel.org,
-        "Dave Hansen" <dave.hansen@linux.intel.com>,
-        "Dan Williams" <dan.j.williams@intel.com>,
-        "Fenghua Yu" <fenghua.yu@intel.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-nvdimm@lists.01.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        kvm@vger.kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kexec@lists.infradead.org, linux-bcache@vger.kernel.org,
-        linux-mtd@lists.infradead.org, devel@driverdev.osuosl.org,
-        linux-efi@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, ceph-devel@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-aio@kvack.org,
-        io-uring@vger.kernel.org, linux-erofs@lists.ozlabs.org,
-        linux-um@lists.infradead.org, linux-ntfs-dev@lists.sourceforge.net,
-        reiserfs-devel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-nilfs@vger.kernel.org, cluster-devel@redhat.com,
-        ecryptfs@vger.kernel.org, linux-cifs@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-rdma@vger.kernel.org, amd-gfx@lists.freed.esktop.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        drbd-dev@tron.linbit.com, linux-block@vger.kernel.org,
-        xen-devel@lists.xenproject.org, linux-cachefs@redhat.com,
-        samba-technical@lists.samba.org, intel-wired-lan@lists.osuosl.org
-Date:   Sat, 10 Oct 2020 11:36:49 +0000
-MIME-Version: 1.0
-Sensitivity: 
-Importance: Normal
-X-Priority: 3 (Normal)
-References: <20201009195033.3208459-11-ira.weiny@intel.com>,<20201009195033.3208459-1-ira.weiny@intel.com>
-X-Mailer: IBM iNotes ($HaikuForm 1054.1) | IBM Domino Build
- SCN1812108_20180501T0841_FP65 April 15, 2020 at 09:48
-X-LLNOutbound: False
-X-Disclaimed: 59823
-X-TNEFEvaluated: 1
+        id S1730734AbgJJWzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 18:55:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36488 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729033AbgJJTQT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 15:16:19 -0400
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam08on20619.outbound.protection.outlook.com [IPv6:2a01:111:f400:7e8b::619])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74CE8C05BD2F;
+        Sat, 10 Oct 2020 09:05:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WTAJtpTTE7fWry0OMde0CBTdPb65wKs0+pM38mJZnVTyCD84kTBzZeSMdiF1gw928oHJMKkAchc9Gj4mhKV9kRFl+SJpAkYftIP8IPiL4Dil56v3TN7ZpMF+c1Y4wk0G7Lsd5zaCABCMzKlOIpT8bZH+nkDXsa4chXms0Z2tXZxncsOwK+SEBDOT4U0JId/XtGm2AebQF/qBoVH/vaSDHhnxZQIU3/64Zjfu61zBElkzunzwb/tUE5SQOxgMwu6BlTAWLOGVTptPqflcjmSvhhis76V3DmmxC9Cfni6WdIh+OnG6DVZFefyrRC1YlLPI6wTvd3USpTITczz5BgETJg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=v+H/+Ujr7nYbzBqxDzAi5w82b0e7jU9DlNYKaS9bbNQ=;
+ b=Bj1s/hTQfyjAPZlwUjLgzd/PmgdZDYTTMFdJ0jbRWwVNdOHx36CYhmIBTPnyqoKsyth1Hv8bpq2RmfJph/mOSd+yG3OOVz6qzi0tSrSTQ5tD9MLP2eBwuTxY3J+lNuMppL5AjgdRLPFRgVSWOaNkh/i6BKPAzgabuulF5dxVMY0V+gsQngkWhwXgnWHHLR0q8miC4t2Ll9W7xvM7+/uV7Yr1Tubifp5cYN1n4jcUOG4ANFcxkYIifASV60zTU8zK6ZI/3RCe1A0dlFTNLZ6b2MXwk/QWHt7H3m+GlaVYLqYfWVaGBxOLof+f6Hw2YT4YsxtmvNkVkeT5IuIeRVmH6A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=v+H/+Ujr7nYbzBqxDzAi5w82b0e7jU9DlNYKaS9bbNQ=;
+ b=YyOPDsMa7S19XGCSc67WyvCW1/v62vyCD5F/oLthGmwBTycU6hG0SAx2TAxs9PDLEOOlAaxBE833BqTNRKIHqcc/WBJdpzDospFHLn7gOHxbOOoAAGtJlxdgBegQxcAs3GUX0xkwHbX0e/Q+GO2o5IqlpoY24obdhl8ecjLDC60=
+Authentication-Results: codeaurora.org; dkim=none (message not signed)
+ header.d=none;codeaurora.org; dmarc=none action=none header.from=silabs.com;
+Received: from SN6PR11MB2718.namprd11.prod.outlook.com (2603:10b6:805:63::18)
+ by SN6PR11MB2720.namprd11.prod.outlook.com (2603:10b6:805:56::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.28; Sat, 10 Oct
+ 2020 12:07:18 +0000
+Received: from SN6PR11MB2718.namprd11.prod.outlook.com
+ ([fe80::4f5:fbe5:44a7:cb8a]) by SN6PR11MB2718.namprd11.prod.outlook.com
+ ([fe80::4f5:fbe5:44a7:cb8a%5]) with mapi id 15.20.3455.028; Sat, 10 Oct 2020
+ 12:07:18 +0000
+From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: Re: [PATCH 2/8] staging: wfx: check memory allocation
+Date:   Sat, 10 Oct 2020 14:07:13 +0200
+Message-ID: <2852079.TFTgQsWz4P@pc-42>
+Organization: Silicon Labs
+In-Reply-To: <874kn31be2.fsf@codeaurora.org>
+References: <20201009171307.864608-1-Jerome.Pouiller@silabs.com> <20201009171307.864608-3-Jerome.Pouiller@silabs.com> <874kn31be2.fsf@codeaurora.org>
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-x-cbid: 20101011-2475-0000-0000-0000044A0339
-X-IBM-SpamModules-Scores: BY=0.233045; FL=0; FP=0; FZ=0; HX=0; KW=0; PH=0;
- SC=0.421684; ST=0; TS=0; UL=0; ISC=; MB=0.000000
-X-IBM-SpamModules-Versions: BY=3.00013982; HX=3.00000242; KW=3.00000007;
- PH=3.00000004; SC=3.00000295; SDB=6.01447073; UDB=6.00777937; IPR=6.01229775;
- MB=3.00034472; MTD=3.00000008; XFM=3.00000015; UTC=2020-10-10 11:36:54
-X-IBM-AV-DETECTION: SAVI=unsuspicious REMOTE=unsuspicious XFE=unused
-X-IBM-AV-VERSION: SAVI=2020-10-10 06:57:40 - 6.00011937
-x-cbparentid: 20101011-2476-0000-0000-0000DAA5035B
-Message-Id: <OF849D92D8.F4735ECA-ON002585FD.003F5F27-002585FD.003FCBD6@notes.na.collabserv.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-10-10_07:2020-10-09,2020-10-10 signatures=0
-X-Proofpoint-Spam-Reason: orgsafe
+Content-Type: text/plain; charset="iso-8859-1"
+X-Originating-IP: [82.67.86.106]
+X-ClientProxiedBy: SN6PR01CA0026.prod.exchangelabs.com (2603:10b6:805:b6::39)
+ To SN6PR11MB2718.namprd11.prod.outlook.com (2603:10b6:805:63::18)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from pc-42.localnet (82.67.86.106) by SN6PR01CA0026.prod.exchangelabs.com (2603:10b6:805:b6::39) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.22 via Frontend Transport; Sat, 10 Oct 2020 12:07:16 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 59ecb213-2575-4e4b-c065-08d86d15086e
+X-MS-TrafficTypeDiagnostic: SN6PR11MB2720:
+X-Microsoft-Antispam-PRVS: <SN6PR11MB2720E52955CB85D71113318993090@SN6PR11MB2720.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: uNcWdA0NcNXt6QQReFBDEF/yKICYQ7JJPS4M6+9le4kEBXrq/zpyLQ5X6OJ1gW+uoucBZsa/Tkfmfn0zm6JcgEgJWg7QP5ns87jmizyCRitRjxhWSSVBMW89KM1TBG3fL93kWFHpaST6L+R6liU58MEPWJJTF4IVPw7Y6rJNX6KxqU149CjCCEOEbAOPk4JK5yn58WdG1/EEkwLBOcg8KYSP2b4hOxY9QaT/xf79CSWK1JvaK8rjtiu/Nxozpigz1gc3bU5J52Vbe/QX31ncohtY0O+iPLs1ElORAUD2eFaTQRh/h9Np2W3NpotQfryMyNBek6mpRGAJPuYrONOaAm5dW52qBK9cEZ8HNEwpB5NefB/gvIcmcYqv2PwwiWBl
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB2718.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(376002)(39850400004)(366004)(346002)(396003)(2906002)(33716001)(6916009)(478600001)(54906003)(316002)(66476007)(66556008)(52116002)(8676002)(4326008)(6506007)(86362001)(956004)(5660300002)(16526019)(186003)(26005)(9686003)(66574015)(6666004)(83380400001)(6486002)(66946007)(36916002)(6512007)(8936002)(39026012);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: GM0nsDI559CglDX5W1Nsfv+Kp0ab+MSYeJmfvfbtI9sA7/ia4bGOUB2gUQKJgiOmNCfwK/7BfHQGL6B4FB0CludBV4Z1V7GzFuSQ3Y2loN8C+XFuaaR5N7UwKCNbOClXna1zNbx+Oi3f/PdWI0Yxt90BaFYdRhzvDCUsG4W5KOu8O9q59R1TWS0L9nF2x/YASSfGheQfqcnLK9trn6lElR+7uvZCO5St4Wr1ykTOHZU01D3fcvXD6w4t+WyL3gSZPMbxdKzgVXnXC5d8YevoBVzRKGHCgKNPkvmp8OOeuS9NSF9kx+lqEGX5wcMGqxvh5Q5OezpusqxIWw36lMxGat5fQpTjQcbDzYNS3+k5N/lzQVO4J7p8fe6KHUCfeA4j1wmtlId472k1TEew/nK3x/JSDzu4dJM6bdtLxRHsIYT0/Ge5ZAcjyCdcw1DXgCFeQsvnJCJkAcnSnMKQHtj10mlSR1401jnv+6RIhIy454baHWVVz3yvuSYgMJAG+temZ43PViANXZphVglJl2SGwj0cdWdyRjkxKwHlcbja3jborGJg/+/UHP5aZtl/3Rwe92f4ywAhSIPG+Lly8A0U3LTwR4jvdM7CtiXb2RSdLibEugUbJLm29S/JRmB9PKW22xPxPJUpamWsgsB6vzJIRw==
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 59ecb213-2575-4e4b-c065-08d86d15086e
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB2718.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Oct 2020 12:07:18.0169
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: TKyGxiI+yaGlOLdgGhz+QYBjsblDkjqNFkR+uixYVwQxmSK0IF1uuz/O+7aeQz2JwUIXuFPbKk1aGKZrCQk8OQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB2720
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
------ira.weiny@intel.com wrote: -----
+On Friday 9 October 2020 20:51:01 CEST Kalle Valo wrote:
+> CAUTION: This email originated from outside of the organization. Do not c=
+lick links or open attachments unless you recognize the sender and know the=
+ content is safe.
+>=20
+>=20
+> Jerome Pouiller <Jerome.Pouiller@silabs.com> writes:
+>=20
+> > From: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
+> >
+> > Smatch complains:
+> >
+> >    main.c:228 wfx_send_pdata_pds() warn: potential NULL parameter deref=
+erence 'tmp_buf'
+> >    227          tmp_buf =3D kmemdup(pds->data, pds->size, GFP_KERNEL);
+> >    228          ret =3D wfx_send_pds(wdev, tmp_buf, pds->size);
+> >                                          ^^^^^^^
+> >    229          kfree(tmp_buf);
+> >
+> > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > Signed-off-by: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
+> > ---
+> >  drivers/staging/wfx/main.c | 8 +++++++-
+> >  1 file changed, 7 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/staging/wfx/main.c b/drivers/staging/wfx/main.c
+> > index df11c091e094..a8dc2c033410 100644
+> > --- a/drivers/staging/wfx/main.c
+> > +++ b/drivers/staging/wfx/main.c
+> > @@ -222,12 +222,18 @@ static int wfx_send_pdata_pds(struct wfx_dev *wde=
+v)
+> >       if (ret) {
+> >               dev_err(wdev->dev, "can't load PDS file %s\n",
+> >                       wdev->pdata.file_pds);
+> > -             return ret;
+> > +             goto err1;
+> >       }
+> >       tmp_buf =3D kmemdup(pds->data, pds->size, GFP_KERNEL);
+> > +     if (!tmp_buf) {
+> > +             ret =3D -ENOMEM;
+> > +             goto err2;
+> > +     }
+> >       ret =3D wfx_send_pds(wdev, tmp_buf, pds->size);
+> >       kfree(tmp_buf);
+> > +err2:
+> >       release_firmware(pds);
+> > +err1:
+> >       return ret;
+> >  }
+>=20
+> A minor style issue but using more descriptive error labels make the
+> code more readable and maintainable, especially in a bigger function.
+> For example, err2 could be called err_release_firmware.
+>=20
+> And actually err1 could be removed and the goto replaced with just
+> "return ret;". Then err2 could be renamed to a simple err.
 
->To: "Andrew Morton" <akpm@linux-foundation.org>, "Thomas Gleixner"
-><tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>, "Borislav
->Petkov" <bp@alien8.de>, "Andy Lutomirski" <luto@kernel.org>, "Peter
->Zijlstra" <peterz@infradead.org>
->From: ira.weiny@intel.com
->Date: 10/09/2020 09:52PM
->Cc: "Ira Weiny" <ira.weiny@intel.com>, "Mike Marciniszyn"
-><mike.marciniszyn@intel.com>, "Dennis Dalessandro"
-><dennis.dalessandro@intel.com>, "Doug Ledford" <dledford@redhat.com>,
->"Jason Gunthorpe" <jgg@ziepe.ca>, "Faisal Latif"
-><faisal.latif@intel.com>, "Shiraz Saleem" <shiraz.saleem@intel.com>,
->"Bernard Metzler" <bmt@zurich.ibm.com>, x86@kernel.org, "Dave Hansen"
-><dave.hansen@linux.intel.com>, "Dan Williams"
-><dan.j.williams@intel.com>, "Fenghua Yu" <fenghua.yu@intel.com>,
->linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
->linux-nvdimm@lists.01.org, linux-fsdevel@vger.kernel.org,
->linux-mm@kvack.org, linux-kselftest@vger.kernel.org,
->linuxppc-dev@lists.ozlabs.org, kvm@vger.kernel.org,
->netdev@vger.kernel.org, bpf@vger.kernel.org,
->kexec@lists.infradead.org, linux-bcache@vger.kernel.org,
->linux-mtd@lists.infradead.org, devel@driverdev.osuosl.org,
->linux-efi@vger.kernel.org, linux-mmc@vger.kernel.org,
->linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
->linux-nfs@vger.kernel.org, ceph-devel@vger.kernel.org,
->linux-ext4@vger.kernel.org, linux-aio@kvack.org,
->io-uring@vger.kernel.org, linux-erofs@lists.ozlabs.org,
->linux-um@lists.infradead.org, linux-ntfs-dev@lists.sourceforge.net,
->reiserfs-devel@vger.kernel.org,
->linux-f2fs-devel@lists.sourceforge.net, linux-nilfs@vger.kernel.org,
->cluster-devel@redhat.com, ecryptfs@vger.kernel.org,
->linux-cifs@vger.kernel.org, linux-btrfs@vger.kernel.org,
->linux-afs@lists.infradead.org, linux-rdma@vger.kernel.org,
->amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
->intel-gfx@lists.freedesktop.org, drbd-dev@tron.linbit.com,
->linux-block@vger.kernel.org, xen-devel@lists.xenproject.org,
->linux-cachefs@redhat.com, samba-technical@lists.samba.org,
->intel-wired-lan@lists.osuosl.org
->Subject: [EXTERNAL] [PATCH RFC PKS/PMEM 10/58] drivers/rdma: Utilize
->new kmap=5Fthread()
->
->From: Ira Weiny <ira.weiny@intel.com>
->
->The kmap() calls in these drivers are localized to a single thread.
->To
->avoid the over head of global PKRS updates use the new kmap=5Fthread()
->call.
->
->Cc: Mike Marciniszyn <mike.marciniszyn@intel.com>
->Cc: Dennis Dalessandro <dennis.dalessandro@intel.com>
->Cc: Doug Ledford <dledford@redhat.com>
->Cc: Jason Gunthorpe <jgg@ziepe.ca>
->Cc: Faisal Latif <faisal.latif@intel.com>
->Cc: Shiraz Saleem <shiraz.saleem@intel.com>
->Cc: Bernard Metzler <bmt@zurich.ibm.com>
->Signed-off-by: Ira Weiny <ira.weiny@intel.com>
->---
-> drivers/infiniband/hw/hfi1/sdma.c      |  4 ++--
-> drivers/infiniband/hw/i40iw/i40iw=5Fcm.c | 10 +++++-----
-> drivers/infiniband/sw/siw/siw=5Fqp=5Ftx.c  | 14 +++++++-------
-> 3 files changed, 14 insertions(+), 14 deletions(-)
->
->diff --git a/drivers/infiniband/hw/hfi1/sdma.c
->b/drivers/infiniband/hw/hfi1/sdma.c
->index 04575c9afd61..09d206e3229a 100644
->--- a/drivers/infiniband/hw/hfi1/sdma.c
->+++ b/drivers/infiniband/hw/hfi1/sdma.c
->@@ -3130,7 +3130,7 @@ int ext=5Fcoal=5Fsdma=5Ftx=5Fdescs(struct hfi1=5Fdev=
-data
->*dd, struct sdma=5Ftxreq *tx,
-> 		}
->=20
-> 		if (type =3D=3D SDMA=5FMAP=5FPAGE) {
->-			kvaddr =3D kmap(page);
->+			kvaddr =3D kmap=5Fthread(page);
-> 			kvaddr +=3D offset;
-> 		} else if (WARN=5FON(!kvaddr)) {
-> 			=5F=5Fsdma=5Ftxclean(dd, tx);
->@@ -3140,7 +3140,7 @@ int ext=5Fcoal=5Fsdma=5Ftx=5Fdescs(struct hfi1=5Fdev=
-data
->*dd, struct sdma=5Ftxreq *tx,
-> 		memcpy(tx->coalesce=5Fbuf + tx->coalesce=5Fidx, kvaddr, len);
-> 		tx->coalesce=5Fidx +=3D len;
-> 		if (type =3D=3D SDMA=5FMAP=5FPAGE)
->-			kunmap(page);
->+			kunmap=5Fthread(page);
->=20
-> 		/* If there is more data, return */
-> 		if (tx->tlen - tx->coalesce=5Fidx)
->diff --git a/drivers/infiniband/hw/i40iw/i40iw=5Fcm.c
->b/drivers/infiniband/hw/i40iw/i40iw=5Fcm.c
->index a3b95805c154..122d7a5642a1 100644
->--- a/drivers/infiniband/hw/i40iw/i40iw=5Fcm.c
->+++ b/drivers/infiniband/hw/i40iw/i40iw=5Fcm.c
->@@ -3721,7 +3721,7 @@ int i40iw=5Faccept(struct iw=5Fcm=5Fid *cm=5Fid, str=
-uct
->iw=5Fcm=5Fconn=5Fparam *conn=5Fparam)
-> 		ibmr->device =3D iwpd->ibpd.device;
-> 		iwqp->lsmm=5Fmr =3D ibmr;
-> 		if (iwqp->page)
->-			iwqp->sc=5Fqp.qp=5Fuk.sq=5Fbase =3D kmap(iwqp->page);
->+			iwqp->sc=5Fqp.qp=5Fuk.sq=5Fbase =3D kmap=5Fthread(iwqp->page);
-> 		dev->iw=5Fpriv=5Fqp=5Fops->qp=5Fsend=5Flsmm(&iwqp->sc=5Fqp,
-> 							iwqp->ietf=5Fmem.va,
-> 							(accept.size + conn=5Fparam->private=5Fdata=5Flen),
->@@ -3729,12 +3729,12 @@ int i40iw=5Faccept(struct iw=5Fcm=5Fid *cm=5Fid,
->struct iw=5Fcm=5Fconn=5Fparam *conn=5Fparam)
->=20
-> 	} else {
-> 		if (iwqp->page)
->-			iwqp->sc=5Fqp.qp=5Fuk.sq=5Fbase =3D kmap(iwqp->page);
->+			iwqp->sc=5Fqp.qp=5Fuk.sq=5Fbase =3D kmap=5Fthread(iwqp->page);
-> 		dev->iw=5Fpriv=5Fqp=5Fops->qp=5Fsend=5Flsmm(&iwqp->sc=5Fqp, NULL, 0, 0);
-> 	}
->=20
-> 	if (iwqp->page)
->-		kunmap(iwqp->page);
->+		kunmap=5Fthread(iwqp->page);
->=20
-> 	iwqp->cm=5Fid =3D cm=5Fid;
-> 	cm=5Fnode->cm=5Fid =3D cm=5Fid;
->@@ -4102,10 +4102,10 @@ static void i40iw=5Fcm=5Fevent=5Fconnected(struct
->i40iw=5Fcm=5Fevent *event)
-> 	i40iw=5Fcm=5Finit=5Ftsa=5Fconn(iwqp, cm=5Fnode);
-> 	read0 =3D (cm=5Fnode->send=5Frdma0=5Fop =3D=3D SEND=5FRDMA=5FREAD=5FZERO=
-);
-> 	if (iwqp->page)
->-		iwqp->sc=5Fqp.qp=5Fuk.sq=5Fbase =3D kmap(iwqp->page);
->+		iwqp->sc=5Fqp.qp=5Fuk.sq=5Fbase =3D kmap=5Fthread(iwqp->page);
-> 	dev->iw=5Fpriv=5Fqp=5Fops->qp=5Fsend=5Frtt(&iwqp->sc=5Fqp, read0);
-> 	if (iwqp->page)
->-		kunmap(iwqp->page);
->+		kunmap=5Fthread(iwqp->page);
->=20
-> 	memset(&attr, 0, sizeof(attr));
-> 	attr.qp=5Fstate =3D IB=5FQPS=5FRTS;
->diff --git a/drivers/infiniband/sw/siw/siw=5Fqp=5Ftx.c
->b/drivers/infiniband/sw/siw/siw=5Fqp=5Ftx.c
->index d19d8325588b..4ed37c328d02 100644
->--- a/drivers/infiniband/sw/siw/siw=5Fqp=5Ftx.c
->+++ b/drivers/infiniband/sw/siw/siw=5Fqp=5Ftx.c
->@@ -76,7 +76,7 @@ static int siw=5Ftry=5F1seg(struct siw=5Fiwarp=5Ftx *c=
-=5Ftx,
->void *paddr)
-> 			if (unlikely(!p))
-> 				return -EFAULT;
->=20
->-			buffer =3D kmap(p);
->+			buffer =3D kmap=5Fthread(p);
->=20
-> 			if (likely(PAGE=5FSIZE - off >=3D bytes)) {
-> 				memcpy(paddr, buffer + off, bytes);
->@@ -84,7 +84,7 @@ static int siw=5Ftry=5F1seg(struct siw=5Fiwarp=5Ftx *c=
-=5Ftx,
->void *paddr)
-> 				unsigned long part =3D bytes - (PAGE=5FSIZE - off);
->=20
-> 				memcpy(paddr, buffer + off, part);
->-				kunmap(p);
->+				kunmap=5Fthread(p);
->=20
-> 				if (!mem->is=5Fpbl)
-> 					p =3D siw=5Fget=5Fupage(mem->umem,
->@@ -96,10 +96,10 @@ static int siw=5Ftry=5F1seg(struct siw=5Fiwarp=5Ftx
->*c=5Ftx, void *paddr)
-> 				if (unlikely(!p))
-> 					return -EFAULT;
->=20
->-				buffer =3D kmap(p);
->+				buffer =3D kmap=5Fthread(p);
-> 				memcpy(paddr + part, buffer, bytes - part);
-> 			}
->-			kunmap(p);
->+			kunmap=5Fthread(p);
-> 		}
-> 	}
-> 	return (int)bytes;
->@@ -505,7 +505,7 @@ static int siw=5Ftx=5Fhdt(struct siw=5Fiwarp=5Ftx *c=
-=5Ftx,
->struct socket *s)
-> 				page=5Farray[seg] =3D p;
->=20
-> 				if (!c=5Ftx->use=5Fsendpage) {
->-					iov[seg].iov=5Fbase =3D kmap(p) + fp=5Foff;
->+					iov[seg].iov=5Fbase =3D kmap=5Fthread(p) + fp=5Foff;
+It was the case in the initial code. However, I have preferred to not
+mix 'return' and 'goto' inside the same function. Probably a matter of
+taste.
 
-This misses a corresponding kunmap=5Fthread() in siw=5Funmap=5Fpages()
-(pls change line 403 in siw=5Fqp=5Ftx.c as well)
+Greg has already applied the series, but I don't forget this review. I
+will take it into account in the series I am going to send you (probably
+in the v2, in order to not defer the v1).
 
-Thanks,
-Bernard.
+--=20
+J=E9r=F4me Pouiller
 
-> 					iov[seg].iov=5Flen =3D plen;
->=20
-> 					/* Remember for later kunmap() */
->@@ -518,9 +518,9 @@ static int siw=5Ftx=5Fhdt(struct siw=5Fiwarp=5Ftx *c=
-=5Ftx,
->struct socket *s)
-> 							plen);
-> 				} else if (do=5Fcrc) {
-> 					crypto=5Fshash=5Fupdate(c=5Ftx->mpa=5Fcrc=5Fhd,
->-							    kmap(p) + fp=5Foff,
->+							    kmap=5Fthread(p) + fp=5Foff,
-> 							    plen);
->-					kunmap(p);
->+					kunmap=5Fthread(p);
-> 				}
-> 			} else {
-> 				u64 va =3D sge->laddr + sge=5Foff;
->--=20
->2.28.0.rc0.12.gb6a658bd00c9
->
->
 
