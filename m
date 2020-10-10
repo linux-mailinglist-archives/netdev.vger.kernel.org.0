@@ -2,114 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A99A28A215
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 00:54:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00CF828A233
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 00:55:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388701AbgJJWyb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 18:54:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34710 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731262AbgJJTFY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 15:05:24 -0400
-Received: from mo6-p00-ob.smtp.rzone.de (mo6-p00-ob.smtp.rzone.de [IPv6:2a01:238:20a:202:5300::11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A5B6C05BD38;
-        Sat, 10 Oct 2020 09:35:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1602347097;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=yaxlQrst36IygI7MJFDli/+6A/eBm0GVYENbEKpqTqY=;
-        b=PX2rzFbeKg1RmEivQ2mjxlmpeouWeh/3lRtV6RsnOFjeocjqfKebM0HE1O7tOSutI4
-        EKURmTVzILyygQnHt3AkAJXmruK6+DTX+GoA64bWcE19MoFJbc67HKEWKJfcEuJGQKfF
-        U6FskbWpRoCa5ahG0xTTf6Q7Ro797JHLiRPHGTsVnDkKdwyPQ4PJY0TOCArIAUwuxLGw
-        93UlFi7UG61KaPBAUuRIRAef8a4X9qxtvRvy5XBqTW9FtYCSYuhZHqcab+cptBaSZJw8
-        oitHlfEjt53PFPG2aqcHPWw5ktVa5Z1lHV7w0pYWzyweTbeY9MNJkVFdeaUoCzwjnj+d
-        wL0Q==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3HMbEWLW0JK2wEH"
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.50.177]
-        by smtp.strato.de (RZmta 47.2.1 DYNA|AUTH)
-        with ESMTPSA id D0b41cw9AGOmM2g
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Sat, 10 Oct 2020 18:24:48 +0200 (CEST)
-Subject: Re: [PATCH 08/17] can: add ISO 15765-2:2016 transport protocol
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>, netdev@vger.kernel.org,
-        davem@davemloft.net, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-References: <20201007213159.1959308-1-mkl@pengutronix.de>
- <20201007213159.1959308-9-mkl@pengutronix.de>
- <20201009175751.5c54097f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <bcebf26e-3cfb-c7aa-e7fc-4faa744b9c2f@hartkopp.net>
- <20201010084421.308645a2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <10c8b62c-e522-aaa4-2e75-d1c1bd630735@hartkopp.net>
-Date:   Sat, 10 Oct 2020 18:24:48 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S2389238AbgJJWz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 18:55:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53938 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731822AbgJJTh1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 10 Oct 2020 15:37:27 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 08229223BF;
+        Sat, 10 Oct 2020 16:32:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602347534;
+        bh=Jd04fxPJuQJZKqz4bs0WWvyPt+mS9UdG/D05ZrDqSWA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WVlM3/bD81SYY9L3YcIlGO+M9fWud/EARbrbdzuz1DsgU/eA63iFZ3z9sTjxlyDDo
+         /B30bdPp2kbOYC37K7ZE9vW9T6McYv+ljJEFY8+cQSc2NfitzUmAUM1NcPXTZmRpY/
+         zO+z+yGe6sGqUBlYALARDVxkUNcid+lf8MLxTQ94=
+Date:   Sat, 10 Oct 2020 09:32:12 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        eyal.birger@gmail.com
+Subject: Re: [PATCH bpf-next V3 0/6] bpf: New approach for BPF MTU handling
+Message-ID: <20201010093212.374d1e68@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201010124402.606f2d37@carbon>
+References: <160216609656.882446.16642490462568561112.stgit@firesoul>
+        <20201009093319.6140b322@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <5f80ccca63d9_ed74208f8@john-XPS-13-9370.notmuch>
+        <20201009160010.4b299ac3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20201010124402.606f2d37@carbon>
 MIME-Version: 1.0
-In-Reply-To: <20201010084421.308645a2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 10.10.20 17:44, Jakub Kicinski wrote:
-> On Sat, 10 Oct 2020 16:29:06 +0200 Oliver Hartkopp wrote:
->>>> diff --git a/net/can/Kconfig b/net/can/Kconfig
->>>> index 25436a715db3..021fe03a8ed6 100644
->>>> --- a/net/can/Kconfig
->>>> +++ b/net/can/Kconfig
->>>> @@ -55,6 +55,19 @@ config CAN_GW
->>>>    
->>>>    source "net/can/j1939/Kconfig"
->>>>    
->>>> +config CAN_ISOTP
->>>> +	tristate "ISO 15765-2:2016 CAN transport protocol"
->>>> +	default y
->>>
->>> default should not be y unless there is a very good reason.
->>> I don't see such reason here. This is new functionality, users
->>> can enable it if they need it.
->>
->> Yes. I agree. But there is a good reason for it.
->> The ISO 15765-2 protocol is used for vehicle diagnosis and is a *very*
->> common CAN bus use case.
+On Sat, 10 Oct 2020 12:44:02 +0200 Jesper Dangaard Brouer wrote:
+> > > > We will not be sprinkling validation checks across the drivers because
+> > > > some reconfiguration path may occasionally yield a bad packet, or it's
+> > > > hard to do something right with BPF.      
+> > > 
+> > > This is a driver bug then. As it stands today drivers may get hit with
+> > > skb with MTU greater than set MTU as best I can tell.    
+> > 
+> > You're talking about taking it from "maybe this can happen, but will
+> > still be at most jumbo" to "it's going to be very easy to trigger and
+> > length may be > MAX_U16".  
 > 
-> More common than j1939? (Google uses words like 'widely used' and
-> 'common' :)) To give you some perspective we don't enable Ethernet
-> vlan support by default, vlans are pretty common, too.
-> 
->> The config item only shows up when CONFIG_CAN is selected and then ISO
->> 15765-2 should be enabled too. I have implemented and maintained the
->> out-of-tree driver for ~12 years now and the people have real problems
->> using e.g. Ubuntu with signed kernel modules when they need this protocol.
->>
->> Therefore the option should default to 'y' to make sure the common
->> distros (that enable CONFIG_CAN) enable ISO-TP too.
-> 
-> I understand the motivation, but Linus had pushed back on defaulting to
-> 'y' many times over the years, please read this:
-> 
-> https://lkml.org/lkml/2012/1/6/354
-> 
-> This really must not pop up on his screen as default 'y' when he does
-> an oldconfig after pulling the networking tree..
-> 
+> It is interesting that a misbehaving BPF program can easily trigger this.
+> Next week, I will looking writing such a BPF-prog and then test it on
+> the hardware I have avail in my testlab.
 
-Ok. Understood.
+FWIW I took a quick swing at testing it with the HW I have and it did
+exactly what hardware should do. The TX unit entered an error state 
+and then the driver detected that and reset it a few seconds later.
 
-I'll remove the default=y then. Would it be ok to add some text like
+Hardware is almost always designed to behave like that. If some NIC
+actually cleanly drops over sized TX frames, I'd bet it's done in FW,
+or some other software piece.
 
-If you want to perfrom automotive vehicle diagnostic services (UDS), say 
-'y'.
+There was also a statement earlier in the thread that we can put a large
+frame on the wire and "let the switch drop it". I don't believe
+that's possible either (as I mentioned previously BPF could generate
+frames above jumbo size). My phy knowledge is very rudimentary and
+rusty but from what I heard Ethernet PHYs have a hard design limit on
+the length of a frame they can put of a wire (or pull from it), because
+of symbol encoding, electrical charges on the wire etc. reasons. There
+needs to be a bunch of idle symbols every now and then. And obviously
+if one actually manages to get a longer frame to the PHY it will fault,
+see above.
 
-?
+> > > Generally I expect drivers use MTU to configure RX buffers not sure
+> > > how it is going to be used on TX side? Any examples? I just poked
+> > > around through the driver source to see and seems to confirm its
+> > > primarily for RX side configuration with some drivers throwing the
+> > > event down to the firmware for something that I can't see in the code?    
+> > 
+> > Right, but that could just be because nobody expects to get over sized
+> > frames from the stack.
+> > 
+> > We actively encourage drivers to remove paranoid checks. It's really
+> > not going to be a great experience for driver authors where they need
+> > to consult a list of things they should and shouldn't check.
+> > 
+> > If we want to do this, the driver interface must most definitely say 
+> > MRU and not MTU.  
+> 
+> What is MRU?
 
-Best regards,
-Oliver
+Max Receive Unit, Jesse and others have been talking about how we 
+should separate the TX config from RX config for drivers. Right now
+drivers configure RX filters based on the max transmission unit, 
+which is weird, and nobody is sure whether that's actually desired.
+
+> > > I'm not suggestiong sprinkling validation checks across the drivers.
+> > > I'm suggesting if the drivers hang we fix them.    
+> > 
+> > We both know the level of testing drivers get, it's unlikely this will
+> > be validated. It's packet of death waiting to happen. 
+> > 
+> > And all this for what? Saving 2 cycles on a branch that will almost
+> > never be taken?  
+> 
+> I do think it is risky not to do this simple MTU check in net-core.  I
+> also believe the overhead is very very low.  Hint, I'm basically just
+> moving the MTU check from one place to another.  (And last patch in
+> patchset is an optimization that inlines and save cycles when doing
+> these kind of MTU checks).
