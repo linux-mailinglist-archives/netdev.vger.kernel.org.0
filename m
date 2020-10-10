@@ -2,119 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53AFA28A391
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 01:09:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECFFA28A399
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 01:09:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390230AbgJJW4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 18:56:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33164 "EHLO
+        id S2390256AbgJJW4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 18:56:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730476AbgJJV7Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 17:59:24 -0400
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D88F7C0613D2
-        for <netdev@vger.kernel.org>; Sat, 10 Oct 2020 14:49:19 -0700 (PDT)
-Received: by mail-pf1-x430.google.com with SMTP id 144so10010447pfb.4
-        for <netdev@vger.kernel.org>; Sat, 10 Oct 2020 14:49:19 -0700 (PDT)
+        with ESMTP id S1730730AbgJJWCr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 18:02:47 -0400
+Received: from mail-yb1-xb41.google.com (mail-yb1-xb41.google.com [IPv6:2607:f8b0:4864:20::b41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0510FC0613D0;
+        Sat, 10 Oct 2020 15:02:46 -0700 (PDT)
+Received: by mail-yb1-xb41.google.com with SMTP id h9so10226070ybm.4;
+        Sat, 10 Oct 2020 15:02:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=st0s2kzUicjbj8R7EOC27K/dfyNUBDh27Z/gJXV3eFE=;
-        b=i4YhDPS9+Mji198d+x6U1u+SVAKOrEoQqJrheGtHHDbqB2tP9gwMhopcV1+96I9rMq
-         ndjvMpca0MLaupN/vjdNOQ5JcnG7Ml7XlEUAXW1fzWlhpzEkrTCqqiD+jb6KxP1BUBvK
-         8Ref2yCAxSW7cqH7ekFS0ORivmr6WYT2NTOq0CX/SJ61cWpjDZLECt1lymrVT/u42iQg
-         87fII+BE3dlsbZn8L7icvI6PAkYNjT4r3YKsLkOyk2Vfpj2lJcsH4OiC0NxrZmnfybCV
-         YkApSCuTKWcR+stwTVzevZ+OuGVt9lLHoMMQYxS8xmQ+OUcohm9RQOP363TyGQCp54qt
-         kgHQ==
+        bh=BPBONxxyc/ex5OHILvYzv0JlzTpLWw2xP7v4ZASALFI=;
+        b=shDLVtvTK/uzL9IyUrcof7dNKQDBT6+FnW+xaBA4W6SykTAgqiYi+B1L2c/Ed2DFWd
+         oE+MJvl2OHWEPAwGIw83yFJD0BEc76TkdZPxjkE35QLDqh2/YAUqRT/CKFG/vmUcMi9m
+         4Anmj7zJ36m+jD0kha5wxLexJzG3wuz0Q3jDRTFKbRZP/BBhKTsT6nYOramAvvN7pD1g
+         W+a64oK3pEwVbBx4T1O/frK3WFutv/roj0sW/gTUDpryqNZZ2eI7aiGI4HPbWEUJY4Tb
+         ALUlO6AKymjLSiobcUDuEhoW0bstjw7U4LzMlAJgCPoX8GvlHBonqx+Ymc3nVVDAmESd
+         E1ZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=st0s2kzUicjbj8R7EOC27K/dfyNUBDh27Z/gJXV3eFE=;
-        b=HE/XHF25rGZa5kH4owEG+zj67Ajkd8Cb4j1C1t7chgA/hEO4LqnXssSjHVEzSEp5OV
-         WeKxnC8mPB2je+bQ2TLc0IrYLyWpc+ZtVZvtWD3Q6xuaZ8iu/lcxVJipOTt8PpYp1XKf
-         d+edtqHqz4E6JO9xxdnIJp3njt6kmaqokverw3iRkuhZXFMLrS2cWWvAfXaIUD0qLwum
-         x3juAEG7ov/J6g08Gkp7jUxvH33UVc9rIH5Xb05bB8979mzGOJF3vB7Ckp+XuTo5Hb7y
-         k6k73JRnz3+LX8RxlJPNlCm1hbKq80gnMKfhPdQINSD/+GyxO4aXCSkGjefigkJMbWKJ
-         AjSA==
-X-Gm-Message-State: AOAM530bYgPA1t6QLF4ycXRo+x+h7RUt/NehufOsqDPjixg/8ynGjMAT
-        Qqya2VONLgETpTnmxJglvxeMheEjRVPMmjuCXKs=
-X-Google-Smtp-Source: ABdhPJwRBZi6ge/S8ckiMDKMlvBoL+BMVno3Ds6vn3OXlMTv+FhAadFwvANiWfj3P/7AgpOk50RPLYc+x+5/uyW/EXI=
-X-Received: by 2002:a17:90a:bf92:: with SMTP id d18mr11810763pjs.210.1602366558204;
- Sat, 10 Oct 2020 14:49:18 -0700 (PDT)
+        bh=BPBONxxyc/ex5OHILvYzv0JlzTpLWw2xP7v4ZASALFI=;
+        b=iikqMDLJ+NhD9mvRoLjcJpDx67+j67rWw6jTFrZEZSwl6U/D4cLl3vo2UiLOdQeS0c
+         Icgzn0krwb7KfPsgTC4xIWZ/QON/pXYEfDLYb6IBUqX3wvCIrox7hcvblHh0ksYFZAsC
+         yqpvZdGtwZMhKx+YQwwVWH9JH9zof1BE4W8PM91p7+FnYEWKpn/Ophks1jPq9nag23O6
+         c9+EJeBDwRjNu9UB6lBXU8zOTYpRBpUc8W3cJ7FzpnUAjRPljijLV4xhirpscNcaaihD
+         uP3VITynkHCnKAk+phIcyhm9t1gzY/+C6TFm53wFINr0wPCbKvEb6UPyzFdNudZr8o5h
+         pQ5g==
+X-Gm-Message-State: AOAM530/8tDM7K8RniHpApiN7sCSLf4cUM4oAXTKhLDU4ZX8wYMZegfE
+        StwdqFBjyQpoVEi66GVPjCxQ6Lo+p5X4zlt268E=
+X-Google-Smtp-Source: ABdhPJwwQ9QUbTlJgjeiZSkxW8PdW93J3Wb9f/3iZbRIxvAzSn9EWnlckNJl3xPOIrpfYvrZWfEoWLEWtIJJvksiFyE=
+X-Received: by 2002:a25:2a4b:: with SMTP id q72mr18181406ybq.27.1602367366106;
+ Sat, 10 Oct 2020 15:02:46 -0700 (PDT)
 MIME-Version: 1.0
-References: <20201008012154.11149-1-xiyou.wangcong@gmail.com>
- <CA+FuTSeMYFh3tY9cJN6h02E+r3BST=w74+pD=zraLXsmJTLZXA@mail.gmail.com>
- <CAM_iQpWCR84sD6dZBforgt4cg-Jya91D6EynDo2y2sC7vi-vMg@mail.gmail.com>
- <CA+FuTSdKa1Q36ONbsGOMqXDCUiiDNsA6rkqyrzB+eXJj=MyRKA@mail.gmail.com>
- <CAJht_ENnmYRh-RomBodJE0HoFzaLQhD+DKEu2WWST+B43JxWcQ@mail.gmail.com>
- <CA+FuTSdWYDs5u+3VzpTA1-Xs1OiVzv8QiKGTH4GUYrvXFfGT_A@mail.gmail.com>
- <CAJht_ENMFY_HwaJDjvxZbQgcDv7btC+bU6gzdjyddY-JS=a6Lg@mail.gmail.com>
- <CA+FuTScizeZC-ndVvXj4VyArth2gnxoh3kTSoe5awGoiFXtkBA@mail.gmail.com>
- <CAJht_ENmrPbhfPaD5kkiDVWQsvA_LRndPiCMrS9zdje6sVPk=g@mail.gmail.com>
- <CA+FuTSfhDgn-Qej4HOY-kYWSy8pUsnafMk=ozwtYGfS4W2DNuA@mail.gmail.com>
- <CAJht_ENxoAyUOoiHSbFXEZ6Jf2xqfOmYfQ6Sh-hfmTUk-kTrfQ@mail.gmail.com>
- <CAJht_EOMQRKWfwhfqwXB3RYA1h463q43ycNjJmaGZm6RS65QGA@mail.gmail.com>
- <CAM_iQpWRftQkOfgfMACNR_5YZxvzLJH1aMtmZNj7nJH_Wu-NRw@mail.gmail.com>
- <CAJht_ENnYyXbOxtPHD9GHB92U4uonKO_oRZ82g2OR2DaFZ7bBQ@mail.gmail.com>
- <CAJht_EPVyc0uAZc914E3tdgqEc7tDabpAxnBsGrRRFecc+NMwg@mail.gmail.com>
- <CAM_iQpU1hU0Wg9sdTwFAG17Gk4-85+=xvZdQeb3oswhBKtAsPA@mail.gmail.com>
- <CAM_iQpVhrFZ4DWg9btEpS9+s0QX-b=eSkJJWzPr_KUV-TEkrQw@mail.gmail.com>
- <CAJht_EO99yYQeUPUFR-qvWwrpZQfXToUu6x7LBS+0yhqiYg_XQ@mail.gmail.com> <CAM_iQpX0zjZUDE_iuf4WWXiodwb2UpqyjjQPYrfD0CMXnMSymQ@mail.gmail.com>
-In-Reply-To: <CAM_iQpX0zjZUDE_iuf4WWXiodwb2UpqyjjQPYrfD0CMXnMSymQ@mail.gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Sat, 10 Oct 2020 14:49:07 -0700
-Message-ID: <CAJht_EPQ8OXUeRxn7Q2AU9NsEuFB14Vs8Q0xBs-j9ka36RUVWQ@mail.gmail.com>
-Subject: Re: [Patch net] ip_gre: set dev->hard_header_len properly
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        syzbot <syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com>,
-        William Tu <u9012063@gmail.com>
+References: <20201010205447.5610-1-daniel@iogearbox.net> <20201010205447.5610-4-daniel@iogearbox.net>
+In-Reply-To: <20201010205447.5610-4-daniel@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Sat, 10 Oct 2020 15:02:35 -0700
+Message-ID: <CAEf4BzZjDVqH3feow2Jzp--+akegVp5yrDdMyzB6EiD6U2ddDQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 3/6] bpf: allow for map-in-map with dynamic
+ inner array map entries
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 10, 2020 at 11:58 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+On Sat, Oct 10, 2020 at 1:54 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
 >
-> On Fri, Oct 9, 2020 at 8:10 PM Xie He <xie.he.0141@gmail.com> wrote:
-> >
-> > This seems so weird to me. If a user is using an AF_PACKET/RAW socket,
-> > the user is supposed to do what the header_ops->create function does
-> > (that is, creating two headers and leaving two holes to be filled in
-> > later). I think no user would actually do that. That is so weird.
+> Recent work in f4d05259213f ("bpf: Add map_meta_equal map ops") and 134fede4eecf
+> ("bpf: Relax max_entries check for most of the inner map types") added support
+> for dynamic inner max elements for most map-in-map types. Exceptions were maps
+> like array or prog array where the map_gen_lookup() callback uses the maps'
+> max_entries field as a constant when emitting instructions.
 >
-> Well, AF_PACKET RAW socket is supposed to construct L2 headers
-> from the user buffer, and for a tunnel device these headers are indeed its
-> L2. If users do not want to do this, they can switch to DGRAM anyway.
+> We recently implemented Maglev consistent hashing into Cilium's load balancer
+> which uses map-in-map with an outer map being hash and inner being array holding
+> the Maglev backend table for each service. This has been designed this way in
+> order to reduce overall memory consumption given the outer hash map allows to
+> avoid preallocating a large, flat memory area for all services. Also, the
+> number of service mappings is not always known a-priori.
 >
-> I know how inconvenient it is to construct a GRE tunnel header, I guess
-> this is why all other tunnel devices do not provide a header_ops::create.
-> GRE tunnel is not a special case, this is why I agree on removing its
-> ->create() although it does look like all tunnel devices should let users
-> construct headers by definition of RAW.
+> The use case for dynamic inner array map entries is to further reduce memory
+> overhead, for example, some services might just have a small number of back
+> ends while others could have a large number. Right now the Maglev backend table
+> for small and large number of backends would need to have the same inner array
+> map entries which adds a lot of unneeded overhead.
 >
-> Of course, it may be too late to change this behavior even if we really
-> want, users may already assume there is always no tunnel header needed
-> to construct.
+> Dynamic inner array map entries can be realized by avoiding the inlined code
+> generation for their lookup. The lookup will still be efficient since it will
+> be calling into array_map_lookup_elem() directly and thus avoiding retpoline.
+> The patch adds a BPF_F_INNER_MAP flag to map creation which therefore skips
+> inline code generation and relaxes array_map_meta_equal() check to ignore both
+> maps' max_entries. This also still allows to have faster lookups for map-in-map
+> when BPF_F_INNER_MAP is not specified and hence dynamic max_entries not needed.
+>
+> Example code generation where inner map is dynamic sized array:
+>
+>   # bpftool p d x i 125
+>   int handle__sys_enter(void * ctx):
+>   ; int handle__sys_enter(void *ctx)
+>      0: (b4) w1 = 0
+>   ; int key = 0;
+>      1: (63) *(u32 *)(r10 -4) = r1
+>      2: (bf) r2 = r10
+>   ;
+>      3: (07) r2 += -4
+>   ; inner_map = bpf_map_lookup_elem(&outer_arr_dyn, &key);
+>      4: (18) r1 = map[id:468]
+>      6: (07) r1 += 272
+>      7: (61) r0 = *(u32 *)(r2 +0)
+>      8: (35) if r0 >= 0x3 goto pc+5
+>      9: (67) r0 <<= 3
+>     10: (0f) r0 += r1
+>     11: (79) r0 = *(u64 *)(r0 +0)
+>     12: (15) if r0 == 0x0 goto pc+1
+>     13: (05) goto pc+1
+>     14: (b7) r0 = 0
+>     15: (b4) w6 = -1
+>   ; if (!inner_map)
+>     16: (15) if r0 == 0x0 goto pc+6
+>     17: (bf) r2 = r10
+>   ;
+>     18: (07) r2 += -4
+>   ; val = bpf_map_lookup_elem(inner_map, &key);
+>     19: (bf) r1 = r0                               | No inlining but instead
+>     20: (85) call array_map_lookup_elem#149280     | call to array_map_lookup_elem()
+>   ; return val ? *val : -1;                        | for inner array lookup.
+>     21: (15) if r0 == 0x0 goto pc+1
+>   ; return val ? *val : -1;
+>     22: (61) r6 = *(u32 *)(r0 +0)
+>   ; }
+>     23: (bc) w0 = w6
+>     24: (95) exit
+>
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+> ---
+>  include/linux/bpf.h            |  2 +-
+>  include/uapi/linux/bpf.h       |  3 +++
+>  kernel/bpf/arraymap.c          | 17 +++++++++++------
+>  kernel/bpf/hashtab.c           |  6 +++---
+>  kernel/bpf/verifier.c          |  4 +++-
+>  net/xdp/xskmap.c               |  2 +-
+>  tools/include/uapi/linux/bpf.h |  3 +++
+>  7 files changed, 25 insertions(+), 12 deletions(-)
+>
 
-Another reason why tunnel devices usually don't provide
-header_ops->create might be to keep consistency with TAP devices. TAP
-devices are just like tunnel (TUN) devices except that they use an
-additional Ethernet header after the tunnel headers. I guess that TAP
-devices would usually use Ethernet's header_ops to expose only the
-Ethernet header to the user, but hide the outer tunnel headers from
-the user and let them be constructed on the transmission path (so that
-TAP devices would appear exactly like Ethernet devices). If we want to
-keep TUN devices consistent with TAP devices, we should hide the
-tunnel headers from the user for TUN devices, too.
+[...]
 
-Actually, a lot of devices expose a fake L2 header in header_ops,
-instead of their real L2 header anyway. Wi-Fi devices usually pretend
-to be Ethernet devices and expose an Ethernet header in header_ops. So
-I think it is acceptable to not expose the real L2 header in
-header_ops. (This is also what needed_headroom is created for - to
-request additional header space for headers not exposed in
-header_ops.)
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index f3e36eade3d4..d578875df1ad 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -11049,6 +11049,8 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
+>                         if (insn->imm == BPF_FUNC_map_lookup_elem &&
+>                             ops->map_gen_lookup) {
+>                                 cnt = ops->map_gen_lookup(map_ptr, insn_buf);
+> +                               if (cnt < 0)
+> +                                       goto patch_map_ops_generic;
+
+but now any reported error will be silently skipped. The logic should be:
+
+if (cnt == -EOPNOTSUPP)
+    goto patch_map_ops_generic;
+if (cnt <= 0 || cnt >= ARRAY_SIZE(insn_buf))
+    verbose(env, "bpf verifier is misconfigured\n");
+
+This way only -EOPNOTSUPP is silently skipped, all other cases where
+error is returned, cnt == 0, or cnt is too big would be reported as
+error.
+
+>                                 if (cnt == 0 || cnt >= ARRAY_SIZE(insn_buf)) {
+>                                         verbose(env, "bpf verifier is misconfigured\n");
+>                                         return -EINVAL;
+> @@ -11079,7 +11081,7 @@ static int fixup_bpf_calls(struct bpf_verifier_env *env)
+>                                      (int (*)(struct bpf_map *map, void *value))NULL));
+>                         BUILD_BUG_ON(!__same_type(ops->map_peek_elem,
+>                                      (int (*)(struct bpf_map *map, void *value))NULL));
+
+[...]
