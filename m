@@ -2,42 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0CBE28A3B0
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 01:09:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3D6528A248
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 00:56:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390166AbgJJW4q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 18:56:46 -0400
-Received: from mo4-p00-ob.smtp.rzone.de ([85.215.255.20]:25288 "EHLO
-        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388233AbgJJUzn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 16:55:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1602363338;
+        id S2390189AbgJJW4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 18:56:47 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.164]:22993 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388235AbgJJUzv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 16:55:51 -0400
+X-Greylist: delayed 352 seconds by postgrey-1.27 at vger.kernel.org; Sat, 10 Oct 2020 16:55:48 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1602363340;
         s=strato-dkim-0002; d=hartkopp.net;
-        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
-        Subject:Sender;
-        bh=RfRl8LEsL90bZVT/vnSK+cUBa8J9DjYbPGdWhQ3vRg0=;
-        b=SwpGm+PMApiCQvyeK16bFoSqrCyGgwxrWTaGCTgNUSOxipCqylxG5rcs86W2tV387e
-        7vHV6PBbdDfr+qVSP8L9g8YGqGgZHsjuS2bJYwEDtTrQ7MdysAQ3P7rCBJh6fJ/gsRo5
-        muk5AmExGlLM7ZJhBOoZMHFn71B9CqsxWP4/EMCmqJhrMi7UK67a18DnrrBPGHpvWaxv
-        e/f+6mV9+HCka+0OfwHMVB1KJjeGfJPfJhPF54Cq/F45OBHB+lKHqvNSDuw2XPQJtu5L
-        uWEOuW3XnX135hBlPvjkclMkX+ykGXO/hO866AeBZ45ulBcfvSkko0wugoVKYbwR5ycX
-        tbeg==
+        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=HnFFJSfWt+x5iyzDrAWWJ7dBQ05FqJKWxjqrCQ02A7k=;
+        b=IzPYa/VRfKrn2ZQhn7z/O6q/CRAZ93I9H6GjTqJBfwWoBTwr6IeayyEXpL4u2CQV5M
+        pCmYqrtN/91EjGb53T4HtSYn7OqCrBcOi4Jp2LF3cDJAZJdUNV8yL23mscBkzISpPa9g
+        qWM1fHZaFY4Dm3Ef0y3y9wNsETmanzAGsTTczIRs1aYjQOMGO8xU0MEJIZ4V38Aa1YEM
+        Q3D/XLzhLHK4qgJAGTti3kGvLcb+mRY9c9wF1KOk/77SUfJeW+KMAr0R9BrfAVcKVXzy
+        DmkADJKDfLfjR+LQco1x4gADnyPsGExgs6JDYdMgKmt5JW3ELVfuJwVu9T4mDiG88/TO
+        AIyw==
 X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjGrp7owjzFK3JbFk1mS0lu8GW2/7Zq6MBXY="
 X-RZG-CLASS-ID: mo00
 Received: from silver.lan
         by smtp.strato.de (RZmta 47.2.1 DYNA|AUTH)
-        with ESMTPSA id D0b41cw9AKnbMGS
+        with ESMTPSA id D0b41cw9AKoBMGa
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-        Sat, 10 Oct 2020 22:49:37 +0200 (CEST)
+        Sat, 10 Oct 2020 22:50:11 +0200 (CEST)
 From:   Oliver Hartkopp <socketcan@hartkopp.net>
 To:     kuba@kernel.org, netdev@vger.kernel.org
 Cc:     mkl@pengutronix.de, davem@davemloft.net, linux-can@vger.kernel.org,
         Oliver Hartkopp <socketcan@hartkopp.net>
-Subject: [PATCH net-next 1/2] can-isotp: implement cleanups / improvements from review
-Date:   Sat, 10 Oct 2020 22:49:08 +0200
-Message-Id: <20201010204909.2059-1-socketcan@hartkopp.net>
+Subject: [PATCH net-next 2/2] can: remove obsolete version strings
+Date:   Sat, 10 Oct 2020 22:49:09 +0200
+Message-Id: <20201010204909.2059-2-socketcan@hartkopp.net>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20201010204909.2059-1-socketcan@hartkopp.net>
+References: <20201010204909.2059-1-socketcan@hartkopp.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -46,111 +49,196 @@ X-Mailing-List: netdev@vger.kernel.org
 
 As pointed out by Jakub Kicinski here:
 https://marc.info/?l=linux-can&m=160229286216008
-this patch addresses the remarked issues:
-
-- remove empty lines in comment
-- remove default=y for CAN_ISOTP in Kconfig
-- make use of pr_notice_once()
-- use GFP_KERNEL instead of gfp_any() in soft hrtimer context
-
-The version strings in the CAN subsystem are removed by a separate patch.
+this patch removes the obsolete version information of the different
+CAN protocols and the AF_CAN core module.
 
 Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
 ---
- include/uapi/linux/can/isotp.h |  4 +---
- net/can/Kconfig                |  3 ++-
- net/can/isotp.c                | 14 +++++++-------
- 3 files changed, 10 insertions(+), 11 deletions(-)
+ include/linux/can/core.h |  7 -------
+ include/net/netns/can.h  |  1 -
+ net/can/af_can.c         |  2 +-
+ net/can/bcm.c            |  4 +---
+ net/can/gw.c             |  4 +---
+ net/can/isotp.c          |  4 +---
+ net/can/proc.c           | 12 ------------
+ net/can/raw.c            |  4 +---
+ 8 files changed, 5 insertions(+), 33 deletions(-)
 
-diff --git a/include/uapi/linux/can/isotp.h b/include/uapi/linux/can/isotp.h
-index 553006509f4e..accf0efa46f4 100644
---- a/include/uapi/linux/can/isotp.h
-+++ b/include/uapi/linux/can/isotp.h
-@@ -151,8 +151,7 @@ struct can_isotp_ll_options {
- #define CAN_ISOTP_DEFAULT_LL_TX_DL	CAN_MAX_DLEN
- #define CAN_ISOTP_DEFAULT_LL_TX_FLAGS	0
+diff --git a/include/linux/can/core.h b/include/linux/can/core.h
+index 7da9f1f82e8e..5fb8d0e3f9c1 100644
+--- a/include/linux/can/core.h
++++ b/include/linux/can/core.h
+@@ -18,13 +18,6 @@
+ #include <linux/skbuff.h>
+ #include <linux/netdevice.h>
  
--/*
-- * Remark on CAN_ISOTP_DEFAULT_RECV_* values:
-+/* Remark on CAN_ISOTP_DEFAULT_RECV_* values:
-  *
-  * We can strongly assume, that the Linux Kernel implementation of
-  * CAN_ISOTP is capable to run with BS=0, STmin=0 and WFTmax=0.
-@@ -160,7 +159,6 @@ struct can_isotp_ll_options {
-  * these default settings can be changed via sockopts.
-  * For that reason the STmin value is intentionally _not_ checked for
-  * consistency and copied directly into the flow control (FC) frame.
-- *
-  */
+-#define CAN_VERSION "20170425"
+-
+-/* increment this number each time you change some user-space interface */
+-#define CAN_ABI_VERSION "9"
+-
+-#define CAN_VERSION_STRING "rev " CAN_VERSION " abi " CAN_ABI_VERSION
+-
+ #define DNAME(dev) ((dev) ? (dev)->name : "any")
  
- #endif /* !_UAPI_CAN_ISOTP_H */
-diff --git a/net/can/Kconfig b/net/can/Kconfig
-index 021fe03a8ed6..224e5e0283a9 100644
---- a/net/can/Kconfig
-+++ b/net/can/Kconfig
-@@ -57,7 +57,6 @@ source "net/can/j1939/Kconfig"
+ /**
+diff --git a/include/net/netns/can.h b/include/net/netns/can.h
+index b6ab7d1530d7..52fbd8291a96 100644
+--- a/include/net/netns/can.h
++++ b/include/net/netns/can.h
+@@ -15,7 +15,6 @@ struct can_rcv_lists_stats;
+ struct netns_can {
+ #if IS_ENABLED(CONFIG_PROC_FS)
+ 	struct proc_dir_entry *proc_dir;
+-	struct proc_dir_entry *pde_version;
+ 	struct proc_dir_entry *pde_stats;
+ 	struct proc_dir_entry *pde_reset_stats;
+ 	struct proc_dir_entry *pde_rcvlist_all;
+diff --git a/net/can/af_can.c b/net/can/af_can.c
+index b7d0f6500893..6373ab9c5507 100644
+--- a/net/can/af_can.c
++++ b/net/can/af_can.c
+@@ -875,7 +875,7 @@ static __init int can_init(void)
+ 		     offsetof(struct can_frame, data) !=
+ 		     offsetof(struct canfd_frame, data));
  
- config CAN_ISOTP
- 	tristate "ISO 15765-2:2016 CAN transport protocol"
--	default y
- 	help
- 	  CAN Transport Protocols offer support for segmented Point-to-Point
- 	  communication between CAN nodes via two defined CAN Identifiers.
-@@ -67,6 +66,8 @@ config CAN_ISOTP
- 	  vehicle diagnosis (UDS, ISO 14229) or IP-over-CAN traffic.
- 	  This protocol driver implements data transfers according to
- 	  ISO 15765-2:2016 for 'classic' CAN and CAN FD frame types.
-+	  If you want to perform automotive vehicle diagnostic services (UDS),
-+	  say 'y'.
+-	pr_info("can: controller area network core (" CAN_VERSION_STRING ")\n");
++	pr_info("can: controller area network core\n");
  
- source "drivers/net/can/Kconfig"
+ 	rcv_cache = kmem_cache_create("can_receiver", sizeof(struct receiver),
+ 				      0, 0, NULL);
+diff --git a/net/can/bcm.c b/net/can/bcm.c
+index 4253915800e6..0e5c37be4a2b 100644
+--- a/net/can/bcm.c
++++ b/net/can/bcm.c
+@@ -81,8 +81,6 @@
+ 		     (CAN_EFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG) : \
+ 		     (CAN_SFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG))
  
+-#define CAN_BCM_VERSION "20170425"
+-
+ MODULE_DESCRIPTION("PF_CAN broadcast manager protocol");
+ MODULE_LICENSE("Dual BSD/GPL");
+ MODULE_AUTHOR("Oliver Hartkopp <oliver.hartkopp@volkswagen.de>");
+@@ -1696,7 +1694,7 @@ static int __init bcm_module_init(void)
+ {
+ 	int err;
+ 
+-	pr_info("can: broadcast manager protocol (rev " CAN_BCM_VERSION " t)\n");
++	pr_info("can: broadcast manager protocol\n");
+ 
+ 	err = can_proto_register(&bcm_can_proto);
+ 	if (err < 0) {
+diff --git a/net/can/gw.c b/net/can/gw.c
+index 49b4e3d91ad6..6b790b6ff8d2 100644
+--- a/net/can/gw.c
++++ b/net/can/gw.c
+@@ -59,7 +59,6 @@
+ #include <net/net_namespace.h>
+ #include <net/sock.h>
+ 
+-#define CAN_GW_VERSION "20190810"
+ #define CAN_GW_NAME "can-gw"
+ 
+ MODULE_DESCRIPTION("PF_CAN netlink gateway");
+@@ -1194,8 +1193,7 @@ static __init int cgw_module_init(void)
+ 	/* sanitize given module parameter */
+ 	max_hops = clamp_t(unsigned int, max_hops, CGW_MIN_HOPS, CGW_MAX_HOPS);
+ 
+-	pr_info("can: netlink gateway (rev " CAN_GW_VERSION ") max_hops=%d\n",
+-		max_hops);
++	pr_info("can: netlink gateway - max_hops=%d\n",	max_hops);
+ 
+ 	ret = register_pernet_subsys(&cangw_pernet_ops);
+ 	if (ret)
 diff --git a/net/can/isotp.c b/net/can/isotp.c
-index e6ff032b5426..bc3a722c200b 100644
+index bc3a722c200b..5338e990bde1 100644
 --- a/net/can/isotp.c
 +++ b/net/can/isotp.c
-@@ -222,8 +222,8 @@ static int isotp_send_fc(struct sock *sk, int ae, u8 flowstatus)
+@@ -72,8 +72,6 @@
+ #include <net/sock.h>
+ #include <net/net_namespace.h>
  
- 	can_send_ret = can_send(nskb, 1);
- 	if (can_send_ret)
--		printk_once(KERN_NOTICE "can-isotp: %s: can_send_ret %d\n",
--			    __func__, can_send_ret);
-+		pr_notice_once("can-isotp: %s: can_send_ret %d\n",
-+			       __func__, can_send_ret);
+-#define CAN_ISOTP_VERSION "20200928"
+-
+ MODULE_DESCRIPTION("PF_CAN isotp 15765-2:2016 protocol");
+ MODULE_LICENSE("Dual BSD/GPL");
+ MODULE_AUTHOR("Oliver Hartkopp <socketcan@hartkopp.net>");
+@@ -1408,7 +1406,7 @@ static __init int isotp_module_init(void)
+ {
+ 	int err;
  
- 	dev_put(dev);
+-	pr_info("can: isotp protocol (rev " CAN_ISOTP_VERSION ")\n");
++	pr_info("can: isotp protocol\n");
  
-@@ -769,7 +769,7 @@ static enum hrtimer_restart isotp_tx_timer_handler(struct hrtimer *hrtimer)
+ 	err = can_proto_register(&isotp_can_proto);
+ 	if (err < 0)
+diff --git a/net/can/proc.c b/net/can/proc.c
+index a4eb06c9eb70..550928b8b8a2 100644
+--- a/net/can/proc.c
++++ b/net/can/proc.c
+@@ -54,7 +54,6 @@
+  * proc filenames for the PF_CAN core
+  */
  
- isotp_tx_burst:
- 		skb = alloc_skb(so->ll.mtu + sizeof(struct can_skb_priv),
--				gfp_any());
-+				GFP_KERNEL);
- 		if (!skb) {
- 			dev_put(dev);
- 			break;
-@@ -798,8 +798,8 @@ static enum hrtimer_restart isotp_tx_timer_handler(struct hrtimer *hrtimer)
+-#define CAN_PROC_VERSION     "version"
+ #define CAN_PROC_STATS       "stats"
+ #define CAN_PROC_RESET_STATS "reset_stats"
+ #define CAN_PROC_RCVLIST_ALL "rcvlist_all"
+@@ -293,12 +292,6 @@ static int can_reset_stats_proc_show(struct seq_file *m, void *v)
+ 	return 0;
+ }
  
- 		can_send_ret = can_send(skb, 1);
- 		if (can_send_ret)
--			printk_once(KERN_NOTICE "can-isotp: %s: can_send_ret %d\n",
--				    __func__, can_send_ret);
-+			pr_notice_once("can-isotp: %s: can_send_ret %d\n",
-+				       __func__, can_send_ret);
- 
- 		if (so->tx.idx >= so->tx.len) {
- 			/* we are done */
-@@ -942,8 +942,8 @@ static int isotp_sendmsg(struct socket *sock, struct msghdr *msg, size_t size)
- 	err = can_send(skb, 1);
- 	dev_put(dev);
- 	if (err) {
--		printk_once(KERN_NOTICE "can-isotp: %s: can_send_ret %d\n",
--			    __func__, err);
-+		pr_notice_once("can-isotp: %s: can_send_ret %d\n",
-+			       __func__, err);
- 		return err;
+-static int can_version_proc_show(struct seq_file *m, void *v)
+-{
+-	seq_printf(m, "%s\n", CAN_VERSION_STRING);
+-	return 0;
+-}
+-
+ static inline void can_rcvlist_proc_show_one(struct seq_file *m, int idx,
+ 					     struct net_device *dev,
+ 					     struct can_dev_rcv_lists *dev_rcv_lists)
+@@ -441,8 +434,6 @@ void can_init_proc(struct net *net)
  	}
  
+ 	/* own procfs entries from the AF_CAN core */
+-	net->can.pde_version = proc_create_net_single(CAN_PROC_VERSION, 0644,
+-			net->can.proc_dir, can_version_proc_show, NULL);
+ 	net->can.pde_stats = proc_create_net_single(CAN_PROC_STATS, 0644,
+ 			net->can.proc_dir, can_stats_proc_show, NULL);
+ 	net->can.pde_reset_stats = proc_create_net_single(CAN_PROC_RESET_STATS,
+@@ -471,9 +462,6 @@ void can_init_proc(struct net *net)
+  */
+ void can_remove_proc(struct net *net)
+ {
+-	if (net->can.pde_version)
+-		remove_proc_entry(CAN_PROC_VERSION, net->can.proc_dir);
+-
+ 	if (net->can.pde_stats)
+ 		remove_proc_entry(CAN_PROC_STATS, net->can.proc_dir);
+ 
+diff --git a/net/can/raw.c b/net/can/raw.c
+index ea70850f9152..6ec8aa1d0da4 100644
+--- a/net/can/raw.c
++++ b/net/can/raw.c
+@@ -55,8 +55,6 @@
+ #include <net/sock.h>
+ #include <net/net_namespace.h>
+ 
+-#define CAN_RAW_VERSION CAN_VERSION
+-
+ MODULE_DESCRIPTION("PF_CAN raw protocol");
+ MODULE_LICENSE("Dual BSD/GPL");
+ MODULE_AUTHOR("Urs Thuermann <urs.thuermann@volkswagen.de>");
+@@ -885,7 +883,7 @@ static __init int raw_module_init(void)
+ {
+ 	int err;
+ 
+-	pr_info("can: raw protocol (rev " CAN_RAW_VERSION ")\n");
++	pr_info("can: raw protocol\n");
+ 
+ 	err = can_proto_register(&raw_can_proto);
+ 	if (err < 0)
 -- 
 2.28.0
 
