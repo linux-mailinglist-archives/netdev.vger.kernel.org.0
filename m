@@ -2,175 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AAE9289F03
-	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 09:49:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E844C289F07
+	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 09:55:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729569AbgJJHsp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 03:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43958 "EHLO
+        id S1729618AbgJJHz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 03:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729329AbgJJHsT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 03:48:19 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB118C0613CF;
-        Sat, 10 Oct 2020 00:48:15 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id r10so9163983pgb.10;
-        Sat, 10 Oct 2020 00:48:15 -0700 (PDT)
+        with ESMTP id S1728994AbgJJHzK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 03:55:10 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DBA6C0613CF
+        for <netdev@vger.kernel.org>; Sat, 10 Oct 2020 00:55:10 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id z6so13131257qkz.4
+        for <netdev@vger.kernel.org>; Sat, 10 Oct 2020 00:55:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0N5myq9RqbCXporbQ6mi5leNzojgy9tudrwbZBPAQqQ=;
-        b=nxDrpRp7v+4Cx8Tp0tsimpv42CN7uXj4TrBK9LOySij4k21J8K0AXWaYxN9S7u6uN+
-         GKyxg1MkPHuV0ksqc2GEMLLJEEK4GVqgUw0hIl9bAFqZJc8qr7+rJ70yq/SecC1x6KJr
-         JiqwTh3ziDM44op3QnrUXOzmBorXVNHMIOyNZDl+33i1UwthsJCeLXi3ZBVIeXATFiEO
-         9WuUir64l+g/A2nTyeS94pwcYZocj7NMnKvEPVm0PUyf3MmLSsLrUZtx5lwMhKH4QHz3
-         EEb2d5UhL9HpuPMyVit279EWOzOGTAxrSkEnUSJcu+A7iLEhV04C5+NHoWG01w3XZFVU
-         7vxA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FIbfa8CnKY7IkW3rParF9jXfx9AUSNx+WkfiE3ixDLU=;
+        b=K74AqtWTCzeJ3fHFsLhU28oHxZJ+TBfWXN0ajy3/k79H47kIb6MQDZ9nJQCyC7X1FQ
+         tr6uLNZQBBPRT+S6uqbkjrpuJdO3XjwIxeDqOGwnGiO7ZtFx3PGlnbSpe/ewrpp7dpmA
+         6yM6plNwn4lhupl/UBahvQezEoGzNs3DkYzamN5bJXG5KgZ3aRevOBWopKO2nKx5gcdh
+         wrxutUi4qd2RDt9iHtSgJIroiijkuyHseBKYyMkxv2dBGNmX45+SzDmE+11usmet2Y3C
+         B9ycpdjwSsWETinivuhVzm/zmT56SoTeMaLwEoQRLw8++vWysmVZQwgYvmFoF0KUJnBc
+         IhwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0N5myq9RqbCXporbQ6mi5leNzojgy9tudrwbZBPAQqQ=;
-        b=qyBzxFVihm+w7vR8LJxJbDAJ7EYqLvdkArBUtVSS7dkR/h8Xdm7mkauJL86qCRIGzY
-         Elwzds5aeQdWvmAG0TEBjoCgww0e+qSjYb1SBx6wvSS2low7TOrdr2IenH3EBgv7jUR4
-         fH42k+SA3hIhgOqPT42E+1MACD12p3KIAaNK4MXnXtp5HthaySShBXNEVgigSLG7Eb3E
-         2CMQt4e28ctgakldqqmtTZbKADLJmztiqmbeGM80hGk0tmVATNHAhssR3qUjK+yrYt2I
-         orKh1PiKQxKyHviDFNnfmlgYiXl0dpl3dBtAewObXHjp/YGSqlPWG3AebQ9OAPWeAjWt
-         KgJQ==
-X-Gm-Message-State: AOAM5311E8opQv6FgsL/7HxEkaCyal6NcpkbF7fM/2na25skZzBpJdXa
-        qiH4bCpxllevK832el+Ul6d3kj3tQ9c6HA==
-X-Google-Smtp-Source: ABdhPJzyfUtr5p1jo+SHlF3ESI2QcIH6+wPCeEp3xe1mBnkkIA4mdn87cBSRaDYJ0AGnKjTqgut3Bw==
-X-Received: by 2002:aa7:8b03:0:b029:152:a364:5084 with SMTP id f3-20020aa78b030000b0290152a3645084mr15040090pfd.29.1602316095367;
-        Sat, 10 Oct 2020 00:48:15 -0700 (PDT)
-Received: from f3 (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
-        by smtp.gmail.com with ESMTPSA id x18sm13531125pfj.90.2020.10.10.00.48.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 10 Oct 2020 00:48:14 -0700 (PDT)
-Date:   Sat, 10 Oct 2020 16:48:09 +0900
-From:   Benjamin Poirier <benjamin.poirier@gmail.com>
-To:     Coiby Xu <coiby.xu@gmail.com>
-Cc:     devel@driverdev.osuosl.org, Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v1 2/6] staging: qlge: coredump via devlink health
- reporter
-Message-ID: <20201010074809.GB14495@f3>
-References: <20201008115808.91850-1-coiby.xu@gmail.com>
- <20201008115808.91850-3-coiby.xu@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FIbfa8CnKY7IkW3rParF9jXfx9AUSNx+WkfiE3ixDLU=;
+        b=V0oG61yn9b+/RwK0ndNEmMIJqBUgSUeDUKdwSITxAJJq+eVwF1jemxLrNRO8bIwTjL
+         G4HrAOdBaZUfdqZ4X4Ccksg8ntXRebSewLh1lqAPH27ubH7AkN3h3EJ5TFHKGjHtLLWN
+         qoLL+moduVf6RbbGOZGEAvUnp7u1xzq5qVOfj8SlzpRmErGXFurnvuIf1ledE7WwJzbs
+         SWom0uEtk+8imQOy5iq4UzsFk76Yc50E+E2a67dUZSREzcoUhfFr/ohufKkVWX1oEJ7M
+         9RXEDEeieV7n2kiEk6YH4hoqQyaE2s1gO3msUa4etT2GQPSAiUU2Ib5Mip7ZTpYJH9sg
+         xysA==
+X-Gm-Message-State: AOAM532Tkn4vs7QFdpBEAiu9oOuaWJWSIzvkN0tin7pTATUhi8IL3SNB
+        cfcIGDufZyU+AD5acIzJJrOUiJUhZjnCYCTzaRCrRg==
+X-Google-Smtp-Source: ABdhPJyGZIeP/r5j1IxcIHRQMZhGLZo7w7MDc8zflXTalRA5Cb9Of04dAcnojeKE3/QoqUcIaXbsjr/CPBqlOjWL7RA=
+X-Received: by 2002:a37:5684:: with SMTP id k126mr1356621qkb.43.1602316509213;
+ Sat, 10 Oct 2020 00:55:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201008115808.91850-3-coiby.xu@gmail.com>
+References: <20201007101726.3149375-1-a.nogikh@gmail.com> <20201007101726.3149375-2-a.nogikh@gmail.com>
+ <20201009161558.57792e1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201009161558.57792e1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Sat, 10 Oct 2020 09:54:57 +0200
+Message-ID: <CACT4Y+ZF_umjBpyJiCb8YPQOOSofG-M9h0CB=xn3bCgK=Kr=9w@mail.gmail.com>
+Subject: Re: [PATCH 1/2] net: store KCOV remote handle in sk_buff
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Aleksandr Nogikh <a.nogikh@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Marco Elver <elver@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Aleksandr Nogikh <nogikh@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-10-08 19:58 +0800, Coiby Xu wrote:
->     $ devlink health dump show DEVICE reporter coredump -p -j
->     {
->         "Core Registers": {
->             "segment": 1,
->             "values": [ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-> ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ]
->         },
->         "Test Logic Regs": {
->             "segment": 2,
->             "values": [ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ]
->         },
->         "RMII Registers": {
->             "segment": 3,
->             "values": [ 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ]
->         },
->         ...
->         "Sem Registers": {
->             "segment": 50,
->             "values": [ 0,0,0,0 ]
->         }
->     }
-> 
-> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
-> ---
->  drivers/staging/qlge/qlge_devlink.c | 131 ++++++++++++++++++++++++++--
->  1 file changed, 125 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/staging/qlge/qlge_devlink.c b/drivers/staging/qlge/qlge_devlink.c
-> index aa45e7e368c0..91b6600b94a9 100644
-> --- a/drivers/staging/qlge/qlge_devlink.c
-> +++ b/drivers/staging/qlge/qlge_devlink.c
-> @@ -1,16 +1,135 @@
->  #include "qlge.h"
->  #include "qlge_devlink.h"
->  
-> -static int
-> -qlge_reporter_coredump(struct devlink_health_reporter *reporter,
-> -			struct devlink_fmsg *fmsg, void *priv_ctx,
-> -			struct netlink_ext_ack *extack)
-> +static int fill_seg_(struct devlink_fmsg *fmsg,
+On Sat, Oct 10, 2020 at 1:16 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed,  7 Oct 2020 10:17:25 +0000 Aleksandr Nogikh wrote:
+> > From: Aleksandr Nogikh <nogikh@google.com>
+> >
+> > Remote KCOV coverage collection enables coverage-guided fuzzing of the
+> > code that is not reachable during normal system call execution. It is
+> > especially helpful for fuzzing networking subsystems, where it is
+> > common to perform packet handling in separate work queues even for the
+> > packets that originated directly from the user space.
+> >
+> > Enable coverage-guided frame injection by adding a kcov_handle
+> > parameter to sk_buff structure. Initialization in __alloc_skb ensures
+> > that no socket buffer that was generated during a system call will be
+> > missed.
+> >
+> > Code that is of interest and that performs packet processing should be
+> > annotated with kcov_remote_start()/kcov_remote_stop().
+> >
+> > An alternative approach is to determine kcov_handle solely on the
+> > basis of the device/interface that received the specific socket
+> > buffer. However, in this case it would be impossible to distinguish
+> > between packets that originated from normal background network
+> > processes and those that were intentionally injected from the user
+> > space.
+> >
+> > Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
+>
+> Could you use skb_extensions for this?
 
-Please include the "qlge_" prefix.
-
-> +		    struct mpi_coredump_segment_header *seg_header,
-> +		    u32 *reg_data)
->  {
-> -	return 0;
-> +	int i;
-> +	int header_size = sizeof(struct mpi_coredump_segment_header);
-> +	int regs_num = (seg_header->seg_size - header_size) / sizeof(u32);
-> +	int err;
-> +
-> +	err = devlink_fmsg_pair_nest_start(fmsg, seg_header->description);
-> +	if (err)
-> +		return err;
-> +	err = devlink_fmsg_obj_nest_start(fmsg);
-> +	if (err)
-> +		return err;
-> +	err = devlink_fmsg_u32_pair_put(fmsg, "segment", seg_header->seg_num);
-> +	if (err)
-> +		return err;
-> +	err = devlink_fmsg_arr_pair_nest_start(fmsg, "values");
-> +	if (err)
-> +		return err;
-> +	for (i = 0; i < regs_num; i++) {
-> +		err = devlink_fmsg_u32_put(fmsg, *reg_data);
-> +		if (err)
-> +			return err;
-> +		reg_data++;
-> +	}
-> +	err = devlink_fmsg_obj_nest_end(fmsg);
-> +	if (err)
-> +		return err;
-> +	err = devlink_fmsg_arr_pair_nest_end(fmsg);
-> +	if (err)
-> +		return err;
-> +	err = devlink_fmsg_pair_nest_end(fmsg);
-> +	return err;
-> +}
-> +
-> +#define fill_seg(seg_hdr, seg_regs)			               \
-
-considering that this macro accesses local variables, it is not really
-"function-like". I think an all-caps name would be better to tip-off the
-reader.
-
-> +	do {                                                           \
-> +		err = fill_seg_(fmsg, &dump->seg_hdr, dump->seg_regs); \
-> +		if (err) {					       \
-> +			kvfree(dump);                                  \
-> +			return err;				       \
-> +		}                                                      \
-> +	} while (0)
-> +
-> +static int qlge_reporter_coredump(struct devlink_health_reporter *reporter,
-> +				  struct devlink_fmsg *fmsg, void *priv_ctx,
-> +				  struct netlink_ext_ack *extack)
-> +{
-> +	int err = 0;
-> +
-> +	struct qlge_devlink *dev = devlink_health_reporter_priv(reporter);
-
-Please name this variable ql_devlink, like in qlge_probe().
+Why? If for space, this is already under a non-production ifdef.
