@@ -2,113 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90FE2289D1D
-	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 03:36:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C691A289DA5
+	for <lists+netdev@lfdr.de>; Sat, 10 Oct 2020 04:46:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729253AbgJJBfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Oct 2020 21:35:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59324 "EHLO mail.kernel.org"
+        id S1730308AbgJJCoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Oct 2020 22:44:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60268 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728994AbgJJBak (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Oct 2020 21:30:40 -0400
-Received: from sol.localdomain (172-10-235-113.lightspeed.sntcca.sbcglobal.net [172.10.235.113])
+        id S1729606AbgJJBhr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Oct 2020 21:37:47 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4E006206D9;
-        Sat, 10 Oct 2020 01:30:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5521321D43;
+        Sat, 10 Oct 2020 01:37:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602293439;
-        bh=sHFyDh52gnsvc+uI8yhUC5uDYbYkQCvra+rDiRMmAvs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kwaFsg+FwkcbT1hA6vX2rbzC7SEHg0ckV7q6+TfKUuTYp7lijGzsxhx1D9MfT9qZg
-         puzd9VwNUhNC7pSZTswv9TmxeVvsyOKe33XMZMPqVG5rfdvIuh+YhVfWI5Z4mrkh0S
-         V8+sp7izCEY2Jms4cmTCzh86mPIYz7uaZ6k3dzLQ=
-Date:   Fri, 9 Oct 2020 18:30:36 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     ira.weiny@intel.com, Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>, linux-aio@kvack.org,
-        linux-efi@vger.kernel.org, kvm@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-mmc@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
-        target-devel@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-kselftest@vger.kernel.org, samba-technical@lists.samba.org,
-        ceph-devel@vger.kernel.org, drbd-dev@lists.linbit.com,
-        devel@driverdev.osuosl.org, linux-cifs@vger.kernel.org,
-        linux-nilfs@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-nvdimm@lists.01.org, linux-rdma@vger.kernel.org,
-        x86@kernel.org, amd-gfx@lists.freedesktop.org,
-        linux-afs@lists.infradead.org, cluster-devel@redhat.com,
-        linux-cachefs@redhat.com, intel-wired-lan@lists.osuosl.org,
-        xen-devel@lists.xenproject.org, linux-ext4@vger.kernel.org,
-        Fenghua Yu <fenghua.yu@intel.com>, ecryptfs@vger.kernel.org,
-        linux-um@lists.infradead.org, intel-gfx@lists.freedesktop.org,
-        linux-erofs@lists.ozlabs.org, reiserfs-devel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-bcache@vger.kernel.org,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        io-uring@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-ntfs-dev@lists.sourceforge.net, netdev@vger.kernel.org,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-fsdevel@vger.kernel.org, bpf@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-btrfs@vger.kernel.org
-Subject: Re: [PATCH RFC PKS/PMEM 22/58] fs/f2fs: Utilize new kmap_thread()
-Message-ID: <20201010013036.GD1122@sol.localdomain>
-References: <20201009195033.3208459-1-ira.weiny@intel.com>
- <20201009195033.3208459-23-ira.weiny@intel.com>
- <20201009213434.GA839@sol.localdomain>
- <20201010003954.GW20115@casper.infradead.org>
+        s=default; t=1602293866;
+        bh=TImQnumvAsuIvB6ZjobGjyHEklCSDfcLpLW8oqlYYgs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=q6weeN3oR0Vv4iCvav77zhUmvie+4vb02KfZ7c5fQbXh4raMCGsITrc+Tjib6BJrz
+         b1Gd1TkuB5RNgqgGMiWpvkaUQmLjtBWH2eXeFSj8CLGMKGKxdZcmFR+8mcP3QOyLDS
+         3AH4gJROj8IDnaJnNNAbLRK8Ue3fbJDisi4sjggE=
+Date:   Fri, 9 Oct 2020 18:37:44 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Srujana Challa <schalla@marvell.com>
+Cc:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+        <sgoutham@marvell.com>, <gakula@marvell.com>,
+        <sbhatta@marvell.com>, <schandran@marvell.com>,
+        <pathreya@marvell.com>
+Subject: Re: [PATCH v4,net-next,00/13] Add Support for Marvell OcteonTX2
+ Cryptographic
+Message-ID: <20201009183744.7504cfc6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201009153421.30562-1-schalla@marvell.com>
+References: <20201009153421.30562-1-schalla@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201010003954.GW20115@casper.infradead.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 10, 2020 at 01:39:54AM +0100, Matthew Wilcox wrote:
-> On Fri, Oct 09, 2020 at 02:34:34PM -0700, Eric Biggers wrote:
-> > On Fri, Oct 09, 2020 at 12:49:57PM -0700, ira.weiny@intel.com wrote:
-> > > The kmap() calls in this FS are localized to a single thread.  To avoid
-> > > the over head of global PKRS updates use the new kmap_thread() call.
-> > >
-> > > @@ -2410,12 +2410,12 @@ static inline struct page *f2fs_pagecache_get_page(
-> > >  
-> > >  static inline void f2fs_copy_page(struct page *src, struct page *dst)
-> > >  {
-> > > -	char *src_kaddr = kmap(src);
-> > > -	char *dst_kaddr = kmap(dst);
-> > > +	char *src_kaddr = kmap_thread(src);
-> > > +	char *dst_kaddr = kmap_thread(dst);
-> > >  
-> > >  	memcpy(dst_kaddr, src_kaddr, PAGE_SIZE);
-> > > -	kunmap(dst);
-> > > -	kunmap(src);
-> > > +	kunmap_thread(dst);
-> > > +	kunmap_thread(src);
-> > >  }
-> > 
-> > Wouldn't it make more sense to switch cases like this to kmap_atomic()?
-> > The pages are only mapped to do a memcpy(), then they're immediately unmapped.
+On Fri, 9 Oct 2020 21:04:08 +0530 Srujana Challa wrote:
+> This series introduces crypto(CPT) drivers(PF & VF) for Marvell OcteonTX2
+> CN96XX Soc.
 > 
-> Maybe you missed the earlier thread from Thomas trying to do something
-> similar for rather different reasons ...
+> OcteonTX2 SOC's resource virtualization unit (RVU) supports multiple
+> physical and virtual functions. Each of the PF/VF's functionality is
+> determined by what kind of resources are attached to it. When the CPT
+> block is attached to a VF, it can function as a security device.
+> The following document provides an overview of the hardware and
+> different drivers for the OcteonTX2 SOC: 
+> https://www.kernel.org/doc/Documentation/networking/device_drivers/marvell/octeontx2.rst
 > 
-> https://lore.kernel.org/lkml/20200919091751.011116649@linutronix.de/
+> The CPT PF driver is responsible for:
+> - Forwarding messages to/from VFs from/to admin function(AF),
+> - Enabling/disabling VFs,
+> - Loading/unloading microcode (creation/deletion of engine groups).
+> 
+> The CPT VF driver works as a crypto offload device.
+> 
+> This patch series includes:
+> - Patch to update existing Marvell sources to support the CPT driver.
+> - Patch that adds mailbox messages to the admin function (AF) driver,
+> to configure CPT HW registers.
+> - CPT PF driver patches that include AF<=>PF<=>VF mailbox communication,
+> sriov_configure, and firmware load to the acceleration engines.
+> - CPT VF driver patches that include VF<=>PF mailbox communication and
+> crypto offload support through the kernel cryptographic API.
+> 
+> This series is tested with CRYPTO_EXTRA_TESTS enabled and
+> CRYPTO_DISABLE_TESTS disabled.
 
-I did miss it.  I'm not subscribed to any of the mailing lists it was sent to.
+Please rebase and resend, this doesn't apply to net-next:
 
-Anyway, it shouldn't matter.  Patchsets should be standalone, and not require
-reading random prior threads on linux-kernel to understand.
+error: patch failed: drivers/net/ethernet/marvell/octeontx2/af/Makefile:8
+error: drivers/net/ethernet/marvell/octeontx2/af/Makefile: patch does not apply
+hint: Use 'git am --show-current-patch=diff' to see the failed patch
+Applying: octeontx2-pf: move lmt flush to include/linux/soc
+Applying: octeontx2-af: add mailbox interface for CPT
+Patch failed at 0002 octeontx2-af: add mailbox interface for CPT
+When you have resolved this problem, run "git am --continue".
+If you prefer to skip this patch, run "git am --skip" instead.
+To restore the original branch and stop patching, run "git am --abort".
 
-And I still don't really understand.  After this patchset, there is still code
-nearly identical to the above (doing a temporary mapping just for a memcpy) that
-would still be using kmap_atomic().  Is the idea that later, such code will be
-converted to use kmap_thread() instead?  If not, why use one over the other?
-
-- Eric
