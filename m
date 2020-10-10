@@ -2,40 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87E7A28A232
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 00:55:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E480D28A219
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 00:54:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389198AbgJJWz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 18:55:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53934 "EHLO mail.kernel.org"
+        id S1729115AbgJJWys (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 18:54:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50674 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731830AbgJJTh1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 10 Oct 2020 15:37:27 -0400
+        id S1731360AbgJJTMW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 10 Oct 2020 15:12:22 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 74A8722475;
-        Sat, 10 Oct 2020 17:51:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CBF5122472;
+        Sat, 10 Oct 2020 17:57:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602352261;
-        bh=RcrHP6M9iO2TiQX0pTpMw4VWg9yEMVSi+ILIXkBBZvY=;
+        s=default; t=1602352624;
+        bh=qCkIXS8ZsPa/miTSH/dO+gBtGrLl0bKkccWoe6NRsxI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hKqNIdhwXmIO2EMZZey3KIc+weJn3OqlPCaBFNezueQjIJUpOSRNZA3Zt/DhmvW5W
-         SDP1b6ws55zHVaV0j4Zp8t40CBvNTXtbl0jo9cJ99KX4RqATTwrln90ZLAqY/h5IRg
-         MgiPFnXJX+c3Cw0IK2kWwA4GDgEG8N5e+RusKPQ4=
-Date:   Sat, 10 Oct 2020 10:51:00 -0700
+        b=zakQ0exw5bsUlHg/AvMbE0bT/JkNFlEFa9mfuBE6s/p/m5kg5YBHcV7wEMYqDXT2B
+         aKe81E6e0VZyVOml5MTVMhMNdWoF5j4bPZKKlGJhUScgGQjdxJefTW/6VmArHoC3yy
+         A9oe1V8SwONlHtgVc4wlFb3uRksZkGZrem3f2d3w=
+Date:   Sat, 10 Oct 2020 10:57:02 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Camelia Alexandra Groza <camelia.groza@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>
-Subject: Re: [PATCH] dpaa_eth: enable NETIF_MSG_HW by default
-Message-ID: <20201010105100.1f7e71e5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <AM6PR04MB39762E887745C2CAC34F9098EC0B0@AM6PR04MB3976.eurprd04.prod.outlook.com>
-References: <20201008120312.258644-1-vladimir.oltean@nxp.com>
-        <AM6PR04MB39762E887745C2CAC34F9098EC0B0@AM6PR04MB3976.eurprd04.prod.outlook.com>
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Grant Likely <grant.likely@arm.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        robh+dt@kernel.org, Diana Madalina Craciun <diana.craciun@nxp.com>,
+        netdev@vger.kernel.org, Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux.cj@gmail.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        devicetree@vger.kernel.org
+Subject: Re: [net-next PATCH v1] net: phy: Move of_mdio from drivers/of to
+ drivers/net/mdio
+Message-ID: <20201010105702.729a2bde@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201008144706.8212-1-calvin.johnson@oss.nxp.com>
+References: <20201008144706.8212-1-calvin.johnson@oss.nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -43,26 +58,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 8 Oct 2020 14:37:44 +0000 Madalin Bucur (OSS) wrote:
-> > From: Maxim Kochetkov <fido_max@inbox.ru>
-> > 
-> > When packets are received on the error queue, this function under
-> > net_ratelimit():
-> > 
-> > netif_err(priv, hw, net_dev, "Err FD status = 0x%08x\n");
-> > 
-> > does not get printed. Instead we only see:
-> > 
-> > [ 3658.845592] net_ratelimit: 244 callbacks suppressed
-> > [ 3663.969535] net_ratelimit: 230 callbacks suppressed
-> > [ 3669.085478] net_ratelimit: 228 callbacks suppressed
-> > 
-> > Enabling NETIF_MSG_HW fixes this issue, and we can see some information
-> > about the frame descriptors of packets.
-> > 
-> > Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Thu,  8 Oct 2020 20:17:06 +0530 Calvin Johnson wrote:
+> Better place for of_mdio.c is drivers/net/mdio.
+> Move of_mdio.c from drivers/of to drivers/net/mdio
 > 
-> Reviewed-by: Madalin Bucur <madalin.bucur@oss.nxp.com>
+> Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
 
-Applied, thanks everyone!
+Applied, thank you.
