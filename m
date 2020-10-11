@@ -2,84 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6895128AB17
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 01:30:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F60B28AB1F
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 01:56:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387815AbgJKXab (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 19:30:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50992 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387799AbgJKXaa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 11 Oct 2020 19:30:30 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A606B207D3;
-        Sun, 11 Oct 2020 23:30:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602459030;
-        bh=Ff5geeY/vb97bfI4zCs5RCpvI6lIo23pIvbrLYF4c4c=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=G9FsdsewQwMBFb7UQTbFtf+TDLhMBELsBHeNDlYUj+HcZ4CRs1+BtErsNHfBbfKBQ
-         dXV8dssCMhtFoWncbY9A2xbf48IL9TQI+uWFRbVWiLK6ffVky0UQPxru74q3urBYuV
-         np9ajpkHbkn90Bs8+CtHHKbVNscv7lnDZx3j1NJM=
-Date:   Sun, 11 Oct 2020 16:30:28 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
-        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
-        eyal.birger@gmail.com
-Subject: Re: [PATCH bpf-next V3 0/6] bpf: New approach for BPF MTU handling
-Message-ID: <20201011163028.5f436f39@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <5f824950d4b24_1867f20894@john-XPS-13-9370.notmuch>
-References: <160216609656.882446.16642490462568561112.stgit@firesoul>
-        <20201009093319.6140b322@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <5f80ccca63d9_ed74208f8@john-XPS-13-9370.notmuch>
-        <20201009160010.4b299ac3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201010124402.606f2d37@carbon>
-        <20201010093212.374d1e68@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <5f824950d4b24_1867f20894@john-XPS-13-9370.notmuch>
+        id S2387829AbgJKX4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 19:56:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45182 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387799AbgJKX4t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 19:56:49 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E630EC0613CE;
+        Sun, 11 Oct 2020 16:56:47 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id m17so15888927ioo.1;
+        Sun, 11 Oct 2020 16:56:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=/fduF09yM7vuP+WIo3gczCgW86zcHAmHOB9GlTh+hfA=;
+        b=reMWvGiq0ouMhl326muorYxlUAV0TT8c5fYPf0FHRNo+YkZ2LOw8PP/Gv7vZ7Q7PIp
+         Lnyn68oxDalFKBjG3GzQxpV720iN7fY7wnqmx7yG8O6cNp839MQL24YkXTJzIZ79Srns
+         1o+nkDNHpV2UijbcPbYur3eGuAkv5GHvDOMqjNEoi4x+EIbgysXQbDeK4WunJjnP6UYA
+         fxQyyzlmKvNlx4snD/KSycGGlb9V9dN/TQNfKNURgBWOlMRIJXtZ1FWyS2uVTwjXnvPW
+         R9BUhdAg26A0ifVDOSW/kgFgMLsOY8Tnc80qMngm+8PceW6uZJYQ39HSQtfd54AUTLFS
+         gLuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=/fduF09yM7vuP+WIo3gczCgW86zcHAmHOB9GlTh+hfA=;
+        b=Rct4MeZ6BwYEk4UpmC1416vrJA/BCZv+H811KE5ukjaQmI6mAKYENAxdnD/sg+ih/C
+         wGp9EZTOqbBorFxIDMGbDvOl7mrIeb7SWIW73SIDU77/FpBygcRUClnLySN3yBC2ex8X
+         alawy8XpDd5QCVwZrGdHNHxBxAxich0/tcQnFR17UB8D6u/jEN1groMDNDH5JeT13ZkF
+         ut65HXgsGfajM51HNt+NmC3Do9GbuCNa/7YLp8/2bnPseo/2y+GZbFr1zJMJyKRwo66C
+         IctMFh6g+m5D5ViCs7cKdiFBtpqWntxTaUHaybMPabDgiyNsPRlJE+5xTZIHXEMMn503
+         0RgQ==
+X-Gm-Message-State: AOAM530LTba+FFjp+ZLTZnYTuEP+jXxoOHm7X2sj/oHUP4uSu/0xj1MX
+        7/Tw7KLtzyVVWmhPPeA7Q3UEa6g/Cls=
+X-Google-Smtp-Source: ABdhPJyJJmBv0bPJEFldWnZVeCAKEDBfKwvDPK+zYZMoVTIdKHbzYw7wl2vzpknPZdSSY/rWG/mnTw==
+X-Received: by 2002:a6b:6c0c:: with SMTP id a12mr15283601ioh.40.1602460606890;
+        Sun, 11 Oct 2020 16:56:46 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:85e0:a5a2:ceeb:837])
+        by smtp.googlemail.com with ESMTPSA id h184sm6530152ioa.34.2020.10.11.16.56.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 11 Oct 2020 16:56:46 -0700 (PDT)
+Subject: Re: [RFC PATCH 0/3] l3mdev icmp error route lookup fixes
+From:   David Ahern <dsahern@gmail.com>
+To:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        David Ahern <dsahern@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Michael Jeanson <mjeanson@efficios.com>
+Cc:     linux-kernel@vger.kernel.org
+References: <20200925200452.2080-1-mathieu.desnoyers@efficios.com>
+ <fd970150-f214-63a3-953c-769fa2787bc0@gmail.com>
+Message-ID: <19cf586d-4c4e-e18c-cd9e-3fde3717a9e1@gmail.com>
+Date:   Sun, 11 Oct 2020 17:56:45 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <fd970150-f214-63a3-953c-769fa2787bc0@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 10 Oct 2020 16:52:48 -0700 John Fastabend wrote:
-> Jakub Kicinski wrote:
-> > FWIW I took a quick swing at testing it with the HW I have and it did
-> > exactly what hardware should do. The TX unit entered an error state 
-> > and then the driver detected that and reset it a few seconds later.  
+On 10/5/20 9:30 AM, David Ahern wrote:
+> On 9/25/20 1:04 PM, Mathieu Desnoyers wrote:
+>> Hi,
+>>
+>> Here is an updated series of fixes for ipv4 and ipv6 which which ensure
+>> the route lookup is performed on the right routing table in VRF
+>> configurations when sending TTL expired icmp errors (useful for
+>> traceroute).
+>>
+>> It includes tests for both ipv4 and ipv6.
+>>
+>> These fixes address specifically address the code paths involved in
+>> sending TTL expired icmp errors. As detailed in the individual commit
+>> messages, those fixes do not address similar icmp errors related to
+>> network namespaces and unreachable / fragmentation needed messages,
+>> which appear to use different code paths.
+>>
+>> The main changes since the last round are updates to the selftests.
+>>
 > 
-> Ths seems like the right thing to do in my opinion. If the
-> stack gives the NIC garbage entering error state and reset
-> sounds expected. Thanks for actually trying it by the way.
+> This looks fine to me. I noticed the IPv6 large packet test case is
+> failing; the fib6 tracepoint is showing the loopback as the iif which is
+> wrong:
 > 
-> We might have come to different conclusions though from my side
-> the conclusion is, good nothing horrible happened no MTU check needed.
-> If the user spews garbage at the nic from the BPF program great it
-> gets dropped and causes the driver/nic to punish you a bit by staying
-> hung. Fix your BPF program.
-
-Right probably difference of perspective. I understand that from
-Cilium's POV you can probably feel pretty confident about the BPF
-programs that are running. I bet Maciej is even more confident with
-Android!
-
-But in principle BPF was supposed to make the kernel end user
-programmable. We have to ensure it's safe.
-
-> > > > And all this for what? Saving 2 cycles on a branch that will almost
-> > > > never be taken?    
+> ping6  8488 [004]   502.015817: fib6:fib6_table_lookup: table 255 oif 0
+> iif 1 proto 58 ::/0 -> 2001:db8:16:1::1/0 tos 0 scope 0 flags 0 ==> dev
+> lo gw :: err -113
 > 
-> 2 cycles here and 2 cycles there .... plus complexity to think about
-> it. Eventually it all adds up. At the risk of entering bike shedding
-> territory maybe.
+> I will dig into it later this week.
+> 
 
-Not sure it's a bike shedding territory but I doubt you want to be
-making either the complexity or the performance argument to a fellow 
-TLS maintainer.. cough cough.. ;)
+I see the problem here -- source address selection is picking ::1. I do
+not have a solution to the problem yet, but its resolution is
+independent of the change in this set so I think this one is good to go.
