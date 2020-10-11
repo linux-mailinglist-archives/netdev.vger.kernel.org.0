@@ -2,96 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F80B28A7FC
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 17:35:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C85E428A803
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 17:45:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388187AbgJKPfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 11:35:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53300 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388174AbgJKPfd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 11:35:33 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D91C0613CE;
-        Sun, 11 Oct 2020 08:35:33 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id n18so16084368wrs.5;
-        Sun, 11 Oct 2020 08:35:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=N3w+u3WCpyf2Vmxu08flBAYgvj/+mZSLxfWdcFvbf9A=;
-        b=is0pGkhosYP4T2lFntud/fVUdOErxzaBOMphwYQ+jimFNuLOPiyszvkD+Lm0P0w/wC
-         lJ4MjsQTHbulo1nx/YKOCXEx7e5lqTf96lRJYp4ns+y7necMy1INEbj8vBo91MrKyXc9
-         NJXCGUe5teb6OXrKhgAKtPTuwHpT/siUay3pqRltaGBueMGYAVqPHX8P0dtyVqb3Yuy3
-         14+FN83DAgG31kz2nLLUUaHsfX4imHgMvHnRTk9rVTzjGQwp1/utq0s3SbJeknEfbT+f
-         7ug7IF6QV08qMoF7TN42T48w7q+7EksbT+X0DuNBDfCh7lKVqUaxV/fEPiaOh1YllNbp
-         Smnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=N3w+u3WCpyf2Vmxu08flBAYgvj/+mZSLxfWdcFvbf9A=;
-        b=YPV9GS3f+A7YjgUalJH9xFKT6U9+U725WJ+bwsqVg5XWhUlhwtisaJl16tyjre5ksa
-         XH8FNuwheEh+C2QLeVsnIEQcYl9UUsiuHzrqXXaGZZ+Oii7KMQUCSuakKwSrTguqFPeZ
-         m6s3MDmHHGZB/uOMFD1WfFiZ+9qrJo2sH6t4UKYc8MBtQ5FK69DKBHdQmhtuKn4Ox2t/
-         dQhIuMXwn3BZ5G30v0jLmVXjI3KrwlZDD5Q6iu/veC6vgk0xTIZT6BHgY80i/oaxsQxz
-         JJUoKr78ljCmj968qU48euiBqauqWKncyaSeKGBP6O0aeRMxd5yMJbs3fPvKAv2YnNyt
-         noJw==
-X-Gm-Message-State: AOAM531M3LWr5gxrBGKVokhLWmV3QbBJ4VzCXtJwnZ5Fs6IaFh5tM4zB
-        mts7sZId6a9stt/FgnferhFKu2foEjSLIqbQ
-X-Google-Smtp-Source: ABdhPJwAUxKzsVVN5goil3FjwV7IzV49fihju/Qq955hCEYJeP1uRw6KOEJqosZwlQvoOAa8GIJK2g==
-X-Received: by 2002:a05:6000:10cd:: with SMTP id b13mr21029873wrx.4.1602430531606;
-        Sun, 11 Oct 2020 08:35:31 -0700 (PDT)
-Received: from localhost.localdomain (bzq-79-182-88-189.red.bezeqint.net. [79.182.88.189])
-        by smtp.gmail.com with ESMTPSA id y7sm20309176wmg.40.2020.10.11.08.35.30
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 11 Oct 2020 08:35:31 -0700 (PDT)
-From:   Or Cohen <orcohen2006@gmail.com>
-X-Google-Original-From: Or Cohen <orcohen@paloaltonetworks.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Or Cohen <orcohen@paloaltonetworks.com>
-Subject: [PATCH] net/af_unix: Remove unused old_pid variable
-Date:   Sun, 11 Oct 2020 18:35:27 +0300
-Message-Id: <20201011153527.18628-1-orcohen@paloaltonetworks.com>
-X-Mailer: git-send-email 2.28.0
+        id S1727409AbgJKPpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 11:45:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45430 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725863AbgJKPpB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 11 Oct 2020 11:45:01 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 72DEC22227;
+        Sun, 11 Oct 2020 15:45:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602431100;
+        bh=m9czVHQzjCUW/4Q7vExkMd3mGcT9XtV+6UaDcGwHc/s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gLOkU640NA0v+QwgA13KItw6y3T4tiDj8DqPsTEDe1pIl5Lzap9IQLkREhdcGAyD2
+         irmMPYq621e7bWpSZa6/WtBqcfhzhN2rmdWUlo7f8QMSqaLbmcRn1xGEE4lkbrbwwW
+         z3Wl2bXudFcvosialI5/TRv/glvkRE4mDnRW0JWE=
+Date:   Sun, 11 Oct 2020 08:44:58 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     netdev@vger.kernel.org, mkl@pengutronix.de, davem@davemloft.net,
+        linux-can@vger.kernel.org
+Subject: Re: [PATCH net-next v2 1/2] can-isotp: implement cleanups /
+ improvements from review
+Message-ID: <20201011084458.065be222@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201011092408.1766-1-socketcan@hartkopp.net>
+References: <20201011092408.1766-1-socketcan@hartkopp.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 109f6e39fa07c48f5801 ("af_unix: Allow SO_PEERCRED
-to work across namespaces.") introduced the old_pid variable
-in unix_listen, but it's never used.
-Remove the declaration and the call to put_pid.
+On Sun, 11 Oct 2020 11:24:07 +0200 Oliver Hartkopp wrote:
+> diff --git a/net/can/isotp.c b/net/can/isotp.c
+> index e6ff032b5426..22187669c5c9 100644
+> --- a/net/can/isotp.c
+> +++ b/net/can/isotp.c
+> @@ -79,6 +79,8 @@ MODULE_LICENSE("Dual BSD/GPL");
+>  MODULE_AUTHOR("Oliver Hartkopp <socketcan@hartkopp.net>");
+>  MODULE_ALIAS("can-proto-6");
+>  
+> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-Signed-off-by: Or Cohen <orcohen@paloaltonetworks.com>
----
- net/unix/af_unix.c | 2 --
- 1 file changed, 2 deletions(-)
+You need to move this before the includes:
 
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index 3385a7a0b231..26d3bf81186f 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -613,7 +613,6 @@ static int unix_listen(struct socket *sock, int backlog)
- 	int err;
- 	struct sock *sk = sock->sk;
- 	struct unix_sock *u = unix_sk(sk);
--	struct pid *old_pid = NULL;
- 
- 	err = -EOPNOTSUPP;
- 	if (sock->type != SOCK_STREAM && sock->type != SOCK_SEQPACKET)
-@@ -634,7 +633,6 @@ static int unix_listen(struct socket *sock, int backlog)
- 
- out_unlock:
- 	unix_state_unlock(sk);
--	put_pid(old_pid);
- out:
- 	return err;
- }
--- 
-2.17.1
-
+net/can/isotp.c:82: warning: "pr_fmt" redefined
+   82 | #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+      | 
+In file included from ../include/linux/kernel.h:15,
+                 from ../include/linux/list.h:9,
+                 from ../include/linux/module.h:12,
+                 from ../net/can/isotp.c:56:
+include/linux/printk.h:297: note: this is the location of the previous definition
+  297 | #define pr_fmt(fmt) fmt
+      | 
+net/can/isotp.c:82:9: warning: preprocessor token pr_fmt redefined
+net/can/isotp.c: note: in included file (through ../include/linux/kernel.h, ../include/linux/list.h, ../include/linux/module.h):
+include/linux/printk.h:297:9: this was the original definition
