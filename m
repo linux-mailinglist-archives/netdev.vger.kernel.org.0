@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4C7128A9D6
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 21:44:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39E3528A9D1
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 21:44:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726825AbgJKToh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 15:44:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34900 "EHLO
+        id S1726984AbgJKTol (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 15:44:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726661AbgJKTod (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 15:44:33 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D9D3C0613D1;
-        Sun, 11 Oct 2020 12:44:33 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id lw21so20328975ejb.6;
-        Sun, 11 Oct 2020 12:44:33 -0700 (PDT)
+        with ESMTP id S1726751AbgJKTof (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 15:44:35 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45202C0613CE;
+        Sun, 11 Oct 2020 12:44:35 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id o18so14743100edq.4;
+        Sun, 11 Oct 2020 12:44:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GOIK3Hq+WKcGwLhTgVcjjfr06Gc4T0D1ld9TN3UCVLk=;
-        b=ak9qyYGUS/U3E7+fqKubKrZLUjAKvhb5C7ccuV+XENvdJ6qznvZ2FmEuZsE04zT+Bb
-         pgBBsU8+QXgI9zw+6dsTfR75KDCqVtJ2MvmuKgSpfqiX0nbQ+bRrtJiPhhwkKtzSybdY
-         wcNaUW5gH5oQ84Jhoynwt0AwviYe/rMjqcytLiAPOJxWrH6wYYUIsM1Rfu/taPd1XF7h
-         TbJbIjw8Z68xZLGS2UMDeCLXLamJ1VM2Earj8w6IyiwrZLdut+ATAyuT5b1o7Bujm4SK
-         y5nPoaZLubDDb3DBoa+bkCTReCWgmr38aSNg7Y3PXXcBjvcNlqgn4aTnDgYoSJ19F2S4
-         hwtg==
+        bh=pinXyNbLzNVPX/bjvrXpQvjJmZP5stTSjNwoOuOjf58=;
+        b=MdJ4QWv6yJuL/l2OhB7xzWNVy+zRUUOc2Zmq2r6kz69YmC7edeD8SQOWY5BcoLeUzX
+         ogwkOVKYgX4+0aXYCsA21Yq8sFWFV/uZizHm5EdW4jeYb3EGjA0DJzLY8lOlwC6uHMW8
+         htjV2C56x49koAQuXCDOYq5rteaudtGE/1A/EkXqsS3IZrZbvCKo5Ss1J92v1uV2inRv
+         2eAuq2Lnzb2cMyumzcVEu0HNZYarGbEWVHwpeNgc14/xQ3jR2dp9sHRdackkJhiaKvji
+         vyxU1eXFLdpm3OBVokdaXHoxQAitkX2aUINFS4qr3ukUQ1AQ3+VtjoOJhb5DgxspDs43
+         vYkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=GOIK3Hq+WKcGwLhTgVcjjfr06Gc4T0D1ld9TN3UCVLk=;
-        b=hg5QOnenK3p5QqTC3HFs506VdEe8bMMaAnc37RaIV1N9tTQgkuasfsV0tB8WwF5gO3
-         FpcEuSfxNSJm6TsB98HGliXnqrF9Z33HLgG5G5bsgGdsvmWoN24AOFecU7ewNIHOh1no
-         7CQdRSR92tW5POSEDFq0B9P37aYwATz7ke4Ca+i5D06bfwJoJVNiB3MedRbYdCl7B7GG
-         B+dfx7oX7eDGtEECNStNNqL4BIzuRENEiNfDe/9o6RinY13pDKGQLDHD3K4KW0xdECsl
-         yTrEOIOSMaD1pHez1raV6uaJEbiuGmvbHoJ5YRYRVJlPf04kyC7502qq09B2tTooLxBw
-         5PXw==
-X-Gm-Message-State: AOAM532J7s5KEFVnQO6Vuy90UsGANSu4C67peGn/erLp/ueh/xikDbAx
-        v1fQWX2GUTnoAXPqaUCK5os=
-X-Google-Smtp-Source: ABdhPJyAzc9Sk1A8caGl+hCGaIAJ01fKrSLPSH3KAJAeZ/TISr185eyHMYYLC4sIDCTQCQp5NYVRNA==
-X-Received: by 2002:a17:906:cd14:: with SMTP id oz20mr7328506ejb.7.1602445471848;
-        Sun, 11 Oct 2020 12:44:31 -0700 (PDT)
+        bh=pinXyNbLzNVPX/bjvrXpQvjJmZP5stTSjNwoOuOjf58=;
+        b=QFpxx/4SHt9483cCgw9ryjN5ADif/DaRBuWlJfrbfjYoJyGUaX6h4Vy460pHx8ZymO
+         B0v7CtYLkYdTm87MRpLnSC6QeEFz4g0fP2mpEo8D5Q+SJ4BSqCKXyR9/hyVreSGYfR+v
+         nvDdLMVg8UngU8mMc7fhG81QKdvHQEM2IX8Cw8/pf31IRpX/NM6ggTG0DKo2Y263EMbk
+         gLgMEMonYJ475QWTxE6N00PmA0llFeKpkl4BVeik3AbiG3zhy2xK/Agx11kAfvgCUQa3
+         vhDdOI64Yt20Q3Fr5rmXJbNk0qrEBPzWUyKBIZWozKbJQI252POyk9UpCPvcwmGQRiNo
+         0ZPg==
+X-Gm-Message-State: AOAM532q2w6oyjm2ZkFZr/ljY0gxmoLVXbUd8gUl928AML22sl39+q3V
+        7jKVGz92/BAPVeGyzsXiCb4=
+X-Google-Smtp-Source: ABdhPJxFHfj/MBXeetj477kxdURdC3Dlcz5g257iXuawEKZFoVAzZWuyj+HwYtf/AqICeqid3bPHBw==
+X-Received: by 2002:a05:6402:b0e:: with SMTP id bm14mr10989272edb.259.1602445473344;
+        Sun, 11 Oct 2020 12:44:33 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8f00:6a00:51b7:bf4f:604:7d3d? (p200300ea8f006a0051b7bf4f06047d3d.dip0.t-ipconnect.de. [2003:ea:8f00:6a00:51b7:bf4f:604:7d3d])
-        by smtp.googlemail.com with ESMTPSA id e4sm9728173edk.38.2020.10.11.12.44.30
+        by smtp.googlemail.com with ESMTPSA id a22sm9549717ejs.25.2020.10.11.12.44.32
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 11 Oct 2020 12:44:31 -0700 (PDT)
-Subject: [PATCH net-next 04/12] net: usb: qmi_wwan: use new function
+        Sun, 11 Oct 2020 12:44:32 -0700 (PDT)
+Subject: [PATCH net-next 05/12] net: usbnet: use new function
  dev_fetch_sw_netstats
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     David Miller <davem@davemloft.net>,
@@ -76,8 +76,8 @@ Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         linux-wireless <linux-wireless@vger.kernel.org>,
         bridge@lists.linux-foundation.org
 References: <a46f539e-a54d-7e92-0372-cd96bb280729@gmail.com>
-Message-ID: <9cde03fe-d032-521d-2d34-34429d6d1a1c@gmail.com>
-Date:   Sun, 11 Oct 2020 21:38:44 +0200
+Message-ID: <e24d4325-07c4-9015-e617-4cfa27777e91@gmail.com>
+Date:   Sun, 11 Oct 2020 21:39:28 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.1
 MIME-Version: 1.0
@@ -93,17 +93,17 @@ Simplify the code by using new function dev_fetch_sw_netstats().
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/usb/qmi_wwan.c | 24 +-----------------------
+ drivers/net/usb/usbnet.c | 24 +-----------------------
  1 file changed, 1 insertion(+), 23 deletions(-)
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 5ca1356b8..a322f5187 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -126,31 +126,9 @@ static void qmimux_get_stats64(struct net_device *net,
- 			       struct rtnl_link_stats64 *stats)
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index 963d260d1..6062dc278 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -983,31 +983,9 @@ EXPORT_SYMBOL_GPL(usbnet_set_link_ksettings);
+ void usbnet_get_stats64(struct net_device *net, struct rtnl_link_stats64 *stats)
  {
- 	struct qmimux_priv *priv = netdev_priv(net);
+ 	struct usbnet *dev = netdev_priv(net);
 -	unsigned int start;
 -	int cpu;
  
@@ -114,7 +114,7 @@ index 5ca1356b8..a322f5187 100644
 -		u64 rx_packets, rx_bytes;
 -		u64 tx_packets, tx_bytes;
 -
--		stats64 = per_cpu_ptr(priv->stats64, cpu);
+-		stats64 = per_cpu_ptr(dev->stats64, cpu);
 -
 -		do {
 -			start = u64_stats_fetch_begin_irq(&stats64->syncp);
@@ -129,10 +129,10 @@ index 5ca1356b8..a322f5187 100644
 -		stats->tx_packets += tx_packets;
 -		stats->tx_bytes += tx_bytes;
 -	}
-+	dev_fetch_sw_netstats(stats, priv->stats64);
++	dev_fetch_sw_netstats(stats, dev->stats64);
  }
+ EXPORT_SYMBOL_GPL(usbnet_get_stats64);
  
- static const struct net_device_ops qmimux_netdev_ops = {
 -- 
 2.28.0
 
