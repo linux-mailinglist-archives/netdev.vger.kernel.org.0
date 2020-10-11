@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC3A128A61B
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 09:16:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E070928A61E
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 09:22:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728815AbgJKHQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 03:16:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33658 "EHLO
+        id S1728853AbgJKHWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 03:22:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725802AbgJKHQb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 03:16:31 -0400
+        with ESMTP id S1726461AbgJKHWf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 03:22:35 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B56C0613CE
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 00:16:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D081FC0613D0
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 00:22:34 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kRVak-0001IT-84; Sun, 11 Oct 2020 09:16:26 +0200
-Received: from [IPv6:2a03:f580:87bc:d400:94c5:3170:694e:9c6d] (unknown [IPv6:2a03:f580:87bc:d400:94c5:3170:694e:9c6d])
+        id 1kRVgc-0001mk-4m; Sun, 11 Oct 2020 09:22:30 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:94c5:3170:694e:9c6d] (2a03-f580-87bc-d400-94c5-3170-694e-9c6d.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:94c5:3170:694e:9c6d])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
          client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 4231E576AAE;
-        Sun, 11 Oct 2020 07:16:25 +0000 (UTC)
-Subject: Re: pull-request: can 2020-10-08
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        linux-can@vger.kernel.org, kernel@pengutronix.de
-References: <20201008214022.2044402-1-mkl@pengutronix.de>
- <20201010103240.11c8e69d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 1F049576ABA;
+        Sun, 11 Oct 2020 07:22:29 +0000 (UTC)
+Subject: Re: [PATCH net-next 2/2] can: remove obsolete version strings
+To:     Oliver Hartkopp <socketcan@hartkopp.net>, kuba@kernel.org,
+        netdev@vger.kernel.org
+Cc:     davem@davemloft.net, linux-can@vger.kernel.org
+References: <20201010204909.2059-1-socketcan@hartkopp.net>
+ <20201010204909.2059-2-socketcan@hartkopp.net>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
@@ -94,15 +94,15 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
  HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
  xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
-Message-ID: <6facaac5-62c4-4322-6c23-a7003b98d6a6@pengutronix.de>
-Date:   Sun, 11 Oct 2020 09:16:20 +0200
+Message-ID: <aba70665-f2af-3aa2-68ff-f78d1604c179@pengutronix.de>
+Date:   Sun, 11 Oct 2020 09:22:25 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20201010103240.11c8e69d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201010204909.2059-2-socketcan@hartkopp.net>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="jkMjjY2imwCatKGHqFFkFqzFE5d6iMEDK"
+ boundary="B3YfvXDb0rdL29H9U4cMFVngnBVCdIIRd"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -112,52 +112,40 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---jkMjjY2imwCatKGHqFFkFqzFE5d6iMEDK
-Content-Type: multipart/mixed; boundary="KyTDtkYZj7Pn8i6pilhLPsVokZoVIjWi7";
+--B3YfvXDb0rdL29H9U4cMFVngnBVCdIIRd
+Content-Type: multipart/mixed; boundary="yGw3fP9QCXrSqi44TSnp6a4cgm0NvF8ym";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org, davem@davemloft.net, linux-can@vger.kernel.org,
- kernel@pengutronix.de
-Message-ID: <6facaac5-62c4-4322-6c23-a7003b98d6a6@pengutronix.de>
-Subject: Re: pull-request: can 2020-10-08
-References: <20201008214022.2044402-1-mkl@pengutronix.de>
- <20201010103240.11c8e69d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201010103240.11c8e69d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+To: Oliver Hartkopp <socketcan@hartkopp.net>, kuba@kernel.org,
+ netdev@vger.kernel.org
+Cc: davem@davemloft.net, linux-can@vger.kernel.org
+Message-ID: <aba70665-f2af-3aa2-68ff-f78d1604c179@pengutronix.de>
+Subject: Re: [PATCH net-next 2/2] can: remove obsolete version strings
+References: <20201010204909.2059-1-socketcan@hartkopp.net>
+ <20201010204909.2059-2-socketcan@hartkopp.net>
+In-Reply-To: <20201010204909.2059-2-socketcan@hartkopp.net>
 
---KyTDtkYZj7Pn8i6pilhLPsVokZoVIjWi7
+--yGw3fP9QCXrSqi44TSnp6a4cgm0NvF8ym
 Content-Type: text/plain; charset=utf-8
 Content-Language: de-DE
 Content-Transfer-Encoding: quoted-printable
 
-On 10/10/20 7:32 PM, Jakub Kicinski wrote:
-> On Thu,  8 Oct 2020 23:40:19 +0200 Marc Kleine-Budde wrote:
->> The first patch is part of my pull request "linux-can-fixes-for-5.9-20=
-201006",
->> so consider that one obsolete and take this instead.
->>
->> The first patch is by Lucas Stach and fixes m_can driver by removing a=
-n
->> erroneous call to m_can_class_suspend() in runtime suspend. Which caus=
-es the
->> pinctrl state to get stuck on the "sleep" state, which breaks all CAN
->> functionality on SoCs where this state is defined.
->>
->> The last two patches target the j1939 protocol: Cong Wang fixes a syzb=
-ot
->> finding of an uninitialized variable in the j1939 transport protocol. =
-I
->> contribute a patch, that fixes the initialization of a same uninitiali=
-zed
->> variable in a different function.
->=20
-> Pulled, thanks!
->=20
-> Since we missed 5.9 would you like me to queue these up for stable?
+On 10/10/20 10:49 PM, Oliver Hartkopp wrote:
+> As pointed out by Jakub Kicinski here:
+> https://marc.info/?l=3Dlinux-can&m=3D160229286216008
 
-Yes.
+Better use https://lore.kernel.org for this. The URL is constructed by ad=
+ding
+"/r/$MESSAGE_ID":
 
-tnx,
+
+http://lore.kernel.org/r/20201009175751.5c54097f@kicinski-fedora-pc1c0hjn=
+=2Edhcp.thefacebook.com
+
+> this patch removes the obsolete version information of the different
+> CAN protocols and the AF_CAN core module.
+>=20
+> Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
 Marc
 
 --=20
@@ -167,23 +155,23 @@ Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---KyTDtkYZj7Pn8i6pilhLPsVokZoVIjWi7--
+--yGw3fP9QCXrSqi44TSnp6a4cgm0NvF8ym--
 
---jkMjjY2imwCatKGHqFFkFqzFE5d6iMEDK
+--B3YfvXDb0rdL29H9U4cMFVngnBVCdIIRd
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+CsUQACgkQqclaivrt
-76lPQwgAmO2h+MeBrNkVCGFy5IoZXSqJovV1+viq4BDVMRf3COFMr6G4CtilTqDI
-29xi12bWzftDO53f+AqqtOIwksv1o/A4wffJ9ISvCviMtQG/5ge+1IMAFZo5bP+u
-YPB1tD2ctJWjQNnMjNlTU9hXuHsZ+cTY7UMJGty0GrLGbEYgTHfoT33wJb/rWdIT
-sXh+h/5HdoucwkwG4dcmYv3mJC7TuyasJd93ND5ZgUESnRsqK78ylFZA6K1yGG+u
-vnTdWNkIcZbL9qDakE7ak4ooDAxby5l5BpvD+3qyyRb5TQfx5+AafIn02uZsIUIJ
-iGpKpwZZnM1UBiBSDcvptmxvF3Ag4Q==
-=mplS
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+CsrEACgkQqclaivrt
+76lDXQf8DKL9vUUtNo3tSQvHB0xXCYM/XNKnAfVCkUyaoVI0+y8q75OWcRXz+Tc2
+pPUBtJB8EWXrsK6ulPpHfYg6qAO6J1FFjsoyLsvIns8DknW2gZE5Xf3cwtyrBoiD
+6HPrJBe7ISv17Tb3gds8wm0+RrptBbo5Q1aiA4CRRCTQbDxMsnQ7xfWLOsJRQNMd
+/YMciOVk85kVlTQeWT/Sd4pYSU8xd07Xm/i4dxybCn94oncKv7o7THcbavfnT5jR
+WPPbqRgK4QF7URObrIxoekUhPqG/mCxHq0st/nGcds7Uz29jmZRiSooEEVdlBBwW
+aZ9Xw6E4MoI3dQnnOD58UUMp8Iw4UQ==
+=WGag
 -----END PGP SIGNATURE-----
 
---jkMjjY2imwCatKGHqFFkFqzFE5d6iMEDK--
+--B3YfvXDb0rdL29H9U4cMFVngnBVCdIIRd--
