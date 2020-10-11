@@ -2,129 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A664528A69A
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 11:22:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADC8A28A69C
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 11:22:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726469AbgJKJVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 05:21:03 -0400
-Received: from mail-vi1eur05on2045.outbound.protection.outlook.com ([40.107.21.45]:38433
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725863AbgJKJVC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 11 Oct 2020 05:21:02 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gkOzEV2iyhU0PTWRha0MQjmkEgnZ7Nr7mc2SkkAq1K7y10R3vKuE8Zf7kTgMdcyeMf3iIwGPwhPUiIrPEC7/37BSZw+e18Hq2tV4qNjSquX7f7gMMmvfCP2oayYdGc2J9jASQXvXQdV/Pcx4n++HOtQGmZ2U4E61JMkI4cD1e4y+BrcXbvcMReSLqyoIBcL344KvrE0+2N2Bk7JFBpJKpSnU5QCUuSiK8LOQsmz+LUQOsYDuG40XLrb/yTVTTNccZLtP8ynTyFYbAFP1dNnIFjwEIZ62d5yKIXZ3cBrV2mSfJ/Gvu9fWigTEIxcdNV+pJipDFQjs8N8EyW0IsLPP2A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DSo+s6bDonMt5k9g1GY9GGBEwlbm81up4oeFDirFQiI=;
- b=lxGBz3OxrwoAjb5F1PC3pwdNblFUjxqLVj5/jicNzLi0YkWoy8AahdM4dEWT52j3/VYwgrP/izs/mzs02N87Rz0n/3Vo/Nz/yS67lBzWvDiOZEjqn+zbIUgGqQy6zIWIff9zGxbw8himQv2GkJAOvdGFEtpbw7rqbFpwsLxgLAB8iYcK2BIMYOp2onmB0Xq+4AavxHUtkRexRz7gAaw2Bv7cfPai1Y6LHCk/gsRneoRhN45GYmZOqrndif0EbgCkORPzdVad5V+zjOM6//x8qVeEoX2zZMJ2A/+BRhXT6Z1I60FQII56FPF8lsyrlZwd7EVfupXh5/ikeYc6wvjy4A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DSo+s6bDonMt5k9g1GY9GGBEwlbm81up4oeFDirFQiI=;
- b=oF8r9/NAbGlzZVnEekgAD94p/nFfa2PFVLBJ5QEe0b7P50j2Zst233qw5W/120j6m5BQyLEOs4am05NYKZ67PwZYdF7mOQaxJqSqr861skbVo8n5xRvzUm/9HS7JWLzDmMjzdhSZ4uzveCLsxzVCpd1aOLA6CWnMp7KkK4Kqe3I=
-Authentication-Results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VI1PR04MB4222.eurprd04.prod.outlook.com (2603:10a6:803:46::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.22; Sun, 11 Oct
- 2020 09:20:56 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3455.029; Sun, 11 Oct 2020
- 09:20:56 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     alexandre.belloni@bootlin.com, netdev@vger.kernel.org,
-        UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next] net: mscc: ocelot: remove duplicate ocelot_port_dev_check
-Date:   Sun, 11 Oct 2020 12:20:41 +0300
-Message-Id: <20201011092041.3535101-1-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [188.26.174.215]
-X-ClientProxiedBy: VI1PR08CA0100.eurprd08.prod.outlook.com
- (2603:10a6:800:d3::26) To VI1PR04MB5696.eurprd04.prod.outlook.com
- (2603:10a6:803:e7::13)
+        id S1726935AbgJKJWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 05:22:30 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:28157 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725863AbgJKJWa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 05:22:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602408148;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jKK5N6PrgxsOU8SQj7Scj0vZnD5482zpkcpJ2wJ4hZA=;
+        b=QJvtGVW0LRsX0ZnMyZLHoPFgE62Cine+g6IQWDFgv65rG1HFP0QHl787fFFVfLHjDKvio5
+        0IAZvIPc32GxcKnugWrKRq38hzT6qcjljwrlzcPHABmCk5vKwvLmNovn8plzqAjdtB8cqM
+        J2TMTFSXU/JaM8oWiCyXqktFdgqVU3I=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-435-VlH4jTA0PIW89n__ZAlHEg-1; Sun, 11 Oct 2020 05:22:24 -0400
+X-MC-Unique: VlH4jTA0PIW89n__ZAlHEg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E7593425D5;
+        Sun, 11 Oct 2020 09:22:22 +0000 (UTC)
+Received: from carbon (unknown [10.40.208.22])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9EE7510013C4;
+        Sun, 11 Oct 2020 09:22:14 +0000 (UTC)
+Date:   Sun, 11 Oct 2020 11:22:13 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     brouer@redhat.com, ast@kernel.org, john.fastabend@gmail.com,
+        yhs@fb.com, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Toke =?UTF-8?B?SMO4aWxhbmQt?= =?UTF-8?B?SsO4cmdlbnNlbg==?= 
+        <toke@redhat.com>
+Subject: Re: [PATCH bpf-next v6 2/6] bpf: add redirect_peer helper
+Message-ID: <20201011112213.7e542de7@carbon>
+In-Reply-To: <20201010234006.7075-3-daniel@iogearbox.net>
+References: <20201010234006.7075-1-daniel@iogearbox.net>
+        <20201010234006.7075-3-daniel@iogearbox.net>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.26.174.215) by VI1PR08CA0100.eurprd08.prod.outlook.com (2603:10a6:800:d3::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.22 via Frontend Transport; Sun, 11 Oct 2020 09:20:55 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 75bd18f2-fa49-4490-3f60-08d86dc6f569
-X-MS-TrafficTypeDiagnostic: VI1PR04MB4222:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB4222C4F1D1EBBCF4C56B20F0E0060@VI1PR04MB4222.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6uf6PRbQc91y7FqDKE7cVn+xNeE0I7lbQUjvzHljmtASaAejxXQDmU+cZyp2lO8Ybob7TL98VNXZ+UTORyd9oINjZfIC64PVUc9qz3y2BmqR/ExlfMxjhlbDDvfteT19WepjuQ5AOT7mrMXcTa8FRQQ75F7Zz727sX2bp/A9g2pyHAU945/buIV67PeXS/QgSGW2RPU0AC5UW0Va8wB3ioDdi7OOiXhhO77+D/OncfB0quXWWYAsOAWhVDvHbvIzodq3Dnctv4O1NdpMpfui4POHKuSN6f4YlB3lmke2N7IVCOPbIMlnTx7pDnyOwZTUI8EbSiG2f7Hsqa843/VmQKJQ3krMU5zWXJlVzwRbYu0cQjqqDuzJFA+yjVg4g0MU
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(346002)(396003)(136003)(39850400004)(6666004)(16526019)(86362001)(44832011)(66946007)(186003)(8676002)(5660300002)(69590400008)(36756003)(8936002)(6506007)(316002)(1076003)(66476007)(66556008)(26005)(2616005)(956004)(83380400001)(2906002)(6512007)(478600001)(52116002)(4326008)(6486002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: 5KK7jFNUA69ARtNKxXco5ZefJ1Uk9n2IoNvEaPSyzakU5zW4ZJZh23sH8V3foixcCvKgH2fr62wvGwiLZ/vCFDsFesOUNQdKDumrJq+8OrIFdycM1hVUokbg5o5rBLG38SSzoAR5oCUrRp/ro0/kZfUYYl+P06CdHk7oaLv693C5K3vSDSNYJafUjVx1ShDJ0cDhPvjPFiMMQ0uN+JLjO1PnAWdncUmk7YMup1U8TvFwKUSFQkXdi2rMa62ISo3GG8AwNV7BvJhM5zPZNcPj3WxReH/ic4Q7ufGunVkb5/CfY0+cGq44p6kEdEvhTmeAmnv+Qk/bl2JbuIJNDTBBz0Ndl1Q8sNgeKxBKWrwIwi7ke8ijrOu8xKBOmWDcWNvJLokyx3tPRnJjL04IPwXdtpVHseKvC/0XZLrQyGxFECb+eTZksA0njl8Hk7p0hZPRXtogjOO9YOLojgZfAXzT5k7Nu+VLJA9kMohKFK2Z2jofzC2kHRTW6LkT+mPhcELkzcyGHplGXuNqb+NrwpTeRuORFk6t6kRHpsjwuaHkktxNT2EWQ5ZSd85iiVN2A38JiDqTK3mKaHIn48/zzil0WosbSHypumMeyzDHzEMIYj7cKf/0K+ABPud/2gHpzxYVBu+xcZG94pTr5CwK9ATQUw==
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 75bd18f2-fa49-4490-3f60-08d86dc6f569
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Oct 2020 09:20:56.3221
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: n8iNjF3E6BhTUQpYrUt3jZcjl6XGMO4sJGJokVREN6d3O9zv+mZ32GcZK3aUuLy6VXJBUvL7Ltsrx5oXNDoz4g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4222
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A helper for checking whether a net_device belongs to mscc_ocelot
-already existed and did not need to be rewritten. Use it.
+On Sun, 11 Oct 2020 01:40:02 +0200
+Daniel Borkmann <daniel@iogearbox.net> wrote:
 
-Fixes: 319e4dd11a20 ("net: mscc: ocelot: introduce conversion helpers between port and netdev")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/ethernet/mscc/ocelot_net.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+> Add an efficient ingress to ingress netns switch that can be used out of tc BPF
+> programs in order to redirect traffic from host ns ingress into a container
+> veth device ingress without having to go via CPU backlog queue [0]. For local
+> containers this can also be utilized and path via CPU backlog queue only needs
+> to be taken once, not twice. On a high level this borrows from ipvlan which does
+> similar switch in __netif_receive_skb_core() and then iterates via another_round.
+> This helps to reduce latency for mentioned use cases.
+> 
+> Pod to remote pod with redirect(), TCP_RR [1]:
+> 
+>   # percpu_netperf 10.217.1.33
+>           RT_LATENCY:         122.450         (per CPU:         122.666         122.401         122.333         122.401 )
+>         MEAN_LATENCY:         121.210         (per CPU:         121.100         121.260         121.320         121.160 )
+>       STDDEV_LATENCY:         120.040         (per CPU:         119.420         119.910         125.460         115.370 )
+>          MIN_LATENCY:          46.500         (per CPU:          47.000          47.000          47.000          45.000 )
+>          P50_LATENCY:         118.500         (per CPU:         118.000         119.000         118.000         119.000 )
+>          P90_LATENCY:         127.500         (per CPU:         127.000         128.000         127.000         128.000 )
+>          P99_LATENCY:         130.750         (per CPU:         131.000         131.000         129.000         132.000 )
+> 
+>     TRANSACTION_RATE:       32666.400         (per CPU:        8152.200        8169.842        8174.439        8169.897 )
+> 
+> Pod to remote pod with redirect_peer(), TCP_RR:
+> 
+>   # percpu_netperf 10.217.1.33
+>           RT_LATENCY:          44.449         (per CPU:          43.767          43.127          45.279          45.622 )
+>         MEAN_LATENCY:          45.065         (per CPU:          44.030          45.530          45.190          45.510 )
+>       STDDEV_LATENCY:          84.823         (per CPU:          66.770          97.290          84.380          90.850 )
+>          MIN_LATENCY:          33.500         (per CPU:          33.000          33.000          34.000          34.000 )
+>          P50_LATENCY:          43.250         (per CPU:          43.000          43.000          43.000          44.000 )
+>          P90_LATENCY:          46.750         (per CPU:          46.000          47.000          47.000          47.000 )
+>          P99_LATENCY:          52.750         (per CPU:          51.000          54.000          53.000          53.000 )
+> 
+>     TRANSACTION_RATE:       90039.500         (per CPU:       22848.186       23187.089       22085.077       21919.130 )
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-index d3c03942546d..b34da11acf65 100644
---- a/drivers/net/ethernet/mscc/ocelot_net.c
-+++ b/drivers/net/ethernet/mscc/ocelot_net.c
-@@ -669,7 +669,8 @@ struct net_device *ocelot_port_to_netdev(struct ocelot *ocelot, int port)
- 	return priv->dev;
- }
- 
--static bool ocelot_port_dev_check(const struct net_device *dev)
-+/* Checks if the net_device instance given to us originates from our driver */
-+static bool ocelot_netdevice_dev_check(const struct net_device *dev)
- {
- 	return dev->netdev_ops == &ocelot_port_netdev_ops;
- }
-@@ -678,7 +679,7 @@ int ocelot_netdev_to_port(struct net_device *dev)
- {
- 	struct ocelot_port_private *priv;
- 
--	if (!dev || !ocelot_port_dev_check(dev))
-+	if (!dev || !ocelot_netdevice_dev_check(dev))
- 		return -EINVAL;
- 
- 	priv = netdev_priv(dev);
-@@ -907,12 +908,6 @@ static int ocelot_port_obj_del(struct net_device *dev,
- 	return ret;
- }
- 
--/* Checks if the net_device instance given to us originate from our driver. */
--static bool ocelot_netdevice_dev_check(const struct net_device *dev)
--{
--	return dev->netdev_ops == &ocelot_port_netdev_ops;
--}
--
- static int ocelot_netdevice_port_event(struct net_device *dev,
- 				       unsigned long event,
- 				       struct netdev_notifier_changeupper_info *info)
+This is awesome results and great work Daniel! :-)
+
+I wonder if we can also support this from XDP, which can also native
+redirect into veth.  Originally I though we could add the peer netdev
+in the devmap, but AFAIK Toke showed me that this was not possible.
+
+
+>   [0] https://linuxplumbersconf.org/event/7/contributions/674/attachments/568/1002/plumbers_2020_cilium_load_balancer.pdf
+>   [1] https://github.com/borkmann/netperf_scripts/blob/master/percpu_netperf
+> 
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> ---
+>  drivers/net/veth.c             |  9 ++++++
+>  include/linux/netdevice.h      |  4 +++
+>  include/uapi/linux/bpf.h       | 17 +++++++++++
+>  net/core/dev.c                 | 15 ++++++++--
+>  net/core/filter.c              | 54 +++++++++++++++++++++++++++++-----
+>  tools/include/uapi/linux/bpf.h | 17 +++++++++++
+>  6 files changed, 106 insertions(+), 10 deletions(-)
+> 
+[...]
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 9d55bf5d1a65..7dd015823593 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -4930,7 +4930,7 @@ EXPORT_SYMBOL_GPL(br_fdb_test_addr_hook);
+>  
+>  static inline struct sk_buff *
+>  sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
+> -		   struct net_device *orig_dev)
+> +		   struct net_device *orig_dev, bool *another)
+>  {
+>  #ifdef CONFIG_NET_CLS_ACT
+>  	struct mini_Qdisc *miniq = rcu_dereference_bh(skb->dev->miniq_ingress);
+> @@ -4974,7 +4974,11 @@ sch_handle_ingress(struct sk_buff *skb, struct packet_type **pt_prev, int *ret,
+>  		 * redirecting to another netdev
+>  		 */
+>  		__skb_push(skb, skb->mac_len);
+> -		skb_do_redirect(skb);
+> +		if (skb_do_redirect(skb) == -EAGAIN) {
+> +			__skb_pull(skb, skb->mac_len);
+> +			*another = true;
+> +			break;
+> +		}
+>  		return NULL;
+>  	case TC_ACT_CONSUMED:
+>  		return NULL;
+> @@ -5163,7 +5167,12 @@ static int __netif_receive_skb_core(struct sk_buff **pskb, bool pfmemalloc,
+>  skip_taps:
+>  #ifdef CONFIG_NET_INGRESS
+>  	if (static_branch_unlikely(&ingress_needed_key)) {
+> -		skb = sch_handle_ingress(skb, &pt_prev, &ret, orig_dev);
+> +		bool another = false;
+> +
+> +		skb = sch_handle_ingress(skb, &pt_prev, &ret, orig_dev,
+> +					 &another);
+> +		if (another)
+> +			goto another_round;
+>  		if (!skb)
+>  			goto out;
+>  
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 5da44b11e1ec..fab951c6be57 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -2380,8 +2380,9 @@ static int __bpf_redirect_neigh(struct sk_buff *skb, struct net_device *dev)
+>  
+>  /* Internal, non-exposed redirect flags. */
+>  enum {
+> -	BPF_F_NEIGH = (1ULL << 1),
+> -#define BPF_F_REDIRECT_INTERNAL	(BPF_F_NEIGH)
+> +	BPF_F_NEIGH	= (1ULL << 1),
+> +	BPF_F_PEER	= (1ULL << 2),
+> +#define BPF_F_REDIRECT_INTERNAL	(BPF_F_NEIGH | BPF_F_PEER)
+>  };
+>  
+>  BPF_CALL_3(bpf_clone_redirect, struct sk_buff *, skb, u32, ifindex, u64, flags)
+> @@ -2430,19 +2431,35 @@ EXPORT_PER_CPU_SYMBOL_GPL(bpf_redirect_info);
+>  int skb_do_redirect(struct sk_buff *skb)
+>  {
+>  	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
+> +	struct net *net = dev_net(skb->dev);
+>  	struct net_device *dev;
+>  	u32 flags = ri->flags;
+>  
+> -	dev = dev_get_by_index_rcu(dev_net(skb->dev), ri->tgt_index);
+> +	dev = dev_get_by_index_rcu(net, ri->tgt_index);
+>  	ri->tgt_index = 0;
+> -	if (unlikely(!dev)) {
+> -		kfree_skb(skb);
+> -		return -EINVAL;
+> +	ri->flags = 0;
+> +	if (unlikely(!dev))
+> +		goto out_drop;
+> +	if (flags & BPF_F_PEER) {
+> +		const struct net_device_ops *ops = dev->netdev_ops;
+> +
+> +		if (unlikely(!ops->ndo_get_peer_dev ||
+> +			     !skb_at_tc_ingress(skb)))
+> +			goto out_drop;
+> +		dev = ops->ndo_get_peer_dev(dev);
+> +		if (unlikely(!dev ||
+> +			     !is_skb_forwardable(dev, skb) ||
+
+Again a MTU "transmissing" check on ingress "receive" path, but we can
+take that discussion after this is merged, as this keeps the current
+behavior.
+
+> +			     net_eq(net, dev_net(dev))))
+> +			goto out_drop;
+> +		skb->dev = dev;
+
+Don't we need to clean some more state when this packet gets redirected
+into another namespace?
+
+Like skb_scrub_packet(), or is that not needed?  (p.s. I would like to
+avoid it, as it e.g. clears the skb->mark.)
+
+> +		return -EAGAIN;
+>  	}
+> -
+>  	return flags & BPF_F_NEIGH ?
+>  	       __bpf_redirect_neigh(skb, dev) :
+>  	       __bpf_redirect(skb, dev, flags);
+> +out_drop:
+> +	kfree_skb(skb);
+> +	return -EINVAL;
+>  }
+
+
+
 -- 
-2.25.1
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
