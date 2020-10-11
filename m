@@ -2,94 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2309428A98D
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 21:08:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76A0528A993
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 21:11:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728548AbgJKTIL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 15:08:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57604 "EHLO
+        id S1728673AbgJKTLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 15:11:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726151AbgJKTIK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 15:08:10 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87873C0613CE;
-        Sun, 11 Oct 2020 12:08:10 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id u8so16127948lff.1;
-        Sun, 11 Oct 2020 12:08:10 -0700 (PDT)
+        with ESMTP id S1728229AbgJKTLg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 15:11:36 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30EB4C0613CE
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 12:11:36 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id t18so7272427plo.1
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 12:11:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GGPf0Ai+cdZzA8pg4bWhAmqLseFTaZSi05u7rjNimbU=;
-        b=NGOJ/SWRY4H7gbvG6VzGLMX3GsPv/LWyxJN6wSy0KX5rKiYtswKKK6IDwzpY2gRpqv
-         4cQwPMy1BjhPeGkQdiCsGtBwt5AHWBuK1B0yZFSwb/Yn8w/WOSjj8ja8o4d6q4CDKqoJ
-         6EdtSXuMetdBIpVEp0DRk8BKUB9q+h+VFiVaX65beZoFfWxJIN1pjUvfy/TznWWkHKud
-         XIpUPmacyVBl8QrVkAULFsWe9nUXiCXK9sdMsW66aBQramyBnDgtUaxWTjrqab54Mvcm
-         eezM22QunvYG7KqLNE0INkyoYM22fG1rvX+NwsTK9rpO4m5Rh1Nk+mOpUXeFqKN6LfUR
-         58yw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1KetGy40ERK0V6+twwjePiHzbJKqm870Uk7Y8d/2PWc=;
+        b=L51vuIuyBmiaLJ4MK2ycvZq3fdbx45VGc79X7kmAWWKBUcs4hmj78xJX/JUbWbLdzs
+         fzdzwqPues8X9Eths+lxWDqOC177SXWuyEnDqb0m05gqs5M/I6VYlTqBc4wuytzG4hoh
+         Ya+JKR4BKKcm4/cc+d1WVtEjGjqIERrlhVpnBEW2K1pmf8bpo/d8tc0nBQTZcvTjSqLV
+         gDDTCQt3+AYN5JYVBAMTV5Tg+8WNDiK3j+aDjSmBfmMhi/W2akg7/bTnfgq5e6/21J58
+         ZR0YYLrr6LNUzC/NT8691PZM/qhb7D6NcHkWG0WakfRvU+SKNHYxntTHmpITwvshsbEo
+         298A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GGPf0Ai+cdZzA8pg4bWhAmqLseFTaZSi05u7rjNimbU=;
-        b=nwONFst3GvQGKYlr169dZP7e9aA9Kt0yQ6dMWLjk17z3Pl8w7JEoO1qLXHqj1ARgG3
-         rVmsjCHVp+Q8krDy/ztVSpAEjmflflQn8WiZIpnDY0Ehy3DYiDlHEtIPjiM2EbNLV3XU
-         X/4QOQBSt3eTaHtC1FYiBGH+AbxwdwQYIEU8B40VVmAV1JZ4aPGfT8WjLDccq7qnHRVB
-         uO/x5CWQhColwOJpYBsM4mhu8MDT/G/OaTkaoS057cLbQdSqftLs9Y87hVH2DNvQbem2
-         upD7kR1yZ6uLrVuKJuN7rl71PQNhZveErWvnCL3Ak2j7kjlNCrlY9/Hz0gtzmBdbIic0
-         fo/A==
-X-Gm-Message-State: AOAM530ET2dEUWzXRQRbzdyZveD084+mHwrN8NNBPndvH9iSCdKgjK5u
-        PbrXiR0f0W/xoSy78wXgf32rHXr5EJvcyz3mvrI=
-X-Google-Smtp-Source: ABdhPJyLSLt7KFipNUuTUDAvQzA7yv8F0RnrRzO0D6BvjarI40PRbp8W9O5OGB458/Lsjmxt6IF24FLEgnphbXwq1Wc=
-X-Received: by 2002:a19:c68a:: with SMTP id w132mr6710919lff.106.1602443288614;
- Sun, 11 Oct 2020 12:08:08 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1KetGy40ERK0V6+twwjePiHzbJKqm870Uk7Y8d/2PWc=;
+        b=mBM2iaeBQAnpWdXy/pw6kdTsXnFgsS7FtG0mtFPxjrQ5w1mwLs3NfNHWIQJ3dco0/i
+         0DPlrqIiOSaxy6jv84k2W+au84Ksd1+9Uhz/s/xvqSRVlCLte7BKyxGQsAceqndiYufq
+         iZLo2ojtuDKJx5rZnYJNiw0AmUO+9u4pbvZXJ0SsQwsUsQM+UunRNoD/Uq3lmgbVLjFF
+         2ccrZrolrZse7YTltKZ+N2/STTxZNx4zrDAM2jU74h59a4F9eQD/dOUmOV564iDBzo5A
+         ieTuGdRVvpbwNdNwcF3UuAWD3Tbn3sllmFl9tAo5N7WdBSFNLS1r/kw7KcBef5QvIgcR
+         AWvw==
+X-Gm-Message-State: AOAM533jkDe8NqS0SIDdy0fmKIorifVo2LcBZLccoDceUMib6v0T6vFL
+        DR/KAWXyaOIgy/YgJquEdFAKttM496v2rgzH
+X-Google-Smtp-Source: ABdhPJzjpOliv0vNNPyArmxBBCC80b/oRQ3uF80V155M/GNM8grLUyrsgbMvm8/Mfd3r/mMBB3s5Fg==
+X-Received: by 2002:a17:902:b096:b029:d3:e6c5:507c with SMTP id p22-20020a170902b096b02900d3e6c5507cmr21089144plr.71.1602443495308;
+        Sun, 11 Oct 2020 12:11:35 -0700 (PDT)
+Received: from unknown.linux-6brj.site ([2600:1700:65a0:ab60::46])
+        by smtp.gmail.com with ESMTPSA id r16sm20292078pjo.19.2020.10.11.12.11.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 11 Oct 2020 12:11:34 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com,
+        Xie He <xie.he.0141@gmail.com>,
+        William Tu <u9012063@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Subject: [Patch net v2] ip_gre: set dev->hard_header_len and dev->needed_headroom properly
+Date:   Sun, 11 Oct 2020 12:11:29 -0700
+Message-Id: <20201011191129.991-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-References: <20201010210929.620244-1-anmol.karan123@gmail.com> <20201011095436.06131ff3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201011095436.06131ff3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Anmol karn <anmol.karan123@gmail.com>
-Date:   Mon, 12 Oct 2020 00:37:56 +0530
-Message-ID: <CAC+yH-YgC1r+-J50TFSkK=NvSE0eHiXNkvgVFuLRQq4daeQZJw@mail.gmail.com>
-Subject: Re: [Linux-kernel-mentees] [PATCH net] ethtool: strset: Fix out of
- bound read in strset_parse_request()
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, mkubecek@suse.cz,
-        andrew@lunn.ch, f.fainelli@gmail.com,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        netdev <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzkaller-bugs@googlegroups.com,
-        syzbot+9d1389df89299fa368dc@syzkaller.appspotmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello sir,
-On Sun, Oct 11, 2020 at 10:24 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Sun, 11 Oct 2020 02:39:29 +0530 Anmol Karn wrote:
-> > Flag ``ETHTOOL_A_STRSET_COUNTS_ONLY`` tells the kernel to only return the string
-> > counts of the sets, but, when req_info->counts_only tries to read the
-> > tb[ETHTOOL_A_STRSET_COUNTS_ONLY] it gets out of bound.
-> >
-> > - net/ethtool/strset.c
-> > The bug seems to trigger in this line:
-> >
-> > req_info->counts_only = tb[ETHTOOL_A_STRSET_COUNTS_ONLY];
-> >
-> > Fix it by NULL checking for req_info->counts_only while
-> > reading from tb[ETHTOOL_A_STRSET_COUNTS_ONLY].
-> >
-> > Reported-by: syzbot+9d1389df89299fa368dc@syzkaller.appspotmail.com
-> > Link: https://syzkaller.appspot.com/bug?id=730deff8fe9954a5e317924d9acff98d9c64a770
-> > Signed-off-by: Anmol Karn <anmol.karan123@gmail.com>
->
-> I think the correct fix for this was already applied to net-next as:
->
->  commit db972e532518 ("ethtool: strset: allow ETHTOOL_A_STRSET_COUNTS_ONLY attr")
+GRE tunnel has its own header_ops, ipgre_header_ops, and sets it
+conditionally. When it is set, it assumes the outer IP header is
+already created before ipgre_xmit().
 
-I am glad that it's fixed now.
+This is not true when we send packets through a raw packet socket,
+where L2 headers are supposed to be constructed by user. Packet
+socket calls dev_validate_header() to validate the header. But
+GRE tunnel does not set dev->hard_header_len, so that check can
+be simply bypassed, therefore uninit memory could be passed down
+to ipgre_xmit(). Similar for dev->needed_headroom.
 
-Thanks,
-Anmol
+dev->hard_header_len is supposed to be the length of the header
+created by dev->header_ops->create(), so it should be used whenever
+header_ops is set, and dev->needed_headroom should be used when it
+is not set.
+
+Reported-and-tested-by: syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com
+Cc: Xie He <xie.he.0141@gmail.com>
+Cc: William Tu <u9012063@gmail.com>
+Cc: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
+---
+Note, there are some other suspicious use of dev->hard_header_len in
+the same file, but let's leave them to a separate patch if really
+needed.
+
+ net/ipv4/ip_gre.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+index 4e31f23e4117..82fee0010353 100644
+--- a/net/ipv4/ip_gre.c
++++ b/net/ipv4/ip_gre.c
+@@ -626,8 +626,7 @@ static netdev_tx_t ipgre_xmit(struct sk_buff *skb,
+ 
+ 	if (dev->header_ops) {
+ 		/* Need space for new headers */
+-		if (skb_cow_head(skb, dev->needed_headroom -
+-				      (tunnel->hlen + sizeof(struct iphdr))))
++		if (skb_cow_head(skb, dev->hard_header_len))
+ 			goto free_skb;
+ 
+ 		tnl_params = (const struct iphdr *)skb->data;
+@@ -748,7 +747,11 @@ static void ipgre_link_update(struct net_device *dev, bool set_mtu)
+ 	len = tunnel->tun_hlen - len;
+ 	tunnel->hlen = tunnel->hlen + len;
+ 
+-	dev->needed_headroom = dev->needed_headroom + len;
++	if (dev->header_ops)
++		dev->hard_header_len += len;
++	else
++		dev->needed_headroom += len;
++
+ 	if (set_mtu)
+ 		dev->mtu = max_t(int, dev->mtu - len, 68);
+ 
+@@ -944,6 +947,7 @@ static void __gre_tunnel_init(struct net_device *dev)
+ 	tunnel->parms.iph.protocol = IPPROTO_GRE;
+ 
+ 	tunnel->hlen = tunnel->tun_hlen + tunnel->encap_hlen;
++	dev->needed_headroom = tunnel->hlen + sizeof(tunnel->parms.iph);
+ 
+ 	dev->features		|= GRE_FEATURES;
+ 	dev->hw_features	|= GRE_FEATURES;
+@@ -987,10 +991,14 @@ static int ipgre_tunnel_init(struct net_device *dev)
+ 				return -EINVAL;
+ 			dev->flags = IFF_BROADCAST;
+ 			dev->header_ops = &ipgre_header_ops;
++			dev->hard_header_len = tunnel->hlen + sizeof(*iph);
++			dev->needed_headroom = 0;
+ 		}
+ #endif
+ 	} else if (!tunnel->collect_md) {
+ 		dev->header_ops = &ipgre_header_ops;
++		dev->hard_header_len = tunnel->hlen + sizeof(*iph);
++		dev->needed_headroom = 0;
+ 	}
+ 
+ 	return ip_tunnel_init(dev);
+-- 
+2.28.0
+
