@@ -2,98 +2,241 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 444E928A980
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 20:53:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A34D28A984
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 21:00:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725855AbgJKSxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 14:53:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55396 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725882AbgJKSxr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 14:53:47 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 431EAC0613D0
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 11:53:47 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id x16so11908760pgj.3
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 11:53:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Nlp2koKuQPol8YlKp8/Psy2arD2kGeXLj/kBWBMZhrs=;
-        b=nnryzzC6T0pyBVF20/k1rNuBjO9bNchPlai67Pq4CZOa2U8wy/KC6Hx0aNuv6B2QUX
-         WKdY5GFURbSUcqcYHmhT20OT7aBsKdWrfcqgTvqRJ3rpNEtt+PnlaL0uofaR+lohyo0S
-         6h9GPkHZH11birXRoD/uJI+sg8+SEreiBJsYjoyX0c0nDysokLEow5mEVhVOIfLT+ZH7
-         9bdNDvA986GNm8rqrwkIhc6186SDqkdysPs8mTd2kcUaC6cuGAcoShIE3DzWXSuCWJsW
-         +BxLdlfo+rMeSLwDEEB9Z9oR7M4k5lG0/7KJheGk9sAcAb72UT1WKXWlypc0h5I4QJ08
-         WiuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Nlp2koKuQPol8YlKp8/Psy2arD2kGeXLj/kBWBMZhrs=;
-        b=jkG9fqXRIFeACncdU/lrghTtR4CH3+qleduBu2+o/s/rw711ItW6NewlG6zbW5qXJ3
-         GxAQ+8cfYvJLO/GSQnjZN2Rg1OREQpDXX4qqnCD3bENUH6rg0me16QpyG0zKGbhv38GK
-         u0OngYnEWxDE2H4S5J0xTjHcClPyygWMqbEtKOgiFA5ut3PV5aWUeEZWr4NsCGE+6ZEV
-         9dT9ANfwOy/c5ucxfYiW8cOFv2OdDxjLFIfbivWQZomPklGvAr7jbz6+9Ti83XqUyfKE
-         gbWeCku5UQ9uukuSgRq/hoTOiNxjyy+Yx6sM26u27ao8XJ11KuEJC+UQ+KUedY/DNJd/
-         DISw==
-X-Gm-Message-State: AOAM530rH3yo76Vd+D+qyeu4fq5nHjqK8Q6j7UeiIdWgAf4lIlSEACPg
-        w09X+Ruas1zsiPAuyz6BMUinoaevUqNnXbeSoIg5ew==
-X-Google-Smtp-Source: ABdhPJyY5AWdJ4kh4tWqQSOizBmz/3pEctCN1xhSb3L68hRDFALws3ju7pGh8GmQErpholv7sc6lef1+fcJO7iQ/5os=
-X-Received: by 2002:a63:1906:: with SMTP id z6mr1042584pgl.286.1602442426499;
- Sun, 11 Oct 2020 11:53:46 -0700 (PDT)
+        id S1726151AbgJKS7f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 14:59:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34888 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725855AbgJKS7f (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 11 Oct 2020 14:59:35 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 57CAC2078A;
+        Sun, 11 Oct 2020 18:59:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602442774;
+        bh=rwLud/7xJ0byJdJfx2kbTIafsurhZ3360u8ISyB5nlw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jFS1oF85NpOmMiQ1BvAzbh9vs5r4zMjyHZk+LnXvQm8Ok/bnw9qxsgNzbZq6JAQ5w
+         Cd7iJrGStVyoUpzVB3bB2D2M4v3FMrpQfP2lo0t1fv3nLBiLmyEKSvOWndfIHBnI8R
+         d75I0v8+/2Ho+mZAvhsXCInu8wqCrEFXdvh7iF4I=
+Date:   Sun, 11 Oct 2020 11:59:32 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     davem@davemloft.net, hemantk@codeaurora.org,
+        netdev@vger.kernel.org, manivannan.sadhasivam@linaro.org
+Subject: Re: [PATCH] net: Add mhi-net driver
+Message-ID: <20201011115932.3d67ba52@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1602275611-7440-1-git-send-email-loic.poulain@linaro.org>
+References: <1602275611-7440-1-git-send-email-loic.poulain@linaro.org>
 MIME-Version: 1.0
-References: <20201009170202.103512-1-a.nogikh@gmail.com> <5d71472dcef4d88786ea6e8f30f0816f8b920bb7.camel@sipsolutions.net>
-In-Reply-To: <5d71472dcef4d88786ea6e8f30f0816f8b920bb7.camel@sipsolutions.net>
-From:   Andrey Konovalov <andreyknvl@google.com>
-Date:   Sun, 11 Oct 2020 20:53:35 +0200
-Message-ID: <CAAeHK+xfc=oqtXTx1m0gAaz9naDRzRXnUsWbPMzPxQHdaYj=qQ@mail.gmail.com>
-Subject: Re: [PATCH v2 0/3] [PATCH v2 0/3] [PATCH v2 0/3] net, mac80211,
- kernel: enable KCOV remote coverage collection for 802.11 frame handling
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        Aleksandr Nogikh <a.nogikh@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Marco Elver <elver@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
-        Aleksandr Nogikh <nogikh@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 11, 2020 at 8:50 PM Johannes Berg <johannes@sipsolutions.net> wrote:
->
-> On Fri, 2020-10-09 at 17:01 +0000, Aleksandr Nogikh wrote:
-> > From: Aleksandr Nogikh <nogikh@google.com>
-> >
-> > This patch series enables remote KCOV coverage collection during
-> > 802.11 frames processing. These changes make it possible to perform
-> > coverage-guided fuzzing in search of remotely triggerable bugs.
->
-> Btw, it occurred to me that I don't know at all - is this related to
-> syzkaller? Or is there some other fuzzing you're working on? Can we get
-> the bug reports from it if it's different? :)
+On Fri,  9 Oct 2020 22:33:31 +0200 Loic Poulain wrote:
+> This patch adds a new network driver implementing MHI transport for
+> network packets. Packets can be in any format, though QMAP (rmnet)
+> is the usual protocol (flow control + PDN mux).
+> 
+> It support two MHI devices, IP_HW0 which is, the path to the IPA
+> (IP accelerator) on qcom modem, And IP_SW0 which is the software
+> driven IP path (to modem CPU).
+> 
+> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
 
-Yes, all this is for syzkaller :)
+> +static int mhi_ndo_xmit(struct sk_buff *skb, struct net_device *ndev)
+> +{
+> +	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
+> +	struct mhi_device *mdev = mhi_netdev->mdev;
+> +	int err;
+> +
+> +	/* Only support for single buffer transfer for now */
+> +	err = skb_linearize(skb);
 
->
-> Also, unrelated to that (but I see Dmitry CC'ed), I started wondering if
-> it'd be helpful to have an easier raw 802.11 inject path on top of say
-> hwsim0; I noticed some syzbot reports where it created raw sockets, but
-> that only gets you into the *data* plane of the wifi stack, not into the
-> *management* plane. Theoretically you could add a monitor interface, but
-> right now the wifi setup (according to the current docs on github) is
-> using two IBSS interfaces.
->
-> Perhaps an inject path on the mac80211-hwsim "hwsim0" interface would be
-> something to consider? Or simply adding a third radio that's in
-> "monitor" mode, so that a raw socket bound to *that* interface can
-> inject with a radiotap header followed by an 802.11 frame, getting to
-> arbitrary frame handling code, not just data frames.
+Since you don't advertise NETIF_F_SG you shouldn't have to call this,
+no?
 
-I'll let Aleksandr address this part.
+> +	if (unlikely(err)) {
+> +		kfree_skb(skb);
+> +		mhi_netdev->stats.tx_dropped++;
+> +		return NETDEV_TX_OK;
+> +	}
+> +
+> +	skb_tx_timestamp(skb);
+> +
+> +	/* mhi_queue_skb is not thread-safe, but xmit is serialized by the
+> +	 * network core. Once MHI core will be thread save, migrate to
+> +	 * NETIF_F_LLTX support.
+> +	 */
+> +	err = mhi_queue_skb(mdev, DMA_TO_DEVICE, skb, skb->len, MHI_EOT);
+> +	if (err) {
+> +		netdev_err(ndev, "mhi_queue_skb err %d\n", err);
+
+This needs to be at least rate limited. 
+
+> +		netif_stop_queue(ndev);
+
+What's going to start the queue if it's a transient errors and not
+NETDEV_TX_BUSY?
+
+> +		return (err == -ENOMEM) ? NETDEV_TX_BUSY : err;
+
+You should drop the packet if it's not NETDEV_TX_BUSY, and return
+NETDEV_TX_OK. Don't return negative errors from ndo_xmit. 
+
+> +	}
+> +
+> +	return NETDEV_TX_OK;
+> +}
+> +
+> +static void mhi_ndo_get_stats64(struct net_device *ndev,
+> +				struct rtnl_link_stats64 *stats)
+> +{
+> +	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
+> +
+> +	stats->rx_packets = mhi_netdev->stats.rx_packets;
+> +	stats->rx_bytes = mhi_netdev->stats.rx_bytes;
+> +	stats->rx_errors = mhi_netdev->stats.rx_errors;
+> +	stats->rx_dropped = mhi_netdev->stats.rx_dropped;
+> +	stats->tx_packets = mhi_netdev->stats.tx_packets;
+> +	stats->tx_bytes = mhi_netdev->stats.tx_bytes;
+> +	stats->tx_errors = mhi_netdev->stats.tx_errors;
+> +	stats->tx_dropped = mhi_netdev->stats.tx_dropped;
+> +}
+
+Can you use 
+
+> +static void mhi_net_dl_callback(struct mhi_device *mhi_dev,
+> +				struct mhi_result *mhi_res)
+> +{
+> +	struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
+> +	struct sk_buff *skb = mhi_res->buf_addr;
+> +
+> +	atomic_dec(&mhi_netdev->stats.rx_queued);
+> +
+> +	if (mhi_res->transaction_status) {
+> +		mhi_netdev->stats.rx_errors++;
+> +		kfree_skb(skb);
+> +	} else {
+> +		mhi_netdev->stats.rx_packets++;
+> +		mhi_netdev->stats.rx_bytes += mhi_res->bytes_xferd;
+> +
+> +		skb->protocol = htons(ETH_P_MAP);
+> +		skb_put(skb, mhi_res->bytes_xferd);
+> +		netif_rx(skb);
+> +	}
+> +
+> +	schedule_delayed_work(&mhi_netdev->rx_refill, 0);
+
+Scheduling a work to replace every single RX buffer looks quite 
+inefficient. Any chance you can do batching? I assume mhi_queue_skb()
+has to be able to sleep?
+
+> +static void mhi_net_rx_refill_work(struct work_struct *work)
+> +{
+> +	struct mhi_net_dev *mhi_netdev = container_of(work, struct mhi_net_dev,
+> +						      rx_refill.work);
+> +	struct net_device *ndev = mhi_netdev->ndev;
+> +	struct mhi_device *mdev = mhi_netdev->mdev;
+> +	struct sk_buff *skb;
+> +	int err;
+> +
+> +	if (!netif_running(ndev))
+> +		return;
+
+How can this happen? You cancel the work from ndo_stop.
+
+> +	do {
+> +		skb = netdev_alloc_skb(ndev, READ_ONCE(ndev->mtu));
+> +		if (unlikely(!skb)) {
+> +			/* If we are starved of RX buffers, retry later */
+> +			if (!atomic_read(&mhi_netdev->stats.rx_queued))
+> +				schedule_delayed_work(&mhi_netdev->rx_refill, HZ / 2);
+> +			break;
+> +		}
+> +
+> +		err = mhi_queue_skb(mdev, DMA_FROM_DEVICE, skb, ndev->mtu,
+> +				    MHI_EOT);
+> +		if (err) {
+> +			atomic_dec(&mhi_netdev->stats.rx_queued);
+
+This can never fail with an empty ring? No need to potentially
+reschedule the work here?
+
+> +			kfree_skb(skb);
+> +			break;
+> +		}
+> +
+> +		atomic_inc(&mhi_netdev->stats.rx_queued);
+> +
+> +	} while (1);
+> +}
+> +
+> +static int mhi_net_probe(struct mhi_device *mhi_dev,
+> +			 const struct mhi_device_id *id)
+> +{
+> +	const char *netname = (char *)id->driver_data;
+> +	struct mhi_net_dev *mhi_netdev;
+> +	struct net_device *ndev;
+> +	struct device *dev = &mhi_dev->dev;
+> +	int err;
+> +
+> +	ndev = alloc_netdev(sizeof(*mhi_netdev), netname, NET_NAME_PREDICTABLE,
+> +			    mhi_net_setup);
+> +	if (!ndev) {
+> +		err = -ENOMEM;
+> +		return err;
+
+return -ENOMEM;
+
+> +	}
+> +
+> +	mhi_netdev = netdev_priv(ndev);
+> +	dev_set_drvdata(dev, mhi_netdev);
+> +	mhi_netdev->ndev = ndev;
+> +	mhi_netdev->mdev = mhi_dev;
+
+SET_NETDEV_DEV() ?
+
+> +	INIT_DELAYED_WORK(&mhi_netdev->rx_refill, mhi_net_rx_refill_work);
+> +
+> +	/* Start MHI channels */
+> +	err = mhi_prepare_for_transfer(mhi_dev, 0);
+> +	if (err) {
+> +		free_netdev(ndev);
+> +		return err;
+> +	}
+> +
+> +	err = register_netdev(ndev);
+> +	if (err) {
+> +		dev_err(dev, "mhi_net: registering device failed\n");
+> +		free_netdev(ndev);
+> +		return -EINVAL;
+
+Why not propagate the error?
+
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void mhi_net_remove(struct mhi_device *mhi_dev)
+> +{
+> +	struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
+> +
+> +	mhi_unprepare_from_transfer(mhi_netdev->mdev);
+> +	unregister_netdev(mhi_netdev->ndev);
+
+Isn't this the wrong way around?
+
+Should you not unregister the netdev before you stop transfers?
+
+> +	/* netdev released from unregister */
+
+> +}
