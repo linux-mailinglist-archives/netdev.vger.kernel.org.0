@@ -2,112 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D59328A759
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 14:29:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEBAC28A777
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 15:09:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387828AbgJKM3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 08:29:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53128 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387744AbgJKM3P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 08:29:15 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24307C0613CE;
-        Sun, 11 Oct 2020 05:29:15 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1602419352;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iJdfEiY4PfN/AFpvryhGU/5LSIFVk3RfEZa1/Sumoe4=;
-        b=bO+F2xe02c1f7d8lSe+vg0IynY4IcWkuwQltUf0m8vBr9/YRdV48u/PsCr8wRJ8hidUoID
-        k1pnA6X8TbYxD2z3mS538Aa8cUzXx5Go2cvmTc68udVg+yV6MPO/VC32QRXDcPkjmB3XZe
-        /Gb3lD3A12/EVTxZmHSN4NQRRnNQhnZCJjCeNOhWcxdpLV2WjWxBUvmAwI8NCGcr1Oa1Qk
-        XTG8aGQHHbTd/n9FTakCZ1F/N8hoN0z/Rt2Bv1KlIlF3dkPVX+LPzY648i2AxQspQY518I
-        58spl23CIlDMbyy/NiSSy62a8JOFdzhFcBxPAdZatCvEMp3r8hsCb48MVQoxiQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1602419352;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iJdfEiY4PfN/AFpvryhGU/5LSIFVk3RfEZa1/Sumoe4=;
-        b=3EWsKYr1tmKSqW2zf/7zx/SkPRqLInhX95082zDmQxsmuUJlPGHqEERUuRKUWbh7Wv2MMf
-        ORmlpy8if2aBBJBA==
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH net-next v6 2/7] net: dsa: Add DSA driver for Hirschmann Hellcreek switches
-In-Reply-To: <20201006135631.73rm3gka7r7krwca@skbuf>
-References: <20201004112911.25085-1-kurt@linutronix.de> <20201004112911.25085-3-kurt@linutronix.de> <20201004125601.aceiu4hdhrawea5z@skbuf> <87lfgj997g.fsf@kurt> <20201006092017.znfuwvye25vsu4z7@skbuf> <878scj8xxr.fsf@kurt> <20201006113237.73rzvw34anilqh4d@skbuf> <87wo037ajr.fsf@kurt> <20201006135631.73rm3gka7r7krwca@skbuf>
-Date:   Sun, 11 Oct 2020 14:29:08 +0200
-Message-ID: <87362lt08b.fsf@kurt>
+        id S2387870AbgJKNJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 09:09:06 -0400
+Received: from condef-02.nifty.com ([202.248.20.67]:44587 "EHLO
+        condef-02.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387867AbgJKNJF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 09:09:05 -0400
+Received: from conssluserg-06.nifty.com ([10.126.8.85])by condef-02.nifty.com with ESMTP id 09BD4mEk009656
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 22:04:48 +0900
+Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169]) (authenticated)
+        by conssluserg-06.nifty.com with ESMTP id 09BD4Nqp002188;
+        Sun, 11 Oct 2020 22:04:24 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 09BD4Nqp002188
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1602421464;
+        bh=OMFBsDy/RPXiLiW/3MJoJPAqD+BEbAsFNNhKa91sz2Y=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=t5dUOfQRE9r0F3fw54/CpLc+M39/VjjSxeiA3e/xf0QykiFVBwywTsJNNopN9gark
+         5I919YSPuMLccRPNclQRfwq99aC0j0wgP15b2UeULTdtdVZj1d0rn3YtvEZTcmrDCM
+         7mdODxmNeqA4QSLGO+inYBaxeXvmx68XmtTpSOPRh+tMdYjtue1AJEq+uaS0KXdyC3
+         2IzID1FPEaauL91ae+LZcDBVlW4Dp+mKxN4VtdZEq1f5Z+4qmsb0NPe4G61qE7KlFg
+         Wjlcgz3apRXDecrKEIk2MuN3SbtSXLMOZ19Ax7A670LplFd09ULhE2GeB2y3K7BlMx
+         juT/8FPhymsVA==
+X-Nifty-SrcIP: [209.85.215.169]
+Received: by mail-pg1-f169.google.com with SMTP id l18so2320977pgg.0;
+        Sun, 11 Oct 2020 06:04:23 -0700 (PDT)
+X-Gm-Message-State: AOAM5329+cC8c5W3nd9S6w5snzXfgfTqD/Tf5O+RM4jJDdNw0cV5Rv38
+        XQOPkpaRbbbOWPaMYd791qNhPiIfszV75U3owTo=
+X-Google-Smtp-Source: ABdhPJy384OdpW7pSrLgM3oeXXtJ/wn1xuM8xgyBEt9StGTLBEh74qkoVeh8iSFsvpYsT54V6B04DTc9DrVV+Phjbwo=
+X-Received: by 2002:a63:1b44:: with SMTP id b4mr9858962pgm.175.1602421463085;
+ Sun, 11 Oct 2020 06:04:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+References: <20201001011232.4050282-1-andrew@lunn.ch> <20201001011232.4050282-2-andrew@lunn.ch>
+ <CAKwvOdnVC8F1=QT03W5Zh9pJdTxxNfRcqXeob5_b4CXycvG1+g@mail.gmail.com>
+ <20201002014411.GG4067422@lunn.ch> <CAKwvOdmdfwWsRtJHtJ16B0RMyoxUi1587OKnyunQd5gfwmnGsA@mail.gmail.com>
+ <20201005194913.GC56634@lunn.ch> <CAK8P3a1qS8kaXNqAtqMKpWGx05DHVHMYwKBD_j-Zs+DHbL5CNw@mail.gmail.com>
+ <20201005210808.GE56634@lunn.ch>
+In-Reply-To: <20201005210808.GE56634@lunn.ch>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Sun, 11 Oct 2020 22:03:45 +0900
+X-Gmail-Original-Message-ID: <CAK7LNASB6ashOzmL5XntkPSq9a+8VoWCowP5CAt+oX0o=0y=dA@mail.gmail.com>
+Message-ID: <CAK7LNASB6ashOzmL5XntkPSq9a+8VoWCowP5CAt+oX0o=0y=dA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/2] Makefile.extrawarn: Add symbol for W=1
+ warnings for today
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-
-On Tue Oct 06 2020, Vladimir Oltean wrote:
-> On Tue, Oct 06, 2020 at 03:23:36PM +0200, Kurt Kanzenbach wrote:
->> So you're saying private VLANs can be used but the user or the other
->> kernel modules shouldn't be allowed to use them to simplify the
->> implementation?  Makes sense to me.
+On Tue, Oct 6, 2020 at 6:08 AM Andrew Lunn <andrew@lunn.ch> wrote:
 >
-> It would be interesting to see if you could simply turn off VLAN
-> awareness in standalone mode, and still use unique pvids per port.
+> > It depends a lot on what portion of the kernel gets enabled for W=1.
+> >
+> > As long as it's only drivers that are actively maintained, and they
+> > make up a fairly small portion of all code, it should not be a problem
+> > to find someone to fix useful warnings.
+>
+> Well, drivers/net/ethernet is around 1.5M LOC. The tree as a whole is
+> just short of 23M LOC. So i guess that is a small portion of all the
+> code.
+>
+>         Andrew
 
-That doesn't work, just tested. When VLAN awareness is disabled,
-everything is switched regardless of VLAN tags and table. Therefore, the
-implementation could look like this:
 
- * bridge without filtering:
-   * vlan_awareness=0
-   * drop private vlans
- * bridge with vlan filtering:
-   * vlan_awareness=1
-   * drop private vlans
- * standalone:
-   * vlan_awareness=1
-   * use private vlans
-   * forbid other users to use private vlans to allow
-     configure_vlans_while_not_filtering behavior in .vlan_prepare()
-   * forbid use of lan0.<X> and lan1.<X> in .port_prechangeupper()
+I am not a big fan of KBUILD_CFLAGS_W1_<timestamp>
+since it is ugly.
 
-So, this should work, or?
+I'd like to start with adding individual flags
+like drivers/gpu/drm/i915/Makefile, and see
+how difficult it would be to maintain it.
 
-Thanks,
-Kurt
+One drawback of your approach is that
+you cannot set KBUILD_CFLAGS_W1_20200930
+until you eliminate all the warnings in the
+sub-directory in interest.
+(i.e. all or nothing approach)
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+At best, you can only work out from 'old -> new' order
+because KBUILD_CFLAGS_W1_20200326 is a suer-set of
+KBUILD_CFLAGS_W1_20190907, which is a suer-set of
+KBUILD_CFLAGS_W1_20190617 ...
 
------BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl+C+pQACgkQeSpbgcuY
-8KaOhQ/+LUNWORnLGdWaAt9Bxg+UNEUCDGMNKl7XkzEOD9Ew6RFPIKGZCh8bt782
-56t8msbcwFyHehAELJOdpOX5wGmhfSGjDjtxN0D/QnSiWKs/qZ+VhwC8EX+bmmfZ
-fq/Sw2gzcu8xWM9gPcsoTBMfosNP2HPIUwVG0VCzzLRT6tRLXIA7DyYArrXdNPWv
-NVC+b3Rf2c/nBGW6ayaaPk7yIJZKH6rNctGdL7HCL857px2yINZU8xlkiMyvGxeh
-asapR6YWqblqFhM6CUaXhh0xFOAuTwZGh1MIqjrJ+BZ0mQrTvANYFzIboT+8SfYi
-WCeUhLGr/9YG1t/jw4yjvN5UkKhdQFgniqVbuZQvnOFy9OrmQP7mVx01ysSrzxQa
-pgQc26LCEhaIfC2XRWTuAHcaq07CxWZ72XPyKnbzxLyJgM2qTzvoErBJ12rgbwlr
-rUbXbqzYepR1MlvR/3am+aK6YeQW+EloCtgWKtWlFgsVvscKfIUGJ+bzylJo2zbH
-LimrYkHwRAwoItWSsgJO6km0qJp4NttPDZaxf5jrVnOMfEbFS9SSU0TdFkv1Yscw
-qAaybIunOh2NVqaC7viU79v4x8TSgzCsr6U3irygZ/ItD7gZwhvaqC7qnYk/02jr
-VKnzthgRkqHkVNvtgsdLJeyxUxn8JVex/Dpoa3vR2mOkBAkgidE=
-=iNiJ
------END PGP SIGNATURE-----
---=-=-=--
+
+If you add flags individually, you can start with
+low-hanging fruits, or ones with higher priority
+as Arnd mentions about -Wmissing-{declaration,prototypes}.
+
+
+For example, you might be able to set
+'subdir-ccflags-y += -Wmissing-declarations'
+to drivers/net/Makefile, while
+'subdir-ccflags-y += -Wunused-but-set-variable'
+stays in drivers/net/ethernet/Makefile.
+
+
+
+--
+Best Regards
+Masahiro Yamada
