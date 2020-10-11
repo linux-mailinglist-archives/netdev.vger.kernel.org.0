@@ -2,116 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C261828A6ED
+	by mail.lfdr.de (Postfix) with ESMTP id 2DEFE28A6EC
 	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 12:23:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729624AbgJKKX3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 06:23:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33900 "EHLO
+        id S1729595AbgJKKXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 06:23:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729173AbgJKKXX (ORCPT
+        with ESMTP id S1729379AbgJKKXX (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 06:23:23 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A93DCC0613D0
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 03:23:22 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id x16so11249945pgj.3
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 03:23:22 -0700 (PDT)
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BC2BC0613CE
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 03:23:23 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id y14so11208797pgf.12
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 03:23:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=czSQteC+aSKObBiN/Iuimr/HumGMamHufzyKfeyiMrs=;
-        b=eC+RW0WpSCPSd/HowETmut7zWw6Ejs2DfPs0QtkVUC1zBmy0SjEBY5mOPiWfbDUxXE
-         TJQ0R41VpSkHLwh4Mytd8Bw8VZxDy4Hl0FRovkgY64IL0CiVikZm5tcgchOv1cp6Ifd9
-         Zo2IiqhU+GevDKPMaZhx2qQIh3wCh3/fnWeIQ=
+        bh=XKCo2C5uFX/aBMpqXZi2XLFPbj1ykwoPeJiS3sWb/LE=;
+        b=XtivgyGA/xH9CPMgn0Ue1SdOPx1g1/wxJtOyGo886rKN6CYOCDRCf3U+p4yHOSWr/T
+         xIsZtkR4xavX6UJkaTEAcmX8Pf+be7S1kWAzpIP3suqPSpp1hcXc26GXzDzOe9nsIHQE
+         ZIlwjF3nnNZurGdTFuNHFsv3l9aNwPqy6NEpc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=czSQteC+aSKObBiN/Iuimr/HumGMamHufzyKfeyiMrs=;
-        b=fHXiLxwikMS8kqemc/5PK9mBlBnpLmDrWOipUg6mgEUFzigXIMHhC4cHVmpYN8fEeL
-         v+Yo+S/iunx+7+1Blm1EHysJZiIu4bLAdzNaDaRXuce74XGkvF0CnkJ0qznA9evYdJxT
-         UbvXAQB66fwDpkZ/KAaI2fxy8OxFs9vGZhYCpTlGtHhC9Ugi729k/bBf7PX3A0nJc0ru
-         NuuTuJhmQoIpBGj/Nf3aELkZlIfzHq73UegRQkq/jNNShVkhJws+Rsqd7D/76ztlYViK
-         h/0ArV1bFh/FHPNEwN6RhTRFECZ3FI/ZRnHmPfzRxGUb7xPclXTykXKYIKXDi2IIIGID
-         jOzw==
-X-Gm-Message-State: AOAM532Nfkvw8ToxrmAvDeD2sCWRPFv0l1h5JTBxi/SlisFvIgPFMbfL
-        79iBWMCl7KmPE93KlfKPWuaRk1Q7nX4Y0Q==
-X-Google-Smtp-Source: ABdhPJxtFe7ls8zvQKEwVdMNAQTKABitto1shq0FZvWPzYGc2cE+Hv7LuPItGKXXBUxUuUGI6bAkmg==
-X-Received: by 2002:a62:520e:0:b029:142:2501:3979 with SMTP id g14-20020a62520e0000b029014225013979mr19636417pfb.62.1602411802007;
-        Sun, 11 Oct 2020 03:23:22 -0700 (PDT)
+        bh=XKCo2C5uFX/aBMpqXZi2XLFPbj1ykwoPeJiS3sWb/LE=;
+        b=toHOwFShu69uPVCEQbYaHVlk8f/776Uouq1+R8ybGkFGBARGT8CEfVt14AbFyUe1zn
+         5oiu2H6zUuEVBYV4xl0i/gJZxXXCBunFh7LaFmCmcJRIfAce3dZXFTaDi8vKAxPZGeMA
+         fZckvy1l0pdyNtz8wNXLF9j6PksJMjTtXIX5FqozWbBro66ZHM2PWE64a/BgIGqqFY7v
+         TvuPPq+yuPbyufzHXJFD+jr6pwFLlllClGQ0FePR+Vz0YjS717MhHEkaQXFoUAlcKRaH
+         LK27wBUF0TelMhpY89doSWDqHVo1sLJhXMws1BRj3XHkz+cilgjVgBZHxPpKqQcdatfB
+         vN6w==
+X-Gm-Message-State: AOAM531MwBMKEWXJoM0GraH/YU6XX5CYZn5kBBmq5NnYMEnprLspOH+/
+        jPkprNTr+PwmG2w2LJsZUSffBg==
+X-Google-Smtp-Source: ABdhPJxS+Pj3swXd7Fv3yPtwdpusPwiJL7uVR+8E1eEQWCzW6uymNp3Vcpt8EhV2NMq7nJUUcfkuAQ==
+X-Received: by 2002:a17:90a:fb92:: with SMTP id cp18mr14835209pjb.228.1602411803013;
+        Sun, 11 Oct 2020 03:23:23 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id i1sm20155057pjh.52.2020.10.11.03.23.20
+        by smtp.gmail.com with ESMTPSA id i1sm20155057pjh.52.2020.10.11.03.23.22
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 11 Oct 2020 03:23:21 -0700 (PDT)
+        Sun, 11 Oct 2020 03:23:22 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH net-next 2/9] bnxt_en: Enable online self tests for multi-host/NPAR mode.
-Date:   Sun, 11 Oct 2020 06:22:54 -0400
-Message-Id: <1602411781-6012-3-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
+Subject: [PATCH net-next 3/9] bnxt_en: Set driver default message level.
+Date:   Sun, 11 Oct 2020 06:22:55 -0400
+Message-Id: <1602411781-6012-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1602411781-6012-1-git-send-email-michael.chan@broadcom.com>
 References: <1602411781-6012-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000454f0b05b1629298"
+        boundary="00000000000052cd5905b162928e"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000454f0b05b1629298
+--00000000000052cd5905b162928e
 
-From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-
-Online self tests are not disruptive and can be run in NPAR mode
-and in multi-host NIC as well.
+Currently, bp->msg_enable has default value of 0.  It is more useful
+to have the commonly used NETIF_MSG_DRV and NETIF_MSG_HW enabled by
+default.
 
 Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 52b4ea6ef8c9..dcbb7b70d60a 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -3298,7 +3298,7 @@ static void bnxt_self_test(struct net_device *dev, struct ethtool_test *etest,
- 	u8 test_mask = 0;
- 	int rc = 0, i;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index d4402a2cd07f..0da6a1138eee 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -69,6 +69,7 @@
+ #include "bnxt_debugfs.h"
  
--	if (!bp->num_tests || !BNXT_SINGLE_PF(bp))
-+	if (!bp->num_tests || !BNXT_PF(bp))
- 		return;
- 	memset(buf, 0, sizeof(u64) * bp->num_tests);
- 	if (!netif_running(dev)) {
-@@ -3311,9 +3311,9 @@ static void bnxt_self_test(struct net_device *dev, struct ethtool_test *etest,
- 		do_ext_lpbk = true;
+ #define BNXT_TX_TIMEOUT		(5 * HZ)
++#define BNXT_DEF_MSG_ENABLE	(NETIF_MSG_DRV | NETIF_MSG_HW)
  
- 	if (etest->flags & ETH_TEST_FL_OFFLINE) {
--		if (bp->pf.active_vfs) {
-+		if (bp->pf.active_vfs || !BNXT_SINGLE_PF(bp)) {
- 			etest->flags |= ETH_TEST_FL_FAILED;
--			netdev_warn(dev, "Offline tests cannot be run with active VFs\n");
-+			netdev_warn(dev, "Offline tests cannot be run with active VFs or on shared PF\n");
- 			return;
- 		}
- 		offline = true;
-@@ -3829,7 +3829,7 @@ void bnxt_ethtool_init(struct bnxt *bp)
- 		bnxt_get_pkgver(dev);
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Broadcom BCM573xx network driver");
+@@ -12510,6 +12511,7 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		return -ENOMEM;
  
- 	bp->num_tests = 0;
--	if (bp->hwrm_spec_code < 0x10704 || !BNXT_SINGLE_PF(bp))
-+	if (bp->hwrm_spec_code < 0x10704 || !BNXT_PF(bp))
- 		return;
+ 	bp = netdev_priv(dev);
++	bp->msg_enable = BNXT_DEF_MSG_ENABLE;
+ 	bnxt_set_max_func_irqs(bp, max_irqs);
  
- 	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_SELFTEST_QLIST, -1, -1);
+ 	if (bnxt_vf_pciid(ent->driver_data))
 -- 
 2.18.1
 
 
---000000000000454f0b05b1629298
+--00000000000052cd5905b162928e
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -181,14 +165,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgWVWqseomjNZy
-vBsgiaAtf7Sls+Y3ccW178Ld5TJFk9swGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAxMDExMTAyMzIyWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgaa9uZ2ZTpfFZ
+Srp7ym1F+fvL7lE8GK4hBx6VJoZJCuIwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAxMDExMTAyMzIzWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAHQf5puCPMlE7B7dnZIRkjHRhyrvtMKq
-4L6WTqTT8QbzRgshegi8X0g/EKhpoOqyMVhNzvtJr+Rd53f+BkTYyJ0YTiaqDGeAJCwWfwsNZOlH
-x8lMEcAEeI65eSMlOCEKNczpbVnCeVB/lT2ASprx+5kxjDtOyhzBjSnGWQb3h12nt0gRrm4uSOV/
-ycu8Z5c0giuEOKmKXV/k7uw5t1UFyE/0WxtmtbKA6NQ8j9sWH42K4QkrE5zrm2yQEEzVda4mpfcP
-8mKy/psH7DKbGz5CDi9u6+uuEkbiluRH6gNZ+9OgSFGdKDtg1NccgHXkhvT3zOSSjw/L+u87qlW9
-rHHPcxg=
---000000000000454f0b05b1629298--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAKjqYtoPWtplgtY1PCw4nt+sicx7uFz4
+nsAA/E0h8eD4xqx2wiQJRNguRmb1RwCw6PBqJfxwlmwl8A6ZFZLpwbb9AM3gKaK3SxBok+PyIwty
+c01Bb4oCApXBJPV4p7T5LVrwk4IeFeMsD16wWwYJacnAOb485RTD7AcgAaZgCKhXPpfYSQw4aB5G
+EVVGtH6LUkZpj+BaLTJJjonUgqDcGBWS13dgwwfoMnj7Y1KVh2Cp7SWSfAwjiD/7emy572bQCZPB
+kjPldmssY8se4oKFNSQXkNq/j5mfy1qnqhJRGq0mD1Cn3RCGL6QbGDWZ6Z9GV+sJfvcklmVcdXAS
+P+yWAx4=
+--00000000000052cd5905b162928e--
