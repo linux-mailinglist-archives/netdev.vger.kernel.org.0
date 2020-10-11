@@ -2,115 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEBAC28A777
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 15:09:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA0AC28A796
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 15:45:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387870AbgJKNJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 09:09:06 -0400
-Received: from condef-02.nifty.com ([202.248.20.67]:44587 "EHLO
-        condef-02.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387867AbgJKNJF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 09:09:05 -0400
-Received: from conssluserg-06.nifty.com ([10.126.8.85])by condef-02.nifty.com with ESMTP id 09BD4mEk009656
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 22:04:48 +0900
-Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169]) (authenticated)
-        by conssluserg-06.nifty.com with ESMTP id 09BD4Nqp002188;
-        Sun, 11 Oct 2020 22:04:24 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 09BD4Nqp002188
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1602421464;
-        bh=OMFBsDy/RPXiLiW/3MJoJPAqD+BEbAsFNNhKa91sz2Y=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=t5dUOfQRE9r0F3fw54/CpLc+M39/VjjSxeiA3e/xf0QykiFVBwywTsJNNopN9gark
-         5I919YSPuMLccRPNclQRfwq99aC0j0wgP15b2UeULTdtdVZj1d0rn3YtvEZTcmrDCM
-         7mdODxmNeqA4QSLGO+inYBaxeXvmx68XmtTpSOPRh+tMdYjtue1AJEq+uaS0KXdyC3
-         2IzID1FPEaauL91ae+LZcDBVlW4Dp+mKxN4VtdZEq1f5Z+4qmsb0NPe4G61qE7KlFg
-         Wjlcgz3apRXDecrKEIk2MuN3SbtSXLMOZ19Ax7A670LplFd09ULhE2GeB2y3K7BlMx
-         juT/8FPhymsVA==
-X-Nifty-SrcIP: [209.85.215.169]
-Received: by mail-pg1-f169.google.com with SMTP id l18so2320977pgg.0;
-        Sun, 11 Oct 2020 06:04:23 -0700 (PDT)
-X-Gm-Message-State: AOAM5329+cC8c5W3nd9S6w5snzXfgfTqD/Tf5O+RM4jJDdNw0cV5Rv38
-        XQOPkpaRbbbOWPaMYd791qNhPiIfszV75U3owTo=
-X-Google-Smtp-Source: ABdhPJy384OdpW7pSrLgM3oeXXtJ/wn1xuM8xgyBEt9StGTLBEh74qkoVeh8iSFsvpYsT54V6B04DTc9DrVV+Phjbwo=
-X-Received: by 2002:a63:1b44:: with SMTP id b4mr9858962pgm.175.1602421463085;
- Sun, 11 Oct 2020 06:04:23 -0700 (PDT)
+        id S2387924AbgJKNmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 09:42:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36032 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387887AbgJKNma (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 09:42:30 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FF6CC0613CE;
+        Sun, 11 Oct 2020 06:42:30 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id x1so14184337eds.1;
+        Sun, 11 Oct 2020 06:42:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=hLxG0yZ5cZrExT3IP3K5DP3mD84GDhpB6hZtlMmQVmE=;
+        b=B5bQKrMxDEyYGZai4RbwquyXNF22aY0dhlPe6gAJ1zPbcZgSYCMzucXvoMjI2a2Sqb
+         Qtvl1es9qkwlyjowHg0oGGjkBKxu0o5HXu7hKobGGElCz7A6eq/5hPYdYs9inb+ZOfIi
+         RZQgdd/Zs6Qe+etdqbYBvY+pdMBqUJjFBUZoveL0KHQF1ME8XgvJK/mj6BRRjNAfbgkj
+         RbDQ1bV9LBWlIZCpkqxIzmILwfTPnresJ2Z/oK27RCJgNf8VbX9KJyryFqWgyt1Pgnvf
+         0A9FVhZIdETnELehurtsJKB6vwZyD7qBLAL07nrq1ezTW15in2YYJPYrKKoPu3avwvLf
+         lFmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=hLxG0yZ5cZrExT3IP3K5DP3mD84GDhpB6hZtlMmQVmE=;
+        b=OCRrMFIWf7mbY9Zd/1xc/NEoI4tft6PGZj7DTsiJujsNbdT2v1kFNDUQ2JuspOHCOU
+         4PTBIf7DoF/FvgRB+aWC129DS4Gy6u2f1AfGHFxhzXdrXx+VmBme1mMgW9IMqSv9woel
+         zVY2xnO0BFiGz1ruAUhpMzr8Xu6d1UesaykZwk7wMjGWH7EPmkS93FFmof2eDa2B2rEx
+         Z9y8MSzenPs/lL4K/hORkBmJLSQkXpJHfn2cNUgF52FVxa5a+CD0FZpnt0AoFjP2Wxjp
+         XyMlKdd535MltjCGYUveYvYwvEpTtC3O1DAiUEJQJKNIeRvKylHgv0E35wwapwiYnV/a
+         hrVA==
+X-Gm-Message-State: AOAM531CrcSpYnplhYigHJL1pZd/VITzwKTdsDJ5yC1LdAWxrwW/B7Bd
+        ERSQoQMoWJmIZ5V+giIwoPA=
+X-Google-Smtp-Source: ABdhPJxnDhlnbDVChei7DLsNpLX3y7RDHL/sAv8tUogZzC2FUdZ0LuoU57KmtX6qI0C/9D8WkYGi6g==
+X-Received: by 2002:a05:6402:3089:: with SMTP id de9mr9497751edb.368.1602423748759;
+        Sun, 11 Oct 2020 06:42:28 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f00:6a00:51b7:bf4f:604:7d3d? (p200300ea8f006a0051b7bf4f06047d3d.dip0.t-ipconnect.de. [2003:ea:8f00:6a00:51b7:bf4f:604:7d3d])
+        by smtp.googlemail.com with ESMTPSA id p12sm9093760edr.18.2020.10.11.06.42.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 11 Oct 2020 06:42:28 -0700 (PDT)
+Subject: Re: [PATCH] net: stmmac: Don't call _irqoff() with hardirqs enabled
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     John Keeping <john@metanate.com>, netdev@vger.kernel.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>
+References: <20201008162749.860521-1-john@metanate.com>
+ <8036d473-68bd-7ee7-e2e9-677ff4060bd3@gmail.com>
+ <20201009085805.65f9877a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <725ba7ca-0818-074b-c380-15abaa5d037b@gmail.com>
+ <070b2b87-f38c-088d-4aaf-12045dbd92f7@gmail.com>
+ <20201010082248.22cc7656@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <04d10b06-ca1c-3bfa-0a5f-730a9c8a2744@gmail.com>
+Date:   Sun, 11 Oct 2020 15:42:24 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-References: <20201001011232.4050282-1-andrew@lunn.ch> <20201001011232.4050282-2-andrew@lunn.ch>
- <CAKwvOdnVC8F1=QT03W5Zh9pJdTxxNfRcqXeob5_b4CXycvG1+g@mail.gmail.com>
- <20201002014411.GG4067422@lunn.ch> <CAKwvOdmdfwWsRtJHtJ16B0RMyoxUi1587OKnyunQd5gfwmnGsA@mail.gmail.com>
- <20201005194913.GC56634@lunn.ch> <CAK8P3a1qS8kaXNqAtqMKpWGx05DHVHMYwKBD_j-Zs+DHbL5CNw@mail.gmail.com>
- <20201005210808.GE56634@lunn.ch>
-In-Reply-To: <20201005210808.GE56634@lunn.ch>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Sun, 11 Oct 2020 22:03:45 +0900
-X-Gmail-Original-Message-ID: <CAK7LNASB6ashOzmL5XntkPSq9a+8VoWCowP5CAt+oX0o=0y=dA@mail.gmail.com>
-Message-ID: <CAK7LNASB6ashOzmL5XntkPSq9a+8VoWCowP5CAt+oX0o=0y=dA@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/2] Makefile.extrawarn: Add symbol for W=1
- warnings for today
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201010082248.22cc7656@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 6, 2020 at 6:08 AM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > It depends a lot on what portion of the kernel gets enabled for W=1.
-> >
-> > As long as it's only drivers that are actively maintained, and they
-> > make up a fairly small portion of all code, it should not be a problem
-> > to find someone to fix useful warnings.
->
-> Well, drivers/net/ethernet is around 1.5M LOC. The tree as a whole is
-> just short of 23M LOC. So i guess that is a small portion of all the
-> code.
->
->         Andrew
+On 10.10.2020 17:22, Jakub Kicinski wrote:
+> On Sat, 10 Oct 2020 15:08:15 +0200 Heiner Kallweit wrote:
+>> On 09.10.2020 18:06, Heiner Kallweit wrote:
+>>> On 09.10.2020 17:58, Jakub Kicinski wrote:  
+>>>> On Fri, 9 Oct 2020 16:54:06 +0200 Heiner Kallweit wrote:  
+>>>>> I'm thinking about a __napi_schedule version that disables hard irq's
+>>>>> conditionally, based on variable force_irqthreads, exported by the irq
+>>>>> subsystem. This would allow to behave correctly with threadirqs set,
+>>>>> whilst not loosing the _irqoff benefit with threadirqs unset.
+>>>>> Let me come up with a proposal.  
+>>>>
+>>>> I think you'd need to make napi_schedule_irqoff() behave like that,
+>>>> right?  Are there any uses of napi_schedule_irqoff() that are disabling
+>>>> irqs and not just running from an irq handler?
+>>>>  
+>>> Right, the best approach depends on the answer to the latter question.
+>>> I didn't check this yet, therefore I described the least intrusive approach.
+>>>   
+>>
+>> With some help from coccinelle I identified the following functions that
+>> call napi_schedule_irqoff() or __napi_schedule_irqoff() and do not run
+>> from an irq handler (at least not at the first glance).
+>>
+>> dpaa2_caam_fqdan_cb
+>> qede_simd_fp_handler
+>> mlx4_en_rx_irq
+>> mlx4_en_tx_irq
+> 
+> Don't know the others but FWIW the mlx4 ones run from an IRQ handler,
+> AFAICT:
+> 
+> static irqreturn_t mlx4_interrupt(int irq, void *dev_ptr)
+> static irqreturn_t mlx4_msi_x_interrupt(int irq, void *eq_ptr)
+>   mlx4_eq_int()
+>     mlx4_cq_completion
+>       cq->comp()
+> 
+>> qeth_qdio_poll
+>> netvsc_channel_cb
+>> napi_watchdog
+> 
+> This one runs from a hrtimer, which I believe will be a hard irq
+> context on anything but RT. I could be wrong.
+> 
+
+Typically forced irq threading will not be enabled, therefore going
+back to use napi_schedule() in drivers in most cases will cause
+losing the benefit of the irqoff version. Something like the following
+should be better. Only small drawback I see is that in case of forced
+irq threading hrtimers will still run in hardirq context and we lose
+the benefit of the irqoff version in napi_watchdog().
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index a146bac84..7d18560b2 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -6393,7 +6393,11 @@ EXPORT_SYMBOL(napi_schedule_prep);
+  */
+ void __napi_schedule_irqoff(struct napi_struct *n)
+ {
+-	____napi_schedule(this_cpu_ptr(&softnet_data), n);
++	/* hard irqs may not be masked in case of forced irq threading */
++	if (force_irqthreads)
++		__napi_schedule(n);
++	else
++		____napi_schedule(this_cpu_ptr(&softnet_data), n);
+ }
+ EXPORT_SYMBOL(__napi_schedule_irqoff);
+ 
+-- 
+2.28.0
 
 
-I am not a big fan of KBUILD_CFLAGS_W1_<timestamp>
-since it is ugly.
-
-I'd like to start with adding individual flags
-like drivers/gpu/drm/i915/Makefile, and see
-how difficult it would be to maintain it.
-
-One drawback of your approach is that
-you cannot set KBUILD_CFLAGS_W1_20200930
-until you eliminate all the warnings in the
-sub-directory in interest.
-(i.e. all or nothing approach)
-
-At best, you can only work out from 'old -> new' order
-because KBUILD_CFLAGS_W1_20200326 is a suer-set of
-KBUILD_CFLAGS_W1_20190907, which is a suer-set of
-KBUILD_CFLAGS_W1_20190617 ...
-
-
-
-If you add flags individually, you can start with
-low-hanging fruits, or ones with higher priority
-as Arnd mentions about -Wmissing-{declaration,prototypes}.
-
-
-For example, you might be able to set
-'subdir-ccflags-y += -Wmissing-declarations'
-to drivers/net/Makefile, while
-'subdir-ccflags-y += -Wunused-but-set-variable'
-stays in drivers/net/ethernet/Makefile.
-
-
-
---
-Best Regards
-Masahiro Yamada
