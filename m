@@ -2,176 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E070928A61E
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 09:22:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E63E128A62E
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 09:42:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728853AbgJKHWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 03:22:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34576 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726461AbgJKHWf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 03:22:35 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D081FC0613D0
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 00:22:34 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kRVgc-0001mk-4m; Sun, 11 Oct 2020 09:22:30 +0200
-Received: from [IPv6:2a03:f580:87bc:d400:94c5:3170:694e:9c6d] (2a03-f580-87bc-d400-94c5-3170-694e-9c6d.ip6.dokom21.de [IPv6:2a03:f580:87bc:d400:94c5:3170:694e:9c6d])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 1F049576ABA;
-        Sun, 11 Oct 2020 07:22:29 +0000 (UTC)
-Subject: Re: [PATCH net-next 2/2] can: remove obsolete version strings
-To:     Oliver Hartkopp <socketcan@hartkopp.net>, kuba@kernel.org,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, linux-can@vger.kernel.org
-References: <20201010204909.2059-1-socketcan@hartkopp.net>
- <20201010204909.2059-2-socketcan@hartkopp.net>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <aba70665-f2af-3aa2-68ff-f78d1604c179@pengutronix.de>
-Date:   Sun, 11 Oct 2020 09:22:25 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1726461AbgJKHm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 03:42:26 -0400
+Received: from mail-il1-f207.google.com ([209.85.166.207]:42964 "EHLO
+        mail-il1-f207.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728944AbgJKHmZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 03:42:25 -0400
+Received: by mail-il1-f207.google.com with SMTP id 18so10267149ilt.9
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 00:42:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=7PbN+9cIdIGVhAv/w+zEBq3PXtiMVM6PcDD03VAAMBg=;
+        b=RGmyGnEGTLKQRNnDWkKR2qiT/u8q9rLDVVjQrW3IZlEK5PZzdZ40nU7/kvxCu/AIIv
+         ErjWDQOso4KfiKSu7Sjk2ts0ARX2MDHq/o0AfY/EUVSu8t6MsOb2kUU/al7Zv76Dmw4P
+         84H3VXjgBNsM7mCueWX4g7GPb+v1WUIlNq8nHH8X6JFMBMta+Eic9qprph3QPBlL0aH3
+         E05np+nBS3Xi8pG5WVNdaP3qB8erJK/6mrdUctKw8SuRO0e/qG+0o1tj0v4jylw9sAOa
+         4iI/+JdRYj5ROa64KRaryKliigCUaTSZzLPvYMNyjeeTEJmayo4To7WPf/MVm9wNMJVf
+         QZxg==
+X-Gm-Message-State: AOAM533sOQBleF+22EbNVGmXLcGSH67W+nO4IFA22skP1KdGLaYysQPo
+        cuKR7jZzLyiLaC2liagTS9s4KW9YAIv6HhE8dKtfcEjO2UFr
+X-Google-Smtp-Source: ABdhPJyfm97kuiDrvOvrC4MEWpb5dQ4Z3AEAoLbN5ZLjqzf9moIGtcQnvOdZaAHkHdu05MBr3uc0j9ba3ktrZfUJIOWxbuzyioC4
 MIME-Version: 1.0
-In-Reply-To: <20201010204909.2059-2-socketcan@hartkopp.net>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="B3YfvXDb0rdL29H9U4cMFVngnBVCdIIRd"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Received: by 2002:a05:6e02:d45:: with SMTP id h5mr6241432ilj.307.1602402144037;
+ Sun, 11 Oct 2020 00:42:24 -0700 (PDT)
+Date:   Sun, 11 Oct 2020 00:42:24 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000009530b805b1605237@google.com>
+Subject: KASAN: use-after-free Read in sco_chan_del
+From:   syzbot <syzbot+1df6a63e69a359c8b517@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        marcel@holtmann.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---B3YfvXDb0rdL29H9U4cMFVngnBVCdIIRd
-Content-Type: multipart/mixed; boundary="yGw3fP9QCXrSqi44TSnp6a4cgm0NvF8ym";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Oliver Hartkopp <socketcan@hartkopp.net>, kuba@kernel.org,
- netdev@vger.kernel.org
-Cc: davem@davemloft.net, linux-can@vger.kernel.org
-Message-ID: <aba70665-f2af-3aa2-68ff-f78d1604c179@pengutronix.de>
-Subject: Re: [PATCH net-next 2/2] can: remove obsolete version strings
-References: <20201010204909.2059-1-socketcan@hartkopp.net>
- <20201010204909.2059-2-socketcan@hartkopp.net>
-In-Reply-To: <20201010204909.2059-2-socketcan@hartkopp.net>
+Hello,
 
---yGw3fP9QCXrSqi44TSnp6a4cgm0NvF8ym
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+syzbot found the following issue on:
 
-On 10/10/20 10:49 PM, Oliver Hartkopp wrote:
-> As pointed out by Jakub Kicinski here:
-> https://marc.info/?l=3Dlinux-can&m=3D160229286216008
+HEAD commit:    a804ab08 Add linux-next specific files for 20201006
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1073270b900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=26c1b4cc4a62ccb
+dashboard link: https://syzkaller.appspot.com/bug?extid=1df6a63e69a359c8b517
+compiler:       gcc (GCC) 10.1.0-syz 20200507
 
-Better use https://lore.kernel.org for this. The URL is constructed by ad=
-ding
-"/r/$MESSAGE_ID":
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+1df6a63e69a359c8b517@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KASAN: use-after-free in hci_conn_drop include/net/bluetooth/hci_core.h:1145 [inline]
+BUG: KASAN: use-after-free in hci_conn_drop include/net/bluetooth/hci_core.h:1115 [inline]
+BUG: KASAN: use-after-free in sco_chan_del+0x400/0x430 net/bluetooth/sco.c:149
+Read of size 8 at addr ffff88804d29c918 by task syz-executor.2/27575
+
+CPU: 0 PID: 27575 Comm: syz-executor.2 Not tainted 5.9.0-rc8-next-20201006-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x198/0x1fb lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0xae/0x497 mm/kasan/report.c:385
+ __kasan_report mm/kasan/report.c:545 [inline]
+ kasan_report.cold+0x1f/0x37 mm/kasan/report.c:562
+ hci_conn_drop include/net/bluetooth/hci_core.h:1145 [inline]
+ hci_conn_drop include/net/bluetooth/hci_core.h:1115 [inline]
+ sco_chan_del+0x400/0x430 net/bluetooth/sco.c:149
+ __sco_sock_close+0x16e/0x5b0 net/bluetooth/sco.c:434
+ sco_sock_close net/bluetooth/sco.c:448 [inline]
+ sco_sock_release+0x69/0x290 net/bluetooth/sco.c:1059
+ __sock_release+0xcd/0x280 net/socket.c:596
+ sock_close+0x18/0x20 net/socket.c:1277
+ __fput+0x285/0x920 fs/file_table.c:281
+ task_work_run+0xdd/0x190 kernel/task_work.c:141
+ get_signal+0xd89/0x1f00 kernel/signal.c:2561
+ arch_do_signal+0x82/0x2470 arch/x86/kernel/signal.c:811
+ exit_to_user_mode_loop kernel/entry/common.c:161 [inline]
+ exit_to_user_mode_prepare+0x194/0x1f0 kernel/entry/common.c:192
+ syscall_exit_to_user_mode+0x7a/0x2c0 kernel/entry/common.c:267
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x45de29
+Code: 0d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b3 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fabeda51c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002a
+RAX: fffffffffffffffc RBX: 0000000000002200 RCX: 000000000045de29
+RDX: 0000000000000008 RSI: 0000000020000080 RDI: 0000000000000006
+RBP: 000000000118c158 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000118c124
+R13: 00007ffdb3c9529f R14: 00007fabeda529c0 R15: 000000000118c124
+
+Allocated by task 27575:
+ kasan_save_stack+0x1b/0x40 mm/kasan/common.c:48
+ kasan_set_track mm/kasan/common.c:56 [inline]
+ __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:461
+ kmem_cache_alloc_trace+0x1a0/0x480 mm/slab.c:3552
+ kmalloc include/linux/slab.h:554 [inline]
+ kzalloc include/linux/slab.h:666 [inline]
+ hci_conn_add+0x53/0x1330 net/bluetooth/hci_conn.c:525
+ hci_connect_sco+0x356/0x860 net/bluetooth/hci_conn.c:1283
+ sco_connect net/bluetooth/sco.c:241 [inline]
+ sco_sock_connect+0x308/0x980 net/bluetooth/sco.c:588
+ __sys_connect_file+0x155/0x1a0 net/socket.c:1852
+ __sys_connect+0x161/0x190 net/socket.c:1869
+ __do_sys_connect net/socket.c:1879 [inline]
+ __se_sys_connect net/socket.c:1876 [inline]
+ __x64_sys_connect+0x6f/0xb0 net/socket.c:1876
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Freed by task 26665:
+ kasan_save_stack+0x1b/0x40 mm/kasan/common.c:48
+ kasan_set_track+0x1c/0x30 mm/kasan/common.c:56
+ kasan_set_free_info+0x1b/0x30 mm/kasan/generic.c:355
+ __kasan_slab_free+0xd8/0x120 mm/kasan/common.c:422
+ __cache_free mm/slab.c:3420 [inline]
+ kfree+0x10e/0x2a0 mm/slab.c:3758
+ device_release+0x9f/0x240 drivers/base/core.c:1808
+ kobject_cleanup lib/kobject.c:705 [inline]
+ kobject_release lib/kobject.c:736 [inline]
+ kref_put include/linux/kref.h:65 [inline]
+ kobject_put+0x171/0x270 lib/kobject.c:753
+ put_device+0x1b/0x30 drivers/base/core.c:3037
+ hci_conn_del+0x27e/0x6a0 net/bluetooth/hci_conn.c:645
+ hci_conn_hash_flush+0x189/0x220 net/bluetooth/hci_conn.c:1558
+ hci_dev_do_close+0x5c6/0x1080 net/bluetooth/hci_core.c:1770
+ hci_unregister_dev+0x214/0xe90 net/bluetooth/hci_core.c:3827
+ vhci_release+0x70/0xe0 drivers/bluetooth/hci_vhci.c:340
+ __fput+0x285/0x920 fs/file_table.c:281
+ task_work_run+0xdd/0x190 kernel/task_work.c:141
+ exit_task_work include/linux/task_work.h:25 [inline]
+ do_exit+0xb23/0x2930 kernel/exit.c:806
+ do_group_exit+0x125/0x310 kernel/exit.c:903
+ get_signal+0x428/0x1f00 kernel/signal.c:2757
+ arch_do_signal+0x82/0x2470 arch/x86/kernel/signal.c:811
+ exit_to_user_mode_loop kernel/entry/common.c:161 [inline]
+ exit_to_user_mode_prepare+0x194/0x1f0 kernel/entry/common.c:192
+ syscall_exit_to_user_mode+0x7a/0x2c0 kernel/entry/common.c:267
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+The buggy address belongs to the object at ffff88804d29c000
+ which belongs to the cache kmalloc-4k of size 4096
+The buggy address is located 2328 bytes inside of
+ 4096-byte region [ffff88804d29c000, ffff88804d29d000)
+The buggy address belongs to the page:
+page:0000000084eedba7 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x4d29c
+head:0000000084eedba7 order:1 compound_mapcount:0
+flags: 0xfffe0000010200(slab|head)
+raw: 00fffe0000010200 ffffea00012af708 ffffea0001001308 ffff8880aa040900
+raw: 0000000000000000 ffff88804d29c000 0000000100000001 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff88804d29c800: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88804d29c880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+>ffff88804d29c900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                            ^
+ ffff88804d29c980: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+ ffff88804d29ca00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
 
-http://lore.kernel.org/r/20201009175751.5c54097f@kicinski-fedora-pc1c0hjn=
-=2Edhcp.thefacebook.com
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-> this patch removes the obsolete version information of the different
-> CAN protocols and the AF_CAN core module.
->=20
-> Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---yGw3fP9QCXrSqi44TSnp6a4cgm0NvF8ym--
-
---B3YfvXDb0rdL29H9U4cMFVngnBVCdIIRd
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+CsrEACgkQqclaivrt
-76lDXQf8DKL9vUUtNo3tSQvHB0xXCYM/XNKnAfVCkUyaoVI0+y8q75OWcRXz+Tc2
-pPUBtJB8EWXrsK6ulPpHfYg6qAO6J1FFjsoyLsvIns8DknW2gZE5Xf3cwtyrBoiD
-6HPrJBe7ISv17Tb3gds8wm0+RrptBbo5Q1aiA4CRRCTQbDxMsnQ7xfWLOsJRQNMd
-/YMciOVk85kVlTQeWT/Sd4pYSU8xd07Xm/i4dxybCn94oncKv7o7THcbavfnT5jR
-WPPbqRgK4QF7URObrIxoekUhPqG/mCxHq0st/nGcds7Uz29jmZRiSooEEVdlBBwW
-aZ9Xw6E4MoI3dQnnOD58UUMp8Iw4UQ==
-=WGag
------END PGP SIGNATURE-----
-
---B3YfvXDb0rdL29H9U4cMFVngnBVCdIIRd--
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
