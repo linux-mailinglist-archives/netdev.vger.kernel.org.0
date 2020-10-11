@@ -2,95 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1ACF28A4A8
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 01:56:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8B1228A503
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 04:28:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730026AbgJJX4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 19:56:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51096 "EHLO
+        id S1730348AbgJKC24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 22:28:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726989AbgJJX4j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 19:56:39 -0400
-Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7EF0C0613D0;
-        Sat, 10 Oct 2020 16:56:39 -0700 (PDT)
-Received: by mail-yb1-xb42.google.com with SMTP id x20so10340134ybs.8;
-        Sat, 10 Oct 2020 16:56:39 -0700 (PDT)
+        with ESMTP id S1726473AbgJKC2z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 22:28:55 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3610C0613D0;
+        Sat, 10 Oct 2020 19:28:55 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id x13so7690690pfa.9;
+        Sat, 10 Oct 2020 19:28:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vXLuilCJr1RW1byBqMvIVGVnL8GVaGMkrx1VY2TWsaU=;
-        b=NXIDCQrQ5pQGn2eriRo0lenes8eyU2JiHnDJkbrR1Gh7lzomdOyZfbC7AN6RAomywQ
-         S5YtwK9BuOVs/Z2vWEa5AVD95iOvFQq14+TvG0E1nAFvCtOb/vtbEutqX1y2HwIRiW7G
-         AhNNFmT3VSu5BH2018DS4Ip9OzThE5q9CuZ6zq9piHSyeivjGDOk4vPc2t1JC/o+QNRV
-         00MQYTFWV+Ujpy8X36iwy8m//mAqENPut9KkC8x99utjl/+0b4odQCD8Z1+rRAgs7Xb5
-         NjX28ZMkvJFM5z8w5K3OzbMjX5ynMT7BVrzfqZEB0EZZERUjsDu6xbyzzs3j0DKsyu63
-         Gglg==
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=abrGFb5Z0J48VjjKlVpgG6k2o9tGWZkHPGQ3DWMV9Co=;
+        b=qFjiDRMriXa/bKyFAAUp9AoNztar2N21yLRIQOvBC7CZMu+Uz0hVfNGYMWse/fNZT9
+         4wGRRIEMTIdB7nD5/b8mqMEohziget2goubz3kGKYr4VM4yxEVr7S5kBdF+RYIHGEgLa
+         5Iy9lZVdv829aDY/zhim2puVp+yFPwkLE6YOhne21L9djr2RUeZuBgfPXQwBQBAVGhdP
+         lRODxNfI4KRrOUu/BtzDsdts9zaJ2whYXAQk9HTEZ5Jnr7f5g1hvwJMp7pl0w3e0TTUL
+         d2pANmlNRqGnOtGP1QM2BJvbd6vPP1qy1bxT5tNG9+QQxGcSf9UV0007YheOBHEZkn6x
+         SPdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vXLuilCJr1RW1byBqMvIVGVnL8GVaGMkrx1VY2TWsaU=;
-        b=DZJ18Z9UvKiVcPge9o6wwBI9xIe9jwwxW9KfSgsfxA8okQfO4nVPZLkWihoB+nQupu
-         hxLlBQX3YuB7cppzcsVQ8U4ujztp6/rfSOC4IZTjiX/Hk6R3IUnS2lzeEZhWVR3hXwo7
-         3vJFGhezjnG49coW5Koh4oGSNN9ncfVr2xvbDQSd+DNsCVk8rM1KC6u7fQFhmLjX6oCc
-         dqSAm2OovIz0iMDH16rD18eufGuam1FvDZ/d7eeVSqRVKzs4C49JlnVmBW9cF8drYG9E
-         Qrv0JFAjo3SS8Rv3XR5dA0e/m5OmngBrfU3EFGNOGfpyZ+aKxYIxnHqYNChi2IsoBRoX
-         CZ4Q==
-X-Gm-Message-State: AOAM530IS68LNI2bd8PIcLWuo0WO8R5+X7NPLDFT7TY94sdB+V0yNQ1a
-        4m1/SChv+k1b4YzaFc9+jLxnTHm3Vp84aynQbEk=
-X-Google-Smtp-Source: ABdhPJwdXn94V0+jHc/SF+7B2v4z2b5BAX+kq5vzXGcq0uwULmUbBptDWT5DLZ8KtDZodCXdKERXcZ5tQUxRRBIhddc=
-X-Received: by 2002:a25:5f08:: with SMTP id t8mr1555012ybb.260.1602374198981;
- Sat, 10 Oct 2020 16:56:38 -0700 (PDT)
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=abrGFb5Z0J48VjjKlVpgG6k2o9tGWZkHPGQ3DWMV9Co=;
+        b=eOid30DpmFWToXci2zFjszbFzJ/8GjvpDhvgzA6dPvnOcA55+0bDHb6HSJFgLrewhJ
+         rr5b3onUy98+e3KFGeCWFnLfUZTLJk/33fyuS+d4fyz7UVXmr3Sdu2JxFuqF5whtaTa2
+         N0nhjmjV/ou4jaF1Xwr5VOynchE4RdYlMbd1ubnAh4/1gyfwdOV7FH5oKcp5O6o1Kv8n
+         nDUYL3dAcCrL9TTccxOHwsLW7/h/UO6E0k/69KEuF53WVE+z0aWqkDmUSgEu3E06zL/R
+         f3AcyXX+mp4bLaJS4oNGU4C61g2XkYKNi5pY8OKoE0nV5Hc0DPOu6FZSTU0cRmmZMOhS
+         q68A==
+X-Gm-Message-State: AOAM530b8636UB3/8YrRGTKbkqksMwTKb70bjmVuW19r8XrWZdHupmpl
+        Uyb6DT3iUzHzNLOWOvlmLPY=
+X-Google-Smtp-Source: ABdhPJxKpN9puFqVmtWPSWskekDRrRKyjO+qi7DcM2EOGfVNcg1h7/YT2hszcJ7N8YfB3UNh78cKLQ==
+X-Received: by 2002:a65:53cc:: with SMTP id z12mr9071134pgr.333.1602383334387;
+        Sat, 10 Oct 2020 19:28:54 -0700 (PDT)
+Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
+        by smtp.gmail.com with ESMTPSA id o23sm17936124pjw.32.2020.10.10.19.28.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 10 Oct 2020 19:28:53 -0700 (PDT)
+To:     Kurt Kanzenbach <kurt@kmk-computers.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, kurt@linutronix.de
+References: <20201010164627.9309-1-kurt@kmk-computers.de>
+ <20201010164627.9309-2-kurt@kmk-computers.de>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH net-next 1/2] dt-bindings: net: dsa: b53: Add YAML
+ bindings
+Message-ID: <3249c764-ec4a-26be-a52d-e9e85f3162ea@gmail.com>
+Date:   Sat, 10 Oct 2020 19:28:51 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.3.2
 MIME-Version: 1.0
-References: <20201010181734.1109-1-danieltimlee@gmail.com> <20201010181734.1109-2-danieltimlee@gmail.com>
-In-Reply-To: <20201010181734.1109-2-danieltimlee@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sat, 10 Oct 2020 16:56:27 -0700
-Message-ID: <CAEf4BzZw3Se=qa=hjrtLtL4AEq7UQcmS-ZdKqo=qAHO1Kn=SGA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/3] samples: bpf: Refactor xdp_monitor with libbpf
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Xdp <xdp-newbies@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201010164627.9309-2-kurt@kmk-computers.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 10, 2020 at 11:17 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
->
-> To avoid confusion caused by the increasing fragmentation of the BPF
-> Loader program, this commit would like to change to the libbpf loader
-> instead of using the bpf_load.
->
-> Thanks to libbpf's bpf_link interface, managing the tracepoint BPF
-> program is much easier. bpf_program__attach_tracepoint manages the
-> enable of tracepoint event and attach of BPF programs to it with a
-> single interface bpf_link, so there is no need to manage event_fd and
-> prog_fd separately.
->
-> This commit refactors xdp_monitor with using this libbpf API, and the
-> bpf_load is removed and migrated to libbpf.
->
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
->
-> ---
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
-> Changes in v2:
->  - added cleanup logic for bpf_link and bpf_object
->  - split increment into seperate satement
->  - refactor pointer array initialization
->
->  samples/bpf/Makefile           |   2 +-
->  samples/bpf/xdp_monitor_user.c | 159 +++++++++++++++++++++++++--------
->  2 files changed, 121 insertions(+), 40 deletions(-)
->
+On 10/10/2020 9:46 AM, Kurt Kanzenbach wrote:
+> Convert the b53 DSA device tree bindings to YAML in order to allow
+> for automatic checking and such.
+> 
+> Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
+> Signed-off-by: Kurt Kanzenbach <kurt@kmk-computers.de>
 
-[...]
+Thanks for making this change, there are quite a few warnings that are 
+going to show up because the binding was defined in a way that it would 
+define chip compatible strings, which not all DTS files are using. I 
+don't know if Rob would be comfortable with taking this until we resolve 
+all warnings first.
+-- 
+Florian
