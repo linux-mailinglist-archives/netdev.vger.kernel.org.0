@@ -2,72 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D941928A72A
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 13:18:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79B2928A707
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 12:40:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730001AbgJKLSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 07:18:17 -0400
-Received: from mail2-relais-roc.national.inria.fr ([192.134.164.83]:24878 "EHLO
-        mail2-relais-roc.national.inria.fr" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729891AbgJKLSH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 07:18:07 -0400
-X-IronPort-AV: E=Sophos;i="5.77,362,1596492000"; 
-   d="scan'208";a="471985694"
-Received: from palace.rsr.lip6.fr (HELO palace.lip6.fr) ([132.227.105.202])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/AES256-SHA256; 11 Oct 2020 13:18:01 +0200
-From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Boris Pismenny <borisp@nvidia.com>
-Cc:     =?UTF-8?q?Valdis=20Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>,
-        Joe Perches <joe@perches.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        kernel-janitors@vger.kernel.org,
-        Aviad Yehezkel <aviadye@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 5/5] net/tls: use semicolons rather than commas to separate statements
-Date:   Sun, 11 Oct 2020 12:34:58 +0200
-Message-Id: <1602412498-32025-6-git-send-email-Julia.Lawall@inria.fr>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1602412498-32025-1-git-send-email-Julia.Lawall@inria.fr>
-References: <1602412498-32025-1-git-send-email-Julia.Lawall@inria.fr>
+        id S1729746AbgJKKhl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 06:37:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36090 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729624AbgJKKhk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 06:37:40 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFE6C0613CE
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 03:37:40 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id d6so6858329plo.13
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 03:37:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=IwIdQxaAvtPvdQ7kv8/2HX6fvW7PYAkceLWLP3z3+j0=;
+        b=fyGSM/hsJOE0+XtyetgrP/4oSTaoITF9ynd40QSEjMTurJmPGVfydGEeShfrjnIx46
+         bt3uG5ZSkh68debo5dfPfrAp8wvNUD8IsS5GDoeO5XNxTqGfxrR/aqjxV49upHn5pqmo
+         6mbu4nm2PJaOkxMfymbia6RnuRZNoU4liSZ+kRwILNQ3DFil3jGHMuRWVgWadtUlG0pm
+         UPAXkrs1YKR5H8pdQhL93YcwDIQHoxtG+uvcFRdCidW5Rpd+ksWW0Pd0pZzipCpQWQ81
+         VTw6Ps674GUciAn/Nmh+x6wVwiI7+rl4Wh0JXyEVpFqGEA/U4DWJ41sL6EdlEMnRWiA8
+         iI9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=IwIdQxaAvtPvdQ7kv8/2HX6fvW7PYAkceLWLP3z3+j0=;
+        b=LWONn3Cu2E8tkOIle1Er8VAuE2Nixc432BlxydwcxkukzcXPRCrG1r1waT30vk8yQ6
+         ST9aw8SFk5oMim7qGzL93dLOvLtn1nTSucs1ciflX3HhvNSdYSA5NdNZXwfo3x341viZ
+         nl3cxVz4f4wI0/24S0/QY8bVlq9+ga/bLmacqxK+OPZnPeXLLwV7ZVRshD3BXIGn7+1+
+         ZidIyXzXj3sfNxVeUpsS6CgXOqK3stu1LI6ObcPAeeN7QTy4o27vjslgjyynURKCOe6w
+         NLbLsSHm8vL9Q+Z6NWVn1Wc1QwCJVFPFaIQ3KXxnh60p00GUITBMPANWqB6ssErGi113
+         XXNA==
+X-Gm-Message-State: AOAM531+Dnbd4IM4WsDd/jw4qCxtZix+oNWH8v7lyShGViKwg7Seqfvz
+        4s1UJsYPzLOphyMgUbERrRSrAVnF6D4DyWWYvgky3w==
+X-Google-Smtp-Source: ABdhPJx3URKf9AYK1M9Ikngl4G/r8DiVTS1GIRSdM5JdeFin+So8Y+XY9rUA1QnFioyMCB7L+/WDBgYt7vg2IYTVf0A=
+X-Received: by 2002:a17:902:d716:b029:d3:8e2a:1b5d with SMTP id
+ w22-20020a170902d716b02900d38e2a1b5dmr18272569ply.85.1602412659693; Sun, 11
+ Oct 2020 03:37:39 -0700 (PDT)
+MIME-Version: 1.0
+References: <20201009170202.103512-1-a.nogikh@gmail.com> <C4BF5679-74E6-4F2E-839B-A95D88699DBF@sipsolutions.net>
+In-Reply-To: <C4BF5679-74E6-4F2E-839B-A95D88699DBF@sipsolutions.net>
+From:   Andrey Konovalov <andreyknvl@google.com>
+Date:   Sun, 11 Oct 2020 12:37:29 +0200
+Message-ID: <CAAeHK+y=YaVwU=vgf4Fph_WMLnKgzKEhyypVmsYbF1LnRPfJsg@mail.gmail.com>
+Subject: Re: [PATCH v2 0/3] [PATCH v2 0/3] [PATCH v2 0/3] net, mac80211,
+ kernel: enable KCOV remote coverage collection for 802.11 frame handling
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Aleksandr Nogikh <a.nogikh@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Marco Elver <elver@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, linux-wireless@vger.kernel.org,
+        Aleksandr Nogikh <nogikh@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Replace commas with semicolons.  Commas introduce unnecessary
-variability in the code structure and are hard to see.  What is done
-is essentially described by the following Coccinelle semantic patch
-(http://coccinelle.lip6.fr/):
+On Fri, Oct 9, 2020 at 7:13 PM Johannes Berg <johannes@sipsolutions.net> wr=
+ote:
+>
+>
+>
+> On 9 October 2020 19:01:59 CEST, Aleksandr Nogikh <a.nogikh@gmail.com> wr=
+ote:
+>
+> >This patch series conflicts with another proposed patch
+> >http://lkml.kernel.org/r/223901affc7bd759b2d6995c2dbfbdd0a29bc88a.160224=
+8029.git.andreyknvl@google.com
+> >One of these patches needs to be rebased once the other one is merged.
+>
+>
+> Maybe that other patch shouldn't do things that way though, and add new A=
+PI (which the existing one could call with some kind of "all contexts" argu=
+ment) instead, so it's only necessary to specify the context (mask?) where =
+its actually needed (the few places in usb or e whatever)?
+>
+> Surely that would also look less tedious in the mac80211 code, for exampl=
+e.
+>
+> And if you ever fix the nesting issue you'd have fewer places to modify a=
+gain.
 
-// <smpl>
-@@ expression e1,e2; @@
-e1
--,
-+;
-e2
-... when any
-// </smpl>
+Hi Johannes,
 
-Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+I initially hesitated to do that, as it would multiply the number of
+kcov callbacks. But perhaps you're right and a clean API look
+outweighs the rest. I will do this in v3.
 
----
- net/tls/tls_main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index 002b0859fed5..8d93cea99f2c 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -869,7 +869,7 @@ static int __init tls_register(void)
- 
- 	tls_sw_proto_ops = inet_stream_ops;
- 	tls_sw_proto_ops.splice_read = tls_sw_splice_read;
--	tls_sw_proto_ops.sendpage_locked   = tls_sw_sendpage_locked,
-+	tls_sw_proto_ops.sendpage_locked   = tls_sw_sendpage_locked;
- 
- 	tls_device_init();
- 	tcp_register_ulp(&tcp_tls_ulp_ops);
-
+Thanks!
