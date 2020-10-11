@@ -2,121 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBAFE28A7F7
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 17:31:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F80B28A7FC
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 17:35:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388174AbgJKPbA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 11:31:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52602 "EHLO
+        id S2388187AbgJKPfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 11:35:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388162AbgJKPa7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 11:30:59 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59225C0613CE;
-        Sun, 11 Oct 2020 08:30:59 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id i5so14343397edr.5;
-        Sun, 11 Oct 2020 08:30:59 -0700 (PDT)
+        with ESMTP id S2388174AbgJKPfd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 11:35:33 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68D91C0613CE;
+        Sun, 11 Oct 2020 08:35:33 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id n18so16084368wrs.5;
+        Sun, 11 Oct 2020 08:35:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yT7iclCksjyvHogLFtUOukinR9Uqpwagw6AnAve1RRk=;
-        b=LAbaDB+uFCIp7ilYU/QpL3TPS2IAsJHtvfp+OjrGyMGGAgSSflt5/QpAhZK+oJU38M
-         GbRbn8hgjCkYtFSJvDIVzUUgQx/XRmQagLUDaqwwfVjdIdfnYB0eRlFqbK1eGX9D3rWb
-         WjY7EgADGgawWSXAJRw1H7oAupSSW+9ifi6o0UrPo/0bl8XvWNLd/iDQAun3eMoWPl5j
-         M+7oLsbznoLPGx/X/wEalVKrUtpT5R50vEnIvzZ1KwPDtV2BCPohi0UHyto4Rt4uMfGi
-         pnkjOhaEaH9mjxEoFDjJyIczhHlb/vOU6546I30TfXoG721eggdZ3XUGKWwqV7PQiFJe
-         jpJw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=N3w+u3WCpyf2Vmxu08flBAYgvj/+mZSLxfWdcFvbf9A=;
+        b=is0pGkhosYP4T2lFntud/fVUdOErxzaBOMphwYQ+jimFNuLOPiyszvkD+Lm0P0w/wC
+         lJ4MjsQTHbulo1nx/YKOCXEx7e5lqTf96lRJYp4ns+y7necMy1INEbj8vBo91MrKyXc9
+         NJXCGUe5teb6OXrKhgAKtPTuwHpT/siUay3pqRltaGBueMGYAVqPHX8P0dtyVqb3Yuy3
+         14+FN83DAgG31kz2nLLUUaHsfX4imHgMvHnRTk9rVTzjGQwp1/utq0s3SbJeknEfbT+f
+         7ug7IF6QV08qMoF7TN42T48w7q+7EksbT+X0DuNBDfCh7lKVqUaxV/fEPiaOh1YllNbp
+         Smnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yT7iclCksjyvHogLFtUOukinR9Uqpwagw6AnAve1RRk=;
-        b=K+vx4lGWis4JjtYmZT3kgWrI7PYqY6Z6es4w8VZQcWQ2isN46tw/xi73Cd/K/RunAl
-         pmh91htbLdGiHCROZ2/igMActbcU7z+2CSt7Eb6j0sHEEfKgbBhdXWNdoyWdttguBHEb
-         U++m/oerrVJmqylzFLma16B00ApLRt4wyWpxSZc7qB4WqdBZxka6/S6Ngf5Axo4sgYH+
-         L6AjlRuV/uqOixDEUr7XwYdZiJZLBX03OHVAZlni0X2qhVmEUq+95G0wyi6zDTa+QMvy
-         zU96REYbJEqYIqTa7iZvNUWPJchp9tptLpt17mt/hp0VBrXHclFuPFa06XoMdTniq0gQ
-         6JeA==
-X-Gm-Message-State: AOAM533aMPJ+CW2zgkkcP9t+7u0GWcTRqGAvs4YUwMzGXQAdVbwgTwp7
-        RdhaZodUHSbd8pD1+1AR2R0=
-X-Google-Smtp-Source: ABdhPJz27hJTv+CVz9EUFaC/hH1pBYtdr1Q+tDE8YdR+bI3QotRO1IE7H8F/n9V4vWndsPw08kdHmA==
-X-Received: by 2002:a05:6402:651:: with SMTP id u17mr9372591edx.206.1602430257796;
-        Sun, 11 Oct 2020 08:30:57 -0700 (PDT)
-Received: from skbuf ([188.26.174.215])
-        by smtp.gmail.com with ESMTPSA id n22sm9269800eji.106.2020.10.11.08.30.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Oct 2020 08:30:57 -0700 (PDT)
-Date:   Sun, 11 Oct 2020 18:30:55 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH net-next v6 2/7] net: dsa: Add DSA driver for Hirschmann
- Hellcreek switches
-Message-ID: <20201011153055.gottyzqv4hv3qaxv@skbuf>
-References: <20201004112911.25085-1-kurt@linutronix.de>
- <20201004112911.25085-3-kurt@linutronix.de>
- <20201004125601.aceiu4hdhrawea5z@skbuf>
- <87lfgj997g.fsf@kurt>
- <20201006092017.znfuwvye25vsu4z7@skbuf>
- <878scj8xxr.fsf@kurt>
- <20201006113237.73rzvw34anilqh4d@skbuf>
- <87wo037ajr.fsf@kurt>
- <20201006135631.73rm3gka7r7krwca@skbuf>
- <87362lt08b.fsf@kurt>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=N3w+u3WCpyf2Vmxu08flBAYgvj/+mZSLxfWdcFvbf9A=;
+        b=YPV9GS3f+A7YjgUalJH9xFKT6U9+U725WJ+bwsqVg5XWhUlhwtisaJl16tyjre5ksa
+         XH8FNuwheEh+C2QLeVsnIEQcYl9UUsiuHzrqXXaGZZ+Oii7KMQUCSuakKwSrTguqFPeZ
+         m6s3MDmHHGZB/uOMFD1WfFiZ+9qrJo2sH6t4UKYc8MBtQ5FK69DKBHdQmhtuKn4Ox2t/
+         dQhIuMXwn3BZ5G30v0jLmVXjI3KrwlZDD5Q6iu/veC6vgk0xTIZT6BHgY80i/oaxsQxz
+         JJUoKr78ljCmj968qU48euiBqauqWKncyaSeKGBP6O0aeRMxd5yMJbs3fPvKAv2YnNyt
+         noJw==
+X-Gm-Message-State: AOAM531M3LWr5gxrBGKVokhLWmV3QbBJ4VzCXtJwnZ5Fs6IaFh5tM4zB
+        mts7sZId6a9stt/FgnferhFKu2foEjSLIqbQ
+X-Google-Smtp-Source: ABdhPJwAUxKzsVVN5goil3FjwV7IzV49fihju/Qq955hCEYJeP1uRw6KOEJqosZwlQvoOAa8GIJK2g==
+X-Received: by 2002:a05:6000:10cd:: with SMTP id b13mr21029873wrx.4.1602430531606;
+        Sun, 11 Oct 2020 08:35:31 -0700 (PDT)
+Received: from localhost.localdomain (bzq-79-182-88-189.red.bezeqint.net. [79.182.88.189])
+        by smtp.gmail.com with ESMTPSA id y7sm20309176wmg.40.2020.10.11.08.35.30
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 11 Oct 2020 08:35:31 -0700 (PDT)
+From:   Or Cohen <orcohen2006@gmail.com>
+X-Google-Original-From: Or Cohen <orcohen@paloaltonetworks.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Or Cohen <orcohen@paloaltonetworks.com>
+Subject: [PATCH] net/af_unix: Remove unused old_pid variable
+Date:   Sun, 11 Oct 2020 18:35:27 +0300
+Message-Id: <20201011153527.18628-1-orcohen@paloaltonetworks.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87362lt08b.fsf@kurt>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 11, 2020 at 02:29:08PM +0200, Kurt Kanzenbach wrote:
-> On Tue Oct 06 2020, Vladimir Oltean wrote:
-> > It would be interesting to see if you could simply turn off VLAN
-> > awareness in standalone mode, and still use unique pvids per port.
->
-> That doesn't work, just tested. When VLAN awareness is disabled,
-> everything is switched regardless of VLAN tags and table.
+Commit 109f6e39fa07c48f5801 ("af_unix: Allow SO_PEERCRED
+to work across namespaces.") introduced the old_pid variable
+in unix_listen, but it's never used.
+Remove the declaration and the call to put_pid.
 
-That's strange, do you happen to know where things are going wrong?
-I would expect:
-- port VLAN awareness is disabled, so any packet is classified to the
-  port-based VLAN
-- the port-based VLAN is a private VLAN whose membership includes only
-  that port, plus the CPU port
-- the switch does not forward packets towards a port that is not member
-  of the packets' classified VLAN
-When VLAN awareness is disabled, are you able to cause packet drops by
-deleting the pvid of the ingress port? Therefore, can you confirm that
-lan1 is not a member of lan0's pvid, but the switch still forwards the
-packets to it?
+Signed-off-by: Or Cohen <orcohen@paloaltonetworks.com>
+---
+ net/unix/af_unix.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-> Therefore, the implementation could look like this:
->
->  * bridge without filtering:
->    * vlan_awareness=0
->    * drop private vlans
->  * bridge with vlan filtering:
->    * vlan_awareness=1
->    * drop private vlans
->  * standalone:
->    * vlan_awareness=1
->    * use private vlans
->    * forbid other users to use private vlans to allow
->      configure_vlans_while_not_filtering behavior in .vlan_prepare()
->    * forbid use of lan0.<X> and lan1.<X> in .port_prechangeupper()
->
-> So, this should work, or?
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 3385a7a0b231..26d3bf81186f 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -613,7 +613,6 @@ static int unix_listen(struct socket *sock, int backlog)
+ 	int err;
+ 	struct sock *sk = sock->sk;
+ 	struct unix_sock *u = unix_sk(sk);
+-	struct pid *old_pid = NULL;
+ 
+ 	err = -EOPNOTSUPP;
+ 	if (sock->type != SOCK_STREAM && sock->type != SOCK_SEQPACKET)
+@@ -634,7 +633,6 @@ static int unix_listen(struct socket *sock, int backlog)
+ 
+ out_unlock:
+ 	unix_state_unlock(sk);
+-	put_pid(old_pid);
+ out:
+ 	return err;
+ }
+-- 
+2.17.1
 
-Yes, this is an alternative that could work.
