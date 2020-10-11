@@ -2,132 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F48628A81C
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 17:57:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E1C428A824
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 18:01:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387553AbgJKP4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 11:56:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54490 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730174AbgJKP42 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 11 Oct 2020 11:56:28 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 693C72223C;
-        Sun, 11 Oct 2020 15:56:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602431787;
-        bh=pqoA6wkSIxse6OFFBq+N4TiZpT55U12SAaPD59TIWIs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AIE3Sg6Ey+hhdmnuXTo7IVTvffCxtk0GV5yAXPUYzjJDxLHHhr2C1XDeLKa/rsuiv
-         hKMJXkil72xrDpSNF6jHRzpTwwWONo7wd1r4eavuvMOKowlrdyBXDqYyTYZYJH/UnX
-         J8/H4gEoaybf2hqarkomcmesA38JqRQU7AP6U4Wo=
-Date:   Sun, 11 Oct 2020 08:56:26 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     John Keeping <john@metanate.com>, netdev@vger.kernel.org,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH] net: stmmac: Don't call _irqoff() with hardirqs enabled
-Message-ID: <20201011085626.6bec051f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <04d10b06-ca1c-3bfa-0a5f-730a9c8a2744@gmail.com>
-References: <20201008162749.860521-1-john@metanate.com>
-        <8036d473-68bd-7ee7-e2e9-677ff4060bd3@gmail.com>
-        <20201009085805.65f9877a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <725ba7ca-0818-074b-c380-15abaa5d037b@gmail.com>
-        <070b2b87-f38c-088d-4aaf-12045dbd92f7@gmail.com>
-        <20201010082248.22cc7656@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <04d10b06-ca1c-3bfa-0a5f-730a9c8a2744@gmail.com>
+        id S2387950AbgJKQBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 12:01:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57202 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387799AbgJKQBB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 12:01:01 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A01EC0613CE
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 09:01:01 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id r10so11618819pgb.10
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 09:01:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZeFjw3qLweAjOU35zoRBA8nXBOKUeG2GljXb+HxWSOw=;
+        b=wAfLQMktP3vX4gsrlyNS7bbn9fQ5HRsy2aJNNdt6ka30g9Ko/FJhQwWyAHrLsBd1W9
+         7AiJ5IaRRvN+HySKCHGDPwiC0KkE+cFhqzlUT4+q4MXFanvmSVhk/kzTw908Gp1DWunj
+         zrQDcro6Gcwx4ETnK2/bI3WREkoPuUKNxqbhUDblGB+RWrRA87LcKUVozSjTa0x3aNMe
+         TUQIZ6CB0bnK1Tsxxg9Y/KgqK9yXkn32E64iseUZsCkqK97b9VQugRYctPXTC92FZ3is
+         k77wtpura5vda4j29hm2YPSItLsBTdPUa81UMEMC4p8nkdaVpbPPm3RHrSzFWPa5Tayd
+         a3TA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZeFjw3qLweAjOU35zoRBA8nXBOKUeG2GljXb+HxWSOw=;
+        b=aaCIZvOfR5JiWYyTcvem75vZyJmlQYIm9LGtNWi3AGdNxHVMRD04ynWduX4h0zu61J
+         cPvSv7oCDFPB/QKMtelUHDW7QumXDcY6Z//shO6+wUTJkadM0oCWbRJCeEzWwKVCa+At
+         i3XOcRwztuRLvue8tuvDbSiYet+bOrMXR9u2ynchIK1zPNfJ6jlXRmgNuwOSWi9jTXuj
+         2OgDoQLQ3b1rZQLXtEpgxCrzTXBKdKlwHnOWyzmNggW7NV0i6CxsGHXFKQVkVL+A5sCU
+         DDrEaphDhmfPZ0kizkPaASEXNR0c+On/p0g2r3zqHoJZJXtXtOu4QnW56s62ubu9Hwb5
+         lVHQ==
+X-Gm-Message-State: AOAM5322roSbUoxPFjUIajeoeoOEjhwLZcVPnLvQB2iVmrxZibFaxhE8
+        w8mLm2yf/P+QLsp9kRTV77nVXmxhpKSuF5DadtKzAQ==
+X-Google-Smtp-Source: ABdhPJx+35KZugbZDuYuwDppg2jtVfNyVvGyDLkEevimfuHCyJp9HQAuTr44pyJ85kH6+5R+ijtE2LOzbIG0aYnD3qI=
+X-Received: by 2002:a17:90a:4749:: with SMTP id y9mr2820055pjg.229.1602432060784;
+ Sun, 11 Oct 2020 09:01:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201010103854.66746-1-songmuchun@bytedance.com> <20201011135244.GC4251@kernel.org>
+In-Reply-To: <20201011135244.GC4251@kernel.org>
+From:   Muchun Song <songmuchun@bytedance.com>
+Date:   Mon, 12 Oct 2020 00:00:24 +0800
+Message-ID: <CAMZfGtVgiZ-dg=t0Vsc5mt+UgEA+W2RjZ8sd9TFdEUB4iPPxXw@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH] mm: proc: add Sock to /proc/meminfo
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, rafael@kernel.org,
+        mst@redhat.com, jasowang@redhat.com,
+        David Miller <davem@davemloft.net>, kuba@kernel.org,
+        adobriyan@gmail.com, Andrew Morton <akpm@linux-foundation.org>,
+        Eric Dumazet <edumazet@google.com>, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org, steffen.klassert@secunet.com,
+        herbert@gondor.apana.org.au, Shakeel Butt <shakeelb@google.com>,
+        Will Deacon <will@kernel.org>, Michal Hocko <mhocko@suse.com>,
+        Roman Gushchin <guro@fb.com>, neilb@suse.de,
+        Sami Tolvanen <samitolvanen@google.com>,
+        kirill.shutemov@linux.intel.com, feng.tang@intel.com,
+        pabeni@redhat.com, Willem de Bruijn <willemb@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>, fw@strlen.de,
+        gustavoars@kernel.org, pablo@netfilter.org, decui@microsoft.com,
+        jakub@cloudflare.com, Peter Zijlstra <peterz@infradead.org>,
+        christian.brauner@ubuntu.com, ebiederm@xmission.com,
+        Thomas Gleixner <tglx@linutronix.de>, dave@stgolabs.net,
+        Michel Lespinasse <walken@google.com>,
+        Jann Horn <jannh@google.com>, chenqiwu@xiaomi.com,
+        christophe.leroy@c-s.fr, minchan@kernel.org,
+        Martin KaFai Lau <kafai@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, linmiaohe@huawei.com,
+        Kees Cook <keescook@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Networking <netdev@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org,
+        Linux Memory Management List <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 11 Oct 2020 15:42:24 +0200 Heiner Kallweit wrote:
-> On 10.10.2020 17:22, Jakub Kicinski wrote:
-> > On Sat, 10 Oct 2020 15:08:15 +0200 Heiner Kallweit wrote:  
-> >> On 09.10.2020 18:06, Heiner Kallweit wrote:  
-> >>> On 09.10.2020 17:58, Jakub Kicinski wrote:    
-> >>>> On Fri, 9 Oct 2020 16:54:06 +0200 Heiner Kallweit wrote:    
-> >>>>> I'm thinking about a __napi_schedule version that disables hard irq's
-> >>>>> conditionally, based on variable force_irqthreads, exported by the irq
-> >>>>> subsystem. This would allow to behave correctly with threadirqs set,
-> >>>>> whilst not loosing the _irqoff benefit with threadirqs unset.
-> >>>>> Let me come up with a proposal.    
-> >>>>
-> >>>> I think you'd need to make napi_schedule_irqoff() behave like that,
-> >>>> right?  Are there any uses of napi_schedule_irqoff() that are disabling
-> >>>> irqs and not just running from an irq handler?
-> >>>>    
-> >>> Right, the best approach depends on the answer to the latter question.
-> >>> I didn't check this yet, therefore I described the least intrusive approach.
-> >>>     
-> >>
-> >> With some help from coccinelle I identified the following functions that
-> >> call napi_schedule_irqoff() or __napi_schedule_irqoff() and do not run
-> >> from an irq handler (at least not at the first glance).
-> >>
-> >> dpaa2_caam_fqdan_cb
-> >> qede_simd_fp_handler
-> >> mlx4_en_rx_irq
-> >> mlx4_en_tx_irq  
-> > 
-> > Don't know the others but FWIW the mlx4 ones run from an IRQ handler,
-> > AFAICT:
-> > 
-> > static irqreturn_t mlx4_interrupt(int irq, void *dev_ptr)
-> > static irqreturn_t mlx4_msi_x_interrupt(int irq, void *eq_ptr)
-> >   mlx4_eq_int()
-> >     mlx4_cq_completion
-> >       cq->comp()
-> >   
-> >> qeth_qdio_poll
-> >> netvsc_channel_cb
-> >> napi_watchdog  
-> > 
-> > This one runs from a hrtimer, which I believe will be a hard irq
-> > context on anything but RT. I could be wrong.
-> >   
-> 
-> Typically forced irq threading will not be enabled, therefore going
-> back to use napi_schedule() in drivers in most cases will cause
-> losing the benefit of the irqoff version. Something like the following
-> should be better. Only small drawback I see is that in case of forced
-> irq threading hrtimers will still run in hardirq context and we lose
-> the benefit of the irqoff version in napi_watchdog().
-> 
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index a146bac84..7d18560b2 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -6393,7 +6393,11 @@ EXPORT_SYMBOL(napi_schedule_prep);
->   */
->  void __napi_schedule_irqoff(struct napi_struct *n)
->  {
-> -	____napi_schedule(this_cpu_ptr(&softnet_data), n);
-> +	/* hard irqs may not be masked in case of forced irq threading */
-> +	if (force_irqthreads)
-> +		__napi_schedule(n);
-> +	else
-> +		____napi_schedule(this_cpu_ptr(&softnet_data), n);
->  }
->  EXPORT_SYMBOL(__napi_schedule_irqoff);
+On Sun, Oct 11, 2020 at 9:53 PM Mike Rapoport <rppt@kernel.org> wrote:
+>
+> On Sat, Oct 10, 2020 at 06:38:54PM +0800, Muchun Song wrote:
+> > The amount of memory allocated to sockets buffer can become significant.
+> > However, we do not display the amount of memory consumed by sockets
+> > buffer. In this case, knowing where the memory is consumed by the kernel
+> > is very difficult. On our server with 500GB RAM, sometimes we can see
+> > 25GB disappear through /proc/meminfo. After our analysis, we found the
+> > following memory allocation path which consumes the memory with page_owner
+> > enabled.
+>
+> I have a high lelel question.
+> There is accounting of the socket memory for memcg that gets called from
+> the networking layer. Did you check if the same call sites can be used
+> for the system-wide accounting as well?
 
-Does
+I also think about this. But we did not pass the `struct page` parameter to
+the sock accounting memcg API. So we did not know the NUMA node
+which allocated the socket buffer memory and cannot do node-level
+statistics. In addition, there is another problem. If the user sends a 4096-byte
+message, we only charge one page to the memcg but the system allocates 8
+pages. So if we reuse the same call sites for the system-wide accounting,
+the statistical count we get is always smaller than the actual situation.
 
-	if (force_irqthreads)
-		local_irq_save(flags);
-	____napi_schedule(this_cpu_ptr(&softnet_data), n);
-	if (force_irqthreads)
-		local_irq_restore(flags);
+>
+> >   849698 times:
+> >   Page allocated via order 3, mask 0x4052c0(GFP_NOWAIT|__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP)
+> >    __alloc_pages_nodemask+0x11d/0x290
+> >    skb_page_frag_refill+0x68/0xf0
+> >    sk_page_frag_refill+0x19/0x70
+> >    tcp_sendmsg_locked+0x2f4/0xd10
+> >    tcp_sendmsg+0x29/0xa0
+> >    sock_sendmsg+0x30/0x40
+> >    sock_write_iter+0x8f/0x100
+> >    __vfs_write+0x10b/0x190
+> >    vfs_write+0xb0/0x190
+> >    ksys_write+0x5a/0xd0
+> >    do_syscall_64+0x5d/0x110
+> >    entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> >
+> > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> > ---
+> >  drivers/base/node.c      |  2 ++
+> >  drivers/net/virtio_net.c |  3 +--
+>
+> Is virtio-net the only dirver that requred an update?
 
-not produce more concise assembly?
+Yeah, only virtio-net needs an update. Because only it uses the
+skb_page_frag_refill() API.
+
+>
+> >  fs/proc/meminfo.c        |  1 +
+> >  include/linux/mmzone.h   |  1 +
+> >  include/linux/skbuff.h   | 43 ++++++++++++++++++++++++++++++++++++++--
+> >  kernel/exit.c            |  3 +--
+> >  mm/page_alloc.c          |  7 +++++--
+> >  mm/vmstat.c              |  1 +
+> >  net/core/sock.c          |  8 ++++----
+> >  net/ipv4/tcp.c           |  3 +--
+> >  net/xfrm/xfrm_state.c    |  3 +--
+> >  11 files changed, 59 insertions(+), 16 deletions(-)
+> >
+
+
+
+-- 
+Yours,
+Muchun
