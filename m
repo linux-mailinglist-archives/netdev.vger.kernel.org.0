@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFB0628A619
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 09:16:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC3A128A61B
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 09:16:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726461AbgJKHPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 03:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33544 "EHLO
+        id S1728815AbgJKHQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 03:16:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725802AbgJKHPr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 03:15:47 -0400
+        with ESMTP id S1725802AbgJKHQb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 03:16:31 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 838D4C0613D0
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 00:15:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9B56C0613CE
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 00:16:30 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kRVZz-00019G-Ch; Sun, 11 Oct 2020 09:15:39 +0200
+        id 1kRVak-0001IT-84; Sun, 11 Oct 2020 09:16:26 +0200
 Received: from [IPv6:2a03:f580:87bc:d400:94c5:3170:694e:9c6d] (unknown [IPv6:2a03:f580:87bc:d400:94c5:3170:694e:9c6d])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 33A17576AAB;
-        Sun, 11 Oct 2020 07:15:35 +0000 (UTC)
-To:     Oliver Hartkopp <socketcan@hartkopp.net>, kuba@kernel.org,
-        netdev@vger.kernel.org
-Cc:     davem@davemloft.net, linux-can@vger.kernel.org
-References: <20201010204909.2059-1-socketcan@hartkopp.net>
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 4231E576AAE;
+        Sun, 11 Oct 2020 07:16:25 +0000 (UTC)
+Subject: Re: pull-request: can 2020-10-08
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-can@vger.kernel.org, kernel@pengutronix.de
+References: <20201008214022.2044402-1-mkl@pengutronix.de>
+ <20201010103240.11c8e69d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
@@ -92,17 +94,15 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
  HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
  xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
-Subject: Re: [PATCH net-next 1/2] can-isotp: implement cleanups / improvements
- from review
-Message-ID: <2c295ab7-882a-08de-26b5-685f0028c355@pengutronix.de>
-Date:   Sun, 11 Oct 2020 09:15:28 +0200
+Message-ID: <6facaac5-62c4-4322-6c23-a7003b98d6a6@pengutronix.de>
+Date:   Sun, 11 Oct 2020 09:16:20 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20201010204909.2059-1-socketcan@hartkopp.net>
+In-Reply-To: <20201010103240.11c8e69d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="iaXBA3O6b0w3JlJ3uNLvGR9KrmLd9XWf3"
+ boundary="jkMjjY2imwCatKGHqFFkFqzFE5d6iMEDK"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -112,148 +112,52 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---iaXBA3O6b0w3JlJ3uNLvGR9KrmLd9XWf3
-Content-Type: multipart/mixed; boundary="DqjUoOygCSmmnjCuujcZs7oqpQx4s1Mj7";
+--jkMjjY2imwCatKGHqFFkFqzFE5d6iMEDK
+Content-Type: multipart/mixed; boundary="KyTDtkYZj7Pn8i6pilhLPsVokZoVIjWi7";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Oliver Hartkopp <socketcan@hartkopp.net>, kuba@kernel.org,
- netdev@vger.kernel.org
-Cc: davem@davemloft.net, linux-can@vger.kernel.org
-Message-ID: <2c295ab7-882a-08de-26b5-685f0028c355@pengutronix.de>
-Subject: Re: [PATCH net-next 1/2] can-isotp: implement cleanups / improvements
- from review
-References: <20201010204909.2059-1-socketcan@hartkopp.net>
-In-Reply-To: <20201010204909.2059-1-socketcan@hartkopp.net>
+To: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org, davem@davemloft.net, linux-can@vger.kernel.org,
+ kernel@pengutronix.de
+Message-ID: <6facaac5-62c4-4322-6c23-a7003b98d6a6@pengutronix.de>
+Subject: Re: pull-request: can 2020-10-08
+References: <20201008214022.2044402-1-mkl@pengutronix.de>
+ <20201010103240.11c8e69d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201010103240.11c8e69d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 
---DqjUoOygCSmmnjCuujcZs7oqpQx4s1Mj7
+--KyTDtkYZj7Pn8i6pilhLPsVokZoVIjWi7
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Language: de-DE
 Content-Transfer-Encoding: quoted-printable
 
-On 10/10/20 10:49 PM, Oliver Hartkopp wrote:
-> As pointed out by Jakub Kicinski here:
-> https://marc.info/?l=3Dlinux-can&m=3D160229286216008
-> this patch addresses the remarked issues:
+On 10/10/20 7:32 PM, Jakub Kicinski wrote:
+> On Thu,  8 Oct 2020 23:40:19 +0200 Marc Kleine-Budde wrote:
+>> The first patch is part of my pull request "linux-can-fixes-for-5.9-20=
+201006",
+>> so consider that one obsolete and take this instead.
+>>
+>> The first patch is by Lucas Stach and fixes m_can driver by removing a=
+n
+>> erroneous call to m_can_class_suspend() in runtime suspend. Which caus=
+es the
+>> pinctrl state to get stuck on the "sleep" state, which breaks all CAN
+>> functionality on SoCs where this state is defined.
+>>
+>> The last two patches target the j1939 protocol: Cong Wang fixes a syzb=
+ot
+>> finding of an uninitialized variable in the j1939 transport protocol. =
+I
+>> contribute a patch, that fixes the initialization of a same uninitiali=
+zed
+>> variable in a different function.
 >=20
-> - remove empty lines in comment
-> - remove default=3Dy for CAN_ISOTP in Kconfig
-> - make use of pr_notice_once()
-> - use GFP_KERNEL instead of gfp_any() in soft hrtimer context
+> Pulled, thanks!
 >=20
-> The version strings in the CAN subsystem are removed by a separate patc=
-h.
->=20
-> Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
-> ---
->  include/uapi/linux/can/isotp.h |  4 +---
->  net/can/Kconfig                |  3 ++-
->  net/can/isotp.c                | 14 +++++++-------
->  3 files changed, 10 insertions(+), 11 deletions(-)
->=20
-> diff --git a/include/uapi/linux/can/isotp.h b/include/uapi/linux/can/is=
-otp.h
-> index 553006509f4e..accf0efa46f4 100644
-> --- a/include/uapi/linux/can/isotp.h
-> +++ b/include/uapi/linux/can/isotp.h
-> @@ -151,8 +151,7 @@ struct can_isotp_ll_options {
->  #define CAN_ISOTP_DEFAULT_LL_TX_DL	CAN_MAX_DLEN
->  #define CAN_ISOTP_DEFAULT_LL_TX_FLAGS	0
-> =20
-> -/*
-> - * Remark on CAN_ISOTP_DEFAULT_RECV_* values:
-> +/* Remark on CAN_ISOTP_DEFAULT_RECV_* values:
+> Since we missed 5.9 would you like me to queue these up for stable?
 
-I think for uapi headers we use the default commenting style, not the net=
-dev one.
+Yes.
 
->   *
->   * We can strongly assume, that the Linux Kernel implementation of
->   * CAN_ISOTP is capable to run with BS=3D0, STmin=3D0 and WFTmax=3D0.
-> @@ -160,7 +159,6 @@ struct can_isotp_ll_options {
->   * these default settings can be changed via sockopts.
->   * For that reason the STmin value is intentionally _not_ checked for
->   * consistency and copied directly into the flow control (FC) frame.
-> - *
->   */
-> =20
->  #endif /* !_UAPI_CAN_ISOTP_H */
-> diff --git a/net/can/Kconfig b/net/can/Kconfig
-> index 021fe03a8ed6..224e5e0283a9 100644
-> --- a/net/can/Kconfig
-> +++ b/net/can/Kconfig
-> @@ -57,7 +57,6 @@ source "net/can/j1939/Kconfig"
-> =20
->  config CAN_ISOTP
->  	tristate "ISO 15765-2:2016 CAN transport protocol"
-> -	default y
->  	help
->  	  CAN Transport Protocols offer support for segmented Point-to-Point
->  	  communication between CAN nodes via two defined CAN Identifiers.
-> @@ -67,6 +66,8 @@ config CAN_ISOTP
->  	  vehicle diagnosis (UDS, ISO 14229) or IP-over-CAN traffic.
->  	  This protocol driver implements data transfers according to
->  	  ISO 15765-2:2016 for 'classic' CAN and CAN FD frame types.
-> +	  If you want to perform automotive vehicle diagnostic services (UDS)=
-,
-> +	  say 'y'.
-> =20
->  source "drivers/net/can/Kconfig"
-> =20
-> diff --git a/net/can/isotp.c b/net/can/isotp.c
-> index e6ff032b5426..bc3a722c200b 100644
-> --- a/net/can/isotp.c
-> +++ b/net/can/isotp.c
-> @@ -222,8 +222,8 @@ static int isotp_send_fc(struct sock *sk, int ae, u=
-8 flowstatus)
-> =20
->  	can_send_ret =3D can_send(nskb, 1);
->  	if (can_send_ret)
-> -		printk_once(KERN_NOTICE "can-isotp: %s: can_send_ret %d\n",
-> -			    __func__, can_send_ret);
-> +		pr_notice_once("can-isotp: %s: can_send_ret %d\n",
-> +			       __func__, can_send_ret);
-
-please define a pr_fmt for the "can-isotp: " prefix.
-
-> =20
->  	dev_put(dev);
-> =20
-> @@ -769,7 +769,7 @@ static enum hrtimer_restart isotp_tx_timer_handler(=
-struct hrtimer *hrtimer)
-> =20
->  isotp_tx_burst:
->  		skb =3D alloc_skb(so->ll.mtu + sizeof(struct can_skb_priv),
-> -				gfp_any());
-> +				GFP_KERNEL);
->  		if (!skb) {
->  			dev_put(dev);
->  			break;
-> @@ -798,8 +798,8 @@ static enum hrtimer_restart isotp_tx_timer_handler(=
-struct hrtimer *hrtimer)
-> =20
->  		can_send_ret =3D can_send(skb, 1);
->  		if (can_send_ret)
-> -			printk_once(KERN_NOTICE "can-isotp: %s: can_send_ret %d\n",
-> -				    __func__, can_send_ret);
-> +			pr_notice_once("can-isotp: %s: can_send_ret %d\n",
-> +				       __func__, can_send_ret);
-> =20
->  		if (so->tx.idx >=3D so->tx.len) {
->  			/* we are done */
-> @@ -942,8 +942,8 @@ static int isotp_sendmsg(struct socket *sock, struc=
-t msghdr *msg, size_t size)
->  	err =3D can_send(skb, 1);
->  	dev_put(dev);
->  	if (err) {
-> -		printk_once(KERN_NOTICE "can-isotp: %s: can_send_ret %d\n",
-> -			    __func__, err);
-> +		pr_notice_once("can-isotp: %s: can_send_ret %d\n",
-> +			       __func__, err);
->  		return err;
->  	}
-> =20
->=20
-
+tnx,
 Marc
 
 --=20
@@ -263,23 +167,23 @@ Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---DqjUoOygCSmmnjCuujcZs7oqpQx4s1Mj7--
+--KyTDtkYZj7Pn8i6pilhLPsVokZoVIjWi7--
 
---iaXBA3O6b0w3JlJ3uNLvGR9KrmLd9XWf3
+--jkMjjY2imwCatKGHqFFkFqzFE5d6iMEDK
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+CsRAACgkQqclaivrt
-76lf4ggAj954XeLxDfyz5rkdJ7kU9V3ZdEZDDQ7Kug5IJ9MhoynECC3nVY0jkdMR
-UYYyXRP9NcD1LkLtiTCc8unRqFpExHtaVyuIKZ2JrpFx2z3Tm5/ilrL0TqQlk7KM
-bMK1t8g0ok9dMGnPomBpiGM1z6zydqzPnC5uZHkrU1glB9w01Z/cRSD9TgrY9s2L
-1H3hrhKkzSOh+viTJ4zx7PfBgOK1QAZi1OjV/RFA241t6Jksimj69o3sWEyNEliw
-B+hPKiBBdsO0b4ZiriYBxNVOgvkctpKbF1eGm1Gtc1yn2gnw9YIVtNaoT+BBuXZT
-zrkKuxXwr3mytOGM9jxuP2y2n3ZS8A==
-=Esj9
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+CsUQACgkQqclaivrt
+76lPQwgAmO2h+MeBrNkVCGFy5IoZXSqJovV1+viq4BDVMRf3COFMr6G4CtilTqDI
+29xi12bWzftDO53f+AqqtOIwksv1o/A4wffJ9ISvCviMtQG/5ge+1IMAFZo5bP+u
+YPB1tD2ctJWjQNnMjNlTU9hXuHsZ+cTY7UMJGty0GrLGbEYgTHfoT33wJb/rWdIT
+sXh+h/5HdoucwkwG4dcmYv3mJC7TuyasJd93ND5ZgUESnRsqK78ylFZA6K1yGG+u
+vnTdWNkIcZbL9qDakE7ak4ooDAxby5l5BpvD+3qyyRb5TQfx5+AafIn02uZsIUIJ
+iGpKpwZZnM1UBiBSDcvptmxvF3Ag4Q==
+=mplS
 -----END PGP SIGNATURE-----
 
---iaXBA3O6b0w3JlJ3uNLvGR9KrmLd9XWf3--
+--jkMjjY2imwCatKGHqFFkFqzFE5d6iMEDK--
