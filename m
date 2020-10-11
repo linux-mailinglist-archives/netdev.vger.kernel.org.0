@@ -2,104 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F02E128AA00
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 21:55:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26B0528AA0A
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 22:01:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726825AbgJKTyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 15:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36410 "EHLO
+        id S1727136AbgJKUBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 16:01:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726456AbgJKTyX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 15:54:23 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87B6C0613D2
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 12:54:21 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id a200so11454318pfa.10
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 12:54:21 -0700 (PDT)
+        with ESMTP id S1726335AbgJKUBx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 16:01:53 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B05C0613CE;
+        Sun, 11 Oct 2020 13:01:53 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id x16so12041643pgj.3;
+        Sun, 11 Oct 2020 13:01:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Ce5PmEqmv1YSWMDHRt7GbAyKG6KhkYzK8oKJ+L0ajJU=;
-        b=NecgSIK6HUp8mfsj4UInLUpOx0FhmYVbOiqvrr2fvZ5TYkrQUuEXkLPTzx5tcFBsEz
-         Nq5+JltEQ91NdKRQV2G4Iq1a+xepvbeY+DfJKI4gN+xMLpM7ffxRD/Vy8ael2SRXmk1R
-         zyFNBrWANYpGkvC0C9FQlDI7o+XgrW96Kn/50uUMwFceO/cPDsQ5nMCNredRM1yohFiF
-         WCfcxk5DLRJtocYCPu/Q2rJDAWygrt7fEniMPlOpK2C7WdbS9Qof9pGftoU6zVWTgefu
-         A0B22SdP73LR4NQuzphqUkQ+dMI1GkQXsNYI0Dl/JKScaU4MYP2jBBnNoIji5e1DpelC
-         TCTQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=tn5Umitn611AeU/nGjwHnxqj/V3fNuGGU1EQjASJeYI=;
+        b=piMYo0v0G5zmNt8qN0DKOrVtO4qH/FQUHgtvOoamIAtPwOPOsatw7FD/7M3byxeEpM
+         M8wvq2Iz5DMpeSgombV8G2zJKz/TaGg0uaJ1mKNUmR6vG2EN4Z4aaja3ZGohTqUtBJvO
+         ykusySr8WrSZNW/yZMfN2wlfNtafolabvZW9trqBjqUNB2G+CZ+nZGqPtJ8tN9bmsyqj
+         tNWnZNEyFo5lPKmzZdL7q6rhicUlBu3hYsxjeNSicjPeO9ZpEr4Ee++XcdVVM8dmomAa
+         oGDqVzBLV/mvofWMN04CUty9sYi+/urxPYRshs5ss2dpWJbjlw/fqq8GDiWNRRbqTvjt
+         fQ8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Ce5PmEqmv1YSWMDHRt7GbAyKG6KhkYzK8oKJ+L0ajJU=;
-        b=lMLb414KHqAAgSA3utveBm8yxZ8GqfC28JluvOZmtDDkgFm+v+g8+k7ltoTkRgbhte
-         RipvRgFYMWzvPs6PjfpPOGPKmvrdQXhKDwg5rkKw1qzmXQyLzWICrexA9wWVnCYKUTrk
-         CHWaIfXuoVkzVjrJUrg+Al7BeW+SbT77zKzoZ4H9GOs62p3yOGN0+GMlvFc7uRf3k/in
-         jUIhlAmCJfmyz0T/ueZ4JTsD22xS3C7fdhGfp9S1FvqO7aOwT6MGA+R77WTJx+FxZTBp
-         8KxWtNvjQbm2JMcrhpg61QlJo7S2yxGTFQp6vQljkdesYRTuvygbWWDqjX7wqYWCrr8b
-         2VWA==
-X-Gm-Message-State: AOAM530gVqiCG3M2lI/7ulRP78K5ymH44CRmH87IQ01S0NrG7HQexlvv
-        obJ8+KCfpmT8O8Qzu9Mn0Wlwag==
-X-Google-Smtp-Source: ABdhPJyvpHbR55UUKFuI4uBzl5Pqj28b0PIKd/Oy+gbrycGDnCsZJfFifJORg9kf7WymGLQ6QTDtfQ==
-X-Received: by 2002:aa7:8216:0:b029:142:2501:3968 with SMTP id k22-20020aa782160000b029014225013968mr20639458pfi.45.1602446061008;
-        Sun, 11 Oct 2020 12:54:21 -0700 (PDT)
-Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id a185sm17241288pgc.46.2020.10.11.12.54.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 11 Oct 2020 12:54:20 -0700 (PDT)
-Date:   Sun, 11 Oct 2020 12:54:12 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?B?QmrDuHJu?= Mork <bjorn@mork.no>,
-        Oliver Neukum <oneukum@suse.com>,
-        Igor Mitsyanko <imitsyanko@quantenna.com>,
-        Sergey Matyukevich <geomatsi@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-rdma@vger.kernel.org,
-        Linux USB Mailing List <linux-usb@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net-next 01/12] net: core: add function
- dev_fetch_sw_netstats for fetching pcpu_sw_netstats
-Message-ID: <20201011125412.3719926a@hermes.local>
-In-Reply-To: <5bb71143-0dac-c413-7e97-50eed8a57862@gmail.com>
-References: <a46f539e-a54d-7e92-0372-cd96bb280729@gmail.com>
-        <5bb71143-0dac-c413-7e97-50eed8a57862@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=tn5Umitn611AeU/nGjwHnxqj/V3fNuGGU1EQjASJeYI=;
+        b=XPQ8zS7+EMnMHjYoKCYC1siO5w4yWcQekUF8FC1qEM3LueVKuE/UtV3ZKqNd6pHk5R
+         sMXRF/UhJ5iFAJOVmXBSFDutoPZfnCuo+JGYBQ4v+dSHOlc61qjgDHWClg6HCtyZv3xS
+         e4Equc+EE69sXnbRESywuW1Ql1PNRWK87hvyO731E1m23MIorsHf0Rba0sri1j1MK9ii
+         8jUTWQu34Nz1DGbkFeAxozSFzrKgqH55K2VotNxbhN5XoQL89cHMOx/LNp+NpCNDDrhs
+         We0DyyRBltwC0+DKe1y8sDguAF1GyGK49wjVervGydK6uQC9bH/2DKKMvYDH/f680GKr
+         ohBw==
+X-Gm-Message-State: AOAM530aSxkbmKIDkSteUSi/m3S0GDnW95duXQij0KQ4JhEsdrnqT6B5
+        21E+Hw+vyLyD2sQsD8mUXwM=
+X-Google-Smtp-Source: ABdhPJx2DhRziAxDOSQdyHIGFx4V/h+NkLUqLXixer2cSDEAsjOx2Q8XxY8knnfVON8Yts+3I6UCyQ==
+X-Received: by 2002:a65:5249:: with SMTP id q9mr10787816pgp.79.1602446512516;
+        Sun, 11 Oct 2020 13:01:52 -0700 (PDT)
+Received: from ast-mbp.thefacebook.com ([163.114.132.7])
+        by smtp.gmail.com with ESMTPSA id e186sm18126491pfh.60.2020.10.11.13.01.50
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 11 Oct 2020 13:01:51 -0700 (PDT)
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, konstantin@linuxfoundation.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
+Subject: [PATCH bpf-next] bpf: Migrate from patchwork.ozlabs.org to patchwork.kernel.org.
+Date:   Sun, 11 Oct 2020 13:01:49 -0700
+Message-Id: <20201011200149.66537-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.13.5
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 11 Oct 2020 21:36:43 +0200
-Heiner Kallweit <hkallweit1@gmail.com> wrote:
+From: Alexei Starovoitov <ast@kernel.org>
 
-> +void dev_fetch_sw_netstats(struct rtnl_link_stats64 *s,
-> +			   struct pcpu_sw_netstats __percpu *netstats)
+Move the bpf/bpf-next patch processing queue to patchwork.kernel.org.
 
-netstats is unmodified, should it be const?
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+---
 
-> +{
-> +	int cpu;
-> +
-> +	if (IS_ERR_OR_NULL(netstats))
-> +		return;
+Hi All BPF developers,
 
-Any code calling this with a null pointer is broken/buggy, please don't
-ignore that.
+we've migrated bpf patchwork to kernel.org.
+Please monitor the bpf queue at
+https://patchwork.kernel.org/project/netdevbpf/list/?delegate=121173
+The new home provides:
+- automatic marking of patches as 'accepted' as soon as they land in bpf/bpf-next trees.
+- automatic email notification when patches are pushed into bpf/bpf-next trees.
+- automatic marking as 'superseded' when patch series are respun.
+- automatic marking with bpf or netdev delegate based on
+  [PATCH bpf|bpf-next|net|net-next] subject and via file-based pattern matching.
+- Fast UI with low latency for those in US and Europe.
+- Patches sent to netdev@vger and/or bpf@vger appear in one place.
+
+Thank you, Konstantin, for making it happen.
+
+The patches will still appear at ozlabs.org until it stops receiving emails.
+All bpf patches at ozlabs will be marked as 'not applicable'.
+The ozlabs instance is deprecated. It will be used as an archive.
+---
+ Documentation/bpf/bpf_devel_QA.rst | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/bpf/bpf_devel_QA.rst b/Documentation/bpf/bpf_devel_QA.rst
+index 75a0dca5f295..5b613d2a5f1a 100644
+--- a/Documentation/bpf/bpf_devel_QA.rst
++++ b/Documentation/bpf/bpf_devel_QA.rst
+@@ -60,13 +60,13 @@ Q: Where can I find patches currently under discussion for BPF subsystem?
+ A: All patches that are Cc'ed to netdev are queued for review under netdev
+ patchwork project:
+ 
+-  http://patchwork.ozlabs.org/project/netdev/list/
++  https://patchwork.kernel.org/project/netdevbpf/list/
+ 
+ Those patches which target BPF, are assigned to a 'bpf' delegate for
+ further processing from BPF maintainers. The current queue with
+ patches under review can be found at:
+ 
+-  https://patchwork.ozlabs.org/project/netdev/list/?delegate=77147
++  https://patchwork.kernel.org/project/netdevbpf/list/?delegate=121173
+ 
+ Once the patches have been reviewed by the BPF community as a whole
+ and approved by the BPF maintainers, their status in patchwork will be
+-- 
+2.23.0
+
