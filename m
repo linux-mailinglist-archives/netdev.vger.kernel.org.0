@@ -2,91 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8B1228A503
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 04:28:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EE2628A52F
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 05:57:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730348AbgJKC24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Oct 2020 22:28:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46002 "EHLO
+        id S1730708AbgJKDzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Oct 2020 23:55:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726473AbgJKC2z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 22:28:55 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3610C0613D0;
-        Sat, 10 Oct 2020 19:28:55 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id x13so7690690pfa.9;
-        Sat, 10 Oct 2020 19:28:55 -0700 (PDT)
+        with ESMTP id S1729217AbgJKDzy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Oct 2020 23:55:54 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDAFFC0613D0
+        for <netdev@vger.kernel.org>; Sat, 10 Oct 2020 20:55:52 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id 144so10399852pfb.4
+        for <netdev@vger.kernel.org>; Sat, 10 Oct 2020 20:55:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=abrGFb5Z0J48VjjKlVpgG6k2o9tGWZkHPGQ3DWMV9Co=;
-        b=qFjiDRMriXa/bKyFAAUp9AoNztar2N21yLRIQOvBC7CZMu+Uz0hVfNGYMWse/fNZT9
-         4wGRRIEMTIdB7nD5/b8mqMEohziget2goubz3kGKYr4VM4yxEVr7S5kBdF+RYIHGEgLa
-         5Iy9lZVdv829aDY/zhim2puVp+yFPwkLE6YOhne21L9djr2RUeZuBgfPXQwBQBAVGhdP
-         lRODxNfI4KRrOUu/BtzDsdts9zaJ2whYXAQk9HTEZ5Jnr7f5g1hvwJMp7pl0w3e0TTUL
-         d2pANmlNRqGnOtGP1QM2BJvbd6vPP1qy1bxT5tNG9+QQxGcSf9UV0007YheOBHEZkn6x
-         SPdQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/9/JEfyeVvXPulJoe6wfMF+6Q/pba2GZK8yoyU5M2PQ=;
+        b=XF5piBpF65qi3mgVVI3xtGW3B8rthQem0Ar1PmIYUFny4yiqbYzpPJekDkscyO3V5J
+         QtVMqchX1Nn3gfT9oguOijVF9BXdO1V8za8tsOG/Ww086N+4eEPgdnVX8Tg7I5simNdq
+         z/ddjv1QmUb7ET64uMa3CxU8AM5kjJDZ2QsCHxITVT3VCErQg9h+5v1S2zO45NOL6Cah
+         Id24usY2+/QAyElxigEBdT+/16GLkODHAOs8jQKrZs4fbzoqlXLjH7JqQ0/YtrwLj8F/
+         yfUetiFCua+4iKwo+QHEzGqwrbIIT0FwI/vzUFt1Qe92bea+nhJUrbQUuoNYtpgf17Bd
+         CgEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=abrGFb5Z0J48VjjKlVpgG6k2o9tGWZkHPGQ3DWMV9Co=;
-        b=eOid30DpmFWToXci2zFjszbFzJ/8GjvpDhvgzA6dPvnOcA55+0bDHb6HSJFgLrewhJ
-         rr5b3onUy98+e3KFGeCWFnLfUZTLJk/33fyuS+d4fyz7UVXmr3Sdu2JxFuqF5whtaTa2
-         N0nhjmjV/ou4jaF1Xwr5VOynchE4RdYlMbd1ubnAh4/1gyfwdOV7FH5oKcp5O6o1Kv8n
-         nDUYL3dAcCrL9TTccxOHwsLW7/h/UO6E0k/69KEuF53WVE+z0aWqkDmUSgEu3E06zL/R
-         f3AcyXX+mp4bLaJS4oNGU4C61g2XkYKNi5pY8OKoE0nV5Hc0DPOu6FZSTU0cRmmZMOhS
-         q68A==
-X-Gm-Message-State: AOAM530b8636UB3/8YrRGTKbkqksMwTKb70bjmVuW19r8XrWZdHupmpl
-        Uyb6DT3iUzHzNLOWOvlmLPY=
-X-Google-Smtp-Source: ABdhPJxKpN9puFqVmtWPSWskekDRrRKyjO+qi7DcM2EOGfVNcg1h7/YT2hszcJ7N8YfB3UNh78cKLQ==
-X-Received: by 2002:a65:53cc:: with SMTP id z12mr9071134pgr.333.1602383334387;
-        Sat, 10 Oct 2020 19:28:54 -0700 (PDT)
-Received: from [192.168.1.3] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.gmail.com with ESMTPSA id o23sm17936124pjw.32.2020.10.10.19.28.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 10 Oct 2020 19:28:53 -0700 (PDT)
-To:     Kurt Kanzenbach <kurt@kmk-computers.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, kurt@linutronix.de
-References: <20201010164627.9309-1-kurt@kmk-computers.de>
- <20201010164627.9309-2-kurt@kmk-computers.de>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH net-next 1/2] dt-bindings: net: dsa: b53: Add YAML
- bindings
-Message-ID: <3249c764-ec4a-26be-a52d-e9e85f3162ea@gmail.com>
-Date:   Sat, 10 Oct 2020 19:28:51 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.3.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/9/JEfyeVvXPulJoe6wfMF+6Q/pba2GZK8yoyU5M2PQ=;
+        b=bD+JRJS23JvLUab/XXbT2Y9MI4O5dd4WlMPMR5zdjuPNhWJsQAVN8J6M6OAzqVV80H
+         NBgvwkXFFOvAUC8QJrNoBBO/7fekuLrALyxLDSijerXyaSrsAh1uPPTDDBakDhjPWxnv
+         Slz98jvOH7W0wPaVtrUtenc2nbpKQFEw3DHf/rowcBt8Nq2jhzvh5eEMDK1DjbMia5xd
+         JiXpqjNxX6WjZ5XghuCF6T5a6rGUiiY+k3YT+7L/Q7zHW8YXif+TzwdwtbCSuAOUpj8x
+         Q8liZRwRB9sX3WGiwZ5kbVZe8h1wSPXCPHZd3pTsylkYqIVVEEPjf+JmSOz9BZubVLkr
+         RN1Q==
+X-Gm-Message-State: AOAM533H2YALLCd4oXNCxvVUmnLOFv+dAWJIJDDNBGQILi2LhDpGB7Lq
+        1YwNa378iMgdmTEfOqadRcOz2waqAstTIxyj/X4=
+X-Google-Smtp-Source: ABdhPJy6dS6jIH1eeMgDfSpzgHEghJG5Nk+s5nPTcekRVBhswah+vuaWnR2bHZRscjbHO6qNaWCcelt3i0Puu8F1pS0=
+X-Received: by 2002:a62:6383:0:b029:151:3ddb:a126 with SMTP id
+ x125-20020a6263830000b02901513ddba126mr18606668pfb.4.1602388551898; Sat, 10
+ Oct 2020 20:55:51 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20201010164627.9309-2-kurt@kmk-computers.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20201008012154.11149-1-xiyou.wangcong@gmail.com>
+ <CA+FuTSeMYFh3tY9cJN6h02E+r3BST=w74+pD=zraLXsmJTLZXA@mail.gmail.com>
+ <CAM_iQpWCR84sD6dZBforgt4cg-Jya91D6EynDo2y2sC7vi-vMg@mail.gmail.com>
+ <CA+FuTSdKa1Q36ONbsGOMqXDCUiiDNsA6rkqyrzB+eXJj=MyRKA@mail.gmail.com>
+ <CAJht_ENnmYRh-RomBodJE0HoFzaLQhD+DKEu2WWST+B43JxWcQ@mail.gmail.com>
+ <CA+FuTSdWYDs5u+3VzpTA1-Xs1OiVzv8QiKGTH4GUYrvXFfGT_A@mail.gmail.com>
+ <CAJht_ENMFY_HwaJDjvxZbQgcDv7btC+bU6gzdjyddY-JS=a6Lg@mail.gmail.com>
+ <CA+FuTScizeZC-ndVvXj4VyArth2gnxoh3kTSoe5awGoiFXtkBA@mail.gmail.com>
+ <CAJht_ENmrPbhfPaD5kkiDVWQsvA_LRndPiCMrS9zdje6sVPk=g@mail.gmail.com>
+ <CA+FuTSfhDgn-Qej4HOY-kYWSy8pUsnafMk=ozwtYGfS4W2DNuA@mail.gmail.com>
+ <CAJht_ENxoAyUOoiHSbFXEZ6Jf2xqfOmYfQ6Sh-hfmTUk-kTrfQ@mail.gmail.com>
+ <CAJht_EOMQRKWfwhfqwXB3RYA1h463q43ycNjJmaGZm6RS65QGA@mail.gmail.com>
+ <CAM_iQpWRftQkOfgfMACNR_5YZxvzLJH1aMtmZNj7nJH_Wu-NRw@mail.gmail.com>
+ <CAJht_ENnYyXbOxtPHD9GHB92U4uonKO_oRZ82g2OR2DaFZ7bBQ@mail.gmail.com>
+ <CAJht_EPVyc0uAZc914E3tdgqEc7tDabpAxnBsGrRRFecc+NMwg@mail.gmail.com>
+ <CAM_iQpU1hU0Wg9sdTwFAG17Gk4-85+=xvZdQeb3oswhBKtAsPA@mail.gmail.com>
+ <CAM_iQpVhrFZ4DWg9btEpS9+s0QX-b=eSkJJWzPr_KUV-TEkrQw@mail.gmail.com>
+ <CAJht_EO99yYQeUPUFR-qvWwrpZQfXToUu6x7LBS+0yhqiYg_XQ@mail.gmail.com>
+ <CAM_iQpX0zjZUDE_iuf4WWXiodwb2UpqyjjQPYrfD0CMXnMSymQ@mail.gmail.com> <CAJht_EPQ8OXUeRxn7Q2AU9NsEuFB14Vs8Q0xBs-j9ka36RUVWQ@mail.gmail.com>
+In-Reply-To: <CAJht_EPQ8OXUeRxn7Q2AU9NsEuFB14Vs8Q0xBs-j9ka36RUVWQ@mail.gmail.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Sat, 10 Oct 2020 20:55:41 -0700
+Message-ID: <CAJht_EMo4bpzv_T0G5xx6t=dr4HgyTPHtk+m_NyMqEmAD5uo3A@mail.gmail.com>
+Subject: Re: [Patch net] ip_gre: set dev->hard_header_len properly
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        syzbot <syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com>,
+        William Tu <u9012063@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Oct 10, 2020 at 2:49 PM Xie He <xie.he.0141@gmail.com> wrote:
+>
+> Another reason why tunnel devices usually don't provide
+> header_ops->create might be to keep consistency with TAP devices. TAP
+> devices are just like tunnel (TUN) devices except that they use an
+> additional Ethernet header after the tunnel headers. I guess that TAP
+> devices would usually use Ethernet's header_ops to expose only the
+> Ethernet header to the user, but hide the outer tunnel headers from
+> the user and let them be constructed on the transmission path (so that
+> TAP devices would appear exactly like Ethernet devices). If we want to
+> keep TUN devices consistent with TAP devices, we should hide the
+> tunnel headers from the user for TUN devices, too.
 
+Actually there's a "Universal TUN/TAP driver" in the kernel, which
+passes L3 packets or Ethernet frames (that are being sent) back to the
+user space and lets a user space program add the tunnel headers.
 
-On 10/10/2020 9:46 AM, Kurt Kanzenbach wrote:
-> Convert the b53 DSA device tree bindings to YAML in order to allow
-> for automatic checking and such.
-> 
-> Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
-> Signed-off-by: Kurt Kanzenbach <kurt@kmk-computers.de>
+https://www.kernel.org/doc/Documentation/networking/tuntap.rst
 
-Thanks for making this change, there are quite a few warnings that are 
-going to show up because the binding was defined in a way that it would 
-define chip compatible strings, which not all DTS files are using. I 
-don't know if Rob would be comfortable with taking this until we resolve 
-all warnings first.
--- 
-Florian
+In this case, we are not able to construct the tunnel headers until we
+pass the packets / Ethernet frames back to the user space to the user
+space program. We can only hide the tunnel headers.
+
+To keep other TUN/TAP devices in the kernel consistent with the
+"Universal TUN/TAP driver", we should hide the tunnel headers from the
+user for those devices, too.
+
+> Actually, a lot of devices expose a fake L2 header in header_ops,
+> instead of their real L2 header anyway. Wi-Fi devices usually pretend
+> to be Ethernet devices and expose an Ethernet header in header_ops. So
+> I think it is acceptable to not expose the real L2 header in
+> header_ops. (This is also what needed_headroom is created for - to
+> request additional header space for headers not exposed in
+> header_ops.)
