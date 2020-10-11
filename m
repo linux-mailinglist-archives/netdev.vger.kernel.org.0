@@ -2,144 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAB6428A572
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 06:43:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73E6428A5B5
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 07:09:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725802AbgJKEnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 00:43:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38184 "EHLO
+        id S1726273AbgJKFJC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 01:09:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725882AbgJKEnO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 00:43:14 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5966EC0613D0
-        for <netdev@vger.kernel.org>; Sat, 10 Oct 2020 21:43:14 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id n9so10857993pgf.9
-        for <netdev@vger.kernel.org>; Sat, 10 Oct 2020 21:43:14 -0700 (PDT)
+        with ESMTP id S1725882AbgJKFJC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 01:09:02 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F16F7C0613CE;
+        Sat, 10 Oct 2020 22:09:01 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id d20so14355839iop.10;
+        Sat, 10 Oct 2020 22:09:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TW9KMm6OrgwSQSQ2ZasuwFiv2daX2uTGOG3qcoUMv5w=;
-        b=AnJ2qoD5K4gRsDV2GJqxk0P/F2E7jo8rtGu952jzmVjnBt2KP9bl3aJ9JTFYGg7rqR
-         SetWwDLPKamShb8Gwhchi78tPzG491wTQ4L/NdMLdd7bgL9/koS1faeeDbJH7HUjmO0L
-         2wO5oym9VV5mc8kQB0OYBN97GqdTqlZ6dyniakEy4obZPAXAf5w6redGYXQuYQD7vQ1t
-         Mz0by5XxDlUiaD4z1KZFMaMLyc86ETL6ks6p/zjkXpmix0MvTummVGOamE17jD2RlBTx
-         qYNf8xEl39T7D879PWYx6fO0ImO2wg/s1cVCK/yj2N5kLY15fBJtTKalwrrL4oiY1wiS
-         2BBg==
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:date:message-id:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=TTLjJ4M65NXNwBuWUHISV2u6iuMr/6vLuZHwjECtuNA=;
+        b=Wg18mjEvZDPXnDah10+dwkSC6HXYb5vCluBUu+yuc/cYZEmzrB7r3C7HxXT3p6EkF8
+         vS63X+taifRqL3edCskHOY72tMXLkRAlPG8PoqLk/YcWD0zYoO01LPTGlPoQVUuwu6lR
+         kaDdIDe8qqvr5qfKR4YLYVnUAvZdFjdXQuCvj3QztDFG8jwl943CFA9RdsZSugXOhUXX
+         J65vIa29ZHFvao7fm2mO2YI6Y4O/FiAvn32lLlMwMrdEUvrpMG12SaD/xiw0cJTcLhC2
+         hwCzF2DkQjged14epJ7y2FrezZQ6jdWNloxusOMTVAJfmz1e+53aglOQBGzsWUrOAitQ
+         HiqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TW9KMm6OrgwSQSQ2ZasuwFiv2daX2uTGOG3qcoUMv5w=;
-        b=IwPs+E8S33IdnhzyP1UALEFWTwL11dte4xeeoCdpu1fM3eH3nHDlV7NnxlPiUwMUa0
-         Ymeeu3M2J93UNudSq+p20IvRDA5Q7sGf2yhG6REqOJNnzvoAdyGBBWPpf/z7vBWLZuno
-         N5LaHokZSLpDK2FagROyjZ0jGjnYwxBquj2onu4qhAXDm3vLFDFP+J0MStbkYI0953G4
-         kRwRFWaZGWwHlZE3lz/ZYiSW2964nQgJo9eQNdRHwZ+tkIGxvlB4liADzQlofS9fZnUb
-         pCYtfdLtQzb2hVzDnHQ3omn3LyTLUI3GRBbISeSvYp0hMbB4EBW88E7vPwardzppCxIJ
-         0D+Q==
-X-Gm-Message-State: AOAM531BmTiRgGPdqjXPppaczBww63tz4ZzMMNY/aJCPssx+fxpuvOf3
-        KrQQ8+Mb/VjwVD80XUihOI2Z9R4pd93L2CTzCfsWfg==
-X-Google-Smtp-Source: ABdhPJyX5zE5edIE4wAqcFOL3tIX1HCwgBxHGADIZGwbL/1HpgjGMf2Sb1l/deaG+f2s3p39mIbnOHH/kLvxzOrAV+E=
-X-Received: by 2002:a17:90a:890f:: with SMTP id u15mr13407412pjn.147.1602391393656;
- Sat, 10 Oct 2020 21:43:13 -0700 (PDT)
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=TTLjJ4M65NXNwBuWUHISV2u6iuMr/6vLuZHwjECtuNA=;
+        b=G3bJhOpxieU+9it/1bVLjWC6gB0kUo16D4r9bhFem5V3/eWvDcQiq7FVD59l1JauLm
+         +K9uqRIDpbDjJ1jWLon7QzwOKx7sGm2YpcyrmIWFJgH9zOjMlcV5CpT4se/ozCJBu0n+
+         v5tSmchZDSuBDQAQElyabTELT8x71xUaEyvT/Bb8O5d4sonq4DskN0RJ1jc/bqg0uNoa
+         tTmIeurrQw7oWhS8La5SAfSb1o7VtBaoPpRZcMlos6IcdBkTsEyuzfcQTLOeCjTvlHSl
+         GopQkx44Ah5vChde7QalV8U3JLIIkVIWWfnj99FXXEzT6uz2VchKfLacHK/f/fhM0jiO
+         J7kg==
+X-Gm-Message-State: AOAM531szhl1yrsJ/NGiBz1fC/mIc23G7QQA6uh9fglwyuTGHHfTqqjQ
+        fJUr4RgDPRp08qyyH+gq4tc=
+X-Google-Smtp-Source: ABdhPJz51xOp5egqyA05mE7x5e2OIPf3OX6v7gFLWBhZT3Yzt6uhTfTfUUrr6SJ/ZGx4+HkCUMQ8/g==
+X-Received: by 2002:a6b:3f88:: with SMTP id m130mr13516197ioa.78.1602392941239;
+        Sat, 10 Oct 2020 22:09:01 -0700 (PDT)
+Received: from [127.0.1.1] ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id b2sm6774730ila.62.2020.10.10.22.08.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 10 Oct 2020 22:09:00 -0700 (PDT)
+Subject: [bpf-next PATCH 0/4] bpf, sockmap: allow verdict only sk_skb progs
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     john.fastabend@gmail.com, alexei.starovoitov@gmail.com,
+        daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, jakub@cloudflare.com,
+        lmb@cloudflare.com
+Date:   Sat, 10 Oct 2020 22:08:29 -0700
+Message-ID: <160239226775.8495.15389345509643354423.stgit@john-Precision-5820-Tower>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-References: <20201010103854.66746-1-songmuchun@bytedance.com> <f6dfa37f-5991-3e96-93b8-737f60128151@infradead.org>
-In-Reply-To: <f6dfa37f-5991-3e96-93b8-737f60128151@infradead.org>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Sun, 11 Oct 2020 12:42:37 +0800
-Message-ID: <CAMZfGtWo0m+6zxG-XWh5fxcV3d4k77P-e37ZAj1f5oDhvZGqUQ@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH] mm: proc: add Sock to /proc/meminfo
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, rafael@kernel.org,
-        mst@redhat.com, jasowang@redhat.com,
-        David Miller <davem@davemloft.net>, kuba@kernel.org,
-        adobriyan@gmail.com, Andrew Morton <akpm@linux-foundation.org>,
-        Eric Dumazet <edumazet@google.com>, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, steffen.klassert@secunet.com,
-        herbert@gondor.apana.org.au, Shakeel Butt <shakeelb@google.com>,
-        Will Deacon <will@kernel.org>, Michal Hocko <mhocko@suse.com>,
-        Roman Gushchin <guro@fb.com>, neilb@suse.de, rppt@kernel.org,
-        Sami Tolvanen <samitolvanen@google.com>,
-        kirill.shutemov@linux.intel.com, feng.tang@intel.com,
-        pabeni@redhat.com, Willem de Bruijn <willemb@google.com>,
-        fw@strlen.de, gustavoars@kernel.org, pablo@netfilter.org,
-        decui@microsoft.com, jakub@cloudflare.com,
-        Peter Zijlstra <peterz@infradead.org>,
-        christian.brauner@ubuntu.com, ebiederm@xmission.com,
-        Thomas Gleixner <tglx@linutronix.de>, dave@stgolabs.net,
-        Michel Lespinasse <walken@google.com>,
-        Jann Horn <jannh@google.com>, chenqiwu@xiaomi.com,
-        christophe.leroy@c-s.fr, minchan@kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, linmiaohe@huawei.com,
-        Kees Cook <keescook@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Networking <netdev@vger.kernel.org>,
-        linux-fsdevel@vger.kernel.org,
-        Linux Memory Management List <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 11, 2020 at 12:37 AM Randy Dunlap <rdunlap@infradead.org> wrote:
->
-> Hi,
->
-> On 10/10/20 3:38 AM, Muchun Song wrote:
-> > The amount of memory allocated to sockets buffer can become significant.
-> > However, we do not display the amount of memory consumed by sockets
-> > buffer. In this case, knowing where the memory is consumed by the kernel
-> > is very difficult. On our server with 500GB RAM, sometimes we can see
-> > 25GB disappear through /proc/meminfo. After our analysis, we found the
-> > following memory allocation path which consumes the memory with page_owner
-> > enabled.
-> >
-> >   849698 times:
-> >   Page allocated via order 3, mask 0x4052c0(GFP_NOWAIT|__GFP_IO|__GFP_FS|__GFP_NOWARN|__GFP_NORETRY|__GFP_COMP)
-> >    __alloc_pages_nodemask+0x11d/0x290
-> >    skb_page_frag_refill+0x68/0xf0
-> >    sk_page_frag_refill+0x19/0x70
-> >    tcp_sendmsg_locked+0x2f4/0xd10
-> >    tcp_sendmsg+0x29/0xa0
-> >    sock_sendmsg+0x30/0x40
-> >    sock_write_iter+0x8f/0x100
-> >    __vfs_write+0x10b/0x190
-> >    vfs_write+0xb0/0x190
-> >    ksys_write+0x5a/0xd0
-> >    do_syscall_64+0x5d/0x110
-> >    entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> >
-> > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
-> > ---
-> >  drivers/base/node.c      |  2 ++
-> >  drivers/net/virtio_net.c |  3 +--
-> >  fs/proc/meminfo.c        |  1 +
-> >  include/linux/mmzone.h   |  1 +
-> >  include/linux/skbuff.h   | 43 ++++++++++++++++++++++++++++++++++++++--
-> >  kernel/exit.c            |  3 +--
-> >  mm/page_alloc.c          |  7 +++++--
-> >  mm/vmstat.c              |  1 +
-> >  net/core/sock.c          |  8 ++++----
-> >  net/ipv4/tcp.c           |  3 +--
-> >  net/xfrm/xfrm_state.c    |  3 +--
-> >  11 files changed, 59 insertions(+), 16 deletions(-)
->
-> Thanks for finding that.
->
-> Please update Documentation/filesystems/proc.rst "meminfo" section also.
+This allows a sockmap sk_skb verdict programs to run without a parser. For
+some use cases, such as verdict program that support streaming data or a
+l3/l4 proxy that does not use data in packet, loading the nop parser
+'return skb->len' is an extra unnecessary complexity. With this series we
+simply call the verdict program directly from data_ready instead of
+bouncing through the strparser logic.
 
-Will do. Thanks for your suggestions.
+Patches 1,2 do the lifting on the sockmap side then patches 3,4 add the
+selftests.
 
->
-> --
-> ~Randy
->
+This applies on top of the series here,
+
+  sockmap/sk_skb program memory acct fixes 
+  https://patchwork.ozlabs.org/project/netdev/list/?series=206975
+
+it will apply without the above series cleanly, but will have an incorrect
+memory accounting causing a failure in ./test_sockmap. I could have left
+it so the series passed without above series, but it seemed odd to have
+it out there and then require yet another patch to fix it up here.
+
+Thanks.
+
+---
+
+John Fastabend (4):
+      bpf, sockmap: check skb_verdict and skb_parser programs explicitly
+      bpf, sockmap: Allow skipping sk_skb parser program
+      bpf, selftests: Add option to test_sockmap to omit adding parser program
+      bpf, selftests: Add three new sockmap tests for verdict only programs
 
 
--- 
-Yours,
-Muchun
+ include/linux/skmsg.h                      |    2 +
+ net/core/skmsg.c                           |   78 ++++++++++++++++++++++++++++
+ net/core/sock_map.c                        |   37 ++++++++-----
+ tools/testing/selftests/bpf/test_sockmap.c |   54 ++++++++++++++-----
+ 4 files changed, 142 insertions(+), 29 deletions(-)
+
+--
+Signature
