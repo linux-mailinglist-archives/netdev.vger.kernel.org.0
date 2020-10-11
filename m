@@ -2,115 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87E6D28A658
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 10:32:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2ECD28A65C
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 10:34:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729307AbgJKIcd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 04:32:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45252 "EHLO
+        id S1728561AbgJKIem (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 04:34:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726441AbgJKIcc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 04:32:32 -0400
-Received: from wp003.webpack.hosteurope.de (wp003.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:840a::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4441DC0613CE;
-        Sun, 11 Oct 2020 01:32:31 -0700 (PDT)
-Received: from p548da7b6.dip0.t-ipconnect.de ([84.141.167.182] helo=kmk0); authenticated
-        by wp003.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        id 1kRWm5-0008An-OQ; Sun, 11 Oct 2020 10:32:13 +0200
-From:   Kurt Kanzenbach <kurt@kmk-computers.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, kurt@linutronix.de
-Subject: Re: [PATCH net-next 1/2] dt-bindings: net: dsa: b53: Add YAML bindings
-In-Reply-To: <3249c764-ec4a-26be-a52d-e9e85f3162ea@gmail.com>
-References: <20201010164627.9309-1-kurt@kmk-computers.de>
- <20201010164627.9309-2-kurt@kmk-computers.de>
- <3249c764-ec4a-26be-a52d-e9e85f3162ea@gmail.com>
-Date:   Sun, 11 Oct 2020 10:32:02 +0200
-Message-ID: <877drxp3i5.fsf@kmk-computers.de>
+        with ESMTP id S1726070AbgJKIem (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 04:34:42 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21CCBC0613CE
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 01:34:42 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id k6so14610777ior.2
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 01:34:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=Kkztf4HxjBe3jVjhLu26l4MxkoXgID/MrQDwZTuaaS8=;
+        b=a8EObZXXtXER9ElnYHp+exUq37jpFXWVXfEbBhZY7RTn50VQrnjhJeDQwlxRWBgHwx
+         MU+45VAiSex4PUl43mynyQLZ5UqVJOxlrIClYk3lRMNPGeIyBgGpHYNOuaPuxjj0hNpO
+         /TdrYyvpc4ulxM3Hp4/hYT8VdN54+8Y6lMbVuai2JSPF9+33dhjDMv7OOwr5H534pRWA
+         I3oj6hmz5J+Pg0ytgM/926nvy88SXyoQmzkljtlxVrzKlSm2+pQcKRVs8OTRTvRLh3GO
+         Io6xCBOAIvpf2jfdqzp2z0FrE645sx6wSIkyc8Qo1fqBaDPfrHUD3AaiVE2escITYMs0
+         yhsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=Kkztf4HxjBe3jVjhLu26l4MxkoXgID/MrQDwZTuaaS8=;
+        b=T6M4vpPLZnQrH1BL3Bk931Z0cyJ6/9fJjunKEmcGMl3yfOXUlSxNfYeYQAYrsewTwH
+         2avESvtlX5/jVGtnv1pbTxfwwJG3LWvqg0IDizL9Vz3OlpQgK8GORmg087BvrH/gia1O
+         CmTb7J43bnXRMO0Kg/Xb855HfkrySIQCusX456+2hn9Ei6bt8ZAUsnbjAVEU4Og5fXCA
+         6Ro7FYV0xXZKlW9WqPE9TWLD/QjWgmUhfHF811ViuBAJG4FKsSOhKrqKfTxrYKmPMF+e
+         NLAikqabUwk9kDIbLWJgD53iL/lTxRcYMOpIUo5W+m6EW+EE02nm5G/NnK3CUp4nXrc5
+         F4nw==
+X-Gm-Message-State: AOAM530kw5swEtAEyMaUhHA3OeRjf/cTVJc0sDtU9bZWcn6Lc+SyyVsr
+        OPurgDwJN4NW8HJHvGvWGsp+zVlg6PXIqR/ntEI8GJSTfTFRuw==
+X-Google-Smtp-Source: ABdhPJwiqPAHlose+i4/3qbZI22ZipPtKsNO0gzvYVmDYt00aMig4vfqHxeyHStnGA5v3Bcc7OVWg9y11l5C9StUpZ4=
+X-Received: by 2002:a05:6602:2fc2:: with SMTP id v2mr5019617iow.19.1602405281219;
+ Sun, 11 Oct 2020 01:34:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha256; protocol="application/pgp-signature"
-X-bounce-key: webpack.hosteurope.de;kurt@kmk-computers.de;1602405151;c918a955;
-X-HE-SMSGID: 1kRWm5-0008An-OQ
+From:   Thayne <astrothayne@gmail.com>
+Date:   Sun, 11 Oct 2020 02:34:30 -0600
+Message-ID: <CALbpH+jhmunBMrBCf6L9US7xtOB-U-UZ4W2nuM5Dzz86vRqXVQ@mail.gmail.com>
+Subject: [PATCH] Add documentation of fiter syntax to ss manpage
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+Since the documentation currently referenced in the manpage no longer
+exists.
+---
+ man/man8/ss.8 | 75 ++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 74 insertions(+), 1 deletion(-)
 
-On Sat Oct 10 2020, Florian Fainelli wrote:
-> On 10/10/2020 9:46 AM, Kurt Kanzenbach wrote:
->> Convert the b53 DSA device tree bindings to YAML in order to allow
->> for automatic checking and such.
->>=20
->> Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
->> Signed-off-by: Kurt Kanzenbach <kurt@kmk-computers.de>
->
-> Thanks for making this change, there are quite a few warnings that are=20
-> going to show up because the binding was defined in a way that it would=20
-> define chip compatible strings, which not all DTS files are using.
+diff --git a/man/man8/ss.8 b/man/man8/ss.8
+index 3b2559ff..f9e629f6 100644
+--- a/man/man8/ss.8
++++ b/man/man8/ss.8
+@@ -401,7 +401,7 @@ Read filter information from FILE.  Each line of
+FILE is interpreted
+ like single command line option. If FILE is - stdin is used.
+ .TP
+ .B FILTER := [ state STATE-FILTER ] [ EXPRESSION ]
+-Please take a look at the official documentation for details regarding filters.
++See below an explanation of STATE-FILTER and EXPRESSION.
 
-Oh, I didn't know there is a second make command for doing the actual
-check against the dtbs. I've just used `make dt_binding_check'.
+ .SH STATE-FILTER
 
-So, it seems like a lot of the errors are caused by the include files
-such as
+@@ -437,6 +437,79 @@ states except for
+ - opposite to
+ .B bucket
 
-[linux]/arch/arm/boot/dts/bcm5301x.dtsi
-
-	srab: srab@18007000 {
-		compatible =3D "brcm,bcm5301x-srab";
-		reg =3D <0x18007000 0x1000>;
-
-		status =3D "disabled";
-
-		/* ports are defined in board DTS */
-	};
-
-The nodename should be "switch" not "srab" as enforced by
-dsa.yaml. Furthermore, some DTS files are not adding the chip specific
-compatible strings and the ports leading to more errors.
-
-There are also some minor errors regarding the reg-names and such for
-specific instances.
-
-How should we proceed? Adding the missing compatible strings and ports
-to the DTS files? Or adjusting the include files?
-
-> I don't know if Rob would be comfortable with taking this until we
-> resolve all warnings first.
-
-Probably not. We should fix the existing device trees first.
-
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQJKBAEBCAA0FiEEiQLjxJIQcNxwU7Bj249qgr3OILkFAl+CwwIWHGt1cnRAa21r
-LWNvbXB1dGVycy5kZQAKCRDbj2qCvc4guTL2D/4/J9yKF/KUjL+XZvYUslqcMSwu
-HkoIg5d416nWzCbbJ1jyZRHdJeQspVOymcoE8plPjjoQl9MjT1nnFfXSCUiAybq+
-lAvxgP/Pj4GrInnRTIWynzvo+W6o5G0jJLrUWO5GdJdMQRqDpoy3SizLAfNk9q/W
-AsGo+7La3CwQAuZmyQ145NdsMph6uRuW8BxCzdwEI8PI44dMz6kUiSF1DKqJfdRl
-+56IrhOdUg6ST28ytwUdDlRvMLbPR9Q5BKxKxK6PYuee4M3O83VNyei5OUZ+mKzi
-qUvlT91EmciVqNGnDAM+R14mR5NfVZhvqyxp2YXhIMXlR9KDfLw8dBVypYnyOlkQ
-FFcYznTZcMzSMZDerZ61qw81ciXGLtrEyergSmOcpnPv9QodXTrSlPXQO7D/12rj
-O1b+mHB4anbJsCWUY03MUhCoPRKBKcVmYE2apnkMFTdRR1ogSgUPgcQ+dvbsBUlQ
-N4waVf500qbvJNNOawthiXGQYtzBjo6qaBX6utgbBX/rapLvYp1KffHJHTsoI4TV
-G/PjZDjnR+BxQVPdm2bX57t39fz6bFL/ZNIKq4HYrGlKyexqqEVcuHqE3vmAPAmB
-xsm1O3MdV4A6qBdxq2ctqM4mnMjjan1O+ROiUIeS6YjXg0Rc1/0MD0ZJPDtUF7mX
-4o/+xo7iSiPDKOnFVQ==
-=9iWY
------END PGP SIGNATURE-----
---=-=-=--
++.SH EXPRESSION
++
++The following simple expressions are supported:
++
++.TP
++.RB { \ src \ | \ dst \ } \ = \
+\fR[\fIFAMILY\fB:\fR][\fIADDRESS\fR][\fB:\fIPORT\fR]
++Matches if the source or destination matches the host condition.
++Providing FAMILY is equivalent to passing the family with the -f option.
++ADDRESS and PORT are the family specific address (or hostname) and port (or
++service name) to match against. At least one of ADDRESS and PORT should be
++provided. Additionally, "*" may be used as a wildcard for either ADDRESS or
++PORT. Note that for some families, PORT is meaningless.
++
++For inet and inet6 addresses, if the address is numeric (not a hostname) a
++bitmask can be provided in CIDR notation (ex. 127.0.0.0/16) to match a range of
++addresses. If the address is provided as a hostname, all addresses returned by
++DNS for that hostname will match. The inet or inet6 address may be enclosed in
++"[" and "]".
++.TP
++.RB { \ sport \ | \ dport \ } "\fI OP \fR[\fIFAMILY\fB:\fR][\fB:\fR]\fIPORT"
++Matches if the source or destination port matches the comparison with the
++supplied port.  FAMILY and PORT are the same as above.  OP can  be any of "=",
++"!=", "<", ">", "<=", or ">=".
++.TP
++.BR dev \ { \ = \ | \ != \ }  \fI\ DEV
++Matches if it is on the specified device (or not). The device can be specified
++either by name or by index.
++.TP
++.BR fwmark \ { \ = \ | \ != \ } \ \fIMARK-MASK
++Matches if the firewall mark matches the supplied mask (or not). The
+mask should
++be specified as an integer value optionally followed by a "/" and an integer
++mask. The integer may be hex-encoded if it begins with "0x" or "0X".
++.TP
++.BR cgroup \ { \ = \ | \ != \ } \ \fICGROUP
++Matches if it is part of the cgroup (or not).
++.B CGROUP
++should be the path for the desired cgroup.
++.TP
++.B autobound
++Matches if the local port is automatically bound (randomly assigned).
++
++.PP
++Each operator has equivalent aliases as follows:
++.IP
++"=" can be replaced with "==" or "eq"
++.IP
++"!=" can be replaced with "ne" or "neq"
++.IP
++">" can be replaced with "gt"
++.IP
++"<" can be replaced with "lt"
++.IP
++">=" can be replaced with "ge" or "geq"
++.IP
++"<=" can be replaced with "le" or "leq"
++
++Subexpressions can be combined into more complex expressions in the following
++ways:
++.TP
++.BI not \ EXPRESSION
++Negate the EXPRESSION. "!" can be used in place of of "not".
++.TP
++\fI EXPRESSION EXPRESSION \fR| \fIEXPRESSION \fBand \fIEXPRESSION
++Match only if both expressions match. "&" or "&&" can be used in
+place of "and".
++.TP
++.IB EXPRESSION \ or \ EXPRESSION
++Match if either expression matches. "|" or "||" can be used in place of "or".
++.TP
++.BI ( \ EXPRESSION \ )
++Group EXPRESSION to change precedence of the above operators. The default
++precedence is "not", "and", "or".
++
++
+ .SH USAGE EXAMPLES
+ .TP
+ .B ss -t -a
+-- 
+2.28.0
