@@ -2,83 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD3CE28AAF9
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 00:41:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D777B28AAFD
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 00:46:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387750AbgJKWly (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 18:41:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33132 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387717AbgJKWlx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 11 Oct 2020 18:41:53 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7F8FB2074A;
-        Sun, 11 Oct 2020 22:41:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602456113;
-        bh=KjfGjYsSnfWIwHrASEVqiRbvBtfZz9AkJ6pI70LmAbY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DXXI2vnw0yJuPJ+UvqE/MJmockTPIdo7j2X4VD6cjbrAv9qt0TDpFCu4E2diTbvCa
-         shuUVYDttC88i8EshqLCBbS7Pgnjatcg9oMtKR2Gt/ZosE3SnuV5Kkmq5YtSR7y6jw
-         Db1nukMbgdyTCNrBWKddb4xAZNlStmyMTtVuHomM=
-Date:   Sun, 11 Oct 2020 15:41:50 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        =?UTF-8?B?QmrDuHJu?= Mork <bjorn@mork.no>,
-        Oliver Neukum <oneukum@suse.com>,
-        Igor Mitsyanko <imitsyanko@quantenna.com>,
-        Sergey Matyukevich <geomatsi@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-rdma@vger.kernel.org,
-        Linux USB Mailing List <linux-usb@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net-next 00/12] net: add and use function
- dev_fetch_sw_netstats for fetching pcpu_sw_netstats
-Message-ID: <20201011154150.6cad3758@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1f1dceab-bab0-ff9e-dae6-ed35be504a9c@gmail.com>
-References: <a46f539e-a54d-7e92-0372-cd96bb280729@gmail.com>
-        <20201011151030.05ad88dd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <1f1dceab-bab0-ff9e-dae6-ed35be504a9c@gmail.com>
+        id S2387756AbgJKWqE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 18:46:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34426 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387717AbgJKWqE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 18:46:04 -0400
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738AEC0613CE
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 15:46:02 -0700 (PDT)
+Received: by mail-pf1-x42d.google.com with SMTP id e10so11763271pfj.1
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 15:46:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BAAAgGveWAxBCq3q++T6ZbUx+Nt0dHNHLu3JhI0mJco=;
+        b=IeEXzgLXEuAknduYCNJ2ZHMMshjsdMGsKvCJGlrN9se4Ix+t8579E6Guq1aGnRp6dW
+         JFS8zVKaZLNJC9AAEkYD7E94PDndScz5t0LGOTHz1XoLbtzLniyeNdtaVudoPJPQL4/x
+         aN9H6/PdRkudejEFDyIWpxmaOz4yTOZw2PzMetWcsZ0R9lfKDJT3WbGzJIw7i+rl7+Oc
+         0xsPc2jPu1qSQfpz5fom/4R0IaOVJMf/JoLir7lFSsIYL/71puZrx5w0NgjMfZvoc9ok
+         dIej1+xKxe6o/9j0AjCcigccjsXhHRin9Rob6A9Cni0IGMVP46w19FuQpa67UO2iNdh8
+         +5sA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BAAAgGveWAxBCq3q++T6ZbUx+Nt0dHNHLu3JhI0mJco=;
+        b=uIcQ8E/qPLrj1n4uTGlb9Q5FZA9xX3cxGVbibnEG7UUmqp04y+VUqxG0DqWvY0Mnlc
+         BKNlavnudOL0kLj56dR6ASIsE9QkFJa+PjrOkXGMCqkuNrB7rL+uxQiKRkdbQK+6r6xK
+         WNXzGXFviwjyXt8hMmoMFyjJFcE9njf/jOpzzz1hVlXUBRZQ6nN1N3sVCkFMwMLPW4S9
+         K89cnTPI3AmGTVfdzTnGv6ExrnF2PgElvyagZCounJlQxhyhevjuAaxKsFXRjezvy3oC
+         4NItSDRDRHzPNaaj4j9qyynf8jHVkmRsudTpYVyTWRwyg8X5wJEblVK1psUr7jcUia/D
+         rPBQ==
+X-Gm-Message-State: AOAM532askEoKABXlFJd7dBR19A6yWfbqF5L8Zs+xCvnl0Ft4IBkIQuE
+        oN6GmhNkNLDZ2wcOIw+v4sMU0CHsRGYI5qOwi0U=
+X-Google-Smtp-Source: ABdhPJytyFGAB28HnSUBW9JiQfOSIGsCBmfUMcraGeU4ZJ7/lhPimJZxroJjzfx6bcNDz7SVM13hxwyX4Inn0Ekoby0=
+X-Received: by 2002:a63:a55d:: with SMTP id r29mr10966397pgu.368.1602456361791;
+ Sun, 11 Oct 2020 15:46:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201011191129.991-1-xiyou.wangcong@gmail.com>
+In-Reply-To: <20201011191129.991-1-xiyou.wangcong@gmail.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Sun, 11 Oct 2020 15:45:50 -0700
+Message-ID: <CAJht_ENA9cfnU2bpjgFDZN=4QPwEJBs_59h_AoH5Sk=BasgZ4g@mail.gmail.com>
+Subject: Re: [Patch net v2] ip_gre: set dev->hard_header_len and
+ dev->needed_headroom properly
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzbot <syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com>,
+        William Tu <u9012063@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Oct 2020 00:29:52 +0200 Heiner Kallweit wrote:
-> On 12.10.2020 00:10, Jakub Kicinski wrote:
-> > On Sun, 11 Oct 2020 21:34:58 +0200 Heiner Kallweit wrote:  
-> >> In several places the same code is used to populate rtnl_link_stats64
-> >> fields with data from pcpu_sw_netstats. Therefore factor out this code
-> >> to a new function dev_fetch_sw_netstats().  
-> > 
-> > FWIW probably fine to convert nfp_repr_get_host_stats64() as well, just
-> > take out the drop counter and make it a separate atomic. If you're up
-> > for that.
-> >   
-> Looking at nfp_repr_get_host_stats64() I'm not sure why the authors
-> decided to add a 64bit tx drop counter, struct net_device_stats has
-> an unsigned long tx_dropped counter already. And that the number of
-> dropped tx packets exceeds 32bit (on 32bit systems) seems not very
-> likely.
+On Sun, Oct 11, 2020 at 12:11 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> @@ -626,8 +626,7 @@ static netdev_tx_t ipgre_xmit(struct sk_buff *skb,
+>
+>         if (dev->header_ops) {
+>                 /* Need space for new headers */
+> -               if (skb_cow_head(skb, dev->needed_headroom -
+> -                                     (tunnel->hlen + sizeof(struct iphdr))))
+> +               if (skb_cow_head(skb, dev->hard_header_len))
+>                         goto free_skb;
+>
+>                 tnl_params = (const struct iphdr *)skb->data;
 
-struct net_device::stats? That's not per-cpu.
-Or do you mean struct net_device::tx_dropped? That'd work nicely.
+As I understand, the skb_cow functions are for ensuring enough header
+space before skb->data. (Right?) However, at this stage our skb->data
+is already at the outer IP header, I think we don't need to request
+additional header space before the outer IP header.
