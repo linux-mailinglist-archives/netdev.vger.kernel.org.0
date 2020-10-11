@@ -2,242 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4416D28A6A1
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 11:24:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0822E28A6A5
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 11:24:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729117AbgJKJYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 05:24:38 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.166]:29979 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725863AbgJKJYh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 05:24:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1602408272;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=DfKaRLp+AGmYyZ/CoUkpWc0VbeX0Tcz66ERJD0eHyoU=;
-        b=Ds4HP0LJAIz3XAHfFoVXud2jqxXx9o4FXN1goPa1vmtHeYc2nPigGpu786L9tMJVZI
-        lcytc1qpi9LMScoYbArzTXoSN0iHw0HRy8fCdZ+ce5SYn7txwsqOloSiJygYNQ8kNmKl
-        53/VUWXE2/9qHk2vENJL9VMjIdyrW1Dr8QZaQe97Gafh6cxrbW24LugoKzip3TfpuSOf
-        vbM67R4ktqRuiKTIukC/W/ZoNa/hjjPmpR+9IqFd6dsTj9R39dwtKRziUyhkzU6MPb9M
-        ZZtdoTs3NrpnFNyKFgF3i3RdKYlhbSKknu6wRfC3ZPSjwkBBJKNNRQoa/sjvb47c3kvM
-        sEAQ==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjGrp7owjzFK3JbFk1mS5ke8I08fc+Yum5KVO"
-X-RZG-CLASS-ID: mo00
-Received: from silver.lan
-        by smtp.strato.de (RZmta 47.2.1 DYNA|AUTH)
-        with ESMTPSA id D0b41cw9B9ORMmf
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Sun, 11 Oct 2020 11:24:27 +0200 (CEST)
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-To:     kuba@kernel.org, netdev@vger.kernel.org
-Cc:     mkl@pengutronix.de, davem@davemloft.net, linux-can@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>
-Subject: [PATCH net-next v2 2/2] can: remove obsolete version strings
-Date:   Sun, 11 Oct 2020 11:24:08 +0200
-Message-Id: <20201011092408.1766-2-socketcan@hartkopp.net>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20201011092408.1766-1-socketcan@hartkopp.net>
-References: <20201011092408.1766-1-socketcan@hartkopp.net>
+        id S2387459AbgJKJYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 05:24:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53208 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725863AbgJKJYu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 05:24:50 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 958BFC0613CE;
+        Sun, 11 Oct 2020 02:24:49 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id dg9so11451329edb.12;
+        Sun, 11 Oct 2020 02:24:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=tH45RmioYS3HtwVDfkOZiUgyPKcw48joPJkjW+p/y2k=;
+        b=I4BNsrv8kdOI9zLwYOShUS1WC28NH3JI55NT2p/R4GoG25X77zYu41TfPUjpWfK6L6
+         CrN6+FYr6UsHfBU4nIA9q6XK+rrTxwC4FnJmbJI0rd1+7H2LHgBg5xpGA0iYB25niYES
+         FsQi5hJrI/bc+7I2jObKzCpJFmVJQtrehfT0Y2u72mJhg0vwaDFIdyPn2uIBTS7NJxEO
+         IHlwwgq6UNSg7WxdILIFu+16IHfzt+PXp+N021PMWPGl3eg9bxmyqtCUOJpa3TTBMq0A
+         m50PD5Nks8px8WuVvot4h3YfBFwasRL6kpgQn6xzaRNAKQmOn3tclYQ1dCyRzLg1y1/J
+         J38Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=tH45RmioYS3HtwVDfkOZiUgyPKcw48joPJkjW+p/y2k=;
+        b=mnkcH8P9qYZtfcMB8A4Ta9xIB7YAY26IuTJI8YZR040ui4RmqKlvnkJ1TgNGgM/YqX
+         6Xr6bRKEXHRECzpofe0J1Q+dZTA+sMnDLHfcWkIHv/FkrTl3eZ9d5wQpWX9Mnn+NPHOP
+         k6CPlEMeQaNBneK+fnPd/krynkeTS/iNckdxXf7mszwkDN6/3XnC97D7+/6nx6cxdoaS
+         p7F7OxlEXYjjSVVA3P8tT9EIPAiWgzzlFOjTY8jjFuoBmPHEonuZfpS8xfox+JDnvomF
+         ky6mzhzTNU0H96ZQmLVh6HPT8ZH+FtEvBx3N/JZ56Doo/pdKCYS2HGjsefSqvF0Y8tyg
+         afPg==
+X-Gm-Message-State: AOAM532xVZ6Ne28zXSUIriC/AHdZJdvFwZakDGxRfsMdPRKLGTtFtMJ/
+        Jg9rnvQFzkez14p6Eo+1XtjjYfOh5Hgdsg==
+X-Google-Smtp-Source: ABdhPJzyinaKYsOUUr1JqCSL+yUoSM495atqvyfqafzGj+nvUDOiolEyh+13nkTGbyhXnvqIykjMIg==
+X-Received: by 2002:aa7:c948:: with SMTP id h8mr6689859edt.171.1602408287443;
+        Sun, 11 Oct 2020 02:24:47 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f00:6a00:51b7:bf4f:604:7d3d? (p200300ea8f006a0051b7bf4f06047d3d.dip0.t-ipconnect.de. [2003:ea:8f00:6a00:51b7:bf4f:604:7d3d])
+        by smtp.googlemail.com with ESMTPSA id x2sm8855899edr.65.2020.10.11.02.24.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 11 Oct 2020 02:24:47 -0700 (PDT)
+Subject: Re: [PATCH] net: stmmac: Don't call _irqoff() with hardirqs enabled
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     John Keeping <john@metanate.com>, netdev@vger.kernel.org,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>
+References: <20201008162749.860521-1-john@metanate.com>
+ <8036d473-68bd-7ee7-e2e9-677ff4060bd3@gmail.com>
+ <20201009085805.65f9877a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <725ba7ca-0818-074b-c380-15abaa5d037b@gmail.com>
+ <070b2b87-f38c-088d-4aaf-12045dbd92f7@gmail.com>
+ <20201010082248.22cc7656@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <c73866a9-2ee8-b549-f578-75d62b9263b4@gmail.com>
+Date:   Sun, 11 Oct 2020 11:24:41 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201010082248.22cc7656@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As pointed out by Jakub Kicinski here:
-http://lore.kernel.org/r/20201009175751.5c54097f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com
-this patch removes the obsolete version information of the different
-CAN protocols and the AF_CAN core module.
+On 10.10.2020 17:22, Jakub Kicinski wrote:
+> On Sat, 10 Oct 2020 15:08:15 +0200 Heiner Kallweit wrote:
+>> On 09.10.2020 18:06, Heiner Kallweit wrote:
+>>> On 09.10.2020 17:58, Jakub Kicinski wrote:  
+>>>> On Fri, 9 Oct 2020 16:54:06 +0200 Heiner Kallweit wrote:  
+>>>>> I'm thinking about a __napi_schedule version that disables hard irq's
+>>>>> conditionally, based on variable force_irqthreads, exported by the irq
+>>>>> subsystem. This would allow to behave correctly with threadirqs set,
+>>>>> whilst not loosing the _irqoff benefit with threadirqs unset.
+>>>>> Let me come up with a proposal.  
+>>>>
+>>>> I think you'd need to make napi_schedule_irqoff() behave like that,
+>>>> right?  Are there any uses of napi_schedule_irqoff() that are disabling
+>>>> irqs and not just running from an irq handler?
+>>>>  
+>>> Right, the best approach depends on the answer to the latter question.
+>>> I didn't check this yet, therefore I described the least intrusive approach.
+>>>   
+>>
+>> With some help from coccinelle I identified the following functions that
+>> call napi_schedule_irqoff() or __napi_schedule_irqoff() and do not run
+>> from an irq handler (at least not at the first glance).
+>>
+>> dpaa2_caam_fqdan_cb
+>> qede_simd_fp_handler
+>> mlx4_en_rx_irq
+>> mlx4_en_tx_irq
+> 
+> Don't know the others but FWIW the mlx4 ones run from an IRQ handler,
+> AFAICT:
+> 
+> static irqreturn_t mlx4_interrupt(int irq, void *dev_ptr)
+> static irqreturn_t mlx4_msi_x_interrupt(int irq, void *eq_ptr)
+>   mlx4_eq_int()
+>     mlx4_cq_completion
+>       cq->comp()
+> 
+>> qeth_qdio_poll
+>> netvsc_channel_cb
+>> napi_watchdog
+> 
+> This one runs from a hrtimer, which I believe will be a hard irq
+> context on anything but RT. I could be wrong.
+> 
 
-Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
----
- include/linux/can/core.h |  7 -------
- include/net/netns/can.h  |  1 -
- net/can/af_can.c         |  2 +-
- net/can/bcm.c            |  4 +---
- net/can/gw.c             |  4 +---
- net/can/isotp.c          |  4 +---
- net/can/proc.c           | 12 ------------
- net/can/raw.c            |  4 +---
- 8 files changed, 5 insertions(+), 33 deletions(-)
-
-diff --git a/include/linux/can/core.h b/include/linux/can/core.h
-index 7da9f1f82e8e..5fb8d0e3f9c1 100644
---- a/include/linux/can/core.h
-+++ b/include/linux/can/core.h
-@@ -18,13 +18,6 @@
- #include <linux/skbuff.h>
- #include <linux/netdevice.h>
- 
--#define CAN_VERSION "20170425"
--
--/* increment this number each time you change some user-space interface */
--#define CAN_ABI_VERSION "9"
--
--#define CAN_VERSION_STRING "rev " CAN_VERSION " abi " CAN_ABI_VERSION
--
- #define DNAME(dev) ((dev) ? (dev)->name : "any")
- 
- /**
-diff --git a/include/net/netns/can.h b/include/net/netns/can.h
-index b6ab7d1530d7..52fbd8291a96 100644
---- a/include/net/netns/can.h
-+++ b/include/net/netns/can.h
-@@ -15,7 +15,6 @@ struct can_rcv_lists_stats;
- struct netns_can {
- #if IS_ENABLED(CONFIG_PROC_FS)
- 	struct proc_dir_entry *proc_dir;
--	struct proc_dir_entry *pde_version;
- 	struct proc_dir_entry *pde_stats;
- 	struct proc_dir_entry *pde_reset_stats;
- 	struct proc_dir_entry *pde_rcvlist_all;
-diff --git a/net/can/af_can.c b/net/can/af_can.c
-index b7d0f6500893..6373ab9c5507 100644
---- a/net/can/af_can.c
-+++ b/net/can/af_can.c
-@@ -875,7 +875,7 @@ static __init int can_init(void)
- 		     offsetof(struct can_frame, data) !=
- 		     offsetof(struct canfd_frame, data));
- 
--	pr_info("can: controller area network core (" CAN_VERSION_STRING ")\n");
-+	pr_info("can: controller area network core\n");
- 
- 	rcv_cache = kmem_cache_create("can_receiver", sizeof(struct receiver),
- 				      0, 0, NULL);
-diff --git a/net/can/bcm.c b/net/can/bcm.c
-index 4253915800e6..0e5c37be4a2b 100644
---- a/net/can/bcm.c
-+++ b/net/can/bcm.c
-@@ -81,8 +81,6 @@
- 		     (CAN_EFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG) : \
- 		     (CAN_SFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG))
- 
--#define CAN_BCM_VERSION "20170425"
--
- MODULE_DESCRIPTION("PF_CAN broadcast manager protocol");
- MODULE_LICENSE("Dual BSD/GPL");
- MODULE_AUTHOR("Oliver Hartkopp <oliver.hartkopp@volkswagen.de>");
-@@ -1696,7 +1694,7 @@ static int __init bcm_module_init(void)
- {
- 	int err;
- 
--	pr_info("can: broadcast manager protocol (rev " CAN_BCM_VERSION " t)\n");
-+	pr_info("can: broadcast manager protocol\n");
- 
- 	err = can_proto_register(&bcm_can_proto);
- 	if (err < 0) {
-diff --git a/net/can/gw.c b/net/can/gw.c
-index 49b4e3d91ad6..6b790b6ff8d2 100644
---- a/net/can/gw.c
-+++ b/net/can/gw.c
-@@ -59,7 +59,6 @@
- #include <net/net_namespace.h>
- #include <net/sock.h>
- 
--#define CAN_GW_VERSION "20190810"
- #define CAN_GW_NAME "can-gw"
- 
- MODULE_DESCRIPTION("PF_CAN netlink gateway");
-@@ -1194,8 +1193,7 @@ static __init int cgw_module_init(void)
- 	/* sanitize given module parameter */
- 	max_hops = clamp_t(unsigned int, max_hops, CGW_MIN_HOPS, CGW_MAX_HOPS);
- 
--	pr_info("can: netlink gateway (rev " CAN_GW_VERSION ") max_hops=%d\n",
--		max_hops);
-+	pr_info("can: netlink gateway - max_hops=%d\n",	max_hops);
- 
- 	ret = register_pernet_subsys(&cangw_pernet_ops);
- 	if (ret)
-diff --git a/net/can/isotp.c b/net/can/isotp.c
-index 22187669c5c9..132ca6c471d6 100644
---- a/net/can/isotp.c
-+++ b/net/can/isotp.c
-@@ -72,8 +72,6 @@
- #include <net/sock.h>
- #include <net/net_namespace.h>
- 
--#define CAN_ISOTP_VERSION "20200928"
--
- MODULE_DESCRIPTION("PF_CAN isotp 15765-2:2016 protocol");
- MODULE_LICENSE("Dual BSD/GPL");
- MODULE_AUTHOR("Oliver Hartkopp <socketcan@hartkopp.net>");
-@@ -1409,7 +1407,7 @@ static __init int isotp_module_init(void)
- {
- 	int err;
- 
--	pr_info("isotp protocol (rev " CAN_ISOTP_VERSION ")\n");
-+	pr_info("isotp protocol\n");
- 
- 	err = can_proto_register(&isotp_can_proto);
- 	if (err < 0)
-diff --git a/net/can/proc.c b/net/can/proc.c
-index a4eb06c9eb70..550928b8b8a2 100644
---- a/net/can/proc.c
-+++ b/net/can/proc.c
-@@ -54,7 +54,6 @@
-  * proc filenames for the PF_CAN core
-  */
- 
--#define CAN_PROC_VERSION     "version"
- #define CAN_PROC_STATS       "stats"
- #define CAN_PROC_RESET_STATS "reset_stats"
- #define CAN_PROC_RCVLIST_ALL "rcvlist_all"
-@@ -293,12 +292,6 @@ static int can_reset_stats_proc_show(struct seq_file *m, void *v)
- 	return 0;
- }
- 
--static int can_version_proc_show(struct seq_file *m, void *v)
--{
--	seq_printf(m, "%s\n", CAN_VERSION_STRING);
--	return 0;
--}
--
- static inline void can_rcvlist_proc_show_one(struct seq_file *m, int idx,
- 					     struct net_device *dev,
- 					     struct can_dev_rcv_lists *dev_rcv_lists)
-@@ -441,8 +434,6 @@ void can_init_proc(struct net *net)
- 	}
- 
- 	/* own procfs entries from the AF_CAN core */
--	net->can.pde_version = proc_create_net_single(CAN_PROC_VERSION, 0644,
--			net->can.proc_dir, can_version_proc_show, NULL);
- 	net->can.pde_stats = proc_create_net_single(CAN_PROC_STATS, 0644,
- 			net->can.proc_dir, can_stats_proc_show, NULL);
- 	net->can.pde_reset_stats = proc_create_net_single(CAN_PROC_RESET_STATS,
-@@ -471,9 +462,6 @@ void can_init_proc(struct net *net)
-  */
- void can_remove_proc(struct net *net)
- {
--	if (net->can.pde_version)
--		remove_proc_entry(CAN_PROC_VERSION, net->can.proc_dir);
--
- 	if (net->can.pde_stats)
- 		remove_proc_entry(CAN_PROC_STATS, net->can.proc_dir);
- 
-diff --git a/net/can/raw.c b/net/can/raw.c
-index ea70850f9152..6ec8aa1d0da4 100644
---- a/net/can/raw.c
-+++ b/net/can/raw.c
-@@ -55,8 +55,6 @@
- #include <net/sock.h>
- #include <net/net_namespace.h>
- 
--#define CAN_RAW_VERSION CAN_VERSION
--
- MODULE_DESCRIPTION("PF_CAN raw protocol");
- MODULE_LICENSE("Dual BSD/GPL");
- MODULE_AUTHOR("Urs Thuermann <urs.thuermann@volkswagen.de>");
-@@ -885,7 +883,7 @@ static __init int raw_module_init(void)
- {
- 	int err;
- 
--	pr_info("can: raw protocol (rev " CAN_RAW_VERSION ")\n");
-+	pr_info("can: raw protocol\n");
- 
- 	err = can_proto_register(&raw_can_proto);
- 	if (err < 0)
--- 
-2.28.0
-
+A similar discussion can be found e.g. here:
+https://lore.kernel.org/netdev/20191126222013.1904785-1-bigeasy@linutronix.de/
+However I don't see any actual outcome.
