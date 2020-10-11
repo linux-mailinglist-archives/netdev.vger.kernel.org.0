@@ -2,78 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C11428A742
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 13:46:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D59328A759
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 14:29:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387710AbgJKLqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 07:46:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46584 "EHLO
+        id S2387828AbgJKM3P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 08:29:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387489AbgJKLqS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 07:46:18 -0400
-X-Greylist: delayed 344 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 11 Oct 2020 04:46:16 PDT
-Received: from valentin-vidic.from.hr (valentin-vidic.from.hr [IPv6:2001:470:1f0b:3b7::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5A0EC0613CE;
-        Sun, 11 Oct 2020 04:46:16 -0700 (PDT)
-X-Virus-Scanned: Debian amavisd-new at valentin-vidic.from.hr
-Received: by valentin-vidic.from.hr (Postfix, from userid 1000)
-        id DA40A3FDF; Sun, 11 Oct 2020 13:40:24 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=valentin-vidic.from.hr; s=2020; t=1602416424;
-        bh=kLUtzGm/mOxFRk7ierRj4MOQrCli4dPiEbdR2LcWxqQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=VO6MnSAqm52dlNEvak1+TarsFGx++KHwe8G77UO/GINYWz/HdyMa/AX/vg1ax5mvJ
-         r4CaUeakpPDerkySy8MlUWeFT+WA03ra1eDS8n9z6Fi/ez+Lsmbg6GoSZ/gBbz8Rl0
-         C0lzn2hBLlcOBpKt30RPRiwXvv5myNsE/fTPW39YxmKpvyv54OYuz5SNQoIK+Yz7xy
-         +vrSmtngv1SHBr9oUDUy+Au1zwWCr/l8XiY8QOxHlhHGRpCV5xXanVGv8cghMTvFZ2
-         OR1chuKQwEoP+eN0lBUt9qIKzg4fqFgNUyNWF1wW54Ml9XOy3pH+3iv5pD9c9YRXru
-         MZ3cn2er1CYnrg3YVTv/sBLwXF6eaUbT/OnwpsXBbF3eXjWOfHN2IRA+6SL3R20BcD
-         WtMgTsM1fj4l/WbYY2iDv5OYnqfFukSZWDXh17AszFyW+C+7XLgwwP3phdrxmsg00+
-         EjXYGVV73tXzgv/hI/q2qTme+DVvVv1rpcPYkN4+mtp2FddtDR9m/rU19qu95wr5YI
-         VA6rA/l38++n5JpQ9pZgSeI3Z8nnDEejJw9ht8q3E8qsco/KryHCWnjPqPdX/t8THj
-         ydps+fgAihbOe0EsOA865TXFSy9hmQpV8P67LZKEyiuNygXmFjSqMa3R9LkBsWtOLU
-         VmvHIqu4NgpmcptE98ZG0/nU=
-From:   Valentin Vidic <vvidic@valentin-vidic.from.hr>
-To:     "David S. Miller" <davem@davemloft.net>
-Cc:     Philip Rischel <rischelp@idt.com>, Felix Fietkau <nbd@openwrt.org>,
-        Florian Fainelli <florian@openwrt.org>,
-        Roman Yeryomin <roman@advem.lv>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Martin Habets <mhabets@solarflare.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Valentin Vidic <vvidic@valentin-vidic.from.hr>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: korina: free array used for rx/tx descriptors
-Date:   Sun, 11 Oct 2020 13:39:55 +0200
-Message-Id: <20201011113955.19511-1-vvidic@valentin-vidic.from.hr>
-X-Mailer: git-send-email 2.20.1
+        with ESMTP id S2387744AbgJKM3P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 08:29:15 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24307C0613CE;
+        Sun, 11 Oct 2020 05:29:15 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1602419352;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iJdfEiY4PfN/AFpvryhGU/5LSIFVk3RfEZa1/Sumoe4=;
+        b=bO+F2xe02c1f7d8lSe+vg0IynY4IcWkuwQltUf0m8vBr9/YRdV48u/PsCr8wRJ8hidUoID
+        k1pnA6X8TbYxD2z3mS538Aa8cUzXx5Go2cvmTc68udVg+yV6MPO/VC32QRXDcPkjmB3XZe
+        /Gb3lD3A12/EVTxZmHSN4NQRRnNQhnZCJjCeNOhWcxdpLV2WjWxBUvmAwI8NCGcr1Oa1Qk
+        XTG8aGQHHbTd/n9FTakCZ1F/N8hoN0z/Rt2Bv1KlIlF3dkPVX+LPzY648i2AxQspQY518I
+        58spl23CIlDMbyy/NiSSy62a8JOFdzhFcBxPAdZatCvEMp3r8hsCb48MVQoxiQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1602419352;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iJdfEiY4PfN/AFpvryhGU/5LSIFVk3RfEZa1/Sumoe4=;
+        b=3EWsKYr1tmKSqW2zf/7zx/SkPRqLInhX95082zDmQxsmuUJlPGHqEERUuRKUWbh7Wv2MMf
+        ORmlpy8if2aBBJBA==
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH net-next v6 2/7] net: dsa: Add DSA driver for Hirschmann Hellcreek switches
+In-Reply-To: <20201006135631.73rm3gka7r7krwca@skbuf>
+References: <20201004112911.25085-1-kurt@linutronix.de> <20201004112911.25085-3-kurt@linutronix.de> <20201004125601.aceiu4hdhrawea5z@skbuf> <87lfgj997g.fsf@kurt> <20201006092017.znfuwvye25vsu4z7@skbuf> <878scj8xxr.fsf@kurt> <20201006113237.73rzvw34anilqh4d@skbuf> <87wo037ajr.fsf@kurt> <20201006135631.73rm3gka7r7krwca@skbuf>
+Date:   Sun, 11 Oct 2020 14:29:08 +0200
+Message-ID: <87362lt08b.fsf@kurt>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Memory was not freed when driver is unloaded from the kernel.
+--=-=-=
+Content-Type: text/plain
 
-Signed-off-by: Valentin Vidic <vvidic@valentin-vidic.from.hr>
----
- drivers/net/ethernet/korina.c | 1 +
- 1 file changed, 1 insertion(+)
+On Tue Oct 06 2020, Vladimir Oltean wrote:
+> On Tue, Oct 06, 2020 at 03:23:36PM +0200, Kurt Kanzenbach wrote:
+>> So you're saying private VLANs can be used but the user or the other
+>> kernel modules shouldn't be allowed to use them to simplify the
+>> implementation?  Makes sense to me.
+>
+> It would be interesting to see if you could simply turn off VLAN
+> awareness in standalone mode, and still use unique pvids per port.
 
-diff --git a/drivers/net/ethernet/korina.c b/drivers/net/ethernet/korina.c
-index 03e034918d14..99146145f020 100644
---- a/drivers/net/ethernet/korina.c
-+++ b/drivers/net/ethernet/korina.c
-@@ -1133,6 +1133,7 @@ static int korina_remove(struct platform_device *pdev)
- 	iounmap(lp->eth_regs);
- 	iounmap(lp->rx_dma_regs);
- 	iounmap(lp->tx_dma_regs);
-+	kfree(lp->td_ring);
- 
- 	unregister_netdev(bif->dev);
- 	free_netdev(bif->dev);
--- 
-2.20.1
+That doesn't work, just tested. When VLAN awareness is disabled,
+everything is switched regardless of VLAN tags and table. Therefore, the
+implementation could look like this:
 
+ * bridge without filtering:
+   * vlan_awareness=0
+   * drop private vlans
+ * bridge with vlan filtering:
+   * vlan_awareness=1
+   * drop private vlans
+ * standalone:
+   * vlan_awareness=1
+   * use private vlans
+   * forbid other users to use private vlans to allow
+     configure_vlans_while_not_filtering behavior in .vlan_prepare()
+   * forbid use of lan0.<X> and lan1.<X> in .port_prechangeupper()
+
+So, this should work, or?
+
+Thanks,
+Kurt
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl+C+pQACgkQeSpbgcuY
+8KaOhQ/+LUNWORnLGdWaAt9Bxg+UNEUCDGMNKl7XkzEOD9Ew6RFPIKGZCh8bt782
+56t8msbcwFyHehAELJOdpOX5wGmhfSGjDjtxN0D/QnSiWKs/qZ+VhwC8EX+bmmfZ
+fq/Sw2gzcu8xWM9gPcsoTBMfosNP2HPIUwVG0VCzzLRT6tRLXIA7DyYArrXdNPWv
+NVC+b3Rf2c/nBGW6ayaaPk7yIJZKH6rNctGdL7HCL857px2yINZU8xlkiMyvGxeh
+asapR6YWqblqFhM6CUaXhh0xFOAuTwZGh1MIqjrJ+BZ0mQrTvANYFzIboT+8SfYi
+WCeUhLGr/9YG1t/jw4yjvN5UkKhdQFgniqVbuZQvnOFy9OrmQP7mVx01ysSrzxQa
+pgQc26LCEhaIfC2XRWTuAHcaq07CxWZ72XPyKnbzxLyJgM2qTzvoErBJ12rgbwlr
+rUbXbqzYepR1MlvR/3am+aK6YeQW+EloCtgWKtWlFgsVvscKfIUGJ+bzylJo2zbH
+LimrYkHwRAwoItWSsgJO6km0qJp4NttPDZaxf5jrVnOMfEbFS9SSU0TdFkv1Yscw
+qAaybIunOh2NVqaC7viU79v4x8TSgzCsr6U3irygZ/ItD7gZwhvaqC7qnYk/02jr
+VKnzthgRkqHkVNvtgsdLJeyxUxn8JVex/Dpoa3vR2mOkBAkgidE=
+=iNiJ
+-----END PGP SIGNATURE-----
+--=-=-=--
