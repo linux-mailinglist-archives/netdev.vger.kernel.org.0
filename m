@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A9AB228A9ED
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 21:45:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D539D28A9E5
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 21:45:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728893AbgJKTpC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 15:45:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34944 "EHLO
+        id S1728996AbgJKTpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 15:45:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726615AbgJKToo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 15:44:44 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF903C0613D2;
-        Sun, 11 Oct 2020 12:44:43 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id a3so20268705ejy.11;
-        Sun, 11 Oct 2020 12:44:43 -0700 (PDT)
+        with ESMTP id S1726840AbgJKTop (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 15:44:45 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 787A0C0613D5;
+        Sun, 11 Oct 2020 12:44:45 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id g4so14768794edk.0;
+        Sun, 11 Oct 2020 12:44:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=gfr3ALYPLKmxZda8jB3ld1N0hpEXjoqgwocV8/nd3X0=;
-        b=UbL1GtjqXIjEGis5eM/8DwyMsHni206CGfZbq8bJ4Cq/dPqLWTpDUaxfFfzUN/NQ0R
-         WNmYW3qdxh0pnWXQaoDe1nChSTIh6UTJ1SUMKcaQwRu7tQHbnHMJYc9b60vNWy4nh2aR
-         39ZLS52ZJ30L2HF+21PL5XB8xlAqyxKt0lsCWZO9rcVudZySuROSZS34XHNWL3VL6POI
-         W9VRr+t4S9PS8gPdJ6DjdYR+h3OE9rx1F5wr5xgIPwYgalHlaXejI9sL//flzgCHykQy
-         G2u1erqZ9fsK4FIHDpNBHaAuHIFP5hkKTLCqnvVJlEoUoVZHPXw9YfD1SP1dRKmk2vw8
-         oFFw==
+        bh=t6mBah8f7Cbtv+XC/jNYzc0qx0/PRMeIzqK4sBdTEL4=;
+        b=rPx+oLh0oDeejrIAjThcqiU01bY+NR/k9Ak/q2AE42r8Gg7pRz3M+Uy3dqcWg/5a0y
+         sU6Fu8p8hMgV+DxLdyXWUXNi/WlICSn/J74p/bkR5B8QMpgSNJ7i78VvvbKZTvTWUmUO
+         ssIM5hWV8fer6aBzRCJ3ILF+cF6tNEy173XU7jOQnTqZ7TmIGacbgP1mzVWthRP4ZkfF
+         n6sU8bfkOVjw3SuQlW30E4i4blnq1TTgch31KKRt16pVpCDmYF4xhrum7E1h5HVGQl0k
+         YF6X/p8B3lKJqZLDYJYVza3bSDkW/GBL26emjt3oHzNjoXOna1w3iNOSMd0OYAoxPq2H
+         jTiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=gfr3ALYPLKmxZda8jB3ld1N0hpEXjoqgwocV8/nd3X0=;
-        b=MPS8gWxuoWD0lAHGlDXclV+YC03sstt2YKZCeFV8O2dkaFeZvDZhYf+w2n0P/o7UzT
-         seZmKvwm65yOlLlIDeesn6niKkypnEmcFZoKAiiF/rD59QyaqwySIBK+0BwLdZuGu0eO
-         kbco1S2FXMnHECukeSS0NGDJvhGYdNsqeLpre+5t2uNmJhANj+OrdWysHxkGeVFGnvy6
-         kPEdA5U1OAnTz23ijGx6K3ulhPfirCrpJB3uIWnlrb0yl0aWwMJM4kfSydFxcQEDfHbK
-         p/jK2jCxKYpDZf7kIWh1CUaeKDEzx28f915SsAjThtm5RYKCka79SgX9jgXHbZf1wKIz
-         sH+w==
-X-Gm-Message-State: AOAM531HnnsYQ+4PZWwdq2ZgDI2SMzB+lVQ5H5j7+XQjb25OxqhVRgok
-        kNrBkeCY+h9H96NJOY1Kw2I=
-X-Google-Smtp-Source: ABdhPJxJzVcxYYhChoisYAA0WC0eftqGze9+lsho48XfvKPZgGEASN1Fa9S6xPslx35aOFc2I6gM5Q==
-X-Received: by 2002:a17:906:3b91:: with SMTP id u17mr24104083ejf.504.1602445482592;
-        Sun, 11 Oct 2020 12:44:42 -0700 (PDT)
+        bh=t6mBah8f7Cbtv+XC/jNYzc0qx0/PRMeIzqK4sBdTEL4=;
+        b=QrU48prxfFnwpIUIYlpgO9u+YHbaBNaOeIBFI9wnbhwVEg1OTQEZ9VYyqe3zRQ5s7u
+         AesB9AMSjI0J1RgoRXjPlSW4SJVbyTtSRNwxJr0nkh5mmEs/S+Y4Nd1g8SiM/WPUu9Wp
+         osqTtsKH+7Fxlw72qjlrOai1/PU22djKjYISb6hkr73ln4D0yW7o9vOcHVI6BJ/Dmaua
+         GveX3YeHk2Db4fORzNREvg32Ngib5WUPqn9RBL71ukBLqvFiWMlQWbK6pIzX5GRDhZ6m
+         6zdabCHjIw3TR40mawMopq8e5UjxuCfcWrjuY4YsT2gnX7BSr1qAnVoTAVdVqTW31r2c
+         9dUA==
+X-Gm-Message-State: AOAM530DkeqnO+aO3UkbXy7fMoJGuzHlq5a3mqCbQOF8nSbSC0k2rj4f
+        mwOYi5cyrbj96/YPSeXHgAs=
+X-Google-Smtp-Source: ABdhPJze22jzr28NBfMCWqu+FyuYjUDaaRfQd4k9/kJxDSiAjQKlgPzLiPicrGF5qB1uFU4ILMcjtw==
+X-Received: by 2002:aa7:dc16:: with SMTP id b22mr10482539edu.252.1602445484162;
+        Sun, 11 Oct 2020 12:44:44 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8f00:6a00:51b7:bf4f:604:7d3d? (p200300ea8f006a0051b7bf4f06047d3d.dip0.t-ipconnect.de. [2003:ea:8f00:6a00:51b7:bf4f:604:7d3d])
-        by smtp.googlemail.com with ESMTPSA id x2sm9504409edr.65.2020.10.11.12.44.41
+        by smtp.googlemail.com with ESMTPSA id s6sm9816029ejx.79.2020.10.11.12.44.43
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 11 Oct 2020 12:44:42 -0700 (PDT)
-Subject: [PATCH net-next 11/12] net: openvswitch: use new function
- dev_fetch_sw_netstats
+        Sun, 11 Oct 2020 12:44:43 -0700 (PDT)
+Subject: [PATCH net-next 12/12] xfrm: use new function dev_fetch_sw_netstats
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -76,8 +75,8 @@ Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         linux-wireless <linux-wireless@vger.kernel.org>,
         bridge@lists.linux-foundation.org
 References: <a46f539e-a54d-7e92-0372-cd96bb280729@gmail.com>
-Message-ID: <7debf7e5-ea7f-6fec-4f58-7dd6c8f28b7b@gmail.com>
-Date:   Sun, 11 Oct 2020 21:43:18 +0200
+Message-ID: <b0edee7e-4594-e3b3-ea75-68b4f33509df@gmail.com>
+Date:   Sun, 11 Oct 2020 21:44:02 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.1
 MIME-Version: 1.0
@@ -93,46 +92,42 @@ Simplify the code by using new function dev_fetch_sw_netstats().
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- net/openvswitch/vport-internal_dev.c | 20 +-------------------
- 1 file changed, 1 insertion(+), 19 deletions(-)
+ net/xfrm/xfrm_interface.c | 22 +---------------------
+ 1 file changed, 1 insertion(+), 21 deletions(-)
 
-diff --git a/net/openvswitch/vport-internal_dev.c b/net/openvswitch/vport-internal_dev.c
-index d8fe66eea..1e30d8df3 100644
---- a/net/openvswitch/vport-internal_dev.c
-+++ b/net/openvswitch/vport-internal_dev.c
-@@ -86,31 +86,13 @@ static void internal_dev_destructor(struct net_device *dev)
- static void
- internal_get_stats(struct net_device *dev, struct rtnl_link_stats64 *stats)
+diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+index 5b120936d..aa4cdcf69 100644
+--- a/net/xfrm/xfrm_interface.c
++++ b/net/xfrm/xfrm_interface.c
+@@ -541,27 +541,7 @@ static int xfrmi_update(struct xfrm_if *xi, struct xfrm_if_parms *p)
+ static void xfrmi_get_stats64(struct net_device *dev,
+ 			       struct rtnl_link_stats64 *s)
  {
--	int i;
+-	int cpu;
 -
- 	memset(stats, 0, sizeof(*stats));
- 	stats->rx_errors  = dev->stats.rx_errors;
- 	stats->tx_errors  = dev->stats.tx_errors;
- 	stats->tx_dropped = dev->stats.tx_dropped;
- 	stats->rx_dropped = dev->stats.rx_dropped;
- 
--	for_each_possible_cpu(i) {
--		const struct pcpu_sw_netstats *percpu_stats;
--		struct pcpu_sw_netstats local_stats;
--		unsigned int start;
+-	for_each_possible_cpu(cpu) {
+-		struct pcpu_sw_netstats *stats;
+-		struct pcpu_sw_netstats tmp;
+-		int start;
 -
--		percpu_stats = per_cpu_ptr(dev->tstats, i);
--
+-		stats = per_cpu_ptr(dev->tstats, cpu);
 -		do {
--			start = u64_stats_fetch_begin_irq(&percpu_stats->syncp);
--			local_stats = *percpu_stats;
--		} while (u64_stats_fetch_retry_irq(&percpu_stats->syncp, start));
+-			start = u64_stats_fetch_begin_irq(&stats->syncp);
+-			tmp.rx_packets = stats->rx_packets;
+-			tmp.rx_bytes   = stats->rx_bytes;
+-			tmp.tx_packets = stats->tx_packets;
+-			tmp.tx_bytes   = stats->tx_bytes;
+-		} while (u64_stats_fetch_retry_irq(&stats->syncp, start));
 -
--		stats->rx_bytes         += local_stats.rx_bytes;
--		stats->rx_packets       += local_stats.rx_packets;
--		stats->tx_bytes         += local_stats.tx_bytes;
--		stats->tx_packets       += local_stats.tx_packets;
+-		s->rx_packets += tmp.rx_packets;
+-		s->rx_bytes   += tmp.rx_bytes;
+-		s->tx_packets += tmp.tx_packets;
+-		s->tx_bytes   += tmp.tx_bytes;
 -	}
-+	dev_fetch_sw_netstats(stats, dev->tstats);
- }
++	dev_fetch_sw_netstats(s, dev->tstats);
  
- static const struct net_device_ops internal_dev_netdev_ops = {
+ 	s->rx_dropped = dev->stats.rx_dropped;
+ 	s->tx_dropped = dev->stats.tx_dropped;
 -- 
 2.28.0
 
