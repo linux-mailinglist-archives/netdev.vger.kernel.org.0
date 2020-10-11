@@ -2,129 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AAC028A7CB
-	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 16:35:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC24B28A7E5
+	for <lists+netdev@lfdr.de>; Sun, 11 Oct 2020 17:01:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388026AbgJKOfj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 10:35:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44152 "EHLO
+        id S2388140AbgJKPA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 11:00:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388008AbgJKOfj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 10:35:39 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E89D4C0613CE
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 07:35:38 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id h6so11528192pgk.4
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 07:35:38 -0700 (PDT)
+        with ESMTP id S2388129AbgJKPA6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 11:00:58 -0400
+Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61F43C0613D0
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 08:00:58 -0700 (PDT)
+Received: by mail-vs1-xe44.google.com with SMTP id w25so7700267vsk.9
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 08:00:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Wy5QvizAeXnuABsCtWkZJK2SeD8FZ20HNIGyAV0RiD0=;
-        b=F/+qdPcGkTBmONyNFPadJxomOU9yp5H29HdKkkY4LOn04AL6Kc1eivyiSL78Q13dIY
-         qFyCDEfO4horP6k4Rpn+jp14DZuNANCGrjtpoynKVvg5nww3kjuKgCDz61kG0eY1AMhO
-         isqQ2mlAs6maB+SlBEoLfQJXndtp3MkoSFLvGLUKfl86P5TYCqbzCyH1h/L3RjVZve2n
-         DkB9JLTJAXQjwg6XNMtkRgBuJSTw3hsBLVLEyngiolmZ3x75Aw3NEvrX7bS6MYLuHdTi
-         4CsPxVPfdRY5Dqe+IIe5Go+u6kTrguGLOullYsZKb/qjYJyn2mFq+tz3ReU7sW73OvQK
-         /i6A==
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=D3K5E57dO7txV6GqbdCQheuWG6wP6jCKaZ50hBhRQmc=;
+        b=oOaaUrqUdTT5ww+pq9Q5Y07Piez/ULUlUaRm6y41SqcmwgYFv83DgdW5EZebqpzr8I
+         zG5MsE7kCG1taCWaEd126y67gqQbkeyWqSaP295BAfSZLZe/Ym2Ra4uVROIY5rfDiVUc
+         Ukq+k2rCouIT1M/V/MUcvvtKLyPLkM5K+HmGz2SvgVvsYTdFYDLny5wu4KXA1SB7tejQ
+         yYoPWfE9Lre1KC0YVPz1SLgqjyi4JYfrAyDGTBUGEBuChAYFS5ibIU4rLH7gmyqcc19c
+         /nvwbE3UZLR6mPWRU4RiweaV6uoadi2x5OQeA3ql9s3xNoewo6GYD4MGkSTH8fjmHiIk
+         42KQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Wy5QvizAeXnuABsCtWkZJK2SeD8FZ20HNIGyAV0RiD0=;
-        b=d4G4PYCLKSwzOA18Hw8/cOGzgeg7i24cbGfiFilUp/CQyFU5PLNm4qjwMX0ZLZjYte
-         i/9rEqEPjV3uqrfdbiwVwXyeuFHwsJcmGU1k6jXTLdrej9hV3vihcgak6rd1v/y7/5fV
-         wy/YzPlu/oCD3IxOw0Kk2uL7qYDASucRTqD8Vm9WzY1aSL9JUTxj7br+qWvUDjhpLOjN
-         ICUHz+tfJV3gdG7iJhgIe42utjkHVZwMwHmAjcqY5hmC9BIH5RSSVp+a+yoc5qCAoHtY
-         vsRN7/69LzSks26QcWveXF/e1XrajUhOWz8JAUEBcgZgHCRZJhzB+cU2wxCL5oDEVnqu
-         vK4w==
-X-Gm-Message-State: AOAM530+WaYz5gno2pBiCCc/y3Z/I7F5A02oZPOfgmp3Vbk9EMbsLtwA
-        HfELY/a19fO7VQIkBh3srBbqDHZDDGqyQGYnf14=
-X-Google-Smtp-Source: ABdhPJxUwxvOD7u/VJ9/f+DfuwgSqih91tP2+kKfV5ASyQYE8YbI2Wp+R9TsWomflxLH1gQcO38gGNFkPYtuyBNJB4Q=
-X-Received: by 2002:a17:90b:d91:: with SMTP id bg17mr15571354pjb.66.1602426938368;
- Sun, 11 Oct 2020 07:35:38 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=D3K5E57dO7txV6GqbdCQheuWG6wP6jCKaZ50hBhRQmc=;
+        b=hJ4btzXpTptLRc7mqj1L168xIhT50yII68fZA/PnY/wiqxUQXy2lNmzeeAr4TPJ3nR
+         HVxHSDWjcA1HZM1tokfex0p1pF4+6V/xY1WRN0NCvCTODDCMddYuazyAjPCV4/v5/awJ
+         fxiQmnpKRqbVHvuwHpTgevrO6khFQ22EM3Y/sl1aGQSU0Q/gEFptQfeZRThTVbjow7Ol
+         rRtPqo72bet8RYTpJTSNgOfyySxSzNh2ijEE19jEpODUsIubHIpEhX3q3B+eMNo3zwFR
+         wYR6giMwX9wzuiXTRpEh+246hiOBcjZUIaoQgYvTZlU2v7kXHNkV0gKFa3XodCfR2G3L
+         T+8g==
+X-Gm-Message-State: AOAM531Ofja2eXKSJ/0lmDfSnHRFqElp40bSnYqH9qrXN2Z0vtCWph5r
+        27R21LcBG38jtUvxC3foPNj7hWPWQK0004KtWDI=
+X-Google-Smtp-Source: ABdhPJzmcdi/ZpyOP9cotKL9s5mytqeqfO8m1/vCY7M4JyvAks3ly5DL4nh1fD4IJBfg19Okn3oVmZdIVBpof0mjRps=
+X-Received: by 2002:a67:2ecc:: with SMTP id u195mr12457901vsu.43.1602428457512;
+ Sun, 11 Oct 2020 08:00:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20201008012154.11149-1-xiyou.wangcong@gmail.com>
- <CA+FuTSeMYFh3tY9cJN6h02E+r3BST=w74+pD=zraLXsmJTLZXA@mail.gmail.com>
- <CAM_iQpWCR84sD6dZBforgt4cg-Jya91D6EynDo2y2sC7vi-vMg@mail.gmail.com>
- <CA+FuTSdKa1Q36ONbsGOMqXDCUiiDNsA6rkqyrzB+eXJj=MyRKA@mail.gmail.com>
- <CAJht_ENnmYRh-RomBodJE0HoFzaLQhD+DKEu2WWST+B43JxWcQ@mail.gmail.com>
- <CA+FuTSdWYDs5u+3VzpTA1-Xs1OiVzv8QiKGTH4GUYrvXFfGT_A@mail.gmail.com>
- <CAJht_ENMFY_HwaJDjvxZbQgcDv7btC+bU6gzdjyddY-JS=a6Lg@mail.gmail.com>
- <CA+FuTScizeZC-ndVvXj4VyArth2gnxoh3kTSoe5awGoiFXtkBA@mail.gmail.com>
- <CAJht_ENmrPbhfPaD5kkiDVWQsvA_LRndPiCMrS9zdje6sVPk=g@mail.gmail.com>
- <CA+FuTSfhDgn-Qej4HOY-kYWSy8pUsnafMk=ozwtYGfS4W2DNuA@mail.gmail.com>
- <CAJht_ENxoAyUOoiHSbFXEZ6Jf2xqfOmYfQ6Sh-hfmTUk-kTrfQ@mail.gmail.com>
- <CAJht_EOMQRKWfwhfqwXB3RYA1h463q43ycNjJmaGZm6RS65QGA@mail.gmail.com>
- <CAM_iQpWRftQkOfgfMACNR_5YZxvzLJH1aMtmZNj7nJH_Wu-NRw@mail.gmail.com>
- <CAJht_ENnYyXbOxtPHD9GHB92U4uonKO_oRZ82g2OR2DaFZ7bBQ@mail.gmail.com>
- <CAJht_EPVyc0uAZc914E3tdgqEc7tDabpAxnBsGrRRFecc+NMwg@mail.gmail.com>
- <CAM_iQpU1hU0Wg9sdTwFAG17Gk4-85+=xvZdQeb3oswhBKtAsPA@mail.gmail.com>
- <CAM_iQpVhrFZ4DWg9btEpS9+s0QX-b=eSkJJWzPr_KUV-TEkrQw@mail.gmail.com>
- <CAJht_EO99yYQeUPUFR-qvWwrpZQfXToUu6x7LBS+0yhqiYg_XQ@mail.gmail.com> <CAM_iQpX0zjZUDE_iuf4WWXiodwb2UpqyjjQPYrfD0CMXnMSymQ@mail.gmail.com>
-In-Reply-To: <CAM_iQpX0zjZUDE_iuf4WWXiodwb2UpqyjjQPYrfD0CMXnMSymQ@mail.gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Sun, 11 Oct 2020 07:35:27 -0700
-Message-ID: <CAJht_EOyOrRoqExrKHVV5DQp8Sk1Zx4sqgkfQ63TQ==cV8+b5g@mail.gmail.com>
-Subject: Re: [Patch net] ip_gre: set dev->hard_header_len properly
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        syzbot <syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com>,
-        William Tu <u9012063@gmail.com>
+Received: by 2002:a67:1087:0:0:0:0:0 with HTTP; Sun, 11 Oct 2020 08:00:57
+ -0700 (PDT)
+Reply-To: mrs.chantala2055@gmail.com
+From:   mrs chantal <mrs.chantalas1@gmail.com>
+Date:   Sun, 11 Oct 2020 08:00:57 -0700
+Message-ID: <CAMdkyyD3b0bqD7-WAZLuJTcmhA6Tkz7=PKc_mJs4Y5St60ihaA@mail.gmail.com>
+Subject: Dear Friend
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 10, 2020 at 11:58 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> Well, AF_PACKET RAW socket is supposed to construct L2 headers
-> from the user buffer, and for a tunnel device these headers are indeed its
-> L2. If users do not want to do this, they can switch to DGRAM anyway.
->
-> I know how inconvenient it is to construct a GRE tunnel header, I guess
-> this is why all other tunnel devices do not provide a header_ops::create.
-> GRE tunnel is not a special case, this is why I agree on removing its
-> ->create() although it does look like all tunnel devices should let users
-> construct headers by definition of RAW.
->
-> Of course, it may be too late to change this behavior even if we really
-> want, users may already assume there is always no tunnel header needed
-> to construct.
-
-Sorry. I was re-thinking about whether we should expose certain
-headers in header_ops or not. Now my thoughts are a little bit
-different, so I want to re-reply to your email.
-
-1.
-
-The first reason why I think we should not expose the GRE header in
-header_ops, is that in this way we can keep the un-exposed headers of
-GRE devices consistent with those of GRETAP devices. (This is just
-like the consistency between "universal TUN devices" and "universal
-TAP devices".) This is similar to what I wrote in my previous replies.
-
-However, after thinking I think this only applies to GRE/GRETAP but
-not to some other tunnel devices. For example, for PPP, we can't
-actually transmit Ethernet frames directly over PPP (but need to
-encapsulate them in BCP over PPP), so there's no way to keep the
-un-exposed headers of PPP devices consistent with those of "PPP TAP"
-(PPP bridging) devices anyway.
-
-2.
-
-Second, I think the headers before the GRE header (the outer IP header
-and the "encap" header) should actually belong to the underlying
-network being tunneled through, and should not be viewed as L2 headers
-of the tunneling network. As for the GRE header, it might be better
-viewed as a "bridge" between the tunneled network and the tunneling
-network, and belongs neither of the two, so it should not be viewed as
-the L2 header of the tunneling network either.
-
-However, for PPP tunnels, I think the PPP header clearly belongs to
-the tunneling network's L2 header (because PPP can run directly over a
-hardware link, and even if it is used for a tunnel, it needs a
-specific underlying network's protocol, such as SSH or PPPoE, to
-transport). So I think it is better to expose the PPP header in
-header_ops.
+ICBIZWxsbyBGcmllbmQuScKgYW3CoE1ycy5DSEFOVEFMwqBJwqBhbcKgc2VuZGluZ8KgdGhpc8Kg
+YnJpZWYNCsKgwqDCoMKgbGV0dGVywqB0b8Kgc29saWNpdMKgeW91csKgcGFydG5lcnNoaXDCoHRv
+wqB0cmFuc2ZlcsKgJDcuMsKgTWlsbGlvbsKgVVMNCsKgwqDCoMKgRG9sbGFycy5JwqBzaGFsbMKg
+c2VuZMKgeW91wqBtb3JlwqBpbmZvcm1hdGlvbsKgYW5kwqBwcm9jZWR1cmVzwqB3aGVuwqBJwqBy
+ZWNlaXZlDQrCoMKgwqDCoHBvc2l0aXZlwqByZXNwb25zZcKgRnJvbcKgeW91LsKgUGxlYXNlwqBz
+ZW5kwqBtZcKgYcKgbWVzc2FnZcKgaW7CoE15wqBwcml2YXRlDQrCoMKgwqDCoGVtYWlswqBhZGRy
+ZXNzwqBpc8KgKMKgbXJzY2hhbnRhbDZAZ21haWwuY29twqApDQoNCsKgwqDCoMKgQmVzdMKgUmVn
+YXJkcw0KDQrCoMKgwqDCoE1ycy5DaGFudGFsDQo=
