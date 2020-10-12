@@ -2,59 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 813EF28BB93
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 17:10:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A2A228BBA3
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 17:16:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389547AbgJLPK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 11:10:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45076 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389498AbgJLPK0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 11:10:26 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A246DC0613D1
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 08:10:24 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id i2so14548380pgh.7
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 08:10:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=0NHSXhk9dTshCx5DF5zP7p5vePvVsv6vjq91VyVfW34=;
-        b=XU5qClnLrrvis7/VaXXFMXOqxMuXDJA6Ng4PIVpt/YCtg8zv8NXVawjexhd95Xvwbi
-         YSHXjllkMb+88/H+gJ7e2db7GlGE9obA4iAtfFyNv0oEessUuNUrd87vl/Bf5L4YXDSm
-         VUPX7a2ow5SwQziYC6e8KJSk5rlGSYkE4Pudno8dVgJdZy5JKd8Kmse5BBt3FWurfrN5
-         3Dm/QbzU6dzvXU7m1FRkYu8TcmEYyK1Gwti+pxX/olsSVoCjInYXOvLSd/hjGa+QsEVG
-         u0NUNn41DaPU9LZwaz71qvU6X5f1kQa8qvNbrg9QUFgSKVFvtai2ij2aLiYgiRBPUC/1
-         yNEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=0NHSXhk9dTshCx5DF5zP7p5vePvVsv6vjq91VyVfW34=;
-        b=f81g6sLrIT2V77Wtp8b8VcdHFuz778ux8cDKSS1UL17RSYUJUFOXw1nuPSWnXZSUJL
-         2iAYknoEXRl2hBBVedhLGhv1VGilC416g8Zt6gZq9DFAc8JH3dnyn5VxPYQFMn/W3gFy
-         eUbie00zwmq8cZZkNSdLSLKuZBSTV6hWXsIQhhIBoPLMZzWdYlOBc/TcxP3OqZCzNd/O
-         7TnAmsMsEpRIYpyym7bVP7YP7XL+AaNlYbwmz6I7NXMBQN5BGo3oifol8I/y9aiPpKXX
-         sZqmRc/X3jrgtgg3aYpxZECM4iYyHk4MaokOSVNfF2VrsWa4/YKZuSWiEKYa6Fxym4iZ
-         ezAg==
-X-Gm-Message-State: AOAM532uyOfyyp0fVBcTAD8xYr0FAWi1Tc63xJq9oktYEXHqNEaQ1mUz
-        4HVkanG1YaISBUThZnRbonR2Egth67/cQQ==
-X-Google-Smtp-Source: ABdhPJz7Ju2L2j8c1iH1DjCcCq7CIR/GE9QCVl40sQIbYRxamB3VXKQV744QZ/3p/wUsqDie4mo/pg==
-X-Received: by 2002:a63:a55d:: with SMTP id r29mr13318760pgu.368.1602515424028;
-        Mon, 12 Oct 2020 08:10:24 -0700 (PDT)
-Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id b5sm20113655pfo.64.2020.10.12.08.10.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Oct 2020 08:10:23 -0700 (PDT)
-Date:   Mon, 12 Oct 2020 08:10:16 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jan Engelhardt <jengelh@inai.de>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [iproute PATCH] ip: add error reporting when RTM_GETNSID failed
-Message-ID: <20201012081016.702db023@hermes.local>
-In-Reply-To: <20201012135555.6071-1-jengelh@inai.de>
-References: <20201012135555.6071-1-jengelh@inai.de>
+        id S2389738AbgJLPQg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 11:16:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34270 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389225AbgJLPQg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Oct 2020 11:16:36 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6A6B920878;
+        Mon, 12 Oct 2020 15:16:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602515795;
+        bh=0j6qf98C/VHd5JVBKbDLdE4Pd0CIJdHg9Om9AIcfSm0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ivnuej6X8z4a8TCAuaJTm6INdDWC6yUxZPKyVGbSEVvL27mCCNRxqp1yjXAmY8dPB
+         YCMn70Op0MPtEkAbQ/faDox7RvTPLfnmu/SxQsD7KLFCfyWMzws84aA2d73Ta4BWez
+         +fJD2shGgoJ1BcHUrs8Eu9NSL0LeNVBHzh+WeSns=
+Date:   Mon, 12 Oct 2020 08:16:33 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        intel-wired-lan@lists.osuosl.org, netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Yongxin Liu <yongxin.liu@windriver.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] net: ethernet: ixgbe: don't propagate -ENODEV from
+ ixgbe_mii_bus_init()
+Message-ID: <20201012081633.7b501cde@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAMRc=MexKweGRjF5KNg1saz7NmE+tQq=03oR3wzoMsaTcm+CAA@mail.gmail.com>
+References: <20200928071744.18253-1-brgl@bgdev.pl>
+        <CAMRc=MexKweGRjF5KNg1saz7NmE+tQq=03oR3wzoMsaTcm+CAA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -62,20 +46,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Oct 2020 15:55:55 +0200
-Jan Engelhardt <jengelh@inai.de> wrote:
+On Mon, 12 Oct 2020 14:20:16 +0200 Bartosz Golaszewski wrote:
+> On Mon, Sep 28, 2020 at 9:17 AM Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+> >
+> > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> >
+> > It's a valid use-case for ixgbe_mii_bus_init() to return -ENODEV - we
+> > still want to finalize the registration of the ixgbe device. Check the
+> > error code and don't bail out if err == -ENODEV.
+> >
+> > This fixes an issue on C3000 family of SoCs where four ixgbe devices
+> > share a single MDIO bus and ixgbe_mii_bus_init() returns -ENODEV for
+> > three of them but we still want to register them.
+> >
+> > Fixes: 09ef193fef7e ("net: ethernet: ixgbe: check the return value of ixgbe_mii_bus_init()")
+> > Reported-by: Yongxin Liu <yongxin.liu@windriver.com>
+> > Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> > ---
+> >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> > index 2f8a4cfc5fa1..d1623af30125 100644
+> > --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> > +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+> > @@ -11032,7 +11032,7 @@ static int ixgbe_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+> >                         true);
+> >
+> >         err = ixgbe_mii_bus_init(hw);
+> > -       if (err)
+> > +       if (err && err != -ENODEV)
+> >                 goto err_netdev;
+> >
+> >         return 0;
+>
+> Gentle ping for this patch. Who's picking up networking patches now
+> that David is OoO? Should I Cc someone else?
 
-> +			fprintf(stderr, "/proc/self/ns/net: %s. "
-> +				"Continuing anyway.\n", strerror(errno))
+Intel went through a maintainer change of its own, and they usually
+pick up their patches and send a PR.
 
-
-WARNING: quoted string split across lines
-#95: FILE: ip/ipnetns.c:82:
-+			fprintf(stderr, "/proc/self/ns/net: %s. "
-+				"Continuing anyway.\n", strerror(errno));
-
-
-
-
-I applied this but fixed the two checkpatch warnings about breaking single line
-in message.
+Tony, do you want me to apply this directly?
