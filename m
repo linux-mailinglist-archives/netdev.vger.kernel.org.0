@@ -2,119 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B9A128AFB9
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 10:12:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AAFF28B014
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 10:22:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728929AbgJLIMN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 04:12:13 -0400
-Received: from mout.kundenserver.de ([212.227.126.133]:33193 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726680AbgJLIMM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 04:12:12 -0400
-Received: from mail-lj1-f181.google.com ([209.85.208.181]) by
- mrelayeu.kundenserver.de (mreue009 [212.227.15.129]) with ESMTPSA (Nemesis)
- id 1MfHIZ-1k0Fof3MUN-00grJn; Mon, 12 Oct 2020 10:12:10 +0200
-Received: by mail-lj1-f181.google.com with SMTP id h20so16053270lji.9;
-        Mon, 12 Oct 2020 01:12:10 -0700 (PDT)
-X-Gm-Message-State: AOAM5319sCPFCO1m/EFZQJETJ9qxWIAYFT+81/0dxYCqYqZCsYAotpHj
-        dovE/s9X6YEeJ3oRZ28e9hWzxINJcNBM4O6qbAA=
-X-Google-Smtp-Source: ABdhPJzIbqkTuWB97PfBo7gju3+aGiKTNM1pYfIzgns4fQt7o6rczfccMS4P0CKvZwocCS9gab3dhvwjqV5QwnP1gQQ=
-X-Received: by 2002:a2e:83c9:: with SMTP id s9mr9732795ljh.168.1602490330242;
- Mon, 12 Oct 2020 01:12:10 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201001011232.4050282-1-andrew@lunn.ch> <20201001011232.4050282-2-andrew@lunn.ch>
- <CAKwvOdnVC8F1=QT03W5Zh9pJdTxxNfRcqXeob5_b4CXycvG1+g@mail.gmail.com>
- <20201002014411.GG4067422@lunn.ch> <CAKwvOdmdfwWsRtJHtJ16B0RMyoxUi1587OKnyunQd5gfwmnGsA@mail.gmail.com>
- <20201005194913.GC56634@lunn.ch> <CAK8P3a1qS8kaXNqAtqMKpWGx05DHVHMYwKBD_j-Zs+DHbL5CNw@mail.gmail.com>
- <20201005210808.GE56634@lunn.ch> <CAK7LNASB6ashOzmL5XntkPSq9a+8VoWCowP5CAt+oX0o=0y=dA@mail.gmail.com>
-In-Reply-To: <CAK7LNASB6ashOzmL5XntkPSq9a+8VoWCowP5CAt+oX0o=0y=dA@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Mon, 12 Oct 2020 10:11:53 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2LxR7BXhMktQN-Q-JpYq0ziMZVPHhu47k3CQ9OuKWUTg@mail.gmail.com>
-Message-ID: <CAK8P3a2LxR7BXhMktQN-Q-JpYq0ziMZVPHhu47k3CQ9OuKWUTg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/2] Makefile.extrawarn: Add symbol for W=1
- warnings for today
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
+        id S1728203AbgJLIWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 04:22:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38292 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727350AbgJLIVv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 04:21:51 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2914EC0613D0;
+        Mon, 12 Oct 2020 01:21:51 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id p15so21971920ejm.7;
+        Mon, 12 Oct 2020 01:21:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=QgEFAZvIGUs9d79dSBvM16GKW6VzPnxLl+Fxh+U3V5E=;
+        b=smMjqkLUc83TdlNXcDcI3M3/ULwnTf55iu2dvwq3DZB3ijaghGEg1QucVM48Q59Xei
+         PhCJRKNkGb6mEr/MRzSqyVNV4fflsAxkglH2EZ7WsMPP0qYCAMMKkJfrlb0Te3v932Kj
+         u04qGb9yhQ1k2CE2QwduucTZPxyUTXc6f7vZLCvLmEUzn/FDxBGxmAIpH705hS2LrQ/+
+         +SOYOqNpqZrunAzwqopXYlPOD0/GDk4BgwqEYxQYMykZ+qxKMd/llLUBmr2yahu1s5mQ
+         T/ll3jwrsNZlgaP76L6IGirBg7GpdPamcuyboxa4oE4J03+nQ3j2KUDK6SR2oN8ZurC5
+         kFvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=QgEFAZvIGUs9d79dSBvM16GKW6VzPnxLl+Fxh+U3V5E=;
+        b=jvsQO+bCRycEugMQ7gPDYNqZXlnjLP1T1TMwhWDwxWtKcTresq5f86KiL7BEjKijo8
+         LKmkiiQp903+aF08ZRqqWU435vsmqO3HEWBcminolpODrImgacWDz0qoDJi2ADMUSfrR
+         rd8PKjd+TkTMMrGm6W1SUOpLw69/8aIq9ThmvsxcrmtQdRFlE9XPMAZe/2NH5cZGgCa3
+         TJvCZrHsK8Op1z2kunkRG7yVG1dfF21j5MdrrI7GUDQWzON1gTDrA6KOOzHpdYPWp9mn
+         HVXFq4EaJtZBXuArXY0+MYYlgeAwHBlzuPgdXUyfcDY+otUQrrEZ471foCoqm6wJEQYE
+         er7w==
+X-Gm-Message-State: AOAM532/ALYxLVzAqhDtbErsXOcYNX4OJy4mrqHCbQd2fyJ3TyNvUw7n
+        gJw05run25BZA4l8bBB67lk=
+X-Google-Smtp-Source: ABdhPJyLRdlG9ykmhX1eEdrQT1Otm/9oE2nWPUWVssRBAX1UfhecwcY5LXaqbq8XeUhyDJxeQhtshg==
+X-Received: by 2002:a17:906:82d7:: with SMTP id a23mr27024407ejy.66.1602490909845;
+        Mon, 12 Oct 2020 01:21:49 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f00:6a00:f90c:2907:849f:701c? (p200300ea8f006a00f90c2907849f701c.dip0.t-ipconnect.de. [2003:ea:8f00:6a00:f90c:2907:849f:701c])
+        by smtp.googlemail.com with ESMTPSA id v6sm10439545ejj.112.2020.10.12.01.21.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 12 Oct 2020 01:21:49 -0700 (PDT)
+Subject: [PATCH net-next v2 06/12] qtnfmac: use new function
+ dev_fetch_sw_netstats
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:Sz/4HpuF9P/8YEsnst7dQ9gcRH+VX6Ilep+tWTvxNsXk54N094a
- VrSB99Ayx4smNRrJirD07ho+R3ArnJAqwsomp1GmdTRZcNcMEqimGvspWQhVZgwHzxGG6Mp
- AtsGNl5GTzU8O9CcKwL/nBj9tXb6GWQ8XrWxACOp4vwOkLMbdPwAqFELQj2gWAoeW4ZhaO4
- lXAYZyQh0EFzSWtIfiTUQ==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:e2R8m4lqZqM=:PqQ+D/PrTk66rQSLp5Kai3
- 9nxGtE32LGI4bgjiuR0lmjF1US42V52PjUDuYXf0skN5+PX5ghvQ+dzwd92OMVLosFC75Pbfv
- mEwJ0dziobI1ubMXDHU1nscXReP9bNbWC33Z3CRZU2+M4FAqgprQuZs81NM2pjOhYqmHV3J22
- Rji1NcWXCJrgRiRUBkMx8UkGvfXQWc8EUwN0QbAu4BsPSkz52iRj8gmQlxWWzwdx9BNTOG8zP
- kjPc0oEV1q34Xap3jGsznhKO1/c+7tV+cO1HYwHl1htYY+AEx5fN8FHO0kLlkqxIMMfbZuQby
- 3npTgoeiVDMew3OcnllCJj/DZCvLxZ4EDqFs87vStXFucVSLnlX5sdYZR1IFCCZLjeRspMVEE
- tikebACMLA2q6UdebRJmfgEq4y5pWXqPDbrhY1FppCejrveH8yHkqwjbGe4KhLPWPVq8v6sqS
- 93dyt86APivtsdaBUjz0e+Mp5ocle9IzEi9ALvgjbsq39dqaXnVf7nl6XYClDTmrYnXrLdRxq
- 7kTvDi8vsD8JvhcOatsXR+UJ/Mo9WY14mEAkcaDOKqExkNScxof/e6xSaJIQyP2nYjaNmWeJy
- 3JQ5MkyAy/0D5/MyLAGfkgyITemTkr7mw1+FG4tH5bWt7o1KgGckr1Xd4EJyqB48UQ8LOxMiw
- rbbMcH1+F+trtMyr1CVRTtOu9JzfIZ325oAp6ZMDSAQJaClNrzKmztB6WS3BAiJWSsHLEoiDf
- igsffxiPpud9ZMHMdRMWr/eIiPt/fzPUTJwRjNoo7LqjP7kdg8C26PMuVcrLZTBnInzk0zbMB
- QfWzHCMsxOp3aNmGi37Cb2ZaYNP/y6TZXzkhENFC00Extxf9aDG9W0kBcHOJZxxGxVDbEhch5
- cj9o+5dpdpH0FA1Tagm+FKTHc/ogAYhgh8xkMxb/umbQmUnzkzjLVQ1ElhrDh6M71zmsdUVyB
- o64+PxaCFFtC3hmED0fNQenZaZHqB8VSogF0Sj1Oc2hb+k9brIWax
+        =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>,
+        Oliver Neukum <oneukum@suse.com>,
+        Igor Mitsyanko <imitsyanko@quantenna.com>,
+        Sergey Matyukevich <geomatsi@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        linux-rdma@vger.kernel.org,
+        Linux USB Mailing List <linux-usb@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        bridge@lists.linux-foundation.org
+References: <d77b65de-1793-f808-66b5-aaa4e7c8a8f0@gmail.com>
+Message-ID: <166259f2-084c-45d7-e610-2de2a0bdae06@gmail.com>
+Date:   Mon, 12 Oct 2020 10:14:08 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
+MIME-Version: 1.0
+In-Reply-To: <d77b65de-1793-f808-66b5-aaa4e7c8a8f0@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 11, 2020 at 3:04 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> On Tue, Oct 6, 2020 at 6:08 AM Andrew Lunn <andrew@lunn.ch> wrote:
->
->
-> I am not a big fan of KBUILD_CFLAGS_W1_<timestamp>
-> since it is ugly.
->
-> I'd like to start with adding individual flags
-> like drivers/gpu/drm/i915/Makefile, and see
-> how difficult it would be to maintain it.
+Simplify the code by using new function dev_fetch_sw_netstats().
 
-I don't really like that either, to be honest, mostly because that is
-somewhat incompatible with my plan to move all the warning flags
-out the command line and into _Pragma() lines in header files.
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Acked-by: Kalle Valo <kvalo@codeaurora.org>
+---
+ drivers/net/wireless/quantenna/qtnfmac/core.c | 23 +------------------
+ 1 file changed, 1 insertion(+), 22 deletions(-)
 
-> One drawback of your approach is that
-> you cannot set KBUILD_CFLAGS_W1_20200930
-> until you eliminate all the warnings in the
-> sub-directory in interest.
-> (i.e. all or nothing approach)
->
-> At best, you can only work out from 'old -> new' order
-> because KBUILD_CFLAGS_W1_20200326 is a suer-set of
-> KBUILD_CFLAGS_W1_20190907, which is a suer-set of
-> KBUILD_CFLAGS_W1_20190617 ...
->
->
->
-> If you add flags individually, you can start with
-> low-hanging fruits, or ones with higher priority
-> as Arnd mentions about -Wmissing-{declaration,prototypes}.
->
->
-> For example, you might be able to set
-> 'subdir-ccflags-y += -Wmissing-declarations'
-> to drivers/net/Makefile, while
-> 'subdir-ccflags-y += -Wunused-but-set-variable'
-> stays in drivers/net/ethernet/Makefile.
+diff --git a/drivers/net/wireless/quantenna/qtnfmac/core.c b/drivers/net/wireless/quantenna/qtnfmac/core.c
+index 374074dc7..bf6dbeb61 100644
+--- a/drivers/net/wireless/quantenna/qtnfmac/core.c
++++ b/drivers/net/wireless/quantenna/qtnfmac/core.c
+@@ -139,34 +139,13 @@ static void qtnf_netdev_get_stats64(struct net_device *ndev,
+ 				    struct rtnl_link_stats64 *stats)
+ {
+ 	struct qtnf_vif *vif = qtnf_netdev_get_priv(ndev);
+-	unsigned int start;
+-	int cpu;
+ 
+ 	netdev_stats_to_stats64(stats, &ndev->stats);
+ 
+ 	if (!vif->stats64)
+ 		return;
+ 
+-	for_each_possible_cpu(cpu) {
+-		struct pcpu_sw_netstats *stats64;
+-		u64 rx_packets, rx_bytes;
+-		u64 tx_packets, tx_bytes;
+-
+-		stats64 = per_cpu_ptr(vif->stats64, cpu);
+-
+-		do {
+-			start = u64_stats_fetch_begin_irq(&stats64->syncp);
+-			rx_packets = stats64->rx_packets;
+-			rx_bytes = stats64->rx_bytes;
+-			tx_packets = stats64->tx_packets;
+-			tx_bytes = stats64->tx_bytes;
+-		} while (u64_stats_fetch_retry_irq(&stats64->syncp, start));
+-
+-		stats->rx_packets += rx_packets;
+-		stats->rx_bytes += rx_bytes;
+-		stats->tx_packets += tx_packets;
+-		stats->tx_bytes += tx_bytes;
+-	}
++	dev_fetch_sw_netstats(stats, vif->stats64);
+ }
+ 
+ /* Netdev handler for transmission timeout.
+-- 
+2.28.0
 
-I agree with the goal though. In particular it may be helpful to pick
-a set of warning flags to always be enabled without also setting
--Wextra, which has different meanings depending on compiler
-version, or between gcc and clang.
 
-I wonder how different they really are, and we can probably find
-out from https://github.com/Barro/compiler-warnings, but I have
-not checked myself.
-
-      Arnd
