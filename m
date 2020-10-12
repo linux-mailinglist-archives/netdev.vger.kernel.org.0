@@ -2,107 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8579D28ADCE
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 07:45:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D3CD28ADD8
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 07:48:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726685AbgJLFpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 01:45:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
+        id S1726989AbgJLFst (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 01:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726072AbgJLFpO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 01:45:14 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83927C0613CE;
-        Sun, 11 Oct 2020 22:45:14 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1602481513;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UMpL/R1nLesM5wL3p0yEU/9E+n3FxnEiinXlmtJm2FI=;
-        b=mVMfimr81cirXB82mVb3JNfX1mMrb2BxY8zjaCdniW1Dibu0CvySmGyfieIz+/3DKrHemw
-        Y2ZvxX6nKHTp+LNd/wUeqHHnjfHz7pz8nHwGhYiVlMlUt9kSyQUzbWY7lXsLK4PMvk30VY
-        Ogbyy+Wjl5HS4vxhNOoccoGZCV6CGAp90RY3B4YOSq6mvfkiy8VAtdRMp2jHfUk1JPIXWi
-        ZLRWizrmpxdgZQFUMFjQvg45WhBIOR60LupOUQQCDF/G8aDxO9eeWoFCUKPvMTqz+EMjQP
-        7HpHBBbF2Igvh3FeRArU7IpFhTyXZBz2Ti/9vrz3I0Aq/J5V+AnGO1FxnYg2Fw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1602481513;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UMpL/R1nLesM5wL3p0yEU/9E+n3FxnEiinXlmtJm2FI=;
-        b=YARPKng4jcx1hiYl0VOxyal2Iw12Q5CCDn6W8Sws9lXJvH0niNbZVfknb9Wwv/VFmABW9W
-        /Dc28l0RPuzVBTAA==
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Kurt Kanzenbach <kurt@kmk-computers.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] dt-bindings: net: dsa: b53: Add YAML bindings
-In-Reply-To: <08c1a0f5-84e1-1c92-2c57-466a28d0346a@gmail.com>
-References: <20201010164627.9309-1-kurt@kmk-computers.de> <20201010164627.9309-2-kurt@kmk-computers.de> <3249c764-ec4a-26be-a52d-e9e85f3162ea@gmail.com> <877drxp3i5.fsf@kmk-computers.de> <08c1a0f5-84e1-1c92-2c57-466a28d0346a@gmail.com>
-Date:   Mon, 12 Oct 2020 07:45:10 +0200
-Message-ID: <87o8l8f15l.fsf@kurt>
+        with ESMTP id S1726072AbgJLFsr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 01:48:47 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F83C0613CE
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 22:48:46 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kRqhN-0008SA-GX; Mon, 12 Oct 2020 07:48:41 +0200
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kRqhL-0002Ue-T7; Mon, 12 Oct 2020 07:48:39 +0200
+Date:   Mon, 12 Oct 2020 07:48:39 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Bruno Thomsen <bruno.thomsen@gmail.com>
+Cc:     Fabio Estevam <festevam@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        David Jander <david@protonic.nl>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Marek Vasut <marex@denx.de>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: PHY reset question
+Message-ID: <20201012054839.n6do5ruxhbhc7h7n@pengutronix.de>
+References: <20201006080424.GA6988@pengutronix.de>
+ <CAOMZO5Ds7mm4dWdt_a+HU=V40zjp006JQJbozRCicx9yiqacgg@mail.gmail.com>
+ <CAH+2xPD=CE+pk_cEC=cLv1nebBBg7X+xDpOFANf3rQ4V2+2Cvw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAH+2xPD=CE+pk_cEC=cLv1nebBBg7X+xDpOFANf3rQ4V2+2Cvw@mail.gmail.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 07:33:52 up 331 days, 20:52, 351 users,  load average: 0.00, 0.03,
+ 0.01
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
+Hi all,
 
-On Sun Oct 11 2020, Florian Fainelli wrote:
-> On 10/11/2020 1:32 AM, Kurt Kanzenbach wrote:
->> How should we proceed? Adding the missing compatible strings and ports
->> to the DTS files? Or adjusting the include files?
->
-> The include is correct as it provides the fallback family string which=20
-> is what the driver will be looking for unless we do not provide a chip=20
-> compatible. The various DTS should be updated to contain both the chip=20
-> compatible and the fallback family (brcm,bcm5301x-srab) string, I will=20
-> update the various DTS and submit these for review later next week.
+thank you for the feedback!
 
-OK. It's not just the compatible strings, there are other issues as
-well. You can check with `make dtbs_check DT_SCHEMA_FILES=3Dpath/to/b53.yam=
-l'.
+On Fri, Oct 09, 2020 at 04:25:49PM +0200, Bruno Thomsen wrote:
+> Hi Fabio and Oleksij
+> 
+> Den ons. 7. okt. 2020 kl. 11.50 skrev Fabio Estevam <festevam@gmail.com>:
+> >
+> > Hi Oleksij,
+> >
+> > On Tue, Oct 6, 2020 at 5:05 AM Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+> > >
+> > > Hello PHY experts,
+> > >
+> > > Short version:
+> > > what is the proper way to handle the PHY reset before identifying PHY?
+> > >
+> > > Long version:
+> > > I stumbled over following issue:
+> > > If PHY reset is registered within PHY node. Then, sometimes,  we will not be
+> > > able to identify it (read PHY ID), because PHY is under reset.
+> > >
+> > > mdio {
+> > >         compatible = "virtual,mdio-gpio";
+> > >
+> > >         [...]
+> > >
+> > >         /* Microchip KSZ8081 */
+> > >         usbeth_phy: ethernet-phy@3 {
+> > >                 reg = <0x3>;
+> > >
+> > >                 interrupts-extended = <&gpio5 12 IRQ_TYPE_LEVEL_LOW>;
+> > >                 reset-gpios = <&gpio5 11 GPIO_ACTIVE_LOW>;
+> > >                 reset-assert-us = <500>;
+> > >                 reset-deassert-us = <1000>;
+> > >         };
+> > >
+> > >         [...]
+> > > };
+> > >
+> > > On simple boards with one PHY per MDIO bus, it is easy to workaround by using
+> > > phy-reset-gpios withing MAC node (illustrated in below DT example), instead of
+> > > using reset-gpios within PHY node (see above DT example).
+> > >
+> > > &fec {
+> > >         [...]
+> > >         phy-mode = "rmii";
+> > >         phy-reset-gpios = <&gpio4 12 GPIO_ACTIVE_LOW>;
+> > >         [...]
+> >
+> > I thought this has been fixed by Bruno's series:
+> > https://www.spinics.net/lists/netdev/msg673611.html
+> 
+> Yes, that has fixed the Microchip/Micrel PHY ID auto detection
+> issue. I have send a DTS patch v3 that makes use of the newly
+> added device tree parameter:
+> https://lkml.org/lkml/2020/9/23/595
 
->
-> Then we could imagine me taking this YAML change through the Broadcom=20
-> ARM SoC pull requests that way no new regressions are introduced.
->
-> Sounds good?
+This way is suitable only for boards with single PHY and single reset
+line. But it is not scale on boards with multiple PHY and multiple reset
+lines.
 
-Sounds like a plan. But, Rob or other device tree maintainers should
-have a look at the YAML file to spot issues in there first.
+So far, it looks like using compatible like "ethernet-phy-idXXXX.XXXX"
+is the only way to go.
 
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl+D7WYACgkQeSpbgcuY
-8KYI5w//YG1MK/Zs2OSAzXBXPj4K25Z7xSLXkCq+A0IBOpMhCvwWsBTTCVqZ0SUv
-ERu7QqaYlsPW3qL81v4M12FVpAXGuGbB5j4rwunTGidSDeRoj89PCa5hVLsbLe0x
-3Bu+xzjuLxR5tsNjC3AGgh/S4vibVenxnYn9rF3d5jxyuPC0mpcyc0hg7Zv6Eup9
-/+bly+0mtzIz1YVp6UZPmtmzQ4n+rLHZShsVtqJeiROd5XPebeCBBta50PO8C8mn
-y9M7AvVLugrpgg/o4nHsQHeB0Tcnv1W6UBYlRUZlTpyXSTQEuQW9CdUMT/TId3Ky
-0Lymem0rB+1NSX1GwAl9dfjtxU40LRpj1VRmKEWMYBmIDYxsLOvZTAx8sFHWPv96
-HoVPrOgkEOrhgQE6TAcSoRyyvM6cib1SY9M80Rzld3ZHPjy1GEx8WGMYeCBwKv79
-pWYv8DIhExn8Ye2aEX6OTCvJ+LQbzggChfc7rZcmogjoa/qIPiWoDHJ11SX0aOp7
-u39JP42NkgG3Z9VZtrA8z9eG0sVV5Bq4rEY6RUrQ7PXr3tUplFzi3BFAywHW3OJ/
-/r+IroI3kjBOHcbeHWguTiBT28ku1zbwPEE05bIlCrW4htgcw/PW+7Ooc0W7pXOG
-cgOu20D6XenODEKuRi2Q7mlRXEv9LwGakmAZAmLgTvJa8HHruWI=
-=tqms
------END PGP SIGNATURE-----
---=-=-=--
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
