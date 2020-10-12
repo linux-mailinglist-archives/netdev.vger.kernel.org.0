@@ -2,42 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 83F7D28C0BC
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 21:08:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A077F28C0A8
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 21:06:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391087AbgJLTF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 15:05:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53900 "EHLO mail.kernel.org"
+        id S2391577AbgJLTFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 15:05:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53898 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391312AbgJLTEY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Oct 2020 15:04:24 -0400
+        id S2391313AbgJLTEZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Oct 2020 15:04:25 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D688F22244;
-        Mon, 12 Oct 2020 19:04:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7EF582224A;
+        Mon, 12 Oct 2020 19:04:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602529447;
-        bh=d2HYbOsQ1yl+qpVnWz/MHk6rX10ap3uZgRn5HeIqMAo=;
+        s=default; t=1602529452;
+        bh=ptha9/6vbYax2Cmn6fZT5FA9ybQKKoEsnoXVXkEp964=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jbpiy7mVmrTFYV5LTr1qFpkAWP13Vvp/WSQKnqKRhTMAcULzVuq6VQ5zX+vf/rYmD
-         MuGLwnB+/xMtF2YPIrSiyAB+KYvAonuULBrQ0u7rIRcCCaJjeXTVsWSV3i75XP0Q4H
-         H0ILPqBc+mDkxXS2aJKetDuWu4AJEPWIVXT8UpJk=
+        b=VF/9wOZqEJyd4EfFju3jWAF1p64vHGeil/GCMMulJB2dM146MGCPCAsZCr967qmsD
+         gkqlAc38WS91J9ry9rR1z5S8+VsLHLyayk/Z0/eSfL+XcE9Ut8H43esuQu9Rc/A/4C
+         lVuE1LNgnGqOv9qymu8szaWoIRVVoGcQp1IgobG8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wilken Gottwalt <wilken.gottwalt@mailbox.org>,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 11/11] net: usb: qmi_wwan: add Cellient MPL200 card
-Date:   Mon, 12 Oct 2020 15:03:53 -0400
-Message-Id: <20201012190353.3279662-11-sashal@kernel.org>
+Cc:     Jamie Iles <jamie@nuviainc.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 2/6] net/fsl: quieten expected MDIO access failures
+Date:   Mon, 12 Oct 2020 15:04:04 -0400
+Message-Id: <20201012190408.3279779-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201012190353.3279662-1-sashal@kernel.org>
-References: <20201012190353.3279662-1-sashal@kernel.org>
+In-Reply-To: <20201012190408.3279779-1-sashal@kernel.org>
+References: <20201012190408.3279779-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -45,32 +44,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wilken Gottwalt <wilken.gottwalt@mailbox.org>
+From: Jamie Iles <jamie@nuviainc.com>
 
-[ Upstream commit 28802e7c0c9954218d1830f7507edc9d49b03a00 ]
+[ Upstream commit 1ec8e74855588cecb2620b28b877c08f45765374 ]
 
-Add usb ids of the Cellient MPL200 card.
+MDIO reads can happen during PHY probing, and printing an error with
+dev_err can result in a large number of error messages during device
+probe.  On a platform with a serial console this can result in
+excessively long boot times in a way that looks like an infinite loop
+when multiple busses are present.  Since 0f183fd151c (net/fsl: enable
+extended scanning in xgmac_mdio) we perform more scanning so there are
+potentially more failures.
 
-Signed-off-by: Wilken Gottwalt <wilken.gottwalt@mailbox.org>
-Acked-by: Bjørn Mork <bjorn@mork.no>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reduce the logging level to dev_dbg which is consistent with the
+Freescale enetc driver.
+
+Cc: Jeremy Linton <jeremy.linton@arm.com>
+Signed-off-by: Jamie Iles <jamie@nuviainc.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/qmi_wwan.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/freescale/xgmac_mdio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 3e3dca59b7a69..2f79a5f1552d4 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1301,6 +1301,7 @@ static const struct usb_device_id products[] = {
- 	{QMI_QUIRK_SET_DTR(0x2cb7, 0x0104, 4)},	/* Fibocom NL678 series */
- 	{QMI_FIXED_INTF(0x0489, 0xe0b4, 0)},	/* Foxconn T77W968 LTE */
- 	{QMI_FIXED_INTF(0x0489, 0xe0b5, 0)},	/* Foxconn T77W968 LTE with eSIM support*/
-+	{QMI_FIXED_INTF(0x2692, 0x9025, 4)},    /* Cellient MPL200 (rebranded Qualcomm 05c6:9025) */
- 
- 	/* 4. Gobi 1000 devices */
- 	{QMI_GOBI1K_DEVICE(0x05c6, 0x9212)},	/* Acer Gobi Modem Device */
+diff --git a/drivers/net/ethernet/freescale/xgmac_mdio.c b/drivers/net/ethernet/freescale/xgmac_mdio.c
+index c82c85ef5fb34..61cb4ba0005bd 100644
+--- a/drivers/net/ethernet/freescale/xgmac_mdio.c
++++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
+@@ -229,7 +229,7 @@ static int xgmac_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
+ 	/* Return all Fs if nothing was there */
+ 	if ((xgmac_read32(&regs->mdio_stat, endian) & MDIO_STAT_RD_ER) &&
+ 	    !priv->has_a011043) {
+-		dev_err(&bus->dev,
++		dev_dbg(&bus->dev,
+ 			"Error while reading PHY%d reg at %d.%hhu\n",
+ 			phy_id, dev_addr, regnum);
+ 		return 0xffff;
 -- 
 2.25.1
 
