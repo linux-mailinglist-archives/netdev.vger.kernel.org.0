@@ -2,214 +2,313 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB5FC28B16A
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 11:24:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EB4028B177
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 11:24:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729272AbgJLJYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 05:24:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47912 "EHLO
+        id S1729353AbgJLJYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 05:24:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726104AbgJLJYL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 05:24:11 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6774C0613CE;
-        Mon, 12 Oct 2020 02:24:10 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id t9so18307362wrq.11;
-        Mon, 12 Oct 2020 02:24:10 -0700 (PDT)
+        with ESMTP id S1726104AbgJLJYi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 05:24:38 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3FCC0613CE
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:24:37 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id u8so22263189ejg.1
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:24:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=DMVGRL2h5VknQLtG+XBcBI/2PJssThsIUXIEgYmYsSU=;
-        b=uKFHU+okcDjb6Fb/zP+lA9f+wlJxiFRf7FlqX2XxTyuTAKieQcr+4zEW7fj4A8Nodv
-         UF+rwE5tD2Honok8Btx3sX6sPae46NxFjByl9kbbCK6ESCFKenq7EwhoEVom6Bihw8o8
-         JwSALjaIOzE1qYYNL5Z5adiyP5tSNlQubxoSXrK/Q/orJAeILuAmOveunVcy+BUGzlKh
-         GiyXc7DjBg3xpg2bF/WuWixArQ5fEkUFuXU6lyRn3lcpiitXWoGX4CX48uXPPd3VpwYe
-         HPOJndvhcauDFtUV5/TmvJEWQsDs07mw7cLnIx/vGlrqjxN8HNJwzQgzNPlmNJICIUK+
-         Nd0w==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Fu0PSy2Z1gVPhwGaBv6ckpIJw9tmz1tQHvR3iVcBB0Q=;
+        b=A80XE3ZXbYucOOpvVKTmr3q4tTTAkKCeISSB2P+TtJj8qjAE9ehcyF/vEknmF+3S0i
+         izxjK0BnzjTvGPG72QEZQXSEw2QfHYIn48aK91kJfxrHIL/gi5Q2A74iWTs4GjQzhbd0
+         7h6qMlSfDXNRWipFNICUv3kVESFsUZU2hRQ6xs43gdB5vxQ9otfqnpP1npgPN/X+8XL+
+         Sd3frs/41UKo8nrOqUWLQeE3+fFs3BSNkbVj2k80zTG1bIbzmhTVIhdSRlQjvaY5bNb+
+         U5hd6OoRM2hGWc9FX23U2h77GXo6+xhLd6MkSdMO5yE+W7j3YKntrI5Jf4LrTrbyB2iM
+         hhSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=DMVGRL2h5VknQLtG+XBcBI/2PJssThsIUXIEgYmYsSU=;
-        b=Ku7+aPhQPMMJ/r0tqU2La/x6Wv1viUaqthJN93lDREzB0lWKUFrDoOTHWsndLZpSWA
-         ABBAow1rw9sUqkiUoT1NoBweX0eiG1Wrbby6Upy3mhEm5U6r3puftkCsx44z2Zh937p8
-         hPbQ5AuwVP5rT5WIVaoBtyFUyxerHwGxsre4XjHCtzMZ0KYeCg6P+Hgb9xl4X/dyivFZ
-         lEbfZpfnn1m01hX921/fE0OgDkgSqI6KhK7+cFBKqWH2dQ8WOA/lV38jlxEO7TVIofqA
-         HrxrdjWY0jSXT3vmDnHoRNjGFkfPwD7oYuFhCag3ebpkGVtedQC6kziZcTLMM+mbjgVh
-         02Lg==
-X-Gm-Message-State: AOAM531rC2RaAGUkzRe51Z9/foBYwM8tCd4ZJz8tuP9UfiTBdKyDR/WL
-        J4jNIkm+oXTxGqdC4gzzlPk=
-X-Google-Smtp-Source: ABdhPJxWeGiqNCh1RC5V9AJmojzSnIkqs8imzlEXRVq0FqWUz6cdLVCww51FepImaJs0WTrh5TtGDQ==
-X-Received: by 2002:adf:9f4c:: with SMTP id f12mr16937624wrg.108.1602494649624;
-        Mon, 12 Oct 2020 02:24:09 -0700 (PDT)
-Received: from [192.168.8.147] ([37.167.93.109])
-        by smtp.gmail.com with ESMTPSA id c16sm25066726wrx.31.2020.10.12.02.24.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Oct 2020 02:24:08 -0700 (PDT)
-Subject: Re: [External] Re: [PATCH] mm: proc: add Sock to /proc/meminfo
-To:     Muchun Song <songmuchun@bytedance.com>,
-        Eric Dumazet <edumazet@google.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Greg KH <gregkh@linuxfoundation.org>, rafael@kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Shakeel Butt <shakeelb@google.com>,
-        Will Deacon <will@kernel.org>, Michal Hocko <mhocko@suse.com>,
-        Roman Gushchin <guro@fb.com>, Neil Brown <neilb@suse.de>,
-        rppt@kernel.org, Sami Tolvanen <samitolvanen@google.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Florian Westphal <fw@strlen.de>, gustavoars@kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Thomas Gleixner <tglx@linutronix.de>, dave@stgolabs.net,
-        Michel Lespinasse <walken@google.com>,
-        Jann Horn <jannh@google.com>, chenqiwu@xiaomi.com,
-        christophe.leroy@c-s.fr, Minchan Kim <minchan@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Kees Cook <keescook@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>
-References: <20201010103854.66746-1-songmuchun@bytedance.com>
- <CAM_iQpUQXctR8UBNRP6td9dWTA705tP5fWKj4yZe9gOPTn_8oQ@mail.gmail.com>
- <CAMZfGtUhVx_iYY3bJZRY5s1PG0N1mCsYGS9Oku8cTqPiMDze-g@mail.gmail.com>
- <CANn89iKprp7WYeZy4RRO5jHykprnSCcVBc7Tk14Ui_MA9OK7Fg@mail.gmail.com>
- <CAMZfGtXVKER_GM-wwqxrUshDzcEg9FkS3x_BaMTVyeqdYPGSkw@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <9262ea44-fc3a-0b30-54dd-526e16df85d1@gmail.com>
-Date:   Mon, 12 Oct 2020 11:24:05 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Fu0PSy2Z1gVPhwGaBv6ckpIJw9tmz1tQHvR3iVcBB0Q=;
+        b=cICRnteJaeEAyvOENuvt+W3/OwzzEr0DP3iwPXHcP7cUAdUyKpZ3JK8Z+jIRA8mgSA
+         IQ8KkGP4ud7LBoxQVwcBLLiL7OEu0Smlky9ONMt+fxxvKdz9ICEcy9sr3hW/W+Y1PwhQ
+         jgU7ixo/o/+xAlqBz3Yg0YE1PRUBba206VWT4LCOr29TvabeMASE1SCfhMxgPG4RpDt3
+         1dhpVGRYAiwjZomts6vezx0ldaUd3fqOMGyeIY43LnM/M386iQ/JhHxKUrDm8wCXX2bX
+         Hkr4/mZkHP+s2WjYvXHz+oP6KAxP3WnkHx96ds46p6c+2l4/iszOs/tnoqxCx8q+stwQ
+         A1Vg==
+X-Gm-Message-State: AOAM530tf0DecljVw9HUAmLWN43ZioyRlsps/E27w9H/4ZoWDYO+cbns
+        Fr3wDNM1jX7ruO7oDDNqrccWVaIUc1uufxKeuSu4oA==
+X-Google-Smtp-Source: ABdhPJygvawRcBQ+4JMlfaN42oGGSqBP4c2Y27cp+3WQn9dYwdVfW42PjgWMBjFfDu7q0Eo2rTRmoNtVJMUjP3uCe0c=
+X-Received: by 2002:a17:906:fb86:: with SMTP id lr6mr26914950ejb.510.1602494676244;
+ Mon, 12 Oct 2020 02:24:36 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAMZfGtXVKER_GM-wwqxrUshDzcEg9FkS3x_BaMTVyeqdYPGSkw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <1602275611-7440-1-git-send-email-loic.poulain@linaro.org> <20201011115932.3d67ba52@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201011115932.3d67ba52@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Mon, 12 Oct 2020 11:30:08 +0200
+Message-ID: <CAMZdPi_RDSi-STO3EduoG0=s_75RZYWm3CmfWwhsmg6y1bk_hQ@mail.gmail.com>
+Subject: Re: [PATCH] net: Add mhi-net driver
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, Hemant Kumar <hemantk@codeaurora.org>,
+        netdev@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Jakub, and thanks for your review.
 
+On Sun, 11 Oct 2020 at 20:59, Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Fri,  9 Oct 2020 22:33:31 +0200 Loic Poulain wrote:
+> > This patch adds a new network driver implementing MHI transport for
+> > network packets. Packets can be in any format, though QMAP (rmnet)
+> > is the usual protocol (flow control + PDN mux).
+> >
+> > It support two MHI devices, IP_HW0 which is, the path to the IPA
+> > (IP accelerator) on qcom modem, And IP_SW0 which is the software
+> > driven IP path (to modem CPU).
+> >
+> > Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+>
+> > +static int mhi_ndo_xmit(struct sk_buff *skb, struct net_device *ndev)
+> > +{
+> > +     struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
+> > +     struct mhi_device *mdev = mhi_netdev->mdev;
+> > +     int err;
+> > +
+> > +     /* Only support for single buffer transfer for now */
+> > +     err = skb_linearize(skb);
+>
+> Since you don't advertise NETIF_F_SG you shouldn't have to call this,
+> no?
 
-On 10/12/20 10:39 AM, Muchun Song wrote:
-> On Mon, Oct 12, 2020 at 3:42 PM Eric Dumazet <edumazet@google.com> wrote:
->>
->> On Mon, Oct 12, 2020 at 6:22 AM Muchun Song <songmuchun@bytedance.com> wrote:
->>>
->>> On Mon, Oct 12, 2020 at 2:39 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->>>>
->>>> On Sat, Oct 10, 2020 at 3:39 AM Muchun Song <songmuchun@bytedance.com> wrote:
->>>>>
->>>>> The amount of memory allocated to sockets buffer can become significant.
->>>>> However, we do not display the amount of memory consumed by sockets
->>>>> buffer. In this case, knowing where the memory is consumed by the kernel
->>>>
->>>> We do it via `ss -m`. Is it not sufficient? And if not, why not adding it there
->>>> rather than /proc/meminfo?
->>>
->>> If the system has little free memory, we can know where the memory is via
->>> /proc/meminfo. If a lot of memory is consumed by socket buffer, we cannot
->>> know it when the Sock is not shown in the /proc/meminfo. If the unaware user
->>> can't think of the socket buffer, naturally they will not `ss -m`. The
->>> end result
->>> is that we still don’t know where the memory is consumed. And we add the
->>> Sock to the /proc/meminfo just like the memcg does('sock' item in the cgroup
->>> v2 memory.stat). So I think that adding to /proc/meminfo is sufficient.
->>>
->>>>
->>>>>  static inline void __skb_frag_unref(skb_frag_t *frag)
->>>>>  {
->>>>> -       put_page(skb_frag_page(frag));
->>>>> +       struct page *page = skb_frag_page(frag);
->>>>> +
->>>>> +       if (put_page_testzero(page)) {
->>>>> +               dec_sock_node_page_state(page);
->>>>> +               __put_page(page);
->>>>> +       }
->>>>>  }
->>>>
->>>> You mix socket page frag with skb frag at least, not sure this is exactly
->>>> what you want, because clearly skb page frags are frequently used
->>>> by network drivers rather than sockets.
->>>>
->>>> Also, which one matches this dec_sock_node_page_state()? Clearly
->>>> not skb_fill_page_desc() or __skb_frag_ref().
->>>
->>> Yeah, we call inc_sock_node_page_state() in the skb_page_frag_refill().
->>> So if someone gets the page returned by skb_page_frag_refill(), it must
->>> put the page via __skb_frag_unref()/skb_frag_unref(). We use PG_private
->>> to indicate that we need to dec the node page state when the refcount of
->>> page reaches zero.
->>>
->>
->> Pages can be transferred from pipe to socket, socket to pipe (splice()
->> and zerocopy friends...)
->>
->>  If you want to track TCP memory allocations, you always can look at
->> /proc/net/sockstat,
->> without adding yet another expensive memory accounting.
-> 
-> The 'mem' item in the /proc/net/sockstat does not represent real
-> memory usage. This is just the total amount of charged memory.
-> 
-> For example, if a task sends a 10-byte message, it only charges one
-> page to memcg. But the system may allocate 8 pages. Therefore, it
-> does not truly reflect the memory allocated by the above memory
-> allocation path. We can see the difference via the following message.
-> 
-> cat /proc/net/sockstat
->   sockets: used 698
->   TCP: inuse 70 orphan 0 tw 617 alloc 134 mem 13
->   UDP: inuse 90 mem 4
->   UDPLITE: inuse 0
->   RAW: inuse 1
->   FRAG: inuse 0 memory 0
-> 
-> cat /proc/meminfo | grep Sock
->   Sock:              13664 kB
-> 
-> The /proc/net/sockstat only shows us that there are 17*4 kB TCP
-> memory allocations. But apply this patch, we can see that we truly
-> allocate 13664 kB(May be greater than this value because of per-cpu
-> stat cache). Of course the load of the example here is not high. In
-> some high load cases, I believe the difference here will be even
-> greater.
-> 
+Right, good to know.
 
-This is great, but you have not addressed my feedback.
+>
+> > +     if (unlikely(err)) {
+> > +             kfree_skb(skb);
+> > +             mhi_netdev->stats.tx_dropped++;
+> > +             return NETDEV_TX_OK;
+> > +     }
+> > +
+> > +     skb_tx_timestamp(skb);
+> > +
+> > +     /* mhi_queue_skb is not thread-safe, but xmit is serialized by the
+> > +      * network core. Once MHI core will be thread save, migrate to
+> > +      * NETIF_F_LLTX support.
+> > +      */
+> > +     err = mhi_queue_skb(mdev, DMA_TO_DEVICE, skb, skb->len, MHI_EOT);
+> > +     if (err) {
+> > +             netdev_err(ndev, "mhi_queue_skb err %d\n", err);
+>
+> This needs to be at least rate limited.
 
-TCP memory allocations are bounded by /proc/sys/net/ipv4/tcp_mem
+Yes, I've missed removing that message, going to keep rate-limited version
+for non-busy error case.
 
-Fact that the memory is forward allocated or not is a detail.
+>
+> > +             netif_stop_queue(ndev);
+>
+> What's going to start the queue if it's a transient errors and not
+> NETDEV_TX_BUSY?
+>
+> > +             return (err == -ENOMEM) ? NETDEV_TX_BUSY : err;
+>
+> You should drop the packet if it's not NETDEV_TX_BUSY, and return
+> NETDEV_TX_OK. Don't return negative errors from ndo_xmit.
 
-If you think we must pre-allocate memory, instead of forward allocations,
-your patch does not address this. Adding one line per consumer in /proc/meminfo looks
-wrong to me.
+Ok, going to determine which error it is and act accordingly.
 
-If you do not want 9.37 % of physical memory being possibly used by TCP,
-just change /proc/sys/net/ipv4/tcp_mem accordingly ?
+>
+> > +     }
+> > +
+> > +     return NETDEV_TX_OK;
+> > +}
+> > +
+> > +static void mhi_ndo_get_stats64(struct net_device *ndev,
+> > +                             struct rtnl_link_stats64 *stats)
+> > +{
+> > +     struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
+> > +
+> > +     stats->rx_packets = mhi_netdev->stats.rx_packets;
+> > +     stats->rx_bytes = mhi_netdev->stats.rx_bytes;
+> > +     stats->rx_errors = mhi_netdev->stats.rx_errors;
+> > +     stats->rx_dropped = mhi_netdev->stats.rx_dropped;
+> > +     stats->tx_packets = mhi_netdev->stats.tx_packets;
+> > +     stats->tx_bytes = mhi_netdev->stats.tx_bytes;
+> > +     stats->tx_errors = mhi_netdev->stats.tx_errors;
+> > +     stats->tx_dropped = mhi_netdev->stats.tx_dropped;
+> > +}
+>
+> Can you use
 
+?
 
+>
+> > +static void mhi_net_dl_callback(struct mhi_device *mhi_dev,
+> > +                             struct mhi_result *mhi_res)
+> > +{
+> > +     struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
+> > +     struct sk_buff *skb = mhi_res->buf_addr;
+> > +
+> > +     atomic_dec(&mhi_netdev->stats.rx_queued);
+> > +
+> > +     if (mhi_res->transaction_status) {
+> > +             mhi_netdev->stats.rx_errors++;
+> > +             kfree_skb(skb);
+> > +     } else {
+> > +             mhi_netdev->stats.rx_packets++;
+> > +             mhi_netdev->stats.rx_bytes += mhi_res->bytes_xferd;
+> > +
+> > +             skb->protocol = htons(ETH_P_MAP);
+> > +             skb_put(skb, mhi_res->bytes_xferd);
+> > +             netif_rx(skb);
+> > +     }
+> > +
+> > +     schedule_delayed_work(&mhi_netdev->rx_refill, 0);
+>
+> Scheduling a work to replace every single RX buffer looks quite
+> inefficient. Any chance you can do batching? I assume mhi_queue_skb()
+> has to be able to sleep?
+
+There is already some kind of batching, the hardware can perform interrupt
+coalescing (called interrupt mitigation in case of MHI), which, in high traffic
+case will cause the dl_callback to be called in row for multiple packets, and
+so the work to be scheduled only once. mhi_queue_skb does not sleep.
+
+However we could implement some additional mitigation by e.g. only scheduling
+the work if the current rx-queue fall under a certain limit (e.g.
+queue size / 2), like it is
+done in virtio-net. What do you think?
+
+>
+> > +static void mhi_net_rx_refill_work(struct work_struct *work)
+> > +{
+> > +     struct mhi_net_dev *mhi_netdev = container_of(work, struct mhi_net_dev,
+> > +                                                   rx_refill.work);
+> > +     struct net_device *ndev = mhi_netdev->ndev;
+> > +     struct mhi_device *mdev = mhi_netdev->mdev;
+> > +     struct sk_buff *skb;
+> > +     int err;
+> > +
+> > +     if (!netif_running(ndev))
+> > +             return;
+>
+> How can this happen? You cancel the work from ndo_stop.
+
+Right, If the work is executed while we are currently canceling it, I wanted
+to prevent the work to fully run and reschedule. But yes it's not strictly
+necessary since cancel_work_sync will 1. wait for the job to exit and
+2. dequeue the work. Will remove that.
+
+>
+> > +     do {
+> > +             skb = netdev_alloc_skb(ndev, READ_ONCE(ndev->mtu));
+> > +             if (unlikely(!skb)) {
+> > +                     /* If we are starved of RX buffers, retry later */
+> > +                     if (!atomic_read(&mhi_netdev->stats.rx_queued))
+> > +                             schedule_delayed_work(&mhi_netdev->rx_refill, HZ / 2);
+> > +                     break;
+> > +             }
+> > +
+> > +             err = mhi_queue_skb(mdev, DMA_FROM_DEVICE, skb, ndev->mtu,
+> > +                                 MHI_EOT);
+> > +             if (err) {
+> > +                     atomic_dec(&mhi_netdev->stats.rx_queued);
+>
+> This can never fail with an empty ring? No need to potentially
+> reschedule the work here?
+
+Well, it can fail because IO/transient error, so yes, I need to check that
+case and reschedule if necessary.
+
+>
+> > +                     kfree_skb(skb);
+> > +                     break;
+> > +             }
+> > +
+> > +             atomic_inc(&mhi_netdev->stats.rx_queued);
+> > +
+> > +     } while (1);
+> > +}
+> > +
+> > +static int mhi_net_probe(struct mhi_device *mhi_dev,
+> > +                      const struct mhi_device_id *id)
+> > +{
+> > +     const char *netname = (char *)id->driver_data;
+> > +     struct mhi_net_dev *mhi_netdev;
+> > +     struct net_device *ndev;
+> > +     struct device *dev = &mhi_dev->dev;
+> > +     int err;
+> > +
+> > +     ndev = alloc_netdev(sizeof(*mhi_netdev), netname, NET_NAME_PREDICTABLE,
+> > +                         mhi_net_setup);
+> > +     if (!ndev) {
+> > +             err = -ENOMEM;
+> > +             return err;
+>
+> return -ENOMEM;
+>
+> > +     }
+> > +
+> > +     mhi_netdev = netdev_priv(ndev);
+> > +     dev_set_drvdata(dev, mhi_netdev);
+> > +     mhi_netdev->ndev = ndev;
+> > +     mhi_netdev->mdev = mhi_dev;
+>
+> SET_NETDEV_DEV() ?
+
+Ok.
+
+>
+> > +     INIT_DELAYED_WORK(&mhi_netdev->rx_refill, mhi_net_rx_refill_work);
+> > +
+> > +     /* Start MHI channels */
+> > +     err = mhi_prepare_for_transfer(mhi_dev, 0);
+> > +     if (err) {
+> > +             free_netdev(ndev);
+> > +             return err;
+> > +     }
+> > +
+> > +     err = register_netdev(ndev);
+> > +     if (err) {
+> > +             dev_err(dev, "mhi_net: registering device failed\n");
+> > +             free_netdev(ndev);
+> > +             return -EINVAL;
+>
+> Why not propagate the error?
+
+Will do.
+
+>
+> > +     }
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static void mhi_net_remove(struct mhi_device *mhi_dev)
+> > +{
+> > +     struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
+> > +
+> > +     mhi_unprepare_from_transfer(mhi_netdev->mdev);
+> > +     unregister_netdev(mhi_netdev->ndev);
+>
+> Isn't this the wrong way around?
+>
+> Should you not unregister the netdev before you stop transfers?
+
+That can be done that way, but wanted to be sure that no transfer callback
+is called after netdev has been released (freed in unregister), though the MHI
+core takes care of that in its remove procedure.
+
+>
+> > +     /* netdev released from unregister */
+>
+> > +}
+
+Thanks,
+Loic
