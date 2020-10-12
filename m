@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CE8128C0AA
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 21:06:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9D1D28C09B
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 21:05:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391566AbgJLTFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 15:05:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54366 "EHLO mail.kernel.org"
+        id S2391535AbgJLTFV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 15:05:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54372 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391340AbgJLTEZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2391347AbgJLTEZ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 12 Oct 2020 15:04:25 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 387CA22261;
-        Mon, 12 Oct 2020 19:04:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5BC35221FF;
+        Mon, 12 Oct 2020 19:04:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602529463;
-        bh=ZbD2Lx9zxzhcfwjObcbwoeavVHkc6F0SAF6Qm7eaOSY=;
+        s=default; t=1602529464;
+        bh=e9yGa2tP0UE3nErhXo1t63AQ+zvXV4/FX4qb6ouIiLc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ga+GMwgFSBJExAvcX0zMFk66H3CJCr+bhQEIZfR6WhEo7zT7PTxsPkKGony4Uhls8
-         PWfrKDw1N09CCn/P6WZl69wf4f5M2IDu1UrrmXZIkiDxBSKwR0pIfXVBWg1U/mZdcc
-         YqgxD/FToIDtsF6Ew7uZlutOiL6th8KskgVpb3E0=
+        b=OUY1B4hJkQrBeUI+duCsS/uh/cU9mJQaUchAeA+iZmts8XijZsM6I7DYXN/BA5Qv0
+         vl97nufJrp9ACqpZKGwtzITU0JsaU49P43CquNJka/EYd9efc+Jgp1X/z3xD6VXUG9
+         Azyfp5h7DV8xabbMT7pujm1OWt+AhzhLa56LYBXY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Kevin Brace <kevinbrace@bracecomputerlab.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 3/6] via-rhine: Fix for the hardware having a reset failure after resume
-Date:   Mon, 12 Oct 2020 15:04:15 -0400
-Message-Id: <20201012190418.3279866-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 4/6] via-rhine: VTunknown1 device is really VT8251 South Bridge
+Date:   Mon, 12 Oct 2020 15:04:16 -0400
+Message-Id: <20201012190418.3279866-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201012190418.3279866-1-sashal@kernel.org>
 References: <20201012190418.3279866-1-sashal@kernel.org>
@@ -44,41 +44,32 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Kevin Brace <kevinbrace@bracecomputerlab.com>
 
-[ Upstream commit d120c9a81e32c43cba8017dec873b6a414898716 ]
+[ Upstream commit aa15190cf2cf25ec7e6c6d7373ae3ca563d48601 ]
 
-In rhine_resume() and rhine_suspend(), the code calls netif_running()
-to see if the network interface is down or not.  If it is down (i.e.,
-netif_running() returning false), they will skip any housekeeping work
-within the function relating to the hardware.  This becomes a problem
-when the hardware resumes from a standby since it is counting on
-rhine_resume() to map its MMIO and power up rest of the hardware.
-Not getting its MMIO remapped and rest of the hardware powered
-up lead to a soft reset failure and hardware disappearance.  The
-solution is to map its MMIO and power up rest of the hardware inside
-rhine_open() before soft reset is to be performed.  This solution was
-verified on ASUS P5V800-VM mainboard's integrated Rhine-II Ethernet
-MAC inside VIA Technologies VT8251 South Bridge.
+The VIA Technologies VT8251 South Bridge's integrated Rhine-II
+Ethernet MAC comes has a PCI revision value of 0x7c.  This was
+verified on ASUS P5V800-VM mainboard.
 
 Signed-off-by: Kevin Brace <kevinbrace@bracecomputerlab.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/via/via-rhine.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/via/via-rhine.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/via/via-rhine.c b/drivers/net/ethernet/via/via-rhine.c
-index 2b7550c43f780..8a8b2364bf82d 100644
+index 8a8b2364bf82d..370676d2ae6ae 100644
 --- a/drivers/net/ethernet/via/via-rhine.c
 +++ b/drivers/net/ethernet/via/via-rhine.c
-@@ -1711,6 +1711,8 @@ static int rhine_open(struct net_device *dev)
- 		goto out_free_ring;
- 
- 	alloc_tbufs(dev);
-+	enable_mmio(rp->pioaddr, rp->quirks);
-+	rhine_power_init(dev);
- 	rhine_chip_reset(dev);
- 	rhine_task_enable(rp);
- 	init_registers(dev);
+@@ -243,7 +243,7 @@ enum rhine_revs {
+ 	VT8233		= 0x60,	/* Integrated MAC */
+ 	VT8235		= 0x74,	/* Integrated MAC */
+ 	VT8237		= 0x78,	/* Integrated MAC */
+-	VTunknown1	= 0x7C,
++	VT8251		= 0x7C,	/* Integrated MAC */
+ 	VT6105		= 0x80,
+ 	VT6105_B0	= 0x83,
+ 	VT6105L		= 0x8A,
 -- 
 2.25.1
 
