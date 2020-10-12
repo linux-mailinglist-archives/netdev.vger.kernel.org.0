@@ -2,78 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A7D828AE44
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 08:41:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C97F28AE57
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 08:49:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726340AbgJLGlE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 02:41:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51000 "EHLO
+        id S1726413AbgJLGtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 02:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725941AbgJLGlE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 02:41:04 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3465C0613CE
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 23:41:03 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id a5so15799170ljj.11
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 23:41:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6CWc5hTXjCf+VxrBjupME5sKSzAv2k0Mojh/jAZ4YRc=;
-        b=DfMvyYG9l1FdNSGtLn+/WRhHBRp5NSDJvepsqtZIIw4e+dgqOzFaKZDZ6srjQh8imH
-         uYRv1QyvTSPW+lXl7bgmsXS+Fg0CY9MRVEzTS4Ebe6o8Y1V8F0npRivV5Po1ccDdjIGK
-         HU0MbKhXz06w8Upro68VBNec91vQHe19+POr8PXWhGNvp5Fw8+/Q3hCanSxgN/Qxfh67
-         xkyF2HYnNrmEz+kgA/EKUlLN98KfRXpn22sYzqbv0uMZBPs8kAJyxbA3jY+BHbPFeU/r
-         9c49HJayxOajJMt0UObmWMJNhaTecdM3jjUt9UAixI1+y9LZIDpMenizdSBuxHcATBcT
-         U7mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6CWc5hTXjCf+VxrBjupME5sKSzAv2k0Mojh/jAZ4YRc=;
-        b=JNyXRJ8254wexjrYhOo3ro2fpob6wWn2vYg/vVGbqYBTot7QuNBiA2T2G6Pf2IAnLB
-         vJmd6ExCVy6nuQl5gzoVnfYctnQFp0bWoIKSCheRC5coireqXfKHLfhNjCjORqeSWXX3
-         wIF2oCKLPBsuk99gbLwXXMO4UNUInouPXpEShzmCXwIZ22ZZIUPvJAUFmExrFiwW8ooJ
-         nuiPTsdYmUa1SxzLDEYQ2XWgagFoR/ZUEbJ9OqjfWFIOBQ+LJYiL7bOEK6nniq6OAkWP
-         5zz+rRLN239eFUVpBAxgea110jSvync3kgbRag1YMkkWigXQQcL4UpYadmshWlREcIbU
-         jlTw==
-X-Gm-Message-State: AOAM5315AACulgJ/EHGEB8kBXgRy1v836+s3HSxl9nYJuX+N4IXFLMab
-        kVh7V01YCEydpajDC/Dh5F1l+vP3+Jf8zISVzfhvLY4M4LI=
-X-Google-Smtp-Source: ABdhPJyMbmaieanUH7BpioGmtJDRLzPVfL0xDS0a5sbGyqribBZPMhDdL3QCU7Dw/uWPF/DxBylv5mKXMM2TB/8LpOg=
-X-Received: by 2002:a2e:b0fc:: with SMTP id h28mr5951399ljl.226.1602484861982;
- Sun, 11 Oct 2020 23:41:01 -0700 (PDT)
+        with ESMTP id S1725941AbgJLGtD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 02:49:03 -0400
+Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2146DC0613CE;
+        Sun, 11 Oct 2020 23:49:02 -0700 (PDT)
+Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 09C6lRMn030659
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Mon, 12 Oct 2020 08:47:28 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1602485253; bh=EM7SRTw2y1jyItrWLGnDOK3doiCpFc3aZvBKNU44DDM=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=kS4WJ5liWgVBV/PZX+XguD8kCe6CzMV/SozNJtRSLrEKROlT0lTnXLxcEgUI/lHdQ
+         9tYB5Ub5nfYwmhAFrio3yOnThkWaMB2+jpHWpbr4jiJ7rdoEAKWTMxqcxuu7E30hua
+         P5LK3vjH6VIkjZp2gBCjFgbQ19M2Yxa9QIgJzGaw=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.94)
+        (envelope-from <bjorn@mork.no>)
+        id 1kRrcE-001O96-2I; Mon, 12 Oct 2020 08:47:26 +0200
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Oliver Neukum <oneukum@suse.com>,
+        Igor Mitsyanko <imitsyanko@quantenna.com>,
+        Sergey Matyukevich <geomatsi@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        linux-rdma@vger.kernel.org,
+        Linux USB Mailing List <linux-usb@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH net-next 04/12] net: usb: qmi_wwan: use new function dev_fetch_sw_netstats
+Organization: m
+References: <a46f539e-a54d-7e92-0372-cd96bb280729@gmail.com>
+        <9cde03fe-d032-521d-2d34-34429d6d1a1c@gmail.com>
+Date:   Mon, 12 Oct 2020 08:47:25 +0200
+In-Reply-To: <9cde03fe-d032-521d-2d34-34429d6d1a1c@gmail.com> (Heiner
+        Kallweit's message of "Sun, 11 Oct 2020 21:38:44 +0200")
+Message-ID: <87imbgdjpe.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.3 (gnu/linux)
 MIME-Version: 1.0
-References: <20201008184526.3196768-1-jonathan.lemon@gmail.com> <20201011113529.23a26766@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201011113529.23a26766@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-Date:   Mon, 12 Oct 2020 09:40:51 +0300
-Message-ID: <CALkJObfWR-7igG5JOwx42AQHPD6MA69+Gi_uaWgJ4AbzUZ=G_g@mail.gmail.com>
-Subject: Re: [PATCH net-next] mlx4: handle non-napi callers to napi_poll
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        saeedm@nvidia.com, tariqt@nvidia.com, kernel-team@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.102.4 at canardo
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Oct 2020 at 05:47, Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 8 Oct 2020 11:45:26 -0700 Jonathan Lemon wrote:
-> > From: Jonathan Lemon <bsd@fb.com>
-> >
-> > netcons calls napi_poll with a budget of 0 to transmit packets.
-> > Handle this by:
-> >  - skipping RX processing
-> >  - do not try to recycle TX packets to the RX cache
-> >
-> > Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
->
-> Tariq, Saeed - how does this look to you?
+Heiner Kallweit <hkallweit1@gmail.com> writes:
 
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+> Simplify the code by using new function dev_fetch_sw_netstats().
+>
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-Thanks,
-Tariq
+Acked-by: Bj=C3=B8rn Mork <bjorn@mork.no>
