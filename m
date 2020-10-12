@@ -2,133 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D3CD28ADD8
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 07:48:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76EEC28ADE2
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 07:52:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726989AbgJLFst (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 01:48:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42968 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726072AbgJLFsr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 01:48:47 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F83C0613CE
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 22:48:46 -0700 (PDT)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1kRqhN-0008SA-GX; Mon, 12 Oct 2020 07:48:41 +0200
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1kRqhL-0002Ue-T7; Mon, 12 Oct 2020 07:48:39 +0200
-Date:   Mon, 12 Oct 2020 07:48:39 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Bruno Thomsen <bruno.thomsen@gmail.com>
-Cc:     Fabio Estevam <festevam@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        David Jander <david@protonic.nl>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Marek Vasut <marex@denx.de>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: PHY reset question
-Message-ID: <20201012054839.n6do5ruxhbhc7h7n@pengutronix.de>
-References: <20201006080424.GA6988@pengutronix.de>
- <CAOMZO5Ds7mm4dWdt_a+HU=V40zjp006JQJbozRCicx9yiqacgg@mail.gmail.com>
- <CAH+2xPD=CE+pk_cEC=cLv1nebBBg7X+xDpOFANf3rQ4V2+2Cvw@mail.gmail.com>
+        id S1726685AbgJLFwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 01:52:24 -0400
+Received: from mga12.intel.com ([192.55.52.136]:18020 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726072AbgJLFwU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Oct 2020 01:52:20 -0400
+IronPort-SDR: CLPkUE8ZXL9RG0hlY2fQGhUxycBLQsChKLafCW6TnTmty/B4AJSVoYo8VkwfX4+LMLJe/TrE5a
+ 9755N6FOm/YQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9771"; a="145014271"
+X-IronPort-AV: E=Sophos;i="5.77,365,1596524400"; 
+   d="scan'208";a="145014271"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2020 22:52:20 -0700
+IronPort-SDR: Ya9EDAn3SOMd08SCKVKBtueoni+yyq9EF8H8N9tr+YE/IrdFHweYy6SREcwPgxnde0DbbLRvxa
+ rOKYCbITG9ew==
+X-IronPort-AV: E=Sophos;i="5.77,365,1596524400"; 
+   d="scan'208";a="520573207"
+Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Oct 2020 22:52:19 -0700
+Date:   Sun, 11 Oct 2020 22:52:19 -0700
+From:   Ira Weiny <ira.weiny@intel.com>
+To:     John Hubbard <jhubbard@nvidia.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Fenghua Yu <fenghua.yu@intel.com>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-nvdimm@lists.01.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        kvm@vger.kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kexec@lists.infradead.org, linux-bcache@vger.kernel.org,
+        linux-mtd@lists.infradead.org, devel@driverdev.osuosl.org,
+        linux-efi@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
+        linux-nfs@vger.kernel.org, ceph-devel@vger.kernel.org,
+        linux-ext4@vger.kernel.org, linux-aio@kvack.org,
+        io-uring@vger.kernel.org, linux-erofs@lists.ozlabs.org,
+        linux-um@lists.infradead.org, linux-ntfs-dev@lists.sourceforge.net,
+        reiserfs-devel@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net,
+        linux-nilfs@vger.kernel.org, cluster-devel@redhat.com,
+        ecryptfs@vger.kernel.org, linux-cifs@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, linux-afs@lists.infradead.org,
+        linux-rdma@vger.kernel.org, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
+        xen-devel@lists.xenproject.org, linux-cachefs@redhat.com,
+        samba-technical@lists.samba.org, intel-wired-lan@lists.osuosl.org
+Subject: Re: [PATCH RFC PKS/PMEM 57/58] nvdimm/pmem: Stray access protection
+ for pmem->virt_addr
+Message-ID: <20201012055218.GA2046448@iweiny-DESK2.sc.intel.com>
+References: <20201009195033.3208459-1-ira.weiny@intel.com>
+ <20201009195033.3208459-58-ira.weiny@intel.com>
+ <bd3f5ece-0e7b-4c15-abbc-1b3b943334dc@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAH+2xPD=CE+pk_cEC=cLv1nebBBg7X+xDpOFANf3rQ4V2+2Cvw@mail.gmail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 07:33:52 up 331 days, 20:52, 351 users,  load average: 0.00, 0.03,
- 0.01
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <bd3f5ece-0e7b-4c15-abbc-1b3b943334dc@nvidia.com>
+User-Agent: Mutt/1.11.1 (2018-12-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
-
-thank you for the feedback!
-
-On Fri, Oct 09, 2020 at 04:25:49PM +0200, Bruno Thomsen wrote:
-> Hi Fabio and Oleksij
+On Fri, Oct 09, 2020 at 07:53:07PM -0700, John Hubbard wrote:
+> On 10/9/20 12:50 PM, ira.weiny@intel.com wrote:
+> > From: Ira Weiny <ira.weiny@intel.com>
+> > 
+> > The pmem driver uses a cached virtual address to access its memory
+> > directly.  Because the nvdimm driver is well aware of the special
+> > protections it has mapped memory with, we call dev_access_[en|dis]able()
+> > around the direct pmem->virt_addr (pmem_addr) usage instead of the
+> > unnecessary overhead of trying to get a page to kmap.
+> > 
+> > Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+> > ---
+> >   drivers/nvdimm/pmem.c | 4 ++++
+> >   1 file changed, 4 insertions(+)
+> > 
+> > diff --git a/drivers/nvdimm/pmem.c b/drivers/nvdimm/pmem.c
+> > index fab29b514372..e4dc1ae990fc 100644
+> > --- a/drivers/nvdimm/pmem.c
+> > +++ b/drivers/nvdimm/pmem.c
+> > @@ -148,7 +148,9 @@ static blk_status_t pmem_do_read(struct pmem_device *pmem,
+> >   	if (unlikely(is_bad_pmem(&pmem->bb, sector, len)))
+> >   		return BLK_STS_IOERR;
+> > +	dev_access_enable(false);
+> >   	rc = read_pmem(page, page_off, pmem_addr, len);
+> > +	dev_access_disable(false);
 > 
-> Den ons. 7. okt. 2020 kl. 11.50 skrev Fabio Estevam <festevam@gmail.com>:
-> >
-> > Hi Oleksij,
-> >
-> > On Tue, Oct 6, 2020 at 5:05 AM Oleksij Rempel <o.rempel@pengutronix.de> wrote:
-> > >
-> > > Hello PHY experts,
-> > >
-> > > Short version:
-> > > what is the proper way to handle the PHY reset before identifying PHY?
-> > >
-> > > Long version:
-> > > I stumbled over following issue:
-> > > If PHY reset is registered within PHY node. Then, sometimes,  we will not be
-> > > able to identify it (read PHY ID), because PHY is under reset.
-> > >
-> > > mdio {
-> > >         compatible = "virtual,mdio-gpio";
-> > >
-> > >         [...]
-> > >
-> > >         /* Microchip KSZ8081 */
-> > >         usbeth_phy: ethernet-phy@3 {
-> > >                 reg = <0x3>;
-> > >
-> > >                 interrupts-extended = <&gpio5 12 IRQ_TYPE_LEVEL_LOW>;
-> > >                 reset-gpios = <&gpio5 11 GPIO_ACTIVE_LOW>;
-> > >                 reset-assert-us = <500>;
-> > >                 reset-deassert-us = <1000>;
-> > >         };
-> > >
-> > >         [...]
-> > > };
-> > >
-> > > On simple boards with one PHY per MDIO bus, it is easy to workaround by using
-> > > phy-reset-gpios withing MAC node (illustrated in below DT example), instead of
-> > > using reset-gpios within PHY node (see above DT example).
-> > >
-> > > &fec {
-> > >         [...]
-> > >         phy-mode = "rmii";
-> > >         phy-reset-gpios = <&gpio4 12 GPIO_ACTIVE_LOW>;
-> > >         [...]
-> >
-> > I thought this has been fixed by Bruno's series:
-> > https://www.spinics.net/lists/netdev/msg673611.html
+> Hi Ira!
 > 
-> Yes, that has fixed the Microchip/Micrel PHY ID auto detection
-> issue. I have send a DTS patch v3 that makes use of the newly
-> added device tree parameter:
-> https://lkml.org/lkml/2020/9/23/595
+> The APIs should be tweaked to use a symbol (GLOBAL, PER_THREAD), instead of
+> true/false. Try reading the above and you'll see that it sounds like it's
+> doing the opposite of what it is ("enable_this(false)" sounds like a clumsy
+> API design to *disable*, right?). And there is no hint about the scope.
 
-This way is suitable only for boards with single PHY and single reset
-line. But it is not scale on boards with multiple PHY and multiple reset
-lines.
+Sounds reasonable.
 
-So far, it looks like using compatible like "ethernet-phy-idXXXX.XXXX"
-is the only way to go.
+> 
+> And it *could* be so much more readable like this:
+> 
+>     dev_access_enable(DEV_ACCESS_THIS_THREAD);
 
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+I'll think about the flag name.  I'm not liking 'this thread'.
+
+Maybe DEV_ACCESS_[GLOBAL|THREAD]
+
+Ira
+
