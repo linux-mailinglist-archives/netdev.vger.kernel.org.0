@@ -2,60 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05C6028BE9E
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 19:04:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0EEA28BEA0
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 19:05:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403928AbgJLREu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 13:04:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34558 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390355AbgJLREu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 13:04:50 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B2BC0613D0
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 10:04:48 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id j7so4140577pgk.5
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 10:04:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/YRyxiBlnnmPiKDTUrcrLjbGfbEC/ethjvoeOjNFlCI=;
-        b=I/CEFok0tqy4QNEObTCbQPKqcAO9Jz9gvuThr7dY5LTunUijDPG7cyy3HpDUqe6BWL
-         ekeFs4ynT3EwJHO0Xpbo1kGz/jyZ5fIgquoGjxyyosxua1YiyxZE68RIsxBZzyLWAyeo
-         P7f0vygABbqM/ki0QsAzmkASaFaUvW/pa0Wybz2Ee/6IoPWEgELd3pmc2GKQehq5Xvxj
-         gfm0y6b154QvsCVSvRnoDUmfRHA1zF/xiARZ6UmV5FAGwC1x/X+LFcxY+t2Knc9mOiNA
-         +5iqCT7R7FVQALd6+QffObRaQ6wXc/Rbp6PEwH38oim/JiOM/lgrUMnKyJ0WTk194DWq
-         APIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/YRyxiBlnnmPiKDTUrcrLjbGfbEC/ethjvoeOjNFlCI=;
-        b=HU/QSTyefyfYRFk8Ha0IU9tqNtJP79gTrvp+qLQKie/fhyh3pVzejgjCv/ZDfiy2Zn
-         VQgO+itTAOdrCQD2YxK37YOz8qGgkVstiS96x+tf+3ojcx+DNBOXrpkdQd48a2OfqDpT
-         xiA+v1xzUO674cHxZUVeL4YxKMI1gzWYsXnQOe0YZwdPcPcCvDvrPljGS3MQkdHbajg1
-         f3S2l44/Y6OEW8wkkNwmmoaEdfuSBWj5F905j97K+Wlc/yE4q2KpQCbyyRxixpHB2clY
-         c5G1FNys5oVoJw67sG93ZN+8NaAL2dOhMggnGaABGhyRgSXLlr7IzIfwcQRQcRUqog0j
-         xtDg==
-X-Gm-Message-State: AOAM531yhauhrZdGAMxC5mp5R28/0LRVfsgDTWG6vOq5771+iUyIwWwD
-        8K5MINyZxGk0TKNtMaJZNk5Clw7TbVK6PQ==
-X-Google-Smtp-Source: ABdhPJwOUtbzqE2fikrDNL8baVLww/xaV94eLkA9fcEjOGHaC8fufZd4lvkg2aIUSij+facYB37WpQ==
-X-Received: by 2002:a05:6a00:7cb:b029:152:94b3:b2ee with SMTP id n11-20020a056a0007cbb029015294b3b2eemr24172547pfu.58.1602522288327;
-        Mon, 12 Oct 2020 10:04:48 -0700 (PDT)
-Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id n9sm19869428pgi.2.2020.10.12.10.04.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Oct 2020 10:04:48 -0700 (PDT)
-Date:   Mon, 12 Oct 2020 10:04:40 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jan Engelhardt <jengelh@inai.de>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [iproute PATCH v2] lib/color: introduce freely configurable
- color strings
-Message-ID: <20201012100440.0de0be16@hermes.local>
-In-Reply-To: <20201012164639.20976-1-jengelh@inai.de>
-References: <20201012164639.20976-1-jengelh@inai.de>
+        id S2403948AbgJLRFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 13:05:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42110 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2403931AbgJLRFE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Oct 2020 13:05:04 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8B6BA2072D;
+        Mon, 12 Oct 2020 17:05:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602522304;
+        bh=+36ST4U99P+UWwG8debn0zuuiSGn1LQmo1LY2w8xF6o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=CBGaB1Yj6IT7WRAhzb2OO5M2uCdl52HAvaF/Y8yEI5FSBU9p3bg0XmkxGuisRBgvl
+         MAed/+WXCvR1iNT+459iyKcSLe0qcOG/JkoTgJWzm88K5O1zICbf83BmBKPoaZkDgt
+         hH3KAg2T7U/inJ3mBhm3wt+0pC2OCqIrXfYqC5E0=
+Date:   Mon, 12 Oct 2020 10:05:01 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Christian Eggers <ceggers@arri.de>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        George McCollister <george.mccollister@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [net v4] net: dsa: microchip: fix race condition
+Message-ID: <20201012100501.33a41d8a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201012083942.12722-1-ceggers@arri.de>
+References: <20201012083942.12722-1-ceggers@arri.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -63,26 +46,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Oct 2020 18:46:39 +0200
-Jan Engelhardt <jengelh@inai.de> wrote:
+On Mon, 12 Oct 2020 10:39:42 +0200 Christian Eggers wrote:
+> Between queuing the delayed work and finishing the setup of the dsa
+> ports, the process may sleep in request_module() (via
+> phy_device_create()) and the queued work may be executed prior to the
+> switch net devices being registered. In ksz_mib_read_work(), a NULL
+> dereference will happen within netof_carrier_ok(dp->slave).
+> 
+> Not queuing the delayed work in ksz_init_mib_timer() makes things even
+> worse because the work will now be queued for immediate execution
+> (instead of 2000 ms) in ksz_mac_link_down() via
+> dsa_port_link_register_of().
 
-> +static struct color_code {
-> +	const char match[8], *code;
-> +	int len;
-> +} color_codes[C_MAX] = {
-> +	{"iface="}, {"lladdr="}, {"v4addr="}, {"v6addr="}, {"operup="},
-> +	{"operdn="}, {"clear=", "0", 1},
->  };
+> 
+> Solution:
+> 1. Do not queue (only initialize) delayed work in ksz_init_mib_timer().
+> 2. Only queue delayed work in ksz_mac_link_down() if init is completed.
+> 3. Queue work once in ksz_switch_register(), after dsa_register_switch()
+> has completed.
+> 
+> Fixes: 7c6ff470aa86 ("net: dsa: microchip: add MIB counter reading support")
+> Signed-off-by: Christian Eggers <ceggers@arri.de>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
 
-Probably better to expand the initializer here to be safe in future.
-Also if each match has = that maybe redundant.
+Now you went too far in the opposite direction, I never gave you my
+explicit tag :) So I'll drop it.
 
-static struct color_code {
-	char match[8], *code;
-	unsigned int len;
-} color_codes[] = {
-	[C_IFACE] = {
-		.match = "iface",
- 	},
-...
-
+Applied and queued for stable, thanks!
