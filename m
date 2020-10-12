@@ -2,42 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B749028C0DF
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 21:08:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E05DB28C0D9
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 21:08:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391293AbgJLTHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 15:07:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53108 "EHLO mail.kernel.org"
+        id S2391489AbgJLTG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 15:06:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52710 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390975AbgJLTDe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Oct 2020 15:03:34 -0400
+        id S2390369AbgJLTDl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Oct 2020 15:03:41 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DF1AC2222E;
-        Mon, 12 Oct 2020 19:03:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3EF82215A4;
+        Mon, 12 Oct 2020 19:03:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602529413;
-        bh=Vfi0vXl7mXFBASrya4e5Ty5OzH1koMJicQLz0Kiey4g=;
+        s=default; t=1602529419;
+        bh=jo2Y3XhqQPp30WQEqhZBXmg+qDWrXbP3ry7sxWeq1L8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wVeKxfHbgdw9rhnhGEdB7bDadJ84vFVpmGeEnMXUnEpaj7umRLHCHiKJUq+b2SwkO
-         m1Ty7k8JTWpnrayd1VABa8+uI9stRGjB3s/hlf0qwAvvE68JPU2QOp16cXeyY3Uom1
-         YE9JzZ3JF/MUQ5nHZrfIJ5UGZe4XblTJjXN5/Y5U=
+        b=BpZwAK2+xsDNoG8auNo1c5vViuWSbfbmRoW0qPmqEPPeUhfRr9wGzSBEfylYsw4aE
+         2A/hPjEiis75WDY2cmmXs8xtThbS5dxVVOD8Ulr8qZOcYVGQZG1exc3P2dLa6uypVX
+         5py5w5bzogan3b+4uRH9xg9zYC9cHdoOAwuD0AdQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wilken Gottwalt <wilken.gottwalt@mailbox.org>,
-        =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 15/15] net: usb: qmi_wwan: add Cellient MPL200 card
-Date:   Mon, 12 Oct 2020 15:03:12 -0400
-Message-Id: <20201012190313.3279397-15-sashal@kernel.org>
+Cc:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 02/12] net: mscc: ocelot: fix fields offset in SG_CONFIG_REG_3
+Date:   Mon, 12 Oct 2020 15:03:25 -0400
+Message-Id: <20201012190335.3279538-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201012190313.3279397-1-sashal@kernel.org>
-References: <20201012190313.3279397-1-sashal@kernel.org>
+In-Reply-To: <20201012190335.3279538-1-sashal@kernel.org>
+References: <20201012190335.3279538-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -45,32 +42,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wilken Gottwalt <wilken.gottwalt@mailbox.org>
+From: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
 
-[ Upstream commit 28802e7c0c9954218d1830f7507edc9d49b03a00 ]
+[ Upstream commit 4ab810a4e04ab6c851007033d39c13e6d3f55110 ]
 
-Add usb ids of the Cellient MPL200 card.
+INIT_IPS and GATE_ENABLE fields have a wrong offset in SG_CONFIG_REG_3.
+This register is used by stream gate control of PSFP, and it has not
+been used before, because PSFP is not implemented in ocelot driver.
 
-Signed-off-by: Wilken Gottwalt <wilken.gottwalt@mailbox.org>
-Acked-by: Bjørn Mork <bjorn@mork.no>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/qmi_wwan.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/mscc/ocelot_ana.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index e57d59b0a7ae9..21d905d90650b 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1375,6 +1375,7 @@ static const struct usb_device_id products[] = {
- 	{QMI_QUIRK_SET_DTR(0x2cb7, 0x0104, 4)},	/* Fibocom NL678 series */
- 	{QMI_FIXED_INTF(0x0489, 0xe0b4, 0)},	/* Foxconn T77W968 LTE */
- 	{QMI_FIXED_INTF(0x0489, 0xe0b5, 0)},	/* Foxconn T77W968 LTE with eSIM support*/
-+	{QMI_FIXED_INTF(0x2692, 0x9025, 4)},    /* Cellient MPL200 (rebranded Qualcomm 05c6:9025) */
+diff --git a/drivers/net/ethernet/mscc/ocelot_ana.h b/drivers/net/ethernet/mscc/ocelot_ana.h
+index 841c6ec22b641..1669481d97794 100644
+--- a/drivers/net/ethernet/mscc/ocelot_ana.h
++++ b/drivers/net/ethernet/mscc/ocelot_ana.h
+@@ -252,10 +252,10 @@
+ #define ANA_SG_CONFIG_REG_3_LIST_LENGTH_M                 GENMASK(18, 16)
+ #define ANA_SG_CONFIG_REG_3_LIST_LENGTH_X(x)              (((x) & GENMASK(18, 16)) >> 16)
+ #define ANA_SG_CONFIG_REG_3_GATE_ENABLE                   BIT(20)
+-#define ANA_SG_CONFIG_REG_3_INIT_IPS(x)                   (((x) << 24) & GENMASK(27, 24))
+-#define ANA_SG_CONFIG_REG_3_INIT_IPS_M                    GENMASK(27, 24)
+-#define ANA_SG_CONFIG_REG_3_INIT_IPS_X(x)                 (((x) & GENMASK(27, 24)) >> 24)
+-#define ANA_SG_CONFIG_REG_3_INIT_GATE_STATE               BIT(28)
++#define ANA_SG_CONFIG_REG_3_INIT_IPS(x)                   (((x) << 21) & GENMASK(24, 21))
++#define ANA_SG_CONFIG_REG_3_INIT_IPS_M                    GENMASK(24, 21)
++#define ANA_SG_CONFIG_REG_3_INIT_IPS_X(x)                 (((x) & GENMASK(24, 21)) >> 21)
++#define ANA_SG_CONFIG_REG_3_INIT_GATE_STATE               BIT(25)
  
- 	/* 4. Gobi 1000 devices */
- 	{QMI_GOBI1K_DEVICE(0x05c6, 0x9212)},	/* Acer Gobi Modem Device */
+ #define ANA_SG_GCL_GS_CONFIG_RSZ                          0x4
+ 
 -- 
 2.25.1
 
