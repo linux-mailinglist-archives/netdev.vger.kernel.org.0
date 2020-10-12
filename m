@@ -2,63 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EF7528BE71
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 18:50:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23C3628BE99
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 19:04:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403895AbgJLQup (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 12:50:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39374 "EHLO mail.kernel.org"
+        id S2390747AbgJLREC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 13:04:02 -0400
+Received: from mx2.suse.de ([195.135.220.15]:59758 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726742AbgJLQuo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Oct 2020 12:50:44 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 47A302080A;
-        Mon, 12 Oct 2020 16:50:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602521444;
-        bh=hY/CEJqHsosCubZ93vuYlbFvOgJSyT40CbOhQjScUH4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nSUHzawX68KPmLkfQR074vFJATFk73RqZihzuJUxc1Q1oJb6wUVY0MsZqpp6eheqy
-         Nhp/WLdsGsMKxqvSw5s9TkH2Wnc7sLN3OxzGH2joB/TJcRzrE56Fn3qT+l20Yv/MNg
-         5DkwuXTq3/An9EkC8peCVoMmTZsn4KgIl2mvdWi4=
-Date:   Mon, 12 Oct 2020 09:50:42 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ondrej Zary <linux@zary.sk>
-Cc:     Oliver Neukum <oneukum@suse.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] cx82310_eth: re-enable ethernet mode after router
- reboot
-Message-ID: <20201012095042.4f5b4843@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <202010121242.55826.linux@zary.sk>
-References: <20201010140048.12067-1-linux@zary.sk>
-        <20201011155539.315bf5aa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <202010121242.55826.linux@zary.sk>
+        id S2390355AbgJLREC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Oct 2020 13:04:02 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 42FF6ABAD;
+        Mon, 12 Oct 2020 17:04:00 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id A9E58603A2; Mon, 12 Oct 2020 19:03:59 +0200 (CEST)
+Date:   Mon, 12 Oct 2020 19:03:59 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jiri@nvidia.com, danieller@nvidia.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 1/6] ethtool: Extend link modes settings uAPI
+ with lanes
+Message-ID: <20201012170359.tmh5hgvgjuuigaio@lion.mk-sys.cz>
+References: <20201010154119.3537085-1-idosch@idosch.org>
+ <20201010154119.3537085-2-idosch@idosch.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201010154119.3537085-2-idosch@idosch.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Oct 2020 12:42:55 +0200 Ondrej Zary wrote:
-> On Monday 12 October 2020, Jakub Kicinski wrote:
-> > On Sat, 10 Oct 2020 16:00:46 +0200 Ondrej Zary wrote:  
-> > > When the router is rebooted without a power cycle, the USB device
-> > > remains connected but its configuration is reset. This results in
-> > > a non-working ethernet connection with messages like this in syslog:
-> > > 	usb 2-2: RX packet too long: 65535 B
-> > >
-> > > Re-enable ethernet mode when receiving a packet with invalid size of
-> > > 0xffff.  
-> >
-> > Patch looks good, but could you explain what's a reboot without a power
-> > cycle in this case? The modem gets reset but USB subsystem doesn't know
-> > it and doesn't go though a unbind() + bind() cycle?  
+On Sat, Oct 10, 2020 at 06:41:14PM +0300, Ido Schimmel wrote:
+> From: Danielle Ratson <danieller@nvidia.com>
 > 
-> The router can be rebooted through the web interface. The reboot does not 
-> disconnect the USB device - it remains connected as if nothing happened. Only 
-> wrong data starts to come in.
+> Currently, when auto negotiation is on, the user can advertise all the
+> linkmodes which correspond to a specific speed, but does not have a
+> similar selector for the number of lanes. This is significant when a
+> specific speed can be achieved using different number of lanes.  For
+> example, 2x50 or 4x25.
+> 
+> Add 'ETHTOOL_A_LINKMODES_LANES' attribute and expand 'struct
+> ethtool_link_settings' with lanes field in order to implement a new
+> lanes-selector that will enable the user to advertise a specific number
+> of lanes as well.
+> 
+> When auto negotiation is off, lanes parameter can be forced only if the
+> driver supports it. Add a capability bit in 'struct ethtool_ops' that
+> allows ethtool know if the driver can handle the lanes parameter when
+> auto negotiation is off, so if it does not, an error message will be
+> returned when trying to set lanes.
+> 
+> Example:
+> 
+> $ ethtool -s swp1 lanes 4
+> $ ethtool swp1
+>   Settings for swp1:
+> 	Supported ports: [ FIBRE ]
+>         Supported link modes:   1000baseKX/Full
+>                                 10000baseKR/Full
+>                                 40000baseCR4/Full
+> 				40000baseSR4/Full
+> 				40000baseLR4/Full
+>                                 25000baseCR/Full
+>                                 25000baseSR/Full
+> 				50000baseCR2/Full
+>                                 100000baseSR4/Full
+> 				100000baseCR4/Full
+>         Supported pause frame use: Symmetric Receive-only
+>         Supports auto-negotiation: Yes
+>         Supported FEC modes: Not reported
+>         Advertised link modes:  40000baseCR4/Full
+> 				40000baseSR4/Full
+> 				40000baseLR4/Full
+>                                 100000baseSR4/Full
+> 				100000baseCR4/Full
+>         Advertised pause frame use: No
+>         Advertised auto-negotiation: Yes
+>         Advertised FEC modes: Not reported
+>         Speed: Unknown!
+>         Duplex: Unknown! (255)
+>         Auto-negotiation: on
+>         Port: Direct Attach Copper
+>         PHYAD: 0
+>         Transceiver: internal
+>         Link detected: no
+> 
+> Signed-off-by: Danielle Ratson <danieller@nvidia.com>
+> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+[...]
+>  static const struct link_mode_info link_mode_params[] = {
+> -	__DEFINE_LINK_MODE_PARAMS(10, T, Half),
+> -	__DEFINE_LINK_MODE_PARAMS(10, T, Full),
+> -	__DEFINE_LINK_MODE_PARAMS(100, T, Half),
+> -	__DEFINE_LINK_MODE_PARAMS(100, T, Full),
+> -	__DEFINE_LINK_MODE_PARAMS(1000, T, Half),
+> -	__DEFINE_LINK_MODE_PARAMS(1000, T, Full),
+> +	__DEFINE_LINK_MODE_PARAMS(10, T, 1, Half),
+> +	__DEFINE_LINK_MODE_PARAMS(10, T, 1, Full),
+> +	__DEFINE_LINK_MODE_PARAMS(100, T, 1, Half),
+> +	__DEFINE_LINK_MODE_PARAMS(100, T, 1, Full),
+> +	__DEFINE_LINK_MODE_PARAMS(1000, T, 1, Half),
+> +	__DEFINE_LINK_MODE_PARAMS(1000, T, 1, Full),
 
-I see. Applied to net-next, thanks!
+Technically, 4 may be more appropriate for 1000base-T, 2500base-T,
+5000base-T and 10000base-T but it's probably just a formality. While
+there is 1000base-T1, I'm not sure if we can expect a device which would
+support e.g. both 1000base-T and 1000base-T1 (or some other colliding
+combination of modes).
+
+Michal
