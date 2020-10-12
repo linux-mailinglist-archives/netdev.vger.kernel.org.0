@@ -2,92 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00A9F28B130
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 11:11:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0258B28B135
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 11:11:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729301AbgJLJLW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 05:11:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45930 "EHLO
+        id S1729351AbgJLJLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 05:11:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729223AbgJLJLV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 05:11:21 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ADFAC0613CE
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:21 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id w21so12924571pfc.7
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:21 -0700 (PDT)
+        with ESMTP id S1729307AbgJLJLX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 05:11:23 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C82C0613CE
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:22 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id 10so3408338pfp.5
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=51Z5NBF4chpnkHRNT6LoiowC5yr3V2WfPcKwftONxbE=;
-        b=KlC9TOFPvLjEUhCv+f5e6MBI52rGgf2cd+HxKYSpKUi1T21DrFieVDCy9yUoulO7ZO
-         3s2U+QrLZIP88P3tPE5I2EH7MhQCFAMTuRo/EDQBm/fE9jpVUT7bo2V5laKlHM4YBgOU
-         ux4e591B8HhaXurJnEHNnjd2WSwisAVATbQ5I=
+        bh=UU/g7YEFTk/ndn0PxJ17rq21QQR5DSWFBRCbBKIsEpA=;
+        b=SL1sRvgWa6+s1iwq8JZXsmpZWspTsy/w7AwjL2U6+Jjc1AKFHcUfem9BSRA2NkXg7n
+         bYr83RLxE5MGAf6gU9o8q5FJopp8Y7laW944SJ/4Doal6/htDkixl2Cv6ixpylu14B74
+         VabHjDiPJmbL8TyXGgKi8IgfBCLbM6ChR3BRI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=51Z5NBF4chpnkHRNT6LoiowC5yr3V2WfPcKwftONxbE=;
-        b=rDXpZYZNS2nc817CzTTRrIAq70PhNTngBmenFL5k1buJqoNRDDZQ48aYjIks6g8HiV
-         OndIMQPu3pNU6h+l14tefNVj4PBkhaZGdsUFMgY1cOjGG5A1FMk10sWA5q7p7VhfPHY0
-         FZ3Q3+UZD9Pkmm+Wdv938zai1jLt0Vs4d0TSFsZBNEKXfSdokouLrryTg1Ois0issV1k
-         +ibVv7K13CokkFK2npnq6wMtqKoBN8UJ14djHfy6MUkb8MW6cLCGhKfjXjMzjuOhZeAh
-         s6Rw9pei9ZpjiVJrbsSsgu2vlkL5/ddcm8GPZFTHu/gFAAgZBtEoJNBHl99Xf8YIXaYI
-         PdoA==
-X-Gm-Message-State: AOAM5300SxEmukncdiNrYT4cr63TNQhkCURBOTDQgIan7TpCDKj+/qA3
-        G3E/RyFIEiSJ3mUDxb5ToLDD1Q==
-X-Google-Smtp-Source: ABdhPJxY0DQf8iXUP3d9aIp2E5OlUHrDcELXTUNR5Jl3lz7M5Bt+LBV7qREMpcObnEt40ujvIQpfDw==
-X-Received: by 2002:a17:90a:f3d3:: with SMTP id ha19mr19091277pjb.58.1602493880858;
-        Mon, 12 Oct 2020 02:11:20 -0700 (PDT)
+        bh=UU/g7YEFTk/ndn0PxJ17rq21QQR5DSWFBRCbBKIsEpA=;
+        b=Kzr3LZvaiQQ+NPnMJTwaWARNgIZo5lierBxURa6pNkn1k+fWdNZ1L5JmkHh/3gjGWA
+         Ma6WEu1RXE5tRoWWaC2tYd1/087icY5sUtbt4sQKiZGILvqIuwHVFxudxGVhUZqTYWmb
+         9i3ydjRvCjBsmTbir6P8/l8R6Xg71/fGt70za8ro2ssdSfbUodlyvFqKZ0spNKAMpfkt
+         BAI5r8YYq3doIn3yLXOB65F5F1Al+5FW6e6wnrV7ztsPju/1Y6AxGLLyHjgaZk7hetI0
+         Sm5kxa8Sx4zQTLtg6wqdwMbTjooQ6yrd7PztfORz8D9DzV92nzg/rYDoK8rgwKp+Y+dc
+         bVwg==
+X-Gm-Message-State: AOAM531i7XB8pmIuMrg1g3e7iucbhokLW5vHpoou3UmVuKS5cNOfZn5H
+        dZI46z12nNVZd7m3T17fItJgqw==
+X-Google-Smtp-Source: ABdhPJw9ee3vg3kFOCf3w0N0sURIH8onF01wgwfsaPI9bcZBgbu911kyrp30KBRqUcoeGFU3nd3zjQ==
+X-Received: by 2002:a63:5446:: with SMTP id e6mr12365348pgm.415.1602493882314;
+        Mon, 12 Oct 2020 02:11:22 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id jy19sm1275932pjb.9.2020.10.12.02.11.19
+        by smtp.gmail.com with ESMTPSA id jy19sm1275932pjb.9.2020.10.12.02.11.20
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 12 Oct 2020 02:11:19 -0700 (PDT)
+        Mon, 12 Oct 2020 02:11:21 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next v2 5/9] bnxt_en: Log event_data1 and event_data2 when handling RESET_NOTIFY event.
-Date:   Mon, 12 Oct 2020 05:10:50 -0400
-Message-Id: <1602493854-29283-6-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 6/9] bnxt_en: Log unknown link speed appropriately.
+Date:   Mon, 12 Oct 2020 05:10:51 -0400
+Message-Id: <1602493854-29283-7-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1602493854-29283-1-git-send-email-michael.chan@broadcom.com>
 References: <1602493854-29283-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000008cad5905b175ae10"
+        boundary="000000000000a2a0d705b175ae15"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000008cad5905b175ae10
+--000000000000a2a0d705b175ae15
 
-Log these values that contain useful firmware state information.
+If the VF virtual link is set to always enabled, the speed may be
+unknown when the physical link is down.  The driver currently logs
+the link speed as 4294967295 Mbps which is SPEED_UNKNOWN.  Modify
+the link up log message as "speed unknown" which makes more sense.
 
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 293af0d48028..877efaf302ad 100644
+index 877efaf302ad..78bf636e623b 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -2032,6 +2032,9 @@ static int bnxt_async_event_process(struct bnxt *bp,
- 		set_bit(BNXT_RESET_TASK_SILENT_SP_EVENT, &bp->sp_event);
- 		break;
- 	case ASYNC_EVENT_CMPL_EVENT_ID_RESET_NOTIFY:
-+		if (netif_msg_hw(bp))
-+			netdev_warn(bp->dev, "Received RESET_NOTIFY event, data1: 0x%x, data2: 0x%x\n",
-+				    data1, data2);
- 		if (!bp->fw_health)
- 			goto async_event_process_exit;
+@@ -8902,6 +8902,11 @@ static void bnxt_report_link(struct bnxt *bp)
+ 		u16 fec;
  
+ 		netif_carrier_on(bp->dev);
++		speed = bnxt_fw_to_ethtool_speed(bp->link_info.link_speed);
++		if (speed == SPEED_UNKNOWN) {
++			netdev_info(bp->dev, "NIC Link is Up, speed unknown\n");
++			return;
++		}
+ 		if (bp->link_info.duplex == BNXT_LINK_DUPLEX_FULL)
+ 			duplex = "full";
+ 		else
+@@ -8914,7 +8919,6 @@ static void bnxt_report_link(struct bnxt *bp)
+ 			flow_ctrl = "ON - receive";
+ 		else
+ 			flow_ctrl = "none";
+-		speed = bnxt_fw_to_ethtool_speed(bp->link_info.link_speed);
+ 		netdev_info(bp->dev, "NIC Link is Up, %u Mbps %s duplex, Flow control: %s\n",
+ 			    speed, duplex, flow_ctrl);
+ 		if (bp->flags & BNXT_FLAG_EEE_CAP)
 -- 
 2.18.1
 
 
---0000000000008cad5905b175ae10
+--000000000000a2a0d705b175ae15
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -157,14 +170,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQg77vp1JsWXRLe
-ONmEWvEKChQSBAiPOKIo30zjxBf/5zcwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAxMDEyMDkxMTIxWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgTbfFFG2eBI/x
+9zh0OU/c16rPXtmRowqPMM5VrqahUZ8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAxMDEyMDkxMTIyWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAJE/S9LVvc0BVXQoe7tdQLdo7FPlzP+h
-6dnGxZbDtBabL4t1ue2o4B1dYtzmb7hzCN1erCFNvksZwPuifw4k+Tx5kcC6Yc8y2CZh570OEWyh
-CPBNfI5kUewTc0gntCpId5Nj1OroQ/qHgr59Kt4CJdIjnp84hNMlefL43JkZVNTM/LWr91q6dbf8
-Ifzr0nEy47jrsaqzxw9KFawidplATTfUgI9u7s5qWqjsZpvLRAm55DyOekpImWfyasGhT6e/lTT3
-CJ5vHbgAknjhCBhzdCCoQERV0zMgmRQ4NZ/JcVgMZUbb0Ld5t3G4GHNrl6KMEFKIhZuP4D0b2p9b
-MGkIU+k=
---0000000000008cad5905b175ae10--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAEDaUL59U1R95AtxfxCMgZ+/6XxdvNbf
+1B0GFwwZapb/abnbpx7ZLiNnjQZdS4Oh/cXK2JITkNGnJksIOwqq6J6HwXIOGB64sMhsAitLhn/q
+Xlz3aSqqM05muPqSfo/2FLg9Slcpz//rWs/EHnEn1c5oXD+1Kqw4UeWchdqH3DF4briPongXqgak
+FTBtn/FJad/RHcBjZOALzPhNziTFxQcRtBmUzZx6HcrL7l3G6L+41QpgOV6ChsLTjTDclVBAtauJ
+aYCD1bA3NpJtssYkMItHdZxYeArhWHIJKEc1nDTU/atomcS+HpjQn70MAi2SxS5VbPAswVx4F066
+Pv/6FZ4=
+--000000000000a2a0d705b175ae15--
