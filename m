@@ -2,124 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F323A28BCAD
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 17:45:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A006B28BCFF
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 17:55:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390310AbgJLPo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 11:44:57 -0400
-Received: from mx2.suse.de ([195.135.220.15]:59066 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390282AbgJLPo5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Oct 2020 11:44:57 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 0BFB0AECD;
-        Mon, 12 Oct 2020 15:44:56 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id BF39F603A2; Mon, 12 Oct 2020 17:44:55 +0200 (CEST)
-Date:   Mon, 12 Oct 2020 17:44:55 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH ethtool-next v2 5/6] netlink: use policy dumping to check
- if stats flag is supported
-Message-ID: <20201012154455.tq65ttu6mrpoocyj@lion.mk-sys.cz>
-References: <20201006150425.2631432-1-kuba@kernel.org>
- <20201006150425.2631432-6-kuba@kernel.org>
+        id S1730481AbgJLPzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 11:55:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51990 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730340AbgJLPzC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 11:55:02 -0400
+Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB1AC0613D1
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 08:55:02 -0700 (PDT)
+Received: by mail-ot1-x343.google.com with SMTP id m13so16231049otl.9
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 08:55:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+Ipj6KApmqDordHHkZA5BdwogTRTbSz9ufEP2mPZJkg=;
+        b=bqM+JLYeYtmZLKVItTggBkanB+K1wLMBpj7MByYdi1dXJ89PovuV9CfiJ0Z52A5pOo
+         v09VFIcwFD5Mk5KK8RpEZUNGVeMwhJnlXCJDl5EEpDfGkleP4MQpXYkhFm2dlxODF+Za
+         3sdMFjM0CAKrxOkWulu8F1GYHUPxLq48Io9jI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+Ipj6KApmqDordHHkZA5BdwogTRTbSz9ufEP2mPZJkg=;
+        b=cNudSlxEPvRgdK2AJeojhM3LVogTgYWTurDpZIT3aMKebAZjc+Gk6cg0OcPuq6Mzwe
+         6SYko/F7yE9lXkW32T48rqP2AE79PvOkEl54PznqVpZYhRvxY+klMSgSPSq7ZDxdVGig
+         EvogUSTUuFiCWdBHNABFcsruhhs9NRLAeqphhxaRgS2xB/jJe0wv+bNn+zbcq3ZKdWis
+         P83hhSbUM5lHMoebKYTFVGJ/Gf7qUCnCcD+7uDXHp8fXL3mZv7Tu6aQLuu9bASnKru92
+         D++k9sw6rXqzQkQVhoQK4Rod1GhB2JYinZySGXcO2/MW+oxNBENIT8ep4M+G8iN+YE2r
+         4/bw==
+X-Gm-Message-State: AOAM533SGkzWHVLmBvIRrogSpVuxuPo4AK89/w/tIyCBjdBjr7UBBgTg
+        7GmKSPyAdyRYIqbWsQSJRwdM5K9Dazlxtqmp9Hlrhg==
+X-Google-Smtp-Source: ABdhPJx+keD6z4dt02aa8k+J2BwE04JZ7uXERqCyeIC3cQdasnyOXK211tshxI858hddaUTcqvIBCQadIhBaz7Crf2I=
+X-Received: by 2002:a9d:6ad5:: with SMTP id m21mr17217338otq.147.1602518101673;
+ Mon, 12 Oct 2020 08:55:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="crrciydtoqbtar5b"
-Content-Disposition: inline
-In-Reply-To: <20201006150425.2631432-6-kuba@kernel.org>
+References: <160216609656.882446.16642490462568561112.stgit@firesoul> <160216615258.882446.12640007391672866038.stgit@firesoul>
+In-Reply-To: <160216615258.882446.12640007391672866038.stgit@firesoul>
+From:   Lorenz Bauer <lmb@cloudflare.com>
+Date:   Mon, 12 Oct 2020 17:54:50 +0200
+Message-ID: <CACAyw9-Ou=T7d6uDC8yKLNUf+QC5sZg_itOEJfhAinKznDdGCA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next V3 3/6] bpf: add BPF-helper for MTU checking
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        Shaun Crampton <shaun@tigera.io>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Marek Majkowski <marek@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, 8 Oct 2020 at 16:09, Jesper Dangaard Brouer <brouer@redhat.com> wrote:
 
---crrciydtoqbtar5b
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+...
 
-On Tue, Oct 06, 2020 at 08:04:24AM -0700, Jakub Kicinski wrote:
-> Older kernels don't support statistics, to avoid retries
-> make use of netlink policy dumps to figure out which
-> flags kernel actually supports.
->=20
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-[...]
-> +static int family_policy_cb(const struct nlmsghdr *nlhdr, void *data)
-> +{
-> +	const struct nlattr *tba[NL_POLICY_TYPE_ATTR_MAX + 1] =3D {};
-> +	DECLARE_ATTR_TB_INFO(tba);
-> +	const struct nlattr *tb[CTRL_ATTR_MAX + 1] =3D {};
-> +	DECLARE_ATTR_TB_INFO(tb);
-> +	const struct nlattr *policy_attr, *attr_attr, *attr;
-> +	struct ethtool_op_policy_query_ctx *ctx =3D data;
+> + *             The *flags* argument can be a combination of one or more of the
+> + *             following values:
+> + *
+> + *              **BPF_MTU_CHK_RELAX**
+> + *                     This flag relax or increase the MTU with room for one
+> + *                     VLAN header (4 bytes) and take into account net device
+> + *                     hard_header_len.  This relaxation is also used by the
+> + *                     kernels own forwarding MTU checks.
+> + *
+> + *             **BPF_MTU_CHK_GSO**
+> + *                     This flag will only works for *ctx* **struct sk_buff**.
+> + *                     If packet context contains extra packet segment buffers
+> + *                     (often knows as frags), then those are also checked
+> + *                     against the MTU size.
 
-I would rather use a different name for this variable as "ctx" is used
-for struct cmd_context everywhere else.
+Maybe this is a documentation issue, but how / when am I expected to
+use these flags? I'm really ignorant when it comes to GSO, but could
+BPF_MTU_CHK_GSO be implied when the skb is using GSO?
 
-> +	unsigned int attr_idx, policy_idx;
-> +	int ret;
+> + *
+> + *             The *mtu_result* pointer contains the MTU value of the net
+> + *             device including the L2 header size (usually 14 bytes Ethernet
+> + *             header). The net device configured MTU is the L3 size, but as
+> + *             XDP and TX length operate at L2 this helper include L2 header
+> + *             size in reported MTU.
 
-[...]
-> +static int get_flags_policy(struct nl_context *nlctx, struct nl_socket *=
-nlsk,
-> +			    unsigned int nlcmd, unsigned int hdrattr)
-> +{
-> +	struct nl_msg_buff *msgbuff =3D &nlsk->msgbuff;
-> +	struct ethtool_op_policy_query_ctx ctx;
+What does mtu_result represent in the GSO case? I can imagine there
+being some funky interactions between skb->len and the return value,
+depending on how this is defined.
 
-Same here.
+> + *
+> + *     Return
+> + *             * 0 on success, and populate MTU value in *mtu_result* pointer.
+> + *
+> + *             * < 0 if any input argument is invalid (*mtu_result* not updated)
+> + *
+> + *             MTU violations return positive values, but also populate MTU
+> + *             value in *mtu_result* pointer, as this can be needed for
+> + *             implemeting PMTU handing:
+> + *
+> + *             * **BPF_MTU_CHK_RET_FRAG_NEEDED**
+> + *             * **BPF_MTU_CHK_RET_GSO_TOOBIG**
+> + *
 
-> +	int ret;
-> +
-> +	memset(&ctx, 0, sizeof(ctx));
-> +	ctx.nlctx =3D nlctx;
-> +	ctx.op =3D nlcmd;
-> +	ctx.op_hdr_attr =3D hdrattr;
-> +
-> +	ret =3D __msg_init(msgbuff, GENL_ID_CTRL, CTRL_CMD_GETPOLICY,
-> +			 NLM_F_REQUEST | NLM_F_ACK | NLM_F_DUMP, 1);
-> +	if (ret < 0)
-> +		return ret;
-> +	ret =3D -EMSGSIZE;
-> +	if (ethnla_put_u16(msgbuff, CTRL_ATTR_FAMILY_ID, nlctx->ethnl_fam))
-> +		return ret;
-> +	if (ethnla_put_u32(msgbuff, CTRL_ATTR_OP, nlcmd))
-> +		return ret;
-> +
-> +	nlsock_sendmsg(nlsk, NULL);
-> +	nlsock_process_reply(nlsk, family_policy_cb, &ctx);
-> +
-> +	ret =3D ctx.flag_mask;
-> +	return ret;
-> +}
+-- 
+Lorenz Bauer  |  Systems Engineer
+6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
 
-The return value is assigned either a negative error code or a u32 flag
-mask. If we run this code on a kernel supporting 32 flags, flag in bit
-31 would collide with sign and successfully retrieved flag mask would be
-interpreted as an error by caller.
-
-Other than this, the series looks good to me.
-
-Michal
-
---crrciydtoqbtar5b
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl+EefEACgkQ538sG/LR
-dpW9Awf/XThGsLRIzuo73CeZ9Lu5P7XMydf+XHLb7RiDsOOuDEgoAXYbTxobelYr
-WkcgvddcVnos2tO9Gm2BgB8lmUOYXmov6GlpGDIu0tWEBffIfE9WeLS/0PNbIq/i
-6Jy85ITzvFzs+Ud9rXTvU/wza+xtxLgx+82vnvGu4K6u7q+5DS9NXNhzqnpGOtJf
-xNL5ahOYAW2LbIgqCt+JvTCjJTXoYS1cjJxVfNiFnvXz5imR7UbUU2Y8uzYXnaoj
-Bk5zWvpJODZNk1IdeglCmTgWe3EO2HfCnPrQaHfLQzS/En3a+gxo7h8Z/di6LW1x
-zV3aKHRhun6hxo5cMl4U6QDAH8aY/A==
-=AY8N
------END PGP SIGNATURE-----
-
---crrciydtoqbtar5b--
+www.cloudflare.com
