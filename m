@@ -2,116 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A006B28BCFF
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 17:55:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14B9D28BD07
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 17:58:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730481AbgJLPzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 11:55:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51990 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730340AbgJLPzC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 11:55:02 -0400
-Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AB1AC0613D1
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 08:55:02 -0700 (PDT)
-Received: by mail-ot1-x343.google.com with SMTP id m13so16231049otl.9
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 08:55:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+Ipj6KApmqDordHHkZA5BdwogTRTbSz9ufEP2mPZJkg=;
-        b=bqM+JLYeYtmZLKVItTggBkanB+K1wLMBpj7MByYdi1dXJ89PovuV9CfiJ0Z52A5pOo
-         v09VFIcwFD5Mk5KK8RpEZUNGVeMwhJnlXCJDl5EEpDfGkleP4MQpXYkhFm2dlxODF+Za
-         3sdMFjM0CAKrxOkWulu8F1GYHUPxLq48Io9jI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+Ipj6KApmqDordHHkZA5BdwogTRTbSz9ufEP2mPZJkg=;
-        b=cNudSlxEPvRgdK2AJeojhM3LVogTgYWTurDpZIT3aMKebAZjc+Gk6cg0OcPuq6Mzwe
-         6SYko/F7yE9lXkW32T48rqP2AE79PvOkEl54PznqVpZYhRvxY+klMSgSPSq7ZDxdVGig
-         EvogUSTUuFiCWdBHNABFcsruhhs9NRLAeqphhxaRgS2xB/jJe0wv+bNn+zbcq3ZKdWis
-         P83hhSbUM5lHMoebKYTFVGJ/Gf7qUCnCcD+7uDXHp8fXL3mZv7Tu6aQLuu9bASnKru92
-         D++k9sw6rXqzQkQVhoQK4Rod1GhB2JYinZySGXcO2/MW+oxNBENIT8ep4M+G8iN+YE2r
-         4/bw==
-X-Gm-Message-State: AOAM533SGkzWHVLmBvIRrogSpVuxuPo4AK89/w/tIyCBjdBjr7UBBgTg
-        7GmKSPyAdyRYIqbWsQSJRwdM5K9Dazlxtqmp9Hlrhg==
-X-Google-Smtp-Source: ABdhPJx+keD6z4dt02aa8k+J2BwE04JZ7uXERqCyeIC3cQdasnyOXK211tshxI858hddaUTcqvIBCQadIhBaz7Crf2I=
-X-Received: by 2002:a9d:6ad5:: with SMTP id m21mr17217338otq.147.1602518101673;
- Mon, 12 Oct 2020 08:55:01 -0700 (PDT)
+        id S1730562AbgJLP6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 11:58:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53616 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726742AbgJLP6G (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Oct 2020 11:58:06 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 660B52074A;
+        Mon, 12 Oct 2020 15:58:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602518285;
+        bh=LEwnypzSjtd++DNJpV6qTktXDbbYwzYkL50Dz6WMZuQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ypORsP7hseFygcpMSXloSyLUTY+6Zs3ggk+1uBiatnuOy0+sTaRiS7zw+TIly6Mb5
+         /IrkWHMPQvcw7vw6Tr0LUgZHUcjsjExU9lDCbr5fzKaPsIG7UlNZ1p8/dZ8efNbgnL
+         zyNDI9LSupZftVGqTOlJeojLAKKy9jUiX0CAaweg=
+Date:   Mon, 12 Oct 2020 08:58:03 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Danielle Ratson <danieller@nvidia.com>
+Cc:     Ido Schimmel <idosch@idosch.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>, mlxsw <mlxsw@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>
+Subject: Re: [PATCH net-next 1/6] ethtool: Extend link modes settings uAPI
+ with lanes
+Message-ID: <20201012085803.61e256e6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <DM6PR12MB3865B2FBA17BABBC747190D8D8070@DM6PR12MB3865.namprd12.prod.outlook.com>
+References: <20201010154119.3537085-1-idosch@idosch.org>
+        <20201010154119.3537085-2-idosch@idosch.org>
+        <20201011153759.1bcb6738@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <DM6PR12MB3865B2FBA17BABBC747190D8D8070@DM6PR12MB3865.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-References: <160216609656.882446.16642490462568561112.stgit@firesoul> <160216615258.882446.12640007391672866038.stgit@firesoul>
-In-Reply-To: <160216615258.882446.12640007391672866038.stgit@firesoul>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Mon, 12 Oct 2020 17:54:50 +0200
-Message-ID: <CACAyw9-Ou=T7d6uDC8yKLNUf+QC5sZg_itOEJfhAinKznDdGCA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next V3 3/6] bpf: add BPF-helper for MTU checking
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        Shaun Crampton <shaun@tigera.io>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Marek Majkowski <marek@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 8 Oct 2020 at 16:09, Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+On Mon, 12 Oct 2020 15:33:45 +0000 Danielle Ratson wrote:
+> > What's the use for this in practical terms? Isn't the lane count basically
+> > implied by the module that gets plugged in?  
+> 
+> The use is to enable the user to decide how to achieve a certain speed. 
+> For example, if he wants to get 100G and the port has 4 lanes, the
+> speed can be achieved it using both 2 lanes of 50G and 4 lanes of
+> 25G, as a port with 4 lanes width can work in 2 lanes mode with
+> double speed each. So, by specifying "lanes 2" he will achieve 100G
+> using 2 lanes of 50G.
 
-...
-
-> + *             The *flags* argument can be a combination of one or more of the
-> + *             following values:
-> + *
-> + *              **BPF_MTU_CHK_RELAX**
-> + *                     This flag relax or increase the MTU with room for one
-> + *                     VLAN header (4 bytes) and take into account net device
-> + *                     hard_header_len.  This relaxation is also used by the
-> + *                     kernels own forwarding MTU checks.
-> + *
-> + *             **BPF_MTU_CHK_GSO**
-> + *                     This flag will only works for *ctx* **struct sk_buff**.
-> + *                     If packet context contains extra packet segment buffers
-> + *                     (often knows as frags), then those are also checked
-> + *                     against the MTU size.
-
-Maybe this is a documentation issue, but how / when am I expected to
-use these flags? I'm really ignorant when it comes to GSO, but could
-BPF_MTU_CHK_GSO be implied when the skb is using GSO?
-
-> + *
-> + *             The *mtu_result* pointer contains the MTU value of the net
-> + *             device including the L2 header size (usually 14 bytes Ethernet
-> + *             header). The net device configured MTU is the L3 size, but as
-> + *             XDP and TX length operate at L2 this helper include L2 header
-> + *             size in reported MTU.
-
-What does mtu_result represent in the GSO case? I can imagine there
-being some funky interactions between skb->len and the return value,
-depending on how this is defined.
-
-> + *
-> + *     Return
-> + *             * 0 on success, and populate MTU value in *mtu_result* pointer.
-> + *
-> + *             * < 0 if any input argument is invalid (*mtu_result* not updated)
-> + *
-> + *             MTU violations return positive values, but also populate MTU
-> + *             value in *mtu_result* pointer, as this can be needed for
-> + *             implemeting PMTU handing:
-> + *
-> + *             * **BPF_MTU_CHK_RET_FRAG_NEEDED**
-> + *             * **BPF_MTU_CHK_RET_GSO_TOOBIG**
-> + *
-
--- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
-
-www.cloudflare.com
+Can you give a concrete example of serdes capabilities of the port,
+what SFP gets plugged in and what configuration user wants to select?
