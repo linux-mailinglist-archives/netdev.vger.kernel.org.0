@@ -2,105 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0258B28B135
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 11:11:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59AD428B134
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 11:11:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729351AbgJLJLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1729358AbgJLJLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 12 Oct 2020 05:11:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45936 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729307AbgJLJLX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 05:11:23 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5C82C0613CE
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:22 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id 10so3408338pfp.5
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:22 -0700 (PDT)
+        with ESMTP id S1729223AbgJLJLY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 05:11:24 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EA85C0613D0
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:24 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id b193so12751828pga.6
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=UU/g7YEFTk/ndn0PxJ17rq21QQR5DSWFBRCbBKIsEpA=;
-        b=SL1sRvgWa6+s1iwq8JZXsmpZWspTsy/w7AwjL2U6+Jjc1AKFHcUfem9BSRA2NkXg7n
-         bYr83RLxE5MGAf6gU9o8q5FJopp8Y7laW944SJ/4Doal6/htDkixl2Cv6ixpylu14B74
-         VabHjDiPJmbL8TyXGgKi8IgfBCLbM6ChR3BRI=
+        bh=w/l6UjjGVDjvMkYct8wvf/TQlsuPRHwH57knBcEPQhU=;
+        b=QfWOtDHPHg1Yu11TRiCiHQvXs0E+3aSkV+8kaP2nRUhnljk9qdg6As9n2zIrjQyPxC
+         3bZGiSOcgZ/O9Xh7H0xRlPXPh4syQ33f530i+5092ZBnaeq1EuNADUCv4gpmsrhA5WzE
+         9A8JkJNbGwPpocTzVLjYRLMiXcrJfeX2F4D4s=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=UU/g7YEFTk/ndn0PxJ17rq21QQR5DSWFBRCbBKIsEpA=;
-        b=Kzr3LZvaiQQ+NPnMJTwaWARNgIZo5lierBxURa6pNkn1k+fWdNZ1L5JmkHh/3gjGWA
-         Ma6WEu1RXE5tRoWWaC2tYd1/087icY5sUtbt4sQKiZGILvqIuwHVFxudxGVhUZqTYWmb
-         9i3ydjRvCjBsmTbir6P8/l8R6Xg71/fGt70za8ro2ssdSfbUodlyvFqKZ0spNKAMpfkt
-         BAI5r8YYq3doIn3yLXOB65F5F1Al+5FW6e6wnrV7ztsPju/1Y6AxGLLyHjgaZk7hetI0
-         Sm5kxa8Sx4zQTLtg6wqdwMbTjooQ6yrd7PztfORz8D9DzV92nzg/rYDoK8rgwKp+Y+dc
-         bVwg==
-X-Gm-Message-State: AOAM531i7XB8pmIuMrg1g3e7iucbhokLW5vHpoou3UmVuKS5cNOfZn5H
-        dZI46z12nNVZd7m3T17fItJgqw==
-X-Google-Smtp-Source: ABdhPJw9ee3vg3kFOCf3w0N0sURIH8onF01wgwfsaPI9bcZBgbu911kyrp30KBRqUcoeGFU3nd3zjQ==
-X-Received: by 2002:a63:5446:: with SMTP id e6mr12365348pgm.415.1602493882314;
-        Mon, 12 Oct 2020 02:11:22 -0700 (PDT)
+        bh=w/l6UjjGVDjvMkYct8wvf/TQlsuPRHwH57knBcEPQhU=;
+        b=MJpo8qTknW3Zl4yFFDRDfhg74GuP1vpD5OG/jw2eI/YqmsRXzS1QlwV6ZULnGUDhz9
+         BrXqXKGr9U3M/u2CjLnOcum1LFQM+cVDELmuhP6roKpJKo1t+cjMv6CHHYwN2suOFtrE
+         23aopJ3uRvnSMFgJULAl9UYKBLJSwQ1eGXwBGoHhYj94m5eXVqQRuWi1t+sw9wu3gT1d
+         cRDDk5f2gwWJfwBP1V/MDdgJmq06geXpjheFpXE16l7EtMzkrI0JYtDMFA6yeJ3JPVQq
+         G/Ryb+slJPMOXAUjmaLFp905d9F8JLSnHG2NME449RwbKOy45KpXnH5aM0AgV/tmuICc
+         0P2g==
+X-Gm-Message-State: AOAM530potykS/p/nvV9AzhPLOT2RBk+hbuduOlm0IrMqXHqzOzXWC4u
+        zbs2RsLQualQS6ANOScbqDPw+w==
+X-Google-Smtp-Source: ABdhPJyF4bz3CIdRbR4xh1k6c1/V+r75RK64yGSzziuKo+YAHYBvDVMVkWOncAGDIIL50UPib/BEDg==
+X-Received: by 2002:a17:90a:a111:: with SMTP id s17mr19333783pjp.28.1602493883739;
+        Mon, 12 Oct 2020 02:11:23 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id jy19sm1275932pjb.9.2020.10.12.02.11.20
+        by smtp.gmail.com with ESMTPSA id jy19sm1275932pjb.9.2020.10.12.02.11.22
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 12 Oct 2020 02:11:21 -0700 (PDT)
+        Mon, 12 Oct 2020 02:11:22 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next v2 6/9] bnxt_en: Log unknown link speed appropriately.
-Date:   Mon, 12 Oct 2020 05:10:51 -0400
-Message-Id: <1602493854-29283-7-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Subject: [PATCH net-next v2 7/9] bnxt_en: Add bnxt_hwrm_nvm_get_dev_info() to query NVM info.
+Date:   Mon, 12 Oct 2020 05:10:52 -0400
+Message-Id: <1602493854-29283-8-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1602493854-29283-1-git-send-email-michael.chan@broadcom.com>
 References: <1602493854-29283-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000a2a0d705b175ae15"
+        boundary="000000000000b991e605b175ae32"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000a2a0d705b175ae15
+--000000000000b991e605b175ae32
 
-If the VF virtual link is set to always enabled, the speed may be
-unknown when the physical link is down.  The driver currently logs
-the link speed as 4294967295 Mbps which is SPEED_UNKNOWN.  Modify
-the link up log message as "speed unknown" which makes more sense.
+From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 
-Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+Add a new bnxt_hwrm_nvm_get_dev_info() to query firmware version
+information via NVM_GET_DEV_INFO firmware command.  Use it to
+get the running version of the NVM configuration information.
+
+This new function will also be used in subsequent patches to get the
+stored firmware versions.
+
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c        | 12 ++++++++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h        |  1 +
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c    | 16 ++++++++++++++++
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.h    |  2 ++
+ 4 files changed, 31 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 877efaf302ad..78bf636e623b 100644
+index 78bf636e623b..fa147865e33f 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -8902,6 +8902,11 @@ static void bnxt_report_link(struct bnxt *bp)
- 		u16 fec;
+@@ -7562,6 +7562,16 @@ static int bnxt_hwrm_func_reset(struct bnxt *bp)
+ 	return hwrm_send_message(bp, &req, sizeof(req), HWRM_RESET_TIMEOUT);
+ }
  
- 		netif_carrier_on(bp->dev);
-+		speed = bnxt_fw_to_ethtool_speed(bp->link_info.link_speed);
-+		if (speed == SPEED_UNKNOWN) {
-+			netdev_info(bp->dev, "NIC Link is Up, speed unknown\n");
-+			return;
-+		}
- 		if (bp->link_info.duplex == BNXT_LINK_DUPLEX_FULL)
- 			duplex = "full";
- 		else
-@@ -8914,7 +8919,6 @@ static void bnxt_report_link(struct bnxt *bp)
- 			flow_ctrl = "ON - receive";
- 		else
- 			flow_ctrl = "none";
--		speed = bnxt_fw_to_ethtool_speed(bp->link_info.link_speed);
- 		netdev_info(bp->dev, "NIC Link is Up, %u Mbps %s duplex, Flow control: %s\n",
- 			    speed, duplex, flow_ctrl);
- 		if (bp->flags & BNXT_FLAG_EEE_CAP)
++static void bnxt_nvm_cfg_ver_get(struct bnxt *bp)
++{
++	struct hwrm_nvm_get_dev_info_output nvm_info;
++
++	if (!bnxt_hwrm_nvm_get_dev_info(bp, &nvm_info))
++		snprintf(bp->nvm_cfg_ver, FW_VER_STR_LEN, "%d.%d.%d",
++			 nvm_info.nvm_cfg_ver_maj, nvm_info.nvm_cfg_ver_min,
++			 nvm_info.nvm_cfg_ver_upd);
++}
++
+ static int bnxt_hwrm_queue_qportcfg(struct bnxt *bp)
+ {
+ 	int rc = 0;
+@@ -11223,6 +11233,8 @@ static int bnxt_fw_init_one_p1(struct bnxt *bp)
+ 		if (rc)
+ 			return rc;
+ 	}
++	bnxt_nvm_cfg_ver_get(bp);
++
+ 	rc = bnxt_hwrm_func_reset(bp);
+ 	if (rc)
+ 		return -ENODEV;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index b208ff7c5d14..21ef1c21f602 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1856,6 +1856,7 @@ struct bnxt {
+ #define PHY_VER_STR_LEN         (FW_VER_STR_LEN - BC_HWRM_STR_LEN)
+ 	char			fw_ver_str[FW_VER_STR_LEN];
+ 	char			hwrm_ver_supp[FW_VER_STR_LEN];
++	char			nvm_cfg_ver[FW_VER_STR_LEN];
+ 	u64			fw_ver_code;
+ #define BNXT_FW_VER_CODE(maj, min, bld, rsv)			\
+ 	((u64)(maj) << 48 | (u64)(min) << 32 | (u64)(bld) << 16 | (rsv))
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index dcbb7b70d60a..53687bc7fcf5 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -2072,6 +2072,22 @@ static u32 bnxt_get_link(struct net_device *dev)
+ 	return bp->link_info.link_up;
+ }
+ 
++int bnxt_hwrm_nvm_get_dev_info(struct bnxt *bp,
++			       struct hwrm_nvm_get_dev_info_output *nvm_dev_info)
++{
++	struct hwrm_nvm_get_dev_info_output *resp = bp->hwrm_cmd_resp_addr;
++	struct hwrm_nvm_get_dev_info_input req = {0};
++	int rc;
++
++	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_NVM_GET_DEV_INFO, -1, -1);
++	mutex_lock(&bp->hwrm_cmd_lock);
++	rc = _hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
++	if (!rc)
++		memcpy(nvm_dev_info, resp, sizeof(*resp));
++	mutex_unlock(&bp->hwrm_cmd_lock);
++	return rc;
++}
++
+ static void bnxt_print_admin_err(struct bnxt *bp)
+ {
+ 	netdev_info(bp->dev, "PF does not have admin privileges to flash or reset the device\n");
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
+index 34f44ddfad79..fa6fbde52bea 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
+@@ -92,6 +92,8 @@ u32 bnxt_get_rxfh_indir_size(struct net_device *dev);
+ u32 _bnxt_fw_to_ethtool_adv_spds(u16, u8);
+ u32 bnxt_fw_to_ethtool_speed(u16);
+ u16 bnxt_get_fw_auto_link_speeds(u32);
++int bnxt_hwrm_nvm_get_dev_info(struct bnxt *bp,
++			       struct hwrm_nvm_get_dev_info_output *nvm_dev_info);
+ int bnxt_flash_package_from_file(struct net_device *dev, const char *filename,
+ 				 u32 install_type);
+ void bnxt_ethtool_init(struct bnxt *bp);
 -- 
 2.18.1
 
 
---000000000000a2a0d705b175ae15
+--000000000000b991e605b175ae32
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -170,14 +236,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgTbfFFG2eBI/x
-9zh0OU/c16rPXtmRowqPMM5VrqahUZ8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAxMDEyMDkxMTIyWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgl3DeVM0+WdQR
+MpVPqoLa/NZiWSquTTBUsGyR1x00nFowGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAxMDEyMDkxMTI0WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAEDaUL59U1R95AtxfxCMgZ+/6XxdvNbf
-1B0GFwwZapb/abnbpx7ZLiNnjQZdS4Oh/cXK2JITkNGnJksIOwqq6J6HwXIOGB64sMhsAitLhn/q
-Xlz3aSqqM05muPqSfo/2FLg9Slcpz//rWs/EHnEn1c5oXD+1Kqw4UeWchdqH3DF4briPongXqgak
-FTBtn/FJad/RHcBjZOALzPhNziTFxQcRtBmUzZx6HcrL7l3G6L+41QpgOV6ChsLTjTDclVBAtauJ
-aYCD1bA3NpJtssYkMItHdZxYeArhWHIJKEc1nDTU/atomcS+HpjQn70MAi2SxS5VbPAswVx4F066
-Pv/6FZ4=
---000000000000a2a0d705b175ae15--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAAqbwEGXf7H7KAZIG7i6D4ORtEVrArQj
+gnYV1hWMgv598wAgKmq2SPi7qqqjdiMK3ssXq3B/oLRlrCpA1xvI8wsAfkz74bRBrtfX11XWvAoS
+QUjoxZkvvrFXYiux4TRw+z/TzefwO3mjA4ootNGhPPQcHrWfnDDwk+VUZqnhVpb4hfleVwHQTLRX
+fEd4OS9Xu4Uqqm4KPdzpfAG/Jv/X4Xgb76IZ3E4bDv/au9I6nsyNSK1ynKRIqCeb6uPaYsaKs81K
+ErL2zWMeiHjCkhnuG5lhDXctt1LSAIcA3/CQLEev+/NjGi0rh2635J0eQ6IvLVCtnt3Y5Kd3DQsM
+N4dqHKQ=
+--000000000000b991e605b175ae32--
