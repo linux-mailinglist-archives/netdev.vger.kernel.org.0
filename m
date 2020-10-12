@@ -2,103 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A39128C08C
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 21:05:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1626A28C141
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 21:12:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391465AbgJLTEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 15:04:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54396 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391400AbgJLTE1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Oct 2020 15:04:27 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C204322203;
-        Mon, 12 Oct 2020 19:04:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602529466;
-        bh=+5+pS2ispcwRZwG6pyNLvhJ9r0xoiWE3FsuAUwpMXmY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LqSGM9AVstKS5q9HXl2q+lHRdfP9GLhpq3mRMu0TRtz+bkqToJoToFLuHBxPUMoo4
-         rSXOJPwljn3TdNRKeSkY3b/W1T860ZI/Xb85hd85EA2pNcE7axhEE8F6T/Mmi8wDp+
-         /V5Qe6qbdpPMP9W2C8QuYOl00T+WHSotRk+ZyLvI=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Anant Thazhemadam <anant.thazhemadam@gmail.com>,
-        syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com,
-        Petko Manolov <petkan@nucleusys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 6/6] net: usb: rtl8150: set random MAC address when set_ethernet_addr() fails
-Date:   Mon, 12 Oct 2020 15:04:18 -0400
-Message-Id: <20201012190418.3279866-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201012190418.3279866-1-sashal@kernel.org>
-References: <20201012190418.3279866-1-sashal@kernel.org>
+        id S2391296AbgJLTL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 15:11:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54280 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388013AbgJLTLZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 15:11:25 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8988C0613D0
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 12:11:25 -0700 (PDT)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1kS3Dz-004KOd-1W; Mon, 12 Oct 2020 21:11:11 +0200
+Message-ID: <52f7e2d98ae575f353c6f519065c85ba782168be.camel@sipsolutions.net>
+Subject: Re: [PATCH net-next 1/6] ethtool: Extend link modes settings uAPI
+ with lanes
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>, Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@nvidia.com,
+        danieller@nvidia.com, andrew@lunn.ch, f.fainelli@gmail.com,
+        mkubecek@suse.cz, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Date:   Mon, 12 Oct 2020 21:10:53 +0200
+In-Reply-To: <20201011153759.1bcb6738@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201010154119.3537085-1-idosch@idosch.org>
+         <20201010154119.3537085-2-idosch@idosch.org>
+         <20201011153759.1bcb6738@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anant Thazhemadam <anant.thazhemadam@gmail.com>
+Hi,
 
-[ Upstream commit f45a4248ea4cc13ed50618ff066849f9587226b2 ]
+Sorry, somehow didn't see this until now.
 
-When get_registers() fails in set_ethernet_addr(),the uninitialized
-value of node_id gets copied over as the address.
-So, check the return value of get_registers().
+> > +/* Lanes, 1, 2, 4 or 8. */
+> > +#define ETHTOOL_LANES_1			1
+> > +#define ETHTOOL_LANES_2			2
+> > +#define ETHTOOL_LANES_4			4
+> > +#define ETHTOOL_LANES_8			8
+> 
+> Not an extremely useful set of defines, not sure Michal would agree.
+> 
+> > +#define ETHTOOL_LANES_UNKNOWN		0
+> >  struct link_mode_info {
+> >  	int				speed;
+> > +	int				lanes;
+> 
+> why signed?
+> 
+> >  	u8				duplex;
+> >  };
+> > @@ -274,16 +277,17 @@ const struct nla_policy ethnl_linkmodes_set_policy[] = {
+> >  	[ETHTOOL_A_LINKMODES_SPEED]		= { .type = NLA_U32 },
+> >  	[ETHTOOL_A_LINKMODES_DUPLEX]		= { .type = NLA_U8 },
+> >  	[ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG]	= { .type = NLA_U8 },
+> > +	[ETHTOOL_A_LINKMODES_LANES]		= { .type = NLA_U32 },
+> 
+> NLA_POLICY_VALIDATE_FN(), not sure why the types for this
+> validation_type are limited.. Johannes, just an abundance of caution?
 
-If get_registers() executed successfully (i.e., it returns
-sizeof(node_id)), copy over the MAC address using ether_addr_copy()
-(instead of using memcpy()).
+So let me see if I got this right - you're saying you'd like to use
+NLA_POLICY_VALIDATE_FN() for an NLA_U32, to validate against the _LANES
+being 1, 2, 4 or 8?
 
-Else, if get_registers() failed instead, a randomly generated MAC
-address is set as the MAC address instead.
+First of all, you _can_, no? I mean, it's limited by
 
-Reported-by: syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com
-Tested-by: syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com
-Acked-by: Petko Manolov <petkan@nucleusys.com>
-Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/usb/rtl8150.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+#define NLA_ENSURE_NO_VALIDATION_PTR(tp)                \
+        (__NLA_ENSURE(tp != NLA_BITFIELD32 &&           \
+                      tp != NLA_REJECT &&               \
+                      tp != NLA_NESTED &&               \
+                      tp != NLA_NESTED_ARRAY) + tp)
 
-diff --git a/drivers/net/usb/rtl8150.c b/drivers/net/usb/rtl8150.c
-index 58b1e18fdd64d..7230f1e8210ff 100644
---- a/drivers/net/usb/rtl8150.c
-+++ b/drivers/net/usb/rtl8150.c
-@@ -277,12 +277,20 @@ static int write_mii_word(rtl8150_t * dev, u8 phy, __u8 indx, u16 reg)
- 		return 1;
- }
- 
--static inline void set_ethernet_addr(rtl8150_t * dev)
-+static void set_ethernet_addr(rtl8150_t *dev)
- {
--	u8 node_id[6];
-+	u8 node_id[ETH_ALEN];
-+	int ret;
-+
-+	ret = get_registers(dev, IDR, sizeof(node_id), node_id);
- 
--	get_registers(dev, IDR, sizeof(node_id), node_id);
--	memcpy(dev->netdev->dev_addr, node_id, sizeof(node_id));
-+	if (ret == sizeof(node_id)) {
-+		ether_addr_copy(dev->netdev->dev_addr, node_id);
-+	} else {
-+		eth_hw_addr_random(dev->netdev);
-+		netdev_notice(dev->netdev, "Assigned a random MAC address: %pM\n",
-+			      dev->netdev->dev_addr);
-+	}
- }
- 
- static int rtl8150_set_mac_address(struct net_device *netdev, void *p)
--- 
-2.25.1
+and the reason is sort of encoded in that - the types listed here
+already use the pointer *regardless of the validation_type*, so you
+can't have a pointer to the function in the same union.
+
+But not sure I understood :-)
+
+johannes
 
