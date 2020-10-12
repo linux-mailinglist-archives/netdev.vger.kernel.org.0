@@ -2,92 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF42928AB2F
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 02:15:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E334928AB48
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 02:59:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726635AbgJLAO6 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 11 Oct 2020 20:14:58 -0400
-Received: from smtp.h3c.com ([60.191.123.50]:62718 "EHLO h3cspam02-ex.h3c.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725962AbgJLAO5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 11 Oct 2020 20:14:57 -0400
-Received: from DAG2EX02-BASE.srv.huawei-3com.com ([10.8.0.65])
-        by h3cspam02-ex.h3c.com with ESMTPS id 09C0EcWI014370
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 12 Oct 2020 08:14:38 +0800 (GMT-8)
-        (envelope-from tian.xianting@h3c.com)
-Received: from DAG2EX03-BASE.srv.huawei-3com.com (10.8.0.66) by
- DAG2EX02-BASE.srv.huawei-3com.com (10.8.0.65) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 12 Oct 2020 08:14:39 +0800
-Received: from DAG2EX03-BASE.srv.huawei-3com.com ([fe80::5d18:e01c:bbbd:c074])
- by DAG2EX03-BASE.srv.huawei-3com.com ([fe80::5d18:e01c:bbbd:c074%7]) with
- mapi id 15.01.1713.004; Mon, 12 Oct 2020 08:14:39 +0800
-From:   Tianxianting <tian.xianting@h3c.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] net: Avoid allocing memory on memoryless numa node
-Thread-Topic: [PATCH] net: Avoid allocing memory on memoryless numa node
-Thread-Index: AQHWn4X33nOETvWn/EOdjwgvT00GhKmSQVKAgADYw6A=
-Date:   Mon, 12 Oct 2020 00:14:39 +0000
-Message-ID: <b77011b20e85434e8e5135ea1c0f51ac@h3c.com>
-References: <20201011041140.8945-1-tian.xianting@h3c.com>
- <20201011121803.2c003c7e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201011121803.2c003c7e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.99.141.128]
-x-sender-location: DAG2
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727212AbgJLA7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 20:59:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54766 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727132AbgJLA73 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 20:59:29 -0400
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66023C0613CE;
+        Sun, 11 Oct 2020 17:59:29 -0700 (PDT)
+Received: by mail-lj1-x235.google.com with SMTP id 133so15245252ljj.0;
+        Sun, 11 Oct 2020 17:59:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=jWvlIBzh+NxbUx8sE9GgdjQVlb7CmsH9J6UF2pj8tsA=;
+        b=LABqZHmq6JY2YZLhX5Ds7Y1BT6ng2OTIsyuBOKIik1+vpc+rLWhUb3UoPYfszspiwR
+         AOQgEf7V1DcX6zFqK8YgY34xm3v7MBwdrWQ6VshQZo0vcYe9QmgLVeLXFG8jiG7Ln+k0
+         J2UPfkRqfzkmShubcDGdUYWhhM8rFY6pwFV4aK7VUfgrkCc2HU07ro5UhP9m+hyln9QF
+         8hw3oFy2WAgVK7riMHt+YfvE1QWT0YGjuHLykONzRTPnsfmpw5aakuvfe/FrPe5Uj88u
+         XDMFfp9H3k50O7nTW1rlQz6YbhUimVcgoU5YeXFnixHTKxe/dLBzNoeYtbAGLJGxXLUG
+         zLZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=jWvlIBzh+NxbUx8sE9GgdjQVlb7CmsH9J6UF2pj8tsA=;
+        b=WIVrbgUj2F3woQkrRlLNnhb9NxQ/tHvDMwkpGa+X7h3MwuQzZzuBApKCkGey6IBjIp
+         /iaa2da0w00pLVgQtxkHl0m1aeOWUeL+HYmeQWu0wJgmGr7z4ZA/mvdyQzIWju7ArqY4
+         hqW+HVE3reItBa1zJ2x/jCh3+eJPhvSmMLIdjh7NbHRbI1Q7usCFJRCwtXMxYKhdG9y+
+         aRkxugKY9+nkGz/oy4aLcwu/qGseJrcxLDInThSFEd8743JqsIvQrn/S8y6+O99y8htH
+         0k5l0o0i675k0lDev0TlN4ImCD3GNlDSgII2RIeO0wIshuvDQAu5+VB82iV9MLT5IjVK
+         8fRw==
+X-Gm-Message-State: AOAM530Kj9LoDEBH1lJ8x5878sLTTZ++9othK3q4lOn6BTesLjjpR7Nr
+        jt3k2pBRb+7PMlPXlUFBE+qfefNKM4vMsU+3nMLomn/ZyQs=
+X-Google-Smtp-Source: ABdhPJwwXkOCmdtfQdDCkSYAEFUSxSjTaaKanT7huL1qg1DEApgdSI/1J/E+2v8mivEIW2D5XJ+RzPRzLJAh6/PY+ss=
+X-Received: by 2002:a2e:9015:: with SMTP id h21mr9871539ljg.450.1602464367764;
+ Sun, 11 Oct 2020 17:59:27 -0700 (PDT)
 MIME-Version: 1.0
-X-DNSRBL: 
-X-MAIL: h3cspam02-ex.h3c.com 09C0EcWI014370
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Sun, 11 Oct 2020 17:59:16 -0700
+Message-ID: <CAADnVQ+ycd8T4nBcnAwr5FHX75_JhWmqdHzXEXwx5udBv8uwiQ@mail.gmail.com>
+Subject: merge window is open. bpf-next is still open.
+To:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
-Thanks for your suggestion,
-Let me try it :-)
+Hi BPF developers,
 
------Original Message-----
-From: Jakub Kicinski [mailto:kuba@kernel.org] 
-Sent: Monday, October 12, 2020 3:18 AM
-To: tianxianting (RD) <tian.xianting@h3c.com>
-Cc: davem@davemloft.net; netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: Avoid allocing memory on memoryless numa node
+The merge window has just opened.
+Which would typically mean that bpf-next is closing,
+but things are going to be a little bit different this time.
+We're stopping to accept new features into bpf-next/master.
+The few pending patches might get applied and imminent pull-req into
+net-next will be sent.
+After that bpf-next/master will be frozen for the duration of the merge window,
+but bpf-next/next branch will be open for the new features.
 
-On Sun, 11 Oct 2020 12:11:40 +0800 Xianting Tian wrote:
-> In architecture like powerpc, we can have cpus without any local 
-> memory attached to it. In such cases the node does not have real memory.
-> 
-> Use local_memory_node(), which is guaranteed to have memory.
-> local_memory_node is a noop in other architectures that does not 
-> support memoryless nodes.
-> 
-> Signed-off-by: Xianting Tian <tian.xianting@h3c.com>
-> ---
->  net/core/dev.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/net/core/dev.c b/net/core/dev.c index 
-> 266073e30..dcb4533ef 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -2590,7 +2590,7 @@ static struct xps_map *expand_xps_map(struct xps_map *map, int attr_index,
->  		new_map = kzalloc(XPS_MAP_SIZE(alloc_len), GFP_KERNEL);
->  	else
->  		new_map = kzalloc_node(XPS_MAP_SIZE(alloc_len), GFP_KERNEL,
-> -				       cpu_to_node(attr_index));
-> +				       local_memory_node(cpu_to_node(attr_index)));
->  	if (!new_map)
->  		return NULL;
->  
+So please continue the BPF development and keep sending your patches.
+They will be reviewed as usual.
+After the merge window everything that is accumulated in bpf-next/next
+will be applied to bpf-next/master.
+Due to merge/rebase sha-s in bpf-next/next will likely be unstable.
 
-Are we going to patch all kmalloc_node() callers now to apply local_memory_node()?  Can't the allocator take care of this?
+Please focus on fixing bugs that may get exposed during the merge window.
+The bpf tree is always open for bug fixes.
 
+Thanks!
