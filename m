@@ -2,123 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1929828B85E
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 15:52:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C326F28B8EE
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 15:57:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389963AbgJLNvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 09:51:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60766 "EHLO
+        id S2389613AbgJLN4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 09:56:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389973AbgJLNtw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 09:49:52 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80E26C0613D7;
-        Mon, 12 Oct 2020 06:49:51 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id t20so10697078edr.11;
-        Mon, 12 Oct 2020 06:49:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:in-reply-to:message-id:references
-         :user-agent:mime-version;
-        bh=HsbAp6qd7g4JTk6QFw04+VFZUaG3bIXSc1NpoNbfqf8=;
-        b=phQ8c5GMkXNgAEiW9pg3lAWEQS1b60Omw7uWqN0NQUjcppagPTYtroAw8rKpJsTb9G
-         +QD9RAx2vJoncFxbg7zUExmhvBJh9nr0yR8gsAZ+SJseY4NuhdNgHnBcmFPOgFnizuzQ
-         qRWHPuXVuZfx+32H/GUCF7uWBhp7NMaJQyeeZBxbPQx2vFXSU00hdF39rgfPJGfhKy55
-         EdmRUfZY16sG7yJvjcvET3KkhQ5rBeWMGrGfh6X0kZE747vjAP6eRX24+chUkhcZbMGw
-         4/5ETyAd+LZsEtsdqJGe764PuvmLDlQASUw7tIvKy3SsBWyY4wCYUlUdQXVNqKdGY0UK
-         T2/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:in-reply-to:message-id
-         :references:user-agent:mime-version;
-        bh=HsbAp6qd7g4JTk6QFw04+VFZUaG3bIXSc1NpoNbfqf8=;
-        b=IpE6cDGEHNJUHYu1djq5WNwPFiC+FohCMvI5yKzz2p0Qpopx2rdZdlaPFbB1N1/7XT
-         Ft9LgUV9iXx+2atz5u0jgUlYT6fPIFdrMbQgFuinx5DlmVaHloyS9UKJ9DGIPQnzfZpG
-         48xjdVAli2dee7o8yTPvxBtedR0xTIxuVqpKXHOe1ziVpZBYuKv9Ll5iS63dk5qL577r
-         PSNxok4bG+8iKrI7wF1BYJtzG2M5r4VIBzkz8rSmPN1w6V3leYen4/tQM4gsJ3WuKyQY
-         qKpDXy4BwYeLhUERxwSGvXMrcfntAkayOlXEdrxrpRiHpDb4vjh2FWjXyrc+BsAAUe8c
-         lJQw==
-X-Gm-Message-State: AOAM5320YJjgVf3b31hkLdkIreF9cvB5Y18DJu+4b5QpbTaus7vjI56T
-        9rfP6x9FV8Ikx3rZrg+qzvI=
-X-Google-Smtp-Source: ABdhPJxFkYpU7K3AS5LxjIDvju41ZYqpsBIoDPX+SHxU23/hUALjax3K659HVU/Z5ZE7dilKv7q/kw==
-X-Received: by 2002:aa7:cd4f:: with SMTP id v15mr13718665edw.243.1602510590180;
-        Mon, 12 Oct 2020 06:49:50 -0700 (PDT)
-Received: from felia ([2001:16b8:2d57:fc00:8472:203c:3ecb:c442])
-        by smtp.gmail.com with ESMTPSA id u17sm8233872ejj.83.2020.10.12.06.49.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Oct 2020 06:49:49 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-X-Google-Original-From: Lukas Bulwahn <lukas@gmail.com>
-Date:   Mon, 12 Oct 2020 15:49:48 +0200 (CEST)
-X-X-Sender: lukas@felia
-To:     Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-safety@lists.elisa.tech, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org
-Subject: Re: [linux-safety] [PATCH] e1000: drop unneeded assignment in
- e1000_set_itr()
-In-Reply-To: <20201011212326.2758-1-sudipm.mukherjee@gmail.com>
-Message-ID: <alpine.DEB.2.21.2010121546470.6487@felia>
-References: <20201011212326.2758-1-sudipm.mukherjee@gmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        with ESMTP id S2389652AbgJLN4A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 09:56:00 -0400
+Received: from a3.inai.de (a3.inai.de [IPv6:2a01:4f8:10b:45d8::f5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 028F1C0613D0
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 06:56:00 -0700 (PDT)
+Received: by a3.inai.de (Postfix, from userid 65534)
+        id E74AE586342DF; Mon, 12 Oct 2020 15:55:56 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on a3.inai.de
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.2
+Received: from a4.inai.de (a4.inai.de [IPv6:2a01:4f8:10b:45d8::f8])
+        by a3.inai.de (Postfix) with ESMTP id 12BD9586342DD;
+        Mon, 12 Oct 2020 15:55:56 +0200 (CEST)
+From:   Jan Engelhardt <jengelh@inai.de>
+To:     stephen@networkplumber.org
+Cc:     jengelh@inai.de, netdev@vger.kernel.org
+Subject: [iproute PATCH] ip: add error reporting when RTM_GETNSID failed
+Date:   Mon, 12 Oct 2020 15:55:55 +0200
+Message-Id: <20201012135555.6071-1-jengelh@inai.de>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+`ip addr` when run under qemu-user-riscv64, fails. This likely is due
+to qemu-5.1 not doing translation of RTM_GETNSID calls. Aborting ip
+completely is not helpful for the user however. This patch reworks
+the error handling.
 
+Before:
 
-On Sun, 11 Oct 2020, Sudip Mukherjee wrote:
+rtest:/ # ip a
+2: host0@if4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+request send failed: Operation not supported
+    link/ether 46:3f:2d:88:3d:db brd ff:ff:ff:ff:ff:ffrtest:/ #
 
-> The variable 'current_itr' is assigned to 0 before jumping to
-> 'set_itr_now' but it has not been used after the jump. So, remove the
-> unneeded assignement.
-> 
-> Signed-off-by: Sudip Mukherjee <sudipm.mukherjee@gmail.com>
-> ---
->  drivers/net/ethernet/intel/e1000/e1000_main.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/e1000/e1000_main.c b/drivers/net/ethernet/intel/e1000/e1000_main.c
-> index 5e28cf4fa2cd..042de276e632 100644
-> --- a/drivers/net/ethernet/intel/e1000/e1000_main.c
-> +++ b/drivers/net/ethernet/intel/e1000/e1000_main.c
-> @@ -2632,7 +2632,6 @@ static void e1000_set_itr(struct e1000_adapter *adapter)
->  
->  	/* for non-gigabit speeds, just fix the interrupt rate at 4000 */
->  	if (unlikely(adapter->link_speed != SPEED_1000)) {
-> -		current_itr = 0;
->  		new_itr = 4000;
->  		goto set_itr_now;
->  	}
+Afterwards:
 
-Alternatively, you could just inline the max(...) into the switch and 
-completely drop the current_itr definition.
+rtest:/ # ip a
+2: host0@if4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default qlen 1000
+rtnl_send(RTM_GETNSID): Operation not supported. Continuing anyway.
+    link/ether 46:3f:2d:88:3d:db brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 192.168.72.147/28 brd 192.168.72.159 scope global host0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::443f:2dff:fe88:3ddb/64 scope link
+       valid_lft forever preferred_lft forever
+rtest:/ #
 
-But your solution probably does the job: it is a "No functional change" 
-commit.
+Signed-off-by: Jan Engelhardt <jengelh@inai.de>
+---
+ ip/ipnetns.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-Reviewed-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+diff --git a/ip/ipnetns.c b/ip/ipnetns.c
+index 46cc235b..e7a45653 100644
+--- a/ip/ipnetns.c
++++ b/ip/ipnetns.c
+@@ -78,6 +78,8 @@ static int ipnetns_have_nsid(void)
+ 	if (have_rtnl_getnsid < 0) {
+ 		fd = open("/proc/self/ns/net", O_RDONLY);
+ 		if (fd < 0) {
++			fprintf(stderr, "/proc/self/ns/net: %s. "
++				"Continuing anyway.\n", strerror(errno));
+ 			have_rtnl_getnsid = 0;
+ 			return 0;
+ 		}
+@@ -85,8 +87,11 @@ static int ipnetns_have_nsid(void)
+ 		addattr32(&req.n, 1024, NETNSA_FD, fd);
+ 
+ 		if (rtnl_send(&rth, &req.n, req.n.nlmsg_len) < 0) {
+-			perror("request send failed");
+-			exit(1);
++			fprintf(stderr, "rtnl_send(RTM_GETNSID): %s. "
++				"Continuing anyway.\n", strerror(errno));
++			have_rtnl_getnsid = 0;
++			close(fd);
++			return 0;
+ 		}
+ 		rtnl_listen(&rth, ipnetns_accept_msg, NULL);
+ 		close(fd);
+-- 
+2.28.0
 
-
-Lukas
-
-> -- 
-> 2.11.0
-> 
-> 
-> 
-> -=-=-=-=-=-=-=-=-=-=-=-
-> Links: You receive all messages sent to this group.
-> View/Reply Online (#77): https://lists.elisa.tech/g/linux-safety/message/77
-> Mute This Topic: https://lists.elisa.tech/mt/77448709/1714638
-> Group Owner: linux-safety+owner@lists.elisa.tech
-> Unsubscribe: https://lists.elisa.tech/g/linux-safety/unsub [lukas.bulwahn@gmail.com]
-> -=-=-=-=-=-=-=-=-=-=-=-
-> 
-> 
-> 
