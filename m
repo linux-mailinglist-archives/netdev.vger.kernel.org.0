@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6E2C28C129
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 21:09:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C4BB28C11B
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 21:09:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390131AbgJLTJb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 15:09:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52236 "EHLO mail.kernel.org"
+        id S1731317AbgJLTJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 15:09:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52258 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731037AbgJLTCy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Oct 2020 15:02:54 -0400
+        id S2387933AbgJLTC4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Oct 2020 15:02:56 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AC43920BED;
-        Mon, 12 Oct 2020 19:02:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CDD46214D8;
+        Mon, 12 Oct 2020 19:02:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602529374;
-        bh=S0KZYLLGViKT+39FRrXiwxyyEjpKYZusv+4UoPxSpf4=;
+        s=default; t=1602529375;
+        bh=2wljG4LeMS7hfd/+UNGq7TdFAwYhZZvRSu5x0DBBEDA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kqRniX6148EcNpuyQt0PQDenn3z8ZxgpNGMv7HNJ0WxEfmlEfdYp0RmbXHfohXPV7
-         c7lDTJsLczncS5GSnRA26OEYf3hYZNcIPEpNCfRKSVeR9viY2pT3gmYytZ9EEAe1Ox
-         Rc0OcA2iogKJh55X8gQMoF7HSInxw+GGdDN0zZC0=
+        b=l3Uxohr4empUXtSpgRdeEKa91N2YGhjd7B76wae0CCymrx631NBwhWwdNLdmQ+FsS
+         Afn8Z/Ld3sHt5Dhqq5Rs4yIkSbQ6s+MyogyCTnl3/pVVyj61nKPDg/I8SYCrst+5rW
+         T9I+Dd+U4KKWM4lPG7sE9V6WCsgQwyWAy+glb3jE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Igor Russkikh <irusskikh@marvell.com>,
+Cc:     Wilken Gottwalt <wilken.gottwalt@mailbox.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.8 11/24] net: atlantic: fix build when object tree is separate
-Date:   Mon, 12 Oct 2020 15:02:26 -0400
-Message-Id: <20201012190239.3279198-11-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.8 12/24] net: usb: ax88179_178a: add MCT usb 3.0 adapter
+Date:   Mon, 12 Oct 2020 15:02:27 -0400
+Message-Id: <20201012190239.3279198-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201012190239.3279198-1-sashal@kernel.org>
 References: <20201012190239.3279198-1-sashal@kernel.org>
@@ -42,45 +43,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Igor Russkikh <irusskikh@marvell.com>
+From: Wilken Gottwalt <wilken.gottwalt@mailbox.org>
 
-[ Upstream commit 059432495e209279bae12db3d2b0bc8c8fe987bb ]
+[ Upstream commit c92a79829c7c169139874aa1d4bf6da32d10c38a ]
 
-Driver subfolder files refer parent folder includes in an
-absolute manner.
+Adds the driver_info and usb ids of the AX88179 based MCT U3-A9003 USB
+3.0 ethernet adapter.
 
-Makefile contains a -I for this, but apparently that does not
-work if object tree is separated.
-
-Adding srctree to fix that.
-
-Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
+Signed-off-by: Wilken Gottwalt <wilken.gottwalt@mailbox.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/aquantia/atlantic/Makefile | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/usb/ax88179_178a.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/Makefile b/drivers/net/ethernet/aquantia/atlantic/Makefile
-index 130a105d03f3b..8ebcc68e807fc 100644
---- a/drivers/net/ethernet/aquantia/atlantic/Makefile
-+++ b/drivers/net/ethernet/aquantia/atlantic/Makefile
-@@ -8,7 +8,7 @@
+diff --git a/drivers/net/usb/ax88179_178a.c b/drivers/net/usb/ax88179_178a.c
+index 125f7bf57590b..a2f8a93c89269 100644
+--- a/drivers/net/usb/ax88179_178a.c
++++ b/drivers/net/usb/ax88179_178a.c
+@@ -1841,6 +1841,19 @@ static const struct driver_info toshiba_info = {
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
  
- obj-$(CONFIG_AQTION) += atlantic.o
- 
--ccflags-y += -I$(src)
-+ccflags-y += -I$(srctree)/$(src)
- 
- atlantic-objs := aq_main.o \
- 	aq_nic.o \
-@@ -33,4 +33,4 @@ atlantic-objs := aq_main.o \
- 
- atlantic-$(CONFIG_MACSEC) += aq_macsec.o
- 
--atlantic-$(CONFIG_PTP_1588_CLOCK) += aq_ptp.o
-\ No newline at end of file
-+atlantic-$(CONFIG_PTP_1588_CLOCK) += aq_ptp.o
++static const struct driver_info mct_info = {
++	.description = "MCT USB 3.0 Gigabit Ethernet Adapter",
++	.bind	= ax88179_bind,
++	.unbind	= ax88179_unbind,
++	.status	= ax88179_status,
++	.link_reset = ax88179_link_reset,
++	.reset	= ax88179_reset,
++	.stop	= ax88179_stop,
++	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
++	.rx_fixup = ax88179_rx_fixup,
++	.tx_fixup = ax88179_tx_fixup,
++};
++
+ static const struct usb_device_id products[] = {
+ {
+ 	/* ASIX AX88179 10/100/1000 */
+@@ -1878,6 +1891,10 @@ static const struct usb_device_id products[] = {
+ 	/* Toshiba USB 3.0 GBit Ethernet Adapter */
+ 	USB_DEVICE(0x0930, 0x0a13),
+ 	.driver_info = (unsigned long)&toshiba_info,
++}, {
++	/* Magic Control Technology U3-A9003 USB 3.0 Gigabit Ethernet Adapter */
++	USB_DEVICE(0x0711, 0x0179),
++	.driver_info = (unsigned long)&mct_info,
+ },
+ 	{ },
+ };
 -- 
 2.25.1
 
