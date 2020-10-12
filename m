@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1900B28B946
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 16:01:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D03228B7DC
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 15:47:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389337AbgJLN64 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 09:58:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44458 "EHLO mail.kernel.org"
+        id S1731573AbgJLNrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 09:47:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52916 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388819AbgJLNkT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Oct 2020 09:40:19 -0400
+        id S2389856AbgJLNqT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Oct 2020 09:46:19 -0400
 Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7F5A72222F;
-        Mon, 12 Oct 2020 13:40:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A4E9C2065C;
+        Mon, 12 Oct 2020 13:46:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602510018;
-        bh=2Nx3/OxOX057FxNjUTWL3n5+d+aTyHL7ZD2aZeSaif4=;
+        s=default; t=1602510378;
+        bh=wG7icQgvvldD3Eueh6MCaoWkARZulU5p3Vkvftls3p4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KjQCOFPKVX3hkSXXJOA8be1K1LezLy2QmMVo6jemir5QdvPVQAT/QwMcxxb4VbsZi
-         2LXbsjyBwoHZIRjflnOOkrhLI/GGUpANiFMzkdHxEgeKNWNp6FvvGeyEY199jBc22V
-         XjYnAtcHuRNNuIKIdy1cP9T1Fh6HR4srwhU6YBfw=
+        b=AvivphXjw5TY+yrd2nnB3bGeDmxizqV3CJShejHUiyQfzUEtPRt8dJmIZpNjdP1QB
+         Jd+HnuTFTTebcwm6rYHIgoDy6VcL+kxVz3Yyop2RiPgvj1yfHDJZfec810zk/98DCC
+         kCcFchd/02W8lWEKaYWp4k7EAfPS1A52twN/RWqc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -34,12 +34,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         David Daney <david.daney@cavium.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 38/49] mdio: fix mdio-thunder.c dependency & build error
-Date:   Mon, 12 Oct 2020 15:27:24 +0200
-Message-Id: <20201012132631.204016121@linuxfoundation.org>
+Subject: [PATCH 5.8 073/124] mdio: fix mdio-thunder.c dependency & build error
+Date:   Mon, 12 Oct 2020 15:31:17 +0200
+Message-Id: <20201012133150.388407834@linuxfoundation.org>
 X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20201012132629.469542486@linuxfoundation.org>
-References: <20201012132629.469542486@linuxfoundation.org>
+In-Reply-To: <20201012133146.834528783@linuxfoundation.org>
+References: <20201012133146.834528783@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -74,10 +74,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 1f5fd24cd749e..2386871e12949 100644
+index e351d65533aa8..06146ae4c6d8d 100644
 --- a/drivers/net/phy/Kconfig
 +++ b/drivers/net/phy/Kconfig
-@@ -154,6 +154,7 @@ config MDIO_THUNDER
+@@ -217,6 +217,7 @@ config MDIO_THUNDER
  	depends on 64BIT
  	depends on PCI
  	select MDIO_CAVIUM
