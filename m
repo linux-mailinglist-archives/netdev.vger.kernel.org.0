@@ -2,116 +2,309 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DCB228C349
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 22:50:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C92628C369
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 22:55:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729735AbgJLUuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 16:50:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41506 "EHLO
+        id S1729905AbgJLUz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 16:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726510AbgJLUuW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 16:50:22 -0400
-Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86F1C0613D0;
-        Mon, 12 Oct 2020 13:50:21 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4C99mT3wmGz9sSn;
-        Tue, 13 Oct 2020 07:50:17 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1602535818;
-        bh=YUhO3LaBBnxchR2B7Hh4aVMkJSvy8cXmxp+QLkuloM8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GbKdciGWDXoVsuUGJVKrod7kNRy5kw99IxLh/3mRLQKiQgcVL642MN87rxJD3FUJV
-         3lyoGipdeHtqx9uI1Kl09NOD1NlA7+1TaXJJuUZikmIM/dJlAKtxensySEd3w6SYzO
-         IdY8jT7cWB2uq/LwBJNGsfLf5SzLOJNeREebMqd53n8CyJUjEWBabNMvtjBRKfgIFl
-         7JJksu1rZviSlnDjmJcire6PMULoSJqlssr3w1xbw3bVu/17Ne7+QZRjpbX7Ji78We
-         1Uz5/xrP8bUe1lHXAdfIQaPK2XHE26MJ2DWa40CeOxk1aWgrPToQGDy0x1SDbmamRx
-         v/sVSYq5/D3+Q==
-Date:   Tue, 13 Oct 2020 07:50:16 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: merge window is open. bpf-next is still open.
-Message-ID: <20201013075016.61028eee@canb.auug.org.au>
-In-Reply-To: <CAADnVQKn=CxcOpjSWLsD+VC5rviC6sMfrhw5jrPCU60Bcx5Ssw@mail.gmail.com>
-References: <CAADnVQ+ycd8T4nBcnAwr5FHX75_JhWmqdHzXEXwx5udBv8uwiQ@mail.gmail.com>
-        <20201012110046.3b2c3c27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAADnVQKn=CxcOpjSWLsD+VC5rviC6sMfrhw5jrPCU60Bcx5Ssw@mail.gmail.com>
+        with ESMTP id S1726510AbgJLUzZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 16:55:25 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87E51C0613D0;
+        Mon, 12 Oct 2020 13:55:25 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id j7so4815498pgk.5;
+        Mon, 12 Oct 2020 13:55:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dOqX6ZA5NhEl9eqkMEXDWMgAlQbfF4PK52Ihdx6sTuE=;
+        b=AiYQAAlYcJ9gOyZtJd4gZavbI7W2hW8BPMZJYtc9hwGfRxDGP5gK3OdjsFioE6vOMZ
+         B09ufgRUQM4Bw28FilZK29XW4vUb3Kqr/eYBCeRJT5owuLIryknX+h4s00A5ruBk3FPK
+         +HuFJQGTV31Igm67WZfV6Nyfw+O/GtFtjPcm38FTILl9s7iwiVnBItP3g5i5QaE22JRG
+         JKiDIg7TCr5Hriujd+TL6hgnCjTrsIQmSlwqNsCq76qMfyT2YiKFa7VVvSg2IpMiJy5D
+         7qfGBrBF86fVTMaz7h3sxD3qNL1U/Pfp55dPGWPGaunzFhL6ziCIP65PdrumYfD1e61r
+         0gvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dOqX6ZA5NhEl9eqkMEXDWMgAlQbfF4PK52Ihdx6sTuE=;
+        b=GHxjaFb+rk0Q6JCM4DleE4AxYLU/jby92J2TabV/t0EHVx+VYSpbfegf/Wq6gEv2Ih
+         CYUhhiN3QEwHXzAusIDcVmD57z0TVMcLA4W4HQ47PtrACCJOicm57F3dZyMxLjfPJdQX
+         Brk7JPKwWFxD+gfimSounDYcKQW4MOJRsiVgmu10K0hC9ATPaIeFtJ0DAZwHalBZcWrv
+         GjJ426bJEMVGjEcAW0c4haC+n5w1ru+BhfQ1An593nN+3xK+vrXhsnQvOWi6+grJTmcQ
+         6sCex5TfvXj//DWjYbBpS1cxliWjbVFSzJqJMoBURG6oeXMjLktt31xeW/x2Ji2rM2v2
+         LTLQ==
+X-Gm-Message-State: AOAM530oDGgvcQyvmG7HQ44KHAnMdVh+inJsuywsqM4xe24prDKQfBth
+        LXMnMI8YOfkx8iXb2Ew1tOAlwW+UIPJdmA==
+X-Google-Smtp-Source: ABdhPJzPDBvoMhbkMrRir7B+YJ62ZsZsvi9M54YdmrQQL/OYfkgBBEA+sV4V9h+ed9H7FTmprOgViw==
+X-Received: by 2002:a17:90a:fa86:: with SMTP id cu6mr12569489pjb.167.1602536124852;
+        Mon, 12 Oct 2020 13:55:24 -0700 (PDT)
+Received: from ast-mbp.thefacebook.com ([163.114.132.7])
+        by smtp.gmail.com with ESMTPSA id q16sm19598058pfu.206.2020.10.12.13.55.23
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 12 Oct 2020 13:55:23 -0700 (PDT)
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     davem@davemloft.net
+Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@fb.com
+Subject: pull-request: bpf-next 2020-10-12
+Date:   Mon, 12 Oct 2020 13:55:22 -0700
+Message-Id: <20201012205522.27023-1-alexei.starovoitov@gmail.com>
+X-Mailer: git-send-email 2.13.5
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/WQYHjQDj8tSUW..gW_rk0cz";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/WQYHjQDj8tSUW..gW_rk0cz
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi,
 
-Hi Alexei,
+The following pull-request contains BPF updates for your *net-next* tree.
 
-On Mon, 12 Oct 2020 13:15:16 -0700 Alexei Starovoitov <alexei.starovoitov@g=
-mail.com> wrote:
->
-> You mean keep pushing into bpf-next/master ?
-> The only reason is linux-next.
-> But coming to think about it again, let's fix linux-next process instead.
->=20
-> Stephen,
-> could you switch linux-next to take from bpf.git during the merge window
-> and then go back to bpf-next.git after the merge window?
-> That will help everyone. CIs wouldn't need to flip flop.
-> People will keep basing their features on bpf-next/master all the time, e=
-tc.
-> The only inconvenience is for linux-next. I think that's a reasonable tra=
-de-off.
-> In other words bpf-next/master will always be open for new features.
-> After the merge window bpf-next/master will get rebased to rc1.
+We've added 62 non-merge commits during the last 10 day(s) which contain
+a total of 73 files changed, 4339 insertions(+), 772 deletions(-).
 
-I already fetch bpf.git#master all the time (that is supposed to be
-fixes for the current release and gets merged into the net tree, right?)
+The main changes are:
 
-How about this: you create a for-next branch in the bpf-next tree and I
-fetch that instead of your master branch.  What you do is always work
-in your master branch and whenever it is "ready", you just merge master
-into for-next and that is what linux-next works with (net-next still
-merges your master branch as now).  So the for-next branch consists
-only of consecutive merges of your master branch.
+1) The BPF verifier improvements to track register allocation pattern, from Alexei and Yonghong.
 
-During the merge window you do *not* merge master into for-next (and,
-in fact, everything in for-next should have been merged into the
-net-next tree anyway, right?) and then when -rc1 is released, you reset
-for-next to -rc1 and start merging master into it again.
+2) libbpf relocation support for different size load/store, from Andrii.
 
-This way the commit SHA1s are stable and I don't have to remember to
-switch branches/trees every merge window (which I would forget
-sometimes for sure :-)).
---=20
-Cheers,
-Stephen Rothwell
+3) bpf_redirect_peer() helper and support for inner map array with different max_entries, from Daniel.
 
---Sig_/WQYHjQDj8tSUW..gW_rk0cz
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+4) BPF support for per-cpu variables, form Hao.
 
------BEGIN PGP SIGNATURE-----
+5) sockmap improvements, from John.
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl+EwYgACgkQAVBC80lX
-0Gy/Qgf/cvvvkk2O3hpxESyVTDJEn7+6KERQumpV5ZJoxjjvIiV13MM/wDAHjwcd
-jtkTi9EDRvTgz58NKWttLoWMKr+SjQS+Y3Jy4a1fOYuGxpD9UYGImyKIo3cVgIZ/
-qXHcKzUT78uifnJWXrZMSqALZWbJNu8MXfEWfEl+81B6ZuYg7hlfO46ZELStxY8H
-hqE7toqQlUy0sP3/x6EHm2sz+/mouy4PNt2ViCR/hloRnBVqWCW9N7PUna9KatLi
-JH4psdGDNYGHBUsXDcXiwkMLBbUvIfJjkDiKuxQVt8OUDKvXsbH+zWVwZK44BxOh
-eilB24Od+LdOcJPT+rZqS+QyGHeCxw==
-=xj0d
------END PGP SIGNATURE-----
+Please consider pulling these changes from:
 
---Sig_/WQYHjQDj8tSUW..gW_rk0cz--
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Alexei Starovoitov, Andrii Nakryiko, Christoph Hellwig, David Ahern, 
+John Fastabend, Martin KaFai Lau, Petar Penkov, Samanta Navarro, 
+Stanislav Fomichev, Yonghong Song
+
+----------------------------------------------------------------
+
+The following changes since commit 360f89874635b08057757376b8cc4faa221862e2:
+
+  lib8390: Use netif_msg_init to initialize msg_enable bits (2020-10-01 19:08:46 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
+
+for you to fetch changes up to 376dcfe3a4e5a5475a84e6b5f926066a8614f887:
+
+  Merge branch 'bpf, sockmap: allow verdict only sk_skb progs' (2020-10-11 18:09:45 -0700)
+
+----------------------------------------------------------------
+Alexei Starovoitov (13):
+      Merge branch 'Do not limit cb_flags when creating child sk'
+      Merge branch 'bpf: BTF support for ksyms'
+      Merge branch 'Add skb_adjust_room() for SK_SKB'
+      Merge branch 'Fix pining maps after reuse map fd'
+      Merge branch 'libbpf: auto-resize relocatable LOAD/STORE instructions'
+      bpf: Propagate scalar ranges through register assignments.
+      selftests/bpf: Add profiler test
+      selftests/bpf: Asm tests for the verifier regalloc tracking.
+      Merge branch 'Follow-up BPF helper improvements'
+      Merge branch 'samples: bpf: Refactor XDP programs with libbpf'
+      bpf: Migrate from patchwork.ozlabs.org to patchwork.kernel.org.
+      Merge branch 'sockmap/sk_skb program memory acct fixes'
+      Merge branch 'bpf, sockmap: allow verdict only sk_skb progs'
+
+Andrii Nakryiko (5):
+      bpf, doc: Update Andrii's email in MAINTAINERS
+      libbpf: Skip CO-RE relocations for not loaded BPF programs
+      libbpf: Support safe subset of load/store instruction resizing with CO-RE
+      libbpf: Allow specifying both ELF and raw BTF for CO-RE BTF override
+      selftests/bpf: Validate libbpf's auto-sizing of LD/ST/STX instructions
+
+Björn Töpel (1):
+      xsk: Remove internal DMA headers
+
+Ciara Loftus (3):
+      samples: bpf: Split xdpsock stats into new struct
+      samples: bpf: Count syscalls in xdpsock
+      samples: bpf: Driver interrupt statistics in xdpsock
+
+Daniel Borkmann (7):
+      Merge branch 'bpf-llvm-reg-alloc-patterns'
+      bpf: Improve bpf_redirect_neigh helper description
+      bpf: Add redirect_peer helper
+      bpf: Allow for map-in-map with dynamic inner array map entries
+      bpf, selftests: Add test for different array inner map size
+      bpf, selftests: Make redirect_neigh test more extensible
+      bpf, selftests: Add redirect_peer selftest
+
+Daniel T. Lee (3):
+      samples: bpf: Refactor xdp_monitor with libbpf
+      samples: bpf: Replace attach_tracepoint() to attach() in xdp_redirect_cpu
+      samples: bpf: Refactor XDP kern program maps with BTF-defined map
+
+Gustavo A. R. Silva (1):
+      bpf, verifier: Use fallthrough pseudo-keyword
+
+Hangbin Liu (3):
+      libbpf: Close map fd if init map slots failed
+      libbpf: Check if pin_path was set even map fd exist
+      selftest/bpf: Test pinning map with reused map fd
+
+Hao Luo (7):
+      bpf: Introduce pseudo_btf_id
+      bpf/libbpf: BTF support for typed ksyms
+      selftests/bpf: Ksyms_btf to test typed ksyms
+      bpf: Introduce bpf_per_cpu_ptr()
+      bpf: Introducte bpf_this_cpu_ptr()
+      bpf/selftests: Test for bpf_per_cpu_ptr() and bpf_this_cpu_ptr()
+      selftests/bpf: Fix test_verifier after introducing resolve_pseudo_ldimm64
+
+Jakub Wilk (1):
+      bpf: Fix typo in uapi/linux/bpf.h
+
+John Fastabend (12):
+      bpf, sockmap: Add skb_adjust_room to pop bytes off ingress payload
+      bpf, sockmap: Update selftests to use skb_adjust_room
+      bpf, sockmap: Skb verdict SK_PASS to self already checked rmem limits
+      bpf, sockmap: On receive programs try to fast track SK_PASS ingress
+      bpf, sockmap: Remove skb_set_owner_w wmem will be taken later from sendpage
+      bpf, sockmap: Remove dropped data on errors in redirect case
+      bpf, sockmap: Remove skb_orphan and let normal skb_kfree do cleanup
+      bpf, sockmap: Add memory accounting so skbs on ingress lists are visible
+      bpf, sockmap: Check skb_verdict and skb_parser programs explicitly
+      bpf, sockmap: Allow skipping sk_skb parser program
+      bpf, selftests: Add option to test_sockmap to omit adding parser program
+      bpf, selftests: Add three new sockmap tests for verdict only programs
+
+Luigi Rizzo (1):
+      bpf, libbpf: Use valid btf in bpf_program__set_attach_target
+
+Magnus Karlsson (2):
+      libbpf: Fix compatibility problem in xsk_socket__create
+      xsk: Introduce padding between ring pointers
+
+Martin KaFai Lau (2):
+      bpf: tcp: Do not limit cb_flags when creating child sk from listen sk
+      bpf: selftest: Ensure the child sk inherited all bpf_sock_ops_cb_flags
+
+Nikita V. Shirokov (1):
+      bpf: Add tcp_notsent_lowat bpf setsockopt
+
+Randy Dunlap (1):
+      kernel/bpf/verifier: Fix build when NET is not enabled
+
+Song Liu (1):
+      bpf: Use raw_spin_trylock() for pcpu_freelist_push/pop in NMI
+
+Stanislav Fomichev (3):
+      selftests/bpf: Initialize duration in xdp_noinline.c
+      selftests/bpf: Properly initialize linfo in sockmap_basic
+      bpf: Deref map in BPF_PROG_BIND_MAP when it's already used
+
+Toke Høiland-Jørgensen (1):
+      bpf: Always return target ifindex in bpf_fib_lookup
+
+Yonghong Song (4):
+      samples/bpf: Change Makefile to cope with latest llvm
+      samples/bpf: Fix a compilation error with fallthrough marking
+      bpf: Fix build failure for kernel/trace/bpf_trace.c with CONFIG_NET=n
+      bpf: Track spill/fill of bounded scalars.
+
+ Documentation/bpf/bpf_devel_QA.rst                 |   4 +-
+ MAINTAINERS                                        |   2 +-
+ drivers/net/veth.c                                 |   9 +
+ include/linux/bpf.h                                |   8 +-
+ include/linux/bpf_verifier.h                       |   7 +
+ include/linux/btf.h                                |  26 +
+ include/linux/netdevice.h                          |   4 +
+ include/linux/skmsg.h                              |   2 +
+ include/net/tcp.h                                  |  33 -
+ include/uapi/linux/bpf.h                           | 101 ++-
+ kernel/bpf/arraymap.c                              |  17 +-
+ kernel/bpf/btf.c                                   |  25 -
+ kernel/bpf/hashtab.c                               |   6 +-
+ kernel/bpf/helpers.c                               |  32 +
+ kernel/bpf/percpu_freelist.c                       | 101 ++-
+ kernel/bpf/percpu_freelist.h                       |   1 +
+ kernel/bpf/syscall.c                               |   4 +-
+ kernel/bpf/verifier.c                              | 270 +++++-
+ kernel/trace/bpf_trace.c                           |   6 +
+ net/core/dev.c                                     |  15 +-
+ net/core/filter.c                                  | 107 ++-
+ net/core/skmsg.c                                   | 161 +++-
+ net/core/sock_map.c                                |  37 +-
+ net/ipv4/tcp_minisocks.c                           |   1 -
+ net/xdp/xsk_buff_pool.c                            |   3 -
+ net/xdp/xsk_queue.h                                |   4 +
+ net/xdp/xskmap.c                                   |   2 +-
+ samples/bpf/Makefile                               |  15 +-
+ samples/bpf/hbm.c                                  |   3 +-
+ samples/bpf/xdp_monitor_kern.c                     |  60 +-
+ samples/bpf/xdp_monitor_user.c                     | 159 +++-
+ samples/bpf/xdp_redirect_cpu_user.c                | 153 ++--
+ samples/bpf/xdp_sample_pkts_kern.c                 |  14 +-
+ samples/bpf/xdp_sample_pkts_user.c                 |   1 -
+ samples/bpf/xdpsock_user.c                         | 354 ++++++--
+ tools/include/uapi/linux/bpf.h                     | 101 ++-
+ tools/lib/bpf/libbpf.c                             | 348 ++++++--
+ tools/lib/bpf/xsk.c                                |   7 +-
+ tools/testing/selftests/bpf/README.rst             |  38 +
+ tools/testing/selftests/bpf/prog_tests/align.c     |  16 +-
+ .../selftests/bpf/prog_tests/btf_map_in_map.c      |  39 +-
+ .../selftests/bpf/prog_tests/core_autosize.c       | 225 +++++
+ tools/testing/selftests/bpf/prog_tests/ksyms.c     |  38 +-
+ tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  88 ++
+ tools/testing/selftests/bpf/prog_tests/pinning.c   |  49 +-
+ .../selftests/bpf/prog_tests/sockmap_basic.c       |   2 +-
+ .../selftests/bpf/prog_tests/tcp_hdr_options.c     |  12 +
+ .../selftests/bpf/prog_tests/test_profiler.c       |  72 ++
+ .../selftests/bpf/prog_tests/xdp_noinline.c        |   2 +-
+ tools/testing/selftests/bpf/progs/connect4_prog.c  |  19 +
+ tools/testing/selftests/bpf/progs/profiler.h       | 177 ++++
+ tools/testing/selftests/bpf/progs/profiler.inc.h   | 969 +++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/profiler1.c      |   6 +
+ tools/testing/selftests/bpf/progs/profiler2.c      |   6 +
+ tools/testing/selftests/bpf/progs/profiler3.c      |   6 +
+ .../selftests/bpf/progs/test_btf_map_in_map.c      |  43 +
+ .../selftests/bpf/progs/test_core_autosize.c       | 172 ++++
+ tools/testing/selftests/bpf/progs/test_ksyms_btf.c |  55 ++
+ .../bpf/progs/test_misc_tcp_hdr_options.c          |   4 +-
+ .../selftests/bpf/progs/test_sockmap_kern.h        |  34 +-
+ tools/testing/selftests/bpf/progs/test_tc_neigh.c  |  40 +-
+ tools/testing/selftests/bpf/progs/test_tc_peer.c   |  45 +
+ .../selftests/bpf/progs/test_tcp_hdr_options.c     |   7 +-
+ tools/testing/selftests/bpf/test_sockmap.c         |  81 +-
+ tools/testing/selftests/bpf/test_tc_neigh.sh       | 168 ----
+ tools/testing/selftests/bpf/test_tc_redirect.sh    | 204 +++++
+ tools/testing/selftests/bpf/test_tcp_hdr_options.h |   5 +-
+ tools/testing/selftests/bpf/trace_helpers.c        |  27 +
+ tools/testing/selftests/bpf/trace_helpers.h        |   4 +
+ tools/testing/selftests/bpf/verifier/basic.c       |   2 +-
+ .../selftests/bpf/verifier/direct_packet_access.c  |   2 +-
+ tools/testing/selftests/bpf/verifier/ld_imm64.c    |   8 -
+ tools/testing/selftests/bpf/verifier/regalloc.c    | 243 ++++++
+ 73 files changed, 4339 insertions(+), 772 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/core_autosize.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/test_profiler.c
+ create mode 100644 tools/testing/selftests/bpf/progs/profiler.h
+ create mode 100644 tools/testing/selftests/bpf/progs/profiler.inc.h
+ create mode 100644 tools/testing/selftests/bpf/progs/profiler1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/profiler2.c
+ create mode 100644 tools/testing/selftests/bpf/progs/profiler3.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_autosize.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_btf.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_tc_peer.c
+ delete mode 100755 tools/testing/selftests/bpf/test_tc_neigh.sh
+ create mode 100755 tools/testing/selftests/bpf/test_tc_redirect.sh
+ create mode 100644 tools/testing/selftests/bpf/verifier/regalloc.c
