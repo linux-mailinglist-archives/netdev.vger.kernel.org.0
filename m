@@ -2,148 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CA9D28C539
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 01:31:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB11C28C56F
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 01:50:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389590AbgJLXbd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 19:31:33 -0400
-Received: from mga11.intel.com ([192.55.52.93]:32822 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726780AbgJLXb3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Oct 2020 19:31:29 -0400
-IronPort-SDR: v8kc3Fio+LjPoyvQb3mY8ylUGqFR6CzeawpaCTXAqt1VAiQ6XIXdXgWe/N/tGX+W/WtGkwX1MB
- Yyz30aCCeR2g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9772"; a="162351722"
-X-IronPort-AV: E=Sophos;i="5.77,368,1596524400"; 
-   d="scan'208";a="162351722"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2020 16:31:28 -0700
-IronPort-SDR: tYujEEKuwB7pwkDEJNgfSBtOh7hwJ+YZEVhRvoIibttlBusG3o0pRElwiIGjx+C70rOitVdHyl
- N8yvUi3stUVQ==
-X-IronPort-AV: E=Sophos;i="5.77,368,1596524400"; 
-   d="scan'208";a="313606559"
-Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2020 16:31:27 -0700
-Date:   Mon, 12 Oct 2020 16:31:26 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>, linux-aio@kvack.org,
-        linux-efi@vger.kernel.org, kvm@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-mmc@vger.kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
-        target-devel@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-kselftest@vger.kernel.org, samba-technical@lists.samba.org,
-        ceph-devel@vger.kernel.org, drbd-dev@lists.linbit.com,
-        devel@driverdev.osuosl.org, linux-cifs@vger.kernel.org,
-        linux-nilfs@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-nvdimm@lists.01.org, linux-rdma@vger.kernel.org,
-        x86@kernel.org, amd-gfx@lists.freedesktop.org,
-        linux-afs@lists.infradead.org, cluster-devel@redhat.com,
-        linux-cachefs@redhat.com, intel-wired-lan@lists.osuosl.org,
-        xen-devel@lists.xenproject.org, linux-ext4@vger.kernel.org,
-        Fenghua Yu <fenghua.yu@intel.com>, ecryptfs@vger.kernel.org,
-        linux-um@lists.infradead.org, intel-gfx@lists.freedesktop.org,
-        linux-erofs@lists.ozlabs.org, reiserfs-devel@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-bcache@vger.kernel.org,
-        Jaegeuk Kim <jaegeuk@kernel.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        io-uring@vger.kernel.org, linux-nfs@vger.kernel.org,
-        linux-ntfs-dev@lists.sourceforge.net, netdev@vger.kernel.org,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-fsdevel@vger.kernel.org, bpf@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-btrfs@vger.kernel.org
-Subject: Re: [PATCH RFC PKS/PMEM 22/58] fs/f2fs: Utilize new kmap_thread()
-Message-ID: <20201012233126.GD2046448@iweiny-DESK2.sc.intel.com>
-References: <20201009195033.3208459-23-ira.weiny@intel.com>
- <20201009213434.GA839@sol.localdomain>
- <20201010003954.GW20115@casper.infradead.org>
- <20201010013036.GD1122@sol.localdomain>
- <20201012065635.GB2046448@iweiny-DESK2.sc.intel.com>
- <20201012161946.GA858@sol.localdomain>
- <5d621db9-23d4-e140-45eb-d7fca2093d2b@intel.com>
- <20201012164438.GA20115@casper.infradead.org>
- <20201012195354.GC2046448@iweiny-DESK2.sc.intel.com>
- <20201012200254.GB20115@casper.infradead.org>
+        id S2390465AbgJLXuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 19:50:05 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:31150 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2389460AbgJLXuE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 19:50:04 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09CNnvgk003592
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 16:50:04 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type :
+ content-transfer-encoding; s=facebook;
+ bh=DTTjSIB8MQVwaw/rlRdz1VKVb2ywGrMhX8K8wwM/Q8A=;
+ b=F1RqRx3N1yK4neRImzmcBYQlrYKb3ZSUlKS42JcTG3JlVJAPsw/kz0rAUSX+LMNY2pFD
+ 0LqfnbYD/otGyria+I7W5nTxcbLm+bu6DYDNtDXXXoGL5KyfWqaG/SndxCIha/dpVWHI
+ QiKZNKtKn9TxanOxvveGvF1pVkPrD7saBlU= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 343vfbqy9s-6
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 16:50:04 -0700
+Received: from intmgw003.03.ash8.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 12 Oct 2020 16:49:41 -0700
+Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
+        id 5722329464F4; Mon, 12 Oct 2020 16:49:40 -0700 (PDT)
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     <bpf@vger.kernel.org>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
+        <netdev@vger.kernel.org>, Andrii Nakryiko <andriin@fb.com>
+Subject: [PATCH bpf] bpf: selftest: Fix flaky tcp_hdr_options test when adding addr to lo
+Date:   Mon, 12 Oct 2020 16:49:40 -0700
+Message-ID: <20201012234940.1707941-1-kafai@fb.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201012200254.GB20115@casper.infradead.org>
-User-Agent: Mutt/1.11.1 (2018-12-01)
+X-FB-Internal: Safe
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-10-12_18:2020-10-12,2020-10-12 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
+ lowpriorityscore=0 spamscore=0 priorityscore=1501 impostorscore=0
+ bulkscore=0 mlxscore=0 malwarescore=0 mlxlogscore=999 clxscore=1015
+ adultscore=0 suspectscore=13 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2009150000 definitions=main-2010120174
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 12, 2020 at 09:02:54PM +0100, Matthew Wilcox wrote:
-> On Mon, Oct 12, 2020 at 12:53:54PM -0700, Ira Weiny wrote:
-> > On Mon, Oct 12, 2020 at 05:44:38PM +0100, Matthew Wilcox wrote:
-> > > On Mon, Oct 12, 2020 at 09:28:29AM -0700, Dave Hansen wrote:
-> > > > kmap_atomic() is always preferred over kmap()/kmap_thread().
-> > > > kmap_atomic() is _much_ more lightweight since its TLB invalidation is
-> > > > always CPU-local and never broadcast.
-> > > > 
-> > > > So, basically, unless you *must* sleep while the mapping is in place,
-> > > > kmap_atomic() is preferred.
-> > > 
-> > > But kmap_atomic() disables preemption, so the _ideal_ interface would map
-> > > it only locally, then on preemption make it global.  I don't even know
-> > > if that _can_ be done.  But this email makes it seem like kmap_atomic()
-> > > has no downsides.
-> > 
-> > And that is IIUC what Thomas was trying to solve.
-> > 
-> > Also, Linus brought up that kmap_atomic() has quirks in nesting.[1]
-> > 
-> > >From what I can see all of these discussions support the need to have something
-> > between kmap() and kmap_atomic().
-> > 
-> > However, the reason behind converting call sites to kmap_thread() are different
-> > between Thomas' patch set and mine.  Both require more kmap granularity.
-> > However, they do so with different reasons and underlying implementations but
-> > with the _same_ resulting semantics; a thread local mapping which is
-> > preemptable.[2]  Therefore they each focus on changing different call sites.
-> > 
-> > While this patch set is huge I think it serves a valuable purpose to identify a
-> > large number of call sites which are candidates for this new semantic.
-> 
-> Yes, I agree.  My problem with this patch-set is that it ties it to
-> some Intel feature that almost nobody cares about.
+The tcp_hdr_options test adds a "::eB9F" addr to the lo dev.
+However, this non loopback address will have a race on ipv6 dad
+which may lead to EADDRNOTAVAIL error from time to time.
 
-I humbly disagree.  At this level the only thing this is tied to is the idea
-that there are additional memory protections available which can be enabled
-quickly on a per-thread basis.  PKS on Intel is but 1 implementation of that.
+Even nodad is used in the iproute2 command, there is still a race in
+when the route will be added.  This will then lead to ENETUNREACH from
+time to time.
 
-Even the kmap code only has knowledge that there is something which needs to be
-done special on a devm page.
+To avoid the above, this patch uses the default loopback address "::1"
+to do the test.
 
->
-> Maybe we should
-> care about it, but you didn't try very hard to make anyone care about
-> it in the cover letter.
+Fixes: ad2f8eb0095e ("bpf: selftests: Tcp header options")
+Reported-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Martin KaFai Lau <kafai@fb.com>
+---
+ .../bpf/prog_tests/tcp_hdr_options.c          | 26 +------------------
+ .../bpf/progs/test_misc_tcp_hdr_options.c     |  2 +-
+ 2 files changed, 2 insertions(+), 26 deletions(-)
 
-Ok my bad.  We have customers who care very much about restricting access to
-the PMEM pages to prevent bugs in the kernel from causing permanent damage to
-their data/file systems.  I'll reword the cover letter better.
+diff --git a/tools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c b/t=
+ools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c
+index c86e67214a9e..c85174cdcb77 100644
+--- a/tools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c
++++ b/tools/testing/selftests/bpf/prog_tests/tcp_hdr_options.c
+@@ -15,7 +15,7 @@
+ #include "test_tcp_hdr_options.skel.h"
+ #include "test_misc_tcp_hdr_options.skel.h"
+=20
+-#define LO_ADDR6 "::eB9F"
++#define LO_ADDR6 "::1"
+ #define CG_NAME "/tcpbpf-hdr-opt-test"
+=20
+ struct bpf_test_option exp_passive_estab_in;
+@@ -40,27 +40,6 @@ struct sk_fds {
+ 	int active_lport;
+ };
+=20
+-static int add_lo_addr(void)
+-{
+-	char ip_addr_cmd[256];
+-	int cmdlen;
+-
+-	cmdlen =3D snprintf(ip_addr_cmd, sizeof(ip_addr_cmd),
+-			  "ip -6 addr add %s/128 dev lo scope host",
+-			  LO_ADDR6);
+-
+-	if (CHECK(cmdlen >=3D sizeof(ip_addr_cmd), "compile ip cmd",
+-		  "failed to add host addr %s to lo. ip cmdlen is too long\n",
+-		  LO_ADDR6))
+-		return -1;
+-
+-	if (CHECK(system(ip_addr_cmd), "run ip cmd",
+-		  "failed to add host addr %s to lo\n", LO_ADDR6))
+-		return -1;
+-
+-	return 0;
+-}
+-
+ static int create_netns(void)
+ {
+ 	if (CHECK(unshare(CLONE_NEWNET), "create netns",
+@@ -72,9 +51,6 @@ static int create_netns(void)
+ 		  "failed to bring lo link up\n"))
+ 		return -1;
+=20
+-	if (add_lo_addr())
+-		return -1;
+-
+ 	return 0;
+ }
+=20
+diff --git a/tools/testing/selftests/bpf/progs/test_misc_tcp_hdr_options.=
+c b/tools/testing/selftests/bpf/progs/test_misc_tcp_hdr_options.c
+index 72ec0178f653..6077a025092c 100644
+--- a/tools/testing/selftests/bpf/progs/test_misc_tcp_hdr_options.c
++++ b/tools/testing/selftests/bpf/progs/test_misc_tcp_hdr_options.c
+@@ -16,7 +16,7 @@
+ #define BPF_PROG_TEST_TCP_HDR_OPTIONS
+ #include "test_tcp_hdr_options.h"
+=20
+-__u16 last_addr16_n =3D __bpf_htons(0xeB9F);
++__u16 last_addr16_n =3D __bpf_htons(1);
+ __u16 active_lport_n =3D 0;
+ __u16 active_lport_h =3D 0;
+ __u16 passive_lport_n =3D 0;
+--=20
+2.24.1
 
-> 
-> For a future patch-set, I'd like to see you just introduce the new
-> API.  Then you can optimise the Intel implementation of it afterwards.
-> Those patch-sets have entirely different reviewers.
-
-I considered doing this.  But this seemed more logical because the feature is
-being driven by PMEM which is behind the kmap interface not by the users of the
-API.
-
-I can introduce a patch set with a kmap_thread() call which does nothing if
-that is more palatable but it seems wrong to me to do so.
-
-Ira
