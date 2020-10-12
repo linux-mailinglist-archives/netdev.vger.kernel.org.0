@@ -2,113 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5ACAB28B12F
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 11:11:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F240828B12E
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 11:11:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729283AbgJLJLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 05:11:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45918 "EHLO
+        id S1729289AbgJLJLV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 05:11:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729259AbgJLJLS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 05:11:18 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E73C0613CE
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:18 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id n9so200565pgt.8
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:18 -0700 (PDT)
+        with ESMTP id S1729273AbgJLJLU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 05:11:20 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB539C0613D0
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:19 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id b26so12944234pff.3
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=nXlPfikK8eog6RN7v2pmBeQAfT23cQtLP0EZqe7O05I=;
-        b=e2qPQeSybGdmeCZ7HYcVarmR8oSDqCcIMwtp2YSoRVEdCXqfyiWdD4o9lq95KQJ0lh
-         oNw4qY5aDS6UG82KJSSxoi4MsNS2AnHNVq2fVsQ0fQ77wkq5omwXe6QU4r5M41Gd+2b0
-         46Uhh+Dn2OXuv8HF5JH8wFJEQJuqydOTDfzEY=
+        bh=cR27gV077Qe43s3jKK+9o+jLch3DBwZ/pJ5X76wDrf0=;
+        b=OmQqaV3H2sk3BM6+EITQm8DJY+YTsGDQshkioUWF88z+971YouTnFrUwWg03CxZQl8
+         ONAUzRVWVTvvvUuzrtqOWEot3nPHMCMj2HJY6Hc886ZLo2ftjvFnAyBdXriqiP4XZkKG
+         JNZiEuB6GjTTJpX9Uwacz7Cw3npKAhe6XTVAk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=nXlPfikK8eog6RN7v2pmBeQAfT23cQtLP0EZqe7O05I=;
-        b=CK+fjLcSyNEBLKIyGxZXd1AtfIPM4R378Y6Q6wBQHkY8+VoRntVxOv6b4K6UTj5vcf
-         zTFsN8AGTTWboO+NDLbh9HoWhI0qoRr77KSwVhMaB5JABjt6ZBOD4KsoKUEgKJ3WZT50
-         IYA83JJGi7P3+IEL1kt8mfwR+avnWQwPhwtj0cQJU5jCAxQrJEReu3qqf+65HMEonO4a
-         YJugTLUMS9w5zmW90rJmF/noVJyGqOSVUD7cmIJiZJBLBCUKjuQ3dJz84+Z3su8dp5YZ
-         gUanKHEcK6ohv1HdNXqO57EwNo1rNp5hBmNQyImO0aSUDCFI+k7uZlTTAqIjNeulXrk1
-         e+GQ==
-X-Gm-Message-State: AOAM530NyXp+8LSwQ7PIZh1lsfgQImqxCFlBjIw+0iJxe0oMPofj0/ML
-        GzLZ6XDsSV3o0u2+zVGzitk3zmGYpdeRoA==
-X-Google-Smtp-Source: ABdhPJy8KI+r5Vu/VcJvtSMZ20Oo5grZLgkHVITTGYcGU5oE+Xl8Lu6YpTcKWcgV84fT6x0HWUkq3A==
-X-Received: by 2002:a17:90b:90c:: with SMTP id bo12mr18372195pjb.7.1602493877964;
-        Mon, 12 Oct 2020 02:11:17 -0700 (PDT)
+        bh=cR27gV077Qe43s3jKK+9o+jLch3DBwZ/pJ5X76wDrf0=;
+        b=q8yKKU+dpncvQXnmJ6RZJUR5mGwuAdhO7/IFk0gbAh7oIz3Tmt2xTJAvt4aWvhWRCn
+         EU9cnCh5YOItURe0nHt1YI8a/VS+CwrfVSmVEgBzKHf5WtjK/uGeGJDKMptxGPDSpTTA
+         JYuYiJ+pxFWeWTE82yH5H8vM4abxr7GQ8Hez6JYeXlh/f61AEv2Se8mrMJLLAgFYgerY
+         EOB1peMAJHzoFHih3fBdHm/nDqdxvbHebKhmAe2TUTVQoElJWB1kGfwnIo7WHdWvSRan
+         zrfArzAkXZRXYNu9+HECb4JLPogWeImi0FQu7+hXu/rWpFkx539bD/r6M0Cb3mn7MPCN
+         m1gQ==
+X-Gm-Message-State: AOAM532KBvkYSEkFmN/EW7L9627MKAMGeQe58jNtbJdrEvYFu/8nAgmu
+        y5oHmowenHQSupTElYrCXy+3fA==
+X-Google-Smtp-Source: ABdhPJxJmpB9wsoiG9y4nx6RLhiHcaUe7N/XgUtDtoSx7/w+135D2/bJqpFQp5mX96+OUBsOSurkCQ==
+X-Received: by 2002:a17:90a:1b45:: with SMTP id q63mr18283436pjq.21.1602493879265;
+        Mon, 12 Oct 2020 02:11:19 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id jy19sm1275932pjb.9.2020.10.12.02.11.16
+        by smtp.gmail.com with ESMTPSA id jy19sm1275932pjb.9.2020.10.12.02.11.18
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 12 Oct 2020 02:11:17 -0700 (PDT)
+        Mon, 12 Oct 2020 02:11:18 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next v2 3/9] bnxt_en: Set driver default message level.
-Date:   Mon, 12 Oct 2020 05:10:48 -0400
-Message-Id: <1602493854-29283-4-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 4/9] bnxt_en: Simplify bnxt_async_event_process().
+Date:   Mon, 12 Oct 2020 05:10:49 -0400
+Message-Id: <1602493854-29283-5-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1602493854-29283-1-git-send-email-michael.chan@broadcom.com>
 References: <1602493854-29283-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000005fb7c705b175aea7"
+        boundary="000000000000742d7905b175aec7"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000005fb7c705b175aea7
+--000000000000742d7905b175aec7
 
-Currently, bp->msg_enable has default value of 0.  It is more useful
-to have the commonly used NETIF_MSG_DRV and NETIF_MSG_HW enabled by
-default.
-
-v2: Change the fall back bnxt_reset_task() inside bnxt_rx_ring_reset()
-to silent mode.  With older fw, we would take the fall back path and
-it would be very noisy.
+event_data1 and event_data2 are used when processing most events.
+Store these in local variables at the beginning of the function to
+simplify many of the case statements.
 
 Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 12 +++---------
+ 1 file changed, 3 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index d4402a2cd07f..bac1b713786c 100644
+index bac1b713786c..293af0d48028 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -69,6 +69,7 @@
- #include "bnxt_debugfs.h"
+@@ -1980,11 +1980,12 @@ static int bnxt_async_event_process(struct bnxt *bp,
+ 				    struct hwrm_async_event_cmpl *cmpl)
+ {
+ 	u16 event_id = le16_to_cpu(cmpl->event_id);
++	u32 data1 = le32_to_cpu(cmpl->event_data1);
++	u32 data2 = le32_to_cpu(cmpl->event_data2);
  
- #define BNXT_TX_TIMEOUT		(5 * HZ)
-+#define BNXT_DEF_MSG_ENABLE	(NETIF_MSG_DRV | NETIF_MSG_HW)
+ 	/* TODO CHIMP_FW: Define event id's for link change, error etc */
+ 	switch (event_id) {
+ 	case ASYNC_EVENT_CMPL_EVENT_ID_LINK_SPEED_CFG_CHANGE: {
+-		u32 data1 = le32_to_cpu(cmpl->event_data1);
+ 		struct bnxt_link_info *link_info = &bp->link_info;
  
- MODULE_LICENSE("GPL");
- MODULE_DESCRIPTION("Broadcom BCM573xx network driver");
-@@ -10753,7 +10754,7 @@ static void bnxt_rx_ring_reset(struct bnxt *bp)
- 			else
- 				netdev_warn(bp->dev, "RX ring reset failed, rc = %d, falling back to global reset\n",
- 					    rc);
--			bnxt_reset_task(bp, false);
-+			bnxt_reset_task(bp, true);
- 			break;
+ 		if (BNXT_VF(bp))
+@@ -2014,7 +2015,6 @@ static int bnxt_async_event_process(struct bnxt *bp,
+ 		set_bit(BNXT_HWRM_PF_UNLOAD_SP_EVENT, &bp->sp_event);
+ 		break;
+ 	case ASYNC_EVENT_CMPL_EVENT_ID_PORT_CONN_NOT_ALLOWED: {
+-		u32 data1 = le32_to_cpu(cmpl->event_data1);
+ 		u16 port_id = BNXT_GET_EVENT_PORT(data1);
+ 
+ 		if (BNXT_VF(bp))
+@@ -2031,9 +2031,7 @@ static int bnxt_async_event_process(struct bnxt *bp,
+ 			goto async_event_process_exit;
+ 		set_bit(BNXT_RESET_TASK_SILENT_SP_EVENT, &bp->sp_event);
+ 		break;
+-	case ASYNC_EVENT_CMPL_EVENT_ID_RESET_NOTIFY: {
+-		u32 data1 = le32_to_cpu(cmpl->event_data1);
+-
++	case ASYNC_EVENT_CMPL_EVENT_ID_RESET_NOTIFY:
+ 		if (!bp->fw_health)
+ 			goto async_event_process_exit;
+ 
+@@ -2053,10 +2051,8 @@ static int bnxt_async_event_process(struct bnxt *bp,
  		}
- 		bnxt_free_one_rx_ring_skbs(bp, i);
-@@ -12510,6 +12511,7 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		return -ENOMEM;
+ 		set_bit(BNXT_FW_RESET_NOTIFY_SP_EVENT, &bp->sp_event);
+ 		break;
+-	}
+ 	case ASYNC_EVENT_CMPL_EVENT_ID_ERROR_RECOVERY: {
+ 		struct bnxt_fw_health *fw_health = bp->fw_health;
+-		u32 data1 = le32_to_cpu(cmpl->event_data1);
  
- 	bp = netdev_priv(dev);
-+	bp->msg_enable = BNXT_DEF_MSG_ENABLE;
- 	bnxt_set_max_func_irqs(bp, max_irqs);
+ 		if (!fw_health)
+ 			goto async_event_process_exit;
+@@ -2084,8 +2080,6 @@ static int bnxt_async_event_process(struct bnxt *bp,
+ 		goto async_event_process_exit;
+ 	}
+ 	case ASYNC_EVENT_CMPL_EVENT_ID_RING_MONITOR_MSG: {
+-		u32 data1 = le32_to_cpu(cmpl->event_data1);
+-		u32 data2 = le32_to_cpu(cmpl->event_data2);
+ 		struct bnxt_rx_ring_info *rxr;
+ 		u16 grp_idx;
  
- 	if (bnxt_vf_pciid(ent->driver_data))
 -- 
 2.18.1
 
 
---0000000000005fb7c705b175aea7
+--000000000000742d7905b175aec7
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -178,14 +201,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQg6Yvhb8U4QuM6
-ShPLC3ZdAc+movyqDAvz4LXNwEx4m3YwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAxMDEyMDkxMTE4WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQg5q6CJUyn5WSr
+eAwiKqKw8np+Zmbz8I3aLxDYsSxQ0ogwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAxMDEyMDkxMTE5WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAFjsm5QlQYaBtrFVUXINQ4Tut6/wES0p
-bmc2kwAMnEHFqT42Gp6H7LToI411yAguE4yzKu+PZ2k0PzF4UFudTARGsjNjLX4o1QFqpKfIu+8Y
-YMUxRqlvX94ar8nNiqu9ikj9sCtRFNlxLZMQT+m37Dw/hdEdhkGeD4zmYQPiFa0oZrsctP7+aash
-dW22aX2Ug0vH0ve1ZR+/n8qReKj+o8lsSLfdh+3UdIpvk5ynO62DMrAARj3oZrvEse/CiCUrrocj
-Rho8Zc07CSTAdINPOHdP+ZLa6j8A8tL6DfWVn2O6vjhKwbAHPloQsC35L8QLO+jD8ih7FYI/vaxY
-xgprng8=
---0000000000005fb7c705b175aea7--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAEGgRwIv/LkoYVJ+i9jqYqN1hdn8mhR/
+EFtH1L6H8yLOwrCu4rFra2fopSAJL9qDKZQ/YMCF7JXYSEIlL/op1L1yzUBUm7rWrDIzH35RCoI+
+/LQUZ4jhqcuXAKA32Jh1r/JBVNz8IWgkjU8REEexi403POZDw+jzD8mKi657hiiDnE0e5jPwv+0O
+uQxdiLCQsI1RkI3t/re9//Jja47z9ddovVEbhoJ9LspgkgnR/zkOKG+pB9L5tRr8QVC/zDDO4xC2
+1u5ieFL0t+alWMpsDdEl0rDQq8+Eg/oY/irJcvUmwAKJFXqLALClrkYATgh/WsI/eKclwFit0KLc
+Q6VqkFk=
+--000000000000742d7905b175aec7--
