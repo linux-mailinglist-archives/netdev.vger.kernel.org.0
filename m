@@ -2,95 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1B2D28BF6F
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 20:10:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A22928BF76
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 20:13:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404152AbgJLSKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 14:10:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44634 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726648AbgJLSK0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 14:10:26 -0400
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC6AEC0613D0;
-        Mon, 12 Oct 2020 11:10:26 -0700 (PDT)
-Received: by mail-il1-x12b.google.com with SMTP id o18so16849906ill.2;
-        Mon, 12 Oct 2020 11:10:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=xR8AOR8eDZo7fnV3At7W3eM/Qc/oh+pJSD36MDXE/G0=;
-        b=XuDG/L0RfxJB847IqpUl+7XylAB97uctjercI7rUxi+fisT7vSdfkDGz6EV9+lhA+6
-         JyLuTVByVAOWbk3Ap7XneG1lV03lstZV+ug/6smlvu/adPx9YGgo4g/KCIGirSS5DVT7
-         qsun3dEAT6RkPFCxr45MT/R18e5JJgaCh5iauKnIfvltFHrXMd8CNNSxpLcu4EDENE85
-         fBUAw/qOmrojCvE64Sf7FOeOCJ12DDqcA4JL5LDCcXyQS59DvYtL22Mf09NuQ5nobzuO
-         z0rSdws9cqOTck4xbTXC3PLtva98DSoScc0TY7tnMriND8yuRQ18YumQNnKxgkbX/JBB
-         oLjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=xR8AOR8eDZo7fnV3At7W3eM/Qc/oh+pJSD36MDXE/G0=;
-        b=l6OquZdj5bw9A/M9J9CAt+xX4rPzBxDtpQuR5vMcm6I42haugvCH8EQ0fa9983+0ge
-         h7Ts3G2q3UFAhALDLoxMQHMGYu0Jzg1IaegO4JqXWux1aGtuFUtL5ZKP1WT/oGGxtoTp
-         bRTBWRG0ehEBXBHHCvlB/QIb+cfL7C4vy2t+vkNjStweMO+mYldsBeojGnFsC0rp+i6q
-         1z5DyJFCrIslQFpg40awt+vB3ckgyzM8uDzwO16iD4Nb1+aYSo54YYDvgUBqp3wopm2U
-         v4Bm8rbG2YeHg5E/teJeOEyNTGq1pBcNWVEEd9F3omMTk6qXQoQY4je8k3LB6a6p/0qN
-         n4JA==
-X-Gm-Message-State: AOAM533zwzvuUdDVWmI4oXJYfbeSh8KBin2KmsO/lPHnrnQ4EqpLIk+f
-        CYVgaHrWPWXHni8wDuNpXWg=
-X-Google-Smtp-Source: ABdhPJz4M4dlw5xD1aH36xOzXW50kJLl2vrns7fVQv+u1NmZ2qNS/Idl9fPgNbgaaJGWeWXvj8so9Q==
-X-Received: by 2002:a92:1bd6:: with SMTP id f83mr88501ill.274.1602526226214;
-        Mon, 12 Oct 2020 11:10:26 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id x13sm5157024iob.8.2020.10.12.11.10.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Oct 2020 11:10:25 -0700 (PDT)
-Date:   Mon, 12 Oct 2020 11:10:18 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>, Yonghong Song <yhs@fb.com>
-Cc:     kernel-team@cloudflare.com, kernel test robot <lkp@intel.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Message-ID: <5f849c0a5229e_370c208d3@john-XPS-13-9370.notmuch>
-In-Reply-To: <20201012091850.67452-1-lmb@cloudflare.com>
-References: <20201012091850.67452-1-lmb@cloudflare.com>
-Subject: RE: [PATCH bpf] bpf: sockmap: add locking annotations to iterator
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S2390820AbgJLSN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 14:13:57 -0400
+Received: from mga18.intel.com ([134.134.136.126]:20165 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389885AbgJLSN5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Oct 2020 14:13:57 -0400
+IronPort-SDR: JuYE+b645+E+KYCN/bc6ZRbJISyZk8eJtq5ggeNjify07IhWfWyvukwOLMfegu/OS4whHsCqD5
+ vb0J+AeU3D2A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9772"; a="153613143"
+X-IronPort-AV: E=Sophos;i="5.77,367,1596524400"; 
+   d="scan'208";a="153613143"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2020 11:13:57 -0700
+IronPort-SDR: GsDNJUBbw2x6EZDNW4MKGm6maDW1MwPFOnqrYEnIYTvswQR5ez0BAA9LF8YaERJ7iioDX/iXUB
+ xYV6fdBYga9Q==
+X-IronPort-AV: E=Sophos;i="5.77,367,1596524400"; 
+   d="scan'208";a="463192898"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2020 11:13:56 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next v2 0/2][pull request] 40GbE Intel Wired LAN Driver Updates 2020-10-12
+Date:   Mon, 12 Oct 2020 11:13:44 -0700
+Message-Id: <20201012181346.3073618-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenz Bauer wrote:
-> The sparse checker currently outputs the following warnings:
-> 
->     include/linux/rcupdate.h:632:9: sparse: sparse: context imbalance in 'sock_hash_seq_start' - wrong count at exit
->     include/linux/rcupdate.h:632:9: sparse: sparse: context imbalance in 'sock_map_seq_start' - wrong count at exit
-> 
-> Add the necessary __acquires and __release annotations to make the
-> iterator locking schema palatable to sparse. Also add __must_hold
-> for good measure.
-> 
-> The kernel codebase uses both __acquires(rcu) and __acquires(RCU).
-> I couldn't find any guidance which one is preferred, so I used
-> what is easier to type out.
-> 
-> Fixes: 0365351524d7 ("net: Allow iterating sockmap and sockhash")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
-> ---
+This series contains updates to i40e and e1000 drivers.
 
-LGTM
+Jaroslaw adds support for changing FEC on i40e if the firmware supports it.
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+Jesse fixes a kbuild-bot warning regarding ternary operator on e1000. 
+
+v2: Return -EOPNOTSUPP instead of -EINVAL when FEC settings are not
+supported by firmware. Remove, unneeded, done label and return errors
+directly in i40e_set_fec_param() for patch 1. Dropped, previous patch 2,
+to send to net. 
+
+The following are changes since commit 15f5e48f93c0e028b4d5cc0e8ede1168a2308fe6:
+  cx82310_eth: use netdev_err instead of dev_err
+and are available in the git repository at:
+  https://github.com/anguy11/next-queue.git 40GbE
+
+Jaroslaw Gawin (1):
+  i40e: Allow changing FEC settings on X722 if supported by FW
+
+Jesse Brandeburg (1):
+  e1000: remove unused and incorrect code
+
+ drivers/net/ethernet/intel/e1000/e1000_hw.c   | 10 +-----
+ drivers/net/ethernet/intel/i40e/i40e_adminq.c |  6 ++++
+ .../net/ethernet/intel/i40e/i40e_adminq_cmd.h |  2 ++
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    | 33 ++++++++++++-------
+ drivers/net/ethernet/intel/i40e/i40e_main.c   | 19 +++++++++++
+ drivers/net/ethernet/intel/i40e/i40e_type.h   |  1 +
+ 6 files changed, 50 insertions(+), 21 deletions(-)
+
+-- 
+2.26.2
+
