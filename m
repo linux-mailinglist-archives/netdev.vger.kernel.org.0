@@ -2,136 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0917528B026
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 10:22:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA77828AFEF
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 10:17:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728859AbgJLIWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 04:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38308 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727325AbgJLIV4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 04:21:56 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36A9C0613D2;
-        Mon, 12 Oct 2020 01:21:55 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id g4so16032414edk.0;
-        Mon, 12 Oct 2020 01:21:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/FTD4WRUg6u2eGbYzuvRNRJ/sh1gmUaaKBFsN/NH+4I=;
-        b=C3113bStM70NZuGM7RyowckACfab14LKWg7wWfVF/LN3gVgq92KWQoexxkqcaYsQXm
-         S9+IQrNBQJWcncQPRDFnK9QzobnWFz6/JtU8SocMw+7dSpE6I4f0nVub/xf9cfsowJaT
-         lE7n6ZQ9/gd82nLWmrQ3oIVm6iIFDGr3OMzdAgFx1XMuMONCdTGsKH53SxyEiTGbgnl5
-         krmJtopY25J74lQSe8f4R3ihHlk5EuspuSF+G0TSkKhlCCRf8804X1ysZI4h47N94G5q
-         vi6K7T1jrBWYfgWxCeNxF9ui1SbrovpET6KJdVeSH4Sb0Dyj3pF8LO/mrTrIKzKbH/cb
-         S6jQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/FTD4WRUg6u2eGbYzuvRNRJ/sh1gmUaaKBFsN/NH+4I=;
-        b=cJhTHNQmfmrvsQX20KXM0s6RLEtQe5m5KcFt6Lz+yzfHVhljZD8ixXwxqalNQgigBh
-         m2CkjdBACPMHTUtptresV/eRr2mVfz4xc0bX9aR3dbkHwNsCCKkvffUcX2cFp4OauH/E
-         nLEaW5ILU16VRyfpHXePZPXOQQgRe1nz3RTNodPiBzaXtSHDiMVv9NNNqRXwodrMomFv
-         J++JsjgrlCnFksPuRgkfuwtjrSahyrFjoPDarhhXS5/kU+BMNLVe0N8SWrJNYWpg8/Lx
-         EdwBw2uZfmaUhngv/RDtCD6rwQ4T8bi6mlvHWZ4N3i9lEkeJsIO/ATnbCxvz7jQMXbC1
-         rnYw==
-X-Gm-Message-State: AOAM531S0jgMS+dcVUI9RXMJoyE5rm6myCWaNhMt+XK3znOTX7ElifSh
-        NifBq3k4fKbp9A3gDFJzerRkkbefZZJPyA==
-X-Google-Smtp-Source: ABdhPJyr91gOF2uqDYP3d2BgCowxK/xZ/ClenuzL/KGhJVInWE0z0tAUMA3MaJ4QILJikb+ZTAQeVg==
-X-Received: by 2002:a50:8745:: with SMTP id 5mr12629496edv.49.1602490914611;
-        Mon, 12 Oct 2020 01:21:54 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f00:6a00:f90c:2907:849f:701c? (p200300ea8f006a00f90c2907849f701c.dip0.t-ipconnect.de. [2003:ea:8f00:6a00:f90c:2907:849f:701c])
-        by smtp.googlemail.com with ESMTPSA id do22sm9778504ejc.16.2020.10.12.01.21.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Oct 2020 01:21:54 -0700 (PDT)
-Subject: [PATCH net-next v2 09/12] iptunnel: use new function
- dev_fetch_sw_netstats
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>,
-        Oliver Neukum <oneukum@suse.com>,
-        Igor Mitsyanko <imitsyanko@quantenna.com>,
-        Sergey Matyukevich <geomatsi@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-rdma@vger.kernel.org,
-        Linux USB Mailing List <linux-usb@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        bridge@lists.linux-foundation.org
-References: <d77b65de-1793-f808-66b5-aaa4e7c8a8f0@gmail.com>
-Message-ID: <050f9a83-b195-a3d6-edbd-91a59040be21@gmail.com>
-Date:   Mon, 12 Oct 2020 10:17:07 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        id S1726733AbgJLIRm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 04:17:42 -0400
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:19011 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726098AbgJLIRm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 04:17:42 -0400
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5f8410eb0001>; Mon, 12 Oct 2020 01:16:43 -0700
+Received: from mtl-vdi-166.wap.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 12 Oct
+ 2020 08:17:29 +0000
+Date:   Mon, 12 Oct 2020 11:17:25 +0300
+From:   Eli Cohen <elic@nvidia.com>
+To:     Jason Wang <jasowang@redhat.com>
+CC:     <mst@redhat.com>, <lulu@redhat.com>, <kvm@vger.kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <rob.miller@broadcom.com>, <lingshan.zhu@intel.com>,
+        <eperezma@redhat.com>, <hanand@xilinx.com>,
+        <mhabets@solarflare.com>, <amorenoz@redhat.com>,
+        <maxime.coquelin@redhat.com>, <stefanha@redhat.com>,
+        <sgarzare@redhat.com>
+Subject: Re: [RFC PATCH 10/24] vdpa: introduce config operations for
+ associating ASID to a virtqueue group
+Message-ID: <20201012081725.GB42327@mtl-vdi-166.wap.labs.mlnx>
+References: <20200924032125.18619-1-jasowang@redhat.com>
+ <20200924032125.18619-11-jasowang@redhat.com>
+ <20201001132927.GC32363@mtl-vdi-166.wap.labs.mlnx>
+ <70af3ff0-74ed-e519-56f5-d61e6a48767f@redhat.com>
+ <20201012065931.GA42327@mtl-vdi-166.wap.labs.mlnx>
+ <b1ac150b-0845-874f-75d0-7440133a1d41@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <d77b65de-1793-f808-66b5-aaa4e7c8a8f0@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <b1ac150b-0845-874f-75d0-7440133a1d41@redhat.com>
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1602490603; bh=Kg9ecYgsKq8hj5s7dMs7IKjshYentJJrrOYixBkDd+g=;
+        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+         Content-Type:Content-Disposition:In-Reply-To:User-Agent:
+         X-Originating-IP:X-ClientProxiedBy;
+        b=q2D7izcFRuCz8XdUQF8ATaarITInVRF7zWozqgfHXXGVRHcT/oRcJVQl4k7Z0KLwY
+         DIOYlsCOHiEsnMM9z+CoLIbgdlFG2EU1kXqItA/5xetkRrfQqELTWtld0zm1O+yjHv
+         ycVB8C/mFGz3+hJe56udPw86gqBx4J4KLPBiTS5sUUJbZa6FiV1vfN2vXxJLofRDk7
+         peUKbW0d4p3dB0DT2jJ9E6loyvejEAxy+XWWB+LNP7nzR7z/IkzcI8o5Emr48i/XJw
+         tgxraQMDzAXV+F+lA6HmawnE4vTKA71DheAf73aDdOgKbdekd3p37xworK7+lvy9K3
+         r4dXPDjS3/A2A==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simplify the code by using new function dev_fetch_sw_netstats().
+On Mon, Oct 12, 2020 at 03:45:10PM +0800, Jason Wang wrote:
+> > > 
+> > So in theory we can have several asid's (for different virtqueues), each
+> > one should be followed by a specific set_map call. If this is so, how do
+> > I know if I met all the conditions run my driver? Maybe we need another
+> > callback to let the driver know it should not expect more set_maps().
+> 
+> 
+> This should work similarly as in the past. Two parts of the work is expected
+> to be done by the driver:
+> 
+> 1) store the mapping somewhere (e.g hardware) during set_map()
+> 2) associating mapping with a specific virtqueue
+> 
+> The only difference is that more than one mapping is used now.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- net/ipv4/ip_tunnel_core.c | 23 +----------------------
- 1 file changed, 1 insertion(+), 22 deletions(-)
+ok, so like today, I will always get DRIVER_OK after I got all the
+set_maps(), right?
 
-diff --git a/net/ipv4/ip_tunnel_core.c b/net/ipv4/ip_tunnel_core.c
-index b2ea1a8c5..25f1caf5a 100644
---- a/net/ipv4/ip_tunnel_core.c
-+++ b/net/ipv4/ip_tunnel_core.c
-@@ -433,29 +433,8 @@ EXPORT_SYMBOL(skb_tunnel_check_pmtu);
- void ip_tunnel_get_stats64(struct net_device *dev,
- 			   struct rtnl_link_stats64 *tot)
- {
--	int i;
--
- 	netdev_stats_to_stats64(tot, &dev->stats);
--
--	for_each_possible_cpu(i) {
--		const struct pcpu_sw_netstats *tstats =
--						   per_cpu_ptr(dev->tstats, i);
--		u64 rx_packets, rx_bytes, tx_packets, tx_bytes;
--		unsigned int start;
--
--		do {
--			start = u64_stats_fetch_begin_irq(&tstats->syncp);
--			rx_packets = tstats->rx_packets;
--			tx_packets = tstats->tx_packets;
--			rx_bytes = tstats->rx_bytes;
--			tx_bytes = tstats->tx_bytes;
--		} while (u64_stats_fetch_retry_irq(&tstats->syncp, start));
--
--		tot->rx_packets += rx_packets;
--		tot->tx_packets += tx_packets;
--		tot->rx_bytes   += rx_bytes;
--		tot->tx_bytes   += tx_bytes;
--	}
-+	dev_fetch_sw_netstats(tot, dev->tstats);
- }
- EXPORT_SYMBOL_GPL(ip_tunnel_get_stats64);
- 
--- 
-2.28.0
-
-
+> 
+> For the issue of more set_maps(), driver should be always ready for the new
+> set_maps() call instead of not expecting new set_maps() since guest memory
+> topology could be changed due to several reasons.
+> 
+> Qemu or vhost-vDPA will try their best to avoid the frequency of set_maps()
+> for better performance (e.g through batched IOTLB updating). E.g there
+> should be at most one set_map() during one time of guest booting.
+> 
+> 
+> > 
+> 
