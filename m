@@ -2,28 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D39528C4DD
+	by mail.lfdr.de (Postfix) with ESMTP id BBBA128C4DE
 	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 00:42:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731049AbgJLWmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 18:42:19 -0400
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:9860 "EHLO
+        id S2390408AbgJLWmW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 18:42:22 -0400
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:9863 "EHLO
         hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730671AbgJLWmT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 18:42:19 -0400
+        with ESMTP id S1730707AbgJLWmU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 18:42:20 -0400
 Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5f84db580000>; Mon, 12 Oct 2020 15:40:24 -0700
+        id <B5f84db580001>; Mon, 12 Oct 2020 15:40:24 -0700
 Received: from sx1.mtl.com (10.124.1.5) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 12 Oct
- 2020 22:42:12 +0000
+ 2020 22:42:13 +0000
 From:   Saeed Mahameed <saeedm@nvidia.com>
 To:     Jakub Kicinski <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
-        "Huy Nguyen" <huyn@mellanox.com>, Raed Salem <raeds@mellanox.com>,
+        "Huy Nguyen" <huyn@mellanox.com>,
+        Boris Pismenny <borisp@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 2/4] net/mlx5: Add NIC TX domain namespace
-Date:   Mon, 12 Oct 2020 15:41:50 -0700
-Message-ID: <20201012224152.191479-3-saeedm@nvidia.com>
+Subject: [net-next 3/4] net/mlx5e: IPsec: Add TX steering rule per IPsec state
+Date:   Mon, 12 Oct 2020 15:41:51 -0700
+Message-ID: <20201012224152.191479-4-saeedm@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201012224152.191479-1-saeedm@nvidia.com>
 References: <20201012224152.191479-1-saeedm@nvidia.com>
@@ -34,130 +36,336 @@ X-Originating-IP: [10.124.1.5]
 X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1602542424; bh=8+JPL1qD+zfbcpL5F6LOqwcza2DvkEHE7UbP+oRSukI=;
+        t=1602542424; bh=maEjl6UD31BYk9Qy4dbLf28oF4QSszPzCnC2p5M4N2Q=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=QvRUAgMgPNyNANSgg77l6PUDdacn7ui2EYk/XM6XPqQ5hn5ZSfEj1GXA1pRM6yg+v
-         vrYNnLfI7Iad2hWKObdht3+y/LtS3sNcSJ2eW98bjF8EiKe1gqb47XUw+Ro0gDn+wU
-         qETvPpgQDIrHIMRCY9AGHEAqs6sg4yLWd9ilz28L4x86teTV70he4EFr80j0ucDLXt
-         qoSzZ3q5zR/8Ff4TqEEgTNv7Gip6/QhxK6rQsW7gUdds5oMEqJq6cEWcqmPXkdB46x
-         QrAAN65Tp3RrePzV3dRWeQs661bgjg6mwOSOhdw6bQVYPa0jP8UOU8ziDi8akPae7h
-         8f8rTnKqsRYvQ==
+        b=R1zW/Q805KnxfqGc4PAIQxqc6prwpKnMRz7FVn74/GzHO0oYYF6iGPv9DA/5XpQsT
+         kmFkBseYqT+NVVJAozlb2xru742B/rLvEFxx+u+fQnsSPdmTAHabbaqdLs1iXhbHTj
+         ofMg84orAPOC756cFzQ7OwR84JRN/XOM5vKdtlpufVFea+Ngm3HXqoBgmSp84+6S/m
+         2hXPAzURXNUw8vrx9JjJjYqR43hmwuFo2tbawTrte180Av9oZw6OYPIY4NJFJgr3K+
+         FXC29d04qWPnOhJHCIK+9mJw9HCpbTnK2jL0u7wt9p+S8Tf+l0s6ssTOoCfQjsmeVh
+         g0KDOqPqzFrxA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Huy Nguyen <huyn@mellanox.com>
 
-Add new namespace that represents the NIC TX domain.
+Add new FTE in TX IPsec FT per IPsec state. It has the
+same matching criteria as the RX steering rule.
+
+The IPsec FT is created/destroyed when the first/last rule
+is added/deleted respectively.
 
 Signed-off-by: Huy Nguyen <huyn@mellanox.com>
-Signed-off-by: Raed Salem <raeds@mellanox.com>
+Reviewed-by: Boris Pismenny <borisp@nvidia.com>
+Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/fs.h   |  1 +
- .../net/ethernet/mellanox/mlx5/core/fs_cmd.c  |  3 +++
- .../net/ethernet/mellanox/mlx5/core/fs_core.c | 19 ++++++++++++++++++-
- include/linux/mlx5/fs.h                       |  1 +
- 4 files changed, 23 insertions(+), 1 deletion(-)
+ .../mellanox/mlx5/core/en_accel/ipsec.h       |   2 +
+ .../mellanox/mlx5/core/en_accel/ipsec_fs.c    | 178 +++++++++++++++++-
+ include/linux/mlx5/qp.h                       |   6 +-
+ 3 files changed, 181 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h b/drivers/net/=
-ethernet/mellanox/mlx5/core/en/fs.h
-index 6a97452dc60e..dc744702aee4 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
-@@ -236,6 +236,7 @@ struct mlx5e_accel_fs_tcp;
-=20
- struct mlx5e_flow_steering {
- 	struct mlx5_flow_namespace      *ns;
-+	struct mlx5_flow_namespace      *egress_ns;
- #ifdef CONFIG_MLX5_EN_RXNFC
- 	struct mlx5e_ethtool_steering   ethtool;
- #endif
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c b/drivers/net=
-/ethernet/mellanox/mlx5/core/fs_cmd.c
-index fee169732de7..babe3405132a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_cmd.c
-@@ -776,6 +776,9 @@ static int mlx5_cmd_modify_header_alloc(struct mlx5_flo=
-w_root_namespace *ns,
- 		table_type =3D FS_FT_NIC_RX;
- 		break;
- 	case MLX5_FLOW_NAMESPACE_EGRESS:
-+#ifdef CONFIG_MLX5_IPSEC
-+	case MLX5_FLOW_NAMESPACE_EGRESS_KERNEL:
-+#endif
- 		max_actions =3D MLX5_CAP_FLOWTABLE_NIC_TX(dev, max_modify_header_actions=
-);
- 		table_type =3D FS_FT_NIC_TX;
- 		break;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c b/drivers/ne=
-t/ethernet/mellanox/mlx5/core/fs_core.c
-index 6141e9ec8190..16091838bfcf 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_core.c
-@@ -126,6 +126,10 @@
- #define LAG_NUM_PRIOS 1
- #define LAG_MIN_LEVEL (OFFLOADS_MIN_LEVEL + 1)
-=20
-+#define KERNEL_TX_IPSEC_NUM_PRIOS  1
-+#define KERNEL_TX_IPSEC_NUM_LEVELS 1
-+#define KERNEL_TX_MIN_LEVEL        (KERNEL_TX_IPSEC_NUM_LEVELS)
-+
- struct node_caps {
- 	size_t	arr_sz;
- 	long	*caps;
-@@ -180,13 +184,24 @@ static struct init_tree_node {
-=20
- static struct init_tree_node egress_root_fs =3D {
- 	.type =3D FS_TYPE_NAMESPACE,
-+#ifdef CONFIG_MLX5_IPSEC
-+	.ar_size =3D 2,
-+#else
- 	.ar_size =3D 1,
-+#endif
- 	.children =3D (struct init_tree_node[]) {
- 		ADD_PRIO(0, MLX5_BY_PASS_NUM_PRIOS, 0,
- 			 FS_CHAINING_CAPS_EGRESS,
- 			 ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_DEF,
- 				ADD_MULTIPLE_PRIO(MLX5_BY_PASS_NUM_PRIOS,
- 						  BY_PASS_PRIO_NUM_LEVELS))),
-+#ifdef CONFIG_MLX5_IPSEC
-+		ADD_PRIO(0, KERNEL_TX_MIN_LEVEL, 0,
-+			 FS_CHAINING_CAPS_EGRESS,
-+			 ADD_NS(MLX5_FLOW_TABLE_MISS_ACTION_DEF,
-+				ADD_MULTIPLE_PRIO(KERNEL_TX_IPSEC_NUM_PRIOS,
-+						  KERNEL_TX_IPSEC_NUM_LEVELS))),
-+#endif
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h b/dri=
+vers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
+index 0fc8b4d4f4a3..6164c7f59efb 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.h
+@@ -76,6 +76,7 @@ struct mlx5e_ipsec_stats {
  };
 =20
-@@ -2165,8 +2180,10 @@ struct mlx5_flow_namespace *mlx5_get_flow_namespace(=
-struct mlx5_core_dev *dev,
- 		break;
- 	}
+ struct mlx5e_accel_fs_esp;
++struct mlx5e_ipsec_tx;
 =20
--	if (type =3D=3D MLX5_FLOW_NAMESPACE_EGRESS) {
-+	if (type =3D=3D MLX5_FLOW_NAMESPACE_EGRESS ||
-+	    type =3D=3D MLX5_FLOW_NAMESPACE_EGRESS_KERNEL) {
- 		root_ns =3D steering->egress_root_ns;
-+		prio =3D type - MLX5_FLOW_NAMESPACE_EGRESS;
- 	} else if (type =3D=3D MLX5_FLOW_NAMESPACE_RDMA_RX) {
- 		root_ns =3D steering->rdma_rx_root_ns;
- 		prio =3D RDMA_RX_BYPASS_PRIO;
-diff --git a/include/linux/mlx5/fs.h b/include/linux/mlx5/fs.h
-index 92d991d93757..846d94ad04bc 100644
---- a/include/linux/mlx5/fs.h
-+++ b/include/linux/mlx5/fs.h
-@@ -76,6 +76,7 @@ enum mlx5_flow_namespace_type {
- 	MLX5_FLOW_NAMESPACE_SNIFFER_RX,
- 	MLX5_FLOW_NAMESPACE_SNIFFER_TX,
- 	MLX5_FLOW_NAMESPACE_EGRESS,
-+	MLX5_FLOW_NAMESPACE_EGRESS_KERNEL,
- 	MLX5_FLOW_NAMESPACE_RDMA_RX,
- 	MLX5_FLOW_NAMESPACE_RDMA_RX_KERNEL,
- 	MLX5_FLOW_NAMESPACE_RDMA_TX,
+ struct mlx5e_ipsec {
+ 	struct mlx5e_priv *en_priv;
+@@ -87,6 +88,7 @@ struct mlx5e_ipsec {
+ 	struct mlx5e_ipsec_stats stats;
+ 	struct workqueue_struct *wq;
+ 	struct mlx5e_accel_fs_esp *rx_fs;
++	struct mlx5e_ipsec_tx *tx_fs;
+ };
+=20
+ struct mlx5e_ipsec_esn_state {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c b/=
+drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
+index b974f3cd1005..0e45590662a8 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
+@@ -34,6 +34,12 @@ struct mlx5e_accel_fs_esp {
+ 	struct mlx5e_accel_fs_esp_prot fs_prot[ACCEL_FS_ESP_NUM_TYPES];
+ };
+=20
++struct mlx5e_ipsec_tx {
++	struct mlx5_flow_table *ft;
++	struct mutex mutex; /* Protect IPsec TX steering */
++	u32 refcnt;
++};
++
+ /* IPsec RX flow steering */
+ static enum mlx5e_traffic_types fs_esp2tt(enum accel_fs_esp_type i)
+ {
+@@ -323,6 +329,77 @@ static void rx_ft_put(struct mlx5e_priv *priv, enum ac=
+cel_fs_esp_type type)
+ 	mutex_unlock(&fs_prot->prot_mutex);
+ }
+=20
++/* IPsec TX flow steering */
++static int tx_create(struct mlx5e_priv *priv)
++{
++	struct mlx5_flow_table_attr ft_attr =3D {};
++	struct mlx5e_ipsec *ipsec =3D priv->ipsec;
++	struct mlx5_flow_table *ft;
++	int err;
++
++	priv->fs.egress_ns =3D
++		mlx5_get_flow_namespace(priv->mdev,
++					MLX5_FLOW_NAMESPACE_EGRESS_KERNEL);
++	if (!priv->fs.egress_ns)
++		return -EOPNOTSUPP;
++
++	ft_attr.max_fte =3D NUM_IPSEC_FTE;
++	ft_attr.autogroup.max_num_groups =3D 1;
++	ft =3D mlx5_create_auto_grouped_flow_table(priv->fs.egress_ns, &ft_attr);
++	if (IS_ERR(ft)) {
++		err =3D PTR_ERR(ft);
++		netdev_err(priv->netdev, "fail to create ipsec tx ft err=3D%d\n", err);
++		return err;
++	}
++	ipsec->tx_fs->ft =3D ft;
++	return 0;
++}
++
++static void tx_destroy(struct mlx5e_priv *priv)
++{
++	struct mlx5e_ipsec *ipsec =3D priv->ipsec;
++
++	if (IS_ERR_OR_NULL(ipsec->tx_fs->ft))
++		return;
++
++	mlx5_destroy_flow_table(ipsec->tx_fs->ft);
++	ipsec->tx_fs->ft =3D NULL;
++}
++
++static int tx_ft_get(struct mlx5e_priv *priv)
++{
++	struct mlx5e_ipsec_tx *tx_fs =3D priv->ipsec->tx_fs;
++	int err =3D 0;
++
++	mutex_lock(&tx_fs->mutex);
++	if (tx_fs->refcnt++)
++		goto out;
++
++	err =3D tx_create(priv);
++	if (err) {
++		tx_fs->refcnt--;
++		goto out;
++	}
++
++out:
++	mutex_unlock(&tx_fs->mutex);
++	return err;
++}
++
++static void tx_ft_put(struct mlx5e_priv *priv)
++{
++	struct mlx5e_ipsec_tx *tx_fs =3D priv->ipsec->tx_fs;
++
++	mutex_lock(&tx_fs->mutex);
++	if (--tx_fs->refcnt)
++		goto out;
++
++	tx_destroy(priv);
++
++out:
++	mutex_unlock(&tx_fs->mutex);
++}
++
+ static void setup_fte_common(struct mlx5_accel_esp_xfrm_attrs *attrs,
+ 			     u32 ipsec_obj_id,
+ 			     struct mlx5_flow_spec *spec,
+@@ -457,6 +534,54 @@ static int rx_add_rule(struct mlx5e_priv *priv,
+ 	return err;
+ }
+=20
++static int tx_add_rule(struct mlx5e_priv *priv,
++		       struct mlx5_accel_esp_xfrm_attrs *attrs,
++		       u32 ipsec_obj_id,
++		       struct mlx5e_ipsec_rule *ipsec_rule)
++{
++	struct mlx5_flow_act flow_act =3D {};
++	struct mlx5_flow_handle *rule;
++	struct mlx5_flow_spec *spec;
++	int err =3D 0;
++
++	err =3D tx_ft_get(priv);
++	if (err)
++		return err;
++
++	spec =3D kvzalloc(sizeof(*spec), GFP_KERNEL);
++	if (!spec) {
++		err =3D -ENOMEM;
++		goto out;
++	}
++
++	setup_fte_common(attrs, ipsec_obj_id, spec, &flow_act);
++
++	/* Add IPsec indicator in metadata_reg_a */
++	spec->match_criteria_enable |=3D MLX5_MATCH_MISC_PARAMETERS_2;
++	MLX5_SET(fte_match_param, spec->match_criteria, misc_parameters_2.metadat=
+a_reg_a,
++		 MLX5_ETH_WQE_FT_META_IPSEC);
++	MLX5_SET(fte_match_param, spec->match_value, misc_parameters_2.metadata_r=
+eg_a,
++		 MLX5_ETH_WQE_FT_META_IPSEC);
++
++	flow_act.action =3D MLX5_FLOW_CONTEXT_ACTION_ALLOW |
++			  MLX5_FLOW_CONTEXT_ACTION_IPSEC_ENCRYPT;
++	rule =3D mlx5_add_flow_rules(priv->ipsec->tx_fs->ft, spec, &flow_act, NUL=
+L, 0);
++	if (IS_ERR(rule)) {
++		err =3D PTR_ERR(rule);
++		netdev_err(priv->netdev, "fail to add ipsec rule attrs->action=3D0x%x, e=
+rr=3D%d\n",
++			   attrs->action, err);
++		goto out;
++	}
++
++	ipsec_rule->rule =3D rule;
++
++out:
++	kvfree(spec);
++	if (err)
++		tx_ft_put(priv);
++	return err;
++}
++
+ static void rx_del_rule(struct mlx5e_priv *priv,
+ 			struct mlx5_accel_esp_xfrm_attrs *attrs,
+ 			struct mlx5e_ipsec_rule *ipsec_rule)
+@@ -470,15 +595,27 @@ static void rx_del_rule(struct mlx5e_priv *priv,
+ 	rx_ft_put(priv, attrs->is_ipv6 ? ACCEL_FS_ESP6 : ACCEL_FS_ESP4);
+ }
+=20
++static void tx_del_rule(struct mlx5e_priv *priv,
++			struct mlx5e_ipsec_rule *ipsec_rule)
++{
++	mlx5_del_flow_rules(ipsec_rule->rule);
++	ipsec_rule->rule =3D NULL;
++
++	tx_ft_put(priv);
++}
++
+ int mlx5e_accel_ipsec_fs_add_rule(struct mlx5e_priv *priv,
+ 				  struct mlx5_accel_esp_xfrm_attrs *attrs,
+ 				  u32 ipsec_obj_id,
+ 				  struct mlx5e_ipsec_rule *ipsec_rule)
+ {
+-	if (!priv->ipsec->rx_fs || attrs->action !=3D MLX5_ACCEL_ESP_ACTION_DECRY=
+PT)
++	if (!priv->ipsec->rx_fs)
+ 		return -EOPNOTSUPP;
+=20
+-	return rx_add_rule(priv, attrs, ipsec_obj_id, ipsec_rule);
++	if (attrs->action =3D=3D MLX5_ACCEL_ESP_ACTION_DECRYPT)
++		return rx_add_rule(priv, attrs, ipsec_obj_id, ipsec_rule);
++	else
++		return tx_add_rule(priv, attrs, ipsec_obj_id, ipsec_rule);
+ }
+=20
+ void mlx5e_accel_ipsec_fs_del_rule(struct mlx5e_priv *priv,
+@@ -488,7 +625,18 @@ void mlx5e_accel_ipsec_fs_del_rule(struct mlx5e_priv *=
+priv,
+ 	if (!priv->ipsec->rx_fs)
+ 		return;
+=20
+-	rx_del_rule(priv, attrs, ipsec_rule);
++	if (attrs->action =3D=3D MLX5_ACCEL_ESP_ACTION_DECRYPT)
++		rx_del_rule(priv, attrs, ipsec_rule);
++	else
++		tx_del_rule(priv, ipsec_rule);
++}
++
++static void fs_cleanup_tx(struct mlx5e_priv *priv)
++{
++	mutex_destroy(&priv->ipsec->tx_fs->mutex);
++	WARN_ON(priv->ipsec->tx_fs->refcnt);
++	kfree(priv->ipsec->tx_fs);
++	priv->ipsec->tx_fs =3D NULL;
+ }
+=20
+ static void fs_cleanup_rx(struct mlx5e_priv *priv)
+@@ -507,6 +655,17 @@ static void fs_cleanup_rx(struct mlx5e_priv *priv)
+ 	priv->ipsec->rx_fs =3D NULL;
+ }
+=20
++static int fs_init_tx(struct mlx5e_priv *priv)
++{
++	priv->ipsec->tx_fs =3D
++		kzalloc(sizeof(struct mlx5e_ipsec_tx), GFP_KERNEL);
++	if (!priv->ipsec->tx_fs)
++		return -ENOMEM;
++
++	mutex_init(&priv->ipsec->tx_fs->mutex);
++	return 0;
++}
++
+ static int fs_init_rx(struct mlx5e_priv *priv)
+ {
+ 	struct mlx5e_accel_fs_esp_prot *fs_prot;
+@@ -532,13 +691,24 @@ void mlx5e_accel_ipsec_fs_cleanup(struct mlx5e_priv *=
+priv)
+ 	if (!priv->ipsec->rx_fs)
+ 		return;
+=20
++	fs_cleanup_tx(priv);
+ 	fs_cleanup_rx(priv);
+ }
+=20
+ int mlx5e_accel_ipsec_fs_init(struct mlx5e_priv *priv)
+ {
++	int err;
++
+ 	if (!mlx5_is_ipsec_device(priv->mdev) || !priv->ipsec)
+ 		return -EOPNOTSUPP;
+=20
+-	return fs_init_rx(priv);
++	err =3D fs_init_tx(priv);
++	if (err)
++		return err;
++
++	err =3D fs_init_rx(priv);
++	if (err)
++		fs_cleanup_tx(priv);
++
++	return err;
+ }
+diff --git a/include/linux/mlx5/qp.h b/include/linux/mlx5/qp.h
+index 36492a1342cf..d75ef8aa8fac 100644
+--- a/include/linux/mlx5/qp.h
++++ b/include/linux/mlx5/qp.h
+@@ -245,6 +245,10 @@ enum {
+ 	MLX5_ETH_WQE_SWP_OUTER_L4_UDP   =3D 1 << 5,
+ };
+=20
++enum {
++	MLX5_ETH_WQE_FT_META_IPSEC =3D BIT(0),
++};
++
+ struct mlx5_wqe_eth_seg {
+ 	u8              swp_outer_l4_offset;
+ 	u8              swp_outer_l3_offset;
+@@ -253,7 +257,7 @@ struct mlx5_wqe_eth_seg {
+ 	u8              cs_flags;
+ 	u8              swp_flags;
+ 	__be16          mss;
+-	__be32          rsvd2;
++	__be32          flow_table_metadata;
+ 	union {
+ 		struct {
+ 			__be16 sz;
 --=20
 2.26.2
 
