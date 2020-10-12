@@ -2,41 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D533528BF77
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 20:13:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49D0C28BF78
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 20:14:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404124AbgJLSN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 14:13:58 -0400
+        id S2404149AbgJLSOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 14:14:01 -0400
 Received: from mga18.intel.com ([134.134.136.126]:20165 "EHLO mga18.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390199AbgJLSN6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726636AbgJLSN6 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 12 Oct 2020 14:13:58 -0400
-IronPort-SDR: FLn0182v6Vj5jkHf5aszYkieQ1e7yNzj9Yb9svq8TZ0GYmaFQKEbYh88hKZfv5neEq03BxshR6
- ZPfFfFkiZSzw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9772"; a="153613144"
+IronPort-SDR: xeJo6YHg634aawMLkiiu7yoHjvNrBdFkAOOMDIXhgNdIRZXjuNMRIJpkN9S3oc0HOsfwj2VJ58
+ 6DHKndc9zUUQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9772"; a="153613145"
 X-IronPort-AV: E=Sophos;i="5.77,367,1596524400"; 
-   d="scan'208";a="153613144"
+   d="scan'208";a="153613145"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
   by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2020 11:13:57 -0700
-IronPort-SDR: y3/zBsTGD/tufOEPLjfzpmADxBRH20NUSKAQGDxt3Ku9azRqUICcQbXvcagBCr7pcrIYrIa6Y0
- MHLdhMfT2SZQ==
+IronPort-SDR: yGUAdZ0wqCHIkNvW3tGS9ePz/L+ZAckBA7kQqDCW+d0DL1rpoceA4vo3g0EDeoATfBc3grR1jA
+ E0Zh0qlsJ8Zw==
 X-IronPort-AV: E=Sophos;i="5.77,367,1596524400"; 
-   d="scan'208";a="463192901"
+   d="scan'208";a="463192903"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.86])
   by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2020 11:13:57 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Jaroslaw Gawin <jaroslawx.gawin@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        anthony.l.nguyen@intel.com,
-        Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Andrew Bowers <andrewx.bowers@intel.com>
-Subject: [net-next v2 1/2] i40e: Allow changing FEC settings on X722 if supported by FW
-Date:   Mon, 12 Oct 2020 11:13:45 -0700
-Message-Id: <20201012181346.3073618-2-anthony.l.nguyen@intel.com>
+Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        anthony.l.nguyen@intel.com, Aaron Brown <aaron.f.brown@intel.com>
+Subject: [net-next v2 2/2] e1000: remove unused and incorrect code
+Date:   Mon, 12 Oct 2020 11:13:46 -0700
+Message-Id: <20201012181346.3073618-3-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201012181346.3073618-1-anthony.l.nguyen@intel.com>
 References: <20201012181346.3073618-1-anthony.l.nguyen@intel.com>
@@ -46,174 +43,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jaroslaw Gawin <jaroslawx.gawin@intel.com>
+From: Jesse Brandeburg <jesse.brandeburg@intel.com>
 
-Starting with API version 1.10 firmware for X722 devices has ability
-to change FEC settings in PHY. Code added in this patch allows
-changing FEC settings if the capability flag indicates the device
-supports this feature.
+The e1000_clear_vfta function was triggering a warning in kbuild-bot
+testing. It's actually a bug but has no functional impact.
 
-Signed-off-by: Jaroslaw Gawin <jaroslawx.gawin@intel.com>
-Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
-Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+drivers/net/ethernet/intel/e1000/e1000_hw.c:4415:58: warning: Same expression in both branches of ternary operator. [duplicateExpressionTernary]
+
+Fix this warning by removing the offending code and simplifying
+the routine to do exactly what it did before, no functional
+change.
+
+Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Tested-by: Aaron Brown <aaron.f.brown@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_adminq.c |  6 ++++
- .../net/ethernet/intel/i40e/i40e_adminq_cmd.h |  2 ++
- .../net/ethernet/intel/i40e/i40e_ethtool.c    | 33 ++++++++++++-------
- drivers/net/ethernet/intel/i40e/i40e_main.c   | 19 +++++++++++
- drivers/net/ethernet/intel/i40e/i40e_type.h   |  1 +
- 5 files changed, 49 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/intel/e1000/e1000_hw.c | 10 +---------
+ 1 file changed, 1 insertion(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_adminq.c b/drivers/net/ethernet/intel/i40e/i40e_adminq.c
-index c897a2863e4f..593912b17609 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_adminq.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_adminq.c
-@@ -541,6 +541,12 @@ static void i40e_set_hw_flags(struct i40e_hw *hw)
- 		    (aq->api_maj_ver == 1 &&
- 		     aq->api_min_ver >= I40E_MINOR_VER_GET_LINK_INFO_X722))
- 			hw->flags |= I40E_HW_FLAG_AQ_PHY_ACCESS_CAPABLE;
-+
-+		if (aq->api_maj_ver > 1 ||
-+		    (aq->api_maj_ver == 1 &&
-+		     aq->api_min_ver >= I40E_MINOR_VER_FW_REQUEST_FEC_X722))
-+			hw->flags |= I40E_HW_FLAG_X722_FEC_REQUEST_CAPABLE;
-+
- 		fallthrough;
- 	default:
- 		break;
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_adminq_cmd.h b/drivers/net/ethernet/intel/i40e/i40e_adminq_cmd.h
-index c0c8efe42fce..1e960c3c7ef0 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_adminq_cmd.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e_adminq_cmd.h
-@@ -24,6 +24,8 @@
- #define I40E_MINOR_VER_GET_LINK_INFO_X722 0x0009
- /* API version 1.6 for X722 devices adds ability to stop FW LLDP agent */
- #define I40E_MINOR_VER_FW_LLDP_STOPPABLE_X722 0x0006
-+/* API version 1.10 for X722 devices adds ability to request FEC encoding */
-+#define I40E_MINOR_VER_FW_REQUEST_FEC_X722 0x000A
+diff --git a/drivers/net/ethernet/intel/e1000/e1000_hw.c b/drivers/net/ethernet/intel/e1000/e1000_hw.c
+index fb5af23880c3..4c0c9433bd60 100644
+--- a/drivers/net/ethernet/intel/e1000/e1000_hw.c
++++ b/drivers/net/ethernet/intel/e1000/e1000_hw.c
+@@ -4401,17 +4401,9 @@ void e1000_write_vfta(struct e1000_hw *hw, u32 offset, u32 value)
+ static void e1000_clear_vfta(struct e1000_hw *hw)
+ {
+ 	u32 offset;
+-	u32 vfta_value = 0;
+-	u32 vfta_offset = 0;
+-	u32 vfta_bit_in_reg = 0;
  
- struct i40e_aq_desc {
- 	__le16 flags;
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-index dc1577156bb6..26ba1f3eb2d8 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_ethtool.c
-@@ -891,6 +891,7 @@ static void i40e_get_settings_link_up(struct i40e_hw *hw,
- 		if (hw_link_info->requested_speeds & I40E_LINK_SPEED_10GB)
- 			ethtool_link_ksettings_add_link_mode(ks, advertising,
- 							     10000baseT_Full);
-+		i40e_get_settings_link_up_fec(hw_link_info->req_fec_info, ks);
- 		break;
- 	case I40E_PHY_TYPE_SGMII:
- 		ethtool_link_ksettings_add_link_mode(ks, supported, Autoneg);
-@@ -1481,12 +1482,16 @@ static int i40e_set_fec_param(struct net_device *netdev,
- 	struct i40e_pf *pf = np->vsi->back;
- 	struct i40e_hw *hw = &pf->hw;
- 	u8 fec_cfg = 0;
--	int err = 0;
- 
- 	if (hw->device_id != I40E_DEV_ID_25G_SFP28 &&
--	    hw->device_id != I40E_DEV_ID_25G_B) {
--		err = -EPERM;
--		goto done;
-+	    hw->device_id != I40E_DEV_ID_25G_B &&
-+	    hw->device_id != I40E_DEV_ID_KX_X722)
-+		return -EPERM;
-+
-+	if (hw->mac.type == I40E_MAC_X722 &&
-+	    !(hw->flags & I40E_HW_FLAG_X722_FEC_REQUEST_CAPABLE)) {
-+		netdev_err(netdev, "Setting FEC encoding not supported by firmware. Please update the NVM image.\n");
-+		return -EOPNOTSUPP;
+ 	for (offset = 0; offset < E1000_VLAN_FILTER_TBL_SIZE; offset++) {
+-		/* If the offset we want to clear is the same offset of the
+-		 * manageability VLAN ID, then clear all bits except that of the
+-		 * manageability unit
+-		 */
+-		vfta_value = (offset == vfta_offset) ? vfta_bit_in_reg : 0;
+-		E1000_WRITE_REG_ARRAY(hw, VFTA, offset, vfta_value);
++		E1000_WRITE_REG_ARRAY(hw, VFTA, offset, 0);
+ 		E1000_WRITE_FLUSH();
  	}
- 
- 	switch (fecparam->fec) {
-@@ -1508,14 +1513,10 @@ static int i40e_set_fec_param(struct net_device *netdev,
- 	default:
- 		dev_warn(&pf->pdev->dev, "Unsupported FEC mode: %d",
- 			 fecparam->fec);
--		err = -EINVAL;
--		goto done;
-+		return -EINVAL;
- 	}
- 
--	err = i40e_set_fec_cfg(netdev, fec_cfg);
--
--done:
--	return err;
-+	return i40e_set_fec_cfg(netdev, fec_cfg);
  }
- 
- static int i40e_nway_reset(struct net_device *netdev)
-@@ -4951,8 +4952,7 @@ static int i40e_set_priv_flags(struct net_device *dev, u32 flags)
- 		}
- 	}
- 
--	if (((changed_flags & I40E_FLAG_RS_FEC) ||
--	     (changed_flags & I40E_FLAG_BASE_R_FEC)) &&
-+	if (changed_flags & I40E_FLAG_RS_FEC &&
- 	    pf->hw.device_id != I40E_DEV_ID_25G_SFP28 &&
- 	    pf->hw.device_id != I40E_DEV_ID_25G_B) {
- 		dev_warn(&pf->pdev->dev,
-@@ -4960,6 +4960,15 @@ static int i40e_set_priv_flags(struct net_device *dev, u32 flags)
- 		return -EOPNOTSUPP;
- 	}
- 
-+	if (changed_flags & I40E_FLAG_BASE_R_FEC &&
-+	    pf->hw.device_id != I40E_DEV_ID_25G_SFP28 &&
-+	    pf->hw.device_id != I40E_DEV_ID_25G_B &&
-+	    pf->hw.device_id != I40E_DEV_ID_KX_X722) {
-+		dev_warn(&pf->pdev->dev,
-+			 "Device does not support changing FEC configuration\n");
-+		return -EOPNOTSUPP;
-+	}
-+
- 	/* Process any additional changes needed as a result of flag changes.
- 	 * The changed_flags value reflects the list of bits that were
- 	 * changed in the code above.
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 929c64789119..4f8a2154b93f 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -6622,6 +6622,25 @@ void i40e_print_link_message(struct i40e_vsi *vsi, bool isup)
- 			else
- 				req_fec = "CL74 FC-FEC/BASE-R";
- 		}
-+		netdev_info(vsi->netdev,
-+			    "NIC Link is Up, %sbps Full Duplex, Requested FEC: %s, Negotiated FEC: %s, Autoneg: %s, Flow Control: %s\n",
-+			    speed, req_fec, fec, an, fc);
-+	} else if (pf->hw.device_id == I40E_DEV_ID_KX_X722) {
-+		req_fec = "None";
-+		fec = "None";
-+		an = "False";
-+
-+		if (pf->hw.phy.link_info.an_info & I40E_AQ_AN_COMPLETED)
-+			an = "True";
-+
-+		if (pf->hw.phy.link_info.fec_info &
-+		    I40E_AQ_CONFIG_FEC_KR_ENA)
-+			fec = "CL74 FC-FEC/BASE-R";
-+
-+		if (pf->hw.phy.link_info.req_fec_info &
-+		    I40E_AQ_REQUEST_FEC_KR)
-+			req_fec = "CL74 FC-FEC/BASE-R";
-+
- 		netdev_info(vsi->netdev,
- 			    "NIC Link is Up, %sbps Full Duplex, Requested FEC: %s, Negotiated FEC: %s, Autoneg: %s, Flow Control: %s\n",
- 			    speed, req_fec, fec, an, fc);
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_type.h b/drivers/net/ethernet/intel/i40e/i40e_type.h
-index 97d29df65f9e..c0bdc666f557 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_type.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e_type.h
-@@ -595,6 +595,7 @@ struct i40e_hw {
- #define I40E_HW_FLAG_FW_LLDP_PERSISTENT     BIT_ULL(5)
- #define I40E_HW_FLAG_AQ_PHY_ACCESS_EXTENDED BIT_ULL(6)
- #define I40E_HW_FLAG_DROP_MODE              BIT_ULL(7)
-+#define I40E_HW_FLAG_X722_FEC_REQUEST_CAPABLE BIT_ULL(8)
- 	u64 flags;
- 
- 	/* Used in set switch config AQ command */
 -- 
 2.26.2
 
