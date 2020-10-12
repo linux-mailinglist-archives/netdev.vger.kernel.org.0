@@ -2,54 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B00C128ADCA
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 07:38:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8579D28ADCE
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 07:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726512AbgJLFiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 01:38:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41356 "EHLO
+        id S1726685AbgJLFpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 01:45:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726413AbgJLFiK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 01:38:10 -0400
+        with ESMTP id S1726072AbgJLFpO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 01:45:14 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E21B2C0613CE;
-        Sun, 11 Oct 2020 22:38:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83927C0613CE;
+        Sun, 11 Oct 2020 22:45:14 -0700 (PDT)
 From:   Kurt Kanzenbach <kurt@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1602481088;
+        s=2020; t=1602481513;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=WLEceUZkq4DyJTbDblgRq1oLbfxs2FunDxKz231d6Y8=;
-        b=oT0fTymk9iUgvzfIVOpfdDugST9Xh1Y7vdZbAT8HFt+fkK5R4ki7pv3uUFGjLG7oo7JVKF
-        Co3J5mFfJ4wfFBWcdR14fEMYPqPGmkp1WfOEeegdtv/4EA8UGvjYKJqUX7opWC4qv9BPhh
-        FjzSts5hiSdGRVsAdSTHtsX2o7SHe7O169aIo7CbAdprqCwDCo3xrCq8sXwIpVb5dUj0nm
-        TQJHd99Hd6NNQcUSTIx0EMOciXX862S1f3BBGDK0DnBplr5RUErK4IwM8z3JOxC4pGMJbQ
-        RHvCKxBf83iAhX59xfphVeNrASjPpW/rJQ3TF02U6huucNVGy8WbV5P7ZG9U4A==
+        bh=UMpL/R1nLesM5wL3p0yEU/9E+n3FxnEiinXlmtJm2FI=;
+        b=mVMfimr81cirXB82mVb3JNfX1mMrb2BxY8zjaCdniW1Dibu0CvySmGyfieIz+/3DKrHemw
+        Y2ZvxX6nKHTp+LNd/wUeqHHnjfHz7pz8nHwGhYiVlMlUt9kSyQUzbWY7lXsLK4PMvk30VY
+        Ogbyy+Wjl5HS4vxhNOoccoGZCV6CGAp90RY3B4YOSq6mvfkiy8VAtdRMp2jHfUk1JPIXWi
+        ZLRWizrmpxdgZQFUMFjQvg45WhBIOR60LupOUQQCDF/G8aDxO9eeWoFCUKPvMTqz+EMjQP
+        7HpHBBbF2Igvh3FeRArU7IpFhTyXZBz2Ti/9vrz3I0Aq/J5V+AnGO1FxnYg2Fw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1602481088;
+        s=2020e; t=1602481513;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=WLEceUZkq4DyJTbDblgRq1oLbfxs2FunDxKz231d6Y8=;
-        b=RMCXHF6R2oE3BQsPGdNALD963gsBrbvRVmrShvVIIpWHxtTJAZ3Nisrah/T1kgX0J/jpys
-        XK8aCKONys6YtqAA==
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        bh=UMpL/R1nLesM5wL3p0yEU/9E+n3FxnEiinXlmtJm2FI=;
+        b=YARPKng4jcx1hiYl0VOxyal2Iw12Q5CCDn6W8Sws9lXJvH0niNbZVfknb9Wwv/VFmABW9W
+        /Dc28l0RPuzVBTAA==
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Kurt Kanzenbach <kurt@kmk-computers.de>,
+        Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH net-next v6 2/7] net: dsa: Add DSA driver for Hirschmann Hellcreek switches
-In-Reply-To: <20201011153055.gottyzqv4hv3qaxv@skbuf>
-References: <20201004112911.25085-1-kurt@linutronix.de> <20201004112911.25085-3-kurt@linutronix.de> <20201004125601.aceiu4hdhrawea5z@skbuf> <87lfgj997g.fsf@kurt> <20201006092017.znfuwvye25vsu4z7@skbuf> <878scj8xxr.fsf@kurt> <20201006113237.73rzvw34anilqh4d@skbuf> <87wo037ajr.fsf@kurt> <20201006135631.73rm3gka7r7krwca@skbuf> <87362lt08b.fsf@kurt> <20201011153055.gottyzqv4hv3qaxv@skbuf>
-Date:   Mon, 12 Oct 2020 07:37:53 +0200
-Message-ID: <87r1q4f1hq.fsf@kurt>
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next 1/2] dt-bindings: net: dsa: b53: Add YAML bindings
+In-Reply-To: <08c1a0f5-84e1-1c92-2c57-466a28d0346a@gmail.com>
+References: <20201010164627.9309-1-kurt@kmk-computers.de> <20201010164627.9309-2-kurt@kmk-computers.de> <3249c764-ec4a-26be-a52d-e9e85f3162ea@gmail.com> <877drxp3i5.fsf@kmk-computers.de> <08c1a0f5-84e1-1c92-2c57-466a28d0346a@gmail.com>
+Date:   Mon, 12 Oct 2020 07:45:10 +0200
+Message-ID: <87o8l8f15l.fsf@kurt>
 MIME-Version: 1.0
 Content-Type: multipart/signed; boundary="=-=-=";
         micalg=pgp-sha512; protocol="application/pgp-signature"
@@ -59,36 +57,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 --=-=-=
 Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-On Sun Oct 11 2020, Vladimir Oltean wrote:
-> On Sun, Oct 11, 2020 at 02:29:08PM +0200, Kurt Kanzenbach wrote:
->> On Tue Oct 06 2020, Vladimir Oltean wrote:
->> > It would be interesting to see if you could simply turn off VLAN
->> > awareness in standalone mode, and still use unique pvids per port.
->>
->> That doesn't work, just tested. When VLAN awareness is disabled,
->> everything is switched regardless of VLAN tags and table.
+On Sun Oct 11 2020, Florian Fainelli wrote:
+> On 10/11/2020 1:32 AM, Kurt Kanzenbach wrote:
+>> How should we proceed? Adding the missing compatible strings and ports
+>> to the DTS files? Or adjusting the include files?
 >
-> That's strange, do you happen to know where things are going wrong?
+> The include is correct as it provides the fallback family string which=20
+> is what the driver will be looking for unless we do not provide a chip=20
+> compatible. The various DTS should be updated to contain both the chip=20
+> compatible and the fallback family (brcm,bcm5301x-srab) string, I will=20
+> update the various DTS and submit these for review later next week.
 
-No I don't. I'll clarify with the hardware engineer.
+OK. It's not just the compatible strings, there are other issues as
+well. You can check with `make dtbs_check DT_SCHEMA_FILES=3Dpath/to/b53.yam=
+l'.
 
-> I would expect:
-> - port VLAN awareness is disabled, so any packet is classified to the
->   port-based VLAN
-> - the port-based VLAN is a private VLAN whose membership includes only
->   that port, plus the CPU port
-> - the switch does not forward packets towards a port that is not member
->   of the packets' classified VLAN
+>
+> Then we could imagine me taking this YAML change through the Broadcom=20
+> ARM SoC pull requests that way no new regressions are introduced.
+>
+> Sounds good?
 
-Me, too.
-
-> When VLAN awareness is disabled, are you able to cause packet drops by
-> deleting the pvid of the ingress port? Therefore, can you confirm that
-> lan1 is not a member of lan0's pvid, but the switch still forwards the
-> packets to it?
-
-Will test.
+Sounds like a plan. But, Rob or other device tree maintainers should
+have a look at the YAML file to spot issues in there first.
 
 Thanks,
 Kurt
@@ -98,18 +91,18 @@ Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl+D67EACgkQeSpbgcuY
-8KYI/g/9GFaeZzkhfnDmitgCUqIkmy24C6c25fQxMLBwtSvtPd2Me1PPKG2CVGQ6
-7cKD1eM6A36awKtjkF5QnpobTglwhrZlQuBMt6cC6d2nAjkDNcdkU0nLfJEmkI8Y
-fzC+ZrvNiBMwe6OBYpVW0lhX7cxzy9Zt4vTPUGBAQAkBqRtSlo4QSUGGZgKdaQB6
-MeBDbFq61aJE4akBKt1V5XtYH/bQU2ooHqoKDPVMb2QcAo8eEADSTKmzkgH1x8it
-ZL8CJMN+Dgv8Vr6cblRIUJmHtSGek06HMgh1gdaj1tjvXMApProtc2HpjZ5ckbuV
-/i+q6ZOEayGxiosP0TYjqJ7W4JAmai7Ywkhkn1He7G+F31eL2RtF5mfVsYYFj5Ci
-Pyhqw1JDDi9eEQrl8IfeWcvJ5IjvPJhvd5TIBYIbYxpOIAZIc/Sy4ffpvzdGFQFh
-kZDCyguVJMzduFjmCrnUKK3wD76vEpWgRSpDTOgC2VG/JWHb70EkYwnrsNt8SH9W
-CSQ8mBZeCenCO6zUKCHK9JnkUq4Yoj3O1JiGJtZEwPidtqqD7EYkPEIhhVoagmTQ
-37mVZmdzYM3o1rYkZchqss8Ohwz0IUr8+8hv7f4dH+84W+CF/5PeH+QwTzLih1mq
-WhTmwfLBgneArljWCqJCowXp+hQYEpnBpiBJDDWn0PdI5vQVJO0=
-=7bdk
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl+D7WYACgkQeSpbgcuY
+8KYI5w//YG1MK/Zs2OSAzXBXPj4K25Z7xSLXkCq+A0IBOpMhCvwWsBTTCVqZ0SUv
+ERu7QqaYlsPW3qL81v4M12FVpAXGuGbB5j4rwunTGidSDeRoj89PCa5hVLsbLe0x
+3Bu+xzjuLxR5tsNjC3AGgh/S4vibVenxnYn9rF3d5jxyuPC0mpcyc0hg7Zv6Eup9
+/+bly+0mtzIz1YVp6UZPmtmzQ4n+rLHZShsVtqJeiROd5XPebeCBBta50PO8C8mn
+y9M7AvVLugrpgg/o4nHsQHeB0Tcnv1W6UBYlRUZlTpyXSTQEuQW9CdUMT/TId3Ky
+0Lymem0rB+1NSX1GwAl9dfjtxU40LRpj1VRmKEWMYBmIDYxsLOvZTAx8sFHWPv96
+HoVPrOgkEOrhgQE6TAcSoRyyvM6cib1SY9M80Rzld3ZHPjy1GEx8WGMYeCBwKv79
+pWYv8DIhExn8Ye2aEX6OTCvJ+LQbzggChfc7rZcmogjoa/qIPiWoDHJ11SX0aOp7
+u39JP42NkgG3Z9VZtrA8z9eG0sVV5Bq4rEY6RUrQ7PXr3tUplFzi3BFAywHW3OJ/
+/r+IroI3kjBOHcbeHWguTiBT28ku1zbwPEE05bIlCrW4htgcw/PW+7Ooc0W7pXOG
+cgOu20D6XenODEKuRi2Q7mlRXEv9LwGakmAZAmLgTvJa8HHruWI=
+=tqms
 -----END PGP SIGNATURE-----
 --=-=-=--
