@@ -2,102 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B73B728B12A
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 11:11:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97EA128B132
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 11:11:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729225AbgJLJLP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 05:11:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45902 "EHLO
+        id S1729241AbgJLJLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 05:11:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729014AbgJLJLO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 05:11:14 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EC91C0613CE
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:14 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id q21so2421911pgi.13
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:14 -0700 (PDT)
+        with ESMTP id S1729014AbgJLJLQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 05:11:16 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11237C0613CE
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:16 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id w21so12924401pfc.7
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=3f3AscQFQhqgIU0kU5pm0zwKktJV8Z9Iow4C1i58nFA=;
-        b=DkFM0vd4qR2wLWaBCFSHIohDL2dRuIB4s3Inm1rWKntSyR8DYR3oerQhFixpiC8myL
-         ttQcdLuvleAnnx18wODo0ciO93yiiiaxo1iobKWIhd8hzqa1EQRRqbtN9lGZ+5YGi0jq
-         rjyIHftf2C+Dqi2BuprCqQGZDIshKil98UIXM=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=48xDogQ+yVA231K9iKicWj7mmIKN7NZJhrv5CyAja4k=;
+        b=LFTuaRK7B73pZLNXAsJmltXzAIgRQXdyYVg6s8n5k47xaIlM9umubisb8Zv8Mjja4N
+         R2YyCMoSjXKprNv3wUChDvR0Q7xZUoWyAt6FJLPePC/1dOpozWsPU9oGR4ihL1w0LH6p
+         +TIp8IWxd/xQzDCFp3MVUuyeI4KqX0WrrKQ9A=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=3f3AscQFQhqgIU0kU5pm0zwKktJV8Z9Iow4C1i58nFA=;
-        b=O3We3QUtbSULkj9awVMnjBdTbajqX2xhLYOxS+P8NJFnm+wa8MbmWh0Outo21UpFRl
-         bAlDe7+rinYiTOgrKa2zCujaLa8y2NADRlICxsg+Z5TJnXqn1WpWbGTXH5F8FKNw8O9l
-         G47zvUH62vhymKV0yHcmAr+4QW5HP16PiYIdUPXbI3vB6w0rmaeHebWcEcrf/1RzqdYF
-         H0v1hd0vYJEtmjXOVti97ysb0mcJ+sdxy2Lgf02/1OsuuzEV6kb+Pm7+JNOxEM+0W2i5
-         Qo0KxUeln+5ZQJdqWKIf/T3xiI+goQpRYhsk+2zIpB14MdwHW9W55z0xsAUzDUDGPvYw
-         UKfQ==
-X-Gm-Message-State: AOAM530KV3BjvWDqtmAmzRSmYwOHJASoDMVAe89ZA2b2AvQ+Tp39Ut8f
-        l0BxoONF9gC12wTKqfIVVaXZgw==
-X-Google-Smtp-Source: ABdhPJzJb4go0YCEgB4TVAFXSONtT0HydaFs0XEhJOeAGQhtq0bp7Q4iEBVgZ73lH+4fAgsbDIXfAQ==
-X-Received: by 2002:a62:1414:0:b029:152:44af:42e with SMTP id 20-20020a6214140000b029015244af042emr22512283pfu.66.1602493873725;
-        Mon, 12 Oct 2020 02:11:13 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=48xDogQ+yVA231K9iKicWj7mmIKN7NZJhrv5CyAja4k=;
+        b=p3FY/NtdtK/C9hjHlbcYLnPkiBvoKeYudT7jzfbSPzEdhVM7yArm2Q7ceLLOq97BP3
+         EWH3Kyx7lG+kuGGikfO7s/Ig4Je7ieJm0xmBPcwy/i2YA+o9sGYKCgbDLA/qI9tGB3ku
+         JYRGUhGLlpDTxnYh1eqw72uqtrSkrxk4eO2rtEAAiPu/u/s2IGYTCawX7WP+9Vd/E5Gm
+         BPEBXtBahDA9rM11SWIJwmXhUPC9gzePfgIoLN6BZh60qFMKEsmGYUc3tAACKnV7/3wL
+         YEzLfq/LOwVQglO9hWcMXMjAL91FzYAST/u3if3NM6aqqeqUm5LKawxgmXlmST1GcUnQ
+         AqQw==
+X-Gm-Message-State: AOAM531WsGQpvBzdIxlVo94m2jpxc1UQZ+23opeluuIpAKrMcEIcZwsZ
+        RooRoGhuDazajym5PmR5n7PkroOouS46iw==
+X-Google-Smtp-Source: ABdhPJzlArkiEwVBkUPduqB0zRF4H28ldEDyGFfifgXSP8ADIPpxPAaO5tmuq/n6HZ+lfEugWY5Mww==
+X-Received: by 2002:a62:aa10:0:b029:152:b36e:b052 with SMTP id e16-20020a62aa100000b0290152b36eb052mr22019563pff.27.1602493875433;
+        Mon, 12 Oct 2020 02:11:15 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id jy19sm1275932pjb.9.2020.10.12.02.11.12
+        by smtp.gmail.com with ESMTPSA id jy19sm1275932pjb.9.2020.10.12.02.11.13
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 12 Oct 2020 02:11:12 -0700 (PDT)
+        Mon, 12 Oct 2020 02:11:14 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next v2 0/9] bnxt_en: Updates for net-next.
-Date:   Mon, 12 Oct 2020 05:10:45 -0400
-Message-Id: <1602493854-29283-1-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
+        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Subject: [PATCH net-next v2 1/9] bnxt_en: Return -EROFS to user space, if NVM writes are not permitted.
+Date:   Mon, 12 Oct 2020 05:10:46 -0400
+Message-Id: <1602493854-29283-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1602493854-29283-1-git-send-email-michael.chan@broadcom.com>
+References: <1602493854-29283-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000214f3205b175ae2c"
+        boundary="00000000000039af8405b175ae64"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000214f3205b175ae2c
+--00000000000039af8405b175ae64
 
-This series contains these main changes:
+From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 
-1. Change of default message level to enable more logging.
-2. Some cleanups related to processing async events from firmware.
-3. Allow online ethtool selftest on multi-function PFs.
-4. Return stored firmware version information to devlink.
+If NVRAM resources are locked, NVM writes are not permitted. In such
+scenarios, firmware returns HWRM_ERR_CODE_RESOURCE_LOCKED error to
+firmware commands.
 
-v2:
-Patch 3: Change bnxt_reset_task() to silent mode.
-Patch 8 & 9: Ensure we copy NULL terminated fw strings to devlink.
-Patch 8 & 9: Return directly after the last bnxt_dl_info_put() call.
-Patch 9: If FW call to get stored dev info fails, return success to
-         devlink without the stored versions.
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
+Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Michael Chan (4):
-  bnxt_en: Set driver default message level.
-  bnxt_en: Simplify bnxt_async_event_process().
-  bnxt_en: Log event_data1 and event_data2 when handling RESET_NOTIFY
-    event.
-  bnxt_en: Log unknown link speed appropriately.
-
-Vasundhara Volam (5):
-  bnxt_en: Return -EROFS to user space, if NVM writes are not permitted.
-  bnxt_en: Enable online self tests for multi-host/NPAR mode.
-  bnxt_en: Add bnxt_hwrm_nvm_get_dev_info() to query NVM info.
-  bnxt_en: Refactor bnxt_dl_info_get().
-  bnxt_en: Add stored FW version info to devlink info_get cb.
-
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  39 +++--
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   1 +
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 154 ++++++++++++------
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.h |   6 +
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  24 ++-
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.h |   2 +
- 6 files changed, 164 insertions(+), 62 deletions(-)
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 5e4b7fbeef06..d4402a2cd07f 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -4325,6 +4325,8 @@ static int bnxt_hwrm_to_stderr(u32 hwrm_err)
+ 	switch (hwrm_err) {
+ 	case HWRM_ERR_CODE_SUCCESS:
+ 		return 0;
++	case HWRM_ERR_CODE_RESOURCE_LOCKED:
++		return -EROFS;
+ 	case HWRM_ERR_CODE_RESOURCE_ACCESS_DENIED:
+ 		return -EACCES;
+ 	case HWRM_ERR_CODE_RESOURCE_ALLOC_ERROR:
 -- 
 2.18.1
 
 
---000000000000214f3205b175ae2c
+--00000000000039af8405b175ae64
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -167,14 +161,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgkQwmhnm0rz6I
-AI1nxqbQolvSzWSCSNf3TNk2kZ5/fwswGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAxMDEyMDkxMTE0WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgCvhlgGmA6gGV
+POG4RpvKe6PZu25bqIrHwtA5htx/EaYwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAxMDEyMDkxMTE1WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAIvM0BQLH8KYd5ktD/Mb1XczLVxlsDsb
-n6ksVkWySfeV5ygn0kDNu15v+sSpeOHLqpDXcmMiwh+BkB3DEFjyCpjgu17WuUIJpZjkuWX55tiV
-fNsOlbCfnTOhGHfPJuafL3HItkMN7nbQBBqyCnsGyVYefaiaJuQ5hiOG4PiP8sxM5yashyPmpHy0
-ywHaWIShCKASW0WXsxuIZcfJPjIhcUA3lGnmuMiRiGJD0B5M9iMfgSVQjuxHhoR0rhd87tCrscp5
-MG0EkBXZwgmvsVYjy9jvqGt0vrwdDimFZ/zXUw607pAfvQ6vyrgdgV8Fkalw8uGS4SpBYw8RBz/9
-NIrRMTw=
---000000000000214f3205b175ae2c--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAK27H5o+g0Oa8lmlzE+0mGEc2TL2XluT
+Jk4g39DTgMYZGQxv3xJGxATosILDwi42MTsbJKBT78gxRPUBZoXh0xu3If4Xu97SXxsvBxxp6l+Q
+ZF4/nf9846lbD3GL169jQ0iqEdO4MtjegxvIJ4ze6Q61X8JvlB6iD+NFFao7wwrMO/e9i4gnqfsJ
+gLH50kiayQmd+rRyAoUyZfHBJcl+8CZ5JpHxk50Sn7bkrOWA6ZXN3glP7QgMwHcT/fqXJtj/1Y+o
+HEr+YvJ5lkuc9mq/gICc12Y5dvx7LN9pzEyXM/G0DssLO3CEYLWP8IEyipm33nKBHaqoJJFxCwX8
+VUEyKvI=
+--00000000000039af8405b175ae64--
