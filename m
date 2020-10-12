@@ -2,743 +2,270 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C4C028BB5E
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 16:51:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0938E28BB54
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 16:50:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389562AbgJLOuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 10:50:55 -0400
-Received: from mail.efficios.com ([167.114.26.124]:60690 "EHLO
-        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389291AbgJLOug (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 10:50:36 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 44F3B2EA30D;
-        Mon, 12 Oct 2020 10:50:33 -0400 (EDT)
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id yHmTERZjf3cE; Mon, 12 Oct 2020 10:50:32 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 4EE0D2EA05C;
-        Mon, 12 Oct 2020 10:50:32 -0400 (EDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 4EE0D2EA05C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1602514232;
-        bh=7xkH0gQ4ENzBnFbtTf0dYpAI/IsCvW/SUR3EsIxRxts=;
-        h=From:To:Date:Message-Id;
-        b=CnESkb8KI88hBrbX9sQ9ZV/wSTHYKYVGWnYGvg/69lPInFiGRlBxGgprRdbZ2jBHm
-         dABgUDrdRrR5Eo2asUmFKk26QKaVJFgs3V3UOXVLHAm7VJqe7IcFjcigLKO8E7MX/a
-         GaImUwaKaBUR7HQQkQGDP2uDCDBCMyQtO15zCtn/2j3q6kh1UTtR2ujsV3Cgxy4lZz
-         maG+8i5BywYfBZQ/uZcDJowIzJVqsHvRKNnU1wZIEbK531DsLLlkhInjSAakc/WTZc
-         HVwcQRgOhRsarO49Fzb9mdk3DBxOi1dK/2abFvbWRGi3adQOiUG02FZTUQ9PAKmdNN
-         TgcfaR1PR86XA==
-X-Virus-Scanned: amavisd-new at efficios.com
-Received: from mail.efficios.com ([127.0.0.1])
-        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id t7-BJcnGb1N9; Mon, 12 Oct 2020 10:50:32 -0400 (EDT)
-Received: from localhost.localdomain (192-222-181-218.qc.cable.ebox.net [192.222.181.218])
-        by mail.efficios.com (Postfix) with ESMTPSA id 7F7DA2E9FD8;
-        Mon, 12 Oct 2020 10:50:30 -0400 (EDT)
-From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-To:     David Ahern <dsahern@kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Michael Jeanson <mjeanson@efficios.com>
-Subject: [PATCH 3/3] selftests: Add VRF route leaking tests
-Date:   Mon, 12 Oct 2020 10:50:16 -0400
-Message-Id: <20201012145016.2023-4-mathieu.desnoyers@efficios.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201012145016.2023-1-mathieu.desnoyers@efficios.com>
-References: <20201012145016.2023-1-mathieu.desnoyers@efficios.com>
+        id S2389160AbgJLOuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 10:50:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41920 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388863AbgJLOuY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 10:50:24 -0400
+Received: from a3.inai.de (a3.inai.de [IPv6:2a01:4f8:10b:45d8::f5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE3EC0613D0
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 07:50:24 -0700 (PDT)
+Received: by a3.inai.de (Postfix, from userid 65534)
+        id BBC14586342E1; Mon, 12 Oct 2020 16:50:22 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on a3.inai.de
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.2
+Received: from a4.inai.de (a4.inai.de [IPv6:2a01:4f8:10b:45d8::f8])
+        by a3.inai.de (Postfix) with ESMTP id 816CB5872C948;
+        Mon, 12 Oct 2020 16:50:21 +0200 (CEST)
+From:   Jan Engelhardt <jengelh@inai.de>
+To:     stephen@networkplumber.org
+Cc:     jengelh@inai.de, netdev@vger.kernel.org
+Subject: [iproute PATCH] lib/color: introduce freely configurable color strings
+Date:   Mon, 12 Oct 2020 16:50:21 +0200
+Message-Id: <20201012145021.10539-1-jengelh@inai.de>
+X-Mailer: git-send-email 2.28.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Jeanson <mjeanson@efficios.com>
+Implement fine-grained control over color codes for iproute, very
+similar to the GCC_COLORS environment variable.
 
-The objective of the tests is to check that ICMP errors generated while
-crossing between VRFs are properly routed back to the source host.
-
-The first ttl test sends a ping with a ttl of 1 from h1 to h2 and parses the
-output of the command to check that a ttl expired error is received.
-
-The second ttl test runs traceroute from h1 to h2 and parses the output to
-check for a hop on r1.
-
-The mtu test sends a ping with a payload of 1450 from h1 to h2, through
-r1 which has an interface with a mtu of 1400 and parses the output of the
-command to check that a fragmentation needed error is received.
-
-[ The IPv6 MTU test still fails with the symmetric routing setup. It
-  appears to be caused by source address selection picking ::1.  Fixing
-  this is beyond the scope of this series. ]
-
-Signed-off-by: Michael Jeanson <mjeanson@efficios.com>
-Reviewed-by: David Ahern <dsahern@gmail.com>
-Cc: David Ahern <dsahern@kernel.org>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: netdev@vger.kernel.org
+Signed-off-by: Jan Engelhardt <jengelh@inai.de>
 ---
-Changes since v2:
-- Renamed test script to vrf_route_leaking.sh
-- Added a default symmetric routing topology
-- Documented the asymmetric routing topology
-Changes since v1:
-- Formating and indentation fixes
-- Added '-t' to getopts
-- Reworked verbose output of grep'd commands with a new function
-- Expanded ip command names
-- Added fragmentation tests
----
- tools/testing/selftests/net/Makefile          |   1 +
- .../selftests/net/vrf_route_leaking.sh        | 626 ++++++++++++++++++
- 2 files changed, 627 insertions(+)
- create mode 100755 tools/testing/selftests/net/vrf_route_leaking.sh
+ lib/color.c   | 127 ++++++++++++++++++++++++--------------------------
+ man/man8/ip.8 |  25 ++++++++--
+ 2 files changed, 81 insertions(+), 71 deletions(-)
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 9491bbaa0831..3e7fb1e70c77 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -19,6 +19,7 @@ TEST_PROGS += txtimestamp.sh
- TEST_PROGS += vrf-xfrm-tests.sh
- TEST_PROGS += rxtimestamp.sh
- TEST_PROGS += devlink_port_split.py
-+TEST_PROGS += vrf_route_leaking.sh
- TEST_PROGS_EXTENDED := in_netns.sh
- TEST_GEN_FILES =  socket nettest
- TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
-diff --git a/tools/testing/selftests/net/vrf_route_leaking.sh b/tools/testing/selftests/net/vrf_route_leaking.sh
-new file mode 100755
-index 000000000000..23cf924754a5
---- /dev/null
-+++ b/tools/testing/selftests/net/vrf_route_leaking.sh
-@@ -0,0 +1,626 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Copyright (c) 2019 David Ahern <dsahern@gmail.com>. All rights reserved.
-+# Copyright (c) 2020 Michael Jeanson <mjeanson@efficios.com>. All rights reserved.
-+#
-+# Requires CONFIG_NET_VRF, CONFIG_VETH, CONFIG_BRIDGE and CONFIG_NET_NS.
-+#
-+#
-+# Symmetric routing topology
-+#
-+#                     blue         red
-+# +----+              .253 +----+ .253              +----+
-+# | h1 |-------------------| r1 |-------------------| h2 |
-+# +----+ .1                +----+                .2 +----+
-+#         172.16.1/24                  172.16.2/24
-+#    2001:db8:16:1/64                  2001:db8:16:2/64
-+#
-+#
-+# Route from h1 to h2 and back goes through r1, incoming vrf blue has a route
-+# to the outgoing vrf red for the n2 network and red has a route back to n1.
-+# The red VRF interface has a MTU of 1400.
-+#
-+# The first test sends a ping with a ttl of 1 from h1 to h2 and parses the
-+# output of the command to check that a ttl expired error is received.
-+#
-+# The second test runs traceroute from h1 to h2 and parses the output to check
-+# for a hop on r1.
-+#
-+# The third test sends a ping with a packet size of 1450 from h1 to h2 and
-+# parses the output of the command to check that a fragmentation error is
-+# received.
-+#
-+#
-+# Asymmetric routing topology
-+#
-+# This topology represents a customer setup where the issue with icmp errors
-+# and VRF route leaking was initialy reported. The MTU test isn't done here
-+# because of the lack of a return route in the red VRF.
-+#
-+#                     blue         red
-+#                     .253 +----+ .253
-+#                     +----| r1 |----+
-+#                     |    +----+    |
-+# +----+              |              |              +----+
-+# | h1 |--------------+              +--------------| h2 |
-+# +----+ .1           |              |           .2 +----+
-+#         172.16.1/24 |    +----+    | 172.16.2/24
-+#    2001:db8:16:1/64 +----| r2 |----+ 2001:db8:16:2/64
-+#                     .254 +----+ .254
-+#
-+#
-+# Route from h1 to h2 goes through r1, incoming vrf blue has a route to the
-+# outgoing vrf red for the n2 network but red doesn't have a route back to n1.
-+# Route from h2 to h1 goes through r2.
-+#
-+# The objective is to check that the incoming vrf routing table is selected
-+# to send an ICMP error back to the source when the ttl of a packet reaches 1
-+# while it is forwarded between different vrfs.
-+
-+VERBOSE=0
-+PAUSE_ON_FAIL=no
-+DEFAULT_TTYPE=sym
-+
-+H1_N1=172.16.1.0/24
-+H1_N1_6=2001:db8:16:1::/64
-+
-+H1_N1_IP=172.16.1.1
-+R1_N1_IP=172.16.1.253
-+R2_N1_IP=172.16.1.254
-+
-+H1_N1_IP6=2001:db8:16:1::1
-+R1_N1_IP6=2001:db8:16:1::253
-+R2_N1_IP6=2001:db8:16:1::254
-+
-+H2_N2=172.16.2.0/24
-+H2_N2_6=2001:db8:16:2::/64
-+
-+H2_N2_IP=172.16.2.2
-+R1_N2_IP=172.16.2.253
-+R2_N2_IP=172.16.2.254
-+
-+H2_N2_IP6=2001:db8:16:2::2
-+R1_N2_IP6=2001:db8:16:2::253
-+R2_N2_IP6=2001:db8:16:2::254
-+
-+################################################################################
-+# helpers
-+
-+log_section()
-+{
-+	echo
-+	echo "###########################################################################"
-+	echo "$*"
-+	echo "###########################################################################"
-+	echo
-+}
-+
-+log_test()
-+{
-+	local rc=$1
-+	local expected=$2
-+	local msg="$3"
-+
-+	if [ "${rc}" -eq "${expected}" ]; then
-+		printf "TEST: %-60s  [ OK ]\n" "${msg}"
-+		nsuccess=$((nsuccess+1))
-+	else
-+		ret=1
-+		nfail=$((nfail+1))
-+		printf "TEST: %-60s  [FAIL]\n" "${msg}"
-+		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
-+			echo
-+			echo "hit enter to continue, 'q' to quit"
-+			read -r a
-+			[ "$a" = "q" ] && exit 1
-+		fi
-+	fi
-+}
-+
-+run_cmd()
-+{
-+	local cmd="$*"
-+	local out
-+	local rc
-+
-+	if [ "$VERBOSE" = "1" ]; then
-+		echo "COMMAND: $cmd"
-+	fi
-+
-+	# shellcheck disable=SC2086
-+	out=$(eval $cmd 2>&1)
-+	rc=$?
-+	if [ "$VERBOSE" = "1" ] && [ -n "$out" ]; then
-+		echo "$out"
-+	fi
-+
-+	[ "$VERBOSE" = "1" ] && echo
-+
-+	return $rc
-+}
-+
-+run_cmd_grep()
-+{
-+	local grep_pattern="$1"
-+	shift
-+	local cmd="$*"
-+	local out
-+	local rc
-+
-+	if [ "$VERBOSE" = "1" ]; then
-+		echo "COMMAND: $cmd"
-+	fi
-+
-+	# shellcheck disable=SC2086
-+	out=$(eval $cmd 2>&1)
-+	if [ "$VERBOSE" = "1" ] && [ -n "$out" ]; then
-+		echo "$out"
-+	fi
-+
-+	echo "$out" | grep -q "$grep_pattern"
-+	rc=$?
-+
-+	[ "$VERBOSE" = "1" ] && echo
-+
-+	return $rc
-+}
-+
-+################################################################################
-+# setup and teardown
-+
-+cleanup()
-+{
-+	local ns
-+
-+	for ns in h1 h2 r1 r2; do
-+		ip netns del $ns 2>/dev/null
-+	done
-+}
-+
-+setup_vrf()
-+{
-+	local ns=$1
-+
-+	ip -netns "${ns}" rule del pref 0
-+	ip -netns "${ns}" rule add pref 32765 from all lookup local
-+	ip -netns "${ns}" -6 rule del pref 0
-+	ip -netns "${ns}" -6 rule add pref 32765 from all lookup local
-+}
-+
-+create_vrf()
-+{
-+	local ns=$1
-+	local vrf=$2
-+	local table=$3
-+
-+	ip -netns "${ns}" link add "${vrf}" type vrf table "${table}"
-+	ip -netns "${ns}" link set "${vrf}" up
-+	ip -netns "${ns}" route add vrf "${vrf}" unreachable default metric 8192
-+	ip -netns "${ns}" -6 route add vrf "${vrf}" unreachable default metric 8192
-+
-+	ip -netns "${ns}" addr add 127.0.0.1/8 dev "${vrf}"
-+	ip -netns "${ns}" -6 addr add ::1 dev "${vrf}" nodad
-+}
-+
-+setup_sym()
-+{
-+	local ns
-+
-+	# make sure we are starting with a clean slate
-+	cleanup
-+
-+	#
-+	# create nodes as namespaces
-+	#
-+	for ns in h1 h2 r1; do
-+		ip netns add $ns
-+		ip -netns $ns link set lo up
-+
-+		case "${ns}" in
-+		h[12]) ip netns exec $ns sysctl -q -w net.ipv6.conf.all.forwarding=0
-+		       ip netns exec $ns sysctl -q -w net.ipv6.conf.all.keep_addr_on_down=1
-+			;;
-+		r1)    ip netns exec $ns sysctl -q -w net.ipv4.ip_forward=1
-+		       ip netns exec $ns sysctl -q -w net.ipv6.conf.all.forwarding=1
-+		esac
-+	done
-+
-+	#
-+	# create interconnects
-+	#
-+	ip -netns h1 link add eth0 type veth peer name r1h1
-+	ip -netns h1 link set r1h1 netns r1 name eth0 up
-+
-+	ip -netns h2 link add eth0 type veth peer name r1h2
-+	ip -netns h2 link set r1h2 netns r1 name eth1 up
-+
-+	#
-+	# h1
-+	#
-+	ip -netns h1 addr add dev eth0 ${H1_N1_IP}/24
-+	ip -netns h1 -6 addr add dev eth0 ${H1_N1_IP6}/64 nodad
-+	ip -netns h1 link set eth0 up
-+
-+	# h1 to h2 via r1
-+	ip -netns h1    route add ${H2_N2} via ${R1_N1_IP} dev eth0
-+	ip -netns h1 -6 route add ${H2_N2_6} via "${R1_N1_IP6}" dev eth0
-+
-+	#
-+	# h2
-+	#
-+	ip -netns h2 addr add dev eth0 ${H2_N2_IP}/24
-+	ip -netns h2 -6 addr add dev eth0 ${H2_N2_IP6}/64 nodad
-+	ip -netns h2 link set eth0 up
-+
-+	# h2 to h1 via r1
-+	ip -netns h2 route add default via ${R1_N2_IP} dev eth0
-+	ip -netns h2 -6 route add default via ${R1_N2_IP6} dev eth0
-+
-+	#
-+	# r1
-+	#
-+	setup_vrf r1
-+	create_vrf r1 blue 1101
-+	create_vrf r1 red 1102
-+	ip -netns r1 link set mtu 1400 dev eth1
-+	ip -netns r1 link set eth0 vrf blue up
-+	ip -netns r1 link set eth1 vrf red up
-+	ip -netns r1 addr add dev eth0 ${R1_N1_IP}/24
-+	ip -netns r1 -6 addr add dev eth0 ${R1_N1_IP6}/64 nodad
-+	ip -netns r1 addr add dev eth1 ${R1_N2_IP}/24
-+	ip -netns r1 -6 addr add dev eth1 ${R1_N2_IP6}/64 nodad
-+
-+	# Route leak from blue to red
-+	ip -netns r1 route add vrf blue ${H2_N2} dev red
-+	ip -netns r1 -6 route add vrf blue ${H2_N2_6} dev red
-+
-+	# Route leak from red to blue
-+	ip -netns r1 route add vrf red ${H1_N1} dev blue
-+	ip -netns r1 -6 route add vrf red ${H1_N1_6} dev blue
-+
-+
-+	# Wait for ip config to settle
-+	sleep 2
-+}
-+
-+setup_asym()
-+{
-+	local ns
-+
-+	# make sure we are starting with a clean slate
-+	cleanup
-+
-+	#
-+	# create nodes as namespaces
-+	#
-+	for ns in h1 h2 r1 r2; do
-+		ip netns add $ns
-+		ip -netns $ns link set lo up
-+
-+		case "${ns}" in
-+		h[12]) ip netns exec $ns sysctl -q -w net.ipv6.conf.all.forwarding=0
-+		       ip netns exec $ns sysctl -q -w net.ipv6.conf.all.keep_addr_on_down=1
-+			;;
-+		r[12]) ip netns exec $ns sysctl -q -w net.ipv4.ip_forward=1
-+		       ip netns exec $ns sysctl -q -w net.ipv6.conf.all.forwarding=1
-+		esac
-+	done
-+
-+	#
-+	# create interconnects
-+	#
-+	ip -netns h1 link add eth0 type veth peer name r1h1
-+	ip -netns h1 link set r1h1 netns r1 name eth0 up
-+
-+	ip -netns h1 link add eth1 type veth peer name r2h1
-+	ip -netns h1 link set r2h1 netns r2 name eth0 up
-+
-+	ip -netns h2 link add eth0 type veth peer name r1h2
-+	ip -netns h2 link set r1h2 netns r1 name eth1 up
-+
-+	ip -netns h2 link add eth1 type veth peer name r2h2
-+	ip -netns h2 link set r2h2 netns r2 name eth1 up
-+
-+	#
-+	# h1
-+	#
-+	ip -netns h1 link add br0 type bridge
-+	ip -netns h1 link set br0 up
-+	ip -netns h1 addr add dev br0 ${H1_N1_IP}/24
-+	ip -netns h1 -6 addr add dev br0 ${H1_N1_IP6}/64 nodad
-+	ip -netns h1 link set eth0 master br0 up
-+	ip -netns h1 link set eth1 master br0 up
-+
-+	# h1 to h2 via r1
-+	ip -netns h1    route add ${H2_N2} via ${R1_N1_IP} dev br0
-+	ip -netns h1 -6 route add ${H2_N2_6} via "${R1_N1_IP6}" dev br0
-+
-+	#
-+	# h2
-+	#
-+	ip -netns h2 link add br0 type bridge
-+	ip -netns h2 link set br0 up
-+	ip -netns h2 addr add dev br0 ${H2_N2_IP}/24
-+	ip -netns h2 -6 addr add dev br0 ${H2_N2_IP6}/64 nodad
-+	ip -netns h2 link set eth0 master br0 up
-+	ip -netns h2 link set eth1 master br0 up
-+
-+	# h2 to h1 via r2
-+	ip -netns h2 route add default via ${R2_N2_IP} dev br0
-+	ip -netns h2 -6 route add default via ${R2_N2_IP6} dev br0
-+
-+	#
-+	# r1
-+	#
-+	setup_vrf r1
-+	create_vrf r1 blue 1101
-+	create_vrf r1 red 1102
-+	ip -netns r1 link set mtu 1400 dev eth1
-+	ip -netns r1 link set eth0 vrf blue up
-+	ip -netns r1 link set eth1 vrf red up
-+	ip -netns r1 addr add dev eth0 ${R1_N1_IP}/24
-+	ip -netns r1 -6 addr add dev eth0 ${R1_N1_IP6}/64 nodad
-+	ip -netns r1 addr add dev eth1 ${R1_N2_IP}/24
-+	ip -netns r1 -6 addr add dev eth1 ${R1_N2_IP6}/64 nodad
-+
-+	# Route leak from blue to red
-+	ip -netns r1 route add vrf blue ${H2_N2} dev red
-+	ip -netns r1 -6 route add vrf blue ${H2_N2_6} dev red
-+
-+	# No route leak from red to blue
-+
-+	#
-+	# r2
-+	#
-+	ip -netns r2 addr add dev eth0 ${R2_N1_IP}/24
-+	ip -netns r2 -6 addr add dev eth0 ${R2_N1_IP6}/64 nodad
-+	ip -netns r2 addr add dev eth1 ${R2_N2_IP}/24
-+	ip -netns r2 -6 addr add dev eth1 ${R2_N2_IP6}/64 nodad
-+
-+	# Wait for ip config to settle
-+	sleep 2
-+}
-+
-+check_connectivity()
-+{
-+	ip netns exec h1 ping -c1 -w1 ${H2_N2_IP} >/dev/null 2>&1
-+	log_test $? 0 "Basic IPv4 connectivity"
-+	return $?
-+}
-+
-+check_connectivity6()
-+{
-+	ip netns exec h1 "${ping6}" -c1 -w1 ${H2_N2_IP6} >/dev/null 2>&1
-+	log_test $? 0 "Basic IPv6 connectivity"
-+	return $?
-+}
-+
-+check_traceroute()
-+{
-+	if [ ! -x "$(command -v traceroute)" ]; then
-+		echo "SKIP: Could not run IPV4 test without traceroute"
-+		return 1
-+	fi
-+}
-+
-+check_traceroute6()
-+{
-+	if [ ! -x "$(command -v traceroute6)" ]; then
-+		echo "SKIP: Could not run IPV6 test without traceroute6"
-+		return 1
-+	fi
-+}
-+
-+ipv4_traceroute()
-+{
-+	local ttype="$1"
-+
-+	[ "x$ttype" = "x" ] && ttype="$DEFAULT_TTYPE"
-+
-+	log_section "IPv4 ($ttype route): VRF ICMP error route lookup traceroute"
-+
-+	check_traceroute || return
-+
-+	setup_"$ttype"
-+
-+	check_connectivity || return
-+
-+	run_cmd_grep "${R1_N1_IP}" ip netns exec h1 traceroute ${H2_N2_IP}
-+	log_test $? 0 "Traceroute reports a hop on r1"
-+}
-+
-+ipv4_traceroute_asym()
-+{
-+	ipv4_traceroute asym
-+}
-+
-+ipv6_traceroute()
-+{
-+	local ttype="$1"
-+
-+	[ "x$ttype" = "x" ] && ttype="$DEFAULT_TTYPE"
-+
-+	log_section "IPv6 ($ttype route): VRF ICMP error route lookup traceroute"
-+
-+	check_traceroute6 || return
-+
-+	setup_"$ttype"
-+
-+	check_connectivity6 || return
-+
-+	run_cmd_grep "${R1_N1_IP6}" ip netns exec h1 traceroute6 ${H2_N2_IP6}
-+	log_test $? 0 "Traceroute6 reports a hop on r1"
-+}
-+
-+ipv6_traceroute_asym()
-+{
-+	ipv6_traceroute asym
-+}
-+
-+ipv4_ping_ttl()
-+{
-+	local ttype="$1"
-+
-+	[ "x$ttype" = "x" ] && ttype="$DEFAULT_TTYPE"
-+
-+	log_section "IPv4 ($ttype route): VRF ICMP ttl error route lookup ping"
-+
-+	setup_"$ttype"
-+
-+	check_connectivity || return
-+
-+	run_cmd_grep "Time to live exceeded" ip netns exec h1 ping -t1 -c1 -W2 ${H2_N2_IP}
-+	log_test $? 0 "Ping received ICMP ttl exceeded"
-+}
-+
-+ipv4_ping_ttl_asym()
-+{
-+	ipv4_ping_ttl asym
-+}
-+
-+ipv4_ping_frag()
-+{
-+	local ttype="$1"
-+
-+	[ "x$ttype" = "x" ] && ttype="$DEFAULT_TTYPE"
-+
-+	log_section "IPv4 ($ttype route): VRF ICMP fragmentation error route lookup ping"
-+
-+	setup_"$ttype"
-+
-+	check_connectivity || return
-+
-+	run_cmd_grep "Frag needed" ip netns exec h1 ping -s 1450 -Mdo -c1 -W2 ${H2_N2_IP}
-+	log_test $? 0 "Ping received ICMP Frag needed"
-+}
-+
-+ipv4_ping_frag_asym()
-+{
-+	ipv4_ping_frag asym
-+}
-+
-+ipv6_ping_ttl()
-+{
-+	local ttype="$1"
-+
-+	[ "x$ttype" = "x" ] && ttype="$DEFAULT_TTYPE"
-+
-+	log_section "IPv6 ($ttype route): VRF ICMP ttl error route lookup ping"
-+
-+	setup_"$ttype"
-+
-+	check_connectivity6 || return
-+
-+	run_cmd_grep "Time exceeded: Hop limit" ip netns exec h1 "${ping6}" -t1 -c1 -W2 ${H2_N2_IP6}
-+	log_test $? 0 "Ping received ICMP Hop limit"
-+}
-+
-+ipv6_ping_ttl_asym()
-+{
-+	ipv6_ping_ttl asym
-+}
-+
-+ipv6_ping_frag()
-+{
-+	local ttype="$1"
-+
-+	[ "x$ttype" = "x" ] && ttype="$DEFAULT_TTYPE"
-+
-+	log_section "IPv6 ($ttype route): VRF ICMP fragmentation error route lookup ping"
-+
-+	setup_"$ttype"
-+
-+	check_connectivity6 || return
-+
-+	run_cmd_grep "Packet too big" ip netns exec h1 "${ping6}" -s 1450 -Mdo -c1 -W2 ${H2_N2_IP6}
-+	log_test $? 0 "Ping received ICMP Packet too big"
-+}
-+
-+ipv6_ping_frag_asym()
-+{
-+	ipv6_ping_frag asym
-+}
-+
-+################################################################################
-+# usage
-+
-+usage()
-+{
-+        cat <<EOF
-+usage: ${0##*/} OPTS
-+
-+	-4          Run IPv4 tests only
-+	-6          Run IPv6 tests only
-+        -t TEST     Run only TEST
-+	-p          Pause on fail
-+	-v          verbose mode (show commands and output)
-+EOF
-+}
-+
-+################################################################################
-+# main
-+
-+# Some systems don't have a ping6 binary anymore
-+command -v ping6 > /dev/null 2>&1 && ping6=$(command -v ping6) || ping6=$(command -v ping)
-+
-+TESTS_IPV4="ipv4_ping_ttl ipv4_traceroute ipv4_ping_frag ipv4_ping_ttl_asym ipv4_traceroute_asym"
-+TESTS_IPV6="ipv6_ping_ttl ipv6_traceroute ipv6_ping_frag ipv6_ping_ttl_asym ipv6_traceroute_asym"
-+
-+ret=0
-+nsuccess=0
-+nfail=0
-+
-+while getopts :46t:pvh o
-+do
-+	case $o in
-+		4) TESTS=ipv4;;
-+		6) TESTS=ipv6;;
-+		t) TESTS=$OPTARG;;
-+		p) PAUSE_ON_FAIL=yes;;
-+		v) VERBOSE=1;;
-+		h) usage; exit 0;;
-+		*) usage; exit 1;;
-+	esac
-+done
-+
-+#
-+# show user test config
-+#
-+if [ -z "$TESTS" ]; then
-+        TESTS="$TESTS_IPV4 $TESTS_IPV6"
-+elif [ "$TESTS" = "ipv4" ]; then
-+        TESTS="$TESTS_IPV4"
-+elif [ "$TESTS" = "ipv6" ]; then
-+        TESTS="$TESTS_IPV6"
-+fi
-+
-+for t in $TESTS
-+do
-+	case $t in
-+	ipv4_ping_ttl|ping)              ipv4_ping_ttl;;&
-+	ipv4_ping_ttl_asym|ping)         ipv4_ping_ttl_asym;;&
-+	ipv4_traceroute|traceroute)      ipv4_traceroute;;&
-+	ipv4_traceroute_asym|traceroute) ipv4_traceroute_asym;;&
-+	ipv4_ping_frag|ping)             ipv4_ping_frag;;&
-+
-+	ipv6_ping_ttl|ping)              ipv6_ping_ttl;;&
-+	ipv6_ping_ttl_asym|ping)         ipv6_ping_ttl_asym;;&
-+	ipv6_traceroute|traceroute)      ipv6_traceroute;;&
-+	ipv6_traceroute_asym|traceroute) ipv6_traceroute_asym;;&
-+	ipv6_ping_frag|ping)             ipv6_ping_frag;;&
-+
-+	# setup namespaces and config, but do not run any tests
-+	setup_sym|setup)                 setup_sym; exit 0;;
-+	setup_asym)                      setup_asym; exit 0;;
-+
-+	help)                       echo "Test names: $TESTS"; exit 0;;
-+	esac
-+done
-+
-+cleanup
-+
-+printf "\nTests passed: %3d\n" ${nsuccess}
-+printf "Tests failed: %3d\n"   ${nfail}
-+
-+exit $ret
+diff --git a/lib/color.c b/lib/color.c
+index 59976847..a11129f4 100644
+--- a/lib/color.c
++++ b/lib/color.c
+@@ -1,4 +1,5 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
++#include <stdbool.h>
+ #include <stdio.h>
+ #include <stdarg.h>
+ #include <stdlib.h>
+@@ -13,71 +14,37 @@
+ 
+ static void set_color_palette(void);
+ 
+-enum color {
+-	C_RED,
+-	C_GREEN,
+-	C_YELLOW,
+-	C_BLUE,
+-	C_MAGENTA,
+-	C_CYAN,
+-	C_WHITE,
+-	C_BOLD_RED,
+-	C_BOLD_GREEN,
+-	C_BOLD_YELLOW,
+-	C_BOLD_BLUE,
+-	C_BOLD_MAGENTA,
+-	C_BOLD_CYAN,
+-	C_BOLD_WHITE,
+-	C_CLEAR
+-};
+-
+-static const char * const color_codes[] = {
+-	"\e[31m",
+-	"\e[32m",
+-	"\e[33m",
+-	"\e[34m",
+-	"\e[35m",
+-	"\e[36m",
+-	"\e[37m",
+-	"\e[1;31m",
+-	"\e[1;32m",
+-	"\e[1;33m",
+-	"\e[1;34m",
+-	"\e[1;35m",
+-	"\e[1;36m",
+-	"\e[1;37m",
+-	"\e[0m",
+-	NULL,
+-};
+-
+-/* light background */
+-static enum color attr_colors_light[] = {
+-	C_CYAN,
+-	C_YELLOW,
+-	C_MAGENTA,
+-	C_BLUE,
+-	C_GREEN,
+-	C_RED,
++enum {
++	C_IFACE,
++	C_LLADDR,
++	C_V4ADDR,
++	C_V6ADDR,
++	C_OPERUP,
++	C_OPERDN,
+ 	C_CLEAR,
++	C_MAX,
+ };
+ 
+-/* dark background */
+-static enum color attr_colors_dark[] = {
+-	C_BOLD_CYAN,
+-	C_BOLD_YELLOW,
+-	C_BOLD_MAGENTA,
+-	C_BOLD_BLUE,
+-	C_BOLD_GREEN,
+-	C_BOLD_RED,
+-	C_CLEAR
++static const char default_colors_for_black[] =
++	"iface=36:lladdr=33:v4addr=35:v6addr=34:operup=32:operdn=31:clear=0";
++static const char default_colors_for_white[] =
++	"iface=1;36:lladdr=1;33:v4addr=1;35:v6addr=1;34:operup=1;32:operdn=1;31:clear=0";
++static struct color_code {
++	const char match[8], *code;
++	int len;
++} color_codes[C_MAX] = {
++	{"iface="}, {"lladdr="}, {"v4addr="}, {"v6addr="}, {"operup="},
++	{"operdn="}, {"clear=", "0", 1},
+ };
+ 
+-static int is_dark_bg;
+ static int color_is_enabled;
+ 
+ static void enable_color(void)
+ {
+-	color_is_enabled = 1;
++	/* Without $TERM analysis by terminfo, the next best option is...: */
++	const char *s = getenv("COLORTERM"), *s2 = getenv("COLORFGBG");
++	color_is_enabled = (s != NULL && strtoul(s, NULL, 0) != 0) ||
++	                   (s2 != NULL && *s2 != '\0');
+ 	set_color_palette();
+ }
+ 
+@@ -121,17 +88,43 @@ bool matches_color(const char *arg, int *val)
+ 
+ static void set_color_palette(void)
+ {
+-	char *p = getenv("COLORFGBG");
++	const char *initstr = default_colors_for_black;
++	const char *p = getenv("COLORFGBG");
+ 
+ 	/*
+ 	 * COLORFGBG environment variable usually contains either two or three
+ 	 * values separated by semicolons; we want the last value in either case.
+-	 * If this value is 0-6 or 8, background is dark.
++	 * If this value is 7, background is bright.
+ 	 */
+-	if (p && (p = strrchr(p, ';')) != NULL
+-		&& ((p[1] >= '0' && p[1] <= '6') || p[1] == '8')
+-		&& p[2] == '\0')
+-		is_dark_bg = 1;
++	if (p && (p = strrchr(p, ';')) != NULL && (p[1] == '7' && p[2] == '\0'))
++		initstr = default_colors_for_white;
++	p = getenv("IPROUTE_COLORS");
++	if (p != NULL)
++		initstr = p;
++
++	for (p = initstr; *p != '\0'; ) {
++		unsigned int key = C_MAX;
++		const char *code = NULL;
++		for (size_t j = 0; j < ARRAY_SIZE(color_codes); ++j) {
++			if (strncmp(p, color_codes[j].match,
++			    strlen(color_codes[j].match)) != 0)
++				continue;
++			key = j;
++			code = p + strlen(color_codes[j].match);
++			break;
++		}
++
++		const char *next = strchr(p, ':');
++		if (next == NULL)
++			next = p + strlen(p);
++		if (key != C_MAX) {
++			color_codes[key].code = code;
++			color_codes[key].len  = next - code;
++		}
++		p = next;
++		if (*next != '\0')
++			++p;
++	}
+ }
+ 
+ __attribute__((format(printf, 3, 4)))
+@@ -147,11 +140,13 @@ int color_fprintf(FILE *fp, enum color_attr attr, const char *fmt, ...)
+ 		goto end;
+ 	}
+ 
+-	ret += fprintf(fp, "%s", color_codes[is_dark_bg ?
+-		attr_colors_dark[attr] : attr_colors_light[attr]]);
+-
++	const struct color_code *k = &color_codes[attr];
++	if (k->code != NULL && *k->code != '\0')
++		ret += fprintf(fp, "\e[%.*sm", k->len, k->code);
+ 	ret += vfprintf(fp, fmt, args);
+-	ret += fprintf(fp, "%s", color_codes[C_CLEAR]);
++	k = &color_codes[C_CLEAR];
++	if (k->code != NULL && *k->code != '\0')
++		ret += fprintf(fp, "\e[%.*sm", k->len, k->code);
+ 
+ end:
+ 	va_end(args);
+diff --git a/man/man8/ip.8 b/man/man8/ip.8
+index c9f7671e..90efeadf 100644
+--- a/man/man8/ip.8
++++ b/man/man8/ip.8
+@@ -199,8 +199,7 @@ precedence. This flag is ignored if
+ .B \-json
+ is also given.
+ 
+-Used color palette can be influenced by
+-.BR COLORFGBG
++The used color palette can be influenced by the \fBIPROUTE_COLORS\fP
+ environment variable
+ (see
+ .BR ENVIRONMENT ).
+@@ -359,15 +358,31 @@ or, if the objects of this class cannot be listed,
+ .SH ENVIRONMENT
+ .TP
+ .B COLORFGBG
+-If set, it's value is used for detection whether background is dark or
+-light and use contrast colors for it.
++If set, its value is used to detect whether the background is dark or
++light and to select a different palette for IPROUTE_COLORS.
+ 
+-COLORFGBG environment variable usually contains either two or three
++The COLORFGBG environment variable usually contains either two or three
+ values separated by semicolons; we want the last value in either case.
+ If this value is 0-6 or 8, chose colors suitable for dark background:
+ 
+ COLORFGBG=";0" ip -c a
++.TP
++\fBCOLORTERM\fP
++If set, its value is used to determine whether to enable color when
++--color=auto is in effect. iproute does not otherwise make use of terminfo and
++as such does not evaluate the TERM environment variable.
++.TP
++\fBIPROUTE_COLORS\fP
++Its value is a colon-separated list of capabilities and Select Graphic
++Rendition (SGR) substrings. SGR commands are interpreted by the terminal or
++terminal emulator. (See the section in the documentation of your text terminal
++for permitted values and their meanings as character attributes. The
++console_codes(4) manpage gives an overview of ECMA codes.) These substring
++values are integers in decimal representation and can be concatenated with
++semicolons.
+ 
++Default:
++\fIiface=36:lladdr=33:v4addr=35:v6addr=34:operup=32:operdn=31:clear=0\fP
+ .SH EXIT STATUS
+ Exit status is 0 if command was successful, and 1 if there is a syntax error.
+ If an error was reported by the kernel exit status is 2.
 -- 
-2.17.1
+2.28.0
 
