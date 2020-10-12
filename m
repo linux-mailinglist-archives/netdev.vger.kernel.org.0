@@ -2,302 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71FC428B136
+	by mail.lfdr.de (Postfix) with ESMTP id DF84828B137
 	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 11:11:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729366AbgJLJLg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 05:11:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45946 "EHLO
+        id S1729376AbgJLJLh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 05:11:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729311AbgJLJL0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 05:11:26 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2EE4C0613D1
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:25 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id i2so13635700pgh.7
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:25 -0700 (PDT)
+        with ESMTP id S1729343AbgJLJL1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 05:11:27 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F07FC0613D2
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:27 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id n9so13637262pgf.9
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=FdEWMIe9FxulTEz8KTBM9K8ZPg7S8FPQP/yLDE/IWSk=;
-        b=JVoNzoBBkgMuSlnMuWjGyuwc2+iqK4hAUeC5QpY3BALgRbNh0pcziaLiSdAU0Gc4Lp
-         6YQiipSq4KgmBUvZXoZnq9xteIG270gL5xbEkLPXecRsJeV9JpvA0SVfCd6KjowM2JC+
-         JVs1uS0i0vT2xDTO3O2u4OSKYwPvL1HhWZ+Zk=
+        bh=wKVcZbh83k6X/F14A+ztOkjMdocn7bFn38YmFQmh5vQ=;
+        b=gmsr73QMhy44nj2bUAT5Nu2x64BPwQjJKIgVIdVt0t+0Puc+DBwhg+nUVlg7ejQVeQ
+         oHj9vPjQ2uneN1RI8kymY9G+B/7tpXU1NxarTKjif82tj9rQRL/S2lmetE8Lxg8O68Qr
+         ezRpzMOYDMxZX22wG/jfMbGN4zBQVHXeZx3BU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=FdEWMIe9FxulTEz8KTBM9K8ZPg7S8FPQP/yLDE/IWSk=;
-        b=jdJJY1X3IAyinyqMrH+cnWVXq04EkKdmf6t4e2yh0NHlfF56KSxc3yLJc+CkQDVjHK
-         Z77rCcAkQsPVwt0wpHzgScLsKfdLT30U4K2Af9oXiEW6wTWqj5di6pWjiYU5KJ/rndC+
-         +BBkntezig6wPzRQmqzvlfYvP3WG5p21PzKb89gUWjPBYGlBd1vNatCIqHzDSoQV8CM7
-         kaswpvDj9RgFeW2RRfMrK7bHeyhdTXy0+Wr24YnlNp/Il1stv4isI5ZuP6rM3fcO8X9e
-         BKFnoBL/B9aZpH8eO/NXadvhopSK/KuQNbZUc1JMZpOK0Gkxm8FeBDE0v5d0UGriFl7w
-         QHLg==
-X-Gm-Message-State: AOAM5323bff1wVSHM6cY5BGqqZU7Utuir+KVIVKdWHmGdZfxS2/eUpIM
-        7Z1gTCZMcVBoNcs0ARaIc2OVtQ==
-X-Google-Smtp-Source: ABdhPJyOaTFNJrszymJisRletgWPa4MoZJevd1bXoPwzi/95e9KHeQgNfhDN0p/a50BbRs+WV3XuOA==
-X-Received: by 2002:a17:90a:6d26:: with SMTP id z35mr18552519pjj.41.1602493885187;
-        Mon, 12 Oct 2020 02:11:25 -0700 (PDT)
+        bh=wKVcZbh83k6X/F14A+ztOkjMdocn7bFn38YmFQmh5vQ=;
+        b=E+AyX7mFuk5aI7aWRr6VHKI9iIFymoVLxWQcc2ws2VMqA2FE63mOGO0Byc8HzU/gc1
+         Vi34FByUMjH25s2o6XcEmm4MA/pMNY9I6ov2G9cj6RAUKeS/A7VuI71tNnH8bgq5pidw
+         AmVap5B+eCMh7lM/hAYZjNE0jQMR6Ez8mmUuSMSBtW9+Qa/Sh1ZleDRXNzWU3D1bjQtS
+         81p1bRh1631nPGlhz8ATzZuKB4iwfjNc5IWcO42yctGa7Ykz6ldI2Rb4grNUrgxlB16m
+         Wez4jcYxBUS5ZY6/0nsZYuD7fyzLV9Ocir4pJNMYJuWD33Lk2QhQPuVjagy3HYYnY5eP
+         3ilg==
+X-Gm-Message-State: AOAM532sz0rrdUStVf9UHiI8AHZXGSVgXsuHNHbOqR4SXX0dpXMekgPt
+        2to28uLWm38CtbLcsG2+oXbl/5LgDShkdQ==
+X-Google-Smtp-Source: ABdhPJy978tl0KNWJ9glZaS9pIMPXOl7V5IExBq5LgvETfdBAkg/9gextptUIFj05UF6ckNwpuwCjw==
+X-Received: by 2002:a62:ab0e:0:b029:156:1dfe:ae74 with SMTP id p14-20020a62ab0e0000b02901561dfeae74mr3729906pff.7.1602493886539;
+        Mon, 12 Oct 2020 02:11:26 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id jy19sm1275932pjb.9.2020.10.12.02.11.23
+        by smtp.gmail.com with ESMTPSA id jy19sm1275932pjb.9.2020.10.12.02.11.25
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 12 Oct 2020 02:11:24 -0700 (PDT)
+        Mon, 12 Oct 2020 02:11:25 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
         Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH net-next v2 8/9] bnxt_en: Refactor bnxt_dl_info_get().
-Date:   Mon, 12 Oct 2020 05:10:53 -0400
-Message-Id: <1602493854-29283-9-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next v2 9/9] bnxt_en: Add stored FW version info to devlink info_get cb.
+Date:   Mon, 12 Oct 2020 05:10:54 -0400
+Message-Id: <1602493854-29283-10-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1602493854-29283-1-git-send-email-michael.chan@broadcom.com>
 References: <1602493854-29283-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000ce897005b175aea5"
+        boundary="000000000000e3616705b175ae8f"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000ce897005b175aea5
+--000000000000e3616705b175ae8f
 
 From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 
-Add a new function bnxt_dl_info_put() to simplify the code, as there
-are more stored firmware version fields to be added in the next patch.
-
-Also, rename fw_ver variable name to ncsi_ver for better naming while
-copying to devlink info_get cb.
+This patch adds FW versions stored in the flash to devlink info_get
+callback.  Return the correct fw.psid running version using the
+newly added bp->nvm_cfg_ver.
 
 v2:
-Ensure active_pkg_name string is NULL terminated when copied to
+Ensure stored pkg_name string is NULL terminated when copied to
 devlink.
 
 Return directly from the last call to bnxt_dl_info_put().
 
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+If the FW call to get stored version fails for any reason, return
+success immediately to devlink without the stored versions.
+
 Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
 Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 113 ++++++++++--------
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.h |   6 +
- 2 files changed, 71 insertions(+), 48 deletions(-)
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 47 ++++++++++++++++++-
+ 1 file changed, 45 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index d436134bdc40..0be9b46baaca 100644
+index 0be9b46baaca..184b6d0513b2 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -382,6 +382,31 @@ static int bnxt_hwrm_get_nvm_cfg_ver(struct bnxt *bp,
- 	return rc;
- }
- 
-+static int bnxt_dl_info_put(struct bnxt *bp, struct devlink_info_req *req,
-+			    enum bnxt_dl_version_type type, const char *key,
-+			    char *buf)
-+{
-+	if (!strlen(buf))
-+		return 0;
-+
-+	if ((bp->flags & BNXT_FLAG_CHIP_P5) &&
-+	    (!strcmp(key, DEVLINK_INFO_VERSION_GENERIC_FW_NCSI) ||
-+	     !strcmp(key, DEVLINK_INFO_VERSION_GENERIC_FW_ROCE)))
-+		return 0;
-+
-+	switch (type) {
-+	case BNXT_VERSION_FIXED:
-+		return devlink_info_version_fixed_put(req, key, buf);
-+	case BNXT_VERSION_RUNNING:
-+		return devlink_info_version_running_put(req, key, buf);
-+	case BNXT_VERSION_STORED:
-+		return devlink_info_version_stored_put(req, key, buf);
-+	}
-+	return 0;
-+}
-+
-+#define HWRM_FW_VER_STR_LEN	16
-+
+@@ -410,6 +410,7 @@ static int bnxt_dl_info_put(struct bnxt *bp, struct devlink_info_req *req,
  static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
  			    struct netlink_ext_ack *extack)
  {
-@@ -390,7 +415,7 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
++	struct hwrm_nvm_get_dev_info_output nvm_dev_info;
+ 	struct bnxt *bp = bnxt_get_bp_from_dl(dl);
+ 	union devlink_param_value nvm_cfg_ver;
  	struct hwrm_ver_get_output *ver_resp;
- 	char mgmt_ver[FW_VER_STR_LEN];
- 	char roce_ver[FW_VER_STR_LEN];
--	char fw_ver[FW_VER_STR_LEN];
-+	char ncsi_ver[FW_VER_STR_LEN];
- 	char buf[32];
- 	int rc;
- 
-@@ -398,10 +423,11 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
+@@ -457,6 +458,12 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
  	if (rc)
  		return rc;
  
--	if (strlen(bp->board_partno)) {
--		rc = devlink_info_version_fixed_put(req,
--			DEVLINK_INFO_VERSION_GENERIC_BOARD_ID,
--			bp->board_partno);
-+	if (BNXT_PF(bp) && (bp->flags & BNXT_FLAG_DSN_VALID)) {
-+		sprintf(buf, "%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X",
-+			bp->dsn[7], bp->dsn[6], bp->dsn[5], bp->dsn[4],
-+			bp->dsn[3], bp->dsn[2], bp->dsn[1], bp->dsn[0]);
-+		rc = devlink_info_serial_number_put(req, buf);
- 		if (rc)
- 			return rc;
- 	}
-@@ -412,54 +438,50 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
- 			return rc;
- 	}
- 
-+	rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_FIXED,
-+			      DEVLINK_INFO_VERSION_GENERIC_BOARD_ID,
-+			      bp->board_partno);
++	rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_RUNNING,
++			      DEVLINK_INFO_VERSION_GENERIC_FW_PSID,
++			      bp->nvm_cfg_ver);
 +	if (rc)
 +		return rc;
 +
- 	sprintf(buf, "%X", bp->chip_num);
--	rc = devlink_info_version_fixed_put(req,
--			DEVLINK_INFO_VERSION_GENERIC_ASIC_ID, buf);
-+	rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_FIXED,
-+			      DEVLINK_INFO_VERSION_GENERIC_ASIC_ID, buf);
- 	if (rc)
- 		return rc;
- 
- 	ver_resp = &bp->ver_resp;
- 	sprintf(buf, "%X", ver_resp->chip_rev);
--	rc = devlink_info_version_fixed_put(req,
--			DEVLINK_INFO_VERSION_GENERIC_ASIC_REV, buf);
-+	rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_FIXED,
-+			      DEVLINK_INFO_VERSION_GENERIC_ASIC_REV, buf);
- 	if (rc)
- 		return rc;
- 
--	if (BNXT_PF(bp)) {
--		sprintf(buf, "%02X-%02X-%02X-%02X-%02X-%02X-%02X-%02X",
--			bp->dsn[7], bp->dsn[6], bp->dsn[5], bp->dsn[4],
--			bp->dsn[3], bp->dsn[2], bp->dsn[1], bp->dsn[0]);
--		rc = devlink_info_serial_number_put(req, buf);
--		if (rc)
--			return rc;
--	}
--
--	if (strlen(ver_resp->active_pkg_name)) {
--		rc =
--		    devlink_info_version_running_put(req,
--					DEVLINK_INFO_VERSION_GENERIC_FW,
--					ver_resp->active_pkg_name);
--		if (rc)
--			return rc;
--	}
-+	buf[0] = 0;
-+	strncat(buf, ver_resp->active_pkg_name, HWRM_FW_VER_STR_LEN);
-+	rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_RUNNING,
-+			      DEVLINK_INFO_VERSION_GENERIC_FW, buf);
-+	if (rc)
-+		return rc;
- 
- 	if (BNXT_PF(bp) && !bnxt_hwrm_get_nvm_cfg_ver(bp, &nvm_cfg_ver)) {
- 		u32 ver = nvm_cfg_ver.vu32;
+ 	buf[0] = 0;
+ 	strncat(buf, ver_resp->active_pkg_name, HWRM_FW_VER_STR_LEN);
+ 	rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_RUNNING,
+@@ -469,7 +476,7 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
  
  		sprintf(buf, "%X.%X.%X", (ver >> 16) & 0xF, (ver >> 8) & 0xF,
  			ver & 0xF);
--		rc = devlink_info_version_running_put(req,
--				DEVLINK_INFO_VERSION_GENERIC_FW_PSID, buf);
-+		rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_RUNNING,
-+				      DEVLINK_INFO_VERSION_GENERIC_FW_PSID,
-+				      buf);
+-		rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_RUNNING,
++		rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_STORED,
+ 				      DEVLINK_INFO_VERSION_GENERIC_FW_PSID,
+ 				      buf);
  		if (rc)
- 			return rc;
- 	}
+@@ -517,7 +524,43 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
+ 	if (rc)
+ 		return rc;
  
- 	if (ver_resp->flags & VER_GET_RESP_FLAGS_EXT_VER_AVAIL) {
--		snprintf(fw_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
-+		snprintf(mgmt_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
- 			 ver_resp->hwrm_fw_major, ver_resp->hwrm_fw_minor,
- 			 ver_resp->hwrm_fw_build, ver_resp->hwrm_fw_patch);
- 
--		snprintf(mgmt_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
-+		snprintf(ncsi_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
- 			 ver_resp->mgmt_fw_major, ver_resp->mgmt_fw_minor,
- 			 ver_resp->mgmt_fw_build, ver_resp->mgmt_fw_patch);
- 
-@@ -467,11 +489,11 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
- 			 ver_resp->roce_fw_major, ver_resp->roce_fw_minor,
- 			 ver_resp->roce_fw_build, ver_resp->roce_fw_patch);
- 	} else {
--		snprintf(fw_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
-+		snprintf(mgmt_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
- 			 ver_resp->hwrm_fw_maj_8b, ver_resp->hwrm_fw_min_8b,
- 			 ver_resp->hwrm_fw_bld_8b, ver_resp->hwrm_fw_rsvd_8b);
- 
--		snprintf(mgmt_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
-+		snprintf(ncsi_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
- 			 ver_resp->mgmt_fw_maj_8b, ver_resp->mgmt_fw_min_8b,
- 			 ver_resp->mgmt_fw_bld_8b, ver_resp->mgmt_fw_rsvd_8b);
- 
-@@ -479,29 +501,24 @@ static int bnxt_dl_info_get(struct devlink *dl, struct devlink_info_req *req,
- 			 ver_resp->roce_fw_maj_8b, ver_resp->roce_fw_min_8b,
- 			 ver_resp->roce_fw_bld_8b, ver_resp->roce_fw_rsvd_8b);
- 	}
--	rc = devlink_info_version_running_put(req,
--			DEVLINK_INFO_VERSION_GENERIC_FW_MGMT, fw_ver);
+-	return bnxt_dl_info_put(bp, req, BNXT_VERSION_RUNNING,
 +	rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_RUNNING,
++			      DEVLINK_INFO_VERSION_GENERIC_FW_ROCE, roce_ver);
++	if (rc)
++		return rc;
++
++	rc = bnxt_hwrm_nvm_get_dev_info(bp, &nvm_dev_info);
++	if (rc ||
++	    !(nvm_dev_info.flags & NVM_GET_DEV_INFO_RESP_FLAGS_FW_VER_VALID))
++		return 0;
++
++	buf[0] = 0;
++	strncat(buf, nvm_dev_info.pkg_name, HWRM_FW_VER_STR_LEN);
++	rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_STORED,
++			      DEVLINK_INFO_VERSION_GENERIC_FW, buf);
++	if (rc)
++		return rc;
++
++	snprintf(mgmt_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
++		 nvm_dev_info.hwrm_fw_major, nvm_dev_info.hwrm_fw_minor,
++		 nvm_dev_info.hwrm_fw_build, nvm_dev_info.hwrm_fw_patch);
++	rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_STORED,
 +			      DEVLINK_INFO_VERSION_GENERIC_FW_MGMT, mgmt_ver);
- 	if (rc)
- 		return rc;
- 
--	rc = devlink_info_version_running_put(req,
--				DEVLINK_INFO_VERSION_GENERIC_FW_MGMT_API,
--				bp->hwrm_ver_supp);
-+	rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_RUNNING,
-+			      DEVLINK_INFO_VERSION_GENERIC_FW_MGMT_API,
-+			      bp->hwrm_ver_supp);
- 	if (rc)
- 		return rc;
- 
--	if (!(bp->flags & BNXT_FLAG_CHIP_P5)) {
--		rc = devlink_info_version_running_put(req,
--			DEVLINK_INFO_VERSION_GENERIC_FW_NCSI, mgmt_ver);
--		if (rc)
--			return rc;
-+	rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_RUNNING,
++	if (rc)
++		return rc;
++
++	snprintf(ncsi_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
++		 nvm_dev_info.mgmt_fw_major, nvm_dev_info.mgmt_fw_minor,
++		 nvm_dev_info.mgmt_fw_build, nvm_dev_info.mgmt_fw_patch);
++	rc = bnxt_dl_info_put(bp, req, BNXT_VERSION_STORED,
 +			      DEVLINK_INFO_VERSION_GENERIC_FW_NCSI, ncsi_ver);
 +	if (rc)
 +		return rc;
- 
--		rc = devlink_info_version_running_put(req,
--			DEVLINK_INFO_VERSION_GENERIC_FW_ROCE, roce_ver);
--		if (rc)
--			return rc;
--	}
--	return 0;
-+	return bnxt_dl_info_put(bp, req, BNXT_VERSION_RUNNING,
-+				DEVLINK_INFO_VERSION_GENERIC_FW_ROCE, roce_ver);
++
++	snprintf(roce_ver, FW_VER_STR_LEN, "%d.%d.%d.%d",
++		 nvm_dev_info.roce_fw_major, nvm_dev_info.roce_fw_minor,
++		 nvm_dev_info.roce_fw_build, nvm_dev_info.roce_fw_patch);
++	return bnxt_dl_info_put(bp, req, BNXT_VERSION_STORED,
+ 				DEVLINK_INFO_VERSION_GENERIC_FW_ROCE, roce_ver);
  }
  
- static int bnxt_hwrm_nvm_req(struct bnxt *bp, u32 param_id, void *msg,
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
-index d5c8bd49383a..d22cab5d6856 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.h
-@@ -60,6 +60,12 @@ struct bnxt_dl_nvm_param {
- 	u8 dl_num_bytes;
- };
- 
-+enum bnxt_dl_version_type {
-+	BNXT_VERSION_FIXED,
-+	BNXT_VERSION_RUNNING,
-+	BNXT_VERSION_STORED,
-+};
-+
- void bnxt_devlink_health_report(struct bnxt *bp, unsigned long event);
- void bnxt_dl_health_status_update(struct bnxt *bp, bool healthy);
- void bnxt_dl_health_recovery_done(struct bnxt *bp);
 -- 
 2.18.1
 
 
---000000000000ce897005b175aea5
+--000000000000e3616705b175ae8f
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -367,14 +236,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQg9qxxTPCoNixz
-ZAysZ1Ltz3MB4Ohr7ftogAse4MsKvbAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAxMDEyMDkxMTI1WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgPmC2NSwLarG0
+FXVpRgwZAYLYkPhi7+ec2R6fNFla0tEwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAxMDEyMDkxMTI2WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAJHtZMnmka4PbrcTMEfoJkfi+eWSWZFn
-pF2DZBOi1Z7BbL71qgw66b7/t5FTHn7ToTyFZQr5bOrkqudtaTQTj3+kBflcxeqisLm8ccPoRHjI
-rsAdd4QRJ9Jtyqz6LJFpKp1Js/9ANkxK+vKn5wPU+dTKacppNLAtgXK0gb81Ogvl5WSRV+q5V6Da
-ge4VeSbjVSCwaEPL9/abGodmNW5veOW6NQJe3TSIEwcApSCf+HZGnGCgkKvUwFrwJ+X3PbEjNS0t
-UZ1GeiLuwL9yShMMo1nVD8vst5GByanrUirdK9A/LCBPK/IitiMqyVQ9O/o8R3RpDR6vop3J9R80
-pgGHt/4=
---000000000000ce897005b175aea5--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAE8NgN3GQEb78ak9LSOZDndwv3a8UHFM
+rkDC58HnZmW6LJzu+MrTeP8Kc1w9llRy5Qk/ePO9lH0PjG/NQ5pqiQCce3i5BZemDmTsdeKVWwSi
+iYomyFYH/YE/HaWjaTQ5FgjNfu9TpMa+GgwpJzh1lsWM7uxUW3SHvLtuWBTF5IaULZv7vcvhDoCx
+rhf1y+3YCvSnmYCvQd5P8aT/pNZWm8VeiCKslW/9gkcSQuFkpWNTnf2wVvQz/l7OL+cbVlEROm6M
+VpP9bL+zvWj1c1nMXc+aLEl74ooLBdXzvS9KITbQp004twigOsWiP5X6DABdxFmHFcpmXpVHmgsP
+UGpxP+k=
+--000000000000e3616705b175ae8f--
