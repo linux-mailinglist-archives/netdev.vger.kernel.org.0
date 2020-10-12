@@ -2,138 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11D4828B008
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 10:21:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E47A028B3DA
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 13:34:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727582AbgJLIVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 04:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38286 "EHLO
+        id S2388159AbgJLLeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 07:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727325AbgJLIVu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 04:21:50 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81021C0613CE;
-        Mon, 12 Oct 2020 01:21:49 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id u21so22000520eja.2;
-        Mon, 12 Oct 2020 01:21:49 -0700 (PDT)
+        with ESMTP id S2387617AbgJLLeV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 07:34:21 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D99F0C0613CE;
+        Mon, 12 Oct 2020 04:34:21 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id d6so8403501plo.13;
+        Mon, 12 Oct 2020 04:34:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pinXyNbLzNVPX/bjvrXpQvjJmZP5stTSjNwoOuOjf58=;
-        b=YIWmvaXj7toieBiR6u74axTiOYjNawVWVtnHUyzNWXykWBn89aGaVyvF2haYTaAskF
-         jjgPJIg550NZ0VDgYrXna3lBgTWA8Z6sK/nB4o9vWcDFD/u02S1ilD8dorfma/JoyyYB
-         mMYHDCKYtOpROJbMbPzz3JLo74hKj1Iy0uOE4Hcjp6O/K0iTauIgpVp6CQyCBwpJVjlY
-         0LHrbQIbAeJx7vxB9Oap2QLNBhXOyobXyaYc4zVE5ZbL1P+7UwIgIS/1P26x7gUndJng
-         3ENBnQVP+YMBJ9+uqKlnKlRD1E8LYrMZypcQp2lhUydsh1gi7Grpu3WO831Lx14+H3WH
-         KB4g==
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=IRuRu6d50EbSzR6eJn8zTFBIpVvHOPQss0OJFKbt4rE=;
+        b=PdEG7lRfdR0pUwVfHV6Jbh+x9P1/KCp8yGwD3CMccR/aPvV/BOf5ChBDI2nSGCaQ8N
+         4IUaIBdJYTcm7lE98ugQbg4LqFFjbSKY+kZ2FMDlyNtwoOoZ+APcLL22gnmPlUGTBq1D
+         mmjtT6gDVB0cAtMIjWpRhj0+7eEAV6tIe9t331u1SBekgietglZTE5BZJy5JotQw8eqa
+         if9gOtwGn9m9PzDQm1f62uNpwSWCUytjacxb2Gwb9TL3umgNGKPlIk5XrANBJcr3rhnk
+         vSppL5yDDND8GB4Egs6SMovu1EKi06NaK5c9eFhfqOo8vBrz8HJqeNSuWfueWKzaVnTG
+         cW8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=pinXyNbLzNVPX/bjvrXpQvjJmZP5stTSjNwoOuOjf58=;
-        b=JAphHkob91B6DQE695/v2YEHY7+L5M8h4l/86tEhAo0TedkvZqHx+dHQ9gr0iJTO7p
-         VHPnqaFVv4RkELS8npz9LMF3cuImD6LXvXpnCKkMIqoyy1lX8Eg3CHTWonMry/U3FSof
-         2mAjsOiquaDh2ac+Xn7lU6Xv+svAJbF0m3mmrHKoPw1Wbc+ki5Sc5XSyUN3BTtpYyPwe
-         qmb8DAkUR9r0DenuMFBbE7twbR9TRJ10WulLZBABoqjWXvHkXra8fh7/hRC7MICQwmO5
-         cAxgMlxOOMCW4O1+EuNt/8tu5WYX1M++JiJVcYxQoh800uC+KKY04cjOK1zH/9p6Uf/h
-         PnYg==
-X-Gm-Message-State: AOAM533Eq3Et9WpulZfv8RCEXDgjKjG/YlfYk4+E9VoPHffdSA9L8guW
-        QpZ60JSVmvRGO4ISmOXi3+A=
-X-Google-Smtp-Source: ABdhPJw2bnUJbtCuziDVxBntmS/1DOzHEWat6ryyl6+Lnf71IgL4kFsQqFK6oNkIj97r+IUGer37lg==
-X-Received: by 2002:a17:906:8519:: with SMTP id i25mr26774698ejx.76.1602490908123;
-        Mon, 12 Oct 2020 01:21:48 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f00:6a00:f90c:2907:849f:701c? (p200300ea8f006a00f90c2907849f701c.dip0.t-ipconnect.de. [2003:ea:8f00:6a00:f90c:2907:849f:701c])
-        by smtp.googlemail.com with ESMTPSA id h22sm10232665ejc.80.2020.10.12.01.21.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Oct 2020 01:21:47 -0700 (PDT)
-Subject: [PATCH net-next v2 05/12] net: usbnet: use new function
- dev_fetch_sw_netstats
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>,
-        Oliver Neukum <oneukum@suse.com>,
-        Igor Mitsyanko <imitsyanko@quantenna.com>,
-        Sergey Matyukevich <geomatsi@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-rdma@vger.kernel.org,
-        Linux USB Mailing List <linux-usb@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        bridge@lists.linux-foundation.org
-References: <d77b65de-1793-f808-66b5-aaa4e7c8a8f0@gmail.com>
-Message-ID: <70ad3e33-8ea6-e12e-31de-5fec7a3c4f6e@gmail.com>
-Date:   Mon, 12 Oct 2020 10:07:33 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=IRuRu6d50EbSzR6eJn8zTFBIpVvHOPQss0OJFKbt4rE=;
+        b=rpz5/IKS+eptHQf034BEb94Ipr73fUR99bz157dBE1Fa+gc6pXNZxtwZyTfvaNUoss
+         f7vixFHrr8mfwMiwyt4KC9iKOZg7Hy3Kynj7MugJxNBrTgWdB/DY3oZrvlmDTzapqfh9
+         t4l94uJLGwtA7LHRBJwoo4GicBCuSCoU7q5flOds0wPQwmjXdohqMnKT4tZtDQb/iuwc
+         pE0s/gdkEFFFhAd6VSJWOtnkIU9s4DsPA3ZB+Kxu6HY5WrMtPmwt5E25I9HgCJN+iOdH
+         kMbq1oyyXzASZiWtWfDLZfii7cUND/aOrJbRTSgrRSfVYUockWo8O4/VFB8Tj74ZUBrA
+         IOcA==
+X-Gm-Message-State: AOAM533JKRxb8u7HRUBQAnxtNiuxYGI5hmnvCkYe25NMY7miDWOxdLo9
+        AMb3BQI2zoXbA0RAITG36qpSrcHqn7VfBbQr
+X-Google-Smtp-Source: ABdhPJy1FSos1brD4v41UJOTnL3tEdAi/pK60RCz3MBlNzcAJQ2WAXzqsUO/JE+GHFQ+oP4XQWnOJQ==
+X-Received: by 2002:a17:902:7242:b029:d4:c719:79ce with SMTP id c2-20020a1709027242b02900d4c71979cemr11851730pll.26.1602502461436;
+        Mon, 12 Oct 2020 04:34:21 -0700 (PDT)
+Received: from localhost ([160.16.113.140])
+        by smtp.gmail.com with ESMTPSA id z6sm20350965pfg.12.2020.10.12.04.34.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Oct 2020 04:34:21 -0700 (PDT)
+From:   Coiby Xu <coiby.xu@gmail.com>
+X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
+Date:   Mon, 12 Oct 2020 16:08:43 +0800
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     devel@driverdev.osuosl.org,
+        Benjamin Poirier <benjamin.poirier@gmail.com>,
+        Shung-Hsi Yu <shung-hsi.yu@suse.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
+        <GR-Linux-NIC-Dev@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v1 1/6] staging: qlge: Initialize devlink health dump
+ framework for the dlge driver
+Message-ID: <20201012080843.7kh4xdk4ymaetza6@Rk>
+References: <20201008115808.91850-1-coiby.xu@gmail.com>
+ <20201008115808.91850-2-coiby.xu@gmail.com>
+ <CA+FuTSdEK+0nBCd5KAYpbEECmSvjoMEgcEOtM+ZKFF4QQKuAfw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <d77b65de-1793-f808-66b5-aaa4e7c8a8f0@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <CA+FuTSdEK+0nBCd5KAYpbEECmSvjoMEgcEOtM+ZKFF4QQKuAfw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Simplify the code by using new function dev_fetch_sw_netstats().
+On Thu, Oct 08, 2020 at 08:22:44AM -0400, Willem de Bruijn wrote:
+>On Thu, Oct 8, 2020 at 7:58 AM Coiby Xu <coiby.xu@gmail.com> wrote:
+>>
+>> Initialize devlink health dump framework for the dlge driver so the
+>> coredump could be done via devlink.
+>>
+>> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
+>
+>> @@ -4556,6 +4559,13 @@ static int qlge_probe(struct pci_dev *pdev,
+>>         struct ql_adapter *qdev = NULL;
+>>         static int cards_found;
+>>         int err = 0;
+>> +       struct devlink *devlink;
+>> +       struct qlge_devlink *ql_devlink;
+>> +
+>> +       devlink = devlink_alloc(&qlge_devlink_ops, sizeof(struct qlge_devlink));
+>> +       if (!devlink)
+>> +               return -ENOMEM;
+>> +       ql_devlink = devlink_priv(devlink);
+>>
+>>         ndev = alloc_etherdev_mq(sizeof(struct ql_adapter),
+>>                                  min(MAX_CPUS,
+>
+>need to goto devlink_free instead of return -ENOMEM here, too.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/usb/usbnet.c | 24 +-----------------------
- 1 file changed, 1 insertion(+), 23 deletions(-)
+devlink_alloc return NULL only if kzalloc return NULL. So we
+shouldn't go to devlink_free which will call kfree.
+>
+>> @@ -4614,6 +4624,16 @@ static int qlge_probe(struct pci_dev *pdev,
+>>                 free_netdev(ndev);
+>>                 return err;
+>
+>and here
 
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index 963d260d1..6062dc278 100644
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -983,31 +983,9 @@ EXPORT_SYMBOL_GPL(usbnet_set_link_ksettings);
- void usbnet_get_stats64(struct net_device *net, struct rtnl_link_stats64 *stats)
- {
- 	struct usbnet *dev = netdev_priv(net);
--	unsigned int start;
--	int cpu;
- 
- 	netdev_stats_to_stats64(stats, &net->stats);
--
--	for_each_possible_cpu(cpu) {
--		struct pcpu_sw_netstats *stats64;
--		u64 rx_packets, rx_bytes;
--		u64 tx_packets, tx_bytes;
--
--		stats64 = per_cpu_ptr(dev->stats64, cpu);
--
--		do {
--			start = u64_stats_fetch_begin_irq(&stats64->syncp);
--			rx_packets = stats64->rx_packets;
--			rx_bytes = stats64->rx_bytes;
--			tx_packets = stats64->tx_packets;
--			tx_bytes = stats64->tx_bytes;
--		} while (u64_stats_fetch_retry_irq(&stats64->syncp, start));
--
--		stats->rx_packets += rx_packets;
--		stats->rx_bytes += rx_bytes;
--		stats->tx_packets += tx_packets;
--		stats->tx_bytes += tx_bytes;
--	}
-+	dev_fetch_sw_netstats(stats, dev->stats64);
- }
- EXPORT_SYMBOL_GPL(usbnet_get_stats64);
- 
--- 
-2.28.0
+But I should goto devlink_free here. Thank you for pointing out my
+neglect.
+>
+>>         }
+>> +
+>> +       err = devlink_register(devlink, &pdev->dev);
+>> +       if (err) {
+>> +               goto devlink_free;
+>> +       }
+>> +
+>> +       qlge_health_create_reporters(ql_devlink);
+>> +       ql_devlink->qdev = qdev;
+>> +       ql_devlink->ndev = ndev;
+>> +       qdev->ql_devlink = ql_devlink;
+>>         /* Start up the timer to trigger EEH if
+>>          * the bus goes dead
+>>          */
+>> @@ -4624,6 +4644,10 @@ static int qlge_probe(struct pci_dev *pdev,
+>>         atomic_set(&qdev->lb_count, 0);
+>>         cards_found++;
+>>         return 0;
+>> +
+>> +devlink_free:
+>> +       devlink_free(devlink);
+>> +       return err;
+>>  }
 
-
+--
+Best regards,
+Coiby
