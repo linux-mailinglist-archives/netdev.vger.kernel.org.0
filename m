@@ -2,43 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C0EEA28BEA0
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 19:05:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F4B328BEAE
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 19:07:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403948AbgJLRFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 13:05:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42110 "EHLO mail.kernel.org"
+        id S2404023AbgJLRHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 13:07:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42988 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2403931AbgJLRFE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Oct 2020 13:05:04 -0400
+        id S2403845AbgJLRHx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Oct 2020 13:07:53 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8B6BA2072D;
-        Mon, 12 Oct 2020 17:05:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4DA9620735;
+        Mon, 12 Oct 2020 17:07:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602522304;
-        bh=+36ST4U99P+UWwG8debn0zuuiSGn1LQmo1LY2w8xF6o=;
+        s=default; t=1602522472;
+        bh=1qZ/2HeKImHa8M4Zw9hd9GhiiOJB0JQGkiplbKu7jW0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CBGaB1Yj6IT7WRAhzb2OO5M2uCdl52HAvaF/Y8yEI5FSBU9p3bg0XmkxGuisRBgvl
-         MAed/+WXCvR1iNT+459iyKcSLe0qcOG/JkoTgJWzm88K5O1zICbf83BmBKPoaZkDgt
-         hH3KAg2T7U/inJ3mBhm3wt+0pC2OCqIrXfYqC5E0=
-Date:   Mon, 12 Oct 2020 10:05:01 -0700
+        b=V92LgSkrwZuFJUsD7b6r1WxpcD6BCSDF5mMo8T7YWmbEI7E5VrpZjEKYHPCqvxbtH
+         2Pjpx8FnsbXfoBIdnNoXj1zidzCbyARxVT+YnL/qbZovy/8YNHcz+J6Zjwp1KE+Y3V
+         HLzDetRy2LdqVK0smab/F6grotH4HXFJa3gn3Vm8=
+Date:   Mon, 12 Oct 2020 10:07:50 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        George McCollister <george.mccollister@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [net v4] net: dsa: microchip: fix race condition
-Message-ID: <20201012100501.33a41d8a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201012083942.12722-1-ceggers@arri.de>
-References: <20201012083942.12722-1-ceggers@arri.de>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Valentin Vidic <vvidic@valentin-vidic.from.hr>,
+        "David S. Miller" <davem@davemloft.net>,
+        Philip Rischel <rischelp@idt.com>,
+        Florian Fainelli <florian@openwrt.org>,
+        Roman Yeryomin <roman@advem.lv>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Martin Habets <mhabets@solarflare.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] net: korina: fix kfree of rx/tx descriptor array
+Message-ID: <20201012100750.125a55ab@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CA+FuTSfFcyVPd3Tr=wFSfSFBojpXPMZGmPvS0m+iM4TiRpsM5w@mail.gmail.com>
+References: <20201011212135.GD8773@valentin-vidic.from.hr>
+        <20201011220329.13038-1-vvidic@valentin-vidic.from.hr>
+        <CA+FuTSfFcyVPd3Tr=wFSfSFBojpXPMZGmPvS0m+iM4TiRpsM5w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -46,32 +50,18 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Oct 2020 10:39:42 +0200 Christian Eggers wrote:
-> Between queuing the delayed work and finishing the setup of the dsa
-> ports, the process may sleep in request_module() (via
-> phy_device_create()) and the queued work may be executed prior to the
-> switch net devices being registered. In ksz_mib_read_work(), a NULL
-> dereference will happen within netof_carrier_ok(dp->slave).
+On Sun, 11 Oct 2020 18:53:31 -0400 Willem de Bruijn wrote:
+> On Sun, Oct 11, 2020 at 6:04 PM Valentin Vidic wrote:
+> > kmalloc returns KSEG0 addresses so convert back from KSEG1
+> > in kfree. Also make sure array is freed when the driver is
+> > unloaded from the kernel.
+> >
+> > Fixes: ef11291bcd5f ("Add support the Korina (IDT RC32434) Ethernet MAC")
+> > Signed-off-by: Valentin Vidic <vvidic@valentin-vidic.from.hr>  
 > 
-> Not queuing the delayed work in ksz_init_mib_timer() makes things even
-> worse because the work will now be queued for immediate execution
-> (instead of 2000 ms) in ksz_mac_link_down() via
-> dsa_port_link_register_of().
-
+> Ah, this a MIPS architecture feature, both KSEGs mapping the same
+> region, just cachable vs non-cachable.
 > 
-> Solution:
-> 1. Do not queue (only initialize) delayed work in ksz_init_mib_timer().
-> 2. Only queue delayed work in ksz_mac_link_down() if init is completed.
-> 3. Queue work once in ksz_switch_register(), after dsa_register_switch()
-> has completed.
-> 
-> Fixes: 7c6ff470aa86 ("net: dsa: microchip: add MIB counter reading support")
-> Signed-off-by: Christian Eggers <ceggers@arri.de>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-> Reviewed-by: Jakub Kicinski <kuba@kernel.org>
+> Acked-by: Willem de Bruijn <willemb@google.com>
 
-Now you went too far in the opposite direction, I never gave you my
-explicit tag :) So I'll drop it.
-
-Applied and queued for stable, thanks!
+Applied, thank you!
