@@ -2,91 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1626A28C141
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 21:12:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3066428C13F
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 21:12:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391296AbgJLTL2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 15:11:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54280 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388013AbgJLTLZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 15:11:25 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8988C0613D0
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 12:11:25 -0700 (PDT)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kS3Dz-004KOd-1W; Mon, 12 Oct 2020 21:11:11 +0200
-Message-ID: <52f7e2d98ae575f353c6f519065c85ba782168be.camel@sipsolutions.net>
-Subject: Re: [PATCH net-next 1/6] ethtool: Extend link modes settings uAPI
- with lanes
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jakub Kicinski <kuba@kernel.org>, Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@nvidia.com,
-        danieller@nvidia.com, andrew@lunn.ch, f.fainelli@gmail.com,
-        mkubecek@suse.cz, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Date:   Mon, 12 Oct 2020 21:10:53 +0200
-In-Reply-To: <20201011153759.1bcb6738@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20201010154119.3537085-1-idosch@idosch.org>
-         <20201010154119.3537085-2-idosch@idosch.org>
-         <20201011153759.1bcb6738@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S2391108AbgJLTLX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 15:11:23 -0400
+Received: from smtprelay0133.hostedemail.com ([216.40.44.133]:37514 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2388013AbgJLTLX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 15:11:23 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay01.hostedemail.com (Postfix) with ESMTP id E3DE9100E7B44;
+        Mon, 12 Oct 2020 19:11:20 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:967:973:988:989:1260:1277:1311:1313:1314:1345:1359:1431:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2525:2560:2563:2682:2685:2828:2859:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3872:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4250:4321:4605:5007:7514:7576:7903:9025:9165:10004:10400:10471:10481:10848:11026:11232:11658:11914:12043:12296:12297:12438:12555:12740:12760:12895:13069:13255:13311:13357:13439:13972:14181:14659:14721:19900:21080:21451:21611:21627:21788:21939:21990:30003:30012:30054:30070:30079:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: lamp55_0c0ae3f271fc
+X-Filterd-Recvd-Size: 2942
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf03.hostedemail.com (Postfix) with ESMTPA;
+        Mon, 12 Oct 2020 19:11:19 +0000 (UTC)
+Message-ID: <c93d120c850c5fecadaea845517f0fdbfd9a61c7.camel@perches.com>
+Subject: Re: [PATCH AUTOSEL 5.8 18/24] net: usb: rtl8150: set random MAC
+ address when set_ethernet_addr() fails
+From:   Joe Perches <joe@perches.com>
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     Anant Thazhemadam <anant.thazhemadam@gmail.com>,
+        syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com,
+        Petko Manolov <petkan@nucleusys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Date:   Mon, 12 Oct 2020 12:11:18 -0700
+In-Reply-To: <20201012190239.3279198-18-sashal@kernel.org>
+References: <20201012190239.3279198-1-sashal@kernel.org>
+         <20201012190239.3279198-18-sashal@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.4-0ubuntu1 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-Sorry, somehow didn't see this until now.
-
-> > +/* Lanes, 1, 2, 4 or 8. */
-> > +#define ETHTOOL_LANES_1			1
-> > +#define ETHTOOL_LANES_2			2
-> > +#define ETHTOOL_LANES_4			4
-> > +#define ETHTOOL_LANES_8			8
+On Mon, 2020-10-12 at 15:02 -0400, Sasha Levin wrote:
+> From: Anant Thazhemadam <anant.thazhemadam@gmail.com>
 > 
-> Not an extremely useful set of defines, not sure Michal would agree.
+> [ Upstream commit f45a4248ea4cc13ed50618ff066849f9587226b2 ]
 > 
-> > +#define ETHTOOL_LANES_UNKNOWN		0
-> >  struct link_mode_info {
-> >  	int				speed;
-> > +	int				lanes;
+> When get_registers() fails in set_ethernet_addr(),the uninitialized
+> value of node_id gets copied over as the address.
+> So, check the return value of get_registers().
 > 
-> why signed?
+> If get_registers() executed successfully (i.e., it returns
+> sizeof(node_id)), copy over the MAC address using ether_addr_copy()
+> (instead of using memcpy()).
 > 
-> >  	u8				duplex;
-> >  };
-> > @@ -274,16 +277,17 @@ const struct nla_policy ethnl_linkmodes_set_policy[] = {
-> >  	[ETHTOOL_A_LINKMODES_SPEED]		= { .type = NLA_U32 },
-> >  	[ETHTOOL_A_LINKMODES_DUPLEX]		= { .type = NLA_U8 },
-> >  	[ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG]	= { .type = NLA_U8 },
-> > +	[ETHTOOL_A_LINKMODES_LANES]		= { .type = NLA_U32 },
-> 
-> NLA_POLICY_VALIDATE_FN(), not sure why the types for this
-> validation_type are limited.. Johannes, just an abundance of caution?
+> Else, if get_registers() failed instead, a randomly generated MAC
+> address is set as the MAC address instead.
 
-So let me see if I got this right - you're saying you'd like to use
-NLA_POLICY_VALIDATE_FN() for an NLA_U32, to validate against the _LANES
-being 1, 2, 4 or 8?
+This autosel is premature.
 
-First of all, you _can_, no? I mean, it's limited by
+This patch always sets a random MAC.
+See the follow on patch: https://lkml.org/lkml/2020/10/11/131
+To my knowledge, this follow-ob has yet to be applied:
 
-#define NLA_ENSURE_NO_VALIDATION_PTR(tp)                \
-        (__NLA_ENSURE(tp != NLA_BITFIELD32 &&           \
-                      tp != NLA_REJECT &&               \
-                      tp != NLA_NESTED &&               \
-                      tp != NLA_NESTED_ARRAY) + tp)
+> diff --git a/drivers/net/usb/rtl8150.c b/drivers/net/usb/rtl8150.c
+[]
+> @@ -274,12 +274,20 @@ static int write_mii_word(rtl8150_t * dev, u8 phy, __u8 indx, u16 reg)
+>  		return 1;
+>  }
+>  
+> -static inline void set_ethernet_addr(rtl8150_t * dev)
+> +static void set_ethernet_addr(rtl8150_t *dev)
+>  {
+> -	u8 node_id[6];
+> +	u8 node_id[ETH_ALEN];
+> +	int ret;
+> +
+> +	ret = get_registers(dev, IDR, sizeof(node_id), node_id);
+>  
+> -	get_registers(dev, IDR, sizeof(node_id), node_id);
+> -	memcpy(dev->netdev->dev_addr, node_id, sizeof(node_id));
+> +	if (ret == sizeof(node_id)) {
 
-and the reason is sort of encoded in that - the types listed here
-already use the pointer *regardless of the validation_type*, so you
-can't have a pointer to the function in the same union.
+So this needs to use
+	if (!ret) {
 
-But not sure I understood :-)
+or 
+	if (ret < 0)
 
-johannes
+and reversed code blocks
+
+> +		ether_addr_copy(dev->netdev->dev_addr, node_id);
+> +	} else {
+> +		eth_hw_addr_random(dev->netdev);
+> +		netdev_notice(dev->netdev, "Assigned a random MAC address: %pM\n",
+> +			      dev->netdev->dev_addr);
+> +	}
+>  }
+>  
+>  static int rtl8150_set_mac_address(struct net_device *netdev, void *p)
 
