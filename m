@@ -2,158 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C346428AB2A
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 02:06:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF42928AB2F
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 02:15:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729627AbgJLAGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 20:06:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46626 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726148AbgJLAGK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 20:06:10 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B9EC0613CE
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 17:06:09 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id q25so1764625ioh.4
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 17:06:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JqFPdm7Uuq0N9/hGjayf2PVrscGqAUsq6FQXY21IyLY=;
-        b=FpTGfwbkPDxbVnH3stNRi0wrtMrhOwQnd/lFlZkryoShtqIaikFim6fqrQqEYO/ja8
-         FJ/s1B5N1oFddQvnKqvSFbcYPiGf9g7ePLIJnlnB7aukbR9myty8VvnGJVsJcO2m5UKq
-         JMc7LakxE0A9ASCz7ZqGTwUek/f9Nm175KUbsA2PGhaH+Y5covSv16CbCGlHM4ou0Sbx
-         3HZSJMIDRlFUVflV0N04sdBdpwQk+HYVThhdmZb2Lu/ams84uTZ9pDi5PUmVO7ITlgb9
-         hBkueoKkjWQKlE1C3KEjte086w+iL3uexWmIbhqZZPkFZJvEPTnhM1A4Ps56L3+ogoWD
-         v0oQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JqFPdm7Uuq0N9/hGjayf2PVrscGqAUsq6FQXY21IyLY=;
-        b=LxuzoBuqvo1opTweMPlIsHan8FNWEb1WJhmjpv+WEQHb8a5e79/2DbqTYmlg6WuSs7
-         eP916UeUq82WY39HQVr35nByf+2yTqlEIBtHfmNffpUhEZoPQ1+8mEV5Ecx9Ir5ZyHnP
-         kjHts8NgGs2ynzyLglCUXFduQdHkTkPrXsPi0/tYc15zvT4m49517FYss735k8KRb9K/
-         lJx/z6cLIxxSI9RxNhWrwVYPHK7ASlTRPrQG/OuLoqlXQiWAjlflJAViKnrYp0BBfYwV
-         4VA0S5nwt9Suwf+0BPiovRPoj3Akd3ChUm7TI/ZSIR/QLdRCEFAyzYpqP38tTZYFEeoy
-         j1ag==
-X-Gm-Message-State: AOAM532tjw5sNohcXIMtl5FmUz06mqcgqaPHfpsR9a/pqAiyIYAKXY6E
-        ZEOh25OsWRnTfpSpRJ3h4ePZDoO5s1w=
-X-Google-Smtp-Source: ABdhPJwnAqDvuZzoM2EI8HT4CMzCk5TwVpdCWSd5n7QhqcuF63zNUwMsXHQ60T1MEZD91s/QIAkuew==
-X-Received: by 2002:a5d:9243:: with SMTP id e3mr15121719iol.193.1602461168014;
-        Sun, 11 Oct 2020 17:06:08 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:85e0:a5a2:ceeb:837])
-        by smtp.googlemail.com with ESMTPSA id r2sm7514950ile.1.2020.10.11.17.06.07
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 11 Oct 2020 17:06:07 -0700 (PDT)
-Subject: Re: ip rule iif oif and vrf
-To:     Stephen Suryaputra <ssuryaextr@gmail.com>
-Cc:     netdev@vger.kernel.org
-References: <20200922131122.GB1601@ICIPI.localdomain>
- <2bea9311-e6b6-91ea-574a-4aa7838d53ea@gmail.com>
- <20200923235002.GA25818@ICIPI.localdomain>
- <ccba2d59-58ad-40ca-0a09-b55c90e9145e@gmail.com>
- <20200924134845.GA3688@ICIPI.localdomain>
- <97ce9942-2115-ed3a-75ea-8b58aa799ceb@gmail.com>
- <20201001022345.GA3527@vmserver>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <3d4d0a18-0f08-d171-dcbe-26e01d354b13@gmail.com>
-Date:   Sun, 11 Oct 2020 18:06:06 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.1
+        id S1726635AbgJLAO6 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 11 Oct 2020 20:14:58 -0400
+Received: from smtp.h3c.com ([60.191.123.50]:62718 "EHLO h3cspam02-ex.h3c.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725962AbgJLAO5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 11 Oct 2020 20:14:57 -0400
+Received: from DAG2EX02-BASE.srv.huawei-3com.com ([10.8.0.65])
+        by h3cspam02-ex.h3c.com with ESMTPS id 09C0EcWI014370
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 12 Oct 2020 08:14:38 +0800 (GMT-8)
+        (envelope-from tian.xianting@h3c.com)
+Received: from DAG2EX03-BASE.srv.huawei-3com.com (10.8.0.66) by
+ DAG2EX02-BASE.srv.huawei-3com.com (10.8.0.65) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 12 Oct 2020 08:14:39 +0800
+Received: from DAG2EX03-BASE.srv.huawei-3com.com ([fe80::5d18:e01c:bbbd:c074])
+ by DAG2EX03-BASE.srv.huawei-3com.com ([fe80::5d18:e01c:bbbd:c074%7]) with
+ mapi id 15.01.1713.004; Mon, 12 Oct 2020 08:14:39 +0800
+From:   Tianxianting <tian.xianting@h3c.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] net: Avoid allocing memory on memoryless numa node
+Thread-Topic: [PATCH] net: Avoid allocing memory on memoryless numa node
+Thread-Index: AQHWn4X33nOETvWn/EOdjwgvT00GhKmSQVKAgADYw6A=
+Date:   Mon, 12 Oct 2020 00:14:39 +0000
+Message-ID: <b77011b20e85434e8e5135ea1c0f51ac@h3c.com>
+References: <20201011041140.8945-1-tian.xianting@h3c.com>
+ <20201011121803.2c003c7e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201011121803.2c003c7e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.99.141.128]
+x-sender-location: DAG2
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-In-Reply-To: <20201001022345.GA3527@vmserver>
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-DNSRBL: 
+X-MAIL: h3cspam02-ex.h3c.com 09C0EcWI014370
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 9/30/20 7:23 PM, Stephen Suryaputra wrote:
-> On Thu, Sep 24, 2020 at 08:41:54AM -0600, David Ahern wrote:
->>> We have multiple options on the table right now. One that can be done
->>> without writing any code is to use an nft prerouting rule to mark
->>> the packet with iif equals the tunnel and use ip rule fwmark to lookup
->>> the right table.
->>>
->>> ip netns exec r0 nft add table ip c2t
->>> ip netns exec r0 nft add chain ip c2t prerouting '{ type filter hook prerouting priority 0; policy accept; }'
->>> ip netns exec r0 nft rule ip c2t prerouting iif gre01 mark set 101 counter
->>> ip netns exec r0 ip rule add fwmark 101 table 10 pref 999
->>>
->>> ip netns exec r1 nft add table ip c2t
->>> ip netns exec r1 nft add chain ip c2t prerouting '{ type filter hook prerouting priority 0; policy accept; }'
->>> ip netns exec r1 nft rule ip c2t prerouting iif gre10 mark set 101 counter
->>> ip netns exec r1 ip rule add fwmark 101 table 10 pref 999
->>>
->>> But this doesn't seem to work on my Ubuntu VM with the namespaces
->>> script, i.e. pinging from h0 to h1. The packet doesn't egress r1_v11. It
->>> does work on our target, based on 4.14 kernel.
->>
->> add debugs to net/core/fib_rules.c, fib_rule_match() to see if
->> flowi_mark is getting set properly. There could easily be places that
->> are missed. Or if it works on one setup, but not another compare sysctl
->> settings for net.core and net.ipv4
-> 
-> Sorry, I got side-tracked. Coming back to this: I made a mistake in the
-> ip rule fwmark pref in the script. I have fixed it and the script is
-> attached (gre_setup_nft.sh). It has the nft and ip rule commands above.
-> The ping between h0 and h1 works.
-> 
->>> We also notice though in on the target platform that the ip rule fwmark
->>> doesn't seem to change the skb->dev to the vrf of the lookup table.
->>
->> not following that statement. fwmark should be marking the skb, not
->> changing the skb->dev.
-> 
-> Yes and it causes the ping between h0 and r1 r1_v11 to not work, e.g.:
-> 
-> ip netns exec h0 ping -c 1 11.0.0.1
-> 
-> Similarly, ping between r0_v00 and r1_v11 also does not work:
-> 
-> ip netns exec r0 ip vrf exec vrf_r0t ping -c 1 -I 10.0.0.1 11.0.0.1
-> 
->>> E.g., ping from 10.0.0.1 to 11.0.0.1. With net.ipv4.fwmark_reflect set,
->>> the reply is generated but the originating ping application doesn't get
->>> the packet.  I suspect it is caused by the socket is bound to the tenant
->>> vrf. I haven't been able to repro this because of the problem with the
->>> nft approach above.
-> 
-> To illustrate my statements above, this is what I did:
-> ip netns exec r1 sysctl -w net.ipv4.fwmark_reflect=1
-> ip netns exec h0 ping -c 1 11.0.0.1
-> PING 11.0.0.1 (11.0.0.1) 56(84) bytes of data.
-> 64 bytes from 11.0.0.1: icmp_seq=1 ttl=63 time=0.079 ms
-> 
-> The ping between h0 and r1 r1_v11 works, but it still doesn't work for this:
-> ip netns exec r0 ip vrf exec vrf_r0t ping -c 1 -I 10.0.0.1 11.0.0.1
-> 
-> eventhough the reply is received by gre01:
-> ip netns exec r0 tcpdump -nexi gre01
-> 22:10:57.173680 Out ethertype IPv4 (0x0800), length 100: 10.0.0.1 > 11.0.0.1: ICMP echo request, id 3803, seq 1, length 64
-> 	0x0000:  4500 0054 1d2a 4000 4001 087e 0a00 0001
-> 	0x0010:  0b00 0001 0800 a410 0edb 0001 b13a 755f
-> 	0x0020:  0000 0000 5da6 0200 0000 0000 1011 1213
-> 	0x0030:  1415 1617 1819 1a1b 1c1d 1e1f 2021 2223
-> 	0x0040:  2425 2627 2829 2a2b 2c2d 2e2f 3031 3233
-> 	0x0050:  3435 3637
-> 22:10:57.173724  In ethertype IPv4 (0x0800), length 100: 11.0.0.1 > 10.0.0.1: ICMP echo reply, id 3803, seq 1, length 64
-> 	0x0000:  4500 0054 c709 0000 4001 9e9e 0b00 0001
-> 	0x0010:  0a00 0001 0000 ac10 0edb 0001 b13a 755f
-> 	0x0020:  0000 0000 5da6 0200 0000 0000 1011 1213
-> 	0x0030:  1415 1617 1819 1a1b 1c1d 1e1f 2021 2223
-> 	0x0040:  2425 2627 2829 2a2b 2c2d 2e2f 3031 3233
-> 	0x0050:  3435 3637
-> 
-> In summary the question is: should ip rule with action FR_ACT_TO_TBL
-> also change the skb->dev to the right l3mdev?
+Hi Jakub,
+Thanks for your suggestion,
+Let me try it :-)
 
-'ip rule' does not change the skb; only the vrf driver does that (and
-some IPv4/IPv6 code reverts it). The rule code only changes the
-flowi_oif setting.
+-----Original Message-----
+From: Jakub Kicinski [mailto:kuba@kernel.org] 
+Sent: Monday, October 12, 2020 3:18 AM
+To: tianxianting (RD) <tian.xianting@h3c.com>
+Cc: davem@davemloft.net; netdev@vger.kernel.org; linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: Avoid allocing memory on memoryless numa node
 
+On Sun, 11 Oct 2020 12:11:40 +0800 Xianting Tian wrote:
+> In architecture like powerpc, we can have cpus without any local 
+> memory attached to it. In such cases the node does not have real memory.
+> 
+> Use local_memory_node(), which is guaranteed to have memory.
+> local_memory_node is a noop in other architectures that does not 
+> support memoryless nodes.
+> 
+> Signed-off-by: Xianting Tian <tian.xianting@h3c.com>
+> ---
+>  net/core/dev.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/core/dev.c b/net/core/dev.c index 
+> 266073e30..dcb4533ef 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -2590,7 +2590,7 @@ static struct xps_map *expand_xps_map(struct xps_map *map, int attr_index,
+>  		new_map = kzalloc(XPS_MAP_SIZE(alloc_len), GFP_KERNEL);
+>  	else
+>  		new_map = kzalloc_node(XPS_MAP_SIZE(alloc_len), GFP_KERNEL,
+> -				       cpu_to_node(attr_index));
+> +				       local_memory_node(cpu_to_node(attr_index)));
+>  	if (!new_map)
+>  		return NULL;
+>  
+
+Are we going to patch all kmalloc_node() callers now to apply local_memory_node()?  Can't the allocator take care of this?
 
