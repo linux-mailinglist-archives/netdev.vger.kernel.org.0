@@ -2,161 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3793828B43F
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 13:59:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36D4428B452
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 14:04:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388362AbgJLL7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 07:59:32 -0400
-Received: from esa4.microchip.iphmx.com ([68.232.154.123]:20803 "EHLO
-        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388209AbgJLL7c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 07:59:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1602503971; x=1634039971;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ZQpmQnv2bppFu4iHMRCySxuz/8he+l1cLdbBjy/BBIY=;
-  b=fvELu6OEsGJjxHcCCAEwFgHEPILx0PKKdn3V7dk9m9N7ZV4UO/JxmmWd
-   vXd9+aZDyvmqZe2DDA4Q7hNQEkRXdA/PQsHbrhR9DTNkijVTSesxPc1Ec
-   7DZtVwCWdaM/eTdKwn3F9m2o5uD0/+iQjqwL+PzwfO/+BaIrKClp1Ted5
-   orG/ID/iKw64OePiEg1nXbpaIEjaWZdW9TTqycXFEoO1C8FAxEQ6SilEh
-   f6CCNPvHWSY73Qgpu4B1vmf0mmBKaiEnxK++oV0tn/J6CZOZe4rIxh+iw
-   fxEWPV4jzl/QW9lXyEuZKq4Dc298kH82vVgmGOx2N/AJGMiT0vvZL0Yua
-   w==;
-IronPort-SDR: Jdg3nGDX07cJHTWCaym1uROXKNQ3JlLnV9AoHgvuptAn59cYAdgrBmapjM0L02T6Wvu0dChVXc
- fs2sZg1bV6xESc2MEw6NDcvXOjpO+uu+ZI+0vmt0ENV/XAI8KKOiQifuWOs06vdPj7F3Ay8jUk
- Y9Nb4UVdoMOBCw6ac/S+bTwoCmURBRa3GtsmsT2qAbTd3xGZr3Ld6Mkcp3AriMbOOghmOHRfiV
- zcJJ8aW6x7xUL/z0n7S5a07dfAaxdVAqLlAjVJvvmO5wUL86BJ1KAP+br/0JDA22AVfv0UMgvw
- 6Vg=
-X-IronPort-AV: E=Sophos;i="5.77,366,1596524400"; 
-   d="scan'208";a="89891813"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Oct 2020 04:59:31 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 12 Oct 2020 04:59:30 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
- (10.10.85.152) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Mon, 12 Oct 2020 04:59:30 -0700
-Date:   Mon, 12 Oct 2020 11:57:44 +0000
-From:   "henrik.bjoernlund@microchip.com" <henrik.bjoernlund@microchip.com>
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>
-CC:     "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jiri@mellanox.com" <jiri@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        "idosch@mellanox.com" <idosch@mellanox.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "horatiu.vultur@microchip.com" <horatiu.vultur@microchip.com>
-Subject: Re: [PATCH net-next v4 01/10] net: bridge: extend the process of
- special frames
-Message-ID: <20201012115744.56mjeuoe7nlonjxt@soft-test08>
-References: <20201009143530.2438738-1-henrik.bjoernlund@microchip.com>
- <20201009143530.2438738-2-henrik.bjoernlund@microchip.com>
- <3fc314a2074001f7b39bada2c50529eb2aefd077.camel@nvidia.com>
+        id S2388281AbgJLMEX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 08:04:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44330 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388209AbgJLMEW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 08:04:22 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA26C0613D0
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 05:04:22 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id e17so18853787wru.12
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 05:04:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=8vMF8lZRQsgeDB+OVpE15wXr25/uWkPUozR5wkyqRus=;
+        b=IpypOWt+e7NTYuvuZsUirxmMBp02bpHU7QR+sFmnBU3Fr/3pbR8GCt+RCLWA5BNjNZ
+         x/uGUozNT8ktjyxkpfCHleMuvoTKbiUQFtiG9mpIav+6yRNIIXqJS9ttrJJy0UgPbKWd
+         HLjokQy3AeS73Rfq6DIR1aS7R7d6aUcRjdiNg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version:content-transfer-encoding;
+        bh=8vMF8lZRQsgeDB+OVpE15wXr25/uWkPUozR5wkyqRus=;
+        b=doKmCfg8EfScxg3MQ4R7r4ayWJcxKAxqMToF1nrOLiauoHEDNWyxOmKwnDILTkv635
+         IU85OVV3t+vGWmXNR0iIP333XI7ixJ4jqCUdfbZRrp/TyyXTWXQ0QYwNcN/5LdzNz/Bz
+         dBG4lzakBLurxBFK+P1oBPM/dAiEtbpdbcf983vwmd8E2d6mbNGWuUVptn14vU8NcJ+2
+         r7WVbRdJQ9WroFKc6yXj8gMq5ts/KuZ2NVkddDLO8QwwjJxE2/PHCZcj6zGn5aeh8laY
+         oi8rzhtyis1LKXQe09ynxa8j89jw8/lgkEWKy38a/Mb+G7wlELAK1883IwdaP+TOCMTf
+         nMZg==
+X-Gm-Message-State: AOAM533nUmWPwq3lXMWv7ZopyqTaHiWVCYknUIyij+J+QX5JVxQnEJfW
+        Avee/2c9+u7EEs/XgU0O+ZmStQ==
+X-Google-Smtp-Source: ABdhPJygN61G/pPtEL0XYbZfLV74sPBmvxLtRPL9SyStjuicJwun+0rTKfWdXamhoMZMkMTQQ49AqA==
+X-Received: by 2002:adf:e70a:: with SMTP id c10mr28946099wrm.425.1602504260962;
+        Mon, 12 Oct 2020 05:04:20 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id q2sm24366964wrw.40.2020.10.12.05.04.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Oct 2020 05:04:20 -0700 (PDT)
+References: <160226839426.5692.13107801574043388675.stgit@john-Precision-5820-Tower> <160226863689.5692.13861422742592309285.stgit@john-Precision-5820-Tower>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     alexei.starovoitov@gmail.com, daniel@iogearbox.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, lmb@cloudflare.com
+Subject: Re: [bpf-next PATCH v3 4/6] bpf, sockmap: remove dropped data on errors in redirect case
+In-reply-to: <160226863689.5692.13861422742592309285.stgit@john-Precision-5820-Tower>
+Date:   Mon, 12 Oct 2020 14:04:19 +0200
+Message-ID: <87ft6jr6po.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <3fc314a2074001f7b39bada2c50529eb2aefd077.camel@nvidia.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thanks for the review. Comments below.
-
-The 10/12/2020 09:12, Nikolay Aleksandrov wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
-> On Fri, 2020-10-09 at 14:35 +0000, Henrik Bjoernlund wrote:
-> > This patch extends the processing of frames in the bridge. Currently MRP
-> > frames needs special processing and the current implementation doesn't
-> > allow a nice way to process different frame types. Therefore try to
-> > improve this by adding a list that contains frame types that need
-> > special processing. This list is iterated for each input frame and if
-> > there is a match based on frame type then these functions will be called
-> > and decide what to do with the frame. It can process the frame then the
-> > bridge doesn't need to do anything or don't process so then the bridge
-> > will do normal forwarding.
-> >
-> > Signed-off-by: Henrik Bjoernlund  <henrik.bjoernlund@microchip.com>
-> > Reviewed-by: Horatiu Vultur  <horatiu.vultur@microchip.com>
-> > ---
-> >  net/bridge/br_device.c  |  1 +
-> >  net/bridge/br_input.c   | 33 ++++++++++++++++++++++++++++++++-
-> >  net/bridge/br_mrp.c     | 19 +++++++++++++++----
-> >  net/bridge/br_private.h | 18 ++++++++++++------
-> >  4 files changed, 60 insertions(+), 11 deletions(-)
-> >
-> [snip]
-> > diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-> > index 345118e35c42..3e62ce2ef8a5 100644
-> > --- a/net/bridge/br_private.h
-> > +++ b/net/bridge/br_private.h
-> > @@ -480,6 +480,8 @@ struct net_bridge {
-> >  #endif
-> >       struct hlist_head               fdb_list;
-> >
-> > +     struct hlist_head               frame_type_list;
-> 
-> Since there will be a v5, I'd suggest to move this struct member in the first
-> cache line as it will be always used in the bridge fast-path for all cases.
-> In order to make room for it there you can move port_list after fdb_hash_tbl and
-> add this in its place, port_list is currently used only when flooding and soon
-> I'll even change that.
-> 
-> Thanks,
->  Nik
+On Fri, Oct 09, 2020 at 08:37 PM CEST, John Fastabend wrote:
+> In the sk_skb redirect case we didn't handle the case where we overrun
+> the sk_rmem_alloc entry on ingress redirect or sk_wmem_alloc on egress.
+> Because we didn't have anything implemented we simply dropped the skb.
+> This meant data could be dropped if socket memory accounting was in
+> place.
 >
-I will do change as requested.
+> This fixes the above dropped data case by moving the memory checks
+> later in the code where we actually do the send or recv. This pushes
+> those checks into the workqueue and allows us to return an EAGAIN error
+> which in turn allows us to try again later from the workqueue.
+>
+> Fixes: 51199405f9672 ("bpf: skb_verdict, support SK_PASS on RX BPF path")
+> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+> ---
+>  net/core/skmsg.c |   28 ++++++++++++++--------------
+>  1 file changed, 14 insertions(+), 14 deletions(-)
+>
 
-> > +
-> >  #if IS_ENABLED(CONFIG_BRIDGE_MRP)
-> >       struct list_head                mrp_list;
-> >  #endif
-> > @@ -755,6 +757,16 @@ int nbp_backup_change(struct net_bridge_port *p, struct net_device *backup_dev);
-> >  int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb);
-> >  rx_handler_func_t *br_get_rx_handler(const struct net_device *dev);
-> >
-> > +struct br_frame_type {
-> > +     __be16                  type;
-> > +     int                     (*frame_handler)(struct net_bridge_port *port,
-> > +                                              struct sk_buff *skb);
-> > +     struct hlist_node       list;
-> > +};
-> > +
-> > +void br_add_frame(struct net_bridge *br, struct br_frame_type *ft);
-> > +void br_del_frame(struct net_bridge *br, struct br_frame_type *ft);
-> > +
-> >  static inline bool br_rx_handler_check_rcu(const struct net_device *dev)
-> >  {
-> >       return rcu_dereference(dev->rx_handler) == br_get_rx_handler(dev);
-> > @@ -1417,7 +1429,6 @@ extern int (*br_fdb_test_addr_hook)(struct net_device *dev, unsigned char *addr)
-> >  #if IS_ENABLED(CONFIG_BRIDGE_MRP)
-> >  int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
-> >                struct nlattr *attr, int cmd, struct netlink_ext_ack *extack);
-> > -int br_mrp_process(struct net_bridge_port *p, struct sk_buff *skb);
-> >  bool br_mrp_enabled(struct net_bridge *br);
-> >  void br_mrp_port_del(struct net_bridge *br, struct net_bridge_port *p);
-> >  int br_mrp_fill_info(struct sk_buff *skb, struct net_bridge *br);
-> > @@ -1429,11 +1440,6 @@ static inline int br_mrp_parse(struct net_bridge *br, struct net_bridge_port *p,
-> >       return -EOPNOTSUPP;
-> >  }
-> >
-> > -static inline int br_mrp_process(struct net_bridge_port *p, struct sk_buff *skb)
-> > -{
-> > -     return 0;
-> > -}
-> > -
-> >  static inline bool br_mrp_enabled(struct net_bridge *br)
-> >  {
-> >       return false;
-> 
+[...]
 
--- 
-/Henrik
+> @@ -709,30 +711,28 @@ static void sk_psock_skb_redirect(struct sk_buff *s=
+kb)
+>  {
+>  	struct sk_psock *psock_other;
+>  	struct sock *sk_other;
+> -	bool ingress;
+>
+>  	sk_other =3D tcp_skb_bpf_redirect_fetch(skb);
+> +	/* This error is a buggy BPF program, it returned a redirect
+> +	 * return code, but then didn't set a redirect interface.
+> +	 */
+>  	if (unlikely(!sk_other)) {
+>  		kfree_skb(skb);
+>  		return;
+>  	}
+>  	psock_other =3D sk_psock(sk_other);
+> +	/* This error indicates the socket is being torn down or had another
+> +	 * error that caused the pipe to break. We can't send a packet on
+> +	 * a socket that is in this state so we drop the skb.
+> +	 */
+>  	if (!psock_other || sock_flag(sk_other, SOCK_DEAD) ||
+>  	    !sk_psock_test_state(psock_other, SK_PSOCK_TX_ENABLED)) {
+>  		kfree_skb(skb);
+>  		return;
+>  	}
+>
+> -	ingress =3D tcp_skb_bpf_ingress(skb);
+> -	if ((!ingress && sock_writeable(sk_other)) ||
+> -	    (ingress &&
+> -	     atomic_read(&sk_other->sk_rmem_alloc) <=3D
+> -	     sk_other->sk_rcvbuf)) {
+
+I'm wondering why the check for going over socket's rcvbuf was removed?
+
+I see that we now rely exclusively on
+sk_psock_skb_ingress=E2=86=92sk_rmem_schedule for sk_rmem_alloc checks, whi=
+ch I
+don't think applies the rcvbuf limit.
+
+> -		skb_queue_tail(&psock_other->ingress_skb, skb);
+> -		schedule_work(&psock_other->work);
+> -	} else {
+> -		kfree_skb(skb);
+> -	}
+> +	skb_queue_tail(&psock_other->ingress_skb, skb);
+> +	schedule_work(&psock_other->work);
+>  }
+>
+>  static void sk_psock_tls_verdict_apply(struct sk_buff *skb, int verdict)
