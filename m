@@ -2,90 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADAD628AB68
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 03:26:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50FBE28AB6F
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 03:38:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727415AbgJLB0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 21:26:54 -0400
-Received: from smtp.h3c.com ([60.191.123.56]:31220 "EHLO h3cspam01-ex.h3c.com"
+        id S1725967AbgJLBia (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 21:38:30 -0400
+Received: from correo.us.es ([193.147.175.20]:41692 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726543AbgJLB0y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 11 Oct 2020 21:26:54 -0400
-Received: from DAG2EX06-IDC.srv.huawei-3com.com ([10.8.0.69])
-        by h3cspam01-ex.h3c.com with ESMTPS id 09C1Q0W3023693
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 12 Oct 2020 09:26:00 +0800 (GMT-8)
-        (envelope-from tian.xianting@h3c.com)
-Received: from DAG2EX03-BASE.srv.huawei-3com.com (10.8.0.66) by
- DAG2EX06-IDC.srv.huawei-3com.com (10.8.0.69) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 12 Oct 2020 09:26:01 +0800
-Received: from DAG2EX03-BASE.srv.huawei-3com.com ([fe80::5d18:e01c:bbbd:c074])
- by DAG2EX03-BASE.srv.huawei-3com.com ([fe80::5d18:e01c:bbbd:c074%7]) with
- mapi id 15.01.1713.004; Mon, 12 Oct 2020 09:26:01 +0800
-From:   Tianxianting <tian.xianting@h3c.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        "John Fastabend" <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] bpf: Avoid allocing memory on memoryless numa node
-Thread-Topic: [PATCH] bpf: Avoid allocing memory on memoryless numa node
-Thread-Index: AQHWnuLrmIxw4uY1XUG+lUKVObi7NKmSqAmAgACHNeA=
-Date:   Mon, 12 Oct 2020 01:26:01 +0000
-Message-ID: <21cff6313475470e9b316911c748f890@h3c.com>
-References: <20201010084417.5400-1-tian.xianting@h3c.com>
- <CAADnVQJUL7BynGMD_nGu8y=D1yv6TybOxeSh03TrkD7kS0aOrA@mail.gmail.com>
-In-Reply-To: <CAADnVQJUL7BynGMD_nGu8y=D1yv6TybOxeSh03TrkD7kS0aOrA@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.99.141.128]
-x-sender-location: DAG2
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726562AbgJLBia (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 11 Oct 2020 21:38:30 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 4ECA9E780F
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 03:38:27 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 3EED0DA73F
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 03:38:27 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 34A82DA704; Mon, 12 Oct 2020 03:38:27 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
+        version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 52A20DA730;
+        Mon, 12 Oct 2020 03:38:25 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Mon, 12 Oct 2020 03:38:25 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPSA id 1FFEA41FF201;
+        Mon, 12 Oct 2020 03:38:25 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH 0/6] Netfilter/IPVS updates for net-next
+Date:   Mon, 12 Oct 2020 03:38:13 +0200
+Message-Id: <20201012013819.23128-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-DNSRBL: 
-X-MAIL: h3cspam01-ex.h3c.com 09C1Q0W3023693
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhhbmtzIEFsZXhlaSBmb3IgeW91ciBzdWdnZXN0aW9uLA0KSSB3aWxsIHRyeSB0byBkbyBpdC4N
-Cg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEFsZXhlaSBTdGFyb3ZvaXRvdiBb
-bWFpbHRvOmFsZXhlaS5zdGFyb3ZvaXRvdkBnbWFpbC5jb21dIA0KU2VudDogTW9uZGF5LCBPY3Rv
-YmVyIDEyLCAyMDIwIDk6MjEgQU0NClRvOiB0aWFueGlhbnRpbmcgKFJEKSA8dGlhbi54aWFudGlu
-Z0BoM2MuY29tPg0KQ2M6IEFsZXhlaSBTdGFyb3ZvaXRvdiA8YXN0QGtlcm5lbC5vcmc+OyBEYW5p
-ZWwgQm9ya21hbm4gPGRhbmllbEBpb2dlYXJib3gubmV0PjsgRGF2aWQgUy4gTWlsbGVyIDxkYXZl
-bUBkYXZlbWxvZnQubmV0PjsgSmFrdWIgS2ljaW5za2kgPGt1YmFAa2VybmVsLm9yZz47IEplc3Bl
-ciBEYW5nYWFyZCBCcm91ZXIgPGhhd2tAa2VybmVsLm9yZz47IEpvaG4gRmFzdGFiZW5kIDxqb2hu
-LmZhc3RhYmVuZEBnbWFpbC5jb20+OyBNYXJ0aW4gS2FGYWkgTGF1IDxrYWZhaUBmYi5jb20+OyBT
-b25nIExpdSA8c29uZ2xpdWJyYXZpbmdAZmIuY29tPjsgWW9uZ2hvbmcgU29uZyA8eWhzQGZiLmNv
-bT47IEFuZHJpaSBOYWtyeWlrbyA8YW5kcmlpbkBmYi5jb20+OyBLUCBTaW5naCA8a3BzaW5naEBj
-aHJvbWl1bS5vcmc+OyBOZXR3b3JrIERldmVsb3BtZW50IDxuZXRkZXZAdmdlci5rZXJuZWwub3Jn
-PjsgYnBmIDxicGZAdmdlci5rZXJuZWwub3JnPjsgTEtNTCA8bGludXgta2VybmVsQHZnZXIua2Vy
-bmVsLm9yZz4NClN1YmplY3Q6IFJlOiBbUEFUQ0hdIGJwZjogQXZvaWQgYWxsb2NpbmcgbWVtb3J5
-IG9uIG1lbW9yeWxlc3MgbnVtYSBub2RlDQoNCk9uIFNhdCwgT2N0IDEwLCAyMDIwIGF0IDE6NTUg
-QU0gWGlhbnRpbmcgVGlhbiA8dGlhbi54aWFudGluZ0BoM2MuY29tPiB3cm90ZToNCj4NCj4gSW4g
-YXJjaGl0ZWN0dXJlIGxpa2UgcG93ZXJwYywgd2UgY2FuIGhhdmUgY3B1cyB3aXRob3V0IGFueSBs
-b2NhbCANCj4gbWVtb3J5IGF0dGFjaGVkIHRvIGl0LiBJbiBzdWNoIGNhc2VzIHRoZSBub2RlIGRv
-ZXMgbm90IGhhdmUgcmVhbCBtZW1vcnkuDQo+DQo+IFVzZSBsb2NhbF9tZW1vcnlfbm9kZSgpLCB3
-aGljaCBpcyBndWFyYW50ZWVkIHRvIGhhdmUgbWVtb3J5Lg0KPiBsb2NhbF9tZW1vcnlfbm9kZSBp
-cyBhIG5vb3AgaW4gb3RoZXIgYXJjaGl0ZWN0dXJlcyB0aGF0IGRvZXMgbm90IA0KPiBzdXBwb3J0
-IG1lbW9yeWxlc3Mgbm9kZXMuDQouLi4NCj4gICAgICAgICAvKiBIYXZlIG1hcC0+bnVtYV9ub2Rl
-LCBidXQgY2hvb3NlIG5vZGUgb2YgcmVkaXJlY3QgdGFyZ2V0IENQVSAqLw0KPiAtICAgICAgIG51
-bWEgPSBjcHVfdG9fbm9kZShjcHUpOw0KPiArICAgICAgIG51bWEgPSBsb2NhbF9tZW1vcnlfbm9k
-ZShjcHVfdG9fbm9kZShjcHUpKTsNCg0KVGhlcmUgYXJlIHNvIG1hbnkgY2FsbHMgdG8gY3B1X3Rv
-X25vZGUoKSB0aHJvdWdob3V0IHRoZSBrZXJuZWwuDQpBcmUgeW91IGdvaW5nIHRvIGNvbnZlcnQg
-YWxsIG9mIHRoZW0gb25lIHBhdGNoIGF0IGEgdGltZSB0byB0aGUgYWJvdmUgc2VxdWVuY2U/DQpX
-aHkgbm90IGRvIHRoaXMgQ09ORklHX0hBVkVfTUVNT1JZTEVTU19OT0RFUyBpbiBjcHVfdG9fbm9k
-ZSgpIGluc3RlYWQ/DQphbmQgc2F2ZSB0aGUgY2h1cm4uDQo=
+Hi,
+
+The following patchset contains Netfilter/IPVS updates for net-next:
+
+1) Inspect the reply packets coming from DR/TUN and refresh connection
+   state and timeout, from longguang yue and Julian Anastasov.
+
+2) Series to add support for the inet ingress chain type in nf_tables.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
+
+Thank you.
+
+----------------------------------------------------------------
+
+The following changes since commit bc081a693a56061f68f736c5d596134ee3c87689:
+
+  Merge branch 'Offload-tc-vlan-mangle-to-mscc_ocelot-switch' (2020-10-11 11:19:25 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git HEAD
+
+for you to fetch changes up to 793d5d61242695142460ce74f124281e0681fbc7:
+
+  netfilter: flowtable: reduce calls to pskb_may_pull() (2020-10-12 01:58:10 +0200)
+
+----------------------------------------------------------------
+Pablo Neira Ayuso (5):
+      netfilter: add nf_static_key_{inc,dec}
+      netfilter: add nf_ingress_hook() helper function
+      netfilter: add inet ingress support
+      netfilter: nf_tables: add inet ingress support
+      netfilter: flowtable: reduce calls to pskb_may_pull()
+
+longguang.yue (1):
+      ipvs: inspect reply packets from DR/TUN real servers
+
+ include/net/netfilter/nf_tables.h      |   6 ++
+ include/net/netfilter/nf_tables_ipv4.h |  33 +++++++++
+ include/net/netfilter/nf_tables_ipv6.h |  46 ++++++++++++
+ include/uapi/linux/netfilter.h         |   1 +
+ net/netfilter/core.c                   | 129 ++++++++++++++++++++++++++-------
+ net/netfilter/ipvs/ip_vs_conn.c        |  18 ++++-
+ net/netfilter/ipvs/ip_vs_core.c        |  19 ++---
+ net/netfilter/nf_flow_table_core.c     |  12 +--
+ net/netfilter/nf_flow_table_ip.c       |  45 +++++++-----
+ net/netfilter/nf_tables_api.c          |  14 ++--
+ net/netfilter/nft_chain_filter.c       |  35 ++++++++-
+ 11 files changed, 282 insertions(+), 76 deletions(-)
