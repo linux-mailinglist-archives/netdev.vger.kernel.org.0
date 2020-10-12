@@ -2,116 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1AA728C3BF
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 23:03:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DE0528C3C2
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 23:04:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732085AbgJLVDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 17:03:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43526 "EHLO
+        id S1732064AbgJLVEW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 17:04:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730845AbgJLVDK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 17:03:10 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F67C0613D0;
-        Mon, 12 Oct 2020 14:03:10 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id o3so5594153pgr.11;
-        Mon, 12 Oct 2020 14:03:10 -0700 (PDT)
+        with ESMTP id S1730845AbgJLVEW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 17:04:22 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9FCDC0613D1
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 14:04:20 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id 67so19051922iob.8
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 14:04:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=mL58EEBYBfzBm/sWpTxkhiJ2mB3L4QfDQl4WPIpN03g=;
-        b=jpFoBmShBddFvBl6seKqLzZ3/KIAU5dtm+ieEuCzZ14y48VVy6owKrJiERjBvTIO05
-         jypkmsZwoVjESPo6kzHlBf9ZZvdn2tbDygmc7dCRBRXLqErr84WSssHaq0kJ2zm5u5v1
-         d5i/XfxbyHyCwqFvMbQrlqzUAwZ/Nku4l/OIBhja5z++pkuivbCeICz9ETT4XVi6gq7E
-         Wkj7DfWVRlFpraDlNrvTB55XZI45Q0RanjElD3/3ZsdvpoAfDNB0hUN41V2yqQnv6wCu
-         B5JRxxZS5CVuDWfWDA2eRfhElgreok99lJjzAp8eWPPK3EGGUoAaiB3V+vwipdfbob2G
-         RWYw==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=UOV+wZSty8SFi6MYQVj35TSEg5h/obGY+TCOAt7L/FU=;
+        b=P1GGgpG8ooD5mkWbCTzonrFgaySG8R8UTioqSHnXcUfieFh6gAPW1RUT5yJE1/5lmd
+         N9Lrd3gpmIbctpqiSVW/xIXcCpgJbz2kjZzgtmFC47RGZRONTQONOEE1QJJGJtmzBI2Q
+         GRP8y0zXYP9QA22sdwpY5OlwyH7dzcjm0NgZSv8BLszDZXnQqB0I0lKz0JSwrTtZfwZx
+         jpOKRxn9Cz7j3/7w8HbWEbRIQacAP+zTw4a0g9GLrrah8k/Koc9jg4JHAAvWaDThRfzs
+         ORSdbfMDt30uIEeC5smg+0pxuvyvQk4WJfGckA7jAJWi1GHceZFA6v3U3HADXZ6ATcnh
+         EkiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mL58EEBYBfzBm/sWpTxkhiJ2mB3L4QfDQl4WPIpN03g=;
-        b=UzMGZTpcBqpCaUphuYBMRQMWjoDSifGjlVc71MY5VgHfbMh0aWAkWirF6dLRMCBoRq
-         DPH3kVK9qLfqSD/wEDs7UkTKn5zgTQfFxd+bibgwxHeI5Kv1jOJMHuVJAuhpA19veyjd
-         RvzB5xqqf1wprYVNttrkfq7gsSYe23NrWUhSLUojx55paTi6zrrm9SGduXHy2g9IGjuH
-         2DhLLsQLr0AEcoAGqDOORdlyimOX6INTyN7Mu/QPvDlS44LVlMxOT/tr6prEzUvC+pwd
-         H/huAsjfdaikh0LzosbzWGGxcANi7Teu7BDQDGhrpHOkHZt3REsY2RYSQsebph9VxXet
-         pKrA==
-X-Gm-Message-State: AOAM533NrotHrmsnYLERY7lVVycPdkFEeInQSTaYS7Cn5TVBRz3bvhUv
-        OjbZ4KPRtHwzAegytqZ8hsg=
-X-Google-Smtp-Source: ABdhPJxOFyn4ESDYHTTBV2FZ5Hw5w8NUOWgRRrCG7GkZ4Nr3hKAstsJlMv0rMHcodm4+BKf3AXgNOQ==
-X-Received: by 2002:a62:e81a:0:b029:152:97f9:9775 with SMTP id c26-20020a62e81a0000b029015297f99775mr24025149pfi.29.1602536590054;
-        Mon, 12 Oct 2020 14:03:10 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:400::5:41ef])
-        by smtp.gmail.com with ESMTPSA id s11sm21410763pgm.36.2020.10.12.14.03.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Oct 2020 14:03:09 -0700 (PDT)
-Date:   Mon, 12 Oct 2020 14:03:07 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: merge window is open. bpf-next is still open.
-Message-ID: <20201012210307.byn6jx7dxmsxq7dt@ast-mbp>
-References: <CAADnVQ+ycd8T4nBcnAwr5FHX75_JhWmqdHzXEXwx5udBv8uwiQ@mail.gmail.com>
- <20201012110046.3b2c3c27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAADnVQKn=CxcOpjSWLsD+VC5rviC6sMfrhw5jrPCU60Bcx5Ssw@mail.gmail.com>
- <20201013075016.61028eee@canb.auug.org.au>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=UOV+wZSty8SFi6MYQVj35TSEg5h/obGY+TCOAt7L/FU=;
+        b=pFsRl1tCOHf2TSOciS6CoMav/EAoMSL03jr9N5SGNgFajByE2Jn9ZHzXa9RwcVr8Kt
+         sL0EZIIiGMSIoFRKQblPW/seWD7tv5cCGr1pNDD82BNRa5uaToqGnkwFH/unsLfRJccH
+         8SmzOHt8gz/0lCCT2ix1yLEZw3auyNTECqRieZsf4WhaPYI7Gj6NMHv0DB0QXtbMzlpS
+         S3pfYqghBm/eDSIhRPJQ32eUC6bz4ZCNQoz5k9gkg5FddhgYlAIKCeQTzqhqg3Z2scI5
+         qicN/AynxdPnJfemegoSaKulOjJd3uVOCvmiEFeK/vOjyVBl85JsMfGdAbhcuxnjysRj
+         JCgw==
+X-Gm-Message-State: AOAM531rAs1CTICy/PJl/QuQAJba8nOMpm81vTbpSfWHQs2Jwh10Iqzt
+        HAQIybzeN6SrU8PhTQIkC9NKyPSrlMQpZI4POrZFMg==
+X-Google-Smtp-Source: ABdhPJz/oXMaf3NdxBr/YUP34hLYpHoGuDElu1QGaCL9svj1l1e93Koq+PqUfLWU+mbrGF+lAQoHl3UeQYh5WOrjetU=
+X-Received: by 2002:a05:6602:2c84:: with SMTP id i4mr11403491iow.89.1602536659858;
+ Mon, 12 Oct 2020 14:04:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201013075016.61028eee@canb.auug.org.au>
+References: <160216609656.882446.16642490462568561112.stgit@firesoul>
+ <160216615767.882446.7384364280837100311.stgit@firesoul> <40d7af61-6840-5473-79d7-ea935f6889f4@iogearbox.net>
+ <CANP3RGesHkCNTWsWDoU2uJsFjZ4dgnEpp+F-iEmhb9U0-rcT_w@mail.gmail.com> <20201010130938.138c80d9@carbon>
+In-Reply-To: <20201010130938.138c80d9@carbon>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Date:   Mon, 12 Oct 2020 14:04:08 -0700
+Message-ID: <CANP3RGeQJYbn-RbxJvUO-WauDDhCEQQz086DgNhh3KeubCA33w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next V3 4/6] bpf: make it possible to identify BPF
+ redirected SKBs
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Shaun Crampton <shaun@tigera.io>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Marek Majkowski <marek@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eyal Birger <eyal.birger@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 13, 2020 at 07:50:16AM +1100, Stephen Rothwell wrote:
-> Hi Alexei,
-> 
-> On Mon, 12 Oct 2020 13:15:16 -0700 Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> >
-> > You mean keep pushing into bpf-next/master ?
-> > The only reason is linux-next.
-> > But coming to think about it again, let's fix linux-next process instead.
-> > 
-> > Stephen,
-> > could you switch linux-next to take from bpf.git during the merge window
-> > and then go back to bpf-next.git after the merge window?
-> > That will help everyone. CIs wouldn't need to flip flop.
-> > People will keep basing their features on bpf-next/master all the time, etc.
-> > The only inconvenience is for linux-next. I think that's a reasonable trade-off.
-> > In other words bpf-next/master will always be open for new features.
-> > After the merge window bpf-next/master will get rebased to rc1.
-> 
-> I already fetch bpf.git#master all the time (that is supposed to be
-> fixes for the current release and gets merged into the net tree, right?)
+On Sat, Oct 10, 2020 at 4:09 AM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
+>
+> On Fri, 9 Oct 2020 11:33:33 -0700
+> Maciej =C5=BBenczykowski <maze@google.com> wrote:
+>
+> > > > This change makes it possible to identify SKBs that have been redir=
+ected
+> > > > by TC-BPF (cls_act). This is needed for a number of cases.
+> > > >
+> > > > (1) For collaborating with driver ifb net_devices.
+> > > > (2) For avoiding starting generic-XDP prog on TC ingress redirect.
+> > > >
+> > > > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> > >
+> > > Not sure if anyone actually cares about ifb devices, but my worry is =
+that the
+> > > generic XDP vs tc interaction has been as-is for quite some time so t=
+his change
+> > > in behavior could break in the wild.
+>
+> No, I believe this happened as recent at kernel v5.2, when Stephen
+> Hemminger changed this in commit 458bf2f224f0 ("net: core: support XDP
+> generic on stacked devices.").  And for the record I think that
+> patch/change was a mistake, as people should not use generic-XDP for
+> these kind of stacked devices (they should really use TC-BPF as that is
+> the right tool for the job).
+>
+>
+> > I'm not at all sure of the interactions/implications here.
+> > But I do have a request to enable ifb on Android for ingress rate
+> > limiting and separately we're trying to make XDP work...
+> > So we might at some point end up with cellular interfaces with xdp
+> > ebpf (redirect for forwarding/nat/tethering) + ifb + tc ebpf (for
+> > device local stuff).
+>
+> To me I was very surprised when I discovered tc-redirect didn't work
+> with ifb driver.  And it sounds like you have an actual use-case for
+> this on Android.
+>
+> > But this is still all very vague and 'ideas only' level.
+> > (and in general I think I'd like to get rid of the redirect in tc
+> > ebpf, and leave only xlat64 translation for to-the-device traffic in
+> > there, so maybe there's no problem anyway??)
+>
+> I know it sounds strange coming from me "Mr.XDP", but I actaully think
+> that in many cases you will be better off with using TC-BPF.
+> Especially on Android, as it will be very hard to get native-XDP
+> implemented in all these different drivers. (And you don't want to use
+> generic-XDP, because there is a high chance it causes a reallocation of
+> the SKB, which is a huge performance hit).
 
-Correct. That part doesn't change.
+We want the benefits of not allocating/zeroing skb metadata.
+We probably can't (always) do zerocopy...
 
-> How about this: you create a for-next branch in the bpf-next tree and I
-> fetch that instead of your master branch.  What you do is always work
-> in your master branch and whenever it is "ready", you just merge master
-> into for-next and that is what linux-next works with (net-next still
-> merges your master branch as now).  So the for-next branch consists
-> only of consecutive merges of your master branch.
-> 
-> During the merge window you do *not* merge master into for-next (and,
-> in fact, everything in for-next should have been merged into the
-> net-next tree anyway, right?) and then when -rc1 is released, you reset
-> for-next to -rc1 and start merging master into it again.
-> 
-> This way the commit SHA1s are stable and I don't have to remember to
-> switch branches/trees every merge window (which I would forget
-> sometimes for sure :-)).
+But let's list what we have on at least 1 sample device:
+(a) cellular interface receives, no LRO, into skb, no build_skb
+so each packet is <=3D mtu and requires meta alloc, meta zero, payload allo=
+c
+on some devices, payload is copied because nic does not receive into
+all of system RAM, just SWMMIO style into a small ~60MB buffer.
+(b) GRO happens
+(c) TC BPF with redirect or routing/forwarding/iptables
+(d) GSO happens, cause no TSO at NCM usb driver
+(e) NCM driver copies payload, discards skb.
+[and it allocates around 1 more skb per 16KB]
 
-That is a great idea! I think that should work well for everyone.
-Let's do exactly that.
-Just pushed bpf-next/for-next branch.
+so we basically have at least 2 allocs and 2 payload copies per <=3D1500 pa=
+cket
+(and cellular mtus are likely closer to 1280 then 1500)
 
-I'll send a patch to update Documentation/bpf/bpf_devel_QA.rst
-with all these details later today.
+Lots of room for improvement - GRO/GSO are probably a net loss
+(unclear) and all that allocation/copies.
+If I can get XDP to eliminate the skb meta allocation and the fast
+path payload copy in the cellular driver.
+(so we only have copy from xdp frame into skb), then it's already a
+huge win - we're down to 1 copy in NCM driver.
+NCM could technically not require a copy with USB controller SG, but
+current demo patches for that are not a win.
+(Most likely usb controller is crappy, but lots of work left)
+If forwarding/tethering is through XDP Redirect, then I also win due
+to no GRO/GSO on that path.
+(at least I think so)
