@@ -2,134 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4938728B14B
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 11:18:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCE6C28B14E
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 11:19:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387400AbgJLJR4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 05:17:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46952 "EHLO
+        id S1729164AbgJLJT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 05:19:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726396AbgJLJR4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 05:17:56 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BDBC0613CE;
-        Mon, 12 Oct 2020 02:17:55 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id o3so3650881pgr.11;
-        Mon, 12 Oct 2020 02:17:55 -0700 (PDT)
+        with ESMTP id S1727227AbgJLJTz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 05:19:55 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE1AC0613CE
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:19:55 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id p15so22197757ejm.7
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:19:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=Ov3FUKrNTHLpkrGh5RLsSQkZzOmYXtgceijebKP/orE=;
-        b=Pxf91ZADA3kHjPOTZCRMhqikUJb6PIBg3jJeAbwA/Hf8O18uGy2b0oXYhxlV/BTduC
-         n/djlhrL8iuzGzI7fyqZRmsCzqHugC0fvDI6OpfiJFg7FdKqYnTdmoeIF/AlzDZ5fUEA
-         cBaj2zgLb7ITgxsXWhbRAPzZnTFP+3UHN2w9KWALiaD2FJ2TbDn2oT4W3M8DfHtf1FkF
-         Nx7OVH7Z4k3RDHxutTwnSsOZ18/lCgUUtzsjLalW1qCDcBlrMHA60QSMgpW29f0Yhhdx
-         Z8VjKTKEySkDlq43+F+xVpHzakF9ZASwJtHFB/iKmb1BZkItovGokmMJMfOIrigkWNRN
-         Xe3A==
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aB+F+LSfyZ6/dCTwKyQPt5hR5XIkYtzIf7awe/NipxE=;
+        b=CbKK+gRvc5v/iI/hT1XnCe2gT1iPQqtKxcpeQ41tF5kfGLK8b/Dr2YAebJKojI6/HT
+         rFs4DD8eMc+LSWr190vq5r8PzdviFYrKXtOM6T2YVd1ualqEeohRgJo2sSIUolHT2g+W
+         2bFOU+zjyqSG+hjrBoptoIEU4gFLRYBMPlAKw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=Ov3FUKrNTHLpkrGh5RLsSQkZzOmYXtgceijebKP/orE=;
-        b=UYfe6YDZoYUa0OFuRBTHYaEMEOvnDLCkwxbpzGlxRAlCEAHvXwToqRjUMqTlj8/2hA
-         /vZJmD6EkwV2rupOzJTkEx8AlJ1+Gd8er5mcgCyKPN2w2sd8k5L1aTj95YqLoOxZozSz
-         j0eoGeep00WgaWSxbIPNaCzbxQr04jBXfRHaPJRXg+tcdWOpVuuFFaA0EQnHdONbal4O
-         WlpnCz7R/z7I2e88chip8Btg0oKdI/YbNqQBvCLyvDglaf2+HEK9SWGGxWm6ThvJgpno
-         uoXCLbotKWPlMYcU9dFEG5Wl631L83iYUBvqFbeyTfpkcLZOn0Q26eAu7n1ORUx8Abyx
-         Vilg==
-X-Gm-Message-State: AOAM530lMFzJe5h+UTW5cYJfVj2jOK2vEjbqLUkjhM8xwyb3vaxiZxme
-        HrYhOeqobmevIM4slwftz8s=
-X-Google-Smtp-Source: ABdhPJxxXGtyhYKNPjMn5KenHZwRXjmQMFBS4Ovr6doT1BbITKj2ygbJJBvg7ch/3u6iFxAfxHNPgg==
-X-Received: by 2002:a17:90b:4d05:: with SMTP id mw5mr9039646pjb.9.1602494275069;
-        Mon, 12 Oct 2020 02:17:55 -0700 (PDT)
-Received: from [192.168.0.104] ([49.207.200.2])
-        by smtp.gmail.com with ESMTPSA id w205sm19514691pfc.78.2020.10.12.02.17.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Oct 2020 02:17:54 -0700 (PDT)
-Subject: Re: [PATCH net] net: 9p: initialize sun_server.sun_path to have
- addr's value only when addr is valid
-To:     Dominique Martinet <asmadeus@codewreck.org>
-Cc:     ericvh@gmail.com, lucho@ionkov.net, davem@davemloft.net,
-        kuba@kernel.org, v9fs-developer@lists.sourceforge.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        syzbot+75d51fe5bf4ebe988518@syzkaller.appspotmail.com
-References: <20201012042404.2508-1-anant.thazhemadam@gmail.com>
- <20201012075910.GA17745@nautica>
-From:   Anant Thazhemadam <anant.thazhemadam@gmail.com>
-Message-ID: <147004bd-5cff-6240-218d-ebd80a9b48a1@gmail.com>
-Date:   Mon, 12 Oct 2020 14:47:50 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.2
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aB+F+LSfyZ6/dCTwKyQPt5hR5XIkYtzIf7awe/NipxE=;
+        b=qoOpogMtg7WrsN0pcXbX/cakXamTa1UOgRT88f6I2IY7Y1T8AyDNTVYNdK7xTwf0Je
+         mWmlK1E9D5H+V9sUdYDOnc8Xn94sfvGTOxZjdns0x7UYvthk5CEKIJC9y98K53V4tM5K
+         IzV3A+BQL75fLszrDuNfN+n553KS9U5UkMUNrJBhoYhHnyHAXm43jBcpYOe8j1gElDSY
+         bzE3G3SY2Myh47+knyFC+uN64J+cic26ISSfoEm93bFB0nTe8WvszlMpmuCpcrHzM20E
+         SvvCSORo4XZj7YZynKyGhGo4zntPxvlzzfypbnTkKx/S6kukRfOIjm98dkfRZGFx7ZNr
+         qfww==
+X-Gm-Message-State: AOAM532QVnLCk59x8Dr1Mv7BE7Jti/4/ZdsJH/DslNpcsx2WEYIGdXtA
+        5sa6e8DozRwoETk0KzMKP+zSiw==
+X-Google-Smtp-Source: ABdhPJx5XFsHT27Sb+fbFnWQZZXJQ6H7gYYZAkdJY19fb6/Z4DDcglvpr773N2/AJurdT8ugzMOygQ==
+X-Received: by 2002:a17:906:4e06:: with SMTP id z6mr28296939eju.370.1602494393813;
+        Mon, 12 Oct 2020 02:19:53 -0700 (PDT)
+Received: from antares.fritz.box (p200300c1c70304000403afa763d01b3d.dip0.t-ipconnect.de. [2003:c1:c703:400:403:afa7:63d0:1b3d])
+        by smtp.gmail.com with ESMTPSA id q12sm10396834edj.19.2020.10.12.02.19.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Oct 2020 02:19:53 -0700 (PDT)
+From:   Lorenz Bauer <lmb@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>, Yonghong Song <yhs@fb.com>
+Cc:     kernel-team@cloudflare.com, kernel test robot <lkp@intel.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH bpf] bpf: sockmap: add locking annotations to iterator
+Date:   Mon, 12 Oct 2020 11:18:50 +0200
+Message-Id: <20201012091850.67452-1-lmb@cloudflare.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20201012075910.GA17745@nautica>
-Content-Type: text/plain; charset=windows-1252
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The sparse checker currently outputs the following warnings:
 
-On 12-10-2020 13:29, Dominique Martinet wrote:
-> Anant Thazhemadam wrote on Mon, Oct 12, 2020:
->> In p9_fd_create_unix, checking is performed to see if the addr (passed
->> as an argument) is NULL or not.
->> However, no check is performed to see if addr is a valid address, i.e.,
->> it doesn't entirely consist of only 0's.
->> The initialization of sun_server.sun_path to be equal to this faulty
->> addr value leads to an uninitialized variable, as detected by KMSAN.
->> Checking for this (faulty addr) and returning a negative error number
->> appropriately, resolves this issue.
-> I'm not sure I agree a fully zeroed address is faulty but I agree we can
-> probably refuse it given userspace can't pass useful abstract addresses
-> here.
+    include/linux/rcupdate.h:632:9: sparse: sparse: context imbalance in 'sock_hash_seq_start' - wrong count at exit
+    include/linux/rcupdate.h:632:9: sparse: sparse: context imbalance in 'sock_map_seq_start' - wrong count at exit
 
+Add the necessary __acquires and __release annotations to make the
+iterator locking schema palatable to sparse. Also add __must_hold
+for good measure.
 
-Understood. It's  probably a better that I modify the commit message a little and
-send a v2 so it becomes more accurate.
+The kernel codebase uses both __acquires(rcu) and __acquires(RCU).
+I couldn't find any guidance which one is preferred, so I used
+what is easier to type out.
 
-> Just one nitpick but this is otherwise fine - good catch!
+Fixes: 0365351524d7 ("net: Allow iterating sockmap and sockhash")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Lorenz Bauer <lmb@cloudflare.com>
+---
+ net/core/sock_map.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-Thank you!
-
->
->> Reported-by: syzbot+75d51fe5bf4ebe988518@syzkaller.appspotmail.com
->> Tested-by: syzbot+75d51fe5bf4ebe988518@syzkaller.appspotmail.com
->> Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
->> ---
->>  net/9p/trans_fd.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
->> index c0762a302162..8f528e783a6c 100644
->> --- a/net/9p/trans_fd.c
->> +++ b/net/9p/trans_fd.c
->> @@ -1023,7 +1023,7 @@ p9_fd_create_unix(struct p9_client *client, const char *addr, char *args)
->>  
->>  	csocket = NULL;
->>  
->> -	if (addr == NULL)
->> +	if (!addr || !strlen(addr))
-> Since we don't care about the actual length here, how about checking for
-> addr[0] directly?
-> That'll spare a strlen() call in the valid case.
->
-You mentioned how a fully zeroed address isn't exactly faulty. By extension, wouldn't that
-mean that an address that simply begins with a 0 isn't faulty as well?
-This is an interesting point, because if the condition is modified to checking for addr[0] directly,
-addresses that simply begin with 0 (but have more non-zero content following) wouldn't be
-copied over either, right?
-In the end, it comes down to what you define as a "valid" value that sun_path can have.
-We've already agreed that a fully zeroed address wouldn't qualify as a valid value for sun_path.
-Are addresses that aren't fully zeroed, but only begin with a 0 also to be considered as an
-unacceptable value for sun_path?
-
-Thanks,
-Anant
-
-
-
+diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+index df09c39a4dd2..203900a6ca5f 100644
+--- a/net/core/sock_map.c
++++ b/net/core/sock_map.c
+@@ -745,6 +745,7 @@ static void *sock_map_seq_lookup_elem(struct sock_map_seq_info *info)
+ }
+ 
+ static void *sock_map_seq_start(struct seq_file *seq, loff_t *pos)
++	__acquires(rcu)
+ {
+ 	struct sock_map_seq_info *info = seq->private;
+ 
+@@ -757,6 +758,7 @@ static void *sock_map_seq_start(struct seq_file *seq, loff_t *pos)
+ }
+ 
+ static void *sock_map_seq_next(struct seq_file *seq, void *v, loff_t *pos)
++	__must_hold(rcu)
+ {
+ 	struct sock_map_seq_info *info = seq->private;
+ 
+@@ -767,6 +769,7 @@ static void *sock_map_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+ }
+ 
+ static int sock_map_seq_show(struct seq_file *seq, void *v)
++	__must_hold(rcu)
+ {
+ 	struct sock_map_seq_info *info = seq->private;
+ 	struct bpf_iter__sockmap ctx = {};
+@@ -789,6 +792,7 @@ static int sock_map_seq_show(struct seq_file *seq, void *v)
+ }
+ 
+ static void sock_map_seq_stop(struct seq_file *seq, void *v)
++	__releases(rcu)
+ {
+ 	if (!v)
+ 		(void)sock_map_seq_show(seq, NULL);
+@@ -1353,6 +1357,7 @@ static void *sock_hash_seq_find_next(struct sock_hash_seq_info *info,
+ }
+ 
+ static void *sock_hash_seq_start(struct seq_file *seq, loff_t *pos)
++	__acquires(rcu)
+ {
+ 	struct sock_hash_seq_info *info = seq->private;
+ 
+@@ -1365,6 +1370,7 @@ static void *sock_hash_seq_start(struct seq_file *seq, loff_t *pos)
+ }
+ 
+ static void *sock_hash_seq_next(struct seq_file *seq, void *v, loff_t *pos)
++	__must_hold(rcu)
+ {
+ 	struct sock_hash_seq_info *info = seq->private;
+ 
+@@ -1373,6 +1379,7 @@ static void *sock_hash_seq_next(struct seq_file *seq, void *v, loff_t *pos)
+ }
+ 
+ static int sock_hash_seq_show(struct seq_file *seq, void *v)
++	__must_hold(rcu)
+ {
+ 	struct sock_hash_seq_info *info = seq->private;
+ 	struct bpf_iter__sockmap ctx = {};
+@@ -1396,6 +1403,7 @@ static int sock_hash_seq_show(struct seq_file *seq, void *v)
+ }
+ 
+ static void sock_hash_seq_stop(struct seq_file *seq, void *v)
++	__releases(rcu)
+ {
+ 	if (!v)
+ 		(void)sock_hash_seq_show(seq, NULL);
+-- 
+2.25.1
 
