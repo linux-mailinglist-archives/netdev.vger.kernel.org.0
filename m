@@ -2,126 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE4B028B033
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 10:25:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7320428B03B
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 10:27:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726567AbgJLIZx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 04:25:53 -0400
-Received: from mail-out.m-online.net ([212.18.0.9]:57395 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726130AbgJLIZx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 04:25:53 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4C8sFV2Bgyz1r6n6;
-        Mon, 12 Oct 2020 10:25:50 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4C8sFT6mDMz1qtZD;
-        Mon, 12 Oct 2020 10:25:49 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id PMlXL_AF067s; Mon, 12 Oct 2020 10:25:47 +0200 (CEST)
-X-Auth-Info: IUOEMG6j6w6T+7mO+bcViJsS5TlYYJ79Hmo2WCJ5uFE=
-Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Mon, 12 Oct 2020 10:25:47 +0200 (CEST)
-Subject: Re: PHY reset question
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Bruno Thomsen <bruno.thomsen@gmail.com>
-Cc:     Fabio Estevam <festevam@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        David Jander <david@protonic.nl>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Florian Fainelli <f.fainelli@gmail.com>
-References: <20201006080424.GA6988@pengutronix.de>
- <CAOMZO5Ds7mm4dWdt_a+HU=V40zjp006JQJbozRCicx9yiqacgg@mail.gmail.com>
- <CAH+2xPD=CE+pk_cEC=cLv1nebBBg7X+xDpOFANf3rQ4V2+2Cvw@mail.gmail.com>
- <20201012054839.n6do5ruxhbhc7h7n@pengutronix.de>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <cbb3aecd-5bcd-7221-2b0a-0ba91c9a55c0@denx.de>
-Date:   Mon, 12 Oct 2020 10:25:46 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1726832AbgJLI1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 04:27:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39194 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726130AbgJLI1i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 04:27:38 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40B6EC0613CE
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 01:27:38 -0700 (PDT)
+Received: from heimdall.vpn.pengutronix.de ([2001:67c:670:205:1d::14] helo=blackshift.org)
+        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kRtBA-0004Ow-Oc; Mon, 12 Oct 2020 10:27:36 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: pull-request: can-next 2020-10-12
+Date:   Mon, 12 Oct 2020 10:27:25 +0200
+Message-Id: <20201012082727.2338859-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-In-Reply-To: <20201012054839.n6do5ruxhbhc7h7n@pengutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:205:1d::14
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/12/20 7:48 AM, Oleksij Rempel wrote:
-> Hi all,
-> 
-> thank you for the feedback!
-> 
-> On Fri, Oct 09, 2020 at 04:25:49PM +0200, Bruno Thomsen wrote:
->> Hi Fabio and Oleksij
->>
->> Den ons. 7. okt. 2020 kl. 11.50 skrev Fabio Estevam <festevam@gmail.com>:
->>>
->>> Hi Oleksij,
->>>
->>> On Tue, Oct 6, 2020 at 5:05 AM Oleksij Rempel <o.rempel@pengutronix.de> wrote:
->>>>
->>>> Hello PHY experts,
->>>>
->>>> Short version:
->>>> what is the proper way to handle the PHY reset before identifying PHY?
->>>>
->>>> Long version:
->>>> I stumbled over following issue:
->>>> If PHY reset is registered within PHY node. Then, sometimes,  we will not be
->>>> able to identify it (read PHY ID), because PHY is under reset.
->>>>
->>>> mdio {
->>>>         compatible = "virtual,mdio-gpio";
->>>>
->>>>         [...]
->>>>
->>>>         /* Microchip KSZ8081 */
->>>>         usbeth_phy: ethernet-phy@3 {
->>>>                 reg = <0x3>;
->>>>
->>>>                 interrupts-extended = <&gpio5 12 IRQ_TYPE_LEVEL_LOW>;
->>>>                 reset-gpios = <&gpio5 11 GPIO_ACTIVE_LOW>;
->>>>                 reset-assert-us = <500>;
->>>>                 reset-deassert-us = <1000>;
->>>>         };
->>>>
->>>>         [...]
->>>> };
->>>>
->>>> On simple boards with one PHY per MDIO bus, it is easy to workaround by using
->>>> phy-reset-gpios withing MAC node (illustrated in below DT example), instead of
->>>> using reset-gpios within PHY node (see above DT example).
->>>>
->>>> &fec {
->>>>         [...]
->>>>         phy-mode = "rmii";
->>>>         phy-reset-gpios = <&gpio4 12 GPIO_ACTIVE_LOW>;
->>>>         [...]
->>>
->>> I thought this has been fixed by Bruno's series:
->>> https://www.spinics.net/lists/netdev/msg673611.html
->>
->> Yes, that has fixed the Microchip/Micrel PHY ID auto detection
->> issue. I have send a DTS patch v3 that makes use of the newly
->> added device tree parameter:
->> https://lkml.org/lkml/2020/9/23/595
-> 
-> This way is suitable only for boards with single PHY and single reset
-> line. But it is not scale on boards with multiple PHY and multiple reset
-> lines.
-> 
-> So far, it looks like using compatible like "ethernet-phy-idXXXX.XXXX"
-> is the only way to go.
+Hello Jakub, hello David,
 
-I did further digging in this, and I agree it is either this or reset in
-boot loader, sigh.
+here's a pull request of two patches for net-next/master.
+
+Both patches are by Oliver Hartkopp, the first one addresses Jakub's review
+comments of the ISOTP protocol, the other one removes version strings from
+various CAN protocols.
+
+regrads,
+Marc
+
+---
+
+The following changes since commit bc081a693a56061f68f736c5d596134ee3c87689:
+
+  Merge branch 'Offload-tc-vlan-mangle-to-mscc_ocelot-switch' (2020-10-11 11:19:25 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git tags/linux-can-next-for-5.10-20201012
+
+for you to fetch changes up to f726f3d37163f714034aa5fd1f92a1a73df4297f:
+
+  can: remove obsolete version strings (2020-10-12 10:06:39 +0200)
+
+----------------------------------------------------------------
+linux-can-next-for-5.10-20201012
+
+----------------------------------------------------------------
+Oliver Hartkopp (2):
+      can: isotp: implement cleanups / improvements from review
+      can: remove obsolete version strings
+
+ include/linux/can/core.h       |  7 -------
+ include/net/netns/can.h        |  1 -
+ include/uapi/linux/can/isotp.h |  1 -
+ net/can/Kconfig                |  3 ++-
+ net/can/af_can.c               |  2 +-
+ net/can/bcm.c                  |  4 +---
+ net/can/gw.c                   |  4 +---
+ net/can/isotp.c                | 18 ++++++++----------
+ net/can/proc.c                 | 12 ------------
+ net/can/raw.c                  |  4 +---
+ 10 files changed, 14 insertions(+), 42 deletions(-)
+
+
+
