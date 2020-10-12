@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA37D28BA44
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 16:08:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E854328BA40
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 16:08:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391169AbgJLOHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 10:07:38 -0400
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:55756 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391039AbgJLOGl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 10:06:41 -0400
+        id S2391154AbgJLOHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 10:07:13 -0400
+Received: from esa2.microchip.iphmx.com ([68.232.149.84]:1309 "EHLO
+        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391108AbgJLOGo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 10:06:44 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1602511600; x=1634047600;
+  t=1602511603; x=1634047603;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=crU6DD77k7Sut/mtgCsOKsugr0LgbVzRcfG8ovBIfg0=;
-  b=faDOQewIfTfb2NZU89hlQP7O9p865y/aZI5u/9RxZVSDrq7r5xtnsfnG
-   Uh2n7klPX+2Z+UKiH0KudRRG2+5W7U5YkVAHRBVQxgyeH5PGUs/2IS9tG
-   +pVosQeTG3PwS2ejwZP85cdwewRONA980TuPOcvpdpUSRreeKWn4Z42V6
-   Mhy2tCT9wQBJ4hZG6C7PrRaMsY83WX+66k30+VpfIhjIjdAxPwmP64Z6p
-   7aMKZQjn2tQVwH8xH36+hlPbRCmQoelVJEYiwKh9KGp/gcpsivnRbaExh
-   DJfU95pvk28NM5eARFfUIC8LOV/t48penzP44g/uW4MqHboD1dbLU8yhg
-   g==;
-IronPort-SDR: 42y8Fb+cFdCDgUuc/0swlChL9h6D1tncMRYnBxsdbPIK2A4eyXW5fAeeqIibtwgyWWLYa5gmcl
- nOIHQ7vio/d31nYxmWTDiSKtX+YW9xiXVsIXzBq8yVp8rED9j5oMIGrCzNlIStMY2Mu1pAwi6v
- ck1U1D3kelAXZK6GBr4A13R6yjjY9COQPGXqTjdxmQszG25K7pY9EcctM9B2qgFELJpb50AKDH
- imRJeWdus7NA41mi7GBINsNAd/XTVoe3rIJjuNGc6s6ol6RvXaw1So4UX6Sb8QEyydXYPe2rWx
- xOo=
+  bh=HbeMCc+hOmuHjA47q19RJzL7fviNcUhMbPII/soGdqw=;
+  b=WAWeRhH3GyqUmzJiWm0G3A1mupnnUsf7x1y9lqqGhIxCL/TLR+uRcnrI
+   2hzTOKV8NbET4WPveeE6WJyEdgwibT/oGJKGBQIvtTU5OxSRWNi5zcacL
+   UoBhTcRT9BUeCMI+cNG0JQ+g4ap1N5rD+srE0QifdkhMs7bQEkxY5lNK9
+   GwMyv3ER1mmAGtmuc0HGsrcJyRrVOk7YEpdVgO0Z9liS6E018EAHVVKza
+   frT0dCXUlK7+achTIlvzDtNwMujQNtCOfkhdxalmLjmfw/qvZpQirWAFZ
+   5tbqPHugh3xUYLBwoUU/rBBwb5qTWk9YBv46H8iMe5yjU/Hrjv2nLRkrg
+   A==;
+IronPort-SDR: S1a1zHGf6k0Itf63NzwHyrzuImntVfjus0uIa0BR3qGai1fvYBgAw+anwZMnfIZYVXw1upT6+r
+ 4+0gNKVl4VMv8jL9NW2QZHJvWaGddDLqJePM9lmSDCXPEsJYHytWb1d0/P0RMnmKyJ+3Noc5mA
+ D68rnl3Tyyp7eC956Vn2Z7DhLcMyugQZJVfT5Te6H59+P5NbJv1cKaKhe5YviAZms0k0REznmu
+ pjuYI3Qm2J78Og+fqDo1VUDACtPbCiD3F+fa0Dq2LtzG76F66Frm2NFXzqJ4PMMORhzJSV/kYn
+ NnY=
 X-IronPort-AV: E=Sophos;i="5.77,366,1596524400"; 
-   d="scan'208";a="95019189"
+   d="scan'208";a="92295956"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Oct 2020 07:06:40 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Oct 2020 07:06:42 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 12 Oct 2020 07:06:40 -0700
+ 15.1.1979.3; Mon, 12 Oct 2020 07:06:42 -0700
 Received: from soft-test08.microsemi.net (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Mon, 12 Oct 2020 07:06:37 -0700
+ 15.1.1979.3 via Frontend Transport; Mon, 12 Oct 2020 07:06:40 -0700
 From:   Henrik Bjoernlund <henrik.bjoernlund@microchip.com>
 To:     <davem@davemloft.net>, <kuba@kernel.org>, <roopa@nvidia.com>,
         <nikolay@nvidia.com>, <jiri@mellanox.com>, <idosch@mellanox.com>,
@@ -47,9 +47,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>, <roopa@nvidia.com>,
         <bridge@lists.linux-foundation.org>, <UNGLinuxDriver@microchip.com>
 CC:     Henrik Bjoernlund <henrik.bjoernlund@microchip.com>,
         Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v5 07/10] bridge: cfm: Netlink SET configuration Interface.
-Date:   Mon, 12 Oct 2020 14:04:25 +0000
-Message-ID: <20201012140428.2549163-8-henrik.bjoernlund@microchip.com>
+Subject: [PATCH net-next v5 08/10] bridge: cfm: Netlink GET configuration Interface.
+Date:   Mon, 12 Oct 2020 14:04:26 +0000
+Message-ID: <20201012140428.2549163-9-henrik.bjoernlund@microchip.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201012140428.2549163-1-henrik.bjoernlund@microchip.com>
 References: <20201012140428.2549163-1-henrik.bjoernlund@microchip.com>
@@ -61,37 +61,37 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is the implementation of CFM netlink configuration
-set information interface.
+get information interface.
 
 Add new nested netlink attributes. These attributes are used by the
-user space to create/delete/configure CFM instances.
+user space to get configuration information.
 
-SETLINK:
+GETLINK:
+    Request filter RTEXT_FILTER_CFM_CONFIG:
+    Indicating that CFM configuration information must be delivered.
+
     IFLA_BRIDGE_CFM:
-        Indicate that the following attributes are CFM.
+        Points to the CFM information.
 
-    IFLA_BRIDGE_CFM_MEP_CREATE:
-        This indicate that a MEP instance must be created.
-    IFLA_BRIDGE_CFM_MEP_DELETE:
-        This indicate that a MEP instance must be deleted.
-    IFLA_BRIDGE_CFM_MEP_CONFIG:
-        This indicate that a MEP instance must be configured.
-    IFLA_BRIDGE_CFM_CC_CONFIG:
-        This indicate that a MEP instance Continuity Check (CC)
-        functionality must be configured.
-    IFLA_BRIDGE_CFM_CC_PEER_MEP_ADD:
-        This indicate that a CC Peer MEP must be added.
-    IFLA_BRIDGE_CFM_CC_PEER_MEP_REMOVE:
-        This indicate that a CC Peer MEP must be removed.
-    IFLA_BRIDGE_CFM_CC_CCM_TX:
-        This indicate that the CC transmitted CCM PDU must be configured.
-    IFLA_BRIDGE_CFM_CC_RDI:
-        This indicate that the CC transmitted CCM PDU RDI must be
-        configured.
+    IFLA_BRIDGE_CFM_MEP_CREATE_INFO:
+        This indicate that MEP instance create parameters are following.
+    IFLA_BRIDGE_CFM_MEP_CONFIG_INFO:
+        This indicate that MEP instance config parameters are following.
+    IFLA_BRIDGE_CFM_CC_CONFIG_INFO:
+        This indicate that MEP instance CC functionality
+        parameters are following.
+    IFLA_BRIDGE_CFM_CC_RDI_INFO:
+        This indicate that CC transmitted CCM PDU RDI
+        parameters are following.
+    IFLA_BRIDGE_CFM_CC_CCM_TX_INFO:
+        This indicate that CC transmitted CCM PDU parameters are
+        following.
+    IFLA_BRIDGE_CFM_CC_PEER_MEP_INFO:
+        This indicate that the added peer MEP IDs are following.
 
 CFM nested attribute has the following attributes in next level.
 
-SETLINK RTEXT_FILTER_CFM_CONFIG:
+GETLINK RTEXT_FILTER_CFM_CONFIG:
     IFLA_BRIDGE_CFM_MEP_CREATE_INSTANCE:
         The created MEP instance number.
         The type is u32.
@@ -199,670 +199,284 @@ SETLINK RTEXT_FILTER_CFM_CONFIG:
 
 Signed-off-by: Henrik Bjoernlund  <henrik.bjoernlund@microchip.com>
 Reviewed-by: Horatiu Vultur  <horatiu.vultur@microchip.com>
-Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 ---
- include/uapi/linux/if_bridge.h |  90 +++++++
- include/uapi/linux/rtnetlink.h |   1 +
- net/bridge/Makefile            |   2 +-
- net/bridge/br_cfm.c            |   5 +
- net/bridge/br_cfm_netlink.c    | 453 +++++++++++++++++++++++++++++++++
- net/bridge/br_netlink.c        |   5 +
- net/bridge/br_private.h        |  17 +-
- 7 files changed, 571 insertions(+), 2 deletions(-)
- create mode 100644 net/bridge/br_cfm_netlink.c
+ include/uapi/linux/if_bridge.h |   6 ++
+ net/bridge/br_cfm_netlink.c    | 161 +++++++++++++++++++++++++++++++++
+ net/bridge/br_netlink.c        |  29 +++++-
+ net/bridge/br_private.h        |   6 ++
+ 4 files changed, 200 insertions(+), 2 deletions(-)
 
 diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bridge.h
-index 4c687686aa8f..94cc9444d749 100644
+index 94cc9444d749..b8b4491922d9 100644
 --- a/include/uapi/linux/if_bridge.h
 +++ b/include/uapi/linux/if_bridge.h
-@@ -121,6 +121,7 @@ enum {
- 	IFLA_BRIDGE_VLAN_INFO,
- 	IFLA_BRIDGE_VLAN_TUNNEL_INFO,
- 	IFLA_BRIDGE_MRP,
-+	IFLA_BRIDGE_CFM,
- 	__IFLA_BRIDGE_MAX,
+@@ -339,6 +339,12 @@ enum {
+ 	IFLA_BRIDGE_CFM_CC_PEER_MEP_REMOVE,
+ 	IFLA_BRIDGE_CFM_CC_RDI,
+ 	IFLA_BRIDGE_CFM_CC_CCM_TX,
++	IFLA_BRIDGE_CFM_MEP_CREATE_INFO,
++	IFLA_BRIDGE_CFM_MEP_CONFIG_INFO,
++	IFLA_BRIDGE_CFM_CC_CONFIG_INFO,
++	IFLA_BRIDGE_CFM_CC_RDI_INFO,
++	IFLA_BRIDGE_CFM_CC_CCM_TX_INFO,
++	IFLA_BRIDGE_CFM_CC_PEER_MEP_INFO,
+ 	__IFLA_BRIDGE_CFM_MAX,
  };
- #define IFLA_BRIDGE_MAX (__IFLA_BRIDGE_MAX - 1)
-@@ -328,6 +329,95 @@ struct br_mrp_start_in_test {
- 	__u16 in_id;
- };
  
-+enum {
-+	IFLA_BRIDGE_CFM_UNSPEC,
-+	IFLA_BRIDGE_CFM_MEP_CREATE,
-+	IFLA_BRIDGE_CFM_MEP_DELETE,
-+	IFLA_BRIDGE_CFM_MEP_CONFIG,
-+	IFLA_BRIDGE_CFM_CC_CONFIG,
-+	IFLA_BRIDGE_CFM_CC_PEER_MEP_ADD,
-+	IFLA_BRIDGE_CFM_CC_PEER_MEP_REMOVE,
-+	IFLA_BRIDGE_CFM_CC_RDI,
-+	IFLA_BRIDGE_CFM_CC_CCM_TX,
-+	__IFLA_BRIDGE_CFM_MAX,
-+};
-+
-+#define IFLA_BRIDGE_CFM_MAX (__IFLA_BRIDGE_CFM_MAX - 1)
-+
-+enum {
-+	IFLA_BRIDGE_CFM_MEP_CREATE_UNSPEC,
-+	IFLA_BRIDGE_CFM_MEP_CREATE_INSTANCE,
-+	IFLA_BRIDGE_CFM_MEP_CREATE_DOMAIN,
-+	IFLA_BRIDGE_CFM_MEP_CREATE_DIRECTION,
-+	IFLA_BRIDGE_CFM_MEP_CREATE_IFINDEX,
-+	__IFLA_BRIDGE_CFM_MEP_CREATE_MAX,
-+};
-+
-+#define IFLA_BRIDGE_CFM_MEP_CREATE_MAX (__IFLA_BRIDGE_CFM_MEP_CREATE_MAX - 1)
-+
-+enum {
-+	IFLA_BRIDGE_CFM_MEP_DELETE_UNSPEC,
-+	IFLA_BRIDGE_CFM_MEP_DELETE_INSTANCE,
-+	__IFLA_BRIDGE_CFM_MEP_DELETE_MAX,
-+};
-+
-+#define IFLA_BRIDGE_CFM_MEP_DELETE_MAX (__IFLA_BRIDGE_CFM_MEP_DELETE_MAX - 1)
-+
-+enum {
-+	IFLA_BRIDGE_CFM_MEP_CONFIG_UNSPEC,
-+	IFLA_BRIDGE_CFM_MEP_CONFIG_INSTANCE,
-+	IFLA_BRIDGE_CFM_MEP_CONFIG_UNICAST_MAC,
-+	IFLA_BRIDGE_CFM_MEP_CONFIG_MDLEVEL,
-+	IFLA_BRIDGE_CFM_MEP_CONFIG_MEPID,
-+	__IFLA_BRIDGE_CFM_MEP_CONFIG_MAX,
-+};
-+
-+#define IFLA_BRIDGE_CFM_MEP_CONFIG_MAX (__IFLA_BRIDGE_CFM_MEP_CONFIG_MAX - 1)
-+
-+enum {
-+	IFLA_BRIDGE_CFM_CC_CONFIG_UNSPEC,
-+	IFLA_BRIDGE_CFM_CC_CONFIG_INSTANCE,
-+	IFLA_BRIDGE_CFM_CC_CONFIG_ENABLE,
-+	IFLA_BRIDGE_CFM_CC_CONFIG_EXP_INTERVAL,
-+	IFLA_BRIDGE_CFM_CC_CONFIG_EXP_MAID,
-+	__IFLA_BRIDGE_CFM_CC_CONFIG_MAX,
-+};
-+
-+#define IFLA_BRIDGE_CFM_CC_CONFIG_MAX (__IFLA_BRIDGE_CFM_CC_CONFIG_MAX - 1)
-+
-+enum {
-+	IFLA_BRIDGE_CFM_CC_PEER_MEP_UNSPEC,
-+	IFLA_BRIDGE_CFM_CC_PEER_MEP_INSTANCE,
-+	IFLA_BRIDGE_CFM_CC_PEER_MEPID,
-+	__IFLA_BRIDGE_CFM_CC_PEER_MEP_MAX,
-+};
-+
-+#define IFLA_BRIDGE_CFM_CC_PEER_MEP_MAX (__IFLA_BRIDGE_CFM_CC_PEER_MEP_MAX - 1)
-+
-+enum {
-+	IFLA_BRIDGE_CFM_CC_RDI_UNSPEC,
-+	IFLA_BRIDGE_CFM_CC_RDI_INSTANCE,
-+	IFLA_BRIDGE_CFM_CC_RDI_RDI,
-+	__IFLA_BRIDGE_CFM_CC_RDI_MAX,
-+};
-+
-+#define IFLA_BRIDGE_CFM_CC_RDI_MAX (__IFLA_BRIDGE_CFM_CC_RDI_MAX - 1)
-+
-+enum {
-+	IFLA_BRIDGE_CFM_CC_CCM_TX_UNSPEC,
-+	IFLA_BRIDGE_CFM_CC_CCM_TX_INSTANCE,
-+	IFLA_BRIDGE_CFM_CC_CCM_TX_DMAC,
-+	IFLA_BRIDGE_CFM_CC_CCM_TX_SEQ_NO_UPDATE,
-+	IFLA_BRIDGE_CFM_CC_CCM_TX_PERIOD,
-+	IFLA_BRIDGE_CFM_CC_CCM_TX_IF_TLV,
-+	IFLA_BRIDGE_CFM_CC_CCM_TX_IF_TLV_VALUE,
-+	IFLA_BRIDGE_CFM_CC_CCM_TX_PORT_TLV,
-+	IFLA_BRIDGE_CFM_CC_CCM_TX_PORT_TLV_VALUE,
-+	__IFLA_BRIDGE_CFM_CC_CCM_TX_MAX,
-+};
-+
-+#define IFLA_BRIDGE_CFM_CC_CCM_TX_MAX (__IFLA_BRIDGE_CFM_CC_CCM_TX_MAX - 1)
-+
- struct bridge_stp_xstats {
- 	__u64 transition_blk;
- 	__u64 transition_fwd;
-diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
-index 9b814c92de12..ffc9ca1f2bdb 100644
---- a/include/uapi/linux/rtnetlink.h
-+++ b/include/uapi/linux/rtnetlink.h
-@@ -779,6 +779,7 @@ enum {
- #define RTEXT_FILTER_BRVLAN_COMPRESSED	(1 << 2)
- #define	RTEXT_FILTER_SKIP_STATS	(1 << 3)
- #define RTEXT_FILTER_MRP	(1 << 4)
-+#define RTEXT_FILTER_CFM_CONFIG	(1 << 5)
+diff --git a/net/bridge/br_cfm_netlink.c b/net/bridge/br_cfm_netlink.c
+index 6558fa95630e..e7bfb8e003e8 100644
+--- a/net/bridge/br_cfm_netlink.c
++++ b/net/bridge/br_cfm_netlink.c
+@@ -451,3 +451,164 @@ int br_cfm_parse(struct net_bridge *br, struct net_bridge_port *p,
  
- /* End of information exported to user level */
- 
-diff --git a/net/bridge/Makefile b/net/bridge/Makefile
-index ddc0a9192348..4702702a74d3 100644
---- a/net/bridge/Makefile
-+++ b/net/bridge/Makefile
-@@ -28,4 +28,4 @@ obj-$(CONFIG_NETFILTER) += netfilter/
- 
- bridge-$(CONFIG_BRIDGE_MRP)	+= br_mrp_switchdev.o br_mrp.o br_mrp_netlink.o
- 
--bridge-$(CONFIG_BRIDGE_CFM)	+= br_cfm.o
-+bridge-$(CONFIG_BRIDGE_CFM)	+= br_cfm.o br_cfm_netlink.o
-diff --git a/net/bridge/br_cfm.c b/net/bridge/br_cfm.c
-index d928de5de155..c8de462c2fd4 100644
---- a/net/bridge/br_cfm.c
-+++ b/net/bridge/br_cfm.c
-@@ -816,6 +816,11 @@ int br_cfm_cc_ccm_tx(struct net_bridge *br, const u32 instance,
  	return 0;
  }
- 
-+bool br_cfm_created(struct net_bridge *br)
++
++int br_cfm_config_fill_info(struct sk_buff *skb, struct net_bridge *br)
 +{
-+	return !hlist_empty(&br->mep_list);
-+}
-+
- /* Deletes the CFM instances on a specific bridge port
-  */
- void br_cfm_port_del(struct net_bridge *br, struct net_bridge_port *port)
-diff --git a/net/bridge/br_cfm_netlink.c b/net/bridge/br_cfm_netlink.c
-new file mode 100644
-index 000000000000..6558fa95630e
---- /dev/null
-+++ b/net/bridge/br_cfm_netlink.c
-@@ -0,0 +1,453 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+
-+#include <net/genetlink.h>
-+
-+#include "br_private.h"
-+#include "br_private_cfm.h"
-+
-+static const struct nla_policy
-+br_cfm_mep_create_policy[IFLA_BRIDGE_CFM_MEP_CREATE_MAX + 1] = {
-+	[IFLA_BRIDGE_CFM_MEP_CREATE_UNSPEC]	= { .type = NLA_REJECT },
-+	[IFLA_BRIDGE_CFM_MEP_CREATE_INSTANCE]	= { .type = NLA_U32 },
-+	[IFLA_BRIDGE_CFM_MEP_CREATE_DOMAIN]	= { .type = NLA_U32 },
-+	[IFLA_BRIDGE_CFM_MEP_CREATE_DIRECTION]	= { .type = NLA_U32 },
-+	[IFLA_BRIDGE_CFM_MEP_CREATE_IFINDEX]	= { .type = NLA_U32 },
-+};
-+
-+static const struct nla_policy
-+br_cfm_mep_delete_policy[IFLA_BRIDGE_CFM_MEP_DELETE_MAX + 1] = {
-+	[IFLA_BRIDGE_CFM_MEP_DELETE_UNSPEC]	= { .type = NLA_REJECT },
-+	[IFLA_BRIDGE_CFM_MEP_DELETE_INSTANCE]	= { .type = NLA_U32 },
-+};
-+
-+static const struct nla_policy
-+br_cfm_mep_config_policy[IFLA_BRIDGE_CFM_MEP_CONFIG_MAX + 1] = {
-+	[IFLA_BRIDGE_CFM_MEP_CONFIG_UNSPEC]		= { .type = NLA_REJECT },
-+	[IFLA_BRIDGE_CFM_MEP_CONFIG_INSTANCE]		= { .type = NLA_U32 },
-+	[IFLA_BRIDGE_CFM_MEP_CONFIG_UNICAST_MAC]	= NLA_POLICY_ETH_ADDR,
-+	[IFLA_BRIDGE_CFM_MEP_CONFIG_MDLEVEL]		= { .type = NLA_U32 },
-+	[IFLA_BRIDGE_CFM_MEP_CONFIG_MEPID]		= { .type = NLA_U32 },
-+};
-+
-+static const struct nla_policy
-+br_cfm_cc_config_policy[IFLA_BRIDGE_CFM_CC_CONFIG_MAX + 1] = {
-+	[IFLA_BRIDGE_CFM_CC_CONFIG_UNSPEC]		= { .type = NLA_REJECT },
-+	[IFLA_BRIDGE_CFM_CC_CONFIG_INSTANCE]		= { .type = NLA_U32 },
-+	[IFLA_BRIDGE_CFM_CC_CONFIG_ENABLE]		= { .type = NLA_U32 },
-+	[IFLA_BRIDGE_CFM_CC_CONFIG_EXP_INTERVAL]	= { .type = NLA_U32 },
-+	[IFLA_BRIDGE_CFM_CC_CONFIG_EXP_MAID]	= {
-+	.type = NLA_BINARY, .len = CFM_MAID_LENGTH },
-+};
-+
-+static const struct nla_policy
-+br_cfm_cc_peer_mep_policy[IFLA_BRIDGE_CFM_CC_PEER_MEP_MAX + 1] = {
-+	[IFLA_BRIDGE_CFM_CC_PEER_MEP_UNSPEC]	= { .type = NLA_REJECT },
-+	[IFLA_BRIDGE_CFM_CC_PEER_MEP_INSTANCE]	= { .type = NLA_U32 },
-+	[IFLA_BRIDGE_CFM_CC_PEER_MEPID]		= { .type = NLA_U32 },
-+};
-+
-+static const struct nla_policy
-+br_cfm_cc_rdi_policy[IFLA_BRIDGE_CFM_CC_RDI_MAX + 1] = {
-+	[IFLA_BRIDGE_CFM_CC_RDI_UNSPEC]		= { .type = NLA_REJECT },
-+	[IFLA_BRIDGE_CFM_CC_RDI_INSTANCE]	= { .type = NLA_U32 },
-+	[IFLA_BRIDGE_CFM_CC_RDI_RDI]		= { .type = NLA_U32 },
-+};
-+
-+static const struct nla_policy
-+br_cfm_cc_ccm_tx_policy[IFLA_BRIDGE_CFM_CC_CCM_TX_MAX + 1] = {
-+	[IFLA_BRIDGE_CFM_CC_CCM_TX_UNSPEC]		= { .type = NLA_REJECT },
-+	[IFLA_BRIDGE_CFM_CC_CCM_TX_INSTANCE]		= { .type = NLA_U32 },
-+	[IFLA_BRIDGE_CFM_CC_CCM_TX_DMAC]		= NLA_POLICY_ETH_ADDR,
-+	[IFLA_BRIDGE_CFM_CC_CCM_TX_SEQ_NO_UPDATE]	= { .type = NLA_U32 },
-+	[IFLA_BRIDGE_CFM_CC_CCM_TX_PERIOD]		= { .type = NLA_U32 },
-+	[IFLA_BRIDGE_CFM_CC_CCM_TX_IF_TLV]		= { .type = NLA_U32 },
-+	[IFLA_BRIDGE_CFM_CC_CCM_TX_IF_TLV_VALUE]	= { .type = NLA_U8 },
-+	[IFLA_BRIDGE_CFM_CC_CCM_TX_PORT_TLV]		= { .type = NLA_U32 },
-+	[IFLA_BRIDGE_CFM_CC_CCM_TX_PORT_TLV_VALUE]	= { .type = NLA_U8 },
-+};
-+
-+static const struct nla_policy
-+br_cfm_policy[IFLA_BRIDGE_CFM_MAX + 1] = {
-+	[IFLA_BRIDGE_CFM_UNSPEC]		= { .type = NLA_REJECT },
-+	[IFLA_BRIDGE_CFM_MEP_CREATE]		=
-+				NLA_POLICY_NESTED(br_cfm_mep_create_policy),
-+	[IFLA_BRIDGE_CFM_MEP_DELETE]		=
-+				NLA_POLICY_NESTED(br_cfm_mep_delete_policy),
-+	[IFLA_BRIDGE_CFM_MEP_CONFIG]		=
-+				NLA_POLICY_NESTED(br_cfm_mep_config_policy),
-+	[IFLA_BRIDGE_CFM_CC_CONFIG]		=
-+				NLA_POLICY_NESTED(br_cfm_cc_config_policy),
-+	[IFLA_BRIDGE_CFM_CC_PEER_MEP_ADD]	=
-+				NLA_POLICY_NESTED(br_cfm_cc_peer_mep_policy),
-+	[IFLA_BRIDGE_CFM_CC_PEER_MEP_REMOVE]	=
-+				NLA_POLICY_NESTED(br_cfm_cc_peer_mep_policy),
-+	[IFLA_BRIDGE_CFM_CC_RDI]		=
-+				NLA_POLICY_NESTED(br_cfm_cc_rdi_policy),
-+	[IFLA_BRIDGE_CFM_CC_CCM_TX]		=
-+				NLA_POLICY_NESTED(br_cfm_cc_ccm_tx_policy),
-+};
-+
-+static int br_mep_create_parse(struct net_bridge *br, struct nlattr *attr,
-+			       struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[IFLA_BRIDGE_CFM_MEP_CREATE_MAX + 1];
-+	struct br_cfm_mep_create create;
-+	u32 instance;
-+	int err;
-+
-+	err = nla_parse_nested(tb, IFLA_BRIDGE_CFM_MEP_CREATE_MAX, attr,
-+			       br_cfm_mep_create_policy, extack);
-+	if (err)
-+		return err;
-+
-+	if (!tb[IFLA_BRIDGE_CFM_MEP_CREATE_INSTANCE]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing INSTANCE attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_MEP_CREATE_DOMAIN]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing DOMAIN attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_MEP_CREATE_DIRECTION]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing DIRECTION attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_MEP_CREATE_IFINDEX]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing IFINDEX attribute");
-+		return -EINVAL;
-+	}
-+
-+	memset(&create, 0, sizeof(create));
-+
-+	instance =  nla_get_u32(tb[IFLA_BRIDGE_CFM_MEP_CREATE_INSTANCE]);
-+	create.domain = nla_get_u32(tb[IFLA_BRIDGE_CFM_MEP_CREATE_DOMAIN]);
-+	create.direction = nla_get_u32(tb[IFLA_BRIDGE_CFM_MEP_CREATE_DIRECTION]);
-+	create.ifindex = nla_get_u32(tb[IFLA_BRIDGE_CFM_MEP_CREATE_IFINDEX]);
-+
-+	return br_cfm_mep_create(br, instance, &create, extack);
-+}
-+
-+static int br_mep_delete_parse(struct net_bridge *br, struct nlattr *attr,
-+			       struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[IFLA_BRIDGE_CFM_MEP_DELETE_MAX + 1];
-+	u32 instance;
-+	int err;
-+
-+	err = nla_parse_nested(tb, IFLA_BRIDGE_CFM_MEP_DELETE_MAX, attr,
-+			       br_cfm_mep_delete_policy, extack);
-+	if (err)
-+		return err;
-+
-+	if (!tb[IFLA_BRIDGE_CFM_MEP_DELETE_INSTANCE]) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "Missing INSTANCE attribute");
-+		return -EINVAL;
-+	}
-+
-+	instance =  nla_get_u32(tb[IFLA_BRIDGE_CFM_MEP_DELETE_INSTANCE]);
-+
-+	return br_cfm_mep_delete(br, instance, extack);
-+}
-+
-+static int br_mep_config_parse(struct net_bridge *br, struct nlattr *attr,
-+			       struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[IFLA_BRIDGE_CFM_MEP_CONFIG_MAX + 1];
-+	struct br_cfm_mep_config config;
-+	u32 instance;
-+	int err;
-+
-+	err = nla_parse_nested(tb, IFLA_BRIDGE_CFM_MEP_CONFIG_MAX, attr,
-+			       br_cfm_mep_config_policy, extack);
-+	if (err)
-+		return err;
-+
-+	if (!tb[IFLA_BRIDGE_CFM_MEP_CONFIG_INSTANCE]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing INSTANCE attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_MEP_CONFIG_UNICAST_MAC]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing UNICAST_MAC attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_MEP_CONFIG_MDLEVEL]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing MDLEVEL attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_MEP_CONFIG_MEPID]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing MEPID attribute");
-+		return -EINVAL;
-+	}
-+
-+	memset(&config, 0, sizeof(config));
-+
-+	instance =  nla_get_u32(tb[IFLA_BRIDGE_CFM_MEP_CONFIG_INSTANCE]);
-+	nla_memcpy(&config.unicast_mac.addr,
-+		   tb[IFLA_BRIDGE_CFM_MEP_CONFIG_UNICAST_MAC],
-+		   sizeof(config.unicast_mac.addr));
-+	config.mdlevel = nla_get_u32(tb[IFLA_BRIDGE_CFM_MEP_CONFIG_MDLEVEL]);
-+	config.mepid = nla_get_u32(tb[IFLA_BRIDGE_CFM_MEP_CONFIG_MEPID]);
-+
-+	return br_cfm_mep_config_set(br, instance, &config, extack);
-+}
-+
-+static int br_cc_config_parse(struct net_bridge *br, struct nlattr *attr,
-+			      struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[IFLA_BRIDGE_CFM_CC_CONFIG_MAX + 1];
-+	struct br_cfm_cc_config config;
-+	u32 instance;
-+	int err;
-+
-+	err = nla_parse_nested(tb, IFLA_BRIDGE_CFM_CC_CONFIG_MAX, attr,
-+			       br_cfm_cc_config_policy, extack);
-+	if (err)
-+		return err;
-+
-+	if (!tb[IFLA_BRIDGE_CFM_CC_CONFIG_INSTANCE]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing INSTANCE attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_CC_CONFIG_ENABLE]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing ENABLE attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_CC_CONFIG_EXP_INTERVAL]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing INTERVAL attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_CC_CONFIG_EXP_MAID]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing MAID attribute");
-+		return -EINVAL;
-+	}
-+
-+	memset(&config, 0, sizeof(config));
-+
-+	instance =  nla_get_u32(tb[IFLA_BRIDGE_CFM_CC_CONFIG_INSTANCE]);
-+	config.enable = nla_get_u32(tb[IFLA_BRIDGE_CFM_CC_CONFIG_ENABLE]);
-+	config.exp_interval = nla_get_u32(tb[IFLA_BRIDGE_CFM_CC_CONFIG_EXP_INTERVAL]);
-+	nla_memcpy(&config.exp_maid.data, tb[IFLA_BRIDGE_CFM_CC_CONFIG_EXP_MAID],
-+		   sizeof(config.exp_maid.data));
-+
-+	return br_cfm_cc_config_set(br, instance, &config, extack);
-+}
-+
-+static int br_cc_peer_mep_add_parse(struct net_bridge *br, struct nlattr *attr,
-+				    struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[IFLA_BRIDGE_CFM_CC_PEER_MEP_MAX + 1];
-+	u32 instance, peer_mep_id;
-+	int err;
-+
-+	err = nla_parse_nested(tb, IFLA_BRIDGE_CFM_CC_PEER_MEP_MAX, attr,
-+			       br_cfm_cc_peer_mep_policy, extack);
-+	if (err)
-+		return err;
-+
-+	if (!tb[IFLA_BRIDGE_CFM_CC_PEER_MEP_INSTANCE]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing INSTANCE attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_CC_PEER_MEPID]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing PEER_MEP_ID attribute");
-+		return -EINVAL;
-+	}
-+
-+	instance =  nla_get_u32(tb[IFLA_BRIDGE_CFM_CC_PEER_MEP_INSTANCE]);
-+	peer_mep_id =  nla_get_u32(tb[IFLA_BRIDGE_CFM_CC_PEER_MEPID]);
-+
-+	return br_cfm_cc_peer_mep_add(br, instance, peer_mep_id, extack);
-+}
-+
-+static int br_cc_peer_mep_remove_parse(struct net_bridge *br, struct nlattr *attr,
-+				       struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[IFLA_BRIDGE_CFM_CC_PEER_MEP_MAX + 1];
-+	u32 instance, peer_mep_id;
-+	int err;
-+
-+	err = nla_parse_nested(tb, IFLA_BRIDGE_CFM_CC_PEER_MEP_MAX, attr,
-+			       br_cfm_cc_peer_mep_policy, extack);
-+	if (err)
-+		return err;
-+
-+	if (!tb[IFLA_BRIDGE_CFM_CC_PEER_MEP_INSTANCE]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing INSTANCE attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_CC_PEER_MEPID]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing PEER_MEP_ID attribute");
-+		return -EINVAL;
-+	}
-+
-+	instance =  nla_get_u32(tb[IFLA_BRIDGE_CFM_CC_PEER_MEP_INSTANCE]);
-+	peer_mep_id =  nla_get_u32(tb[IFLA_BRIDGE_CFM_CC_PEER_MEPID]);
-+
-+	return br_cfm_cc_peer_mep_remove(br, instance, peer_mep_id, extack);
-+}
-+
-+static int br_cc_rdi_parse(struct net_bridge *br, struct nlattr *attr,
-+			   struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[IFLA_BRIDGE_CFM_CC_RDI_MAX + 1];
-+	u32 instance, rdi;
-+	int err;
-+
-+	err = nla_parse_nested(tb, IFLA_BRIDGE_CFM_CC_RDI_MAX, attr,
-+			       br_cfm_cc_rdi_policy, extack);
-+	if (err)
-+		return err;
-+
-+	if (!tb[IFLA_BRIDGE_CFM_CC_RDI_INSTANCE]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing INSTANCE attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_CC_RDI_RDI]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing RDI attribute");
-+		return -EINVAL;
-+	}
-+
-+	instance =  nla_get_u32(tb[IFLA_BRIDGE_CFM_CC_RDI_INSTANCE]);
-+	rdi =  nla_get_u32(tb[IFLA_BRIDGE_CFM_CC_RDI_RDI]);
-+
-+	return br_cfm_cc_rdi_set(br, instance, rdi, extack);
-+}
-+
-+static int br_cc_ccm_tx_parse(struct net_bridge *br, struct nlattr *attr,
-+			      struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[IFLA_BRIDGE_CFM_CC_CCM_TX_MAX + 1];
-+	struct br_cfm_cc_ccm_tx_info tx_info;
-+	u32 instance;
-+	int err;
-+
-+	err = nla_parse_nested(tb, IFLA_BRIDGE_CFM_CC_CCM_TX_MAX, attr,
-+			       br_cfm_cc_ccm_tx_policy, extack);
-+	if (err)
-+		return err;
-+
-+	if (!tb[IFLA_BRIDGE_CFM_CC_CCM_TX_INSTANCE]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing INSTANCE attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_CC_CCM_TX_DMAC]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing DMAC attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_CC_CCM_TX_SEQ_NO_UPDATE]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing SEQ_NO_UPDATE attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_CC_CCM_TX_PERIOD]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing PERIOD attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_CC_CCM_TX_IF_TLV]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing IF_TLV attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_CC_CCM_TX_IF_TLV_VALUE]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing IF_TLV_VALUE attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_CC_CCM_TX_PORT_TLV]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing PORT_TLV attribute");
-+		return -EINVAL;
-+	}
-+	if (!tb[IFLA_BRIDGE_CFM_CC_CCM_TX_PORT_TLV_VALUE]) {
-+		NL_SET_ERR_MSG_MOD(extack, "Missing PORT_TLV_VALUE attribute");
-+		return -EINVAL;
-+	}
-+
-+	memset(&tx_info, 0, sizeof(tx_info));
-+
-+	instance = nla_get_u32(tb[IFLA_BRIDGE_CFM_CC_RDI_INSTANCE]);
-+	nla_memcpy(&tx_info.dmac.addr,
-+		   tb[IFLA_BRIDGE_CFM_CC_CCM_TX_DMAC],
-+		   sizeof(tx_info.dmac.addr));
-+	tx_info.seq_no_update = nla_get_u32(tb[IFLA_BRIDGE_CFM_CC_CCM_TX_SEQ_NO_UPDATE]);
-+	tx_info.period = nla_get_u32(tb[IFLA_BRIDGE_CFM_CC_CCM_TX_PERIOD]);
-+	tx_info.if_tlv = nla_get_u32(tb[IFLA_BRIDGE_CFM_CC_CCM_TX_IF_TLV]);
-+	tx_info.if_tlv_value = nla_get_u8(tb[IFLA_BRIDGE_CFM_CC_CCM_TX_IF_TLV_VALUE]);
-+	tx_info.port_tlv = nla_get_u32(tb[IFLA_BRIDGE_CFM_CC_CCM_TX_PORT_TLV]);
-+	tx_info.port_tlv_value = nla_get_u8(tb[IFLA_BRIDGE_CFM_CC_CCM_TX_PORT_TLV_VALUE]);
-+
-+	return br_cfm_cc_ccm_tx(br, instance, &tx_info, extack);
-+}
-+
-+int br_cfm_parse(struct net_bridge *br, struct net_bridge_port *p,
-+		 struct nlattr *attr, int cmd, struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *tb[IFLA_BRIDGE_CFM_MAX + 1];
-+	int err;
-+
-+	/* When this function is called for a port then the br pointer is
-+	 * invalid, therefor set the br to point correctly
-+	 */
-+	if (p)
-+		br = p->br;
-+
-+	err = nla_parse_nested(tb, IFLA_BRIDGE_CFM_MAX, attr,
-+			       br_cfm_policy, extack);
-+	if (err)
-+		return err;
-+
-+	if (tb[IFLA_BRIDGE_CFM_MEP_CREATE]) {
-+		err = br_mep_create_parse(br, tb[IFLA_BRIDGE_CFM_MEP_CREATE],
-+					  extack);
-+		if (err)
-+			return err;
-+	}
-+
-+	if (tb[IFLA_BRIDGE_CFM_MEP_DELETE]) {
-+		err = br_mep_delete_parse(br, tb[IFLA_BRIDGE_CFM_MEP_DELETE],
-+					  extack);
-+		if (err)
-+			return err;
-+	}
-+
-+	if (tb[IFLA_BRIDGE_CFM_MEP_CONFIG]) {
-+		err = br_mep_config_parse(br, tb[IFLA_BRIDGE_CFM_MEP_CONFIG],
-+					  extack);
-+		if (err)
-+			return err;
-+	}
-+
-+	if (tb[IFLA_BRIDGE_CFM_CC_CONFIG]) {
-+		err = br_cc_config_parse(br, tb[IFLA_BRIDGE_CFM_CC_CONFIG],
-+					 extack);
-+		if (err)
-+			return err;
-+	}
-+
-+	if (tb[IFLA_BRIDGE_CFM_CC_PEER_MEP_ADD]) {
-+		err = br_cc_peer_mep_add_parse(br, tb[IFLA_BRIDGE_CFM_CC_PEER_MEP_ADD],
-+					       extack);
-+		if (err)
-+			return err;
-+	}
-+
-+	if (tb[IFLA_BRIDGE_CFM_CC_PEER_MEP_REMOVE]) {
-+		err = br_cc_peer_mep_remove_parse(br, tb[IFLA_BRIDGE_CFM_CC_PEER_MEP_REMOVE],
-+						  extack);
-+		if (err)
-+			return err;
-+	}
-+
-+	if (tb[IFLA_BRIDGE_CFM_CC_RDI]) {
-+		err = br_cc_rdi_parse(br, tb[IFLA_BRIDGE_CFM_CC_RDI],
-+				      extack);
-+		if (err)
-+			return err;
-+	}
-+
-+	if (tb[IFLA_BRIDGE_CFM_CC_CCM_TX]) {
-+		err = br_cc_ccm_tx_parse(br, tb[IFLA_BRIDGE_CFM_CC_CCM_TX],
-+					 extack);
-+		if (err)
-+			return err;
++	struct br_cfm_peer_mep *peer_mep;
++	struct br_cfm_mep *mep;
++	struct nlattr *tb;
++
++	hlist_for_each_entry_rcu(mep, &br->mep_list, head) {
++		tb = nla_nest_start(skb, IFLA_BRIDGE_CFM_MEP_CREATE_INFO);
++		if (!tb)
++			goto nla_info_failure;
++
++		if (nla_put_u32(skb, IFLA_BRIDGE_CFM_MEP_CREATE_INSTANCE,
++				mep->instance))
++			goto nla_put_failure;
++
++		if (nla_put_u32(skb, IFLA_BRIDGE_CFM_MEP_CREATE_DOMAIN,
++				mep->create.domain))
++			goto nla_put_failure;
++
++		if (nla_put_u32(skb, IFLA_BRIDGE_CFM_MEP_CREATE_DIRECTION,
++				mep->create.direction))
++			goto nla_put_failure;
++
++		if (nla_put_u32(skb, IFLA_BRIDGE_CFM_MEP_CREATE_IFINDEX,
++				mep->create.ifindex))
++			goto nla_put_failure;
++
++		nla_nest_end(skb, tb);
++
++		tb = nla_nest_start(skb, IFLA_BRIDGE_CFM_MEP_CONFIG_INFO);
++
++		if (!tb)
++			goto nla_info_failure;
++
++		if (nla_put_u32(skb, IFLA_BRIDGE_CFM_MEP_CONFIG_INSTANCE,
++				mep->instance))
++			goto nla_put_failure;
++
++		if (nla_put(skb, IFLA_BRIDGE_CFM_MEP_CONFIG_UNICAST_MAC,
++			    sizeof(mep->config.unicast_mac.addr),
++			    mep->config.unicast_mac.addr))
++			goto nla_put_failure;
++
++		if (nla_put_u32(skb, IFLA_BRIDGE_CFM_MEP_CONFIG_MDLEVEL,
++				mep->config.mdlevel))
++			goto nla_put_failure;
++
++		if (nla_put_u32(skb, IFLA_BRIDGE_CFM_MEP_CONFIG_MEPID,
++				mep->config.mepid))
++			goto nla_put_failure;
++
++		nla_nest_end(skb, tb);
++
++		tb = nla_nest_start(skb, IFLA_BRIDGE_CFM_CC_CONFIG_INFO);
++
++		if (!tb)
++			goto nla_info_failure;
++
++		if (nla_put_u32(skb, IFLA_BRIDGE_CFM_CC_CONFIG_INSTANCE,
++				mep->instance))
++			goto nla_put_failure;
++
++		if (nla_put_u32(skb, IFLA_BRIDGE_CFM_CC_CONFIG_ENABLE,
++				mep->cc_config.enable))
++			goto nla_put_failure;
++
++		if (nla_put_u32(skb, IFLA_BRIDGE_CFM_CC_CONFIG_EXP_INTERVAL,
++				mep->cc_config.exp_interval))
++			goto nla_put_failure;
++
++		if (nla_put(skb, IFLA_BRIDGE_CFM_CC_CONFIG_EXP_MAID,
++			    sizeof(mep->cc_config.exp_maid.data),
++			    mep->cc_config.exp_maid.data))
++			goto nla_put_failure;
++
++		nla_nest_end(skb, tb);
++
++		tb = nla_nest_start(skb, IFLA_BRIDGE_CFM_CC_RDI_INFO);
++
++		if (!tb)
++			goto nla_info_failure;
++
++		if (nla_put_u32(skb, IFLA_BRIDGE_CFM_CC_RDI_INSTANCE,
++				mep->instance))
++			goto nla_put_failure;
++
++		if (nla_put_u32(skb, IFLA_BRIDGE_CFM_CC_RDI_RDI,
++				mep->rdi))
++			goto nla_put_failure;
++
++		nla_nest_end(skb, tb);
++
++		tb = nla_nest_start(skb, IFLA_BRIDGE_CFM_CC_CCM_TX_INFO);
++
++		if (!tb)
++			goto nla_info_failure;
++
++		if (nla_put_u32(skb, IFLA_BRIDGE_CFM_CC_CCM_TX_INSTANCE,
++				mep->instance))
++			goto nla_put_failure;
++
++		if (nla_put(skb, IFLA_BRIDGE_CFM_CC_CCM_TX_DMAC,
++			    sizeof(mep->cc_ccm_tx_info.dmac),
++			    mep->cc_ccm_tx_info.dmac.addr))
++			goto nla_put_failure;
++
++		if (nla_put_u32(skb, IFLA_BRIDGE_CFM_CC_CCM_TX_SEQ_NO_UPDATE,
++				mep->cc_ccm_tx_info.seq_no_update))
++			goto nla_put_failure;
++
++		if (nla_put_u32(skb, IFLA_BRIDGE_CFM_CC_CCM_TX_PERIOD,
++				mep->cc_ccm_tx_info.period))
++			goto nla_put_failure;
++
++		if (nla_put_u32(skb, IFLA_BRIDGE_CFM_CC_CCM_TX_IF_TLV,
++				mep->cc_ccm_tx_info.if_tlv))
++			goto nla_put_failure;
++
++		if (nla_put_u8(skb, IFLA_BRIDGE_CFM_CC_CCM_TX_IF_TLV_VALUE,
++			       mep->cc_ccm_tx_info.if_tlv_value))
++			goto nla_put_failure;
++
++		if (nla_put_u32(skb, IFLA_BRIDGE_CFM_CC_CCM_TX_PORT_TLV,
++				mep->cc_ccm_tx_info.port_tlv))
++			goto nla_put_failure;
++
++		if (nla_put_u8(skb, IFLA_BRIDGE_CFM_CC_CCM_TX_PORT_TLV_VALUE,
++			       mep->cc_ccm_tx_info.port_tlv_value))
++			goto nla_put_failure;
++
++		nla_nest_end(skb, tb);
++
++		hlist_for_each_entry_rcu(peer_mep, &mep->peer_mep_list, head) {
++			tb = nla_nest_start(skb,
++					    IFLA_BRIDGE_CFM_CC_PEER_MEP_INFO);
++
++			if (!tb)
++				goto nla_info_failure;
++
++			if (nla_put_u32(skb,
++					IFLA_BRIDGE_CFM_CC_PEER_MEP_INSTANCE,
++					mep->instance))
++				goto nla_put_failure;
++
++			if (nla_put_u32(skb, IFLA_BRIDGE_CFM_CC_PEER_MEPID,
++					peer_mep->mepid))
++				goto nla_put_failure;
++
++			nla_nest_end(skb, tb);
++		}
 +	}
 +
 +	return 0;
++
++nla_put_failure:
++	nla_nest_cancel(skb, tb);
++
++nla_info_failure:
++	return -EMSGSIZE;
 +}
 diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index 92d64abffa87..431ee2b06dc1 100644
+index 431ee2b06dc1..69bfe165ff7f 100644
 --- a/net/bridge/br_netlink.c
 +++ b/net/bridge/br_netlink.c
-@@ -700,6 +700,11 @@ static int br_afspec(struct net_bridge *br,
- 			if (err)
- 				return err;
- 			break;
-+		case IFLA_BRIDGE_CFM:
-+			err = br_cfm_parse(br, p, attr, cmd, extack);
-+			if (err)
-+				return err;
-+			break;
- 		}
+@@ -16,6 +16,7 @@
+ 
+ #include "br_private.h"
+ #include "br_private_stp.h"
++#include "br_private_cfm.h"
+ #include "br_private_tunnel.h"
+ 
+ static int __get_num_vlan_infos(struct net_bridge_vlan_group *vg,
+@@ -426,7 +427,8 @@ static int br_fill_ifinfo(struct sk_buff *skb,
+ 
+ 	if (filter_mask & (RTEXT_FILTER_BRVLAN |
+ 			   RTEXT_FILTER_BRVLAN_COMPRESSED |
+-			   RTEXT_FILTER_MRP)) {
++			   RTEXT_FILTER_MRP |
++			   RTEXT_FILTER_CFM_CONFIG)) {
+ 		af = nla_nest_start_noflag(skb, IFLA_AF_SPEC);
+ 		if (!af)
+ 			goto nla_put_failure;
+@@ -475,6 +477,28 @@ static int br_fill_ifinfo(struct sk_buff *skb,
+ 			goto nla_put_failure;
  	}
  
++	if (filter_mask & RTEXT_FILTER_CFM_CONFIG) {
++		struct nlattr *cfm_nest = NULL;
++		int err;
++
++		if (!br_cfm_created(br) || port)
++			goto done;
++
++		cfm_nest = nla_nest_start(skb, IFLA_BRIDGE_CFM);
++		if (!cfm_nest)
++			goto nla_put_failure;
++
++		if (filter_mask & RTEXT_FILTER_CFM_CONFIG) {
++			rcu_read_lock();
++			err = br_cfm_config_fill_info(skb, br);
++			rcu_read_unlock();
++			if (err)
++				goto nla_put_failure;
++		}
++
++		nla_nest_end(skb, cfm_nest);
++	}
++
+ done:
+ 	if (af)
+ 		nla_nest_end(skb, af);
+@@ -538,7 +562,8 @@ int br_getlink(struct sk_buff *skb, u32 pid, u32 seq,
+ 
+ 	if (!port && !(filter_mask & RTEXT_FILTER_BRVLAN) &&
+ 	    !(filter_mask & RTEXT_FILTER_BRVLAN_COMPRESSED) &&
+-	    !(filter_mask & RTEXT_FILTER_MRP))
++	    !(filter_mask & RTEXT_FILTER_MRP) &&
++	    !(filter_mask & RTEXT_FILTER_CFM_CONFIG))
+ 		return 0;
+ 
+ 	return br_fill_ifinfo(skb, port, pid, seq, RTM_NEWLINK, nlflags,
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index f7c41380de4d..6a5db0553f19 100644
+index 6a5db0553f19..f571bdeb5d83 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
-@@ -1459,10 +1459,25 @@ static inline int br_mrp_fill_info(struct sk_buff *skb, struct net_bridge *br)
- 
- #endif
- 
--/* br_mrp.c */
-+/* br_cfm.c */
- #if IS_ENABLED(CONFIG_BRIDGE_CFM)
-+int br_cfm_parse(struct net_bridge *br, struct net_bridge_port *p,
-+		 struct nlattr *attr, int cmd, struct netlink_ext_ack *extack);
-+bool br_cfm_created(struct net_bridge *br);
+@@ -1465,6 +1465,7 @@ int br_cfm_parse(struct net_bridge *br, struct net_bridge_port *p,
+ 		 struct nlattr *attr, int cmd, struct netlink_ext_ack *extack);
+ bool br_cfm_created(struct net_bridge *br);
  void br_cfm_port_del(struct net_bridge *br, struct net_bridge_port *p);
++int br_cfm_config_fill_info(struct sk_buff *skb, struct net_bridge *br);
  #else
-+static inline int br_cfm_parse(struct net_bridge *br, struct net_bridge_port *p,
-+			       struct nlattr *attr, int cmd,
-+			       struct netlink_ext_ack *extack)
+ static inline int br_cfm_parse(struct net_bridge *br, struct net_bridge_port *p,
+ 			       struct nlattr *attr, int cmd,
+@@ -1482,6 +1483,11 @@ static inline void br_cfm_port_del(struct net_bridge *br,
+ 				   struct net_bridge_port *p)
+ {
+ }
++
++static inline int br_cfm_config_fill_info(struct sk_buff *skb, struct net_bridge *br)
 +{
 +	return -EOPNOTSUPP;
 +}
-+
-+static inline bool br_cfm_created(struct net_bridge *br)
-+{
-+	return false;
-+}
-+
- static inline void br_cfm_port_del(struct net_bridge *br,
- 				   struct net_bridge_port *p)
- {
+ #endif
+ 
+ /* br_netlink.c */
 -- 
 2.28.0
 
