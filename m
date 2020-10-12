@@ -2,118 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EB4D28BD14
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 18:00:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FBDE28BD33
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 18:05:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390026AbgJLQAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 12:00:41 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:40950 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389771AbgJLQAl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 12:00:41 -0400
-Received: by mail-ot1-f65.google.com with SMTP id l4so16261663ota.7;
-        Mon, 12 Oct 2020 09:00:40 -0700 (PDT)
+        id S2390344AbgJLQF0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 12:05:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53580 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389068AbgJLQFX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 12:05:23 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BDB9C0613D1
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 09:05:21 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id w21so13884825pfc.7
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 09:05:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8I5XKTgq/Z0bLvn2YmKFNFJu3bvFZkBI41VZpa4KwVY=;
+        b=ZjmvDvxLIavsomBf4sUVGuCczLwUrYqvKoVsenBx5ZDRysgwBdTa+1a1hCLp4Qv/HB
+         k4Wxd5SxpANhGENEB9lk+phhkrybxUbtpj3DlcrL1Q7YuRIsYIHnjAlD+kfS0fSxfR8y
+         9WfbcrXwfavgTijWwW63FTK24YGHQMz+hktTJfj+1mgQCNXDExJDfFVLF00EwSS8Frz9
+         P3dg0bc4S4XIpcPWsub1WMZmrlYxkqIYdJNiHh9PUyVvS7Uuvo7U99bT7Pxc2Oq9qcDg
+         7BQxc8sXd+fJ3+GfRaJ16RG40eODbhCHJET4XmpCc9mchniOFbFOF9DU45Mv5RnpltPa
+         ZS6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sKQvgCFfoUK383C3nmDjkaV64Iaz4htqCFpPTHjis94=;
-        b=DVGuDgmr7+LBzZaET5scApmNjHjps1RWmBneflL8cIMP36vBlb4m88JvD1NrjbSbN7
-         2e8hRxt6Fue9Z30muGGYssHYDSIJ2wzoPrJe9OmrCCXW8ChuiJ5s8xX8oEcDF0SvKM1W
-         m4WNy2CcYnP3gL/9rCGnX0WeeH3+97SSfzjrRMze1DXpBOQUEb9M7frQBET8EfHqC4/w
-         lvfJrKhGRfKWqeDq5L2Gr/7aUQ3bSRYf03k5Bdzmcscmrn6Mw7UGblXAZEhmo0NlZrXY
-         QJ5uxjyntzkOeZf7PrqeJb4mGb3+QBqSslIzxyJjMhhQXPf/UEJ5Kxa2lZB3yB2+3a6i
-         CUEA==
-X-Gm-Message-State: AOAM533m2fRE2pMWHgqg35MZTdz4V8Ex0bGVKP5JRbQ6eriKayMPVBG9
-        0XbqAQs45UNinatFOpWQFQ==
-X-Google-Smtp-Source: ABdhPJxkLahxePnE9AL27oE1+P/rxoCNJR5P+a+QdCW4mRzABSit5agAwmV+5vq3bUnnU+pwFw6YXg==
-X-Received: by 2002:a9d:3e4:: with SMTP id f91mr20173294otf.244.1602518440260;
-        Mon, 12 Oct 2020 09:00:40 -0700 (PDT)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id k73sm8849333otk.63.2020.10.12.09.00.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Oct 2020 09:00:39 -0700 (PDT)
-Received: (nullmailer pid 1622059 invoked by uid 1000);
-        Mon, 12 Oct 2020 16:00:38 -0000
-Date:   Mon, 12 Oct 2020 11:00:38 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Chunfeng Yun <chunfeng.yun@mediatek.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v2 2/4] dt-bindings: usb: add properties for hard wired
- devices
-Message-ID: <20201012160038.GA1618651@bogus>
-References: <3db52d534065dcf28e9a10b8129bea3eced0193e.1602318869.git.chunfeng.yun@mediatek.com>
- <bd71ed260efd162d25e0491988d61fcf1e589bc0.1602318869.git.chunfeng.yun@mediatek.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8I5XKTgq/Z0bLvn2YmKFNFJu3bvFZkBI41VZpa4KwVY=;
+        b=qy/XqbcAuvuwPOd1p396ar6+8kmfxeNPCm1TcHg5Tz2N4MyFglrwZO0mO6TTA6d1w2
+         tT64VsrwJvWbxRu+j7i2Jk7Y0r0343zBVmkMGW4jQTK90Xld3CiXCNs9r3l6m5mSSJcl
+         WuFCNAo4mo7zrAv/XA1cnzPfqU4BOJ268oiOFSdAJh+lHGjJ3DlpXt4Pno4u6hxQlXfs
+         t+xfZvBS5ht+ae3g1nj87MGWukRnkAi+QJhuPWJaqY2G9z+vdBfge0bNMeGvD4rcWDSF
+         IzLO5YtsNCM3wP4PzWzUcpD+5ZDcC7AW/aNLKgeCB862fLACUo4+YZXr2VgVc3uQmicz
+         HdNA==
+X-Gm-Message-State: AOAM5332c9nMXiSGQ+JFwhwBRNsXTIm7hqVUpN2RHEHZzF8afVOpZf2h
+        n7yKAlfpQ/lNKgoVCV6hMf52ZChsMcPI2PZrPyT1xg==
+X-Google-Smtp-Source: ABdhPJzYe2rIzqJSmeOTfqVuMkQYjy2B4w6VyJ48z1edXwESV0BcGlpJn5MlnRrH/2xTVtTap322A3yoOEsV6GS4dck=
+X-Received: by 2002:a17:90a:890f:: with SMTP id u15mr20954335pjn.147.1602518720947;
+ Mon, 12 Oct 2020 09:05:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bd71ed260efd162d25e0491988d61fcf1e589bc0.1602318869.git.chunfeng.yun@mediatek.com>
+References: <20201010104521.67262-1-songmuchun@bytedance.com> <20201012135823.GA188876@cmpxchg.org>
+In-Reply-To: <20201012135823.GA188876@cmpxchg.org>
+From:   Muchun Song <songmuchun@bytedance.com>
+Date:   Tue, 13 Oct 2020 00:04:44 +0800
+Message-ID: <CAMZfGtXE1DaDXSOWObaJDTxUH2zB2hjfKoX38Y2oKgNaDkyoCA@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH] mm: memcontrol: localize
+ mem_cgroup_sockets_enabled() check
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     David Miller <davem@davemloft.net>, kuba@kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Vladimir Davydov <vdavydov.dev@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        Shakeel Butt <shakeelb@google.com>,
+        Roman Gushchin <guro@fb.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>, laoar.shao@gmail.com,
+        Chris Down <chris@chrisdown.name>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>, jakub@cloudflare.com,
+        linmiaohe@huawei.com, Kees Cook <keescook@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 10, 2020 at 04:43:12PM +0800, Chunfeng Yun wrote:
-> Add some optional properties which are needed for hard wired devices
-> 
-> Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
-> ---
-> v2 changes suggested by Rob:
->    1. modify pattern to support any USB class
->    2. refer to usb-device.yaml instead of usb-device.txt
-> ---
->  .../devicetree/bindings/usb/usb-hcd.yaml      | 19 +++++++++++++++++++
->  1 file changed, 19 insertions(+)
+On Mon, Oct 12, 2020 at 9:59 PM Johannes Weiner <hannes@cmpxchg.org> wrote:
+>
+> On Sat, Oct 10, 2020 at 06:45:21PM +0800, Muchun Song wrote:
+> > Move the mem_cgroup_sockets_enabled() checks into memcg socket charge
+> > or uncharge functions, so the users don't have to explicitly check that
+> > condition.
+> >
+> > This is purely code cleanup patch without any functional change. But
+> > move the sk_memcg member of the sock structure to the CONFIG_MEMCG
+> > scope.
+> >
+> > Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+> > ---
+> >  include/linux/memcontrol.h      | 78 ++++++++++++++++++++++++++-------
+> >  include/net/sock.h              |  5 ++-
+> >  include/net/tcp.h               |  3 +-
+> >  mm/memcontrol.c                 | 43 +++++++++++++-----
+> >  net/core/sock.c                 | 15 +++----
+> >  net/ipv4/inet_connection_sock.c |  6 +--
+> >  net/ipv4/tcp_output.c           |  3 +-
+> >  7 files changed, 111 insertions(+), 42 deletions(-)
+>
+> Hm, this is almost 3 times as much code.
+>
+> The sk_memcg saving on !CONFIG_MEMCG is somewhat nice, but it's not
+> clear how many users would benefit here. And it adds ifdefs in code.
 
-You can fold this into the first patch. While not explicit before, it 
-was implied.
+The 'ifdefs in code' means the initialization of sk_memcg in the sk_clone_lock?
+If yes, we can add a new inline initialization function to avoid this.
 
-Rob
+>
+> Also memcg code now has to know about struct sock.
 
-> 
-> diff --git a/Documentation/devicetree/bindings/usb/usb-hcd.yaml b/Documentation/devicetree/bindings/usb/usb-hcd.yaml
-> index 7263b7f2b510..42b295afdf32 100644
-> --- a/Documentation/devicetree/bindings/usb/usb-hcd.yaml
-> +++ b/Documentation/devicetree/bindings/usb/usb-hcd.yaml
-> @@ -22,9 +22,28 @@ properties:
->      description:
->        Name specifier for the USB PHY
->  
-> +  "#address-cells":
-> +    const: 1
-> +
-> +  "#size-cells":
-> +    const: 0
-> +
-> +patternProperties:
-> +  "^[a-f]+@[0-9a-f]+$":
+Without this patch, the memcg code also has to know about struct sock.
+You can see the code of  mem_cgroup_sk_alloc and mem_cgroup_sk_free.
 
-Just define the unit-address here: "@[0-9a-f]+$"
-> +    type: object
-> +    $ref: /usb/usb-device.yaml
-> +    description: The hard wired USB devices
+Thanks.
 
-Need to also define 'reg' and 'compatible' here.
+>
+> I'm not quite sure that this is an overall improvement.
 
-> +
->  examples:
->    - |
->      usb {
->          phys = <&usb2_phy1>, <&usb3_phy1>;
->          phy-names = "usb";
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        hub@1 {
-> +            compatible = "usb5e3,610";
-> +            reg = <1>;
-> +        };
->      };
-> -- 
-> 2.18.0
+
+
+-- 
+Yours,
+Muchun
