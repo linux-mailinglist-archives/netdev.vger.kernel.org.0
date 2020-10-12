@@ -2,41 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86CD928C094
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 21:05:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 252BA28C09E
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 21:06:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391496AbgJLTFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 15:05:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54336 "EHLO mail.kernel.org"
+        id S2391546AbgJLTFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 15:05:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54360 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391311AbgJLTEZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2391355AbgJLTEZ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 12 Oct 2020 15:04:25 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6C1A122246;
-        Mon, 12 Oct 2020 19:04:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D4FBB22258;
+        Mon, 12 Oct 2020 19:04:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602529457;
-        bh=RnZtjUDSLtE32FJ+gtQIaBWPjQ1eFyjx75Cy4UXfb6k=;
+        s=default; t=1602529461;
+        bh=6Co/gsGu6KjrXaEmBLDO2KaZP7cCA9HeWbgIWngnSbU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Nn7KGsqQbCsBUWP3jeq+WaW8eSkYtPeZy+eaS0SKnpAtCPMvm7St7QNLiqPbPzmhA
-         g5iIwQfrGtOQ/SIahdL9F12QOIuYNAoXXUrPouKQV5HRunQC2yG7hCWQoJE9JFTnWa
-         u6KT6yWcRlP7obY1IX3JeLL2SVyN4k0IqBheT4iY=
+        b=PxwBuextDRCxXPn70CXoJ7VgzsyXedP2YuPD6mChXKYftbysecmb9JNKz/oilwc3i
+         1weWZk3keGa6/IbhWgVEK696T4uvUkWex/JfELrfUkyqan7XLM4bEW+SaZcd1Zcqfh
+         1SC4BMW2sWJECVP73abziNTPoLE342rq+IAWWj0U=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Anant Thazhemadam <anant.thazhemadam@gmail.com>,
-        syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com,
-        Petko Manolov <petkan@nucleusys.com>,
+Cc:     Jamie Iles <jamie@nuviainc.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 6/6] net: usb: rtl8150: set random MAC address when set_ethernet_addr() fails
-Date:   Mon, 12 Oct 2020 15:04:08 -0400
-Message-Id: <20201012190408.3279779-6-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 2/6] net/fsl: quieten expected MDIO access failures
+Date:   Mon, 12 Oct 2020 15:04:14 -0400
+Message-Id: <20201012190418.3279866-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201012190408.3279779-1-sashal@kernel.org>
-References: <20201012190408.3279779-1-sashal@kernel.org>
+In-Reply-To: <20201012190418.3279866-1-sashal@kernel.org>
+References: <20201012190418.3279866-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -45,60 +44,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anant Thazhemadam <anant.thazhemadam@gmail.com>
+From: Jamie Iles <jamie@nuviainc.com>
 
-[ Upstream commit f45a4248ea4cc13ed50618ff066849f9587226b2 ]
+[ Upstream commit 1ec8e74855588cecb2620b28b877c08f45765374 ]
 
-When get_registers() fails in set_ethernet_addr(),the uninitialized
-value of node_id gets copied over as the address.
-So, check the return value of get_registers().
+MDIO reads can happen during PHY probing, and printing an error with
+dev_err can result in a large number of error messages during device
+probe.  On a platform with a serial console this can result in
+excessively long boot times in a way that looks like an infinite loop
+when multiple busses are present.  Since 0f183fd151c (net/fsl: enable
+extended scanning in xgmac_mdio) we perform more scanning so there are
+potentially more failures.
 
-If get_registers() executed successfully (i.e., it returns
-sizeof(node_id)), copy over the MAC address using ether_addr_copy()
-(instead of using memcpy()).
+Reduce the logging level to dev_dbg which is consistent with the
+Freescale enetc driver.
 
-Else, if get_registers() failed instead, a randomly generated MAC
-address is set as the MAC address instead.
-
-Reported-by: syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com
-Tested-by: syzbot+abbc768b560c84d92fd3@syzkaller.appspotmail.com
-Acked-by: Petko Manolov <petkan@nucleusys.com>
-Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
+Cc: Jeremy Linton <jeremy.linton@arm.com>
+Signed-off-by: Jamie Iles <jamie@nuviainc.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/rtl8150.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/freescale/xgmac_mdio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/usb/rtl8150.c b/drivers/net/usb/rtl8150.c
-index 9504800217edd..4455493723681 100644
---- a/drivers/net/usb/rtl8150.c
-+++ b/drivers/net/usb/rtl8150.c
-@@ -277,12 +277,20 @@ static int write_mii_word(rtl8150_t * dev, u8 phy, __u8 indx, u16 reg)
- 		return 1;
- }
- 
--static inline void set_ethernet_addr(rtl8150_t * dev)
-+static void set_ethernet_addr(rtl8150_t *dev)
- {
--	u8 node_id[6];
-+	u8 node_id[ETH_ALEN];
-+	int ret;
-+
-+	ret = get_registers(dev, IDR, sizeof(node_id), node_id);
- 
--	get_registers(dev, IDR, sizeof(node_id), node_id);
--	memcpy(dev->netdev->dev_addr, node_id, sizeof(node_id));
-+	if (ret == sizeof(node_id)) {
-+		ether_addr_copy(dev->netdev->dev_addr, node_id);
-+	} else {
-+		eth_hw_addr_random(dev->netdev);
-+		netdev_notice(dev->netdev, "Assigned a random MAC address: %pM\n",
-+			      dev->netdev->dev_addr);
-+	}
- }
- 
- static int rtl8150_set_mac_address(struct net_device *netdev, void *p)
+diff --git a/drivers/net/ethernet/freescale/xgmac_mdio.c b/drivers/net/ethernet/freescale/xgmac_mdio.c
+index a15b4a97c172d..d407471f3be04 100644
+--- a/drivers/net/ethernet/freescale/xgmac_mdio.c
++++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
+@@ -229,7 +229,7 @@ static int xgmac_mdio_read(struct mii_bus *bus, int phy_id, int regnum)
+ 	/* Return all Fs if nothing was there */
+ 	if ((xgmac_read32(&regs->mdio_stat, endian) & MDIO_STAT_RD_ER) &&
+ 	    !priv->has_a011043) {
+-		dev_err(&bus->dev,
++		dev_dbg(&bus->dev,
+ 			"Error while reading PHY%d reg at %d.%hhu\n",
+ 			phy_id, dev_addr, regnum);
+ 		return 0xffff;
 -- 
 2.25.1
 
