@@ -2,78 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5FA928AB64
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 03:26:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADAD628AB68
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 03:26:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727381AbgJLB0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 21:26:10 -0400
-Received: from Mailgw01.mediatek.com ([1.203.163.78]:52733 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725917AbgJLB0K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 21:26:10 -0400
-X-UUID: e35f3a41522b44ab82b04b3a3d4f211d-20201012
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=R1q9dfekP6mSdsS/ET+QXDzN+e6bl0PwJAWHtliaE3M=;
-        b=egZlOpHpLj25rSinPIGxOKpqyurq2TpQOT20FwDiNgAfNvECWFMWSyCr+SAHzfaxkwKNJEvCdR67oSDNGVQnZETgTvtNHj/FBlSwUVqUerWH0iqvdt+opb+5SmYvCmIUN09yEgsy+GHV9R0DnlahxdRMVJwPMYupm/L6nEVu7NM=;
-X-UUID: e35f3a41522b44ab82b04b3a3d4f211d-20201012
-Received: from mtkcas32.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
-        (envelope-from <chunfeng.yun@mediatek.com>)
-        (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 562371480; Mon, 12 Oct 2020 09:25:58 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N1.mediatek.inc
- (172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 12 Oct
- 2020 09:25:56 +0800
-Received: from [10.17.3.153] (10.17.3.153) by MTKCAS36.mediatek.inc
- (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 12 Oct 2020 09:25:55 +0800
-Message-ID: <1602465955.29336.57.camel@mhfsdcap03>
-Subject: Re: [PATCH v2 4/4] dt-bindings: usb: use preferred license tag
-From:   Chunfeng Yun <chunfeng.yun@mediatek.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>
-Date:   Mon, 12 Oct 2020 09:25:55 +0800
-In-Reply-To: <20201010095052.GA989257@kroah.com>
-References: <3db52d534065dcf28e9a10b8129bea3eced0193e.1602318869.git.chunfeng.yun@mediatek.com>
-         <d76ca8b2d64c7c017e3ddaca8497eb38ee514204.1602318869.git.chunfeng.yun@mediatek.com>
-         <20201010095052.GA989257@kroah.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.10.4-0ubuntu2 
-MIME-Version: 1.0
-X-TM-SNTS-SMTP: 29B9D6F8DD7D8A01EEF75DC90A0B763AD3F7D6CA7860AF3A06EB30669984C0B72000:8
-X-MTK:  N
+        id S1727415AbgJLB0y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 21:26:54 -0400
+Received: from smtp.h3c.com ([60.191.123.56]:31220 "EHLO h3cspam01-ex.h3c.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726543AbgJLB0y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 11 Oct 2020 21:26:54 -0400
+Received: from DAG2EX06-IDC.srv.huawei-3com.com ([10.8.0.69])
+        by h3cspam01-ex.h3c.com with ESMTPS id 09C1Q0W3023693
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 12 Oct 2020 09:26:00 +0800 (GMT-8)
+        (envelope-from tian.xianting@h3c.com)
+Received: from DAG2EX03-BASE.srv.huawei-3com.com (10.8.0.66) by
+ DAG2EX06-IDC.srv.huawei-3com.com (10.8.0.69) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 12 Oct 2020 09:26:01 +0800
+Received: from DAG2EX03-BASE.srv.huawei-3com.com ([fe80::5d18:e01c:bbbd:c074])
+ by DAG2EX03-BASE.srv.huawei-3com.com ([fe80::5d18:e01c:bbbd:c074%7]) with
+ mapi id 15.01.1713.004; Mon, 12 Oct 2020 09:26:01 +0800
+From:   Tianxianting <tian.xianting@h3c.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        "John Fastabend" <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        "Song Liu" <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] bpf: Avoid allocing memory on memoryless numa node
+Thread-Topic: [PATCH] bpf: Avoid allocing memory on memoryless numa node
+Thread-Index: AQHWnuLrmIxw4uY1XUG+lUKVObi7NKmSqAmAgACHNeA=
+Date:   Mon, 12 Oct 2020 01:26:01 +0000
+Message-ID: <21cff6313475470e9b316911c748f890@h3c.com>
+References: <20201010084417.5400-1-tian.xianting@h3c.com>
+ <CAADnVQJUL7BynGMD_nGu8y=D1yv6TybOxeSh03TrkD7kS0aOrA@mail.gmail.com>
+In-Reply-To: <CAADnVQJUL7BynGMD_nGu8y=D1yv6TybOxeSh03TrkD7kS0aOrA@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.99.141.128]
+x-sender-location: DAG2
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-DNSRBL: 
+X-MAIL: h3cspam01-ex.h3c.com 09C1Q0W3023693
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gU2F0LCAyMDIwLTEwLTEwIGF0IDExOjUwICswMjAwLCBHcmVnIEtyb2FoLUhhcnRtYW4gd3Jv
-dGU6DQo+IE9uIFNhdCwgT2N0IDEwLCAyMDIwIGF0IDA0OjQzOjE0UE0gKzA4MDAsIENodW5mZW5n
-IFl1biB3cm90ZToNCj4gPiBUaGlzIGlzIHVzZWQgdG8gZml4IHRoZSBjaGVja3BhY2gucGwgV0FS
-TklORzpTUERYX0xJQ0VOU0VfVEFHDQo+ID4gDQo+ID4gU2VlIGJpbmRpbmdzL3N1Ym1pdHRpbmct
-cGF0Y2hlcy5yc3Q6DQo+ID4gIkRUIGJpbmRpbmcgZmlsZXMgc2hvdWxkIGJlIGR1YWwgbGljZW5z
-ZWQuIFRoZSBwcmVmZXJyZWQgbGljZW5zZSB0YWcgaXMNCj4gPiAgKEdQTC0yLjAtb25seSBPUiBC
-U0QtMi1DbGF1c2UpLiINCj4gPiANCj4gPiBTaWduZWQtb2ZmLWJ5OiBDaHVuZmVuZyBZdW4gPGNo
-dW5mZW5nLnl1bkBtZWRpYXRlay5jb20+DQo+ID4gLS0tDQo+ID4gdjI6IG5ldyBwYXRjaA0KPiA+
-IC0tLQ0KPiA+ICBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvdXNiL3VzYi1oY2Qu
-eWFtbCB8IDIgKy0NCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0
-aW9uKC0pDQo+ID4gDQo+ID4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9i
-aW5kaW5ncy91c2IvdXNiLWhjZC55YW1sIGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRp
-bmdzL3VzYi91c2ItaGNkLnlhbWwNCj4gPiBpbmRleCA0MmIyOTVhZmRmMzIuLjExYjliOWVlMmI1
-NCAxMDA2NDQNCj4gPiAtLS0gYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvdXNi
-L3VzYi1oY2QueWFtbA0KPiA+ICsrKyBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5n
-cy91c2IvdXNiLWhjZC55YW1sDQo+ID4gQEAgLTEsNCArMSw0IEBADQo+ID4gLSMgU1BEWC1MaWNl
-bnNlLUlkZW50aWZpZXI6IEdQTC0yLjANCj4gPiArIyBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjog
-KEdQTC0yLjAtb25seSBPUiBCU0QtMi1DbGF1c2UpDQo+IA0KPiBBcmUgeW91IHN1cmUgeW91IGFy
-ZSBhbGxvd2VkIHRvIGNoYW5nZSB0aGUgbGljZW5zZSBvZiB0aGlzIGZpbGU/ICBMYXN0IEkNCj4g
-Y2hlY2tlZCwgeW91IGRpZCBub3Qgd3JpdGUgdGhpcyBmaWxlLCBhbmQgc28sIHlvdSBjYW4ndCBj
-aGFuZ2UgdGhlDQo+IGxpY2Vuc2Ugb2YgaXQuICBZb3UgbmVlZCB0byBnZXQgdGhlIG93bmVycyBv
-ZiB0aGUgZmlsZSB0byBkbyBzby4NCkdvdCBpdCwgd2lsbCBhYmFuZG9uIGl0IGluIG5leHQgdmVy
-c2lvbg0KDQpUaGFua3MNCg0KPiANCj4gdGhhbmtzLA0KPiANCj4gZ3JlZyBrLWgNCg0K
-
+VGhhbmtzIEFsZXhlaSBmb3IgeW91ciBzdWdnZXN0aW9uLA0KSSB3aWxsIHRyeSB0byBkbyBpdC4N
+Cg0KLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCkZyb206IEFsZXhlaSBTdGFyb3ZvaXRvdiBb
+bWFpbHRvOmFsZXhlaS5zdGFyb3ZvaXRvdkBnbWFpbC5jb21dIA0KU2VudDogTW9uZGF5LCBPY3Rv
+YmVyIDEyLCAyMDIwIDk6MjEgQU0NClRvOiB0aWFueGlhbnRpbmcgKFJEKSA8dGlhbi54aWFudGlu
+Z0BoM2MuY29tPg0KQ2M6IEFsZXhlaSBTdGFyb3ZvaXRvdiA8YXN0QGtlcm5lbC5vcmc+OyBEYW5p
+ZWwgQm9ya21hbm4gPGRhbmllbEBpb2dlYXJib3gubmV0PjsgRGF2aWQgUy4gTWlsbGVyIDxkYXZl
+bUBkYXZlbWxvZnQubmV0PjsgSmFrdWIgS2ljaW5za2kgPGt1YmFAa2VybmVsLm9yZz47IEplc3Bl
+ciBEYW5nYWFyZCBCcm91ZXIgPGhhd2tAa2VybmVsLm9yZz47IEpvaG4gRmFzdGFiZW5kIDxqb2hu
+LmZhc3RhYmVuZEBnbWFpbC5jb20+OyBNYXJ0aW4gS2FGYWkgTGF1IDxrYWZhaUBmYi5jb20+OyBT
+b25nIExpdSA8c29uZ2xpdWJyYXZpbmdAZmIuY29tPjsgWW9uZ2hvbmcgU29uZyA8eWhzQGZiLmNv
+bT47IEFuZHJpaSBOYWtyeWlrbyA8YW5kcmlpbkBmYi5jb20+OyBLUCBTaW5naCA8a3BzaW5naEBj
+aHJvbWl1bS5vcmc+OyBOZXR3b3JrIERldmVsb3BtZW50IDxuZXRkZXZAdmdlci5rZXJuZWwub3Jn
+PjsgYnBmIDxicGZAdmdlci5rZXJuZWwub3JnPjsgTEtNTCA8bGludXgta2VybmVsQHZnZXIua2Vy
+bmVsLm9yZz4NClN1YmplY3Q6IFJlOiBbUEFUQ0hdIGJwZjogQXZvaWQgYWxsb2NpbmcgbWVtb3J5
+IG9uIG1lbW9yeWxlc3MgbnVtYSBub2RlDQoNCk9uIFNhdCwgT2N0IDEwLCAyMDIwIGF0IDE6NTUg
+QU0gWGlhbnRpbmcgVGlhbiA8dGlhbi54aWFudGluZ0BoM2MuY29tPiB3cm90ZToNCj4NCj4gSW4g
+YXJjaGl0ZWN0dXJlIGxpa2UgcG93ZXJwYywgd2UgY2FuIGhhdmUgY3B1cyB3aXRob3V0IGFueSBs
+b2NhbCANCj4gbWVtb3J5IGF0dGFjaGVkIHRvIGl0LiBJbiBzdWNoIGNhc2VzIHRoZSBub2RlIGRv
+ZXMgbm90IGhhdmUgcmVhbCBtZW1vcnkuDQo+DQo+IFVzZSBsb2NhbF9tZW1vcnlfbm9kZSgpLCB3
+aGljaCBpcyBndWFyYW50ZWVkIHRvIGhhdmUgbWVtb3J5Lg0KPiBsb2NhbF9tZW1vcnlfbm9kZSBp
+cyBhIG5vb3AgaW4gb3RoZXIgYXJjaGl0ZWN0dXJlcyB0aGF0IGRvZXMgbm90IA0KPiBzdXBwb3J0
+IG1lbW9yeWxlc3Mgbm9kZXMuDQouLi4NCj4gICAgICAgICAvKiBIYXZlIG1hcC0+bnVtYV9ub2Rl
+LCBidXQgY2hvb3NlIG5vZGUgb2YgcmVkaXJlY3QgdGFyZ2V0IENQVSAqLw0KPiAtICAgICAgIG51
+bWEgPSBjcHVfdG9fbm9kZShjcHUpOw0KPiArICAgICAgIG51bWEgPSBsb2NhbF9tZW1vcnlfbm9k
+ZShjcHVfdG9fbm9kZShjcHUpKTsNCg0KVGhlcmUgYXJlIHNvIG1hbnkgY2FsbHMgdG8gY3B1X3Rv
+X25vZGUoKSB0aHJvdWdob3V0IHRoZSBrZXJuZWwuDQpBcmUgeW91IGdvaW5nIHRvIGNvbnZlcnQg
+YWxsIG9mIHRoZW0gb25lIHBhdGNoIGF0IGEgdGltZSB0byB0aGUgYWJvdmUgc2VxdWVuY2U/DQpX
+aHkgbm90IGRvIHRoaXMgQ09ORklHX0hBVkVfTUVNT1JZTEVTU19OT0RFUyBpbiBjcHVfdG9fbm9k
+ZSgpIGluc3RlYWQ/DQphbmQgc2F2ZSB0aGUgY2h1cm4uDQo=
