@@ -2,172 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8128E28AB94
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 04:03:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 78AE528AB97
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 04:08:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726773AbgJLCDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Oct 2020 22:03:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36272 "EHLO
+        id S1726832AbgJLCIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Oct 2020 22:08:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725925AbgJLCDm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 22:03:42 -0400
-Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BB0DC0613CE
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 19:03:42 -0700 (PDT)
-Received: by mail-oi1-x241.google.com with SMTP id h10so4501188oie.5
-        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 19:03:42 -0700 (PDT)
+        with ESMTP id S1726773AbgJLCIW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Oct 2020 22:08:22 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D4E5C0613CE
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 19:08:22 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id o9so9951684ilo.0
+        for <netdev@vger.kernel.org>; Sun, 11 Oct 2020 19:08:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=j13Tylr9YBkdZ0Q6y1P4zQEjpOu1kWVXCB0vaRAU130=;
-        b=ACNIBePjoAnvCfSd8s6z6kT8Js7T1Vq8g5oAhpnPtxIFeCpdFE4v/k2DUyARLJ53k7
-         Fi/I672QmETEm/7L59US6zBtJgm5feW8XfCvfGsnr53Ybbw5ONXV0UDxa9U1OC2ogGPo
-         D0Oi5XUTwPgOil4yyxWQiKvHzigAjPtRyAXivyL0A8Rh0Nq4JCkXCqgb3DCAuruzZy4b
-         EjDhj4RGTAfmlBlGiUYBvE0OOHC4khrVj/N064OEuklRLtIsE7eocTE8JrhFKkYV6UQu
-         0AeuKbw2UOX+EQN9u+aCXtqbmPqvp57iOEdrzVgHNYvviyHdM+UUixpdeeqZ3bfXhemR
-         P3aw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=H03qBKsscBeXpz6bYBgjhyN7Mc/3xUrd+ba59zX0ak8=;
+        b=izCW822eWhYBXAGHcqMU9XeDR62k2ohH99rleUnRXfeuqoAx8vv4jihzqF0E8Xnsum
+         5ZFoGNlEXZs5F+9JtpJlecIuUBYfey4xp1Pz7rEe8jKedUlbZs8IS1Da3tr0PHBygGQf
+         inAyO/SnuduE3Jl+/QTooJpDPXrTp1hGWRP10/y9Yej/62wr7Yj8v6rP8OA+ncXVY0f+
+         vWCUZckl111Jvogk6Ef60lEqqe8PXwBkptYLhULa+7DZTl+irV0unczSXAZJD6Lp3kGv
+         +NtvNo7xKChvy/jvxXNCP9jXytiR4JpaK93f1Kmw4tbI+esI0Ohnz0PSKrP8tiFl5Xx2
+         wNiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=j13Tylr9YBkdZ0Q6y1P4zQEjpOu1kWVXCB0vaRAU130=;
-        b=S0Kq2VUkkoWu7ypzTXLMDw2p6eIdm2KCyS2ucS2ZygPHv9SJ0p60bNm4gJTEWaUFWo
-         B8EwxjiOFhJkZnu5nrTihromsJybRyezvGECGvQ6H2xV/MRevbBkm67yl+s6k1ON+e1w
-         1eiZDhX54GQHOyJT4XycKYhfpTUkvYeKVrP146xXDDH+lPNJcYyKlgOm8bxH6otIreb1
-         nexxLN4IryjX6tku/bcHZvTk+viExdz/+ZSdI2mlY32OSpA+kGgPZaaoasIx5qcuoSJm
-         +tnIHP3JjISggKYDxNT2XRScS53Q4Mx2MfExL3pRXAkUblBX9Vj4/4gd7604a3l48+ft
-         bN8Q==
-X-Gm-Message-State: AOAM5315N37l4/x8WPjTvQ8GIPU4tTFpknf0T5iQOkC0A4I3cEn8+niG
-        OpNaO5kOYJeTn1DUtRcwFhlh3oeCRoo=
-X-Google-Smtp-Source: ABdhPJzbSZngaFCV4YYKgEgA+zeTPsGl4ocGWWpONXc9jQ04lXVYHQZD/kFhwp5l2bt+VbTQZSy97g==
-X-Received: by 2002:aca:3a57:: with SMTP id h84mr9778654oia.95.1602468220426;
-        Sun, 11 Oct 2020 19:03:40 -0700 (PDT)
-Received: from localhost.localdomain ([50.236.19.102])
-        by smtp.gmail.com with ESMTPSA id t12sm1560471oth.13.2020.10.11.19.03.04
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 11 Oct 2020 19:03:39 -0700 (PDT)
-From:   xiangxia.m.yue@gmail.com
-To:     jasowang@redhat.com, mst@redhat.com, willemb@google.com
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Subject: [PATCH net-next v3] virtio-net: ethtool configurable RXCSUM
-Date:   Mon, 12 Oct 2020 09:58:20 +0800
-Message-Id: <20201012015820.62042-1-xiangxia.m.yue@gmail.com>
-X-Mailer: git-send-email 2.15.0
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=H03qBKsscBeXpz6bYBgjhyN7Mc/3xUrd+ba59zX0ak8=;
+        b=Oz8YJl7SbgueKWRen3Zppt0n+2s+Tf+XBwqmvYuLsa2fblD7r6cNfxyS1wLIDwYOJm
+         RNETam7OflEwE4l9h8vNhCKqK7szLw7AXSgxX7weNTKX12k0SoK6pJTUCd0aAC6UoEiO
+         4vF2IXCozX4xYh1SPC8u/i0Abgn7QxLeoHrJygnsYXBuIrGXlqA1o4sP+6iWOakiZj4N
+         2oEqUJlK6wpcQCf539YP1+GPQrYBGEDjHhbbf1kTRqC8uigFx+0YV5NkUMgZu3/6/E8I
+         WUbQgfm1/BOP7k5Z7DSKpcbGFGSta6+wWK9rGv39blnQW8IkCfQ8ZuOWtJvS9cHrJ/71
+         94vw==
+X-Gm-Message-State: AOAM530nkXcLscviAXXBMdXpFMwF7FhlLlmJaOnejRJGd7wB3NkeKtMh
+        ogtFUh6H1XPY5cEF0MV09XI=
+X-Google-Smtp-Source: ABdhPJwkSCRO4pBJ7IuOZ0uezz2I4SBLbhXA1Vzb0Snkh/P0OuLH8uuh9CeNksA2a/RZt7DhmprIpA==
+X-Received: by 2002:a92:360d:: with SMTP id d13mr15149441ila.99.1602468501427;
+        Sun, 11 Oct 2020 19:08:21 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:85e0:a5a2:ceeb:837])
+        by smtp.googlemail.com with ESMTPSA id m7sm6712157iop.13.2020.10.11.19.08.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 11 Oct 2020 19:08:20 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next 0/6] bridge: mdb: add support for
+ IGMPv3/MLDv2 attributes
+To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, Nikolay Aleksandrov <nikolay@nvidia.com>
+References: <20201008135024.1515468-1-razor@blackwall.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <05f5cd5c-6dd8-a153-64ed-03b1d850d5d5@gmail.com>
+Date:   Sun, 11 Oct 2020 20:08:19 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.1
+MIME-Version: 1.0
+In-Reply-To: <20201008135024.1515468-1-razor@blackwall.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+On 10/8/20 6:50 AM, Nikolay Aleksandrov wrote:
+> From: Nikolay Aleksandrov <nikolay@nvidia.com>
+> 
+> Hi,
+> This set adds support for IGMPv3/MLDv2 attributes, they're mostly
+> read-only at the moment. The only new "set" option is the source address
+> for S,G entries. It is added in patch 01 (see the patch commit message for
+> an example). Patch 02 shows a missing flag (fast_leave) for
+> completeness, then patch 03 shows the new IGMPv3/MLDv2 flags:
+> added_by_star_ex and blocked. Patches 04-06 show the new extra
+> information about the entry's state when IGMPv3/MLDv2 are enabled. That
+> includes its filter mode (include/exclude), source list with timers and
+> origin protocol (currently only static/kernel), in order to show the new
+> information the user must use "-d"/show_details.
+> Here's the output of a few IGMPv3 entries:
+>  dev bridge port ens12 grp 239.0.0.1 src 20.21.22.23 temp filter_mode include proto kernel  blocked    0.00
+>  dev bridge port ens12 grp 239.0.0.1 src 8.9.10.11 temp filter_mode include proto kernel  blocked    0.00
+>  dev bridge port ens12 grp 239.0.0.1 src 1.2.3.1 temp filter_mode include proto kernel  blocked    0.00
+>  dev bridge port ens12 grp 239.0.0.1 temp filter_mode exclude source_list 20.21.22.23/0.00,8.9.10.11/0.00,1.2.3.1/0.00 proto kernel    26.65
+> 
 
-Allow user configuring RXCSUM separately with ethtool -K,
-reusing the existing virtnet_set_guest_offloads helper
-that configures RXCSUM for XDP. This is conditional on
-VIRTIO_NET_F_CTRL_GUEST_OFFLOADS.
-
-If Rx checksum is disabled, LRO should also be disabled.
-
-Cc: Michael S. Tsirkin <mst@redhat.com>
-Cc: Jason Wang <jasowang@redhat.com>
-Cc: Willem de Bruijn <willemb@google.com>
-Signed-off-by: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
----
- drivers/net/virtio_net.c | 48 ++++++++++++++++++++++++++++++----------
- 1 file changed, 36 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 21b71148c532..d2d2c4a53cf2 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -68,6 +68,8 @@ static const unsigned long guest_offloads[] = {
- 				(1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
- 				(1ULL << VIRTIO_NET_F_GUEST_UFO))
- 
-+#define GUEST_OFFLOAD_CSUM_MASK (1ULL << VIRTIO_NET_F_GUEST_CSUM)
-+
- struct virtnet_stat_desc {
- 	char desc[ETH_GSTRING_LEN];
- 	size_t offset;
-@@ -2522,29 +2524,48 @@ static int virtnet_get_phys_port_name(struct net_device *dev, char *buf,
- 	return 0;
- }
- 
-+static netdev_features_t virtnet_fix_features(struct net_device *netdev,
-+					      netdev_features_t features)
-+{
-+	/* If Rx checksum is disabled, LRO should also be disabled. */
-+	if (!(features & NETIF_F_RXCSUM))
-+		features &= ~NETIF_F_LRO;
-+
-+	return features;
-+}
-+
- static int virtnet_set_features(struct net_device *dev,
- 				netdev_features_t features)
- {
- 	struct virtnet_info *vi = netdev_priv(dev);
--	u64 offloads;
-+	u64 offloads = vi->guest_offloads;
- 	int err;
- 
--	if ((dev->features ^ features) & NETIF_F_LRO) {
--		if (vi->xdp_queue_pairs)
--			return -EBUSY;
-+	/* Don't allow configuration while XDP is active. */
-+	if (vi->xdp_queue_pairs)
-+		return -EBUSY;
- 
-+	if ((dev->features ^ features) & NETIF_F_LRO) {
- 		if (features & NETIF_F_LRO)
--			offloads = vi->guest_offloads_capable;
-+			offloads |= GUEST_OFFLOAD_LRO_MASK &
-+				    vi->guest_offloads_capable;
- 		else
--			offloads = vi->guest_offloads_capable &
--				   ~GUEST_OFFLOAD_LRO_MASK;
-+			offloads &= ~GUEST_OFFLOAD_LRO_MASK;
-+	}
- 
--		err = virtnet_set_guest_offloads(vi, offloads);
--		if (err)
--			return err;
--		vi->guest_offloads = offloads;
-+	if ((dev->features ^ features) & NETIF_F_RXCSUM) {
-+		if (features & NETIF_F_RXCSUM)
-+			offloads |= GUEST_OFFLOAD_CSUM_MASK &
-+				    vi->guest_offloads_capable;
-+		else
-+			offloads &= ~GUEST_OFFLOAD_CSUM_MASK;
- 	}
- 
-+	err = virtnet_set_guest_offloads(vi, offloads);
-+	if (err)
-+		return err;
-+
-+	vi->guest_offloads = offloads;
- 	return 0;
- }
- 
-@@ -2563,6 +2584,7 @@ static const struct net_device_ops virtnet_netdev = {
- 	.ndo_features_check	= passthru_features_check,
- 	.ndo_get_phys_port_name	= virtnet_get_phys_port_name,
- 	.ndo_set_features	= virtnet_set_features,
-+	.ndo_fix_features	= virtnet_fix_features,
- };
- 
- static void virtnet_config_changed_work(struct work_struct *work)
-@@ -3013,8 +3035,10 @@ static int virtnet_probe(struct virtio_device *vdev)
- 	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
- 	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
- 		dev->features |= NETIF_F_LRO;
--	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
-+	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS)) {
-+		dev->hw_features |= NETIF_F_RXCSUM;
- 		dev->hw_features |= NETIF_F_LRO;
-+	}
- 
- 	dev->vlan_features = dev->features;
- 
--- 
-2.23.0
-
+applied to iproute2-next. Thanks, Nik
