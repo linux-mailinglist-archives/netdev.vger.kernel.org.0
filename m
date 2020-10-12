@@ -2,116 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FF0528B12D
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 11:11:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ACAB28B12F
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 11:11:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729260AbgJLJLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 05:11:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45912 "EHLO
+        id S1729283AbgJLJLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 05:11:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729075AbgJLJLR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 05:11:17 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53631C0613D0
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:17 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id e10so12941904pfj.1
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:17 -0700 (PDT)
+        with ESMTP id S1729259AbgJLJLS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 05:11:18 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E73C0613CE
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:18 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id n9so200565pgt.8
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 02:11:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=oHtz6W3fJN30D9Y2QS+JEp+DqO/4kmAxy22G4WX1KA0=;
-        b=PQNpIrIA2IAYi3vfRS2rZ9Tt9GTcIMTyu2IwiykGyMn/F47qayK1tl5etVzk+HBa7n
-         62XpXJBxFrz+ldmncFCj0tWuTMcf/6tyKPjoEgJTIyf9aXF00ToAygS2Myfwy7Ht70Y8
-         WC9xO7DeLumG+ffctZvX7hEj2Nrsk1vlxBJ3I=
+        bh=nXlPfikK8eog6RN7v2pmBeQAfT23cQtLP0EZqe7O05I=;
+        b=e2qPQeSybGdmeCZ7HYcVarmR8oSDqCcIMwtp2YSoRVEdCXqfyiWdD4o9lq95KQJ0lh
+         oNw4qY5aDS6UG82KJSSxoi4MsNS2AnHNVq2fVsQ0fQ77wkq5omwXe6QU4r5M41Gd+2b0
+         46Uhh+Dn2OXuv8HF5JH8wFJEQJuqydOTDfzEY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=oHtz6W3fJN30D9Y2QS+JEp+DqO/4kmAxy22G4WX1KA0=;
-        b=YAU4T2HI08TPQI/WvORiIDi5V1sIfBcuaepG/sqIzzBQlACMCY5skcWLPOrmXqx3qW
-         mOSomZkdGW7yhRJ1LfKBebLwoYLqz1+Gs403iajk8u14uI3R3TyzP4I50VWWDN3iZqWj
-         bYvkiopBRK+6mP+iyCZ8XC/M18jr8kp2gUmmitCOvtdrAzP3dofPXVhvcfEK0l91k0cr
-         DR8srI2tiaXVDUGijrEFJKGHswb9mSu8O043Zp4EHEuO0ebnifY9gLNrW9KBUOgQUCBO
-         s0j+k3i8bFgSrMrH8odMaD6ZLmM0Rn+z2Hmlg1HloXHYnVu3hn6LVs05F+MFW4xq0yI2
-         qkkQ==
-X-Gm-Message-State: AOAM5321u/1JS73FMhIBM367lgw9KwfEVTFVYuwi9GfbjOEC+1BeVbzO
-        QbvC/+MNDDSIM3PNrI6ykb29Aw==
-X-Google-Smtp-Source: ABdhPJwbyw81fajEzX9rTC1a1orU9ssqNX3VIkn4qxFUm60HWFy0PFt9X4zBBc6tTBwxL76k8fFSgg==
-X-Received: by 2002:a17:90b:490:: with SMTP id bh16mr18373700pjb.214.1602493876773;
-        Mon, 12 Oct 2020 02:11:16 -0700 (PDT)
+        bh=nXlPfikK8eog6RN7v2pmBeQAfT23cQtLP0EZqe7O05I=;
+        b=CK+fjLcSyNEBLKIyGxZXd1AtfIPM4R378Y6Q6wBQHkY8+VoRntVxOv6b4K6UTj5vcf
+         zTFsN8AGTTWboO+NDLbh9HoWhI0qoRr77KSwVhMaB5JABjt6ZBOD4KsoKUEgKJ3WZT50
+         IYA83JJGi7P3+IEL1kt8mfwR+avnWQwPhwtj0cQJU5jCAxQrJEReu3qqf+65HMEonO4a
+         YJugTLUMS9w5zmW90rJmF/noVJyGqOSVUD7cmIJiZJBLBCUKjuQ3dJz84+Z3su8dp5YZ
+         gUanKHEcK6ohv1HdNXqO57EwNo1rNp5hBmNQyImO0aSUDCFI+k7uZlTTAqIjNeulXrk1
+         e+GQ==
+X-Gm-Message-State: AOAM530NyXp+8LSwQ7PIZh1lsfgQImqxCFlBjIw+0iJxe0oMPofj0/ML
+        GzLZ6XDsSV3o0u2+zVGzitk3zmGYpdeRoA==
+X-Google-Smtp-Source: ABdhPJy8KI+r5Vu/VcJvtSMZ20Oo5grZLgkHVITTGYcGU5oE+Xl8Lu6YpTcKWcgV84fT6x0HWUkq3A==
+X-Received: by 2002:a17:90b:90c:: with SMTP id bo12mr18372195pjb.7.1602493877964;
+        Mon, 12 Oct 2020 02:11:17 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id jy19sm1275932pjb.9.2020.10.12.02.11.15
+        by smtp.gmail.com with ESMTPSA id jy19sm1275932pjb.9.2020.10.12.02.11.16
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 12 Oct 2020 02:11:15 -0700 (PDT)
+        Mon, 12 Oct 2020 02:11:17 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH net-next v2 2/9] bnxt_en: Enable online self tests for multi-host/NPAR mode.
-Date:   Mon, 12 Oct 2020 05:10:47 -0400
-Message-Id: <1602493854-29283-3-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
+Subject: [PATCH net-next v2 3/9] bnxt_en: Set driver default message level.
+Date:   Mon, 12 Oct 2020 05:10:48 -0400
+Message-Id: <1602493854-29283-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1602493854-29283-1-git-send-email-michael.chan@broadcom.com>
 References: <1602493854-29283-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000004d177c05b175ae34"
+        boundary="0000000000005fb7c705b175aea7"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000004d177c05b175ae34
+--0000000000005fb7c705b175aea7
 
-From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Currently, bp->msg_enable has default value of 0.  It is more useful
+to have the commonly used NETIF_MSG_DRV and NETIF_MSG_HW enabled by
+default.
 
-Online self tests are not disruptive and can be run in NPAR mode
-and in multi-host NIC as well.
+v2: Change the fall back bnxt_reset_task() inside bnxt_rx_ring_reset()
+to silent mode.  With older fw, we would take the fall back path and
+it would be very noisy.
 
 Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 52b4ea6ef8c9..dcbb7b70d60a 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -3298,7 +3298,7 @@ static void bnxt_self_test(struct net_device *dev, struct ethtool_test *etest,
- 	u8 test_mask = 0;
- 	int rc = 0, i;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index d4402a2cd07f..bac1b713786c 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -69,6 +69,7 @@
+ #include "bnxt_debugfs.h"
  
--	if (!bp->num_tests || !BNXT_SINGLE_PF(bp))
-+	if (!bp->num_tests || !BNXT_PF(bp))
- 		return;
- 	memset(buf, 0, sizeof(u64) * bp->num_tests);
- 	if (!netif_running(dev)) {
-@@ -3311,9 +3311,9 @@ static void bnxt_self_test(struct net_device *dev, struct ethtool_test *etest,
- 		do_ext_lpbk = true;
+ #define BNXT_TX_TIMEOUT		(5 * HZ)
++#define BNXT_DEF_MSG_ENABLE	(NETIF_MSG_DRV | NETIF_MSG_HW)
  
- 	if (etest->flags & ETH_TEST_FL_OFFLINE) {
--		if (bp->pf.active_vfs) {
-+		if (bp->pf.active_vfs || !BNXT_SINGLE_PF(bp)) {
- 			etest->flags |= ETH_TEST_FL_FAILED;
--			netdev_warn(dev, "Offline tests cannot be run with active VFs\n");
-+			netdev_warn(dev, "Offline tests cannot be run with active VFs or on shared PF\n");
- 			return;
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Broadcom BCM573xx network driver");
+@@ -10753,7 +10754,7 @@ static void bnxt_rx_ring_reset(struct bnxt *bp)
+ 			else
+ 				netdev_warn(bp->dev, "RX ring reset failed, rc = %d, falling back to global reset\n",
+ 					    rc);
+-			bnxt_reset_task(bp, false);
++			bnxt_reset_task(bp, true);
+ 			break;
  		}
- 		offline = true;
-@@ -3829,7 +3829,7 @@ void bnxt_ethtool_init(struct bnxt *bp)
- 		bnxt_get_pkgver(dev);
+ 		bnxt_free_one_rx_ring_skbs(bp, i);
+@@ -12510,6 +12511,7 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		return -ENOMEM;
  
- 	bp->num_tests = 0;
--	if (bp->hwrm_spec_code < 0x10704 || !BNXT_SINGLE_PF(bp))
-+	if (bp->hwrm_spec_code < 0x10704 || !BNXT_PF(bp))
- 		return;
+ 	bp = netdev_priv(dev);
++	bp->msg_enable = BNXT_DEF_MSG_ENABLE;
+ 	bnxt_set_max_func_irqs(bp, max_irqs);
  
- 	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_SELFTEST_QLIST, -1, -1);
+ 	if (bnxt_vf_pciid(ent->driver_data))
 -- 
 2.18.1
 
 
---0000000000004d177c05b175ae34
+--0000000000005fb7c705b175aea7
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -181,14 +178,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgWVWqseomjNZy
-vBsgiaAtf7Sls+Y3ccW178Ld5TJFk9swGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAxMDEyMDkxMTE3WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQg6Yvhb8U4QuM6
+ShPLC3ZdAc+movyqDAvz4LXNwEx4m3YwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAxMDEyMDkxMTE4WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAEiR61GbPiQeXY+K09I0VQwcN2p5AIEL
-yZ4796Gpng8NbwQ3b/HhOsYFE/KUp+Vt5u4OdpgKtY20/HUrgl7ecOoElSgtZbUT/uF9ElgkA/B2
-/ffK2AhdE7WUpwbjdSNlkv6W0rwIL5ZWgLx1S8vQqCftCEF0FIw+gz+iAYFLTFDJMshIBxzZW8Et
-Z0/PGWd1RaeHQTQVnzOVTKtQtYjOAImh875RKkc2kg+XbFNsngyTrUYO7bxFzM/konXd2JssDRYo
-YCv1rDLCq+H5SDi7G+Hmd/E6glwTq7zVCdWiajpzrwkHJKLsQxRF/BquVwD93xUKe1R43LM8DtHp
-niYkXwo=
---0000000000004d177c05b175ae34--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAFjsm5QlQYaBtrFVUXINQ4Tut6/wES0p
+bmc2kwAMnEHFqT42Gp6H7LToI411yAguE4yzKu+PZ2k0PzF4UFudTARGsjNjLX4o1QFqpKfIu+8Y
+YMUxRqlvX94ar8nNiqu9ikj9sCtRFNlxLZMQT+m37Dw/hdEdhkGeD4zmYQPiFa0oZrsctP7+aash
+dW22aX2Ug0vH0ve1ZR+/n8qReKj+o8lsSLfdh+3UdIpvk5ynO62DMrAARj3oZrvEse/CiCUrrocj
+Rho8Zc07CSTAdINPOHdP+ZLa6j8A8tL6DfWVn2O6vjhKwbAHPloQsC35L8QLO+jD8ih7FYI/vaxY
+xgprng8=
+--0000000000005fb7c705b175aea7--
