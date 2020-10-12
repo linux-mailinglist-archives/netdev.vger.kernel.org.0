@@ -2,91 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2291728BFFB
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 20:48:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF77A28C037
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 21:02:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730649AbgJLSsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 14:48:06 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:37936 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726267AbgJLSsF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 14:48:05 -0400
-Received: by mail-ot1-f66.google.com with SMTP id i12so16771743ota.5;
-        Mon, 12 Oct 2020 11:48:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6XXJOfO7U4hxEa5RGS+xMQKrs9V5PRPthZW1rOFN0zg=;
-        b=lKQWoVXqhV4Bf/VFkJfoZNCWxPisDAAzEdQD0+REe8/0DNyAYRs9EB8M5JxtSI9YQl
-         yBcdrnk79vHj3gglT5mkEeOf1yWqgVOBOLuuuuL0julgVk3mjZte0EUDgJ1WTgK0FLOU
-         wi7yLK2D08sev8IWi45PqN+N+iJNESK6sDZAPpGHp/yKWiG+LDQlb26cxiYN2/M3sE10
-         8MpBcx84yIIkRqGo2jqhSDeKZQVbJOlwUkLJpJ3QqxKKGrpzcZGNjCDrgGUdC0dijWc9
-         m4a932euHSciSyFuhOGPl/iHMOLlyEvT4oSIxAWcB8zJmCxnTvTzntSWyHN3aftBUo8Z
-         5tDg==
-X-Gm-Message-State: AOAM533J65wLTCeeoRcWPpfLneWTHJuiiYLPg8+3qjP3SaLb5t20LAcU
-        tDHJLRYhCfY7Up+bleNs7g==
-X-Google-Smtp-Source: ABdhPJyutzG/CtBSo2AbNwxTQRPhoMC69LSSASIpnyv8Pknp6DCor79KIyNjWfH7xwLJ0tgZgDRPng==
-X-Received: by 2002:a9d:2087:: with SMTP id x7mr19777191ota.119.1602528484942;
-        Mon, 12 Oct 2020 11:48:04 -0700 (PDT)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id w30sm403234oow.15.2020.10.12.11.48.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Oct 2020 11:48:04 -0700 (PDT)
-Received: (nullmailer pid 1895055 invoked by uid 1000);
-        Mon, 12 Oct 2020 18:48:03 -0000
-Date:   Mon, 12 Oct 2020 13:48:03 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Kurt Kanzenbach <kurt@kmk-computers.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next 1/2] dt-bindings: net: dsa: b53: Add YAML
- bindings
-Message-ID: <20201012184803.GB1886314@bogus>
-References: <20201010164627.9309-1-kurt@kmk-computers.de>
- <20201010164627.9309-2-kurt@kmk-computers.de>
- <3249c764-ec4a-26be-a52d-e9e85f3162ea@gmail.com>
- <877drxp3i5.fsf@kmk-computers.de>
- <08c1a0f5-84e1-1c92-2c57-466a28d0346a@gmail.com>
- <87o8l8f15l.fsf@kurt>
+        id S1730809AbgJLTCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 15:02:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51990 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727320AbgJLTCm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Oct 2020 15:02:42 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 459772067C;
+        Mon, 12 Oct 2020 19:02:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602529362;
+        bh=6yTxjcYLL3KprZZN6IEMWOR5I1ln8xYAUZsUeCw9yWE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=l0LX/RQXhyddGTmyEmIEHwgzE98t6LOeDYu9AziudKj7ANDN8f8jSc/y/ArNarZwu
+         Leu+9Lhpo4zJeuwqg+IKMfr8F6wRGzDcI+XlDu9yJI0TKH8KFVvVskX1hzDYP326NE
+         6BXrUZCGoXJSTkpASpzX1+FbLhZ/xRTWLoQqqRlo=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Hauke Mehrtens <hauke@hauke-m.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.8 01/24] net: lantiq: Add locking for TX DMA channel
+Date:   Mon, 12 Oct 2020 15:02:16 -0400
+Message-Id: <20201012190239.3279198-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87o8l8f15l.fsf@kurt>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 12, 2020 at 07:45:10AM +0200, Kurt Kanzenbach wrote:
-> On Sun Oct 11 2020, Florian Fainelli wrote:
-> > On 10/11/2020 1:32 AM, Kurt Kanzenbach wrote:
-> >> How should we proceed? Adding the missing compatible strings and ports
-> >> to the DTS files? Or adjusting the include files?
-> >
-> > The include is correct as it provides the fallback family string which 
-> > is what the driver will be looking for unless we do not provide a chip 
-> > compatible. The various DTS should be updated to contain both the chip 
-> > compatible and the fallback family (brcm,bcm5301x-srab) string, I will 
-> > update the various DTS and submit these for review later next week.
-> 
-> OK. It's not just the compatible strings, there are other issues as
-> well. You can check with `make dtbs_check DT_SCHEMA_FILES=path/to/b53.yaml'.
-> 
-> >
-> > Then we could imagine me taking this YAML change through the Broadcom 
-> > ARM SoC pull requests that way no new regressions are introduced.
-> >
-> > Sounds good?
-> 
-> Sounds like a plan. But, Rob or other device tree maintainers should
-> have a look at the YAML file to spot issues in there first.
+From: Hauke Mehrtens <hauke@hauke-m.de>
 
-Looks pretty good to me.
+[ Upstream commit f9317ae5523f99999fb54c513ebabbb2bc887ddf ]
 
-Rob
+The TX DMA channel data is accessed by the xrx200_start_xmit() and the
+xrx200_tx_housekeeping() function from different threads. Make sure the
+accesses are synchronized by acquiring the netif_tx_lock() in the
+xrx200_tx_housekeeping() function too. This lock is acquired by the
+kernel before calling xrx200_start_xmit().
+
+Signed-off-by: Hauke Mehrtens <hauke@hauke-m.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/lantiq_xrx200.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/ethernet/lantiq_xrx200.c b/drivers/net/ethernet/lantiq_xrx200.c
+index 635ff3a5dcfb3..51ed8a54d3801 100644
+--- a/drivers/net/ethernet/lantiq_xrx200.c
++++ b/drivers/net/ethernet/lantiq_xrx200.c
+@@ -245,6 +245,7 @@ static int xrx200_tx_housekeeping(struct napi_struct *napi, int budget)
+ 	int pkts = 0;
+ 	int bytes = 0;
+ 
++	netif_tx_lock(net_dev);
+ 	while (pkts < budget) {
+ 		struct ltq_dma_desc *desc = &ch->dma.desc_base[ch->tx_free];
+ 
+@@ -268,6 +269,7 @@ static int xrx200_tx_housekeeping(struct napi_struct *napi, int budget)
+ 	net_dev->stats.tx_bytes += bytes;
+ 	netdev_completed_queue(ch->priv->net_dev, pkts, bytes);
+ 
++	netif_tx_unlock(net_dev);
+ 	if (netif_queue_stopped(net_dev))
+ 		netif_wake_queue(net_dev);
+ 
+-- 
+2.25.1
+
