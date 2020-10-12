@@ -2,152 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76DB328AF40
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 09:41:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C76DB28AF5D
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 09:42:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728164AbgJLHlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 03:41:01 -0400
-Received: from mx2.suse.de ([195.135.220.15]:44446 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727698AbgJLHky (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Oct 2020 03:40:54 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id AA46FAB0E;
-        Mon, 12 Oct 2020 07:40:51 +0000 (UTC)
-Subject: Re: [PATCH RFC PKS/PMEM 48/58] drivers/md: Utilize new kmap_thread()
-To:     Ira Weiny <ira.weiny@intel.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Kent Overstreet <kent.overstreet@gmail.com>, x86@kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-nvdimm@lists.01.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        kvm@vger.kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kexec@lists.infradead.org, linux-bcache@vger.kernel.org,
-        linux-mtd@lists.infradead.org, devel@driverdev.osuosl.org,
-        linux-efi@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, ceph-devel@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-aio@kvack.org,
-        io-uring@vger.kernel.org, linux-erofs@lists.ozlabs.org,
-        linux-um@lists.infradead.org, linux-ntfs-dev@lists.sourceforge.net,
-        reiserfs-devel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-nilfs@vger.kernel.org, cluster-devel@redhat.com,
-        ecryptfs@vger.kernel.org, linux-cifs@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-rdma@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        xen-devel@lists.xenproject.org, linux-cachefs@redhat.com,
-        samba-technical@lists.samba.org, intel-wired-lan@lists.osuosl.org
-References: <20201009195033.3208459-1-ira.weiny@intel.com>
- <20201009195033.3208459-49-ira.weiny@intel.com>
- <c802fbf4-f67a-b205-536d-9c71b440f9c8@suse.de>
- <20201012052817.GZ2046448@iweiny-DESK2.sc.intel.com>
-From:   Coly Li <colyli@suse.de>
-Autocrypt: addr=colyli@suse.de; keydata=
- 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
-Message-ID: <026a7658-6c43-6510-a8b5-32f29de7b281@suse.de>
-Date:   Mon, 12 Oct 2020 15:40:27 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.1
+        id S1728769AbgJLHlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 03:41:49 -0400
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.216]:19479 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726396AbgJLHll (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 03:41:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1602488499;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=2CQdP0Sf2MdF3PeDqGdq4RZG464P2CZWTKHkFJPpzPc=;
+        b=lVUiShoTMJUa9as6qetTt0pbZsj6RYISyl9rG4upz2Mxp21SsFe7GTe/U4YnmYGOKq
+        CN6gHZBx3T9i/vBc78HNMmePsf5l5I/2hJ7rfntNGcDsanq+9/4wU1wydXVVOO+O9Dk3
+        HNr2okACGM1OgbbkqCRn/7QXIC58DEDKcf7mCgQ23r9n8pV9zmEU0SOuQljlxYFQZ9PA
+        KN38Xm7ietpefTgxFzAOi2rkkxZ+NMoMVQ95W74XWIsCR6uJ2CcAUS3lnKJLcSJgptvw
+        PUiK1okv1tc4YOQAXey15hbCBFnnvNyq6Cy5wblKiUu7gg+YOSSTttMClx92bax8PkE8
+        pMLQ==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3TMaFqTGVxiOM9spw=="
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.10.137]
+        by smtp.strato.de (RZmta 47.2.1 DYNA|AUTH)
+        with ESMTPSA id D0b41cw9C7fMOKc
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Mon, 12 Oct 2020 09:41:22 +0200 (CEST)
+Subject: Re: [PATCH net-next v2 1/2] can-isotp: implement cleanups /
+ improvements from review
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, mkl@pengutronix.de, davem@davemloft.net,
+        linux-can@vger.kernel.org
+References: <20201011092408.1766-1-socketcan@hartkopp.net>
+ <20201011084458.065be222@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <cc2250dd-5297-ee00-bbac-11e8865c600d@hartkopp.net>
+Date:   Mon, 12 Oct 2020 09:41:16 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20201012052817.GZ2046448@iweiny-DESK2.sc.intel.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20201011084458.065be222@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/10/12 13:28, Ira Weiny wrote:
-> On Sat, Oct 10, 2020 at 10:20:34AM +0800, Coly Li wrote:
->> On 2020/10/10 03:50, ira.weiny@intel.com wrote:
->>> From: Ira Weiny <ira.weiny@intel.com>
->>>
->>> These kmap() calls are localized to a single thread.  To avoid the over
->>> head of global PKRS updates use the new kmap_thread() call.
->>>
->>
->> Hi Ira,
->>
->> There were a number of options considered.
->>
->> 1) Attempt to change all the thread local kmap() calls to kmap_atomic()
->> 2) Introduce a flags parameter to kmap() to indicate if the mapping
->> should be global or not
->> 3) Change ~20-30 call sites to 'kmap_global()' to indicate that they
->> require a global mapping of the pages
->> 4) Change ~209 call sites to 'kmap_thread()' to indicate that the
->> mapping is to be used within that thread of execution only
->>
->>
->> I copied the above information from patch 00/58 to this message. The
->> idea behind kmap_thread() is fine to me, but as you said the new api is
->> very easy to be missed in new code (even for me). I would like to be
->> supportive to option 2) introduce a flag to kmap(), then we won't forget
->> the new thread-localized kmap method, and people won't ask why a
->> _thread() function is called but no kthread created.
+
+
+On 11.10.20 17:44, Jakub Kicinski wrote:
+> On Sun, 11 Oct 2020 11:24:07 +0200 Oliver Hartkopp wrote:
+>> diff --git a/net/can/isotp.c b/net/can/isotp.c
+>> index e6ff032b5426..22187669c5c9 100644
+>> --- a/net/can/isotp.c
+>> +++ b/net/can/isotp.c
+>> @@ -79,6 +79,8 @@ MODULE_LICENSE("Dual BSD/GPL");
+>>   MODULE_AUTHOR("Oliver Hartkopp <socketcan@hartkopp.net>");
+>>   MODULE_ALIAS("can-proto-6");
+>>   
+>> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 > 
-> Thanks for the feedback.
+> You need to move this before the includes:
 > 
-> I'm going to hold off making any changes until others weigh in.  FWIW, I kind
-> of like option 2 as well.  But there is already kmap_atomic() so it seemed like
-> kmap_XXXX() was more in line with the current API.
+> net/can/isotp.c:82: warning: "pr_fmt" redefined
+>     82 | #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+>        |
+> In file included from ../include/linux/kernel.h:15,
+>                   from ../include/linux/list.h:9,
+>                   from ../include/linux/module.h:12,
+>                   from ../net/can/isotp.c:56:
+> include/linux/printk.h:297: note: this is the location of the previous definition
+>    297 | #define pr_fmt(fmt) fmt
+>        |
+> net/can/isotp.c:82:9: warning: preprocessor token pr_fmt redefined
+> net/can/isotp.c: note: in included file (through ../include/linux/kernel.h, ../include/linux/list.h, ../include/linux/module.h):
+> include/linux/printk.h:297:9: this was the original definition
+> 
 
-I understand it now, the idea is fine to me.
+Hm - don't know why my build process didn't complain about it. Or why I 
+possibly overlooked it.
 
-Acked-by: Coly Li <colyli@suse.de>
+I'll do the cosmetic pr_fmt() improvements for the entire CAN network 
+layer stuff later as it is not relevant for this net-next window.
 
-Thanks.
+The v3 patch will fix the GFP_ATOMIC too.
 
-Coly Li
+Thanks for your patience,
+Oliver
+
