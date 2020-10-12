@@ -2,270 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0938E28BB54
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 16:50:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEF2728BB84
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 17:05:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389160AbgJLOuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 10:50:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41920 "EHLO
+        id S2389302AbgJLPFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 11:05:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388863AbgJLOuY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 10:50:24 -0400
-Received: from a3.inai.de (a3.inai.de [IPv6:2a01:4f8:10b:45d8::f5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE3EC0613D0
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 07:50:24 -0700 (PDT)
-Received: by a3.inai.de (Postfix, from userid 65534)
-        id BBC14586342E1; Mon, 12 Oct 2020 16:50:22 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on a3.inai.de
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.2
-Received: from a4.inai.de (a4.inai.de [IPv6:2a01:4f8:10b:45d8::f8])
-        by a3.inai.de (Postfix) with ESMTP id 816CB5872C948;
-        Mon, 12 Oct 2020 16:50:21 +0200 (CEST)
-From:   Jan Engelhardt <jengelh@inai.de>
-To:     stephen@networkplumber.org
-Cc:     jengelh@inai.de, netdev@vger.kernel.org
-Subject: [iproute PATCH] lib/color: introduce freely configurable color strings
-Date:   Mon, 12 Oct 2020 16:50:21 +0200
-Message-Id: <20201012145021.10539-1-jengelh@inai.de>
-X-Mailer: git-send-email 2.28.0
+        with ESMTP id S2388518AbgJLPFE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 11:05:04 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C87C0613D0
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 08:05:03 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id b193so13644296pga.6
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 08:05:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=AfxnrOWV886CqAK9wDipIrArxg73zx6Y/LaQiWjnxeU=;
+        b=v4L2wSAmHYwfhPW9AnvYRMhqSZ/d/4gzviD625vrVN4MEsFgKYsENu44PCuuEwcFJG
+         J11UHo/oMWbsqPXmsWkS11yRHonfUbd3CKkDcZPBP7XPebIoJQ9aU8QKb39kIpBd+P1e
+         o2zNxGw120JR447oddZamT+76/xt9mloAnYOQFGW7YCecKvsAtr7EonyRRJbLnUfUfSt
+         X6ariLjX21l/aHEUD3Aw02V2UBkPK3EDL+P0Kdq3lhCkicayJ4ktIeLJg1WissnddErz
+         gFKxrxRBN7dNUEyT39INsCjthYgrRXBdnGNggVwuW9num1iSBttSsW2r5/xcW6VSE/8d
+         Cd2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=AfxnrOWV886CqAK9wDipIrArxg73zx6Y/LaQiWjnxeU=;
+        b=q37zGTFq1XqhXPwKkxKbvJJP8ntO9+460QOONNaLfwaPWue+5pWVgJc+2rFWMw7k0+
+         nJHa1IoYVyVTh+k4ODX9pH1GuGq0Zu6U1oqAjoD2aVjZNjEQToShJkSSKO7rZi+cc2rS
+         gOpn6oOyGC8BoOpMO+/3eJZXzzMVm+6wM32F09u+Y7DoT8GqYhVgOHRb69v/KHxmTAil
+         JujyQ5sz0Z7cLzSWHakPZaGOBHJd/s47Y4j2tkZIETPX6ZNwAqYWLDyCTTQri52RbxjD
+         C/AGwiEVKpVg0x41QZvDUFyT2bpyZQlP9iXscLwPRIdFCkh0ZDtmYyGKSOfRUAFsxrpT
+         fKzw==
+X-Gm-Message-State: AOAM533oiOFOV9uPzBJ89jM1N7NbdLTYirL+AXEwsfHWfnIF91a4q7NA
+        w7OGAyvxi+Pr7CkoSDliaVXBbGuABprsWA==
+X-Google-Smtp-Source: ABdhPJyt1fPthLt/gFA55bipvtqK7I3lKcmmV5TLfbJ+3sBU5skfCoEsogLwy6e4DhYBMgnXLS69DQ==
+X-Received: by 2002:a63:4b26:: with SMTP id y38mr10972799pga.342.1602515102520;
+        Mon, 12 Oct 2020 08:05:02 -0700 (PDT)
+Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id v3sm26323833pjk.23.2020.10.12.08.05.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Oct 2020 08:05:02 -0700 (PDT)
+Date:   Mon, 12 Oct 2020 08:04:54 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jan Engelhardt <jengelh@inai.de>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [iproute PATCH] lib/color: introduce freely configurable color
+ strings
+Message-ID: <20201012080454.6b57ccfe@hermes.local>
+In-Reply-To: <20201012145021.10539-1-jengelh@inai.de>
+References: <20201012145021.10539-1-jengelh@inai.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement fine-grained control over color codes for iproute, very
-similar to the GCC_COLORS environment variable.
+On Mon, 12 Oct 2020 16:50:21 +0200
+Jan Engelhardt <jengelh@inai.de> wrote:
 
-Signed-off-by: Jan Engelhardt <jengelh@inai.de>
----
- lib/color.c   | 127 ++++++++++++++++++++++++--------------------------
- man/man8/ip.8 |  25 ++++++++--
- 2 files changed, 81 insertions(+), 71 deletions(-)
+> Implement fine-grained control over color codes for iproute, very
+> similar to the GCC_COLORS environment variable.
+> 
+> Signed-off-by: Jan Engelhardt <jengelh@inai.de>
+> ---
+>  lib/color.c   | 127 ++++++++++++++++++++++++--------------------------
+>  man/man8/ip.8 |  25 ++++++++--
+>  2 files changed, 81 insertions(+), 71 deletions(-)
 
-diff --git a/lib/color.c b/lib/color.c
-index 59976847..a11129f4 100644
---- a/lib/color.c
-+++ b/lib/color.c
-@@ -1,4 +1,5 @@
- /* SPDX-License-Identifier: GPL-2.0 */
-+#include <stdbool.h>
- #include <stdio.h>
- #include <stdarg.h>
- #include <stdlib.h>
-@@ -13,71 +14,37 @@
- 
- static void set_color_palette(void);
- 
--enum color {
--	C_RED,
--	C_GREEN,
--	C_YELLOW,
--	C_BLUE,
--	C_MAGENTA,
--	C_CYAN,
--	C_WHITE,
--	C_BOLD_RED,
--	C_BOLD_GREEN,
--	C_BOLD_YELLOW,
--	C_BOLD_BLUE,
--	C_BOLD_MAGENTA,
--	C_BOLD_CYAN,
--	C_BOLD_WHITE,
--	C_CLEAR
--};
--
--static const char * const color_codes[] = {
--	"\e[31m",
--	"\e[32m",
--	"\e[33m",
--	"\e[34m",
--	"\e[35m",
--	"\e[36m",
--	"\e[37m",
--	"\e[1;31m",
--	"\e[1;32m",
--	"\e[1;33m",
--	"\e[1;34m",
--	"\e[1;35m",
--	"\e[1;36m",
--	"\e[1;37m",
--	"\e[0m",
--	NULL,
--};
--
--/* light background */
--static enum color attr_colors_light[] = {
--	C_CYAN,
--	C_YELLOW,
--	C_MAGENTA,
--	C_BLUE,
--	C_GREEN,
--	C_RED,
-+enum {
-+	C_IFACE,
-+	C_LLADDR,
-+	C_V4ADDR,
-+	C_V6ADDR,
-+	C_OPERUP,
-+	C_OPERDN,
- 	C_CLEAR,
-+	C_MAX,
- };
- 
--/* dark background */
--static enum color attr_colors_dark[] = {
--	C_BOLD_CYAN,
--	C_BOLD_YELLOW,
--	C_BOLD_MAGENTA,
--	C_BOLD_BLUE,
--	C_BOLD_GREEN,
--	C_BOLD_RED,
--	C_CLEAR
-+static const char default_colors_for_black[] =
-+	"iface=36:lladdr=33:v4addr=35:v6addr=34:operup=32:operdn=31:clear=0";
-+static const char default_colors_for_white[] =
-+	"iface=1;36:lladdr=1;33:v4addr=1;35:v6addr=1;34:operup=1;32:operdn=1;31:clear=0";
-+static struct color_code {
-+	const char match[8], *code;
-+	int len;
-+} color_codes[C_MAX] = {
-+	{"iface="}, {"lladdr="}, {"v4addr="}, {"v6addr="}, {"operup="},
-+	{"operdn="}, {"clear=", "0", 1},
- };
- 
--static int is_dark_bg;
- static int color_is_enabled;
- 
- static void enable_color(void)
- {
--	color_is_enabled = 1;
-+	/* Without $TERM analysis by terminfo, the next best option is...: */
+I like the idea a lot.
+
+But there are some style issues.
+Checkpatch sees:
+
+WARNING: Missing a blank line after declarations
+#165: FILE: lib/color.c:46:
 +	const char *s = getenv("COLORTERM"), *s2 = getenv("COLORFGBG");
 +	color_is_enabled = (s != NULL && strtoul(s, NULL, 0) != 0) ||
-+	                   (s2 != NULL && *s2 != '\0');
- 	set_color_palette();
- }
- 
-@@ -121,17 +88,43 @@ bool matches_color(const char *arg, int *val)
- 
- static void set_color_palette(void)
- {
--	char *p = getenv("COLORFGBG");
-+	const char *initstr = default_colors_for_black;
-+	const char *p = getenv("COLORFGBG");
- 
- 	/*
- 	 * COLORFGBG environment variable usually contains either two or three
- 	 * values separated by semicolons; we want the last value in either case.
--	 * If this value is 0-6 or 8, background is dark.
-+	 * If this value is 7, background is bright.
- 	 */
--	if (p && (p = strrchr(p, ';')) != NULL
--		&& ((p[1] >= '0' && p[1] <= '6') || p[1] == '8')
--		&& p[2] == '\0')
--		is_dark_bg = 1;
+
+ERROR: code indent should use tabs where possible
+#166: FILE: lib/color.c:47:
++^I                   (s2 != NULL && *s2 != '\0');$
+
+ERROR: do not use assignment in if condition
+#188: FILE: lib/color.c:99:
 +	if (p && (p = strrchr(p, ';')) != NULL && (p[1] == '7' && p[2] == '\0'))
-+		initstr = default_colors_for_white;
-+	p = getenv("IPROUTE_COLORS");
-+	if (p != NULL)
-+		initstr = p;
-+
-+	for (p = initstr; *p != '\0'; ) {
-+		unsigned int key = C_MAX;
+
+WARNING: Missing a blank line after declarations
+#197: FILE: lib/color.c:108:
 +		const char *code = NULL;
 +		for (size_t j = 0; j < ARRAY_SIZE(color_codes); ++j) {
-+			if (strncmp(p, color_codes[j].match,
-+			    strlen(color_codes[j].match)) != 0)
-+				continue;
-+			key = j;
-+			code = p + strlen(color_codes[j].match);
-+			break;
-+		}
-+
+
+WARNING: Missing a blank line after declarations
+#207: FILE: lib/color.c:118:
 +		const char *next = strchr(p, ':');
 +		if (next == NULL)
-+			next = p + strlen(p);
-+		if (key != C_MAX) {
-+			color_codes[key].code = code;
-+			color_codes[key].len  = next - code;
-+		}
-+		p = next;
-+		if (*next != '\0')
-+			++p;
-+	}
- }
- 
- __attribute__((format(printf, 3, 4)))
-@@ -147,11 +140,13 @@ int color_fprintf(FILE *fp, enum color_attr attr, const char *fmt, ...)
- 		goto end;
- 	}
- 
--	ret += fprintf(fp, "%s", color_codes[is_dark_bg ?
--		attr_colors_dark[attr] : attr_colors_light[attr]]);
--
+
+WARNING: Missing a blank line after declarations
+#228: FILE: lib/color.c:144:
 +	const struct color_code *k = &color_codes[attr];
 +	if (k->code != NULL && *k->code != '\0')
-+		ret += fprintf(fp, "\e[%.*sm", k->len, k->code);
- 	ret += vfprintf(fp, fmt, args);
--	ret += fprintf(fp, "%s", color_codes[C_CLEAR]);
-+	k = &color_codes[C_CLEAR];
-+	if (k->code != NULL && *k->code != '\0')
-+		ret += fprintf(fp, "\e[%.*sm", k->len, k->code);
- 
- end:
- 	va_end(args);
-diff --git a/man/man8/ip.8 b/man/man8/ip.8
-index c9f7671e..90efeadf 100644
---- a/man/man8/ip.8
-+++ b/man/man8/ip.8
-@@ -199,8 +199,7 @@ precedence. This flag is ignored if
- .B \-json
- is also given.
- 
--Used color palette can be influenced by
--.BR COLORFGBG
-+The used color palette can be influenced by the \fBIPROUTE_COLORS\fP
- environment variable
- (see
- .BR ENVIRONMENT ).
-@@ -359,15 +358,31 @@ or, if the objects of this class cannot be listed,
- .SH ENVIRONMENT
- .TP
- .B COLORFGBG
--If set, it's value is used for detection whether background is dark or
--light and use contrast colors for it.
-+If set, its value is used to detect whether the background is dark or
-+light and to select a different palette for IPROUTE_COLORS.
- 
--COLORFGBG environment variable usually contains either two or three
-+The COLORFGBG environment variable usually contains either two or three
- values separated by semicolons; we want the last value in either case.
- If this value is 0-6 or 8, chose colors suitable for dark background:
- 
- COLORFGBG=";0" ip -c a
-+.TP
-+\fBCOLORTERM\fP
-+If set, its value is used to determine whether to enable color when
-+--color=auto is in effect. iproute does not otherwise make use of terminfo and
-+as such does not evaluate the TERM environment variable.
-+.TP
-+\fBIPROUTE_COLORS\fP
-+Its value is a colon-separated list of capabilities and Select Graphic
-+Rendition (SGR) substrings. SGR commands are interpreted by the terminal or
-+terminal emulator. (See the section in the documentation of your text terminal
-+for permitted values and their meanings as character attributes. The
-+console_codes(4) manpage gives an overview of ECMA codes.) These substring
-+values are integers in decimal representation and can be concatenated with
-+semicolons.
- 
-+Default:
-+\fIiface=36:lladdr=33:v4addr=35:v6addr=34:operup=32:operdn=31:clear=0\fP
- .SH EXIT STATUS
- Exit status is 0 if command was successful, and 1 if there is a syntax error.
- If an error was reported by the kernel exit status is 2.
--- 
-2.28.0
 
+
+Also, please don't mix declarations in code like:
+
++		for (size_t j = 0; j < ARRAY_SIZE(color_codes); ++j) {
+
+Iproute2 tries to stick to the kernel coding style, and loop variables
+like this are allowed in that standard.
