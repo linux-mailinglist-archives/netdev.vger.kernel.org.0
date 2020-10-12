@@ -2,131 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8314928AF85
-	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 10:00:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79E4328AF8E
+	for <lists+netdev@lfdr.de>; Mon, 12 Oct 2020 10:01:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727457AbgJLIAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 04:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35010 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726732AbgJLIAX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 04:00:23 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 426C2C0613CE;
-        Mon, 12 Oct 2020 01:00:23 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id u8so21932924ejg.1;
-        Mon, 12 Oct 2020 01:00:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=E6ZQVUiO2275Bcug8uUrW3WsykSr+byogH0GbMVRigw=;
-        b=GcDfopve+WPhIRwCJrdYk1/TfRko9i65Ilpv8HZL+ED4dQxCulnQnRZePaC64NPAr2
-         nmn49sDr6c5oTxnoaD2uTYlCVwQO8ZXYpcby1pF1D2C+klxUKxBdYIrvBNyVr+GmiuG8
-         2bxGIzY8Kxom/n/9bHVET77PZ+zY76sAt0wT5b3JoLdHxzTW8+7RWqIDuoC4DkIKWI6m
-         7HiNZNlq7bhlUSEqBASqo+IrjOTSLh2e3kzN+VzkPV5G32LDlCJJtFw4Om97uHa2w1yJ
-         VkNWhQdsIVRQDbB1ucSjpnk/Fp3cj2MWiyRP9+YPlG7kqDkXi/dXv8baEtjIGqojK2hg
-         0+vQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=E6ZQVUiO2275Bcug8uUrW3WsykSr+byogH0GbMVRigw=;
-        b=BeQOuwcxpOp1wFrB1Y2rJvnyX28ggCNQYAG5l8eVgAlbDVWNvU7zCHBoF1H7/MBd7b
-         vt02e8acz3yYPMB4BZAdKM7ZO+54/DD/fSenqd6S2QAih+qjqSLVdbLCDl1Je9AKwG9+
-         sfUkjWY/CjjCtMxY8tV8YjpjXJdjFdJfELWe0P5WSYaDHFyMMdqK/VvGPxpFJtDruQm3
-         eLBBjclouDP+j4cyysP5n4Pw92dZICylVm7VPYMaNft6o9FjnNHJhlBSwrxexAqru7b/
-         VkBTQKqv/KzQoUjcrNCH5ld/z1//wGiBshquPBGA7add1obPFHuA1tCiWt9eZmAQZc1E
-         +7JQ==
-X-Gm-Message-State: AOAM533ZbgJvreW0Re0hlzBR+yMfoStaIDqss6z6fEP613SYAAG63yw6
-        WfQj9QMuyeRR4Kg9R9uQS8U=
-X-Google-Smtp-Source: ABdhPJyM1WPUyaOroCzCzAQo+bFOg9gN1cdZ7Fu41hYLugilC37gIB+LcI36H/p0IumpMavqB/LCXw==
-X-Received: by 2002:a17:907:4365:: with SMTP id nd5mr27607240ejb.56.1602489621917;
-        Mon, 12 Oct 2020 01:00:21 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f00:6a00:f90c:2907:849f:701c? (p200300ea8f006a00f90c2907849f701c.dip0.t-ipconnect.de. [2003:ea:8f00:6a00:f90c:2907:849f:701c])
-        by smtp.googlemail.com with ESMTPSA id r21sm10129690eda.3.2020.10.12.01.00.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Oct 2020 01:00:21 -0700 (PDT)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next v2 00/12] net: add and use function
- dev_fetch_sw_netstats for fetching pcpu_sw_netstats
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>,
-        Oliver Neukum <oneukum@suse.com>,
-        Igor Mitsyanko <imitsyanko@quantenna.com>,
-        Sergey Matyukevich <geomatsi@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-rdma@vger.kernel.org,
-        Linux USB Mailing List <linux-usb@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        bridge@lists.linux-foundation.org
-Message-ID: <d77b65de-1793-f808-66b5-aaa4e7c8a8f0@gmail.com>
-Date:   Mon, 12 Oct 2020 10:00:11 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        id S1728817AbgJLIBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 04:01:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:31096 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726334AbgJLIBT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 04:01:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602489677;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=f3yX0WlF+2eHtbcZPvQACZAma8VUwa9B1j/FjYNY+fs=;
+        b=VRo+3GyvC/eR7YloHphLuAgh/dWPWiHYZhu8B4MpWYKxgFc7H9LUXxP3eYOrryckXJiKtF
+        8BXL/wCPjtE1u72cPPQYyZ31psJxVoLhV/AjNL1/ki8spInYXZm2sxSZbauXgm4iDXUr4B
+        +r5U/uoryxWuK2vwd8myh4HYH/yt+ZA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-214-eFcuIaVLMxmj3lvAneKo6w-1; Mon, 12 Oct 2020 04:01:13 -0400
+X-MC-Unique: eFcuIaVLMxmj3lvAneKo6w-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 64E3B64085;
+        Mon, 12 Oct 2020 08:01:12 +0000 (UTC)
+Received: from ovpn-113-160.ams2.redhat.com (ovpn-113-160.ams2.redhat.com [10.36.113.160])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2AC615578F;
+        Mon, 12 Oct 2020 08:01:10 +0000 (UTC)
+Message-ID: <c5ea3f4a906c0dcd7b53b0dd70fc13eb3d2386e2.camel@redhat.com>
+Subject: Re: [PATCH net 0/2] mptcp: some fallback fixes
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        mptcp@lists.01.org
+Date:   Mon, 12 Oct 2020 10:01:10 +0200
+In-Reply-To: <20201010111332.3ac29a5f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <cover.1602262630.git.pabeni@redhat.com>
+         <20201010111332.3ac29a5f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In several places the same code is used to populate rtnl_link_stats64
-fields with data from pcpu_sw_netstats. Therefore factor out this code
-to a new function dev_fetch_sw_netstats().
+On Sat, 2020-10-10 at 11:13 -0700, Jakub Kicinski wrote:
+> On Fri,  9 Oct 2020 18:59:59 +0200 Paolo Abeni wrote:
+> > pktdrill pointed-out we currently don't handle properly some
+> > fallback scenario for MP_JOIN subflows
+> > 
+> > The first patch addresses such issue.
+> > 
+> > Patch 2/2 fixes a related pre-existing issue that is more
+> > evident after 1/2: we could keep using for MPTCP signaling
+> > closed subflows.
+> 
+> Applied, thanks Paolo.
+> 
+> You already have a few of those in the code, but:
+> 
+> +	if (... &&
+> +	    schedule_work(&mptcp_sk(sk)->work))
+> +		sock_hold(sk);
+> 
+> isn't this a fairly questionable construct?
+> 
+> You take a reference for the async work to release _after_ you
+> scheduled the async work? 
 
-v2:
-- constify argument netstats
-- don't ignore netstats being NULL or an ERRPTR
-- switch to EXPORT_SYMBOL_GPL
+Thank you for reviewing! Indeed we need to add some comments there:
+IIRC that chunk already raised a question in the past.
 
-Heiner Kallweit (12):
-  net: core: add function dev_fetch_sw_netstats for fetching
-    pcpu_sw_netstats
-  IB/hfi1: use new function dev_fetch_sw_netstats
-  net: macsec: use new function dev_fetch_sw_netstats
-  net: usb: qmi_wwan: use new function dev_fetch_sw_netstats
-  net: usbnet: use new function dev_fetch_sw_netstats
-  qtnfmac: use new function dev_fetch_sw_netstats
-  net: bridge: use new function dev_fetch_sw_netstats
-  net: dsa: use new function dev_fetch_sw_netstats
-  iptunnel: use new function dev_fetch_sw_netstats
-  mac80211: use new function dev_fetch_sw_netstats
-  net: openvswitch: use new function dev_fetch_sw_netstats
-  xfrm: use new function dev_fetch_sw_netstats
+Afaics, that is safe because the caller (a subflow) held a reference to
+sk and sk can't be freed in between the scheduling and the next
+sock_hold(). 
 
- drivers/infiniband/hw/hfi1/ipoib_main.c       | 34 +------------------
- drivers/net/macsec.c                          | 22 +-----------
- drivers/net/usb/qmi_wwan.c                    | 24 +------------
- drivers/net/usb/usbnet.c                      | 24 +------------
- drivers/net/wireless/quantenna/qtnfmac/core.c | 27 +--------------
- include/linux/netdevice.h                     |  2 ++
- net/bridge/br_device.c                        | 21 +-----------
- net/core/dev.c                                | 34 +++++++++++++++++++
- net/dsa/slave.c                               | 21 +-----------
- net/ipv4/ip_tunnel_core.c                     | 23 +------------
- net/mac80211/iface.c                          | 23 +------------
- net/openvswitch/vport-internal_dev.c          | 20 +----------
- net/xfrm/xfrm_interface.c                     | 22 +-----------
- 13 files changed, 47 insertions(+), 250 deletions(-)
+We have a pending refactor, targeting the next development cycle, that
+will consolidate the workqueue scheduling into an helper. We will add
+some comments there to clarify the above.
 
--- 
-2.28.0
+Thanks,
 
-
+Paolo
 
