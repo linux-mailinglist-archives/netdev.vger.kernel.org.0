@@ -2,98 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC62C28D5F7
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 22:53:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6BD728D616
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 23:03:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728000AbgJMUxl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 16:53:41 -0400
-Received: from mga17.intel.com ([192.55.52.151]:54071 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726186AbgJMUxi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Oct 2020 16:53:38 -0400
-IronPort-SDR: gI8MkOnOGO61aP07XY6CCWHG9J8FvCUX/dOJGBzQnYJFTP4ej18aKmY+Fn52D+I38Lw4zhRGT9
- RQaSxhwXc52g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9773"; a="145845033"
-X-IronPort-AV: E=Sophos;i="5.77,371,1596524400"; 
-   d="scan'208";a="145845033"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2020 13:53:36 -0700
-IronPort-SDR: 6pC5EU5QwoXbsJ9AhSALdpEnefHex0iyEFu7THvX1eaSFNd77CbWePaQQdxa3yUvYDZ6VBgRvg
- Vwn0OOQPMwwA==
-X-IronPort-AV: E=Sophos;i="5.77,371,1596524400"; 
-   d="scan'208";a="313946459"
-Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2020 13:53:35 -0700
-Date:   Tue, 13 Oct 2020 13:52:49 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-nvdimm@lists.01.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        kvm@vger.kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kexec@lists.infradead.org, linux-bcache@vger.kernel.org,
-        linux-mtd@lists.infradead.org, devel@driverdev.osuosl.org,
-        linux-efi@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, ceph-devel@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-aio@kvack.org,
-        io-uring@vger.kernel.org, linux-erofs@lists.ozlabs.org,
-        linux-um@lists.infradead.org, linux-ntfs-dev@lists.sourceforge.net,
-        reiserfs-devel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-nilfs@vger.kernel.org, cluster-devel@redhat.com,
-        ecryptfs@vger.kernel.org, linux-cifs@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-rdma@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        xen-devel@lists.xenproject.org, linux-cachefs@redhat.com,
-        samba-technical@lists.samba.org, intel-wired-lan@lists.osuosl.org
-Subject: Re: [PATCH RFC PKS/PMEM 24/58] fs/freevxfs: Utilize new kmap_thread()
-Message-ID: <20201013205248.GJ2046448@iweiny-DESK2.sc.intel.com>
-References: <20201009195033.3208459-1-ira.weiny@intel.com>
- <20201009195033.3208459-25-ira.weiny@intel.com>
- <20201013112544.GA5249@infradead.org>
+        id S1727172AbgJMVDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 17:03:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40472 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726652AbgJMVDr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 17:03:47 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A235EC061755;
+        Tue, 13 Oct 2020 14:03:46 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id m20so883013ljj.5;
+        Tue, 13 Oct 2020 14:03:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8E7i0ijGJqc7mZ92dyJTA6zEj/61pYu3UEGHjeYbStc=;
+        b=jEeFSfmjoRMPSxXxDmkpc9dI31DAn+EKG8PEphM/ZCFbtp9WpkhOQeuf9xJCNoSsnI
+         RoIrRvc/oulOC2ZhlWMYcb8TfDEUR15VUpiD7mf7gcohHBZRUZtuaJPzaL/X1T7aHcA+
+         vmKT0fbYKdj5TvxRXrCFlvUmkFPx/1DPAmU2QBHuIAxybnWFv+WEm2K0UDdj+0mgt7+N
+         0Ze0AX4w/tOWGqKptnUnZrDT4P9VOFohcmd3TUKKE8+ci9BEwkoEGjR2XkvYv6wsiqTF
+         2s07pk5RwMIH6ZhnArmvXP06kGBzZ/KlfGbyX0zg8nOvBqXM4+l9YMvCiQfyK2skU3h2
+         DXbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8E7i0ijGJqc7mZ92dyJTA6zEj/61pYu3UEGHjeYbStc=;
+        b=mXtYmXEac+lZKP5I+IrQUFpb00ae/+xttul3z3n8REHuKNj+Pebbr+RnjfSqClwtuA
+         tb6uzyq8nymjPCCA2iYdoYWIOjLpN40FUzqUvqpt1mOy1CVmbI9iDwT6E8JemDGQ8QrJ
+         WoaArNgWgNh/pHVi4eKMYwB5epCgn0xsnOThKzoGdCJD/VSpEMDNZ3+EmVIcx/VYbMLP
+         e9sEyXoMKpuPZyK9ArIQ2YYCTny52gyj9O35K8ptYAj4unwycoNOVi356nh2yI1aI8ms
+         XAHXsVMXL4yeuHhyJf1zmVUxJcyTG66QPjZ9qZUyqXnF39Uj8sA4bsM7DkcN90ye13Y6
+         c9vg==
+X-Gm-Message-State: AOAM532RkwySQ/YgfGmZSzyeC+F0wTCfjHjVH81sfCpcFNs7+RErPcKJ
+        NkgLVFyeNLSBCMZ49v3EPueAPrLrytL1quxbUt8=
+X-Google-Smtp-Source: ABdhPJyC+0Nfdi9/QamjgkRtl1lSCJ+BrTIgQnllfz9eL0PVd77eaR8WwvWjKDaoJodZlMtbeXYyiqnfoXF+mAXMXV4=
+X-Received: by 2002:a2e:b8cc:: with SMTP id s12mr554986ljp.2.1602623025058;
+ Tue, 13 Oct 2020 14:03:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201013112544.GA5249@infradead.org>
-User-Agent: Mutt/1.11.1 (2018-12-01)
+References: <20201009011240.48506-1-alexei.starovoitov@gmail.com>
+ <20201009011240.48506-4-alexei.starovoitov@gmail.com> <20201013195622.GB1305928@krava>
+In-Reply-To: <20201013195622.GB1305928@krava>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 13 Oct 2020 14:03:33 -0700
+Message-ID: <CAADnVQLYSk0YgK7_dUSF-5Rau10vOdDgosVhE9xmEr1dp+=2vg@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 3/4] selftests/bpf: Add profiler test
+To:     Jiri Olsa <jolsa@redhat.com>, Andrii Nakryiko <andrii@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 13, 2020 at 12:25:44PM +0100, Christoph Hellwig wrote:
-> > -	kaddr = kmap(pp);
-> > +	kaddr = kmap_thread(pp);
-> >  	memcpy(kaddr, vip->vii_immed.vi_immed + offset, PAGE_SIZE);
-> > -	kunmap(pp);
-> > +	kunmap_thread(pp);
-> 
-> You only Cced me on this particular patch, which means I have absolutely
-> no idea what kmap_thread and kunmap_thread actually do, and thus can't
-> provide an informed review.
+On Tue, Oct 13, 2020 at 12:56 PM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Thu, Oct 08, 2020 at 06:12:39PM -0700, Alexei Starovoitov wrote:
+>
+> SNIP
+>
+> > +
+> > +#ifdef UNROLL
+> > +#pragma unroll
+> > +#endif
+> > +     for (int i = 0; i < MAX_CGROUPS_PATH_DEPTH; i++) {
+> > +             filepart_length =
+> > +                     bpf_probe_read_str(payload, MAX_PATH, BPF_CORE_READ(cgroup_node, name));
+> > +             if (!cgroup_node)
+> > +                     return payload;
+> > +             if (cgroup_node == cgroup_root_node)
+> > +                     *root_pos = payload - payload_start;
+> > +             if (filepart_length <= MAX_PATH) {
+> > +                     barrier_var(filepart_length);
+> > +                     payload += filepart_length;
+> > +             }
+> > +             cgroup_node = BPF_CORE_READ(cgroup_node, parent);
+> > +     }
+> > +     return payload;
+> > +}
+> > +
+> > +static ino_t get_inode_from_kernfs(struct kernfs_node* node)
+> > +{
+> > +     struct kernfs_node___52* node52 = (void*)node;
+> > +
+> > +     if (bpf_core_field_exists(node52->id.ino)) {
+> > +             barrier_var(node52);
+> > +             return BPF_CORE_READ(node52, id.ino);
+> > +     } else {
+> > +             barrier_var(node);
+> > +             return (u64)BPF_CORE_READ(node, id);
+> > +     }
+> > +}
+> > +
+> > +int pids_cgrp_id = 1;
+>
+>
+> hi,
+> I'm getting compilation failure with this:
+>
+>           CLNG-LLC [test_maps] profiler2.o
+>         In file included from progs/profiler2.c:6:
+>         progs/profiler.inc.h:246:5: error: redefinition of 'pids_cgrp_id' as different kind of symbol
+>         int pids_cgrp_id = 1;
+>             ^
+>         /home/jolsa/linux-qemu/tools/testing/selftests/bpf/tools/include/vmlinux.h:14531:2: note: previous definition is here
+>                 pids_cgrp_id = 11,
 
-Sorry the list was so big I struggled with who to CC and on which patches.
+Interesting.
+You probably have CONFIG_CGROUP_PIDS in your .config?
+I don't and bpf CI doesn't have it either, so this issue wasn't spotted earlier.
 
-> 
-> That being said I think your life would be a lot easier if you add
-> helpers for the above code sequence and its counterpart that copies
-> to a potential hughmem page first, as that hides the implementation
-> details from most users.
-
-Matthew Wilcox and Al Viro have suggested similar ideas.
-
-https://lore.kernel.org/lkml/20201013205012.GI2046448@iweiny-DESK2.sc.intel.com/
-
-Ira
+I can hard code 11, of course, but
+but maybe Andrii has a cool way to use co-re to deal with this?
+I think
+"extern bool CONFIG_CGROUP_PIDS __kconfig"
+won't work.
+A good opportunity to try to use bpf_core_enum_value_exists() ?
