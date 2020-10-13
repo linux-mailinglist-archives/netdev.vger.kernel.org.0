@@ -2,122 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 625D628C808
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 06:39:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A728728C81C
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 07:10:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731799AbgJMEjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 00:39:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57678 "EHLO
+        id S1732288AbgJMFKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 01:10:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726463AbgJMEjx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 00:39:53 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77593C0613D0
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 21:39:53 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id x13so13286328pfa.9
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 21:39:53 -0700 (PDT)
+        with ESMTP id S1727482AbgJMFKn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 01:10:43 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34688C0613D0;
+        Mon, 12 Oct 2020 22:10:43 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id c21so18980035ljn.13;
+        Mon, 12 Oct 2020 22:10:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=h/SYra0nJ3lAnbnnToGH+G1Xs8BxrRKZg1vS9nYb6KE=;
-        b=CDD6AyZXmgMc6ml8p1hRESvOHidFzxnkg6jAV1DPwtTjlNF7L6D8OfHojERcYRHaAk
-         xbfDW64hNUdMJqa6ysDrY1cReePbveNe4F67AA8vRxaQ3qr72c27FtIvWCitvOfaPlg1
-         NbOiz/RsrcFhNPa3diRBLGuPPnpexyvDfXD0GNvdnPstaRaGjhD3JQ23bV3abxoOL41S
-         B4JtJRZsf3tTKNJ+Hwfw8ZAMJl23r0cP3JuQpjDCOd9h7haxSQPFuUr7cOVkW9oVpsW0
-         GGo13jjH+FAzBt7zTvozyDh1LJEG96IfmkX81FU5BG6lTu0O0h0YD6tF4UyZ9j8kIGRw
-         ScuA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hK0wq5TYtu4CbgyWj0slcUjypLXIPkC3crHQS4fmi60=;
+        b=W2PRgL+E4l/FgMDKFhT9G2yInReFYMwPRyjLpEp89OhHX0TxFKLlkBiNIFjfAu5HLF
+         IquTfcW4V6CoR0DwjGgWab490UZEehJwv/3e3fRxp0L4QGnhUMHc6VDIzkcweZ4WXbkE
+         3N70ady5ojtp+ro2ynKFp8oUzggkF67sp0xtNZOHBV5t0fRKGQ5ZnTTWQgQjDQIi5NBO
+         Jdkyx0XVK5LF7fLdWCz2Cn9TTQsbkDlpe9jJqGyQOMSMVBzxpXR3uK+P4pKIzoDcvpa2
+         vl7zTs/4gtNNdbjQrpfDvpMYNfmbXtepistA2XfrIgsCL4EL+gzn9ozvb7uakrsowwjw
+         AxgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=h/SYra0nJ3lAnbnnToGH+G1Xs8BxrRKZg1vS9nYb6KE=;
-        b=fPoSG0WYXv8ZM7CzpgaaOg93iJS4bqZ+DjiKuR8o9oo4NvK5nzPr6j4CQ2blV8ebXe
-         8F7FXKsBD44qGpEIPzJtpxZfRZbemyDAjYl24oR/Yy0fTlulx/B/CJjEzpR5JAMh4ioz
-         hJn8enlQfgorwvZyHQyDrBrTsVN7Xcoh+r3RdsnpcAJL3QU2hqVIDoqoujHFP6JNIbLm
-         9qndPsTKE26iVjvNqUwnESMl7inAqq5Q53M43qrpqXDcGsZMGRTfz8igxiZzZMqvMDEk
-         1qqgzctFlBymprFIy3N0XktI2nqkLP99D/IO9boh0LX7+DY4LzDB+Cr/fTfUNuwGgZBL
-         jZwA==
-X-Gm-Message-State: AOAM532eWq7EEjLJQDIwd/VX5O/rP0NSTWmZk6qoL/D5ncRQIoTwDs2/
-        Hv6SdWhvMW3xhKgMR0j8cwM=
-X-Google-Smtp-Source: ABdhPJypVz/zIT6e9UhembZLVBxVxJ36iqJ6GvOXJzwBLuuj+J4mNPFZy4BqW6sDNIPZcFiZWokdWA==
-X-Received: by 2002:a62:9245:0:b029:156:4a19:a250 with SMTP id o66-20020a6292450000b02901564a19a250mr4506411pfd.2.1602563992902;
-        Mon, 12 Oct 2020 21:39:52 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id f21sm8559762pfk.169.2020.10.12.21.39.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Oct 2020 21:39:52 -0700 (PDT)
-Date:   Tue, 13 Oct 2020 12:39:43 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Ido Schimmel <idosch@mellanox.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        David Ahern <dsahern@gmail.com>
-Subject: vxlan_asymmetric.sh test failed every time
-Message-ID: <20201013043943.GL2531@dhcp-12-153.nay.redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hK0wq5TYtu4CbgyWj0slcUjypLXIPkC3crHQS4fmi60=;
+        b=WsEt87lxlyozQh+jF3Q3SQVWw396lJV6fQP1k/2mPzSOmev6d7yd0ThcKOnhRqFiRR
+         4kRJNxKf8bwQq+JcHxb0/JzgAWO/5334u78cBEZjLHmMVdmuGWq9FH8o36c/ynJ8O6e9
+         twtsRDITJ1AITCA53m2QiKBSTx+90OUrvExROU8o9JtwJp5pI7SHZ8ghqWZpb4cN4t5U
+         f2X6DE5qVS9n9AbPHxPXYY9rijYnNpRMQEAJOHl2Xh4Jl55IHMeRJUZKu75mkrxRg0gf
+         DWW+tA9rQLIpjg5NMCkUYAdode0etRdBAmgp660o9q2y4NeUNP/BsBb+894p1wfGdIDv
+         ax6Q==
+X-Gm-Message-State: AOAM532QmR4pi6cEzEs4mA2rrw3YoCMaOKmNzOUSXdrWb2I5J+T8LhWV
+        mVozqraYw1vDmHb0onjilJjHYtAlotLpZuooFO8=
+X-Google-Smtp-Source: ABdhPJxfEIgaqk5j6DLVDWEk4eng393qHmcvgOh1K3aPKL9V9vpwiUhB/m+FPxmCAhk0NAyy4++G9m5YGzjkRtmsQwo=
+X-Received: by 2002:a05:651c:10b:: with SMTP id a11mr4479478ljb.49.1602565841740;
+ Mon, 12 Oct 2020 22:10:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20201012093542.15504-1-ceggers@arri.de> <CA+FuTSfkBHtKqjppMmqudj9GwZBidSqvOP6WCzoxLGihqiz5Qw@mail.gmail.com>
+In-Reply-To: <CA+FuTSfkBHtKqjppMmqudj9GwZBidSqvOP6WCzoxLGihqiz5Qw@mail.gmail.com>
+From:   Deepa Dinamani <deepa.kernel@gmail.com>
+Date:   Mon, 12 Oct 2020 22:10:31 -0700
+Message-ID: <CABeXuvrgdP9C4jM2VhNn_FAdTvW5EVMoNSOmca2YW-XtM544rw@mail.gmail.com>
+Subject: Re: [PATCH net v2 1/2] socket: fix option SO_TIMESTAMPING_NEW
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Christian Eggers <ceggers@arri.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Ido,
+> On Mon, Oct 12, 2020 at 5:36 AM Christian Eggers <ceggers@arri.de> wrote:
+> > v2:
+> > -----
+> > - integrated proposal from Willem de Bruijn
+> > - added Reviewed-by: from Willem and Deepa
 
-When run vxlan_asymmetric.sh on RHEL8, It failed every time. I though that
-it may failed because the kernel version is too old. But today I tried with
-latest kernel, it still failed. Would you please help check if I missed
-any configuration?
+You may add my
+Acked-by: Deepa Dinamani <deepa.kernel@gmail.com>
 
-# uname -r
-5.9.0
-# ip -V
-ip utility, iproute2-ss200602
-# netsniff-ng -v
-netsniff-ng 0.6.6 (Syro), Git id: (none)
-# cp forwarding.config.sample forwarding.config
 
-# ./vxlan_asymmetric.sh
-RTNETLINK answers: File exists
-TEST: ping: local->local vid 10->vid 20                             [FAIL]
-TEST: ping: local->remote vid 10->vid 10                            [ OK ]
-TEST: ping: local->remote vid 20->vid 20                            [ OK ]
-TEST: ping: local->remote vid 10->vid 20                            [FAIL]
-TEST: ping: local->remote vid 20->vid 10                            [FAIL]
-INFO: deleting neighbours from vlan interfaces
-TEST: ping: local->local vid 10->vid 20                             [FAIL]
-TEST: ping: local->remote vid 10->vid 10                            [ OK ]
-TEST: ping: local->remote vid 20->vid 20                            [ OK ]
-TEST: ping: local->remote vid 10->vid 20                            [FAIL]
-TEST: ping: local->remote vid 20->vid 10                            [FAIL]
-TEST: neigh_suppress: on / neigh exists: yes                        [ OK ]
-TEST: neigh_suppress: on / neigh exists: no                         [ OK ]
-TEST: neigh_suppress: off / neigh exists: no                        [ OK ]
-TEST: neigh_suppress: off / neigh exists: yes                       [ OK ]
-
-# dmesg
-[...snip...]
-[ 1518.885526] device br1 entered promiscuous mode
-[ 1518.886211] device br1 left promiscuous mode
-[ 1518.890637] device br1 entered promiscuous mode
-[ 1518.941524] br1: received packet on vx10 with own address as source address (addr:00:00:5e:00:01:01, vlan:10)
-[ 1518.949522] br1: received packet on vx10 with own address as source address (addr:00:00:5e:00:01:01, vlan:10)
-[ 1519.165569] br1: received packet on vx10 with own address as source address (addr:00:00:5e:00:01:01, vlan:10)
-[ 1519.166900] IPv6: vlan10-v: IPv6 duplicate address fe80::200:5eff:fe00:101 used by 00:00:5e:00:01:01 detected!
-[ 1519.392633] br1: received packet on vx20 with own address as source address (addr:00:00:5e:00:01:01, vlan:20)
-[ 1519.741559] br1: received packet on vx20 with own address as source address (addr:00:00:5e:00:01:01, vlan:20)
-[ 1519.861641] br1: received packet on vx20 with own address as source address (addr:00:00:5e:00:01:01, vlan:20)
-[ 1519.862993] IPv6: vlan20-v: IPv6 duplicate address fe80::200:5eff:fe00:101 used by 00:00:5e:00:01:01 detected!
-[ 1520.181565] br1: received packet on vx10 with own address as source address (addr:00:00:5e:00:01:01, vlan:10)
-[ 1520.182739] br1: received packet on vx10 with own address as source address (addr:00:00:5e:00:01:01, vlan:10)
-[ 1524.853572] net_ratelimit: 4 callbacks suppressed
-[ 1524.854346] br1: received packet on vx10 with own address as source address (addr:00:00:5e:00:01:01, vlan:10)
-[ 1525.365565] br1: received packet on vx20 with own address as source address (addr:00:00:5e:00:01:01, vlan:20)
-[ 1533.557792] br1: received packet on vx10 with own address as source address (addr:00:00:5e:00:01:01, vlan:10)
-[ 1534.069921] br1: received packet on vx20 with own address as source address (addr:00:00:5e:00:01:01, vlan:20)
-[ 1550.965225] br1: received packet on vx20 with own address as source address (addr:00:00:5e:00:01:01, vlan:20)
-[ 1551.477294] br1: received packet on vx10 with own address as source address (addr:00:00:5e:00:01:01, vlan:10)
-[ 1558.064257] device w3 left promiscuous mode
-[ 1558.073279] br1: port 4(w3) entered disabled state
-[...snip...]
-
-Thanks
-Hangbin
+-Deepa
