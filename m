@@ -2,73 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 032FB28C6E3
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 03:47:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBD2A28C6EE
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 03:55:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728378AbgJMBq7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 21:46:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59304 "EHLO
+        id S1728444AbgJMBzl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 21:55:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728368AbgJMBq6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 21:46:58 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD21FC0613D0
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 18:46:58 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id a200so15557758pfa.10
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 18:46:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2Hj2CS00hXkxQ4mehrUgfvmB19jo4/tzD+aGD6uLzcA=;
-        b=G+5gBYBOFOn5r1xr9usT53zbIJ3AKcT6aTtLl4jcsbDRJast/sKHWb2HA/t6b2LxDb
-         C3B8/5Sn3ZZ3tKo5E3xHu3HjPSWELie/Nb+3V7tf85QIU4gAiNTeER6i1MNVQal9bHex
-         vGp/uGZLKk7R5ISM/SB0C93hckkSlzyhg9Jb7i/D2HddFSbjNDtTTw0y1CES1G//PrLc
-         gbfvIEVEf7inyk2K5ZaQEEScHYYzo39tMUVCPaY6Lk07WZ6BvWlX9289yhqQuyvq0XT4
-         5yEQinFYGqGzBhfon+L8PauOArAKDL1g8vNxELlqIlxtK/9lEwp52gCFVBB6+os73F66
-         V9nA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2Hj2CS00hXkxQ4mehrUgfvmB19jo4/tzD+aGD6uLzcA=;
-        b=ZCji/3KSqAxSglfyPLVbQu8egon1xm56BnYYfKR/63yOax7jYLU5w++qReX9Fg9z9s
-         sonGarEWP0MIZcILqrD2uSN8aXhEtSgUob05tK1qlCQ0Ttb3avbIvF0pzvNhmfq9Tnna
-         DmkC6R3oR/75g+TFdzCvs5kn4ijLPPrE1bvn9Y5qQLuYUZOMsVj8IhQk/a1CdknV/Wgp
-         3hK9Ao8uItqbC7R9VBzOmvb/EaibEk4nVCiBLGfc76K7ZzfEGUdux4c75sNyj+9z8yrQ
-         wcZpjv25EE0WKnIv6DDA3aW1TBGPpj7RuXjS5+eQdrgw7CAlrrvHTS07EKddBJc9xw7k
-         OhxA==
-X-Gm-Message-State: AOAM530TOsXFzRQlN8pDyWxHRFegTdDOaO451RxtGNRiyFQSFJPRBXW0
-        ePnw1cd9TIf8l3HJIy/O9PVYpuVNmbB77Zuyre4=
-X-Google-Smtp-Source: ABdhPJzYMSLzLMR7TRRVQCUjw1fWBsrIZYoeMF3hFif6oVxRCulTO2vDfEQ89bXgWigweG5V8kQexRk8vKPY+HPfbpM=
-X-Received: by 2002:aa7:83c2:0:b029:156:5ece:98b6 with SMTP id
- j2-20020aa783c20000b02901565ece98b6mr2982181pfn.4.1602553618061; Mon, 12 Oct
- 2020 18:46:58 -0700 (PDT)
+        with ESMTP id S1726168AbgJMBzl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 21:55:41 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34A06C0613D0;
+        Mon, 12 Oct 2020 18:55:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=XZ4PnfNtwakIDlRRmh47GHVxqUjiVpoW6RClzSLlVzI=; b=XUUZ4fqAb9ywdL3Jx1BwPY9nJF
+        iKs2Te4/mNvPSrju67WdoJ/QCbrAFA+clkdxX64WQg3c+9bKiPnFI4f5asilYqfKGH72XDZmnsqHp
+        Kvf8wcF8HS0BqzRGycWfFdmw1R1G4GortaEEZClVb8nq/w8TkUFKDWsQvpbdXoSqaUmvkp6kk4Ukb
+        XLrm32/BBTILt0MJIXpqmIa+UaafcrPp5akacLOp8c8Vku9Gxk35K++Xry7n+lss9nHpm33DdNQ2M
+        KPniw/AZ7n0euRWQxfHH0JfzNia/dNHs2P0FhVbA5ZzXV+2E8NyXBCrwI2YygAduTJka4X+rvPPTf
+        9b6QTkQg==;
+Received: from [2601:1c0:6280:3f0::507c]
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kS9X2-0003p6-DD; Tue, 13 Oct 2020 01:55:16 +0000
+Subject: Re: [PATCH v2 2/6] ASoC: SOF: Introduce descriptors for SOF client
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        alsa-devel@alsa-project.org
+Cc:     tiwai@suse.de, broonie@kernel.org, linux-rdma@vger.kernel.org,
+        jgg@nvidia.com, dledford@redhat.com, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
+        ranjani.sridharan@linux.intel.com, fred.oh@linux.intel.com,
+        parav@mellanox.com, shiraz.saleem@intel.com,
+        dan.j.williams@intel.com, kiran.patil@intel.com
+References: <20201005182446.977325-1-david.m.ertman@intel.com>
+ <20201005182446.977325-3-david.m.ertman@intel.com>
+ <076a0c53-0738-270e-845f-0ac968a4ea78@infradead.org>
+ <d9f062ee-a5f0-b41c-c8f6-b81b374754fa@linux.intel.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <9ef98f33-a0d3-579d-26e0-6046dd593eef@infradead.org>
+Date:   Mon, 12 Oct 2020 18:55:11 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-References: <20201012231721.20374-1-xiyou.wangcong@gmail.com>
-In-Reply-To: <20201012231721.20374-1-xiyou.wangcong@gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Mon, 12 Oct 2020 18:46:47 -0700
-Message-ID: <CAJht_ENiKS6KKQUCvE1ScLsyTawwaDjioPDC8jXE0CHZKnzHrg@mail.gmail.com>
-Subject: Re: [Patch net v3] ip_gre: set dev->hard_header_len and
- dev->needed_headroom properly
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzbot <syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com>,
-        William Tu <u9012063@gmail.com>,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <d9f062ee-a5f0-b41c-c8f6-b81b374754fa@linux.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 12, 2020 at 4:17 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> Note, there are some other suspicious use of dev->hard_header_len in
-> the same file, but let's leave them to a separate patch if really
-> needed.
+On 10/12/20 6:31 PM, Pierre-Louis Bossart wrote:
+> 
+>>> +config SND_SOC_SOF_CLIENT
+>>> +    tristate
+>>> +    select ANCILLARY_BUS
+>>> +    help
+>>> +      This option is not user-selectable but automagically handled by
+>>> +      'select' statements at a higher level
+>>> +
+>>> +config SND_SOC_SOF_CLIENT_SUPPORT
+>>> +    bool "SOF enable clients"
+>>
+>> Tell users what "SOF" means.
+> 
+> This option can only be reached if the user already selected the topic-level option. From there on the SOF acronym is used. Is this not enough?
 
-I looked at the file (before this patch). There are 4 occurrences of
-hard_header_len, but they are all for ERSPAN devices (TAP devices
-which tunnel Ethernet frames). So I think they are used for the
-Ethernet header length and we don't need to worry about them.
+Yes, that's enough. I didn't see it. Sorry about that.
+
+> config SND_SOC_SOF_TOPLEVEL
+>     bool "Sound Open Firmware Support"
+>     help
+>       This adds support for Sound Open Firmware (SOF). SOF is a free and
+>       generic open source audio DSP firmware for multiple devices.
+>       Say Y if you have such a device that is supported by SOF.
+> 
+>>
+>>> +    depends on SND_SOC_SOF
+>>> +    help
+>>> +      This adds support for ancillary client devices to separate out the debug
+>>> +      functionality for IPC tests, probes etc. into separate devices. This
+>>> +      option would also allow adding client devices based on DSP FW
+>>
+>> spell out firmware
+> 
+> agree on this one.
+> 
+>>
+>>> +      capabilities and ACPI/OF device information.
+>>> +      Say Y if you want to enable clients with SOF.
+>>> +      If unsure select "N".
+>>> +
+>>
+>>
+
+thanks.
+-- 
+~Randy
+
