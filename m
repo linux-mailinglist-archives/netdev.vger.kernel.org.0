@@ -2,106 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84DAD28CF4D
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 15:40:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD52428CE1B
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 14:16:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728852AbgJMNkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 09:40:14 -0400
-Received: from mail.joister.net ([103.2.236.236]:57684 "EHLO joister.net"
+        id S1727794AbgJMMQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 08:16:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41122 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728487AbgJMNkO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Oct 2020 09:40:14 -0400
-Received: from [::1] (port=41228 helo=cp1.joister.com)
-        by cp1.joister.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <perlessen56@gmail.com>)
-        id 1kSJ4n-0004CB-7f; Tue, 13 Oct 2020 17:36:47 +0530
-Received: from [82.223.22.31] ([82.223.22.31]) by joister.net (Horde
- Framework) with HTTPS; Tue, 13 Oct 2020 17:36:43 +0530
-Date:   Tue, 13 Oct 2020 17:36:43 +0530
-Message-ID: <20201013173643.Horde.oF_SqLHAnXA_3qtiK9LkFhY@joister.net>
-From:   Per Lessen <perlessen56@gmail.com>
-Subject: Business Funding Proposal
-Reply-to: perlessen56@gmail.com
-User-Agent: Horde Application Framework 5
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
+        id S1726881AbgJMMO4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Oct 2020 08:14:56 -0400
+Received: from mail.kernel.org (ip5f5ad5b2.dynamic.kabel-deutschland.de [95.90.213.178])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 06EAB22259;
+        Tue, 13 Oct 2020 12:14:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602591295;
+        bh=ReWeQAdsRgO/jyvpQynk0BfIa0k5iD1zUW77cmoS650=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mSBfPkA08R1XVmVSSTOhDI1cky7v8/jEmZ3JPPIrdtsqXlGagJZFPZn3faDl0OWsb
+         gL34LAY8f/wt8cDc3Hz5mRo9F3Ufb44/T4FMQZs1KsaZg5LMugPUA9c6iG0AL4Ej7L
+         dA39u+7SqXOzoOohgo0DJMkFA/VAmIjJvdA6sH1w=
+Received: from mchehab by mail.kernel.org with local (Exim 4.94)
+        (envelope-from <mchehab@kernel.org>)
+        id 1kSJCf-006CoO-32; Tue, 13 Oct 2020 14:14:53 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jonathan Corbet" <corbet@lwn.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH v2 15/24] docs: net: statistics.rst: remove a duplicated kernel-doc
+Date:   Tue, 13 Oct 2020 14:14:42 +0200
+Message-Id: <91767bf1dc65a8989d25e08e6af8feb1529b4136.1602590106.git.mchehab+huawei@kernel.org>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <cover.1602590106.git.mchehab+huawei@kernel.org>
+References: <cover.1602590106.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
-Content-Disposition: inline
-X-OutGoing-Spam-Status: No, score=8.0
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - cp1.joister.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - gmail.com
-X-Get-Message-Sender-Via: cp1.joister.com: authenticated_id: renu.singh@joister.net
-X-Authenticated-Sender: cp1.joister.com: renu.singh@joister.net
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 8bit
+Sender: Mauro Carvalho Chehab <mchehab@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+include/linux/ethtool.h is included twice with kernel-doc,
+both to document ethtool_pause_stats(). The first one is
+at statistics.rst, and the second one at ethtool-netlink.rst.
 
-Good Day,
+Replace one of the references to use the name of the
+function. The automarkup.py extension should create the
+cross-references.
 
-I am Dr.Per Lessen and I work as a financial consultant with
-Global Asset Management company LLC and some High Net worth
-individuals from the MENA region and European Union .
+Solves this warning:
 
-Basically, my principals are interested in investing in projects that
-are viable and has capacity of generating a reasonable ROI for the
-investor.
+	../Documentation/networking/ethtool-netlink.rst: WARNING: Duplicate C declaration, also defined in 'networking/statistics'.
+	Declaration is 'ethtool_pause_stats'.
 
-I MUST consider you a privileged entity who shall be privy to many
-sourcable CLEAN fund meant for foreign investment and you are able to
-access up to One Billion Euro or More.
+Acked-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+---
+ Documentation/networking/statistics.rst | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-I will wish that you send a copy of your highlighted projects with a
-elucidated BUSINESS PLANS and EXECUTIVE SUMMARY which I shall propagate
-for its immediate approval for a minimal ROI return on investment which
-you shall have sole mandate.
-
-
-You should also bear in mind that funding of this nature is not
-completed on email communication alone, there will be the need for a
-face to face meeting with the investor or His representatives and have
-the paperwork perfected and signed.
-
-kindly reply as soon as possible if you have any viable project that you
-will want us to be involved as indicated above.
-
-Thanks
-
-Dr. Per Lessen
+diff --git a/Documentation/networking/statistics.rst b/Documentation/networking/statistics.rst
+index 8e15bc98830b..234abedc29b2 100644
+--- a/Documentation/networking/statistics.rst
++++ b/Documentation/networking/statistics.rst
+@@ -175,5 +175,4 @@ The following structures are internal to the kernel, their members are
+ translated to netlink attributes when dumped. Drivers must not overwrite
+ the statistics they don't report with 0.
+ 
+-.. kernel-doc:: include/linux/ethtool.h
+-    :identifiers: ethtool_pause_stats
++- ethtool_pause_stats()
 -- 
-Good Day,
-
-I am Dr.Per Lessen and I work as a financial consultant with
-Global Asset Management company LLC and some High Net worth
-individuals from the MENA region and European Union .
-
-Basically, my principals are interested in investing in projects that
-are viable and has capacity of generating a reasonable ROI for the
-investor.
-
-I MUST consider you a privileged entity who shall be privy to many
-sourcable CLEAN fund meant for foreign investment and you are able to
-access up to One Billion Euro or More.
-
-I will wish that you send a copy of your highlighted projects with a
-elucidated BUSINESS PLANS and EXECUTIVE SUMMARY which I shall propagate
-for its immediate approval for a minimal ROI return on investment which
-you shall have sole mandate.
-
-
-You should also bear in mind that funding of this nature is not
-completed on email communication alone, there will be the need for a
-face to face meeting with the investor or His representatives and have
-the paperwork perfected and signed.
-
-kindly reply as soon as possible if you have any viable project that you
-will want us to be involved as indicated above.
-
-Thanks
-
-Dr. Per Lessen
+2.26.2
 
