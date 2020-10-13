@@ -2,161 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1337A28C7B4
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 05:53:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B14D28C7BC
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 06:08:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731396AbgJMDxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 23:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50552 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726651AbgJMDxG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 23:53:06 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E10EC0613D0
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 20:53:05 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id j18so3274632pfa.0
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 20:53:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=I976gwN/15KL+QNMsgGgqLZsKsiYJk1WAAkrJcvqpXg=;
-        b=Jvs6pDvj0IsDRmKV94si7Hmy7rSC+vZBw6IORU+6GuiBz6nFVyhqIqcqJDs0PDrtGr
-         nXgB5Gg3YnIhlpunv6ok32b0qmXBGoCwLNqj8YhtpNO34HbUEe0fj0rk5j4aFEsdLznp
-         VoXOaX98Lakuk83ySfZj3iYVBGQSYWKOXyIXuOrEyRswmVxiaN0fpvQLOEbiBPlkB0f0
-         SaQzLf6nCGYW1cdweYZEMOz6t3FkN6D8ke5ashIIre24atnH4a15lepW6k2kSOlNz9zr
-         SS6NCvPuDVbJ/UO8vSYODHhBG1Za37JNzNmmpoq6Rj8IhJ3hedl5GM6iDMNEd51QrfKm
-         Hzeg==
+        id S1731413AbgJMEHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 00:07:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:58662 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727016AbgJMEHh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 00:07:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602562056;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JirT+4vZS4Wlh/KjRG5Gnr9Co+Ss0bLSO4bv8e9Yukw=;
+        b=iwWaL5X9WkuhMgMnJYHDFplAyU+m3QuxJYFvxcpkO5IVJNIGQOu7jv3bNQgzxekmG/kfai
+        +0rWk0k+TacnpYpqmsw8XSIHL9NKdR3WCuOdLAt8X4OsvVwwRodfsRsBLs5ss9DCdPflQX
+        a8p3OJ/QSQMWL6/1CLz2XHtvM9YfRAY=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-594-44m_ELsTOzKH2NjOlRXajQ-1; Tue, 13 Oct 2020 00:07:34 -0400
+X-MC-Unique: 44m_ELsTOzKH2NjOlRXajQ-1
+Received: by mail-qk1-f198.google.com with SMTP id w126so14174808qka.5
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 21:07:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=I976gwN/15KL+QNMsgGgqLZsKsiYJk1WAAkrJcvqpXg=;
-        b=J42GhwQVLozJ4Oa9ArS6yOqAuZS2VYi9qRZg9b17jIMp4aN+DOK7+xfetRQ91XfWUl
-         K5A9v1QWgR25vOpJtzOenqmaV8MEqYq3OukY/32w26qixOUCk2DGJQ5QxoLfVPatbxi7
-         XrOaQue9rhdGT9kM7kmyNrdxeU2JRm9S8eTc3GfTbBXRd92z9YR9xjrx7KoUAQq1HWpH
-         wgzl7m4SrCWjeY6K6+2Mrhwit+gxe9JS7xqzLCWt9vX4kCAoyCDDXWJsvhYvCFgvFVUJ
-         HQ6RuImj+f62B5aArNDV+PWuz04d5ARzf4lsBtNPYNDDRePDNRweKNUj2Lb+aZYTznwA
-         WrTQ==
-X-Gm-Message-State: AOAM531YLoGdAf7mde2ZEZN/ITL0vO2IAKpLZ5tWwUI00mXA66cZQjJw
-        529A6XFCE353iK/eRIkyVxsJL88wRuLdLSzxAqhQlA==
-X-Google-Smtp-Source: ABdhPJxTj1LpD8Fj5IklJNe6tlIaSL6h8M3LDjY1NdFgvnmFbpO9hutDnYHrS/qSHLk7UFCnLzxPbWYodXJxV9DZ0fk=
-X-Received: by 2002:a17:90a:4749:: with SMTP id y9mr10977409pjg.229.1602561184587;
- Mon, 12 Oct 2020 20:53:04 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=JirT+4vZS4Wlh/KjRG5Gnr9Co+Ss0bLSO4bv8e9Yukw=;
+        b=Jg5rSTS7uP8k26BgZRW31AIw9EIlL7YumAlGStKa0djlbOsUqi0WJ3pS0UTT4ApNiG
+         LDsPN2eJg8drfNhkLbzrPAqan7aDY/MFkHsRJhk6JWljxaWmDmCIt9erMkprvZAiDBju
+         j2afpBQMZeLpm88tqfYmRst7MzMF1VmWo2pi+lXIIUWSVC4VPDid/wMVWOv0f/qN9b9F
+         kmgLzTB18qYz0fQEVNT+yetCP7fa3EQMNRopkOagGxbaG7UMrJ7DOGO+3VVwb78FGM5t
+         0mBiR7/pC5kNt6c9amefebswqauJhI4SRoapOS/5GVwuNXGiEMKwu4Id8jjR9tYi4vmq
+         HBCw==
+X-Gm-Message-State: AOAM533wHPHa4rFgJ1JdCD9Y+cTPjUGwpHeAWqQhbTDBTzTmS2jmzNLR
+        EE+AdjHixulq8TaeAvmccygUQhEWlIjk4RynTRjkLRNNPb0DdR79QS0Jaoyg0cpG10CwJ/1+9Jb
+        0sjXz+YeDOw5qcBPs
+X-Received: by 2002:ac8:31b4:: with SMTP id h49mr13612802qte.258.1602562053509;
+        Mon, 12 Oct 2020 21:07:33 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJym1jOUYWeI7Zbb7O6jtxusBRzdyOWNTK23Knln/KjzDTmGZDXeBS3EfPjk5zslnyZ6dHPQ0g==
+X-Received: by 2002:ac8:31b4:: with SMTP id h49mr13612782qte.258.1602562053198;
+        Mon, 12 Oct 2020 21:07:33 -0700 (PDT)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id s17sm13274100qta.26.2020.10.12.21.07.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 12 Oct 2020 21:07:32 -0700 (PDT)
+Subject: Re: [PATCH] ptp: ptp_clockmatrix: initialize variables
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     natechancellor@gmail.com, ndesaulniers@google.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+References: <20201011200955.29992-1-trix@redhat.com>
+ <20201012220126.GB1310@hoboy>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <05da63b8-f1f5-9195-d156-0f2e7f3ea116@redhat.com>
+Date:   Mon, 12 Oct 2020 21:07:30 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-References: <20201010103854.66746-1-songmuchun@bytedance.com>
- <CAM_iQpUQXctR8UBNRP6td9dWTA705tP5fWKj4yZe9gOPTn_8oQ@mail.gmail.com>
- <CAMZfGtUhVx_iYY3bJZRY5s1PG0N1mCsYGS9Oku8cTqPiMDze-g@mail.gmail.com>
- <CANn89iKprp7WYeZy4RRO5jHykprnSCcVBc7Tk14Ui_MA9OK7Fg@mail.gmail.com>
- <CAMZfGtXVKER_GM-wwqxrUshDzcEg9FkS3x_BaMTVyeqdYPGSkw@mail.gmail.com>
- <9262ea44-fc3a-0b30-54dd-526e16df85d1@gmail.com> <CAMZfGtVF6OjNuJFUExRMY1k-EaDS744=nKy6_a2cYdrJRncTgQ@mail.gmail.com>
- <CAM_iQpUgy7MDka8A44U=pLGDOwqn8YhXMp8rgs8LCJBHb5DXYA@mail.gmail.com>
-In-Reply-To: <CAM_iQpUgy7MDka8A44U=pLGDOwqn8YhXMp8rgs8LCJBHb5DXYA@mail.gmail.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Tue, 13 Oct 2020 11:52:28 +0800
-Message-ID: <CAMZfGtUgX2JNVHW8F4cJ7rY2T-8DNkouQh8O0-j6CAfd4+TCew@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH] mm: proc: add Sock to /proc/meminfo
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>, rafael@kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Shakeel Butt <shakeelb@google.com>,
-        Will Deacon <will@kernel.org>, Michal Hocko <mhocko@suse.com>,
-        Roman Gushchin <guro@fb.com>, Neil Brown <neilb@suse.de>,
-        Mike Rapoport <rppt@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Florian Westphal <fw@strlen.de>, gustavoars@kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Thomas Gleixner <tglx@linutronix.de>, dave@stgolabs.net,
-        Michel Lespinasse <walken@google.com>,
-        Jann Horn <jannh@google.com>, chenqiwu@xiaomi.com,
-        christophe.leroy@c-s.fr, Minchan Kim <minchan@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Kees Cook <keescook@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201012220126.GB1310@hoboy>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 13, 2020 at 6:12 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+
+On 10/12/20 3:01 PM, Richard Cochran wrote:
+> On Sun, Oct 11, 2020 at 01:09:55PM -0700, trix@redhat.com wrote:
+>> From: Tom Rix <trix@redhat.com>
+>>
+>> Clang static analysis reports this representative problem
+>>
+>> ptp_clockmatrix.c:1852:2: warning: 5th function call argument
+>>   is an uninitialized value
+>>         snprintf(idtcm->version, sizeof(idtcm->version), "%u.%u.%u",
+>>         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>>
+>> idtcm_display_version_info() calls several idtcm_read_*'s without
+>> checking a return status.
+> So why not check the return status?
+
+calling function is a print information only function that returns void.
+
+I do think not adding error handling is worth it.
+
+I could change the return and then the calls if if you like.
+
+Tom
+
 >
-> On Mon, Oct 12, 2020 at 2:53 AM Muchun Song <songmuchun@bytedance.com> wrote:
-> > We are not complaining about TCP using too much memory, but how do
-> > we know that TCP uses a lot of memory. When I firstly face this problem,
-> > I do not know who uses the 25GB memory and it is not shown in the /proc/meminfo.
-> > If we can know the amount memory of the socket buffer via /proc/meminfo, we
-> > may not need to spend a lot of time troubleshooting this problem. Not everyone
-> > knows that a lot of memory may be used here. But I believe many people
-> > should know /proc/meminfo to confirm memory users.
+> Your patch papers over the issue.
 >
-> Well, I'd bet networking people know `ss -m` better than /proc/meminfo,
-
-I agree with you. But if someone(not networking people) faces the same
-problem. He may suspect that there is a memory leak or think that a certain
-driver allocates memory but has no statistics. He only saw the memory
-disappeared via /proc/meminfo.
-
-> generally speaking.
+> Thanks,
+> Richard
 >
-> The practice here is that if you want some networking-specific counters,
-> add it to where networking people know better, that is, `ss -m` or /proc/net/...
->
-> Or maybe the problem you described is not specific to networking at all,
-> there must be some other places where pages are allocated but not charged.
 
-Yeah, it is not charged. The allocation path is as follows. This allocation
-consumes 25GB memory on our server. And it belongs to the network core.
-
-Thanks.
-
-   __alloc_pages_nodemask+0x11d/0x290
-   skb_page_frag_refill+0x68/0xf0
-   sk_page_frag_refill+0x19/0x70
-   tcp_sendmsg_locked+0x2f4/0xd10
-   tcp_sendmsg+0x29/0xa0
-   sock_sendmsg+0x30/0x40
-   sock_write_iter+0x8f/0x100
-   __vfs_write+0x10b/0x190
-   vfs_write+0xb0/0x190
-   ksys_write+0x5a/0xd0
-   do_syscall_64+0x5d/0x110
-   entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-> If so, adding a general mm counter in /proc/meminfo makes sense, but
-> it won't be specific to networking.
->
-> Thanks.
-
-
-
--- 
-Yours,
-Muchun
