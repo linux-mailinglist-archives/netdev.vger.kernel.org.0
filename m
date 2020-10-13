@@ -2,253 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E6BC28CE99
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 14:44:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56CE328CE87
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 14:41:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728050AbgJMMoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 08:44:38 -0400
-Received: from mta-02.yadro.com ([89.207.88.252]:39630 "EHLO mta-01.yadro.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727959AbgJMMof (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Oct 2020 08:44:35 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mta-01.yadro.com (Postfix) with ESMTP id E8E85412EB;
-        Tue, 13 Oct 2020 12:36:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
-        content-type:content-type:content-transfer-encoding:mime-version
-        :references:in-reply-to:x-mailer:message-id:date:date:subject
-        :subject:from:from:received:received:received; s=mta-01; t=
-        1602592579; x=1604406980; bh=zVhD6lUNMQlctSn+NLlY9tSIYRxPl0V3drX
-        /ojOm4RM=; b=UYtfeyXiCO69TIis32Rr/PaD1pBBZCZcUzzXbFVxqRgb+ax/ULV
-        zPcMrFn3cOhIcddAc3OV8v6JElEXz/JTFzxryOq80ijQstzPyPPyNQjKXzOwSU9A
-        Ti4+5UbkRmRVZPC0XvSM+K+Ejqri8ScNNZhP4gKYqw6dqSACCk3n4OE4=
-X-Virus-Scanned: amavisd-new at yadro.com
-Received: from mta-01.yadro.com ([127.0.0.1])
-        by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 4Bwg6O1ei_0M; Tue, 13 Oct 2020 15:36:19 +0300 (MSK)
-Received: from T-EXCH-04.corp.yadro.com (t-exch-04.corp.yadro.com [172.17.100.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mta-01.yadro.com (Postfix) with ESMTPS id 553C5412CF;
-        Tue, 13 Oct 2020 15:36:16 +0300 (MSK)
-Received: from localhost.dev.yadro.com (10.199.1.110) by
- T-EXCH-04.corp.yadro.com (172.17.100.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.669.32; Tue, 13 Oct 2020 15:36:15 +0300
-From:   Ivan Mikhaylov <i.mikhaylov@yadro.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Po-Yu Chuang <ratbert@faraday-tech.com>
-CC:     Ivan Mikhaylov <i.mikhaylov@yadro.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <openbmc@lists.ozlabs.org>
-Subject: [PATCH 1/1] net: ftgmac100: add handling of mdio/phy nodes for ast2400/2500
-Date:   Tue, 13 Oct 2020 15:40:14 +0300
-Message-ID: <20201013124014.2989-2-i.mikhaylov@yadro.com>
-X-Mailer: git-send-email 2.21.1
-In-Reply-To: <20201013124014.2989-1-i.mikhaylov@yadro.com>
-References: <20201013124014.2989-1-i.mikhaylov@yadro.com>
+        id S1727971AbgJMMlW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 08:41:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47530 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727114AbgJMMlV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 08:41:21 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C151C0613D0
+        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 05:41:21 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id b8so10642967wrn.0
+        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 05:41:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=pNavMPzBv1bWO2xJwWPv5IVzSCbtuf1nLt+5l6s1J/o=;
+        b=QA9+6FdNmLc9+EsoJDJrBGGmTC5iiFjqGfllRgq3RGRTamRpABhV4rusN+5zqzN702
+         emKaLOMbIkEo5dOVentURYS/7neEoDRtXpwAmcujjawrtqPyPRZS22zxcy3+NbtQx0lR
+         +kn2x+oXtSfTVHvQw/6QXz2N0bmidJ/bA+TXQPeYwWL/uR5tWaivGgD+HFL/Dn3rphks
+         YWIhIAes8IxqMFWaynEbijWYBFi2rgpRGJeWEvAoK6s+g4KZDvvos1/SfAnZGgu607XT
+         1AArDT9hbjWUIb/fhAu0pDYkf5gA4xYry/I1foS4hV4WZUgfNPuhGm4VpY5g4OXUIn1z
+         tvPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=pNavMPzBv1bWO2xJwWPv5IVzSCbtuf1nLt+5l6s1J/o=;
+        b=II4c/5JwLMon3Dt17cYwatPiTTxITwa0ElAkhhnOBxI+7HRIH4bdKos5ufo2G4g3Sl
+         TLHrUP6o+PGwrCqPkavUQAv/3CXD3E/G2Ak2NhoP5RODq8xyWHepTMhKh4VyY1Fb5LMq
+         lDqyYMJwSgqd2w8dqliVUcFw3EjKl1b297/dLXw9dDSzkVMpM4mWdZ74o8AQVXJ/1Ur4
+         kbGrdYqp0WwjqCNColOb/ugm5LAbDsiq4D9D163Iq1nEVE0PsWtUM6fijoLqHbCdOCq9
+         v/TPWleD1yIHxPI7ThFuxUCpezE1Rtz0+Xn0UtTiSgndjpeOkUlLuShIONLr8AXcHile
+         h0rA==
+X-Gm-Message-State: AOAM533qfcoEPZa1qd4bWLDFQmO272m+l28ln3ma3X/Drkcjp35Us4b9
+        3DiGk44PPWjfYLYepIIK+6hb2A==
+X-Google-Smtp-Source: ABdhPJxMq5zb0ocLPTn93Nm0G/M+mG3D5usUkfrCZOqEX0hKVywgbdmx0FDxg6OZ3G5AU4BxISpXXQ==
+X-Received: by 2002:adf:f4d2:: with SMTP id h18mr30712574wrp.99.1602592880111;
+        Tue, 13 Oct 2020 05:41:20 -0700 (PDT)
+Received: from ?IPv6:2a01:e0a:410:bb00:b907:592:b05a:33d2? ([2a01:e0a:410:bb00:b907:592:b05a:33d2])
+        by smtp.gmail.com with ESMTPSA id x64sm27005735wmg.33.2020.10.13.05.41.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 13 Oct 2020 05:41:19 -0700 (PDT)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH ipsec] xfrm: interface: fix the priorities for ipip and
+ ipv6 tunnels
+To:     Steffen Klassert <steffen.klassert@secunet.com>,
+        Xin Long <lucien.xin@gmail.com>
+Cc:     netdev@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>
+References: <99c1ec6ed0212992474d19f4e15ef5d077fe99b3.1602144804.git.lucien.xin@gmail.com>
+ <20201013092856.GU20687@gauss3.secunet.de>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <df21f95b-f3eb-d853-49a6-e68b3830f566@6wind.com>
+Date:   Tue, 13 Oct 2020 14:41:18 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <20201013092856.GU20687@gauss3.secunet.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.199.1.110]
-X-ClientProxiedBy: T-EXCH-01.corp.yadro.com (172.17.10.101) To
- T-EXCH-04.corp.yadro.com (172.17.100.104)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-phy-handle can't be handled well for ast2400/2500 which has an embedded
-MDIO controller. Add ftgmac100_mdio_setup for ast2400/2500 and initialize
-PHYs from mdio child node with of_mdiobus_register.
+Le 13/10/2020 à 11:28, Steffen Klassert a écrit :
+> On Thu, Oct 08, 2020 at 04:13:24PM +0800, Xin Long wrote:
+>> As Nicolas noticed in his case, when xfrm_interface module is installed
+>> the standard IP tunnels will break in receiving packets.
+>>
+>> This is caused by the IP tunnel handlers with a higher priority in xfrm
+>> interface processing incoming packets by xfrm_input(), which would drop
+>> the packets and return 0 instead when anything wrong happens.
+>>
+>> Rather than changing xfrm_input(), this patch is to adjust the priority
+>> for the IP tunnel handlers in xfrm interface, so that the packets would
+>> go to xfrmi's later than the others', as the others' would not drop the
+>> packets when the handlers couldn't process them.
+>>
+>> Note that IPCOMP also defines its own IPIP tunnel handler and it calls
+>> xfrm_input() as well, so we must make its priority lower than xfrmi's,
+>> which means having xfrmi loaded would still break IPCOMP. We may seek
+>> another way to fix it in xfrm_input() in the future.
+>>
+>> Reported-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+>> Tested-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+>> Fixes: da9bbf0598c9 ("xfrm: interface: support IPIP and IPIP6 tunnels processing with .cb_handler")
+>> FIxes: d7b360c2869f ("xfrm: interface: support IP6IP6 and IP6IP tunnels processing with .cb_handler")
+>> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> 
+> Applied, thanks a lot Xin!
+> 
+Is it possible to queue this for stable branches?
 
-Signed-off-by: Ivan Mikhaylov <i.mikhaylov@yadro.com>
----
- drivers/net/ethernet/faraday/ftgmac100.c | 114 ++++++++++++++---------
- 1 file changed, 69 insertions(+), 45 deletions(-)
 
-diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
-index 87236206366f..e32066519ec1 100644
---- a/drivers/net/ethernet/faraday/ftgmac100.c
-+++ b/drivers/net/ethernet/faraday/ftgmac100.c
-@@ -1044,11 +1044,47 @@ static void ftgmac100_adjust_link(struct net_device *netdev)
- 	schedule_work(&priv->reset_task);
- }
- 
--static int ftgmac100_mii_probe(struct ftgmac100 *priv, phy_interface_t intf)
-+static int ftgmac100_mii_probe(struct net_device *netdev)
- {
--	struct net_device *netdev = priv->netdev;
-+	struct ftgmac100 *priv = netdev_priv(netdev);
-+	struct platform_device *pdev = to_platform_device(priv->dev);
-+	struct device_node *np = pdev->dev.of_node;
-+	phy_interface_t phy_intf = PHY_INTERFACE_MODE_RGMII;
- 	struct phy_device *phydev;
- 
-+	/* Get PHY mode from device-tree */
-+	if (np) {
-+		/* Default to RGMII. It's a gigabit part after all */
-+		phy_intf = of_get_phy_mode(np, &phy_intf);
-+		if (phy_intf < 0)
-+			phy_intf = PHY_INTERFACE_MODE_RGMII;
-+
-+		/* Aspeed only supports these. I don't know about other IP
-+		 * block vendors so I'm going to just let them through for
-+		 * now. Note that this is only a warning if for some obscure
-+		 * reason the DT really means to lie about it or it's a newer
-+		 * part we don't know about.
-+		 *
-+		 * On the Aspeed SoC there are additionally straps and SCU
-+		 * control bits that could tell us what the interface is
-+		 * (or allow us to configure it while the IP block is held
-+		 * in reset). For now I chose to keep this driver away from
-+		 * those SoC specific bits and assume the device-tree is
-+		 * right and the SCU has been configured properly by pinmux
-+		 * or the firmware.
-+		 */
-+		if (priv->is_aspeed &&
-+		    phy_intf != PHY_INTERFACE_MODE_RMII &&
-+		    phy_intf != PHY_INTERFACE_MODE_RGMII &&
-+		    phy_intf != PHY_INTERFACE_MODE_RGMII_ID &&
-+		    phy_intf != PHY_INTERFACE_MODE_RGMII_RXID &&
-+		    phy_intf != PHY_INTERFACE_MODE_RGMII_TXID) {
-+			netdev_warn(netdev,
-+				    "Unsupported PHY mode %s !\n",
-+				    phy_modes(phy_intf));
-+		}
-+	}
-+
- 	phydev = phy_find_first(priv->mii_bus);
- 	if (!phydev) {
- 		netdev_info(netdev, "%s: no PHY found\n", netdev->name);
-@@ -1056,7 +1092,7 @@ static int ftgmac100_mii_probe(struct ftgmac100 *priv, phy_interface_t intf)
- 	}
- 
- 	phydev = phy_connect(netdev, phydev_name(phydev),
--			     &ftgmac100_adjust_link, intf);
-+			     &ftgmac100_adjust_link, phy_intf);
- 
- 	if (IS_ERR(phydev)) {
- 		netdev_err(netdev, "%s: Could not attach to PHY\n", netdev->name);
-@@ -1601,8 +1637,8 @@ static int ftgmac100_setup_mdio(struct net_device *netdev)
- {
- 	struct ftgmac100 *priv = netdev_priv(netdev);
- 	struct platform_device *pdev = to_platform_device(priv->dev);
--	phy_interface_t phy_intf = PHY_INTERFACE_MODE_RGMII;
- 	struct device_node *np = pdev->dev.of_node;
-+	struct device_node *mdio_np;
- 	int i, err = 0;
- 	u32 reg;
- 
-@@ -1623,39 +1659,6 @@ static int ftgmac100_setup_mdio(struct net_device *netdev)
- 		iowrite32(reg, priv->base + FTGMAC100_OFFSET_REVR);
- 	}
- 
--	/* Get PHY mode from device-tree */
--	if (np) {
--		/* Default to RGMII. It's a gigabit part after all */
--		err = of_get_phy_mode(np, &phy_intf);
--		if (err)
--			phy_intf = PHY_INTERFACE_MODE_RGMII;
--
--		/* Aspeed only supports these. I don't know about other IP
--		 * block vendors so I'm going to just let them through for
--		 * now. Note that this is only a warning if for some obscure
--		 * reason the DT really means to lie about it or it's a newer
--		 * part we don't know about.
--		 *
--		 * On the Aspeed SoC there are additionally straps and SCU
--		 * control bits that could tell us what the interface is
--		 * (or allow us to configure it while the IP block is held
--		 * in reset). For now I chose to keep this driver away from
--		 * those SoC specific bits and assume the device-tree is
--		 * right and the SCU has been configured properly by pinmux
--		 * or the firmware.
--		 */
--		if (priv->is_aspeed &&
--		    phy_intf != PHY_INTERFACE_MODE_RMII &&
--		    phy_intf != PHY_INTERFACE_MODE_RGMII &&
--		    phy_intf != PHY_INTERFACE_MODE_RGMII_ID &&
--		    phy_intf != PHY_INTERFACE_MODE_RGMII_RXID &&
--		    phy_intf != PHY_INTERFACE_MODE_RGMII_TXID) {
--			netdev_warn(netdev,
--				   "Unsupported PHY mode %s !\n",
--				   phy_modes(phy_intf));
--		}
--	}
--
- 	priv->mii_bus->name = "ftgmac100_mdio";
- 	snprintf(priv->mii_bus->id, MII_BUS_ID_SIZE, "%s-%d",
- 		 pdev->name, pdev->id);
-@@ -1667,22 +1670,22 @@ static int ftgmac100_setup_mdio(struct net_device *netdev)
- 	for (i = 0; i < PHY_MAX_ADDR; i++)
- 		priv->mii_bus->irq[i] = PHY_POLL;
- 
--	err = mdiobus_register(priv->mii_bus);
-+	mdio_np = of_get_child_by_name(np, "mdio");
-+	if (mdio_np)
-+		err = of_mdiobus_register(priv->mii_bus, mdio_np);
-+	else
-+		err = mdiobus_register(priv->mii_bus);
-+
- 	if (err) {
- 		dev_err(priv->dev, "Cannot register MDIO bus!\n");
- 		goto err_register_mdiobus;
- 	}
- 
--	err = ftgmac100_mii_probe(priv, phy_intf);
--	if (err) {
--		dev_err(priv->dev, "MII Probe failed!\n");
--		goto err_mii_probe;
--	}
-+	if (mdio_np)
-+		of_node_put(mdio_np);
- 
- 	return 0;
- 
--err_mii_probe:
--	mdiobus_unregister(priv->mii_bus);
- err_register_mdiobus:
- 	mdiobus_free(priv->mii_bus);
- 	return err;
-@@ -1836,10 +1839,23 @@ static int ftgmac100_probe(struct platform_device *pdev)
- 	} else if (np && of_get_property(np, "phy-handle", NULL)) {
- 		struct phy_device *phy;
- 
-+		/* Support "mdio"/"phy" child nodes for ast2400/2500 with
-+		 * an embedded MDIO controller. Automatically scan the DTS for
-+		 * available PHYs and register them.
-+		 */
-+		if (of_device_is_compatible(np, "aspeed,ast2400-mac") ||
-+		    of_device_is_compatible(np, "aspeed,ast2500-mac")) {
-+			err = ftgmac100_setup_mdio(netdev);
-+			if (err)
-+				goto err_setup_mdio;
-+		}
-+
- 		phy = of_phy_get_and_connect(priv->netdev, np,
- 					     &ftgmac100_adjust_link);
- 		if (!phy) {
- 			dev_err(&pdev->dev, "Failed to connect to phy\n");
-+			if (priv->mii_bus)
-+				mdiobus_unregister(priv->mii_bus);
- 			goto err_setup_mdio;
- 		}
- 
-@@ -1860,6 +1876,14 @@ static int ftgmac100_probe(struct platform_device *pdev)
- 		err = ftgmac100_setup_mdio(netdev);
- 		if (err)
- 			goto err_setup_mdio;
-+
-+		err = ftgmac100_mii_probe(netdev);
-+		if (err) {
-+			dev_err(priv->dev, "MII probe failed!\n");
-+			mdiobus_unregister(priv->mii_bus);
-+			goto err_setup_mdio;
-+		}
-+
- 	}
- 
- 	if (priv->is_aspeed) {
--- 
-2.21.1
-
+Thank you,
+Nicolas
