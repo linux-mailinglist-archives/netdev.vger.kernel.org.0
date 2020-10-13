@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3339928C93A
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 09:28:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15F0728C93E
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 09:28:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390105AbgJMH17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 03:27:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55368 "EHLO
+        id S2390118AbgJMH2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 03:28:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390091AbgJMH17 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 03:27:59 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E664C0613D0;
-        Tue, 13 Oct 2020 00:27:59 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id b193so16078434pga.6;
-        Tue, 13 Oct 2020 00:27:59 -0700 (PDT)
+        with ESMTP id S2390091AbgJMH2H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 03:28:07 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73517C0613D0;
+        Tue, 13 Oct 2020 00:28:07 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id c20so5583517pfr.8;
+        Tue, 13 Oct 2020 00:28:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=jGFHohiLMKmOcbBELvAHtKl6/eKf2Rs4EotDZ5VjkE0=;
-        b=shmCcPCC3BKRGSsP5ReVaQM3GPq6uAoRhJHnCy/xgF7/tHsG7UmxX1JOWntvb4H8XS
-         XxQ6QJyT7tpEotgoo/ChXHpheJw16ceGqIZxZLTh2H1wTeXpqZHPqrtKguh4FOL8ikMH
-         L4jLVgmVH/sykm2wvHa+2TVtEwXBr6/ewHhQJT1r84uLhn0igqPLwEjleiCs0/hltI8M
-         D2FWehMnhiDh6uvE7MboKdqaFtX4IzcIooexLxLZ2GHWedIwMTnpV3H7C2f64kqxjW8x
-         dblBd6q07nIPx+z5CNv1oz5h8rspH31w/F7k8basO1GxlgsWGeuaD/3MIqBJCL1reLs1
-         BuJg==
+        bh=NWswMQFNrJpmgSXJFGyvzsyral3mRo2RUwnr9RHwTGk=;
+        b=tnF0u66XkMUCpMqTv/lo2ZASpfMhbzQuTZlibftVepVKx90bSGM2RaH9p5ZOGL9UXB
+         E5JRRiq9oKcjqUcr+VM/XRC3dmzTLI89N2l9ds2jEIqn+Pp+u2OPvM8K4DaJ5IYv4QcW
+         u8wNEGNBHp9NYIMz56Pn+CgE+ibA3hiJp8CipQH/gUteaUbY3pQJZZ7hm8V3IGAkWfAd
+         ad5elQvn9rtXNUUb/OGB+b0XhyM1KG+84cmCUDNkCKTn8OI5gTLrHrRQ07umBGp32Cqg
+         oTnctiTL25byLYkkRU9kRbRhdF7YftZaMDpAkX4ZDu8RhjsoaoJxpjuGusRaMg1M19yP
+         WxOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=jGFHohiLMKmOcbBELvAHtKl6/eKf2Rs4EotDZ5VjkE0=;
-        b=arykkZ+/Ro4OkthZBI2oum7ZQzq2ei3u7KASBDftOrvZD8/ifh5Dj8++Ixp52rmCnW
-         50KdJJjun3UJ6YR8DljCMaWCGfzipj1yu9Bnbp5WqUfJNPAR7s7ZM5opAKAlTZq+zdTB
-         JzztDG95BpmwqmCRS8xgjW+v4HXPnXKVxppowIHYRb/74Z1+Im0j+mEz0JYOltue0bVV
-         95UzumQupIxTzaK0E3tvP99N/gePsXhi9/jansAckMD2n6dbIHm8f12uMYLg7c9HC7tF
-         d/D5ysWSIZO0DaWlf0U+3fsuOV8joHr3W5pxVXWmp2CkFg476itmkDn+FRlEOwVY/hgo
-         4Lkg==
-X-Gm-Message-State: AOAM532rdOUpnlDJWo1GHkXJbAXjR3lZFNvpevUuW6CXgZs6aNd3NVOD
-        g68BdJuL/+gLqpf0UODcBlerXOS0fiE=
-X-Google-Smtp-Source: ABdhPJym/DJAfIGKhdOhkBrkbaQKQhK9O9z29llMz1dn9QmEr/dBugdD+RAX16/mSgDwgqT27vQpLw==
-X-Received: by 2002:a63:564e:: with SMTP id g14mr9756014pgm.59.1602574078103;
-        Tue, 13 Oct 2020 00:27:58 -0700 (PDT)
+        bh=NWswMQFNrJpmgSXJFGyvzsyral3mRo2RUwnr9RHwTGk=;
+        b=XLm6XTghM2UApdHDGWKzvPwfpOfRBGHvBMln1kdoGMxucYgaEZBdTH8Bxj7JjB+Bc0
+         V6qjhvShHPQiyiSQjlBPY2Ave1NsSOAjJg4UC4yEd6OWk+o0jTx8EmTO1cauTy+irfvd
+         IkH69JAEar9/4EtMx6Zcjtta6XAfEPdVdkm/bmEgguonmOR2iltO1yqroDsRpzS+3aLd
+         E1fku3pbilCCtH0Nj97zxk6fcvvwEQWmUK3CPE+wH4HpP0n5dOfvyy8eQ3l6Ewic7t1K
+         Qg2Lr8PtpYNSPzABgKigVsUhPHHiJkFP4YuwhW3VTyCgP2c4Q6E8NbF1C657gMYOxaQ4
+         GMCQ==
+X-Gm-Message-State: AOAM532wK/obz6pC6YD6p379iMmUotEJ7Mbctinp1qK0f0U0S2DfWwG/
+        wXmUjfnAtfTQBm266fkmrZ9nWDWBTz0=
+X-Google-Smtp-Source: ABdhPJxsBuuPGPwOcn2kRAcT9ypKhMS+ulT07OyGafhplNMQAcjIiH/D2wykJGZw5ivYjwPZwg9pAg==
+X-Received: by 2002:a62:88ca:0:b029:156:2594:23c7 with SMTP id l193-20020a6288ca0000b0290156259423c7mr7632048pfd.12.1602574086769;
+        Tue, 13 Oct 2020 00:28:06 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id j138sm22281582pfd.19.2020.10.13.00.27.56
+        by smtp.gmail.com with ESMTPSA id l2sm27442296pjy.6.2020.10.13.00.28.05
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 13 Oct 2020 00:27:57 -0700 (PDT)
+        Tue, 13 Oct 2020 00:28:06 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
@@ -54,59 +54,63 @@ Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Michael Tuexen <tuexen@fh-muenster.de>, davem@davemloft.net,
         gnault@redhat.com, pabeni@redhat.com,
         willemdebruijn.kernel@gmail.com
-Subject: [PATCHv3 net-next 01/16] udp: check udp sock encap_type in __udp_lib_err
-Date:   Tue, 13 Oct 2020 15:27:26 +0800
-Message-Id: <fae9c57767447c4fd97476807b9e029e8fda607a.1602574012.git.lucien.xin@gmail.com>
+Subject: [PATCHv3 net-next 02/16] udp6: move the mss check after udp gso tunnel processing
+Date:   Tue, 13 Oct 2020 15:27:27 +0800
+Message-Id: <c01a9a09096cb1b292d461aa5a1e72aae2ca942a.1602574012.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <cover.1602574012.git.lucien.xin@gmail.com>
+In-Reply-To: <fae9c57767447c4fd97476807b9e029e8fda607a.1602574012.git.lucien.xin@gmail.com>
 References: <cover.1602574012.git.lucien.xin@gmail.com>
+ <fae9c57767447c4fd97476807b9e029e8fda607a.1602574012.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1602574012.git.lucien.xin@gmail.com>
 References: <cover.1602574012.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a chance that __udp4/6_lib_lookup() returns a udp encap
-sock in __udp_lib_err(), like the udp encap listening sock may
-use the same port as remote encap port, in which case it should
-go to __udp4/6_lib_err_encap() for more validation before
-processing the icmp packet.
+For some protocol's gso, like SCTP, it's using GSO_BY_FRAGS for
+gso_size. When using UDP to encapsulate its packet, it will
+return error in udp6_ufo_fragment() as skb->len < gso_size,
+and it will never go to the gso tunnel processing.
 
-This patch is to check encap_type in __udp_lib_err() for the
-further validation for a encap sock.
+So we should move this check after udp gso tunnel processing,
+the same as udp4_ufo_fragment() does.
+
+v1->v2:
+  - no change.
+v2->v3:
+  - not do any cleanup.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- net/ipv4/udp.c | 2 +-
- net/ipv6/udp.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ net/ipv6/udp_offload.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 09f0a23..ca04a8a 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -702,7 +702,7 @@ int __udp4_lib_err(struct sk_buff *skb, u32 info, struct udp_table *udptable)
- 	sk = __udp4_lib_lookup(net, iph->daddr, uh->dest,
- 			       iph->saddr, uh->source, skb->dev->ifindex,
- 			       inet_sdif(skb), udptable, NULL);
--	if (!sk) {
-+	if (!sk || udp_sk(sk)->encap_type) {
- 		/* No socket for error: try tunnels before discarding */
- 		sk = ERR_PTR(-ENOENT);
- 		if (static_branch_unlikely(&udp_encap_needed_key)) {
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 29d9691..cde9b88 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -560,7 +560,7 @@ int __udp6_lib_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
+diff --git a/net/ipv6/udp_offload.c b/net/ipv6/udp_offload.c
+index 584157a..aa602af 100644
+--- a/net/ipv6/udp_offload.c
++++ b/net/ipv6/udp_offload.c
+@@ -28,10 +28,6 @@ static struct sk_buff *udp6_ufo_fragment(struct sk_buff *skb,
+ 	int tnl_hlen;
+ 	int err;
  
- 	sk = __udp6_lib_lookup(net, daddr, uh->dest, saddr, uh->source,
- 			       inet6_iif(skb), inet6_sdif(skb), udptable, NULL);
--	if (!sk) {
-+	if (!sk || udp_sk(sk)->encap_type) {
- 		/* No socket for error: try tunnels before discarding */
- 		sk = ERR_PTR(-ENOENT);
- 		if (static_branch_unlikely(&udpv6_encap_needed_key)) {
+-	mss = skb_shinfo(skb)->gso_size;
+-	if (unlikely(skb->len <= mss))
+-		goto out;
+-
+ 	if (skb->encapsulation && skb_shinfo(skb)->gso_type &
+ 	    (SKB_GSO_UDP_TUNNEL|SKB_GSO_UDP_TUNNEL_CSUM))
+ 		segs = skb_udp_tunnel_segment(skb, features, true);
+@@ -48,6 +44,10 @@ static struct sk_buff *udp6_ufo_fragment(struct sk_buff *skb,
+ 		if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4)
+ 			return __udp_gso_segment(skb, features);
+ 
++		mss = skb_shinfo(skb)->gso_size;
++		if (unlikely(skb->len <= mss))
++			goto out;
++
+ 		/* Do software UFO. Complete and fill in the UDP checksum as HW cannot
+ 		 * do checksum of UDP packets sent as multiple IP fragments.
+ 		 */
 -- 
 2.1.0
 
