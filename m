@@ -2,92 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B8DE28D27C
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 18:44:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2261428D2A4
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 18:53:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727921AbgJMQoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 12:44:09 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.51]:22333 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727696AbgJMQoJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 12:44:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1602607447;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=OZ7zYsDouacPwyCPa7aXDDiin8TYVeABf/NDLjhE2OE=;
-        b=UO7ETVwGQgs2XHeWh7ulHKxSdUcZp5ji1ROY+qPMEaOvVrjb3yAlZhzqhuKXsjCyH5
-        rVKUanIA2EDena2hsjBSO3xDWxXIamLP3OWByPXjf7mqzVH9IlHeQ8/LKswKSgj3Y0yZ
-        BGV1HulF/Vzn5TgF3ljabl3A70EW/dTQMylbuAdd4TSN7WxuA3WRVI7xWa0AG0a4BGMA
-        cWhcKmdhPPurQI0uXGBPmRPpy2Mbuf+xzhxWgIIQVadcx8NXSK2jEKUB5u+lIP6N0cSh
-        UaVy8+gsi2RZyBwSvzLSDXDhm2BRlXRAfYN5z6qMXCrjIhM6HB2LKI6p1TSDPjIAp9fO
-        04fw==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMJVch5mEtI"
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.50.177]
-        by smtp.strato.de (RZmta 47.2.1 DYNA|AUTH)
-        with ESMTPSA id D0b41cw9DGhuTiE
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Tue, 13 Oct 2020 18:43:56 +0200 (CEST)
-Subject: Re: [PATCH] can: Explain PDU in CAN_ISOTP help text
-To:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20201013141341.28487-1-geert+renesas@glider.be>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <8e7bface-eef3-c5eb-a822-aec79c6992ac@hartkopp.net>
-Date:   Tue, 13 Oct 2020 18:43:50 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1728552AbgJMQw6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 12:52:58 -0400
+Received: from mail.adapt-ip.com ([173.164.178.19]:60192 "EHLO
+        web.adapt-ip.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1727696AbgJMQw6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 12:52:58 -0400
+X-Greylist: delayed 423 seconds by postgrey-1.27 at vger.kernel.org; Tue, 13 Oct 2020 12:52:58 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by web.adapt-ip.com (Postfix) with ESMTP id 46B8A4FA377;
+        Tue, 13 Oct 2020 16:45:54 +0000 (UTC)
+X-Virus-Scanned: Debian amavisd-new at web.adapt-ip.com
+Received: from web.adapt-ip.com ([127.0.0.1])
+        by localhost (web.adapt-ip.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id RRucx4ImxBfd; Tue, 13 Oct 2020 16:45:51 +0000 (UTC)
+Received: from mail.ibsgaard.io (c-73-223-60-234.hsd1.ca.comcast.net [73.223.60.234])
+        (Authenticated sender: thomas@adapt-ip.com)
+        by web.adapt-ip.com (Postfix) with ESMTPSA id 5EC344FA372;
+        Tue, 13 Oct 2020 16:45:50 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <20201013141341.28487-1-geert+renesas@glider.be>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Date:   Tue, 13 Oct 2020 09:45:49 -0700
+From:   Thomas Pedersen <thomas@adapt-ip.com>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v6 68/80] nl80211: docs: add a description for s1g_cap
+ parameter
+In-Reply-To: <9633ea7d9b0cb2f997d784df86ba92e67659f29b.1602589096.git.mchehab+huawei@kernel.org>
+References: <cover.1602589096.git.mchehab+huawei@kernel.org>
+ <9633ea7d9b0cb2f997d784df86ba92e67659f29b.1602589096.git.mchehab+huawei@kernel.org>
+User-Agent: Roundcube Webmail/1.4.9
+Message-ID: <53bc6de4ee69b43236866a4355859e2a@adapt-ip.com>
+X-Sender: thomas@adapt-ip.com
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 13.10.20 16:13, Geert Uytterhoeven wrote:
-> The help text for the CAN_ISOTP config symbol uses the acronym "PDU".
-> However, this acronym is not explained here, nor in
-> Documentation/networking/can.rst.
-> Expand the acronym to make it easier for users to decide if they need to
-> enable the CAN_ISOTP option or not.
+On 2020-10-13 04:54, Mauro Carvalho Chehab wrote:
+> Changeset df78a0c0b67d ("nl80211: S1G band and channel definitions")
+> added a new parameter, but didn't add the corresponding kernel-doc
+> markup, as repoted when doing "make htmldocs":
 > 
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-
-Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
-
-Yes, when you are so deep into it that PDU becomes a word like dog or 
-cat ;-)
-
-Thanks,
-Oliver
-
-> ---
->   net/can/Kconfig | 5 +++--
->   1 file changed, 3 insertions(+), 2 deletions(-)
+> 	./include/net/cfg80211.h:471: warning: Function parameter or member
+> 's1g_cap' not described in 'ieee80211_supported_band'
 > 
-> diff --git a/net/can/Kconfig b/net/can/Kconfig
-> index 224e5e0283a986d9..7c9958df91d353c8 100644
-> --- a/net/can/Kconfig
-> +++ b/net/can/Kconfig
-> @@ -62,8 +62,9 @@ config CAN_ISOTP
->   	  communication between CAN nodes via two defined CAN Identifiers.
->   	  As CAN frames can only transport a small amount of data bytes
->   	  (max. 8 bytes for 'classic' CAN and max. 64 bytes for CAN FD) this
-> -	  segmentation is needed to transport longer PDUs as needed e.g. for
-> -	  vehicle diagnosis (UDS, ISO 14229) or IP-over-CAN traffic.
-> +	  segmentation is needed to transport longer Protocol Data Units (PDU)
-> +	  as needed e.g. for vehicle diagnosis (UDS, ISO 14229) or IP-over-CAN
-> +	  traffic.
->   	  This protocol driver implements data transfers according to
->   	  ISO 15765-2:2016 for 'classic' CAN and CAN FD frame types.
->   	  If you want to perform automotive vehicle diagnostic services (UDS),
-> 
+> Add a documentation for it.
+
+Sorry about that. Patch looks good.
+
+> Fixes: df78a0c0b67d ("nl80211: S1G band and channel definitions")
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+
+Signed-off-by: Thomas Pedersen <thomas@adapt-ip.com>
+
+-- 
+thomas
