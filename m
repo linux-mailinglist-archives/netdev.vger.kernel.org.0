@@ -2,91 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5518C28DD13
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 11:22:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B08A728D652
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 23:59:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731154AbgJNJWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 05:22:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39952 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731144AbgJNJVw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 05:21:52 -0400
-Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61609C0613B4;
-        Tue, 13 Oct 2020 14:59:12 -0700 (PDT)
-Received: by mail-yb1-xb43.google.com with SMTP id h6so908522ybi.11;
-        Tue, 13 Oct 2020 14:59:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VRRma4QG3RpD3m+KVfyIAn86lByO9d2UMJBpO63DxTI=;
-        b=BNC+HtRVwGwOu7By4Lr9k59i/iQgasSemzSgLKfB6hjxMPjh7dKBEpTOmc7/pj6b3W
-         6Nd2pEjhvSD9+MlelhDFBidieGLIKHp0fmaxSNDTYbHoP5gGFenNKiv15cLmaqIgdDA6
-         gClTXfSozfyEop/pog/t9sYW9Cb4iIdzTqCRgw04AYodY2YO1WXgW/Rey4JjTP0l/7KR
-         5lrWP4b3vZ89IrUBg4ey5bfMsvRop5d4xhYv7uYeGidoVXuxH8meNnCNLwphAQqpprds
-         vT77jAmdtbR6sRaMSDeCBrTKi01R6TKavgxnQ9PHvnkcCHv6f2EQvf7XY2uwlLpa7HdQ
-         jXbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VRRma4QG3RpD3m+KVfyIAn86lByO9d2UMJBpO63DxTI=;
-        b=oPmwMWa8lnCeKiJIHziL3Zw3zmMI3ILJHoLB0H+y/loua5UogPTinchRqB9xq3nTim
-         zhSS35OxMdlaVW1JqL62nTSHdlSusTqrUrfwKy/y6b2eyzf+eFb9xp0ypnfb8K2luKnf
-         HyL/RxqZlzHEmXYPHFyAJQo4/r9asGAI/Z5X58q3CEdBtIJthe/yzH5spcpaZepu6J3n
-         QSWiFRDQS3GkFs2QsrKPzVpikvteaBalzZWllsLoTDhKa414rVf28QPozVinyVkPZMdn
-         gtO4a7XJwDOLVpt/aPUk3yAR+ZDz3e1jTIJKSBSLi611664XAUujEHHmMghLs1GethGN
-         PkjQ==
-X-Gm-Message-State: AOAM531WsfjLZPonyPA+V1dNXRF976jKehHFaTZ0jNBQoy1J9SjdBgpb
-        M9LQeAhkeDUa60F5xhj6bRLl7QpaXXmU2kThKb2QIIvJtpg=
-X-Google-Smtp-Source: ABdhPJw7+CRp3FkUL12dvYfJIGv04RKrS1K04TJYYe6IrveNHSanyH+O0iF4G9VNil7Nfq5BH2firwTmkFUz7se4xGI=
-X-Received: by 2002:a25:2687:: with SMTP id m129mr2687368ybm.425.1602626351620;
- Tue, 13 Oct 2020 14:59:11 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201012234940.1707941-1-kafai@fb.com>
-In-Reply-To: <20201012234940.1707941-1-kafai@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 13 Oct 2020 14:59:00 -0700
-Message-ID: <CAEf4BzbFoFryfELodTeQPQdC_hR5o9rxCXwNd4y4Tu-xZyV-9A@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: selftest: Fix flaky tcp_hdr_options test when
- adding addr to lo
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        id S1728550AbgJMV7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 17:59:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55552 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726652AbgJMV7Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 17:59:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602626363;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fYrjNlXma4vJJxZyP5CC/ms1HsNtREh93d7itYhlVAY=;
+        b=X69hMnbLkkBhBrcek9anoqhzY+Ted7hH6iBykB7DrPAqLPTVMvFPlUzVPLeBpHmF/nJySI
+        j5VwHISZ4jbki9w+MUdfxxHQPqWNMQlt6ts4UH+UsjNT911B3iXIYmBWy8fd2T2isUR88t
+        nLqmHigi7UByQIG2pwW/OQ7TR8wlu7c=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-591-jx05ndn4O3C846O1GQcEiw-1; Tue, 13 Oct 2020 17:59:21 -0400
+X-MC-Unique: jx05ndn4O3C846O1GQcEiw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 79ECA8BAF42;
+        Tue, 13 Oct 2020 21:59:18 +0000 (UTC)
+Received: from krava (unknown [10.40.193.3])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 8244C5D9D3;
+        Tue, 13 Oct 2020 21:59:16 +0000 (UTC)
+Date:   Tue, 13 Oct 2020 23:59:15 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Networking <netdev@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        John Fastabend <john.fastabend@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH v2 bpf-next 3/4] selftests/bpf: Add profiler test
+Message-ID: <20201013215915.GC1305928@krava>
+References: <20201009011240.48506-1-alexei.starovoitov@gmail.com>
+ <20201009011240.48506-4-alexei.starovoitov@gmail.com>
+ <20201013195622.GB1305928@krava>
+ <CAADnVQLYSk0YgK7_dUSF-5Rau10vOdDgosVhE9xmEr1dp+=2vg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADnVQLYSk0YgK7_dUSF-5Rau10vOdDgosVhE9xmEr1dp+=2vg@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 13, 2020 at 4:13 AM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> The tcp_hdr_options test adds a "::eB9F" addr to the lo dev.
-> However, this non loopback address will have a race on ipv6 dad
-> which may lead to EADDRNOTAVAIL error from time to time.
->
-> Even nodad is used in the iproute2 command, there is still a race in
-> when the route will be added.  This will then lead to ENETUNREACH from
-> time to time.
->
-> To avoid the above, this patch uses the default loopback address "::1"
-> to do the test.
->
-> Fixes: ad2f8eb0095e ("bpf: selftests: Tcp header options")
-> Reported-by: Andrii Nakryiko <andriin@fb.com>
-> Signed-off-by: Martin KaFai Lau <kafai@fb.com>
-> ---
+On Tue, Oct 13, 2020 at 02:03:33PM -0700, Alexei Starovoitov wrote:
+> On Tue, Oct 13, 2020 at 12:56 PM Jiri Olsa <jolsa@redhat.com> wrote:
+> >
+> > On Thu, Oct 08, 2020 at 06:12:39PM -0700, Alexei Starovoitov wrote:
+> >
+> > SNIP
+> >
+> > > +
+> > > +#ifdef UNROLL
+> > > +#pragma unroll
+> > > +#endif
+> > > +     for (int i = 0; i < MAX_CGROUPS_PATH_DEPTH; i++) {
+> > > +             filepart_length =
+> > > +                     bpf_probe_read_str(payload, MAX_PATH, BPF_CORE_READ(cgroup_node, name));
+> > > +             if (!cgroup_node)
+> > > +                     return payload;
+> > > +             if (cgroup_node == cgroup_root_node)
+> > > +                     *root_pos = payload - payload_start;
+> > > +             if (filepart_length <= MAX_PATH) {
+> > > +                     barrier_var(filepart_length);
+> > > +                     payload += filepart_length;
+> > > +             }
+> > > +             cgroup_node = BPF_CORE_READ(cgroup_node, parent);
+> > > +     }
+> > > +     return payload;
+> > > +}
+> > > +
+> > > +static ino_t get_inode_from_kernfs(struct kernfs_node* node)
+> > > +{
+> > > +     struct kernfs_node___52* node52 = (void*)node;
+> > > +
+> > > +     if (bpf_core_field_exists(node52->id.ino)) {
+> > > +             barrier_var(node52);
+> > > +             return BPF_CORE_READ(node52, id.ino);
+> > > +     } else {
+> > > +             barrier_var(node);
+> > > +             return (u64)BPF_CORE_READ(node, id);
+> > > +     }
+> > > +}
+> > > +
+> > > +int pids_cgrp_id = 1;
+> >
+> >
+> > hi,
+> > I'm getting compilation failure with this:
+> >
+> >           CLNG-LLC [test_maps] profiler2.o
+> >         In file included from progs/profiler2.c:6:
+> >         progs/profiler.inc.h:246:5: error: redefinition of 'pids_cgrp_id' as different kind of symbol
+> >         int pids_cgrp_id = 1;
+> >             ^
+> >         /home/jolsa/linux-qemu/tools/testing/selftests/bpf/tools/include/vmlinux.h:14531:2: note: previous definition is here
+> >                 pids_cgrp_id = 11,
+> 
+> Interesting.
+> You probably have CONFIG_CGROUP_PIDS in your .config?
 
-Less shelling out is always good :)
+yes
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+jirka
 
->  .../bpf/prog_tests/tcp_hdr_options.c          | 26 +------------------
->  .../bpf/progs/test_misc_tcp_hdr_options.c     |  2 +-
->  2 files changed, 2 insertions(+), 26 deletions(-)
->
 
-[...]
+> I don't and bpf CI doesn't have it either, so this issue wasn't spotted earlier.
+> 
+> I can hard code 11, of course, but
+> but maybe Andrii has a cool way to use co-re to deal with this?
+> I think
+> "extern bool CONFIG_CGROUP_PIDS __kconfig"
+> won't work.
+> A good opportunity to try to use bpf_core_enum_value_exists() ?
+> 
+
