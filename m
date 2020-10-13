@@ -2,113 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E02CF28D25A
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 18:38:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A76328D274
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 18:41:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727522AbgJMQi2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 12:38:28 -0400
-Received: from mailomta13-sa.btinternet.com ([213.120.69.19]:49493 "EHLO
-        sa-prd-fep-047.btinternet.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726942AbgJMQi1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 12:38:27 -0400
-Received: from sa-prd-rgout-004.btmx-prd.synchronoss.net ([10.2.38.7])
-          by sa-prd-fep-047.btinternet.com with ESMTP
-          id <20201013163824.GNHU4609.sa-prd-fep-047.btinternet.com@sa-prd-rgout-004.btmx-prd.synchronoss.net>;
-          Tue, 13 Oct 2020 17:38:24 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=btinternet.com; s=btmx201904; t=1602607104; 
-        bh=wACf3Mpnrb86ay9KbtonDAJZf/90XXOvVorm3FbySaE=;
-        h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:MIME-Version;
-        b=RKTqQ+oOwL2NjtW18VBTcqLkuibQyXNmit/VqWooqgrxDhlXqqR9HB16m5ApYY6/p3NWlrhrJQZ7cafem+mRbGty2Mgm+tdakbKjU5EJWx3TBsuxKk5sasRL9ktyzUKSzP+s3iToVhgrAgx5xWwfNqx5NwAuLgnZWmj1u7hYh1zMwPmxnwoMbfYxHZl12GyIZq7pYtnZsHYqUKySdjUm+1m5NRabDC1qoL+1lfL6Ef9mCEic6FnIrfzD/scYIHmShqf/ubz41UPPmR7/gjei/kBd8lSNmvw8Z2Yqaf24W8ltPY98rM5C8AKlX1WZcfKbwsggFkJih+BepUdWNuiZBg==
-Authentication-Results: btinternet.com;
-    auth=pass (LOGIN) smtp.auth=richard_c_haines@btinternet.com
-X-Originating-IP: [81.147.56.93]
-X-OWM-Source-IP: 81.147.56.93 (GB)
-X-OWM-Env-Sender: richard_c_haines@btinternet.com
-X-VadeSecure-score: verdict=clean score=0/300, class=clean
-X-RazorGate-Vade: gggruggvucftvghtrhhoucdtuddrgedujedrheelgddutdegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuueftkffvkffujffvgffngfevqffopdfqfgfvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkuffhvfffjghftggfggfgsehtjeertddtreejnecuhfhrohhmpeftihgthhgrrhguucfjrghinhgvshcuoehrihgthhgrrhgupggtpghhrghinhgvshessghtihhnthgvrhhnvghtrdgtohhmqeenucggtffrrghtthgvrhhnpeetteevgeehveeiieefkedvieehjeevtdeileffffefveelieejvedvjedvuddugeenucffohhmrghinhepghhithhhuhgsrdgtohhmnecukfhppeekuddrudegjedrheeirdelfeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhephhgvlhhopehlohgtrghlhhhoshhtrdhlohgtrghlughomhgrihhnpdhinhgvthepkedurddugeejrdehiedrleefpdhmrghilhhfrhhomhepoehrihgthhgrrhgupggtpghhrghinhgvshessghtihhnthgvrhhnvghtrdgtohhmqecuuefqffgjpeekuefkvffokffogfdprhgtphhtthhopeeojhhmohhrrhhishesnhgrmhgvihdrohhrgheqpdhrtghpthhtohepoehlrghfohhrghgvsehgnhhumhhonhhkshdrohhrgheqpdhrtghpthhtohepoehlihhnuhigqdhsvggtuhhrihhthidqmhhoughulhgvsehvghgvrhdrkhgvrhhnvghlrdhorhhgqedprhgt
-        phhtthhopeeonhgvthguvghvsehvghgvrhdrkhgvrhhnvghlrdhorhhgqedprhgtphhtthhopeeoohhsmhhotghomhdqnhgvthdqghhprhhssehlihhsthhsrdhoshhmohgtohhmrdhorhhgqedprhgtphhtthhopeeophgrsghlohesnhgvthhfihhlthgvrhdrohhrgheqpdhrtghpthhtohepoehprghulhesphgruhhlqdhmohhorhgvrdgtohhmqedprhgtphhtthhopeeoshgvlhhinhhugiesvhhgvghrrdhkvghrnhgvlhdrohhrgheqpdhrtghpthhtohepoehsthgvphhhvghnrdhsmhgrlhhlvgihrdifohhrkhesghhmrghilhdrtghomheq
-X-RazorGate-Vade-Verdict: clean 0
-X-RazorGate-Vade-Classification: clean
-X-SNCR-hdrdom: btinternet.com
-Received: from localhost.localdomain (81.147.56.93) by sa-prd-rgout-004.btmx-prd.synchronoss.net (5.8.340) (authenticated as richard_c_haines@btinternet.com)
-        id 5ED9B66115DDE5BF; Tue, 13 Oct 2020 17:38:24 +0100
-Message-ID: <77226ae9dc60113d1953c1f957849d6460c5096f.camel@btinternet.com>
-Subject: Re: [PATCH 3/3] selinux: Add SELinux GTP support
-From:   Richard Haines <richard_c_haines@btinternet.com>
-To:     Paul Moore <paul@paul-moore.com>,
-        Harald Welte <laforge@gnumonks.org>
-Cc:     pablo@netfilter.org, selinux@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        James Morris <jmorris@namei.org>
-Date:   Tue, 13 Oct 2020 17:38:16 +0100
-In-Reply-To: <CAHC9VhTrSBsm-qVh95J2SzUq5=_pESwTUBRmVSjXOoyG+97jYA@mail.gmail.com>
-References: <20200930094934.32144-1-richard_c_haines@btinternet.com>
-         <20200930094934.32144-4-richard_c_haines@btinternet.com>
-         <20200930110153.GT3871@nataraja>
-         <33cf57c9599842247c45c92aa22468ec89f7ba64.camel@btinternet.com>
-         <20200930133847.GD238904@nataraja>
-         <CAHC9VhT5HahBhow0RzWHs1yAh5qQw2dZ-3vgJv5GuyFWrXau1A@mail.gmail.com>
-         <20201012093851.GF947663@nataraja>
-         <CAHC9VhTrSBsm-qVh95J2SzUq5=_pESwTUBRmVSjXOoyG+97jYA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        id S1728215AbgJMQlq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 12:41:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33156 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728134AbgJMQle (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Oct 2020 12:41:34 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B795C252B8;
+        Tue, 13 Oct 2020 16:41:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602607294;
+        bh=AepnuuPkTX043zkw3GP7KDAMH+cpTjtdHQsMUPjqm4Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=B9HWrpiBLpV+j9o4VKsTU2JvGjw/FGk8Lbxf9yayaLa9rPNC3YB3wgrF2CDOJ/Lay
+         LqDJN87Mg4662JVZ3RIyn8UhVGbLHxTtzhtfODdA81CqODSiG04vW8saAI5uc4NVd8
+         OKq5lVhSoJfzdoQg1NuWE+K11f6Ba90cLK9BYH/8=
+Date:   Tue, 13 Oct 2020 09:41:32 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Loic Poulain <loic.poulain@linaro.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        manivannan.sadhasivam@linaro.org, hemantk@codeaurora.org
+Subject: Re: [PATCH v2] net: Add mhi-net driver
+Message-ID: <20201013094132.3a338771@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1602516363-27006-1-git-send-email-loic.poulain@linaro.org>
+References: <1602516363-27006-1-git-send-email-loic.poulain@linaro.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2020-10-13 at 09:55 -0400, Paul Moore wrote:
-> On Mon, Oct 12, 2020 at 5:40 AM Harald Welte <laforge@gnumonks.org>
-> wrote:
-> > Hi Paul,
-> > 
-> > On Sun, Oct 11, 2020 at 10:09:11PM -0400, Paul Moore wrote:
-> > > Harald, Pablo - I know you both suggested taking a slow iterative
-> > > approach to merging functionality, perhaps you could also help
-> > > those
-> > > of us on the SELinux side better understand some of the common
-> > > GTP use
-> > > cases?
-> > 
-> > There really only is one use case for this code:  The GGSN or P-GW
-> > function
-> > in the 3GPP network architecture ...
-> > 
-> > Hope this helps,
-> >         Harald
+On Mon, 12 Oct 2020 17:26:03 +0200 Loic Poulain wrote:
+> This patch adds a new network driver implementing MHI transport for
+> network packets. Packets can be in any format, though QMAP (rmnet)
+> is the usual protocol (flow control + PDN mux).
 > 
-> It does, thank you.
+> It support two MHI devices, IP_HW0 which is, the path to the IPA
+> (IP accelerator) on qcom modem, And IP_SW0 which is the software
+> driven IP path (to modem CPU).
 > 
-> It looks like this patchset is not really a candidate for merging in
-> its current form, but I didn't want to lose this information (both
-> the
-> patches and Harald's comments) so I created a GH issue to track this
-> at the URL below.
-> 
-> * https://github.com/SELinuxProject/selinux-kernel/issues/54
-> 
+> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
 
-While I was not expecting these patches to be excepted for the current
-version, the main aim was to see what LSM security services could be
-implemented on possible 5G components, bearing in mind the DARPA Open
-Programmable Secure 5G (OPS-5G) initiative (probably 'jumping the gun'
-here a bit though). 
+> +static void mhi_net_rx_refill_work(struct work_struct *work)
+> +{
+> +	struct mhi_net_dev *mhi_netdev = container_of(work, struct mhi_net_dev,
+> +						      rx_refill.work);
+> +	struct net_device *ndev = mhi_netdev->ndev;
+> +	struct mhi_device *mdev = mhi_netdev->mdev;
+> +	struct sk_buff *skb;
+> +	int err;
+> +
+> +	do {
+> +		skb = netdev_alloc_skb(ndev, READ_ONCE(ndev->mtu));
+> +		if (unlikely(!skb))
+> +			break;
+> +
+> +		err = mhi_queue_skb(mdev, DMA_FROM_DEVICE, skb, ndev->mtu,
+> +				    MHI_EOT);
+> +		if (err) {
+> +			if (unlikely(err != -ENOMEM)) {
+> +				net_err_ratelimited("%s: Failed to queue RX buf (%d)\n",
+> +						    ndev->name, err);
+> +			}
 
-There is in development a 5G version of GTP at [1]. I have added the
-enhanced hooks to this (plus retrieve contexts via call-backs etc.),
-and have it running on 5.9, passing their tests. I'm not sure how far
-this development will go, but a starter ??.
+nit: no need for parens here
 
-The other component that seems to be widely used in these systems is
-SCTP that I added hooks to a few years ago, also TCP/UDP etc. that are
-already well catered for. Also there would be a large amount of
-userspace code ....
+> +			kfree_skb(skb);
+> +			break;
+> +		}
+> +
+> +		atomic_inc_return(&mhi_netdev->stats.rx_queued);
+> +	} while (1);
+> +
+> +	/* If we're still starved of rx buffers, reschedule latter */
+> +	if (unlikely(!atomic_read(&mhi_netdev->stats.rx_queued)))
+> +		schedule_delayed_work(&mhi_netdev->rx_refill, HZ / 2);
+> +}
 
-Anyway food for thought.
+> +	/* Start MHI channels */
+> +	err = mhi_prepare_for_transfer(mhi_dev);
+> +	if (err)
+> +		goto out_err;
+> +
+> +	err = register_netdev(ndev);
+> +	if (err)
+> +		goto out_err;
+> +
+> +	return 0;
 
-[1] https://github.com/PrinzOwO/gtp5g
+no need to
 
+	mhi_unprepare_from_transfer(mhi_netdev->mdev);
 
+here when coming from register_netdev() failure?
+
+> +out_err:
+> +	free_netdev(ndev);
+> +	return err;
+> +}
+> +
+> +static void mhi_net_remove(struct mhi_device *mhi_dev)
+> +{
+> +	struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
+> +
+> +	unregister_netdev(mhi_netdev->ndev);
+> +
+> +	mhi_unprepare_from_transfer(mhi_netdev->mdev);
+> +
+> +	free_netdev(mhi_netdev->ndev);
+> +}
