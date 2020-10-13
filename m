@@ -2,95 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EBEE28D4DB
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 21:45:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4A9E28D4FF
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 21:56:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729599AbgJMTpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 15:45:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56556 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726552AbgJMTpN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 15:45:13 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F454C0613D0
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 12:45:12 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id q9so1190695iow.6
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 12:45:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Bm16GqpOD7Ki4zZQHCFjSyawqd78XJGBOczoXTgkkiI=;
-        b=DXUphNutlOoT+5dJOxIPxWL+8g49E5OI4SfAs2WZyuNcerSowKkPCXVNkz7AvfGwcQ
-         AvipuJ7EoD6+c9s0Veh74eeHfvx8WBFDj1R+u8R/bD2FL6ilOWNtB0C98k6lT5OQ+AtP
-         cDpm07zBjmeAtuaCAvHQfs2nNIlq33kC09RDwjxPG6o4D3HxfHjiBzG376wQ3YSlF2Av
-         lJ93P1iQL/M0pddAdMfK7NAA+bVxx2W1cvxMNzptX9wnxuGKJxqjqpfjpijM9KLK3Kgo
-         M+fhRfJqRPjFh7WRiE4bfHoykTp1u5foeH+Q1qgZnTynDx4noZ+yzWOUSceWzn4o1kQi
-         I32Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Bm16GqpOD7Ki4zZQHCFjSyawqd78XJGBOczoXTgkkiI=;
-        b=Gw7pAb0873aU26NP283pqcyPjdXGjfJKRUHaV3AInpCkpwCRlgozkbiTn9PwHcyPQq
-         eH/pLpSpKsCcPLlZhZII5BX/uS4M9BxlzqdxeiqB9+kX0wP74VxhSdbAW469r3ivYcrQ
-         B7A/RskSUa0Bapvi/hY5MDSsC42gYm0gLzMgqcrLsUDvJd6vg6/y3VdDCGn+D/J5+Lds
-         Sq+VPfq9Y/X0BHO7jDXRn5s7Bp6G5SbMR8fFQKXs4reByrDsQoHa6TkT4FQr/1de5AZh
-         8vaFNE3j+sOtHHKDtiFOsJfwwETtOv2VbqafLYispeokAoDN185YrBWBR73AptL7p5Q9
-         Zjtg==
-X-Gm-Message-State: AOAM531FbU9TjadWSG4Xvk9L+Lsj9a8XjkYaBHa27aWY+X+fRsgFZsFJ
-        KrAPH2aCThpZ26/uf29NmyPWs2yRrRA=
-X-Google-Smtp-Source: ABdhPJwouXACGC8aAisgQWWdAr7/BqE9uKzKdRmP+GLCLsWqhmqsALG7QCgd11N/MkFP/KnUHsfjPQ==
-X-Received: by 2002:a5e:9e42:: with SMTP id j2mr327048ioq.87.1602618311570;
-        Tue, 13 Oct 2020 12:45:11 -0700 (PDT)
-Received: from willemb.nyc.corp.google.com ([2620:0:1003:312:f693:9fff:fef4:3e8a])
-        by smtp.gmail.com with ESMTPSA id b3sm677595iot.37.2020.10.13.12.45.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Oct 2020 12:45:10 -0700 (PDT)
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, Willem de Bruijn <willemb@google.com>
-Subject: [PATCH net] docs: networking: update XPS to account for netif_set_xps_queue
-Date:   Tue, 13 Oct 2020 15:45:08 -0400
-Message-Id: <20201013194508.389495-1-willemdebruijn.kernel@gmail.com>
-X-Mailer: git-send-email 2.28.0.1011.ga647a8990f-goog
+        id S1727827AbgJMT4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 15:56:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44801 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726848AbgJMT4e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 15:56:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602618993;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=iwU7tK6msSXXjxmtdCmiDX1VSEEaziIZMs2Jkm9hIlI=;
+        b=Y9w4k85b5WKwhdc6Y7huZB53XuC69O5rhkZT/fpRPsFc6jZCkpj7ff3XlW8M+iSs9Huy6W
+        1pAqdpza4Kj5tIorXSgwzx/Xm8vBQRRW46GEyyViieEJxLh3DoZWIXjqTs8UnISeZbDmGd
+        7AQZNfRgyYUiPosLTPcb4UUUV/BRzaQ=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-7-Auzav5HPNgCSQebp_c0R_w-1; Tue, 13 Oct 2020 15:56:29 -0400
+X-MC-Unique: Auzav5HPNgCSQebp_c0R_w-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AF6B61015C85;
+        Tue, 13 Oct 2020 19:56:27 +0000 (UTC)
+Received: from krava (unknown [10.40.193.3])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 393F65D9CD;
+        Tue, 13 Oct 2020 19:56:24 +0000 (UTC)
+Date:   Tue, 13 Oct 2020 21:56:22 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     davem@davemloft.net, daniel@iogearbox.net,
+        john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-team@fb.com
+Subject: Re: [PATCH v2 bpf-next 3/4] selftests/bpf: Add profiler test
+Message-ID: <20201013195622.GB1305928@krava>
+References: <20201009011240.48506-1-alexei.starovoitov@gmail.com>
+ <20201009011240.48506-4-alexei.starovoitov@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201009011240.48506-4-alexei.starovoitov@gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemb@google.com>
+On Thu, Oct 08, 2020 at 06:12:39PM -0700, Alexei Starovoitov wrote:
 
-With the introduction of netif_set_xps_queue, XPS can be enabled
-by the driver at initialization.
+SNIP
 
-Update the documentation to reflect this, as otherwise users
-may incorrectly believe that the feature is off by default.
+> +
+> +#ifdef UNROLL
+> +#pragma unroll
+> +#endif
+> +	for (int i = 0; i < MAX_CGROUPS_PATH_DEPTH; i++) {
+> +		filepart_length =
+> +			bpf_probe_read_str(payload, MAX_PATH, BPF_CORE_READ(cgroup_node, name));
+> +		if (!cgroup_node)
+> +			return payload;
+> +		if (cgroup_node == cgroup_root_node)
+> +			*root_pos = payload - payload_start;
+> +		if (filepart_length <= MAX_PATH) {
+> +			barrier_var(filepart_length);
+> +			payload += filepart_length;
+> +		}
+> +		cgroup_node = BPF_CORE_READ(cgroup_node, parent);
+> +	}
+> +	return payload;
+> +}
+> +
+> +static ino_t get_inode_from_kernfs(struct kernfs_node* node)
+> +{
+> +	struct kernfs_node___52* node52 = (void*)node;
+> +
+> +	if (bpf_core_field_exists(node52->id.ino)) {
+> +		barrier_var(node52);
+> +		return BPF_CORE_READ(node52, id.ino);
+> +	} else {
+> +		barrier_var(node);
+> +		return (u64)BPF_CORE_READ(node, id);
+> +	}
+> +}
+> +
+> +int pids_cgrp_id = 1;
 
-Fixes: 537c00de1c9b ("net: Add functions netif_reset_xps_queue and netif_set_xps_queue")
-Signed-off-by: Willem de Bruijn <willemb@google.com>
----
- Documentation/networking/scaling.rst | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/networking/scaling.rst b/Documentation/networking/scaling.rst
-index 8f0347b9fb3d..3d435caa3ef2 100644
---- a/Documentation/networking/scaling.rst
-+++ b/Documentation/networking/scaling.rst
-@@ -465,9 +465,9 @@ XPS Configuration
- -----------------
- 
- XPS is only available if the kconfig symbol CONFIG_XPS is enabled (on by
--default for SMP). The functionality remains disabled until explicitly
--configured. To enable XPS, the bitmap of CPUs/receive-queues that may
--use a transmit queue is configured using the sysfs file entry:
-+default for SMP). If compiled in, it is driver dependent whether, and
-+how, XPS is configured at device init. The mapping of CPUs/receive-queues
-+to transmit queue can be inspected and configured using sysfs:
- 
- For selection based on CPUs map::
- 
--- 
-2.28.0.1011.ga647a8990f-goog
+hi,
+I'm getting compilation failure with this:
+
+	  CLNG-LLC [test_maps] profiler2.o
+	In file included from progs/profiler2.c:6:
+	progs/profiler.inc.h:246:5: error: redefinition of 'pids_cgrp_id' as different kind of symbol
+	int pids_cgrp_id = 1;
+	    ^
+	/home/jolsa/linux-qemu/tools/testing/selftests/bpf/tools/include/vmlinux.h:14531:2: note: previous definition is here
+		pids_cgrp_id = 11,
+		^
+	1 error generated.
+	/opt/clang/bin/llc: error: /opt/clang/bin/llc: <stdin>:1:1: error: expected top-level entity
+	BPF obj compilation failed
+	^
+	make: *** [Makefile:396: /home/jolsa/linux-qemu/tools/testing/selftests/bpf/profiler2.o] Error 1
+
+jirka
 
