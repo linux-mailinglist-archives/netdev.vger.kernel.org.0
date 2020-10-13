@@ -2,75 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F211A28CE45
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 14:24:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 901D028CE84
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 14:40:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727058AbgJMMYD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 08:24:03 -0400
-Received: from aer-iport-4.cisco.com ([173.38.203.54]:56530 "EHLO
-        aer-iport-4.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726770AbgJMMYD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 08:24:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=1210; q=dns/txt; s=iport;
-  t=1602591843; x=1603801443;
-  h=from:to:cc:subject:date:message-id;
-  bh=imvnwR2b/Qb1Zv2bukYGNNj3ZK7ofBjSiQJ1wCM2eU0=;
-  b=fT+BGsno5xLBet5drgytlZUkJ9EKs1Jga5ewFqNhZwc0SWP9jqIl8fe0
-   kWZMsfysXW52nBQjdnCn8/d5gWfLxhKm027xlVsAB7pjVts1vSvMb0ZJ+
-   e5sfz+dpNgsTfB4f0E34JWMLHEw+ZL6z4dwqONaP8pZxTZwQvqzc14MO6
-   E=;
-X-IronPort-AV: E=Sophos;i="5.77,370,1596499200"; 
-   d="scan'208";a="30256835"
-Received: from aer-iport-nat.cisco.com (HELO aer-core-1.cisco.com) ([173.38.203.22])
-  by aer-iport-4.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 13 Oct 2020 12:24:01 +0000
-Received: from rdbuild16.cisco.com.rd.cisco.com (rdbuild16.cisco.com [10.47.15.16])
-        by aer-core-1.cisco.com (8.15.2/8.15.2) with ESMTP id 09DCO1uJ011822;
-        Tue, 13 Oct 2020 12:24:01 GMT
-From:   Georg Kohmann <geokohma@cisco.com>
-To:     netdev@vger.kernel.org
-Cc:     netfilter-devel@vger.kernel.org, pablo@netfilter.org,
-        kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
-        Georg Kohmann <geokohma@cisco.com>
-Subject: [PATCH net V2] netfilter: Drop fragmented ndisc packets assembled in netfilter
-Date:   Tue, 13 Oct 2020 14:23:12 +0200
-Message-Id: <20201013122312.8761-1-geokohma@cisco.com>
-X-Mailer: git-send-email 2.10.2
-X-Outbound-SMTP-Client: 10.47.15.16, rdbuild16.cisco.com
-X-Outbound-Node: aer-core-1.cisco.com
+        id S1727924AbgJMMkL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 08:40:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47336 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726636AbgJMMkJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 08:40:09 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD804C0613D0;
+        Tue, 13 Oct 2020 05:40:09 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id n9so17457174pgf.9;
+        Tue, 13 Oct 2020 05:40:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=IAvUP/SNXLFWxPseN2fkYDuXWsWTQevluoDNd3o/wiE=;
+        b=a+Je3JWpw3FL7os4ZqiD3XA9NL0oSpxM0YnjdnfgkgtJQLYJjWrN7QT1u9FfXXU8HE
+         ggrhutr+bnD3phA9Wd1Rqb8sOjd64N9OZrcKL8u0MI+W9ewmyNCmYKa6FbFOenT/IXjI
+         FIQtbvANvAMrmPUgeoeimxg0EF5D+PW79hLdGr1BP9/Quh8k4dlLZfNEFUXJREggJcHX
+         +L+uZR9LkgeItna44i0RCBqeyg1cVO10yNcZgeTwJq+RUWceVfkbwdo9EFYlSPSYwbu4
+         LVFwtpmRe/GP1BSylfjMC9GBoZkvD3wJkR1fAjjaUenF2g5yEoxSNT8qDPw35HfnKkEy
+         qsGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=IAvUP/SNXLFWxPseN2fkYDuXWsWTQevluoDNd3o/wiE=;
+        b=PX5ltDAb43/xwFgL/Qgq0ZWkQ+u0k3rM1c/VMjYfWTPG0a++VehG/4u61/y7wdVDFw
+         RC/cX1ZWuntbgXKp6JiP/fWqXgqXAz1IWk1niK4x3HWzgt3AKavS3HKLNCzJu6rupDuL
+         6efzCvtKkgHV6jDZ/AflQ7ZasgkdjCfp4RL2EhuJsz5Okw5jIJKzYbR5I+Q7tghgX71w
+         VsmsxHDg8hbP4v+3MJtpfuL7j5NoPM+1nzqK7EEhYNRFNBeF3yK0uY1Zig9I2vPTmxuE
+         6OXAiCKBG6VpP9oGq/EzkS11GhO+z+AAPCFAs1nCMhy1HEeJywZTVo/9gbOkhxdXWXw/
+         qabQ==
+X-Gm-Message-State: AOAM53143FINPxEUxIFwsHcZEPQbmU8tHa3m6PJERBBGyWUpqMCdzyX/
+        ZPYOD8b4cMslv3VVQfeks1+i7BEIYNc=
+X-Google-Smtp-Source: ABdhPJxTBI8AyiLXFUzbUiJSkyZ9P2ttFTS6jansX6Tfmf13/pt+pyUqxOdHLiKIMveW1lByAO5sOg==
+X-Received: by 2002:a62:6082:0:b029:156:5cab:1bfc with SMTP id u124-20020a6260820000b02901565cab1bfcmr5081745pfb.69.1602592809338;
+        Tue, 13 Oct 2020 05:40:09 -0700 (PDT)
+Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id i7sm22277297pfo.208.2020.10.13.05.40.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Oct 2020 05:40:08 -0700 (PDT)
+Date:   Tue, 13 Oct 2020 05:40:06 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Tom Rix <trix@redhat.com>
+Cc:     natechancellor@gmail.com, ndesaulniers@google.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Subject: Re: [PATCH] ptp: ptp_clockmatrix: initialize variables
+Message-ID: <20201013124006.GA10454@hoboy>
+References: <20201011200955.29992-1-trix@redhat.com>
+ <20201012220126.GB1310@hoboy>
+ <05da63b8-f1f5-9195-d156-0f2e7f3ea116@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <05da63b8-f1f5-9195-d156-0f2e7f3ea116@redhat.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fragmented ndisc packets assembled in netfilter not dropped as specified
-in RFC 6980, section 5. This behaviour breaks TAHI IPv6 Core Conformance
-Tests v6LC.2.1.22/23, V6LC.2.2.26/27 and V6LC.2.3.18.
+On Mon, Oct 12, 2020 at 09:07:30PM -0700, Tom Rix wrote:
+> calling function is a print information only function that returns void.
 
-Setting IP6SKB_FRAGMENTED flag during reassembly.
+That is fine.
 
-References: commit b800c3b966bc ("ipv6: drop fragmented ndisc packets by
-default (RFC 6980)")
-Signed-off-by: Georg Kohmann <geokohma@cisco.com>
----
+> I do think not adding error handling is worth it.
+> 
+> I could change the return and then the calls if if you like.
 
-V2: Fix spelling of IPSKB_FRAGMENTED to IP6SKB_FRAGMENTED in comment
+How about printing the version string when readable, and otherwise
+print an appropriate informative error message?
 
- net/ipv6/netfilter/nf_conntrack_reasm.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/ipv6/netfilter/nf_conntrack_reasm.c b/net/ipv6/netfilter/nf_conntrack_reasm.c
-index fed9666..054d287 100644
---- a/net/ipv6/netfilter/nf_conntrack_reasm.c
-+++ b/net/ipv6/netfilter/nf_conntrack_reasm.c
-@@ -355,6 +355,7 @@ static int nf_ct_frag6_reasm(struct frag_queue *fq, struct sk_buff *skb,
- 	ipv6_hdr(skb)->payload_len = htons(payload_len);
- 	ipv6_change_dsfield(ipv6_hdr(skb), 0xff, ecn);
- 	IP6CB(skb)->frag_max_size = sizeof(struct ipv6hdr) + fq->q.max_size;
-+	IP6CB(skb)->flags |= IP6SKB_FRAGMENTED;
- 
- 	/* Yes, and fold redundant checksum back. 8) */
- 	if (skb->ip_summed == CHECKSUM_COMPLETE)
--- 
-2.10.2
-
+Thanks,
+Richard
