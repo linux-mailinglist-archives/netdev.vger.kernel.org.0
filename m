@@ -2,255 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7F3A28CFF1
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 16:13:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9006028CFF5
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 16:13:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388479AbgJMONI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 10:13:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33492 "EHLO
+        id S2388515AbgJMONp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 10:13:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388308AbgJMONI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 10:13:08 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C7B0C0613D0
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 07:13:07 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id n15so24270262wrq.2
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 07:13:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8Lgo+BhNewfrDpcQjXlds1MNXx+/6h/dLhrZxMBOp14=;
-        b=W6TUEzwGLZdNXbOOO/wl9Ju1p4P5be+Y0kvAngJjlL77V8v1N9xVqZoZHFhZ0Hkh8U
-         cv3vO9ruFuwYKOl7nC8ZhUkV/IxnDrriBCQSAiz5Zxb84yuTe+w4twOWXnzfRuq9kQAO
-         ctkxJzBxFz0NHNEvXDazS/4oTk1A0c2eJCf014HyKQ2SAYuZ8Z6oyNhhJrt2nGWc0I3z
-         GMPrrLR1OL/1DfWRpAKDJ1wRXBOnpMqPb0PWYogIGoZ5Zmc8qPH+mmidrCdqjQlaYeDw
-         1sTkvhXWyLQXxI65B6gs/yWxhFNgK97MLD6SvAgPLUmaMWR4OZreCXez/1Fcl56B8K+8
-         2Row==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8Lgo+BhNewfrDpcQjXlds1MNXx+/6h/dLhrZxMBOp14=;
-        b=WBRRUB5VoOrs25vRrEI8IJUJf8cGRRgMew8CTJjEnPDMCEBw+g1usorBDPY2nWeIsm
-         VaZ0xIDY9KL/I3wepqiJovFf0ld4SLvas1ff4mDts5th6BniZ9kWbNUrCbbKN1S/KRzM
-         MMmopLApE4lpLmcqchYBlpE6UsEyv0k8WvFqGG8Irq2O7sYOW+/aF6ZYJnFW2P1ai3Jt
-         bsqz+sv2sQkZbSyVO8OkdITGKI2Hw2RF/V7oxhAOGT0oJhIM2HOn86bpzX6hjEsDtvkL
-         rptWYfBnrpVbTcUmSX6YQ7KD9NDjbfDXSKlKt3Lz0we5bf4G+xJ5JD4NTT6CnFdXBxjq
-         3EXQ==
-X-Gm-Message-State: AOAM533q2hnPiSHIwwtaODjEWAdz5+3sMbUgG/qtx/9P8plYEuwYw6cF
-        H88bxJV9JoZc8L/n3GkNGBQSxA==
-X-Google-Smtp-Source: ABdhPJx89kX+cXzker6RFVu+teaibI8F7nytLgLkQTLN/3e4QQUZ1hYdBppy8oxO8GLrgiL58G6/QA==
-X-Received: by 2002:a5d:5743:: with SMTP id q3mr35570190wrw.167.1602598386301;
-        Tue, 13 Oct 2020 07:13:06 -0700 (PDT)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id f8sm16290095wrw.85.2020.10.13.07.13.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Oct 2020 07:13:05 -0700 (PDT)
-Date:   Tue, 13 Oct 2020 16:13:02 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, alexandre.belloni@bootlin.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
-        xiaoliang.yang_1@nxp.com, hongbo.wang@nxp.com, kuba@kernel.org,
-        idosch@idosch.org, UNGLinuxDriver@microchip.com
-Subject: Re: [RFC PATCH 08/10] net: mscc: ocelot: register devlink ports
-Message-ID: <20201013141302.GA3251@nanopsycho.orion>
-References: <20201013134849.395986-1-vladimir.oltean@nxp.com>
- <20201013134849.395986-9-vladimir.oltean@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201013134849.395986-9-vladimir.oltean@nxp.com>
+        with ESMTP id S2388488AbgJMONp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 10:13:45 -0400
+Received: from albert.telenet-ops.be (albert.telenet-ops.be [IPv6:2a02:1800:110:4::f00:1a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6494C0613D5
+        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 07:13:44 -0700 (PDT)
+Received: from ramsan ([84.195.186.194])
+        by albert.telenet-ops.be with bizsmtp
+        id fSDi2300E4C55Sk06SDiYz; Tue, 13 Oct 2020 16:13:43 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan with esmtp (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1kSL3e-0006RP-HN; Tue, 13 Oct 2020 16:13:42 +0200
+Received: from geert by rox.of.borg with local (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1kSL3e-0007QD-FW; Tue, 13 Oct 2020 16:13:42 +0200
+From:   Geert Uytterhoeven <geert+renesas@glider.be>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: [PATCH] can: Explain PDU in CAN_ISOTP help text
+Date:   Tue, 13 Oct 2020 16:13:41 +0200
+Message-Id: <20201013141341.28487-1-geert+renesas@glider.be>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Oct 13, 2020 at 03:48:47PM CEST, vladimir.oltean@nxp.com wrote:
->Add devlink integration into the mscc_ocelot switchdev driver. Only the
->probed interfaces are registered with devlink, because for convenience,
->struct devlink_port was included into struct ocelot_port_private, which
->is only initialized for the ports that are used.
->
->Note that the felix DSA driver is already integrated with devlink by
->default, since that is a thing that the DSA core takes care of.
->
->Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
->---
-> drivers/net/ethernet/mscc/ocelot.h         |  4 +
-> drivers/net/ethernet/mscc/ocelot_net.c     | 92 ++++++++++++++++++++++
-> drivers/net/ethernet/mscc/ocelot_vsc7514.c |  7 ++
-> include/soc/mscc/ocelot.h                  |  1 +
-> 4 files changed, 104 insertions(+)
->
->diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
->index 8eae68e0fd0b..3fee5f565920 100644
->--- a/drivers/net/ethernet/mscc/ocelot.h
->+++ b/drivers/net/ethernet/mscc/ocelot.h
->@@ -65,6 +65,8 @@ struct ocelot_port_private {
-> 	struct phy *serdes;
-> 
-> 	struct ocelot_port_tc tc;
->+
->+	struct devlink_port devlink_port;
-> };
-> 
-> struct ocelot_dump_ctx {
->@@ -106,6 +108,8 @@ void ocelot_port_writel(struct ocelot_port *port, u32 val, u32 reg);
-> 
-> int ocelot_probe_port(struct ocelot *ocelot, int port, struct regmap *target,
-> 		      struct phy_device *phy);
->+int ocelot_devlink_init(struct ocelot *ocelot);
->+void ocelot_devlink_teardown(struct ocelot *ocelot);
-> 
-> extern struct notifier_block ocelot_netdevice_nb;
-> extern struct notifier_block ocelot_switchdev_nb;
->diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
->index d3c03942546d..a11e5e7a0228 100644
->--- a/drivers/net/ethernet/mscc/ocelot_net.c
->+++ b/drivers/net/ethernet/mscc/ocelot_net.c
->@@ -8,6 +8,98 @@
-> #include "ocelot.h"
-> #include "ocelot_vcap.h"
-> 
->+struct ocelot_devlink_private {
->+	struct ocelot *ocelot;
->+};
->+
->+static const struct devlink_ops ocelot_devlink_ops = {
->+};
->+
->+static int ocelot_port_devlink_init(struct ocelot *ocelot, int port)
->+{
->+	struct ocelot_port *ocelot_port = ocelot->ports[port];
->+	struct devlink *dl = ocelot->devlink;
->+	struct devlink_port_attrs attrs = {};
->+	struct ocelot_port_private *priv;
->+	struct devlink_port *dlp;
->+
->+	if (!ocelot_port)
->+		return 0;
->+
->+	priv = container_of(ocelot_port, struct ocelot_port_private, port);
->+	dlp = &priv->devlink_port;
->+
->+	attrs.phys.port_number = port;
->+
->+	if (priv->dev)
->+		attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
->+	else
->+		attrs.flavour = DEVLINK_PORT_FLAVOUR_UNUSED;
->+
->+	devlink_port_attrs_set(dlp, &attrs);
->+
->+	return devlink_port_register(dl, dlp, port);
+The help text for the CAN_ISOTP config symbol uses the acronym "PDU".
+However, this acronym is not explained here, nor in
+Documentation/networking/can.rst.
+Expand the acronym to make it easier for users to decide if they need to
+enable the CAN_ISOTP option or not.
 
-You are missing devlink_port_type_eth_set()
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ net/can/Kconfig | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
+diff --git a/net/can/Kconfig b/net/can/Kconfig
+index 224e5e0283a986d9..7c9958df91d353c8 100644
+--- a/net/can/Kconfig
++++ b/net/can/Kconfig
+@@ -62,8 +62,9 @@ config CAN_ISOTP
+ 	  communication between CAN nodes via two defined CAN Identifiers.
+ 	  As CAN frames can only transport a small amount of data bytes
+ 	  (max. 8 bytes for 'classic' CAN and max. 64 bytes for CAN FD) this
+-	  segmentation is needed to transport longer PDUs as needed e.g. for
+-	  vehicle diagnosis (UDS, ISO 14229) or IP-over-CAN traffic.
++	  segmentation is needed to transport longer Protocol Data Units (PDU)
++	  as needed e.g. for vehicle diagnosis (UDS, ISO 14229) or IP-over-CAN
++	  traffic.
+ 	  This protocol driver implements data transfers according to
+ 	  ISO 15765-2:2016 for 'classic' CAN and CAN FD frame types.
+ 	  If you want to perform automotive vehicle diagnostic services (UDS),
+-- 
+2.17.1
 
->+}
->+
->+static void ocelot_port_devlink_teardown(struct ocelot *ocelot, int port)
->+{
->+	struct ocelot_port *ocelot_port = ocelot->ports[port];
->+	struct ocelot_port_private *priv;
->+	struct devlink_port *dlp;
->+
->+	if (!ocelot_port)
->+		return;
->+
->+	priv = container_of(ocelot_port, struct ocelot_port_private, port);
->+	dlp = &priv->devlink_port;
->+
->+	devlink_port_unregister(dlp);
->+}
->+
->+int ocelot_devlink_init(struct ocelot *ocelot)
->+{
->+	struct ocelot_devlink_private *dl_priv;
->+	int port, err;
->+
->+	ocelot->devlink = devlink_alloc(&ocelot_devlink_ops, sizeof(*dl_priv));
->+	if (!ocelot->devlink)
->+		return -ENOMEM;
->+	dl_priv = devlink_priv(ocelot->devlink);
->+	dl_priv->ocelot = ocelot;
->+
->+	err = devlink_register(ocelot->devlink, ocelot->dev);
-
->+	if (err)
->+		goto free_devlink;
->+
->+	for (port = 0; port < ocelot->num_phys_ports; port++) {
->+		err = ocelot_port_devlink_init(ocelot, port);
->+		if (err) {
->+			while (port-- > 0)
->+				ocelot_port_devlink_teardown(ocelot, port);
->+			goto unregister_devlink;
->+		}
->+	}
->+
->+	return 0;
->+
->+unregister_devlink:
->+	devlink_unregister(ocelot->devlink);
->+free_devlink:
->+	devlink_free(ocelot->devlink);
->+	return err;
->+}
->+
->+void ocelot_devlink_teardown(struct ocelot *ocelot)
->+{
->+	int port;
->+
->+	for (port = 0; port < ocelot->num_phys_ports; port++)
->+		ocelot_port_devlink_teardown(ocelot, port);
->+
->+	devlink_unregister(ocelot->devlink);
->+	devlink_free(ocelot->devlink);
->+}
->+
-> int ocelot_setup_tc_cls_flower(struct ocelot_port_private *priv,
-> 			       struct flow_cls_offload *f,
-> 			       bool ingress)
->diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
->index ea55f4d20ecc..6512ddeafd50 100644
->--- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
->+++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
->@@ -1292,6 +1292,12 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
-> 		}
-> 	}
-> 
->+	err = ocelot_devlink_init(ocelot);
->+	if (err) {
->+		mscc_ocelot_release_ports(ocelot);
->+		goto out_put_ports;
->+	}
->+
-> 	register_netdevice_notifier(&ocelot_netdevice_nb);
-> 	register_switchdev_notifier(&ocelot_switchdev_nb);
-> 	register_switchdev_blocking_notifier(&ocelot_switchdev_blocking_nb);
->@@ -1307,6 +1313,7 @@ static int mscc_ocelot_remove(struct platform_device *pdev)
-> {
-> 	struct ocelot *ocelot = platform_get_drvdata(pdev);
-> 
->+	ocelot_devlink_teardown(ocelot);
-> 	ocelot_deinit_timestamp(ocelot);
-> 	mscc_ocelot_release_ports(ocelot);
-> 	ocelot_deinit(ocelot);
->diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
->index c6153c73dbfe..19ce7ea11163 100644
->--- a/include/soc/mscc/ocelot.h
->+++ b/include/soc/mscc/ocelot.h
->@@ -599,6 +599,7 @@ struct ocelot_port {
-> 
-> struct ocelot {
-> 	struct device			*dev;
->+	struct devlink			*devlink;
-> 
-> 	const struct ocelot_ops		*ops;
-> 	struct regmap			*targets[TARGET_MAX];
->-- 
->2.25.1
->
