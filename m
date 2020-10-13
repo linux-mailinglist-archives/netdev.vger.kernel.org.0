@@ -2,92 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D057628C6F7
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 03:59:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 550BF28C702
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 04:05:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728488AbgJMB7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 21:59:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33024 "EHLO
+        id S1728534AbgJMCFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 22:05:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726168AbgJMB7h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 21:59:37 -0400
-Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E59FC0613D0;
-        Mon, 12 Oct 2020 18:59:36 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4C9Jcj3CwXz9sTr;
-        Tue, 13 Oct 2020 12:59:01 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1602554343;
-        bh=pmgPJPvZsJLsw7I2sG6yosJYB3ZefjQHmA4yalF2CxY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lnXelRUORBwPKUVDaYJLNzHEVeSKeZ2CCPNZvhZuLPcqef0EmZFaWEKVzBhKNbeWR
-         GN7S+Fl0PdVbRdk/UA8x/E+5l/z69fpmjBdh/PZnNX2AOIXmiVkVA13WgQtl2kwM2f
-         gKPP8e+gYfyMp7G5iTxX9WG6XRKAexIJtqIzQI6K6Tnem7l2a9845Lu1tsGxS3MUZ4
-         TJoFx1Zld0cZknBNbHoNXvxIUrEsT5ym3plf273bn2wn3lwcaan71RBNP7HUTsnGa6
-         UuB2vCFXctLX0pizx9Ptl91Zdclije6jFsj9dL9mZ1MaufOkobcZ3YYQwp91RymANP
-         Mb3KDoF69jomA==
-Date:   Tue, 13 Oct 2020 12:58:59 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: merge window is open. bpf-next is still open.
-Message-ID: <20201013125859.1d694319@canb.auug.org.au>
-In-Reply-To: <20201012210307.byn6jx7dxmsxq7dt@ast-mbp>
-References: <CAADnVQ+ycd8T4nBcnAwr5FHX75_JhWmqdHzXEXwx5udBv8uwiQ@mail.gmail.com>
-        <20201012110046.3b2c3c27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAADnVQKn=CxcOpjSWLsD+VC5rviC6sMfrhw5jrPCU60Bcx5Ssw@mail.gmail.com>
-        <20201013075016.61028eee@canb.auug.org.au>
-        <20201012210307.byn6jx7dxmsxq7dt@ast-mbp>
+        with ESMTP id S1726168AbgJMCFr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 22:05:47 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E225C0613D0
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 19:05:47 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id r10so13638146ilm.11
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 19:05:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=eJsaD8bPdy1Qz/9syntqHSJI75fj0kwd5NS1dqij4E0=;
+        b=gclyF6ODKozT1FFjouilAduZaTZ6yhG5JQt1Ni0TXeKrSpPCR7XX0vnpc1EbuFdMRa
+         GVBz3ll4LS0NhpiBZ2/piEynqV+Gh9+TrgVK1WNKjGiqZfduFeaD1GJBBg+rgtgx1rdK
+         YLx5Z+48tIf1vUFNIyAw1tl5Gq9Gdnwq/MxPYsrXzuxnGeWssm6UVgikZY8qbVKINtjL
+         UP7h+iIYx5kIlyRX494ZlY/EUhykH+/kHWRG9NA/GQ5HQi+tF8rYJrWWT1eR/eo48BGP
+         CF6PhKd3IWYMXb3lGS7UguUuli10CrTEJhxTXZevQiI+0fAiWa53kLYaEfQaS7AxROWW
+         Zs5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=eJsaD8bPdy1Qz/9syntqHSJI75fj0kwd5NS1dqij4E0=;
+        b=pHfpwR504A5N89liuZiFkIJSuUk8A2fCO2EZpOK7qasXK5KbgrBlal7jSnV3QTO0tM
+         MNGYvarY6vP0J1rgVaCupptZ3jUf0DzcaDk+ZiaVtgp3y3kf6t29zIOiIckRdy/bwbhH
+         QZMSrZVuDuhlD/xdiWv30pvT7Ka40XYl/oIujbMtck2E76XfID+F6J+mGzVKUNHuUAfr
+         R8dntzGsSBlJf2njfRNSeaaHufLmQ2osZSW0CX2M2OtX3dL58U+kamuEujTibVBsJtmW
+         ssF1SC3prSfoob0uxGAetXd+p6JlCD4EhlvphRaWrBlxZbMUpDJM8fyQ415OsGcaZVM1
+         9p3w==
+X-Gm-Message-State: AOAM5314UI/FLL7C8d442Sf6PtMJW95BpIJbG8V2EoPWjwMkr6b6UFbH
+        xlHbGq16/lN8AUjuTIpQS1w=
+X-Google-Smtp-Source: ABdhPJxpoxjmpUjE9rg+60uoa1QumIjglWtlL4YbzGkFlf4boiZToEPOcXBlcoP0RdXmlOEm/+iw8A==
+X-Received: by 2002:a92:d850:: with SMTP id h16mr1246409ilq.281.1602554746970;
+        Mon, 12 Oct 2020 19:05:46 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:85e0:a5a2:ceeb:837])
+        by smtp.googlemail.com with ESMTPSA id c2sm8073611ioc.29.2020.10.12.19.05.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 12 Oct 2020 19:05:45 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next v2 2/2] tc: implement support for terse dump
+To:     Vlad Buslov <vlad@buslov.dev>, Jamal Hadi Salim <jhs@mojatatu.com>
+Cc:     David Ahern <dsahern@gmail.com>, Vlad Buslov <vladbu@nvidia.com>,
+        stephen@networkplumber.org, xiyou.wangcong@gmail.com,
+        netdev@vger.kernel.org, davem@davemloft.net, jiri@resnulli.us,
+        ivecera@redhat.com, Vlad Buslov <vladbu@mellanox.com>
+References: <20200930165924.16404-1-vladbu@nvidia.com>
+ <20200930165924.16404-3-vladbu@nvidia.com>
+ <9961ad12-dc8f-55fc-3f9d-8e1aaca82327@gmail.com>
+ <ff969d59-53e0-aca3-2de8-9be41d6d7804@mojatatu.com>
+ <87imbk20li.fsf@buslov.dev>
+ <81cf5868-be3d-f3b0-9090-01ec38f035e4@mojatatu.com>
+ <87ft6n1tp8.fsf@buslov.dev>
+ <5d4231c5-94d2-4d14-292f-e68d015ea260@mojatatu.com>
+ <87d01r1hi8.fsf@buslov.dev>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <d9468ce9-78a7-f5a4-baaa-479fbe4380c9@gmail.com>
+Date:   Mon, 12 Oct 2020 20:05:44 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/qzu=3O5TsrkNFDVoYhuzU6W";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <87d01r1hi8.fsf@buslov.dev>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/qzu=3O5TsrkNFDVoYhuzU6W
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 10/9/20 9:38 AM, Vlad Buslov wrote:
+> 
+> On Fri 09 Oct 2020 at 15:45, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>> On 2020-10-09 8:15 a.m., Vlad Buslov wrote:
+>>>
+>>> On Fri 09 Oct 2020 at 15:03, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>>
+>>>> Which test(s)?
+>>>> I see for example d45e mentioning terse but i dont see corresponding
+>>>> code in the iproute2 tree i just pulled.
+>>>
+>>> Yes. The tests d45e and 7c65 were added as a part of kernel series, but
+>>> corresponding iproute2 patches were never merged. Tests expect original
+>>> "terse flag" syntax of V1 iproute2 series and will have to be changed to
+>>> use -brief option instead.
+>>
+>> Then i dont see a problem in changing the tests.
+>> If you are going to send a v3 please include my acked-by.
+>> Would have been nice to see what terse output would have looked like.
+>>
+>> cheers,
+>> jamal
+> 
+> Sure. Just waiting for everyone to voice their opinion regarding the
+> output format before proceeding with any changes.
+> 
 
-Hi Alexei,
+go ahead and send a v3 with example output. cc Jamal and Cong
 
-On Mon, 12 Oct 2020 14:03:07 -0700 Alexei Starovoitov <alexei.starovoitov@g=
-mail.com> wrote:
->
-> That is a great idea! I think that should work well for everyone.
-> Let's do exactly that.
-> Just pushed bpf-next/for-next branch.
-
-=46rom now on I will only fetch the for-next branch.
-
-Thanks.
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/qzu=3O5TsrkNFDVoYhuzU6W
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl+FCeMACgkQAVBC80lX
-0GyKPAf+LIh0n3MhDh9RH4TK7Ym0sim29+Ng6FmUh3z8PJGj7vwS/B9GBmIY8Si2
-gB1yGKMkBbwpVQyQnJ2rTrb9Xcu/aj7GTSE2RpK5n+dUIcJvTBUNS9a8Uyabix6k
-ESeiXEZfXhMXgLJEKCICaGt7OAvxaiPZqaGdMoU2Y/5pM4m1NA+PC1UoQfrtfSMF
-w1ZKcHV+lzv1bGqMKlRTmURQ8m9QB2G0zK/zh4nFxAiUil4pWFMjTg3rYdd9nS+F
-74mGhiKCTsjrp0pTKVOX6SNEATPZcASqo490AuqH1bhh2zRrPXXpNE4cLxwzt+zV
-/WhaIvk6Wym4mKPaKLTvfLU+gRu+aA==
-=d+mu
------END PGP SIGNATURE-----
-
---Sig_/qzu=3O5TsrkNFDVoYhuzU6W--
