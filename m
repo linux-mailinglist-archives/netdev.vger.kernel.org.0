@@ -2,104 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B14D28C7BC
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 06:08:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 625D628C808
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 06:39:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731413AbgJMEHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 00:07:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:58662 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727016AbgJMEHh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 00:07:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1602562056;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=JirT+4vZS4Wlh/KjRG5Gnr9Co+Ss0bLSO4bv8e9Yukw=;
-        b=iwWaL5X9WkuhMgMnJYHDFplAyU+m3QuxJYFvxcpkO5IVJNIGQOu7jv3bNQgzxekmG/kfai
-        +0rWk0k+TacnpYpqmsw8XSIHL9NKdR3WCuOdLAt8X4OsvVwwRodfsRsBLs5ss9DCdPflQX
-        a8p3OJ/QSQMWL6/1CLz2XHtvM9YfRAY=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-594-44m_ELsTOzKH2NjOlRXajQ-1; Tue, 13 Oct 2020 00:07:34 -0400
-X-MC-Unique: 44m_ELsTOzKH2NjOlRXajQ-1
-Received: by mail-qk1-f198.google.com with SMTP id w126so14174808qka.5
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 21:07:34 -0700 (PDT)
+        id S1731799AbgJMEjx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 00:39:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57678 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726463AbgJMEjx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 00:39:53 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77593C0613D0
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 21:39:53 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id x13so13286328pfa.9
+        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 21:39:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=h/SYra0nJ3lAnbnnToGH+G1Xs8BxrRKZg1vS9nYb6KE=;
+        b=CDD6AyZXmgMc6ml8p1hRESvOHidFzxnkg6jAV1DPwtTjlNF7L6D8OfHojERcYRHaAk
+         xbfDW64hNUdMJqa6ysDrY1cReePbveNe4F67AA8vRxaQ3qr72c27FtIvWCitvOfaPlg1
+         NbOiz/RsrcFhNPa3diRBLGuPPnpexyvDfXD0GNvdnPstaRaGjhD3JQ23bV3abxoOL41S
+         B4JtJRZsf3tTKNJ+Hwfw8ZAMJl23r0cP3JuQpjDCOd9h7haxSQPFuUr7cOVkW9oVpsW0
+         GGo13jjH+FAzBt7zTvozyDh1LJEG96IfmkX81FU5BG6lTu0O0h0YD6tF4UyZ9j8kIGRw
+         ScuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=JirT+4vZS4Wlh/KjRG5Gnr9Co+Ss0bLSO4bv8e9Yukw=;
-        b=Jg5rSTS7uP8k26BgZRW31AIw9EIlL7YumAlGStKa0djlbOsUqi0WJ3pS0UTT4ApNiG
-         LDsPN2eJg8drfNhkLbzrPAqan7aDY/MFkHsRJhk6JWljxaWmDmCIt9erMkprvZAiDBju
-         j2afpBQMZeLpm88tqfYmRst7MzMF1VmWo2pi+lXIIUWSVC4VPDid/wMVWOv0f/qN9b9F
-         kmgLzTB18qYz0fQEVNT+yetCP7fa3EQMNRopkOagGxbaG7UMrJ7DOGO+3VVwb78FGM5t
-         0mBiR7/pC5kNt6c9amefebswqauJhI4SRoapOS/5GVwuNXGiEMKwu4Id8jjR9tYi4vmq
-         HBCw==
-X-Gm-Message-State: AOAM533wHPHa4rFgJ1JdCD9Y+cTPjUGwpHeAWqQhbTDBTzTmS2jmzNLR
-        EE+AdjHixulq8TaeAvmccygUQhEWlIjk4RynTRjkLRNNPb0DdR79QS0Jaoyg0cpG10CwJ/1+9Jb
-        0sjXz+YeDOw5qcBPs
-X-Received: by 2002:ac8:31b4:: with SMTP id h49mr13612802qte.258.1602562053509;
-        Mon, 12 Oct 2020 21:07:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJym1jOUYWeI7Zbb7O6jtxusBRzdyOWNTK23Knln/KjzDTmGZDXeBS3EfPjk5zslnyZ6dHPQ0g==
-X-Received: by 2002:ac8:31b4:: with SMTP id h49mr13612782qte.258.1602562053198;
-        Mon, 12 Oct 2020 21:07:33 -0700 (PDT)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id s17sm13274100qta.26.2020.10.12.21.07.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Oct 2020 21:07:32 -0700 (PDT)
-Subject: Re: [PATCH] ptp: ptp_clockmatrix: initialize variables
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     natechancellor@gmail.com, ndesaulniers@google.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-References: <20201011200955.29992-1-trix@redhat.com>
- <20201012220126.GB1310@hoboy>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <05da63b8-f1f5-9195-d156-0f2e7f3ea116@redhat.com>
-Date:   Mon, 12 Oct 2020 21:07:30 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=h/SYra0nJ3lAnbnnToGH+G1Xs8BxrRKZg1vS9nYb6KE=;
+        b=fPoSG0WYXv8ZM7CzpgaaOg93iJS4bqZ+DjiKuR8o9oo4NvK5nzPr6j4CQ2blV8ebXe
+         8F7FXKsBD44qGpEIPzJtpxZfRZbemyDAjYl24oR/Yy0fTlulx/B/CJjEzpR5JAMh4ioz
+         hJn8enlQfgorwvZyHQyDrBrTsVN7Xcoh+r3RdsnpcAJL3QU2hqVIDoqoujHFP6JNIbLm
+         9qndPsTKE26iVjvNqUwnESMl7inAqq5Q53M43qrpqXDcGsZMGRTfz8igxiZzZMqvMDEk
+         1qqgzctFlBymprFIy3N0XktI2nqkLP99D/IO9boh0LX7+DY4LzDB+Cr/fTfUNuwGgZBL
+         jZwA==
+X-Gm-Message-State: AOAM532eWq7EEjLJQDIwd/VX5O/rP0NSTWmZk6qoL/D5ncRQIoTwDs2/
+        Hv6SdWhvMW3xhKgMR0j8cwM=
+X-Google-Smtp-Source: ABdhPJypVz/zIT6e9UhembZLVBxVxJ36iqJ6GvOXJzwBLuuj+J4mNPFZy4BqW6sDNIPZcFiZWokdWA==
+X-Received: by 2002:a62:9245:0:b029:156:4a19:a250 with SMTP id o66-20020a6292450000b02901564a19a250mr4506411pfd.2.1602563992902;
+        Mon, 12 Oct 2020 21:39:52 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id f21sm8559762pfk.169.2020.10.12.21.39.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Oct 2020 21:39:52 -0700 (PDT)
+Date:   Tue, 13 Oct 2020 12:39:43 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Ido Schimmel <idosch@mellanox.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        David Ahern <dsahern@gmail.com>
+Subject: vxlan_asymmetric.sh test failed every time
+Message-ID: <20201013043943.GL2531@dhcp-12-153.nay.redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20201012220126.GB1310@hoboy>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Ido,
 
-On 10/12/20 3:01 PM, Richard Cochran wrote:
-> On Sun, Oct 11, 2020 at 01:09:55PM -0700, trix@redhat.com wrote:
->> From: Tom Rix <trix@redhat.com>
->>
->> Clang static analysis reports this representative problem
->>
->> ptp_clockmatrix.c:1852:2: warning: 5th function call argument
->>   is an uninitialized value
->>         snprintf(idtcm->version, sizeof(idtcm->version), "%u.%u.%u",
->>         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->>
->> idtcm_display_version_info() calls several idtcm_read_*'s without
->> checking a return status.
-> So why not check the return status?
+When run vxlan_asymmetric.sh on RHEL8, It failed every time. I though that
+it may failed because the kernel version is too old. But today I tried with
+latest kernel, it still failed. Would you please help check if I missed
+any configuration?
 
-calling function is a print information only function that returns void.
+# uname -r
+5.9.0
+# ip -V
+ip utility, iproute2-ss200602
+# netsniff-ng -v
+netsniff-ng 0.6.6 (Syro), Git id: (none)
+# cp forwarding.config.sample forwarding.config
 
-I do think not adding error handling is worth it.
+# ./vxlan_asymmetric.sh
+RTNETLINK answers: File exists
+TEST: ping: local->local vid 10->vid 20                             [FAIL]
+TEST: ping: local->remote vid 10->vid 10                            [ OK ]
+TEST: ping: local->remote vid 20->vid 20                            [ OK ]
+TEST: ping: local->remote vid 10->vid 20                            [FAIL]
+TEST: ping: local->remote vid 20->vid 10                            [FAIL]
+INFO: deleting neighbours from vlan interfaces
+TEST: ping: local->local vid 10->vid 20                             [FAIL]
+TEST: ping: local->remote vid 10->vid 10                            [ OK ]
+TEST: ping: local->remote vid 20->vid 20                            [ OK ]
+TEST: ping: local->remote vid 10->vid 20                            [FAIL]
+TEST: ping: local->remote vid 20->vid 10                            [FAIL]
+TEST: neigh_suppress: on / neigh exists: yes                        [ OK ]
+TEST: neigh_suppress: on / neigh exists: no                         [ OK ]
+TEST: neigh_suppress: off / neigh exists: no                        [ OK ]
+TEST: neigh_suppress: off / neigh exists: yes                       [ OK ]
 
-I could change the return and then the calls if if you like.
+# dmesg
+[...snip...]
+[ 1518.885526] device br1 entered promiscuous mode
+[ 1518.886211] device br1 left promiscuous mode
+[ 1518.890637] device br1 entered promiscuous mode
+[ 1518.941524] br1: received packet on vx10 with own address as source address (addr:00:00:5e:00:01:01, vlan:10)
+[ 1518.949522] br1: received packet on vx10 with own address as source address (addr:00:00:5e:00:01:01, vlan:10)
+[ 1519.165569] br1: received packet on vx10 with own address as source address (addr:00:00:5e:00:01:01, vlan:10)
+[ 1519.166900] IPv6: vlan10-v: IPv6 duplicate address fe80::200:5eff:fe00:101 used by 00:00:5e:00:01:01 detected!
+[ 1519.392633] br1: received packet on vx20 with own address as source address (addr:00:00:5e:00:01:01, vlan:20)
+[ 1519.741559] br1: received packet on vx20 with own address as source address (addr:00:00:5e:00:01:01, vlan:20)
+[ 1519.861641] br1: received packet on vx20 with own address as source address (addr:00:00:5e:00:01:01, vlan:20)
+[ 1519.862993] IPv6: vlan20-v: IPv6 duplicate address fe80::200:5eff:fe00:101 used by 00:00:5e:00:01:01 detected!
+[ 1520.181565] br1: received packet on vx10 with own address as source address (addr:00:00:5e:00:01:01, vlan:10)
+[ 1520.182739] br1: received packet on vx10 with own address as source address (addr:00:00:5e:00:01:01, vlan:10)
+[ 1524.853572] net_ratelimit: 4 callbacks suppressed
+[ 1524.854346] br1: received packet on vx10 with own address as source address (addr:00:00:5e:00:01:01, vlan:10)
+[ 1525.365565] br1: received packet on vx20 with own address as source address (addr:00:00:5e:00:01:01, vlan:20)
+[ 1533.557792] br1: received packet on vx10 with own address as source address (addr:00:00:5e:00:01:01, vlan:10)
+[ 1534.069921] br1: received packet on vx20 with own address as source address (addr:00:00:5e:00:01:01, vlan:20)
+[ 1550.965225] br1: received packet on vx20 with own address as source address (addr:00:00:5e:00:01:01, vlan:20)
+[ 1551.477294] br1: received packet on vx10 with own address as source address (addr:00:00:5e:00:01:01, vlan:10)
+[ 1558.064257] device w3 left promiscuous mode
+[ 1558.073279] br1: port 4(w3) entered disabled state
+[...snip...]
 
-Tom
-
->
-> Your patch papers over the issue.
->
-> Thanks,
-> Richard
->
-
+Thanks
+Hangbin
