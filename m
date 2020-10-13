@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1378028CF75
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 15:49:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13CBE28CF76
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 15:49:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387883AbgJMNtS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 09:49:18 -0400
-Received: from mail-vi1eur05on2057.outbound.protection.outlook.com ([40.107.21.57]:11232
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        id S2387898AbgJMNtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 09:49:20 -0400
+Received: from mail-eopbgr140045.outbound.protection.outlook.com ([40.107.14.45]:35766
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2387772AbgJMNtP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Oct 2020 09:49:15 -0400
+        id S2387848AbgJMNtQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Oct 2020 09:49:16 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EvgoouzeQIL2PQbFtVxuzDPh59XnG66KoKSb4dH5PN/46Ush/wihANimPDcT56hxKY/e92NqvhhOQwABvFLLcQYRCo4LlMEH30VBdQs81hPpN/cK2zT6NfxvgFK9IIzDt49+LpoP17KPAtVR+YkjWrvKH4idMXQoOTUNdTN9xZsGX8YKXv9OddsD1BC+4uh+4cDTmQPXuaNZwv5AQCWMeH5iK8FyCE1lw5NWlXNUWuuDuHTwdNjqGIT9Z1aHjopbrjrVT00Rm13YPvidUHitiL43VdRv2nGC9dspryV5HzN1KZxrbCVW6rj2h3hKW5dl36dVn8HGboCw2AQlHZA+mA==
+ b=WZ5MYlcOWTVVoDko/HFLCfIBxr8hbZQaEzc3zv6WB+o5vFVr6NzUzD4aqQdOpsxexZTZg+8JiPGLu77L68sryP8+0dvTeMn2ZfzGdB/3ERaRx4T7AIlZg3ViIL3WA9lBnaCn8qY2763kEcB8Ut8oxIb54SxsOkTLtgKcOrDUXtIY5cMT6T1hdB8SirrEjZSVumGUoLaQk7OXjkeaFfmT0zodJG/RwbZ/rEVWXr8hKU9ni/vxnQiojppbJm1AXDNY6QIGTU8nwXjVTI9fSW08gGnI/KrS6CvFa7/zSs2DOEaEugBgOYSLJ7n1R032qNVjtQ9rPyBHbtRtTpZkSwlBrw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rIwY2Els2OJHS55Euvj7X3mYT5NgTBpKwPyLGZdLYug=;
- b=E5yYltUSFV51EZ7jYbt4JmaTqBjNaCWOfw8VH03S9x93u2PTrxx33yJYKLgqJ850SEjA09leVK4WHG2I9x6Tj4GVxLXmvxqDoC98nYfhkRtwoavaKM8CEOB9HtwKwJiEaOaAE2hs8Q8CZ8LeMNWXBnDxpEI+2F9s4xnW/q10NmP190sQIPgV6Lh0F/d0NN3cWsmfghhaVyq82YDVbmlO+eIdR0EkYQSH710ieHRkk2Fuwv5dUXXdGOwdAMQdPEmepcDu+h+HJm7DDeypylUVLtUWcpNHXLxVfzeZBCxhvcxsVTRz9jj4pF3KONYxJ3/bNIknwNLsY9PQWP1wa0JOJg==
+ bh=NOO54jQzxi8VL9PH8PoJY3MCvTxW+1UWIs3COycn6dY=;
+ b=KLdyRvmov7DH4qw7rLReHlcu1ay8wRW8k1ILZ1V62la+kxYLAme/RlSH6Dfvm5rJTBaYrgTBhQ2v4pOkHH3XX/7/XZ2uP8l0fKU6KP1ckhFkEKiU27UCFTCvDR+KCAwQTSDSWQzpU2hlDcLePpnHYKmP7HLY0lPaPrPe4Hi1JyIsjkJyw1NWH1q6VnFgsh4iHOrxRLbVWceEJFP/d8pWsrL7i88h5r6fPJNwgcjdaKG+OQ/Uu5ihiCF6IQQC6RNx9YczMFH3ZIegl8qQHzGx4P/7b9uSw/8BIaSGs2a0P6GTD5BmFMMJekY7y5TfPo350GZvOvwlwZTWJjI4xUD7jQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rIwY2Els2OJHS55Euvj7X3mYT5NgTBpKwPyLGZdLYug=;
- b=qoxfxWuIBB6Dy8n2H7RITI7aXq6wwnLD8kViRW/VOtvXnUfTAF+FP2xkzVfWI833BsAf00bQezYoyHwhBaQGTdIpmvVz4KJ0TFituefNts3Oc1HIsBBVzcXyHCmF+byhLTYfUjbI5c+IJWpu7yByCZsYCjmk59ouJiYuQESovdc=
+ bh=NOO54jQzxi8VL9PH8PoJY3MCvTxW+1UWIs3COycn6dY=;
+ b=GvW7WCbxH0h2eF0hhFbIxMtuY8Ff8k//jfeGjme08OzJhjWEJXt1egKa4wTLa+n9wrtQSYo+7GybJ+HPbWIT0LMwBF6BXXXyY6KMsvSvayV1+lBosbX0PffRGPo3DFkj018tfP4sQxkPk5CK0JIzHV/uAv03UfCzBE/wW54fbSo=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VE1PR04MB6637.eurprd04.prod.outlook.com (2603:10a6:803:126::16) with
+ by VI1PR04MB7104.eurprd04.prod.outlook.com (2603:10a6:800:126::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.24; Tue, 13 Oct
- 2020 13:49:10 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.22; Tue, 13 Oct
+ 2020 13:49:12 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3477.020; Tue, 13 Oct 2020
- 13:49:10 +0000
+ 13:49:12 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
@@ -44,9 +44,9 @@ Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
         alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
         xiaoliang.yang_1@nxp.com, hongbo.wang@nxp.com, kuba@kernel.org,
         jiri@resnulli.us, idosch@idosch.org, UNGLinuxDriver@microchip.com
-Subject: [RFC PATCH 02/10] net: mscc: ocelot: add ops for decoding watermark threshold and occupancy
-Date:   Tue, 13 Oct 2020 16:48:41 +0300
-Message-Id: <20201013134849.395986-3-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH 03/10] net: dsa: add ops for devlink-sb
+Date:   Tue, 13 Oct 2020 16:48:42 +0300
+Message-Id: <20201013134849.395986-4-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201013134849.395986-1-vladimir.oltean@nxp.com>
 References: <20201013134849.395986-1-vladimir.oltean@nxp.com>
@@ -58,179 +58,284 @@ X-ClientProxiedBy: AM0PR01CA0084.eurprd01.prod.exchangelabs.com
  (2603:10a6:803:e7::13)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.26.174.215) by AM0PR01CA0084.eurprd01.prod.exchangelabs.com (2603:10a6:208:10e::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.20 via Frontend Transport; Tue, 13 Oct 2020 13:49:09 +0000
+Received: from localhost.localdomain (188.26.174.215) by AM0PR01CA0084.eurprd01.prod.exchangelabs.com (2603:10a6:208:10e::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.20 via Frontend Transport; Tue, 13 Oct 2020 13:49:10 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 2716da69-a96c-4483-7e42-08d86f7ec313
-X-MS-TrafficTypeDiagnostic: VE1PR04MB6637:
+X-MS-Office365-Filtering-Correlation-Id: 86d6ea6a-a374-42ab-b036-08d86f7ec42e
+X-MS-TrafficTypeDiagnostic: VI1PR04MB7104:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VE1PR04MB66374ACE598635C5A279D245E0040@VE1PR04MB6637.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB7104A59FCA168B8F42D2310AE0040@VI1PR04MB7104.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4a80fCiL0iuoDnQ7G6lPWjAXEpwRHqAZ0pQCgAdM0FF9JQRVk/MwEmyOagCqYbgV662SZePXStWSWna8Z/++9xNCWn5aWiPTbP0Oln/aVd5asYebPBcEUaIeaXsNh1bgZoPYQo4qKNddGN/swNuH6z2++1Cj91WxxnAApMhHto6iLY8Rtt2CTg8Ytaa4bHVx+XnfIv4qYeMK2yo/UXdNX4gYRV6ez1BQLSEn7qxzITwuFZoGyBfg4+2lJp1T+dhbco1X6K2UQjWR5gUYuJ6qgEKVGLSufMOYTH8FGGb87BghEE/Vmh30Mmmc5fVtS9g1tfFK2SY7G+H4R86FOPxXR6Kl2/k3ztn/D5XjJzL6aIdyO8eaaf6TW5dsqiyJ/b1/
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(136003)(376002)(346002)(39850400004)(366004)(52116002)(83380400001)(66946007)(66476007)(4326008)(6506007)(186003)(8936002)(69590400008)(26005)(8676002)(6666004)(16526019)(66556008)(5660300002)(44832011)(956004)(478600001)(6916009)(36756003)(86362001)(6512007)(1076003)(6486002)(316002)(2616005)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: o98ei3dJ5fb/ENVgpceD59CbLEO9tYe7WZXuXoFflRQDzm42F3wdFU3LbYMlgBEPggQvppX8FZ5rzQFcbOUihSALzyGtpqm4tR/HnEfr1Vl1oCsTI5VFMG2NL7LZz+k+0UazUARaAeH95JgeB7PyYntYR+K+osTyhDV0H0nowUwCE47OYN3+id7dMnE545L04QLZubLNj5xsX17SZs4FvV9rJx/Otfl51ctTxIAaqu5vfPdPuwIZFJa8lHg8nVnuxuQoUeXe6Ukg9H3EHcBZH+s2qzpvbMe2xNM+TShkD7fCSM3bIX/QkuGzXcJKC9JbBIe14m7ifXZf8r2eXVKdoaUhqjZJzF9WI2y+TU8jvH3ySi4n5fS/8xu2SoxaGx7peG6bMucbiR1O3VdisVp0I4Od5AnqqQ+nRqMYbHLz5bt+2rS6Ku3wnrXtPnPiJ8qCFw6iHjLI7endltKw8YBPvTEBe5p4YBBOefpXt/YGk5VXRlTq0UO87OXBBekUfit5M1bzy+q9+65CYHpjDSIF9XW1FR1H9ArWhvpLfJ3iGVfJZvxXASByQMv7f6co/Ywom68Vp8gjTz/PulowBnxhfPSra3/JETEX2rfRXEyh1Z6XRl0HMFAtOBUL6APVABNaNpTt/e6TXzKR/1nnk8tCbA==
+X-Microsoft-Antispam-Message-Info: VRX2vACzAR0qulXwwqX3FklOh3GMMiE9ELBOyfsg6lbdTus5IoL3q8Mi31ZfJrsAfEfe9+0xi4qDnhjgBSoGmIMoZXm6EKY5g67jN1U1d/ovDSmqsMVPjSaTXHCHYR6vKSa4avwKypa1ra/kY9aW9miJISZBclEDSD15eXuSoRx6SrwfQPX5UGxuic12vZDeS+Xk6BWyjVtVLgAVpmJ723yEo7PkXPqRekxNrvSqM/+QEhphYGdiNkQTjRr7X/EsAcAwbZErMhgLXK1Hy9vEESJ7lnvrvOvbcRHITWEPdyIbSdS736VnzMtRMfcUcSJo1BzTdTnjksHTwcqqrI7vVlJhwJXPbeJoQufPA1aYgjG89ioyyP4XrJmiBTxWoqVA
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(136003)(366004)(39850400004)(376002)(396003)(478600001)(83380400001)(6506007)(8936002)(69590400008)(6486002)(66556008)(66476007)(6666004)(66946007)(5660300002)(1076003)(316002)(4326008)(36756003)(956004)(8676002)(86362001)(2616005)(186003)(6916009)(16526019)(26005)(52116002)(44832011)(2906002)(6512007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 63FEfuzgIg+ol77YO2pec/r7Vcg15fh5LTPfL44sm6M1gOiLW5iVPh3hp1AsW9klm5nhmg+zrBgddBw5Ty+o3n6WGUbWYpuas5zU6O8Qivw5SicRHVW4E9TeknOAaDGHMZhhTMiJNaCWEweNmwfjaUp4rdzSp2H6aJY5uN+u57Sq/Tk43JTgyjG0iI0DrkbKE60dBGqIVygqI0Rw4HWOot42rD0GZODViaExzpI+Fpsg/kRUlMm4flIajHz1TzdiVISFHs1UiDSqIouCfeeqzMKHitx2NCPMfula4Qvgkba6YNF2YQjIksjHegFdIR+Fb3tcCmHX35GoEiFBfn3BOmRf+8oYB4Sj8iJQHECvi9SHoUDU+4JXBn+5/htSuqpIKUy9z5ILiRnpYDm+Pri6yBxTch9BBpPO6Ujl87Rb5lLqPwFscsnDhroSmzS9Dgjo7B7oLuWDS32jbRMvQ+djY20gmJUROZ90PZLUlN6cTYewNQc0lCOMrf7b5BYg1I3zHzzMzf3tzoVC0BcdgFn1icmrhghLwHBNVDg9AuvBJrzcGsXjpzFYaqKDfCk6x9MJwkGFlKrB+sQas+gB7Pz9G9YyAlqnBhdimDeAjTnRPLOvBCtfJL+K/q8VJJ4PtatZHd27C0O5y1HpRaxINr2YCQ==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2716da69-a96c-4483-7e42-08d86f7ec313
+X-MS-Exchange-CrossTenant-Network-Message-Id: 86d6ea6a-a374-42ab-b036-08d86f7ec42e
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Oct 2020 13:49:10.7469
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Oct 2020 13:49:12.3660
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gSI6lXRtwvOierJLK8jos0KqUQo0PGfDBXCoZ2K3MTif72qrGYmtwzKSJFDgI0MfMLz+pr2CNi5dDTsnOd0U/Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6637
+X-MS-Exchange-CrossTenant-UserPrincipalName: TrLYIcM2gIF3zl2/QjvKjUnuSFB4wvhv3XcDzLazhmgMLLBen9c/1Cm9dPQNzvZA3jkGSjEBCguG1ta/AFkTVQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7104
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We'll need to read back the watermark thresholds and occupancy from
-hardware (for devlink-sb integration), not only to write them as we did
-so far in ocelot_port_set_maxlen. So introduce 2 new functions in struct
-ocelot_ops, similar to wm_enc, and implement them for the 3 supported
-mscc_ocelot switches.
+Switches that care about QoS might have hardware support for reserving
+buffer pools for individual ports or traffic classes, and configuring
+their sizes and thresholds. Through devlink-sb (shared buffers), this is
+all configurable, as well as their occupancy being viewable.
 
-Remove the INUSE and MAXUSE unpacking helpers for the QSYS_RES_STAT
-register, because that doesn't scale with the number of switches that
-mscc_ocelot supports now. They have different bit widths for the
-watermarks, and we need function pointers to abstract that difference
-away.
+Add the plumbing in DSA for these operations.
+
+Individual drivers still need to call devlink_sb_register() with the
+shared buffers they want to expose. A helper was not created in DSA for
+this purpose (unlike, say, dsa_devlink_params_register), since in my
+opinion it does not bring any benefit over plainly calling
+devlink_sb_register() directly.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/ocelot/felix_vsc9959.c     | 18 ++++++++++++++++++
- drivers/net/dsa/ocelot/seville_vsc9953.c   | 18 ++++++++++++++++++
- drivers/net/ethernet/mscc/ocelot_vsc7514.c | 16 ++++++++++++++++
- include/soc/mscc/ocelot.h                  |  2 ++
- include/soc/mscc/ocelot_qsys.h             |  6 ------
- 5 files changed, 54 insertions(+), 6 deletions(-)
+ include/net/dsa.h |  34 +++++++++
+ net/dsa/dsa2.c    | 174 +++++++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 207 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index a2d5a9a8baf1..d4ef440d6340 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1006,9 +1006,27 @@ static u16 vsc9959_wm_enc(u16 value)
- 	return value;
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 35429a140dfa..7f2174535435 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -637,6 +637,40 @@ struct dsa_switch_ops {
+ 	int	(*devlink_info_get)(struct dsa_switch *ds,
+ 				    struct devlink_info_req *req,
+ 				    struct netlink_ext_ack *extack);
++	int	(*devlink_sb_pool_get)(struct dsa_switch *ds,
++				       unsigned int sb_index, u16 pool_index,
++				       struct devlink_sb_pool_info *pool_info);
++	int	(*devlink_sb_pool_set)(struct dsa_switch *ds, unsigned int sb_index,
++				       u16 pool_index, u32 size,
++				       enum devlink_sb_threshold_type threshold_type,
++				       struct netlink_ext_ack *extack);
++	int	(*devlink_sb_port_pool_get)(struct dsa_switch *ds, int port,
++					    unsigned int sb_index, u16 pool_index,
++					    u32 *p_threshold);
++	int	(*devlink_sb_port_pool_set)(struct dsa_switch *ds, int port,
++					    unsigned int sb_index, u16 pool_index,
++					    u32 threshold,
++					    struct netlink_ext_ack *extack);
++	int	(*devlink_sb_tc_pool_bind_get)(struct dsa_switch *ds, int port,
++					       unsigned int sb_index, u16 tc_index,
++					       enum devlink_sb_pool_type pool_type,
++					       u16 *p_pool_index, u32 *p_threshold);
++	int	(*devlink_sb_tc_pool_bind_set)(struct dsa_switch *ds, int port,
++					       unsigned int sb_index, u16 tc_index,
++					       enum devlink_sb_pool_type pool_type,
++					       u16 pool_index, u32 threshold,
++					       struct netlink_ext_ack *extack);
++	int	(*devlink_sb_occ_snapshot)(struct dsa_switch *ds,
++					   unsigned int sb_index);
++	int	(*devlink_sb_occ_max_clear)(struct dsa_switch *ds,
++					    unsigned int sb_index);
++	int	(*devlink_sb_occ_port_pool_get)(struct dsa_switch *ds, int port,
++						unsigned int sb_index, u16 pool_index,
++						u32 *p_cur, u32 *p_max);
++	int	(*devlink_sb_occ_tc_port_bind_get)(struct dsa_switch *ds, int port,
++						   unsigned int sb_index, u16 tc_index,
++						   enum devlink_sb_pool_type pool_type,
++						   u32 *p_cur, u32 *p_max);
+ 
+ 	/*
+ 	 * MTU change functionality. Switches can also adjust their MRU through
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index 183003e45762..61f2cfb96da4 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -400,8 +400,180 @@ static int dsa_devlink_info_get(struct devlink *dl,
+ 	return -EOPNOTSUPP;
  }
  
-+static u16 vsc9959_wm_dec(u16 wm)
++static struct dsa_port *devlink_to_dsa_port(struct devlink_port *dlp)
 +{
-+	WARN_ON(wm & ~GENMASK(8, 0));
-+
-+	if (wm & BIT(8))
-+		return (wm & GENMASK(7, 0)) * 16;
-+
-+	return wm;
++	return container_of(dlp, struct dsa_port, devlink_port);
 +}
 +
-+static void vsc9959_wm_stat(u32 val, u32 *inuse, u32 *maxuse)
++static int dsa_devlink_sb_pool_get(struct devlink *dl,
++				   unsigned int sb_index, u16 pool_index,
++				   struct devlink_sb_pool_info *pool_info)
 +{
-+	*inuse = (val & GENMASK(23, 12)) >> 12;
-+	*maxuse = val & GENMASK(11, 0);
++	struct dsa_devlink_priv *dl_priv = devlink_priv(dl);
++	struct dsa_switch *ds = dl_priv->ds;
++
++	if (!ds->ops->devlink_sb_pool_get)
++		return -EOPNOTSUPP;
++
++	return ds->ops->devlink_sb_pool_get(ds, sb_index, pool_index,
++					    pool_info);
 +}
 +
- static const struct ocelot_ops vsc9959_ops = {
- 	.reset			= vsc9959_reset,
- 	.wm_enc			= vsc9959_wm_enc,
-+	.wm_dec			= vsc9959_wm_dec,
-+	.wm_stat		= vsc9959_wm_stat,
- 	.port_to_netdev		= felix_port_to_netdev,
- 	.netdev_to_port		= felix_netdev_to_port,
++static int dsa_devlink_sb_pool_set(struct devlink *dl, unsigned int sb_index,
++				   u16 pool_index, u32 size,
++				   enum devlink_sb_threshold_type threshold_type,
++				   struct netlink_ext_ack *extack)
++{
++	struct dsa_devlink_priv *dl_priv = devlink_priv(dl);
++	struct dsa_switch *ds = dl_priv->ds;
++
++	if (!ds->ops->devlink_sb_pool_set)
++		return -EOPNOTSUPP;
++
++	return ds->ops->devlink_sb_pool_set(ds, sb_index, pool_index, size,
++					    threshold_type, extack);
++}
++
++static int dsa_devlink_sb_port_pool_get(struct devlink_port *dlp,
++					unsigned int sb_index, u16 pool_index,
++					u32 *p_threshold)
++{
++	struct dsa_devlink_priv *dl_priv = devlink_priv(dlp->devlink);
++	struct dsa_port *dp = devlink_to_dsa_port(dlp);
++	struct dsa_switch *ds = dl_priv->ds;
++
++	if (!ds->ops->devlink_sb_port_pool_get)
++		return -EOPNOTSUPP;
++
++	return ds->ops->devlink_sb_port_pool_get(ds, dp->index, sb_index,
++						 pool_index, p_threshold);
++}
++
++static int dsa_devlink_sb_port_pool_set(struct devlink_port *dlp,
++					unsigned int sb_index, u16 pool_index,
++					u32 threshold,
++					struct netlink_ext_ack *extack)
++{
++	struct dsa_devlink_priv *dl_priv = devlink_priv(dlp->devlink);
++	struct dsa_port *dp = devlink_to_dsa_port(dlp);
++	struct dsa_switch *ds = dl_priv->ds;
++
++	if (!ds->ops->devlink_sb_port_pool_set)
++		return -EOPNOTSUPP;
++
++	return ds->ops->devlink_sb_port_pool_set(ds, dp->index, sb_index,
++						 pool_index, threshold, extack);
++}
++
++static int
++dsa_devlink_sb_tc_pool_bind_get(struct devlink_port *dlp,
++				unsigned int sb_index, u16 tc_index,
++				enum devlink_sb_pool_type pool_type,
++				u16 *p_pool_index, u32 *p_threshold)
++{
++	struct dsa_devlink_priv *dl_priv = devlink_priv(dlp->devlink);
++	struct dsa_port *dp = devlink_to_dsa_port(dlp);
++	struct dsa_switch *ds = dl_priv->ds;
++
++	if (!ds->ops->devlink_sb_tc_pool_bind_get)
++		return -EOPNOTSUPP;
++
++	return ds->ops->devlink_sb_tc_pool_bind_get(ds, dp->index, sb_index,
++						    tc_index, pool_type,
++						    p_pool_index, p_threshold);
++}
++
++static int
++dsa_devlink_sb_tc_pool_bind_set(struct devlink_port *dlp,
++				unsigned int sb_index, u16 tc_index,
++				enum devlink_sb_pool_type pool_type,
++				u16 pool_index, u32 threshold,
++				struct netlink_ext_ack *extack)
++{
++	struct dsa_devlink_priv *dl_priv = devlink_priv(dlp->devlink);
++	struct dsa_port *dp = devlink_to_dsa_port(dlp);
++	struct dsa_switch *ds = dl_priv->ds;
++
++	if (!ds->ops->devlink_sb_tc_pool_bind_set)
++		return -EOPNOTSUPP;
++
++	return ds->ops->devlink_sb_tc_pool_bind_set(ds, dp->index, sb_index,
++						    tc_index, pool_type,
++						    pool_index, threshold,
++						    extack);
++}
++
++static int dsa_devlink_sb_occ_snapshot(struct devlink *dl,
++				       unsigned int sb_index)
++{
++	struct dsa_devlink_priv *dl_priv = devlink_priv(dl);
++	struct dsa_switch *ds = dl_priv->ds;
++
++	if (!ds->ops->devlink_sb_occ_snapshot)
++		return -EOPNOTSUPP;
++
++	return ds->ops->devlink_sb_occ_snapshot(ds, sb_index);
++}
++
++static int dsa_devlink_sb_occ_max_clear(struct devlink *dl,
++					unsigned int sb_index)
++{
++	struct dsa_devlink_priv *dl_priv = devlink_priv(dl);
++	struct dsa_switch *ds = dl_priv->ds;
++
++	if (!ds->ops->devlink_sb_occ_max_clear)
++		return -EOPNOTSUPP;
++
++	return ds->ops->devlink_sb_occ_max_clear(ds, sb_index);
++}
++
++static int dsa_devlink_sb_occ_port_pool_get(struct devlink_port *dlp,
++					    unsigned int sb_index,
++					    u16 pool_index, u32 *p_cur,
++					    u32 *p_max)
++{
++	struct dsa_devlink_priv *dl_priv = devlink_priv(dlp->devlink);
++	struct dsa_port *dp = devlink_to_dsa_port(dlp);
++	struct dsa_switch *ds = dl_priv->ds;
++
++	if (!ds->ops->devlink_sb_occ_port_pool_get)
++		return -EOPNOTSUPP;
++
++	return ds->ops->devlink_sb_occ_port_pool_get(ds, dp->index, sb_index,
++						     pool_index, p_cur, p_max);
++}
++
++static int
++dsa_devlink_sb_occ_tc_port_bind_get(struct devlink_port *dlp,
++				    unsigned int sb_index, u16 tc_index,
++				    enum devlink_sb_pool_type pool_type,
++				    u32 *p_cur, u32 *p_max)
++{
++	struct dsa_devlink_priv *dl_priv = devlink_priv(dlp->devlink);
++	struct dsa_port *dp = devlink_to_dsa_port(dlp);
++	struct dsa_switch *ds = dl_priv->ds;
++
++	if (!ds->ops->devlink_sb_occ_tc_port_bind_get)
++		return -EOPNOTSUPP;
++
++	return ds->ops->devlink_sb_occ_tc_port_bind_get(ds, dp->index,
++							sb_index, tc_index,
++							pool_type, p_cur,
++							p_max);
++}
++
+ static const struct devlink_ops dsa_devlink_ops = {
+-	.info_get = dsa_devlink_info_get,
++	.info_get			= dsa_devlink_info_get,
++	.sb_pool_get			= dsa_devlink_sb_pool_get,
++	.sb_pool_set			= dsa_devlink_sb_pool_set,
++	.sb_port_pool_get		= dsa_devlink_sb_port_pool_get,
++	.sb_port_pool_set		= dsa_devlink_sb_port_pool_set,
++	.sb_tc_pool_bind_get		= dsa_devlink_sb_tc_pool_bind_get,
++	.sb_tc_pool_bind_set		= dsa_devlink_sb_tc_pool_bind_set,
++	.sb_occ_snapshot		= dsa_devlink_sb_occ_snapshot,
++	.sb_occ_max_clear		= dsa_devlink_sb_occ_max_clear,
++	.sb_occ_port_pool_get		= dsa_devlink_sb_occ_port_pool_get,
++	.sb_occ_tc_port_bind_get	= dsa_devlink_sb_occ_tc_port_bind_get,
  };
-diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-index dbf2bb951761..b9890d18ad16 100644
---- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-+++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-@@ -1057,9 +1057,27 @@ static u16 vsc9953_wm_enc(u16 value)
- 	return value;
- }
  
-+static u16 vsc9953_wm_dec(u16 wm)
-+{
-+	WARN_ON(wm & ~GENMASK(9, 0));
-+
-+	if (wm & BIT(9))
-+		return (wm & GENMASK(8, 0)) * 16;
-+
-+	return wm;
-+}
-+
-+static void vsc9953_wm_stat(u32 val, u32 *inuse, u32 *maxuse)
-+{
-+	*inuse = (val & GENMASK(25, 13)) >> 13;
-+	*maxuse = val & GENMASK(12, 0);
-+}
-+
- static const struct ocelot_ops vsc9953_ops = {
- 	.reset			= vsc9953_reset,
- 	.wm_enc			= vsc9953_wm_enc,
-+	.wm_dec			= vsc9953_wm_dec,
-+	.wm_stat		= vsc9953_wm_stat,
- 	.port_to_netdev		= felix_port_to_netdev,
- 	.netdev_to_port		= felix_netdev_to_port,
- };
-diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-index 5a07f0c23f42..ea55f4d20ecc 100644
---- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-@@ -763,9 +763,25 @@ static u16 ocelot_wm_enc(u16 value)
- 	return value;
- }
- 
-+static u16 ocelot_wm_dec(u16 wm)
-+{
-+	if (wm & BIT(8))
-+		return (wm & GENMASK(7, 0)) * 16;
-+
-+	return wm;
-+}
-+
-+static void ocelot_wm_stat(u32 val, u32 *inuse, u32 *maxuse)
-+{
-+	*inuse = (val & GENMASK(23, 12)) >> 12;
-+	*maxuse = val & GENMASK(11, 0);
-+}
-+
- static const struct ocelot_ops ocelot_ops = {
- 	.reset			= ocelot_reset,
- 	.wm_enc			= ocelot_wm_enc,
-+	.wm_dec			= ocelot_wm_dec,
-+	.wm_stat		= ocelot_wm_stat,
- 	.port_to_netdev		= ocelot_port_to_netdev,
- 	.netdev_to_port		= ocelot_netdev_to_port,
- };
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index da3e50efcf96..4f4390408925 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -563,6 +563,8 @@ struct ocelot_ops {
- 	int (*netdev_to_port)(struct net_device *dev);
- 	int (*reset)(struct ocelot *ocelot);
- 	u16 (*wm_enc)(u16 value);
-+	u16 (*wm_dec)(u16 value);
-+	void (*wm_stat)(u32 val, u32 *inuse, u32 *maxuse);
- };
- 
- struct ocelot_vcap_block {
-diff --git a/include/soc/mscc/ocelot_qsys.h b/include/soc/mscc/ocelot_qsys.h
-index b7b263a19068..9731895be643 100644
---- a/include/soc/mscc/ocelot_qsys.h
-+++ b/include/soc/mscc/ocelot_qsys.h
-@@ -71,12 +71,6 @@
- 
- #define QSYS_RES_STAT_GSZ                                 0x8
- 
--#define QSYS_RES_STAT_INUSE(x)                            (((x) << 12) & GENMASK(23, 12))
--#define QSYS_RES_STAT_INUSE_M                             GENMASK(23, 12)
--#define QSYS_RES_STAT_INUSE_X(x)                          (((x) & GENMASK(23, 12)) >> 12)
--#define QSYS_RES_STAT_MAXUSE(x)                           ((x) & GENMASK(11, 0))
--#define QSYS_RES_STAT_MAXUSE_M                            GENMASK(11, 0)
--
- #define QSYS_MMGT_EQ_CTRL_FP_FREE_CNT(x)                  ((x) & GENMASK(15, 0))
- #define QSYS_MMGT_EQ_CTRL_FP_FREE_CNT_M                   GENMASK(15, 0)
- 
+ static int dsa_switch_setup(struct dsa_switch *ds)
 -- 
 2.25.1
 
