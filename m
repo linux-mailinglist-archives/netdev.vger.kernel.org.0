@@ -2,114 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BA9D28C6F1
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 03:57:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D057628C6F7
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 03:59:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728463AbgJMB5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 21:57:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60868 "EHLO
+        id S1728488AbgJMB7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 21:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726168AbgJMB5J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 21:57:09 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325E9C0613D0;
-        Mon, 12 Oct 2020 18:57:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:References:Cc:To:From:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=bofq6aL5/+29OZsHkddC1oB1vsNZ0db2q5pYJHTnMUQ=; b=V7Z8AV8Xtib3nBBeqBFkaHoOj6
-        M+hjTGZc9UkYF0l/s8IUvD50nTKjpAgaNSWPlZwfX1z+qzeZq2rk8fcLfHzWG56VZqbOVVnOi4xEe
-        5LaoPCylHKs6v9VE6s60Cw8X1nYKl7oY2Cvjyc4MgTfaOJH0oAw0XkWj2iM9chRv+JhIkg4rJBgCt
-        Knw1bXklm4JtT6GHkAnvj/Vm9Dspje1W9/Y55josQ+H2hxfhFmCQjKEZSdCQqvDIHx9UHzUXdzbl6
-        SWBcxg9lJFIyqPaRgl0QASA2TmYuNegMxcwv5YwJc/5KJH8ZZuECKkfowS22OuaFlHa7FGLbPrZD/
-        259McASA==;
-Received: from [2601:1c0:6280:3f0::507c]
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kS9Yi-0003ts-LD; Tue, 13 Oct 2020 01:57:01 +0000
-Subject: Re: [PATCH v2 2/6] ASoC: SOF: Introduce descriptors for SOF client
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Dave Ertman <david.m.ertman@intel.com>,
-        alsa-devel@alsa-project.org
-Cc:     tiwai@suse.de, broonie@kernel.org, linux-rdma@vger.kernel.org,
-        jgg@nvidia.com, dledford@redhat.com, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
-        ranjani.sridharan@linux.intel.com, fred.oh@linux.intel.com,
-        parav@mellanox.com, shiraz.saleem@intel.com,
-        dan.j.williams@intel.com, kiran.patil@intel.com
-References: <20201005182446.977325-1-david.m.ertman@intel.com>
- <20201005182446.977325-3-david.m.ertman@intel.com>
- <076a0c53-0738-270e-845f-0ac968a4ea78@infradead.org>
- <d9f062ee-a5f0-b41c-c8f6-b81b374754fa@linux.intel.com>
- <9ef98f33-a0d3-579d-26e0-6046dd593eef@infradead.org>
-Message-ID: <5b447b78-626d-2680-8a48-53493e2084a2@infradead.org>
-Date:   Mon, 12 Oct 2020 18:56:55 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S1726168AbgJMB7h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 21:59:37 -0400
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E59FC0613D0;
+        Mon, 12 Oct 2020 18:59:36 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4C9Jcj3CwXz9sTr;
+        Tue, 13 Oct 2020 12:59:01 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1602554343;
+        bh=pmgPJPvZsJLsw7I2sG6yosJYB3ZefjQHmA4yalF2CxY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lnXelRUORBwPKUVDaYJLNzHEVeSKeZ2CCPNZvhZuLPcqef0EmZFaWEKVzBhKNbeWR
+         GN7S+Fl0PdVbRdk/UA8x/E+5l/z69fpmjBdh/PZnNX2AOIXmiVkVA13WgQtl2kwM2f
+         gKPP8e+gYfyMp7G5iTxX9WG6XRKAexIJtqIzQI6K6Tnem7l2a9845Lu1tsGxS3MUZ4
+         TJoFx1Zld0cZknBNbHoNXvxIUrEsT5ym3plf273bn2wn3lwcaan71RBNP7HUTsnGa6
+         UuB2vCFXctLX0pizx9Ptl91Zdclije6jFsj9dL9mZ1MaufOkobcZ3YYQwp91RymANP
+         Mb3KDoF69jomA==
+Date:   Tue, 13 Oct 2020 12:58:59 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: merge window is open. bpf-next is still open.
+Message-ID: <20201013125859.1d694319@canb.auug.org.au>
+In-Reply-To: <20201012210307.byn6jx7dxmsxq7dt@ast-mbp>
+References: <CAADnVQ+ycd8T4nBcnAwr5FHX75_JhWmqdHzXEXwx5udBv8uwiQ@mail.gmail.com>
+        <20201012110046.3b2c3c27@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CAADnVQKn=CxcOpjSWLsD+VC5rviC6sMfrhw5jrPCU60Bcx5Ssw@mail.gmail.com>
+        <20201013075016.61028eee@canb.auug.org.au>
+        <20201012210307.byn6jx7dxmsxq7dt@ast-mbp>
 MIME-Version: 1.0
-In-Reply-To: <9ef98f33-a0d3-579d-26e0-6046dd593eef@infradead.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/qzu=3O5TsrkNFDVoYhuzU6W";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/12/20 6:55 PM, Randy Dunlap wrote:
-> On 10/12/20 6:31 PM, Pierre-Louis Bossart wrote:
->>
->>>> +config SND_SOC_SOF_CLIENT
->>>> +    tristate
->>>> +    select ANCILLARY_BUS
->>>> +    help
->>>> +      This option is not user-selectable but automagically handled by
->>>> +      'select' statements at a higher level
->>>> +
->>>> +config SND_SOC_SOF_CLIENT_SUPPORT
->>>> +    bool "SOF enable clients"
->>>
->>> Tell users what "SOF" means.
->>
->> This option can only be reached if the user already selected the topic-level option. From there on the SOF acronym is used. Is this not enough?
-> 
-> Yes, that's enough. I didn't see it. Sorry about that.
+--Sig_/qzu=3O5TsrkNFDVoYhuzU6W
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Huh. I still don't see that Kconfig option.
-Which patch is it in?
+Hi Alexei,
 
-I only saw patches 1,2,3 on LKML.
+On Mon, 12 Oct 2020 14:03:07 -0700 Alexei Starovoitov <alexei.starovoitov@g=
+mail.com> wrote:
+>
+> That is a great idea! I think that should work well for everyone.
+> Let's do exactly that.
+> Just pushed bpf-next/for-next branch.
 
->> config SND_SOC_SOF_TOPLEVEL
->>     bool "Sound Open Firmware Support"
->>     help
->>       This adds support for Sound Open Firmware (SOF). SOF is a free and
->>       generic open source audio DSP firmware for multiple devices.
->>       Say Y if you have such a device that is supported by SOF.
->>
->>>
->>>> +    depends on SND_SOC_SOF
->>>> +    help
->>>> +      This adds support for ancillary client devices to separate out the debug
->>>> +      functionality for IPC tests, probes etc. into separate devices. This
->>>> +      option would also allow adding client devices based on DSP FW
->>>
->>> spell out firmware
->>
->> agree on this one.
->>
->>>
->>>> +      capabilities and ACPI/OF device information.
->>>> +      Say Y if you want to enable clients with SOF.
->>>> +      If unsure select "N".
->>>> +
->>>
->>>
-> 
-> thanks.
-> 
+=46rom now on I will only fetch the for-next branch.
 
+Thanks.
+--=20
+Cheers,
+Stephen Rothwell
 
--- 
-~Randy
+--Sig_/qzu=3O5TsrkNFDVoYhuzU6W
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl+FCeMACgkQAVBC80lX
+0GyKPAf+LIh0n3MhDh9RH4TK7Ym0sim29+Ng6FmUh3z8PJGj7vwS/B9GBmIY8Si2
+gB1yGKMkBbwpVQyQnJ2rTrb9Xcu/aj7GTSE2RpK5n+dUIcJvTBUNS9a8Uyabix6k
+ESeiXEZfXhMXgLJEKCICaGt7OAvxaiPZqaGdMoU2Y/5pM4m1NA+PC1UoQfrtfSMF
+w1ZKcHV+lzv1bGqMKlRTmURQ8m9QB2G0zK/zh4nFxAiUil4pWFMjTg3rYdd9nS+F
+74mGhiKCTsjrp0pTKVOX6SNEATPZcASqo490AuqH1bhh2zRrPXXpNE4cLxwzt+zV
+/WhaIvk6Wym4mKPaKLTvfLU+gRu+aA==
+=d+mu
+-----END PGP SIGNATURE-----
+
+--Sig_/qzu=3O5TsrkNFDVoYhuzU6W--
