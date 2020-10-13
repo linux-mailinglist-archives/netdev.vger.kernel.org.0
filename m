@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D453828CB91
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 12:26:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9A0728CB92
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 12:26:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730293AbgJMK0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 06:26:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54986 "EHLO
+        id S1730429AbgJMK05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 06:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729395AbgJMK0w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 06:26:52 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE3CC0613D2
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 03:26:52 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id hk7so474303pjb.2
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 03:26:52 -0700 (PDT)
+        with ESMTP id S1729395AbgJMK04 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 06:26:56 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C212C0613D0
+        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 03:26:55 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id y1so6906689plp.6
+        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 03:26:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=pmtSLsNOOW8G2LXBB5V8DeAGMiSYhaA498eQKjyFKpw=;
-        b=AQ9KoxCeXi+s6cLai/+kPS4qqKblgs/YM+M89rfswuSr/ho65mO2WtNSnEACcTp+/N
-         DdjnYuQSRYSTFSkoveLepzScWuX3jQq0ZgXHSc2oSa3J1BnLzshfvp7l2T8ubEUpI2Wf
-         +IZ4XncMJpo/pJrmP30GbGuJSlKnMHsnMJvOgHFszP+yXSHQUbLuKb7nX92o/CJPWoyR
-         fwudG68UcuAOkBmmDVO88UIQkjTFfLX4Pl4wAwFQRFdCqOTvYC4+01UOLGWaZWmhJmu6
-         7u7+FlxqALjDUWl/b3UmqqPPIocuirB5qNeUzulqp0ebKZCqjMeNwC44pAd6G4gvIEtJ
-         XS7w==
+        bh=++fHmNDvbhoQgnwTB7QfOMvHXuPYbZS4H/nW6oBz3Wk=;
+        b=Y11r8XXfl69qMQC/CuJYSog9MLJSfX254FZkmgUl3ge9unv5iBs1JcU9p8Wka0mpQO
+         p4yIMxOeS7gsaD9hp70gMyrocxIFsM7oqXeMoyLQ323Wud9za+q9e+w517Dxu8PXLz0P
+         yaIPSz/dR6UH7eGPFhwW5dDHwAivNQZ5wKBCzOFEnPOlA1aOv9m96DwqSrSCHIzwMzHd
+         0RJhPY2T2lQRfT7ykvfJB7xKIVqJux5MggT0t3cr2nAVDy7rn/zG3wfPOaQQDQbnJGb/
+         8akDdtCAf1QBbyiJKdROvtdlNjdqo2iPT3YAmHkgxP5QHqkuuxEcwv/gGK03GrNNf/cb
+         0pmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=pmtSLsNOOW8G2LXBB5V8DeAGMiSYhaA498eQKjyFKpw=;
-        b=a84HziimHqfIG3s3A6I8EC+fobzSZfDFukb/07pOXDqtWL95+j+1/dBGdU5dwAKeSS
-         33HZgRqowDQM66w6jyXWlAh39y094IY957ttuCpCoTbK47XBl/i/Gbe2huXkzblCqtzg
-         rnzSwJYAHTYm+yppdJduPJgnOKBsYNQ5oCbnDs+TqmSw9CKA98IbgCQbxeu0l4fPjc4k
-         wQZLGVz8yg3UnQeMs9Y6+0ZJ16FeLtBJF08ZCMsM8eu1waHPHhEr9eV54n4B6lGYqimK
-         vwMunVjOw54TJW/c4Zj2KWabjloNSX5WHTo+s4/2Pr43LaRdn6DSdNSkNDq3A6ZHff/c
-         G4cg==
-X-Gm-Message-State: AOAM530wyTZklhIVFF2Nk49Cta5u46pbcRm6nBTrl+eckxyaKzw3f50A
-        vXeUJleucECTMRZsCjGHw4JLkbfitkvDVg==
-X-Google-Smtp-Source: ABdhPJxq8ZXkHOC+omnno1fArEUovyfUjjQ7kqzUerx7RXpV40J5Cc3yQWdITukX9RurU/9WHf2CPg==
-X-Received: by 2002:a17:902:525:b029:d1:920c:c200 with SMTP id 34-20020a1709020525b02900d1920cc200mr27827796plf.25.1602584811988;
-        Tue, 13 Oct 2020 03:26:51 -0700 (PDT)
+        bh=++fHmNDvbhoQgnwTB7QfOMvHXuPYbZS4H/nW6oBz3Wk=;
+        b=LXuez1DItfQaVFKufHauXNR15TYVToymQrE6dlv8Opi6almLRmJtLojOplEXxthR2o
+         4a3sLZsR9GM8meYJ8Tz05uOOwQoE5gTLV8lCkjlf2U/eP2wi/PJJv5QAAJhFFQV0zh7a
+         MQ4wvQmfCV6XM5sSqZYqwey59UMRgEyNbZb07J4XDonZWyWfp29QxXqJ41HP2TdKQpvP
+         e87A9dhOPXZ2CPj5VgJP3I/YBz/X+KXbxLklcmhpX4+9JztE4jwT0uXXGBepclEDQGWj
+         fDHJvcWU4vb3GqH8iqOOJkwl4HWgJdPf/OXOtk8V8eDTai7zovMwwgsCVZpqcewpaCxo
+         yH1w==
+X-Gm-Message-State: AOAM531csCTD3r4INCLlQd7suJWujGxY/hccir/YJ0RE1Aq1V4Ep+lwq
+        iASvckjEckwQqhoMlqktcXk=
+X-Google-Smtp-Source: ABdhPJzpY5A1vTYONKDW6PZp4H/AzsoaJO8qe6OR64fOXfgSUoGgu1FgiU31H36L0LHkFUuucpD78Q==
+X-Received: by 2002:a17:90a:ad98:: with SMTP id s24mr24943081pjq.199.1602584815084;
+        Tue, 13 Oct 2020 03:26:55 -0700 (PDT)
 Received: from hyd1358.caveonetworks.com ([1.6.215.26])
-        by smtp.googlemail.com with ESMTPSA id g4sm22034444pgj.15.2020.10.13.03.26.49
+        by smtp.googlemail.com with ESMTPSA id g4sm22034444pgj.15.2020.10.13.03.26.52
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 13 Oct 2020 03:26:51 -0700 (PDT)
+        Tue, 13 Oct 2020 03:26:54 -0700 (PDT)
 From:   sundeep.lkml@gmail.com
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     rsaladi2@marvell.com, sgoutham@marvell.com,
         Subbaraya Sundeep <sbhatta@marvell.com>
-Subject: [net-next PATCH 02/10] octeontx2-af: Manage new blocks in 98xx
-Date:   Tue, 13 Oct 2020 15:56:24 +0530
-Message-Id: <1602584792-22274-3-git-send-email-sundeep.lkml@gmail.com>
+Subject: [net-next PATCH 03/10] octeontx2-af: Initialize NIX1 block
+Date:   Tue, 13 Oct 2020 15:56:25 +0530
+Message-Id: <1602584792-22274-4-git-send-email-sundeep.lkml@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1602584792-22274-1-git-send-email-sundeep.lkml@gmail.com>
 References: <1602584792-22274-1-git-send-email-sundeep.lkml@gmail.com>
@@ -62,288 +62,320 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Rakesh Babu <rsaladi2@marvell.com>
 
-AF manages the tasks of allocating, freeing
-LFs from RVU blocks to PF and VFs. With new
-NIX1 and CPT1 blocks in 98xx, this patch
-adds support for handling new blocks too.
+This patch modifies NIX functions to operate
+with nix_hw context so that existing functions
+can be used for both NIX0 and NIX1 blocks. And
+the NIX blocks present in the system are initialized
+during driver init and freed during exit.
 
-Co-developed-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
 Signed-off-by: Rakesh Babu <rsaladi2@marvell.com>
+Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c    | 142 ++++++++++++++-------
- .../net/ethernet/marvell/octeontx2/af/rvu_reg.h    |   8 +-
- .../net/ethernet/marvell/octeontx2/af/rvu_struct.h |   4 +-
- 3 files changed, 105 insertions(+), 49 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c    |   2 +
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |   9 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    | 128 +++++++++++++++------
+ 3 files changed, 104 insertions(+), 35 deletions(-)
 
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-index ead7711..2f59983 100644
+index 2f59983..79b9553 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -210,6 +210,9 @@ int rvu_get_lf(struct rvu *rvu, struct rvu_block *block, u16 pcifunc, u16 slot)
-  * multiple blocks of same type.
-  *
-  * @pcifunc has to be zero when no LF is yet attached.
-+ *
-+ * For a pcifunc if LFs are attached from multiple blocks of same type, then
-+ * return blkaddr of first encountered block.
-  */
- int rvu_get_blkaddr(struct rvu *rvu, int blktype, u16 pcifunc)
- {
-@@ -258,20 +261,39 @@ int rvu_get_blkaddr(struct rvu *rvu, int blktype, u16 pcifunc)
- 		devnum = rvu_get_pf(pcifunc);
- 	}
+@@ -66,6 +66,7 @@ static void rvu_setup_hw_capabilities(struct rvu *rvu)
+ 	hw->cap.nix_shaping = true;
+ 	hw->cap.nix_tx_link_bp = true;
+ 	hw->cap.nix_rx_multicast = true;
++	hw->rvu = rvu;
  
--	/* Check if the 'pcifunc' has a NIX LF from 'BLKADDR_NIX0' */
-+	/* Check if the 'pcifunc' has a NIX LF from 'BLKADDR_NIX0' or
-+	 * 'BLKADDR_NIX1'.
-+	 */
- 	if (blktype == BLKTYPE_NIX) {
--		reg = is_pf ? RVU_PRIV_PFX_NIX0_CFG : RVU_PRIV_HWVFX_NIX0_CFG;
-+		reg = is_pf ? RVU_PRIV_PFX_NIXX_CFG(0) :
-+			RVU_PRIV_HWVFX_NIXX_CFG(0);
- 		cfg = rvu_read64(rvu, BLKADDR_RVUM, reg | (devnum << 16));
--		if (cfg)
-+		if (cfg) {
- 			blkaddr = BLKADDR_NIX0;
-+			goto exit;
-+		}
-+
-+		reg = is_pf ? RVU_PRIV_PFX_NIXX_CFG(1) :
-+			RVU_PRIV_HWVFX_NIXX_CFG(1);
-+		cfg = rvu_read64(rvu, BLKADDR_RVUM, reg | (devnum << 16));
-+		if (cfg)
-+			blkaddr = BLKADDR_NIX1;
- 	}
- 
--	/* Check if the 'pcifunc' has a CPT LF from 'BLKADDR_CPT0' */
- 	if (blktype == BLKTYPE_CPT) {
--		reg = is_pf ? RVU_PRIV_PFX_CPT0_CFG : RVU_PRIV_HWVFX_CPT0_CFG;
-+		reg = is_pf ? RVU_PRIV_PFX_CPTX_CFG(0) :
-+			RVU_PRIV_HWVFX_CPTX_CFG(0);
- 		cfg = rvu_read64(rvu, BLKADDR_RVUM, reg | (devnum << 16));
--		if (cfg)
-+		if (cfg) {
- 			blkaddr = BLKADDR_CPT0;
-+			goto exit;
-+		}
-+
-+		reg = is_pf ? RVU_PRIV_PFX_CPTX_CFG(1) :
-+			RVU_PRIV_HWVFX_CPTX_CFG(1);
-+		cfg = rvu_read64(rvu, BLKADDR_RVUM, reg | (devnum << 16));
-+		if (cfg)
-+			blkaddr = BLKADDR_CPT1;
- 	}
- 
- exit:
-@@ -471,12 +493,16 @@ static void rvu_reset_all_blocks(struct rvu *rvu)
- 	/* Do a HW reset of all RVU blocks */
- 	rvu_block_reset(rvu, BLKADDR_NPA, NPA_AF_BLK_RST);
- 	rvu_block_reset(rvu, BLKADDR_NIX0, NIX_AF_BLK_RST);
-+	rvu_block_reset(rvu, BLKADDR_NIX1, NIX_AF_BLK_RST);
- 	rvu_block_reset(rvu, BLKADDR_NPC, NPC_AF_BLK_RST);
- 	rvu_block_reset(rvu, BLKADDR_SSO, SSO_AF_BLK_RST);
- 	rvu_block_reset(rvu, BLKADDR_TIM, TIM_AF_BLK_RST);
- 	rvu_block_reset(rvu, BLKADDR_CPT0, CPT_AF_BLK_RST);
-+	rvu_block_reset(rvu, BLKADDR_CPT1, CPT_AF_BLK_RST);
- 	rvu_block_reset(rvu, BLKADDR_NDC_NIX0_RX, NDC_AF_BLK_RST);
- 	rvu_block_reset(rvu, BLKADDR_NDC_NIX0_TX, NDC_AF_BLK_RST);
-+	rvu_block_reset(rvu, BLKADDR_NDC_NIX1_RX, NDC_AF_BLK_RST);
-+	rvu_block_reset(rvu, BLKADDR_NDC_NIX1_TX, NDC_AF_BLK_RST);
- 	rvu_block_reset(rvu, BLKADDR_NDC_NPA0, NDC_AF_BLK_RST);
+ 	if (is_rvu_96xx_B0(rvu)) {
+ 		hw->cap.nix_fixed_txschq_mapping = true;
+@@ -812,6 +813,7 @@ static int rvu_setup_nix_hw_resource(struct rvu *rvu, int blkaddr)
+ 	block->msixcfg_reg = NIX_PRIV_LFX_INT_CFG;
+ 	block->lfreset_reg = NIX_AF_LF_RST;
+ 	sprintf(block->name, "NIX%d", blkid);
++	rvu->nix_blkaddr[blkid] = blkaddr;
+ 	return rvu_alloc_bitmap(&block->lf);
  }
  
-@@ -762,6 +788,61 @@ static void rvu_fwdata_exit(struct rvu *rvu)
- 		iounmap(rvu->fwdata);
- }
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+index 0cb5093..a419075 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+@@ -28,6 +28,7 @@
+ #define	PCI_MBOX_BAR_NUM			4
  
-+static int rvu_setup_nix_hw_resource(struct rvu *rvu, int blkaddr)
-+{
-+	struct rvu_hwinfo *hw = rvu->hw;
-+	struct rvu_block *block;
-+	int blkid;
-+	u64 cfg;
-+
-+	/* Init NIX LF's bitmap */
-+	block = &hw->block[blkaddr];
-+	if (!block->implemented)
-+		return 0;
-+	blkid = (blkaddr == BLKADDR_NIX0) ? 0 : 1;
-+	cfg = rvu_read64(rvu, blkaddr, NIX_AF_CONST2);
-+	block->lf.max = cfg & 0xFFF;
-+	block->addr = blkaddr;
-+	block->type = BLKTYPE_NIX;
-+	block->lfshift = 8;
-+	block->lookup_reg = NIX_AF_RVU_LF_CFG_DEBUG;
-+	block->pf_lfcnt_reg = RVU_PRIV_PFX_NIXX_CFG(blkid);
-+	block->vf_lfcnt_reg = RVU_PRIV_HWVFX_NIXX_CFG(blkid);
-+	block->lfcfg_reg = NIX_PRIV_LFX_CFG;
-+	block->msixcfg_reg = NIX_PRIV_LFX_INT_CFG;
-+	block->lfreset_reg = NIX_AF_LF_RST;
-+	sprintf(block->name, "NIX%d", blkid);
-+	return rvu_alloc_bitmap(&block->lf);
-+}
-+
-+static int rvu_setup_cpt_hw_resource(struct rvu *rvu, int blkaddr)
-+{
-+	struct rvu_hwinfo *hw = rvu->hw;
-+	struct rvu_block *block;
-+	int blkid;
-+	u64 cfg;
-+
-+	/* Init CPT LF's bitmap */
-+	block = &hw->block[blkaddr];
-+	if (!block->implemented)
-+		return 0;
-+	blkid = (blkaddr == BLKADDR_CPT0) ? 0 : 1;
-+	cfg = rvu_read64(rvu, blkaddr, CPT_AF_CONSTANTS0);
-+	block->lf.max = cfg & 0xFF;
-+	block->addr = blkaddr;
-+	block->type = BLKTYPE_CPT;
-+	block->multislot = true;
-+	block->lfshift = 3;
-+	block->lookup_reg = CPT_AF_RVU_LF_CFG_DEBUG;
-+	block->pf_lfcnt_reg = RVU_PRIV_PFX_CPTX_CFG(blkid);
-+	block->vf_lfcnt_reg = RVU_PRIV_HWVFX_CPTX_CFG(blkid);
-+	block->lfcfg_reg = CPT_PRIV_LFX_CFG;
-+	block->msixcfg_reg = CPT_PRIV_LFX_INT_CFG;
-+	block->lfreset_reg = CPT_AF_LF_RST;
-+	sprintf(block->name, "CPT%d", blkid);
-+	return rvu_alloc_bitmap(&block->lf);
-+}
-+
- static int rvu_setup_hw_resources(struct rvu *rvu)
- {
- 	struct rvu_hwinfo *hw = rvu->hw;
-@@ -796,27 +877,13 @@ static int rvu_setup_hw_resources(struct rvu *rvu)
- 		return err;
+ #define NAME_SIZE				32
++#define MAX_NIX_BLKS				2
  
- nix:
--	/* Init NIX LF's bitmap */
--	block = &hw->block[BLKADDR_NIX0];
--	if (!block->implemented)
--		goto sso;
--	cfg = rvu_read64(rvu, BLKADDR_NIX0, NIX_AF_CONST2);
--	block->lf.max = cfg & 0xFFF;
--	block->addr = BLKADDR_NIX0;
--	block->type = BLKTYPE_NIX;
--	block->lfshift = 8;
--	block->lookup_reg = NIX_AF_RVU_LF_CFG_DEBUG;
--	block->pf_lfcnt_reg = RVU_PRIV_PFX_NIX0_CFG;
--	block->vf_lfcnt_reg = RVU_PRIV_HWVFX_NIX0_CFG;
--	block->lfcfg_reg = NIX_PRIV_LFX_CFG;
--	block->msixcfg_reg = NIX_PRIV_LFX_INT_CFG;
--	block->lfreset_reg = NIX_AF_LF_RST;
--	sprintf(block->name, "NIX");
--	err = rvu_alloc_bitmap(&block->lf);
-+	err = rvu_setup_nix_hw_resource(rvu, BLKADDR_NIX0);
-+	if (err)
-+		return err;
-+	err = rvu_setup_nix_hw_resource(rvu, BLKADDR_NIX1);
- 	if (err)
- 		return err;
- 
--sso:
- 	/* Init SSO group's bitmap */
- 	block = &hw->block[BLKADDR_SSO];
- 	if (!block->implemented)
-@@ -882,28 +949,13 @@ static int rvu_setup_hw_resources(struct rvu *rvu)
- 		return err;
- 
- cpt:
--	/* Init CPT LF's bitmap */
--	block = &hw->block[BLKADDR_CPT0];
--	if (!block->implemented)
--		goto init;
--	cfg = rvu_read64(rvu, BLKADDR_CPT0, CPT_AF_CONSTANTS0);
--	block->lf.max = cfg & 0xFF;
--	block->addr = BLKADDR_CPT0;
--	block->type = BLKTYPE_CPT;
--	block->multislot = true;
--	block->lfshift = 3;
--	block->lookup_reg = CPT_AF_RVU_LF_CFG_DEBUG;
--	block->pf_lfcnt_reg = RVU_PRIV_PFX_CPT0_CFG;
--	block->vf_lfcnt_reg = RVU_PRIV_HWVFX_CPT0_CFG;
--	block->lfcfg_reg = CPT_PRIV_LFX_CFG;
--	block->msixcfg_reg = CPT_PRIV_LFX_INT_CFG;
--	block->lfreset_reg = CPT_AF_LF_RST;
--	sprintf(block->name, "CPT");
--	err = rvu_alloc_bitmap(&block->lf);
-+	err = rvu_setup_cpt_hw_resource(rvu, BLKADDR_CPT0);
-+	if (err)
-+		return err;
-+	err = rvu_setup_cpt_hw_resource(rvu, BLKADDR_CPT1);
- 	if (err)
- 		return err;
- 
--init:
- 	/* Allocate memory for PFVF data */
- 	rvu->pf = devm_kcalloc(rvu->dev, hw->total_pfs,
- 			       sizeof(struct rvu_pfvf), GFP_KERNEL);
-@@ -1970,7 +2022,7 @@ static void rvu_blklf_teardown(struct rvu *rvu, u16 pcifunc, u8 blkaddr)
- 			continue;
- 
- 		/* Cleanup LF and reset it */
--		if (block->addr == BLKADDR_NIX0)
-+		if (block->addr == BLKADDR_NIX0 || block->addr == BLKADDR_NIX1)
- 			rvu_nix_lf_teardown(rvu, pcifunc, block->addr, lf);
- 		else if (block->addr == BLKADDR_NPA)
- 			rvu_npa_lf_teardown(rvu, pcifunc, lf);
-@@ -1992,7 +2044,9 @@ static void __rvu_flr_handler(struct rvu *rvu, u16 pcifunc)
- 	 * 3. Cleanup pools (NPA)
- 	 */
- 	rvu_blklf_teardown(rvu, pcifunc, BLKADDR_NIX0);
-+	rvu_blklf_teardown(rvu, pcifunc, BLKADDR_NIX1);
- 	rvu_blklf_teardown(rvu, pcifunc, BLKADDR_CPT0);
-+	rvu_blklf_teardown(rvu, pcifunc, BLKADDR_CPT1);
- 	rvu_blklf_teardown(rvu, pcifunc, BLKADDR_TIM);
- 	rvu_blklf_teardown(rvu, pcifunc, BLKADDR_SSOW);
- 	rvu_blklf_teardown(rvu, pcifunc, BLKADDR_SSO);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-index 7ca599b..b929f8f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
-@@ -54,20 +54,20 @@
- #define RVU_PRIV_PFX_MSIX_CFG(a)            (0x8000110 | (a) << 16)
- #define RVU_PRIV_PFX_ID_CFG(a)              (0x8000120 | (a) << 16)
- #define RVU_PRIV_PFX_INT_CFG(a)             (0x8000200 | (a) << 16)
--#define RVU_PRIV_PFX_NIX0_CFG               (0x8000300)
-+#define RVU_PRIV_PFX_NIXX_CFG(a)            (0x8000300 | (a) << 3)
- #define RVU_PRIV_PFX_NPA_CFG		    (0x8000310)
- #define RVU_PRIV_PFX_SSO_CFG                (0x8000320)
- #define RVU_PRIV_PFX_SSOW_CFG               (0x8000330)
- #define RVU_PRIV_PFX_TIM_CFG                (0x8000340)
--#define RVU_PRIV_PFX_CPT0_CFG               (0x8000350)
-+#define RVU_PRIV_PFX_CPTX_CFG(a)            (0x8000350 | (a) << 3)
- #define RVU_PRIV_BLOCK_TYPEX_REV(a)         (0x8000400 | (a) << 3)
- #define RVU_PRIV_HWVFX_INT_CFG(a)           (0x8001280 | (a) << 16)
--#define RVU_PRIV_HWVFX_NIX0_CFG             (0x8001300)
-+#define RVU_PRIV_HWVFX_NIXX_CFG(a)          (0x8001300 | (a) << 3)
- #define RVU_PRIV_HWVFX_NPA_CFG              (0x8001310)
- #define RVU_PRIV_HWVFX_SSO_CFG              (0x8001320)
- #define RVU_PRIV_HWVFX_SSOW_CFG             (0x8001330)
- #define RVU_PRIV_HWVFX_TIM_CFG              (0x8001340)
--#define RVU_PRIV_HWVFX_CPT0_CFG             (0x8001350)
-+#define RVU_PRIV_HWVFX_CPTX_CFG(a)          (0x8001350 | (a) << 3)
- 
- /* RVU PF registers */
- #define	RVU_PF_VFX_PFVF_MBOX0		    (0x00000)
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h
-index a3ecb5d..6336de3 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_struct.h
-@@ -31,7 +31,9 @@ enum rvu_block_addr_e {
- 	BLKADDR_NDC_NIX0_RX	= 0xcULL,
- 	BLKADDR_NDC_NIX0_TX	= 0xdULL,
- 	BLKADDR_NDC_NPA0	= 0xeULL,
--	BLK_COUNT		= 0xfULL,
-+	BLKADDR_NDC_NIX1_RX	= 0x10ULL,
-+	BLKADDR_NDC_NIX1_TX	= 0x11ULL,
-+	BLK_COUNT		= 0x12ULL,
+ /* PF_FUNC */
+ #define RVU_PFVF_PF_SHIFT	10
+@@ -220,6 +221,8 @@ struct nix_lso {
  };
  
- /* RVU Block Type Enumeration */
+ struct nix_hw {
++	int blkaddr;
++	struct rvu *rvu;
+ 	struct nix_txsch txsch[NIX_TXSCH_LVL_CNT]; /* Tx schedulers */
+ 	struct nix_mcast mcast;
+ 	struct nix_flowkey flowkey;
+@@ -255,7 +258,8 @@ struct rvu_hwinfo {
+ 
+ 	struct hw_cap    cap;
+ 	struct rvu_block block[BLK_COUNT]; /* Block info */
+-	struct nix_hw    *nix0;
++	struct nix_hw    *nix;
++	struct rvu	 *rvu;
+ 	struct npc_pkind pkind;
+ 	struct npc_mcam  mcam;
+ };
+@@ -316,6 +320,7 @@ struct rvu {
+ 	struct rvu_pfvf		*hwvf;
+ 	struct mutex		rsrc_lock; /* Serialize resource alloc/free */
+ 	int			vfs; /* Number of VFs attached to RVU */
++	int			nix_blkaddr[MAX_NIX_BLKS];
+ 
+ 	/* Mbox */
+ 	struct mbox_wq_info	afpf_wq_info;
+@@ -487,6 +492,8 @@ int rvu_get_nixlf_count(struct rvu *rvu);
+ void rvu_nix_lf_teardown(struct rvu *rvu, u16 pcifunc, int blkaddr, int npalf);
+ int nix_get_nixlf(struct rvu *rvu, u16 pcifunc, int *nixlf, int *nix_blkaddr);
+ int nix_update_bcast_mce_list(struct rvu *rvu, u16 pcifunc, bool add);
++struct nix_hw *get_nix_hw(struct rvu_hwinfo *hw, int blkaddr);
++int rvu_get_next_nix_blkaddr(struct rvu *rvu, int blkaddr);
+ 
+ /* NPC APIs */
+ int rvu_npc_init(struct rvu *rvu);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+index 21a89dd..096c2e0 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_nix.c
+@@ -68,6 +68,23 @@ struct mce {
+ 	u16			pcifunc;
+ };
+ 
++int rvu_get_next_nix_blkaddr(struct rvu *rvu, int blkaddr)
++{
++	int i = 0;
++
++	/*If blkaddr is 0, return the first nix block address*/
++	if (blkaddr == 0)
++		return rvu->nix_blkaddr[blkaddr];
++
++	while (i + 1 < MAX_NIX_BLKS) {
++		if (rvu->nix_blkaddr[i] == blkaddr)
++			return rvu->nix_blkaddr[i + 1];
++		i++;
++	}
++
++	return 0;
++}
++
+ bool is_nixlf_attached(struct rvu *rvu, u16 pcifunc)
+ {
+ 	struct rvu_pfvf *pfvf = rvu_get_pfvf(rvu, pcifunc);
+@@ -81,14 +98,16 @@ bool is_nixlf_attached(struct rvu *rvu, u16 pcifunc)
+ 
+ int rvu_get_nixlf_count(struct rvu *rvu)
+ {
++	int blkaddr = 0, max = 0;
+ 	struct rvu_block *block;
+-	int blkaddr;
+ 
+-	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
+-	if (blkaddr < 0)
+-		return 0;
+-	block = &rvu->hw->block[blkaddr];
+-	return block->lf.max;
++	blkaddr = rvu_get_next_nix_blkaddr(rvu, blkaddr);
++	while (blkaddr) {
++		block = &rvu->hw->block[blkaddr];
++		max += block->lf.max;
++		blkaddr = rvu_get_next_nix_blkaddr(rvu, blkaddr);
++	}
++	return max;
+ }
+ 
+ int nix_get_nixlf(struct rvu *rvu, u16 pcifunc, int *nixlf, int *nix_blkaddr)
+@@ -130,11 +149,18 @@ static u16 nix_alloc_mce_list(struct nix_mcast *mcast, int count)
+ 	return idx;
+ }
+ 
+-static inline struct nix_hw *get_nix_hw(struct rvu_hwinfo *hw, int blkaddr)
++struct nix_hw *get_nix_hw(struct rvu_hwinfo *hw, int blkaddr)
+ {
+-	if (blkaddr == BLKADDR_NIX0 && hw->nix0)
+-		return hw->nix0;
++	int nix_blkaddr = 0, i = 0;
++	struct rvu *rvu = hw->rvu;
+ 
++	nix_blkaddr = rvu_get_next_nix_blkaddr(rvu, nix_blkaddr);
++	while (nix_blkaddr) {
++		if (blkaddr == nix_blkaddr && hw->nix)
++			return &hw->nix[i];
++		nix_blkaddr = rvu_get_next_nix_blkaddr(rvu, nix_blkaddr);
++		i++;
++	}
+ 	return NULL;
+ }
+ 
+@@ -622,6 +648,7 @@ static int rvu_nix_aq_enq_inst(struct rvu *rvu, struct nix_aq_enq_req *req,
+ 	struct rvu_block *block;
+ 	struct admin_queue *aq;
+ 	struct rvu_pfvf *pfvf;
++	struct nix_hw *nix_hw;
+ 	void *ctx, *mask;
+ 	bool ena;
+ 	u64 cfg;
+@@ -637,6 +664,10 @@ static int rvu_nix_aq_enq_inst(struct rvu *rvu, struct nix_aq_enq_req *req,
+ 		return NIX_AF_ERR_AQ_ENQUEUE;
+ 	}
+ 
++	nix_hw =  get_nix_hw(rvu->hw, blkaddr);
++	if (!nix_hw)
++		return -EINVAL;
++
+ 	pfvf = rvu_get_pfvf(rvu, pcifunc);
+ 	nixlf = rvu_get_lf(rvu, block, pcifunc, 0);
+ 
+@@ -669,8 +700,9 @@ static int rvu_nix_aq_enq_inst(struct rvu *rvu, struct nix_aq_enq_req *req,
+ 		break;
+ 	case NIX_AQ_CTYPE_MCE:
+ 		cfg = rvu_read64(rvu, blkaddr, NIX_AF_RX_MCAST_CFG);
++
+ 		/* Check if index exceeds MCE list length */
+-		if (!hw->nix0->mcast.mce_ctx ||
++		if (!nix_hw->mcast.mce_ctx ||
+ 		    (req->qidx >= (256UL << (cfg & 0xF))))
+ 			rc = NIX_AF_ERR_AQ_ENQUEUE;
+ 
+@@ -3109,17 +3141,15 @@ static int nix_aq_init(struct rvu *rvu, struct rvu_block *block)
+ 	return 0;
+ }
+ 
+-int rvu_nix_init(struct rvu *rvu)
++static int rvu_nix_block_init(struct rvu *rvu, struct nix_hw *nix_hw)
+ {
+ 	const struct npc_lt_def_cfg *ltdefs;
+ 	struct rvu_hwinfo *hw = rvu->hw;
++	int blkaddr = nix_hw->blkaddr;
+ 	struct rvu_block *block;
+-	int blkaddr, err;
++	int err;
+ 	u64 cfg;
+ 
+-	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
+-	if (blkaddr < 0)
+-		return 0;
+ 	block = &hw->block[blkaddr];
+ 
+ 	if (is_rvu_96xx_B0(rvu)) {
+@@ -3164,26 +3194,21 @@ int rvu_nix_init(struct rvu *rvu)
+ 	/* Restore CINT timer delay to HW reset values */
+ 	rvu_write64(rvu, blkaddr, NIX_AF_CINT_DELAY, 0x0ULL);
+ 
+-	if (blkaddr == BLKADDR_NIX0) {
+-		hw->nix0 = devm_kzalloc(rvu->dev,
+-					sizeof(struct nix_hw), GFP_KERNEL);
+-		if (!hw->nix0)
+-			return -ENOMEM;
+-
+-		err = nix_setup_txschq(rvu, hw->nix0, blkaddr);
++	if (is_block_implemented(hw, blkaddr)) {
++		err = nix_setup_txschq(rvu, nix_hw, blkaddr);
+ 		if (err)
+ 			return err;
+ 
+-		err = nix_af_mark_format_setup(rvu, hw->nix0, blkaddr);
++		err = nix_af_mark_format_setup(rvu, nix_hw, blkaddr);
+ 		if (err)
+ 			return err;
+ 
+-		err = nix_setup_mcast(rvu, hw->nix0, blkaddr);
++		err = nix_setup_mcast(rvu, nix_hw, blkaddr);
+ 		if (err)
+ 			return err;
+ 
+ 		/* Configure segmentation offload formats */
+-		nix_setup_lso(rvu, hw->nix0, blkaddr);
++		nix_setup_lso(rvu, nix_hw, blkaddr);
+ 
+ 		/* Config Outer/Inner L2, IP, TCP, UDP and SCTP NPC layer info.
+ 		 * This helps HW protocol checker to identify headers
+@@ -3236,23 +3261,44 @@ int rvu_nix_init(struct rvu *rvu)
+ 	return 0;
+ }
+ 
+-void rvu_nix_freemem(struct rvu *rvu)
++int rvu_nix_init(struct rvu *rvu)
+ {
+ 	struct rvu_hwinfo *hw = rvu->hw;
+-	struct rvu_block *block;
++	struct nix_hw *nix_hw;
++	int blkaddr = 0, err;
++	int i = 0;
++
++	hw->nix = devm_kcalloc(rvu->dev, MAX_NIX_BLKS, sizeof(struct nix_hw),
++			       GFP_KERNEL);
++	if (!hw->nix)
++		return -ENOMEM;
++
++	blkaddr = rvu_get_next_nix_blkaddr(rvu, blkaddr);
++	while (blkaddr) {
++		nix_hw = &hw->nix[i];
++		nix_hw->rvu = rvu;
++		nix_hw->blkaddr = blkaddr;
++		err = rvu_nix_block_init(rvu, nix_hw);
++		if (err)
++			return err;
++		blkaddr = rvu_get_next_nix_blkaddr(rvu, blkaddr);
++		i++;
++	}
++
++	return 0;
++}
++
++static void rvu_nix_block_freemem(struct rvu *rvu, int blkaddr,
++				  struct rvu_block *block)
++{
+ 	struct nix_txsch *txsch;
+ 	struct nix_mcast *mcast;
+ 	struct nix_hw *nix_hw;
+-	int blkaddr, lvl;
++	int lvl;
+ 
+-	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_NIX, 0);
+-	if (blkaddr < 0)
+-		return;
+-
+-	block = &hw->block[blkaddr];
+ 	rvu_aq_free(rvu, block->aq);
+ 
+-	if (blkaddr == BLKADDR_NIX0) {
++	if (is_block_implemented(rvu->hw, blkaddr)) {
+ 		nix_hw = get_nix_hw(rvu->hw, blkaddr);
+ 		if (!nix_hw)
+ 			return;
+@@ -3269,6 +3315,20 @@ void rvu_nix_freemem(struct rvu *rvu)
+ 	}
+ }
+ 
++void rvu_nix_freemem(struct rvu *rvu)
++{
++	struct rvu_hwinfo *hw = rvu->hw;
++	struct rvu_block *block;
++	int blkaddr = 0;
++
++	blkaddr = rvu_get_next_nix_blkaddr(rvu, blkaddr);
++	while (blkaddr) {
++		block = &hw->block[blkaddr];
++		rvu_nix_block_freemem(rvu, blkaddr, block);
++		blkaddr = rvu_get_next_nix_blkaddr(rvu, blkaddr);
++	}
++}
++
+ int rvu_mbox_handler_nix_lf_start_rx(struct rvu *rvu, struct msg_req *req,
+ 				     struct msg_rsp *rsp)
+ {
 -- 
 2.7.4
 
