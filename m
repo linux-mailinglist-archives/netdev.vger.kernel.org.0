@@ -2,95 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D95E28D30B
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 19:20:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A3C328D39D
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 20:24:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388367AbgJMRUh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 13:20:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34292 "EHLO
+        id S1728731AbgJMSYg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 14:24:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725970AbgJMRUh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 13:20:37 -0400
-Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com [IPv6:2607:f8b0:4864:20::e2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3CF9C0613D0
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 10:20:36 -0700 (PDT)
-Received: by mail-vs1-xe2b.google.com with SMTP id f8so488446vsl.3
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 10:20:36 -0700 (PDT)
+        with ESMTP id S1729007AbgJMSYf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 14:24:35 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B85C0613D0
+        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 11:24:35 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id q202so560912iod.9
+        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 11:24:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=q881i9ci2QuprURu2T3tf48Pqp0gc9MKpu5hxYilB+g=;
-        b=eFQzsiuCFyYGjk1JsFCyldI6bQWERpHPtyXAng9JAdyEsVnbOu3O82ISh/bo44+iZg
-         AwEiOw2ESU3v1QP/LeAscRyl9EMM3JuI5/qw2adwBkRw2l0c7iMYsOJH5Tav7fNdKjLi
-         Q00NFqPf88MLgULgyRRf76fl5ve1dSmf55z/URd+YXEm9/TeCQ2sbcYXxK4Gk2be/ewy
-         5NEjj3+Kumt+8xBoXVwboNjqAWkqN5fbm3fDVqBssOwKBcCD2x7XIzM1zIK3Dx4k2eWJ
-         hrsj6rgYMYNCciUXEoZnxYKQnTfvThYWppuPJxaDUjjH3Iww2dRPwm5nigHyAeJqE8i+
-         e+kQ==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=b3UOT0JizEwGIchXB0/Zk5FvRtFOlTNreHoHzeOyCsk=;
+        b=I+5f7ZTb4yaYaTKRJRGbE8iwkW6NqPVqEmGsQ2bLYrbSp+H3ENiKrf19kycaT1kPwX
+         wYu24VW1eqm8KMTGXz1Vg19iMcurT+2Dp6HfL3pFU/nP+jPEocCPju/HfJ1sAhkvzOnF
+         YcXzD9csH9v8qyA9N8xGTI0HWaBxcH3f6kjRwCo7SaCVOQoiTlRSh/Uu9ji0xWouj0sO
+         7mBTqayqMPBgPD0JiDwqCyvis16mhgmoD35xt3d+bR9u4CjZvXXMSlv63Sm8a7WuZV/6
+         lukY5jwhItYlaT1hzI+v+MTO2ejtG5CTdAtf+bR6C7gNrAaQrlYFkYPHrZSfSL4VAGqy
+         qgAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=q881i9ci2QuprURu2T3tf48Pqp0gc9MKpu5hxYilB+g=;
-        b=U1sVuEpsVd/46KKOQ/EQMHPdeV3wnv26FVxzYZeuMbattMkT+I78S0j+dwdHxx41Ef
-         2DM6gvZt3RIDnH4HsSpwRb+P0d8O+Q3f+hHYEPxJVWQvona7iLp5GIc2VtHMhnPvEs44
-         /8SUkgw38pCoZGLcA665teHRLNKyPVytqe98GC4rC3OZ2D8rxZOM4vLAyk8QtmQN2rO2
-         nBqTU+aHypj7f+JeR8z03+PxRF6/78gQS/we7EorqA1Yw8ZO0bCeoyK4KyAa0FBGVbAX
-         7oOSm9xL2MZVBTqOcvDvFW3CpS5158ROfRJ4XVavzWPeHdZ7tA8W84ISR1wP7JKXcz4v
-         Irrw==
-X-Gm-Message-State: AOAM531fGDppEjldTZpuG3I6ruvbkaZfH3pssxHHaixvD4wxFNnpJ6yE
-        jyHNCkBLPliuYs2a0447bUJM7TUcCVA=
-X-Google-Smtp-Source: ABdhPJzSuJOGerfDRMbBEN+IAA2fuBXyFSIPC9FTIbL9/jLuaDYQgq/WR9hl3L1mqkkAP2pe6b319A==
-X-Received: by 2002:a67:68d1:: with SMTP id d200mr696696vsc.60.1602609635723;
-        Tue, 13 Oct 2020 10:20:35 -0700 (PDT)
-Received: from mail-vs1-f52.google.com (mail-vs1-f52.google.com. [209.85.217.52])
-        by smtp.gmail.com with ESMTPSA id h10sm75175vke.46.2020.10.13.10.20.33
-        for <netdev@vger.kernel.org>
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=b3UOT0JizEwGIchXB0/Zk5FvRtFOlTNreHoHzeOyCsk=;
+        b=EHtFPv/XI737mt4BYfeOJRq18b8F+uR/R9UeVgAZ9MmcFQFU5o4gPAekZ8b27UB4DQ
+         6rdhb229ysTTHSoI8paagez9CaFmctr4lmxDnHKgQ1AEKlE2ue+vYVRkFhoPdW9LqQ95
+         ib6FtPh4GWnb1OnlJSmW2nFDQKTPK0LY8XZoLPpZo/ZdagS+nYsf0lEOn4bYoREV8Y0/
+         LjwLc40S86EgQzJ5o6chxE0L/ntUtBHtBmjBWfeld2AttEsX46magZC0Vw7gUkrjrcNg
+         Yf8H5kMrQ1k5PR+z1YBZ6fUd2ssGdcHKXoiB62BYqvBvB50idkIYYRKuuowmIWuOVkq+
+         z1ZQ==
+X-Gm-Message-State: AOAM532wTODAlFvLGODOUG8gGSH70vVZGRCS6NPLRsZpyHXipSP2ZRqx
+        tHdj+hNkif7QPS9RAEzrlwhmJyr2Gy8=
+X-Google-Smtp-Source: ABdhPJxrUATGMOVcPjPpcUbw4po/ag5eYAK+28ocWlsO1fJ9pLju1kBpMfteRGDa9Wn+kq5+Vi4Whg==
+X-Received: by 2002:a5d:9842:: with SMTP id p2mr101110ios.113.1602613474777;
+        Tue, 13 Oct 2020 11:24:34 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:914:29ce:4c18:5cb6])
+        by smtp.googlemail.com with ESMTPSA id s17sm646782ioa.38.2020.10.13.11.24.33
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 13 Oct 2020 10:20:34 -0700 (PDT)
-Received: by mail-vs1-f52.google.com with SMTP id f8so488356vsl.3
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 10:20:33 -0700 (PDT)
-X-Received: by 2002:a67:fb96:: with SMTP id n22mr681911vsr.13.1602609633308;
- Tue, 13 Oct 2020 10:20:33 -0700 (PDT)
+        Tue, 13 Oct 2020 11:24:33 -0700 (PDT)
+Subject: Re: [iproute2-next v2 1/1] devlink: display elapsed time during flash
+ update
+To:     "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shannon Nelson <snelson@pensando.io>
+References: <20200930234012.137020-1-jacob.e.keller@intel.com>
+ <5ebd3324-1acc-8d9b-2f45-7c4878ad7acc@gmail.com>
+ <e039e78a96c7442aa542f4bac60eb186@intel.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <85a4a31a-7af5-ebae-462b-15363ec6c4df@gmail.com>
+Date:   Tue, 13 Oct 2020 12:24:32 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.1
 MIME-Version: 1.0
-References: <cover.1602574012.git.lucien.xin@gmail.com> <fae9c57767447c4fd97476807b9e029e8fda607a.1602574012.git.lucien.xin@gmail.com>
- <c01a9a09096cb1b292d461aa5a1e72aae2ca942a.1602574012.git.lucien.xin@gmail.com>
-In-Reply-To: <c01a9a09096cb1b292d461aa5a1e72aae2ca942a.1602574012.git.lucien.xin@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 13 Oct 2020 13:19:56 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSc1FRRZS8Yt0U7bt6M9Qjvi+xrQTefvMuOxF6=FL3dPPw@mail.gmail.com>
-Message-ID: <CA+FuTSc1FRRZS8Yt0U7bt6M9Qjvi+xrQTefvMuOxF6=FL3dPPw@mail.gmail.com>
-Subject: Re: [PATCHv3 net-next 02/16] udp6: move the mss check after udp gso
- tunnel processing
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Michael Tuexen <tuexen@fh-muenster.de>,
-        David Miller <davem@davemloft.net>, gnault@redhat.com,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <e039e78a96c7442aa542f4bac60eb186@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 13, 2020 at 3:28 AM Xin Long <lucien.xin@gmail.com> wrote:
->
-> For some protocol's gso, like SCTP, it's using GSO_BY_FRAGS for
-> gso_size. When using UDP to encapsulate its packet, it will
-> return error in udp6_ufo_fragment() as skb->len < gso_size,
-> and it will never go to the gso tunnel processing.
->
-> So we should move this check after udp gso tunnel processing,
-> the same as udp4_ufo_fragment() does.
->
-> v1->v2:
->   - no change.
-> v2->v3:
->   - not do any cleanup.
->
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+On 10/12/20 11:30 AM, Keller, Jacob E wrote:
+> Ah. Good point. This should use CLOCK_MONOTONIC instead, right?
 
-Acked-by: Willem de Bruijn <willemb@google.com>
-
-Thanks for revising
+that or MONOTONIC_RAW.
