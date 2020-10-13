@@ -2,111 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4A9E28D4FF
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 21:56:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE70D28D504
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 21:57:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727827AbgJMT4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 15:56:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44801 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726848AbgJMT4e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 15:56:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1602618993;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iwU7tK6msSXXjxmtdCmiDX1VSEEaziIZMs2Jkm9hIlI=;
-        b=Y9w4k85b5WKwhdc6Y7huZB53XuC69O5rhkZT/fpRPsFc6jZCkpj7ff3XlW8M+iSs9Huy6W
-        1pAqdpza4Kj5tIorXSgwzx/Xm8vBQRRW46GEyyViieEJxLh3DoZWIXjqTs8UnISeZbDmGd
-        7AQZNfRgyYUiPosLTPcb4UUUV/BRzaQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-7-Auzav5HPNgCSQebp_c0R_w-1; Tue, 13 Oct 2020 15:56:29 -0400
-X-MC-Unique: Auzav5HPNgCSQebp_c0R_w-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AF6B61015C85;
-        Tue, 13 Oct 2020 19:56:27 +0000 (UTC)
-Received: from krava (unknown [10.40.193.3])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 393F65D9CD;
-        Tue, 13 Oct 2020 19:56:24 +0000 (UTC)
-Date:   Tue, 13 Oct 2020 21:56:22 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     davem@davemloft.net, daniel@iogearbox.net,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, kernel-team@fb.com
-Subject: Re: [PATCH v2 bpf-next 3/4] selftests/bpf: Add profiler test
-Message-ID: <20201013195622.GB1305928@krava>
-References: <20201009011240.48506-1-alexei.starovoitov@gmail.com>
- <20201009011240.48506-4-alexei.starovoitov@gmail.com>
+        id S1729209AbgJMT5q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 15:57:46 -0400
+Received: from mga12.intel.com ([192.55.52.136]:64648 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728094AbgJMT5q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Oct 2020 15:57:46 -0400
+IronPort-SDR: 0j9C6qPJBqdgbSSAkPUOZPSi1IMO2Vj40o2cze5+43l9N/Q0PME166yDS1NAL42TpHy3K5/mJx
+ ovU8xKavhNyg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9773"; a="145292200"
+X-IronPort-AV: E=Sophos;i="5.77,371,1596524400"; 
+   d="scan'208";a="145292200"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2020 12:57:45 -0700
+IronPort-SDR: d0IlcAIZDMxhhDk4Vn2AdgtgrpwB9JQaofY6SZeFhcib7oole0qgEOyzyHL1s4NdDdNZIlJH9b
+ 0FpHvLq3v3CQ==
+X-IronPort-AV: E=Sophos;i="5.77,371,1596524400"; 
+   d="scan'208";a="390428718"
+Received: from maryannn-mobl.amr.corp.intel.com (HELO [10.209.70.94]) ([10.209.70.94])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2020 12:57:43 -0700
+Subject: Re: [PATCH v2 2/6] ASoC: SOF: Introduce descriptors for SOF client
+To:     Randy Dunlap <rdunlap@infradead.org>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        alsa-devel@alsa-project.org
+Cc:     parav@mellanox.com, tiwai@suse.de, netdev@vger.kernel.org,
+        ranjani.sridharan@linux.intel.com, fred.oh@linux.intel.com,
+        linux-rdma@vger.kernel.org, dledford@redhat.com,
+        broonie@kernel.org, jgg@nvidia.com, gregkh@linuxfoundation.org,
+        kuba@kernel.org, dan.j.williams@intel.com, shiraz.saleem@intel.com,
+        davem@davemloft.net, kiran.patil@intel.com
+References: <20201005182446.977325-1-david.m.ertman@intel.com>
+ <20201005182446.977325-3-david.m.ertman@intel.com>
+ <076a0c53-0738-270e-845f-0ac968a4ea78@infradead.org>
+ <d9f062ee-a5f0-b41c-c8f6-b81b374754fa@linux.intel.com>
+ <9ef98f33-a0d3-579d-26e0-6046dd593eef@infradead.org>
+ <5b447b78-626d-2680-8a48-53493e2084a2@infradead.org>
+ <7192373a-0347-2d2d-74fc-6544f738b195@linux.intel.com>
+ <b07f6cbc-8e48-a4aa-bfcb-8a938fa00a38@infradead.org>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Message-ID: <91f0e062-5878-562c-c055-5dc597d4841f@linux.intel.com>
+Date:   Tue, 13 Oct 2020 14:57:07 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201009011240.48506-4-alexei.starovoitov@gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+In-Reply-To: <b07f6cbc-8e48-a4aa-bfcb-8a938fa00a38@infradead.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 08, 2020 at 06:12:39PM -0700, Alexei Starovoitov wrote:
 
-SNIP
+>>>>>>> +config SND_SOC_SOF_CLIENT_SUPPORT
+>>>>>>> +    bool "SOF enable clients"
+>>>>>>
+>>>>>> Tell users what "SOF" means.
+>>>>>
+>>>>> This option can only be reached if the user already selected the topic-level option. From there on the SOF acronym is used. Is this not enough?
+>>>>
+>>>> Yes, that's enough. I didn't see it. Sorry about that.
+>>>
+>>> Huh. I still don't see that Kconfig option.
+>>> Which patch is it in?
+>>>
+>>> I only saw patches 1,2,3 on LKML.
+>>
+>> The Sound Open Firmware (SOF) driver is upstream since 2019, see https://elixir.bootlin.com/linux/latest/source/sound/soc/sof/Kconfig
+>>
+>> What was shared in these patches is just an evolution to make the driver more modular to handle of 'subfunctions' with the auxiliary bus.
+>>
+>> we'd love to hear your feedback if you think the help text can be improved. Thanks!
+>>
+> 
+> OK, I looked at the SOF Kconfig files. They are mostly OK except for
+> missing '.' at the end of lots of sentences and a few other typos.
+> 
+> Do you want patches?
 
-> +
-> +#ifdef UNROLL
-> +#pragma unroll
-> +#endif
-> +	for (int i = 0; i < MAX_CGROUPS_PATH_DEPTH; i++) {
-> +		filepart_length =
-> +			bpf_probe_read_str(payload, MAX_PATH, BPF_CORE_READ(cgroup_node, name));
-> +		if (!cgroup_node)
-> +			return payload;
-> +		if (cgroup_node == cgroup_root_node)
-> +			*root_pos = payload - payload_start;
-> +		if (filepart_length <= MAX_PATH) {
-> +			barrier_var(filepart_length);
-> +			payload += filepart_length;
-> +		}
-> +		cgroup_node = BPF_CORE_READ(cgroup_node, parent);
-> +	}
-> +	return payload;
-> +}
-> +
-> +static ino_t get_inode_from_kernfs(struct kernfs_node* node)
-> +{
-> +	struct kernfs_node___52* node52 = (void*)node;
-> +
-> +	if (bpf_core_field_exists(node52->id.ino)) {
-> +		barrier_var(node52);
-> +		return BPF_CORE_READ(node52, id.ino);
-> +	} else {
-> +		barrier_var(node);
-> +		return (u64)BPF_CORE_READ(node, id);
-> +	}
-> +}
-> +
-> +int pids_cgrp_id = 1;
-
-
-hi,
-I'm getting compilation failure with this:
-
-	  CLNG-LLC [test_maps] profiler2.o
-	In file included from progs/profiler2.c:6:
-	progs/profiler.inc.h:246:5: error: redefinition of 'pids_cgrp_id' as different kind of symbol
-	int pids_cgrp_id = 1;
-	    ^
-	/home/jolsa/linux-qemu/tools/testing/selftests/bpf/tools/include/vmlinux.h:14531:2: note: previous definition is here
-		pids_cgrp_id = 11,
-		^
-	1 error generated.
-	/opt/clang/bin/llc: error: /opt/clang/bin/llc: <stdin>:1:1: error: expected top-level entity
-	BPF obj compilation failed
-	^
-	make: *** [Makefile:396: /home/jolsa/linux-qemu/tools/testing/selftests/bpf/profiler2.o] Error 1
-
-jirka
-
+Sure! Thanks in advance.
