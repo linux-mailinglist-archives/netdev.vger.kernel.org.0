@@ -2,84 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DC0F28C6EF
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 03:56:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BA9D28C6F1
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 03:57:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728453AbgJMB4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 21:56:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60806 "EHLO
+        id S1728463AbgJMB5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 21:57:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726168AbgJMB4n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 21:56:43 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F8E3C0613D0
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 18:56:43 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id 1so3952185ple.2
-        for <netdev@vger.kernel.org>; Mon, 12 Oct 2020 18:56:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Qhtp9DcsHC+50o/dFFEBEUFxetslYLjDExV0KXZhOvU=;
-        b=KUjWt7JzbiSYqznwkix6e2uekYJi2Oha8ca4Eo6ZvLUEAA6ipLKYQ5N0Ti8H2wxgZi
-         6GWlwSrk2Qkd/yxNnddUGtwGgJOXZp76Ls0ZfNs6UcFf5NbY/uhtnDE5WkqtkS0f/ZB3
-         hf59IQ4bCJq6doOgRthi4Smpc2xu+8YcvTlIwGByKetKWgm15mSvCbkskppC3eNKaV6O
-         XezVH4l4JjEg4CPL6BT2D6wVtk7tB+/0MRwKCggonW05Dw4r2k7ky3fHa8OvXVoO27PO
-         dnY3AYdUA86q2yQel85SbsUIOsJNQs1Q4j5oiFO7GwRS5T4CaKlQk3yzg8QXX3mve0JR
-         UKVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Qhtp9DcsHC+50o/dFFEBEUFxetslYLjDExV0KXZhOvU=;
-        b=riBf5qxMi1JY6/kO9dFE6lQHa5a3if5i+56uuFsVuoQteZldfKIB9XLerx5cgBEm7q
-         4s/Qm3GWYTLT1Zbi9ihvs9/lRyAby5ZluGNf+rmZGeSkXOI3G/wwhHjtp8Batb5stm+e
-         wflK+l7C9ISn3WwMjMLvLpO6EzpLcgHEy3D7LNQHcjy/nbvhwXMAhXBFUUkiXB5LjIqG
-         ZqOa9iaBagqBMbsaSIGQMrWaIHqhPP2SahByLXpeS7gY39uUAPAULQapkKC+87alZPHy
-         OXk0XyHGmoh2rF0uZaAvlXs+7ruabRunJMVZ26WiTlRYiuDLvfW3TlqfiO1zUzP05zJb
-         kVOQ==
-X-Gm-Message-State: AOAM533vtsi4kwBVDRXvMKa/gLs7u2otRCTQnzsUi7xHmBsZdiJGDmxb
-        6AX2oDZobtanPzx/nL/wpbLsxPGBqsd1Pw+1AIk=
-X-Google-Smtp-Source: ABdhPJwaxZ/tYZO+6w1kUxalOo1vgKDAqySQcITC5SDv5QYEB2X9bGk3RMhKFbLBXP9TcA6uzFt+BGexGf7GU8LPsAI=
-X-Received: by 2002:a17:902:9694:b029:d2:1b52:f46 with SMTP id
- n20-20020a1709029694b02900d21b520f46mr27187256plp.78.1602554202940; Mon, 12
- Oct 2020 18:56:42 -0700 (PDT)
+        with ESMTP id S1726168AbgJMB5J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 21:57:09 -0400
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325E9C0613D0;
+        Mon, 12 Oct 2020 18:57:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:References:Cc:To:From:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=bofq6aL5/+29OZsHkddC1oB1vsNZ0db2q5pYJHTnMUQ=; b=V7Z8AV8Xtib3nBBeqBFkaHoOj6
+        M+hjTGZc9UkYF0l/s8IUvD50nTKjpAgaNSWPlZwfX1z+qzeZq2rk8fcLfHzWG56VZqbOVVnOi4xEe
+        5LaoPCylHKs6v9VE6s60Cw8X1nYKl7oY2Cvjyc4MgTfaOJH0oAw0XkWj2iM9chRv+JhIkg4rJBgCt
+        Knw1bXklm4JtT6GHkAnvj/Vm9Dspje1W9/Y55josQ+H2hxfhFmCQjKEZSdCQqvDIHx9UHzUXdzbl6
+        SWBcxg9lJFIyqPaRgl0QASA2TmYuNegMxcwv5YwJc/5KJH8ZZuECKkfowS22OuaFlHa7FGLbPrZD/
+        259McASA==;
+Received: from [2601:1c0:6280:3f0::507c]
+        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kS9Yi-0003ts-LD; Tue, 13 Oct 2020 01:57:01 +0000
+Subject: Re: [PATCH v2 2/6] ASoC: SOF: Introduce descriptors for SOF client
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        alsa-devel@alsa-project.org
+Cc:     tiwai@suse.de, broonie@kernel.org, linux-rdma@vger.kernel.org,
+        jgg@nvidia.com, dledford@redhat.com, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
+        ranjani.sridharan@linux.intel.com, fred.oh@linux.intel.com,
+        parav@mellanox.com, shiraz.saleem@intel.com,
+        dan.j.williams@intel.com, kiran.patil@intel.com
+References: <20201005182446.977325-1-david.m.ertman@intel.com>
+ <20201005182446.977325-3-david.m.ertman@intel.com>
+ <076a0c53-0738-270e-845f-0ac968a4ea78@infradead.org>
+ <d9f062ee-a5f0-b41c-c8f6-b81b374754fa@linux.intel.com>
+ <9ef98f33-a0d3-579d-26e0-6046dd593eef@infradead.org>
+Message-ID: <5b447b78-626d-2680-8a48-53493e2084a2@infradead.org>
+Date:   Mon, 12 Oct 2020 18:56:55 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-References: <20201012231721.20374-1-xiyou.wangcong@gmail.com>
-In-Reply-To: <20201012231721.20374-1-xiyou.wangcong@gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Mon, 12 Oct 2020 18:56:32 -0700
-Message-ID: <CAJht_EPOjEACReo3M85TiKNquSPu92JWC3SfwsOr5PS7QDDqKw@mail.gmail.com>
-Subject: Re: [Patch net v3] ip_gre: set dev->hard_header_len and
- dev->needed_headroom properly
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzbot <syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com>,
-        William Tu <u9012063@gmail.com>,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <9ef98f33-a0d3-579d-26e0-6046dd593eef@infradead.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 12, 2020 at 4:17 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> GRE tunnel has its own header_ops, ipgre_header_ops, and sets it
-> conditionally. When it is set, it assumes the outer IP header is
-> already created before ipgre_xmit().
->
-> This is not true when we send packets through a raw packet socket,
-> where L2 headers are supposed to be constructed by user. Packet
-> socket calls dev_validate_header() to validate the header. But
-> GRE tunnel does not set dev->hard_header_len, so that check can
-> be simply bypassed, therefore uninit memory could be passed down
-> to ipgre_xmit(). Similar for dev->needed_headroom.
->
-> dev->hard_header_len is supposed to be the length of the header
-> created by dev->header_ops->create(), so it should be used whenever
-> header_ops is set, and dev->needed_headroom should be used when it
-> is not set.
+On 10/12/20 6:55 PM, Randy Dunlap wrote:
+> On 10/12/20 6:31 PM, Pierre-Louis Bossart wrote:
+>>
+>>>> +config SND_SOC_SOF_CLIENT
+>>>> +    tristate
+>>>> +    select ANCILLARY_BUS
+>>>> +    help
+>>>> +      This option is not user-selectable but automagically handled by
+>>>> +      'select' statements at a higher level
+>>>> +
+>>>> +config SND_SOC_SOF_CLIENT_SUPPORT
+>>>> +    bool "SOF enable clients"
+>>>
+>>> Tell users what "SOF" means.
+>>
+>> This option can only be reached if the user already selected the topic-level option. From there on the SOF acronym is used. Is this not enough?
+> 
+> Yes, that's enough. I didn't see it. Sorry about that.
 
-Acked-by: Xie He <xie.he.0141@gmail.com>
+Huh. I still don't see that Kconfig option.
+Which patch is it in?
 
-Thank you for your work, Cong!
+I only saw patches 1,2,3 on LKML.
+
+>> config SND_SOC_SOF_TOPLEVEL
+>>     bool "Sound Open Firmware Support"
+>>     help
+>>       This adds support for Sound Open Firmware (SOF). SOF is a free and
+>>       generic open source audio DSP firmware for multiple devices.
+>>       Say Y if you have such a device that is supported by SOF.
+>>
+>>>
+>>>> +    depends on SND_SOC_SOF
+>>>> +    help
+>>>> +      This adds support for ancillary client devices to separate out the debug
+>>>> +      functionality for IPC tests, probes etc. into separate devices. This
+>>>> +      option would also allow adding client devices based on DSP FW
+>>>
+>>> spell out firmware
+>>
+>> agree on this one.
+>>
+>>>
+>>>> +      capabilities and ACPI/OF device information.
+>>>> +      Say Y if you want to enable clients with SOF.
+>>>> +      If unsure select "N".
+>>>> +
+>>>
+>>>
+> 
+> thanks.
+> 
+
+
+-- 
+~Randy
+
