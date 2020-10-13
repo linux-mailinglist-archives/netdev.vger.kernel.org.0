@@ -2,96 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CF6C28D65C
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 00:01:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C607128D688
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 00:43:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727029AbgJMWBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 18:01:10 -0400
-Received: from mga05.intel.com ([192.55.52.43]:7401 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725935AbgJMWBJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Oct 2020 18:01:09 -0400
-IronPort-SDR: Bd2LgM3qlBnb2yfx7G5pdhT3MlLSWjI4jlepT9+M42ImGREnpLisNTehcvMe/QPASsrehAb0i4
- 4GVhp/nVfW5A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9773"; a="250686415"
-X-IronPort-AV: E=Sophos;i="5.77,371,1596524400"; 
-   d="scan'208";a="250686415"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2020 15:01:09 -0700
-IronPort-SDR: ToVhdH2VAtIHbB7hGPVNvyPLfEZNQSmGRyRg4EVj49UMevEF1HfIuZC2SHMo5/F/njAUmFGJ07
- r/AcmQcabifg==
-X-IronPort-AV: E=Sophos;i="5.77,371,1596524400"; 
-   d="scan'208";a="463658440"
-Received: from alexissu-mobl.amr.corp.intel.com (HELO [10.212.1.230]) ([10.212.1.230])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2020 15:01:08 -0700
-Subject: Re: [PATCH v2 22/24] ice: docs fix a devlink info that broke a table
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <cover.1602590106.git.mchehab+huawei@kernel.org>
- <79d341b6be03e9ffbe489d7110348357971a5fc8.1602590106.git.mchehab+huawei@kernel.org>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <1c894002-7d96-3b28-b612-56b392ba5c2d@intel.com>
-Date:   Tue, 13 Oct 2020 15:01:05 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.2
+        id S1729087AbgJMWnh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 18:43:37 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:34364 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728931AbgJMWnZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 18:43:25 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09DMYHRI023311;
+        Tue, 13 Oct 2020 22:43:19 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=corp-2020-01-29;
+ bh=BPXVhR8Zcz1sWINwPPKI15oRrSSfJmS7Dk7t6k2FBvc=;
+ b=X98OMsUEJ6iXi28jlvGzIuUNtCUPCHKr9Y26mlldDvGV1tVg0rW4+z19ERv9nUm05fW2
+ 7uLfRfkQC87plb6dqK0JgwDllNVeWHEr4KuohBovrquRB4Wp8Fn55mzzRhERGk86b1R8
+ IUAHuFALM9P0nzG0SMad9VRc3S4BqwSCpX9uXbI7E8E4JWNs+M489BfaOy69s9tMy36o
+ WsDINZk0QvR9KX7AD1uVtYIm858Ec1rCBrQM2cWhu74pWwQ4sERB2XP+p4QlG2a3ov36
+ KsDceZW1Gf6MViMvswmWBcHmPujmAKdJrQLwx9ihpq7sGfN7gk8NuWumGIvUgBivX+8I Nw== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2120.oracle.com with ESMTP id 3434wkmr7r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 13 Oct 2020 22:43:19 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09DMZeSv129581;
+        Tue, 13 Oct 2020 22:43:18 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3030.oracle.com with ESMTP id 343phntsx7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 13 Oct 2020 22:43:18 +0000
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 09DMhIGo146795;
+        Tue, 13 Oct 2020 22:43:18 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3030.oracle.com with ESMTP id 343phntswf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 13 Oct 2020 22:43:18 +0000
+Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 09DMhFrt005717;
+        Tue, 13 Oct 2020 22:43:16 GMT
+Received: from ca-mkp.ca.oracle.com (/10.156.108.201)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 13 Oct 2020 15:43:15 -0700
+From:   "Martin K. Petersen" <martin.petersen@oracle.com>
+To:     linux-spi@vger.kernel.org, Julia Lawall <Julia.Lawall@inria.fr>
+Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
+        linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+        dmaengine@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-media@vger.kernel.org, target-devel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, Dan Williams <dan.j.williams@intel.com>,
+        linux-serial@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-scsi@vger.kernel.org, Yossi Leybovich <sleybo@amazon.com>,
+        linux-block@vger.kernel.org, rds-devel@oss.oracle.com
+Subject: Re: [PATCH 00/14] drop double zeroing
+Date:   Tue, 13 Oct 2020 18:42:52 -0400
+Message-Id: <160262862433.3018.13907233755506910409.b4-ty@oracle.com>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <1600601186-7420-1-git-send-email-Julia.Lawall@inria.fr>
+References: <1600601186-7420-1-git-send-email-Julia.Lawall@inria.fr>
 MIME-Version: 1.0
-In-Reply-To: <79d341b6be03e9ffbe489d7110348357971a5fc8.1602590106.git.mchehab+huawei@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9773 signatures=668681
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 mlxscore=0
+ malwarescore=0 phishscore=0 suspectscore=0 impostorscore=0 clxscore=1011
+ spamscore=0 priorityscore=1501 bulkscore=0 adultscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2010130158
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sun, 20 Sep 2020 13:26:12 +0200, Julia Lawall wrote:
 
+> sg_init_table zeroes its first argument, so the allocation of that argument
+> doesn't have to.
 
-On 10/13/2020 5:14 AM, Mauro Carvalho Chehab wrote:
-> Changeset 410d06879c01 ("ice: add the DDP Track ID to devlink info")
-> added description for a new devlink field, but forgot to add
-> one of its columns, causing it to break:
-> 
-> 	.../Documentation/networking/devlink/ice.rst:15: WARNING: Error parsing content block for the "list-table" directive: uniform two-level bullet list expected, but row 11 does not contain the same number of items as row 1 (3 vs 4).
-> 
-> 	.. list-table:: devlink info versions implemented
-> 	    :widths: 5 5 5 90
-> ...
-> 	    * - ``fw.app.bundle_id``
-> 	      - 0xc0000001
-> 	      - Unique identifier for the DDP package loaded in the device. Also
-> 	        referred to as the DDP Track ID. Can be used to uniquely identify
-> 	        the specific DDP package.
-> 
-> Add the type field to the ``fw.app.bundle_id`` row.
-> 
-> Fixes: 410d06879c01 ("ice: add the DDP Track ID to devlink info")
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Applied to 5.10/scsi-queue, thanks!
 
-Yep, looks correct. Thanks for the fix!
+[02/14] scsi: target: rd: Drop double zeroing
+        https://git.kernel.org/mkp/scsi/c/4b217e015b75
 
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-
-> ---
->  Documentation/networking/devlink/ice.rst | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/networking/devlink/ice.rst b/Documentation/networking/devlink/ice.rst
-> index b165181d5d4d..a432dc419fa4 100644
-> --- a/Documentation/networking/devlink/ice.rst
-> +++ b/Documentation/networking/devlink/ice.rst
-> @@ -70,6 +70,7 @@ The ``ice`` driver reports the following versions
->          that both the name (as reported by ``fw.app.name``) and version are
->          required to uniquely identify the package.
->      * - ``fw.app.bundle_id``
-> +      - running
->        - 0xc0000001
->        - Unique identifier for the DDP package loaded in the device. Also
->          referred to as the DDP Track ID. Can be used to uniquely identify
-> 
+-- 
+Martin K. Petersen	Oracle Linux Engineering
