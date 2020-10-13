@@ -2,123 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0E9428C894
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 08:18:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABD1B28C8AA
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 08:35:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389200AbgJMGS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 02:18:28 -0400
-Received: from mail-eopbgr40129.outbound.protection.outlook.com ([40.107.4.129]:27712
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388527AbgJMGS2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Oct 2020 02:18:28 -0400
+        id S2389433AbgJMGfF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 02:35:05 -0400
+Received: from mga04.intel.com ([192.55.52.120]:12651 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389425AbgJMGfF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Oct 2020 02:35:05 -0400
+IronPort-SDR: /55eKnN0UeqvUq9bNFiAJC5m7LldkwaXfLY1CryD/icrNq1n0FcuNd3ssVvaCN0uzq2PEg6mo5
+ /9wBkOqUldSA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9772"; a="163221413"
+X-IronPort-AV: E=Sophos;i="5.77,369,1596524400"; 
+   d="scan'208";a="163221413"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Oct 2020 23:35:04 -0700
+IronPort-SDR: dOO668doPGUJ4Zju7PTW4HHWFo1QVBjyQi6uM1XnO0d1NodHopr2pRQcSDF8ijkpfxERQtpxHi
+ u3+L4X0PzIXg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,369,1596524400"; 
+   d="scan'208";a="345159190"
+Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
+  by fmsmga004.fm.intel.com with ESMTP; 12 Oct 2020 23:35:04 -0700
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 12 Oct 2020 23:35:04 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Mon, 12 Oct 2020 23:35:04 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.173)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Mon, 12 Oct 2020 23:35:02 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YSQzYYSgyElIbIeF+/Tz0lm6YMjXEle7t6mAnhpUCj+6r6l+8IaIoh1sJYaHq3OjHwFVWh/jEmEHXOXx3UAa4/Vq9lXF4Lz+Ugyd1xqYltyfKz3J6fATAtMfXVSy7a1RNdKaWOFcDnPVskCxMiVmV8o4pM8746/8KM7yCaFg+/IGu0Z3J3EXZdP/OTa0qL3XrBsrpAyo0WhddqrB6BZF9Gliz7nyFZU9Y4ZnhGqSOD7HDwxTDvXERylNcLOU2b+rzAxwiLdDg6NUiCsqw5DppwOA9XSCtjDks3EQwIOOO5Z0b2MLTlJYRZey/cqDpSjm2g1OvdIN3Y26D9YWOrnHRA==
+ b=dyP9X4yDBmhEechUNaRzyGGKjd6hxxucV/MWYImBiy2SmvyztIAkqiiT/2/u8ev40XVucp+Re09TDxKV2NJx3BLTUGE+5ZhKZlyqkl43qvS1tiQro0JPcM0IzS8pIyGqv3qQ4USXCuw4y2lVLFm6RoguAV3+yoJnJ1uuseAG7Tp34vHAssiyyxCfqUoyE3J/+OsAL7LndS08Vie45iCF5iPUD9PV07dmX9ZNiRRFx0heEXtQy6TY9uPhu3k+nqOhnkzkKmSyCH3zjLRVcGhmQRnCLUZq29M3qnSya17YTc1Z2kNQxUhc+vyM/NrhpuowelO5phZjgOQBW+G0KbVgwQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aKsa77vm2/lA1ajx+syKbEFyZn5+8r8lmOCkc6QZtRs=;
- b=Npoe8yV4AZPB8elvPM2/aNTGaeFiWvbGegbsH3K2yp9grQcF3WclDaGFilRkXjcy4uYPXRzW8EZN06T1SsaXf1MFLdvOHPwK/SxTEslSndVtwxKHWn1G+jar07PfbJPKJiafHKTpYq4q1rVnoPWMaAtFQcyVGNTxGYbAD4KxVcsIYLZe+WAOU1+E8hvIjV93by6te8e3tf9ZIu2zcRjea/3blVyuC2XGvvjhxRWggrYZWJR6k8s7PJRDVqkB7/egtLHShgIVZUMJ2p4AAs/NT6coY1dpyT8F1gQCaGpvwhN86Ly6xa0XAdSUifdxf08h4l9Ifk5ff7eRIKjU2zENgQ==
+ bh=EAi1aOHQgcESmR7M0YvdXOEBiEz4xoU8KJy73aIWmh0=;
+ b=HhjMxVbhALfeNxMR37Y8GlX4sJu2cwUAw7OlaOrGBuawd3vtyeEs+nVXZBJRvKjXFkHSzjbmPKHDw+TxdZEoj8HkL24RV/FHfu3nyRDKsEiju9QHxJyduKMsQcXQWJHYehUe4dpq8feTd91mGywkLIxudG/aUs/q4x7Rox2WP6pP5Yj6b1PpM5LUe84M1lDU/tkrZH0MAfc/+nYMuwYwytxpAWMC560cZIzexQ2/K0MDAgzJVTafW/z6+UJZytoWl3y0vE9/oI1MqqNXe09XDxSyfCqtpnQS7t7SU4hw8aakmBuVOn3khtGwToAiNkzioBhHlGZxtRWs6J9lGAy2mw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
- s=selector2;
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aKsa77vm2/lA1ajx+syKbEFyZn5+8r8lmOCkc6QZtRs=;
- b=hVN33ff8l4CTuZxSSxNQ0A02a3BLYsgRta3WQ4RgLLxIXRX1u2wz8Kedh90//0SybHYdwmwCzcMKGAnoFMpk95DZ8ZTta8iewomI6wrsJBhe8mlzOFyElfgDc0rQMVuERgIEyW5WH0yO4++HrOHTO5N8VBfdj/yoL/dBh0jBfbc=
-Authentication-Results: lists.sourceforge.net; dkim=none (message not signed)
- header.d=none;lists.sourceforge.net; dmarc=none action=none
- header.from=dektech.com.au;
-Received: from VI1PR05MB4605.eurprd05.prod.outlook.com (2603:10a6:802:61::21)
- by VI1PR0502MB2942.eurprd05.prod.outlook.com (2603:10a6:800:bb::20) with
+ bh=EAi1aOHQgcESmR7M0YvdXOEBiEz4xoU8KJy73aIWmh0=;
+ b=kLM78Lh8hsP5fKnDEhMzUrZqaIE8XeXyc1YLR1V/jxQMnvoMIMXTcWK+EnhtLgpLuxDMFuT+35En3lY8JMThpxPbfBdGeEioCweI4S1uG0BLJIZ6xPVQlFvNFHeg+mhpMoKkyDFc0kHpiRrI891DaUhB6jlM5hYn4aa02XnfdMo=
+Received: from SN6PR11MB3008.namprd11.prod.outlook.com (2603:10b6:805:cf::18)
+ by SA2PR11MB5067.namprd11.prod.outlook.com (2603:10b6:806:111::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.21; Tue, 13 Oct
- 2020 06:18:23 +0000
-Received: from VI1PR05MB4605.eurprd05.prod.outlook.com
- ([fe80::2459:8421:b4ec:dcb4]) by VI1PR05MB4605.eurprd05.prod.outlook.com
- ([fe80::2459:8421:b4ec:dcb4%6]) with mapi id 15.20.3455.031; Tue, 13 Oct 2020
- 06:18:23 +0000
-From:   Hoang Huu Le <hoang.h.le@dektech.com.au>
-To:     tipc-discussion@lists.sourceforge.net, jmaloy@redhat.com,
-        maloy@donjonn.com, ying.xue@windriver.com, netdev@vger.kernel.org
-Subject: [net] tipc: re-configure queue limit for broadcast link
-Date:   Tue, 13 Oct 2020 13:18:10 +0700
-Message-Id: <20201013061810.77866-1-hoang.h.le@dektech.com.au>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [14.161.14.188]
-X-ClientProxiedBy: SG2PR02CA0090.apcprd02.prod.outlook.com
- (2603:1096:4:90::30) To VI1PR05MB4605.eurprd05.prod.outlook.com
- (2603:10a6:802:61::21)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.30; Tue, 13 Oct
+ 2020 06:34:59 +0000
+Received: from SN6PR11MB3008.namprd11.prod.outlook.com
+ ([fe80::5072:297c:9cd1:48b3]) by SN6PR11MB3008.namprd11.prod.outlook.com
+ ([fe80::5072:297c:9cd1:48b3%7]) with mapi id 15.20.3455.030; Tue, 13 Oct 2020
+ 06:34:59 +0000
+From:   "Kuruvinakunnel, George" <george.kuruvinakunnel@intel.com>
+To:     Marek Majtyka <alardam@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "Topel, Bjorn" <bjorn.topel@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        "Majtyka, MarekX" <marekx.majtyka@intel.com>,
+        "maciejromanfijalkowski@gmain.com" <maciejromanfijalkowski@gmain.com>
+Subject: RE: [Intel-wired-lan] [PATCH net-next] i40e: remove redundant
+ assigment
+Thread-Topic: [Intel-wired-lan] [PATCH net-next] i40e: remove redundant
+ assigment
+Thread-Index: AQHWheecZ1AT+nXQY0G4US3AI+MauqmVNpBQ
+Date:   Tue, 13 Oct 2020 06:34:58 +0000
+Message-ID: <SN6PR11MB30082C2927FF8287E58FF69EE2040@SN6PR11MB3008.namprd11.prod.outlook.com>
+References: <20200908123440.11278-1-marekx.majtyka@intel.com>
+In-Reply-To: <20200908123440.11278-1-marekx.majtyka@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [106.200.10.148]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6ecdb008-1ea7-42b3-db92-08d86f421b5c
+x-ms-traffictypediagnostic: SA2PR11MB5067:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SA2PR11MB50675455DC84482CACF41FDEE2040@SA2PR11MB5067.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5516;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 601U2FXWoCq56qAnXmmPj4oVY17xJVkTJ5W9VQkxjS/AULhm7ds9INmbuQnBTTeMnDWwY53fGBqUrp5/TtBnkuGfqZJgcfmAfup5vekp1Y3ZU4X2FyEBlEPkcqfJUhg3ggIKqLt0BykqUKcb/VjuByKvLNgm8mrphQyqJyAUgjfa5yUsOOdDercUcClrtTu800atu0t7iJXwVEpbVT26HOJCuZLe0X9HxoWe6k7TiY3OIEU3wqJBdwwglANTLEVgM0gYUfGHK4frQ8bAE5f9lqy3ctC1t6v98OkafC4rk2xOqXPyBcIIlf5VWmPA3r0f
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3008.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(366004)(376002)(346002)(396003)(136003)(52536014)(4744005)(8936002)(5660300002)(9686003)(8676002)(71200400001)(186003)(478600001)(53546011)(4326008)(66556008)(54906003)(66476007)(2906002)(66446008)(66946007)(64756008)(33656002)(83380400001)(76116006)(55016002)(110136005)(316002)(7696005)(6506007)(26005)(86362001)(6636002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: AJ1b6ur0Kk9wLWt4fHeCSIioirMoFyDwjmy5PCjsO/Ix2kLiGJEqDpb5PmAb1bsM7awkaM5ICInmzloItEO7igwqLqI0Zc5pQUN5561Re5njOOn8jj4f5zT3+IBm1oe7vZSVT+6si8JmT4jiiep8I1nMrhdhiZhD9602u7Ev5Wfz5s0f3uf8K+8jPuckQ2U2x6AfAZcqXQ4RljWoA8C7SURjy/mLJRcbPgGIVDdKjtoTW+az6wQvT3k9vaMwrnLkBw7Gfiw2T1pF1R8BlLlHoRpwhzF3qe2d2u7gDUQ6i3TnL0lKVAvLtPTpHz6NLLQKmaeLNGLpcMU+Jd1/e5I5KVMLy65Z5XsFO6UFrALxr2cPKHuw+YWJt/sU6DACHRboGh9HYFVBVHi7qNSmKiyh+X51x51lHx+cr5YCL+ikmyntN3s9JQvomgs8Klo3TPBAY/Zca6LYzYN9SNV7hC2QQRnaefx9oZkLFdzG6+0hu0TQuSn3bYN4G8sG9a+OT4tiZnJK3ITOxZPlwL0u6KRBTzdAZU8nUJwbVletxkPcC02MvLoEAqlSvRMwKVYayM+tagHeh+oKWuLoHXRg3CsC9iqMrMLjvF2cLWLK0mPB7mcz3rfyDJrD+wTN8tpaDutKAt8oqF40Ndsy9JEoFEupeQ==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dektech.com.au (14.161.14.188) by SG2PR02CA0090.apcprd02.prod.outlook.com (2603:1096:4:90::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.22 via Frontend Transport; Tue, 13 Oct 2020 06:18:21 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d2ae6dbd-e3b8-40e6-6adb-08d86f3fc9ba
-X-MS-TrafficTypeDiagnostic: VI1PR0502MB2942:
-X-Microsoft-Antispam-PRVS: <VI1PR0502MB2942110C7D87B88F17EEAFD1F1040@VI1PR0502MB2942.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2449;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3qbAI9D3wfXRyKWHVp2ZYxF3R9sbupHi8L4e/TICs9l75cP1nPET7M7hYSOVWv0EA0bzFwYbdVY9HZcxTclnhKtmG6rvv5LicaRU2zKg9Q6SD9tUd8cdKflP5FzbymDUrNe/7OQiiJdMBghXndyTLvQZgIgk/3R4+yMfamSwQ4zb649Og0+FcZz69orBgSrThJDY45hf3B8ly5HYASFcEr8prVUryic+4L/vxHRJkvN4onx8bEFC4XNRPT3EV4xJjuXKZ5gpjFE3uxbEq7vozJ7s1eX30IIMsdBBDsBiqX/wwXTKL7gc0t65SGHozNeV2I/iv9/UYX2b5FNMiQBLAg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB4605.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(39840400004)(366004)(136003)(346002)(376002)(86362001)(103116003)(83380400001)(16526019)(478600001)(36756003)(55016002)(26005)(186003)(8936002)(2616005)(956004)(8676002)(2906002)(66946007)(66556008)(52116002)(7696005)(66476007)(6666004)(316002)(5660300002)(1076003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: Fc8BbISNyMco+CcqHXqoUP5Anz07ElIwZXgo0UUde5UrHsZH9Il5BaDznVzl7jbPRXQB1N2hOl92hTu87iQapByQRO8posJykrnDbe0gnbdmGF2b6kvKPU3U5PF7zTRMakucvQ7khxHXyhTRJ4vfD0Q6SaN4aFvjZ2ocz4s6+5kz+hqBZXi6kyMNTY8IIQp2fgTHcVHLpZ5pXkdKNhI2ZJYGcJlp3Wq101Lp6tSyGB2nQi8RlBWfHwUcYyM8X7VWwKuW08K7/9SK10V3bC4ZXiC96K6rBL7GE2TG8ECWy4F79c0KVHSaDmcVr2TBuZz8wn83T9xy28h/EUsDzj4Y71EHFBmuZ8mMUSCZWzpD7S14c7Zg46pP6sAFr2BAmodIJ/8Ahtg2YURTh3gZbBh0j5GOP7fSvDEGAEhMQezVpno0rBZf9dbrv8QEP9wtvOiQxRwARsB9tLd2Rs3vVPDGe+VhZr9NXwrJlB2KQN7LbN4xjR1BlUjx3u5Wj8GM/Yo4SxGPaArDTwEzyrUoRHq87Qcq+xzRx9QUsB92KAEpo7SvFP3EKHjyHrMtPnvzRhIuROudZHVbCBscpXhgAH9RQL090PD2eFFWaCExGerEIJBPp1z1icJeEWpRNwLmqjsoogEVp3vaYDe4Re0fyQnpHg==
-X-OriginatorOrg: dektech.com.au
-X-MS-Exchange-CrossTenant-Network-Message-Id: d2ae6dbd-e3b8-40e6-6adb-08d86f3fc9ba
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB4605.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Oct 2020 06:18:23.4023
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3008.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6ecdb008-1ea7-42b3-db92-08d86f421b5c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Oct 2020 06:34:58.9131
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9+q3G8Yjh94sgBHSwRheeDiuGIptABkP6Cwqf4ATdSCLebas1jWJGzq0Uwn6zlzkOmzDPhZaMKYp+VWdb+XBWoBp6hp4KFDbhy8OmeWxJcM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0502MB2942
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: DAqQOhvm0KYj6ZhvR0S1NjWB7SSFbdi9mGxCh6/FnyaHhZuXlKZR6yvDC5YlnfZXH8/adB1S9CVu5HC/AvWM4L5aB1FduNyPb9XXEU+PUh4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB5067
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The queue limit of the broadcast link is being calculated base on initial
-MTU. However, when MTU value changed (e.g manual changing MTU on NIC
-device, MTU negotiation etc.,) we do not re-calculate queue limit.
-This gives throughput does not reflect with the change.
+From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of Mar=
+ek Majtyka
+Sent: Tuesday, September 8, 2020 6:05 PM
+To: Karlsson, Magnus <magnus.karlsson@intel.com>; Topel, Bjorn <bjorn.topel=
+@intel.com>; intel-wired-lan@lists.osuosl.org; Kirsher, Jeffrey T <jeffrey.=
+t.kirsher@intel.com>
+Cc: netdev@vger.kernel.org; Fijalkowski, Maciej <maciej.fijalkowski@intel.c=
+om>; Majtyka, MarekX <marekx.majtyka@intel.com>; maciejromanfijalkowski@gma=
+in.com
+Subject: [Intel-wired-lan] [PATCH net-next] i40e: remove redundant assigmen=
+t
 
-So fix it by calling the function to re-calculate queue limit of the
-broadcast link.
+Remove a redundant assigment of the software ring pointer in the i40e drive=
+r. The variable is assigned twice with no use in between, so just get rid o=
+f the first occurrence.
 
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: Hoang Huu Le <hoang.h.le@dektech.com.au>
+Fixes: 3b4f0b66c2b3 ("i40e, xsk: Migrate to new MEM_TYPE_XSK_BUFF_POOL")
+Signed-off-by: Marek Majtyka <marekx.majtyka@intel.com>
 ---
- net/tipc/bcast.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/net/tipc/bcast.c b/net/tipc/bcast.c
-index 940d176e0e87..c77fd13e2777 100644
---- a/net/tipc/bcast.c
-+++ b/net/tipc/bcast.c
-@@ -108,6 +108,7 @@ static void tipc_bcbase_select_primary(struct net *net)
- {
- 	struct tipc_bc_base *bb = tipc_bc_base(net);
- 	int all_dests =  tipc_link_bc_peers(bb->link);
-+	int max_win = tipc_link_max_win(bb->link);
- 	int i, mtu, prim;
- 
- 	bb->primary_bearer = INVALID_BEARER_ID;
-@@ -121,8 +122,11 @@ static void tipc_bcbase_select_primary(struct net *net)
- 			continue;
- 
- 		mtu = tipc_bearer_mtu(net, i);
--		if (mtu < tipc_link_mtu(bb->link))
-+		if (mtu < tipc_link_mtu(bb->link)) {
- 			tipc_link_set_mtu(bb->link, mtu);
-+			tipc_link_set_queue_limits(bb->link, max_win,
-+						   max_win);
-+		}
- 		bb->bcast_support &= tipc_bearer_bcast_support(net, i);
- 		if (bb->dests[i] < all_dests)
- 			continue;
--- 
-2.25.1
+Tested-by: George Kuruvinakunnel <george.kuruvinakunnel@intel.com>
+
 
