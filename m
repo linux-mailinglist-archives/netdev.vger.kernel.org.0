@@ -2,286 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E23728D19F
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 17:57:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A38AF28D1A6
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 17:59:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731427AbgJMP5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 11:57:12 -0400
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:34949 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731302AbgJMP5L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 11:57:11 -0400
-Received: by mail-oi1-f193.google.com with SMTP id w141so23030294oia.2;
-        Tue, 13 Oct 2020 08:57:10 -0700 (PDT)
+        id S1731441AbgJMP7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 11:59:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50080 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731302AbgJMP7j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 11:59:39 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92168C0613D0;
+        Tue, 13 Oct 2020 08:59:39 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id q25so9170568ioh.4;
+        Tue, 13 Oct 2020 08:59:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GoK/FN58ddEqFxJb9/v0ALx7V7xXFOJvLkZX3jWieiI=;
+        b=oylhnEaPP6ek6HyznEVGBglU1X4AQm1C3CktWmZqvyVeaMi2GU7Ra/7wM5wnnjNnOl
+         DeW8tV6roR/LEStCUbRSl+eMZwakc0VDzKzo19Tf1mUzRDAdYSpN0RCOsHm4IvyRXor5
+         UcDbV5LR2wMOP0EPvob2ZbW5C3XVrhjqP3o7Wugusaf9+pT6geRMr3XYwn9FXvZJGIfK
+         brnTkNrrg5BhAeLZTvVeWMqZQa0qczKvNC9bXVwnMd6I/VfVCN5NAB23Oq8np8hwaz+N
+         K6qqPJhOiuauqNMmJlcmJ2/pyHFe8jEXI8PdhcF35zd9ggVIx9YciuaPan+8MdE2qnJQ
+         4LnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=OZ/eS1qPTmzOSxijyOeTEv/iETW9q80iAo0sLSTFilA=;
-        b=XCIz20HcArs9IXMapoZitc5f+MJDNUl6CtRTyoV6FBXMYhWXRLJQHBwt7l1i/hbj3E
-         opZ7+Zh6r4+aa6UoOAkruMQAbBc3u7/eA2EtbdXmXBIR2kXcpGkXz3EGuziRzIf/Yq/o
-         SPvxs2pNx9UtJ20ugwUPAjFicXbMegXLf45MyqeCnao08r1HK7Xl/5pnutEmtVf9Hqmg
-         4vL7GT01sZy/QijxWWscvOKYvqD07U4xXG7RZ1CUkKPXOJYCyzyhNYkEsJFM2bLP5m0b
-         Potk137WhzZSqPlnYEMlUiH/UQR+yBNAYIobqsnaj+1SyXcuSUPCGz7FHXL8Epk4h5e1
-         sd2A==
-X-Gm-Message-State: AOAM5338lrHgmM+b9AjRHQqC+pKjoGVx9cSeqGnnnDVsnNQovDHHktds
-        J+Rw3ETT4zZFbhHZIeNqvgzISl4izlK0
-X-Google-Smtp-Source: ABdhPJz+H4GxPSSrEPTmrPeF3MwsaF2EiDnEhhJZHgylYS4aQDW7pXDNfI6eE7csQEmkcYcnshh60g==
-X-Received: by 2002:aca:c485:: with SMTP id u127mr249666oif.92.1602604630073;
-        Tue, 13 Oct 2020 08:57:10 -0700 (PDT)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id m13sm47370otn.20.2020.10.13.08.57.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Oct 2020 08:57:09 -0700 (PDT)
-Received: (nullmailer pid 3594570 invoked by uid 1000);
-        Tue, 13 Oct 2020 15:57:08 -0000
-Date:   Tue, 13 Oct 2020 10:57:08 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     mkl@pengutronix.de, Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] dt-bindings: can: flexcan: convert fsl,*flexcan
- bindings to yaml
-Message-ID: <20201013155708.GA3588169@bogus>
-References: <20201009132912.7583-1-o.rempel@pengutronix.de>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GoK/FN58ddEqFxJb9/v0ALx7V7xXFOJvLkZX3jWieiI=;
+        b=p1/vLZbxfuUk59c3J3EWwW/awMRtO9BoXKQIg4w81G/gD8gzZxYt3SUnSp7qPndk25
+         uLFkkrtNdkdVJEfkxmzVvnIPGismlZJeQ1cUP1iTaeSjBLfSvw0dNlx3sbxIg5cWvyuu
+         1d/d/qy4a63KTmC58J/Gt4jA26BwMUopcNUehXNNaPlRBbbL6SwRiNgMIiZwpAZbngZB
+         K8IoEjc+mJSXRVyHDFQnmGkwZohPJQoMeIOa1lE+9ctH6uvvKMgxmVz6F7V90Lmp1YZW
+         KkoxwmddWrIxzrCOAA+k+7r4XKpwsGCKNUii5I+c/XaJPXJt5UoKJdRLsREWMNwGucYB
+         QKvQ==
+X-Gm-Message-State: AOAM530vR7OppbCGSJ37e6z1kkA7T1J4a5/Nn5OrVlKeMPdjKJuwy23e
+        qGEZaSAZigkfLRH7Gqr7NCu8Hi0juQTqaBAwgKc=
+X-Google-Smtp-Source: ABdhPJzZha795qGjwavS+Zmii1KbnFD70ocwhqgxvRVr9dwy9BI+9WNCFg1FDRdptRVvAg+T8XTI6OVi6tIDsfr3kfE=
+X-Received: by 2002:a05:6638:98:: with SMTP id v24mr524631jao.113.1602604778970;
+ Tue, 13 Oct 2020 08:59:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201009132912.7583-1-o.rempel@pengutronix.de>
+References: <20201007101726.3149375-1-a.nogikh@gmail.com> <20201007101726.3149375-2-a.nogikh@gmail.com>
+ <20201009161558.57792e1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CACT4Y+ZF_umjBpyJiCb8YPQOOSofG-M9h0CB=xn3bCgK=Kr=9w@mail.gmail.com>
+ <20201010081431.1f2d9d0d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CACT4Y+aEQoRMO6eA7iQZf4dhOu2cD1ZbbH6TT4Rs_uQwG0PWYg@mail.gmail.com>
+In-Reply-To: <CACT4Y+aEQoRMO6eA7iQZf4dhOu2cD1ZbbH6TT4Rs_uQwG0PWYg@mail.gmail.com>
+From:   Aleksandr Nogikh <a.nogikh@gmail.com>
+Date:   Tue, 13 Oct 2020 18:59:28 +0300
+Message-ID: <CADpXja8i4YPT=vcuCr412RYqRMjTOGuaMW2dyV0j7BtEwNBgFA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] net: store KCOV remote handle in sk_buff
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Marco Elver <elver@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Aleksandr Nogikh <nogikh@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 09, 2020 at 03:29:12PM +0200, Oleksij Rempel wrote:
-> In order to automate the verification of DT nodes convert
-> fsl-flexcan.txt to fsl,flexcan.yaml
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  .../bindings/net/can/fsl,flexcan.yaml         | 137 ++++++++++++++++++
->  .../bindings/net/can/fsl-flexcan.txt          |  57 --------
->  2 files changed, 137 insertions(+), 57 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml
->  delete mode 100644 Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml b/Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml
-> new file mode 100644
-> index 000000000000..6486047f48b8
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml
-> @@ -0,0 +1,137 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/can/fsl,flexcan.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title:
-> +  Flexcan CAN controller on Freescale's ARM and PowerPC system-on-a-chip (SOC).
-> +
-> +maintainers:
-> +  - Marc Kleine-Budde <mkl@pengutronix.de>
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - enum:
-> +          - fsl,imx8qm-flexcan
-> +          - fsl,imx8mp-flexcan
-> +          - fsl,imx6q-flexcan
-> +          - fsl,imx53-flexcan
-> +          - fsl,imx35-flexcan
-> +          - fsl,imx28-flexcan
-> +          - fsl,imx25-flexcan
-> +          - fsl,p1010-flexcan
-> +          - fsl,vf610-flexcan
-> +          - fsl,ls1021ar2-flexcan
-> +          - fsl,lx2160ar1-flexcan
-> +      - items:
-> +          - enum:
-> +              - fsl,imx7d-flexcan
-> +              - fsl,imx6ul-flexcan
-> +              - fsl,imx6sx-flexcan
-> +          - const: fsl,imx6q-flexcan
-> +      - items:
-> +          - enum:
-> +              - fsl,ls1028ar1-flexcan
-> +          - const: fsl,lx2160ar1-flexcan
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    maxItems: 2
-> +
-> +  clock-names:
-> +    items:
-> +      - const: ipg
-> +      - const: per
-> +
-> +  clock-frequency:
-> +    description: |
-> +      The oscillator frequency driving the flexcan device, filled in by the
-> +      boot loader. This property should only be used the used operating system
-> +      doesn't support the clocks and clock-names property.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +
-> +  xceiver-supply:
-> +    description: Regulator that powers the CAN transceiver.
-> +    maxItems: 1
-> +
-> +  big-endian:
-> +    $ref: /schemas/types.yaml#/definitions/flag
-> +    description: |
-> +      This means the registers of FlexCAN controller are big endian. This is
-> +      optional property.i.e. if this property is not present in device tree
-> +      node then controller is assumed to be little endian. If this property is
-> +      present then controller is assumed to be big endian.
-> +
-> +  fsl,stop-mode:
-> +    description: |
-> +      Register bits of stop mode control.
-> +
-> +      The format should be as follows:
-> +      <gpr req_gpr req_bit>
-> +      gpr is the phandle to general purpose register node.
-> +      req_gpr is the gpr register offset of CAN stop request.
-> +      req_bit is the bit offset of CAN stop request.
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+On Mon, 12 Oct 2020 at 09:04, Dmitry Vyukov <dvyukov@google.com> wrote:
+>
+> On Sat, Oct 10, 2020 at 5:14 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Sat, 10 Oct 2020 09:54:57 +0200 Dmitry Vyukov wrote:
+> > > On Sat, Oct 10, 2020 at 1:16 AM Jakub Kicinski <kuba@kernel.org> wrote:
+[...]
+> > > > Could you use skb_extensions for this?
+> > >
+> > > Why? If for space, this is already under a non-production ifdef.
+> >
+> > I understand, but the skb_ext infra is there for uncommon use cases
+> > like this one. Any particular reason you don't want to use it?
+> > The slight LoC increase?
+> >
+> > Is there any precedent for adding the kcov field to other performance
+> > critical structures?
 
-Should be a phandle-array.
+It would be great to come to some conclusion on where exactly to store
+kcov_handle. Technically, it is possible to use skb extensions for the
+purpose, though it will indeed slightly increase the complexity.
 
-> +    items:
-> +      items:
-> +        - description: The 'gpr' is the phandle to general purpose register node.
-> +        - description: The 'req_gpr' is the gpr register offset of CAN stop request.
-> +          maximum: 0xff
-> +        - description: The 'req_bit' is the bit offset of CAN stop request.
-> +          maximum: 0x1f
-> +    minItems: 1
-> +    maxItems: 1
+Jakub, you think that kcov_handle should be added as an skb extension,
+right?
 
-Drop the outer 'items' and these 2. 
+Though I do not really object to moving the field, it still seems to
+me that sk_buff itself is a better place. Right now skb extensions
+store values that are local to specific protocols and that are only
+meaningful in the context of these protocols (correct me if I'm
+wrong). Although this patch only adds remote kcov coverage to the wifi
+code, kcov_handle can be meaningful for other protocols as well - just
+like the already existing sk_buff fields. So adding kcov_handle to skb
+extensions will break this logical separation.
 
-> +
-> +  fsl,clk-source:
-> +    description: |
-> +      Select the clock source to the CAN Protocol Engine (PE). It's SoC
-> +      implementation dependent. Refer to RM for detailed definition. If this
-> +      property is not set in device tree node then driver selects clock source 1
-> +      by default.
-> +      0: clock source 0 (oscillator clock)
-> +      1: clock source 1 (peripheral clock)
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    default: 1
-> +    minimum: 0
-> +    maximum: 1
-> +
-> +  wakeup-source:
-> +    $ref: /schemas/types.yaml#/definitions/flag
-> +    description:
-> +      Enable CAN remote wakeup.
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    can@1c000 {
-> +        compatible = "fsl,p1010-flexcan";
-> +        reg = <0x1c000 0x1000>;
-> +        interrupts = <48 0x2>;
-> +        interrupt-parent = <&mpic>;
-> +        clock-frequency = <200000000>;
-> +        fsl,clk-source = <0>;
-> +    };
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +    flexcan@2090000 {
-
-can@...
-
-> +        compatible = "fsl,imx6q-flexcan";
-> +        reg = <0x02090000 0x4000>;
-> +        interrupts = <0 110 IRQ_TYPE_LEVEL_HIGH>;
-> +        clocks = <&clks 1>, <&clks 2>;
-> +        clock-names = "ipg", "per";
-> +        fsl,stop-mode = <&gpr 0x34 28>;
-> +    };
-> diff --git a/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt b/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
-> deleted file mode 100644
-> index e10b6eb955e1..000000000000
-> --- a/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
-> +++ /dev/null
-> @@ -1,57 +0,0 @@
-> -Flexcan CAN controller on Freescale's ARM and PowerPC system-on-a-chip (SOC).
-> -
-> -Required properties:
-> -
-> -- compatible : Should be "fsl,<processor>-flexcan"
-> -
-> -  where <processor> is imx8qm, imx6q, imx28, imx53, imx35, imx25, p1010,
-> -  vf610, ls1021ar2, lx2160ar1, ls1028ar1.
-> -
-> -  The ls1028ar1 must be followed by lx2160ar1, e.g.
-> -   - "fsl,ls1028ar1-flexcan", "fsl,lx2160ar1-flexcan"
-> -
-> -  An implementation should also claim any of the following compatibles
-> -  that it is fully backwards compatible with:
-> -
-> -  - fsl,p1010-flexcan
-> -
-> -- reg : Offset and length of the register set for this device
-> -- interrupts : Interrupt tuple for this device
-> -
-> -Optional properties:
-> -
-> -- clock-frequency : The oscillator frequency driving the flexcan device
-> -
-> -- xceiver-supply: Regulator that powers the CAN transceiver
-> -
-> -- big-endian: This means the registers of FlexCAN controller are big endian.
-> -              This is optional property.i.e. if this property is not present in
-> -              device tree node then controller is assumed to be little endian.
-> -              if this property is present then controller is assumed to be big
-> -              endian.
-> -
-> -- fsl,stop-mode: register bits of stop mode control, the format is
-> -		 <&gpr req_gpr req_bit>.
-> -		 gpr is the phandle to general purpose register node.
-> -		 req_gpr is the gpr register offset of CAN stop request.
-> -		 req_bit is the bit offset of CAN stop request.
-> -
-> -- fsl,clk-source: Select the clock source to the CAN Protocol Engine (PE).
-> -		  It's SoC Implementation dependent. Refer to RM for detailed
-> -		  definition. If this property is not set in device tree node
-> -		  then driver selects clock source 1 by default.
-> -		  0: clock source 0 (oscillator clock)
-> -		  1: clock source 1 (peripheral clock)
-> -
-> -- wakeup-source: enable CAN remote wakeup
-> -
-> -Example:
-> -
-> -	can@1c000 {
-> -		compatible = "fsl,p1010-flexcan";
-> -		reg = <0x1c000 0x1000>;
-> -		interrupts = <48 0x2>;
-> -		interrupt-parent = <&mpic>;
-> -		clock-frequency = <200000000>; // filled in by bootloader
-> -		fsl,clk-source = <0>; // select clock source 0 for PE
-> -	};
-> -- 
-> 2.28.0
-> 
+--
+Best regards,
+Aleksandr
