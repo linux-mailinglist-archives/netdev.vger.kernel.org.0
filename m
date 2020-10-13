@@ -2,151 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB17A28D426
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 21:00:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F8F328D447
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 21:15:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731651AbgJMS74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 14:59:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49548 "EHLO
+        id S1732386AbgJMTO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 15:14:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727733AbgJMS74 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 14:59:56 -0400
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 13 Oct 2020 11:59:55 PDT
-Received: from mail1.systemli.org (mail1.systemli.org [IPv6:2001:678:a40:7000:2::14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6E28C0613D0;
-        Tue, 13 Oct 2020 11:59:55 -0700 (PDT)
-Subject: Re: [PATCH 2/2] Revert "dccp: don't free ccid2_hc_tx_sock struct in
- dccp_disconnect()"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=systemli.org;
-        s=default; t=1602615592;
-        bh=Aa9pyHjOcVbUByGQfquuzPxzq9f9clmIPBURVdjhxXc=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=6IHpWSmB8zoYG6asQFqI8pGauKxsUSqDu54yoOvi2XetGybBYXP9qOyhSM/eX99qw
-         KDfiHCuIco4JN2p2GOlyy0L0gEbI2QbgjHAHPiW/RbrZqCIie8WLvl8lG/ttNki/4W
-         a1xlVs+sGxTprEXOkSFVo3M9RWePNPZ+qZPdyBE3zFs5uBvbhUSlf+jphwhS5GbXYv
-         GY7xBc54ZHolUrMUonOhiDCWTVHZ9K6WavbdCrvbdX50aEPWmpqfO13nHeF4QcUiok
-         IBlnGdXj6TvoiSZRB76SOqEhM8I7V/tutv4vQ9DOSPbiJoznk30mcSK89D3lHAgqc8
-         MRHB9+9kLA0Eg==
-To:     Kleber Sacilotto de Souza <kleber.souza@canonical.com>,
-        netdev@vger.kernel.org
-Cc:     Gerrit Renker <gerrit@erg.abdn.ac.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        "Alexander A. Klimov" <grandmaster@al2klimov.de>,
-        Kees Cook <keescook@chromium.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexey Kodanev <alexey.kodanev@oracle.com>,
-        dccp@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20201013171849.236025-1-kleber.souza@canonical.com>
- <20201013171849.236025-3-kleber.souza@canonical.com>
-From:   Richard Sailer <richard_siegfried@systemli.org>
-Autocrypt: addr=richard_siegfried@systemli.org; prefer-encrypt=mutual;
- keydata=
- mQENBE3hr2UBCACos1E12camcYIlpe25jaqwu+ATrfuFcCIPsLmff7whzxClsaC78lsxQ3jD
- 4MIlOpkIBWJvc4sziai1P/CrafvM0DTuUasCv+mQpup6cFMWy1JmDtJ8X0Ccy/PH83e9Yjnv
- xJu0NhoQAqMZrVmXx4Q7DKcgpvkk9Oyd5u6ocfdb2GhF0Bxa7GySZyYOc4rQvduRLOdNMbnS
- 6SM+cTAhMOHtoqKWCP4EogXKALg6LDFcx8yUoMzLRy/YXsnWa1/WayG8Zr6kX84VKhTGUrdG
- Pw4Zg1cQ6vqwMZ4RwaR/9RWK2WnYr7XyOTDBgmCix5c5lu+GeLqUYUIPTvdQ7Xgwx0UhABEB
- AAG0OVJpY2hhcmQgU2llZ2ZyaWVkIFNhaWxlciA8cmljaGFyZF9zaWVnZnJpZWRAc3lzdGVt
- bGkub3JnPokBVwQTAQgAQQIbIwULCQgHAgYVCAkKCwIEFgIDAQIeAQIXgAIZARYhBAYAIbmK
- zp5fVAuyN/ZBOcwFm+HhBQJanueLBQkSYNKmAAoJEPZBOcwFm+Hh+ugH/2P0yClrZkkMK5y2
- L389qNPlF8i1H77S4NE9zxiHI38jnIFLqjD4F+KzGAXNmOXCw+QYqLL+TmsuGY+5LOLtp/M4
- lG6ajVC1JCcF2+bQrDc11g7AG7A+rySX5JpqSFO7ARfLTs3iW1DoyLN7lBUtL9dV+yx9mRUv
- fx/TcB9ItPhK4rtJuWy3yg6SNBZzkgc0zsCyIkJ4dEtdEW6IgW6Qk242kMVya8fytM02EwEM
- vBTdca/duCO2tEComPeF+8WExM+BfQ+6o3kpqRsOR6Ek6wDsnalFHy8NHaicbEy7qjybGOKZ
- IdvzAyAhsmpu+5ltOfQWViNBseqRk1H9ikuTKTq5AQ0ETeGvZQEIANRmPSJX9qVU+Hi74uvD
- /LYC3wPm5kCAS0Q5jT3AC5cisu8z92b/Bt8DRKwwpu4esZisQu3RSFvnmkrllkuokSAVKxXo
- bZG2yTq+qecrvKtVH99lA0leiy5TdcJdmhJvkcQv7kvIgKYdXSW1BAhUbtX827IGAW1LCvJL
- gKqox3Ftxpi5pf/gVh7NFXU/7n6Nr3NGi5havoReeIy8iVKGFjyCFN67vlyzaTV6yTUIdrko
- StTJJ8c7ECjJSkCW34lj8mR0y9qCRK5gIZURf3jjMQBDuDvHO0XQ4mog6/oOov4vJRyNMhWT
- 2b0LG5CFJeOQTQVgfaT1MckluRBvYMZAOmkAEQEAAYkBPAQYAQIAJgIbDBYhBAYAIbmKzp5f
- VAuyN/ZBOcwFm+HhBQJanueQBQkSYNKrAAoJEPZBOcwFm+HhrCAH/2doMkTKWrIzKmBidxOR
- +hvqJfBB4GvoHBsQoqWj85DtgvE5jKc11FYzSDzQjmMKIIBwaOjjrQ8QyXm2CYJlx7/GiEJc
- F3QNa5q3GBgiyZ0h78b2Lbu/sBhaCFSXHfnriRGvIXqsxyPMllqb+LBRy56ed97OQBQX8nFI
- umdUMtt8EFK2SM0KYY1V0COcYqGHMRUiVosTV1aVwoLm2SXsB9jicPUaQbRgsPfglTn00wnl
- fhJ8bAO800MtG+LW6pzP+6EZPvnHhKBS7Xbl6bn6r2OW32T7TeFg0RJbpE/MW1gY0NjgmtWj
- vdhuvK9nHCRL2O/xLofm9aoELUaXGHoxMn4=
-Message-ID: <bb2755d3-cb80-5761-f01f-4c6da9bd31c2@systemli.org>
-Date:   Tue, 13 Oct 2020 20:59:50 +0200
+        with ESMTP id S1725984AbgJMTO5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 15:14:57 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3DEFC0613D0
+        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 12:14:57 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id p16so1581713ilq.5
+        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 12:14:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=VJjtKmd2apILXmfF2EQPIO1XzJ0lEoY85P4KNi8M4Yo=;
+        b=lP3Z2IVedcNLCzGuPNd6NJi5JbXGjAbUhN+kkeUinSOtv/DczOrRtnE5Nm7+PbKCRC
+         x8jvcACGr2Ov9Cyh8+GBSd+UFWwEMrg63v/5QR4m9sMr3LOd0SZ/PuMdSHBCJz43osj6
+         HCTR9mrXxvPHqgtxu8tRfW3HbfTLOlr0KpAK5wTbjT/WvZdJm7I50AHZiYzh6aRDjyNe
+         7PuzdQRCPqSprJ3AO5J2EL2yPoP4WuHlTfO+mzE1hej2VOycNQkzTvug4ZOwa5J98FO5
+         oIunPo3+S8pQ10unsxlhBcECm1ex1iuJJ4CXLzrldKfaNBjGdSe0Fi28Q8NLSU+Q6nyG
+         CqXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=VJjtKmd2apILXmfF2EQPIO1XzJ0lEoY85P4KNi8M4Yo=;
+        b=XVc7Vz+QfFUex+v5SAUpdl8lUzeIDRcI41rUhRDgDZBkan49+zinMlq/BQEKbTUswa
+         vwMgF4GA+nub4nz0Bf7bXVXmbQZ0ERzUZFEvcpkdxVMk9G5Y2s1grIyW3dHXkfvY0O1n
+         N/yH3jP8cx/nySelraWdibkR1dDhEzZ9t63bBLkSHUeo8MGKog4428JspdY1BVYv8A9e
+         c5VGDpNrVpOBvrr/hTKzL719M0ksovNp3nOdsCd21N3IyaTLgRlEprDprYadh1xH2YGl
+         sM1Fm1nw1lBU7T3R/zE1ckTE46KCNEhIvlz8ezny6m8VP+pKGRrrgWZaJIYlZmN86yXC
+         1iBw==
+X-Gm-Message-State: AOAM533y5srG0/2WNlc/KelHHOkgiNveKYklfgMIv8Kkn46raselo/GI
+        b4QqrwcC3KNwrWzuxHgcGeIwx9qHr0JZRWfIVQs9NA==
+X-Google-Smtp-Source: ABdhPJwvTALQicnbBOI5aDrUrzxONwJs4HzJNk1waENtSLsVKmq+AX0giwG/VJ2TPij8WjQys43xC/7TtjRAb4spNvo=
+X-Received: by 2002:a92:cd11:: with SMTP id z17mr1186301iln.201.1602616496705;
+ Tue, 13 Oct 2020 12:14:56 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20201013171849.236025-3-kleber.souza@canonical.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="J1wNxwe2U3hUL6xUfMbG23kWMkDthUjal"
+From:   Grant Grundler <grundler@google.com>
+Date:   Tue, 13 Oct 2020 19:14:45 +0000
+Message-ID: <CANEJEGuciX5he18HU5B+mAEcTom2MFtAKZfiVHCojvj24mzSAA@mail.gmail.com>
+Subject: cdc-ncm spewing link state
+To:     nic_swsd <nic_swsd@realtek.com>, Hayes Wang <hayeswang@realtek.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Prashant Malani <pmalani@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---J1wNxwe2U3hUL6xUfMbG23kWMkDthUjal
-Content-Type: multipart/mixed; boundary="WxePmLM0IhiWSQnQjcpdYpcvAqMuNppWd";
- protected-headers="v1"
-From: Richard Sailer <richard_siegfried@systemli.org>
-To: Kleber Sacilotto de Souza <kleber.souza@canonical.com>,
- netdev@vger.kernel.org
-Cc: Gerrit Renker <gerrit@erg.abdn.ac.uk>,
- "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
- Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
- "Gustavo A. R. Silva" <gustavoars@kernel.org>,
- "Alexander A. Klimov" <grandmaster@al2klimov.de>,
- Kees Cook <keescook@chromium.org>, Eric Dumazet <edumazet@google.com>,
- Alexey Kodanev <alexey.kodanev@oracle.com>, dccp@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Message-ID: <bb2755d3-cb80-5761-f01f-4c6da9bd31c2@systemli.org>
-Subject: Re: [PATCH 2/2] Revert "dccp: don't free ccid2_hc_tx_sock struct in
- dccp_disconnect()"
-References: <20201013171849.236025-1-kleber.souza@canonical.com>
- <20201013171849.236025-3-kleber.souza@canonical.com>
-In-Reply-To: <20201013171849.236025-3-kleber.souza@canonical.com>
+When I connect a "newish" RTL8156 2.5Gbps USB ethernet dongle to any
+chromebook running 4.4, 4.14 or local workstation running 5.7.17 I get
+the link state spewed on the dmesg at ~30 times per second:
+[67541.686970] usb 2-6: new SuperSpeed Gen 1 USB device number 3 using xhci_hcd
+[67541.707673] usb 2-6: New USB device found, idVendor=0bda,
+idProduct=8156, bcdDevice=30.00
+[67541.707678] usb 2-6: New USB device strings: Mfr=1, Product=2, SerialNumber=6
+[67541.707681] usb 2-6: Product: USB 10/100/1G/2.5G LAN
+[67541.707684] usb 2-6: Manufacturer: Realtek
+[67541.707687] usb 2-6: SerialNumber: 000A91758
+[67541.751910] cdc_ncm 2-6:2.0: MAC-Address: 00:c0:ca:a9:17:58
+[67541.751912] cdc_ncm 2-6:2.0: setting rx_max = 16384
+[67541.751978] cdc_ncm 2-6:2.0: setting tx_max = 16384
+[67541.752223] cdc_ncm 2-6:2.0 usb0: register 'cdc_ncm' at
+usb-0000:00:14.0-6, CDC NCM, 00:c0:ca:a9:17:58
+[67541.752507] usbcore: registered new interface driver cdc_ncm
+[67541.753929] usbcore: registered new interface driver cdc_wdm
+[67541.755147] usbcore: registered new interface driver cdc_mbim
+[67541.760965] cdc_ncm 2-6:2.0 enx00c0caa91758: renamed from usb0
+[67541.833636] cdc_ncm 2-6:2.0 enx00c0caa91758: network connection: disconnected
+[67541.865610] cdc_ncm 2-6:2.0 enx00c0caa91758: network connection: disconnected
+...
 
---WxePmLM0IhiWSQnQjcpdYpcvAqMuNppWd
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-
-On 13/10/2020 19:18, Kleber Sacilotto de Souza wrote:
-> rom: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
->=20
-> This reverts commit 2677d20677314101293e6da0094ede7b5526d2b1.
->=20
-> This fixes an issue that after disconnect, dccps_hc_tx_ccid will still =
-be
-> kept, allowing the socket to be reused as a listener socket, and the cl=
-oned
-> socket will free its dccps_hc_tx_ccid, leading to a later use after fre=
-e,
-> when the listener socket is closed.
->=20
-> This addresses CVE-2020-16119.
->=20
-> Fixes: 2677d2067731 (dccp: don't free ccid2_hc_tx_sock struct in dccp_d=
-isconnect())
-> Reported-by: Hadar Manor
-> Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-> Signed-off-by: Kleber Sacilotto de Souza <kleber.souza@canonical.com>
-> ---
-Acked-by: Richard Sailer <richard_siegfried@systemli.org>
+This works out to roughly 200MB per day or 1 GB per week. Not acceptable.
 
 
---WxePmLM0IhiWSQnQjcpdYpcvAqMuNppWd--
+QUESTION: Is the following change the correct approach to resolve at
+least 1/2 the issue?
+    Or is this a bug in the Realtek CDC NCM support?
 
---J1wNxwe2U3hUL6xUfMbG23kWMkDthUjal
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
+index 16546268d77d7..8258f7463fcf1 100644
+--- a/drivers/net/usb/cdc_ncm.c
++++ b/drivers/net/usb/cdc_ncm.c
+@@ -1623,8 +1623,7 @@ static void cdc_ncm_status(struct usbnet *dev,
+struct urb *urb)
 
------BEGIN PGP SIGNATURE-----
+ static const struct driver_info cdc_ncm_info = {
+        .description = "CDC NCM",
+-       .flags = FLAG_POINTTOPOINT | FLAG_NO_SETINT | FLAG_MULTI_PACKET
+-                       | FLAG_LINK_INTR,
++       .flags = FLAG_POINTTOPOINT | FLAG_NO_SETINT | FLAG_MULTI_PACKET,
+        .bind = cdc_ncm_bind,
+        .unbind = cdc_ncm_unbind,
+        .manage_power = usbnet_manage_power,
 
-iQEzBAEBCgAdFiEEBgAhuYrOnl9UC7I39kE5zAWb4eEFAl+F+ScACgkQ9kE5zAWb
-4eH6sQf/Tqw4Q9r0PAI1c+stYzlcCikkYpFE33vnoG+SbiIQCBhB83rs/BxTNmxO
-mKRJpzTswAQsqrnGRCrFGcazAUJKWqhAxC6N+g0nZCDZuSVfSAAh5e6ayHP4HLJw
-SW0daEUNYkdGvYkl5Dhom35pjziR+m1RTWE2EXesA4vMpOG+WBsNyzZ1tmDDb/Ad
-nYQNfRZOZjXpFWwGg4yVl9q0kddB5RYxkYXHH1gRsMK8uvJRjGXmaj/XdNlcdyLQ
-BfwUINi94v9arFQZwnjtiKDTkpN5YaD4GLPT+ffQLcBc6P6ixa6CcCCG0khkjLu5
-dfBZ8s+blxKb/APl8JUsI6Ud9YMLVw==
-=+HsJ
------END PGP SIGNATURE-----
+Removing FLAG_LINK_INTR eliminated the "no link" spew but not the
+"uplink" spew output from cdc_ncm_speed_change():
+[   70.919608] usb 2-2: new SuperSpeed USB device number 3 using xhci_hcd
+[   70.931102] usb 2-2: New USB device found, idVendor=0bda,
+idProduct=8156, bcdDevice=30.00
+[   70.931107] usb 2-2: New USB device strings: Mfr=1, Product=2, SerialNumber=6
+[   70.931108] usb 2-2: Product: USB 10/100/1G/2.5G LAN
+[   70.931110] usb 2-2: Manufacturer: Realtek
+[   70.931112] usb 2-2: SerialNumber: 000000001
+[   71.013028] cdc_ncm 2-2:2.0: MAC-Address: a0:ce:c8:c8:13:60
+[   71.013033] cdc_ncm 2-2:2.0: setting rx_max = 16384
+[   71.013110] cdc_ncm 2-2:2.0: setting tx_max = 16384
+[   71.013394] cdc_ncm 2-2:2.0 usb0: register 'cdc_ncm' at
+usb-0000:00:14.0-2, CDC NCM, a0:ce:c8:c8:13:60
+[   71.014265] usbcore: registered new interface driver cdc_ncm
+[   71.018726] usbcore: registered new interface driver cdc_wdm
+[   71.019875] usbcore: registered new interface driver cdc_mbim
+... (connect ethernet from GigE switch to dongle)
+[  133.820200] cdc_ncm 2-2:2.0 usb0: 1000 mbit/s downlink 1000 mbit/s uplink
+[  133.884202] cdc_ncm 2-2:2.0 usb0: 1000 mbit/s downlink 1000 mbit/s uplink
+[  133.948235] cdc_ncm 2-2:2.0 usb0: 1000 mbit/s downlink 1000 mbit/s uplink
+...
+[  167.164652] cdc_ncm 2-2:2.0 usb0: 1000 mbit/s downlink 1000 mbit/s uplink
+[  167.228824] cdc_ncm 2-2:2.0 usb0: 1000 mbit/s downlink 1000 mbit/s uplink
+[  167.292679] cdc_ncm 2-2:2.0 usb0: 1000 mbit/s downlink 1000 mbit/s uplink
+[  167.356662] cdc_ncm 2-2:2.0 usb0: 1000 mbit/s downlink 1000 mbit/s uplink
+[  173.473869] usb 2-2: USB disconnect, device number 3
+[  173.474110] cdc_ncm 2-2:2.0 usb0: unregister 'cdc_ncm'
+usb-0000:00:14.0-2, CDC NCM
+[  181.171531] PDLOG 2020/10/13 01:55:23.1602554122 P0 SRC 3000mA
 
---J1wNxwe2U3hUL6xUfMbG23kWMkDthUjal--
+Thanks for any help with this.
+
+cheers,
+grant
