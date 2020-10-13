@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CAF928CB98
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 12:27:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A8BB28CB9C
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 12:27:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730839AbgJMK1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 06:27:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55058 "EHLO
+        id S1731102AbgJMK11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 06:27:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730814AbgJMK1M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 06:27:12 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139A4C0613D8
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 03:27:11 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id f5so269231pgb.1
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 03:27:11 -0700 (PDT)
+        with ESMTP id S1730852AbgJMK1O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 06:27:14 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51E6BC0613D0
+        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 03:27:14 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id x16so17268969pgj.3
+        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 03:27:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=FN+YKdDgSUjsd9TeDWmG2gdywodGyUIcs86hwY2qLts=;
-        b=Lg3pcwQuVQjOIHBSXSzVayFy/A1GDWBwmja6ZrcbnXD3jVL+TmdqYedBPHFS7PRWAO
-         lwqqx1235itn8zsPrnzLS/d42EVhXas3hvag/uuS84OtjEBEDiHWg/bXDMd36GCX5Zok
-         Xyp78HEKl+H4/khPo1kyyRqdqWzy5A71dBUihPXMIRy1FgAPrLdl9fS6+YYKOs1hzfv1
-         IhTs4cbrP8S1I6oRXKaVsg6mZc5glKlXIqP5EgRTGoDJemDpNVbcNesZ0qOzLp4XV9/b
-         FKAic3VK6I9YxexhCxoYw97rG+dJT49lCa9ioIOTVpDjG/Zl00CUmYukJkOplMqig9il
-         Z02g==
+        bh=SZSIjvRmiHjmprgbBa1hYTijjhvThg+IG6XFdYD/tYI=;
+        b=mL5EWA0uDCVoyjEvvwku2Si0F0azim/4INGkOo2C/PqOc4I/oV2nOG3c1AmOlQyyJN
+         UW86kBZG39tn9tthuJWjkOBeOhFs6wH8e/uHOKI1hol3gCoAQs5vQLnPbzb2YhcUVGUv
+         5nRDXlssYs4fc9rVKlLChPi6WJ6EWXG9JQkeJYXuNo17k4V0E1Vki6Ozh2C2fVb/8N6x
+         txKrnd+zX25xy31hc+z5hjmTr62PZ36CESLzVpPdqNRkGoPx8uv9pcT8MaEWT4a35k6n
+         US/jz/SfGtuEpj3uLj6tnIfdNYnRB8+mI0R3f/ScU67X7ccqluY0Rsy5epeKKndiVVQJ
+         cLaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=FN+YKdDgSUjsd9TeDWmG2gdywodGyUIcs86hwY2qLts=;
-        b=ZA5462+kLQMRffMplGX1gDV+yQheFs3nHjS1jQKuzndH+l+ub869Gs+XRjdXofmIlo
-         ce9pJgAurp6ZUvwwGsKkMEVhKLXD/7PmQm59s7oLBnFx3nmrqJ1W3s1rfTrGohV2DXCs
-         t0fCU3W2rYzYSdW2DViZJsSGt74rYCehn5rwBOh+N7jWdhkOeElhOM9rhgPHvJ43f2ba
-         fDvzDZ57Ewz00V+wuRyYUbqnGqEK9aVEBEh1G2H2jUhMgpVMqT9uh8/NyFOj5glJUDWJ
-         VJQctwDqYFeIaJh5YvJ+Vw7RhGBkVqb6VswSRAZR8jW0u0h/c4xV0VxVetb9LkdROL1k
-         REtQ==
-X-Gm-Message-State: AOAM531ofbQt62MDUVtq3KjJ55zOBU7U+E8O1mcFZ1tnmlj2trBVFmKL
-        2gCejfP9XbmzA7vLVFeaQAD4AB+WnFqWig==
-X-Google-Smtp-Source: ABdhPJwhHixu2iBKmlUqp3f7MlPaS3KJKEjeWaSwQcRyGK3fL0LeGAwWW6CUW28FPXT6pRX8YzhDIA==
-X-Received: by 2002:a62:3815:0:b029:152:80d4:2a6f with SMTP id f21-20020a6238150000b029015280d42a6fmr26113601pfa.72.1602584830652;
-        Tue, 13 Oct 2020 03:27:10 -0700 (PDT)
+        bh=SZSIjvRmiHjmprgbBa1hYTijjhvThg+IG6XFdYD/tYI=;
+        b=O71oLdaidkqpdTrS+tflkVhljX9d6JoJePDrQv3pv4FvGHnDu4o4dh1nn9vspmKGBK
+         hNjNI3WV2CY8Hw3IXPJVHB8MTzW59LbzgjCJvElKUh6OzNNNL+67oH2dPX5doH8s3LB8
+         B0D1EO6DDHKnYRUSk8ddadw8l4+FymPcuoYaeu7dok/SYGVAlncmjg9Ln8thzZ77W5I7
+         x38Y49tYqkvsfrpA4mk1z9rh1YT8H83kTmXx3no53ZToGfu6Snf6wYDC+cywPM8krYDe
+         d3oGC67KUn9As3WVGC1pM3cuFYbftY7CnknFNl9319pIpXKqZHOfzGn/DYUSAIewMEg+
+         HSRA==
+X-Gm-Message-State: AOAM530MS8VCDvaW0R/iZQfZ1VWaxTzeJXGdg0okGj+QlotdLtZ5/0mO
+        xoyvqqL7URF7u+Ahfb4IqO8=
+X-Google-Smtp-Source: ABdhPJx8nOPXVz6JZfbMonHls0ML648Ktho81roawwdqhHT057Wa4qkJYPk5JTG88t/Dl0SyIV96eg==
+X-Received: by 2002:a62:4e0f:0:b029:156:13e0:efa7 with SMTP id c15-20020a624e0f0000b029015613e0efa7mr9108223pfb.73.1602584833753;
+        Tue, 13 Oct 2020 03:27:13 -0700 (PDT)
 Received: from hyd1358.caveonetworks.com ([1.6.215.26])
-        by smtp.googlemail.com with ESMTPSA id g4sm22034444pgj.15.2020.10.13.03.27.07
+        by smtp.googlemail.com with ESMTPSA id g4sm22034444pgj.15.2020.10.13.03.27.11
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 13 Oct 2020 03:27:10 -0700 (PDT)
+        Tue, 13 Oct 2020 03:27:13 -0700 (PDT)
 From:   sundeep.lkml@gmail.com
 To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
 Cc:     rsaladi2@marvell.com, sgoutham@marvell.com,
         Subbaraya Sundeep <sbhatta@marvell.com>
-Subject: [net-next PATCH 08/10] octeontx2-pf: Calculate LBK link instead of hardcoding
-Date:   Tue, 13 Oct 2020 15:56:30 +0530
-Message-Id: <1602584792-22274-9-git-send-email-sundeep.lkml@gmail.com>
+Subject: [net-next PATCH 09/10] octeontx2-af: Display NIX1 also in debugfs
+Date:   Tue, 13 Oct 2020 15:56:31 +0530
+Message-Id: <1602584792-22274-10-git-send-email-sundeep.lkml@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1602584792-22274-1-git-send-email-sundeep.lkml@gmail.com>
 References: <1602584792-22274-1-git-send-email-sundeep.lkml@gmail.com>
@@ -60,60 +60,397 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Subbaraya Sundeep <sbhatta@marvell.com>
+From: Rakesh Babu <rsaladi2@marvell.com>
 
-CGX links are followed by LBK links but number of
-CGX and LBK links varies between platforms. Hence
-get the number of links present in hardware from
-AF and use it to calculate LBK link number.
+If NIX1 block is also implemented then add a new
+directory for NIX1 in debugfs root. Stats of
+NIX1 block can be read/writen from/to the files
+in directory "/sys/kernel/debug/octeontx2/nix1/".
 
+Signed-off-by: Rakesh Babu <rsaladi2@marvell.com>
 Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: Rakesh Babu <rsaladi2@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c | 8 ++++++--
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h | 2 ++
- 2 files changed, 8 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/af/common.h |   2 +
+ .../ethernet/marvell/octeontx2/af/rvu_debugfs.c    | 166 +++++++++++++++------
+ 2 files changed, 125 insertions(+), 43 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index d258109..fc765e8 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -531,8 +531,10 @@ static int otx2_get_link(struct otx2_nic *pfvf)
- 		link = 4 * ((map >> 8) & 0xF) + ((map >> 4) & 0xF);
- 	}
- 	/* LBK channel */
--	if (pfvf->hw.tx_chan_base < SDP_CHAN_BASE)
--		link = 12;
-+	if (pfvf->hw.tx_chan_base < SDP_CHAN_BASE) {
-+		map = pfvf->hw.tx_chan_base & 0x7FF;
-+		link = pfvf->hw.cgx_links | ((map >> 8) & 0xF);
-+	}
- 
- 	return link;
- }
-@@ -1503,6 +1505,8 @@ void mbox_handler_nix_lf_alloc(struct otx2_nic *pfvf,
- 	pfvf->hw.tx_chan_base = rsp->tx_chan_base;
- 	pfvf->hw.lso_tsov4_idx = rsp->lso_tsov4_idx;
- 	pfvf->hw.lso_tsov6_idx = rsp->lso_tsov6_idx;
-+	pfvf->hw.cgx_links = rsp->cgx_links;
-+	pfvf->hw.lbk_links = rsp->lbk_links;
- }
- EXPORT_SYMBOL(mbox_handler_nix_lf_alloc);
- 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index d6253f2..386cb08 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -197,6 +197,8 @@ struct otx2_hw {
- 	struct otx2_drv_stats	drv_stats;
- 	u64			cgx_rx_stats[CGX_RX_STATS_COUNT];
- 	u64			cgx_tx_stats[CGX_TX_STATS_COUNT];
-+	u8			cgx_links;  /* No. of CGX links present in HW */
-+	u8			lbk_links;  /* No. of LBK links present in HW */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/common.h b/drivers/net/ethernet/marvell/octeontx2/af/common.h
+index 3b7cad5..8f68e7a 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/common.h
+@@ -210,6 +210,8 @@ enum ndc_idx_e {
+ 	NIX0_RX = 0x0,
+ 	NIX0_TX = 0x1,
+ 	NPA0_U  = 0x2,
++	NIX1_RX = 0x4,
++	NIX1_TX = 0x5,
  };
  
- struct otx2_vf_config {
+ enum ndc_ctype_e {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+index 7b8cc55..b1b54cb 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_debugfs.c
+@@ -224,18 +224,11 @@ static ssize_t rvu_dbg_rsrc_attach_status(struct file *filp,
+ 
+ RVU_DEBUG_FOPS(rsrc_status, rsrc_attach_status, NULL);
+ 
+-static bool rvu_dbg_is_valid_lf(struct rvu *rvu, int blktype, int lf,
++static bool rvu_dbg_is_valid_lf(struct rvu *rvu, int blkaddr, int lf,
+ 				u16 *pcifunc)
+ {
+ 	struct rvu_block *block;
+ 	struct rvu_hwinfo *hw;
+-	int blkaddr;
+-
+-	blkaddr = rvu_get_blkaddr(rvu, blktype, 0);
+-	if (blkaddr < 0) {
+-		dev_warn(rvu->dev, "Invalid blktype\n");
+-		return false;
+-	}
+ 
+ 	hw = rvu->hw;
+ 	block = &hw->block[blkaddr];
+@@ -291,10 +284,12 @@ static int rvu_dbg_qsize_display(struct seq_file *filp, void *unsused,
+ {
+ 	void (*print_qsize)(struct seq_file *filp,
+ 			    struct rvu_pfvf *pfvf) = NULL;
++	struct dentry *current_dir;
+ 	struct rvu_pfvf *pfvf;
+ 	struct rvu *rvu;
+ 	int qsize_id;
+ 	u16 pcifunc;
++	int blkaddr;
+ 
+ 	rvu = filp->private;
+ 	switch (blktype) {
+@@ -312,7 +307,15 @@ static int rvu_dbg_qsize_display(struct seq_file *filp, void *unsused,
+ 		return -EINVAL;
+ 	}
+ 
+-	if (!rvu_dbg_is_valid_lf(rvu, blktype, qsize_id, &pcifunc))
++	if (blktype == BLKTYPE_NPA) {
++		blkaddr = BLKADDR_NPA;
++	} else {
++		current_dir = filp->file->f_path.dentry->d_parent;
++		blkaddr = (!strcmp(current_dir->d_name.name, "nix1") ?
++				   BLKADDR_NIX1 : BLKADDR_NIX0);
++	}
++
++	if (!rvu_dbg_is_valid_lf(rvu, blkaddr, qsize_id, &pcifunc))
+ 		return -EINVAL;
+ 
+ 	pfvf = rvu_get_pfvf(rvu, pcifunc);
+@@ -329,6 +332,8 @@ static ssize_t rvu_dbg_qsize_write(struct file *filp,
+ 	struct seq_file *seqfile = filp->private_data;
+ 	char *cmd_buf, *cmd_buf_tmp, *subtoken;
+ 	struct rvu *rvu = seqfile->private;
++	struct dentry *current_dir;
++	int blkaddr;
+ 	u16 pcifunc;
+ 	int ret, lf;
+ 
+@@ -355,7 +360,15 @@ static ssize_t rvu_dbg_qsize_write(struct file *filp,
+ 		goto qsize_write_done;
+ 	}
+ 
+-	if (!rvu_dbg_is_valid_lf(rvu, blktype, lf, &pcifunc)) {
++	if (blktype == BLKTYPE_NPA) {
++		blkaddr = BLKADDR_NPA;
++	} else {
++		current_dir = filp->f_path.dentry->d_parent;
++		blkaddr = (!strcmp(current_dir->d_name.name, "nix1") ?
++				   BLKADDR_NIX1 : BLKADDR_NIX0);
++	}
++
++	if (!rvu_dbg_is_valid_lf(rvu, blkaddr, lf, &pcifunc)) {
+ 		ret = -EINVAL;
+ 		goto qsize_write_done;
+ 	}
+@@ -498,7 +511,7 @@ static int rvu_dbg_npa_ctx_display(struct seq_file *m, void *unused, int ctype)
+ 		return -EINVAL;
+ 	}
+ 
+-	if (!rvu_dbg_is_valid_lf(rvu, BLKTYPE_NPA, npalf, &pcifunc))
++	if (!rvu_dbg_is_valid_lf(rvu, BLKADDR_NPA, npalf, &pcifunc))
+ 		return -EINVAL;
+ 
+ 	pfvf = rvu_get_pfvf(rvu, pcifunc);
+@@ -556,7 +569,7 @@ static int write_npa_ctx(struct rvu *rvu, bool all,
+ 	int max_id = 0;
+ 	u16 pcifunc;
+ 
+-	if (!rvu_dbg_is_valid_lf(rvu, BLKTYPE_NPA, npalf, &pcifunc))
++	if (!rvu_dbg_is_valid_lf(rvu, BLKADDR_NPA, npalf, &pcifunc))
+ 		return -EINVAL;
+ 
+ 	pfvf = rvu_get_pfvf(rvu, pcifunc);
+@@ -704,9 +717,17 @@ static void ndc_cache_stats(struct seq_file *s, int blk_addr,
+ 			    int ctype, int transaction)
+ {
+ 	u64 req, out_req, lat, cant_alloc;
+-	struct rvu *rvu = s->private;
++	struct nix_hw *nix_hw;
++	struct rvu *rvu;
+ 	int port;
+ 
++	if (blk_addr == BLKADDR_NDC_NPA0) {
++		rvu = s->private;
++	} else {
++		nix_hw = s->private;
++		rvu = nix_hw->rvu;
++	}
++
+ 	for (port = 0; port < NDC_MAX_PORT; port++) {
+ 		req = rvu_read64(rvu, blk_addr, NDC_AF_PORTX_RTX_RWX_REQ_PC
+ 						(port, ctype, transaction));
+@@ -749,9 +770,17 @@ RVU_DEBUG_SEQ_FOPS(npa_ndc_cache, npa_ndc_cache_display, NULL);
+ 
+ static int ndc_blk_hits_miss_stats(struct seq_file *s, int idx, int blk_addr)
+ {
+-	struct rvu *rvu = s->private;
++	struct nix_hw *nix_hw;
++	struct rvu *rvu;
+ 	int bank, max_bank;
+ 
++	if (blk_addr == BLKADDR_NDC_NPA0) {
++		rvu = s->private;
++	} else {
++		nix_hw = s->private;
++		rvu = nix_hw->rvu;
++	}
++
+ 	max_bank = NDC_MAX_BANK(rvu, blk_addr);
+ 	for (bank = 0; bank < max_bank; bank++) {
+ 		seq_printf(s, "BANK:%d\n", bank);
+@@ -767,16 +796,30 @@ static int ndc_blk_hits_miss_stats(struct seq_file *s, int idx, int blk_addr)
+ 
+ static int rvu_dbg_nix_ndc_rx_cache_display(struct seq_file *filp, void *unused)
+ {
+-	return ndc_blk_cache_stats(filp, NIX0_RX,
+-				   BLKADDR_NDC_NIX0_RX);
++	struct nix_hw *nix_hw = filp->private;
++	int blkaddr = 0;
++	int ndc_idx = 0;
++
++	blkaddr = (nix_hw->blkaddr == BLKADDR_NIX1 ?
++		   BLKADDR_NDC_NIX1_RX : BLKADDR_NDC_NIX0_RX);
++	ndc_idx = (nix_hw->blkaddr == BLKADDR_NIX1 ? NIX1_RX : NIX0_RX);
++
++	return ndc_blk_cache_stats(filp, ndc_idx, blkaddr);
+ }
+ 
+ RVU_DEBUG_SEQ_FOPS(nix_ndc_rx_cache, nix_ndc_rx_cache_display, NULL);
+ 
+ static int rvu_dbg_nix_ndc_tx_cache_display(struct seq_file *filp, void *unused)
+ {
+-	return ndc_blk_cache_stats(filp, NIX0_TX,
+-				   BLKADDR_NDC_NIX0_TX);
++	struct nix_hw *nix_hw = filp->private;
++	int blkaddr = 0;
++	int ndc_idx = 0;
++
++	blkaddr = (nix_hw->blkaddr == BLKADDR_NIX1 ?
++		   BLKADDR_NDC_NIX1_TX : BLKADDR_NDC_NIX0_TX);
++	ndc_idx = (nix_hw->blkaddr == BLKADDR_NIX1 ? NIX1_TX : NIX0_TX);
++
++	return ndc_blk_cache_stats(filp, ndc_idx, blkaddr);
+ }
+ 
+ RVU_DEBUG_SEQ_FOPS(nix_ndc_tx_cache, nix_ndc_tx_cache_display, NULL);
+@@ -792,8 +835,14 @@ RVU_DEBUG_SEQ_FOPS(npa_ndc_hits_miss, npa_ndc_hits_miss_display, NULL);
+ static int rvu_dbg_nix_ndc_rx_hits_miss_display(struct seq_file *filp,
+ 						void *unused)
+ {
+-	return ndc_blk_hits_miss_stats(filp,
+-				      NPA0_U, BLKADDR_NDC_NIX0_RX);
++	struct nix_hw *nix_hw = filp->private;
++	int ndc_idx = NPA0_U;
++	int blkaddr = 0;
++
++	blkaddr = (nix_hw->blkaddr == BLKADDR_NIX1 ?
++		   BLKADDR_NDC_NIX1_RX : BLKADDR_NDC_NIX0_RX);
++
++	return ndc_blk_hits_miss_stats(filp, ndc_idx, blkaddr);
+ }
+ 
+ RVU_DEBUG_SEQ_FOPS(nix_ndc_rx_hits_miss, nix_ndc_rx_hits_miss_display, NULL);
+@@ -801,8 +850,14 @@ RVU_DEBUG_SEQ_FOPS(nix_ndc_rx_hits_miss, nix_ndc_rx_hits_miss_display, NULL);
+ static int rvu_dbg_nix_ndc_tx_hits_miss_display(struct seq_file *filp,
+ 						void *unused)
+ {
+-	return ndc_blk_hits_miss_stats(filp,
+-				      NPA0_U, BLKADDR_NDC_NIX0_TX);
++	struct nix_hw *nix_hw = filp->private;
++	int ndc_idx = NPA0_U;
++	int blkaddr = 0;
++
++	blkaddr = (nix_hw->blkaddr == BLKADDR_NIX1 ?
++		   BLKADDR_NDC_NIX1_TX : BLKADDR_NDC_NIX0_TX);
++
++	return ndc_blk_hits_miss_stats(filp, ndc_idx, blkaddr);
+ }
+ 
+ RVU_DEBUG_SEQ_FOPS(nix_ndc_tx_hits_miss, nix_ndc_tx_hits_miss_display, NULL);
+@@ -969,7 +1024,8 @@ static int rvu_dbg_nix_queue_ctx_display(struct seq_file *filp,
+ {
+ 	void (*print_nix_ctx)(struct seq_file *filp,
+ 			      struct nix_aq_enq_rsp *rsp) = NULL;
+-	struct rvu *rvu = filp->private;
++	struct nix_hw *nix_hw = filp->private;
++	struct rvu *rvu = nix_hw->rvu;
+ 	struct nix_aq_enq_req aq_req;
+ 	struct nix_aq_enq_rsp rsp;
+ 	char *ctype_string = NULL;
+@@ -1001,7 +1057,7 @@ static int rvu_dbg_nix_queue_ctx_display(struct seq_file *filp,
+ 		return -EINVAL;
+ 	}
+ 
+-	if (!rvu_dbg_is_valid_lf(rvu, BLKTYPE_NIX, nixlf, &pcifunc))
++	if (!rvu_dbg_is_valid_lf(rvu, nix_hw->blkaddr, nixlf, &pcifunc))
+ 		return -EINVAL;
+ 
+ 	pfvf = rvu_get_pfvf(rvu, pcifunc);
+@@ -1053,13 +1109,15 @@ static int rvu_dbg_nix_queue_ctx_display(struct seq_file *filp,
+ }
+ 
+ static int write_nix_queue_ctx(struct rvu *rvu, bool all, int nixlf,
+-			       int id, int ctype, char *ctype_string)
++			       int id, int ctype, char *ctype_string,
++			       struct seq_file *m)
+ {
++	struct nix_hw *nix_hw = m->private;
+ 	struct rvu_pfvf *pfvf;
+ 	int max_id = 0;
+ 	u16 pcifunc;
+ 
+-	if (!rvu_dbg_is_valid_lf(rvu, BLKTYPE_NIX, nixlf, &pcifunc))
++	if (!rvu_dbg_is_valid_lf(rvu, nix_hw->blkaddr, nixlf, &pcifunc))
+ 		return -EINVAL;
+ 
+ 	pfvf = rvu_get_pfvf(rvu, pcifunc);
+@@ -1119,7 +1177,8 @@ static ssize_t rvu_dbg_nix_queue_ctx_write(struct file *filp,
+ 					   int ctype)
+ {
+ 	struct seq_file *m = filp->private_data;
+-	struct rvu *rvu = m->private;
++	struct nix_hw *nix_hw = m->private;
++	struct rvu *rvu = nix_hw->rvu;
+ 	char *cmd_buf, *ctype_string;
+ 	int nixlf, id = 0, ret;
+ 	bool all = false;
+@@ -1155,7 +1214,7 @@ static ssize_t rvu_dbg_nix_queue_ctx_write(struct file *filp,
+ 		goto done;
+ 	} else {
+ 		ret = write_nix_queue_ctx(rvu, all, nixlf, id, ctype,
+-					  ctype_string);
++					  ctype_string, m);
+ 	}
+ done:
+ 	kfree(cmd_buf);
+@@ -1259,49 +1318,67 @@ static int rvu_dbg_nix_qsize_display(struct seq_file *filp, void *unused)
+ 
+ RVU_DEBUG_SEQ_FOPS(nix_qsize, nix_qsize_display, nix_qsize_write);
+ 
+-static void rvu_dbg_nix_init(struct rvu *rvu)
++static void rvu_dbg_nix_init(struct rvu *rvu, int blkaddr)
+ {
+ 	const struct device *dev = &rvu->pdev->dev;
++	struct nix_hw *nix_hw;
+ 	struct dentry *pfile;
+ 
+-	rvu->rvu_dbg.nix = debugfs_create_dir("nix", rvu->rvu_dbg.root);
+-	if (!rvu->rvu_dbg.nix) {
+-		dev_err(rvu->dev, "create debugfs dir failed for nix\n");
++	if (!is_block_implemented(rvu->hw, blkaddr))
+ 		return;
++
++	if (blkaddr == BLKADDR_NIX0) {
++		rvu->rvu_dbg.nix = debugfs_create_dir("nix", rvu->rvu_dbg.root);
++		if (!rvu->rvu_dbg.nix) {
++			dev_err(rvu->dev, "create debugfs dir failed for nix\n");
++			return;
++		}
++		nix_hw = &rvu->hw->nix[0];
++	} else {
++		rvu->rvu_dbg.nix = debugfs_create_dir("nix1",
++						      rvu->rvu_dbg.root);
++		if (!rvu->rvu_dbg.nix) {
++			dev_err(rvu->dev,
++				"create debugfs dir failed for nix1\n");
++			return;
++		}
++		nix_hw = &rvu->hw->nix[1];
+ 	}
+ 
+-	pfile = debugfs_create_file("sq_ctx", 0600, rvu->rvu_dbg.nix, rvu,
++	pfile = debugfs_create_file("sq_ctx", 0600, rvu->rvu_dbg.nix, nix_hw,
+ 				    &rvu_dbg_nix_sq_ctx_fops);
+ 	if (!pfile)
+ 		goto create_failed;
+ 
+-	pfile = debugfs_create_file("rq_ctx", 0600, rvu->rvu_dbg.nix, rvu,
++	pfile = debugfs_create_file("rq_ctx", 0600, rvu->rvu_dbg.nix, nix_hw,
+ 				    &rvu_dbg_nix_rq_ctx_fops);
+ 	if (!pfile)
+ 		goto create_failed;
+ 
+-	pfile = debugfs_create_file("cq_ctx", 0600, rvu->rvu_dbg.nix, rvu,
++	pfile = debugfs_create_file("cq_ctx", 0600, rvu->rvu_dbg.nix, nix_hw,
+ 				    &rvu_dbg_nix_cq_ctx_fops);
+ 	if (!pfile)
+ 		goto create_failed;
+ 
+-	pfile = debugfs_create_file("ndc_tx_cache", 0600, rvu->rvu_dbg.nix, rvu,
+-				    &rvu_dbg_nix_ndc_tx_cache_fops);
++	pfile = debugfs_create_file("ndc_tx_cache", 0600, rvu->rvu_dbg.nix,
++				    nix_hw, &rvu_dbg_nix_ndc_tx_cache_fops);
+ 	if (!pfile)
+ 		goto create_failed;
+ 
+-	pfile = debugfs_create_file("ndc_rx_cache", 0600, rvu->rvu_dbg.nix, rvu,
+-				    &rvu_dbg_nix_ndc_rx_cache_fops);
++	pfile = debugfs_create_file("ndc_rx_cache", 0600, rvu->rvu_dbg.nix,
++				    nix_hw, &rvu_dbg_nix_ndc_rx_cache_fops);
+ 	if (!pfile)
+ 		goto create_failed;
+ 
+ 	pfile = debugfs_create_file("ndc_tx_hits_miss", 0600, rvu->rvu_dbg.nix,
+-				    rvu, &rvu_dbg_nix_ndc_tx_hits_miss_fops);
++				    nix_hw,
++				    &rvu_dbg_nix_ndc_tx_hits_miss_fops);
+ 	if (!pfile)
+ 		goto create_failed;
+ 
+ 	pfile = debugfs_create_file("ndc_rx_hits_miss", 0600, rvu->rvu_dbg.nix,
+-				    rvu, &rvu_dbg_nix_ndc_rx_hits_miss_fops);
++				    nix_hw,
++				    &rvu_dbg_nix_ndc_rx_hits_miss_fops);
+ 	if (!pfile)
+ 		goto create_failed;
+ 
+@@ -1312,7 +1389,8 @@ static void rvu_dbg_nix_init(struct rvu *rvu)
+ 
+ 	return;
+ create_failed:
+-	dev_err(dev, "Failed to create debugfs dir/file for NIX\n");
++	dev_err(dev,
++		"Failed to create debugfs dir/file for NIX blk\n");
+ 	debugfs_remove_recursive(rvu->rvu_dbg.nix);
+ }
+ 
+@@ -1692,7 +1770,9 @@ void rvu_dbg_init(struct rvu *rvu)
+ 		goto create_failed;
+ 
+ 	rvu_dbg_npa_init(rvu);
+-	rvu_dbg_nix_init(rvu);
++	rvu_dbg_nix_init(rvu, BLKADDR_NIX0);
++
++	rvu_dbg_nix_init(rvu, BLKADDR_NIX1);
+ 	rvu_dbg_cgx_init(rvu);
+ 	rvu_dbg_npc_init(rvu);
+ 
 -- 
 2.7.4
 
