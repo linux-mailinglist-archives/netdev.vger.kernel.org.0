@@ -2,144 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 13D8E28D4CE
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 21:42:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8C7F728D4D2
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 21:43:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731908AbgJMTmC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 15:42:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56002 "EHLO
+        id S1728266AbgJMTnG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 15:43:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728068AbgJMTlx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 15:41:53 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 723E5C0613D2
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 12:41:53 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id dt13so1403535ejb.12
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 12:41:53 -0700 (PDT)
+        with ESMTP id S1727099AbgJMTnG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 15:43:06 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17619C0613D2
+        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 12:43:06 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id s9so760734wro.8
+        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 12:43:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=intel-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jlOzF1QhqikCoQxsvfJV6M6Hjgbrow9dB9uNs1AoGLE=;
-        b=kTjS5KS3nYcf/wrvTsuRt1BvzGw557kJOoPvyzYoBgiqb4b8bKtbI2/mMLiZYyRjFR
-         J9ydTuu0x47x+MEvbUBFhFH3/2QgRWgMVRtg9k6OLuYDe131Mp/cuPa30fJMGhSFjepr
-         cqBBXWNROTwzHkSN49lY/psarWhxU27El5EYWXEJaiWvhTqo66L6QK98x3Y0Yvi2nF9y
-         UTW/CUag9LBP+VfPW+1mn8JfLpPCSXoAzeg5FBjWoJMu0+7UEW9Ka5T8iigFwOd+JDvR
-         rrctnvxFOZW164mxjZq4IMmZGZxG4l2jAUbsCf6skOMzcKIRAwJ8OakZ/jL0rfexuXSd
-         7ngQ==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=rJwsepZBWYhxq62vufFoGeztf8zxwm4eD+MUavFU97M=;
+        b=Nru/fu4SfHGesWuxDVA6eMnJ7v033oQeDepII6EpexnNRt9F9VrMDaRtX4mDU7n0KY
+         KbhmqjETqtLQ5puaczk0CbL2MrDx3kE0Q8OPFIrJJY8YUIPRgu3f7uCbcfpGGurd/ONY
+         Bn5mqOeJiNgXz2vsyfKwMcuSQFUuflYMNC6Fg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jlOzF1QhqikCoQxsvfJV6M6Hjgbrow9dB9uNs1AoGLE=;
-        b=i9ImD7m2HH9vSVWqJb1JsSonoJJMR4dYhZIaZ7k2bwvAQj8z6dAp8E2rJjFqIhnxAT
-         Gh6VzNaSzjqFHVsTkK+FRiFsNEci07LeRczZ69tyh3qxzt4EjQcBcrTgQBI2QvorBWBo
-         j4NreiROqOaDS7GGKJzFnHHiDDzOH2L6WiP0RivhEZnnYChGLWeYDPBQcdg8rzrkrlNn
-         BjjopwNzoscS4P6K+O1/vaHtvJtRQOkSX0hRNv0mztB4Ryk+UmQ1h/scdcXje6jVEb58
-         0mHEU8Dw9a4cVst25tKzQRLQqeIZH4T/yyb0PLnmav7MGs3sN+iXBlZUEVaTrBIgDnXp
-         s6BQ==
-X-Gm-Message-State: AOAM532JETK1x3p8ej2aiALLkOhMXhl00rY5VNIYfPIRjh1jafNAqhFG
-        iz0Ef953kdP8TyRCObO/D6AhSwRcECRE1k58g3A5WQ==
-X-Google-Smtp-Source: ABdhPJxGxhMZ7o2BYtIDXOupUr3pSHVXck0tIwC9HMZ0nIbp0pU6AQKRljKqMwVkoxmX0BYp74elTVEnpYvo3LWFH24=
-X-Received: by 2002:a17:906:7e47:: with SMTP id z7mr1390518ejr.418.1602618108255;
- Tue, 13 Oct 2020 12:41:48 -0700 (PDT)
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=rJwsepZBWYhxq62vufFoGeztf8zxwm4eD+MUavFU97M=;
+        b=O7REKEgCFGA7U6ld2xA4ev4yFfyjb8i40JXCoAfz7MP5jdib48vDWeXaVSc8MzEpxo
+         EFNv54dOLTSrP4VHz8rxSrpfy7Lg9ISNXHlnOnxWvwS0fZT4qjr7ECXSxRghQdCbQ1p3
+         UEUg/N5PTElOKTrYjFxzgyoP5oTHc2srrX61BKM3GqPS/WkKryMdKJYBxZ3wDETKaeMZ
+         jSD/I78OowNIaHP9yVOTdOR03Q6ktJ68FixsDEN2HrSRLL7QvwmlNYT66BeNSCfgYLQe
+         xhEzeUKnUH1DkXHmepqjZ5UVEtmXDetQWaMMMk1hKCavmW7yID7+iIMLOY7q4FwBB8K6
+         TvgQ==
+X-Gm-Message-State: AOAM532LKvpQeGPgg27Ak9tLpcLtGoIYfI3+KA1IAAL1Tv207Mme4FQ8
+        dQ9xpXWV6G78PkK2mhA2mnZ38g==
+X-Google-Smtp-Source: ABdhPJwvCueY0bo+O4KnnmLkYJrNSs5kuzkZEbfb2z5DhZL0ryFuRAYGcc8Lv9Opebo9Fognr8j19A==
+X-Received: by 2002:adf:e38f:: with SMTP id e15mr1387531wrm.294.1602618184735;
+        Tue, 13 Oct 2020 12:43:04 -0700 (PDT)
+Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
+        by smtp.gmail.com with ESMTPSA id v8sm909742wmb.20.2020.10.13.12.43.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Oct 2020 12:43:04 -0700 (PDT)
+References: <160226839426.5692.13107801574043388675.stgit@john-Precision-5820-Tower> <160226859704.5692.12929678876744977669.stgit@john-Precision-5820-Tower> <87h7qzrf3c.fsf@cloudflare.com> <5f8477448f66e_370c208e4@john-XPS-13-9370.notmuch>
+User-agent: mu4e 1.1.0; emacs 26.3
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     alexei.starovoitov@gmail.com, daniel@iogearbox.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org, lmb@cloudflare.com
+Subject: Re: [bpf-next PATCH v3 2/6] bpf, sockmap: On receive programs try to fast track SK_PASS ingress
+In-reply-to: <5f8477448f66e_370c208e4@john-XPS-13-9370.notmuch>
+Date:   Tue, 13 Oct 2020 21:43:03 +0200
+Message-ID: <87blh5rjy0.fsf@cloudflare.com>
 MIME-Version: 1.0
-References: <20201009195033.3208459-1-ira.weiny@intel.com> <20201009195033.3208459-34-ira.weiny@intel.com>
- <CAPcyv4gL3jfw4d+SJGPqAD3Dp4F_K=X3domuN4ndAA1FQDGcPg@mail.gmail.com> <20201013193643.GK20115@casper.infradead.org>
-In-Reply-To: <20201013193643.GK20115@casper.infradead.org>
-From:   Dan Williams <dan.j.williams@intel.com>
-Date:   Tue, 13 Oct 2020 12:41:36 -0700
-Message-ID: <CAPcyv4gL70FcLe8az7ezmpcZV=bG0Cka7daKWcCdmV4GoenSZw@mail.gmail.com>
-Subject: Re: [PATCH RFC PKS/PMEM 33/58] fs/cramfs: Utilize new kmap_thread()
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     "Weiny, Ira" <ira.weiny@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Nicolas Pitre <nico@fluxnic.net>, X86 ML <x86@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-nvdimm <linux-nvdimm@lists.01.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>, linux-kselftest@vger.kernel.org,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        KVM list <kvm@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>, bpf@vger.kernel.org,
-        Kexec Mailing List <kexec@lists.infradead.org>,
-        linux-bcache@vger.kernel.org, linux-mtd@lists.infradead.org,
-        devel@driverdev.osuosl.org, linux-efi <linux-efi@vger.kernel.org>,
-        linux-mmc@vger.kernel.org, linux-scsi <linux-scsi@vger.kernel.org>,
-        target-devel@vger.kernel.org, linux-nfs@vger.kernel.org,
-        ceph-devel@vger.kernel.org,
-        linux-ext4 <linux-ext4@vger.kernel.org>, linux-aio@kvack.org,
-        io-uring@vger.kernel.org, linux-erofs@lists.ozlabs.org,
-        linux-um@lists.infradead.org, linux-ntfs-dev@lists.sourceforge.net,
-        reiserfs-devel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-nilfs@vger.kernel.org, cluster-devel@redhat.com,
-        ecryptfs@vger.kernel.org, linux-cifs@vger.kernel.org,
-        linux-btrfs <linux-btrfs@vger.kernel.org>,
-        linux-afs@lists.infradead.org,
-        linux-rdma <linux-rdma@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>, intel-gfx@lists.freedesktop.org,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        xen-devel <xen-devel@lists.xenproject.org>,
-        linux-cachefs@redhat.com, samba-technical@lists.samba.org,
-        intel-wired-lan@lists.osuosl.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 13, 2020 at 12:37 PM Matthew Wilcox <willy@infradead.org> wrote:
->
-> On Tue, Oct 13, 2020 at 11:44:29AM -0700, Dan Williams wrote:
-> > On Fri, Oct 9, 2020 at 12:52 PM <ira.weiny@intel.com> wrote:
-> > >
-> > > From: Ira Weiny <ira.weiny@intel.com>
-> > >
-> > > The kmap() calls in this FS are localized to a single thread.  To avoid
-> > > the over head of global PKRS updates use the new kmap_thread() call.
-> > >
-> > > Cc: Nicolas Pitre <nico@fluxnic.net>
-> > > Signed-off-by: Ira Weiny <ira.weiny@intel.com>
-> > > ---
-> > >  fs/cramfs/inode.c | 10 +++++-----
-> > >  1 file changed, 5 insertions(+), 5 deletions(-)
-> > >
-> > > diff --git a/fs/cramfs/inode.c b/fs/cramfs/inode.c
-> > > index 912308600d39..003c014a42ed 100644
-> > > --- a/fs/cramfs/inode.c
-> > > +++ b/fs/cramfs/inode.c
-> > > @@ -247,8 +247,8 @@ static void *cramfs_blkdev_read(struct super_block *sb, unsigned int offset,
-> > >                 struct page *page = pages[i];
-> > >
-> > >                 if (page) {
-> > > -                       memcpy(data, kmap(page), PAGE_SIZE);
-> > > -                       kunmap(page);
-> > > +                       memcpy(data, kmap_thread(page), PAGE_SIZE);
-> > > +                       kunmap_thread(page);
-> >
-> > Why does this need a sleepable kmap? This looks like a textbook
-> > kmap_atomic() use case.
->
-> There's a lot of code of this form.  Could we perhaps have:
->
-> static inline void copy_to_highpage(struct page *to, void *vfrom, unsigned int size)
-> {
->         char *vto = kmap_atomic(to);
->
->         memcpy(vto, vfrom, size);
->         kunmap_atomic(vto);
-> }
->
-> in linux/highmem.h ?
+On Mon, Oct 12, 2020 at 05:33 PM CEST, John Fastabend wrote:
+> Jakub Sitnicki wrote:
 
-Nice, yes, that could also replace the local ones in lib/iov_iter.c
-(memcpy_{to,from}_page())
+[...]
+
+>> On Fri, Oct 09, 2020 at 08:36 PM CEST, John Fastabend wrote:
+>> > When we receive an skb and the ingress skb verdict program returns
+>> > SK_PASS we currently set the ingress flag and put it on the workqueue
+>> > so it can be turned into a sk_msg and put on the sk_msg ingress queue.
+>> > Then finally telling userspace with data_ready hook.
+>> >
+>> > Here we observe that if the workqueue is empty then we can try to
+>> > convert into a sk_msg type and call data_ready directly without
+>> > bouncing through a workqueue. Its a common pattern to have a recv
+>> > verdict program for visibility that always returns SK_PASS. In this
+>> > case unless there is an ENOMEM error or we overrun the socket we
+>> > can avoid the workqueue completely only using it when we fall back
+>> > to error cases caused by memory pressure.
+>> >
+>> > By doing this we eliminate another case where data may be dropped
+>> > if errors occur on memory limits in workqueue.
+>> >
+>> > Fixes: 51199405f9672 ("bpf: skb_verdict, support SK_PASS on RX BPF path")
+>> > Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+>> > ---
+>> >  net/core/skmsg.c |   17 +++++++++++++++--
+>> >  1 file changed, 15 insertions(+), 2 deletions(-)
+>> >
+>> > diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+>> > index 040ae1d75b65..4b160d97b7f9 100644
+>> > --- a/net/core/skmsg.c
+>> > +++ b/net/core/skmsg.c
+>> > @@ -773,6 +773,7 @@ static void sk_psock_verdict_apply(struct sk_psock *psock,
+>> >  {
+>> >  	struct tcp_skb_cb *tcp;
+>> >  	struct sock *sk_other;
+>> > +	int err = -EIO;
+>> >
+>> >  	switch (verdict) {
+>> >  	case __SK_PASS:
+>> > @@ -784,8 +785,20 @@ static void sk_psock_verdict_apply(struct sk_psock *psock,
+>> >
+>> >  		tcp = TCP_SKB_CB(skb);
+>> >  		tcp->bpf.flags |= BPF_F_INGRESS;
+>> > -		skb_queue_tail(&psock->ingress_skb, skb);
+>> > -		schedule_work(&psock->work);
+>> > +
+>> > +		/* If the queue is empty then we can submit directly
+>> > +		 * into the msg queue. If its not empty we have to
+>> > +		 * queue work otherwise we may get OOO data. Otherwise,
+>> > +		 * if sk_psock_skb_ingress errors will be handled by
+>> > +		 * retrying later from workqueue.
+>> > +		 */
+>> > +		if (skb_queue_empty(&psock->ingress_skb)) {
+>> > +			err = sk_psock_skb_ingress(psock, skb);
+>>
+>> When going through the workqueue (sk_psock_backlog), we will also check
+>> if socket didn't get detached from the process, that is if
+>> psock->sk->sk_socket != NULL, before queueing into msg queue.
+>
+> The sk_socket check is only for the egress path,
+>
+>   sk_psock_handle_skb -> skb_send_sock_locked -> kernel_sendmsg_locked
+
+Oh, okay. I thought it was because we want to forwarding into the socket
+as soon as there is no process to read from the queue.
+
+> Then the do_tcp_sendpages() uses sk_socket and I don't see any checks for
+> sk_socket being set. Although I think its worth looking through to see
+> if the psock/sk state is always such that we have sk_socket there I
+> don't recall off-hand where that is null'd.
+
+It's in sock_orphan().
+
+> But, to answer your question this is ingress only and here we don't
+> use sk_socket for anything so I don't see any reason the check is
+> needed. All that is done here is converting to skmsg and posting
+> onto ingress queue.
+
+Queued skb won't be read out, but I don't see a problem with it.
+
+[...]
