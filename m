@@ -2,184 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34F0B28D727
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 01:46:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A75928DD69
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 11:26:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730044AbgJMXqS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 19:46:18 -0400
-Received: from correo.us.es ([193.147.175.20]:59930 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730013AbgJMXqO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Oct 2020 19:46:14 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 53625E4BA7
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 01:46:09 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 3FA2BDA78C
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 01:46:09 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 35270DA730; Wed, 14 Oct 2020 01:46:09 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 27DD6DA73D;
-        Wed, 14 Oct 2020 01:46:07 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 14 Oct 2020 01:46:07 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id E78DB42EFB80;
-        Wed, 14 Oct 2020 01:46:06 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH 4/4] netfilter: nf_log: missing vlan offload tag and proto
-Date:   Wed, 14 Oct 2020 01:45:59 +0200
-Message-Id: <20201013234559.15113-5-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201013234559.15113-1-pablo@netfilter.org>
-References: <20201013234559.15113-1-pablo@netfilter.org>
+        id S1730489AbgJNJYQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 05:24:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39948 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388192AbgJNJU4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 05:20:56 -0400
+Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32606C08EC67
+        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 16:54:31 -0700 (PDT)
+Received: by mail-il1-x141.google.com with SMTP id j13so3090190ilc.4
+        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 16:54:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sjm3u8JC4Xlbusb+qeX/5Jk8X4D9CpxdIUDG8wfTrLc=;
+        b=h7OqxXGKwj4Mo4JA7yrTBWbdI8dnRHqApiqXyHTpTe991zpKHZkEHCEWyHDvG1qik+
+         CxqFaq8V2zp0IIB8Vz1ST135NAoNU5tXd0fqOWAmNisCCPUzBWpFweo0bkm6PY0OfKLl
+         9nr5NggqtKFcmLjBEAumVHZ0wFXUnFWNE80roOle4AdU+7WLrd0yYeJwlH1gwjc8HaVR
+         4UI6u/hgDaDFrVDnhQnEUAb1LLth6/fHwpenUGo2z+to58CwMJ1kLvCJTwZud0xRXiQi
+         +CtWLyhj1h3AOHapWt+ge6Jyt+9mGVuB4vUTqHQ9220EAh94pga7svTjw/F94Z1iMAZ9
+         ysZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sjm3u8JC4Xlbusb+qeX/5Jk8X4D9CpxdIUDG8wfTrLc=;
+        b=KIsmf9+WOJkd45qgsNMRH4UQci/wPJkfOb6A+lxmjg12VDOYjWW7qUD7dI4gt9ZUpH
+         7RksoK4h26AKYI0182Y8Tj0jxBnu7sORgmzHDZvVHMxNrRlFnAMXiu6xvQArt5fjvhQH
+         MrZm+1bsIOG90fs5iYi1U14MG7bNve8SV7k7RqAaun+oDJV62C1AU6efsmjfF5RTGGW3
+         MygtoIc3J024PKN5y+jvINIVLmb1kB5Zs6a9SYSVn692jTNvChj+3ALeQvoMTI0ONTNa
+         d5Kb0ZwyAA+M70cOaGAFz+z04twDllSBy2s4oDuDIsydbvmQgxeEzX1l3wRUNJmuq+us
+         BSpg==
+X-Gm-Message-State: AOAM533aOnTZ2a3KGvrUf755cDaykYsBbvUj9G2BFKxmXO/8N23YLMhO
+        hzdkUVquDpLs5+KG9jTNViiQEORBwSPLtSl8MRqMBg==
+X-Google-Smtp-Source: ABdhPJz8qdgbvWOw8zzy1DuQLasgWgEutPD6COUd/uTLi2C5S0MzLmxZtdhCOAHYVnQWeAnrM4Jg1hq+7EDgKgW3Udo=
+X-Received: by 2002:a05:6e02:11a8:: with SMTP id 8mr619039ilj.145.1602633270384;
+ Tue, 13 Oct 2020 16:54:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+References: <160216609656.882446.16642490462568561112.stgit@firesoul>
+ <20201009093319.6140b322@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <5f80ccca63d9_ed74208f8@john-XPS-13-9370.notmuch> <20201009160010.4b299ac3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201010124402.606f2d37@carbon> <20201010093212.374d1e68@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201013224009.77d6f746@carbon> <20201013160726.367e3871@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201013233734.6z3uyrlr43s7etay@ast-mbp>
+In-Reply-To: <20201013233734.6z3uyrlr43s7etay@ast-mbp>
+From:   =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>
+Date:   Tue, 13 Oct 2020 16:54:18 -0700
+Message-ID: <CANP3RGdPWxf-TFypoxb0uMtKBy2nVAkzCmbhwjzjKDi8ZguEbg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next V3 0/6] bpf: New approach for BPF MTU handling
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Linux NetDev <netdev@vger.kernel.org>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Shaun Crampton <shaun@tigera.io>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Marek Majkowski <marek@cloudflare.com>,
+        Eyal Birger <eyal.birger@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dump vlan tag and proto for the usual vlan offload case if the
-NF_LOG_MACDECODE flag is set on. Without this information the logging is
-misleading as there is no reference to the VLAN header.
+> how about we set __bpf_skb_max_len() to jumbo like 8k and be done with it.
 
-[12716.993704] test: IN=veth0 OUT= MACSRC=86:6c:92:ea:d6:73 MACDST=0e:3b:eb:86:73:76 VPROTO=8100 VID=10 MACPROTO=0800 SRC=192.168.10.2 DST=172.217.168.163 LEN=52 TOS=0x00 PREC=0x00 TTL=64 ID=2548 DF PROTO=TCP SPT=55848 DPT=80 WINDOW=501 RES=0x00 ACK FIN URGP=0
-[12721.157643] test: IN=veth0 OUT= MACSRC=86:6c:92:ea:d6:73 MACDST=0e:3b:eb:86:73:76 VPROTO=8100 VID=10 MACPROTO=0806 ARP HTYPE=1 PTYPE=0x0800 OPCODE=2 MACSRC=86:6c:92:ea:d6:73 IPSRC=192.168.10.2 MACDST=0e:3b:eb:86:73:76 IPDST=192.168.10.1
+8k is still far too small.  A lot of places do 9K or 16K jumbo frames.
+You'd need at least a full 16K for it to be real jumbo compatible.
 
-Fixes: 83e96d443b37 ("netfilter: log: split family specific code to nf_log_{ip,ip6,common}.c files")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- include/net/netfilter/nf_log.h   |  1 +
- net/ipv4/netfilter/nf_log_arp.c  | 19 +++++++++++++++++--
- net/ipv4/netfilter/nf_log_ipv4.c |  6 ++++--
- net/ipv6/netfilter/nf_log_ipv6.c |  8 +++++---
- net/netfilter/nf_log_common.c    | 12 ++++++++++++
- 5 files changed, 39 insertions(+), 7 deletions(-)
+That said, if we're ever willing to ignore device mtu, then I see no
+reason why an 8K or 16K or 32K limit is any better than 64K.
+(which is at least max IP packet size compatible [let's ignore ipv6
+jumbograms as not realistic])
 
-diff --git a/include/net/netfilter/nf_log.h b/include/net/netfilter/nf_log.h
-index 0d3920896d50..716db4a0fed8 100644
---- a/include/net/netfilter/nf_log.h
-+++ b/include/net/netfilter/nf_log.h
-@@ -108,6 +108,7 @@ int nf_log_dump_tcp_header(struct nf_log_buf *m, const struct sk_buff *skb,
- 			   unsigned int logflags);
- void nf_log_dump_sk_uid_gid(struct net *net, struct nf_log_buf *m,
- 			    struct sock *sk);
-+void nf_log_dump_vlan(struct nf_log_buf *m, const struct sk_buff *skb);
- void nf_log_dump_packet_common(struct nf_log_buf *m, u_int8_t pf,
- 			       unsigned int hooknum, const struct sk_buff *skb,
- 			       const struct net_device *in,
-diff --git a/net/ipv4/netfilter/nf_log_arp.c b/net/ipv4/netfilter/nf_log_arp.c
-index 7a83f881efa9..136030ad2e54 100644
---- a/net/ipv4/netfilter/nf_log_arp.c
-+++ b/net/ipv4/netfilter/nf_log_arp.c
-@@ -43,16 +43,31 @@ static void dump_arp_packet(struct nf_log_buf *m,
- 			    const struct nf_loginfo *info,
- 			    const struct sk_buff *skb, unsigned int nhoff)
- {
--	const struct arphdr *ah;
--	struct arphdr _arph;
- 	const struct arppayload *ap;
- 	struct arppayload _arpp;
-+	const struct arphdr *ah;
-+	unsigned int logflags;
-+	struct arphdr _arph;
- 
- 	ah = skb_header_pointer(skb, 0, sizeof(_arph), &_arph);
- 	if (ah == NULL) {
- 		nf_log_buf_add(m, "TRUNCATED");
- 		return;
- 	}
-+
-+	if (info->type == NF_LOG_TYPE_LOG)
-+		logflags = info->u.log.logflags;
-+	else
-+		logflags = NF_LOG_DEFAULT_MASK;
-+
-+	if (logflags & NF_LOG_MACDECODE) {
-+		nf_log_buf_add(m, "MACSRC=%pM MACDST=%pM ",
-+			       eth_hdr(skb)->h_source, eth_hdr(skb)->h_dest);
-+		nf_log_dump_vlan(m, skb);
-+		nf_log_buf_add(m, "MACPROTO=%04x ",
-+			       ntohs(eth_hdr(skb)->h_proto));
-+	}
-+
- 	nf_log_buf_add(m, "ARP HTYPE=%d PTYPE=0x%04x OPCODE=%d",
- 		       ntohs(ah->ar_hrd), ntohs(ah->ar_pro), ntohs(ah->ar_op));
- 
-diff --git a/net/ipv4/netfilter/nf_log_ipv4.c b/net/ipv4/netfilter/nf_log_ipv4.c
-index 0c72156130b6..d07583fac8f8 100644
---- a/net/ipv4/netfilter/nf_log_ipv4.c
-+++ b/net/ipv4/netfilter/nf_log_ipv4.c
-@@ -284,8 +284,10 @@ static void dump_ipv4_mac_header(struct nf_log_buf *m,
- 
- 	switch (dev->type) {
- 	case ARPHRD_ETHER:
--		nf_log_buf_add(m, "MACSRC=%pM MACDST=%pM MACPROTO=%04x ",
--			       eth_hdr(skb)->h_source, eth_hdr(skb)->h_dest,
-+		nf_log_buf_add(m, "MACSRC=%pM MACDST=%pM ",
-+			       eth_hdr(skb)->h_source, eth_hdr(skb)->h_dest);
-+		nf_log_dump_vlan(m, skb);
-+		nf_log_buf_add(m, "MACPROTO=%04x ",
- 			       ntohs(eth_hdr(skb)->h_proto));
- 		return;
- 	default:
-diff --git a/net/ipv6/netfilter/nf_log_ipv6.c b/net/ipv6/netfilter/nf_log_ipv6.c
-index da64550a5707..8210ff34ed9b 100644
---- a/net/ipv6/netfilter/nf_log_ipv6.c
-+++ b/net/ipv6/netfilter/nf_log_ipv6.c
-@@ -297,9 +297,11 @@ static void dump_ipv6_mac_header(struct nf_log_buf *m,
- 
- 	switch (dev->type) {
- 	case ARPHRD_ETHER:
--		nf_log_buf_add(m, "MACSRC=%pM MACDST=%pM MACPROTO=%04x ",
--		       eth_hdr(skb)->h_source, eth_hdr(skb)->h_dest,
--		       ntohs(eth_hdr(skb)->h_proto));
-+		nf_log_buf_add(m, "MACSRC=%pM MACDST=%pM ",
-+			       eth_hdr(skb)->h_source, eth_hdr(skb)->h_dest);
-+		nf_log_dump_vlan(m, skb);
-+		nf_log_buf_add(m, "MACPROTO=%04x ",
-+			       ntohs(eth_hdr(skb)->h_proto));
- 		return;
- 	default:
- 		break;
-diff --git a/net/netfilter/nf_log_common.c b/net/netfilter/nf_log_common.c
-index ae5628ddbe6d..fd7c5f0f5c25 100644
---- a/net/netfilter/nf_log_common.c
-+++ b/net/netfilter/nf_log_common.c
-@@ -171,6 +171,18 @@ nf_log_dump_packet_common(struct nf_log_buf *m, u_int8_t pf,
- }
- EXPORT_SYMBOL_GPL(nf_log_dump_packet_common);
- 
-+void nf_log_dump_vlan(struct nf_log_buf *m, const struct sk_buff *skb)
-+{
-+	u16 vid;
-+
-+	if (!skb_vlan_tag_present(skb))
-+		return;
-+
-+	vid = skb_vlan_tag_get(skb);
-+	nf_log_buf_add(m, "VPROTO=%04x VID=%u ", ntohs(skb->vlan_proto), vid);
-+}
-+EXPORT_SYMBOL_GPL(nf_log_dump_vlan);
-+
- /* bridge and netdev logging families share this code. */
- void nf_log_l2packet(struct net *net, u_int8_t pf,
- 		     __be16 protocol,
--- 
-2.20.1
+If something in the firmware/driver fails at 64K it'll probably fail
+at 8K as well.
+Since the 'bad' hardware is most likely old and only ~1500 (or 1
+pagesize) capable anyway...
 
+In practice driver limitations maybe more around the number of pages
+or sg sections, then rather on the max packet size anyway...
+so failures may depend on individual skb layout...
+
+And as a reminder there are interfaces (like lo) that default to 64K mtu.
+(and I have veth setups with 64K mtu as well)
+
+btw. our GCE folks tell us they occasionally see (and now discard)
+>mtu packets from Linux VMs (using the virtio-net driver),
+we've not had time to debug this (the VMs in question have some pretty
+funky routing and for privacy reason I've not been able to get actual
+dumps of the problematic frames), but gut feeling is >mtu packets
+occasionally leak into the drivers (probably from the tcp stack).
+
+> I guess some badly written driver/fw may still hang with <= 8k skb
+> that bpf redirected from one netdev with mtu=jumbo to another
+> netdev with mtu=1500, but then it's really a job of the driver/fw
+> to deal with it cleanly.
+>
+> I think checking skb->tx_dev->mtu for every xmited packet is not great.
+> For typical load balancer it would be good to have MRU 1500 and MTU 15xx.
+> Especially if it's internet facing. Just to drop all known big
+> packets in hw via MRU check.
+> But the stack doesn't have MRU vs MTU distinction and XDP_TX doesn't
+> adhere to MTU. xdp_data_hard_end is the limit.
+> So xdp already allows growing the packet beyond MTU.
+> I think upgrading artificial limit in __bpf_skb_max_len() to 8k will
+> keep it safe enough for all practical cases and will avoid unnecessary
+> checks and complexity in xmit path.
