@@ -2,91 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B834228C69B
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 03:05:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86B0028C6B6
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 03:18:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728027AbgJMBFl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Oct 2020 21:05:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52986 "EHLO
+        id S1728080AbgJMBSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Oct 2020 21:18:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727950AbgJMBFk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 21:05:40 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78508C0613D0;
-        Mon, 12 Oct 2020 18:05:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=3/UMvVj1iHurYlGTpET+HgFtFX6/vZ3O3wVdx9j3nWA=; b=u94y0GqYiqP9faYdqaxObjAgwO
-        SM4gwA9EdKonSkFRQEfeNDGxRts7FTWDkzDaKXx9p1GP3VCVVb+wHyXVDykSeLv4mYNPRa+Vd1aqT
-        ionUIht+s1cw7eDUdqBo3d8PftiGU6Gw3vzk9lBqmalVPTJU6QS1Ii1cQhqJGyv3U0WoSsCzd55bR
-        SrI9SdFEqb7furHGOrU6ByBlKjBV3KQyGck+WgWr5zPJZuXcV2wxfFucixEpOgwV9E1aOMR/WpgPL
-        7PF7YN+lPKqpu+5PI18UdSV/vaDBybbadQeO6IAEV66oyhBF2at4UBt03hoA35SZgHq+dOjymefuS
-        wbQqEAcQ==;
-Received: from [2601:1c0:6280:3f0::507c]
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kS8kd-0001Q2-0Y; Tue, 13 Oct 2020 01:05:15 +0000
-Subject: Re: [PATCH v2 2/6] ASoC: SOF: Introduce descriptors for SOF client
-To:     Dave Ertman <david.m.ertman@intel.com>, alsa-devel@alsa-project.org
-Cc:     tiwai@suse.de, broonie@kernel.org, linux-rdma@vger.kernel.org,
-        jgg@nvidia.com, dledford@redhat.com, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
-        ranjani.sridharan@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com, fred.oh@linux.intel.com,
-        parav@mellanox.com, shiraz.saleem@intel.com,
-        dan.j.williams@intel.com, kiran.patil@intel.com
-References: <20201005182446.977325-1-david.m.ertman@intel.com>
- <20201005182446.977325-3-david.m.ertman@intel.com>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <076a0c53-0738-270e-845f-0ac968a4ea78@infradead.org>
-Date:   Mon, 12 Oct 2020 18:05:09 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S1727950AbgJMBSQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Oct 2020 21:18:16 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 536DFC0613D0;
+        Mon, 12 Oct 2020 18:18:16 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id x13so12868546pfa.9;
+        Mon, 12 Oct 2020 18:18:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/9A0K1IzOHna1C0DxmV3XpbQqnDKqQQDF6op5A/lIOE=;
+        b=Yo4t8KHitl7IijBwyBzbt+gmWaEcnfLB3k5bFe3RMkLOZGpv7uckNpQTdsfI1voSeo
+         j/+15lQPSXGjI3uFic49xOYnjSCdFWRGO/fT1AtPB0eI6zk92pqx5ehhY4xJnk3rVALk
+         ddkysd6k7Q3qCTPL299gXm2zoy8Kak3S5Qo60VN7TKbhWfirdSGdLmOYgPgv4y+qkCvd
+         50S6QKUxR8Ey/wFnaMDDtatK4M6BZ24Yq9Xg1iPO5LbguUw3ygoT9MF454psQy7MW2gC
+         urQ1gJaKpQ8XbW/mk+PZh0gmOZTST/vFP1P7F3zPSmNF1ceNYj1OHrCi+hoMbfMfWtC9
+         GRzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/9A0K1IzOHna1C0DxmV3XpbQqnDKqQQDF6op5A/lIOE=;
+        b=YzmcsiHJtCDnyqYQzSDudV5aCY0Vf7UZ18i7+as5ZSpBqjIgd3b70o9u5Lume6oqCh
+         CPyJCjxNruTT1CygCkCHkt4RqknMzEV3U1LyFKgoQXaBzFE07fyiYCBI1wcXP+wlHgWO
+         +GN8v9n9RTpFrVrfktd9t0lD/OAyU0/JaskqYngo/U3olcN84uaA4zEd28H9oik6KKsA
+         VD/7OsO+kVpVQKbSAzGeX7Wk9bvGDSDzyq9Plf6U+31D5eQuyQRK6jHKr5JCy6GtHNQg
+         /z5mr2Z53a3uFvw32ZHkZWfN2uCfO9oaF4XQaF9qUd/lLP9n3BuaDDiaGTnD7fBy6MUt
+         kLjw==
+X-Gm-Message-State: AOAM5300XwAyQPLR5c4xV89Jfw08RAUCvZZnshNLl21G4cgxYKXV7R3s
+        RtW/B/ZNMCrZEjQRAGwm9QOllhEgShJ/uw==
+X-Google-Smtp-Source: ABdhPJwm1/3VSrSwzuGk4/Zydbtvz11dFFE2Xj3zygfVfOXds4aeHb7HYdhqd+iRm1poALRR9DjznQ==
+X-Received: by 2002:a17:90b:17c4:: with SMTP id me4mr21967291pjb.91.1602551895798;
+        Mon, 12 Oct 2020 18:18:15 -0700 (PDT)
+Received: from f3 (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
+        by smtp.gmail.com with ESMTPSA id b6sm24476508pjq.42.2020.10.12.18.18.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Oct 2020 18:18:14 -0700 (PDT)
+Date:   Tue, 13 Oct 2020 10:18:10 +0900
+From:   Benjamin Poirier <benjamin.poirier@gmail.com>
+To:     Coiby Xu <coiby.xu@gmail.com>
+Cc:     devel@driverdev.osuosl.org, Shung-Hsi Yu <shung-hsi.yu@suse.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
+        <GR-Linux-NIC-Dev@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 2/6] staging: qlge: coredump via devlink health
+ reporter
+Message-ID: <20201013011810.GB41031@f3>
+References: <20201008115808.91850-1-coiby.xu@gmail.com>
+ <20201008115808.91850-3-coiby.xu@gmail.com>
+ <20201010074809.GB14495@f3>
+ <20201010100258.px2go6nugsfbwoq7@Rk>
+ <20201010132230.GA17351@f3>
+ <20201012115114.lyh33rvmm4rt7mej@Rk>
 MIME-Version: 1.0
-In-Reply-To: <20201005182446.977325-3-david.m.ertman@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201012115114.lyh33rvmm4rt7mej@Rk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/5/20 11:24 AM, Dave Ertman wrote:
-> diff --git a/sound/soc/sof/Kconfig b/sound/soc/sof/Kconfig
-> index 4dda4b62509f..cea7efedafef 100644
-> --- a/sound/soc/sof/Kconfig
-> +++ b/sound/soc/sof/Kconfig
-> @@ -50,6 +50,24 @@ config SND_SOC_SOF_DEBUG_PROBES
->  	  Say Y if you want to enable probes.
->  	  If unsure, select "N".
->  
-> +config SND_SOC_SOF_CLIENT
-> +	tristate
-> +	select ANCILLARY_BUS
-> +	help
-> +	  This option is not user-selectable but automagically handled by
-> +	  'select' statements at a higher level
-> +
-> +config SND_SOC_SOF_CLIENT_SUPPORT
-> +	bool "SOF enable clients"
+On 2020-10-12 19:51 +0800, Coiby Xu wrote:
+> On Sat, Oct 10, 2020 at 10:22:30PM +0900, Benjamin Poirier wrote:
+> > On 2020-10-10 18:02 +0800, Coiby Xu wrote:
+> > [...]
+> > > > > +	do {                                                           \
+> > > > > +		err = fill_seg_(fmsg, &dump->seg_hdr, dump->seg_regs); \
+> > > > > +		if (err) {					       \
+> > > > > +			kvfree(dump);                                  \
+> > > > > +			return err;				       \
+> > > > > +		}                                                      \
+> > > > > +	} while (0)
+> > > > > +
+> > > > > +static int qlge_reporter_coredump(struct devlink_health_reporter *reporter,
+> > > > > +				  struct devlink_fmsg *fmsg, void *priv_ctx,
+> > > > > +				  struct netlink_ext_ack *extack)
+> > > > > +{
+> > > > > +	int err = 0;
+> > > > > +
+> > > > > +	struct qlge_devlink *dev = devlink_health_reporter_priv(reporter);
+> > > >
+> > > > Please name this variable ql_devlink, like in qlge_probe().
+> > > 
+> > > I happened to find the following text in drivers/staging/qlge/TODO
+> > > > * in terms of namespace, the driver uses either qlge_, ql_ (used by
+> > > >  other qlogic drivers, with clashes, ex: ql_sem_spinlock) or nothing (with
+> > > >  clashes, ex: struct ob_mac_iocb_req). Rename everything to use the "qlge_"
+> > > >  prefix.
+> > 
+> > This comment applies to global identifiers, not local variables.
+> 
+> Thank you for the explanation! Are you suggesting we should choose
+> different naming styles so we better tell global identifiers from local
+> variables?
 
-Tell users what "SOF" means.
+That's not the main purpose IMO. Using a consistent prefix for global
+identifiers (ex. "qlge_") is to avoid clashes (two drivers using the
+same name, as in the examples above). Strictly speaking, it is not a
+problem for symbols with internal linkage (ex. static functions) or type
+definitions in local header files but it makes the code clearer because
+it shows immediately that this identifier was defined in the driver.
 
-> +	depends on SND_SOC_SOF
-> +	help
-> +	  This adds support for ancillary client devices to separate out the debug
-> +	  functionality for IPC tests, probes etc. into separate devices. This
-> +	  option would also allow adding client devices based on DSP FW
+For local variables, the name is more a matter of personal taste I think
+but it should be consistent within the driver and with other users of
+the same api, where applicable. A prefix is not needed but the name is
+sometimes a simpler version of a type name which includes a prefix.
 
-spell out firmware
+> > > So I will adopt qlge_ instead. Besides I prefer qlge_dl to ql_devlink.
+> > 
+> > Up to you but personally, I think ql_devlink is better. In any case,
+> > "dev" is too general and often used for struct net_device pointers
+> > instead.
+> 
+> Thank you for the suggestion. Another reason to use qlge_dl is many
+> other network drivers supporting devlink interface also adopt this kind
+> of style.
 
-> +	  capabilities and ACPI/OF device information.
-> +	  Say Y if you want to enable clients with SOF.
-> +	  If unsure select "N".
-> +
-
-
--- 
-~Randy
-
+Sounds good. On second thought I regretted suggesting ql_devlink. While
+local variable don't need any prefix; if they do have one, better not
+mix qlge_ and ql_.
