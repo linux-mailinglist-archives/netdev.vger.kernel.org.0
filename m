@@ -2,88 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B9F7528CC7B
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 13:26:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B10A28CD8E
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 14:02:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726111AbgJML0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 07:26:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35930 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726575AbgJML0F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 07:26:05 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BDA2C0613D0;
-        Tue, 13 Oct 2020 04:26:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=ap+vugPRXoOSJhloW5EJc9FGxy9ZwiLwbnG+7+pEMhA=; b=a/Sp1GZZiVtkIrsbDZFKKgQTkQ
-        FS+JHTt9pp+5vCrBdk0ac5b7U8ZgZGFScrKiULCJv4PZD4wWqOSzzq06ZoGh/8vFLI33VuvYYBdii
-        wZ4VlXJvl5fnmlD+q4pIJJmvrTs/0jX/FIDmEAYUX2+Mt6vIwB3sAbRYRgWIA8hB4i4EWyZuWPFOQ
-        rIaV+GwSaVBgBLKvO/SsFSj7I46VHFxg38PLmJQ+Oh1DkRIQcIx5NIWLGcWnDXshQ14JMdlpURiF2
-        LxyBxRGv+1Wkfh31jf6dzRr+U4xHgvz3PsshAxeZoaF0OQPY6Fl5VA2XZOxLonra6CTBCfgsfUBp/
-        6eTYHzgA==;
-Received: from hch by casper.infradead.org with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kSIR6-0001VK-7P; Tue, 13 Oct 2020 11:25:44 +0000
-Date:   Tue, 13 Oct 2020 12:25:44 +0100
-From:   Christoph Hellwig <hch@infradead.org>
-To:     ira.weiny@intel.com
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Christoph Hellwig <hch@infradead.org>, x86@kernel.org,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Fenghua Yu <fenghua.yu@intel.com>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-nvdimm@lists.01.org,
-        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
-        linux-kselftest@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        kvm@vger.kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        kexec@lists.infradead.org, linux-bcache@vger.kernel.org,
-        linux-mtd@lists.infradead.org, devel@driverdev.osuosl.org,
-        linux-efi@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-scsi@vger.kernel.org, target-devel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, ceph-devel@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-aio@kvack.org,
-        io-uring@vger.kernel.org, linux-erofs@lists.ozlabs.org,
-        linux-um@lists.infradead.org, linux-ntfs-dev@lists.sourceforge.net,
-        reiserfs-devel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net,
-        linux-nilfs@vger.kernel.org, cluster-devel@redhat.com,
-        ecryptfs@vger.kernel.org, linux-cifs@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-rdma@vger.kernel.org, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        drbd-dev@lists.linbit.com, linux-block@vger.kernel.org,
-        xen-devel@lists.xenproject.org, linux-cachefs@redhat.com,
-        samba-technical@lists.samba.org, intel-wired-lan@lists.osuosl.org
-Subject: Re: [PATCH RFC PKS/PMEM 24/58] fs/freevxfs: Utilize new kmap_thread()
-Message-ID: <20201013112544.GA5249@infradead.org>
-References: <20201009195033.3208459-1-ira.weiny@intel.com>
- <20201009195033.3208459-25-ira.weiny@intel.com>
+        id S1728714AbgJMMA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 08:00:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57432 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727451AbgJMLym (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Oct 2020 07:54:42 -0400
+Received: from mail.kernel.org (ip5f5ad5b2.dynamic.kabel-deutschland.de [95.90.213.178])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8B0E4222C8;
+        Tue, 13 Oct 2020 11:54:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602590080;
+        bh=uyw81/CIQor1pw1d+F+O72/KMytUqBcsX5jPSTgoByE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UG2vO65eqVkBKAnAhL+JdEyNxErQmO0597qfesKYR05pbPxvdd2m74Cwc0AhcDITB
+         wAJlIQfkpOidDJElNIDpMd1Engk93aH39qFnmuElMbdMMkQewD5F3YMTojsRKFoQCD
+         7GB2CvTycFN6ZVJG3V1J7/mA1Lz7/lkd10kJtVig=
+Received: from mchehab by mail.kernel.org with local (Exim 4.94)
+        (envelope-from <mchehab@kernel.org>)
+        id 1kSIt4-006CUM-Bo; Tue, 13 Oct 2020 13:54:38 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jonathan Corbet" <corbet@lwn.net>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-kernel@vger.kernel.org, linux-wpan@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH v6 26/80] docs: net: ieee802154.rst: fix C expressions
+Date:   Tue, 13 Oct 2020 13:53:41 +0200
+Message-Id: <e9a94add62e184ce5a3b2fd49b2c217b4dc77e7b.1602589096.git.mchehab+huawei@kernel.org>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <cover.1602589096.git.mchehab+huawei@kernel.org>
+References: <cover.1602589096.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201009195033.3208459-25-ira.weiny@intel.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by casper.infradead.org. See http://www.infradead.org/rpr.html
+Content-Transfer-Encoding: 8bit
+Sender: Mauro Carvalho Chehab <mchehab@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -	kaddr = kmap(pp);
-> +	kaddr = kmap_thread(pp);
->  	memcpy(kaddr, vip->vii_immed.vi_immed + offset, PAGE_SIZE);
-> -	kunmap(pp);
-> +	kunmap_thread(pp);
+There are some warnings produced with Sphinx 3.x:
 
-You only Cced me on this particular patch, which means I have absolutely
-no idea what kmap_thread and kunmap_thread actually do, and thus can't
-provide an informed review.
+	Documentation/networking/ieee802154.rst:29: WARNING: Error in declarator or parameters
+	Invalid C declaration: Expecting "(" in parameters. [error at 7]
+	  int sd = socket(PF_IEEE802154, SOCK_DGRAM, 0);
+	  -------^
+	Documentation/networking/ieee802154.rst:134: WARNING: Invalid C declaration: Expected end of definition. [error at 81]
+	  void ieee802154_rx_irqsafe(struct ieee802154_hw *hw, struct sk_buff *skb, u8 lqi):
+	  ---------------------------------------------------------------------------------^
+	Documentation/networking/ieee802154.rst:139: WARNING: Invalid C declaration: Expected end of definition. [error at 95]
+	  void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb, bool ifs_handling):
+	  -----------------------------------------------------------------------------------------------^
+	Documentation/networking/ieee802154.rst:158: WARNING: Invalid C declaration: Expected end of definition. [error at 35]
+	  int start(struct ieee802154_hw *hw):
+	  -----------------------------------^
+	Documentation/networking/ieee802154.rst:162: WARNING: Invalid C declaration: Expected end of definition. [error at 35]
+	  void stop(struct ieee802154_hw *hw):
+	  -----------------------------------^
+	Documentation/networking/ieee802154.rst:166: WARNING: Invalid C declaration: Expected end of definition. [error at 61]
+	  int xmit_async(struct ieee802154_hw *hw, struct sk_buff *skb):
+	  -------------------------------------------------------------^
+	Documentation/networking/ieee802154.rst:171: WARNING: Invalid C declaration: Expected end of definition. [error at 43]
+	  int ed(struct ieee802154_hw *hw, u8 *level):
+	  -------------------------------------------^
+	Documentation/networking/ieee802154.rst:176: WARNING: Invalid C declaration: Expected end of definition. [error at 62]
+	  int set_channel(struct ieee802154_hw *hw, u8 page, u8 channel):
+	  --------------------------------------------------------------^
 
-That being said I think your life would be a lot easier if you add
-helpers for the above code sequence and its counterpart that copies
-to a potential hughmem page first, as that hides the implementation
-details from most users.
+Caused by some bad c:function: prototypes. Fix them.
+
+Acked-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+---
+ Documentation/networking/ieee802154.rst | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/Documentation/networking/ieee802154.rst b/Documentation/networking/ieee802154.rst
+index 6f4bf8447a21..f27856d77c8b 100644
+--- a/Documentation/networking/ieee802154.rst
++++ b/Documentation/networking/ieee802154.rst
+@@ -26,7 +26,9 @@ The stack is composed of three main parts:
+ Socket API
+ ==========
+ 
+-.. c:function:: int sd = socket(PF_IEEE802154, SOCK_DGRAM, 0);
++::
++
++    int sd = socket(PF_IEEE802154, SOCK_DGRAM, 0);
+ 
+ The address family, socket addresses etc. are defined in the
+ include/net/af_ieee802154.h header or in the special header
+@@ -131,12 +133,12 @@ Register PHY in the system.
+ 
+ Freeing registered PHY.
+ 
+-.. c:function:: void ieee802154_rx_irqsafe(struct ieee802154_hw *hw, struct sk_buff *skb, u8 lqi):
++.. c:function:: void ieee802154_rx_irqsafe(struct ieee802154_hw *hw, struct sk_buff *skb, u8 lqi)
+ 
+ Telling 802.15.4 module there is a new received frame in the skb with
+ the RF Link Quality Indicator (LQI) from the hardware device.
+ 
+-.. c:function:: void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb, bool ifs_handling):
++.. c:function:: void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb, bool ifs_handling)
+ 
+ Telling 802.15.4 module the frame in the skb is or going to be
+ transmitted through the hardware device
+@@ -155,25 +157,25 @@ operations structure at least::
+         ...
+    };
+ 
+-.. c:function:: int start(struct ieee802154_hw *hw):
++.. c:function:: int start(struct ieee802154_hw *hw)
+ 
+ Handler that 802.15.4 module calls for the hardware device initialization.
+ 
+-.. c:function:: void stop(struct ieee802154_hw *hw):
++.. c:function:: void stop(struct ieee802154_hw *hw)
+ 
+ Handler that 802.15.4 module calls for the hardware device cleanup.
+ 
+-.. c:function:: int xmit_async(struct ieee802154_hw *hw, struct sk_buff *skb):
++.. c:function:: int xmit_async(struct ieee802154_hw *hw, struct sk_buff *skb)
+ 
+ Handler that 802.15.4 module calls for each frame in the skb going to be
+ transmitted through the hardware device.
+ 
+-.. c:function:: int ed(struct ieee802154_hw *hw, u8 *level):
++.. c:function:: int ed(struct ieee802154_hw *hw, u8 *level)
+ 
+ Handler that 802.15.4 module calls for Energy Detection from the hardware
+ device.
+ 
+-.. c:function:: int set_channel(struct ieee802154_hw *hw, u8 page, u8 channel):
++.. c:function:: int set_channel(struct ieee802154_hw *hw, u8 page, u8 channel)
+ 
+ Set radio for listening on specific channel of the hardware device.
+ 
+-- 
+2.26.2
+
