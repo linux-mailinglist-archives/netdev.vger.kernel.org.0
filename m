@@ -2,136 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F8F328D447
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 21:15:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 074B128D484
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 21:36:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732386AbgJMTO6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 15:14:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51854 "EHLO
+        id S1728482AbgJMTgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 15:36:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725984AbgJMTO5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 15:14:57 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3DEFC0613D0
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 12:14:57 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id p16so1581713ilq.5
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 12:14:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=VJjtKmd2apILXmfF2EQPIO1XzJ0lEoY85P4KNi8M4Yo=;
-        b=lP3Z2IVedcNLCzGuPNd6NJi5JbXGjAbUhN+kkeUinSOtv/DczOrRtnE5Nm7+PbKCRC
-         x8jvcACGr2Ov9Cyh8+GBSd+UFWwEMrg63v/5QR4m9sMr3LOd0SZ/PuMdSHBCJz43osj6
-         HCTR9mrXxvPHqgtxu8tRfW3HbfTLOlr0KpAK5wTbjT/WvZdJm7I50AHZiYzh6aRDjyNe
-         7PuzdQRCPqSprJ3AO5J2EL2yPoP4WuHlTfO+mzE1hej2VOycNQkzTvug4ZOwa5J98FO5
-         oIunPo3+S8pQ10unsxlhBcECm1ex1iuJJ4CXLzrldKfaNBjGdSe0Fi28Q8NLSU+Q6nyG
-         CqXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=VJjtKmd2apILXmfF2EQPIO1XzJ0lEoY85P4KNi8M4Yo=;
-        b=XVc7Vz+QfFUex+v5SAUpdl8lUzeIDRcI41rUhRDgDZBkan49+zinMlq/BQEKbTUswa
-         vwMgF4GA+nub4nz0Bf7bXVXmbQZ0ERzUZFEvcpkdxVMk9G5Y2s1grIyW3dHXkfvY0O1n
-         N/yH3jP8cx/nySelraWdibkR1dDhEzZ9t63bBLkSHUeo8MGKog4428JspdY1BVYv8A9e
-         c5VGDpNrVpOBvrr/hTKzL719M0ksovNp3nOdsCd21N3IyaTLgRlEprDprYadh1xH2YGl
-         sM1Fm1nw1lBU7T3R/zE1ckTE46KCNEhIvlz8ezny6m8VP+pKGRrrgWZaJIYlZmN86yXC
-         1iBw==
-X-Gm-Message-State: AOAM533y5srG0/2WNlc/KelHHOkgiNveKYklfgMIv8Kkn46raselo/GI
-        b4QqrwcC3KNwrWzuxHgcGeIwx9qHr0JZRWfIVQs9NA==
-X-Google-Smtp-Source: ABdhPJwvTALQicnbBOI5aDrUrzxONwJs4HzJNk1waENtSLsVKmq+AX0giwG/VJ2TPij8WjQys43xC/7TtjRAb4spNvo=
-X-Received: by 2002:a92:cd11:: with SMTP id z17mr1186301iln.201.1602616496705;
- Tue, 13 Oct 2020 12:14:56 -0700 (PDT)
+        with ESMTP id S1725919AbgJMTgG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 15:36:06 -0400
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E6AC0613D0;
+        Tue, 13 Oct 2020 12:36:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=/8br067d++YamcdmBjUCKygjOJnP8nv1KaYqcimhMro=; b=lmdvQOQx7pe0L2+mTdplGXQkDb
+        3GUORaiFM95XhvSXSfEfS5dbmdOHpcLsE/27lckEJ7d618moCNCZ1OrcD78mkFIEOPo6KcWM+Shlo
+        qd/ubudvq2AYY1ppmgDaAn2bct9+030ApeGwQEWxPJEMhYNZSR/mdYz1fzpJTrLw4zsBQqDausc1Y
+        0XVXJInQU2RUGkvPdG8LQ4SeHVvD/THsekq7Q93G+nlpy3d4ANoiKRWtmLCsDi2swPtpRYEIerf5u
+        UBlUZh/6Sfu55qqQjI8518BsV6U8jgAez+rD1ykcaOGpp6/1UUah7+lbO4zgGzo4XZwUsHZJ+Y1bN
+        YhO7zBCQ==;
+Received: from [2601:1c0:6280:3f0::507c]
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kSQ5K-00077m-1U; Tue, 13 Oct 2020 19:35:47 +0000
+Subject: Re: [PATCH v2 2/6] ASoC: SOF: Introduce descriptors for SOF client
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Dave Ertman <david.m.ertman@intel.com>,
+        alsa-devel@alsa-project.org
+Cc:     parav@mellanox.com, tiwai@suse.de, netdev@vger.kernel.org,
+        ranjani.sridharan@linux.intel.com, fred.oh@linux.intel.com,
+        linux-rdma@vger.kernel.org, dledford@redhat.com,
+        broonie@kernel.org, jgg@nvidia.com, gregkh@linuxfoundation.org,
+        kuba@kernel.org, dan.j.williams@intel.com, shiraz.saleem@intel.com,
+        davem@davemloft.net, kiran.patil@intel.com
+References: <20201005182446.977325-1-david.m.ertman@intel.com>
+ <20201005182446.977325-3-david.m.ertman@intel.com>
+ <076a0c53-0738-270e-845f-0ac968a4ea78@infradead.org>
+ <d9f062ee-a5f0-b41c-c8f6-b81b374754fa@linux.intel.com>
+ <9ef98f33-a0d3-579d-26e0-6046dd593eef@infradead.org>
+ <5b447b78-626d-2680-8a48-53493e2084a2@infradead.org>
+ <7192373a-0347-2d2d-74fc-6544f738b195@linux.intel.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <b07f6cbc-8e48-a4aa-bfcb-8a938fa00a38@infradead.org>
+Date:   Tue, 13 Oct 2020 12:35:39 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-From:   Grant Grundler <grundler@google.com>
-Date:   Tue, 13 Oct 2020 19:14:45 +0000
-Message-ID: <CANEJEGuciX5he18HU5B+mAEcTom2MFtAKZfiVHCojvj24mzSAA@mail.gmail.com>
-Subject: cdc-ncm spewing link state
-To:     nic_swsd <nic_swsd@realtek.com>, Hayes Wang <hayeswang@realtek.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Prashant Malani <pmalani@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <7192373a-0347-2d2d-74fc-6544f738b195@linux.intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When I connect a "newish" RTL8156 2.5Gbps USB ethernet dongle to any
-chromebook running 4.4, 4.14 or local workstation running 5.7.17 I get
-the link state spewed on the dmesg at ~30 times per second:
-[67541.686970] usb 2-6: new SuperSpeed Gen 1 USB device number 3 using xhci_hcd
-[67541.707673] usb 2-6: New USB device found, idVendor=0bda,
-idProduct=8156, bcdDevice=30.00
-[67541.707678] usb 2-6: New USB device strings: Mfr=1, Product=2, SerialNumber=6
-[67541.707681] usb 2-6: Product: USB 10/100/1G/2.5G LAN
-[67541.707684] usb 2-6: Manufacturer: Realtek
-[67541.707687] usb 2-6: SerialNumber: 000A91758
-[67541.751910] cdc_ncm 2-6:2.0: MAC-Address: 00:c0:ca:a9:17:58
-[67541.751912] cdc_ncm 2-6:2.0: setting rx_max = 16384
-[67541.751978] cdc_ncm 2-6:2.0: setting tx_max = 16384
-[67541.752223] cdc_ncm 2-6:2.0 usb0: register 'cdc_ncm' at
-usb-0000:00:14.0-6, CDC NCM, 00:c0:ca:a9:17:58
-[67541.752507] usbcore: registered new interface driver cdc_ncm
-[67541.753929] usbcore: registered new interface driver cdc_wdm
-[67541.755147] usbcore: registered new interface driver cdc_mbim
-[67541.760965] cdc_ncm 2-6:2.0 enx00c0caa91758: renamed from usb0
-[67541.833636] cdc_ncm 2-6:2.0 enx00c0caa91758: network connection: disconnected
-[67541.865610] cdc_ncm 2-6:2.0 enx00c0caa91758: network connection: disconnected
-...
+On 10/13/20 8:08 AM, Pierre-Louis Bossart wrote:
+> 
+>>>>>> +config SND_SOC_SOF_CLIENT
+>>>>>> +    tristate
+>>>>>> +    select ANCILLARY_BUS
+>>>>>> +    help
+>>>>>> +      This option is not user-selectable but automagically handled by
+>>>>>> +      'select' statements at a higher level
+>>>>>> +
+>>>>>> +config SND_SOC_SOF_CLIENT_SUPPORT
+>>>>>> +    bool "SOF enable clients"
+>>>>>
+>>>>> Tell users what "SOF" means.
+>>>>
+>>>> This option can only be reached if the user already selected the topic-level option. From there on the SOF acronym is used. Is this not enough?
+>>>
+>>> Yes, that's enough. I didn't see it. Sorry about that.
+>>
+>> Huh. I still don't see that Kconfig option.
+>> Which patch is it in?
+>>
+>> I only saw patches 1,2,3 on LKML.
+> 
+> The Sound Open Firmware (SOF) driver is upstream since 2019, see https://elixir.bootlin.com/linux/latest/source/sound/soc/sof/Kconfig
+> 
+> What was shared in these patches is just an evolution to make the driver more modular to handle of 'subfunctions' with the auxiliary bus.
+> 
+> we'd love to hear your feedback if you think the help text can be improved. Thanks!
+> 
 
-This works out to roughly 200MB per day or 1 GB per week. Not acceptable.
+OK, I looked at the SOF Kconfig files. They are mostly OK except for
+missing '.' at the end of lots of sentences and a few other typos.
 
+Do you want patches?
 
-QUESTION: Is the following change the correct approach to resolve at
-least 1/2 the issue?
-    Or is this a bug in the Realtek CDC NCM support?
+-- 
+~Randy
 
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-index 16546268d77d7..8258f7463fcf1 100644
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -1623,8 +1623,7 @@ static void cdc_ncm_status(struct usbnet *dev,
-struct urb *urb)
-
- static const struct driver_info cdc_ncm_info = {
-        .description = "CDC NCM",
--       .flags = FLAG_POINTTOPOINT | FLAG_NO_SETINT | FLAG_MULTI_PACKET
--                       | FLAG_LINK_INTR,
-+       .flags = FLAG_POINTTOPOINT | FLAG_NO_SETINT | FLAG_MULTI_PACKET,
-        .bind = cdc_ncm_bind,
-        .unbind = cdc_ncm_unbind,
-        .manage_power = usbnet_manage_power,
-
-Removing FLAG_LINK_INTR eliminated the "no link" spew but not the
-"uplink" spew output from cdc_ncm_speed_change():
-[   70.919608] usb 2-2: new SuperSpeed USB device number 3 using xhci_hcd
-[   70.931102] usb 2-2: New USB device found, idVendor=0bda,
-idProduct=8156, bcdDevice=30.00
-[   70.931107] usb 2-2: New USB device strings: Mfr=1, Product=2, SerialNumber=6
-[   70.931108] usb 2-2: Product: USB 10/100/1G/2.5G LAN
-[   70.931110] usb 2-2: Manufacturer: Realtek
-[   70.931112] usb 2-2: SerialNumber: 000000001
-[   71.013028] cdc_ncm 2-2:2.0: MAC-Address: a0:ce:c8:c8:13:60
-[   71.013033] cdc_ncm 2-2:2.0: setting rx_max = 16384
-[   71.013110] cdc_ncm 2-2:2.0: setting tx_max = 16384
-[   71.013394] cdc_ncm 2-2:2.0 usb0: register 'cdc_ncm' at
-usb-0000:00:14.0-2, CDC NCM, a0:ce:c8:c8:13:60
-[   71.014265] usbcore: registered new interface driver cdc_ncm
-[   71.018726] usbcore: registered new interface driver cdc_wdm
-[   71.019875] usbcore: registered new interface driver cdc_mbim
-... (connect ethernet from GigE switch to dongle)
-[  133.820200] cdc_ncm 2-2:2.0 usb0: 1000 mbit/s downlink 1000 mbit/s uplink
-[  133.884202] cdc_ncm 2-2:2.0 usb0: 1000 mbit/s downlink 1000 mbit/s uplink
-[  133.948235] cdc_ncm 2-2:2.0 usb0: 1000 mbit/s downlink 1000 mbit/s uplink
-...
-[  167.164652] cdc_ncm 2-2:2.0 usb0: 1000 mbit/s downlink 1000 mbit/s uplink
-[  167.228824] cdc_ncm 2-2:2.0 usb0: 1000 mbit/s downlink 1000 mbit/s uplink
-[  167.292679] cdc_ncm 2-2:2.0 usb0: 1000 mbit/s downlink 1000 mbit/s uplink
-[  167.356662] cdc_ncm 2-2:2.0 usb0: 1000 mbit/s downlink 1000 mbit/s uplink
-[  173.473869] usb 2-2: USB disconnect, device number 3
-[  173.474110] cdc_ncm 2-2:2.0 usb0: unregister 'cdc_ncm'
-usb-0000:00:14.0-2, CDC NCM
-[  181.171531] PDLOG 2020/10/13 01:55:23.1602554122 P0 SRC 3000mA
-
-Thanks for any help with this.
-
-cheers,
-grant
