@@ -2,34 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4720928D5A3
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 22:45:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D991528D5D9
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 22:50:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727888AbgJMUpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 16:45:45 -0400
-Received: from mga06.intel.com ([134.134.136.31]:25495 "EHLO mga06.intel.com"
+        id S1727962AbgJMUuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 16:50:23 -0400
+Received: from mga17.intel.com ([192.55.52.151]:53797 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726186AbgJMUpl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Oct 2020 16:45:41 -0400
-IronPort-SDR: mZwOtv67dqEBiGSFiQA1HH+52lu+XaatUyCHIwsEsQTVZco3BYJgpnR1BKZGjgtQ13OuzxqNuP
- qfsJLET/T3+g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9773"; a="227623788"
+        id S1726186AbgJMUuU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Oct 2020 16:50:20 -0400
+IronPort-SDR: vGwvENHr8aV6GMMmU3JiVVu9bGbHLVnIKGEU16rg4DPFmRfroqFhcgmzGSrDU1r1Uxn8m2zrs/
+ Bjj0wf008kQQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9773"; a="145844592"
 X-IronPort-AV: E=Sophos;i="5.77,371,1596524400"; 
-   d="scan'208";a="227623788"
+   d="scan'208";a="145844592"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2020 13:45:38 -0700
-IronPort-SDR: 9cNNwyFW01V43IRpBEA5F+eU6gGnvdaUqvIfWWDJoXczsQwSY988pJwnA1f05GwG/v1vkNjadd
- aJS/wzoBibsg==
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2020 13:50:14 -0700
+IronPort-SDR: tBU8Od+WgzKnoE84+DWDWPkln+je7r0O2Nptsn2TVKPsgnriflj5gQkH1GYPWlpzBZ1iqAqtCk
+ /srhQcj0pjbQ==
 X-IronPort-AV: E=Sophos;i="5.77,371,1596524400"; 
-   d="scan'208";a="530558193"
+   d="scan'208";a="318439699"
 Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2020 13:45:37 -0700
-Date:   Tue, 13 Oct 2020 13:45:37 -0700
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2020 13:50:12 -0700
+Date:   Tue, 13 Oct 2020 13:50:12 -0700
 From:   Ira Weiny <ira.weiny@intel.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Dan Williams <dan.j.williams@intel.com>,
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
@@ -70,64 +71,65 @@ Cc:     Dan Williams <dan.j.williams@intel.com>,
         linux-cachefs@redhat.com, samba-technical@lists.samba.org,
         intel-wired-lan@lists.osuosl.org
 Subject: Re: [PATCH RFC PKS/PMEM 33/58] fs/cramfs: Utilize new kmap_thread()
-Message-ID: <20201013204537.GH2046448@iweiny-DESK2.sc.intel.com>
+Message-ID: <20201013205012.GI2046448@iweiny-DESK2.sc.intel.com>
 References: <20201009195033.3208459-1-ira.weiny@intel.com>
  <20201009195033.3208459-34-ira.weiny@intel.com>
  <CAPcyv4gL3jfw4d+SJGPqAD3Dp4F_K=X3domuN4ndAA1FQDGcPg@mail.gmail.com>
  <20201013193643.GK20115@casper.infradead.org>
+ <20201013200149.GI3576660@ZenIV.linux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201013193643.GK20115@casper.infradead.org>
+In-Reply-To: <20201013200149.GI3576660@ZenIV.linux.org.uk>
 User-Agent: Mutt/1.11.1 (2018-12-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 13, 2020 at 08:36:43PM +0100, Matthew Wilcox wrote:
-> On Tue, Oct 13, 2020 at 11:44:29AM -0700, Dan Williams wrote:
-> > On Fri, Oct 9, 2020 at 12:52 PM <ira.weiny@intel.com> wrote:
-> > >
-> > > From: Ira Weiny <ira.weiny@intel.com>
-> > >
-> > > The kmap() calls in this FS are localized to a single thread.  To avoid
-> > > the over head of global PKRS updates use the new kmap_thread() call.
-> > >
-> > > Cc: Nicolas Pitre <nico@fluxnic.net>
-> > > Signed-off-by: Ira Weiny <ira.weiny@intel.com>
-> > > ---
-> > >  fs/cramfs/inode.c | 10 +++++-----
-> > >  1 file changed, 5 insertions(+), 5 deletions(-)
-> > >
-> > > diff --git a/fs/cramfs/inode.c b/fs/cramfs/inode.c
-> > > index 912308600d39..003c014a42ed 100644
-> > > --- a/fs/cramfs/inode.c
-> > > +++ b/fs/cramfs/inode.c
-> > > @@ -247,8 +247,8 @@ static void *cramfs_blkdev_read(struct super_block *sb, unsigned int offset,
-> > >                 struct page *page = pages[i];
-> > >
-> > >                 if (page) {
-> > > -                       memcpy(data, kmap(page), PAGE_SIZE);
-> > > -                       kunmap(page);
-> > > +                       memcpy(data, kmap_thread(page), PAGE_SIZE);
-> > > +                       kunmap_thread(page);
+On Tue, Oct 13, 2020 at 09:01:49PM +0100, Al Viro wrote:
+> On Tue, Oct 13, 2020 at 08:36:43PM +0100, Matthew Wilcox wrote:
+> 
+> > static inline void copy_to_highpage(struct page *to, void *vfrom, unsigned int size)
+> > {
+> > 	char *vto = kmap_atomic(to);
 > > 
-> > Why does this need a sleepable kmap? This looks like a textbook
-> > kmap_atomic() use case.
+> > 	memcpy(vto, vfrom, size);
+> > 	kunmap_atomic(vto);
+> > }
+> > 
+> > in linux/highmem.h ?
 > 
-> There's a lot of code of this form.  Could we perhaps have:
-> 
-> static inline void copy_to_highpage(struct page *to, void *vfrom, unsigned int size)
+> You mean, like
+> static void memcpy_from_page(char *to, struct page *page, size_t offset, size_t len)
 > {
-> 	char *vto = kmap_atomic(to);
-> 
-> 	memcpy(vto, vfrom, size);
-> 	kunmap_atomic(vto);
+>         char *from = kmap_atomic(page);
+>         memcpy(to, from + offset, len);
+>         kunmap_atomic(from);
 > }
 > 
-> in linux/highmem.h ?
+> static void memcpy_to_page(struct page *page, size_t offset, const char *from, size_t len)
+> {
+>         char *to = kmap_atomic(page);
+>         memcpy(to + offset, from, len);
+>         kunmap_atomic(to);
+> }
+> 
+> static void memzero_page(struct page *page, size_t offset, size_t len)
+> {
+>         char *addr = kmap_atomic(page);
+>         memset(addr + offset, 0, len);
+>         kunmap_atomic(addr);
+> }
+> 
+> in lib/iov_iter.c?  FWIW, I don't like that "highpage" in the name and
+> highmem.h as location - these make perfect sense regardless of highmem;
+> they are normal memory operations with page + offset used instead of
+> a pointer...
 
-Christoph had the same idea.  I'll work on it.
+I was thinking along those lines as well especially because of the direction
+this patch set takes kmap().
+
+Thanks for pointing these out to me.  How about I lift them to a common header?
+But if not highmem.h where?
 
 Ira
-
