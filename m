@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 63C5D28C94A
-	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 09:28:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4886E28C94C
+	for <lists+netdev@lfdr.de>; Tue, 13 Oct 2020 09:29:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390210AbgJMH2x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 03:28:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55534 "EHLO
+        id S2390225AbgJMH26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 03:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390091AbgJMH2x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 03:28:53 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E1DBC0613D0;
-        Tue, 13 Oct 2020 00:28:53 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id az3so1606082pjb.4;
-        Tue, 13 Oct 2020 00:28:53 -0700 (PDT)
+        with ESMTP id S2390091AbgJMH24 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 03:28:56 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 718F3C0613D0;
+        Tue, 13 Oct 2020 00:28:56 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id j18so3634653pfa.0;
+        Tue, 13 Oct 2020 00:28:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=wwbKI6c2NhmZswtibscSDsBNiITsh3tYCdze/In9x0Q=;
-        b=GyZtOc5Dnkr4/j76CWXU42TPYkJ0TrxdILPv1y2wOWdHVf47ZQeuOr/Fc1tOUNx57O
-         YB7eERo2Ogg7DGkWPnW5Mi+HUqPZSi+NwqMwrYQRrkVL1N+L/Xurdtbw4GE7L263C5R/
-         Upgq5HtWZjVSBPRSxVp7iraWsZjS8gLt7PbitEGGmCMUkInfAadxX+Rr4QwR/euVR60k
-         TfGwRrjBMvpoA6TktlwwEdny8SiwxmDu9wf7vS02w14NJtoqYKVmpnNqxA72TiKT2ctE
-         OR2EMqURNGwG3wmumv7Ccjx+Y6FQlLBat40ilmDbOxLahIsQ1wIcyvcVytcGZD8orGWU
-         CtCw==
+        bh=iNzHGEAnbQnBSq+cqEMlnX9SeC26Mbv1uc1rY7stx/g=;
+        b=vROqWLGrxp7jTopMSR7eQyOdSPqKJzS4zvQmCd9ulkGl3pGGiU2ounCv9yDwKAcupz
+         MXEjVoKsI6Ac/vYw1/krcETcIgGKTWIteNwBRwjR2xsgeeGq4kTPSZNaWIXdoJzYSuYA
+         UNQyRs1LDECHGQzxcqiBkMCewsjeA0Qi/E3HCQ3P/HNMX9rx/Yn4MNRKr8TO2tz+AwkK
+         /42inAduZVCpyNL5ShUQmj189/F6/noQNcPqcfqfIGXFQzO7RIv3DNJ/Qjz2UZrLgVWt
+         Y5YBHv4tkgvAVpvTBm4JbZl85e+2xFNKc+7d+cQqufkL0hDrylDLgN1E73yqrdR5dmbl
+         rwQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=wwbKI6c2NhmZswtibscSDsBNiITsh3tYCdze/In9x0Q=;
-        b=CFxGOhnT8eLrIHvIRwmRpFsJmc30DQ7Y79Am1x8Avx4mLBSSYDI/qPITDD13UJAfNW
-         LPV/ySNsylUvWD2UZEmrr4cGrc8QSc529lpEETruIf6SvA5ADXtxGMJOFoU/lSHg7WKU
-         wrnaSx9QgP5yP4GNXIG7BQGaN/hLiEYl0F9ofMH27WtMYic4CHlYgGZ72aLK1bc/NlBp
-         PqXI+mRls5EkB8yu6cYFQ6pqrha4eCqC+Q1bb1c+F4Wr8XgmmqR2rCWwawyHV5Lvi8F7
-         R2BaZ6S4BpYNIRHsg4gGer2FwGhPi6URvZmUmThRaR0x00s7GkuyzQ70sKgSOxku/WBu
-         /vzg==
-X-Gm-Message-State: AOAM531doMt9f96f360hLIZEiqOgHzu2kQPKISmYndnGVPNhQxDQyFYJ
-        qJ53jtIDSBH4wz1uF4RHZAdcDo7ZCW4=
-X-Google-Smtp-Source: ABdhPJy+vcKB4cpuKkzzjSMeSDeQ7eWCdWNQTarBMN2XeI9WjIVVUuD5D4rNw1nELsC3Nx8rs8zK/g==
-X-Received: by 2002:a17:90b:3314:: with SMTP id kf20mr24653234pjb.19.1602574132222;
-        Tue, 13 Oct 2020 00:28:52 -0700 (PDT)
+        bh=iNzHGEAnbQnBSq+cqEMlnX9SeC26Mbv1uc1rY7stx/g=;
+        b=gw0uVljfksonH0fsQmtlqlKr/J7uKQdfH9YGgWjWwNUv48ASAHTWYw7exop5t25jt2
+         gX6S0wpfV1xSTOy3A6uEK+EgMRIf6OAwwwlRuB4x1uLX5ADhqjHVno7ooQD6avd6T52/
+         jLCBTra0HBkv5tIg2WuGGHJ2mWTQfU/WePI6vyCZ7W0vOvpuorzPqF+oobbLxrKGdpx4
+         xWCh6/ZEB+1LcODXG6HA/DUyfH9cYUJnexJiIY5gQvJVkGMgIYRrCyL21C7do5ph5AKz
+         TzBUaHR13d0K2lw0QsJFBgl+2LMTahNbatEMJ3WCgEcitHcDo32JzczQeerjhAOiokDP
+         n3lQ==
+X-Gm-Message-State: AOAM532ST2adbS84HIB6hqGjyXLi5CnVqIC4QjgxpJuoX6VeFPEbJlky
+        3ImM5N/tj+/m2lS5/Bv8uIbg9eAboY8=
+X-Google-Smtp-Source: ABdhPJxoXTWzZVMweftDLitdPKPOGdpgPKUXrDV5iCTn/vXRFtseCfHLzWMVYbfED7fL7Pc1PfZydQ==
+X-Received: by 2002:a65:5ace:: with SMTP id d14mr16170961pgt.323.1602574135582;
+        Tue, 13 Oct 2020 00:28:55 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id fa12sm17854277pjb.25.2020.10.13.00.28.50
+        by smtp.gmail.com with ESMTPSA id x29sm15309450pfp.152.2020.10.13.00.28.54
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 13 Oct 2020 00:28:51 -0700 (PDT)
+        Tue, 13 Oct 2020 00:28:55 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
@@ -54,11 +54,11 @@ Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Michael Tuexen <tuexen@fh-muenster.de>, davem@davemloft.net,
         gnault@redhat.com, pabeni@redhat.com,
         willemdebruijn.kernel@gmail.com
-Subject: [PATCHv3 net-next 08/16] sctp: add SCTP_REMOTE_UDP_ENCAPS_PORT sockopt
-Date:   Tue, 13 Oct 2020 15:27:33 +0800
-Message-Id: <08854ecf72eee34d3e98e30def6940d94f97fdef.1602574012.git.lucien.xin@gmail.com>
+Subject: [PATCHv3 net-next 09/16] sctp: allow changing transport encap_port by peer packets
+Date:   Tue, 13 Oct 2020 15:27:34 +0800
+Message-Id: <732baa9aef67a1b0d0b4d69f47149b41a49bbd76.1602574012.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <37e9f70ffb9dea1572025b8e1c4b1f1c6e6b3da5.1602574012.git.lucien.xin@gmail.com>
+In-Reply-To: <08854ecf72eee34d3e98e30def6940d94f97fdef.1602574012.git.lucien.xin@gmail.com>
 References: <cover.1602574012.git.lucien.xin@gmail.com>
  <fae9c57767447c4fd97476807b9e029e8fda607a.1602574012.git.lucien.xin@gmail.com>
  <c01a9a09096cb1b292d461aa5a1e72aae2ca942a.1602574012.git.lucien.xin@gmail.com>
@@ -67,211 +67,158 @@ References: <cover.1602574012.git.lucien.xin@gmail.com>
  <b9f0bfa27c5be3bbf27a7325c73f16205286df38.1602574012.git.lucien.xin@gmail.com>
  <c9c1d019287792f71863c89758d179b133fe1200.1602574012.git.lucien.xin@gmail.com>
  <37e9f70ffb9dea1572025b8e1c4b1f1c6e6b3da5.1602574012.git.lucien.xin@gmail.com>
+ <08854ecf72eee34d3e98e30def6940d94f97fdef.1602574012.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1602574012.git.lucien.xin@gmail.com>
 References: <cover.1602574012.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to implement:
+As rfc6951#section-5.4 says:
 
-  rfc6951#section-6.1: Get or Set the Remote UDP Encapsulation Port Number
+  "After finding the SCTP association (which
+   includes checking the verification tag), the UDP source port MUST be
+   stored as the encapsulation port for the destination address the SCTP
+   packet is received from (see Section 5.1).
 
-with the param of the struct:
+   When a non-encapsulated SCTP packet is received by the SCTP stack,
+   the encapsulation of outgoing packets belonging to the same
+   association and the corresponding destination address MUST be
+   disabled."
 
-  struct sctp_udpencaps {
-    sctp_assoc_t sue_assoc_id;
-    struct sockaddr_storage sue_address;
-    uint16_t sue_port;
-  };
+transport encap_port should be updated by a validated incoming packet's
+udp src port.
 
-the encap_port of sock, assoc or transport can be changed by users,
-which also means it allows the different transports of the same asoc
-to have different encap_port value.
+We save the udp src port in sctp_input_cb->encap_port, and then update
+the transport in two places:
+
+  1. right after vtag is verified, which is required by RFC, and this
+     allows the existent transports to be updated by the chunks that
+     can only be processed on an asoc.
+
+  2. right before processing the 'init' where the transports are added,
+     and this allows building a sctp over udp connection by client with
+     the server not knowing the remote encap port.
+
+  3. when processing ootb_pkt and creating the temporary transport for
+     the reply pkt.
+
+Note that sctp_input_cb->header is removed, as it's not used any more
+in sctp.
 
 v1->v2:
-  - no change.
-v2->v3:
-  - fix the endian warning when setting values between encap_port and
-    sue_port.
+  - Change encap_port as __be16 for sctp_input_cb.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- include/uapi/linux/sctp.h |   7 +++
- net/sctp/socket.c         | 114 ++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 121 insertions(+)
+ include/net/sctp/sm.h      |  1 +
+ include/net/sctp/structs.h |  7 +------
+ net/sctp/ipv6.c            |  1 +
+ net/sctp/protocol.c        | 11 ++++++++++-
+ net/sctp/sm_make_chunk.c   |  1 +
+ net/sctp/sm_statefuns.c    |  2 ++
+ 6 files changed, 16 insertions(+), 7 deletions(-)
 
-diff --git a/include/uapi/linux/sctp.h b/include/uapi/linux/sctp.h
-index 28ad40d..cb78e7a 100644
---- a/include/uapi/linux/sctp.h
-+++ b/include/uapi/linux/sctp.h
-@@ -140,6 +140,7 @@ typedef __s32 sctp_assoc_t;
- #define SCTP_ECN_SUPPORTED	130
- #define SCTP_EXPOSE_POTENTIALLY_FAILED_STATE	131
- #define SCTP_EXPOSE_PF_STATE	SCTP_EXPOSE_POTENTIALLY_FAILED_STATE
-+#define SCTP_REMOTE_UDP_ENCAPS_PORT	132
+diff --git a/include/net/sctp/sm.h b/include/net/sctp/sm.h
+index 5c491a3..a499341 100644
+--- a/include/net/sctp/sm.h
++++ b/include/net/sctp/sm.h
+@@ -380,6 +380,7 @@ sctp_vtag_verify(const struct sctp_chunk *chunk,
+         if (ntohl(chunk->sctp_hdr->vtag) == asoc->c.my_vtag)
+                 return 1;
  
- /* PR-SCTP policies */
- #define SCTP_PR_SCTP_NONE	0x0000
-@@ -1197,6 +1198,12 @@ struct sctp_event {
- 	uint8_t se_on;
++	chunk->transport->encap_port = SCTP_INPUT_CB(chunk->skb)->encap_port;
+ 	return 0;
+ }
+ 
+diff --git a/include/net/sctp/structs.h b/include/net/sctp/structs.h
+index aa98e7e..81464ae 100644
+--- a/include/net/sctp/structs.h
++++ b/include/net/sctp/structs.h
+@@ -1120,14 +1120,9 @@ static inline void sctp_outq_cork(struct sctp_outq *q)
+  * sctp_input_cb is currently used on rx and sock rx queue
+  */
+ struct sctp_input_cb {
+-	union {
+-		struct inet_skb_parm	h4;
+-#if IS_ENABLED(CONFIG_IPV6)
+-		struct inet6_skb_parm	h6;
+-#endif
+-	} header;
+ 	struct sctp_chunk *chunk;
+ 	struct sctp_af *af;
++	__be16 encap_port;
+ };
+ #define SCTP_INPUT_CB(__skb)	((struct sctp_input_cb *)&((__skb)->cb[0]))
+ 
+diff --git a/net/sctp/ipv6.c b/net/sctp/ipv6.c
+index 8a58f42..a064bf2 100644
+--- a/net/sctp/ipv6.c
++++ b/net/sctp/ipv6.c
+@@ -1053,6 +1053,7 @@ static struct inet_protosw sctpv6_stream_protosw = {
+ 
+ static int sctp6_rcv(struct sk_buff *skb)
+ {
++	memset(skb->cb, 0, sizeof(skb->cb));
+ 	return sctp_rcv(skb) ? -1 : 0;
+ }
+ 
+diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
+index 5b74187..0d16e5e 100644
+--- a/net/sctp/protocol.c
++++ b/net/sctp/protocol.c
+@@ -843,6 +843,9 @@ static int sctp_ctl_sock_init(struct net *net)
+ 
+ static int sctp_udp_rcv(struct sock *sk, struct sk_buff *skb)
+ {
++	memset(skb->cb, 0, sizeof(skb->cb));
++	SCTP_INPUT_CB(skb)->encap_port = udp_hdr(skb)->source;
++
+ 	skb_set_transport_header(skb, sizeof(struct udphdr));
+ 	sctp_rcv(skb);
+ 	return 0;
+@@ -1139,9 +1142,15 @@ static struct inet_protosw sctp_stream_protosw = {
+ 	.flags      = SCTP_PROTOSW_FLAG
  };
  
-+struct sctp_udpencaps {
-+	sctp_assoc_t sue_assoc_id;
-+	struct sockaddr_storage sue_address;
-+	uint16_t sue_port;
-+};
-+
- /* SCTP Stream schedulers */
- enum sctp_sched_type {
- 	SCTP_SS_FCFS,
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 09b94cd..26e464b 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -4417,6 +4417,55 @@ static int sctp_setsockopt_pf_expose(struct sock *sk,
- 	return retval;
- }
- 
-+static int sctp_setsockopt_encap_port(struct sock *sk,
-+				      struct sctp_udpencaps *encap,
-+				      unsigned int optlen)
++static int sctp4_rcv(struct sk_buff *skb)
 +{
-+	struct sctp_association *asoc;
-+	struct sctp_transport *t;
-+	__be16 encap_port;
-+
-+	if (optlen != sizeof(*encap))
-+		return -EINVAL;
-+
-+	/* If an address other than INADDR_ANY is specified, and
-+	 * no transport is found, then the request is invalid.
-+	 */
-+	encap_port = (__force __be16)encap->sue_port;
-+	if (!sctp_is_any(sk, (union sctp_addr *)&encap->sue_address)) {
-+		t = sctp_addr_id2transport(sk, &encap->sue_address,
-+					   encap->sue_assoc_id);
-+		if (!t)
-+			return -EINVAL;
-+
-+		t->encap_port = encap_port;
-+		return 0;
-+	}
-+
-+	/* Get association, if assoc_id != SCTP_FUTURE_ASSOC and the
-+	 * socket is a one to many style socket, and an association
-+	 * was not found, then the id was invalid.
-+	 */
-+	asoc = sctp_id2assoc(sk, encap->sue_assoc_id);
-+	if (!asoc && encap->sue_assoc_id != SCTP_FUTURE_ASSOC &&
-+	    sctp_style(sk, UDP))
-+		return -EINVAL;
-+
-+	/* If changes are for association, also apply encap to each
-+	 * transport.
-+	 */
-+	if (asoc) {
-+		list_for_each_entry(t, &asoc->peer.transport_addr_list,
-+				    transports)
-+			t->encap_port = encap_port;
-+
-+		return 0;
-+	}
-+
-+	sctp_sk(sk)->encap_port = encap_port;
-+	return 0;
++	memset(skb->cb, 0, sizeof(skb->cb));
++	return sctp_rcv(skb);
 +}
 +
- /* API 6.2 setsockopt(), getsockopt()
-  *
-  * Applications use setsockopt() and getsockopt() to set or retrieve
-@@ -4636,6 +4685,9 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
- 	case SCTP_EXPOSE_POTENTIALLY_FAILED_STATE:
- 		retval = sctp_setsockopt_pf_expose(sk, kopt, optlen);
- 		break;
-+	case SCTP_REMOTE_UDP_ENCAPS_PORT:
-+		retval = sctp_setsockopt_encap_port(sk, kopt, optlen);
-+		break;
- 	default:
- 		retval = -ENOPROTOOPT;
- 		break;
-@@ -7791,6 +7843,65 @@ static int sctp_getsockopt_pf_expose(struct sock *sk, int len,
- 	return retval;
- }
+ /* Register with IP layer.  */
+ static const struct net_protocol sctp_protocol = {
+-	.handler     = sctp_rcv,
++	.handler     = sctp4_rcv,
+ 	.err_handler = sctp_v4_err,
+ 	.no_policy   = 1,
+ 	.netns_ok    = 1,
+diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
+index 9a56ae2..21d0ff1 100644
+--- a/net/sctp/sm_make_chunk.c
++++ b/net/sctp/sm_make_chunk.c
+@@ -2321,6 +2321,7 @@ int sctp_process_init(struct sctp_association *asoc, struct sctp_chunk *chunk,
+ 	 * added as the primary transport.  The source address seems to
+ 	 * be a better choice than any of the embedded addresses.
+ 	 */
++	asoc->encap_port = SCTP_INPUT_CB(chunk->skb)->encap_port;
+ 	if (!sctp_assoc_add_peer(asoc, peer_addr, gfp, SCTP_ACTIVE))
+ 		goto nomem;
  
-+static int sctp_getsockopt_encap_port(struct sock *sk, int len,
-+				      char __user *optval, int __user *optlen)
-+{
-+	struct sctp_association *asoc;
-+	struct sctp_udpencaps encap;
-+	struct sctp_transport *t;
-+	__be16 encap_port;
+diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
+index c669f8b..8edab15 100644
+--- a/net/sctp/sm_statefuns.c
++++ b/net/sctp/sm_statefuns.c
+@@ -6268,6 +6268,8 @@ static struct sctp_packet *sctp_ootb_pkt_new(
+ 	if (!transport)
+ 		goto nomem;
+ 
++	transport->encap_port = SCTP_INPUT_CB(chunk->skb)->encap_port;
 +
-+	if (len < sizeof(encap))
-+		return -EINVAL;
-+
-+	len = sizeof(encap);
-+	if (copy_from_user(&encap, optval, len))
-+		return -EFAULT;
-+
-+	/* If an address other than INADDR_ANY is specified, and
-+	 * no transport is found, then the request is invalid.
-+	 */
-+	if (!sctp_is_any(sk, (union sctp_addr *)&encap.sue_address)) {
-+		t = sctp_addr_id2transport(sk, &encap.sue_address,
-+					   encap.sue_assoc_id);
-+		if (!t) {
-+			pr_debug("%s: failed no transport\n", __func__);
-+			return -EINVAL;
-+		}
-+
-+		encap_port = t->encap_port;
-+		goto out;
-+	}
-+
-+	/* Get association, if assoc_id != SCTP_FUTURE_ASSOC and the
-+	 * socket is a one to many style socket, and an association
-+	 * was not found, then the id was invalid.
-+	 */
-+	asoc = sctp_id2assoc(sk, encap.sue_assoc_id);
-+	if (!asoc && encap.sue_assoc_id != SCTP_FUTURE_ASSOC &&
-+	    sctp_style(sk, UDP)) {
-+		pr_debug("%s: failed no association\n", __func__);
-+		return -EINVAL;
-+	}
-+
-+	if (asoc) {
-+		encap_port = asoc->encap_port;
-+		goto out;
-+	}
-+
-+	encap_port = sctp_sk(sk)->encap_port;
-+
-+out:
-+	encap.sue_port = (__force uint16_t)encap_port;
-+	if (copy_to_user(optval, &encap, len))
-+		return -EFAULT;
-+
-+	if (put_user(len, optlen))
-+		return -EFAULT;
-+
-+	return 0;
-+}
-+
- static int sctp_getsockopt(struct sock *sk, int level, int optname,
- 			   char __user *optval, int __user *optlen)
- {
-@@ -8011,6 +8122,9 @@ static int sctp_getsockopt(struct sock *sk, int level, int optname,
- 	case SCTP_EXPOSE_POTENTIALLY_FAILED_STATE:
- 		retval = sctp_getsockopt_pf_expose(sk, len, optval, optlen);
- 		break;
-+	case SCTP_REMOTE_UDP_ENCAPS_PORT:
-+		retval = sctp_getsockopt_encap_port(sk, len, optval, optlen);
-+		break;
- 	default:
- 		retval = -ENOPROTOOPT;
- 		break;
+ 	/* Cache a route for the transport with the chunk's destination as
+ 	 * the source address.
+ 	 */
 -- 
 2.1.0
 
