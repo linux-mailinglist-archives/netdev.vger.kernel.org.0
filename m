@@ -2,186 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A90728E023
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 13:58:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EED6928E039
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 14:01:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388521AbgJNL6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 07:58:46 -0400
-Received: from mailout08.rmx.de ([94.199.90.85]:56329 "EHLO mailout08.rmx.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726157AbgJNL6q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Oct 2020 07:58:46 -0400
-Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mailout08.rmx.de (Postfix) with ESMTPS id 4CB9tB12XQzMpJl;
-        Wed, 14 Oct 2020 13:58:42 +0200 (CEST)
-Received: from mta.arri.de (unknown [217.111.95.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by kdin02.retarus.com (Postfix) with ESMTPS id 4CB9sg2QcMz2TSBr;
-        Wed, 14 Oct 2020 13:58:15 +0200 (CEST)
-Received: from N95HX1G2.wgnetz.xx (192.168.54.83) by mta.arri.de
- (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Wed, 14 Oct
- 2020 13:58:14 +0200
-From:   Christian Eggers <ceggers@arri.de>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Krzysztof Halasa <khalasa@piap.pl>,
-        Richard Cochran <richardcochran@gmail.com>
-CC:     Vishal Kulkarni <vishal@chelsio.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Christian Eggers <ceggers@arri.de>
-Subject: [PATCH net-next] net: ptp: get rid of IPV4_HLEN() and OFF_IHL macros
-Date:   Wed, 14 Oct 2020 13:58:05 +0200
-Message-ID: <20201014115805.23905-1-ceggers@arri.de>
-X-Mailer: git-send-email 2.26.2
+        id S1730870AbgJNMBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 08:01:41 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198]:40099 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730852AbgJNMBZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 08:01:25 -0400
+Received: by mail-il1-f198.google.com with SMTP id w12so2177898ilj.7
+        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 05:01:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=lmIzmeZ6JEWQDgHZewUQdQ9dPptB1ZZcDqf5FZlF1bk=;
+        b=dpKvoVZT6qR4qUGMqkfMndCgtVZvNX+wzp7QsvI6y6o3Rm3CtQv9joLQTyfRUXQT7/
+         YBjjSRccD3fxc11+NOZLW8KSK8MhsbQ/imEHkK1c2ls/ECv9NEOTRrtA1KiiA2uwBZo9
+         RRURW9QLAq+emQIC4hTb1w9D6dypPO0agFmF9yXHOFYlQgHULo2sCuDGxRPxo7lVR6Dh
+         YZ9fH1KHEIRxWyYSKQdBYyipAenZv2YM1Qzx7cnDM8R5nh3x0gj4fnFkHbSlZpsSJPlv
+         Ul+4mwo+Pbm/ZNUAzupv17TuQzOmxfKTAsvIBcyG5fsL2iEtva/xQ/jkUKNOPFTwAnKn
+         6tuw==
+X-Gm-Message-State: AOAM532usnYl6QTb5xMOXy2ju3S0QPZE0E64SfhMCDLOX/8lLFDbIrW4
+        OB9Kp5BKG1tbb0+3S8dJa1QG2mUGmyHd/Ech1GqSHb+KqXc4
+X-Google-Smtp-Source: ABdhPJwxwXpsyf+M34H12D2yHMek4dY1NS12qdkhRRVdenzAcTt5OFh2KYuHi+95LbnQEReIraQpf/x7N1z+T+WSv8Fs+3mNy73h
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.54.83]
-X-RMX-ID: 20201014-135815-4CB9sg2QcMz2TSBr-0@kdin02
-X-RMX-SOURCE: 217.111.95.66
+X-Received: by 2002:a05:6638:606:: with SMTP id g6mr2893807jar.0.1602676884566;
+ Wed, 14 Oct 2020 05:01:24 -0700 (PDT)
+Date:   Wed, 14 Oct 2020 05:01:24 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000064f6cd05b1a04a2c@google.com>
+Subject: WARNING in __rate_control_send_low
+From:   syzbot <syzbot+fdc5123366fb9c3fdc6d@syzkaller.appspotmail.com>
+To:     clang-built-linux@googlegroups.com, davem@davemloft.net,
+        johannes@sipsolutions.net, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        natechancellor@gmail.com, ndesaulniers@google.com,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Both macros are already marked for removal. IPV4_HLEN(data) is
-misleading as it expects an Ethernet header instead of an IPv4 header as
-argument. Because it is defined (and only used) within PTP, it should be
-named PTP_IPV4_HLEN or similar.
+Hello,
 
-As the whole rest of the IPv4 stack has no problems using iphdr->ihl
-directly, also PTP should be able to do so.
+syzbot found the following issue on:
 
-OFF_IHL has only been used by IPV4_HLEN. Additionally it is superfluous
-as ETH_HLEN already exists for the same.
+HEAD commit:    bbf5c979 Linux 5.9
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=12dc474f900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=3d8333c88fe898d7
+dashboard link: https://syzkaller.appspot.com/bug?extid=fdc5123366fb9c3fdc6d
+compiler:       gcc (GCC) 10.1.0-syz 20200507
 
-Signed-off-by: Christian Eggers <ceggers@arri.de>
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+fdc5123366fb9c3fdc6d@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+no supported rates for sta (null) (0xffffffff, band 0) in rate_mask 0xfff with flags 0x20
+WARNING: CPU: 1 PID: 169 at net/mac80211/rate.c:349 __rate_control_send_low+0x4eb/0x5e0 net/mac80211/rate.c:349
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 1 PID: 169 Comm: kworker/u4:5 Not tainted 5.9.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: phy9 ieee80211_scan_work
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x198/0x1fd lib/dump_stack.c:118
+ panic+0x382/0x7fb kernel/panic.c:231
+ __warn.cold+0x20/0x4b kernel/panic.c:600
+ report_bug+0x1bd/0x210 lib/bug.c:198
+ handle_bug+0x38/0x90 arch/x86/kernel/traps.c:234
+ exc_invalid_op+0x14/0x40 arch/x86/kernel/traps.c:254
+ asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:536
+RIP: 0010:__rate_control_send_low+0x4eb/0x5e0 net/mac80211/rate.c:349
+Code: 14 48 89 44 24 08 e8 d4 8d b0 f9 44 8b 44 24 24 45 89 e9 44 89 e1 48 8b 74 24 08 44 89 f2 48 c7 c7 40 24 5f 89 e8 b7 ca 80 f9 <0f> 0b e9 e0 fd ff ff e8 a9 8d b0 f9 41 83 cd 10 e9 02 fc ff ff e8
+RSP: 0018:ffffc900013f7688 EFLAGS: 00010282
+RAX: 0000000000000000 RBX: ffff88801e243468 RCX: 0000000000000000
+RDX: ffff8880a884e100 RSI: ffffffff815f5a55 RDI: fffff5200027eec3
+RBP: ffff88805f373148 R08: 0000000000000001 R09: ffff8880ae5318e7
+R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+R13: 0000000000000020 R14: 00000000ffffffff R15: 0000000000000090
+ rate_control_send_low+0x261/0x610 net/mac80211/rate.c:374
+ rate_control_get_rate+0x1b9/0x5a0 net/mac80211/rate.c:887
+ ieee80211_tx_h_rate_ctrl+0xa0f/0x1660 net/mac80211/tx.c:749
+ invoke_tx_handlers_early+0xaf3/0x25e0 net/mac80211/tx.c:1784
+ ieee80211_tx+0x250/0x430 net/mac80211/tx.c:1926
+ ieee80211_xmit+0x2dd/0x3b0 net/mac80211/tx.c:2015
+ __ieee80211_tx_skb_tid_band+0x20a/0x290 net/mac80211/tx.c:5351
+ ieee80211_tx_skb_tid_band net/mac80211/ieee80211_i.h:1986 [inline]
+ ieee80211_send_scan_probe_req net/mac80211/scan.c:610 [inline]
+ ieee80211_scan_state_send_probe+0x39f/0x910 net/mac80211/scan.c:638
+ ieee80211_scan_work+0x6df/0x19e0 net/mac80211/scan.c:1071
+ process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
+ kthread+0x3b5/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
+
+
 ---
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_ptp.c       | 4 ++--
- drivers/net/ethernet/chelsio/cxgb4/sge.c             | 5 ++++-
- drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c | 4 +++-
- drivers/net/ethernet/xscale/ixp4xx_eth.c             | 4 +++-
- include/linux/ptp_classify.h                         | 2 --
- net/core/ptp_classifier.c                            | 6 +++---
- 6 files changed, 15 insertions(+), 10 deletions(-)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ptp.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ptp.c
-index 70dbee89118e..b32a9006b222 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ptp.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ptp.c
-@@ -83,8 +83,8 @@ bool is_ptp_enabled(struct sk_buff *skb, struct net_device *dev)
-  */
- bool cxgb4_ptp_is_ptp_rx(struct sk_buff *skb)
- {
--	struct udphdr *uh = (struct udphdr *)(skb->data + ETH_HLEN +
--					      IPV4_HLEN(skb->data));
-+	struct iphdr *ih = (struct iphdr *)(skb->data + ETH_HLEN);
-+	struct udphdr *uh = (struct udphdr *)((char *)ih + (ih->ihl << 2));
- 
- 	return  uh->dest == htons(PTP_EVENT_PORT) &&
- 		uh->source == htons(PTP_EVENT_PORT);
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-index a9e9c7ae565d..c8bec874bc66 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
-@@ -40,6 +40,7 @@
- #include <linux/dma-mapping.h>
- #include <linux/jiffies.h>
- #include <linux/prefetch.h>
-+#include <linux/ptp_classify.h>
- #include <linux/export.h>
- #include <net/xfrm.h>
- #include <net/ipv6.h>
-@@ -3386,7 +3387,9 @@ static noinline int t4_systim_to_hwstamp(struct adapter *adapter,
- 
- 	data = skb->data + sizeof(*cpl);
- 	skb_pull(skb, 2 * sizeof(u64) + sizeof(struct cpl_rx_mps_pkt));
--	offset = ETH_HLEN + IPV4_HLEN(skb->data) + UDP_HLEN;
-+	offset = ETH_HLEN;
-+	offset += ((struct iphdr *)(skb->data + offset))->ihl << 2;
-+	offset += UDP_HLEN;
- 	if (skb->len < offset + OFF_PTP_SEQUENCE_ID + sizeof(short))
- 		return RX_PTP_PKT_ERR;
- 
-diff --git a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
-index ade8c44c01cd..4e95621997d1 100644
---- a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
-+++ b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
-@@ -113,7 +113,9 @@ static int pch_ptp_match(struct sk_buff *skb, u16 uid_hi, u32 uid_lo, u16 seqid)
- 	if (ptp_classify_raw(skb) == PTP_CLASS_NONE)
- 		return 0;
- 
--	offset = ETH_HLEN + IPV4_HLEN(data) + UDP_HLEN;
-+	offset = ETH_HLEN;
-+	offset += ((struct iphdr *)(data + offset))->ihl << 2;
-+	offset += UDP_HLEN;
- 
- 	if (skb->len < offset + OFF_PTP_SEQUENCE_ID + sizeof(seqid))
- 		return 0;
-diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-index 2e5202923510..7443bc1f9bec 100644
---- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
-+++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
-@@ -264,7 +264,9 @@ static int ixp_ptp_match(struct sk_buff *skb, u16 uid_hi, u32 uid_lo, u16 seqid)
- 	if (ptp_classify_raw(skb) != PTP_CLASS_V1_IPV4)
- 		return 0;
- 
--	offset = ETH_HLEN + IPV4_HLEN(data) + UDP_HLEN;
-+	offset = ETH_HLEN;
-+	offset += ((struct iphdr *)(data + offset))->ihl << 2;
-+	offset += UDP_HLEN;
- 
- 	if (skb->len < offset + OFF_PTP_SEQUENCE_ID + sizeof(seqid))
- 		return 0;
-diff --git a/include/linux/ptp_classify.h b/include/linux/ptp_classify.h
-index c6487b7ab026..56b2d7d66177 100644
---- a/include/linux/ptp_classify.h
-+++ b/include/linux/ptp_classify.h
-@@ -40,8 +40,6 @@
- /* Below defines should actually be removed at some point in time. */
- #define IP6_HLEN	40
- #define UDP_HLEN	8
--#define OFF_IHL		14
--#define IPV4_HLEN(data) (((struct iphdr *)(data + OFF_IHL))->ihl << 2)
- 
- struct clock_identity {
- 	u8 id[8];
-diff --git a/net/core/ptp_classifier.c b/net/core/ptp_classifier.c
-index e33fde06d528..6a964639b704 100644
---- a/net/core/ptp_classifier.c
-+++ b/net/core/ptp_classifier.c
-@@ -114,9 +114,11 @@ struct ptp_header *ptp_parse_header(struct sk_buff *skb, unsigned int type)
- 	if (type & PTP_CLASS_VLAN)
- 		ptr += VLAN_HLEN;
- 
-+	ptr += ETH_HLEN;
-+
- 	switch (type & PTP_CLASS_PMASK) {
- 	case PTP_CLASS_IPV4:
--		ptr += IPV4_HLEN(ptr) + UDP_HLEN;
-+		ptr += (((struct iphdr *)ptr)->ihl << 2) + UDP_HLEN;
- 		break;
- 	case PTP_CLASS_IPV6:
- 		ptr += IP6_HLEN + UDP_HLEN;
-@@ -127,8 +129,6 @@ struct ptp_header *ptp_parse_header(struct sk_buff *skb, unsigned int type)
- 		return NULL;
- 	}
- 
--	ptr += ETH_HLEN;
--
- 	/* Ensure that the entire header is present in this packet. */
- 	if (ptr + sizeof(struct ptp_header) > skb->data + skb->len)
- 		return NULL;
--- 
-Christian Eggers
-Embedded software developer
-
-Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
-Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
-Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
-Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
