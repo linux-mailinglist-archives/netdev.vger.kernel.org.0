@@ -2,82 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F43A28DA0B
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 08:46:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 268D928DBC5
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 10:40:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726826AbgJNGqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 02:46:06 -0400
-Received: from fallback21.m.smailru.net ([94.100.176.131]:36962 "EHLO
-        fallback21.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726147AbgJNGqG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 02:46:06 -0400
-X-Greylist: delayed 2124 seconds by postgrey-1.27 at vger.kernel.org; Wed, 14 Oct 2020 02:46:04 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=P+b8lA4YxCrvCA1h9jizLRuqQZfjnc92IDSeMBwxH0o=;
-        b=Zp7/Us8NKGP5HEwZFmo+xtJgowWTEaeZb/lN+EU9uWuZQ8GnnJpVUbmaECZf7OIu4IWU7IQUrsrMyV7Hxtot5wREWgpotOuHA6zhIZBXBemxWVQyov2aIH+J+IiCRi4Qb7DPeIOdU+bbnTQDLn/dtYtKA5SQxyXt6ZvaeWBOUrA=;
-Received: from [10.161.110.92] (port=56072 helo=smtp1.mail.ru)
-        by fallback21.m.smailru.net with esmtp (envelope-from <fido_max@inbox.ru>)
-        id 1kSZzg-0004Ot-9H
-        for netdev@vger.kernel.org; Wed, 14 Oct 2020 09:10:36 +0300
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=P+b8lA4YxCrvCA1h9jizLRuqQZfjnc92IDSeMBwxH0o=;
-        b=GlJNI+uFQHTvS6qcP4ISGvopto5kmeXmbIGRamSkssei1dfB7ggJ17leGxCcnW2QGb53vfKIuGFmbp+3IuLO8RVk4XJgbtefpVy6wduhKVdlostxpJmj0/bwI+zZXQLH20aePzNcPDbjM2WrxFOEQwi2/vGSUSESlT8uVq01mhQ=;
-Received: by smtp1.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
-        id 1kSZzd-00071Y-70; Wed, 14 Oct 2020 09:10:33 +0300
-From:   Maxim Kochetkov <fido_max@inbox.ru>
-To:     netdev@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>
-Subject: [PATCH] net: mscc: ocelot: Allow using without PCI on t1040 SoC
-Date:   Wed, 14 Oct 2020 09:11:05 +0300
-Message-Id: <20201014061105.26655-1-fido_max@inbox.ru>
-X-Mailer: git-send-email 2.27.0
+        id S1729735AbgJNIjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 04:39:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33574 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726269AbgJNIjh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 04:39:37 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 616DCC045871;
+        Tue, 13 Oct 2020 23:13:56 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id t25so3060082ejd.13;
+        Tue, 13 Oct 2020 23:13:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=aeWyu0fhicZ35ndvB5G7CKdKzKpJv3Q8+/dMeny8r3E=;
+        b=ngUoDnD3ez3wPljEH7V6ZRJPxi6VyKPo3NxCEGkokrtq2QA/+s/lV/gHCbtL1ccOZM
+         y4RF2dEUkDYGhH4MNBxZg/1KDQafk1w8ITyco6/45YqH8gEgwjnp0z6zsFzKn4IOHj4s
+         SEgx35DPjNeiQzLyJktDf8AGW15iQC8AEp6CWP5YKxFjWBgY54Ck35nwJlqfo9PVt8+y
+         bOUQNnEc8FKh9al2GBvmeJd6AXmxiWSD5M3XIfYFKi7rr36blaxM8b/XEUh/rGL1Hk8R
+         zvF+ytnIvMGQMQUTRgQmPC6Nm15fiVz3SDDpT9DWCqkOjC2BvUYWeMwsgd6Mu48AXDAk
+         ln9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=aeWyu0fhicZ35ndvB5G7CKdKzKpJv3Q8+/dMeny8r3E=;
+        b=Tm9Kt/lLPAzdk9crNClC2f2jWoJjmuysUv/qxZidTNJe8m4l1kD7ue1rNVXN5bQx9B
+         WqyIuwXa+VVVPIdD+3J9cWR80kh7P1VppdTMfZdwXQ0TceS0opbJFLh2w2eL+jFMJ8du
+         /ohjdzr5w0A7rX27y9IyzVxCLlPA0Dx8GdxrQ3tyhlpaqtn4M5gg50NpepFxOLI4iC7m
+         9haBTGdHJdbvTZIaEMqancmL5X4lhLlo4tGvvetlXdOBTCw4bRg4y7q3MNcZlvYiyBAF
+         d4lelbTx94MTxOBp6yMPkoX1oJpmqzGSzJPgvldA4qgZBGKj+eK7fIunKn6r6Zo+iKfZ
+         1pGQ==
+X-Gm-Message-State: AOAM530MUIWlQf/fNc6Y1IbnQFinVRwCLtj7k9PH2k6e8/qoC6Rs7urx
+        O0mE9HWnjSDHVrFzITTmY7w=
+X-Google-Smtp-Source: ABdhPJyZIBVV6msuVArNaw4EDCFq2Apl0m8HnRD2XrtAzYoL6edLcNmhgdgke6mQaAV0e1pcOOmFPA==
+X-Received: by 2002:a17:907:2179:: with SMTP id rl25mr3703878ejb.450.1602656034995;
+        Tue, 13 Oct 2020 23:13:54 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f23:2800:e563:1e0d:2b0d:aba7? (p200300ea8f232800e5631e0d2b0daba7.dip0.t-ipconnect.de. [2003:ea:8f23:2800:e563:1e0d:2b0d:aba7])
+        by smtp.googlemail.com with ESMTPSA id oa19sm1016118ejb.95.2020.10.13.23.13.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 13 Oct 2020 23:13:54 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 00/12] net: add and use function
+ dev_fetch_sw_netstats for fetching pcpu_sw_netstats
+To:     Leon Romanovsky <leon@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>
+Cc:     =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>,
+        Oliver Neukum <oneukum@suse.com>,
+        Igor Mitsyanko <imitsyanko@quantenna.com>,
+        Sergey Matyukevich <geomatsi@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        linux-rdma@vger.kernel.org,
+        Linux USB Mailing List <linux-usb@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        bridge@lists.linux-foundation.org
+References: <d77b65de-1793-f808-66b5-aaa4e7c8a8f0@gmail.com>
+ <20201013173951.25677bcc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201014054250.GB6305@unreal>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <3be8fd19-1c7e-0e05-6039-e5404b2682b9@gmail.com>
+Date:   Wed, 14 Oct 2020 08:13:47 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-7564579A: 646B95376F6C166E
-X-77F55803: 4F1203BC0FB41BD9E98D729206725230B7B3FB156096CDA3C8FE5CEBDE8F1BC5182A05F538085040000280AA6BBF10B63D07BDF565A30A0F051E435752978B211F12759F861D1906
-X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE795530B80AF2ADB7BEA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F79006378010A306A5B6F90A8638F802B75D45FF5571747095F342E8C7A0BC55FA0FE5FC2087ACAB37DAB0D2108B25D02C99C83DC41AE62D0501685A389733CBF5DBD5E913377AFFFEAFD269176DF2183F8FC7C0ECC8AC47CD0EDEFF8941B15DA834481FCF19DD082D7633A0E7DDDDC251EA7DABA471835C12D1D977725E5C173C3A84C3E478A468B35FE767117882F4460429728AD0CFFFB425014E592AE0A758652A3D76E601842F6C81A19E625A9149C048EEFAD5A440E159F97DE2071C6999E77799D8FC6C240DEA76429449624AB7ADAF37B2D370F7B14D4BC40A6AB1C7CE11FEE3271926AB75068159AD7EC71F1DB88427C4224003CC8364767A15B7713DBEF166A7F4EDE966BC389F9E8FC8737B5C224956ADF5DA62E5A3E1089D37D7C0E48F6CCF19DD082D7633A0E7DDDDC251EA7DABAAAE862A0553A39223F8577A6DFFEA7CFF04BF82BAB0A42543847C11F186F3C5E7DDDDC251EA7DABCC89B49CDF41148FA8EF81845B15A4842623479134186CDE6BA297DBC24807EABDAD6C7F3747799A
-X-C8649E89: F7F7486AB99133E4AF3E2C7A9A83F3977668245908AF641A9A39936B743BFE1B17131A2C7C6EC1B5
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojwfNTBk2YwQEo0/pEw0ooTg==
-X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB247E3F2131F94F916B54117DCB0059E28E2CA1F4C27F84AF43EE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
-X-7564579A: 78E4E2B564C1792B
-X-77F55803: 6242723A09DB00B4033B2E76A2A2E7F3D7C40938B5608F30BC4A02528CC167A0049FFFDB7839CE9E1E474B3F1C45560AE7ABCCA3D206EC8BDD85BDB34F2D6439439965811600D023
-X-7FA49CB5: 0D63561A33F958A5ECCAFFEB996DE9FA49D83A29280B935B7A842972785E5FD38941B15DA834481FA18204E546F3947C540F9B2D9BA47D56F6B57BC7E64490618DEB871D839B7333395957E7521B51C2545D4CF71C94A83E9FA2833FD35BB23D27C277FBC8AE2E8B2EE5AD8F952D28FBA471835C12D1D977C4224003CC8364765529D5D60078C743D81D268191BDAD3DC09775C1D3CA48CF68F7E3CFCDA853A2BA3038C0950A5D36C8A9BA7A39EFB7668729DE7A884B61D135872C767BF85DA29E625A9149C048EE1B544F03EFBC4D57026D3A1080F4EF5C4AD6D5ED66289B524E70A05D1297E1BB35872C767BF85DA227C277FBC8AE2E8BFBB866FF91168F3075ECD9A6C639B01B4E70A05D1297E1BBC6867C52282FAC85D9B7C4F32B44FF57285124B2A10EEC6C00306258E7E6ABB4E4A6367B16DE6309
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojwfNTBk2YwQHCYv7rJY9HTQ==
-X-Mailru-MI: 800
-X-Mailru-Sender: A5480F10D64C9005B1D5677253EBBB584F2DB6FB46BA122314451138C64F667D7A4A9796AB0AFC1BEE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
+In-Reply-To: <20201014054250.GB6305@unreal>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is no need to select FSL_ENETC_MDIO on t1040 SoC (ppc).
+On 14.10.2020 07:42, Leon Romanovsky wrote:
+> On Tue, Oct 13, 2020 at 05:39:51PM -0700, Jakub Kicinski wrote:
+>> On Mon, 12 Oct 2020 10:00:11 +0200 Heiner Kallweit wrote:
+>>> In several places the same code is used to populate rtnl_link_stats64
+>>> fields with data from pcpu_sw_netstats. Therefore factor out this code
+>>> to a new function dev_fetch_sw_netstats().
+>>>
+>>> v2:
+>>> - constify argument netstats
+>>> - don't ignore netstats being NULL or an ERRPTR
+>>> - switch to EXPORT_SYMBOL_GPL
+>>
+>> Applied, thank you!
+> 
+> Jakub,
+> 
+> Is it possible to make sure that changelogs are not part of the commit
+> messages? We don't store previous revisions in the git repo, so it doesn't
+> give too much to anyone who is looking on git log later. The lore link
+> to the patch is more than enough.
+> 
+I remember that once I did it the usual way (changelog below the ---) David
+requested the changelog to be part of the commit message. So obviously he
+sees some benefit in doing so. 
 
-Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
----
- drivers/net/dsa/ocelot/Kconfig | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> 44fa32f008ab ("net: add function dev_fetch_sw_netstats for fetching pcpu_sw_netstats")
+> 
+> Thanks
+> 
 
-diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
-index 2d23ccef7d0e..307331e7783c 100644
---- a/drivers/net/dsa/ocelot/Kconfig
-+++ b/drivers/net/dsa/ocelot/Kconfig
-@@ -1,13 +1,13 @@
- # SPDX-License-Identifier: GPL-2.0-only
- config NET_DSA_MSCC_FELIX
-	tristate "Ocelot / Felix Ethernet switch support"
--	depends on NET_DSA && PCI
-+	depends on NET_DSA && (PCI || PPC)
-	depends on NET_VENDOR_MICROSEMI
-	depends on NET_VENDOR_FREESCALE
-	depends on HAS_IOMEM
-	select MSCC_OCELOT_SWITCH_LIB
-	select NET_DSA_TAG_OCELOT
--	select FSL_ENETC_MDIO
-+	select FSL_ENETC_MDIO if !PPC
-	help
-	  This driver supports network switches from the Vitesse /
-	  Microsemi / Microchip Ocelot family of switching cores that are
---
-2.27.0
