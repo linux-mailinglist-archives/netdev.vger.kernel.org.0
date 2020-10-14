@@ -2,119 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DFD5228D749
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 02:06:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5890328D74A
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 02:06:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727371AbgJNAGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 20:06:33 -0400
-Received: from correo.us.es ([193.147.175.20]:36370 "EHLO mail.us.es"
+        id S1727464AbgJNAGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 20:06:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46590 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726830AbgJNAGc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Oct 2020 20:06:32 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id DD8D7E7809
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 02:06:30 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id CABDCDA78B
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 02:06:30 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id BFBB3DA722; Wed, 14 Oct 2020 02:06:30 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id CA40CDA72F;
-        Wed, 14 Oct 2020 02:06:28 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 14 Oct 2020 02:06:28 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
+        id S1727157AbgJNAGd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Oct 2020 20:06:33 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id A091D42EFB80;
-        Wed, 14 Oct 2020 02:06:28 +0200 (CEST)
-Date:   Wed, 14 Oct 2020 02:06:28 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Florian Westphal <fw@strlen.de>
-Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, coreteam@netfilter.org,
-        netfilter-devel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH nf v2] netfilter: conntrack: connection timeout after
- re-register
-Message-ID: <20201014000628.GA15290@salvia>
-References: <20201007193252.7009D95C169C@us180.sjc.aristanetworks.com>
- <CA+HUmGhBxBHU85oFfvoAyP=hG17DG2kgO67eawk1aXmSjehOWQ@mail.gmail.com>
- <alpine.DEB.2.23.453.2010090838430.19307@blackhole.kfki.hu>
- <20201009110323.GC5723@breakpoint.cc>
- <alpine.DEB.2.23.453.2010092035550.19307@blackhole.kfki.hu>
- <20201009185552.GF5723@breakpoint.cc>
- <alpine.DEB.2.23.453.2010092132220.19307@blackhole.kfki.hu>
- <20201009200548.GG5723@breakpoint.cc>
+        by mail.kernel.org (Postfix) with ESMTPSA id 8CD0C20776;
+        Wed, 14 Oct 2020 00:06:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602633992;
+        bh=LoF1sJ3Qxhrpy9joJ60Bakvq7tkRnNGdA4cB6aLL2IE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PWRjSOfT2kOQWySuhxncWm1R82fUTc8tx4YlysJsLdV2TpNvAy7AQWHsrqj+U5iCe
+         Jf+/EPfRnwm7BVQlhh9jIy/t8aEBWBPBANp7bTb8SsBTZsmW58iPGJWrWxNnCJpZtT
+         WL0HSpK0ALFCkRnkRlzKWga2mjnkGHOdoS/xDDss=
+Date:   Tue, 13 Oct 2020 17:06:30 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     davem@davemloft.net, alexandre.belloni@bootlin.com,
+        netdev@vger.kernel.org, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next] net: mscc: ocelot: remove duplicate
+ ocelot_port_dev_check
+Message-ID: <20201013170630.29d2d199@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201011092041.3535101-1-vladimir.oltean@nxp.com>
+References: <20201011092041.3535101-1-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20201009200548.GG5723@breakpoint.cc>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 09, 2020 at 10:05:48PM +0200, Florian Westphal wrote:
-> Jozsef Kadlecsik <kadlec@netfilter.org> wrote:
-> > > The "delay unregister" remark was wrt. the "all rules were deleted"
-> > > case, i.e. add a "grace period" rather than acting right away when
-> > > conntrack use count did hit 0.
-> > 
-> > Now I understand it, thanks really. The hooks are removed, so conntrack 
-> > cannot "see" the packets and the entries become stale. 
+On Sun, 11 Oct 2020 12:20:41 +0300 Vladimir Oltean wrote:
+> A helper for checking whether a net_device belongs to mscc_ocelot
+> already existed and did not need to be rewritten. Use it.
 > 
-> Yes.
-> 
-> > What is the rationale behind "remove the conntrack hooks when there are no 
-> > rule left referring to conntrack"? Performance optimization? But then the 
-> > content of the whole conntrack table could be deleted too... ;-)
-> 
-> Yes, this isn't the case at the moment -- only hooks are removed,
-> entries will eventually time out.
-> 
-> > > Conntrack entries are not removed, only the base hooks get unregistered. 
-> > > This is a problem for tcp window tracking.
-> > > 
-> > > When re-register occurs, kernel is supposed to switch the existing 
-> > > entries to "loose" mode so window tracking won't flag packets as 
-> > > invalid, but apparently this isn't enough to handle keepalive case.
-> > 
-> > "loose" (nf_ct_tcp_loose) mode doesn't disable window tracking, it 
-> > enables/disables picking up already established connections. 
-> > 
-> > nf_ct_tcp_be_liberal would disable TCP window checking (but not tracking) 
-> > for non RST packets.
-> 
-> You are right, mixup on my part.
-> 
-> > But both seems to be modified only via the proc entries.
-> 
-> Yes, we iterate table on re-register and modify the existing entries.
+> Fixes: 319e4dd11a20 ("net: mscc: ocelot: introduce conversion helpers between port and netdev")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-For iptables-nft, it might be possible to avoid this deregister +
-register ct hooks in the same transaction: Maybe add something like
-nf_ct_netns_get_all() to bump refcounters by one _iff_ they are > 0
-before starting the transaction processing, then call
-nf_ct_netns_put_all() which decrements refcounters and unregister
-hooks if they reach 0.
-
-The only problem with this approach is that this pulls in the
-conntrack module, to solve that, struct nf_ct_hook in
-net/netfilter/core.c could be used to store the reference to
-->netns_get_all and ->net_put_all.
-
-Legacy would still be flawed though.
+Applied, thank you!
