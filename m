@@ -2,181 +2,305 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99DB928DD7B
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 11:26:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B1F028DA10
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 08:52:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730778AbgJNJYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 05:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39944 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730688AbgJNJUC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 05:20:02 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 035B0C05110B
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 23:50:14 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id y16so3923248ila.7
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 23:50:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=4ElDEesyg0K0qnDmN25EoqLVZHDvVGnEe9oIGE+GbpY=;
-        b=yGsJGrunBc8kcDsuG6rQsb9Gi1UWyLuGHPMOjfNqcJYM8NYjLqrxTBD9axJuRe18zU
-         HQkqtoT0925++y4wEzZBq13ntiRfp+ztZ0mDXnUdL/DvJhCreJEXfAa182D+qe97LEkO
-         irPKkX4zfBbl1xcfW5PpBAR52e4Oxl4tjn5J3Yh3jn1ITYtzYpjqrPFLqodqCN8XfrUk
-         dLs6vZPItghAdRarI9xQ1Cxs2V5c5nxJNBgLLgZBspfGmq2VhatarOyYFOVd0EAD4080
-         lhCt/ii1JOENmaqe3S7tG0tp2S0XruPJjXdxCV4VttS68y59UWFitMvHdujhyBd/saDj
-         eSRA==
+        id S1727165AbgJNGwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 02:52:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27246 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726147AbgJNGwY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 02:52:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602658342;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Umgsth+qAlJC/3C7CAcCT5UyrkL1Ulorv+l5T/RtKwQ=;
+        b=J4VFr6uDKP6YeR7SZ4aHKfBouo7QquBgZkRB5dzvzoCKgpZHXxEqX2RoX97teGRZc3IwRR
+        euP+t+s3f3BWZuz5GJHQo1LMQ9fTGU5fgEzq1Rx/02eZT+zyLWM39LDx1h/gKtkbPncirp
+        nG4RxmdTj/rtzCAWKU0oEEuKnBokUe8=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-37-K8graEyAMsufwxK_zILJ7g-1; Wed, 14 Oct 2020 02:52:18 -0400
+X-MC-Unique: K8graEyAMsufwxK_zILJ7g-1
+Received: by mail-wr1-f69.google.com with SMTP id v5so889842wrr.0
+        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 23:52:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=4ElDEesyg0K0qnDmN25EoqLVZHDvVGnEe9oIGE+GbpY=;
-        b=Z2Ye4a4rl3xi2ndZHnHxNagtyz0ei40MnWYXn0iE1elD3fqQxdEqQ89KokgSQn6MXG
-         tXtxjv38p/unsJq4DGi5u1Fv5ssyAo2Q80vvkAhjto7hoguFzG3+aTllsudCAQUCGSLx
-         kAfzJJi43yBlZAx8iDcoaF0PnwszdMGeqpdBDhDOCHdOssTWJ1g7iHNstvbyeZD8ktwN
-         ZUfwzHYrCnf7erssjKLpdsjkJAu1MjFoepx3bbijn5yzmV8BWvpfwgwEzdwkag4WtP6d
-         T8f6FR79U9lPcOQNW5K8kvhkGkgHtyBy2zdTOs3h6ZrrzBIPZ2rpIDh5Ytj5ZUXsPIFF
-         gyrw==
-X-Gm-Message-State: AOAM530wEi395WU+uH2gb7QBEvBhvD0bnxlHhivZm+1QQwhQjfgZD9DL
-        gvKvxvxY+IT6q0sROzuomievwT1+7EQojn9Wlc9KSQ==
-X-Google-Smtp-Source: ABdhPJwp3I8FXlHDe3+yUeiJIWIJmB6SHTRFkbQNvXxGizAU1lL1FALkkQgXS5sL9C/VXtC/MPUiLkp0WUpyy1PrrpA=
-X-Received: by 2002:a05:6e02:5ad:: with SMTP id k13mr1306184ils.71.1602658213139;
- Tue, 13 Oct 2020 23:50:13 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=Umgsth+qAlJC/3C7CAcCT5UyrkL1Ulorv+l5T/RtKwQ=;
+        b=TGhlpxxmy6o0t0E/CPehj96fNsLDnEdOxMGBFKoBd5JtkWKOJ8DAe5BH1r2JadGR6D
+         ZNR2rIctzGOaxbaMfg1etB6VEmD3eR9gnkaVHesiXlOFgZ3uQNGyph+0L4PZ8HkQA7XM
+         MPS97UZHFr4JDCJ8GzGC/Ep5v4L0ZFzgKZJvoOi0dHSelPfme5+qHYXOdXTd3yyiDIgm
+         7Kn3hYaqrcteuxGBs4YFj/shPO+JZ0oBDy1z5LDmecEzPr0+aow4hpjDVK/rLhnyvVs6
+         tV17raHus+6R5UOtY/8dxQiXd87C5Y2LyIDOhV+ZXXCDUQhuW5+eTbNz7WYacap7i3GR
+         8xBg==
+X-Gm-Message-State: AOAM532KQAd8HBijgZTw1PTM8+ILx4hVYWbiUGn8xdWiFTi2XizzWwoq
+        wwa0Q/DessZEox3DTKOowXkomyI5UYFc8sYqPULoYtTXFdFMAWE8A7JVD+f9GKFSN4NYEkVYzUB
+        wR4pJYiwShnx8Bylv
+X-Received: by 2002:a5d:6642:: with SMTP id f2mr3797317wrw.374.1602658337680;
+        Tue, 13 Oct 2020 23:52:17 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJygjRUWH7k8NcK5WnN0N1PQoHHLLXDGOsXxyVZuN4eD8ensBeYjX+ISAk8XAMz9ma+J4s72ew==
+X-Received: by 2002:a5d:6642:: with SMTP id f2mr3797288wrw.374.1602658337370;
+        Tue, 13 Oct 2020 23:52:17 -0700 (PDT)
+Received: from redhat.com (bzq-79-176-118-93.red.bezeqint.net. [79.176.118.93])
+        by smtp.gmail.com with ESMTPSA id f63sm2237494wme.38.2020.10.13.23.52.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Oct 2020 23:52:16 -0700 (PDT)
+Date:   Wed, 14 Oct 2020 02:52:13 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     si-wei liu <si-wei.liu@oracle.com>
+Cc:     Jason Wang <jasowang@redhat.com>, lingshan.zhu@intel.com,
+        joao.m.martins@oracle.com, boris.ostrovsky@oracle.com,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 2/2] vhost-vdpa: fix page pinning leakage in error path
+Message-ID: <20201014025025-mutt-send-email-mst@kernel.org>
+References: <1601701330-16837-1-git-send-email-si-wei.liu@oracle.com>
+ <1601701330-16837-3-git-send-email-si-wei.liu@oracle.com>
+ <574a64e3-8873-0639-fe32-248cb99204bc@redhat.com>
+ <5F863B83.6030204@oracle.com>
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 14 Oct 2020 12:20:00 +0530
-Message-ID: <CA+G9fYvFUpODs+NkSYcnwKnXm62tmP=ksLeBPmB+KFrB2rvCtQ@mail.gmail.com>
-Subject: WARNING: at net/netfilter/nf_tables_api.c:622 lockdep_nfnl_nft_mutex_not_held+0x28/0x38
- [nf_tables]
-To:     "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
-        lkft-triage@lists.linaro.org,
-        open list <linux-kernel@vger.kernel.org>,
-        netfilter-devel@vger.kernel.org
-Cc:     pablo@netfilter.org, Florian Westphal <fw@strlen.de>,
-        fabf@skynet.be, Shuah Khan <shuah@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5F863B83.6030204@oracle.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While running kselftest netfilter on arm64 hikey device on Linux next
-20201013 the following
-kernel warning noticed.
+On Tue, Oct 13, 2020 at 04:42:59PM -0700, si-wei liu wrote:
+> 
+> On 10/9/2020 7:27 PM, Jason Wang wrote:
+> > 
+> > On 2020/10/3 下午1:02, Si-Wei Liu wrote:
+> > > Pinned pages are not properly accounted particularly when
+> > > mapping error occurs on IOTLB update. Clean up dangling
+> > > pinned pages for the error path. As the inflight pinned
+> > > pages, specifically for memory region that strides across
+> > > multiple chunks, would need more than one free page for
+> > > book keeping and accounting. For simplicity, pin pages
+> > > for all memory in the IOVA range in one go rather than
+> > > have multiple pin_user_pages calls to make up the entire
+> > > region. This way it's easier to track and account the
+> > > pages already mapped, particularly for clean-up in the
+> > > error path.
+> > > 
+> > > Fixes: 4c8cf31885f6 ("vhost: introduce vDPA-based backend")
+> > > Signed-off-by: Si-Wei Liu <si-wei.liu@oracle.com>
+> > > ---
+> > > Changes in v3:
+> > > - Factor out vhost_vdpa_map() change to a separate patch
+> > > 
+> > > Changes in v2:
+> > > - Fix incorrect target SHA1 referenced
+> > > 
+> > >   drivers/vhost/vdpa.c | 119
+> > > ++++++++++++++++++++++++++++++---------------------
+> > >   1 file changed, 71 insertions(+), 48 deletions(-)
+> > > 
+> > > diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> > > index 0f27919..dad41dae 100644
+> > > --- a/drivers/vhost/vdpa.c
+> > > +++ b/drivers/vhost/vdpa.c
+> > > @@ -595,21 +595,19 @@ static int
+> > > vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+> > >       struct vhost_dev *dev = &v->vdev;
+> > >       struct vhost_iotlb *iotlb = dev->iotlb;
+> > >       struct page **page_list;
+> > > -    unsigned long list_size = PAGE_SIZE / sizeof(struct page *);
+> > > +    struct vm_area_struct **vmas;
+> > >       unsigned int gup_flags = FOLL_LONGTERM;
+> > > -    unsigned long npages, cur_base, map_pfn, last_pfn = 0;
+> > > -    unsigned long locked, lock_limit, pinned, i;
+> > > +    unsigned long map_pfn, last_pfn = 0;
+> > > +    unsigned long npages, lock_limit;
+> > > +    unsigned long i, nmap = 0;
+> > >       u64 iova = msg->iova;
+> > > +    long pinned;
+> > >       int ret = 0;
+> > >         if (vhost_iotlb_itree_first(iotlb, msg->iova,
+> > >                       msg->iova + msg->size - 1))
+> > >           return -EEXIST;
+> > >   -    page_list = (struct page **) __get_free_page(GFP_KERNEL);
+> > > -    if (!page_list)
+> > > -        return -ENOMEM;
+> > > -
+> > >       if (msg->perm & VHOST_ACCESS_WO)
+> > >           gup_flags |= FOLL_WRITE;
+> > >   @@ -617,61 +615,86 @@ static int
+> > > vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+> > >       if (!npages)
+> > >           return -EINVAL;
+> > >   +    page_list = kvmalloc_array(npages, sizeof(struct page *),
+> > > GFP_KERNEL);
+> > > +    vmas = kvmalloc_array(npages, sizeof(struct vm_area_struct *),
+> > > +                  GFP_KERNEL);
+> > 
+> > 
+> > This will result high order memory allocation which was what the code
+> > tried to avoid originally.
+> > 
+> > Using an unlimited size will cause a lot of side effects consider VM or
+> > userspace may try to pin several TB of memory.
+> Hmmm, that's a good point. Indeed, if the guest memory demand is huge or the
+> host system is running short of free pages, kvmalloc will be problematic and
+> less efficient than the __get_free_page implementation.
 
-metadata:
-  git branch: master
-  git repo: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-  git commit: f2fb1afc57304f9dd68c20a08270e287470af2eb
-  git describe: next-20201013
-  make_kernelversion: 5.9.0
-  kernel-config:
-http://snapshots.linaro.org/openembedded/lkft/lkft/sumo/hikey/lkft/linux-next/879/config
+OK so ... Jason, what's the plan?
 
-steps to reproduce:
----------------------------
-# cd /opt/kselftests/default-in-kernel/
-# ./run_kselftest.sh -c netfilter
-
-crash log:
-----------------
-# selftests: netfilter: nft_trans_stress.sh
-[ 1913.862919] ------------[ cut here ]------------
-[ 1913.869773] WARNING: CPU: 2 PID: 31416 at
-/usr/src/kernel/net/netfilter/nf_tables_api.c:622
-lockdep_nfnl_nft_mutex_not_held+0x28/0x38 [nf_tables]
-[ 1913.885399] Modules linked in: nf_tables nfnetlink act_mirred
-cls_u32 sch_etf xt_conntrack nf_conntrack nf_defrag_ipv4 libcrc32c
-ip6_tables nf_defrag_ipv6 ip_tables x_tables netdevsim 8021q garp mrp
-bridge stp llc sch_fq sch_ingress veth algif_hash wl18xx wlcore
-mac80211 cfg80211 snd_soc_hdmi_codec hci_uart btqca btbcm crct10dif_ce
-snd_soc_audio_graph_card snd_soc_simple_card_utils adv7511 wlcore_sdio
-cec bluetooth kirin_drm lima rfkill dw_drm_dsi gpu_sched
-drm_kms_helper drm fuse [last unloaded: test_blackhole_dev]
-[ 1913.941924] CPU: 2 PID: 31416 Comm: nft Tainted: G        W
-5.9.0-next-20201013 #1
-[ 1913.954131] Hardware name: HiKey Development Board (DT)
-[ 1913.963342] pstate: 00000005 (nzcv daif -PAN -UAO -TCO BTYPE=--)
-[ 1913.973483] pc : lockdep_nfnl_nft_mutex_not_held+0x28/0x38 [nf_tables]
-[ 1913.984271] lr : lockdep_nfnl_nft_mutex_not_held+0x18/0x38 [nf_tables]
-[ 1913.995018] sp : ffff800013bc3550
-[ 1914.002559] x29: ffff800013bc3550 x28: ffff800013bc3930
-[ 1914.012197] x27: 0000000000000001 x26: ffff000045dc4e00
-[ 1914.021880] x25: 0000000000000001 x24: ffff000045dc4e00
-[ 1914.031565] x23: ffff800013bc3930 x22: 0000000000000001
-[ 1914.041298] x21: ffff800012750000 x20: ffff800013bc3668
-[ 1914.051068] x19: ffff800012750000 x18: 0000000000000000
-[ 1914.060876] x17: 0000000000000000 x16: 0000000000000000
-[ 1914.070699] x15: 0000000000000000 x14: ffff800009996d48
-[ 1914.080534] x13: ffffffffff000000 x12: 0000000000000028
-[ 1914.090418] x11: 0101010101010101 x10: 7f7f7f7f7f7f7f7f
-[ 1914.100355] x9 : fefefefefefefeff x8 : 7f7f7f7f7f7f7f7f
-[ 1914.110325] x7 : fefeff53544f4d48 x6 : 0000000000007ab8
-[ 1914.120339] x5 : 0000000000000005 x4 : 0000000000000001
-[ 1914.130388] x3 : 0000000000000001 x2 : 0000000000000000
-[ 1914.140454] x1 : 00000000ffffffff x0 : 0000000000000001
-[ 1914.150529] Call trace:
-[ 1914.157789]  lockdep_nfnl_nft_mutex_not_held+0x28/0x38 [nf_tables]
-[ 1914.168967]  nft_chain_parse_hook+0x58/0x320 [nf_tables]
-[ 1914.179342]  nf_tables_addchain.isra.66+0xb8/0x510 [nf_tables]
-[ 1914.190340]  nf_tables_newchain+0x408/0x618 [nf_tables]
-[ 1914.200734]  nfnetlink_rcv_batch+0x4a0/0x610 [nfnetlink]
-[ 1914.211284]  nfnetlink_rcv+0x174/0x1a8 [nfnetlink]
-[ 1914.221351]  netlink_unicast+0x1dc/0x290
-[ 1914.230589]  netlink_sendmsg+0x2b8/0x3f8
-[ 1914.239840]  ____sys_sendmsg+0x288/0x2d0
-[ 1914.249117]  ___sys_sendmsg+0x90/0xd0
-[ 1914.258154]  __sys_sendmsg+0x78/0xd0
-[ 1914.267140]  __arm64_sys_sendmsg+0x2c/0x38
-[ 1914.276705]  el0_svc_common.constprop.3+0x7c/0x198
-[ 1914.287041]  do_el0_svc+0x34/0xa0
-[ 1914.295928]  el0_sync_handler+0x128/0x190
-[ 1914.305567]  el0_sync+0x140/0x180
-[ 1914.314535] CPU: 2 PID: 31416 Comm: nft Tainted: G        W
-5.9.0-next-20201013 #1
-[ 1914.328670] Hardware name: HiKey Development Board (DT)
-[ 1914.339812] Call trace:
-[ 1914.348184]  dump_backtrace+0x0/0x1f0
-[ 1914.357841]  show_stack+0x2c/0x80
-[ 1914.367181]  dump_stack+0xf8/0x160
-[ 1914.376615]  __warn+0xac/0x168
-[ 1914.385732]  report_bug+0xcc/0x180
-[ 1914.395242]  bug_handler+0x24/0x78
-[ 1914.404783]  call_break_hook+0x80/0xa0
-[ 1914.414725]  brk_handler+0x28/0x68
-[ 1914.424358]  do_debug_exception+0xbc/0x128
-[ 1914.434744]  el1_sync_handler+0x7c/0x128
-[ 1914.445017]  el1_sync+0x7c/0x100
-[ 1914.454625]  lockdep_nfnl_nft_mutex_not_held+0x28/0x38 [nf_tables]
-[ 1914.467351]  nft_chain_parse_hook+0x58/0x320 [nf_tables]
-[ 1914.479276]  nf_tables_addchain.isra.66+0xb8/0x510 [nf_tables]
-[ 1914.491818]  nf_tables_newchain+0x408/0x618 [nf_tables]
-[ 1914.503774]  nfnetlink_rcv_batch+0x4a0/0x610 [nfnetlink]
-[ 1914.515899]  nfnetlink_rcv+0x174/0x1a8 [nfnetlink]
-[ 1914.527525]  netlink_unicast+0x1dc/0x290
-[ 1914.538318]  netlink_sendmsg+0x2b8/0x3f8
-[ 1914.549125]  ____sys_sendmsg+0x288/0x2d0
-[ 1914.559959]  ___sys_sendmsg+0x90/0xd0
-[ 1914.570557]  __sys_sendmsg+0x78/0xd0
-[ 1914.581111]  __arm64_sys_sendmsg+0x2c/0x38
-[ 1914.592241]  el0_svc_common.constprop.3+0x7c/0x198
-[ 1914.604152]  do_el0_svc+0x34/0xa0
-[ 1914.614497]  el0_sync_handler+0x128/0x190
-[ 1914.625540]  el0_sync+0x140/0x180
-[ 1914.635652] irq event stamp: 0
-[ 1914.645091] hardirqs last  enabled at (0): [<0000000000000000>] 0x0
-[ 1914.657471] hardirqs last disabled at (0): [<ffff80001008975c>]
-copy_process+0x68c/0x1910
-[ 1914.671402] softirqs last  enabled at (0): [<ffff80001008975c>]
-copy_process+0x68c/0x1910
-[ 1914.685201] softirqs last disabled at (0): [<0000000000000000>] 0x0
-[ 1914.696977] ---[ end trace 180274a5ab806f4e ]---
-[ 1917.244483] hisi_thermal f7030700.tsensor: sensor <2> THERMAL
-ALARM: 66385 > 65000
-
-Full test log link,
-https://qa-reports.linaro.org/lkft/linux-next-master/build/next-20201013/testrun/3302070/suite/linux-log-parser/test/check-kernel-warning-1839079/log
+How about you send a patchset with
+1. revert this change
+2. fix error handling leak
 
 
--- 
-Linaro LKFT
-https://lkft.linaro.org
+> > 
+> > 
+> > > +    if (!page_list || !vmas) {
+> > > +        ret = -ENOMEM;
+> > > +        goto free;
+> > > +    }
+> > 
+> > 
+> > Any reason that you want to use vmas?
+> Without providing custom vmas, it's subject to high order allocation
+> failure. While page_list and vmas can now fallback to virtual memory
+> allocation if need be.
+> 
+> > 
+> > 
+> > > +
+> > >       mmap_read_lock(dev->mm);
+> > >   -    locked = atomic64_add_return(npages, &dev->mm->pinned_vm);
+> > >       lock_limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
+> > > -
+> > > -    if (locked > lock_limit) {
+> > > +    if (npages + atomic64_read(&dev->mm->pinned_vm) > lock_limit) {
+> > >           ret = -ENOMEM;
+> > > -        goto out;
+> > > +        goto unlock;
+> > >       }
+> > >   -    cur_base = msg->uaddr & PAGE_MASK;
+> > > -    iova &= PAGE_MASK;
+> > > +    pinned = pin_user_pages(msg->uaddr & PAGE_MASK, npages, gup_flags,
+> > > +                page_list, vmas);
+> > > +    if (npages != pinned) {
+> > > +        if (pinned < 0) {
+> > > +            ret = pinned;
+> > > +        } else {
+> > > +            unpin_user_pages(page_list, pinned);
+> > > +            ret = -ENOMEM;
+> > > +        }
+> > > +        goto unlock;
+> > > +    }
+> > >   -    while (npages) {
+> > > -        pinned = min_t(unsigned long, npages, list_size);
+> > > -        ret = pin_user_pages(cur_base, pinned,
+> > > -                     gup_flags, page_list, NULL);
+> > > -        if (ret != pinned)
+> > > -            goto out;
+> > > -
+> > > -        if (!last_pfn)
+> > > -            map_pfn = page_to_pfn(page_list[0]);
+> > > -
+> > > -        for (i = 0; i < ret; i++) {
+> > > -            unsigned long this_pfn = page_to_pfn(page_list[i]);
+> > > -            u64 csize;
+> > > -
+> > > -            if (last_pfn && (this_pfn != last_pfn + 1)) {
+> > > -                /* Pin a contiguous chunk of memory */
+> > > -                csize = (last_pfn - map_pfn + 1) << PAGE_SHIFT;
+> > > -                if (vhost_vdpa_map(v, iova, csize,
+> > > -                           map_pfn << PAGE_SHIFT,
+> > > -                           msg->perm))
+> > > -                    goto out;
+> > > -                map_pfn = this_pfn;
+> > > -                iova += csize;
+> > > +    iova &= PAGE_MASK;
+> > > +    map_pfn = page_to_pfn(page_list[0]);
+> > > +
+> > > +    /* One more iteration to avoid extra vdpa_map() call out of
+> > > loop. */
+> > > +    for (i = 0; i <= npages; i++) {
+> > > +        unsigned long this_pfn;
+> > > +        u64 csize;
+> > > +
+> > > +        /* The last chunk may have no valid PFN next to it */
+> > > +        this_pfn = i < npages ? page_to_pfn(page_list[i]) : -1UL;
+> > > +
+> > > +        if (last_pfn && (this_pfn == -1UL ||
+> > > +                 this_pfn != last_pfn + 1)) {
+> > > +            /* Pin a contiguous chunk of memory */
+> > > +            csize = last_pfn - map_pfn + 1;
+> > > +            ret = vhost_vdpa_map(v, iova, csize << PAGE_SHIFT,
+> > > +                         map_pfn << PAGE_SHIFT,
+> > > +                         msg->perm);
+> > > +            if (ret) {
+> > > +                /*
+> > > +                 * Unpin the rest chunks of memory on the
+> > > +                 * flight with no corresponding vdpa_map()
+> > > +                 * calls having been made yet. On the other
+> > > +                 * hand, vdpa_unmap() in the failure path
+> > > +                 * is in charge of accounting the number of
+> > > +                 * pinned pages for its own.
+> > > +                 * This asymmetrical pattern of accounting
+> > > +                 * is for efficiency to pin all pages at
+> > > +                 * once, while there is no other callsite
+> > > +                 * of vdpa_map() than here above.
+> > > +                 */
+> > > +                unpin_user_pages(&page_list[nmap],
+> > > +                         npages - nmap);
+> > > +                goto out;
+> > >               }
+> > > -
+> > > -            last_pfn = this_pfn;
+> > > +            atomic64_add(csize, &dev->mm->pinned_vm);
+> > > +            nmap += csize;
+> > > +            iova += csize << PAGE_SHIFT;
+> > > +            map_pfn = this_pfn;
+> > >           }
+> > > -
+> > > -        cur_base += ret << PAGE_SHIFT;
+> > > -        npages -= ret;
+> > > +        last_pfn = this_pfn;
+> > >       }
+> > 
+> > 
+> > So what I suggest is to fix the pinning leakage first and do the
+> > possible optimization on top (which is still questionable to me).
+> OK. Unfortunately, this was picked and got merged in upstream. So I will
+> post a follow up patch set to 1) revert the commit to the original
+> __get_free_page() implementation, and 2) fix the accounting and leakage on
+> top. Will it be fine?
+> 
+> 
+> -Siwei
+> > 
+> > Thanks
+> > 
+> > 
+> > >   -    /* Pin the rest chunk */
+> > > -    ret = vhost_vdpa_map(v, iova, (last_pfn - map_pfn + 1) <<
+> > > PAGE_SHIFT,
+> > > -                 map_pfn << PAGE_SHIFT, msg->perm);
+> > > +    WARN_ON(nmap != npages);
+> > >   out:
+> > > -    if (ret) {
+> > > +    if (ret)
+> > >           vhost_vdpa_unmap(v, msg->iova, msg->size);
+> > > -        atomic64_sub(npages, &dev->mm->pinned_vm);
+> > > -    }
+> > > +unlock:
+> > >       mmap_read_unlock(dev->mm);
+> > > -    free_page((unsigned long)page_list);
+> > > +free:
+> > > +    kvfree(vmas);
+> > > +    kvfree(page_list);
+> > >       return ret;
+> > >   }
+> > 
+
