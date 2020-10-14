@@ -2,55 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E7AF28D8ED
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 05:13:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6578B28D908
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 05:58:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728846AbgJNDNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 23:13:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45528 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726049AbgJNDNJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Oct 2020 23:13:09 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C38EB21775;
-        Wed, 14 Oct 2020 03:13:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602645189;
-        bh=NwgTOsmhFDsoNXrdTKUpOlGw6YR1p9x8rc49/ddJF4Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hUrmXEUPKZ4HvdJZPImI+zsjF2aKpGo4Im12o0RcaI3dq6e69/KO1DkAlH8YeOa7F
-         u8LVyw/pNWFRNERWTv6CdsGmCnnYlr1y5bIHy1i8v3bqGtUeO6BqCHkgKzHJW1utCq
-         sGTWqWOnsfjrG/zMi7E7lqszf697RK07AfJ3mvIM=
-Date:   Tue, 13 Oct 2020 20:13:07 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Willy Tarreau <w@1wt.eu>
-Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        netdev@vger.kernel.org, David Miller <davem@davemloft.net>
-Subject: Re: [PATCH net-next 0/3] macb: support the 2-deep Tx queue on at91
-Message-ID: <20201013201307.48976984@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201014030630.GA12531@1wt.eu>
-References: <20201011090944.10607-1-w@1wt.eu>
-        <20201013170358.1a4d282a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201014030630.GA12531@1wt.eu>
+        id S1729810AbgJND6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 23:58:24 -0400
+Received: from smtprelay0131.hostedemail.com ([216.40.44.131]:53106 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729395AbgJND6Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 23:58:24 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 61EF91730847;
+        Wed, 14 Oct 2020 03:58:22 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:1801:2393:2553:2559:2562:2828:2904:3138:3139:3140:3141:3142:3352:3865:3867:3870:4321:4605:5007:10004:10400:10848:11026:11233:11473:11657:11658:11914:12043:12262:12296:12297:12438:12555:12679:12740:12760:12895:13439:14096:14097:14181:14659:14721:21080:21324:21365:21451:21627:21990:30029:30030:30054:30055:30064:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: pail67_620b2a027208
+X-Filterd-Recvd-Size: 3589
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf11.hostedemail.com (Postfix) with ESMTPA;
+        Wed, 14 Oct 2020 03:58:20 +0000 (UTC)
+Message-ID: <73e7098a7dacbbc3a3b77065222f488e23e17201.camel@perches.com>
+Subject: iwlwifi: spaces in procfs filenames ?
+From:   Joe Perches <joe@perches.com>
+To:     Sharon Dvir <sharon.dvir@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org
+Date:   Tue, 13 Oct 2020 20:58:18 -0700
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.4-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 14 Oct 2020 05:06:30 +0200 Willy Tarreau wrote:
-> > LGTM. There's always a chance that this will make other 
-> > designs explode, but short of someone from Cadence giving 
-> > us a timely review we have only one way to find that out.. :)  
-> 
-> Not that much in fact, given that the at91ether_* functions are only
-> used by AT91RM9200 (whose datasheet I used to do this) and Mstar which
-> I used for the tests. I initially wanted to get my old SAM9G20 board
-> to boot until I noticed that it doesn't even use the same set of
-> functions, so the potential victims are extremely limited :-)
+commit 64fa3aff89785b5a924ce3934f6595c35b4dffee
+Author: Sharon Dvir <sharon.dvir@intel.com>
+Date:   Wed Aug 17 15:35:09 2016 +0300
 
-GTK :)
+    iwlwifi: pcie: give a meaningful name to interrupt request
+
+perhaps unintentionally for file:
+
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h
+in function static inline const char *queue_name
+
+creates spaces in procfs filenames.
+
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h:static inline const char *queue_name(struct device *dev,
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-                                  struct iwl_trans_pcie *trans_p, int i)
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-{
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-     if (trans_p->shared_vec_mask) {
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-             int vec = trans_p->shared_vec_mask &
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-                       IWL_SHARED_IRQ_FIRST_RSS ? 1 : 0;
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-             if (i == 0)
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-                     return DRV_NAME ": shared IRQ";
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-             return devm_kasprintf(dev, GFP_KERNEL,
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-                                   DRV_NAME ": queue %d", i + vec);
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-     }
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-     if (i == 0)
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-             return DRV_NAME ": default queue";
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-     if (i == trans_p->alloc_vecs - 1)
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-             return DRV_NAME ": exception";
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-     return devm_kasprintf(dev, GFP_KERNEL,
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-                           DRV_NAME  ": queue %d", i);
+drivers/net/wireless/intel/iwlwifi/pcie/internal.h-}
+
+# find /proc/ | grep " "
+/proc/irq/130/iwlwifi: default queue
+/proc/irq/131/iwlwifi: queue 1
+/proc/irq/132/iwlwifi: queue 2
+/proc/irq/133/iwlwifi: queue 3
+/proc/irq/134/iwlwifi: queue 4
+/proc/irq/135/iwlwifi: exception
+
+Can these names be changed back or collapsed
+to avoid the space use in procfs?
+
+
