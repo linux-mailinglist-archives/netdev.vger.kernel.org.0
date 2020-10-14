@@ -2,87 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F6A428D9A4
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 07:42:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A08F228DAF0
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 10:15:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727245AbgJNFmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 01:42:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44624 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725983AbgJNFmz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Oct 2020 01:42:55 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 936BB2177B;
-        Wed, 14 Oct 2020 05:42:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602654174;
-        bh=w10HAUvHzI4K2dPPA6eBw0IIFtp11qCCa0wUzKaUmD8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cKsoRdZk0/7P9W5KQIcB78oxj7gSK1YWQM+hrVcStVlKqV5euxdawGaIKjsJO+YUU
-         /usInNdGonQCzHNv/4cuzYg3D1kAHdZbtEGHplDqaWK5j6M3yEug5qW6hLhVGcPu6C
-         Ur12VOGAV45LDfAlhlt9kErfzTLPyFZ2XWjKnbEc=
-Date:   Wed, 14 Oct 2020 08:42:50 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
-        Oliver Neukum <oneukum@suse.com>,
-        Igor Mitsyanko <imitsyanko@quantenna.com>,
-        Sergey Matyukevich <geomatsi@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        linux-rdma@vger.kernel.org,
-        Linux USB Mailing List <linux-usb@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        bridge@lists.linux-foundation.org
-Subject: Re: [PATCH net-next v2 00/12] net: add and use function
- dev_fetch_sw_netstats for fetching pcpu_sw_netstats
-Message-ID: <20201014054250.GB6305@unreal>
-References: <d77b65de-1793-f808-66b5-aaa4e7c8a8f0@gmail.com>
- <20201013173951.25677bcc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1728865AbgJNIOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 04:14:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57888 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728671AbgJNIOj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 04:14:39 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE266C045864;
+        Tue, 13 Oct 2020 22:46:06 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id j8so965806pjy.5;
+        Tue, 13 Oct 2020 22:46:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7Rp+G8DZZhkfAL9cWtudlZ9LPgIaBKBM+aO/cPwol6M=;
+        b=EjuzKISfcRwMWyuJ84hl/XIJfHvlfJtu96k58Vd9ubhMhpEFiRfC9GsSebnHufk/uy
+         a3EU7kZEMPLz25Z7fhNUxlaSI/z4kUMYu9ne6sL/z8Esf0JI12kYuW2kU2rkz2oPmqkZ
+         wtJKtf40mq/DV5UlnLh0HBPZ7cyJRIk052ARvv3ibKMrSl9L/Zup6T1mYQ0RPmPSRcZA
+         9yKsABLLcLSq30LFCmvB/XFxV+iM5tyAdA+HwBHyF8i87+yMbLyER/ht4R2co0j7MiHE
+         fFLCUShHi0Ymuh6AwORttGuCm0sPcb40atx8eHYk8yTR/arA9J6j0emw0Qq2MKLa/pq9
+         Tecg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7Rp+G8DZZhkfAL9cWtudlZ9LPgIaBKBM+aO/cPwol6M=;
+        b=VmRQv824paPnnKjFoWhZkQg6KIg/YqaFfKmfOE23sWi+2h2FrHtYjOf7pqastqAg3z
+         lJBUOCJGq5npLeCGqUNWwN++lgtkjKUfj/85ChaG7lZ/nn+cl7FEhzve84u30oz9S4gb
+         u4o8KYddqNWtj2QWhkP/FWah1NccSFwMc50u7r6Zxv5eDBXv3qMTr61YICiD4PUEvmNs
+         Fz40Q3lKctNQp6iBmFqp7y1TQzq5Q2duAp79hFFrbKHLNUGMZkUjs32+zwQ675PU/srQ
+         MEfgs8N3cQHoKh4s/TD0lVkiZViR9VFRf2c6+FqJkcQDQzuxvNRg0vuO9drCXyQ2EtD8
+         A20A==
+X-Gm-Message-State: AOAM5309t1bLiJVxAGFbm6YP5oToru01FVEF/4w0lU/egxuWhw5ahAbc
+        L/xWVGmD9LloXMJtO1MPQmE=
+X-Google-Smtp-Source: ABdhPJxIt969XM2Lx9QtYISAlFDV3pi3XqyjKgkyokQT7WD3SyoIh5WPzQAIxlulAvwbLXckBylbew==
+X-Received: by 2002:a17:90b:3841:: with SMTP id nl1mr1978234pjb.69.1602654366301;
+        Tue, 13 Oct 2020 22:46:06 -0700 (PDT)
+Received: from HVD6JC2.Broadcom.net ([192.19.252.250])
+        by smtp.gmail.com with ESMTPSA id w187sm1620996pfb.93.2020.10.13.22.46.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Oct 2020 22:46:05 -0700 (PDT)
+From:   Amitesh Chandra <amitesh.chandra@gmail.com>
+To:     davem@davemloft.net, robh+dt@kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     amitesh.chandra@broadcom.com, ravi.nagarajan@broadcom.com,
+        cheneyni@google.com
+Subject: [PATCH 2/3] dt-bindings: net: bluetooth: Add broadcom BCM4389 support
+Date:   Wed, 14 Oct 2020 11:15:43 +0530
+Message-Id: <20201014054543.2457-1-amitesh.chandra@gmail.com>
+X-Mailer: git-send-email 2.28.0.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201013173951.25677bcc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 13, 2020 at 05:39:51PM -0700, Jakub Kicinski wrote:
-> On Mon, 12 Oct 2020 10:00:11 +0200 Heiner Kallweit wrote:
-> > In several places the same code is used to populate rtnl_link_stats64
-> > fields with data from pcpu_sw_netstats. Therefore factor out this code
-> > to a new function dev_fetch_sw_netstats().
-> >
-> > v2:
-> > - constify argument netstats
-> > - don't ignore netstats being NULL or an ERRPTR
-> > - switch to EXPORT_SYMBOL_GPL
->
-> Applied, thank you!
+From: Amitesh Chandra <amitesh.chandra@broadcom.com>
 
-Jakub,
+Add bindings for BCM4389 bluetooth controller.
 
-Is it possible to make sure that changelogs are not part of the commit
-messages? We don't store previous revisions in the git repo, so it doesn't
-give too much to anyone who is looking on git log later. The lore link
-to the patch is more than enough.
+Signed-off-by: Amitesh Chandra <amitesh.chandra@broadcom.com>
+---
+ Documentation/devicetree/bindings/net/broadcom-bluetooth.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-44fa32f008ab ("net: add function dev_fetch_sw_netstats for fetching pcpu_sw_netstats")
+diff --git a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+index 4fa00e2..ae48e42 100644
+--- a/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
++++ b/Documentation/devicetree/bindings/net/broadcom-bluetooth.txt
+@@ -14,6 +14,7 @@ Required properties:
+    * "brcm,bcm4330-bt"
+    * "brcm,bcm43438-bt"
+    * "brcm,bcm4345c5"
++   * "brcm,bcm4389-bt"
+ 
+ Optional properties:
+ 
+-- 
+2.7.4
 
-Thanks
