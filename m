@@ -2,96 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4F4428E59E
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 19:43:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE35728E5B5
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 19:49:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727785AbgJNRnz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 13:43:55 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:14000 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726903AbgJNRny (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 13:43:54 -0400
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09EHacm9044171;
-        Wed, 14 Oct 2020 13:43:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references; s=pp1;
- bh=jjyulqcpxlMPbqXd6zWSDFg6RCOZJO1mm6tP1lvXPdE=;
- b=ftOheAfOptlfJlia3WKyfYB4hVdTNpKl47E9CTnuaG0m1h9l0mjuj5BdIlragqptCQ9k
- RBWoqJLV/LcrbpOLOknpbUELfTkUzNrRC8SUftfE27XXGVgwZwzpcF3P4f8Vb6x3yDoV
- lNyIICdhOIgtvlTGsPrr71goAMhCSyGlxczPaBFGIH1Wkb2WFWrPwDYhMt+U0GZ+0IU4
- DGs554JSBF4cqyvBO9S5NT3hJlJRBlt18DRqBEYlfOAMGVnaT67k7WdoZ+dOzdnnEdir
- iGsJTL3TcmX4LzfD19y6kQOrAspWhQ5GJYb9RsVhn69GyijzUH0aMS+IwoNXOUrj8EEf rg== 
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3465nq0n00-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 14 Oct 2020 13:43:52 -0400
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 09EHg16G013475;
-        Wed, 14 Oct 2020 17:43:50 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma01fra.de.ibm.com with ESMTP id 344558sn4c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 14 Oct 2020 17:43:50 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 09EHhll033423830
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 14 Oct 2020 17:43:47 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 81C0652050;
-        Wed, 14 Oct 2020 17:43:47 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 394525204F;
-        Wed, 14 Oct 2020 17:43:47 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
-        ubraun@linux.ibm.com
-Subject: [PATCH net 3/3] net/smc: fix invalid return code in smcd_new_buf_create()
-Date:   Wed, 14 Oct 2020 19:43:29 +0200
-Message-Id: <20201014174329.35791-4-kgraul@linux.ibm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201014174329.35791-1-kgraul@linux.ibm.com>
-References: <20201014174329.35791-1-kgraul@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-10-14_09:2020-10-14,2020-10-14 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- phishscore=0 impostorscore=0 malwarescore=0 mlxscore=0 spamscore=0
- adultscore=0 suspectscore=1 bulkscore=0 clxscore=1015 mlxlogscore=999
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010140122
+        id S1727454AbgJNRtE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 13:49:04 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.50]:17446 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726119AbgJNRtE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 13:49:04 -0400
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMGXsh6lyA="
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.50.177]
+        by smtp.strato.de (RZmta 47.2.1 DYNA|AUTH)
+        with ESMTPSA id D0b41cw9EHmeX6a
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Wed, 14 Oct 2020 19:48:40 +0200 (CEST)
+Subject: Re: [PATCH net] can: peak_usb: add range checking in decode
+ operations
+To:     =?UTF-8?Q?St=c3=a9phane_Grosjean?= <s.grosjean@peak-system.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andri Yngvason <andri.yngvason@marel.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>
+References: <20200813140604.GA456946@mwanda>
+ <VI1PR03MB50536300783DBBEAFC7B0367D6050@VI1PR03MB5053.eurprd03.prod.outlook.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <169f62c4-ee2d-6ba2-2a78-640df8edcde0@hartkopp.net>
+Date:   Wed, 14 Oct 2020 19:48:33 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
+MIME-Version: 1.0
+In-Reply-To: <VI1PR03MB50536300783DBBEAFC7B0367D6050@VI1PR03MB5053.eurprd03.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-smc_ism_register_dmb() returns error codes set by the ISM driver which
-are not guaranteed to be negative or in the errno range. Such values
-would not be handled by ERR_PTR() and finally the return code will be
-used as a memory address.
-Fix that by using a valid negative errno value with ERR_PTR().
+Hi Stephane,
 
-Fixes: 72b7f6c48708 ("net/smc: unique reason code for exceeded max dmb count")
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
----
- net/smc/smc_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+On 14.10.20 15:22, Stéphane Grosjean wrote:
+> Hello Dan,
+> 
+> Don't know if this patch is still relevant, but:
+> 
+> - there is absolutely no reason for the device firmware to provide a channel index greater than or equal to 2, because the IP core of these USB devices handles 2 channels only. Anyway, these changes are correct.
+> - considering the verification of the length "cfd->len" on the other hand, this one comes directly from can_send() via dev_queue_xmit() AFAIK and it seems to me that the underlying driver can assume that its value is smaller than 64.
 
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index 5de637472a11..d790c43c473f 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -1615,7 +1615,8 @@ static struct smc_buf_desc *smcd_new_buf_create(struct smc_link_group *lgr,
- 		rc = smc_ism_register_dmb(lgr, bufsize, buf_desc);
- 		if (rc) {
- 			kfree(buf_desc);
--			return (rc == -ENOMEM) ? ERR_PTR(-EAGAIN) : ERR_PTR(rc);
-+			return (rc == -ENOMEM) ? ERR_PTR(-EAGAIN) :
-+						 ERR_PTR(-EIO);
- 		}
- 		buf_desc->pages = virt_to_page(buf_desc->cpu_addr);
- 		/* CDC header stored in buf. So, pretend it was smaller */
--- 
-2.17.1
+In fact there are many inbound checks e.g. with 
+can_dropped_invalid_skb() to make sure the network layer gets proper CAN 
+skbs (with ETH_P_CAN(FD) ethertypes).
 
+On the outgoing path the CAN driver gets these ETH_P_CAN(FD) CAN skbs an 
+just copies the CAN ID and the up to 64 bytes of data from that skb.
+
+But remember that you can also generate CAN frames via AF_PACKET sockets 
+which does not perform the sanity checks from can_send():
+https://github.com/linux-can/can-tests/blob/master/netlayer/tst-packet.c
+
+Copying 64 byte from the skb into an I/O attached CAN controller is 
+always a safe operation - but when you send the content through another 
+medium (e.g. USB) the length values should be checked.
+
+Best regards,
+Oliver
+
+> 
+> Regards,
+> ---
+> Stéphane Grosjean
+> PEAK-System France
+> 132, rue André Bisiaux
+> F-54320 MAXEVILLE
+> Tél : +(33) 9.72.54.51.97
+> 
+> 
+> 
+> De : Dan Carpenter <dan.carpenter@oracle.com>
+> Envoyé : jeudi 13 août 2020 16:06
+> À : Wolfgang Grandegger <wg@grandegger.com>; Stéphane Grosjean <s.grosjean@peak-system.com>
+> Cc : Marc Kleine-Budde <mkl@pengutronix.de>; David S. Miller <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; Andri Yngvason <andri.yngvason@marel.com>; Oliver Hartkopp <socketcan@hartkopp.net>; linux-can@vger.kernel.org <linux-can@vger.kernel.org>; netdev@vger.kernel.org <netdev@vger.kernel.org>; kernel-janitors@vger.kernel.org <kernel-janitors@vger.kernel.org>
+> Objet : [PATCH net] can: peak_usb: add range checking in decode operations
+> 
+> These values come from skb->data so Smatch considers them untrusted.  I
+> believe Smatch is correct but I don't have a way to test this.
+> 
+> The usb_if->dev[] array has 2 elements but the index is in the 0-15
+> range without checks.  The cfd->len can be up to 255 but the maximum
+> valid size is CANFD_MAX_DLEN (64) so that could lead to memory
+> corruption.
+> 
+> Fixes: 0a25e1f4f185 ("can: peak_usb: add support for PEAK new CANFD USB adapters")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> ---
+>   drivers/net/can/usb/peak_usb/pcan_usb_fd.c | 48 +++++++++++++++++-----
+>   1 file changed, 37 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_fd.c b/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
+> index 47cc1ff5b88e..dee3e689b54d 100644
+> --- a/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
+> +++ b/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
+> @@ -468,12 +468,18 @@ static int pcan_usb_fd_decode_canmsg(struct pcan_usb_fd_if *usb_if,
+>                                        struct pucan_msg *rx_msg)
+>   {
+>           struct pucan_rx_msg *rm = (struct pucan_rx_msg *)rx_msg;
+> -       struct peak_usb_device *dev = usb_if->dev[pucan_msg_get_channel(rm)];
+> -       struct net_device *netdev = dev->netdev;
+> +       struct peak_usb_device *dev;
+> +       struct net_device *netdev;
+>           struct canfd_frame *cfd;
+>           struct sk_buff *skb;
+>           const u16 rx_msg_flags = le16_to_cpu(rm->flags);
+> 
+> +       if (pucan_msg_get_channel(rm) >= ARRAY_SIZE(usb_if->dev))
+> +               return -ENOMEM;
+> +
+> +       dev = usb_if->dev[pucan_msg_get_channel(rm)];
+> +       netdev = dev->netdev;
+> +
+>           if (rx_msg_flags & PUCAN_MSG_EXT_DATA_LEN) {
+>                   /* CANFD frame case */
+>                   skb = alloc_canfd_skb(netdev, &cfd);
+> @@ -519,15 +525,21 @@ static int pcan_usb_fd_decode_status(struct pcan_usb_fd_if *usb_if,
+>                                        struct pucan_msg *rx_msg)
+>   {
+>           struct pucan_status_msg *sm = (struct pucan_status_msg *)rx_msg;
+> -       struct peak_usb_device *dev = usb_if->dev[pucan_stmsg_get_channel(sm)];
+> -       struct pcan_usb_fd_device *pdev =
+> -                       container_of(dev, struct pcan_usb_fd_device, dev);
+> +       struct pcan_usb_fd_device *pdev;
+>           enum can_state new_state = CAN_STATE_ERROR_ACTIVE;
+>           enum can_state rx_state, tx_state;
+> -       struct net_device *netdev = dev->netdev;
+> +       struct peak_usb_device *dev;
+> +       struct net_device *netdev;
+>           struct can_frame *cf;
+>           struct sk_buff *skb;
+> 
+> +       if (pucan_stmsg_get_channel(sm) >= ARRAY_SIZE(usb_if->dev))
+> +               return -ENOMEM;
+> +
+> +       dev = usb_if->dev[pucan_stmsg_get_channel(sm)];
+> +       pdev = container_of(dev, struct pcan_usb_fd_device, dev);
+> +       netdev = dev->netdev;
+> +
+>           /* nothing should be sent while in BUS_OFF state */
+>           if (dev->can.state == CAN_STATE_BUS_OFF)
+>                   return 0;
+> @@ -579,9 +591,14 @@ static int pcan_usb_fd_decode_error(struct pcan_usb_fd_if *usb_if,
+>                                       struct pucan_msg *rx_msg)
+>   {
+>           struct pucan_error_msg *er = (struct pucan_error_msg *)rx_msg;
+> -       struct peak_usb_device *dev = usb_if->dev[pucan_ermsg_get_channel(er)];
+> -       struct pcan_usb_fd_device *pdev =
+> -                       container_of(dev, struct pcan_usb_fd_device, dev);
+> +       struct pcan_usb_fd_device *pdev;
+> +       struct peak_usb_device *dev;
+> +
+> +       if (pucan_ermsg_get_channel(er) >= ARRAY_SIZE(usb_if->dev))
+> +               return -EINVAL;
+> +
+> +       dev = usb_if->dev[pucan_ermsg_get_channel(er)];
+> +       pdev = container_of(dev, struct pcan_usb_fd_device, dev);
+> 
+>           /* keep a trace of tx and rx error counters for later use */
+>           pdev->bec.txerr = er->tx_err_cnt;
+> @@ -595,11 +612,17 @@ static int pcan_usb_fd_decode_overrun(struct pcan_usb_fd_if *usb_if,
+>                                         struct pucan_msg *rx_msg)
+>   {
+>           struct pcan_ufd_ovr_msg *ov = (struct pcan_ufd_ovr_msg *)rx_msg;
+> -       struct peak_usb_device *dev = usb_if->dev[pufd_omsg_get_channel(ov)];
+> -       struct net_device *netdev = dev->netdev;
+> +       struct peak_usb_device *dev;
+> +       struct net_device *netdev;
+>           struct can_frame *cf;
+>           struct sk_buff *skb;
+> 
+> +       if (pufd_omsg_get_channel(ov) >= ARRAY_SIZE(usb_if->dev))
+> +               return -EINVAL;
+> +
+> +       dev = usb_if->dev[pufd_omsg_get_channel(ov)];
+> +       netdev = dev->netdev;
+> +
+>           /* allocate an skb to store the error frame */
+>           skb = alloc_can_err_skb(netdev, &cf);
+>           if (!skb)
+> @@ -716,6 +739,9 @@ static int pcan_usb_fd_encode_msg(struct peak_usb_device *dev,
+>           u16 tx_msg_size, tx_msg_flags;
+>           u8 can_dlc;
+> 
+> +       if (cfd->len > CANFD_MAX_DLEN)
+> +               return -EINVAL;
+> +
+>           tx_msg_size = ALIGN(sizeof(struct pucan_tx_msg) + cfd->len, 4);
+>           tx_msg->size = cpu_to_le16(tx_msg_size);
+>           tx_msg->type = cpu_to_le16(PUCAN_MSG_CAN_TX);
+> --
+> 2.28.0
+> 
+> --
+> PEAK-System Technik GmbH
+> Sitz der Gesellschaft Darmstadt - HRB 9183
+> Geschaeftsfuehrung: Alexander Gach / Uwe Wilhelm
+> Unsere Datenschutzerklaerung mit wichtigen Hinweisen
+> zur Behandlung personenbezogener Daten finden Sie unter
+> www.peak-system.com/Datenschutz.483.0.html
+> 
