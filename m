@@ -2,428 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AB1F28DE52
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 12:08:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2C4928DEC3
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 12:17:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729022AbgJNKIi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 06:08:38 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:18518 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727413AbgJNKIi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 06:08:38 -0400
-Received: from heptagon.blr.asicdesigners.com (heptagon.blr.asicdesigners.com [10.193.186.108])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 09EA8SqW015948;
-        Wed, 14 Oct 2020 03:08:28 -0700
-From:   Ayush Sawal <ayush.sawal@chelsio.com>
-To:     kuba@kernel.org, davem@davemloft.net, herbert@gondor.apana.org.au
-Cc:     netdev@vger.kernel.org, secdev@chelsio.com,
-        Ayush Sawal <ayush.sawal@chelsio.com>
-Subject: [PATCH net-next V3] cxgb4/ch_ipsec: Replace the module name to ch_ipsec from chcr
-Date:   Wed, 14 Oct 2020 15:38:06 +0530
-Message-Id: <20201014100806.23598-1-ayush.sawal@chelsio.com>
-X-Mailer: git-send-email 2.28.0.rc1.6.gae46588
+        id S1727485AbgJNKRk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 06:17:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48992 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726028AbgJNKRk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 06:17:40 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D12C061755
+        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 03:17:40 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kSdqi-00036B-Pd; Wed, 14 Oct 2020 12:17:36 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:3c11:afd4:9079:fce2] (unknown [IPv6:2a03:f580:87bc:d400:3c11:afd4:9079:fce2])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id D58BD578EB3;
+        Wed, 14 Oct 2020 10:17:29 +0000 (UTC)
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>
+References: <20201007213159.1959308-1-mkl@pengutronix.de>
+ <20201007213159.1959308-15-mkl@pengutronix.de>
+ <DB8PR04MB6795CE6F83E1C25F8A04633FE6050@DB8PR04MB6795.eurprd04.prod.outlook.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Subject: Re: [PATCH 14/17] can: flexcan: remove ack_grp and ack_bit handling
+ from driver
+Message-ID: <16223144-3d40-2e3b-52ef-08176a076ed5@pengutronix.de>
+Date:   Wed, 14 Oct 2020 12:17:24 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <DB8PR04MB6795CE6F83E1C25F8A04633FE6050@DB8PR04MB6795.eurprd04.prod.outlook.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="mblygUAZRtzggU8E3zjOhDytZ94rv0sUt"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch changes the module name to "ch_ipsec" and prepends
-"ch_ipsec" string instead of "chcr" in all debug messages and
-function names.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--mblygUAZRtzggU8E3zjOhDytZ94rv0sUt
+Content-Type: multipart/mixed; boundary="TzIWZ33hlJ91xWksRrJQwc9Uo9qjuQMVW";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Joakim Zhang <qiangqing.zhang@nxp.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc: "davem@davemloft.net" <davem@davemloft.net>,
+ "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+ "kernel@pengutronix.de" <kernel@pengutronix.de>
+Message-ID: <16223144-3d40-2e3b-52ef-08176a076ed5@pengutronix.de>
+Subject: Re: [PATCH 14/17] can: flexcan: remove ack_grp and ack_bit handling
+ from driver
+References: <20201007213159.1959308-1-mkl@pengutronix.de>
+ <20201007213159.1959308-15-mkl@pengutronix.de>
+ <DB8PR04MB6795CE6F83E1C25F8A04633FE6050@DB8PR04MB6795.eurprd04.prod.outlook.com>
+In-Reply-To: <DB8PR04MB6795CE6F83E1C25F8A04633FE6050@DB8PR04MB6795.eurprd04.prod.outlook.com>
 
-V1->V2:
--Removed inline keyword from functions.
--Removed CH_IPSEC prefix from pr_debug.
--Used proper indentation for the continuation line of the function
-arguments.
+--TzIWZ33hlJ91xWksRrJQwc9Uo9qjuQMVW
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 
-V2->V3:
-Fix the checkpatch.pl warnings.
+On 10/14/20 10:53 AM, Joakim Zhang wrote:
+>> Since commit:
+>>
+>>     048e3a34a2e7 can: flexcan: poll MCR_LPM_ACK instead of GPR ACK for=
 
-Fixes: 1b77be463929 ("crypto/chcr: Moving chelsio's inline ipsec functionality to /drivers/net")
-Signed-off-by: Ayush Sawal <ayush.sawal@chelsio.com>
----
- drivers/crypto/chelsio/chcr_core.h            |   2 -
- .../inline_crypto/ch_ipsec/chcr_ipsec.c       | 135 +++++++++---------
- 2 files changed, 68 insertions(+), 69 deletions(-)
+>> stop mode acknowledgment
+>>
+>> the driver polls the IP core's internal bit MCR[LPM_ACK] as stop mode
+>> acknowledge and not the acknowledgment on chip level.
+>>
+>> This means the 4th and 5th value of the property "fsl,stop-mode" isn't=
+ used
+>> anymore. This patch removes the used "ack_gpr" and "ack_bit" from the
+>> driver.
+>>
+>> Link:
+>> https://eur01.safelinks.protection.outlook.com/?url=3Dhttp%3A%2F%2Flor=
+e.kern
+>> el.org%2Fr%2F20201006203748.1750156-15-mkl%40pengutronix.de&amp;dat
+>> a=3D02%7C01%7Cqiangqing.zhang%40nxp.com%7C1540ad5bf7bd4a1e10a508d8
+>> 6b087a67%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C637377031
+>> 436785787&amp;sdata=3DierIIVdSqZFLklIvgMokHX6LU77cEWQgUGzUi6CHdDI%
+>> 3D&amp;reserved=3D0
+>> Fixes: 048e3a34a2e7 ("can: flexcan: poll MCR_LPM_ACK instead of GPR AC=
+K
+>> for stop mode acknowledgment")
+>> Cc: Joakim Zhang <qiangqing.zhang@nxp.com>
+>> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+>=20
+> [...]
+>>  	/* stop mode property format is:
+>> -	 * <&gpr req_gpr req_bit ack_gpr ack_bit>.
+>> +	 * <&gpr req_gpr>.
+>=20
+> Hi Marc,
+>=20
+> Sorry for response delay, stop mode property format should be "<&gpr re=
+q_gpr
+> req_bit>", I saw this code change has went into linux-next, so I will c=
+orrect
+> it by the way next time when I upsteam wakeup function for i.MX8.
 
-diff --git a/drivers/crypto/chelsio/chcr_core.h b/drivers/crypto/chelsio/chcr_core.h
-index bb092b6b36b2..b02f981e7c32 100644
---- a/drivers/crypto/chelsio/chcr_core.h
-+++ b/drivers/crypto/chelsio/chcr_core.h
-@@ -137,6 +137,4 @@ int chcr_uld_rx_handler(void *handle, const __be64 *rsp,
- int chcr_uld_tx_handler(struct sk_buff *skb, struct net_device *dev);
- int chcr_handle_resp(struct crypto_async_request *req, unsigned char *input,
- 		     int err);
--int chcr_ipsec_xmit(struct sk_buff *skb, struct net_device *dev);
--void chcr_add_xfrmops(const struct cxgb4_lld_info *lld);
- #endif /* __CHCR_CORE_H__ */
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c b/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c
-index 0e7d25169407..072299b14b8d 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ipsec/chcr_ipsec.c
-@@ -35,7 +35,7 @@
-  *	Atul Gupta (atul.gupta@chelsio.com)
-  */
- 
--#define pr_fmt(fmt) "chcr:" fmt
-+#define pr_fmt(fmt) "ch_ipsec: " fmt
- 
- #include <linux/kernel.h>
- #include <linux/module.h>
-@@ -72,20 +72,21 @@
- static LIST_HEAD(uld_ctx_list);
- static DEFINE_MUTEX(dev_mutex);
- 
--static int chcr_xfrm_add_state(struct xfrm_state *x);
--static void chcr_xfrm_del_state(struct xfrm_state *x);
--static void chcr_xfrm_free_state(struct xfrm_state *x);
--static bool chcr_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *x);
--static void chcr_advance_esn_state(struct xfrm_state *x);
-+static bool ch_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *x);
- static int ch_ipsec_uld_state_change(void *handle, enum cxgb4_state new_state);
-+static int ch_ipsec_xmit(struct sk_buff *skb, struct net_device *dev);
- static void *ch_ipsec_uld_add(const struct cxgb4_lld_info *infop);
--
--static const struct xfrmdev_ops chcr_xfrmdev_ops = {
--	.xdo_dev_state_add      = chcr_xfrm_add_state,
--	.xdo_dev_state_delete   = chcr_xfrm_del_state,
--	.xdo_dev_state_free     = chcr_xfrm_free_state,
--	.xdo_dev_offload_ok     = chcr_ipsec_offload_ok,
--	.xdo_dev_state_advance_esn = chcr_advance_esn_state,
-+static void ch_ipsec_advance_esn_state(struct xfrm_state *x);
-+static void ch_ipsec_xfrm_free_state(struct xfrm_state *x);
-+static void ch_ipsec_xfrm_del_state(struct xfrm_state *x);
-+static int ch_ipsec_xfrm_add_state(struct xfrm_state *x);
-+
-+static const struct xfrmdev_ops ch_ipsec_xfrmdev_ops = {
-+	.xdo_dev_state_add      = ch_ipsec_xfrm_add_state,
-+	.xdo_dev_state_delete   = ch_ipsec_xfrm_del_state,
-+	.xdo_dev_state_free     = ch_ipsec_xfrm_free_state,
-+	.xdo_dev_offload_ok     = ch_ipsec_offload_ok,
-+	.xdo_dev_state_advance_esn = ch_ipsec_advance_esn_state,
- };
- 
- static struct cxgb4_uld_info ch_ipsec_uld_info = {
-@@ -95,8 +96,8 @@ static struct cxgb4_uld_info ch_ipsec_uld_info = {
- 	.rxq_size = 1024,
- 	.add = ch_ipsec_uld_add,
- 	.state_change = ch_ipsec_uld_state_change,
--	.tx_handler = chcr_ipsec_xmit,
--	.xfrmdev_ops = &chcr_xfrmdev_ops,
-+	.tx_handler = ch_ipsec_xmit,
-+	.xfrmdev_ops = &ch_ipsec_xfrmdev_ops,
- };
- 
- static void *ch_ipsec_uld_add(const struct cxgb4_lld_info *infop)
-@@ -119,7 +120,7 @@ static int ch_ipsec_uld_state_change(void *handle, enum cxgb4_state new_state)
- {
- 	struct ipsec_uld_ctx *u_ctx = handle;
- 
--	pr_info("new_state %u\n", new_state);
-+	pr_debug("new_state %u\n", new_state);
- 	switch (new_state) {
- 	case CXGB4_STATE_UP:
- 		pr_info("%s: Up\n", pci_name(u_ctx->lldi.pdev));
-@@ -140,8 +141,8 @@ static int ch_ipsec_uld_state_change(void *handle, enum cxgb4_state new_state)
- 	return 0;
- }
- 
--static inline int chcr_ipsec_setauthsize(struct xfrm_state *x,
--					 struct ipsec_sa_entry *sa_entry)
-+static int ch_ipsec_setauthsize(struct xfrm_state *x,
-+				struct ipsec_sa_entry *sa_entry)
- {
- 	int hmac_ctrl;
- 	int authsize = x->aead->alg_icv_len / 8;
-@@ -164,8 +165,8 @@ static inline int chcr_ipsec_setauthsize(struct xfrm_state *x,
- 	return hmac_ctrl;
- }
- 
--static inline int chcr_ipsec_setkey(struct xfrm_state *x,
--				    struct ipsec_sa_entry *sa_entry)
-+static int ch_ipsec_setkey(struct xfrm_state *x,
-+			   struct ipsec_sa_entry *sa_entry)
- {
- 	int keylen = (x->aead->alg_key_len + 7) / 8;
- 	unsigned char *key = x->aead->alg_key;
-@@ -223,65 +224,65 @@ static inline int chcr_ipsec_setkey(struct xfrm_state *x,
- }
- 
- /*
-- * chcr_xfrm_add_state
-+ * ch_ipsec_xfrm_add_state
-  * returns 0 on success, negative error if failed to send message to FPGA
-  * positive error if FPGA returned a bad response
-  */
--static int chcr_xfrm_add_state(struct xfrm_state *x)
-+static int ch_ipsec_xfrm_add_state(struct xfrm_state *x)
- {
- 	struct ipsec_sa_entry *sa_entry;
- 	int res = 0;
- 
- 	if (x->props.aalgo != SADB_AALG_NONE) {
--		pr_debug("CHCR: Cannot offload authenticated xfrm states\n");
-+		pr_debug("Cannot offload authenticated xfrm states\n");
- 		return -EINVAL;
- 	}
- 	if (x->props.calgo != SADB_X_CALG_NONE) {
--		pr_debug("CHCR: Cannot offload compressed xfrm states\n");
-+		pr_debug("Cannot offload compressed xfrm states\n");
- 		return -EINVAL;
- 	}
- 	if (x->props.family != AF_INET &&
- 	    x->props.family != AF_INET6) {
--		pr_debug("CHCR: Only IPv4/6 xfrm state offloaded\n");
-+		pr_debug("Only IPv4/6 xfrm state offloaded\n");
- 		return -EINVAL;
- 	}
- 	if (x->props.mode != XFRM_MODE_TRANSPORT &&
- 	    x->props.mode != XFRM_MODE_TUNNEL) {
--		pr_debug("CHCR: Only transport and tunnel xfrm offload\n");
-+		pr_debug("Only transport and tunnel xfrm offload\n");
- 		return -EINVAL;
- 	}
- 	if (x->id.proto != IPPROTO_ESP) {
--		pr_debug("CHCR: Only ESP xfrm state offloaded\n");
-+		pr_debug("Only ESP xfrm state offloaded\n");
- 		return -EINVAL;
- 	}
- 	if (x->encap) {
--		pr_debug("CHCR: Encapsulated xfrm state not offloaded\n");
-+		pr_debug("Encapsulated xfrm state not offloaded\n");
- 		return -EINVAL;
- 	}
- 	if (!x->aead) {
--		pr_debug("CHCR: Cannot offload xfrm states without aead\n");
-+		pr_debug("Cannot offload xfrm states without aead\n");
- 		return -EINVAL;
- 	}
- 	if (x->aead->alg_icv_len != 128 &&
- 	    x->aead->alg_icv_len != 96) {
--		pr_debug("CHCR: Cannot offload xfrm states with AEAD ICV length other than 96b & 128b\n");
-+		pr_debug("Cannot offload xfrm states with AEAD ICV length other than 96b & 128b\n");
- 	return -EINVAL;
- 	}
- 	if ((x->aead->alg_key_len != 128 + 32) &&
- 	    (x->aead->alg_key_len != 256 + 32)) {
--		pr_debug("CHCR: Cannot offload xfrm states with AEAD key length other than 128/256 bit\n");
-+		pr_debug("cannot offload xfrm states with AEAD key length other than 128/256 bit\n");
- 		return -EINVAL;
- 	}
- 	if (x->tfcpad) {
--		pr_debug("CHCR: Cannot offload xfrm states with tfc padding\n");
-+		pr_debug("Cannot offload xfrm states with tfc padding\n");
- 		return -EINVAL;
- 	}
- 	if (!x->geniv) {
--		pr_debug("CHCR: Cannot offload xfrm states without geniv\n");
-+		pr_debug("Cannot offload xfrm states without geniv\n");
- 		return -EINVAL;
- 	}
- 	if (strcmp(x->geniv, "seqiv")) {
--		pr_debug("CHCR: Cannot offload xfrm states with geniv other than seqiv\n");
-+		pr_debug("Cannot offload xfrm states with geniv other than seqiv\n");
- 		return -EINVAL;
- 	}
- 
-@@ -291,24 +292,24 @@ static int chcr_xfrm_add_state(struct xfrm_state *x)
- 		goto out;
- 	}
- 
--	sa_entry->hmac_ctrl = chcr_ipsec_setauthsize(x, sa_entry);
-+	sa_entry->hmac_ctrl = ch_ipsec_setauthsize(x, sa_entry);
- 	if (x->props.flags & XFRM_STATE_ESN)
- 		sa_entry->esn = 1;
--	chcr_ipsec_setkey(x, sa_entry);
-+	ch_ipsec_setkey(x, sa_entry);
- 	x->xso.offload_handle = (unsigned long)sa_entry;
- 	try_module_get(THIS_MODULE);
- out:
- 	return res;
- }
- 
--static void chcr_xfrm_del_state(struct xfrm_state *x)
-+static void ch_ipsec_xfrm_del_state(struct xfrm_state *x)
- {
- 	/* do nothing */
- 	if (!x->xso.offload_handle)
- 		return;
- }
- 
--static void chcr_xfrm_free_state(struct xfrm_state *x)
-+static void ch_ipsec_xfrm_free_state(struct xfrm_state *x)
- {
- 	struct ipsec_sa_entry *sa_entry;
- 
-@@ -320,7 +321,7 @@ static void chcr_xfrm_free_state(struct xfrm_state *x)
- 	module_put(THIS_MODULE);
- }
- 
--static bool chcr_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *x)
-+static bool ch_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *x)
- {
- 	if (x->props.family == AF_INET) {
- 		/* Offload with IP options is not supported yet */
-@@ -334,15 +335,15 @@ static bool chcr_ipsec_offload_ok(struct sk_buff *skb, struct xfrm_state *x)
- 	return true;
- }
- 
--static void chcr_advance_esn_state(struct xfrm_state *x)
-+static void ch_ipsec_advance_esn_state(struct xfrm_state *x)
- {
- 	/* do nothing */
- 	if (!x->xso.offload_handle)
- 		return;
- }
- 
--static inline int is_eth_imm(const struct sk_buff *skb,
--			     struct ipsec_sa_entry *sa_entry)
-+static int is_eth_imm(const struct sk_buff *skb,
-+		      struct ipsec_sa_entry *sa_entry)
- {
- 	unsigned int kctx_len;
- 	int hdrlen;
-@@ -360,9 +361,9 @@ static inline int is_eth_imm(const struct sk_buff *skb,
- 	return 0;
- }
- 
--static inline unsigned int calc_tx_sec_flits(const struct sk_buff *skb,
--					     struct ipsec_sa_entry *sa_entry,
--					     bool *immediate)
-+static unsigned int calc_tx_sec_flits(const struct sk_buff *skb,
-+				      struct ipsec_sa_entry *sa_entry,
-+				      bool *immediate)
- {
- 	unsigned int kctx_len;
- 	unsigned int flits;
-@@ -403,7 +404,7 @@ static inline unsigned int calc_tx_sec_flits(const struct sk_buff *skb,
- 	return flits;
- }
- 
--inline void *copy_esn_pktxt(struct sk_buff *skb,
-+static void *copy_esn_pktxt(struct sk_buff *skb,
- 			    struct net_device *dev,
- 			    void *pos,
- 			    struct ipsec_sa_entry *sa_entry)
-@@ -457,7 +458,7 @@ inline void *copy_esn_pktxt(struct sk_buff *skb,
- 	return pos;
- }
- 
--inline void *copy_cpltx_pktxt(struct sk_buff *skb,
-+static void *copy_cpltx_pktxt(struct sk_buff *skb,
- 			      struct net_device *dev,
- 			      void *pos,
- 			      struct ipsec_sa_entry *sa_entry)
-@@ -501,10 +502,10 @@ inline void *copy_cpltx_pktxt(struct sk_buff *skb,
- 	return pos;
- }
- 
--inline void *copy_key_cpltx_pktxt(struct sk_buff *skb,
--				struct net_device *dev,
--				void *pos,
--				struct ipsec_sa_entry *sa_entry)
-+static void *copy_key_cpltx_pktxt(struct sk_buff *skb,
-+				  struct net_device *dev,
-+				  void *pos,
-+				  struct ipsec_sa_entry *sa_entry)
- {
- 	struct _key_ctx *key_ctx;
- 	int left, eoq, key_len;
-@@ -549,11 +550,11 @@ inline void *copy_key_cpltx_pktxt(struct sk_buff *skb,
- 	return pos;
- }
- 
--inline void *chcr_crypto_wreq(struct sk_buff *skb,
--			       struct net_device *dev,
--			       void *pos,
--			       int credits,
--			       struct ipsec_sa_entry *sa_entry)
-+static void *ch_ipsec_crypto_wreq(struct sk_buff *skb,
-+				  struct net_device *dev,
-+				  void *pos,
-+				  int credits,
-+				  struct ipsec_sa_entry *sa_entry)
- {
- 	struct port_info *pi = netdev_priv(dev);
- 	struct adapter *adap = pi->adapter;
-@@ -674,13 +675,13 @@ inline void *chcr_crypto_wreq(struct sk_buff *skb,
-  *      Returns the number of Tx descriptors needed for the supplied number
-  *      of flits.
-  */
--static inline unsigned int flits_to_desc(unsigned int n)
-+static unsigned int flits_to_desc(unsigned int n)
- {
- 	WARN_ON(n > SGE_MAX_WR_LEN / 8);
- 	return DIV_ROUND_UP(n, 8);
- }
- 
--static inline unsigned int txq_avail(const struct sge_txq *q)
-+static unsigned int txq_avail(const struct sge_txq *q)
- {
- 	return q->size - 1 - q->in_use;
- }
-@@ -691,7 +692,7 @@ static void eth_txq_stop(struct sge_eth_txq *q)
- 	q->q.stops++;
- }
- 
--static inline void txq_advance(struct sge_txq *q, unsigned int n)
-+static void txq_advance(struct sge_txq *q, unsigned int n)
- {
- 	q->in_use += n;
- 	q->pidx += n;
-@@ -700,9 +701,9 @@ static inline void txq_advance(struct sge_txq *q, unsigned int n)
- }
- 
- /*
-- *      chcr_ipsec_xmit called from ULD Tx handler
-+ *      ch_ipsec_xmit called from ULD Tx handler
-  */
--int chcr_ipsec_xmit(struct sk_buff *skb, struct net_device *dev)
-+int ch_ipsec_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct xfrm_state *x = xfrm_input_state(skb);
- 	unsigned int last_desc, ndesc, flits = 0;
-@@ -763,8 +764,8 @@ out_free:       dev_kfree_skb_any(skb);
- 	before = (u64 *)pos;
- 	end = (u64 *)pos + flits;
- 	/* Setup IPSec CPL */
--	pos = (void *)chcr_crypto_wreq(skb, dev, (void *)pos,
--				       credits, sa_entry);
-+	pos = (void *)ch_ipsec_crypto_wreq(skb, dev, (void *)pos,
-+					   credits, sa_entry);
- 	if (before > (u64 *)pos) {
- 		left = (u8 *)end - (u8 *)q->q.stat;
- 		end = (void *)q->q.desc + left;
-@@ -791,14 +792,14 @@ out_free:       dev_kfree_skb_any(skb);
- 	return NETDEV_TX_OK;
- }
- 
--static int __init chcr_ipsec_init(void)
-+static int __init ch_ipsec_init(void)
- {
- 	cxgb4_register_uld(CXGB4_ULD_IPSEC, &ch_ipsec_uld_info);
- 
- 	return 0;
- }
- 
--static void __exit chcr_ipsec_exit(void)
-+static void __exit ch_ipsec_exit(void)
- {
- 	struct ipsec_uld_ctx *u_ctx, *tmp;
- 	struct adapter *adap;
-@@ -814,8 +815,8 @@ static void __exit chcr_ipsec_exit(void)
- 	cxgb4_unregister_uld(CXGB4_ULD_IPSEC);
- }
- 
--module_init(chcr_ipsec_init);
--module_exit(chcr_ipsec_exit);
-+module_init(ch_ipsec_init);
-+module_exit(ch_ipsec_exit);
- 
- MODULE_DESCRIPTION("Crypto IPSEC for Chelsio Terminator cards.");
- MODULE_LICENSE("GPL");
--- 
-2.28.0.rc1.6.gae46588
+Doh! I wrongly deleted "req_bit" in the comment, but the code should be a=
+ll
+right. I'll add that back.
 
+> Need I update stop mode property in dts file? Although this function wo=
+n't be
+> broken without dts update.
+
+Yes, you can send patches to update the dts (after net-next was merged to=
+ linus).
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--TzIWZ33hlJ91xWksRrJQwc9Uo9qjuQMVW--
+
+--mblygUAZRtzggU8E3zjOhDytZ94rv0sUt
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+G0DQACgkQqclaivrt
+76nLmQf+MV3gJ4fq1XF1MrALcRD8RNn/iX6h8MkTimKrF+JZYuwSjxafyNi3bDTb
+f4ZFA7/FVkucE2xuIX9ZXHE3lG69xHteEXIekSXx8204B/ENDZPZoU/ttHobgsE4
+79bk3einErQFOgnLjY2Z7saN+NY5kWp9imWI/LH2FrsfVhjyra4j2KoJH3tLZ9zb
+3BVgjchBirz4Gp//TfgcJfOWOJOgVQOMUm7qjuFFTroWuwVIyVu5JZuHMUznmZib
++16r6afC/cX5PD9HM49+PqBjdfIHk2YKjZJqp06JgeOJYDo+vUTyytoftEEvxCVF
+lkOVGDadVcQ84aBzzDuBXh26iUtJ0A==
+=9SJ0
+-----END PGP SIGNATURE-----
+
+--mblygUAZRtzggU8E3zjOhDytZ94rv0sUt--
