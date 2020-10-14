@@ -2,250 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2374028E127
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 15:20:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB7C428E144
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 15:27:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388410AbgJNNUG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 09:20:06 -0400
-Received: from mta-02.yadro.com ([89.207.88.252]:35672 "EHLO mta-01.yadro.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388358AbgJNNUF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Oct 2020 09:20:05 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mta-01.yadro.com (Postfix) with ESMTP id 6B0A3412D0;
-        Wed, 14 Oct 2020 13:20:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
-        content-transfer-encoding:mime-version:user-agent:content-type
-        :content-type:organization:references:in-reply-to:date:date:from
-        :from:subject:subject:message-id:received:received:received; s=
-        mta-01; t=1602681599; x=1604496000; bh=1lgZHuX3krJKu7YHjDu7Ldjeb
-        Om4rKtxnE0OhMoc3x4=; b=W7EoTmJ+mH4FzLN/ZfcPAXQa/vF1Kubvh/b8sknH4
-        YGgOL0uiJ2Ks1TggQfyQ9kQngJtYtGE/a6uFzgFsJlkEQATuZOA7N8Eza8P76x26
-        9mt5U2Dxw/qTrVVqTol8Q+ghfrVKePlqQPf3zy2ynvrXaufhZ89Cu1QoNRJiBZ63
-        To=
-X-Virus-Scanned: amavisd-new at yadro.com
-Received: from mta-01.yadro.com ([127.0.0.1])
-        by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id M_K4M6XKhlYk; Wed, 14 Oct 2020 16:19:59 +0300 (MSK)
-Received: from T-EXCH-04.corp.yadro.com (t-exch-04.corp.yadro.com [172.17.100.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mta-01.yadro.com (Postfix) with ESMTPS id E539C412CA;
-        Wed, 14 Oct 2020 16:19:57 +0300 (MSK)
-Received: from localhost.localdomain (10.199.3.118) by
- T-EXCH-04.corp.yadro.com (172.17.100.104) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.669.32; Wed, 14 Oct 2020 16:19:57 +0300
-Message-ID: <b10f8b366e0971f8809ecfb3d80e00aa42aa4387.camel@yadro.com>
-Subject: Re: [PATCH 1/1] net: ftgmac100: add handling of mdio/phy nodes for
- ast2400/2500
-From:   Ivan Mikhaylov <i.mikhaylov@yadro.com>
-To:     Joel Stanley <joel@jms.id.au>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Po-Yu Chuang <ratbert@faraday-tech.com>,
-        <netdev@vger.kernel.org>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>
-Date:   Wed, 14 Oct 2020 16:24:09 +0300
-In-Reply-To: <CACPK8Xd_gCVjVm13O85+mnZ4VbhQorG4qiy+mVevrvyCbPg9XQ@mail.gmail.com>
-References: <20201013124014.2989-1-i.mikhaylov@yadro.com>
-         <20201013124014.2989-2-i.mikhaylov@yadro.com>
-         <CACPK8Xd_gCVjVm13O85+mnZ4VbhQorG4qiy+mVevrvyCbPg9XQ@mail.gmail.com>
-Organization: YADRO
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+        id S1728036AbgJNN1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 09:27:42 -0400
+Received: from smtp16.mail.ru ([94.100.176.153]:41150 "EHLO smtp16.mail.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726925AbgJNN1m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Oct 2020 09:27:42 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
+        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=UEPi228wc92uoYP7+qr8qoUQaS6XHP6p2o3ilsefCp8=;
+        b=KVH3V5k60N6jb3g7yla6elhXTlbXL45N1ZdhuyQt9oUCo7TRSVhqBa4hVBN5PWnx2DW2sVLv2ODN7ThsI0fyq5ZED6gitPT5vdCsOj/FEpPrbxIHZUyG3lV+Vx5fsAr0znaS1XJkoTiZKJyZRT9lPyrgivi6JGVfMaIeNqPrZBA=;
+Received: by smtp16.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
+        id 1kSgoc-0003w7-Hz; Wed, 14 Oct 2020 16:27:38 +0300
+From:   Maxim Kochetkov <fido_max@inbox.ru>
+To:     netdev@vger.kernel.org
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Maxim Kochetkov <fido_max@inbox.ru>
+Subject: [PATCH v2 1/1] net: dsa: seville: the packet buffer is 2 megabits, not megabytes
+Date:   Wed, 14 Oct 2020 16:27:43 +0300
+Message-Id: <20201014132743.277619-1-fido_max@inbox.ru>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.199.3.118]
-X-ClientProxiedBy: T-EXCH-01.corp.yadro.com (172.17.10.101) To
- T-EXCH-04.corp.yadro.com (172.17.100.104)
+Content-Transfer-Encoding: 8bit
+Authentication-Results: smtp16.mail.ru; auth=pass smtp.auth=fido_max@inbox.ru smtp.mailfrom=fido_max@inbox.ru
+X-7564579A: B8F34718100C35BD
+X-77F55803: 4F1203BC0FB41BD9E98D729206725230F4632E9A98CB8CA8E37E55D9B858C896182A05F5380850402CA73531FC7C81B33F2413D4F223D6E2E299247CB42F472F1B90157251FCE45A
+X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE7544B1CCE26E01C74EA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F7900637FACF2191C0719DEE8638F802B75D45FF5571747095F342E8C7A0BC55FA0FE5FC3E59DFB0D167DDD5F434B1A626F5108DF6A57006690A4523389733CBF5DBD5E913377AFFFEAFD269176DF2183F8FC7C0B27420F9988F54058941B15DA834481FCF19DD082D7633A0E7DDDDC251EA7DABA471835C12D1D977725E5C173C3A84C3ED8438A78DFE0A9E117882F4460429728AD0CFFFB425014E592AE0A758652A3D76E601842F6C81A19E625A9149C048EEC8105B04EFE076281C9461EB66F04EBFD8FC6C240DEA76429449624AB7ADAF37B2D370F7B14D4BC40A6AB1C7CE11FEE3C824672CB62AFFF2302FCEF25BFAB345C4224003CC8364767A15B7713DBEF166A7F4EDE966BC389F9E8FC8737B5C2249A74BC3EA3CC982DF089D37D7C0E48F6CCF19DD082D7633A0E7DDDDC251EA7DABAAAE862A0553A39223F8577A6DFFEA7C304C8BA14588C48243847C11F186F3C5E7DDDDC251EA7DABCC89B49CDF41148FA8EF81845B15A4842623479134186CDE6BA297DBC24807EABDAD6C7F3747799A
+X-C8649E89: 56E9B64B03B7C869D942D287BFB1DF2ECE028E36DF9F12111B5C02BBA25BFC995E41AAE8B1B653A6
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojwfNTBk2YwQHaxzq9zm1fiA==
+X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB2428913D1A142C65B8B7BD59305098989B60094B85DEC50F7BEE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
+X-Mras: Ok
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2020-10-14 at 05:23 +0000, Joel Stanley wrote:
-> Hi Ivan,
-> 
-> On Tue, 13 Oct 2020 at 12:38, Ivan Mikhaylov <i.mikhaylov@yadro.com> wrote:
-> > phy-handle can't be handled well for ast2400/2500 which has an embedded
-> > MDIO controller. Add ftgmac100_mdio_setup for ast2400/2500 and initialize
-> > PHYs from mdio child node with of_mdiobus_register.
-> 
-> Good idea. The driver has become a mess of different ways to connect
-> the phy and it needs to be cleaned up. I have a patch that fixes
-> rmmod, which is currently broken.
-> 
-> 
-> 
-> > Signed-off-by: Ivan Mikhaylov <i.mikhaylov@yadro.com>
-> > ---
-> >  drivers/net/ethernet/faraday/ftgmac100.c | 114 ++++++++++++++---------
-> >  1 file changed, 69 insertions(+), 45 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/faraday/ftgmac100.c
-> > b/drivers/net/ethernet/faraday/ftgmac100.c
-> > index 87236206366f..e32066519ec1 100644
-> > --- a/drivers/net/ethernet/faraday/ftgmac100.c
-> > +++ b/drivers/net/ethernet/faraday/ftgmac100.c
-> > @@ -1044,11 +1044,47 @@ static void ftgmac100_adjust_link(struct net_device
-> > *netdev)
-> >         schedule_work(&priv->reset_task);
-> >  }
-> > 
-> > -static int ftgmac100_mii_probe(struct ftgmac100 *priv, phy_interface_t
-> > intf)
-> > +static int ftgmac100_mii_probe(struct net_device *netdev)
-> >  {
-> > -       struct net_device *netdev = priv->netdev;
-> > +       struct ftgmac100 *priv = netdev_priv(netdev);
-> > +       struct platform_device *pdev = to_platform_device(priv->dev);
-> > +       struct device_node *np = pdev->dev.of_node;
-> > +       phy_interface_t phy_intf = PHY_INTERFACE_MODE_RGMII;
-> >         struct phy_device *phydev;
-> > 
-> > +       /* Get PHY mode from device-tree */
-> > +       if (np) {
-> > +               /* Default to RGMII. It's a gigabit part after all */
-> > +               phy_intf = of_get_phy_mode(np, &phy_intf);
-> > +               if (phy_intf < 0)
-> > +                       phy_intf = PHY_INTERFACE_MODE_RGMII;
-> > +
-> > +               /* Aspeed only supports these. I don't know about other IP
-> > +                * block vendors so I'm going to just let them through for
-> > +                * now. Note that this is only a warning if for some obscure
-> > +                * reason the DT really means to lie about it or it's a
-> > newer
-> > +                * part we don't know about.
-> > +                *
-> > +                * On the Aspeed SoC there are additionally straps and SCU
-> > +                * control bits that could tell us what the interface is
-> > +                * (or allow us to configure it while the IP block is held
-> > +                * in reset). For now I chose to keep this driver away from
-> > +                * those SoC specific bits and assume the device-tree is
-> > +                * right and the SCU has been configured properly by pinmux
-> > +                * or the firmware.
-> > +                */
-> > +               if (priv->is_aspeed &&
-> > +                   phy_intf != PHY_INTERFACE_MODE_RMII &&
-> > +                   phy_intf != PHY_INTERFACE_MODE_RGMII &&
-> > +                   phy_intf != PHY_INTERFACE_MODE_RGMII_ID &&
-> > +                   phy_intf != PHY_INTERFACE_MODE_RGMII_RXID &&
-> > +                   phy_intf != PHY_INTERFACE_MODE_RGMII_TXID) {
-> > +                       netdev_warn(netdev,
-> > +                                   "Unsupported PHY mode %s !\n",
-> > +                                   phy_modes(phy_intf));
-> > +               }
-> 
-> Why do we move this?
+The VSC9953 Seville switch has 2 megabits of buffer split into 4360
+words of 60 bytes each. 2048 * 1024 is 2 megabytes instead of 2 megabits.
+2 megabits is (2048 / 8) * 1024 = 256 * 1024.
 
-I've tried to detach PHY connect from ftgmac100_setup_mdio register function.
-Tried to decouple MDIO and PHY levels.
+Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
+Fixes: a63ed92d217f ("net: dsa: seville: fix buffer size of the queue system")
+---
+ drivers/net/dsa/ocelot/seville_vsc9953.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> 
-> > +       }
-> > +
-> >         phydev = phy_find_first(priv->mii_bus);
-> >         if (!phydev) {
-> >                 netdev_info(netdev, "%s: no PHY found\n", netdev->name);
-> > @@ -1056,7 +1092,7 @@ static int ftgmac100_mii_probe(struct ftgmac100 *priv,
-> > phy_interface_t intf)
-> >         }
-> > 
-> >         phydev = phy_connect(netdev, phydev_name(phydev),
-> > -                            &ftgmac100_adjust_link, intf);
-> > +                            &ftgmac100_adjust_link, phy_intf);
-> > 
-> >         if (IS_ERR(phydev)) {
-> >                 netdev_err(netdev, "%s: Could not attach to PHY\n", netdev-
-> > >name);
-> > @@ -1601,8 +1637,8 @@ static int ftgmac100_setup_mdio(struct net_device
-> > *netdev)
-> >  {
-> >         struct ftgmac100 *priv = netdev_priv(netdev);
-> >         struct platform_device *pdev = to_platform_device(priv->dev);
-> > -       phy_interface_t phy_intf = PHY_INTERFACE_MODE_RGMII;
-> >         struct device_node *np = pdev->dev.of_node;
-> > +       struct device_node *mdio_np;
-> >         int i, err = 0;
-> >         u32 reg;
-> > 
-> > @@ -1623,39 +1659,6 @@ static int ftgmac100_setup_mdio(struct net_device
-> > *netdev)
-> >                 iowrite32(reg, priv->base + FTGMAC100_OFFSET_REVR);
-> >         }
-> > 
-> > -       /* Get PHY mode from device-tree */
-> > -       if (np) {
-> > -               /* Default to RGMII. It's a gigabit part after all */
-> > -               err = of_get_phy_mode(np, &phy_intf);
-> > -               if (err)
-> > -                       phy_intf = PHY_INTERFACE_MODE_RGMII;
-> > -
-> > -               /* Aspeed only supports these. I don't know about other IP
-> > -                * block vendors so I'm going to just let them through for
-> > -                * now. Note that this is only a warning if for some obscure
-> > -                * reason the DT really means to lie about it or it's a
-> > newer
-> > -                * part we don't know about.
-> > -                *
-> > -                * On the Aspeed SoC there are additionally straps and SCU
-> > -                * control bits that could tell us what the interface is
-> > -                * (or allow us to configure it while the IP block is held
-> > -                * in reset). For now I chose to keep this driver away from
-> > -                * those SoC specific bits and assume the device-tree is
-> > -                * right and the SCU has been configured properly by pinmux
-> > -                * or the firmware.
-> > -                */
-> > -               if (priv->is_aspeed &&
-> > -                   phy_intf != PHY_INTERFACE_MODE_RMII &&
-> > -                   phy_intf != PHY_INTERFACE_MODE_RGMII &&
-> > -                   phy_intf != PHY_INTERFACE_MODE_RGMII_ID &&
-> > -                   phy_intf != PHY_INTERFACE_MODE_RGMII_RXID &&
-> > -                   phy_intf != PHY_INTERFACE_MODE_RGMII_TXID) {
-> > -                       netdev_warn(netdev,
-> > -                                  "Unsupported PHY mode %s !\n",
-> > -                                  phy_modes(phy_intf));
-> > -               }
-> > -       }
-> > -
-> >         priv->mii_bus->name = "ftgmac100_mdio";
-> >         snprintf(priv->mii_bus->id, MII_BUS_ID_SIZE, "%s-%d",
-> >                  pdev->name, pdev->id);
-> > @@ -1667,22 +1670,22 @@ static int ftgmac100_setup_mdio(struct net_device
-> > *netdev)
-> >         for (i = 0; i < PHY_MAX_ADDR; i++)
-> >                 priv->mii_bus->irq[i] = PHY_POLL;
-> > 
-> > -       err = mdiobus_register(priv->mii_bus);
-> > +       mdio_np = of_get_child_by_name(np, "mdio");
-> > +       if (mdio_np)
-> > +               err = of_mdiobus_register(priv->mii_bus, mdio_np);
-> > +       else
-> > +               err = mdiobus_register(priv->mii_bus);
-> > +
-> >         if (err) {
-> >                 dev_err(priv->dev, "Cannot register MDIO bus!\n");
-> >                 goto err_register_mdiobus;
-> >         }
-> > 
-> > -       err = ftgmac100_mii_probe(priv, phy_intf);
-> > -       if (err) {
-> > -               dev_err(priv->dev, "MII Probe failed!\n");
-> > -               goto err_mii_probe;
-> > -       }
-> > +       if (mdio_np)
-> > +               of_node_put(mdio_np);
-> 
-> By the time I get down here I'm lost. Do you think you could split the
-> change up into a few smaller patches?
-> 
-> If not, try to explain what the various hunks of your change are trying to do.
-> 
-
-Yes, you're right, I see two patches for now from your comments:
-1. phy connect detach from ftgmac100_setup_mdio
-2. add ast2400/2500 phy-handle support
-
-Thanks.
-
+diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
+index 9e9fd19e1d00..e2cd49eec037 100644
+--- a/drivers/net/dsa/ocelot/seville_vsc9953.c
++++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
+@@ -1010,7 +1010,7 @@ static const struct felix_info seville_info_vsc9953 = {
+	.vcap_is2_keys		= vsc9953_vcap_is2_keys,
+	.vcap_is2_actions	= vsc9953_vcap_is2_actions,
+	.vcap			= vsc9953_vcap_props,
+-	.shared_queue_sz	= 2048 * 1024,
++	.shared_queue_sz	= 256 * 1024,
+	.num_mact_rows		= 2048,
+	.num_ports		= 10,
+	.mdio_bus_alloc		= vsc9953_mdio_bus_alloc,
+--
+2.27.0
