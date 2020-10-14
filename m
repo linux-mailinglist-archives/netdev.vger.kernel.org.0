@@ -2,162 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD5DA28E275
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 16:46:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24E4628E2DF
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 17:13:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729475AbgJNOqQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 10:46:16 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:50552 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726057AbgJNOqQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 10:46:16 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09EEdhkE022213
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 07:46:14 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : content-type : content-transfer-encoding :
- mime-version; s=facebook; bh=ATkRQGLm4zLVf7AvWVIMRIj4Ei6EozvH5D3eO5UBWOw=;
- b=cz7PV9tv4smhs6RuR14yLG88r/ET6T1FbBeUIQrdBYKsq9zgOLREZ5/hZntJxE6MhS4x
- zfOakWvUCtegwIG3om3mNUVS8plVrSZM5I4iPjLRzhKTSN8x1ie2CKVxR3Wqo9xB2qFr
- X8JXPaAMMGnNniMTiocPkaPfX0uorRV/AzA= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 345ff5nqgd-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 07:46:14 -0700
-Received: from intmgw003.08.frc2.facebook.com (2620:10d:c085:208::f) by
- mail.thefacebook.com (2620:10d:c085:11d::4) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 14 Oct 2020 07:46:13 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id 13C663701B20; Wed, 14 Oct 2020 07:46:12 -0700 (PDT)
-From:   Yonghong Song <yhs@fb.com>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Vasily Averin <vvs@virtuozzo.com>
-Subject: [PATCH net v3] net: fix pos incrementment in ipv6_route_seq_next
-Date:   Wed, 14 Oct 2020 07:46:12 -0700
-Message-ID: <20201014144612.2245396-1-yhs@fb.com>
-X-Mailer: git-send-email 2.24.1
-X-FB-Internal: Safe
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        id S1729708AbgJNPM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 11:12:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38202 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726006AbgJNPM6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 11:12:58 -0400
+Received: from mail-vs1-xe41.google.com (mail-vs1-xe41.google.com [IPv6:2607:f8b0:4864:20::e41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7FFBC061755
+        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 08:12:58 -0700 (PDT)
+Received: by mail-vs1-xe41.google.com with SMTP id u74so2298099vsc.2
+        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 08:12:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GFIbDFfhlQ9q1N8ZoJ5cFJGs3F+p1uVY2r1hmo3Aqm8=;
+        b=a25ecWdAmu9ZdEWzHY6qqvmbx/ZET1YfxJv+Z1WdeuSbUdrgJ34roiJGgCv/OmPo1V
+         thZhOgNPV0UK2zQEOf0zCL8CtQUBjZyZtZNTuXhMMyAUg+SSTo1Ru9AH2ewRJsldgCpE
+         HikTsLob5i0h/yh9yR40nUb08exeZJOSDm2OP0f0kuAtmHsy1cwk82YvAglzzVckTg9r
+         YQVis3zxnbwQQ+vFLEN2PWsq5GG/c+TLt720sgN95rJTyfmGS/opTSb5j8kPlywpPwIh
+         LRzazOane/SK1vk884xFf8WEDtmKKwUjGgSQLZ1TiR1drLo2gZcSe0gH8nDIhd9oC7Sy
+         B8nQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GFIbDFfhlQ9q1N8ZoJ5cFJGs3F+p1uVY2r1hmo3Aqm8=;
+        b=bYHseJG28SaQJb7oUJBUfXvbT69V9KXW8jAWLOVJMauCqxZMaORDs+4K3oOXg21x9e
+         hIr8o7uou8K50M8mDxtur+CEdiCtmvia55DNQhaAS8w0PJB7oZ6FIT7IxAobqPQOm2OF
+         2jEFmMe0HF+rT7mXDa+3BCZrlSUWQfvD6thR39XADfHUD6HOJ8XipSz7W+QkbVrRjDrU
+         ArgQ6vLaiAd6GNaX0jWTNkKq4NhAvU48dI26Fdx1hhbmTb0fa8DlFZkVY/KYeTxBwxyv
+         tkT/FN3Kujs9aITn23wX1TPrw3B3UR5f8a44b4CVNP7LcrYAYCz/Fk/N64QQrHH/epmh
+         cUkA==
+X-Gm-Message-State: AOAM533ltXMS0K+MbIoNCWUGvPML+OLxFM7UIcBa7Lv45tN60gKgdnFo
+        G7JpccMjprLbqJg04C/3dMYWm9shUOo=
+X-Google-Smtp-Source: ABdhPJyaM6JeAjvNyRmfSVTl3MCRRdfTAVMLIJc52QNl5xAeBwXM2vokN5AkgMyvGx85V8RVJYDBWg==
+X-Received: by 2002:a67:6c86:: with SMTP id h128mr3518696vsc.42.1602688376973;
+        Wed, 14 Oct 2020 08:12:56 -0700 (PDT)
+Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com. [209.85.217.51])
+        by smtp.gmail.com with ESMTPSA id b13sm697683vkf.49.2020.10.14.08.12.55
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Oct 2020 08:12:55 -0700 (PDT)
+Received: by mail-vs1-f51.google.com with SMTP id d19so2262524vso.10
+        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 08:12:55 -0700 (PDT)
+X-Received: by 2002:a67:fb96:: with SMTP id n22mr3554868vsr.13.1602688374719;
+ Wed, 14 Oct 2020 08:12:54 -0700 (PDT)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-10-14_08:2020-10-14,2020-10-14 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- malwarescore=0 suspectscore=0 bulkscore=0 mlxscore=0 spamscore=0
- impostorscore=0 priorityscore=1501 phishscore=0 adultscore=0
- mlxlogscore=999 clxscore=1015 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2009150000 definitions=main-2010140107
-X-FB-Internal: deliver
+References: <20201011191129.991-1-xiyou.wangcong@gmail.com>
+ <CA+FuTSfeTWBpOp+ZCBMBQPqcPUAhZcAv2unwMLqgGt_x_PkrqA@mail.gmail.com> <CAJht_EM7KW1+sXpv2PZXwJuECuzDS7knEGGA9k6hogoPSDgW_g@mail.gmail.com>
+In-Reply-To: <CAJht_EM7KW1+sXpv2PZXwJuECuzDS7knEGGA9k6hogoPSDgW_g@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 14 Oct 2020 11:12:17 -0400
+X-Gmail-Original-Message-ID: <CA+FuTScUwbuxJ-bed+5s_KVXMTj_com+K438hM61zaOp9Muvkg@mail.gmail.com>
+Message-ID: <CA+FuTScUwbuxJ-bed+5s_KVXMTj_com+K438hM61zaOp9Muvkg@mail.gmail.com>
+Subject: Re: [Patch net v2] ip_gre: set dev->hard_header_len and
+ dev->needed_headroom properly
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        syzbot <syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com>,
+        William Tu <u9012063@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 4fc427e05158 ("ipv6_route_seq_next should increase position index")
-tried to fix the issue where seq_file pos is not increased
-if a NULL element is returned with seq_ops->next(). See bug
-  https://bugzilla.kernel.org/show_bug.cgi?id=3D206283
-The commit effectively does:
-  - increase pos for all seq_ops->start()
-  - increase pos for all seq_ops->next()
+On Wed, Oct 14, 2020 at 4:52 AM Xie He <xie.he.0141@gmail.com> wrote:
+>
+> On Sun, Oct 11, 2020 at 2:01 PM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > There is agreement that hard_header_len should be the length of link
+> > layer headers visible to the upper layers, needed_headroom the
+> > additional room required for headers that are not exposed, i.e., those
+> > pushed inside ndo_start_xmit.
+> >
+> > The link layer header length also has to agree with the interface
+> > hardware type (ARPHRD_..).
+> >
+> > Tunnel devices have not always been consistent in this, but today
+> > "bare" ip tunnel devices without additional headers (ipip, sit, ..) do
+> > match this and advertise 0 byte hard_header_len. Bareudp, vxlan and
+> > geneve also conform to this. Known exception that probably needs to be
+> > addressed is sit, which still advertises LL_MAX_HEADER and so has
+> > exposed quite a few syzkaller issues. Side note, it is not entirely
+> > clear to me what sets ARPHRD_TUNNEL et al apart from ARPHRD_NONE and
+> > why they are needed.
+> >
+> > GRE devices advertise ARPHRD_IPGRE and GRETAP advertise ARPHRD_ETHER.
+> > The second makes sense, as it appears as an Ethernet device. The first
+> > should match "bare" ip tunnel devices, if following the above logic.
+> > Indeed, this is what commit e271c7b4420d ("gre: do not keep the GRE
+> > header around in collect medata mode") implements. It changes
+> > dev->type to ARPHRD_NONE in collect_md mode.
+> >
+> > Some of the inconsistency comes from the various modes of the GRE
+> > driver. Which brings us to ipgre_header_ops. It is set only in two
+> > special cases.
+> >
+> > Commit 6a5f44d7a048 ("[IPV4] ip_gre: sendto/recvfrom NBMA address")
+> > added ipgre_header_ops.parse to be able to receive the inner ip source
+> > address with PF_PACKET recvfrom. And apparently relies on
+> > ipgre_header_ops.create to be able to set an address, which implies
+> > SOCK_DGRAM.
+> >
+> > The other special case, CONFIG_NET_IPGRE_BROADCAST, predates git. Its
+> > implementation starts with the beautiful comment "/* Nice toy.
+> > Unfortunately, useless in real life :-)". From the rest of that
+> > detailed comment, it is not clear to me why it would need to expose
+> > the headers. The example does not use packet sockets.
+> >
+> > A packet socket cannot know devices details such as which configurable
+> > mode a device may be in. And different modes conflict with the basic
+> > rule that for a given well defined link layer type, i.e., dev->type,
+> > header length can be expected to be consistent. In an ideal world
+> > these exceptions would not exist, therefore.
+> >
+> > Unfortunately, this is legacy behavior that will have to continue to
+> > be supported.
+>
+> Thanks for your explanation. So header_ops for GRE devices is only
+> used in 2 special situations. In normal situations, header_ops is not
+> used for GRE devices. And we consider not using header_ops should be
+> the ideal arrangement for GRE devices.
+>
+> Can we create a new dev->type (like ARPHRD_IPGRE_SPECIAL) for GRE
+> devices that use header_ops? I guess changing dev->type will not
+> affect the interface to the user space? This way we can solve the
+> problem of the same dev->type having different hard_header_len values.
 
-For ipv6_route, increasing pos for all seq_ops->next() is correct.
-But increasing pos for seq_ops->start() is not correct
-since pos is used to determine how many items to skip during
-seq_ops->start():
-  iter->skip =3D *pos;
-seq_ops->start() just fetches the *current* pos item.
-The item can be skipped only after seq_ops->show() which essentially
-is the beginning of seq_ops->next().
+But does that address any real issue?
 
-For example, I have 7 ipv6 route entries,
-  root@arch-fb-vm1:~/net-next dd if=3D/proc/net/ipv6_route bs=3D4096
-  00000000000000000000000000000000 40 00000000000000000000000000000000 00 0=
-0000000000000000000000000000000 00000400 00000001 00000000 00000001     eth0
-  fe800000000000000000000000000000 40 00000000000000000000000000000000 00 0=
-0000000000000000000000000000000 00000100 00000001 00000000 00000001     eth0
-  00000000000000000000000000000000 00 00000000000000000000000000000000 00 0=
-0000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo
-  00000000000000000000000000000001 80 00000000000000000000000000000000 00 0=
-0000000000000000000000000000000 00000000 00000003 00000000 80200001       lo
-  fe800000000000002050e3fffebd3be8 80 00000000000000000000000000000000 00 0=
-0000000000000000000000000000000 00000000 00000002 00000000 80200001     eth0
-  ff000000000000000000000000000000 08 00000000000000000000000000000000 00 0=
-0000000000000000000000000000000 00000100 00000004 00000000 00000001     eth0
-  00000000000000000000000000000000 00 00000000000000000000000000000000 00 0=
-0000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo
-  0+1 records in
-  0+1 records out
-  1050 bytes (1.0 kB, 1.0 KiB) copied, 0.00707908 s, 148 kB/s
-  root@arch-fb-vm1:~/net-next
+If anything, it would make sense to keep ARHPHRD_IPGRE for tunnels
+that expect headers and switch to ARPHRD_NONE for those that do not.
+As the collect_md commit I mentioned above does.
 
-In the above, I specify buffer size 4096, so all records can be returned
-to user space with a single trip to the kernel.
+> Also, for the second special situation, if there's no obvious reason
+> to use header_ops, maybe we can consider removing header_ops for this
+> situation.
 
-If I use buffer size 128, since each record size is 149, internally
-kernel seq_read() will read 149 into its internal buffer and return the data
-to user space in two read() syscalls. Then user read() syscall will trigger
-next seq_ops->start(). Since the current implementation increased pos even
-for seq_ops->start(), it will skip record #2, #4 and #6, assuming the first
-record is #1.
-
-  root@arch-fb-vm1:~/net-next dd if=3D/proc/net/ipv6_route bs=3D128
-  00000000000000000000000000000000 40 00000000000000000000000000000000 00 0=
-0000000000000000000000000000000 00000400 00000001 00000000 00000001     eth0
-  00000000000000000000000000000000 00 00000000000000000000000000000000 00 0=
-0000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo
-  fe800000000000002050e3fffebd3be8 80 00000000000000000000000000000000 00 0=
-0000000000000000000000000000000 00000000 00000002 00000000 80200001     eth0
-  00000000000000000000000000000000 00 00000000000000000000000000000000 00 0=
-0000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo
-4+1 records in
-4+1 records out
-600 bytes copied, 0.00127758 s, 470 kB/s
-
-To fix the problem, create a fake pos pointer so seq_ops->start()
-won't actually increase seq_file pos. With this fix, the
-above `dd` command with `bs=3D128` will show correct result.
-
-Fixes: 4fc427e05158 ("ipv6_route_seq_next should increase position index")
-Cc: Andrii Nakryiko <andriin@fb.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Suggested-by: Vasily Averin <vvs@virtuozzo.com>
-Reviewed-by: Vasily Averin <vvs@virtuozzo.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
----
- net/ipv6/ip6_fib.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-Changelog:
- v2 -> v3:
-  - initialize local variable "p" to avoid potential syzbot complaint. (Eri=
-c)
- v1 -> v2:
-  - instead of push increment of *pos in ipv6_route_seq_next() for
-    seq_ops->next() only. Add a face pos pointer in seq_ops->start()
-    and use it when calling ipv6_route_seq_next().
-
-diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
-index 141c0a4c569a..605cdd38a919 100644
---- a/net/ipv6/ip6_fib.c
-+++ b/net/ipv6/ip6_fib.c
-@@ -2622,8 +2622,10 @@ static void *ipv6_route_seq_start(struct seq_file *s=
-eq, loff_t *pos)
- 	iter->skip =3D *pos;
-=20
- 	if (iter->tbl) {
-+		loff_t p =3D 0;
-+
- 		ipv6_route_seq_setup_walk(iter, net);
--		return ipv6_route_seq_next(seq, NULL, pos);
-+		return ipv6_route_seq_next(seq, NULL, &p);
- 	} else {
- 		return NULL;
- 	}
---=20
-2.24.1
-
+Unfortunately, there's no knowing if some application is using this
+broadcast mode *with* a process using packet sockets.
