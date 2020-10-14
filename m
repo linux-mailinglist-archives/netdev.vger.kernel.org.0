@@ -2,141 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9334828DD07
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 11:22:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B59EB28D86B
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 04:22:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730034AbgJNJV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 05:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39970 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731158AbgJNJVz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 05:21:55 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A99C00214B
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 18:39:27 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id b6so461485pju.1
-        for <netdev@vger.kernel.org>; Tue, 13 Oct 2020 18:39:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=yUC0rwUxYmJ6He1+DEtA27099aa0aLL7qdlDf/fhAwo=;
-        b=dSPvtX1pJivkxtP16cpaCi1W9vgJmPRRYtNWPMfqObGwtEAjiAHex1xsjbzeuSwUbp
-         kPC2ULiZZtVpu+9jodXOYVGt37rvGpD828CW7azcWmOcg3DxfLQzMLxtSOjT1f8DXkCa
-         hRoekMja6V5Jw3GeP+M79cTk+qm8+QrDJBsHNQ2QcG1eccYeuLLCgdMD7p0ZRGxGxmTf
-         BFfCXD6k/4Vji5ZpIHGXyXZeWFOhIwc+DZQ4liVq/xp7H4XnwzUFRtzWRg/esEHjZagP
-         hDKyfx+BOeFXFi5XrY1QS21nMb4Ev9NVn61dGt8AP9YGOFkK+3dqeb9B9XYXSYkpPUmj
-         t0FA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yUC0rwUxYmJ6He1+DEtA27099aa0aLL7qdlDf/fhAwo=;
-        b=V4U5OiaDkDqHdBTEDxidouYCn9Pzuz0zN3wXOC6sJGuidy8n4ZaznAfgoRA6+n47Rg
-         gg8WltXd6+DFAHS0Afxev2QHzFvPJOx6AWYH6pDS+xjTkKz7G0MFjWYnJTvOqlyxO5Y9
-         hEFRl5Rn37hDS4r46GDzGKmEY01Yzz7/ZbdWE4zHdaiOn7WJGh2zOrBciLpYr4/0c1Cu
-         A8osCf+ZTOEamb/aqpz6jBU+cAJl3bUQmYxBDR6Zb0gJyQkjieYv+cbJNIpP/AncozCL
-         Zaag8b5d7cJ2Bt8OeFzBbHHZJkwnP9zjPz7SQCUBhQDgQMGrCl3sL0JZGfdZtiUGuhpJ
-         FM0A==
-X-Gm-Message-State: AOAM5329QpFdp0udFlnMqxwTBchMijE0qxmRi93QTmkjFgC9BIRJRfF4
-        XDRsAtY57giDh5lrelko2gA=
-X-Google-Smtp-Source: ABdhPJzV+GnjIc4vUBnszrbkmfwJddBf07TOylxWkAW7tEaeYKvLk0vscfaPsqeUWzb7qSSeV993dQ==
-X-Received: by 2002:a17:90a:bd97:: with SMTP id z23mr1142316pjr.191.1602639567069;
-        Tue, 13 Oct 2020 18:39:27 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id p12sm978345pgm.29.2020.10.13.18.39.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Oct 2020 18:39:26 -0700 (PDT)
-Date:   Wed, 14 Oct 2020 09:39:16 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Ido Schimmel <idosch@mellanox.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: vxlan_asymmetric.sh test failed every time
-Message-ID: <20201014013916.GM2531@dhcp-12-153.nay.redhat.com>
-References: <20201013043943.GL2531@dhcp-12-153.nay.redhat.com>
- <20201013074930.GA4024934@shredder>
+        id S1727198AbgJNCVw convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 13 Oct 2020 22:21:52 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:51866 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726120AbgJNCVw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Oct 2020 22:21:52 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.69 with qID 09E2LJQ50027098, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexmb01.realtek.com.tw[172.21.6.94])
+        by rtits2.realtek.com.tw (8.15.2/2.66/5.86) with ESMTPS id 09E2LJQ50027098
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 14 Oct 2020 10:21:19 +0800
+Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
+ RTEXMB01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2044.4; Wed, 14 Oct 2020 10:21:19 +0800
+Received: from RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa]) by
+ RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa%3]) with mapi id
+ 15.01.2044.006; Wed, 14 Oct 2020 10:21:19 +0800
+From:   Andy Huang <tehuang@realtek.com>
+To:     "'Nathan Chancellor'" <natechancellor@gmail.com>,
+        "trix@redhat.com" <trix@redhat.com>
+CC:     Tony Chuang <yhchuang@realtek.com>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "ndesaulniers@google.com" <ndesaulniers@google.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "clang-built-linux@googlegroups.com" 
+        <clang-built-linux@googlegroups.com>
+Subject: RE: [PATCH] rtw88: fix fw_fifo_addr check
+Thread-Topic: [PATCH] rtw88: fix fw_fifo_addr check
+Thread-Index: AQHWn+b1N2QCxO5tOEqVUSS+vGIPsamSt7QAgAOoEfA=
+Date:   Wed, 14 Oct 2020 02:21:18 +0000
+Message-ID: <ca5131599d3940d8a914025821876219@realtek.com>
+References: <20201011155438.15892-1-trix@redhat.com>
+ <20201012022428.GA936980@ubuntu-m3-large-x86>
+In-Reply-To: <20201012022428.GA936980@ubuntu-m3-large-x86>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.231]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201013074930.GA4024934@shredder>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 13, 2020 at 10:49:30AM +0300, Ido Schimmel wrote:
-> On Tue, Oct 13, 2020 at 12:39:43PM +0800, Hangbin Liu wrote:
-> > Hi Ido,
-> > 
-> > When run vxlan_asymmetric.sh on RHEL8, It failed every time. I though that
-> > it may failed because the kernel version is too old. But today I tried with
-> > latest kernel, it still failed. Would you please help check if I missed
-> > any configuration?
-> 
-> Works OK for me:
-> 
-> $ sudo ./vxlan_asymmetric.sh veth0 veth1 veth2 veth3 veth4 veth5
-> TEST: ping: local->local vid 10->vid 20                             [ OK ]
-> TEST: ping: local->remote vid 10->vid 10                            [ OK ]
-> TEST: ping: local->remote vid 20->vid 20                            [ OK ]
-> TEST: ping: local->remote vid 10->vid 20                            [ OK ]
-> TEST: ping: local->remote vid 20->vid 10                            [ OK ]
-> INFO: deleting neighbours from vlan interfaces
-> TEST: ping: local->local vid 10->vid 20                             [ OK ]
-> TEST: ping: local->remote vid 10->vid 10                            [ OK ]
-> TEST: ping: local->remote vid 20->vid 20                            [ OK ]
-> TEST: ping: local->remote vid 10->vid 20                            [ OK ]
-> TEST: ping: local->remote vid 20->vid 10                            [ OK ]
-> TEST: neigh_suppress: on / neigh exists: yes                        [ OK ]
-> TEST: neigh_suppress: on / neigh exists: no                         [ OK ]
-> TEST: neigh_suppress: off / neigh exists: no                        [ OK ]
-> TEST: neigh_suppress: off / neigh exists: yes                       [ OK ]
-> 
-> # uname -r
-> 5.9.0-rc8-custom-36808-gccdf7fae3afa
-> 
-> # ip -V
-> ip utility, iproute2-5.8.0
-> 
-> # netsniff-ng -v
-> netsniff-ng 0.6.7 (Polygon Window), Git id: (none)
-> 
-> The first failure might be related to your rp_filter settings. Can you
-> please try with this patch?
-> 
-> diff --git a/tools/testing/selftests/net/forwarding/vxlan_asymmetric.sh b/tools/testing/selftests/net/forwarding/vxlan_asymmetric.sh
-> index a0b5f57d6bd3..0727e2012b68 100755
-> --- a/tools/testing/selftests/net/forwarding/vxlan_asymmetric.sh
-> +++ b/tools/testing/selftests/net/forwarding/vxlan_asymmetric.sh
-> @@ -215,10 +215,16 @@ switch_create()
->  
->         bridge fdb add 00:00:5e:00:01:01 dev br1 self local vlan 10
->         bridge fdb add 00:00:5e:00:01:01 dev br1 self local vlan 20
-> +
-> +       sysctl_set net.ipv4.conf.all.rp_filter 0
-> +       sysctl_set net.ipv4.conf.vlan10-v.rp_filter 0
-> +       sysctl_set net.ipv4.conf.vlan20-v.rp_filter 0
->  }
->  
->  switch_destroy()
->  {
-> +       sysctl_restore net.ipv4.conf.all.rp_filter
-> +
->         bridge fdb del 00:00:5e:00:01:01 dev br1 self local vlan 20
->         bridge fdb del 00:00:5e:00:01:01 dev br1 self local vlan 10
->  
-> @@ -359,6 +365,10 @@ ns_switch_create()
->  
->         bridge fdb add 00:00:5e:00:01:01 dev br1 self local vlan 10
->         bridge fdb add 00:00:5e:00:01:01 dev br1 self local vlan 20
-> +
-> +       sysctl_set net.ipv4.conf.all.rp_filter 0
-> +       sysctl_set net.ipv4.conf.vlan10-v.rp_filter 0
-> +       sysctl_set net.ipv4.conf.vlan20-v.rp_filter 0
->  }
->  export -f ns_switch_create
 
-Thanks a lot for help debugging this issue, this patch works for me.
+> On Sun, Oct 11, 2020 at 08:54:38AM -0700, trix@redhat.com wrote:
+> > From: Tom Rix <trix@redhat.com>
+> >
+> > The clang build reports this warning
+> >
+> > fw.c:1485:21: warning: address of array 'rtwdev->chip->fw_fifo_addr'
+> >   will always evaluate to 'true'
+> >         if (!rtwdev->chip->fw_fifo_addr) {
+> >
+> > fw_fifo_addr is an array in rtw_chip_info so it is always nonzero.  A
+> > better check is if the first element of the array is nonzero.  In the
+> > cases where fw_fifo_addr is initialized by rtw88b and rtw88c, the
+> > first array element is 0x780.
+> >
+> > Signed-off-by: Tom Rix <trix@redhat.com>
+> 
+> Reviewed-by: Nathan Chancellor <natechancellor@gmail.com>
+> 
 
-Tested-by: Hangbin Liu <liuhangbin@gmail.com>
+Thanks for your fix,
+
+Acked-by: Tzu-En Huang <tehuang@realtek.com>
+
+> > ---
+> >  drivers/net/wireless/realtek/rtw88/fw.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/wireless/realtek/rtw88/fw.c
+> > b/drivers/net/wireless/realtek/rtw88/fw.c
+> > index 042015bc8055..b2fd87834f23 100644
+> > --- a/drivers/net/wireless/realtek/rtw88/fw.c
+> > +++ b/drivers/net/wireless/realtek/rtw88/fw.c
+> > @@ -1482,7 +1482,7 @@ static bool rtw_fw_dump_check_size(struct
+> > rtw_dev *rtwdev,  int rtw_fw_dump_fifo(struct rtw_dev *rtwdev, u8
+> fifo_sel, u32 addr, u32 size,
+> >  		     u32 *buffer)
+> >  {
+> > -	if (!rtwdev->chip->fw_fifo_addr) {
+> > +	if (!rtwdev->chip->fw_fifo_addr[0]) {
+> >  		rtw_dbg(rtwdev, RTW_DBG_FW, "chip not support dump fw fifo\n");
+> >  		return -ENOTSUPP;
+> >  	}
+> > --
+> > 2.18.1
+> >
+> 
+> ------Please consider the environment before printing this e-mail.
