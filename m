@@ -2,89 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE4E028E451
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 18:24:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A9DB28E46B
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 18:27:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731905AbgJNQYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 12:24:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49236 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728103AbgJNQYL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 12:24:11 -0400
-Received: from mail-vk1-xa44.google.com (mail-vk1-xa44.google.com [IPv6:2607:f8b0:4864:20::a44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 865A3C061755
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 09:24:11 -0700 (PDT)
-Received: by mail-vk1-xa44.google.com with SMTP id r78so885137vke.11
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 09:24:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=R2NINvlndmdGIR5PUQW/963ohtoXETcTt0Yp28eLGZk=;
-        b=Cw18tgFiwqNWNKOJ0dvWVVXuDC+7fkEjU4ipf10gmd9dk6n6eWhjk7lrDLLW5KwXul
-         3aiV4mBQnhOAOTEgsRUvk15tOzDKa5JxITgzK3NDzuhe1+2QbTBjV54lqK2+E/YeWD9G
-         7zlQ7UWMIqwRD90uvlARIBQrK1YhT2ga+E34WjjBlKEoI4TZ7FcE8afXDFIpO5EBxS6a
-         vGFv3lAJlkt17BuXANgRusHjZewRcfyqav0aVlhl2oonXXkHH5oAeJezFHL/Mkswz7R3
-         z7Se4FfxeNDdJaChGoKkToOxXznKKqWG1ztwQoGC2hKzCqCrmxo9HxFLzhoKntuSezeD
-         kKGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=R2NINvlndmdGIR5PUQW/963ohtoXETcTt0Yp28eLGZk=;
-        b=mar6DSVJrmH2if9CNLG40u0wRBlSDWfnlBnLm3aEyM2toSCg1myUtNLPUOf90YQQA/
-         UTef+u0xmSnnCHnz56u5hp74Z/2b1BqQy0tiWNv6eXcsToo2676syHFOmLDE9nGrQFEC
-         hFALpdgUrNL/NMq+yX8Ds/PeejzBzfHu49QNzXI+uFoDJeQ9sE8RtiuIkanuWM4FUkFt
-         eS6BAcFIWX8TAfokJ9KmaFomOfNTvM+W1gNOqJI3sXxG/YSPsTHCKLs9i6EU4Z2pEnG6
-         TZaIdpYHM00Fmr8nUsJlScmlVpO98+20tkbs80wPIf6LHCTSEJ++eURn8ewkUFeQta2v
-         yIzA==
-X-Gm-Message-State: AOAM530+TeXajrgjDNKVNZlAfBJdcWuPFo9T2RWAFJvVr6S7RkLcAX6e
-        +nMJps9oeG6rk7QFrxcfD3oeoBPRfWs=
-X-Google-Smtp-Source: ABdhPJxuzzziOaI4JhwuED+pIaMht4ij4MvcQdqfEbiSaYpvRCYtDlFzXKiIvfSPonLUz/s+hzpbnQ==
-X-Received: by 2002:a1f:eb02:: with SMTP id j2mr3639560vkh.21.1602692649905;
-        Wed, 14 Oct 2020 09:24:09 -0700 (PDT)
-Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com. [209.85.217.43])
-        by smtp.gmail.com with ESMTPSA id k10sm702984vsp.23.2020.10.14.09.24.08
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 14 Oct 2020 09:24:09 -0700 (PDT)
-Received: by mail-vs1-f43.google.com with SMTP id p25so2423711vsq.4
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 09:24:08 -0700 (PDT)
-X-Received: by 2002:a05:6102:398:: with SMTP id m24mr4004838vsq.14.1602692648272;
- Wed, 14 Oct 2020 09:24:08 -0700 (PDT)
+        id S2388476AbgJNQ1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 12:27:51 -0400
+Received: from wtarreau.pck.nerim.net ([62.212.114.60]:43672 "EHLO 1wt.eu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727071AbgJNQ1v (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Oct 2020 12:27:51 -0400
+Received: (from willy@localhost)
+        by pcw.home.local (8.15.2/8.15.2/Submit) id 09EGRW7o012950;
+        Wed, 14 Oct 2020 18:27:32 +0200
+Date:   Wed, 14 Oct 2020 18:27:32 +0200
+From:   Willy Tarreau <w@1wt.eu>
+To:     Claudiu.Beznea@microchip.com
+Cc:     Nicolas.Ferre@microchip.com, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, daniel@0x0f.com
+Subject: Re: [PATCH net-next 3/3] macb: support the two tx descriptors on
+ at91rm9200
+Message-ID: <20201014162732.GA12944@1wt.eu>
+References: <20201011090944.10607-1-w@1wt.eu>
+ <20201011090944.10607-4-w@1wt.eu>
+ <29603cfa-db00-f088-3dbe-0781ee5a99ed@microchip.com>
 MIME-Version: 1.0
-References: <20201013232014.26044-1-dwilder@us.ibm.com> <20201013232014.26044-3-dwilder@us.ibm.com>
-In-Reply-To: <20201013232014.26044-3-dwilder@us.ibm.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 14 Oct 2020 12:23:31 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSfRXhJWOerKL=4OV=ku6v3XfqhBhV0=rtiAfaPgr=yq4w@mail.gmail.com>
-Message-ID: <CA+FuTSfRXhJWOerKL=4OV=ku6v3XfqhBhV0=rtiAfaPgr=yq4w@mail.gmail.com>
-Subject: Re: [ PATCH v2 2/2] ibmveth: Identify ingress large send packets.
-To:     David Wilder <dwilder@us.ibm.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        tlfalcon@linux.ibm.com, cris.forno@ibm.com,
-        pradeeps@linux.vnet.ibm.com, wilder@us.ibm.com,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <29603cfa-db00-f088-3dbe-0781ee5a99ed@microchip.com>
+User-Agent: Mutt/1.6.1 (2016-04-27)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 13, 2020 at 7:21 PM David Wilder <dwilder@us.ibm.com> wrote:
->
-> Ingress large send packets are identified by either:
-> The IBMVETH_RXQ_LRG_PKT flag in the receive buffer
-> or with a -1 placed in the ip header checksum.
-> The method used depends on firmware version. Frame
-> geometry and sufficient header validation is performed by the
-> hypervisor eliminating the need for further header checks here.
->
-> Fixes: 7b5967389f5a ("ibmveth: set correct gso_size and gso_type")
-> Signed-off-by: David Wilder <dwilder@us.ibm.com>
-> Reviewed-by: Thomas Falcon <tlfalcon@linux.ibm.com>
-> Reviewed-by: Cristobal Forno <cris.forno@ibm.com>
-> Reviewed-by: Pradeep Satyanarayana <pradeeps@linux.vnet.ibm.com>
+Hi Claudiu,
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+first, thanks for your feedback!
 
-Thanks for clarifying the header validation. I clearly had missed that :)
+On Wed, Oct 14, 2020 at 04:08:00PM +0000, Claudiu.Beznea@microchip.com wrote:
+> > @@ -3994,11 +3996,10 @@ static netdev_tx_t at91ether_start_xmit(struct sk_buff *skb,
+> >                                         struct net_device *dev)
+> >  {
+> >         struct macb *lp = netdev_priv(dev);
+> > +       unsigned long flags;
+> > 
+> > -       if (macb_readl(lp, TSR) & MACB_BIT(RM9200_BNQ)) {
+> > -               int desc = 0;
+> > -
+> > -               netif_stop_queue(dev);
+> > +       if (lp->rm9200_tx_len < 2) {
+> > +               int desc = lp->rm9200_tx_tail;
+> 
+> I think you also want to protect these reads with spin_lock() to avoid
+> concurrency with the interrupt handler.
+
+I don't think it's needed because the condition doesn't change below
+us as the interrupt handler only decrements. However I could use a
+READ_ONCE to make things cleaner. And in practice this test was kept
+to keep some sanity checks but it never fails, as if the queue length
+reaches 2, the queue is stopped (and I never got the device busy message
+either before nor after the patch).
+
+> >                 /* Store packet information (to free when Tx completed) */
+> >                 lp->rm9200_txq[desc].skb = skb;
+> > @@ -4012,6 +4013,15 @@ static netdev_tx_t at91ether_start_xmit(struct sk_buff *skb,
+> >                         return NETDEV_TX_OK;
+> >                 }
+> > 
+> > +               spin_lock_irqsave(&lp->lock, flags);
+> > +
+> > +               lp->rm9200_tx_tail = (desc + 1) & 1;
+> > +               lp->rm9200_tx_len++;
+> > +               if (lp->rm9200_tx_len > 1)
+> > +                       netif_stop_queue(dev);
+
+This is where we guarantee that we won't call start_xmit() again with
+rm9200_tx_len >= 2.
+
+> > @@ -4088,21 +4100,39 @@ static irqreturn_t at91ether_interrupt(int irq, void *dev_id)
+> >                 at91ether_rx(dev);
+> > 
+> >         /* Transmit complete */
+> > -       if (intstatus & MACB_BIT(TCOMP)) {
+> > +       if (intstatus & (MACB_BIT(TCOMP) | MACB_BIT(RM9200_TBRE))) {
+> >                 /* The TCOM bit is set even if the transmission failed */
+> >                 if (intstatus & (MACB_BIT(ISR_TUND) | MACB_BIT(ISR_RLE)))
+> >                         dev->stats.tx_errors++;
+> > 
+> > -               desc = 0;
+> > -               if (lp->rm9200_txq[desc].skb) {
+> > +               spin_lock(&lp->lock);
+> 
+> Also, this lock could be moved before while, below, as you want to protect
+> the rm9200_tx_len and rm9200_tx_tails members of lp as I understand.
+
+Sure, but it actually *is* before the while(). I'm sorry if that was not
+visible from the context of the diff. The while is just a few lins below,
+thus rm9200_tx_len and rm9200_tx_tail are properly protected. Do not
+hesitate to tell me if something is not clear or if I'm wrong!
+
+Thanks!
+Willy
