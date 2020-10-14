@@ -2,93 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC18428E566
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 19:31:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DB7E28E577
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 19:37:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388774AbgJNRbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 13:31:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59610 "EHLO
+        id S2389443AbgJNRhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 13:37:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726111AbgJNRbH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 13:31:07 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FD59C061755;
-        Wed, 14 Oct 2020 10:31:06 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id dt13so5938538ejb.12;
-        Wed, 14 Oct 2020 10:31:06 -0700 (PDT)
+        with ESMTP id S2389398AbgJNRhO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 13:37:14 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0AA7C061755
+        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 10:37:13 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id k21so2441691ioa.9
+        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 10:37:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=eOQX8qrZdJY6yGgpfPJRyusy5hAy1yUGKjIQzStBmgk=;
-        b=ZF+0TZuVsq6Zf4SBlD665r6t80lHJF87yvJwvoiGORx4R4+UEbp0YRSqILp1YdFydt
-         4c2Jt97yytoFw8AkPdRZX9s+lcDAsSy81fg4oGfz3Y5DTDaQ5R21U+JVV28UcAplX8K2
-         CuNSyCYyuEnl3Wr6BoKducYHMS9sDQUV2O3H7IEq+/GDauBoDOXkjlyZv+KF8fhWAFN7
-         ainegRz7TQnQ+3Dm+7ZE8tIsD36yA1xtc5bbNUNGaFTtncebI6qV+oiW1OnaW6crg1ff
-         xwJDGUulcAXTjCSw6Tqq6Kf849ACTBbXd4EGCYdGTWqKZDuWtEsx2wSM751WRr4wjQ93
-         QzEA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=E5P9XanwOge6BO0+3eqi7lgaSRWxBp2wvk7ap4OM9kU=;
+        b=PLY8MUElKEICEnctPspYXJKR28/9ZIVyBpVpzS32Ba5PoNvOjgLWZTm0k6PJrnF8G8
+         WLu5E49dAv5TFVXs1pydQ7YW6T877BWhhjsSU0k+arfC6/RHmRqLqREPFH4Hl6qTS1Ml
+         tyNKLtPK3f8niK1VxqIL5Oh3QtlgXJmplytiuT5Og9IPI2WMC38e87JkrfD7oWY2EqXT
+         IEJhCt0/lrphzBI91nsQNaiOYR3rPG1bJbBzNMmG8nEI63fxsZ1WqM39/9rhJ1DvzoyO
+         lc1q2qgKKLdO1jYCOjUjUBDLEDwpRxfNfRyxH8nqwqEbE37Epwdqhf7gR553cnwKwyKz
+         ShlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eOQX8qrZdJY6yGgpfPJRyusy5hAy1yUGKjIQzStBmgk=;
-        b=IckhgKdNAeyyFMQggVDHkvLBeXZ1wxf1muPgrrvzYdsw4JXkDeDLFExJ0HjZHZksvl
-         mTm8CRE1nsTrr+fAK/P0tZZkkqy2I8NC3xWIUrLJtxF3nRCDraOhsFS7iq3yfAW7Qn14
-         +Q+LgkoFGhADb58WEwLVDAwwSnZ6CvWO00uPgy6KxUjUecULicHodAt/ksHU+1gYpAlX
-         V5BtHYLpDn9j5sTmm6J5MBrJb/VRYPiXpryq2P7VwzVvJrR1m4DtjD8ldhyx2m8+x692
-         sAykiCMe1jFiR7Gl00njV/od2BNM5sYg6nO17o6A4OSLnAnk4yPZxirJW6tJrhFhJDlA
-         KHog==
-X-Gm-Message-State: AOAM530IwF6c6d0kjF1bHREWhYYaCvKBfJyLQFEH74MTGrs9V5pml+fP
-        gukGLo9gUc0OuyMHlWyIaIY=
-X-Google-Smtp-Source: ABdhPJyMwpQ1vrLwSfJsRlp9uBIfdl7ZYVRtLGRBQODeEVSdZVhGwy115UDqJO4FlZYw7C+eBgRMrw==
-X-Received: by 2002:a17:906:c0d8:: with SMTP id bn24mr112519ejb.480.1602696664980;
-        Wed, 14 Oct 2020 10:31:04 -0700 (PDT)
-Received: from skbuf ([188.26.174.215])
-        by smtp.gmail.com with ESMTPSA id v1sm106400eds.47.2020.10.14.10.31.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Oct 2020 10:31:04 -0700 (PDT)
-Date:   Wed, 14 Oct 2020 20:31:03 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>
-Subject: Re: [PATCH net] net: dsa: ksz: fix padding size of skb
-Message-ID: <20201014173103.26nvgqtrpewqskg4@skbuf>
-References: <20201014161719.30289-1-ceggers@arri.de>
- <20201014164750.qelb6vssiubadslj@skbuf>
- <20201014165410.fzvzdk3odsdjljpq@skbuf>
- <3253541.RgjG7ZtOS4@n95hx1g2>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=E5P9XanwOge6BO0+3eqi7lgaSRWxBp2wvk7ap4OM9kU=;
+        b=hUy2LJN9ZyUfqtfu8cdSVLhq/rgRb1xKK05xbZ8A9aHM7v7+NGEptTUblcLAbr/XMJ
+         2+dTqKhBpI/eDv7w0HiHufe7CiQlN+ZPlBJDzq2tUFy/OydxuDYrzrjmcn+rak2jaqB7
+         HRJV0AXaMTYS+/4OW0gTL+wYG0SPsc/xM4hwrGq7ErrkIiz9sVQ6XIlwsBB7CrOi1mib
+         +4zXLVy4/yjR3yLqcCesIF3Ntwgi5J0mbt6nxDs7cBy+NNhhcE6kMgmmRzel6wBfgsin
+         orLe5yvsjswyXHlscLnsCubae51lO93cEb24BSKjNF6TgAs/UWXSlVClWIbeAgkp5Do8
+         wryQ==
+X-Gm-Message-State: AOAM533T5D3oaDMdwhWGcTSHe5/56Po4EwWh5nh7iqvLlr1ilhcx1TV/
+        70YGiNQCBh3Fj232Z0+2yHbwcznbFvEreWgNBvo=
+X-Google-Smtp-Source: ABdhPJxmT+vP3B/PA4B2WFafPwnlknQyd19fXql5RTR4trVNE2KFE9P4lMhAPlzgLb9uEfFqZzk9nHKXaAkjAbVJL/0=
+X-Received: by 2002:a05:6602:54:: with SMTP id z20mr357528ioz.85.1602697033124;
+ Wed, 14 Oct 2020 10:37:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3253541.RgjG7ZtOS4@n95hx1g2>
+References: <20201014085642.21167-1-leon@kernel.org>
+In-Reply-To: <20201014085642.21167-1-leon@kernel.org>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 14 Oct 2020 10:37:01 -0700
+Message-ID: <CAM_iQpV_exrncjYnN1_+gT42uSVGwsFijsu6K1pmYGv9yCBi5Q@mail.gmail.com>
+Subject: Re: [PATCH net] net: sched: Fix suspicious RCU usage while accessing tcf_tunnel_info
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Vlad Buslov <vladbu@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 14, 2020 at 07:02:13PM +0200, Christian Eggers wrote:
-> > Otherwise said, the frame must be padded to
-> > max(skb->len, ETH_ZLEN) + tail tag length.
-> At first I thought the same when working on this. But IMHO the padding must
-> only ensure the minimum required size, there is no need to pad to the "real"
-> size of the skb. The check for the tailroom above ensures that enough memory
-> for the "real" size is available.
+On Wed, Oct 14, 2020 at 1:56 AM Leon Romanovsky <leon@kernel.org> wrote:
+>
+> From: Leon Romanovsky <leonro@nvidia.com>
+>
+> The access of tcf_tunnel_info() produces the following splat, so fix it
+> by dereferencing the tcf_tunnel_key_params pointer with marker that
+> internal tcfa_liock is held.
 
-Yes, that's right, that's the current logic, but what's the point of
-your patch, then, if the call to __skb_put_padto is only supposed to
-ensure ETH_ZLEN length?
-In fact, __skb_put_padto fundamentally does:
-- an extension of skb->len to the requested argument, via __skb_put
-- a zero-filling of the extra area
-So if you include the length of the tag in the call to __skb_put_padto,
-then what's the other skb_put() from ksz8795_xmit, ksz9477_xmit,
-ksz9893_xmit going to do? Aren't you increasing the frame length twice
-by the length of one tag when you are doing this? What problem are you
-actually trying to solve?
-Can you show a skb_dump(KERN_ERR, skb, true) before and after your change?
+Looks reasonable to me,
+
+Acked-by: Cong Wang <xiyou.wangcong@gmail.com>
+
+Thanks.
