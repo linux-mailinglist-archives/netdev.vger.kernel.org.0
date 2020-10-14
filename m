@@ -2,79 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06A0428E9E6
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 03:20:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DCC928E8EB
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 00:53:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731882AbgJOBUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 21:20:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47380 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387916AbgJOBTh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 21:19:37 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29AC3C051104
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 15:53:20 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id h6so1313400lfj.3
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 15:53:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9u2mhHcY3pY9y0h1f1D8mjxBc1UDKO7lgh+0IH/jA4Y=;
-        b=E/v5G5HV93+1W4ZpS/VEGR4XVjhJ1Cziliaq421Y1vNYDKnUMeDn1lSbhTCyjPD4qn
-         Ycb0GIFY8dVLWimGD6jGpxITZrHhe7xQpjsbikl7AnWc4mhoCouYfkP7/f4PH+VA3clz
-         Cv+uRw1kdI5CfME+yVKJXQCOBYRkOHRUVhiFE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9u2mhHcY3pY9y0h1f1D8mjxBc1UDKO7lgh+0IH/jA4Y=;
-        b=M3mRxcS6O1nFolmyWQX+hZgnZJRWJDGRmYTnGg+48R2p1nGm2E6Bk7YHLg1PZCAfRV
-         grnFoIK1RJiR24+8Gpc0DHsoUYzal/eETVjhUZ5gYJXkxu8uh1odYQxE+6512T37J9Hd
-         kT7ospec/qwlgnaac4TucMSky+3uzMbmoyE28VIgLxIsYUKPsEgjNa3i6tRPOGtVa7ID
-         QaIb3LUjDjw6KvbCHMJNVwCsacvogV9XH8ueSyoif/dTKvxIybxaRdSULEw0drJKd/kc
-         idRSqP+/zNbmwMfsF1PIyuVPwp9DG5Ivr27NC57TeZcc7d094USNcH1J6ODOM4yxTf1x
-         MDpg==
-X-Gm-Message-State: AOAM530GuJWGETXFd0G17+cttYe7PHqt6WlNWBUHFM1+dBCSar6MCais
-        58F76LwKu/8kYILbWAA8acEU0fuuiGzPDQ==
-X-Google-Smtp-Source: ABdhPJy0lWA5YPAuwdsN501ko9Z6CfNIXIviSBlHsPf1gboKL5akpgf66cMb/AHX+wIJmFtQyKjhmQ==
-X-Received: by 2002:a05:6512:20a:: with SMTP id a10mr95486lfo.128.1602715998363;
-        Wed, 14 Oct 2020 15:53:18 -0700 (PDT)
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com. [209.85.167.41])
-        by smtp.gmail.com with ESMTPSA id 196sm258999lfg.209.2020.10.14.15.53.17
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 14 Oct 2020 15:53:17 -0700 (PDT)
-Received: by mail-lf1-f41.google.com with SMTP id d24so1278865lfa.8
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 15:53:17 -0700 (PDT)
-X-Received: by 2002:a19:4815:: with SMTP id v21mr94354lfa.603.1602715996898;
+        id S1730024AbgJNWxS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 18:53:18 -0400
+Received: from mail.zx2c4.com ([192.95.5.64]:49963 "EHLO mail.zx2c4.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728250AbgJNWxS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Oct 2020 18:53:18 -0400
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTP id 442ae914;
+        Wed, 14 Oct 2020 22:19:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=zx2c4.com; h=mime-version
+        :references:in-reply-to:from:date:message-id:subject:to:cc
+        :content-type; s=mail; bh=2bwGM25lN52UQxYKx/Y8jAbUdGU=; b=Se/mlF
+        eLahjhRmIiKnouDoe0+ba694TZ/NJev9yyeuuZGRGjUgc1tYuxRVDaXZrz06s0Hr
+        d/BVx9kGWnNCrcuTyG6uKYR2lrzxf/bZfYpQA2S4y3ZXlDpxbfvuYg8Ov8OW0UV0
+        s0dv6hhMZRnNcjbloMZnUsXO9M8M0kp16bhFCK2s26LSIp672aXuZbnh7WUZoWRs
+        0D+vGZS+Y1IbyK51KiCfcZQIzTcVOL+msiHot0nrzxzMHuKcZyi6CNOxLA6S9la6
+        4Dnx6RGVep3yWF6XRJ1/w5I0XMXZUzlSxWCtdsnMmjvlR+LEY2L0jSEgiWn5EC9v
+        iuNHJlY1xQSHrn3A==
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 830e8d48 (TLSv1.3:TLS_AES_256_GCM_SHA384:256:NO);
+        Wed, 14 Oct 2020 22:19:41 +0000 (UTC)
+Received: by mail-io1-f44.google.com with SMTP id 67so1673659iob.8;
+        Wed, 14 Oct 2020 15:53:16 -0700 (PDT)
+X-Gm-Message-State: AOAM531NBCvdHR+rQRV3wlk/1gmV3m4JR2+FtDn4Zdewd6utotXhT8Zj
+        RbOUl3pC+elhbvSimY7K2n33phkt1HhH5gR3Bpc=
+X-Google-Smtp-Source: ABdhPJw6bdevPelx8D6A+pUz9BwTRHVh5Qc4DW55dxc0R3DWyvS/aEn/iKmQp/sANsC3zUjJk5FnvAdQ/gv9dzlOT+U=
+X-Received: by 2002:a6b:3bcf:: with SMTP id i198mr1222193ioa.25.1602715996006;
  Wed, 14 Oct 2020 15:53:16 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200724012512.GK2786714@ZenIV.linux.org.uk> <20200724012546.302155-1-viro@ZenIV.linux.org.uk>
  <20200724012546.302155-20-viro@ZenIV.linux.org.uk> <20201014222650.GA390346@zx2c4.com>
  <CAHk-=wgTrpV=mT_EZF1BbWxqezrFJRJcaDtuM58qXMXk9=iaZA@mail.gmail.com>
 In-Reply-To: <CAHk-=wgTrpV=mT_EZF1BbWxqezrFJRJcaDtuM58qXMXk9=iaZA@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 14 Oct 2020 15:53:00 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wj_rmS+kQvC9DccZy=UiUFJVFG9=fQajtfSCSP1h0Rofw@mail.gmail.com>
-Message-ID: <CAHk-=wj_rmS+kQvC9DccZy=UiUFJVFG9=fQajtfSCSP1h0Rofw@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Thu, 15 Oct 2020 00:53:05 +0200
+X-Gmail-Original-Message-ID: <CAHmME9rbiFJ8hAqU+u4TJjiSeJRa_R_QUV5VF4NRHJHP=HjyQw@mail.gmail.com>
+Message-ID: <CAHmME9rbiFJ8hAqU+u4TJjiSeJRa_R_QUV5VF4NRHJHP=HjyQw@mail.gmail.com>
 Subject: Re: [PATCH v2 20/20] ppc: propagate the calling conventions change
  down to csum_partial_copy_generic()
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
 Cc:     Al Viro <viro@zeniv.linux.org.uk>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         linux-arch <linux-arch@vger.kernel.org>,
         Netdev <netdev@vger.kernel.org>
-Content-Type: multipart/mixed; boundary="000000000000abfabd05b1a965d0"
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000abfabd05b1a965d0
-Content-Type: text/plain; charset="UTF-8"
-
-On Wed, Oct 14, 2020 at 3:51 PM Linus Torvalds
+On Thu, Oct 15, 2020 at 12:51 AM Linus Torvalds
 <torvalds@linux-foundation.org> wrote:
+>
+> On Wed, Oct 14, 2020 at 3:27 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
+> >
+> > This patch is causing crashes in WireGuard's CI over at
+> > https://www.wireguard.com/build-status/ . Apparently sending a simple
+> > network packet winds up triggering refcount_t's warn-on-saturate code. I
+>
+> Ouch.
+>
+> The C parts look fairly straightforward, and I don't see how they
+> could cause that odd refcount issue.
+>
+> So I assume it's the low-level asm code conversion that is buggy. And
+> it's apparently the 32-bit conversion, since your ppc64 status looks
+> fine.
 >
 > I think it's this instruction:
 >
@@ -83,38 +77,8 @@ On Wed, Oct 14, 2020 at 3:51 PM Linus Torvalds
 > that should be removed from the function exit, because Al removed the
 >
 > -       stwu    r1,-16(r1)
->
-> on function entry.
->
-> So I think you end up with a corrupt stack pointer and basically
-> random behavior.
->
-> Mind trying that? (This is obviously all in
-> arch/powerpc/lib/checksum_32.S, the csum_partial_copy_generic()
-> function).
 
-Patch attached to make it easier to test.
+I just tried that about a minute ago, and indeed that seems to be
+what's up. Problem goes away without it. I'll send a patch shortly.
 
-NOTE! This is ENTIRELY untested. My ppc asm is so rusty that I might
-be barking entirely up the wrong tree, and I just made things much
-worse.
-
-                 Linus
-
---000000000000abfabd05b1a965d0
-Content-Type: application/octet-stream; name=patch
-Content-Disposition: attachment; filename=patch
-Content-Transfer-Encoding: base64
-Content-ID: <f_kg9zpmo10>
-X-Attachment-Id: f_kg9zpmo10
-
-IGFyY2gvcG93ZXJwYy9saWIvY2hlY2tzdW1fMzIuUyB8IDEgLQogMSBmaWxlIGNoYW5nZWQsIDEg
-ZGVsZXRpb24oLSkKCmRpZmYgLS1naXQgYS9hcmNoL3Bvd2VycGMvbGliL2NoZWNrc3VtXzMyLlMg
-Yi9hcmNoL3Bvd2VycGMvbGliL2NoZWNrc3VtXzMyLlMKaW5kZXggZWM1Y2QyZGVkZTM1Li4yN2Q5
-MDcwNjE3ZGYgMTAwNjQ0Ci0tLSBhL2FyY2gvcG93ZXJwYy9saWIvY2hlY2tzdW1fMzIuUworKysg
-Yi9hcmNoL3Bvd2VycGMvbGliL2NoZWNrc3VtXzMyLlMKQEAgLTIzNiw3ICsyMzYsNiBAQCBfR0xP
-QkFMKGNzdW1fcGFydGlhbF9jb3B5X2dlbmVyaWMpCiAJc2x3aQlyMCxyMCw4CiAJYWRkZQlyMTIs
-cjEyLHIwCiA2NjoJYWRkemUJcjMscjEyCi0JYWRkaQlyMSxyMSwxNgogCWJlcWxyKwljcjcKIAly
-bHdpbm0JcjMscjMsOCwwLDMxCS8qIG9kZCBkZXN0aW5hdGlvbiBhZGRyZXNzOiByb3RhdGUgb25l
-IGJ5dGUgKi8KIAlibHIK
---000000000000abfabd05b1a965d0--
+Jason
