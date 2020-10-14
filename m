@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A8B728DD40
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 11:26:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE61A28DDB6
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 11:33:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726491AbgJNJXS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 05:23:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39936 "EHLO
+        id S1727971AbgJNJc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 05:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729820AbgJNJXN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 05:23:13 -0400
+        with ESMTP id S1725960AbgJNJcu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 05:32:50 -0400
 Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2329C0613D9
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 02:20:42 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id e22so3829348ejr.4
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 02:20:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE3F7C061755
+        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 02:32:48 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id h24so3827010ejg.9
+        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 02:32:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cloudflare.com; s=google;
         h=references:user-agent:from:to:cc:subject:in-reply-to:date
          :message-id:mime-version;
-        bh=/WnbvhyGcptPPBaNZxdAo4mg51wxanwUK78khnzdGus=;
-        b=wzFripj/9LraAMEmzYAkjL1sotjg/tzxIUOn+3rAhgYLrFGhBppxP58Fj8lJk3Gn6f
-         QxLE5MOpTScSC67rQ7Y+wNjc6xZaYQ9QPsCqwz0rO1XIwgM+0wXdDQlLbNfLAo/aDtwN
-         8hhmK9wr8/zE8x05W8XeZ6xBYiKnxtZ9qgrbM=
+        bh=2Q2EXfY9q/OGGKRqeKKhw4ADQDGAvZJdTCK/YEvIMm4=;
+        b=OT4R4azZBe83H2jAFxtXzBAZ+lZSdmcLVCr2JZ/C592Oath74URYOWe8A/1jNOG8Kh
+         7Zr/5B9kixpwPUt31hr000uny9DfqH/D52Q4ddESsUWurzzDPOOSrjGerZySJtHeKdRv
+         IbzWx9790xp3fX2rE8MGogzVVRQ88EQaClvuQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:references:user-agent:from:to:cc:subject
          :in-reply-to:date:message-id:mime-version;
-        bh=/WnbvhyGcptPPBaNZxdAo4mg51wxanwUK78khnzdGus=;
-        b=KBeV8K9UeoB7cA7yRu95ZuhwFpzM2XhV0M0YfcpinhjNjNSj3ZT1nzXPAg39mjOMiy
-         Dhu2qLVQXVm7iqV377T375H/PrL4kiv0KTn1uEIFE2B790ojK7KjGGYVRiDC4YKbQJ0O
-         1jL+g237rjRBoxy+konUNUIbWXa+zcJ1+unxwgPv+T9/iR5e++eYNlQnYiOcguPS9F3W
-         NI1Gym9bMTs8eTDm+VykOfXRWqov8k0o69bUmyzTqlk0HQDatQYs9KyZFUoCXZi0tMRH
-         q1qkJ2nKsezYA2PulSqwgDhKn3aJkkOqTcABH+HA9soZpYTDblShVKyDoQr/fPTRpGXc
-         m3Xw==
-X-Gm-Message-State: AOAM533BMA+LDtvrAy3lQ01s6BMInfxs6oUtryxXRLpy6d6IkGRdDSqy
-        KCcIwdy5h9XzDYfX7um3+Ocxnw==
-X-Google-Smtp-Source: ABdhPJxUvxlmotUTKMITZb02Wylkh1sw157EQWmBLNMnqJxc/0hczSTt/IE/DTObQL8sz0hci2Atmg==
-X-Received: by 2002:a17:906:c015:: with SMTP id e21mr4156437ejz.432.1602667241168;
-        Wed, 14 Oct 2020 02:20:41 -0700 (PDT)
+        bh=2Q2EXfY9q/OGGKRqeKKhw4ADQDGAvZJdTCK/YEvIMm4=;
+        b=cvYsA6N6eI4lZ7b0sxz4q6+KvosyGjtfy/PWvx64F38vOV6XZSrHFAL4xunHFtYkDb
+         /gcrtKPz54LDK+n9S1t2ImQSfaitVQs5VXFW8/SI4UKBAcbHOV2CDQAzn+iN2sTKD7de
+         PiKVlQ98xOMDNo4KmY+Azf6XKqIn9VbxMtb3VNYAiViFGQlW7XY5JjvZffaKyocrIrt3
+         0MXD8llPQQiqeO7rkRmj7ticFpmFKcw9xSnLFR7ZmvasJKsWJCbkX5u8lLmEGSZPk89B
+         uImHgGijTIwf+NqT/Xn47WnzhmR2MTkYA4M4eRwgsiooCiSsFSAdFp4FKOG4VP8BCnDG
+         43mg==
+X-Gm-Message-State: AOAM532RHKViNfIA4NXF7qslUy1yrlYrsPTmwLruJrBAY0GCtsvG/q1Z
+        5Y9y3HdVYuOS+0H8GMxPyZYD5Q==
+X-Google-Smtp-Source: ABdhPJxjVAEFb20MNniWGcu/vedUiKayXCpuy0FwmpcpSpxWvQ7TYpYLJ8QYNDaxIR5qKoyrbGtUQQ==
+X-Received: by 2002:a17:906:c08f:: with SMTP id f15mr4220755ejz.97.1602667967489;
+        Wed, 14 Oct 2020 02:32:47 -0700 (PDT)
 Received: from cloudflare.com ([2a02:a310:c262:aa00:b35e:8938:2c2a:ba8b])
-        by smtp.gmail.com with ESMTPSA id bw25sm1326231ejb.119.2020.10.14.02.20.40
+        by smtp.gmail.com with ESMTPSA id a10sm1370276ejs.11.2020.10.14.02.32.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Oct 2020 02:20:40 -0700 (PDT)
+        Wed, 14 Oct 2020 02:32:46 -0700 (PDT)
 References: <20201012170952.60750-1-alex.dewar90@gmail.com>
 User-agent: mu4e 1.1.0; emacs 26.3
 From:   Jakub Sitnicki <jakub@cloudflare.com>
-To:     Alex Dewar <alex.dewar90@gmail.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenz Bauer <lmb@cloudflare.com>,
+To:     Daniel Borkmann <daniel@iogearbox.net>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     Alex Dewar <alex.dewar90@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andrii@kernel.org>,
@@ -61,8 +61,8 @@ Cc:     John Fastabend <john.fastabend@gmail.com>,
         bpf@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH] net: sockmap: Don't call bpf_prog_put() on NULL pointer
 In-reply-to: <20201012170952.60750-1-alex.dewar90@gmail.com>
-Date:   Wed, 14 Oct 2020 11:20:39 +0200
-Message-ID: <878sc9qi3c.fsf@cloudflare.com>
+Date:   Wed, 14 Oct 2020 11:32:45 +0200
+Message-ID: <877drtqhj6.fsf@cloudflare.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Precedence: bulk
@@ -79,4 +79,8 @@ On Mon, Oct 12, 2020 at 07:09 PM CEST, Alex Dewar wrote:
 > Signed-off-by: Alex Dewar <alex.dewar90@gmail.com>
 > ---
 
-Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
+Note to maintainers: the issue exists only in bpf-next where we have:
+
+  https://lore.kernel.org/bpf/160239294756.8495.5796595770890272219.stgit@john-Precision-5820-Tower/
+
+The patch also looks like it is supposed to be applied on top of the above.
