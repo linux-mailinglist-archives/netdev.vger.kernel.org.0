@@ -2,252 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A309A28E93B
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 01:38:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B7B728E942
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 01:50:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731954AbgJNXiH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 19:38:07 -0400
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:37184 "EHLO
-        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730418AbgJNXiH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 19:38:07 -0400
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20201014233755euoutp01c48df94a0929244804b5d56e52f7d3e0~_ACTRpr2-1967919679euoutp01r;
-        Wed, 14 Oct 2020 23:37:55 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20201014233755euoutp01c48df94a0929244804b5d56e52f7d3e0~_ACTRpr2-1967919679euoutp01r
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1602718675;
-        bh=yjula7OfEd/uB0RdF9ta8z1msioiis5pg69uBSunAEw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RidZvdVbc+UyqpjA9EUFhcnsKbHJPGkOklux38JmvS4AsLVLYMYOk0JweWwo/6hKK
-         6d14kbzWJAesKt6pw2VWjW4HuO0pt2YTfR1lO6z+aHQgXNPhJaj2O+FaMBNHApYOpW
-         zhd+DwsAuW3aSBiGsdueFzhOYjtisXtPEn7Q7Ryk=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20201014233750eucas1p26fd94b72dade73713380cb98cad3e049~_ACOKNH8u2579825798eucas1p2j;
-        Wed, 14 Oct 2020 23:37:50 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id EF.61.06318.DCB878F5; Thu, 15
-        Oct 2020 00:37:49 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20201014233749eucas1p239bd9b81aca3ddaa1d589ffeed930a08~_ACNPXmIV2469124691eucas1p2s;
-        Wed, 14 Oct 2020 23:37:49 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20201014233749eusmtrp234f07b92de96146f5d0f5110c7a73cb1~_ACNOuGzB3097330973eusmtrp2g;
-        Wed, 14 Oct 2020 23:37:49 +0000 (GMT)
-X-AuditID: cbfec7f5-371ff700000018ae-73-5f878bcdafa1
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id 8D.6B.06017.CCB878F5; Thu, 15
-        Oct 2020 00:37:48 +0100 (BST)
-Received: from localhost (unknown [106.120.51.46]) by eusmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20201014233748eusmtip2cb9f04d90b568a5c688c4816ec03f919~_ACNEgK973170831708eusmtip2O;
-        Wed, 14 Oct 2020 23:37:48 +0000 (GMT)
-From:   Lukasz Stelmach <l.stelmach@samsung.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?utf-8?Q?Bart=C5=82omiej_=C5=BBolnierkiewicz?= 
-        <b.zolnierkie@samsung.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH] net: phy: Prevent reporting advertised modes when
- autoneg is off
-Date:   Thu, 15 Oct 2020 01:37:37 +0200
-In-Reply-To: <20201014220434.GR1551@shell.armlinux.org.uk> (Russell King's
-        message of "Wed, 14 Oct 2020 23:04:34 +0100")
-Message-ID: <dleftj8sc8751a.fsf%l.stelmach@samsung.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S1732050AbgJNXuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 19:50:17 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:31852 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729327AbgJNXuR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 19:50:17 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09ENj8V3011371;
+        Wed, 14 Oct 2020 16:50:02 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=AqNoZwDDORsiJRveirr4WO9UHLTuRLsiMjzTFHoxfv0=;
+ b=ApbmndnCTLKlcVzS4ZOLEr3JV0WsL1Q5IRSJBDffU5UPJGneTVS9Fn/E06htHy7gtYg8
+ 4wmLiSfWp3+qe0qBYQSkn90NMPKAsVr1bq3hgwPVndDPddyg8G+LCvTEax8ksyCNXH8b
+ hLI+QK3kSp/p4TQ3u9SbN1aKjA3PQbSWd8s= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 345pwsp1b1-6
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 14 Oct 2020 16:50:02 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 14 Oct 2020 16:50:00 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZDNrhbwXhX8Bzb4uQhql4m3SX4GWtMsugmyTeVwfuxldl9zaRdHoqHptMyD+jEs3HIZBGBnu9Eo0JSqHizf6cRfIGcQxC8KnXzyFNCICK1QJPCqIpKzkJ5maxzla5s7jeh0x9QhGmkWvSwRiXiu67L722w+9HseXTUqKI8x4bR7Usv/pNA/bJaHgYyUWM988t3AwR6tYLu82nnamDF3wzdRXAsen6VqgImxuKjOpzww3YU8fzbzkeTbpk5nF9uQXIspJ5+Bqg3ZVto5n0mzlwg/IHyxsgXev9oNyNODeZXi1jKA5IWZJiS/RUNN+sy88cl7zgiBByubDiqunEUAPsQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AqNoZwDDORsiJRveirr4WO9UHLTuRLsiMjzTFHoxfv0=;
+ b=kLVY4Rc4mcZjExxbfW+fB+7Sm6khgNinV+hb4ulIk5gnobIcL3zn3JboC5/17lNHi0FsYTeFmrhOosU6FKR5mlKbRWYf1l6pOZKYmIrRX315bzOnU6mvBliaGxuN1Bjll2pZBsRD91wutuJlWOgoxKMm9aj0VbKZVk+Mz2P1oymrQHVwCmIMKmfBRuVEywS6ed+SsO4HKwxHiaIu6rhzeD6d8MUOOFREf5VaZ7VJg/Gdqgr6pssvmxUoa9gvskZGeQz+Y4AQFcm0wPdpl9x8y5MrxccjopW0INvWMsxYp1boDclS0zOySNyXE0RxukqtgZrUdI4SsYI9SN6Ut8FXcQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AqNoZwDDORsiJRveirr4WO9UHLTuRLsiMjzTFHoxfv0=;
+ b=MYJyvpTOQwPRZ7bfKjnAdY0EBmlD4TWU2+MFllOeKh3SdG2YaUOgi4PnVXxxdNauR6y6zITq/6FyZM13LjGjRo8yMDVHqWsn7Im95O8juDO2Hsk+kCE92girWyv/CfYj5JUHFHnp5WTC6zUsDdQ95mgPC9d/q5B3XVhfgeS1abI=
+Authentication-Results: virtuozzo.com; dkim=none (message not signed)
+ header.d=none;virtuozzo.com; dmarc=none action=none header.from=fb.com;
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB2198.namprd15.prod.outlook.com (2603:10b6:a02:8d::26) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.22; Wed, 14 Oct
+ 2020 23:49:59 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::8887:dd68:f497:ea42]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::8887:dd68:f497:ea42%3]) with mapi id 15.20.3455.030; Wed, 14 Oct 2020
+ 23:49:59 +0000
+Subject: Re: [PATCH net v3] net: fix pos incrementment in ipv6_route_seq_next
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+CC:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Vasily Averin <vvs@virtuozzo.com>
+References: <20201014144612.2245396-1-yhs@fb.com>
+ <CAEf4BzZ4J-c-ODnBD3C8NJeeLOdCqLWvFadWXR8t9eFKaGZOvw@mail.gmail.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <3fcfa6c6-9229-7500-df06-64fbb7dfb01d@fb.com>
+Date:   Wed, 14 Oct 2020 16:49:53 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.1
+In-Reply-To: <CAEf4BzZ4J-c-ODnBD3C8NJeeLOdCqLWvFadWXR8t9eFKaGZOvw@mail.gmail.com>
+Content-Language: en-US
+X-Originating-IP: [2620:10d:c091:480::1:2a8a]
+X-ClientProxiedBy: MN2PR08CA0026.namprd08.prod.outlook.com
+ (2603:10b6:208:239::31) To BYAPR15MB4088.namprd15.prod.outlook.com
+ (2603:10b6:a02:c3::18)
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c0a8:11c9::138b] (2620:10d:c091:480::1:2a8a) by MN2PR08CA0026.namprd08.prod.outlook.com (2603:10b6:208:239::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.21 via Frontend Transport; Wed, 14 Oct 2020 23:49:57 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4f4b185e-ad33-4cee-b427-08d8709bdc6e
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2198:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB21981153BF8D3A8D6A1FEF5ED3050@BYAPR15MB2198.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:529;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: BdxKfxTk4dU88kNTDNHF6x6LX7+2g7Jk40LhwJPgBAd1XxtAmTnc5YYeSmc48hquRMBvfA/V7qmfrLMtcS6A1JOKMSmfZK7cDemRN4buazmEeJ/51YRCeXJS6tFSMU42iPltS8CpkSVEBd4As7IZu3U1SnjCgdDP8DUaNhTdlX6POvDpZk7r+vKSiQlYaaHbitA5VCz/IWkTPIZxdNkEY3ZpxcsmrKdTufJmD14/DQwi4dbWCh29zwJsFV4drq/kPz34FPDsc3hu0puTcqp62WhixvIPAz0a+rst72OL5diKMcpk7G6jVfrckeLCMhPzX12lzc8lbt/EPT/Z9OPZxcHIWh3cFxSzpC5Z0hlgN03X/UNa9xgKbjLvQrPHVfhBrMr798oQNyY+7GrICrIIARr/O0gNchaiNmXoivoSEFSiSwj17bQ99jpPJkTTXG/3m9/UMj/lonyL0N9OmvCuNQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(396003)(39860400002)(366004)(376002)(136003)(478600001)(66946007)(66476007)(66556008)(86362001)(4326008)(53546011)(52116002)(6486002)(2906002)(16526019)(186003)(316002)(2616005)(54906003)(966005)(31696002)(8936002)(5660300002)(6666004)(36756003)(6916009)(83080400001)(8676002)(31686004)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: yIKvdK6BE/WjNyOK+zCuyDk6aj42447OmRIz+xe2eichbaPjmnKL8lAyFwz6mBnlMUNLwZ0RTWyZTT7rkUG7nGqZej1BG2rV1p+Ai8WMiUXyf3xVyNKXAFJaj6kcH0Y5EHenjEAQSwP6dxSS+kJw0eOuQrDl9ppP43kBpL7cNjLnOgCjxhgr+aaSF1cKTIt6g6Kq0Z5NVaZMdHKilsTa5fXp8KiP+qs/99MQCRR9n1Qra4p69IDOG2Vl4j63U0XwivXzHnw6cqSzJVMkq/YHUXj2+20NmBHDwDSVJ4XoGh48Wiq6sdichVDU++kOAQTT2YyyvJWk5l1oBlkYUp9IGS2dQed8Bk4mJsQh1N+UHBxfTWwaxl8HNcQI2QzAGrIQL+8kBxEolsKYnhGg/J86EF98nPTJChx168Cj6oliewtOvfFleP3i1ptyoo+c9JNpO4bjWjhlKReAbOBySl4ndA+9JeN8komjwjhswOwqd1JK42YQs1v3nrqH25SHgfxfTXycCy1uVHsLG0N9Xak2f1McV96c66MTBRbHIMXlshx3H3XzOJDJlTEfa5ifx9QVEYzPKWTEZ8pWPOw76BXbK+O5yxamI3OEXBTRvFo/SzYhw7cIOs29msIqzwm7Vh2s5YW3f40rjjN01S40FmfEt8ioJGssuDxI8BhsXZQmQiA=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4f4b185e-ad33-4cee-b427-08d8709bdc6e
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2020 23:49:59.5488
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sol8tT4sVFbuMMrkrXw5XILYBVknNq7IrZm6D2jylwtiQU3jNQbXZRJDrLsZSDoX
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2198
+X-OriginatorOrg: fb.com
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-="; micalg="pgp-sha256";
-        protocol="application/pgp-signature"
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Se0hTURzHObt323W5OC7LH8tes3ekmVk3s5f6x4WohIIiKlt505HbYjct
-        /SMlSpepWWKPJa2EUic+EpuuptHIWYpNMSMzsSKotOyxIp2P8nYn+N/nfM/n/H7ndzgUoegU
-        KymN7gRr0KmTVBIZaXUOu1a2XciKW/XKGUG7eh0Efe9alZgucp0l6eJv18R0uzVPTHc+KJLQ
-        jsIGRFc86ZXSzluztvgwnS87CKa2rFvE2Ey9UqbGcl7C2OrdIiav1oIYd83cWOk+WWQ8m6RJ
-        YQ0hmw7JEivPvRUdL11+ytJ4icxA9QuykQ8FeA18t1yRZiMZpcClCMo9PRJh8QuBpylTzFsK
-        7EbQ1L138sTPMxleqQSBue6GV/qIwD2kzUYUJcHBUFGxl0d/HAHtOUt5ncAuETjfGSW8PgPv
-        gR+5YwTPJF4E5ke3Sd73wWngLpHxsRyvA9NvD8nzTLweaj/1SYXcD55d//A/J7AWrru+IL4+
-        4PdS+GUbEwn3jIGswbekwDOgv7lWKnAg/LWZRXwvwOlQcHmtcDYHgbVoyOtvgDfPPRKBt0L+
-        UzsS/Onw6quf0Hc6XLZeJYRYDsZMhWAvhMqLdm8VJeT2lyKBGXhs/kAIr5aL4E5zK5mP5pum
-        jGOaMo5poiyBl0HVgxAhXgF3bw8QAm+Eyspv5C0ktqAANpnTJrBcmI49GcyptVyyLiH4iF5b
-        gya+V+t48+961Dh62IEwhVS+8tKhzDiFWJ3CpWodaOFEpffV5e1ISer0OlblL49qaz2okMer
-        U9NYgz7OkJzEcg40myJVAfKw4s8HFDhBfYI9xrLHWcPkrojyUWYgpiVvZ+Gc8hWtg0H+m9ty
-        b9YYX4/Up9U5Y06u3nXatju64Xu0+b61Z95F34f2LlNLZN+OF5DfH9rhihnZ4WQ045heUIZG
-        3/lOK4ni6PSq8PjOoy2a7Wnbhwer11UHxRZqwu8vthdELsnoCldaUgYCQ36cStjG6f8Uh22p
-        6wjbb1SRXKI6dDlh4NT/AP2i+/NmAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrNIsWRmVeSWpSXmKPExsVy+t/xe7pnutvjDRqn2licv3uI2WLjjPWs
-        FnPOt7BYLHo/g9XiwrY+VovLu+awWRyaupfRYu2Ru+wWxxaIOXB6XL52kdljy8qbTB47Z91l
-        99i0qpPNY+eOz0wefVtWMXp83iQXwB6lZ1OUX1qSqpCRX1xiqxRtaGGkZ2hpoWdkYqlnaGwe
-        a2VkqqRvZ5OSmpNZllqkb5egl7Gu9QFTwQqtilX7JrI0MO5Q7GLk5JAQMJH41NTA1sXIxSEk
-        sJRR4t+qm8xdjBxACSmJlXPTIWqEJf5c64KqecoosePNNRaQGjYBPYm1ayNATBEBK4kLPRog
-        JcwCF5kk2u6+ZQWJCwuEStxapgYyRkjAUuLM04XsIDaLgKrE/P0LwaZwClRJfF7OBRLmFTCX
-        mPX1FwuILQpUvuXFfXaIuKDEyZlPwOLMAtkSX1c/Z57AKDALSWoWktQsoKnMApoS63fpQ4S1
-        JZYtfM0MYdtKrFv3nmUBI+sqRpHU0uLc9NxiI73ixNzi0rx0veT83E2MwMjbduznlh2MXe+C
-        DzEKcDAq8fAy/G6LF2JNLCuuzD3EqAI05tGG1RcYpVjy8vNSlUR4nc6ejhPiTUmsrEotyo8v
-        Ks1JLT7EaAr05kRmKdHkfGCyyCuJNzQ1NLewNDQ3Njc2s1AS5+0QOBgjJJCeWJKanZpakFoE
-        08fEwSnVwKjjx7OyI1etKNa5ZpZXp+P8W7cWn73Ull+5XTBxZ3OfyKU3pkn8rEZZ901ym/3d
-        hOpiUq1Ut/U083qp3yyrq3v/Pkyy4dNyl83JwdH94uZF/8/388+8Ji+mr9K8bbmRdvovQ4Vu
-        M6YN3232FTF8VFq+6NjUoFgOvTi2336RppLM2o6reEWVWIozEg21mIuKEwETwyrH3gIAAA==
-X-CMS-MailID: 20201014233749eucas1p239bd9b81aca3ddaa1d589ffeed930a08
-X-Msg-Generator: CA
-X-RootMTR: 20201014233749eucas1p239bd9b81aca3ddaa1d589ffeed930a08
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20201014233749eucas1p239bd9b81aca3ddaa1d589ffeed930a08
-References: <20201014220434.GR1551@shell.armlinux.org.uk>
-        <CGME20201014233749eucas1p239bd9b81aca3ddaa1d589ffeed930a08@eucas1p2.samsung.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-10-14_12:2020-10-14,2020-10-14 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
+ adultscore=0 phishscore=0 priorityscore=1501 mlxlogscore=999
+ impostorscore=0 malwarescore=0 lowpriorityscore=0 mlxscore=0 bulkscore=0
+ suspectscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2010140165
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-
-It was <2020-10-14 =C5=9Bro 23:04>, when Russell King - ARM Linux admin wro=
-te:
-> On Wed, Oct 14, 2020 at 04:39:47PM +0200, Lukasz Stelmach wrote:
->> It was <2020-10-14 =C5=9Bro 14:32>, when Russell King - ARM Linux admin =
-wrote:
->> > In any case, the mii.c code does fill in the advertising mask even
->> > when autoneg is disabled, because, rightly or wrongly, the advertising
->> > mask contains more than just the link modes, it includes the
->> > interface(s) as well. Your change means phylib no longer reports the
->> > interface modes which is at odds with the mii.c code.
->>=20
->> I am afraid you are wrong. There is a rather big if()[1], which
->> depending on AN beeing enabled fills more or less information. Yes this
->> if() looks like it has been yanked from mii_ethtool_gset(). When
->> advertising is converted and copied to cmd->link_modes.advertising at
->> the end of mii_ethtool_get_link_ksettings() it is 0[2] if autonegotiation
->> is disabled.
->>=20
->> [1]
->> https://protect2.fireeye.com/v1/url?k=3Dd1d33944-8c07852c-d1d2b20b-0cc47=
-a3356b2-cede44db8a43e7c3&q=3D1&e=3Dd1dea895-d1df-46b9-8413-ac329b0bbfa7&u=
-=3Dhttps%3A%2F%2Felixir.bootlin.com%2Flinux%2Fv5.9%2Fsource%2Fdrivers%2Fnet=
-%2Fmii.c%23L174
->> [2]
->> https://protect2.fireeye.com/v1/url?k=3Dc840e942-9594552a-c841620d-0cc47=
-a3356b2-510c0749446ea7df&q=3D1&e=3Dd1dea895-d1df-46b9-8413-ac329b0bbfa7&u=
-=3Dhttps%3A%2F%2Felixir.bootlin.com%2Flinux%2Fv5.9%2Fsource%2Fdrivers%2Fnet=
-%2Fmii.c%23L215
->
-> I'm very sorry, but I have to disagree.  I'll quote the code here:
->
->         advertising =3D ADVERTISED_TP | ADVERTISED_MII;
->
-> 	// This is your big if()
->         if (bmcr & BMCR_ANENABLE) {
-> 		advertising |=3D ADVERTISED_Autoneg;
-> 		...
-> 	} else {
-> 		...
-> 	}
->
-> 	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.advertising,
-> 	                                        advertising);
->
-> So, when AN is disabled, we still end up with TP and MII in the
-> advertised link modes. I call TP and MII "interface modes" above
-> to separate them from the "link modes" that describe the speed and
-> duplex etc.
-
-Yes.
-
-> Note that only lp_advertising is zeroed in the "else" clause of
-> the above "if" statement - advertising remains as-is with TP and MII
-> set.
-
-Yes.
-
-> Your patch, on the other hand, merely avoids setting anything in
-> cmd->link_modes.advertising, which means we do not end up with the
-> "interface modes".
->
-> I hope that this helps you see my point.
-
-Yes.
-
-Thanks.
-
-tl;dr: v2 is coming.
-
-Let's take a look at what ethtool prints. With AN enabled
-
-=2D-8<---------------cut here---------------start------------->8---
-Settings for enx00249b14f06e:
-        Supported ports: [ TP MII ]
-        Supported link modes:   10baseT/Half 10baseT/Full=20
-                                100baseT/Half 100baseT/Full=20
-                                1000baseT/Half 1000baseT/Full=20
-        Supported pause frame use: No
-        Supports auto-negotiation: Yes
-        Supported FEC modes: Not reported
-        Advertised link modes:  10baseT/Half 10baseT/Full=20
-                                100baseT/Half 100baseT/Full=20
-                                1000baseT/Full=20
-        Advertised pause frame use: Symmetric
-        Advertised auto-negotiation: Yes
-
-[...]
-
-        Link detected: yes
-=2D-8<---------------cut here---------------end--------------->8---
-
-with AN disabled
-
-=2D-8<---------------cut here---------------start------------->8---
-Settings for enx00249b14f06e:
-        Supported ports: [ TP MII ]
-        Supported link modes:   10baseT/Half 10baseT/Full=20
-                                100baseT/Half 100baseT/Full=20
-                                1000baseT/Half 1000baseT/Full=20
-        Supported pause frame use: No
-        Supports auto-negotiation: Yes
-        Supported FEC modes: Not reported
-        Advertised link modes:  Not reported
-        Advertised pause frame use: No
-        Advertised auto-negotiation: No
-
-[...]
-
-        Link detected: yes
-=2D-8<---------------cut here---------------end--------------->8---
-
-The driver is ax88179_178a which calls mii_ethtool_get_link_ksettings()
-
-The first line that differs is "Advertised link modes". Apparently[1]
-ethtool does not consider ADVERTISED_TP and ADVERTISED_MII as
-interesting modes. Indeed I should add an else clause to clear
-cmd->link_modes.advertising (and lp_advertising) and set only
-ETHTOOL_LINK_MODE_TP_BIT and ETHTOOL_LINK_MODE_MII_BIT.
 
 
-[1] https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/tree/ethtool=
-.c?h=3Dv5.8#n656
-=2D-=20
-=C5=81ukasz Stelmach
-Samsung R&D Institute Poland
-Samsung Electronics
+On 10/14/20 4:14 PM, Andrii Nakryiko wrote:
+> On Wed, Oct 14, 2020 at 2:53 PM Yonghong Song <yhs@fb.com> wrote:
+>>
+>> Commit 4fc427e05158 ("ipv6_route_seq_next should increase position index")
+>> tried to fix the issue where seq_file pos is not increased
+>> if a NULL element is returned with seq_ops->next(). See bug
+>>    https://bugzilla.kernel.org/show_bug.cgi?id=206283
+>> The commit effectively does:
+>>    - increase pos for all seq_ops->start()
+>>    - increase pos for all seq_ops->next()
+>>
+>> For ipv6_route, increasing pos for all seq_ops->next() is correct.
+>> But increasing pos for seq_ops->start() is not correct
+>> since pos is used to determine how many items to skip during
+>> seq_ops->start():
+>>    iter->skip = *pos;
+>> seq_ops->start() just fetches the *current* pos item.
+>> The item can be skipped only after seq_ops->show() which essentially
+>> is the beginning of seq_ops->next().
+>>
+>> For example, I have 7 ipv6 route entries,
+>>    root@arch-fb-vm1:~/net-next dd if=/proc/net/ipv6_route bs=4096
+>>    00000000000000000000000000000000 40 00000000000000000000000000000000 00 00000000000000000000000000000000 00000400 00000001 00000000 00000001     eth0
+>>    fe800000000000000000000000000000 40 00000000000000000000000000000000 00 00000000000000000000000000000000 00000100 00000001 00000000 00000001     eth0
+>>    00000000000000000000000000000000 00 00000000000000000000000000000000 00 00000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo
+>>    00000000000000000000000000000001 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000003 00000000 80200001       lo
+>>    fe800000000000002050e3fffebd3be8 80 00000000000000000000000000000000 00 00000000000000000000000000000000 00000000 00000002 00000000 80200001     eth0
+>>    ff000000000000000000000000000000 08 00000000000000000000000000000000 00 00000000000000000000000000000000 00000100 00000004 00000000 00000001     eth0
+>>    00000000000000000000000000000000 00 00000000000000000000000000000000 00 00000000000000000000000000000000 ffffffff 00000001 00000000 00200200       lo
+>>    0+1 records in
+>>    0+1 records out
+>>    1050 bytes (1.0 kB, 1.0 KiB) copied, 0.00707908 s, 148 kB/s
+>>    root@arch-fb-vm1:~/net-next
+>>
+>> In the above, I specify buffer size 4096, so all records can be returned
+>> to user space with a single trip to the kernel.
+>>
+>> If I use buffer size 128, since each record size is 149, internally
+>> kernel seq_read() will read 149 into its internal buffer and return the data
+>> to user space in two read() syscalls. Then user read() syscall will trigger
+>> next seq_ops->start(). Since the current implementation increased pos even
+>> for seq_ops->start(), it will skip record #2, #4 and #6, assuming the first
+>> record is #1.
+>>
+>>    root@arch-fb-vm1:~/net-next dd if=/proc/net/ipv6_route bs=128
+> 
+> Did you test with non-zero skip= parameter as well (to force lseek)?
+> To make sure we don't break the scenario that original fix tried to
+> fix.
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+I did with skip=1 and it won't show the last line any more. And I
+did not really change that logic (increasing pos even when returning 
+NULL for seq_ops->next()).
 
------BEGIN PGP SIGNATURE-----
+> 
+> If that works:
+> 
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> 
+> [...]
+> 
+>> diff --git a/net/ipv6/ip6_fib.c b/net/ipv6/ip6_fib.c
+>> index 141c0a4c569a..605cdd38a919 100644
+>> --- a/net/ipv6/ip6_fib.c
+>> +++ b/net/ipv6/ip6_fib.c
+>> @@ -2622,8 +2622,10 @@ static void *ipv6_route_seq_start(struct seq_file *seq, loff_t *pos)
+>>          iter->skip = *pos;
+>>
+>>          if (iter->tbl) {
+>> +               loff_t p = 0;
+>> +
+>>                  ipv6_route_seq_setup_walk(iter, net);
+>> -               return ipv6_route_seq_next(seq, NULL, pos);
+>> +               return ipv6_route_seq_next(seq, NULL, &p);
+> 
+> nit: comment here wouldn't hurt for the next guy stumbling upon this
+> code and wondering why we ignore p afterwards
 
-iQEzBAEBCAAdFiEEXpuyqjq9kGEVr9UQsK4enJilgBAFAl+Hi8EACgkQsK4enJil
-gBDeCgf/bw8HiDrt4YimUVEQSKuWqldHTtHuZWvB7Jo2ao/DRC619p9uF6nudVIb
-/TeG+5xt5EqD9+U95LwcWxIq668CQd+ZnYQiq01R9Yrqlw+awafB52mzEUvPntff
-tdJTbrTtwgDfdcJd1RCNmPPl6om3ohgImVGltOX7nnE2ubdbZewrU4ZrUeoJrujX
-084Jew5vvrMkAmx8YuU/z6kZ+u8j8XKggsDGvnDvTw7jYXTACSSipz4UoZPpRKcG
-RLoAVgupK/KwmfO2caYK9Z5wVHs4584NKiB6NbUgSpQQHKZvXQ0ZMVzly50em89h
-MvHfQAvFTqSwQ2EyqXssmzeOYAj87w==
-=YBhi
------END PGP SIGNATURE-----
---=-=-=--
+Typically you won't increase pos from seq_ops->start(). So I think
+we are fine here without comments.
+
+> 
+>>          } else {
+>>                  return NULL;
+>>          }
+>> --
+>> 2.24.1
+>>
