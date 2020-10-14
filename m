@@ -2,112 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EED6928E039
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 14:01:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62D3428E0A8
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 14:43:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730870AbgJNMBl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 08:01:41 -0400
-Received: from mail-il1-f198.google.com ([209.85.166.198]:40099 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730852AbgJNMBZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 08:01:25 -0400
-Received: by mail-il1-f198.google.com with SMTP id w12so2177898ilj.7
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 05:01:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=lmIzmeZ6JEWQDgHZewUQdQ9dPptB1ZZcDqf5FZlF1bk=;
-        b=dpKvoVZT6qR4qUGMqkfMndCgtVZvNX+wzp7QsvI6y6o3Rm3CtQv9joLQTyfRUXQT7/
-         YBjjSRccD3fxc11+NOZLW8KSK8MhsbQ/imEHkK1c2ls/ECv9NEOTRrtA1KiiA2uwBZo9
-         RRURW9QLAq+emQIC4hTb1w9D6dypPO0agFmF9yXHOFYlQgHULo2sCuDGxRPxo7lVR6Dh
-         YZ9fH1KHEIRxWyYSKQdBYyipAenZv2YM1Qzx7cnDM8R5nh3x0gj4fnFkHbSlZpsSJPlv
-         Ul+4mwo+Pbm/ZNUAzupv17TuQzOmxfKTAsvIBcyG5fsL2iEtva/xQ/jkUKNOPFTwAnKn
-         6tuw==
-X-Gm-Message-State: AOAM532usnYl6QTb5xMOXy2ju3S0QPZE0E64SfhMCDLOX/8lLFDbIrW4
-        OB9Kp5BKG1tbb0+3S8dJa1QG2mUGmyHd/Ech1GqSHb+KqXc4
-X-Google-Smtp-Source: ABdhPJwxwXpsyf+M34H12D2yHMek4dY1NS12qdkhRRVdenzAcTt5OFh2KYuHi+95LbnQEReIraQpf/x7N1z+T+WSv8Fs+3mNy73h
+        id S2387972AbgJNMnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 08:43:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44574 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727061AbgJNMni (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Oct 2020 08:43:38 -0400
+Received: from pali.im (pali.im [31.31.79.79])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8447720848;
+        Wed, 14 Oct 2020 12:43:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602679417;
+        bh=jW0i/QQSQbgHdq+AcCmwrK02JHOb8iHkGsSyJ9m/xxE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=D56R7MepUimHoXTW8BAKEcxBCdmFAGZZt2vGgj8O0TSMzweDfN+v2d/7pi1G2qKXs
+         EpH1ZWCUEhPzupaupQcWTnSQDXehpQ+tXteOJSA7dNuJNnf0OIJkbNasyMa/7KTgmH
+         b9SjangPukrd+RMj2fT+KfjxZzl9V8ekOr+Fy5gA=
+Received: by pali.im (Postfix)
+        id 190F66EE; Wed, 14 Oct 2020 14:43:35 +0200 (CEST)
+Date:   Wed, 14 Oct 2020 14:43:34 +0200
+From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
+To:     =?utf-8?B?SsOpcsO0bWU=?= Pouiller <jerome.pouiller@silabs.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-mmc@vger.kernel.org
+Subject: Re: [PATCH 07/23] wfx: add bus_sdio.c
+Message-ID: <20201014124334.lgx53qvtgkmfkepc@pali>
+References: <20201012104648.985256-1-Jerome.Pouiller@silabs.com>
+ <20201012104648.985256-8-Jerome.Pouiller@silabs.com>
+ <20201013201156.g27gynu5bhvaubul@pali>
+ <2628294.9EgBEFZmRI@pc-42>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:606:: with SMTP id g6mr2893807jar.0.1602676884566;
- Wed, 14 Oct 2020 05:01:24 -0700 (PDT)
-Date:   Wed, 14 Oct 2020 05:01:24 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000064f6cd05b1a04a2c@google.com>
-Subject: WARNING in __rate_control_send_low
-From:   syzbot <syzbot+fdc5123366fb9c3fdc6d@syzkaller.appspotmail.com>
-To:     clang-built-linux@googlegroups.com, davem@davemloft.net,
-        johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        natechancellor@gmail.com, ndesaulniers@google.com,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <2628294.9EgBEFZmRI@pc-42>
+User-Agent: NeoMutt/20180716
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wednesday 14 October 2020 13:52:15 Jérôme Pouiller wrote:
+> Hello Pali,
+> 
+> On Tuesday 13 October 2020 22:11:56 CEST Pali Rohár wrote:
+> > Hello!
+> > 
+> > On Monday 12 October 2020 12:46:32 Jerome Pouiller wrote:
+> > > +#define SDIO_VENDOR_ID_SILABS        0x0000
+> > > +#define SDIO_DEVICE_ID_SILABS_WF200  0x1000
+> > > +static const struct sdio_device_id wfx_sdio_ids[] = {
+> > > +     { SDIO_DEVICE(SDIO_VENDOR_ID_SILABS, SDIO_DEVICE_ID_SILABS_WF200) },
+> > 
+> > Please move ids into common include file include/linux/mmc/sdio_ids.h
+> > where are all SDIO ids. Now all drivers have ids defined in that file.
+> > 
+> > > +     // FIXME: ignore VID/PID and only rely on device tree
+> > > +     // { SDIO_DEVICE(SDIO_ANY_ID, SDIO_ANY_ID) },
+> > 
+> > What is the reason for ignoring vendor and device ids?
+> 
+> The device has a particularity, its VID/PID is 0000:1000 (as you can see
+> above). This value is weird. The risk of collision with another device is
+> high.
 
-syzbot found the following issue on:
+Those ids looks strange. You are from Silabs, can you check internally
+in Silabs if ids are really correct? And which sdio vendor id you in
+Silabs got assigned for your products?
 
-HEAD commit:    bbf5c979 Linux 5.9
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=12dc474f900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=3d8333c88fe898d7
-dashboard link: https://syzkaller.appspot.com/bug?extid=fdc5123366fb9c3fdc6d
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+I know that sdio devices with multiple functions may have different sdio
+vendor/device id particular function and in common CIS (function 0).
 
-Unfortunately, I don't have any reproducer for this issue yet.
+Could not be a problem that on one place is vendor/device id correct and
+on other place is that strange value?
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+fdc5123366fb9c3fdc6d@syzkaller.appspotmail.com
+I have sent following patch (now part of upstream kernel) which exports
+these ids to userspace:
+https://lore.kernel.org/linux-mmc/20200527110858.17504-2-pali@kernel.org/T/#u
 
-------------[ cut here ]------------
-no supported rates for sta (null) (0xffffffff, band 0) in rate_mask 0xfff with flags 0x20
-WARNING: CPU: 1 PID: 169 at net/mac80211/rate.c:349 __rate_control_send_low+0x4eb/0x5e0 net/mac80211/rate.c:349
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 1 PID: 169 Comm: kworker/u4:5 Not tainted 5.9.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: phy9 ieee80211_scan_work
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x198/0x1fd lib/dump_stack.c:118
- panic+0x382/0x7fb kernel/panic.c:231
- __warn.cold+0x20/0x4b kernel/panic.c:600
- report_bug+0x1bd/0x210 lib/bug.c:198
- handle_bug+0x38/0x90 arch/x86/kernel/traps.c:234
- exc_invalid_op+0x14/0x40 arch/x86/kernel/traps.c:254
- asm_exc_invalid_op+0x12/0x20 arch/x86/include/asm/idtentry.h:536
-RIP: 0010:__rate_control_send_low+0x4eb/0x5e0 net/mac80211/rate.c:349
-Code: 14 48 89 44 24 08 e8 d4 8d b0 f9 44 8b 44 24 24 45 89 e9 44 89 e1 48 8b 74 24 08 44 89 f2 48 c7 c7 40 24 5f 89 e8 b7 ca 80 f9 <0f> 0b e9 e0 fd ff ff e8 a9 8d b0 f9 41 83 cd 10 e9 02 fc ff ff e8
-RSP: 0018:ffffc900013f7688 EFLAGS: 00010282
-RAX: 0000000000000000 RBX: ffff88801e243468 RCX: 0000000000000000
-RDX: ffff8880a884e100 RSI: ffffffff815f5a55 RDI: fffff5200027eec3
-RBP: ffff88805f373148 R08: 0000000000000001 R09: ffff8880ae5318e7
-R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-R13: 0000000000000020 R14: 00000000ffffffff R15: 0000000000000090
- rate_control_send_low+0x261/0x610 net/mac80211/rate.c:374
- rate_control_get_rate+0x1b9/0x5a0 net/mac80211/rate.c:887
- ieee80211_tx_h_rate_ctrl+0xa0f/0x1660 net/mac80211/tx.c:749
- invoke_tx_handlers_early+0xaf3/0x25e0 net/mac80211/tx.c:1784
- ieee80211_tx+0x250/0x430 net/mac80211/tx.c:1926
- ieee80211_xmit+0x2dd/0x3b0 net/mac80211/tx.c:2015
- __ieee80211_tx_skb_tid_band+0x20a/0x290 net/mac80211/tx.c:5351
- ieee80211_tx_skb_tid_band net/mac80211/ieee80211_i.h:1986 [inline]
- ieee80211_send_scan_probe_req net/mac80211/scan.c:610 [inline]
- ieee80211_scan_state_send_probe+0x39f/0x910 net/mac80211/scan.c:638
- ieee80211_scan_work+0x6df/0x19e0 net/mac80211/scan.c:1071
- process_one_work+0x94c/0x1670 kernel/workqueue.c:2269
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2415
- kthread+0x3b5/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:294
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+Also for debugging ids and information about sdio cards, I sent another
+patch which export additional data:
+https://lore.kernel.org/linux-mmc/20200727133837.19086-1-pali@kernel.org/T/#u
 
+Could you try them and look at /sys/class/mmc_host/ attribute outputs?
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+> So, maybe the device should be probed only if it appears in the DT. Since
+> WF200 targets embedded platforms, I don't think it is a problem to rely on
+> DT. You will find another FIXME further in the code about that:
+> 
+> +               dev_warn(&func->dev,
+> +                        "device is not declared in DT, features will be limited\n");
+> +               // FIXME: ignore VID/PID and only rely on device tree
+> +               // return -ENODEV;
+> 
+> However, it wouldn't be usual way to manage SDIO devices (and it is the
+> reason why the code is commented out).
+> 
+> Anyway, if we choose to rely on the DT, should we also check the VID/PID?
+> 
+> Personally, I am in favor to probe the device only if VID/PID match and if
+> a DT node is found, even if it is not the usual way.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Normally all sdio devices are hotplugged in linux kernel based on sdio
+device and vendor ids. And these ids are unique identifiers of sdio
+devices. So should be enough for detection.
+
+Months ago I have checked it and moved all SDIO device and vendor ids
+into common include/linux/mmc/sdio_ids.h file. I would like to not have
+this "mess" again, which was basically fully cleaned.
+
+I'm adding linux-mmc mailing list and Ulf Hansson to loop.
+
+Ulf, can you look at this "problem"? What do you think about those
+"strange" sdio ids?
