@@ -2,81 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2843F28D979
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 07:13:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A382F28DC33
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 11:00:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730168AbgJNFNm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 01:13:42 -0400
-Received: from fallback23.m.smailru.net ([94.100.187.222]:34806 "EHLO
-        fallback23.mail.ru" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726037AbgJNFNm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 01:13:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=FvE4Wp1/kNY4p6zROGkWOcQX/gdhOS4+tJ7ouSp04Yc=;
-        b=WOciWWdrz8rlBeA+PsxAOmqZWx+kYxTegZ1WCfb20eoB+iKXisccX77PV7r0+ZHiK5xeYaZQNKcCVvUE7sa2r1nn4rJYepHvTi9omh2lX4zqbJX8jorrhd4CktUGjmXLy1zysskw1ZD1hIlaV5P2TBMG6v5csN7IrY7P6wdhgHI=;
-Received: from [10.161.64.60] (port=34582 helo=smtp52.i.mail.ru)
-        by fallback23.m.smailru.net with esmtp (envelope-from <fido_max@inbox.ru>)
-        id 1kSZ6Z-0000ey-14
-        for netdev@vger.kernel.org; Wed, 14 Oct 2020 08:13:39 +0300
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=FvE4Wp1/kNY4p6zROGkWOcQX/gdhOS4+tJ7ouSp04Yc=;
-        b=fCrx5JnCoIKWDUUf3qlPKP+yefTwxJ7AGvHshM60nA7ptV8uShTmwPbxkE4nAvhobZzTsWfg8HJOwCX0Pa51Ij9JxgBxLAP+q12ZMb8oYLhpyQU0Y6MS72eDiRM2HLwJWBkWzedI6B65yZxS28tDE/jqbwKDhgwMayguDDfstmA=;
-Received: by smtp52.i.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
-        id 1kSZ6U-0003Zi-Oa; Wed, 14 Oct 2020 08:13:35 +0300
-From:   Maxim Kochetkov <fido_max@inbox.ru>
-To:     netdev@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Maxim Kochetkov <fido_max@inbox.ru>
-Subject: [PATCH 1/1] net: dsa: seville: fix buffer size of the queue system
-Date:   Wed, 14 Oct 2020 08:14:04 +0300
-Message-Id: <20201014051404.13682-1-fido_max@inbox.ru>
-X-Mailer: git-send-email 2.27.0
+        id S1727743AbgJNI7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 04:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36780 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727731AbgJNI7h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 04:59:37 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 975F8C045858;
+        Tue, 13 Oct 2020 22:24:05 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id b69so1792944qkg.8;
+        Tue, 13 Oct 2020 22:24:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FTyZGQt5KuUq5z9rLb8JACAK351D3dXLreYGG/tKXVU=;
+        b=diIpUdpOtSV4sSvCBvKNWhs7ZVOX7jK4RnfEdeWAsCYaUrVPDszwPH83pDq7dic93M
+         yZTvemAoQO0OeJ4cCOCzW9b9XnJWVTXMTzXR6syLi296zlxl5d5ISSHGiOH3LAq/e0wE
+         A6tRFAlghW5ORpDgkkLGe73lZF3OEvkz6+OzI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FTyZGQt5KuUq5z9rLb8JACAK351D3dXLreYGG/tKXVU=;
+        b=QYF4aOXAq68706/NfF6eke7i7P9HUAUIv00n3GAg6I7saXu+yBX3Ij9bf2bFs5D4qo
+         SZtf5UOX9GBcM6OV6x6CnLiCWLt7VQmJ7FAeIY8rBZ1xKsOMT1f6TnbnNlI8NNeFoPNH
+         ZwmDNpi/2zyw2G/CsrJ0CEVcv18l77bGP6lGlFE+DPcX0oOXKXFHB3asgyY0F8kb24GE
+         EyrqxpAWSgf9M/G8jMtsa+b4bcEhhCXInpwfAEuBs5PHsxLT4Osd+8hM4VIZRT0+llRm
+         8v50zLWF8pIRmgTmkVHlHXebxV3PUYsuUAoFHH1gfECzuoo5CH+O+0j3buo94KvWbJWe
+         TQKQ==
+X-Gm-Message-State: AOAM532CV+oIsVsKlJ2u6FVrPWnQbMeKwY0dFf18Gc4wiaKLhMw8l7a7
+        w0GkMl3HM8opdIgztd57l18Gw4vSgtvAXdFOIYM=
+X-Google-Smtp-Source: ABdhPJysj5Reu8MnR7DVpnqtn6pSEkgSjtKEx/emy7+JdxFCEd4IAp6Iy3iA6zABlbBgCs7XqY/4pg0ZdaFQnK8vO7M=
+X-Received: by 2002:a37:4a4d:: with SMTP id x74mr3469230qka.55.1602653044494;
+ Tue, 13 Oct 2020 22:24:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-7564579A: B8F34718100C35BD
-X-77F55803: 4F1203BC0FB41BD9E98D729206725230EC4711DECE1C9CA05A4415BA10E9EF16182A05F538085040811F65267938B92C9A30B7DB8A4E398789E48A62ACD588DCDE9275158327C653
-X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE7C2204D4F9A221771EA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F7900637BFD6B3F1638522B88638F802B75D45FF5571747095F342E8C7A0BC55FA0FE5FC2087ACAB37DAB0D2CAB0E13B9D68A988CB1759BB24508E68389733CBF5DBD5E913377AFFFEAFD269176DF2183F8FC7C0998E19D2343267C68941B15DA834481FCF19DD082D7633A0E7DDDDC251EA7DABA471835C12D1D977725E5C173C3A84C3E478A468B35FE767117882F4460429728AD0CFFFB425014E592AE0A758652A3D76E601842F6C81A19E625A9149C048EEC24E1E72F37C03A045B9AC499A3C791CD8FC6C240DEA76429449624AB7ADAF37B2D370F7B14D4BC40A6AB1C7CE11FEE3A2475C18617057EEC0837EA9F3D19764C4224003CC8364767A15B7713DBEF166A7F4EDE966BC389F9E8FC8737B5C22499D4858787C9230AF089D37D7C0E48F6CCF19DD082D7633A0E7DDDDC251EA7DABAAAE862A0553A39223F8577A6DFFEA7C9B0A0C6A10C20F7843847C11F186F3C5E7DDDDC251EA7DABCC89B49CDF41148FA8EF81845B15A4842623479134186CDE6BA297DBC24807EABDAD6C7F3747799A
-X-C8649E89: 4A0499F02C53FFFBC8C105306EB89D6563807AC32179C7EE1B5C02BBA05BFC995E41AAE8B1B653A6
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojwfNTBk2YwQGM3JyaSK1R0g==
-X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB241621DC53371021360058C89663E70EEF94D938EB43ACFE1EEE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
-X-7564579A: 646B95376F6C166E
-X-77F55803: 6242723A09DB00B4033B2E76A2A2E7F3D7C40938B5608F3039AD8672D1456623049FFFDB7839CE9E1E474B3F1C45560A5B9D6639531B2DE067F16DC87AC06DEDA6F10619B8C24295
-X-7FA49CB5: 0D63561A33F958A529DFC01B6E46FDA1617621F7D06E9EE145A75973B56231AD8941B15DA834481FA18204E546F3947C540F9B2D9BA47D56F6B57BC7E64490618DEB871D839B7333395957E7521B51C2545D4CF71C94A83E9FA2833FD35BB23D27C277FBC8AE2E8B2EE5AD8F952D28FBA471835C12D1D977C4224003CC8364765529D5D60078C743D81D268191BDAD3DC09775C1D3CA48CF26163BE27A4E3063BA3038C0950A5D36C8A9BA7A39EFB7668729DE7A884B61D135872C767BF85DA29E625A9149C048EE1B544F03EFBC4D5789424AA0EF8DE9BA4AD6D5ED66289B524E70A05D1297E1BB35872C767BF85DA227C277FBC8AE2E8B6435C1528B3C0E0675ECD9A6C639B01B4E70A05D1297E1BBC6867C52282FAC85D9B7C4F32B44FF57285124B2A10EEC6C00306258E7E6ABB4E4A6367B16DE6309
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojwfNTBk2YwQEPM+BNKsMRqA==
-X-Mailru-MI: 800
-X-Mailru-Sender: A5480F10D64C90051B732BAF0E936B4216FA1D8B945B97B86C93F2C7EEC250A7199531D441672C9AC099ADC76E806A99D50E20E2BC48EF5A30D242760C51EA9CEAB4BC95F72C04283CDA0F3B3F5B9367
-X-Mras: Ok
+References: <20201013124014.2989-1-i.mikhaylov@yadro.com> <20201013124014.2989-2-i.mikhaylov@yadro.com>
+In-Reply-To: <20201013124014.2989-2-i.mikhaylov@yadro.com>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Wed, 14 Oct 2020 05:23:52 +0000
+Message-ID: <CACPK8Xd_gCVjVm13O85+mnZ4VbhQorG4qiy+mVevrvyCbPg9XQ@mail.gmail.com>
+Subject: Re: [PATCH 1/1] net: ftgmac100: add handling of mdio/phy nodes for ast2400/2500
+To:     Ivan Mikhaylov <i.mikhaylov@yadro.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Po-Yu Chuang <ratbert@faraday-tech.com>,
+        netdev@vger.kernel.org,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The VSC9953 Seville switch has 2 megabits of buffer split into 4360
-words of 60 bytes each. 2048 * 1024 is 2 megabytes instead of 2 megabytes.
-2 megabytes is (2048 / 8) * 1024 = 256 * 1024.
+Hi Ivan,
 
-Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
-Fixes: a63ed92d217f ("net: dsa: seville: fix buffer size of the queue system")
----
- drivers/net/dsa/ocelot/seville_vsc9953.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Tue, 13 Oct 2020 at 12:38, Ivan Mikhaylov <i.mikhaylov@yadro.com> wrote:
+>
+> phy-handle can't be handled well for ast2400/2500 which has an embedded
+> MDIO controller. Add ftgmac100_mdio_setup for ast2400/2500 and initialize
+> PHYs from mdio child node with of_mdiobus_register.
 
-diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-index 9e9fd19e1d00..e2cd49eec037 100644
---- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-+++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-@@ -1010,7 +1010,7 @@ static const struct felix_info seville_info_vsc9953 = {
-	.vcap_is2_keys		= vsc9953_vcap_is2_keys,
-	.vcap_is2_actions	= vsc9953_vcap_is2_actions,
-	.vcap			= vsc9953_vcap_props,
--	.shared_queue_sz	= 2048 * 1024,
-+	.shared_queue_sz	= 256 * 1024,
-	.num_mact_rows		= 2048,
-	.num_ports		= 10,
-	.mdio_bus_alloc		= vsc9953_mdio_bus_alloc,
---
-2.27.0
+Good idea. The driver has become a mess of different ways to connect
+the phy and it needs to be cleaned up. I have a patch that fixes
+rmmod, which is currently broken.
+
+
+
+>
+> Signed-off-by: Ivan Mikhaylov <i.mikhaylov@yadro.com>
+> ---
+>  drivers/net/ethernet/faraday/ftgmac100.c | 114 ++++++++++++++---------
+>  1 file changed, 69 insertions(+), 45 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+> index 87236206366f..e32066519ec1 100644
+> --- a/drivers/net/ethernet/faraday/ftgmac100.c
+> +++ b/drivers/net/ethernet/faraday/ftgmac100.c
+> @@ -1044,11 +1044,47 @@ static void ftgmac100_adjust_link(struct net_device *netdev)
+>         schedule_work(&priv->reset_task);
+>  }
+>
+> -static int ftgmac100_mii_probe(struct ftgmac100 *priv, phy_interface_t intf)
+> +static int ftgmac100_mii_probe(struct net_device *netdev)
+>  {
+> -       struct net_device *netdev = priv->netdev;
+> +       struct ftgmac100 *priv = netdev_priv(netdev);
+> +       struct platform_device *pdev = to_platform_device(priv->dev);
+> +       struct device_node *np = pdev->dev.of_node;
+> +       phy_interface_t phy_intf = PHY_INTERFACE_MODE_RGMII;
+>         struct phy_device *phydev;
+>
+> +       /* Get PHY mode from device-tree */
+> +       if (np) {
+> +               /* Default to RGMII. It's a gigabit part after all */
+> +               phy_intf = of_get_phy_mode(np, &phy_intf);
+> +               if (phy_intf < 0)
+> +                       phy_intf = PHY_INTERFACE_MODE_RGMII;
+> +
+> +               /* Aspeed only supports these. I don't know about other IP
+> +                * block vendors so I'm going to just let them through for
+> +                * now. Note that this is only a warning if for some obscure
+> +                * reason the DT really means to lie about it or it's a newer
+> +                * part we don't know about.
+> +                *
+> +                * On the Aspeed SoC there are additionally straps and SCU
+> +                * control bits that could tell us what the interface is
+> +                * (or allow us to configure it while the IP block is held
+> +                * in reset). For now I chose to keep this driver away from
+> +                * those SoC specific bits and assume the device-tree is
+> +                * right and the SCU has been configured properly by pinmux
+> +                * or the firmware.
+> +                */
+> +               if (priv->is_aspeed &&
+> +                   phy_intf != PHY_INTERFACE_MODE_RMII &&
+> +                   phy_intf != PHY_INTERFACE_MODE_RGMII &&
+> +                   phy_intf != PHY_INTERFACE_MODE_RGMII_ID &&
+> +                   phy_intf != PHY_INTERFACE_MODE_RGMII_RXID &&
+> +                   phy_intf != PHY_INTERFACE_MODE_RGMII_TXID) {
+> +                       netdev_warn(netdev,
+> +                                   "Unsupported PHY mode %s !\n",
+> +                                   phy_modes(phy_intf));
+> +               }
+
+Why do we move this?
+
+> +       }
+> +
+>         phydev = phy_find_first(priv->mii_bus);
+>         if (!phydev) {
+>                 netdev_info(netdev, "%s: no PHY found\n", netdev->name);
+> @@ -1056,7 +1092,7 @@ static int ftgmac100_mii_probe(struct ftgmac100 *priv, phy_interface_t intf)
+>         }
+>
+>         phydev = phy_connect(netdev, phydev_name(phydev),
+> -                            &ftgmac100_adjust_link, intf);
+> +                            &ftgmac100_adjust_link, phy_intf);
+>
+>         if (IS_ERR(phydev)) {
+>                 netdev_err(netdev, "%s: Could not attach to PHY\n", netdev->name);
+> @@ -1601,8 +1637,8 @@ static int ftgmac100_setup_mdio(struct net_device *netdev)
+>  {
+>         struct ftgmac100 *priv = netdev_priv(netdev);
+>         struct platform_device *pdev = to_platform_device(priv->dev);
+> -       phy_interface_t phy_intf = PHY_INTERFACE_MODE_RGMII;
+>         struct device_node *np = pdev->dev.of_node;
+> +       struct device_node *mdio_np;
+>         int i, err = 0;
+>         u32 reg;
+>
+> @@ -1623,39 +1659,6 @@ static int ftgmac100_setup_mdio(struct net_device *netdev)
+>                 iowrite32(reg, priv->base + FTGMAC100_OFFSET_REVR);
+>         }
+>
+> -       /* Get PHY mode from device-tree */
+> -       if (np) {
+> -               /* Default to RGMII. It's a gigabit part after all */
+> -               err = of_get_phy_mode(np, &phy_intf);
+> -               if (err)
+> -                       phy_intf = PHY_INTERFACE_MODE_RGMII;
+> -
+> -               /* Aspeed only supports these. I don't know about other IP
+> -                * block vendors so I'm going to just let them through for
+> -                * now. Note that this is only a warning if for some obscure
+> -                * reason the DT really means to lie about it or it's a newer
+> -                * part we don't know about.
+> -                *
+> -                * On the Aspeed SoC there are additionally straps and SCU
+> -                * control bits that could tell us what the interface is
+> -                * (or allow us to configure it while the IP block is held
+> -                * in reset). For now I chose to keep this driver away from
+> -                * those SoC specific bits and assume the device-tree is
+> -                * right and the SCU has been configured properly by pinmux
+> -                * or the firmware.
+> -                */
+> -               if (priv->is_aspeed &&
+> -                   phy_intf != PHY_INTERFACE_MODE_RMII &&
+> -                   phy_intf != PHY_INTERFACE_MODE_RGMII &&
+> -                   phy_intf != PHY_INTERFACE_MODE_RGMII_ID &&
+> -                   phy_intf != PHY_INTERFACE_MODE_RGMII_RXID &&
+> -                   phy_intf != PHY_INTERFACE_MODE_RGMII_TXID) {
+> -                       netdev_warn(netdev,
+> -                                  "Unsupported PHY mode %s !\n",
+> -                                  phy_modes(phy_intf));
+> -               }
+> -       }
+> -
+>         priv->mii_bus->name = "ftgmac100_mdio";
+>         snprintf(priv->mii_bus->id, MII_BUS_ID_SIZE, "%s-%d",
+>                  pdev->name, pdev->id);
+> @@ -1667,22 +1670,22 @@ static int ftgmac100_setup_mdio(struct net_device *netdev)
+>         for (i = 0; i < PHY_MAX_ADDR; i++)
+>                 priv->mii_bus->irq[i] = PHY_POLL;
+>
+> -       err = mdiobus_register(priv->mii_bus);
+> +       mdio_np = of_get_child_by_name(np, "mdio");
+> +       if (mdio_np)
+> +               err = of_mdiobus_register(priv->mii_bus, mdio_np);
+> +       else
+> +               err = mdiobus_register(priv->mii_bus);
+> +
+>         if (err) {
+>                 dev_err(priv->dev, "Cannot register MDIO bus!\n");
+>                 goto err_register_mdiobus;
+>         }
+>
+> -       err = ftgmac100_mii_probe(priv, phy_intf);
+> -       if (err) {
+> -               dev_err(priv->dev, "MII Probe failed!\n");
+> -               goto err_mii_probe;
+> -       }
+> +       if (mdio_np)
+> +               of_node_put(mdio_np);
+
+By the time I get down here I'm lost. Do you think you could split the
+change up into a few smaller patches?
+
+If not, try to explain what the various hunks of your change are trying to do.
+
+Cheers,
+
+Joel
+
+>
+>         return 0;
+>
+> -err_mii_probe:
+> -       mdiobus_unregister(priv->mii_bus);
+>  err_register_mdiobus:
+>         mdiobus_free(priv->mii_bus);
+>         return err;
+> @@ -1836,10 +1839,23 @@ static int ftgmac100_probe(struct platform_device *pdev)
+>         } else if (np && of_get_property(np, "phy-handle", NULL)) {
+>                 struct phy_device *phy;
+>
+> +               /* Support "mdio"/"phy" child nodes for ast2400/2500 with
+> +                * an embedded MDIO controller. Automatically scan the DTS for
+> +                * available PHYs and register them.
+> +                */
+> +               if (of_device_is_compatible(np, "aspeed,ast2400-mac") ||
+> +                   of_device_is_compatible(np, "aspeed,ast2500-mac")) {
+> +                       err = ftgmac100_setup_mdio(netdev);
+> +                       if (err)
+> +                               goto err_setup_mdio;
+> +               }
+> +
+>                 phy = of_phy_get_and_connect(priv->netdev, np,
+>                                              &ftgmac100_adjust_link);
+>                 if (!phy) {
+>                         dev_err(&pdev->dev, "Failed to connect to phy\n");
+> +                       if (priv->mii_bus)
+> +                               mdiobus_unregister(priv->mii_bus);
+>                         goto err_setup_mdio;
+>                 }
+>
+> @@ -1860,6 +1876,14 @@ static int ftgmac100_probe(struct platform_device *pdev)
+>                 err = ftgmac100_setup_mdio(netdev);
+>                 if (err)
+>                         goto err_setup_mdio;
+> +
+> +               err = ftgmac100_mii_probe(netdev);
+> +               if (err) {
+> +                       dev_err(priv->dev, "MII probe failed!\n");
+> +                       mdiobus_unregister(priv->mii_bus);
+> +                       goto err_setup_mdio;
+> +               }
+> +
+>         }
+>
+>         if (priv->is_aspeed) {
+> --
+> 2.21.1
+>
