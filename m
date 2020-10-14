@@ -2,409 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E23728DFF9
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 13:48:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A90728E023
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 13:58:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388361AbgJNLs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 07:48:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34662 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388297AbgJNLr6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 07:47:58 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A753C061755
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 04:47:54 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id b127so2260729wmb.3
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 04:47:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=4sCXXYGT48Qv+elJwqE4T/EcNj7PQoU086eMsBAZHzw=;
-        b=ZZzM3OTWtCaW2+GeIzzI2PMJNsAPZUBg3o+35E9Dagp/eZ52GGVvz+Lmg2Db761zbj
-         /rvfHdsiTZbFddVrnGeM4Djvv9bOCmc/BwfeOJp/DiWVyrk8eicIfppSRNRF6+IXnjLS
-         KpVDakf3IHGOafMjgraYo1brGREtz8YguLjhJ/YiNxzXks2ejTyexFm/u9/SY6oymtna
-         CGxhkOR4KRzA8YAgUfgK8xROfn+60fio3PVVZpQW/RsYsp7tzRX5FgM5I4GqCJvTQ5IL
-         AxnhCpLcCSMn/Du126g5eKFN+Ho8GihIP4DZWmZiCeJQRx1jjr5cPUiLc5rNvJ3J+RbT
-         ORbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=4sCXXYGT48Qv+elJwqE4T/EcNj7PQoU086eMsBAZHzw=;
-        b=W1n4jdje+1uDbQsEz0yVtLORaRLncZIE8EqKEuZJc3bUbi72YbLtg7HeSKpkLI9YLA
-         z6RA8U0eSt8qBBAqPQ4J4CcjRrH1qDsHVY6yhlNjrrz5wWq9gAKI0ri/J/tY9WMzRJ4Q
-         KCuv1AwUW3x9maHMXs8683Y48bvidyv6C/PFYn3SawAuQ7gh9PbY/uTBQLYyUmGsj+Cm
-         jFviel06+fatSxDCguEvawmCfEUBN6KuZHV0Yyv8QtTyVrI/OogqxqdqeN4OXp6MIXr1
-         2j35VcvkrZouinCz+6DC/CWJvxzWjcsaPsD2gj22nVF7fuPBxZDh3zsIIrQdhQMP/lhG
-         uv6w==
-X-Gm-Message-State: AOAM532o8n6fm14rQSX7pZtvUsaIy+fNTRPzbBGJJduHYoFzDnVLxbHs
-        oylPwyuwhCuJIJrC1s+yaHUikQ==
-X-Google-Smtp-Source: ABdhPJziWigha5cvg4DGHhq1MsHm6EzxmoII4IXM/sPvaM8itIQ8yP1ZLhWuaWGb8s8dqUJZuZXSjg==
-X-Received: by 2002:a1c:4e1a:: with SMTP id g26mr3054199wmh.98.1602676073136;
-        Wed, 14 Oct 2020 04:47:53 -0700 (PDT)
-Received: from localhost.localdomain ([88.122.66.28])
-        by smtp.gmail.com with ESMTPSA id i14sm3177479wml.24.2020.10.14.04.47.51
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 14 Oct 2020 04:47:52 -0700 (PDT)
-From:   Loic Poulain <loic.poulain@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, hemantk@codeaurora.org,
-        manivannan.sadhasivam@linaro.org,
-        Loic Poulain <loic.poulain@linaro.org>
-Subject: [PATCH v3] net: Add mhi-net driver
-Date:   Wed, 14 Oct 2020 13:53:57 +0200
-Message-Id: <1602676437-9829-1-git-send-email-loic.poulain@linaro.org>
-X-Mailer: git-send-email 2.7.4
+        id S2388521AbgJNL6q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 07:58:46 -0400
+Received: from mailout08.rmx.de ([94.199.90.85]:56329 "EHLO mailout08.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726157AbgJNL6q (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Oct 2020 07:58:46 -0400
+Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout08.rmx.de (Postfix) with ESMTPS id 4CB9tB12XQzMpJl;
+        Wed, 14 Oct 2020 13:58:42 +0200 (CEST)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin02.retarus.com (Postfix) with ESMTPS id 4CB9sg2QcMz2TSBr;
+        Wed, 14 Oct 2020 13:58:15 +0200 (CEST)
+Received: from N95HX1G2.wgnetz.xx (192.168.54.83) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Wed, 14 Oct
+ 2020 13:58:14 +0200
+From:   Christian Eggers <ceggers@arri.de>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Halasa <khalasa@piap.pl>,
+        Richard Cochran <richardcochran@gmail.com>
+CC:     Vishal Kulkarni <vishal@chelsio.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Christian Eggers <ceggers@arri.de>
+Subject: [PATCH net-next] net: ptp: get rid of IPV4_HLEN() and OFF_IHL macros
+Date:   Wed, 14 Oct 2020 13:58:05 +0200
+Message-ID: <20201014115805.23905-1-ceggers@arri.de>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.54.83]
+X-RMX-ID: 20201014-135815-4CB9sg2QcMz2TSBr-0@kdin02
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a new network driver implementing MHI transport for
-network packets. Packets can be in any format, though QMAP (rmnet)
-is the usual protocol (flow control + PDN mux).
+Both macros are already marked for removal. IPV4_HLEN(data) is
+misleading as it expects an Ethernet header instead of an IPv4 header as
+argument. Because it is defined (and only used) within PTP, it should be
+named PTP_IPV4_HLEN or similar.
 
-It support two MHI devices, IP_HW0 which is, the path to the IPA
-(IP accelerator) on qcom modem, And IP_SW0 which is the software
-driven IP path (to modem CPU).
+As the whole rest of the IPv4 stack has no problems using iphdr->ihl
+directly, also PTP should be able to do so.
 
-Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+OFF_IHL has only been used by IPV4_HLEN. Additionally it is superfluous
+as ETH_HLEN already exists for the same.
+
+Signed-off-by: Christian Eggers <ceggers@arri.de>
 ---
-  v2: - rebase on net-next
-      - remove useless skb_linearize
-      - check error type on mhi_queue return
-      - rate limited errors
-      - Schedule RX refill only on 'low' buf level
-      - SET_NETDEV_DEV in probe
-      - reorder device remove sequence
-  v3: - Stop channels on net_register error
-      - Remove useles parentheses
-      - Add driver .owner
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_ptp.c       | 4 ++--
+ drivers/net/ethernet/chelsio/cxgb4/sge.c             | 5 ++++-
+ drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c | 4 +++-
+ drivers/net/ethernet/xscale/ixp4xx_eth.c             | 4 +++-
+ include/linux/ptp_classify.h                         | 2 --
+ net/core/ptp_classifier.c                            | 6 +++---
+ 6 files changed, 15 insertions(+), 10 deletions(-)
 
- drivers/net/Kconfig   |   7 ++
- drivers/net/Makefile  |   1 +
- drivers/net/mhi_net.c | 284 ++++++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 292 insertions(+)
- create mode 100644 drivers/net/mhi_net.c
-
-diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
-index 1368d1d..11a6357 100644
---- a/drivers/net/Kconfig
-+++ b/drivers/net/Kconfig
-@@ -426,6 +426,13 @@ config VSOCKMON
- 	  mostly intended for developers or support to debug vsock issues. If
- 	  unsure, say N.
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ptp.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ptp.c
+index 70dbee89118e..b32a9006b222 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ptp.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_ptp.c
+@@ -83,8 +83,8 @@ bool is_ptp_enabled(struct sk_buff *skb, struct net_device *dev)
+  */
+ bool cxgb4_ptp_is_ptp_rx(struct sk_buff *skb)
+ {
+-	struct udphdr *uh = (struct udphdr *)(skb->data + ETH_HLEN +
+-					      IPV4_HLEN(skb->data));
++	struct iphdr *ih = (struct iphdr *)(skb->data + ETH_HLEN);
++	struct udphdr *uh = (struct udphdr *)((char *)ih + (ih->ihl << 2));
  
-+config MHI_NET
-+	tristate "MHI network driver"
-+	depends on MHI_BUS
-+	help
-+	  This is the network driver for MHI.  It can be used with
-+	  QCOM based WWAN modems (like SDX55).  Say Y or M.
-+
- endif # NET_CORE
+ 	return  uh->dest == htons(PTP_EVENT_PORT) &&
+ 		uh->source == htons(PTP_EVENT_PORT);
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+index a9e9c7ae565d..c8bec874bc66 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+@@ -40,6 +40,7 @@
+ #include <linux/dma-mapping.h>
+ #include <linux/jiffies.h>
+ #include <linux/prefetch.h>
++#include <linux/ptp_classify.h>
+ #include <linux/export.h>
+ #include <net/xfrm.h>
+ #include <net/ipv6.h>
+@@ -3386,7 +3387,9 @@ static noinline int t4_systim_to_hwstamp(struct adapter *adapter,
  
- config SUNGEM_PHY
-diff --git a/drivers/net/Makefile b/drivers/net/Makefile
-index 94b6080..8312037 100644
---- a/drivers/net/Makefile
-+++ b/drivers/net/Makefile
-@@ -34,6 +34,7 @@ obj-$(CONFIG_GTP) += gtp.o
- obj-$(CONFIG_NLMON) += nlmon.o
- obj-$(CONFIG_NET_VRF) += vrf.o
- obj-$(CONFIG_VSOCKMON) += vsockmon.o
-+obj-$(CONFIG_MHI_NET) += mhi_net.o
+ 	data = skb->data + sizeof(*cpl);
+ 	skb_pull(skb, 2 * sizeof(u64) + sizeof(struct cpl_rx_mps_pkt));
+-	offset = ETH_HLEN + IPV4_HLEN(skb->data) + UDP_HLEN;
++	offset = ETH_HLEN;
++	offset += ((struct iphdr *)(skb->data + offset))->ihl << 2;
++	offset += UDP_HLEN;
+ 	if (skb->len < offset + OFF_PTP_SEQUENCE_ID + sizeof(short))
+ 		return RX_PTP_PKT_ERR;
  
- #
- # Networking Drivers
-diff --git a/drivers/net/mhi_net.c b/drivers/net/mhi_net.c
-new file mode 100644
-index 0000000..c184aa9
---- /dev/null
-+++ b/drivers/net/mhi_net.c
-@@ -0,0 +1,284 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/* MHI Network driver - Network over MHI
-+ *
-+ * Copyright (C) 2020 Linaro Ltd <loic.poulain@linaro.org>
-+ */
+diff --git a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
+index ade8c44c01cd..4e95621997d1 100644
+--- a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
++++ b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_main.c
+@@ -113,7 +113,9 @@ static int pch_ptp_match(struct sk_buff *skb, u16 uid_hi, u32 uid_lo, u16 seqid)
+ 	if (ptp_classify_raw(skb) == PTP_CLASS_NONE)
+ 		return 0;
+ 
+-	offset = ETH_HLEN + IPV4_HLEN(data) + UDP_HLEN;
++	offset = ETH_HLEN;
++	offset += ((struct iphdr *)(data + offset))->ihl << 2;
++	offset += UDP_HLEN;
+ 
+ 	if (skb->len < offset + OFF_PTP_SEQUENCE_ID + sizeof(seqid))
+ 		return 0;
+diff --git a/drivers/net/ethernet/xscale/ixp4xx_eth.c b/drivers/net/ethernet/xscale/ixp4xx_eth.c
+index 2e5202923510..7443bc1f9bec 100644
+--- a/drivers/net/ethernet/xscale/ixp4xx_eth.c
++++ b/drivers/net/ethernet/xscale/ixp4xx_eth.c
+@@ -264,7 +264,9 @@ static int ixp_ptp_match(struct sk_buff *skb, u16 uid_hi, u32 uid_lo, u16 seqid)
+ 	if (ptp_classify_raw(skb) != PTP_CLASS_V1_IPV4)
+ 		return 0;
+ 
+-	offset = ETH_HLEN + IPV4_HLEN(data) + UDP_HLEN;
++	offset = ETH_HLEN;
++	offset += ((struct iphdr *)(data + offset))->ihl << 2;
++	offset += UDP_HLEN;
+ 
+ 	if (skb->len < offset + OFF_PTP_SEQUENCE_ID + sizeof(seqid))
+ 		return 0;
+diff --git a/include/linux/ptp_classify.h b/include/linux/ptp_classify.h
+index c6487b7ab026..56b2d7d66177 100644
+--- a/include/linux/ptp_classify.h
++++ b/include/linux/ptp_classify.h
+@@ -40,8 +40,6 @@
+ /* Below defines should actually be removed at some point in time. */
+ #define IP6_HLEN	40
+ #define UDP_HLEN	8
+-#define OFF_IHL		14
+-#define IPV4_HLEN(data) (((struct iphdr *)(data + OFF_IHL))->ihl << 2)
+ 
+ struct clock_identity {
+ 	u8 id[8];
+diff --git a/net/core/ptp_classifier.c b/net/core/ptp_classifier.c
+index e33fde06d528..6a964639b704 100644
+--- a/net/core/ptp_classifier.c
++++ b/net/core/ptp_classifier.c
+@@ -114,9 +114,11 @@ struct ptp_header *ptp_parse_header(struct sk_buff *skb, unsigned int type)
+ 	if (type & PTP_CLASS_VLAN)
+ 		ptr += VLAN_HLEN;
+ 
++	ptr += ETH_HLEN;
 +
-+#include <linux/if_arp.h>
-+#include <linux/mhi.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/netdevice.h>
-+#include <linux/skbuff.h>
-+
-+#define MIN_MTU		ETH_MIN_MTU
-+#define MAX_MTU		0xffff
-+#define DEFAULT_MTU	8192
-+
-+struct mhi_net_stats {
-+	u64 rx_packets;
-+	u64 rx_bytes;
-+	u64 rx_errors;
-+	u64 rx_dropped;
-+	u64 tx_packets;
-+	u64 tx_bytes;
-+	u64 tx_errors;
-+	u64 tx_dropped;
-+	atomic_t rx_queued;
-+};
-+
-+struct mhi_net_dev {
-+	struct mhi_device *mdev;
-+	struct net_device *ndev;
-+	struct delayed_work rx_refill;
-+	struct mhi_net_stats stats;
-+	u32 rx_queue_sz;
-+};
-+
-+static int mhi_ndo_open(struct net_device *ndev)
-+{
-+	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
-+
-+	/* Feed the rx buffer pool */
-+	schedule_delayed_work(&mhi_netdev->rx_refill, 0);
-+
-+	/* Carrier is established via out-of-band channel (e.g. qmi) */
-+	netif_carrier_on(ndev);
-+
-+	netif_start_queue(ndev);
-+
-+	return 0;
-+}
-+
-+static int mhi_ndo_stop(struct net_device *ndev)
-+{
-+	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
-+
-+	netif_stop_queue(ndev);
-+	netif_carrier_off(ndev);
-+	cancel_delayed_work_sync(&mhi_netdev->rx_refill);
-+
-+	return 0;
-+}
-+
-+static int mhi_ndo_xmit(struct sk_buff *skb, struct net_device *ndev)
-+{
-+	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
-+	struct mhi_device *mdev = mhi_netdev->mdev;
-+	int err;
-+
-+	skb_tx_timestamp(skb);
-+
-+	/* mhi_queue_skb is not thread-safe, but xmit is serialized by the
-+	 * network core. Once MHI core will be thread save, migrate to
-+	 * NETIF_F_LLTX support.
-+	 */
-+	err = mhi_queue_skb(mdev, DMA_TO_DEVICE, skb, skb->len, MHI_EOT);
-+	if (err == -ENOMEM) {
-+		netif_stop_queue(ndev);
-+		return NETDEV_TX_BUSY;
-+	} else if (unlikely(err)) {
-+		net_err_ratelimited("%s: Failed to queue TX buf (%d)\n",
-+				    ndev->name, err);
-+		mhi_netdev->stats.tx_dropped++;
-+		kfree_skb(skb);
-+	}
-+
-+	return NETDEV_TX_OK;
-+}
-+
-+static void mhi_ndo_get_stats64(struct net_device *ndev,
-+				struct rtnl_link_stats64 *stats)
-+{
-+	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
-+
-+	stats->rx_packets = mhi_netdev->stats.rx_packets;
-+	stats->rx_bytes = mhi_netdev->stats.rx_bytes;
-+	stats->rx_errors = mhi_netdev->stats.rx_errors;
-+	stats->rx_dropped = mhi_netdev->stats.rx_dropped;
-+	stats->tx_packets = mhi_netdev->stats.tx_packets;
-+	stats->tx_bytes = mhi_netdev->stats.tx_bytes;
-+	stats->tx_errors = mhi_netdev->stats.tx_errors;
-+	stats->tx_dropped = mhi_netdev->stats.tx_dropped;
-+}
-+
-+static const struct net_device_ops mhi_netdev_ops = {
-+	.ndo_open               = mhi_ndo_open,
-+	.ndo_stop               = mhi_ndo_stop,
-+	.ndo_start_xmit         = mhi_ndo_xmit,
-+	.ndo_get_stats64	= mhi_ndo_get_stats64,
-+};
-+
-+static void mhi_net_setup(struct net_device *ndev)
-+{
-+	ndev->header_ops = NULL;  /* No header */
-+	ndev->type = ARPHRD_NONE; /* QMAP... */
-+	ndev->hard_header_len = 0;
-+	ndev->addr_len = 0;
-+	ndev->flags = IFF_POINTOPOINT | IFF_NOARP;
-+	ndev->netdev_ops = &mhi_netdev_ops;
-+	ndev->mtu = DEFAULT_MTU;
-+	ndev->min_mtu = MIN_MTU;
-+	ndev->max_mtu = MAX_MTU;
-+	ndev->tx_queue_len = 1000;
-+}
-+
-+static void mhi_net_dl_callback(struct mhi_device *mhi_dev,
-+				struct mhi_result *mhi_res)
-+{
-+	struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
-+	struct sk_buff *skb = mhi_res->buf_addr;
-+	int remaining;
-+
-+	remaining = atomic_dec_return(&mhi_netdev->stats.rx_queued);
-+
-+	if (unlikely(mhi_res->transaction_status)) {
-+		mhi_netdev->stats.rx_errors++;
-+		kfree_skb(skb);
-+	} else {
-+		mhi_netdev->stats.rx_packets++;
-+		mhi_netdev->stats.rx_bytes += mhi_res->bytes_xferd;
-+
-+		skb->protocol = htons(ETH_P_MAP);
-+		skb_put(skb, mhi_res->bytes_xferd);
-+		netif_rx(skb);
-+	}
-+
-+	/* Refill if RX buffers queue becomes low */
-+	if (remaining <= mhi_netdev->rx_queue_sz / 2)
-+		schedule_delayed_work(&mhi_netdev->rx_refill, 0);
-+}
-+
-+static void mhi_net_ul_callback(struct mhi_device *mhi_dev,
-+				struct mhi_result *mhi_res)
-+{
-+	struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
-+	struct net_device *ndev = mhi_netdev->ndev;
-+	struct sk_buff *skb = mhi_res->buf_addr;
-+
-+	/* Hardware has consumed the buffer, so free the skb (which is not
-+	 * freed by the MHI stack) and perform accounting.
-+	 */
-+	consume_skb(skb);
-+
-+	if (unlikely(mhi_res->transaction_status)) {
-+		mhi_netdev->stats.tx_errors++;
-+	} else {
-+		mhi_netdev->stats.tx_packets++;
-+		mhi_netdev->stats.tx_bytes += mhi_res->bytes_xferd;
-+	}
-+
-+	if (netif_queue_stopped(ndev))
-+		netif_wake_queue(ndev);
-+}
-+
-+static void mhi_net_rx_refill_work(struct work_struct *work)
-+{
-+	struct mhi_net_dev *mhi_netdev = container_of(work, struct mhi_net_dev,
-+						      rx_refill.work);
-+	struct net_device *ndev = mhi_netdev->ndev;
-+	struct mhi_device *mdev = mhi_netdev->mdev;
-+	struct sk_buff *skb;
-+	int err;
-+
-+	do {
-+		skb = netdev_alloc_skb(ndev, READ_ONCE(ndev->mtu));
-+		if (unlikely(!skb))
-+			break;
-+
-+		err = mhi_queue_skb(mdev, DMA_FROM_DEVICE, skb, ndev->mtu,
-+				    MHI_EOT);
-+		if (err) {
-+			if (unlikely(err != -ENOMEM))
-+				net_err_ratelimited("%s: Failed to queue RX buf (%d)\n",
-+						    ndev->name, err);
-+			kfree_skb(skb);
-+			break;
-+		}
-+
-+		atomic_inc(&mhi_netdev->stats.rx_queued);
-+	} while (1);
-+
-+	/* If we're still starved of rx buffers, reschedule latter */
-+	if (unlikely(!atomic_read(&mhi_netdev->stats.rx_queued)))
-+		schedule_delayed_work(&mhi_netdev->rx_refill, HZ / 2);
-+}
-+
-+static int mhi_net_probe(struct mhi_device *mhi_dev,
-+			 const struct mhi_device_id *id)
-+{
-+	const char *netname = (char *)id->driver_data;
-+	struct mhi_net_dev *mhi_netdev;
-+	struct net_device *ndev;
-+	struct device *dev = &mhi_dev->dev;
-+	int err;
-+
-+	ndev = alloc_netdev(sizeof(*mhi_netdev), netname, NET_NAME_PREDICTABLE,
-+			    mhi_net_setup);
-+	if (!ndev)
-+		return -ENOMEM;
-+
-+	mhi_netdev = netdev_priv(ndev);
-+	dev_set_drvdata(dev, mhi_netdev);
-+	mhi_netdev->ndev = ndev;
-+	mhi_netdev->mdev = mhi_dev;
-+	SET_NETDEV_DEV(ndev, &mhi_dev->dev);
-+
-+	/* All MHI net channels have 128 ring elements (at least for now) */
-+	mhi_netdev->rx_queue_sz = 128;
-+
-+	INIT_DELAYED_WORK(&mhi_netdev->rx_refill, mhi_net_rx_refill_work);
-+
-+	/* Start MHI channels */
-+	err = mhi_prepare_for_transfer(mhi_dev);
-+	if (err)
-+		goto out_err;
-+
-+	err = register_netdev(ndev);
-+	if (err) {
-+		mhi_unprepare_from_transfer(mhi_dev);
-+		goto out_err;
-+	}
-+
-+	return 0;
-+
-+out_err:
-+	free_netdev(ndev);
-+	return err;
-+}
-+
-+static void mhi_net_remove(struct mhi_device *mhi_dev)
-+{
-+	struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
-+
-+	unregister_netdev(mhi_netdev->ndev);
-+
-+	mhi_unprepare_from_transfer(mhi_netdev->mdev);
-+
-+	free_netdev(mhi_netdev->ndev);
-+}
-+
-+static const struct mhi_device_id mhi_net_id_table[] = {
-+	{ .chan = "IP_HW0", .driver_data = (kernel_ulong_t)"mhi_hwip%d" },
-+	{ .chan = "IP_SW0", .driver_data = (kernel_ulong_t)"mhi_swip%d" },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(mhi, mhi_net_id_table);
-+
-+static struct mhi_driver mhi_net_driver = {
-+	.probe = mhi_net_probe,
-+	.remove = mhi_net_remove,
-+	.dl_xfer_cb = mhi_net_dl_callback,
-+	.ul_xfer_cb = mhi_net_ul_callback,
-+	.id_table = mhi_net_id_table,
-+	.driver = {
-+		.name = "mhi_net",
-+		.owner = THIS_MODULE,
-+	},
-+};
-+
-+module_mhi_driver(mhi_net_driver);
-+
-+MODULE_AUTHOR("Loic Poulain <loic.poulain@linaro.org>");
-+MODULE_DESCRIPTION("Network over MHI");
-+MODULE_LICENSE("GPL v2");
+ 	switch (type & PTP_CLASS_PMASK) {
+ 	case PTP_CLASS_IPV4:
+-		ptr += IPV4_HLEN(ptr) + UDP_HLEN;
++		ptr += (((struct iphdr *)ptr)->ihl << 2) + UDP_HLEN;
+ 		break;
+ 	case PTP_CLASS_IPV6:
+ 		ptr += IP6_HLEN + UDP_HLEN;
+@@ -127,8 +129,6 @@ struct ptp_header *ptp_parse_header(struct sk_buff *skb, unsigned int type)
+ 		return NULL;
+ 	}
+ 
+-	ptr += ETH_HLEN;
+-
+ 	/* Ensure that the entire header is present in this packet. */
+ 	if (ptr + sizeof(struct ptp_header) > skb->data + skb->len)
+ 		return NULL;
 -- 
-2.7.4
+Christian Eggers
+Embedded software developer
+
+Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
+Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
+Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
 
