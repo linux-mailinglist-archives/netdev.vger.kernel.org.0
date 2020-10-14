@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 300F028D8A8
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 04:46:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8FBF28D8CB
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 05:03:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727970AbgJNCq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Oct 2020 22:46:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38190 "EHLO mail.kernel.org"
+        id S1728916AbgJNDDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Oct 2020 23:03:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43316 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727373AbgJNCq2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Oct 2020 22:46:28 -0400
+        id S1726049AbgJNDDa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Oct 2020 23:03:30 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8A68721775;
-        Wed, 14 Oct 2020 02:46:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9FEED21D81;
+        Wed, 14 Oct 2020 03:03:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602643587;
-        bh=PAAun9qZtcMnwHhRYDJ0GGq9ao3+kGi4K7cdlmWBKX8=;
+        s=default; t=1602644609;
+        bh=UOF+zmDIyS2kNQpi+e1CPAkhCAQ1aICl6nPD8S8F8Ok=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=wqUHOEyX/cFjRI/bTbuvusKroIF5tNJO9BwQ8gw8iZf1yxnq2YnrBQhKCY9BkFE9k
-         H1CRY74EBLtqrv2m03j3VY9PUUPXrJDqHD0VPQjbZuCmvCszRveNsVEYAAin3lNNIz
-         ztkMuFOLPcalohQ1B4b4W6X75SUFlgEyG0xS+5zY=
-Date:   Tue, 13 Oct 2020 19:46:26 -0700
+        b=lhC03TnKEZ+rOS0rRrHC1tj61fEvrT5svmxtRQrE8fY7XBb44S8y0Rdiln2sbBWn7
+         Hvt0VU3MXGxEbr7q1mZPcmcE23J0RcCsfIgcqJyG8fmvV1mGLrG7+tqSJPGMJ0TM/m
+         iYQ+O6XDBdisqxJVc97eZm+rKc7bVHhX/a1L7Uts=
+Date:   Tue, 13 Oct 2020 20:03:28 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com
-Subject: Re: [net-next v2 0/2][pull request] 40GbE Intel Wired LAN Driver
- Updates 2020-10-12
-Message-ID: <20201013194626.680c01fa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201012181346.3073618-1-anthony.l.nguyen@intel.com>
-References: <20201012181346.3073618-1-anthony.l.nguyen@intel.com>
+To:     Saeed Mahameed <saeedm@nvidia.com>
+Cc:     <netdev@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>
+Subject: Re: [pull request][net-next 0/4] mlx5 updates 2020-10-12
+Message-ID: <20201013200328.0273638c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201012224152.191479-1-saeedm@nvidia.com>
+References: <20201012224152.191479-1-saeedm@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -40,16 +38,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Oct 2020 11:13:44 -0700 Tony Nguyen wrote:
-> This series contains updates to i40e and e1000 drivers.
+On Mon, 12 Oct 2020 15:41:48 -0700 Saeed Mahameed wrote:
+> Hi Jakub,
 > 
-> Jaroslaw adds support for changing FEC on i40e if the firmware supports it.
+> This small series add xfrm IPSec TX offload support to mlx5 driver.
 > 
-> Jesse fixes a kbuild-bot warning regarding ternary operator on e1000. 
-> 
-> v2: Return -EOPNOTSUPP instead of -EINVAL when FEC settings are not
-> supported by firmware. Remove, unneeded, done label and return errors
-> directly in i40e_set_fec_param() for patch 1. Dropped, previous patch 2,
-> to send to net. 
+> Please pull and let me know if there is any problem.
 
-Applied, thanks!
+Pulled, thanks!
