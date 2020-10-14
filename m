@@ -2,153 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 754F828DABD
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 09:58:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F55228DAE5
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 10:14:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728342AbgJNH6x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 03:58:53 -0400
-Received: from mail-eopbgr1310110.outbound.protection.outlook.com ([40.107.131.110]:31377
-        "EHLO APC01-SG2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727306AbgJNH6w (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Oct 2020 03:58:52 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LgwkV1M32bbZoipJo33026sUIGvOw9uanAhirXuN5T7PWCFq/ZavDijLr07VPmHW86MNzKRSkjzZz03DMc6lo8ye28efkw2vcBRmP/LJhGQQ3FMokElFkaUUpEfIssiWzJg/S4V6aryM0CZLaq3BWroqxrPq0aj1C3IdifMiAEg0HOyPExulJYGyt5btnRbgCXGEhtbQul/O/AQ7ku1zdok9abOGBLWZmnpSajWyrBDxhWHY/daw5HK03aHJ+eZy9krTXvDe9AlSGz94sFTYJLWwBo0TmcO3k90wLxcd3QbouWpFmnzzZvZyvh/NUmZn3RCBWg7XE03QbGDTuUucrg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JDEWj+SU6qifVTyhdbqgpqRQXzNHgmVRGLuNFLOfDI0=;
- b=ZyJkP1n+PodjselF55V2oGuDTD2RT9S9HCCfEWiqxXji6kxJbS1VKq+IHRUx5xWKlMNGVpmSpWdY+sdksw75c1op6WohIC4oHH1QbHBX+P1dv1UVeJiznlRKU9JZEGMn1e5gnzn7O24/exJCuhiH0Yjmqv3vvNMi1941zj6CaNv9LFgVZsanxYb4/xwOlEuFiLoElT15yBl2IiFpseV2HkbUswdJLtbP/HpG9+92am07+inH3DpgrWvcEl/gKHWQVTGIta+AaM2Snz2ZTtMrDDEfTHT33Bbj6oQJp3Vzax7iRB0jhe2pQyzpQHeiPZETfemyuomnzHw8piu8C4cIeQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=aspeedtech.com; dmarc=pass action=none
- header.from=aspeedtech.com; dkim=pass header.d=aspeedtech.com; arc=none
-Received: from PS1PR0601MB1849.apcprd06.prod.outlook.com (2603:1096:803:6::17)
- by PS1PR06MB2616.apcprd06.prod.outlook.com (2603:1096:803:45::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.21; Wed, 14 Oct
- 2020 07:58:45 +0000
-Received: from PS1PR0601MB1849.apcprd06.prod.outlook.com
- ([fe80::31d5:24c7:7ac6:a5cc]) by PS1PR0601MB1849.apcprd06.prod.outlook.com
- ([fe80::31d5:24c7:7ac6:a5cc%7]) with mapi id 15.20.3455.031; Wed, 14 Oct 2020
- 07:58:44 +0000
-From:   Dylan Hung <dylan_hung@aspeedtech.com>
-To:     Joel Stanley <joel@jms.id.au>
-CC:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S1728641AbgJNIOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 04:14:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57866 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727975AbgJNIOg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 04:14:36 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E08BC051129;
+        Wed, 14 Oct 2020 00:59:18 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id o18so2155805edq.4;
+        Wed, 14 Oct 2020 00:59:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=X6D0Ror+2mO5zJfkz9qAnbmgE+QzWXoroVWR4akLGf8=;
+        b=s5ssW1+ERHepdZYBphFnv0uGNdmvm9qfiAQ+ezzdvRMUdNLSSfX5yH9rbWeN3dajnI
+         MsPJvfe/hKGZMZvtGy+2+V7Od80b210yFBfb10Kku7sofHqFrxvpy04y3AxJZEqJIJ0l
+         hI3xO52Gk6IIjF7eHeSdd5jGaiAvqp5Th2mixIU0AquVhM9CmGRcXahAUQlaDlLLIRBl
+         1VPaaN1rqwQz/uNu35CTX+BChIzjc0L1UiGvQcZU2bYEa8zymc2uV/mvIyimIRYRpV+u
+         78mCAkllTB/rT8HR3KyzJE861EqOb2dYq7mZdKqjD0uDZj/YIYVWGHhYg9HSgBVQoGyd
+         ZVrg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=X6D0Ror+2mO5zJfkz9qAnbmgE+QzWXoroVWR4akLGf8=;
+        b=p9ah5+tQt7Iv3bwvAbTcwf51BYTqwRq+FBqxkyFE/mFKsDFtGgIoHgTfLaY/MWeTrq
+         Td8nc6oIfLr39XSHtbOl9jTBxoZpO0bpT96rdGgCzcNhl4l3c/+3JkYKVgvfTVLu38bJ
+         3E1sg5+He5HsWEzzylDmzxvAX8Fig4Ks3gI2hn0iQVfg0/H0OoLhh6suUljdhiWOBZ2R
+         l/Ng5BGDzKzztrkW0MYipeGDIY3S2SKwVQEXQZYxXtP+lpKSgr6rKLBXn5gIb2IuugvW
+         14v33pcMBseutBsooTP0ZsVil5tTOMZMYDjlR5gCEnYbm2iakUm8H5qiButT874Gmnqd
+         0Dig==
+X-Gm-Message-State: AOAM5329LyJvJUNfPRYNc3jNznvMOlQyz4gnqhCxkeDd6Ih/Xb/IgVAY
+        y08Wq+nIw5mb/NsL5hRRw4Pv88EJZrM=
+X-Google-Smtp-Source: ABdhPJzARrcbOHz0JFF8UC0nfG4bzN1EODm0ruckaDcpJbPk9Rm3gs4ve4yltg1laENCjiYasBL33w==
+X-Received: by 2002:aa7:cf17:: with SMTP id a23mr3821803edy.298.1602662357243;
+        Wed, 14 Oct 2020 00:59:17 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f23:2800:e563:1e0d:2b0d:aba7? (p200300ea8f232800e5631e0d2b0daba7.dip0.t-ipconnect.de. [2003:ea:8f23:2800:e563:1e0d:2b0d:aba7])
+        by smtp.googlemail.com with ESMTPSA id yd18sm1260946ejb.10.2020.10.14.00.59.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Oct 2020 00:59:16 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 00/12] net: add and use function
+ dev_fetch_sw_netstats for fetching pcpu_sw_netstats
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>,
+        Oliver Neukum <oneukum@suse.com>,
+        Igor Mitsyanko <imitsyanko@quantenna.com>,
+        Sergey Matyukevich <geomatsi@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Po-Yu Chuang <ratbert@faraday-tech.com>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        BMC-SW <BMC-SW@aspeedtech.com>
-Subject: RE: [PATCH 1/1] net: ftgmac100: Fix Aspeed ast2600 TX hang issue
-Thread-Topic: [PATCH 1/1] net: ftgmac100: Fix Aspeed ast2600 TX hang issue
-Thread-Index: AQHWofAzDvWchifNuUyQtsmFJfPVT6mWpi2AgAAOHMA=
-Date:   Wed, 14 Oct 2020 07:58:44 +0000
-Message-ID: <PS1PR0601MB1849DAC59EDA6A9DB62B4EE09C050@PS1PR0601MB1849.apcprd06.prod.outlook.com>
-References: <20201014060632.16085-1-dylan_hung@aspeedtech.com>
- <20201014060632.16085-2-dylan_hung@aspeedtech.com>
- <CACPK8Xe_O44BUaPCEm2j3ZN+d4q6JbjEttLsiCLbWF6GnaqSPg@mail.gmail.com>
-In-Reply-To: <CACPK8Xe_O44BUaPCEm2j3ZN+d4q6JbjEttLsiCLbWF6GnaqSPg@mail.gmail.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: jms.id.au; dkim=none (message not signed)
- header.d=none;jms.id.au; dmarc=none action=none header.from=aspeedtech.com;
-x-originating-ip: [211.20.114.70]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d976cc0f-b323-419a-5806-08d87016f975
-x-ms-traffictypediagnostic: PS1PR06MB2616:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <PS1PR06MB261690EBF2C77A435318CFFE9C050@PS1PR06MB2616.apcprd06.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: SAjARkfB5FNoxVlsdEmOaoXLU/XlcZTiXNHvIpDJIOyLUFhrqlF8xJCZjj/rDKiWznwYXOVNakh0z4RdqpE8ws3ivWCtaCJ+4gruYQO7lrUeDYYXIKgVLXq9zzd6pGe7nagtQMd3bgHxcngcGV7OVQTBgPu7+5jkTNy4MW4C/ahCzOPtpPjPeJAVNFdTWlAhs5pd/eviuVzKsAVnTlj9GFZqc5bw91jMjUtIw5n3PnhYt9y8DrpVGSEALpoyk7W3Iy5Yrrr+D9TzNBJ4G2RNur5cdYpiSTdb3RnEaPkbGcAnpuZ01Uh74KuUxazcQdHYGKZPFP/UMFX0oOaImVPiTg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PS1PR0601MB1849.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(346002)(366004)(396003)(376002)(39840400004)(86362001)(6916009)(4326008)(55236004)(83380400001)(8936002)(55016002)(107886003)(6506007)(71200400001)(2906002)(8676002)(26005)(53546011)(66476007)(9686003)(52536014)(64756008)(5660300002)(186003)(478600001)(66446008)(66946007)(54906003)(316002)(76116006)(66556008)(7696005)(33656002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: rlXi6klrJNsWzqzvd2bcVIwlUOfWrpIe8YpRNBDfihmsaCYG9nod8a6CPAXbpYdVpOhrKXCrAaMRswZ+d3dqPPqjZhYQ2rHPECuT5kQxw+vA+BfdZ+helIzmpaOSb4sisSuLnZ8a7QJJHstlsa8D/B6RON9mDjZZY+skgr3wijnmVdgvI6FrBpsDZJFfffEQL79LxN1WMA/aqyiRo605zdMe/mwBdlTvYyL76mRfsERQD461Dl9jHlF3jI9v2WrtEKJDNieh0uoU/0OypKCIhAzA3FiDKYuybro1b9n6kMEdR6Q182TwO3fSTrDVgKOQCGogSvm3HhVR35u/TvusrgDQavKzHCQRDP3r9eBPGoWIzLSZMWfkBIqVrdflZk2g2ndGwp3Muu7oCdSrQSYRQ00ieRYt7AZdu41X5i4SVnj9qaerkSdNpwatOl2Kcq7QEqAjF9wh/EPdiYz1ur5X5u8Gjif0bEDjZl0kzvwBuatRYZzAlHCVyba5OLxk5WJuNDrXNCs3EdeKzeuiVUnUt4Od/RK9wEGTUYO2VeLOeY+FhIQiMZoNStNoYk6znmWpvtkYc0Bw6yst4g+450BhFOwi5n6GIg3uWrHCJYltYuENJbRl0GO0dntP0dM+6yEqFRuldIsHSFI6dK7YlxRUBQ==
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        linux-rdma@vger.kernel.org,
+        Linux USB Mailing List <linux-usb@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        bridge@lists.linux-foundation.org
+References: <d77b65de-1793-f808-66b5-aaa4e7c8a8f0@gmail.com>
+ <20201013173951.25677bcc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201014054250.GB6305@unreal>
+ <3be8fd19-1c7e-0e05-6039-e5404b2682b9@gmail.com>
+ <20201014075310.GG6305@unreal>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <cb02626b-71bd-360d-c864-5dac2a1a7603@gmail.com>
+Date:   Wed, 14 Oct 2020 09:59:10 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-X-OriginatorOrg: aspeedtech.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PS1PR0601MB1849.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d976cc0f-b323-419a-5806-08d87016f975
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Oct 2020 07:58:44.8524
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43d4aa98-e35b-4575-8939-080e90d5a249
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: HDNegYESYgLml6tBe5j5El7t1+w4mFuw9n+XxtnOPs6m0OuvCHbA/+qpF6kqmylOMMZHrwLqsePBS9gUDchBWmgpcab0umzzhAeW7Nd9L9g=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PS1PR06MB2616
+In-Reply-To: <20201014075310.GG6305@unreal>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgSm9lbCwNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBKb2VsIFN0
-YW5sZXkgW21haWx0bzpqb2VsQGptcy5pZC5hdV0NCj4gU2VudDogV2VkbmVzZGF5LCBPY3RvYmVy
-IDE0LCAyMDIwIDI6NDEgUE0NCj4gVG86IER5bGFuIEh1bmcgPGR5bGFuX2h1bmdAYXNwZWVkdGVj
-aC5jb20+DQo+IENjOiBEYXZpZCBTIC4gTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0PjsgSmFr
-dWIgS2ljaW5za2kNCj4gPGt1YmFAa2VybmVsLm9yZz47IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7
-IExpbnV4IEtlcm5lbCBNYWlsaW5nIExpc3QNCj4gPGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5v
-cmc+OyBQby1ZdSBDaHVhbmcgPHJhdGJlcnRAZmFyYWRheS10ZWNoLmNvbT47DQo+IGxpbnV4LWFz
-cGVlZCA8bGludXgtYXNwZWVkQGxpc3RzLm96bGFicy5vcmc+OyBPcGVuQk1DIE1haWxsaXN0DQo+
-IDxvcGVuYm1jQGxpc3RzLm96bGFicy5vcmc+OyBCTUMtU1cgPEJNQy1TV0Bhc3BlZWR0ZWNoLmNv
-bT4NCj4gU3ViamVjdDogUmU6IFtQQVRDSCAxLzFdIG5ldDogZnRnbWFjMTAwOiBGaXggQXNwZWVk
-IGFzdDI2MDAgVFggaGFuZyBpc3N1ZQ0KPiANCj4gT24gV2VkLCAxNCBPY3QgMjAyMCBhdCAwNjow
-NywgRHlsYW4gSHVuZyA8ZHlsYW5faHVuZ0Bhc3BlZWR0ZWNoLmNvbT4NCj4gd3JvdGU6DQo+ID4N
-Cj4gPiBUaGUgbmV3IEhXIGFyYml0cmF0aW9uIGZlYXR1cmUgb24gQXNwZWVkIGFzdDI2MDAgd2ls
-bCBjYXVzZSBNQUMgVFggdG8NCj4gPiBoYW5nIHdoZW4gaGFuZGxpbmcgc2NhdHRlci1nYXRoZXIg
-RE1BLiAgRGlzYWJsZSB0aGUgcHJvYmxlbWF0aWMNCj4gPiBmZWF0dXJlIGJ5IHNldHRpbmcgTUFD
-IHJlZ2lzdGVyIDB4NTggYml0MjggYW5kIGJpdDI3Lg0KPiANCj4gSGkgRHlsYW4sDQo+IA0KPiBX
-aGF0IGFyZSB0aGUgc3ltcHRvbXMgb2YgdGhpcyBpc3N1ZT8gV2UgYXJlIHNlZWluZyB0aGlzIG9u
-IG91ciBzeXN0ZW1zOg0KPiANCj4gWzI5Mzc2LjA5MDYzN10gV0FSTklORzogQ1BVOiAwIFBJRDog
-OSBhdCBuZXQvc2NoZWQvc2NoX2dlbmVyaWMuYzo0NDINCj4gZGV2X3dhdGNoZG9nKzB4MmYwLzB4
-MmY0DQo+IFsyOTM3Ni4wOTk4OThdIE5FVERFViBXQVRDSERPRzogZXRoMCAoZnRnbWFjMTAwKTog
-dHJhbnNtaXQgcXVldWUgMA0KPiB0aW1lZCBvdXQNCj4gDQoNCk1heSBJIGtub3cgeW91ciBzb2Mg
-dmVyc2lvbj8gVGhpcyBpc3N1ZSBoYXBwZW5zIG9uIGFzdDI2MDAgdmVyc2lvbiBBMS4gIFRoZSBy
-ZWdpc3RlcnMgdG8gZml4IHRoaXMgaXNzdWUgYXJlIG1lYW5pbmdsZXNzL3Jlc2VydmVkIG9uIEEw
-IGNoaXAsIHNvIGl0IGlzIG9rYXkgdG8gc2V0IHRoZW0gb24gZWl0aGVyIEEwIG9yIEExLg0KSSB3
-YXMgZW5jb3VudGVyaW5nIHRoaXMgaXNzdWUgd2hlbiBJIHdhcyBydW5uaW5nIHRoZSBpcGVyZiBU
-WCB0ZXN0LiAgVGhlIHN5bXB0b20gaXMgdGhlIFRYIGRlc2NyaXB0b3JzIGFyZSBjb25zdW1lZCwg
-YnV0IG5vIGNvbXBsZXRlIHBhY2tldCBpcyBzZW50IG91dC4NCg0KPiA+IFNpZ25lZC1vZmYtYnk6
-IER5bGFuIEh1bmcgPGR5bGFuX2h1bmdAYXNwZWVkdGVjaC5jb20+DQo+IA0KPiBUaGlzIGZpeGVz
-IHN1cHBvcnQgZm9yIHRoZSBhc3QyNjAwLCBzbyB3ZSBjYW4gcHV0Og0KPiANCj4gRml4ZXM6IDM5
-YmZhYjg4NDRhMCAoIm5ldDogZnRnbWFjMTAwOiBBZGQgc3VwcG9ydCBmb3IgRFQgcGh5LWhhbmRs
-ZQ0KPiBwcm9wZXJ0eSIpDQo+IA0KPiBSZXZpZXdlZC1ieTogSm9lbCBTdGFubGV5IDxqb2VsQGpt
-cy5pZC5hdT4NCj4gDQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L2ZhcmFkYXkv
-ZnRnbWFjMTAwLmMgfCA1ICsrKysrDQo+ID4gZHJpdmVycy9uZXQvZXRoZXJuZXQvZmFyYWRheS9m
-dGdtYWMxMDAuaCB8IDggKysrKysrKysNCj4gPiAgMiBmaWxlcyBjaGFuZ2VkLCAxMyBpbnNlcnRp
-b25zKCspDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvZmFyYWRh
-eS9mdGdtYWMxMDAuYw0KPiA+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvZmFyYWRheS9mdGdtYWMx
-MDAuYw0KPiA+IGluZGV4IDg3MjM2MjA2MzY2Zi4uMDAwMjRkZDQxMTQ3IDEwMDY0NA0KPiA+IC0t
-LSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZhcmFkYXkvZnRnbWFjMTAwLmMNCj4gPiArKysgYi9k
-cml2ZXJzL25ldC9ldGhlcm5ldC9mYXJhZGF5L2Z0Z21hYzEwMC5jDQo+ID4gQEAgLTE4MTcsNiAr
-MTgxNywxMSBAQCBzdGF0aWMgaW50IGZ0Z21hYzEwMF9wcm9iZShzdHJ1Y3QNCj4gcGxhdGZvcm1f
-ZGV2aWNlICpwZGV2KQ0KPiA+ICAgICAgICAgICAgICAgICBwcml2LT5yeGRlczBfZWRvcnJfbWFz
-ayA9IEJJVCgzMCk7DQo+ID4gICAgICAgICAgICAgICAgIHByaXYtPnR4ZGVzMF9lZG90cl9tYXNr
-ID0gQklUKDMwKTsNCj4gPiAgICAgICAgICAgICAgICAgcHJpdi0+aXNfYXNwZWVkID0gdHJ1ZTsN
-Cj4gPiArICAgICAgICAgICAgICAgLyogRGlzYWJsZSBhc3QyNjAwIHByb2JsZW1hdGljIEhXIGFy
-Yml0cmF0aW9uICovDQo+ID4gKyAgICAgICAgICAgICAgIGlmIChvZl9kZXZpY2VfaXNfY29tcGF0
-aWJsZShucCwgImFzcGVlZCxhc3QyNjAwLW1hYyIpKQ0KPiB7DQo+ID4gKyAgICAgICAgICAgICAg
-ICAgICAgICAgaW93cml0ZTMyKEZUR01BQzEwMF9UTV9ERUZBVUxULA0KPiA+ICsgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICBwcml2LT5iYXNlICsNCj4gRlRHTUFDMTAwX09GRlNFVF9U
-TSk7DQo+ID4gKyAgICAgICAgICAgICAgIH0NCj4gPiAgICAgICAgIH0gZWxzZSB7DQo+ID4gICAg
-ICAgICAgICAgICAgIHByaXYtPnJ4ZGVzMF9lZG9ycl9tYXNrID0gQklUKDE1KTsNCj4gPiAgICAg
-ICAgICAgICAgICAgcHJpdi0+dHhkZXMwX2Vkb3RyX21hc2sgPSBCSVQoMTUpOyBkaWZmIC0tZ2l0
-DQo+ID4gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9mYXJhZGF5L2Z0Z21hYzEwMC5oDQo+ID4gYi9k
-cml2ZXJzL25ldC9ldGhlcm5ldC9mYXJhZGF5L2Z0Z21hYzEwMC5oDQo+ID4gaW5kZXggZTU4NzZh
-M2ZkYTkxLi42M2IzZTAyZmFiMTYgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJu
-ZXQvZmFyYWRheS9mdGdtYWMxMDAuaA0KPiA+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2Zh
-cmFkYXkvZnRnbWFjMTAwLmgNCj4gPiBAQCAtMTY5LDYgKzE2OSwxNCBAQA0KPiA+ICAjZGVmaW5l
-IEZUR01BQzEwMF9NQUNDUl9GQVNUX01PREUgICAgICAoMSA8PCAxOSkNCj4gPiAgI2RlZmluZSBG
-VEdNQUMxMDBfTUFDQ1JfU1dfUlNUICAgICAgICAgKDEgPDwgMzEpDQo+ID4NCj4gPiArLyoNCj4g
-PiArICogdGVzdCBtb2RlIGNvbnRyb2wgcmVnaXN0ZXINCj4gPiArICovDQo+ID4gKyNkZWZpbmUg
-RlRHTUFDMTAwX1RNX1JRX1RYX1ZBTElEX0RJUyAoMSA8PCAyOCkgI2RlZmluZQ0KPiA+ICtGVEdN
-QUMxMDBfVE1fUlFfUlJfSURMRV9QUkVWICgxIDw8IDI3KQ0KPiA+ICsjZGVmaW5lIEZUR01BQzEw
-MF9UTV9ERUZBVUxUDQo+IFwNCj4gPiArICAgICAgIChGVEdNQUMxMDBfVE1fUlFfVFhfVkFMSURf
-RElTIHwNCj4gRlRHTUFDMTAwX1RNX1JRX1JSX0lETEVfUFJFVikNCj4gDQo+IFdpbGwgYXNwZWVk
-IGlzc3VlIGFuIHVwZGF0ZWQgZGF0YXNoZWV0IHdpdGggdGhpcyByZWdpc3RlciBkb2N1bWVudGVk
-Pw0KPiANCj4gDQo+ID4gKw0KPiA+ICAvKg0KPiA+ICAgKiBQSFkgY29udHJvbCByZWdpc3Rlcg0K
-PiA+ICAgKi8NCj4gPiAtLQ0KPiA+IDIuMTcuMQ0KPiA+DQo=
+On 14.10.2020 09:53, Leon Romanovsky wrote:
+> On Wed, Oct 14, 2020 at 08:13:47AM +0200, Heiner Kallweit wrote:
+>> On 14.10.2020 07:42, Leon Romanovsky wrote:
+>>> On Tue, Oct 13, 2020 at 05:39:51PM -0700, Jakub Kicinski wrote:
+>>>> On Mon, 12 Oct 2020 10:00:11 +0200 Heiner Kallweit wrote:
+>>>>> In several places the same code is used to populate rtnl_link_stats64
+>>>>> fields with data from pcpu_sw_netstats. Therefore factor out this code
+>>>>> to a new function dev_fetch_sw_netstats().
+>>>>>
+>>>>> v2:
+>>>>> - constify argument netstats
+>>>>> - don't ignore netstats being NULL or an ERRPTR
+>>>>> - switch to EXPORT_SYMBOL_GPL
+>>>>
+>>>> Applied, thank you!
+>>>
+>>> Jakub,
+>>>
+>>> Is it possible to make sure that changelogs are not part of the commit
+>>> messages? We don't store previous revisions in the git repo, so it doesn't
+>>> give too much to anyone who is looking on git log later. The lore link
+>>> to the patch is more than enough.
+>>>
+>> I remember that once I did it the usual way (changelog below the ---) David
+>> requested the changelog to be part of the commit message. So obviously he
+>> sees some benefit in doing so.
+> 
+> Do you have a link? What is the benefit and how can we use it?
+> 
+https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1873080.html
+
+> Usually such request comes to ensure that commit message is updated with
+> extra information (explanation) existed in changelog which is missing in
+> the patch.
+> 
+> Thanks
+> 
+>>
+>>> 44fa32f008ab ("net: add function dev_fetch_sw_netstats for fetching pcpu_sw_netstats")
+>>>
+>>> Thanks
+>>>
+>>
+
