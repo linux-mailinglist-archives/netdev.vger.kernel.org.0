@@ -2,121 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7608528E75F
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 21:35:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1148328E764
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 21:36:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390401AbgJNTfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 15:35:19 -0400
-Received: from correo.us.es ([193.147.175.20]:33768 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730423AbgJNTfT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Oct 2020 15:35:19 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 5C2886D4F9
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 21:35:18 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 4D17FDA78E
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 21:35:18 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 428C9DA789; Wed, 14 Oct 2020 21:35:18 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id EDE9ADA78A;
-        Wed, 14 Oct 2020 21:35:15 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 14 Oct 2020 21:35:15 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id C11C84301DE0;
-        Wed, 14 Oct 2020 21:35:15 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next] netfilter: restore NF_INET_NUMHOOKS
-Date:   Wed, 14 Oct 2020 21:34:32 +0200
-Message-Id: <20201014193432.3446-1-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
+        id S2390763AbgJNTf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 15:35:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51394 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390744AbgJNTf4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 15:35:56 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC90C061755;
+        Wed, 14 Oct 2020 12:35:56 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1kSmYx-0003tJ-Cz; Wed, 14 Oct 2020 21:35:51 +0200
+Date:   Wed, 14 Oct 2020 21:35:51 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Francesco Ruggeri <fruggeri@arista.com>
+Cc:     Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, coreteam@netfilter.org,
+        netfilter-devel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>
+Subject: Re: [PATCH nf v2] netfilter: conntrack: connection timeout after
+ re-register
+Message-ID: <20201014193551.GD16895@breakpoint.cc>
+References: <CA+HUmGhBxBHU85oFfvoAyP=hG17DG2kgO67eawk1aXmSjehOWQ@mail.gmail.com>
+ <alpine.DEB.2.23.453.2010090838430.19307@blackhole.kfki.hu>
+ <20201009110323.GC5723@breakpoint.cc>
+ <alpine.DEB.2.23.453.2010092035550.19307@blackhole.kfki.hu>
+ <20201009185552.GF5723@breakpoint.cc>
+ <alpine.DEB.2.23.453.2010092132220.19307@blackhole.kfki.hu>
+ <20201009200548.GG5723@breakpoint.cc>
+ <20201014000628.GA15290@salvia>
+ <20201014082341.GA16895@breakpoint.cc>
+ <CA+HUmGij2kddxovowfK=Wt=SB6N2sTLTb1Hs+65MfrZGpv=YWg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+HUmGij2kddxovowfK=Wt=SB6N2sTLTb1Hs+65MfrZGpv=YWg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This definition is used by the iptables legacy UAPI, restore it.
+Francesco Ruggeri <fruggeri@arista.com> wrote:
+> On Wed, Oct 14, 2020 at 1:23 AM Florian Westphal <fw@strlen.de> wrote:
+> >
+> > Pablo Neira Ayuso <pablo@netfilter.org> wrote:
+> > > Legacy would still be flawed though.
+> >
+> > Its fine too, new rule blob gets handled (and match/target checkentry
+> > called) before old one is dismantled.
+> >
+> > We only have a 0 refcount + hook unregister when rules get
+> > flushed/removed explicitly.
+> 
+> Should the patch be used in the meantime while this gets
+> worked out?
 
-Fixes: d3519cb89f6d ("netfilter: nf_tables: add inet ingress support")
-Reported-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Tested-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
-@Jakub: if you please can take this into net-next, it is fixing fallout
-        from the inet ingress support. Thank you.
-
- include/net/netfilter/nf_tables.h | 4 +++-
- include/uapi/linux/netfilter.h    | 4 ++--
- net/netfilter/nf_tables_api.c     | 2 +-
- 3 files changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
-index 3965ce18226f..3f7e56b1171e 100644
---- a/include/net/netfilter/nf_tables.h
-+++ b/include/net/netfilter/nf_tables.h
-@@ -14,6 +14,8 @@
- #include <net/netlink.h>
- #include <net/flow_offload.h>
- 
-+#define NFT_MAX_HOOKS	(NF_INET_INGRESS + 1)
-+
- struct module;
- 
- #define NFT_JUMP_STACK_SIZE	16
-@@ -979,7 +981,7 @@ struct nft_chain_type {
- 	int				family;
- 	struct module			*owner;
- 	unsigned int			hook_mask;
--	nf_hookfn			*hooks[NF_MAX_HOOKS];
-+	nf_hookfn			*hooks[NFT_MAX_HOOKS];
- 	int				(*ops_register)(struct net *net, const struct nf_hook_ops *ops);
- 	void				(*ops_unregister)(struct net *net, const struct nf_hook_ops *ops);
- };
-diff --git a/include/uapi/linux/netfilter.h b/include/uapi/linux/netfilter.h
-index 6a6179af0d7c..ef9a44286e23 100644
---- a/include/uapi/linux/netfilter.h
-+++ b/include/uapi/linux/netfilter.h
-@@ -45,8 +45,8 @@ enum nf_inet_hooks {
- 	NF_INET_FORWARD,
- 	NF_INET_LOCAL_OUT,
- 	NF_INET_POST_ROUTING,
--	NF_INET_INGRESS,
--	NF_INET_NUMHOOKS
-+	NF_INET_NUMHOOKS,
-+	NF_INET_INGRESS = NF_INET_NUMHOOKS,
- };
- 
- enum nf_dev_hooks {
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index f22ad21d0230..7f1c184c00d2 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -1864,7 +1864,7 @@ static int nft_chain_parse_hook(struct net *net,
- 		if (IS_ERR(type))
- 			return PTR_ERR(type);
- 	}
--	if (hook->num > NF_MAX_HOOKS || !(type->hook_mask & (1 << hook->num)))
-+	if (hook->num >= NFT_MAX_HOOKS || !(type->hook_mask & (1 << hook->num)))
- 		return -EOPNOTSUPP;
- 
- 	if (type->type == NFT_CHAIN_T_NAT &&
--- 
-2.20.1
-
+I think the patch is correct, and I do NOT see a better solution.
