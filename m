@@ -2,301 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57CC228E000
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 13:49:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C2BF28E00B
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 13:52:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388364AbgJNLtr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 07:49:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34948 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388327AbgJNLtq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 07:49:46 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3057C061755
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 04:49:45 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id q1so4719475ilt.6
-        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 04:49:45 -0700 (PDT)
+        id S1730819AbgJNLwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 07:52:24 -0400
+Received: from mail-co1nam11on2076.outbound.protection.outlook.com ([40.107.220.76]:16385
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726822AbgJNLwY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Oct 2020 07:52:24 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mDoo0l1yPEKMdqBZBarHotoXnAW+46J/ef95Ed6990p3yjk4muXrADDfano/69Dvz+MooMUF03g4iDlue9CzKkj4VzaptkdT4QKJYmwwYDvirmdkc5awgy+ee60ZydTBxc4GBW3b5K5vwh1sxMAKTFMIlxCfB6g3orr3fW6golrWASslxBzdhRzv6b5RWK7j6DM1pcUq7O0UlRH3J2nRV48dO1V962TM3HfU9Xh8Ru9feM81hSGQUEnPgYWiLIvx/iwB3ze1UTfO8yiy+oiVJeEyCQZy+uwwqgQOf08pDcFRxQwO9v4OZLPy4JBrB0jBBx3CFv2GxVOM7i2xteg6uw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=b+IPhP2Kmrei5f/LsFM+HorqoRrOj/FzsF13ggy24FU=;
+ b=Ene/I6oVQa2VOAGGs+aaeu3CBNJFJVZNHE6IKWtO2D0LayPwgeLGAsv/WPUh5RtqBjgHTEIwYx4mGwmnb1l5BmxGI6B1/nv8YwGYc4LybOkRCu558UpzZDyElU6WHJczVu0/AEJijMNd8QTLyaoaK32WCt4RJZb2fYE9x/SSl6pzl0YaXa1vniZFIJjR1SlUzlc8DhbMvPLEvCL0zedPn3DBbRLIO+3E7fhk6SxLKB3bBgx1iCMBoF59r2zlS/ehMHd87AOjZbqvS9mCSnIE0hOQWDIHS05iZ4kEOL7Dcn30DO5Hd/f3eVlgqLXch1HEh4K6hsJSHRoL6th3+VsR1A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=ZNJolRz2m/OrIIPEVWnU6jnci1i43YaodPxZ7EspMqk=;
-        b=f02vCXkq0h2K6O9fLtRbGFGSGVtxhRymYov9DOr6tELJocnbrQ8bU3J9M0v6dC5Ex5
-         i+yfmbsD6xOabkNEtsK5zrW1mQk6e/xlyD1DoRYEWT7eDd0YWVYVJOGGJRp72TxQEO7G
-         BFZTon1M1pXuXdOG1gr8jAPBk7aO8w+fjNqHlcPVPV0enE+9bCpYK1zdlKAxONHirGAM
-         jLoQpTTqKZL368s4P2ABGpMDqnfoT7ryux2xHR9KWx+SdIrRTsG5xnainT4HfRqxEcue
-         BBrrkxOCIkCw7aHdw8qX6trc7vU4UZjr2VbPNMfHQ14xvkeaxl7SnRLKcN88E0IBPUhP
-         5wdQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=ZNJolRz2m/OrIIPEVWnU6jnci1i43YaodPxZ7EspMqk=;
-        b=O7fznS3Hs0nFuYJDgnlMgtnOCFUwL4PFLsaaMZFqWiBS6xj/+Ywe9eO54jfKLED5FV
-         DP0Mit0Nac8AKcIv4gkf4VXYvdUBCYNu6ylghRvtghTqhIFKGZcpepGweWS/nYowCjVg
-         XRDBL/4fMFHhhq6A00e2ECjtbmmp7DLFzWKduZzPlLmyDwv9u5f6NvjQlaOetkV0E4uu
-         I5Pue1a3PhQyWDmJZJYGJhKOErQNLJlT0NzJjSIr8K/VujPuz99noPIZSbEto8+GTnI9
-         MlDvbh253A3cT3ED2SrfFnP4rt7fiYjvbGz9ua7EQdDfqLioxnOYkbRHGYpKK8RuNX4N
-         GI7Q==
-X-Gm-Message-State: AOAM5311NVw4JIBqLpi9diT6eatK4gWOANKSrRGAj7M3JhESH0DJwpxD
-        gCw1yDsdBC/LBwvXUPGuSi2yjenWCrGW1jK3G177mw==
-X-Google-Smtp-Source: ABdhPJyC1vnhl27SGg71MW38ft3eslfIQYWPY565caESAFYaSdD58mPgpHtzcFsGirfJNvR4iu3qqZqZ7lXGw1AoQ8A=
-X-Received: by 2002:a92:9944:: with SMTP id p65mr3301909ili.127.1602676184947;
- Wed, 14 Oct 2020 04:49:44 -0700 (PDT)
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=b+IPhP2Kmrei5f/LsFM+HorqoRrOj/FzsF13ggy24FU=;
+ b=gXFhIwg/2fMES5BojVs/UXMH197a1ZK02Coi3SMSuhS2OfxsqWURhKEcJ/850QCT9AApTNnhw1XqFM3Us90ORIPxRkAqzkhLh42xgUdqmox2NG7sLqSbNFXmYKuUf33qHpsSeyWh6vqclzCet+Qqgwfc8xpMJFSgB+4TIeNLfU8=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=silabs.com;
+Received: from SN6PR11MB2718.namprd11.prod.outlook.com (2603:10b6:805:63::18)
+ by SN6PR11MB2893.namprd11.prod.outlook.com (2603:10b6:805:dc::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.21; Wed, 14 Oct
+ 2020 11:52:21 +0000
+Received: from SN6PR11MB2718.namprd11.prod.outlook.com
+ ([fe80::4f5:fbe5:44a7:cb8a]) by SN6PR11MB2718.namprd11.prod.outlook.com
+ ([fe80::4f5:fbe5:44a7:cb8a%5]) with mapi id 15.20.3455.031; Wed, 14 Oct 2020
+ 11:52:21 +0000
+From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
+To:     Pali =?ISO-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH 07/23] wfx: add bus_sdio.c
+Date:   Wed, 14 Oct 2020 13:52:15 +0200
+Message-ID: <2628294.9EgBEFZmRI@pc-42>
+Organization: Silicon Labs
+In-Reply-To: <20201013201156.g27gynu5bhvaubul@pali>
+References: <20201012104648.985256-1-Jerome.Pouiller@silabs.com> <20201012104648.985256-8-Jerome.Pouiller@silabs.com> <20201013201156.g27gynu5bhvaubul@pali>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-Originating-IP: [82.67.86.106]
+X-ClientProxiedBy: DM5PR07CA0100.namprd07.prod.outlook.com
+ (2603:10b6:4:ae::29) To SN6PR11MB2718.namprd11.prod.outlook.com
+ (2603:10b6:805:63::18)
 MIME-Version: 1.0
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Wed, 14 Oct 2020 17:19:33 +0530
-Message-ID: <CA+G9fYv=zPRGCKyhi9DeUsvyb6ZLVVXdV3hW+15XnQN2R3ircQ@mail.gmail.com>
-Subject: selftests: netfilter: nft_nat.sh: /dev/stdin:2:9-15: Error: syntax
- error, unexpected counter
-To:     "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, netfilter-devel@vger.kernel.org,
-        Netdev <netdev@vger.kernel.org>, lkft-triage@lists.linaro.org
-Cc:     pablo@netfilter.org, Florian Westphal <fw@strlen.de>,
-        fabf@skynet.be, Shuah Khan <shuah@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Anders Roxell <anders.roxell@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from pc-42.localnet (82.67.86.106) by DM5PR07CA0100.namprd07.prod.outlook.com (2603:10b6:4:ae::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.21 via Frontend Transport; Wed, 14 Oct 2020 11:52:18 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 836a45e2-d48e-4431-2e80-08d870379b52
+X-MS-TrafficTypeDiagnostic: SN6PR11MB2893:
+X-Microsoft-Antispam-PRVS: <SN6PR11MB2893755A4059BC7942E7305D93050@SN6PR11MB2893.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FiIC40Fy6cQHK1pF8DlSw0Lot9isxPUyhqp3ltJipnRP40YjH155KPGZ8fQn/y2Gzm687xL1HDX3RdbjrgAJUcSHvj/JoXvOh7JeA4ob8L7Y219hPYO6A+LGJ8dFEy+Sq12AzM9VDWSJl+pKBE2UqugR4v+8ylfxK/6SFP5ghuy1mx6fOeDt/D2Mx9kk5OCeFz4Ml/P4CJBQe7o9XMbNWTUlA24Dutvknqv2pPNtrpwcsF6JE7oe0il12OllqGSu16yH11QjAibsu3AJCsMronJQ2XgIQcWnyAbWaqQSmFRsc+GufboVNv80YiKxEemIWAbV3kOJfaaWqGskL7iQjx04xzgtDauo9PDipKelMol749wgRv56AMGTQjPcQSty
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB2718.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(39850400004)(366004)(136003)(376002)(346002)(396003)(66556008)(66476007)(54906003)(8676002)(316002)(6506007)(6486002)(9686003)(66574015)(6512007)(6916009)(5660300002)(7416002)(8936002)(4326008)(86362001)(478600001)(52116002)(2906002)(66946007)(26005)(186003)(956004)(33716001)(36916002)(83380400001)(16526019)(6666004)(39026012);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 2445WES+e9wE0ygrPmUVFANfPe56hqfhoNSeiwmMq3P2dK32Cs34P9LBB1T5VtudGsxb4Zfb+3GWPogBxvUpBfd7980ULqOBNdHOA6ytEWCovdPbL9h/MO4bxi1LU3xQFnU5VcCoLAu8HWrdLyZkgAACYxHW9Nit2AjZDrPgpQcc25wTl7AESmQugWrejGWJVPSXmlDxy5fY1xPQ1LrAclIv83DZJ9zWIhdtQyEwenTl0ySjnU4Cjyw0e39xk3KRBsTs7U+witG0bvPkHhxYfwxqqQJxns2t+IAPs+soqwE1p1xfWsmQLt2iAUwexjPa9kVeQn+0fDO0bR9yb7ePAsDV8eSRsmDkGm/xbDmcgAhRrIqhOfHdHcRnuZ2o7W8nXteRuBfV9NrHXwd4FOuwwuKoBfHAybVXLtUJOYIFsAyOsZum7Sh5ahhdRtcF/lfjZ/Ek0Ze8IUvQzyx4eyx9GrTZsG81tgCpb3UbUqqH5c2A0GXnGDJvkKp/sXF3MBt2ZK1VmMyVZWkvopTDwm4SDOewoE38OHpddN7hHLXUVaw2TAi0Pki1N3MyL6mZrvaz/EU6wmEVX32Ifdthd+aRlC0B8CnrLA3P3m1DsgwfNd5ahsuEx58l98jWvFnsgjWh+j1DR9dAjoLhDSWl9Mc7yA==
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 836a45e2-d48e-4431-2e80-08d870379b52
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB2718.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2020 11:52:20.8899
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: C1bpE0MFkrQ6bQMUGQXiTpoQCrIrD2UITrZf1Q24nhcIZkupPan2i8C0R1FMkeQo/vr4e4cN9VV5wKjqUoxaKg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB2893
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While running kselftest netfilter test on x86_64 devices linux next
-tag 20201013 kernel
-these errors are noticed. This not specific to kernel version we have
-noticed these errors
-earlier also.
+Hello Pali,
 
-Am I missing configs ?
-Please refer to the config file we are using.
-We are using the minimal busybox shell.
-BusyBox v1.27.2 (2020-07-17 18:42:50 UTC) multi-call binary.
+On Tuesday 13 October 2020 22:11:56 CEST Pali Roh=E1r wrote:
+> Hello!
+>=20
+> On Monday 12 October 2020 12:46:32 Jerome Pouiller wrote:
+> > +#define SDIO_VENDOR_ID_SILABS        0x0000
+> > +#define SDIO_DEVICE_ID_SILABS_WF200  0x1000
+> > +static const struct sdio_device_id wfx_sdio_ids[] =3D {
+> > +     { SDIO_DEVICE(SDIO_VENDOR_ID_SILABS, SDIO_DEVICE_ID_SILABS_WF200)=
+ },
+>=20
+> Please move ids into common include file include/linux/mmc/sdio_ids.h
+> where are all SDIO ids. Now all drivers have ids defined in that file.
+>=20
+> > +     // FIXME: ignore VID/PID and only rely on device tree
+> > +     // { SDIO_DEVICE(SDIO_ANY_ID, SDIO_ANY_ID) },
+>=20
+> What is the reason for ignoring vendor and device ids?
 
-metadata:
-  git branch: master
-  git repo: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-  git commit: f2fb1afc57304f9dd68c20a08270e287470af2eb
-  git describe: next-20201013
-  make_kernelversion: 5.9.0
-  kernel-config:
-http://snapshots.linaro.org/openembedded/lkft/lkft/sumo/intel-corei7-64/lkft/linux-next/879/config
+The device has a particularity, its VID/PID is 0000:1000 (as you can see
+above). This value is weird. The risk of collision with another device is
+high.
 
-Test output log:
---------------------
-selftests: netfilter: nft_nat.sh
-[ 1207.251385] IPv6: ADDRCONF(NETDEV_CHANGE): veth0: link becomes ready
-[ 1207.342479] IPv6: ADDRCONF(NETDEV_CHANGE): veth1: link becomes ready
-# /dev/stdin:2:9-15: Error: syntax error, unexpected counter
-# counter ns0in {}
-#         ^^^^^^^
-# /dev/stdin:3:9-15: Error: syntax error, unexpected counter
-# counter ns1in {}
-#         ^^^^^^^
-# /dev/stdin:4:9-15: Error: syntax error, unexpected counter
-# counter ns2in {}
-#         ^^^^^^^
-# /dev/stdin:6:9-15: Error: syntax error, unexpected counter
-# counter ns0out {}
-#         ^^^^^^^
+So, maybe the device should be probed only if it appears in the DT. Since
+WF200 targets embedded platforms, I don't think it is a problem to rely on
+DT. You will find another FIXME further in the code about that:
 
-<trim>
++               dev_warn(&func->dev,
++                        "device is not declared in DT, features will be li=
+mited\n");
++               // FIXME: ignore VID/PID and only rely on device tree
++               // return -ENODEV;
 
-# /dev/stdin:12:9-15: Error: syntax error, unexpected counter
-# counter ns2in6 {}
-#         ^^^^^^^
-# /dev/stdin:14:9-15: Error: syntax error, unexpected counter
-# counter ns0out6 {}
-#         ^^^^^^^
-[ 1208.229989] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
-# <cmdline>:1:6-12: Error: syntax error, unexpected counter
-# list counter inet filter ns0in
-#      ^^^^^^^
-# ERROR: ns0in counter in ns1-loU9Vlmj has unexpected value (expected
-packets 1 bytes 84) at check_counters 1
-# <cmdline>:1:6-12: Error: syntax error, unexpected counter
-# list counter inet filter ns0in
-#      ^^^^^^^
-# <cmdline>:1:6-12: Error: syntax error, unexpected counter
-# list counter inet filter ns0out
-#      ^^^^^^^
-# ERROR: ns0out counter in ns1-loU9Vlmj has unexpected value (expected
-packets 1 bytes 84) at check_counters 2
-# <cmdline>:1:6-12: Error: syntax error, unexpected counter
-# list counter inet filter ns0out
-#      ^^^^^^^
-# <cmdline>:1:6-12: Error: syntax error, unexpected counter
-# list counter inet filter ns0in6
+However, it wouldn't be usual way to manage SDIO devices (and it is the
+reason why the code is commented out).
 
-# ERROR: ns1 counter in ns0-loU9Vlmj has unexpected value (expected
-packets 1 bytes 104) at check_ns0_counters 5
-# <cmdline>:1:6-12: Error: syntax error, unexpected counter
-# list counter inet filter ns1
-#      ^^^^^^^
+Anyway, if we choose to rely on the DT, should we also check the VID/PID?
 
-<trim>
+Personally, I am in favor to probe the device only if VID/PID match and if
+a DT node is found, even if it is not the usual way.
 
-# <cmdline>:1:16-19: Error: syntax error, unexpected inet
-# reset counters inet
-#                ^^^^
-# <cmdline>:1:16-19: Error: syntax error, unexpected inet
-# reset counters inet
-#                ^^^^
-# FAIL: nftables v0.7 (Scrooge McDuck)
-not ok 2 selftests: netfilter: nft_nat.sh # exit=1
-# selftests: netfilter: bridge_brouter.sh
-# SKIP: Could not run test without ebtables
-ok 3 selftests: netfilter: bridge_brouter.sh # SKIP
-# selftests: netfilter: conntrack_icmp_related.sh
-[ 1215.679815] IPv6: ADDRCONF(NETDEV_CHANGE): veth0: link becomes ready
-[ 1215.698932] IPv6: ADDRCONF(NETDEV_CHANGE): veth0: link becomes ready
-[ 1215.711612] IPv6: ADDRCONF(NETDEV_CHANGE): veth0: link becomes ready
-[ 1216.678043] IPv6: ADDRCONF(NETDEV_CHANGE): eth1: link becomes ready
-# internal:0:0-0: Error: Could not open file \"-\": No such file or directory
-#
-#
-# internal:0:0-0: Error: Could not open file \"-\": No such file or directory
-#
-#
-# internal:0:0-0: Error: Could not open file \"-\": No such file or directory
-#
-#
-# internal:0:0-0: Error: Could not open file \"-\": No such file or directory
-#
-#
-# internal:0:0-0: Error: Could not open file \"-\": No such file or directory
-#
-#
-# <cmdline>:1:6-12: Error: syntax error, unexpected counter
-# list counter inet filter unknown
-#      ^^^^^^^
-# ERROR: counter unknown in nsclient1 has unexpected value (expected
-packets 0 bytes 0)
-# <cmdline>:1:6-12: Error: syntax error, unexpected counter
-# list counter inet filter unknown
-#      ^^^^^^^
+--=20
+J=E9r=F4me Pouiller
 
-<trim>
 
-# ERROR: counter related in nsclient1 has unexpected value (expected
-packets 2 bytes 1856)
-# <cmdline>:1:6-12: Error: syntax error, unexpected counter
-# list counter inet filter related
-#      ^^^^^^^
-# ERROR: icmp error RELATED state test has failed
-not ok 4 selftests: netfilter: conntrack_icmp_related.sh # exit=1
-# selftests: netfilter: nft_flowtable.sh
-# Cannot create namespace file \"/var/run/netns/ns1\": File exists
-[ 1230.570705] IPv6: ADDRCONF(NETDEV_CHANGE): veth0: link becomes ready
-[ 1230.757525] IPv6: ADDRCONF(NETDEV_CHANGE): veth0: link becomes ready
-[ 1230.843221] IPv6: ADDRCONF(NETDEV_CHANGE): veth1: link becomes ready
-# internal:0:0-0: Error: Could not open file \"-\": No such file or directory
-#
-#
-# PASS: netns routing/connectivity: ns1 can reach ns2
-# BusyBox v1.27.2 (2020-07-17 18:42:50 UTC) multi-call binary.
-#
-# Usage: nc [IPADDR PORT]
-# BusyBox v1.27.2 (2020-07-17 18:42:50 UTC) multi-call binary.
-#
-# Usage: nc [IPADDR PORT]
-# FAIL: file mismatch for ns1 -> ns2
-# -rw------- 1 root root 1079296 Oct 13 09:54 /tmp/tmp.EyNCJDBncG
-# -rw------- 1 root root 0 Oct 13 09:54 /tmp/tmp.CR5cdEqIHB
-# FAIL: file mismatch for ns1 <- ns2
-# -rw------- 1 root root 4677632 Oct 13 09:54 /tmp/tmp.NkSMo4ZijB
-# -rw------- 1 root root 0 Oct 13 09:54 /tmp/tmp.irBE9wPUAV
-# FAIL: flow offload for ns1/ns2:
-# internal:0:0-0: Error: Could not open file \"-\": No such file or directory
-#
-#
-# BusyBox v1.27.2 (2020-07-17 18:42:50 UTC) multi-call binary.
-#
-# Usage: nc [IPADDR PORT]
-# BusyBox v1.27.2 (2020-07-17 18:42:50 UTC) multi-call binary.
-#
-# Usage: nc [IPADDR PORT]
-# FAIL: file mismatch for ns1 -> ns2
-# -rw------- 1 root root 1079296 Oct 13 09:54 /tmp/tmp.EyNCJDBncG
-# -rw------- 1 root root 0 Oct 13 09:54 /tmp/tmp.CR5cdEqIHB
-# FAIL: file mismatch for ns1 <- ns2
-# -rw------- 1 root root 4677632 Oct 13 09:54 /tmp/tmp.NkSMo4ZijB
-# -rw------- 1 root root 0 Oct 13 09:54 /tmp/tmp.irBE9wPUAV
-# FAIL: flow offload for ns1/ns2 with NAT
-# <cmdline>:1:1-23: Error: Could not process rule: Table 'filter' does not exist
-# list table inet filter
-# ^^^^^^^^^^^^^^^^^^^^^^^
-# <cmdline>:1:32-32: Error: syntax error, unexpected newline, expecting handle
-# delete rule inet filter forward
-#                                ^
-# FAIL: Could not delete large-packet accept rule
-not ok 5 selftests: netfilter: nft_flowtable.sh # exit=1
-# selftests: netfilter: ipvs.sh
-# skip: could not run test without ipvs module
-ok 6 selftests: netfilter: ipvs.sh # SKIP
-# selftests: netfilter: nft_concat_range.sh
-# TEST: reported issues
-#   Add two elements, flush, re-add                               [
-1240.096121] kauditd_printk_skb: 40 callbacks suppressed
-[ 1240.096124] audit: type=1325 audit(1602582894.032:87830):
-table=t:72;?:0 family=2 entries=1 op=nft_register_table pid=9084
-subj=kernel comm=\"nft\"
-[ 1240.114551] audit: type=1325 audit(1602582894.032:87830):
-table=t:72;s:1 family=2 entries=0 op=nft_register_set pid=9084
-subj=kernel comm=\"nft\"
-[ 1240.127450] audit: type=1325 audit(1602582894.032:87830):
-table=?:0;?:0 family=0 entries=2 op=nft_register_gen pid=9084
-subj=kernel comm=\"nft\"
-[FAIL]
-[ 1240.169015] audit: type=1325 audit(1602582894.105:87831):
-table=t:72;s:1 family=2 entries=0 op=nft_unregister_set pid=9087
-subj=kernel comm=\"nft\"
-[ 1240.182153] audit: type=1325 audit(1602582894.105:87831):
-table=t:72;?:0 family=2 entries=0 op=nft_unregister_table pid=9087
-subj=kernel comm=\"nft\"
-[ 1240.195412] audit: type=1325 audit(1602582894.105:87831):
-table=?:0;?:0 family=0 entries=3 op=nft_register_gen pid=9087
-subj=kernel comm=\"nft\"
-not ok 7 selftests: netfilter: nft_concat_range.sh # exit=1
-# selftests: netfilter: nft_conntrack_helper.sh
-# SKIP: Could not run test without conntrack tool
-ok 8 selftests: netfilter: nft_conntrack_helper.sh # SKIP
-# selftests: netfilter: nft_queue.sh
-[ 1242.587245] IPv6: ADDRCONF(NETDEV_CHANGE): veth0: link becomes ready
-[ 1242.605473] IPv6: ADDRCONF(NETDEV_CHANGE): veth1: link becomes ready
-# internal:0:0-0: Error: Could not open file \"-\": No such file or directory
-#
-#
-[ 1243.557996] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
-# PASS: ns1-4ngWFkmc can reach ns2-4ngWFkmc
-# internal:0:0-0: Error: Could not open file \"-\": No such file or directory
-#
-#
-# FAIL: ip expected failure, got 0
-not ok 9 selftests: netfilter: nft_queue.sh # exit=1
-# selftests: netfilter: nft_meta.sh
-# /dev/stdin:2:9-15: Error: syntax error, unexpected counter
-# counter iifcount {}
-#         ^^^^^^^
-# /dev/stdin:3:9-15: Error: syntax error, [ 1245.942205] kselftest:
-Running tests in nsfs
-unexpected counter
-# counter iifnamecount {}
-#         ^^^^^^^
-# /dev/stdin:4:9-15: Error: syntax error, unexpected counter
-# counter iifgroupcount {}
-#         ^^^^^^^
-
-<trim>
-
-# /dev/stdin:11:9-15: Error: syntax error, unexpected counter
-# counter icurrentyearc[ 1246.027275] kselftest: Running tests in pidfd
-ounter {}
-#         ^^^^^^^
-# SKIP: Could not add test ruleset
-
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-
-Full test log link,
-https://lkft.validation.linaro.org/scheduler/job/1839013#L12339
-
--- 
-Linaro LKFT
-https://lkft.linaro.org
