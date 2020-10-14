@@ -2,74 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D56A028DB22
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 10:24:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D422D28DBA1
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 10:34:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728516AbgJNIXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 04:23:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59342 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726320AbgJNIXt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 04:23:49 -0400
-Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1A7BC051111;
-        Wed, 14 Oct 2020 01:23:50 -0700 (PDT)
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1kSc4T-0000RN-HK; Wed, 14 Oct 2020 10:23:41 +0200
-Date:   Wed, 14 Oct 2020 10:23:41 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, coreteam@netfilter.org,
-        netfilter-devel@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Subject: Re: [PATCH nf v2] netfilter: conntrack: connection timeout after
- re-register
-Message-ID: <20201014082341.GA16895@breakpoint.cc>
-References: <20201007193252.7009D95C169C@us180.sjc.aristanetworks.com>
- <CA+HUmGhBxBHU85oFfvoAyP=hG17DG2kgO67eawk1aXmSjehOWQ@mail.gmail.com>
- <alpine.DEB.2.23.453.2010090838430.19307@blackhole.kfki.hu>
- <20201009110323.GC5723@breakpoint.cc>
- <alpine.DEB.2.23.453.2010092035550.19307@blackhole.kfki.hu>
- <20201009185552.GF5723@breakpoint.cc>
- <alpine.DEB.2.23.453.2010092132220.19307@blackhole.kfki.hu>
- <20201009200548.GG5723@breakpoint.cc>
- <20201014000628.GA15290@salvia>
+        id S1729087AbgJNIdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 04:33:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54714 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728529AbgJNIdj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Oct 2020 04:33:39 -0400
+Received: from localhost (unknown [213.57.247.131])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0D8EC20BED;
+        Wed, 14 Oct 2020 08:33:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602664421;
+        bh=/dGk88bZs3Ic6n91kz7PXwwQ+Cneh7yiXetXdzrM3Qg=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=J0FGzleLohyyZw/qGL9hzcktx4vPA2EWddr7acwRoTbMHX+8V06iva4bmTnmgabb3
+         xglAFl+u2v7dUp7UPNuw0WjK0WCknlx3tSoBiZBEutnjeNZ3fmjzId0zkemPtgwMYC
+         95Feopd2RItcnVSgVJrneWxst3xYmbg6Il2pH7P4=
+Date:   Wed, 14 Oct 2020 11:33:36 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        Oliver Neukum <oneukum@suse.com>,
+        Igor Mitsyanko <imitsyanko@quantenna.com>,
+        Sergey Matyukevich <geomatsi@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        linux-rdma@vger.kernel.org,
+        Linux USB Mailing List <linux-usb@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        bridge@lists.linux-foundation.org
+Subject: Re: [PATCH net-next v2 00/12] net: add and use function
+ dev_fetch_sw_netstats for fetching pcpu_sw_netstats
+Message-ID: <20201014083336.GH6305@unreal>
+References: <d77b65de-1793-f808-66b5-aaa4e7c8a8f0@gmail.com>
+ <20201013173951.25677bcc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20201014054250.GB6305@unreal>
+ <3be8fd19-1c7e-0e05-6039-e5404b2682b9@gmail.com>
+ <20201014075310.GG6305@unreal>
+ <cb02626b-71bd-360d-c864-5dac2a1a7603@gmail.com>
+ <fde05983ff9bc6584ad7ee5136b9f9f17902e600.camel@sipsolutions.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201014000628.GA15290@salvia>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <fde05983ff9bc6584ad7ee5136b9f9f17902e600.camel@sipsolutions.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pablo Neira Ayuso <pablo@netfilter.org> wrote:
-> > Yes, we iterate table on re-register and modify the existing entries.
-> 
-> For iptables-nft, it might be possible to avoid this deregister +
-> register ct hooks in the same transaction: Maybe add something like
-> nf_ct_netns_get_all() to bump refcounters by one _iff_ they are > 0
-> before starting the transaction processing, then call
-> nf_ct_netns_put_all() which decrements refcounters and unregister
-> hooks if they reach 0.
+On Wed, Oct 14, 2020 at 10:01:20AM +0200, Johannes Berg wrote:
+> On Wed, 2020-10-14 at 09:59 +0200, Heiner Kallweit wrote:
+> >
+> > > Do you have a link? What is the benefit and how can we use it?
+> > >
+> > https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1873080.html
 
-No need, its already fine.  Decrement happens from destroy path,
-so new rules are already in place.
+So why is it usable?
+The combination of Link, b4 and git range-diff gives everything in much
+more reliable way.
 
-> The only problem with this approach is that this pulls in the
-> conntrack module, to solve that, struct nf_ct_hook in
-> net/netfilter/core.c could be used to store the reference to
-> ->netns_get_all and ->net_put_all.
-> 
-> Legacy would still be flawed though.
+>
+> There was also a long discussion a year or so back, starting at
+>
+> http://lore.kernel.org/r/7b73e1b7-cc34-982d-2a9c-acf62b88da16@linuxfoundation.org
 
-Its fine too, new rule blob gets handled (and match/target checkentry
-called) before old one is dismantled.
+I participated in that discussion too :)
 
-We only have a 0 refcount + hook unregister when rules get
-flushed/removed explicitly.
+Thanks
+
+>
+> johannes
+>
