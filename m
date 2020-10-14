@@ -2,139 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34F9628DFE5
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 13:37:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 005F928DFED
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 13:41:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387992AbgJNLhv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 07:37:51 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:57896 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387867AbgJNLhv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 07:37:51 -0400
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1602675469;
+        id S2388281AbgJNLlk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 07:41:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:42300 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388177AbgJNLle (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 07:41:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602675692;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=fgQVMv6QFJMTaseF5aPPZGWUnwUKlJlJ27Irewy1FdI=;
-        b=14ZGnGcnpWvkGYSiiAbRoXiY6OZARP9jjRty74t4nUi4e2P6ZIpePsci7LE6hXwnD87ND/
-        ja7UJ/DiFotNZavJE/h0cpS1TC2Qlh9kj0ctNE7+3FXmQXS3/7YKCNtV5Tx2YIJT18k5aJ
-        RnFDBTcN07JpDPMLlVLEwca4wugmGYw0z1H9+IFtjoHJgoenPH4Mc7e4ti13QaUyAP0wQb
-        +WRP3c/DZjN/JCqfFWM7af5Jk3YVqW8120eJHcKL1bxU6aAwrE/ASiJ3QjiP+o82GRIadF
-        h7Jz7V6nRryTnzNxcYW4raN2AVOiF3Y+nq1vDGVainswwx81KwO9Ba1S9H+qkw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1602675469;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=fgQVMv6QFJMTaseF5aPPZGWUnwUKlJlJ27Irewy1FdI=;
-        b=yzl/hEDh/R9P0pJa6SqIQ+/FpwJPr5TTzRCavXIkLp+cVOVlvYvNHl45lFrt53QGgzdsRc
-        k8rIin985AKDJvCw==
-To:     Richard Cochran <richardcochran@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH net-next v6 4/7] net: dsa: hellcreek: Add support for hardware timestamping
-In-Reply-To: <20201014110113.GA1646@hoboy>
-References: <87lfgiqpze.fsf@kurt> <20201007105458.gdbrwyzfjfaygjke@skbuf> <87362pjev0.fsf@kurt> <20201008094440.oede2fucgpgcfx6a@skbuf> <87lfghhw9u.fsf@kurt> <f040ba36070dd1e07b05cc63a392d8267ce4efe2.camel@hs-offenburg.de> <20201008150951.elxob2yaw2tirkig@skbuf> <65ecb62de9940991971b965cbd5b902ae5daa09b.camel@hs-offenburg.de> <20201012214254.GA1310@hoboy> <20201014095747.xlt3xodch7tlhrhr@skbuf> <20201014110113.GA1646@hoboy>
-Date:   Wed, 14 Oct 2020 13:37:47 +0200
-Message-ID: <87eem111is.fsf@kurt>
+        bh=v3IxCdR5UIFXc9Mc6E/qqs0EKX5r/+I61Pl8lD+E/EQ=;
+        b=eNE4T3N/8k+Mmxdnc2TpKUQgrvQR5ZrRV0fhPlBtgU74HwWjuW6vBGsIZBXCKXSW4QYFAq
+        MjswfKkjtO24+HtvdRoXWacMR4nuBE1tMALrQSRezZV+1mugUtkQF2u03W01ECZDppJ9FN
+        ig/YRyeluiPw32/0WUcUE73ALpA8DjY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-500-CRMkafWXMgybo9GQOB-Dgg-1; Wed, 14 Oct 2020 07:41:27 -0400
+X-MC-Unique: CRMkafWXMgybo9GQOB-Dgg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3F9A510866A9;
+        Wed, 14 Oct 2020 11:41:26 +0000 (UTC)
+Received: from [10.72.13.215] (ovpn-13-215.pek2.redhat.com [10.72.13.215])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BF01A5D9CD;
+        Wed, 14 Oct 2020 11:41:18 +0000 (UTC)
+Subject: Re: [PATCH v3 2/2] vhost-vdpa: fix page pinning leakage in error path
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        si-wei liu <si-wei.liu@oracle.com>
+Cc:     lingshan.zhu@intel.com, joao.m.martins@oracle.com,
+        boris.ostrovsky@oracle.com, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+References: <1601701330-16837-1-git-send-email-si-wei.liu@oracle.com>
+ <1601701330-16837-3-git-send-email-si-wei.liu@oracle.com>
+ <574a64e3-8873-0639-fe32-248cb99204bc@redhat.com>
+ <5F863B83.6030204@oracle.com> <20201014025025-mutt-send-email-mst@kernel.org>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <06322c3a-24b1-1fc7-6914-57a920271738@redhat.com>
+Date:   Wed, 14 Oct 2020 19:41:17 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+In-Reply-To: <20201014025025-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
 
-On Wed Oct 14 2020, Richard Cochran wrote:
-> On Wed, Oct 14, 2020 at 12:57:47PM +0300, Vladimir Oltean wrote:
->> So the discussion is about how to have the cake and eat it at the same
->> time.
+On 2020/10/14 下午2:52, Michael S. Tsirkin wrote:
+> On Tue, Oct 13, 2020 at 04:42:59PM -0700, si-wei liu wrote:
+>> On 10/9/2020 7:27 PM, Jason Wang wrote:
+>>> On 2020/10/3 下午1:02, Si-Wei Liu wrote:
+>>>> Pinned pages are not properly accounted particularly when
+>>>> mapping error occurs on IOTLB update. Clean up dangling
+>>>> pinned pages for the error path. As the inflight pinned
+>>>> pages, specifically for memory region that strides across
+>>>> multiple chunks, would need more than one free page for
+>>>> book keeping and accounting. For simplicity, pin pages
+>>>> for all memory in the IOVA range in one go rather than
+>>>> have multiple pin_user_pages calls to make up the entire
+>>>> region. This way it's easier to track and account the
+>>>> pages already mapped, particularly for clean-up in the
+>>>> error path.
+>>>>
+>>>> Fixes: 4c8cf31885f6 ("vhost: introduce vDPA-based backend")
+>>>> Signed-off-by: Si-Wei Liu<si-wei.liu@oracle.com>
+>>>> ---
+>>>> Changes in v3:
+>>>> - Factor out vhost_vdpa_map() change to a separate patch
+>>>>
+>>>> Changes in v2:
+>>>> - Fix incorrect target SHA1 referenced
+>>>>
+>>>>    drivers/vhost/vdpa.c | 119
+>>>> ++++++++++++++++++++++++++++++---------------------
+>>>>    1 file changed, 71 insertions(+), 48 deletions(-)
+>>>>
+>>>> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+>>>> index 0f27919..dad41dae 100644
+>>>> --- a/drivers/vhost/vdpa.c
+>>>> +++ b/drivers/vhost/vdpa.c
+>>>> @@ -595,21 +595,19 @@ static int
+>>>> vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+>>>>        struct vhost_dev *dev = &v->vdev;
+>>>>        struct vhost_iotlb *iotlb = dev->iotlb;
+>>>>        struct page **page_list;
+>>>> -    unsigned long list_size = PAGE_SIZE / sizeof(struct page *);
+>>>> +    struct vm_area_struct **vmas;
+>>>>        unsigned int gup_flags = FOLL_LONGTERM;
+>>>> -    unsigned long npages, cur_base, map_pfn, last_pfn = 0;
+>>>> -    unsigned long locked, lock_limit, pinned, i;
+>>>> +    unsigned long map_pfn, last_pfn = 0;
+>>>> +    unsigned long npages, lock_limit;
+>>>> +    unsigned long i, nmap = 0;
+>>>>        u64 iova = msg->iova;
+>>>> +    long pinned;
+>>>>        int ret = 0;
+>>>>          if (vhost_iotlb_itree_first(iotlb, msg->iova,
+>>>>                        msg->iova + msg->size - 1))
+>>>>            return -EEXIST;
+>>>>    -    page_list = (struct page **) __get_free_page(GFP_KERNEL);
+>>>> -    if (!page_list)
+>>>> -        return -ENOMEM;
+>>>> -
+>>>>        if (msg->perm & VHOST_ACCESS_WO)
+>>>>            gup_flags |= FOLL_WRITE;
+>>>>    @@ -617,61 +615,86 @@ static int
+>>>> vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+>>>>        if (!npages)
+>>>>            return -EINVAL;
+>>>>    +    page_list = kvmalloc_array(npages, sizeof(struct page *),
+>>>> GFP_KERNEL);
+>>>> +    vmas = kvmalloc_array(npages, sizeof(struct vm_area_struct *),
+>>>> +                  GFP_KERNEL);
+>>> This will result high order memory allocation which was what the code
+>>> tried to avoid originally.
+>>>
+>>> Using an unlimited size will cause a lot of side effects consider VM or
+>>> userspace may try to pin several TB of memory.
+>> Hmmm, that's a good point. Indeed, if the guest memory demand is huge or the
+>> host system is running short of free pages, kvmalloc will be problematic and
+>> less efficient than the __get_free_page implementation.
+> OK so ... Jason, what's the plan?
 >
-> And I wish for a pony.  With sparkles.  And a unicorn.  And a rainbow.
->
->> Silicon vendors eager to follow the latest trends in standards are
->> implementing hybrid PTP clocks, where an unsynchronizable version of the
->> clock delivers MAC timestamps to the application stack, and a
->> synchronizable wrapper over that same clock is what gets fed into the
->> offloading engines, like the ones behind the tc-taprio and tc-gate
->> offload. Some of these vendors perform cross-timestamping (they deliver
->> a timestamp from the MAC with 2, or 3, or 4, timestamps, depending on
->> how many PHCs that MAC has wired to it), some don't, and just deliver a
->> single timestamp from a configurable source.
->
-> Sounds like it will be nearly impossible to make a single tc-taprio
-> framework that fits all the hardware variants.
+> How about you send a patchset with
+> 1. revert this change
+> 2. fix error handling leak
 
-Why? All the gate operations work on the synchronized clock. I assume
-all Qbv capable switches have a synchronized clock?
 
-It's just that some switches have multiple PHCs instead of a single
-one. It seems to be quite common to have a free-running as well as a
-synchronized clock. In order for a better(?) or more accurate(?) ptp
-implementation they expose not a single but rather multiple timestamps
-from all PHCs (-> cross-timestamping) to user space for the ptp event
-messages. That's at least my very limited understanding.
+Work for me, but it looks like siwei want to do this.
+
+So it's better for to send the patchset.
+
+Thanks
+
 
 >
->> The operating system is supposed to ??? in order to synchronize the
->> synchronizable clock to the virtual time retrieved via TIME_STATUS_NP
->> that you're talking about. The question is what to replace that ???
->> with, of course.
 >
-> You have a choice.  Either you synchronize the local PHC to the global
-> TAI time base or not.  If you do synchronize the PHC, then everything
-> (like the globally scheduled time slots) just works.  If you decide to
-> follow the nonsensical idea (following 802.1-AS) and leave the PHC
-> free running, then you will have a difficult time scheduling those
-> time windows.
->
-> So it is all up to you.
->
->> I'm not an expert in kernel implementation either, but perhaps in the
->> light of this, you can revisit the idea that kernel changes will not be
->> needed (or explain more, if you still think they aren't).
->
-> I am not opposed to kernel changes, but there must be:
->
-> - A clear statement of the background context, and
-> - an explanation of the issue to solved, and
-> - a realistic solution that will support the wide variety of HW.=20
 
-Agreed.
-
-Thanks,
-Kurt
-
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl+G4wsACgkQeSpbgcuY
-8KbF0BAAtk9IZ6ejCsNNkQIznvS9WeH31TGltyeHfmNzjnjVX0MtMtIucKYWlAM3
-cRUPL/zt2b9PSKOXcaj+7H+pIeu+aCZ3e+YOuAWMEvxV64rXR34PFptF+jxFgWnP
-OAhJUSAqWGkgX0Hj9awD0nf6uxpKiHEpZjtHsu4a74/TOKwfh+bOqJma0S2iCSco
-RSXHbP0HNzQeW2mt8wljZfW+xG9YXT/wJePhH83U8sPAiwfnmcEHXb4RDGnaiaaQ
-tpwMZ9kz2Sd7EnNataIt/81YcrNZOZEkx9de0IQR37iktBP7WYQEZK/T3LSlIpH5
-/k1UzR72SJ+i+BqdswwkAWRXgIXW3it+aFOa+nkWWsMYiA/+i6DuWAkp3kkMAVWW
-xTZgXO+PQktzWvr7xBfOvV/1FH+OEmvyUm+j0RbLy3BV3+S4W+dKYb9Poqb9FCnh
-vWIMw64sph2UQuUtO2gF3lwKtkBQo8kmFhJUBOpIg+7PKaDCWot/1aTrof++vgDJ
-AiZa2d3cJHCbkuMrbkb5f/zwJbKRDfGq3RR2ljX/8tjnECLkJPje/Tf48YfIY85A
-BgjYp+AGw+I7n3E2QT0GAp5yjO2CEQu1P1y3ePXyOdvks46cbsVUfrCxxgiCuXhb
-4/fP6kv3U+VVxgxH3IrWHMrHjRMoIP0kULx8PLpSCt5paPr411o=
-=OCg2
------END PGP SIGNATURE-----
---=-=-=--
