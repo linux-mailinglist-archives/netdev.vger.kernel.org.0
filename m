@@ -2,89 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D11E28D9CD
-	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 08:07:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F43A28DA0B
+	for <lists+netdev@lfdr.de>; Wed, 14 Oct 2020 08:46:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730352AbgJNGHQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 02:07:16 -0400
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:40146 "EHLO
-        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725983AbgJNGHP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 02:07:15 -0400
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 09E64Qjt047726;
-        Wed, 14 Oct 2020 14:04:26 +0800 (GMT-8)
-        (envelope-from dylan_hung@aspeedtech.com)
-Received: from localhost.localdomain (192.168.10.9) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 14 Oct
- 2020 14:06:44 +0800
-From:   Dylan Hung <dylan_hung@aspeedtech.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <ratbert@faraday-tech.com>,
-        <linux-aspeed@lists.ozlabs.org>, <openbmc@lists.ozlabs.org>
-CC:     <BMC-SW@aspeedtech.com>
-Subject: [PATCH 1/1] net: ftgmac100: Fix Aspeed ast2600 TX hang issue
-Date:   Wed, 14 Oct 2020 14:06:32 +0800
-Message-ID: <20201014060632.16085-2-dylan_hung@aspeedtech.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201014060632.16085-1-dylan_hung@aspeedtech.com>
-References: <20201014060632.16085-1-dylan_hung@aspeedtech.com>
+        id S1726826AbgJNGqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 02:46:06 -0400
+Received: from fallback21.m.smailru.net ([94.100.176.131]:36962 "EHLO
+        fallback21.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726147AbgJNGqG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 02:46:06 -0400
+X-Greylist: delayed 2124 seconds by postgrey-1.27 at vger.kernel.org; Wed, 14 Oct 2020 02:46:04 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail;
+        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=P+b8lA4YxCrvCA1h9jizLRuqQZfjnc92IDSeMBwxH0o=;
+        b=Zp7/Us8NKGP5HEwZFmo+xtJgowWTEaeZb/lN+EU9uWuZQ8GnnJpVUbmaECZf7OIu4IWU7IQUrsrMyV7Hxtot5wREWgpotOuHA6zhIZBXBemxWVQyov2aIH+J+IiCRi4Qb7DPeIOdU+bbnTQDLn/dtYtKA5SQxyXt6ZvaeWBOUrA=;
+Received: from [10.161.110.92] (port=56072 helo=smtp1.mail.ru)
+        by fallback21.m.smailru.net with esmtp (envelope-from <fido_max@inbox.ru>)
+        id 1kSZzg-0004Ot-9H
+        for netdev@vger.kernel.org; Wed, 14 Oct 2020 09:10:36 +0300
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
+        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=P+b8lA4YxCrvCA1h9jizLRuqQZfjnc92IDSeMBwxH0o=;
+        b=GlJNI+uFQHTvS6qcP4ISGvopto5kmeXmbIGRamSkssei1dfB7ggJ17leGxCcnW2QGb53vfKIuGFmbp+3IuLO8RVk4XJgbtefpVy6wduhKVdlostxpJmj0/bwI+zZXQLH20aePzNcPDbjM2WrxFOEQwi2/vGSUSESlT8uVq01mhQ=;
+Received: by smtp1.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
+        id 1kSZzd-00071Y-70; Wed, 14 Oct 2020 09:10:33 +0300
+From:   Maxim Kochetkov <fido_max@inbox.ru>
+To:     netdev@vger.kernel.org
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>
+Subject: [PATCH] net: mscc: ocelot: Allow using without PCI on t1040 SoC
+Date:   Wed, 14 Oct 2020 09:11:05 +0300
+Message-Id: <20201014061105.26655-1-fido_max@inbox.ru>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [192.168.10.9]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 09E64Qjt047726
+Content-Transfer-Encoding: 8bit
+X-7564579A: 646B95376F6C166E
+X-77F55803: 4F1203BC0FB41BD9E98D729206725230B7B3FB156096CDA3C8FE5CEBDE8F1BC5182A05F538085040000280AA6BBF10B63D07BDF565A30A0F051E435752978B211F12759F861D1906
+X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE795530B80AF2ADB7BEA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F79006378010A306A5B6F90A8638F802B75D45FF5571747095F342E8C7A0BC55FA0FE5FC2087ACAB37DAB0D2108B25D02C99C83DC41AE62D0501685A389733CBF5DBD5E913377AFFFEAFD269176DF2183F8FC7C0ECC8AC47CD0EDEFF8941B15DA834481FCF19DD082D7633A0E7DDDDC251EA7DABA471835C12D1D977725E5C173C3A84C3E478A468B35FE767117882F4460429728AD0CFFFB425014E592AE0A758652A3D76E601842F6C81A19E625A9149C048EEFAD5A440E159F97DE2071C6999E77799D8FC6C240DEA76429449624AB7ADAF37B2D370F7B14D4BC40A6AB1C7CE11FEE3271926AB75068159AD7EC71F1DB88427C4224003CC8364767A15B7713DBEF166A7F4EDE966BC389F9E8FC8737B5C224956ADF5DA62E5A3E1089D37D7C0E48F6CCF19DD082D7633A0E7DDDDC251EA7DABAAAE862A0553A39223F8577A6DFFEA7CFF04BF82BAB0A42543847C11F186F3C5E7DDDDC251EA7DABCC89B49CDF41148FA8EF81845B15A4842623479134186CDE6BA297DBC24807EABDAD6C7F3747799A
+X-C8649E89: F7F7486AB99133E4AF3E2C7A9A83F3977668245908AF641A9A39936B743BFE1B17131A2C7C6EC1B5
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojwfNTBk2YwQEo0/pEw0ooTg==
+X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB247E3F2131F94F916B54117DCB0059E28E2CA1F4C27F84AF43EE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
+X-Mras: Ok
+X-7564579A: 78E4E2B564C1792B
+X-77F55803: 6242723A09DB00B4033B2E76A2A2E7F3D7C40938B5608F30BC4A02528CC167A0049FFFDB7839CE9E1E474B3F1C45560AE7ABCCA3D206EC8BDD85BDB34F2D6439439965811600D023
+X-7FA49CB5: 0D63561A33F958A5ECCAFFEB996DE9FA49D83A29280B935B7A842972785E5FD38941B15DA834481FA18204E546F3947C540F9B2D9BA47D56F6B57BC7E64490618DEB871D839B7333395957E7521B51C2545D4CF71C94A83E9FA2833FD35BB23D27C277FBC8AE2E8B2EE5AD8F952D28FBA471835C12D1D977C4224003CC8364765529D5D60078C743D81D268191BDAD3DC09775C1D3CA48CF68F7E3CFCDA853A2BA3038C0950A5D36C8A9BA7A39EFB7668729DE7A884B61D135872C767BF85DA29E625A9149C048EE1B544F03EFBC4D57026D3A1080F4EF5C4AD6D5ED66289B524E70A05D1297E1BB35872C767BF85DA227C277FBC8AE2E8BFBB866FF91168F3075ECD9A6C639B01B4E70A05D1297E1BBC6867C52282FAC85D9B7C4F32B44FF57285124B2A10EEC6C00306258E7E6ABB4E4A6367B16DE6309
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojwfNTBk2YwQHCYv7rJY9HTQ==
+X-Mailru-MI: 800
+X-Mailru-Sender: A5480F10D64C9005B1D5677253EBBB584F2DB6FB46BA122314451138C64F667D7A4A9796AB0AFC1BEE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
+X-Mras: Ok
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The new HW arbitration feature on Aspeed ast2600 will cause MAC TX to
-hang when handling scatter-gather DMA.  Disable the problematic feature
-by setting MAC register 0x58 bit28 and bit27.
+There is no need to select FSL_ENETC_MDIO on t1040 SoC (ppc).
 
-Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
+Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
 ---
- drivers/net/ethernet/faraday/ftgmac100.c | 5 +++++
- drivers/net/ethernet/faraday/ftgmac100.h | 8 ++++++++
- 2 files changed, 13 insertions(+)
+ drivers/net/dsa/ocelot/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
-index 87236206366f..00024dd41147 100644
---- a/drivers/net/ethernet/faraday/ftgmac100.c
-+++ b/drivers/net/ethernet/faraday/ftgmac100.c
-@@ -1817,6 +1817,11 @@ static int ftgmac100_probe(struct platform_device *pdev)
- 		priv->rxdes0_edorr_mask = BIT(30);
- 		priv->txdes0_edotr_mask = BIT(30);
- 		priv->is_aspeed = true;
-+		/* Disable ast2600 problematic HW arbitration */
-+		if (of_device_is_compatible(np, "aspeed,ast2600-mac")) {
-+			iowrite32(FTGMAC100_TM_DEFAULT,
-+				  priv->base + FTGMAC100_OFFSET_TM);
-+		}
- 	} else {
- 		priv->rxdes0_edorr_mask = BIT(15);
- 		priv->txdes0_edotr_mask = BIT(15);
-diff --git a/drivers/net/ethernet/faraday/ftgmac100.h b/drivers/net/ethernet/faraday/ftgmac100.h
-index e5876a3fda91..63b3e02fab16 100644
---- a/drivers/net/ethernet/faraday/ftgmac100.h
-+++ b/drivers/net/ethernet/faraday/ftgmac100.h
-@@ -169,6 +169,14 @@
- #define FTGMAC100_MACCR_FAST_MODE	(1 << 19)
- #define FTGMAC100_MACCR_SW_RST		(1 << 31)
- 
-+/*
-+ * test mode control register
-+ */
-+#define FTGMAC100_TM_RQ_TX_VALID_DIS (1 << 28)
-+#define FTGMAC100_TM_RQ_RR_IDLE_PREV (1 << 27)
-+#define FTGMAC100_TM_DEFAULT                                                   \
-+	(FTGMAC100_TM_RQ_TX_VALID_DIS | FTGMAC100_TM_RQ_RR_IDLE_PREV)
-+
- /*
-  * PHY control register
-  */
--- 
-2.17.1
-
+diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
+index 2d23ccef7d0e..307331e7783c 100644
+--- a/drivers/net/dsa/ocelot/Kconfig
++++ b/drivers/net/dsa/ocelot/Kconfig
+@@ -1,13 +1,13 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ config NET_DSA_MSCC_FELIX
+	tristate "Ocelot / Felix Ethernet switch support"
+-	depends on NET_DSA && PCI
++	depends on NET_DSA && (PCI || PPC)
+	depends on NET_VENDOR_MICROSEMI
+	depends on NET_VENDOR_FREESCALE
+	depends on HAS_IOMEM
+	select MSCC_OCELOT_SWITCH_LIB
+	select NET_DSA_TAG_OCELOT
+-	select FSL_ENETC_MDIO
++	select FSL_ENETC_MDIO if !PPC
+	help
+	  This driver supports network switches from the Vitesse /
+	  Microsemi / Microchip Ocelot family of switching cores that are
+--
+2.27.0
