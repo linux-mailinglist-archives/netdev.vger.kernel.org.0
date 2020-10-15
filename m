@@ -2,79 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92B4B28FB0B
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 00:12:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07B7B28FB27
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 00:24:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731133AbgJOWMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 18:12:16 -0400
-Received: from pipe.dmesg.gr ([185.6.77.131]:55236 "EHLO pipe.dmesg.gr"
+        id S1731951AbgJOWYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 18:24:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56122 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730355AbgJOWMQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Oct 2020 18:12:16 -0400
-Received: from marvin.dmesg.gr (unknown [IPv6:2a03:e40:42:102::97])
-        by pipe.dmesg.gr (Postfix) with ESMTPSA id 422ACA76E3;
-        Fri, 16 Oct 2020 01:12:13 +0300 (EEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=dmesg.gr; s=2013;
-        t=1602799933; bh=RmRa8Ww4pzA5Eo1OVwbJP46jVOrwrzFWPYc+q4mxDVM=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=t0E6Rdkq0SiKcr+8BAwxZoNhsytDB+bPOE9cBf+l/gLUGTimf4ojiWja4J7ymGs84
-         LHjSYXGbHjYgvsPLX4KxugXxsA96lWRKBbYQotHmnJcU6YytOFN/oqYoWzIihDgN/J
-         Sm6EWitWKuV2p63PiLaP8CFGOaKVmPGzl9G9Z3SiIqZCYEIA2xfieKIPSHhxe43hpN
-         jfqn0jDlwyzeDynZl3olRWFk4m3874mcY1RsE6S3mqVLeTXwTsT72o0yoXAvR7xJ9t
-         OPrsgGjoX52jqK1ic4P1br+gs+Yhz1w/eBG624AWRvJHpOvsHbXh0rm93t9umhSOvK
-         SYAbJkNsZ4NhA==
-Received: by marvin.dmesg.gr (Postfix, from userid 1000)
-        id D3F5C222B82; Fri, 16 Oct 2020 01:12:12 +0300 (EEST)
-From:   Apollon Oikonomopoulos <apoikos@dmesg.gr>
-To:     Yuchung Cheng <ycheng@google.com>,
-        Neal Cardwell <ncardwell@google.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Subject: Re: TCP sender stuck in persist despite peer advertising non-zero window
-In-Reply-To: <CAK6E8=fCwjP47DvSj4YQQ6xn25bVBN_1mFtrBwOJPYU6jXVcgQ@mail.gmail.com>
-References: <87eelz4abk.fsf@marvin.dmesg.gr> <CADVnQym6OPVRcJ6PdR3hjN5Krcn0pugshdLZsrnzNQe1c52HXA@mail.gmail.com> <CAK6E8=fCwjP47DvSj4YQQ6xn25bVBN_1mFtrBwOJPYU6jXVcgQ@mail.gmail.com>
-Date:   Fri, 16 Oct 2020 01:12:12 +0300
-Message-ID: <87blh33zr7.fsf@marvin.dmesg.gr>
+        id S1728250AbgJOWYy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Oct 2020 18:24:54 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4240920776;
+        Thu, 15 Oct 2020 22:24:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602800693;
+        bh=vW2vkyOsUS/1+J06kIFHt1vg0A+dDdmryUp49IH19ts=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hvOqiLGgk3exYmwcNEcl4DgDkzifViuRitY4f/71zFTqH/XGrOj3SGscbcBgMC6aJ
+         dZWX27RlBgGXKpAa+20uPviVHtIR6nPId+FeI8wD9+74dQtBp4JNvWVuo7jm8Eq5Jd
+         O4K5SAaBaVLwQAIgBTSnXH/7kE7PNDH3ooNitX/Q=
+Date:   Thu, 15 Oct 2020 15:24:51 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Greg KH <greg@kroah.com>,
+        Anant Thazhemadam <anant.thazhemadam@gmail.com>,
+        petkan@nucleusys.com, davem@davemloft.net,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        linux-next@vger.kernel.org
+Subject: Re: [PATCH v2] net: usb: rtl8150: don't incorrectly assign random
+ MAC addresses
+Message-ID: <20201015152451.125895b1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201016085922.4a2b90d1@canb.auug.org.au>
+References: <20201010064459.6563-1-anant.thazhemadam@gmail.com>
+        <20201011173030.141582-1-anant.thazhemadam@gmail.com>
+        <20201012091428.103fc2be@canb.auug.org.au>
+        <20201016085922.4a2b90d1@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yuchung Cheng <ycheng@google.com> writes:
+On Fri, 16 Oct 2020 08:59:22 +1100 Stephen Rothwell wrote:
+> > I will apply the above patch to the merge of the usb tree today to fix
+> > up a semantic conflict between the usb tree and Linus' tree.  
+> 
+> It looks like you forgot to mention this one to Linus :-(
+> 
+> It should probably say:
+> 
+> Fixes: b2a0f274e3f7 ("net: rtl8150: Use the new usb control message API.")
 
-> On Thu, Oct 15, 2020 at 1:22 PM Neal Cardwell <ncardwell@google.com> wrote:
->>
->> On Thu, Oct 15, 2020 at 2:31 PM Apollon Oikonomopoulos <apoikos@dmesg.gr> wrote:
->> >
->> > Hi,
->> >
->> > I'm trying to debug a (possible) TCP issue we have been encountering
->> > sporadically during the past couple of years. Currently we're running
->> > 4.9.144, but we've been observing this since at least 3.16.
->> >
->> > Tl;DR: I believe we are seeing a case where snd_wl1 fails to be properly
->> > updated, leading to inability to recover from a TCP persist state and
->> > would appreciate some help debugging this.
->>
->> Thanks for the detailed report and diagnosis. I think we may need a
->> fix something like the following patch below.
+Umpf. I think Greg sent his changes first, so this is on me.
 
-That was fast, thank you!
-
->>
->> Eric/Yuchung/Soheil, what do you think?
-> wow hard to believe how old this bug can be. The patch looks good but
-> can Apollon verify this patch fix the issue?
-
-Sure, I can give it a try and let the systems do their thing for a couple of
-days, which should be enough to see if it's fixed.
-
-Neal, would it be possible to re-send the patch as an attachment? The
-inlined version does not apply cleanly due to linewrapping and
-whitespace changes and, although I can re-type it, I would prefer to test
-the exact same thing that would be merged.
-
-Regards,
-Apollon
+The networking PR is still outstanding, can we reply to the PR with
+the merge guidance. Or is it too late?
