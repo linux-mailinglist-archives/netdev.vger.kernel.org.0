@@ -2,252 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E818428F0D8
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 13:22:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18DFB28F0F0
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 13:26:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726996AbgJOLWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 07:22:35 -0400
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:36001 "EHLO
-        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726018AbgJOLWe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 07:22:34 -0400
-X-Originating-IP: 78.45.89.65
-Received: from [192.168.1.23] (ip-78-45-89-65.net.upcbroadband.cz [78.45.89.65])
-        (Authenticated sender: i.maximets@ovn.org)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id D59C0FF80B;
-        Thu, 15 Oct 2020 11:22:29 +0000 (UTC)
-Subject: Re: [ovs-dev] [PATCH net v2] net: openvswitch: fix to make sure
- flow_lookup() is not preempted
-To:     Ilya Maximets <i.maximets@ovn.org>,
-        Eelco Chaudron <echaudro@redhat.com>
-Cc:     netdev@vger.kernel.org, dev@openvswitch.org, bigeasy@linutronix.de,
-        jlelli@redhat.com, kuba@kernel.org, pabeni@redhat.com,
-        davem@davemloft.net
-References: <160275519174.566500.6537031776378218151.stgit@ebuild>
- <7212d390-ecfd-bfa1-97fc-1819c0c1ee1d@ovn.org>
- <06EADE58-FBCA-44C8-9EEC-FDAACD7DD126@redhat.com>
- <e6be9a9c-2ff0-11f1-e10b-cd2f54820622@ovn.org>
-From:   Ilya Maximets <i.maximets@ovn.org>
-Message-ID: <12246eee-e235-c10b-96e7-fffc5dda18a2@ovn.org>
-Date:   Thu, 15 Oct 2020 13:22:29 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S1729271AbgJOL0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 07:26:33 -0400
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:21246 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728283AbgJOLZ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 07:25:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1602761155; x=1634297155;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ZoVMllBI6FapwInWS1hyhHru/VQbiws2d3z0bAqZ7Gw=;
+  b=IZ4RgBWpfOSjsBAchw7LkaohE899sQ2QCDN4EmnwSQD1oBs/omRWyAXY
+   u54aa3umY6tFnFVsWhY2XeqFxjeGHOtcMBCguDz0N7zMNk/X5drwjfHA0
+   43KZA7WwMob4ShZHXcrUoklHmK8fIBsP5endy7C+3u0/3qrdYmuXzWC0u
+   ub2xpL4fVE2SATSP+zNlKe/ubVvQNhS5UySDPCDS1nVNQ9NBNxqKEJhPh
+   +RlF6ZjwUXyCj2uM4P9OYJ2lySChBFcU1ypDifGP9ExhOKUvXgOLxS/uQ
+   kOPH1lY5YdNcjvJdpOMZVVdLIQtUb0ATHD8N7NCRySBEme4hFJuLeff3i
+   Q==;
+IronPort-SDR: ZvMN9xDzjixyB3O2ezKYGx3c9lRJrAkDrFUkpaFJPtYdPVKLgSUn7HupHbbZ2TANbJDRz1b3dy
+ L7kI2SKEEtAGY7WDujON8OPQOvV247jGs1aJ4QQnPAEh8Qz5kObMNG++dmAdu/zVie9dQ5ZCaf
+ WjXUvECAZ+J5/yMXeE8H2mn36q5tKT9AqOyB4KvUcSrFGsX3J1tmxMoNmFQGCDAc1fbQYceik8
+ 0t+g6CJ8PIM9aPrCd6YbgS+d11B0FNO3KYWdg9wXECXB+rZ9rAj7blhF7jqlNxWRv+jzWqCVcT
+ cMc=
+X-IronPort-AV: E=Sophos;i="5.77,378,1596524400"; 
+   d="scan'208";a="99624065"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Oct 2020 04:25:55 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Thu, 15 Oct 2020 04:25:54 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Thu, 15 Oct 2020 04:25:53 -0700
+Date:   Thu, 15 Oct 2020 11:24:13 +0000
+From:   Henrik Bjoernlund <henrik.bjoernlund@microchip.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <roopa@nvidia.com>, <nikolay@nvidia.com>,
+        <jiri@mellanox.com>, <idosch@mellanox.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <bridge@lists.linux-foundation.org>,
+        <UNGLinuxDriver@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: Re: [PATCH net-next v5 08/10] bridge: cfm: Netlink GET configuration
+ Interface.
+Message-ID: <20201015112413.5vzxwvykmteiesyx@soft-test08>
+References: <20201012140428.2549163-1-henrik.bjoernlund@microchip.com>
+ <20201012140428.2549163-9-henrik.bjoernlund@microchip.com>
+ <20201014163348.2f99e349@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-In-Reply-To: <e6be9a9c-2ff0-11f1-e10b-cd2f54820622@ovn.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20201014163348.2f99e349@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/15/20 1:04 PM, Ilya Maximets wrote:
-> On 10/15/20 12:54 PM, Eelco Chaudron wrote:
->>
->>
->> On 15 Oct 2020, at 12:27, Ilya Maximets wrote:
->>
->>> On 10/15/20 11:46 AM, Eelco Chaudron wrote:
->>>> The flow_lookup() function uses per CPU variables, which must not be
->>>> preempted. However, this is fine in the general napi use case where
->>>> the local BH is disabled. But, it's also called in the netlink
->>>> context, which is preemptible. The below patch makes sure that even
->>>> in the netlink path, preemption is disabled.
->>>>
->>>> In addition, the u64_stats_update_begin() sync point was not protected,
->>>> making the sync point part of the per CPU variable fixed this.
->>>>
->>>> Fixes: eac87c413bf9 ("net: openvswitch: reorder masks array based on usage")
->>>> Reported-by: Juri Lelli <jlelli@redhat.com>
->>>> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
->>>> ---
->>>> v2: - Add u64_stats_update_begin() sync point protection
->>>>     - Moved patch to net from net-next branch
->>>>
->>>>  net/openvswitch/flow_table.c |   56 +++++++++++++++++++++++++-----------------
->>>>  net/openvswitch/flow_table.h |    8 +++++-
->>>>  2 files changed, 39 insertions(+), 25 deletions(-)
->>>>
->>>> diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
->>>> index e2235849a57e..d90b4af6f539 100644
->>>> --- a/net/openvswitch/flow_table.c
->>>> +++ b/net/openvswitch/flow_table.c
->>>> @@ -172,7 +172,7 @@ static struct table_instance *table_instance_alloc(int new_size)
->>>>
->>>>  static void __mask_array_destroy(struct mask_array *ma)
->>>>  {
->>>> -    free_percpu(ma->masks_usage_cntr);
->>>> +    free_percpu(ma->masks_usage_stats);
->>>>      kfree(ma);
->>>>  }
->>>>
->>>> @@ -196,15 +196,15 @@ static void tbl_mask_array_reset_counters(struct mask_array *ma)
->>>>          ma->masks_usage_zero_cntr[i] = 0;
->>>>
->>>>          for_each_possible_cpu(cpu) {
->>>> -            u64 *usage_counters = per_cpu_ptr(ma->masks_usage_cntr,
->>>> -                              cpu);
->>>> +            struct mask_array_stats *stats;
->>>>              unsigned int start;
->>>>              u64 counter;
->>>>
->>>> +            stats = per_cpu_ptr(ma->masks_usage_stats, cpu);
->>>>              do {
->>>> -                start = u64_stats_fetch_begin_irq(&ma->syncp);
->>>> -                counter = usage_counters[i];
->>>> -            } while (u64_stats_fetch_retry_irq(&ma->syncp, start));
->>>> +                start = u64_stats_fetch_begin_irq(&stats->syncp);
->>>> +                counter = stats->usage_cntrs[i];
->>>> +            } while (u64_stats_fetch_retry_irq(&stats->syncp, start));
->>>>
->>>>              ma->masks_usage_zero_cntr[i] += counter;
->>>>          }
->>>> @@ -227,9 +227,10 @@ static struct mask_array *tbl_mask_array_alloc(int size)
->>>>                           sizeof(struct sw_flow_mask *) *
->>>>                           size);
->>>>
->>>> -    new->masks_usage_cntr = __alloc_percpu(sizeof(u64) * size,
->>>> -                           __alignof__(u64));
->>>> -    if (!new->masks_usage_cntr) {
->>>> +    new->masks_usage_stats = __alloc_percpu(sizeof(struct mask_array_stats) +
->>>> +                        sizeof(u64) * size,
->>>> +                        __alignof__(u64));
->>>> +    if (!new->masks_usage_stats) {
->>>>          kfree(new);
->>>>          return NULL;
->>>>      }
->>>> @@ -732,7 +733,7 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
->>>>                     u32 *n_cache_hit,
->>>>                     u32 *index)
->>>>  {
->>>> -    u64 *usage_counters = this_cpu_ptr(ma->masks_usage_cntr);
->>>> +    struct mask_array_stats *stats = this_cpu_ptr(ma->masks_usage_stats);
->>>>      struct sw_flow *flow;
->>>>      struct sw_flow_mask *mask;
->>>>      int i;
->>>> @@ -742,9 +743,9 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
->>>>          if (mask) {
->>>>              flow = masked_flow_lookup(ti, key, mask, n_mask_hit);
->>>>              if (flow) {
->>>> -                u64_stats_update_begin(&ma->syncp);
->>>> -                usage_counters[*index]++;
->>>> -                u64_stats_update_end(&ma->syncp);
->>>> +                u64_stats_update_begin(&stats->syncp);
->>>> +                stats->usage_cntrs[*index]++;
->>>> +                u64_stats_update_end(&stats->syncp);
->>>>                  (*n_cache_hit)++;
->>>>                  return flow;
->>>>              }
->>>> @@ -763,9 +764,9 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
->>>>          flow = masked_flow_lookup(ti, key, mask, n_mask_hit);
->>>>          if (flow) { /* Found */
->>>>              *index = i;
->>>> -            u64_stats_update_begin(&ma->syncp);
->>>> -            usage_counters[*index]++;
->>>> -            u64_stats_update_end(&ma->syncp);
->>>> +            u64_stats_update_begin(&stats->syncp);
->>>> +            stats->usage_cntrs[*index]++;
->>>> +            u64_stats_update_end(&stats->syncp);
->>>>              return flow;
->>>>          }
->>>>      }
->>>> @@ -851,9 +852,17 @@ struct sw_flow *ovs_flow_tbl_lookup(struct flow_table *tbl,
->>>>      struct mask_array *ma = rcu_dereference_ovsl(tbl->mask_array);
->>>>      u32 __always_unused n_mask_hit;
->>>>      u32 __always_unused n_cache_hit;
->>>> +    struct sw_flow *flow;
->>>>      u32 index = 0;
->>>>
->>>> -    return flow_lookup(tbl, ti, ma, key, &n_mask_hit, &n_cache_hit, &index);
->>>> +    /* This function gets called trough the netlink interface and therefore
->>>> +     * is preemptible. However, flow_lookup() function needs to be called
->>>> +     * with preemption disabled due to CPU specific variables.
->>>
->>> Is it possible to add some kind of assertion inside flow_lookup() to avoid
->>> this kind of issues in the future?
->>
->> We could do something like WARN_ON_ONCE(preemptible()) but do not think such check should be added to the fast path.
-> 
-> I meant something like lockdep_assert_preemption_disabled().  This will not
-> impact fast path if CONFIG_PROVE_LOCKING disabled, but will allow to catch
-> issues during development.
+Thanks for your review. Comment below.
+Regards
+Henrik
 
-To be clear, I just mean that this could be compiled conditionally under some
-debugging config.  Do not know which of existing configs might be used, though. 
-
+The 10/14/2020 16:33, Jakub Kicinski wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
 > 
->>
->>> It might be also good to update the comment for flow_lookup() function itself.
->>
->> Good idea, will do this in a v3
->>
->>>> +     */
->>>> +    local_bh_disable();
->>>> +    flow = flow_lookup(tbl, ti, ma, key, &n_mask_hit, &n_cache_hit, &index);
->>>> +    local_bh_enable();
->>>> +    return flow;
->>>>  }
->>>>
->>>>  struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
->>>> @@ -1109,7 +1118,6 @@ void ovs_flow_masks_rebalance(struct flow_table *table)
->>>>
->>>>      for (i = 0; i < ma->max; i++)  {
->>>>          struct sw_flow_mask *mask;
->>>> -        unsigned int start;
->>>>          int cpu;
->>>>
->>>>          mask = rcu_dereference_ovsl(ma->masks[i]);
->>>> @@ -1120,14 +1128,16 @@ void ovs_flow_masks_rebalance(struct flow_table *table)
->>>>          masks_and_count[i].counter = 0;
->>>>
->>>>          for_each_possible_cpu(cpu) {
->>>> -            u64 *usage_counters = per_cpu_ptr(ma->masks_usage_cntr,
->>>> -                              cpu);
->>>> +            struct mask_array_stats *stats;
->>>> +            unsigned int start;
->>>>              u64 counter;
->>>>
->>>> +            stats = per_cpu_ptr(ma->masks_usage_stats, cpu);
->>>>              do {
->>>> -                start = u64_stats_fetch_begin_irq(&ma->syncp);
->>>> -                counter = usage_counters[i];
->>>> -            } while (u64_stats_fetch_retry_irq(&ma->syncp, start));
->>>> +                start = u64_stats_fetch_begin_irq(&stats->syncp);
->>>> +                counter = stats->usage_cntrs[i];
->>>> +            } while (u64_stats_fetch_retry_irq(&stats->syncp,
->>>> +                               start));
->>>>
->>>>              masks_and_count[i].counter += counter;
->>>>          }
->>>> diff --git a/net/openvswitch/flow_table.h b/net/openvswitch/flow_table.h
->>>> index 6e7d4ac59353..43144396e192 100644
->>>> --- a/net/openvswitch/flow_table.h
->>>> +++ b/net/openvswitch/flow_table.h
->>>> @@ -38,12 +38,16 @@ struct mask_count {
->>>>      u64 counter;
->>>>  };
->>>>
->>>> +struct mask_array_stats {
->>>> +    struct u64_stats_sync syncp;
->>>> +    u64 usage_cntrs[];
->>>> +};
->>>> +
->>>>  struct mask_array {
->>>>      struct rcu_head rcu;
->>>>      int count, max;
->>>> -    u64 __percpu *masks_usage_cntr;
->>>> +    struct mask_array_stats __percpu *masks_usage_stats;
->>>>      u64 *masks_usage_zero_cntr;
->>>> -    struct u64_stats_sync syncp;
->>>>      struct sw_flow_mask __rcu *masks[];
->>>>  };
->>>>
->>>>
->>>> _______________________________________________
->>>> dev mailing list
->>>> dev@openvswitch.org
->>>> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
->>>>
->>
+> On Mon, 12 Oct 2020 14:04:26 +0000 Henrik Bjoernlund wrote:
+> > +             if (nla_put_u32(skb, IFLA_BRIDGE_CFM_CC_CCM_TX_SEQ_NO_UPDATE,
+> > +                             mep->cc_ccm_tx_info.seq_no_update))
+> > +                     goto nla_put_failure;
+> > +
+> > +             if (nla_put_u32(skb, IFLA_BRIDGE_CFM_CC_CCM_TX_PERIOD,
+> > +                             mep->cc_ccm_tx_info.period))
+> > +                     goto nla_put_failure;
+> > +
+> > +             if (nla_put_u32(skb, IFLA_BRIDGE_CFM_CC_CCM_TX_IF_TLV,
+> > +                             mep->cc_ccm_tx_info.if_tlv))
+> > +                     goto nla_put_failure;
+> > +
+> > +             if (nla_put_u8(skb, IFLA_BRIDGE_CFM_CC_CCM_TX_IF_TLV_VALUE,
+> > +                            mep->cc_ccm_tx_info.if_tlv_value))
+> > +                     goto nla_put_failure;
+> > +
+> > +             if (nla_put_u32(skb, IFLA_BRIDGE_CFM_CC_CCM_TX_PORT_TLV,
+> > +                             mep->cc_ccm_tx_info.port_tlv))
+> > +                     goto nla_put_failure;
+> > +
+> > +             if (nla_put_u8(skb, IFLA_BRIDGE_CFM_CC_CCM_TX_PORT_TLV_VALUE,
+> > +                            mep->cc_ccm_tx_info.port_tlv_value))
+> > +                     goto nla_put_failure;
 > 
+> Consider collapsing writing related attrs in a nest into a single
+> if statement:
+> 
+>         if (nla_put_u32(skb, IFLA_BRIDGE_CFM_CC_CCM_TX_SEQ_NO_UPDATE,
+>                         mep->cc_ccm_tx_info.seq_no_update) ||
+>             nla_put_u32(skb, IFLA_BRIDGE_CFM_CC_CCM_TX_PERIOD,
+>                         mep->cc_ccm_tx_info.period) ||
+>                 ...
+I will prefer to keep it as is for my personal taste :-)
 
+-- 
+/Henrik
