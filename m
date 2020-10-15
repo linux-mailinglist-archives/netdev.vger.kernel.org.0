@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6988A28F025
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 12:25:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E49A728F028
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 12:26:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731109AbgJOKZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 06:25:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47596 "EHLO
+        id S1731157AbgJOK01 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 06:26:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726678AbgJOKZj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 06:25:39 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B78E1C061755
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 03:25:38 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id h7so2784329wre.4
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 03:25:38 -0700 (PDT)
+        with ESMTP id S1726678AbgJOK00 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 06:26:26 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AEB0C061755
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 03:26:26 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id e17so2732053wru.12
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 03:26:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id;
         bh=P9NbUSShrbJy/8vwuSmhX5nWcNsQIzK7wekco/25x+8=;
-        b=Gm22zEAk4xSEZwxeNfIPKugbwSKZ2j5pDeDhKofkYe4aemDDkNrVeMyUAzWRuDWp2F
-         kz+KwNp5Sce6RiuhzS5Y3O8MumjCjPyv7c9qRx/ryhsLzJIYE8lzMuZ7Shjiwc0Z5QDb
-         w3f61STmn1z24exHBVD7xmY8S1eondKh9DPG5lJyOSH3HHh/ThRo1amuHC0s6zCGmncA
-         JMf6r3rfyDJYiuKwYMBfsqzDy/cRYE3Y5RWRf6IEc704sjTW2+ZyaYdkW9xV/H9h3nZF
-         fr+ohjY/U6PN3bmGHmqrNlIJ/1XL9w74TMdOMRGltKufE13LMNjmQZsvWPsz1k+lmUAR
-         EYuQ==
+        b=ccVqVSNBsAHJr/rxWvIFB4OVqS/zq9HP6xROdnZjTsYdPFpCBvpvIB4yE+5X0h+YNW
+         c5P31aziki6P8hmijUDbzLyUsib/+n2r86+d6C9LTUWy5lmKuwCSsvo3LaI0yGgp5649
+         MvAZkBVIXhw89mmnFdr7kv5Kt/bkjGuBN64M0dwXZijUkEru8NKPqdRLZczJUCyoiuGa
+         zNXIvnlZgt2/o20Fad5gghtDjI2OZYkQ6BBEUpFA2jSTZrgnUQcBu7eTFsisPK9pj+xg
+         Z9fQcBa/sMQzB2LDMsLgaedOuQg8A8zFgMn9lwld4fRcW+8XEyMS/DvwMvWG/7iMe2JA
+         L+RA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
         bh=P9NbUSShrbJy/8vwuSmhX5nWcNsQIzK7wekco/25x+8=;
-        b=C2gL78MrrbAMC+AUGnQWh+5gqznJPvMJpQIbR6ObJIygcSWZIeFEmK7eGI4sbw7apj
-         dAxl4agkKv5FMpS65PhMtZfj0IKy8LFv/hHUWegm72IXvitVsFfLvU8zM4zzm55eS8eg
-         HDz7RxmHist2fIbYr3Ria8JIBTLpp+drq5RaMKIx+bRLKvNSYW9x3X2x7/LsZIODhVSk
-         GQhVApzmSPtCCbP0CnU7r4FMKgG9+/Ojrm9ghVJSNGGAbP1IDSUrcnUYRFAhBQJgfDND
-         84v/eUZNCq7iTsc5l8F9BNJIwICqkoCLESrRTnWbYSS1XgJS1aQwFx2PC+xRhkBZaVDX
-         rJEQ==
-X-Gm-Message-State: AOAM530yDY/4nEWOIRbED7NpEidLOe++RF9uGLUlvoVc9dNcnT7YoMjr
-        usUD3bxrdAkNck7xVtwrLssrQA==
-X-Google-Smtp-Source: ABdhPJy64uqFg4SGpayU3744+3xKtpV+x/JXmRf0BD32rRTfaQ0537Qck4hlTIkC9LuLvKdEpjq3uQ==
-X-Received: by 2002:adf:9504:: with SMTP id 4mr3632167wrs.27.1602757537315;
-        Thu, 15 Oct 2020 03:25:37 -0700 (PDT)
+        b=ojY1fBy/hV3w5Dm094t02lAtcxGZ8Oj5MEahmKaC7wCq2JbLbohrKZtc2BasYe+NLz
+         G/b45QcuO00e4ITtoPOoewHGGa5+c/Lt+6zHF5TObURIWYHjK8rqJdlTTqNNZv2c2Ty+
+         OONm34Xnat0hSsIkGEpveXb2KAqqsPTRXMs3alPDA05UfGNMVSit2fJ+yTYk/C6G7qe9
+         04VPd9v2WPMjLX+26mwhGa0KoKeZHrtiLOd8XeJiZB/nNw70eg9U1AoCP4IUxA6oHUyJ
+         ZptHY3/Kb2VyuW6eRFqHHyzmTp3EpISmdG/gk+OpEt05OLJAPQDr77HSrjVKHAMi+0Dk
+         pKHA==
+X-Gm-Message-State: AOAM530qSiwYeGvrYFohMxsbViyLGYp12Tj8Gq/foOXBxJ12XSuQssd7
+        4V+1iJtl4FsUZYoXDyOduvAtexWg8VtnKyCA
+X-Google-Smtp-Source: ABdhPJxfDBPO4QSdVMoyLfAyPxejCD5pshoIK+Gq1ORAjYdE3EZ/OG2IZxPg9Xu2lUMAvIQSJyVhww==
+X-Received: by 2002:adf:e70a:: with SMTP id c10mr3382764wrm.425.1602757584694;
+        Thu, 15 Oct 2020 03:26:24 -0700 (PDT)
 Received: from localhost.localdomain ([88.122.66.28])
-        by smtp.gmail.com with ESMTPSA id g83sm3588648wmf.15.2020.10.15.03.25.36
+        by smtp.gmail.com with ESMTPSA id q2sm3748123wrw.40.2020.10.15.03.26.23
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 15 Oct 2020 03:25:36 -0700 (PDT)
+        Thu, 15 Oct 2020 03:26:24 -0700 (PDT)
 From:   Loic Poulain <loic.poulain@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
 Cc:     netdev@vger.kernel.org, hemantk@codeaurora.org,
         manivannan.sadhasivam@linaro.org, eric.dumazet@gmail.com,
         Loic Poulain <loic.poulain@linaro.org>
-Subject: [PATCH v4 1/2] net: Add mhi-net driver
-Date:   Thu, 15 Oct 2020 12:31:28 +0200
-Message-Id: <1602757888-3507-1-git-send-email-loic.poulain@linaro.org>
+Subject: [PATCH v4] net: Add mhi-net driver
+Date:   Thu, 15 Oct 2020 12:32:28 +0200
+Message-Id: <1602757948-3633-1-git-send-email-loic.poulain@linaro.org>
 X-Mailer: git-send-email 2.7.4
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
