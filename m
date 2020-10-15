@@ -2,52 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DB0628F0C9
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 13:15:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4042C28F0CC
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 13:16:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727148AbgJOLPP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 07:15:15 -0400
-Received: from edge.kilargo.pl ([77.252.52.110]:3242 "EHLO edge.kilargo.pl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725899AbgJOLPP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Oct 2020 07:15:15 -0400
-X-Greylist: delayed 351 seconds by postgrey-1.27 at vger.kernel.org; Thu, 15 Oct 2020 07:15:14 EDT
-Received: from mail.kilargo.pl (77.252.52.107) by edge.kilargo.pl
- (77.252.52.109) with Microsoft SMTP Server (TLS) id 8.3.485.1; Thu, 15 Oct
- 2020 13:09:23 +0200
-Received: from User (185.248.12.71) by MAIL.kilargo.pl (172.22.0.36) with
- Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 15 Oct 2020 13:09:17 +0200
-Reply-To: <kim.leang2011@yahoo.com>
-From:   Kim Leang <mechanik@kilargo.pl>
-Subject: Greeting! !!
-Date:   Thu, 15 Oct 2020 14:09:21 +0300
+        id S1727413AbgJOLQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 07:16:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55476 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725899AbgJOLQp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 07:16:45 -0400
+Received: from mail-out.m-online.net (mail-out.m-online.net [IPv6:2001:a60:0:28:0:1:25:1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3611C061755;
+        Thu, 15 Oct 2020 04:16:44 -0700 (PDT)
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4CBmvD5tJkz1sKwV;
+        Thu, 15 Oct 2020 13:16:37 +0200 (CEST)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4CBmv95DK9z1qrg8;
+        Thu, 15 Oct 2020 13:16:37 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id OLsXCAXsHmhb; Thu, 15 Oct 2020 13:16:35 +0200 (CEST)
+X-Auth-Info: k0ZyYsDVmrX4DrH1M24vgA5atTsx5U5lcEFJ6aD+EcU=
+Received: from localhost.localdomain (ip-89-176-112-137.net.upcbroadband.cz [89.176.112.137])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Thu, 15 Oct 2020 13:16:35 +0200 (CEST)
+From:   Marek Vasut <marex@denx.de>
+To:     netdev@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>, Angus Ainslie <angus@akkea.ca>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Martin Kepplinger <martink@posteo.de>,
+        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
+        Siva Rebbagondla <siva8118@gmail.com>,
+        linux-wireless@vger.kernel.org
+Subject: [PATCH] rsi: Fix TX EAPOL packet handling against iwlwifi AP
+Date:   Thu, 15 Oct 2020 13:16:16 +0200
+Message-Id: <20201015111616.429220-1-marex@denx.de>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="Windows-1251"
-Content-Transfer-Encoding: 7bit
-X-Priority: 3
-X-MSMail-Priority: Normal
-X-Mailer: Microsoft Outlook Express 6.00.2600.0000
-X-MimeOLE: Produced By Microsoft MimeOLE V6.00.2600.0000
-Message-ID: <502281e670a64ae69aed4d5057f4f231@mail.kilargo.pl>
-To:     Undisclosed recipients:;
-X-Originating-IP: [185.248.12.71]
-X-ClientProxiedBy: mail.kilargo.pl (172.22.0.36) To MAIL.kilargo.pl
- (172.22.0.36)
-X-EsetResult: clean, is OK
-X-EsetId: 37303A295AAB9B6B64766B
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greeting!
+In case RSI9116 SDIO WiFi operates in STA mode against Intel 9260 in AP mode,
+the association fails. The former is using wpa_supplicant during association,
+the later is set up using hostapd:
 
-I am contacting you to receive and share with me an abandoned fund ( $21,537.000.00 ) left in our bank by a deceased customer. I was going through the Internet search when I found your email address. My name is Mr. Kim Leang.
+iwl$ cat hostapd.conf
+interface=wlp1s0
+ssid=test
+country_code=DE
+hw_mode=g
+channel=1
+wpa=2
+wpa_passphrase=test
+wpa_key_mgmt=WPA-PSK
+iwl$ hostapd -d hostapd.conf
 
-I want to utilize this opportunity and make use of this fund if I should present your name to the bank to stand as his business associate/ trustee for the fund to be released to you via Visa card for easy withdrawals in any VISA ATM machine anywhere in the World.
+rsi$ wpa_supplicant -i wlan0 -c <(wpa_passphrase test test)
 
-The bank will also give you international online transfer options. With these you can transfer the funds without any risk.
+The problem is that the TX EAPOL data descriptor RSI_DESC_REQUIRE_CFM_TO_HOST
+flag and extended descriptor EAPOL4_CONFIRM frame type are not set in case the
+AP is iwlwifi, because in that case the TX EAPOL packet is 2 bytes shorter.
 
-Should you be interested in working with me in this project? Please reply back and let's benefit from this golden opportunity.You are my first contact. I shall wait a few days and if I do not hear from you, I shall look for another person.
+The downstream vendor driver has this change in place already [1], however
+there is no explanation for it, neither is there any commit history from which
+such explanation could be obtained.
 
-Thanks and have a nice day,
-Mr. Kim Leang.
+[1] https://github.com/SiliconLabs/RS911X-nLink-OSD/blob/master/rsi/rsi_91x_hal.c#L238
+
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Angus Ainslie <angus@akkea.ca>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: Lee Jones <lee.jones@linaro.org>
+Cc: Martin Kepplinger <martink@posteo.de>
+Cc: Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>
+Cc: Siva Rebbagondla <siva8118@gmail.com>
+Cc: linux-wireless@vger.kernel.org
+Cc: netdev@vger.kernel.org
+---
+ drivers/net/wireless/rsi/rsi_91x_hal.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/rsi/rsi_91x_hal.c b/drivers/net/wireless/rsi/rsi_91x_hal.c
+index 3f7e3cfb6f00..ce9892152f4d 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_hal.c
++++ b/drivers/net/wireless/rsi/rsi_91x_hal.c
+@@ -248,7 +248,8 @@ int rsi_prepare_data_desc(struct rsi_common *common, struct sk_buff *skb)
+ 			rsi_set_len_qno(&data_desc->len_qno,
+ 					(skb->len - FRAME_DESC_SZ),
+ 					RSI_WIFI_MGMT_Q);
+-		if ((skb->len - header_size) == EAPOL4_PACKET_LEN) {
++		if (((skb->len - header_size) == EAPOL4_PACKET_LEN) ||
++		    ((skb->len - header_size) == EAPOL4_PACKET_LEN - 2)) {
+ 			data_desc->misc_flags |=
+ 				RSI_DESC_REQUIRE_CFM_TO_HOST;
+ 			xtend_desc->confirm_frame_type = EAPOL4_CONFIRM;
+-- 
+2.28.0
+
