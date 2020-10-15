@@ -2,53 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AFCA28F7AB
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 19:34:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84AFD28F7B8
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 19:41:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731213AbgJORee (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 13:34:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43468 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731190AbgJORee (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Oct 2020 13:34:34 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 51DFC2225F;
-        Thu, 15 Oct 2020 17:34:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602783274;
-        bh=DNxvAuV7cKNsPEncClCJJJ0vr4kkwu9AJqh2X91MJ+I=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ma63it46MNeYoPlFyYS5c1K5Cr4yl4b0mvpITcv+TdQSvEqmopd6R4HZanFaS0Ga3
-         Sg9uHJdGQ51/ZZRXYNcxvJph/r1CpZQxyJWJzJhM7/JtRPWs7mYClAwKFR7Swjx7/8
-         48jSLBH9u8JSFCL2ndfp0McKVKoUbsT8Lq397YIg=
-Date:   Thu, 15 Oct 2020 10:34:31 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Henrik Bjoernlund <henrik.bjoernlund@microchip.com>
-Cc:     <davem@davemloft.net>, <roopa@nvidia.com>, <nikolay@nvidia.com>,
-        <jiri@mellanox.com>, <idosch@mellanox.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>,
-        <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: Re: [PATCH net-next v6 07/10] bridge: cfm: Netlink SET
- configuration Interface.
-Message-ID: <20201015103431.25d66c8b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201015115418.2711454-8-henrik.bjoernlund@microchip.com>
-References: <20201015115418.2711454-1-henrik.bjoernlund@microchip.com>
-        <20201015115418.2711454-8-henrik.bjoernlund@microchip.com>
+        id S1728413AbgJORl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 13:41:26 -0400
+Received: from mail-il1-f198.google.com ([209.85.166.198]:53503 "EHLO
+        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727382AbgJORl0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 13:41:26 -0400
+Received: by mail-il1-f198.google.com with SMTP id y62so2689301ilk.20
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 10:41:25 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=+ewE+0OgUh519exF/sfyzoLRnDr91tqD1DjTs6oOsZ4=;
+        b=rijOmn43xAt3Ne+aK1IvQFcKbYLUrGXI4aQLhRiTdDanchTyWv4T6Q5LGaERnzB0Jv
+         9kvkX1W+TdrVW1Fne2R/ZCOZIO/hY4XFM9mFZ8vTIuUfv9HpZ8ZuJ0TwRrBwEbiUjYlF
+         32QCGVfi9zMSgaYbuWb59ifaeWSU3coPIIHw+yIJmILDeSan6Vn4r2j8kOZ/wFYcob6e
+         s7vnd4u+AHWbt009DwoxDOSte2HnDZ/gnG97bVElI08TAylkjcA8RazRmDvjpIxuEQJm
+         yLsyJljO/Pjge/b438BH4WbBSrRSYa+HzfAdHsjk8+6LNHPN47hPcZ5yE2JGieQQ/iCR
+         NWQQ==
+X-Gm-Message-State: AOAM531YQWY8u1XsVn5QrO0wkvIvZSEjlgWeveGyOFfdG/GRgjLb0hn6
+        nkpf/QDD9MCuAg/OIbG8jF/h9xxyy+kevGLzVeo/wsDhvb4w
+X-Google-Smtp-Source: ABdhPJykPhXApjSIGGgpgpYQ/oxCx6+nfz4bLenfec/+1JnYYv4EuZxaoxIZjmKucwov3O3Crm57dbJSBtdcWcsHmDwHzdZ28IRR
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a02:94cd:: with SMTP id x71mr4265709jah.124.1602783685337;
+ Thu, 15 Oct 2020 10:41:25 -0700 (PDT)
+Date:   Thu, 15 Oct 2020 10:41:25 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000376ecf05b1b92848@google.com>
+Subject: bpf-next test error: BUG: program execution failed: executor 0: exit
+ status 67
+From:   syzbot <syzbot+5609d37b3a926aad75b7@syzkaller.appspotmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 15 Oct 2020 11:54:15 +0000 Henrik Bjoernlund wrote:
-> +	[IFLA_BRIDGE_CFM_MEP_CONFIG_MDLEVEL]	 = {
-> +	.type = NLA_U32, .validation_type = NLA_VALIDATE_MAX, .max = 7 },
+Hello,
 
-	NLA_POLICY_MAX(NLA_U32, 7)
+syzbot found the following issue on:
 
-Also why did you keep the validation in the code in patch 4?
+HEAD commit:    e688c3db bpf: Fix register equivalence tracking.
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=13d3c678500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=ea7dc57e899da16d
+dashboard link: https://syzkaller.appspot.com/bug?extid=5609d37b3a926aad75b7
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+5609d37b3a926aad75b7@syzkaller.appspotmail.com
+
+executing program
+2020/10/15 14:32:51 BUG: program execution failed: executor 0: exit status 67
+iptable checkpoint filter/2: getsockopt(IPT_SO_GET_INFO) (errno 22)
+loop exited with status 67
+
+iptable checkpoint filter/2: getsockopt(IPT_SO_GET_INFO) (errno 22)
+loop exited with status 67
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
