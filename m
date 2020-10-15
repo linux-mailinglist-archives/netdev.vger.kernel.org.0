@@ -2,64 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9241028F202
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 14:24:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19AFF28F1FE
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 14:23:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727991AbgJOMYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 08:24:23 -0400
-Received: from mail.csu.ru ([195.54.14.68]:42822 "HELO mail.csu.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with SMTP
-        id S1727278AbgJOMYX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Oct 2020 08:24:23 -0400
-X-Greylist: delayed 507 seconds by postgrey-1.27 at vger.kernel.org; Thu, 15 Oct 2020 08:24:12 EDT
-Received: from webmail.csu.ru (webmail.csu.ru [195.54.14.80])
-        (Authenticated sender: gmu)
-        by mail.csu.ru (Postfix) with ESMTPA id 6E0A3142C9F;
-        Thu, 15 Oct 2020 17:15:27 +0500 (+05)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.csu.ru 6E0A3142C9F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=csu.ru; s=lso;
-        t=1602764141; bh=3a87bqEECgzQlmJ1wGXY5qdbrcBb1wrajgfr+n2VLzw=;
-        h=Date:Subject:From:Reply-To:From;
-        b=c24FvLlCWM7jBWg/A6uhRts2yU+sVfdjUMl/dafhoFG+XpJmoLov+1wt/YFnatS8w
-         tUwH5549wtvGUvYdKV7mJBKSVB4lArMHH5regCSma2JT+YDs23NC/7FZqTXqZnv4N4
-         LTZrmjYiW5+dt5DEyAdWFA0wQd+JGtMHOa48NAuU=
-Received: from 156.146.59.30
-        (SquirrelMail authenticated user gmu)
-        by webmail.csu.ru with HTTP;
-        Thu, 15 Oct 2020 17:15:33 +0500
-Message-ID: <d44edccbd728fa1ed282b9c963a08196.squirrel@webmail.csu.ru>
-Date:   Thu, 15 Oct 2020 17:15:33 +0500
-Subject: Vorschlag
-From:   "Yi Huiman" <info@csu.ru>
-Reply-To: info@huiman.cf
-User-Agent: SquirrelMail/1.4.22
+        id S1727674AbgJOMXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 08:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37562 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727413AbgJOMXU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 08:23:20 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C35C061755
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 05:23:19 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id t12so3829365ilh.3
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 05:23:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8ECLzK1MShg+WzauW23GBytK0weD/HZl1fgYJKzg8JA=;
+        b=D2XmQh4LfMHe4QWWsEdbCefTA8oTwCRE6+yxfIHYUETrJzJCekD29ze1O2N8G61Ltp
+         6d4rQiQpSYyAn9NgtnXG2//7lBOf73/HGVNF7ALSRalCp5rXoGobYc1xnqey9fUMDX9Y
+         6T88S7QfTsQfmubeFXziu6h3q/e6E5C2u+SkX4mqfJS+qyO4TbGfE1/fABh2i+/Bmbsn
+         +K4czm8H26wFvqN5HYp5iPLeLivtgK/e7AwlghgA7xNbvpZgxkGUSWnpOWOPldrmhbjE
+         3/GxpGxkz32ATv/rHUkpJnoU6uNbWFkKwGDfSyRGEYwNxffcxNtX0q6MwFWtDcU0BuiY
+         lZAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8ECLzK1MShg+WzauW23GBytK0weD/HZl1fgYJKzg8JA=;
+        b=RW3vmyF02zzjbfzWvO+0DhKQ67AehMeRTjI6hRYYC6RmzyGgSmaPF50LAXlLYXJPNg
+         FZWFtja5X7tfkQeJzPzXD2TBG6iIHxT79Q967amoI4ltoGfJHVaHAWURQN4CIl7sPCZx
+         QURCaZ7pPACRGaDrdDo7d7IeFlLIuxBSMCts2TidUmfycjFnZwBHC1SUffUS/E2D8rpT
+         30nDQTybEdIwKbGdHvKqSAQEqzRzr69btKJdyNbdjtmkDuZVR4cAAdwT1Can+9nC4h2l
+         d3q6ntoyOhNhNYFCp1gLJ/UoIfykGNQwPdmmkwG85Fq5gbL1Ffcg7Y7A7Gl/qTXuKuPt
+         DnHw==
+X-Gm-Message-State: AOAM531AxTdVNobgurmEGd9PZaphaOQVIUEhi6q2LHfUakS6EFS0SfAo
+        wAodpe4B2/wSuIWPZBoZi9sAheKN2lpAwK27T02q9ov1M8IwXg==
+X-Google-Smtp-Source: ABdhPJwbcTdGFZY1OyfD3amu18Z6PaEOhuQyRw1ulN8kf2I/5zGN7DAx3CQk1JG4o3orOlDneLaH/sn2OejmnFqhIxM=
+X-Received: by 2002:a92:8e51:: with SMTP id k17mr2807573ilh.270.1602764598692;
+ Thu, 15 Oct 2020 05:23:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain;charset=utf-8
-X-Priority: 3 (Normal)
-Importance: Normal
-X-KLMS-Rule-ID: 1
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Lua-Profiles: 159204 [Oct 15 2020]
-X-KLMS-AntiSpam-Version: 5.9.16.0
-X-KLMS-AntiSpam-Envelope-From: info@csu.ru
-X-KLMS-AntiSpam-Auth: dmarc=none header.from=csu.ru;spf=softfail smtp.mailfrom=csu.ru;dkim=none
-X-KLMS-AntiSpam-Rate: 70
-X-KLMS-AntiSpam-Status: not_detected
-X-KLMS-AntiSpam-Method: none
-X-KLMS-AntiSpam-Info: LuaCore: 381 381 faef97d3f9d8f5dd6a9feadc50ba5b34b9486c58, {rep_avail}, {Tracking_content_type, plain}, {Prob_reply_not_match_from}, {Prob_to_header_missing}, {Prob_Reply_to_without_To}, {Tracking_susp_macro_from_formal}, csu.ru:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;webmail.csu.ru:7.1.1;195.54.14.80:7.1.2;huiman.cf:7.1.1, ApMailHostAddress: 195.54.14.80
-X-MS-Exchange-Organization-SCL: -1
-X-KLMS-AntiSpam-Interceptor-Info: scan successful
-X-KLMS-AntiPhishing: Clean, bases: 2020/10/15 11:31:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2020/10/15 07:09:00 #15491089
-X-KLMS-AntiVirus-Status: Clean, skipped
-Content-Transfer-Encoding: quoted-printable
-To:     unlisted-recipients:; (no To-header on input)
+References: <1602584792-22274-1-git-send-email-sundeep.lkml@gmail.com>
+ <1602584792-22274-7-git-send-email-sundeep.lkml@gmail.com> <20201014194804.1e3b57ae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201014194804.1e3b57ae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   sundeep subbaraya <sundeep.lkml@gmail.com>
+Date:   Thu, 15 Oct 2020 17:53:07 +0530
+Message-ID: <CALHRZupwJOZssMhE6Q_0VSCZ06WB2Sgo_BMpf2n=o7MALe+V6g@mail.gmail.com>
+Subject: Re: [net-next PATCH 06/10] octeontx2-af: Add NIX1 interfaces to NPC
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        rsaladi2@marvell.com, Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ich habe ein Gesch=C3=A4ft Vorschlag f=C3=BCr dich.
+Hi Jakub,
 
+On Thu, Oct 15, 2020 at 8:18 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Tue, 13 Oct 2020 15:56:28 +0530 sundeep.lkml@gmail.com wrote:
+> > -static const struct npc_mcam_kex npc_mkex_default = {
+> > +static struct npc_mcam_kex npc_mkex_default = {
+> >       .mkex_sign = MKEX_SIGN,
+> >       .name = "default",
+> >       .kpu_version = NPC_KPU_PROFILE_VER,
+>
+> Why is this no longer constant? Are you modifying global data based
+> on the HW discovered in the system?
 
+Yes. Due to an errata present on earlier silicons
+npc_mkex_default.keyx_cfg[NIX_INTF_TX]
+and npc_mkex_default.keyx_cfg[NIX_INTF_RX] needs to be identical.
 
-
+Thanks,
+Sundeep
