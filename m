@@ -2,126 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0202628F632
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 17:51:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7256728F624
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 17:50:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389893AbgJOPvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 11:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41752 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389693AbgJOPve (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 11:51:34 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E545EC0613D2
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 08:51:33 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id cq12so3609874edb.2
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 08:51:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=o1HGVmUT/OhvqKkWrLamJKiOCE0cdQtudBTyS1tZm8I=;
-        b=eIVCa9svoHxUjRC70zo4OwYhp32AE6RKwMIOps7ykTJTC59EFjxgj7M/zYDwO1smDe
-         hfaGGR0iMaTIA2UaCCGAdFYm8EOsETPB3x3vTIvwM8y3EnZu/uJuQ59NviKaCCm1xcZy
-         LYin9MEe080ve5nmUZ3mR5MFVUCJ+s7XxGSMC7ZXvIr2n2GzshclyMxTtFCCnikpmqJh
-         uTB6Zq/rx4PHm4Sz4qiih0+WzGyTlnc7mtuFDrukIA+atSHYOmt7aMKNxe7f8nIY/QGC
-         wjX1ie8CkSzsTlvHJwOb9EezEAFQ/qPOk2uJsSecIB1kUNtuxQLWIbE1mjdKqfGSs3vX
-         1h7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=o1HGVmUT/OhvqKkWrLamJKiOCE0cdQtudBTyS1tZm8I=;
-        b=ncwx4CahZk7nt1Tr6s4R7akTDcvrseuMn/HSE0T/+EYZZ7RN5/VpextlAyYJpgWhts
-         TjZvVQ2iL/grASg+NUfedxHNH3EhQc85gJQ0811exhgJFqf+n8DX4QjuFFLP65eLrzBF
-         0vijqBHaaWgFulSsMzIcF0Rp0jmmgzzLhX7eAZouwxpD6ml/8xKw2XD1ChZkLMvl+OuK
-         uAdxMA6TmebnFLsQUIHspFCqMrdaK0JxjR+YzyOeYZ/sy7Zf9i9ukHA+11XNxiyZmDMb
-         mj6hqh9OjDqfLmcD+FysHQrNw12xHwtUw41jal/hKB2H2hWfEFVGleF2aGraUgsJ0jGm
-         7Phw==
-X-Gm-Message-State: AOAM5331NZ+PeTS/JaXG7rmjRv1aKeR4ychiv4wXjJjqv9JBq7pBtrZn
-        LhcIpB1i/vf+RjhItI7R4devwshEynA=
-X-Google-Smtp-Source: ABdhPJx3b2+j3m1NdTUNo5JM1dS04Uly6y9CIIdasSgDFCh/FtAWiY2wQ5yfS09nCp/+6TEMB/2L7Q==
-X-Received: by 2002:a05:6402:2070:: with SMTP id bd16mr5038499edb.358.1602777092396;
-        Thu, 15 Oct 2020 08:51:32 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:2800:c92:1571:ee2d:f2ef? (p200300ea8f2328000c921571ee2df2ef.dip0.t-ipconnect.de. [2003:ea:8f23:2800:c92:1571:ee2d:f2ef])
-        by smtp.googlemail.com with ESMTPSA id r4sm1827936edv.16.2020.10.15.08.51.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 15 Oct 2020 08:51:32 -0700 (PDT)
-Subject: [PATCH net-next 3/4] r8169: use struct pcpu_sw_netstats for rx/tx
- packet/byte counters
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <e25761cc-60c2-92fe-f7df-b8c55cf12ec7@gmail.com>
-Message-ID: <8d0804a1-16e5-2f76-9e7e-213cd093b520@gmail.com>
-Date:   Thu, 15 Oct 2020 17:50:12 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        id S2389869AbgJOPuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 11:50:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45400 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389852AbgJOPuU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Oct 2020 11:50:20 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7102C22254;
+        Thu, 15 Oct 2020 15:50:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602777018;
+        bh=Nbeh2o2J1dywpTUez/hZlzk3LDJQpKjMNnmMx7aK6l0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Amo6QXY5T5qCo7ziLFz224ScCkVpzyK15Ee9X170kSqUpVe89THSC8mVUywyi6k48
+         jKfo7BSfCdEyux5Uux3nU0soWase4UBKU3TBduCo2h1yPrn+HaX4ZLeh167VsqO0oi
+         2ft147Aa5V5yUIMStKZbruC5jVmj6plrubcWSzPU=
+Date:   Thu, 15 Oct 2020 17:50:51 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Anmol Karn <anmol.karan123@gmail.com>
+Cc:     ralf@linux-mips.org, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        linux-kernel@vger.kernel.org,
+        syzbot+a1c743815982d9496393@syzkaller.appspotmail.com,
+        linux-hams@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org
+Subject: Re: [Linux-kernel-mentees] [PATCH] net: rose: Fix Null pointer
+ dereference in rose_send_frame()
+Message-ID: <20201015155051.GB66528@kroah.com>
+References: <20201015001712.72976-1-anmol.karan123@gmail.com>
+ <20201015051225.GA404970@kroah.com>
+ <20201015141012.GB77038@Thinkpad>
 MIME-Version: 1.0
-In-Reply-To: <e25761cc-60c2-92fe-f7df-b8c55cf12ec7@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201015141012.GB77038@Thinkpad>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Switch to the net core rx/tx byte/packet counter infrastructure.
-This simplifies the code, only small drawback is some memory overhead
-because we use just one queue, but allocate the counters per cpu.
+On Thu, Oct 15, 2020 at 07:40:12PM +0530, Anmol Karn wrote:
+> On Thu, Oct 15, 2020 at 07:12:25AM +0200, Greg KH wrote:
+> > On Thu, Oct 15, 2020 at 05:47:12AM +0530, Anmol Karn wrote:
+> > > In rose_send_frame(), when comparing two ax.25 addresses, it assigns rose_call to 
+> > > either global ROSE callsign or default port, but when the former block triggers and 
+> > > rose_call is assigned by (ax25_address *)neigh->dev->dev_addr, a NULL pointer is 
+> > > dereferenced by 'neigh' when dereferencing 'dev'.
+> > > 
+> > > - net/rose/rose_link.c
+> > > This bug seems to get triggered in this line:
+> > > 
+> > > rose_call = (ax25_address *)neigh->dev->dev_addr;
+> > > 
+> > > Prevent it by checking NULL condition for neigh->dev before comparing addressed for 
+> > > rose_call initialization.
+> > > 
+> > > Reported-by: syzbot+a1c743815982d9496393@syzkaller.appspotmail.com 
+> > > Link: https://syzkaller.appspot.com/bug?id=9d2a7ca8c7f2e4b682c97578dfa3f236258300b3 
+> > > Signed-off-by: Anmol Karn <anmol.karan123@gmail.com>
+> > > ---
+> > > I am bit sceptical about the error return code, please suggest if anything else is 
+> > > appropriate in place of '-ENODEV'.
+> > > 
+> > >  net/rose/rose_link.c | 3 +++
+> > >  1 file changed, 3 insertions(+)
+> > > 
+> > > diff --git a/net/rose/rose_link.c b/net/rose/rose_link.c
+> > > index f6102e6f5161..92ea6a31d575 100644
+> > > --- a/net/rose/rose_link.c
+> > > +++ b/net/rose/rose_link.c
+> > > @@ -97,6 +97,9 @@ static int rose_send_frame(struct sk_buff *skb, struct rose_neigh *neigh)
+> > >  	ax25_address *rose_call;
+> > >  	ax25_cb *ax25s;
+> > >  
+> > > +	if (!neigh->dev)
+> > > +		return -ENODEV;
+> > 
+> > How can ->dev not be set at this point in time?  Shouldn't that be
+> > fixed, because it could change right after you check this, right?
+> > 
+> > thanks,
+> > 
+> > greg k-h
+> 
+> Hello Sir,
+> 
+> Thanks for the review,
+> After following the call trace i thought, if neigh->dev is NULL it should
+> be checked, but I will figure out what is going on with the crash reproducer,
+> and I think rose_loopback_timer() is the place where problem started. 
+> 
+> Also, I have created a diff for checking neigh->dev before assigning ROSE callsign
+> , please give your suggestions on this.
+> 
+> 
+> diff --git a/net/rose/rose_link.c b/net/rose/rose_link.c
+> index f6102e6f5161..2ddd5e559442 100644
+> --- a/net/rose/rose_link.c
+> +++ b/net/rose/rose_link.c
+> @@ -97,10 +97,14 @@ static int rose_send_frame(struct sk_buff *skb, struct rose_neigh *neigh)
+>         ax25_address *rose_call;
+>         ax25_cb *ax25s;
+>  
+> -       if (ax25cmp(&rose_callsign, &null_ax25_address) == 0)
+> -               rose_call = (ax25_address *)neigh->dev->dev_addr;
+> -       else
+> -               rose_call = &rose_callsign;
+> +       if (neigh->dev) {
+> +               if (ax25cmp(&rose_callsign, &null_ax25_address) == 0)
+> +                       rose_call = (ax25_address *)neigh->dev->dev_addr;
+> +               else
+> +                       rose_call = &rose_callsign;
+> +       } else {
+> +               return -ENODEV;
+> +       }
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+The point I am trying to make is that if someone else is setting ->dev
+to NULL in some other thread/context/whatever, while this is running,
+checking for it like this will not work.
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 7d366b036..840543bc8 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4417,6 +4417,7 @@ static void rtl_tx(struct net_device *dev, struct rtl8169_private *tp,
- 	if (tp->dirty_tx != dirty_tx) {
- 		netdev_completed_queue(dev, pkts_compl, bytes_compl);
- 
-+		dev_sw_netstats_tx_add(dev, pkts_compl, bytes_compl);
- 		rtl_inc_priv_stats(&tp->tx_stats, pkts_compl, bytes_compl);
- 
- 		tp->dirty_tx = dirty_tx;
-@@ -4539,6 +4540,7 @@ static int rtl_rx(struct net_device *dev, struct rtl8169_private *tp, u32 budget
- 
- 		napi_gro_receive(&tp->napi, skb);
- 
-+		dev_sw_netstats_rx_add(dev, pkt_size);
- 		rtl_inc_priv_stats(&tp->rx_stats, 1, pkt_size);
- release_descriptor:
- 		rtl8169_mark_to_asic(desc);
-@@ -4790,9 +4792,7 @@ rtl8169_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
- 	pm_runtime_get_noresume(&pdev->dev);
- 
- 	netdev_stats_to_stats64(stats, &dev->stats);
--
--	rtl_get_priv_stats(&tp->rx_stats, &stats->rx_packets, &stats->rx_bytes);
--	rtl_get_priv_stats(&tp->tx_stats, &stats->tx_packets, &stats->tx_bytes);
-+	dev_fetch_sw_netstats(stats, dev->tstats);
- 
- 	/*
- 	 * Fetch additional counter values missing in stats collected by driver
-@@ -5263,6 +5263,11 @@ static int rtl_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	tp->eee_adv = -1;
- 	tp->ocp_base = OCP_STD_PHY_BASE;
- 
-+	dev->tstats = devm_netdev_alloc_pcpu_stats(&pdev->dev,
-+						   struct pcpu_sw_netstats);
-+	if (!dev->tstats)
-+		return -ENOMEM;
-+
- 	/* Get the *optional* external "ether_clk" used on some boards */
- 	rc = rtl_get_ether_clk(tp);
- 	if (rc)
--- 
-2.28.0
+What is the lifetime rules of that pointer?  Who initializes it, and who
+sets it to NULL.  Figure that out first please to determine how to check
+for this properly.
 
+thanks,
 
+greg k-h
