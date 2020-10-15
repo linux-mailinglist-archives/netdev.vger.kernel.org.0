@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BABB28F977
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 21:30:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F32BE28F97E
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 21:31:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391621AbgJOTav (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 15:30:51 -0400
-Received: from mail-eopbgr1410121.outbound.protection.outlook.com ([40.107.141.121]:10167
+        id S2391645AbgJOTbB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 15:31:01 -0400
+Received: from mail-eopbgr1410119.outbound.protection.outlook.com ([40.107.141.119]:57379
         "EHLO JPN01-OS2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2391541AbgJOTau (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Oct 2020 15:30:50 -0400
+        id S2391629AbgJOTaz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Oct 2020 15:30:55 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hvAsay6NWHYHrMpLESja5GxPd1jfyJ300o9O/wBgfM0FEkGmkJQdSlqXzrY1prmOY8ShQ+HWtjPK/o6gdk5WC85MCJdx94A6OzRhNffpL7axLsJve3IspczzXkZqkJJPpg9kFS+ZiOyMznzjaXaLMQ4pEfL+nl9gZyec8hs4icTDVJ6heqZ9CmtxkY355wu2hJ5C3FwJalwqHwRE9BF6ikvzchY1q1GWeO91cqbFfyBfcmgTvEEJj5v5tdo/RT4/vhywmLpjN8oitGFwgYALRb//oXJAYPODXp8wwnc1YqGrIyFUjjBvbgbJvD+BULTVTaBOSEcLHmhQ276jilOf6g==
+ b=QuuJUs7XQL3E1aaiIe4ZFeZi4Nx3f1Ql0JRlp2b2KmLXnleFDMvgytS7xwEadsYmZ0E8LYsF6FdC1c+hO8n6NsSIkdUSQGFEIpX0pccQ18dBwCmyhkjcXelVRpUCM0PG1sJ3CvFBwUqsfNeCrneVT5+I9jpuxVGC18Mgt/I7rYw05uD6/jvAU+eP4uMz61fLc1tdCOEv1LDavf0JcE3T092KfVTphsSB3KdA9fVVlcM39ZGoFNJsjv6hnyGFO5ZpQmysgH9zmuqVw1OCMHdTkSh2A9+3iXwWxeL0OR0qzh0zqLH4tYm2ixNgDtKlrlTXpWe/AsNu/4in+AHfA/VVMg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VZYri1Xp1Y+qMwSCkkBtWIZyvm3lSelof9qrs+z5kM8=;
- b=i7akx98aLamwHj6E+eARscMhQUnUilITYrrIRWXO1uK7ynlRdeJvDrvwEQkCHcE5KR78QHsQUuaiQRBkaQ3dzb4lIpd9l59emOHyLJGFML7S23tp2kYNOmInmkBsnDbfUKmg+6cJdKUk2E/EMD877S69eJNkmPuX+MWAH13EooMrRwUY8XoPaeM+CSMYdzFjjsM4cIMnxsWPusiM7CqgrUHSEAybaJFWugpKuek1jqa/7U1elT4TF+nSTg+udb64sy6bGaMNpCOUQQKG0cuOOyXlPvNBEuXCydv3ZQRBmoOe6modBnsRHxqVThNq6V7mCLlyccbDwAFQYij4MEseiA==
+ bh=jcNt0iaZSqX65/tfimjHAI8Stkofiq/n71E8Ns92TmU=;
+ b=TDbCx0c4NLmrFUWdHGVvu/BIxpHgmpaxHOtcsfCG4+pIBw6Fts6lfG6fQZenvw1GDUByjX1b+ONJCgqBC1hbehdwJo3gv8oOq5pz9UBRL3jsE6JPXpqkGIKzXyWzNuK6Xj9o58gxAg6ll9Zh42JXhtanTyh3ubMsiL4bTsrpABJE0ILidch1CLJi/ooN5bBY6X825xfy3S6LycuBN3r3rxXzGdneB6e8vuzW8iM8ZBKmM0e6p4dPCHeIbuVuk6f/h4vQ1gGowD7vQ4vz2LQUDOAzHXCDip3nOnoB7PSnLYQsus2baLknTOqjipEnZaWHh3oGbFSvk/VnJVIqdx8i1Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
  dkim=pass header.d=renesas.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VZYri1Xp1Y+qMwSCkkBtWIZyvm3lSelof9qrs+z5kM8=;
- b=dTGlx79xECh4Wwb+g5FGPAHPrfwL96G57ObAFakeXnXE2Z8oz6yzeVibyP21szFqwJsX9KKiJMXPUa8c5EolEtdjb/BhoOr1Fs7lynAPG73XvuVBsWy5DvOuA5R0Qk6H9f/uX/v0J/JijCCTM57jr0gcFsetXq3hGBVwfm8q1A8=
+ bh=jcNt0iaZSqX65/tfimjHAI8Stkofiq/n71E8Ns92TmU=;
+ b=oVQEZfQONVmxoA9bbKKCaAYEScfPSqdMqFGX7gVWsmmHIixaFoVaJ7W4LvfZedX/qiiBW1+irKOSrBrHPiRmEDkKcJ2uE/LNyOZ+HHDKCVvN5kimABfSPge7ttzk7slNPwFYzMSTBen6WXmnQW7o1O6Dg3sYcCWhapDbyyx5Ahs=
 Received: from OSAPR01MB1780.jpnprd01.prod.outlook.com (2603:1096:603:32::12)
  by OSBPR01MB2583.jpnprd01.prod.outlook.com (2603:1096:604:17::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.28; Thu, 15 Oct
- 2020 19:30:46 +0000
+ 2020 19:30:52 +0000
 Received: from OSAPR01MB1780.jpnprd01.prod.outlook.com
  ([fe80::b1fd:3bf0:af0d:56ae]) by OSAPR01MB1780.jpnprd01.prod.outlook.com
  ([fe80::b1fd:3bf0:af0d:56ae%4]) with mapi id 15.20.3477.021; Thu, 15 Oct 2020
- 19:30:46 +0000
+ 19:30:51 +0000
 From:   Min Li <min.li.xe@renesas.com>
 To:     Min Li <min.li.xe@renesas.com>,
         "richardcochran@gmail.com" <richardcochran@gmail.com>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net 2/4] ptp: ptp_idt82p33: add more debug logs
-Thread-Topic: [PATCH net 2/4] ptp: ptp_idt82p33: add more debug logs
-Thread-Index: AQHWbNOFfZDtT11nNU+wHU0tO2aeC6mZea3Q
-Date:   Thu, 15 Oct 2020 19:30:46 +0000
-Message-ID: <OSAPR01MB1780733AA3B25A528A76F8F2BA020@OSAPR01MB1780.jpnprd01.prod.outlook.com>
-References: <1596815868-11045-1-git-send-email-min.li.xe@renesas.com>
-In-Reply-To: <1596815868-11045-1-git-send-email-min.li.xe@renesas.com>
+Subject: RE: [PATCH net 3/4] ptp: ptp_idt82p33: use do_aux_work for delay work
+Thread-Topic: [PATCH net 3/4] ptp: ptp_idt82p33: use do_aux_work for delay
+ work
+Thread-Index: AQHWbNOYY6MaRrcEtUGauhEGkbdWIqmZebYg
+Date:   Thu, 15 Oct 2020 19:30:51 +0000
+Message-ID: <OSAPR01MB1780713D7A363ADDB13C59DBBA020@OSAPR01MB1780.jpnprd01.prod.outlook.com>
+References: <1596815885-11094-1-git-send-email-min.li.xe@renesas.com>
+In-Reply-To: <1596815885-11094-1-git-send-email-min.li.xe@renesas.com>
 Accept-Language: en-CA, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -57,29 +58,29 @@ authentication-results: renesas.com; dkim=none (message not signed)
 x-originating-ip: [173.195.53.163]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: b87be427-dc0e-46b3-7e0e-08d87140d0bb
+x-ms-office365-filtering-correlation-id: 2b46f421-3601-4eb3-805c-08d87140d3e4
 x-ms-traffictypediagnostic: OSBPR01MB2583:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <OSBPR01MB25831A35FB48B8B50FBA5F30BA020@OSBPR01MB2583.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:44;
+x-microsoft-antispam-prvs: <OSBPR01MB2583EF9EF3813EEE36ED62A1BA020@OSBPR01MB2583.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1824;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: iubQdiD1XIavTEeQFh0++IuTtzz9X8rwaAa7lX6qd3KeFloW5mqdvDN4/Wr4gOFWkhC91cIoUEbKIopA076mePxu2lW0H3U+4WK8fNpUxLpMnyZV4YNwHjtea4sA+AK6+WkDjQvDM9BBbrBAlsoQnJ/s7g+DcKFBu4xNU6EWSnnuVKdCdVxY2kFldkWamZFnRJYVHIgDWAGo8vVMpg0uBFo9sDfoN1J5yWOUho/bUUyqQWcHJxJw/nk50F97QwirqLTHkFnxCuZ+fid2sIQF6LaGJRnqAMwDvi7Fmh1BVrV9uF8tMxzR3WxLKYBPKIb06TgeOU/wfJCxPPra8S8wEg==
+x-microsoft-antispam-message-info: //I04DaBN+L74TAtSg5+7l3mSWNDSAp0b8OyzOs3B4EsqYsrjeinGjMGl54QWwiiVXh0ibezhWhJ1CFb2w/0OitUjK+YDPMijppM2xLGqlOTY1qKxWTp8FEsiaLflTOl5+w+WW5bdM+1FFWoIX01VCyvymtDlfJzd7eRqC1lT7pJ8svNhvU+p82WuTc+sQFXIaK3Ii5yx0s0cwvZEtsQqu5RJRcEDxfXRToCpzJxeObjpQ1Ors6lLyqIpLrk0yCoG9QE9EuKex1l6/rnUS7A2LQchjzP5j+hh57eV+qasNbdaw9hx9uAqg33mr8CRAvy
 x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OSAPR01MB1780.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(39860400002)(136003)(366004)(396003)(8936002)(7696005)(186003)(8676002)(55016002)(2906002)(9686003)(54906003)(66946007)(5660300002)(76116006)(316002)(110136005)(26005)(86362001)(64756008)(66476007)(66446008)(66556008)(6506007)(52536014)(53546011)(83380400001)(71200400001)(33656002)(4326008)(478600001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: vSusnYUAUsSGv9YnWmN2kGNU223jJX4QBAppvQvUWCd3nxj6a1uEP+/3+pjEvxTAlvc37mTya7dCSmDxOttAz2AxL1wX1sXoH3tumHm1w0MvYwB74uSQDX+BmJ3QzyViUj6dD6uKeNDZZ0Xc0zS+ZYQM+YjLF/kqWpfuxEV6xMD06iPbczJiseJz3r6te5WtMttpOdIVT5DYie0V6pEamV0wlYKw+MpjPSWaWKra8/r4NJaKVVA1eM1IsfanuH9vgCEdeCY9X2KlgmpbTZ0mYmjo9grklFvl6/JBn5en5VpiC+TiZcZUyW3UbfetM/wlgL0Taryv806bvDUSMnEvviEUETEwhChDo8LcPJaEvpPAlw/r9Ho8/Q3BSG6hB26ADAHlDiv8tdfplTiPl2RmJt5JA1IohIt2xwnmZRflpm2V70bDHBrSt8nhSLEPWOZeT4y1FJqFP8YE+uLsWVQd/H11UZ656t7JNfEMLgLEMsWGOzwBVOO6glNTXx2yT2AtOxDqRBcV61548Vgoa/mocJepcvGQ5lxu6G43CO2Xo+yNn05grjGX4ZfFC74x3vn2ZXKXQBff/YNJtr6eWdo1yD5pysb9R7Udu8ZfqHgswvBfFWMCZjdkG2gfgDM1hx+1Jkkb87KXiIOUuFEJohpNmQ==
+x-ms-exchange-antispam-messagedata: P51hq2C7aswZGX+S4iDvxuA3sumluHxV42ERa4Lp8Y+sbwLAGyOPUl0BdiD5rTxZRCYGwv1X0Fa5UVJBJZdeApCn5NqSVeJRNV+ibUqXN5F+sJFi6YzjC5a8BhwHOiF/Bjc/Pj06pZRGWFIINYlr6UGbds8HDYiWx6QBjsepNwKr1zXFzpa7NjLJNai+khNVSc3ID9HZm4doEKgvEiVHBuS4f1r1s4exUuV4yJi0pPr3mf6e1hIDmdCITYJDO56tt118AogY5/UlFDhG6DKlE38ujfwoB/xw9ZKECOhDfQLhozUB5P+ODzMwlQscMBs2/VkwjPgYjtayofhE6/gSojOLr/UrcdWAjMChBlxGAVif4H4QBefBkUm0EnueFlDIt3hlK4zDn5rep1zrO/bBsd+Xs4rG4rQfTd6YJbTSjTXnWeF1Z+5IPou8KKPVl42iKjU+dGhAaVIWI420uGokYmN+pVTe/IuS1nsvuKGkk4l3ThrSBAet2vDc4xsQ53utQ+WKEAREBSPE/syDnO74FlJYmAXrIR33NlpB2XAYrR2XDCld5TkXGVUIvo8BAMMUaNzKaN0QUpdBbBNPhLo/aa4Fgf3RLmct6UwWpGb1ZJU2/ROemcQ+5Ty6BPW8PnnIzgduAX2oKwJSXCh+3YpqJA==
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: renesas.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: OSAPR01MB1780.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b87be427-dc0e-46b3-7e0e-08d87140d0bb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Oct 2020 19:30:46.5000
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2b46f421-3601-4eb3-805c-08d87140d3e4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Oct 2020 19:30:51.8709
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nPA8SUmKZRtSV+AdD7/fNpvsUAxhcEA7wofooDxVkB3Ph95W00vJ3X5MabAvJ/axuhHXDyQcKLYbHv4ee9T8lQ==
+X-MS-Exchange-CrossTenant-userprincipalname: p34Fgb4lu8tomDPwNv1gjkk9VBV1ODlRmfUQzPL6TL17XUgUL7L6ZlYZlvMB8dTc/H1Y3jv5EF0AhZY25axj0Q==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSBPR01MB2583
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -97,219 +98,114 @@ Sent: August 7, 2020 11:58 AM
 To: richardcochran@gmail.com
 Cc: netdev@vger.kernel.org; linux-kernel@vger.kernel.org; Min Li <min.li.xe=
 @renesas.com>
-Subject: [PATCH net 2/4] ptp: ptp_idt82p33: add more debug logs
+Subject: [PATCH net 3/4] ptp: ptp_idt82p33: use do_aux_work for delay work
 
 From: Min Li <min.li.xe@renesas.com>
 
+Instead of declaring its own delay_work, use ptp_clock provided do_aux_work=
+ to configure sync_tod.
+
 Signed-off-by: Min Li <min.li.xe@renesas.com>
 ---
- drivers/ptp/ptp_idt82p33.c | 88 +++++++++++++++++++++++++++++++++++++++++-=
-----
- 1 file changed, 79 insertions(+), 9 deletions(-)
+ drivers/ptp/ptp_idt82p33.c | 24 ++++++++++++------------  drivers/ptp/ptp_=
+idt82p33.h |  2 --
+ 2 files changed, 12 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/ptp/ptp_idt82p33.c b/drivers/ptp/ptp_idt82p33.c index =
-bd1fbcd..189bb81 100644
+189bb81..2d62aed 100644
 --- a/drivers/ptp/ptp_idt82p33.c
 +++ b/drivers/ptp/ptp_idt82p33.c
-@@ -86,6 +86,7 @@ static int idt82p33_xfer(struct idt82p33 *idt82p33,
- 	struct i2c_client *client =3D idt82p33->client;
- 	struct i2c_msg msg[2];
- 	int cnt;
-+	char *fmt =3D "i2c_transfer failed at %d in %s for %s, at addr:=20
-+%04X!\n";
+@@ -531,8 +531,8 @@ static int idt82p33_sync_tod(struct idt82p33_channel *c=
+hannel, bool enable)
 =20
- 	msg[0].addr =3D client->addr;
- 	msg[0].flags =3D 0;
-@@ -99,7 +100,12 @@ static int idt82p33_xfer(struct idt82p33 *idt82p33,
+ 	if (enable =3D=3D channel->sync_tod_on) {
+ 		if (enable && sync_tod_timeout) {
+-			mod_delayed_work(system_wq, &channel->sync_tod_work,
+-					 sync_tod_timeout * HZ);
++			ptp_schedule_worker(channel->ptp_clock,
++					    sync_tod_timeout * HZ);
+ 		}
+ 		return 0;
+ 	}
+@@ -555,24 +555,27 @@ static int idt82p33_sync_tod(struct idt82p33_channel =
+*channel, bool enable)
+ 	channel->sync_tod_on =3D enable;
 =20
- 	cnt =3D i2c_transfer(client->adapter, msg, 2);
- 	if (cnt < 0) {
--		dev_err(&client->dev, "i2c_transfer returned %d\n", cnt);
-+		dev_err(&client->dev,
-+			fmt,
-+			__LINE__,
-+			__func__,
-+			write ? "write" : "read",
-+			(u8) regaddr);
- 		return cnt;
- 	} else if (cnt !=3D 2) {
- 		dev_err(&client->dev,
-@@ -448,8 +454,13 @@ static int idt82p33_measure_tod_write_overhead(struct =
-idt82p33_channel *channel)
-=20
- 	err =3D idt82p33_measure_settime_gettime_gap_overhead(channel, &gap_ns);
-=20
--	if (err)
-+	if (err) {
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 		return err;
-+	}
-=20
- 	err =3D idt82p33_measure_one_byte_write_overhead(channel,
- 						       &one_byte_write_ns);
-@@ -613,13 +624,23 @@ static int idt82p33_enable_tod(struct idt82p33_channe=
-l *channel)
-=20
- 	err =3D idt82p33_pps_enable(channel, false);
-=20
--	if (err)
-+	if (err) {
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 		return err;
-+	}
-=20
- 	err =3D idt82p33_measure_tod_write_overhead(channel);
-=20
--	if (err)
-+	if (err) {
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 		return err;
-+	}
-=20
- 	err =3D _idt82p33_settime(channel, &ts);
-=20
-@@ -728,6 +749,11 @@ static int idt82p33_adjfine(struct ptp_clock_info *ptp=
-, long scaled_ppm)
-=20
- 	mutex_lock(&idt82p33->reg_lock);
- 	err =3D _idt82p33_adjfine(channel, scaled_ppm);
-+	if (err)
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 	mutex_unlock(&idt82p33->reg_lock);
-=20
- 	return err;
-@@ -751,10 +777,19 @@ static int idt82p33_adjtime(struct ptp_clock_info *pt=
-p, s64 delta_ns)
-=20
- 	if (err) {
- 		mutex_unlock(&idt82p33->reg_lock);
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 		return err;
+ 	if (enable && sync_tod_timeout) {
+-		mod_delayed_work(system_wq, &channel->sync_tod_work,
+-				 sync_tod_timeout * HZ);
++		ptp_schedule_worker(channel->ptp_clock,
++				    sync_tod_timeout * HZ);
  	}
 =20
- 	err =3D idt82p33_sync_tod(channel, true);
-+	if (err)
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
+ 	return 0;
+ }
 =20
- 	mutex_unlock(&idt82p33->reg_lock);
-=20
-@@ -770,6 +805,11 @@ static int idt82p33_gettime(struct ptp_clock_info *ptp=
-, struct timespec64 *ts)
-=20
- 	mutex_lock(&idt82p33->reg_lock);
- 	err =3D _idt82p33_gettime(channel, ts);
-+	if (err)
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 	mutex_unlock(&idt82p33->reg_lock);
-=20
- 	return err;
-@@ -785,6 +825,11 @@ static int idt82p33_settime(struct ptp_clock_info *ptp=
-,
+-static void idt82p33_sync_tod_work_handler(struct work_struct *work)
++static long idt82p33_sync_tod_work_handler(struct ptp_clock_info *ptp)
+ {
+ 	struct idt82p33_channel *channel =3D
+-		container_of(work, struct idt82p33_channel, sync_tod_work.work);
++			container_of(ptp, struct idt82p33_channel, caps);
+ 	struct idt82p33 *idt82p33 =3D channel->idt82p33;
++	int ret;
 =20
  	mutex_lock(&idt82p33->reg_lock);
- 	err =3D _idt82p33_settime(channel, ts);
-+	if (err)
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
+=20
+-	(void)idt82p33_sync_tod(channel, false);
++	ret =3D idt82p33_sync_tod(channel, false);
+=20
  	mutex_unlock(&idt82p33->reg_lock);
++
++	return ret;
+ }
 =20
- 	return err;
-@@ -849,8 +894,13 @@ static int idt82p33_enable_channel(struct idt82p33 *id=
-t82p33, u32 index)
- 	channel =3D &idt82p33->channel[index];
+ static int idt82p33_pps_enable(struct idt82p33_channel *channel, bool enab=
+le) @@ -659,10 +662,8 @@ static void idt82p33_ptp_clock_unregister_all(stru=
+ct idt82p33 *idt82p33)
 =20
- 	err =3D idt82p33_channel_init(channel, index);
--	if (err)
-+	if (err) {
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 		return err;
-+	}
+ 		channel =3D &idt82p33->channel[i];
 =20
- 	channel->idt82p33 =3D idt82p33;
+-		if (channel->ptp_clock) {
++		if (channel->ptp_clock)
+ 			ptp_clock_unregister(channel->ptp_clock);
+-			cancel_delayed_work_sync(&channel->sync_tod_work);
+-		}
+ 	}
+ }
 =20
-@@ -859,12 +909,22 @@ static int idt82p33_enable_channel(struct idt82p33 *i=
-dt82p33, u32 index)
- 		 "IDT 82P33 PLL%u", index);
+@@ -862,8 +863,6 @@ static int idt82p33_channel_init(struct idt82p33_channe=
+l *channel, int index)
+ 		return -EINVAL;
+ 	}
 =20
- 	err =3D idt82p33_dpll_set_mode(channel, PLL_MODE_DCO);
--	if (err)
-+	if (err) {
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 		return err;
-+	}
+-	INIT_DELAYED_WORK(&channel->sync_tod_work,
+-			  idt82p33_sync_tod_work_handler);
+ 	channel->sync_tod_on =3D false;
+ 	channel->current_freq_ppb =3D 0;
 =20
- 	err =3D idt82p33_enable_tod(channel);
--	if (err)
-+	if (err) {
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 		return err;
-+	}
+@@ -881,6 +880,7 @@ static void idt82p33_caps_init(struct ptp_clock_info *c=
+aps)
+ 	caps->gettime64 =3D idt82p33_gettime;
+ 	caps->settime64 =3D idt82p33_settime;
+ 	caps->enable =3D idt82p33_enable;
++	caps->do_aux_work =3D idt82p33_sync_tod_work_handler;
+ }
 =20
- 	channel->ptp_clock =3D ptp_clock_register(&channel->caps, NULL);
-=20
-@@ -896,8 +956,13 @@ static int idt82p33_load_firmware(struct idt82p33 *idt=
-82p33)
-=20
- 	err =3D request_firmware(&fw, FW_FILENAME, &idt82p33->client->dev);
-=20
--	if (err)
-+	if (err) {
-+		dev_err(&idt82p33->client->dev,
-+			"Failed at line %d in func %s!\n",
-+			__LINE__,
-+			__func__);
- 		return err;
-+	}
-=20
- 	dev_dbg(&idt82p33->client->dev, "firmware size %zu bytes\n", fw->size);
-=20
-@@ -981,8 +1046,13 @@ static int idt82p33_probe(struct i2c_client *client,
- 		for (i =3D 0; i < MAX_PHC_PLL; i++) {
- 			if (idt82p33->pll_mask & (1 << i)) {
- 				err =3D idt82p33_enable_channel(idt82p33, i);
--				if (err)
-+				if (err) {
-+					dev_err(&idt82p33->client->dev,
-+						"Failed at %d in func %s!\n",
-+						__LINE__,
-+						__func__);
- 					break;
-+				}
- 			}
- 		}
- 	} else {
+ static int idt82p33_enable_channel(struct idt82p33 *idt82p33, u32 index) d=
+iff --git a/drivers/ptp/ptp_idt82p33.h b/drivers/ptp/ptp_idt82p33.h index 9=
+d46966..1dcd2c0 100644
+--- a/drivers/ptp/ptp_idt82p33.h
++++ b/drivers/ptp/ptp_idt82p33.h
+@@ -119,8 +119,6 @@ struct idt82p33_channel {
+ 	struct ptp_clock	*ptp_clock;
+ 	struct idt82p33	*idt82p33;
+ 	enum pll_mode	pll_mode;
+-	/* task to turn off SYNC_TOD bit after pps sync */
+-	struct delayed_work	sync_tod_work;
+ 	bool			sync_tod_on;
+ 	s32			current_freq_ppb;
+ 	u8			output_mask;
 --
 2.7.4
 
