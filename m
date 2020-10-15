@@ -2,93 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED68A28EC0E
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 06:24:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7B3228EC3D
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 06:27:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728055AbgJOEYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 00:24:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48342 "EHLO
+        id S1728864AbgJOE05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 00:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725208AbgJOEYo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 00:24:44 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA0E5C061755;
-        Wed, 14 Oct 2020 21:24:43 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id k6so2693594ior.2;
-        Wed, 14 Oct 2020 21:24:43 -0700 (PDT)
+        with ESMTP id S1725208AbgJOE0x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 00:26:53 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE6D9C061755;
+        Wed, 14 Oct 2020 21:26:52 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id o7so953390pgv.6;
+        Wed, 14 Oct 2020 21:26:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=oNcEJhw55ywRjfZAJbg+/DFo+lApYdVywIBdG/1c8/0=;
-        b=DJEVufa/6EoZwA8g2RuS3VgMyVWvJ0LZhY+WwDDL4LAAWeMSc8AExtZDUDLHiQyUE5
-         RiU7ePVOud+yYiQGlmTA7U30/+przU8y2144JLOpCSAegshcVGoFys4G2mCp3D1bVoJJ
-         JBb3JI0excZlHyBPUfiOkzlulp8+7XftnjgWKVodsBNQa65P0Vu4OxstuBVop5beImWo
-         f0xXduJALXa5dl8NDhJd5Nyz/Z4qEqqeYRFXhCGFtv1jS3+H/FfL7VXPr74uO9Fg5+zR
-         c/6svrn6hzDNS0PUSrUR4WUzQlcfCkljH8RUI82NilReWN6iqR7kvjneOtMc/oVTPow7
-         djvg==
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iNHVFd5PlmYNkQaZe4PpF7uyhE4h5AcVhJcsViTjG4s=;
+        b=mkrqoz3vvDN/NMvvhVzk3DaTdtwjh8PG2ub0JPFYkF6/Jrxiy+XvCBt9WGb5dW+2UF
+         UAkFTaLyrwC3kuuKbVrM5QzCHn8l/VZ7D9J2EjjtxFshy3RZTEQVKchrCE1s87LB9QBo
+         VdruAwYXBzttt/EvywxQg55de302N6nvGE50UK8+gBub4GiPwmIRTVJ0nVxxwDPrB6tc
+         4Wm/AMoN/hUgaVCtpGNHmVKjooRvSsFlzqvtxJhBQT87xGQCroPDJPwJb8yKK+39AOzZ
+         JSpBlS7+z8aNWmFwTWuNPyVYI/eEoG/8omjZVJG3BWglDc3GTfdSnY2tzz5HN7t4hGXI
+         hY+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=oNcEJhw55ywRjfZAJbg+/DFo+lApYdVywIBdG/1c8/0=;
-        b=nIgWsmSIzgn1Z42YN0e5raHM1x+/GD5AqZn4mJEJHoiWyPbKMOZ9sSSImgO7qeLM6n
-         zIMp8xocVnfGNzGujyGVEzYPn5YEyVhyCRjIt13CPA1mrp1cClgdJ8hMkL4OoFKgPKWV
-         9lmCkISOizcnFed2bUEuMDpHH8ssi537q37MFGZWrA3nVm29YRKs/VSjD6eIBVsezfEB
-         IJYj8j1hfNerosYa53pLKMqgBk3gpEyAnUxMT5VttjcI5IpTcco3KeahGLcR/fyDvWWo
-         LZSKzXJlrAJ6yymyG7oWJyENWrAJRSEZOzbab+Nrcgsa2HpKm3Qy0xT5FEMl1JNZwr+4
-         V3LA==
-X-Gm-Message-State: AOAM532w1O6bLHXVBnLYDICza4fdEGyuHKwQ3Zfa1SPwGkYehmyQ+kYv
-        12rdBvN6FsbWFEfCjjm5NAM=
-X-Google-Smtp-Source: ABdhPJzq7YtqBRFf1tmr6M3ouAl5ssjK0l3oYpdDF6PaJkAh/QIAu9g2gqSOxayeK3fZcFFictJJpw==
-X-Received: by 2002:a05:6602:2a42:: with SMTP id k2mr1927530iov.82.1602735883204;
-        Wed, 14 Oct 2020 21:24:43 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id z15sm1432763ilb.73.2020.10.14.21.24.39
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iNHVFd5PlmYNkQaZe4PpF7uyhE4h5AcVhJcsViTjG4s=;
+        b=AUfQDJyVRSPZGXN4mU8zeNMnhPeMc/8JbRcyetxFzZitSj6RZAzMZcefE9iA6ie94n
+         MAAZ5hlP2/hGb6Fz+YAD8ncfumfP6jhq3PNZOh1Q/fiS3nGfc2m50FbSlkqYbZIPkXHn
+         S8kwPkBkT7i4gxIoVJSuou9EmOSS7U0PA3dZvMfXbWcvTyfTxFV3DTLn4NCZU2lz2n8P
+         19Ml/Pkfrr6LMq6PgiqHNr+zs98HG0PIrWTodCN8IRUsPuZBzlfUXvR9u7EpW08u5bt0
+         usFYfvJNX2hee9PaSWPeoGBcv1t1OSK1UaKeY8zkPhAWkswmGkwLXb/8Q+TZJl3VBr8p
+         vPkQ==
+X-Gm-Message-State: AOAM5323nSS+nSeSHBH6yC3Gw9gvxXxEMpnFq5W7A6PtSuTLTgSgyJ6D
+        HB+ISMeaKLWcIDBsrKAEiGE=
+X-Google-Smtp-Source: ABdhPJx+azL3ac6FwTk5uZqWdTaTc/lgmXZS7FZPyYt5I7pOC7d4UxouNE32nRvJZEVgyR4JlJUelg==
+X-Received: by 2002:aa7:9a4a:0:b029:155:323e:adae with SMTP id x10-20020aa79a4a0000b0290155323eadaemr2407909pfj.70.1602736012489;
+        Wed, 14 Oct 2020 21:26:52 -0700 (PDT)
+Received: from localhost ([2001:e42:102:1532:160:16:113:140])
+        by smtp.gmail.com with ESMTPSA id e4sm1230371pgg.37.2020.10.14.21.26.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Oct 2020 21:24:42 -0700 (PDT)
-Date:   Wed, 14 Oct 2020 21:24:26 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Song Liu <songliubraving@fb.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Jiri Olsa <jolsa@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>
-Cc:     Kernel Team <Kernel-team@fb.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "kpsingh@chromium.org" <kpsingh@chromium.org>
-Message-ID: <5f87cefaa8401_b7602084e@john-XPS-13-9370.notmuch>
-In-Reply-To: <96F50C6A-1A46-441D-AAEE-A67D7D5A903D@fb.com>
-References: <20201014043638.3770558-1-songliubraving@fb.com>
- <96F50C6A-1A46-441D-AAEE-A67D7D5A903D@fb.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: fix compilation error in
- progs/profiler.inc.h
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        Wed, 14 Oct 2020 21:26:52 -0700 (PDT)
+From:   Coiby Xu <coiby.xu@gmail.com>
+X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
+Date:   Thu, 15 Oct 2020 12:26:28 +0800
+To:     Benjamin Poirier <benjamin.poirier@gmail.com>
+Cc:     devel@driverdev.osuosl.org, Shung-Hsi Yu <shung-hsi.yu@suse.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
+        <GR-Linux-NIC-Dev@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 1/7] staging: qlge: replace ql_* with qlge_* to avoid
+ namespace clashes with other qlogic drivers
+Message-ID: <20201015042628.42evgens2z47x3d6@Rk>
+References: <20201014104306.63756-1-coiby.xu@gmail.com>
+ <20201014104306.63756-2-coiby.xu@gmail.com>
+ <20201015010136.GB31835@f3>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20201015010136.GB31835@f3>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Song Liu wrote:
-> 
-> 
-> > On Oct 13, 2020, at 9:36 PM, Song Liu <songliubraving@fb.com> wrote:
-> > 
-> > Fix the following error when compiling selftests/bpf
-> > 
-> > progs/profiler.inc.h:246:5: error: redefinition of 'pids_cgrp_id' as different kind of symbol
-> > 
-> > pids_cgrp_id is used in cgroup code, and included in vmlinux.h. Fix the
-> > error by renaming pids_cgrp_id as pids_cgroup_id.
-> > 
-> > Fixes: 03d4d13fab3f ("selftests/bpf: Add profiler test")
-> > Signed-off-by: Song Liu <songliubraving@fb.com>
-> 
-> I forgot to mention
-> 
-> Reported-by: Jiri Olsa <jolsa@kernel.org>
+On Thu, Oct 15, 2020 at 10:01:36AM +0900, Benjamin Poirier wrote:
+>On 2020-10-14 18:43 +0800, Coiby Xu wrote:
+>> To avoid namespace clashes with other qlogic drivers and also for the
+>> sake of naming consistency, use the "qlge_" prefix as suggested in
+>> drivers/staging/qlge/TODO.
+>>
+>> Suggested-by: Benjamin Poirier <benjamin.poirier@gmail.com>
+>> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
+>> ---
+>>  drivers/staging/qlge/TODO           |    4 -
+>>  drivers/staging/qlge/qlge.h         |  190 ++--
+>>  drivers/staging/qlge/qlge_dbg.c     | 1073 ++++++++++++-----------
+>>  drivers/staging/qlge/qlge_ethtool.c |  231 ++---
+>>  drivers/staging/qlge/qlge_main.c    | 1257 +++++++++++++--------------
+>>  drivers/staging/qlge/qlge_mpi.c     |  352 ++++----
+>>  6 files changed, 1551 insertions(+), 1556 deletions(-)
+>>
+>> diff --git a/drivers/staging/qlge/TODO b/drivers/staging/qlge/TODO
+>> index f93f7428f5d5..5ac55664c3e2 100644
+>> --- a/drivers/staging/qlge/TODO
+>> +++ b/drivers/staging/qlge/TODO
+>> @@ -28,10 +28,6 @@
+>>  * the driver has a habit of using runtime checks where compile time checks are
+>>    possible (ex. ql_free_rx_buffers(), ql_alloc_rx_buffers())
+>>  * reorder struct members to avoid holes if it doesn't impact performance
+>> -* in terms of namespace, the driver uses either qlge_, ql_ (used by
+>> -  other qlogic drivers, with clashes, ex: ql_sem_spinlock) or nothing (with
+>> -  clashes, ex: struct ob_mac_iocb_req). Rename everything to use the "qlge_"
+>> -  prefix.
+>
+>You only renamed ql -> qlge. The prefix needs to be added where there is
+>currently none like the second example of that text.
+>
+Thank you for reminding me of the second example!
 
-Acked-by: John Fastabend <john.fastabend@gmail.com>
+>Besides, the next patch reintroduces the name struct ql_adapter.
+
+Oh, there is still a left-over ql_adapter in qlge.h (I renamed ql->qlge
+after initializing the devlink framework earlier but did a git rebase
+to make the order of the changes more reasonable). Thank you for the
+reminding!
+
+--
+Best regards,
+Coiby
