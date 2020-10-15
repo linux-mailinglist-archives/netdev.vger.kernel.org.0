@@ -2,106 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2E6A28E9DF
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 03:20:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2521028E9AE
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 03:16:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731375AbgJOBUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 21:20:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47396 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387939AbgJOBTh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 21:19:37 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF95C0F26F1;
-        Wed, 14 Oct 2020 18:01:43 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id h2so622566pll.11;
-        Wed, 14 Oct 2020 18:01:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=LwerkOdRsnCJHMpXddlyMckRobHsa+u7GtVSMhhS8lI=;
-        b=BRE6k+Vlxcm645Daww/9IQr9e9BY6KhXtwvPZlpEIhh0C2EpOyQJJV1s0DyVkUfAnW
-         lLUUxoRvG4PP+D3yINPpReSX12FcGN0zeOLAZQK6lqthjnaBlqfJu9zZvc9Wph5FwmQV
-         kqt59vRi7nRFgVW2OVpggU3ow0k1dBH2cTXAiZ0XGDK/pQbHa45AvBwvDL3CszbvqWnK
-         qHIpcUQrvn2h1NYYAOilf8NFXv5fvN2S3rVQaZGecrRRzBpVR5pWGQDC52M8cNUB/dD6
-         F2PzyrvKh+11CTndbIM1aUHsl2bUA/CNJDApYwpuVbszwGr9IsZ9oOYrUPXXl9W1yA9n
-         dXEw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LwerkOdRsnCJHMpXddlyMckRobHsa+u7GtVSMhhS8lI=;
-        b=gSgBHAlmgplxJvJeKKA4RWaA9x2Cf+TDg50+CAw+62PCEi+5lOgr5Av1rQbuFdKKGB
-         wojRqx90hurJDalaXJsp5zYZ7Rf6Ppsm8LlbWwdU+rHfVd86MUpfZMkqHQ8oWSqREh1O
-         jxiM1uUBC7A2kGcL4F8ripXKUUhRdapN6cKQyvTZEdYeEMS2eQ0m3x5My32MeaRa8yNz
-         2UNK0SO1Xs99n6guSVsEzRbBW5F20+MWcue+VwO8U53VhL3zhdjJ832WuDpW8C1utp2y
-         VblTtq9Ol+VuJAow6tMCrB4tK3A3BCU04q8SZ4nDFFkrIiVhqd/fx8mD3036Ei08mmRa
-         A3Uw==
-X-Gm-Message-State: AOAM531eabsqJk9HCPC2BmuMV/Yx+YN3py6grgtgaYvTGA7deJL/jjxn
-        6qsMTtyFpsH6YM2H8c73Ahw=
-X-Google-Smtp-Source: ABdhPJwzGaRcZXELQQDsb0RL51HUB5jeCVJnKyJOaYKWfqyyAK9/uRi+xYiHOEOpXkfpn3UNqDhd/Q==
-X-Received: by 2002:a17:90b:1215:: with SMTP id gl21mr1714511pjb.132.1602723702701;
-        Wed, 14 Oct 2020 18:01:42 -0700 (PDT)
-Received: from f3 (ae055068.dynamic.ppp.asahi-net.or.jp. [14.3.55.68])
-        by smtp.gmail.com with ESMTPSA id m3sm792258pjv.52.2020.10.14.18.01.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Oct 2020 18:01:41 -0700 (PDT)
-Date:   Thu, 15 Oct 2020 10:01:36 +0900
-From:   Benjamin Poirier <benjamin.poirier@gmail.com>
-To:     Coiby Xu <coiby.xu@gmail.com>
-Cc:     devel@driverdev.osuosl.org, Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/7] staging: qlge: replace ql_* with qlge_* to avoid
- namespace clashes with other qlogic drivers
-Message-ID: <20201015010136.GB31835@f3>
-References: <20201014104306.63756-1-coiby.xu@gmail.com>
- <20201014104306.63756-2-coiby.xu@gmail.com>
+        id S1730371AbgJOBQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 21:16:46 -0400
+Received: from correo.us.es ([193.147.175.20]:38730 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730054AbgJOBQo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Oct 2020 21:16:44 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 91AFCDA7B4
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 03:16:41 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 7AE17DA78E
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 03:16:41 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 6FAE5DA78D; Thu, 15 Oct 2020 03:16:41 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
+        version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id E3EDEDA704;
+        Thu, 15 Oct 2020 03:16:38 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Thu, 15 Oct 2020 03:16:38 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPSA id BB3F241FF201;
+        Thu, 15 Oct 2020 03:16:38 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH net-next 0/9] netfilter: flowtable bridge and vlan enhancements
+Date:   Thu, 15 Oct 2020 03:16:21 +0200
+Message-Id: <20201015011630.2399-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201014104306.63756-2-coiby.xu@gmail.com>
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-10-14 18:43 +0800, Coiby Xu wrote:
-> To avoid namespace clashes with other qlogic drivers and also for the
-> sake of naming consistency, use the "qlge_" prefix as suggested in
-> drivers/staging/qlge/TODO.
-> 
-> Suggested-by: Benjamin Poirier <benjamin.poirier@gmail.com>
-> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
-> ---
->  drivers/staging/qlge/TODO           |    4 -
->  drivers/staging/qlge/qlge.h         |  190 ++--
->  drivers/staging/qlge/qlge_dbg.c     | 1073 ++++++++++++-----------
->  drivers/staging/qlge/qlge_ethtool.c |  231 ++---
->  drivers/staging/qlge/qlge_main.c    | 1257 +++++++++++++--------------
->  drivers/staging/qlge/qlge_mpi.c     |  352 ++++----
->  6 files changed, 1551 insertions(+), 1556 deletions(-)
-> 
-> diff --git a/drivers/staging/qlge/TODO b/drivers/staging/qlge/TODO
-> index f93f7428f5d5..5ac55664c3e2 100644
-> --- a/drivers/staging/qlge/TODO
-> +++ b/drivers/staging/qlge/TODO
-> @@ -28,10 +28,6 @@
->  * the driver has a habit of using runtime checks where compile time checks are
->    possible (ex. ql_free_rx_buffers(), ql_alloc_rx_buffers())
->  * reorder struct members to avoid holes if it doesn't impact performance
-> -* in terms of namespace, the driver uses either qlge_, ql_ (used by
-> -  other qlogic drivers, with clashes, ex: ql_sem_spinlock) or nothing (with
-> -  clashes, ex: struct ob_mac_iocb_req). Rename everything to use the "qlge_"
-> -  prefix.
+Hi,
 
-You only renamed ql -> qlge. The prefix needs to be added where there is
-currently none like the second example of that text.
+The following patchset adds infrastructure to augment the Netfilter
+flowtable fastpath [1] to support for local network topologies that
+combine IP forwarding, bridge and vlan devices.
 
-Besides, the next patch reintroduces the name struct ql_adapter.
+A typical scenario that can benefit from this infrastructure is composed
+of several VMs connected to bridge ports where the bridge master device
+'br0' has an IP address. A DHCP server is also assumed to be running to
+provide connectivity to the VMs. The VMs reach the Internet through
+'br0' as default gateway, which makes the packet enter the IP forwarding
+path. Then, netfilter is used to NAT the packets before they leave to
+through the wan device.
+
+Something like this:
+
+                       fast path
+                .------------------------.
+               /                          \
+               |           IP forwarding   |
+               |          /             \  .
+               |       br0               eth0
+               .       / \
+               -- veth1  veth2
+                   .
+                   .
+                   .
+                 ethX
+           ab:cd:ef:ab:cd:ef
+                  VM
+
+The idea is to accelerate forwarding by building a fast path that takes
+packets from the ingress path of the bridge port and place them in the
+egress path of the wan device (and vice versa). Hence, skipping the
+classic bridge and IP stack paths.
+
+Patch #1 adds the transmit path type field to the flow tuple. Two transmit
+         paths are supported so far: the neighbour and the xfrm transmit
+	 paths. This patch comes in preparation to add a new direct ethernet
+	 transmit path (see patch #7).
+
+Patch #2 adds dev_fill_forward_path() and .ndo_fill_forward_path() to
+	 netdev_ops. This new function describes the list of netdevice hops
+	 to reach a given destination MAC address in the local network topology,
+	 e.g.
+                           IP forwarding
+                          /             \
+                       br0              eth0
+                       / \
+                   veth1 veth2
+                    .
+                    .
+                    .
+                   ethX
+             ab:cd:ef:ab:cd:ef
+
+	  where veth1 and veth2 are bridge ports and eth0 provides Internet
+	  connectivity. ethX is the interface in the VM which is connected to
+	  the veth1 bridge port. Then, for packets going to br0 whose
+	  destination MAC address is ab:cd:ef:ab:cd:ef, dev_fill_forward_path()
+	  provides the following path: br0 -> veth1.
+
+Patch #3 adds .ndo_fill_forward_path for vlan devices, which provides the next
+         device hop via vlan->real_dev. This also annotates the vlan id and
+         protocol. This is useful to know what vlan headers are expected from
+	 the ingress device. This also provides information regarding the vlan
+	 headers to be pushed before transmission via the egress device.
+
+Patch #4 adds .ndo_fill_forward_path for bridge devices, which allows to make
+	 lookups to the FDB to locate the next device hop (bridge port) in the
+	 forwarding path.
+
+Patch #5 updates the flowtable to use the dev_fill_forward_path()
+         infrastructure to obtain the ingress device in the forwarding path.
+
+Patch #6 updates the flowtable to use the dev_fill_forward_path()
+         infrastructure to obtain the egress device in the forwarding path.
+
+Patch #7 adds the direct ethernet transmit path, which pushes the
+	 ethernet header to the packet and send it through dev_queue_xmit().
+
+Patch #8 uses the direct ethernet transmit path (added in the previous
+         patch) to transmit packets to bridge ports - in case
+	 dev_fill_forward_path() describes a topology that includes a bridge.
+
+Patch #9 updates the flowtable to include the vlan information in the flow tuple
+	 for lookups from the ingress path as well as the vlan headers to be
+	 pushed into the packet before transmission to the egress device.
+	 802.1q and 802.1ad (q-in-q) are supported. The vlan information is
+	 also described by dev_fill_forward_path().
+
+Comments welcome.
+
+[1] https://www.kernel.org/doc/html/latest/networking/nf_flowtable.html
+
+Pablo Neira Ayuso (9):
+  netfilter: flowtable: add xmit path types
+  net: resolve forwarding path from virtual netdevice and HW destination address
+  net: 8021q: resolve forwarding path for vlan devices
+  bridge: resolve forwarding path for bridge devices
+  netfilter: flowtable: use dev_fill_forward_path() to obtain ingress device
+  netfilter: flowtable: use dev_fill_forward_path() to obtain egress device
+  netfilter: flowtable: add direct xmit path
+  netfilter: flowtable: bridge port support
+  netfilter: flowtable: add vlan support
+
+ include/linux/netdevice.h             |  35 ++++
+ include/net/netfilter/nf_flow_table.h |  41 ++++-
+ net/8021q/vlan_dev.c                  |  15 ++
+ net/bridge/br_device.c                |  22 +++
+ net/core/dev.c                        |  31 ++++
+ net/netfilter/nf_flow_table_core.c    |  27 ++-
+ net/netfilter/nf_flow_table_ip.c      | 247 ++++++++++++++++++++++----
+ net/netfilter/nft_flow_offload.c      | 107 ++++++++++-
+ 8 files changed, 484 insertions(+), 41 deletions(-)
+
+--
+2.20.1
+
