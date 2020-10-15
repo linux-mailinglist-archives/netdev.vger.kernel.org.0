@@ -2,75 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BF1628ED00
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 08:16:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EFE628ED5B
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 09:05:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726925AbgJOGQr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 02:16:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:29940 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725208AbgJOGPs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 02:15:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1602742547;
+        id S1727384AbgJOHF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 03:05:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44792 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727137AbgJOHF2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 03:05:28 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D92C061755;
+        Thu, 15 Oct 2020 00:05:27 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1602745525;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=7fm8AP60agWOcduC0GJGvPeW6g0rnJZZasC9gE26Q2w=;
-        b=EWylWwTA+Tq0o7byi2drwAGiXqGDirm+hvm6sIYs2nufUhAiHJTqdEAshiP6iLEOC53xqG
-        usVSkyeWjpyJiaY4mlTDeNfcQCLkPmwFZT8UzGki3nYr/1v7x0yEJ97Dnxe3RJ3XFEfYut
-        1GAD609uEiTCzYn5Nu3rWUQ3mL0DwYw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-382-sG7un7QEOgKOQMoETVk6Hg-1; Thu, 15 Oct 2020 02:15:42 -0400
-X-MC-Unique: sG7un7QEOgKOQMoETVk6Hg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7E816803640;
-        Thu, 15 Oct 2020 06:15:41 +0000 (UTC)
-Received: from [10.72.13.96] (ovpn-13-96.pek2.redhat.com [10.72.13.96])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 18919610F3;
-        Thu, 15 Oct 2020 06:15:33 +0000 (UTC)
-Subject: Re: [PATCH v3 2/2] vhost-vdpa: fix page pinning leakage in error path
-To:     si-wei liu <si-wei.liu@oracle.com>, mst@redhat.com,
-        lingshan.zhu@intel.com
-Cc:     joao.m.martins@oracle.com, boris.ostrovsky@oracle.com,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <1601701330-16837-1-git-send-email-si-wei.liu@oracle.com>
- <1601701330-16837-3-git-send-email-si-wei.liu@oracle.com>
- <574a64e3-8873-0639-fe32-248cb99204bc@redhat.com>
- <5F863B83.6030204@oracle.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <835e79de-52d9-1d07-71dd-d9bee6b9f62e@redhat.com>
-Date:   Thu, 15 Oct 2020 14:15:32 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        bh=wKx5IQSzdiykghzSAGrSkF1QExk5tgl8xdQy5xIGQlI=;
+        b=02E6X/Pz1T1A1QvesbvdrsGJE9xGHbq4N0qDGaaIU2vzBPedUHPfmISrDdN0fh/wXnTcVj
+        eZNTqX91kACLjWKYhuPpIoHRad87xla2nPTxgWUfoYY83kubQwig+j48Ppcm7JM2CN09X6
+        TM6rXZKI30/xPY3zAbrkJKgHeydjBJ2eYdnQotus/P384Jt/eJhIHBN7YeNrqf7kj8SJGV
+        CPzz/Dh4RwvJfEeanB9CqKD+1ypBIEHDfGu/UoxqKH9gvSKREjVK3T0UcwDzFdrX5IANej
+        wlCxI6BuQzmvxQhzgBYTY/188PPVbzB9QL1F58RrWvf7uDIt3KB6b5f5xvh40g==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1602745525;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wKx5IQSzdiykghzSAGrSkF1QExk5tgl8xdQy5xIGQlI=;
+        b=Gjf4bPCSAYj99xYmrZ+Z/w5XdO2HV6/VYG4ftjuHoX2totlu7ZQby5ZN4wxVoaCbzqeWdp
+        QxAL9loyOyOiOdCw==
+To:     Rob Herring <robh@kernel.org>,
+        Kurt Kanzenbach <kurt@kmk-computers.de>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next 2/2] dt-bindings: net: dsa: b53: Drop old bindings
+In-Reply-To: <20201012184707.GA1886314@bogus>
+References: <20201010164627.9309-1-kurt@kmk-computers.de> <20201010164627.9309-3-kurt@kmk-computers.de> <20201012184707.GA1886314@bogus>
+Date:   Thu, 15 Oct 2020 09:05:23 +0200
+Message-ID: <87r1q0c6ks.fsf@kurt>
 MIME-Version: 1.0
-In-Reply-To: <5F863B83.6030204@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--=-=-=
+Content-Type: text/plain
 
-On 2020/10/14 上午7:42, si-wei liu wrote:
->>
->>
->> So what I suggest is to fix the pinning leakage first and do the 
->> possible optimization on top (which is still questionable to me).
-> OK. Unfortunately, this was picked and got merged in upstream. So I 
-> will post a follow up patch set to 1) revert the commit to the 
-> original __get_free_page() implementation, and 2) fix the accounting 
-> and leakage on top. Will it be fine?
+On Mon Oct 12 2020, Rob Herring wrote:
+> On Sat, Oct 10, 2020 at 06:46:27PM +0200, Kurt Kanzenbach wrote:
+>> The device tree bindings have been converted to YAML. No need to keep
+>> the text file around. Update MAINTAINERS file accordingly.
+>
+> You can squash this into the previous patch.
 
+OK, sure.
 
-Fine.
+@Florian: Should I send a v2?
 
-Thanks
+Thanks,
+Kurt
 
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl+H9LMACgkQeSpbgcuY
+8KbWBg//ULnvu0TuzNgWeAQCizn9k6joUmB9PybzhYqAe9vm2t1vDvP2Z8Q5THdB
+oDTrwWU1GrP02lsXbKVK/U3qEnP6s97RHJ6ZmKW+ev4zG2RsaSVGujvL55lnAgma
+F/Mxkxw4pBS9ixthQTsdQxy+3Py3lNUvcynxU45pK+GrW9YIUtfuQpBA7AWTJ+7u
+VYqGe5bVclStHf0/nHo59wrdJqixm98DXqXKsTzXgaVWa/DMzKlU0qYbpQJv2vWM
+4+agdGRyPGzbsuktfhSooMcvawEwIAGnnitVH5AnrQ18rUTw2S7IjaLNvhtIWAOe
+uP/rwB3S1pUSmNlHDg0navwdzcyDGBWMHCA5V90SdWNjy1L9vQVNWjWMr2/kA5X/
+6WNpGKVULE/ME6ERzT5GQ0/kQuX3IbZCuGalyWGn4+0tSFmFUH8qce4pirObLyqo
+gg4S4vPX1eH6wBlS1PL/rO3X6QJH0o9J5Yr1qzMoIcFLg0K5MitJMJltMG1nSONT
+K9QwMeNI9Dp8Ykngirhk/j21xzVJ27oF1M/QQlrYenfDKNFFhJMrzhJts50/VREx
+n4Bv2laXq9RmZPkrkdq7AAsl3uk5TgSAvzA7dVNIcrvw0cvMIeeeDcoFmVUwfdzk
+sBRSqWjSr8mO1gRsyzDiFdstgxnqGAWuARLgBwFYGbkkfOqARBo=
+=I6/s
+-----END PGP SIGNATURE-----
+--=-=-=--
