@@ -2,119 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE10428FABC
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 23:40:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26DCB28FAC3
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 23:44:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731395AbgJOVkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 17:40:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39286 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726239AbgJOVkC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 17:40:02 -0400
-Received: from mail-vk1-xa44.google.com (mail-vk1-xa44.google.com [IPv6:2607:f8b0:4864:20::a44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3896C061755
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 14:40:01 -0700 (PDT)
-Received: by mail-vk1-xa44.google.com with SMTP id s2so139276vks.13
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 14:40:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Lub4zB17xVRPAdPXAMOQDpe5vm63XnWv1jQj4CLOnlk=;
-        b=G9C52u9cJP92WVB2M6b+/YDGCcpCwFgQC59mlcMo4I9+JmGN15FUbzHkgG/muyQ5m5
-         oRs4xcGtDQjUO4wIipBggfPUWxDBXUu1NxD0pHNyMz3iNmlyOIyWP7si97X27gpx3Yjf
-         b1PaNUhviOS4fhskpjFb9spPdDNTWiv8GxXIKy0+mQ4TnIilv1BMP1wDtdKnwHGsAy5j
-         X8EjwafttoyZtLYdMTE3DBjz9NKxK4DfvmS/Mtx6g/g+Ock1PPmLc2a4IAvrL76oIZl1
-         TgGA3NGb2rsmnMHiqogY2sqORYkAHidSy0nhZUpDV+Kj6EgUbqD6c2Je5Wu0KVdfRhC0
-         mvUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Lub4zB17xVRPAdPXAMOQDpe5vm63XnWv1jQj4CLOnlk=;
-        b=K4qHcskyDgNUCRATMrz8C5CX18Rf7G6PoXQ3jCe5zGUETiibe+VjsUbDOxlyhQSe+t
-         cHup5uqgncOpBQ3jmLRaH7/lxna4VoCUPwDtujZziZ/TkpsdV4A86/36jrdsAlkmKl0t
-         WQu2A1eO5bgfwvDE6fWpIk765J3r3Tja6IyevmDRj9IzECp9Oi5giMtrS/pw3JC7qjg0
-         +SM+K6HCkrFARjmfGUo2KgBYce/bXrMTBL3yfJrd8MlzlPG0BIpu5XavjUYyc/w4xmKB
-         GFpu5F7MC3tNtWvkFgaGQMC4Fv1qwQ6AMTuaG3xFlmlVL9YtxLNfqD+ZKOymWt9Htivt
-         aL2A==
-X-Gm-Message-State: AOAM531P/2SLA6VPW7CeuE4bAu4CpupxDgI+td2ZpvvIZKH5OCzprXYm
-        OY9nsWKJVCk4O+FqBz4Mnavk+2csU+aN33SDV0o89IxKnBg=
-X-Google-Smtp-Source: ABdhPJwC11n7Xmcbn2Ae4qmJIuk7OfMeRJ09SNGScXyWWt4AmdKDf6ccTl/dkPzcK+8mSMbhZVdVJPfnSkfxfYwKstQ=
-X-Received: by 2002:a1f:6082:: with SMTP id u124mr300381vkb.19.1602798000550;
- Thu, 15 Oct 2020 14:40:00 -0700 (PDT)
+        id S1728543AbgJOVoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 17:44:24 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:51873 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727278AbgJOVoX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Oct 2020 17:44:23 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4CC2qS0xCTz9sTr;
+        Fri, 16 Oct 2020 08:44:20 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1602798261;
+        bh=xxCONTbIooCLH5Bf98YyysiRr38oie6ZZ6U5FiXcbkI=;
+        h=Date:From:To:Cc:Subject:From;
+        b=OG8ho/Li0M4Gw+DaySwLdtwJ9q3QxzeGwHplZcYWDKBLkGbFNhpzJztM2HoMbnk/9
+         /yWB6fQiXNdZwE5cJ5lXNGGhOXsxChpn3X4qaELOKbgdsxierhrPrOqBTvqs/GeAYa
+         /ieYU7MkdNAdtwTpr0iBNUP2NUIe8KeYP+Re8rijFU91QMFIZGVn07QVSshAeLAPcU
+         Em9J2pVgSajphckrLeKXVQPUVLyy1jYw+xaWCBZFZN2AA/MeCQjUoAN0dN30laeVvL
+         dpf/CO5svJYAOO0gf71zyW2bTWiwxniurMYpDHhV4UQ7iBDT0/og26Hu0l/0/pggIn
+         Eg0vY+N8kpRkw==
+Date:   Fri, 16 Oct 2020 08:44:19 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        Wireless <linux-wireless@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Ido Schimmel <idosch@mellanox.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Michael Jeanson <mjeanson@efficios.com>
+Subject: linux-next: manual merge of the wireless-drivers tree with the net
+ tree
+Message-ID: <20201016084419.3c6e048a@canb.auug.org.au>
 MIME-Version: 1.0
-References: <87eelz4abk.fsf@marvin.dmesg.gr> <CADVnQym6OPVRcJ6PdR3hjN5Krcn0pugshdLZsrnzNQe1c52HXA@mail.gmail.com>
-In-Reply-To: <CADVnQym6OPVRcJ6PdR3hjN5Krcn0pugshdLZsrnzNQe1c52HXA@mail.gmail.com>
-From:   Yuchung Cheng <ycheng@google.com>
-Date:   Thu, 15 Oct 2020 14:39:24 -0700
-Message-ID: <CAK6E8=fCwjP47DvSj4YQQ6xn25bVBN_1mFtrBwOJPYU6jXVcgQ@mail.gmail.com>
-Subject: Re: TCP sender stuck in persist despite peer advertising non-zero window
-To:     Neal Cardwell <ncardwell@google.com>
-Cc:     Apollon Oikonomopoulos <apoikos@dmesg.gr>,
-        Netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/gHa18ALDmab4h1Q=Y3a==d9";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 15, 2020 at 1:22 PM Neal Cardwell <ncardwell@google.com> wrote:
->
-> On Thu, Oct 15, 2020 at 2:31 PM Apollon Oikonomopoulos <apoikos@dmesg.gr> wrote:
-> >
-> > Hi,
-> >
-> > I'm trying to debug a (possible) TCP issue we have been encountering
-> > sporadically during the past couple of years. Currently we're running
-> > 4.9.144, but we've been observing this since at least 3.16.
-> >
-> > Tl;DR: I believe we are seeing a case where snd_wl1 fails to be properly
-> > updated, leading to inability to recover from a TCP persist state and
-> > would appreciate some help debugging this.
->
-> Thanks for the detailed report and diagnosis. I think we may need a
-> fix something like the following patch below.
->
-> Eric/Yuchung/Soheil, what do you think?
-wow hard to believe how old this bug can be. The patch looks good but
-can Apollon verify this patch fix the issue?
+--Sig_/gHa18ALDmab4h1Q=Y3a==d9
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
->
-> commit 42b37c72aa73aaabd0c01b8c05c2205236279021
-> Author: Neal Cardwell <ncardwell@google.com>
-> Date:   Thu Oct 15 16:06:11 2020 -0400
->
->     tcp: fix to update snd_wl1 in bulk receiver fast path
->
->     In the header prediction fast path for a bulk data receiver, if no
->     data is newly acknowledged then we do not call tcp_ack() and do not
->     call tcp_ack_update_window(). This means that a bulk receiver that
->     receives large amounts of data can have the incoming sequence numbers
->     wrap, so that the check in tcp_may_update_window fails:
->        after(ack_seq, tp->snd_wl1)
->
->     The fix is to update snd_wl1 in the header prediction fast path for a
->     bulk data receiver, so that it keeps up and does not see wrapping
->     problems.
->
->     Signed-off-by: Neal Cardwell <ncardwell@google.com>
->     Reported-By: Apollon Oikonomopoulos <apoikos@dmesg.gr>
->
-> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-> index b1ce2054291d..75be97f6a7da 100644
-> --- a/net/ipv4/tcp_input.c
-> +++ b/net/ipv4/tcp_input.c
-> @@ -5766,6 +5766,8 @@ void tcp_rcv_established(struct sock *sk, struct
-> sk_buff *skb)
->                                 tcp_data_snd_check(sk);
->                                 if (!inet_csk_ack_scheduled(sk))
->                                         goto no_ack;
-> +                       } else {
-> +                               tcp_update_wl(tp, TCP_SKB_CB(skb)->seq);
->                         }
->
->                         __tcp_ack_snd_check(sk, 0);
->
-> neal
+Hi all,
+
+Today's linux-next merge of the wireless-drivers tree got a conflict in:
+
+  tools/testing/selftests/net/Makefile
+
+between commit:
+
+  1a01727676a8 ("selftests: Add VRF route leaking tests")
+
+from the net tree and commit:
+
+  b7cc6d3c5c91 ("selftests: net: Add drop monitor test")
+
+from the wireless-drivers (presumably because it has merged part of the
+net-next tree) tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc tools/testing/selftests/net/Makefile
+index 3e7fb1e70c77,4773ce72edbd..000000000000
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@@ -19,7 -19,7 +19,8 @@@ TEST_PROGS +=3D txtimestamp.s
+  TEST_PROGS +=3D vrf-xfrm-tests.sh
+  TEST_PROGS +=3D rxtimestamp.sh
+  TEST_PROGS +=3D devlink_port_split.py
++ TEST_PROGS +=3D drop_monitor_tests.sh
+ +TEST_PROGS +=3D vrf_route_leaking.sh
+  TEST_PROGS_EXTENDED :=3D in_netns.sh
+  TEST_GEN_FILES =3D  socket nettest
+  TEST_GEN_FILES +=3D psock_fanout psock_tpacket msg_zerocopy reuseport_add=
+r_any
+
+--Sig_/gHa18ALDmab4h1Q=Y3a==d9
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl+IwrMACgkQAVBC80lX
+0GwW6Qf9GgMvt4wD9afGoWwR3PrZX5Fzbe5fqY+FJIrMG6yHYcyPxRG605Vl5gXo
+JwcjFo9xXxOtEb7EDC1uwLZouTpFtoArIyhJTa7ND1psay5yu3nrTKVljZeTE2ub
+DGZuF6NfGHQ7L1dE0szwqBVL99n17hF1Apvy9wRXd+lpMJllJs32orJ15h6aUdOa
+K7/r8yFN8GN0LEtIw5sgRZ/nArGn/aftRHUVv79jrEzTOYSCc8nS7IQWHNXl3aQH
+AQs7a5bEGg+GlI0AOCWwpDgFuCmzYFQyPlWfPEJzt9Y8+xiIiz3ep88IVKCHm5Kh
+2lhbecBDqNtsb+GZW/hgj5oCcYml8Q==
+=IQ4s
+-----END PGP SIGNATURE-----
+
+--Sig_/gHa18ALDmab4h1Q=Y3a==d9--
