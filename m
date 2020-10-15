@@ -2,65 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84C4A28F5E4
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 17:32:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6793828F613
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 17:46:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388357AbgJOPcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 11:32:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41480 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729327AbgJOPcz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Oct 2020 11:32:55 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AD0A422248;
-        Thu, 15 Oct 2020 15:32:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602775975;
-        bh=dpCemnMINpdU7ehwAmSaB541GU+21aff7h/2VJopyOc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=yOKhqP7xSFtpZ1zrHWfUBADgRZwU6IF6K23/nYSFeibxGm1K6rKXpNFND70OK6Xn/
-         rbMMGmjhV04BLyboKMPVFdRzabID3dKbtfh85GPK1cKxF70LVgcXaiHfCo5dcC5jsR
-         qPpXshCC/SGH3OeZ3AH4l/mLT3B09DimGdVZjbgA=
-Date:   Thu, 15 Oct 2020 08:32:51 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     sundeep subbaraya <sundeep.lkml@gmail.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        rsaladi2@marvell.com, Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>
-Subject: Re: [net-next PATCH 06/10] octeontx2-af: Add NIX1 interfaces to NPC
-Message-ID: <20201015083251.10bc1aaf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CALHRZupwJOZssMhE6Q_0VSCZ06WB2Sgo_BMpf2n=o7MALe+V6g@mail.gmail.com>
-References: <1602584792-22274-1-git-send-email-sundeep.lkml@gmail.com>
-        <1602584792-22274-7-git-send-email-sundeep.lkml@gmail.com>
-        <20201014194804.1e3b57ae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CALHRZupwJOZssMhE6Q_0VSCZ06WB2Sgo_BMpf2n=o7MALe+V6g@mail.gmail.com>
+        id S2388461AbgJOPqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 11:46:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:22900 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731105AbgJOPqy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 11:46:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602776812;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=5M26P0L/YGQdFvGc6undAIPcG+PqLaKsMBaJzgIC8aQ=;
+        b=KXWLkB4SxySAEJ/WXOudXkE/BmkyzLC7JGPQGYRkK4P8lFWDvi0iWvMfBipnr3tYUwxk+W
+        4eyhOsUS0dnAqHiSLw8gbLWTkFOOF3U/hmgG+XgoQ2b3vs1Xo61XrruOjz+8N6OR5ZN4RT
+        bCqNI7a0EH1+yxJU4C0Z9TQAZAgwOOk=
+Received: from mail-ua1-f69.google.com (mail-ua1-f69.google.com
+ [209.85.222.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-516-ufZBrqmOPTGDZeQdY5kiSQ-1; Thu, 15 Oct 2020 11:46:51 -0400
+X-MC-Unique: ufZBrqmOPTGDZeQdY5kiSQ-1
+Received: by mail-ua1-f69.google.com with SMTP id m11so173379uah.6
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 08:46:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=5M26P0L/YGQdFvGc6undAIPcG+PqLaKsMBaJzgIC8aQ=;
+        b=Hi0niQwVowTm5G+68X7P3aZwFxlCEVtWJHT0fbetbc7b1NDwrS/Y1mZJnHhk3tBldT
+         ISNv9r38xEYbXgQSdy3J976hXEJWRJV0yL/S5Lkuth8VSDPfgD9S4SS2Xi7OK6AJBfZ4
+         gf6Lr4FH3cJM9XDbQzUnxx4JKn4CpREPDzC4Mydi1gvZB1MfpdruoqVhYQ1eiUL+7B6n
+         A12CvUrei7oHPnV7eZeeGbPJcJeQT8dmnfGlV4TPNxW3a3VkAMlNofzTzhq2d7eHWdGn
+         oLOi0OQQNqS71zvl+LHGU4X4/+vgG4hBrhIpQoQnhqDrKTO70YGLNAZVQ0tFqZvFParB
+         oTSw==
+X-Gm-Message-State: AOAM532ba7MhyT8HChih6QeD6YjdHZm8wfbjZK5NMXFM1bsLl2T1ob0o
+        Fr2tQV6E/qH2DjgIT1d6XMuHznhEvFD8gOf5mXS6Harswc44U1DeDXRvlAUcG2tqEY4rqQqO6eZ
+        TXrHRTpCBbrXlDM9b
+X-Received: by 2002:a1f:17d7:: with SMTP id 206mr1052470vkx.11.1602776810557;
+        Thu, 15 Oct 2020 08:46:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwI0VuDWzILusDGXZ0tIAks8AjGvRmJ1jOE0El4f1vWL77qpiC/BUAAmmIC7nWeq7Gxg+5ieA==
+X-Received: by 2002:a1f:17d7:: with SMTP id 206mr1052440vkx.11.1602776809959;
+        Thu, 15 Oct 2020 08:46:49 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id l6sm439779vkk.56.2020.10.15.08.46.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Oct 2020 08:46:49 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 9BFDD1837DD; Thu, 15 Oct 2020 17:46:47 +0200 (CEST)
+Subject: [PATCH RFC bpf-next 0/2] bpf: Rework bpf_redirect_neigh() to allow
+ supplying nexthop from caller
+From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Date:   Thu, 15 Oct 2020 17:46:47 +0200
+Message-ID: <160277680746.157904.8726318184090980429.stgit@toke.dk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 15 Oct 2020 17:53:07 +0530 sundeep subbaraya wrote:
-> Hi Jakub,
-> 
-> On Thu, Oct 15, 2020 at 8:18 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Tue, 13 Oct 2020 15:56:28 +0530 sundeep.lkml@gmail.com wrote:  
-> > > -static const struct npc_mcam_kex npc_mkex_default = {
-> > > +static struct npc_mcam_kex npc_mkex_default = {
-> > >       .mkex_sign = MKEX_SIGN,
-> > >       .name = "default",
-> > >       .kpu_version = NPC_KPU_PROFILE_VER,  
-> >
-> > Why is this no longer constant? Are you modifying global data based
-> > on the HW discovered in the system?  
-> 
-> Yes. Due to an errata present on earlier silicons
-> npc_mkex_default.keyx_cfg[NIX_INTF_TX]
-> and npc_mkex_default.keyx_cfg[NIX_INTF_RX] needs to be identical.
+Based on previous discussion[0], we determined that it would be beneficial to
+rework bpf_redirect_neigh() so the caller can supply the nexthop information
+(e.g., from a previous call to bpf_fib_lookup()). This way, the two helpers can
+be combined without incurring a second FIB lookup to find the nexthop, and
+bpf_fib_lookup() becomes usable even if no nexthop entry currently exists.
 
-Does this run on the SoC? Is there no possibility that the same kernel
-will have to drive two different pieces of hardware?
+This patch (and accompanying selftest update) accomplishes this by way of an
+optional paramter to bpf_redirect_neigh(). This is an API change, and so should
+really be merged into the bpf tree to be part of the 5.10 cycle; however, since
+bpf-next has not yet been merged into bpf, I'm sending this as an RFC against
+bpf-next for discussion, and will repost against bpf once that merge happens
+(Daniel, unless you have a better way of doing this, of course).
+
+-Toke
+
+[0] https://lore.kernel.org/bpf/393e17fc-d187-3a8d-2f0d-a627c7c63fca@iogearbox.net/
+
+---
+
+Toke Høiland-Jørgensen (2):
+      bpf_redirect_neigh: Support supplying the nexthop as a helper parameter
+      selftests: Update test_tc_neigh to use the modified bpf_redirect_neigh()
+
+
+ .../selftests/bpf/progs/test_tc_neigh.c       | 83 ++++++++++++++++---
+ .../testing/selftests/bpf/test_tc_redirect.sh |  8 +-
+ 2 files changed, 78 insertions(+), 13 deletions(-)
+
