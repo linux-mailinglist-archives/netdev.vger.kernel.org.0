@@ -2,106 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B77A28F91B
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 21:03:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C5BB28F929
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 21:05:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391426AbgJOTD3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 15:03:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43336 "EHLO
+        id S2391460AbgJOTE5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 15:04:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391414AbgJOTD2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 15:03:28 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5808C061755;
-        Thu, 15 Oct 2020 12:03:27 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id f21so4250291ljh.7;
-        Thu, 15 Oct 2020 12:03:27 -0700 (PDT)
+        with ESMTP id S2391452AbgJOTEx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 15:04:53 -0400
+Received: from mail-vk1-xa43.google.com (mail-vk1-xa43.google.com [IPv6:2607:f8b0:4864:20::a43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48375C061755
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 12:04:52 -0700 (PDT)
+Received: by mail-vk1-xa43.google.com with SMTP id m3so40219vki.12
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 12:04:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=CyXpjKQXQowVOzd2/NVdHefkoQIV4RLZ1yMexmhPMTI=;
-        b=JEbpRsyiwyYuDWMS/jcCy6N0i02nKMRGCxcfuQ7FsZGaHZ8ig/FgApufpAq+X1Eu52
-         EUJESVaUCFAM/ojd1FVaYZl//pK6Jtu8iI6nYB/B4v4keFMhnIvT11q0IUzxrN3fzZfL
-         Xg9OTv/6MFNKgZXwiqYwZK05MyX19tBDX0l0Y3GDFmHxcPw8lLtyv74YpedhMwMCE1Kq
-         t+sKinn2H1LiPADa6SqN6vYJQQRDTlGCLw8OD45umkGadCLHg1XFGkxXZOYOWJmrNlha
-         fKHqjf63JfaPU9ltQmoN0ajSu+G3+YGpMP1utWvkMvilxUtp3O/s7BHTv0DULIN857s5
-         hBzQ==
+        bh=FsqHAs58x4trJhhHbsTmRDV/y8bm/KqBtxUEW7L/rUE=;
+        b=YNNWaoUtxTP/GIofNOCaOHVKhI6pyeffEbAmx886qQVLDGA3jsArPDvJf/qbzSWmCc
+         C5JfSYJSVtYWs6UJQCeHi99QiHWdoFYMYViyrs4GkHdbebB9lvRoT5MsmnuVEbrv5sQ5
+         xyBdn1KZD+RztL6gagqXOC5GBULxTxnMWP+g3mewAA2K+kcEaPCupv4dBfWaESKTZ0q4
+         F/jljeAcNeIyh+7o++HQGpupYtGu3HVDJc3LL7YW5gHdbei4cJBlby+rSSR2WQbMITIL
+         Y200lB9YcKNGyyeCJEg3TIV4W7HQoW+8SvWycOmJ5NiqvujbAt6k1iobSf04Y5uPkCOq
+         SULw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=CyXpjKQXQowVOzd2/NVdHefkoQIV4RLZ1yMexmhPMTI=;
-        b=KQdsPN0arkqqKz3W1gRQR7JmaydsSx0X/9CdlAszHDkhYU6RXxv8c2Yy3Se6GWuCaI
-         GCm23iegyBO10LQxWEbu9oYRIYoEWu84QVhzA9t15QKlgVzpNMjp71aHcVWwf0fpA9EN
-         UzkBiQzk5egKF+0GEzbS1CHPnSkoii3hJvV3/dTsS2vCV9+iYDcGI728rYxWMnIZlp0q
-         zvUVghSSBDkURIdApVd1cJsFT89ocNL7jDIoSi82cx5eHcyoVw1NAprclEzkWgVUo5CU
-         GmMT5EIkQqGcV1Bnr2uVG4R6hUBnPAaFB2YlybQl1zVfuEyRxzmzpbMkWphr6Vonzfoj
-         tcFQ==
-X-Gm-Message-State: AOAM5336pTP58gXU1kjg8bhJR1vozLpljC2zoIITWCX844B1F/M4+/np
-        hwmZuFNslvtIqQmweNeQZOWRglGyRgZq4mvMHr2vOukyGdo=
-X-Google-Smtp-Source: ABdhPJzBhvLFav5bbdU1VvjtQMAvsVFUDlRA1ezc27v9bcUmw3XV+hG4Sy8LmhQ+oHm6DhGf/sDUZCroXUC+WnGJa58=
-X-Received: by 2002:a2e:a162:: with SMTP id u2mr70611ljl.283.1602788606206;
- Thu, 15 Oct 2020 12:03:26 -0700 (PDT)
+        bh=FsqHAs58x4trJhhHbsTmRDV/y8bm/KqBtxUEW7L/rUE=;
+        b=lKsFhRC6iisVd+kbJ2NFM7RKMt3GAPTI4RLgygGUXVR+JJ90y5hLYqbHCbusAm9RSh
+         EmJmVFAYHY9Ba0Lt0dXmOFZ7KYh4+jqaeETskqxNfMpQw4USLxuByWXMjMd5/wNaaoyh
+         mL2s21C37tC8mxuLQqMUgOxOW05n8qhrSR4Z5xud8sF3U8Gzps4KEuixuxIdBGZfzjG0
+         d4STYknfNuLj9N+V8W/OOUh8biBCqfv+r5K8SUhYpi+VIHeXuCkDUviA1dXcoqjZddPM
+         pA6C28fVJhyt6X+LdyZLQi+6yDZvvyKTvRbFMMo3GsuwFCkghR4v6lSQkwsKGpp/Powo
+         gdSw==
+X-Gm-Message-State: AOAM533RWgTivv+udz7dESiwQ7B4kLeGZEQ2yVnkh3r3JGEiFGJscvL1
+        EzypryBM/nc8pIq1Pgqp9BbZlMJnMzc=
+X-Google-Smtp-Source: ABdhPJyFqaHVD780tE6W7dg3oCR4R5rXAxgEONkobhPkpWje+IO2pmfwvQEtSaNQ0c9TF8iL1JtXNQ==
+X-Received: by 2002:a1f:e384:: with SMTP id a126mr227984vkh.16.1602788690293;
+        Thu, 15 Oct 2020 12:04:50 -0700 (PDT)
+Received: from mail-vs1-f45.google.com (mail-vs1-f45.google.com. [209.85.217.45])
+        by smtp.gmail.com with ESMTPSA id m125sm30020vkh.15.2020.10.15.12.04.48
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Oct 2020 12:04:49 -0700 (PDT)
+Received: by mail-vs1-f45.google.com with SMTP id b3so67276vsc.5
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 12:04:48 -0700 (PDT)
+X-Received: by 2002:a67:d84:: with SMTP id 126mr3522829vsn.51.1602788688034;
+ Thu, 15 Oct 2020 12:04:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <20201014091749.25488-1-yuehaibing@huawei.com> <20201015093748.587a72b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAADnVQKJ=iDMiJpELmuATsdf2vxGJ=Y9r+vjJG6m4BDRNPmP3g@mail.gmail.com> <20201015115643.3a4d4820@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201015115643.3a4d4820@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 15 Oct 2020 12:03:14 -0700
-Message-ID: <CAADnVQLVvd_2zJTQJ7m=322H7M7NdTFfFE7f800XA=9HXVY28Q@mail.gmail.com>
-Subject: Re: [PATCH] bpfilter: Fix build error with CONFIG_BPFILTER_UMH
+References: <20201007101726.3149375-1-a.nogikh@gmail.com> <20201007101726.3149375-2-a.nogikh@gmail.com>
+ <20201009161558.57792e1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CACT4Y+ZF_umjBpyJiCb8YPQOOSofG-M9h0CB=xn3bCgK=Kr=9w@mail.gmail.com>
+ <20201010081431.1f2d9d0d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CACT4Y+aEQoRMO6eA7iQZf4dhOu2cD1ZbbH6TT4Rs_uQwG0PWYg@mail.gmail.com>
+ <CADpXja8i4YPT=vcuCr412RYqRMjTOGuaMW2dyV0j7BtEwNBgFA@mail.gmail.com> <20201013095038.61ba8f55@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201013095038.61ba8f55@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 15 Oct 2020 15:04:11 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSf2kfvdYydXYJNCCfE62q9DXXOBMh_ZSO5W=L9GK478HA@mail.gmail.com>
+Message-ID: <CA+FuTSf2kfvdYydXYJNCCfE62q9DXXOBMh_ZSO5W=L9GK478HA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] net: store KCOV remote handle in sk_buff
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     YueHaibing <yuehaibing@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Cc:     Aleksandr Nogikh <a.nogikh@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        David Miller <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Marco Elver <elver@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Florian Westphal <fw@strlen.de>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 15, 2020 at 11:56 AM Jakub Kicinski <kuba@kernel.org> wrote:
+On Tue, Oct 13, 2020 at 12:50 PM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> On Thu, 15 Oct 2020 11:53:08 -0700 Alexei Starovoitov wrote:
-> > On Thu, Oct 15, 2020 at 9:37 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > On Wed, 14 Oct 2020 17:17:49 +0800 YueHaibing wrote:
-> > > > IF CONFIG_BPFILTER_UMH is set, building fails:
-> > > >
-> > > > In file included from /usr/include/sys/socket.h:33:0,
-> > > >                  from net/bpfilter/main.c:6:
-> > > > /usr/include/bits/socket.h:390:10: fatal error: asm/socket.h: No such file or directory
-> > > >  #include <asm/socket.h>
-> > > >           ^~~~~~~~~~~~~~
-> > > > compilation terminated.
-> > > > scripts/Makefile.userprogs:43: recipe for target 'net/bpfilter/main.o' failed
-> > > > make[2]: *** [net/bpfilter/main.o] Error 1
-> > > >
-> > > > Add missing include path to fix this.
-> > > >
-> > > > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> On Tue, 13 Oct 2020 18:59:28 +0300 Aleksandr Nogikh wrote:
+> > On Mon, 12 Oct 2020 at 09:04, Dmitry Vyukov <dvyukov@google.com> wrote:
 > > >
-> > > Applied, thank you!
+> > > On Sat, Oct 10, 2020 at 5:14 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > >
+> > > > On Sat, 10 Oct 2020 09:54:57 +0200 Dmitry Vyukov wrote:
+> > > > > On Sat, Oct 10, 2020 at 1:16 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > [...]
+> > > > > > Could you use skb_extensions for this?
+> > > > >
+> > > > > Why? If for space, this is already under a non-production ifdef.
+> > > >
+> > > > I understand, but the skb_ext infra is there for uncommon use cases
+> > > > like this one. Any particular reason you don't want to use it?
+> > > > The slight LoC increase?
+> > > >
+> > > > Is there any precedent for adding the kcov field to other performance
+> > > > critical structures?
 > >
-> > Please revert. The patch makes no sense.
+> > It would be great to come to some conclusion on where exactly to store
+> > kcov_handle. Technically, it is possible to use skb extensions for the
+> > purpose, though it will indeed slightly increase the complexity.
+> >
+> > Jakub, you think that kcov_handle should be added as an skb extension,
+> > right?
 >
-> How so? It's using in-tree headers instead of system ones.
-> Many samples seem to be doing the same thing.
-
-There is no such thing as "usr/include" in the kernel build and source trees.
-
-> > Also please don't take bpf patches.
+> That'd be preferable. I understand with current use cases it doesn't
+> really matter, but history shows people come up with all sort of
+> wonderful use cases down the line. And when they do they rarely go back
+> and fix such fundamental minutiae.
 >
-> You had it marked it as netdev in your patchwork :/
+> > Though I do not really object to moving the field, it still seems to
+> > me that sk_buff itself is a better place. Right now skb extensions
+> > store values that are local to specific protocols and that are only
+> > meaningful in the context of these protocols (correct me if I'm
+> > wrong). Although this patch only adds remote kcov coverage to the wifi
+> > code, kcov_handle can be meaningful for other protocols as well - just
+> > like the already existing sk_buff fields. So adding kcov_handle to skb
+> > extensions will break this logical separation.
+>
+> It's not as much protocols as subsystems. The values are meaningful to
+> a subsystem which inserts them, that doesn't mean single layer of the
+> stack. If it was about storing layer's context we would just use
+> skb->cb.
+>
+> So I think the kcov use matches pretty well.
 
-It was delegated automatically by the patchwork system.
-I didn't have time to reassign, but you should have known better
-when you saw 'bpfilter' in the subject.
+skb_extensions was the first thing that came to mind when I read this
+patchset too. It is not specific to protocols.
+
+We have long stopped growing sk_buff size.
