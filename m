@@ -2,61 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7ADE528E9F7
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 03:25:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0C1D28EA43
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 03:38:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732186AbgJOBZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 21:25:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37468 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388656AbgJOBZC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Oct 2020 21:25:02 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 375BD22254;
-        Thu, 15 Oct 2020 01:25:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602725101;
-        bh=YBLKi6Mjxj4D8HFHFUdrANVKThhTNBXxCoH7elR16Fo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=S96Y7gqs+XYulv3FBSXhNovrcXPpSYjTuXw1F8glDjdxTUWKoNEZZa8IIIIYXmkXt
-         D6Vvc0Z2dP2cFoiz2QirE36flYpb2JXEiTPU90KtY9oyUEumF1zXldb5HSOdZReix+
-         UnNOvtr3ne72LNidKfP+n9tgWJdVIzNFZB6PynSQ=
-Date:   Wed, 14 Oct 2020 18:24:59 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Herat Ramani <herat@chelsio.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, rahul@chelsio.com,
-        dt@chelsio.com
-Subject: Re: [PATCH net-next] cxgb4: handle 4-tuple PEDIT to NAT mode
- translation
-Message-ID: <20201014182459.68896a93@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201013093129.321-1-herat@chelsio.com>
-References: <20201013093129.321-1-herat@chelsio.com>
+        id S2388121AbgJOBiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 21:38:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50402 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728457AbgJOBiP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Oct 2020 21:38:15 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4E5BC061755
+        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 18:38:15 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id e7so937915pfn.12
+        for <netdev@vger.kernel.org>; Wed, 14 Oct 2020 18:38:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xjoHR5NS3Y93BCcsCt4qk3hGdCPN6rf1CQt1k7IZuw0=;
+        b=AMldrin15KtRqK6rJijDdX1hCHhDUzKlzV7QycUc+VRRk6oQePslk/GuyGKNTRasD6
+         r0dC6k6THGNARZ2qDFd8vmAnJMchciOIYHVb05thZF9d+ThZbD2dnhgZt28KI+8jVoZq
+         9Ts4Ol9kdwaozuigXd4S6uZlsNXbfUNYHmrMSjgnZ1dqDvz7NnyYa2H353+8Kh8q0KUG
+         LZjIwLaqvOmsY1XLijrG/LJBBseyVYjZlpGtN0kUO0O9IgzGcjw+wx0yzZncqrO4ZAiC
+         e+X0vYEMARkVaYVNqxAwZEkzoWZLgfkRjKrq2v08y+P5jzjGq7tJ9Jfjj5yg8ppQgNvg
+         Btdw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xjoHR5NS3Y93BCcsCt4qk3hGdCPN6rf1CQt1k7IZuw0=;
+        b=fS72JvlmV3GitFBkGGrZo/NC7/kb7yYQfCuplkvEcLZF7buIEe17Nkz008qpEpJJoZ
+         iFKg8g8xQbHs2HMnYppTsU5TXzP9d8nXXK86QOoq4k5Qadgph6uzvjuwSpI3vQ393FJ1
+         dyf5i1fwIPL157oGojDPHGp3vHbB7x2RMhjCMi8qCMS1Ke1z7k1k4qWPSeehLfUfb1Y5
+         nK3R5ejgjKEin83mSQzsT3ldgSjc+eyg++t9z0D9iALIHQPKgGiqVuWgHKLB51N19Xqv
+         Md3BHuZETtUPpx4oQobbRqG0PvUBq76sRm4KSEjUdBmPTrA0C4GWGg3yloOmpBOGWanQ
+         HSTA==
+X-Gm-Message-State: AOAM532rNtkivKtVShO3dsOOmVDr9HD+LbKpA/CVRJh1Qyh5yF+CT3yJ
+        XFSbTE0jzrxAzkI0H5QMgUIqmTRnZlxFjnLm10s=
+X-Google-Smtp-Source: ABdhPJwqlMGAfbUl+/kKPwb3ny5a//C8ZldYINnMG1bEN3imaldPjZXgL0M86DPGcyx/N2ZzdRrrTSUaYB4lloK+/V4=
+X-Received: by 2002:a63:7347:: with SMTP id d7mr1464934pgn.63.1602725895219;
+ Wed, 14 Oct 2020 18:38:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201011191129.991-1-xiyou.wangcong@gmail.com>
+ <CA+FuTSfeTWBpOp+ZCBMBQPqcPUAhZcAv2unwMLqgGt_x_PkrqA@mail.gmail.com>
+ <CAJht_EM7KW1+sXpv2PZXwJuECuzDS7knEGGA9k6hogoPSDgW_g@mail.gmail.com>
+ <CA+FuTScUwbuxJ-bed+5s_KVXMTj_com+K438hM61zaOp9Muvkg@mail.gmail.com>
+ <CAJht_ENhobjCkQmKBB6DtZkx599F3dQyHA4i43=SDSzNkWPLgQ@mail.gmail.com> <CA+FuTSd=54S48QXk3-3CBeSdj8L3DAnRRE6LLmeXaN1kUq-_ww@mail.gmail.com>
+In-Reply-To: <CA+FuTSd=54S48QXk3-3CBeSdj8L3DAnRRE6LLmeXaN1kUq-_ww@mail.gmail.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Wed, 14 Oct 2020 18:38:04 -0700
+Message-ID: <CAJht_EPFCTjv6JAMWFgCdgYpwfEVYB9_r0HaiKUTwekEiPnoDg@mail.gmail.com>
+Subject: Re: [Patch net v2] ip_gre: set dev->hard_header_len and
+ dev->needed_headroom properly
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        syzbot <syzbot+4a2c52677a8a1aa283cb@syzkaller.appspotmail.com>,
+        William Tu <u9012063@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 13 Oct 2020 15:01:29 +0530 Herat Ramani wrote:
-> The 4-tuple NAT offload via PEDIT always overwrites all the 4-tuple
-> fields even if they had not been explicitly enabled. If any fields in
-> the 4-tuple are not enabled, then the hardware overwrites the
-> disabled fields with zeros, instead of ignoring them.
-> 
-> So, add a parser that can translate the enabled 4-tuple PEDIT fields
-> to one of the NAT mode combinations supported by the hardware and
-> hence avoid overwriting disabled fields to 0. Any rule with
-> unsupported NAT mode combination is rejected.
-> 
-> Signed-off-by: Herat Ramani <herat@chelsio.com>
+On Wed, Oct 14, 2020 at 1:19 PM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> On Wed, Oct 14, 2020 at 3:48 PM Xie He <xie.he.0141@gmail.com> wrote:
+> >
+> > I thought we agreed that ideally GRE devices would not have
+> > header_ops. Currently GRE devices (in normal situations) indeed do not
+> > use header_ops (and use ARHPHRD_IPGRE as dev->type). I think we should
+> > keep this behavior.
+> >
+> > To solve the problem of the same dev->type having different
+> > hard_header_len values which you mentioned. I think we should create a
+> > new dev->type (ARPHRD_IPGRE_SPECIAL) for GRE devices that use
+> > header_ops.
+> >
+> > Also, for collect_md, I think we should use ARHPHRD_IPGRE. I see no
+> > reason to use ARPHRD_NONE.
+>
+> What does ARPHRD_IPGRE define beyond ARPHRD_NONE? And same for
+> ARPHRD_TUNNEL variants. If they are indistinguishable, they are the
+> same and might as well have the same label.
 
-Looks good, applied, but to net. 
+It is indeed reasonable to keep devices indistinguishable to each
+other having the same dev->type label. But I see a lot of devices in
+the kernel without header_ops having different dev->type labels. For
+example, ARPHRD_SLIP should be the same as ARPHRD_RAWIP. One feature
+distinguishing these devices might be their dev->mtu.
 
-Not rejecting unsupported configurations is a bug.
+GRE devices may have their special dev->mtu determined by the maximum
+IP packet size and the GRE header length.
 
-Unless you tell me otherwise I'll also queue this for stable.
-
-Thanks!
+For ARPHRD_TUNNEL, it may also have its own dev->mtu. I also see it
+has header_ops->parse_protocol (but it doesn't have
+header_ops->create).
