@@ -2,94 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45ECE28F953
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 21:16:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 440DF28F956
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 21:18:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389848AbgJOTQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 15:16:03 -0400
-Received: from www62.your-server.de ([213.133.104.62]:47514 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389812AbgJOTQD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 15:16:03 -0400
-Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kT8jA-0002CN-MN; Thu, 15 Oct 2020 21:15:52 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: pull-request: bpf-next 2020-10-15
-Date:   Thu, 15 Oct 2020 21:15:52 +0200
-Message-Id: <20201015191552.12435-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S1731232AbgJOTSy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 15:18:54 -0400
+Received: from mx2.suse.de ([195.135.220.15]:35726 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726830AbgJOTSy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Oct 2020 15:18:54 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id CB865B2C8
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 19:18:52 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 8839D6078A; Thu, 15 Oct 2020 21:18:52 +0200 (CEST)
+Date:   Thu, 15 Oct 2020 21:18:52 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Subject: ethtool 5.9 released
+Message-ID: <20201015191852.bc3rghi4okucs5ex@lion.mk-sys.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25958/Thu Oct 15 15:56:23 2020)
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="7w6vwwxm3vf2xnj6"
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub,
 
-The following pull-request contains BPF *fixes* for your *net-next* tree.
+--7w6vwwxm3vf2xnj6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-We've added 4 non-merge commits during the last 3 day(s) which contain
-a total of 5 files changed, 70 insertions(+), 46 deletions(-).
+Hello,
 
-The main changes are:
+ethtool 5.9 has been released.
 
-1) Fix register equivalence tracking in verifier, from Alexei Starovoitov.
+Home page: https://www.kernel.org/pub/software/network/ethtool/
+Download link:
+https://www.kernel.org/pub/software/network/ethtool/ethtool-5.9.tar.xz
 
-2) Fix sockmap error path to not call bpf_prog_put() with NULL, from Alex Dewar.
+Release notes:
 
-3) Fix sockmap to add locking annotations to iterator, from Lorenz Bauer.
+	* Feature: extended link state
+	* Feature: QSFP-DD support
+	* Feature: tunnel information (--show-tunnels)
+	* Feature: Broadcom bnxt support
+	* Fix: improve compatibility between ioctl and netlink output
+	* Fix: cable test TDR amplitude output
+	* Fix: get rid of build warnings
+	* Fix: null pointer dereference running against old kernel (no arg)
+	* Fix: update link mode tables
+	* Fix: fix memory leaks and error handling found by static analysis
 
-4) Fix tcp_hdr_options test to use loopback address, from Martin KaFai Lau.
+Enjoy,
+Michal
 
-Please consider pulling these changes from:
+--7w6vwwxm3vf2xnj6
+Content-Type: application/pgp-signature; name="signature.asc"
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+-----BEGIN PGP SIGNATURE-----
 
-Thanks a lot!
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAl+IoJcACgkQ538sG/LR
+dpUWtwf/fz56KiT0k4XfSbAEB1u0BgV9nBQ3a0vFe53QchwquzyjOQZPO4SnGjD4
+KSPvl/GuaCkVVG79zbTrwFIfTyvqPlHo4KMXtV0INPO5GAliUMDi9YAMhI3O0Bfa
+1MamaZH3w5tLYyOCoDHm+65gVvRlAMEoH28cjSzjhRURAnfKRZZpWoB1S/6S+Jwp
+FDdujBf4uIkY/SQWN20CfC9P7YAMqOZL31GLpzQ98qdE90ILap99ovCuqpKdIZdo
+o0tv3/Fqrwm1tbIRNUlrclAJ7HX8nDX5nlt8Xg0WUUCyGzDxInPmDkEclGdpeQcH
+3ackF4a9vyu6tsW5m60UNiUvmlgpNw==
+=U69F
+-----END PGP SIGNATURE-----
 
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Andrii Nakryiko, Jakub Sitnicki, John Fastabend, kernel test robot, 
-Yonghong Song
-
-----------------------------------------------------------------
-
-The following changes since commit ccdf7fae3afaeaf0e5dd03311b86ffa56adf85ae:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next (2020-10-12 16:16:50 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
-
-for you to fetch changes up to 83c11c17553c0fca217105c17444c4ef5ab2403f:
-
-  net, sockmap: Don't call bpf_prog_put() on NULL pointer (2020-10-15 21:05:23 +0200)
-
-----------------------------------------------------------------
-Alex Dewar (1):
-      net, sockmap: Don't call bpf_prog_put() on NULL pointer
-
-Alexei Starovoitov (1):
-      bpf: Fix register equivalence tracking.
-
-Lorenz Bauer (1):
-      bpf, sockmap: Add locking annotations to iterator
-
-Martin KaFai Lau (1):
-      bpf, selftest: Fix flaky tcp_hdr_options test when adding addr to lo
-
- kernel/bpf/verifier.c                              | 38 ++++++++++++++--------
- net/core/sock_map.c                                | 24 ++++++++++----
- .../selftests/bpf/prog_tests/tcp_hdr_options.c     | 26 +--------------
- .../bpf/progs/test_misc_tcp_hdr_options.c          |  2 +-
- tools/testing/selftests/bpf/verifier/regalloc.c    | 26 +++++++++++++++
- 5 files changed, 70 insertions(+), 46 deletions(-)
+--7w6vwwxm3vf2xnj6--
