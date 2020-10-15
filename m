@@ -2,145 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B3CA28FB46
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 00:37:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EFF6528FB66
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 01:04:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731895AbgJOWh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 18:37:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48204 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731394AbgJOWh4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 18:37:56 -0400
-Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6298DC061755
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 15:37:55 -0700 (PDT)
-Received: by mail-vs1-xe44.google.com with SMTP id u74so370126vsc.2
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 15:37:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9S2JLAqGZsH4z/tGSHbw7geQ9XQmkwSlZEfCbkTojUo=;
-        b=EBWSxJ+0QIrEOjHtInqjqieA70u/BbSMEMkC27yslFsheBlsxUCLCtcL1Q+oJ+kM+t
-         30bhZ2u5YpA3EaZbfqkrvlKz/8mKbUVrGitSicsOcZhTbozVZ3tseUSFQwimvm7yFxjL
-         IdGLVvILuJNqsx6LcShe5dCXlbyw9OWbhfYif94UJz+CYpBk6TPVDklQkNkD5dlivp6b
-         8zVw5MklIRJVwFglPO9Skjo/Q8Q0bPKx1LoRDJDfEDII2fauKbSkC0xFM0fYz8dOk8f3
-         Q6GrGJprGm2qGiyjBkoR7WU3pc1ZrHydjq+eVWTcHruU0KrUJ82qBRfjcScnlCFD0GPg
-         at1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9S2JLAqGZsH4z/tGSHbw7geQ9XQmkwSlZEfCbkTojUo=;
-        b=lYflFuKjK61y4pE8lKTtJTQQ2Hh4AFQ6G4W4odnGDwTtYcGoCHdjIoyhvWJv6BaFhh
-         gf91k476+G3ay+wQxJD19FIpsuxbUpjOGe4Aj9JZNDZmmQqT4kQHJGBOFH8cB/YhbT/M
-         eeXk3Y9wQkHLI8gc4nhV4mBNvSw1tEr/9dVqy2Qdd59cokojKRbjU69l/rKtCLxDl4hA
-         6U44ab5vgAV5LzUxwat+AuxKalF2bG0tv2Dc6u9SlS1SRZkGgcYau2InS1ucsfvOGNK2
-         YC8AN0UngeAZMlWMxd+sIXEADrljW7wsFMObHe4kAWeyskm6smB2v65tKRNO0cRuAvgQ
-         VWTA==
-X-Gm-Message-State: AOAM532COy0xhLHLAjQ7Ju6pfGuef7T2yufUxsYjFMvlyVAa/76R8RrA
-        JB/GegNwbPlfQ7/dL8kLmoLvcbpMyAbofK/9pPNKGA==
-X-Google-Smtp-Source: ABdhPJwXFvyDLF0j/cP5ghD/fErjt+cZvHb864mC3+5Nj5tc0wJcYO818UzKDquOaC0aPACADsyovTD/wQaV9HgYgEo=
-X-Received: by 2002:a67:ffc1:: with SMTP id w1mr418337vsq.52.1602801474350;
- Thu, 15 Oct 2020 15:37:54 -0700 (PDT)
+        id S1732390AbgJOXEb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 19:04:31 -0400
+Received: from correo.us.es ([193.147.175.20]:39706 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732282AbgJOXEb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Oct 2020 19:04:31 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 39EAFFB36B
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 01:04:29 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 2C270DA722
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 01:04:29 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 21CABDA730; Fri, 16 Oct 2020 01:04:29 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
+        version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id B509CDA722;
+        Fri, 16 Oct 2020 01:04:26 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 16 Oct 2020 01:04:26 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 951A342EF4E0;
+        Fri, 16 Oct 2020 01:04:26 +0200 (CEST)
+Date:   Fri, 16 Oct 2020 01:04:26 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next,v2 0/9] netfilter: flowtable bridge and vlan
+ enhancements
+Message-ID: <20201015230426.GA15673@salvia>
+References: <20201015163038.26992-1-pablo@netfilter.org>
+ <20201015124748.7793cbda@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <87eelz4abk.fsf@marvin.dmesg.gr> <CADVnQym6OPVRcJ6PdR3hjN5Krcn0pugshdLZsrnzNQe1c52HXA@mail.gmail.com>
- <CAK6E8=fCwjP47DvSj4YQQ6xn25bVBN_1mFtrBwOJPYU6jXVcgQ@mail.gmail.com> <87blh33zr7.fsf@marvin.dmesg.gr>
-In-Reply-To: <87blh33zr7.fsf@marvin.dmesg.gr>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Thu, 15 Oct 2020 18:37:37 -0400
-Message-ID: <CADVnQym2cJGRP8JnRAdzHfWEeEbZrmXd3eXD-nFP6pRNK7beWw@mail.gmail.com>
-Subject: Re: TCP sender stuck in persist despite peer advertising non-zero window
-To:     Apollon Oikonomopoulos <apoikos@dmesg.gr>
-Cc:     Yuchung Cheng <ycheng@google.com>, Netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Content-Type: multipart/mixed; boundary="0000000000008702dd05b1bd4c0e"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20201015124748.7793cbda@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000008702dd05b1bd4c0e
-Content-Type: text/plain; charset="UTF-8"
+On Thu, Oct 15, 2020 at 12:47:48PM -0700, Jakub Kicinski wrote:
+> On Thu, 15 Oct 2020 18:30:29 +0200 Pablo Neira Ayuso wrote:
+> > The following patchset adds infrastructure to augment the Netfilter
+> > flowtable fastpath [1] to support for local network topologies that
+> > combine IP forwarding, bridge and vlan devices.
+> > 
+> > A typical scenario that can benefit from this infrastructure is composed
+> > of several VMs connected to bridge ports where the bridge master device
+> > 'br0' has an IP address. A DHCP server is also assumed to be running to
+> > provide connectivity to the VMs. The VMs reach the Internet through
+> > 'br0' as default gateway, which makes the packet enter the IP forwarding
+> > path. Then, netfilter is used to NAT the packets before they leave to
+> > through the wan device.
+> 
+> Hi Pablo, I should have looked at this closer yesterday, but I think it
+> warrants a little more review than we can afford right now. 
+> 
+> Let's take it after the merge window, sorry!
 
-On Thu, Oct 15, 2020 at 6:12 PM Apollon Oikonomopoulos <apoikos@dmesg.gr> wrote:
->
-> Yuchung Cheng <ycheng@google.com> writes:
->
-> > On Thu, Oct 15, 2020 at 1:22 PM Neal Cardwell <ncardwell@google.com> wrote:
-> >>
-> >> On Thu, Oct 15, 2020 at 2:31 PM Apollon Oikonomopoulos <apoikos@dmesg.gr> wrote:
-> >> >
-> >> > Hi,
-> >> >
-> >> > I'm trying to debug a (possible) TCP issue we have been encountering
-> >> > sporadically during the past couple of years. Currently we're running
-> >> > 4.9.144, but we've been observing this since at least 3.16.
-> >> >
-> >> > Tl;DR: I believe we are seeing a case where snd_wl1 fails to be properly
-> >> > updated, leading to inability to recover from a TCP persist state and
-> >> > would appreciate some help debugging this.
-> >>
-> >> Thanks for the detailed report and diagnosis. I think we may need a
-> >> fix something like the following patch below.
->
-> That was fast, thank you!
->
-> >>
-> >> Eric/Yuchung/Soheil, what do you think?
-> > wow hard to believe how old this bug can be. The patch looks good but
-> > can Apollon verify this patch fix the issue?
->
-> Sure, I can give it a try and let the systems do their thing for a couple of
-> days, which should be enough to see if it's fixed.
+I understand, I admit it was a bit late patchset.
 
-Great, thanks!
+I have to say that I'm dissapointed. I cannot avoid shaking the
+feeling that there is always a reason to push back for Netfilter
+stuff.
 
-> Neal, would it be possible to re-send the patch as an attachment? The
-> inlined version does not apply cleanly due to linewrapping and
-> whitespace changes and, although I can re-type it, I would prefer to test
-> the exact same thing that would be merged.
+Probably it's not fair to mention this in this case.
 
-Sure, I have attached the "git format-patch" format of the commit. It
-does seem to apply cleanly to the v4.9.144 kernel you mentioned you
-are using.
-
-Thanks for testing this!
-
-best,
-neal
-
---0000000000008702dd05b1bd4c0e
-Content-Type: application/x-patch; 
-	name="0001-tcp-fix-to-update-snd_wl1-in-bulk-receiver-fast-path.patch"
-Content-Disposition: attachment; 
-	filename="0001-tcp-fix-to-update-snd_wl1-in-bulk-receiver-fast-path.patch"
-Content-Transfer-Encoding: base64
-Content-ID: <f_kgbe8cb10>
-X-Attachment-Id: f_kgbe8cb10
-
-RnJvbSA0MmIzN2M3MmFhNzNhYWFiZDBjMDFiOGMwNWMyMjA1MjM2Mjc5MDIxIE1vbiBTZXAgMTcg
-MDA6MDA6MDAgMjAwMQpGcm9tOiBOZWFsIENhcmR3ZWxsIDxuY2FyZHdlbGxAZ29vZ2xlLmNvbT4K
-RGF0ZTogVGh1LCAxNSBPY3QgMjAyMCAxNjowNjoxMSAtMDQwMApTdWJqZWN0OiBbUEFUQ0hdIHRj
-cDogZml4IHRvIHVwZGF0ZSBzbmRfd2wxIGluIGJ1bGsgcmVjZWl2ZXIgZmFzdCBwYXRoCgpJbiB0
-aGUgaGVhZGVyIHByZWRpY3Rpb24gZmFzdCBwYXRoIGZvciBhIGJ1bGsgZGF0YSByZWNlaXZlciwg
-aWYgbm8KZGF0YSBpcyBuZXdseSBhY2tub3dsZWRnZWQgdGhlbiB3ZSBkbyBub3QgY2FsbCB0Y3Bf
-YWNrKCkgYW5kIGRvIG5vdApjYWxsIHRjcF9hY2tfdXBkYXRlX3dpbmRvdygpLiBUaGlzIG1lYW5z
-IHRoYXQgYSBidWxrIHJlY2VpdmVyIHRoYXQKcmVjZWl2ZXMgbGFyZ2UgYW1vdW50cyBvZiBkYXRh
-IGNhbiBoYXZlIHRoZSBpbmNvbWluZyBzZXF1ZW5jZSBudW1iZXJzCndyYXAsIHNvIHRoYXQgdGhl
-IGNoZWNrIGluIHRjcF9tYXlfdXBkYXRlX3dpbmRvdyBmYWlsczoKICAgYWZ0ZXIoYWNrX3NlcSwg
-dHAtPnNuZF93bDEpCgpUaGUgZml4IGlzIHRvIHVwZGF0ZSBzbmRfd2wxIGluIHRoZSBoZWFkZXIg
-cHJlZGljdGlvbiBmYXN0IHBhdGggZm9yIGEKYnVsayBkYXRhIHJlY2VpdmVyLCBzbyB0aGF0IGl0
-IGtlZXBzIHVwIGFuZCBkb2VzIG5vdCBzZWUgd3JhcHBpbmcKcHJvYmxlbXMuCgpTaWduZWQtb2Zm
-LWJ5OiBOZWFsIENhcmR3ZWxsIDxuY2FyZHdlbGxAZ29vZ2xlLmNvbT4KUmVwb3J0ZWQtQnk6IEFw
-b2xsb24gT2lrb25vbW9wb3Vsb3MgPGFwb2lrb3NAZG1lc2cuZ3I+Ci0tLQogbmV0L2lwdjQvdGNw
-X2lucHV0LmMgfCAyICsrCiAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCspCgpkaWZmIC0t
-Z2l0IGEvbmV0L2lwdjQvdGNwX2lucHV0LmMgYi9uZXQvaXB2NC90Y3BfaW5wdXQuYwppbmRleCBi
-MWNlMjA1NDI5MWQuLjc1YmU5N2Y2YTdkYSAxMDA2NDQKLS0tIGEvbmV0L2lwdjQvdGNwX2lucHV0
-LmMKKysrIGIvbmV0L2lwdjQvdGNwX2lucHV0LmMKQEAgLTU3NjYsNiArNTc2Niw4IEBAIHZvaWQg
-dGNwX3Jjdl9lc3RhYmxpc2hlZChzdHJ1Y3Qgc29jayAqc2ssIHN0cnVjdCBza19idWZmICpza2Ip
-CiAJCQkJdGNwX2RhdGFfc25kX2NoZWNrKHNrKTsKIAkJCQlpZiAoIWluZXRfY3NrX2Fja19zY2hl
-ZHVsZWQoc2spKQogCQkJCQlnb3RvIG5vX2FjazsKKwkJCX0gZWxzZSB7CisJCQkJdGNwX3VwZGF0
-ZV93bCh0cCwgVENQX1NLQl9DQihza2IpLT5zZXEpOwogCQkJfQogCiAJCQlfX3RjcF9hY2tfc25k
-X2NoZWNrKHNrLCAwKTsKLS0gCjIuMjkuMC5yYzEuMjk3LmdmYTk3NDNlNTAxLWdvb2cKCg==
---0000000000008702dd05b1bd4c0e--
+It's just a personal perception, so I might be really wrong about it.
