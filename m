@@ -2,115 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D19928EC50
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 06:33:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C202928EC59
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 06:43:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728997AbgJOEdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 00:33:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49722 "EHLO
+        id S1728370AbgJOEnj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 00:43:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725208AbgJOEda (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 00:33:30 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2FEFC061755;
-        Wed, 14 Oct 2020 21:33:29 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id n9so1065471pgf.9;
-        Wed, 14 Oct 2020 21:33:29 -0700 (PDT)
+        with ESMTP id S1726012AbgJOEnj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 00:43:39 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAAF6C061755;
+        Wed, 14 Oct 2020 21:43:38 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id d20so2665896iop.10;
+        Wed, 14 Oct 2020 21:43:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=BoSX3rBWIH0BfpEjF76Dmbb/3sKDbh5PYS0JdSEYDAA=;
-        b=W2vCDoxSf13zj8g9zZY1eIf+g4kb/0I6Rs4x2A6doe9Aw9+/dn1Fh5A90ARpCMc2r+
-         VwNVOY7sRAsdtXRizSsUzHpnr703Df4rPXB9wpE3s30ytolY2/y0G2qD2AT7X1PaxbbW
-         S2yakTx0cFnEVeHAaLnNNZSvHGHnz+/lDlLB0ejvbDtFsOY+3D00h/mG8D3RONbjLxJe
-         HO3vGaEHQoWiOzjLUgv1ApaVPNdEcbGFvrpWAilhBKT1FYeteMOzuqMIJCmH+zp4L/Jh
-         EzADXMoYrrXJIKImlLqq/mhoviaj4ug9+QjMifRLIncmpjhFrd5ArydKNnMyu5IOWOyG
-         nYfQ==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=hp/IQgMH7PxTKUrIjJbWVpSobp0VPSFvyGy6U//MIf0=;
+        b=pYcMe0Vgmx0X3sAxtRyoYD58EUUzsgjovx82demcGZg/ctk7mdTMg7OY2w/rRcLB5M
+         /+7IMDUvEFqeXXgBfKgbPBWXA31dgx8Uy99HULu50OwafU4RgaiPA16Q+seAl/yPEA3p
+         2I7Nf1xfJlaDb/VCtBvNJwi5O0GsJgnGCKito+loPEFdF1R3xGmA0snF1GTFAvkzMZSf
+         SvrwWAF8KpFguqZwglfIezg+4fr1G67sEFtsCgCWerHMtiz+GR+FxKPKvbmTVJg27KAk
+         79vvn+YM3vx/c/Be2iu1LpZW6pBfyb/D5AGNUE9TrBYZ/8nwWCI3WX+SXbvx6Zf475eQ
+         9/XA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BoSX3rBWIH0BfpEjF76Dmbb/3sKDbh5PYS0JdSEYDAA=;
-        b=E1b4f5zLISztN5oV9oTH6bNbsSAuld9B8x0Xbmbp2cpfrHF1SN7JjGNnDoLgBSNmnD
-         E2eDkOpqg2xIP0LVX7TlkbD9HtYYsqBxPpCopJCN4XJgj34mbzAZc183PswyEWek5FQW
-         qIY8HwQoTdUUPaxBg3xrYXopvrdUCaNtpwpAkXbdAVy0A7BDocYtfR8DLYBI4UDHR1FK
-         D5D9FhseqeY0HbnpDBsx1rA+haL7LemKOLP+oS2ZN+QG+qrcLOtIYjLvzmGM47IGNY4s
-         5lM7GaQWq6Ac0zdTQLY8y2O+MFBF8ZSDjMxz30wM9AAKYnEERA5pO6T4v/YKYBU08vx4
-         HX8Q==
-X-Gm-Message-State: AOAM53355DH41liREA1DYeU6/fyYqOWb/eeA8f1isr1qWggzkBe5fK3J
-        s6NijA68mCvX8fWMyW8pwZ4=
-X-Google-Smtp-Source: ABdhPJyfUA7VeZdb0UrSGUs4ReOt9DflZquI1UGtleSJyhY3oG3RlPdoVwjivuTKkZgWo8IGVZxt7A==
-X-Received: by 2002:a63:d40d:: with SMTP id a13mr1952033pgh.344.1602736409526;
-        Wed, 14 Oct 2020 21:33:29 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:f594])
-        by smtp.gmail.com with ESMTPSA id kc21sm1264251pjb.36.2020.10.14.21.33.28
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=hp/IQgMH7PxTKUrIjJbWVpSobp0VPSFvyGy6U//MIf0=;
+        b=K71xe1q2W43vSWLDLifqe/28/afMxlUFF8ddHas4ZvIC7tC8/hEye6t+U7HUL0MpJw
+         3/d0z1nePUFyX0G2Sk/bn24GpG6EV7khLRT2T2aCmQ81fsnYqP2InwSI4EdJoycF0oup
+         +FWPTm6enJV5OagOrGsOAy0XKIObxeHuBHtwk7nWL38CP0ebGhNAAm7mVXMRpwL43qtN
+         ga2h72gPZuyR/PD4IqnqygxhhioQGwS7KlNd6ECRLrTzVAwCJq0VlitDBX92Ecxt22EO
+         LJwDYZzq2GM+QF241tO4o3Phm/fXKm1k6bQDhDzPkRO0HDwbmY5oQn9WKv5xkvV+AIzP
+         cX1A==
+X-Gm-Message-State: AOAM530Uv+mhWggk/Qf2dFuXNGXfInggWeFGjMrVDK/I9H3EqIIsGqIg
+        y2UpsiC8qSlhY8K5/X11nVI=
+X-Google-Smtp-Source: ABdhPJyX/6g7d5i1K57Hxs+9ymz+uNQihzvxVKOwYmhCYQhqs8dd7n3/JKPKZ6KLlvdn2zFem8+22A==
+X-Received: by 2002:a5e:c70a:: with SMTP id f10mr1933169iop.178.1602737018033;
+        Wed, 14 Oct 2020 21:43:38 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id g17sm1411630ilq.15.2020.10.14.21.43.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Oct 2020 21:33:28 -0700 (PDT)
-Date:   Wed, 14 Oct 2020 21:33:27 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        Wed, 14 Oct 2020 21:43:37 -0700 (PDT)
+Date:   Wed, 14 Oct 2020 21:43:30 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Sitnicki <jakub@cloudflare.com>,
+        Alex Dewar <alex.dewar90@gmail.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next] bpf: Fix register equivalence tracking.
-Message-ID: <20201015043327.stqhrupw2adhd5hl@ast-mbp.dhcp.thefacebook.com>
-References: <20201014175608.1416-1-alexei.starovoitov@gmail.com>
- <CAEf4BzaF2fDWoRg8h3dUKftvcastYqzEhGS2TG6MoV462fd_8Q@mail.gmail.com>
- <5f87ca47436f3_b7602088f@john-XPS-13-9370.notmuch>
- <20201015041952.n3crk6kvtbgev6rw@ast-mbp.dhcp.thefacebook.com>
- <5f87cfa5b1a77_b7602087e@john-XPS-13-9370.notmuch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5f87cfa5b1a77_b7602087e@john-XPS-13-9370.notmuch>
+        Lorenz Bauer <lmb@cloudflare.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-ID: <5f87d37225c32_b7602083@john-XPS-13-9370.notmuch>
+In-Reply-To: <878sc9qi3c.fsf@cloudflare.com>
+References: <20201012170952.60750-1-alex.dewar90@gmail.com>
+ <878sc9qi3c.fsf@cloudflare.com>
+Subject: Re: [PATCH] net: sockmap: Don't call bpf_prog_put() on NULL pointer
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 14, 2020 at 09:27:17PM -0700, John Fastabend wrote:
-> Alexei Starovoitov wrote:
-> > On Wed, Oct 14, 2020 at 09:04:23PM -0700, John Fastabend wrote:
-> > > Andrii Nakryiko wrote:
-> > > > On Wed, Oct 14, 2020 at 10:59 AM Alexei Starovoitov
-> > > > <alexei.starovoitov@gmail.com> wrote:
-> > > > >
-> > > > > From: Alexei Starovoitov <ast@kernel.org>
-> > > > >
-> > > > > The 64-bit JEQ/JNE handling in reg_set_min_max() was clearing reg->id in either
-> > > > > true or false branch. In the case 'if (reg->id)' check was done on the other
-> > > > > branch the counter part register would have reg->id == 0 when called into
-> > > > > find_equal_scalars(). In such case the helper would incorrectly identify other
-> > > > > registers with id == 0 as equivalent and propagate the state incorrectly.
-> > > 
-> > > One thought. It seems we should never have reg->id=0 in find_equal_scalars()
-> > > would it be worthwhile to add an additional check here? Something like,
-> > > 
-> > >   if (known_reg->id == 0)
-> > > 	return
-> > >
-> > > Or even a WARN_ON_ONCE() there? Not sold either way, but maybe worth thinking
-> > > about.
-> > 
-> > That cannot happen anymore due to
-> > if (dst_reg->id && !WARN_ON_ONCE(dst_reg->id != other_branch_regs[insn->dst_reg].id))
-> > check in the caller.
-> > I prefer not to repeat the same check twice. Also I really don't like defensive programming.
-> > if (known_reg->id == 0)
-> >        return;
-> > is exactly that.
-> > If we had that already, as Andrii argued in the original thread, we would have
-> > never noticed this issue. <, >, <= ops would have worked, but == would be
-> > sort-of working. It would mark one branch instead of both, and sometimes
-> > neither of the branches. I'd rather have bugs like this one hurting and caught
-> > quickly instead of warm feeling of being safe and sailing into unknown.
+Jakub Sitnicki wrote:
+> On Mon, Oct 12, 2020 at 07:09 PM CEST, Alex Dewar wrote:
+> > If bpf_prog_inc_not_zero() fails for skb_parser, then bpf_prog_put() is
+> > called unconditionally on skb_verdict, even though it may be NULL. Fix
+> > and tidy up error path.
+> >
+> > Addresses-Coverity-ID: 1497799: Null pointer dereferences (FORWARD_NULL)
+> > Fixes: 743df8b7749f ("bpf, sockmap: Check skb_verdict and skb_parser programs explicitly")
+> > Signed-off-by: Alex Dewar <alex.dewar90@gmail.com>
+> > ---
 > 
-> Agree. Although a WARN_ON_ONCE would have also been caught.
+> Acked-by: Jakub Sitnicki <jakub@cloudflare.com>
 
-Right. Such WARN_ON_ONCE would definitely have been nice either in the caller
-or in the callee. If I could have thought that id could be zero somehow here.
-In retrospect it makes sense that there is possibility that IDs of regs in
-this_branch and other_branch may diverge.
-Hence I'm adding the warn to check for this specific divergence.
+Thanks.
+
+Jakub, any opinions on if we should just throw an error if users try to
+add a sock to a map with a parser but no verdict? At the moment we fall
+through and add the socket, but it wont do any receive parsing/verdict.
+At the moment I think its fine with above fix. The useful cases for RX
+are parser+verdict, verdict, and empty. Where empty is just used for
+redirects or other socket account tricks. Just something to keep in mind.
+
+Acked-by: John Fastabend <john.fastabend@gmail.com>
