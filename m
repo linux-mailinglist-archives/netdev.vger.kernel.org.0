@@ -2,93 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EFE628ED5B
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 09:05:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 13F5C28EDAE
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 09:26:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727384AbgJOHF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 03:05:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44792 "EHLO
+        id S1727239AbgJOH0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 03:26:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727137AbgJOHF2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 03:05:28 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67D92C061755;
-        Thu, 15 Oct 2020 00:05:27 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1602745525;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wKx5IQSzdiykghzSAGrSkF1QExk5tgl8xdQy5xIGQlI=;
-        b=02E6X/Pz1T1A1QvesbvdrsGJE9xGHbq4N0qDGaaIU2vzBPedUHPfmISrDdN0fh/wXnTcVj
-        eZNTqX91kACLjWKYhuPpIoHRad87xla2nPTxgWUfoYY83kubQwig+j48Ppcm7JM2CN09X6
-        TM6rXZKI30/xPY3zAbrkJKgHeydjBJ2eYdnQotus/P384Jt/eJhIHBN7YeNrqf7kj8SJGV
-        CPzz/Dh4RwvJfEeanB9CqKD+1ypBIEHDfGu/UoxqKH9gvSKREjVK3T0UcwDzFdrX5IANej
-        wlCxI6BuQzmvxQhzgBYTY/188PPVbzB9QL1F58RrWvf7uDIt3KB6b5f5xvh40g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1602745525;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wKx5IQSzdiykghzSAGrSkF1QExk5tgl8xdQy5xIGQlI=;
-        b=Gjf4bPCSAYj99xYmrZ+Z/w5XdO2HV6/VYG4ftjuHoX2totlu7ZQby5ZN4wxVoaCbzqeWdp
-        QxAL9loyOyOiOdCw==
-To:     Rob Herring <robh@kernel.org>,
-        Kurt Kanzenbach <kurt@kmk-computers.de>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next 2/2] dt-bindings: net: dsa: b53: Drop old bindings
-In-Reply-To: <20201012184707.GA1886314@bogus>
-References: <20201010164627.9309-1-kurt@kmk-computers.de> <20201010164627.9309-3-kurt@kmk-computers.de> <20201012184707.GA1886314@bogus>
-Date:   Thu, 15 Oct 2020 09:05:23 +0200
-Message-ID: <87r1q0c6ks.fsf@kurt>
+        with ESMTP id S1726245AbgJOH0A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 03:26:00 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 830A5C061755
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 00:26:00 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id 13so2054800wmf.0
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 00:26:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=aDwPHUxxIHGSGd5acXdTkmOfTk0TSyYa6ts+8FQBGXY=;
+        b=MN3kbhiNjIRJ/vAg/AWxKPFyjKIzblyIM3lkztXl28eErt9ORWTHtrvrnGul4AEXu8
+         es0qlgfSm76TXmwDd/KsWhMKUUjMUbGnDNJlnmdXr4NgCgi3b3b//h2476NRJkuFOg8/
+         ercieYWxDbVJaSQkoJ1MiEMoXTbvVaqLcsXoEZHfZH1N8xdP8kac1ay5faM+DUUIvMzG
+         3RvQLlFpPc8bCQqbj2RqNsVYVMp237Hl5EOoYBY68C/szpv+syfuqIyRt2z4kDtqUglQ
+         LgnB2zNMSQIfHK47pYcThXNDENVMWssDUZ5S0fmGq6a1xujrGvKldbjNIcFDmZSJC19c
+         FWHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=aDwPHUxxIHGSGd5acXdTkmOfTk0TSyYa6ts+8FQBGXY=;
+        b=pkyVUlfmtWsOixVjF1sgKmM8coVByXk5EiLlQ5eZSqiARUtSfCzUcaetagdaSN+0U5
+         wN7Kwzhk7jfxmMPGNdJbvfNcM648p+l8sMBfKTLQ57JnM8cUw3he4b9W8hFpys8cmQlg
+         uVqkAiIAltvGj8cT1Lj/Zn1m0nAQX0gOeEq/AQu5CEVHvEcuqjX+/7VPupAxkvgoVvfT
+         vApq/M20zoT9e3bYvR+agowphLWMvxv88yX1PVO1+HvyFEDNdOzMtjdVTKyPWs91ISMy
+         MQ6118yO5ZV68vhFjEGRELy64l1HBwRevxUsy9pHTDfBQG6g4CpkkTLSi5cFl3xZUigM
+         wHsg==
+X-Gm-Message-State: AOAM533cG0JJfI9ID57l41EOUaZqcISaN6H5UU+Nxe4qXvHXTxxqmgR+
+        sIwnnIxHl/u1r43t8IeT9xQ=
+X-Google-Smtp-Source: ABdhPJxEWFzLgY9Mk4y0HVM3iknl6sFc4N2kbmmRqS+Bzyx+QMgYbp3xWbZgrtZd/uEEX9q9VFN+2A==
+X-Received: by 2002:a05:600c:2241:: with SMTP id a1mr2645579wmm.49.1602746758010;
+        Thu, 15 Oct 2020 00:25:58 -0700 (PDT)
+Received: from [192.168.8.147] ([37.172.154.187])
+        by smtp.gmail.com with ESMTPSA id t124sm2982776wmg.31.2020.10.15.00.25.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Oct 2020 00:25:57 -0700 (PDT)
+Subject: Re: [PATCH v3] net: Add mhi-net driver
+To:     Loic Poulain <loic.poulain@linaro.org>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, hemantk@codeaurora.org,
+        manivannan.sadhasivam@linaro.org
+References: <1602676437-9829-1-git-send-email-loic.poulain@linaro.org>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <b7fd004c-2293-a08c-51eb-40eecbdd4a9c@gmail.com>
+Date:   Thu, 15 Oct 2020 09:25:56 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+In-Reply-To: <1602676437-9829-1-git-send-email-loic.poulain@linaro.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
 
-On Mon Oct 12 2020, Rob Herring wrote:
-> On Sat, Oct 10, 2020 at 06:46:27PM +0200, Kurt Kanzenbach wrote:
->> The device tree bindings have been converted to YAML. No need to keep
->> the text file around. Update MAINTAINERS file accordingly.
->
-> You can squash this into the previous patch.
 
-OK, sure.
+On 10/14/20 1:53 PM, Loic Poulain wrote:
+> This patch adds a new network driver implementing MHI transport for
+> network packets. Packets can be in any format, though QMAP (rmnet)
+> is the usual protocol (flow control + PDN mux).
+> 
 
-@Florian: Should I send a v2?
+...
 
-Thanks,
-Kurt
+> +static void mhi_net_rx_refill_work(struct work_struct *work)
+> +{
+> +	struct mhi_net_dev *mhi_netdev = container_of(work, struct mhi_net_dev,
+> +						      rx_refill.work);
+> +	struct net_device *ndev = mhi_netdev->ndev;
+> +	struct mhi_device *mdev = mhi_netdev->mdev;
+> +	struct sk_buff *skb;
+> +	int err;
+> +
+> +	do {
+> +		skb = netdev_alloc_skb(ndev, READ_ONCE(ndev->mtu));
+> +		if (unlikely(!skb))
+> +			break;
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+It is a bit strange you use READ_ONCE(ndev->mtu) here, but later
+re-read ndev->mtu
 
------BEGIN PGP SIGNATURE-----
+It seems you need to store the READ_ONCE() in a temporary variable,
 
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl+H9LMACgkQeSpbgcuY
-8KbWBg//ULnvu0TuzNgWeAQCizn9k6joUmB9PybzhYqAe9vm2t1vDvP2Z8Q5THdB
-oDTrwWU1GrP02lsXbKVK/U3qEnP6s97RHJ6ZmKW+ev4zG2RsaSVGujvL55lnAgma
-F/Mxkxw4pBS9ixthQTsdQxy+3Py3lNUvcynxU45pK+GrW9YIUtfuQpBA7AWTJ+7u
-VYqGe5bVclStHf0/nHo59wrdJqixm98DXqXKsTzXgaVWa/DMzKlU0qYbpQJv2vWM
-4+agdGRyPGzbsuktfhSooMcvawEwIAGnnitVH5AnrQ18rUTw2S7IjaLNvhtIWAOe
-uP/rwB3S1pUSmNlHDg0navwdzcyDGBWMHCA5V90SdWNjy1L9vQVNWjWMr2/kA5X/
-6WNpGKVULE/ME6ERzT5GQ0/kQuX3IbZCuGalyWGn4+0tSFmFUH8qce4pirObLyqo
-gg4S4vPX1eH6wBlS1PL/rO3X6QJH0o9J5Yr1qzMoIcFLg0K5MitJMJltMG1nSONT
-K9QwMeNI9Dp8Ykngirhk/j21xzVJ27oF1M/QQlrYenfDKNFFhJMrzhJts50/VREx
-n4Bv2laXq9RmZPkrkdq7AAsl3uk5TgSAvzA7dVNIcrvw0cvMIeeeDcoFmVUwfdzk
-sBRSqWjSr8mO1gRsyzDiFdstgxnqGAWuARLgBwFYGbkkfOqARBo=
-=I6/s
------END PGP SIGNATURE-----
---=-=-=--
+                unsigned int mtu = READ_ONCE(ndev->mtu);
+
+> +
+> +		err = mhi_queue_skb(mdev, DMA_FROM_DEVICE, skb, ndev->mtu,
+> +				    MHI_EOT);
+
+                 s/ndev->mtu/mtu/
+
+
+> +		if (err) {
+> +			if (unlikely(err != -ENOMEM))
+> +				net_err_ratelimited("%s: Failed to queue RX buf (%d)\n",
+> +						    ndev->name, err);
+> +			kfree_skb(skb);
+> +			break;
+> +		}
+> +
+> +		atomic_inc(&mhi_netdev->stats.rx_queued);
+
+This is an unbound loop in the kernel ?
+
+Please add a :
+
+		cond_resched();
+
+Before anyone gets hurt.
+
+
+> +	} while (1);
+> +
+> +	/* If we're still starved of rx buffers, reschedule latter */
+> +	if (unlikely(!atomic_read(&mhi_netdev->stats.rx_queued)))
+> +		schedule_delayed_work(&mhi_netdev->rx_refill, HZ / 2);
+> +}
+> +
+> 
+
+
