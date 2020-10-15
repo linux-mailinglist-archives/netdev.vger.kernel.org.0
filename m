@@ -2,85 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E946C28EF5A
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 11:26:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F6A928EF7E
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 11:42:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730701AbgJOJ0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 05:26:50 -0400
-Received: from correo.us.es ([193.147.175.20]:40850 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727753AbgJOJ0u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Oct 2020 05:26:50 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 8949BC0B3E
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 11:26:46 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 7BB53DA7B9
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 11:26:46 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 7115CDA78C; Thu, 15 Oct 2020 11:26:46 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 574A2DA78C;
-        Thu, 15 Oct 2020 11:26:44 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 15 Oct 2020 11:26:44 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 26D5F42EF42C;
-        Thu, 15 Oct 2020 11:26:44 +0200 (CEST)
-Date:   Thu, 15 Oct 2020 11:26:43 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>, netfilter-devel@vger.kernel.org,
-        Netdev <netdev@vger.kernel.org>, lkft-triage@lists.linaro.org,
-        Florian Westphal <fw@strlen.de>, fabf@skynet.be,
-        Shuah Khan <shuah@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Anders Roxell <anders.roxell@linaro.org>
-Subject: Re: selftests: netfilter: nft_nat.sh: /dev/stdin:2:9-15: Error:
- syntax error, unexpected counter
-Message-ID: <20201015092643.GB3468@salvia>
-References: <CA+G9fYv=zPRGCKyhi9DeUsvyb6ZLVVXdV3hW+15XnQN2R3ircQ@mail.gmail.com>
- <20201014193034.GA14337@salvia>
- <CA+G9fYsnPH4nQWoY0bpdw+DS5sqO4xcxDXuu-tfEHxXEGrMyUA@mail.gmail.com>
+        id S2388865AbgJOJmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 05:42:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40818 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388793AbgJOJmS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 05:42:18 -0400
+X-Greylist: delayed 382 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 15 Oct 2020 02:42:18 PDT
+Received: from lechat.rtp-net.org (lechat.rtp-net.org [IPv6:2001:bc8:3430:1000::c0f:fee])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51DA3C061755;
+        Thu, 15 Oct 2020 02:42:18 -0700 (PDT)
+Received: by lechat.rtp-net.org (Postfix, from userid 1000)
+        id DFD9D18084F; Thu, 15 Oct 2020 11:35:51 +0200 (CEST)
+Message-ID: <20201015093221.720980174@rtp-net.org>
+User-Agent: quilt/0.66
+Date:   Thu, 15 Oct 2020 11:32:15 +0200
+From:   Arnaud Patard (Rtp) <arnaud.patard@rtp-net.org>
+To:     stable@vger.kernel.org
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [patch 1/1] drivers/net/ethernet/marvell/mvmdio.c: Fix non OF case
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CA+G9fYsnPH4nQWoY0bpdw+DS5sqO4xcxDXuu-tfEHxXEGrMyUA@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 15, 2020 at 08:31:52AM +0530, Naresh Kamboju wrote:
-> On Thu, 15 Oct 2020 at 01:00, Pablo Neira Ayuso <pablo@netfilter.org> wrote:
-> >
-> > On Wed, Oct 14, 2020 at 05:19:33PM +0530, Naresh Kamboju wrote:
-> > > While running kselftest netfilter test on x86_64 devices linux next
-> > > tag 20201013 kernel
-> > > these errors are noticed. This not specific to kernel version we have
-> > > noticed these errors
-> > > earlier also.
-> > >
-> > > Am I missing configs ?
-> >
-> > What nftables version are you using?
-> 
-> nft --version
-> nftables v0.7 (Scrooge McDuck)
+commit d934423ac26ed373dfe089734d505dca5ff679b6 upstream.
 
-That's very very old.
+Orion5.x systems are still using machine files and not device-tree.
+Commit 96cb4342382290c9 ("net: mvmdio: allow up to three clocks to be
+specified for orion-mdio") has replaced devm_clk_get() with of_clk_get(),
+leading to a oops at boot and not working network, as reported in
+https://lists.debian.org/debian-arm/2019/07/msg00088.html and possibly in
+https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=908712.
+    
+Link: https://lists.debian.org/debian-arm/2019/07/msg00088.html
+Fixes: 96cb4342382290c9 ("net: mvmdio: allow up to three clocks to be specified for orion-mdio")
+Signed-off-by: Arnaud Patard <arnaud.patard@rtp-net.org>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 
-Latest is 0.9.6, please run latest in your CI testbed.
+Index: linux/drivers/net/ethernet/marvell/mvmdio.c
+===================================================================
+--- linux.orig/drivers/net/ethernet/marvell/mvmdio.c
++++ linux/drivers/net/ethernet/marvell/mvmdio.c
+@@ -319,15 +319,25 @@ static int orion_mdio_probe(struct platf
+ 
+ 	init_waitqueue_head(&dev->smi_busy_wait);
+ 
+-	for (i = 0; i < ARRAY_SIZE(dev->clk); i++) {
+-		dev->clk[i] = of_clk_get(pdev->dev.of_node, i);
+-		if (PTR_ERR(dev->clk[i]) == -EPROBE_DEFER) {
++	if (pdev->dev.of_node) {
++		for (i = 0; i < ARRAY_SIZE(dev->clk); i++) {
++			dev->clk[i] = of_clk_get(pdev->dev.of_node, i);
++			if (PTR_ERR(dev->clk[i]) == -EPROBE_DEFER) {
++				ret = -EPROBE_DEFER;
++				goto out_clk;
++			}
++			if (IS_ERR(dev->clk[i]))
++				break;
++			clk_prepare_enable(dev->clk[i]);
++		}
++	} else {
++		dev->clk[0] = clk_get(&pdev->dev, NULL);
++		if (PTR_ERR(dev->clk[0]) == -EPROBE_DEFER) {
+ 			ret = -EPROBE_DEFER;
+ 			goto out_clk;
+ 		}
+-		if (IS_ERR(dev->clk[i]))
+-			break;
+-		clk_prepare_enable(dev->clk[i]);
++		if (!IS_ERR(dev->clk[0]))
++			clk_prepare_enable(dev->clk[0]);
+ 	}
+ 
+ 	dev->err_interrupt = platform_get_irq(pdev, 0);
+
+
+
+
