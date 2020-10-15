@@ -2,82 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FF4B28F9DB
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 22:00:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F05728F9E0
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 22:03:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392054AbgJOUAn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 16:00:43 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:53570 "EHLO inva021.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392040AbgJOUAm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Oct 2020 16:00:42 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id B549C2007C4;
-        Thu, 15 Oct 2020 22:00:39 +0200 (CEST)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id A67C820060C;
-        Thu, 15 Oct 2020 22:00:39 +0200 (CEST)
-Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 440C3202DA;
-        Thu, 15 Oct 2020 22:00:39 +0200 (CEST)
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     rdunlap@infradead.org, Jose.Abreu@synopsys.com, andrew@lunn.ch,
-        sfr@canb.auug.org.au, linux-next@vger.kernel.org,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
-Subject: [PATCH net-next] net: pcs-xpcs: depend on MDIO_BUS instead of selecting it
-Date:   Thu, 15 Oct 2020 23:00:23 +0300
-Message-Id: <20201015200023.15746-1-ioana.ciornei@nxp.com>
-X-Mailer: git-send-email 2.17.1
-Reply-to: ioana.ciornei@nxp.com
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1727224AbgJOUDu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 16:03:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52758 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726142AbgJOUDu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 16:03:50 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF2DAC061755
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 13:03:49 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id l24so8661edj.8
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 13:03:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S7HzwVjSno4y7wZKs3op0DJ4j+ctb3DSm6IetgL1pfM=;
+        b=DCx6mVO2H3W0hZk1CaSADyaKUDhiJQgtUR5LPdAYNj/IyXSCnEOdCtR05BwSl22WKq
+         0CG+OWwYzTTidXEwSwwmyHC8TB9YcEEf3ez9WdFzfh10A7aO78a1OCH1bugIskmjJS+b
+         laQ9Ap7yDV4FlpzJQ4ereRiBjgI4namIQQJBqJWHzpzejW3MqP0C8dIqnlQ3vywmfyZh
+         ccYgywQ057E9bnf9phLFi3AeDX9DE1A/52jRSkuYsaZnAXkBhSsQMEPKk4dobxtNxY5x
+         cOAgg0fJw4VkCOkJn3ecv7BywpZUoY949AakFSfK7BrBl4/0okTsrF5C81lk2bBCQGz7
+         Lr0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S7HzwVjSno4y7wZKs3op0DJ4j+ctb3DSm6IetgL1pfM=;
+        b=RPuBnFpLD1d03UzCeBHkTTVooKdurGywv0uYRRQ2HBF4lvX/Sa8Gzz+q6F38baJiXW
+         dTMAurGbMIGZUs172IUNSsJrAju938FUXAPe1sTRmz+s23lX2ESKjBv5pPDB2+6xpqM4
+         9TY0CGh4cQ3IzDTgWBfFt4Ms6jdYOXYk3Q/LhjnfxNWoa5wBG1M10QPK8Gl5m9gPGV5q
+         qzyX7uEFoZIHWzQAKu9se7ZuqM64CKHghRA/gK7wR3/AH20RO4Z32j3M/4d+kn8+Eqk0
+         5HILuxWXmqgwJ9bZoyJf66Qk77xdzD64yHltM0O9klWuO0mt9AYvb0e9XZV8MrXJ2ep5
+         y2Og==
+X-Gm-Message-State: AOAM533QpxEXil0wGHugkXZs8D9HFgihdfrgKNXOUdFtVHAS0PkuU1LV
+        dXrg/mGV1SiLKZn74KOxLabu9xIAJaN3iL0c/YWlPpwQwoA=
+X-Google-Smtp-Source: ABdhPJzcdHHCHOXNedPj4PFfA1i7uFGU43/kQkt8EqSMFVIzOjUBSVHB6NfA4JxAMGtn2TKdAEQSPq+WCdeJq7kGoPM=
+X-Received: by 2002:a05:6402:32f:: with SMTP id q15mr126898edw.230.1602792228141;
+ Thu, 15 Oct 2020 13:03:48 -0700 (PDT)
+MIME-Version: 1.0
+References: <20201014222715.83445-1-awogbemila@google.com> <20201014222715.83445-3-awogbemila@google.com>
+ <20201015113228.4650680e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201015113228.4650680e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   David Awogbemila <awogbemila@google.com>
+Date:   Thu, 15 Oct 2020 13:03:37 -0700
+Message-ID: <CAL9ddJfxNK-dJo0XHx7ngrU1F1m+qfTj9VNN1rZ9ZtY+McewOA@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 2/4] gve: Add support for raw addressing to
+ the rx path
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Catherine Sullivan <csully@google.com>,
+        Yangchun Fu <yangchun@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The below compile time error can be seen when PHYLIB is configured as a
-module.
+On Thu, Oct 15, 2020 at 11:32 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed, 14 Oct 2020 15:27:13 -0700 David Awogbemila wrote:
+> > diff --git a/drivers/net/ethernet/google/gve/gve_rx.c b/drivers/net/ethernet/google/gve/gve_rx.c
+> > index 008fa897a3e6..47d0687aa20a 100644
+> > --- a/drivers/net/ethernet/google/gve/gve_rx.c
+> > +++ b/drivers/net/ethernet/google/gve/gve_rx.c
+> > @@ -6,6 +6,7 @@
+> >
+> >  #include "gve.h"
+> >  #include "gve_adminq.h"
+> > +#include "linux/device-mapper.h"
+> >  #include <linux/etherdevice.h>
+>
+> Why are you including the device mapper?
 
- ld: drivers/net/pcs/pcs-xpcs.o: in function `xpcs_read':
- pcs-xpcs.c:(.text+0x29): undefined reference to `mdiobus_read'
- ld: drivers/net/pcs/pcs-xpcs.o: in function `xpcs_soft_reset.constprop.7':
- pcs-xpcs.c:(.text+0x80): undefined reference to `mdiobus_write'
- ld: drivers/net/pcs/pcs-xpcs.o: in function `xpcs_config_aneg':
- pcs-xpcs.c:(.text+0x318): undefined reference to `mdiobus_write'
- ld: pcs-xpcs.c:(.text+0x38e): undefined reference to `mdiobus_write'
- ld: pcs-xpcs.c:(.text+0x3eb): undefined reference to `mdiobus_write'
- ld: pcs-xpcs.c:(.text+0x437): undefined reference to `mdiobus_write'
- ld: drivers/net/pcs/pcs-xpcs.o:pcs-xpcs.c:(.text+0xb1e): more undefined references to `mdiobus_write' follow
-
-PHYLIB being a module leads to MDIO_BUS being a module as well while the
-XPCS is still built-in. What should happen in this configuration is that
-PCS_XPCS should be forced to build as module. However, that select only
-acts in the opposite way so we should turn it into a depends.
-
-Fix this up by explicitly depending on MDIO_BUS.
-
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
-Fixes: 2fa4e4b799e1 ("net: pcs: Move XPCS into new PCS subdirectory")
-Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
----
- drivers/net/pcs/Kconfig | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/drivers/net/pcs/Kconfig b/drivers/net/pcs/Kconfig
-index 074fb3f5db18..22ba7b0b476d 100644
---- a/drivers/net/pcs/Kconfig
-+++ b/drivers/net/pcs/Kconfig
-@@ -7,8 +7,7 @@ menu "PCS device drivers"
- 
- config PCS_XPCS
- 	tristate "Synopsys DesignWare XPCS controller"
--	select MDIO_BUS
--	depends on MDIO_DEVICE
-+	depends on MDIO_DEVICE && MDIO_BUS
- 	help
- 	  This module provides helper functions for Synopsys DesignWare XPCS
- 	  controllers.
--- 
-2.17.1
-
+oh no .. sorry this is entirely accidental, I'll remove it.
