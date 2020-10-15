@@ -2,64 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5052828F939
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 21:10:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45ECE28F953
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 21:16:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728046AbgJOTKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 15:10:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54102 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727152AbgJOTKD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Oct 2020 15:10:03 -0400
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602789003;
-        bh=sj3HyIcKIgtG7lgmfDbWXebS3FQOZamkxyPH6dtjLHo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PeY7Y0CUd5BmkeSg7JGXaCyaGEqE7qMk1zG5FjmazyhCEKjM3RZOzES0rn4WgOBcQ
-         R5MF/E1aXqYR4gYrnZoO3VRo3Uxlqky+yLx3ozCavqjNKsxdxYILhA4X/LOeVG6+AY
-         jpAbUMRS47ZlfoohJzyXLrKJehAQbHIjA6oBABso=
+        id S2389848AbgJOTQD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 15:16:03 -0400
+Received: from www62.your-server.de ([213.133.104.62]:47514 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389812AbgJOTQD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 15:16:03 -0400
+Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kT8jA-0002CN-MN; Thu, 15 Oct 2020 21:15:52 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf-next 2020-10-15
+Date:   Thu, 15 Oct 2020 21:15:52 +0200
+Message-Id: <20201015191552.12435-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: sockmap: Don't call bpf_prog_put() on NULL pointer
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160278900298.4062.17082299733897692954.git-patchwork-notify@kernel.org>
-Date:   Thu, 15 Oct 2020 19:10:02 +0000
-References: <20201012170952.60750-1-alex.dewar90@gmail.com>
-In-Reply-To: <20201012170952.60750-1-alex.dewar90@gmail.com>
-To:     Alex Dewar <alex.dewar90@gmail.com>
-Cc:     john.fastabend@gmail.com, daniel@iogearbox.net,
-        jakub@cloudflare.com, lmb@cloudflare.com, davem@davemloft.net,
-        kuba@kernel.org, ast@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, andrii@kernel.org,
-        kpsingh@chromium.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25958/Thu Oct 15 15:56:23 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi David, hi Jakub,
 
-This patch was applied to bpf/bpf-next.git (refs/heads/master):
+The following pull-request contains BPF *fixes* for your *net-next* tree.
 
-On Mon, 12 Oct 2020 18:09:53 +0100 you wrote:
-> If bpf_prog_inc_not_zero() fails for skb_parser, then bpf_prog_put() is
-> called unconditionally on skb_verdict, even though it may be NULL. Fix
-> and tidy up error path.
-> 
-> Addresses-Coverity-ID: 1497799: Null pointer dereferences (FORWARD_NULL)
-> Fixes: 743df8b7749f ("bpf, sockmap: Check skb_verdict and skb_parser programs explicitly")
-> Signed-off-by: Alex Dewar <alex.dewar90@gmail.com>
-> 
-> [...]
+We've added 4 non-merge commits during the last 3 day(s) which contain
+a total of 5 files changed, 70 insertions(+), 46 deletions(-).
 
-Here is the summary with links:
-  - net: sockmap: Don't call bpf_prog_put() on NULL pointer
-    https://git.kernel.org/bpf/bpf-next/c/83c11c17553c
+The main changes are:
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+1) Fix register equivalence tracking in verifier, from Alexei Starovoitov.
 
+2) Fix sockmap error path to not call bpf_prog_put() with NULL, from Alex Dewar.
 
+3) Fix sockmap to add locking annotations to iterator, from Lorenz Bauer.
+
+4) Fix tcp_hdr_options test to use loopback address, from Martin KaFai Lau.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Andrii Nakryiko, Jakub Sitnicki, John Fastabend, kernel test robot, 
+Yonghong Song
+
+----------------------------------------------------------------
+
+The following changes since commit ccdf7fae3afaeaf0e5dd03311b86ffa56adf85ae:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next (2020-10-12 16:16:50 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
+
+for you to fetch changes up to 83c11c17553c0fca217105c17444c4ef5ab2403f:
+
+  net, sockmap: Don't call bpf_prog_put() on NULL pointer (2020-10-15 21:05:23 +0200)
+
+----------------------------------------------------------------
+Alex Dewar (1):
+      net, sockmap: Don't call bpf_prog_put() on NULL pointer
+
+Alexei Starovoitov (1):
+      bpf: Fix register equivalence tracking.
+
+Lorenz Bauer (1):
+      bpf, sockmap: Add locking annotations to iterator
+
+Martin KaFai Lau (1):
+      bpf, selftest: Fix flaky tcp_hdr_options test when adding addr to lo
+
+ kernel/bpf/verifier.c                              | 38 ++++++++++++++--------
+ net/core/sock_map.c                                | 24 ++++++++++----
+ .../selftests/bpf/prog_tests/tcp_hdr_options.c     | 26 +--------------
+ .../bpf/progs/test_misc_tcp_hdr_options.c          |  2 +-
+ tools/testing/selftests/bpf/verifier/regalloc.c    | 26 +++++++++++++++
+ 5 files changed, 70 insertions(+), 46 deletions(-)
