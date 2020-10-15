@@ -2,145 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DF0328EEB5
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 10:45:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 477F428EEB7
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 10:45:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388272AbgJOIpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 04:45:30 -0400
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:42563 "EHLO
-        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387422AbgJOIp3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 04:45:29 -0400
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20201015084517euoutp01736d814e272f9bd611fdcdc84321fa27~_HgNbO_-L1458814588euoutp01e
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 08:45:17 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20201015084517euoutp01736d814e272f9bd611fdcdc84321fa27~_HgNbO_-L1458814588euoutp01e
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1602751517;
-        bh=y0oCq68YdRF8NXo3BoF+euePbj27PoHRi5+zdDHBL9E=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=sMvl/x85sFi4K4rR8Q+X771Rfd4XMVtb34n6mqgTiNUksRE3ilZdYDlZM6qbMO7zr
-         dgBqWVfQeLd9qel/mCE0EaqUIxwpXUuuLyhiJ5AU9T/jwDfadS+IopisvYnHSh/GkZ
-         LrJSIe3xZTVfGs+IoUV96X4DLCLVd1F/bC+fGwPg=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20201015084514eucas1p233f9f5da7d4dc04178aab2ef3ba72461~_HgKoQEp-3079930799eucas1p2k;
-        Thu, 15 Oct 2020 08:45:14 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges2new.samsung.com (EUCPMTA) with SMTP id A6.54.05997.A1C088F5; Thu, 15
-        Oct 2020 09:45:14 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20201015084513eucas1p234e2fa7a42b973ee7feafbdac6267a84~_HgKNHJKM3079530795eucas1p2U;
-        Thu, 15 Oct 2020 08:45:13 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20201015084513eusmtrp2766b126b06102e13b168439f659e7c4d~_HgKMfAzK0782407824eusmtrp2w;
-        Thu, 15 Oct 2020 08:45:13 +0000 (GMT)
-X-AuditID: cbfec7f4-65dff7000000176d-d3-5f880c1ac3ef
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id 5E.1D.06017.91C088F5; Thu, 15
-        Oct 2020 09:45:13 +0100 (BST)
-Received: from localhost (unknown [106.120.51.46]) by eusmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20201015084513eusmtip1cc1450371704605ce86930770bfe9efd~_HgKAupoJ2954629546eusmtip10;
-        Thu, 15 Oct 2020 08:45:13 +0000 (GMT)
-From:   =?UTF-8?q?=C5=81ukasz=20Stelmach?= <l.stelmach@samsung.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Bart=C5=82omiej=20=C5=BBolnierkiewicz?= 
-        <b.zolnierkie@samsung.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        =?UTF-8?q?=C5=81ukasz=20Stelmach?= <l.stelmach@samsung.com>
-Subject: [PATCH v2] net: phy: Prevent reporting advertised modes when
- autoneg is off
-Date:   Thu, 15 Oct 2020 10:44:35 +0200
-Message-Id: <20201015084435.24368-1-l.stelmach@samsung.com>
+        id S2388297AbgJOIpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 04:45:51 -0400
+Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:40685 "EHLO
+        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388233AbgJOIpv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 04:45:51 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 37ABCB92;
+        Thu, 15 Oct 2020 04:45:50 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 15 Oct 2020 04:45:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=+o6OT9THLkqgP1/Yr
+        StfX5yCJbAJz/IFXHqieQMT4O4=; b=calBjbbOAS5Fp49+rO7zIuup5fqC/vKqh
+        1bVORdPRNnkPtJ72zb/6RadqvkoVVBdtAhWA/dG2Z33SPVu4s0+bUuwHMHPD9927
+        rgWNcXGTq1RKkfE6guDu/2fPXgnO5gwf9DnLdAX+Rksk+SoFg4bcJ8oUwFnmNVTd
+        LVTggjk+ycgpzUJv+Eyz+rbHWHbeke+HV6OkGUZZYGQXkaeI6yEZDUqJz/edXbIb
+        9lppY11WevCnoffB79c3kC8G3MfGMadgTQO4NFYd3ZTsDByTvc82k1oZzQhvPjFx
+        Bp8MkgmhmwfkOK7rYpoPXT2ecrc1u9EJA5y5Iwt4O8ghAGGY8yr+Q==
+X-ME-Sender: <xms:PQyIX5V-QUkT9PoJo9T_sgjosH0soo0IJxG4PMv1HHu4fpxQLYM6Vg>
+    <xme:PQyIX5nf7jfS-N-6_1gmmXIQHfi-gQLJDVC_33XLzM-qO5r4bwxgG4izQTmoUH4jh
+    hpZ8eFpaSG15ts>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrieefgddtjecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffoggfgsedtkeertdertd
+    dtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghh
+    rdhorhhgqeenucggtffrrghtthgvrhhnpeetveeghfevgffgffekueffuedvhfeuheehte
+    ffieekgeehveefvdegledvffduhfenucfkphepkeegrddvvdelrdefjedrudegkeenucev
+    lhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthh
+    esihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:PQyIX1YCBTS2R9vngyMIGn8lAYZ2zgbxDU2YdwXnm6puZx8RxsYGaw>
+    <xmx:PQyIX8WuZqaUlwX5qxyA8BxdezYvgBw0Xb8WJRHRvwZSAtlp--4MDQ>
+    <xmx:PQyIXzksnUo9iaxkh9WGBV_Uw1RfHApgMLbb-V_qpGvI6hc7AcwUyw>
+    <xmx:PQyIXxioQSLvnv4olAav6XgG7pWTC2KDn7YZX9b1Nybzr97DUt--GA>
+Received: from shredder.mtl.com (igld-84-229-37-148.inter.net.il [84.229.37.148])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 2E5BD3064683;
+        Thu, 15 Oct 2020 04:45:48 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, liuhangbin@gmail.com,
+        petrm@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net] selftests: forwarding: Add missing 'rp_filter' configuration
+Date:   Thu, 15 Oct 2020 11:45:25 +0300
+Message-Id: <20201015084525.135121-1-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Organization: Samsung R&D Institute Poland
 Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA02SfyyUcRzH+97zPHePy/F1LB9qpUurtPzol2e71mjZnvWX+iNNK108O4Zj
-        d4hqJUrY+V3IjxgLUURcDqlddSpxTEuaS5mxrFaNtur65Txn+e/9+Xxe7+/789m+NCHtoNzp
-        KFUCp1YpYmRCMakz/hjc5m6fGeZ7qYBiTGYDwbSWtlBMhekiydR8LqWYIV0uxYwZGhAz0lUh
-        ZAxX7yPm9mOziDFWrwoQsyOvhgm2/eaYgNWXmUVsW2OWkNV3zgnY3PZGxM61rQ0WhYr3RHAx
-        UUmc2mfvCXHkG+0DMl5rn1yr05KpqFOcjexowDvh5XAekY3EtBQ3IHgx2S3ki3kEtZZsAV/M
-        IXjYbUFLlrG+ChtVj6C48+PiQIpnEOTObrBqIQ6EvBtPKSvkgr8hmJq+g6wFgXsR6N9eIayU
-        Mz4MM01m0qpJvBGac8wLfZqWYDkM6Xz5tHVwuf6e0Kol2AmeXZtaxB2xF9xKG13UxAKT3lG+
-        eATgXhEUNRUJePN+yGoaJHntDLN97SJer4G/+iqBNQvweSgq3M17tQh0Fd9tvBzGB38KrQyB
-        t0BLlw/fDoT+4TSCtzrA609O/AoOUKgrsbUlkJkh5WlPaM7rsT3oDjmzDYhHWDDp2Xy0vmzZ
-        XWXLbin7H1uNiEbkyiVqYpWcZruKO+WtUcRqElVK7/C42Da08Jn6//TNd6KuXycNCNNIZi9Z
-        YckIk1KKJE1KrAEBTchcJPsG+o9LJRGKlNOcOi5MnRjDaQxoNU3KXCU7aj4ck2KlIoGL5rh4
-        Tr00FdB27qmoZb7uTJtx9t1WCzlafFSVlqPYpHJUojqL4+aQDD+3guGOoEOhNeW1PeboL1+N
-        uWbLo12ixEj/4umgSjqzxtx6N7zyXLrPiGyiashNXe8pTx0/S0RPyluemAYo1+uTKycOBIip
-        0iIjeTAZl9QfUV7wCHnuM+73/rdHvr+xJ7hARmoiFX5ehFqj+Ae8//lGSAMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrHIsWRmVeSWpSXmKPExsVy+t/xu7qSPB3xBq+3qVqcv3uI2WLjjPWs
-        FnPOt7BYLHo/g9XiwrY+Voubh1YwWlzeNYfN4tDUvYwWa4/cZbc4tkDMgcvj8rWLzB5bVt5k
-        8tg56y67x6ZVnWweO3d8ZvLo27KK0ePzJrkA9ig9m6L80pJUhYz84hJbpWhDCyM9Q0sLPSMT
-        Sz1DY/NYKyNTJX07m5TUnMyy1CJ9uwS9jFs9+1kKengqFm/rYWlg3MHVxcjJISFgInHz+By2
-        LkYuDiGBpYwS6953sHYxcgAlpCRWzk2HqBGW+HOtC6rmKaPE1YYHbCAJNgFHif6lJ1hBEiIC
-        vxklthydB+YwC+xjlNh/dDE7yCRhgRCJXbecQRpYBFQl1vXeZQYJ8wpYS1zYZgCxQF6iffl2
-        sJm8AoISJ2c+YQEpYRZQl1g/TwgkzC+gJbGm6ToLiM0MVN68dTbzBEaBWUg6ZiF0zEJStYCR
-        eRWjSGppcW56brGRXnFibnFpXrpecn7uJkZgXG079nPLDsaud8GHGAU4GJV4eBl+t8ULsSaW
-        FVfmHmKU4GBWEuF1Ons6Tog3JbGyKrUoP76oNCe1+BCjKdA3E5mlRJPzgTGfVxJvaGpobmFp
-        aG5sbmxmoSTO2yFwMEZIID2xJDU7NbUgtQimj4mDU6qBUcxbYpfb34+rNRZ+/R+yYvpPlm+R
-        ReGHc5UsotysA5+srHu24iL3vpC3LNECeqzyIfUFs++1vd4d+t66ccd7k+Ohj+4WSr1dwZMZ
-        pTd3d9bZkF9CDDN/fpnQcKjat5Nz2WV9DomML3rxl0QFwpi1qjoY/R5Fe59b6Ck/xbvubMzb
-        Ta0PNWfNVWIpzkg01GIuKk4EAKPQG6jBAgAA
-X-CMS-MailID: 20201015084513eucas1p234e2fa7a42b973ee7feafbdac6267a84
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20201015084513eucas1p234e2fa7a42b973ee7feafbdac6267a84
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20201015084513eucas1p234e2fa7a42b973ee7feafbdac6267a84
-References: <CGME20201015084513eucas1p234e2fa7a42b973ee7feafbdac6267a84@eucas1p2.samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Do not report advertised link modes (local and remote) when
-autonegotiation is turned off. mii_ethtool_get_link_ksettings() exhibits
-the same behaviour and this patch aims at unifying the behavior of both
-functions.
+From: Ido Schimmel <idosch@nvidia.com>
 
-Signed-off-by: Łukasz Stelmach <l.stelmach@samsung.com>
+When 'rp_filter' is configured in strict mode (1) the tests fail because
+packets received from the macvlan netdevs would not be forwarded through
+them on the reverse path.
+
+Fix this by disabling the 'rp_filter', meaning no source validation is
+performed.
+
+Fixes: 1538812e0880 ("selftests: forwarding: Add a test for VXLAN asymmetric routing")
+Fixes: 438a4f5665b2 ("selftests: forwarding: Add a test for VXLAN symmetric routing")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reported-by: Hangbin Liu <liuhangbin@gmail.com>
+Tested-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
-Changes in v2:
-  - clear lp_advertising
-  - set ETHTOOL_LINK_MODE_TP_BIT and ETHTOOL_LINK_MODE_MII_BIT in advertising
+ .../selftests/net/forwarding/vxlan_asymmetric.sh       | 10 ++++++++++
+ .../selftests/net/forwarding/vxlan_symmetric.sh        | 10 ++++++++++
+ 2 files changed, 20 insertions(+)
 
- drivers/net/phy/phy.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
-index 35525a671400..6ede9c1c138c 100644
---- a/drivers/net/phy/phy.c
-+++ b/drivers/net/phy/phy.c
-@@ -315,8 +315,17 @@ void phy_ethtool_ksettings_get(struct phy_device *phydev,
- 			       struct ethtool_link_ksettings *cmd)
- {
- 	linkmode_copy(cmd->link_modes.supported, phydev->supported);
--	linkmode_copy(cmd->link_modes.advertising, phydev->advertising);
--	linkmode_copy(cmd->link_modes.lp_advertising, phydev->lp_advertising);
-+	if (phydev->autoneg) {
-+		linkmode_copy(cmd->link_modes.advertising, phydev->advertising);
-+		linkmode_copy(cmd->link_modes.lp_advertising, phydev->lp_advertising);
-+	} else {
-+		linkmode_zero(cmd->link_modes.lp_advertising);
-+		linkmode_zero(cmd->link_modes.advertising);
-+		linkmode_set_bit(ETHTOOL_LINK_MODE_TP_BIT,
-+				 cmd->link_modes.advertising);
-+		linkmode_set_bit(ETHTOOL_LINK_MODE_MII_BIT,
-+				 cmd->link_modes.advertising);
-+	}
+diff --git a/tools/testing/selftests/net/forwarding/vxlan_asymmetric.sh b/tools/testing/selftests/net/forwarding/vxlan_asymmetric.sh
+index a0b5f57d6bd3..0727e2012b68 100755
+--- a/tools/testing/selftests/net/forwarding/vxlan_asymmetric.sh
++++ b/tools/testing/selftests/net/forwarding/vxlan_asymmetric.sh
+@@ -215,10 +215,16 @@ switch_create()
  
- 	cmd->base.speed = phydev->speed;
- 	cmd->base.duplex = phydev->duplex;
+ 	bridge fdb add 00:00:5e:00:01:01 dev br1 self local vlan 10
+ 	bridge fdb add 00:00:5e:00:01:01 dev br1 self local vlan 20
++
++	sysctl_set net.ipv4.conf.all.rp_filter 0
++	sysctl_set net.ipv4.conf.vlan10-v.rp_filter 0
++	sysctl_set net.ipv4.conf.vlan20-v.rp_filter 0
+ }
+ 
+ switch_destroy()
+ {
++	sysctl_restore net.ipv4.conf.all.rp_filter
++
+ 	bridge fdb del 00:00:5e:00:01:01 dev br1 self local vlan 20
+ 	bridge fdb del 00:00:5e:00:01:01 dev br1 self local vlan 10
+ 
+@@ -359,6 +365,10 @@ ns_switch_create()
+ 
+ 	bridge fdb add 00:00:5e:00:01:01 dev br1 self local vlan 10
+ 	bridge fdb add 00:00:5e:00:01:01 dev br1 self local vlan 20
++
++	sysctl_set net.ipv4.conf.all.rp_filter 0
++	sysctl_set net.ipv4.conf.vlan10-v.rp_filter 0
++	sysctl_set net.ipv4.conf.vlan20-v.rp_filter 0
+ }
+ export -f ns_switch_create
+ 
+diff --git a/tools/testing/selftests/net/forwarding/vxlan_symmetric.sh b/tools/testing/selftests/net/forwarding/vxlan_symmetric.sh
+index 1209031bc794..5d97fa347d75 100755
+--- a/tools/testing/selftests/net/forwarding/vxlan_symmetric.sh
++++ b/tools/testing/selftests/net/forwarding/vxlan_symmetric.sh
+@@ -237,10 +237,16 @@ switch_create()
+ 
+ 	bridge fdb add 00:00:5e:00:01:01 dev br1 self local vlan 10
+ 	bridge fdb add 00:00:5e:00:01:01 dev br1 self local vlan 20
++
++	sysctl_set net.ipv4.conf.all.rp_filter 0
++	sysctl_set net.ipv4.conf.vlan10-v.rp_filter 0
++	sysctl_set net.ipv4.conf.vlan20-v.rp_filter 0
+ }
+ 
+ switch_destroy()
+ {
++	sysctl_restore net.ipv4.conf.all.rp_filter
++
+ 	bridge fdb del 00:00:5e:00:01:01 dev br1 self local vlan 20
+ 	bridge fdb del 00:00:5e:00:01:01 dev br1 self local vlan 10
+ 
+@@ -402,6 +408,10 @@ ns_switch_create()
+ 
+ 	bridge fdb add 00:00:5e:00:01:01 dev br1 self local vlan 10
+ 	bridge fdb add 00:00:5e:00:01:01 dev br1 self local vlan 20
++
++	sysctl_set net.ipv4.conf.all.rp_filter 0
++	sysctl_set net.ipv4.conf.vlan10-v.rp_filter 0
++	sysctl_set net.ipv4.conf.vlan20-v.rp_filter 0
+ }
+ export -f ns_switch_create
+ 
 -- 
 2.26.2
 
