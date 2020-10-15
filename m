@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2B7A28EBAE
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 05:42:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AE9228EBB2
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 05:43:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730044AbgJODme (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 23:42:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49162 "EHLO mail.kernel.org"
+        id S1729992AbgJODn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 23:43:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49534 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727281AbgJODmd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Oct 2020 23:42:33 -0400
+        id S1727281AbgJODnZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Oct 2020 23:43:25 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8A0DD22243;
-        Thu, 15 Oct 2020 03:42:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5002122241;
+        Thu, 15 Oct 2020 03:43:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602733353;
-        bh=GwGUyejOLstRN1Fx4fxG6UMNfecHd9+GCmbEcvKveDM=;
+        s=default; t=1602733405;
+        bh=azE8D6Jip/DfgDAtotq0y1JFG3w8UjkW+iU0XO+pqEM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jcq/f5ElfKyGA7WuJZI8Uj77rhyk9lOWDtsa6Ri+ARf5GN08JDiomJLzOk9WxVje5
-         ZmmVeQXM5UxxQjiDo/osNUogJS/dnVrTRzXL6i+y4kppPZIxtzmiYRdtrUHbrcGL2Z
-         Wyw1rGvjsRXk4tNEWMIpJvhOFF2eiMJuo4Ex0ja4=
-Date:   Wed, 14 Oct 2020 20:42:30 -0700
+        b=HL9yxG0LA7lztRKCg0XUK3Be9kv6e3tjQu8ZiPTS7dwkZVHhTXJKycsESwIb3cfQA
+         sHAor+N4tCr5gHZzLqfSycvS4W/HQbVyEfIqf8tNLPUNzAlBlz+yVmGdWOnNlpVacn
+         dLWwDfcWmnGcLhiJRUtJxA3GPdJEMbUdYYpSY07c=
+Date:   Wed, 14 Oct 2020 20:43:22 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Kleber Sacilotto de Souza <kleber.souza@canonical.com>
 Cc:     netdev@vger.kernel.org, Gerrit Renker <gerrit@erg.abdn.ac.uk>,
@@ -35,12 +35,11 @@ Cc:     netdev@vger.kernel.org, Gerrit Renker <gerrit@erg.abdn.ac.uk>,
         Eric Dumazet <edumazet@google.com>,
         Alexey Kodanev <alexey.kodanev@oracle.com>,
         dccp@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] Revert "dccp: don't free ccid2_hc_tx_sock struct in
- dccp_disconnect()"
-Message-ID: <20201014204230.56cbfb12@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201013171849.236025-3-kleber.souza@canonical.com>
+Subject: Re: [PATCH 1/2] dccp: ccid: move timers to struct dccp_sock
+Message-ID: <20201014204322.7a51c375@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201013171849.236025-2-kleber.souza@canonical.com>
 References: <20201013171849.236025-1-kleber.souza@canonical.com>
-        <20201013171849.236025-3-kleber.souza@canonical.com>
+        <20201013171849.236025-2-kleber.souza@canonical.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -48,22 +47,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 13 Oct 2020 19:18:49 +0200 Kleber Sacilotto de Souza wrote:
+On Tue, 13 Oct 2020 19:18:48 +0200 Kleber Sacilotto de Souza wrote:
 > From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 > 
-> This reverts commit 2677d20677314101293e6da0094ede7b5526d2b1.
-> 
-> This fixes an issue that after disconnect, dccps_hc_tx_ccid will still be
-> kept, allowing the socket to be reused as a listener socket, and the cloned
-> socket will free its dccps_hc_tx_ccid, leading to a later use after free,
-> when the listener socket is closed.
+> When dccps_hc_tx_ccid is freed, ccid timers may still trigger. The reason
+> del_timer_sync can't be used is because this relies on keeping a reference
+> to struct sock. But as we keep a pointer to dccps_hc_tx_ccid and free that
+> during disconnect, the timer should really belong to struct dccp_sock.
 > 
 > This addresses CVE-2020-16119.
 > 
-> Fixes: 2677d2067731 (dccp: don't free ccid2_hc_tx_sock struct in dccp_disconnect())
-> Reported-by: Hadar Manor
+> Fixes: 839a6094140a (net: dccp: Convert timers to use timer_setup())
 
-Does this person has an email address?
+Presumably you chose this commit because the fix won't apply beyond it?
+But it really fixes 2677d2067731 (dccp: don't free.. right?
 
 > Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 > Signed-off-by: Kleber Sacilotto de Souza <kleber.souza@canonical.com>
