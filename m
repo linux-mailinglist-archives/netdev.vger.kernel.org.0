@@ -2,94 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FBAB28FA08
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 22:17:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54D7B28FA11
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 22:22:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392210AbgJOUR2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 16:17:28 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:59046 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392167AbgJOUR2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 16:17:28 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09FKANCM103594;
-        Thu, 15 Oct 2020 20:17:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- from : mime-version : to : cc : subject : references : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=7QAvXMeeS57/+hrtbbW9yGz6rPw3JrSqRU0qxFyRT80=;
- b=A1OkIizRKmb2Tfffot7DQRboH4NjLAAgg5VPMw/Qu1eoLeLv4ZaX1f8u9SUO4FPblYJ3
- 3aUqC3tk/9dI2gBCyGsH5GwfrmqnjVHfofMK4BafUdLOEtERR9UNrJW1I6UTgqOL/tds
- Asns4lw07xICdR7ozCNJ2SliSuUeCPsilY+yYYY0NS3u+SuFYwza0P6vzliH117c0jR2
- 7udPRVs9MSAH8Z7oiOb7DG6irDjeEzpPUtWCJCRzSQhrgTw8rV97FY9Bgy5T0MclLfOw
- cyZKnXPphc+kGheXmu65EgCai+41ygQtK7kS7v9cRiEiOJOlowOVLsTbSykQjaHbrcN/ Mg== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 3434wkxt97-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 15 Oct 2020 20:17:19 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09FK6eXF158648;
-        Thu, 15 Oct 2020 20:17:18 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 343pw0u8tv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 15 Oct 2020 20:17:18 +0000
-Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 09FKHHZU002127;
-        Thu, 15 Oct 2020 20:17:17 GMT
-Received: from [10.159.253.148] (/10.159.253.148)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 15 Oct 2020 13:17:17 -0700
-Message-ID: <5F88AE4A.9030300@oracle.com>
-Date:   Thu, 15 Oct 2020 13:17:14 -0700
-From:   si-wei liu <si-wei.liu@oracle.com>
-Organization: Oracle Corporation
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:24.0) Gecko/20100101 Thunderbird/24.2.0
+        id S1730355AbgJOUWk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 16:22:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55620 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729554AbgJOUWk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 16:22:40 -0400
+Received: from mail-vs1-xe29.google.com (mail-vs1-xe29.google.com [IPv6:2607:f8b0:4864:20::e29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65DF3C061755
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 13:22:38 -0700 (PDT)
+Received: by mail-vs1-xe29.google.com with SMTP id r1so160631vsi.12
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 13:22:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2PsYXnuIrN/1pEpqRN9Bs20xAJnJl1Iv2V0NVJ9tavo=;
+        b=lnSGCXtVqUBamHEMzJ3TvZkrTeMmlWh/vks4Yi5R+J7ALSqRIwSWQfhxPh4+gIPDpD
+         r+UTzkr+bn2qqCBsF/qzqttVFfFpXojqtvU8GHdEK3e48OW/jvDNrYWLXE7IlBR7kWhc
+         /CvMrw3HSAAmhFnyuofFZsIpcm9mmh9+U6Bj3KFQysFHWctYnPT+OHDl7Oo1thrz4cc2
+         NsOlVQLRIPfoz9MwOjOEAXPG/NFLxDJ46ff6g4iT12kWR5XVxGZCEGoBhmAW7BHSvjPq
+         GUc1YIkf20SIpjCP10Pil9CaZUKVMTowrVfoTA1KH/MaUxYp20Py+tLKb3pE4ESLHpEo
+         Ih+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2PsYXnuIrN/1pEpqRN9Bs20xAJnJl1Iv2V0NVJ9tavo=;
+        b=POBAi1UutxMPP9oH8VEW6JtMy9KZ9WfnABAVJ2WQ8wSFUk8wxkVYGcV+cr9k4HB17e
+         licCCFr1J010HXdvzSkOXXXg+K3iMs9JttMaE0PniEkILUuX7waHZXh50JVBcBIBPnGF
+         3WL/+pzC1aoa2ZrahSTN63QscRU68RBKujLYRia3boBktih0Ati84Y0m+2HS1r8C/fP1
+         02DoVTzf95GrR0AMDuUO4Yu7jifLuU+jxfx2qYHXIQjNm993HT7xqpfeo60lmambqq2x
+         L11OuC2XmKK9z+D8CsYrz6Z7DFQzV4hVTRS9OznEYrRVOLYoftOdQDaftaAUywFHLSfI
+         oi7g==
+X-Gm-Message-State: AOAM532vcOKI8RUIxAQZzJopgKebXgWQnrn664gHZbITymPwBdqTeVJM
+        CLgrJdpH2oWwO+6glWhsRDWqYBQcxUNspmEgti6dZj1DrIZ8uA==
+X-Google-Smtp-Source: ABdhPJxkJWuS9r6lIMvoQHnYjwHsQnZXW5Hqgezk2wKpUSP5mZMngSiXCrAhc6nftbTMZADbFClWYBWj+7RBPL9d15c=
+X-Received: by 2002:a67:ffc1:: with SMTP id w1mr142271vsq.52.1602793357263;
+ Thu, 15 Oct 2020 13:22:37 -0700 (PDT)
 MIME-Version: 1.0
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-CC:     lingshan.zhu@intel.com, joao.m.martins@oracle.com,
-        boris.ostrovsky@oracle.com, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] vhost-vdpa: fix page pinning leakage in error
- path
-References: <1601701330-16837-1-git-send-email-si-wei.liu@oracle.com> <1601701330-16837-3-git-send-email-si-wei.liu@oracle.com> <574a64e3-8873-0639-fe32-248cb99204bc@redhat.com> <5F863B83.6030204@oracle.com> <835e79de-52d9-1d07-71dd-d9bee6b9f62e@redhat.com> <20201015091150-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20201015091150-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9775 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxscore=0 adultscore=0
- bulkscore=0 mlxlogscore=999 suspectscore=2 malwarescore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2010150134
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9775 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 mlxscore=0
- malwarescore=0 phishscore=0 suspectscore=2 impostorscore=0 clxscore=1015
- spamscore=0 priorityscore=1501 bulkscore=0 adultscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2010150134
+References: <87eelz4abk.fsf@marvin.dmesg.gr>
+In-Reply-To: <87eelz4abk.fsf@marvin.dmesg.gr>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Thu, 15 Oct 2020 16:22:21 -0400
+Message-ID: <CADVnQym6OPVRcJ6PdR3hjN5Krcn0pugshdLZsrnzNQe1c52HXA@mail.gmail.com>
+Subject: Re: TCP sender stuck in persist despite peer advertising non-zero window
+To:     Apollon Oikonomopoulos <apoikos@dmesg.gr>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 10/15/2020 6:11 AM, Michael S. Tsirkin wrote:
-> On Thu, Oct 15, 2020 at 02:15:32PM +0800, Jason Wang wrote:
->> On 2020/10/14 上午7:42, si-wei liu wrote:
->>>>
->>>> So what I suggest is to fix the pinning leakage first and do the
->>>> possible optimization on top (which is still questionable to me).
->>> OK. Unfortunately, this was picked and got merged in upstream. So I will
->>> post a follow up patch set to 1) revert the commit to the original
->>> __get_free_page() implementation, and 2) fix the accounting and leakage
->>> on top. Will it be fine?
->>
->> Fine.
->>
->> Thanks
-> Fine by me too.
+On Thu, Oct 15, 2020 at 2:31 PM Apollon Oikonomopoulos <apoikos@dmesg.gr> wrote:
 >
-Thanks, Michael & Jason. I will post the fix shortly. Stay tuned.
+> Hi,
+>
+> I'm trying to debug a (possible) TCP issue we have been encountering
+> sporadically during the past couple of years. Currently we're running
+> 4.9.144, but we've been observing this since at least 3.16.
+>
+> Tl;DR: I believe we are seeing a case where snd_wl1 fails to be properly
+> updated, leading to inability to recover from a TCP persist state and
+> would appreciate some help debugging this.
 
--Siwei
+Thanks for the detailed report and diagnosis. I think we may need a
+fix something like the following patch below.
 
+Eric/Yuchung/Soheil, what do you think?
+
+commit 42b37c72aa73aaabd0c01b8c05c2205236279021
+Author: Neal Cardwell <ncardwell@google.com>
+Date:   Thu Oct 15 16:06:11 2020 -0400
+
+    tcp: fix to update snd_wl1 in bulk receiver fast path
+
+    In the header prediction fast path for a bulk data receiver, if no
+    data is newly acknowledged then we do not call tcp_ack() and do not
+    call tcp_ack_update_window(). This means that a bulk receiver that
+    receives large amounts of data can have the incoming sequence numbers
+    wrap, so that the check in tcp_may_update_window fails:
+       after(ack_seq, tp->snd_wl1)
+
+    The fix is to update snd_wl1 in the header prediction fast path for a
+    bulk data receiver, so that it keeps up and does not see wrapping
+    problems.
+
+    Signed-off-by: Neal Cardwell <ncardwell@google.com>
+    Reported-By: Apollon Oikonomopoulos <apoikos@dmesg.gr>
+
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index b1ce2054291d..75be97f6a7da 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5766,6 +5766,8 @@ void tcp_rcv_established(struct sock *sk, struct
+sk_buff *skb)
+                                tcp_data_snd_check(sk);
+                                if (!inet_csk_ack_scheduled(sk))
+                                        goto no_ack;
++                       } else {
++                               tcp_update_wl(tp, TCP_SKB_CB(skb)->seq);
+                        }
+
+                        __tcp_ack_snd_check(sk, 0);
+
+neal
