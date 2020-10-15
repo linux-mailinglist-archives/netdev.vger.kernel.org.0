@@ -2,129 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE24428EC4D
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 06:32:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D19928EC50
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 06:33:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728970AbgJOEcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 00:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49602 "EHLO
+        id S1728997AbgJOEdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 00:33:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725208AbgJOEco (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 00:32:44 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7D38C061755;
-        Wed, 14 Oct 2020 21:32:44 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id t18so918403plo.1;
-        Wed, 14 Oct 2020 21:32:44 -0700 (PDT)
+        with ESMTP id S1725208AbgJOEda (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 00:33:30 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2FEFC061755;
+        Wed, 14 Oct 2020 21:33:29 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id n9so1065471pgf.9;
+        Wed, 14 Oct 2020 21:33:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
+        h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=AXmRyhdS0GmnvBNnxkJbmQYN3zA7PGYdeJKou+GYMoo=;
-        b=mpMjdv6mT4g/VsBLWkdSiBxftUd526VNielRQ0VQfG1pt+L2u5osaPA22YbWSfKXva
-         OdKP7BfLnt3IguqnNSQoeJmM0eMpgns2wNIJLNqfBVDVa5NbrMhmW0UL5xqGCXJVfJmu
-         XahafWswVwfYcpw0D9+3YNvMHlPXSToq/Xm44PMTBve5HNV2/3SRQOOIOjh0pD2AtGja
-         JJogbjyO/6h2vAS+DEtfK7Q9+zduqvUp9BEh9Tq6zNFmo7okMjyHnOOlNZCtD9H1wJXA
-         TdgFc5ClyLzr9OvaCQGnalUcwPjgyKcG5Gws+qMA5JM2G7BNnLbv4fT/E+J7kQ0Exeu3
-         c3GA==
+        bh=BoSX3rBWIH0BfpEjF76Dmbb/3sKDbh5PYS0JdSEYDAA=;
+        b=W2vCDoxSf13zj8g9zZY1eIf+g4kb/0I6Rs4x2A6doe9Aw9+/dn1Fh5A90ARpCMc2r+
+         VwNVOY7sRAsdtXRizSsUzHpnr703Df4rPXB9wpE3s30ytolY2/y0G2qD2AT7X1PaxbbW
+         S2yakTx0cFnEVeHAaLnNNZSvHGHnz+/lDlLB0ejvbDtFsOY+3D00h/mG8D3RONbjLxJe
+         HO3vGaEHQoWiOzjLUgv1ApaVPNdEcbGFvrpWAilhBKT1FYeteMOzuqMIJCmH+zp4L/Jh
+         EzADXMoYrrXJIKImlLqq/mhoviaj4ug9+QjMifRLIncmpjhFrd5ArydKNnMyu5IOWOyG
+         nYfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=AXmRyhdS0GmnvBNnxkJbmQYN3zA7PGYdeJKou+GYMoo=;
-        b=FvCh0fEr6wBtY2ba7n9tpkIPBHDfyuLuWu/PnoWJIGI5KX16IfcC4Gq43T6gJ0DXje
-         izZlG3pVwtmJ8/Gw/t8JAiRsh4ZpIp/M54pCVJ+WCLMTsWac6r3woA/xp/zaeshC7csj
-         NySUnZleP/KuGH30Go+dEVVwm35alK8a95zsN9huEuSHDPjthzMNF2ZkaQEO85xAU/+g
-         Qil6Pv9j9D+YVJ3G+9RFP4pcYiifCH8HENoy34a37e5OL+x5XW8Q3/LRLTea3LYO+VkL
-         OsCuN+Y9KDe8Ka/7lzWs01a8H5sn9GNz5hNIHXeJbnzp7XldfgG1dz6ORv2/Hb8d8QlK
-         lH8w==
-X-Gm-Message-State: AOAM532NknpYQEj99MmhwwwVP6te85AiLmHCg2y6Kusk7xmiX0vTssnH
-        a8Z7f9uiZ6Ejo0lWromzNXU=
-X-Google-Smtp-Source: ABdhPJyyxNTCxrERuQhJUbuIfefATua/xJ5SaZSMGoJ9xBYOsLupMChuptum8AWnVLJ+XujWyr99Fg==
-X-Received: by 2002:a17:902:bf45:b029:d5:b36d:56eb with SMTP id u5-20020a170902bf45b02900d5b36d56ebmr2177589pls.28.1602736364265;
-        Wed, 14 Oct 2020 21:32:44 -0700 (PDT)
-Received: from localhost ([2001:e42:102:1532:160:16:113:140])
-        by smtp.gmail.com with ESMTPSA id w187sm1309176pfb.93.2020.10.14.21.32.43
+        bh=BoSX3rBWIH0BfpEjF76Dmbb/3sKDbh5PYS0JdSEYDAA=;
+        b=E1b4f5zLISztN5oV9oTH6bNbsSAuld9B8x0Xbmbp2cpfrHF1SN7JjGNnDoLgBSNmnD
+         E2eDkOpqg2xIP0LVX7TlkbD9HtYYsqBxPpCopJCN4XJgj34mbzAZc183PswyEWek5FQW
+         qIY8HwQoTdUUPaxBg3xrYXopvrdUCaNtpwpAkXbdAVy0A7BDocYtfR8DLYBI4UDHR1FK
+         D5D9FhseqeY0HbnpDBsx1rA+haL7LemKOLP+oS2ZN+QG+qrcLOtIYjLvzmGM47IGNY4s
+         5lM7GaQWq6Ac0zdTQLY8y2O+MFBF8ZSDjMxz30wM9AAKYnEERA5pO6T4v/YKYBU08vx4
+         HX8Q==
+X-Gm-Message-State: AOAM53355DH41liREA1DYeU6/fyYqOWb/eeA8f1isr1qWggzkBe5fK3J
+        s6NijA68mCvX8fWMyW8pwZ4=
+X-Google-Smtp-Source: ABdhPJyfUA7VeZdb0UrSGUs4ReOt9DflZquI1UGtleSJyhY3oG3RlPdoVwjivuTKkZgWo8IGVZxt7A==
+X-Received: by 2002:a63:d40d:: with SMTP id a13mr1952033pgh.344.1602736409526;
+        Wed, 14 Oct 2020 21:33:29 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:400::5:f594])
+        by smtp.gmail.com with ESMTPSA id kc21sm1264251pjb.36.2020.10.14.21.33.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Oct 2020 21:32:43 -0700 (PDT)
-From:   Coiby Xu <coiby.xu@gmail.com>
-X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
-Date:   Thu, 15 Oct 2020 12:32:29 +0800
-To:     Benjamin Poirier <benjamin.poirier@gmail.com>
-Cc:     devel@driverdev.osuosl.org, Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/7] staging: qlge: replace ql_* with qlge_* to avoid
- namespace clashes with other qlogic drivers
-Message-ID: <20201015043229.yngmk7h32plk5kkn@Rk>
-References: <20201014104306.63756-1-coiby.xu@gmail.com>
- <20201014104306.63756-2-coiby.xu@gmail.com>
- <20201015010136.GB31835@f3>
- <20201015042628.42evgens2z47x3d6@Rk>
+        Wed, 14 Oct 2020 21:33:28 -0700 (PDT)
+Date:   Wed, 14 Oct 2020 21:33:27 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     John Fastabend <john.fastabend@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next] bpf: Fix register equivalence tracking.
+Message-ID: <20201015043327.stqhrupw2adhd5hl@ast-mbp.dhcp.thefacebook.com>
+References: <20201014175608.1416-1-alexei.starovoitov@gmail.com>
+ <CAEf4BzaF2fDWoRg8h3dUKftvcastYqzEhGS2TG6MoV462fd_8Q@mail.gmail.com>
+ <5f87ca47436f3_b7602088f@john-XPS-13-9370.notmuch>
+ <20201015041952.n3crk6kvtbgev6rw@ast-mbp.dhcp.thefacebook.com>
+ <5f87cfa5b1a77_b7602087e@john-XPS-13-9370.notmuch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201015042628.42evgens2z47x3d6@Rk>
+In-Reply-To: <5f87cfa5b1a77_b7602087e@john-XPS-13-9370.notmuch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 15, 2020 at 12:26:28PM +0800, Coiby Xu wrote:
->On Thu, Oct 15, 2020 at 10:01:36AM +0900, Benjamin Poirier wrote:
->>On 2020-10-14 18:43 +0800, Coiby Xu wrote:
->>>To avoid namespace clashes with other qlogic drivers and also for the
->>>sake of naming consistency, use the "qlge_" prefix as suggested in
->>>drivers/staging/qlge/TODO.
->>>
->>>Suggested-by: Benjamin Poirier <benjamin.poirier@gmail.com>
->>>Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
->>>---
->>> drivers/staging/qlge/TODO           |    4 -
->>> drivers/staging/qlge/qlge.h         |  190 ++--
->>> drivers/staging/qlge/qlge_dbg.c     | 1073 ++++++++++++-----------
->>> drivers/staging/qlge/qlge_ethtool.c |  231 ++---
->>> drivers/staging/qlge/qlge_main.c    | 1257 +++++++++++++--------------
->>> drivers/staging/qlge/qlge_mpi.c     |  352 ++++----
->>> 6 files changed, 1551 insertions(+), 1556 deletions(-)
->>>
->>>diff --git a/drivers/staging/qlge/TODO b/drivers/staging/qlge/TODO
->>>index f93f7428f5d5..5ac55664c3e2 100644
->>>--- a/drivers/staging/qlge/TODO
->>>+++ b/drivers/staging/qlge/TODO
->>>@@ -28,10 +28,6 @@
->>> * the driver has a habit of using runtime checks where compile time checks are
->>>   possible (ex. ql_free_rx_buffers(), ql_alloc_rx_buffers())
->>> * reorder struct members to avoid holes if it doesn't impact performance
->>>-* in terms of namespace, the driver uses either qlge_, ql_ (used by
->>>-  other qlogic drivers, with clashes, ex: ql_sem_spinlock) or nothing (with
->>>-  clashes, ex: struct ob_mac_iocb_req). Rename everything to use the "qlge_"
->>>-  prefix.
->>
->>You only renamed ql -> qlge. The prefix needs to be added where there is
->>currently none like the second example of that text.
->>
->Thank you for reminding me of the second example!
->
->>Besides, the next patch reintroduces the name struct ql_adapter.
->
->Oh, there is still a left-over ql_adapter in qlge.h (I renamed ql->qlge
->after initializing the devlink framework earlier but did a git rebase
->to make the order of the changes more reasonable). Thank you for the
->reminding!
+On Wed, Oct 14, 2020 at 09:27:17PM -0700, John Fastabend wrote:
+> Alexei Starovoitov wrote:
+> > On Wed, Oct 14, 2020 at 09:04:23PM -0700, John Fastabend wrote:
+> > > Andrii Nakryiko wrote:
+> > > > On Wed, Oct 14, 2020 at 10:59 AM Alexei Starovoitov
+> > > > <alexei.starovoitov@gmail.com> wrote:
+> > > > >
+> > > > > From: Alexei Starovoitov <ast@kernel.org>
+> > > > >
+> > > > > The 64-bit JEQ/JNE handling in reg_set_min_max() was clearing reg->id in either
+> > > > > true or false branch. In the case 'if (reg->id)' check was done on the other
+> > > > > branch the counter part register would have reg->id == 0 when called into
+> > > > > find_equal_scalars(). In such case the helper would incorrectly identify other
+> > > > > registers with id == 0 as equivalent and propagate the state incorrectly.
+> > > 
+> > > One thought. It seems we should never have reg->id=0 in find_equal_scalars()
+> > > would it be worthwhile to add an additional check here? Something like,
+> > > 
+> > >   if (known_reg->id == 0)
+> > > 	return
+> > >
+> > > Or even a WARN_ON_ONCE() there? Not sold either way, but maybe worth thinking
+> > > about.
+> > 
+> > That cannot happen anymore due to
+> > if (dst_reg->id && !WARN_ON_ONCE(dst_reg->id != other_branch_regs[insn->dst_reg].id))
+> > check in the caller.
+> > I prefer not to repeat the same check twice. Also I really don't like defensive programming.
+> > if (known_reg->id == 0)
+> >        return;
+> > is exactly that.
+> > If we had that already, as Andrii argued in the original thread, we would have
+> > never noticed this issue. <, >, <= ops would have worked, but == would be
+> > sort-of working. It would mark one branch instead of both, and sometimes
+> > neither of the branches. I'd rather have bugs like this one hurting and caught
+> > quickly instead of warm feeling of being safe and sailing into unknown.
+> 
+> Agree. Although a WARN_ON_ONCE would have also been caught.
 
-Btw, is there a way to configure kernel building to let the compiler
-discover this kind of issue automatically?
-
->--
->Best regards,
->Coiby
-
---
-Best regards,
-Coiby
+Right. Such WARN_ON_ONCE would definitely have been nice either in the caller
+or in the callee. If I could have thought that id could be zero somehow here.
+In retrospect it makes sense that there is possibility that IDs of regs in
+this_branch and other_branch may diverge.
+Hence I'm adding the warn to check for this specific divergence.
