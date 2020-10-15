@@ -2,49 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2521028E9AE
+	by mail.lfdr.de (Postfix) with ESMTP id 8E8F328E9B0
 	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 03:16:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730371AbgJOBQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Oct 2020 21:16:46 -0400
-Received: from correo.us.es ([193.147.175.20]:38730 "EHLO mail.us.es"
+        id S1730811AbgJOBQp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Oct 2020 21:16:45 -0400
+Received: from correo.us.es ([193.147.175.20]:38738 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730054AbgJOBQo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1730279AbgJOBQo (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 14 Oct 2020 21:16:44 -0400
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 91AFCDA7B4
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 03:16:41 +0200 (CEST)
+        by mail.us.es (Postfix) with ESMTP id 6E89DDA7E3
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 03:16:42 +0200 (CEST)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 7AE17DA78E
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 03:16:41 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 584CADA722
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 03:16:42 +0200 (CEST)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 6FAE5DA78D; Thu, 15 Oct 2020 03:16:41 +0200 (CEST)
+        id 4DED8DA789; Thu, 15 Oct 2020 03:16:42 +0200 (CEST)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
-        version=3.4.1
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
+        autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id E3EDEDA704;
-        Thu, 15 Oct 2020 03:16:38 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 26DB4DA722;
+        Thu, 15 Oct 2020 03:16:40 +0200 (CEST)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 15 Oct 2020 03:16:38 +0200 (CEST)
+ Thu, 15 Oct 2020 03:16:40 +0200 (CEST)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from localhost.localdomain (unknown [90.77.255.23])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id BB3F241FF201;
-        Thu, 15 Oct 2020 03:16:38 +0200 (CEST)
+        by entrada.int (Postfix) with ESMTPSA id E91D041FF201;
+        Thu, 15 Oct 2020 03:16:39 +0200 (CEST)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 0/9] netfilter: flowtable bridge and vlan enhancements
-Date:   Thu, 15 Oct 2020 03:16:21 +0200
-Message-Id: <20201015011630.2399-1-pablo@netfilter.org>
+Subject: [PATCH net-next 1/9] netfilter: flowtable: add xmit path types
+Date:   Thu, 15 Oct 2020 03:16:22 +0200
+Message-Id: <20201015011630.2399-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20201015011630.2399-1-pablo@netfilter.org>
+References: <20201015011630.2399-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Virus-Scanned: ClamAV using ClamSMTP
@@ -52,122 +54,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Add the xmit_type field that defines the two supported xmit paths in the
+flowtable data plane, which are the neighbour and the xfrm xmit paths.
+This patch prepares for new flowtable xmit path types to come.
 
-The following patchset adds infrastructure to augment the Netfilter
-flowtable fastpath [1] to support for local network topologies that
-combine IP forwarding, bridge and vlan devices.
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ include/net/netfilter/nf_flow_table.h |  6 ++++
+ net/netfilter/nf_flow_table_core.c    |  4 +++
+ net/netfilter/nf_flow_table_ip.c      | 50 ++++++++++++++++++---------
+ 3 files changed, 44 insertions(+), 16 deletions(-)
 
-A typical scenario that can benefit from this infrastructure is composed
-of several VMs connected to bridge ports where the bridge master device
-'br0' has an IP address. A DHCP server is also assumed to be running to
-provide connectivity to the VMs. The VMs reach the Internet through
-'br0' as default gateway, which makes the packet enter the IP forwarding
-path. Then, netfilter is used to NAT the packets before they leave to
-through the wan device.
-
-Something like this:
-
-                       fast path
-                .------------------------.
-               /                          \
-               |           IP forwarding   |
-               |          /             \  .
-               |       br0               eth0
-               .       / \
-               -- veth1  veth2
-                   .
-                   .
-                   .
-                 ethX
-           ab:cd:ef:ab:cd:ef
-                  VM
-
-The idea is to accelerate forwarding by building a fast path that takes
-packets from the ingress path of the bridge port and place them in the
-egress path of the wan device (and vice versa). Hence, skipping the
-classic bridge and IP stack paths.
-
-Patch #1 adds the transmit path type field to the flow tuple. Two transmit
-         paths are supported so far: the neighbour and the xfrm transmit
-	 paths. This patch comes in preparation to add a new direct ethernet
-	 transmit path (see patch #7).
-
-Patch #2 adds dev_fill_forward_path() and .ndo_fill_forward_path() to
-	 netdev_ops. This new function describes the list of netdevice hops
-	 to reach a given destination MAC address in the local network topology,
-	 e.g.
-                           IP forwarding
-                          /             \
-                       br0              eth0
-                       / \
-                   veth1 veth2
-                    .
-                    .
-                    .
-                   ethX
-             ab:cd:ef:ab:cd:ef
-
-	  where veth1 and veth2 are bridge ports and eth0 provides Internet
-	  connectivity. ethX is the interface in the VM which is connected to
-	  the veth1 bridge port. Then, for packets going to br0 whose
-	  destination MAC address is ab:cd:ef:ab:cd:ef, dev_fill_forward_path()
-	  provides the following path: br0 -> veth1.
-
-Patch #3 adds .ndo_fill_forward_path for vlan devices, which provides the next
-         device hop via vlan->real_dev. This also annotates the vlan id and
-         protocol. This is useful to know what vlan headers are expected from
-	 the ingress device. This also provides information regarding the vlan
-	 headers to be pushed before transmission via the egress device.
-
-Patch #4 adds .ndo_fill_forward_path for bridge devices, which allows to make
-	 lookups to the FDB to locate the next device hop (bridge port) in the
-	 forwarding path.
-
-Patch #5 updates the flowtable to use the dev_fill_forward_path()
-         infrastructure to obtain the ingress device in the forwarding path.
-
-Patch #6 updates the flowtable to use the dev_fill_forward_path()
-         infrastructure to obtain the egress device in the forwarding path.
-
-Patch #7 adds the direct ethernet transmit path, which pushes the
-	 ethernet header to the packet and send it through dev_queue_xmit().
-
-Patch #8 uses the direct ethernet transmit path (added in the previous
-         patch) to transmit packets to bridge ports - in case
-	 dev_fill_forward_path() describes a topology that includes a bridge.
-
-Patch #9 updates the flowtable to include the vlan information in the flow tuple
-	 for lookups from the ingress path as well as the vlan headers to be
-	 pushed into the packet before transmission to the egress device.
-	 802.1q and 802.1ad (q-in-q) are supported. The vlan information is
-	 also described by dev_fill_forward_path().
-
-Comments welcome.
-
-[1] https://www.kernel.org/doc/html/latest/networking/nf_flowtable.html
-
-Pablo Neira Ayuso (9):
-  netfilter: flowtable: add xmit path types
-  net: resolve forwarding path from virtual netdevice and HW destination address
-  net: 8021q: resolve forwarding path for vlan devices
-  bridge: resolve forwarding path for bridge devices
-  netfilter: flowtable: use dev_fill_forward_path() to obtain ingress device
-  netfilter: flowtable: use dev_fill_forward_path() to obtain egress device
-  netfilter: flowtable: add direct xmit path
-  netfilter: flowtable: bridge port support
-  netfilter: flowtable: add vlan support
-
- include/linux/netdevice.h             |  35 ++++
- include/net/netfilter/nf_flow_table.h |  41 ++++-
- net/8021q/vlan_dev.c                  |  15 ++
- net/bridge/br_device.c                |  22 +++
- net/core/dev.c                        |  31 ++++
- net/netfilter/nf_flow_table_core.c    |  27 ++-
- net/netfilter/nf_flow_table_ip.c      | 247 ++++++++++++++++++++++----
- net/netfilter/nft_flow_offload.c      | 107 ++++++++++-
- 8 files changed, 484 insertions(+), 41 deletions(-)
-
---
+diff --git a/include/net/netfilter/nf_flow_table.h b/include/net/netfilter/nf_flow_table.h
+index 16e8b2f8d006..08e779f149ee 100644
+--- a/include/net/netfilter/nf_flow_table.h
++++ b/include/net/netfilter/nf_flow_table.h
+@@ -89,6 +89,11 @@ enum flow_offload_tuple_dir {
+ 	FLOW_OFFLOAD_DIR_MAX = IP_CT_DIR_MAX
+ };
+ 
++enum flow_offload_xmit_type {
++	FLOW_OFFLOAD_XMIT_NEIGH		= 0,
++	FLOW_OFFLOAD_XMIT_XFRM,
++};
++
+ struct flow_offload_tuple {
+ 	union {
+ 		struct in_addr		src_v4;
+@@ -108,6 +113,7 @@ struct flow_offload_tuple {
+ 	u8				l3proto;
+ 	u8				l4proto;
+ 	u8				dir;
++	enum flow_offload_xmit_type	xmit_type:8;
+ 
+ 	u16				mtu;
+ 
+diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
+index 513f78db3cb2..97f04f244961 100644
+--- a/net/netfilter/nf_flow_table_core.c
++++ b/net/netfilter/nf_flow_table_core.c
+@@ -95,6 +95,10 @@ static int flow_offload_fill_route(struct flow_offload *flow,
+ 	}
+ 
+ 	flow_tuple->iifidx = other_dst->dev->ifindex;
++
++	if (dst_xfrm(dst))
++		flow_tuple->xmit_type = FLOW_OFFLOAD_XMIT_XFRM;
++
+ 	flow_tuple->dst_cache = dst;
+ 
+ 	return 0;
+diff --git a/net/netfilter/nf_flow_table_ip.c b/net/netfilter/nf_flow_table_ip.c
+index a698dbe28ef5..e215c79e6777 100644
+--- a/net/netfilter/nf_flow_table_ip.c
++++ b/net/netfilter/nf_flow_table_ip.c
+@@ -252,6 +252,7 @@ nf_flow_offload_ip_hook(void *priv, struct sk_buff *skb,
+ 	unsigned int thoff;
+ 	struct iphdr *iph;
+ 	__be32 nexthop;
++	int ret;
+ 
+ 	if (skb->protocol != htons(ETH_P_IP))
+ 		return NF_ACCEPT;
+@@ -295,19 +296,27 @@ nf_flow_offload_ip_hook(void *priv, struct sk_buff *skb,
+ 	if (flow_table->flags & NF_FLOWTABLE_COUNTER)
+ 		nf_ct_acct_update(flow->ct, tuplehash->tuple.dir, skb->len);
+ 
+-	if (unlikely(dst_xfrm(&rt->dst))) {
++	switch (tuplehash->tuple.xmit_type) {
++	case FLOW_OFFLOAD_XMIT_NEIGH:
++		skb->dev = outdev;
++		nexthop = rt_nexthop(rt, flow->tuplehash[!dir].tuple.src_v4.s_addr);
++		skb_dst_set_noref(skb, &rt->dst);
++		neigh_xmit(NEIGH_ARP_TABLE, outdev, &nexthop, skb);
++		ret = NF_STOLEN;
++		break;
++	case FLOW_OFFLOAD_XMIT_XFRM:
+ 		memset(skb->cb, 0, sizeof(struct inet_skb_parm));
+ 		IPCB(skb)->iif = skb->dev->ifindex;
+ 		IPCB(skb)->flags = IPSKB_FORWARDED;
+-		return nf_flow_xmit_xfrm(skb, state, &rt->dst);
++		ret = nf_flow_xmit_xfrm(skb, state, &rt->dst);
++		break;
++	default:
++		WARN_ON_ONCE(1);
++		ret = NF_DROP;
++		break;
+ 	}
+ 
+-	skb->dev = outdev;
+-	nexthop = rt_nexthop(rt, flow->tuplehash[!dir].tuple.src_v4.s_addr);
+-	skb_dst_set_noref(skb, &rt->dst);
+-	neigh_xmit(NEIGH_ARP_TABLE, outdev, &nexthop, skb);
+-
+-	return NF_STOLEN;
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(nf_flow_offload_ip_hook);
+ 
+@@ -493,6 +502,7 @@ nf_flow_offload_ipv6_hook(void *priv, struct sk_buff *skb,
+ 	struct net_device *outdev;
+ 	struct ipv6hdr *ip6h;
+ 	struct rt6_info *rt;
++	int ret;
+ 
+ 	if (skb->protocol != htons(ETH_P_IPV6))
+ 		return NF_ACCEPT;
+@@ -536,18 +546,26 @@ nf_flow_offload_ipv6_hook(void *priv, struct sk_buff *skb,
+ 	if (flow_table->flags & NF_FLOWTABLE_COUNTER)
+ 		nf_ct_acct_update(flow->ct, tuplehash->tuple.dir, skb->len);
+ 
+-	if (unlikely(dst_xfrm(&rt->dst))) {
++	switch (tuplehash->tuple.xmit_type) {
++	case FLOW_OFFLOAD_XMIT_NEIGH:
++		skb->dev = outdev;
++		nexthop = rt6_nexthop(rt, &flow->tuplehash[!dir].tuple.src_v6);
++		skb_dst_set_noref(skb, &rt->dst);
++		neigh_xmit(NEIGH_ND_TABLE, outdev, nexthop, skb);
++		ret = NF_STOLEN;
++		break;
++	case FLOW_OFFLOAD_XMIT_XFRM:
+ 		memset(skb->cb, 0, sizeof(struct inet6_skb_parm));
+ 		IP6CB(skb)->iif = skb->dev->ifindex;
+ 		IP6CB(skb)->flags = IP6SKB_FORWARDED;
+-		return nf_flow_xmit_xfrm(skb, state, &rt->dst);
++		ret = nf_flow_xmit_xfrm(skb, state, &rt->dst);
++		break;
++	default:
++		WARN_ON_ONCE(1);
++		ret = NF_DROP;
++		break;
+ 	}
+ 
+-	skb->dev = outdev;
+-	nexthop = rt6_nexthop(rt, &flow->tuplehash[!dir].tuple.src_v6);
+-	skb_dst_set_noref(skb, &rt->dst);
+-	neigh_xmit(NEIGH_ND_TABLE, outdev, nexthop, skb);
+-
+-	return NF_STOLEN;
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(nf_flow_offload_ipv6_hook);
+-- 
 2.20.1
 
