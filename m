@@ -2,87 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F6A928EF7E
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 11:42:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48E8228EF8B
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 11:47:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388865AbgJOJmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 05:42:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40818 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388793AbgJOJmS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 05:42:18 -0400
-X-Greylist: delayed 382 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 15 Oct 2020 02:42:18 PDT
-Received: from lechat.rtp-net.org (lechat.rtp-net.org [IPv6:2001:bc8:3430:1000::c0f:fee])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51DA3C061755;
-        Thu, 15 Oct 2020 02:42:18 -0700 (PDT)
-Received: by lechat.rtp-net.org (Postfix, from userid 1000)
-        id DFD9D18084F; Thu, 15 Oct 2020 11:35:51 +0200 (CEST)
-Message-ID: <20201015093221.720980174@rtp-net.org>
-User-Agent: quilt/0.66
-Date:   Thu, 15 Oct 2020 11:32:15 +0200
-From:   Arnaud Patard (Rtp) <arnaud.patard@rtp-net.org>
-To:     stable@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [patch 1/1] drivers/net/ethernet/marvell/mvmdio.c: Fix non OF case
+        id S2388919AbgJOJrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 05:47:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58515 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388789AbgJOJrI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 05:47:08 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602755226;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=1TaUMLO70lMW7u1wsGwZHTX2AFWks1AkvWQYCuOPHPI=;
+        b=IX+Y40xezqY6ayI32x08+OKTZ7+bVpWAojYIh8uPWd9qZ2kvobGfWPlDE9rwiBCCW6EwSt
+        A7v2impvc7WLrg9rcMeUJ0bk4SbKVCr9n6zZpyUdA8tWOuspZnpSg3F2CJvLKkl5ozGSma
+        Vl0pyO/j3/FiNNmg4i3dmzIx/j45ZGs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-495-bk2-abcnNbWyLUX6ZAiRJQ-1; Thu, 15 Oct 2020 05:47:03 -0400
+X-MC-Unique: bk2-abcnNbWyLUX6ZAiRJQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EB5C28030DE;
+        Thu, 15 Oct 2020 09:47:01 +0000 (UTC)
+Received: from ebuild.redhat.com (ovpn-115-61.ams2.redhat.com [10.36.115.61])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 87239610F3;
+        Thu, 15 Oct 2020 09:46:58 +0000 (UTC)
+From:   Eelco Chaudron <echaudro@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, dev@openvswitch.org, kuba@kernel.org,
+        pabeni@redhat.com, pshelar@ovn.org, jlelli@redhat.com,
+        bigeasy@linutronix.de
+Subject: [PATCH net v2] net: openvswitch: fix to make sure flow_lookup() is not preempted
+Date:   Thu, 15 Oct 2020 11:46:53 +0200
+Message-Id: <160275519174.566500.6537031776378218151.stgit@ebuild>
+User-Agent: StGit/0.21
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-commit d934423ac26ed373dfe089734d505dca5ff679b6 upstream.
+The flow_lookup() function uses per CPU variables, which must not be
+preempted. However, this is fine in the general napi use case where
+the local BH is disabled. But, it's also called in the netlink
+context, which is preemptible. The below patch makes sure that even
+in the netlink path, preemption is disabled.
 
-Orion5.x systems are still using machine files and not device-tree.
-Commit 96cb4342382290c9 ("net: mvmdio: allow up to three clocks to be
-specified for orion-mdio") has replaced devm_clk_get() with of_clk_get(),
-leading to a oops at boot and not working network, as reported in
-https://lists.debian.org/debian-arm/2019/07/msg00088.html and possibly in
-https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=908712.
-    
-Link: https://lists.debian.org/debian-arm/2019/07/msg00088.html
-Fixes: 96cb4342382290c9 ("net: mvmdio: allow up to three clocks to be specified for orion-mdio")
-Signed-off-by: Arnaud Patard <arnaud.patard@rtp-net.org>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+In addition, the u64_stats_update_begin() sync point was not protected,
+making the sync point part of the per CPU variable fixed this.
 
-Index: linux/drivers/net/ethernet/marvell/mvmdio.c
-===================================================================
---- linux.orig/drivers/net/ethernet/marvell/mvmdio.c
-+++ linux/drivers/net/ethernet/marvell/mvmdio.c
-@@ -319,15 +319,25 @@ static int orion_mdio_probe(struct platf
+Fixes: eac87c413bf9 ("net: openvswitch: reorder masks array based on usage")
+Reported-by: Juri Lelli <jlelli@redhat.com>
+Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+---
+v2: - Add u64_stats_update_begin() sync point protection
+    - Moved patch to net from net-next branch
+
+ net/openvswitch/flow_table.c |   56 +++++++++++++++++++++++++-----------------
+ net/openvswitch/flow_table.h |    8 +++++-
+ 2 files changed, 39 insertions(+), 25 deletions(-)
+
+diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
+index e2235849a57e..d90b4af6f539 100644
+--- a/net/openvswitch/flow_table.c
++++ b/net/openvswitch/flow_table.c
+@@ -172,7 +172,7 @@ static struct table_instance *table_instance_alloc(int new_size)
  
- 	init_waitqueue_head(&dev->smi_busy_wait);
+ static void __mask_array_destroy(struct mask_array *ma)
+ {
+-	free_percpu(ma->masks_usage_cntr);
++	free_percpu(ma->masks_usage_stats);
+ 	kfree(ma);
+ }
  
--	for (i = 0; i < ARRAY_SIZE(dev->clk); i++) {
--		dev->clk[i] = of_clk_get(pdev->dev.of_node, i);
--		if (PTR_ERR(dev->clk[i]) == -EPROBE_DEFER) {
-+	if (pdev->dev.of_node) {
-+		for (i = 0; i < ARRAY_SIZE(dev->clk); i++) {
-+			dev->clk[i] = of_clk_get(pdev->dev.of_node, i);
-+			if (PTR_ERR(dev->clk[i]) == -EPROBE_DEFER) {
-+				ret = -EPROBE_DEFER;
-+				goto out_clk;
-+			}
-+			if (IS_ERR(dev->clk[i]))
-+				break;
-+			clk_prepare_enable(dev->clk[i]);
-+		}
-+	} else {
-+		dev->clk[0] = clk_get(&pdev->dev, NULL);
-+		if (PTR_ERR(dev->clk[0]) == -EPROBE_DEFER) {
- 			ret = -EPROBE_DEFER;
- 			goto out_clk;
+@@ -196,15 +196,15 @@ static void tbl_mask_array_reset_counters(struct mask_array *ma)
+ 		ma->masks_usage_zero_cntr[i] = 0;
+ 
+ 		for_each_possible_cpu(cpu) {
+-			u64 *usage_counters = per_cpu_ptr(ma->masks_usage_cntr,
+-							  cpu);
++			struct mask_array_stats *stats;
+ 			unsigned int start;
+ 			u64 counter;
+ 
++			stats = per_cpu_ptr(ma->masks_usage_stats, cpu);
+ 			do {
+-				start = u64_stats_fetch_begin_irq(&ma->syncp);
+-				counter = usage_counters[i];
+-			} while (u64_stats_fetch_retry_irq(&ma->syncp, start));
++				start = u64_stats_fetch_begin_irq(&stats->syncp);
++				counter = stats->usage_cntrs[i];
++			} while (u64_stats_fetch_retry_irq(&stats->syncp, start));
+ 
+ 			ma->masks_usage_zero_cntr[i] += counter;
  		}
--		if (IS_ERR(dev->clk[i]))
--			break;
--		clk_prepare_enable(dev->clk[i]);
-+		if (!IS_ERR(dev->clk[0]))
-+			clk_prepare_enable(dev->clk[0]);
- 	}
+@@ -227,9 +227,10 @@ static struct mask_array *tbl_mask_array_alloc(int size)
+ 					     sizeof(struct sw_flow_mask *) *
+ 					     size);
  
- 	dev->err_interrupt = platform_get_irq(pdev, 0);
-
-
-
+-	new->masks_usage_cntr = __alloc_percpu(sizeof(u64) * size,
+-					       __alignof__(u64));
+-	if (!new->masks_usage_cntr) {
++	new->masks_usage_stats = __alloc_percpu(sizeof(struct mask_array_stats) +
++						sizeof(u64) * size,
++						__alignof__(u64));
++	if (!new->masks_usage_stats) {
+ 		kfree(new);
+ 		return NULL;
+ 	}
+@@ -732,7 +733,7 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
+ 				   u32 *n_cache_hit,
+ 				   u32 *index)
+ {
+-	u64 *usage_counters = this_cpu_ptr(ma->masks_usage_cntr);
++	struct mask_array_stats *stats = this_cpu_ptr(ma->masks_usage_stats);
+ 	struct sw_flow *flow;
+ 	struct sw_flow_mask *mask;
+ 	int i;
+@@ -742,9 +743,9 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
+ 		if (mask) {
+ 			flow = masked_flow_lookup(ti, key, mask, n_mask_hit);
+ 			if (flow) {
+-				u64_stats_update_begin(&ma->syncp);
+-				usage_counters[*index]++;
+-				u64_stats_update_end(&ma->syncp);
++				u64_stats_update_begin(&stats->syncp);
++				stats->usage_cntrs[*index]++;
++				u64_stats_update_end(&stats->syncp);
+ 				(*n_cache_hit)++;
+ 				return flow;
+ 			}
+@@ -763,9 +764,9 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
+ 		flow = masked_flow_lookup(ti, key, mask, n_mask_hit);
+ 		if (flow) { /* Found */
+ 			*index = i;
+-			u64_stats_update_begin(&ma->syncp);
+-			usage_counters[*index]++;
+-			u64_stats_update_end(&ma->syncp);
++			u64_stats_update_begin(&stats->syncp);
++			stats->usage_cntrs[*index]++;
++			u64_stats_update_end(&stats->syncp);
+ 			return flow;
+ 		}
+ 	}
+@@ -851,9 +852,17 @@ struct sw_flow *ovs_flow_tbl_lookup(struct flow_table *tbl,
+ 	struct mask_array *ma = rcu_dereference_ovsl(tbl->mask_array);
+ 	u32 __always_unused n_mask_hit;
+ 	u32 __always_unused n_cache_hit;
++	struct sw_flow *flow;
+ 	u32 index = 0;
+ 
+-	return flow_lookup(tbl, ti, ma, key, &n_mask_hit, &n_cache_hit, &index);
++	/* This function gets called trough the netlink interface and therefore
++	 * is preemptible. However, flow_lookup() function needs to be called
++	 * with preemption disabled due to CPU specific variables.
++	 */
++	local_bh_disable();
++	flow = flow_lookup(tbl, ti, ma, key, &n_mask_hit, &n_cache_hit, &index);
++	local_bh_enable();
++	return flow;
+ }
+ 
+ struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
+@@ -1109,7 +1118,6 @@ void ovs_flow_masks_rebalance(struct flow_table *table)
+ 
+ 	for (i = 0; i < ma->max; i++)  {
+ 		struct sw_flow_mask *mask;
+-		unsigned int start;
+ 		int cpu;
+ 
+ 		mask = rcu_dereference_ovsl(ma->masks[i]);
+@@ -1120,14 +1128,16 @@ void ovs_flow_masks_rebalance(struct flow_table *table)
+ 		masks_and_count[i].counter = 0;
+ 
+ 		for_each_possible_cpu(cpu) {
+-			u64 *usage_counters = per_cpu_ptr(ma->masks_usage_cntr,
+-							  cpu);
++			struct mask_array_stats *stats;
++			unsigned int start;
+ 			u64 counter;
+ 
++			stats = per_cpu_ptr(ma->masks_usage_stats, cpu);
+ 			do {
+-				start = u64_stats_fetch_begin_irq(&ma->syncp);
+-				counter = usage_counters[i];
+-			} while (u64_stats_fetch_retry_irq(&ma->syncp, start));
++				start = u64_stats_fetch_begin_irq(&stats->syncp);
++				counter = stats->usage_cntrs[i];
++			} while (u64_stats_fetch_retry_irq(&stats->syncp,
++							   start));
+ 
+ 			masks_and_count[i].counter += counter;
+ 		}
+diff --git a/net/openvswitch/flow_table.h b/net/openvswitch/flow_table.h
+index 6e7d4ac59353..43144396e192 100644
+--- a/net/openvswitch/flow_table.h
++++ b/net/openvswitch/flow_table.h
+@@ -38,12 +38,16 @@ struct mask_count {
+ 	u64 counter;
+ };
+ 
++struct mask_array_stats {
++	struct u64_stats_sync syncp;
++	u64 usage_cntrs[];
++};
++
+ struct mask_array {
+ 	struct rcu_head rcu;
+ 	int count, max;
+-	u64 __percpu *masks_usage_cntr;
++	struct mask_array_stats __percpu *masks_usage_stats;
+ 	u64 *masks_usage_zero_cntr;
+-	struct u64_stats_sync syncp;
+ 	struct sw_flow_mask __rcu *masks[];
+ };
+ 
 
