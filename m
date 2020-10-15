@@ -2,457 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4548728F1AC
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 13:59:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C83E928F1C6
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 14:02:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725919AbgJOL7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 07:59:40 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:1160 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730045AbgJOL5F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 07:57:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1602763024; x=1634299024;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=O6bOnyZOE01UfklMi2GHAFpianUW6Nag7EBxBIdq4Bo=;
-  b=OBN8kd7b6sr29ap7LdcPdQDg4qGYF3ViYSbTijudvCNocaYlICBZxCFq
-   Jbh06OyuujJfyOoHwTFwHq2412m2HPkx2xa7sYyZAfVaEzcmyA6ijsbnM
-   slyZG/m1CkU8JJhD43Ny3eJ8i+G7abZoe8Lgb5IS5nM3HkDx6p3n8L7Oa
-   b+7f++yjarRKj2Deh64hIw+v++4qWGD1PgrwWFyCsu0ZA53TZIQEkHgBc
-   oZQtI8aC3E4rEdSAHuf/k4yOI1s5ADzKNP2A7u6XdLDVn6U6OnlI/cYk2
-   5z16YcxCS3uDAaVLXy321OmSjCM+wTIy+XVY/oNKNcjZNWHLW1My5ll8J
-   g==;
-IronPort-SDR: prZHmN6cIgJzQ7KKH7vWpGo13yE5NHNV8cLBrWYBvPGwIyzGssPgHGUAeyNMS8ZH61+d2IIpMu
- UHK3MeK9ktKc5Pf/yHzuMb9b122zCkGy502h0bKp9hRb2VgJaGOUbBdW1C3dByatnvt8XPIMW2
- 6665lzg8E2g+OE47INCQN0CLwvvVWf+K6bGPCcZCfTSXsSch7rrnr4+L0oQFnyxH6788aiofIi
- HB20EBig0M7I3riiI72tGS7HKLDdcQthtaXtNqvmMqEfK39OstUcNLDomqFH3iGKlY1FeSWKsV
- jjk=
-X-IronPort-AV: E=Sophos;i="5.77,378,1596524400"; 
-   d="scan'208";a="92709661"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Oct 2020 04:56:32 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 15 Oct 2020 04:56:31 -0700
-Received: from soft-test08.microsemi.net (10.10.115.15) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Thu, 15 Oct 2020 04:56:28 -0700
-From:   Henrik Bjoernlund <henrik.bjoernlund@microchip.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <roopa@nvidia.com>,
-        <nikolay@nvidia.com>, <jiri@mellanox.com>, <idosch@mellanox.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>, <UNGLinuxDriver@microchip.com>
-CC:     Henrik Bjoernlund <henrik.bjoernlund@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH net-next v6 10/10] bridge: cfm: Netlink Notifications.
-Date:   Thu, 15 Oct 2020 11:54:18 +0000
-Message-ID: <20201015115418.2711454-11-henrik.bjoernlund@microchip.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20201015115418.2711454-1-henrik.bjoernlund@microchip.com>
-References: <20201015115418.2711454-1-henrik.bjoernlund@microchip.com>
+        id S1730559AbgJOMCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 08:02:30 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:64036 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726358AbgJOMC3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 08:02:29 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09FC0FnG008580;
+        Thu, 15 Oct 2020 05:02:15 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0220;
+ bh=qO5dU0aVhHg7+L1vu7xDV2vwveXHEQhnSOWZzEF5F5o=;
+ b=X6A3KjabttMLHNcI1RjiQxX+Nwx1NiVccVfYwRAUJxX2blM9V3Q9lDsV2qQLREzF7ssK
+ izUbbJxijCQDW21FjSmAMZYTZHYVtrpz6fPis0y+oHIrZgXtYh05QGpm+EfZ9ikF5CwA
+ +NyPiarAaPJD8lK0BFU+nCc/jVhMBF4sjOUfjIzMVrEU1sbXEirlBWLGJsGWKKkjLZCn
+ D0iB6NpGccDoz9JKPlxy/5oMbiQQVxhL/wesMZV2uXIE4/bNby1efyH2Pc0f/fEofBWY
+ thjPsPcNsp9cF8z1XHuSpicdBuc8lSa9Qk9lqPqSjDyNt8Zs7va4XgYJ7AQ6Hd4vasNk 5Q== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 343cfjjnjn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 15 Oct 2020 05:02:14 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 15 Oct
+ 2020 05:02:12 -0700
+Received: from SC-EXCH03.marvell.com (10.93.176.83) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 15 Oct
+ 2020 05:02:11 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.36.56) by
+ SC-EXCH03.marvell.com (10.93.176.83) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Thu, 15 Oct 2020 05:02:11 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iqjLVVGC/aci9866m5guoXF1OneHC0cNxA6fJYO+9vWNUvgK9Cy96JsB3bSDu1Xwzopwqz58cFLMkk8u+ywDDAgxdfeGWif9o7Yvgu75cUXGK/IbyEINgJjcQR3dOWKnWs4+SNmcJ/NCA7QupSylRsaVF0BaJNz+4iGX6L4r85NQTf0atNtouoLWPpX4CL9OESFcBJuWiegv4MuUkGbNBYDpk/HVBLlP48I4DzPQijn7qvW943T9F23m7iN7b+ePM0ZMqmxML4YKI/kHVQMsjxb7mTAdS0L9c3pd49uW0zaxp8nass/Gc3Ry2qmzaOg0+9xk3f5lcUhK1BTEgSur+g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qO5dU0aVhHg7+L1vu7xDV2vwveXHEQhnSOWZzEF5F5o=;
+ b=C+7R2OBQv71EKic6SLjRGrdVYTSfxPEjN2zYWX9cyYEURlg/RWrYxSvcHAHj8tgm2vmogVHN7Uww4IXPmxDb6P2vYHJ5pJjJCC2A7HwAq8XgjqeU9P6jz1dHu2CSiL1WyVSho/EGg6SYZwP8t7KwCGyomijitZMgDRs/vphkn/7WwSfXSozgcLklzan8Qb6nVedUnRsHrRoa9fgQWMA2unYMWXcOhRdqj2QsJtMSRFGvyxhGFAQbEiQmfbjAZlyQO/fQTbH1mAvv03ZX5Uu8ek2dHvxvhy7v0T5zDVQpQhzeMBxI9jG1DDt+M6eFvZB3EltDhinB9AuoVQf2hQia3g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qO5dU0aVhHg7+L1vu7xDV2vwveXHEQhnSOWZzEF5F5o=;
+ b=GF2RyeFbXyBbo8iKYUrCcivzmpIforPZgBNmaWgdmanJn+zVVMsPsn682jTdL/WmaJ1pOdlT2ZQZuiKuuA/0r+hU3hxdA+jG5s9Y7bXGockf73VkxwCXEbXIu3gn0Zq0xGbofiWjbS2jkBdgMM+4r9R3JZZP2XRumgwC8Shh1FI=
+Received: from BYAPR18MB2791.namprd18.prod.outlook.com (2603:10b6:a03:111::21)
+ by BY5PR18MB3124.namprd18.prod.outlook.com (2603:10b6:a03:194::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.21; Thu, 15 Oct
+ 2020 12:02:10 +0000
+Received: from BYAPR18MB2791.namprd18.prod.outlook.com
+ ([fe80::68cb:a1a3:e1cf:f9d2]) by BYAPR18MB2791.namprd18.prod.outlook.com
+ ([fe80::68cb:a1a3:e1cf:f9d2%5]) with mapi id 15.20.3477.020; Thu, 15 Oct 2020
+ 12:02:10 +0000
+From:   Srujana Challa <schalla@marvell.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Geethasowjanya Akula <gakula@marvell.com>,
+        Subbaraya Sundeep Bhatta <sbhatta@marvell.com>,
+        Suheil Chandran <schandran@marvell.com>,
+        "Narayana Prasad Raju Athreya" <pathreya@marvell.com>
+Subject: RE: [EXT] Re: [PATCH v7,net-next,04/13] drivers: crypto: add Marvell
+ OcteonTX2 CPT PF driver
+Thread-Topic: [EXT] Re: [PATCH v7,net-next,04/13] drivers: crypto: add Marvell
+ OcteonTX2 CPT PF driver
+Thread-Index: AQHWoIajDK99I44HzUyBhzYIqJkQoKmXyrCAgADH6aA=
+Date:   Thu, 15 Oct 2020 12:02:10 +0000
+Message-ID: <BYAPR18MB2791A8B78FF0E3572C59AD66A0020@BYAPR18MB2791.namprd18.prod.outlook.com>
+References: <20201012105719.12492-1-schalla@marvell.com>
+        <20201012105719.12492-5-schalla@marvell.com>
+ <20201014165811.7f2d8ced@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201014165811.7f2d8ced@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=marvell.com;
+x-originating-ip: [103.96.19.173]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: cb93e943-af7c-47c7-449e-08d87102254e
+x-ms-traffictypediagnostic: BY5PR18MB3124:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BY5PR18MB3124293A20C1E4CB5DC51C72A0020@BY5PR18MB3124.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:121;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: wla8QjcofNHaS43Pd2dR3ErnYHASV5elySRCk4dd9d7UFbxaGVQizRk0Ov57wdhl8plw+VJL13s538ld1G/8Oi9UlM8zCE0b7VDXtZV45XzKIjNLdeXtMCHTVnGbo6inmcXobW7HtK5wy5ehsxr3itxKfpjMsgxZ4IDT/rfN7pU39zgQtU4R+izn50mZiDplb1jfwxUoEAoaArhijJHCSnKfyycHl2vgxpsBsEXlEI33NMd7Z4TuPljqCfqRvYzCCDCx4ct5Um0hZPKFfYGKgXVLChfYai9850s7JVB92rMnEdvIDLVaB2y7BLZKz05hsHAc8GahoLhX09nmiNlzRg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR18MB2791.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(396003)(346002)(376002)(39860400002)(136003)(66446008)(64756008)(26005)(66556008)(76116006)(9686003)(4744005)(8936002)(8676002)(186003)(316002)(71200400001)(5660300002)(52536014)(107886003)(86362001)(54906003)(55016002)(6916009)(33656002)(478600001)(66946007)(66476007)(4326008)(2906002)(6506007)(7696005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: Wv3LN3U2gd6tC1+p/cbMi7b6bypopZUD+ngVdFEVoch8LfgWCtgiyF2r/LEDUpQknniCtfVqHtMnCz5jZH88pANpQmnBmLi5NyPozMl18p2gMtZ9HkZmHEg/RnEIwystXuD9f2G6tRR8TvS2l8Lcu3iE/1Hp2E0REFciE3pRZoKK2ewcXZMtTXicjetjdurwyDHFSSeudEMw//cSGXNutTpMNfm91TyPVwH7T7bTzfC23qLZll8cS1OM2Yul6bFyUsPZnUQrHSpp4ArIMGY6JDhd6VbPy+7VfXiWsRd+VynrmvYyQfEe1K5Gtzo5byti/tYvrlgwpIryJbldtVymEeSrb8rTMoVnWLdqJDFUZ0XzUV78piKpMwz4GSUP+afvF/TlpCm99c+sdikV0zF7ic5UN68XoqBiCa4H8sjWP0sNGKq6C8DYH+UkfBI7LjLQcdg6Pq1EgJJ1JlBMKj8IrblJX9dZ7uEbXQ8rNlfy2+W1MmkShqk3mRqDrncAdCN8cXjus8Bx1GvqLQkARe6HAsu4OYxeuEcUWoNjvZaxulBkzkslWogThC5BZjx9JHbpNBxPLqrOZfIzsh9tcglBNWuM5SIVvogx0JQw+89UCPTTCCoehd22iliPNxwM4+/3mEJ7ARuagWy40jgUTdGpJw==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR18MB2791.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cb93e943-af7c-47c7-449e-08d87102254e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Oct 2020 12:02:10.1275
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7MGl5nOOvvPUfvsdly0aURUuc5NfeeYHQbVESe6ASkECBtMOUYZmDh6F2GSnzpk5/f83bjGCf8c6AfZDvfNkdA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR18MB3124
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-10-15_07:2020-10-14,2020-10-15 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is the implementation of Netlink notifications out of CFM.
-
-Notifications are initiated whenever a state change happens in CFM.
-
-IFLA_BRIDGE_CFM:
-    Points to the CFM information.
-
-IFLA_BRIDGE_CFM_MEP_STATUS_INFO:
-    This indicate that the MEP instance status are following.
-IFLA_BRIDGE_CFM_CC_PEER_STATUS_INFO:
-    This indicate that the peer MEP status are following.
-
-CFM nested attribute has the following attributes in next level.
-
-IFLA_BRIDGE_CFM_MEP_STATUS_INSTANCE:
-    The MEP instance number of the delivered status.
-    The type is NLA_U32.
-IFLA_BRIDGE_CFM_MEP_STATUS_OPCODE_UNEXP_SEEN:
-    The MEP instance received CFM PDU with unexpected Opcode.
-    The type is NLA_U32 (bool).
-IFLA_BRIDGE_CFM_MEP_STATUS_VERSION_UNEXP_SEEN:
-    The MEP instance received CFM PDU with unexpected version.
-    The type is NLA_U32 (bool).
-IFLA_BRIDGE_CFM_MEP_STATUS_RX_LEVEL_LOW_SEEN:
-    The MEP instance received CCM PDU with MD level lower than
-    configured level. This frame is discarded.
-    The type is NLA_U32 (bool).
-
-IFLA_BRIDGE_CFM_CC_PEER_STATUS_INSTANCE:
-    The MEP instance number of the delivered status.
-    The type is NLA_U32.
-IFLA_BRIDGE_CFM_CC_PEER_STATUS_PEER_MEPID:
-    The added Peer MEP ID of the delivered status.
-    The type is NLA_U32.
-IFLA_BRIDGE_CFM_CC_PEER_STATUS_CCM_DEFECT:
-    The CCM defect status.
-    The type is NLA_U32 (bool).
-    True means no CCM frame is received for 3.25 intervals.
-    IFLA_BRIDGE_CFM_CC_CONFIG_EXP_INTERVAL.
-IFLA_BRIDGE_CFM_CC_PEER_STATUS_RDI:
-    The last received CCM PDU RDI.
-    The type is NLA_U32 (bool).
-IFLA_BRIDGE_CFM_CC_PEER_STATUS_PORT_TLV_VALUE:
-    The last received CCM PDU Port Status TLV value field.
-    The type is NLA_U8.
-IFLA_BRIDGE_CFM_CC_PEER_STATUS_IF_TLV_VALUE:
-    The last received CCM PDU Interface Status TLV value field.
-    The type is NLA_U8.
-IFLA_BRIDGE_CFM_CC_PEER_STATUS_SEEN:
-    A CCM frame has been received from Peer MEP.
-    The type is NLA_U32 (bool).
-    This is cleared after GETLINK IFLA_BRIDGE_CFM_CC_PEER_STATUS_INFO.
-IFLA_BRIDGE_CFM_CC_PEER_STATUS_TLV_SEEN:
-    A CCM frame with TLV has been received from Peer MEP.
-    The type is NLA_U32 (bool).
-    This is cleared after GETLINK IFLA_BRIDGE_CFM_CC_PEER_STATUS_INFO.
-IFLA_BRIDGE_CFM_CC_PEER_STATUS_SEQ_UNEXP_SEEN:
-    A CCM frame with unexpected sequence number has been received
-    from Peer MEP.
-    The type is NLA_U32 (bool).
-    When a sequence number is not one higher than previously received
-    then it is unexpected.
-    This is cleared after GETLINK IFLA_BRIDGE_CFM_CC_PEER_STATUS_INFO.
-
-Signed-off-by: Henrik Bjoernlund  <henrik.bjoernlund@microchip.com>
-Reviewed-by: Horatiu Vultur  <horatiu.vultur@microchip.com>
-Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
----
- net/bridge/br_cfm.c         | 48 ++++++++++++++++++++++++
- net/bridge/br_cfm_netlink.c | 25 ++++++++-----
- net/bridge/br_netlink.c     | 73 ++++++++++++++++++++++++++++++++-----
- net/bridge/br_private.h     | 22 ++++++++++-
- 4 files changed, 147 insertions(+), 21 deletions(-)
-
-diff --git a/net/bridge/br_cfm.c b/net/bridge/br_cfm.c
-index 3912fedfd289..001064f7583d 100644
---- a/net/bridge/br_cfm.c
-+++ b/net/bridge/br_cfm.c
-@@ -138,6 +138,13 @@ static void ccm_rx_timer_start(struct br_cfm_peer_mep *peer_mep)
- 			   usecs_to_jiffies(interval_us / 4));
- }
- 
-+static void br_cfm_notify(int event, const struct net_bridge_port *port)
-+{
-+	u32 filter = RTEXT_FILTER_CFM_STATUS;
-+
-+	return br_info_notify(event, port->br, NULL, filter);
-+}
-+
- static void cc_peer_enable(struct br_cfm_peer_mep *peer_mep)
- {
- 	memset(&peer_mep->cc_status, 0, sizeof(peer_mep->cc_status));
-@@ -288,6 +295,7 @@ static void ccm_tx_work_expired(struct work_struct *work)
- static void ccm_rx_work_expired(struct work_struct *work)
- {
- 	struct br_cfm_peer_mep *peer_mep;
-+	struct net_bridge_port *b_port;
- 	struct delayed_work *del_work;
- 
- 	del_work = to_delayed_work(work);
-@@ -305,6 +313,13 @@ static void ccm_rx_work_expired(struct work_struct *work)
- 		 * CCM defect detected
- 		 */
- 		peer_mep->cc_status.ccm_defect = true;
-+
-+		/* Change in CCM defect status - notify */
-+		rcu_read_lock();
-+		b_port = rcu_dereference(peer_mep->mep->b_port);
-+		if (b_port)
-+			br_cfm_notify(RTM_NEWLINK, b_port);
-+		rcu_read_unlock();
- 	}
- }
- 
-@@ -430,6 +445,9 @@ static int br_cfm_frame_rx(struct net_bridge_port *port, struct sk_buff *skb)
- 		if (peer_mep->cc_status.ccm_defect) {
- 			peer_mep->cc_status.ccm_defect = false;
- 
-+			/* Change in CCM defect status - notify */
-+			br_cfm_notify(RTM_NEWLINK, port);
-+
- 			/* Start CCM RX timer */
- 			ccm_rx_timer_start(peer_mep);
- 		}
-@@ -799,6 +817,36 @@ int br_cfm_cc_ccm_tx(struct net_bridge *br, const u32 instance,
- 	return 0;
- }
- 
-+int br_cfm_mep_count(struct net_bridge *br, u32 *count)
-+{
-+	struct br_cfm_mep *mep;
-+
-+	*count = 0;
-+
-+	rcu_read_lock();
-+	hlist_for_each_entry_rcu(mep, &br->mep_list, head)
-+		*count += 1;
-+	rcu_read_unlock();
-+
-+	return 0;
-+}
-+
-+int br_cfm_peer_mep_count(struct net_bridge *br, u32 *count)
-+{
-+	struct br_cfm_peer_mep *peer_mep;
-+	struct br_cfm_mep *mep;
-+
-+	*count = 0;
-+
-+	rcu_read_lock();
-+	hlist_for_each_entry_rcu(mep, &br->mep_list, head)
-+		hlist_for_each_entry_rcu(peer_mep, &mep->peer_mep_list, head)
-+			*count += 1;
-+	rcu_read_unlock();
-+
-+	return 0;
-+}
-+
- bool br_cfm_created(struct net_bridge *br)
- {
- 	return !hlist_empty(&br->mep_list);
-diff --git a/net/bridge/br_cfm_netlink.c b/net/bridge/br_cfm_netlink.c
-index 7bac465f2e19..9f439d17baa6 100644
---- a/net/bridge/br_cfm_netlink.c
-+++ b/net/bridge/br_cfm_netlink.c
-@@ -616,7 +616,9 @@ int br_cfm_config_fill_info(struct sk_buff *skb, struct net_bridge *br)
- 	return -EMSGSIZE;
- }
- 
--int br_cfm_status_fill_info(struct sk_buff *skb, struct net_bridge *br)
-+int br_cfm_status_fill_info(struct sk_buff *skb,
-+			    struct net_bridge *br,
-+			    bool getlink)
- {
- 	struct br_cfm_peer_mep *peer_mep;
- 	struct br_cfm_mep *mep;
-@@ -646,10 +648,13 @@ int br_cfm_status_fill_info(struct sk_buff *skb, struct net_bridge *br)
- 				mep->status.rx_level_low_seen))
- 			goto nla_put_failure;
- 
--		/* Clear all 'seen' indications */
--		mep->status.opcode_unexp_seen = false;
--		mep->status.version_unexp_seen = false;
--		mep->status.rx_level_low_seen = false;
-+		/* Only clear if this is a GETLINK */
-+		if (getlink) {
-+			/* Clear all 'seen' indications */
-+			mep->status.opcode_unexp_seen = false;
-+			mep->status.version_unexp_seen = false;
-+			mep->status.rx_level_low_seen = false;
-+		}
- 
- 		nla_nest_end(skb, tb);
- 
-@@ -703,10 +708,12 @@ int br_cfm_status_fill_info(struct sk_buff *skb, struct net_bridge *br)
- 					peer_mep->cc_status.seq_unexp_seen))
- 				goto nla_put_failure;
- 
--			/* Clear all 'seen' indications */
--			peer_mep->cc_status.seen = false;
--			peer_mep->cc_status.tlv_seen = false;
--			peer_mep->cc_status.seq_unexp_seen = false;
-+			if (getlink) { /* Only clear if this is a GETLINK */
-+				/* Clear all 'seen' indications */
-+				peer_mep->cc_status.seen = false;
-+				peer_mep->cc_status.tlv_seen = false;
-+				peer_mep->cc_status.seq_unexp_seen = false;
-+			}
- 
- 			nla_nest_end(skb, tb);
- 		}
-diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index 68c2ed87e26b..6952d4852942 100644
---- a/net/bridge/br_netlink.c
-+++ b/net/bridge/br_netlink.c
-@@ -94,9 +94,11 @@ static size_t br_get_link_af_size_filtered(const struct net_device *dev,
- {
- 	struct net_bridge_vlan_group *vg = NULL;
- 	struct net_bridge_port *p = NULL;
--	struct net_bridge *br;
--	int num_vlan_infos;
-+	struct net_bridge *br = NULL;
-+	u32 num_cfm_peer_mep_infos;
-+	u32 num_cfm_mep_infos;
- 	size_t vinfo_sz = 0;
-+	int num_vlan_infos;
- 
- 	rcu_read_lock();
- 	if (netif_is_bridge_port(dev)) {
-@@ -115,6 +117,49 @@ static size_t br_get_link_af_size_filtered(const struct net_device *dev,
- 	/* Each VLAN is returned in bridge_vlan_info along with flags */
- 	vinfo_sz += num_vlan_infos * nla_total_size(sizeof(struct bridge_vlan_info));
- 
-+	if (!(filter_mask & RTEXT_FILTER_CFM_STATUS))
-+		return vinfo_sz;
-+
-+	if (!br)
-+		return vinfo_sz;
-+
-+	/* CFM status info must be added */
-+	br_cfm_mep_count(br, &num_cfm_mep_infos);
-+	br_cfm_peer_mep_count(br, &num_cfm_peer_mep_infos);
-+
-+	vinfo_sz += nla_total_size(0);	/* IFLA_BRIDGE_CFM */
-+	/* For each status struct the MEP instance (u32) is added */
-+	/* MEP instance (u32) + br_cfm_mep_status */
-+	vinfo_sz += num_cfm_mep_infos *
-+		     /*IFLA_BRIDGE_CFM_MEP_STATUS_INSTANCE */
-+		    (nla_total_size(sizeof(u32))
-+		     /* IFLA_BRIDGE_CFM_MEP_STATUS_OPCODE_UNEXP_SEEN */
-+		     + nla_total_size(sizeof(u32))
-+		     /* IFLA_BRIDGE_CFM_MEP_STATUS_VERSION_UNEXP_SEEN */
-+		     + nla_total_size(sizeof(u32))
-+		     /* IFLA_BRIDGE_CFM_MEP_STATUS_RX_LEVEL_LOW_SEEN */
-+		     + nla_total_size(sizeof(u32)));
-+	/* MEP instance (u32) + br_cfm_cc_peer_status */
-+	vinfo_sz += num_cfm_peer_mep_infos *
-+		     /* IFLA_BRIDGE_CFM_CC_PEER_STATUS_INSTANCE */
-+		    (nla_total_size(sizeof(u32))
-+		     /* IFLA_BRIDGE_CFM_CC_PEER_STATUS_PEER_MEPID */
-+		     + nla_total_size(sizeof(u32))
-+		     /* IFLA_BRIDGE_CFM_CC_PEER_STATUS_CCM_DEFECT */
-+		     + nla_total_size(sizeof(u32))
-+		     /* IFLA_BRIDGE_CFM_CC_PEER_STATUS_RDI */
-+		     + nla_total_size(sizeof(u32))
-+		     /* IFLA_BRIDGE_CFM_CC_PEER_STATUS_PORT_TLV_VALUE */
-+		     + nla_total_size(sizeof(u8))
-+		     /* IFLA_BRIDGE_CFM_CC_PEER_STATUS_IF_TLV_VALUE */
-+		     + nla_total_size(sizeof(u8))
-+		     /* IFLA_BRIDGE_CFM_CC_PEER_STATUS_SEEN */
-+		     + nla_total_size(sizeof(u32))
-+		     /* IFLA_BRIDGE_CFM_CC_PEER_STATUS_TLV_SEEN */
-+		     + nla_total_size(sizeof(u32))
-+		     /* IFLA_BRIDGE_CFM_CC_PEER_STATUS_SEQ_UNEXP_SEEN */
-+		     + nla_total_size(sizeof(u32)));
-+
- 	return vinfo_sz;
- }
- 
-@@ -378,7 +423,8 @@ static int br_fill_ifvlaninfo(struct sk_buff *skb,
- static int br_fill_ifinfo(struct sk_buff *skb,
- 			  const struct net_bridge_port *port,
- 			  u32 pid, u32 seq, int event, unsigned int flags,
--			  u32 filter_mask, const struct net_device *dev)
-+			  u32 filter_mask, const struct net_device *dev,
-+			  bool getlink)
- {
- 	u8 operstate = netif_running(dev) ? dev->operstate : IF_OPER_DOWN;
- 	struct nlattr *af = NULL;
-@@ -499,7 +545,7 @@ static int br_fill_ifinfo(struct sk_buff *skb,
- 
- 		if (filter_mask & RTEXT_FILTER_CFM_STATUS) {
- 			rcu_read_lock();
--			err = br_cfm_status_fill_info(skb, br);
-+			err = br_cfm_status_fill_info(skb, br, getlink);
- 			rcu_read_unlock();
- 			if (err)
- 				goto nla_put_failure;
-@@ -519,11 +565,9 @@ static int br_fill_ifinfo(struct sk_buff *skb,
- 	return -EMSGSIZE;
- }
- 
--/* Notify listeners of a change in bridge or port information */
--void br_ifinfo_notify(int event, const struct net_bridge *br,
--		      const struct net_bridge_port *port)
-+void br_info_notify(int event, const struct net_bridge *br,
-+		    const struct net_bridge_port *port, u32 filter)
- {
--	u32 filter = RTEXT_FILTER_BRVLAN_COMPRESSED;
- 	struct net_device *dev;
- 	struct sk_buff *skb;
- 	int err = -ENOBUFS;
-@@ -548,7 +592,7 @@ void br_ifinfo_notify(int event, const struct net_bridge *br,
- 	if (skb == NULL)
- 		goto errout;
- 
--	err = br_fill_ifinfo(skb, port, 0, 0, event, 0, filter, dev);
-+	err = br_fill_ifinfo(skb, port, 0, 0, event, 0, filter, dev, false);
- 	if (err < 0) {
- 		/* -EMSGSIZE implies BUG in br_nlmsg_size() */
- 		WARN_ON(err == -EMSGSIZE);
-@@ -561,6 +605,15 @@ void br_ifinfo_notify(int event, const struct net_bridge *br,
- 	rtnl_set_sk_err(net, RTNLGRP_LINK, err);
- }
- 
-+/* Notify listeners of a change in bridge or port information */
-+void br_ifinfo_notify(int event, const struct net_bridge *br,
-+		      const struct net_bridge_port *port)
-+{
-+	u32 filter = RTEXT_FILTER_BRVLAN_COMPRESSED;
-+
-+	return br_info_notify(event, br, port, filter);
-+}
-+
- /*
-  * Dump information about all ports, in response to GETLINK
-  */
-@@ -577,7 +630,7 @@ int br_getlink(struct sk_buff *skb, u32 pid, u32 seq,
- 		return 0;
- 
- 	return br_fill_ifinfo(skb, port, pid, seq, RTM_NEWLINK, nlflags,
--			      filter_mask, dev);
-+			      filter_mask, dev, true);
- }
- 
- static int br_vlan_info(struct net_bridge *br, struct net_bridge_port *p,
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 228635b350a2..905d406a2fc7 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -1466,7 +1466,11 @@ int br_cfm_parse(struct net_bridge *br, struct net_bridge_port *p,
- bool br_cfm_created(struct net_bridge *br);
- void br_cfm_port_del(struct net_bridge *br, struct net_bridge_port *p);
- int br_cfm_config_fill_info(struct sk_buff *skb, struct net_bridge *br);
--int br_cfm_status_fill_info(struct sk_buff *skb, struct net_bridge *br);
-+int br_cfm_status_fill_info(struct sk_buff *skb,
-+			    struct net_bridge *br,
-+			    bool getlink);
-+int br_cfm_mep_count(struct net_bridge *br, u32 *count);
-+int br_cfm_peer_mep_count(struct net_bridge *br, u32 *count);
- #else
- static inline int br_cfm_parse(struct net_bridge *br, struct net_bridge_port *p,
- 			       struct nlattr *attr, int cmd,
-@@ -1490,7 +1494,19 @@ static inline int br_cfm_config_fill_info(struct sk_buff *skb, struct net_bridge
- 	return -EOPNOTSUPP;
- }
- 
--static inline int br_cfm_status_fill_info(struct sk_buff *skb, struct net_bridge *br)
-+static inline int br_cfm_status_fill_info(struct sk_buff *skb,
-+					  struct net_bridge *br,
-+					  bool getlink)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static inline int br_cfm_mep_count(struct net_bridge *br, u32 *count)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+static inline int br_cfm_peer_mep_count(struct net_bridge *br, u32 *count)
- {
- 	return -EOPNOTSUPP;
- }
-@@ -1502,6 +1518,8 @@ int br_netlink_init(void);
- void br_netlink_fini(void);
- void br_ifinfo_notify(int event, const struct net_bridge *br,
- 		      const struct net_bridge_port *port);
-+void br_info_notify(int event, const struct net_bridge *br,
-+		    const struct net_bridge_port *port, u32 filter);
- int br_setlink(struct net_device *dev, struct nlmsghdr *nlmsg, u16 flags,
- 	       struct netlink_ext_ack *extack);
- int br_dellink(struct net_device *dev, struct nlmsghdr *nlmsg, u16 flags);
--- 
-2.28.0
-
+> Subject: [EXT] Re: [PATCH v7,net-next,04/13] drivers: crypto: add Marvell
+> OcteonTX2 CPT PF driver
+>=20
+> External Email
+>=20
+> ----------------------------------------------------------------------
+> On Mon, 12 Oct 2020 16:27:10 +0530 Srujana Challa wrote:
+> > +union otx2_cptx_lf_misc_int {
+> > +	u64 u;
+> > +	struct otx2_cptx_lf_misc_int_s {
+> > +		u64 reserved_0:1;
+> > +		u64 nqerr:1;
+> > +		u64 irde:1;
+> > +		u64 nwrp:1;
+> > +		u64 reserved_4:1;
+> > +		u64 hwerr:1;
+> > +		u64 fault:1;
+> > +		u64 reserved_7_63:57;
+> > +	} s;
+> > +};
+>=20
+> AFAIK bitfields don't jive with endianness, please don't use them.
+> The Linux kernel is supposed to work regardless of host CPU endian.
+These are hardware specific defines. OcteonTX2 SOC and we don't intend
+to support BIG endian.
