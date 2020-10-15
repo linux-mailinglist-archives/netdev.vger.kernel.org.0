@@ -2,71 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A630128F5D1
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 17:28:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84C4A28F5E4
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 17:32:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389653AbgJOP2m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 11:28:42 -0400
-Received: from correo.us.es ([193.147.175.20]:39352 "EHLO mail.us.es"
+        id S2388357AbgJOPcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 11:32:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41480 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388686AbgJOP2m (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Oct 2020 11:28:42 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id A563A1C4386
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 17:28:39 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 98D5FDA73D
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 17:28:39 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 8E3D6DA78B; Thu, 15 Oct 2020 17:28:39 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 9F6C9DA78C;
-        Thu, 15 Oct 2020 17:28:37 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 15 Oct 2020 17:28:37 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [90.77.255.23])
+        id S1729327AbgJOPcz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Oct 2020 11:32:55 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 814BA42EF4E1;
-        Thu, 15 Oct 2020 17:28:37 +0200 (CEST)
-Date:   Thu, 15 Oct 2020 17:28:37 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 9/9] netfilter: flowtable: add vlan support
-Message-ID: <20201015152837.GA14689@salvia>
-References: <20201015011630.2399-1-pablo@netfilter.org>
- <20201015011630.2399-10-pablo@netfilter.org>
- <20201015081013.4f059b7b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id AD0A422248;
+        Thu, 15 Oct 2020 15:32:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602775975;
+        bh=dpCemnMINpdU7ehwAmSaB541GU+21aff7h/2VJopyOc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=yOKhqP7xSFtpZ1zrHWfUBADgRZwU6IF6K23/nYSFeibxGm1K6rKXpNFND70OK6Xn/
+         rbMMGmjhV04BLyboKMPVFdRzabID3dKbtfh85GPK1cKxF70LVgcXaiHfCo5dcC5jsR
+         qPpXshCC/SGH3OeZ3AH4l/mLT3B09DimGdVZjbgA=
+Date:   Thu, 15 Oct 2020 08:32:51 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     sundeep subbaraya <sundeep.lkml@gmail.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        rsaladi2@marvell.com, Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>
+Subject: Re: [net-next PATCH 06/10] octeontx2-af: Add NIX1 interfaces to NPC
+Message-ID: <20201015083251.10bc1aaf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CALHRZupwJOZssMhE6Q_0VSCZ06WB2Sgo_BMpf2n=o7MALe+V6g@mail.gmail.com>
+References: <1602584792-22274-1-git-send-email-sundeep.lkml@gmail.com>
+        <1602584792-22274-7-git-send-email-sundeep.lkml@gmail.com>
+        <20201014194804.1e3b57ae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CALHRZupwJOZssMhE6Q_0VSCZ06WB2Sgo_BMpf2n=o7MALe+V6g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20201015081013.4f059b7b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 15, 2020 at 08:10:13AM -0700, Jakub Kicinski wrote:
-> On Thu, 15 Oct 2020 03:16:30 +0200 Pablo Neira Ayuso wrote:
-> > Add the vlan id and proto to the flow tuple to uniquely identify flows
-> > from the receive path. Store the vlan id and proto to set it accordingly
-> > from the transmit path. This patch includes support for two VLAN headers
-> > (Q-in-Q).
-> > 
-> > Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+On Thu, 15 Oct 2020 17:53:07 +0530 sundeep subbaraya wrote:
+> Hi Jakub,
 > 
-> 20+ sparse warnings here as well - do you want to respin quickly?
+> On Thu, Oct 15, 2020 at 8:18 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > On Tue, 13 Oct 2020 15:56:28 +0530 sundeep.lkml@gmail.com wrote:  
+> > > -static const struct npc_mcam_kex npc_mkex_default = {
+> > > +static struct npc_mcam_kex npc_mkex_default = {
+> > >       .mkex_sign = MKEX_SIGN,
+> > >       .name = "default",
+> > >       .kpu_version = NPC_KPU_PROFILE_VER,  
+> >
+> > Why is this no longer constant? Are you modifying global data based
+> > on the HW discovered in the system?  
+> 
+> Yes. Due to an errata present on earlier silicons
+> npc_mkex_default.keyx_cfg[NIX_INTF_TX]
+> and npc_mkex_default.keyx_cfg[NIX_INTF_RX] needs to be identical.
 
-Yes, preparing for this.
+Does this run on the SoC? Is there no possibility that the same kernel
+will have to drive two different pieces of hardware?
