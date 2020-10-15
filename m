@@ -2,228 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 598A128FB92
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 01:16:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33D6028FB98
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 01:19:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387534AbgJOXQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 19:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54170 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732872AbgJOXQe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 19:16:34 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F124C061755;
-        Thu, 15 Oct 2020 16:16:34 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1602803789;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vjUedKRxgvfYMPV7hCjkN8m3z31Iq7E51pJ7H44Pj0s=;
-        b=jvaMb2FWyysyAuM4zwgrUWmKAVzz7LFxYs7aZtkIAlQQCQGaTQS0PCSrnzcO0oq1dWIMre
-        mUv+XOu6496lnJNyndNSQ0StMFzIZmP8taw7FDSVTVGS6RMY6zZ84Oy1uA8s8hQu4eTOw1
-        knbdQh843QNYc6VhlKmrnA01OPH4Qnv3iAY68r9xXihpj+q8yp5UMqSXLQjTk3EY192fFT
-        NiKpiAgSMJCCd63F4TwN0YwU6/pnju8BTO4Ub1BLZ7IQPMt79HZetzjLCOFfjgivcZP9FA
-        QLrUBCsgTkuG3R+c/eJrIGPZp6tkJDoQipMoKsQV9tTC26eDpZ2WPNWpYCU60g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1602803789;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=vjUedKRxgvfYMPV7hCjkN8m3z31Iq7E51pJ7H44Pj0s=;
-        b=CBacvdxbYq+BPIvqZQNSV/dhhCJfkiEGVIkiHUx6YaniVlCBoHE53RNIpexQpmnYWZS7eQ
-        zUjRm7JEMQaPEiDg==
-To:     "Meisinger\, Andreas" <andreas.meisinger@siemens.com>,
-        "vinicius.gomes\@intel.com" <vinicius.gomes@intel.com>,
-        "Geva\, Erez" <erez.geva.ext@siemens.com>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "xiyou.wangcong\@gmail.com" <xiyou.wangcong@gmail.com>,
-        "davem\@davemloft.net" <davem@davemloft.net>,
-        "kuba\@kernel.org" <kuba@kernel.org>,
-        "jhs\@mojatatu.com" <jhs@mojatatu.com>,
-        "jiri\@resnulli.us" <jiri@resnulli.us>,
-        "avagin\@gmail.com" <avagin@gmail.com>,
-        "0x7f454c46\@gmail.com" <0x7f454c46@gmail.com>,
-        "ebiederm\@xmission.com" <ebiederm@xmission.com>,
-        "mingo\@kernel.org" <mingo@kernel.org>,
-        "john.stultz\@linaro.org" <john.stultz@linaro.org>,
-        "mkubecek\@suse.cz" <mkubecek@suse.cz>,
-        "oleg\@redhat.com" <oleg@redhat.com>,
-        "peterz\@infradead.org" <peterz@infradead.org>,
-        "richardcochran\@gmail.com" <richardcochran@gmail.com>,
-        "sboyd\@kernel.org" <sboyd@kernel.org>,
-        "vdronov\@redhat.com" <vdronov@redhat.com>,
-        "bigeasy\@linutronix.de" <bigeasy@linutronix.de>,
-        "frederic\@kernel.org" <frederic@kernel.org>,
-        "edumazet\@google.com" <edumazet@google.com>
-Cc:     "jesus.sanchez-palencia\@intel.com" 
-        <jesus.sanchez-palencia@intel.com>,
-        "vedang.patel\@intel.com" <vedang.patel@intel.com>,
-        "Sudler\, Simon" <simon.sudler@siemens.com>,
-        "Bucher\, Andreas" <andreas.bucher@siemens.com>,
-        "henning.schild\@siemens.com" <henning.schild@siemens.com>,
-        "jan.kiszka\@siemens.com" <jan.kiszka@siemens.com>,
-        "Zirkler\, Andreas" <andreas.zirkler@siemens.com>,
-        "Sakic\, Ermin" <ermin.sakic@siemens.com>,
-        "anninh.nguyen\@siemens.com" <anninh.nguyen@siemens.com>,
-        "Saenger\, Michael" <michael.saenger@siemens.com>,
-        "Maehringer\, Bernd" <bernd.maehringer@siemens.com>,
-        "gisela.greinert\@siemens.com" <gisela.greinert@siemens.com>,
-        "Geva\, Erez" <erez.geva.ext@siemens.com>,
-        "ErezGeva2\@gmail.com" <ErezGeva2@gmail.com>,
-        "guenter.steindl\@siemens.com" <guenter.steindl@siemens.com>
-Subject: Re: [PATCH 0/7] TC-ETF support PTP clocks series
-In-Reply-To: <AM0PR10MB3073F9694ECAD4F612A86FA7FA050@AM0PR10MB3073.EURPRD10.PROD.OUTLOOK.COM>
-References: <AM0PR10MB3073F9694ECAD4F612A86FA7FA050@AM0PR10MB3073.EURPRD10.PROD.OUTLOOK.COM>
-Date:   Fri, 16 Oct 2020 01:16:28 +0200
-Message-ID: <87ft6fulkj.fsf@nanos.tec.linutronix.de>
+        id S2387861AbgJOXT2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 19:19:28 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:44676 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387694AbgJOXT2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 19:19:28 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 09FNJO8U079860;
+        Thu, 15 Oct 2020 18:19:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1602803964;
+        bh=oO+JEQwbOCBhrKYSnbru4rgOHlGjLU4dzzwQRA3ruGg=;
+        h=From:To:CC:Subject:Date;
+        b=h51Hq+vU0lU6Ew7LRLTi8/cWGS70yPiSQwL8A+WWgzbm3CTu2gFINJYQn/vRdbJ1K
+         +3/HrnQDowa9RfWP5M4kD8tGADq29vXQ2YqC8W5fu4VNjAcukLejnED67rC5XNU57J
+         7lYuvuO7DfB3tRj0uiptR8kkNXmmCO+n2hqq5ujk=
+Received: from DLEE111.ent.ti.com (dlee111.ent.ti.com [157.170.170.22])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 09FNJO8j114447
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 15 Oct 2020 18:19:24 -0500
+Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE111.ent.ti.com
+ (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 15
+ Oct 2020 18:19:23 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE104.ent.ti.com
+ (157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 15 Oct 2020 18:19:23 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 09FNJMhw093075;
+        Thu, 15 Oct 2020 18:19:23 -0500
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>
+CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        <linux-omap@vger.kernel.org>,
+        Murali Karicheri <m-karicheri2@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>
+Subject: [PATCH net-next v2 0/9] net: ethernet: ti: am65-cpsw: add multi port support in mac-only mode
+Date:   Fri, 16 Oct 2020 02:19:04 +0300
+Message-ID: <20201015231913.30280-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andreas,
+Hi
 
-On Wed, Oct 14 2020 at 09:12, Andreas Meisinger wrote:
-> Sorry about the wrong format/style of my last mail, hope I did get it
-> right this time.
+This series adds multi-port support in mac-only mode (multi MAC mode) to TI
+AM65x CPSW driver in preparation for enabling support for multi-port devices,
+like Main CPSW0 on K3 J721E SoC or future CPSW3g on K3 AM64x SoC.
 
-No problem. Yes this looks better. The only thing which could be
-improved is that your mail client fails to add
+The multi MAC mode is implemented by configuring every enabled port in "mac-only"
+mode (all ingress packets are sent only to the Host port and egress packets
+directed to target Ext. Port) and creating separate net_device for
+every enabled Ext. port.
 
- In-Reply-To: <messageid>
- References: <msgid1> <msgid2> ...
+This series does not affect on existing CPSW2g one Ext. Port devices and xmit
+path changes are done only for multi-port devices by splitting xmit path for
+one-port and multi-port devices. 
 
-headers and instead has the MS lookout specific
+Patches 1-3: Preparation patches to improve K3 CPSW configuration depending on DT
+Patches 4-5: Fix VLAN offload for multi MAC mode
+Patch 6: Fixes CPTS context lose issue during PM runtime transition
+Patch 7: Fixes TX csum offload for multi MAC mode
+Patches 8-9: add multi-port support to TI AM65x CPSW
 
-Thread-Topic: [PATCH 0/7] TC-ETF support PTP clocks series
-Thread-Index: AdaiB8a+x+RhfhtwSZ+NKfvRdyiJkw=3D=3D
+changes in v2:
+- patch 8: xmit path split for one-port and multi-port devices to avoid
+  performance losses 
+- patch 9: fixed the case when Port 1 is disabled
+- Patch 7: added fix for TX csum offload 
 
-headers. If you look at the lore archive you see the effect:
+v1: https://lore.kernel.org/patchwork/cover/1315766/
 
-  https://lore.kernel.org/r/AM0PR10MB3073F9694ECAD4F612A86FA7FA050@AM0PR10M=
-B3073.EURPRD10.PROD.OUTLOOK.COM
+Grygorii Strashko (9):
+  net: ethernet: ti: am65-cpsw: move ale selection in pdata
+  net: ethernet: ti: am65-cpsw: move free desc queue mode selection in
+    pdata
+  net: ethernet: ti: am65-cpsw: use cppi5_desc_is_tdcm()
+  net: ethernet: ti: cpsw_ale: add cpsw_ale_vlan_del_modify()
+  net: ethernet: ti: am65-cpsw: fix vlan offload for multi mac mode
+  net: ethernet: ti: am65-cpsw: keep active if cpts enabled
+  net: ethernet: ti: am65-cpsw: fix tx csum offload for multi mac mode
+  net: ethernet: ti: am65-cpsw: prepare xmit/rx path for multi-port
+    devices in mac-only mode
+  net: ethernet: ti: am65-cpsw: add multi port support in mac-only mode
 
-and that happens to all mail clients which use threading based on the
-standard headers. There is config knob in lookout to enable them.
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c | 327 +++++++++++++++--------
+ drivers/net/ethernet/ti/am65-cpsw-nuss.h |   5 +
+ drivers/net/ethernet/ti/cpsw_ale.c       |  41 ++-
+ drivers/net/ethernet/ti/cpsw_ale.h       |   1 +
+ drivers/net/ethernet/ti/cpsw_switchdev.c |   2 +-
+ 5 files changed, 251 insertions(+), 125 deletions(-)
 
-> Let me first point at an important thing because we did have
-> discussions here about it too. As of the manpages Linux CLOCK_TAI
-> seems to be defined as an nonsettable clock which does have the same
-> behaviour as of international atomic time TAI. Yet if it's nonsettable
-> it can't be linked or synchronized to the value of International
-> Atomic Time?
->
-> On the other hand there seems to be code in place to change the
-> CLOCK_TAI offset thus making it basically sort of "setable"?
-
-It obviously needs to be modifiable in some way, otherwise
-synchronization to a master clock via PTP would not work at all.
-
-But it cannot be set in the way of settimeofday()/clock_settime() like
-CLOCK_REALTIME.
-
->> The user space daemon which does the correlation between these PTP
->> domains and TAI is required in any case, so the magic clock
->> TAI_PRIVATE is not having any advantage.
-
-> I think a userspace daemon handling the translation information
-> between different clocks would be fine. I think it's not really that
-> relevant who exactly does apply the translation. Kernel level might be
-> a little bit more precise but I guess it'd depend on other factors
-> too.
-
-Not really. The kernel still provides the timestamp pairs/triplets in the
-best way the underlying hardware provides it. Some hardware can even
-provide hardware assistet pairs of ART and PTP clock.
-
-> Yet all translation based approaches have in common, setting a clock,
-> renders translations done in past invalid. It would be required to fix
-> old translated values along with setting the clock. I assume we
-> couldn't distinguish between "translated" values and genuine values
-> after translation, so fixing them might not be possible at all.
-
-CLOCK_TAI is not really set after the initial sychronization. It's
-frequency corrected without causing jumps. PTP daemon uses a PLL based
-algorithm for that.
-
-Of course this adjustment has side effects for translation.
-
-> In our usecase we do have a clock for network operation which can't be
-> set. We can guarantee this because we are able to define the network
-> not being operational when the defined time is not available =F0=9F=98=89.
-> Having this defined the remaining option would be the target clock to
-> be set. As of your suggestion that would be CLOCK_TAI. So at this
-> point "setable" or "nonsettable" would become important. Here
-> "setable" would introduce a dependency between the clocks. Being
-> independent from clocks outside of our control was exactly the reason
-> to introduce the separate network clock. To me this means if CLOCK_TAI
-> could be changed by anything it couldn't be the base clock for our
-> usecase if it can't it might be a solution.
-
-It's under your control as system designer how you operate CLOCK_TAI.
-
-If you use the PTP daemon then it will sync CLOCK_TAI to the PTP clock
-of your choice. If you don't have PTP at all then you can use NTP to
-sync to a time server, which is less accurate. You can use PPS or just
-use nothing.
-
-The kernel does not care which non-standard base time or frequency you
-chose.
-
-Applications which communicate over network might care if the other side
-uses a differnet time universe. Log files which start at 1971 might be
-interesting to analyse against the log file of your other system which
-starts in 2020.
-
->> Depending on the frequency drift between CLOCK_TAI and clock PTP/$N
->> the timer expiry might be slightly inaccurate, but surely not more
->> inaccurate than if that conversion is done purely in user space.
->>
->> The self rearming posix timers would work too, but the self rearming
->> is based on CLOCK_TAI, so rounding errors and drift would be
->> accumulative. So I'd rather stay away from them.
->
-> As of the time ranges typically used in tsn networks the drift error
-> for single shot timers most likely isn't a big deal. But as you
-> suggest I'd stay away from long running timers as well rearming ones
-> too, I guess they'd be mostly unusable.
-
-Depends. It's a matter of hardware properties, system requirements,
-application/system designers decisions. So what you consider unusable
-for your system might be perfectly fine for others.
-
-If we add support for this type of correlation then of course these
-things need to be documented.
-
-> Right now there's only one timestamp in CLOCK_TAI format which is used
-> by ETF as well as by network card thus causing trouble if time is not
-> same there.
->
-> If we'd add an (optional) second timestamp to SKB which would have to
-> be set to network card time we could avoid the conversion error. As we
-> do know which network card will be used for sending the SKB we
-> wouldn't need a clock identifier for the second timestamp.  For
-> situations where the application is not aware of the network cards
-> timespace it wouldn't provide the second timestamp. In these
-> situations it'd behave identical to your suggestion. Here the
-> CLOCK_TAI timestamp would be translated to network card time based on
-> the information of the userspace daemon.
-
-That would work as long as the target PTP clock is correlated because
-the TAI timestamp is still required to make all of this work.
-
-There are probably quite some dragons lurking left and right if we go
-there, but it looks like a possible option.
-
-Thanks,
-
-        tglx
-
+-- 
+2.17.1
 
