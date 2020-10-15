@@ -2,61 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8119528F8E1
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 20:50:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E8EF28F8EF
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 20:53:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389793AbgJOSuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 14:50:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42074 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726877AbgJOSuD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Oct 2020 14:50:03 -0400
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602787802;
-        bh=lzEq58ojFUDuqX9ecWN/GVC9Y8rc3xPA1K2INOFoh0Y=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NTxaGN0MR5bpj9YERmPh2BfJigfSvofw6Iass1HydJSGV5nhFDe+6Sp8B81oQ5K3Z
-         ucLzpL7GVAoh6ujC0cZ/B24eXCeQhI+Lde0z1Kw5+4a7mXmMmskoHXNJkrrHh/cTfo
-         TJVEIj/41Ezp3jVxaDqJl67JIJgGfAdLUrFH1qRo=
+        id S2391082AbgJOSxX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 14:53:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41770 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391065AbgJOSxW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 14:53:22 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC0EC061755;
+        Thu, 15 Oct 2020 11:53:21 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id f21so4218251ljh.7;
+        Thu, 15 Oct 2020 11:53:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cCCE4YtFTVJq/2VDGFn6Aptk+OGDPex4RVpqANY0ajc=;
+        b=eOe65PlCHYMlKyLKE79QtpMiCnRCGzMfDhTlnuTXa3H6yASakhYUZzKdgS7quLTmr7
+         +LzLFH0sVg+A7dl+B7QH30Qal6DNSnBaLP1NFvF6okphNxdvpD8grAtKqPSBj8+ziAnm
+         tXXryoWVNq2YMr3nwqgGwhLIb+B9N2JrjSapo3J4C+fb1OW/vSBPjBVuTJ9jA39uAEfP
+         0e02tiBLTlzMRJuywWzbU6TPPfKj2wFW2hibwcU4qXMx3UQ6JsXeHrt8ftwWe0wO7VHM
+         xxPHSNUurTX4iX68sOBEIy5B/Ocelnj4IarlZhbutkAfn8aFGCdbSK7YuMFsDu8iUV2t
+         RDFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cCCE4YtFTVJq/2VDGFn6Aptk+OGDPex4RVpqANY0ajc=;
+        b=ImkE5J/J8zbpr4rffVsxDXyqvIldd/l9GIuelQmiQjudqL5Nwj1MFj+6I3TdK08KTS
+         yyGUBoQCzDNOXf9noVOPxTkBXuvUxqsN8soKu2Yo+ZP42w3agd6ib00kESkvZTU6RiQU
+         hBxgjtDHZkAPKafpjM2wujWMSfyAUnUNs/Ij8Xd+kLkpatXt7UIX7pqqoRl3SwrXWNKE
+         vG0ZJrJg7vHAXp+FrDQRokb+Y9iFziae/+w49L7XFQchrz3VbJolYvqtFbPmas3QlUvU
+         2FwW79JgTngMPIyUGu2rC3MUQfkIgsQ4EZyPrA9GaeylL48XlpFct8qXpXhiDJqF03ky
+         /Inw==
+X-Gm-Message-State: AOAM5301zRW0KrEPZC1GFax4Id7pgk/ReScMs2q8Q9A4+KM+PCD1HTtd
+        Fsntcw/oKvus+2KTlDBg6hbkY/F4edyIAEq2vtE=
+X-Google-Smtp-Source: ABdhPJxnj+CpCo+jWWUGnPD/LssgI2suQ52wVLqo0qvlncvNzhCqO8GhZL4RmjkihtMJC9zkc/uQxQgGS8d8ruApKoQ=
+X-Received: by 2002:a2e:a162:: with SMTP id u2mr55026ljl.283.1602788000220;
+ Thu, 15 Oct 2020 11:53:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH ethtool] netlink: fix allocation failure handling in
- dump_features()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160278780283.28012.6567583320815769774.git-patchwork-notify@kernel.org>
-Date:   Thu, 15 Oct 2020 18:50:02 +0000
-References: <20201014164952.CC0C860731@lion.mk-sys.cz>
-In-Reply-To: <20201014164952.CC0C860731@lion.mk-sys.cz>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, ivecera@redhat.com
+References: <20201014091749.25488-1-yuehaibing@huawei.com> <20201015093748.587a72b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201015093748.587a72b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 15 Oct 2020 11:53:08 -0700
+Message-ID: <CAADnVQKJ=iDMiJpELmuATsdf2vxGJ=Y9r+vjJG6m4BDRNPmP3g@mail.gmail.com>
+Subject: Re: [PATCH] bpfilter: Fix build error with CONFIG_BPFILTER_UMH
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     YueHaibing <yuehaibing@huawei.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, Oct 15, 2020 at 9:37 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Wed, 14 Oct 2020 17:17:49 +0800 YueHaibing wrote:
+> > IF CONFIG_BPFILTER_UMH is set, building fails:
+> >
+> > In file included from /usr/include/sys/socket.h:33:0,
+> >                  from net/bpfilter/main.c:6:
+> > /usr/include/bits/socket.h:390:10: fatal error: asm/socket.h: No such file or directory
+> >  #include <asm/socket.h>
+> >           ^~~~~~~~~~~~~~
+> > compilation terminated.
+> > scripts/Makefile.userprogs:43: recipe for target 'net/bpfilter/main.o' failed
+> > make[2]: *** [net/bpfilter/main.o] Error 1
+> >
+> > Add missing include path to fix this.
+> >
+> > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+>
+> Applied, thank you!
 
-This patch was applied to ethtool/ethtool.git (refs/heads/master):
-
-On Wed, 14 Oct 2020 18:49:52 +0200 (CEST) you wrote:
-> On allocation failure, dump_features() would set ret to -ENOMEM but then
-> return 0 anyway. As there is nothing to free in this case anyway, the
-> easiest fix is to simply return -ENOMEM rather than jumping to out_free
-> label - which can be dropped as well as this was its only use.
-> 
-> Fixes: f2c17e107900 ("netlink: add netlink handler for gfeatures (-k)")
-> Reported-by: Ivan Vecera <ivecera@redhat.com>
-> Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
-> 
-> [...]
-
-Here is the summary with links:
-  - [ethtool] netlink: fix allocation failure handling in dump_features()
-    https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/commit/?id=09c67a720a07
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Please revert. The patch makes no sense.
+Also please don't take bpf patches.
