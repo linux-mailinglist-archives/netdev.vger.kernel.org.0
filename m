@@ -2,64 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE86B28EFE1
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 12:10:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62A7A28EFFC
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 12:20:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731076AbgJOKKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 06:10:38 -0400
-Received: from sonic311-30.consmr.mail.ir2.yahoo.com ([77.238.176.162]:39377
-        "EHLO sonic311-30.consmr.mail.ir2.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731061AbgJOKKi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 06:10:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1602756636; bh=k6qD474V9VtXKDobcCBmjOJywgarZvgPlTt0r+34qBY=; h=Date:From:Reply-To:Subject:References:From:Subject; b=kc4GuFYOVc16vDJCvdNAdDS2Aus1qJA+e6IZmu6+83PFRJT9hZDF44CoJr9/k9ZPW9nsrD1ZetHa9ecaj1sBmPVk+nZ8XCCxXy0ZUS40YtE9MwQP6EKp8EbTOUh7wiT9A62OKaaqeq5C+wuOcEDiUFoHiQpiqcpaWuUoEE4Bxfb36Llj6JRdcHWkNCEctBlxi8PvAwOz74xYVKTDl+kJxscRTy+24trn6nvmjv6YSes5pKBR5BnVBouCOjjFKzBjgfTJSV31D2P1wX/J4MOnmtNWEtav4SFGLfrtp7ERLjHzJLO/p+iZxaEf4qJbKk8usRcYixOrouAYDc/RXFH/bw==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1602756636; bh=sugumTkjXZYylASI6y/gUETQfsdNSItwaIPx1OquoGw=; h=Date:From:Subject; b=hPvYBqjGuPnZ5Xka5POZtYfhTaXU2JJ6ymZvzFSQjlavBotuUcluBt5Z21BpWf99a/CcVP9Vu+QRBeao3kSVIfc6F8ylHh3tr6alv3etbezIzHcjfIxizYWjLUthi++5EkMVd06E7nw+6Rrj/di5GZGODK31GaC6PiiEiitnNdJFqNrqUasdqMxtAj+egeRMcx/3XI7ZygVt1z4hpGn+h9ZfxQjzC6C21K4mL8u+PcHaoMc5Fb8QyrJkXUGQDljw2c3Y6P/sxLWcuOs5CmE2TM1iHegKa79yXlUJVnmTV0dMXkvc9qH1STPIOL2ctMy4BXaomg5U9cXrSXow0W07fg==
-X-YMail-OSG: jCPkz0EVM1mzEH_pR73_GcYP5K9d8jfuYDrhNIM416tgwvRCKzXq01x_WpIddb1
- rWmBD4ZWoKMuy4T9p0MMkbt0SCjbAnGgB8LybfziQwh3EUC7.DepVQOQXoOpPQ0QVx4lF.2NllsT
- jFUd_Ikw8P8pSEg2eQs.btpW5y67ZhHHOdK3OXVQYdic3qc4G5ApY_wHUOa3LJXfAY.jwwd9Z_QS
- udqYXetpl.LrfY0f4zLh1h1pqJmLVYhYdP8v.P.RSHvECwXV.4xVBRe2A9mBpd5UqXoWjIYS7ihO
- TMzDFN0EsCizxfejq22cY6lHn.uyyGTBUPddyNBU.n1q330te0.s1opnYXuX699RvD8KHaxpiKFK
- csRehwHGdAnytZ4rzUV66d8yQHEFrgKg1vjQuPNq7JJ8rDU2cPQnmdVak7pq6K.IQmVnSDX21DwB
- 1zhKaw.F3Xqz9iIY.dSIKFQYtxQcAkLtfX9h_WTIxa1n9bRZ_80RID7opk7l5MF8XYenO.hocEtp
- jyDbukYWlh0AymikWXC1m1nbS9rtxnHmLci9V1d58.dorQpCyft669sa9aBqp6YwKRvoYgTlb_D_
- LGpSiXDTEj3Ief50J.eF2moTE77nl2ue1Df0v0dW0LkHCDRARkBWjSR0OmUDs1pB5s_mgE0jvTsc
- fE842SJ_eTXcLd.GoF6C8iwWtzS32PXj.bVc0hRBI3j2FMn_ct4e9b.Dk3rc9BNiT641hVihxwAn
- q7n0kY6rBIhTWildxuNg_uzzwHnU9ei_uTaWfpf5qBtRwHLXeF145SWgFBvQf1CRa8IR99IpfW1b
- vhL.Wf6mngZ29HH9HlykFN4CSkhJN7i6xlmXop1ZViFyZ9M3QwJyL4fdcCgDrvVROoM2D8E9ynvm
- IuOF24KpTlOzCzq_hTb.DdW.QXNOsk.AGQ.ynvS5TGvFFtGBnYKa6OUWiVBbSM6k8h8qroYPaeD7
- WagFHCjipCyNFXQkyS.Y6gqLPQ0eTTVVT8teq857HcMly0m8RCzN..CyBfRZv3hUnSXSoNzMdQcf
- zUXfcm0mLHsGnNBcG.TDHoi7sGp6zqio5H2mIkN7y.kgYPDPwVu0jNH_aGUisnFedj5LEA35xHQd
- o0nWTm2aGT5H1AFyBoNaa.s10YZJ0oAZsBJTH7gcbbq2IQKpWtiRON02imqxDLvqMoFXZm3KSQfa
- J88CKL84o91jYe_evl7s3foF1lD.37FowfOYzFUv1XgyzYyxW4X5if91h2N6uexUI1UJ9eXJplZz
- O0BPeleSctrSWyVw5H79NfuSzo_G2Y6vvcD615gopTNhOHv7I3GKPhsKopFmro2NeAec.4hC93kB
- xH6YJsRjqMYliphOy5NX1.nEULFoU7Olo_lByNqJpSak35sCgoTwoybq75Dkguc_0b8m2iM5IJ37
- _VMA9soVhXsc1udakKlPQWCRSokrwi1Em93bTHajqSA--
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic311.consmr.mail.ir2.yahoo.com with HTTP; Thu, 15 Oct 2020 10:10:36 +0000
-Date:   Thu, 15 Oct 2020 10:10:34 +0000 (UTC)
-From:   MONICA BROWN <monicabrown4098@gmail.com>
-Reply-To: monicabrown4098@gmail.com
-Message-ID: <1259086596.1583298.1602756634426@mail.yahoo.com>
-Subject: FROM SERGEANT MONICA BROWN
+        id S1727905AbgJOKUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 06:20:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46718 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726709AbgJOKUQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 06:20:16 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 362A6C061755
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 03:20:16 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id ce10so2821102ejc.5
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 03:20:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=h8VwUpwBBTh1Rt5wZETtbVn2OaoNXb3XoyRsN7+Y0Go=;
+        b=OUinwxwmMVvHZNml5LaB5PTPpU9i/RuDDwuzA61t8sa5dwIEidyVF5r0y+c92yC7XG
+         cdj7xvaeqCjhVzsrsZAGUceg/sZZyyWdN4vIs7bzOES1xH3d3GZb9JuqitYgrXvM7m/p
+         RJIAvbnfWIAAzo4wGGeS6qeOK8wiM8+j365oxnSJQXbH7WBJJ0eAcTeEtyOMLyEA/sAw
+         /wy/wDs6ueLWwtk9GdlXcG2VT2rYUzdYcLs9Tw4Bi1rsfaBMcdcRq0QJfmqB4eu/z5qz
+         oABNBu8ZvkApKzH/coefXH/ngxzc8opNH3YE6bRdy03/3ZFaguRutlbZ1W1nBdyhQvi+
+         8UEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=h8VwUpwBBTh1Rt5wZETtbVn2OaoNXb3XoyRsN7+Y0Go=;
+        b=W03i/FTVnxX9JQK/2j9eJoFzwr1Km47bIpPgzIfGr7YBGifJeXTumTALcd0xk+iHMh
+         EcqBdag1hHnms66TXdrd2rtYuvNeiKfGH+riTw8plnnywdF9ieyZ+XYnmhQTvRr5LUSp
+         F46coLR+EgKSyhIh69mN3ZwpGrFKjJaPc6YyyYTZBvb47OCaZ2FSzxcjBHT2EpKQ9HYU
+         Uiyasm143bCFd+jCl2ZxMP5uUUeB9YxUO3RfZTGgalg3/1dLXh6gXyqDLDC6aQwQn1Tz
+         N+uDFxr69V2J7WfY+nDTOhAUKjhVd4NZd5zhCxULy+9RM3r1sf0YMf2MjWp6tCQPnb38
+         GHzw==
+X-Gm-Message-State: AOAM531Dm4sVMET9L2byRbc+evncwYs348DxA1KHvnhWaT6SifRtTqUI
+        jZsFFFDdp7dFKlcHfXBZFwyxk0XBMo/clgsY/RES7A==
+X-Google-Smtp-Source: ABdhPJx5+mUYrRfq/cJ5vkeB4PPpgw3U7SUSOp+iKzMy158tSj/eykJP7DB8v/ac6bkyUbqxNvjJYamh4Wd/GTvEJUA=
+X-Received: by 2002:a17:906:1f53:: with SMTP id d19mr3537700ejk.255.1602757214763;
+ Thu, 15 Oct 2020 03:20:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-References: <1259086596.1583298.1602756634426.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.16845 YMailNodin Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
-To:     unlisted-recipients:; (no To-header on input)
+References: <1602676437-9829-1-git-send-email-loic.poulain@linaro.org> <b7fd004c-2293-a08c-51eb-40eecbdd4a9c@gmail.com>
+In-Reply-To: <b7fd004c-2293-a08c-51eb-40eecbdd4a9c@gmail.com>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Thu, 15 Oct 2020 12:25:44 +0200
+Message-ID: <CAMZdPi_2Fp8rRmgUCZcXo+1JScx_4bCWPt64ePtn2hRBYP5Q8Q@mail.gmail.com>
+Subject: Re: [PATCH v3] net: Add mhi-net driver
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org, Hemant Kumar <hemantk@codeaurora.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I am Sergeant Monica Brown, originally from Lake Jackson Texas. I have 
-personally conducted a special research on the internet and came across 
-your information. I am writing you this mail from US Military Base Kabul 
-Afghanistan. I have a secured business proposal for you. If you are 
-interested in my private email (monicabrown4098@gmail.com), please contact me 
-immediately for more information.
-Thank you.
+On Thu, 15 Oct 2020 at 09:25, Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+>
+>
+> On 10/14/20 1:53 PM, Loic Poulain wrote:
+> > This patch adds a new network driver implementing MHI transport for
+> > network packets. Packets can be in any format, though QMAP (rmnet)
+> > is the usual protocol (flow control + PDN mux).
+> >
+>
+> ...
+>
+> > +static void mhi_net_rx_refill_work(struct work_struct *work)
+> > +{
+> > +     struct mhi_net_dev *mhi_netdev = container_of(work, struct mhi_net_dev,
+> > +                                                   rx_refill.work);
+> > +     struct net_device *ndev = mhi_netdev->ndev;
+> > +     struct mhi_device *mdev = mhi_netdev->mdev;
+> > +     struct sk_buff *skb;
+> > +     int err;
+> > +
+> > +     do {
+> > +             skb = netdev_alloc_skb(ndev, READ_ONCE(ndev->mtu));
+> > +             if (unlikely(!skb))
+> > +                     break;
+>
+> It is a bit strange you use READ_ONCE(ndev->mtu) here, but later
+> re-read ndev->mtu
+>
+> It seems you need to store the READ_ONCE() in a temporary variable,
+>
+>                 unsigned int mtu = READ_ONCE(ndev->mtu);
+>
 
+Indeed, thanks.
 
+> > +
+> > +             err = mhi_queue_skb(mdev, DMA_FROM_DEVICE, skb, ndev->mtu,
+> > +                                 MHI_EOT);
+>
+>                  s/ndev->mtu/mtu/
+>
+>
+> > +             if (err) {
+> > +                     if (unlikely(err != -ENOMEM))
+> > +                             net_err_ratelimited("%s: Failed to queue RX buf (%d)\n",
+> > +                                                 ndev->name, err);
+> > +                     kfree_skb(skb);
+> > +                     break;
+> > +             }
+> > +
+> > +             atomic_inc(&mhi_netdev->stats.rx_queued);
+>
+> This is an unbound loop in the kernel ?
+>
+> Please add a :
+>
+>                 cond_resched();
+>
+> Before anyone gets hurt.
 
+Will do, thanks.
 
-
-
-
+>
+>
+> > +     } while (1);
+> > +
+> > +     /* If we're still starved of rx buffers, reschedule latter */
+> > +     if (unlikely(!atomic_read(&mhi_netdev->stats.rx_queued)))
+> > +             schedule_delayed_work(&mhi_netdev->rx_refill, HZ / 2);
+> > +}
+> > +
+> >
+>
+>
