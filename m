@@ -2,94 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A992728F2F1
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 15:12:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C572E28F31D
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 15:23:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728231AbgJONME (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 09:12:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:30613 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726924AbgJONMD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 09:12:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1602767522;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uAf/KQ6TAdYo1Wm4S00yfTFLig9CeJngAorlemy7WXc=;
-        b=WPYTxfWpenyzRNvqTGJpp4hh3+b76u8dxA9SQy252rdGbZsOolOwDFJvc2OW46xbk7UNXJ
-        5QMELvpuAhRPvLRZpOdtuWuYk58Oz3C/6OxPCapuaMGeL1VsU7aWiaaqTcH7sEHKm0TPbW
-        F7a3e+j+V/0tGccnKWMQtG5F7TeeYHk=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-16-xfHIHqY3OaefcrZZcJGJZQ-1; Thu, 15 Oct 2020 09:12:01 -0400
-X-MC-Unique: xfHIHqY3OaefcrZZcJGJZQ-1
-Received: by mail-wr1-f70.google.com with SMTP id t17so1874614wrm.13
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 06:12:00 -0700 (PDT)
+        id S1729059AbgJONX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 09:23:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47020 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728521AbgJONX4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 09:23:56 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89F93C061755
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 06:23:56 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id o18so3087449edq.4
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 06:23:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mBbJjr/w6dV0hBxLxDNDRdI4SJ/0WyuAlSGKKh4XkGw=;
+        b=wf0GqoSRgmwnq57TmIvmEsiPfmvFoWrTkKxnwW3HTYwVYPAAzc1e7WNss6Br0zjCe2
+         7tSNab13ShbMcYyxq0WZgzpi45LnvZzWlC3Y+Gmtk1jwkCdyy4nbYuKiysYlRZzlvb0K
+         gZKb5qYGJtmFSh3lQDGasmJVsqkn9Rjf1/rU5vRZRvhIe+ikS9kjuDzz0HrdY7eK0kuv
+         HugvSGNwNCFJqNJ0isbP49/E2Bs/lSufpn3M876hZhjdFRHr5OFfynegTFe0i8lWdp93
+         3NFU28qdQzSwPhERGzU+NhUo+5sgBiWQ/PaXMmJiLcZQdUjQfaRxgwkgRLtlsVM9Wi53
+         7Dkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=uAf/KQ6TAdYo1Wm4S00yfTFLig9CeJngAorlemy7WXc=;
-        b=W83QZQCd343StIRurdfQh8z4l2aUpZSSMWHYMU3CH68MviPkE3BjBB4Uqzqdqd9KTG
-         RnRTq2CqWJrfHQUZp+XMp7VcJa/fOQsmFUL339hu6SF3qaqZgvqnmSW7f1xMJfqfeTfW
-         Dl7QjY9CR42EXI7F6D+afod9TBoD1I+r42zzjEPvwqFi13P7bR7+wW9DK68zIR8tDWRK
-         fFkK+Xv6AGssLfXET3vYw1X0dRHGwDi9MgT33AkloYTFl1+/2gTPzfhYWXLnw+UxH2cl
-         IRt0jY7fDK67UEhv/y36RijNwGyQoz/0P8XxhVKU7uf+WJO18UuNc+NaasHKsUUT3Txh
-         L8SQ==
-X-Gm-Message-State: AOAM530F8/ffbbX7KiX4GQxRVQjaNMWa4VyTTwywaS+vjzCfJhnXr+mL
-        Asv+qsLr8CN4obJ0/9seUpafuONOB+9iFoOmfuqtrulo1Amh5Y6uNomV4XjpTnAGiu2owcQ26I7
-        UxhngBACl8zOnqcmK
-X-Received: by 2002:a7b:c148:: with SMTP id z8mr3896326wmi.135.1602767519242;
-        Thu, 15 Oct 2020 06:11:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyLn1GAiAp1rVzj+T97VT2N5UZGZv+k9R+BhLp1TRQ1j526UPewTS8smKxID+OGAzZGSt3Z4g==
-X-Received: by 2002:a7b:c148:: with SMTP id z8mr3896295wmi.135.1602767519019;
-        Thu, 15 Oct 2020 06:11:59 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-118-93.red.bezeqint.net. [79.176.118.93])
-        by smtp.gmail.com with ESMTPSA id y7sm4331656wmg.40.2020.10.15.06.11.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Oct 2020 06:11:58 -0700 (PDT)
-Date:   Thu, 15 Oct 2020 09:11:55 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     si-wei liu <si-wei.liu@oracle.com>, lingshan.zhu@intel.com,
-        joao.m.martins@oracle.com, boris.ostrovsky@oracle.com,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] vhost-vdpa: fix page pinning leakage in error path
-Message-ID: <20201015091150-mutt-send-email-mst@kernel.org>
-References: <1601701330-16837-1-git-send-email-si-wei.liu@oracle.com>
- <1601701330-16837-3-git-send-email-si-wei.liu@oracle.com>
- <574a64e3-8873-0639-fe32-248cb99204bc@redhat.com>
- <5F863B83.6030204@oracle.com>
- <835e79de-52d9-1d07-71dd-d9bee6b9f62e@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mBbJjr/w6dV0hBxLxDNDRdI4SJ/0WyuAlSGKKh4XkGw=;
+        b=l8CH7BNu/1bmswMbSutYkCVv4lGn0hjXK09HIusMPXbo9U7pOeodSXjVQz1MBpqu8L
+         1OiqIwTHKvZHGIYT2Fn7l9kBZVgQ8TDZh0XLvLsi7e0Ia8IwaixBP2+AVJdlEvYr4bdd
+         AJLw7HcF7NtfNjAaJU7M+WCkvFEtZg+Y+e2gn7ngjaP2NgD38MXSfCEI7KujMdYk43wL
+         IGMTQ/N1dW1VPt//fbBjvAJqJ+kwny1i3W8EM5epUth6q4U1eexJjUiLRgbtjMN3ePDR
+         D7Pz4KVer6q3DSxWK8M84cKW0tUjPXmYS8ul+3dGo1t5d1grwqWTKZSXa6JI9dqgfPaG
+         dSjw==
+X-Gm-Message-State: AOAM5306jz7ARF2iYJdzRMh2r/warBllwkJ0LjjwxWpySZZeHcua6WIT
+        Ddvcz4SX5gd5zAgngOJLGLjj4bH7d7SdBYzKo4UwYQ==
+X-Google-Smtp-Source: ABdhPJy/zOU6SusIzeYXstSGW7dzX7dyrQcaIhvPkZgmQzp3RsX8yUarNaWljbwomnmrg3aKPJBKEjWGLA6IJpQGUkw=
+X-Received: by 2002:aa7:dac4:: with SMTP id x4mr4285140eds.165.1602768235170;
+ Thu, 15 Oct 2020 06:23:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <835e79de-52d9-1d07-71dd-d9bee6b9f62e@redhat.com>
+References: <1602757888-3507-1-git-send-email-loic.poulain@linaro.org> <ec2a1d76-d51f-7ec5-e2c1-5ed0eaf9a537@gmail.com>
+In-Reply-To: <ec2a1d76-d51f-7ec5-e2c1-5ed0eaf9a537@gmail.com>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Thu, 15 Oct 2020 15:29:24 +0200
+Message-ID: <CAMZdPi93Ma4dGMNr_2JHqYJqDE6VSx6vEpRR3_Y2wbpT1QAvTA@mail.gmail.com>
+Subject: Re: [PATCH v4 1/2] net: Add mhi-net driver
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org, Hemant Kumar <hemantk@codeaurora.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 15, 2020 at 02:15:32PM +0800, Jason Wang wrote:
-> 
-> On 2020/10/14 上午7:42, si-wei liu wrote:
-> > > 
-> > > 
-> > > So what I suggest is to fix the pinning leakage first and do the
-> > > possible optimization on top (which is still questionable to me).
-> > OK. Unfortunately, this was picked and got merged in upstream. So I will
-> > post a follow up patch set to 1) revert the commit to the original
-> > __get_free_page() implementation, and 2) fix the accounting and leakage
-> > on top. Will it be fine?
-> 
-> 
-> Fine.
-> 
-> Thanks
+On Thu, 15 Oct 2020 at 14:41, Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+>
+>
+> On 10/15/20 12:31 PM, Loic Poulain wrote:
+> > This patch adds a new network driver implementing MHI transport for
+> > network packets. Packets can be in any format, though QMAP (rmnet)
+> > is the usual protocol (flow control + PDN mux).
+> >
+> > It support two MHI devices, IP_HW0 which is, the path to the IPA
+> > (IP accelerator) on qcom modem, And IP_SW0 which is the software
+> > driven IP path (to modem CPU).
+> >
+> >
+> > +static int mhi_ndo_xmit(struct sk_buff *skb, struct net_device *ndev)
+> > +{
+> > +     struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
+> > +     struct mhi_device *mdev = mhi_netdev->mdev;
+> > +     int err;
+> > +
+> > +     skb_tx_timestamp(skb);
+> > +
+> > +     /* mhi_queue_skb is not thread-safe, but xmit is serialized by the
+> > +      * network core. Once MHI core will be thread save, migrate to
+> > +      * NETIF_F_LLTX support.
+> > +      */
+> > +     err = mhi_queue_skb(mdev, DMA_TO_DEVICE, skb, skb->len, MHI_EOT);
+> > +     if (err == -ENOMEM) {
+> > +             netif_stop_queue(ndev);
+>
+> If you return NETDEV_TX_BUSY, this means this skb will be requeues,
+> then sent again right away, and this will potentially loop forever.
 
-Fine by me too.
+The TX queue is stopped in that case, so the net core will not loop, right?
 
+>
+> Also skb_tx_timestamp() would be called multiple times.
+
+OK so I'm going to remove that, maybe the MHI layer should mark
+timestamp instead.
+
+>
+> I suggest you drop the packet instead.
+>
+> > +             return NETDEV_TX_BUSY;
+> > +     } else if (unlikely(err)) {
+> > +             net_err_ratelimited("%s: Failed to queue TX buf (%d)\n",
+> > +                                 ndev->name, err);
+> > +             mhi_netdev->stats.tx_dropped++;
+> > +             kfree_skb(skb);
+> > +     }
+> > +
+> > +     return NETDEV_TX_OK;
+> > +}
+> > +
+> > +static void mhi_ndo_get_stats64(struct net_device *ndev,
+> > +                             struct rtnl_link_stats64 *stats)
+> > +{
+> > +     struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
+> > +
+> > +     stats->rx_packets = mhi_netdev->stats.rx_packets;
+> > +     stats->rx_bytes = mhi_netdev->stats.rx_bytes;
+> > +     stats->rx_errors = mhi_netdev->stats.rx_errors;
+> > +     stats->rx_dropped = mhi_netdev->stats.rx_dropped;
+> > +     stats->tx_packets = mhi_netdev->stats.tx_packets;
+> > +     stats->tx_bytes = mhi_netdev->stats.tx_bytes;
+> > +     stats->tx_errors = mhi_netdev->stats.tx_errors;
+> > +     stats->tx_dropped = mhi_netdev->stats.tx_dropped;
+> > +}
+>
+> This code is not correct on a 32bit kernel, since u64 values
+> can not be safely be read without extra care.
+>
+>
