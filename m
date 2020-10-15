@@ -2,82 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FBFE28EFDC
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 12:08:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE86B28EFE1
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 12:10:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731057AbgJOKIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 06:08:10 -0400
-Received: from lechat.rtp-net.org ([51.15.165.164]:52202 "EHLO
-        lechat.rtp-net.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727554AbgJOKIK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 06:08:10 -0400
-X-Greylist: delayed 1932 seconds by postgrey-1.27 at vger.kernel.org; Thu, 15 Oct 2020 06:08:09 EDT
-Received: by lechat.rtp-net.org (Postfix, from userid 115)
-        id C256E1808BA; Thu, 15 Oct 2020 12:08:06 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on lechat.rtp-net.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-3.0 required=5.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.2
-Received: from lechat.rtp-net.org (localhost [IPv6:::1])
-        by lechat.rtp-net.org (Postfix) with ESMTPS id D366B180293;
-        Thu, 15 Oct 2020 12:08:00 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=rtp-net.org; s=email;
-        t=1602756480; bh=/WP2iatIa6ZGmlsfOvc3rkcr4CT/R4RHFTNo01YUKWk=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=kVbdlxhWmyVpu8RAONRZ3NsI4UCW1y740Zo7qCI0egcGUmP9fLDI9YLzOQv/LKA+x
-         Lg9mhjNHh029ecEAn3yWv8lVLtAeZUd0k2jFgs2QjJ7pLb742vcuMb6u+StqJENYvt
-         wBg7yncIgJttJx9OWHhld4NMs8VzYAHvjY638jWuk4L1+GVffq4tPreCMt3+L2ip56
-         ywnB+B5POLi+KC5YlKMq4VDR4cCGHtmiSky5hWtlXfiv2y2dJe1A1iG6E4TDy27WqO
-         IX8Weny2SO97XkeVBzYen1Wf1SlspGfsfLNU400PR2zZYSEVevUTEzFF7iyV7QhA8V
-         A+4v5wAPtZzJr5sMraHf6nErEJHbv+txK2QTvyDN7GEfpJr3eYXKwnS9NtQJibWvqr
-         v4Yv8Hc9+Nt7yjQukENjSWRVpSNoJKFqSjraOimeBKTTiv39azUsZ3ceQ8XUoK79cO
-         E1k9/dDdE+Vot7G4OUEgS9Z2T2s29lESWGfZfPjn0vBp4E7rsuAcyHdEb22qlXpWFq
-         7+cMkkFo6iVHiKhFDXuQa7xyam3Nlaf670UNFkJ19m7bUY7h0sOYNVirBWkOChGY4c
-         RJQsPhdWWTIKjgqyKZgOgoUGwAWgWSv1mLJ6AzlSRBxPB9Ih7PUWONyYektyiZx//s
-         zex23j9vjprfOPyRd75t7meo=
-From:   Arnaud Patard (Rtp) <arnaud.patard@rtp-net.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     stable@vger.kernel.org, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [patch 1/1] drivers/net/ethernet/marvell/mvmdio.c: Fix non OF case
-Organization: RtpNet
-References: <20201015093221.720980174@rtp-net.org>
-        <20201015100455.GA3938169@kroah.com>
-Date:   Thu, 15 Oct 2020 12:08:00 +0200
-In-Reply-To: <20201015100455.GA3938169@kroah.com> (Greg KH's message of "Thu,
-        15 Oct 2020 12:04:55 +0200")
-Message-ID: <87wnzr6bun.fsf@lechat.rtp-net.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1731076AbgJOKKi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 06:10:38 -0400
+Received: from sonic311-30.consmr.mail.ir2.yahoo.com ([77.238.176.162]:39377
+        "EHLO sonic311-30.consmr.mail.ir2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731061AbgJOKKi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 06:10:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1602756636; bh=k6qD474V9VtXKDobcCBmjOJywgarZvgPlTt0r+34qBY=; h=Date:From:Reply-To:Subject:References:From:Subject; b=kc4GuFYOVc16vDJCvdNAdDS2Aus1qJA+e6IZmu6+83PFRJT9hZDF44CoJr9/k9ZPW9nsrD1ZetHa9ecaj1sBmPVk+nZ8XCCxXy0ZUS40YtE9MwQP6EKp8EbTOUh7wiT9A62OKaaqeq5C+wuOcEDiUFoHiQpiqcpaWuUoEE4Bxfb36Llj6JRdcHWkNCEctBlxi8PvAwOz74xYVKTDl+kJxscRTy+24trn6nvmjv6YSes5pKBR5BnVBouCOjjFKzBjgfTJSV31D2P1wX/J4MOnmtNWEtav4SFGLfrtp7ERLjHzJLO/p+iZxaEf4qJbKk8usRcYixOrouAYDc/RXFH/bw==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1602756636; bh=sugumTkjXZYylASI6y/gUETQfsdNSItwaIPx1OquoGw=; h=Date:From:Subject; b=hPvYBqjGuPnZ5Xka5POZtYfhTaXU2JJ6ymZvzFSQjlavBotuUcluBt5Z21BpWf99a/CcVP9Vu+QRBeao3kSVIfc6F8ylHh3tr6alv3etbezIzHcjfIxizYWjLUthi++5EkMVd06E7nw+6Rrj/di5GZGODK31GaC6PiiEiitnNdJFqNrqUasdqMxtAj+egeRMcx/3XI7ZygVt1z4hpGn+h9ZfxQjzC6C21K4mL8u+PcHaoMc5Fb8QyrJkXUGQDljw2c3Y6P/sxLWcuOs5CmE2TM1iHegKa79yXlUJVnmTV0dMXkvc9qH1STPIOL2ctMy4BXaomg5U9cXrSXow0W07fg==
+X-YMail-OSG: jCPkz0EVM1mzEH_pR73_GcYP5K9d8jfuYDrhNIM416tgwvRCKzXq01x_WpIddb1
+ rWmBD4ZWoKMuy4T9p0MMkbt0SCjbAnGgB8LybfziQwh3EUC7.DepVQOQXoOpPQ0QVx4lF.2NllsT
+ jFUd_Ikw8P8pSEg2eQs.btpW5y67ZhHHOdK3OXVQYdic3qc4G5ApY_wHUOa3LJXfAY.jwwd9Z_QS
+ udqYXetpl.LrfY0f4zLh1h1pqJmLVYhYdP8v.P.RSHvECwXV.4xVBRe2A9mBpd5UqXoWjIYS7ihO
+ TMzDFN0EsCizxfejq22cY6lHn.uyyGTBUPddyNBU.n1q330te0.s1opnYXuX699RvD8KHaxpiKFK
+ csRehwHGdAnytZ4rzUV66d8yQHEFrgKg1vjQuPNq7JJ8rDU2cPQnmdVak7pq6K.IQmVnSDX21DwB
+ 1zhKaw.F3Xqz9iIY.dSIKFQYtxQcAkLtfX9h_WTIxa1n9bRZ_80RID7opk7l5MF8XYenO.hocEtp
+ jyDbukYWlh0AymikWXC1m1nbS9rtxnHmLci9V1d58.dorQpCyft669sa9aBqp6YwKRvoYgTlb_D_
+ LGpSiXDTEj3Ief50J.eF2moTE77nl2ue1Df0v0dW0LkHCDRARkBWjSR0OmUDs1pB5s_mgE0jvTsc
+ fE842SJ_eTXcLd.GoF6C8iwWtzS32PXj.bVc0hRBI3j2FMn_ct4e9b.Dk3rc9BNiT641hVihxwAn
+ q7n0kY6rBIhTWildxuNg_uzzwHnU9ei_uTaWfpf5qBtRwHLXeF145SWgFBvQf1CRa8IR99IpfW1b
+ vhL.Wf6mngZ29HH9HlykFN4CSkhJN7i6xlmXop1ZViFyZ9M3QwJyL4fdcCgDrvVROoM2D8E9ynvm
+ IuOF24KpTlOzCzq_hTb.DdW.QXNOsk.AGQ.ynvS5TGvFFtGBnYKa6OUWiVBbSM6k8h8qroYPaeD7
+ WagFHCjipCyNFXQkyS.Y6gqLPQ0eTTVVT8teq857HcMly0m8RCzN..CyBfRZv3hUnSXSoNzMdQcf
+ zUXfcm0mLHsGnNBcG.TDHoi7sGp6zqio5H2mIkN7y.kgYPDPwVu0jNH_aGUisnFedj5LEA35xHQd
+ o0nWTm2aGT5H1AFyBoNaa.s10YZJ0oAZsBJTH7gcbbq2IQKpWtiRON02imqxDLvqMoFXZm3KSQfa
+ J88CKL84o91jYe_evl7s3foF1lD.37FowfOYzFUv1XgyzYyxW4X5if91h2N6uexUI1UJ9eXJplZz
+ O0BPeleSctrSWyVw5H79NfuSzo_G2Y6vvcD615gopTNhOHv7I3GKPhsKopFmro2NeAec.4hC93kB
+ xH6YJsRjqMYliphOy5NX1.nEULFoU7Olo_lByNqJpSak35sCgoTwoybq75Dkguc_0b8m2iM5IJ37
+ _VMA9soVhXsc1udakKlPQWCRSokrwi1Em93bTHajqSA--
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic311.consmr.mail.ir2.yahoo.com with HTTP; Thu, 15 Oct 2020 10:10:36 +0000
+Date:   Thu, 15 Oct 2020 10:10:34 +0000 (UTC)
+From:   MONICA BROWN <monicabrown4098@gmail.com>
+Reply-To: monicabrown4098@gmail.com
+Message-ID: <1259086596.1583298.1602756634426@mail.yahoo.com>
+Subject: FROM SERGEANT MONICA BROWN
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+References: <1259086596.1583298.1602756634426.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.16845 YMailNodin Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greg KH <gregkh@linuxfoundation.org> writes:
+I am Sergeant Monica Brown, originally from Lake Jackson Texas. I have 
+personally conducted a special research on the internet and came across 
+your information. I am writing you this mail from US Military Base Kabul 
+Afghanistan. I have a secured business proposal for you. If you are 
+interested in my private email (monicabrown4098@gmail.com), please contact me 
+immediately for more information.
+Thank you.
 
-> On Thu, Oct 15, 2020 at 11:32:15AM +0200, Arnaud Patard wrote:
->> commit d934423ac26ed373dfe089734d505dca5ff679b6 upstream.
->> 
->> Orion5.x systems are still using machine files and not device-tree.
->> Commit 96cb4342382290c9 ("net: mvmdio: allow up to three clocks to be
->> specified for orion-mdio") has replaced devm_clk_get() with of_clk_get(),
->> leading to a oops at boot and not working network, as reported in
->> https://lists.debian.org/debian-arm/2019/07/msg00088.html and possibly in
->> https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=908712.
->>     
->> Link: https://lists.debian.org/debian-arm/2019/07/msg00088.html
->> Fixes: 96cb4342382290c9 ("net: mvmdio: allow up to three clocks to be specified for orion-mdio")
->> Signed-off-by: Arnaud Patard <arnaud.patard@rtp-net.org>
->> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
->> Signed-off-by: David S. Miller <davem@davemloft.net>
->> 
->
-> What stable tree(s) are you asking for this to be backported to?
 
-oops, forgot to put it in the mail subject. It's for 4.19.X, which is
-used in Debian stable.
 
-Arnaud
+
+
+
+
