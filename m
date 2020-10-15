@@ -2,61 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED08828F8AC
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 20:33:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E30B028F8C8
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 20:40:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730950AbgJOSdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 14:33:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33452 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725955AbgJOSdC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Oct 2020 14:33:02 -0400
-Content-Type: text/plain; charset="utf-8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602786781;
-        bh=de+spJiuW0MoskwctT/cBv2p6oj7cQouTTaBzGjjGtU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=DbDrwR/37Zi2rof/0EuqMbCHltA0ZrgyUS2NxzGonlidlF1RsOuqt6ZyMxnc0PK1n
-         aWGQXLPin4l6v/PhBul8pWhUtbvdblGYiT1wZaUphRwRDk/lgNL2OhIvwyp3XEF/Tb
-         WS56TBBALxy2FPxfbuDGH8o295LfX86rY79tIqNk=
+        id S2388964AbgJOSkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 14:40:46 -0400
+Received: from one.firstfloor.org ([193.170.194.197]:36272 "EHLO
+        one.firstfloor.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731154AbgJOSkp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 14:40:45 -0400
+X-Greylist: delayed 409 seconds by postgrey-1.27 at vger.kernel.org; Thu, 15 Oct 2020 14:40:44 EDT
+Received: by one.firstfloor.org (Postfix, from userid 503)
+        id 8CBB48679B; Thu, 15 Oct 2020 20:33:53 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=firstfloor.org;
+        s=mail; t=1602786833;
+        bh=dV0+kWgIRHjFHhxjma5VS4fwV/bqAmm2JmcpyYQHK90=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=p5/cKbKVaK1KcqSaIR+mbp40xg+ZVM+ARTbEzmtyf+FsWORoLFdd+I7z7/gQoRC8q
+         x3wTkT+Rv9QDAS9jUAQKvHP4RXGauB+zDCnT17lfAjh4hgJrsbA5ozeozDKDhTPtL9
+         mKa+hjuaL2M81xlp8zMt/065Fkf8gdXuYj6VNL8g=
+Date:   Thu, 15 Oct 2020 11:33:53 -0700
+From:   Andi Kleen <andi@firstfloor.org>
+To:     Or Gerlitz <gerlitz.or@gmail.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Brendan Gregg <bgregg@netflix.com>,
+        Linux Netdev List <netdev@vger.kernel.org>
+Subject: Re: perf measure for stalled cycles per instruction on newer Intel
+ processors
+Message-ID: <20201015183352.o4zmciukdrdvvdj4@two.firstfloor.org>
+References: <CAJ3xEMiOtDe5OeC8oT2NyVu5BEmH_eLgAAH4voLqejWgsvG4xQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/2] rxrpc: Fixes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160278678121.17812.13011148239593102113.git-patchwork-notify@kernel.org>
-Date:   Thu, 15 Oct 2020 18:33:01 +0000
-References: <160276675194.955243.3551319337030732277.stgit@warthog.procyon.org.uk>
-In-Reply-To: <160276675194.955243.3551319337030732277.stgit@warthog.procyon.org.uk>
-To:     David Howells <dhowells@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJ3xEMiOtDe5OeC8oT2NyVu5BEmH_eLgAAH4voLqejWgsvG4xQ@mail.gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Thu, 15 Oct 2020 13:59:11 +0100 you wrote:
-> Here are a couple of fixes that need to be applied on top of rxrpc patches
-> in net-next:
+On Thu, Oct 15, 2020 at 05:53:40PM +0300, Or Gerlitz wrote:
+> Hi,
 > 
->  (1) Fix a bug in the connection bundle changes in the net-next tree.
-> 
->  (2) Fix the loss of final ACK on socket shutdown.
-> 
-> [...]
+> Earlier Intel processors (e.g E5-2650) support the more of classical
+> two stall events (for backend and frontend [1]) and then perf shows
+> the nice measure of stalled cycles per instruction - e.g here where we
+> have IPC of 0.91 and CSPI (see [2]) of 0.68:
 
-Here is the summary with links:
-  - [net-next,1/2] rxrpc: Fix bundle counting for exclusive connections
-    https://git.kernel.org/netdev/net-next/c/f3af4ad1e08a
-  - [net-next,2/2] rxrpc: Fix loss of final ack on shutdown
-    https://git.kernel.org/netdev/net-next/c/ddc7834af8d5
+Don't use it. It's misleading on a out-of-order CPU because you don't
+know if it's actually limiting anything.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+If you want useful bottleneck data use --topdown.
 
-
+-Andi
