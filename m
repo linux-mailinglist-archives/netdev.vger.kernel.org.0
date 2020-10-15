@@ -2,149 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4573528F691
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 18:26:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3736A28F693
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 18:27:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389525AbgJOQ0O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 12:26:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47154 "EHLO
+        id S2389433AbgJOQ1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 12:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388357AbgJOQ0O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 12:26:14 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B30DC061755
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 09:26:14 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id x13so2216325pgp.7
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 09:26:14 -0700 (PDT)
+        with ESMTP id S2388357AbgJOQ1Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 12:27:16 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44378C061755;
+        Thu, 15 Oct 2020 09:27:16 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id t18so4865325ilo.12;
+        Thu, 15 Oct 2020 09:27:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=XeQyMSiRFrjngZmGhAferKWNdiScGw2gNzfstm/NcLY=;
-        b=aPlTFA2igpiQFrERGATCbZERTSDidFazrXB1oVAbW3rE2LpcRC/FTQj3Zd15/TSnRB
-         daDD1fIQHG1VO06/buaOggqHiYVTrMzCpA72MorqBpZbtDvZavixgAP7NQllkOZNcB59
-         jI+WelnMl0fYMXVPM98jYC3DNA2s/sOc/T5ohCefxIOKF6CpmrIEbLDNQvPdgL1FOAEi
-         Gn3SPYhe+glvTNj60eTvWWLIaJS1yoLCMJCwng92AXoj3WC2UXTNM0mrFFbHVAofZVzP
-         M1gy9IW/1zFbJxzoxbLgXbuxJO85W+bprmHuQDi8YfjtIZrAEwQ6p9JJMqTOnuu5kjnw
-         Voqg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=EZrB5m8bl5QVLVCvmg4jAcVTnduJtXRVFyRvpTwJT+c=;
+        b=YP7xpmUsvQvu0Orj3hBKmrChJkAzl4do9csgkbzJ92h+sfiKnJuq0kKcQhRiHoCLmh
+         dn4ZZzGt4awK7YurXZSropUgXmI+YddASCCdwJe0UNNGmxAI8CVJpsQkw8Q5dlVC3j1F
+         f/KdpfW3BTD+/DyVx9pRHHvTEJuMa9t+7ypTxqegKl4+/+cPv7cPnUr07tGitX0ytCWh
+         Bs7HD9K9Jn15LtQJRLT41dUEkfbjr07UONwNrQy7L/7B5+SA+7lGJvHQo3g5JP5l+hbH
+         qv8RAHRxZ/O/XGJcixFRxKkVh3Wj1rdMf1B/5MGzOix808ZdIZjHzj9ZTyFA/oMMDlt5
+         +Q+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=XeQyMSiRFrjngZmGhAferKWNdiScGw2gNzfstm/NcLY=;
-        b=KWxdcEg4PMl7V4YO4KvYrfiMRgFukQs3pif/yDTz1zNoDz7KyaJ0vl1NGiKQCm5ozz
-         BZzdtIr0/Uij/K6X7m/4Payzxft5JGRchAnSQ7PygMTutU/Kqt2kS65sR6WA2QoZX37+
-         6dyeWDW3iz/0LPRXFxIZOhg+Kpi2HiJXa8LUGwtg7I5N1OsF9klQ0veq0PS7bSx8OKMb
-         7hbaci+dFlIwIPVa9BP+ZSCuCPrO9SUE0RWAOgRJwUhhyfEfVrC3YuGscMiYmWgKZZg5
-         R0Y8YR5ZwpqdQIqMwrV6AaTvmWAGyMYb24ryxT+tP+Rt2ZU1K+0zEVe5n1PApqs4Y50+
-         KqYw==
-X-Gm-Message-State: AOAM532oA2Uizs7FW/K58tSXWaIw/+9hpEdcoWxAKIaxCto4t0fPXNFT
-        gGHQzzi7hVzJR/hUOmUL7WQjlmeszRw=
-X-Google-Smtp-Source: ABdhPJzUvLMosXPznPqYKwIHWl0Z4AFFSx5t3FeBdxUF9V6l+VBRoVZYfhcbnoF/g1qpu/eVwsii8Q==
-X-Received: by 2002:a63:1805:: with SMTP id y5mr3901363pgl.174.1602779173891;
-        Thu, 15 Oct 2020 09:26:13 -0700 (PDT)
-Received: from localhost.localdomain ([180.70.143.152])
-        by smtp.gmail.com with ESMTPSA id n125sm3938883pfn.185.2020.10.15.09.26.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Oct 2020 09:26:12 -0700 (PDT)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     ap420073@gmail.com
-Subject: [PATCH net] net: core: use list_del_init() instead of list_del() in netdev_run_todo()
-Date:   Thu, 15 Oct 2020 16:26:06 +0000
-Message-Id: <20201015162606.9377-1-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=EZrB5m8bl5QVLVCvmg4jAcVTnduJtXRVFyRvpTwJT+c=;
+        b=rI8CwBd6N4NQL9DMSqStaMdaDSlbSr8CAkrQJtJ65EVwQk84H8zMLlNK4Rarmja7mo
+         hv/2HUUVQI6+Ge2k1n3re+rddi1t1C97bIm9n7nWNzFNYxyVZNKsBbCOYPZbXny9kV3J
+         9HJSI1k+Xg1/Bzeqg89QzmFas3DY6Ai1Bt9aPBqeYU071CcOsiLHuIGVo7b3LS6AWyUh
+         pIETg74sP+fua/0i+1VdQ30jC6oD2NNDiDk2ZcEstQOdRgQpMs+Nfal7L35FStc541nB
+         fE086+kK5KHpBjlHZHA8ld+51ptETqKm05+HBJxkHjmemfVYRUankcTx+QFNvzWKUYBW
+         i3Ag==
+X-Gm-Message-State: AOAM530RRv9shUmxSflWB7zd7OwPA0mwCKibRV8KYgYO3+ldAJ3V5BP7
+        XLk1u14N6opFNhqEFIRnmH2WY/YPu5s=
+X-Google-Smtp-Source: ABdhPJyzrblq0zv602ujTRYOwnmwF8pruLLMjQTCkT8sgfzM0udi/KzpZ1N559aczHfDwh8X2hqMjg==
+X-Received: by 2002:a92:980d:: with SMTP id l13mr3621482ili.244.1602779235189;
+        Thu, 15 Oct 2020 09:27:15 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:255f:25d3:4b48:11f7])
+        by smtp.googlemail.com with ESMTPSA id z15sm3093066ioj.22.2020.10.15.09.27.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Oct 2020 09:27:13 -0700 (PDT)
+Subject: Re: [PATCH RFC bpf-next 1/2] bpf_redirect_neigh: Support supplying
+ the nexthop as a helper parameter
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <160277680746.157904.8726318184090980429.stgit@toke.dk>
+ <160277680864.157904.8719768977907736015.stgit@toke.dk>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <d5c14618-089d-5f29-7f10-11d11b0d59ab@gmail.com>
+Date:   Thu, 15 Oct 2020 10:27:12 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.1
+MIME-Version: 1.0
+In-Reply-To: <160277680864.157904.8719768977907736015.stgit@toke.dk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-dev->unlink_list is reused unless dev is deleted.
-So, list_del() should not be used.
-Due to using list_del(), dev->unlink_list can't be reused so that
-dev->nested_level update logic doesn't work.
-In order to fix this bug, list_del_init() should be used instead
-of list_del().
+On 10/15/20 9:46 AM, Toke Høiland-Jørgensen wrote:
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index bf5a99d803e4..980cc1363be8 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -3677,15 +3677,19 @@ union bpf_attr {
+>   * 	Return
+>   * 		The id is returned or 0 in case the id could not be retrieved.
+>   *
+> - * long bpf_redirect_neigh(u32 ifindex, u64 flags)
+> + * long bpf_redirect_neigh(u32 ifindex, struct bpf_redir_neigh *params, int plen, u64 flags)
 
-Test commands:
-    ip link add bond0 type bond
-    ip link add bond1 type bond
-    ip link set bond0 master bond1
-    ip link set bond0 nomaster
-    ip link set bond1 master bond0
-    ip link set bond1 nomaster
+why not fold ifindex into params? with params and plen this should be
+extensible later if needed.
 
-Splat looks like:
-[  255.750458][ T1030] ============================================
-[  255.751967][ T1030] WARNING: possible recursive locking detected
-[  255.753435][ T1030] 5.9.0-rc8+ #772 Not tainted
-[  255.754553][ T1030] --------------------------------------------
-[  255.756047][ T1030] ip/1030 is trying to acquire lock:
-[  255.757304][ T1030] ffff88811782a280 (&dev_addr_list_lock_key/1){+...}-{2:2}, at: dev_mc_sync_multiple+0xc2/0x150
-[  255.760056][ T1030]
-[  255.760056][ T1030] but task is already holding lock:
-[  255.761862][ T1030] ffff88811130a280 (&dev_addr_list_lock_key/1){+...}-{2:2}, at: bond_enslave+0x3d4d/0x43e0 [bonding]
-[  255.764581][ T1030]
-[  255.764581][ T1030] other info that might help us debug this:
-[  255.766645][ T1030]  Possible unsafe locking scenario:
-[  255.766645][ T1030]
-[  255.768566][ T1030]        CPU0
-[  255.769415][ T1030]        ----
-[  255.770259][ T1030]   lock(&dev_addr_list_lock_key/1);
-[  255.771629][ T1030]   lock(&dev_addr_list_lock_key/1);
-[  255.772994][ T1030]
-[  255.772994][ T1030]  *** DEADLOCK ***
-[  255.772994][ T1030]
-[  255.775091][ T1030]  May be due to missing lock nesting notation
-[  255.775091][ T1030]
-[  255.777182][ T1030] 2 locks held by ip/1030:
-[  255.778299][ T1030]  #0: ffffffffb1f63250 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg+0x2e4/0x8b0
-[  255.780600][ T1030]  #1: ffff88811130a280 (&dev_addr_list_lock_key/1){+...}-{2:2}, at: bond_enslave+0x3d4d/0x43e0 [bonding]
-[  255.783411][ T1030]
-[  255.783411][ T1030] stack backtrace:
-[  255.784874][ T1030] CPU: 7 PID: 1030 Comm: ip Not tainted 5.9.0-rc8+ #772
-[  255.786595][ T1030] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.10.2-1ubuntu1 04/01/2014
-[  255.789030][ T1030] Call Trace:
-[  255.789850][ T1030]  dump_stack+0x99/0xd0
-[  255.790882][ T1030]  __lock_acquire.cold.71+0x166/0x3cc
-[  255.792285][ T1030]  ? register_lock_class+0x1a30/0x1a30
-[  255.793619][ T1030]  ? rcu_read_lock_sched_held+0x91/0xc0
-[  255.794963][ T1030]  ? rcu_read_lock_bh_held+0xa0/0xa0
-[  255.796246][ T1030]  lock_acquire+0x1b8/0x850
-[  255.797332][ T1030]  ? dev_mc_sync_multiple+0xc2/0x150
-[  255.798624][ T1030]  ? bond_enslave+0x3d4d/0x43e0 [bonding]
-[  255.800039][ T1030]  ? check_flags+0x50/0x50
-[  255.801143][ T1030]  ? lock_contended+0xd80/0xd80
-[  255.802341][ T1030]  _raw_spin_lock_nested+0x2e/0x70
-[  255.803592][ T1030]  ? dev_mc_sync_multiple+0xc2/0x150
-[  255.804897][ T1030]  dev_mc_sync_multiple+0xc2/0x150
-[  255.806168][ T1030]  bond_enslave+0x3d58/0x43e0 [bonding]
-[  255.807542][ T1030]  ? __lock_acquire+0xe53/0x51b0
-[  255.808824][ T1030]  ? bond_update_slave_arr+0xdc0/0xdc0 [bonding]
-[  255.810451][ T1030]  ? check_chain_key+0x236/0x5e0
-[  255.811742][ T1030]  ? mutex_is_locked+0x13/0x50
-[  255.812910][ T1030]  ? rtnl_is_locked+0x11/0x20
-[  255.814061][ T1030]  ? netdev_master_upper_dev_get+0xf/0x120
-[  255.815553][ T1030]  do_setlink+0x94c/0x3040
-[ ... ]
+A couple of nits below that caught me eye.
 
-Reported-by: syzbot+4a0f7bc34e3997a6c7df@syzkaller.appspotmail.com
-Fixes: 1fc70edb7d7b ("net: core: add nested_level variable in net_device")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
----
- net/core/dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 4906b44af850..010de57488ce 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10134,7 +10134,7 @@ void netdev_run_todo(void)
- 		struct net_device *dev = list_first_entry(&unlink_list,
- 							  struct net_device,
- 							  unlink_list);
--		list_del(&dev->unlink_list);
-+		list_del_init(&dev->unlink_list);
- 		dev->nested_level = dev->lower_level - 1;
- 	}
- #endif
--- 
-2.17.1
+>   * 	Description
+>   * 		Redirect the packet to another net device of index *ifindex*
+>   * 		and fill in L2 addresses from neighboring subsystem. This helper
+>   * 		is somewhat similar to **bpf_redirect**\ (), except that it
+>   * 		populates L2 addresses as well, meaning, internally, the helper
+> - * 		performs a FIB lookup based on the skb's networking header to
+> - * 		get the address of the next hop and then relies on the neighbor
+> - * 		lookup for the L2 address of the nexthop.
+> + * 		relies on the neighbor lookup for the L2 address of the nexthop.
+> + *
+> + * 		The helper will perform a FIB lookup based on the skb's
+> + * 		networking header to get the address of the next hop, unless
+> + * 		this is supplied by the caller in the *params* argument. The
+> + * 		*plen* argument indicates the len of *params* and should be set
+> + * 		to 0 if *params* is NULL.
+>   *
+>   * 		The *flags* argument is reserved and must be 0. The helper is
+>   * 		currently only supported for tc BPF program types, and enabled
+> @@ -4906,6 +4910,17 @@ struct bpf_fib_lookup {
+>  	__u8	dmac[6];     /* ETH_ALEN */
+>  };
+>  
+> +struct bpf_redir_neigh {
+> +	/* network family for lookup (AF_INET, AF_INET6)
+> +	 */
+
+second line for the comment is not needed.
+
+> +	__u8	nh_family;
+> +	/* network address of nexthop; skips fib lookup to find gateway */
+> +	union {
+> +		__be32		ipv4_nh;
+> +		__u32		ipv6_nh[4];  /* in6_addr; network order */
+> +	};
+> +};
+> +
+>  enum bpf_task_fd_type {
+>  	BPF_FD_TYPE_RAW_TRACEPOINT,	/* tp name */
+>  	BPF_FD_TYPE_TRACEPOINT,		/* tp name */
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index c5e2a1c5fd8d..d073031a3a61 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -2165,12 +2165,11 @@ static int __bpf_redirect(struct sk_buff *skb, struct net_device *dev,
+>  }
+>  
+>  #if IS_ENABLED(CONFIG_IPV6)
+> -static int bpf_out_neigh_v6(struct net *net, struct sk_buff *skb)
+> +static int bpf_out_neigh_v6(struct net *net, struct sk_buff *skb,
+> +			    struct net_device *dev, const struct in6_addr *nexthop)
+>  {
+> -	struct dst_entry *dst = skb_dst(skb);
+> -	struct net_device *dev = dst->dev;
+>  	u32 hh_len = LL_RESERVED_SPACE(dev);
+> -	const struct in6_addr *nexthop;
+> +	struct dst_entry *dst = NULL;
+>  	struct neighbour *neigh;
+>  
+>  	if (dev_xmit_recursion()) {
+> @@ -2196,8 +2195,11 @@ static int bpf_out_neigh_v6(struct net *net, struct sk_buff *skb)
+>  	}
+>  
+>  	rcu_read_lock_bh();
+> -	nexthop = rt6_nexthop(container_of(dst, struct rt6_info, dst),
+> -			      &ipv6_hdr(skb)->daddr);
+> +	if (!nexthop) {
+> +		dst = skb_dst(skb);
+> +		nexthop = rt6_nexthop(container_of(dst, struct rt6_info, dst),
+> +				      &ipv6_hdr(skb)->daddr);
+> +	}
+>  	neigh = ip_neigh_gw6(dev, nexthop);
+>  	if (likely(!IS_ERR(neigh))) {
+>  		int ret;
+> @@ -2210,36 +2212,46 @@ static int bpf_out_neigh_v6(struct net *net, struct sk_buff *skb)
+>  		return ret;
+>  	}
+>  	rcu_read_unlock_bh();
+> -	IP6_INC_STATS(dev_net(dst->dev),
+> -		      ip6_dst_idev(dst), IPSTATS_MIB_OUTNOROUTES);
+> +	if (dst)
+> +		IP6_INC_STATS(dev_net(dst->dev),
+> +			      ip6_dst_idev(dst), IPSTATS_MIB_OUTNOROUTES);
+>  out_drop:
+>  	kfree_skb(skb);
+>  	return -ENETDOWN;
+>  }
+>  
+> -static int __bpf_redirect_neigh_v6(struct sk_buff *skb, struct net_device *dev)
+> +static int __bpf_redirect_neigh_v6(struct sk_buff *skb, struct net_device *dev,
+> +				   struct bpf_nh_params *nh)
+>  {
+>  	const struct ipv6hdr *ip6h = ipv6_hdr(skb);
+> +	struct in6_addr *nexthop = NULL;
+>  	struct net *net = dev_net(dev);
+>  	int err, ret = NET_XMIT_DROP;
+> -	struct dst_entry *dst;
+> -	struct flowi6 fl6 = {
+> -		.flowi6_flags	= FLOWI_FLAG_ANYSRC,
+> -		.flowi6_mark	= skb->mark,
+> -		.flowlabel	= ip6_flowinfo(ip6h),
+> -		.flowi6_oif	= dev->ifindex,
+> -		.flowi6_proto	= ip6h->nexthdr,
+> -		.daddr		= ip6h->daddr,
+> -		.saddr		= ip6h->saddr,
+> -	};
+>  
+> -	dst = ipv6_stub->ipv6_dst_lookup_flow(net, NULL, &fl6, NULL);
+> -	if (IS_ERR(dst))
+> -		goto out_drop;
+> +	if (!nh->nh_family) {
+> +		struct dst_entry *dst;
+
+reverse xmas tree ordering
+
+> +		struct flowi6 fl6 = {
+> +			.flowi6_flags = FLOWI_FLAG_ANYSRC,
+> +			.flowi6_mark = skb->mark,
+> +			.flowlabel = ip6_flowinfo(ip6h),
+> +			.flowi6_oif = dev->ifindex,
+> +			.flowi6_proto = ip6h->nexthdr,
+> +			.daddr = ip6h->daddr,
+> +			.saddr = ip6h->saddr,
+> +		};
+> +
+> +		dst = ipv6_stub->ipv6_dst_lookup_flow(net, NULL, &fl6, NULL);
+> +		if (IS_ERR(dst))
+> +			goto out_drop;
+>  
+> -	skb_dst_set(skb, dst);
+> +		skb_dst_set(skb, dst);
+> +	} else if (nh->nh_family == AF_INET6) {
+> +		nexthop = &nh->ipv6_nh;
+> +	} else {
+> +		goto out_drop;
+> +	}
+>  
+> -	err = bpf_out_neigh_v6(net, skb);
+> +	err = bpf_out_neigh_v6(net, skb, dev, nexthop);
+>  	if (unlikely(net_xmit_eval(err)))
+>  		dev->stats.tx_errors++;
+>  	else
+
 
