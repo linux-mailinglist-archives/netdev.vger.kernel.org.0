@@ -2,230 +2,416 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B75F28F04E
-	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 12:46:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6988A28F025
+	for <lists+netdev@lfdr.de>; Thu, 15 Oct 2020 12:25:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730186AbgJOKqc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 06:46:32 -0400
-Received: from mslow2.mail.gandi.net ([217.70.178.242]:33210 "EHLO
-        mslow2.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726121AbgJOKqc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 06:46:32 -0400
-Received: from relay9-d.mail.gandi.net (unknown [217.70.183.199])
-        by mslow2.mail.gandi.net (Postfix) with ESMTP id 846963A11FB
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 10:27:36 +0000 (UTC)
-X-Originating-IP: 78.45.89.65
-Received: from [192.168.1.23] (ip-78-45-89-65.net.upcbroadband.cz [78.45.89.65])
-        (Authenticated sender: i.maximets@ovn.org)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 901D6FF80F;
-        Thu, 15 Oct 2020 10:27:12 +0000 (UTC)
-Cc:     i.maximets@ovn.org, dev@openvswitch.org, bigeasy@linutronix.de,
-        jlelli@redhat.com, kuba@kernel.org, pabeni@redhat.com,
-        davem@davemloft.net
-Subject: Re: [ovs-dev] [PATCH net v2] net: openvswitch: fix to make sure
- flow_lookup() is not preempted
-To:     Eelco Chaudron <echaudro@redhat.com>, netdev@vger.kernel.org
-References: <160275519174.566500.6537031776378218151.stgit@ebuild>
-From:   Ilya Maximets <i.maximets@ovn.org>
-Message-ID: <7212d390-ecfd-bfa1-97fc-1819c0c1ee1d@ovn.org>
-Date:   Thu, 15 Oct 2020 12:27:11 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
-MIME-Version: 1.0
-In-Reply-To: <160275519174.566500.6537031776378218151.stgit@ebuild>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1731109AbgJOKZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 06:25:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47596 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726678AbgJOKZj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Oct 2020 06:25:39 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B78E1C061755
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 03:25:38 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id h7so2784329wre.4
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 03:25:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=P9NbUSShrbJy/8vwuSmhX5nWcNsQIzK7wekco/25x+8=;
+        b=Gm22zEAk4xSEZwxeNfIPKugbwSKZ2j5pDeDhKofkYe4aemDDkNrVeMyUAzWRuDWp2F
+         kz+KwNp5Sce6RiuhzS5Y3O8MumjCjPyv7c9qRx/ryhsLzJIYE8lzMuZ7Shjiwc0Z5QDb
+         w3f61STmn1z24exHBVD7xmY8S1eondKh9DPG5lJyOSH3HHh/ThRo1amuHC0s6zCGmncA
+         JMf6r3rfyDJYiuKwYMBfsqzDy/cRYE3Y5RWRf6IEc704sjTW2+ZyaYdkW9xV/H9h3nZF
+         fr+ohjY/U6PN3bmGHmqrNlIJ/1XL9w74TMdOMRGltKufE13LMNjmQZsvWPsz1k+lmUAR
+         EYuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=P9NbUSShrbJy/8vwuSmhX5nWcNsQIzK7wekco/25x+8=;
+        b=C2gL78MrrbAMC+AUGnQWh+5gqznJPvMJpQIbR6ObJIygcSWZIeFEmK7eGI4sbw7apj
+         dAxl4agkKv5FMpS65PhMtZfj0IKy8LFv/hHUWegm72IXvitVsFfLvU8zM4zzm55eS8eg
+         HDz7RxmHist2fIbYr3Ria8JIBTLpp+drq5RaMKIx+bRLKvNSYW9x3X2x7/LsZIODhVSk
+         GQhVApzmSPtCCbP0CnU7r4FMKgG9+/Ojrm9ghVJSNGGAbP1IDSUrcnUYRFAhBQJgfDND
+         84v/eUZNCq7iTsc5l8F9BNJIwICqkoCLESrRTnWbYSS1XgJS1aQwFx2PC+xRhkBZaVDX
+         rJEQ==
+X-Gm-Message-State: AOAM530yDY/4nEWOIRbED7NpEidLOe++RF9uGLUlvoVc9dNcnT7YoMjr
+        usUD3bxrdAkNck7xVtwrLssrQA==
+X-Google-Smtp-Source: ABdhPJy64uqFg4SGpayU3744+3xKtpV+x/JXmRf0BD32rRTfaQ0537Qck4hlTIkC9LuLvKdEpjq3uQ==
+X-Received: by 2002:adf:9504:: with SMTP id 4mr3632167wrs.27.1602757537315;
+        Thu, 15 Oct 2020 03:25:37 -0700 (PDT)
+Received: from localhost.localdomain ([88.122.66.28])
+        by smtp.gmail.com with ESMTPSA id g83sm3588648wmf.15.2020.10.15.03.25.36
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 15 Oct 2020 03:25:36 -0700 (PDT)
+From:   Loic Poulain <loic.poulain@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, hemantk@codeaurora.org,
+        manivannan.sadhasivam@linaro.org, eric.dumazet@gmail.com,
+        Loic Poulain <loic.poulain@linaro.org>
+Subject: [PATCH v4 1/2] net: Add mhi-net driver
+Date:   Thu, 15 Oct 2020 12:31:28 +0200
+Message-Id: <1602757888-3507-1-git-send-email-loic.poulain@linaro.org>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/15/20 11:46 AM, Eelco Chaudron wrote:
-> The flow_lookup() function uses per CPU variables, which must not be
-> preempted. However, this is fine in the general napi use case where
-> the local BH is disabled. But, it's also called in the netlink
-> context, which is preemptible. The below patch makes sure that even
-> in the netlink path, preemption is disabled.
-> 
-> In addition, the u64_stats_update_begin() sync point was not protected,
-> making the sync point part of the per CPU variable fixed this.
-> 
-> Fixes: eac87c413bf9 ("net: openvswitch: reorder masks array based on usage")
-> Reported-by: Juri Lelli <jlelli@redhat.com>
-> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
-> ---
-> v2: - Add u64_stats_update_begin() sync point protection
->     - Moved patch to net from net-next branch
-> 
->  net/openvswitch/flow_table.c |   56 +++++++++++++++++++++++++-----------------
->  net/openvswitch/flow_table.h |    8 +++++-
->  2 files changed, 39 insertions(+), 25 deletions(-)
-> 
-> diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
-> index e2235849a57e..d90b4af6f539 100644
-> --- a/net/openvswitch/flow_table.c
-> +++ b/net/openvswitch/flow_table.c
-> @@ -172,7 +172,7 @@ static struct table_instance *table_instance_alloc(int new_size)
->  
->  static void __mask_array_destroy(struct mask_array *ma)
->  {
-> -	free_percpu(ma->masks_usage_cntr);
-> +	free_percpu(ma->masks_usage_stats);
->  	kfree(ma);
->  }
->  
-> @@ -196,15 +196,15 @@ static void tbl_mask_array_reset_counters(struct mask_array *ma)
->  		ma->masks_usage_zero_cntr[i] = 0;
->  
->  		for_each_possible_cpu(cpu) {
-> -			u64 *usage_counters = per_cpu_ptr(ma->masks_usage_cntr,
-> -							  cpu);
-> +			struct mask_array_stats *stats;
->  			unsigned int start;
->  			u64 counter;
->  
-> +			stats = per_cpu_ptr(ma->masks_usage_stats, cpu);
->  			do {
-> -				start = u64_stats_fetch_begin_irq(&ma->syncp);
-> -				counter = usage_counters[i];
-> -			} while (u64_stats_fetch_retry_irq(&ma->syncp, start));
-> +				start = u64_stats_fetch_begin_irq(&stats->syncp);
-> +				counter = stats->usage_cntrs[i];
-> +			} while (u64_stats_fetch_retry_irq(&stats->syncp, start));
->  
->  			ma->masks_usage_zero_cntr[i] += counter;
->  		}
-> @@ -227,9 +227,10 @@ static struct mask_array *tbl_mask_array_alloc(int size)
->  					     sizeof(struct sw_flow_mask *) *
->  					     size);
->  
-> -	new->masks_usage_cntr = __alloc_percpu(sizeof(u64) * size,
-> -					       __alignof__(u64));
-> -	if (!new->masks_usage_cntr) {
-> +	new->masks_usage_stats = __alloc_percpu(sizeof(struct mask_array_stats) +
-> +						sizeof(u64) * size,
-> +						__alignof__(u64));
-> +	if (!new->masks_usage_stats) {
->  		kfree(new);
->  		return NULL;
->  	}
-> @@ -732,7 +733,7 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
->  				   u32 *n_cache_hit,
->  				   u32 *index)
->  {
-> -	u64 *usage_counters = this_cpu_ptr(ma->masks_usage_cntr);
-> +	struct mask_array_stats *stats = this_cpu_ptr(ma->masks_usage_stats);
->  	struct sw_flow *flow;
->  	struct sw_flow_mask *mask;
->  	int i;
-> @@ -742,9 +743,9 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
->  		if (mask) {
->  			flow = masked_flow_lookup(ti, key, mask, n_mask_hit);
->  			if (flow) {
-> -				u64_stats_update_begin(&ma->syncp);
-> -				usage_counters[*index]++;
-> -				u64_stats_update_end(&ma->syncp);
-> +				u64_stats_update_begin(&stats->syncp);
-> +				stats->usage_cntrs[*index]++;
-> +				u64_stats_update_end(&stats->syncp);
->  				(*n_cache_hit)++;
->  				return flow;
->  			}
-> @@ -763,9 +764,9 @@ static struct sw_flow *flow_lookup(struct flow_table *tbl,
->  		flow = masked_flow_lookup(ti, key, mask, n_mask_hit);
->  		if (flow) { /* Found */
->  			*index = i;
-> -			u64_stats_update_begin(&ma->syncp);
-> -			usage_counters[*index]++;
-> -			u64_stats_update_end(&ma->syncp);
-> +			u64_stats_update_begin(&stats->syncp);
-> +			stats->usage_cntrs[*index]++;
-> +			u64_stats_update_end(&stats->syncp);
->  			return flow;
->  		}
->  	}
-> @@ -851,9 +852,17 @@ struct sw_flow *ovs_flow_tbl_lookup(struct flow_table *tbl,
->  	struct mask_array *ma = rcu_dereference_ovsl(tbl->mask_array);
->  	u32 __always_unused n_mask_hit;
->  	u32 __always_unused n_cache_hit;
-> +	struct sw_flow *flow;
->  	u32 index = 0;
->  
-> -	return flow_lookup(tbl, ti, ma, key, &n_mask_hit, &n_cache_hit, &index);
-> +	/* This function gets called trough the netlink interface and therefore
-> +	 * is preemptible. However, flow_lookup() function needs to be called
-> +	 * with preemption disabled due to CPU specific variables.
+This patch adds a new network driver implementing MHI transport for
+network packets. Packets can be in any format, though QMAP (rmnet)
+is the usual protocol (flow control + PDN mux).
 
-Is it possible to add some kind of assertion inside flow_lookup() to avoid
-this kind of issues in the future?
+It support two MHI devices, IP_HW0 which is, the path to the IPA
+(IP accelerator) on qcom modem, And IP_SW0 which is the software
+driven IP path (to modem CPU).
 
-It might be also good to update the comment for flow_lookup() function itself.
+Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
+---
+  v2: - rebase on net-next
+      - remove useless skb_linearize
+      - check error type on mhi_queue return
+      - rate limited errors
+      - Schedule RX refill only on 'low' buf level
+      - SET_NETDEV_DEV in probe
+      - reorder device remove sequence
+  v3: - Stop channels on net_register error
+      - Remove useles parentheses
+      - Add driver .owner
+  v4: - prevent potential cpu hog in rx-refill loop
+      - Access mtu via READ_ONCE
 
-> +	 */
-> +	local_bh_disable();
-> +	flow = flow_lookup(tbl, ti, ma, key, &n_mask_hit, &n_cache_hit, &index);
-> +	local_bh_enable();
-> +	return flow;
->  }
->  
->  struct sw_flow *ovs_flow_tbl_lookup_exact(struct flow_table *tbl,
-> @@ -1109,7 +1118,6 @@ void ovs_flow_masks_rebalance(struct flow_table *table)
->  
->  	for (i = 0; i < ma->max; i++)  {
->  		struct sw_flow_mask *mask;
-> -		unsigned int start;
->  		int cpu;
->  
->  		mask = rcu_dereference_ovsl(ma->masks[i]);
-> @@ -1120,14 +1128,16 @@ void ovs_flow_masks_rebalance(struct flow_table *table)
->  		masks_and_count[i].counter = 0;
->  
->  		for_each_possible_cpu(cpu) {
-> -			u64 *usage_counters = per_cpu_ptr(ma->masks_usage_cntr,
-> -							  cpu);
-> +			struct mask_array_stats *stats;
-> +			unsigned int start;
->  			u64 counter;
->  
-> +			stats = per_cpu_ptr(ma->masks_usage_stats, cpu);
->  			do {
-> -				start = u64_stats_fetch_begin_irq(&ma->syncp);
-> -				counter = usage_counters[i];
-> -			} while (u64_stats_fetch_retry_irq(&ma->syncp, start));
-> +				start = u64_stats_fetch_begin_irq(&stats->syncp);
-> +				counter = stats->usage_cntrs[i];
-> +			} while (u64_stats_fetch_retry_irq(&stats->syncp,
-> +							   start));
->  
->  			masks_and_count[i].counter += counter;
->  		}
-> diff --git a/net/openvswitch/flow_table.h b/net/openvswitch/flow_table.h
-> index 6e7d4ac59353..43144396e192 100644
-> --- a/net/openvswitch/flow_table.h
-> +++ b/net/openvswitch/flow_table.h
-> @@ -38,12 +38,16 @@ struct mask_count {
->  	u64 counter;
->  };
->  
-> +struct mask_array_stats {
-> +	struct u64_stats_sync syncp;
-> +	u64 usage_cntrs[];
-> +};
-> +
->  struct mask_array {
->  	struct rcu_head rcu;
->  	int count, max;
-> -	u64 __percpu *masks_usage_cntr;
-> +	struct mask_array_stats __percpu *masks_usage_stats;
->  	u64 *masks_usage_zero_cntr;
-> -	struct u64_stats_sync syncp;
->  	struct sw_flow_mask __rcu *masks[];
->  };
->  
-> 
-> _______________________________________________
-> dev mailing list
-> dev@openvswitch.org
-> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
-> 
+ drivers/net/Kconfig   |   7 ++
+ drivers/net/Makefile  |   1 +
+ drivers/net/mhi_net.c | 289 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 297 insertions(+)
+ create mode 100644 drivers/net/mhi_net.c
+
+diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+index 1368d1d..11a6357 100644
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -426,6 +426,13 @@ config VSOCKMON
+ 	  mostly intended for developers or support to debug vsock issues. If
+ 	  unsure, say N.
+ 
++config MHI_NET
++	tristate "MHI network driver"
++	depends on MHI_BUS
++	help
++	  This is the network driver for MHI.  It can be used with
++	  QCOM based WWAN modems (like SDX55).  Say Y or M.
++
+ endif # NET_CORE
+ 
+ config SUNGEM_PHY
+diff --git a/drivers/net/Makefile b/drivers/net/Makefile
+index 94b6080..8312037 100644
+--- a/drivers/net/Makefile
++++ b/drivers/net/Makefile
+@@ -34,6 +34,7 @@ obj-$(CONFIG_GTP) += gtp.o
+ obj-$(CONFIG_NLMON) += nlmon.o
+ obj-$(CONFIG_NET_VRF) += vrf.o
+ obj-$(CONFIG_VSOCKMON) += vsockmon.o
++obj-$(CONFIG_MHI_NET) += mhi_net.o
+ 
+ #
+ # Networking Drivers
+diff --git a/drivers/net/mhi_net.c b/drivers/net/mhi_net.c
+new file mode 100644
+index 0000000..fe605a4
+--- /dev/null
++++ b/drivers/net/mhi_net.c
+@@ -0,0 +1,289 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/* MHI Network driver - Network over MHI
++ *
++ * Copyright (C) 2020 Linaro Ltd <loic.poulain@linaro.org>
++ */
++
++#include <linux/if_arp.h>
++#include <linux/mhi.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/netdevice.h>
++#include <linux/skbuff.h>
++
++#define MIN_MTU		ETH_MIN_MTU
++#define MAX_MTU		0xffff
++#define DEFAULT_MTU	8192
++
++struct mhi_net_stats {
++	u64 rx_packets;
++	u64 rx_bytes;
++	u64 rx_errors;
++	u64 rx_dropped;
++	u64 tx_packets;
++	u64 tx_bytes;
++	u64 tx_errors;
++	u64 tx_dropped;
++	atomic_t rx_queued;
++};
++
++struct mhi_net_dev {
++	struct mhi_device *mdev;
++	struct net_device *ndev;
++	struct delayed_work rx_refill;
++	struct mhi_net_stats stats;
++	u32 rx_queue_sz;
++};
++
++static int mhi_ndo_open(struct net_device *ndev)
++{
++	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
++
++	/* Feed the rx buffer pool */
++	schedule_delayed_work(&mhi_netdev->rx_refill, 0);
++
++	/* Carrier is established via out-of-band channel (e.g. qmi) */
++	netif_carrier_on(ndev);
++
++	netif_start_queue(ndev);
++
++	return 0;
++}
++
++static int mhi_ndo_stop(struct net_device *ndev)
++{
++	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
++
++	netif_stop_queue(ndev);
++	netif_carrier_off(ndev);
++	cancel_delayed_work_sync(&mhi_netdev->rx_refill);
++
++	return 0;
++}
++
++static int mhi_ndo_xmit(struct sk_buff *skb, struct net_device *ndev)
++{
++	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
++	struct mhi_device *mdev = mhi_netdev->mdev;
++	int err;
++
++	skb_tx_timestamp(skb);
++
++	/* mhi_queue_skb is not thread-safe, but xmit is serialized by the
++	 * network core. Once MHI core will be thread save, migrate to
++	 * NETIF_F_LLTX support.
++	 */
++	err = mhi_queue_skb(mdev, DMA_TO_DEVICE, skb, skb->len, MHI_EOT);
++	if (err == -ENOMEM) {
++		netif_stop_queue(ndev);
++		return NETDEV_TX_BUSY;
++	} else if (unlikely(err)) {
++		net_err_ratelimited("%s: Failed to queue TX buf (%d)\n",
++				    ndev->name, err);
++		mhi_netdev->stats.tx_dropped++;
++		kfree_skb(skb);
++	}
++
++	return NETDEV_TX_OK;
++}
++
++static void mhi_ndo_get_stats64(struct net_device *ndev,
++				struct rtnl_link_stats64 *stats)
++{
++	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
++
++	stats->rx_packets = mhi_netdev->stats.rx_packets;
++	stats->rx_bytes = mhi_netdev->stats.rx_bytes;
++	stats->rx_errors = mhi_netdev->stats.rx_errors;
++	stats->rx_dropped = mhi_netdev->stats.rx_dropped;
++	stats->tx_packets = mhi_netdev->stats.tx_packets;
++	stats->tx_bytes = mhi_netdev->stats.tx_bytes;
++	stats->tx_errors = mhi_netdev->stats.tx_errors;
++	stats->tx_dropped = mhi_netdev->stats.tx_dropped;
++}
++
++static const struct net_device_ops mhi_netdev_ops = {
++	.ndo_open               = mhi_ndo_open,
++	.ndo_stop               = mhi_ndo_stop,
++	.ndo_start_xmit         = mhi_ndo_xmit,
++	.ndo_get_stats64	= mhi_ndo_get_stats64,
++};
++
++static void mhi_net_setup(struct net_device *ndev)
++{
++	ndev->header_ops = NULL;  /* No header */
++	ndev->type = ARPHRD_NONE; /* QMAP... */
++	ndev->hard_header_len = 0;
++	ndev->addr_len = 0;
++	ndev->flags = IFF_POINTOPOINT | IFF_NOARP;
++	ndev->netdev_ops = &mhi_netdev_ops;
++	ndev->mtu = DEFAULT_MTU;
++	ndev->min_mtu = MIN_MTU;
++	ndev->max_mtu = MAX_MTU;
++	ndev->tx_queue_len = 1000;
++}
++
++static void mhi_net_dl_callback(struct mhi_device *mhi_dev,
++				struct mhi_result *mhi_res)
++{
++	struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
++	struct sk_buff *skb = mhi_res->buf_addr;
++	int remaining;
++
++	remaining = atomic_dec_return(&mhi_netdev->stats.rx_queued);
++
++	if (unlikely(mhi_res->transaction_status)) {
++		mhi_netdev->stats.rx_errors++;
++		kfree_skb(skb);
++	} else {
++		mhi_netdev->stats.rx_packets++;
++		mhi_netdev->stats.rx_bytes += mhi_res->bytes_xferd;
++
++		skb->protocol = htons(ETH_P_MAP);
++		skb_put(skb, mhi_res->bytes_xferd);
++		netif_rx(skb);
++	}
++
++	/* Refill if RX buffers queue becomes low */
++	if (remaining <= mhi_netdev->rx_queue_sz / 2)
++		schedule_delayed_work(&mhi_netdev->rx_refill, 0);
++}
++
++static void mhi_net_ul_callback(struct mhi_device *mhi_dev,
++				struct mhi_result *mhi_res)
++{
++	struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
++	struct net_device *ndev = mhi_netdev->ndev;
++	struct sk_buff *skb = mhi_res->buf_addr;
++
++	/* Hardware has consumed the buffer, so free the skb (which is not
++	 * freed by the MHI stack) and perform accounting.
++	 */
++	consume_skb(skb);
++
++	if (unlikely(mhi_res->transaction_status)) {
++		mhi_netdev->stats.tx_errors++;
++	} else {
++		mhi_netdev->stats.tx_packets++;
++		mhi_netdev->stats.tx_bytes += mhi_res->bytes_xferd;
++	}
++
++	if (netif_queue_stopped(ndev))
++		netif_wake_queue(ndev);
++}
++
++static void mhi_net_rx_refill_work(struct work_struct *work)
++{
++	struct mhi_net_dev *mhi_netdev = container_of(work, struct mhi_net_dev,
++						      rx_refill.work);
++	struct net_device *ndev = mhi_netdev->ndev;
++	struct mhi_device *mdev = mhi_netdev->mdev;
++	int size = READ_ONCE(ndev->mtu);
++	struct sk_buff *skb;
++	int err;
++
++	do {
++		skb = netdev_alloc_skb(ndev, size);
++		if (unlikely(!skb))
++			break;
++
++		err = mhi_queue_skb(mdev, DMA_FROM_DEVICE, skb, size, MHI_EOT);
++		if (err) {
++			if (unlikely(err != -ENOMEM))
++				net_err_ratelimited("%s: Failed to queue RX buf (%d)\n",
++						    ndev->name, err);
++			kfree_skb(skb);
++			break;
++		}
++
++		atomic_inc(&mhi_netdev->stats.rx_queued);
++
++		/* Do not hog the CPU if rx buffers are completed faster than
++		 * queued (unlikely).
++		 */
++		cond_resched();
++	} while (1);
++
++	/* If we're still starved of rx buffers, reschedule latter */
++	if (unlikely(!atomic_read(&mhi_netdev->stats.rx_queued)))
++		schedule_delayed_work(&mhi_netdev->rx_refill, HZ / 2);
++}
++
++static int mhi_net_probe(struct mhi_device *mhi_dev,
++			 const struct mhi_device_id *id)
++{
++	const char *netname = (char *)id->driver_data;
++	struct mhi_net_dev *mhi_netdev;
++	struct net_device *ndev;
++	struct device *dev = &mhi_dev->dev;
++	int err;
++
++	ndev = alloc_netdev(sizeof(*mhi_netdev), netname, NET_NAME_PREDICTABLE,
++			    mhi_net_setup);
++	if (!ndev)
++		return -ENOMEM;
++
++	mhi_netdev = netdev_priv(ndev);
++	dev_set_drvdata(dev, mhi_netdev);
++	mhi_netdev->ndev = ndev;
++	mhi_netdev->mdev = mhi_dev;
++	SET_NETDEV_DEV(ndev, &mhi_dev->dev);
++
++	/* All MHI net channels have 128 ring elements (at least for now) */
++	mhi_netdev->rx_queue_sz = 128;
++
++	INIT_DELAYED_WORK(&mhi_netdev->rx_refill, mhi_net_rx_refill_work);
++
++	/* Start MHI channels */
++	err = mhi_prepare_for_transfer(mhi_dev);
++	if (err)
++		goto out_err;
++
++	err = register_netdev(ndev);
++	if (err) {
++		mhi_unprepare_from_transfer(mhi_dev);
++		goto out_err;
++	}
++
++	return 0;
++
++out_err:
++	free_netdev(ndev);
++	return err;
++}
++
++static void mhi_net_remove(struct mhi_device *mhi_dev)
++{
++	struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
++
++	unregister_netdev(mhi_netdev->ndev);
++
++	mhi_unprepare_from_transfer(mhi_netdev->mdev);
++
++	free_netdev(mhi_netdev->ndev);
++}
++
++static const struct mhi_device_id mhi_net_id_table[] = {
++	{ .chan = "IP_HW0", .driver_data = (kernel_ulong_t)"mhi_hwip%d" },
++	{ .chan = "IP_SW0", .driver_data = (kernel_ulong_t)"mhi_swip%d" },
++	{}
++};
++MODULE_DEVICE_TABLE(mhi, mhi_net_id_table);
++
++static struct mhi_driver mhi_net_driver = {
++	.probe = mhi_net_probe,
++	.remove = mhi_net_remove,
++	.dl_xfer_cb = mhi_net_dl_callback,
++	.ul_xfer_cb = mhi_net_ul_callback,
++	.id_table = mhi_net_id_table,
++	.driver = {
++		.name = "mhi_net",
++		.owner = THIS_MODULE,
++	},
++};
++
++module_mhi_driver(mhi_net_driver);
++
++MODULE_AUTHOR("Loic Poulain <loic.poulain@linaro.org>");
++MODULE_DESCRIPTION("Network over MHI");
++MODULE_LICENSE("GPL v2");
+-- 
+2.7.4
 
