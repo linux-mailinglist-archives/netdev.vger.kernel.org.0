@@ -2,114 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A285928FFE9
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 10:24:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A54428FFE4
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 10:21:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390153AbgJPIXy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 04:23:54 -0400
-Received: from m42-4.mailgun.net ([69.72.42.4]:41030 "EHLO m42-4.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2394568AbgJPIXx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Oct 2020 04:23:53 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1602836632; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=ogih4ttt21IhnMbpr4r7Ie0P2Iu9q+S+qfDsHdjfTpI=; b=l2axuc3EWuQCRrTaYTMXp7eub3uvYXxlwkprV9eoviND2uQUJbVk4R7lt/QcnVrAnyGruYbW
- 9KFgUW/9YcxVivj03A52Yf73qPwKfclgHLxhCorIntrSJmruo1HMyKLxmx0uIgNB+/qR3Eoj
- sDhOuPJ33KA2w9qMyvOAPZhEHK8=
-X-Mailgun-Sending-Ip: 69.72.42.4
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
- 5f895898588858a304539124 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 16 Oct 2020 08:23:52
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 30CC4C43385; Fri, 16 Oct 2020 08:23:51 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 0F48DC433CB;
-        Fri, 16 Oct 2020 08:23:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 0F48DC433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        Srinivasan Raju <srini.raju@purelifi.com>,
-        mostafa.afgani@purelifi.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH] [v2] wireless: Initial driver submission for pureLiFi devices
-References: <20200924151910.21693-1-srini.raju@purelifi.com>
-        <20200928102008.32568-1-srini.raju@purelifi.com>
-        <20200930051602.GJ3094@unreal> <87d023elrc.fsf@codeaurora.org>
-        <20200930095526.GM3094@unreal>
-        <1449cdbe49b428b7d16a199ebc4c9aef73d6564c.camel@sipsolutions.net>
-        <20200930104459.GO3094@unreal>
-Date:   Fri, 16 Oct 2020 11:23:45 +0300
-In-Reply-To: <20200930104459.GO3094@unreal> (Leon Romanovsky's message of
-        "Wed, 30 Sep 2020 13:44:59 +0300")
-Message-ID: <87blh2y3xq.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S2405127AbgJPIVv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 04:21:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53620 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405123AbgJPIVt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 04:21:49 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45E53C061755
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 01:21:49 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id e22so1915794ejr.4
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 01:21:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gEiZi7rd3SSJxLuea3zsqbWKYhT9/0fEd+OaUrny7yk=;
+        b=aIRbhHfqk1vKGHGZH7OYReSBQQJmLwmDg7rla+i5yjZsClb/2mCV1Kzpu++IyycOhU
+         R/WFhtw18JOJcPaJykk3x4aZtJQKNtI1F2lXDEZdCOFjV+bYQwYALYpeXZQSLLVGLNEu
+         qBKRdxrbXZ7SIVzp59+6PVVkOFEo8VLxL6uU3bwemdEhDqtBkqpLhcawiRHGs3lBJ541
+         ALiXLYD0S5HFWf1EawRrDAxyzb0FX+EAzL6ASD2K4Ytxu5eabs82Ulinook4X+dx/N+N
+         Vk+UD/5dAbtQwECUQhUabqzBlHwTTe6eDjvQv0sNd1W1BOgEeN/vD+c51Ytz7cgIQVWZ
+         IUVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gEiZi7rd3SSJxLuea3zsqbWKYhT9/0fEd+OaUrny7yk=;
+        b=IC+kwaO1zLIIiRIc6l1L9GQIdlQR+3vygr75XIkmFitY2s65usgAA7Yu13CtjKnH4g
+         hs4LesMaGP/FmMnunCgkb7saPi9HXEizukle8ld/nHwZvcoC5i0yyRTLTtJB3RNcW0bQ
+         4cGPOOOfwUD8dG9OHFWOI16DrnZdxHusGwv22Ms+9UGD0mSxQ3W13rU5D67mbZM7pd2s
+         f/7Y9hOIv/9KJdJdLsRXOjgQirPS7zHEoEBOGPYO0lPB8i0pXMtO4k4i0X4PKqEEqJFp
+         kjTPdV6WiLVl6K7fNHYbfkiOx7eSktkClWJAyhW6kICdXZsR2i0VxcVcH0w97DXLuJ5m
+         Uo3g==
+X-Gm-Message-State: AOAM53264sI6DO7iPEYSZex6p7RomrVBLs+M6dsfOUNxfB2wF6vrvhaL
+        aSHCqrYoCcbu/wY60vRmSTCo16AnqK6DnOTCnlnt8g==
+X-Google-Smtp-Source: ABdhPJxJ0EMK0apijpvIDsk11bP2lUcvGUYaK+08n4ilw6CScnd+QnA1GbXN5B8u16s0u+bMEV0U6G03hZpSqSx7+Pg=
+X-Received: by 2002:a17:906:f205:: with SMTP id gt5mr2524261ejb.48.1602836507861;
+ Fri, 16 Oct 2020 01:21:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <1602757888-3507-1-git-send-email-loic.poulain@linaro.org>
+ <ec2a1d76-d51f-7ec5-e2c1-5ed0eaf9a537@gmail.com> <CAMZdPi93Ma4dGMNr_2JHqYJqDE6VSx6vEpRR3_Y2wbpT1QAvTA@mail.gmail.com>
+ <62605ecb-3974-38a9-1f64-b08df6a72663@gmail.com>
+In-Reply-To: <62605ecb-3974-38a9-1f64-b08df6a72663@gmail.com>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Fri, 16 Oct 2020 10:27:16 +0200
+Message-ID: <CAMZdPi_RtJRQu0hA=KBZyAWLryoDZW+a=x_GoHJrUP4APVstHQ@mail.gmail.com>
+Subject: Re: [PATCH v4 1/2] net: Add mhi-net driver
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
+        netdev@vger.kernel.org, Hemant Kumar <hemantk@codeaurora.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Leon Romanovsky <leon@kernel.org> writes:
+Hi Eric,
 
-> On Wed, Sep 30, 2020 at 12:11:24PM +0200, Johannes Berg wrote:
->> On Wed, 2020-09-30 at 12:55 +0300, Leon Romanovsky wrote:
->> > On Wed, Sep 30, 2020 at 11:01:27AM +0300, Kalle Valo wrote:
->> > > Leon Romanovsky <leon@kernel.org> writes:
->> > >
->> > > > > diff --git a/drivers/net/wireless/purelifi/Kconfig
->> > > > b/drivers/net/wireless/purelifi/Kconfig
->> > > > > new file mode 100644
->> > > > > index 000000000000..ff05eaf0a8d4
->> > > > > --- /dev/null
->> > > > > +++ b/drivers/net/wireless/purelifi/Kconfig
->> > > > > @@ -0,0 +1,38 @@
->> > > > > +# SPDX-License-Identifier: GPL-2.0
->> > > > > +config WLAN_VENDOR_PURELIFI
->> > > > > +	bool "pureLiFi devices"
->> > > > > +	default y
->> > > >
->> > > > "N" is preferred default.
->> > >
->> > > In most cases that's true, but for WLAN_VENDOR_ configs 'default y'
->> > > should be used. It's the same as with NET_VENDOR_.
->> >
->> > I would like to challenge it, why is that?
->> > Why do I need to set "N", every time new vendor upstreams its code?
->>
->> You don't. The WLAN_VENDOR_* settings are not supposed to affect the
->> build, just the Kconfig visibility.
+On Thu, 15 Oct 2020 at 20:56, Eric Dumazet <eric.dumazet@gmail.com> wrote:
 >
-> Which is important to me, I'm keeping .config as minimal as possible
-> to simplify comparison between various builds.
+>
+>
+> On 10/15/20 3:29 PM, Loic Poulain wrote:
+> > On Thu, 15 Oct 2020 at 14:41, Eric Dumazet <eric.dumazet@gmail.com> wrote:
+> >>
+> >>
+> >>
+> >> On 10/15/20 12:31 PM, Loic Poulain wrote:
+> >>> This patch adds a new network driver implementing MHI transport for
+> >>> network packets. Packets can be in any format, though QMAP (rmnet)
+> >>> is the usual protocol (flow control + PDN mux).
+> >>>
+> >>> It support two MHI devices, IP_HW0 which is, the path to the IPA
+> >>> (IP accelerator) on qcom modem, And IP_SW0 which is the software
+> >>> driven IP path (to modem CPU).
+> >>>
+> >>>
+> >>> +static int mhi_ndo_xmit(struct sk_buff *skb, struct net_device *ndev)
+> >>> +{
+> >>> +     struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
+> >>> +     struct mhi_device *mdev = mhi_netdev->mdev;
+> >>> +     int err;
+> >>> +
+> >>> +     skb_tx_timestamp(skb);
+> >>> +
+> >>> +     /* mhi_queue_skb is not thread-safe, but xmit is serialized by the
+> >>> +      * network core. Once MHI core will be thread save, migrate to
+> >>> +      * NETIF_F_LLTX support.
+> >>> +      */
+> >>> +     err = mhi_queue_skb(mdev, DMA_TO_DEVICE, skb, skb->len, MHI_EOT);
+> >>> +     if (err == -ENOMEM) {
+> >>> +             netif_stop_queue(ndev);
+> >>
+> >> If you return NETDEV_TX_BUSY, this means this skb will be requeues,
+> >> then sent again right away, and this will potentially loop forever.
+> >
+> > The TX queue is stopped in that case, so the net core will not loop, right?
+>
+> -ENOMEM suggests a memory allocation failed.
+>
+> What is going to restart the queue when memory is available ?
 
-IIRC the 'default y' is to avoid breaking when updating from an old,
-pre-vendor, kernel config (for example with 'make oldconfig'), otherwise
-all wireless drivers would have been disabled without a warning. But as
-wireless vendors were introduced back in 2015 in v4.5-rc1 I don't think
-we need to worry about that anymore. But I would like to keep this
-behaviour consistent across all vendors, so they all should be changed
-at the same time in one patch.
+The queue is restarted as soon as new ring elements are available, in
+the tx complete callback (mhi_net_ul_callback).
 
--- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+>
+> -ENOMEM seems weird if used for queue being full.
+
+Regarding MHI core, that means no element is available in the ring to
+push the buffer, so maybe -ENOSPC would be more suitable? This change
+could be done in a subsequent series since it would request to modify
+MHI core and other MHI drivers.
+
+I'm not sure this is the right way, but this 'stop-queue and return
+busy' is a pattern used in various other network drivers. However, I
+understand that a better solution would be to stop the queue earlier,
+as soon as ring is full and prevent this abnormal situation.
+
+>
+> >
+> >>
+> >> Also skb_tx_timestamp() would be called multiple times.
+> >
+> > OK so I'm going to remove that, maybe the MHI layer should mark
+> > timestamp instead.
+>
+> Yes, probably.
+>
