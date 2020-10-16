@@ -2,84 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A8DC290DF7
-	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 01:05:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9407B290E10
+	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 01:16:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406990AbgJPXFb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 19:05:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50828 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390294AbgJPXFa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Oct 2020 19:05:30 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DD19220874;
-        Fri, 16 Oct 2020 23:05:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602889530;
-        bh=QisPMfxsCS0Q/9ORktOr+4PYFXO4fpG+jUWVvR3fQTY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=z5vRTXwCskbxWBhUyLa4AX5qsD3j57QimkRshWTzQMT4wQZ7Hh0VAW365zZCdjVRp
-         LWjufbhr2YtApGdVwaQym4LoAtWxJA8u0cadNs/gEjKcx8Gr/hgiLERpx4s/qNMz9V
-         JjNiLxWcv2itMinTohAdA7IMjXifFdeNblz/qr5g=
-Date:   Fri, 16 Oct 2020 16:05:28 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ian Kumlien <ian.kumlien@gmail.com>
-Cc:     jeffrey.t.kirsher@intel.com,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Subject: Re: ixgbe - only presenting one out of four interfaces on 5.9
-Message-ID: <20201016160528.0b5f849b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAA85sZtGt0ZbhGY8+96G9TY+cE+tgmjb8rHmiGT9Js+ZbjKJeg@mail.gmail.com>
-References: <CAA85sZv=13q8NXbjdf7+R=wu0Q5=Vj9covZ24e9Ew2DCd7S==A@mail.gmail.com>
-        <CAA85sZs9wswn06hd7ien2B_fyqFM9kEWL_-vXQN-sjhqisizaQ@mail.gmail.com>
-        <20201016122122.0a70f5a3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CAA85sZtGt0ZbhGY8+96G9TY+cE+tgmjb8rHmiGT9Js+ZbjKJeg@mail.gmail.com>
+        id S2410949AbgJPXQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 19:16:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51358 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2393118AbgJPXQw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 19:16:52 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED707C061755;
+        Fri, 16 Oct 2020 16:16:50 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id 10so2343229pfp.5;
+        Fri, 16 Oct 2020 16:16:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=igR2JRxUZsx9VeqjyhWla0GW6mc0OrGGOO2sZ/4GSGw=;
+        b=R/Ck/YfRnhuxMc6JuLtu1AwhOE9d6RzebEMS0v+lCaUt00Wy8ZzAtSiwGCGeJ1bvy6
+         Np1+Oqff7McieYD2Irz7CaOMByfuXtN9gWBGk32pYjwJWJoppsz09BUA5Eqt3eMVP+4z
+         gDa2JN/A4IhXY2CWYHgsYj8VUeWhapLgvumzhFHVtdKQi46v9hulRzWblu77Uq2ASA77
+         xL8wOQGES112LDwlOdPghZID1v9I304doRA9zXOv3D6J+XXYMPLZtIYL3EbVYIaShmEt
+         58825OHJAQwaAFllkKzDLlJWLtpyZ38BtRxMFV9dkRglJfegihW8uYDKpVPkaD+KdurP
+         kk2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=igR2JRxUZsx9VeqjyhWla0GW6mc0OrGGOO2sZ/4GSGw=;
+        b=jk1R9K4xr7XiWWX4ETXRqppsrsrCA+CjbodAQm/r3L2dHk+dL4/D4VWtZepCjQ7bOS
+         6m86+CeY83SjCjZbbHFKlpuN3yWjjk+m90EfKChMu1jbVqyCEHR//08AVXBP8nShuQVq
+         I8tKlRj+4P42eBi9a+WBSXaEnAqlpccG9QtysH57V2IvyMSMUajEk72Q8uGm0lF8GHKM
+         f+APDqW2Bq6+39DcjEGrLc0Tsp4itVxQn0DR7S3uCMDydVAPY5Inef7i51TVRFQbj2cX
+         pQqupTGccfdsSPLhepvaJ/C+4ntBm4VzdiNSOMi4o9PetFpqU3r4ahX2A3zR7dlqiMOD
+         zWhw==
+X-Gm-Message-State: AOAM5325ffckS91cMROi5qHC5xLgrRaaPnxGXuzW/jfzV2jDOZ0LtVtb
+        aVpxKHY/4XSBlVOvit7NZ3Y=
+X-Google-Smtp-Source: ABdhPJzIUhe6rpqQQpdTqA9lxqZEic4rsMwchjGvg9htvspwVRLoQLUhBANu9Nz4PeE7MyFB1RzqQQ==
+X-Received: by 2002:a63:5d07:: with SMTP id r7mr5128569pgb.440.1602890210456;
+        Fri, 16 Oct 2020 16:16:50 -0700 (PDT)
+Received: from localhost ([2001:e42:102:1532:160:16:113:140])
+        by smtp.gmail.com with ESMTPSA id b128sm3807930pga.80.2020.10.16.16.16.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Oct 2020 16:16:49 -0700 (PDT)
+From:   Coiby Xu <coiby.xu@gmail.com>
+X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
+Date:   Sat, 17 Oct 2020 07:08:21 +0800
+To:     Benjamin Poirier <benjamin.poirier@gmail.com>
+Cc:     devel@driverdev.osuosl.org, Shung-Hsi Yu <shung-hsi.yu@suse.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
+        <GR-Linux-NIC-Dev@marvell.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v1 1/6] staging: qlge: Initialize devlink health dump
+ framework for the dlge driver
+Message-ID: <20201016230821.zgdc44qt34rzsn5x@Rk>
+References: <20201008115808.91850-1-coiby.xu@gmail.com>
+ <20201008115808.91850-2-coiby.xu@gmail.com>
+ <20201010073514.GA14495@f3>
+ <20201010102416.hvbgx3mgyadmu6ui@Rk>
+ <20201010134855.GB17351@f3>
+ <20201012112406.6mxta2mapifkbeyw@Rk>
+ <20201013003704.GA41031@f3>
+ <20201015033732.qaihehernm2jzoln@Rk>
+ <20201015110606.GA52981@f3>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20201015110606.GA52981@f3>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 17 Oct 2020 00:39:11 +0200 Ian Kumlien wrote:
-> On Fri, Oct 16, 2020 at 9:21 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > > You can actually see it dmesg... And i tried some basic looking at
-> > > > changes to see if it was obvious.... but..  
-> >
-> > Showing a full dmesg may be helpful, but looking at what you posted it
-> > seems like the driver gets past the point where netdev gets registered,
-> > so the only thing that could fail after that point AFIACT is
-> > mdiobus_register(). Could be some breakage in MDIO.  
-> 
-> Humm... interesting, will have a look at it
-> 
-> > Any chance you could fire up perf, bpftrace and install a kretprobe to
-> > see what mdiobus_register() returns? You can rebind the device to the
-> > driver through sysfs.  
-> 
-> Do you need a difference between the kernels?
+On Thu, Oct 15, 2020 at 08:06:06PM +0900, Benjamin Poirier wrote:
+>On 2020-10-15 11:37 +0800, Coiby Xu wrote:
+>> On Tue, Oct 13, 2020 at 09:37:04AM +0900, Benjamin Poirier wrote:
+>> > On 2020-10-12 19:24 +0800, Coiby Xu wrote:
+>> > [...]
+>> > > > I think, but didn't check in depth, that in those drivers, the devlink
+>> > > > device is tied to the pci device and can exist independently of the
+>> > > > netdev, at least in principle.
+>> > > >
+>> > > You are right. Take drivers/net/ethernet/mellanox/mlxsw as an example,
+>> > > devlink reload would first first unregister_netdev and then
+>> > > register_netdev but struct devlink stays put. But I have yet to
+>> > > understand when unregister/register_netdev is needed.
+>> >
+>> > Maybe it can be useful to manually recover if the hardware or driver
+>> > gets in an erroneous state. I've used `modprobe -r qlge && modprobe
+>> > qlge` for the same in the past.
+>>
+>> Thank you for providing this user case!
+>> >
+>> > > Do we need to
+>> > > add "devlink reload" for qlge?
+>> >
+>> > Not for this patchset. That would be a new feature.
+>>
+>> To implement this feature, it seems I need to understand how qlge work
+>> under the hood. For example, what's the difference between
+>> qlge_soft_reset_mpi_risc and qlge_hard_reset_mpi_risc? Or should we use
+>> a brute-force way like do the tasks in qlge_remove and then re-do the
+>> tasks in qlge_probe?
+>
+>I don't know. Like I've said before, I'd recommend testing on actual
+>hardware. I don't have access to it anymore.
 
-Nope, we can safely assume that it return 0 on kernels where things
-work.
+Yeah, as I'm changing more code, it's more and more important to test
+it on actual hardware. Have you heard anyone installing qle8142 to
+Raspberry Pi which has a PCIe bus.
+>
+>> Is a hardware reference manual for qlge device?
+>
+>I've never gotten access to one.
+>
+My experience of wrestling with an AMD GPIO chip [1] shows it would
+be a bit annoying to deal with a device without a reference manual.
+I have to treat it like a blackbox and try different kinds of input
+to see what would happen.
 
-Looking at the changes in this area now - it's gotta be:
+Btw, it seems resetting the device is a kind of panacea. For example,
+according to the specs of my touchpad (Synaptics RMI4 Specification),
+it even has the feature of spontaneous reset. devlink health [2] also
+has the so-called auto-recovery. So resetting is a common phenomenon. I
+wonder if there are some common guidelines to do resetting which also
+apply to the qlge8*** devices.
 
-commit 09ef193fef7e ("net: ethernet: ixgbe: check the return value of ixgbe_mii_bus_init()")
+>The only noteworthy thing from Qlogic that I know of is the firmware
+>update:
+>http://driverdownloads.qlogic.com/QLogicDriverDownloads_UI/SearchByProduct.aspx?ProductCategory=322&Product=1104&Os=190
+>
+>It did fix some weird behavior when I applied it so I'd recommend doing
+>the same if you get an adapter.
 
-This should make things work again for you:
+Thank you for sharing the info!
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c
-index f77fa3e4fdd1..ac5bfc2b5f81 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c
-@@ -922,7 +922,7 @@ s32 ixgbe_mii_bus_init(struct ixgbe_hw *hw)
-        case IXGBE_DEV_ID_X550EM_A_1G_T:
-        case IXGBE_DEV_ID_X550EM_A_1G_T_L:
-                if (!ixgbe_x550em_a_has_mii(hw))
--                       return -ENODEV;
-+                       return 0;
-                bus->read = &ixgbe_x550em_a_mii_bus_read;
-                bus->write = &ixgbe_x550em_a_mii_bus_write;
-                break;
+
+[1] https://www.spinics.net/lists/linux-gpio/msg53901.html
+[2] https://www.kernel.org/doc/html/latest/networking/devlink/devlink-health.html
+
+--
+Best regards,
+Coiby
