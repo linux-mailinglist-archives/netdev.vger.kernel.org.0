@@ -2,118 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1017290E14
-	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 01:17:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A63D290E18
+	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 01:20:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2411008AbgJPXRB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 19:17:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51370 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2393118AbgJPXQy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 19:16:54 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9426EC061755;
-        Fri, 16 Oct 2020 16:16:54 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id p11so2053758pld.5;
-        Fri, 16 Oct 2020 16:16:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=x6hSFVlaJgCB8hg2RJUELUmJfgX8zfnwtAOEG3X8KRk=;
-        b=GmE8xczXXqnrMh3MsLpg+HZZ9Er+EYhFt4ttU688FcVbfAZWL2aUg3lPGDBItpw2oR
-         el5T7eKC2o05aL0HbiSPsPh/XKeedj7iQPVheNZ1SgVUlk5d5lgSeMi8n/hC2sQKgXZR
-         +xMLQFwgJRI1t/UjNTsRl3q9uPKkzO9rElgGeKIhQsWhIl7/QBaRPg3UJg4MY5PnDP/w
-         +5/GF9W5QGBoPHSwLaprExL/4ZjYM1LwZMa2FYKKkfy6pjpHEcPXdtvYLcuwV1j8UiVt
-         WoXTqzwHLOSxZgUAmHgadE2iFEO9GFjv5ltQgjdSIMdZp2BtPJhF5HLXrO35APqf/xn9
-         zn1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=x6hSFVlaJgCB8hg2RJUELUmJfgX8zfnwtAOEG3X8KRk=;
-        b=XrEr4igDYZoJEvt0rubdMkkpI4Dft3SuEaKNacRm0o1UuF37fpy2ofJ8CgzrQmwKnH
-         DfMy9rJ6UJbOcAMZXoj7zXEjLWcwe/tl+N+PSMbX2jlGwXMHg/BxXnyJgtxLDeNrgBpt
-         SePc+T6FPArfg5kUr3YXlmiGGPuojkpzLU2bZ8TpAD3Wz+7Ip3eP750v0wITSRTHh9rr
-         aFvsL+lIkVVxsYF1m0uk/fHDstqVjYf1n4yQeGXUA98uXrq9Syn7WPa/IPFqkhRid3y0
-         nfR1Sx5k3UrvFhPyd8tUURgT1/5/JW1z8ysD1xJh9sLl/GOEwPvUIAiEnHetVZmAWGdn
-         2xKg==
-X-Gm-Message-State: AOAM533VQX1ZbuA76JNTkYQ9pnWqww/kEY0mYbxgvxXH41VudtDP+6Tm
-        6SEperwUQn69ZAzM2Bed2RI=
-X-Google-Smtp-Source: ABdhPJyQi7b1KBOmbhj++1AhiYXfPqOsE3wSaoA35psvMQoboX5Xz1e04PbFQtYG9v9LtdvsL1bfPA==
-X-Received: by 2002:a17:90a:f0ca:: with SMTP id fa10mr6196925pjb.130.1602890214147;
-        Fri, 16 Oct 2020 16:16:54 -0700 (PDT)
-Received: from localhost ([2001:e42:102:1532:160:16:113:140])
-        by smtp.gmail.com with ESMTPSA id z12sm3928887pfr.197.2020.10.16.16.16.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Oct 2020 16:16:53 -0700 (PDT)
-From:   Coiby Xu <coiby.xu@gmail.com>
-X-Google-Original-From: Coiby Xu <Coiby.Xu@gmail.com>
-Date:   Sat, 17 Oct 2020 07:16:31 +0800
-To:     Benjamin Poirier <benjamin.poirier@gmail.com>
-Cc:     devel@driverdev.osuosl.org, Shung-Hsi Yu <shung-hsi.yu@suse.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/7] staging: qlge: replace ql_* with qlge_* to avoid
- namespace clashes with other qlogic drivers
-Message-ID: <20201016231631.efwu5a4a5f3jnrzv@Rk>
-References: <20201014104306.63756-1-coiby.xu@gmail.com>
- <20201014104306.63756-2-coiby.xu@gmail.com>
- <20201015010136.GB31835@f3>
+        id S2410982AbgJPXUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 19:20:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52994 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2407447AbgJPXUQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Oct 2020 19:20:16 -0400
+Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 425E120878;
+        Fri, 16 Oct 2020 23:20:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602890415;
+        bh=649c6RlozZsvm4+vvYsGe08W5GdQKZZI6fD6317ADYc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=CcWKRbGtmbiINQmkFzVutB55pIMUUvMFUXXql7cJ/w2xMrqL3WbJLOYLYGgaIh8+l
+         74y4TqIzxv5ooQBvOURH8WQMZjtizdSPimxFZznxlxhRnhpywMCIp1w80eE+OckeJQ
+         tJVcXW9jhxo2GHv2jIzmm6uYaSgS9fJ1nyqlS9gE=
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kernel-team@fb.com, ian.kumlien@gmail.com,
+        anthony.l.nguyen@intel.com, jesse.brandeburg@intel.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net] ixgbe: fix probing of multi-port devices with one MDIO
+Date:   Fri, 16 Oct 2020 16:20:06 -0700
+Message-Id: <20201016232006.3352947-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20201015010136.GB31835@f3>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 15, 2020 at 10:01:36AM +0900, Benjamin Poirier wrote:
->On 2020-10-14 18:43 +0800, Coiby Xu wrote:
->> To avoid namespace clashes with other qlogic drivers and also for the
->> sake of naming consistency, use the "qlge_" prefix as suggested in
->> drivers/staging/qlge/TODO.
->>
->> Suggested-by: Benjamin Poirier <benjamin.poirier@gmail.com>
->> Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
->> ---
->>  drivers/staging/qlge/TODO           |    4 -
->>  drivers/staging/qlge/qlge.h         |  190 ++--
->>  drivers/staging/qlge/qlge_dbg.c     | 1073 ++++++++++++-----------
->>  drivers/staging/qlge/qlge_ethtool.c |  231 ++---
->>  drivers/staging/qlge/qlge_main.c    | 1257 +++++++++++++--------------
->>  drivers/staging/qlge/qlge_mpi.c     |  352 ++++----
->>  6 files changed, 1551 insertions(+), 1556 deletions(-)
->>
->> diff --git a/drivers/staging/qlge/TODO b/drivers/staging/qlge/TODO
->> index f93f7428f5d5..5ac55664c3e2 100644
->> --- a/drivers/staging/qlge/TODO
->> +++ b/drivers/staging/qlge/TODO
->> @@ -28,10 +28,6 @@
->>  * the driver has a habit of using runtime checks where compile time checks are
->>    possible (ex. ql_free_rx_buffers(), ql_alloc_rx_buffers())
->>  * reorder struct members to avoid holes if it doesn't impact performance
->> -* in terms of namespace, the driver uses either qlge_, ql_ (used by
->> -  other qlogic drivers, with clashes, ex: ql_sem_spinlock) or nothing (with
->> -  clashes, ex: struct ob_mac_iocb_req). Rename everything to use the "qlge_"
->> -  prefix.
->
->You only renamed ql -> qlge. The prefix needs to be added where there is
->currently none like the second example of that text.
+Ian reports that after upgrade from v5.8.14 to v5.9 only one
+of his 4 ixgbe netdevs appear in the system.
 
-On second thoughts, these structs like ob_mac_iocb_req are defined in
-local headers and there is no mixed usage. So even when we want to
-build this diver and other qlogic drivers into the kernel instead of
-as separate modules, it won't lead to real problems, is it right?
->
->Besides, the next patch reintroduces the name struct ql_adapter.
+Quoting the comment on ixgbe_x550em_a_has_mii():
+ * Returns true if hw points to lowest numbered PCI B:D.F x550_em_a device in
+ * the SoC.  There are up to 4 MACs sharing a single MDIO bus on the x550em_a,
+ * but we only want to register one MDIO bus.
 
---
-Best regards,
-Coiby
+This matches the symptoms, since the return value from
+ixgbe_mii_bus_init() is no longer ignored we need to handle
+the higher ports of x550em without an error.
+
+Fixes: 09ef193fef7e ("net: ethernet: ixgbe: check the return value of ixgbe_mii_bus_init()")
+Reported-by: Ian Kumlien <ian.kumlien@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c | 23 ++++++++++++--------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c
+index f77fa3e4fdd1..fc389eecdd2b 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_phy.c
+@@ -901,15 +901,13 @@ static bool ixgbe_x550em_a_has_mii(struct ixgbe_hw *hw)
+  **/
+ s32 ixgbe_mii_bus_init(struct ixgbe_hw *hw)
+ {
++	s32 (*write)(struct mii_bus *bus, int addr, int regnum, u16 val);
++	s32 (*read)(struct mii_bus *bus, int addr, int regnum);
+ 	struct ixgbe_adapter *adapter = hw->back;
+ 	struct pci_dev *pdev = adapter->pdev;
+ 	struct device *dev = &adapter->netdev->dev;
+ 	struct mii_bus *bus;
+ 
+-	bus = devm_mdiobus_alloc(dev);
+-	if (!bus)
+-		return -ENOMEM;
+-
+ 	switch (hw->device_id) {
+ 	/* C3000 SoCs */
+ 	case IXGBE_DEV_ID_X550EM_A_KR:
+@@ -922,16 +920,23 @@ s32 ixgbe_mii_bus_init(struct ixgbe_hw *hw)
+ 	case IXGBE_DEV_ID_X550EM_A_1G_T:
+ 	case IXGBE_DEV_ID_X550EM_A_1G_T_L:
+ 		if (!ixgbe_x550em_a_has_mii(hw))
+-			return -ENODEV;
+-		bus->read = &ixgbe_x550em_a_mii_bus_read;
+-		bus->write = &ixgbe_x550em_a_mii_bus_write;
++			return 0;
++		read = &ixgbe_x550em_a_mii_bus_read;
++		write = &ixgbe_x550em_a_mii_bus_write;
+ 		break;
+ 	default:
+-		bus->read = &ixgbe_mii_bus_read;
+-		bus->write = &ixgbe_mii_bus_write;
++		read = &ixgbe_mii_bus_read;
++		write = &ixgbe_mii_bus_write;
+ 		break;
+ 	}
+ 
++	bus = devm_mdiobus_alloc(dev);
++	if (!bus)
++		return -ENOMEM;
++
++	bus->read = read;
++	bus->write = write;
++
+ 	/* Use the position of the device in the PCI hierarchy as the id */
+ 	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-mdio-%s", ixgbe_driver_name,
+ 		 pci_name(pdev));
+-- 
+2.26.2
+
