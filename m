@@ -2,95 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1480290B02
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 19:56:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90641290B0B
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 20:01:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390202AbgJPR4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 13:56:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58258 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389903AbgJPR4Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 13:56:24 -0400
-Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53E8C061755
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 10:56:22 -0700 (PDT)
-Received: by mail-vs1-xe42.google.com with SMTP id w25so1897478vsk.9
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 10:56:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SaoQ+PY8WdgXWfG4Tr/QI8n9nsnA3ZBVl2uXb5YE3hI=;
-        b=fW3rcEBw042PWje7Uf+WZJBUg03pPhUNaGNaK8oOaFY+BZCuelxigvg/JiEl2cHQzn
-         FLTq1lh8GwQaG9Do6SzDtaB6pF67cLDkdzeYGxaxN2pPfElAgpGweOrNfY7Da+fROUwb
-         i7sD0bwYVpnAPeBFxWCOrUlNYglfbh6ljJgh9TaiW3MFMvU89uTz+eiGuklBHR/k7GTf
-         Vf5xfAU7NAdixsSGLQcWZwQmT44J3BUX/RhJ8jMHkRvWvMImfvSW6kY7jqHzxYpG0aEh
-         9N3NN9PJ6u/h04Dh/xCTodofcPMjzHujzTxOETr8T25l0LvA27zcOEE6BAR2y8n8R2Bp
-         RqMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SaoQ+PY8WdgXWfG4Tr/QI8n9nsnA3ZBVl2uXb5YE3hI=;
-        b=fwe6fIqAp96/PAARDveT44Qa1SDItOfRQbvmBHeLNnnjxxEtbp/aJs7KFy86Ew5zOv
-         QKNc8OAQNCM/WoRDRIVLIV9K9faWgXoWXCp8D0YoWkGLxuQOg1hRiggc/PkFJMIGixOR
-         Jn2E9zY/f6BAKcC7JLeMIpx8BVeMxcH7Hpsb9/6bcM/55cauf/3upfK7Omg7sKWxC4+K
-         n9REPjE6W8zHdMaeKZyTYQJmHERjn0XPG7oAgWo4ubfFKflKHDtQXloEEr/2YnCSvvPM
-         djuhJiYt5DKYqvWZ9pz/gJh0b+utgHMjRR3nRCZNcLaJxohCkAeZnY7p5Tmh7N9POA38
-         1TaA==
-X-Gm-Message-State: AOAM533RdgkW6rzc77H+KA9lrplSgh/JY8A34B7LC/ggwBGSZzahBKHt
-        027vxQGA7QSbNB8QKzwpmgWztB17N1E=
-X-Google-Smtp-Source: ABdhPJxJhmpc1AnrgA3R95DXrX4c40QREtYbUotqQMo/4QRhZgxChFay6DWOjOVN3utHtThhwT+xJA==
-X-Received: by 2002:a05:6102:208e:: with SMTP id h14mr3272796vsr.42.1602870981660;
-        Fri, 16 Oct 2020 10:56:21 -0700 (PDT)
-Received: from mail-vs1-f54.google.com (mail-vs1-f54.google.com. [209.85.217.54])
-        by smtp.gmail.com with ESMTPSA id a64sm433738vkh.3.2020.10.16.10.56.20
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 16 Oct 2020 10:56:20 -0700 (PDT)
-Received: by mail-vs1-f54.google.com with SMTP id p25so1912414vsq.4
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 10:56:20 -0700 (PDT)
-X-Received: by 2002:a67:d84:: with SMTP id 126mr2931254vsn.51.1602870980343;
- Fri, 16 Oct 2020 10:56:20 -0700 (PDT)
+        id S2390747AbgJPSBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 14:01:13 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60142 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390128AbgJPSBN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Oct 2020 14:01:13 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kTU2G-0021tA-Kf; Fri, 16 Oct 2020 20:01:00 +0200
+Date:   Fri, 16 Oct 2020 20:01:00 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lukasz Stelmach <l.stelmach@samsung.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, jim.cromie@gmail.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        =?utf-8?Q?Bart=C5=82omiej_=C5=BBolnierkiewicz?= 
+        <b.zolnierkie@samsung.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH v2 2/4] net: ax88796c: ASIX AX88796C SPI Ethernet Adapter
+ Driver
+Message-ID: <20201016180100.GF139700@lunn.ch>
+References: <20201002203641.GI3996795@lunn.ch>
+ <CGME20201013200453eucas1p1b77c93275b518422429ff1481f88a4be@eucas1p1.samsung.com>
+ <dleftjd01l99jv.fsf%l.stelmach@samsung.com>
 MIME-Version: 1.0
-References: <20201016111156.26927-1-ovov@yandex-team.ru>
-In-Reply-To: <20201016111156.26927-1-ovov@yandex-team.ru>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 16 Oct 2020 13:55:43 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSe5szAPV0qDVU1Qa7e-XH6uO4eWELfzykOvpb0CJ0NbUA@mail.gmail.com>
-Message-ID: <CA+FuTSe5szAPV0qDVU1Qa7e-XH6uO4eWELfzykOvpb0CJ0NbUA@mail.gmail.com>
-Subject: Re: [PATCH net] ip6_tunnel: set inner ipproto before ip6_tnl_encap.
-To:     Alexander Ovechkin <ovov@yandex-team.ru>
-Cc:     Network Development <netdev@vger.kernel.org>, vfedorenko@novek.ru
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <dleftjd01l99jv.fsf%l.stelmach@samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 16, 2020 at 7:14 AM Alexander Ovechkin <ovov@yandex-team.ru> wrote:
->
-> ip6_tnl_encap assigns to proto transport protocol which
-> encapsulates inner packet, but we must pass to set_inner_ipproto
-> protocol of that inner packet.
->
-> Calling set_inner_ipproto after ip6_tnl_encap might break gso.
-> For example, in case of encapsulating ipv6 packet in fou6 packet, inner_ipproto
-> would be set to IPPROTO_UDP instead of IPPROTO_IPV6. This would lead to
-> incorrect calling sequence of gso functions:
-> ipv6_gso_segment -> udp6_ufo_fragment -> skb_udp_tunnel_segment -> udp6_ufo_fragment
-> instead of:
-> ipv6_gso_segment -> udp6_ufo_fragment -> skb_udp_tunnel_segment -> ip6ip6_gso_segment
->
-> Signed-off-by: Alexander Ovechkin <ovov@yandex-team.ru>
+> >> +static void
+> >> +ax88796c_get_regs(struct net_device *ndev, struct ethtool_regs *regs, void *_p)
+> >> +{
+> >> +	struct ax88796c_device *ax_local = to_ax88796c_device(ndev);
+> >> +	u16 *p = _p;
+> >> +	int offset, i;
+> >> +
+> >> +	memset(p, 0, AX88796C_REGDUMP_LEN);
+> >> +
+> >> +	for (offset = 0; offset < AX88796C_REGDUMP_LEN; offset += 2) {
+> >> +		if (!test_bit(offset / 2, ax88796c_no_regs_mask))
+> >> +			*p = AX_READ(&ax_local->ax_spi, offset);
+> >> +		p++;
+> >> +	}
+> >> +
+> >> +	for (i = 0; i < AX88796C_PHY_REGDUMP_LEN / 2; i++) {
+> >> +		*p = phy_read(ax_local->phydev, i);
+> >> +		p++;
+> >
+> > Depending on the PHY, that can be dangerous.
+> 
+> This is a built-in generic PHY. The chip has no lines to attach any
+> other external one.
+> 
+> > phylib could be busy doing things with the PHY. It could be looking at
+> 
+> How does phylib prevent concurrent access to a PHY? 
 
-Commit 6c11fbf97e69 ("ip6_tunnel: add MPLS transmit support") moved
-the call from ip6_tnl_encap's caller to inside ip6_tnl_encap.
+phydev->lock. All access to the PHY should go through the phylib,
+which will take the lock before calling into the driver.
 
-It makes sense that that likely broke this behavior for UDP (L4) tunnels.
+> > a different page for example.
+> 
+> Different page? 
 
-But it was moved on purpose to avoid setting the inner protocol to
-IPPROTO_MPLS. That needs to use skb->inner_protocol to further
-segment.
+I was talking about the general case. A number of PHYs have more than
+32 registers. So they implement pages to give access to more
+registers. For that to work, you need to ensure you don't have
+concurrent access.
 
-I suspect we need to set this before or after conditionally to avoid
-breaking that use case.
+> > miitool(1) can give you the same functionally without the MAC driver
+> > doing anything, other than forwarding the IOCTL call on.
+> 
+> No, I am afraid mii-tool is not able to dump registers.
+
+It should be able to.
+
+sudo mii-tool -vv eth0
+Using SIOCGMIIPHY=0x8947
+eth0: negotiated 1000baseT-FD flow-control, link ok
+  registers for MII PHY 0: 
+    1040 79ed 001c c800 0de1 c5e1 006d 0000
+    0000 0200 0800 0000 0000 0000 0000 2000
+    0000 0000 ffff 0000 0000 0400 0f00 0f00
+    318b 0053 31ec 8012 bf1f 0000 0000 0000
+  product info: vendor 00:07:32, model 0 rev 0
+  basic mode:   autonegotiation enabled
+  basic status: autonegotiation complete, link ok
+  capabilities: 1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD
+  advertising:  1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD flow-control
+  link partner: 1000baseT-FD 100baseTx-FD 100baseTx-HD 10baseT-FD 10baseT-HD flow-control
+
+> >> +ax88796c_mdio_write(struct mii_bus *mdiobus, int phy_id, int loc, u16 val)
+> >> +{
+> >> +	struct ax88796c_device *ax_local = mdiobus->priv;
+> >> +	int ret;
+> >> +
+> >> +	AX_WRITE(&ax_local->ax_spi, val, P2_MDIODR);
+> >> +
+> >> +	AX_WRITE(&ax_local->ax_spi,
+> >> +		 MDIOCR_RADDR(loc) | MDIOCR_FADDR(phy_id)
+> >> +		 | MDIOCR_WRITE, P2_MDIOCR);
+> >> +
+> >> +	ret = read_poll_timeout(AX_READ, ret,
+> >> +				((ret & MDIOCR_VALID) != 0), 0,
+> >> +				jiffies_to_usecs(HZ / 100), false,
+> >> +				&ax_local->ax_spi, P2_MDIOCR);
+> >> +	if (ret)
+> >> +		return -EIO;
+> >> +
+> >> +	if (loc == MII_ADVERTISE) {
+> >> +		AX_WRITE(&ax_local->ax_spi, (BMCR_FULLDPLX | BMCR_ANRESTART |
+> >> +			  BMCR_ANENABLE | BMCR_SPEED100), P2_MDIODR);
+> >> +		AX_WRITE(&ax_local->ax_spi, (MDIOCR_RADDR(MII_BMCR) |
+> >> +			  MDIOCR_FADDR(phy_id) | MDIOCR_WRITE),
+> >> +			  P2_MDIOCR);
+> >>
+> >
+> > What is this doing?
+> >
+> 
+> Well… it turns autonegotiation when changing advertised link modes. But
+> this is obvious. As to why this code is here, I will honestly say — I am
+> not sure (Reminder: this is a vendor driver I am porting, I am more than
+> happy to receive any comments, thank you). Apparently it is not required
+> and I am willing to remove it.
+
+Please do remove it.
+
+> >> +
+> >> +	ret = devm_register_netdev(&spi->dev, ndev);
+> >> +	if (ret) {
+> >> +		dev_err(&spi->dev, "failed to register a network device\n");
+> >> +		destroy_workqueue(ax_local->ax_work_queue);
+> >> +		goto err;
+> >> +	}
+> >
+> > The device is not live. If this is being used for NFS root, the kernel
+> > will start using it. So what sort of mess will it get into, if there
+> > is no PHY yet? Nothing important should happen after register_netdev().
+> >
+> 
+> But, with an unregistered network device ndev_owner in
+> phy_attach_direct() is NULL. Thus, phy_connect_direct() below fails.
+> 
+> --8<---------------cut here---------------start------------->8---
+>    1332         if (dev)
+>    1333                 ndev_owner = dev->dev.parent->driver->owner;
+>    1334         if (ndev_owner != bus->owner &&  !try_module_get(bus->owner)) {
+>    1335                 phydev_err(phydev, "failed to get the bus  module\n");
+>    1336                 return -EIO;
+>    1337         }
+> --8<---------------cut here---------------end--------------->8---
+
+Which is probably why most drivers actually attach the PHY in open()
+and detach it in close().
+
+It can be done in probe, just look around for a driver which does and
+copy it.
+
+> No problem. Do you have any recommendation how to express this
+> 
+>  #define PSR_RESET  (0 << 15)
+
+> I know it equals 0, but shows explicitly the bit number.
+
+Yes, that is useful for documentation. How about:
+
+#define PSR_NOT_RESET BIT(15)
+
+And then turn the logic around.
+
+    Andrew
