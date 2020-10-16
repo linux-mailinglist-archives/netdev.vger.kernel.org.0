@@ -2,122 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80D582904E7
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 14:18:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB29C2904C6
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 14:11:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407395AbgJPMSL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 08:18:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33862 "EHLO
+        id S2407209AbgJPMLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 08:11:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407387AbgJPMSL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 08:18:11 -0400
-X-Greylist: delayed 455 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 16 Oct 2020 05:18:10 PDT
-Received: from forward104p.mail.yandex.net (forward104p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b7:107])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92919C061755;
-        Fri, 16 Oct 2020 05:18:10 -0700 (PDT)
-Received: from mxback21j.mail.yandex.net (mxback21j.mail.yandex.net [IPv6:2a02:6b8:0:1619::221])
-        by forward104p.mail.yandex.net (Yandex) with ESMTP id 9A54B4B01C6D;
-        Fri, 16 Oct 2020 15:10:33 +0300 (MSK)
-Received: from iva6-2d18925256a6.qloud-c.yandex.net (iva6-2d18925256a6.qloud-c.yandex.net [2a02:6b8:c0c:7594:0:640:2d18:9252])
-        by mxback21j.mail.yandex.net (mxback/Yandex) with ESMTP id bmeH7k81eS-AWEWY0Po;
-        Fri, 16 Oct 2020 15:10:33 +0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yandex.ru; s=mail; t=1602850233;
-        bh=TdL1UjfRFoVfBC9zIYZuV9TNWFx2bflF7mNPxJ/0RP4=;
-        h=Subject:To:From:Cc:Date:Message-Id;
-        b=qLlJlSVCMyjBvsN7nu3GaXATCGTg/5Tv3aZh7md0lxF1URjqMZt+PNejoNPd9EwD4
-         TzPbjkUF+oDO+3R8lgmvifnOKD97GNwaNKss6dX1bHTL40zcMV9vE7AxoDgVmqHT/t
-         o7uyS7dYvmdRVkNNNTja3y9EL5joePCyQcLzTw/A=
-Authentication-Results: mxback21j.mail.yandex.net; dkim=pass header.i=@yandex.ru
-Received: by iva6-2d18925256a6.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id NJraWbc8kA-AVnW2qeE;
-        Fri, 16 Oct 2020 15:10:32 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-From:   Aleksandr Nogikh <a.nogikh@yandex.ru>
-To:     stephen@networkplumber.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     andreyknvl@google.com, dvyukov@google.com, elver@google.com,
-        rdunlap@infradead.org, dave.taht@gmail.com, edumazet@google.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Aleksandr Nogikh <nogikh@google.com>,
-        syzbot+ec762a6342ad0d3c0d8f@syzkaller.appspotmail.com
-Subject: [PATCH] netem: prevent division by zero in tabledist
-Date:   Fri, 16 Oct 2020 12:10:07 +0000
-Message-Id: <20201016121007.2378114-1-a.nogikh@yandex.ru>
-X-Mailer: git-send-email 2.29.0.rc1.297.gfa9743e501-goog
+        with ESMTP id S2407182AbgJPMLR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 08:11:17 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59365C061755;
+        Fri, 16 Oct 2020 05:11:17 -0700 (PDT)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1602850275;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=l6tn/UiS5TsBzWHjXOllBWC9DcShkaQo1JEZyj3tsVc=;
+        b=u6ffnwrCYpE8m1oEhCQ0agemjWz4sVVlEFKwlubQlZmdTSgeVI4KanOs8yrjL7QOqIRX7Z
+        9aI8ph+2mQ4lhXBdp/3dyLJjww+cGr/Go7FKz1Yau1jPbZSYHfJJdv+foeWpMkP0NCF8tV
+        s/h9PrkC/Op5/dXP5VbbIiuhDxpuaa/N/HE1lmOHOgLZISEhY489v6E7LncQsOeC6KxMbz
+        v9TOp3tMro5pVOQMKhIlakrCq/E+aqaJ8FklYPdIBiq0snPttH0qRNnlIi5gVUwSIMfeFh
+        HyTDseO8foiAyt2NZn2kQmY5NR9bCA5FkaDk7vjoUzncu9x3/errGDNbHwljZg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1602850275;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=l6tn/UiS5TsBzWHjXOllBWC9DcShkaQo1JEZyj3tsVc=;
+        b=7ds7ctUzMtxSjaN6hk8h2zJbQh/s0exc8BqSS8hesWLAGCw5HC+cPy/7tLjuZRWA6dnzN6
+        qmJfUQY/c/FKxoDw==
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH net-next v6 2/7] net: dsa: Add DSA driver for Hirschmann Hellcreek switches
+In-Reply-To: <87r1q4f1hq.fsf@kurt>
+References: <20201004112911.25085-1-kurt@linutronix.de> <20201004112911.25085-3-kurt@linutronix.de> <20201004125601.aceiu4hdhrawea5z@skbuf> <87lfgj997g.fsf@kurt> <20201006092017.znfuwvye25vsu4z7@skbuf> <878scj8xxr.fsf@kurt> <20201006113237.73rzvw34anilqh4d@skbuf> <87wo037ajr.fsf@kurt> <20201006135631.73rm3gka7r7krwca@skbuf> <87362lt08b.fsf@kurt> <20201011153055.gottyzqv4hv3qaxv@skbuf> <87r1q4f1hq.fsf@kurt>
+Date:   Fri, 16 Oct 2020 14:11:06 +0200
+Message-ID: <87sgaee5gl.fsf@kurt>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aleksandr Nogikh <nogikh@google.com>
+--=-=-=
+Content-Type: text/plain
 
-Currently it is possible to craft a special netlink RTM_NEWQDISC
-command that result in jitter being equal to 0x80000000. It is enough
-to set 32 bit jitter to 0x02000000 (it will later be multiplied by
-2^6) or set 64 bit jitter via TCA_NETEM_JITTER64. This causes an
-overflow during the generation of uniformly districuted numbers in
-tabledist, which in turn leads to division by zero (sigma != 0, but
-sigma * 2 is 0).
+On Mon Oct 12 2020, Kurt Kanzenbach wrote:
+> On Sun Oct 11 2020, Vladimir Oltean wrote:
+>> On Sun, Oct 11, 2020 at 02:29:08PM +0200, Kurt Kanzenbach wrote:
+>>> On Tue Oct 06 2020, Vladimir Oltean wrote:
+>>> > It would be interesting to see if you could simply turn off VLAN
+>>> > awareness in standalone mode, and still use unique pvids per port.
+>>>
+>>> That doesn't work, just tested. When VLAN awareness is disabled,
+>>> everything is switched regardless of VLAN tags and table.
+>>
+>> That's strange, do you happen to know where things are going wrong?
+>
+> No I don't. I'll clarify with the hardware engineer.
 
-The related fragment of code needs 32-bit division - see commit
-9b0ed89 ("netem: remove unnecessary 64 bit modulus"), so
-switching to 64 bit is not an option.
+When VLAN awareness is disabled, the packet is still classified with the
+pvid. But, later all rules regarding VLANs (except for the PCP field)
+are ignored then. So, the programmed pvid doesn't matter in this case.
 
-Fix the issue by preventing 32 bit integer overflows in
-tabledist. Also, instead of truncating s64 integer to s32, truncate it
-to u32, as negative standard deviation does not make sense anyway.
+The only way to implement the non-filtering bridge behavior is this
+flag. However, this has some more implications. For instance when
+there's a non filtering bridge, then standalone mode doesn't work
+anymore due to the VLAN unawareness. This is not a problem at the
+moment, because there are only two ports. But, later when there are more
+ports, then having two ports in a non-filtering bridge and one in
+standalone mode doesn't work. That's another limitation that needs to be
+considered when adding more ports later on.
 
-Reported-by: syzbot+ec762a6342ad0d3c0d8f@syzkaller.appspotmail.com
-Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
----
- net/sched/sch_netem.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+Besides that problem everything else seem to work now in accordance to
+the expected Linux behavior with roper restrictions in place.
 
-diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
-index 84f82771cdf5..d8b0bf1b5346 100644
---- a/net/sched/sch_netem.c
-+++ b/net/sched/sch_netem.c
-@@ -315,7 +315,7 @@ static bool loss_event(struct netem_sched_data *q)
-  * std deviation sigma.  Uses table lookup to approximate the desired
-  * distribution, and a uniformly-distributed pseudo-random source.
-  */
--static s64 tabledist(s64 mu, s32 sigma,
-+static s64 tabledist(s64 mu, u32 sigma,
- 		     struct crndstate *state,
- 		     const struct disttable *dist)
- {
-@@ -329,8 +329,14 @@ static s64 tabledist(s64 mu, s32 sigma,
- 	rnd = get_crandom(state);
- 
- 	/* default uniform distribution */
--	if (dist == NULL)
-+	if (!dist) {
-+		/* Sigma is too big to perform 32 bit division.
-+		 * Use the widest possible deviation.
-+		 */
-+		if ((u64)sigma * 2ULL >= U32_MAX)
-+			return mu + rnd - U32_MAX / 2;
- 		return ((rnd % (2 * sigma)) + mu) - sigma;
-+	}
- 
- 	t = dist->table[rnd % dist->size];
- 	x = (sigma % NETEM_DIST_SCALE) * t;
-@@ -533,7 +539,10 @@ static int netem_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 		u64 now;
- 		s64 delay;
- 
--		delay = tabledist(q->latency, q->jitter,
-+		/* tabledist is unable to handle 64 bit jitters yet, so we adjust it beforehand */
-+		u32 constrained_jitter = q->jitter > 0 ? min_t(u32, q->jitter, U32_MAX) : 0;
-+
-+		delay = tabledist(q->latency, constrained_jitter,
- 				  &q->delay_cor, q->delay_dist);
- 
- 		now = ktime_get_ns();
+Thanks,
+Kurt
 
-base-commit: bbf5c979011a099af5dc76498918ed7df445635b
--- 
-2.29.0.rc1.297.gfa9743e501-goog
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl+JjdoACgkQeSpbgcuY
+8KawTRAApd17ogXfDyCUUBFpdZRzcN3ZT/aBd6wyHTIKK/fQ2rCK4jxGUW1ORBLN
+98NmmpclKVZy6E1tYZXMtIcUwObg9bSCSLcePhdF+vJKAwyueBmG54HYtGaqpbas
+hOQqgwUGNpCywwQaHKoU72gOU5H/R3NgUZu9124mcGbMkH8ZbRZ7vnCqUITTZ6Rg
+2t5vYaXjQJ1vnX7epOmoWaMKUXPPct6IdLB2xqMA67+5b1PyVTBgeets1LmaP8sb
+x3mcfuGa/l1o/ZiXoULZjMDXQ1TJDz5KkKB0USfPbEm3dC8W2V9yfNehYR8J5r8C
+C8mETidBoGVd9LPfxDzwRQqyeNti1WzMa0nZRmZRdrRhECxGhnyajbdclitAb2J3
+RqUIkFWW3vKp9PSo5Q0vbaRuxEX3vOG6VBTCURR6JJ+pYyKHFc2M+ZLenYpVFukX
+TyFIFYIp6HZCydzcc2cslwdvXEFpMfWRP+UOtkR7S+Zx+ZLvYXDem5PBrpTSwKwJ
+Ns56XQf0B1y0TWtU8j5iN3boUVoxcfcg8LbgKCpUMyN2tLoPiCZBqbTiGDe5I9GR
+ZgLa6vCt4E/hPrUKVWiuSNM/QSC2hCa472a+46YaoIvnk0Mr5MHovI4BO2/lOdWk
+MXnMAQws63TzyT/NfuPkbQ+oEFRqd5ADHQqswE4lR5Ycst90Gr8=
+=LUio
+-----END PGP SIGNATURE-----
+--=-=-=--
