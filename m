@@ -2,71 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C02B629021A
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 11:43:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7599229023C
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 11:53:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406098AbgJPJlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 05:41:25 -0400
-Received: from smtp44.i.mail.ru ([94.100.177.104]:46514 "EHLO smtp44.i.mail.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405757AbgJPJlY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Oct 2020 05:41:24 -0400
-X-Greylist: delayed 9749 seconds by postgrey-1.27 at vger.kernel.org; Fri, 16 Oct 2020 05:41:23 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=VxtFqTzKn8D1XEyz/xBV/bsI+NnzNkxZyb+HkVyGK4o=;
-        b=iCKbaE7MHLkPhTP8TK9Xz1ih1crZT5Wlr/PuSb7hQZiVUz0FnieQVsDzrVTvkA2+W7eJVK/J4YoP+9qe2VzGFWe30CF5UUan4t6j2+dploZ0LiWQDbpsRre+dxK+LDQMDYHsaaE4QJ1Mk/oBnsIOqPvD303fbzyc5aUidTvQsXU=;
-Received: by smtp44.i.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
-        id 1kTMEi-0003oD-Gq; Fri, 16 Oct 2020 12:41:20 +0300
-From:   Maxim Kochetkov <fido_max@inbox.ru>
-To:     netdev@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Maxim Kochetkov <fido_max@inbox.ru>
-Subject: [PATCH v3 1/1] net: dsa: seville: the packet buffer is 2 megabits, not megabytes
-Date:   Fri, 16 Oct 2020 12:41:55 +0300
-Message-Id: <20201016094155.532088-1-fido_max@inbox.ru>
-X-Mailer: git-send-email 2.27.0
+        id S2405764AbgJPJxK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 05:53:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39634 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2394309AbgJPJxJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 05:53:09 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AC7FC061755
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 02:53:08 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id t18so1857375ilo.12
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 02:53:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=cvCOy9gmWwEIGoAvKN1wTgWgmqeY7BJZiB7+75Zr3Co=;
+        b=azwHXmtdPCiJsYliYGpApVetFnvHJA0/1l77B2B7nUbv8rIYH7lNHxm9Y1MyyOReW4
+         eqOJuVrnSzV/ktVXiqsrwEHB4aYfAA/JqgDQ8X5CNY4JSmE40e9mHaGMn/fxuun2abXd
+         mIULp1VLlYOU8WKJrt/j8p5hrJpTqWlIIL5K5wIJUmUePIooPnXry773zYq4a84QnFTT
+         oZrLhcOnmueYW+jEqoITK/t7OJ33YMIvIz9hko58H/1nti80yrLuaUiaEFmsDk4cdGTP
+         n1WnME2RQWZr9DapX/GyVROReImiTiN/DORZ/NXTbDVM3d6qxmznpBD89F7ChgM3q3ra
+         cL9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=cvCOy9gmWwEIGoAvKN1wTgWgmqeY7BJZiB7+75Zr3Co=;
+        b=UbK5rOVtRTOQkm2L+oi8xmplYVmaZ9elNdZpFc0xj84xGYgf+HlGn3HmqIA1ZparTM
+         6Dyih0V2xmh8Cbp5q5SYq5wJ+C72Y/S+JQKBA0WEgsEguAeeTVm1StxPaJARrGiXTssP
+         LSIoOYUpDI5pa2jN3oM2uKLg61U+IJKWO5XYM/UEymppD6A/U3z6zrsU0YVQ63MUzcAE
+         2UDJvNQrxv2hxxUiXhr4WniOyZQNPjWGEQ2kdgxiC002uG1HV5nBrDmZi69L8Iw9Hikj
+         VjLSqL9CqDLJJ61Kneobfv3QS/lHAipLGmBClKxe7YuBnJP03SSSbWmhkYjFqJyVb7Qf
+         UQzw==
+X-Gm-Message-State: AOAM530l63uZD0kiySp0LEkdB5YHCpDNsubXekX3sH2inf2iqu56Guva
+        GINNikK4efMgDKS/aubFT7duALYbgSrR/XquMU4=
+X-Google-Smtp-Source: ABdhPJw30Awhex/Oro7fwUKpVR3X2haAokgEJlKiRE05+wgKSZZcM2UxlsevIODBfP76/4pbrkLOjYt14YuGuhYLVRA=
+X-Received: by 2002:a05:6e02:128d:: with SMTP id y13mr2029573ilq.44.1602841987547;
+ Fri, 16 Oct 2020 02:53:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Authentication-Results: smtp44.i.mail.ru; auth=pass smtp.auth=fido_max@inbox.ru smtp.mailfrom=fido_max@inbox.ru
-X-7564579A: B8F34718100C35BD
-X-77F55803: 4F1203BC0FB41BD9E98D7292067252302C0E76C52979D672675FED68DAFAF9FC182A05F538085040F0F085F7325A13BE9F0A50A0FFDA5A3FAD68637CE4A81A5F8879B4B06EC84300
-X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE7DECE8D0A5E25C0FCEA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F79006370D3D68FCEFFDD9EA8638F802B75D45FF5571747095F342E8C7A0BC55FA0FE5FCB9D2E28F37CB8F4A2E6A346629DEDBF9B1FAF873BDB81B56389733CBF5DBD5E913377AFFFEAFD269176DF2183F8FC7C06030C3405640F6718941B15DA834481FCF19DD082D7633A0E7DDDDC251EA7DABA471835C12D1D977725E5C173C3A84C3E478A468B35FE767117882F4460429728AD0CFFFB425014E592AE0A758652A3D76E601842F6C81A19E625A9149C048EE7532CA1512B81981FCB1554B277F7060D8FC6C240DEA76429449624AB7ADAF37B2D370F7B14D4BC40A6AB1C7CE11FEE3540F9B2D9BA47D5603F1AB874ED89028C4224003CC8364767A15B7713DBEF166A7F4EDE966BC389F9E8FC8737B5C224959DF8EA86ED09BA9089D37D7C0E48F6CCF19DD082D7633A0E7DDDDC251EA7DABAAAE862A0553A39223F8577A6DFFEA7C4BBCEF8A9559A4AE43847C11F186F3C5E7DDDDC251EA7DABCC89B49CDF41148FA8EF81845B15A4842623479134186CDE6BA297DBC24807EABDAD6C7F3747799A
-X-C8649E89: 0D0D877C87F70461655CE65291C019C320FB086E9003A5B2FD2A454D30892B09E3D94FCD835E4469
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojYVZa6UGX9HTn7u1vVV2ahQ==
-X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB242BE1615B0E2CD00D5493889C515CF79CBBE8FF8006AF1AAFEE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
+Received: by 2002:a6b:3b15:0:0:0:0:0 with HTTP; Fri, 16 Oct 2020 02:53:07
+ -0700 (PDT)
+Reply-To: bukarmangora@hotmail.com
+From:   Bukar Mangora <bukarmangora@gmail.com>
+Date:   Fri, 16 Oct 2020 09:53:07 +0000
+Message-ID: <CAJLrak_REzJbR5VgzjKqtAVcDqCR=6DGog3Q-GdojQQfOvc+Sw@mail.gmail.com>
+Subject: From Bukar Mangora, Hello Friend Please Treat Urgent
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The VSC9953 Seville switch has 2 megabits of buffer split into 4360
-words of 60 bytes each. 2048 * 1024 is 2 megabytes instead of 2 megabits.
-2 megabits is (2048 / 8) * 1024 = 256 * 1024.
+Good day my good friend.
+How are you doing today? It has been long i hear from you, what is
+going on your side? Today i am very much happy to inform you about my
+success in getting those inheritance funds transferred under the
+co-operation of a new partner from India Asia. He is a Canadian but
+based in India, but presently I'm in India for investment projects
+with my own share of the total sum of Millions of dollars. meanwhile,
+i didn't forget your past efforts and attempts to assist me in
+transferring those inheritance funds despite that it failed us
+somehow, i want you to contact my Secretary in Lom=C3=A9 Togo, his name is
+Mr. Paul Agwa, this is his email address (paulagwad@aol.com ), ask him
+to contact Ecobank were i kept the sum of $350,000.00, for your
+compensation, this compensation fund is for all the past efforts and
+attempts to assist me in the past transaction. I appreciated your
+efforts at that time very much.  so, feel free and contact my
+secretary, and instruct him where Ecobank will transfer the total sum
+of $350,000.00.
 
-Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Fixes: a63ed92d217f ("net: dsa: seville: fix buffer size of the queue system")
----
- drivers/net/dsa/ocelot/seville_vsc9953.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Please do let me know immediately Ecobank transfer the fund
+$350.000.00 into your own bank account, in the moment, I am too busy
+here because of the investment projects which i am having with my new
+partner at hand, so get in touch with Mr. Paul Agwa on his email
+address, he will contact Ecobank on your behalf without any delay.
+Stay safe of Covid 19.
 
-diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-index 9e9fd19e1d00..e2cd49eec037 100644
---- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-+++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-@@ -1010,7 +1010,7 @@ static const struct felix_info seville_info_vsc9953 = {
- 	.vcap_is2_keys		= vsc9953_vcap_is2_keys,
- 	.vcap_is2_actions	= vsc9953_vcap_is2_actions,
- 	.vcap			= vsc9953_vcap_props,
--	.shared_queue_sz	= 2048 * 1024,
-+	.shared_queue_sz	= 256 * 1024,
- 	.num_mact_rows		= 2048,
- 	.num_ports		= 10,
- 	.mdio_bus_alloc		= vsc9953_mdio_bus_alloc,
--- 
-2.27.0
-
+Best regards,
+Bukar Mangora.
