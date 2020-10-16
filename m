@@ -2,90 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82770290B01
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 19:55:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1480290B02
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 19:56:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388272AbgJPRzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 13:55:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58048 "EHLO
+        id S2390202AbgJPR4Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 13:56:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731123AbgJPRzB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 13:55:01 -0400
-Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9758C061755
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 10:54:59 -0700 (PDT)
-Received: by mail-vs1-xe30.google.com with SMTP id r1so1891454vsi.12
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 10:54:59 -0700 (PDT)
+        with ESMTP id S2389903AbgJPR4Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 13:56:24 -0400
+Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53E8C061755
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 10:56:22 -0700 (PDT)
+Received: by mail-vs1-xe42.google.com with SMTP id w25so1897478vsk.9
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 10:56:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=T7RmkCdURX7edIG7MLMiHxalXn5YtiMab+pTqubB6tw=;
-        b=MUZiz6bzwdvEZkYGYpJEXkrRo5wGlY8pFogDdaVprzDpbSAkLIc+1tMXaEaLt4Ey1y
-         bIl7MnUwj0cchYfy0Y5e+csEBieHnWDFmRlxy5W+Xy4O8gPeGKIKA2MW7Z1iouAZ9tcc
-         OXY4f3Bdl/6D7GDMkeRLb5KBnIO4SRQhzRa8mACMcYmf4tv79zu2mPwWS+ugM73xSOvj
-         3gG7K2i9AafR+0zNMU4xyW9BFBfWS0dTBc62LqBrECZRab6iRatCLNyK6okJRmyyPGCb
-         3OmkAy8aEwD9YRnTS2mDRy5q8NBIEQYlLgvdnMNgTROBzZmjFHgP14i8gY9lBzxT3/GC
-         1URg==
+        bh=SaoQ+PY8WdgXWfG4Tr/QI8n9nsnA3ZBVl2uXb5YE3hI=;
+        b=fW3rcEBw042PWje7Uf+WZJBUg03pPhUNaGNaK8oOaFY+BZCuelxigvg/JiEl2cHQzn
+         FLTq1lh8GwQaG9Do6SzDtaB6pF67cLDkdzeYGxaxN2pPfElAgpGweOrNfY7Da+fROUwb
+         i7sD0bwYVpnAPeBFxWCOrUlNYglfbh6ljJgh9TaiW3MFMvU89uTz+eiGuklBHR/k7GTf
+         Vf5xfAU7NAdixsSGLQcWZwQmT44J3BUX/RhJ8jMHkRvWvMImfvSW6kY7jqHzxYpG0aEh
+         9N3NN9PJ6u/h04Dh/xCTodofcPMjzHujzTxOETr8T25l0LvA27zcOEE6BAR2y8n8R2Bp
+         RqMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=T7RmkCdURX7edIG7MLMiHxalXn5YtiMab+pTqubB6tw=;
-        b=JwLCEWXAk72hhvA5l9DAJOtixNjorKJAsfjVFmllsBOz6SR6z4/sgiAImPI5ERy/6k
-         9UtN/8frSi5MZAusY3gTGXiNYDJJ2RXElR7ge6ZzrIDkQPjB/mY0F+7jefBbx7GTRAHx
-         Za6nOmenTcsBQojhhCHi6gLetqMrMUquMsJ8o7fCxX77yBTgYz4elhuiiX+5X3Q1dlZl
-         cuTJMAB1FwTQiWbrJF7R7ZZyJmLYBwMQFYVe2AUs/XJS/PiUSWBXEzpjSDQ39gUI6raT
-         +5aTw7jIybQh2Wdzq1G8fP3kN5by9YZPpPscCgzsfHNzw4QEHWuy91k2ji+uxVX2t9Ez
-         +vHw==
-X-Gm-Message-State: AOAM531V92/B2Fc+d1dGxTiQin2bR7/3ijuwjmjJpI1/1yzyEycz/Utm
-        7xYhbVOCgEbjCnZPjcNg71/x7HPgfUsPPYczSBpflQ==
-X-Google-Smtp-Source: ABdhPJwxuwGVOTSPysQt9ug5K7hY4YgSxIT6hXbqyjNsNYmzmIQ0Xo2QDL/EwRnOaXRJ82JYT3C/CorvfDErgR8kZ40=
-X-Received: by 2002:a67:de18:: with SMTP id q24mr3036609vsk.54.1602870898321;
- Fri, 16 Oct 2020 10:54:58 -0700 (PDT)
+        bh=SaoQ+PY8WdgXWfG4Tr/QI8n9nsnA3ZBVl2uXb5YE3hI=;
+        b=fwe6fIqAp96/PAARDveT44Qa1SDItOfRQbvmBHeLNnnjxxEtbp/aJs7KFy86Ew5zOv
+         QKNc8OAQNCM/WoRDRIVLIV9K9faWgXoWXCp8D0YoWkGLxuQOg1hRiggc/PkFJMIGixOR
+         Jn2E9zY/f6BAKcC7JLeMIpx8BVeMxcH7Hpsb9/6bcM/55cauf/3upfK7Omg7sKWxC4+K
+         n9REPjE6W8zHdMaeKZyTYQJmHERjn0XPG7oAgWo4ubfFKflKHDtQXloEEr/2YnCSvvPM
+         djuhJiYt5DKYqvWZ9pz/gJh0b+utgHMjRR3nRCZNcLaJxohCkAeZnY7p5Tmh7N9POA38
+         1TaA==
+X-Gm-Message-State: AOAM533RdgkW6rzc77H+KA9lrplSgh/JY8A34B7LC/ggwBGSZzahBKHt
+        027vxQGA7QSbNB8QKzwpmgWztB17N1E=
+X-Google-Smtp-Source: ABdhPJxJhmpc1AnrgA3R95DXrX4c40QREtYbUotqQMo/4QRhZgxChFay6DWOjOVN3utHtThhwT+xJA==
+X-Received: by 2002:a05:6102:208e:: with SMTP id h14mr3272796vsr.42.1602870981660;
+        Fri, 16 Oct 2020 10:56:21 -0700 (PDT)
+Received: from mail-vs1-f54.google.com (mail-vs1-f54.google.com. [209.85.217.54])
+        by smtp.gmail.com with ESMTPSA id a64sm433738vkh.3.2020.10.16.10.56.20
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 16 Oct 2020 10:56:20 -0700 (PDT)
+Received: by mail-vs1-f54.google.com with SMTP id p25so1912414vsq.4
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 10:56:20 -0700 (PDT)
+X-Received: by 2002:a67:d84:: with SMTP id 126mr2931254vsn.51.1602870980343;
+ Fri, 16 Oct 2020 10:56:20 -0700 (PDT)
 MIME-Version: 1.0
-References: <87eelz4abk.fsf@marvin.dmesg.gr> <CADVnQym6OPVRcJ6PdR3hjN5Krcn0pugshdLZsrnzNQe1c52HXA@mail.gmail.com>
- <CAK6E8=fCwjP47DvSj4YQQ6xn25bVBN_1mFtrBwOJPYU6jXVcgQ@mail.gmail.com>
- <87blh33zr7.fsf@marvin.dmesg.gr> <CADVnQym2cJGRP8JnRAdzHfWEeEbZrmXd3eXD-nFP6pRNK7beWw@mail.gmail.com>
- <878sc63y8j.fsf@marvin.dmesg.gr>
-In-Reply-To: <878sc63y8j.fsf@marvin.dmesg.gr>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Fri, 16 Oct 2020 13:54:41 -0400
-Message-ID: <CADVnQymc0cVqfBmRVeERrrTOSJOpScdz8_HCU6yDWNREz9TG3g@mail.gmail.com>
-Subject: Re: TCP sender stuck in persist despite peer advertising non-zero window
-To:     Apollon Oikonomopoulos <apoikos@dmesg.gr>
-Cc:     Yuchung Cheng <ycheng@google.com>, Netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
+References: <20201016111156.26927-1-ovov@yandex-team.ru>
+In-Reply-To: <20201016111156.26927-1-ovov@yandex-team.ru>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 16 Oct 2020 13:55:43 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSe5szAPV0qDVU1Qa7e-XH6uO4eWELfzykOvpb0CJ0NbUA@mail.gmail.com>
+Message-ID: <CA+FuTSe5szAPV0qDVU1Qa7e-XH6uO4eWELfzykOvpb0CJ0NbUA@mail.gmail.com>
+Subject: Re: [PATCH net] ip6_tunnel: set inner ipproto before ip6_tnl_encap.
+To:     Alexander Ovechkin <ovov@yandex-team.ru>
+Cc:     Network Development <netdev@vger.kernel.org>, vfedorenko@novek.ru
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 16, 2020 at 12:57 PM Apollon Oikonomopoulos
-<apoikos@dmesg.gr> wrote:
+On Fri, Oct 16, 2020 at 7:14 AM Alexander Ovechkin <ovov@yandex-team.ru> wrote:
 >
-> Neal Cardwell <ncardwell@google.com> writes:
-> > On Thu, Oct 15, 2020 at 6:12 PM Apollon Oikonomopoulos <apoikos@dmesg.gr> wrote:
-> >> Neal, would it be possible to re-send the patch as an attachment? The
-> >> inlined version does not apply cleanly due to linewrapping and
-> >> whitespace changes and, although I can re-type it, I would prefer to test
-> >> the exact same thing that would be merged.
-> >
-> > Sure, I have attached the "git format-patch" format of the commit. It
-> > does seem to apply cleanly to the v4.9.144 kernel you mentioned you
-> > are using.
-> >
-> > Thanks for testing this!
+> ip6_tnl_encap assigns to proto transport protocol which
+> encapsulates inner packet, but we must pass to set_inner_ipproto
+> protocol of that inner packet.
 >
-> We are now running the patched kernel on the machines involved. I want
-> to give it some time just to be sure, so I'll get back to you by
-> Thursday if everything goes well.
+> Calling set_inner_ipproto after ip6_tnl_encap might break gso.
+> For example, in case of encapsulating ipv6 packet in fou6 packet, inner_ipproto
+> would be set to IPPROTO_UDP instead of IPPROTO_IPV6. This would lead to
+> incorrect calling sequence of gso functions:
+> ipv6_gso_segment -> udp6_ufo_fragment -> skb_udp_tunnel_segment -> udp6_ufo_fragment
+> instead of:
+> ipv6_gso_segment -> udp6_ufo_fragment -> skb_udp_tunnel_segment -> ip6ip6_gso_segment
+>
+> Signed-off-by: Alexander Ovechkin <ovov@yandex-team.ru>
 
-Great. Thanks, Apollon, for testing this!
+Commit 6c11fbf97e69 ("ip6_tunnel: add MPLS transmit support") moved
+the call from ip6_tnl_encap's caller to inside ip6_tnl_encap.
 
-Thanks, Eric. I will include the link you suggested in the next rev of
-the patch.
+It makes sense that that likely broke this behavior for UDP (L4) tunnels.
 
-thanks,
-neal
+But it was moved on purpose to avoid setting the inner protocol to
+IPPROTO_MPLS. That needs to use skb->inner_protocol to further
+segment.
+
+I suspect we need to set this before or after conditionally to avoid
+breaking that use case.
