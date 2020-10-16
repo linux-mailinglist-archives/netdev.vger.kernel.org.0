@@ -2,100 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 44882290A6A
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 19:16:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D877290A6D
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 19:17:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390356AbgJPRQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 13:16:22 -0400
-Received: from smtp11.smtpout.orange.fr ([80.12.242.133]:59793 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728367AbgJPRQR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 13:16:17 -0400
-Received: from tomoyo.flets-east.jp ([153.230.197.127])
-        by mwinf5d46 with ME
-        id ghG42300F2lQRaH03hGCKe; Fri, 16 Oct 2020 19:16:16 +0200
-X-ME-Helo: tomoyo.flets-east.jp
-X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
-X-ME-Date: Fri, 16 Oct 2020 19:16:16 +0200
-X-ME-IP: 153.230.197.127
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH v4 1/4] can: dev: can_get_echo_skb(): prevent call to kfree_skb() in hard IRQ context
-Date:   Sat, 17 Oct 2020 02:13:30 +0900
-Message-Id: <20201016171402.229001-2-mailhol.vincent@wanadoo.fr>
+        id S1733160AbgJPRQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 13:16:57 -0400
+Received: from mailout08.rmx.de ([94.199.90.85]:48128 "EHLO mailout08.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730958AbgJPRQ5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Oct 2020 13:16:57 -0400
+Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout08.rmx.de (Postfix) with ESMTPS id 4CCXrN5QytzN1M8;
+        Fri, 16 Oct 2020 19:16:52 +0200 (CEST)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin02.retarus.com (Postfix) with ESMTPS id 4CCXqc07dDz2TTMX;
+        Fri, 16 Oct 2020 19:16:12 +0200 (CEST)
+Received: from N95HX1G2.wgnetz.xx (192.168.54.12) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Fri, 16 Oct
+ 2020 19:16:11 +0200
+From:   Christian Eggers <ceggers@arri.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+CC:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Christian Eggers <ceggers@arri.de>
+Subject: [PATCH net] net: dsa: tag_ksz: KSZ8795 and KSZ9477 also use tail tags
+Date:   Fri, 16 Oct 2020 19:16:03 +0200
+Message-ID: <20201016171603.10587-1-ceggers@arri.de>
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201016171402.229001-1-mailhol.vincent@wanadoo.fr>
-References: <20201016171402.229001-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.54.12]
+X-RMX-ID: 20201016-191612-4CCXqc07dDz2TTMX-0@kdin02
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If a driver calls can_get_echo_skb() during a hardware IRQ (which is
-often, but not always, the case), the 'WARN_ON(in_irq)' in
-net/core/skbuff.c#skb_release_head_state() might be triggered, under
-network congestion circumstances, together with the potential risk of
-a NULL pointer dereference.
+The Marvell 88E6060 uses tag_trailer.c and the KSZ8795, KSZ9477 and
+KSZ9893 switches also use tail tags.
 
-The root cause of this issue is the call to kfree_skb() instead of
-dev_kfree_skb_irq() in net/core/dev.c#enqueue_to_backlog().
-
-This patch prevents the skb to be freed within the call to netif_rx()
-by incrementing its reference count with skb_get(). The skb is finally
-freed by one of the in-irq-context safe functions:
-dev_consume_skb_any() or dev_kfree_skb_any().  The "any" version is
-used because some drivers might call can_get_echo_skb() in a normal
-context.
-
-The reason for this issue to occur is that initially, in the core
-network stack, loopback skb were not supposed to be received in
-hardware IRQ context. The CAN stack is an exeption.
-
-This bug was previously reported back in 2017 in [1] but the proposed
-patch never got accepted.
-
-While [1] directly modifies net/core/dev.c, we try to propose here a
-smoother modification local to CAN network stack (the assumption
-behind is that only CAN devices are affected by this issue).
-
-[1] https://patchwork.ozlabs.org/patch/835236/
-
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Fixes: 7a6ffe764be3 ("net: dsa: point out the tail taggers")
+Signed-off-by: Christian Eggers <ceggers@arri.de>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
+On Friday, 16 October 2020, 18:56:51 CEST, Vladimir Oltean wrote:
+> Hi Christian,
+> 
+> The idea is perfect but the commit isn't.
+>  ...
+> Now if you run
+> "git show 7a6ffe764be35af0527d8cfd047945e8f8797ddf --pretty=fixes",
+> you'll see:
+> 
+> Fixes: 7a6ffe764be3 ("net: dsa: point out the tail taggers")
+thanks for pointing out how to use this feature. I did this manually up to now.
 
-Changes in v3 and v4: None
+> Notice how there's no [net] tag?
+> People complain when the format of the Fixes: tag is not standardized.
+I added it manually because the commit ID is not from Linus' tree. Is there any
+value using Fixes tags with id's from other trees?
 
-Changes in v2:
- - Minor changes of link format in the changelog.
----
- drivers/net/can/dev.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+regards
+Christian
 
-diff --git a/drivers/net/can/dev.c b/drivers/net/can/dev.c
-index b70ded3760f2..73cfcd7e9517 100644
---- a/drivers/net/can/dev.c
-+++ b/drivers/net/can/dev.c
-@@ -538,7 +538,11 @@ unsigned int can_get_echo_skb(struct net_device *dev, unsigned int idx)
- 	if (!skb)
- 		return 0;
+ net/dsa/tag_ksz.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/dsa/tag_ksz.c b/net/dsa/tag_ksz.c
+index 945a9bd5ba35..0a5aa982c60d 100644
+--- a/net/dsa/tag_ksz.c
++++ b/net/dsa/tag_ksz.c
+@@ -123,6 +123,7 @@ static const struct dsa_device_ops ksz8795_netdev_ops = {
+ 	.xmit	= ksz8795_xmit,
+ 	.rcv	= ksz8795_rcv,
+ 	.overhead = KSZ_INGRESS_TAG_LEN,
++	.tail_tag = true,
+ };
  
--	netif_rx(skb);
-+	skb_get(skb);
-+	if (netif_rx(skb) == NET_RX_SUCCESS)
-+		dev_consume_skb_any(skb);
-+	else
-+		dev_kfree_skb_any(skb);
+ DSA_TAG_DRIVER(ksz8795_netdev_ops);
+@@ -199,6 +200,7 @@ static const struct dsa_device_ops ksz9477_netdev_ops = {
+ 	.xmit	= ksz9477_xmit,
+ 	.rcv	= ksz9477_rcv,
+ 	.overhead = KSZ9477_INGRESS_TAG_LEN,
++	.tail_tag = true,
+ };
  
- 	return len;
- }
+ DSA_TAG_DRIVER(ksz9477_netdev_ops);
 -- 
-2.26.2
+Christian Eggers
+Embedded software developer
+
+Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
+Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
+Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
 
