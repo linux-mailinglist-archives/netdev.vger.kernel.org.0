@@ -2,99 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05AAE290952
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 18:07:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E894B290968
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 18:11:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2409202AbgJPQHt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 12:07:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41466 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2395322AbgJPQHt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 12:07:49 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED1B1C061755
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 09:07:47 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id q63so2339627qkf.3
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 09:07:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=o0gYhmEzcMEprls/DJVzSMZqHL9O3JXuw3Ia+lARi8U=;
-        b=j85YRmhdSzO/yKn1LZSjgP4H6qzVlNrauzbpre5CQL4zkoXfF9pnUcn5agSkxYFZyA
-         G+31xRyEcQ5K3DezdydXyRrJkTjiHoSm/m2vA0uvFGLlqkl1/WeueX04soJo6DATJkx+
-         yiQ9bcuhqBOVJqjtCxP3yc0P5w1tp9ZI7skQgbZejdry8LUU633gJ/DfRZwmqfRKMD5E
-         pWQYE6lyIlBHPB7BX5DptXbGJOJ4KoIsVI2LjiU7uNaFokK/Q9fGJ3FirKeds0Nsoq4B
-         s3lnCUFdveOuNRdauj5Hf3u2Wbw9vD0Rh17xUYnaLbE34a6whdruXsUVsS+nZO0NajaM
-         q4PA==
+        id S2410660AbgJPQL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 12:11:29 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:35591 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2407134AbgJPQL3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 12:11:29 -0400
+Received: by mail-oi1-f193.google.com with SMTP id w141so3012886oia.2;
+        Fri, 16 Oct 2020 09:11:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=o0gYhmEzcMEprls/DJVzSMZqHL9O3JXuw3Ia+lARi8U=;
-        b=eX3YjqELsk2hv86K5FsTm+RL6GLrsOhb6py4k5R+DIK7BCU7hBvNXUrCnnY5N7yRt1
-         zu5mN86uuaHfb5C/ELHprtguF5XUnUIsqFhlFWkgYrvVZA0zS7DTT6pNxFh+74IXf4qJ
-         oe6Rp68ENWUWd+usaXgbdJI5R/5HXV32iLVKQS/UDqToKIJW1NW0KR73k2C4Z3FL7gtv
-         QkR7unUnFhFYPEsO3wbCsCtRCUY0tdxFDOnHpG67MP9N0cJU5cEa1LeqUh71MyeBvSRg
-         ko1/ciKxf1oypEVtv18SCvzrMgWflP0qf9vpJduhV9biMqhwKGGfN37VGOZfzTKMSjkM
-         Bz0g==
-X-Gm-Message-State: AOAM533iv33LGY9ATBXK4HJhgGGg+PRW4mgDiRVRZSQs5kW5eoiC+BfR
-        R6qLw5RI/AhOgN0W8/7WZVX2Kg==
-X-Google-Smtp-Source: ABdhPJz8Xk1O9+8JlDCtBAF0k7l0Wiej1w+IhD2XMF3NaPauUPT0n2ho+yzX8Sh80HCP0R7qtUnmvg==
-X-Received: by 2002:a05:620a:127c:: with SMTP id b28mr4679375qkl.491.1602864467183;
-        Fri, 16 Oct 2020 09:07:47 -0700 (PDT)
-Received: from [192.168.2.28] (bras-base-kntaon1617w-grc-10-184-147-165-106.dsl.bell.ca. [184.147.165.106])
-        by smtp.googlemail.com with ESMTPSA id 82sm1000834qke.130.2020.10.16.09.07.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 16 Oct 2020 09:07:46 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next v3 2/2] tc: implement support for terse dump
-To:     Vlad Buslov <vladbu@nvidia.com>, dsahern@gmail.com,
-        stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, ivecera@redhat.com,
-        vlad@buslov.dev, Vlad Buslov <vladbu@mellanox.com>
-References: <20201016144205.21787-1-vladbu@nvidia.com>
- <20201016144205.21787-3-vladbu@nvidia.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <0bb6f625-c987-03d7-7225-eee03345168e@mojatatu.com>
-Date:   Fri, 16 Oct 2020 12:07:45 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rEAPxl1KjgfwVme9xwT1MzPMtYY7qqr5iqswWViBBoA=;
+        b=bbFcIM5rX6uuJFdYkQ0K3HSej5LzoJsBuzalkzrCGjbZwpXWW0MWDaCKhWifVtNVKo
+         RMW4PE0PURhAvCExsoHBzj7FV7AyOsVRh7tZjU5GUnlVdoPfPQDtLj9dqfwKaVibklnb
+         xqxlcxhuBJ/0LxMm/YHOw7zxePUUGSXLCQLVlqQ4vq6qVa+A3N3oScvNcV1dHU/jFtMW
+         rND3l+h33WATlK/1Od/Uysh8nofrmI6B3069uYE0blD0p7PxXkB4gNESbmPW6r2JNngb
+         0GcYtFt4/7KTEGpznqPWhKDAoGl+wwcEZr4BP8LUWWl02MwImYT0neUVnHIO6kl7p4CC
+         tzTg==
+X-Gm-Message-State: AOAM531dLqg7vpY85NKMosAhr5r5xxL4AZg/q6vA+/Z1tU6fChDYOzlv
+        jtnYOhXsWQI4jetjFz2SZveWrdQTcA==
+X-Google-Smtp-Source: ABdhPJylcRl5VtXACVgCUXR3Yo/AvXoa+GOjkZt1qU4vIYR7pQmtadpwGpHRc3srxH8tyzjL0w9DTA==
+X-Received: by 2002:a05:6808:10e:: with SMTP id b14mr3083547oie.152.1602864688191;
+        Fri, 16 Oct 2020 09:11:28 -0700 (PDT)
+Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id j10sm1082858ota.56.2020.10.16.09.11.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Oct 2020 09:11:27 -0700 (PDT)
+Received: (nullmailer pid 1505308 invoked by uid 1000);
+        Fri, 16 Oct 2020 16:11:26 -0000
+Date:   Fri, 16 Oct 2020 11:11:26 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        mkl@pengutronix.de, netdev@vger.kernel.org, kernel@pengutronix.de,
+        linux-can@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        devicetree@vger.kernel.org,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v2 1/2] dt-bindings: can: add can-controller.yaml
+Message-ID: <20201016161126.GA1504381@bogus>
+References: <20201016073315.16232-1-o.rempel@pengutronix.de>
+ <20201016073315.16232-2-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20201016144205.21787-3-vladbu@nvidia.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201016073315.16232-2-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-10-16 10:42 a.m., Vlad Buslov wrote:
-> From: Vlad Buslov <vladbu@mellanox.com>
+On Fri, 16 Oct 2020 09:33:14 +0200, Oleksij Rempel wrote:
+> For now we have only node name as common rule for all CAN controllers
 > 
-> Implement support for classifier/action terse dump using new TCA_DUMP_FLAGS
-> tlv with only available flag value TCA_DUMP_FLAGS_TERSE. Set the flag when
-> user requested it with following example CLI (-br for 'brief'):
-> 
-> $ tc -s -brief filter show dev ens1f0 ingress
-> filter protocol all pref 49151 flower chain 0
-> filter protocol all pref 49151 flower chain 0 handle 0x1
->    not_in_hw
->          action order 1:         Action statistics:
->          Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
->          backlog 0b 0p requeues 0
-> 
-> filter protocol all pref 49152 flower chain 0
-> filter protocol all pref 49152 flower chain 0 handle 0x1
->    not_in_hw
->          action order 1:         Action statistics:
->          Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
->          backlog 0b 0p requeues 0
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  .../bindings/net/can/can-controller.yaml         | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/can/can-controller.yaml
 > 
 
-Should the action name at least show up?
+
+My bot found errors running 'make dt_binding_check' on your patch:
+
+./Documentation/devicetree/bindings/net/can/can-controller.yaml: $id: relative path/filename doesn't match actual path or filename
+	expected: http://devicetree.org/schemas/net/can/can-controller.yaml#
 
 
-cheers,
-jamal
+See https://patchwork.ozlabs.org/patch/1383115
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure dt-schema is up to date:
+
+pip3 install git+https://github.com/devicetree-org/dt-schema.git@master --upgrade
+
+Please check and re-submit.
+
