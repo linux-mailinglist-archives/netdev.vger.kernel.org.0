@@ -2,125 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 845022909FA
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 18:50:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA48E290A0C
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 18:56:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2410590AbgJPQu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 12:50:26 -0400
-Received: from mail-am6eur05on2072.outbound.protection.outlook.com ([40.107.22.72]:61792
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2409837AbgJPQu0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Oct 2020 12:50:26 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=V+bE0eSWejoLPebC8bJLUrs3bMd8JaTdHyXBg4rLaRRnFDQCwiJI+m/f7N+KAp9QIeZgh2MO369nri0AAG0I7sFRdTw1pcgxyL5Xu1Pqrn01SMWUVLWW6ezAW2MpZp/gpMxErB1TB3zuuoh82FA0sFtNE3DV6fyZisJ2gFjvEKD/i4wgfEHU6Twd4Fm7Hsd4d1Si5lQ+MNtBvncwUgR8tgUi+KscBs7PoPDMJbilqMY8TIrlzknMu7tzs6hOI45Hkg80cCtc0ttIKpP/WtZeEnGqM+wWp/L7l9aU1gNPamP2Z7zz6PHZXfo562vTsOOPZLghjprNT1mcjS2fCxESlA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jiFr4UXVWRFb/6C8p7jnlDkwt3rG7oVdtJXfRKbpS0M=;
- b=ZD4lzl8v4ylIsqy9uIIbHxDbFrAN614ttLu/nIctcpnAdxKVJFlpCGNhBn1DKGZXMEJHdMJlbahkSIldcMAfTNPjDl8vRqf5nj7pXlqFMVzQOHh6xS9WqEM+dwqZNVON/8SS8UnKs4kFwALjpZJRpfaE/0iuLNAmTXGja0GmQR4vV+/yD5FRVUILhkZTpTT2u1opWvaRvjEprXHld7wKRiqAc0RiCOCXzkmq8/F42vnbLGLJS7qXb5G4cP1+9rNsUfs1JHGEBAETlsrRW7PQuY/SBMQwUjt5+R+0G9vgnt7OZ/ZchgqFfK6Wzt0P9zPLJCLGwg6+R37Aw+839je3Xw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jiFr4UXVWRFb/6C8p7jnlDkwt3rG7oVdtJXfRKbpS0M=;
- b=p0tvaTV/X0+RNgHLJ9m/n9RT+blHeMGQ+HP0Zoqro62XuDIEja/9hJ5bZQyj+6CuxtM+bqOPAJ8x+KqnxUhAGZdtJCGTaJce/SzpKYSKC4YiA2Bz+hMLwdHG9JHQbGz7c7Pd0bRBLCSnGsxjsEkbQ67OhssT8Z2Nh6k4BG3r6kw=
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VE1PR04MB7343.eurprd04.prod.outlook.com (2603:10a6:800:1a2::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.24; Fri, 16 Oct
- 2020 16:50:23 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3477.020; Fri, 16 Oct 2020
- 16:50:23 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>
-Subject: Re: [RFC PATCH] net: bridge: call br_multicast_del_port before the
- port leaves
-Thread-Topic: [RFC PATCH] net: bridge: call br_multicast_del_port before the
- port leaves
-Thread-Index: AQHWoxlk3CgJjcYqVUG5/aECg5LB0qmaPloAgAA0UYA=
-Date:   Fri, 16 Oct 2020 16:50:22 +0000
-Message-ID: <20201016165021.fjrxiwofwfqespei@skbuf>
-References: <20201015173355.564934-1-vladimir.oltean@nxp.com>
- <ed19387091755aee165c074983776f37f2b87892.camel@nvidia.com>
-In-Reply-To: <ed19387091755aee165c074983776f37f2b87892.camel@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: nvidia.com; dkim=none (message not signed)
- header.d=none;nvidia.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.26.174.215]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 6b901356-18ec-4e6d-4aec-08d871f39315
-x-ms-traffictypediagnostic: VE1PR04MB7343:
-x-microsoft-antispam-prvs: <VE1PR04MB73434973C7C2689C7A193882E0030@VE1PR04MB7343.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: NKBX/mKebfYKEvIA3G7l0Y9pOY1OE2IfrbbDuyu2JsanVu6ikrp7/ENaIjaV92N/i5fFpWnuOkByt7IgcCsJHWt4D1Q8tcmLoFKn8cSAWHSYB8PtzQZyFoBDlfYGI807oPbV7Rg4NP+vhD5pgiPYSsB8yIEYjDcwK+VX11sId+Ti50ZrBoUbMbFeqe80t9UwB8rnOCXfJyPBEbW4VzI7JxmGgIEgZW2u0DXulWukTWl0ZK/EyCXkQMLZrb+YbcH9yaCMXFtEiY7eLqAFcVF6sTyUQ4PYnuDHAXtppyUQjLpspeM3IsFdfmKSDOuw3Xk2m1T+yPStN9kp7UyDX3ga3g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(136003)(366004)(39860400002)(396003)(376002)(346002)(186003)(6486002)(1076003)(4326008)(8676002)(8936002)(6506007)(2906002)(26005)(86362001)(71200400001)(6916009)(5660300002)(66556008)(316002)(33716001)(91956017)(478600001)(66476007)(6512007)(76116006)(66946007)(66446008)(44832011)(54906003)(3716004)(83380400001)(64756008)(9686003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: PuJ5Opea8tMIbWtYePpf06urNL2iJ4x4MfRAAga3RG7PGm8a/yV+R9M6JxtTiZFFgpKMc2/1LYXY6UmlzW1Qng4loaMCUPcxNMXrBopmAFljiqNxY4ZJd7xISpT3H/4CyTeYOo/4PMX4A20XZGmZiKahWF33J4eg7XGZkzQc47uEQXcUonIqb6sgJzXuGTV6yVNJCQoHVjDy6OLPepRHsRP/3QtRArWIOqOOpaJ+AE6CMQ0ZHyp1gHiK9DOK/1hT/wEv+Fhujj9ftmNgN+HYtApsKruplJ2IKGiOl7ft75mpTMMnQ/iLTR/mm0Mh2KLB7cb4jGDtfUCFad4wz5FxMdOreAG4bGjWw/fcqIi7a5A+MUIVBL+9YJMuXFjaiaYWta9uG+gn4qXAxlhQu4KoKEpHaAxncdc0vg/wCTMxCeXCJ9MJRHBEJuzAAG3bP/aghkYtmyFLMagMVzFVSsIQV8kAQpnbF0ux7hhUXxP2jv6R83LVnDO/kmPG8AOBVf9+NVsrJ5l0wRtXYGaaijx81Q7sJGiuGmz4mRGVukYKTd5TrFMg+RFApW8sg9NNDjxaf08mFMziIfSsZYMWfix3IIP1whHdjLRV+4R7Hyh62dTxLltw+giP7U2g2WIZZeb1pE6qE0eFZzU2zvapWLgtag==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <01BB5C912E1F944C867A03D3C92DBCC5@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S2410929AbgJPQ40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 12:56:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49006 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2410921AbgJPQ4Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 12:56:25 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB02AC061755;
+        Fri, 16 Oct 2020 09:56:25 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id d23so1595317pll.7;
+        Fri, 16 Oct 2020 09:56:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=1LFSgmI1+3+q3qHcEVi2fTpHvPU1hp/D33HWCvyJhrk=;
+        b=hCxBcYzTkOhkKs4GXc3AmnXHuv4RC1wC5jN6Mi36b07hflfy1MN6N6URB4l06wYE2O
+         Zhc8PcbpiqW740li2zYVDUiLtwRKFpKikNt0fb41Mk3xlHGkI9T7iFpLPNp/to/VIrcq
+         BMjdtSRGunDLw0IYZbqzhLw4Q11TY3dhbWuF3xvabaBioM3uZuJDT7gGZc2hKdhtkaes
+         o1aLd2tdU/gTh/Gto2boiWZ8mmAE2UZnVbYIV9c1GO9HTWmu5EogKj00th5K++i/59ts
+         wWELQPSLGMIIUpBQ9gVVFTPiv8ThROZq7NA0ZUZeuiTU0sKN3je2ifmAwp+FH4eK2HEp
+         jQaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=1LFSgmI1+3+q3qHcEVi2fTpHvPU1hp/D33HWCvyJhrk=;
+        b=aqo6gjnIpzlU7eZOVVV4dZ1HiYfGVAe24QW4JKR0glTFjXXEjVCd8GkTPazF7SS1T6
+         Y+SxhITjIN4TcqjIXJa605rFep6W51223DfD7+oqhIluTrPH2m3YLIwO1sSYifv/hhqh
+         ZWmVUwJL9md4LrGBtmjZn3I3882ufC5E+Ewa0K7yVj2BYXax2yPZ3hiOkEnWkFlvpufu
+         FtR46VMbflHkQnvxjxbla2V0eDq7Q3RzDhzqJn6ntuJPzvJ6ZisNpSkl4joE38pO/zOp
+         AeI5zmRxMheHRjsWU0NiTZS7tQCtOxMdhuR4TzosUtBo4JlKe94geey+RD9tlAir1v/y
+         OxgQ==
+X-Gm-Message-State: AOAM532WMZ52EuH51Gk/8ja2nNNLQHguFolWLaVjZFs9OJ8J/XKcIF2q
+        YD4/+nI8SI1d7vuHkKNr2CVAvNNzrig=
+X-Google-Smtp-Source: ABdhPJwIlvuaZmd7ixP1Kb9M2Jj8uAO6vW0X+17OApd9jNS8KDS1RQIwxT50V9G7qEAaLXbqgyVpFA==
+X-Received: by 2002:a17:90a:7d16:: with SMTP id g22mr4914970pjl.135.1602867384968;
+        Fri, 16 Oct 2020 09:56:24 -0700 (PDT)
+Received: from [10.67.48.230] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id gi20sm3711514pjb.28.2020.10.16.09.56.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 16 Oct 2020 09:56:24 -0700 (PDT)
+Subject: Re: [PATCH net-next v6 2/7] net: dsa: Add DSA driver for Hirschmann
+ Hellcreek switches
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
+        ilias.apalodimas@linaro.org
+References: <87lfgj997g.fsf@kurt> <20201006092017.znfuwvye25vsu4z7@skbuf>
+ <878scj8xxr.fsf@kurt> <20201006113237.73rzvw34anilqh4d@skbuf>
+ <87wo037ajr.fsf@kurt> <20201006135631.73rm3gka7r7krwca@skbuf>
+ <87362lt08b.fsf@kurt> <20201011153055.gottyzqv4hv3qaxv@skbuf>
+ <87r1q4f1hq.fsf@kurt> <87sgaee5gl.fsf@kurt>
+ <20201016154336.s2acp5auctn2zzis@skbuf>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <6cf8acc5-a6aa-5e77-f0a3-09d7d7af1a82@gmail.com>
+Date:   Fri, 16 Oct 2020 09:56:22 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6b901356-18ec-4e6d-4aec-08d871f39315
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Oct 2020 16:50:23.0573
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: iz9ByR2avXDSVJUV+fGRB/q/i9BH0Xfpic8Fb1dSYkFlS5+ZAq2QFoBWy+narTM/3jddh7riHbb1IHfHp46Gzg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7343
+In-Reply-To: <20201016154336.s2acp5auctn2zzis@skbuf>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 16, 2020 at 01:43:06PM +0000, Nikolay Aleksandrov wrote:
-> It can potentially use after free, multicast resources (per-cpu stats) ar=
-e freed
-> in br_multicast_del_port() and can be used due to a race with port state
-> sync on other CPUs since the handler can still process packets. That has =
-a
-> chance of happening if vlans are not used.
+On 10/16/20 8:43 AM, Vladimir Oltean wrote:
+> On Fri, Oct 16, 2020 at 02:11:06PM +0200, Kurt Kanzenbach wrote:
+>> When VLAN awareness is disabled, the packet is still classified with the
+>> pvid. But, later all rules regarding VLANs (except for the PCP field)
+>> are ignored then. So, the programmed pvid doesn't matter in this case.
+> 
+> Ok, clear now.
+> 
+>> The only way to implement the non-filtering bridge behavior is this
+>> flag. However, this has some more implications. For instance when
+>> there's a non filtering bridge, then standalone mode doesn't work
+>> anymore due to the VLAN unawareness. This is not a problem at the
+>> moment, because there are only two ports. But, later when there are more
+>> ports, then having two ports in a non-filtering bridge and one in
+>> standalone mode doesn't work. That's another limitation that needs to be
+>> considered when adding more ports later on.
+> 
+> Well, then you have feedback to bring to the hardware engineers when
+> switches with more than 2 user ports will be instantiated.
+> 
+>> Besides that problem everything else seem to work now in accordance to
+>> the expected Linux behavior with roper restrictions in place.
+> 
+> Ok, that's great.
 
-Interesting, thanks for pointing this out, I haven't observed
-use-after-free in my limited testing of this patch.
-
-> Interesting that br_stp_disable_port() calls br_multicast_disable_port() =
-which
-> flushes all non-permanent mdb entries, so I'm guessing you have problem o=
-nly
-> with permanent ones?
-
-Indeed, I'm testing out your L2 multicast patch.
-
-> Perhaps we can flush them all before. Either by passing an argument to
-> br_stp_disable_port() that we're deleting the port which will be
-> passed down to br_multicast_disable_port() or by calling an additional
-> helper to flush all which can be re-used by both disable_port() and
-> stop_multicast() calls. Adding an argument to br_stp_disable_port() to
-> be passed down sounds cleaner to me. What do you think?
-
-That sounds a bit complicated, to be honest.
-In fact, the reason why I submitted this as RFC only is because it isn't
-solving all my problems. You know that saying "- it hurts when I do that
-- then don't do that"? I think I can just change the ocelot driver to
-stop remapping the untagged MDB entries to its pvid, and then I can drop
-all my charges to the bridge driver.=
+I probably missed parts of this long discussion, but for this generation
+of switches, does that mean that you will only allow a bridge with
+vlan_filtering=1 to be configured and also refuse toggling of
+vlan_filtering at run time?
+-- 
+Florian
