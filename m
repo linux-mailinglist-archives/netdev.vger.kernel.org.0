@@ -2,172 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2495028FF7A
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 09:52:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E94928FFA0
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 10:00:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404844AbgJPHwL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 03:52:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49052 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404800AbgJPHwL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 03:52:11 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA4FC061755
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 00:52:11 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1kTKWw-0008UC-IA; Fri, 16 Oct 2020 09:52:02 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1kTKWv-0008E6-Om; Fri, 16 Oct 2020 09:52:01 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     mkl@pengutronix.de, Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Fabio Estevam <festevam@gmail.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>
-Subject: [PATCH v1] ARM: dts: imx6/7: sync fsl,stop-mode with current flexcan driver
-Date:   Fri, 16 Oct 2020 09:51:58 +0200
-Message-Id: <20201016075158.31574-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.28.0
+        id S2404941AbgJPIAo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 04:00:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42108 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404837AbgJPIAo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Oct 2020 04:00:44 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0995D207F7;
+        Fri, 16 Oct 2020 08:00:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602835243;
+        bh=z3R5rMG1CNfodWBk5r8gqQ3c0h1EiVS8upNvCaOYWWo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=C55FKWQngIgLPhuBYjbWeOMRWlw8UnQ2IkaYU+yjv/wyOG18fMWmtlu+2vLqaNlaB
+         YefEBF+Y+VE1IohOEmDySu0BJpXjqJbJB3AS4bvXaSXGL5LyXgmJSuiNJE/Q3of30C
+         Iz8Jt/fjV8hTRNDd1TEo9Rst6bCVdCB9gtS1LAgQ=
+Date:   Fri, 16 Oct 2020 10:01:14 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Arnaud Patard <arnaud.patard@rtp-net.org>
+Cc:     stable@vger.kernel.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [patch 1/1] drivers/net/ethernet/marvell/mvmdio.c: Fix non OF
+ case
+Message-ID: <20201016080114.GA1355531@kroah.com>
+References: <20201015093221.720980174@rtp-net.org>
+ <20201015100455.GA3938169@kroah.com>
+ <87wnzr6bun.fsf@lechat.rtp-net.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87wnzr6bun.fsf@lechat.rtp-net.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After this patch we need 2 arguments less for the fsl,stop-mode
-property:
+On Thu, Oct 15, 2020 at 12:08:00PM +0200, Arnaud Patard wrote:
+> Greg KH <gregkh@linuxfoundation.org> writes:
+> 
+> > On Thu, Oct 15, 2020 at 11:32:15AM +0200, Arnaud Patard wrote:
+> >> commit d934423ac26ed373dfe089734d505dca5ff679b6 upstream.
+> >> 
+> >> Orion5.x systems are still using machine files and not device-tree.
+> >> Commit 96cb4342382290c9 ("net: mvmdio: allow up to three clocks to be
+> >> specified for orion-mdio") has replaced devm_clk_get() with of_clk_get(),
+> >> leading to a oops at boot and not working network, as reported in
+> >> https://lists.debian.org/debian-arm/2019/07/msg00088.html and possibly in
+> >> https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=908712.
+> >>     
+> >> Link: https://lists.debian.org/debian-arm/2019/07/msg00088.html
+> >> Fixes: 96cb4342382290c9 ("net: mvmdio: allow up to three clocks to be specified for orion-mdio")
+> >> Signed-off-by: Arnaud Patard <arnaud.patard@rtp-net.org>
+> >> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> >> Signed-off-by: David S. Miller <davem@davemloft.net>
+> >> 
+> >
+> > What stable tree(s) are you asking for this to be backported to?
+> 
+> oops, forgot to put it in the mail subject. It's for 4.19.X, which is
+> used in Debian stable.
 
-| commit d9b081e3fc4bdc33e672dcb7bb256394909432fc
-| Author: Marc Kleine-Budde <mkl@pengutronix.de>
-| Date:   Sun Jun 14 21:09:20 2020 +0200
-|
-| can: flexcan: remove ack_grp and ack_bit handling from driver
-|
-| Since commit:
-|
-|  048e3a34a2e7 can: flexcan: poll MCR_LPM_ACK instead of GPR ACK for stop mode acknowledgment
-|
-| the driver polls the IP core's internal bit MCR[LPM_ACK] as stop mode
-| acknowledge and not the acknowledgment on chip level.
-|
-| This means the 4th and 5th value of the property "fsl,stop-mode" isn't used
-| anymore. This patch removes the used "ack_gpr" and "ack_bit" from the driver.
+Also works on 4.14.y, so I've put it there as well.
 
-This patch removes the two last arguments, as they are not needed
-anymore.
+thanks,
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-
- # Please enter the commit message for your changes. Lines starting
----
- arch/arm/boot/dts/imx6qdl.dtsi | 4 ++--
- arch/arm/boot/dts/imx6sx.dtsi  | 4 ++--
- arch/arm/boot/dts/imx6ul.dtsi  | 4 ++--
- arch/arm/boot/dts/imx7s.dtsi   | 4 ++--
- 4 files changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/arch/arm/boot/dts/imx6qdl.dtsi b/arch/arm/boot/dts/imx6qdl.dtsi
-index 43edbf1156c7..5efb9b923bf9 100644
---- a/arch/arm/boot/dts/imx6qdl.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl.dtsi
-@@ -549,7 +549,7 @@ can1: flexcan@2090000 {
- 				clocks = <&clks IMX6QDL_CLK_CAN1_IPG>,
- 					 <&clks IMX6QDL_CLK_CAN1_SERIAL>;
- 				clock-names = "ipg", "per";
--				fsl,stop-mode = <&gpr 0x34 28 0x10 17>;
-+				fsl,stop-mode = <&gpr 0x34 28>;
- 				status = "disabled";
- 			};
- 
-@@ -560,7 +560,7 @@ can2: flexcan@2094000 {
- 				clocks = <&clks IMX6QDL_CLK_CAN2_IPG>,
- 					 <&clks IMX6QDL_CLK_CAN2_SERIAL>;
- 				clock-names = "ipg", "per";
--				fsl,stop-mode = <&gpr 0x34 29 0x10 18>;
-+				fsl,stop-mode = <&gpr 0x34 29>;
- 				status = "disabled";
- 			};
- 
-diff --git a/arch/arm/boot/dts/imx6sx.dtsi b/arch/arm/boot/dts/imx6sx.dtsi
-index b480dfa9e251..8770e522d21c 100644
---- a/arch/arm/boot/dts/imx6sx.dtsi
-+++ b/arch/arm/boot/dts/imx6sx.dtsi
-@@ -463,7 +463,7 @@ flexcan1: can@2090000 {
- 				clocks = <&clks IMX6SX_CLK_CAN1_IPG>,
- 					 <&clks IMX6SX_CLK_CAN1_SERIAL>;
- 				clock-names = "ipg", "per";
--				fsl,stop-mode = <&gpr 0x10 1 0x10 17>;
-+				fsl,stop-mode = <&gpr 0x10 1>;
- 				status = "disabled";
- 			};
- 
-@@ -474,7 +474,7 @@ flexcan2: can@2094000 {
- 				clocks = <&clks IMX6SX_CLK_CAN2_IPG>,
- 					 <&clks IMX6SX_CLK_CAN2_SERIAL>;
- 				clock-names = "ipg", "per";
--				fsl,stop-mode = <&gpr 0x10 2 0x10 18>;
-+				fsl,stop-mode = <&gpr 0x10 2>;
- 				status = "disabled";
- 			};
- 
-diff --git a/arch/arm/boot/dts/imx6ul.dtsi b/arch/arm/boot/dts/imx6ul.dtsi
-index 2b088f210331..4a059708ff20 100644
---- a/arch/arm/boot/dts/imx6ul.dtsi
-+++ b/arch/arm/boot/dts/imx6ul.dtsi
-@@ -430,7 +430,7 @@ can1: flexcan@2090000 {
- 				clocks = <&clks IMX6UL_CLK_CAN1_IPG>,
- 					 <&clks IMX6UL_CLK_CAN1_SERIAL>;
- 				clock-names = "ipg", "per";
--				fsl,stop-mode = <&gpr 0x10 1 0x10 17>;
-+				fsl,stop-mode = <&gpr 0x10 1>;
- 				status = "disabled";
- 			};
- 
-@@ -441,7 +441,7 @@ can2: flexcan@2094000 {
- 				clocks = <&clks IMX6UL_CLK_CAN2_IPG>,
- 					 <&clks IMX6UL_CLK_CAN2_SERIAL>;
- 				clock-names = "ipg", "per";
--				fsl,stop-mode = <&gpr 0x10 2 0x10 18>;
-+				fsl,stop-mode = <&gpr 0x10 2>;
- 				status = "disabled";
- 			};
- 
-diff --git a/arch/arm/boot/dts/imx7s.dtsi b/arch/arm/boot/dts/imx7s.dtsi
-index 1cfaf410aa43..837f0da08686 100644
---- a/arch/arm/boot/dts/imx7s.dtsi
-+++ b/arch/arm/boot/dts/imx7s.dtsi
-@@ -971,7 +971,7 @@ flexcan1: can@30a00000 {
- 				clocks = <&clks IMX7D_CLK_DUMMY>,
- 					<&clks IMX7D_CAN1_ROOT_CLK>;
- 				clock-names = "ipg", "per";
--				fsl,stop-mode = <&gpr 0x10 1 0x10 17>;
-+				fsl,stop-mode = <&gpr 0x10 1>;
- 				status = "disabled";
- 			};
- 
-@@ -982,7 +982,7 @@ flexcan2: can@30a10000 {
- 				clocks = <&clks IMX7D_CLK_DUMMY>,
- 					<&clks IMX7D_CAN2_ROOT_CLK>;
- 				clock-names = "ipg", "per";
--				fsl,stop-mode = <&gpr 0x10 2 0x10 18>;
-+				fsl,stop-mode = <&gpr 0x10 2>;
- 				status = "disabled";
- 			};
- 
--- 
-2.28.0
-
+greg k-h
