@@ -2,95 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D144290DA2
-	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 00:15:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 92A12290DBA
+	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 00:30:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393601AbgJPWP4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 18:15:56 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:60434 "EHLO vps0.lunn.ch"
+        id S2404536AbgJPWaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 18:30:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44976 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391880AbgJPWPz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Oct 2020 18:15:55 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kTY0v-0024B4-4O; Sat, 17 Oct 2020 00:15:53 +0200
-Date:   Sat, 17 Oct 2020 00:15:53 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Danielle Ratson <danieller@nvidia.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, Ido Schimmel <idosch@idosch.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>, mlxsw <mlxsw@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>
-Subject: Re: [PATCH net-next 1/6] ethtool: Extend link modes settings uAPI
- with lanes
-Message-ID: <20201016221553.GN139700@lunn.ch>
-References: <20201010154119.3537085-1-idosch@idosch.org>
- <20201010154119.3537085-2-idosch@idosch.org>
- <20201011153759.1bcb6738@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <DM6PR12MB3865B2FBA17BABBC747190D8D8070@DM6PR12MB3865.namprd12.prod.outlook.com>
- <20201012085803.61e256e6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <DM6PR12MB3865E4CB3854ECF70F5864D7D8040@DM6PR12MB3865.namprd12.prod.outlook.com>
+        id S2391662AbgJPWaT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Oct 2020 18:30:19 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 224DC22201;
+        Fri, 16 Oct 2020 22:30:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602887418;
+        bh=QIhm6rh4cFWdK4I5sF0Dg/mxr6d+MjeS/vGS3QZH7YE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=zXBcjuvED6yQMnI0tG7rBKOnl0CHVmSdg48KolA4qhKETrRMpT3AVec63jl6jafpT
+         51Wq8VaVTZB7i4Mi+80RcniUj7dgC9FcPGaS+sRFoJ8hRGQZw/jKLdIVlahu7VZeFh
+         N85Z8VOI81XAURJTkYJIkLRarQ7pIKQqtaAPBD+Q=
+Date:   Fri, 16 Oct 2020 15:30:16 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kleber Sacilotto de Souza <kleber.souza@canonical.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, Gerrit Renker <gerrit@erg.abdn.ac.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        "Alexander A. Klimov" <grandmaster@al2klimov.de>,
+        Kees Cook <keescook@chromium.org>,
+        Alexey Kodanev <alexey.kodanev@oracle.com>,
+        dccp@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dccp: ccid: move timers to struct dccp_sock
+Message-ID: <20201016153016.04bffc1e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201013171849.236025-2-kleber.souza@canonical.com>
+References: <20201013171849.236025-1-kleber.souza@canonical.com>
+        <20201013171849.236025-2-kleber.souza@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DM6PR12MB3865E4CB3854ECF70F5864D7D8040@DM6PR12MB3865.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Example:
-> - swp1 is a 200G port with 4 lanes.
-> - QSFP28 is plugged in.
-> - The user wants to select configuration of 100G speed using 2 lanes, 50G each.
+On Tue, 13 Oct 2020 19:18:48 +0200 Kleber Sacilotto de Souza wrote:
+> From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 > 
-> $ ethtool swp1
-> Settings for swp1:
->         Supported ports: [ FIBRE         Backplane ]
->         Supported link modes:   1000baseT/Full
->                                 10000baseT/Full
->                                 1000baseKX/Full
->                                 10000baseKR/Full
->                                 10000baseR_FEC
->                                 40000baseKR4/Full
->                                 40000baseCR4/Full
->                                 40000baseSR4/Full
->                                 40000baseLR4/Full
->                                 25000baseCR/Full
->                                 25000baseKR/Full
->                                 25000baseSR/Full
->                                 50000baseCR2/Full
->                                 50000baseKR2/Full
->                                 100000baseKR4/Full
->                                 100000baseSR4/Full
->                                 100000baseCR4/Full
->                                 100000baseLR4_ER4/Full
->                                 50000baseSR2/Full
->                                 10000baseCR/Full
->                                 10000baseSR/Full
->                                 10000baseLR/Full
->                                 10000baseER/Full
->                                 50000baseKR/Full
->                                 50000baseSR/Full
->                                 50000baseCR/Full
->                                 50000baseLR_ER_FR/Full
->                                 50000baseDR/Full
+> When dccps_hc_tx_ccid is freed, ccid timers may still trigger. The reason
+> del_timer_sync can't be used is because this relies on keeping a reference
+> to struct sock. But as we keep a pointer to dccps_hc_tx_ccid and free that
+> during disconnect, the timer should really belong to struct dccp_sock.
+> 
+> This addresses CVE-2020-16119.
+> 
+> Fixes: 839a6094140a (net: dccp: Convert timers to use timer_setup())
+> Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+> Signed-off-by: Kleber Sacilotto de Souza <kleber.souza@canonical.com>
 
->                                 100000baseKR2/Full
->                                 100000baseSR2/Full
->                                 100000baseCR2/Full
->                                 100000baseLR2_ER2_FR2/Full
->                                 100000baseDR2/Full
+I've been mulling over this fix.
 
-I'm not sure i fully understand all these different link modes, but i
-thought these 5 are all 100G using 2 lanes? So why cannot the user
-simply do
+The layering violation really doesn't sit well.
 
-ethtool -s swp1 advertise 100000baseKR2/Full
+We're reusing the timer object. What if we are really unlucky, the
+fires and gets blocked by a cosmic ray just as it's about to try to
+lock the socket, then user manages to reconnect, and timer starts
+again. Potentially with a different CCID algo altogether?
 
-and the driver can figure out it needs to use two lanes at 50G?
+Is disconnect ever called under the BH lock?  Maybe plumb a bool
+argument through to ccid*_hc_tx_exit() and do a sk_stop_timer_sync()
+when called from disconnect()?
 
-    Andrew
+Or do refcounting on ccid_priv so that the timer holds both the socket
+and the priv?
