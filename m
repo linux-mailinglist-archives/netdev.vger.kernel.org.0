@@ -2,82 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56C38290AF7
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 19:48:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82770290B01
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 19:55:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731832AbgJPRsy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 13:48:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44714 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731589AbgJPRsy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Oct 2020 13:48:54 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3C69D20709;
-        Fri, 16 Oct 2020 17:48:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602870533;
-        bh=NGn+uaxc51RgqjFOnKMIZpDJGbHocddGNfqOufHBeV8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dtDx1mwHKrmBsQH/Z4I6b+MYsueRr9/Il34OisnTuOlG8hQuRmbcFkOwFF0ovgu57
-         GOngRxQissD7Vt05B/29WSn6jIOhsvFpg9S4npU0aqeFwVVMnQ8S/uKk7pyRc3OtvV
-         ftPPcvST7ETpnbUmqNsIl4q6S/npjEkmGXiobfkU=
-Date:   Fri, 16 Oct 2020 10:48:51 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     sundeep subbaraya <sundeep.lkml@gmail.com>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        rsaladi2@marvell.com, Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>
-Subject: Re: [net-next PATCH 06/10] octeontx2-af: Add NIX1 interfaces to NPC
-Message-ID: <20201016104851.01ac62f4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CALHRZurSx8JJj0cQ3dghXO0wesfNm0cS5tmzn_JrpM3wm9W3sQ@mail.gmail.com>
-References: <1602584792-22274-1-git-send-email-sundeep.lkml@gmail.com>
-        <1602584792-22274-7-git-send-email-sundeep.lkml@gmail.com>
-        <20201014194804.1e3b57ae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CALHRZupwJOZssMhE6Q_0VSCZ06WB2Sgo_BMpf2n=o7MALe+V6g@mail.gmail.com>
-        <20201015083251.10bc1aaf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CALHRZurSx8JJj0cQ3dghXO0wesfNm0cS5tmzn_JrpM3wm9W3sQ@mail.gmail.com>
+        id S2388272AbgJPRzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 13:55:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58048 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731123AbgJPRzB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 13:55:01 -0400
+Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9758C061755
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 10:54:59 -0700 (PDT)
+Received: by mail-vs1-xe30.google.com with SMTP id r1so1891454vsi.12
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 10:54:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=T7RmkCdURX7edIG7MLMiHxalXn5YtiMab+pTqubB6tw=;
+        b=MUZiz6bzwdvEZkYGYpJEXkrRo5wGlY8pFogDdaVprzDpbSAkLIc+1tMXaEaLt4Ey1y
+         bIl7MnUwj0cchYfy0Y5e+csEBieHnWDFmRlxy5W+Xy4O8gPeGKIKA2MW7Z1iouAZ9tcc
+         OXY4f3Bdl/6D7GDMkeRLb5KBnIO4SRQhzRa8mACMcYmf4tv79zu2mPwWS+ugM73xSOvj
+         3gG7K2i9AafR+0zNMU4xyW9BFBfWS0dTBc62LqBrECZRab6iRatCLNyK6okJRmyyPGCb
+         3OmkAy8aEwD9YRnTS2mDRy5q8NBIEQYlLgvdnMNgTROBzZmjFHgP14i8gY9lBzxT3/GC
+         1URg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=T7RmkCdURX7edIG7MLMiHxalXn5YtiMab+pTqubB6tw=;
+        b=JwLCEWXAk72hhvA5l9DAJOtixNjorKJAsfjVFmllsBOz6SR6z4/sgiAImPI5ERy/6k
+         9UtN/8frSi5MZAusY3gTGXiNYDJJ2RXElR7ge6ZzrIDkQPjB/mY0F+7jefBbx7GTRAHx
+         Za6nOmenTcsBQojhhCHi6gLetqMrMUquMsJ8o7fCxX77yBTgYz4elhuiiX+5X3Q1dlZl
+         cuTJMAB1FwTQiWbrJF7R7ZZyJmLYBwMQFYVe2AUs/XJS/PiUSWBXEzpjSDQ39gUI6raT
+         +5aTw7jIybQh2Wdzq1G8fP3kN5by9YZPpPscCgzsfHNzw4QEHWuy91k2ji+uxVX2t9Ez
+         +vHw==
+X-Gm-Message-State: AOAM531V92/B2Fc+d1dGxTiQin2bR7/3ijuwjmjJpI1/1yzyEycz/Utm
+        7xYhbVOCgEbjCnZPjcNg71/x7HPgfUsPPYczSBpflQ==
+X-Google-Smtp-Source: ABdhPJwxuwGVOTSPysQt9ug5K7hY4YgSxIT6hXbqyjNsNYmzmIQ0Xo2QDL/EwRnOaXRJ82JYT3C/CorvfDErgR8kZ40=
+X-Received: by 2002:a67:de18:: with SMTP id q24mr3036609vsk.54.1602870898321;
+ Fri, 16 Oct 2020 10:54:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <87eelz4abk.fsf@marvin.dmesg.gr> <CADVnQym6OPVRcJ6PdR3hjN5Krcn0pugshdLZsrnzNQe1c52HXA@mail.gmail.com>
+ <CAK6E8=fCwjP47DvSj4YQQ6xn25bVBN_1mFtrBwOJPYU6jXVcgQ@mail.gmail.com>
+ <87blh33zr7.fsf@marvin.dmesg.gr> <CADVnQym2cJGRP8JnRAdzHfWEeEbZrmXd3eXD-nFP6pRNK7beWw@mail.gmail.com>
+ <878sc63y8j.fsf@marvin.dmesg.gr>
+In-Reply-To: <878sc63y8j.fsf@marvin.dmesg.gr>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Fri, 16 Oct 2020 13:54:41 -0400
+Message-ID: <CADVnQymc0cVqfBmRVeERrrTOSJOpScdz8_HCU6yDWNREz9TG3g@mail.gmail.com>
+Subject: Re: TCP sender stuck in persist despite peer advertising non-zero window
+To:     Apollon Oikonomopoulos <apoikos@dmesg.gr>
+Cc:     Yuchung Cheng <ycheng@google.com>, Netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 16 Oct 2020 08:59:43 +0530 sundeep subbaraya wrote:
-> On Thu, Oct 15, 2020 at 9:02 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Thu, 15 Oct 2020 17:53:07 +0530 sundeep subbaraya wrote:  
-> > > Hi Jakub,
-> > >
-> > > On Thu, Oct 15, 2020 at 8:18 AM Jakub Kicinski <kuba@kernel.org> wrote:  
-> > > >
-> > > > On Tue, 13 Oct 2020 15:56:28 +0530 sundeep.lkml@gmail.com wrote:  
-> > > > > -static const struct npc_mcam_kex npc_mkex_default = {
-> > > > > +static struct npc_mcam_kex npc_mkex_default = {
-> > > > >       .mkex_sign = MKEX_SIGN,
-> > > > >       .name = "default",
-> > > > >       .kpu_version = NPC_KPU_PROFILE_VER,  
-> > > >
-> > > > Why is this no longer constant? Are you modifying global data based
-> > > > on the HW discovered in the system?  
-> > >
-> > > Yes. Due to an errata present on earlier silicons
-> > > npc_mkex_default.keyx_cfg[NIX_INTF_TX]
-> > > and npc_mkex_default.keyx_cfg[NIX_INTF_RX] needs to be identical.  
+On Fri, Oct 16, 2020 at 12:57 PM Apollon Oikonomopoulos
+<apoikos@dmesg.gr> wrote:
+>
+> Neal Cardwell <ncardwell@google.com> writes:
+> > On Thu, Oct 15, 2020 at 6:12 PM Apollon Oikonomopoulos <apoikos@dmesg.gr> wrote:
+> >> Neal, would it be possible to re-send the patch as an attachment? The
+> >> inlined version does not apply cleanly due to linewrapping and
+> >> whitespace changes and, although I can re-type it, I would prefer to test
+> >> the exact same thing that would be merged.
 > >
-> > Does this run on the SoC? Is there no possibility that the same kernel
-> > will have to drive two different pieces of hardware?  
-> 
-> If kernel runs on SoC with errata present then
-> npc_mkex_default.keyx_cfg[NIX_INTF_TX]
-> is modified to be same as npc_mkex_default.keyx_cfg[NIX_INTF_RX]. And if errata
-> is not applicable to SoC then npc_mkex_default.keyx_cfg[NIX_INTF_TX]
-> is unchanged and the values present in TX and RX are programmed to TX and RX
-> interface registers.
+> > Sure, I have attached the "git format-patch" format of the commit. It
+> > does seem to apply cleanly to the v4.9.144 kernel you mentioned you
+> > are using.
+> >
+> > Thanks for testing this!
+>
+> We are now running the patched kernel on the machines involved. I want
+> to give it some time just to be sure, so I'll get back to you by
+> Thursday if everything goes well.
 
-Let me rephrase the question - can the AF driver only run on the SoC 
-or are there configurations in which host can control the AF?
+Great. Thanks, Apollon, for testing this!
 
-I see that Kconfig depends on ARM64 but is that what you choose 
-to support or a HW limitation?
+Thanks, Eric. I will include the link you suggested in the next rev of
+the patch.
+
+thanks,
+neal
