@@ -2,94 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 69577290DCE
-	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 00:39:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E6EEC290DD6
+	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 00:45:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731899AbgJPWjY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 18:39:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45572 "EHLO
+        id S2390253AbgJPWpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 18:45:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731257AbgJPWjX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 18:39:23 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F94C061755
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 15:39:23 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id 140so3223265qko.2
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 15:39:23 -0700 (PDT)
+        with ESMTP id S1731757AbgJPWpF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 18:45:05 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97D51C061755
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 15:45:05 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id t25so5474822ejd.13
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 15:45:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=A7vRkpeq6oF7y1uLVD7hHZ2BUOjTTW5x+4EJzcO6XLk=;
-        b=pbRrNQmV/O0YqcKW9Hr2HSJv+0AFYlc/WibExVzN8SXonmHrn+2+Fj5Mf37y1Sw9YE
-         V8N38wkIZv4dVJFixdo9vBg2itX0wEAAo14ycgVWEBNknrWvwJIxbgzbGmBH6cH1a9Vh
-         9gWF7ERNktUO280fCs+swfTHbJLlyW6MBe5JyOlZ9HVKzmhA9X0yhLNEYMDKWVU6eQAJ
-         M0yTPTQR1x12vKQwakAz5YIOZS//S6ZtquU+KDyWy0AMaJGd/nna1GV74vaRqNh1VWl9
-         cCvfoussVIyBvxnKE/kq638h0o00/j7QXAHYvw+XGbMwu2qgEz5YGak38wYo7LSHEJqh
-         g9Nw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=5QaKDhHA51i+ao4lZH/mlb5XFtbpdEQDvqKAwWDWSZ0=;
+        b=VuFKVselKxE/NUPSVlsuYLYd+xx2jwi+8XSf6ypnndGdpKkTr/0ZQh8HPFI8TsTf+e
+         wUUHk9zZHsWk3mI0Np7VPe9nC0s1S93zaDHhYhE258JygaQu4jqbLyOMYY0F2KlnUHz1
+         kQVb/MgB00krpNhPeDFFcCFRvu6eGxqAz0DZfTv0HPk/8DOzga2C1cp2i4IJ/wbIPcWT
+         rsxvq45XE+3sr33v05goCHLnXrISJbjFbwAeDqAie7dS7EwZExX9kAzDDl1YNYie9PBS
+         LQY0ggvdwfdSHU13+nr0BQQQ/LHV8lyaTQc/8zCnqiPAR8dM/I/ziJ5HUWZ21mxtzKD/
+         FuUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=A7vRkpeq6oF7y1uLVD7hHZ2BUOjTTW5x+4EJzcO6XLk=;
-        b=lL7KN9LFPYacyXAI9UilXo9K30kjg/il79rSu2ecRNMRjrqrW24phiJioVQkceVEbB
-         dIYQeiVYhC3F4lYlaGFb3b0xWw3wemHGeRCLUwEJeg6QxsMC2nsVaXlYSmeV0uZAQ3yY
-         XOlQ9NFqTn/NasLznR5eLD3BmtQQuklk0AID5fiVd96+y7Y1VJf70GJzMdIvNc+dgyrc
-         NWj5kjqNguBcsL6hCovajUAcLVM7B/EdKuy0o+Kj2LJcRSwu+CiKyoLqD5mddHgZxXvg
-         aAXp8gtU/BWBTQSgNrwiIwoTYGULF6mUZPPNPfEoZgQvyj1KSTEsw02pyuoVZ22NqZ4W
-         EP2g==
-X-Gm-Message-State: AOAM533p9mXpaiPaWmtTll1MTn6P4/9pzKZt+xb0Z8+UFRx1hL0Chued
-        pIH91aZLzncuxeT+ao/Ome0OSpRkgQ6psbbvhbOWY2oW+bU=
-X-Google-Smtp-Source: ABdhPJxZ2xS2xhf7sCclLZXdEGKqhWooYcqSTk5XLzP2aYOatQerA09t9DjTAfi1e+ZbvauBtHAkwu0Ni5qWy2Lnbdo=
-X-Received: by 2002:a37:a187:: with SMTP id k129mr6321075qke.435.1602887962177;
- Fri, 16 Oct 2020 15:39:22 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=5QaKDhHA51i+ao4lZH/mlb5XFtbpdEQDvqKAwWDWSZ0=;
+        b=CjsGnHv366z/DqAZ+qO2SfDXqtuTn+bgVGoLsd3gw+/Ja6HeMLIz4FUohQe3xzN5Na
+         Fv/IzvMtza7Qe5bkmrws8fK4VtoWzpwFp4QLJxy/CWXuhbszqdELn/GqW6uQVBK2WSnR
+         BzuzGVRLVSCv8UtocxDJ1dTE6sJY43ska2i852ijF6hybh+1bCM+YFJwa7M+CLipJGix
+         x3UKarNNd9t9hXwcH0VWVV1wB7fBVrE3UyG8NBk68NtPTR1jJq/82vcacseScCKC3S/D
+         74y5T2hCPyMXQP58PJ/FSNHZ6gBt6NK8cz2sgnBZw3yystB9qk0fUPHaKl64lhZpMaIl
+         27Ow==
+X-Gm-Message-State: AOAM530fgbYlomS8z1AXdJhkAjPGTon1+vRuKRPNPKp7COcloB0yi9uD
+        SfNH1U9qBjOatjym8Vi4LEk=
+X-Google-Smtp-Source: ABdhPJxSjLpm0FHn2gf4h9Q2yCwN9jBTlgXmXL8RqAVAvTy/gfMSgVAs9TODPD8ue176xKtrcMmI9Q==
+X-Received: by 2002:a17:906:1e04:: with SMTP id g4mr6010027ejj.72.1602888304297;
+        Fri, 16 Oct 2020 15:45:04 -0700 (PDT)
+Received: from skbuf ([188.26.174.215])
+        by smtp.gmail.com with ESMTPSA id jw9sm3059899ejb.33.2020.10.16.15.45.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Oct 2020 15:45:03 -0700 (PDT)
+Date:   Sat, 17 Oct 2020 01:45:02 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc:     zhudi <zhudi21@huawei.com>, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, rose.chen@huawei.com,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH] rtnetlink: fix data overflow in rtnl_calcit()
+Message-ID: <20201016224502.wztzj45gxepygzqd@skbuf>
+References: <20201016020238.22445-1-zhudi21@huawei.com>
+ <20201016143625.00005f4e@intel.com>
 MIME-Version: 1.0
-References: <CAA85sZv=13q8NXbjdf7+R=wu0Q5=Vj9covZ24e9Ew2DCd7S==A@mail.gmail.com>
- <CAA85sZs9wswn06hd7ien2B_fyqFM9kEWL_-vXQN-sjhqisizaQ@mail.gmail.com> <20201016122122.0a70f5a3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201016122122.0a70f5a3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Ian Kumlien <ian.kumlien@gmail.com>
-Date:   Sat, 17 Oct 2020 00:39:11 +0200
-Message-ID: <CAA85sZtGt0ZbhGY8+96G9TY+cE+tgmjb8rHmiGT9Js+ZbjKJeg@mail.gmail.com>
-Subject: Re: ixgbe - only presenting one out of four interfaces on 5.9
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     jeffrey.t.kirsher@intel.com,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201016143625.00005f4e@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 16, 2020 at 9:21 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Fri, 16 Oct 2020 11:35:15 +0200 Ian Kumlien wrote:
-> > Adding netdev, someone might have a clue of what to look at...
-> >
-> > On Mon, Oct 12, 2020 at 9:20 PM Ian Kumlien <ian.kumlien@gmail.com> wrote:
-> > >
-> > > Hi,
-> > >
-> > > I was really surprised when i rebooted my firewall and there was
-> > > network issues, I was even more surprised when
-> > > only one of the four ports of my ixbe (x553) nic was available when booted.
->
-> Just to be sure you mean that the 3 devices are not present in ip link
-> show?
+On Fri, Oct 16, 2020 at 02:36:25PM -0700, Jesse Brandeburg wrote:
+> > Signed-off-by: zhudi <zhudi21@huawei.com>
+> 
+> Kernel documentation says for you to use your real name, please do so,
+> unless you're a rock star and have officially changed your name to
+> zhudi.
 
-or ifconfig or /proc etc etc, so yes
-
-> > > You can actually see it dmesg... And i tried some basic looking at
-> > > changes to see if it was obvious.... but..
->
-> Showing a full dmesg may be helpful, but looking at what you posted it
-> seems like the driver gets past the point where netdev gets registered,
-> so the only thing that could fail after that point AFIACT is
-> mdiobus_register(). Could be some breakage in MDIO.
-
-Humm... interesting, will have a look at it
-
-> Any chance you could fire up perf, bpftrace and install a kretprobe to
-> see what mdiobus_register() returns? You can rebind the device to the
-> driver through sysfs.
-
-Do you need a difference between the kernels?
+Well, his real name is probably 朱棣, and the pinyin transliteration
+system doesn't really insist on separating 朱 (zhu) from 棣 (di), or on
+capitalizing any of twose words, so I'm not sure what your point is.
+Would you prefer his sign-off to read 朱棣 <zhudi21@huawei.com>?
