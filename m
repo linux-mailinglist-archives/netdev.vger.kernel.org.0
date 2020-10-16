@@ -2,276 +2,297 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B4EB28FC7D
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 04:44:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C7D128FCA1
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 05:15:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404315AbgJPCoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Oct 2020 22:44:01 -0400
-Received: from mga07.intel.com ([134.134.136.100]:13480 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404305AbgJPCoB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Oct 2020 22:44:01 -0400
-IronPort-SDR: vRzVuSDTriTsjaM2GwLJpbmsG47VXiXsNFBwoVXoglSV0XHmXz/jPci+U57hGvkWk2Depb4eAG
- 1eIs1D+VMypg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9775"; a="230702556"
-X-IronPort-AV: E=Sophos;i="5.77,381,1596524400"; 
-   d="scan'208";a="230702556"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Oct 2020 19:43:57 -0700
-IronPort-SDR: NC+/iZd3R5lLC0S8yCUutlygGF6H/NOGZJBlkJEFWgdwLvqpYIDJWRsVUrZx5+tGXGvklwubFh
- FvLxiVJW7UGQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,381,1596524400"; 
-   d="scan'208";a="521005098"
-Received: from climb.png.intel.com ([10.221.118.165])
-  by fmsmga006.fm.intel.com with ESMTP; 15 Oct 2020 19:43:54 -0700
-From:   Voon Weifeng <weifeng.voon@intel.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jose Abreu <joabreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Weifeng <weifeng.voon@intel.com>,
-        Seow Chen Yong <chen.yong.seow@intel.com>,
-        Mark Gross <mgross@linux.intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>
-Subject: [PATCH v3 net-next] net: stmmac: Enable EEE HW LPI timer with auto SW/HW switching
-Date:   Fri, 16 Oct 2020 10:43:53 +0800
-Message-Id: <20201016024353.4717-1-weifeng.voon@intel.com>
-X-Mailer: git-send-email 2.17.1
+        id S2393976AbgJPDPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Oct 2020 23:15:40 -0400
+Received: from mail-mw2nam12on2063.outbound.protection.outlook.com ([40.107.244.63]:11210
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2393799AbgJPDPk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Oct 2020 23:15:40 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HslqHICOSHfNjKJcUCNb8QXXfqJBVnhLQsV0OevKLcEgQ7dZmXkaLVJa6nnEio60joTX8tO2rpgHQ6gYb0Yx+VqBF+lITbBC50hosIWNXrPYF2ezW+V9B84p6GH8MFGSEJ1voQ4gKgC/GNoLbCb1cZWYI48bDvw9oDlCarPP2VZzY3NjrqBDRLjUT43ukg8BqugAUkV8e5IoJ6vM3ghuN7HgKxaApfoSLPL/atlybZ9YAcYqTvYq7Fha8JWtIL5SYPA1iwepYaA4NDIDEEJWNO4Gw4mRjrBb34gEHvU9Ihg9pDNKb8AGV24DsheS4V16anPsLfd7giLws/mDPYHi/w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ILfpBybP/LbNxysxcoHAlZQKI/vDYbiWrz22EIzrHsU=;
+ b=Kxz1HKfvieWuZlaPvToJF/JXOTNezZcWCvlLtUeFHlRBx5M1Pp1rTYQLst+nfjY+yBu1QdOvdLn2V7TJIpf/92GRNfpvmGsQwfVFgbFi5NXe4dhHqPFlSjdi4n7MWyCpB/QhLgtkmsBOweNIfm+nGxOv6k0TVE+FXv0yVzBjExRfKpggKcR7wRqkiAPh8IyXywKEFdx1Jso6XKsHJwmw10uUqA3CXmPxAaP0GnycE8vqUBq8WJo2hqt9Juf1mHKIF9LkP3+Jkbw3PkTWe9VD6Qi0tIIQ91yPuHvHK553esvGhlmthTU7HuO/RAPVxHiOWvRfxBml3z1ruzicAOy7DA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=windriver.com; dmarc=pass action=none
+ header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=windriversystems.onmicrosoft.com;
+ s=selector2-windriversystems-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ILfpBybP/LbNxysxcoHAlZQKI/vDYbiWrz22EIzrHsU=;
+ b=HD+EEZGxhaSfN7xBZWA0rRQY+NTp8E04Jn/pISgtQ6RQrs4I9ALxXgs2I89aSaJudn4c7teeB/gFv4IQ41qmJKmod/Xll6ehtqRAmZqWk0+LuRNk59hz84X04UOSoVabdVRoJfXbk2RiTzE0qZSQbd3zD7NesPyF7+WIKZ/rI4M=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=windriver.com;
+Received: from BY5PR11MB4241.namprd11.prod.outlook.com (2603:10b6:a03:1ca::13)
+ by SJ0PR11MB4974.namprd11.prod.outlook.com (2603:10b6:a03:2d6::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.20; Fri, 16 Oct
+ 2020 03:15:35 +0000
+Received: from BY5PR11MB4241.namprd11.prod.outlook.com
+ ([fe80::3581:4d13:b613:eb81]) by BY5PR11MB4241.namprd11.prod.outlook.com
+ ([fe80::3581:4d13:b613:eb81%7]) with mapi id 15.20.3455.035; Fri, 16 Oct 2020
+ 03:15:35 +0000
+Subject: Re: [PATCH] Bluetooth: Use lock_sock() when acquiring lock in
+ sco_conn_del
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     marcel@holtmann.org, johan.hedberg@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20201014071731.34279-1-yanfei.xu@windriver.com>
+ <20201014123113.21888-1-hdanton@sina.com>
+From:   "Xu, Yanfei" <yanfei.xu@windriver.com>
+Message-ID: <02d6c3a0-401f-46be-bd18-6cf83e9f7c42@windriver.com>
+Date:   Fri, 16 Oct 2020 11:15:27 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+In-Reply-To: <20201014123113.21888-1-hdanton@sina.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [60.247.85.82]
+X-ClientProxiedBy: YT1PR01CA0123.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:2c::32) To BY5PR11MB4241.namprd11.prod.outlook.com
+ (2603:10b6:a03:1ca::13)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [128.224.162.160] (60.247.85.82) by YT1PR01CA0123.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:2c::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.21 via Frontend Transport; Fri, 16 Oct 2020 03:15:31 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 399fbfe2-504b-40c5-4371-08d87181bf5f
+X-MS-TrafficTypeDiagnostic: SJ0PR11MB4974:
+X-Microsoft-Antispam-PRVS: <SJ0PR11MB4974C088587E23AF1F38BCC4E4030@SJ0PR11MB4974.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pwGzy6nRYxuDiyDYpdKBXtiUIIRpQMGozp9za3BM4c3wrXtLMgIeHEJwlHm3niws+rn8UvPwnIEVTMoRopHRjp6mckpvL4DK5lLenixAs42nXnYJl+qKpfMFLcqL+5GoYTKgLU1jLaWpm1aGsOqdkbzvKFA4B4bBfwx26PkKN078EBOGpcPbwfW62E23Y+x4agi0Tsevl4yXMVA1TGm/St3ZIYQl1cMC7giHpkgqeABhqf+Uu+DfAssXimfI/EGWbJ2lX+JU6iZ9j3gXSr2rGtZk8Fn1yw0QG9hkwtNOpzSvN5gQ4stpCOiS3tcdf3uOzt6OpnazGX+sTrk1A0wdeFvXjq0d0VLUFrtOUfsBcI3lAleGvFI0oefXEystBYS+9Mnwi2XiNipJjSW09NaBU8Aa1fUy6ko55qGbz6sb6MlY75M4IP6ZpIe0hQI54JKl
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR11MB4241.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(396003)(366004)(39850400004)(346002)(376002)(26005)(956004)(478600001)(34490700002)(8936002)(31686004)(52116002)(4326008)(2906002)(6706004)(186003)(16526019)(8676002)(31696002)(53546011)(16576012)(6486002)(36756003)(2616005)(5660300002)(316002)(6916009)(86362001)(66946007)(66476007)(66556008)(6666004)(83380400001)(78286007)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: Qbxo9vTWXT6U4JPak/93/Zj+FL/6dGKOA3uOvT2smV6xU46fuhwM3b4XiEDEHojZTEeN06UO1trD1CJdzMeCqHUbrCIsEI1KUv5BRaelYrxrWr7nTGsE3LspFyBErBuI0IFHgMTlDzhTZ2/T68EV1EbNaaOM9wBmNygWAcQcOz6R+EbaemQYTf01AuAsJJyAx/VCNJT770J8N4AJNfHP12Bgg52o2HBK8tSEZE0NHnUeBwthDdHqusCND0IyhOYPA21OYQCUoZSqFQNxkmYJ2WGQEgKgYmCXgCxQEAdzsS5zEiEbh0QO6R/W+7xj3sUD2/PFcwt8VkXvDNBE90zEhAh6uPAXeOUzYvMb79dzcRXD5mI/5Jekm5BtfobvdnDG77YgVulLOtwxiYWGzCc5T2/f7/xYuJcW+x6RIjaWRtvuk4p08r0Y2qFcx/bHSI40JkBzzivCsDemvIjM9i1ccYTM8gHVGNPk26K+hkyVv06ZTNMeEgHMsrSBR3EwL4kw9EasTM4NQl3fLv2/aL9DFRHdYo1gS4yZ3pLFlKLdXvKTae5CJfT0u2fbMP8AIQhKsJnJg7r1uZjmV+CFlY3QF/rYajI093jiLs8lE+oOfWibJ/ozyjnJpHuW8rnZcXGLfVxWFS6Z6wKZDmbj+R077Q==
+X-OriginatorOrg: windriver.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 399fbfe2-504b-40c5-4371-08d87181bf5f
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR11MB4241.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2020 03:15:35.1874
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6xSDCcNuw3VhtBueyHbAdPA2bSPykwym18pnN7q9Z5KmH6TMqM/nJcAImFq2yecRjOeP5kltG8XqCNVVWTJMbQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB4974
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Vineetha G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>
 
-This patch enables the HW LPI Timer which controls the automatic entry
-and exit of the LPI state.
-The EEE LPI timer value is configured through ethtool. The driver will
-auto select the LPI HW timer if the value in the HW timer supported range.
-Else, the driver will fallback to SW timer.
 
-Signed-off-by: Vineetha G. Jaya Kumaran <vineetha.g.jaya.kumaran@intel.com>
-Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
----
-v3 changelog:
--Changed stmmac_lpi_entry_timer_config() to static function
+On 10/14/20 8:31 PM, Hillf Danton wrote:
+> 
+> On Wed, 14 Oct 2020 15:17:31 +0800
+>> From: Yanfei Xu <yanfei.xu@windriver.com>
+>>
+>> Locking slock-AF_BLUETOOTH-BTPROTO_SCO may happen in process context or
+>> BH context. If in process context, we should use lock_sock(). As blow
+>> warning, sco_conn_del() is called in process context, so let's use
+>> lock_sock() instead of bh_lock_sock().
+>>
+> Sounds opposite because blocking BH in BH context provides no extra
+> protection while it makes sense in the less critical context particularly
+> wrt sock lock.
+> 
+>> ================================
+>> WARNING: inconsistent lock state
+>> 5.9.0-rc4-syzkaller #0 Not tainted
+>> --------------------------------
+>> inconsistent {IN-SOFTIRQ-W} -> {SOFTIRQ-ON-W} usage.
+>> syz-executor675/31233 [HC0[0]:SC0[0]:HE1:SE1] takes:
+>> ffff8880a75c50a0 (slock-AF_BLUETOOTH-BTPROTO_SCO){+.?.}-{2:2}, at:
+>> spin_lock include/linux/spinlock.h:354 [inline]
+>> ffff8880a75c50a0 (slock-AF_BLUETOOTH-BTPROTO_SCO){+.?.}-{2:2}, at:
+>> sco_conn_del+0x128/0x270 net/bluetooth/sco.c:176
+>> {IN-SOFTIRQ-W} state was registered at:
+>>    lock_acquire+0x1f3/0xae0 kernel/locking/lockdep.c:5006
+>>    __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
+>>    _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
+>>    spin_lock include/linux/spinlock.h:354 [inline]
+>>    sco_sock_timeout+0x24/0x140 net/bluetooth/sco.c:83
+>>    call_timer_fn+0x1ac/0x760 kernel/time/timer.c:1413
+>>    expire_timers kernel/time/timer.c:1458 [inline]
+>>    __run_timers.part.0+0x67c/0xaa0 kernel/time/timer.c:1755
+>>    __run_timers kernel/time/timer.c:1736 [inline]
+>>    run_timer_softirq+0xae/0x1a0 kernel/time/timer.c:1768
+>>    __do_softirq+0x1f7/0xa91 kernel/softirq.c:298
+>>    asm_call_on_stack+0xf/0x20 arch/x86/entry/entry_64.S:706
+>>    __run_on_irqstack arch/x86/include/asm/irq_stack.h:22 [inline]
+>>    run_on_irqstack_cond arch/x86/include/asm/irq_stack.h:48 [inline]
+>>    do_softirq_own_stack+0x9d/0xd0 arch/x86/kernel/irq_64.c:77
+>>    invoke_softirq kernel/softirq.c:393 [inline]
+>>    __irq_exit_rcu kernel/softirq.c:423 [inline]
+>>    irq_exit_rcu+0x235/0x280 kernel/softirq.c:435
+>>    sysvec_apic_timer_interrupt+0x51/0xf0 arch/x86/kernel/apic/apic.c:1091
+>>    asm_sysvec_apic_timer_interrupt+0x12/0x20
+>>    arch/x86/include/asm/idtentry.h:581
+>>    unwind_next_frame+0x139a/0x1f90 arch/x86/kernel/unwind_orc.c:607
+>>    arch_stack_walk+0x81/0xf0 arch/x86/kernel/stacktrace.c:25
+>>    stack_trace_save+0x8c/0xc0 kernel/stacktrace.c:123
+>>    kasan_save_stack+0x1b/0x40 mm/kasan/common.c:48
+>>    kasan_set_track mm/kasan/common.c:56 [inline]
+>>    __kasan_kmalloc.constprop.0+0xbf/0xd0 mm/kasan/common.c:461
+>>    slab_post_alloc_hook mm/slab.h:518 [inline]
+>>    slab_alloc mm/slab.c:3312 [inline]
+>>    kmem_cache_alloc+0x13a/0x3a0 mm/slab.c:3482
+>>    __d_alloc+0x2a/0x950 fs/dcache.c:1709
+>>    d_alloc+0x4a/0x230 fs/dcache.c:1788
+>>    d_alloc_parallel+0xe9/0x18e0 fs/dcache.c:2540
+>>    lookup_open.isra.0+0x9ac/0x1350 fs/namei.c:3030
+>>    open_last_lookups fs/namei.c:3177 [inline]
+>>    path_openat+0x96d/0x2730 fs/namei.c:3365
+>>    do_filp_open+0x17e/0x3c0 fs/namei.c:3395
+>>    do_sys_openat2+0x16d/0x420 fs/open.c:1168
+>>    do_sys_open fs/open.c:1184 [inline]
+>>    __do_sys_open fs/open.c:1192 [inline]
+>>    __se_sys_open fs/open.c:1188 [inline]
+>>    __x64_sys_open+0x119/0x1c0 fs/open.c:1188
+>>    do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+>>    entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>> irq event stamp: 853
+>> hardirqs last  enabled at (853): [<ffffffff87f733af>]
+>> __raw_spin_unlock_irq include/linux/spinlock_api_smp.h:168 [inline]
+>> hardirqs last  enabled at (853): [<ffffffff87f733af>]
+>> _raw_spin_unlock_irq+0x1f/0x80 kernel/locking/spinlock.c:199
+>> hardirqs last disabled at (852): [<ffffffff87f73764>]
+>> __raw_spin_lock_irq include/linux/spinlock_api_smp.h:126 [inline]
+>> hardirqs last disabled at (852): [<ffffffff87f73764>]
+>> _raw_spin_lock_irq+0xa4/0xd0 kernel/locking/spinlock.c:167
+>> softirqs last  enabled at (0): [<ffffffff8144c929>]
+>> copy_process+0x1a99/0x6920 kernel/fork.c:2018
+>> softirqs last disabled at (0): [<0000000000000000>] 0x0
+>>
+>> other info that might help us debug this:
+>>   Possible unsafe locking scenario:
+>>
+>>         CPU0
+>>         ----
+>>    lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
+>>    <Interrupt>
+>>      lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
+>>
+>>   *** DEADLOCK ***
+>>
+>> 3 locks held by syz-executor675/31233:
+>>   #0: ffff88809f104f40 (&hdev->req_lock){+.+.}-{3:3}, at:
+>> hci_dev_do_close+0xf5/0x1080 net/bluetooth/hci_core.c:1720
+>>   #1: ffff88809f104078 (&hdev->lock){+.+.}-{3:3}, at:
+>> hci_dev_do_close+0x253/0x1080 net/bluetooth/hci_core.c:1757
+>>   #2: ffffffff8a9188c8 (hci_cb_list_lock){+.+.}-{3:3}, at:
+>> hci_disconn_cfm include/net/bluetooth/hci_core.h:1435 [inline]
+>>   #2: ffffffff8a9188c8 (hci_cb_list_lock){+.+.}-{3:3}, at:
+>> hci_conn_hash_flush+0xc7/0x220 net/bluetooth/hci_conn.c:1557
+>>
+>> stack backtrace:
+>> CPU: 1 PID: 31233 Comm: syz-executor675 Not tainted 5.9.0-rc4-syzkaller
+>> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+>> Google 01/01/2011
+>> Call Trace:
+>>   __dump_stack lib/dump_stack.c:77 [inline]
+>>   dump_stack+0x198/0x1fd lib/dump_stack.c:118
+>>   print_usage_bug kernel/locking/lockdep.c:4020 [inline]
+>>   valid_state kernel/locking/lockdep.c:3361 [inline]
+>>   mark_lock_irq kernel/locking/lockdep.c:3560 [inline]
+>>   mark_lock.cold+0x7a/0x7f kernel/locking/lockdep.c:4006
+>>   mark_usage kernel/locking/lockdep.c:3923 [inline]
+>>   __lock_acquire+0x876/0x5570 kernel/locking/lockdep.c:4380
+>>   lock_acquire+0x1f3/0xae0 kernel/locking/lockdep.c:5006
+>>   __raw_spin_lock include/linux/spinlock_api_smp.h:142 [inline]
+>>   _raw_spin_lock+0x2a/0x40 kernel/locking/spinlock.c:151
+>>   spin_lock include/linux/spinlock.h:354 [inline]
+>>   sco_conn_del+0x128/0x270 net/bluetooth/sco.c:176
+>>   sco_disconn_cfm net/bluetooth/sco.c:1178 [inline]
+>>   sco_disconn_cfm+0x62/0x80 net/bluetooth/sco.c:1171
+>>   hci_disconn_cfm include/net/bluetooth/hci_core.h:1438 [inline]
+>>   hci_conn_hash_flush+0x114/0x220 net/bluetooth/hci_conn.c:1557
+>>   hci_dev_do_close+0x5c6/0x1080 net/bluetooth/hci_core.c:1770
+>>   hci_unregister_dev+0x1bd/0xe30 net/bluetooth/hci_core.c:3790
+>>   vhci_release+0x70/0xe0 drivers/bluetooth/hci_vhci.c:340
+>>   __f put+0x285/0x920 fs/file_table.c:281
+>>   task_work_run+0xdd/0x190 kernel/task_work.c:141
+>>   exit_task_work include/linux/task_work.h:25 [inline]
+>>   do_exit+0xb7d/0x29f0 kernel/exit.c:806
+>>   do_group_exit+0x125/0x310 kernel/exit.c:903
+>>   get_signal+0x428/0x1f00 kernel/signal.c:2757
+>>   arch_do_signal+0x82/0x2520 arch/x86/kernel/signal.c:811
+>>   exit_to_user_mode_loop kernel/entry/common.c:159 [inline]
+>>   exit_to_user_mode_prepare+0x1ae/0x200 kernel/entry/common.c:190
+>>   syscall_exit_to_user_mode+0x7e/0x2e0 kernel/entry/common.c:265
+>>   entry_SYSCALL_64_after_hwframe+0x44/0xa9
+>> RIP: 0033:0x447279
+>>
+>> Reported-by: syzbot+65684128cd7c35bc66a1@syzkaller.appspotmail.com
+>> Signed-off-by: Yanfei Xu <yanfei.xu@windriver.com>
+>> ---
+>>   net/bluetooth/sco.c | 4 ++--
+>>   1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/net/bluetooth/sco.c b/net/bluetooth/sco.c
+>> index dcf7f96ff417..559b883c815f 100644
+>> --- a/net/bluetooth/sco.c
+>> +++ b/net/bluetooth/sco.c
+>> @@ -173,10 +173,10 @@ static void sco_conn_del(struct hci_conn *hcon, int err)
+>>   
+>>   	if (sk) {
+>>   		sock_hold(sk);
+>> -		bh_lock_sock(sk);
+>> +		lock_sock(sk);
+>>   		sco_sock_clear_timer(sk);
+>>   		sco_chan_del(sk, err);
+>> -		bh_unlock_sock(sk);
+>> +		release_sock(sk);
+>>   		sco_sock_kill(sk);
+>>   		sock_put(sk);
+>>   	}
+>> -- 
+>> 2.18.2
+> 
+> 
+> --- a/net/bluetooth/sco.c
+> +++ b/net/bluetooth/sco.c
+> @@ -80,10 +80,10 @@ static void sco_sock_timeout(struct time
+>   
+>   	BT_DBG("sock %p state %d", sk, sk->sk_state);
+>   
+> -	bh_lock_sock(sk);
+> +	lock_sock(sk);
+>   	sk->sk_err = ETIMEDOUT;
+>   	sk->sk_state_change(sk);
+> -	bh_unlock_sock(sk);
+> +	unlock_sock(sk);
+>   
+>   	sco_sock_kill(sk);
+>   	sock_put(sk);
+> 
+Hi Hillf,
 
-v2 changelog:
--removed #define for LPI_ET_ENABLE and LPI_ET_DISABLE and directly use
- literals
--removed not required function header in stmmac.h
--renamed stmmac_lpi_entry_timer_enable() to stmmac_lpi_entry_timer_config()
--Moved stmmac_lpi_entry_timer_enable() up in the file before
- stmmac_disable_eee_mode()
+Thanks for your reply! But I don't clearly understand what you mean.
 
- drivers/net/ethernet/stmicro/stmmac/common.h  |  1 +
- drivers/net/ethernet/stmicro/stmmac/dwmac4.h  |  2 ++
- .../net/ethernet/stmicro/stmmac/dwmac4_core.c | 24 ++++++++++++++
- drivers/net/ethernet/stmicro/stmmac/hwif.h    |  3 ++
- drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  1 +
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 31 +++++++++++++++++--
- 6 files changed, 59 insertions(+), 3 deletions(-)
+After your change, If sco_conn_del（） have got the lock and then run into 
+sco_sock_timeout which is in BH, the potential deadlock is still exsit.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
-index df7de50497a0..6f271c46368d 100644
---- a/drivers/net/ethernet/stmicro/stmmac/common.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/common.h
-@@ -402,6 +402,7 @@ struct dma_features {
- /* Default LPI timers */
- #define STMMAC_DEFAULT_LIT_LS	0x3E8
- #define STMMAC_DEFAULT_TWT_LS	0x1E
-+#define STMMAC_ET_MAX		0xFFFFF
- 
- #define STMMAC_CHAIN_MODE	0x1
- #define STMMAC_RING_MODE	0x2
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-index 592b043f9676..82df91c130f7 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4.h
-@@ -176,9 +176,11 @@ enum power_event {
-  */
- #define GMAC4_LPI_CTRL_STATUS	0xd0
- #define GMAC4_LPI_TIMER_CTRL	0xd4
-+#define GMAC4_LPI_ENTRY_TIMER	0xd8
- 
- /* LPI control and status defines */
- #define GMAC4_LPI_CTRL_STATUS_LPITCSE	BIT(21)	/* LPI Tx Clock Stop Enable */
-+#define GMAC4_LPI_CTRL_STATUS_LPIATE	BIT(20) /* LPI Timer Enable */
- #define GMAC4_LPI_CTRL_STATUS_LPITXA	BIT(19)	/* Enable LPI TX Automate */
- #define GMAC4_LPI_CTRL_STATUS_PLS	BIT(17) /* PHY Link Status */
- #define GMAC4_LPI_CTRL_STATUS_LPIEN	BIT(16)	/* LPI Enable */
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index 002791b77356..3ed4f4cda7f9 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -379,6 +379,27 @@ static void dwmac4_set_eee_pls(struct mac_device_info *hw, int link)
- 	writel(value, ioaddr + GMAC4_LPI_CTRL_STATUS);
- }
- 
-+static void dwmac4_set_eee_lpi_entry_timer(struct mac_device_info *hw, int et)
-+{
-+	void __iomem *ioaddr = hw->pcsr;
-+	int value = et & STMMAC_ET_MAX;
-+	int regval;
-+
-+	/* Program LPI entry timer value into register */
-+	writel(value, ioaddr + GMAC4_LPI_ENTRY_TIMER);
-+
-+	/* Enable/disable LPI entry timer */
-+	regval = readl(ioaddr + GMAC4_LPI_CTRL_STATUS);
-+	regval |= GMAC4_LPI_CTRL_STATUS_LPIEN | GMAC4_LPI_CTRL_STATUS_LPITXA;
-+
-+	if (et)
-+		regval |= GMAC4_LPI_CTRL_STATUS_LPIATE;
-+	else
-+		regval &= ~GMAC4_LPI_CTRL_STATUS_LPIATE;
-+
-+	writel(regval, ioaddr + GMAC4_LPI_CTRL_STATUS);
-+}
-+
- static void dwmac4_set_eee_timer(struct mac_device_info *hw, int ls, int tw)
- {
- 	void __iomem *ioaddr = hw->pcsr;
-@@ -1164,6 +1185,7 @@ const struct stmmac_ops dwmac4_ops = {
- 	.get_umac_addr = dwmac4_get_umac_addr,
- 	.set_eee_mode = dwmac4_set_eee_mode,
- 	.reset_eee_mode = dwmac4_reset_eee_mode,
-+	.set_eee_lpi_entry_timer = dwmac4_set_eee_lpi_entry_timer,
- 	.set_eee_timer = dwmac4_set_eee_timer,
- 	.set_eee_pls = dwmac4_set_eee_pls,
- 	.pcs_ctrl_ane = dwmac4_ctrl_ane,
-@@ -1206,6 +1228,7 @@ const struct stmmac_ops dwmac410_ops = {
- 	.get_umac_addr = dwmac4_get_umac_addr,
- 	.set_eee_mode = dwmac4_set_eee_mode,
- 	.reset_eee_mode = dwmac4_reset_eee_mode,
-+	.set_eee_lpi_entry_timer = dwmac4_set_eee_lpi_entry_timer,
- 	.set_eee_timer = dwmac4_set_eee_timer,
- 	.set_eee_pls = dwmac4_set_eee_pls,
- 	.pcs_ctrl_ane = dwmac4_ctrl_ane,
-@@ -1249,6 +1272,7 @@ const struct stmmac_ops dwmac510_ops = {
- 	.get_umac_addr = dwmac4_get_umac_addr,
- 	.set_eee_mode = dwmac4_set_eee_mode,
- 	.reset_eee_mode = dwmac4_reset_eee_mode,
-+	.set_eee_lpi_entry_timer = dwmac4_set_eee_lpi_entry_timer,
- 	.set_eee_timer = dwmac4_set_eee_timer,
- 	.set_eee_pls = dwmac4_set_eee_pls,
- 	.pcs_ctrl_ane = dwmac4_ctrl_ane,
-diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-index e2dca9b6e992..b40b2e0667bb 100644
---- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
-@@ -337,6 +337,7 @@ struct stmmac_ops {
- 	void (*set_eee_mode)(struct mac_device_info *hw,
- 			     bool en_tx_lpi_clockgating);
- 	void (*reset_eee_mode)(struct mac_device_info *hw);
-+	void (*set_eee_lpi_entry_timer)(struct mac_device_info *hw, int et);
- 	void (*set_eee_timer)(struct mac_device_info *hw, int ls, int tw);
- 	void (*set_eee_pls)(struct mac_device_info *hw, int link);
- 	void (*debug)(void __iomem *ioaddr, struct stmmac_extra_stats *x,
-@@ -439,6 +440,8 @@ struct stmmac_ops {
- 	stmmac_do_void_callback(__priv, mac, set_eee_mode, __args)
- #define stmmac_reset_eee_mode(__priv, __args...) \
- 	stmmac_do_void_callback(__priv, mac, reset_eee_mode, __args)
-+#define stmmac_set_eee_lpi_timer(__priv, __args...) \
-+	stmmac_do_void_callback(__priv, mac, set_eee_lpi_entry_timer, __args)
- #define stmmac_set_eee_timer(__priv, __args...) \
- 	stmmac_do_void_callback(__priv, mac, set_eee_timer, __args)
- #define stmmac_set_eee_pls(__priv, __args...) \
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index 727e68dfaf1c..c88ee8ea4245 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -207,6 +207,7 @@ struct stmmac_priv {
- 	int tx_lpi_timer;
- 	int tx_lpi_enabled;
- 	int eee_tw_timer;
-+	bool eee_sw_timer_en;
- 	unsigned int mode;
- 	unsigned int chain_mode;
- 	int extend_desc;
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 220626a8d499..f2e320480c8c 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -294,6 +294,16 @@ static inline u32 stmmac_rx_dirty(struct stmmac_priv *priv, u32 queue)
- 	return dirty;
- }
- 
-+static void stmmac_lpi_entry_timer_config(struct stmmac_priv *priv, bool en)
-+{
-+	int tx_lpi_timer;
-+
-+	/* Clear/set the SW EEE timer flag based on LPI ET enablement */
-+	priv->eee_sw_timer_en = en ? 0 : 1;
-+	tx_lpi_timer  = en ? priv->tx_lpi_timer : 0;
-+	stmmac_set_eee_lpi_timer(priv, priv->hw, tx_lpi_timer);
-+}
-+
- /**
-  * stmmac_enable_eee_mode - check and enter in LPI mode
-  * @priv: driver private structure
-@@ -327,6 +337,11 @@ static void stmmac_enable_eee_mode(struct stmmac_priv *priv)
-  */
- void stmmac_disable_eee_mode(struct stmmac_priv *priv)
- {
-+	if (!priv->eee_sw_timer_en) {
-+		stmmac_lpi_entry_timer_config(priv, 0);
-+		return;
-+	}
-+
- 	stmmac_reset_eee_mode(priv, priv->hw);
- 	del_timer_sync(&priv->eee_ctrl_timer);
- 	priv->tx_path_in_lpi_mode = false;
-@@ -376,6 +391,7 @@ bool stmmac_eee_init(struct stmmac_priv *priv)
- 	if (!priv->eee_active) {
- 		if (priv->eee_enabled) {
- 			netdev_dbg(priv->dev, "disable EEE\n");
-+			stmmac_lpi_entry_timer_config(priv, 0);
- 			del_timer_sync(&priv->eee_ctrl_timer);
- 			stmmac_set_eee_timer(priv, priv->hw, 0, eee_tw_timer);
- 		}
-@@ -389,7 +405,15 @@ bool stmmac_eee_init(struct stmmac_priv *priv)
- 				     eee_tw_timer);
- 	}
- 
--	mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(priv->tx_lpi_timer));
-+	if (priv->plat->has_gmac4 && priv->tx_lpi_timer <= STMMAC_ET_MAX) {
-+		del_timer_sync(&priv->eee_ctrl_timer);
-+		priv->tx_path_in_lpi_mode = false;
-+		stmmac_lpi_entry_timer_config(priv, 1);
-+	} else {
-+		stmmac_lpi_entry_timer_config(priv, 0);
-+		mod_timer(&priv->eee_ctrl_timer,
-+			  STMMAC_LPI_T(priv->tx_lpi_timer));
-+	}
- 
- 	mutex_unlock(&priv->lock);
- 	netdev_dbg(priv->dev, "Energy-Efficient Ethernet initialized\n");
-@@ -2044,7 +2068,8 @@ static int stmmac_tx_clean(struct stmmac_priv *priv, int budget, u32 queue)
- 		netif_tx_wake_queue(netdev_get_tx_queue(priv->dev, queue));
- 	}
- 
--	if ((priv->eee_enabled) && (!priv->tx_path_in_lpi_mode)) {
-+	if (priv->eee_enabled && !priv->tx_path_in_lpi_mode &&
-+	    priv->eee_sw_timer_en) {
- 		stmmac_enable_eee_mode(priv);
- 		mod_timer(&priv->eee_ctrl_timer, STMMAC_LPI_T(priv->tx_lpi_timer));
- 	}
-@@ -3306,7 +3331,7 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
- 	tx_q = &priv->tx_queue[queue];
- 	first_tx = tx_q->cur_tx;
- 
--	if (priv->tx_path_in_lpi_mode)
-+	if (priv->tx_path_in_lpi_mode && priv->eee_sw_timer_en)
- 		stmmac_disable_eee_mode(priv);
- 
- 	/* Manage oversized TCP frames for GMAC4 device */
--- 
-2.17.1
+As the function define, use bh_lock_sock in sco_sock_timeout(BH context) 
+is right. The root cause is prevent from locking in BH after we've got 
+the lock in sco_conn_del, isn't it?
+
+/* BH context may only use the following locking interface. */
+#define bh_lock_sock(__sk)      spin_lock(&((__sk)->sk_lock.slock))
+
+
+Regards,
+Yanfei
+
+
+
 
