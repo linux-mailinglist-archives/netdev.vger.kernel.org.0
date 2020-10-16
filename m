@@ -2,101 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF9BB28FE23
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 08:19:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E40628FE32
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 08:20:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394004AbgJPGTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 02:19:10 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:33818 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2393991AbgJPGTK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Oct 2020 02:19:10 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 258D7E95BBEB13B85C01;
-        Fri, 16 Oct 2020 14:18:59 +0800 (CST)
-Received: from [10.174.176.180] (10.174.176.180) by
- DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
- 14.3.487.0; Fri, 16 Oct 2020 14:18:54 +0800
-Subject: Re: [PATCH] bpfilter: Fix build error with CONFIG_BPFILTER_UMH
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20201014091749.25488-1-yuehaibing@huawei.com>
- <20201015093748.587a72b5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAADnVQKJ=iDMiJpELmuATsdf2vxGJ=Y9r+vjJG6m4BDRNPmP3g@mail.gmail.com>
- <20201015115643.3a4d4820@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAADnVQLVvd_2zJTQJ7m=322H7M7NdTFfFE7f800XA=9HXVY28Q@mail.gmail.com>
- <20201015122624.0ca7b58c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAADnVQLiYfi3DvT=S_jgb+X=qD4GC1WJynWmh8988scUQJozWA@mail.gmail.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-From:   Yuehaibing <yuehaibing@huawei.com>
-Message-ID: <888cb447-dda7-dd1a-38ab-fbae08032e23@huawei.com>
-Date:   Fri, 16 Oct 2020 14:18:53 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.8.0
+        id S2394023AbgJPGUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 02:20:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391090AbgJPGUd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 02:20:33 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FA01C0613CF
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 23:20:33 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kTJ6G-0006kS-T0; Fri, 16 Oct 2020 08:20:25 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:c4e8:c8ff:a41:29c1] (unknown [IPv6:2a03:f580:87bc:d400:c4e8:c8ff:a41:29c1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 020F857A597;
+        Fri, 16 Oct 2020 06:20:22 +0000 (UTC)
+Subject: Re: [PATCH 3/6] dt-bindings: can: flexcan: add fsl, can-index
+ property to indicate a resource
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>, robh+dt@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de
+Cc:     devicetree@vger.kernel.org, peng.fan@nxp.com, victor.liu@nxp.com,
+        netdev@vger.kernel.org, pankaj.bansal@nxp.com,
+        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-imx@nxp.com, kernel@pengutronix.de
+References: <20201016134320.20321-1-qiangqing.zhang@nxp.com>
+ <20201016134320.20321-4-qiangqing.zhang@nxp.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <604a66f6-83ea-630e-f479-fe62189de42a@pengutronix.de>
+Date:   Fri, 16 Oct 2020 08:20:18 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <CAADnVQLiYfi3DvT=S_jgb+X=qD4GC1WJynWmh8988scUQJozWA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.176.180]
-X-CFilter-Loop: Reflected
+In-Reply-To: <20201016134320.20321-4-qiangqing.zhang@nxp.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="hbnXYKQVltF6uJyGcZTvfcMtBEt13k8EX"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--hbnXYKQVltF6uJyGcZTvfcMtBEt13k8EX
+Content-Type: multipart/mixed; boundary="ELjD8mlgZXf80gZdfz0BoipHtSJqjkxBs";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Joakim Zhang <qiangqing.zhang@nxp.com>, robh+dt@kernel.org,
+ shawnguo@kernel.org, s.hauer@pengutronix.de
+Cc: devicetree@vger.kernel.org, peng.fan@nxp.com, victor.liu@nxp.com,
+ netdev@vger.kernel.org, pankaj.bansal@nxp.com, linux-kernel@vger.kernel.org,
+ linux-can@vger.kernel.org, linux-imx@nxp.com, kernel@pengutronix.de
+Message-ID: <604a66f6-83ea-630e-f479-fe62189de42a@pengutronix.de>
+Subject: Re: [PATCH 3/6] dt-bindings: can: flexcan: add fsl, can-index
+ property to indicate a resource
+References: <20201016134320.20321-1-qiangqing.zhang@nxp.com>
+ <20201016134320.20321-4-qiangqing.zhang@nxp.com>
+In-Reply-To: <20201016134320.20321-4-qiangqing.zhang@nxp.com>
+
+--ELjD8mlgZXf80gZdfz0BoipHtSJqjkxBs
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
+
+On 10/16/20 3:43 PM, Joakim Zhang wrote:
+> For SoCs with SCU support, need setup stop mode via SCU firmware,
+> so this property can help indicate a resource.
+>=20
+> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+> ---
+>  Documentation/devicetree/bindings/net/can/fsl-flexcan.txt | 5 +++++
+>  1 file changed, 5 insertions(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt =
+b/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
+> index 6af67f5e581c..839c0c0064a2 100644
+> --- a/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
+> +++ b/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
+> @@ -43,6 +43,10 @@ Optional properties:
+>  		  0: clock source 0 (oscillator clock)
+>  		  1: clock source 1 (peripheral clock)
+> =20
+> +- fsl,can-index: The index of CAN instance.
+> +                 For SoCs with SCU support, need setup stop mode via S=
+CU firmware,
+> +                 so this property can help indicate a resource.
+
+This property is not CAN specific. So the name could be more general.
+
+> +
+>  - wakeup-source: enable CAN remote wakeup
+> =20
+>  Example:
+> @@ -54,4 +58,5 @@ Example:
+>  		interrupt-parent =3D <&mpic>;
+>  		clock-frequency =3D <200000000>; // filled in by bootloader
+>  		fsl,clk-source =3D /bits/ 8 <0>; // select clock source 0 for PE
+> +		fsl,can-index =3D /bits/ 8 <1>; // the second CAN instance
+>  	};
+>=20
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
-On 2020/10/16 3:57, Alexei Starovoitov wrote:
-> On Thu, Oct 15, 2020 at 12:26 PM Jakub Kicinski <kuba@kernel.org> wrote:
->>
->> On Thu, 15 Oct 2020 12:03:14 -0700 Alexei Starovoitov wrote:
->>> On Thu, Oct 15, 2020 at 11:56 AM Jakub Kicinski <kuba@kernel.org> wrote:
->>>> How so? It's using in-tree headers instead of system ones.
->>>> Many samples seem to be doing the same thing.
->>>
->>> There is no such thing as "usr/include" in the kernel build and source trees.
->>
->> Hm. I thought bpfilter somehow depends on make headers. But it doesn't
->> seem to. Reverting now.
-> 
-> Thanks!
-> Right. To explain it a bit further for the author of the patch:
-> Some samples makefiles use this -I usr/include pattern.
-> That's different. This local "usr/include" is a result of 'make
-> headers_install'.
+--ELjD8mlgZXf80gZdfz0BoipHtSJqjkxBs--
 
-I didn't notice this, sorry for the wrong fix.
+--hbnXYKQVltF6uJyGcZTvfcMtBEt13k8EX
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
 
-> For samples and such it's ok to depend on that, but bpfilter is
-> the part of the kernel build.
-> It cannot depend on the 'make headers_install' step,
-> so the fix has to be different.
+-----BEGIN PGP SIGNATURE-----
 
-Yes, this should rework.
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+JO6IACgkQqclaivrt
+76m3fAf/VfHHeBNNC6HFkotFw02P4snUxFBJhJGfL4rKemCPD5Ais9qC/AGXmuff
+KYIA6ZPH49O8lTppyknSATYS7xNSTPRJQTVm+JoyYeerD23C+PNrrSEfrUb1D2o5
+7TCP9FaUm3v8Udzs6tLIfceHivvVMaBwk9g4v9WXt/yE4HqWr2DDmlbZOZa+w3cp
+EBbisH3+I2mQ+GTRZkOEYMeRPtDLRYQDz0JBHC2cNiTEryr7FMISPZi0dsb/J8Gl
+UD79cjVsXpM3btLFHcagkSN5WMRd3DfzHtAJF9ZNDWsJWOFJkbCYq4SNPwAjVW0o
+TMd5CxY67RCXaUhoDSgPGghEaFXZQA==
+=Zd9i
+-----END PGP SIGNATURE-----
 
-> 
->>>>> Also please don't take bpf patches.
->>>>
->>>> You had it marked it as netdev in your patchwork :/
->>>
->>> It was delegated automatically by the patchwork system.
->>> I didn't have time to reassign, but you should have known better
->>> when you saw 'bpfilter' in the subject.
->>
->> The previous committers for bpfilter are almost all Dave, so I checked
->> your patchwork to make sure and it was netdev...
-> 
-> It was my fault. I was sloppy in the past and didn't pay enough attention
-> to bpfilter and it started to bitrot because Dave was applying patches
-> with his normal SLAs while I was silent.
-> .
-> 
+--hbnXYKQVltF6uJyGcZTvfcMtBEt13k8EX--
