@@ -2,98 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC9F5290596
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 14:53:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18DD329060F
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 15:13:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407894AbgJPMxE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 08:53:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39312 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406441AbgJPMxE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 08:53:04 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6D01C061755;
-        Fri, 16 Oct 2020 05:53:02 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id a1so1463677pjd.1;
-        Fri, 16 Oct 2020 05:53:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=FUtQA0qUOVYE5VMj3cW7CapQKG9ojRqmAnqdA0LyCGo=;
-        b=vCXhQdQ3ztQPt5becxg794HJUjDegq7SsbB8nMOJtcMdHGFVWDzVZ1P7DbouMNp34+
-         /9riFPGA07BC2xndwiMfNsgtn6iivyjmOtb4vcanx0bCNmWwfS5oyttzERJ3r64L7HHK
-         OOir14GM2lJMLvmLs4iwK6GOtC0ZYWim5C2rf6chEjeWPxDYll9yd9eOEWXeFqdb+p8b
-         LF+P2Kh8TwirUNnL+i664tkjfkKfHl0pTZYmuzpGF1iXwJL5sfp9HX34oZ2mz9Nrbbot
-         PMLXCMCXAiCAK/zIoZcWdboUL2WgJdEQaf7L8yoBrkUtFcrR57Z1ykTb6a9iTZmdJT4J
-         phyA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=FUtQA0qUOVYE5VMj3cW7CapQKG9ojRqmAnqdA0LyCGo=;
-        b=d9+X/Zani8hpdM5yDCOpoOaR8Iqr1DknFbZ9TOQDKDN+8x02eHbxnmoQywk2NwMqzA
-         tdP+n6gGVSzLGA5BcF25KsLgy/e8AcgmHU5/kavCUByiP3YOXTE2PccmeIjNC59K6vHN
-         8M0PXv1LHXh1NEXWmapq2oOAQz6WYB+s7HBLDJGCb0badBaYXUMLdpEw8ysq8uQI86kA
-         kdovUCGZ2HuiZ5meTuABKNb/yBL+giaTUORqQaPGmhqstvOU9YBTTqNOnfOq5ile3Jbr
-         zPPMdmX5XzdPOpPURU9Nc//mnFg+hmp4aHXgitsC5ZCiE++WtYB+hHMVNrvgpa22Hqr0
-         mpZg==
-X-Gm-Message-State: AOAM5323Jl66aNk4tnLvTEpPgHV/i4FO/XU7QEYJ6cng1x211hZz0Vc4
-        vWlJxeEJeopba02YljExHI8=
-X-Google-Smtp-Source: ABdhPJzY3RkwsN6x7PhOlOHBSwgLqFLWfkyjtm1ufhmdyNT3hSPhVUnNDEcbUZsj6CIatDIUAKRjHQ==
-X-Received: by 2002:a17:902:a715:b029:d3:c2b4:bcee with SMTP id w21-20020a170902a715b02900d3c2b4bceemr4059331plq.22.1602852782314;
-        Fri, 16 Oct 2020 05:53:02 -0700 (PDT)
-Received: from hoboy (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id 190sm2904499pfc.151.2020.10.16.05.53.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Oct 2020 05:53:01 -0700 (PDT)
-Date:   Fri, 16 Oct 2020 05:52:59 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Krzysztof Halasa <khalasa@piap.pl>,
-        Vishal Kulkarni <vishal@chelsio.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net: ptp: get rid of IPV4_HLEN() and OFF_IHL
- macros
-Message-ID: <20201016125259.GA19213@hoboy>
-References: <20201014115805.23905-1-ceggers@arri.de>
- <20201015033648.GA24901@hoboy>
- <939828b0-846c-9e10-df31-afcb77b1150a@gmail.com>
- <2135183.8zsl8bQRyA@n95hx1g2>
+        id S2406887AbgJPNNm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 09:13:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35190 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2406870AbgJPNNk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Oct 2020 09:13:40 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7A62D20848;
+        Fri, 16 Oct 2020 13:13:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602854020;
+        bh=2+IXWiDXYWcnJuiE9ZkzKBF2ew8gRWZjJ+yHD8BlPnc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XuPWPf1We//fwVQZkSXxO228X+FCRnjpLC9nRuvW003drC/co7zfHLsRCAkWJyVdl
+         FObaIQuwCFwzmWxn/eiBvC7Kr60FVapHG5hiDzZaeeOmfg0JJ5+7rfe0iaJAFy2Me+
+         d43xcPNfroCluWJFiaiTEE6hLn7etwUZIKTqJFes=
+Date:   Fri, 16 Oct 2020 15:14:10 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Alexander A Sverdlin <alexander.sverdlin@nokia.com>
+Cc:     devel@driverdev.osuosl.org, Aaro Koskinen <aaro.koskinen@iki.fi>,
+        Ralf Baechle <ralf@linux-mips.org>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v2 net] staging: octeon: Drop on uncorrectable alignment
+ or FCS error
+Message-ID: <20201016131410.GA1796046@kroah.com>
+References: <20201016101858.11374-1-alexander.sverdlin@nokia.com>
+ <20201016101858.11374-2-alexander.sverdlin@nokia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2135183.8zsl8bQRyA@n95hx1g2>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20201016101858.11374-2-alexander.sverdlin@nokia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 16, 2020 at 09:04:38AM +0200, Christian Eggers wrote:
-> IPV4_HLEN() is only used for PTP. Is there any way to use "normal"
-> infrastructure as in the rest of the network stack?
+On Fri, Oct 16, 2020 at 12:18:58PM +0200, Alexander A Sverdlin wrote:
+> From: Alexander Sverdlin <alexander.sverdlin@nokia.com>
+> 
+> Currently in case of alignment or FCS error if the packet cannot be
+> corrected it's still not dropped. Report the error properly and drop the
+> packet while making the code around a little bit more readable.
+> 
+> Signed-off-by: Alexander Sverdlin <alexander.sverdlin@nokia.com>
+> Fixes: 80ff0fd3ab ("Staging: Add octeon-ethernet driver files.")
+> 
+> Change-Id: Ie1fadcc57cb5e221cf3e83c169b53a5533b8edff
 
-You answered your own question...
-
-> It looks like PTP code
-> typically has to look into multiple network layers (mac, network, transport)
-> at places these layers may not be processed yet (at least in RX direction).
-
-here!
-
-(The pointers in the skb are moved around as the skb flows through the stack.)
-
-The original, per-driver, un-refactored callers of that macro (at
-least the ones written by me) used the macro carefully.  Also, I think
-the recent re-factoring that Kurt implemented preserves the correct
-usage of the macro.  Any new users must, of course, use it carefully
-while parsing the bytes of a frame.
-
-I agree that the macro is perhaps not the best possible solution, but
-it is not the worst either.
-
-Thanks,
-Richard
+Why is the change-id still here???
