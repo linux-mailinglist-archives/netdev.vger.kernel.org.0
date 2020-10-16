@@ -2,282 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C008290C5A
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 21:36:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93AD0290C5D
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 21:37:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2411094AbgJPTgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 15:36:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45548 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2411089AbgJPTgb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 15:36:31 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D33DDC061755
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 12:36:30 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kTVWZ-0001TL-Py; Fri, 16 Oct 2020 21:36:23 +0200
-Received: from [IPv6:2a03:f580:87bc:d400:11bc:f68a:b193:452] (unknown [IPv6:2a03:f580:87bc:d400:11bc:f68a:b193:452])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 566E357ACAA;
-        Fri, 16 Oct 2020 19:36:20 +0000 (UTC)
-Subject: Re: [RFC] can: can_create_echo_skb(): fix echo skb generation: always
- use skb_clone()
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        dev.kurt@vandijck-laurijssen.be, wg@grandegger.com
-Cc:     netdev@vger.kernel.org, kernel@pengutronix.de,
-        linux-can@vger.kernel.org
-References: <20200124132656.22156-1-o.rempel@pengutronix.de>
- <20200214120948.4sjnqn2jvndldphw@pengutronix.de>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <f2ae9b3a-0d10-64ae-1533-2308e9346ebc@pengutronix.de>
-Date:   Fri, 16 Oct 2020 21:36:08 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S2436565AbgJPThz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 15:37:55 -0400
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:48487 "EHLO
+        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2436556AbgJPThz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 15:37:55 -0400
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20201016193743euoutp0107c4bbc9860fa4f6497e3c9eee48d491~_kDJnuiuw2186621866euoutp01X;
+        Fri, 16 Oct 2020 19:37:43 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20201016193743euoutp0107c4bbc9860fa4f6497e3c9eee48d491~_kDJnuiuw2186621866euoutp01X
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1602877063;
+        bh=fAaURGxFxrxf5vT3aXwuCB6B61xvc3SkZQaHP8Bxw2c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=c6XkpzyD37jVkF+ueKbbfEvrMfGqDMJEt2z7q8ZS4y/5O2QMaWgUhOV2t7Uvd6GYl
+         wFTWOfXzGXmAIBbjtoYjL6m8YsBDHCUea6rAg3zFsSfiG6RBVne9XeVoXea/jKwiCi
+         PJWpseKUb3klATWf4Q+fO1Wvd3dvPCZ9NSFPKDls=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20201016193738eucas1p2287eb7f7921312b483df787ba1458f0b~_kDEmgLjf3236532365eucas1p2d;
+        Fri, 16 Oct 2020 19:37:38 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id F4.D1.06318.186F98F5; Fri, 16
+        Oct 2020 20:37:38 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+        20201016193736eucas1p1eb94190e16b194f473ade8c49ca34275~_kDDg7Amv1985019850eucas1p1Y;
+        Fri, 16 Oct 2020 19:37:36 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20201016193736eusmtrp2c14f92c698e38174eb337adfc0966d01~_kDDgTWdg0550405504eusmtrp2Q;
+        Fri, 16 Oct 2020 19:37:36 +0000 (GMT)
+X-AuditID: cbfec7f5-38bff700000018ae-d6-5f89f681d2e1
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms1.samsung.com (EUCPMTA) with SMTP id E0.87.06314.086F98F5; Fri, 16
+        Oct 2020 20:37:36 +0100 (BST)
+Received: from localhost (unknown [106.120.51.46]) by eusmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20201016193736eusmtip15ddc2e6638e98b652554b93c369ed722~_kDDSqUIB0611506115eusmtip1W;
+        Fri, 16 Oct 2020 19:37:36 +0000 (GMT)
+From:   Lukasz Stelmach <l.stelmach@samsung.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        =?utf-8?Q?Bart=C5=82omiej_=C5=BBolnierkie?= =?utf-8?Q?wicz?= 
+        <b.zolnierkie@samsung.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH v2] net: phy: Prevent reporting advertised modes when
+ autoneg is off
+Date:   Fri, 16 Oct 2020 21:37:22 +0200
+In-Reply-To: <20201016180935.GG139700@lunn.ch> (Andrew Lunn's message of
+        "Fri, 16 Oct 2020 20:09:35 +0200")
+Message-ID: <dleftjzh4m3qtp.fsf%l.stelmach@samsung.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-In-Reply-To: <20200214120948.4sjnqn2jvndldphw@pengutronix.de>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="n3giXz5InSHdvfjztmUxruz38fjbuz1dn"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: multipart/signed; boundary="=-=-="; micalg="pgp-sha256";
+        protocol="application/pgp-signature"
+X-Brightmail-Tracker: H4sIAAAAAAAAA01Sa0hTYRju2zlnO1vOjjPzxSJk6Q8VL2HUiSzKJEZRhGCUUbby4G2btqll
+        /cjSIsVLqJE3yntmOVPmnHafpZipqWVlukQMzTQRL5WJ5vEz6N/zPt/zPC/Py0cTsi7KgQ7T
+        RHNajVIlF0pIY9Pvdvcrs0lBXmPJBNvRbybY6uwqis3vSCTZoolsin1rTKPY7oZ8IWu++QSx
+        lS/7RWxTwbrdYkV3TyehMNz7JFDU5/aLFDUVSUJFvWlKoEgzVCDFVM3Gw6JAiU8wpwqL5bSe
+        u05JQlvrPgiiLNLzo+XVZDz6uToZiWlgtkBeZoowGUloGVOO4NliCYmHaQS3EuYEeJhC8N5S
+        hJIRvWz5URaM+bsISlI7VhzDCAay0pdFQsYDKiuP8ivWMo6Q1TJP8RqCGRbAr4EsgtfYMoEw
+        M+/La0jGGUay2iieFjNqqM3w5mkpsw0s+eOIx3bMdjCMfBFh3gZacoZIHhNL8pyOMcTHAzMu
+        ghxjL8LV/KDuq4XC2BZGmw0ijDfAYv0dAe5yCTIztmJvCgJj/i8Sa3ZAX/ucEGv2QF6fI4bW
+        8HHcBq+1hgzjLQLTUrh+TYaNTqBPf7wS4gCpo+UrR1OAfnLlTpcR9HROEDeQY+5/ZXL/K5O7
+        ZCEYF6hq8MS0G5QVficw3gl6/QRZgKgKZM/F6NQhnM5bw53z0CnVuhhNiMeZSHUNWvpdrQvN
+        Myb0dP60GTE0kltJ6dKkIBmljNXFqc3IaSlp8OH9t8iB1ERqOPlaqW9b60mZNFgZd4HTRgZp
+        Y1SczozW06TcXupd9O2EjAlRRnMRHBfFaf+9CmixQzxaNZXNJVb6q+THXM8W1kb8DPAhwEoQ
+        /+bIeCmx7/VEqWl41lV+/EWxirx46LPJL/P57ZBNWq+6A/sHH4zGL9woWSxqcp5ufHWwc7ac
+        7Z3rt9vrMtYo6XLvnYle49nl3xbT3Ta5MTHcJ+BR2R9/9XRgsSHVjXmXMFSXEm60ybgqHpCT
+        ulDlZldCq1P+BfKV0GZlAwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrLIsWRmVeSWpSXmKPExsVy+t/xu7oN3zrjDbpvm1qcv3uI2WLjjPWs
+        FnPOt7BYLHo/g9XiwrY+VovLu+awWRyaupfRYu2Ru+wWxxaIOXB6XL52kdljy8qbTB47Z91l
+        99i0qpPNY+eOz0wefVtWMXp83iQXwB6lZ1OUX1qSqpCRX1xiqxRtaGGkZ2hpoWdkYqlnaGwe
+        a2VkqqRvZ5OSmpNZllqkb5egl3F6+3Wmgnu8Fa9WbGRpYPzO3cXIwSEhYCLxbllKFyMXh5DA
+        UkaJ0wcPskLEpSRWzk3vYuQEMoUl/lzrYoOoecoosfPkeiaQGjYBPYm1ayNAakQEFCSmnPzD
+        ClLDLPCCSWL9nj52kISwQITEpzdb2EBsIQFdiT+z+1lBbBYBVYkXU86C2ZwCuRLb224zgti8
+        AuYS9+a8BbNFBSwltry4zw4RF5Q4OfMJC4jNLJAt8XX1c+YJjAKzkKRmIUnNAjqPWUBTYv0u
+        fYiwtsSyha+ZIWxbiXXr3rMsYGRdxSiSWlqcm55bbKhXnJhbXJqXrpecn7uJERh924793LyD
+        8dLG4EOMAhyMSjy8GxZ1xguxJpYVV+YeYlQBGvNow+oLjFIsefl5qUoivE5nT8cJ8aYkVlal
+        FuXHF5XmpBYfYjQF+nMis5Rocj4wYeSVxBuaGppbWBqaG5sbm1koifN2CByMERJITyxJzU5N
+        LUgtgulj4uCUamBULTDSOn3jxZ2OrJNesfujbjcn5Xw1cJd8aPfW+MFs/aWXhM0m3C23PBSh
+        97hR39Nb9fAyh0Wm9gXXd3Z12mstXtI+b7eWgrb51mURF1q95jV8DZ349XFo8tTFawSEPN5o
+        Ps7Kvr9hTndTKl+rohdT6YIt5eHGDvtO5MZ36cZ+8rqjEKjvoqDEUpyRaKjFXFScCADqHMrz
+        4AIAAA==
+X-CMS-MailID: 20201016193736eucas1p1eb94190e16b194f473ade8c49ca34275
+X-Msg-Generator: CA
+X-RootMTR: 20201016193736eucas1p1eb94190e16b194f473ade8c49ca34275
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20201016193736eucas1p1eb94190e16b194f473ade8c49ca34275
+References: <20201016180935.GG139700@lunn.ch>
+        <CGME20201016193736eucas1p1eb94190e16b194f473ade8c49ca34275@eucas1p1.samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---n3giXz5InSHdvfjztmUxruz38fjbuz1dn
-Content-Type: multipart/mixed; boundary="C94m3spvx1gPxz05V2BSJLQh1v5TKI24U";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Oleksij Rempel <o.rempel@pengutronix.de>,
- dev.kurt@vandijck-laurijssen.be, wg@grandegger.com
-Cc: netdev@vger.kernel.org, kernel@pengutronix.de, linux-can@vger.kernel.org
-Message-ID: <f2ae9b3a-0d10-64ae-1533-2308e9346ebc@pengutronix.de>
-Subject: Re: [RFC] can: can_create_echo_skb(): fix echo skb generation: always
- use skb_clone()
-References: <20200124132656.22156-1-o.rempel@pengutronix.de>
- <20200214120948.4sjnqn2jvndldphw@pengutronix.de>
-In-Reply-To: <20200214120948.4sjnqn2jvndldphw@pengutronix.de>
-
---C94m3spvx1gPxz05V2BSJLQh1v5TKI24U
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
+--=-=-=
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 
-On 2/14/20 1:09 PM, Oleksij Rempel wrote:
-> Hi all,
->=20
-> any comments on this patch?
+It was <2020-10-16 pi=C4=85 20:09>, when Andrew Lunn wrote:
+> On Thu, Oct 15, 2020 at 10:44:35AM +0200, =C5=81ukasz Stelmach wrote:
+>> Do not report advertised link modes (local and remote) when
+>> autonegotiation is turned off. mii_ethtool_get_link_ksettings() exhibits
+>> the same behaviour and this patch aims at unifying the behavior of both
+>> functions.
+>
+> Does ethtool allow you to configure advertised modes with autoneg off?
+> If it can, it would be useful to see what is being configured, before
+> it is actually turned on.
+>
+> ethtool -s eth42 autoneg off advertise 0xf
+>
+> does not give an error on an interface i have.
 
-I'm going to take this patch now for 5.10....Comments?
+Yes, this is a good point. Do you think I should change the if()[1] in=20
+mii_ethtool_get_link_ksettings() instead? I really think these two
+function should report the same.
 
-Marc
+[1] https://elixir.bootlin.com/linux/v5.9/source/drivers/net/mii.c#L174
+[2] https://elixir.bootlin.com/linux/v5.9/source/drivers/net/mii.c#L145
 
->=20
-> On Fri, Jan 24, 2020 at 02:26:56PM +0100, Oleksij Rempel wrote:
->> All user space generated SKBs are owned by a socket (unless injected
->> into the key via AF_PACKET). If a socket is closed, all associated skb=
-s
->> will be cleaned up.
->>
->> This leads to a problem when a CAN driver calls can_put_echo_skb() on =
-a
->> unshared SKB. If the socket is closed prior to the TX complete handler=
-,
->> can_get_echo_skb() and the subsequent delivering of the echo SKB to
->> all registered callbacks, a SKB with a refcount of 0 is delivered.
->>
->> To avoid the problem, in can_get_echo_skb() the original SKB is now
->> always cloned, regardless of shared SKB or not. If the process exists =
-it
->> can now safely discard its SKBs, without disturbing the delivery of th=
-e
->> echo SKB.
->>
->> The problem shows up in the j1939 stack, when it clones the
->> incoming skb, which detects the already 0 refcount.
->>
->> We can easily reproduce this with following example:
->>
->> testj1939 -B -r can0: &
->> cansend can0 1823ff40#0123
->>
->> WARNING: CPU: 0 PID: 293 at lib/refcount.c:25 refcount_warn_saturate+0=
-x108/0x174
->> refcount_t: addition on 0; use-after-free.
->> Modules linked in: coda_vpu imx_vdoa videobuf2_vmalloc dw_hdmi_ahb_aud=
-io vcan
->> CPU: 0 PID: 293 Comm: cansend Not tainted 5.5.0-rc6-00376-g9e20dcb7040=
-d #1
->> Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
->> Backtrace:
->> [<c010f570>] (dump_backtrace) from [<c010f90c>] (show_stack+0x20/0x24)=
+Kind regards,
+=2D-=20
+=C5=81ukasz Stelmach
+Samsung R&D Institute Poland
+Samsung Electronics
 
->> [<c010f8ec>] (show_stack) from [<c0c3e1a4>] (dump_stack+0x8c/0xa0)
->> [<c0c3e118>] (dump_stack) from [<c0127fec>] (__warn+0xe0/0x108)
->> [<c0127f0c>] (__warn) from [<c01283c8>] (warn_slowpath_fmt+0xa8/0xcc)
->> [<c0128324>] (warn_slowpath_fmt) from [<c0539c0c>] (refcount_warn_satu=
-rate+0x108/0x174)
->> [<c0539b04>] (refcount_warn_saturate) from [<c0ad2cac>] (j1939_can_rec=
-v+0x20c/0x210)
->> [<c0ad2aa0>] (j1939_can_recv) from [<c0ac9dc8>] (can_rcv_filter+0xb4/0=
-x268)
->> [<c0ac9d14>] (can_rcv_filter) from [<c0aca2cc>] (can_receive+0xb0/0xe4=
-)
->> [<c0aca21c>] (can_receive) from [<c0aca348>] (can_rcv+0x48/0x98)
->> [<c0aca300>] (can_rcv) from [<c09b1fdc>] (__netif_receive_skb_one_core=
-+0x64/0x88)
->> [<c09b1f78>] (__netif_receive_skb_one_core) from [<c09b2070>] (__netif=
-_receive_skb+0x38/0x94)
->> [<c09b2038>] (__netif_receive_skb) from [<c09b2130>] (netif_receive_sk=
-b_internal+0x64/0xf8)
->> [<c09b20cc>] (netif_receive_skb_internal) from [<c09b21f8>] (netif_rec=
-eive_skb+0x34/0x19c)
->> [<c09b21c4>] (netif_receive_skb) from [<c0791278>] (can_rx_offload_nap=
-i_poll+0x58/0xb4)
->>
->> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
->> ---
->>  include/linux/can/skb.h | 20 ++++++++------------
->>  1 file changed, 8 insertions(+), 12 deletions(-)
->>
->> diff --git a/include/linux/can/skb.h b/include/linux/can/skb.h
->> index a954def26c0d..0783b0c6d9e2 100644
->> --- a/include/linux/can/skb.h
->> +++ b/include/linux/can/skb.h
->> @@ -61,21 +61,17 @@ static inline void can_skb_set_owner(struct sk_buf=
-f *skb, struct sock *sk)
->>   */
->>  static inline struct sk_buff *can_create_echo_skb(struct sk_buff *skb=
-)
->>  {
->> -	if (skb_shared(skb)) {
->> -		struct sk_buff *nskb =3D skb_clone(skb, GFP_ATOMIC);
->> +	struct sk_buff *nskb;
->> =20
->> -		if (likely(nskb)) {
->> -			can_skb_set_owner(nskb, skb->sk);
->> -			consume_skb(skb);
->> -			return nskb;
->> -		} else {
->> -			kfree_skb(skb);
->> -			return NULL;
->> -		}
->> +	nskb =3D skb_clone(skb, GFP_ATOMIC);
->> +	if (unlikely(!nskb)) {
->> +		kfree_skb(skb);
->> +		return NULL;
->>  	}
->> =20
->> -	/* we can assume to have an unshared skb with proper owner */
->> -	return skb;
->> +	can_skb_set_owner(nskb, skb->sk);
->> +	consume_skb(skb);
->> +	return nskb;
->>  }
->> =20
->>  #endif /* !_CAN_SKB_H */
->> --=20
->> 2.25.0
->>
->>
->>
->=20
-
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---C94m3spvx1gPxz05V2BSJLQh1v5TKI24U--
-
---n3giXz5InSHdvfjztmUxruz38fjbuz1dn
+--=-=-=
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+J9isACgkQqclaivrt
-76kGhQf+I5D7eopDXxzbmNsSj9muBUJUncUav7aqWo5V8240zx09Qmk7EBBFq4jb
-HWl+YiuJ0RKHz511/tu5rWtG3LICNk6CneGej/Mm50js7sMDHnUAXuo+QaOSPoO4
-F4VWN2IbOu7CRhmbCKhwAXFTssF5HVZ+p1HBeBgii3HhJR3of+cw4srPolHpeYVJ
-Oey9xEFfkCJqNya+XreYSxt9Jx9AVVK2w+9+yUSwcmWh38clrrTP5HjKH39CoBIz
-XygGtQShlNVF4g/DiEjaXLujVb7n3k1WeTyUQmxeeA95/+FUuaYRMTIb7l+53z3D
-99IDJeGUjiXZyhuQlT5ZEYQGElntjA==
-=10Rx
+iQEzBAEBCAAdFiEEXpuyqjq9kGEVr9UQsK4enJilgBAFAl+J9nIACgkQsK4enJil
+gBA9Rwf/XFHX++6DgwEAyPDwfrsq28MTgViffjtzEIJp4EQRo9DrPF+vwu0neyHL
+G4pB7KhjIe8f4IbKiwNvnjgVbL1ukmaalb5tTqjYHVUHh4nnpqOdMJ7eMUI73tDy
+C74fpWifs3z8gxp7l6gBklpDGRzj9V4mwsRFrDarzyKjKhxnVpjCkKsWrxBnivTk
+lEGkPeB2r/0+7aeR74djxfu67OnTsnQcBYmmFZhq3TkR4gK7oGVCbR4WIWtPYcol
+DxNxluNLRPGHwp8v0y34wZU+AvsTbK0x82Mc6cve4MhdD1lCCWqGSFhd9NTFl/lo
+HnWngZjxSn35rC4VkHOzIdap0IDzjw==
+=/DVz
 -----END PGP SIGNATURE-----
-
---n3giXz5InSHdvfjztmUxruz38fjbuz1dn--
+--=-=-=--
