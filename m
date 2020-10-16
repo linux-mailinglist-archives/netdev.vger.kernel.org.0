@@ -2,133 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A67D229070F
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 16:21:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CEB429071A
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 16:26:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408780AbgJPOU4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 10:20:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53056 "EHLO
+        id S2406607AbgJPO0R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 10:26:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2408771AbgJPOUz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 10:20:55 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4716AC0613D4
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 07:20:55 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id w17so2806015ilg.8
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 07:20:55 -0700 (PDT)
+        with ESMTP id S2390724AbgJPO0R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 10:26:17 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F311C061755
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 07:26:15 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id t21so2611419eds.6
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 07:26:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ILU1JiiWwmc95Pb/WWnMrCIUzuQZgL65VpWvlyy0uws=;
-        b=HEPkXoSC4+XViOa2NstBZBi5peIDrb80Thy9EpYPPQFO80kSOluTlFVunJ9q7XLi41
-         PPqK2THj7pyPrLghVLfFynw1npRcrsx6jx0Wgrfgyqg2brX8ZvopZSU7YSdH/0LkVpDO
-         JDE22r1UgDghP9r57+WICgOjhnO4KERaBTDhCVUqUaqDquxzefiNcEqHITD9Mjmgv5b5
-         40IbFKVTza9Er2Gz15cRfaJF4YHhV8o59A792eqKJ7sq/2zyOuZ7e5fpSaA3CJyWm7DS
-         7srxW9LYUi2hOcy39d6X4sgQNR4S94gbsuLgztiZqFFOuee8yzBElhn/1AHSiVKSaaxD
-         Ewrg==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=7Ac7MIkClsdpIuzFP232MqlDI0LBFUX0g87TnIYO0xk=;
+        b=m1OCjNiZpCng4uiA5UUgxErw9PaTcmV2DnbKDbLzL5cDegV273JVSucDppO9WZAPIK
+         AUu7XQ7BuZ1rRCwg0s391/hD6HATsqBW42EPIX0ZcDcOTTMp13WWJKtFvhrhlqrOSqAR
+         gtXNTnWFQN2H70DZNpF18DBuZWrZZkp4ei/NiYtXlpNTMUb4nfYZYa+oyYPiPrHu7TJe
+         a5Wuc0qncS/1x/MVY68f6N2MB1lRmzFxlu0b8tPo0v5E2z3jQbSnBUkcVaOHHsEt5aMR
+         2YyvmMqnlEOtI2TTC4A+qBQSW+Y0PSQ/uUQTA2ftIls5t7B6CinTfkGLCz3o9f/Ig8hq
+         T+vQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ILU1JiiWwmc95Pb/WWnMrCIUzuQZgL65VpWvlyy0uws=;
-        b=ooEBp7uqj9GTeZd7HRpYgqlhbidOo3oookNoBqpifcgra6q+/GdPxt/J+/2mpotzrP
-         OTEPIYC6+6lqMCwXS7xTcAFT6mnSt5X2iGZ+X+qToYiRtDHVRo9uzJ7uMvhaeuDgD4iK
-         AMor2IPqD/LtQ0bM16H46lgjbSXHYExvFiZsKmmRaSpPyJt5yayvh7/5e2tNuLF4VCE3
-         Z0xKkSk+SQOb4eUx5WX6fP8CT0vO56Lac5Z9B8VRMCmloDfAbSqPm5nUIQLdC0ItXzH8
-         X8lJeIfenboe3C93eOwyrfUFCPPuqtaLjB+W9dFrjLaYt8lGODKJV8O8/M6qk26INg41
-         47aw==
-X-Gm-Message-State: AOAM532AbLV1CS9pANcRFuGu8tLZFEbMspsxUwRa5ZUuGnn3GmPIF0DV
-        yN+dPjBWUX1DQ2ttIkWBFCLK+5GB54ACBYCwgA3CTA==
-X-Google-Smtp-Source: ABdhPJxubq2fzGL00SIrDkBpOu8eo1lYW9KXkOhd7VAlU2NeWINOP4NjqVxzNovv5CI4q3PGv41TQKCIzUMr+AlwxJ8=
-X-Received: by 2002:a92:8404:: with SMTP id l4mr3069053ild.134.1602858054317;
- Fri, 16 Oct 2020 07:20:54 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7Ac7MIkClsdpIuzFP232MqlDI0LBFUX0g87TnIYO0xk=;
+        b=mvM5UA1YO6x5g9chHvWWOjOeTHJcuKltc5TtB06Nrwc05DD8MNzV+WEeqD3Bz7mCfL
+         CpUiazNMz7jVS3sruPpSgkv7TQujj12oxtaV0eEHiTfcjn5Iz09Z7vOjMXDnVkxeqqIl
+         bKc3VEFMSfhS4WhXXbGZXTdK1sX/bfZJFfSrxg98tGMyS2G7pPnH2cSJwr/hsFtRX1Yo
+         b/6P+n23I+jdWmgHxKWD7wQNszSr61s1pUd4WUc9LsqF/s6DYkb2HByiTXBOkienOOfw
+         eK51uPwIuWT0GBmYxT1xU7aSgQ2lZJnU/cW9AMkVwOCWHjnpii9ySGJ3SnUFTqiEjjq7
+         zPpA==
+X-Gm-Message-State: AOAM531AemIrti/6iQnOybQHxumbs+3a/QiZDIMGia/NQvZIQMu4F0qL
+        d9zZ3NjBkUON9rPwmrj9nC0=
+X-Google-Smtp-Source: ABdhPJxUq+S3H8Nw9VXe4WaTIzQEbIB9/cF/Ahq0hibYLXCT9svLJbY4ss2oIMtMZTrrQ9Q6ipfoEA==
+X-Received: by 2002:a50:e08a:: with SMTP id f10mr4358052edl.220.1602858372830;
+        Fri, 16 Oct 2020 07:26:12 -0700 (PDT)
+Received: from skbuf ([188.26.174.215])
+        by smtp.gmail.com with ESMTPSA id y12sm1592767ede.82.2020.10.16.07.26.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Oct 2020 07:26:12 -0700 (PDT)
+Date:   Fri, 16 Oct 2020 17:26:11 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Mike Galbraith <efault@gmx.de>, netdev <netdev@vger.kernel.org>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Subject: Re: [patchlet] r8169: fix napi_schedule_irqoff() called with irqs
+ enabled warning
+Message-ID: <20201016142611.zpp63qppmazxl4k7@skbuf>
+References: <9c34e18280bde5c14f40b1ef89a5e6ea326dd5da.camel@gmx.de>
+ <7e7e1b0e-aaf4-385c-b82c-79cac34c9175@gmail.com>
 MIME-Version: 1.0
-References: <20201007101726.3149375-1-a.nogikh@gmail.com> <20201007101726.3149375-2-a.nogikh@gmail.com>
- <20201009161558.57792e1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CACT4Y+ZF_umjBpyJiCb8YPQOOSofG-M9h0CB=xn3bCgK=Kr=9w@mail.gmail.com>
- <20201010081431.1f2d9d0d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CACT4Y+aEQoRMO6eA7iQZf4dhOu2cD1ZbbH6TT4Rs_uQwG0PWYg@mail.gmail.com>
- <CADpXja8i4YPT=vcuCr412RYqRMjTOGuaMW2dyV0j7BtEwNBgFA@mail.gmail.com>
- <20201013095038.61ba8f55@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CA+FuTSf2kfvdYydXYJNCCfE62q9DXXOBMh_ZSO5W=L9GK478HA@mail.gmail.com>
-In-Reply-To: <CA+FuTSf2kfvdYydXYJNCCfE62q9DXXOBMh_ZSO5W=L9GK478HA@mail.gmail.com>
-From:   Aleksandr Nogikh <nogikh@google.com>
-Date:   Fri, 16 Oct 2020 17:20:42 +0300
-Message-ID: <CANp29Y69mvAuwdcNk8DyjYSjDMBkQupMh0JHHLkybg+rA2zCLw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] net: store KCOV remote handle in sk_buff
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Aleksandr Nogikh <a.nogikh@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        David Miller <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Marco Elver <elver@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Florian Westphal <fw@strlen.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7e7e1b0e-aaf4-385c-b82c-79cac34c9175@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 15, 2020 at 10:04 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Tue, Oct 13, 2020 at 12:50 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Tue, 13 Oct 2020 18:59:28 +0300 Aleksandr Nogikh wrote:
-> > > On Mon, 12 Oct 2020 at 09:04, Dmitry Vyukov <dvyukov@google.com> wrote:
-> > > >
-> > > > On Sat, Oct 10, 2020 at 5:14 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > > >
-> > > > > On Sat, 10 Oct 2020 09:54:57 +0200 Dmitry Vyukov wrote:
-> > > > > > On Sat, Oct 10, 2020 at 1:16 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > [...]
-> > > > > > > Could you use skb_extensions for this?
-> > > > > >
-> > > > > > Why? If for space, this is already under a non-production ifdef.
-> > > > >
-> > > > > I understand, but the skb_ext infra is there for uncommon use cases
-> > > > > like this one. Any particular reason you don't want to use it?
-> > > > > The slight LoC increase?
-> > > > >
-> > > > > Is there any precedent for adding the kcov field to other performance
-> > > > > critical structures?
-> > >
-> > > It would be great to come to some conclusion on where exactly to store
-> > > kcov_handle. Technically, it is possible to use skb extensions for the
-> > > purpose, though it will indeed slightly increase the complexity.
-> > >
-> > > Jakub, you think that kcov_handle should be added as an skb extension,
-> > > right?
-> >
-> > That'd be preferable. I understand with current use cases it doesn't
-> > really matter, but history shows people come up with all sort of
-> > wonderful use cases down the line. And when they do they rarely go back
-> > and fix such fundamental minutiae.
-> >
-> > > Though I do not really object to moving the field, it still seems to
-> > > me that sk_buff itself is a better place. Right now skb extensions
-> > > store values that are local to specific protocols and that are only
-> > > meaningful in the context of these protocols (correct me if I'm
-> > > wrong). Although this patch only adds remote kcov coverage to the wifi
-> > > code, kcov_handle can be meaningful for other protocols as well - just
-> > > like the already existing sk_buff fields. So adding kcov_handle to skb
-> > > extensions will break this logical separation.
-> >
-> > It's not as much protocols as subsystems. The values are meaningful to
-> > a subsystem which inserts them, that doesn't mean single layer of the
-> > stack. If it was about storing layer's context we would just use
-> > skb->cb.
-> >
-> > So I think the kcov use matches pretty well.
->
-> skb_extensions was the first thing that came to mind when I read this
-> patchset too. It is not specific to protocols.
->
-> We have long stopped growing sk_buff size.
+On Fri, Oct 16, 2020 at 01:34:55PM +0200, Heiner Kallweit wrote:
+> I'm aware of the topic, but missing the benefits of the irqoff version
+> unconditionally doesn't seem to be the best option.
 
-Thank you all for your comments. I'll use skb extensions in v3 of the series.
+What are the benefits of the irqoff version? As far as I see it, the
+only use case for that function is when the caller has _explicitly_
+disabled interrupts.
+
+The plain napi_schedule call will check if irqs are disabled. If they
+are, it won't do anything further in that area. There is no performance
+impact except for a check.
+
+> Needed is a function that dynamically picks the right version.
+
+So you want to replace a check with another check, am I right? How will
+that improve anything performance-wise?
