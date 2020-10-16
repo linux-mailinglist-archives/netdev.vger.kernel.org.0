@@ -2,83 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16A1D28FEB6
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 08:59:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BFF828FED3
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 09:05:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394397AbgJPG7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 02:59:00 -0400
-Received: from fallback10.mail.ru ([94.100.178.50]:44000 "EHLO
-        fallback10.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391432AbgJPG7A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 02:59:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=VxtFqTzKn8D1XEyz/xBV/bsI+NnzNkxZyb+HkVyGK4o=;
-        b=KNTWF6dEDXbtfWBM/7GO9OBHUkCcP0QZvaFwTwcS/jDJ7dGwN8fcCRHahu9GJu0MBfpWiUuZISiIbLG6t2WbpmerwrXzmoCu7XhtAnHnNOj4TiRNb2MdGowULnkc8DEaurgpL8XAE37ctOmWIqG90HjHDPNYexjWR7+3ADoaVkM=;
-Received: from [10.161.64.37] (port=45978 helo=smtp29.i.mail.ru)
-        by fallback10.m.smailru.net with esmtp (envelope-from <fido_max@inbox.ru>)
-        id 1kTJhY-0004F4-Gw
-        for netdev@vger.kernel.org; Fri, 16 Oct 2020 09:58:56 +0300
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=VxtFqTzKn8D1XEyz/xBV/bsI+NnzNkxZyb+HkVyGK4o=;
-        b=Zw/feNBFIm4JCWPG6FXpQDGH5RVVYMp+E5SLT6LbW/9f9zqs2JIR2j2mcbaBQTb1y084u8KPlhbfHsMGyqcINWXGPISTBjx93gkuW755/qCu490G1xKGYkCA7phsthZecNrl5cO1vMP3s8wW4K/mFPor2tPP29jyXXK/7FtHdQk=;
-Received: by smtp29.i.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
-        id 1kTJhU-0000GF-80; Fri, 16 Oct 2020 09:58:52 +0300
-From:   Maxim Kochetkov <fido_max@inbox.ru>
-To:     netdev@vger.kernel.org
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        id S2404286AbgJPHFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 03:05:13 -0400
+Received: from mailout08.rmx.de ([94.199.90.85]:43405 "EHLO mailout08.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404197AbgJPHFM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Oct 2020 03:05:12 -0400
+Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout08.rmx.de (Postfix) with ESMTPS id 4CCHGV5KJGzN0hg;
+        Fri, 16 Oct 2020 09:05:06 +0200 (CEST)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin02.retarus.com (Postfix) with ESMTPS id 4CCHGN0Vmkz2TTNh;
+        Fri, 16 Oct 2020 09:05:00 +0200 (CEST)
+Received: from n95hx1g2.localnet (192.168.54.49) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Fri, 16 Oct
+ 2020 09:04:38 +0200
+From:   Christian Eggers <ceggers@arri.de>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+CC:     Richard Cochran <richardcochran@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Maxim Kochetkov <fido_max@inbox.ru>
-Subject: [PATCH v3 1/2] net: dsa: seville: the packet buffer is 2 megabits, not megabytes
-Date:   Fri, 16 Oct 2020 09:59:14 +0300
-Message-Id: <20201016065914.313573-1-fido_max@inbox.ru>
-X-Mailer: git-send-email 2.27.0
+        Jakub Kicinski <kuba@kernel.org>,
+        Krzysztof Halasa <khalasa@piap.pl>,
+        Vishal Kulkarni <vishal@chelsio.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: ptp: get rid of IPV4_HLEN() and OFF_IHL macros
+Date:   Fri, 16 Oct 2020 09:04:38 +0200
+Message-ID: <2135183.8zsl8bQRyA@n95hx1g2>
+Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+In-Reply-To: <939828b0-846c-9e10-df31-afcb77b1150a@gmail.com>
+References: <20201014115805.23905-1-ceggers@arri.de> <20201015033648.GA24901@hoboy> <939828b0-846c-9e10-df31-afcb77b1150a@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-7564579A: 646B95376F6C166E
-X-77F55803: 4F1203BC0FB41BD9E98D729206725230133C3A831769128DEDDD1D80DDE91E0E182A05F538085040E60634D3AE8201A0F435C1EB397470C8FBE2ADC444CD42768F923A341B0FFF2F
-X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE782A779A89F7D69B2C2099A533E45F2D0395957E7521B51C2CFCAF695D4D8E9FCEA1F7E6F0F101C6778DA827A17800CE742D9BD90C58D50E0EA1F7E6F0F101C674E70A05D1297E1BBC6CDE5D1141D2B1C353025C494B666A6A8663D6A7221167F3EFAEFC720026E679FA2833FD35BB23D9E625A9149C048EE1E561CDFBCA1751F2CC0D3CB04F14752D2E47CDBA5A96583BD4B6F7A4D31EC0BB23A54CFFDBC96A8389733CBF5DBD5E9D5E8D9A59859A8B64854413538E1713FCC7F00164DA146DA6F5DAA56C3B73B23EB494CE229B2136F3AA81AA40904B5D9A18204E546F3947CCE4AEF6198D2632603F1AB874ED890284AD6D5ED66289B5218080C068C56568E6136E347CC761E07725E5C173C3A84C3B051C509E7C27A99BA3038C0950A5D36B5C8C57E37DE458B0B4866841D68ED3567F23339F89546C55F5C1EE8F4F765FC15B11194B854C5ED75ECD9A6C639B01BBD4B6F7A4D31EC0BC0CAF46E325F83A522CA9DD8327EE4931B544F03EFBC4D576B0B6A749F1976AFC4224003CC836476C0CAF46E325F83A50BF2EBBBDD9D6B0F05F538519369F3743B503F486389A921A5CC5B56E945C8DA
-X-C8649E89: FE99C59221A9F1F544879E594616CB0889E16117550FEF6DFD2A454D30892B09E3D94FCD835E4469
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojYVZa6UGX9HQtF9g4mlkd5Q==
-X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB24CE7D6F653F9D64CE7AB2BA7555FE3782EF0017A7BE1B9352EE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
-X-7564579A: B8F34718100C35BD
-X-77F55803: 6242723A09DB00B4033B2E76A2A2E7F3D7C40938B5608F303AAA720A31B3BD0D049FFFDB7839CE9EA691736600A9A48A416A98EC6C0478BCAAC4C05BD1F04FE21464307D30C7BD5E
-X-7FA49CB5: 0D63561A33F958A51B6A9E66D25412D4C3CF72E23D9875AF0C3273428A4AB2388941B15DA834481FA18204E546F3947CDF046C1992EC065EF6B57BC7E64490618DEB871D839B7333395957E7521B51C2545D4CF71C94A83E9FA2833FD35BB23D27C277FBC8AE2E8B2EE5AD8F952D28FBA471835C12D1D977C4224003CC8364765529D5D60078C743D81D268191BDAD3DC09775C1D3CA48CFF6881EAFA8B7E635BA3038C0950A5D36C8A9BA7A39EFB7668729DE7A884B61D135872C767BF85DA29E625A9149C048EE1B544F03EFBC4D576B0B6A749F1976AF4AD6D5ED66289B524E70A05D1297E1BB35872C767BF85DA227C277FBC8AE2E8B15B11194B854C5ED75ECD9A6C639B01B4E70A05D1297E1BBC6867C52282FAC85D9B7C4F32B44FF57285124B2A10EEC6C00306258E7E6ABB4E4A6367B16DE6309
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojYVZa6UGX9HRhqhrTged8Xg==
-X-Mailru-MI: 800
-X-Mailru-Sender: A5480F10D64C9005DD084BBBA291661DA3189662269F43EFF79CC66967A36819C8217CE68A9CF838C099ADC76E806A99D50E20E2BC48EF5A30D242760C51EA9CEAB4BC95F72C04283CDA0F3B3F5B9367
-X-Mras: Ok
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Originating-IP: [192.168.54.49]
+X-RMX-ID: 20201016-090500-4CCHGN0Vmkz2TTNh-0@kdin02
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The VSC9953 Seville switch has 2 megabits of buffer split into 4360
-words of 60 bytes each. 2048 * 1024 is 2 megabytes instead of 2 megabits.
-2 megabits is (2048 / 8) * 1024 = 256 * 1024.
+On Thursday, 15 October 2020, 18:56:41 CEST, Florian Fainelli wrote:
+> Having recently helped someone with a bug that involved using
+> IPV4_HLEN() instead of ip_hdr() in a driver's transmit path (so with the
+> transport header correctly set), it would probably help if we could make
+> IPV4_HLEN()'s semantics clearer with converting it to a static inline
+> function and put asserts in there about what the transport and MAC
+> header positions should be.
+IPV4_HLEN() is only used for PTP. Is there any way to use "normal" 
+infrastructure as in the rest of the network stack? It looks like PTP code 
+typically has to look into multiple network layers (mac, network, transport) 
+at places these layers may not be processed yet (at least in RX direction).
 
-Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Fixes: a63ed92d217f ("net: dsa: seville: fix buffer size of the queue system")
----
- drivers/net/dsa/ocelot/seville_vsc9953.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> At the very least, creating a new function, like this maybe in
+> include/linux/ip.h might help:
+> 
+> static inline u8 __ip_hdr_len(const struct sk_buff *skb)
+> {
+> 	const struct iphdr *ip_hdr = (const struct iphdr *)(skb->data);
+> 
+> 	return ip_hdr->ihl << 2;
+> }
+Is there any reason using skb->data instead of skb_network_header()? Debugging 
+through my DSA driver showed that ...
 
-diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-index 9e9fd19e1d00..e2cd49eec037 100644
---- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-+++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-@@ -1010,7 +1010,7 @@ static const struct felix_info seville_info_vsc9953 = {
- 	.vcap_is2_keys		= vsc9953_vcap_is2_keys,
- 	.vcap_is2_actions	= vsc9953_vcap_is2_actions,
- 	.vcap			= vsc9953_vcap_props,
--	.shared_queue_sz	= 2048 * 1024,
-+	.shared_queue_sz	= 256 * 1024,
- 	.num_mact_rows		= 2048,
- 	.num_ports		= 10,
- 	.mdio_bus_alloc		= vsc9953_mdio_bus_alloc,
--- 
-2.27.0
+- for TX (called by dsa_slave_xmit), skb->data is set to the MAC header
+(skb->head+0x02), whilst skb->network_header is correctly set to 0x10 
+(skb->mac_header+14).
+- for TX, skb->transport_header is 0xffff, so udp_hdr() cannot be used
+
+- for RX (called by dsa_switch_rcv), skb->data is set to skb->head+0x50, which 
+is identical to skb->network_header
+- for RX, skb->transport_header ist set equal to skb->network_header, so 
+udp_hdr() can also not be used.
+
+Best regards
+Christian
+
+
 
