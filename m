@@ -2,105 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5721F290A68
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 19:16:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CC46290A7F
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 19:19:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390379AbgJPRQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 13:16:22 -0400
-Received: from mail-il1-f200.google.com ([209.85.166.200]:34976 "EHLO
-        mail-il1-f200.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390339AbgJPRQU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 13:16:20 -0400
-Received: by mail-il1-f200.google.com with SMTP id k15so2092672ilh.2
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 10:16:18 -0700 (PDT)
+        id S2390646AbgJPRTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 13:19:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52586 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390386AbgJPRTl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 13:19:41 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6D8C061755
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 10:19:39 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id t21so3231079eds.6
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 10:19:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TZiDKOsJ7YsZPhT+2ifIwa7V0HOvOhHvnljt25X3cq8=;
+        b=RGJaNDcDXhfUlJk4wGdkIExmVk9PyOt643ZDyBhyt3Eyxc7n/ZqZjcRh+8Q5vsEfQM
+         6HssJn6bFOBtVg5PGZ3f6D81fxC9cnWhsLUbowLQVIucOl5pYHUmuuGyVhNccgU93nS6
+         ORSfdbyqVqCA2hV1KL9cA+JWofl1wzfi1xYGcCEEevAhoDCSHlsDeg4P3KLPP8HgauMJ
+         9S4zYOoasvfIAd99xBmPVuFY0dK1BeaGIHUz6L4NI5CLAIuWD2u++ytehUgQ/1pzqbqQ
+         Y3S52t/H/lkM0Es6n7bSqSYm5EkBxnKBpAPN3OXSXFzxlo4PwrZp0bR6Hfr8rGKnzIQm
+         Z/TQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=q0jNKtibOWMJBRSMoi9tRAAYTD3Bsh7XibLHQWKKvMs=;
-        b=s32Wv9n4v4phTgG3jX2z1jZuFKbd1GFTdeBmI8UyhAeZVNmh0z9HTo5tAN7hxdLoa3
-         npwjH/uuCDdeQXAM/R0JEHwhk0B1S1snnCSEe3IENH1H6t+4bZ/Z2XlZMkKa7eiDqM9p
-         fMVjOMD3bDCvvPekeeO0m6xuOkKLyBDyVa6hzzw0q5QEbdqSH80f3xIhaQ7GmiFhUFiS
-         DAh9UWOq+C3N212L2L0UmCOQHNNqbT8jjCRii6zdzTEJvtvMIoJwrOQHeP+FUWfH/ojU
-         KmzDz7HINgulKOxnIbCSjL5cdYtQI4NyFUh8efaq43Vi2IT4Ayvx++wZyWkoAIII4fPK
-         Cmcg==
-X-Gm-Message-State: AOAM530Zl4N5yz2jHZ8sfw83EHqVlCvHD9kCL/ms/De75cShlsI/VfFn
-        V5eGeFm4kKvjlNbYNwUqctcIuuQuEF0VKRayivScTbMlcBjx
-X-Google-Smtp-Source: ABdhPJwqAUmyYK33bi7fsTlYAEosMlLlYVI/JmFTbMGOfskbj7unza2qeiRqPfBErINwiMLlxq0rBxgEvPh/RyCvU9DhOFa4hD3Z
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TZiDKOsJ7YsZPhT+2ifIwa7V0HOvOhHvnljt25X3cq8=;
+        b=t69DjJjTOQe/FWfpyuKK1aULAPIFxfp/sqrfcV3mJIVYgo2nMewpiUvuwDs9O/br50
+         FJpOdgxfBjsz3DzFCD4IDkBqFq3Krkd5VomveuhYrvabW2ZyXFwCX5Ay50APle49LAGE
+         D1F0CHCgkIJMKmksh8OG2Qzi97Dl1NtKx1sKQ1sIGXQOv7c/Av0Wb0ZiwHXDxmxu48Xm
+         Z/fywgAUgPgOqB/zzd0nig1fZAKK5gZqAlrSpMgyN5gWCU9u0auC4agh+DYD0iF8boY/
+         mzNDRhrX+0FjZ9W7moADNI1MSeIhwl9iw6ZHinKATgRL3A40PeTkqxgWHWAy5dvsG9US
+         d7VQ==
+X-Gm-Message-State: AOAM531GL7Y4/SyPSC1g5EAXhiC2+DKHI3ZwPZR0GowGuY7HPPBR3bva
+        JZzbrWTYcdOmS268geSEM7M=
+X-Google-Smtp-Source: ABdhPJywSkZNFATyx47TvvRvMYTPCXQw5JZlDq8wx6hfB7JDvXrEiuUPwmAKh3Q/PGcDvYe/Cu3Ekg==
+X-Received: by 2002:aa7:c90a:: with SMTP id b10mr5239099edt.163.1602868778066;
+        Fri, 16 Oct 2020 10:19:38 -0700 (PDT)
+Received: from skbuf ([188.26.174.215])
+        by smtp.gmail.com with ESMTPSA id a27sm2161214ejb.67.2020.10.16.10.19.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Oct 2020 10:19:37 -0700 (PDT)
+Date:   Fri, 16 Oct 2020 20:19:36 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Mike Galbraith <efault@gmx.de>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Subject: Re: [patchlet] r8169: fix napi_schedule_irqoff() called with irqs
+ enabled warning
+Message-ID: <20201016171936.vidrappu4gdiv5cm@skbuf>
+References: <9c34e18280bde5c14f40b1ef89a5e6ea326dd5da.camel@gmx.de>
+ <7e7e1b0e-aaf4-385c-b82c-79cac34c9175@gmail.com>
+ <20201016142611.zpp63qppmazxl4k7@skbuf>
+ <42ff951039f3c92def8490d3842e3f7eaf6900ff.camel@gmx.de>
 MIME-Version: 1.0
-X-Received: by 2002:a92:da0e:: with SMTP id z14mr3473482ilm.151.1602868577972;
- Fri, 16 Oct 2020 10:16:17 -0700 (PDT)
-Date:   Fri, 16 Oct 2020 10:16:17 -0700
-In-Reply-To: <000000000000e921b305b18ba0a7@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000036383505b1ccec93@google.com>
-Subject: Re: BUG: using __this_cpu_read() in preemptible code in trace_hardirqs_on
-From:   syzbot <syzbot+53f8ce8bbc07924b6417@syzkaller.appspotmail.com>
-To:     linux-kernel@vger.kernel.org, mingo@redhat.com,
-        netdev@vger.kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <42ff951039f3c92def8490d3842e3f7eaf6900ff.camel@gmx.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+On Fri, Oct 16, 2020 at 07:11:22PM +0200, Mike Galbraith wrote:
+> Yeah, it's a straight up correctness issue as it sits.
 
-HEAD commit:    9ff9b0d3 Merge tag 'net-next-5.10' of git://git.kernel.org..
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=16638607900000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d13c3fa80bc4bcc1
-dashboard link: https://syzkaller.appspot.com/bug?extid=53f8ce8bbc07924b6417
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15b63310500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1565657f900000
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+53f8ce8bbc07924b6417@syzkaller.appspotmail.com
-
-BUG: using __this_cpu_read() in preemptible [00000000] code: syz-executor089/6901
-caller is lockdep_hardirqs_on_prepare+0x5e/0x450 kernel/locking/lockdep.c:4060
-CPU: 0 PID: 6901 Comm: syz-executor089 Not tainted 5.9.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x198/0x1fb lib/dump_stack.c:118
- check_preemption_disabled+0x128/0x130 lib/smp_processor_id.c:48
- lockdep_hardirqs_on_prepare+0x5e/0x450 kernel/locking/lockdep.c:4060
- trace_hardirqs_on+0x5b/0x1c0 kernel/trace/trace_preemptirq.c:49
- __bad_area_nosemaphore+0xc6/0x4f0 arch/x86/mm/fault.c:797
- do_user_addr_fault+0x852/0xbf0 arch/x86/mm/fault.c:1335
- handle_page_fault arch/x86/mm/fault.c:1429 [inline]
- exc_page_fault+0xa8/0x190 arch/x86/mm/fault.c:1482
- asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:583
-RIP: 0033:0x4241f0
-Code: 66 0f ef c0 66 0f ef c9 66 0f ef d2 66 0f ef db 48 89 f8 48 89 f9 48 81 e1 ff 0f 00 00 48 81 f9 cf 0f 00 00 77 74 48 83 e0 f0 <66> 0f 74 00 66 0f 74 48 10 66 0f 74 50 20 66 0f 74 58 30 66 0f d7
-RSP: 002b:00007ffcacd310b8 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 00007ffcacd310e0 RCX: 0000000000000000
-RDX: 0000000000000010 RSI: 000000000000000f RDI: 0000000000000000
-RBP: 0000000000000003 R08: 00000000ffffffff R09: 0000000000000000
-R10: 0000000000000000 R11: 000000000000000f R12: 0000000000401d70
-R13: 0000000000401e00 R14: 0000000000000000 R15: 0000000000000000
-BUG: using __this_cpu_read() in preemptible [00000000] code: syz-executor089/6901
-caller is lockdep_hardirqs_on+0x34/0x110 kernel/locking/lockdep.c:4129
-CPU: 0 PID: 6901 Comm: syz-executor089 Not tainted 5.9.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x198/0x1fb lib/dump_stack.c:118
- check_preemption_disabled+0x128/0x130 lib/smp_processor_id.c:48
- lockdep_hardirqs_on+0x34/0x110 kernel/locking/lockdep.c:4129
- __bad_area_nosemaphore+0xc6/0x4f0 arch/x86/mm/fault.c:797
- do_user_addr_fault+0x852/0xbf0 arch/x86/mm/fault.c:1335
- handle_page_fault arch/x86/mm/fault.c:1429 [inline]
- exc_page_fault+0xa8/0x190 arch/x86/mm/fault.c:1482
- asm_exc_page_fault+0x1e/0x30 arch/x86/include/asm/idtentry.h:583
-RIP: 0033:0x4241f0
-Code: 66 0f ef c0 66 0f ef c9 66 0f ef d2 66 0f ef db 48 89 f8 48 89 f9 48 81 e1 ff 0f 00 00 48 81 f9 cf 0f 00 00 77 74 48 83 e0 f0 <66> 0f 74 00 66 0f 74 48 10 66 0f 74 50 20 66 0f 74 58 30 66 0f d7
-RSP: 002b:00007ffcacd310b8 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 00007ffcacd310e0 RCX: 0000000000000000
-RDX: 0000000000000010 RSI: 000000000000000f RDI: 0000000000000000
-RBP: 0000000000000003 R08: 00000000ffffffff R09: 0000000000000000
-R10: 0000000000000000 R11: 00000000000
-
+Yeah, tell me about it, you don't even want to know what it looks like
+when the local_softirq_pending_ref percpu mask gets corrupted. The
+symptom will be that random syscalls, like clock_nanosleep, will make
+user processes hang in the kernel, because their timers will appear to
+never expire. You'll also see negative expiry times in /proc/timer_list.
+Eventually the entire system dies. All of that, reproducible with a
+simple flood ping, given enough time.  Ask me how I come to know....
+The 215602a8d212 ("enetc: use napi_schedule to be compatible with
+PREEMPT_RT") commit is from before the lockdep warning came to be.
