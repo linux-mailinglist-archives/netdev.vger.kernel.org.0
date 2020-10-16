@@ -2,98 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3371D28FD19
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 06:12:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D4B728FD7E
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 06:57:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727003AbgJPEMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 00:12:24 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:60286 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726961AbgJPEMY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 00:12:24 -0400
-Received: from mail-pl1-f200.google.com ([209.85.214.200])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <po-hsu.lin@canonical.com>)
-        id 1kTH6M-0002nU-AX
-        for netdev@vger.kernel.org; Fri, 16 Oct 2020 04:12:22 +0000
-Received: by mail-pl1-f200.google.com with SMTP id e6so594943pld.12
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 21:12:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=lj+knYxUtKPg4RXVIM/N60ZjQtEWBhu0c8E4sC/HXuk=;
-        b=L3RSGvNH0lYORdax40HZ94Y6Mpwtag/tyGPAt+a4zWXepE9jd1n/fQbqQ9LDlCof11
-         MqEH8kiVmk7Zmfzy4ktJgZRASAGedR2q6J6BhE+I0wzMEslMy0mkHZTJrcJkal1i23Gm
-         TYpiiumIdq2XgxZFiyPtRHd3+Kr6insDxf9WTClGuF9x/j+C7pyKKqk92W+vWKwrW0Q/
-         Rjn7oiJtYH6QZgpjqFltwwwpnyIFaIdZQUSmBHbty9YEEMN2lXVW2iBOPuZyYG27R8DI
-         UIetjCXi4b45r1xM6tTFFJMY54LAQ1Pw6y5zvSvznFgITCsyquvdssI8HhnpACHFsLxg
-         3YkA==
-X-Gm-Message-State: AOAM532/K1lggqmjX0jOchPUBL9Ru4QOjXhXji1vdyKW7yIQ9S4j2LNw
-        Oyi26sPBz4I7IbaSO5z4IuEtmEkWnTCJtNbZENW0GngIjBnVzZBKDWn/jHIDMbPCpuCZrEmuldl
-        CHxDpGyCmDHDO8nrQ9zxpfukxwbSD2M0f
-X-Received: by 2002:a17:90a:f504:: with SMTP id cs4mr1960313pjb.134.1602821540786;
-        Thu, 15 Oct 2020 21:12:20 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwuiSKw3Fc623zX1J/CAP9plBsNCtvs5MGJMMDxfzVtSTbK7rn7o0Xn8rYN4eGs9/I/aF82TA==
-X-Received: by 2002:a17:90a:f504:: with SMTP id cs4mr1960296pjb.134.1602821540489;
-        Thu, 15 Oct 2020 21:12:20 -0700 (PDT)
-Received: from Leggiero.taipei.internal (61-220-137-37.HINET-IP.hinet.net. [61.220.137.37])
-        by smtp.gmail.com with ESMTPSA id w12sm889596pfu.53.2020.10.15.21.12.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Oct 2020 21:12:19 -0700 (PDT)
-From:   Po-Hsu Lin <po-hsu.lin@canonical.com>
-To:     kuba@kernel.org, davem@davemloft.net, skhan@linuxfoundation.org
-Cc:     po-hsu.lin@canonical.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCHv4] selftests: rtnetlink: load fou module for kci_test_encap_fou() test
-Date:   Fri, 16 Oct 2020 12:12:11 +0800
-Message-Id: <20201016041211.18827-1-po-hsu.lin@canonical.com>
-X-Mailer: git-send-email 2.17.1
+        id S1732247AbgJPE5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 00:57:20 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:65196 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730479AbgJPE5T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 00:57:19 -0400
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09G4uWM6165771
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 00:57:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=V7Tb5S84MEAlhi/TgOgWisZRL0A7sMYagN0a2VaiBdY=;
+ b=NH37r4lxN7kE5vDeFkNez01HQBbTIgboI8TU1TSPDVx1W+3vgLfQqNWE4FQ3XAMwAt/I
+ oW7WF2rplxONesJijHxtbo46DSRKsbYM39DBl5XScze4jaPDQFJ4xaG35G02nsJ38gtz
+ Q6CpNMUutiK8q2qhws77cmzGjbJ/E5M8tsytrFZkQLE4wNJ5zKGG+oa3o5NzOZ2v524m
+ NYsVq9BofiKvTyYfGxBf25uZSyMRUnnbchXd7CLXgiTDXLEY6b4p5REB4GYycd0AApMn
+ mhXNzhfCUxiJPkVpWK4QGdl2BDvp8zw458EsDU4WAudXnvEaHtl01oyWgNtTQnF4Drzt dw== 
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3474r0g8s9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 00:57:18 -0400
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 09G4pxob015169
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 04:57:18 GMT
+Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
+        by ppma02dal.us.ibm.com with ESMTP id 3434kab34j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 04:57:18 +0000
+Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
+        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 09G4vBg334865646
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 16 Oct 2020 04:57:11 GMT
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 870AF6E058;
+        Fri, 16 Oct 2020 04:57:16 +0000 (GMT)
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 16DCD6E04E;
+        Fri, 16 Oct 2020 04:57:15 +0000 (GMT)
+Received: from pompom.ibm.com (unknown [9.85.140.17])
+        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Fri, 16 Oct 2020 04:57:15 +0000 (GMT)
+From:   Lijun Pan <ljp@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     Lijun Pan <ljp@linux.ibm.com>
+Subject: [PATCH net] ibmvnic: save changed mac address to adapter->mac_addr
+Date:   Thu, 15 Oct 2020 23:57:15 -0500
+Message-Id: <20201016045715.26768-1-ljp@linux.ibm.com>
+X-Mailer: git-send-email 2.22.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-10-16_01:2020-10-16,2020-10-16 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ adultscore=0 malwarescore=0 lowpriorityscore=0 phishscore=0 clxscore=1015
+ mlxscore=0 bulkscore=0 suspectscore=1 mlxlogscore=817 impostorscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2010160025
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The kci_test_encap_fou() test from kci_test_encap() in rtnetlink.sh
-needs the fou module to work. Otherwise it will fail with:
+After mac address change request completes successfully, the new mac
+address need to be saved to adapter->mac_addr as well as
+netdev->dev_addr. Otherwise, adapter->mac_addr still holds old
+data.
 
-  $ ip netns exec "$testns" ip fou add port 7777 ipproto 47
-  RTNETLINK answers: No such file or directory
-  Error talking to the kernel
-
-Add the CONFIG_NET_FOU into the config file as well. Which needs at
-least to be set as a loadable module.
-
-Signed-off-by: Po-Hsu Lin <po-hsu.lin@canonical.com>
+Fixes: 62740e97881c("net/ibmvnic: Update MAC address settings after adapter reset")
+Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
 ---
- tools/testing/selftests/net/config       | 1 +
- tools/testing/selftests/net/rtnetlink.sh | 5 +++++
- 2 files changed, 6 insertions(+)
+ drivers/net/ethernet/ibm/ibmvnic.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/tools/testing/selftests/net/config b/tools/testing/selftests/net/config
-index 3b42c06b..c5e50ab 100644
---- a/tools/testing/selftests/net/config
-+++ b/tools/testing/selftests/net/config
-@@ -31,3 +31,4 @@ CONFIG_NET_SCH_ETF=m
- CONFIG_NET_SCH_NETEM=y
- CONFIG_TEST_BLACKHOLE_DEV=m
- CONFIG_KALLSYMS=y
-+CONFIG_NET_FOU=m
-diff --git a/tools/testing/selftests/net/rtnetlink.sh b/tools/testing/selftests/net/rtnetlink.sh
-index 7c38a90..6f8f159 100755
---- a/tools/testing/selftests/net/rtnetlink.sh
-+++ b/tools/testing/selftests/net/rtnetlink.sh
-@@ -520,6 +520,11 @@ kci_test_encap_fou()
- 		return $ksft_skip
- 	fi
- 
-+	if ! /sbin/modprobe -q -n fou; then
-+		echo "SKIP: module fou is not found"
-+		return $ksft_skip
-+	fi
-+	/sbin/modprobe -q fou
- 	ip -netns "$testns" fou add port 7777 ipproto 47 2>/dev/null
- 	if [ $? -ne 0 ];then
- 		echo "FAIL: can't add fou port 7777, skipping test"
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 1b702a43a5d0..021968d1db9c 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -4196,6 +4196,8 @@ static int handle_change_mac_rsp(union ibmvnic_crq *crq,
+ 	}
+ 	ether_addr_copy(netdev->dev_addr,
+ 			&crq->change_mac_addr_rsp.mac_addr[0]);
++	ether_addr_copy(adapter->mac_addr,
++			&crq->change_mac_addr_rsp.mac_addr[0]);
+ out:
+ 	complete(&adapter->fw_done);
+ 	return rc;
 -- 
-2.7.4
+2.23.0
 
