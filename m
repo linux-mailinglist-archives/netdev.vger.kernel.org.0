@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDB1D290C8B
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 22:03:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7D94290C91
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 22:04:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392779AbgJPUDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 16:03:44 -0400
-Received: from mailout09.rmx.de ([94.199.88.74]:34844 "EHLO mailout09.rmx.de"
+        id S2393356AbgJPUE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 16:04:28 -0400
+Received: from mailout06.rmx.de ([94.199.90.92]:45644 "EHLO mailout06.rmx.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392577AbgJPUDo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Oct 2020 16:03:44 -0400
+        id S2393334AbgJPUE1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Oct 2020 16:04:27 -0400
 Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mailout09.rmx.de (Postfix) with ESMTPS id 4CCcXr0FTBzbsT2;
-        Fri, 16 Oct 2020 22:03:40 +0200 (CEST)
+        by mailout06.rmx.de (Postfix) with ESMTPS id 4CCcYf61nmz9vB2;
+        Fri, 16 Oct 2020 22:04:22 +0200 (CEST)
 Received: from mta.arri.de (unknown [217.111.95.66])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by kdin01.retarus.com (Postfix) with ESMTPS id 4CCcXY11sbz2xKS;
-        Fri, 16 Oct 2020 22:03:25 +0200 (CEST)
+        by kdin01.retarus.com (Postfix) with ESMTPS id 4CCcXr0CzYz2xPF;
+        Fri, 16 Oct 2020 22:03:40 +0200 (CEST)
 Received: from N95HX1G2.wgnetz.xx (192.168.54.12) by mta.arri.de
  (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Fri, 16 Oct
- 2020 22:02:51 +0200
+ 2020 22:03:25 +0200
 From:   Christian Eggers <ceggers@arri.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -34,87 +34,117 @@ To:     Andrew Lunn <andrew@lunn.ch>,
 CC:     "David S . Miller" <davem@davemloft.net>,
         Woojung Huh <woojung.huh@microchip.com>,
         Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 0/3] net: dsa: move skb reallocation to dsa_slave_xmit
-Date:   Fri, 16 Oct 2020 22:02:23 +0200
-Message-ID: <20201016200226.23994-1-ceggers@arri.de>
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Christian Eggers <ceggers@arri.de>
+Subject: [PATCH net-next 1/3] net: dsa: don't pass cloned skb's to drivers xmit function
+Date:   Fri, 16 Oct 2020 22:02:24 +0200
+Message-ID: <20201016200226.23994-2-ceggers@arri.de>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20201016200226.23994-1-ceggers@arri.de>
+References: <20201016200226.23994-1-ceggers@arri.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [192.168.54.12]
-X-RMX-ID: 20201016-220331-4CCcXY11sbz2xKS-0@kdin01
+X-RMX-ID: 20201016-220340-4CCcXr0CzYz2xPF-0@kdin01
 X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series moves the reallocation of a skb which may be required due to
-tail tagging or padding, from the tag_trailer and tag_ksz drivers to
-dsa_slave_xmit. Additionally it prevents a skb_panic in a very special
-corner case described here:
-https://patchwork.ozlabs.org/project/netdev/patch/20201014161719.30289-1-ceggers@arri.de/#2554896
+Ensure that the skb is not cloned and has enough tail room for the tail
+tag. This code will be removed from the drivers in the next commits.
 
-This series has been tested with KSZ9563 and my preliminary PTP patches.
+Signed-off-by: Christian Eggers <ceggers@arri.de>
+---
+ net/dsa/dsa_priv.h |  3 +++
+ net/dsa/slave.c    | 38 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 41 insertions(+)
 
-On Friday, 16 October 2020, 17:56:45 CEST, Vladimir Oltean wrote:
-> On Fri, Oct 16, 2020 at 02:44:46PM +0200, Christian Eggers wrote:
-> > Machine:
-> > - ARMv7 (i.MX6ULL), SMP_CACHE_BYTES is 64
-> > - DSA device: Microchip KSZ9563 (I am currently working on time stamping
-> > support)
-> I have a board very similar to this on which I am going to test.
-hopefully you are not just developing on PTP support for KSZ9563 ;-)
-Which hardware do you exactly own? The problem I described to (link
-above) can only be reproduced with my (not yes published) PTP patches.
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 12998bf04e55..975001c625b1 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -77,6 +77,9 @@ struct dsa_slave_priv {
+ 	/* Copy of CPU port xmit for faster access in slave transmit hot path */
+ 	struct sk_buff *	(*xmit)(struct sk_buff *skb,
+ 					struct net_device *dev);
++	/* same for tail_tag and overhead */
++	bool tail_tag;
++	unsigned int overhead;
+ 
+ 	struct pcpu_sw_netstats	__percpu *stats64;
+ 
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 3bc5ca40c9fb..49a19a3b0736 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -553,6 +553,7 @@ static netdev_tx_t dsa_slave_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	struct dsa_slave_priv *p = netdev_priv(dev);
+ 	struct pcpu_sw_netstats *s;
+ 	struct sk_buff *nskb;
++	int padlen;
+ 
+ 	s = this_cpu_ptr(p->stats64);
+ 	u64_stats_update_begin(&s->syncp);
+@@ -567,6 +568,41 @@ static netdev_tx_t dsa_slave_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	 */
+ 	dsa_skb_tx_timestamp(p, skb);
+ 
++	/* We have to pad he packet to the minimum Ethernet frame size,
++	 * if necessary, before adding the trailer (tail tagging only).
++	 */
++	padlen = (skb->len >= ETH_ZLEN) ? 0 : ETH_ZLEN - skb->len;
++
++	/* To keep the slave's xmit() methods simple, don't pass cloned skbs to
++	 * them. Additionally ensure, that suitable room for tail tagging is
++	 * available.
++	 */
++	if (skb_cloned(skb) ||
++	    (p->tail_tag && skb_tailroom(skb) < (padlen + p->overhead))) {
++		struct sk_buff *nskb;
++
++		nskb = alloc_skb(NET_IP_ALIGN + skb->len +
++				 padlen + p->overhead, GFP_ATOMIC);
++		if (!nskb) {
++			kfree_skb(skb);
++			return NETDEV_TX_OK;
++		}
++		skb_reserve(nskb, NET_IP_ALIGN);
++
++		skb_reset_mac_header(nskb);
++		skb_set_network_header(nskb,
++				       skb_network_header(skb) - skb->head);
++		skb_set_transport_header(nskb,
++					 skb_transport_header(skb) - skb->head);
++		skb_copy_and_csum_dev(skb, skb_put(nskb, skb->len));
++		consume_skb(skb);
++
++		if (padlen)
++			skb_put_zero(nskb, padlen);
++
++		skb = nskb;
++	}
++
+ 	/* Transmit function may have to reallocate the original SKB,
+ 	 * in which case it must have freed it. Only free it here on error.
+ 	 */
+@@ -1814,6 +1850,8 @@ int dsa_slave_create(struct dsa_port *port)
+ 	p->dp = port;
+ 	INIT_LIST_HEAD(&p->mall_tc_list);
+ 	p->xmit = cpu_dp->tag_ops->xmit;
++	p->tail_tag = cpu_dp->tag_ops->tail_tag;
++	p->overhead = cpu_dp->tag_ops->overhead;
+ 	port->slave = slave_dev;
+ 
+ 	rtnl_lock();
+-- 
+Christian Eggers
+Embedded software developer
 
-> > Last, CONFIG_SLOB must be selected.
-> 
-> Interesting, do you know why?
-Yes. The other allocaters will actually allocate 512 byte instead of 320
-if 64+256 bytes are requested. This will then be reported by ksize() and
-let to more skb tailroom. The SLOB allocator will really allocate only
-320 byte in this case, so that the skb will be run out of tail room when
-tail tagging...
-
-> > 3. "Manually" unsharing in dsa_slave_xmit(), reserving enough tailroom
-> > for the tail tag (and ETH_ZLEN?). Would moving the "else" clause from
-> > ksz_common_xmit()  to dsa_slave_xmit() do the job correctly?
-> 
-> I was thinking about something like that, indeed. DSA knows everything
-> about the tagger: its overhead, whether it's a tail tag or not. The xmit
-> callback of the tagger should only be there to populate the tag where it
-> needs to be. But reallocation, padding, etc etc, should all be dealt
-> with by the common DSA xmit procedure. We want the taggers to be simple
-> and reuse as much logic as possible, not to be bloated.
-This series is the first draft for it. Some additional changes my be
-done later:
-1. All xmit() function now return either the supplied skb or NULL. No
-reallocation will be done anymore. Maybe the type of the return value may
-be changed to reflect this (e.g. to bool).
-2. There is no path left which calls __skb_put_padto()/skb_pad() with
-free_on_error set to false. So the following commit may be reverted in
-order to simply the code:
-
-cd0a137acbb6 ("net: core: Specify skb_pad()/skb_put_padto() SKB freeing")
-
-On Friday, 16 October 2020, 11:05:27 CEST, Vladimir Oltean wrote:
-> Kurt is asking, and rightfully so, because his tag_hellcreek.c driver
-> (for a 1588 switch with tail tags) is copied from tag_ksz.c.
-@Kurt: If this series (or a later version) is accepted, please update
-your tagging driver. Ensure that your dsa_device_ops::overhead contains
-the "maximum" possible tail tag len for xmit and that
-dsa_device_ops::tail_tag is set to true.
-
-On Friday, 16 October 2020, 20:03:11 CEST, Jakub Kicinski wrote:
-> FWIW if you want to avoid the reallocs you may want to set
-> needed_tailroom on the netdev.
-I haven't looked for this yet. If this can really solve the tagging AND
-padding problem, I would like to do this in a follow up patch.
-
-Wishing a nice weekend for netdev.
-Christian
-
-
-
+Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
+Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
+Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
 
