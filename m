@@ -2,114 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB29C2904C6
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 14:11:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C02282904D4
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 14:16:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407209AbgJPMLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 08:11:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32796 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407182AbgJPMLR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 08:11:17 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59365C061755;
-        Fri, 16 Oct 2020 05:11:17 -0700 (PDT)
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1602850275;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=l6tn/UiS5TsBzWHjXOllBWC9DcShkaQo1JEZyj3tsVc=;
-        b=u6ffnwrCYpE8m1oEhCQ0agemjWz4sVVlEFKwlubQlZmdTSgeVI4KanOs8yrjL7QOqIRX7Z
-        9aI8ph+2mQ4lhXBdp/3dyLJjww+cGr/Go7FKz1Yau1jPbZSYHfJJdv+foeWpMkP0NCF8tV
-        s/h9PrkC/Op5/dXP5VbbIiuhDxpuaa/N/HE1lmOHOgLZISEhY489v6E7LncQsOeC6KxMbz
-        v9TOp3tMro5pVOQMKhIlakrCq/E+aqaJ8FklYPdIBiq0snPttH0qRNnlIi5gVUwSIMfeFh
-        HyTDseO8foiAyt2NZn2kQmY5NR9bCA5FkaDk7vjoUzncu9x3/errGDNbHwljZg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1602850275;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=l6tn/UiS5TsBzWHjXOllBWC9DcShkaQo1JEZyj3tsVc=;
-        b=7ds7ctUzMtxSjaN6hk8h2zJbQh/s0exc8BqSS8hesWLAGCw5HC+cPy/7tLjuZRWA6dnzN6
-        qmJfUQY/c/FKxoDw==
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Kamil Alkhouri <kamil.alkhouri@hs-offenburg.de>,
-        ilias.apalodimas@linaro.org
-Subject: Re: [PATCH net-next v6 2/7] net: dsa: Add DSA driver for Hirschmann Hellcreek switches
-In-Reply-To: <87r1q4f1hq.fsf@kurt>
-References: <20201004112911.25085-1-kurt@linutronix.de> <20201004112911.25085-3-kurt@linutronix.de> <20201004125601.aceiu4hdhrawea5z@skbuf> <87lfgj997g.fsf@kurt> <20201006092017.znfuwvye25vsu4z7@skbuf> <878scj8xxr.fsf@kurt> <20201006113237.73rzvw34anilqh4d@skbuf> <87wo037ajr.fsf@kurt> <20201006135631.73rm3gka7r7krwca@skbuf> <87362lt08b.fsf@kurt> <20201011153055.gottyzqv4hv3qaxv@skbuf> <87r1q4f1hq.fsf@kurt>
-Date:   Fri, 16 Oct 2020 14:11:06 +0200
-Message-ID: <87sgaee5gl.fsf@kurt>
+        id S2407318AbgJPMQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 08:16:52 -0400
+Received: from mail-bn7nam10on2067.outbound.protection.outlook.com ([40.107.92.67]:39961
+        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2404860AbgJPMQw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Oct 2020 08:16:52 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ii7Ry/ANrG0cAiMolsZXE5BQj9jgPDY7PqjJeeRXiRMVdiMC1uVDF/cKHbMHb3PtdDFY9eToqYNPaxLWjGwVJWfHye0cvGTD52Au5+8lH1ziUJS2TRs097KJZ9qqM1IUXBwL85FDIc8kWpqyXnh7dqTJBuA+Pk01C+dbB4iZ6RCKyG0Q1cwShLYW48sAFTyTHq6YSYAo15mYS+EiJY3hdQkmKFv65ztnT2l9+/xvCOiO49YuP/4WyNyXJq+VJ1UQNib/HoqVqo3UB5pTNSHuUbq5fmyURyBr5EiFEyFWjSweTRgPivCgs9C5VtCHmJbQ1tEwxOlQ/ylRxvdBiO/huA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AjLzVHhASSbFURlfnPTPPZoHp5YzonUfkjcaMt+meE4=;
+ b=AjzLo1YXVaFIHu2D3pkHMZxeVzileteH4727ySwjrRNEwLKOPE54l1N3WOijBgj8854OtPS+2FiM3OlT227LBeALuSboQHO2knTE7vUw0wixhMVB1L5pdSWLFbip3ubj0Q2gCi96AZGUGzuAe/LkO95ZayXn6A7UdBRHWxrzA/Wb/5lN88NOaRMhH8k30kKuWnMrlpBQ9xfgHTTYL5SOKei9imzPmi46ceoMudRcdyQCEReK5O5eSi+GQTbXZyS5JUR1T/d6ZaAdAQb0xvJtICB1tgfRzw1iauip3qwo7iXI33zMw7nbu+8Dj4Y8hGkTxVvAvW3/p2ot6oPryAAzYA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AjLzVHhASSbFURlfnPTPPZoHp5YzonUfkjcaMt+meE4=;
+ b=hrjGP0ouKjaVee872Q/ZqVj/EIhqLSHEJeg0jiq0qomg3MexTOArvL+Z6HQOVdw+u1hEa6CzyJrsDhOVXuImShp6P9VLqTE6Ff3MmYlugN22SZm0r0XnD+BkDpdSe+RmOqQZOiZ15U8oJkVP4cWgEqsgnmUwAWLuvx60zeNDHo0=
+Authentication-Results: linaro.org; dkim=none (message not signed)
+ header.d=none;linaro.org; dmarc=none action=none header.from=silabs.com;
+Received: from SN6PR11MB2718.namprd11.prod.outlook.com (2603:10b6:805:63::18)
+ by SN6PR11MB2654.namprd11.prod.outlook.com (2603:10b6:805:54::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.23; Fri, 16 Oct
+ 2020 12:16:48 +0000
+Received: from SN6PR11MB2718.namprd11.prod.outlook.com
+ ([fe80::4f5:fbe5:44a7:cb8a]) by SN6PR11MB2718.namprd11.prod.outlook.com
+ ([fe80::4f5:fbe5:44a7:cb8a%5]) with mapi id 15.20.3455.031; Fri, 16 Oct 2020
+ 12:16:48 +0000
+From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        driverdevel <devel@driverdev.osuosl.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        DTML <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH 07/23] wfx: add bus_sdio.c
+Date:   Fri, 16 Oct 2020 14:16:43 +0200
+Message-ID: <2769264.q6GNP55evR@pc-42>
+Organization: Silicon Labs
+In-Reply-To: <CAPDyKFpP6xBru79Xh2oe=J8HWO3uk1VpcMzEiG6X7WX-AOvgkA@mail.gmail.com>
+References: <20201012104648.985256-1-Jerome.Pouiller@silabs.com> <20201012104648.985256-8-Jerome.Pouiller@silabs.com> <CAPDyKFpP6xBru79Xh2oe=J8HWO3uk1VpcMzEiG6X7WX-AOvgkA@mail.gmail.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-Originating-IP: [82.67.86.106]
+X-ClientProxiedBy: SN4PR0501CA0008.namprd05.prod.outlook.com
+ (2603:10b6:803:40::21) To SN6PR11MB2718.namprd11.prod.outlook.com
+ (2603:10b6:805:63::18)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from pc-42.localnet (82.67.86.106) by SN4PR0501CA0008.namprd05.prod.outlook.com (2603:10b6:803:40::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.7 via Frontend Transport; Fri, 16 Oct 2020 12:16:46 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 51d3f556-4ee2-4f69-f375-08d871cd5ae7
+X-MS-TrafficTypeDiagnostic: SN6PR11MB2654:
+X-Microsoft-Antispam-PRVS: <SN6PR11MB2654D7BB096FE2524E067E0893030@SN6PR11MB2654.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2399;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: xPYooIvud6uGGXOvIwioHc+ET2KL4+cgbmMdX0L5+5jtWbauBdUodTAWquDMWJT/exELRzBTDXaBkyoAuP1OEJDXX3aU+gq5qd+hXQMPwpunXa8hbwn/CN5ZqiFxh/waXIjbRL4F5AAMq8UzHXc1pE5/K4X12Nx0cTdjtapVTXwfpapFHBxBeawQSBU2Bl3+Oo8v4AxdFXtwVE668conCDpSG/wvVLMtlMQZze9G2HVLM7bG+YRjemu53JoMwDu6WiXkdZXSs0eDavbx+Ot6XaRtxPyzhYnpTU8KcsXLU0MFJ68MyuBvN+rOQNEUfJjiGVWBFzumg27qm3bEn9H7b37ibfWQOabmCOHO0/6aNMYdlqc5+0SQ9JA4GxSFzQLL9T7ytDIlnqBa0DWrkT7pcsyPfVdJw2Vx0ybFnfUhqALA/7x5hqCuDs+kOQt7VgmqinA8CxQCdluekspZ3/ssxg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB2718.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(396003)(39850400004)(136003)(346002)(376002)(66574015)(7416002)(66556008)(2906002)(66946007)(66476007)(33716001)(86362001)(6506007)(52116002)(966005)(83380400001)(5660300002)(956004)(6666004)(316002)(54906003)(6512007)(16526019)(6916009)(4326008)(8936002)(6486002)(36916002)(478600001)(9686003)(8676002)(186003)(26005)(39026012);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: E4VSLrls2NaUo+OUmr/uF+neqKYQk7rQP7A9udPwhXBXM9lI78pRIKhUebgFygN9faby8QP991AlxtKan0dYov1S/nb7+O5xJUbiwdQHt935Ms09c17NehtzfxxuCBhXM+fGaxplCtDiUaNy4oTnUCjQwMdg3Y4iVPtvRitHvGtIRnqXs5s9iJOwGb40fli2UZ0Dgu3zSb2vVQTFPA96OYJYlFi8GB7VfOmEGDmpRayklCfkiZgiVc6O9Fs0OReCKCUpTd98OjzgMFn6hTqtENa23OL1pXlk6UsO7+mFRj9J2zi8SLRPBZD/p2OLhqXj1Zis3mYlArZ9OP5Zhm56tvhy31PiI6aOJTi5BuHXQKblg7sS14Wo8d4uHxWC2iSqVDqvr2rHJjYlRsqmuHHZppUEgRE92Ev1rH9EHFRKDHPX+qPKi+G98ejPJP0GqNuSMrY4S/ZpLvmeuoIanC3rnWi3j6NhEIal1saUnVAp8H9/lwmLDKMmkwEFdaQqS6M6fgVjVgXhT1QpdDVj1jAkaySGv2BoQOfQshmA9xalIASyDB2Ie8iL46dRA9MW/hx1gQkDlUfZXCMUBgY7tqZKtRD8qxZKNVg3H3DMFyHFoOfFhZ8riF3v41kLjqzByHf5jCGf4OGPyLBzXxN0eo6dNg==
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 51d3f556-4ee2-4f69-f375-08d871cd5ae7
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB2718.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Oct 2020 12:16:48.6266
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9XakUjjPyQc2fqU6VtXlE0qIZkuBT5mZBmBFx+QFvv33hDwFtumC55cMTa3mc9jUYIzBjAniHvuskDm2zpo1hA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR11MB2654
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
+Hello Ulf,
 
-On Mon Oct 12 2020, Kurt Kanzenbach wrote:
-> On Sun Oct 11 2020, Vladimir Oltean wrote:
->> On Sun, Oct 11, 2020 at 02:29:08PM +0200, Kurt Kanzenbach wrote:
->>> On Tue Oct 06 2020, Vladimir Oltean wrote:
->>> > It would be interesting to see if you could simply turn off VLAN
->>> > awareness in standalone mode, and still use unique pvids per port.
->>>
->>> That doesn't work, just tested. When VLAN awareness is disabled,
->>> everything is switched regardless of VLAN tags and table.
->>
->> That's strange, do you happen to know where things are going wrong?
->
-> No I don't. I'll clarify with the hardware engineer.
+On Friday 16 October 2020 13:30:30 CEST Ulf Hansson wrote:
+> On Mon, 12 Oct 2020 at 12:47, Jerome Pouiller
+> <Jerome.Pouiller@silabs.com> wrote:
+> >
+> > From: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
+>=20
+> Please fill out this commit message to explain a bit more about the
+> patch and the HW it enables support for.
 
-When VLAN awareness is disabled, the packet is still classified with the
-pvid. But, later all rules regarding VLANs (except for the PCP field)
-are ignored then. So, the programmed pvid doesn't matter in this case.
+This patch belongs to a series[1] that will squashed before to be
+committed (Kalle Valo prefer to process like that for this review). So,
+I didn't bother to write real commit messages. For the v2, I will take
+care to add linux-mmc in copy of the whole series.
 
-The only way to implement the non-filtering bridge behavior is this
-flag. However, this has some more implications. For instance when
-there's a non filtering bridge, then standalone mode doesn't work
-anymore due to the VLAN unawareness. This is not a problem at the
-moment, because there are only two ports. But, later when there are more
-ports, then having two ports in a non-filtering bridge and one in
-standalone mode doesn't work. That's another limitation that needs to be
-considered when adding more ports later on.
+[1] https://lore.kernel.org/lkml/20201012104648.985256-1-Jerome.Pouiller@si=
+labs.com/
 
-Besides that problem everything else seem to work now in accordance to
-the expected Linux behavior with roper restrictions in place.
 
-Thanks,
-Kurt
+> > Signed-off-by: J=E9r=F4me Pouiller <jerome.pouiller@silabs.com>
+> > ---
+> >  drivers/net/wireless/silabs/wfx/bus_sdio.c | 269 +++++++++++++++++++++
+> >  1 file changed, 269 insertions(+)
+> >  create mode 100644 drivers/net/wireless/silabs/wfx/bus_sdio.c
+> >
+> > diff --git a/drivers/net/wireless/silabs/wfx/bus_sdio.c b/drivers/net/w=
+ireless/silabs/wfx/bus_sdio.c
+> > new file mode 100644
+> > index 000000000000..e06d7e1ebe9c
+[...]
+> > +struct sdio_driver wfx_sdio_driver =3D {
+> > +       .name =3D "wfx-sdio",
+> > +       .id_table =3D wfx_sdio_ids,
+> > +       .probe =3D wfx_sdio_probe,
+> > +       .remove =3D wfx_sdio_remove,
+> > +       .drv =3D {
+> > +               .owner =3D THIS_MODULE,
+> > +               .of_match_table =3D wfx_sdio_of_match,
+> > +       }
+> > +};
+>=20
+> I couldn't find where you call sdio_register|unregister_driver(), but
+> maybe that's done from another patch in series?
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+Indeed, it is here[2].
 
------BEGIN PGP SIGNATURE-----
+[2] https://lore.kernel.org/lkml/20201012104648.985256-5-Jerome.Pouiller@si=
+labs.com/
 
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl+JjdoACgkQeSpbgcuY
-8KawTRAApd17ogXfDyCUUBFpdZRzcN3ZT/aBd6wyHTIKK/fQ2rCK4jxGUW1ORBLN
-98NmmpclKVZy6E1tYZXMtIcUwObg9bSCSLcePhdF+vJKAwyueBmG54HYtGaqpbas
-hOQqgwUGNpCywwQaHKoU72gOU5H/R3NgUZu9124mcGbMkH8ZbRZ7vnCqUITTZ6Rg
-2t5vYaXjQJ1vnX7epOmoWaMKUXPPct6IdLB2xqMA67+5b1PyVTBgeets1LmaP8sb
-x3mcfuGa/l1o/ZiXoULZjMDXQ1TJDz5KkKB0USfPbEm3dC8W2V9yfNehYR8J5r8C
-C8mETidBoGVd9LPfxDzwRQqyeNti1WzMa0nZRmZRdrRhECxGhnyajbdclitAb2J3
-RqUIkFWW3vKp9PSo5Q0vbaRuxEX3vOG6VBTCURR6JJ+pYyKHFc2M+ZLenYpVFukX
-TyFIFYIp6HZCydzcc2cslwdvXEFpMfWRP+UOtkR7S+Zx+ZLvYXDem5PBrpTSwKwJ
-Ns56XQf0B1y0TWtU8j5iN3boUVoxcfcg8LbgKCpUMyN2tLoPiCZBqbTiGDe5I9GR
-ZgLa6vCt4E/hPrUKVWiuSNM/QSC2hCa472a+46YaoIvnk0Mr5MHovI4BO2/lOdWk
-MXnMAQws63TzyT/NfuPkbQ+oEFRqd5ADHQqswE4lR5Ycst90Gr8=
-=LUio
------END PGP SIGNATURE-----
---=-=-=--
+
+--=20
+J=E9r=F4me Pouiller
+
+
