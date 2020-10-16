@@ -2,88 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BFF828FED3
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 09:05:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6D7728FEE7
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 09:09:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404286AbgJPHFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 03:05:13 -0400
-Received: from mailout08.rmx.de ([94.199.90.85]:43405 "EHLO mailout08.rmx.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404197AbgJPHFM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Oct 2020 03:05:12 -0400
-Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mailout08.rmx.de (Postfix) with ESMTPS id 4CCHGV5KJGzN0hg;
-        Fri, 16 Oct 2020 09:05:06 +0200 (CEST)
-Received: from mta.arri.de (unknown [217.111.95.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by kdin02.retarus.com (Postfix) with ESMTPS id 4CCHGN0Vmkz2TTNh;
-        Fri, 16 Oct 2020 09:05:00 +0200 (CEST)
-Received: from n95hx1g2.localnet (192.168.54.49) by mta.arri.de
- (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Fri, 16 Oct
- 2020 09:04:38 +0200
-From:   Christian Eggers <ceggers@arri.de>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-CC:     Richard Cochran <richardcochran@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Krzysztof Halasa <khalasa@piap.pl>,
-        Vishal Kulkarni <vishal@chelsio.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: ptp: get rid of IPV4_HLEN() and OFF_IHL macros
-Date:   Fri, 16 Oct 2020 09:04:38 +0200
-Message-ID: <2135183.8zsl8bQRyA@n95hx1g2>
-Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-In-Reply-To: <939828b0-846c-9e10-df31-afcb77b1150a@gmail.com>
-References: <20201014115805.23905-1-ceggers@arri.de> <20201015033648.GA24901@hoboy> <939828b0-846c-9e10-df31-afcb77b1150a@gmail.com>
+        id S2404364AbgJPHJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 03:09:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42342 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404250AbgJPHJE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 03:09:04 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E87C061755;
+        Fri, 16 Oct 2020 00:09:03 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id t9so1448047wrq.11;
+        Fri, 16 Oct 2020 00:09:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aIIdpu2aafryC7SkAft1rO9mxaExxYzvxUJKMsE57LM=;
+        b=h8++BVrBVk+QB6QAgRp+N/cQmQNmxnsd8hWZgb8maJcShr2uJA6CI/LyeI3/szH85d
+         eSgyTWtvn0SCjWxGw/i2GvxQTjBnvrFmW+s6n3spVlwg/7aTGw6ZOWjNTr4do4QYQpaq
+         w5mhlbpFNG8RiUWj+JHpmvyTT+DB0pO40jONYnTydEW02rnACGGTFMYDB2l3Uz4OHog/
+         ZfpMOu2yiPWkHUSrjeahGpMzjgsqWWJq4dP++tG2sxEI2l66yjYXO9TZQFzpIZ8Ir+lM
+         wtLYWmaXCoAVEW7Zrfges56GS3mcZqSHdMbreFamNaU1l4jO89PVGTM0MPbO+DKJFhgs
+         dndw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aIIdpu2aafryC7SkAft1rO9mxaExxYzvxUJKMsE57LM=;
+        b=NATU+sqTE9RahBuHRKPT3Y7N9wgyL0pyt411VgUfBidypgLH40c0K+QRjxKUav7v17
+         nkhdKwrrkQ13aKyOKEB3nLA4bYCgcoJRYoWqnB9auomKVZqDbTNWU2HbW+a48/pqBRwM
+         G4YugSxyJMqqv9aKkPCyUQkaZds0nuYyOr7mx12Z8+8VX2hg+LjONc1cgKbOhcrr7MJF
+         Tkt9oC4HKCeRMTY/zZrraDlaPa2FgQbqxe1YsKl6slWN4Xj5wrOTxa54CNhZ2PyFIPf2
+         dUUvC5ILd+Gt7MyyegrDmiaEd/vO9oZ5MxGfszklSPD8PiHDZbxOJUahu7lNg6DKP6hS
+         S1Fg==
+X-Gm-Message-State: AOAM532uspoZf+oUecMqasucZul2gcM8AVaemuyRjGO4hmQbaP8MQV+H
+        qLLhQVMcqqxLHNIhQMeQCFWZllOjRuDe21v5W+I=
+X-Google-Smtp-Source: ABdhPJzU+rpl7mleJ7UmiIByEj8QhJlPpO6xYuF54LSPCCiaSNBB6n63CehF1DuVgJ4kCSLSJjwPW4HUEt/ebgQeKmo=
+X-Received: by 2002:a5d:5748:: with SMTP id q8mr2165039wrw.299.1602832142701;
+ Fri, 16 Oct 2020 00:09:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Originating-IP: [192.168.54.49]
-X-RMX-ID: 20201016-090500-4CCHGN0Vmkz2TTNh-0@kdin02
-X-RMX-SOURCE: 217.111.95.66
+References: <cover.1602574012.git.lucien.xin@gmail.com> <afbaca39fa40eba694bd63c200050a49d8c8df81.1602574012.git.lucien.xin@gmail.com>
+ <20201015174252.GB11030@localhost.localdomain>
+In-Reply-To: <20201015174252.GB11030@localhost.localdomain>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Fri, 16 Oct 2020 15:08:51 +0800
+Message-ID: <CADvbK_eMOPQfB2URNshOizSe9_j0dpbA47TVWSwctziFas3GaQ@mail.gmail.com>
+Subject: Re: [PATCHv3 net-next 16/16] sctp: enable udp tunneling socks
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Michael Tuexen <tuexen@fh-muenster.de>,
+        davem <davem@davemloft.net>, Guillaume Nault <gnault@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thursday, 15 October 2020, 18:56:41 CEST, Florian Fainelli wrote:
-> Having recently helped someone with a bug that involved using
-> IPV4_HLEN() instead of ip_hdr() in a driver's transmit path (so with the
-> transport header correctly set), it would probably help if we could make
-> IPV4_HLEN()'s semantics clearer with converting it to a static inline
-> function and put asserts in there about what the transport and MAC
-> header positions should be.
-IPV4_HLEN() is only used for PTP. Is there any way to use "normal" 
-infrastructure as in the rest of the network stack? It looks like PTP code 
-typically has to look into multiple network layers (mac, network, transport) 
-at places these layers may not be processed yet (at least in RX direction).
+On Fri, Oct 16, 2020 at 1:42 AM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
+>
+> Actually..
+>
+> On Tue, Oct 13, 2020 at 03:27:41PM +0800, Xin Long wrote:
+> ...
+> > Also add sysctl udp_port to allow changing the listening
+> > sock's port by users.
+> ...
+> > ---
+> >  net/sctp/protocol.c |  5 +++++
+> >  net/sctp/sysctl.c   | 50 ++++++++++++++++++++++++++++++++++++++++++++++++++
+> >  2 files changed, 55 insertions(+)
+>
+> Xin, sorry for not noticing this earlier, but we need a documentation
+> update here for this new sysctl. This is important. Please add its
+> entry in ip-sysctl.rst.
+no problem, I will add it.
 
-> At the very least, creating a new function, like this maybe in
-> include/linux/ip.h might help:
-> 
-> static inline u8 __ip_hdr_len(const struct sk_buff *skb)
-> {
-> 	const struct iphdr *ip_hdr = (const struct iphdr *)(skb->data);
-> 
-> 	return ip_hdr->ihl << 2;
-> }
-Is there any reason using skb->data instead of skb_network_header()? Debugging 
-through my DSA driver showed that ...
+>
+> >
+> > diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
+> > index be002b7..79fb4b5 100644
+> > --- a/net/sctp/protocol.c
+> > +++ b/net/sctp/protocol.c
+> > @@ -1469,6 +1469,10 @@ static int __net_init sctp_ctrlsock_init(struct net *net)
+> >       if (status)
+> >               pr_err("Failed to initialize the SCTP control sock\n");
+> >
+> > +     status = sctp_udp_sock_start(net);
+> > +     if (status)
+> > +             pr_err("Failed to initialize the SCTP udp tunneling sock\n");
+>                                                       ^^^ upper case please.
+> Nit. There are other occurrences of this.
+You mean we can remove this log, as it's been handled well in
+sctp_udp_sock_start()?
 
-- for TX (called by dsa_slave_xmit), skb->data is set to the MAC header
-(skb->head+0x02), whilst skb->network_header is correctly set to 0x10 
-(skb->mac_header+14).
-- for TX, skb->transport_header is 0xffff, so udp_hdr() cannot be used
+>
+> > +
+> >       return status;
+> ...
+> > +     ret = proc_dointvec(&tbl, write, buffer, lenp, ppos);
+> > +     if (write && ret == 0) {
+> > +             struct sock *sk = net->sctp.ctl_sock;
+> > +
+> > +             if (new_value > max || new_value < min)
+> > +                     return -EINVAL;
+> > +
+> > +             net->sctp.udp_port = new_value;
+> > +             sctp_udp_sock_stop(net);
+>
+> So, if it would be disabling the encapsulation, it shouldn't be
+> calling _start() then, right? Like
+>
+>                 if (new_value)
+>                         ret = sctp_udp_sock_start(net);
+>
+> Otherwise _start() here will call ..._bind() with port 0, which then
+> will be a random one.
+right, somehow I thought it wouldn't bind with port 0.
 
-- for RX (called by dsa_switch_rcv), skb->data is set to skb->head+0x50, which 
-is identical to skb->network_header
-- for RX, skb->transport_header ist set equal to skb->network_header, so 
-udp_hdr() can also not be used.
-
-Best regards
-Christian
-
-
-
+Thanks.
+>
+> > +             ret = sctp_udp_sock_start(net);
+> > +             if (ret)
+> > +                     net->sctp.udp_port = 0;
+> > +
+> > +             /* Update the value in the control socket */
+> > +             lock_sock(sk);
+> > +             sctp_sk(sk)->udp_port = htons(net->sctp.udp_port);
+> > +             release_sock(sk);
+> > +     }
+> > +
+> > +     return ret;
+> > +}
+> > +
+> >  int sctp_sysctl_net_register(struct net *net)
+> >  {
+> >       struct ctl_table *table;
+> > --
+> > 2.1.0
+> >
