@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E894B290968
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 18:11:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79678290973
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 18:13:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2410660AbgJPQL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 12:11:29 -0400
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:35591 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407134AbgJPQL3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 12:11:29 -0400
-Received: by mail-oi1-f193.google.com with SMTP id w141so3012886oia.2;
-        Fri, 16 Oct 2020 09:11:28 -0700 (PDT)
+        id S2410585AbgJPQNy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 12:13:54 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:44735 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2395449AbgJPQNx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 12:13:53 -0400
+Received: by mail-ot1-f65.google.com with SMTP id e20so2859549otj.11;
+        Fri, 16 Oct 2020 09:13:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=rEAPxl1KjgfwVme9xwT1MzPMtYY7qqr5iqswWViBBoA=;
-        b=bbFcIM5rX6uuJFdYkQ0K3HSej5LzoJsBuzalkzrCGjbZwpXWW0MWDaCKhWifVtNVKo
-         RMW4PE0PURhAvCExsoHBzj7FV7AyOsVRh7tZjU5GUnlVdoPfPQDtLj9dqfwKaVibklnb
-         xqxlcxhuBJ/0LxMm/YHOw7zxePUUGSXLCQLVlqQ4vq6qVa+A3N3oScvNcV1dHU/jFtMW
-         rND3l+h33WATlK/1Od/Uysh8nofrmI6B3069uYE0blD0p7PxXkB4gNESbmPW6r2JNngb
-         0GcYtFt4/7KTEGpznqPWhKDAoGl+wwcEZr4BP8LUWWl02MwImYT0neUVnHIO6kl7p4CC
-         tzTg==
-X-Gm-Message-State: AOAM531dLqg7vpY85NKMosAhr5r5xxL4AZg/q6vA+/Z1tU6fChDYOzlv
-        jtnYOhXsWQI4jetjFz2SZveWrdQTcA==
-X-Google-Smtp-Source: ABdhPJylcRl5VtXACVgCUXR3Yo/AvXoa+GOjkZt1qU4vIYR7pQmtadpwGpHRc3srxH8tyzjL0w9DTA==
-X-Received: by 2002:a05:6808:10e:: with SMTP id b14mr3083547oie.152.1602864688191;
-        Fri, 16 Oct 2020 09:11:28 -0700 (PDT)
+        bh=3S6o6pCsqlpQRPyq0YIBMbpipy60d1/GQBn4kE8sQ4E=;
+        b=bcwjTgkU7XyHDcXf5/rYd9ooU7udQIvLXJsgCJk5d2HRxbq1SphsJaouJ0EvXO4I0C
+         jAdbeDYzXtKM229Kku6nM2J4mOVIiB8YDk2I14A1w3KXsb69UMgvL3Y4jgiqJ0Oo0ACr
+         tEfxjceyy3E6Ixu0j9L69UsWZeiV56kr1BHukZFR21aj7ADKlPqJ7a1CszWW+vAdobEY
+         0uEYKyUt8gYuzul4WYqXc1k4BCYttHIVVzAX8smeULjfiI7gCKMKCAR/SmLmzsJrKvIS
+         RPGnUC94jlbVTtkQ2GSn3Z6Y3F0JgrD1bE5EeNr4lYfueidrb1QSKtUVFAP0aOqNoxyg
+         k+LQ==
+X-Gm-Message-State: AOAM531zbHliBblQGJVp6IbUF1HQdeQVvVKW7iS8Rjw8LqpvsrHohXWv
+        40DqRKeOqLvLCifHEjO73w==
+X-Google-Smtp-Source: ABdhPJy31GLp3Gq3wrThbltyY2aRjfcKdZPCwOmBriiR2Jq309ootzkq3phDe7FB4aNFH2VnXhA7VA==
+X-Received: by 2002:a9d:127:: with SMTP id 36mr2811371otu.73.1602864832590;
+        Fri, 16 Oct 2020 09:13:52 -0700 (PDT)
 Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id j10sm1082858ota.56.2020.10.16.09.11.27
+        by smtp.gmail.com with ESMTPSA id h4sm1233579oot.45.2020.10.16.09.13.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Oct 2020 09:11:27 -0700 (PDT)
-Received: (nullmailer pid 1505308 invoked by uid 1000);
-        Fri, 16 Oct 2020 16:11:26 -0000
-Date:   Fri, 16 Oct 2020 11:11:26 -0500
+        Fri, 16 Oct 2020 09:13:52 -0700 (PDT)
+Received: (nullmailer pid 1508478 invoked by uid 1000);
+        Fri, 16 Oct 2020 16:13:50 -0000
+Date:   Fri, 16 Oct 2020 11:13:50 -0500
 From:   Rob Herring <robh@kernel.org>
 To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        mkl@pengutronix.de, netdev@vger.kernel.org, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        devicetree@vger.kernel.org,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>
+Cc:     mkl@pengutronix.de, Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
 Subject: Re: [PATCH v2 1/2] dt-bindings: can: add can-controller.yaml
-Message-ID: <20201016161126.GA1504381@bogus>
+Message-ID: <20201016161350.GB1504381@bogus>
 References: <20201016073315.16232-1-o.rempel@pengutronix.de>
  <20201016073315.16232-2-o.rempel@pengutronix.de>
 MIME-Version: 1.0
@@ -57,7 +56,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 16 Oct 2020 09:33:14 +0200, Oleksij Rempel wrote:
+On Fri, Oct 16, 2020 at 09:33:14AM +0200, Oleksij Rempel wrote:
 > For now we have only node name as common rule for all CAN controllers
 > 
 > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
@@ -66,20 +65,34 @@ On Fri, 16 Oct 2020 09:33:14 +0200, Oleksij Rempel wrote:
 >  1 file changed, 16 insertions(+)
 >  create mode 100644 Documentation/devicetree/bindings/net/can/can-controller.yaml
 > 
+> diff --git a/Documentation/devicetree/bindings/net/can/can-controller.yaml b/Documentation/devicetree/bindings/net/can/can-controller.yaml
+> new file mode 100644
+> index 000000000000..185904454a69
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/can/can-controller.yaml
+> @@ -0,0 +1,16 @@
+> +# SPDX-License-Identifier: GPL-2.0
 
+Dual license new bindings please.
 
-My bot found errors running 'make dt_binding_check' on your patch:
+(GPL-2.0-only OR BSD-2-Clause)
 
-./Documentation/devicetree/bindings/net/can/can-controller.yaml: $id: relative path/filename doesn't match actual path or filename
-	expected: http://devicetree.org/schemas/net/can/can-controller.yaml#
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/can-controller.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: CAN Controller Generic Binding
+> +
+> +maintainers:
+> +  - Marc Kleine-Budde <mkl@pengutronix.de>
+> +
+> +properties:
+> +  $nodename:
+> +    pattern: "^can(@.*)?$"
 
+additionalProperties: true
 
-See https://patchwork.ozlabs.org/patch/1383115
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure dt-schema is up to date:
-
-pip3 install git+https://github.com/devicetree-org/dt-schema.git@master --upgrade
-
-Please check and re-submit.
-
+(This is the default, but it's going to be required after rc1 so the 
+meta-schema can check for it and I can stop telling people to add it (in 
+the false case)).
