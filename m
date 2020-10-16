@@ -2,79 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6EEC290DD6
-	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 00:45:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C992290DE9
+	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 00:56:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390253AbgJPWpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 18:45:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46490 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731757AbgJPWpF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 18:45:05 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97D51C061755
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 15:45:05 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id t25so5474822ejd.13
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 15:45:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=5QaKDhHA51i+ao4lZH/mlb5XFtbpdEQDvqKAwWDWSZ0=;
-        b=VuFKVselKxE/NUPSVlsuYLYd+xx2jwi+8XSf6ypnndGdpKkTr/0ZQh8HPFI8TsTf+e
-         wUUHk9zZHsWk3mI0Np7VPe9nC0s1S93zaDHhYhE258JygaQu4jqbLyOMYY0F2KlnUHz1
-         kQVb/MgB00krpNhPeDFFcCFRvu6eGxqAz0DZfTv0HPk/8DOzga2C1cp2i4IJ/wbIPcWT
-         rsxvq45XE+3sr33v05goCHLnXrISJbjFbwAeDqAie7dS7EwZExX9kAzDDl1YNYie9PBS
-         LQY0ggvdwfdSHU13+nr0BQQQ/LHV8lyaTQc/8zCnqiPAR8dM/I/ziJ5HUWZ21mxtzKD/
-         FuUA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=5QaKDhHA51i+ao4lZH/mlb5XFtbpdEQDvqKAwWDWSZ0=;
-        b=CjsGnHv366z/DqAZ+qO2SfDXqtuTn+bgVGoLsd3gw+/Ja6HeMLIz4FUohQe3xzN5Na
-         Fv/IzvMtza7Qe5bkmrws8fK4VtoWzpwFp4QLJxy/CWXuhbszqdELn/GqW6uQVBK2WSnR
-         BzuzGVRLVSCv8UtocxDJ1dTE6sJY43ska2i852ijF6hybh+1bCM+YFJwa7M+CLipJGix
-         x3UKarNNd9t9hXwcH0VWVV1wB7fBVrE3UyG8NBk68NtPTR1jJq/82vcacseScCKC3S/D
-         74y5T2hCPyMXQP58PJ/FSNHZ6gBt6NK8cz2sgnBZw3yystB9qk0fUPHaKl64lhZpMaIl
-         27Ow==
-X-Gm-Message-State: AOAM530fgbYlomS8z1AXdJhkAjPGTon1+vRuKRPNPKp7COcloB0yi9uD
-        SfNH1U9qBjOatjym8Vi4LEk=
-X-Google-Smtp-Source: ABdhPJxSjLpm0FHn2gf4h9Q2yCwN9jBTlgXmXL8RqAVAvTy/gfMSgVAs9TODPD8ue176xKtrcMmI9Q==
-X-Received: by 2002:a17:906:1e04:: with SMTP id g4mr6010027ejj.72.1602888304297;
-        Fri, 16 Oct 2020 15:45:04 -0700 (PDT)
-Received: from skbuf ([188.26.174.215])
-        by smtp.gmail.com with ESMTPSA id jw9sm3059899ejb.33.2020.10.16.15.45.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Oct 2020 15:45:03 -0700 (PDT)
-Date:   Sat, 17 Oct 2020 01:45:02 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
-Cc:     zhudi <zhudi21@huawei.com>, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, rose.chen@huawei.com,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH] rtnetlink: fix data overflow in rtnl_calcit()
-Message-ID: <20201016224502.wztzj45gxepygzqd@skbuf>
-References: <20201016020238.22445-1-zhudi21@huawei.com>
- <20201016143625.00005f4e@intel.com>
+        id S2404054AbgJPW4f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 18:56:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48452 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2392489AbgJPW4f (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Oct 2020 18:56:35 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 85FB920874;
+        Fri, 16 Oct 2020 22:56:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602888995;
+        bh=/lXhp6rLF5lFUokrwfRiKmnmoHe+zKZ44ar1nzyDehs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qD0jkJbzDmDM92q2qHE/ZB1DB//9dR5lAihvHP9lClMKNhAx6LZVTeinM9Z2i+UrA
+         0FTVCxqGc01Szmf4bf0np+Jz8SN6Wmu/0Qz4ZKW9mmrLTz97xUruR35zOiXRD4Q2E6
+         Pq2ec+VtcFBwS6uWVpcO72Q1gENuVzj7XwgdenOU=
+Date:   Fri, 16 Oct 2020 15:56:32 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, kernel test robot <lkp@intel.com>,
+        Christian Eggers <ceggers@arri.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        kbuild-all@lists.01.org,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: dsa: point out the tail taggers
+Message-ID: <20201016155632.395af75a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201016213302.yeesw4jbw3rzfluf@skbuf>
+References: <20201016162800.7696-1-ceggers@arri.de>
+        <202010170153.fwOuks52-lkp@intel.com>
+        <20201016173317.4ihhiamrv5w5am6y@skbuf>
+        <20201016201428.GI139700@lunn.ch>
+        <20201016201930.2i2lw4aixklyg6j7@skbuf>
+        <20201016210318.GL139700@lunn.ch>
+        <20201016211628.mw7jlvqx3audzo76@skbuf>
+        <20201016213302.yeesw4jbw3rzfluf@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201016143625.00005f4e@intel.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 16, 2020 at 02:36:25PM -0700, Jesse Brandeburg wrote:
-> > Signed-off-by: zhudi <zhudi21@huawei.com>
+On Sat, 17 Oct 2020 00:33:02 +0300 Vladimir Oltean wrote:
+> On Sat, Oct 17, 2020 at 12:16:28AM +0300, Vladimir Oltean wrote:
+> > On Fri, Oct 16, 2020 at 11:03:18PM +0200, Andrew Lunn wrote:  
+> > > 2ecbc1f684482b4ed52447a39903bd9b0f222898 does not have net-next, as
+> > > far as i see,  
+> > 
+> > Not sure what you mean by that.  
 > 
-> Kernel documentation says for you to use your real name, please do so,
-> unless you're a rock star and have officially changed your name to
-> zhudi.
+> Ah, I do understand what you mean now. In git, that is what I see as
+> well. But in my cgit link, why would tail_tag be there?
+> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/tree/include/net/dsa.h#n93?id=2ecbc1f684482b4ed52447a39903bd9b0f222898
+> I think either cgit is plainly dumb at showing the kernel tree at a
+> particular commit, or I'm plainly incapable of using it.
 
-Well, his real name is probably 朱棣, and the pinyin transliteration
-system doesn't really insist on separating 朱 (zhu) from 棣 (di), or on
-capitalizing any of twose words, so I'm not sure what your point is.
-Would you prefer his sign-off to read 朱棣 <zhudi21@huawei.com>?
+The link is bamboozled.
+
+The #n93 needs to be after the ? parameters.
+
+Like this:
+
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/tree/include/net/dsa.h?id=2ecbc1f684482b4ed52447a39903bd9b0f222898#n86
