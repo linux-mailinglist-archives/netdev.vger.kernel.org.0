@@ -2,49 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAE4028FF70
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 09:47:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E72F628FF77
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 09:52:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404838AbgJPHrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 03:47:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48326 "EHLO
+        id S2404826AbgJPHwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 03:52:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404735AbgJPHra (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 03:47:30 -0400
+        with ESMTP id S2404771AbgJPHwB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 03:52:01 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 557BEC061755
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 00:47:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57290C061755
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 00:52:01 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kTKSO-0007y9-Qh; Fri, 16 Oct 2020 09:47:20 +0200
+        id 1kTKWj-0008TN-Bz; Fri, 16 Oct 2020 09:51:49 +0200
 Received: from [IPv6:2a03:f580:87bc:d400:c4e8:c8ff:a41:29c1] (unknown [IPv6:2a03:f580:87bc:d400:c4e8:c8ff:a41:29c1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
          client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id DCAD257A739;
-        Fri, 16 Oct 2020 07:47:18 +0000 (UTC)
-Subject: Re: [PATCH 3/6] dt-bindings: can: flexcan: add fsl, can-index
- property to indicate a resource
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
-Cc:     "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Peng Fan <peng.fan@nxp.com>, Ying Liu <victor.liu@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Pankaj Bansal <pankaj.bansal@nxp.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        by smtp.blackshift.org (Postfix) with ESMTPSA id A61BB57A747;
+        Fri, 16 Oct 2020 07:51:46 +0000 (UTC)
+Subject: Re: [PATCH net] can: peak_usb: add range checking in decode
+ operations
+To:     =?UTF-8?Q?St=c3=a9phane_Grosjean?= <s.grosjean@peak-system.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andri Yngvason <andri.yngvason@marel.com>,
         "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>
-References: <20201016134320.20321-1-qiangqing.zhang@nxp.com>
- <20201016134320.20321-4-qiangqing.zhang@nxp.com>
- <604a66f6-83ea-630e-f479-fe62189de42a@pengutronix.de>
- <DB8PR04MB67950ABB888D13416D20784BE6030@DB8PR04MB6795.eurprd04.prod.outlook.com>
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>
+References: <20200813140604.GA456946@mwanda>
+ <VI1PR03MB50536300783DBBEAFC7B0367D6050@VI1PR03MB5053.eurprd03.prod.outlook.com>
+ <169f62c4-ee2d-6ba2-2a78-640df8edcde0@hartkopp.net>
+ <VI1PR03MB5053CAE3ED35D8E9C23063F8D6030@VI1PR03MB5053.eurprd03.prod.outlook.com>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
@@ -106,15 +104,15 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
  HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
  xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
-Message-ID: <715a951f-5ed7-d5ee-f64e-f228cf6b9f87@pengutronix.de>
-Date:   Fri, 16 Oct 2020 09:47:14 +0200
+Message-ID: <9d961074-5e51-4e90-191e-791f5de8da9f@pengutronix.de>
+Date:   Fri, 16 Oct 2020 09:51:41 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <DB8PR04MB67950ABB888D13416D20784BE6030@DB8PR04MB6795.eurprd04.prod.outlook.com>
+In-Reply-To: <VI1PR03MB5053CAE3ED35D8E9C23063F8D6030@VI1PR03MB5053.eurprd03.prod.outlook.com>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="84xmicyfAILlR4Bs14e1ExCBWjUXoSs64"
+ boundary="PoV6K5uvyOleD7r5AvPcILSeLJJ1VrlDR"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -124,89 +122,44 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---84xmicyfAILlR4Bs14e1ExCBWjUXoSs64
-Content-Type: multipart/mixed; boundary="GG5iOWp7CBqqr0CCKLzfjW0KgNqLUKaES";
+--PoV6K5uvyOleD7r5AvPcILSeLJJ1VrlDR
+Content-Type: multipart/mixed; boundary="iei3976M3SaOGH3LKPh2BdJySyGItjbZM";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Joakim Zhang <qiangqing.zhang@nxp.com>,
- "robh+dt@kernel.org" <robh+dt@kernel.org>,
- "shawnguo@kernel.org" <shawnguo@kernel.org>,
- "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
-Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- Peng Fan <peng.fan@nxp.com>, Ying Liu <victor.liu@nxp.com>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- Pankaj Bansal <pankaj.bansal@nxp.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+To: =?UTF-8?Q?St=c3=a9phane_Grosjean?= <s.grosjean@peak-system.com>,
+ Oliver Hartkopp <socketcan@hartkopp.net>,
+ Dan Carpenter <dan.carpenter@oracle.com>
+Cc: "David S. Miller" <davem@davemloft.net>, Jakub Kicinski
+ <kuba@kernel.org>, Andri Yngvason <andri.yngvason@marel.com>,
  "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
- dl-linux-imx <linux-imx@nxp.com>,
- "kernel@pengutronix.de" <kernel@pengutronix.de>
-Message-ID: <715a951f-5ed7-d5ee-f64e-f228cf6b9f87@pengutronix.de>
-Subject: Re: [PATCH 3/6] dt-bindings: can: flexcan: add fsl, can-index
- property to indicate a resource
-References: <20201016134320.20321-1-qiangqing.zhang@nxp.com>
- <20201016134320.20321-4-qiangqing.zhang@nxp.com>
- <604a66f6-83ea-630e-f479-fe62189de42a@pengutronix.de>
- <DB8PR04MB67950ABB888D13416D20784BE6030@DB8PR04MB6795.eurprd04.prod.outlook.com>
-In-Reply-To: <DB8PR04MB67950ABB888D13416D20784BE6030@DB8PR04MB6795.eurprd04.prod.outlook.com>
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+ Wolfgang Grandegger <wg@grandegger.com>
+Message-ID: <9d961074-5e51-4e90-191e-791f5de8da9f@pengutronix.de>
+Subject: Re: [PATCH net] can: peak_usb: add range checking in decode
+ operations
+References: <20200813140604.GA456946@mwanda>
+ <VI1PR03MB50536300783DBBEAFC7B0367D6050@VI1PR03MB5053.eurprd03.prod.outlook.com>
+ <169f62c4-ee2d-6ba2-2a78-640df8edcde0@hartkopp.net>
+ <VI1PR03MB5053CAE3ED35D8E9C23063F8D6030@VI1PR03MB5053.eurprd03.prod.outlook.com>
+In-Reply-To: <VI1PR03MB5053CAE3ED35D8E9C23063F8D6030@VI1PR03MB5053.eurprd03.prod.outlook.com>
 
---GG5iOWp7CBqqr0CCKLzfjW0KgNqLUKaES
+--iei3976M3SaOGH3LKPh2BdJySyGItjbZM
 Content-Type: text/plain; charset=utf-8
 Content-Language: de-DE
 Content-Transfer-Encoding: quoted-printable
 
-On 10/16/20 8:52 AM, Joakim Zhang wrote:
->=20
-> Hi Marc,
->=20
->> -----Original Message-----
->> From: Marc Kleine-Budde <mkl@pengutronix.de>
->> Sent: 2020=E5=B9=B410=E6=9C=8816=E6=97=A5 14:20
->> To: Joakim Zhang <qiangqing.zhang@nxp.com>; robh+dt@kernel.org;
->> shawnguo@kernel.org; s.hauer@pengutronix.de
->> Cc: devicetree@vger.kernel.org; Peng Fan <peng.fan@nxp.com>; Ying Liu
->> <victor.liu@nxp.com>; netdev@vger.kernel.org; Pankaj Bansal
->> <pankaj.bansal@nxp.com>; linux-kernel@vger.kernel.org;
->> linux-can@vger.kernel.org; dl-linux-imx <linux-imx@nxp.com>;
->> kernel@pengutronix.de
->> Subject: Re: [PATCH 3/6] dt-bindings: can: flexcan: add fsl, can-index=
- property
->> to indicate a resource
->>
->> On 10/16/20 3:43 PM, Joakim Zhang wrote:
->>> For SoCs with SCU support, need setup stop mode via SCU firmware, so
->>> this property can help indicate a resource.
->>>
->>> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
->>> ---
->>>  Documentation/devicetree/bindings/net/can/fsl-flexcan.txt | 5 +++++
->>>  1 file changed, 5 insertions(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/net/can/fsl-flexcan.tx=
-t
->>> b/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
->>> index 6af67f5e581c..839c0c0064a2 100644
->>> --- a/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
->>> +++ b/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
->>> @@ -43,6 +43,10 @@ Optional properties:
->>>  		  0: clock source 0 (oscillator clock)
->>>  		  1: clock source 1 (peripheral clock)
->>>
->>> +- fsl,can-index: The index of CAN instance.
->>> +                 For SoCs with SCU support, need setup stop mode via=
+On 10/16/20 9:43 AM, St=C3=A9phane Grosjean wrote:
+> Thank you for your detailed answer. And so? AFAIK I saw that this patch=
+ is still
+> not in mainline. What needs to be done for it to be there? Should I bri=
+ng an
+> Ack, for example?
 
->> SCU firmware,
->>> +                 so this property can help indicate a resource.
->>
->> This property is not CAN specific. So the name could be more general.
->=20
-> How about "fsl,index"?
+If you have reviewed the patch, give an Ack or Reviewed-by.
 
-Maybe something with "scu", as it's specific to the SCU firmware.
-
-I think it's up to Rob's and the DT people.
-
+regards,
 Marc
-
 --=20
 Pengutronix e.K.                 | Marc Kleine-Budde           |
 Embedded Linux                   | https://www.pengutronix.de  |
@@ -214,23 +167,23 @@ Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---GG5iOWp7CBqqr0CCKLzfjW0KgNqLUKaES--
+--iei3976M3SaOGH3LKPh2BdJySyGItjbZM--
 
---84xmicyfAILlR4Bs14e1ExCBWjUXoSs64
+--PoV6K5uvyOleD7r5AvPcILSeLJJ1VrlDR
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+JUAIACgkQqclaivrt
-76k39Af9GKMdUJduwNkE51ACE92N+qC/32WuSsSxd0N4AK2eEJZUS2qFrQSQmJ3R
-C8hVVevohxoIDW+F8YdFurdh9WGNzQIRFbUfk/m9BGotoODWYcCqUDkRG/Q3XNj+
-REhiMFZdi+VWyKaZ8aoWvXFZMw4Bff3mF7Mdghuv7nLA5fy9LxF4h4tr1YO8Y3zz
-KkbIDaia86EV3lhLfoTaNGFZpCresnfwBTz2HEZya3zBRI+l006v0uT+cQEr7gd4
-FrzJNioQR5HRHJdZzzIU0asu7EoymR3ZD5oILNg5VfBveFjnNaMCv4ywNBeZoKvn
-bIZ6EPrePS19x5nxdYvMj5qg8OQmVA==
-=1p8i
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+JUQ0ACgkQqclaivrt
+76lIgQgArEg6AHJWyInC9Eadqt26bkjdEjmbjThdeMSM4/lh7veZGqwljt+0NpdG
+R7ER/nuhkeZ6FRaxyEti60tEvtdvxMHmXjsdoXJcXpZOlxAL21iFftCEsChf0ncT
+7j1+3OL36JkLO0ug71pS9xGpxgw8XjMBjX7W7tZPqHc/s5MmVWPhkQDaYiop58TL
+7DVmqz1vB/Jnv6sX9nShqMDURTIeyOjtsat86s0Ze4qIq2/q5BrOsuuj3bxbhO1S
+C16mLtivf4b3qVLEWQGltGf0+J/cTmuP3NtQOoLAvcXxHvbUO9pH/AzIf7QLXK1R
+JmOndByYYczI2S43fO8LKurzHasVxQ==
+=v+oh
 -----END PGP SIGNATURE-----
 
---84xmicyfAILlR4Bs14e1ExCBWjUXoSs64--
+--PoV6K5uvyOleD7r5AvPcILSeLJJ1VrlDR--
