@@ -2,97 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79678290973
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 18:13:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EAC4290988
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 18:18:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2410585AbgJPQNy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 12:13:54 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:44735 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2395449AbgJPQNx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 12:13:53 -0400
-Received: by mail-ot1-f65.google.com with SMTP id e20so2859549otj.11;
-        Fri, 16 Oct 2020 09:13:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3S6o6pCsqlpQRPyq0YIBMbpipy60d1/GQBn4kE8sQ4E=;
-        b=bcwjTgkU7XyHDcXf5/rYd9ooU7udQIvLXJsgCJk5d2HRxbq1SphsJaouJ0EvXO4I0C
-         jAdbeDYzXtKM229Kku6nM2J4mOVIiB8YDk2I14A1w3KXsb69UMgvL3Y4jgiqJ0Oo0ACr
-         tEfxjceyy3E6Ixu0j9L69UsWZeiV56kr1BHukZFR21aj7ADKlPqJ7a1CszWW+vAdobEY
-         0uEYKyUt8gYuzul4WYqXc1k4BCYttHIVVzAX8smeULjfiI7gCKMKCAR/SmLmzsJrKvIS
-         RPGnUC94jlbVTtkQ2GSn3Z6Y3F0JgrD1bE5EeNr4lYfueidrb1QSKtUVFAP0aOqNoxyg
-         k+LQ==
-X-Gm-Message-State: AOAM531zbHliBblQGJVp6IbUF1HQdeQVvVKW7iS8Rjw8LqpvsrHohXWv
-        40DqRKeOqLvLCifHEjO73w==
-X-Google-Smtp-Source: ABdhPJy31GLp3Gq3wrThbltyY2aRjfcKdZPCwOmBriiR2Jq309ootzkq3phDe7FB4aNFH2VnXhA7VA==
-X-Received: by 2002:a9d:127:: with SMTP id 36mr2811371otu.73.1602864832590;
-        Fri, 16 Oct 2020 09:13:52 -0700 (PDT)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id h4sm1233579oot.45.2020.10.16.09.13.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Oct 2020 09:13:52 -0700 (PDT)
-Received: (nullmailer pid 1508478 invoked by uid 1000);
-        Fri, 16 Oct 2020 16:13:50 -0000
-Date:   Fri, 16 Oct 2020 11:13:50 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     mkl@pengutronix.de, Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Joakim Zhang <qiangqing.zhang@nxp.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: can: add can-controller.yaml
-Message-ID: <20201016161350.GB1504381@bogus>
-References: <20201016073315.16232-1-o.rempel@pengutronix.de>
- <20201016073315.16232-2-o.rempel@pengutronix.de>
+        id S2405614AbgJPQSg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 12:18:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:30607 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2410004AbgJPQSf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 12:18:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602865114;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=y+hjVI66PfcmwJlWfVwVOTQ6i8qhG0kIQEYwSMKlTRs=;
+        b=FhJjkaAmVMEEZkf71mIjkyO+l0W/4D7YMf+IOLej1MHCryMHsIqVLgD5+fc98lsH1yTi0w
+        ljFXoMaq8S0aDqI4ZzMQsjHaQEjwHyH8JK8KVII31U81IzmYcaW9UatL48yFFXu2VukqxR
+        G+xuTGlQE0xxFhnvmPHIZOqRHmPU7g8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-356-hJhe2FRRP26PUE3ZREH50Q-1; Fri, 16 Oct 2020 12:18:31 -0400
+X-MC-Unique: hJhe2FRRP26PUE3ZREH50Q-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7400A80365F;
+        Fri, 16 Oct 2020 16:18:29 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-120-70.rdu2.redhat.com [10.10.120.70])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 1A5CB60C04;
+        Fri, 16 Oct 2020 16:18:26 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+To:     herbert@gondor.apana.org.au, davem@davemloft.net,
+        trond.myklebust@hammerspace.com
+cc:     dhowells@redhat.com, linux-crypto@vger.kernel.org,
+        linux-nfs@vger.kernel.org, linux-afs@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: gssapi, crypto and afs/rxrpc
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201016073315.16232-2-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <1444463.1602865106.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Fri, 16 Oct 2020 17:18:26 +0100
+Message-ID: <1444464.1602865106@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 16, 2020 at 09:33:14AM +0200, Oleksij Rempel wrote:
-> For now we have only node name as common rule for all CAN controllers
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> ---
->  .../bindings/net/can/can-controller.yaml         | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/can/can-controller.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/net/can/can-controller.yaml b/Documentation/devicetree/bindings/net/can/can-controller.yaml
-> new file mode 100644
-> index 000000000000..185904454a69
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/can/can-controller.yaml
-> @@ -0,0 +1,16 @@
-> +# SPDX-License-Identifier: GPL-2.0
+Hi Herbert, Dave, Trond,
 
-Dual license new bindings please.
+I've written basic gssapi-derived security support for AF_RXRPC:
 
-(GPL-2.0-only OR BSD-2-Clause)
+	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log=
+/?h=3Drxrpc-rxgk
 
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/can-controller.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: CAN Controller Generic Binding
-> +
-> +maintainers:
-> +  - Marc Kleine-Budde <mkl@pengutronix.de>
-> +
-> +properties:
-> +  $nodename:
-> +    pattern: "^can(@.*)?$"
+I've borrowed some bits from net/sunrpc/auth_gss/ but there's a lot in the=
+re
+that is quite specific to the sunrpc module that makes it hard to use for
+rxrpc (dprintk, struct xdr_buf).
 
-additionalProperties: true
+Further, I've implemented some more enctypes that aren't supported yet by
+gssapi (AES with sha256/sha384 and Camellia), and that requires some chang=
+es
+to the handling as AES with sha384 has a 24-byte checksum size and a 24-by=
+te
+calculated key size for Kc and Ki but a 32-byte Ke.
 
-(This is the default, but it's going to be required after rc1 so the 
-meta-schema can check for it and I can stop telling people to add it (in 
-the false case)).
+Should I pull the core out and try to make it common?  If so, should I mov=
+e it
+to crypto/ or lib/, or perhaps put it in net/gssapi/?
+
+There are two components to it:
+
+ (1) Key derivation steps.
+
+     My thought is to use xdr_netobj or something similar for to communica=
+te
+     between the steps (though I'd prefer to change .data to be a void* ra=
+ther
+     than u8*).
+
+ (2) Encryption/checksumming.
+
+     My thought is to make this interface use scattergather lists[*] since
+     that's what the crypto encryption API requires (though not the hash A=
+PI).
+
+If I do this, should I create a "kerberos" crypto API for the data wrappin=
+g
+functions?  I'm not sure that it quite matches the existing APIs because t=
+he
+size of the input data will likely not match the size of the output data a=
+nd
+it's "one shot" as it needs to deal with a checksum.
+
+Or I can just keep my implementation separate inside net/rxrpc/.
+
+David
+
+[*] That said, I'm not exactly sure how the sunrpc stuff works, so this mi=
+ght
+not work for that.
+
