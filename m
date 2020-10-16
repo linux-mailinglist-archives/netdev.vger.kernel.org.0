@@ -2,154 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F50A290AC0
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 19:29:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8905290ACA
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 19:33:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390540AbgJPR3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 13:29:35 -0400
-Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:58245 "EHLO
-        wout5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2389852AbgJPR3f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 13:29:35 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id C40B7B57;
-        Fri, 16 Oct 2020 13:29:33 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Fri, 16 Oct 2020 13:29:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=RItVByjQCrLrEhk/I
-        Pd3UGeblYO7Go1U0n5N49J1wf4=; b=O38KQZBc9IqeSWcl230VySCVHfsS8uEvc
-        ETjxANVpwo4VtbYdqPDZfcp2wvPrd3LIHkbAERrXycrXEAMJlNB8//7CO9l9/WNF
-        /r3yCwrhkuq64YxJZDtiJ0kvIJgXJeRaDuPf1xzPq5u+hRSuWzDTitX7wWZ66ao3
-        9YalC3YPfDSseKDzOKjR+cqe0X+w9SetN/dmZa4QwwjJT2hNejr6OolF352bl5k2
-        WjfARE2tPRyH9XujHjfyLNNQB9PguZTxqDZ9Fkm95LNA3g3GQGWD9loNbo/6ZZRG
-        i30ML7rLg7hlT4meVByKB/q7DDkqxGkYKVrV7sHx4C6hadL5HJAWA==
-X-ME-Sender: <xms:fdiJX3eJtuX92KGtkqh2-UOAWrLWhZmbr8OHbuDjoq1t447dB0PYBw>
-    <xme:fdiJX9ON4wFbPP5N8aQ54XXLUwmrjZiF4_HvpbAuJvnqef48g3ZhurYjdntyhpdkK
-    X61Pw7E0lByzN8>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrieehgdduudegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
-    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
-    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
-    etffeikeegheevfedvgeelvdffudfhnecukfhppeekgedrvddvledrfeejrddugeeknecu
-    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
-    hhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:fdiJXwhNM--dFdQLlF7KdClHRsxUNJ-rVLddITYbhoBlfByBDrqRMw>
-    <xmx:fdiJX49oUCilRIcj5F98R5Lfxx-N65Nq7__zy3wzm2u7BiyU1HsswA>
-    <xmx:fdiJXzvDRArhc6olqHU-cfAZLhrn3WUqUutVCoyNUiIpf-HUIbcSjA>
-    <xmx:fdiJXzIhVmSk-hK1ubmVzhXUsqQOxEFQme-nIC713g1pldsfpPbYCg>
-Received: from shredder.mtl.com (igld-84-229-37-148.inter.net.il [84.229.37.148])
-        by mail.messagingengine.com (Postfix) with ESMTPA id C7F6F306467E;
-        Fri, 16 Oct 2020 13:29:31 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
-        nikolay@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net] nexthop: Fix performance regression in nexthop deletion
-Date:   Fri, 16 Oct 2020 20:29:14 +0300
-Message-Id: <20201016172914.643282-1-idosch@idosch.org>
-X-Mailer: git-send-email 2.26.2
+        id S2391100AbgJPRdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 13:33:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54700 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731789AbgJPRdV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 13:33:21 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE0F0C061755;
+        Fri, 16 Oct 2020 10:33:20 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id t20so3251557edr.11;
+        Fri, 16 Oct 2020 10:33:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=kso/t/FQGplwmPwYWFbbSAuJZcROUihXnMeufE07GRk=;
+        b=BLwLFhhpdgTVNdpmuEOeE5mzRROgd19f+HRIwQhPzzm/+1ZG9e3fmVdGONVNcVlGUH
+         /WzNKO1ZE2xCrs36UvzAPFcOAOuYJzrxhNFy7KkkDH7ARWZWbNTtK9g1WewKBqMX4yAx
+         AxdJxqEGoll3yqMUXDFPeHp/czQgtU9BFoI7yIdLw47oZyHO2N+u8cnNrzl5O+rIHaWq
+         8yBRrEGCFV1F9yVJJfbBmL9Q+G/CByIbxFqsSRieLytyYrbF1dUpOVUtefa3wmvz93Dw
+         CT66tQJMf5usq/mcU61DK/zCFCQ6KrenEgZezhyn0DKR1y1yU4xJL+928QZVyNEHKLK0
+         XlxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kso/t/FQGplwmPwYWFbbSAuJZcROUihXnMeufE07GRk=;
+        b=uJfelFAjz4s3d3LHYmpBMrnx5K0M4MYfSzYIAMWzqCn3R2Q3lby83ncuEfCNMgshag
+         LGSPt1LQEZI3wSIjl9WbACxDXBAtATis1KKBthSzbGqeJpLloxBu7Sm4jiOy+WFPhCQv
+         iXZ+dv0fr4bmdecQu8sYDyQzjX7VyzSXkXTypwkChIW8p8fMeNn0X33mgsmlLK2EYffP
+         FKfPMnzIrDx+UvnvFH3qVIZxaRB7dR/XfMZqSOnDp/e0br9JfASMGSJXTkJEA+9BhDmo
+         TWK2dC+dOq/VIxjvsubNzIgROsFRD4W6UzfUXfqBLiia45dMyWBgbRQlYo4D7SB4wFmu
+         H10Q==
+X-Gm-Message-State: AOAM531IJBb+WIVKixSN1+w9a+wyOVc3Dfr/2U5khoFV7XT/kpF5BSrs
+        1gU/GPXXhoCfpQuD2Z3RIjg=
+X-Google-Smtp-Source: ABdhPJzt6UvcFHwXt4Lc7paQqFGd0R2+4HVuCNqj2Ha1vecWaPyzXlLAEZJOyoKKpcRkYW3ZqTmgqA==
+X-Received: by 2002:a05:6402:1684:: with SMTP id a4mr5134938edv.79.1602869599455;
+        Fri, 16 Oct 2020 10:33:19 -0700 (PDT)
+Received: from skbuf ([188.26.174.215])
+        by smtp.gmail.com with ESMTPSA id y25sm2220134edr.7.2020.10.16.10.33.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Oct 2020 10:33:19 -0700 (PDT)
+Date:   Fri, 16 Oct 2020 20:33:17 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Christian Eggers <ceggers@arri.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        kbuild-all@lists.01.org,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] net: dsa: point out the tail taggers
+Message-ID: <20201016173317.4ihhiamrv5w5am6y@skbuf>
+References: <20201016162800.7696-1-ceggers@arri.de>
+ <202010170153.fwOuks52-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202010170153.fwOuks52-lkp@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+On Sat, Oct 17, 2020 at 01:25:08AM +0800, kernel test robot wrote:
+> Hi Christian,
+>
+> Thank you for the patch! Yet something to improve:
+>
+> [auto build test ERROR on net/master]
+>
+> url:    https://github.com/0day-ci/linux/commits/Christian-Eggers/net-dsa-point-out-the-tail-taggers/20201017-003007
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 2ecbc1f684482b4ed52447a39903bd9b0f222898
+> config: xtensa-allyesconfig (attached as .config)
+> compiler: xtensa-linux-gcc (GCC) 9.3.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://github.com/0day-ci/linux/commit/aaa07cad29bf365264beb2c2e2668db83ca31923
+>         git remote add linux-review https://github.com/0day-ci/linux
+>         git fetch --no-tags linux-review Christian-Eggers/net-dsa-point-out-the-tail-taggers/20201017-003007
+>         git checkout aaa07cad29bf365264beb2c2e2668db83ca31923
+>         # save the attached .config to linux build tree
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-9.3.0 make.cross ARCH=xtensa
+>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All error/warnings (new ones prefixed by >>):
+>
+> >> net/dsa/tag_ksz.c:126:3: error: 'const struct dsa_device_ops' has no member named 'tail_tag'
+>      126 |  .tail_tag = true,
+>          |   ^~~~~~~~
+> >> net/dsa/tag_ksz.c:126:14: warning: initialization of 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+>      126 |  .tail_tag = true,
+>          |              ^~~~
+>    net/dsa/tag_ksz.c:126:14: note: (near initialization for 'ksz8795_netdev_ops.name')
+> >> net/dsa/tag_ksz.c:126:14: warning: initialized field overwritten [-Woverride-init]
+>    net/dsa/tag_ksz.c:126:14: note: (near initialization for 'ksz8795_netdev_ops.name')
+>    net/dsa/tag_ksz.c:203:3: error: 'const struct dsa_device_ops' has no member named 'tail_tag'
+>      203 |  .tail_tag = true,
+>          |   ^~~~~~~~
+>    net/dsa/tag_ksz.c:203:14: warning: initialization of 'const char *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+>      203 |  .tail_tag = true,
+>          |              ^~~~
+>    net/dsa/tag_ksz.c:203:14: note: (near initialization for 'ksz9477_netdev_ops.name')
+>    net/dsa/tag_ksz.c:203:14: warning: initialized field overwritten [-Woverride-init]
+>    net/dsa/tag_ksz.c:203:14: note: (near initialization for 'ksz9477_netdev_ops.name')
+>
+> vim +126 net/dsa/tag_ksz.c
+>
+>    119
+>    120	static const struct dsa_device_ops ksz8795_netdev_ops = {
+>    121		.name	= "ksz8795",
+>    122		.proto	= DSA_TAG_PROTO_KSZ8795,
+>    123		.xmit	= ksz8795_xmit,
+>    124		.rcv	= ksz8795_rcv,
+>    125		.overhead = KSZ_INGRESS_TAG_LEN,
+>  > 126		.tail_tag = true,
+>    127	};
+>    128
+>
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 
-While insertion of 16k nexthops all using the same netdev ('dummy10')
-takes less than a second, deletion takes about 130 seconds:
-
-# time -p ip -b nexthop.batch
-real 0.29
-user 0.01
-sys 0.15
-
-# time -p ip link set dev dummy10 down
-real 131.03
-user 0.06
-sys 0.52
-
-This is because of repeated calls to synchronize_rcu() whenever a
-nexthop is removed from a nexthop group:
-
-# /usr/share/bcc/tools/offcputime -p `pgrep -nx ip` -K
-...
-    b'finish_task_switch'
-    b'schedule'
-    b'schedule_timeout'
-    b'wait_for_completion'
-    b'__wait_rcu_gp'
-    b'synchronize_rcu.part.0'
-    b'synchronize_rcu'
-    b'__remove_nexthop'
-    b'remove_nexthop'
-    b'nexthop_flush_dev'
-    b'nh_netdev_event'
-    b'raw_notifier_call_chain'
-    b'call_netdevice_notifiers_info'
-    b'__dev_notify_flags'
-    b'dev_change_flags'
-    b'do_setlink'
-    b'__rtnl_newlink'
-    b'rtnl_newlink'
-    b'rtnetlink_rcv_msg'
-    b'netlink_rcv_skb'
-    b'rtnetlink_rcv'
-    b'netlink_unicast'
-    b'netlink_sendmsg'
-    b'____sys_sendmsg'
-    b'___sys_sendmsg'
-    b'__sys_sendmsg'
-    b'__x64_sys_sendmsg'
-    b'do_syscall_64'
-    b'entry_SYSCALL_64_after_hwframe'
-    -                ip (277)
-        126554955
-
-Since nexthops are always deleted under RTNL, synchronize_net() can be
-used instead. It will call synchronize_rcu_expedited() which only blocks
-for several microseconds as opposed to multiple milliseconds like
-synchronize_rcu().
-
-With this patch deletion of 16k nexthops takes less than a second:
-
-# time -p ip link set dev dummy10 down
-real 0.12
-user 0.00
-sys 0.04
-
-Tested with fib_nexthops.sh which includes torture tests that prompted
-the initial change:
-
-# ./fib_nexthops.sh
-...
-Tests passed: 134
-Tests failed:   0
-
-Fixes: 90f33bffa382 ("nexthops: don't modify published nexthop groups")
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- net/ipv4/nexthop.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index 8c0f17c6863c..0dc43ad28eb9 100644
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -845,7 +845,7 @@ static void remove_nexthop_from_groups(struct net *net, struct nexthop *nh,
- 		remove_nh_grp_entry(net, nhge, nlinfo);
- 
- 	/* make sure all see the newly published array before releasing rtnl */
--	synchronize_rcu();
-+	synchronize_net();
- }
- 
- static void remove_nexthop_group(struct nexthop *nh, struct nl_info *nlinfo)
--- 
-2.26.2
-
+Is the test bot being a bit "slow" today?
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/tree/include/net/dsa.h#n93?id=2ecbc1f684482b4ed52447a39903bd9b0f222898
