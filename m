@@ -2,268 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C84B328FF23
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 09:33:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8EE828FF39
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 09:36:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404609AbgJPHd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 03:33:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46088 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404603AbgJPHd2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 03:33:28 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55318C061755
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 00:33:28 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1kTKEq-00064r-EO; Fri, 16 Oct 2020 09:33:20 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1kTKEm-0004F3-G1; Fri, 16 Oct 2020 09:33:16 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     mkl@pengutronix.de, Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Joakim Zhang <qiangqing.zhang@nxp.com>
-Subject: [PATCH v2 2/2] dt-bindings: can: flexcan: convert fsl,*flexcan bindings to yaml
-Date:   Fri, 16 Oct 2020 09:33:15 +0200
-Message-Id: <20201016073315.16232-3-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20201016073315.16232-1-o.rempel@pengutronix.de>
-References: <20201016073315.16232-1-o.rempel@pengutronix.de>
+        id S2404705AbgJPHgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 03:36:24 -0400
+Received: from mailout08.rmx.de ([94.199.90.85]:43981 "EHLO mailout08.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404600AbgJPHgY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Oct 2020 03:36:24 -0400
+Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout08.rmx.de (Postfix) with ESMTPS id 4CCHyX0PknzN0wd;
+        Fri, 16 Oct 2020 09:36:20 +0200 (CEST)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin01.retarus.com (Postfix) with ESMTPS id 4CCHxl2DmGz2xpY;
+        Fri, 16 Oct 2020 09:35:39 +0200 (CEST)
+Received: from N95HX1G2.wgnetz.xx (192.168.54.49) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Fri, 16 Oct
+ 2020 09:35:38 +0200
+From:   Christian Eggers <ceggers@arri.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+CC:     Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Christian Eggers <ceggers@arri.de>
+Subject: [PATCH net] net: dsa: ksz: don't pad a cloned sk_buff
+Date:   Fri, 16 Oct 2020 09:35:27 +0200
+Message-ID: <20201016073527.5087-1-ceggers@arri.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.54.49]
+X-RMX-ID: 20201016-093539-4CCHxl2DmGz2xpY-0@kdin01
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to automate the verification of DT nodes convert
-fsl-flexcan.txt to fsl,flexcan.yaml
+If the supplied sk_buff is cloned (e.g. in dsa_skb_tx_timestamp()),
+__skb_put_padto() will allocate a new sk_buff with size = skb->len +
+padlen. So the condition just tested for (skb_tailroom(skb) >= padlen +
+len) is not fulfilled anymore. Although the real size will usually be
+larger than skb->len + padlen (due to alignment), there is no guarantee
+that the required memory for the tail tag will be available
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Instead of letting __skb_put_padto allocate a new (too small) sk_buff,
+lets take the already existing path and allocate a new sk_buff ourself
+(with sufficient size).
+
+Fixes: 8b8010fb7876 ("dsa: add support for Microchip KSZ tail tagging")
+Signed-off-by: Christian Eggers <ceggers@arri.de>
 ---
- .../bindings/net/can/fsl,flexcan.yaml         | 137 ++++++++++++++++++
- .../bindings/net/can/fsl-flexcan.txt          |  57 --------
- 2 files changed, 137 insertions(+), 57 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml
- delete mode 100644 Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
+I am not sure whether this is a problem for current kernels (it depends
+whether cloned sk_buffs can happen on any paths). But when adding time
+stamping (will be submitted soon), this will become an issue.
 
-diff --git a/Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml b/Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml
-new file mode 100644
-index 000000000000..c5c72bcd47c8
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml
-@@ -0,0 +1,137 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/can/fsl,flexcan.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title:
-+  Flexcan CAN controller on Freescale's ARM and PowerPC system-on-a-chip (SOC).
-+
-+maintainers:
-+  - Marc Kleine-Budde <mkl@pengutronix.de>
-+
-+allOf:
-+  - $ref: can-controller.yaml#
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - enum:
-+          - fsl,imx8qm-flexcan
-+          - fsl,imx8mp-flexcan
-+          - fsl,imx6q-flexcan
-+          - fsl,imx53-flexcan
-+          - fsl,imx35-flexcan
-+          - fsl,imx28-flexcan
-+          - fsl,imx25-flexcan
-+          - fsl,p1010-flexcan
-+          - fsl,vf610-flexcan
-+          - fsl,ls1021ar2-flexcan
-+          - fsl,lx2160ar1-flexcan
-+      - items:
-+          - enum:
-+              - fsl,imx7d-flexcan
-+              - fsl,imx6ul-flexcan
-+              - fsl,imx6sx-flexcan
-+          - const: fsl,imx6q-flexcan
-+      - items:
-+          - enum:
-+              - fsl,ls1028ar1-flexcan
-+          - const: fsl,lx2160ar1-flexcan
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 2
-+
-+  clock-names:
-+    items:
-+      - const: ipg
-+      - const: per
-+
-+  clock-frequency:
-+    description: |
-+      The oscillator frequency driving the flexcan device, filled in by the
-+      boot loader. This property should only be used the used operating system
-+      doesn't support the clocks and clock-names property.
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+
-+  xceiver-supply:
-+    description: Regulator that powers the CAN transceiver.
-+    maxItems: 1
-+
-+  big-endian:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description: |
-+      This means the registers of FlexCAN controller are big endian. This is
-+      optional property.i.e. if this property is not present in device tree
-+      node then controller is assumed to be little endian. If this property is
-+      present then controller is assumed to be big endian.
-+
-+  fsl,stop-mode:
-+    description: |
-+      Register bits of stop mode control.
-+
-+      The format should be as follows:
-+      <gpr req_gpr req_bit>
-+      gpr is the phandle to general purpose register node.
-+      req_gpr is the gpr register offset of CAN stop request.
-+      req_bit is the bit offset of CAN stop request.
-+    $ref: /schemas/types.yaml#/definitions/phandle-array
-+    items:
-+      - description: The 'gpr' is the phandle to general purpose register node.
-+      - description: The 'req_gpr' is the gpr register offset of CAN stop request.
-+        maximum: 0xff
-+      - description: The 'req_bit' is the bit offset of CAN stop request.
-+        maximum: 0x1f
-+
-+  fsl,clk-source:
-+    description: |
-+      Select the clock source to the CAN Protocol Engine (PE). It's SoC
-+      implementation dependent. Refer to RM for detailed definition. If this
-+      property is not set in device tree node then driver selects clock source 1
-+      by default.
-+      0: clock source 0 (oscillator clock)
-+      1: clock source 1 (peripheral clock)
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    default: 1
-+    minimum: 0
-+    maximum: 1
-+
-+  wakeup-source:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description:
-+      Enable CAN remote wakeup.
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    can@1c000 {
-+        compatible = "fsl,p1010-flexcan";
-+        reg = <0x1c000 0x1000>;
-+        interrupts = <48 0x2>;
-+        interrupt-parent = <&mpic>;
-+        clock-frequency = <200000000>;
-+        fsl,clk-source = <0>;
-+    };
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    can@2090000 {
-+        compatible = "fsl,imx6q-flexcan";
-+        reg = <0x02090000 0x4000>;
-+        interrupts = <0 110 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&clks 1>, <&clks 2>;
-+        clock-names = "ipg", "per";
-+        fsl,stop-mode = <&gpr 0x34 28>;
-+    };
-diff --git a/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt b/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
-deleted file mode 100644
-index e10b6eb955e1..000000000000
---- a/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
-+++ /dev/null
-@@ -1,57 +0,0 @@
--Flexcan CAN controller on Freescale's ARM and PowerPC system-on-a-chip (SOC).
--
--Required properties:
--
--- compatible : Should be "fsl,<processor>-flexcan"
--
--  where <processor> is imx8qm, imx6q, imx28, imx53, imx35, imx25, p1010,
--  vf610, ls1021ar2, lx2160ar1, ls1028ar1.
--
--  The ls1028ar1 must be followed by lx2160ar1, e.g.
--   - "fsl,ls1028ar1-flexcan", "fsl,lx2160ar1-flexcan"
--
--  An implementation should also claim any of the following compatibles
--  that it is fully backwards compatible with:
--
--  - fsl,p1010-flexcan
--
--- reg : Offset and length of the register set for this device
--- interrupts : Interrupt tuple for this device
--
--Optional properties:
--
--- clock-frequency : The oscillator frequency driving the flexcan device
--
--- xceiver-supply: Regulator that powers the CAN transceiver
--
--- big-endian: This means the registers of FlexCAN controller are big endian.
--              This is optional property.i.e. if this property is not present in
--              device tree node then controller is assumed to be little endian.
--              if this property is present then controller is assumed to be big
--              endian.
--
--- fsl,stop-mode: register bits of stop mode control, the format is
--		 <&gpr req_gpr req_bit>.
--		 gpr is the phandle to general purpose register node.
--		 req_gpr is the gpr register offset of CAN stop request.
--		 req_bit is the bit offset of CAN stop request.
--
--- fsl,clk-source: Select the clock source to the CAN Protocol Engine (PE).
--		  It's SoC Implementation dependent. Refer to RM for detailed
--		  definition. If this property is not set in device tree node
--		  then driver selects clock source 1 by default.
--		  0: clock source 0 (oscillator clock)
--		  1: clock source 1 (peripheral clock)
--
--- wakeup-source: enable CAN remote wakeup
--
--Example:
--
--	can@1c000 {
--		compatible = "fsl,p1010-flexcan";
--		reg = <0x1c000 0x1000>;
--		interrupts = <48 0x2>;
--		interrupt-parent = <&mpic>;
--		clock-frequency = <200000000>; // filled in by bootloader
--		fsl,clk-source = <0>; // select clock source 0 for PE
--	};
+This patch supersedes "net: dsa: ksz: fix padding size of skb" from
+yesterday.
+
+ net/dsa/tag_ksz.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/net/dsa/tag_ksz.c b/net/dsa/tag_ksz.c
+index 945a9bd5ba35..cb1f27e15201 100644
+--- a/net/dsa/tag_ksz.c
++++ b/net/dsa/tag_ksz.c
+@@ -22,7 +22,7 @@ static struct sk_buff *ksz_common_xmit(struct sk_buff *skb,
+ 
+ 	padlen = (skb->len >= ETH_ZLEN) ? 0 : ETH_ZLEN - skb->len;
+ 
+-	if (skb_tailroom(skb) >= padlen + len) {
++	if (skb_tailroom(skb) >= padlen + len && !skb_cloned(skb)) {
+ 		/* Let dsa_slave_xmit() free skb */
+ 		if (__skb_put_padto(skb, skb->len + padlen, false))
+ 			return NULL;
+@@ -45,7 +45,7 @@ static struct sk_buff *ksz_common_xmit(struct sk_buff *skb,
+ 		/* Let skb_put_padto() free nskb, and let dsa_slave_xmit() free
+ 		 * skb
+ 		 */
+-		if (skb_put_padto(nskb, nskb->len + padlen))
++		if (skb_put_padto(nskb, ETH_ZLEN + len))
+ 			return NULL;
+ 
+ 		consume_skb(skb);
 -- 
-2.28.0
+Christian Eggers
+Embedded software developer
+
+Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
+Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
+Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
 
