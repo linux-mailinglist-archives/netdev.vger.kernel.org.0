@@ -2,81 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CC46290A7F
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 19:19:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D14C1290A84
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 19:21:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390646AbgJPRTl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 13:19:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52586 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390386AbgJPRTl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 13:19:41 -0400
-Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A6D8C061755
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 10:19:39 -0700 (PDT)
-Received: by mail-ed1-x543.google.com with SMTP id t21so3231079eds.6
-        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 10:19:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=TZiDKOsJ7YsZPhT+2ifIwa7V0HOvOhHvnljt25X3cq8=;
-        b=RGJaNDcDXhfUlJk4wGdkIExmVk9PyOt643ZDyBhyt3Eyxc7n/ZqZjcRh+8Q5vsEfQM
-         6HssJn6bFOBtVg5PGZ3f6D81fxC9cnWhsLUbowLQVIucOl5pYHUmuuGyVhNccgU93nS6
-         ORSfdbyqVqCA2hV1KL9cA+JWofl1wzfi1xYGcCEEevAhoDCSHlsDeg4P3KLPP8HgauMJ
-         9S4zYOoasvfIAd99xBmPVuFY0dK1BeaGIHUz6L4NI5CLAIuWD2u++ytehUgQ/1pzqbqQ
-         Y3S52t/H/lkM0Es6n7bSqSYm5EkBxnKBpAPN3OXSXFzxlo4PwrZp0bR6Hfr8rGKnzIQm
-         Z/TQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=TZiDKOsJ7YsZPhT+2ifIwa7V0HOvOhHvnljt25X3cq8=;
-        b=t69DjJjTOQe/FWfpyuKK1aULAPIFxfp/sqrfcV3mJIVYgo2nMewpiUvuwDs9O/br50
-         FJpOdgxfBjsz3DzFCD4IDkBqFq3Krkd5VomveuhYrvabW2ZyXFwCX5Ay50APle49LAGE
-         D1F0CHCgkIJMKmksh8OG2Qzi97Dl1NtKx1sKQ1sIGXQOv7c/Av0Wb0ZiwHXDxmxu48Xm
-         Z/fywgAUgPgOqB/zzd0nig1fZAKK5gZqAlrSpMgyN5gWCU9u0auC4agh+DYD0iF8boY/
-         mzNDRhrX+0FjZ9W7moADNI1MSeIhwl9iw6ZHinKATgRL3A40PeTkqxgWHWAy5dvsG9US
-         d7VQ==
-X-Gm-Message-State: AOAM531GL7Y4/SyPSC1g5EAXhiC2+DKHI3ZwPZR0GowGuY7HPPBR3bva
-        JZzbrWTYcdOmS268geSEM7M=
-X-Google-Smtp-Source: ABdhPJywSkZNFATyx47TvvRvMYTPCXQw5JZlDq8wx6hfB7JDvXrEiuUPwmAKh3Q/PGcDvYe/Cu3Ekg==
-X-Received: by 2002:aa7:c90a:: with SMTP id b10mr5239099edt.163.1602868778066;
-        Fri, 16 Oct 2020 10:19:38 -0700 (PDT)
-Received: from skbuf ([188.26.174.215])
-        by smtp.gmail.com with ESMTPSA id a27sm2161214ejb.67.2020.10.16.10.19.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Oct 2020 10:19:37 -0700 (PDT)
-Date:   Fri, 16 Oct 2020 20:19:36 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Mike Galbraith <efault@gmx.de>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Subject: Re: [patchlet] r8169: fix napi_schedule_irqoff() called with irqs
- enabled warning
-Message-ID: <20201016171936.vidrappu4gdiv5cm@skbuf>
-References: <9c34e18280bde5c14f40b1ef89a5e6ea326dd5da.camel@gmx.de>
- <7e7e1b0e-aaf4-385c-b82c-79cac34c9175@gmail.com>
- <20201016142611.zpp63qppmazxl4k7@skbuf>
- <42ff951039f3c92def8490d3842e3f7eaf6900ff.camel@gmx.de>
+        id S2390735AbgJPRV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 13:21:29 -0400
+Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:48659 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390454AbgJPRV3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 13:21:29 -0400
+Received: from tomoyo.flets-east.jp ([153.230.197.127])
+        by mwinf5d44 with ME
+        id ghMB2300J2lQRaH03hML2a; Fri, 16 Oct 2020 19:21:26 +0200
+X-ME-Helo: tomoyo.flets-east.jp
+X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
+X-ME-Date: Fri, 16 Oct 2020 19:21:26 +0200
+X-ME-IP: 153.230.197.127
+From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>
+Cc:     Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>
+Subject: [PATCH v4 2/4] can: dev: add a helper function to get the correct length of Classical frames
+Date:   Sat, 17 Oct 2020 02:20:23 +0900
+Message-Id: <20201016172053.229281-1-mailhol.vincent@wanadoo.fr>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20201016171402.229001-1-mailhol.vincent@wanadoo.fr>
+References: <20201016171402.229001-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <42ff951039f3c92def8490d3842e3f7eaf6900ff.camel@gmx.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 16, 2020 at 07:11:22PM +0200, Mike Galbraith wrote:
-> Yeah, it's a straight up correctness issue as it sits.
+In classical CAN, the length of the data (i.e. CAN payload) is not
+always equal to the DLC! If the frame is a Remote Transmission Request
+(RTR), data length is always zero regardless of DLC value and else, if
+the DLC is greater than 8, the length is 8. Contrary to common belief,
+ISO 11898-1 Chapter 8.4.2.3 (DLC field) do allow DLCs greater than 8
+for Classical Frames and specifies that those DLCs shall indicate that
+the data field is 8 bytes long.
 
-Yeah, tell me about it, you don't even want to know what it looks like
-when the local_softirq_pending_ref percpu mask gets corrupted. The
-symptom will be that random syscalls, like clock_nanosleep, will make
-user processes hang in the kernel, because their timers will appear to
-never expire. You'll also see negative expiry times in /proc/timer_list.
-Eventually the entire system dies. All of that, reproducible with a
-simple flood ping, given enough time.  Ask me how I come to know....
-The 215602a8d212 ("enetc: use napi_schedule to be compatible with
-PREEMPT_RT") commit is from before the lockdep warning came to be.
+Above facts are widely unknown and so many developpers uses the "len"
+field of "struct canfd_frame" to get the length of classical CAN
+frames: this is incorrect!
+
+This patch introduces function get_can_len() which can be used in
+remediation. The function takes the SKB as an input in order to be
+able to determine if the frame is classical or FD.
+
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+---
+
+Changes in v4: None
+
+Changes in v3:
+  - Make get_can_len() return u8.
+  - Make the skb const.
+Reference: https://lkml.org/lkml/2020/9/30/883
+
+Changes in v2: None
+---
+ include/linux/can/dev.h | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
+
+diff --git a/include/linux/can/dev.h b/include/linux/can/dev.h
+index 41ff31795320..d90890172d2a 100644
+--- a/include/linux/can/dev.h
++++ b/include/linux/can/dev.h
+@@ -192,6 +192,29 @@ u8 can_dlc2len(u8 can_dlc);
+ /* map the sanitized data length to an appropriate data length code */
+ u8 can_len2dlc(u8 len);
+ 
++/*
++ * get_can_len(skb) - get the length of the CAN payload.
++ *
++ * In classical CAN, the length of the data (i.e. CAN payload) is not
++ * always equal to the DLC! If the frame is a Remote Transmission
++ * Request (RTR), data length is always zero regardless of DLC value
++ * and else, if the DLC is greater than 8, the length is 8. Contrary
++ * to common belief, ISO 11898-1 Chapter 8.4.2.3 (DLC field) do allow
++ * DLCs greater than 8 for Classical Frames and specifies that those
++ * DLCs shall indicate that the data field is 8 bytes long.
++ */
++static inline u8 get_can_len(const struct sk_buff *skb)
++{
++	const struct canfd_frame *cf = (const struct canfd_frame *)skb->data;
++
++	if (can_is_canfd_skb(skb))
++		return min_t(u8, cf->len, CANFD_MAX_DLEN);
++	else if (cf->can_id & CAN_RTR_FLAG)
++		return 0;
++	else
++		return min_t(u8, cf->len, CAN_MAX_DLEN);
++}
++
+ struct net_device *alloc_candev_mqs(int sizeof_priv, unsigned int echo_skb_max,
+ 				    unsigned int txqs, unsigned int rxqs);
+ #define alloc_candev(sizeof_priv, echo_skb_max) \
+-- 
+2.26.2
+
