@@ -2,67 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 558C2290AAD
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 19:26:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F50A290AC0
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 19:29:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390877AbgJPR0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 13:26:21 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:36359 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390753AbgJPR0V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 13:26:21 -0400
-Received: by mail-oi1-f194.google.com with SMTP id u17so3264485oie.3;
-        Fri, 16 Oct 2020 10:26:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=omBtvAFklWNlMUExD+4CJmUl79VsD9qGgMC2YooqDqQ=;
-        b=O3vyaTUN1322Q7xxUo+EDsOaHITA9I17aSGKABBfnKF41NjIGBVPtIPA6L2pycDJCF
-         0pHVjXGQ4wEnNfJ8gHLMg0k4fJ45hY5mViwFMeoEK+1OepYt3y/RynhqhnOyHEJcHQ14
-         aKCnuwIGngQASYV7jogmPXPQXy+enGMQoiaXcheTgEfHjXQLotc+kMWuvaKvKyGQetbJ
-         4WqGfXa6DVfie9a+TLkUwBVXr24EsfP6mjzVclQP0Vfr/1jEePdDc/Y+e4qPJp34GVfW
-         LeCMkKsOLtaWlGKtjRO1JWxl4ME/UWrufAL/KqkYDWNm7QtNDc5Zw9Joj8ItfbwmfmS6
-         470A==
-X-Gm-Message-State: AOAM533XOcrXqlAqAzXXIV+yluSw5diFwfxYVcI9w8U8U1/6M0TQCVX3
-        Ev36PUrYv0TfyxBDlRYTyg==
-X-Google-Smtp-Source: ABdhPJzPn9Z+rZQLCishbk/PK12xWXQbmx1o3tzrhz0RLIx7LPM64CTl4qb0i2NU5xp5XJ3dwvEfhg==
-X-Received: by 2002:aca:eb48:: with SMTP id j69mr3293005oih.149.1602869178902;
-        Fri, 16 Oct 2020 10:26:18 -0700 (PDT)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id r62sm1226958oih.12.2020.10.16.10.26.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Oct 2020 10:26:18 -0700 (PDT)
-Received: (nullmailer pid 1609608 invoked by uid 1000);
-        Fri, 16 Oct 2020 17:26:17 -0000
-Date:   Fri, 16 Oct 2020 12:26:17 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Amitesh Chandra <amitesh.chandra@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        robh+dt@kernel.org, ravi.nagarajan@broadcom.com,
-        cheneyni@google.com, amitesh.chandra@broadcom.com,
-        davem@davemloft.net, devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/3] dt-bindings: net: bluetooth: Add broadcom BCM4389
- support
-Message-ID: <20201016172617.GA1609528@bogus>
-References: <20201014054543.2457-1-amitesh.chandra@gmail.com>
+        id S2390540AbgJPR3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 13:29:35 -0400
+Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:58245 "EHLO
+        wout5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2389852AbgJPR3f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 13:29:35 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id C40B7B57;
+        Fri, 16 Oct 2020 13:29:33 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Fri, 16 Oct 2020 13:29:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=RItVByjQCrLrEhk/I
+        Pd3UGeblYO7Go1U0n5N49J1wf4=; b=O38KQZBc9IqeSWcl230VySCVHfsS8uEvc
+        ETjxANVpwo4VtbYdqPDZfcp2wvPrd3LIHkbAERrXycrXEAMJlNB8//7CO9l9/WNF
+        /r3yCwrhkuq64YxJZDtiJ0kvIJgXJeRaDuPf1xzPq5u+hRSuWzDTitX7wWZ66ao3
+        9YalC3YPfDSseKDzOKjR+cqe0X+w9SetN/dmZa4QwwjJT2hNejr6OolF352bl5k2
+        WjfARE2tPRyH9XujHjfyLNNQB9PguZTxqDZ9Fkm95LNA3g3GQGWD9loNbo/6ZZRG
+        i30ML7rLg7hlT4meVByKB/q7DDkqxGkYKVrV7sHx4C6hadL5HJAWA==
+X-ME-Sender: <xms:fdiJX3eJtuX92KGtkqh2-UOAWrLWhZmbr8OHbuDjoq1t447dB0PYBw>
+    <xme:fdiJX9ON4wFbPP5N8aQ54XXLUwmrjZiF4_HvpbAuJvnqef48g3ZhurYjdntyhpdkK
+    X61Pw7E0lByzN8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrieehgdduudegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuggftrfgrthhtvghrnhepteevgefhvefggfffkeeuffeuvdfhueehhe
+    etffeikeegheevfedvgeelvdffudfhnecukfhppeekgedrvddvledrfeejrddugeeknecu
+    vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstg
+    hhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:fdiJXwhNM--dFdQLlF7KdClHRsxUNJ-rVLddITYbhoBlfByBDrqRMw>
+    <xmx:fdiJX49oUCilRIcj5F98R5Lfxx-N65Nq7__zy3wzm2u7BiyU1HsswA>
+    <xmx:fdiJXzvDRArhc6olqHU-cfAZLhrn3WUqUutVCoyNUiIpf-HUIbcSjA>
+    <xmx:fdiJXzIhVmSk-hK1ubmVzhXUsqQOxEFQme-nIC713g1pldsfpPbYCg>
+Received: from shredder.mtl.com (igld-84-229-37-148.inter.net.il [84.229.37.148])
+        by mail.messagingengine.com (Postfix) with ESMTPA id C7F6F306467E;
+        Fri, 16 Oct 2020 13:29:31 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
+        nikolay@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: [PATCH net] nexthop: Fix performance regression in nexthop deletion
+Date:   Fri, 16 Oct 2020 20:29:14 +0300
+Message-Id: <20201016172914.643282-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201014054543.2457-1-amitesh.chandra@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 14 Oct 2020 11:15:43 +0530, Amitesh Chandra wrote:
-> From: Amitesh Chandra <amitesh.chandra@broadcom.com>
-> 
-> Add bindings for BCM4389 bluetooth controller.
-> 
-> Signed-off-by: Amitesh Chandra <amitesh.chandra@broadcom.com>
-> ---
->  Documentation/devicetree/bindings/net/broadcom-bluetooth.txt | 1 +
->  1 file changed, 1 insertion(+)
-> 
+From: Ido Schimmel <idosch@nvidia.com>
 
-Acked-by: Rob Herring <robh@kernel.org>
+While insertion of 16k nexthops all using the same netdev ('dummy10')
+takes less than a second, deletion takes about 130 seconds:
+
+# time -p ip -b nexthop.batch
+real 0.29
+user 0.01
+sys 0.15
+
+# time -p ip link set dev dummy10 down
+real 131.03
+user 0.06
+sys 0.52
+
+This is because of repeated calls to synchronize_rcu() whenever a
+nexthop is removed from a nexthop group:
+
+# /usr/share/bcc/tools/offcputime -p `pgrep -nx ip` -K
+...
+    b'finish_task_switch'
+    b'schedule'
+    b'schedule_timeout'
+    b'wait_for_completion'
+    b'__wait_rcu_gp'
+    b'synchronize_rcu.part.0'
+    b'synchronize_rcu'
+    b'__remove_nexthop'
+    b'remove_nexthop'
+    b'nexthop_flush_dev'
+    b'nh_netdev_event'
+    b'raw_notifier_call_chain'
+    b'call_netdevice_notifiers_info'
+    b'__dev_notify_flags'
+    b'dev_change_flags'
+    b'do_setlink'
+    b'__rtnl_newlink'
+    b'rtnl_newlink'
+    b'rtnetlink_rcv_msg'
+    b'netlink_rcv_skb'
+    b'rtnetlink_rcv'
+    b'netlink_unicast'
+    b'netlink_sendmsg'
+    b'____sys_sendmsg'
+    b'___sys_sendmsg'
+    b'__sys_sendmsg'
+    b'__x64_sys_sendmsg'
+    b'do_syscall_64'
+    b'entry_SYSCALL_64_after_hwframe'
+    -                ip (277)
+        126554955
+
+Since nexthops are always deleted under RTNL, synchronize_net() can be
+used instead. It will call synchronize_rcu_expedited() which only blocks
+for several microseconds as opposed to multiple milliseconds like
+synchronize_rcu().
+
+With this patch deletion of 16k nexthops takes less than a second:
+
+# time -p ip link set dev dummy10 down
+real 0.12
+user 0.00
+sys 0.04
+
+Tested with fib_nexthops.sh which includes torture tests that prompted
+the initial change:
+
+# ./fib_nexthops.sh
+...
+Tests passed: 134
+Tests failed:   0
+
+Fixes: 90f33bffa382 ("nexthops: don't modify published nexthop groups")
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+---
+ net/ipv4/nexthop.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+index 8c0f17c6863c..0dc43ad28eb9 100644
+--- a/net/ipv4/nexthop.c
++++ b/net/ipv4/nexthop.c
+@@ -845,7 +845,7 @@ static void remove_nexthop_from_groups(struct net *net, struct nexthop *nh,
+ 		remove_nh_grp_entry(net, nhge, nlinfo);
+ 
+ 	/* make sure all see the newly published array before releasing rtnl */
+-	synchronize_rcu();
++	synchronize_net();
+ }
+ 
+ static void remove_nexthop_group(struct nexthop *nh, struct nl_info *nlinfo)
+-- 
+2.26.2
+
