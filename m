@@ -2,61 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23399290D4C
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 23:30:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85110290D50
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 23:32:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2410477AbgJPVaE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 17:30:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50308 "EHLO mail.kernel.org"
+        id S2411362AbgJPVcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 17:32:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50638 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406032AbgJPVaE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Oct 2020 17:30:04 -0400
-Content-Type: text/plain; charset="utf-8"
+        id S2411354AbgJPVcF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Oct 2020 17:32:05 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 643E9216C4;
+        Fri, 16 Oct 2020 21:32:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602883803;
-        bh=Iha3UzVe2jDJommM1IBHUO4EWT+4P+YFWBi7x9ObpEI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Ep2LJrcorhJja64koPOFWzFEnS+RZn5mUeE8yY3WmqbKn4CFNIMcDKBPWXlNugLW6
-         xZEtndrPMfrB/utRvyupsUi08dIuJb6US61GmaI4LrFMG/ciWW7pUDT6ZrSV8GOYyk
-         Xcl6L8ophqpXiMhxEb4avRos1o43d+pEvRiSs06I=
+        s=default; t=1602883925;
+        bh=sONpstJsGgC+AA1Ry+CXKRFgauKStQSxfQ1R0eaWOt4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SbPF+VDu/jBRH1m5MvpW9XhPZ4Sa4ZpSiRvUJwIZT+/uH5hm6FRU8AUj3DsSqg8Nq
+         fVwUzH43wH/cqVEaNmVp20VhEHP+Q/hHTSjLrezRwYqsGbls5JOVhk1W1YrPkxO+gA
+         RpR9RF4f+4rz82e5zxOhNf0iDrz76/S7H82AXP/Q=
+Date:   Fri, 16 Oct 2020 14:32:01 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc:     Ian Rogers <irogers@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Igor Russkikh <irusskikh@marvell.com>,
+        Mark Starovoytov <mstarovoitov@marvell.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        "Toke =?UTF-8?B?SMO4aWxhbmQt?= =?UTF-8?B?SsO4cmdlbnNlblw=?=" 
+        <toke@redhat.com>,
+        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        Alexandre Cassen <acassen@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH 1/2] tools/include: Update if_link.h and netlink.h
+Message-ID: <20201016143201.0c12c03b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201016142348.0000452b@intel.com>
+References: <20201015223119.1712121-1-irogers@google.com>
+        <20201016142348.0000452b@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [net 1/2] tipc: re-configure queue limit for broadcast link
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160288380340.31566.9245323917252134913.git-patchwork-notify@kernel.org>
-Date:   Fri, 16 Oct 2020 21:30:03 +0000
-References: <20201016023119.5833-1-hoang.h.le@dektech.com.au>
-In-Reply-To: <20201016023119.5833-1-hoang.h.le@dektech.com.au>
-To:     Hoang Huu Le <hoang.h.le@dektech.com.au>
-Cc:     jmaloy@redhat.com, ying.xue@windriver.com, netdev@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (refs/heads/master):
-
-On Fri, 16 Oct 2020 09:31:18 +0700 you wrote:
-> The queue limit of the broadcast link is being calculated base on initial
-> MTU. However, when MTU value changed (e.g manual changing MTU on NIC
-> device, MTU negotiation etc.,) we do not re-calculate queue limit.
-> This gives throughput does not reflect with the change.
+On Fri, 16 Oct 2020 14:23:48 -0700 Jesse Brandeburg wrote:
+> > These are tested to be the latest as part of the tools/lib/bpf build.  
 > 
-> So fix it by calling the function to re-calculate queue limit of the
-> broadcast link.
-> 
-> [...]
+> But you didn't mention why you're making these changes, and you're
+> removing a lot of comments without explaining why/where there might be
+> a replacement or why the comments are useless. I now see that you're
+> adding actual kdoc which is good, except for the part where
+> you don't put kdoc on all the structures.
 
-Here is the summary with links:
-  - [net,1/2] tipc: re-configure queue limit for broadcast link
-    https://git.kernel.org/netdev/net/c/75cee397ae6f
-  - [net,2/2] tipc: fix incorrect setting window for bcast link
-    https://git.kernel.org/netdev/net/c/ec78e31852c9
+Note that he's just syncing the uAPI headers to tools/
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+The source of the change is here:
 
-
+78a3ea555713 ("net: remove comments on struct rtnl_link_stats")
+0db0c34cfbc9 ("net: tighten the definition of interface statistics")
