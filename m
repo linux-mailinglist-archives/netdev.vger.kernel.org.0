@@ -2,154 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93AD0290C5D
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 21:37:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDB1D290C8B
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 22:03:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436565AbgJPThz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 15:37:55 -0400
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:48487 "EHLO
-        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436556AbgJPThz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 15:37:55 -0400
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20201016193743euoutp0107c4bbc9860fa4f6497e3c9eee48d491~_kDJnuiuw2186621866euoutp01X;
-        Fri, 16 Oct 2020 19:37:43 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20201016193743euoutp0107c4bbc9860fa4f6497e3c9eee48d491~_kDJnuiuw2186621866euoutp01X
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1602877063;
-        bh=fAaURGxFxrxf5vT3aXwuCB6B61xvc3SkZQaHP8Bxw2c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c6XkpzyD37jVkF+ueKbbfEvrMfGqDMJEt2z7q8ZS4y/5O2QMaWgUhOV2t7Uvd6GYl
-         wFTWOfXzGXmAIBbjtoYjL6m8YsBDHCUea6rAg3zFsSfiG6RBVne9XeVoXea/jKwiCi
-         PJWpseKUb3klATWf4Q+fO1Wvd3dvPCZ9NSFPKDls=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20201016193738eucas1p2287eb7f7921312b483df787ba1458f0b~_kDEmgLjf3236532365eucas1p2d;
-        Fri, 16 Oct 2020 19:37:38 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id F4.D1.06318.186F98F5; Fri, 16
-        Oct 2020 20:37:38 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20201016193736eucas1p1eb94190e16b194f473ade8c49ca34275~_kDDg7Amv1985019850eucas1p1Y;
-        Fri, 16 Oct 2020 19:37:36 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20201016193736eusmtrp2c14f92c698e38174eb337adfc0966d01~_kDDgTWdg0550405504eusmtrp2Q;
-        Fri, 16 Oct 2020 19:37:36 +0000 (GMT)
-X-AuditID: cbfec7f5-38bff700000018ae-d6-5f89f681d2e1
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id E0.87.06314.086F98F5; Fri, 16
-        Oct 2020 20:37:36 +0100 (BST)
-Received: from localhost (unknown [106.120.51.46]) by eusmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20201016193736eusmtip15ddc2e6638e98b652554b93c369ed722~_kDDSqUIB0611506115eusmtip1W;
-        Fri, 16 Oct 2020 19:37:36 +0000 (GMT)
-From:   Lukasz Stelmach <l.stelmach@samsung.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        =?utf-8?Q?Bart=C5=82omiej_=C5=BBolnierkie?= =?utf-8?Q?wicz?= 
-        <b.zolnierkie@samsung.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH v2] net: phy: Prevent reporting advertised modes when
- autoneg is off
-Date:   Fri, 16 Oct 2020 21:37:22 +0200
-In-Reply-To: <20201016180935.GG139700@lunn.ch> (Andrew Lunn's message of
-        "Fri, 16 Oct 2020 20:09:35 +0200")
-Message-ID: <dleftjzh4m3qtp.fsf%l.stelmach@samsung.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S2392779AbgJPUDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 16:03:44 -0400
+Received: from mailout09.rmx.de ([94.199.88.74]:34844 "EHLO mailout09.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2392577AbgJPUDo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Oct 2020 16:03:44 -0400
+Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout09.rmx.de (Postfix) with ESMTPS id 4CCcXr0FTBzbsT2;
+        Fri, 16 Oct 2020 22:03:40 +0200 (CEST)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin01.retarus.com (Postfix) with ESMTPS id 4CCcXY11sbz2xKS;
+        Fri, 16 Oct 2020 22:03:25 +0200 (CEST)
+Received: from N95HX1G2.wgnetz.xx (192.168.54.12) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Fri, 16 Oct
+ 2020 22:02:51 +0200
+From:   Christian Eggers <ceggers@arri.de>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 0/3] net: dsa: move skb reallocation to dsa_slave_xmit
+Date:   Fri, 16 Oct 2020 22:02:23 +0200
+Message-ID: <20201016200226.23994-1-ceggers@arri.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-="; micalg="pgp-sha256";
-        protocol="application/pgp-signature"
-X-Brightmail-Tracker: H4sIAAAAAAAAA01Sa0hTYRju2zlnO1vOjjPzxSJk6Q8VL2HUiSzKJEZRhGCUUbby4G2btqll
-        /cjSIsVLqJE3yntmOVPmnHafpZipqWVlukQMzTQRL5WJ5vEz6N/zPt/zPC/Py0cTsi7KgQ7T
-        RHNajVIlF0pIY9Pvdvcrs0lBXmPJBNvRbybY6uwqis3vSCTZoolsin1rTKPY7oZ8IWu++QSx
-        lS/7RWxTwbrdYkV3TyehMNz7JFDU5/aLFDUVSUJFvWlKoEgzVCDFVM3Gw6JAiU8wpwqL5bSe
-        u05JQlvrPgiiLNLzo+XVZDz6uToZiWlgtkBeZoowGUloGVOO4NliCYmHaQS3EuYEeJhC8N5S
-        hJIRvWz5URaM+bsISlI7VhzDCAay0pdFQsYDKiuP8ivWMo6Q1TJP8RqCGRbAr4EsgtfYMoEw
-        M+/La0jGGUay2iieFjNqqM3w5mkpsw0s+eOIx3bMdjCMfBFh3gZacoZIHhNL8pyOMcTHAzMu
-        ghxjL8LV/KDuq4XC2BZGmw0ijDfAYv0dAe5yCTIztmJvCgJj/i8Sa3ZAX/ucEGv2QF6fI4bW
-        8HHcBq+1hgzjLQLTUrh+TYaNTqBPf7wS4gCpo+UrR1OAfnLlTpcR9HROEDeQY+5/ZXL/K5O7
-        ZCEYF6hq8MS0G5QVficw3gl6/QRZgKgKZM/F6NQhnM5bw53z0CnVuhhNiMeZSHUNWvpdrQvN
-        Myb0dP60GTE0kltJ6dKkIBmljNXFqc3IaSlp8OH9t8iB1ERqOPlaqW9b60mZNFgZd4HTRgZp
-        Y1SczozW06TcXupd9O2EjAlRRnMRHBfFaf+9CmixQzxaNZXNJVb6q+THXM8W1kb8DPAhwEoQ
-        /+bIeCmx7/VEqWl41lV+/EWxirx46LPJL/P57ZBNWq+6A/sHH4zGL9woWSxqcp5ufHWwc7ac
-        7Z3rt9vrMtYo6XLvnYle49nl3xbT3Ta5MTHcJ+BR2R9/9XRgsSHVjXmXMFSXEm60ybgqHpCT
-        ulDlZldCq1P+BfKV0GZlAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrLIsWRmVeSWpSXmKPExsVy+t/xu7oN3zrjDbpvm1qcv3uI2WLjjPWs
-        FnPOt7BYLHo/g9XiwrY+VovLu+awWRyaupfRYu2Ru+wWxxaIOXB6XL52kdljy8qbTB47Z91l
-        99i0qpPNY+eOz0wefVtWMXp83iQXwB6lZ1OUX1qSqpCRX1xiqxRtaGGkZ2hpoWdkYqlnaGwe
-        a2VkqqRvZ5OSmpNZllqkb5egl3F6+3Wmgnu8Fa9WbGRpYPzO3cXIwSEhYCLxbllKFyMXh5DA
-        UkaJ0wcPskLEpSRWzk3vYuQEMoUl/lzrYoOoecoosfPkeiaQGjYBPYm1ayNAakQEFCSmnPzD
-        ClLDLPCCSWL9nj52kISwQITEpzdb2EBsIQFdiT+z+1lBbBYBVYkXU86C2ZwCuRLb224zgti8
-        AuYS9+a8BbNFBSwltry4zw4RF5Q4OfMJC4jNLJAt8XX1c+YJjAKzkKRmIUnNAjqPWUBTYv0u
-        fYiwtsSyha+ZIWxbiXXr3rMsYGRdxSiSWlqcm55bbKhXnJhbXJqXrpecn7uJERh924793LyD
-        8dLG4EOMAhyMSjy8GxZ1xguxJpYVV+YeYlQBGvNow+oLjFIsefl5qUoivE5nT8cJ8aYkVlal
-        FuXHF5XmpBYfYjQF+nMis5Rocj4wYeSVxBuaGppbWBqaG5sbm1koifN2CByMERJITyxJzU5N
-        LUgtgulj4uCUamBULTDSOn3jxZ2OrJNesfujbjcn5Xw1cJd8aPfW+MFs/aWXhM0m3C23PBSh
-        97hR39Nb9fAyh0Wm9gXXd3Z12mstXtI+b7eWgrb51mURF1q95jV8DZ349XFo8tTFawSEPN5o
-        Ps7Kvr9hTndTKl+rohdT6YIt5eHGDvtO5MZ36cZ+8rqjEKjvoqDEUpyRaKjFXFScCADqHMrz
-        4AIAAA==
-X-CMS-MailID: 20201016193736eucas1p1eb94190e16b194f473ade8c49ca34275
-X-Msg-Generator: CA
-X-RootMTR: 20201016193736eucas1p1eb94190e16b194f473ade8c49ca34275
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20201016193736eucas1p1eb94190e16b194f473ade8c49ca34275
-References: <20201016180935.GG139700@lunn.ch>
-        <CGME20201016193736eucas1p1eb94190e16b194f473ade8c49ca34275@eucas1p1.samsung.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.54.12]
+X-RMX-ID: 20201016-220331-4CCcXY11sbz2xKS-0@kdin01
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+This series moves the reallocation of a skb which may be required due to
+tail tagging or padding, from the tag_trailer and tag_ksz drivers to
+dsa_slave_xmit. Additionally it prevents a skb_panic in a very special
+corner case described here:
+https://patchwork.ozlabs.org/project/netdev/patch/20201014161719.30289-1-ceggers@arri.de/#2554896
 
-It was <2020-10-16 pi=C4=85 20:09>, when Andrew Lunn wrote:
-> On Thu, Oct 15, 2020 at 10:44:35AM +0200, =C5=81ukasz Stelmach wrote:
->> Do not report advertised link modes (local and remote) when
->> autonegotiation is turned off. mii_ethtool_get_link_ksettings() exhibits
->> the same behaviour and this patch aims at unifying the behavior of both
->> functions.
->
-> Does ethtool allow you to configure advertised modes with autoneg off?
-> If it can, it would be useful to see what is being configured, before
-> it is actually turned on.
->
-> ethtool -s eth42 autoneg off advertise 0xf
->
-> does not give an error on an interface i have.
+This series has been tested with KSZ9563 and my preliminary PTP patches.
 
-Yes, this is a good point. Do you think I should change the if()[1] in=20
-mii_ethtool_get_link_ksettings() instead? I really think these two
-function should report the same.
+On Friday, 16 October 2020, 17:56:45 CEST, Vladimir Oltean wrote:
+> On Fri, Oct 16, 2020 at 02:44:46PM +0200, Christian Eggers wrote:
+> > Machine:
+> > - ARMv7 (i.MX6ULL), SMP_CACHE_BYTES is 64
+> > - DSA device: Microchip KSZ9563 (I am currently working on time stamping
+> > support)
+> I have a board very similar to this on which I am going to test.
+hopefully you are not just developing on PTP support for KSZ9563 ;-)
+Which hardware do you exactly own? The problem I described to (link
+above) can only be reproduced with my (not yes published) PTP patches.
 
-[1] https://elixir.bootlin.com/linux/v5.9/source/drivers/net/mii.c#L174
-[2] https://elixir.bootlin.com/linux/v5.9/source/drivers/net/mii.c#L145
+> > Last, CONFIG_SLOB must be selected.
+> 
+> Interesting, do you know why?
+Yes. The other allocaters will actually allocate 512 byte instead of 320
+if 64+256 bytes are requested. This will then be reported by ksize() and
+let to more skb tailroom. The SLOB allocator will really allocate only
+320 byte in this case, so that the skb will be run out of tail room when
+tail tagging...
 
-Kind regards,
-=2D-=20
-=C5=81ukasz Stelmach
-Samsung R&D Institute Poland
-Samsung Electronics
+> > 3. "Manually" unsharing in dsa_slave_xmit(), reserving enough tailroom
+> > for the tail tag (and ETH_ZLEN?). Would moving the "else" clause from
+> > ksz_common_xmit()  to dsa_slave_xmit() do the job correctly?
+> 
+> I was thinking about something like that, indeed. DSA knows everything
+> about the tagger: its overhead, whether it's a tail tag or not. The xmit
+> callback of the tagger should only be there to populate the tag where it
+> needs to be. But reallocation, padding, etc etc, should all be dealt
+> with by the common DSA xmit procedure. We want the taggers to be simple
+> and reuse as much logic as possible, not to be bloated.
+This series is the first draft for it. Some additional changes my be
+done later:
+1. All xmit() function now return either the supplied skb or NULL. No
+reallocation will be done anymore. Maybe the type of the return value may
+be changed to reflect this (e.g. to bool).
+2. There is no path left which calls __skb_put_padto()/skb_pad() with
+free_on_error set to false. So the following commit may be reverted in
+order to simply the code:
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+cd0a137acbb6 ("net: core: Specify skb_pad()/skb_put_padto() SKB freeing")
 
------BEGIN PGP SIGNATURE-----
+On Friday, 16 October 2020, 11:05:27 CEST, Vladimir Oltean wrote:
+> Kurt is asking, and rightfully so, because his tag_hellcreek.c driver
+> (for a 1588 switch with tail tags) is copied from tag_ksz.c.
+@Kurt: If this series (or a later version) is accepted, please update
+your tagging driver. Ensure that your dsa_device_ops::overhead contains
+the "maximum" possible tail tag len for xmit and that
+dsa_device_ops::tail_tag is set to true.
 
-iQEzBAEBCAAdFiEEXpuyqjq9kGEVr9UQsK4enJilgBAFAl+J9nIACgkQsK4enJil
-gBA9Rwf/XFHX++6DgwEAyPDwfrsq28MTgViffjtzEIJp4EQRo9DrPF+vwu0neyHL
-G4pB7KhjIe8f4IbKiwNvnjgVbL1ukmaalb5tTqjYHVUHh4nnpqOdMJ7eMUI73tDy
-C74fpWifs3z8gxp7l6gBklpDGRzj9V4mwsRFrDarzyKjKhxnVpjCkKsWrxBnivTk
-lEGkPeB2r/0+7aeR74djxfu67OnTsnQcBYmmFZhq3TkR4gK7oGVCbR4WIWtPYcol
-DxNxluNLRPGHwp8v0y34wZU+AvsTbK0x82Mc6cve4MhdD1lCCWqGSFhd9NTFl/lo
-HnWngZjxSn35rC4VkHOzIdap0IDzjw==
-=/DVz
------END PGP SIGNATURE-----
---=-=-=--
+On Friday, 16 October 2020, 20:03:11 CEST, Jakub Kicinski wrote:
+> FWIW if you want to avoid the reallocs you may want to set
+> needed_tailroom on the netdev.
+I haven't looked for this yet. If this can really solve the tagging AND
+padding problem, I would like to do this in a follow up patch.
+
+Wishing a nice weekend for netdev.
+Christian
+
+
+
+
