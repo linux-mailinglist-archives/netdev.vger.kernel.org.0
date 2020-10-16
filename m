@@ -2,94 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0481290D17
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 23:05:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E672290CC4
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 22:33:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2410572AbgJPVFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 17:05:08 -0400
-Received: from server139.web-hosting.com ([104.219.248.44]:38404 "EHLO
-        server139.web-hosting.com" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2392781AbgJPVFI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 17:05:08 -0400
-X-Greylist: delayed 2254 seconds by postgrey-1.27 at vger.kernel.org; Fri, 16 Oct 2020 17:05:07 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=gentil.com;
-         s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:Subject:From:To:Sender:Reply-To:Cc:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=sHMhCA8rDLuNM2TBbdntuJxD4Wlzrmz2hMZn6SssMTg=; b=dLHqQbiMCYM7wkZuy1Y7dEDl+M
-        /ZH019BWWyWvPomGWjwUN/guoaXMQNQ45BiI8OVXVuIGOu2dXYNF5jiH0q4YAEDv3lqzcV4Q5GRng
-        53+yzHRHCEqyxkMEGbz6+bWOcMq7uwBuIXroWXPba/YL4HHtCtnpcNGlmc566xFUpLPPGJ1BUjuCh
-        14AE7KlBMdGyuUTwaQAAFT/fTmc5jGnN5JpAJEyCrtKSEGabWubRMbP26H3DaWoe7qHLlIPt92ums
-        t9VhI6F4gENmTu8VZVpcPTd1Z5uaIZS2D1mu7RGilIn0MChEICkKdUIXSQ0vy4dSDRWiRN1GihLtP
-        r/RyHqew==;
-Received: from [98.207.153.78] (port=48154 helo=[192.168.10.25])
-        by server139.web-hosting.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <gregoire@gentil.com>)
-        id 1kTWK1-001PeX-DN
-        for netdev@vger.kernel.org; Fri, 16 Oct 2020 16:27:33 -0400
-To:     netdev@vger.kernel.org
-From:   Gregoire Gentil <gregoire@gentil.com>
-Subject: How to disable CRC32 FCS in stmmac (v3.5)?
-Organization: Gregoire Gentil
-Message-ID: <1007a52d-8399-1952-3c1b-0b37e7e02437@gentil.com>
-Date:   Fri, 16 Oct 2020 13:27:29 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S2393589AbgJPUdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 16:33:07 -0400
+Received: from mail-io1-f70.google.com ([209.85.166.70]:39545 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2393322AbgJPUdG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 16:33:06 -0400
+Received: by mail-io1-f70.google.com with SMTP id s135so2471948ios.6
+        for <netdev@vger.kernel.org>; Fri, 16 Oct 2020 13:33:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=ROzsNmPEboimXBnltYvp0yZ0R4DqKoIDM5mz8ldG/wE=;
+        b=jHoUofxaU8rMiujZSuHgaJVHFGte0Rzqo7W2eMNpk0aE4W+DaqmZmkGcLtzov7yFsh
+         3e//7i1Ry2vyC9lnx2HsAxsMQh0DGoF+Ey+XBjRiwAVKbrIMdOGa3G/NH3f1DeF/y45y
+         XnMGLiIwb+dC6NEc/xqviG0Kuz7qpglrYt1pTlACLu7gZkpLvOQr9DwNpQaL9f1DSwl2
+         d58oAzdkIcx8CN6LJLjQS6Iu6I4sWWfqFARYsXOvv++2tAn44vR4z2eZusDYfOWXj8J+
+         uHvnOMoQH2Nca8pcxHr9DZg/avj/lAcEOlgdFbaYUOS3a2yGw/fI4GX5ergm+U1ToWcO
+         ZlFQ==
+X-Gm-Message-State: AOAM532Q2mHTqYnkbc7iZDNVP0C59wcZ+vLaGShXUwyb/Bxqw5XoQ2fH
+        27ylwcfjLi/S397cFJ4byGzWvu2i7TmXWsnuAb9jnfmkp+YI
+X-Google-Smtp-Source: ABdhPJydD4gCS1GOdiO5MwakOGqV4ls4j0FZtILxVgGqBP7Uc/39/66TxdoYwmTOVK/z73ttFcN08POCtPfnQNumYnXoocxDU7jN
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-OutGoing-Spam-Status: No, score=-0.2
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - server139.web-hosting.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - gentil.com
-X-Get-Message-Sender-Via: server139.web-hosting.com: authenticated_id: gregoire@gentil.com
-X-Authenticated-Sender: server139.web-hosting.com: gregoire@gentil.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-From-Rewrite: unmodified, already matched
+X-Received: by 2002:a5e:930d:: with SMTP id k13mr2094900iom.33.1602880385159;
+ Fri, 16 Oct 2020 13:33:05 -0700 (PDT)
+Date:   Fri, 16 Oct 2020 13:33:05 -0700
+In-Reply-To: <000000000000e921b305b18ba0a7@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f9990805b1cfab64@google.com>
+Subject: Re: BUG: using __this_cpu_read() in preemptible code in trace_hardirqs_on
+From:   syzbot <syzbot+53f8ce8bbc07924b6417@syzkaller.appspotmail.com>
+To:     linux-kernel@vger.kernel.org, mingo@kernel.org, mingo@redhat.com,
+        netdev@vger.kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        syzkaller-bugs@googlegroups.com, will@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I have a FPGA sending frames (payload length=1280) over RGMII to a 
-Samsung module which includes STMMAC MAC IP (v3.5).
+syzbot has bisected this issue to:
 
-If the FCS is correct, I manage to receive data from the FPGA to the MAC 
-in the kernel.
+commit 4d004099a668c41522242aa146a38cc4eb59cb1e
+Author: Peter Zijlstra <peterz@infradead.org>
+Date:   Fri Oct 2 09:04:21 2020 +0000
 
-For multiple reasons, I wish to disable FCS so that frames are received 
-in the kernel even if the 4-byte CRC FCS are wrong.
+    lockdep: Fix lockdep recursion
 
-After a lot tries for the past few weeks, I don't manage to receive 
-error frames. Especially, if FCS is wrong, I don't get anything in 
-"stmmac_rx(struct stmmac_priv *priv, int limit)".
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=174a766f900000
+start commit:   9ff9b0d3 Merge tag 'net-next-5.10' of git://git.kernel.org..
+git tree:       net-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=14ca766f900000
+console output: https://syzkaller.appspot.com/x/log.txt?x=10ca766f900000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d13c3fa80bc4bcc1
+dashboard link: https://syzkaller.appspot.com/bug?extid=53f8ce8bbc07924b6417
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15b63310500000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1565657f900000
 
-Here is a list of all the relevant bits I have played with:
+Reported-by: syzbot+53f8ce8bbc07924b6417@syzkaller.appspotmail.com
+Fixes: 4d004099a668 ("lockdep: Fix lockdep recursion")
 
-C006_0000h (CST 25): CRC Stripping for Type Frames
-C006_0000h (IPC 10): Checksum Offload
-C006_0000h (ACS 7): Automatic Pad or CRC Stripping
-C006_1018h (DT 26): Disable dropping of TCP/IP Checksum Error Frames
-C006_1018h (FEF 7): Forward Error Frames
-
-Whithout any special hacking, my default registers are:
-C006_0000h: 0x1100880 (25:0, 10:0, 7:1)
-C006_1018h: 0x2202006 (26:0, 7:0)
-
-I have also unsuccessfully played with "ethtool --offload eth0 rx off"
-
-The MAC registers documentation is rather sparse and written in flaky 
-English though it seems that the register description table is a copy 
-paste from the original ST documentation.
-
-
-Has anyone managed to achieve my objective, getting rid of FCS frame drop?
-
-Grégoire
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
