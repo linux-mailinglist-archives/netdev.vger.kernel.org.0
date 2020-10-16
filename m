@@ -2,95 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAB25290CAD
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 22:19:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A0481290D17
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 23:05:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393596AbgJPUTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 16:19:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52172 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2393350AbgJPUTe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 16:19:34 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1175BC061755;
-        Fri, 16 Oct 2020 13:19:34 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id md26so4941870ejb.10;
-        Fri, 16 Oct 2020 13:19:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=FA2VjoAOVa3zI6J2opQjTrtgww1jO5eNYFEdgCxHx6w=;
-        b=M5YRjTwHGKRGb6866ns3452jEWgGy0LzwHZQVBj772EGLvAHUtvMAX7i/vTW9IJ6El
-         XWqIJVLmSsP4h+EnjED61eOct26U3+UJftJHcLp32bY8okG7TkKTTY+uigTAIIL7AklB
-         sjwOqHFrE9x8u3LcmBKQCd6Zt1lvFtEXAQYQ4Womo0WG+A+OyQhnPh5ejyLfsBoT0pEM
-         awai1DaWmcpx+ISh3HqllJWBm0a9QklxwTebmPf+5MYzyp+abu+XUa5wczuImyg/oEn8
-         snO0xhZjNqjf0YF4/pz+ALL74MMjeacMOGzJp/NmEl/EVXOR2IyRPNWAqw9Sv3zv5I2D
-         jV1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FA2VjoAOVa3zI6J2opQjTrtgww1jO5eNYFEdgCxHx6w=;
-        b=oY019FUpIDFAtYtEskYhYG8NVo+GCw+hiZ+ml37iY33piRM/sw49DzsMmUsRRaXIIT
-         eFzMfTTJxQuIDRRVIYhk50D0YWY7sM4TLalVht7Q1bGnUXUIPqyDHudXw6iSX4zTzsSn
-         4XrzDh5Igx//7aYeyWZsgeMGhjwYEtyi+k99+Y3+8m/V6rDDf2ZZouvatvyXspl0rpW1
-         LOOpSVxM5vFSXK8wvIFVWu5K7DY5rAf8ZFmMyFblUS4yE+keTQYrFQPy+KGNJUDr4yv1
-         ehGNXBcUbETfbrKvlE68MtF3YkAjutZ8Ed8tXADi0CJWAutRMRCuM/kPH5ThYhDwp7aC
-         48ow==
-X-Gm-Message-State: AOAM5337M6ZVZ0P32nI9FQB9bHsNnA2UA2k1koYuQTd/XoW3/7U5oYdD
-        4d/wmRlq08wZzaifFmHKhUQ=
-X-Google-Smtp-Source: ABdhPJycfqqRhRIEfhQWm6SCqKIuDZRiZgFaUAbcupXtKXwp6RB2pk9D65/0sSaJlebhr+Z7xt4Rmw==
-X-Received: by 2002:a17:906:11d3:: with SMTP id o19mr5381348eja.287.1602879572776;
-        Fri, 16 Oct 2020 13:19:32 -0700 (PDT)
-Received: from skbuf ([188.26.174.215])
-        by smtp.gmail.com with ESMTPSA id v23sm2555507edq.86.2020.10.16.13.19.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Oct 2020 13:19:32 -0700 (PDT)
-Date:   Fri, 16 Oct 2020 23:19:30 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     kernel test robot <lkp@intel.com>,
-        Christian Eggers <ceggers@arri.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        kbuild-all@lists.01.org,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: dsa: point out the tail taggers
-Message-ID: <20201016201930.2i2lw4aixklyg6j7@skbuf>
-References: <20201016162800.7696-1-ceggers@arri.de>
- <202010170153.fwOuks52-lkp@intel.com>
- <20201016173317.4ihhiamrv5w5am6y@skbuf>
- <20201016201428.GI139700@lunn.ch>
+        id S2410572AbgJPVFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 17:05:08 -0400
+Received: from server139.web-hosting.com ([104.219.248.44]:38404 "EHLO
+        server139.web-hosting.com" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2392781AbgJPVFI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 17:05:08 -0400
+X-Greylist: delayed 2254 seconds by postgrey-1.27 at vger.kernel.org; Fri, 16 Oct 2020 17:05:07 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=gentil.com;
+         s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:Subject:From:To:Sender:Reply-To:Cc:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=sHMhCA8rDLuNM2TBbdntuJxD4Wlzrmz2hMZn6SssMTg=; b=dLHqQbiMCYM7wkZuy1Y7dEDl+M
+        /ZH019BWWyWvPomGWjwUN/guoaXMQNQ45BiI8OVXVuIGOu2dXYNF5jiH0q4YAEDv3lqzcV4Q5GRng
+        53+yzHRHCEqyxkMEGbz6+bWOcMq7uwBuIXroWXPba/YL4HHtCtnpcNGlmc566xFUpLPPGJ1BUjuCh
+        14AE7KlBMdGyuUTwaQAAFT/fTmc5jGnN5JpAJEyCrtKSEGabWubRMbP26H3DaWoe7qHLlIPt92ums
+        t9VhI6F4gENmTu8VZVpcPTd1Z5uaIZS2D1mu7RGilIn0MChEICkKdUIXSQ0vy4dSDRWiRN1GihLtP
+        r/RyHqew==;
+Received: from [98.207.153.78] (port=48154 helo=[192.168.10.25])
+        by server139.web-hosting.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <gregoire@gentil.com>)
+        id 1kTWK1-001PeX-DN
+        for netdev@vger.kernel.org; Fri, 16 Oct 2020 16:27:33 -0400
+To:     netdev@vger.kernel.org
+From:   Gregoire Gentil <gregoire@gentil.com>
+Subject: How to disable CRC32 FCS in stmmac (v3.5)?
+Organization: Gregoire Gentil
+Message-ID: <1007a52d-8399-1952-3c1b-0b37e7e02437@gentil.com>
+Date:   Fri, 16 Oct 2020 13:27:29 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201016201428.GI139700@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-OutGoing-Spam-Status: No, score=-0.2
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - server139.web-hosting.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - gentil.com
+X-Get-Message-Sender-Via: server139.web-hosting.com: authenticated_id: gregoire@gentil.com
+X-Authenticated-Sender: server139.web-hosting.com: gregoire@gentil.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-From-Rewrite: unmodified, already matched
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 16, 2020 at 10:14:28PM +0200, Andrew Lunn wrote:
-> On Fri, Oct 16, 2020 at 08:33:17PM +0300, Vladimir Oltean wrote:
-> > On Sat, Oct 17, 2020 at 01:25:08AM +0800, kernel test robot wrote:
-> > > Hi Christian,
-> > >
-> > > Thank you for the patch! Yet something to improve:
-> > >
-> > > [auto build test ERROR on net/master]
-> > >
-> > > url:    https://github.com/0day-ci/linux/commits/Christian-Eggers/net-dsa-point-out-the-tail-taggers/20201017-003007
-> > > base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 2ecbc1f684482b4ed52447a39903bd9b0f222898
-> 
-> > Is the test bot being a bit "slow" today?
-> 
-> It is using the net.git commit from yesterday afternoon. net-next got
-> merged into net yesterday evening, so it is a bit behind, but not too
-> far behind.
+I have a FPGA sending frames (payload length=1280) over RGMII to a 
+Samsung module which includes STMMAC MAC IP (v3.5).
 
-Exactly. The sha1sum it uses _does_ contain the tail_tag member inside
-struct dsa_device_ops. What's it complaining about?
+If the FCS is correct, I manage to receive data from the FPGA to the MAC 
+in the kernel.
+
+For multiple reasons, I wish to disable FCS so that frames are received 
+in the kernel even if the 4-byte CRC FCS are wrong.
+
+After a lot tries for the past few weeks, I don't manage to receive 
+error frames. Especially, if FCS is wrong, I don't get anything in 
+"stmmac_rx(struct stmmac_priv *priv, int limit)".
+
+Here is a list of all the relevant bits I have played with:
+
+C006_0000h (CST 25): CRC Stripping for Type Frames
+C006_0000h (IPC 10): Checksum Offload
+C006_0000h (ACS 7): Automatic Pad or CRC Stripping
+C006_1018h (DT 26): Disable dropping of TCP/IP Checksum Error Frames
+C006_1018h (FEF 7): Forward Error Frames
+
+Whithout any special hacking, my default registers are:
+C006_0000h: 0x1100880 (25:0, 10:0, 7:1)
+C006_1018h: 0x2202006 (26:0, 7:0)
+
+I have also unsuccessfully played with "ethtool --offload eth0 rx off"
+
+The MAC registers documentation is rather sparse and written in flaky 
+English though it seems that the register description table is a copy 
+paste from the original ST documentation.
+
+
+Has anyone managed to achieve my objective, getting rid of FCS frame drop?
+
+Grégoire
