@@ -2,42 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 684CD28FE3E
-	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 08:22:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CB4228FE42
+	for <lists+netdev@lfdr.de>; Fri, 16 Oct 2020 08:23:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394147AbgJPGWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Oct 2020 02:22:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35106 "EHLO
+        id S2394167AbgJPGXO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 02:23:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2393986AbgJPGWN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 02:22:13 -0400
+        with ESMTP id S2394163AbgJPGXM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Oct 2020 02:23:12 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC524C061755
-        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 23:22:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B42B8C061755
+        for <netdev@vger.kernel.org>; Thu, 15 Oct 2020 23:23:12 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kTJ7s-00072I-2g; Fri, 16 Oct 2020 08:22:04 +0200
+        id 1kTJ8q-00077f-F4; Fri, 16 Oct 2020 08:23:04 +0200
 Received: from [IPv6:2a03:f580:87bc:d400:c4e8:c8ff:a41:29c1] (unknown [IPv6:2a03:f580:87bc:d400:c4e8:c8ff:a41:29c1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
          client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 9D8D257A5A4;
-        Fri, 16 Oct 2020 06:22:02 +0000 (UTC)
-Subject: Re: [PATCH 2/6] dt-bindings: can: flexcan: fix fsl,clk-source
- property
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 243DA57A5AD;
+        Fri, 16 Oct 2020 06:23:03 +0000 (UTC)
+Subject: Re: [PATCH 4/6] can: flexcan: rename macro
+ FLEXCAN_QUIRK_SETUP_STOP_MODE -> FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR
 To:     Joakim Zhang <qiangqing.zhang@nxp.com>, robh+dt@kernel.org,
         shawnguo@kernel.org, s.hauer@pengutronix.de
-Cc:     devicetree@vger.kernel.org, peng.fan@nxp.com, victor.liu@nxp.com,
-        netdev@vger.kernel.org, pankaj.bansal@nxp.com,
-        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-imx@nxp.com, kernel@pengutronix.de,
-        Oleksij Rempel <ore@pengutronix.de>
+Cc:     kernel@pengutronix.de, linux-imx@nxp.com, victor.liu@nxp.com,
+        peng.fan@nxp.com, linux-can@vger.kernel.org, pankaj.bansal@nxp.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 References: <20201016134320.20321-1-qiangqing.zhang@nxp.com>
- <20201016134320.20321-3-qiangqing.zhang@nxp.com>
+ <20201016134320.20321-5-qiangqing.zhang@nxp.com>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
@@ -99,15 +98,15 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
  HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
  xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
-Message-ID: <5a70ac44-62cd-8f7e-d524-c2d738a07298@pengutronix.de>
-Date:   Fri, 16 Oct 2020 08:21:58 +0200
+Message-ID: <dad084b0-018a-248c-642b-d55df4dd840f@pengutronix.de>
+Date:   Fri, 16 Oct 2020 08:22:58 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.12.0
 MIME-Version: 1.0
-In-Reply-To: <20201016134320.20321-3-qiangqing.zhang@nxp.com>
+In-Reply-To: <20201016134320.20321-5-qiangqing.zhang@nxp.com>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="Umc6dfOHNQbvTME7dy07LjINIViDg35ym"
+ boundary="ICUxgjYGJGLzxN5UPhZi7X4prXugoJjnc"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -117,36 +116,40 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Umc6dfOHNQbvTME7dy07LjINIViDg35ym
-Content-Type: multipart/mixed; boundary="t9W9a1tULPbO1VlFCJfhpy6AweMejlppr";
+--ICUxgjYGJGLzxN5UPhZi7X4prXugoJjnc
+Content-Type: multipart/mixed; boundary="cCyy6J1Fi2rvtWU6nX1qSX1ursVt6svNY";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
 To: Joakim Zhang <qiangqing.zhang@nxp.com>, robh+dt@kernel.org,
  shawnguo@kernel.org, s.hauer@pengutronix.de
-Cc: devicetree@vger.kernel.org, peng.fan@nxp.com, victor.liu@nxp.com,
- netdev@vger.kernel.org, pankaj.bansal@nxp.com, linux-kernel@vger.kernel.org,
- linux-can@vger.kernel.org, linux-imx@nxp.com, kernel@pengutronix.de,
- Oleksij Rempel <ore@pengutronix.de>
-Message-ID: <5a70ac44-62cd-8f7e-d524-c2d738a07298@pengutronix.de>
-Subject: Re: [PATCH 2/6] dt-bindings: can: flexcan: fix fsl,clk-source
- property
+Cc: kernel@pengutronix.de, linux-imx@nxp.com, victor.liu@nxp.com,
+ peng.fan@nxp.com, linux-can@vger.kernel.org, pankaj.bansal@nxp.com,
+ netdev@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Message-ID: <dad084b0-018a-248c-642b-d55df4dd840f@pengutronix.de>
+Subject: Re: [PATCH 4/6] can: flexcan: rename macro
+ FLEXCAN_QUIRK_SETUP_STOP_MODE -> FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR
 References: <20201016134320.20321-1-qiangqing.zhang@nxp.com>
- <20201016134320.20321-3-qiangqing.zhang@nxp.com>
-In-Reply-To: <20201016134320.20321-3-qiangqing.zhang@nxp.com>
+ <20201016134320.20321-5-qiangqing.zhang@nxp.com>
+In-Reply-To: <20201016134320.20321-5-qiangqing.zhang@nxp.com>
 
---t9W9a1tULPbO1VlFCJfhpy6AweMejlppr
+--cCyy6J1Fi2rvtWU6nX1qSX1ursVt6svNY
 Content-Type: text/plain; charset=utf-8
 Content-Language: de-DE
 Content-Transfer-Encoding: quoted-printable
 
 On 10/16/20 3:43 PM, Joakim Zhang wrote:
-> Correct fsl,clk-source example since flexcan driver uses "of_property_r=
-ead_u8"
-> to get this property.
+> This patch intends to rename FLEXCAN_QUIRK_SETUP_STOP_MODE quirk
+> to FLEXCAN_QUIRK_SETUP_STOP_MODE_GRP for non-scu SoCs, coming patch wil=
+l
+> add quirk for scu SoCs.
+>=20
+> For non-scu SoCs, setup stop mode with GPR register.
+> For scu SoCs, setup stop mode with SCU firmware.
+>=20
+> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
 
-Hopefully today Oleksij will post the next round of the yaml bindings con=
-version
-patch. Please resping when Oleksij's patch is applied.
+Looks good.
 
 Marc
 
@@ -157,23 +160,23 @@ Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
 Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---t9W9a1tULPbO1VlFCJfhpy6AweMejlppr--
+--cCyy6J1Fi2rvtWU6nX1qSX1ursVt6svNY--
 
---Umc6dfOHNQbvTME7dy07LjINIViDg35ym
+--ICUxgjYGJGLzxN5UPhZi7X4prXugoJjnc
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+JPAYACgkQqclaivrt
-76moJwf/VE5RzkJTV+UPKygsROruaJJE0knOgcsLY6755uxz8p58+10BL/DCIo+v
-JEKvVfQtm4U1usae7AhqnS4WJJneBfWmbzyvgLi12oqLOud3FNmy26yzM91ePuB+
-xEHiOJ1uxv3dc4rgMNCSw3hrhrTOXBXoNvyxUqGUF28Li45RmvNsmPOheQmCY9db
-JiGI6xcSck/Cw69ELh4NVeZc0b5IYssVVUjfZl6quTgck3F/L9aJMtsu8WPvOb8E
-G9NCcwBlUmUOvmoTw+5aZM6GCpAHb1S3Q/d7y65ySxr+UzqyLSFg/xc7fcDbfFw4
-291hPyu1Zq4tRKjCnYnBDF7KdXiHAQ==
-=P3WP
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+JPEIACgkQqclaivrt
+76lOjAf/cpluo2MgOvgh1Kg4M9GkoXb75uqdsehEBAb+YesEgu6Y+O9JbgYJap5T
+RbBY1o+m88/CC+Vs20XUDhs5MTe2q5ruzyFPqr8jofwUAM06nA/zTvmJPNr3Y0Zh
+53DZJIVrzYDxbLY5cIX7X+DYi8Osmf59QR0024feJJvabzwSThHDF7y6aGkWvKEO
+dWWo/ujh1p4wK/ygyGLorgs6YJYSxtwuE05+xAfDlmA9H8cq63xA/HhELEfCmgfz
+iCsZcnOawDl7XpDiZbhxOdNthXtJKEl71+uD55lOOZdB5IiPyIYnij2TrRV1dkpt
+6NTe5IkbUtz6zAB5Sc7Lkv2k+Z6hcQ==
+=x5mv
 -----END PGP SIGNATURE-----
 
---Umc6dfOHNQbvTME7dy07LjINIViDg35ym--
+--ICUxgjYGJGLzxN5UPhZi7X4prXugoJjnc--
