@@ -2,61 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC5FF290F97
-	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 07:47:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E76CF290E51
+	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 02:08:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436548AbgJQFrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Oct 2020 01:47:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46592 "EHLO mail.kernel.org"
+        id S2411283AbgJQAFx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Oct 2020 20:05:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36476 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2410845AbgJQFrV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 17 Oct 2020 01:47:21 -0400
-Content-Type: text/plain; charset="utf-8"
+        id S2411510AbgJQABx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Oct 2020 20:01:53 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AAA1222203;
+        Sat, 17 Oct 2020 00:01:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602892803;
-        bh=N6sGLQTL3I8PG+AghEG4usEUqToaBVskk1UZA3JOcfs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=d923Az5MBeFQOwshPimDFkt2pchsSg1q/PGG3GmxqjXXsR50+dcIlYeEpvAoYz7z0
-         XajvqLGILq8brKrP/y1GoqHQRV72DA4R/X1j/VqX0oYos32IFWQdJY5pke7iiiwtqF
-         7m/xs7iwCz/YKUXXAPR5kXX5BwtqHvNB7nJ7eTVI=
+        s=default; t=1602892889;
+        bh=xYyU7HNpb8kciSA2gjxbTtUsERt/l6+7SlYsGylARjs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=eGo4rDnfLljNjzPm8RP1uipVW0BUZf0yQ8y4aS3HyWaX0OxEHJKaMM46F6x0VS7nc
+         9FE+W8dpD3tmiF87N5msDcCrQSnP2mhp3KSE69mxXLOampBjm+BmG7/YTMkz4/Up8F
+         Q0qubTBoqDbwveNNj2Me36cDzRhfqMQuETNJplFA=
+Date:   Fri, 16 Oct 2020 17:01:26 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ian Kumlien <ian.kumlien@gmail.com>, anthony.l.nguyen@intel.com
+Cc:     David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        kernel-team@fb.com, jesse.brandeburg@intel.com,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: Re: [PATCH net] ixgbe: fix probing of multi-port devices with one
+ MDIO
+Message-ID: <20201016170126.21b1cad5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAA85sZsm0ZNGoU59Lhn+qUHDAUcNjLoJYdqUf45k_nSkANMDog@mail.gmail.com>
+References: <20201016232006.3352947-1-kuba@kernel.org>
+        <CAA85sZsm0ZNGoU59Lhn+qUHDAUcNjLoJYdqUf45k_nSkANMDog@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] icmp: randomize the global rate limiter
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <160289280320.7840.14344252019735666760.git-patchwork-notify@kernel.org>
-Date:   Sat, 17 Oct 2020 00:00:03 +0000
-References: <20201015184200.2179938-1-eric.dumazet@gmail.com>
-In-Reply-To: <20201015184200.2179938-1-eric.dumazet@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        edumazet@google.com, kman001@ucr.edu
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Thu, 15 Oct 2020 11:42:00 -0700 you wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Sat, 17 Oct 2020 01:50:59 +0200 Ian Kumlien wrote:
+> On Sat, Oct 17, 2020 at 1:20 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> > Ian reports that after upgrade from v5.8.14 to v5.9 only one
+> > of his 4 ixgbe netdevs appear in the system.
+> >
+> > Quoting the comment on ixgbe_x550em_a_has_mii():
+> >  * Returns true if hw points to lowest numbered PCI B:D.F x550_em_a device in
+> >  * the SoC.  There are up to 4 MACs sharing a single MDIO bus on the x550em_a,
+> >  * but we only want to register one MDIO bus.
+> >
+> > This matches the symptoms, since the return value from
+> > ixgbe_mii_bus_init() is no longer ignored we need to handle
+> > the higher ports of x550em without an error.  
 > 
-> Keyu Man reported that the ICMP rate limiter could be used
-> by attackers to get useful signal. Details will be provided
-> in an upcoming academic publication.
+> Nice, that fixes it!
 > 
-> Our solution is to add some noise, so that the attackers
-> no longer can get help from the predictable token bucket limiter.
-> 
-> [...]
+> You can add a:
+> Tested-by: Ian Kumlien <ian.kumlien@gmail.com>
 
-Here is the summary with links:
-  - [net] icmp: randomize the global rate limiter
-    https://git.kernel.org/netdev/net/c/b38e7819cae9
+Will do, thanks!
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Tony, should I apply directly to net?
