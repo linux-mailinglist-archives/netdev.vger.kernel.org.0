@@ -2,113 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA7FB291468
-	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 22:57:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACC2029147C
+	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 23:01:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439101AbgJQU5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Oct 2020 16:57:18 -0400
-Received: from mailout06.rmx.de ([94.199.90.92]:43707 "EHLO mailout06.rmx.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2439080AbgJQU5R (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 17 Oct 2020 16:57:17 -0400
-Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mailout06.rmx.de (Postfix) with ESMTPS id 4CDFh92mp3z9tD4;
-        Sat, 17 Oct 2020 22:57:13 +0200 (CEST)
-Received: from mta.arri.de (unknown [217.111.95.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by kdin01.retarus.com (Postfix) with ESMTPS id 4CDFgt3PVjz2xGF;
-        Sat, 17 Oct 2020 22:56:58 +0200 (CEST)
-Received: from n95hx1g2.localnet (192.168.54.12) by mta.arri.de
- (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Sat, 17 Oct
- 2020 22:56:25 +0200
-From:   Christian Eggers <ceggers@arri.de>
-To:     Vladimir Oltean <olteanv@gmail.com>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 1/3] net: dsa: don't pass cloned skb's to drivers xmit function
-Date:   Sat, 17 Oct 2020 22:56:24 +0200
-Message-ID: <1735006.IpzxAEH60n@n95hx1g2>
-Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-In-Reply-To: <20201017191247.ohslc77wkhbhffym@skbuf>
-References: <20201016200226.23994-1-ceggers@arri.de> <2130539.dlFve3NVyK@n95hx1g2> <20201017191247.ohslc77wkhbhffym@skbuf>
+        id S2439254AbgJQVBi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Oct 2020 17:01:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53828 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2439166AbgJQVBg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Oct 2020 17:01:36 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCDB3C0613CE
+        for <netdev@vger.kernel.org>; Sat, 17 Oct 2020 14:01:35 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id qp15so8487762ejb.3
+        for <netdev@vger.kernel.org>; Sat, 17 Oct 2020 14:01:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=intel-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QU5tUnKrk3cCgEOM6DUuSpHohPcIoidzngrqxPrVqlg=;
+        b=ntIAxdfj5B3UZZJPAO3W3zqpuYJdxZe6wmMN+Cg5+tfh5QjsxLbXR5o2amfdJQ2J48
+         +r9G2vZiMs4S/e6t6kNU+/1RisTXP2Yspklt8lksB4PhSQjsUISEYusYJeN2p0XCHoqr
+         5tX/QI+fZe3GQZJaviemAIYQlGxoIFC7s6aX8R5MJQLi2SOYJ/keQbrc62HNUeJ8pCOI
+         7WYztP0OE4axPIRoGDfVK4aq4k9dPY6fZ69Y4fL3/a70qb0GrKtNhloBSbp9yIhwtpgg
+         UECkhdkcAFyI2jUc3qFZfU7NKoc+E1dZJHZxhONiRQFFV//aVnbaYjp+hfJUaNjfh3TU
+         ik3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QU5tUnKrk3cCgEOM6DUuSpHohPcIoidzngrqxPrVqlg=;
+        b=VdiAIthJMkhGeS+qUSZEcue8ukiR8VcMeXFufj2cbGSk2CV4j9lOz7RjoLZu5OWHot
+         STBxsI43Z2vtvg9Y/i8N8Fm0DF3MNS6r+y/phwbDc5oxgrGSHGvm7Bbs/BKdGypkcbNq
+         1U93o/WXys8f18t4XDyoAICeCe/d8lbWg6IYHSuDsakKAAVJQxMW/dmY09xdMe9cf1E4
+         0axdZ0HuxE9uA7khz3z3Bt749AG4PEupcRVQ2Tds2/Ky37JhNkY6rUe3ZiMGVa9QmC6k
+         7r2q2l/x5zgVBWcbBzVJDspzv3c2ubJYE+jlASrotcUlIMllNmUoNgNvPGOMpdhb2aAY
+         9ynw==
+X-Gm-Message-State: AOAM531wmQaEiXszGQ6C+qFWIe7RBnYVf4otF9kASscaI4dkpQeqcgdA
+        P6UfUld/OBoBAyaJDx1BsNlPNp+MQgu5ZA4hw737OA==
+X-Google-Smtp-Source: ABdhPJzde2s6j/g/ekBLPPrgSH2EJqfd3KSDRuhe3Mnzr9w98lVRa6HniOngGCyhNuV4q/eDk1HFvyy/v8IqyEanGTA=
+X-Received: by 2002:a17:906:1a19:: with SMTP id i25mr9957370ejf.323.1602968492144;
+ Sat, 17 Oct 2020 14:01:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Originating-IP: [192.168.54.12]
-X-RMX-ID: 20201017-225704-4CDFgt3PVjz2xGF-0@kdin01
-X-RMX-SOURCE: 217.111.95.66
+References: <20201017160928.12698-1-trix@redhat.com>
+In-Reply-To: <20201017160928.12698-1-trix@redhat.com>
+From:   Dan Williams <dan.j.williams@intel.com>
+Date:   Sat, 17 Oct 2020 14:01:22 -0700
+Message-ID: <CAPcyv4jkSFxMXgMABX7sDbwmq8zJO=rLX2ww3Y9Tc0VAANY8xQ@mail.gmail.com>
+Subject: Re: [RFC] treewide: cleanup unreachable breaks
+To:     trix@redhat.com
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-edac@vger.kernel.org,
+        Linux ACPI <linux-acpi@vger.kernel.org>,
+        Linux-pm mailing list <linux-pm@vger.kernel.org>,
+        xen-devel <xen-devel@lists.xenproject.org>,
+        linux-block@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-crypto <linux-crypto@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-power@fi.rohmeurope.com, linux-gpio@vger.kernel.org,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>, nouveau@lists.freedesktop.org,
+        virtualization@lists.linux-foundation.org,
+        spice-devel@lists.freedesktop.org, linux-iio@vger.kernel.org,
+        linux-amlogic@lists.infradead.org,
+        industrypack-devel@lists.sourceforge.net,
+        "Linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+        MPT-FusionLinux.pdl@broadcom.com,
+        linux-scsi <linux-scsi@vger.kernel.org>,
+        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
+        Netdev <netdev@vger.kernel.org>,
+        intel-wired-lan@lists.osuosl.org, ath10k@lists.infradead.org,
+        Linux Wireless List <linux-wireless@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com, linux-nfc@lists.01.org,
+        linux-nvdimm <linux-nvdimm@lists.01.org>,
+        Linux PCI <linux-pci@vger.kernel.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        platform-driver-x86@vger.kernel.org, patches@opensource.cirrus.com,
+        storagedev@microchip.com, devel@driverdev.osuosl.org,
+        linux-serial@vger.kernel.org, USB list <linux-usb@vger.kernel.org>,
+        usb-storage@lists.one-eyed-alien.net,
+        linux-watchdog@vger.kernel.org, ocfs2-devel@oss.oracle.com,
+        bpf@vger.kernel.org, linux-integrity@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        "open list:KEYS-TRUSTED" <keyrings@vger.kernel.org>,
+        alsa-devel@alsa-project.org,
+        clang-built-linux <clang-built-linux@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Saturday, 17 October 2020, 21:12:47 CEST, Vladimir Oltean wrote:
-> On Sat, Oct 17, 2020 at 08:53:19PM +0200, Christian Eggers wrote:
-> > > Does 1588 work for you using this change, or you haven't finished
-> > > implementing it yet? If you haven't, I would suggest finishing that
-> > > part first.
-> > 
-> > Yes it does. Just after finishing this topic, I would to sent the patches
-> > for PTP. Maybe I'll do it in parallel, anything but the combination of
-> > L2/E2E/SLOB seems to work.
-> 
-> 2 aspects:
-> - net-next is closed for this week and the next one, due to the merge
->   window. You'll have to wait until it reopens.
-The status page seems to be out of date:
-http://vger.kernel.org/~davem/net-next.html
+On Sat, Oct 17, 2020 at 9:10 AM <trix@redhat.com> wrote:
+>
+> From: Tom Rix <trix@redhat.com>
+>
+> This is a upcoming change to clean up a new warning treewide.
+> I am wondering if the change could be one mega patch (see below) or
+> normal patch per file about 100 patches or somewhere half way by collecting
+> early acks.
+>
+> clang has a number of useful, new warnings see
+> https://clang.llvm.org/docs/DiagnosticsReference.html
+>
+> This change cleans up -Wunreachable-code-break
+> https://clang.llvm.org/docs/DiagnosticsReference.html#wunreachable-code-break
+> for 266 of 485 warnings in this week's linux-next, allyesconfig on x86_64.
+>
+> The method of fixing was to look for warnings where the preceding statement
+> was a simple statement and by inspection made the subsequent break unneeded.
+> In order of frequency these look like
+>
+> return and break
+>
+>         switch (c->x86_vendor) {
+>         case X86_VENDOR_INTEL:
+>                 intel_p5_mcheck_init(c);
+>                 return 1;
+> -               break;
+>
+> goto and break
+>
+>         default:
+>                 operation = 0; /* make gcc happy */
+>                 goto fail_response;
+> -               break;
+>
+> break and break
+>                 case COLOR_SPACE_SRGB:
+>                         /* by pass */
+>                         REG_SET(OUTPUT_CSC_CONTROL, 0,
+>                                 OUTPUT_CSC_GRPH_MODE, 0);
+>                         break;
+> -                       break;
+>
+> The exception to the simple statement, is a switch case with a block
+> and the end of block is a return
+>
+>                         struct obj_buffer *buff = r->ptr;
+>                         return scnprintf(str, PRIV_STR_SIZE,
+>                                         "size=%u\naddr=0x%X\n", buff->size,
+>                                         buff->addr);
+>                 }
+> -               break;
+>
+> Not considered obvious and excluded, breaks after
+> multi level switches
+> complicated if-else if-else blocks
+> panic() or similar calls
+>
+> And there is an odd addition of a 'fallthrough' in drivers/tty/nozomi.c
+[..]
+> diff --git a/drivers/nvdimm/claim.c b/drivers/nvdimm/claim.c
+> index 5a7c80053c62..2f250874b1a4 100644
+> --- a/drivers/nvdimm/claim.c
+> +++ b/drivers/nvdimm/claim.c
+> @@ -200,11 +200,10 @@ ssize_t nd_namespace_store(struct device *dev,
+>                 }
+>                 break;
+>         default:
+>                 len = -EBUSY;
+>                 goto out_attach;
+> -               break;
+>         }
 
-The FAQ says: "Do not send new net-next content to netdev...". So there is no
-possibility for code review, is it?
-
-> - Actually I was asking you this because sja1105 PTP no longer works
->   after this change, due to the change of txflags.
-The tail taggers seem to be immune against this change.
-
-> > I don't like to touch the non-tail taggers, this is too much out of the
-> > scope of my current work.
-> 
-> Do you want me to try and send a version using pskb_expand_head and you
-> can test if it works for your tail-tagging switch?
-I already wanted to ask... My 2nd try (checking for !skb_cloned()) was already
-sufficient (for me). Hacking linux-net is very interesting, but I have many 
-other items open... Testing would be no problem.
-
-> > > Also, if the result is going to be longer than ~20 lines of code, I
-> > > strongly suggest moving the reallocation to a separate function so you
-> > > don't clutter dsa_slave_xmit.
-> > 
-> > As Florian requested I'll likely put the code into a separate function in
-> > slave.c and call it from the individual tail-taggers in order not to put
-> > extra conditionals in dsa_slave_xmit.
-> 
-> I think it would be best to use the unlikely(tail_tag) approach though.
-> The reallocation function should still be in the common code path. Even
-> for a non-1588 switch, there are other code paths that clone packets on
-> TX. For example, the bridge does that, when flooding packets. 
-You already mentioned that you don't want to pass cloned packets to the tag 
-drivers xmit() functions. I've no experience with the problems caused by 
-cloned packets, but would cloned packets work anyway? Or must cloned packets 
-not be changed (e.g. by tail-tagging)? Is there any value in first cloning in 
-dsa_skb_tx_timestamp() and then unsharing in dsa_slave_xmit a few lines later? 
-The issue I currently have only affects a very minor number of packets (cloned 
-AND < ETH_ZLEN AND CONFIG_SLOB), so only these packets would need a copying.
-
-> Currently, DSA ensures that the header area is writable by calling 
-> skb_cow_head, as far as I can see. But the point is, maybe we can do TX 
-> reallocation centrally.
-
-regards
-Christian
-
-
-
+Acked-by: Dan Williams <dan.j.williams@intel.com>
