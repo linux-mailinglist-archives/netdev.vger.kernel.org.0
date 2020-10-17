@@ -2,269 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CEDB290F2E
-	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 07:29:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AF44291063
+	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 09:12:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2411666AbgJQF3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Oct 2020 01:29:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52250 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2411627AbgJQF3n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Oct 2020 01:29:43 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00015C05BD31;
-        Fri, 16 Oct 2020 22:19:57 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id g29so2676948pgl.2;
-        Fri, 16 Oct 2020 22:19:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=g4S8FiM9+SxQFJfjVdY05B6e4/CplxY8Vc+xso0Pvpo=;
-        b=pLQmnZgsHQKbiHvccGpmqSLOBP1t0JBScHmZpTP8fieLT0xtiqRzdxWWuy/f1t0fGr
-         5LArsmGCFrawy4UfJ/H4obnCYzSqvU+o1BTv0bvlTVnmqyl+hAh3O2y2zR3jMlmne2pF
-         vWT38/wo6I2u22NfUvNKgMaaTKutrpSL4t7iJXKMNGZaGkso6jJO32iWAKVxnUz/zZMO
-         jUkltvVMTB0SGYwyI86GNwRKcZ2/EDo4ZLX8wmR3Xir4xV42wzexjbkeuAMaITaNQXJL
-         +00NFqpKooO33yetRM9JvKKw1dx2kPng/CVSElw+cBPgi4tzHykLaaGfTt8sqY4JEZG5
-         wCbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=g4S8FiM9+SxQFJfjVdY05B6e4/CplxY8Vc+xso0Pvpo=;
-        b=Vt07i00Aku+s5ZPvo6CwcDBls9dUbs/V2JNV3JVTeN398C0C+8kbyOd0M80YI5WEN+
-         mZteijuf/awSRFENlO4LnQVsmJqbKnNBZTc3Cn9uRrgrUeSeHzTmW00M0kb3Ho5cqtu8
-         CUtbDVqoDgdmkgj8oPK1JTfImjRI2QXR5un6BRUwNnqqGYlbfV+Jd9fpQeuP4BJr2AeB
-         /N01xu2jRU/bHJLNNy1LC/NazXN6M/YkAEuII95PLfh5OGJ9Mu1oGXHh+FHY2t9d+q57
-         zKp8driIKV6olfzGN+PpjPWY0RSAfw9PvEE9r3UJiqilcSStnotXxRMZ9cTl0VvXt6hx
-         475w==
-X-Gm-Message-State: AOAM532nnVIXYboVG4VFhmYwOaELEUtIoLnWEkNmQj8BMAZqwpHr44f1
-        HYgshNS/BcDUmcbkPaOwIPo=
-X-Google-Smtp-Source: ABdhPJznEamAzPXJ2wEqNHW/F+jzs/N80l47ArH5F+tK1caxmbDoCwbEdT08bhsVMLhkHoKx8iHznA==
-X-Received: by 2002:a63:fc08:: with SMTP id j8mr5910099pgi.138.1602911997313;
-        Fri, 16 Oct 2020 22:19:57 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:dd8e:b5f2:63bf:1e61])
-        by smtp.gmail.com with ESMTPSA id q81sm4623784pfc.36.2020.10.16.22.19.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Oct 2020 22:19:56 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Krzysztof Halasa <khc@pm.waw.pl>
-Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH net-next] drivers/net/wan/hdlc_fr: Improve fr_rx and add support for any Ethertype
-Date:   Fri, 16 Oct 2020 22:19:51 -0700
-Message-Id: <20201017051951.363514-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
+        id S2411517AbgJQHMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Oct 2020 03:12:48 -0400
+Received: from mail-eopbgr80095.outbound.protection.outlook.com ([40.107.8.95]:15328
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2410562AbgJQHMs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 17 Oct 2020 03:12:48 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=m+P/HRN11TxY6C2FfWOFG0FzdofTp2FXWqmr3r/vYkjBKEazi9HHyMdcCDHM0SqPIeOhRzDr3faencFMuwEtUmr/VqfO68Ct4FZyGY0uVN5TQC1fYMhPEZ3oIu+HxPXW8O84ziMa4qE45Dplf3YRSBJ0fcu9QQ+kPT1Ps3yfafO2jFH+YgRJq8j6IZT+SxlVRKccUMO0LKxxkVV9HS1271brXnMg0jXS5KX/d4slthZrWjpA0qKmmz/qawYDoTBrIitjiOJwpaGFbdjqANX2ebSgMkQbyoEtX8m6w6dOZpRlaxmlh5RTwX+Z2E4M4v3D0znQA9719wK4uo8Djifi0g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9cvAU3m0xpEsheXyH8GRGZW+of1AVUCHgCJmqAtz2nc=;
+ b=NR16ivGVPMNbuRnF08LEuNSLLaqfobrgZ9ZuMQHVfFzec3TDHhSq2mejlJPxPbHnyT6kJav8Osvp0LvwXFLYt5k/UxHdLMAe/b4RIw4Oe1LF8Ejqtf7B8SfP+2OmpFmr3u64Tp1L3EEv8knusdQfIL3EwrRbH8WNTE3i/ORGF2DAkSH5UapPe/txieD8UOTTqJ3+jmyNokYAamaiGcnwSLJwm18l3FWU+aDaWGUOwC2hIzlNkfIdk4SlBEVy8JSEoZGDB5p/wlJYkF110j/jbhtDS3ud2d8X2JLD7P+fyxQPZ0E4NRhFq/B8wASC7cguPZAOTXSOfIZd2O4B2Xxdig==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=voleatech.de; dmarc=pass action=none header.from=voleatech.de;
+ dkim=pass header.d=voleatech.de; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=voleatech.de;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9cvAU3m0xpEsheXyH8GRGZW+of1AVUCHgCJmqAtz2nc=;
+ b=eeIxTCYuTP3fWVNoZDivqYo8RJtmGgrV2PceB4IIu+9t8roXq4UXrdJGdGgAoHNGuKhzmjBVEpHKksFX6yZKT5BSSOOcdpszyr0HSHJNXMRarIybZqXttrYp0WuuNyw6an0GlICj5O83a/dAeCA+FNs/PapwW1CqhLmJMwx44Ms=
+Authentication-Results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=voleatech.de;
+Received: from AM8PR05MB7251.eurprd05.prod.outlook.com (2603:10a6:20b:1d4::23)
+ by AM0PR0502MB4018.eurprd05.prod.outlook.com (2603:10a6:208:b::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.21; Sat, 17 Oct
+ 2020 07:12:41 +0000
+Received: from AM8PR05MB7251.eurprd05.prod.outlook.com
+ ([fe80::f132:2cc:34f2:5e4]) by AM8PR05MB7251.eurprd05.prod.outlook.com
+ ([fe80::f132:2cc:34f2:5e4%7]) with mapi id 15.20.3477.021; Sat, 17 Oct 2020
+ 07:12:41 +0000
+From:   sven.auhagen@voleatech.de
+To:     anthony.l.nguyen@intel.com, maciej.fijalkowski@intel.com
+Cc:     davem@davemloft.net, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        sandeep.penigalapati@intel.com, brouer@redhat.com
+Subject: [PATCH v2 0/6] igb: xdp patches followup
+Date:   Sat, 17 Oct 2020 09:12:32 +0200
+Message-Id: <20201017071238.95190-1-sven.auhagen@voleatech.de>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [109.193.235.168]
+X-ClientProxiedBy: AM3PR05CA0087.eurprd05.prod.outlook.com
+ (2603:10a6:207:1::13) To AM8PR05MB7251.eurprd05.prod.outlook.com
+ (2603:10a6:20b:1d4::23)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (109.193.235.168) by AM3PR05CA0087.eurprd05.prod.outlook.com (2603:10a6:207:1::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.25 via Frontend Transport; Sat, 17 Oct 2020 07:12:41 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8dbdcee9-4a74-4cc5-d30a-08d8726c0979
+X-MS-TrafficTypeDiagnostic: AM0PR0502MB4018:
+X-Microsoft-Antispam-PRVS: <AM0PR0502MB4018C25E538DDD1E5BE3A55CEF000@AM0PR0502MB4018.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1051;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: TPO2/+TDZR4ReaoO2YpcOUq0t8uYDOcxGbGNWOgn0FNKvg3YUClKaKoeS00lEEJ0OIF5XjAY8FMCerVlS0/oFs56zMcsPEJoPV4vulIRyPphvdQuWRQc+YOrMpxfQlO+s1aKvD9w3UNxK4rBHYRqLNmZgL1h+uayuGy2tWePTKdJtvbUmFb6aItvNQbXT2EMQC64HBo4thnTD6aMYvSIRW/amPnO/QoS+rRjrCHA6wWPMJP8Snn6jkMZ9GFjrg2FdniwOvdhmzTWzidBpQcKWjs3aKzAZUfI8bNLBmVskJPc9T7ZyQb3fyMlMFL8YqYQcOUccbiDDxuHZi3Cx+I2FMEgrkxoTgAwol+jFsm3Ub4sh+mblqT8hZgFLNjRhu3T
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR05MB7251.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(39830400003)(396003)(346002)(376002)(136003)(1076003)(8936002)(66476007)(66946007)(8676002)(86362001)(52116002)(69590400008)(66556008)(6512007)(478600001)(6506007)(9686003)(26005)(4326008)(6666004)(83380400001)(4744005)(5660300002)(956004)(2906002)(36756003)(316002)(186003)(2616005)(16526019)(6486002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: tpQGRMo7Xrl4yPshL6To66Gz4Hu447OQgnNVRQHP7gmoEFWbYm1GuYfEOXGD8PqJad8kcS08dnR6s4iKmvX/gg7aUVATFW7D/HHto73JXsRJfWacmzP0OIpsHfLWeamHQvvfBGMBoKLOTLEZNLWy7nv+ajPJIrsGpc5+UIWVgD2msocGVSGmTurCBoIu4Bj+LU8UfY0z0AunsUfcF1xwNC0HZWUA0kWJT8Hndbrsj0Wkgr7i3X3KiKFFl5kItQrxT22QQGDDBOTa5zCR5b8X/PbhX3i6KmfOC5zCfQMlebSMAmk+HOPdqwAkcvPnWbHjaXlpCrNVSnFFrUeaGnR1xRTaqMuLoph/jriVy7hD+NTH49oWdzlU9RD0vRDDa3V/RDChRkgoR8eyhlFM9+5TDbc3ZlAmiGFjxueU1kg/Qy1ETQ/edxFM+n2QHjN8IopZS5ThsIYdFFnxF5rs0kvQc/nG0oY4PTEM6xl9x+lorEhAbu0ZDl1cMQZ60by1wFmtyIUghscwXZAQTYRQZ1sdorr8yZS6w0l0DkBCZ3qZhb0sevT/3K6p/OLMvCOH9Tu0YboiY3ZVXYzSmaFHLARzb+dbWuUiL63kx1KRTqcZ7hjsGjhe3JUnkfKoenT9fwRk+V21Xk4Y0Yv7DqIfnXm7vg==
+X-OriginatorOrg: voleatech.de
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8dbdcee9-4a74-4cc5-d30a-08d8726c0979
+X-MS-Exchange-CrossTenant-AuthSource: AM8PR05MB7251.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Oct 2020 07:12:41.5989
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: b82a99f6-7981-4a72-9534-4d35298f847b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lz/eUUvgmaGeTNegyxUrfEKk5+XBUAYr/TSPBsRfEVwMaQjUYlAsHkuO3M0qw0on+ROka9SlX7u+cWDrUxfAc5DlFuN+Q/a3r2LXVdeOFyk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0502MB4018
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-1. Change the fr_rx function to make this driver support any Ethertype
-when receiving. (This driver is already able to handle any Ethertype
-when sending.)
+From: Sven Auhagen <sven.auhagen@voleatech.de>
 
-Originally in the fr_rx function, the code that parses the long (10-byte)
-header only recognizes a few Ethertype values and drops frames with other
-Ethertype values. This patch replaces this code to make fr_rx support
-any Ethertype. This patch also creates a new function fr_snap_parse as
-part of the new code.
+This patch series addresses some of the comments that came back
+after the igb XDP patch was accepted.
+Most of it is code cleanup.
+The last patch contains a fix for a tx queue timeout
+that can occur when using xdp.
 
-2. Change the use of the "dev" variable in fr_rx. Originally we do
-"dev = something", and then at the end do "if (dev) skb->dev = dev".
-Now we do "if (something) skb->dev = something", then at the end do
-"dev = skb->dev".
+Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
 
-This is to make the logic of our code consistent with eth_type_trans
-(which we call). The eth_type_trans function expects a non-NULL pointer
-as a parameter and assigns it directly to skb->dev.
+Change from v1:
+    * Drop patch 5 as the igb_rx_frame_truesize won't match
+    * Fix typo in comment
+    * Add Suggested-by and Reviewed-by tags
+    * Add how to avoid transmit queue timeout in xdp path
+      is fixed in the commit message
 
-3. Change the initial skb->len check in fr_fx from "<= 4" to "< 4".
-At first we only need to ensure a 4-byte header is present. We indeed
-normally need the 5th byte, too, but it'd be more logical to check its
-existence when we actually need it.
+Sven Auhagen (6):
+  igb: XDP xmit back fix error code
+  igb: take vlan double header into account
+  igb: XDP extack message on error
+  igb: skb add metasize for xdp
+  igb: use xdp_do_flush
+  igb: avoid transmit queue timeout in xdp path
 
-Also add an fh->ea2 check to the initial checks in fr_fx. fh->ea2 == 1
-means the second address byte is the final address byte. We only support
-the case where the address length is 2 bytes.
+ drivers/net/ethernet/intel/igb/igb.h      |  5 ++++
+ drivers/net/ethernet/intel/igb/igb_main.c | 32 +++++++++++++++--------
+ 2 files changed, 26 insertions(+), 11 deletions(-)
 
-4. Use "goto rx_drop" whenever we need to drop a valid frame.
-
-Cc: Krzysztof Halasa <khc@pm.waw.pl>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
- drivers/net/wan/hdlc_fr.c | 119 +++++++++++++++++++++++---------------
- 1 file changed, 73 insertions(+), 46 deletions(-)
-
-diff --git a/drivers/net/wan/hdlc_fr.c b/drivers/net/wan/hdlc_fr.c
-index 409e5a7ad8e2..e95efc14bc97 100644
---- a/drivers/net/wan/hdlc_fr.c
-+++ b/drivers/net/wan/hdlc_fr.c
-@@ -871,6 +871,45 @@ static int fr_lmi_recv(struct net_device *dev, struct sk_buff *skb)
- 	return 0;
- }
- 
-+static int fr_snap_parse(struct sk_buff *skb, struct pvc_device *pvc)
-+{
-+	/* OUI 00-00-00 indicates an Ethertype follows */
-+	if (skb->data[0] == 0x00 &&
-+	    skb->data[1] == 0x00 &&
-+	    skb->data[2] == 0x00) {
-+		if (!pvc->main)
-+			return -1;
-+		skb->dev = pvc->main;
-+		skb->protocol = *(__be16 *)(skb->data + 3); /* Ethertype */
-+		skb_pull(skb, 5);
-+		skb_reset_mac_header(skb);
-+		return 0;
-+
-+	/* OUI 00-80-C2 stands for the 802.1 organization */
-+	} else if (skb->data[0] == 0x00 &&
-+		   skb->data[1] == 0x80 &&
-+		   skb->data[2] == 0xC2) {
-+		/* PID 00-07 stands for Ethernet frames without FCS */
-+		if (skb->data[3] == 0x00 &&
-+		    skb->data[4] == 0x07) {
-+			if (!pvc->ether)
-+				return -1;
-+			skb_pull(skb, 5);
-+			if (skb->len < ETH_HLEN)
-+				return -1;
-+			skb->protocol = eth_type_trans(skb, pvc->ether);
-+			return 0;
-+
-+		/* PID unsupported */
-+		} else {
-+			return -1;
-+		}
-+
-+	/* OUI unsupported */
-+	} else {
-+		return -1;
-+	}
-+}
- 
- static int fr_rx(struct sk_buff *skb)
- {
-@@ -880,9 +919,9 @@ static int fr_rx(struct sk_buff *skb)
- 	u8 *data = skb->data;
- 	u16 dlci;
- 	struct pvc_device *pvc;
--	struct net_device *dev = NULL;
-+	struct net_device *dev;
- 
--	if (skb->len <= 4 || fh->ea1 || data[2] != FR_UI)
-+	if (skb->len < 4 || fh->ea1 || !fh->ea2 || data[2] != FR_UI)
- 		goto rx_error;
- 
- 	dlci = q922_to_dlci(skb->data);
-@@ -904,8 +943,7 @@ static int fr_rx(struct sk_buff *skb)
- 		netdev_info(frad, "No PVC for received frame's DLCI %d\n",
- 			    dlci);
- #endif
--		dev_kfree_skb_any(skb);
--		return NET_RX_DROP;
-+		goto rx_drop;
- 	}
- 
- 	if (pvc->state.fecn != fh->fecn) {
-@@ -931,63 +969,52 @@ static int fr_rx(struct sk_buff *skb)
- 	}
- 
- 	if (data[3] == NLPID_IP) {
-+		if (!pvc->main)
-+			goto rx_drop;
- 		skb_pull(skb, 4); /* Remove 4-byte header (hdr, UI, NLPID) */
--		dev = pvc->main;
-+		skb->dev = pvc->main;
- 		skb->protocol = htons(ETH_P_IP);
-+		skb_reset_mac_header(skb);
- 
- 	} else if (data[3] == NLPID_IPV6) {
-+		if (!pvc->main)
-+			goto rx_drop;
- 		skb_pull(skb, 4); /* Remove 4-byte header (hdr, UI, NLPID) */
--		dev = pvc->main;
-+		skb->dev = pvc->main;
- 		skb->protocol = htons(ETH_P_IPV6);
-+		skb_reset_mac_header(skb);
- 
--	} else if (skb->len > 10 && data[3] == FR_PAD &&
--		   data[4] == NLPID_SNAP && data[5] == FR_PAD) {
--		u16 oui = ntohs(*(__be16*)(data + 6));
--		u16 pid = ntohs(*(__be16*)(data + 8));
--		skb_pull(skb, 10);
--
--		switch ((((u32)oui) << 16) | pid) {
--		case ETH_P_ARP: /* routed frame with SNAP */
--		case ETH_P_IPX:
--		case ETH_P_IP:	/* a long variant */
--		case ETH_P_IPV6:
--			dev = pvc->main;
--			skb->protocol = htons(pid);
--			break;
--
--		case 0x80C20007: /* bridged Ethernet frame */
--			if ((dev = pvc->ether) != NULL)
--				skb->protocol = eth_type_trans(skb, dev);
--			break;
--
--		default:
--			netdev_info(frad, "Unsupported protocol, OUI=%x PID=%x\n",
--				    oui, pid);
--			dev_kfree_skb_any(skb);
--			return NET_RX_DROP;
-+	} else if (data[3] == FR_PAD) {
-+		if (skb->len < 5)
-+			goto rx_error;
-+		if (data[4] == NLPID_SNAP) { /* A SNAP header follows */
-+			skb_pull(skb, 5);
-+			if (skb->len < 5) /* Incomplete SNAP header */
-+				goto rx_error;
-+			if (fr_snap_parse(skb, pvc))
-+				goto rx_drop;
-+		} else {
-+			goto rx_drop;
- 		}
-+
- 	} else {
- 		netdev_info(frad, "Unsupported protocol, NLPID=%x length=%i\n",
- 			    data[3], skb->len);
--		dev_kfree_skb_any(skb);
--		return NET_RX_DROP;
-+		goto rx_drop;
- 	}
- 
--	if (dev) {
--		dev->stats.rx_packets++; /* PVC traffic */
--		dev->stats.rx_bytes += skb->len;
--		if (pvc->state.becn)
--			dev->stats.rx_compressed++;
--		skb->dev = dev;
--		netif_rx(skb);
--		return NET_RX_SUCCESS;
--	} else {
--		dev_kfree_skb_any(skb);
--		return NET_RX_DROP;
--	}
-+	dev = skb->dev;
-+	dev->stats.rx_packets++; /* PVC traffic */
-+	dev->stats.rx_bytes += skb->len;
-+	if (pvc->state.becn)
-+		dev->stats.rx_compressed++;
-+	netif_rx(skb);
-+	return NET_RX_SUCCESS;
- 
-- rx_error:
-+rx_error:
- 	frad->stats.rx_errors++; /* Mark error */
-+rx_drop:
-+	frad->stats.rx_dropped++;
- 	dev_kfree_skb_any(skb);
- 	return NET_RX_DROP;
- }
 -- 
-2.25.1
+2.20.1
 
