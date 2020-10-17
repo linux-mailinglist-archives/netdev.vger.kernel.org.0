@@ -2,89 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB01829121A
-	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 15:46:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7934C291255
+	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 16:20:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438196AbgJQNqH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Oct 2020 09:46:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43616 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2438192AbgJQNqG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Oct 2020 09:46:06 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8544DC061755
-        for <netdev@vger.kernel.org>; Sat, 17 Oct 2020 06:46:06 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id h24so7501835ejg.9
-        for <netdev@vger.kernel.org>; Sat, 17 Oct 2020 06:46:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=FPhEdIY5KuEMvseRGzglc0TnMkq8eN0fVBxf9t9vD5g=;
-        b=YD6Xq6L9uo2dCF0d4GH1W7AaYY8jASnSXy0nNWzGn+xqSOiVK1aehGqWgRjOko4hnX
-         ngt15q+s9eO11qmRpKM4EdnkmiVq9qdpvlCx2y5AbaPKaqow/EQmnvMTMVv3HhjGD6t8
-         Hvp4yvJdEp++vYijW9YJxU63425J3IWzRfEhJWXFPxfQNU+iowpfFlKhTDbnEDzuYiJl
-         UioP4xsHAwk0Cuwk7Ag4srSq5GjImFoL30FHtDrNmDlR+zNWLYaxARQ2R9qvX1nl6Gz/
-         WJjbi7ka5BRjt/+b/HOpIQkD8P2ZpmkWUv1VOveatgm4kZBsfsjV0uskoNmkwaSZHbMP
-         RQOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=FPhEdIY5KuEMvseRGzglc0TnMkq8eN0fVBxf9t9vD5g=;
-        b=gcX+FvRgh6fxI9BxwatDfNLHwChH1UucAY8rd8qpaQ24Yk/6ioS76aTtVoS67ilOj0
-         yJXaqreuslH78Oz+FaO4myngv5KYmcfC0NKhe3/eP0eQT9rtY8I5FrdEOG1dsCw8r0SO
-         H1DGE7hFQisZ+WtfwlY6UcjFDn3nAEjS6snRcCT6lS+opeQ6aOgWFKWCpakokCkwWMy/
-         N2rtoRbyUbgiXOgjbrgDpi+EdgVIzb++zUPIyXXWXQ7dPKHGfpMvu8GqdvoahGh5hHCU
-         ZwKlrgs2Il4AjqtyGH9s3gsON5ldug+GR6EO3AAa6r30+gJtF3rfV3jTPTriymK3Rvx2
-         1fvg==
-X-Gm-Message-State: AOAM530fTzWP77Q84G8/x8a8MEbr/3iWw2vvdMjVsRrudaPb5K0pscwm
-        IiHai4XTxuKFbNSDqyirRP1XNk0Z3bM=
-X-Google-Smtp-Source: ABdhPJw5gVweXS2zgH29uDh4ZR0xTYv7IACRS4dRVBO/Wcqh+FJJRv+YJCjooJPAS4RemrcmylBf4A==
-X-Received: by 2002:a17:907:104f:: with SMTP id oy15mr8833258ejb.261.1602942364902;
-        Sat, 17 Oct 2020 06:46:04 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:2800:f845:b1c9:b817:f8d3? (p200300ea8f232800f845b1c9b817f8d3.dip0.t-ipconnect.de. [2003:ea:8f23:2800:f845:b1c9:b817:f8d3])
-        by smtp.googlemail.com with ESMTPSA id i5sm5052996ejv.54.2020.10.17.06.46.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 17 Oct 2020 06:46:04 -0700 (PDT)
-To:     Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Remove __napi_schedule_irqoff?
-Message-ID: <01af7f4f-bd05-b93e-57ad-c2e9b8726e90@gmail.com>
-Date:   Sat, 17 Oct 2020 15:45:57 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        id S2438315AbgJQOUs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Oct 2020 10:20:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37314 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2392579AbgJQOUs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 17 Oct 2020 10:20:48 -0400
+Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 85598207C4
+        for <netdev@vger.kernel.org>; Sat, 17 Oct 2020 14:20:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602944447;
+        bh=MlLcGAmr9JWymolHAXnLBcXm6VpyIqHq55mEcGChNN8=;
+        h=From:Date:Subject:To:From;
+        b=sYAbe35DugQjVa7PgRzsOxt4kTVxzn1dzsZzzhs/SUhzhumme7j8IK76726z3mRC6
+         NzZpwprwBGilREQ6X/K4uCeANDBllJsxVSQETa2EnARjhfNT6EXOD+wvmdbG/RR3hX
+         Sq5GHXfIhr/lJ3u0j4RAgjQgomatyCZMXJKgikxU=
+Received: by mail-ot1-f43.google.com with SMTP id n15so5394391otl.8
+        for <netdev@vger.kernel.org>; Sat, 17 Oct 2020 07:20:47 -0700 (PDT)
+X-Gm-Message-State: AOAM533VlWqOdATMv6ZsGjg/d8RzYZnYsTD9gBlvb4bcf+tzq3yxA+A5
+        Ebjxp7OJcFy2vwNLogW8giNVEJU8tyU4E75RRwQ=
+X-Google-Smtp-Source: ABdhPJw8h7CRrDEqNKJXivZk4DLL8c0l7ev16knYbi+d6hep1Qk0FEBcZkLuOnzrTvb2xh303KBRlpKo+lnr/vIlOE4=
+X-Received: by 2002:a9d:6c92:: with SMTP id c18mr6019200otr.108.1602944446843;
+ Sat, 17 Oct 2020 07:20:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Sat, 17 Oct 2020 16:20:36 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXEEF_Un-4NTaD5iUN0NoZYaJQn-rPediX0S6oRiuVuW-A@mail.gmail.com>
+Message-ID: <CAMj1kXEEF_Un-4NTaD5iUN0NoZYaJQn-rPediX0S6oRiuVuW-A@mail.gmail.com>
+Subject: realtek PHY commit bbc4d71d63549 causes regression
+To:     "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Willy Liu <willy.liu@realtek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Masahisa Kojima <masahisa.kojima@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When __napi_schedule_irqoff was added with bc9ad166e38a
-("net: introduce napi_schedule_irqoff()") the commit message stated:
-"Many NIC drivers can use it from their hard IRQ handler instead of
-generic variant."
-It turned out that this most of the time isn't safe in certain
-configurations:
-- if CONFIG_PREEMPT_RT is set
-- if command line parameter threadirqs is set
+Hello all,
 
-Having said that drivers are being switched back to __napi_schedule(),
-see e.g. patch in [0] and related discussion. I thought about a
-__napi_schedule version checking dynamically whether interrupts are
-disabled. But checking e.g. variable force_irqthreads also comes at
-a cost, so that we may not see a benefit compared to calling
-local_irq_save/local_irq_restore.
+I just upgraded my arm64 SynQuacer box to 5.8.16 and lost all network
+connectivity. This box has a on-SoC socionext 'netsec' network
+controller wired to a Realtek 80211e PHY, and this was working without
+problems until the following commit was merged
 
-If more or less all users have to switch back, then the question is
-whether we should remove __napi_schedule_irqoff.
-Instead of touching all users we could make  __napi_schedule_irqoff
-an alias for __napi_schedule for now.
+commit bbc4d71d63549bcd003a430de18a72a742d8c91e
+Author: Willy Liu <willy.liu@realtek.com>
+Date:   Tue Sep 29 10:10:49 2020 +0800
 
-[0] https://lkml.org/lkml/2020/10/8/706
+net: phy: realtek: fix rtl8211e rx/tx delay config
+
+It was backported to v5.8 as b9f0dcfbfc07719be7cc732cda4e609280704605
+
+The commit log in question is a bit vague, as it does not explain what
+is wrong with the commit it aims to fix, or what the changes are meant
+to achieve.
+
+Since it breaks h/w in the field, can we please revert it? (and
+backport the revert?)
+
+Regards,
+Ard.
