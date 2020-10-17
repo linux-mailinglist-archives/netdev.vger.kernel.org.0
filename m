@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A14662914C2
-	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 23:37:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C98E72914C1
+	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 23:36:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439674AbgJQVgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Oct 2020 17:36:50 -0400
-Received: from mail-vi1eur05on2079.outbound.protection.outlook.com ([40.107.21.79]:2205
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        id S2439624AbgJQVgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Oct 2020 17:36:47 -0400
+Received: from mail-eopbgr150051.outbound.protection.outlook.com ([40.107.15.51]:7653
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2439571AbgJQVgq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2439610AbgJQVgq (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 17 Oct 2020 17:36:46 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T/guNfZ3Kw8qWSWVGcoKjjflmtp9OO+/yGidZP0v0uEaHu62SnQxkg/eQdpu60qMu7mNw3Btbbkr8GYu/2ZaD5yEFI5CplDVXn7ydbokFEABBzxJVTd6QW12Hbd+af+4b1i4IwDcNEk9YAxhAevcHH8uMtmqxgS/2XfNyIzO4FI5+JWNH+kPUYqJpRTV1DJppDDIRFYn0WVM4wohQH2ACAgZVqgsYW/ciklUEltrNbAlDWr5mRfciT49IXBG0+/cFVmO6eKpFcS85gRBCCPZIb/m8hwup3v50b8POhpAJ6Bx8/WBXE2sJ8+oK/0irLtL2U7b+/QvbTUr+dOAUMbSVg==
+ b=fu+uDslonra4EiRNK0xETKqkN0QLDgFrtPLh/OHvx3fjRfp835fekQV4hCoDgbCmOG+LMYO8BeZMnit5axJwwUZITcZoIwhD1hGapC2D+z9YrbZZsPlN4wDvE5FW+hWUyuvnuWAkie5SJv+4jxpeKxQQ3++7O2n1bA1EGkXLa6bHF5I6n0qfqOEhdffAHXGDvYuFdhgrqFj1h6e0a2R6LA9LtHBSKUStN3wGNEYhy6rnBAbhz6CVlzhXtn2Yp0vKhLZAf+G78UA4aBhSoXJ28plVTHTLpGcEugDyNrzSP2ubvC/Th/f3HIlmE6LAy5UNgrub7lVdNZj/blcHwl4VmQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RNvKApBPi1G5wozBbipSUnx+lnpcbrQnLsNzDBRsR2Q=;
- b=Kz8seYqgC9PtahrX0IrPIMr7LpEcQyKb175lUaVv+zZ5x6x7THXmf9/K/y6kkdAGMcPq9cCRafiTpItEQATezjZ23rysZBoArsztEWbfFEM7ItE+gRejt8icNNxQqn/6xN0f2F4UbTvwaOkmAvX1wCiUA9U2d8LTWaL8zUnLKULdnRNl8HYxFVhgI8CXIdfb9r9tbH1eLvoyF+xG2Lp6xmrSscf1dTdLGEyTrNWDvWqfeRrw6xsqf0qyOGDW7GAucietYPpYloZIN1U9DT9mXJNBKmyo9uf4xS+fP89VvWVY394LXBUfpGi4BFwoTJQu3d6mKHO4Ip2/q6AsI1yLCw==
+ bh=G7Z6qh0OvbSNaqX7X1zLwUcrDbPu3g2VKepi90Mdlw4=;
+ b=KiWE2UUYTesFRey+UdDHVQLdvy1zrQbwDSJf0KB8LquHPaICgqxZFgGxDYrh77m57S6JRqz0f3GlJAyWiT+kO2+tXenPPBRxzcseccGs/g8cCCXApWE/jreVsnZ8FZ8WXw2Sr44jekidCCjpMW8P4uhW6WZ5BMs3O3wTjdvLQGjXWp08wuUPKNK8lruQkncnKaNw0qqhSkxOZyOCM6xVcHaYi19+VUwfPx3jbzWspj9js1obuztP5KwsgsWI5WorayMkO4Cqf8Hm9vJ9k3wCBPRYtHXi2059G7+bulz3XYkn7usBaqdc0nnX03V1lopQE1JUNNRqJssGfJ9uDpCUGw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RNvKApBPi1G5wozBbipSUnx+lnpcbrQnLsNzDBRsR2Q=;
- b=WiB0PSNcKUTa6ZiN4k9NMeZWzplp/Uj38rwJ8+g56V7Uq52j3OxL8q/03QYVdBCMtf1fr/97D5oTmhFXbP1BdXg0pXHddepCyyEJnSENJFvt/GR2O8oVPrYFs6/3qTEHT/CInSEs1rdiNItSHTJ93JWAI+SAxxb59/aYfL492wE=
+ bh=G7Z6qh0OvbSNaqX7X1zLwUcrDbPu3g2VKepi90Mdlw4=;
+ b=PNf3nhZVgG30r2qwycum86RUx0Uf7JLS+F5CW63k4l5GBB6L6zUlsFVM0hjs5jW9X08KVa+KVHEpCqKOTDHnPVhpNoz08G9XsKehqXCxOvo1gL5zdiCj/PtujY0wCDjbGNWuW14qy1Ej9byK+PGdEQLPNr+m36aFx90b6WLKOKM=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
@@ -36,15 +36,15 @@ Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3477.028; Sat, 17 Oct 2020
- 21:36:35 +0000
+ 21:36:36 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
         kuba@kernel.org, Christian Eggers <ceggers@arri.de>,
         Kurt Kanzenbach <kurt@linutronix.de>
-Subject: [RFC PATCH 03/13] net: dsa: tag_ksz: don't allocate additional memory for padding/tagging
-Date:   Sun, 18 Oct 2020 00:36:01 +0300
-Message-Id: <20201017213611.2557565-4-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH 04/13] net: dsa: trailer: don't allocate additional memory for padding/tagging
+Date:   Sun, 18 Oct 2020 00:36:02 +0300
+Message-Id: <20201017213611.2557565-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201017213611.2557565-1-vladimir.oltean@nxp.com>
 References: <20201017213611.2557565-1-vladimir.oltean@nxp.com>
@@ -59,25 +59,25 @@ X-MS-Exchange-MessageSentRepresentingType: 1
 Received: from localhost.localdomain (188.26.174.215) by VI1P195CA0091.EURP195.PROD.OUTLOOK.COM (2603:10a6:802:59::44) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.20 via Frontend Transport; Sat, 17 Oct 2020 21:36:35 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 33b69c15-4199-4936-9c34-08d872e4b91c
+X-MS-Office365-Filtering-Correlation-Id: d1955bc5-0138-4500-9f94-08d872e4b969
 X-MS-TrafficTypeDiagnostic: VI1PR04MB5854:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB58540A08FBA0D207ECD3E422E0000@VI1PR04MB5854.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3044;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB585453C958FDEEF9DDDA263BE0000@VI1PR04MB5854.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lZxWHj4arydIoCjiECyWZE6fjXc6FPcHeBnM5/ppKND3pv+FtBRjFSrx8aeUi73dE7z6Jsa/AKOqnAcd40DV2HddGCKrs9MeW7xaQgtDvurNeoLl935lFt9Yndvbl8JekLHreEodRXEeenYbjX2Put7HekYYb7vgDnkJT+psl4g8DLNbiqKND5LlnnBd8gpDtl7vBhV6SHOnzE5ntxcJd41hNNXtGGDKqWrdV0C91f7rfSUeTwrlhq/X6VIAfI/X8XjMw+qYXTbStOKXg93Q3ALs1/eQ6pBuvSbMLuJbFiQqMWZccHYwNxOSdW/Wkw+sSODaiJcf/7RtONvuiDPoPQ7ey2s71l/3L2lhQZ3+6ug7HVUNPCJW0RHzpyCjxBdt
+X-Microsoft-Antispam-Message-Info: YLhEmx+IgWXOsKowZ9R7vfrdU3CTrAPKLVdGb2RjUyCB0Q37oVRHZe0XQChr7RHJDVDACLOJgvvuEfbr05Pyn+orQ3gekXknINUk0mTvW8pwmhJYG40z5+kYIQKQW6Fu5+Gc2xFr5vGiCJQjwhxWxt1HYOxtqCLWkyr3RKrVn5m3Jvta4khQZJcg0ISqBQ1wZfKBLrw7qCw0aVZt4QV1WMeY/WQGjdnI4I3TZdSI46nrCaFstuIxZB0/chgi2csp1Vm79OgqsWRidTg21UfoKP5bA3LpM7yHL7F5Ws5gzSP7C3m13GIen4sZUZ19Zz4F6n0+qB/c7Sz8ljria+XQWGeEoR8Ax53v9eX+v2PMsLoqWRQhyo+289FaWUWA5I4y
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(396003)(136003)(39850400004)(376002)(86362001)(2906002)(6506007)(66556008)(26005)(6666004)(16526019)(186003)(66946007)(1076003)(8936002)(66476007)(69590400008)(36756003)(5660300002)(316002)(4326008)(2616005)(54906003)(6916009)(52116002)(8676002)(478600001)(956004)(44832011)(6486002)(83380400001)(6512007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: EwoKh9w0SWvh+2N9nahk7E53thKsxzTDQOmf4azOVPgePumELZOh5jsiiaywBdI460dPIlE3Lw+juJ6m4fC5YrCpJYs9IN5VxpD8EgOjPJC9tHeLjlvuezT36cPdghraC0jEvj0Mdes+fZyjnxWs0Pc8z0iwUTi/EBBLdnVsoeLUGqM3C2uPyUQS+X6RoI8nNhjzEp+tQQUfkWpazTnusE4uVXkeZyTW/gbYdafKDYdCWhH0XZGm38cUTFR9dDFC4iPaC9aJegQbbshSPg3PGKfqzv9dhsequamSBJneIsm6IS1NUsAYNEPG3BRJ+s9QQKBVLJ9TauY6I6As9dMudwYxOsBH7NF1uH7SHp+BmDiihkBadbiDP4G1J/HGt3wyeLuQp8nya5bRTJBivjaFOrXydYnb01Kxy0NPe+1xItbwVNyF6kAhcYMhdXIakg/Cez/qGeo0jFkUTNmOpXmQ8g/S/C/RDSE27kGXOTnF7ij1naKJvVDgA+/pS5Pv3UbXvww41O2SRUmA4BW9RO7Ob99C6oR1wrWW9cmgXIy2rQxQrgv2fmgUzL1/r1RMiIFEqYN2bao+aufOoMlv5JgHNaPfbAItE7LK5L6zrX0NnavRZnNDpeB3ZEBwPZ4lyw9m0OaU2KtQ+grP47zezEUHZQ==
+X-MS-Exchange-AntiSpam-MessageData: DMTmchopb3eurwVWR67zEyZ4k8PlT3tBbxiatytvH4+Fju+BHgC3bfPnppwMTpyz6s37xSvMYVvh3F/6zk1ElKmsnNKp9fZXAobgEqvkb1mX7aDqWKfNHoW/7XQyZA+SFVOe0VC4ue0OBCFIni8KBIjSZ2zri4uWjz/T6Wq7XwxF69n9yHB7wEQfeFsqgX8v9M5bZXwK275S7JoJJNdqmw4STGxjqilNxmZoRyUeLcziTPsJfUiarLXg2RAq7s59yceHajeuyULhYW5o1O9qjF/sGf4GAweygZlKlYOIVnrB3lLupt+6GHNrN7NO5GYEXWgKlND3h7fQCICfi5b6cBcIt0jzHI0+MpGYCP+1BaACwRdDzDuIYOeFttZJi7Dw6lUHIrLlOHMvfX7gi1ocVwuaJg28CGXqsyLrWrjCm3cn097h859OuZ+7Ni5lWAUlhTnUzN4nLDn8Yd6W41gis7EPqurN+RCxyruazFgnzEboM2yT9wR+Bo54b+WQ6qXDzrY7xuXOp9D3dMmUDI3U2WF4G68r+7XtMkg5c1LZVm/PITvlaHUjv4jyZUr+vYSjUJEASJC9MtOVjHvucNSRB5H1Gu6ksF08ipAd543K1ws/SNVwhtSrWQaDnoI1evAsPw5TzPNAQOtSnknuyaQ33g==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 33b69c15-4199-4936-9c34-08d872e4b91c
+X-MS-Exchange-CrossTenant-Network-Message-Id: d1955bc5-0138-4500-9f94-08d872e4b969
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Oct 2020 21:36:35.8264
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Oct 2020 21:36:36.4150
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uQNSccFLFe7d3NYATmo74Sm7vH50RHmxSdZXzMpWlV8oE6fRgt4KXg9mQ/ljC0SxgN23FUvNEEEoDT57fSqnKA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: J7rUqqeQQgackPHS8HQSfTp0fkzKtHuXYEYXoBtA4wDsJUuymitgoIeID85iPrWqufJMEwvNkl36hxh8bsfCWw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5854
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -91,145 +91,58 @@ ETH_ZLEN and that enough memory for tail tagging is available.
 Signed-off-by: Christian Eggers <ceggers@arri.de>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/tag_ksz.c | 73 ++++++-----------------------------------------
- 1 file changed, 9 insertions(+), 64 deletions(-)
+ net/dsa/tag_trailer.c | 31 ++-----------------------------
+ 1 file changed, 2 insertions(+), 29 deletions(-)
 
-diff --git a/net/dsa/tag_ksz.c b/net/dsa/tag_ksz.c
-index 945a9bd5ba35..e78a783bb841 100644
---- a/net/dsa/tag_ksz.c
-+++ b/net/dsa/tag_ksz.c
-@@ -14,46 +14,6 @@
- #define KSZ_EGRESS_TAG_LEN		1
- #define KSZ_INGRESS_TAG_LEN		1
- 
--static struct sk_buff *ksz_common_xmit(struct sk_buff *skb,
--				       struct net_device *dev, int len)
--{
+diff --git a/net/dsa/tag_trailer.c b/net/dsa/tag_trailer.c
+index 3a1cc24a4f0a..5b97ede56a0f 100644
+--- a/net/dsa/tag_trailer.c
++++ b/net/dsa/tag_trailer.c
+@@ -13,42 +13,15 @@
+ static struct sk_buff *trailer_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
 -	struct sk_buff *nskb;
 -	int padlen;
+ 	u8 *trailer;
+ 
+-	/*
+-	 * We have to make sure that the trailer ends up as the very
+-	 * last 4 bytes of the packet.  This means that we have to pad
+-	 * the packet to the minimum ethernet frame size, if necessary,
+-	 * before adding the trailer.
+-	 */
+-	padlen = 0;
+-	if (skb->len < 60)
+-		padlen = 60 - skb->len;
 -
--	padlen = (skb->len >= ETH_ZLEN) ? 0 : ETH_ZLEN - skb->len;
+-	nskb = alloc_skb(NET_IP_ALIGN + skb->len + padlen + 4, GFP_ATOMIC);
+-	if (!nskb)
+-		return NULL;
+-	skb_reserve(nskb, NET_IP_ALIGN);
 -
--	if (skb_tailroom(skb) >= padlen + len) {
--		/* Let dsa_slave_xmit() free skb */
--		if (__skb_put_padto(skb, skb->len + padlen, false))
--			return NULL;
+-	skb_reset_mac_header(nskb);
+-	skb_set_network_header(nskb, skb_network_header(skb) - skb->head);
+-	skb_set_transport_header(nskb, skb_transport_header(skb) - skb->head);
+-	skb_copy_and_csum_dev(skb, skb_put(nskb, skb->len));
+-	consume_skb(skb);
 -
--		nskb = skb;
--	} else {
--		nskb = alloc_skb(NET_IP_ALIGN + skb->len +
--				 padlen + len, GFP_ATOMIC);
--		if (!nskb)
--			return NULL;
--		skb_reserve(nskb, NET_IP_ALIGN);
--
--		skb_reset_mac_header(nskb);
--		skb_set_network_header(nskb,
--				       skb_network_header(skb) - skb->head);
--		skb_set_transport_header(nskb,
--					 skb_transport_header(skb) - skb->head);
--		skb_copy_and_csum_dev(skb, skb_put(nskb, skb->len));
--
--		/* Let skb_put_padto() free nskb, and let dsa_slave_xmit() free
--		 * skb
--		 */
--		if (skb_put_padto(nskb, nskb->len + padlen))
--			return NULL;
--
--		consume_skb(skb);
+-	if (padlen) {
+-		skb_put_zero(nskb, padlen);
 -	}
 -
--	return nskb;
--}
--
- static struct sk_buff *ksz_common_rcv(struct sk_buff *skb,
- 				      struct net_device *dev,
- 				      unsigned int port, unsigned int len)
-@@ -90,23 +50,18 @@ static struct sk_buff *ksz_common_rcv(struct sk_buff *skb,
- static struct sk_buff *ksz8795_xmit(struct sk_buff *skb, struct net_device *dev)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
--	struct sk_buff *nskb;
- 	u8 *tag;
- 	u8 *addr;
- 
--	nskb = ksz_common_xmit(skb, dev, KSZ_INGRESS_TAG_LEN);
--	if (!nskb)
--		return NULL;
--
- 	/* Tag encoding */
--	tag = skb_put(nskb, KSZ_INGRESS_TAG_LEN);
--	addr = skb_mac_header(nskb);
-+	tag = skb_put(skb, KSZ_INGRESS_TAG_LEN);
-+	addr = skb_mac_header(skb);
- 
- 	*tag = 1 << dp->index;
- 	if (is_link_local_ether_addr(addr))
- 		*tag |= KSZ8795_TAIL_TAG_OVERRIDE;
+-	trailer = skb_put(nskb, 4);
++	trailer = skb_put(skb, 4);
+ 	trailer[0] = 0x80;
+ 	trailer[1] = 1 << dp->index;
+ 	trailer[2] = 0x10;
+ 	trailer[3] = 0x00;
  
 -	return nskb;
 +	return skb;
  }
  
- static struct sk_buff *ksz8795_rcv(struct sk_buff *skb, struct net_device *dev,
-@@ -155,18 +110,13 @@ static struct sk_buff *ksz9477_xmit(struct sk_buff *skb,
- 				    struct net_device *dev)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
--	struct sk_buff *nskb;
- 	__be16 *tag;
- 	u8 *addr;
- 	u16 val;
- 
--	nskb = ksz_common_xmit(skb, dev, KSZ9477_INGRESS_TAG_LEN);
--	if (!nskb)
--		return NULL;
--
- 	/* Tag encoding */
--	tag = skb_put(nskb, KSZ9477_INGRESS_TAG_LEN);
--	addr = skb_mac_header(nskb);
-+	tag = skb_put(skb, KSZ9477_INGRESS_TAG_LEN);
-+	addr = skb_mac_header(skb);
- 
- 	val = BIT(dp->index);
- 
-@@ -175,7 +125,7 @@ static struct sk_buff *ksz9477_xmit(struct sk_buff *skb,
- 
- 	*tag = cpu_to_be16(val);
- 
--	return nskb;
-+	return skb;
- }
- 
- static struct sk_buff *ksz9477_rcv(struct sk_buff *skb, struct net_device *dev,
-@@ -211,24 +161,19 @@ static struct sk_buff *ksz9893_xmit(struct sk_buff *skb,
- 				    struct net_device *dev)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
--	struct sk_buff *nskb;
- 	u8 *addr;
- 	u8 *tag;
- 
--	nskb = ksz_common_xmit(skb, dev, KSZ_INGRESS_TAG_LEN);
--	if (!nskb)
--		return NULL;
--
- 	/* Tag encoding */
--	tag = skb_put(nskb, KSZ_INGRESS_TAG_LEN);
--	addr = skb_mac_header(nskb);
-+	tag = skb_put(skb, KSZ_INGRESS_TAG_LEN);
-+	addr = skb_mac_header(skb);
- 
- 	*tag = BIT(dp->index);
- 
- 	if (is_link_local_ether_addr(addr))
- 		*tag |= KSZ9893_TAIL_TAG_OVERRIDE;
- 
--	return nskb;
-+	return skb;
- }
- 
- static const struct dsa_device_ops ksz9893_netdev_ops = {
+ static struct sk_buff *trailer_rcv(struct sk_buff *skb, struct net_device *dev,
 -- 
 2.25.1
 
