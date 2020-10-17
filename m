@@ -2,114 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 779B72914C8
-	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 23:37:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 459DB2914DF
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 00:02:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439728AbgJQVhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Oct 2020 17:37:03 -0400
-Received: from mail-eopbgr150051.outbound.protection.outlook.com ([40.107.15.51]:7653
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        id S2439608AbgJQWBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Oct 2020 18:01:10 -0400
+Received: from mail-vi1eur05on2055.outbound.protection.outlook.com ([40.107.21.55]:43712
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2439699AbgJQVg6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 17 Oct 2020 17:36:58 -0400
+        id S2439595AbgJQWBK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 17 Oct 2020 18:01:10 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jyZEmukpT1hYxw2Q1bg+Q+5Wbm/SYWmsaUb7eYxr5iEpM9NkGJwIjGWoCzzFSElReHLVPaqFwoUQNgVcwr5eoSyYNBXMfW7JGvUHKGDYECbSvIXK+UQciEXJh9Ou9Iy3EanjN+VyciodqHHPXvuzMe4RC1L2AGQqxNE9SpgkADmla1qQJGMOzVxoYXMPp6yaHU+CapuviOiiVNEQvPuKV4Rwg8o7Ghmk22rR4KFeoO6ZQvFKKCz3DCw5BH6R/EM0EmW37VpLrC32B27IAa05Rinj4YGtN7jSyDb9q7ZzKcxMJrFDi1uWt6Uh8JbJV/lF4BRHYZTPzsAic3yKEvMkCg==
+ b=SVOz2I2w4ow6KzgY+Yn0Zg8qTZiG/oj1Ez6WB5lKWJNceGk/t2pXuceqgRcaILTzZ3e1wr5QOIFy+jEZMDokShCdDeQPmcuD8i4QieVEPO61/YTGSSzsaC0mFFfnsgLeh8eR5vTs+o+BsyMoZH/nDl9bskbiQ1Fxlfu00ImNSUujBtf1Q+as7oJre64Z6MDxWpIM99aM+H4xumYM3O7hcXY4e4venR4r3Ey8Kkq+GM4Jn/f6zU+HLFfAzTsJIxS57DUNL5Mn2lYc52p2oaRCIXEwxhcOGEjbD1ANLnoJzpVhTJF3kXbOb5GrEGuQ3Go0hzJzZWn4pqKHJraPTpehdg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p73WWmDCd67JyQxZyxr/XfFjJCuJt0t7Busat5pIn0Y=;
- b=Rfu0I+rw5q0O11LIxg830YnwNIelfYhqU0I9T8s7VHCsJM2ara4xCk6oawPVfGHjeK+oTxEkzxmLTikypYZjCbb4xSsgBxlq/i8SMjYWlmDaL+V9II5uUPgqelFdm/T7xKiwo993jRfgTOYv9BEyOn2PXlv1omzM8bOzsFoVyx0V7Hsk+CGZGsF8jp6cfB+iZlH59MYNWGas1nAfvNJkfEE++zjiSyLuy+BovavFKLRQZF7gIYONKUuqHwTUpWZ25S1vjZvUwnBaTwBB5CLzboxEIiPxt0bor1xDzag/m3fzl20TunKIzaOrKtI03BOY22QnJWe70hT+8wsDNxsj7A==
+ bh=3fDHtpx4wddZCiQXy26wfuSdbd4EUChUkYF+i+wEKm4=;
+ b=Me2lizh8NtlwptmnmpCZblHWoZSpud2CyluG/kdpX/MR/If+t2QD0fcLiIKkqhdTFXbcfO1/cSaAF441l0S/Jh6wLNl10ue7H3mXxuKZIEJd2cNxPN6XJViGGBmVSjJkKnreZu3ZfiywQSRdxKqrXnn9qIYnsaij+KIFXSq2pknBy1QcTfrIA89VWJ6E74kCS1n7aXq0f06hAFC0Qh144DfkqKydbe3i3BpMayX8yDXcOHuEcoGRzDnFAFd/624NCBtPAIOtoqk0MU58bFnEQRoTrspu7AUHXWULhw8ms+5nOSS4wBMYpuIuMHlZjpbXQscD7vPyXu4mB+F9WhChAw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p73WWmDCd67JyQxZyxr/XfFjJCuJt0t7Busat5pIn0Y=;
- b=EIoqGWKIdsC3gQU/yTqEeJEntjtJV+y3D3Uic9kC4VySyjA2dX6NfBuRTFdaWAHef/cIDMXigtw8vh2W/p7N2F6qTs8wH9ELXlkxw4iaiQQuwZ4QoNmCgTAAvLl9wPJTtiVkF9fSBwWCNtZEsZ6ntgaXWpNM4jh/valWtfruZQI=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
+ bh=3fDHtpx4wddZCiQXy26wfuSdbd4EUChUkYF+i+wEKm4=;
+ b=KEJ0a+MxQ3inRZPQLF7kDpleD3vL138E9/hFzcGBXugBe5ACgfD/sDVTr6CdHxuH9XL4p1ISdplwp/Awqpc1lmyhQ+FzlVf0mLWbqMfBIaaXD/G/MnYvW707WEZaVDgOj9LLotRybgfVhsUdWbtsksC863XfMSg9BpdZzHqnLks=
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VI1PR04MB5854.eurprd04.prod.outlook.com (2603:10a6:803:e2::23) with
+ by VE1PR04MB6509.eurprd04.prod.outlook.com (2603:10a6:803:125::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.20; Sat, 17 Oct
- 2020 21:36:43 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.25; Sat, 17 Oct
+ 2020 22:01:06 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3477.028; Sat, 17 Oct 2020
- 21:36:42 +0000
+ 22:01:05 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        kuba@kernel.org, Christian Eggers <ceggers@arri.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Per Forlin <per.forlin@axis.com>,
-        Oleksij Rempel <linux@rempel-privat.de>
-Subject: [RFC PATCH 13/13] net: dsa: tag_ar9331: let DSA core deal with TX reallocation
-Date:   Sun, 18 Oct 2020 00:36:11 +0300
-Message-Id: <20201017213611.2557565-14-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201017213611.2557565-1-vladimir.oltean@nxp.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        Christian Eggers <ceggers@arri.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: Re: [RFC PATCH 02/13] net: dsa: implement a central TX reallocation
+ procedure
+Thread-Topic: [RFC PATCH 02/13] net: dsa: implement a central TX reallocation
+ procedure
+Thread-Index: AQHWpM2WRVElJamqkEeHVtfDsj9ayamcWGgA
+Date:   Sat, 17 Oct 2020 22:01:05 +0000
+Message-ID: <20201017220104.wejlxn2a4seefkfv@skbuf>
 References: <20201017213611.2557565-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [188.26.174.215]
-X-ClientProxiedBy: VI1P195CA0091.EURP195.PROD.OUTLOOK.COM
- (2603:10a6:802:59::44) To VI1PR04MB5696.eurprd04.prod.outlook.com
- (2603:10a6:803:e7::13)
+ <20201017213611.2557565-3-vladimir.oltean@nxp.com>
+In-Reply-To: <20201017213611.2557565-3-vladimir.oltean@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.26.174.215]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 49decc23-a255-4548-bd72-08d872e82575
+x-ms-traffictypediagnostic: VE1PR04MB6509:
+x-microsoft-antispam-prvs: <VE1PR04MB6509D3DF615963BC8E7B2E52E0000@VE1PR04MB6509.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: h/FXm7wV8RW61T4HMkcUyrwantxCZS2IWozInJgNjrIVMzfbEQXnI8k1+NjTGt5w+Gus3qFkP/4O5GxbzZbR30BIrC3CvsePvo8k3okgWGIF2fedhmJUndBqYAsPnWq/eeiF80jepiVFut9Qjba+N8JkZl7TVFh3jLal9A+YudOhMSqe6uiwzujFuUplSMs95UeCdkcTo+rOmTuDR/PIi7174qe1NJYMFA/hbTg4asKLHTyMUjfVJAbXFHT45GgPQ0YWokrgHt+1rjUBZmFSGNbLaKLDKHsdzGXjKPkG/PyWEoMQ9GOGX/pwpJzFZyd/
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(366004)(39850400004)(346002)(136003)(376002)(396003)(66476007)(64756008)(66556008)(66446008)(44832011)(9686003)(4326008)(83380400001)(71200400001)(1076003)(6486002)(6506007)(54906003)(2906002)(6916009)(76116006)(26005)(6512007)(478600001)(33716001)(86362001)(5660300002)(91956017)(8676002)(316002)(186003)(66946007)(8936002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: Ss05DgjYMw4LnRZQga03/xlcnKZTRxaRdBuUmyOa8xQdBS/bW2isp6O+0w7J7YwcvL5vdw4NQqg3xPtKqttY1L2qjxvakwbRyF/mL82jMAQDya3MVxQoLaF8xZeZ9Gdn9tp9yoQavqF4DEERPk5Ff64M0UDU0hHOY0Wjjs/Q9C/H3tQfbqUMTTN/LWOhRPowc7efhYCSuR7kRlNKIBJU+AQPDPgP+9P/dcdmboYX97HN6OiE5HsgtB1hP5GDqh7LQ/ZbTWuZUmhuCXV0oVtzeDQa72ERpgiYFKbpJTBryY4P0uAmDLxXfJiBxjWZBDbdzTwfU9KpUgAAMYCEaakENYEtF6ogtRCiD/7kJ6WuPqX5gGjqdS0tn+syGFl9MjLDm91fY6eV3DEKOV4ncjfC9L4TbfoRwx+p+xwlnfAMCFhEmjd0CKryFCCN3Hknvf7iWkaxJ9JjBFues/M7Yc63aOSuBQGl4gfvzburnUGV4J2XImtCWSVb/LTGB+GnUi53Op+XvwN2G9iMsxvOypPqBtjevlZtyqbFq4uhl4PVg8D1CwDaaSbR4vDhyqduoLqd+R9CWrqlnorTRhH8Ph4BYlgMjnCffgKGR5aiIQAJy5Ci/c1tO1lpsVQOnpSpT7OGOggcLScGEB9pHnXxi6dA/Q==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <BF23647F2FD9B948ABD896A82404C9F4@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (188.26.174.215) by VI1P195CA0091.EURP195.PROD.OUTLOOK.COM (2603:10a6:802:59::44) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.20 via Frontend Transport; Sat, 17 Oct 2020 21:36:42 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: c4e0d65b-3abe-4a5e-7a33-08d872e4bd42
-X-MS-TrafficTypeDiagnostic: VI1PR04MB5854:
-X-Microsoft-Antispam-PRVS: <VI1PR04MB5854096255453F14B8986045E0000@VI1PR04MB5854.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1923;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hl3bQJr8AxgwKkFfCtJ4XqNA7kaxGGkX45IMpOkBOH1XpW840Ryt9mzfVZkpS6tP73VKn0ljcdmneDwRQPzaOjmtgGS4CP1C4maV1s0kztVe3I0YWH9kNTkmzky6S9sKeHtVQUF0c/oXXKth1PG3aBrEYtGJ7gavD/UistbErLEn6pCO4zqxwfI1RYWq444w2TI8+tq/PF+7h8V40LrieaIgkbmkW+EAj6v8vEMlVMQM8No5QsNamenRrwEuhRCkup7UtsEpDnPXBzcGklifYamEu4m8uDjMssJiFw1YrocNobM6DTw46vNfyZNCIzecNPv4bC5mEragAYZ1Ii1Z1xu/rc/9o7eae4cYpS5mjEbWlpxxGPA4PcAkxByK4HZJ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(396003)(136003)(39850400004)(376002)(86362001)(2906002)(6506007)(4744005)(66556008)(26005)(6666004)(16526019)(186003)(66946007)(1076003)(8936002)(66476007)(69590400008)(36756003)(5660300002)(316002)(4326008)(2616005)(54906003)(6916009)(52116002)(8676002)(478600001)(956004)(44832011)(6486002)(83380400001)(6512007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: cFQIXLvaCSXa3BT9SRkAVX5xkAIqxRqD0ZAfQVnEhWzuQWPorTLWrSt3JpIXqjg1RXJ6ykyjZtf5rYfHwv3pquZzx0hxiFOPE5Ml/xjJvs4oqxy62qmDJCSAj+dw/DelJL5dDnRkKGAxlimONsTAZWOlPdaZLlbr6xxap2LjL/cc/XnPbqqLG3bGfJtvQEw+vLNOWJj+LkPm7OfNYbNxVXloLI9jv05FRPfkEjHUr6HJEts6qNPJ8lkXpTY3cLPtLIH3OGc2CaFWqIieD8rMLu4yqFg+1uI6cpGsph2neTFOFqFcSRJu9XAw/YyRXHVzGsJM74UmYZsmBK/eAzhPuRmu9BJUNWZNpwdhp7bhm0aW0KtAan1H9MrnfPDEiLw4bqckcsN1WJixfyH8cgh26rhqoPnSF1zL9dl99ziswAcL6Z5UOj1iD1VvQ/ay64wbhzqn1gwnU09M5xVX9JqkFKWeeEm5oRZBXJLCI+ji6m05wh1GqfkhwGhllWVNpIPd2b/jK2tWchdXQkrxZJ22xeXRlU1nrQeL8ISv4gwh5h5N5La1KygT4kr5RCOoF1vlZWnjIV4YyNT53MNrUmmLYauiESRNBuQW8fWMTd78oJHSPx2A8stTIqurkunj0FqVUoENAjqk6l/vDFYdXMZ1tQ==
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c4e0d65b-3abe-4a5e-7a33-08d872e4bd42
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Oct 2020 21:36:42.8194
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 49decc23-a255-4548-bd72-08d872e82575
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Oct 2020 22:01:05.7968
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8WIG8LoUPodrlMN7fktxZ07Vtjq+vTMdiFJlvmiGrkaQd4d8JSC0DUY26f+BZYouogNXT6YurF2ZnB4h+MqrFw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5854
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: W+N3xkmS63pjVZQYIkbj6qt9Af29fvAdlitJLwXIInEr0D3AY1/7naWzB7BU+ZaY7bVFrr78vi02LTUDf7XnEQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6509
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we have a central TX reallocation procedure that accounts for
-the tagger's needed headroom in a generic way, we can remove the
-skb_cow_head call.
+On Sun, Oct 18, 2020 at 12:36:00AM +0300, Vladimir Oltean wrote:
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index d4326940233c..790f5c8deb13 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -548,6 +548,36 @@ netdev_tx_t dsa_enqueue_skb(struct sk_buff *skb, str=
+uct net_device *dev)
+>  }
+>  EXPORT_SYMBOL_GPL(dsa_enqueue_skb);
+> =20
+> +static int dsa_realloc_skb(struct sk_buff *skb, struct net_device *dev)
 
-Cc: Per Forlin <per.forlin@axis.com>
-Cc: Oleksij Rempel <linux@rempel-privat.de>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/dsa/tag_ar9331.c | 3 ---
- 1 file changed, 3 deletions(-)
+I forgot to actually pad the skb here, if it's a tail tagger, silly me.
+The following changes should do the trick.
 
-diff --git a/net/dsa/tag_ar9331.c b/net/dsa/tag_ar9331.c
-index 55b00694cdba..002cf7f952e2 100644
---- a/net/dsa/tag_ar9331.c
-+++ b/net/dsa/tag_ar9331.c
-@@ -31,9 +31,6 @@ static struct sk_buff *ar9331_tag_xmit(struct sk_buff *skb,
- 	__le16 *phdr;
- 	u16 hdr;
- 
--	if (skb_cow_head(skb, AR9331_HDR_LEN) < 0)
--		return NULL;
--
- 	phdr = skb_push(skb, AR9331_HDR_LEN);
- 
- 	hdr = FIELD_PREP(AR9331_HDR_VERSION_MASK, AR9331_HDR_VERSION);
--- 
-2.25.1
+> +{
+> +	struct net_device *master =3D dsa_slave_to_master(dev);
 
+The addition of master->needed_headroom and master->needed_tailroom used
+to be here, that's why this unused variable is here.
+
+> +	struct dsa_slave_priv *p =3D netdev_priv(dev);
+> +	struct dsa_slave_stats *e;
+> +	int headroom, tailroom;
+	int padlen =3D 0, err;
+> +
+> +	headroom =3D dev->needed_headroom;
+> +	tailroom =3D dev->needed_tailroom;
+> +	/* For tail taggers, we need to pad short frames ourselves, to ensure
+> +	 * that the tail tag does not fail at its role of being at the end of
+> +	 * the packet, once the master interface pads the frame.
+> +	 */
+> +	if (unlikely(tailroom && skb->len < ETH_ZLEN))
+> +		tailroom +=3D ETH_ZLEN - skb->len;
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		padlen =3D ETH_ZLEN - skb->len;
+	tailroom +=3D padlen;
+> +
+> +	if (likely(skb_headroom(skb) >=3D headroom &&
+> +		   skb_tailroom(skb) >=3D tailroom) &&
+> +		   !skb_cloned(skb))
+> +		/* No reallocation needed, yay! */
+> +		return 0;
+> +
+> +	e =3D this_cpu_ptr(p->extra_stats);
+> +	u64_stats_update_begin(&e->syncp);
+> +	e->tx_reallocs++;
+> +	u64_stats_update_end(&e->syncp);
+> +
+> +	return pskb_expand_head(skb, headroom, tailroom, GFP_ATOMIC);
+	~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+	err =3D pskb_expand_head(skb, headroom, tailroom, GFP_ATOMIC);
+	if (err < 0 || !padlen)
+		return err;
+
+	return __skb_put_padto(skb, padlen, false);
+> +}
+> +
+>  static netdev_tx_t dsa_slave_xmit(struct sk_buff *skb, struct net_device=
+ *dev)
+>  {
+>  	struct dsa_slave_priv *p =3D netdev_priv(dev);
+> @@ -567,6 +597,11 @@ static netdev_tx_t dsa_slave_xmit(struct sk_buff *sk=
+b, struct net_device *dev)
+>  	 */
+>  	dsa_skb_tx_timestamp(p, skb);
+> =20
+> +	if (dsa_realloc_skb(skb, dev)) {
+> +		kfree_skb(skb);
+> +		return NETDEV_TX_OK;
+> +	}
+> +
+>  	/* Transmit function may have to reallocate the original SKB,
+>  	 * in which case it must have freed it. Only free it here on error.
+>  	 */
+> @@ -1802,6 +1837,14 @@ int dsa_slave_create(struct dsa_port *port)
+>  	slave_dev->netdev_ops =3D &dsa_slave_netdev_ops;
+>  	if (ds->ops->port_max_mtu)
+>  		slave_dev->max_mtu =3D ds->ops->port_max_mtu(ds, port->index);
+> +	/* Try to save one extra realloc later in the TX path (in the master)
+> +	 * by also inheriting the master's needed headroom and tailroom.
+> +	 * The 8021q driver also does this.
+> +	 */
+
+Also, this comment is bogus given the current code. It should be removed
+from here, and...
+
+> +	if (cpu_dp->tag_ops->tail_tag)
+> +		slave_dev->needed_tailroom =3D cpu_dp->tag_ops->overhead;
+> +	else
+> +		slave_dev->needed_headroom =3D cpu_dp->tag_ops->overhead;
+...put here, along with:
+	slave_dev->needed_headroom +=3D master->needed_headroom;
+	slave_dev->needed_tailroom +=3D master->needed_tailroom;
+>  	SET_NETDEV_DEVTYPE(slave_dev, &dsa_type);
+> =20
+>  	netdev_for_each_tx_queue(slave_dev, dsa_slave_set_lockdep_class_one,
+> --=20
+> 2.25.1
+> =
