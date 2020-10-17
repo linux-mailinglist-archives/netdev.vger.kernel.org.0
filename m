@@ -2,100 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5020629140C
-	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 21:08:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DE2D291411
+	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 21:13:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437990AbgJQTI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Oct 2020 15:08:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36538 "EHLO
+        id S2439382AbgJQTMz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Oct 2020 15:12:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437462AbgJQTI2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Oct 2020 15:08:28 -0400
-Received: from rhcavuit01.kulnet.kuleuven.be (rhcavuit01.kulnet.kuleuven.be [IPv6:2a02:2c40:0:c0::25:129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B3FC061755
-        for <netdev@vger.kernel.org>; Sat, 17 Oct 2020 12:08:27 -0700 (PDT)
-X-KULeuven-Envelope-From: mathy.vanhoef@kuleuven.be
-X-Spam-Status: not spam, SpamAssassin (not cached, score=-51, required 5,
-        autolearn=disabled, ALL_TRUSTED -1.00, LOCAL_SMTPS -50.00)
-X-KULeuven-Scanned: Found to be clean
-X-KULeuven-ID: 2B3C1120002.AD9C6
-X-KULeuven-Information: Katholieke Universiteit Leuven
-Received: from icts-p-smtps-1.cc.kuleuven.be (icts-p-smtps-1e.kulnet.kuleuven.be [134.58.240.33])
-        by rhcavuit01.kulnet.kuleuven.be (Postfix) with ESMTP id 2B3C1120002
-        for <netdev@vger.kernel.org>; Sat, 17 Oct 2020 21:08:23 +0200 (CEST)
-Received: from mathy-work.localhost (unknown [31.215.199.82])
-        (using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by icts-p-smtps-1.cc.kuleuven.be (Postfix) with ESMTPSA id 6924140B2;
-        Sat, 17 Oct 2020 21:08:21 +0200 (CEST)
-Date:   Sat, 17 Oct 2020 23:08:18 +0400
-X-Kuleuven: This mail passed the K.U.Leuven mailcluster
-From:   Mathy Vanhoef <Mathy.Vanhoef@kuleuven.be>
-To:     Thomas Deutschmann <whissi@gentoo.org>
-Cc:     <johannes@sipsolutions.net>,
-        "davem@davemloft.net" <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-wireless@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        <denkenz@gmail.com>
-Subject: Re: [Regression 5.9][Bisected 1df2bdba528b] Wifi GTK rekeying
- fails: Sending of EAPol packages broken
-Message-ID: <20201017230818.04896494@mathy-work.localhost>
-In-Reply-To: <4a7f92dc-13bb-697f-1730-ac288e74b730@gentoo.org>
-References: <4a7f92dc-13bb-697f-1730-ac288e74b730@gentoo.org>
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        with ESMTP id S2437998AbgJQTMz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Oct 2020 15:12:55 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4F98C061755;
+        Sat, 17 Oct 2020 12:12:53 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id t21so6111973eds.6;
+        Sat, 17 Oct 2020 12:12:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=JIfVjsDKn4SaATVNn//P1puG7p7aBs4tQ9Vt/McDwTQ=;
+        b=MeHJDRcXkRRYn2oKVNujZ0bE3bLyfkPd0lbdYLiaIGSj0jDnKdizyZyU+O6GVAi5O/
+         kL7qC/xR1RFSdYdDkHFjTXm5B5z7jRUhcF5UPEBMwvCJUOCzzvT0qPx9iEGJGJa3w/KO
+         3/Q7nMJn6csxzcKPuYCEjAHBpXjed59cMU5N23ITLOjL6aOOMPZ0GBQJcL4qBUbg+0Lg
+         ZjcHKfdfI/6MLPUhye/HX59xvas1hVClyIRHsQSjnmDS0pMmgCPZQ7+rJfGBatkGjwUK
+         RDWBCk3fXOOu9Rs/+fIoWRiUnKIw2BxR8PbTPvSfFHMpqmfrJxeC4w8ZCQMVXedtjLAa
+         CTQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JIfVjsDKn4SaATVNn//P1puG7p7aBs4tQ9Vt/McDwTQ=;
+        b=CARZ41B78JkpczARuSGaZ4qwXILMfeib0cxTczq7e16vQ/1mF6j+HfU0IlKvG0NNtM
+         41CCY44a0AdTBQHcw6+B6sNcjcILnPt9v9L0x612ZT+1kALayvvGFEQNmdwDrddekGVK
+         b2U9HPbQs+CCv3FLjs9iq9XO4GDApaDgec4NoifEfUFZlUekVhS3US1MU+GaLWgL6/XY
+         p8IVC4+iakEl6aoufZBcNLdSQYwfQbZJObVHlvaWPWi03VYQeToi1yhy+VcuQW6iJ9g/
+         RAQTu74cdoc3JrTmupMQZLhqlWFrXfK1Ki6pycjJ/Oztg1mrgDlnUAYe0mR7NmpbLD5n
+         8fvw==
+X-Gm-Message-State: AOAM532jJkLsjGMF/eGzjB30k2HWuOAKKvEnEPtNlJgYcsd48F4UP3cj
+        s9u5WuF8IzcvYPW3lRfW8W0=
+X-Google-Smtp-Source: ABdhPJyqjdZATDf+JPQ2D8XUseLmg53+oz1AtIR+gC56PALUZRxC8lo9ad01A3eMsQ8q+Wxn1xvrsQ==
+X-Received: by 2002:aa7:d394:: with SMTP id x20mr10500532edq.14.1602961969464;
+        Sat, 17 Oct 2020 12:12:49 -0700 (PDT)
+Received: from skbuf ([188.26.174.215])
+        by smtp.gmail.com with ESMTPSA id v21sm5704579edt.80.2020.10.17.12.12.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 17 Oct 2020 12:12:48 -0700 (PDT)
+Date:   Sat, 17 Oct 2020 22:12:47 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Eggers <ceggers@arri.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 1/3] net: dsa: don't pass cloned skb's to
+ drivers xmit function
+Message-ID: <20201017191247.ohslc77wkhbhffym@skbuf>
+References: <20201016200226.23994-1-ceggers@arri.de>
+ <20201016200226.23994-2-ceggers@arri.de>
+ <20201017004816.q4l6cypw4fd4vu5f@skbuf>
+ <2130539.dlFve3NVyK@n95hx1g2>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2130539.dlFve3NVyK@n95hx1g2>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I've managed to reproduce the issue, or at least a related issue. Can
-you try the draft patch below and see if that fixes it?
+On Sat, Oct 17, 2020 at 08:53:19PM +0200, Christian Eggers wrote:
+> > Does 1588 work for you using this change, or you haven't finished
+> > implementing it yet? If you haven't, I would suggest finishing that
+> > part first.
+> Yes it does. Just after finishing this topic, I would to sent the patches for
+> PTP. Maybe I'll do it in parallel, anything but the combination of L2/E2E/SLOB
+> seems to work.
 
-[PATCH] mac80211: fix regression where EAPOL frames were sent in plaintext
+2 aspects:
+- net-next is closed for this week and the next one, due to the merge
+  window. You'll have to wait until it reopens.
+- Actually I was asking you this because sja1105 PTP no longer works
+  after this change, due to the change of txflags.
 
-When sending EAPOL frames via NL80211 they are treated as injected
-frames in mac80211. Due to commit 1df2bdba528b ("mac80211: never drop
-injected frames even if normally not allowed") these injected frames
-were not assigned a sta context in the function ieee80211_tx_dequeue,
-causing certain wireless network cards to always send EAPOL frames in
-plaintext. This may cause compatibility issues with some clients or
-APs, which for instance can cause the group key handshake to fail and
-in turn would cause the station to get disconnected.
+> I don't like to touch the non-tail taggers, this is too much out of the scope
+> of my current work.
 
-This commit fixes this regression by assigning a sta context in
-ieee80211_tx_dequeue to injected frames as well.
+Do you want me to try and send a version using pskb_expand_head and you
+can test if it works for your tail-tagging switch?
 
-Note that sending EAPOL frames in plaintext is not a security issue
-since they contain their own encryption and authentication protection.
+> > Also, if the result is going to be longer than ~20 lines of code, I
+> > strongly suggest moving the reallocation to a separate function so you
+> > don't clutter dsa_slave_xmit.
+> As Florian requested I'll likely put the code into a separate function in
+> slave.c and call it from the individual tail-taggers in order not to put
+> extra conditionals in dsa_slave_xmit.
 
-Fixes: 1df2bdba528b ("mac80211: never drop injected frames even if normally not allowed")
----
- net/mac80211/tx.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
-index 8ba10a48d..55b41167a 100644
---- a/net/mac80211/tx.c
-+++ b/net/mac80211/tx.c
-@@ -3619,13 +3619,14 @@ struct sk_buff *ieee80211_tx_dequeue(struct ieee80211_hw *hw,
- 	tx.skb = skb;
- 	tx.sdata = vif_to_sdata(info->control.vif);
- 
--	if (txq->sta && !(info->flags & IEEE80211_TX_CTL_INJECTED)) {
-+	if (txq->sta) {
- 		tx.sta = container_of(txq->sta, struct sta_info, sta);
- 		/*
- 		 * Drop unicast frames to unauthorised stations unless they are
--		 * EAPOL frames from the local station.
-+		 * injected frames or EAPOL frames from the local station.
- 		 */
--		if (unlikely(ieee80211_is_data(hdr->frame_control) &&
-+		if (unlikely(!(info->flags & IEEE80211_TX_CTL_INJECTED) &&
-+			     ieee80211_is_data(hdr->frame_control) &&
- 			     !ieee80211_vif_is_mesh(&tx.sdata->vif) &&
- 			     tx.sdata->vif.type != NL80211_IFTYPE_OCB &&
- 			     !is_multicast_ether_addr(hdr->addr1) &&
--- 
-2.28.0
+I think it would be best to use the unlikely(tail_tag) approach though.
+The reallocation function should still be in the common code path. Even
+for a non-1588 switch, there are other code paths that clone packets on
+TX. For example, the bridge does that, when flooding packets. Currently,
+DSA ensures that the header area is writable by calling skb_cow_head, as
+far as I can see. But the point is, maybe we can do TX reallocation
+centrally.
