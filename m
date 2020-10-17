@@ -2,117 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3423C2913BE
-	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 20:55:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C0292913CC
+	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 21:00:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439119AbgJQSzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Oct 2020 14:55:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38330 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2439112AbgJQSzj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 17 Oct 2020 14:55:39 -0400
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 128AB2073A
-        for <netdev@vger.kernel.org>; Sat, 17 Oct 2020 18:55:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602960938;
-        bh=xE5kyr3XYBXffZgGF4kWpyNrMxsHDj4u3m9YzcRdVJQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Uv5R+lzJIzWSRyKyCpzPbFiQrkBEMKF1uXXsiZGZG+EeARtJJcQo7qXEOvDWlB8dX
-         B6SvPO4vA72fkAxir79TKbPT8Gb5iyLi7B20maGg6oCdmggUIpPC1Sp4vuyBjpXk8G
-         aeFJvpxIq6IMd5N1lEtuQa9+usMxFflGFMeuXdLU=
-Received: by mail-oi1-f181.google.com with SMTP id s21so6950050oij.0
-        for <netdev@vger.kernel.org>; Sat, 17 Oct 2020 11:55:38 -0700 (PDT)
-X-Gm-Message-State: AOAM531AhHhInuPHq6F8u56GHwOn3T2AUCFNTGfCdT4WpJJc+G+ThTr1
-        cswtNtwN3tBIKxW7Swzr47tMHJCgzzubvECSfC8=
-X-Google-Smtp-Source: ABdhPJypGgKKNSMkvBCTjuHI1MOLQVnfheKvVR82vYM5tBJmiexsP8YanBWqA47E0grs02uibc6jYhCtmQTEESDFIfI=
-X-Received: by 2002:aca:d845:: with SMTP id p66mr6127082oig.47.1602960937466;
- Sat, 17 Oct 2020 11:55:37 -0700 (PDT)
+        id S2439277AbgJQTAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Oct 2020 15:00:15 -0400
+Received: from smtprelay0208.hostedemail.com ([216.40.44.208]:36586 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2439239AbgJQTAN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Oct 2020 15:00:13 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay08.hostedemail.com (Postfix) with ESMTP id 15895182CED2A;
+        Sat, 17 Oct 2020 19:00:10 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:967:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1434:1437:1515:1516:1518:1535:1542:1593:1594:1711:1730:1747:1777:1792:2194:2199:2393:2525:2553:2561:2564:2682:2685:2693:2828:2859:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3355:3622:3865:3866:3867:3868:3870:3871:3872:3873:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4321:4470:4823:5007:6117:6742:6743:7576:7903:8660:8792:8957:9010:9025:9108:10004:10400:10450:10455:11232:11658:11914:12043:12050:12295:12296:12297:12438:12555:12663:12740:12760:12895:12986:13138:13148:13230:13231:13439:14096:14097:14181:14659:14721:19904:19999:21080:21324:21451:21627:21939:21990:30029:30034:30054:30070:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: jewel08_4005cbe27228
+X-Filterd-Recvd-Size: 5179
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf01.hostedemail.com (Postfix) with ESMTPA;
+        Sat, 17 Oct 2020 19:00:02 +0000 (UTC)
+Message-ID: <503af4a57ca6daeb3e42a9be136dcd21e6d6e23d.camel@perches.com>
+Subject: Re: [Cocci] [RFC] treewide: cleanup unreachable breaks
+From:   Joe Perches <joe@perches.com>
+To:     Julia Lawall <julia.lawall@inria.fr>
+Cc:     trix@redhat.com, linux-kernel@vger.kernel.org,
+        cocci <cocci@systeme.lip6.fr>, alsa-devel@alsa-project.org,
+        clang-built-linux@googlegroups.com, linux-iio@vger.kernel.org,
+        nouveau@lists.freedesktop.org, storagedev@microchip.com,
+        dri-devel@lists.freedesktop.org,
+        virtualization@lists.linux-foundation.org,
+        keyrings@vger.kernel.org, linux-mtd@lists.infradead.org,
+        ath10k@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        usb-storage@lists.one-eyed-alien.net,
+        linux-watchdog@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-samsung-soc@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-nvdimm@lists.01.org, amd-gfx@lists.freedesktop.org,
+        linux-acpi@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        industrypack-devel@lists.sourceforge.net,
+        linux-pci@vger.kernel.org, spice-devel@lists.freedesktop.org,
+        MPT-FusionLinux.pdl@broadcom.com, linux-media@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-nfc@lists.01.org,
+        linux-pm@vger.kernel.org, linux-can@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-gpio@vger.kernel.org,
+        xen-devel@lists.xenproject.org, linux-amlogic@lists.infradead.org,
+        openipmi-developer@lists.sourceforge.net,
+        platform-driver-x86@vger.kernel.org,
+        linux-integrity@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-wireless@vger.kernel.org,
+        linux-security-module@vger.kernel.org,
+        linux-crypto@vger.kernel.org, patches@opensource.cirrus.com,
+        bpf@vger.kernel.org, ocfs2-devel@oss.oracle.com,
+        linux-power@fi.rohmeurope.com
+Date:   Sat, 17 Oct 2020 12:00:01 -0700
+In-Reply-To: <alpine.DEB.2.22.394.2010172016370.9440@hadrien>
+References: <20201017160928.12698-1-trix@redhat.com>
+         <f530b7aeecbbf9654b4540cfa20023a4c2a11889.camel@perches.com>
+         <alpine.DEB.2.22.394.2010172016370.9440@hadrien>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.4-0ubuntu1 
 MIME-Version: 1.0
-References: <CAMj1kXEEF_Un-4NTaD5iUN0NoZYaJQn-rPediX0S6oRiuVuW-A@mail.gmail.com>
- <20201017144430.GI456889@lunn.ch> <CAMj1kXHsNrRSkZfSJ_VatES+V1obLcvfo=Qab_4jy58Znpjy6Q@mail.gmail.com>
- <20201017151132.GK456889@lunn.ch> <CAMj1kXH+Z56dkZz8OYMhPuqbjPPCqW=UMV6w--=XXh87UyHVaQ@mail.gmail.com>
- <20201017161435.GA1768480@apalos.home> <CAMj1kXHXYprdC19m1S5p_LQ2BOHtDCbyCWCJ0eJ5xPxFv8hgoA@mail.gmail.com>
- <20201017180453.GM456889@lunn.ch> <CAMj1kXEcrULejk+h1Jv42W=r7odQ9Z_G0XDX_KrEnYYPEVgHkA@mail.gmail.com>
- <20201017182738.GN456889@lunn.ch>
-In-Reply-To: <20201017182738.GN456889@lunn.ch>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Sat, 17 Oct 2020 20:55:26 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXHwYkd0L63K3+e_iwfoSYEUOmYdWf_cKv90_qVXSxEesg@mail.gmail.com>
-Message-ID: <CAMj1kXHwYkd0L63K3+e_iwfoSYEUOmYdWf_cKv90_qVXSxEesg@mail.gmail.com>
-Subject: Re: realtek PHY commit bbc4d71d63549 causes regression
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>, Willy Liu <willy.liu@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Masahisa Kojima <masahisa.kojima@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 17 Oct 2020 at 20:27, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Sat, Oct 17, 2020 at 08:11:24PM +0200, Ard Biesheuvel wrote:
-> > On Sat, 17 Oct 2020 at 20:04, Andrew Lunn <andrew@lunn.ch> wrote:
-> > >
-> > > > I have tried this, and it seems to fix the issue. I will send out a
-> > > > patch against the netsec driver.
-> > >
-> > > Please also fix the firmware so it does not pass rgmii.
-> > >
-> > > If there are pure DT systems, which do require phy-mode to be used, we
-> > > will need to revert your proposed change in order to make the MAC
-> > > driver work as it should, rather than work around the broken firmware.
-> > >
-> >
-> > What do you mean by 'pure' DT system? Only EDK2 based firmware exists
-> > for this platform
->
-> Currently, only EDK2 based firmware exists. Is there anything stopping
-> somebody using u-boot? ACPI is aimed for server class systems, on
-> ARM. If anybody wants to use this SoC in am embedded setting, not
-> server, then they are more likely to use DT, especially when you need
-> a complex network, eg. an Ethernet switch. It seems like ACPI is too
-> simple to support complex network hardware found in some embedded
-> systems.
->
-> > So what I propose to do is drop the handling of the [mandatory]
-> > phy-mode device property from the netsec driver (which is really only
-> > used by this board). As we don't really need a phy-mode to begin with,
-> > and given that firmware exists in the field that passes the wrong
-> > value, the only option I see for passing a value here is to use a
-> > different, *optional* DT property (force-phy-mode or
-> > phy-mode-override) that takes the place of phy-mode.
->
-> No, sorry, this is an ACPI problem, not a DT problem. I don't want to
-> accept DT hacks because of broken ACPI.
->
-> We have been through this before, when the Atheros PHY fixed is RGMII
-> delay support, and lots of platforms broke. Everybody just updated
-> their DT and were happy. I see no reason why ACPI should be different.
->
+On Sat, 2020-10-17 at 20:21 +0200, Julia Lawall wrote:
+> On Sat, 17 Oct 2020, Joe Perches wrote:
+> > On Sat, 2020-10-17 at 09:09 -0700, trix@redhat.com wrote:
+> > > From: Tom Rix <trix@redhat.com>
+> > > 
+> > > This is a upcoming change to clean up a new warning treewide.
+> > > I am wondering if the change could be one mega patch (see below) or
+> > > normal patch per file about 100 patches or somewhere half way by collecting
+> > > early acks.
+> > > 
+> > > clang has a number of useful, new warnings see
+> > > https://clang.llvm.org/docs/DiagnosticsReference.html
+> > > 
+> > > This change cleans up -Wunreachable-code-break
+> > > https://clang.llvm.org/docs/DiagnosticsReference.html#wunreachable-code-break
+> > > for 266 of 485 warnings in this week's linux-next, allyesconfig on x86_64.
+> > 
+> > Early acks/individual patches by subsystem would be good.
+> > Better still would be an automated cocci script.
+> 
+> Coccinelle is not especially good at this, because it is based on control
+> flow, and a return or goto diverts the control flow away from the break.
+> A hack to solve the problem is to put an if around the return or goto, but
+> that gives the break a meaningless file name and line number.  I collected
+> the following list, but it only has 439 results, so fewer than clang.  But
+> maybe there are some files that are not considered by clang in the x86
+> allyesconfig configuration.
+> 
+> Probably checkpatch is the best solution here, since it is not
+> configuration sensitive and doesn't care about control flow.
 
-I don't understand why you insist on framing this as a ACPI vs DT
-issue. AFAICT, the only meaningful distinction here is between
-firmware that configures the PHY and firmware that doesn't.
+Likely the clang compiler is the best option here.
 
-Broken firmware exists for this platform, and it provides incorrect DT
-data as well as incorrect ACPI data, but it does configure the PHY.
-Fixing that firmware involves fixing both, and it is easily updatable
-on this platform, so it is almost as simple as dropping a new DT file
-in your /boot partition. But you still need to do that.
+It might be useful to add -Wunreachable-code-break to W=1
+or just always enable it if it isn't already enabled.
 
-So we can fix this firmware by just setting phy-mode to the empty string, right?
+diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
+index 95e4cdb94fe9..3819787579d5 100644
+--- a/scripts/Makefile.extrawarn
++++ b/scripts/Makefile.extrawarn
+@@ -32,6 +32,7 @@ KBUILD_CFLAGS += $(call cc-option, -Wunused-but-set-variable)
+ KBUILD_CFLAGS += $(call cc-option, -Wunused-const-variable)
+ KBUILD_CFLAGS += $(call cc-option, -Wpacked-not-aligned)
+ KBUILD_CFLAGS += $(call cc-option, -Wstringop-truncation)
++KBUILD_CFLAGS += $(call cc-option, -Wunreachable-code-break)
+ # The following turn off the warnings enabled by -Wextra
+ KBUILD_CFLAGS += -Wno-missing-field-initializers
+ KBUILD_CFLAGS += -Wno-sign-compare
 
-So the only question is how we deal with broken firmware. Again, I
-don't see much point in distinguishing between DT and ACPI here, as in
-both cases, the same action is required on the part of the user to
-change something on their system before they can upgrade their kernel.
+(and thank you Tom for pushing this forward)
+
+checkpatch can't find instances like:
+
+	case FOO:
+		if (foo)
+			return 1;
+		else
+			return 2;
+		break;
+
+As it doesn't track flow and relies on the number
+of tabs to be the same for any goto/return and break;
+
+checkpatch will warn on:
+
+	case FOO:
+		...
+		goto bar;
+		break;
+
+
