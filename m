@@ -2,142 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C0292913CC
-	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 21:00:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5020629140C
+	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 21:08:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439277AbgJQTAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Oct 2020 15:00:15 -0400
-Received: from smtprelay0208.hostedemail.com ([216.40.44.208]:36586 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2439239AbgJQTAN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Oct 2020 15:00:13 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay08.hostedemail.com (Postfix) with ESMTP id 15895182CED2A;
-        Sat, 17 Oct 2020 19:00:10 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:967:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1434:1437:1515:1516:1518:1535:1542:1593:1594:1711:1730:1747:1777:1792:2194:2199:2393:2525:2553:2561:2564:2682:2685:2693:2828:2859:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3355:3622:3865:3866:3867:3868:3870:3871:3872:3873:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4321:4470:4823:5007:6117:6742:6743:7576:7903:8660:8792:8957:9010:9025:9108:10004:10400:10450:10455:11232:11658:11914:12043:12050:12295:12296:12297:12438:12555:12663:12740:12760:12895:12986:13138:13148:13230:13231:13439:14096:14097:14181:14659:14721:19904:19999:21080:21324:21451:21627:21939:21990:30029:30034:30054:30070:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: jewel08_4005cbe27228
-X-Filterd-Recvd-Size: 5179
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf01.hostedemail.com (Postfix) with ESMTPA;
-        Sat, 17 Oct 2020 19:00:02 +0000 (UTC)
-Message-ID: <503af4a57ca6daeb3e42a9be136dcd21e6d6e23d.camel@perches.com>
-Subject: Re: [Cocci] [RFC] treewide: cleanup unreachable breaks
-From:   Joe Perches <joe@perches.com>
-To:     Julia Lawall <julia.lawall@inria.fr>
-Cc:     trix@redhat.com, linux-kernel@vger.kernel.org,
-        cocci <cocci@systeme.lip6.fr>, alsa-devel@alsa-project.org,
-        clang-built-linux@googlegroups.com, linux-iio@vger.kernel.org,
-        nouveau@lists.freedesktop.org, storagedev@microchip.com,
-        dri-devel@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org,
-        keyrings@vger.kernel.org, linux-mtd@lists.infradead.org,
-        ath10k@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        usb-storage@lists.one-eyed-alien.net,
-        linux-watchdog@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-samsung-soc@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-nvdimm@lists.01.org, amd-gfx@lists.freedesktop.org,
-        linux-acpi@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        industrypack-devel@lists.sourceforge.net,
-        linux-pci@vger.kernel.org, spice-devel@lists.freedesktop.org,
-        MPT-FusionLinux.pdl@broadcom.com, linux-media@vger.kernel.org,
-        linux-serial@vger.kernel.org, linux-nfc@lists.01.org,
-        linux-pm@vger.kernel.org, linux-can@vger.kernel.org,
-        linux-block@vger.kernel.org, linux-gpio@vger.kernel.org,
-        xen-devel@lists.xenproject.org, linux-amlogic@lists.infradead.org,
-        openipmi-developer@lists.sourceforge.net,
-        platform-driver-x86@vger.kernel.org,
-        linux-integrity@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-wireless@vger.kernel.org,
-        linux-security-module@vger.kernel.org,
-        linux-crypto@vger.kernel.org, patches@opensource.cirrus.com,
-        bpf@vger.kernel.org, ocfs2-devel@oss.oracle.com,
-        linux-power@fi.rohmeurope.com
-Date:   Sat, 17 Oct 2020 12:00:01 -0700
-In-Reply-To: <alpine.DEB.2.22.394.2010172016370.9440@hadrien>
-References: <20201017160928.12698-1-trix@redhat.com>
-         <f530b7aeecbbf9654b4540cfa20023a4c2a11889.camel@perches.com>
-         <alpine.DEB.2.22.394.2010172016370.9440@hadrien>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.4-0ubuntu1 
+        id S2437990AbgJQTI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Oct 2020 15:08:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36538 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2437462AbgJQTI2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Oct 2020 15:08:28 -0400
+Received: from rhcavuit01.kulnet.kuleuven.be (rhcavuit01.kulnet.kuleuven.be [IPv6:2a02:2c40:0:c0::25:129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4B3FC061755
+        for <netdev@vger.kernel.org>; Sat, 17 Oct 2020 12:08:27 -0700 (PDT)
+X-KULeuven-Envelope-From: mathy.vanhoef@kuleuven.be
+X-Spam-Status: not spam, SpamAssassin (not cached, score=-51, required 5,
+        autolearn=disabled, ALL_TRUSTED -1.00, LOCAL_SMTPS -50.00)
+X-KULeuven-Scanned: Found to be clean
+X-KULeuven-ID: 2B3C1120002.AD9C6
+X-KULeuven-Information: Katholieke Universiteit Leuven
+Received: from icts-p-smtps-1.cc.kuleuven.be (icts-p-smtps-1e.kulnet.kuleuven.be [134.58.240.33])
+        by rhcavuit01.kulnet.kuleuven.be (Postfix) with ESMTP id 2B3C1120002
+        for <netdev@vger.kernel.org>; Sat, 17 Oct 2020 21:08:23 +0200 (CEST)
+Received: from mathy-work.localhost (unknown [31.215.199.82])
+        (using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by icts-p-smtps-1.cc.kuleuven.be (Postfix) with ESMTPSA id 6924140B2;
+        Sat, 17 Oct 2020 21:08:21 +0200 (CEST)
+Date:   Sat, 17 Oct 2020 23:08:18 +0400
+X-Kuleuven: This mail passed the K.U.Leuven mailcluster
+From:   Mathy Vanhoef <Mathy.Vanhoef@kuleuven.be>
+To:     Thomas Deutschmann <whissi@gentoo.org>
+Cc:     <johannes@sipsolutions.net>,
+        "davem@davemloft.net" <davem@davemloft.net>, <kuba@kernel.org>,
+        <linux-wireless@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        <denkenz@gmail.com>
+Subject: Re: [Regression 5.9][Bisected 1df2bdba528b] Wifi GTK rekeying
+ fails: Sending of EAPol packages broken
+Message-ID: <20201017230818.04896494@mathy-work.localhost>
+In-Reply-To: <4a7f92dc-13bb-697f-1730-ac288e74b730@gentoo.org>
+References: <4a7f92dc-13bb-697f-1730-ac288e74b730@gentoo.org>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2020-10-17 at 20:21 +0200, Julia Lawall wrote:
-> On Sat, 17 Oct 2020, Joe Perches wrote:
-> > On Sat, 2020-10-17 at 09:09 -0700, trix@redhat.com wrote:
-> > > From: Tom Rix <trix@redhat.com>
-> > > 
-> > > This is a upcoming change to clean up a new warning treewide.
-> > > I am wondering if the change could be one mega patch (see below) or
-> > > normal patch per file about 100 patches or somewhere half way by collecting
-> > > early acks.
-> > > 
-> > > clang has a number of useful, new warnings see
-> > > https://clang.llvm.org/docs/DiagnosticsReference.html
-> > > 
-> > > This change cleans up -Wunreachable-code-break
-> > > https://clang.llvm.org/docs/DiagnosticsReference.html#wunreachable-code-break
-> > > for 266 of 485 warnings in this week's linux-next, allyesconfig on x86_64.
-> > 
-> > Early acks/individual patches by subsystem would be good.
-> > Better still would be an automated cocci script.
-> 
-> Coccinelle is not especially good at this, because it is based on control
-> flow, and a return or goto diverts the control flow away from the break.
-> A hack to solve the problem is to put an if around the return or goto, but
-> that gives the break a meaningless file name and line number.  I collected
-> the following list, but it only has 439 results, so fewer than clang.  But
-> maybe there are some files that are not considered by clang in the x86
-> allyesconfig configuration.
-> 
-> Probably checkpatch is the best solution here, since it is not
-> configuration sensitive and doesn't care about control flow.
+I've managed to reproduce the issue, or at least a related issue. Can
+you try the draft patch below and see if that fixes it?
 
-Likely the clang compiler is the best option here.
+[PATCH] mac80211: fix regression where EAPOL frames were sent in plaintext
 
-It might be useful to add -Wunreachable-code-break to W=1
-or just always enable it if it isn't already enabled.
+When sending EAPOL frames via NL80211 they are treated as injected
+frames in mac80211. Due to commit 1df2bdba528b ("mac80211: never drop
+injected frames even if normally not allowed") these injected frames
+were not assigned a sta context in the function ieee80211_tx_dequeue,
+causing certain wireless network cards to always send EAPOL frames in
+plaintext. This may cause compatibility issues with some clients or
+APs, which for instance can cause the group key handshake to fail and
+in turn would cause the station to get disconnected.
 
-diff --git a/scripts/Makefile.extrawarn b/scripts/Makefile.extrawarn
-index 95e4cdb94fe9..3819787579d5 100644
---- a/scripts/Makefile.extrawarn
-+++ b/scripts/Makefile.extrawarn
-@@ -32,6 +32,7 @@ KBUILD_CFLAGS += $(call cc-option, -Wunused-but-set-variable)
- KBUILD_CFLAGS += $(call cc-option, -Wunused-const-variable)
- KBUILD_CFLAGS += $(call cc-option, -Wpacked-not-aligned)
- KBUILD_CFLAGS += $(call cc-option, -Wstringop-truncation)
-+KBUILD_CFLAGS += $(call cc-option, -Wunreachable-code-break)
- # The following turn off the warnings enabled by -Wextra
- KBUILD_CFLAGS += -Wno-missing-field-initializers
- KBUILD_CFLAGS += -Wno-sign-compare
+This commit fixes this regression by assigning a sta context in
+ieee80211_tx_dequeue to injected frames as well.
 
-(and thank you Tom for pushing this forward)
+Note that sending EAPOL frames in plaintext is not a security issue
+since they contain their own encryption and authentication protection.
 
-checkpatch can't find instances like:
+Fixes: 1df2bdba528b ("mac80211: never drop injected frames even if normally not allowed")
+---
+ net/mac80211/tx.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-	case FOO:
-		if (foo)
-			return 1;
-		else
-			return 2;
-		break;
-
-As it doesn't track flow and relies on the number
-of tabs to be the same for any goto/return and break;
-
-checkpatch will warn on:
-
-	case FOO:
-		...
-		goto bar;
-		break;
-
-
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index 8ba10a48d..55b41167a 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -3619,13 +3619,14 @@ struct sk_buff *ieee80211_tx_dequeue(struct ieee80211_hw *hw,
+ 	tx.skb = skb;
+ 	tx.sdata = vif_to_sdata(info->control.vif);
+ 
+-	if (txq->sta && !(info->flags & IEEE80211_TX_CTL_INJECTED)) {
++	if (txq->sta) {
+ 		tx.sta = container_of(txq->sta, struct sta_info, sta);
+ 		/*
+ 		 * Drop unicast frames to unauthorised stations unless they are
+-		 * EAPOL frames from the local station.
++		 * injected frames or EAPOL frames from the local station.
+ 		 */
+-		if (unlikely(ieee80211_is_data(hdr->frame_control) &&
++		if (unlikely(!(info->flags & IEEE80211_TX_CTL_INJECTED) &&
++			     ieee80211_is_data(hdr->frame_control) &&
+ 			     !ieee80211_vif_is_mesh(&tx.sdata->vif) &&
+ 			     tx.sdata->vif.type != NL80211_IFTYPE_OCB &&
+ 			     !is_multicast_ether_addr(hdr->addr1) &&
+-- 
+2.28.0
