@@ -2,119 +2,469 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C43B0290F58
-	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 07:35:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 280522910C9
+	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 10:48:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2411792AbgJQFfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Oct 2020 01:35:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53074 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2411748AbgJQFen (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Oct 2020 01:34:43 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EBDDC0613A7;
-        Fri, 16 Oct 2020 17:48:20 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id x7so5847846eje.8;
-        Fri, 16 Oct 2020 17:48:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Ua2AZ2Oeg9ewqA0Si3AkIz4WRNl/Q2mfMB0KJrjvhWY=;
-        b=uUqHvywJ4GS5x9oDzvgNuIg90FGhdNqaQgCMHgxjpw45tpi34MNDwt4s22Pxeay58Y
-         ujr4iqHG6RbIXO+2EZqSWTzH3aEpz0Mgj4cnakrg0lFeDXs+Xu5Zt05zoJdANtopnbxF
-         tCBBVD3+0CLMQMTsYUMegL844PryMkQ1229MKI+1MMq4vg39zbGA1Nv9jkr2l74gfWMz
-         VMLpnROG2RhB4Ql8m/yZ9BW+I8oDO5v7leu7r5x/1y0Iq53NEyHwgaEhK/5IyZB6Ch8b
-         GhiQ33U3GMiqBMdiQCnen1aPahXyFCv6zyJoc7OjbcsXlQcPiE0q3Jy0vgQj7I34eYFs
-         5bSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Ua2AZ2Oeg9ewqA0Si3AkIz4WRNl/Q2mfMB0KJrjvhWY=;
-        b=uAlV+uik/qawGdNa/4aQn+Gx4Io9fdtlXUZcUKB6TAh3mFjKHhiSNZfcbBU1HZPNfy
-         +MRSNmJaSpqPF8X9Lgyx+2UzESY0atNvuEf+UdiVz0UdpFEf544g2FrqYT3itOEhFPcQ
-         H0VYRgmhMQt7tnHXTHCijJA6e95tYfkkY7aNVqlkYpI7lEp+86sRLU+rg8l5E7VU5Opb
-         blTfNc1jkXutFTft8z+XvSkMqetSje4lcSiqrzwmVBDgfotnZgUGU6N0IonVtEGvRkrz
-         Ajv+flI04b9426ztcVsl/Ntt8XoeSf2a3Y6ngDh1cx5bKNXysWNukSTYeH/v088gadLp
-         VgnA==
-X-Gm-Message-State: AOAM530jJN+H1FzUzpNtTrJS+aEFkLNE1LN4UnP98BJv9rA8xbwEdKiv
-        EOThw3XChWgFlvkAiLOlH3I=
-X-Google-Smtp-Source: ABdhPJzn4nNS0j7LhCADf/vRymr8pWItLqMkNIvB2wdUC712nx3iIG29qbmvY0bg9osr7Jp5j/DpQg==
-X-Received: by 2002:a17:906:1a11:: with SMTP id i17mr6338496ejf.381.1602895698730;
-        Fri, 16 Oct 2020 17:48:18 -0700 (PDT)
-Received: from skbuf ([188.26.174.215])
-        by smtp.gmail.com with ESMTPSA id si13sm3326957ejb.49.2020.10.16.17.48.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Oct 2020 17:48:18 -0700 (PDT)
-Date:   Sat, 17 Oct 2020 03:48:16 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/3] net: dsa: don't pass cloned skb's to
- drivers xmit function
-Message-ID: <20201017004816.q4l6cypw4fd4vu5f@skbuf>
-References: <20201016200226.23994-1-ceggers@arri.de>
- <20201016200226.23994-2-ceggers@arri.de>
+        id S2437734AbgJQIsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Oct 2020 04:48:11 -0400
+Received: from z5.mailgun.us ([104.130.96.5]:39831 "EHLO z5.mailgun.us"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2437730AbgJQIsK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 17 Oct 2020 04:48:10 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1602924489; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=QwjYGlqYo24gqdDkAcddWX8Qdr+goF/apA1d3PH9D6E=; b=AmHZCN2vFNByUExAE0dQK2+jwad7I8y7GlOXXHR3UVRjFjXOx6xZPg0bZbCpv4g+2VImCTEw
+ hbnZjZ7+Fs4GJyfwSKm8661lOK8p7lhjzx9emXigE1je6n+WPkd13otQ66qIHRy0LtOgE6MC
+ WPY5p62eZ4phIBcdchW5Q/ekxsw=
+X-Mailgun-Sending-Ip: 104.130.96.5
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
+ 5f8a404f4f8cc67c3150a1fd (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 17 Oct 2020 00:52:31
+ GMT
+Sender: hemantk=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 6FF08C43382; Sat, 17 Oct 2020 00:52:30 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.2 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from [10.46.162.249] (i-global254.qualcomm.com [199.106.103.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: hemantk)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id AAF07C433F1;
+        Sat, 17 Oct 2020 00:52:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org AAF07C433F1
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=hemantk@codeaurora.org
+Subject: Re: [PATCH v6 2/3] net: Add mhi-net driver
+To:     Loic Poulain <loic.poulain@linaro.org>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, manivannan.sadhasivam@linaro.org,
+        eric.dumazet@gmail.com
+References: <1602840007-27140-1-git-send-email-loic.poulain@linaro.org>
+ <1602840007-27140-2-git-send-email-loic.poulain@linaro.org>
+From:   Hemant Kumar <hemantk@codeaurora.org>
+Message-ID: <ec86ae1d-5e64-85d3-090f-5f74649561f3@codeaurora.org>
+Date:   Fri, 16 Oct 2020 17:52:28 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201016200226.23994-2-ceggers@arri.de>
+In-Reply-To: <1602840007-27140-2-git-send-email-loic.poulain@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 16, 2020 at 10:02:24PM +0200, Christian Eggers wrote:
-> Ensure that the skb is not cloned and has enough tail room for the tail
-> tag. This code will be removed from the drivers in the next commits.
+Hi Loic,
+
+On 10/16/20 2:20 AM, Loic Poulain wrote:
+> This patch adds a new network driver implementing MHI transport for
+> network packets. Packets can be in any format, though QMAP (rmnet)
+> is the usual protocol (flow control + PDN mux).
 > 
-> Signed-off-by: Christian Eggers <ceggers@arri.de>
+> It support two MHI devices, IP_HW0 which is, the path to the IPA
+> (IP accelerator) on qcom modem, And IP_SW0 which is the software
+> driven IP path (to modem CPU).
+> 
+> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
 > ---
+> 
+>    v2: - rebase on net-next
+>        - remove useless skb_linearize
+>        - check error type on mhi_queue return
+>        - rate limited errors
+>        - Schedule RX refill only on 'low' buf level
+>        - SET_NETDEV_DEV in probe
+>        - reorder device remove sequence
+>    v3: - Stop channels on net_register error
+>        - Remove useles parentheses
+>        - Add driver .owner
+>    v4: - prevent potential cpu hog in rx-refill loop
+>        - Access mtu via READ_ONCE
+>    v5: - Fix access to u64 stats
+>    v6: - Stop TX queue earlier if queue is full
+>        - Preventing 'abnormal' NETDEV_TX_BUSY path
+> 
+>   drivers/net/Kconfig   |   7 ++
+>   drivers/net/Makefile  |   1 +
+>   drivers/net/mhi_net.c | 312 ++++++++++++++++++++++++++++++++++++++++++++++++++
+>   3 files changed, 320 insertions(+)
+>   create mode 100644 drivers/net/mhi_net.c
+> 
+> diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+> index 1368d1d..11a6357 100644
+> --- a/drivers/net/Kconfig
+> +++ b/drivers/net/Kconfig
+> @@ -426,6 +426,13 @@ config VSOCKMON
+>   	  mostly intended for developers or support to debug vsock issues. If
+>   	  unsure, say N.
+>   
+> +config MHI_NET
+> +	tristate "MHI network driver"
+> +	depends on MHI_BUS
+> +	help
+> +	  This is the network driver for MHI.  It can be used with
+> +	  QCOM based WWAN modems (like SDX55).  Say Y or M.
+> +
+>   endif # NET_CORE
+>   
+>   config SUNGEM_PHY
+> diff --git a/drivers/net/Makefile b/drivers/net/Makefile
+> index 94b6080..8312037 100644
+> --- a/drivers/net/Makefile
+> +++ b/drivers/net/Makefile
+> @@ -34,6 +34,7 @@ obj-$(CONFIG_GTP) += gtp.o
+>   obj-$(CONFIG_NLMON) += nlmon.o
+>   obj-$(CONFIG_NET_VRF) += vrf.o
+>   obj-$(CONFIG_VSOCKMON) += vsockmon.o
+> +obj-$(CONFIG_MHI_NET) += mhi_net.o
+>   
+>   #
+>   # Networking Drivers
+> diff --git a/drivers/net/mhi_net.c b/drivers/net/mhi_net.c
+> new file mode 100644
+> index 0000000..9c93db1
+> --- /dev/null
+> +++ b/drivers/net/mhi_net.c
+> @@ -0,0 +1,312 @@
+> +// SPDX-License-Identifier: GPL-2.0-or-later
+> +/* MHI Network driver - Network over MHI
+> + *
+> + * Copyright (C) 2020 Linaro Ltd <loic.poulain@linaro.org>
+> + */
+> +
+> +#include <linux/if_arp.h>
+> +#include <linux/mhi.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/module.h>
+> +#include <linux/netdevice.h>
+> +#include <linux/skbuff.h>
+> +#include <linux/u64_stats_sync.h>
+> +
+> +#define MIN_MTU		ETH_MIN_MTU
+> +#define MAX_MTU		0xffff
+uci driver patch series would take care of this :)
+> +#define DEFAULT_MTU	8192
+it would be good to pass this from driver data based on sw/hw channel
+> +
+> +struct mhi_net_stats {
+> +	u64_stats_t rx_packets;
+> +	u64_stats_t rx_bytes;
+> +	u64_stats_t rx_errors;
+> +	u64_stats_t rx_dropped;
+> +	u64_stats_t tx_packets;
+> +	u64_stats_t tx_bytes;
+> +	u64_stats_t tx_errors;
+> +	u64_stats_t tx_dropped;
+> +	atomic_t rx_queued;
+> +	struct u64_stats_sync tx_syncp;
+> +	struct u64_stats_sync rx_syncp;
+> +};
+> +
+> +struct mhi_net_dev {
+> +	struct mhi_device *mdev;
+> +	struct net_device *ndev;
+> +	struct delayed_work rx_refill;
+> +	struct mhi_net_stats stats;
+> +	u32 rx_queue_sz;
+> +};
+> +
+> +static int mhi_ndo_open(struct net_device *ndev)
+> +{
+> +	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
+> +
+> +	/* Feed the rx buffer pool */
+> +	schedule_delayed_work(&mhi_netdev->rx_refill, 0);
+> +
+> +	/* Carrier is established via out-of-band channel (e.g. qmi) */
+> +	netif_carrier_on(ndev);
+> +
+> +	netif_start_queue(ndev);
+> +
+> +	return 0;
+> +}
+> +
+> +static int mhi_ndo_stop(struct net_device *ndev)
+> +{
+> +	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
+> +
+> +	netif_stop_queue(ndev);
+> +	netif_carrier_off(ndev);
+> +	cancel_delayed_work_sync(&mhi_netdev->rx_refill);
+> +
+> +	return 0;
+> +}
+> +
+> +static int mhi_ndo_xmit(struct sk_buff *skb, struct net_device *ndev)
+> +{
+> +	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
+> +	struct mhi_device *mdev = mhi_netdev->mdev;
+> +	int err;
+> +
+> +	/* mhi_queue_skb is not thread-safe, but xmit is serialized by the
+> +	 * network core. Once MHI core will be thread save, migrate to
+> +	 * NETIF_F_LLTX support.
+> +	 */
+> +	err = mhi_queue_skb(mdev, DMA_TO_DEVICE, skb, skb->len, MHI_EOT);
+> +	if (unlikely(err)) {
+> +		net_err_ratelimited("%s: Failed to queue TX buf (%d)\n",
+> +				    ndev->name, err);
+> +
+> +		u64_stats_update_begin(&mhi_netdev->stats.tx_syncp);
+> +		u64_stats_inc(&mhi_netdev->stats.tx_dropped);
+> +		u64_stats_update_end(&mhi_netdev->stats.tx_syncp);
+> +
+> +		/* drop the packet */
+> +		kfree_skb(skb);
+> +	}
+> +
+> +	if (mhi_queue_is_full(mdev, DMA_TO_DEVICE))
+> +		netif_stop_queue(ndev);
+is it possible to enable flow control on tx queue if mhi_queue_skb 
+returns non zero value and return NETDEV_TX_BUSY instead of dropping 
+packet at MHI layer ? If this is possible you dont need to export new 
+API as well.
+> +
+> +	return NETDEV_TX_OK;
+> +}
+> +
+> +static void mhi_ndo_get_stats64(struct net_device *ndev,
+> +				struct rtnl_link_stats64 *stats)
+> +{
+> +	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
+> +	unsigned int start;
+> +
+> +	do {
+> +		start = u64_stats_fetch_begin_irq(&mhi_netdev->stats.rx_syncp);
+> +		stats->rx_packets = u64_stats_read(&mhi_netdev->stats.rx_packets);
+> +		stats->rx_bytes = u64_stats_read(&mhi_netdev->stats.rx_bytes);
+> +		stats->rx_errors = u64_stats_read(&mhi_netdev->stats.rx_errors);
+> +		stats->rx_dropped = u64_stats_read(&mhi_netdev->stats.rx_dropped);
+> +	} while (u64_stats_fetch_retry_irq(&mhi_netdev->stats.rx_syncp, start));
+> +
+> +	do {
+> +		start = u64_stats_fetch_begin_irq(&mhi_netdev->stats.tx_syncp);
+> +		stats->tx_packets = u64_stats_read(&mhi_netdev->stats.tx_packets);
+> +		stats->tx_bytes = u64_stats_read(&mhi_netdev->stats.tx_bytes);
+> +		stats->tx_errors = u64_stats_read(&mhi_netdev->stats.tx_errors);
+> +		stats->tx_dropped = u64_stats_read(&mhi_netdev->stats.tx_dropped);
+> +	} while (u64_stats_fetch_retry_irq(&mhi_netdev->stats.tx_syncp, start));
+> +}
+> +
+> +static const struct net_device_ops mhi_netdev_ops = {
+> +	.ndo_open               = mhi_ndo_open,
+> +	.ndo_stop               = mhi_ndo_stop,
+> +	.ndo_start_xmit         = mhi_ndo_xmit,
+> +	.ndo_get_stats64	= mhi_ndo_get_stats64,
+> +};
+> +
+> +static void mhi_net_setup(struct net_device *ndev)
+> +{
+> +	ndev->header_ops = NULL;  /* No header */
+> +	ndev->type = ARPHRD_NONE; /* QMAP... */
+> +	ndev->hard_header_len = 0;
+> +	ndev->addr_len = 0;
+> +	ndev->flags = IFF_POINTOPOINT | IFF_NOARP;
+> +	ndev->netdev_ops = &mhi_netdev_ops;
+> +	ndev->mtu = DEFAULT_MTU;
+> +	ndev->min_mtu = MIN_MTU;
+> +	ndev->max_mtu = MAX_MTU;
+> +	ndev->tx_queue_len = 1000;
+some of the above parameters can go in to driver data specific to sw and 
+hw channels.
+> +}
+> +
+> +static void mhi_net_dl_callback(struct mhi_device *mhi_dev,
+> +				struct mhi_result *mhi_res)
+> +{
+> +	struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
+> +	struct sk_buff *skb = mhi_res->buf_addr;
+> +	int remaining;
+> +
+> +	remaining = atomic_dec_return(&mhi_netdev->stats.rx_queued);
+> +
+> +	if (unlikely(mhi_res->transaction_status)) {
+> +		u64_stats_update_begin(&mhi_netdev->stats.rx_syncp);
+> +		u64_stats_inc(&mhi_netdev->stats.rx_errors);
+> +		u64_stats_update_end(&mhi_netdev->stats.rx_syncp);
+> +
+> +		kfree_skb(skb);
+> +	} else {
+> +		u64_stats_update_begin(&mhi_netdev->stats.rx_syncp);
+> +		u64_stats_inc(&mhi_netdev->stats.rx_packets);
+> +		u64_stats_add(&mhi_netdev->stats.rx_bytes, mhi_res->bytes_xferd);
+> +		u64_stats_update_end(&mhi_netdev->stats.rx_syncp);
+> +
+> +		skb->protocol = htons(ETH_P_MAP);
+> +		skb_put(skb, mhi_res->bytes_xferd);
+> +		netif_rx(skb);
+> +	}
+> +
+> +	/* Refill if RX buffers queue becomes low */
+> +	if (remaining <= mhi_netdev->rx_queue_sz / 2)
+> +		schedule_delayed_work(&mhi_netdev->rx_refill, 0);
+> +}
+> +
+> +static void mhi_net_ul_callback(struct mhi_device *mhi_dev,
+> +				struct mhi_result *mhi_res)
+> +{
+> +	struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
+> +	struct net_device *ndev = mhi_netdev->ndev;
+> +	struct sk_buff *skb = mhi_res->buf_addr;
+> +
+> +	/* Hardware has consumed the buffer, so free the skb (which is not
+> +	 * freed by the MHI stack) and perform accounting.
+> +	 */
+> +	consume_skb(skb);
+> +
+> +	u64_stats_update_begin(&mhi_netdev->stats.tx_syncp);
+> +	if (unlikely(mhi_res->transaction_status)) {
+> +		u64_stats_inc(&mhi_netdev->stats.tx_errors);
+> +	} else {
+> +		u64_stats_inc(&mhi_netdev->stats.tx_packets);
+> +		u64_stats_add(&mhi_netdev->stats.tx_bytes, mhi_res->bytes_xferd);
+> +	}
+> +	u64_stats_update_end(&mhi_netdev->stats.tx_syncp);
+> +
+> +	if (netif_queue_stopped(ndev))
+> +		netif_wake_queue(ndev);
+> +}
+> +
+> +static void mhi_net_rx_refill_work(struct work_struct *work)
+> +{
+> +	struct mhi_net_dev *mhi_netdev = container_of(work, struct mhi_net_dev,
+> +						      rx_refill.work);
+> +	struct net_device *ndev = mhi_netdev->ndev;
+> +	struct mhi_device *mdev = mhi_netdev->mdev;
+> +	int size = READ_ONCE(ndev->mtu);
+> +	struct sk_buff *skb;
+> +	int err;
+> +
+> +	do {
+> +		skb = netdev_alloc_skb(ndev, size);
+> +		if (unlikely(!skb))
+> +			break;
+> +
+> +		err = mhi_queue_skb(mdev, DMA_FROM_DEVICE, skb, size, MHI_EOT);
+> +		if (err) {
+> +			if (unlikely(err != -ENOMEM))
+> +				net_err_ratelimited("%s: Failed to queue RX buf (%d)\n",
+> +						    ndev->name, err);
+> +			kfree_skb(skb);
+> +			break;
+> +		}
+> +
+> +		atomic_inc(&mhi_netdev->stats.rx_queued);
+> +
+> +		/* Do not hog the CPU if rx buffers are completed faster than
+> +		 * queued (unlikely).
+> +		 */
+> +		cond_resched();
+> +	} while (1);
+> +
+> +	/* If we're still starved of rx buffers, reschedule latter */
+> +	if (unlikely(!atomic_read(&mhi_netdev->stats.rx_queued)))
+> +		schedule_delayed_work(&mhi_netdev->rx_refill, HZ / 2);
+> +}
+> +
+> +static int mhi_net_probe(struct mhi_device *mhi_dev,
+> +			 const struct mhi_device_id *id)
+> +{
+> +	const char *netname = (char *)id->driver_data;
+> +	struct mhi_net_dev *mhi_netdev;
+> +	struct net_device *ndev;
+> +	struct device *dev = &mhi_dev->dev;
+> +	int err;
+> +
+> +	ndev = alloc_netdev(sizeof(*mhi_netdev), netname, NET_NAME_PREDICTABLE,
+> +			    mhi_net_setup);
+> +	if (!ndev)
+> +		return -ENOMEM;
+> +
+> +	mhi_netdev = netdev_priv(ndev);
+> +	dev_set_drvdata(dev, mhi_netdev);
+> +	mhi_netdev->ndev = ndev;
+> +	mhi_netdev->mdev = mhi_dev;
+> +	SET_NETDEV_DEV(ndev, &mhi_dev->dev);
+> +
+> +	/* All MHI net channels have 128 ring elements (at least for now) */
+> +	mhi_netdev->rx_queue_sz = 128;
+Instead of hard coded value you can use mhi_get_free_desc_count() again 
+from uci patch series :)
+> +
+> +	INIT_DELAYED_WORK(&mhi_netdev->rx_refill, mhi_net_rx_refill_work);
+> +	u64_stats_init(&mhi_netdev->stats.rx_syncp);
+> +	u64_stats_init(&mhi_netdev->stats.tx_syncp);
+> +
+> +	/* Start MHI channels */
+> +	err = mhi_prepare_for_transfer(mhi_dev);
+> +	if (err)
+> +		goto out_err;
+> +
+> +	err = register_netdev(ndev);
+> +	if (err) {
+> +		mhi_unprepare_from_transfer(mhi_dev);
+> +		goto out_err;
+> +	}
+> +
+> +	return 0;
+> +
+> +out_err:
+> +	free_netdev(ndev);
+> +	return err;
+> +}
+> +
+> +static void mhi_net_remove(struct mhi_device *mhi_dev)
+> +{
+> +	struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
+> +
+> +	unregister_netdev(mhi_netdev->ndev);
+> +
+> +	mhi_unprepare_from_transfer(mhi_netdev->mdev);
+> +
+> +	free_netdev(mhi_netdev->ndev);
+> +}
+> +
+> +static const struct mhi_device_id mhi_net_id_table[] = {
+> +	{ .chan = "IP_HW0", .driver_data = (kernel_ulong_t)"mhi_hwip%d" },
+it would be good to use driver data as struct which would pass network 
+device name, mru, etc. You can have diff mru between sw and hw channel 
+if packet level aggregation is enabled.
+> +	{ .chan = "IP_SW0", .driver_data = (kernel_ulong_t)"mhi_swip%d" },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(mhi, mhi_net_id_table);
+> +
+> +static struct mhi_driver mhi_net_driver = {
+> +	.probe = mhi_net_probe,
+> +	.remove = mhi_net_remove,
+> +	.dl_xfer_cb = mhi_net_dl_callback,
+> +	.ul_xfer_cb = mhi_net_ul_callback,
+> +	.id_table = mhi_net_id_table,
+> +	.driver = {
+> +		.name = "mhi_net",
+> +		.owner = THIS_MODULE,
+> +	},
+> +};
+> +
+> +module_mhi_driver(mhi_net_driver);
+> +
+> +MODULE_AUTHOR("Loic Poulain <loic.poulain@linaro.org>");
+> +MODULE_DESCRIPTION("Network over MHI");
+> +MODULE_LICENSE("GPL v2");
+> 
 
-Does 1588 work for you using this change, or you haven't finished
-implementing it yet? If you haven't, I would suggest finishing that
-part first.
-
-The post-reallocation skb looks nothing like the one before.
-
-Before:
-skb len=68 headroom=2 headlen=68 tailroom=186
-mac=(2,14) net=(16,-1) trans=-1
-shinfo(txflags=1 nr_frags=0 gso(size=0 type=0 segs=0))
-csum(0x0 ip_summed=0 complete_sw=0 valid=0 level=0)
-hash(0x9d6927ec sw=1 l4=0) proto=0x88f7 pkttype=0 iif=0
-dev name=swp2 feat=0x0x0002000000005020
-sk family=17 type=3 proto=0
-
-After:
-skb len=68 headroom=2 headlen=68 tailroom=186
-mac=(2,16) net=(18,-17) trans=1
-shinfo(txflags=0 nr_frags=0 gso(size=0 type=0 segs=0))
-csum(0x0 ip_summed=0 complete_sw=0 valid=0 level=0)
-hash(0x0 sw=0 l4=0) proto=0x0000 pkttype=0 iif=0
-
-Notice how you've changed shinfo(txflags), among other things.
-
-Which proves that you can't just copy&paste whatever you found in
-tag_trailer.c.
-
-I am not yet sure whether there is any helper that can be used instead
-of this crazy open-coding. Right now, not having tested anything yet, my
-candidates of choice would be pskb_expand_head or __pskb_pull_tail. You
-should probably also try to cater here for the potential reallocation
-done in the skb_cow_head() of non-tail taggers. Which would lean the
-balance towards pskb_expand_head(), I believe.
-
-Also, if the result is going to be longer than ~20 lines of code, I
-strongly suggest moving the reallocation to a separate function so you
-don't clutter dsa_slave_xmit.
-
-Also, please don't redeclare struct sk_buff *nskb, you don't need to.
+Thanks,
+Hemant
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
