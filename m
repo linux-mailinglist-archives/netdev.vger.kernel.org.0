@@ -2,124 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6D1D2914BD
-	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 23:36:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5214D2914BE
+	for <lists+netdev@lfdr.de>; Sat, 17 Oct 2020 23:36:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439543AbgJQVf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Oct 2020 17:35:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59132 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2439535AbgJQVf4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Oct 2020 17:35:56 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27E58C061755;
-        Sat, 17 Oct 2020 14:35:54 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id t21so6336835eds.6;
-        Sat, 17 Oct 2020 14:35:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=JbJ9KB4lg+6PAN8UYVsFa7Ig0sAEIA2xZhtAQfi2Mgk=;
-        b=J0Ypt8zCrI8BL3DpBtBpwNfeSZKiT3KNRWFdMAwXR88HdK46KKccQPPkIHNlJwPHVj
-         Jxrf0nWADPT9nG3bUcjaFQaJ8AfjyfH4i0fL3NG42J2fdxhG6b4/rWdklw+Z3VFVtzMg
-         t60eKcHgzqrzmV6jrodVVzgYCxjhsufFEtSFdzjIWD2Tvo+2PKl/d+dykOnd+QSZP0N0
-         L/uG1jCLDNVRmCT3hKBAnpfH+Ds2+CPh5MCvql038EnDz4uvUOnPafhbSUCEmsQs35bD
-         6sLTEw06y0XGyqkyZdUHKG7hLmN13R4kVS++p3oWDTCfNkdJ84rC1P5b77qIfrk0fxXv
-         SBsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JbJ9KB4lg+6PAN8UYVsFa7Ig0sAEIA2xZhtAQfi2Mgk=;
-        b=aviGWkXV1S/0eANVOQSHa+vdNQueNnLFmQCv+NAoLeFJxlBtJHv/hRv0eILQWe+/vJ
-         gdKTi/U9+OqpI96+g+4CzXV3ZCsYe5vDroanKR9DVN8vcy0Mq+9hiMwC0X1LP8UiY6MF
-         T6tOC7MLvfpWTpeNitUcqTsZs1PBELnEYjsi4eYDhXX+IPPrm7ExjvSpx9kasBkMZdH1
-         8V9GM9vDVXlsovGC8gi7M71ELsuXif40q4DtcfSCS30CCb79lUVfKz4Wp44sLql/D8GF
-         wQYoL5/EDCrMt1pbg+ErKUZiPrgGQcwOQMOzX6uGgAinVp1I+fwt2kT/IlLmL4NKa3gd
-         u9Sw==
-X-Gm-Message-State: AOAM530FjSGFDLwotrVbXNzjAdITikp47TfvolLrledEbnwkiyI7ARJm
-        T0lDYbCASxh4TOVHyhOwuIA=
-X-Google-Smtp-Source: ABdhPJyCDt8FZ6YT0Y6yRbwDYJDclmHXmamjetF7NDrjj+jGCRyYSASyTUzbd5FNtF7lVh4Mp20vrQ==
-X-Received: by 2002:aa7:dac4:: with SMTP id x4mr10588986eds.165.1602970552294;
-        Sat, 17 Oct 2020 14:35:52 -0700 (PDT)
-Received: from skbuf ([188.26.174.215])
-        by smtp.gmail.com with ESMTPSA id z22sm5916838ejw.107.2020.10.17.14.35.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Oct 2020 14:35:51 -0700 (PDT)
-Date:   Sun, 18 Oct 2020 00:35:50 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 1/3] net: dsa: don't pass cloned skb's to
- drivers xmit function
-Message-ID: <20201017213550.5qgiy7tpydutxkis@skbuf>
-References: <20201016200226.23994-1-ceggers@arri.de>
- <2130539.dlFve3NVyK@n95hx1g2>
- <20201017191247.ohslc77wkhbhffym@skbuf>
- <1735006.IpzxAEH60n@n95hx1g2>
+        id S2439596AbgJQVgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Oct 2020 17:36:39 -0400
+Received: from mail-eopbgr150051.outbound.protection.outlook.com ([40.107.15.51]:7653
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2439570AbgJQVgj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 17 Oct 2020 17:36:39 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=exjhjDVxjkDQi8PsFXYlh3WPVeH/r2MVKeSm6oOr0CBi9oXEPyqPnPl1o2aOLFXYzfyoFy8gpHcrT6XLahCftAB4zhoIkk4gbTQBr9HwsQFmwW1Wh2R8e+HQJ2vpifz8ZfJgJtbh9VwrWRnHu/Pt9h1jc/8J/mjZ3RN7g2Q3yNWvfGXsiOBxIfhwswwAuDRrTtrkDhum4AJQNHyNc0ahOn7af1UsBscex6TSH6d1KV7lRlKICg4PotrjzfOY2//2FyrnLmxykSosq8rjm9FH+/uXf+B4XDaz6kdwMqCkv9iQdb5LmJf3bvSW6pv9sqsIMeRN4qZPR/shccTvyk8F+w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UT91n9fa+yStoPqcJ8y92Te4wmINBo9cqaq4utJolQE=;
+ b=ARvLX2k3g+r7b0PPnJI9PxeFPLipaDIUrotxcjRFGapmLyvBC4UcoKoUZ3qLaL9ooF5F1KlSDktSv02eVz1kYOyuUEouYUR3fSW6P6x+lEnUcL67M+49nySlPhmIkReDh9jxD6rVukgzSVRjySL3QdCWAVTbRrjXvVVolnWDnQPvH/ArxIoENeCYWwuNlOmFn8ZZsaVtumHZfSY4Y610l0ireEQ4ZfLOWam4h3j5pK4nuDG+QTh2bR1k+B3MEd8VWCLuphIHyZb7+heh1WoaQ8Pexp2KZGfZ9eH7PEJjC/t7XPvBtEcbV8hA5LfB4Q+Q9uS+SRqv00WIeM436bXorg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UT91n9fa+yStoPqcJ8y92Te4wmINBo9cqaq4utJolQE=;
+ b=k/eLKw99RwAixiLK+LrUOEwqUsOWBtZpYkfS/kLIMMSJf3WwPYOBNjetIaY+BstNd0/K6+gduh4bKxirq9lBN0XLMF1zzZ9xF8KlRXFyK89iJh5GT2UWFR6cVpekczYDWqWFAXpS20u99IyFh66vC8gSXMgknfOPvboPlGVOyfo=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
+ by VI1PR04MB5854.eurprd04.prod.outlook.com (2603:10a6:803:e2::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.20; Sat, 17 Oct
+ 2020 21:36:34 +0000
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3477.028; Sat, 17 Oct 2020
+ 21:36:33 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        kuba@kernel.org, Christian Eggers <ceggers@arri.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: [RFC PATCH 00/13] Generic TX reallocation for DSA
+Date:   Sun, 18 Oct 2020 00:35:58 +0300
+Message-Id: <20201017213611.2557565-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [188.26.174.215]
+X-ClientProxiedBy: VI1P195CA0091.EURP195.PROD.OUTLOOK.COM
+ (2603:10a6:802:59::44) To VI1PR04MB5696.eurprd04.prod.outlook.com
+ (2603:10a6:803:e7::13)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1735006.IpzxAEH60n@n95hx1g2>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (188.26.174.215) by VI1P195CA0091.EURP195.PROD.OUTLOOK.COM (2603:10a6:802:59::44) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.20 via Frontend Transport; Sat, 17 Oct 2020 21:36:33 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: a80a1551-4b02-49f3-2c14-08d872e4b7d7
+X-MS-TrafficTypeDiagnostic: VI1PR04MB5854:
+X-Microsoft-Antispam-PRVS: <VI1PR04MB58545EC5F8C2D83D7D57D137E0000@VI1PR04MB5854.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 1gGcjvZmiL2E+3AAo9rDYfDJiAI4NYufMLNwKQ7O4S3JL8xlm+x58B30BQaU6z588lA5hdLMHu+4uxNUAMLhGpa+OIEPo2KoJg2iV6xyl4zU5JRXbNrse/E4sIqPH0W7li1Sj+FYAwTntH/w8LxbsY0x7GFMjnHGlbNnphx/UaYLi8cN9uN++7sD0CMTOADkoyLlSPeeX+0g+wI1+CBKeVIyapxCxXcq57ybb+49R0tQCoHnX6RQi2JUYuPESyM7pPkIzkbJolzAUciu4SL4k8PSiuZ4fkLYuJzPqV+ow2SZYvFIQo5c5R4M5TmkyeTpopM7ftYJ8BQVR2p1ZFkCHnP0nORUQx+M1tuBb1x7JruIK2Cq5G0eE0l9o7Hvyri2U0KlyeCV8IVwWSr6JOBLr20QRnQ58nK7Kd9XCZqEMRElCzMyTyoYl42PbXhLEDRe1GX8+wqGWaqJiID67SDm4NYLIgnxhLMYE92MzK0CXZM=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(396003)(136003)(39850400004)(376002)(86362001)(2906002)(6506007)(66556008)(26005)(6666004)(16526019)(186003)(66946007)(1076003)(8936002)(66476007)(69590400008)(36756003)(966005)(5660300002)(316002)(4326008)(2616005)(54906003)(6916009)(52116002)(8676002)(478600001)(956004)(44832011)(6486002)(83380400001)(6512007)(41533002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: JKD84zephSvg589pksitI/Y3nBi7896678G4twUl4svKkWpzsFniGSRT5WpgAlLcRTV0mLG+o0J0cc5W0xfER2qdqymLbW/PPKGmSPSSwA2HJvs1FEVjKoXaIEgh2FEo+jOFKTRDzcsLTpAkiSApq0nsM9DjSEERhHR6mStZwgugntAGtBXJHR1hizuGZIhZ5k45p/yNw7BITAzB9ns8lxGVarJBoBYOe3/tZfiP7EkzRpngbWIlA1gQn0I+9VNKWNqbPTRMjU5klmipQf8BJT+OgAV3VxakDT4T9b+3UAbmTYzC9v/zuz2fI2RqmZY6m3tlxCKCnHXfjVJr6cvsvHBzS9jJVcUAO/9MtwsdLeOzvisfweaqgQ1QxkKESjImjTsWal79SJuqJNtyQ0rnlBsTZ/VGKqs2WV7ZKUtuzkNIQ8ypwkFcNszMDsJS8g1QK/JLNQP3duqEnhY35o2PFS2XrwlCaqUMOwulib2zq6pd5Q3+4YUVNb3C0ejzvYYweBs4dgNKV2kjQZdU1BCHPqCVUuVKCH3M3uRyjMwuocAaQfe3NkofajgQUKj9H1+kgWUSjh77CswnpuzCiaGe5K3eWt2rtd2eNx0ZdEO5ihJi8NtTcMaaF7Q3vJhdeXoyepY9G1UqP98VNwWAqSIrMg==
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a80a1551-4b02-49f3-2c14-08d872e4b7d7
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Oct 2020 21:36:33.8345
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: O/j+fjHjvsSfH2B+DyJ7xzBtMNBDXnMkCEMdl9ivR6XgoB5/UUR1yZ9Sn2iRPuBK6Qwj/Swx+VpwDPxTJGfjeA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5854
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 17, 2020 at 10:56:24PM +0200, Christian Eggers wrote:
-> The status page seems to be out of date:
-> http://vger.kernel.org/~davem/net-next.html
+Christian has reported buggy usage of skb_put() in tag_ksz.c, which is
+only triggerable in real life using his not-yet-published patches for
+IEEE 1588 timestamping on Micrel KSZ switches.
 
-Yeah, it can do that sometimes. Extremely rarely, but it happens. But
-net-next is still closed, nonetheless.
+The concrete problem there is that the driver can end up calling
+skb_put() and exceed the end of the skb data area, because even though
+it had reallocated the frame once before, it hadn't reallocated it large
+enough. Christian explained it in more detail here:
 
-> The FAQ says: "Do not send new net-next content to netdev...". So there is no
-> possibility for code review, is it?
+https://lore.kernel.org/netdev/20201014161719.30289-1-ceggers@arri.de/
+https://lore.kernel.org/netdev/20201016200226.23994-1-ceggers@arri.de/
 
-You can always send patches as RFC (Request For Comments). In fact
-that's what I'm going to do right now.
+But actually there's a bigger problem, which is that some taggers which
+get more rarely tested tend to do some shenanigans which are uncaught
+for the longest time, and in the meanwhile, their code gets copy-pasted
+into other taggers, creating a mess. For example, the tail tagging
+driver for Marvell 88E6060 currently reallocates _every_single_frame_ on
+TX. Is that an obvious indication that nobody is using it? Sure. Is it a
+good model to follow when developing a new tail tagging driver? No.
 
-> > - Actually I was asking you this because sja1105 PTP no longer works
-> >   after this change, due to the change of txflags.
-> The tail taggers seem to be immune against this change.
+DSA has all the information it needs in order to simplify the job of a
+tagger on TX. It knows whether it's a normal or a tail tagger, and what
+is the protocol overhead it incurs. So why not just perform the
+reallocation centrally, which also has the benefit of being able to
+introduce a common ethtool statistics counter for number of TX reallocs.
+With the latter, performance issues due to this particular reason are
+easy to track down.
 
-How?
+Christian Eggers (2):
+  net: dsa: tag_ksz: don't allocate additional memory for
+    padding/tagging
+  net: dsa: trailer: don't allocate additional memory for
+    padding/tagging
 
-> > Do you want me to try and send a version using pskb_expand_head and you
-> > can test if it works for your tail-tagging switch?
-> I already wanted to ask... My 2nd try (checking for !skb_cloned()) was already
-> sufficient (for me). Hacking linux-net is very interesting, but I have many
-> other items open... Testing would be no problem.
+Vladimir Oltean (11):
+  net: dsa: add plumbing for custom netdev statistics
+  net: dsa: implement a central TX reallocation procedure
+  net: dsa: tag_qca: let DSA core deal with TX reallocation
+  net: dsa: tag_ocelot: let DSA core deal with TX reallocation
+  net: dsa: tag_mtk: let DSA core deal with TX reallocation
+  net: dsa: tag_lan9303: let DSA core deal with TX reallocation
+  net: dsa: tag_edsa: let DSA core deal with TX reallocation
+  net: dsa: tag_brcm: let DSA core deal with TX reallocation
+  net: dsa: tag_dsa: let DSA core deal with TX reallocation
+  net: dsa: tag_gswip: let DSA core deal with TX reallocation
+  net: dsa: tag_ar9331: let DSA core deal with TX reallocation
 
-Ok, incoming.....
+ net/dsa/dsa_priv.h    |  9 ++++++
+ net/dsa/slave.c       | 68 ++++++++++++++++++++++++++++++++++++++--
+ net/dsa/tag_ar9331.c  |  3 --
+ net/dsa/tag_brcm.c    |  3 --
+ net/dsa/tag_dsa.c     |  5 ---
+ net/dsa/tag_edsa.c    |  4 ---
+ net/dsa/tag_gswip.c   |  4 ---
+ net/dsa/tag_ksz.c     | 73 ++++++-------------------------------------
+ net/dsa/tag_lan9303.c |  9 ------
+ net/dsa/tag_mtk.c     |  3 --
+ net/dsa/tag_ocelot.c  |  7 -----
+ net/dsa/tag_qca.c     |  3 --
+ net/dsa/tag_trailer.c | 31 ++----------------
+ 13 files changed, 85 insertions(+), 137 deletions(-)
 
-> > I think it would be best to use the unlikely(tail_tag) approach though.
-> > The reallocation function should still be in the common code path. Even
-> > for a non-1588 switch, there are other code paths that clone packets on
-> > TX. For example, the bridge does that, when flooding packets.
-> You already mentioned that you don't want to pass cloned packets to the tag
-> drivers xmit() functions. I've no experience with the problems caused by
-> cloned packets, but would cloned packets work anyway? Or must cloned packets
-> not be changed (e.g. by tail-tagging)? Is there any value in first cloning in
-> dsa_skb_tx_timestamp() and then unsharing in dsa_slave_xmit a few lines later?
-> The issue I currently have only affects a very minor number of packets (cloned
-> AND < ETH_ZLEN AND CONFIG_SLOB), so only these packets would need a copying.
+-- 
+2.25.1
 
-Yes, we need to clone and then unshare immediately afterwards because
-sja1105_xmit calls sja1105_defer_xmit, which schedules a workqueue. The
-sja1105 driver assumes that the skb has already been cloned by then. So
-basically, the sja1105 driver introduces a strict ordering requirement
-that dsa_skb_tx_timestamp needs to be first, then p->xmit second. So we
-necessarily must reallocate freshly cloned skbs, as things stand now.
-I'll think about avoiding that, but not now. We were always reallocating
-those frames before, using skb_cow_head. The only difference now is that
-the skb, as it is passed to the tagger's xmit() function, is directly
-writable. You'll see...
