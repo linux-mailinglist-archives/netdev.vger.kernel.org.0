@@ -2,36 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 336C02919C4
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 21:20:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64CC3291EED
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 21:56:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728345AbgJRTTn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 15:19:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58644 "EHLO mail.kernel.org"
+        id S1728451AbgJRTTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 15:19:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58704 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728301AbgJRTTm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Oct 2020 15:19:42 -0400
+        id S1728421AbgJRTTo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Oct 2020 15:19:44 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7EDA4222E8;
-        Sun, 18 Oct 2020 19:19:40 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3427822363;
+        Sun, 18 Oct 2020 19:19:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603048781;
-        bh=D2rn82u9XBoGzM/QeR1D+rIp50ldv11A3HZpYHRRCSg=;
+        s=default; t=1603048784;
+        bh=mTY9y3pxS8i08iT2C0dGcNyVykiKc/+2kfaNjS4clTA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UAFjkAvcX11hEANXXOXh/Qiuj+jnfcfwOsg/LQ0FaFpgxXxSbUOfRAQwNUYjMAj04
-         CLr99+IKjnv1AAb6oNDRlZ4pwg6JkjAvp7ytPZT9lHagcHyRtJF5wash/wLtUAF+Ew
-         pCjpG9a0mX/Y9VZCC+wZKq02iBuL7ualWbhZtQmA=
+        b=ln0ZVIYZir1n2RWRMK+wjH2iRLvUnW30gFA6X6MmgELGNuisDUE4IFiGGjZp3LzKn
+         1immWFqpt5h26FyYPX2UpinjHMzb0xAJg/mZOqMcDjuQKQ11IEv7p1SXcDZ7IwTFLe
+         7dXYnDlUMDIpbLS+k/vhe8cUPVncZntBoLFFIXjM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.9 078/111] selftests/bpf: Fix test_sysctl_loop{1, 2} failure due to clang change
-Date:   Sun, 18 Oct 2020 15:17:34 -0400
-Message-Id: <20201018191807.4052726-78-sashal@kernel.org>
+Cc:     Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.9 080/111] brcmsmac: fix memory leak in wlc_phy_attach_lcnphy
+Date:   Sun, 18 Oct 2020 15:17:36 -0400
+Message-Id: <20201018191807.4052726-80-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201018191807.4052726-1-sashal@kernel.org>
 References: <20201018191807.4052726-1-sashal@kernel.org>
@@ -43,127 +45,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yonghong Song <yhs@fb.com>
+From: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
 
-[ Upstream commit 7fb5eefd76394cfefb380724a87ca40b47d44405 ]
+[ Upstream commit f4443293d741d1776b86ed1dd8c4e4285d0775fc ]
 
-Andrii reported that with latest clang, when building selftests, we have
-error likes:
-  error: progs/test_sysctl_loop1.c:23:16: in function sysctl_tcp_mem i32 (%struct.bpf_sysctl*):
-  Looks like the BPF stack limit of 512 bytes is exceeded.
-  Please move large on stack variables into BPF per-cpu array map.
+When wlc_phy_txpwr_srom_read_lcnphy fails in wlc_phy_attach_lcnphy,
+the allocated pi->u.pi_lcnphy is leaked, since struct brcms_phy will be
+freed in the caller function.
 
-The error is triggered by the following LLVM patch:
-  https://reviews.llvm.org/D87134
+Fix this by calling wlc_phy_detach_lcnphy in the error handler of
+wlc_phy_txpwr_srom_read_lcnphy before returning.
 
-For example, the following code is from test_sysctl_loop1.c:
-  static __always_inline int is_tcp_mem(struct bpf_sysctl *ctx)
-  {
-    volatile char tcp_mem_name[] = "net/ipv4/tcp_mem/very_very_very_very_long_pointless_string";
-    ...
-  }
-Without the above LLVM patch, the compiler did optimization to load the string
-(59 bytes long) with 7 64bit loads, 1 8bit load and 1 16bit load,
-occupying 64 byte stack size.
-
-With the above LLVM patch, the compiler only uses 8bit loads, but subregister is 32bit.
-So stack requirements become 4 * 59 = 236 bytes. Together with other stuff on
-the stack, total stack size exceeds 512 bytes, hence compiler complains and quits.
-
-To fix the issue, removing "volatile" key word or changing "volatile" to
-"const"/"static const" does not work, the string is put in .rodata.str1.1 section,
-which libbpf did not process it and errors out with
-  libbpf: elf: skipping unrecognized data section(6) .rodata.str1.1
-  libbpf: prog 'sysctl_tcp_mem': bad map relo against '.L__const.is_tcp_mem.tcp_mem_name'
-          in section '.rodata.str1.1'
-
-Defining the string const as global variable can fix the issue as it puts the string constant
-in '.rodata' section which is recognized by libbpf. In the future, when libbpf can process
-'.rodata.str*.*' properly, the global definition can be changed back to local definition.
-
-Defining tcp_mem_name as a global, however, triggered a verifier failure.
-   ./test_progs -n 7/21
-  libbpf: load bpf program failed: Permission denied
-  libbpf: -- BEGIN DUMP LOG ---
-  libbpf:
-  invalid stack off=0 size=1
-  verification time 6975 usec
-  stack depth 160+64
-  processed 889 insns (limit 1000000) max_states_per_insn 4 total_states
-  14 peak_states 14 mark_read 10
-
-  libbpf: -- END LOG --
-  libbpf: failed to load program 'sysctl_tcp_mem'
-  libbpf: failed to load object 'test_sysctl_loop2.o'
-  test_bpf_verif_scale:FAIL:114
-  #7/21 test_sysctl_loop2.o:FAIL
-This actually exposed a bpf program bug. In test_sysctl_loop{1,2}, we have code
-like
-  const char tcp_mem_name[] = "<...long string...>";
-  ...
-  char name[64];
-  ...
-  for (i = 0; i < sizeof(tcp_mem_name); ++i)
-      if (name[i] != tcp_mem_name[i])
-          return 0;
-In the above code, if sizeof(tcp_mem_name) > 64, name[i] access may be
-out of bound. The sizeof(tcp_mem_name) is 59 for test_sysctl_loop1.c and
-79 for test_sysctl_loop2.c.
-
-Without promotion-to-global change, old compiler generates code where
-the overflowed stack access is actually filled with valid value, so hiding
-the bpf program bug. With promotion-to-global change, the code is different,
-more specifically, the previous loading constants to stack is gone, and
-"name" occupies stack[-64:0] and overflow access triggers a verifier error.
-To fix the issue, adjust "name" buffer size properly.
-
-Reported-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Link: https://lore.kernel.org/bpf/20200909171542.3673449-1-yhs@fb.com
+Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20200908121743.23108-1-keitasuzuki.park@sslab.ics.keio.ac.jp
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/progs/test_sysctl_loop1.c | 4 ++--
- tools/testing/selftests/bpf/progs/test_sysctl_loop2.c | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ .../net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c    | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/progs/test_sysctl_loop1.c b/tools/testing/selftests/bpf/progs/test_sysctl_loop1.c
-index 458b0d69133e4..553a282d816ab 100644
---- a/tools/testing/selftests/bpf/progs/test_sysctl_loop1.c
-+++ b/tools/testing/selftests/bpf/progs/test_sysctl_loop1.c
-@@ -18,11 +18,11 @@
- #define MAX_ULONG_STR_LEN 7
- #define MAX_VALUE_STR_LEN (TCP_MEM_LOOPS * MAX_ULONG_STR_LEN)
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c
+index 7ef36234a25dc..66797dc5e90d5 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c
+@@ -5065,8 +5065,10 @@ bool wlc_phy_attach_lcnphy(struct brcms_phy *pi)
+ 	pi->pi_fptr.radioloftget = wlc_lcnphy_get_radio_loft;
+ 	pi->pi_fptr.detach = wlc_phy_detach_lcnphy;
  
-+const char tcp_mem_name[] = "net/ipv4/tcp_mem/very_very_very_very_long_pointless_string";
- static __always_inline int is_tcp_mem(struct bpf_sysctl *ctx)
- {
--	volatile char tcp_mem_name[] = "net/ipv4/tcp_mem/very_very_very_very_long_pointless_string";
- 	unsigned char i;
--	char name[64];
-+	char name[sizeof(tcp_mem_name)];
- 	int ret;
+-	if (!wlc_phy_txpwr_srom_read_lcnphy(pi))
++	if (!wlc_phy_txpwr_srom_read_lcnphy(pi)) {
++		kfree(pi->u.pi_lcnphy);
+ 		return false;
++	}
  
- 	memset(name, 0, sizeof(name));
-diff --git a/tools/testing/selftests/bpf/progs/test_sysctl_loop2.c b/tools/testing/selftests/bpf/progs/test_sysctl_loop2.c
-index b2e6f9b0894d8..2b64bc563a12e 100644
---- a/tools/testing/selftests/bpf/progs/test_sysctl_loop2.c
-+++ b/tools/testing/selftests/bpf/progs/test_sysctl_loop2.c
-@@ -18,11 +18,11 @@
- #define MAX_ULONG_STR_LEN 7
- #define MAX_VALUE_STR_LEN (TCP_MEM_LOOPS * MAX_ULONG_STR_LEN)
- 
-+const char tcp_mem_name[] = "net/ipv4/tcp_mem/very_very_very_very_long_pointless_string_to_stress_byte_loop";
- static __attribute__((noinline)) int is_tcp_mem(struct bpf_sysctl *ctx)
- {
--	volatile char tcp_mem_name[] = "net/ipv4/tcp_mem/very_very_very_very_long_pointless_string_to_stress_byte_loop";
- 	unsigned char i;
--	char name[64];
-+	char name[sizeof(tcp_mem_name)];
- 	int ret;
- 
- 	memset(name, 0, sizeof(name));
+ 	if (LCNREV_IS(pi->pubpi.phy_rev, 1)) {
+ 		if (pi_lcn->lcnphy_tempsense_option == 3) {
 -- 
 2.25.1
 
