@@ -2,106 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59149291814
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 17:38:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C470291816
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 17:43:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726685AbgJRPiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 11:38:21 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:33310 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726364AbgJRPiV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Oct 2020 11:38:21 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kUAlB-002JSq-UZ; Sun, 18 Oct 2020 17:38:13 +0200
-Date:   Sun, 18 Oct 2020 17:38:13 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
-        Sumit Garg <sumit.garg@linaro.org>,
-        Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>, steve@einval.com,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>, Willy Liu <willy.liu@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Masahisa Kojima <masahisa.kojima@linaro.org>
-Subject: Re: realtek PHY commit bbc4d71d63549 causes regression
-Message-ID: <20201018153813.GY456889@lunn.ch>
-References: <20201017161435.GA1768480@apalos.home>
- <CAMj1kXHXYprdC19m1S5p_LQ2BOHtDCbyCWCJ0eJ5xPxFv8hgoA@mail.gmail.com>
- <20201017180453.GM456889@lunn.ch>
- <CAMj1kXEcrULejk+h1Jv42W=r7odQ9Z_G0XDX_KrEnYYPEVgHkA@mail.gmail.com>
- <20201017182738.GN456889@lunn.ch>
- <CAMj1kXHwYkd0L63K3+e_iwfoSYEUOmYdWf_cKv90_qVXSxEesg@mail.gmail.com>
- <20201017194904.GP456889@lunn.ch>
- <CAMj1kXEY5jK7z+_ezDX733zbtHnaGUNCkJ_gHcPqAavOQPOzBQ@mail.gmail.com>
- <20201017230226.GV456889@lunn.ch>
- <CAMj1kXGO=5MsbLYvng4JWdNhJ3Nb0TSFKvnT-ZhjF2xcO9dZaw@mail.gmail.com>
+        id S1726851AbgJRPng (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 11:43:36 -0400
+Received: from sonic316-20.consmr.mail.ne1.yahoo.com ([66.163.187.146]:34413
+        "EHLO sonic316-20.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726661AbgJRPnf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Oct 2020 11:43:35 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1603035815; bh=ShrdGJTCUVMCJqYIFt8iS0epc16DuED8/NfeEkfRx3o=; h=Date:From:Reply-To:Subject:References:From:Subject; b=tFEGz+RkfL+PZIrtgJeWde7ftz64atm0XTvj6QTPfR3MYcWxvfD49HEds5xi5XsyAczL2DCnu7TiY6D742Ukg9Am7jRc1ttyv3LXeGDViANaimebQF8cJpL4tq4vK3dNaMLeAJAaAmJoV4ZU7huxlDB635faKMXfLdRxu6hMRJaD1HWm2V1Rs7wyz83qzYYO7xTBEdw6olZJQxbRyJJ3v5VVrk3bX7rSS2zoYsGc5vJJ50aaIGfUKn0RSLSEbsP6HetD5k0izVstNLhLR5MQb9Xec0uEkgRTRt041/nUjK14UrmoTU8tzyZ+oRkESNOqMXumpvnechcMQTVaf3yOcA==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1603035815; bh=zax5VsgMmnG3QUGZiQlv1/V0hJC1R/q3NQ9EDdFcNJK=; h=Date:From:Subject; b=fzTn1HhEqlMstZLA/oGCcEYZ620KcGXlWEpWLGnincUksBfAK7fwkZLKhzQZoNbNCGgPytEPxjZUj1UsuboIL5cvA3Hlr36a3MdkfkVyglFyX7IyJvZncEJTpl0s4MUfjusCMUgM+NLPlsku16QFlAGq+xWQA/bQxonOUqVnyLUY52fIBCEjntefjeQsye83Y3q1E9qxE2Xs1xwyj3RvcRNnJf4flZxFAuhmm0uu9qM677fLGaNjCK2ou/8mao5SMhyGfi1bHAG1ZXBoOnTO0Y9ANGzeJ3zGeTBZ6aKi6w+g4y/NbvRLuhUAsAravC8BQcSubs7n4T40Gspkh+9EDQ==
+X-YMail-OSG: _t_XlyEVM1llOrb_IeNAJ7zkxRkBVMx5dDhXxzp5VA5VO7lQyz8sj_ue2qDitz3
+ Dj__2j03nw8.KLM5gHKjWL7DYShGLQIrV3TKbF.C3ZExRR57c3.pDEf8IE6uNxnu2TNNJRuqDreY
+ nKhBaY.A1O0oTr7He_wv6QuXOWvpnh0pDoAmHd3SytBQvVM.WtWKZ6DhV.AntwksDWGpFgG0Z1a2
+ e3y.p_x4rc.zReXeFJJKQXwbDbE0zb3WEqiRhewYNQ95pxlPstT8qEu9BZXcfw0r0evAqswBegf_
+ C0gDAyrCnmbKUQBC07TwWXaBkDCu_32pzFHJM1cigD3fOsBbpaR9oqkyoFYOdjwCzfUJ3Pj3eS_i
+ mocnVhRPOZeoQlXfzFDUlPLp4YhutymN5_eX0bS.pKWg8FnUtI5T_lhwtqgTDxMm8VU3O2qcMuoS
+ xZcKAecx5G_1.l3CgiomaAUhm2MdrnG8weI1Fc9HYQZgPUt7RjN14bjm4H16abqA4ekdlbfTrtLD
+ t57rFskDGGbWyOlmKasB16CsAnbj4nB4Svc75wHG05DVN4IXqH8hOXnl2DCRmWDrhcAGu0NDOHL6
+ l_7BfaPOAamPgnYG2YMGwgm8n5577BnRcLk3A6QKPyJgpxCMqQpkeIihF38vcRzlNJmzOHqsdW_K
+ ACKb8MA3JC169INhj1zRl6iVL50x059Kr82PSUTK60640FxodaVmP146FR99j6TbJZ71g25imY0O
+ irWRCHPkREI6.ZaBiFy1Cxlb0hg0HXpMo.KjTLVcnl8qJXr8uh.JiUoENur0WaChFTp9_gMICrbE
+ fK08m1rxlCJ1YYLFgNa3xxV878sF6WAO9nFMdB4rpd7qXuq9XDfOxgdYLHvPpGxYtMX.ERAa5SZG
+ k2Ncjtgvts8V9ODZSsL1l80j19p4.gxHNku3.2vl8Q_HexSPliwyIzmfb4NQYUmOOysZZjZscl4e
+ l4b6AyEezC2wkJATBuPMbpEuAY_UbRZ1WXILxR06DpMRjfh0KyXp3GQsYD2BqRM2l1r0pEyVUtxK
+ f3yX93bfPeVmnMW9Ji_gjhozgz28yzObHv38rV9oqjVVnc2GBvklV5jbnUc_EeDNXz8KyTzqnlNA
+ bghIQ8YM9iwGmnO38s.q.gocNR.RBYH8ZBRIYYPa_UX4JXphfcdtNjik4LmzBy1FzG6zPd52.O.a
+ _ynPL.cIK_Hn32TE57N1GUwfadVREiD4sNp1_4NWVHAT_Im9uXd8VRVGLSodMZ513byhjgFHy0cg
+ 6xLn5ZHDaP9lTdGZEXoJxzG4gNH0A2zm537UJuSrI2gfo4mKW0kb9zbpDkUsqIljlcq.UJSFXR.K
+ H2hNGy_EeSwsSz3NTfkgExWhLw7nmQB7QQhDtQh0A.1mE3hrbzvHOHIiJz_zO4OV45vLPQBnChMC
+ s4zlsR_XhgGLw1LekYCjjhfs.Yoc0hc7Luzyl9Es6oygsPQA-
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic316.consmr.mail.ne1.yahoo.com with HTTP; Sun, 18 Oct 2020 15:43:35 +0000
+Date:   Sun, 18 Oct 2020 15:43:34 +0000 (UTC)
+From:   Ali Shareef Al-Emadi <alishareefalemadi465@gmail.com>
+Reply-To: alishareefalemadi465@gmail.com
+Message-ID: <401880578.747846.1603035814237@mail.yahoo.com>
+Subject: QATAR PETROLEUM INVESTMENT....
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMj1kXGO=5MsbLYvng4JWdNhJ3Nb0TSFKvnT-ZhjF2xcO9dZaw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+References: <401880578.747846.1603035814237.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.16868 YMailNodin Mozilla/5.0 (Windows NT 6.1; rv:81.0) Gecko/20100101 Firefox/81.0
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Thanks for reporting back on that. It probably needs to be something
-> > we always recommend for ACPI systems, either use "", or preferably no
-> > phy-mode at all, and let the driver default to NA. ACPI and networking
-> > is at a very early stage at the moment, since UEFA says nothing about
-> > it. It will take a while before we figure out the best practices, and
-> > some vendor gets something added to the ACPI specifications.
-> >
-> 
-> You mean MDIO topology, right?
 
-That is part of it. I2C for SFPs, ethernet switches, etc.  I think
-SFPs are going to be the real sticking point, since when you get above
-10Gbps, you are into the land of SFPs, and server platforms are those
-which will be going above 10G first.
 
-> Every x86 PC and server in the world uses ACPI, and networking
-> doesn't seem to be a problem there, so it is simply a matter of
-> choosing the right abstraction level. I know this is much easier to
-> achieve when all the network controllers are on PCIe cards, but the
-> point remains valid: exhaustively describing the entire SoC like we
-> do for DT is definitely not the right choice for ACPI systems.
+Greetings.
 
-Agreed. And i am pushing back. But we also have the conflict that some
-SoC IP is used in systems that will boot RHEL, Debian, etc, and in
-systems that are DT based. Do you want to write two drivers? One
-assuming ACPI is doing all the work, and another where DT describes
-the system and drivers and network core does all the work configuring
-the hardware. For the same piece of hardware?
+I am Mr. H.E. Ali Shareef Al-Emadi, Finance and Account, Qatar Petroleum. I have $30m for Investment. Contact me if you are interested; I have all it will take to move the fund to any of your account designate as a Contract Fund to avoid every query by the authority in your Country.
 
-> I do have a question about the history here, btw. As I understand it,
-> before commit f81dadbcf7fd ("net: phy: realtek: Add rtl8211e rx/tx
-> delays config"), the phy-mode setting did not have any effect on
-> Realtek PHYs in the first place, right? Since otherwise, this platform
-> would never have worked from the beginning.
+I sent this message from my private Email; I will give you more details through my official
+Email upon the receipt of your response to prove myself and office to
+you.
 
-I suspect it did work to some extent, but not fully. So it could be,
-it worked for whatever platform Serge was using, but failed in some
-other cases, e.g. you board, and left the delays alone.
+Email Address: alishareefalemadi465@gmail.com
 
-Later the vendor came along and said the code was wrong, and provided
-some bits of information from the datasheet which is not publicly
-available. As a result f81dadbcf7fd happened. Since that fixed a
-previous patch, it was given a Fixes: tag and i assume back ported.
+Regards.
 
-> So commit f81dadbcf7fd was backported to -stable, even though it
-> didn't actually work, and had to be fixed in bbc4d71d63549bcd ("net:
-> phy: realtek: fix rtl8211e rx/tx delay config"), which is the commit
-> that causes the regression on these boards.
-> 
-> So why was commit f81dadbcf7fd sent to -stable in the first place?
-
-f81dadbcf7fd first appears in v5.2. I don't see it in 4.19.152, the
-LTS kernel older than that. So it is not in -stable.
-
-    Andrew
+Mr. H.E. Ali Shareef Al-Emadi,
+Minister Of Finance.
+Qatar Petroleum
