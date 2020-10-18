@@ -2,117 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47234291860
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 18:39:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63010291866
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 18:49:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727143AbgJRQjJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 12:39:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36208 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726613AbgJRQjI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Oct 2020 12:39:08 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E33BFC061755
-        for <netdev@vger.kernel.org>; Sun, 18 Oct 2020 09:39:07 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id dn5so7779204edb.10
-        for <netdev@vger.kernel.org>; Sun, 18 Oct 2020 09:39:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=ReBPidVWJI5UOuvjFPtVR/ClX74ZZfVh3V8CjolLSvs=;
-        b=ZS5NzN+b40TlI4fUuvpvlPzD6NvTQf5BhE+vE8hHwscilf0fjYTjIIjCyMa4gSz+Xe
-         OI8BOv/krNy1c6pduW6XmSyOiKX3gcupP+CqKc4CtMd7HgMC3sHVD46KR017gfQxVTNO
-         gBkQfY1RzG9TR9xoq3rTHXkQ1UJj4LWPtzEbPdKMA0I7cHUt5E1Pp7KaB3+OtsI3JC2f
-         /11ztRfnze377YH4nQTtu5xc4eRlfKXxMQeovMZbY4TwXe6dUzGhmuHsHDVl4vZ0bOSH
-         Gho16t83CJB25Jrg3ZQiMAR28Dk76WbmrmWXhfsSqNHUMreypfzrCFMfSza9u/jFPlZa
-         9pvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=ReBPidVWJI5UOuvjFPtVR/ClX74ZZfVh3V8CjolLSvs=;
-        b=NVQi12Cd4STRRbCLz1wWye8qH717Rkm/BdiZTpUh3liFddk5JQANFP2UtxgfeuOlo8
-         bQ6mDpj6yT4mxQcr2iqgnuEdeX160qshOfos6S8/JAgxeV7duv1Qw8aUbEWpyAHSET0l
-         xo8AuM31P9uM+ordSCB6uoEdqx7GJjPNwdsDnDuDi37tEq+UCon6QCbIYB+T8TpWz0zw
-         4avPSfQowMHpxWztT3rQ2pAdlfb2UebVf/YP6QRc/Pfopcx7fV0Xc/hBi0x/XEsbAGA6
-         6ZhL+di5GpbyipUb2cdmP9LnJLgyQfTfRe3Ue7FE+BBrGV6Q2EiGyHKSsZl/QlwylYDj
-         4jzw==
-X-Gm-Message-State: AOAM531kbv4G0c1rsqCuYersmiWwhOVEOff4cdy9isYr1b2+OMxZnUjJ
-        FWqsOXEOV7pFw/0tpk1gDKE+721kK7g=
-X-Google-Smtp-Source: ABdhPJwVj6XV5G8J+5nFujxjLkfp60FhMqsI7d5LcWb/n/JZRD6Np5T2BDhR1Z/SvUfgJJKqmOtx6Q==
-X-Received: by 2002:a50:d4dc:: with SMTP id e28mr14719166edj.137.1603039146306;
-        Sun, 18 Oct 2020 09:39:06 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:2800:8821:97f2:24b4:2f18? (p200300ea8f232800882197f224b42f18.dip0.t-ipconnect.de. [2003:ea:8f23:2800:8821:97f2:24b4:2f18])
-        by smtp.googlemail.com with ESMTPSA id bn2sm7648532ejb.48.2020.10.18.09.39.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Oct 2020 09:39:05 -0700 (PDT)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net] r8169: fix operation under forced interrupt threading
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Message-ID: <4d3ef84a-c812-5072-918a-22a6f6468310@gmail.com>
-Date:   Sun, 18 Oct 2020 18:38:59 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        id S1727185AbgJRQty (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 12:49:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49612 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726613AbgJRQtx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Oct 2020 12:49:53 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2F69A2222B;
+        Sun, 18 Oct 2020 16:49:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603039793;
+        bh=h+a1Vt070skwp40zl87iBgkHz1karNa8fg8pzLMX5Zg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ad2oDpJg7iParr/YDbPWp0vEYAAqBIZe4U1nQzQNe2JeB0GuU5ZUmsipGnEm5433d
+         gOsyGi1YadrD0g2quTOssbZn4NBqo4pI9/B1M8gIG7oe21DfUGIpuswguqnBL39Cp9
+         VcAOB3xr30q2AJqXKmxrQIHMUksdscB/G5Bbggtk=
+Date:   Sun, 18 Oct 2020 09:49:51 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, Christian Eggers <ceggers@arri.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: Re: [RFC PATCH 01/13] net: dsa: add plumbing for custom netdev
+ statistics
+Message-ID: <20201018094951.0016f208@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201017213611.2557565-2-vladimir.oltean@nxp.com>
+References: <20201017213611.2557565-1-vladimir.oltean@nxp.com>
+        <20201017213611.2557565-2-vladimir.oltean@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For several network drivers it was reported that using
-__napi_schedule_irqoff() is unsafe with forced threading. One way to
-fix this is switching back to __napi_schedule, but then we lose the
-benefit of the irqoff version in general. As stated by Eric it doesn't
-make sense to make the minimal hard irq handlers in drivers using NAPI
-a thread. Therefore ensure that the hard irq handler is never
-thread-ified.
+On Sun, 18 Oct 2020 00:35:59 +0300 Vladimir Oltean wrote:
+> DSA needs to push a header onto every packet on TX, and this might cause
+> reallocation under certain scenarios, which might affect, for example,
+> performance.
+> 
+> But reallocated packets are not standardized in struct pcpu_sw_netstats,
+> struct net_device_stats or anywhere else, it seems, so we need to roll
+> our own extra netdevice statistics and expose them to ethtool.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Fixes: 9a899a35b0d6 ("r8169: switch to napi_schedule_irqoff")
-Link: https://lkml.org/lkml/2020/10/18/19
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Could you consider adding "driver" stats under RTM_GETSTATS, 
+or a similar new structured interface over ethtool?
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 7d366b036..3b6ddc706 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4694,7 +4694,7 @@ static int rtl8169_close(struct net_device *dev)
- 
- 	phy_disconnect(tp->phydev);
- 
--	pci_free_irq(pdev, 0, tp);
-+	free_irq(pci_irq_vector(pdev, 0), tp);
- 
- 	dma_free_coherent(&pdev->dev, R8169_RX_RING_BYTES, tp->RxDescArray,
- 			  tp->RxPhyAddr);
-@@ -4745,8 +4745,8 @@ static int rtl_open(struct net_device *dev)
- 
- 	rtl_request_firmware(tp);
- 
--	retval = pci_request_irq(pdev, 0, rtl8169_interrupt, NULL, tp,
--				 dev->name);
-+	retval = request_irq(pci_irq_vector(pdev, 0), rtl8169_interrupt,
-+			     IRQF_NO_THREAD | IRQF_SHARED, dev->name, tp);
- 	if (retval < 0)
- 		goto err_release_fw_2;
- 
-@@ -4763,7 +4763,7 @@ static int rtl_open(struct net_device *dev)
- 	return retval;
- 
- err_free_irq:
--	pci_free_irq(pdev, 0, tp);
-+	free_irq(pci_irq_vector(pdev, 0), tp);
- err_release_fw_2:
- 	rtl_release_firmware(tp);
- 	rtl8169_rx_clear(tp);
--- 
-2.28.0
+Looks like the statistic in question has pretty clear semantics,
+and may be more broadly useful.
 
+> +/* Driver statistics, other than those in struct rtnl_link_stats64.
+> + * These are collected per-CPU and aggregated by ethtool.
+> + */
+> +struct dsa_slave_stats {
+> +	__u64			tx_reallocs;
+
+s/__u/u/
+
+> +	struct u64_stats_sync	syncp;
+> +} __aligned(1 * sizeof(u64));
+
+Why aligned to u64? Compiler should pick a reasonable alignment here 
+by itself.
