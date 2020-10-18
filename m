@@ -2,180 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E3DB0292027
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 23:32:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E93FB29204F
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 23:50:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728220AbgJRVcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 17:32:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47032 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726458AbgJRVcB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Oct 2020 17:32:01 -0400
-Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2D89822268;
-        Sun, 18 Oct 2020 21:32:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603056721;
-        bh=kOc0SU+wBfjrVQZ8eee9WVB+ukBN0CzbCnEbg/duRf0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xsLgKjbNpZ5/HESlGf+5BxUyFY+x+2gdlNrJNhHBB3xyIGsUCJ9gAmhPh8ap45Ztc
-         R1oyCsnlRRZuXdsnXApYvZC+IN+3rK8FC+HF3UZ7xWOwBwJRbh1Tx8lHkZC4ge2txQ
-         pSJ7g+1E2rohWZy+PDO0j/eKyOvLvezmZrdZtyBQ=
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     mkubecek@suse.cz
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com, idosch@idosch.org,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH ethtool v3 7/7] pause: add support for dumping statistics
-Date:   Sun, 18 Oct 2020 14:31:51 -0700
-Message-Id: <20201018213151.3450437-8-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201018213151.3450437-1-kuba@kernel.org>
-References: <20201018213151.3450437-1-kuba@kernel.org>
+        id S1728668AbgJRVuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 17:50:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55738 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726249AbgJRVuO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Oct 2020 17:50:14 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 797D3C061755;
+        Sun, 18 Oct 2020 14:50:14 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id m65so4983425qte.11;
+        Sun, 18 Oct 2020 14:50:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LW7NtPMGJ2R8VOhKgzw6sjc10vh2YbY8kQEEkfju8fA=;
+        b=BT6sX70H+s8KhgIkqlKxOTyt7nLW9Zkkp/pWMqwoIwpRPwASphI99ISJJY/DrRq4YB
+         tuxxuQta89p2LltScao7kwUamcV10d6qq0/0GsMri9Y5uCbzF0DQIPVBZym6oh2w8IRp
+         jGv4FzahYM8UB3UvXODpIfq1ilK2uqq9Xd/9k1Vp0D25EYeZvsrsLMiSOVKbh0jHo8ly
+         ZwpyiDfjYzQI7omWM6lYTXWC4WxC4zXCwovEKbG2sVh0lXA3kgHlfvQ9kncK/jS7lzXB
+         WtZ4PQbPMGBo2Fvzsm14b4aTThFD0/Vsyl0CynTIq6qQwMl+W5yJA342KaaYBMt5xICG
+         NkkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LW7NtPMGJ2R8VOhKgzw6sjc10vh2YbY8kQEEkfju8fA=;
+        b=A54fIiuMEzcWU81kWizVMjWexILYSifLNSzkHPsvY2YrLg8OawjexicsjeQJnFnBDX
+         lFgMcBFXA82PdWXGIIPhsA9feRYqx1SsNLbcJ/ziaN4LYnD1cKUMCksOLHy3lFXz5KLL
+         mu9EmHYogFvkDCXUl8CHzXsYLO+k6XJR5vHxIizc57xHGVrJllBoAsjDznA1f3vEv4gq
+         7r/cDjJ56/USRGuhaG/HGaCbsUTFN5E6xSa5feLVxVzOgJvtHqkKZCTYXCcsqR5D9EDP
+         B2OZD0jdfFS8VVd8PckfIcCDEueSt7zf1C/eHHzfQ2kzEXzjmS452U49hb5WZ726v4sf
+         2NGA==
+X-Gm-Message-State: AOAM533U1Tx5J8OhD7nMqzqK4J++qB+CTP2+s6UHp1PSbvAYT+XXA4Gn
+        4VQzZkhSxbqT6YowujhmHWmAgdDYog4L64/VD5A=
+X-Google-Smtp-Source: ABdhPJw59Z9ZSI7YkUnrDX/NzYUwLZIQMERPV41io/elXdvNyA/Ph+eIMdFGNAEYy/TP8jUOuq9oIUb3paHWMlURueE=
+X-Received: by 2002:aed:2983:: with SMTP id o3mr12423656qtd.285.1603057812125;
+ Sun, 18 Oct 2020 14:50:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200817091617.28119-1-allen.cryptic@gmail.com>
+In-Reply-To: <20200817091617.28119-1-allen.cryptic@gmail.com>
+From:   Richard Weinberger <richard.weinberger@gmail.com>
+Date:   Sun, 18 Oct 2020 23:50:00 +0200
+Message-ID: <CAFLxGvxsHD6zvTJSHeo2gaoRQfjUPZ6M=5BirOObHFjGqnzfew@mail.gmail.com>
+Subject: Re: [PATCH] arch: um: convert tasklets to use new tasklet_setup() API
+To:     Allen Pais <allen.cryptic@gmail.com>
+Cc:     Jeff Dike <jdike@addtoit.com>, Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        3chas3@gmail.com, Jens Axboe <axboe@kernel.dk>,
+        stefanr@s5r6.in-berlin.de, Dave Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Sebastian Reichel <sre@kernel.org>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Helge Deller <deller@gmx.de>, dmitry.torokhov@gmail.com,
+        jassisinghbrar@gmail.com, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Maxim Levitsky <maximlevitsky@gmail.com>,
+        Alex Dubov <oakad@yahoo.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        mporter@kernel.crashing.org, alex.bou9@gmail.com,
+        Mark Brown <broonie@kernel.org>, martyn@welchs.me.uk,
+        manohar.vanga@gmail.com, mitch@sfgoth.com,
+        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
+        Kees Cook <keescook@chromium.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux1394-devel@lists.sourceforge.net,
+        intel-gfx@lists.freedesktop.org,
+        DRI mailing list <dri-devel@lists.freedesktop.org>,
+        linux-hyperv@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-mmc@vger.kernel.org,
+        linux-ntb@googlegroups.com, linux-s390@vger.kernel.org,
+        "open list:SPI SUBSYSTEM" <linux-spi@vger.kernel.org>,
+        devel@driverdev.osuosl.org, Allen Pais <allen.lkml@gmail.com>,
+        Romain Perier <romain.perier@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for requesting pause frame stats from the kernel.
+On Mon, Aug 17, 2020 at 11:17 AM Allen Pais <allen.cryptic@gmail.com> wrote:
+>
+> From: Allen Pais <allen.lkml@gmail.com>
+>
+> In preparation for unconditionally passing the
+> struct tasklet_struct pointer to all tasklet
+> callbacks, switch to using the new tasklet_setup()
+> and from_tasklet() to pass the tasklet pointer explicitly.
+>
+> Signed-off-by: Romain Perier <romain.perier@gmail.com>
+> Signed-off-by: Allen Pais <allen.lkml@gmail.com>
+> ---
+>  arch/um/drivers/vector_kern.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 
- # ./ethtool -I -a eth0
-Pause parameters for eth0:
-Autonegotiate:	on
-RX:		on
-TX:		on
-Statistics:
-  tx_pause_frames: 1
-  rx_pause_frames: 1
+Anton, can you please review this patch?
 
- # ./ethtool -I --json -a eth0
-[ {
-        "ifname": "eth0",
-        "autonegotiate": true,
-        "rx": true,
-        "tx": true,
-        "statistics": {
-            "tx_pause_frames": 1,
-            "rx_pause_frames": 1
-        }
-    } ]
-
-v2: - correct print format for u64
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- netlink/pause.c | 67 ++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 66 insertions(+), 1 deletion(-)
-
-diff --git a/netlink/pause.c b/netlink/pause.c
-index c960c82cba5f..9bc9a301821f 100644
---- a/netlink/pause.c
-+++ b/netlink/pause.c
-@@ -5,6 +5,7 @@
-  */
- 
- #include <errno.h>
-+#include <inttypes.h>
- #include <string.h>
- #include <stdio.h>
- 
-@@ -105,6 +106,62 @@ static int show_pause_autoneg_status(struct nl_context *nlctx)
- 	return ret;
- }
- 
-+static int show_pause_stats(const struct nlattr *nest)
-+{
-+	const struct nlattr *tb[ETHTOOL_A_PAUSE_STAT_MAX + 1] = {};
-+	DECLARE_ATTR_TB_INFO(tb);
-+	static const struct {
-+		unsigned int attr;
-+		char *name;
-+	} stats[] = {
-+		{ ETHTOOL_A_PAUSE_STAT_TX_FRAMES, "tx_pause_frames" },
-+		{ ETHTOOL_A_PAUSE_STAT_RX_FRAMES, "rx_pause_frames" },
-+	};
-+	bool header = false;
-+	unsigned int i;
-+	size_t n;
-+	int ret;
-+
-+	ret = mnl_attr_parse_nested(nest, attr_cb, &tb_info);
-+	if (ret < 0)
-+		return ret;
-+
-+	open_json_object("statistics");
-+	for (i = 0; i < ARRAY_SIZE(stats); i++) {
-+		char fmt[32];
-+
-+		if (!tb[stats[i].attr])
-+			continue;
-+
-+		if (!header && !is_json_context()) {
-+			printf("Statistics:\n");
-+			header = true;
-+		}
-+
-+		if (mnl_attr_validate(tb[stats[i].attr], MNL_TYPE_U64)) {
-+			fprintf(stderr, "malformed netlink message (statistic)\n");
-+			goto err_close_stats;
-+		}
-+
-+		n = snprintf(fmt, sizeof(fmt), "  %s: %%" PRIu64 "\n",
-+			     stats[i].name);
-+		if (n >= sizeof(fmt)) {
-+			fprintf(stderr, "internal error - malformed label\n");
-+			goto err_close_stats;
-+		}
-+
-+		print_u64(PRINT_ANY, stats[i].name, fmt,
-+			  mnl_attr_get_u64(tb[stats[i].attr]));
-+	}
-+	close_json_object();
-+
-+	return 0;
-+
-+err_close_stats:
-+	close_json_object();
-+	return -1;
-+}
-+
- int pause_reply_cb(const struct nlmsghdr *nlhdr, void *data)
- {
- 	const struct nlattr *tb[ETHTOOL_A_PAUSE_MAX + 1] = {};
-@@ -142,6 +199,11 @@ int pause_reply_cb(const struct nlmsghdr *nlhdr, void *data)
- 		if (ret < 0)
- 			goto err_close_dev;
- 	}
-+	if (tb[ETHTOOL_A_PAUSE_STATS]) {
-+		ret = show_pause_stats(tb[ETHTOOL_A_PAUSE_STATS]);
-+		if (ret < 0)
-+			goto err_close_dev;
-+	}
- 	if (!silent)
- 		print_nl();
- 
-@@ -158,6 +220,7 @@ int nl_gpause(struct cmd_context *ctx)
- {
- 	struct nl_context *nlctx = ctx->nlctx;
- 	struct nl_socket *nlsk = nlctx->ethnl_socket;
-+	u32 flags;
- 	int ret;
- 
- 	if (netlink_cmd_check(ctx, ETHTOOL_MSG_PAUSE_GET, true))
-@@ -168,8 +231,10 @@ int nl_gpause(struct cmd_context *ctx)
- 		return 1;
- 	}
- 
-+	flags = get_stats_flag(nlctx, ETHTOOL_MSG_PAUSE_GET,
-+			       ETHTOOL_A_PAUSE_HEADER);
- 	ret = nlsock_prep_get_request(nlsk, ETHTOOL_MSG_PAUSE_GET,
--				      ETHTOOL_A_PAUSE_HEADER, 0);
-+				      ETHTOOL_A_PAUSE_HEADER, flags);
- 	if (ret < 0)
- 		return ret;
- 
 -- 
-2.26.2
-
+Thanks,
+//richard
