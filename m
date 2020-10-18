@@ -2,47 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC6A7291EB4
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 21:55:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADE73291FAB
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 22:04:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388245AbgJRTyc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 15:54:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43532 "EHLO mail.kernel.org"
+        id S1727810AbgJRUEN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 16:04:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51064 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388229AbgJRTy1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Oct 2020 15:54:27 -0400
+        id S1727054AbgJRUEN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Oct 2020 16:04:13 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F2DFB22263;
-        Sun, 18 Oct 2020 19:54:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A314122269;
+        Sun, 18 Oct 2020 20:04:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603050867;
-        bh=lYYbu+LHVs/lI42o9GlVg5xf4fVuj6IuC281Ogm3UKg=;
+        s=default; t=1603051452;
+        bh=CcbzXlUvlztgfVLb1xA8aP21hB1V3F4mA1ukHZN9LcY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eH87+V9t24jrCyts1XE4BPOlv/zkzt1xVw5KzK9qWvsLfSDe9MQuPqGunvGiubzgP
-         dwOBj7YgdFy7GWJ6uAk/TBKbT4RxRfbIux+UZ7Xy1A3SIPCx5NQValsuU0XRPmOBqK
-         Ngku01mhuYSPoejY2vD0Wc17FLgZ5JWoL6MgAXnM=
-Date:   Sun, 18 Oct 2020 12:54:25 -0700
+        b=aICfQcGS6NnAfAH88MROoXXVGCRDpXTSOcGu1JJrNly2YiL+vZEIKDZ4OdEAB9GNf
+         4KIGozY9BWvU0XgUMuC7aP5GFOFhsLpwQqg4WBXK/lUndKKAbH48j+UeObAwoUhwJJ
+         KsyPQJREF9pPsL/vB4sSQpl9dvKoYL0xkvTjIF3M=
+Date:   Sun, 18 Oct 2020 13:04:10 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Greg KH <greg@kroah.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Anant Thazhemadam <anant.thazhemadam@gmail.com>,
-        petkan@nucleusys.com, davem@davemloft.net,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        linux-kernel-mentees@lists.linuxfoundation.org,
-        linux-next@vger.kernel.org
-Subject: Re: [PATCH v2] net: usb: rtl8150: don't incorrectly assign random
- MAC addresses
-Message-ID: <20201018125425.05ef059d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201015153700.1e97b354@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20201010064459.6563-1-anant.thazhemadam@gmail.com>
-        <20201011173030.141582-1-anant.thazhemadam@gmail.com>
-        <20201012091428.103fc2be@canb.auug.org.au>
-        <20201016085922.4a2b90d1@canb.auug.org.au>
-        <20201015152451.125895b1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201015153700.1e97b354@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc:     Ian Kumlien <ian.kumlien@gmail.com>, anthony.l.nguyen@intel.com,
+        David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        kernel-team@fb.com, Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: Re: [PATCH net] ixgbe: fix probing of multi-port devices with one
+ MDIO
+Message-ID: <20201018130410.6bc9672e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201016174807.000036d6@intel.com>
+References: <20201016232006.3352947-1-kuba@kernel.org>
+        <CAA85sZsm0ZNGoU59Lhn+qUHDAUcNjLoJYdqUf45k_nSkANMDog@mail.gmail.com>
+        <20201016170126.21b1cad5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20201016174807.000036d6@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -50,27 +45,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 15 Oct 2020 15:37:00 -0700 Jakub Kicinski wrote:
-> On Thu, 15 Oct 2020 15:24:51 -0700 Jakub Kicinski wrote:
-> > On Fri, 16 Oct 2020 08:59:22 +1100 Stephen Rothwell wrote:  
-> > > > I will apply the above patch to the merge of the usb tree today to fix
-> > > > up a semantic conflict between the usb tree and Linus' tree.      
-> > > 
-> > > It looks like you forgot to mention this one to Linus :-(
-> > > 
-> > > It should probably say:
-> > > 
-> > > Fixes: b2a0f274e3f7 ("net: rtl8150: Use the new usb control message API.")    
-> > 
-> > Umpf. I think Greg sent his changes first, so this is on me.
-> > 
-> > The networking PR is still outstanding, can we reply to the PR with
-> > the merge guidance. Or is it too late?  
+On Fri, 16 Oct 2020 17:48:07 -0700 Jesse Brandeburg wrote:
+> Jakub Kicinski wrote:
 > 
-> I take that back, this came through net, not net-next so our current
-> PR is irrelevant :)
+> > On Sat, 17 Oct 2020 01:50:59 +0200 Ian Kumlien wrote:  
+> > > On Sat, Oct 17, 2020 at 1:20 AM Jakub Kicinski <kuba@kernel.org> wrote:  
+> > > > Ian reports that after upgrade from v5.8.14 to v5.9 only one
+> > > > of his 4 ixgbe netdevs appear in the system.
+> > > >
+> > > > Quoting the comment on ixgbe_x550em_a_has_mii():
+> > > >  * Returns true if hw points to lowest numbered PCI B:D.F x550_em_a device in
+> > > >  * the SoC.  There are up to 4 MACs sharing a single MDIO bus on the x550em_a,
+> > > >  * but we only want to register one MDIO bus.
+> > > >
+> > > > This matches the symptoms, since the return value from
+> > > > ixgbe_mii_bus_init() is no longer ignored we need to handle
+> > > > the higher ports of x550em without an error.    
+> > > 
+> > > Nice, that fixes it!
+> > > 
+> > > You can add a:
+> > > Tested-by: Ian Kumlien <ian.kumlien@gmail.com>  
+> > 
+> > Will do, thanks!
+> > 
+> > Tony, should I apply directly to net?  
+> 
+> Thank you Kuba!
+> 
+> Seems like a pretty straight forward bug-fix. I recommend
+> you apply it directly.
 
-Looks like the best thing to do right now is to put this fix in net,
-so let me do just that (with the Fixes tag from Stephen).
+Done.
 
-Thanks Anant!
+> Acked-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+
+Thank you!
