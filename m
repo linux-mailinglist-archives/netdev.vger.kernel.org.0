@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62CE3291F3B
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 21:58:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58A732919B7
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 21:20:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388437AbgJRT6Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 15:58:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57588 "EHLO mail.kernel.org"
+        id S1727218AbgJRTTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 15:19:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57696 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728048AbgJRTTI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Oct 2020 15:19:08 -0400
+        id S1728039AbgJRTTL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Oct 2020 15:19:11 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AE97D222B9;
-        Sun, 18 Oct 2020 19:19:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D4489222B9;
+        Sun, 18 Oct 2020 19:19:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603048747;
-        bh=v2Irryi3FqaIFDpBaCx1TpdVuR2A4FadIVt8z2gYIKo=;
+        s=default; t=1603048750;
+        bh=W7djoAKVSL07Q8YxcMiprpi1nhnt1rRDRNxZOdBdfkU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yfziRND5DXnl34wKBcx4VkPPS4Xw/OlQuobqEX22DXTBi6gFyhEtsW5H7LMLq3z9R
-         qwOM4wBQdZ9ofY9UdN53SG7vncA+AbNL5lzAxaiCnVMbT5/nBoPZEso4wZtFl4l+EE
-         3vAeh7y5QR6a31hZBVZ8YdqUWSxW6Kt0skP+E6vU=
+        b=d8sdIjBmOxNWW2xgDW/kAUVMLlRw3gP9+BzSBg+FD9lbM06z/yJc7lZ17cjjJZ8T9
+         1z5w4rsi3spXaWlDFipb4g/HZ7UatKBmenxS8wfgYpQ525gPMd7KY3xbDu6noiNTS7
+         DDJiCZVFiTqc6mLDgoE6XtzJwJY6KgUTK+qvjsTA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+Cc:     Tzu-En Huang <tehuang@realtek.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.9 049/111] rtw88: pci: Power cycle device during shutdown
-Date:   Sun, 18 Oct 2020 15:17:05 -0400
-Message-Id: <20201018191807.4052726-49-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.9 052/111] rtw88: increse the size of rx buffer size
+Date:   Sun, 18 Oct 2020 15:17:08 -0400
+Message-Id: <20201018191807.4052726-52-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201018191807.4052726-1-sashal@kernel.org>
 References: <20201018191807.4052726-1-sashal@kernel.org>
@@ -43,45 +43,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Tzu-En Huang <tehuang@realtek.com>
 
-[ Upstream commit 44492e70adc8086c42d3745d21d591657a427f04 ]
+[ Upstream commit ee755732b7a16af018daa77d9562d2493fb7092f ]
 
-There are reports that 8822CE fails to work rtw88 with "failed to read DBI
-register" error. Also I have a system with 8723DE which freezes the whole
-system when the rtw88 is probing the device.
+The vht capability of MAX_MPDU_LENGTH is 11454 in rtw88; however, the rx
+buffer size for each packet is 8192. When receiving packets that are
+larger than rx buffer size, it will leads to rx buffer ring overflow.
 
-According to [1], platform firmware may not properly power manage the
-device during shutdown. I did some expirements and putting the device to
-D3 can workaround the issue.
-
-So let's power cycle the device by putting the device to D3 at shutdown
-to prevent the issue from happening.
-
-[1] https://bugzilla.kernel.org/show_bug.cgi?id=206411#c9
-
-BugLink: https://bugs.launchpad.net/bugs/1872984
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Signed-off-by: Tzu-En Huang <tehuang@realtek.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20200928165508.20775-1-kai.heng.feng@canonical.com
+Link: https://lore.kernel.org/r/20200925061219.23754-2-tehuang@realtek.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw88/pci.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/wireless/realtek/rtw88/pci.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
-index 3413973bc4750..7f1f5073b9f4d 100644
---- a/drivers/net/wireless/realtek/rtw88/pci.c
-+++ b/drivers/net/wireless/realtek/rtw88/pci.c
-@@ -1599,6 +1599,8 @@ void rtw_pci_shutdown(struct pci_dev *pdev)
+diff --git a/drivers/net/wireless/realtek/rtw88/pci.h b/drivers/net/wireless/realtek/rtw88/pci.h
+index 024c2bc275cbe..ca17aa9cf7dc7 100644
+--- a/drivers/net/wireless/realtek/rtw88/pci.h
++++ b/drivers/net/wireless/realtek/rtw88/pci.h
+@@ -9,8 +9,8 @@
+ #define RTK_BEQ_TX_DESC_NUM	256
  
- 	if (chip->ops->shutdown)
- 		chip->ops->shutdown(rtwdev);
-+
-+	pci_set_power_state(pdev, PCI_D3hot);
- }
- EXPORT_SYMBOL(rtw_pci_shutdown);
+ #define RTK_MAX_RX_DESC_NUM	512
+-/* 8K + rx desc size */
+-#define RTK_PCI_RX_BUF_SIZE	(8192 + 24)
++/* 11K + rx desc size */
++#define RTK_PCI_RX_BUF_SIZE	(11454 + 24)
  
+ #define RTK_PCI_CTRL		0x300
+ #define BIT_RST_TRXDMA_INTF	BIT(20)
 -- 
 2.25.1
 
