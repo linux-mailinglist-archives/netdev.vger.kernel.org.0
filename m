@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC06C291C5B
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 21:37:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3102E291C57
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 21:37:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732523AbgJRThh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 15:37:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39838 "EHLO mail.kernel.org"
+        id S1732800AbgJRTh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 15:37:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39868 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731239AbgJRTZW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Oct 2020 15:25:22 -0400
+        id S1731247AbgJRTZX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Oct 2020 15:25:23 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 921C52231B;
-        Sun, 18 Oct 2020 19:25:20 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 12EC1222C8;
+        Sun, 18 Oct 2020 19:25:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603049121;
-        bh=dEgo1FvU10wAANqVlVrxn/yTc2mxar0TZYuqSCpw1Qc=;
+        s=default; t=1603049123;
+        bh=0gt/BdUnjet6wwgBcbHhkuBhangU35v/BOtsUmknBv0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UpgbdxqxRaLKCM1zinG3L4ihmExgEv/hqpP4w6G+UEYWu9Ti8aF9dSLuLaGUP7b4f
-         3CWE9+xbJja7pSCOdaJqvHtUQj66rSyEeXMpWv9PrLg66bQ6KgCmUASwWRXfolAgQb
-         y61UD91U5U4CfGpJg7GW3kv1DGf6A74mFYDJoZtk=
+        b=wb4iRfOiQrXVvmWvA21cu+D3WORk4BdjEbGZX/ipJSF7PaShDqI7uWWKNsHP6lbQN
+         WLvbz2MrsXZMpb/T/omVCffTziUUPRMbiw+v+xF8B26J2p98FCYm5nFjRxSC7w6pyI
+         zr7hJ4AQbdPN8KL64PjFFYLGbBTYtm2doPCAUgZk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        syzbot <syzbot+dc4127f950da51639216@syzkaller.appspotmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Brian Norris <briannorris@chromium.org>,
+Cc:     Wang Yufen <wangyufen@huawei.com>, Hulk Robot <hulkci@huawei.com>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 52/56] mwifiex: don't call del_timer_sync() on uninitialized timer
-Date:   Sun, 18 Oct 2020 15:24:13 -0400
-Message-Id: <20201018192417.4055228-52-sashal@kernel.org>
+        linux-wireless@vger.kernel.org,
+        brcm80211-dev-list.pdl@broadcom.com,
+        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 53/56] brcm80211: fix possible memleak in brcmf_proto_msgbuf_attach
+Date:   Sun, 18 Oct 2020 15:24:14 -0400
+Message-Id: <20201018192417.4055228-53-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201018192417.4055228-1-sashal@kernel.org>
 References: <20201018192417.4055228-1-sashal@kernel.org>
@@ -46,52 +45,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+From: Wang Yufen <wangyufen@huawei.com>
 
-[ Upstream commit 621a3a8b1c0ecf16e1e5667ea5756a76a082b738 ]
+[ Upstream commit 6c151410d5b57e6bb0d91a735ac511459539a7bf ]
 
-syzbot is reporting that del_timer_sync() is called from
-mwifiex_usb_cleanup_tx_aggr() from mwifiex_unregister_dev() without
-checking timer_setup() from mwifiex_usb_tx_init() was called [1].
+When brcmf_proto_msgbuf_attach fail and msgbuf->txflow_wq != NULL,
+we should destroy the workqueue.
 
-Ganapathi Bhat proposed a possibly cleaner fix, but it seems that
-that fix was forgotten [2].
-
-"grep -FrB1 'del_timer' drivers/ | grep -FA1 '.function)'" says that
-currently there are 28 locations which call del_timer[_sync]() only if
-that timer's function field was initialized (because timer_setup() sets
-that timer's function field). Therefore, let's use same approach here.
-
-[1] https://syzkaller.appspot.com/bug?id=26525f643f454dd7be0078423e3cdb0d57744959
-[2] https://lkml.kernel.org/r/CA+ASDXMHt2gq9Hy+iP_BYkWXsSreWdp3_bAfMkNcuqJ3K+-jbQ@mail.gmail.com
-
-Reported-by: syzbot <syzbot+dc4127f950da51639216@syzkaller.appspotmail.com>
-Cc: Ganapathi Bhat <ganapathi.bhat@nxp.com>
-Cc: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-Acked-by: Ganapathi Bhat <ganapathi.bhat@nxp.com>
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20200821082720.7716-1-penguin-kernel@I-love.SAKURA.ne.jp
+Link: https://lore.kernel.org/r/1595237765-66238-1-git-send-email-wangyufen@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/marvell/mwifiex/usb.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/usb.c b/drivers/net/wireless/marvell/mwifiex/usb.c
-index d445acc4786b7..2a8d40ce463d5 100644
---- a/drivers/net/wireless/marvell/mwifiex/usb.c
-+++ b/drivers/net/wireless/marvell/mwifiex/usb.c
-@@ -1355,7 +1355,8 @@ static void mwifiex_usb_cleanup_tx_aggr(struct mwifiex_adapter *adapter)
- 				skb_dequeue(&port->tx_aggr.aggr_list)))
- 				mwifiex_write_data_complete(adapter, skb_tmp,
- 							    0, -1);
--		del_timer_sync(&port->tx_aggr.timer_cnxt.hold_timer);
-+		if (port->tx_aggr.timer_cnxt.hold_timer.function)
-+			del_timer_sync(&port->tx_aggr.timer_cnxt.hold_timer);
- 		port->tx_aggr.timer_cnxt.is_hold_timer_set = false;
- 		port->tx_aggr.timer_cnxt.hold_tmo_msecs = 0;
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.c
+index ee922b0525610..768a99c15c08b 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/msgbuf.c
+@@ -1563,6 +1563,8 @@ int brcmf_proto_msgbuf_attach(struct brcmf_pub *drvr)
+ 					  BRCMF_TX_IOCTL_MAX_MSG_SIZE,
+ 					  msgbuf->ioctbuf,
+ 					  msgbuf->ioctbuf_handle);
++		if (msgbuf->txflow_wq)
++			destroy_workqueue(msgbuf->txflow_wq);
+ 		kfree(msgbuf);
  	}
+ 	return -ENOMEM;
 -- 
 2.25.1
 
