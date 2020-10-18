@@ -2,106 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A6AF291FD3
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 22:32:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C584E292019
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 23:16:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728311AbgJRUcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 16:32:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43848 "EHLO
+        id S1727945AbgJRVQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 17:16:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726422AbgJRUcb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Oct 2020 16:32:31 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6F21C061755
-        for <netdev@vger.kernel.org>; Sun, 18 Oct 2020 13:32:29 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id e17so9088053wru.12
-        for <netdev@vger.kernel.org>; Sun, 18 Oct 2020 13:32:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sAI3551ANWmDeAOBBAsmei3ufVqPNL4Mbt9ru6oPku4=;
-        b=vmEMI2ojS7Lx2KpUhKMUyghwJQYP3cxm/vDaeoFQxrnud11vgSeMatWNdTqEGO4tPX
-         T9sz5KrmX4ntYab/tbblW0hyUHoDPdK3mD33y3BUF6pOHZ0u83yo6iUNNuu6L8DDz59E
-         UwZB1eI01NU5y27xF08vfujA2HBjP97px2WlqFah24AQZ3Us5RYb7+cxQ+5D5MFB3/t/
-         zSXqPRGuB0IbXg/WS3/6px8LB1+nVI1quYDryRVFc1jRQq45/zjiVn9FsRb20YD0Elc0
-         MujHV+FV/eqH/MTC2kMT3dokATfrAi/Kr+8L0u7I/DHJ4ImCz7rzRJc3Ct6U8XYjkteo
-         48mQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sAI3551ANWmDeAOBBAsmei3ufVqPNL4Mbt9ru6oPku4=;
-        b=eHao8zfRPsMkGKqHc/0QqQtW84QC9MbYOZm67bnCaXYzBJWEWw3JiYmCs5fn022OkQ
-         PpiE3lW526/61GjawwxdzN28iKTD8eOU2i6RSzkId6Ql2a0bsZsbsZmXruLlKRwgq9Td
-         mWrzOfuAHF4EB9CKJ8RxOsW9SCc1cp8rxPEMxVPh5dJGUB1Q9Yjmm+K6JvCLHGOTHDvm
-         oBoM0VRbVvOBY44+hXiBEeWVmEcI5eEnBtlCz3bHdaWFnD1WIv3iDkGMFonx+awMhfZ6
-         bPSkrGwyQnkMJUYWJb76HH3GG0umBum0VThj0/M3Y9rKvDhJo9ynhAs7eauy5zCOOsvd
-         OD0w==
-X-Gm-Message-State: AOAM5302d1xc3UK6vZfe1SQieA1z96RuSDYuhDNIrhiRhB/lOyMU5wxn
-        MmDp/t74fi+p6WgLMtPhAt58AG4oXcf3Ag==
-X-Google-Smtp-Source: ABdhPJyjRzaObcF+GDRwZE8ZTTamSa7crXTcCCg1V87nB2YwmUT2UwkJFitml3zlthkJyqcyOlLi5Q==
-X-Received: by 2002:adf:f584:: with SMTP id f4mr15652012wro.383.1603053148344;
-        Sun, 18 Oct 2020 13:32:28 -0700 (PDT)
-Received: from apalos.home (athedsl-246545.home.otenet.gr. [85.73.10.175])
-        by smtp.gmail.com with ESMTPSA id b5sm13842733wrs.97.2020.10.18.13.32.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 18 Oct 2020 13:32:27 -0700 (PDT)
-Date:   Sun, 18 Oct 2020 23:32:25 +0300
-From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+        with ESMTP id S1727889AbgJRVP7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Oct 2020 17:15:59 -0400
+Received: from gate2.alliedtelesis.co.nz (gate2.alliedtelesis.co.nz [IPv6:2001:df5:b000:5::4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9375BC061755
+        for <netdev@vger.kernel.org>; Sun, 18 Oct 2020 14:15:58 -0700 (PDT)
+Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 82AD1891B0;
+        Mon, 19 Oct 2020 10:15:53 +1300 (NZDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1603055753;
+        bh=zfJ4/5j6lapeMGaPNyzEHYnbrS7oCdsukYao/Kwslgo=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To;
+        b=LUiA3LFGArOjR49DHfalpr5ecMZm/tw70SqtJf8SkOXW7ltgmH5SE/TgxxLwAKMcn
+         TyMUPupN1II9KFvWCuT7FM6vHnYZumUskrkPuwnjFnIIsQ4HhE4hXav8ZEbrzYAh/e
+         hAuw4p7oSaY7zzzAy4acDQfIcRYScrCZEVPhiBy1PjG9eyGMMAGcJ7JuA8U6cQETMS
+         lQAuFFAoSkImXBWwKOLiBH7MIppgFLEuAFSiy3E71g09ysUuoE8szB+OX4kvazok64
+         R54e0VMUe6V2lxnfqefdezp3d1eE0NZCN6N5zmKCXeBVLVm2ZF9aWJVZHWI74wN0JZ
+         Bm3U6jZAxS9pQ==
+Received: from svr-chch-ex1.atlnz.lc (Not Verified[10.32.16.77]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
+        id <B5f8cb0880001>; Mon, 19 Oct 2020 10:15:52 +1300
+Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) by
+ svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.2; Mon, 19 Oct 2020 10:15:53 +1300
+Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
+ svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
+ 15.00.1497.006; Mon, 19 Oct 2020 10:15:53 +1300
+From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
 To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Ard Biesheuvel <ardb@kernel.org>, netdev@vger.kernel.org,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Willy Liu <willy.liu@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Masahisa Kojima <masahisa.kojima@linaro.org>,
-        Serge Semin <fancer.lancer@gmail.com>
-Subject: Re: [PATCH net] netsec: ignore 'phy-mode' device property on ACPI
- systems
-Message-ID: <20201018203225.GA1790657@apalos.home>
-References: <20201018163625.2392-1-ardb@kernel.org>
- <20201018175218.GG456889@lunn.ch>
+CC:     "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] net: dsa: mv88e6xxx: Support serdes ports on
+ MV88E6097
+Thread-Topic: [PATCH 2/2] net: dsa: mv88e6xxx: Support serdes ports on
+ MV88E6097
+Thread-Index: AQHWoQc4/uQqPxKVFEaOBfkb784lwamcuA8AgABBNACAAARwgIAADggA
+Date:   Sun, 18 Oct 2020 21:15:52 +0000
+Message-ID: <2e1f1ca4-b5d5-ebc8-99bf-9ad74f461d26@alliedtelesis.co.nz>
+References: <20201013021858.20530-1-chris.packham@alliedtelesis.co.nz>
+ <20201013021858.20530-3-chris.packham@alliedtelesis.co.nz>
+ <20201018161624.GD456889@lunn.ch>
+ <b3d1d071-3bce-84f4-e9d5-f32a41c432bd@alliedtelesis.co.nz>
+ <20201018202539.GJ456889@lunn.ch>
+In-Reply-To: <20201018202539.GJ456889@lunn.ch>
+Accept-Language: en-NZ, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.32.1.11]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <E39CB38EC5A36D40960D57470FC512CA@atlnz.lc>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201018175218.GG456889@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 18, 2020 at 07:52:18PM +0200, Andrew Lunn wrote:
-> > --- a/Documentation/devicetree/bindings/net/socionext-netsec.txt
-> > +++ b/Documentation/devicetree/bindings/net/socionext-netsec.txt
-> > @@ -30,7 +30,9 @@ Optional properties: (See ethernet.txt file in the same directory)
-> >  - max-frame-size: See ethernet.txt in the same directory.
-> >  
-> >  The MAC address will be determined using the optional properties
-> > -defined in ethernet.txt.
-> > +defined in ethernet.txt. The 'phy-mode' property is required, but may
-> > +be set to the empty string if the PHY configuration is programmed by
-> > +the firmware or set by hardware straps, and needs to be preserved.
-> 
-> In general, phy-mode is not mandatory. of_get_phy_mode() does the
-> right thing if it is not found, it sets &priv->phy_interface to
-> PHY_INTERFACE_MODE_NA, but returns -ENODEV. Also, it does not break
-> backwards compatibility to convert a mandatory property to
-> optional. So you could just do
-> 
-> 	of_get_phy_mode(pdev->dev.of_node, &priv->phy_interface);
-> 
-> skip all the error checking, and document it as optional.
-
-Why ?
-The patch as is will not affect systems built on any firmware implementations 
-that use ACPI and somehow configure the hardware. 
-Although the only firmware implementations I am aware of on upsteream are based
-on EDK2, I prefer the explicit error as is now, in case a firmware does on 
-initialize the PHY properly (and is using a DT).
-
-Cheers
-/Ilias
-
-> 
->      Andrew
+DQpPbiAxOS8xMC8yMCA5OjI1IGFtLCBBbmRyZXcgTHVubiB3cm90ZToNCj4+IEkgYXNzdW1lIHlv
+dSdyZSB0YWxraW5nIGFib3V0IHRoZSBQSFkgQ29udHJvbCBSZWdpc3RlciAwIGJpdCAxMS4gSWYg
+c28NCj4+IHRoYXQncyBmb3IgdGhlIGludGVybmFsIFBIWXMgb24gcG9ydHMgMC03LiBQb3J0cyA4
+LCA5IGFuZCAxMCBkb24ndCBoYXZlDQo+PiBQSFlzLg0KPiBIaSBDaHJpcw0KPg0KPiBJIGhhdmUg
+YSBkYXRhc2hlZXQgZm9yIHRoZSA2MTIyLzYxMjEsIGZyb20gc29tZSBjb3JuZXIgb2YgdGhlIHdl
+YiwNCj4gUGFydCAzIG9mIDMsIEdpZ2FiaXQgUEhZcyBhbmQgU0VSREVTLg0KPg0KPiBodHRwOi8v
+d3d3LmltYWdlLm1pY3Jvcy5jb20ucGwvX2RhbmVfdGVjaG5pY3puZV9hdXRvL3VpODhlNjEyMmIy
+bGtqMWkwLnBkZg0KPg0KPiBTZWN0aW9uIDUgb2YgdGhpcyBkb2N1bWVudCB0YWxrcw0KPiBhYm91
+dCB0aGUgU0VSREVTIHJlZ2lzdGVycy4gUmVnaXN0ZXIgMCBpcyBDb250cm9sLCByZWdpc3RlciAx
+IGlzDQo+IFN0YXR1cyAtIEZpYmVyLCByZWdpc3RlciAyIGFuZCAzIGFyZSB0aGUgdXN1YWwgSUQs
+IDQgaXMgYXV0by1uZXQNCj4gYWR2ZXJ0aXNlbWVudCBldGMuDQo+DQo+IFdoZXJlIHRoZXNlIHJl
+Z2lzdGVycyBhcHBlYXIgaW4gdGhlIGFkZHJlc3Mgc3BhY2UgaXMgbm90IGNsZWFyIGZyb20NCj4g
+dGhpcyBkb2N1bWVudC4gSXQgaXMgbm9ybWFsbHkgaW4gZG9jdW1lbnQgcGFydCAyIG9mIDMsIHdo
+aWNoIG15DQo+IHNlYXJjaGluZyBvZiB0aGUgd2ViIGRpZCBub3QgZmluZC4NCj4NCj4gCSAgQW5k
+cmV3DQoNCkkgaGF2ZSBnb3QgdGhlIDg4RTYxMjIgZGF0YXNoZWV0KHMpIGFuZCBjYW4gc2VlIHRo
+ZSBTRVJERVMgcmVnaXN0ZXJzIA0KeW91J3JlIHRhbGtpbmcgYWJvdXQgKEkgdGhpbmsgdGhleSdy
+ZSBpbiB0aGUgc2FtZSByZWdpc3RlciBzcGFjZSBhcyB0aGUgDQpidWlsdC1pbiBQSFlzKS4gSXQg
+bG9va3MgbGlrZSB0aGUgODhFNjA5NyBpcyBkaWZmZXJlbnQgaW4gdGhhdCB0aGVyZSBhcmUgDQpu
+byBTRVJERVMgcmVnaXN0ZXJzIGV4cG9zZWQgKGF0IGxlYXN0IG5vdCBpbiBhIGRvY3VtZW50ZWQg
+d2F5KS4gTG9va2luZyANCmF0IHRoZSA4OEU2MTg1IGl0J3MgdGhlIHNhbWUgYXMgdGhlIDg4RTYw
+OTcuDQoNClNvIGhvdyBkbyB5b3Ugd2FudCB0byBtb3ZlIHRoaXMgc2VyaWVzIGZvcndhcmQ/IEkg
+Y2FuIHRlc3QgaXQgb24gdGhlIA0KODhFNjA5NyAoYW5kIGhhdmUgcmVzdHJpY3RlZCBpdCB0byBq
+dXN0IHRoYXQgY2hpcCBmb3Igbm93KSwgSSdtIHByZXR0eSANCnN1cmUgaXQnbGwgd29yayBvbiB0
+aGUgODhFNjE4NS4gSSBkb3VidCBpdCdsbCB3b3JrIG9uIHRoZSA4OEU2MTIyIGJ1dCANCm1heWJl
+IGl0IHdvdWxkIHdpdGggYSBkaWZmZXJlbnQgc2VyZGVzX3Bvd2VyIGZ1bmN0aW9uIChvciBldmVu
+IHRoZSANCm12ODhlNjM1Ml9zZXJkZXNfcG93ZXIoKSBhcyB5b3Ugc3VnZ2VzdGVkKS4NCg==
