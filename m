@@ -2,80 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A84729180A
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 17:27:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59149291814
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 17:38:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727114AbgJRP1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 11:27:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53392 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726803AbgJRP1T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Oct 2020 11:27:19 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59119C061755
-        for <netdev@vger.kernel.org>; Sun, 18 Oct 2020 08:27:18 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id k6so10089574ior.2
-        for <netdev@vger.kernel.org>; Sun, 18 Oct 2020 08:27:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=xxetPx4u+QiDU/ybn80IZGIewcRYEfrsACrq35pQrlE=;
-        b=vR48Wlxq0wpJfaVeuTQZZ9CE5PzfQW1TU2UVQGp4z3aHLtYgU0sFIIYciPVsAQMxLe
-         H+y8aNhs+AXl4e4qF0Q1NF4K2Kx5HVvU727XgRqu7xpbdtKV89V1c33rOjonA6IOdBjY
-         BDsBimriG+mjNJ8y0P7prgoVZukdevl0SyqAAgPt2QmJ/Ordw2U/NLhY/s9+pQwz2T5K
-         RKHdWPSsBei3gw8zP7+/n5Ah2ssVVCkJ6I/8xd9iGwmDQz/f6uvPwV7+QWZaV5P4K5LE
-         vxktUTy33pMCDDcExBs4aicEG/I0mwHfT5Wb0WJI7UluwK/Nohk5bDHCmfewBfwaK6nd
-         A7Wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=xxetPx4u+QiDU/ybn80IZGIewcRYEfrsACrq35pQrlE=;
-        b=lJZIc/b2rHEALYLqKC6rsBmds71vQv95z7ocEx5mahX/JWRZxtvdlE0TMPObmzIUmX
-         UH54tmilE1WSsQeUscHb45xVg6Kd1gcHU9eJizCRbftlv+JjzeT6cahNiEnGyEy0zn9C
-         nrg1FcyXBk4SCqjFQ0K1mtEPP5QRJAl2olL5SlUtSUp+njzxj5pl6LUaQcm7DunZXgjJ
-         I8lNQ1aS5Ark9WLqNJR2dq+ZZAt/kT9g/o2ni/VOmH0rML/KpGEcBavJdj+ABjCEYK3o
-         0QfYJ1Ml1ld8FaVD7ciyh6ER/EIFtkeJH1VMsoxV61uGzNaMlnAzoqu3P2AGX/ATeTs9
-         /yTQ==
-X-Gm-Message-State: AOAM5310ZVWPQWe9fwVxHrEIdWXhfrYM5FysR6+cK9Cc7JFJCFaV2aaV
-        9lv9P/HicDf+o9rSqvnBfLgdlcIcOA0=
-X-Google-Smtp-Source: ABdhPJyu7LUkcEhlNELch0r1IFzI5WSW+MgFom3ZYszUpRro9qy/WQAUsIVNkysEuPA95p8ZiZW9dw==
-X-Received: by 2002:a6b:9243:: with SMTP id u64mr7923158iod.197.1603034837561;
-        Sun, 18 Oct 2020 08:27:17 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:284:8202:10b0:d908:7fe8:cfc0:66e2])
-        by smtp.googlemail.com with ESMTPSA id a11sm7371956ilk.81.2020.10.18.08.27.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Oct 2020 08:27:16 -0700 (PDT)
-Subject: Re: Why revert commit 2271c95 ("vrf: mark skb for multicast or
- link-local as enslaved to VRF")?
-To:     Stephen Suryaputra <ssuryaextr@gmail.com>, netdev@vger.kernel.org,
-        sashal@kernel.org, mmanning@vyatta.att-mail.com
-References: <20201018132436.GA11729@ICIPI.localdomain>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <75fda8c7-adf3-06a4-298f-b75ac6e6969b@gmail.com>
-Date:   Sun, 18 Oct 2020 09:27:16 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.1
+        id S1726685AbgJRPiV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 11:38:21 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:33310 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726364AbgJRPiV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Oct 2020 11:38:21 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kUAlB-002JSq-UZ; Sun, 18 Oct 2020 17:38:13 +0200
+Date:   Sun, 18 Oct 2020 17:38:13 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        Alex =?iso-8859-1?Q?Benn=E9e?= <alex.bennee@linaro.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>, steve@einval.com,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>, Willy Liu <willy.liu@realtek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Masahisa Kojima <masahisa.kojima@linaro.org>
+Subject: Re: realtek PHY commit bbc4d71d63549 causes regression
+Message-ID: <20201018153813.GY456889@lunn.ch>
+References: <20201017161435.GA1768480@apalos.home>
+ <CAMj1kXHXYprdC19m1S5p_LQ2BOHtDCbyCWCJ0eJ5xPxFv8hgoA@mail.gmail.com>
+ <20201017180453.GM456889@lunn.ch>
+ <CAMj1kXEcrULejk+h1Jv42W=r7odQ9Z_G0XDX_KrEnYYPEVgHkA@mail.gmail.com>
+ <20201017182738.GN456889@lunn.ch>
+ <CAMj1kXHwYkd0L63K3+e_iwfoSYEUOmYdWf_cKv90_qVXSxEesg@mail.gmail.com>
+ <20201017194904.GP456889@lunn.ch>
+ <CAMj1kXEY5jK7z+_ezDX733zbtHnaGUNCkJ_gHcPqAavOQPOzBQ@mail.gmail.com>
+ <20201017230226.GV456889@lunn.ch>
+ <CAMj1kXGO=5MsbLYvng4JWdNhJ3Nb0TSFKvnT-ZhjF2xcO9dZaw@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20201018132436.GA11729@ICIPI.localdomain>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMj1kXGO=5MsbLYvng4JWdNhJ3Nb0TSFKvnT-ZhjF2xcO9dZaw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/18/20 7:24 AM, Stephen Suryaputra wrote:
-> Greetings,
+> > Thanks for reporting back on that. It probably needs to be something
+> > we always recommend for ACPI systems, either use "", or preferably no
+> > phy-mode at all, and let the driver default to NA. ACPI and networking
+> > is at a very early stage at the moment, since UEFA says nothing about
+> > it. It will take a while before we figure out the best practices, and
+> > some vendor gets something added to the ACPI specifications.
+> >
 > 
-> We noticed that the commit was reverted after upgrading to v4.14.200.
-> Any reason why it is reverted? We rely on it.
-> 
+> You mean MDIO topology, right?
 
-$ git show 2271c95
-fatal: ambiguous argument '2271c95': unknown revision or path not in the
-working tree.
-Use '--' to separate paths from revisions, like this:
-'git <command> [<revision>...] -- [<file>...]'
+That is part of it. I2C for SFPs, ethernet switches, etc.  I think
+SFPs are going to be the real sticking point, since when you get above
+10Gbps, you are into the land of SFPs, and server platforms are those
+which will be going above 10G first.
+
+> Every x86 PC and server in the world uses ACPI, and networking
+> doesn't seem to be a problem there, so it is simply a matter of
+> choosing the right abstraction level. I know this is much easier to
+> achieve when all the network controllers are on PCIe cards, but the
+> point remains valid: exhaustively describing the entire SoC like we
+> do for DT is definitely not the right choice for ACPI systems.
+
+Agreed. And i am pushing back. But we also have the conflict that some
+SoC IP is used in systems that will boot RHEL, Debian, etc, and in
+systems that are DT based. Do you want to write two drivers? One
+assuming ACPI is doing all the work, and another where DT describes
+the system and drivers and network core does all the work configuring
+the hardware. For the same piece of hardware?
+
+> I do have a question about the history here, btw. As I understand it,
+> before commit f81dadbcf7fd ("net: phy: realtek: Add rtl8211e rx/tx
+> delays config"), the phy-mode setting did not have any effect on
+> Realtek PHYs in the first place, right? Since otherwise, this platform
+> would never have worked from the beginning.
+
+I suspect it did work to some extent, but not fully. So it could be,
+it worked for whatever platform Serge was using, but failed in some
+other cases, e.g. you board, and left the delays alone.
+
+Later the vendor came along and said the code was wrong, and provided
+some bits of information from the datasheet which is not publicly
+available. As a result f81dadbcf7fd happened. Since that fixed a
+previous patch, it was given a Fixes: tag and i assume back ported.
+
+> So commit f81dadbcf7fd was backported to -stable, even though it
+> didn't actually work, and had to be fixed in bbc4d71d63549bcd ("net:
+> phy: realtek: fix rtl8211e rx/tx delay config"), which is the commit
+> that causes the regression on these boards.
+> 
+> So why was commit f81dadbcf7fd sent to -stable in the first place?
+
+f81dadbcf7fd first appears in v5.2. I don't see it in 4.19.152, the
+LTS kernel older than that. So it is not in -stable.
+
+    Andrew
