@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CEFE291F22
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 21:57:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5208291F1D
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 21:57:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728164AbgJRTTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 15:19:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57856 "EHLO mail.kernel.org"
+        id S1728207AbgJRTTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 15:19:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57922 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727286AbgJRTTS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Oct 2020 15:19:18 -0400
+        id S1728161AbgJRTTU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Oct 2020 15:19:20 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DC038222C8;
-        Sun, 18 Oct 2020 19:19:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 29F16222E7;
+        Sun, 18 Oct 2020 19:19:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603048757;
-        bh=BDNwQRwoRfZPxJGVVrsS9A5kA4VPUPUBVwYYvkvLSsk=;
+        s=default; t=1603048760;
+        bh=1/zcvT49Z0HRAXBRD5R7Zp7EgSGSNvitNfefz2WUyTM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BANUMzjuDytOSGQCyFO5m/cOMQcJkRjLAzTfuHdPHyKba1uW/hAZkJh6VqmFEFPIb
-         bByKdvtdioA02sOmilVTkEf8OEEp8IRCsy8vu2L5herQMg5SEr+izlSJa6JCt+DYUr
-         kfwnDCkpP6cYtNynBZHO1PJNt7SSKn8j2tl3AHs0=
+        b=YB1RGwBionnZVWVRU6HIG48R2wWfaAooS8KCsYFDyCtRZcdqO+B561h8ugAyxdIdd
+         0BFCiJ9SD4guc6Gxvq4L59JV3/Uxca01zeaGUj+WQgjxeXkT+LnYPRZV/RwnwlTg3v
+         8rNUkKQ/jURBTugeU1Yjo4EoFkLf43pjZbaGCwBw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.9 058/111] can: flexcan: flexcan_chip_stop(): add error handling and propagate error value
-Date:   Sun, 18 Oct 2020 15:17:14 -0400
-Message-Id: <20201018191807.4052726-58-sashal@kernel.org>
+Cc:     Brooke Basile <brookebasile@gmail.com>,
+        syzbot+89bd486af9427a9fc605@syzkaller.appspotmail.com,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.9 060/111] ath9k: hif_usb: fix race condition between usb_get_urb() and usb_kill_anchored_urbs()
+Date:   Sun, 18 Oct 2020 15:17:16 -0400
+Message-Id: <20201018191807.4052726-60-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201018191807.4052726-1-sashal@kernel.org>
 References: <20201018191807.4052726-1-sashal@kernel.org>
@@ -43,92 +44,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Joakim Zhang <qiangqing.zhang@nxp.com>
+From: Brooke Basile <brookebasile@gmail.com>
 
-[ Upstream commit 9ad02c7f4f279504bdd38ab706fdc97d5f2b2a9c ]
+[ Upstream commit 03fb92a432ea5abe5909bca1455b7e44a9380480 ]
 
-This patch implements error handling and propagates the error value of
-flexcan_chip_stop(). This function will be called from flexcan_suspend()
-in an upcoming patch in some SoCs which support LPSR mode.
+Calls to usb_kill_anchored_urbs() after usb_kill_urb() on multiprocessor
+systems create a race condition in which usb_kill_anchored_urbs() deallocates
+the URB before the completer callback is called in usb_kill_urb(), resulting
+in a use-after-free.
+To fix this, add proper lock protection to usb_kill_urb() calls that can
+possibly run concurrently with usb_kill_anchored_urbs().
 
-Add a new function flexcan_chip_stop_disable_on_error() that tries to
-disable the chip even in case of errors.
-
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-[mkl: introduce flexcan_chip_stop_disable_on_error() and use it in flexcan_close()]
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Link: https://lore.kernel.org/r/20200922144429.2613631-11-mkl@pengutronix.de
+Reported-by: syzbot+89bd486af9427a9fc605@syzkaller.appspotmail.com
+Link: https://syzkaller.appspot.com/bug?id=cabffad18eb74197f84871802fd2c5117b61febf
+Signed-off-by: Brooke Basile <brookebasile@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20200911071427.32354-1-brookebasile@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/flexcan.c | 34 ++++++++++++++++++++++++++++------
- 1 file changed, 28 insertions(+), 6 deletions(-)
+ drivers/net/wireless/ath/ath9k/hif_usb.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-index 94d10ec954a05..2ac7a667bde35 100644
---- a/drivers/net/can/flexcan.c
-+++ b/drivers/net/can/flexcan.c
-@@ -1260,18 +1260,23 @@ static int flexcan_chip_start(struct net_device *dev)
- 	return err;
+diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
+index 3f563e02d17da..2ed98aaed6fb5 100644
+--- a/drivers/net/wireless/ath/ath9k/hif_usb.c
++++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
+@@ -449,10 +449,19 @@ static void hif_usb_stop(void *hif_handle)
+ 	spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
+ 
+ 	/* The pending URBs have to be canceled. */
++	spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
+ 	list_for_each_entry_safe(tx_buf, tx_buf_tmp,
+ 				 &hif_dev->tx.tx_pending, list) {
++		usb_get_urb(tx_buf->urb);
++		spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
+ 		usb_kill_urb(tx_buf->urb);
++		list_del(&tx_buf->list);
++		usb_free_urb(tx_buf->urb);
++		kfree(tx_buf->buf);
++		kfree(tx_buf);
++		spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
+ 	}
++	spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
+ 
+ 	usb_kill_anchored_urbs(&hif_dev->mgmt_submitted);
  }
+@@ -762,27 +771,37 @@ static void ath9k_hif_usb_dealloc_tx_urbs(struct hif_device_usb *hif_dev)
+ 	struct tx_buf *tx_buf = NULL, *tx_buf_tmp = NULL;
+ 	unsigned long flags;
  
--/* flexcan_chip_stop
-+/* __flexcan_chip_stop
-  *
-- * this functions is entered with clocks enabled
-+ * this function is entered with clocks enabled
-  */
--static void flexcan_chip_stop(struct net_device *dev)
-+static int __flexcan_chip_stop(struct net_device *dev, bool disable_on_error)
- {
- 	struct flexcan_priv *priv = netdev_priv(dev);
- 	struct flexcan_regs __iomem *regs = priv->regs;
-+	int err;
++	spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
+ 	list_for_each_entry_safe(tx_buf, tx_buf_tmp,
+ 				 &hif_dev->tx.tx_buf, list) {
++		usb_get_urb(tx_buf->urb);
++		spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
+ 		usb_kill_urb(tx_buf->urb);
+ 		list_del(&tx_buf->list);
+ 		usb_free_urb(tx_buf->urb);
+ 		kfree(tx_buf->buf);
+ 		kfree(tx_buf);
++		spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
+ 	}
++	spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
  
- 	/* freeze + disable module */
--	flexcan_chip_freeze(priv);
--	flexcan_chip_disable(priv);
-+	err = flexcan_chip_freeze(priv);
-+	if (err && !disable_on_error)
-+		return err;
-+	err = flexcan_chip_disable(priv);
-+	if (err && !disable_on_error)
-+		goto out_chip_unfreeze;
+ 	spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
+ 	hif_dev->tx.flags |= HIF_USB_TX_FLUSH;
+ 	spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
  
- 	/* Disable all interrupts */
- 	priv->write(0, &regs->imask2);
-@@ -1281,6 +1286,23 @@ static void flexcan_chip_stop(struct net_device *dev)
++	spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
+ 	list_for_each_entry_safe(tx_buf, tx_buf_tmp,
+ 				 &hif_dev->tx.tx_pending, list) {
++		usb_get_urb(tx_buf->urb);
++		spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
+ 		usb_kill_urb(tx_buf->urb);
+ 		list_del(&tx_buf->list);
+ 		usb_free_urb(tx_buf->urb);
+ 		kfree(tx_buf->buf);
+ 		kfree(tx_buf);
++		spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
+ 	}
++	spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
  
- 	flexcan_transceiver_disable(priv);
- 	priv->can.state = CAN_STATE_STOPPED;
-+
-+	return 0;
-+
-+ out_chip_unfreeze:
-+	flexcan_chip_unfreeze(priv);
-+
-+	return err;
-+}
-+
-+static inline int flexcan_chip_stop_disable_on_error(struct net_device *dev)
-+{
-+	return __flexcan_chip_stop(dev, true);
-+}
-+
-+static inline int flexcan_chip_stop(struct net_device *dev)
-+{
-+	return __flexcan_chip_stop(dev, false);
+ 	usb_kill_anchored_urbs(&hif_dev->mgmt_submitted);
  }
- 
- static int flexcan_open(struct net_device *dev)
-@@ -1362,7 +1384,7 @@ static int flexcan_close(struct net_device *dev)
- 
- 	netif_stop_queue(dev);
- 	can_rx_offload_disable(&priv->offload);
--	flexcan_chip_stop(dev);
-+	flexcan_chip_stop_disable_on_error(dev);
- 
- 	can_rx_offload_del(&priv->offload);
- 	free_irq(dev->irq, dev);
 -- 
 2.25.1
 
