@@ -2,38 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9650E291C70
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 21:38:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20790291C64
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 21:38:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732769AbgJRTiG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 15:38:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39494 "EHLO mail.kernel.org"
+        id S1730317AbgJRTZO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 15:25:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39528 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731173AbgJRTZK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Oct 2020 15:25:10 -0400
+        id S1731182AbgJRTZL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Oct 2020 15:25:11 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 34397222EA;
-        Sun, 18 Oct 2020 19:25:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8F120222EB;
+        Sun, 18 Oct 2020 19:25:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603049110;
-        bh=y5uEBq0CMBZP0Qcq7Mbc5G5pWK9ose4iPnukaUataFY=;
+        s=default; t=1603049111;
+        bh=wwPN4s7ZogzxBYcHHVEtJGn1YVr02uf+Mt2MuOwvCsQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BhcBlzQimQIRVnUSSDPjbdioXATQPeX19ISTcF5wplWpFvc1ESWycF15Lhgz+Ycsa
-         gFUpWfWSTiTZMxDoQjc8pjh94qEjiAzKEXwWgT/TBV79P70xB156sBaK5lBpDwWDLp
-         rQrVfhFeY+LMGljSxrYxVFZKRn7n8A2fVqyBT8/A=
+        b=PgiUBq4n/9JBETSxOezG+C7O5QRvLhKCjaoGT0CQI1F7qDoPmIaxEXW/FYzRxritj
+         LJJhH8JmPS0iE2ZGeeEU+HwJqJtFGaiY+1FlZXAWMCDDP4xyaOfA1/pjQH/dUsPh6b
+         tVxvy/Ku8xY9m7oh8604btZ6xDzzvMaGgVCD87c4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>,
-        Kalle Valo <kvalo@codeaurora.org>,
+Cc:     Chris Chiu <chiu@endlessm.com>, Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        brcm80211-dev-list@cypress.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 43/56] brcmsmac: fix memory leak in wlc_phy_attach_lcnphy
-Date:   Sun, 18 Oct 2020 15:24:04 -0400
-Message-Id: <20201018192417.4055228-43-sashal@kernel.org>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 44/56] rtl8xxxu: prevent potential memory leak
+Date:   Sun, 18 Oct 2020 15:24:05 -0400
+Message-Id: <20201018192417.4055228-44-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201018192417.4055228-1-sashal@kernel.org>
 References: <20201018192417.4055228-1-sashal@kernel.org>
@@ -45,41 +42,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+From: Chris Chiu <chiu@endlessm.com>
 
-[ Upstream commit f4443293d741d1776b86ed1dd8c4e4285d0775fc ]
+[ Upstream commit 86279456a4d47782398d3cb8193f78f672e36cac ]
 
-When wlc_phy_txpwr_srom_read_lcnphy fails in wlc_phy_attach_lcnphy,
-the allocated pi->u.pi_lcnphy is leaked, since struct brcms_phy will be
-freed in the caller function.
+Free the skb if usb_submit_urb fails on rx_urb. And free the urb
+no matter usb_submit_urb succeeds or not in rtl8xxxu_submit_int_urb.
 
-Fix this by calling wlc_phy_detach_lcnphy in the error handler of
-wlc_phy_txpwr_srom_read_lcnphy before returning.
-
-Signed-off-by: Keita Suzuki <keitasuzuki.park@sslab.ics.keio.ac.jp>
+Signed-off-by: Chris Chiu <chiu@endlessm.com>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20200908121743.23108-1-keitasuzuki.park@sslab.ics.keio.ac.jp
+Link: https://lore.kernel.org/r/20200906040424.22022-1-chiu@endlessm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c    | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c
-index 9fb0d9fbd9395..d532decc15383 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmsmac/phy/phy_lcn.c
-@@ -5085,8 +5085,10 @@ bool wlc_phy_attach_lcnphy(struct brcms_phy *pi)
- 	pi->pi_fptr.radioloftget = wlc_lcnphy_get_radio_loft;
- 	pi->pi_fptr.detach = wlc_phy_detach_lcnphy;
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+index 070ea0f456abd..b80cff96dea1e 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c
+@@ -5453,7 +5453,6 @@ static int rtl8xxxu_submit_int_urb(struct ieee80211_hw *hw)
+ 	ret = usb_submit_urb(urb, GFP_KERNEL);
+ 	if (ret) {
+ 		usb_unanchor_urb(urb);
+-		usb_free_urb(urb);
+ 		goto error;
+ 	}
  
--	if (!wlc_phy_txpwr_srom_read_lcnphy(pi))
-+	if (!wlc_phy_txpwr_srom_read_lcnphy(pi)) {
-+		kfree(pi->u.pi_lcnphy);
- 		return false;
-+	}
+@@ -5462,6 +5461,7 @@ static int rtl8xxxu_submit_int_urb(struct ieee80211_hw *hw)
+ 	rtl8xxxu_write32(priv, REG_USB_HIMR, val32);
  
- 	if (LCNREV_IS(pi->pubpi.phy_rev, 1)) {
- 		if (pi_lcn->lcnphy_tempsense_option == 3) {
+ error:
++	usb_free_urb(urb);
+ 	return ret;
+ }
+ 
+@@ -5787,6 +5787,7 @@ static int rtl8xxxu_start(struct ieee80211_hw *hw)
+ 	struct rtl8xxxu_priv *priv = hw->priv;
+ 	struct rtl8xxxu_rx_urb *rx_urb;
+ 	struct rtl8xxxu_tx_urb *tx_urb;
++	struct sk_buff *skb;
+ 	unsigned long flags;
+ 	int ret, i;
+ 
+@@ -5837,6 +5838,13 @@ static int rtl8xxxu_start(struct ieee80211_hw *hw)
+ 		rx_urb->hw = hw;
+ 
+ 		ret = rtl8xxxu_submit_rx_urb(priv, rx_urb);
++		if (ret) {
++			if (ret != -ENOMEM) {
++				skb = (struct sk_buff *)rx_urb->urb.context;
++				dev_kfree_skb(skb);
++			}
++			rtl8xxxu_queue_rx_urb(priv, rx_urb);
++		}
+ 	}
+ exit:
+ 	/*
 -- 
 2.25.1
 
