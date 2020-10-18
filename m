@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 30256291C4C
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 21:37:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBCC1291C1B
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 21:36:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731295AbgJRTZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 15:25:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40006 "EHLO mail.kernel.org"
+        id S1732982AbgJRTfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 15:35:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40834 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731169AbgJRTZ1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Oct 2020 15:25:27 -0400
+        id S1731462AbgJRTZz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Oct 2020 15:25:55 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 438C42231B;
-        Sun, 18 Oct 2020 19:25:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5C4E6222C8;
+        Sun, 18 Oct 2020 19:25:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603049127;
-        bh=3H1Z0eUXlPWIuf2+rSfVAYlM82e6yjJTmveMrv/NORk=;
+        s=default; t=1603049155;
+        bh=1b/ax91nGnq8bh0X5y2HQqQf0UqwUuwYT2L9Mw+KzBo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kqdw9G6Th59YKYLjbjDB7jDVcNvrCKKf9msZT0XJileYVCzyayDQbnXzjF5WJNvrI
-         yGMZFbLi4kQDqcGWRPZVBNRusxaejLqNFY1SPUt5sjaX9oKh9m9GRtFtEIuNf0GBDD
-         yb0Dcv2K5KUngzhZa9qIFTz6saNGGVkQjULxxhjc=
+        b=tXZ+YFgQOJ8d24uWYh4mE+ZIxvjIhDqa3Z8aC0B6+UHPqQqiVNewCQId7hINpeNAp
+         p4wzE48kFLhyqDr7BI3Gnrd/avW3H+uvgIP6m9qSKV5z7O9XC+ESqSRHhh5FX+OCoY
+         ahfdp0CXpTamwKjziOFMlOGeoeUmYM0IoP42DFK8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 56/56] ath10k: check idx validity in __ath10k_htt_rx_ring_fill_n()
-Date:   Sun, 18 Oct 2020 15:24:17 -0400
-Message-Id: <20201018192417.4055228-56-sashal@kernel.org>
+Cc:     Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        David Ahern <dsahern@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 20/52] ipv6/icmp: l3mdev: Perform icmp error route lookup on source device routing table (v2)
+Date:   Sun, 18 Oct 2020 15:24:57 -0400
+Message-Id: <20201018192530.4055730-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201018192417.4055228-1-sashal@kernel.org>
-References: <20201018192417.4055228-1-sashal@kernel.org>
+In-Reply-To: <20201018192530.4055730-1-sashal@kernel.org>
+References: <20201018192530.4055730-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,66 +43,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 
-[ Upstream commit bad60b8d1a7194df38fd7fe4b22f3f4dcf775099 ]
+[ Upstream commit 272928d1cdacfc3b55f605cb0e9115832ecfb20c ]
 
-The idx in __ath10k_htt_rx_ring_fill_n function lives in
-consistent dma region writable by the device. Malfunctional
-or malicious device could manipulate such idx to have a OOB
-write. Either by
-    htt->rx_ring.netbufs_ring[idx] = skb;
-or by
-    ath10k_htt_set_paddrs_ring(htt, paddr, idx);
+As per RFC4443, the destination address field for ICMPv6 error messages
+is copied from the source address field of the invoking packet.
 
-The idx can also be negative as it's signed, giving a large
-memory space to write to.
+In configurations with Virtual Routing and Forwarding tables, looking up
+which routing table to use for sending ICMPv6 error messages is
+currently done by using the destination net_device.
 
-It's possibly exploitable by corruptting a legit pointer with
-a skb pointer. And then fill skb with payload as rougue object.
+If the source and destination interfaces are within separate VRFs, or
+one in the global routing table and the other in a VRF, looking up the
+source address of the invoking packet in the destination interface's
+routing table will fail if the destination interface's routing table
+contains no route to the invoking packet's source address.
 
-Part of the log here. Sometimes it appears as UAF when writing
-to a freed memory by chance.
+One observable effect of this issue is that traceroute6 does not work in
+the following cases:
 
- [   15.594376] BUG: unable to handle page fault for address: ffff887f5c1804f0
- [   15.595483] #PF: supervisor write access in kernel mode
- [   15.596250] #PF: error_code(0x0002) - not-present page
- [   15.597013] PGD 0 P4D 0
- [   15.597395] Oops: 0002 [#1] SMP KASAN PTI
- [   15.597967] CPU: 0 PID: 82 Comm: kworker/u2:2 Not tainted 5.6.0 #69
- [   15.598843] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
- BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
- [   15.600438] Workqueue: ath10k_wq ath10k_core_register_work [ath10k_core]
- [   15.601389] RIP: 0010:__ath10k_htt_rx_ring_fill_n
- (linux/drivers/net/wireless/ath/ath10k/htt_rx.c:173) ath10k_core
+- Route leaking between global routing table and VRF
+- Route leaking between VRFs
 
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20200623221105.3486-1-bruceshenzk@gmail.com
+Use the source device routing table when sending ICMPv6 error
+messages.
+
+[ In the context of ipv4, it has been pointed out that a similar issue
+  may exist with ICMP errors triggered when forwarding between network
+  namespaces. It would be worthwhile to investigate whether ipv6 has
+  similar issues, but is outside of the scope of this investigation. ]
+
+[ Testing shows that similar issues exist with ipv6 unreachable /
+  fragmentation needed messages.  However, investigation of this
+  additional failure mode is beyond this investigation's scope. ]
+
+Link: https://tools.ietf.org/html/rfc4443
+Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Reviewed-by: David Ahern <dsahern@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/htt_rx.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ net/ipv6/icmp.c       | 7 +++++--
+ net/ipv6/ip6_output.c | 2 --
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/htt_rx.c b/drivers/net/wireless/ath/ath10k/htt_rx.c
-index 03d4cc6f35bcd..7d15f6208b463 100644
---- a/drivers/net/wireless/ath/ath10k/htt_rx.c
-+++ b/drivers/net/wireless/ath/ath10k/htt_rx.c
-@@ -153,6 +153,14 @@ static int __ath10k_htt_rx_ring_fill_n(struct ath10k_htt *htt, int num)
- 	BUILD_BUG_ON(HTT_RX_RING_FILL_LEVEL >= HTT_RX_RING_SIZE / 2);
+diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
+index c5f2b17b7ee1a..36c29df70fb6e 100644
+--- a/net/ipv6/icmp.c
++++ b/net/ipv6/icmp.c
+@@ -481,8 +481,11 @@ static void icmp6_send(struct sk_buff *skb, u8 type, u8 code, __u32 info,
+ 	if (__ipv6_addr_needs_scope_id(addr_type)) {
+ 		iif = icmp6_iif(skb);
+ 	} else {
+-		dst = skb_dst(skb);
+-		iif = l3mdev_master_ifindex(dst ? dst->dev : skb->dev);
++		/*
++		 * The source device is used for looking up which routing table
++		 * to use for sending an ICMP error.
++		 */
++		iif = l3mdev_master_ifindex(skb->dev);
+ 	}
  
- 	idx = __le32_to_cpu(*htt->rx_ring.alloc_idx.vaddr);
-+
-+	if (idx < 0 || idx >= htt->rx_ring.size) {
-+		ath10k_err(htt->ar, "rx ring index is not valid, firmware malfunctioning?\n");
-+		idx &= htt->rx_ring.size_mask;
-+		ret = -ENOMEM;
-+		goto fail;
-+	}
-+
- 	while (num > 0) {
- 		skb = dev_alloc_skb(HTT_RX_BUF_SIZE + HTT_RX_DESC_ALIGN);
- 		if (!skb) {
+ 	/*
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index 5198bc1232045..140fffe5358ba 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -470,8 +470,6 @@ int ip6_forward(struct sk_buff *skb)
+ 	 *	check and decrement ttl
+ 	 */
+ 	if (hdr->hop_limit <= 1) {
+-		/* Force OUTPUT device used as source address */
+-		skb->dev = dst->dev;
+ 		icmpv6_send(skb, ICMPV6_TIME_EXCEED, ICMPV6_EXC_HOPLIMIT, 0);
+ 		__IP6_INC_STATS(net, ip6_dst_idev(dst),
+ 				IPSTATS_MIB_INHDRERRORS);
 -- 
 2.25.1
 
