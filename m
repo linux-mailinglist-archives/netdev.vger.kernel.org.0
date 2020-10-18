@@ -2,62 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E8FC291606
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 07:26:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BD64291624
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 07:43:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726037AbgJRF0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 01:26:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46238 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725308AbgJRF0V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Oct 2020 01:26:21 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10EB2C061755;
-        Sat, 17 Oct 2020 22:26:21 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id p16so7148789ilq.5;
-        Sat, 17 Oct 2020 22:26:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=vBVshD4XKNQWVAfYaxqObW20dee4eDOGnAubSKZwmbA=;
-        b=vSyi/sLhcd7rm5+z1h6UxSpNTSDGRuzzBPXSlbC2+WAw/SZiy9lIuitif6pPpTIZ+K
-         T2+bq/4EzaUwhaat/6dbnuZbdNQe8/I3hAP4T5WdoCfBNNj76I1z2vyTRVPeB+vUTOyz
-         qFz6Ez/n0vl6qXpt+zwiBk9N5l/Am7VKfpShA746V3AsuRlqjmcw9QUGaGWtQwuqPiXh
-         ctDIh9dxI/OQtlyfiQaNOmbRWnkHzzUQ3rkeAlPsDrETs6ECkOd4ABQC23IbD8cRci4E
-         BrKu6Fr9VI0BDE6B/adQIYXUQJ3mqctYBpcHjF21e9sjCJMF0Q3zKoIdzQZ/gZiY0fvQ
-         KY6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=vBVshD4XKNQWVAfYaxqObW20dee4eDOGnAubSKZwmbA=;
-        b=Hczs2e4nEHCkhNlRVq3YSEeTmUG6LeW9Q4a6GNxJavvjN7lhq8B29QPsApq9ehyvo+
-         bvMNaCxScFLy5SsFZ0LaIAASROMUOC7KilIzYxdpG6u40TVchRVl6JF9pwAtmN0c/Xso
-         nq8erqJtJVrRo3+UaSBWrjYA11816k0yXyCNiIyyiujOUMpoiT1WRqEEUFAc4XBaUxVY
-         1DQqnMYYUI7DefajLhQ3f6OhQ1RYLUd8vu6Ry/7t6LkJl5GRP/5e01x0jo2mRiHubcCv
-         R1ahUp4mymGrblDIkZ/ZsTiU0b7r53frscpDaFa5fX0qh2uEWL1MDSGrzaLm6hqW8jFV
-         sz6w==
-X-Gm-Message-State: AOAM531OeryFDatb87DqtkjlZhqVwGNId+I5RF8L9PYAEH/FUAjiCzP4
-        5vllZrRabxfDgiZAijyPAxXXG5D285DxLDn+mss9+3Nq
-X-Google-Smtp-Source: ABdhPJyqNdFhHB04BLaKh3XyqXy9mM036KbJ1keST+ef5Zo7I4Z3sjOTCNXgurSc+uvjRBx18j7UJQUnT1jRzI/8dIY=
-X-Received: by 2002:a92:1943:: with SMTP id e3mr7435521ilm.140.1602998780373;
- Sat, 17 Oct 2020 22:26:20 -0700 (PDT)
+        id S1726360AbgJRFni (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 01:43:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45394 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725275AbgJRFng (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Oct 2020 01:43:36 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 781412080D;
+        Sun, 18 Oct 2020 05:43:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1602999815;
+        bh=xQx4tam510oViG0aS6IAIECEgE6lGctfYht63oAFTjQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=w5E1+nGVmBfju9sqafA7RNAyWyGXNV3glWIi0a1uVAyl5PpHYhnZwSlrCnlNiRfzs
+         cfV4uO4ZitYRPtno4rRqk/s62SY+Vkk0iEk8aerfp+YXmT6bAocVlLg03Vxy6aXm6p
+         C7/g4QRFCPJ09/zXowenG6SzN/MQpYZKW+T/2i1s=
+Date:   Sun, 18 Oct 2020 07:43:32 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     trix@redhat.com
+Cc:     linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
+        xen-devel@lists.xenproject.org, linux-block@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net,
+        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-power@fi.rohmeurope.com, linux-gpio@vger.kernel.org,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        nouveau@lists.freedesktop.org,
+        virtualization@lists.linux-foundation.org,
+        spice-devel@lists.freedesktop.org, linux-iio@vger.kernel.org,
+        linux-amlogic@lists.infradead.org,
+        industrypack-devel@lists.sourceforge.net,
+        linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com,
+        linux-scsi@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com, linux-nfc@lists.01.org,
+        linux-nvdimm@lists.01.org, linux-pci@vger.kernel.org,
+        linux-samsung-soc@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, patches@opensource.cirrus.com,
+        storagedev@microchip.com, devel@driverdev.osuosl.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        usb-storage@lists.one-eyed-alien.net,
+        linux-watchdog@vger.kernel.org, ocfs2-devel@oss.oracle.com,
+        bpf@vger.kernel.org, linux-integrity@vger.kernel.org,
+        linux-security-module@vger.kernel.org, keyrings@vger.kernel.org,
+        alsa-devel@alsa-project.org, clang-built-linux@googlegroups.com
+Subject: Re: [RFC] treewide: cleanup unreachable breaks
+Message-ID: <20201018054332.GB593954@kroah.com>
+References: <20201017160928.12698-1-trix@redhat.com>
 MIME-Version: 1.0
-From:   Alexandr D <alexandrdorosh@gmail.com>
-Date:   Sun, 18 Oct 2020 08:26:09 +0300
-Message-ID: <CAGxHY54m+8vYCfaB-3nnnye_NdrSF1fNoaYMEv6ChiguvBTXtQ@mail.gmail.com>
-Subject: Qualcomm Atheros QCA9377 802.11ac firmware
-To:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201017160928.12698-1-trix@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello.
-I found some kind of "degradation" in a driver for adapter
-Qualcomm Atheros QCA9377 802.11ac Wireless Network Adapter
-Generally, "airodump-ng" utility works with firmware-5.bin but doesn't
-work with the latest firmware-6.bin.
-https://forum.aircrack-ng.org/index.php/topic,2545.msg13665.html#msg13665
+On Sat, Oct 17, 2020 at 09:09:28AM -0700, trix@redhat.com wrote:
+> From: Tom Rix <trix@redhat.com>
+> 
+> This is a upcoming change to clean up a new warning treewide.
+> I am wondering if the change could be one mega patch (see below) or
+> normal patch per file about 100 patches or somewhere half way by collecting
+> early acks.
 
-Can you have a look?
-B.R., Alex
+Please break it up into one-patch-per-subsystem, like normal, and get it
+merged that way.
+
+Sending us a patch, without even a diffstat to review, isn't going to
+get you very far...
+
+thanks,
+
+greg k-h
