@@ -2,29 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AD63291921
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 21:06:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 925F9291E38
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 21:52:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727184AbgJRTGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 15:06:55 -0400
-Received: from smtprelay0246.hostedemail.com ([216.40.44.246]:51812 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726249AbgJRTGx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Oct 2020 15:06:53 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 70CB3100E7B40;
-        Sun, 18 Oct 2020 19:06:49 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:967:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1540:1593:1594:1711:1730:1747:1777:1792:2194:2199:2393:2525:2553:2561:2564:2682:2685:2692:2828:2859:2905:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3868:3870:3871:3872:3873:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4250:4321:5007:6119:6742:6743:7903:8957:8985:9025:10004:10400:10848:11232:11658:11914:12043:12295:12297:12438:12555:12740:12760:12895:12986:13069:13072:13311:13357:13439:14096:14097:14181:14659:14721:14777:21080:21347:21433:21451:21627:21811:21819:30003:30012:30022:30034:30054:30083:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: year67_630d5f827230
-X-Filterd-Recvd-Size: 3209
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf09.hostedemail.com (Postfix) with ESMTPA;
-        Sun, 18 Oct 2020 19:06:42 +0000 (UTC)
-Message-ID: <18981cad4ac27b4a22b2e38d40bd112432d4a4e7.camel@perches.com>
+        id S1729211AbgJRTVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 15:21:05 -0400
+Received: from bedivere.hansenpartnership.com ([96.44.175.130]:39020 "EHLO
+        bedivere.hansenpartnership.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729093AbgJRTVA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Oct 2020 15:21:00 -0400
+X-Greylist: delayed 424 seconds by postgrey-1.27 at vger.kernel.org; Sun, 18 Oct 2020 15:20:56 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 6E9191280300;
+        Sun, 18 Oct 2020 12:13:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
+        s=20151216; t=1603048418;
+        bh=z260bBy56dgN8y3lDRHRQeuKrIr1eALRZNoNPoXlSSo=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=QOZMzgTQH16i5avnDNVW0Ktw3okhOk0UWDzTWl7121p+F93A1Quw31cCRVLQH+SGW
+         zn7QBaZkwCTKpROUCnm6j2wnXTspVYtdUU68F1++PaWc9wHgdj5YeqG30CVReBaxSQ
+         7zgTTXbB0BvsKBkgxIK2UI/Iu/DopS5PndAYThf8=
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id JsjuUxZpqgrR; Sun, 18 Oct 2020 12:13:38 -0700 (PDT)
+Received: from jarvis.int.hansenpartnership.com (unknown [IPv6:2601:600:8280:66d1::c447])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 1ED2912802BA;
+        Sun, 18 Oct 2020 12:13:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
+        s=20151216; t=1603048418;
+        bh=z260bBy56dgN8y3lDRHRQeuKrIr1eALRZNoNPoXlSSo=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=QOZMzgTQH16i5avnDNVW0Ktw3okhOk0UWDzTWl7121p+F93A1Quw31cCRVLQH+SGW
+         zn7QBaZkwCTKpROUCnm6j2wnXTspVYtdUU68F1++PaWc9wHgdj5YeqG30CVReBaxSQ
+         7zgTTXbB0BvsKBkgxIK2UI/Iu/DopS5PndAYThf8=
+Message-ID: <45efa7780c79972eae9ca9bdeb9f7edbab4f3643.camel@HansenPartnership.com>
 Subject: Re: [Ocfs2-devel] [RFC] treewide: cleanup unreachable breaks
-From:   Joe Perches <joe@perches.com>
+From:   James Bottomley <James.Bottomley@HansenPartnership.com>
 To:     Matthew Wilcox <willy@infradead.org>, trix@redhat.com
 Cc:     linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
         clang-built-linux@googlegroups.com, linux-iio@vger.kernel.org,
@@ -56,12 +71,12 @@ Cc:     linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
         linux-crypto@vger.kernel.org, patches@opensource.cirrus.com,
         bpf@vger.kernel.org, ocfs2-devel@oss.oracle.com,
         linux-power@fi.rohmeurope.com
-Date:   Sun, 18 Oct 2020 12:06:40 -0700
+Date:   Sun, 18 Oct 2020 12:13:35 -0700
 In-Reply-To: <20201018185943.GM20115@casper.infradead.org>
 References: <20201017160928.12698-1-trix@redhat.com>
          <20201018185943.GM20115@casper.infradead.org>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.4-0ubuntu1 
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -73,21 +88,22 @@ On Sun, 2020-10-18 at 19:59 +0100, Matthew Wilcox wrote:
 > > clang has a number of useful, new warnings see
 > > https://urldefense.com/v3/__https://clang.llvm.org/docs/DiagnosticsReference.html__;!!GqivPVa7Brio!Krxz78O3RKcB9JBMVo_F98FupVhj_jxX60ddN6tKGEbv_cnooXc1nnBmchm-e_O9ieGnyQ$ 
 > 
-> Please get your IT department to remove that stupidity.  If you can't,
-> please send email from a non-Red Hat email address.
+> Please get your IT department to remove that stupidity.  If you
+> can't, please send email from a non-Red Hat email address.
 
-I didn't get it this way, neither did lore.
-It's on your end.
+Actually, the problem is at Oracle's end somewhere in the ocfs2 list
+... if you could fix it, that would be great.  The usual real mailing
+lists didn't get this transformation
 
-https://lore.kernel.org/lkml/20201017160928.12698-1-trix@redhat.com/
+https://lore.kernel.org/bpf/20201017160928.12698-1-trix@redhat.com/
 
-> I don't understand why this is a useful warning to fix.
+but the ocfs2 list archive did:
 
-Precision in coding style intent and code minimization
-would be the biggest factors IMO.
+https://oss.oracle.com/pipermail/ocfs2-devel/2020-October/015330.html
 
-> What actual problem is caused by the code below?
+I bet Oracle IT has put some spam filter on the list that mangles URLs
+this way.
 
-Obviously none.
+James
 
 
