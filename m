@@ -2,85 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5752291856
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 18:24:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3BA929185F
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 18:36:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726632AbgJRQYG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 12:24:06 -0400
-Received: from mout01.posteo.de ([185.67.36.65]:42762 "EHLO mout01.posteo.de"
+        id S1727090AbgJRQgt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 12:36:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45138 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726513AbgJRQYF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Oct 2020 12:24:05 -0400
-Received: from submission (posteo.de [89.146.220.130]) 
-        by mout01.posteo.de (Postfix) with ESMTPS id 0AF8C160062
-        for <netdev@vger.kernel.org>; Sun, 18 Oct 2020 18:24:03 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.net; s=2017;
-        t=1603038243; bh=ggaLF+6KhMWaExkprMCoLn0nLUb3Tz/6xv0BVvR9diA=;
-        h=Subject:From:To:Cc:Date:From;
-        b=FD0ZqpywRq1wNsPtV+WANJjs8ZIsVxCYq5T5N6jzmWM0CEa3b2/SO5rU9ij75BMjz
-         vv1dRmXYfV6sxiZtXXVYtx9s1XaBmWVEBUb62tjiNlVr8v4elmMk22unftwBQUpTj9
-         DFVwv1JV1hfCvfSBDTtxsIRkAmLKNTMhZfZqX+DllTyFSkdbVQSKjtIyrxVmJu+I74
-         FDQ/HJxvIu/nxitB2IrwdYzAnJMQUVg87KJlsTq9BgKjz5oxZRW9cI64lxWTYvglKr
-         K9zW+/dvOY8xQVZA/0azclk/7R/OoHjp9sp7vfWOYRwNT6WXHx07JT0f1jXq13Ahjx
-         DUXIwj6HgKRQQ==
-Received: from customer (localhost [127.0.0.1])
-        by submission (posteo.de) with ESMTPSA id 4CDlZT39Mfz9rxH;
-        Sun, 18 Oct 2020 18:24:01 +0200 (CEST)
-Message-ID: <f095b9edf561b7f36d45f3bf1ab92f0417b8d8ae.camel@posteo.net>
-Subject: Re: [PATCH] Bluetooth: A2MP: Do not set rsp.id to zero
-From:   Stefan Gottwald <Gotti79@posteo.net>
-To:     marcel@holtmann.org
-Cc:     gregkh@linuxfoundation.org, gottwald@igel.com,
-        Johan Hedberg <johan.hedberg@gmail.com>,
+        id S1726613AbgJRQgt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Oct 2020 12:36:49 -0400
+Received: from e123331-lin.nice.arm.com (lfbn-nic-1-188-42.w2-15.abo.wanadoo.fr [2.15.37.42])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0782820874;
+        Sun, 18 Oct 2020 16:36:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603039008;
+        bh=yEhqFD4tlXrlJq1smYpzCxxQAvOY+tidwn8QFMnBzDo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=o7Lxf7hAX0wxrbr2DFwJL+OU3FiwakvpXjgcAhk1yRxkkDNj7qYuL3NimqNle3ZeU
+         6CWnMbmQEukYz924uDQoX0wBRtwAsGQehQmZ0wuiHYaF988zwmVKgSQEdiRWFspyvT
+         C9gksXycpJhYjIIc00aor+XKIfDXs7MCvlsWZVpw=
+From:   Ard Biesheuvel <ardb@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     Ard Biesheuvel <ardb@kernel.org>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Willy Liu <willy.liu@realtek.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Sun, 18 Oct 2020 18:25:47 +0200
-In-Reply-To: <1603008332-8402-1-git-send-email-gotti79@posteo.net>
-References: <1603008332-8402-1-git-send-email-gotti79@posteo.net>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        Masahisa Kojima <masahisa.kojima@linaro.org>,
+        Serge Semin <fancer.lancer@gmail.com>
+Subject: [PATCH net] netsec: ignore 'phy-mode' device property on ACPI systems
+Date:   Sun, 18 Oct 2020 18:36:25 +0200
+Message-Id: <20201018163625.2392-1-ardb@kernel.org>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Am Sonntag, den 18.10.2020, 10:05 +0200 schrieb Stefan Gottwald:
-> Due to security reasons the rsp struct is not zerod out in one case this will
-> also zero out the former set rsp.id which seems to be wrong.
-> 
-> Signed-off-by: Stefan Gottwald <gotti79@posteo.net>
-> ---
->  net/bluetooth/a2mp.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/bluetooth/a2mp.c b/net/bluetooth/a2mp.c
-> index da7fd7c..7a1e0b7 100644
-> --- a/net/bluetooth/a2mp.c
-> +++ b/net/bluetooth/a2mp.c
-> @@ -381,10 +381,11 @@ static int a2mp_getampassoc_req(struct amp_mgr *mgr, struct sk_buff *skb,
->  	hdev = hci_dev_get(req->id);
->  	if (!hdev || hdev->amp_type == AMP_TYPE_BREDR || tmp) {
->  		struct a2mp_amp_assoc_rsp rsp;
-> -		rsp.id = req->id;
->  
->  		memset(&rsp, 0, sizeof(rsp));
->  
-> +		rsp.id = req->id;
-> +
->  		if (tmp) {
->  			rsp.status = A2MP_STATUS_COLLISION_OCCURED;
->  			amp_mgr_put(tmp);
+Since commit bbc4d71d63549bc ("net: phy: realtek: fix rtl8211e rx/tx
+delay config"), the Realtek PHY driver will override any TX/RX delay
+set by hardware straps if the phy-mode device property does not match.
 
-As it seems I'm too slow there is already a fix from the author of the initial patch.
+This is causing problems on SynQuacer based platforms (the only SoC
+that incorporates the netsec hardware), since many were built with
+this Realtek PHY, and shipped with firmware that defines the phy-mode
+as 'rgmii', even though the PHY is configured for TX and RX delay using
+pull-ups.
 
-https://lore.kernel.org/linux-bluetooth/20201016180956.707681-2-luiz.dentz@gmail.com/
+From the driver's perspective, we should not make any assumptions in
+the general case that the PHY hardware does not require any initial
+configuration. However, the situation is slightly different for ACPI
+boot, since it implies rich firmware with AML abstractions to handle
+hardware details that are not exposed to the OS. So in the ACPI case,
+it is reasonable to assume that the PHY comes up in the right mode,
+regardless of whether the mode is set by straps, by boot time firmware
+or by AML executed by the ACPI interpreter.
 
-There is a additional patch in this series which might also be a important fix
+So let's ignore the 'phy-mode' device property when probing the netsec
+driver in ACPI mode, and hardcode the mode to PHY_INTERFACE_MODE_NA,
+which should work with any PHY provided that it is configured by the
+time the driver attaches to it. While at it, document that omitting
+the mode is permitted for DT probing as well, by setting the phy-mode
+DT property to the empty string.
 
-https://lore.kernel.org/linux-bluetooth/20201016180956.707681-1-luiz.dentz@gmail.com/
+Cc: Jassi Brar <jaswinder.singh@linaro.org>
+Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Cc: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Willy Liu <willy.liu@realtek.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Masahisa Kojima <masahisa.kojima@linaro.org>
+Cc: Serge Semin <fancer.lancer@gmail.com>
+Fixes: 533dd11a12f6 ("net: socionext: Add Synquacer NetSec driver")
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+---
+Related discussion here:
+https://lore.kernel.org/netdev/CAMj1kXEEF_Un-4NTaD5iUN0NoZYaJQn-rPediX0S6oRiuVuW-A@mail.gmail.com/
 
-Thanks to a LWN member pointing this out to me.
+ Documentation/devicetree/bindings/net/socionext-netsec.txt |  4 +++-
+ drivers/net/ethernet/socionext/netsec.c                    | 24 ++++++++++++++------
+ 2 files changed, 20 insertions(+), 8 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/net/socionext-netsec.txt b/Documentation/devicetree/bindings/net/socionext-netsec.txt
+index 9d6c9feb12ff..a3c1dffaa4bb 100644
+--- a/Documentation/devicetree/bindings/net/socionext-netsec.txt
++++ b/Documentation/devicetree/bindings/net/socionext-netsec.txt
+@@ -30,7 +30,9 @@ Optional properties: (See ethernet.txt file in the same directory)
+ - max-frame-size: See ethernet.txt in the same directory.
+ 
+ The MAC address will be determined using the optional properties
+-defined in ethernet.txt.
++defined in ethernet.txt. The 'phy-mode' property is required, but may
++be set to the empty string if the PHY configuration is programmed by
++the firmware or set by hardware straps, and needs to be preserved.
+ 
+ Example:
+ 	eth0: ethernet@522d0000 {
+diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+index 806eb651cea3..1503cc9ec6e2 100644
+--- a/drivers/net/ethernet/socionext/netsec.c
++++ b/drivers/net/ethernet/socionext/netsec.c
+@@ -6,6 +6,7 @@
+ #include <linux/pm_runtime.h>
+ #include <linux/acpi.h>
+ #include <linux/of_mdio.h>
++#include <linux/of_net.h>
+ #include <linux/etherdevice.h>
+ #include <linux/interrupt.h>
+ #include <linux/io.h>
+@@ -1833,6 +1834,14 @@ static const struct net_device_ops netsec_netdev_ops = {
+ static int netsec_of_probe(struct platform_device *pdev,
+ 			   struct netsec_priv *priv, u32 *phy_addr)
+ {
++	int err;
++
++	err = of_get_phy_mode(pdev->dev.of_node, &priv->phy_interface);
++	if (err) {
++		dev_err(&pdev->dev, "missing required property 'phy-mode'\n");
++		return err;
++	}
++
+ 	priv->phy_np = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
+ 	if (!priv->phy_np) {
+ 		dev_err(&pdev->dev, "missing required property 'phy-handle'\n");
+@@ -1859,6 +1868,14 @@ static int netsec_acpi_probe(struct platform_device *pdev,
+ 	if (!IS_ENABLED(CONFIG_ACPI))
+ 		return -ENODEV;
+ 
++	/* ACPI systems are assumed to configure the PHY in firmware, so
++	 * there is really no need to discover the PHY mode from the DSDT.
++	 * Since firmware is known to exist in the field that configures the
++	 * PHY correctly but passes the wrong mode string in the phy-mode
++	 * device property, we have no choice but to ignore it.
++	 */
++	priv->phy_interface = PHY_INTERFACE_MODE_NA;
++
+ 	ret = device_property_read_u32(&pdev->dev, "phy-channel", phy_addr);
+ 	if (ret) {
+ 		dev_err(&pdev->dev,
+@@ -1995,13 +2012,6 @@ static int netsec_probe(struct platform_device *pdev)
+ 	priv->msg_enable = NETIF_MSG_TX_ERR | NETIF_MSG_HW | NETIF_MSG_DRV |
+ 			   NETIF_MSG_LINK | NETIF_MSG_PROBE;
+ 
+-	priv->phy_interface = device_get_phy_mode(&pdev->dev);
+-	if ((int)priv->phy_interface < 0) {
+-		dev_err(&pdev->dev, "missing required property 'phy-mode'\n");
+-		ret = -ENODEV;
+-		goto free_ndev;
+-	}
+-
+ 	priv->ioaddr = devm_ioremap(&pdev->dev, mmio_res->start,
+ 				    resource_size(mmio_res));
+ 	if (!priv->ioaddr) {
+-- 
+2.17.1
 
