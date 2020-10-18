@@ -2,272 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A07F82916F3
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 12:31:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC8CA2916F5
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 12:35:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726514AbgJRKbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 06:31:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:48168 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726459AbgJRKbg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Oct 2020 06:31:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603017093;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=Jmp8YCoG/WrNynJOk5e9pIS3/VMDiD36mwPrboLfjZc=;
-        b=S+zx0HZkK1m6T2heGuL0NaPOdSMjlvLwapWwFSyVjI+50XI30IjA0m3cTuvZuJA1iQQ8gU
-        TMCEQdwSK+lfxG3POWWOhaCDNbxdEDNAD9w6293I/XXkBl/dFgEDIxxC67DRm5G8MwNLPe
-        nPXxKtX6+z+hUVgKfRmiQDs8GvLSbFg=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-230--E9hvoYQM4WyTevHmYo8xg-1; Sun, 18 Oct 2020 06:31:31 -0400
-X-MC-Unique: -E9hvoYQM4WyTevHmYo8xg-1
-Received: by mail-wr1-f72.google.com with SMTP id n14so6006772wrp.1
-        for <netdev@vger.kernel.org>; Sun, 18 Oct 2020 03:31:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=Jmp8YCoG/WrNynJOk5e9pIS3/VMDiD36mwPrboLfjZc=;
-        b=W17bG8EG0CU5DjZQiYo+tDiUrUzpzZv3HvxcX7CWA3R2XLAD/aFq3OpqoN3y/Dh0LP
-         t6t7aWP5U/heS2QMIqXRFJw7zf+wN6f2xNYUJGQ+eQLHBe+1yyahWTI8tqguBFVFC1m1
-         kD3SMTzhCehI4ExQVFBoEqeXq1Yhh6egXJR2kTn7NDZgF7wJlNNFo1qRsay2JOGjMnb+
-         ThEbkHSgraEOQQCscNXAxAGKAjFxoSXTnfPVostVL1XrhM1gxHpKZ0nFHIR8lKM9nBMO
-         zlccdNIIZX8TrndltOCFHCmEEt2P/AA0S1VmfhHaQmkuy0AjOB99++Yvg6EQX5WOFdCh
-         fvPw==
-X-Gm-Message-State: AOAM5338Tnyd/MPH41fc9Z0apmyW4fxoJZERvG3nJVTBV38wtC5I7G+s
-        d39bMaOQDbRIES2TASMBSmOxheaa14H2z6Ae0m9kC8p8uZHjN9j4sHoQCiYfwi8wPPPmJ720Wf6
-        LwtSN+ISPWX+6Mqtr
-X-Received: by 2002:adf:fc83:: with SMTP id g3mr14230130wrr.200.1603017089691;
-        Sun, 18 Oct 2020 03:31:29 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzFgBYW13xTtas95AM+GAmL+tmojRa7wsy3ERg/R+Ej3Bo2glQw7VO5gvpuElbr4/ySC8xwhw==
-X-Received: by 2002:adf:fc83:: with SMTP id g3mr14230106wrr.200.1603017089391;
-        Sun, 18 Oct 2020 03:31:29 -0700 (PDT)
-Received: from redhat.com (bzq-79-176-118-93.red.bezeqint.net. [79.176.118.93])
-        by smtp.gmail.com with ESMTPSA id v6sm6947001wrp.69.2020.10.18.03.31.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 18 Oct 2020 03:31:28 -0700 (PDT)
-Date:   Sun, 18 Oct 2020 06:31:26 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        kernel test robot <lkp@intel.com>,
-        Jason Wang <jasowang@redhat.com>,
+        id S1726469AbgJRKf1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 06:35:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50402 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725298AbgJRKf0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Oct 2020 06:35:26 -0400
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0D1B122203
+        for <netdev@vger.kernel.org>; Sun, 18 Oct 2020 10:35:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603017325;
+        bh=XJH3xURj6/hvuITHtGrkup9SgapCAbRYZieaXTtQLO0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=v7OtStanappHSEUVLDY00VDN4JblTX9DnxYXXaFfirwiJrOmJ23c5Lcb+vRcw3Snn
+         xp9g1GSql84/WcXFmNdPhKUnvWuuCtxB22/fFzCVCkJn7fMCV7kSf71vGtxY1Qk4Xp
+         ZHCjmwvdd8eQ1A/XZESR5CEZQpzP0MiTo5Eo9S9Q=
+Received: by mail-ot1-f52.google.com with SMTP id n15so7683961otl.8
+        for <netdev@vger.kernel.org>; Sun, 18 Oct 2020 03:35:25 -0700 (PDT)
+X-Gm-Message-State: AOAM53292nr7mRn3+5RXLy1vXUpZS9AQw0v8YE07ehxG+c7AvRpfwm9U
+        7XKUV9/SzyeCNAkCVO95MYcgEu+UafdQEs2vW9k=
+X-Google-Smtp-Source: ABdhPJzzUs4B1RfdroAAl3oqI9adWu6b4W4S+2DOau6G1eXNyd7FajuuM7M3CekYRrj0yPjK/VNbWN58SB8gnmAk55g=
+X-Received: by 2002:a9d:6c92:: with SMTP id c18mr8445626otr.108.1603017324297;
+ Sun, 18 Oct 2020 03:35:24 -0700 (PDT)
+MIME-Version: 1.0
+References: <20201017151132.GK456889@lunn.ch> <CAMj1kXH+Z56dkZz8OYMhPuqbjPPCqW=UMV6w--=XXh87UyHVaQ@mail.gmail.com>
+ <20201017161435.GA1768480@apalos.home> <CAMj1kXHXYprdC19m1S5p_LQ2BOHtDCbyCWCJ0eJ5xPxFv8hgoA@mail.gmail.com>
+ <20201017180453.GM456889@lunn.ch> <CAMj1kXEcrULejk+h1Jv42W=r7odQ9Z_G0XDX_KrEnYYPEVgHkA@mail.gmail.com>
+ <20201017182738.GN456889@lunn.ch> <CAMj1kXHwYkd0L63K3+e_iwfoSYEUOmYdWf_cKv90_qVXSxEesg@mail.gmail.com>
+ <20201017194904.GP456889@lunn.ch> <CAMj1kXEY5jK7z+_ezDX733zbtHnaGUNCkJ_gHcPqAavOQPOzBQ@mail.gmail.com>
+ <20201017230226.GV456889@lunn.ch>
+In-Reply-To: <20201017230226.GV456889@lunn.ch>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Sun, 18 Oct 2020 12:35:13 +0200
+X-Gmail-Original-Message-ID: <CAMj1kXGO=5MsbLYvng4JWdNhJ3Nb0TSFKvnT-ZhjF2xcO9dZaw@mail.gmail.com>
+Message-ID: <CAMj1kXGO=5MsbLYvng4JWdNhJ3Nb0TSFKvnT-ZhjF2xcO9dZaw@mail.gmail.com>
+Subject: Re: realtek PHY commit bbc4d71d63549 causes regression
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Daniel Thompson <daniel.thompson@linaro.org>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        =?UTF-8?B?QWxleCBCZW5uw6ll?= <alex.bennee@linaro.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>, steve@einval.com,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>, Willy Liu <willy.liu@realtek.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH] Revert "virtio-net: ethtool configurable RXCSUM"
-Message-ID: <20201018103122.454967-1-mst@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
-X-Mutt-Fcc: =sent
+        Sasha Levin <sashal@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Masahisa Kojima <masahisa.kojima@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 3618ad2a7c0e78e4258386394d5d5f92a3dbccf8.
+On Sun, 18 Oct 2020 at 01:02, Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Sun, Oct 18, 2020 at 12:19:25AM +0200, Ard Biesheuvel wrote:
+> > (cc'ing some folks who may care about functional networking on SynQuacer)
+> >
+> > On Sat, 17 Oct 2020 at 21:49, Andrew Lunn <andrew@lunn.ch> wrote:
+> > >
+> > > > So we can fix this firmware by just setting phy-mode to the empty
+> > > > string, right?
+> > >
+> > > I've never actually tried it, but i think so. There are no DT files
+> > > actually doing that, so you really do need to test it and see. And
+> > > there might be some differences between device_get_phy_mode() and
+> > > of_get_phy_mode().
+> > >
+> >
+> > Yes, that works fine. Fixed now in the latest firmware build [0]
+>
+> Thanks for reporting back on that. It probably needs to be something
+> we always recommend for ACPI systems, either use "", or preferably no
+> phy-mode at all, and let the driver default to NA. ACPI and networking
+> is at a very early stage at the moment, since UEFA says nothing about
+> it. It will take a while before we figure out the best practices, and
+> some vendor gets something added to the ACPI specifications.
+>
 
-When control vq is not negotiated, that commit causes a crash:
+You mean MDIO topology, right? Every x86 PC and server in the world
+uses ACPI, and networking doesn't seem to be a problem there, so it is
+simply a matter of choosing the right abstraction level. I know this
+is much easier to achieve when all the network controllers are on PCIe
+cards, but the point remains valid: exhaustively describing the entire
+SoC like we do for DT is definitely not the right choice for ACPI
+systems. This also means that ACPI is simply not the right fit for all
+designs, and we should push back harder against the tick-the-box
+exercises that are going on to use ACPI for describing unusual designs
+that are never going to boot RHEL or other ACPI-only distros anyway.
 
-[   72.229171] kernel BUG at drivers/net/virtio_net.c:1667!
-[   72.230266] invalid opcode: 0000 [#1] PREEMPT SMP
-[   72.231172] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.9.0-rc8-02934-g3618ad2a7c0e7 #1
-[   72.231172] EIP: virtnet_send_command+0x120/0x140
-[   72.231172] Code: 00 0f 94 c0 8b 7d f0 65 33 3d 14 00 00 00 75 1c 8d 65 f4 5b 5e 5f 5d c3 66 90 be 01 00 00 00 e9 6e ff ff ff 8d b6 00
-+00 00 00 <0f> 0b e8 d9 bb 82 00 eb 17 8d b4 26 00 00 00 00 8d b4 26 00 00 00
-[   72.231172] EAX: 0000000d EBX: f72895c0 ECX: 00000017 EDX: 00000011
-[   72.231172] ESI: f7197800 EDI: ed69bd00 EBP: ed69bcf4 ESP: ed69bc98
-[   72.231172] DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068 EFLAGS: 00010246
-[   72.231172] CR0: 80050033 CR2: 00000000 CR3: 02c84000 CR4: 000406f0
-[   72.231172] Call Trace:
-[   72.231172]  ? __virt_addr_valid+0x45/0x60
-[   72.231172]  ? ___cache_free+0x51f/0x760
-[   72.231172]  ? kobject_uevent_env+0xf4/0x560
-[   72.231172]  virtnet_set_guest_offloads+0x4d/0x80
-[   72.231172]  virtnet_set_features+0x85/0x120
-[   72.231172]  ? virtnet_set_guest_offloads+0x80/0x80
-[   72.231172]  __netdev_update_features+0x27a/0x8e0
-[   72.231172]  ? kobject_uevent+0xa/0x20
-[   72.231172]  ? netdev_register_kobject+0x12c/0x160
-[   72.231172]  register_netdevice+0x4fe/0x740
-[   72.231172]  register_netdev+0x1c/0x40
-[   72.231172]  virtnet_probe+0x728/0xb60
-[   72.231172]  ? _raw_spin_unlock+0x1d/0x40
-[   72.231172]  ? virtio_vdpa_get_status+0x1c/0x20
-[   72.231172]  virtio_dev_probe+0x1c6/0x271
-[   72.231172]  really_probe+0x195/0x2e0
-[   72.231172]  driver_probe_device+0x26/0x60
-[   72.231172]  device_driver_attach+0x49/0x60
-[   72.231172]  __driver_attach+0x46/0xc0
-[   72.231172]  ? device_driver_attach+0x60/0x60
-[   72.231172]  bus_add_driver+0x197/0x1c0
-[   72.231172]  driver_register+0x66/0xc0
-[   72.231172]  register_virtio_driver+0x1b/0x40
-[   72.231172]  virtio_net_driver_init+0x61/0x86
-[   72.231172]  ? veth_init+0x14/0x14
-[   72.231172]  do_one_initcall+0x76/0x2e4
-[   72.231172]  ? rdinit_setup+0x2a/0x2a
-[   72.231172]  do_initcalls+0xb2/0xd5
-[   72.231172]  kernel_init_freeable+0x14f/0x179
-[   72.231172]  ? rest_init+0x100/0x100
-[   72.231172]  kernel_init+0xd/0xe0
-[   72.231172]  ret_from_fork+0x1c/0x30
-[   72.231172] Modules linked in:
-[   72.269563] ---[ end trace a6ebc4afea0e6cb1 ]---
+> > But that still leaves the question whether and how to work around this
+> > for units in the field. Ignoring the PHY mode in the driver would
+> > help, as all known hardware ships with firmware that configures the
+> > PHY with the correct settings, but we will lose the ability to use
+> > other PHY modes in the future, in case the SoC is ever used with DT
+> > based minimal firmware that does not configure networking.
+> >
+> > Since ACPI implies rich firmware, we could make ACPI probing of the
+> > driver ignore the phy-mode setting in the DSDT.
+>
+> I'm O.K. with that, for this driver, but please add a comment in the
+> code about why ACPI ignores DSDT, because of older broken firmware.
+>
 
-The reason is that virtnet_set_features now calls virtnet_set_guest_offloads
-unconditionally, it used to only call it when there is something
-to configure.
+Sure.
 
-If device does not have a control vq, everything breaks.
+> > But if we don't do the same for DT, it would mean DT users are
+> > forced to upgrade their firmware, and hopefully do so before
+> > upgrading to a kernel that breaks networking.
+>
+> Nothing new there. As i said, we have been through this before with
+> the Atheros PHY and others.
+>
+> One option would be to move the DT into the kernel and fix it. Most
+> distributions already use the DT version shipped with the kernel, so
+> they would automatically get the fixed DT at the same time as the
+> kernel which needs the fix.
+>
 
-Looking at this some more, I noticed that it's not really checking the
-hardware too much. E.g.
+The DT is not a flat file that you can simply source from elsewhere -
+it is constructed at boot using firmware settings and other data that
+is different between systems.
 
-        if ((dev->features ^ features) & NETIF_F_LRO) {
-                if (features & NETIF_F_LRO)
-                        offloads |= GUEST_OFFLOAD_LRO_MASK &
-                                    vi->guest_offloads_capable;
-                else
-                        offloads &= ~GUEST_OFFLOAD_LRO_MASK;
-        }
 
-and
+I do have a question about the history here, btw. As I understand it,
+before commit f81dadbcf7fd ("net: phy: realtek: Add rtl8211e rx/tx
+delays config"), the phy-mode setting did not have any effect on
+Realtek PHYs in the first place, right? Since otherwise, this platform
+would never have worked from the beginning.
 
-                                (1ULL << VIRTIO_NET_F_GUEST_TSO6) | \
-                                (1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
-                                (1ULL << VIRTIO_NET_F_GUEST_UFO))
+So commit f81dadbcf7fd was backported to -stable, even though it
+didn't actually work, and had to be fixed in bbc4d71d63549bcd ("net:
+phy: realtek: fix rtl8211e rx/tx delay config"), which is the commit
+that causes the regression on these boards.
 
-But there's no guarantee that e.g. VIRTIO_NET_F_GUEST_TSO6 is set.
+So why was commit f81dadbcf7fd sent to -stable in the first place? It
+doesn't have a fixes tag or cc:stable, and given that it is not
+actually correct to begin with, there seems to be little justification
+for this. Surely, no platform exists in the field that requires this
+commit (as it is broken) or the followup fix (since only was never
+taken into account before)
 
-If it isn't command should not send it.
-
-Further
-
-static int virtnet_set_features(struct net_device *dev,
-                                netdev_features_t features)
-{
-        struct virtnet_info *vi = netdev_priv(dev);
-        u64 offloads = vi->guest_offloads;
-
-seems wrong since guest_offloads is zero initialized,
-it does not reflect the state after reset which comes from
-the features.
-
-Revert the original commit for now.
-
-Cc: Tonghao Zhang <xiangxia.m.yue@gmail.com>
-Cc: Willem de Bruijn <willemb@google.com>
-Fixes: 3618ad2a7c0e7 ("virtio-net: ethtool configurable RXCSUM")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
----
- drivers/net/virtio_net.c | 50 +++++++++++-----------------------------
- 1 file changed, 13 insertions(+), 37 deletions(-)
-
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index d2d2c4a53cf2..21b71148c532 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -68,8 +68,6 @@ static const unsigned long guest_offloads[] = {
- 				(1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
- 				(1ULL << VIRTIO_NET_F_GUEST_UFO))
- 
--#define GUEST_OFFLOAD_CSUM_MASK (1ULL << VIRTIO_NET_F_GUEST_CSUM)
--
- struct virtnet_stat_desc {
- 	char desc[ETH_GSTRING_LEN];
- 	size_t offset;
-@@ -2524,48 +2522,29 @@ static int virtnet_get_phys_port_name(struct net_device *dev, char *buf,
- 	return 0;
- }
- 
--static netdev_features_t virtnet_fix_features(struct net_device *netdev,
--					      netdev_features_t features)
--{
--	/* If Rx checksum is disabled, LRO should also be disabled. */
--	if (!(features & NETIF_F_RXCSUM))
--		features &= ~NETIF_F_LRO;
--
--	return features;
--}
--
- static int virtnet_set_features(struct net_device *dev,
- 				netdev_features_t features)
- {
- 	struct virtnet_info *vi = netdev_priv(dev);
--	u64 offloads = vi->guest_offloads;
-+	u64 offloads;
- 	int err;
- 
--	/* Don't allow configuration while XDP is active. */
--	if (vi->xdp_queue_pairs)
--		return -EBUSY;
--
- 	if ((dev->features ^ features) & NETIF_F_LRO) {
-+		if (vi->xdp_queue_pairs)
-+			return -EBUSY;
-+
- 		if (features & NETIF_F_LRO)
--			offloads |= GUEST_OFFLOAD_LRO_MASK &
--				    vi->guest_offloads_capable;
-+			offloads = vi->guest_offloads_capable;
- 		else
--			offloads &= ~GUEST_OFFLOAD_LRO_MASK;
-+			offloads = vi->guest_offloads_capable &
-+				   ~GUEST_OFFLOAD_LRO_MASK;
-+
-+		err = virtnet_set_guest_offloads(vi, offloads);
-+		if (err)
-+			return err;
-+		vi->guest_offloads = offloads;
- 	}
- 
--	if ((dev->features ^ features) & NETIF_F_RXCSUM) {
--		if (features & NETIF_F_RXCSUM)
--			offloads |= GUEST_OFFLOAD_CSUM_MASK &
--				    vi->guest_offloads_capable;
--		else
--			offloads &= ~GUEST_OFFLOAD_CSUM_MASK;
--	}
--
--	err = virtnet_set_guest_offloads(vi, offloads);
--	if (err)
--		return err;
--
--	vi->guest_offloads = offloads;
- 	return 0;
- }
- 
-@@ -2584,7 +2563,6 @@ static const struct net_device_ops virtnet_netdev = {
- 	.ndo_features_check	= passthru_features_check,
- 	.ndo_get_phys_port_name	= virtnet_get_phys_port_name,
- 	.ndo_set_features	= virtnet_set_features,
--	.ndo_fix_features	= virtnet_fix_features,
- };
- 
- static void virtnet_config_changed_work(struct work_struct *work)
-@@ -3035,10 +3013,8 @@ static int virtnet_probe(struct virtio_device *vdev)
- 	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
- 	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
- 		dev->features |= NETIF_F_LRO;
--	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS)) {
--		dev->hw_features |= NETIF_F_RXCSUM;
-+	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
- 		dev->hw_features |= NETIF_F_LRO;
--	}
- 
- 	dev->vlan_features = dev->features;
- 
--- 
-MST
-
+In summary, I think that - even if we agree that the way forward is to
+fix the firmware and make the driver do the right thing without any
+quirks - these patches do not belong in -stable, and should be
+reverted, unless anyone can point out a system that was working
+before, got broken and was fixed again by f81dadbcf7fd (i.e., a true
+regression)
