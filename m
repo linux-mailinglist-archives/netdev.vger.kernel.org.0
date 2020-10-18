@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0B8B291BA6
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 21:33:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35C13291C7B
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 21:38:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731872AbgJRT0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 15:26:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38972 "EHLO mail.kernel.org"
+        id S1731029AbgJRTZG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 15:25:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39282 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730950AbgJRTYs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Oct 2020 15:24:48 -0400
+        id S1731093AbgJRTZB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Oct 2020 15:25:01 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8FAEC222EC;
-        Sun, 18 Oct 2020 19:24:47 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C5BD7222C8;
+        Sun, 18 Oct 2020 19:24:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603049088;
-        bh=1QLGxxB92voLmkhnmWBAgiVBZOvIXqVvypv3m4j7TeY=;
+        s=default; t=1603049100;
+        bh=xnveaXO6i6+sRzWjv0wdfMQyWpCY6OUx6Bo5Sc7PL6s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z8EN4AetkiqdUUTmfHUU8QTvSz0XivywJljd3+BGPg8OaDLVfTW5wX6c5azw3b1Tr
-         wgSbRoLAlQEPCmTV3vqRvJ2OWnxgaSP1UCdEZXAs+3q3PMC+17owdY8t0Muv+x/gKh
-         xsYjbKfbh7FZ/jcI/96kJEX4cWzlgWynyujbrnTQ=
+        b=zDvW+60B6XKtJi1zEIleh6pmuDts41T3P2/yEb9yAOah1RDMKCyAqqjmbGexHRWzV
+         S47riDN22nchNTIGXOfILrpLcdd+MtQ0B3nm8Wx6QtI9mMvCnlrGEeAJjwUAoOepce
+         wXSIuQzxSVivZZHybSHHmWMY8Y1zDI9RtvBNLZeE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Thomas Pedersen <thomas@adapt-ip.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 24/56] mac80211: handle lack of sband->bitrates in rates
-Date:   Sun, 18 Oct 2020 15:23:45 -0400
-Message-Id: <20201018192417.4055228-24-sashal@kernel.org>
+Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 35/56] can: flexcan: flexcan_chip_stop(): add error handling and propagate error value
+Date:   Sun, 18 Oct 2020 15:23:56 -0400
+Message-Id: <20201018192417.4055228-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201018192417.4055228-1-sashal@kernel.org>
 References: <20201018192417.4055228-1-sashal@kernel.org>
@@ -43,56 +43,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Pedersen <thomas@adapt-ip.com>
+From: Joakim Zhang <qiangqing.zhang@nxp.com>
 
-[ Upstream commit 8b783d104e7f40684333d2ec155fac39219beb2f ]
+[ Upstream commit 9ad02c7f4f279504bdd38ab706fdc97d5f2b2a9c ]
 
-Even though a driver or mac80211 shouldn't produce a
-legacy bitrate if sband->bitrates doesn't exist, don't
-crash if that is the case either.
+This patch implements error handling and propagates the error value of
+flexcan_chip_stop(). This function will be called from flexcan_suspend()
+in an upcoming patch in some SoCs which support LPSR mode.
 
-This fixes a kernel panic if station dump is run before
-last_rate can be updated with a data frame when
-sband->bitrates is missing (eg. in S1G bands).
+Add a new function flexcan_chip_stop_disable_on_error() that tries to
+disable the chip even in case of errors.
 
-Signed-off-by: Thomas Pedersen <thomas@adapt-ip.com>
-Link: https://lore.kernel.org/r/20201005164522.18069-1-thomas@adapt-ip.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+[mkl: introduce flexcan_chip_stop_disable_on_error() and use it in flexcan_close()]
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Link: https://lore.kernel.org/r/20200922144429.2613631-11-mkl@pengutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mac80211/cfg.c      | 3 ++-
- net/mac80211/sta_info.c | 4 ++++
- 2 files changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/can/flexcan.c | 34 ++++++++++++++++++++++++++++------
+ 1 file changed, 28 insertions(+), 6 deletions(-)
 
-diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
-index b6670e74aeb7b..9926455dd546d 100644
---- a/net/mac80211/cfg.c
-+++ b/net/mac80211/cfg.c
-@@ -664,7 +664,8 @@ void sta_set_rate_info_tx(struct sta_info *sta,
- 		u16 brate;
+diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+index bfe13c6627bed..0be8db6ab3195 100644
+--- a/drivers/net/can/flexcan.c
++++ b/drivers/net/can/flexcan.c
+@@ -1091,18 +1091,23 @@ static int flexcan_chip_start(struct net_device *dev)
+ 	return err;
+ }
  
- 		sband = ieee80211_get_sband(sta->sdata);
--		if (sband) {
-+		WARN_ON_ONCE(sband && !sband->bitrates);
-+		if (sband && sband->bitrates) {
- 			brate = sband->bitrates[rate->idx].bitrate;
- 			rinfo->legacy = DIV_ROUND_UP(brate, 1 << shift);
- 		}
-diff --git a/net/mac80211/sta_info.c b/net/mac80211/sta_info.c
-index 2a82d438991b5..9968b8a976f19 100644
---- a/net/mac80211/sta_info.c
-+++ b/net/mac80211/sta_info.c
-@@ -2009,6 +2009,10 @@ static void sta_stats_decode_rate(struct ieee80211_local *local, u32 rate,
- 		int rate_idx = STA_STATS_GET(LEGACY_IDX, rate);
+-/* flexcan_chip_stop
++/* __flexcan_chip_stop
+  *
+- * this functions is entered with clocks enabled
++ * this function is entered with clocks enabled
+  */
+-static void flexcan_chip_stop(struct net_device *dev)
++static int __flexcan_chip_stop(struct net_device *dev, bool disable_on_error)
+ {
+ 	struct flexcan_priv *priv = netdev_priv(dev);
+ 	struct flexcan_regs __iomem *regs = priv->regs;
++	int err;
  
- 		sband = local->hw.wiphy->bands[band];
+ 	/* freeze + disable module */
+-	flexcan_chip_freeze(priv);
+-	flexcan_chip_disable(priv);
++	err = flexcan_chip_freeze(priv);
++	if (err && !disable_on_error)
++		return err;
++	err = flexcan_chip_disable(priv);
++	if (err && !disable_on_error)
++		goto out_chip_unfreeze;
+ 
+ 	/* Disable all interrupts */
+ 	priv->write(0, &regs->imask2);
+@@ -1112,6 +1117,23 @@ static void flexcan_chip_stop(struct net_device *dev)
+ 
+ 	flexcan_transceiver_disable(priv);
+ 	priv->can.state = CAN_STATE_STOPPED;
 +
-+		if (WARN_ON_ONCE(!sband->bitrates))
-+			break;
++	return 0;
 +
- 		brate = sband->bitrates[rate_idx].bitrate;
- 		if (rinfo->bw == RATE_INFO_BW_5)
- 			shift = 2;
++ out_chip_unfreeze:
++	flexcan_chip_unfreeze(priv);
++
++	return err;
++}
++
++static inline int flexcan_chip_stop_disable_on_error(struct net_device *dev)
++{
++	return __flexcan_chip_stop(dev, true);
++}
++
++static inline int flexcan_chip_stop(struct net_device *dev)
++{
++	return __flexcan_chip_stop(dev, false);
+ }
+ 
+ static int flexcan_open(struct net_device *dev)
+@@ -1165,7 +1187,7 @@ static int flexcan_close(struct net_device *dev)
+ 
+ 	netif_stop_queue(dev);
+ 	can_rx_offload_disable(&priv->offload);
+-	flexcan_chip_stop(dev);
++	flexcan_chip_stop_disable_on_error(dev);
+ 
+ 	free_irq(dev->irq, dev);
+ 	clk_disable_unprepare(priv->clk_per);
 -- 
 2.25.1
 
