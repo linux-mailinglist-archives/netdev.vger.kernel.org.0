@@ -2,69 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F37BE291799
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 15:24:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D55BA2917A2
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 15:38:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726706AbgJRNYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 09:24:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34632 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726692AbgJRNYq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Oct 2020 09:24:46 -0400
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B387BC061755
-        for <netdev@vger.kernel.org>; Sun, 18 Oct 2020 06:24:46 -0700 (PDT)
-Received: by mail-oi1-x22c.google.com with SMTP id u127so175982oib.6
-        for <netdev@vger.kernel.org>; Sun, 18 Oct 2020 06:24:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:subject:message-id:mime-version:content-disposition;
-        bh=M0k/RuIbchMfcBWZU6RvLNqKhAw2cFRPrGPnDfNNVzU=;
-        b=BUESe0O7fLyJgdlIMvq+dKrnig1d8+vbdJDmNLJmAo2tOH0/rxgJIbxHS4ix8dW6n2
-         nd2G2ICrsXj3asT3L6XGZ663DvpAKaocGtw9r4Fgdce+BxKl4+RMtH80vZXH6HYkR6n3
-         GFGe+aWQ4ti/f501tRf3EyxpIGEde4zAKmBQL1XpG2oRxwojf654U0xjiXgUS9yfv4It
-         k95sSR1uzVDObZj2nGxoO/XutSTNgpPevr0zxPQnjB1yiYK/We9dxt9qOjDtZqH1J56x
-         /JbzvATHCFcSzzX7xiCQtOgwya8FnatmTbtpJTNc/BPCtvPoSAqJmjxGk2SQ565YfMkx
-         LinA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition;
-        bh=M0k/RuIbchMfcBWZU6RvLNqKhAw2cFRPrGPnDfNNVzU=;
-        b=Mxi5d5ZrTaJAMBZ6cUAa4x3lMR3iGUmIf1vnTEDwbgG/oLWUh+PMQCjiqQrVZTRF1C
-         /JbMPDINu5TRWd5sFFiWQARxnDwhYMXa9B6C+MDf9kX2h3L6BORnEiWqK7fFmvYQ7/xZ
-         GoQoHqQXALpyQcIGmFl1c4WbKzGN/0bwNngVajKqjBf3qg2gmigtcIQGSmjeAsn61peq
-         6/0fcsSXWwubGdZ35nYQYHKqt2OEcwQUUcsJtyEQmhnIxkxM8reuM8JY6XSvLbYY11dB
-         2Tt214/yQprDbAGA6K+KfXM6cONA2FwvIMa250RmKzLM86djXDeKJj9MmJrLIKheiquO
-         IUJA==
-X-Gm-Message-State: AOAM530AFeKMJhcwDtMK6BH7CflvGgcIsEKgKDGh/xz9+EWCWeB4Xqy/
-        wPHou7+rbTrB+MrwkXFtjF6ve4scskA/
-X-Google-Smtp-Source: ABdhPJzCmuqXYZRiMZjSkxX+Uqt3YLHgRZ0Fpu+Dd+0msom4G5UUNrQLCjndNABfPv5tjJdFv0/6Aw==
-X-Received: by 2002:aca:cc0e:: with SMTP id c14mr8802818oig.131.1603027485232;
-        Sun, 18 Oct 2020 06:24:45 -0700 (PDT)
-Received: from ICIPI.localdomain ([136.56.89.69])
-        by smtp.gmail.com with ESMTPSA id w30sm2754025oow.15.2020.10.18.06.24.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 18 Oct 2020 06:24:44 -0700 (PDT)
-Date:   Sun, 18 Oct 2020 09:24:36 -0400
-From:   Stephen Suryaputra <ssuryaextr@gmail.com>
-To:     netdev@vger.kernel.org, sashal@kernel.org,
-        mmanning@vyatta.att-mail.com, dsahern@gmail.com
-Subject: Why revert commit 2271c95 ("vrf: mark skb for multicast or
- link-local as enslaved to VRF")?
-Message-ID: <20201018132436.GA11729@ICIPI.localdomain>
+        id S1726756AbgJRNhr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 09:37:47 -0400
+Received: from mga02.intel.com ([134.134.136.20]:34911 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725837AbgJRNhq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Oct 2020 09:37:46 -0400
+IronPort-SDR: Fxb/yj3uzyVxF4YXE8RlwQOQknt9zXcyeZ8sxRI7TZjBhr9rE+jHfDcPuM4HN2nGjoc/kILSCT
+ jGTliyt0npHA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9777"; a="153836425"
+X-IronPort-AV: E=Sophos;i="5.77,391,1596524400"; 
+   d="scan'208";a="153836425"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Oct 2020 06:37:43 -0700
+IronPort-SDR: GzW+tQO0+IwkIuNWvc/fMMZ2P/vWDPzxdnDd666kL8+SUZR0oPDcCd8lf2L0QIllQnSHNjxJtk
+ LaG3zYhL48Uw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,391,1596524400"; 
+   d="scan'208";a="347123180"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by fmsmga004.fm.intel.com with ESMTP; 18 Oct 2020 06:37:40 -0700
+Date:   Sun, 18 Oct 2020 15:28:42 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     sven.auhagen@voleatech.de
+Cc:     anthony.l.nguyen@intel.com, davem@davemloft.net,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        sandeep.penigalapati@intel.com, brouer@redhat.com
+Subject: Re: [PATCH v2 6/6] igb: avoid transmit queue timeout in xdp path
+Message-ID: <20201018132842.GA34104@ranger.igk.intel.com>
+References: <20201017071238.95190-1-sven.auhagen@voleatech.de>
+ <20201017071238.95190-7-sven.auhagen@voleatech.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20201017071238.95190-7-sven.auhagen@voleatech.de>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Greetings,
+On Sat, Oct 17, 2020 at 09:12:38AM +0200, sven.auhagen@voleatech.de wrote:
+> From: Sven Auhagen <sven.auhagen@voleatech.de>
+> 
+> Since we share the transmit queue with the slow path,
+> it is possible that we run into a transmit queue timeout.
+> This will reset the queue.
+> This happens under high load when the fast path is using the
+> transmit queue pretty much exclusively.
 
-We noticed that the commit was reverted after upgrading to v4.14.200.
-Any reason why it is reverted? We rely on it.
+I'm kinda not leaning towards slow/fast path distinction here, IMHO it
+would be better to state that transmit queues are shared between network
+stack and XDP, but that's just a rant.
 
-Thanks,
+> 
+> By setting the transmit queues trans_start variable to jiffies
+> in the two xdp xmit functions we avoid the timeout.
 
-Stephen.
+Probably a few more words of explanation would help here, specifically I
+would say that netdev_start_xmit() sets trans_start to jiffies which is
+later utilized by dev_watchdog(), so to avoid timeout, let stack know that
+XDP xmit happened by bumping the trans_start within XDP Tx routines.
+
+> 
+> Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
+> ---
+>  drivers/net/ethernet/intel/igb/igb_main.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+> index 55e708f75187..4a082c06f48d 100644
+> --- a/drivers/net/ethernet/intel/igb/igb_main.c
+> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
+> @@ -2916,6 +2916,8 @@ static int igb_xdp_xmit_back(struct igb_adapter *adapter, struct xdp_buff *xdp)
+>  
+>  	nq = txring_txq(tx_ring);
+>  	__netif_tx_lock(nq, cpu);
+> +	/* Avoid transmit queue timeout since we share it with the slow path */
+> +	nq->trans_start = jiffies;
+>  	ret = igb_xmit_xdp_ring(adapter, tx_ring, xdpf);
+>  	__netif_tx_unlock(nq);
+>  
+> @@ -2948,6 +2950,9 @@ static int igb_xdp_xmit(struct net_device *dev, int n,
+>  	nq = txring_txq(tx_ring);
+>  	__netif_tx_lock(nq, cpu);
+>  
+> +	/* Avoid transmit queue timeout since we share it with the slow path */
+> +	nq->trans_start = jiffies;
+> +
+>  	for (i = 0; i < n; i++) {
+>  		struct xdp_frame *xdpf = frames[i];
+>  		int err;
+> -- 
+> 2.20.1
+> 
