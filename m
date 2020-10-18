@@ -2,135 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1FF32917D1
-	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 16:14:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1B642917D9
+	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 16:21:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726457AbgJRONi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 10:13:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42094 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725776AbgJRONi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Oct 2020 10:13:38 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AAC2C061755
-        for <netdev@vger.kernel.org>; Sun, 18 Oct 2020 07:13:36 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id x7so10235295eje.8
-        for <netdev@vger.kernel.org>; Sun, 18 Oct 2020 07:13:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=jgNXt7/bSD04096oK/hpMiX5eLH0klgCEI1ucnUAme0=;
-        b=Sg1GPq+5KfzzemBxrqEPDImqdeJHHL+q+Tx7k5ZWGeHS5MynOE2fhGMzPseJQu9LdL
-         uCAd1Q2cVDo/c6llMsSN0LhZCYqoCoN+0Zp/LPuR08ugV8LdN5GzdpvzaJ8Ue+I+kFBY
-         kGnPW3H+WwZ6zRcRdBtnlVdHy5Nm9H8nYSS55wufWQgVlaTxxpSwgsSawbLay1m2dcb/
-         zOxcHzpnHUVYYOkkJ9Dilr5rcuHDA1a/7TXoEKuETS6gSAMKzTyKiSpMVCGC+eEa/OQw
-         52lfVTBSVpi5wCNZcfLlCc0rwylPvkmfQy+93AYszTekQxIdq7VZ9dc/QTcT2PTOzacX
-         s5Sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=jgNXt7/bSD04096oK/hpMiX5eLH0klgCEI1ucnUAme0=;
-        b=Rhg3B7rDHymaAu6ao7w9F74cdDmqgllKVjIfQ9JmNpqZXHAMAY5uO0ePapBlUPLdEe
-         n2RHm3UDk8dcA5adBHRzrA3dtYIkomokG1ROWAxiyQvG5P5EsKpz6nT8AQjaxZ5KsJrE
-         yg6AdgCRw6Po1yR41STadoQ7ReIEx5D0dRfjJcVXn+Q79yFPQBNL7L5Mqe2CNTJvuhAl
-         W7bsT3XU5APLs/z2gEERwemilPi0BvEpfTavNW9CfqlOta4tX9jTDrorlhFq8czmHtC3
-         gRbwAVDSm+qJzceU//Flv1NpZZGN9dLXn7assfBvId9ZHT45K+Bf16rXDl/Rrnb7+xP+
-         LAvA==
-X-Gm-Message-State: AOAM533AgHo8GToiKi+DRIgnjkt9I6e3wF/Grsc0oyzU5mdxkHl/kxlA
-        6iick/BwXrKcgQuVlhuUKCU=
-X-Google-Smtp-Source: ABdhPJxeCAZvQc491czsTROSexJSnyngZzLBaTdjX1yEfK+6bYxYbO/Nq2hUG1naJHnDBvdbg5BrHw==
-X-Received: by 2002:a17:906:38c9:: with SMTP id r9mr13672569ejd.9.1603030415062;
-        Sun, 18 Oct 2020 07:13:35 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:2800:8821:97f2:24b4:2f18? (p200300ea8f232800882197f224b42f18.dip0.t-ipconnect.de. [2003:ea:8f23:2800:8821:97f2:24b4:2f18])
-        by smtp.googlemail.com with ESMTPSA id m6sm8005341ejl.94.2020.10.18.07.13.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Oct 2020 07:13:34 -0700 (PDT)
-Subject: Re: [RFC PATCH 01/13] net: dsa: add plumbing for custom netdev
- statistics
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        Christian Eggers <ceggers@arri.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-References: <20201017213611.2557565-1-vladimir.oltean@nxp.com>
- <20201017213611.2557565-2-vladimir.oltean@nxp.com>
- <06538edb-65a9-c27f-2335-9213322bed3a@gmail.com>
- <20201018121640.jwzj6ivpis4gh4ki@skbuf>
- <19f10bf4-4154-2207-6554-e44ba05eed8a@gmail.com>
- <20201018134843.emustnvgyby32cm4@skbuf>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <2ae30988-5918-3d02-87f1-e65942acc543@gmail.com>
-Date:   Sun, 18 Oct 2020 16:13:28 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
-MIME-Version: 1.0
-In-Reply-To: <20201018134843.emustnvgyby32cm4@skbuf>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        id S1726673AbgJROVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 10:21:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42646 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725776AbgJROVE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Oct 2020 10:21:04 -0400
+Received: from devnote2 (NE2965lan1.rev.em-net.ne.jp [210.141.244.193])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BEA6921655;
+        Sun, 18 Oct 2020 14:21:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603030864;
+        bh=Y4gRkxpE94bomTsuLKGNom9qq/LJ88DqsOhF7n1C+uw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=vxg29r+kG2J9BP2ZVKfzun0L68+mdq00drnLsoLhk8GSwDd80X+FUS9z6OrXQnFJ3
+         vudLzwZ64l6qxiPGKtYjxv16WVxNeSzjFy6gnHT1niK30uavcLLuqdyVRs8NcEfmYh
+         EQTSMNh8n6QrBoTgViWUBZycrYOC/w+BFQ8/L8QE=
+Date:   Sun, 18 Oct 2020 23:20:58 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Sumit Garg <sumit.garg@linaro.org>,
+        Alex =?UTF-8?B?QmVubsOpZQ==?= <alex.bennee@linaro.org>,
+        steve@einval.com, Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>, Willy Liu <willy.liu@realtek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Masahisa Kojima <masahisa.kojima@linaro.org>
+Subject: Re: realtek PHY commit bbc4d71d63549 causes regression
+Message-Id: <20201018232058.53a22758eba397695adc0352@kernel.org>
+In-Reply-To: <CAMj1kXEY5jK7z+_ezDX733zbtHnaGUNCkJ_gHcPqAavOQPOzBQ@mail.gmail.com>
+References: <20201017144430.GI456889@lunn.ch>
+        <CAMj1kXHsNrRSkZfSJ_VatES+V1obLcvfo=Qab_4jy58Znpjy6Q@mail.gmail.com>
+        <20201017151132.GK456889@lunn.ch>
+        <CAMj1kXH+Z56dkZz8OYMhPuqbjPPCqW=UMV6w--=XXh87UyHVaQ@mail.gmail.com>
+        <20201017161435.GA1768480@apalos.home>
+        <CAMj1kXHXYprdC19m1S5p_LQ2BOHtDCbyCWCJ0eJ5xPxFv8hgoA@mail.gmail.com>
+        <20201017180453.GM456889@lunn.ch>
+        <CAMj1kXEcrULejk+h1Jv42W=r7odQ9Z_G0XDX_KrEnYYPEVgHkA@mail.gmail.com>
+        <20201017182738.GN456889@lunn.ch>
+        <CAMj1kXHwYkd0L63K3+e_iwfoSYEUOmYdWf_cKv90_qVXSxEesg@mail.gmail.com>
+        <20201017194904.GP456889@lunn.ch>
+        <CAMj1kXEY5jK7z+_ezDX733zbtHnaGUNCkJ_gHcPqAavOQPOzBQ@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18.10.2020 15:48, Vladimir Oltean wrote:
-> On Sun, Oct 18, 2020 at 03:09:32PM +0200, Heiner Kallweit wrote:
->> On 18.10.2020 14:16, Vladimir Oltean wrote:
->>> On Sun, Oct 18, 2020 at 02:02:46PM +0200, Heiner Kallweit wrote:
->>>> Wouldn't a simple unsigned long (like in struct net_device_stats) be
->>>> sufficient here? This would make handling the counter much simpler.
->>>> And as far as I understand we talk about a packet counter that is
->>>> touched in certain scenarios only.
->>>
->>> I don't understand, in what sense 'sufficient'? This counter is exported
->>> to ethtool which works with u64 values, how would an unsigned long,
->>> which is u32 on 32-bit systems, help?
->>>
->> Sufficient for me means that it's unlikely that a 32 bit counter will
->> overflow. Many drivers use the 32 bit counters (on a 32bit system) in
->> net_device_stats for infrequent events like rx/tx errors, and 64bit
->> counters only for things like rx/tx bytes, which are more likely to
->> overflow.
+On Sun, 18 Oct 2020 00:19:25 +0200
+Ard Biesheuvel <ardb@kernel.org> wrote:
+
+> (cc'ing some folks who may care about functional networking on SynQuacer)
 > 
-> 2^32 = 4,294,967,296 = 4 billion packets
-> Considering that every packet that needs TX timestamping must be
-> reallocated, protocols such as IEEE 802.1AS will trigger 5 reallocs per
-> second. So time synchronization alone (background traffic, by all
-> accounts) will make this counter overflow in 27 years.
-> Every packet flooded or multicast by the bridge will also trigger
-> reallocs. In this case it is not difficult to imagine that overflows
-> might occur sooner.
+> On Sat, 17 Oct 2020 at 21:49, Andrew Lunn <andrew@lunn.ch> wrote:
+> >
+> > > So we can fix this firmware by just setting phy-mode to the empty
+> > > string, right?
+> >
+> > I've never actually tried it, but i think so. There are no DT files
+> > actually doing that, so you really do need to test it and see. And
+> > there might be some differences between device_get_phy_mode() and
+> > of_get_phy_mode().
+> >
 > 
-> Even if the above wasn't true. What becomes easier when I make the
-> counter an unsigned long? I need to make arch-dependent casts between an
-> unsigned long an an u64 when I expose the counter to ethtool, and there
-> it ends up being u64 too, doesn't it?
+> Yes, that works fine. Fixed now in the latest firmware build [0]
+
+Great! I've just started chasing that bug this Friday.
+Thanks!
+
+> But that still leaves the question whether and how to work around this
+> for units in the field. Ignoring the PHY mode in the driver would
+> help, as all known hardware ships with firmware that configures the
+> PHY with the correct settings, but we will lose the ability to use
+> other PHY modes in the future, in case the SoC is ever used with DT
+> based minimal firmware that does not configure networking.
 > 
+> Since ACPI implies rich firmware, we could make ACPI probing of the
+> driver ignore the phy-mode setting in the DSDT. But if we don't do the
+> same for DT, it would mean DT users are forced to upgrade their
+> firmware, and hopefully do so before upgrading to a kernel that breaks
+> networking. (These boxes are often used headless, so this can be
+> annoying)
+> 
+> 
+> [0] http://snapshots.linaro.org/components/kernel/leg-96boards-developerbox-edk2/83/
 
-Access to unsigned long should be atomic, so you could avoid the
-following and access the counter directly (like other drivers do it
-with the net_device_stats members). On a side note, because I'm also
-just dealing with it: this_cpu_ptr() is safe only if preemption is
-disabled. Is this the case here? Else there's get_cpu_ptr/put_cpu_ptr.
-Also, if irq's aren't disabled there might be a need to use
-u64_stats_update_begin_irqsave() et al. See:
-2695578b896a ("net: usbnet: fix potential deadlock on 32bit hosts")
-But I don't know dsa good enough to say whether this is applicable
-here.
 
-+	e = this_cpu_ptr(p->extra_stats);
-+	u64_stats_update_begin(&e->syncp);
-+	e->tx_reallocs++;
-+	u64_stats_update_end(&e->syncp);
-
-+		e = per_cpu_ptr(p->extra_stats, i);
-+		do {
-+			start = u64_stats_fetch_begin_irq(&e->syncp);
-+			tx_reallocs	= e->tx_reallocs;
-+		} while (u64_stats_fetch_retry_irq(&e->syncp, start));
-
+-- 
+Masami Hiramatsu <mhiramat@kernel.org>
