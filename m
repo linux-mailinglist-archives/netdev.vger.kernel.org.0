@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15058292023
+	by mail.lfdr.de (Postfix) with ESMTP id 843DD292024
 	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 23:32:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728086AbgJRVcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 17:32:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46994 "EHLO mail.kernel.org"
+        id S1728161AbgJRVcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 17:32:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47004 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728036AbgJRVb7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Oct 2020 17:31:59 -0400
+        id S1726458AbgJRVcA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Oct 2020 17:32:00 -0400
 Received: from kicinski-fedora-PC1C0HJN.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1F79C22280;
+        by mail.kernel.org (Postfix) with ESMTPSA id 73E82222C2;
         Sun, 18 Oct 2020 21:31:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=default; t=1603056719;
-        bh=TanqdjBUf0rjKInxfQwL21fLYLSWFj3b+In8ojzGMdY=;
+        bh=zoZ+0kjLHvCLFkFzCWm5daKUx3r60Kvsci5LHnZYE58=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y5x9DMyoBPU8yk/sBSaneUzMwROZ32jPfWf0QXFvwYnE/H8rxMjdWazQSUqdww7Hz
-         Lyyuf8MR3V+GCeSh3mNCteGlJDS5dtSh8Zqo/BhxYdz4zwOqPkJ+V7d4Vjk+qIcSAV
-         FfdoEUL8EYGyCzNuEq53waIIp/azBOojQpSTlvxY=
+        b=JzAuxjjcHUK9zo16ONeCJ6KaudU87Rf8fcla9ojVn0d7BCOU/8zDndgWcYHqEaaEB
+         m00hCG1nMOklr+EVRGUq4Vz9bDW5nMEmBbaiseZxxGUzwpoOYaagMh3AtCMB/ws4dO
+         4+WdGs9+3IZzpx5ovIr81SNftWnJbtyK9/HiyPNo=
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     mkubecek@suse.cz
 Cc:     netdev@vger.kernel.org, kernel-team@fb.com, idosch@idosch.org,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH ethtool v3 1/7] update UAPI header copies
-Date:   Sun, 18 Oct 2020 14:31:45 -0700
-Message-Id: <20201018213151.3450437-2-kuba@kernel.org>
+Subject: [PATCH ethtool v3 2/7] pause: add --json support
+Date:   Sun, 18 Oct 2020 14:31:46 -0700
+Message-Id: <20201018213151.3450437-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201018213151.3450437-1-kuba@kernel.org>
 References: <20201018213151.3450437-1-kuba@kernel.org>
@@ -39,79 +39,179 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update to kernel commit 9453b2d4694c.
+No change in normal text output:
+
+ # ./ethtool  -a eth0
+Pause parameters for eth0:
+Autonegotiate:	on
+RX:		on
+TX:		on
+RX negotiated: on
+TX negotiated: on
+
+JSON:
+
+ # ./ethtool --json -a eth0
+[ {
+        "ifname": "eth0",
+        "autonegotiate": true,
+        "rx": true,
+        "tx": true,
+        "negotiated": {
+            "rx": true,
+            "tx": true
+        }
+    } ]
+
+v2:
+ - restructure show_bool() so we can use its logic for show_bool_val()
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- uapi/linux/genetlink.h | 11 +++++++++++
- uapi/linux/netlink.h   |  4 ++++
- 2 files changed, 15 insertions(+)
+ netlink/coalesce.c |  6 +++---
+ netlink/netlink.h  | 21 ++++++++++++++++-----
+ netlink/pause.c    | 44 ++++++++++++++++++++++++++++++++------------
+ 3 files changed, 51 insertions(+), 20 deletions(-)
 
-diff --git a/uapi/linux/genetlink.h b/uapi/linux/genetlink.h
-index 7c6c390c48ee..9fa720ee87ae 100644
---- a/uapi/linux/genetlink.h
-+++ b/uapi/linux/genetlink.h
-@@ -64,6 +64,8 @@ enum {
- 	CTRL_ATTR_OPS,
- 	CTRL_ATTR_MCAST_GROUPS,
- 	CTRL_ATTR_POLICY,
-+	CTRL_ATTR_OP_POLICY,
-+	CTRL_ATTR_OP,
- 	__CTRL_ATTR_MAX,
- };
+diff --git a/netlink/coalesce.c b/netlink/coalesce.c
+index 65f75cf9a8dd..07a92d04b7a1 100644
+--- a/netlink/coalesce.c
++++ b/netlink/coalesce.c
+@@ -36,9 +36,9 @@ int coalesce_reply_cb(const struct nlmsghdr *nlhdr, void *data)
+ 	if (silent)
+ 		putchar('\n');
+ 	printf("Coalesce parameters for %s:\n", nlctx->devname);
+-	printf("Adaptive RX: %s  TX: %s\n",
+-	       u8_to_bool(tb[ETHTOOL_A_COALESCE_USE_ADAPTIVE_RX]),
+-	       u8_to_bool(tb[ETHTOOL_A_COALESCE_USE_ADAPTIVE_TX]));
++	show_bool("rx", "Adaptive RX: %s  ",
++		  tb[ETHTOOL_A_COALESCE_USE_ADAPTIVE_RX]);
++	show_bool("tx", "TX: %s\n", tb[ETHTOOL_A_COALESCE_USE_ADAPTIVE_TX]);
+ 	show_u32(tb[ETHTOOL_A_COALESCE_STATS_BLOCK_USECS],
+ 		 "stats-block-usecs: ");
+ 	show_u32(tb[ETHTOOL_A_COALESCE_RATE_SAMPLE_INTERVAL],
+diff --git a/netlink/netlink.h b/netlink/netlink.h
+index dd4a02bcc916..1012e8e32cd8 100644
+--- a/netlink/netlink.h
++++ b/netlink/netlink.h
+@@ -98,17 +98,28 @@ static inline void show_u32(const struct nlattr *attr, const char *label)
+ 		printf("%sn/a\n", label);
+ }
  
-@@ -85,6 +87,15 @@ enum {
- 	__CTRL_ATTR_MCAST_GRP_MAX,
- };
+-static inline const char *u8_to_bool(const struct nlattr *attr)
++static inline const char *u8_to_bool(const uint8_t *val)
+ {
+-	if (attr)
+-		return mnl_attr_get_u8(attr) ? "on" : "off";
++	if (val)
++		return *val ? "on" : "off";
+ 	else
+ 		return "n/a";
+ }
  
-+enum {
-+	CTRL_ATTR_POLICY_UNSPEC,
-+	CTRL_ATTR_POLICY_DO,
-+	CTRL_ATTR_POLICY_DUMP,
+-static inline void show_bool(const struct nlattr *attr, const char *label)
++static inline void show_bool_val(const char *key, const char *fmt, uint8_t *val)
++{
++	if (is_json_context()) {
++		if (val)
++			print_bool(PRINT_JSON, key, NULL, val);
++	} else {
++		print_string(PRINT_FP, NULL, fmt, u8_to_bool(val));
++	}
++}
 +
-+	__CTRL_ATTR_POLICY_DUMP_MAX,
-+	CTRL_ATTR_POLICY_DUMP_MAX = __CTRL_ATTR_POLICY_DUMP_MAX - 1
-+};
++static inline void show_bool(const char *key, const char *fmt,
++			     const struct nlattr *attr)
+ {
+-	printf("%s%s\n", label, u8_to_bool(attr));
++	show_bool_val(key, fmt, attr ? mnl_attr_get_payload(attr) : NULL);
+ }
+ 
+ /* misc */
+diff --git a/netlink/pause.c b/netlink/pause.c
+index 7b6b3a1d2c10..c960c82cba5f 100644
+--- a/netlink/pause.c
++++ b/netlink/pause.c
+@@ -40,8 +40,8 @@ static int pause_autoneg_cb(const struct nlmsghdr *nlhdr, void *data)
+ 	struct pause_autoneg_status ours = {};
+ 	struct pause_autoneg_status peer = {};
+ 	struct nl_context *nlctx = data;
+-	bool rx_status = false;
+-	bool tx_status = false;
++	uint8_t rx_status = false;
++	uint8_t tx_status = false;
+ 	bool silent;
+ 	int err_ret;
+ 	int ret;
+@@ -72,8 +72,11 @@ static int pause_autoneg_cb(const struct nlmsghdr *nlhdr, void *data)
+ 		else if (peer.pause)
+ 			tx_status = true;
+ 	}
+-	printf("RX negotiated: %s\nTX negotiated: %s\n",
+-	       rx_status ? "on" : "off", tx_status ? "on" : "off");
 +
- #define CTRL_ATTR_MCAST_GRP_MAX (__CTRL_ATTR_MCAST_GRP_MAX - 1)
++	open_json_object("negotiated");
++	show_bool_val("rx", "RX negotiated: %s\n", &rx_status);
++	show_bool_val("tx", "TX negotiated: %s\n", &tx_status);
++	close_json_object();
  
+ 	return MNL_CB_OK;
+ }
+@@ -121,21 +124,34 @@ int pause_reply_cb(const struct nlmsghdr *nlhdr, void *data)
+ 		return err_ret;
  
-diff --git a/uapi/linux/netlink.h b/uapi/linux/netlink.h
-index 695c88e3c29d..dfef006be9f9 100644
---- a/uapi/linux/netlink.h
-+++ b/uapi/linux/netlink.h
-@@ -129,6 +129,7 @@ struct nlmsgerr {
-  * @NLMSGERR_ATTR_COOKIE: arbitrary subsystem specific cookie to
-  *	be used - in the success case - to identify a created
-  *	object or operation or similar (binary)
-+ * @NLMSGERR_ATTR_POLICY: policy for a rejected attribute
-  * @__NLMSGERR_ATTR_MAX: number of attributes
-  * @NLMSGERR_ATTR_MAX: highest attribute number
-  */
-@@ -137,6 +138,7 @@ enum nlmsgerr_attrs {
- 	NLMSGERR_ATTR_MSG,
- 	NLMSGERR_ATTR_OFFS,
- 	NLMSGERR_ATTR_COOKIE,
-+	NLMSGERR_ATTR_POLICY,
+ 	if (silent)
+-		putchar('\n');
+-	printf("Pause parameters for %s:\n", nlctx->devname);
+-	show_bool(tb[ETHTOOL_A_PAUSE_AUTONEG], "Autonegotiate:\t");
+-	show_bool(tb[ETHTOOL_A_PAUSE_RX], "RX:\t\t");
+-	show_bool(tb[ETHTOOL_A_PAUSE_TX], "TX:\t\t");
++		print_nl();
++
++	open_json_object(NULL);
++
++	print_string(PRINT_ANY, "ifname", "Pause parameters for %s:\n",
++		     nlctx->devname);
++
++	show_bool("autonegotiate", "Autonegotiate:\t%s\n",
++		  tb[ETHTOOL_A_PAUSE_AUTONEG]);
++	show_bool("rx", "RX:\t\t%s\n", tb[ETHTOOL_A_PAUSE_RX]);
++	show_bool("tx", "TX:\t\t%s\n", tb[ETHTOOL_A_PAUSE_TX]);
++
+ 	if (!nlctx->is_monitor && tb[ETHTOOL_A_PAUSE_AUTONEG] &&
+ 	    mnl_attr_get_u8(tb[ETHTOOL_A_PAUSE_AUTONEG])) {
+ 		ret = show_pause_autoneg_status(nlctx);
+ 		if (ret < 0)
+-			return err_ret;
++			goto err_close_dev;
+ 	}
+ 	if (!silent)
+-		putchar('\n');
++		print_nl();
++
++	close_json_object();
  
- 	__NLMSGERR_ATTR_MAX,
- 	NLMSGERR_ATTR_MAX = __NLMSGERR_ATTR_MAX - 1
-@@ -327,6 +329,7 @@ enum netlink_attribute_type {
-  *	the index, if limited inside the nesting (U32)
-  * @NL_POLICY_TYPE_ATTR_BITFIELD32_MASK: valid mask for the
-  *	bitfield32 type (U32)
-+ * @NL_POLICY_TYPE_ATTR_MASK: mask of valid bits for unsigned integers (U64)
-  * @NL_POLICY_TYPE_ATTR_PAD: pad attribute for 64-bit alignment
-  */
- enum netlink_policy_type_attr {
-@@ -342,6 +345,7 @@ enum netlink_policy_type_attr {
- 	NL_POLICY_TYPE_ATTR_POLICY_MAXTYPE,
- 	NL_POLICY_TYPE_ATTR_BITFIELD32_MASK,
- 	NL_POLICY_TYPE_ATTR_PAD,
-+	NL_POLICY_TYPE_ATTR_MASK,
+ 	return MNL_CB_OK;
++
++err_close_dev:
++	close_json_object();
++	return err_ret;
+ }
  
- 	/* keep last */
- 	__NL_POLICY_TYPE_ATTR_MAX,
+ int nl_gpause(struct cmd_context *ctx)
+@@ -156,7 +172,11 @@ int nl_gpause(struct cmd_context *ctx)
+ 				      ETHTOOL_A_PAUSE_HEADER, 0);
+ 	if (ret < 0)
+ 		return ret;
+-	return nlsock_send_get_request(nlsk, pause_reply_cb);
++
++	new_json_obj(ctx->json);
++	ret = nlsock_send_get_request(nlsk, pause_reply_cb);
++	delete_json_obj();
++	return ret;
+ }
+ 
+ /* PAUSE_SET */
 -- 
 2.26.2
 
