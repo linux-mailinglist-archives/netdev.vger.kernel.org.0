@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5208291F1D
+	by mail.lfdr.de (Postfix) with ESMTP id 60D4E291F1C
 	for <lists+netdev@lfdr.de>; Sun, 18 Oct 2020 21:57:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728207AbgJRTTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 15:19:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57922 "EHLO mail.kernel.org"
+        id S2388506AbgJRT5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 15:57:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58070 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728161AbgJRTTU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Oct 2020 15:19:20 -0400
+        id S1728223AbgJRTTZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Oct 2020 15:19:25 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 29F16222E7;
-        Sun, 18 Oct 2020 19:19:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1AF19222E8;
+        Sun, 18 Oct 2020 19:19:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603048760;
-        bh=1/zcvT49Z0HRAXBRD5R7Zp7EgSGSNvitNfefz2WUyTM=;
+        s=default; t=1603048764;
+        bh=osnylhLdi+UzQudt4P3bJg4C5SW8wkL3tOjaChQhp8Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YB1RGwBionnZVWVRU6HIG48R2wWfaAooS8KCsYFDyCtRZcdqO+B561h8ugAyxdIdd
-         0BFCiJ9SD4guc6Gxvq4L59JV3/Uxca01zeaGUj+WQgjxeXkT+LnYPRZV/RwnwlTg3v
-         8rNUkKQ/jURBTugeU1Yjo4EoFkLf43pjZbaGCwBw=
+        b=eF3wiJgXXKwi4JIYYDN001jUSR/Qe2DdRZKt4CWgEj0D/Bm8x1ndw0PmvTjBL/jYE
+         oxsQeGNNoIT2WmIvbkEKOgFF+54RUN99Eq4dEdrwW3/bkoWjtN6Q5Smtm2wGuWNm/k
+         9u6x3fsH5Da+VXr5ojhcTfHFULscXdL5E15uCFWs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Brooke Basile <brookebasile@gmail.com>,
-        syzbot+89bd486af9427a9fc605@syzkaller.appspotmail.com,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.9 060/111] ath9k: hif_usb: fix race condition between usb_get_urb() and usb_kill_anchored_urbs()
-Date:   Sun, 18 Oct 2020 15:17:16 -0400
-Message-Id: <20201018191807.4052726-60-sashal@kernel.org>
+Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.9 064/111] bpf: Limit caller's stack depth 256 for subprogs with tailcalls
+Date:   Sun, 18 Oct 2020 15:17:20 -0400
+Message-Id: <20201018191807.4052726-64-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201018191807.4052726-1-sashal@kernel.org>
 References: <20201018191807.4052726-1-sashal@kernel.org>
@@ -44,89 +42,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Brooke Basile <brookebasile@gmail.com>
+From: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-[ Upstream commit 03fb92a432ea5abe5909bca1455b7e44a9380480 ]
+[ Upstream commit 7f6e4312e15a5c370e84eaa685879b6bdcc717e4 ]
 
-Calls to usb_kill_anchored_urbs() after usb_kill_urb() on multiprocessor
-systems create a race condition in which usb_kill_anchored_urbs() deallocates
-the URB before the completer callback is called in usb_kill_urb(), resulting
-in a use-after-free.
-To fix this, add proper lock protection to usb_kill_urb() calls that can
-possibly run concurrently with usb_kill_anchored_urbs().
+Protect against potential stack overflow that might happen when bpf2bpf
+calls get combined with tailcalls. Limit the caller's stack depth for
+such case down to 256 so that the worst case scenario would result in 8k
+stack size (32 which is tailcall limit * 256 = 8k).
 
-Reported-by: syzbot+89bd486af9427a9fc605@syzkaller.appspotmail.com
-Link: https://syzkaller.appspot.com/bug?id=cabffad18eb74197f84871802fd2c5117b61febf
-Signed-off-by: Brooke Basile <brookebasile@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20200911071427.32354-1-brookebasile@gmail.com
+Suggested-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/hif_usb.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ include/linux/bpf_verifier.h |  1 +
+ kernel/bpf/verifier.c        | 29 +++++++++++++++++++++++++++++
+ 2 files changed, 30 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
-index 3f563e02d17da..2ed98aaed6fb5 100644
---- a/drivers/net/wireless/ath/ath9k/hif_usb.c
-+++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
-@@ -449,10 +449,19 @@ static void hif_usb_stop(void *hif_handle)
- 	spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
+diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
+index 53c7bd568c5d4..5026b75db9725 100644
+--- a/include/linux/bpf_verifier.h
++++ b/include/linux/bpf_verifier.h
+@@ -358,6 +358,7 @@ struct bpf_subprog_info {
+ 	u32 start; /* insn idx of function entry point */
+ 	u32 linfo_idx; /* The idx to the main_prog->aux->linfo */
+ 	u16 stack_depth; /* max. stack depth used by this function */
++	bool has_tail_call;
+ };
  
- 	/* The pending URBs have to be canceled. */
-+	spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
- 	list_for_each_entry_safe(tx_buf, tx_buf_tmp,
- 				 &hif_dev->tx.tx_pending, list) {
-+		usb_get_urb(tx_buf->urb);
-+		spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
- 		usb_kill_urb(tx_buf->urb);
-+		list_del(&tx_buf->list);
-+		usb_free_urb(tx_buf->urb);
-+		kfree(tx_buf->buf);
-+		kfree(tx_buf);
-+		spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
- 	}
-+	spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
+ /* single container for all structs
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index fba52d9ec8fc4..cf9172f40ebcd 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -1489,6 +1489,10 @@ static int check_subprogs(struct bpf_verifier_env *env)
+ 	for (i = 0; i < insn_cnt; i++) {
+ 		u8 code = insn[i].code;
  
- 	usb_kill_anchored_urbs(&hif_dev->mgmt_submitted);
- }
-@@ -762,27 +771,37 @@ static void ath9k_hif_usb_dealloc_tx_urbs(struct hif_device_usb *hif_dev)
- 	struct tx_buf *tx_buf = NULL, *tx_buf_tmp = NULL;
- 	unsigned long flags;
++		if (code == (BPF_JMP | BPF_CALL) &&
++		    insn[i].imm == BPF_FUNC_tail_call &&
++		    insn[i].src_reg != BPF_PSEUDO_CALL)
++			subprog[cur_subprog].has_tail_call = true;
+ 		if (BPF_CLASS(code) != BPF_JMP && BPF_CLASS(code) != BPF_JMP32)
+ 			goto next;
+ 		if (BPF_OP(code) == BPF_EXIT || BPF_OP(code) == BPF_CALL)
+@@ -2974,6 +2978,31 @@ static int check_max_stack_depth(struct bpf_verifier_env *env)
+ 	int ret_prog[MAX_CALL_FRAMES];
  
-+	spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
- 	list_for_each_entry_safe(tx_buf, tx_buf_tmp,
- 				 &hif_dev->tx.tx_buf, list) {
-+		usb_get_urb(tx_buf->urb);
-+		spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
- 		usb_kill_urb(tx_buf->urb);
- 		list_del(&tx_buf->list);
- 		usb_free_urb(tx_buf->urb);
- 		kfree(tx_buf->buf);
- 		kfree(tx_buf);
-+		spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
- 	}
-+	spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
- 
- 	spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
- 	hif_dev->tx.flags |= HIF_USB_TX_FLUSH;
- 	spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
- 
-+	spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
- 	list_for_each_entry_safe(tx_buf, tx_buf_tmp,
- 				 &hif_dev->tx.tx_pending, list) {
-+		usb_get_urb(tx_buf->urb);
-+		spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
- 		usb_kill_urb(tx_buf->urb);
- 		list_del(&tx_buf->list);
- 		usb_free_urb(tx_buf->urb);
- 		kfree(tx_buf->buf);
- 		kfree(tx_buf);
-+		spin_lock_irqsave(&hif_dev->tx.tx_lock, flags);
- 	}
-+	spin_unlock_irqrestore(&hif_dev->tx.tx_lock, flags);
- 
- 	usb_kill_anchored_urbs(&hif_dev->mgmt_submitted);
- }
+ process_func:
++	/* protect against potential stack overflow that might happen when
++	 * bpf2bpf calls get combined with tailcalls. Limit the caller's stack
++	 * depth for such case down to 256 so that the worst case scenario
++	 * would result in 8k stack size (32 which is tailcall limit * 256 =
++	 * 8k).
++	 *
++	 * To get the idea what might happen, see an example:
++	 * func1 -> sub rsp, 128
++	 *  subfunc1 -> sub rsp, 256
++	 *  tailcall1 -> add rsp, 256
++	 *   func2 -> sub rsp, 192 (total stack size = 128 + 192 = 320)
++	 *   subfunc2 -> sub rsp, 64
++	 *   subfunc22 -> sub rsp, 128
++	 *   tailcall2 -> add rsp, 128
++	 *    func3 -> sub rsp, 32 (total stack size 128 + 192 + 64 + 32 = 416)
++	 *
++	 * tailcall will unwind the current stack frame but it will not get rid
++	 * of caller's stack as shown on the example above.
++	 */
++	if (idx && subprog[idx].has_tail_call && depth >= 256) {
++		verbose(env,
++			"tail_calls are not allowed when call stack of previous frames is %d bytes. Too large\n",
++			depth);
++		return -EACCES;
++	}
+ 	/* round up to 32-bytes, since this is granularity
+ 	 * of interpreter stack size
+ 	 */
 -- 
 2.25.1
 
