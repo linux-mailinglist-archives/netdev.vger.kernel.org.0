@@ -2,102 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1790292D16
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 19:46:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25476292D32
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 19:55:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729426AbgJSRqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 13:46:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44608 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726389AbgJSRqV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 13:46:21 -0400
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 374E2C0613CE;
-        Mon, 19 Oct 2020 10:46:21 -0700 (PDT)
-Received: by mail-ed1-x544.google.com with SMTP id t20so156525edr.11;
-        Mon, 19 Oct 2020 10:46:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=tuz0iMfzR0PaX63JhJ+Y+JYTOZifsMKunZ+jRj1PPWc=;
-        b=AiD2naRA+g265roabohxoxhWaPF+PUikrxTN9dxYfmlUhRi/5GaI+LYzDX7MeO+Yk/
-         py8Bcn+taOtG+xHZCMiy0fir7t+JMxVRRAo/BkoePskQeOGeWs8qodBhY3DUukunOZ7L
-         aOuEV/NbdRG7dGSJeGzEWgitlgBlCOfWUae9KZSSBIwkuZ1PW4+K6vZw6A3ObYFAyJt1
-         zAsoQnbNz0Gd+tKTIujijvlKt+pklUIkXW4jYWpbubVYtBVMKkorrXWat/0kS54OjZS8
-         Ns2i+0Itn7gZlrMBijyJWR1BepIMC1WvFQgAmqqMPUF7Mj1hzk8iTJtsfli5LfREUMTn
-         36lg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tuz0iMfzR0PaX63JhJ+Y+JYTOZifsMKunZ+jRj1PPWc=;
-        b=rAwznMvhfi6vixnt7aB5G0IPP9OsjW9TFqirclCMI0uoMqGdBS0PKtzOK61JolFPNJ
-         7+UNWKsdxPUWD3+zyY1uqQr4vjzxfDQHXDJv//FSUsEBS1zVd1pNydpm8pV/Y/ihG1oo
-         5s2wMt9MSVw9C3OeeSrFyqS6SAQ1AgLLoYFnVPOpqm3HH+KlgZAEIx6+rsEdBEjKu1SF
-         3W7Jd/1TxS0k8GD0Q3Oo4Cg2BANXzFkbCSC8Z/mgKz3OURqawdYv5DWwBTUVyzFmJRxD
-         bk7h7t4ePkVgOST5xmy3sqoavBTteUAcvzFq36gSoQYJGVdYbdzbOfsKJtPhkhRBu32E
-         PWWw==
-X-Gm-Message-State: AOAM532g3Mu23hg3tWqztEixCTH+9iY9xV6bPeOhq7N+MLajN2LV+3ap
-        w0fZsJiESorhsjO9f8l5wMw=
-X-Google-Smtp-Source: ABdhPJxbj7UpK2ke725+NFP3GSc5o+CSr4ihINkGPA+1asBuoXo6CcBNMksFSAb/8+lNMryveZ/RhA==
-X-Received: by 2002:a50:bf0d:: with SMTP id f13mr988697edk.48.1603129579912;
-        Mon, 19 Oct 2020 10:46:19 -0700 (PDT)
-Received: from skbuf ([188.26.174.215])
-        by smtp.gmail.com with ESMTPSA id j24sm896755ejf.21.2020.10.19.10.46.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Oct 2020 10:46:19 -0700 (PDT)
-Date:   Mon, 19 Oct 2020 20:46:17 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Helmut Grohne <helmut.grohne@intenta.de>,
-        Paul Barker <pbarker@konsulko.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Marek Vasut <marex@denx.de>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH net-next 8/9] net: dsa: microchip: ksz9477: add Pulse
- Per Second (PPS) support
-Message-ID: <20201019174617.uf7andznyij75mpd@skbuf>
-References: <20201019172435.4416-1-ceggers@arri.de>
- <20201019172435.4416-9-ceggers@arri.de>
+        id S1730164AbgJSRzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 13:55:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52318 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726005AbgJSRzT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Oct 2020 13:55:19 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 923772224D;
+        Mon, 19 Oct 2020 17:55:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603130119;
+        bh=pjFKVmoCsdQyF1oQTqTfsR2tacGK0Y5hFggPLPzGKNY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=R4oD4ifiGsQyfzdXgXsFWg1fnig9UumT9/vck8VgG59/5PU9Z7Cm3COBGGhmwdAqP
+         EC9kKQDXdvWAqG8yWuMsWXjm8KHcYnmrzA8qr6tW3LGIBPiCwhgtmw9bKgj/VEhRE/
+         3gIuzpcYC45kxJJKS9F/9bzlsK4NAQiLOrJlHqkc=
+Date:   Mon, 19 Oct 2020 10:55:16 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: Remove __napi_schedule_irqoff?
+Message-ID: <20201019105516.4fae562c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87ft6aa4k7.fsf@nanos.tec.linutronix.de>
+References: <01af7f4f-bd05-b93e-57ad-c2e9b8726e90@gmail.com>
+        <20201017162949.0a6dd37a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <CANn89i+q=q_LNDzE23y74Codh5EY0HHi_tROsEL2yJAdRjh-vQ@mail.gmail.com>
+        <668a1291-e7f0-ef71-c921-e173d4767a14@gmail.com>
+        <20201018101947.419802df@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87ft6aa4k7.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201019172435.4416-9-ceggers@arri.de>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 19, 2020 at 07:24:34PM +0200, Christian Eggers wrote:
->  static int ksz9477_ptp_enable(struct ptp_clock_info *ptp, struct ptp_clock_request *req, int on)
->  {
-> -	return -ENOTTY;
-> +	struct ksz_device *dev = container_of(ptp, struct ksz_device, ptp_caps);
-> +	int ret;
-> +
-> +	switch (req->type) {
-> +	case PTP_CLK_REQ_PPS:
-> +		mutex_lock(&dev->ptp_mutex);
-> +		ret = ksz9477_ptp_enable_pps(dev, on);
-> +		mutex_unlock(&dev->ptp_mutex);
-> +		return ret;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
->  }
+On Mon, 19 Oct 2020 12:33:12 +0200 Thomas Gleixner wrote:
+> On Sun, Oct 18 2020 at 10:19, Jakub Kicinski wrote:
+> > On Sun, 18 Oct 2020 10:20:41 +0200 Heiner Kallweit wrote:  
+> >> >> Otherwise a non-solution could be to make IRQ_FORCED_THREADING
+> >> >> configurable.    
+> >> > 
+> >> > I have to say I do not understand why we want to defer to a thread the
+> >> > hard IRQ that we use in NAPI model.
+> >> >     
+> >> Seems like the current forced threading comes with the big hammer and
+> >> thread-ifies all hard irq's. To avoid this all NAPI network drivers
+> >> would have to request the interrupt with IRQF_NO_THREAD.  
+> 
+> In a !RT kernel, forced threading (via commandline option) is mostly a
+> debug aid. It's pretty useful when something crashes in hard interrupt
+> context which usually takes the whole machine down. It's rather unlikely
+> to be used on production systems, and if so then the admin surely should
+> know what he's doing.
+> 
+> > Right, it'd work for some drivers. Other drivers try to take spin locks
+> > in their IRQ handlers.  
+> 
+> I checked a few which do and some of these spinlocks just protect
+> register access and are not used for more complex serialization. So
+> these could be converted to raw spinlocks because their scope is short
+> and limited. But yes, you are right that this might be an issue in
+> general.
+> 
+> > What gave me a pause was that we have a busy loop in napi_schedule_prep:
+> >
+> > bool napi_schedule_prep(struct napi_struct *n)
+> > {
+> > 	unsigned long val, new;
+> >
+> > 	do {
+> > 		val = READ_ONCE(n->state);
+> > 		if (unlikely(val & NAPIF_STATE_DISABLE))
+> > 			return false;
+> > 		new = val | NAPIF_STATE_SCHED;
+> >
+> > 		/* Sets STATE_MISSED bit if STATE_SCHED was already set
+> > 		 * This was suggested by Alexander Duyck, as compiler
+> > 		 * emits better code than :
+> > 		 * if (val & NAPIF_STATE_SCHED)
+> > 		 *     new |= NAPIF_STATE_MISSED;
+> > 		 */
+> > 		new |= (val & NAPIF_STATE_SCHED) / NAPIF_STATE_SCHED *
+> > 						   NAPIF_STATE_MISSED;
+> > 	} while (cmpxchg(&n->state, val, new) != val);
+> >
+> > 	return !(val & NAPIF_STATE_SCHED);
+> > }
+> >
+> >
+> > Dunno how acceptable this is to run in an IRQ handler on RT..  
+> 
+> In theory it's bad, but I don't think it's a big deal in reality.
 
-Nope, this is not what you're looking for. Please implement
-PTP_CLK_REQ_PEROUT.
+Awesome, thanks for advice and clearing things up!
+Let me apply Heiner's IRQF_NO_THREAD patch, then.
