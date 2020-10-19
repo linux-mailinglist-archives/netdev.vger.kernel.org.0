@@ -2,113 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B29EA2925E2
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 12:33:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F6A42925F6
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 12:40:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727135AbgJSKdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 06:33:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33070 "EHLO
+        id S1727175AbgJSKkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 06:40:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726791AbgJSKdO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 06:33:14 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB9BFC0613CE;
-        Mon, 19 Oct 2020 03:33:14 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1603103593;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aKA2eYNo0tRyWFjey5VCWB5m13CWJjS0iw4yD8SF5eA=;
-        b=CcX6tzElPYUO1nkyuBaVspg5k5BMlZFQwZ5U6J62eNeDgRzE43paXiUfw6tMROG+fSrvf6
-        igYtCsmr+HeLVWDguz3XoGUG7A5EBYAgEwvCGzn+JjhxQ2gQJO5RoF/8R0lO2KagpqSyLP
-        8MbfMZ2EeQPNs4HU30xnP46OE/mnkj2lI+2Uw4bMFQB7nnySRG3p0fAnbNHS7WuM3zEgBt
-        Z1FDIPlDpnUhRlC3Tr4aXoRWKNboLi5SyBUemkQOseNGrFJMPgBQP6bo141QoWrk1+ZAoj
-        o5LiWhELHrjAPkYwcYWv7NYbCK2qyvVQxBggLVOE4d1ZBEC7p1NyWlaXci8pYw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1603103593;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=aKA2eYNo0tRyWFjey5VCWB5m13CWJjS0iw4yD8SF5eA=;
-        b=/GKktdwwjmHvEG5j+CWj85M5AdiombMk4VRDFF3rcm886EWbj5sYrcLuRner9OKKdfEiLc
-        66LXrH04JdYYo3Ag==
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: Remove __napi_schedule_irqoff?
-In-Reply-To: <20201018101947.419802df@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <01af7f4f-bd05-b93e-57ad-c2e9b8726e90@gmail.com> <20201017162949.0a6dd37a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <CANn89i+q=q_LNDzE23y74Codh5EY0HHi_tROsEL2yJAdRjh-vQ@mail.gmail.com> <668a1291-e7f0-ef71-c921-e173d4767a14@gmail.com> <20201018101947.419802df@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Date:   Mon, 19 Oct 2020 12:33:12 +0200
-Message-ID: <87ft6aa4k7.fsf@nanos.tec.linutronix.de>
+        with ESMTP id S1726791AbgJSKks (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 06:40:48 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87AF2C0613CE;
+        Mon, 19 Oct 2020 03:40:48 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id j7so6725182wrt.9;
+        Mon, 19 Oct 2020 03:40:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sUaflMVkedr8DIApnUtMT1/sTLYEEaR9p9QBwdFLhTs=;
+        b=PuL+eCadXLBoqlSPKdHaNloptopOyGVACeMdFaTXg5PTFVD5M7m/48ADhG9Mcok2Pi
+         5c+79HZlvYRgzJjl4D9jrUsiY9Xc4Wlr5IpTo6kuiIzXn0nPI6+JY3AfL1v+9D628kB9
+         K08JSaCG0SB9VhMkak6kF8MMchYwVQ8fUYnp84X+sH6JIdIWvIBdr0kgxvecsBVq6RxM
+         fnLy/9jDctavYPJJIUHUQ5ZK++hwscX6wFevnIEbk2p9MAg6q6Z9MZkDFx/X05+MQYdg
+         SfxAPX84GBq4LI6ol5sm1ULxxf5lUU6FV8sAAHlSi9sFgxQFKP7qo47y5ArhTLDJWMub
+         1Gug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sUaflMVkedr8DIApnUtMT1/sTLYEEaR9p9QBwdFLhTs=;
+        b=UCG7SMqLcMZHYqmeWSghZwWwVXLXydAQgONltqNgSxIgCWAZCvG5ZZtCnHCcNw4PKz
+         FYtohZUZye1BiN9Yw6w5TXL82LeGIIdFJPukEcw08eastTiZkfEyBynV7ZIl4dy0apLG
+         bkrxxDhoWWhgIOVLQDaVEUqbu0tPJ0oaAFidpiR9UB4gsxwp6gRG34vhK3WBVTjst7Eu
+         ZLy5+fRQvmYmm99FLBNz/WZRAdl4ayYiDlND9iLQYJs4jv9lrtBeka9hVYlNOeDMhAv5
+         WnKzX9Cg6/nPA4+tC53W7lKFIrz0ndG8fI/68dCsx7VGzmlCOIyxmwxWfCEIS2Bajw2a
+         7TOg==
+X-Gm-Message-State: AOAM531QADRLwHHHLhQvQRfT152N8dpr/5k32aHs8WbbxpQmie7qKX7m
+        MQnmEz+5AQpNpMwLENrc7/OsmDRgTOnyS0IcfH4=
+X-Google-Smtp-Source: ABdhPJzCJRNylweSezZEozygOcd5rdzb6RbCQ3CYhfUFr6iOFwrQ2I5oZTGd7uNwAl4aWc/ymIMBlPOcAwWjNFO/z1k=
+X-Received: by 2002:adf:e881:: with SMTP id d1mr18904845wrm.395.1603104046710;
+ Mon, 19 Oct 2020 03:40:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <cover.1602574012.git.lucien.xin@gmail.com> <afbaca39fa40eba694bd63c200050a49d8c8df81.1602574012.git.lucien.xin@gmail.com>
+ <20201015174252.GB11030@localhost.localdomain> <CADvbK_eMOPQfB2URNshOizSe9_j0dpbA47TVWSwctziFas3GaQ@mail.gmail.com>
+In-Reply-To: <CADvbK_eMOPQfB2URNshOizSe9_j0dpbA47TVWSwctziFas3GaQ@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Mon, 19 Oct 2020 18:40:35 +0800
+Message-ID: <CADvbK_dzZaH+6_+2g_ak+AL_RSv1O3cDdVOKiAb3WGm+=6F9gQ@mail.gmail.com>
+Subject: Re: [PATCHv3 net-next 16/16] sctp: enable udp tunneling socks
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Michael Tuexen <tuexen@fh-muenster.de>,
+        davem <davem@davemloft.net>, Guillaume Nault <gnault@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 18 2020 at 10:19, Jakub Kicinski wrote:
-> On Sun, 18 Oct 2020 10:20:41 +0200 Heiner Kallweit wrote:
->> >> Otherwise a non-solution could be to make IRQ_FORCED_THREADING
->> >> configurable.  
->> > 
->> > I have to say I do not understand why we want to defer to a thread the
->> > hard IRQ that we use in NAPI model.
->> >   
->> Seems like the current forced threading comes with the big hammer and
->> thread-ifies all hard irq's. To avoid this all NAPI network drivers
->> would have to request the interrupt with IRQF_NO_THREAD.
-
-In a !RT kernel, forced threading (via commandline option) is mostly a
-debug aid. It's pretty useful when something crashes in hard interrupt
-context which usually takes the whole machine down. It's rather unlikely
-to be used on production systems, and if so then the admin surely should
-know what he's doing.
-
-> Right, it'd work for some drivers. Other drivers try to take spin locks
-> in their IRQ handlers.
-
-I checked a few which do and some of these spinlocks just protect
-register access and are not used for more complex serialization. So
-these could be converted to raw spinlocks because their scope is short
-and limited. But yes, you are right that this might be an issue in
-general.
-
-> What gave me a pause was that we have a busy loop in napi_schedule_prep:
+On Fri, Oct 16, 2020 at 3:08 PM Xin Long <lucien.xin@gmail.com> wrote:
 >
-> bool napi_schedule_prep(struct napi_struct *n)
-> {
-> 	unsigned long val, new;
+> On Fri, Oct 16, 2020 at 1:42 AM Marcelo Ricardo Leitner
+> <marcelo.leitner@gmail.com> wrote:
+> >
+> > Actually..
+> >
+> > On Tue, Oct 13, 2020 at 03:27:41PM +0800, Xin Long wrote:
+> > ...
+> > > Also add sysctl udp_port to allow changing the listening
+> > > sock's port by users.
+> > ...
+> > > ---
+> > >  net/sctp/protocol.c |  5 +++++
+> > >  net/sctp/sysctl.c   | 50 ++++++++++++++++++++++++++++++++++++++++++++++++++
+> > >  2 files changed, 55 insertions(+)
+> >
+> > Xin, sorry for not noticing this earlier, but we need a documentation
+> > update here for this new sysctl. This is important. Please add its
+> > entry in ip-sysctl.rst.
+> no problem, I will add it.
 >
-> 	do {
-> 		val = READ_ONCE(n->state);
-> 		if (unlikely(val & NAPIF_STATE_DISABLE))
-> 			return false;
-> 		new = val | NAPIF_STATE_SCHED;
->
-> 		/* Sets STATE_MISSED bit if STATE_SCHED was already set
-> 		 * This was suggested by Alexander Duyck, as compiler
-> 		 * emits better code than :
-> 		 * if (val & NAPIF_STATE_SCHED)
-> 		 *     new |= NAPIF_STATE_MISSED;
-> 		 */
-> 		new |= (val & NAPIF_STATE_SCHED) / NAPIF_STATE_SCHED *
-> 						   NAPIF_STATE_MISSED;
-> 	} while (cmpxchg(&n->state, val, new) != val);
->
-> 	return !(val & NAPIF_STATE_SCHED);
-> }
->
->
-> Dunno how acceptable this is to run in an IRQ handler on RT..
+> >
+> > >
+> > > diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
+> > > index be002b7..79fb4b5 100644
+> > > --- a/net/sctp/protocol.c
+> > > +++ b/net/sctp/protocol.c
+> > > @@ -1469,6 +1469,10 @@ static int __net_init sctp_ctrlsock_init(struct net *net)
+> > >       if (status)
+> > >               pr_err("Failed to initialize the SCTP control sock\n");
+> > >
+> > > +     status = sctp_udp_sock_start(net);
+> > > +     if (status)
+> > > +             pr_err("Failed to initialize the SCTP udp tunneling sock\n");
+> >                                                       ^^^ upper case please.
+> > Nit. There are other occurrences of this.
+> You mean we can remove this log, as it's been handled well in
+> sctp_udp_sock_start()?
+This one is actually OK :D
+I've updated 'udp' with 'UDP' for all code annotations in this patchset.
 
-In theory it's bad, but I don't think it's a big deal in reality.
+will post v4.
 
-Thanks,
+Thanks.
 
-        tglx
+
+>
+> >
+> > > +
+> > >       return status;
+> > ...
+> > > +     ret = proc_dointvec(&tbl, write, buffer, lenp, ppos);
+> > > +     if (write && ret == 0) {
+> > > +             struct sock *sk = net->sctp.ctl_sock;
+> > > +
+> > > +             if (new_value > max || new_value < min)
+> > > +                     return -EINVAL;
+> > > +
+> > > +             net->sctp.udp_port = new_value;
+> > > +             sctp_udp_sock_stop(net);
+> >
+> > So, if it would be disabling the encapsulation, it shouldn't be
+> > calling _start() then, right? Like
+> >
+> >                 if (new_value)
+> >                         ret = sctp_udp_sock_start(net);
+> >
+> > Otherwise _start() here will call ..._bind() with port 0, which then
+> > will be a random one.
+> right, somehow I thought it wouldn't bind with port 0.
+>
+> Thanks.
+> >
+> > > +             ret = sctp_udp_sock_start(net);
+> > > +             if (ret)
+> > > +                     net->sctp.udp_port = 0;
+> > > +
+> > > +             /* Update the value in the control socket */
+> > > +             lock_sock(sk);
+> > > +             sctp_sk(sk)->udp_port = htons(net->sctp.udp_port);
+> > > +             release_sock(sk);
+> > > +     }
+> > > +
+> > > +     return ret;
+> > > +}
+> > > +
+> > >  int sctp_sysctl_net_register(struct net *net)
+> > >  {
+> > >       struct ctl_table *table;
+> > > --
+> > > 2.1.0
+> > >
