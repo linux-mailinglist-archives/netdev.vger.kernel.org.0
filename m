@@ -2,110 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E7BE29281A
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 15:24:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 923D7292827
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 15:29:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728047AbgJSNYt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 09:24:49 -0400
-Received: from mx2.suse.de ([195.135.220.15]:53894 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727796AbgJSNYs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Oct 2020 09:24:48 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 1552CACAC;
-        Mon, 19 Oct 2020 13:24:47 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 937BC60563; Mon, 19 Oct 2020 15:24:46 +0200 (CEST)
-Date:   Mon, 19 Oct 2020 15:24:46 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Danielle Ratson <danieller@nvidia.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@idosch.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        mlxsw <mlxsw@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>
-Subject: Re: [PATCH net-next 1/6] ethtool: Extend link modes settings uAPI
- with lanes
-Message-ID: <20201019132446.tgtelkzmfjdonhfx@lion.mk-sys.cz>
-References: <20201010154119.3537085-1-idosch@idosch.org>
- <20201010154119.3537085-2-idosch@idosch.org>
- <20201011153759.1bcb6738@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <DM6PR12MB3865B2FBA17BABBC747190D8D8070@DM6PR12MB3865.namprd12.prod.outlook.com>
- <20201012085803.61e256e6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <DM6PR12MB3865E4CB3854ECF70F5864D7D8040@DM6PR12MB3865.namprd12.prod.outlook.com>
- <20201016221553.GN139700@lunn.ch>
- <DM6PR12MB3865B000BE04105A4373FD08D81E0@DM6PR12MB3865.namprd12.prod.outlook.com>
- <20201019110422.gj3ebxttwtfssvem@lion.mk-sys.cz>
- <20201019122643.GC11282@nanopsycho.orion>
+        id S1728257AbgJSN27 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 09:28:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43888 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727796AbgJSN27 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 09:28:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603114137;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=LVvoxKlVxXg3INfBZ85MFvyvFnl4kGjDE0EL+WH7YIQ=;
+        b=RAfYOosHnwS6jQ+4tAznvEFCwbpic8fkPZAn8uLT0DuWWFJIh5usiP/V83/AgMYxwaQrEf
+        gbQKEjaw92V7VWAnwo5jRmP8GrKs/eVLskIeEkDDz/DOTV+HhPr2Fa6Y5nR/PrvsNoBrmG
+        lLqwbqwvjdjdD+Jy4JUNjiycYPZmvss=
+Received: from mail-vk1-f198.google.com (mail-vk1-f198.google.com
+ [209.85.221.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-483-_ZD5HdwQMY6TSP7nJZvCeg-1; Mon, 19 Oct 2020 09:28:56 -0400
+X-MC-Unique: _ZD5HdwQMY6TSP7nJZvCeg-1
+Received: by mail-vk1-f198.google.com with SMTP id j129so177139vkb.15
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 06:28:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=LVvoxKlVxXg3INfBZ85MFvyvFnl4kGjDE0EL+WH7YIQ=;
+        b=fAakviRA9ecgwH1NEVJ5limOn6FYOeJKvK6FS5ZsaYA43/n11l3HXagIMd5OJnIsMj
+         /zdQsNbiJK+RmQW3iIOf4pkSSz73WXT2d0pdDIJrSrRNZC8T7v7Rpzzt9ey5VGRv2GC8
+         4HVBYN7tQi/fJzUfUgAJCtCdslnlEwtk/vDOAfyuxuEDXh3z8GY2daDHUqRVUjrb3+LD
+         dCiM+FKy+t703lNxX1zET87FjLeinS+VrJqKWvBLYYFfoHRIlAgiTJ9znBQ5hh4+XBO8
+         9Q/ImkaH/D6TqPuYBfSu2SKi7cyHKeKt0A1/5KPHDKJXZo0s7eWbM1+DUKSThXf9jyen
+         C27w==
+X-Gm-Message-State: AOAM533GDXZC711HYfQUpNRr1Wo6/fK9fELeruIrpGjxg+CCO65AWk2H
+        CUdiVH3S2A9wLgjPZIK9YtuVbIV1VYjiiBjYW4zog7QUbwID8x0n2GBcjc1MSWY2jeJwSchETR6
+        NKPYFqHtPt9hRu49W
+X-Received: by 2002:ab0:21cf:: with SMTP id u15mr7346850uan.20.1603114135271;
+        Mon, 19 Oct 2020 06:28:55 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwCEtVdHF49zdXS99rhpE+S168nX94ZiTP7ZddD3I8zuyZLQ+JHuJI3oFlRKDCHoG8QXGp4nA==
+X-Received: by 2002:ab0:21cf:: with SMTP id u15mr7346824uan.20.1603114134876;
+        Mon, 19 Oct 2020 06:28:54 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id j15sm456471vke.49.2020.10.19.06.28.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Oct 2020 06:28:54 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 929F01837DD; Mon, 19 Oct 2020 15:28:51 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        David Ahern <dsahern@gmail.com>
+Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH RFC bpf-next 1/2] bpf_redirect_neigh: Support supplying
+ the nexthop as a helper parameter
+In-Reply-To: <5365aae3-dd9c-fdde-822b-636cbcd33669@iogearbox.net>
+References: <160277680746.157904.8726318184090980429.stgit@toke.dk>
+ <160277680864.157904.8719768977907736015.stgit@toke.dk>
+ <d5c14618-089d-5f29-7f10-11d11b0d59ab@gmail.com> <87blh3gu5q.fsf@toke.dk>
+ <5365aae3-dd9c-fdde-822b-636cbcd33669@iogearbox.net>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 19 Oct 2020 15:28:51 +0200
+Message-ID: <87362afip8.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201019122643.GC11282@nanopsycho.orion>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 19, 2020 at 02:26:43PM +0200, Jiri Pirko wrote:
-> Mon, Oct 19, 2020 at 01:04:22PM CEST, mkubecek@suse.cz wrote:
-> >
-> >It would be quite easy to extend the ethtool command line parser to
-> >allow also
-> >
-> >  ethtool -s <dev> advertise <mode> ...
-> >
-> >in addition to already supported
-> >
-> >  ethtool -s <dev> advertise <mask>
-> >  ethtool -s <dev> advertise <mask>/<mask>
-> >  ethtool -s { <mode> { on | off } } ...
+Daniel Borkmann <daniel@iogearbox.net> writes:
 
-This should have been
+> On 10/15/20 9:34 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> David Ahern <dsahern@gmail.com> writes:
+>>> On 10/15/20 9:46 AM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>>>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+>>>> index bf5a99d803e4..980cc1363be8 100644
+>>>> --- a/include/uapi/linux/bpf.h
+>>>> +++ b/include/uapi/linux/bpf.h
+>>>> @@ -3677,15 +3677,19 @@ union bpf_attr {
+>>>>    * 	Return
+>>>>    * 		The id is returned or 0 in case the id could not be retrieved.
+>>>>    *
+>>>> - * long bpf_redirect_neigh(u32 ifindex, u64 flags)
+>>>> + * long bpf_redirect_neigh(u32 ifindex, struct bpf_redir_neigh *param=
+s, int plen, u64 flags)
+>>>
+>>> why not fold ifindex into params? with params and plen this should be
+>>> extensible later if needed.
+>>=20
+>> Figured this way would make it easier to run *without* the params (like
+>> in the existing examples). But don't feel strongly about it, let's see
+>> what Daniel thinks.
+>
+> My preference is what Toke has here, this simplifies use by just being ab=
+le to
+> call bpf_redirect_neigh(ifindex, NULL, 0, 0) when just single external fa=
+cing
+> device is used.
+>
+>>> A couple of nits below that caught me eye.
+>>=20
+>> Thanks, will fix; the kernel bot also found a sparse warning, so I guess
+>> I need to respin anyway (but waiting for Daniel's comments and/or
+>> instructions on what tree to properly submit this to).
+>
+> Given API change, lets do bpf. (Will review the rest later today.)
 
-  ethtool -s <dev> advertise { <mode> { on | off } } ...
+Right, ACK. I'll wait for your review, then resubmit against the bpf
+tree :)
 
-> >Parser converting simple list of values into a maskless bitset is
-> >already there so it would be only matter of checking if there are at
-> >least two arguments and second is "on" or "off" and using corresponding
-> >parser. I think it would be useful independently of this series.
-> 
-> Understood. So basically you will pass some selectors on cmdline and the
-> uapi would stay intact.
-> How do you imagine the specific lane number selection should look like
-> on the cmdline?
+-Toke
 
-As I said, I meant the extension suggested in my mail as independent of
-what this series is about. For lanes count selector, I find proposed
-
-  ethtool -s <dev> ... lanes <lanes_num> ...
-
-the most natural.
-
-From purely syntactic/semantic point of view, there are three types of
-requests:
-
-  (1) enable specific set of modes, disable the rest
-  (2) enable/disable specific modes, leave the rest as they are
-  (3) enable modes matching a condition (and disable the rest)
-
-What I proposed was to allow the use symbolic names instead of masks
-(which are getting more and more awful with each new mode) also for (1),
-like they can already be used for (2).
-
-The lanes selector is an extension of (3) which I would prefer not to
-mix with (1) or (2) within one command line, i.e. either "advertise" or
-"speed / duplex / lanes".
-
-IIUC Jakub's and Andrew's comments were not so much about the syntax and
-semantic (which is quite clear) but rather about the question if the
-requests like "advertise exactly the modes with (100Gb/s speed and) two
-lanes" would really address a real life need and wouldn't be more often
-used as shortcuts for "advertise 100000baseKR2/Full". (On the other
-hand, I suspect existing speed and duplex selectors are often used the
-same way.)
-
-Michal
