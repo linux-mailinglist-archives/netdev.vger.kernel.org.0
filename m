@@ -2,100 +2,285 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56FC4293066
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 23:22:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F7EC293073
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 23:26:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732870AbgJSVWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 17:22:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58846 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732775AbgJSVWa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Oct 2020 17:22:30 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 106E522246;
-        Mon, 19 Oct 2020 21:22:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603142549;
-        bh=XfamQnzOuHXtb2xKfCzFkOlu+JDj24CRCKFBhgQ886g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=F/Jyde13dU7Z2kMfbu14Y3HfmicK7XWZ7+5WH+6ZlAUj43q0zNwtg9zTalkKAdxuP
-         LGGSGZzwSZJJ7cyYO46ZVfITpAF/F9bxVChtQiiAAl+t56qur+l2WB2+ge0FH0zzNK
-         bckyt6Vxrk4TijP4Cmr8r/ZqFjp32Kk2nKE0CJFw=
-Date:   Mon, 19 Oct 2020 14:22:26 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Krzysztof Halasa <khc@pm.waw.pl>
-Subject: Re: [PATCH net] drivers/net/wan/hdlc: In hdlc_rcv, check to make
- sure dev is an HDLC device
-Message-ID: <20201019142226.4503ed65@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201019104942.364914-1-xie.he.0141@gmail.com>
-References: <20201019104942.364914-1-xie.he.0141@gmail.com>
+        id S1732972AbgJSV0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 17:26:00 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:40418 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727409AbgJSV0A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 17:26:00 -0400
+Received: by mail-oi1-f193.google.com with SMTP id m128so1638287oig.7;
+        Mon, 19 Oct 2020 14:25:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=I6GfXHmwcWdw46Oet3WCCRErbptw3S7w9SW7l4PMny4=;
+        b=luToEZyjfqNOt+wXXQAJLPyGCaO0CbTUrA9IzekxTjDVdjeWUbvBfE2vQTq8DTDrfK
+         9tUjGyg1s3MJ9hQxMIOvZ3B93c5xYGL0AvgEV3zqCFM74FOlIdVRqdtHo7u2s6eler9s
+         R87VNKaK+Pcmc3c4ChBrvveRId1cY5HFSV2RYUwxxyGBb58gn9Be6lSjqzycX2Idde1N
+         kuE+JfAxA7kveUt4cp1LCDukxkIAYRSZFrmXA3Lm8kUnogXzjLaHZr6vOFTzC0oW+BPS
+         DU/2yFwGJB/EV37Drjb0YMqwbRgQY/guTVCrVEgb/zRCEzy/wimmKaQWAo5iVrv5ccV5
+         dhdQ==
+X-Gm-Message-State: AOAM532ASv/Qmv7QRmV2pYUz/gCF3BgfePJWU23f+8GaJVedY06Zxrrw
+        3lWIvCzBgYVvjJ68vOT7Ng==
+X-Google-Smtp-Source: ABdhPJzDRxrXYKHZQ7Q0wjEvxxWhKMxOC8MXD9sXJ1Gv1irebKJITlmOFQluvNIIuhhIcTrPAiDi/Q==
+X-Received: by 2002:aca:670b:: with SMTP id z11mr961465oix.116.1603142758484;
+        Mon, 19 Oct 2020 14:25:58 -0700 (PDT)
+Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id f124sm288878oia.27.2020.10.19.14.25.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Oct 2020 14:25:57 -0700 (PDT)
+Received: (nullmailer pid 3628926 invoked by uid 1000);
+        Mon, 19 Oct 2020 21:25:56 -0000
+Date:   Mon, 19 Oct 2020 16:25:56 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     mkl@pengutronix.de, Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, kernel@pengutronix.de,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Subject: Re: [PATCH v2 2/2] dt-bindings: can: flexcan: convert fsl,*flexcan
+ bindings to yaml
+Message-ID: <20201019212556.GA3625661@bogus>
+References: <20201016073315.16232-1-o.rempel@pengutronix.de>
+ <20201016073315.16232-3-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201016073315.16232-3-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 19 Oct 2020 03:49:42 -0700 Xie He wrote:
-> The hdlc_rcv function is used as hdlc_packet_type.func to process any
-> skb received in the kernel with skb->protocol == htons(ETH_P_HDLC).
-> The purpose of this function is to provide second-stage processing for
-> skbs not assigned a "real" L3 skb->protocol value in the first stage.
+On Fri, Oct 16, 2020 at 09:33:15AM +0200, Oleksij Rempel wrote:
+> In order to automate the verification of DT nodes convert
+> fsl-flexcan.txt to fsl,flexcan.yaml
 > 
-> This function assumes the device from which the skb is received is an
-> HDLC device (a device created by this module). It assumes that
-> netdev_priv(dev) returns a pointer to "struct hdlc_device".
-> 
-> However, it is possible that some driver in the kernel (not necessarily
-> in our control) submits a received skb with skb->protocol ==
-> htons(ETH_P_HDLC), from a non-HDLC device. In this case, the skb would
-> still be received by hdlc_rcv. This will cause problems.
-> 
-> hdlc_rcv should be able to recognize and drop invalid skbs. It should
-> first make sure "dev" is actually an HDLC device, before starting its
-> processing.
-> 
-> To reliably check if a device is an HDLC device, we can check if its
-> dev->netdev_ops->ndo_start_xmit == hdlc_start_xmit, because all HDLC
-> devices are required to set their ndo_start_xmit to hdlc_start_xmit
-> (and all non-HDLC devices would not set their ndo_start_xmit to this).
-> 
-> Cc: Krzysztof Halasa <khc@pm.waw.pl>
-> Signed-off-by: Xie He <xie.he.0141@gmail.com>
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 > ---
->  drivers/net/wan/hdlc.c | 10 +++++++++-
->  1 file changed, 9 insertions(+), 1 deletion(-)
+>  .../bindings/net/can/fsl,flexcan.yaml         | 137 ++++++++++++++++++
+>  .../bindings/net/can/fsl-flexcan.txt          |  57 --------
+>  2 files changed, 137 insertions(+), 57 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
 > 
-> diff --git a/drivers/net/wan/hdlc.c b/drivers/net/wan/hdlc.c
-> index 9b00708676cf..0a392fb9aff8 100644
-> --- a/drivers/net/wan/hdlc.c
-> +++ b/drivers/net/wan/hdlc.c
-> @@ -46,7 +46,15 @@ static struct hdlc_proto *first_proto;
->  static int hdlc_rcv(struct sk_buff *skb, struct net_device *dev,
->  		    struct packet_type *p, struct net_device *orig_dev)
->  {
-> -	struct hdlc_device *hdlc = dev_to_hdlc(dev);
-> +	struct hdlc_device *hdlc;
+> diff --git a/Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml b/Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml
+> new file mode 100644
+> index 000000000000..c5c72bcd47c8
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/can/fsl,flexcan.yaml
+> @@ -0,0 +1,137 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/can/fsl,flexcan.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +	/* First make sure "dev" is an HDLC device */
-> +	if (dev->netdev_ops->ndo_start_xmit != hdlc_start_xmit) {
-
-Looks correct to me. I spotted there is also IFF_WAN_HDLC added by 
-7cdc15f5f9db ("WAN: Generic HDLC now uses IFF_WAN_HDLC private flag.")
-would using that flag also be correct and cleaner potentially? 
-
-Up to you, just wanted to make sure you considered it.
-
-> +		kfree_skb(skb);
-> +		return NET_RX_SUCCESS;
-> +	}
+> +title:
+> +  Flexcan CAN controller on Freescale's ARM and PowerPC system-on-a-chip (SOC).
 > +
-> +	hdlc = dev_to_hdlc(dev);
->  
->  	if (!net_eq(dev_net(dev), &init_net)) {
->  		kfree_skb(skb);
+> +maintainers:
+> +  - Marc Kleine-Budde <mkl@pengutronix.de>
+> +
+> +allOf:
+> +  - $ref: can-controller.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      - enum:
+> +          - fsl,imx8qm-flexcan
+> +          - fsl,imx8mp-flexcan
+> +          - fsl,imx6q-flexcan
+> +          - fsl,imx53-flexcan
+> +          - fsl,imx35-flexcan
+> +          - fsl,imx28-flexcan
+> +          - fsl,imx25-flexcan
+> +          - fsl,p1010-flexcan
+> +          - fsl,vf610-flexcan
+> +          - fsl,ls1021ar2-flexcan
+> +          - fsl,lx2160ar1-flexcan
+> +      - items:
+> +          - enum:
+> +              - fsl,imx7d-flexcan
+> +              - fsl,imx6ul-flexcan
+> +              - fsl,imx6sx-flexcan
+> +          - const: fsl,imx6q-flexcan
+> +      - items:
+> +          - enum:
+> +              - fsl,ls1028ar1-flexcan
+> +          - const: fsl,lx2160ar1-flexcan
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  clocks:
+> +    maxItems: 2
+> +
+> +  clock-names:
+> +    items:
+> +      - const: ipg
+> +      - const: per
+> +
+> +  clock-frequency:
+> +    description: |
+> +      The oscillator frequency driving the flexcan device, filled in by the
+> +      boot loader. This property should only be used the used operating system
+> +      doesn't support the clocks and clock-names property.
+> +    $ref: /schemas/types.yaml#/definitions/uint32
 
+Standard prop, already has a type.
+
+> +
+> +  xceiver-supply:
+> +    description: Regulator that powers the CAN transceiver.
+> +    maxItems: 1
+
+*-supply is always a single item. Drop maxItems.
+
+> +
+> +  big-endian:
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +    description: |
+> +      This means the registers of FlexCAN controller are big endian. This is
+> +      optional property.i.e. if this property is not present in device tree
+> +      node then controller is assumed to be little endian. If this property is
+> +      present then controller is assumed to be big endian.
+> +
+> +  fsl,stop-mode:
+> +    description: |
+> +      Register bits of stop mode control.
+> +
+> +      The format should be as follows:
+> +      <gpr req_gpr req_bit>
+> +      gpr is the phandle to general purpose register node.
+> +      req_gpr is the gpr register offset of CAN stop request.
+> +      req_bit is the bit offset of CAN stop request.
+> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+> +    items:
+> +      - description: The 'gpr' is the phandle to general purpose register node.
+> +      - description: The 'req_gpr' is the gpr register offset of CAN stop request.
+> +        maximum: 0xff
+> +      - description: The 'req_bit' is the bit offset of CAN stop request.
+> +        maximum: 0x1f
+> +
+> +  fsl,clk-source:
+> +    description: |
+> +      Select the clock source to the CAN Protocol Engine (PE). It's SoC
+> +      implementation dependent. Refer to RM for detailed definition. If this
+> +      property is not set in device tree node then driver selects clock source 1
+> +      by default.
+> +      0: clock source 0 (oscillator clock)
+> +      1: clock source 1 (peripheral clock)
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    default: 1
+> +    minimum: 0
+> +    maximum: 1
+> +
+> +  wakeup-source:
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +    description:
+> +      Enable CAN remote wakeup.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    can@1c000 {
+> +        compatible = "fsl,p1010-flexcan";
+> +        reg = <0x1c000 0x1000>;
+> +        interrupts = <48 0x2>;
+> +        interrupt-parent = <&mpic>;
+> +        clock-frequency = <200000000>;
+> +        fsl,clk-source = <0>;
+> +    };
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +
+> +    can@2090000 {
+> +        compatible = "fsl,imx6q-flexcan";
+> +        reg = <0x02090000 0x4000>;
+> +        interrupts = <0 110 IRQ_TYPE_LEVEL_HIGH>;
+> +        clocks = <&clks 1>, <&clks 2>;
+> +        clock-names = "ipg", "per";
+> +        fsl,stop-mode = <&gpr 0x34 28>;
+> +    };
+> diff --git a/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt b/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
+> deleted file mode 100644
+> index e10b6eb955e1..000000000000
+> --- a/Documentation/devicetree/bindings/net/can/fsl-flexcan.txt
+> +++ /dev/null
+> @@ -1,57 +0,0 @@
+> -Flexcan CAN controller on Freescale's ARM and PowerPC system-on-a-chip (SOC).
+> -
+> -Required properties:
+> -
+> -- compatible : Should be "fsl,<processor>-flexcan"
+> -
+> -  where <processor> is imx8qm, imx6q, imx28, imx53, imx35, imx25, p1010,
+> -  vf610, ls1021ar2, lx2160ar1, ls1028ar1.
+> -
+> -  The ls1028ar1 must be followed by lx2160ar1, e.g.
+> -   - "fsl,ls1028ar1-flexcan", "fsl,lx2160ar1-flexcan"
+> -
+> -  An implementation should also claim any of the following compatibles
+> -  that it is fully backwards compatible with:
+> -
+> -  - fsl,p1010-flexcan
+> -
+> -- reg : Offset and length of the register set for this device
+> -- interrupts : Interrupt tuple for this device
+> -
+> -Optional properties:
+> -
+> -- clock-frequency : The oscillator frequency driving the flexcan device
+> -
+> -- xceiver-supply: Regulator that powers the CAN transceiver
+> -
+> -- big-endian: This means the registers of FlexCAN controller are big endian.
+> -              This is optional property.i.e. if this property is not present in
+> -              device tree node then controller is assumed to be little endian.
+> -              if this property is present then controller is assumed to be big
+> -              endian.
+> -
+> -- fsl,stop-mode: register bits of stop mode control, the format is
+> -		 <&gpr req_gpr req_bit>.
+> -		 gpr is the phandle to general purpose register node.
+> -		 req_gpr is the gpr register offset of CAN stop request.
+> -		 req_bit is the bit offset of CAN stop request.
+> -
+> -- fsl,clk-source: Select the clock source to the CAN Protocol Engine (PE).
+> -		  It's SoC Implementation dependent. Refer to RM for detailed
+> -		  definition. If this property is not set in device tree node
+> -		  then driver selects clock source 1 by default.
+> -		  0: clock source 0 (oscillator clock)
+> -		  1: clock source 1 (peripheral clock)
+> -
+> -- wakeup-source: enable CAN remote wakeup
+> -
+> -Example:
+> -
+> -	can@1c000 {
+> -		compatible = "fsl,p1010-flexcan";
+> -		reg = <0x1c000 0x1000>;
+> -		interrupts = <48 0x2>;
+> -		interrupt-parent = <&mpic>;
+> -		clock-frequency = <200000000>; // filled in by bootloader
+> -		fsl,clk-source = <0>; // select clock source 0 for PE
+> -	};
+> -- 
+> 2.28.0
+> 
