@@ -2,112 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5E27292182
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 05:49:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D66BB292183
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 05:55:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731675AbgJSDtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 23:49:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54136 "EHLO
+        id S1731706AbgJSDz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 23:55:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731306AbgJSDtf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Oct 2020 23:49:35 -0400
-Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F336FC061755
-        for <netdev@vger.kernel.org>; Sun, 18 Oct 2020 20:49:33 -0700 (PDT)
-Received: by mail-pl1-x643.google.com with SMTP id o9so4288257plx.10
-        for <netdev@vger.kernel.org>; Sun, 18 Oct 2020 20:49:33 -0700 (PDT)
+        with ESMTP id S1731306AbgJSDz1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Oct 2020 23:55:27 -0400
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC75FC061755;
+        Sun, 18 Oct 2020 20:55:26 -0700 (PDT)
+Received: by mail-lj1-x243.google.com with SMTP id i2so10390615ljg.4;
+        Sun, 18 Oct 2020 20:55:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=yyMfIj+kU8+pqrQ/btCQJu8vMqR44MABK0jC++tcDuc=;
-        b=RYt9d+azGgStnRt0SNLnN11Rr7nZcJ+Zg9OU0+R+m6nCqztUI3jPodgexIgCCTLtLF
-         Pk5Rnx1ngzQ1STJRMte6/QS/w1iaLXooxdIMP6hCDfWKd964vczGIeeJeVIKbh8QARRe
-         FIQKb+rE40JeAZjrGyJc7ukboR2OCDgkYY+e0AVyDLa4WHnerH6uzMkv5+tZtKZag5pX
-         3SbA+MplO2eITH3cwzw47VVFWP7glWIljFBfgA/huafNM66iLZFm0a+Q9SFSg+R0672r
-         3FaODC/WzSwgfg7J6UoYTL7myzEwgaKuWpdnbewVtIKBQHUGUOnJfz9flgGvChZU+5XW
-         NtXg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JGRhD4PEJkPED9SetcvHdpE4f5nhMr/c5YW65Q6YUlE=;
+        b=bZKO7VCR4I4+1wjrFBmZMGZJByH62WFATFg4GFd9UJ3PoVJc61jcpktT837bgYflPH
+         pPbcHo/EoNXIcaELhtfthGYs14cwBs5X7iWwQqfn4yTz9kT75biUXGTa+V491Jso3uOk
+         AzounLT1cQiKiacmbmCeeQnjWVKEw5uehZnaumjcRWC7wPERdZ5G1RmwBnU4Z1MBBMjR
+         2ZydHN7DYREUresYmd7CFGxSwrVswiBYIo60LsaJqBW6MolZvXx0gEAnISn5ChulmMWD
+         D2HSB6kazz42AFlYeKiy5n9gSFh0JC7jJgRrU+opKX9e/soEbGOQdsGJnpuR0XWbBg8E
+         tTqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yyMfIj+kU8+pqrQ/btCQJu8vMqR44MABK0jC++tcDuc=;
-        b=uaYEZK8Gszb/K2ES8G2+ID3LotjdiX5xVKRpRovaoAOg//Yu9VJ9vd090UfKmqAomp
-         qAh+U6lZt+PA6Gdkrb+myjflLqVd2F1pEmvJqpCMQQ64Fj4rdrMDgX8cNSlnAbcsBbcH
-         wZ2P9CDNiNrtB0aN+IgDjwdSGdO3UjL07ZTmCxd79lpiTk++hm1t2iu3E4MzZb4BDfT6
-         6h7einCiddlmP1PtJ8vF4py+MWPpFSd0PrttoxUqjeKninGnPCqAxPBiPCj8oJTIDT3K
-         tfRN61GymB9Py66Em7dBUrur6jo5ySJl+EHJVAjxsE0Bdnd1VqBW5jGEXtjJMr+u550l
-         f+jA==
-X-Gm-Message-State: AOAM533or3GuO9paO+heUSWpdqXZ8wOyfHkPS34ICGEFNngJWPcRaUXd
-        tkY+1ecpcoD/I0xFY5TF3pA=
-X-Google-Smtp-Source: ABdhPJzr80C0rq9DtLuBQ3vH+ifwabUajKWBuOTbBACTCqGg6b9My0stJoF0DlBwCIU99zCCX372JA==
-X-Received: by 2002:a17:90b:717:: with SMTP id s23mr16217181pjz.122.1603079373524;
-        Sun, 18 Oct 2020 20:49:33 -0700 (PDT)
-Received: from [10.230.29.112] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id y5sm10652206pge.62.2020.10.18.20.49.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 18 Oct 2020 20:49:32 -0700 (PDT)
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        Christian Eggers <ceggers@arri.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-References: <20201017213611.2557565-1-vladimir.oltean@nxp.com>
- <20201017213611.2557565-2-vladimir.oltean@nxp.com>
- <06538edb-65a9-c27f-2335-9213322bed3a@gmail.com>
- <20201018121640.jwzj6ivpis4gh4ki@skbuf>
- <19f10bf4-4154-2207-6554-e44ba05eed8a@gmail.com>
- <20201018134843.emustnvgyby32cm4@skbuf>
- <2ae30988-5918-3d02-87f1-e65942acc543@gmail.com>
- <20201018225820.b2vhgzyzwk7vy62j@skbuf>
- <b43ad106-9459-0ce9-0999-a6e46af36782@gmail.com>
- <20201019002123.nzi2zhfak3r3lis3@skbuf>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [RFC PATCH 01/13] net: dsa: add plumbing for custom netdev
- statistics
-Message-ID: <da422046-fc3e-9aba-88d1-e7a4d3a74843@gmail.com>
-Date:   Sun, 18 Oct 2020 20:49:31 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.3.2
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JGRhD4PEJkPED9SetcvHdpE4f5nhMr/c5YW65Q6YUlE=;
+        b=o4l25ftcfRf+7Ac4+HOYlxcMTpnXo8zBi7XsK7O+I8JCPs9Ss0B8jKkpSjdYn9Zq7f
+         rWdPFwkg9vCwhN0O1KXgcSbppBjgkLSjl4GgSSkOGwJBFsExbtKjuUhAVxRy8FX0FE1F
+         rKuXNDeDcylGKEmtxHCxBUtz1RFa5Q7AozJpc1nr7lARFtv0gvZdzSlbAPsW1GZIq5Zz
+         OXNMLLF7nJbAn0On9BcV8EqgpXG87Vm8UZYgE7pTs273xe0g0W2R3ShOuU62RX0LpJXE
+         qRlDHsTV78nzg5ECWtlOcWKC8HWp7VQ4ENGXHFW4GMzIKREYYTNHHZmRTA76/DNmj8cH
+         zSYg==
+X-Gm-Message-State: AOAM530xanLmumm7nPiSs1XCmN7GzDN0E1X3ltsLHXIu8QHPjZTKt8y3
+        aSH03Bmsr2cx8bzIxZzAGZG2I2lghn94k9EN20PFJmx/cUo6
+X-Google-Smtp-Source: ABdhPJyHm+0O32JklLtr5FJF0K/1T/HeWFTvyT0kyXME7dMRKYtreYmTbSuK6mwqOj05evXptiwtcym6EZ9dCEU7hsE=
+X-Received: by 2002:a2e:8e72:: with SMTP id t18mr4948814ljk.445.1603079725084;
+ Sun, 18 Oct 2020 20:55:25 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20201019002123.nzi2zhfak3r3lis3@skbuf>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20201015082119.68287-1-rejithomas@juniper.net> <20201018160147.6b3c940a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201018160147.6b3c940a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Reji Thomas <rejithomas.d@gmail.com>
+Date:   Mon, 19 Oct 2020 09:25:12 +0530
+Message-ID: <CAA8Zg7Gcua1=6CgSkJ-z8uKJneDjedB4z6zm2a+DcYt-_YcmSQ@mail.gmail.com>
+Subject: Re: [PATCH v2] IPv6: sr: Fix End.X nexthop to use oif.
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Reji Thomas <rejithomas@juniper.net>, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel test robot <lkp@intel.com>,
+        Mathieu Xhonneux <m.xhonneux@gmail.com>,
+        David Lebrun <david.lebrun@uclouvain.be>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
+Please find my replies inline below.
 
-On 10/18/2020 5:21 PM, Vladimir Oltean wrote:
-> On Sun, Oct 18, 2020 at 04:11:14PM -0700, Florian Fainelli wrote:
->> How about when used as a netconsole? We do support netconsole over DSA
->> interfaces.
-> 
-> How? Who is supposed to bring up the master interface, and when?
-> 
+Regards
+Reji
 
-You are right that this appears not to work when configured on the 
-kernel command line:
+On Mon, Oct 19, 2020 at 4:31 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Thu, 15 Oct 2020 13:51:19 +0530 Reji Thomas wrote:
+> > Currently End.X action doesn't consider the outgoing interface
+> > while looking up the nexthop.This breaks packet path functionality
+> > specifically while using link local address as the End.X nexthop.
+> > The patch fixes this by enforcing End.X action to have both nh6 and
+> > oif and using oif in lookup.It seems this is a day one issue.
+> >
+> > Fixes: 140f04c33bbc ("ipv6: sr: implement several seg6local actions")
+> > Signed-off-by: Reji Thomas <rejithomas@juniper.net>
+>
+> David, Mathiey - any comments?
+>
+> > @@ -239,6 +250,8 @@ static int input_action_end(struct sk_buff *skb, struct seg6_local_lwt *slwt)
+> >  static int input_action_end_x(struct sk_buff *skb, struct seg6_local_lwt *slwt)
+> >  {
+> >       struct ipv6_sr_hdr *srh;
+> > +     struct net_device *odev;
+> > +     struct net *net = dev_net(skb->dev);
+>
+> Order longest to shortest.
+Sorry. Will fix it.
 
-[    6.836910] netpoll: netconsole: local port 4444
-[    6.841553] netpoll: netconsole: local IPv4 address 192.168.1.10
-[    6.847582] netpoll: netconsole: interface 'gphy'
-[    6.852305] netpoll: netconsole: remote port 9353
-[    6.857030] netpoll: netconsole: remote IPv4 address 192.168.1.254
-[    6.863233] netpoll: netconsole: remote ethernet address 
-b8:ac:6f:80:af:7e
-[    6.870134] netpoll: netconsole: device gphy not up yet, forcing it
-[    6.876428] netpoll: netconsole: failed to open gphy
-[    6.881412] netconsole: cleaning up
+>
+>
+> >
+> >       srh = get_and_validate_srh(skb);
+> >       if (!srh)
+> > @@ -246,7 +259,11 @@ static int input_action_end_x(struct sk_buff *skb, struct seg6_local_lwt *slwt)
+> >
+> >       advance_nextseg(srh, &ipv6_hdr(skb)->daddr);
+> >
+> > -     seg6_lookup_nexthop(skb, &slwt->nh6, 0);
+> > +     odev = dev_get_by_index_rcu(net, slwt->oif);
+> > +     if (!odev)
+> > +             goto drop;
+>
+> Are you doing this lookup just to make sure that oif exists?
+> Looks a little wasteful for fast path, but more importantly
+> it won't be backward compatible, right? See below..
+>
+Please see reply below.
 
-looking at my test notes from 2015 when it was added, I had only tested 
-dynamic netconsole while the network devices have already been brought 
-up which is why I did not catch it. Let me see if I can fix that somehow.
--- 
-Florian
+> > +
+> > +     seg6_strict_lookup_nexthop(skb, &slwt->nh6, odev->ifindex, 0);
+> >
+> >       return dst_input(skb);
+> >
+>
+> > @@ -566,7 +583,8 @@ static struct seg6_action_desc seg6_action_table[] = {
+> >       },
+> >       {
+> >               .action         = SEG6_LOCAL_ACTION_END_X,
+> > -             .attrs          = (1 << SEG6_LOCAL_NH6),
+> > +             .attrs          = ((1 << SEG6_LOCAL_NH6) |
+> > +                                (1 << SEG6_LOCAL_OIF)),
+> >               .input          = input_action_end_x,
+> >       },
+> >       {
+>
+> If you set this parse_nla_action() will reject all
+> SEG6_LOCAL_ACTION_END_X without OIF.
+>
+> As you say the OIF is only required for using link local addresses,
+> so this change breaks perfectly legitimate configurations.
+>
+> Can we instead only warn about the missing OIF, and only do that when
+> nh is link local?
+>
+End.X is defined as an adjacency-sid and is used to select a specific link to a
+neighbor for both global and link-local addresses. The intention was
+to drop the
+packet even for global addresses if the route via the specific
+interface is not found.
+Alternatively(believe semantically correct for End.X definition) I
+could do a neighbor lookup
+for nexthop address over specific interface and send the packet out.
+
+> Also doesn't SEG6_LOCAL_ACTION_END_DX6 need a similar treatment?
+
+Yes. I will update the patch for End.DX6 based on the patch finalized for End.X.
