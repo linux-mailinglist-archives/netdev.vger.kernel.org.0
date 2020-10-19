@@ -2,81 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E37B22926E9
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 14:05:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4CD9292700
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 14:08:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726588AbgJSMFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 08:05:37 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:34504 "EHLO vps0.lunn.ch"
+        id S1726809AbgJSMIh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 08:08:37 -0400
+Received: from mga06.intel.com ([134.134.136.31]:2200 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726015AbgJSMFg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Oct 2020 08:05:36 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kUTuw-002UQp-6t; Mon, 19 Oct 2020 14:05:34 +0200
-Date:   Mon, 19 Oct 2020 14:05:34 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        Christian Eggers <ceggers@arri.de>,
-        Kurt Kanzenbach <kurt@linutronix.de>
-Subject: Re: [RFC PATCH 01/13] net: dsa: add plumbing for custom netdev
- statistics
-Message-ID: <20201019120534.GL456889@lunn.ch>
-References: <20201017213611.2557565-2-vladimir.oltean@nxp.com>
- <06538edb-65a9-c27f-2335-9213322bed3a@gmail.com>
- <20201018121640.jwzj6ivpis4gh4ki@skbuf>
- <19f10bf4-4154-2207-6554-e44ba05eed8a@gmail.com>
- <20201018134843.emustnvgyby32cm4@skbuf>
- <2ae30988-5918-3d02-87f1-e65942acc543@gmail.com>
- <20201018225820.b2vhgzyzwk7vy62j@skbuf>
- <b43ad106-9459-0ce9-0999-a6e46af36782@gmail.com>
- <20201019002123.nzi2zhfak3r3lis3@skbuf>
- <da422046-fc3e-9aba-88d1-e7a4d3a74843@gmail.com>
+        id S1725924AbgJSMIh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Oct 2020 08:08:37 -0400
+IronPort-SDR: rce4RRoRr5JO0OKCLe+n8CYvYZjJ3o3Zzs4e3heUT1pt6kublWXcQegWVCM7WkzeW3sTCgHwKb
+ 3/IaPZX52PqA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9778"; a="228650879"
+X-IronPort-AV: E=Sophos;i="5.77,394,1596524400"; 
+   d="scan'208";a="228650879"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2020 05:08:34 -0700
+IronPort-SDR: f7BJiUHIVHCyCeTSnusFZ5JMqws/qrkWu0CcCoRRnk41roUwoX9xep2s0kgMhHrKz+lEjwm1Qq
+ z7bJaayNfnJQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,394,1596524400"; 
+   d="scan'208";a="301349564"
+Received: from lkp-server01.sh.intel.com (HELO 88424da292e0) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 19 Oct 2020 05:08:32 -0700
+Received: from kbuild by 88424da292e0 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1kUTxo-000076-CI; Mon, 19 Oct 2020 12:08:32 +0000
+Date:   Mon, 19 Oct 2020 20:08:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH] can: mcp251xfd: fix semicolon.cocci warnings
+Message-ID: <20201019120805.GA63693@ae4257e0ab22>
+References: <202010192040.u25q5Ddd-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <da422046-fc3e-9aba-88d1-e7a4d3a74843@gmail.com>
+In-Reply-To: <202010192040.u25q5Ddd-lkp@intel.com>
+X-Patchwork-Hint: ignore
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 18, 2020 at 08:49:31PM -0700, Florian Fainelli wrote:
-> 
-> 
-> On 10/18/2020 5:21 PM, Vladimir Oltean wrote:
-> > On Sun, Oct 18, 2020 at 04:11:14PM -0700, Florian Fainelli wrote:
-> > > How about when used as a netconsole? We do support netconsole over DSA
-> > > interfaces.
-> > 
-> > How? Who is supposed to bring up the master interface, and when?
-> > 
-> 
-> You are right that this appears not to work when configured on the kernel
-> command line:
-> 
-> [    6.836910] netpoll: netconsole: local port 4444
-> [    6.841553] netpoll: netconsole: local IPv4 address 192.168.1.10
-> [    6.847582] netpoll: netconsole: interface 'gphy'
-> [    6.852305] netpoll: netconsole: remote port 9353
-> [    6.857030] netpoll: netconsole: remote IPv4 address 192.168.1.254
-> [    6.863233] netpoll: netconsole: remote ethernet address
-> b8:ac:6f:80:af:7e
-> [    6.870134] netpoll: netconsole: device gphy not up yet, forcing it
-> [    6.876428] netpoll: netconsole: failed to open gphy
-> [    6.881412] netconsole: cleaning up
-> 
-> looking at my test notes from 2015 when it was added, I had only tested
-> dynamic netconsole while the network devices have already been brought up
-> which is why I did not catch it. Let me see if I can fix that somehow.
+From: kernel test robot <lkp@intel.com>
 
-Hi Florian
+drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c:176:2-3: Unneeded semicolon
 
-NFS root used to work, so there must be some code in the kernel to
-bring the master interface up. Might just need copy/pasting.
 
-      Andrew
+ Remove unneeded semicolon.
+
+Generated by: scripts/coccinelle/misc/semicolon.cocci
+
+Fixes: f4f77366f21d ("can: mcp251xfd: rename all user facing strings to mcp251xfd")
+Signed-off-by: kernel test robot <lkp@intel.com>
+---
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   7cf726a59435301046250c42131554d9ccc566b8
+commit: f4f77366f21dfd6ac69a902313367d638b328ba1 can: mcp251xfd: rename all user facing strings to mcp251xfd
+
+ mcp251xfd-regmap.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+--- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c
++++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-regmap.c
+@@ -173,7 +173,7 @@ mcp251xfd_regmap_nocrc_read(void *contex
+ 		memcpy(&buf_tx->cmd, reg, sizeof(buf_tx->cmd));
+ 		if (MCP251XFD_SANITIZE_SPI)
+ 			memset(buf_tx->data, 0x0, val_len);
+-	};
++	}
+ 
+ 	err = spi_sync(spi, &msg);
+ 	if (err)
