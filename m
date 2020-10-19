@@ -2,117 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 396492926BC
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 13:52:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 210632926A7
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 13:47:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728256AbgJSLwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 07:52:24 -0400
-Received: from mail.prodrive-technologies.com ([212.61.153.67]:56398 "EHLO
-        mail.prodrive-technologies.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726619AbgJSLwY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 07:52:24 -0400
-X-Greylist: delayed 573 seconds by postgrey-1.27 at vger.kernel.org; Mon, 19 Oct 2020 07:52:23 EDT
-Received: from mail.prodrive-technologies.com (localhost.localdomain [127.0.0.1])
-        by localhost (Email Security Appliance) with SMTP id 7F37032EAF_F8D7BB8B;
-        Mon, 19 Oct 2020 11:42:48 +0000 (GMT)
-Received: from mail.prodrive-technologies.com (exc05.bk.prodrive.nl [10.1.1.214])
-        (using TLSv1.2 with cipher AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "mail.prodrive-technologies.com", Issuer "GlobalSign RSA OV SSL CA 2018" (verified OK))
-        by mail.prodrive-technologies.com (Sophos Email Appliance) with ESMTPS id E5BB330504_F8D7BB7F;
-        Mon, 19 Oct 2020 11:42:47 +0000 (GMT)
-Received: from EXC03.bk.prodrive.nl (10.1.1.212) by EXC05.bk.prodrive.nl
- (10.1.1.214) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2106.2; Mon, 19
- Oct 2020 13:42:47 +0200
-Received: from lnxdevrm01.prodrive.nl (10.1.2.33) by EXC03.bk.prodrive.nl
- (10.1.1.212) with Microsoft SMTP Server id 15.1.2106.2 via Frontend
- Transport; Mon, 19 Oct 2020 13:42:47 +0200
-From:   Martijn de Gouw <martijn.de.gouw@prodrive-technologies.com>
-CC:     <martijn.de.gouw@prodrive-technologies.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "J. Bruce Fields" <bfields@fieldses.org>,
-        "Chuck Lever" <chuck.lever@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>, NeilBrown <neilb@suse.de>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        "Roberto Bergantinos Corpas" <rbergant@redhat.com>,
-        "open list:NFS, SUNRPC, AND LOCKD CLIENTS" 
-        <linux-nfs@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH] SUNRPC: fix copying of multiple pages in gss_read_proxy_verf()
-Date:   Mon, 19 Oct 2020 13:42:27 +0200
-Message-ID: <20201019114229.52973-1-martijn.de.gouw@prodrive-technologies.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726599AbgJSLrS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 07:47:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44448 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726216AbgJSLrR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 07:47:17 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB78C0613CE
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 04:47:17 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id h24so13459089ejg.9
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 04:47:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3dUzHu4x/jtCkUQNe94672McrwZ+e+Z3ey46lX8xZxA=;
+        b=Ey8lzdGcTz4Ux/gJETsNjcye+z3pGCe033rUic7RTneggFsMWC5JnGHc0OTD/uKhkU
+         rRQZgLWRyqAqdoWlh31sZdS54tH2ECnpJOglc72PiaQaGIKHC8PhHxE/TsZYiJYSvErt
+         ccRTwUC9twav1VDhtXkl4Rb+KZlksw+I2eTGew6CcLT55n4Nh3FawcnotSVhwuPEynW3
+         Bdv4IO0nkyTcUz9gBYBsw3F5WiWrqbt0DfRVbzlsmONLeo9Xo+czFDE9w8bjgiMZbG0n
+         d9JP0g7K8E3xWeHbkXc7Sm+wEqjqIEoTRDmsSlt0lTGw+Iv0f2+yFrh6HeyzH3C1FH5d
+         xr0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=3dUzHu4x/jtCkUQNe94672McrwZ+e+Z3ey46lX8xZxA=;
+        b=ZLSS0TfNySBIGvZFZznHAsWkJ5HqATZWXTGa3peoqWwAgzhg75HS1SvXj64hmC8kUS
+         rT9a8BEKFUETXGfAZYPAfoIDglWhhNXyZH2KG2GWod6x17r2Ub1anwOCeIDBX2fWeIfZ
+         JGCXqi/TfwO+kFHOyskIp2hpEfscxkpMM00aYEsz0UO6c+Awck3al1zA4z10CI7Tk/eI
+         gX88Y7J49dYoHr50Sf8C/JJP1n7pUeDfB9wuyIR9l9L5DN8TIkINDjkPbO+KCwbokgaX
+         hNtsPD5NF5IIp8sjrq2Z2VI0QEKddl5nNPc2yOe9hHStH6VN3/ZdyTMDHmdhU0ge3qsy
+         m6xw==
+X-Gm-Message-State: AOAM532BLL9VbqE7DmpKxe9sVAmdGKkrUwneEdfLZr2GujunpKwvOPTT
+        mFZNo1/s37HO6aNtxjqia25aPsFIcvQ=
+X-Google-Smtp-Source: ABdhPJzEfuqAt1emlQHKQxsZhIcfwru0OUFwUO0Mmi270ppJaWx5RkiYxMkNjzRvUDWBQJ222B3Zog==
+X-Received: by 2002:a17:906:9588:: with SMTP id r8mr17416588ejx.389.1603108035455;
+        Mon, 19 Oct 2020 04:47:15 -0700 (PDT)
+Received: from localhost.localdomain (ipbcc01043.dynamic.kabel-deutschland.de. [188.192.16.67])
+        by smtp.gmail.com with ESMTPSA id t3sm10444157edv.59.2020.10.19.04.47.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Oct 2020 04:47:14 -0700 (PDT)
+Sender: Zahari Doychev <zahari.doychev@googlemail.com>
+From:   Zahari Doychev <zahari.doychev@linux.com>
+To:     netdev@vger.kernel.org
+Cc:     dsahern@gmail.com, simon.horman@netronome.com, jhs@mojatatu.com,
+        Zahari Doychev <zahari.doychev@linux.com>
+Subject: [iproute2-next] tc flower: use right ethertype in icmp/arp parsing
+Date:   Mon, 19 Oct 2020 13:47:08 +0200
+Message-Id: <20201019114708.1050421-1-zahari.doychev@linux.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-SASI-RCODE: 200
-To:     unlisted-recipients:; (no To-header on input)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the passed token is longer than 4032 bytes, the remaining part
-of the token must be copied from the rqstp->rq_arg.pages. But the
-copy must make sure it happens in a consecutive way.
+Currently the icmp and arp prsing functions are called with inccorect
+ethtype in case of vlan or cvlan filter options. In this case either
+cvlan_ethtype or vlan_ethtype has to be used.
 
-Signed-off-by: Martijn de Gouw <martijn.de.gouw@prodrive-technologies.com>
+Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
 ---
- net/sunrpc/auth_gss/svcauth_gss.c | 27 +++++++++++++++++----------
- 1 file changed, 17 insertions(+), 10 deletions(-)
+ tc/f_flower.c | 43 ++++++++++++++++++++++++++-----------------
+ 1 file changed, 26 insertions(+), 17 deletions(-)
 
-diff --git a/net/sunrpc/auth_gss/svcauth_gss.c b/net/sunrpc/auth_gss/svcauth_gss.c
-index 258b04372f85..bd4678db9d76 100644
---- a/net/sunrpc/auth_gss/svcauth_gss.c
-+++ b/net/sunrpc/auth_gss/svcauth_gss.c
-@@ -1147,9 +1147,9 @@ static int gss_read_proxy_verf(struct svc_rqst *rqstp,
- 			       struct gssp_in_token *in_token)
- {
- 	struct kvec *argv = &rqstp->rq_arg.head[0];
--	unsigned int page_base, length;
--	int pages, i, res;
--	size_t inlen;
-+	unsigned int length, pgto_offs, pgfrom_offs;
-+	int pages, i, res, pgto, pgfrom;
-+	size_t inlen, to_offs, from_offs;
- 
- 	res = gss_read_common_verf(gc, argv, authp, in_handle);
- 	if (res)
-@@ -1177,17 +1177,24 @@ static int gss_read_proxy_verf(struct svc_rqst *rqstp,
- 	memcpy(page_address(in_token->pages[0]), argv->iov_base, length);
- 	inlen -= length;
- 
--	i = 1;
--	page_base = rqstp->rq_arg.page_base;
-+	to_offs = length;
-+	from_offs = rqstp->rq_arg.page_base;
- 	while (inlen) {
--		length = min_t(unsigned int, inlen, PAGE_SIZE);
--		memcpy(page_address(in_token->pages[i]),
--		       page_address(rqstp->rq_arg.pages[i]) + page_base,
-+		pgto = to_offs >> PAGE_SHIFT;
-+		pgfrom = from_offs >> PAGE_SHIFT;
-+		pgto_offs = to_offs & ~PAGE_MASK;
-+		pgfrom_offs = from_offs & ~PAGE_MASK;
-+
-+		length = min_t(unsigned int, inlen,
-+			 min_t(unsigned int, PAGE_SIZE - pgto_offs,
-+			       PAGE_SIZE - pgfrom_offs));
-+		memcpy(page_address(in_token->pages[pgto]) + pgto_offs,
-+		       page_address(rqstp->rq_arg.pages[pgfrom]) + pgfrom_offs,
- 		       length);
- 
-+		to_offs += length;
-+		from_offs += length;
- 		inlen -= length;
--		page_base = 0;
--		i++;
- 	}
- 	return 0;
- }
+diff --git a/tc/f_flower.c b/tc/f_flower.c
+index 00c919fd..dd9f3446 100644
+--- a/tc/f_flower.c
++++ b/tc/f_flower.c
+@@ -1712,7 +1712,10 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
+ 			}
+ 		} else if (matches(*argv, "type") == 0) {
+ 			NEXT_ARG();
+-			ret = flower_parse_icmp(*argv, eth_type, ip_proto,
++			ret = flower_parse_icmp(*argv, cvlan_ethtype ?
++						cvlan_ethtype : vlan_ethtype ?
++						vlan_ethtype : eth_type,
++						ip_proto,
+ 						FLOWER_ICMP_FIELD_TYPE, n);
+ 			if (ret < 0) {
+ 				fprintf(stderr, "Illegal \"icmp type\"\n");
+@@ -1720,7 +1723,10 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
+ 			}
+ 		} else if (matches(*argv, "code") == 0) {
+ 			NEXT_ARG();
+-			ret = flower_parse_icmp(*argv, eth_type, ip_proto,
++			ret = flower_parse_icmp(*argv, cvlan_ethtype ?
++						cvlan_ethtype : vlan_ethtype ?
++						vlan_ethtype : eth_type,
++						ip_proto,
+ 						FLOWER_ICMP_FIELD_CODE, n);
+ 			if (ret < 0) {
+ 				fprintf(stderr, "Illegal \"icmp code\"\n");
+@@ -1728,33 +1734,36 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
+ 			}
+ 		} else if (matches(*argv, "arp_tip") == 0) {
+ 			NEXT_ARG();
+-			ret = flower_parse_arp_ip_addr(*argv, vlan_ethtype ?
+-						       vlan_ethtype : eth_type,
+-						       TCA_FLOWER_KEY_ARP_TIP,
+-						       TCA_FLOWER_KEY_ARP_TIP_MASK,
+-						       n);
++			ret = flower_parse_arp_ip_addr(*argv, cvlan_ethtype ?
++						cvlan_ethtype : vlan_ethtype ?
++						vlan_ethtype : eth_type,
++						TCA_FLOWER_KEY_ARP_TIP,
++						TCA_FLOWER_KEY_ARP_TIP_MASK,
++						n);
+ 			if (ret < 0) {
+ 				fprintf(stderr, "Illegal \"arp_tip\"\n");
+ 				return -1;
+ 			}
+ 		} else if (matches(*argv, "arp_sip") == 0) {
+ 			NEXT_ARG();
+-			ret = flower_parse_arp_ip_addr(*argv, vlan_ethtype ?
+-						       vlan_ethtype : eth_type,
+-						       TCA_FLOWER_KEY_ARP_SIP,
+-						       TCA_FLOWER_KEY_ARP_SIP_MASK,
+-						       n);
++			ret = flower_parse_arp_ip_addr(*argv, cvlan_ethtype ?
++						cvlan_ethtype : vlan_ethtype ?
++						vlan_ethtype : eth_type,
++						TCA_FLOWER_KEY_ARP_SIP,
++						TCA_FLOWER_KEY_ARP_SIP_MASK,
++						n);
+ 			if (ret < 0) {
+ 				fprintf(stderr, "Illegal \"arp_sip\"\n");
+ 				return -1;
+ 			}
+ 		} else if (matches(*argv, "arp_op") == 0) {
+ 			NEXT_ARG();
+-			ret = flower_parse_arp_op(*argv, vlan_ethtype ?
+-						  vlan_ethtype : eth_type,
+-						  TCA_FLOWER_KEY_ARP_OP,
+-						  TCA_FLOWER_KEY_ARP_OP_MASK,
+-						  n);
++			ret = flower_parse_arp_op(*argv,  cvlan_ethtype ?
++						cvlan_ethtype : vlan_ethtype ?
++						vlan_ethtype : eth_type,
++						TCA_FLOWER_KEY_ARP_OP,
++						TCA_FLOWER_KEY_ARP_OP_MASK,
++						n);
+ 			if (ret < 0) {
+ 				fprintf(stderr, "Illegal \"arp_op\"\n");
+ 				return -1;
 -- 
-2.20.1
+2.28.0
 
