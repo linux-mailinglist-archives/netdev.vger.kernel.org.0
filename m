@@ -2,67 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF5FC2920DF
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 03:40:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 698BD2920E2
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 03:40:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728423AbgJSBfn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 21:35:43 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:3645 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728042AbgJSBfn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Oct 2020 21:35:43 -0400
-Received: from dggemi404-hub.china.huawei.com (unknown [172.30.72.53])
-        by Forcepoint Email with ESMTP id 70FBFD05F2E52ECA3DB0;
-        Mon, 19 Oct 2020 09:35:41 +0800 (CST)
-Received: from DGGEMI422-HUB.china.huawei.com (10.1.199.151) by
- dggemi404-hub.china.huawei.com (10.3.17.142) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Mon, 19 Oct 2020 09:35:41 +0800
-Received: from DGGEMI532-MBX.china.huawei.com ([169.254.7.245]) by
- dggemi422-hub.china.huawei.com ([10.1.199.151]) with mapi id 14.03.0487.000;
- Mon, 19 Oct 2020 09:35:32 +0800
-From:   "zhudi (J)" <zhudi21@huawei.com>
-To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Chenxiang (EulerOS)" <rose.chen@huawei.com>,
-        David Ahern <dsahern@gmail.com>
-Subject: =?gb2312?B?tPC4tDogW1BBVENIXSBydG5ldGxpbms6IGZpeCBkYXRhIG92ZXJmbG93IGlu?=
- =?gb2312?Q?_rtnl=5Fcalcit()?=
-Thread-Topic: [PATCH] rtnetlink: fix data overflow in rtnl_calcit()
-Thread-Index: AQHWo2B2wcLrrPLeR0ifPF37QbJD4qmaO+6AgAPmgtA=
-Date:   Mon, 19 Oct 2020 01:35:32 +0000
-Message-ID: <0DCA8173C37AD8458D6BA40EB0C660918CA671@DGGEMI532-MBX.china.huawei.com>
-References: <20201016020238.22445-1-zhudi21@huawei.com>
- <20201016143625.00005f4e@intel.com>
-In-Reply-To: <20201016143625.00005f4e@intel.com>
-Accept-Language: en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.136.114.155]
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S1730413AbgJSBkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Oct 2020 21:40:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34298 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727359AbgJSBkQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Oct 2020 21:40:16 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E846CC061755;
+        Sun, 18 Oct 2020 18:40:14 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id z5so2597066iob.1;
+        Sun, 18 Oct 2020 18:40:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=IgnPizQJe3I7C3ovLWfCRTWuEYnqFRot96J4CmFs+E0=;
+        b=H0AxscEVyJHlTPMrcnyX1Um1iKSDxvBr42Tr3afep1rtIfmj8WpjnhCql8JmUQkUbg
+         uNI5MUJuUVFx5cH0KJ4IYCDNfrDgMtIUo+72T/MZTuC67nO/8qEG/ttBKYAanVkUW6Nf
+         CDNtvuRkbbdR6gkqtek8Q/HitVcNyIFKJxn/IAN2UsRUNoy6KRjzovJg3+QkNWZDbDZK
+         MpowM4qmbZFNdkxVxZIDsvBT35QAHj8GWtZdxh0u/e3LxgC4QysgjtrLrtzgXPXlylcg
+         uPwSJCkoq9VdhG/mFQUpn/SPqzI+fEhfhsum9oH7exb4OYr56NB66+ZQB9phpnBKXpHH
+         YvxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=IgnPizQJe3I7C3ovLWfCRTWuEYnqFRot96J4CmFs+E0=;
+        b=NHKxqGeELdSSSSnpX9eS2GsIj93S2+ewUdxLsLYbhVxAiXv5zgGVQC0LO4cPQlXHzo
+         iqdx0sJY3kw4b/DE2GasI3DhSHGoAgCkWD9qaGKZQRpUUmTwctgO+n5tp1x0cqxTyQqF
+         1oGLKHtEvdqzd+VDEEMj61H6qNZj1v2jwplCU0QwkR2In9zxbSPQt5CudPPrNgfH7E7G
+         0U2QLgsXhDHf1xqqBq1/kTKiqL/e+f8cwcFY+ufgmdZ85aXHo/fVnyvx15YJOu/0f5qs
+         dS4IBNgNEZ/R5vRbxdKSiZZb2YcGWHRQJYuTT1AL8h/wuEzcD2D4Bw62Z1dy9x/EYAhk
+         R08A==
+X-Gm-Message-State: AOAM533RXRuD9bZKgy2ZnffaB0zz+CFjwu6/ZqWLgLBeDQag1FbxixeN
+        BbiHongu+mYwF/yP6fEmUqJRY1DHaWg=
+X-Google-Smtp-Source: ABdhPJyY2iaG0Mc+bbGuaBZA2Asn/xD5sfVzwNlurO4f3/y0XClFfDnVoH2F3YSyrMjhIFGVSfeYdA==
+X-Received: by 2002:a05:6602:208c:: with SMTP id a12mr9221238ioa.55.1603071614146;
+        Sun, 18 Oct 2020 18:40:14 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:284:8202:10b0:d908:7fe8:cfc0:66e2])
+        by smtp.googlemail.com with ESMTPSA id c11sm8602879ilh.22.2020.10.18.18.40.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 18 Oct 2020 18:40:13 -0700 (PDT)
+Subject: Re: [PATCH AUTOSEL 5.9 035/111] ipv6/icmp: l3mdev: Perform icmp error
+ route lookup on source device routing table (v2)
+To:     Jakub Kicinski <kuba@kernel.org>, Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        netdev@vger.kernel.org
+References: <20201018191807.4052726-1-sashal@kernel.org>
+ <20201018191807.4052726-35-sashal@kernel.org>
+ <20201018124004.5f8c50a3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <842ae8c4-44ef-2005-18d5-80e00c140107@gmail.com>
+Date:   Sun, 18 Oct 2020 19:40:12 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.1
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+In-Reply-To: <20201018124004.5f8c50a3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiA+ICJpcCBhZGRyIHNob3ciIGNvbW1hbmQgZXhlY3V0ZSBlcnJvciB3aGVuIHdlIGhhdmUgYSBw
-aHlzaWNhbCBuZXR3b3JrDQo+ID4gY2FyZCB3aXRoIG51bWJlciBvZiBWRnMgbGFyZ2VyIHRoYW4g
-MjQ3Lg0KPiANCj4gT2ggbWFuLCB0aGlzIGJ1ZyBoYXMgYmVlbiBodXJ0aW5nIHVzIGZvcmV2ZXIg
-YW5kIEkndmUgdHJpZWQgdG8gZml4IGl0IHNldmVyYWwNCj4gdGltZXMgd2l0aG91dCBtdWNoIGx1
-Y2ssIHNvIHRoYW5rcyBmb3Igd29ya2luZyBvbiBpdCENCj4gDQo+IENDOiBEYXZpZCBBaGVybiA8
-ZHNhaGVybkBnbWFpbC5jb20+DQo+IA0KPiBBcyBoZSdzIG1lbnRpb25lZCB0aGlzIGJ1Zy4NCj4g
-Li4uLi4uIA0KPiBLZXJuZWwgZG9jdW1lbnRhdGlvbiBzYXlzIGZvciB5b3UgdG8gdXNlIHlvdXIg
-cmVhbCBuYW1lLCBwbGVhc2UgZG8gc28sDQo+IHVubGVzcyB5b3UncmUgYSByb2NrIHN0YXIgYW5k
-IGhhdmUgb2ZmaWNpYWxseSBjaGFuZ2VkIHlvdXIgbmFtZSB0byB6aHVkaS4NCj4gDQoNCk1heSBi
-ZSBJIHNob3VsZCB1c2UgbmFtZSBzdWNoIGFzIGRpLnpodSAgdG8gYXZvaWQgdW5uZWNlc3Nhcnkg
-cHJvYmxlbSA6KQ0KDQo+ID4gLS0tDQo+ID4gIGluY2x1ZGUvbGludXgvbmV0bGluay5oIHwgMiAr
-LQ0KPiA+ICBuZXQvY29yZS9ydG5ldGxpbmsuYyAgICB8IDggKysrKy0tLS0NCj4gPiAgMiBmaWxl
-cyBjaGFuZ2VkLCA1IGluc2VydGlvbnMoKyksIDUgZGVsZXRpb25zKC0pDQo+IA0KPiBEb2VzIGl0
-IHdvcmsgd2l0aG91dCBhbnkgY2hhbmdlcyB0byBpcHJvdXRlMj8NCg0KVGhlIHBhdGNoIG9ubHkg
-Y2hhbmdlIHRoZSBpbnRlcm5hbCBkYXRhIHN0cnVjdCBjdXJyZW50bHkgb25seSB1c2VkIGJ5IG5l
-dGxpbmtfZHVtcF9zdGFydCgpIGZ1bmN0aW9uLg0KU28gSSB0aGluayB0aGlzIHBhdGNoICBoYXMg
-bm90IGVmZmVjdHMgb24gaXByb3V0ZTIgb3Igb3RoZXIgcGFja2FnZXMNCg0K
+On 10/18/20 1:40 PM, Jakub Kicinski wrote:
+> This one got applied a few days ago, and the urgency is low so it may be
+> worth letting it see at least one -rc release ;)
+
+agreed
