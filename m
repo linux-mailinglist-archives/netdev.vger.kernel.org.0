@@ -2,217 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A1A922930C6
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 23:49:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18F452930C2
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 23:48:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729559AbgJSVti (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 17:49:38 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:32798 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729466AbgJSVth (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 17:49:37 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09JLiEDf008628;
-        Mon, 19 Oct 2020 21:49:36 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references; s=corp-2020-01-29;
- bh=zRnQI8EQayPaK96pH8XspXA3BUSbgetS3UNxcz7mClU=;
- b=f4JRZxxKvGXmW8T+YYxMFfL15OiUxVI5+pdKUflSp52hdOyqBdjMjaaA0LZ8JINECsD+
- baAfQmZb4zdf0Z71vDJC/9nnQnwSVrFlbkNPKoCOLwER+iJmCe2rkR6HFZouMPFTudS2
- LTPjNlSNTQaJKshUkv9GTpIVe2W5cdNd/yFDdxM+xbwmDMeBMTfibJdCuUAJByo0rXk3
- wU4DOR22Tp7CkPo/qiA5KGEXmYUvVUjcIpCVvtCksDCS8K8YiSxVRM3FbjS1gU2olGqm
- nPZ0r5pWN/0wh+WDHr7Nqwr7ezX2428AOPEt4+VLPuaSmJsC6EVrdeHrenXK+Ja77IR0 gw== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2120.oracle.com with ESMTP id 347s8mqucd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 19 Oct 2020 21:49:36 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09JLnZYb021511;
-        Mon, 19 Oct 2020 21:49:35 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3020.oracle.com with ESMTP id 348agwn4y4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 19 Oct 2020 21:49:35 +0000
-Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 09JLnTgd018606;
-        Mon, 19 Oct 2020 21:49:30 GMT
-Received: from mbpatil.us.oracle.com (/10.211.44.53)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 19 Oct 2020 14:49:29 -0700
-From:   Manjunath Patil <manjunath.b.patil@oracle.com>
-To:     santosh.shilimkar@oracle.com
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rama.nichanamatlu@oracle.com, manjunath.b.patil@oracle.com
-Subject: [PATCH 2/2] rds: add functionality to print MR related information
-Date:   Mon, 19 Oct 2020 14:48:08 -0700
-Message-Id: <1603144088-8769-3-git-send-email-manjunath.b.patil@oracle.com>
-X-Mailer: git-send-email 1.7.1
-In-Reply-To: <1603144088-8769-1-git-send-email-manjunath.b.patil@oracle.com>
-References: <1603144088-8769-1-git-send-email-manjunath.b.patil@oracle.com>
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9779 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxscore=0 phishscore=0
- malwarescore=0 spamscore=0 suspectscore=1 bulkscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2010190147
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9779 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 suspectscore=1
- lowpriorityscore=0 mlxlogscore=999 priorityscore=1501 spamscore=0
- phishscore=0 clxscore=1015 bulkscore=0 impostorscore=0 adultscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010190146
+        id S1728156AbgJSVss (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 17:48:48 -0400
+Received: from mail-eopbgr660057.outbound.protection.outlook.com ([40.107.66.57]:57120
+        "EHLO CAN01-QB1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727317AbgJSVsr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Oct 2020 17:48:47 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LkaA2/g7yKxBY21AUiWHXuAPW5gCnicRb/wFE252ieQu1Qn8/EaF36femWt4ou3LERlL6ryrvmY64Z0moUMUfqJ3pjWmDSimTLqBWkwN+IlJ42mZiGODkxVnWuci4cHWzE48LWsjNYUf78xsbXZCukkv9XUZQ5pOozSE+h151MWhd7QL1DMMU/uhQA6wXdn/fz8xbb68wcqRwXkKWyQdJgnfXG7g0C7mheM+0XumnoPzupugJjecOsuUsbxiO9ND91dQKlN1Uz08ZY8LhEPzaPagYrGtrbZvI9vwzn/lnATiIbN/5QwxWOUva5/zPHF8YUorcV+JZbRIazUOGBOv8w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iJejZUgI4b9tskWN9RNoXI0dnjxq7hJPPhC3BxqEDLA=;
+ b=E1daSEzN61+ML0tZoMUV44O19Y1berPT0Q3oJV4h1taB4tiUHUtxzqQC/WFrWOx2ZS8HKGUWhMd+1Kl7scGDI+EYwltJFctzF6/NW4W0ol/+NWycuu2PF+uoy0NdvIIrBFbE/YX00NCvYQevWH+HXTiomgwhyjegLP6UVYkhx+/UtTC7KNS74HlCcMWO4RJ+61rVdCj1XuxJyTID1FGPpkk+fGcQX9CK1NRDwGQVgoZfxZFEa+CV1jlV16kc5/CDU99QWsAK4aiTrhUo/aEj6CZmhhEFk2UR9bgRtDR1BON377bubgZ9VZHaNJ0IGCf/oN0qXFkD/9XRS7QPbavxYQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
+ dkim=pass header.d=calian.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iJejZUgI4b9tskWN9RNoXI0dnjxq7hJPPhC3BxqEDLA=;
+ b=hntj125JBaSgxCxw0+okEIoUNXJDjVstBkh4/56Y3mIDPbIQHWhgaUofe1r+ezXoMevCGYjOCEeHsvi0/KHBH0T+L/ThIZXBP14aTzIUfoZQhheUMmMeg0rBzDb6i8W/Ls9Zj0j0dphT67fw4ZN3h+PA9Tzt2phYfIxi6n6lCaU=
+Received: from YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:f::20)
+ by YTOPR0101MB1435.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b00:1a::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.25; Mon, 19 Oct
+ 2020 21:48:43 +0000
+Received: from YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::5c60:6462:fef4:793]) by YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::5c60:6462:fef4:793%3]) with mapi id 15.20.3477.028; Mon, 19 Oct 2020
+ 21:48:43 +0000
+From:   Robert Hancock <robert.hancock@calian.com>
+To:     "andrew@lunn.ch" <andrew@lunn.ch>
+CC:     "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "radhey.shyam.pandey@xilinx.com" <radhey.shyam.pandey@xilinx.com>
+Subject: Re: [PATCH] net: axienet: Properly handle PCS/PMA PHY for 1000BaseX
+ mode
+Thread-Topic: [PATCH] net: axienet: Properly handle PCS/PMA PHY for 1000BaseX
+ mode
+Thread-Index: AQHWplf8dBlhJmBF50exgeWB7ZNFGamfcykAgAADYYA=
+Date:   Mon, 19 Oct 2020 21:48:43 +0000
+Message-ID: <c989910aee122cfa9d29994d9ce650ce486442ca.camel@calian.com>
+References: <20201019203923.467065-1-robert.hancock@calian.com>
+         <20201019213638.GW139700@lunn.ch>
+In-Reply-To: <20201019213638.GW139700@lunn.ch>
+Accept-Language: en-CA, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Evolution 3.28.5 (3.28.5-12.el8) 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=calian.com;
+x-originating-ip: [204.83.154.189]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 51160567-8391-42ed-6adb-08d87478bff5
+x-ms-traffictypediagnostic: YTOPR0101MB1435:
+x-microsoft-antispam-prvs: <YTOPR0101MB14354F7428831DB9DCF9881AEC1E0@YTOPR0101MB1435.CANPRD01.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: J844ddvWVh4leCN19zjcVwx4VzfMqJd3isPepQB3GrgmPmhwFHMd3ORLcPJ8KL4Qu+Ou8Imma3PqZCI2Z7SkgAp2rnSEV0DwU1cXL+k7MtggtTRjg/L6TKgOqOCjDHkGMctVy4vC7Zw2ZkYXdG6Hyftamzr8kx4AghR+XQd4m0IBHP2qr1QDT8HJhL836QPC1nKlSTViUt203fTZ2IUYLblnHrz5xQ8ROOXfjsbh98fctTJTX0Zv0NRhVtiuSbyePtgtLXAc9SKXDTMy/OuEBvV1KiWpo8gKbi+AcihnNa2Mm4jPgH59mYT5n1vIUHqiJCPhJlyJLKGPH2+UzWtDUAM25cZboS8s5I7cJGKsaGjemgY4ewDD9CqLYAfQ+doPPswT7XiibRr1oiRYM8XkHxe8tsW62580tT4bg25RbbL9BXK3XUICrOavbVbX3C9csWPc2SjajRh9BWEuqQRncVnuToBqbktoo5ys1Am60XE=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(136003)(39850400004)(346002)(396003)(376002)(366004)(6506007)(2616005)(26005)(186003)(478600001)(8936002)(8676002)(83380400001)(2906002)(66556008)(66446008)(5660300002)(76116006)(316002)(64756008)(86362001)(6916009)(66946007)(91956017)(66476007)(36756003)(4001150100001)(71200400001)(6486002)(54906003)(15974865002)(4326008)(6512007)(44832011)(99106002)(18886075002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 67yg4PAEiyVNdWXvTOLQL55SFAiYb8m2FXGy8a2L3GYmVl82pKD4HV9ielAposhhwfpjL8TNlMhFvntIOPOcWT2UvKqVlLNkTsO0Xp5FQSkQJA8Cdacz03ED7ZnJ9Js62ZKZcmYtgBHjeJAbB6TS/MeLacw6v6JfcBC0PlkCnmI/oUfcNdLkSPgO1KiVsucMyXEJuWizrtjewy1tcXrUZEQ5cTomiHt/PP9rDfDYCdS0F50hzPrZR7GD9i8FWpZB1sCSZ4KZjlI80qBaq4UIRhYNAnQkTRVuuQj03s+7557Et7l0Egdr9SCfX5jesl/1/eYwqTAhFTQf/hABGxq9MUxg3w7yNg55maneVxQhq4oWVYo65dmC9EaC/+G8IcM8x24PVmFOxZpdQYM4Vl2y/BzvDUuZH3pQWzQqekrlet5XG7OjIQ5orYc6JoFY2tjl2syQaqq5Wjc+18MJ0Lc4MyvIdQTWCsiZXMYenLrqihTWQ5lUXE2HVPnxsWoBxBNUmk2gNpnky+MpfHpEo/YfNX9Xz9hmAPxjKuT2A1VVCJFHhYPZkWIt5Zho/NWjrJ47WuJVx3LHImVZ3IXX4evs3IaVErySTsdXl6BVTPm69kUk7hoYwLtjiUvLurTuKccRQwJ656BbvndC4hNH0Ml25g==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <A385FB55D87746468B2FF2B52C909699@CANPRD01.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: calian.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 51160567-8391-42ed-6adb-08d87478bff5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Oct 2020 21:48:43.7495
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: L6fpveU+CmvLhm/13P9eMeGPkGuknFDNMh/FC3tJD29CzVA+/GXDqaaPduBY2EPUV4Fm8Lq5tCuuwgknCK16cv3jqwSWBedZnWm0PB9pGBM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: YTOPR0101MB1435
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RDS keeps its own pool of limited MRs[Memory Regions taken from ib
-device for rdma operation] which are shared by RDS applications. Now, we
-can print the applications along with their usage of MRs from userspace
-using 'rds-info -m' command. This would help in tracking the limited
-MRs.
-
-MR related information is stored in rds_sock. This patch exposes the
-information to userspace using rds-info command. The usage is limited to
-CAP_NET_ADMIN privilege.
-
-sample output:
- # rds-info -m
-
-RDS MRs:
-Program          PID    MR-gets    MR-puts    MR-inuse   <IP,port,ToS>
-rds-stress       17743  28468      28464      4          <192.168.18..
-rds-stress       17744  19385      19381      4          <192.168.18..
-
-Signed-off-by: Manjunath Patil <manjunath.b.patil@oracle.com>
-Reviewed-by: Ka-cheong Poon <ka-cheong.poon@oracle.com>
----
- include/uapi/linux/rds.h | 13 ++++++++++++-
- net/rds/af_rds.c         | 38 ++++++++++++++++++++++++++++++++++++++
- net/rds/ib.c             |  1 +
- net/rds/rds.h            |  4 +++-
- 4 files changed, 54 insertions(+), 2 deletions(-)
-
-diff --git a/include/uapi/linux/rds.h b/include/uapi/linux/rds.h
-index cba368e55863..a6e8e28d95fb 100644
---- a/include/uapi/linux/rds.h
-+++ b/include/uapi/linux/rds.h
-@@ -134,8 +134,9 @@ typedef __u8	rds_tos_t;
- #define RDS6_INFO_SOCKETS		10015
- #define RDS6_INFO_TCP_SOCKETS		10016
- #define RDS6_INFO_IB_CONNECTIONS	10017
-+#define RDS_INFO_MRS			10018
- 
--#define RDS_INFO_LAST			10017
-+#define RDS_INFO_LAST			10018
- 
- struct rds_info_counter {
- 	__u8	name[32];
-@@ -270,6 +271,16 @@ struct rds6_info_rdma_connection {
- 	__u32		cache_allocs;
- };
- 
-+struct rds_info_mr {
-+	__u32		pid;
-+	__u8		comm[TASK_COMM_LEN];
-+	__u64		gets;
-+	__u64		puts;
-+	struct in6_addr	laddr;
-+	__be16		lport;
-+	__u8		tos;
-+} __attribute__((packed));
-+
- /* RDS message Receive Path Latency points */
- enum rds_message_rxpath_latency {
- 	RDS_MSG_RX_HDR_TO_DGRAM_START = 0,
-diff --git a/net/rds/af_rds.c b/net/rds/af_rds.c
-index e291095e5224..c81acf1a9457 100644
---- a/net/rds/af_rds.c
-+++ b/net/rds/af_rds.c
-@@ -486,6 +486,7 @@ static int rds_getsockopt(struct socket *sock, int level, int optname,
- 			  char __user *optval, int __user *optlen)
- {
- 	struct rds_sock *rs = rds_sk_to_rs(sock->sk);
-+	struct net *net = sock_net(sock->sk);
- 	int ret = -ENOPROTOOPT, len;
- 	int trans;
- 
-@@ -499,6 +500,11 @@ static int rds_getsockopt(struct socket *sock, int level, int optname,
- 
- 	switch (optname) {
- 	case RDS_INFO_FIRST ... RDS_INFO_LAST:
-+		if (optname == RDS_INFO_MRS &&
-+		    !ns_capable(net->user_ns, CAP_NET_ADMIN)) {
-+			ret = -EACCES;
-+			break;
-+		}
- 		ret = rds_info_getsockopt(sock, optname, optval,
- 					  optlen);
- 		break;
-@@ -878,6 +884,38 @@ static void rds6_sock_info(struct socket *sock, unsigned int len,
- }
- #endif
- 
-+void rds_info_mrs(struct socket *sock, unsigned int len,
-+		  struct rds_info_iterator *iter,
-+		  struct rds_info_lengths *lens)
-+{
-+	struct rds_sock *rs;
-+	struct rds_info_mr mr_info;
-+	unsigned int total = 0;
-+
-+	len /= sizeof(mr_info);
-+
-+	spin_lock_bh(&rds_sock_lock);
-+	list_for_each_entry(rs, &rds_sock_list, rs_item) {
-+		total++;
-+		if (total <= len) {
-+			memset(&mr_info, 0, sizeof(mr_info));
-+			mr_info.pid = rs->rs_pid;
-+			strncpy(mr_info.comm, rs->rs_comm, TASK_COMM_LEN);
-+			mr_info.gets = atomic64_read(&rs->rs_mr_gets);
-+			mr_info.puts = atomic64_read(&rs->rs_mr_puts);
-+			mr_info.laddr = rs->rs_bound_addr;
-+			mr_info.lport = rs->rs_bound_port;
-+			mr_info.tos = rs->rs_tos;
-+			rds_info_copy(iter, &mr_info, sizeof(mr_info));
-+		}
-+	}
-+	spin_unlock_bh(&rds_sock_lock);
-+
-+	lens->nr = total;
-+	lens->each = sizeof(mr_info);
-+}
-+EXPORT_SYMBOL_GPL(rds_info_mrs);
-+
- static void rds_exit(void)
- {
- 	sock_unregister(rds_family_ops.family);
-diff --git a/net/rds/ib.c b/net/rds/ib.c
-index a792d8a3872a..48476ae95da9 100644
---- a/net/rds/ib.c
-+++ b/net/rds/ib.c
-@@ -599,6 +599,7 @@ int rds_ib_init(void)
- 	rds_trans_register(&rds_ib_transport);
- 
- 	rds_info_register_func(RDS_INFO_IB_CONNECTIONS, rds_ib_ic_info);
-+	rds_info_register_func(RDS_INFO_MRS, rds_info_mrs);
- #if IS_ENABLED(CONFIG_IPV6)
- 	rds_info_register_func(RDS6_INFO_IB_CONNECTIONS, rds6_ib_ic_info);
- #endif
-diff --git a/net/rds/rds.h b/net/rds/rds.h
-index 5e61868e1799..dd42bc95bbeb 100644
---- a/net/rds/rds.h
-+++ b/net/rds/rds.h
-@@ -746,7 +746,9 @@ static inline void __rds_wake_sk_sleep(struct sock *sk)
- 		wake_up(waitq);
- }
- extern wait_queue_head_t rds_poll_waitq;
--
-+void rds_info_mrs(struct socket *sock, unsigned int len,
-+		  struct rds_info_iterator *iter,
-+		  struct rds_info_lengths *lens);
- 
- /* bind.c */
- int rds_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len);
--- 
-2.27.0.112.g101b320
-
+T24gTW9uLCAyMDIwLTEwLTE5IGF0IDIzOjM2ICswMjAwLCBBbmRyZXcgTHVubiB3cm90ZToNCj4g
+PiAgc3RhdGljIHZvaWQgYXhpZW5ldF9tYWNfY29uZmlnKHN0cnVjdCBwaHlsaW5rX2NvbmZpZyAq
+Y29uZmlnLA0KPiA+IHVuc2lnbmVkIGludCBtb2RlLA0KPiA+ICAJCQkgICAgICAgY29uc3Qgc3Ry
+dWN0IHBoeWxpbmtfbGlua19zdGF0ZSAqc3RhdGUpDQo+ID4gIHsNCj4gPiAtCS8qIG5vdGhpbmcg
+bWVhbmluZ2Z1bCB0byBkbyAqLw0KPiA+ICsJc3RydWN0IG5ldF9kZXZpY2UgKm5kZXYgPSB0b19u
+ZXRfZGV2KGNvbmZpZy0+ZGV2KTsNCj4gPiArCXN0cnVjdCBheGllbmV0X2xvY2FsICpscCA9IG5l
+dGRldl9wcml2KG5kZXYpOw0KPiA+ICsJaW50IHJldDsNCj4gPiArDQo+ID4gKwlzd2l0Y2ggKHN0
+YXRlLT5pbnRlcmZhY2UpIHsNCj4gPiArCWNhc2UgUEhZX0lOVEVSRkFDRV9NT0RFX1NHTUlJOg0K
+PiA+ICsJY2FzZSBQSFlfSU5URVJGQUNFX01PREVfMTAwMEJBU0VYOg0KPiA+ICsJCXJldCA9IHBo
+eWxpbmtfbWlpX2MyMl9wY3NfY29uZmlnKGxwLT5wY3NfcGh5LCBtb2RlLA0KPiA+ICsJCQkJCQkg
+c3RhdGUtPmludGVyZmFjZSwNCj4gPiArCQkJCQkJIHN0YXRlLT5hZHZlcnRpc2luZyk7DQo+ID4g
+KwkJaWYgKHJldCA8IDApDQo+ID4gKwkJCW5ldGRldl93YXJuKG5kZXYsICJGYWlsZWQgdG8gY29u
+ZmlndXJlIFBDUzoNCj4gPiAlZFxuIiwNCj4gPiArCQkJCSAgICByZXQpOw0KPiA+ICsNCj4gPiAr
+CQkvKiBFbnN1cmUgaXNvbGF0ZSBiaXQgaXMgY2xlYXJlZCAqLw0KPiA+ICsJCXJldCA9IG1kaW9i
+dXNfbW9kaWZ5KGxwLT5wY3NfcGh5LT5idXMsIGxwLT5wY3NfcGh5LQ0KPiA+ID5hZGRyLA0KPiA+
+ICsJCQkJICAgICBNSUlfQk1DUiwgQk1DUl9JU09MQVRFLCAwKTsNCj4gDQo+IEhpIFJvYmVydA0K
+PiANCj4gVGhhdCBsb29rcyBsaWtlIGEgbGF5ZXJpbmcgdmlvbGF0aW9uLiBNYXliZSBtb3ZlIHRo
+aXMgaW50bw0KPiBwaHlsaW5rX21paV9jMjJfcGNzX2NvbmZpZygpLCBpdCBpcyBhY2Nlc3Npbmcg
+TUlJX0JNQ1IgYW55d2F5Lg0KDQpDb3VsZCBkbyAtIGRvIHdlIHRoaW5rIHRoZXJlJ3MgYW55IGhh
+cm0gaW4ganVzdCBkaXNhYmxpbmcgQk1DUl9JU09MQVRFDQppbiBhbGwgY2FzZXMgaW4gdGhhdCBm
+dW5jdGlvbj8NCg0KLS0gDQpSb2JlcnQgSGFuY29jaw0KU2VuaW9yIEhhcmR3YXJlIERlc2lnbmVy
+LCBBZHZhbmNlZCBUZWNobm9sb2dpZXMgDQp3d3cuY2FsaWFuLmNvbQ0K
