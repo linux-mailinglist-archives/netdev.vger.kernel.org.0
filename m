@@ -2,102 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDF0D292245
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 07:43:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95520292258
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 08:06:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726513AbgJSFnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 01:43:50 -0400
-Received: from mail-eopbgr20124.outbound.protection.outlook.com ([40.107.2.124]:40391
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        id S1726575AbgJSGGB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 02:06:01 -0400
+Received: from mail-eopbgr100092.outbound.protection.outlook.com ([40.107.10.92]:41621
+        "EHLO GBR01-LO2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725306AbgJSFnu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Oct 2020 01:43:50 -0400
+        id S1725306AbgJSGGB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Oct 2020 02:06:01 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ldUEtBpZzrpyAriTERSvXMILFIFj009fdDkKA3S3I7wvmkQv8J2ACR8zHmdIzOPIFn0Z7eOltW4Gi0VTgZYP2YR0+b4WTOm4K02To/6jtO54lAjBAMZzUd2tv2SOTWLVEW+ewE5r6DGJcti3UxUye5zCr7ita8yUuznQF/hnvZrIywDpUupaHb1YH7+q87fOMY8BxF/Mg9QzUYuNORn1HNp3Yo4RIPFtmPKzHFrkg5ixbw2WbPZ/I3HBCiEZGV1gstXN5C1oQOVSKGjO91Fzn1hhNr27Q08nSTuWqbtcFxSlJoYv6HlfPaR1LXjJy7rVO5/74QClk4zqN6cAu60uaA==
+ b=fp838OD9WtkVP9eLKA/Iai2EMK1JFLM36ysKNL52X23WbY8Htt9saS43bsJ8rlEjsIFifjufGujwiHom3TBcn4cOHP6rK27fvOJMtSJBnSIjbgQiOj9IlZx7jInxTcNGrHe5xZFnX1yngc+czYSs8wcdTOt5Ql3oPEBZdMwftaw1xEGMW64af/wFwbWQpGGwleEiPHKrebGpNzBFaOzAfY8DG5ZzTPwZt3wIxvYQ46O7tnmxF8IOGDswrasa5xdEBcJMLK3RWkqlTmuz2zWTYNMQH/tSOJPDWgNp7pCJOMGM2WtoTXhiIUjFPY24YApsM5ZHsB5GJez9MKAY4TTt8A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=k+I9idjkmv+21szPzuHkB0K7MMMDnLTIwTqyXT2NIiE=;
- b=TmX8wckbYv0/BhvQT/04Csoa+QWkJ8brBH/iazAZ0SKs4GWyPZDGHG7u3je7f3Mb46KrCBQM/h/d9nU3CILfq0R+n6otzjEyDcmsHL1LErLooJbv1h8uADZDHywPRhu5uhz6HN78xS9UhqBh0lsAoZi9p17laVSlArbFcLWE6BKqE5HxsPqWz6PprBwtRnBsenJFv6F7hGSh4+/rotc5cQl5EwQDriTnIuklbrhvPme7HSQ8tsKp9blQw3k46Q8JSX28H6QjMLZhGuXcFfP8vuanilM1UfPhvVbpfS05q9xoyTPJcWS29LUGAUbCy8p+B8B7k78iOIvIPX9GTTeK5A==
+ bh=+qeNcvlhCEwkGBuLD2qp0N/F8HuRUXeYqJ8mf3RwLJM=;
+ b=RMNwiR8QsHJyxlJ2LXqoz87LjyobgPgiGmvgMtIMgNfpHOOfJkdSYo2rUaTzTKGa9pBA213TAHzvLokDj0Jy8ODzAxbYHgzPAoij8aldON3I580WReENl/uCVGDtPyOFn16dJXEoVCWzA7i7n+tO3NPmORisiq6bV241DV+M/mvxv+UxeCRbGe6ecR2sMfZ44SS/VkZGoqGBD3ZRflXKK7GT52orgNG2BaUlL1OFT1zkCCQizgxxVjEMz+C/q7IhgBSTLF8FGTruZ0isS11zGmh4EUj4ugwdzOt22RM16EpTwQwUyO0AKjfIFGu39Z2ShQtseCA/6G13zwm1g+Bwog==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=voleatech.de; dmarc=pass action=none header.from=voleatech.de;
- dkim=pass header.d=voleatech.de; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=voleatech.de;
- s=selector2;
+ smtp.mailfrom=purelifi.com; dmarc=pass action=none header.from=purelifi.com;
+ dkim=pass header.d=purelifi.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=purevlc.onmicrosoft.com; s=selector2-purevlc-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=k+I9idjkmv+21szPzuHkB0K7MMMDnLTIwTqyXT2NIiE=;
- b=GF4wpg+UBWuhtVgXt/sUPxS25DfnaloED8AFp3Y5z19A1alDAXS+nA72PWKrY+7JFUypwMz8z1zFHQ84aCeMhXKfjSIp6u9RkRfAKTAb2CYN69e/OyexXIjv+V1hxYak5hxj2AhzPCVrdNHVBbPp1OftInoK4F9CaUAH8ypHEq4=
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=voleatech.de;
-Received: from AM8PR05MB7251.eurprd05.prod.outlook.com (2603:10a6:20b:1d4::23)
- by AM4PR0501MB2723.eurprd05.prod.outlook.com (2603:10a6:200:59::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.24; Mon, 19 Oct
- 2020 05:43:45 +0000
-Received: from AM8PR05MB7251.eurprd05.prod.outlook.com
- ([fe80::f132:2cc:34f2:5e4]) by AM8PR05MB7251.eurprd05.prod.outlook.com
- ([fe80::f132:2cc:34f2:5e4%7]) with mapi id 15.20.3477.028; Mon, 19 Oct 2020
- 05:43:45 +0000
-Date:   Mon, 19 Oct 2020 07:43:44 +0200
-From:   Sven Auhagen <sven.auhagen@voleatech.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        anthony.l.nguyen@intel.com, davem@davemloft.net,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        sandeep.penigalapati@intel.com, brouer@redhat.com
-Subject: Re: [PATCH v2 0/6] igb: xdp patches followup
-Message-ID: <20201019054344.ei3yp2d7fqobgd6q@SvensMacBookAir-2.local>
-References: <20201017071238.95190-1-sven.auhagen@voleatech.de>
- <20201018133951.GB34104@ranger.igk.intel.com>
- <20201018120336.4a662b4a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201018120336.4a662b4a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Originating-IP: [109.193.235.168]
-X-ClientProxiedBy: AM0PR06CA0115.eurprd06.prod.outlook.com
- (2603:10a6:208:ab::20) To AM8PR05MB7251.eurprd05.prod.outlook.com
- (2603:10a6:20b:1d4::23)
+ bh=+qeNcvlhCEwkGBuLD2qp0N/F8HuRUXeYqJ8mf3RwLJM=;
+ b=qOAddpFqHQeM1MolmRwG/9tfNGC22701NTBP9L1CGVJptQZkbSO10BzzG6TwSBUimfQ4Z9m9BM0PLEPTCPAvNtuqVaUlgIkbyKPi9BbVf9oG0Zd7WFBP6dQOCbVmS94ksEHU5avNAXq3UlRBr4GZAqSR9W4N5A21G0ZjN3j42Uc=
+Received: from LOYP265MB1918.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:ef::9) by
+ LO3P265MB2106.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:10b::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3477.25; Mon, 19 Oct 2020 06:05:57 +0000
+Received: from LOYP265MB1918.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::b8d7:c2a7:cbbd:6c2b]) by LOYP265MB1918.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::b8d7:c2a7:cbbd:6c2b%7]) with mapi id 15.20.3477.028; Mon, 19 Oct 2020
+ 06:05:57 +0000
+From:   Srinivasan Raju <srini.raju@purelifi.com>
+To:     Joe Perches <joe@perches.com>
+CC:     Mostafa Afgani <mostafa.afgani@purelifi.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS (WIRELESS)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] [v5] wireless: Initial driver submission for pureLiFi STA
+ devices
+Thread-Topic: [PATCH] [v5] wireless: Initial driver submission for pureLiFi
+ STA devices
+Thread-Index: AQHWpcZ65mM4/36TpU6KSYXahxubVameXJmAgAATXBw=
+Date:   Mon, 19 Oct 2020 06:05:57 +0000
+Message-ID: <LOYP265MB191823348BB322A96BBF9BA2E01E0@LOYP265MB1918.GBRP265.PROD.OUTLOOK.COM>
+References: <20201016063444.29822-1-srini.raju@purelifi.com>
+         <20201019031744.17916-1-srini.raju@purelifi.com>,<e59c0c575f9d9e1af8c6fdf2911cd9d028de257f.camel@perches.com>
+In-Reply-To: <e59c0c575f9d9e1af8c6fdf2911cd9d028de257f.camel@perches.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: perches.com; dkim=none (message not signed)
+ header.d=none;perches.com; dmarc=none action=none header.from=purelifi.com;
+x-originating-ip: [103.8.116.159]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b6d96af5-0833-46eb-ae33-08d873f50be0
+x-ms-traffictypediagnostic: LO3P265MB2106:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <LO3P265MB2106E2C70C50EF09FBA16288E01E0@LO3P265MB2106.GBRP265.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:2887;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: HLwn0zlTLgWEjyBPm1V+4ERd6edJPB0NHReHuSLMX1nEFdY6f6p0P2TplKpgUdernwoV9UoxXwZX4L9dDrInCvV2iKmqyg4Q87M3bol2xnJvtXMlFZvnsIXFr/nO8tByavwXGNKGka8qwW1LIu1T/9GUS2JSCohT5v5Agf8ku0j4Z5+uolDiysxTCVkmhOok3B9aySzNCZc1YiA8wYTHQGOyX8qYN26SiBKRQY5apb/Mfv6evSpOgYYZDnPqi1uSnRRF0zFR18pniL/A3q9vtnaApOdWY9ZaamBbWT1dPMbxUD8vDyr7poaF3a2pzwjVjAIdKEI/vlzSGlWtI6iwNA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LOYP265MB1918.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(6029001)(4636009)(366004)(39830400003)(396003)(346002)(136003)(376002)(71200400001)(186003)(52536014)(4326008)(9686003)(64756008)(66446008)(91956017)(76116006)(66946007)(558084003)(66476007)(66556008)(8676002)(33656002)(7416002)(55016002)(2906002)(6916009)(5660300002)(26005)(86362001)(54906003)(478600001)(316002)(6506007)(8936002)(7696005);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: a3GqZKJNGzIbIfRGEseewX7jnSj1hfF+ommNtOL6uZkUGDE8lme3bM5ahjhFhot3os2L2RPk2Klb9+ADtQBqR6OTForChkf2dGjx8dqdXLZlpdt7eURr/dBV4cAQ8K49K1gTg5/7VKNS8+ZHctD7yuBw9ogz8r14Kyke4i+MF61r+wuQCmG0h0lOrymOaj6SZN+x9KKVg/xjF5Y9aS0aaHjwY7KA8AbAtsEt46R5lHUh6uMmjEWKMrDfxRTVGlu1MIusvTjp336ctxxZTSHFWfLCXDz6hvsscis6C3uMLZ9agSpzQw2TYAybUqysKMHE5+8b5j3X5RE+xMLkcPe4+j4wsNKpqx1XEMaES+ch+ztYxDpj5GpLZdoEOsoHhwcQHFjt4RdBp3m4LgaevtIudvtI4rX1kTyNdtQ4hwoa0J3eG0MABOHkjUux6MEUlzOsbaFQJ/hsxH3jTUNS/eSMUz84Rti9EbNnlX64WMnz4ypx6sye0SDhhUSf9nK8bxg3Coh7phjQDLavkoiXrDmcD116huDPc6CBlQo+QYvGuz4xzK8R2FxWBTz8ZSdwuq3jQd0/BJ0EZy9V++RIZJHo7v2BUtf9a1OBQ8c2JXufhEU1hqXd5vSqFtly7uplGSL0cRQiW+UTE9KxioOPXdukRg==
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from SvensMacBookAir-2.local (109.193.235.168) by AM0PR06CA0115.eurprd06.prod.outlook.com (2603:10a6:208:ab::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.20 via Frontend Transport; Mon, 19 Oct 2020 05:43:44 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1f00e45c-2e5f-4cf0-5383-08d873f1f1a2
-X-MS-TrafficTypeDiagnostic: AM4PR0501MB2723:
-X-Microsoft-Antispam-PRVS: <AM4PR0501MB2723E3D56C52A1B6A59DA5B1EF1E0@AM4PR0501MB2723.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Y3b4tB4gXcE0xGJZ4cidla9JvH/i5Zvlt5czL4Rw8MRbYyNVlmwg4rpGkuASv6Nbq9q2uAvpkYcnblv0PSZi6R/cwYG5rkD7fOfJPnvgjIPXTrvkxD/8PmCXx2f7xGjNHmOJg8vbdn9sE9sQMTfhKYhpbnwXsQsJbIe484W6E46r0jve7NuLqQQhtHg2SnuF7Deg0u8ZqAhPTWmQ0w8yG6NJKr0+B0013i2TvZydm30w7eiZRae2PNHV9vvbu+QpRUl4SxuVs/EgpntP9/U2xJWyzsBdnM1rRvwOMlKtoy7FhNmGuojbQx6PB8rDWSUR
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR05MB7251.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(136003)(396003)(39830400003)(376002)(66946007)(5660300002)(2906002)(4744005)(52116002)(7416002)(956004)(6506007)(66476007)(55016002)(7696005)(316002)(16526019)(8936002)(86362001)(6916009)(44832011)(8676002)(66556008)(26005)(4326008)(1076003)(83380400001)(186003)(478600001)(9686003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: EfBrY4BW3cuw+SbmLkrJVEViFtIlJwzEt+Ap3jSeoDXnx2O9asL3ITguuBQiPhU48Qn6ryni+au4+WeILqvlrxkJ2WPZw7HXAOiBEl6UwcuE6l2u+akX5uHqbBjhCSj9uPBNRQ+7W5Bm0f+axOjtLW1elNV5vvt1sgVHICpKK4bL+yNFnA+uxjX6FpqvTFAsXl6wVM54yW7sbc6QO/hkMSayXnBrNuLDClclqDFiEKEuKwpKUccfWzyk24ZmauslISlql0FTa0EpXkKruQCHdYvxMkH60+IS8Oqtj8TDGhLrzmDlrfdJXey/88XgltFe0gLVoUVZOuIr1icdWvxg7W5x/NvU2oUhkbgiTDfnJu91r8qNg3TcfAkE77/STguuAQc/JwptIybEuepnLG9XFJvIRfxE8cfcDRsHVDouZQFBfqTIsCkZahw3sysbbV0xf/9JVjDtfl5ky5hxencK/pH2LJmrkkfCEeLaMmwGoghEcpNTzc4K1mrzl50ahiBUEhtOW+MmLR8MYuV4gAjkdx0JxGt0D+Qx9FWb60QCFFkgH8hXUIBaodagYgdPauUOxblDQTY9VhbOjFnggUuMR7PPHU5G2dKu4nhoH/Z2WEUvrlZMGn2eyhmZ3TB4toXMN0MiE8T7Gla8ESoy7EE3wQ==
-X-OriginatorOrg: voleatech.de
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1f00e45c-2e5f-4cf0-5383-08d873f1f1a2
-X-MS-Exchange-CrossTenant-AuthSource: AM8PR05MB7251.eurprd05.prod.outlook.com
+X-OriginatorOrg: purelifi.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2020 05:43:45.3395
+X-MS-Exchange-CrossTenant-AuthSource: LOYP265MB1918.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: b6d96af5-0833-46eb-ae33-08d873f50be0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Oct 2020 06:05:57.5380
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: b82a99f6-7981-4a72-9534-4d35298f847b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +pexsxA/ZLUYjUrdvJfjMW4kqX8PGp0l63OVR//DOOHqGJzZUZLCIyGN9RW2cqXSX0eDpRyF3OdXxw1GR3xeJ7xNPHq0zCnryGtY1f4NTJo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2723
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5cf4eba2-7b8f-4236-bed4-a2ac41f1a6dc
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: FfbG/Kp+qyUP2jM4k4Jc2kNRUu5tuvx80DS9VZcZnb46rtpUN+lLPoSkNK3Lz3cHv714N2zFGYS9fXJwyKVrsQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LO3P265MB2106
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 18, 2020 at 12:03:36PM -0700, Jakub Kicinski wrote:
-> On Sun, 18 Oct 2020 15:39:51 +0200 Maciej Fijalkowski wrote:
-> > - next time please specify the tree in the subject that you're targetting
-> >   this set to land; is it net or net-next? net-next is currently closed so
-> >   you probably would have to come back with this once it will be open
-> >   again
-> 
-> Most of the patches here look like fixes, so we can take them into net
-> but please repost them rather soon.
-
-I will repost them today.
-
-Best
-Sven
-
+=0A=
+Mostly trivial comments:=0A=
+=0A=
+>> Ok Thanks, I will address them=
