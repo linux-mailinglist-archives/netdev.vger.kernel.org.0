@@ -2,124 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B1E929282F
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 15:30:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E37B22926E9
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 14:05:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728047AbgJSNap (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 09:30:45 -0400
-Received: from mx0a-00191d01.pphosted.com ([67.231.149.140]:23630 "EHLO
-        mx0a-00191d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727297AbgJSNao (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 09:30:44 -0400
-Received: from pps.filterd (m0049295.ppops.net [127.0.0.1])
-        by m0049295.ppops.net-00191d01. (8.16.0.42/8.16.0.42) with SMTP id 09JC4GIC034612;
-        Mon, 19 Oct 2020 08:05:10 -0400
-Received: from tlpd255.enaf.dadc.sbc.com (sbcsmtp3.sbc.com [144.160.112.28])
-        by m0049295.ppops.net-00191d01. with ESMTP id 348e4h76dp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 19 Oct 2020 08:05:10 -0400
-Received: from enaf.dadc.sbc.com (localhost [127.0.0.1])
-        by tlpd255.enaf.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id 09JC58Rf051249;
-        Mon, 19 Oct 2020 07:05:09 -0500
-Received: from zlp30496.vci.att.com (zlp30496.vci.att.com [135.46.181.157])
-        by tlpd255.enaf.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id 09JC53gQ051157
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Mon, 19 Oct 2020 07:05:03 -0500
-Received: from zlp30496.vci.att.com (zlp30496.vci.att.com [127.0.0.1])
-        by zlp30496.vci.att.com (Service) with ESMTP id A1654403A420;
-        Mon, 19 Oct 2020 12:05:03 +0000 (GMT)
-Received: from tlpd252.dadc.sbc.com (unknown [135.31.184.157])
-        by zlp30496.vci.att.com (Service) with ESMTP id 88A5A4016998;
-        Mon, 19 Oct 2020 12:05:03 +0000 (GMT)
-Received: from dadc.sbc.com (localhost [127.0.0.1])
-        by tlpd252.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id 09JC53KH002202;
-        Mon, 19 Oct 2020 07:05:03 -0500
-Received: from mail.eng.vyatta.net (mail.eng.vyatta.net [10.156.50.82])
-        by tlpd252.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id 09JC4w3o001664;
-        Mon, 19 Oct 2020 07:04:58 -0500
-Received: from [10.156.47.164] (unknown [10.156.47.164])
-        by mail.eng.vyatta.net (Postfix) with ESMTPA id 9F0FF360059;
-        Mon, 19 Oct 2020 05:04:27 -0700 (PDT)
-Reply-To: mmanning@vyatta.att-mail.com
-Subject: Re: Why revert commit 2271c95 ("vrf: mark skb for multicast or
- link-local as enslaved to VRF")?
-To:     David Ahern <dsahern@gmail.com>,
-        Stephen Suryaputra <ssuryaextr@gmail.com>
-Cc:     netdev@vger.kernel.org, sashal@kernel.org
-References: <20201018132436.GA11729@ICIPI.localdomain>
- <75fda8c7-adf3-06a4-298f-b75ac6e6969b@gmail.com>
- <20201018160624.GB11729@ICIPI.localdomain>
- <33c7f9b3-aec6-6327-53b3-3b54f74ddcf6@gmail.com>
-From:   Mike Manning <mmanning@vyatta.att-mail.com>
-Message-ID: <544357d4-1481-8563-323a-addf8b89d9e4@vyatta.att-mail.com>
-Date:   Mon, 19 Oct 2020 13:04:26 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1726588AbgJSMFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 08:05:37 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:34504 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726015AbgJSMFg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Oct 2020 08:05:36 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kUTuw-002UQp-6t; Mon, 19 Oct 2020 14:05:34 +0200
+Date:   Mon, 19 Oct 2020 14:05:34 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        Christian Eggers <ceggers@arri.de>,
+        Kurt Kanzenbach <kurt@linutronix.de>
+Subject: Re: [RFC PATCH 01/13] net: dsa: add plumbing for custom netdev
+ statistics
+Message-ID: <20201019120534.GL456889@lunn.ch>
+References: <20201017213611.2557565-2-vladimir.oltean@nxp.com>
+ <06538edb-65a9-c27f-2335-9213322bed3a@gmail.com>
+ <20201018121640.jwzj6ivpis4gh4ki@skbuf>
+ <19f10bf4-4154-2207-6554-e44ba05eed8a@gmail.com>
+ <20201018134843.emustnvgyby32cm4@skbuf>
+ <2ae30988-5918-3d02-87f1-e65942acc543@gmail.com>
+ <20201018225820.b2vhgzyzwk7vy62j@skbuf>
+ <b43ad106-9459-0ce9-0999-a6e46af36782@gmail.com>
+ <20201019002123.nzi2zhfak3r3lis3@skbuf>
+ <da422046-fc3e-9aba-88d1-e7a4d3a74843@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <33c7f9b3-aec6-6327-53b3-3b54f74ddcf6@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-10-19_05:2020-10-16,2020-10-19 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_policy_notspam policy=outbound_policy score=0 bulkscore=0
- malwarescore=0 suspectscore=0 spamscore=0 adultscore=0 impostorscore=0
- priorityscore=1501 clxscore=1011 lowpriorityscore=0 mlxlogscore=999
- mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010190087
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <da422046-fc3e-9aba-88d1-e7a4d3a74843@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/10/2020 02:53, David Ahern wrote:
-> On 10/18/20 10:06 AM, Stephen Suryaputra wrote:
->> $ git --no-pager show afed1a4
->>
->> commit afed1a4dbb76c81900f10fd77397fb91ad442702
->> Author: Sasha Levin <sashal@kernel.org>
->> Date:   Mon Mar 23 16:21:31 2020 -0400
->>
->>     Revert "vrf: mark skb for multicast or link-local as enslaved to VRF"
->>     
->>     This reverts commit 2271c9500434af2a26b2c9eadeb3c0b075409fb5.
->>     
->>     This patch shouldn't have been backported to 4.14.
->>     
->>     Signed-off-by: Sasha Levin <sashal@kernel.org>
->>
-> My response last November was:
->
-> 'backporting this patch and it's bug fix, "ipv6: Fix handling of LLA
-> with VRF and sockets bound to VRF" to 4.14 is a bit questionable. They
-> definitely do not need to come back to 4.9.'
->
-> Basically, my point is that this is work that was committed to 4.19-next
-> I believe and given the state of the VRF feature over the releases, I
-> could not confirm for 4.14 that everything works as intended. Hence, the
-> comment about it being questionable.
->
-> If you / your company are actively using and testing VRF on 4.14 and can
-> confirm it works, then I am fine with the patch (and its bugfix) getting
-> applied.
+On Sun, Oct 18, 2020 at 08:49:31PM -0700, Florian Fainelli wrote:
+> 
+> 
+> On 10/18/2020 5:21 PM, Vladimir Oltean wrote:
+> > On Sun, Oct 18, 2020 at 04:11:14PM -0700, Florian Fainelli wrote:
+> > > How about when used as a netconsole? We do support netconsole over DSA
+> > > interfaces.
+> > 
+> > How? Who is supposed to bring up the master interface, and when?
+> > 
+> 
+> You are right that this appears not to work when configured on the kernel
+> command line:
+> 
+> [    6.836910] netpoll: netconsole: local port 4444
+> [    6.841553] netpoll: netconsole: local IPv4 address 192.168.1.10
+> [    6.847582] netpoll: netconsole: interface 'gphy'
+> [    6.852305] netpoll: netconsole: remote port 9353
+> [    6.857030] netpoll: netconsole: remote IPv4 address 192.168.1.254
+> [    6.863233] netpoll: netconsole: remote ethernet address
+> b8:ac:6f:80:af:7e
+> [    6.870134] netpoll: netconsole: device gphy not up yet, forcing it
+> [    6.876428] netpoll: netconsole: failed to open gphy
+> [    6.881412] netconsole: cleaning up
+> 
+> looking at my test notes from 2015 when it was added, I had only tested
+> dynamic netconsole while the network devices have already been brought up
+> which is why I did not catch it. Let me see if I can fix that somehow.
 
-Hi,
+Hi Florian
 
-This fix is part of a series "vrf: allow simultaneous service instances
-in default and other VRFs" that is present in 5.x kernels and should not
-be used in isolation.
+NFS root used to work, so there must be some code in the kernel to
+bring the master interface up. Might just need copy/pasting.
 
-But it was at a later stage erroneously backported as a standalone fix
-(without the rest of the series) to 4.14 and 4.19.
-
-So it was reverted from these kernels, especially as it was causing this
-regression:
-
-VRF: All router multicast entry(FF02:2) not added to VRF Dev but added
-on VLAN Dev
-
-Sorry for any inconvenience.
-
-Thanks, Mike
-
-
-
+      Andrew
