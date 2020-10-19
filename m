@@ -2,92 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 795F4292A46
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 17:23:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BCF5292A48
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 17:23:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730055AbgJSPXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 11:23:02 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:56606 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729544AbgJSPXC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 11:23:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603120981;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=UoOZbVKyramBVGxWgdJkweMRLt/aT1VjN8t5l7Vev1Q=;
-        b=EhrBu/yK6Xj4+bFghTsFK2amIHDtg/LVxHePK5Ht8GIFHOU1fCBIOO45lKXrMs6CUR65iy
-        0hisQR89nH8RfhjJptCfpr0RjOeh6WFfx6NpV4M8rCKuPJlkBG6EPlsmiUe3aaMN8361F/
-        hZCPQE0hafgXApVNVaJ+Iw4iIAh6yik=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-410-r6eZeZXaNgeOXOK2BKBvhA-1; Mon, 19 Oct 2020 11:22:59 -0400
-X-MC-Unique: r6eZeZXaNgeOXOK2BKBvhA-1
-Received: by mail-wr1-f69.google.com with SMTP id t3so21107wrq.2
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 08:22:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=UoOZbVKyramBVGxWgdJkweMRLt/aT1VjN8t5l7Vev1Q=;
-        b=jiyRIh7zLvcLFNdo6oC4ho5TVhnK1DQdVTrYh8JKQVatiXS9dbFagac2v2ITjG0xj/
-         WSkm+4pgerixt+cOLsQukt+WYTNUDa92XS+hQII9I58suaaxL92OPGjjSUS1/Dv/jKxL
-         4MFmbXMSccFel8OehSX/WuhuDzdVnxxG2eqGoZVguKzH8qk6feIJ9cznhodbd2GDal35
-         KrbJW4VEB2v4aJc6DMru45vVa8b79Be0VTMvmHYgqjKUGR6/3JcKrCp7low52OnLnLgx
-         kLJQP/tAIFS81zM33m0g2z1+4E7hnGIvdl+0m6lN76+3GF9UJhK5HfuWfb4uZVnEpFwI
-         QODQ==
-X-Gm-Message-State: AOAM530f3qtzx+9/Tk54p59IYrAKQgZba7SalibFDZyNt5RbpGPuvx7i
-        UmA4m45OnJTosQ+NmomyAha+9pV3R5j3NZO3V08atU5sKXCqoCwhWi8xcaQC1fNavCMmv/Sc2ka
-        SZvZmmMKgnAvRpWNm
-X-Received: by 2002:adf:97da:: with SMTP id t26mr5745wrb.321.1603120977811;
-        Mon, 19 Oct 2020 08:22:57 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwLtwdQg51zcZJITvPkzgcjw4joPFall1nP0ez+AIdbHbIz/Rw3CW4O0zfwm0xj43256McgLA==
-X-Received: by 2002:adf:97da:: with SMTP id t26mr5730wrb.321.1603120977650;
-        Mon, 19 Oct 2020 08:22:57 -0700 (PDT)
-Received: from pc-2.home (2a01cb058d4f8400c9f0d639f7c74c26.ipv6.abo.wanadoo.fr. [2a01:cb05:8d4f:8400:c9f0:d639:f7c7:4c26])
-        by smtp.gmail.com with ESMTPSA id e7sm97944wrm.6.2020.10.19.08.22.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Oct 2020 08:22:56 -0700 (PDT)
-Date:   Mon, 19 Oct 2020 17:22:55 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, martin.varghese@nokia.com
-Subject: [PATCH v2 iproute2-next 0/2] tc: support for new MPLS L2 VPN actions
-Message-ID: <cover.1603120726.git.gnault@redhat.com>
+        id S1730097AbgJSPXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 11:23:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49940 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729544AbgJSPXD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 11:23:03 -0400
+Received: from fieldses.org (fieldses.org [IPv6:2600:3c00:e000:2f7::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D22D2C0613CE;
+        Mon, 19 Oct 2020 08:23:02 -0700 (PDT)
+Received: by fieldses.org (Postfix, from userid 2815)
+        id E5ADBAAD; Mon, 19 Oct 2020 11:23:01 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 fieldses.org E5ADBAAD
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fieldses.org;
+        s=default; t=1603120981;
+        bh=lT5xtlsxdwOYkecuDWJlMrE8tDokDHNn495zYSF9O6g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=joviL40jSOAtezsmhplLPOD506JpAKoE7uAJXqz9d5tKuxsgLjzu7RUEVujcEdkZe
+         hZi5lpwnRHX4cywOrMhkd5Wui10LqL4MCOg9YVE/veJ6ilSTIsnTw8Uq6RZpEBlFdK
+         ObD5ClmzEJkWXd77ArKXZpDkLAjIxqiljgfasrDk=
+Date:   Mon, 19 Oct 2020 11:23:01 -0400
+From:   "J. Bruce Fields" <bfields@fieldses.org>
+To:     Martijn de Gouw <martijn.de.gouw@prodrive-technologies.com>
+Cc:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, NeilBrown <neilb@suse.de>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Roberto Bergantinos Corpas <rbergant@redhat.com>,
+        "open list:NFS, SUNRPC, AND LOCKD CLIENTS" 
+        <linux-nfs@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] SUNRPC: fix copying of multiple pages in
+ gss_read_proxy_verf()
+Message-ID: <20201019152301.GC32403@fieldses.org>
+References: <20201019114229.52973-1-martijn.de.gouw@prodrive-technologies.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20201019114229.52973-1-martijn.de.gouw@prodrive-technologies.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series adds the possibility for TC to tunnel Ethernet frames
-over MPLS.
+On Mon, Oct 19, 2020 at 01:42:27PM +0200, Martijn de Gouw wrote:
+> When the passed token is longer than 4032 bytes, the remaining part
+> of the token must be copied from the rqstp->rq_arg.pages. But the
+> copy must make sure it happens in a consecutive way.
 
-Patch 1 allows adding or removing the Ethernet header.
-Patch 2 allows pushing an MPLS LSE before the MAC header.
+Thanks.  Apologies, but I don't immediately see where the copy is
+non-consecutive.  What exactly is the bug in the existing code?
 
-By combining these actions, it becomes possible to encapsulate an
-entire Ethernet frame into MPLS, then add an outer Ethernet header
-and send the resulting frame to the next hop.
+--b.
 
-v2: trivial coding style fix (line wrap).
-
-Guillaume Nault (2):
-  m_vlan: add pop_eth and push_eth actions
-  m_mpls: add mac_push action
-
- lib/ll_proto.c            |  1 +
- man/man8/tc-mpls.8        | 44 ++++++++++++++++++--
- man/man8/tc-vlan.8        | 44 ++++++++++++++++++--
- tc/m_mpls.c               | 43 ++++++++++++++------
- tc/m_vlan.c               | 69 +++++++++++++++++++++++++++++++
- testsuite/tests/tc/mpls.t | 69 +++++++++++++++++++++++++++++++
- testsuite/tests/tc/vlan.t | 86 +++++++++++++++++++++++++++++++++++++++
- 7 files changed, 337 insertions(+), 19 deletions(-)
- create mode 100755 testsuite/tests/tc/mpls.t
- create mode 100755 testsuite/tests/tc/vlan.t
-
--- 
-2.21.3
-
+> 
+> Signed-off-by: Martijn de Gouw <martijn.de.gouw@prodrive-technologies.com>
+> ---
+>  net/sunrpc/auth_gss/svcauth_gss.c | 27 +++++++++++++++++----------
+>  1 file changed, 17 insertions(+), 10 deletions(-)
+> 
+> diff --git a/net/sunrpc/auth_gss/svcauth_gss.c b/net/sunrpc/auth_gss/svcauth_gss.c
+> index 258b04372f85..bd4678db9d76 100644
+> --- a/net/sunrpc/auth_gss/svcauth_gss.c
+> +++ b/net/sunrpc/auth_gss/svcauth_gss.c
+> @@ -1147,9 +1147,9 @@ static int gss_read_proxy_verf(struct svc_rqst *rqstp,
+>  			       struct gssp_in_token *in_token)
+>  {
+>  	struct kvec *argv = &rqstp->rq_arg.head[0];
+> -	unsigned int page_base, length;
+> -	int pages, i, res;
+> -	size_t inlen;
+> +	unsigned int length, pgto_offs, pgfrom_offs;
+> +	int pages, i, res, pgto, pgfrom;
+> +	size_t inlen, to_offs, from_offs;
+>  
+>  	res = gss_read_common_verf(gc, argv, authp, in_handle);
+>  	if (res)
+> @@ -1177,17 +1177,24 @@ static int gss_read_proxy_verf(struct svc_rqst *rqstp,
+>  	memcpy(page_address(in_token->pages[0]), argv->iov_base, length);
+>  	inlen -= length;
+>  
+> -	i = 1;
+> -	page_base = rqstp->rq_arg.page_base;
+> +	to_offs = length;
+> +	from_offs = rqstp->rq_arg.page_base;
+>  	while (inlen) {
+> -		length = min_t(unsigned int, inlen, PAGE_SIZE);
+> -		memcpy(page_address(in_token->pages[i]),
+> -		       page_address(rqstp->rq_arg.pages[i]) + page_base,
+> +		pgto = to_offs >> PAGE_SHIFT;
+> +		pgfrom = from_offs >> PAGE_SHIFT;
+> +		pgto_offs = to_offs & ~PAGE_MASK;
+> +		pgfrom_offs = from_offs & ~PAGE_MASK;
+> +
+> +		length = min_t(unsigned int, inlen,
+> +			 min_t(unsigned int, PAGE_SIZE - pgto_offs,
+> +			       PAGE_SIZE - pgfrom_offs));
+> +		memcpy(page_address(in_token->pages[pgto]) + pgto_offs,
+> +		       page_address(rqstp->rq_arg.pages[pgfrom]) + pgfrom_offs,
+>  		       length);
+>  
+> +		to_offs += length;
+> +		from_offs += length;
+>  		inlen -= length;
+> -		page_base = 0;
+> -		i++;
+>  	}
+>  	return 0;
+>  }
+> -- 
+> 2.20.1
