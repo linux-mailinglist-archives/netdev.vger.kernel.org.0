@@ -2,72 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49CCB2920CF
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 03:00:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D5912920D7
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 03:09:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730281AbgJSBAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 21:00:31 -0400
-Received: from one.firstfloor.org ([193.170.194.197]:51490 "EHLO
-        one.firstfloor.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730273AbgJSBAa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Oct 2020 21:00:30 -0400
-Received: by one.firstfloor.org (Postfix, from userid 503)
-        id 7642686899; Mon, 19 Oct 2020 03:00:27 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=firstfloor.org;
-        s=mail; t=1603069227;
-        bh=x0qX4wCgYOfhUPOO64BV9loj3gVnQ4gOoP1bm12yY8M=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=A5L6BTdb2FvR2/pac+Nz1si3UzQaDXoiVHeooXCQQaaw2BR3TUHNGGlmn3B4Y1UvS
-         Fva9ybfxcrXrLS17A7EqQGAV1u+Cmk8ykao6ILegPm7OTaj2RK1KfCPipVElPntWdm
-         KOmF6BTZAWh8RSPYIY/cWyJl4+LXXeqNjL5aTvU0=
-Date:   Sun, 18 Oct 2020 18:00:27 -0700
-From:   Andi Kleen <andi@firstfloor.org>
-To:     Or Gerlitz <gerlitz.or@gmail.com>
-Cc:     Andi Kleen <andi@firstfloor.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Brendan Gregg <bgregg@netflix.com>,
-        Linux Netdev List <netdev@vger.kernel.org>
-Subject: Re: perf measure for stalled cycles per instruction on newer Intel
- processors
-Message-ID: <20201019010026.x72tmoqv6uh76ene@two.firstfloor.org>
-References: <CAJ3xEMiOtDe5OeC8oT2NyVu5BEmH_eLgAAH4voLqejWgsvG4xQ@mail.gmail.com>
- <20201015183352.o4zmciukdrdvvdj4@two.firstfloor.org>
- <CAJ3xEMgKfgbpxzxx595bG=bRM-ETm4vJfWALR3p-wVzzcHxHSw@mail.gmail.com>
+        id S1730340AbgJSBJY convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 18 Oct 2020 21:09:24 -0400
+Received: from szxga03-in.huawei.com ([45.249.212.189]:3985 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728329AbgJSBJY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Oct 2020 21:09:24 -0400
+Received: from dggemi403-hub.china.huawei.com (unknown [172.30.72.55])
+        by Forcepoint Email with ESMTP id 6502BF1412B45060C8FD;
+        Mon, 19 Oct 2020 09:09:22 +0800 (CST)
+Received: from DGGEMI532-MBX.china.huawei.com ([169.254.7.245]) by
+ dggemi403-hub.china.huawei.com ([10.3.17.136]) with mapi id 14.03.0487.000;
+ Mon, 19 Oct 2020 09:09:15 +0800
+From:   "zhudi (J)" <zhudi21@huawei.com>
+To:     Michal Kubecek <mkubecek@suse.cz>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Chenxiang (EulerOS)" <rose.chen@huawei.com>
+Subject: Re: [PATCH] rtnetlink: fix data overflow in rtnl_calcit()
+Thread-Topic: [PATCH] rtnetlink: fix data overflow in rtnl_calcit()
+Thread-Index: AdaltF/2pdXbTlz+SPCCd1/pwXEigg==
+Date:   Mon, 19 Oct 2020 01:09:15 +0000
+Message-ID: <0DCA8173C37AD8458D6BA40EB0C660918CA659@DGGEMI532-MBX.china.huawei.com>
+Accept-Language: en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.136.114.155]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAJ3xEMgKfgbpxzxx595bG=bRM-ETm4vJfWALR3p-wVzzcHxHSw@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > Don't use it. It's misleading on a out-of-order CPU because you don't
-> > know if it's actually limiting anything.
+ > On Fri, Oct 16, 2020 at 10:02:38AM +0800, zhudi wrote:
+> > "ip addr show" command execute error when we have a physical network
+> > card with number of VFs larger than 247.
 > >
-> > If you want useful bottleneck data use --topdown.
+> > The return value of if_nlmsg_size() in rtnl_calcit() will exceed range
+> > of u16 data type when any network cards has a larger number of VFs.
+> > rtnl_vfinfo_size() will significant increase needed dump size when the
+> > value of num_vfs is larger.
+> >
+> > Eventually we get a wrong value of min_ifinfo_dump_size because of
+> > overflow which decides the memory size needed by netlink dump and
+> > netlink_dump() will return -EMSGSIZE because of not enough memory was
+> allocated.
+> >
+> > So fix it by promoting  min_dump_alloc data type to u32 to avoid data
+> > overflow and it's also align with the data type of struct
+> > netlink_callback{}.min_dump_alloc which is assigned by return value of
+> > rtnl_calcit()
 > 
-> So running again, this time with the below params, I got this output
-> where all the right most column is colored red. I wonder what can be
-> said on the amount/ratio of stalls for this app - if you can maybe recommend
-> some posts of yours to better understand that, I saw some comment in the
-> perf-stat man page and some lwn article but wasn't really able to figure it out.
+> Unfortunately this is only part of the problem. For a NIC with so many VFs
+> (not sure if exactly 247 but it's close to that), IFLA_VFINFO_LIST nested
+> attribute itself would be over 64KB long which is not possible as attribute size
+> is u16.
+> 
+> So we should rather fail in such case (except when IFLA_VFINFO_LIST itself
+> fits into 64KB but the whole netlink message would not) and provide an
+> alternative way to get information about all VFs.
 
-TopDown determines what limits the execution the most.
-
-The application is mostly backend bound (55-72%). This can be either memory
-issues (more common), or sometimes also execution issues. Standard perf
-doesn't support a further break down beyond these high level categories,
-but there are alternative tools that do (e.g. mine is "toplev" in
-https://github.com/andikleen/pmu-tools or VTune)
-
-Some references on TopDown:
-https://github.com/andikleen/pmu-tools/wiki/toplev-manual
-http://bit.ly/tma-ispass14
-
-The tools above would also allow you to sample where the stalls
-are occuring.
-
--Andi
+Thanks for your replying,  it's right. The patch only fix the situation that IFLA_VFINFO_LIST itself
+fits into 64KB but the whole netlink message would not.
 
