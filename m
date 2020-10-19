@@ -2,139 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 50BF1292C95
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 19:23:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 860B1292C9A
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 19:24:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730878AbgJSRXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 13:23:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41048 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730336AbgJSRXk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 13:23:40 -0400
-Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA027C0613D0
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 10:23:39 -0700 (PDT)
-Received: by mail-lf1-x142.google.com with SMTP id l28so392480lfp.10
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 10:23:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iyXXWfOQa+1d+k4Kfi8s1b5PhoxBW70UL1MRANY5iTA=;
-        b=o9jkQBUpkBGEwOPcru1DIzTI4hADMkSZb2pfw2EQWRKUHSYKt6lOgBGbe0/PbjBsyj
-         gkCeKyOJfMcHu8JQBuIGXYq2bMyUO23p7qpUH07+K7VJuHC15dj9M6Jixv+0kGJ3I484
-         bibfM3wj1lSg02RVEGxrX4Vn06BnYQ9Fkpzq6GOiAp/P6ZC5OVnYSRqS0zxc14K0j6WJ
-         cCjXupRPGQ3TQDsCBLaS0PxaOBRob35h4AyY0tvNebkGYNGxcnr2o07kc5d9g5o6COFY
-         ILq2uDK4Y0klCUbaiEoIjmZxvz8kx/FNpsGUPC+D11xVFrfoxaJk055Yiql09wfYplO5
-         TC/w==
+        id S1731033AbgJSRYW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 13:24:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33503 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730186AbgJSRYW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 13:24:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603128261;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=GlNRdQUy+AGKN2OBLvxM70f2rqnujuydEmx9LlvXhbI=;
+        b=PGIT5IWEb8BBQWYvfEAvxxpioKhjAnMpXzvP82MrRX8SWQ4pD48w/WfPeAdbSeJ3NDZc0i
+        0rYebwmlYu2Knvek1zNFhtHOk7CrdPXPn4zrJsWCgFRP/F0DtwYGrxtwaEzTCxNY2UlVEI
+        W0sbwW3+cfucGjij0CsqHhCMVgdk3OQ=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-463-j5xyVmvVMMClELReIpyV6A-1; Mon, 19 Oct 2020 13:24:19 -0400
+X-MC-Unique: j5xyVmvVMMClELReIpyV6A-1
+Received: by mail-qt1-f200.google.com with SMTP id l12so370911qtu.22
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 10:24:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iyXXWfOQa+1d+k4Kfi8s1b5PhoxBW70UL1MRANY5iTA=;
-        b=g84pTZlLTFA4yY58vipCSBe87ev1IQ+Q313C8H5qAc8fNEYF/tskSHPVinpbOiqfvK
-         RcDFAeOCiQsN5DJ1+9OXXV9gbEemcirn7+G/RuH5Lweoo1X0922SYn14C5tqMuWl9h/1
-         vebq9oNTmyudjnTokR4nuZot3LyTAzUz//kK55P9hWTjI/CMdZ1FouFbTQqqJ9dx5lPu
-         6xCmG3H2gI1g1tpOpaKKJlGKKlCcTj1+v97/wuXzrbG/beUigHjsy0U1ZUVk081DNSvv
-         KQE+dbZGbrgxawnfv3sQHsNfi1fp9JEaMVslvhu/JzdE+ud6BS3njc3EPggMntCN7mVg
-         OOpg==
-X-Gm-Message-State: AOAM532d3hI+SQifwxxmM+sH7mEEy0p0lzfrMYCDWAHOuNqUY9Gm8qmD
-        KS2KhO3NzGlr74QvLH6nGLkou1Rp3suI6/n/RYxQmQ==
-X-Google-Smtp-Source: ABdhPJwSXb1dY6AgaVzNQLt+reDscKrvoARfXRBXfeo2h9MZNArk1CXUTqLg5bs0YhI3mYrfPTwBL8qmTMYBnfbcX4E=
-X-Received: by 2002:a19:d10:: with SMTP id 16mr216317lfn.385.1603128217818;
- Mon, 19 Oct 2020 10:23:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201010103854.66746-1-songmuchun@bytedance.com>
- <CAM_iQpUQXctR8UBNRP6td9dWTA705tP5fWKj4yZe9gOPTn_8oQ@mail.gmail.com>
- <CAMZfGtUhVx_iYY3bJZRY5s1PG0N1mCsYGS9Oku8cTqPiMDze-g@mail.gmail.com>
- <CANn89iKprp7WYeZy4RRO5jHykprnSCcVBc7Tk14Ui_MA9OK7Fg@mail.gmail.com>
- <CAMZfGtXVKER_GM-wwqxrUshDzcEg9FkS3x_BaMTVyeqdYPGSkw@mail.gmail.com>
- <9262ea44-fc3a-0b30-54dd-526e16df85d1@gmail.com> <CAMZfGtVF6OjNuJFUExRMY1k-EaDS744=nKy6_a2cYdrJRncTgQ@mail.gmail.com>
- <20201013080906.GD4251@kernel.org> <8d1558e7-cd09-1f9e-edab-5f22c5bfc342@suse.cz>
- <20201016205336.GE1976566@google.com>
-In-Reply-To: <20201016205336.GE1976566@google.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Mon, 19 Oct 2020 10:23:26 -0700
-Message-ID: <CALvZod78tJDZauFvYfWmMyd+Z3Ci7Lsruyd_-nU00WL0EjN6vQ@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH] mm: proc: add Sock to /proc/meminfo
-To:     Minchan Kim <minchan@kernel.org>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Greg KH <gregkh@linuxfoundation.org>, rafael@kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Dobriyan <adobriyan@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Will Deacon <will@kernel.org>, Michal Hocko <mhocko@suse.com>,
-        Roman Gushchin <guro@fb.com>, Neil Brown <neilb@suse.de>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Feng Tang <feng.tang@intel.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Florian Westphal <fw@strlen.de>, gustavoars@kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Michel Lespinasse <walken@google.com>,
-        Jann Horn <jannh@google.com>, chenqiwu@xiaomi.com,
-        Christophe Leroy <christophe.leroy@c-s.fr>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Kees Cook <keescook@chromium.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>,
-        Michael Kerrisk <mtk.manpages@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=GlNRdQUy+AGKN2OBLvxM70f2rqnujuydEmx9LlvXhbI=;
+        b=tCRFjjmF4DvtjxFtMILWlk9e6lJat+YXoeA9cqVYq+QdrgIuxNTCKgq2hxf72ZYvqU
+         o+thWPVJZm398OtQLd+JAV2v2/QJsq8dC3uxIjVBVoGErcJ7LqmTed5jY1Vje8xdNWYe
+         ieyqqhW7SJN0K3IaMFHhNDROBXGR5JraDl4PsMEo8a6PayaKRHEk/OHtQa2weLMQIAfk
+         uOitrlhw2t1t18MRrRTQxsbr4JwIVfnSq/FbGmbc0O9sJD/Yq/bjjx969NNgC809pf4j
+         lW03M+FIsBIW0GMPhyjTPB+luxhHUuMyYcdNwqGZlWez2VmVkv4FOQp7UsVWycIQq1RV
+         B+DA==
+X-Gm-Message-State: AOAM531/bTQPTumC/s/SvwtRSK79Od3BlOXBhtwWh1KF7X8WBqB9p2MY
+        BajeoC9CKFIXhFihpEXyS7DeAM5i7RCod9Hh87kkG3a7cZMucx9MHvvQfc32kMpPqd+sCwUwdHo
+        bbC9gDbIEZ7FkohHA
+X-Received: by 2002:ad4:456c:: with SMTP id o12mr941401qvu.48.1603128259073;
+        Mon, 19 Oct 2020 10:24:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy1IY0STp8Q6ypEf1lWhvSs2JcyK6xaHXzjj4/dVdBi8JhNegNGdN/AJqDRKfg+58L+7+NNYg==
+X-Received: by 2002:ad4:456c:: with SMTP id o12mr941370qvu.48.1603128258823;
+        Mon, 19 Oct 2020 10:24:18 -0700 (PDT)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id s22sm222627qtc.33.2020.10.19.10.24.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Oct 2020 10:24:18 -0700 (PDT)
+From:   trix@redhat.com
+To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
+        kuba@kernel.org, thomas.kopp@microchip.com,
+        dan.carpenter@oracle.com, dev.kurt@vandijck-laurijssen.be
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] net: can: remove unneeded break
+Date:   Mon, 19 Oct 2020 10:24:12 -0700
+Message-Id: <20201019172412.31143-1-trix@redhat.com>
+X-Mailer: git-send-email 2.18.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CCed: Paolo Bonzini
+From: Tom Rix <trix@redhat.com>
 
-On Fri, Oct 16, 2020 at 1:53 PM Minchan Kim <minchan@kernel.org> wrote:
-[snip]
-> > And there might be others, and adding everything to /proc/meminfo is not
-> > feasible. I have once proposed adding a counter called "Unaccounted:" which
-> > would at least tell the user easily if a significant portion is occupied by
-> > memory not explained by the other meminfo counters, and look for trends
-> > (increase = potential memory leak?). For specific prominent consumers not
-> > covered by meminfo but that have some kind of internal counters, we could
-> > document where to look, such as /proc/net/sockstat or maybe create some
-> > /proc/ or /sys directory with file per consumer so that it's still easy to
-> > check, but without the overhead of global counters and bloated
-> > /proc/meminfo?
->
-> What have in my mind is to support simple general sysfs infra from MM for
-> driver/subysstems rather than creating each own memory stat. The API
-> could support flexible accounting like just global memory consumption and/or
-> consmption by key(e.g,. pid or each own special) for the detail.
->
-> So, they are all shown under /sys/kernel/mm/misc/ with detail as well as
-> /proc/meminfo with simple line for global.
+A break is not needed if it is preceded by a return
 
-This reminds me of statsfs [1]. I am wondering if this can be another
-useful use-case for statsfs.
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ .../net/can/spi/mcp251xfd/mcp251xfd-core.c    | 22 +++++++++----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-[1] https://lkml.org/lkml/2020/5/26/332
+diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
+index c3f49543ff26..9c215f7c5f81 100644
+--- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
++++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
+@@ -75,11 +75,11 @@ static const char *__mcp251xfd_get_model_str(enum mcp251xfd_model model)
+ {
+ 	switch (model) {
+ 	case MCP251XFD_MODEL_MCP2517FD:
+-		return "MCP2517FD"; break;
++		return "MCP2517FD";
+ 	case MCP251XFD_MODEL_MCP2518FD:
+-		return "MCP2518FD"; break;
++		return "MCP2518FD";
+ 	case MCP251XFD_MODEL_MCP251XFD:
+-		return "MCP251xFD"; break;
++		return "MCP251xFD";
+ 	}
+ 
+ 	return "<unknown>";
+@@ -95,21 +95,21 @@ static const char *mcp251xfd_get_mode_str(const u8 mode)
+ {
+ 	switch (mode) {
+ 	case MCP251XFD_REG_CON_MODE_MIXED:
+-		return "Mixed (CAN FD/CAN 2.0)"; break;
++		return "Mixed (CAN FD/CAN 2.0)";
+ 	case MCP251XFD_REG_CON_MODE_SLEEP:
+-		return "Sleep"; break;
++		return "Sleep";
+ 	case MCP251XFD_REG_CON_MODE_INT_LOOPBACK:
+-		return "Internal Loopback"; break;
++		return "Internal Loopback";
+ 	case MCP251XFD_REG_CON_MODE_LISTENONLY:
+-		return "Listen Only"; break;
++		return "Listen Only";
+ 	case MCP251XFD_REG_CON_MODE_CONFIG:
+-		return "Configuration"; break;
++		return "Configuration";
+ 	case MCP251XFD_REG_CON_MODE_EXT_LOOPBACK:
+-		return "External Loopback"; break;
++		return "External Loopback";
+ 	case MCP251XFD_REG_CON_MODE_CAN2_0:
+-		return "CAN 2.0"; break;
++		return "CAN 2.0";
+ 	case MCP251XFD_REG_CON_MODE_RESTRICTED:
+-		return "Restricted Operation"; break;
++		return "Restricted Operation";
+ 	}
+ 
+ 	return "<unknown>";
+-- 
+2.18.1
+
