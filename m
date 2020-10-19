@@ -2,136 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A4722931BC
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 01:05:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 282852931FF
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 01:30:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388888AbgJSXFu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 19:05:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37898 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727227AbgJSXFt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 19:05:49 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 569C7C0613CE
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 16:05:49 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id z5so84265iob.1
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 16:05:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=KZcwJitFojA7RhzeD/UU8gbzehCBdvf6g5ia0ZYCrq4=;
-        b=R0THCPfeT+NjRv5n7wRuWr3+iQQVH5mYQugrcFEorv7jMlZOJpq4gWO8x2sltRZ1S3
-         8+uXkfK+0xraFRPc7RLEyC+L1Eqn+lwfgcQ60rCu3Ir6T0iqCUlHxkXPI8IxQxljNihW
-         MxA7dERE+Fo0B6yhfEPLGm6gbjuMrGvt0ee7i4ozPAa6C0OwTV1SJBaz+sj8rzyyiIix
-         DQ1LhxNguLsVQ2r9xWcmCur9QDHoeimXQtC/UVpN+4Yl8O9ZbpYKUwlrKFZtzYHwjpgZ
-         iC+kREvCZvwgmOBCIm7DmgxG6/6ncKrp6QDCnbxkp/qIzrhuMyauJsg53LWTp//HSslk
-         z+3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KZcwJitFojA7RhzeD/UU8gbzehCBdvf6g5ia0ZYCrq4=;
-        b=LIil0a1krh1AUgXHX3TacVNwFLsjWbZOecvAFIfxlkjbIHTV7Laqku51ez0cmQFmNi
-         XpGLNkZhIb+GX2ncS1uR0zF5tYPwy5DqZRt9gjO9iTS9gj/paiKpff89lOsN0i0LPeE7
-         uxEjQWbc8zvt3e0gJmUXvZg8NSJZZWoIwplgqTjmwHtoyOTjxnpwDHLGoNWhe6JJi+fp
-         Xc2oTi6vP0s84pJNDgTBzo/wuzOntxQb8DTnySfjML1dkPm/TrEUMluwDhbUW7pPODBk
-         bQBS6mQsWnKquahwM65qs+zg2DtwE/fBdSDVMQh8YTSera43E3jWauuOyx4AwbpBiwdg
-         XAHA==
-X-Gm-Message-State: AOAM530tPUQv8pxXPTW+zRzI5faSBEPztn7SrFUsbvrCmbgDUoVU6BCI
-        bjO58pV94srR34rt0tC13HCPTQ==
-X-Google-Smtp-Source: ABdhPJwE/qhLAedndnNRaUrUDMs331Onaq8Iz+VDEVRJN+4h4B5ckC67pNXDnvS9MRF/DxLJjNlnIQ==
-X-Received: by 2002:a6b:5019:: with SMTP id e25mr44377iob.123.1603148748578;
-        Mon, 19 Oct 2020 16:05:48 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-48-30.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.48.30])
-        by smtp.gmail.com with ESMTPSA id u8sm7938ilm.36.2020.10.19.16.05.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Oct 2020 16:05:47 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1kUeDq-002hRf-LL; Mon, 19 Oct 2020 20:05:46 -0300
-Date:   Mon, 19 Oct 2020 20:05:46 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Tom Rix <trix@redhat.com>, LKML <linux-kernel@vger.kernel.org>,
-        linux-edac@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-pm@vger.kernel.org, xen-devel@lists.xenproject.org,
-        linux-block@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
-        <linux-crypto@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-power@fi.rohmeurope.com, linux-gpio@vger.kernel.org,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        nouveau@lists.freedesktop.org,
-        virtualization@lists.linux-foundation.org,
-        spice-devel@lists.freedesktop.org, linux-iio@vger.kernel.org,
-        linux-amlogic@lists.infradead.org,
-        industrypack-devel@lists.sourceforge.net,
-        linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com,
-        linux-scsi@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-can@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>,
-        intel-wired-lan@lists.osuosl.org, ath10k@lists.infradead.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        linux-stm32@st-md-mailman.stormreply.com, linux-nfc@lists.01.org,
-        linux-nvdimm <linux-nvdimm@lists.01.org>,
-        linux-pci@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, patches@opensource.cirrus.com,
-        storagedev@microchip.com, devel@driverdev.osuosl.org,
-        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
-        usb-storage@lists.one-eyed-alien.net,
-        linux-watchdog@vger.kernel.org, ocfs2-devel@oss.oracle.com,
-        bpf <bpf@vger.kernel.org>, linux-integrity@vger.kernel.org,
-        linux-security-module@vger.kernel.org, keyrings@vger.kernel.org,
-        alsa-devel@alsa-project.org,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        George Burgess <gbiv@google.com>
-Subject: Re: [RFC] treewide: cleanup unreachable breaks
-Message-ID: <20201019230546.GH36674@ziepe.ca>
-References: <20201017160928.12698-1-trix@redhat.com>
- <20201018054332.GB593954@kroah.com>
- <CAKwvOdkR_Ttfo7_JKUiZFVqr=Uh=4b05KCPCSuzwk=zaWtA2_Q@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKwvOdkR_Ttfo7_JKUiZFVqr=Uh=4b05KCPCSuzwk=zaWtA2_Q@mail.gmail.com>
+        id S2389073AbgJSXaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 19:30:17 -0400
+Received: from kernel.crashing.org ([76.164.61.194]:42630 "EHLO
+        kernel.crashing.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389063AbgJSXaO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 19:30:14 -0400
+Received: from localhost (gate.crashing.org [63.228.1.57])
+        (authenticated bits=0)
+        by kernel.crashing.org (8.14.7/8.14.7) with ESMTP id 09JNJQN2024225
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Mon, 19 Oct 2020 18:19:37 -0500
+Message-ID: <be7a978c48c9f1c6c29583350dee6168385c3039.camel@kernel.crashing.org>
+Subject: Re: [PATCH 1/4] ftgmac100: Fix race issue on TX descriptor[0]
+From:   Benjamin Herrenschmidt <benh@kernel.crashing.org>
+To:     Dylan Hung <dylan_hung@aspeedtech.com>, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ratbert@faraday-tech.com,
+        linux-aspeed@lists.ozlabs.org, openbmc@lists.ozlabs.org
+Cc:     BMC-SW@aspeedtech.com, Joel Stanley <joel@jms.id.au>
+Date:   Tue, 20 Oct 2020 10:19:25 +1100
+In-Reply-To: <20201019085717.32413-2-dylan_hung@aspeedtech.com>
+References: <20201019085717.32413-1-dylan_hung@aspeedtech.com>
+         <20201019085717.32413-2-dylan_hung@aspeedtech.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 19, 2020 at 12:42:15PM -0700, Nick Desaulniers wrote:
-> On Sat, Oct 17, 2020 at 10:43 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Sat, Oct 17, 2020 at 09:09:28AM -0700, trix@redhat.com wrote:
-> > > From: Tom Rix <trix@redhat.com>
-> > >
-> > > This is a upcoming change to clean up a new warning treewide.
-> > > I am wondering if the change could be one mega patch (see below) or
-> > > normal patch per file about 100 patches or somewhere half way by collecting
-> > > early acks.
-> >
-> > Please break it up into one-patch-per-subsystem, like normal, and get it
-> > merged that way.
-> >
-> > Sending us a patch, without even a diffstat to review, isn't going to
-> > get you very far...
+On Mon, 2020-10-19 at 16:57 +0800, Dylan Hung wrote:
+> These rules must be followed when accessing the TX descriptor:
 > 
-> Tom,
-> If you're able to automate this cleanup, I suggest checking in a
-> script that can be run on a directory.  Then for each subsystem you
-> can say in your commit "I ran scripts/fix_whatever.py on this subdir."
->  Then others can help you drive the tree wide cleanup.  Then we can
-> enable -Wunreachable-code-break either by default, or W=2 right now
-> might be a good idea.
+> 1. A TX descriptor is "cleanable" only when its value is non-zero
+> and the owner bit is set to "software"
 
-I remember using clang-modernize in the past to fix issues very
-similar to this, if clang machinery can generate the warning, can't
-something like clang-tidy directly generate the patch?
+Can you elaborate ? What is the point of that change ? The owner bit
+should be sufficient, why do we need to check other fields ?
 
-You can send me a patch for drivers/infiniband/* as well
+> 2. A TX descriptor is "writable" only when its value is zero
+> regardless the edotr mask.
 
-Thanks,
-Jason
+Again, why is that ? Can you elaborate ? What race are you trying to
+address here ?
+
+Cheers,
+Ben.
+
+> Fixes: 52c0cae87465 ("ftgmac100: Remove tx descriptor accessors")
+> Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
+> Signed-off-by: Joel Stanley <joel@jms.id.au>
+> ---
+>  drivers/net/ethernet/faraday/ftgmac100.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/faraday/ftgmac100.c
+> b/drivers/net/ethernet/faraday/ftgmac100.c
+> index 00024dd41147..7cacbe4aecb7 100644
+> --- a/drivers/net/ethernet/faraday/ftgmac100.c
+> +++ b/drivers/net/ethernet/faraday/ftgmac100.c
+> @@ -647,6 +647,9 @@ static bool ftgmac100_tx_complete_packet(struct
+> ftgmac100 *priv)
+>  	if (ctl_stat & FTGMAC100_TXDES0_TXDMA_OWN)
+>  		return false;
+>  
+> +	if ((ctl_stat & ~(priv->txdes0_edotr_mask)) == 0)
+> +		return false;
+> +
+>  	skb = priv->tx_skbs[pointer];
+>  	netdev->stats.tx_packets++;
+>  	netdev->stats.tx_bytes += skb->len;
+> @@ -756,6 +759,9 @@ static netdev_tx_t
+> ftgmac100_hard_start_xmit(struct sk_buff *skb,
+>  	pointer = priv->tx_pointer;
+>  	txdes = first = &priv->txdes[pointer];
+>  
+> +	if (le32_to_cpu(txdes->txdes0) & ~priv->txdes0_edotr_mask)
+> +		goto drop;
+> +
+>  	/* Setup it up with the packet head. Don't write the head to
+> the
+>  	 * ring just yet
+>  	 */
+> @@ -787,6 +793,10 @@ static netdev_tx_t
+> ftgmac100_hard_start_xmit(struct sk_buff *skb,
+>  		/* Setup descriptor */
+>  		priv->tx_skbs[pointer] = skb;
+>  		txdes = &priv->txdes[pointer];
+> +
+> +		if (le32_to_cpu(txdes->txdes0) & ~priv-
+> >txdes0_edotr_mask)
+> +			goto dma_err;
+> +
+>  		ctl_stat = ftgmac100_base_tx_ctlstat(priv, pointer);
+>  		ctl_stat |= FTGMAC100_TXDES0_TXDMA_OWN;
+>  		ctl_stat |= FTGMAC100_TXDES0_TXBUF_SIZE(len);
+
