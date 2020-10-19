@@ -2,76 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE88F292666
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 13:32:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A69F292703
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 14:11:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727915AbgJSLcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 07:32:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42204 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727883AbgJSLcq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 07:32:46 -0400
-Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2565AC0613CE
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 04:32:46 -0700 (PDT)
-Received: from ramsan ([84.195.186.194])
-        by laurent.telenet-ops.be with bizsmtp
-        id hnYi230024C55Sk01nYiAJ; Mon, 19 Oct 2020 13:32:43 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan with esmtp (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1kUTP8-000055-11; Mon, 19 Oct 2020 13:32:42 +0200
-Received: from geert by rox.of.borg with local (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1kUTP7-00030U-VE; Mon, 19 Oct 2020 13:32:41 +0200
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-To:     Paolo Abeni <pabeni@redhat.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, mptcp@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Subject: [PATCH] mptcp: MPTCP_KUNIT_TESTS should depend on MPTCP instead of selecting it
-Date:   Mon, 19 Oct 2020 13:32:40 +0200
-Message-Id: <20201019113240.11516-1-geert@linux-m68k.org>
-X-Mailer: git-send-email 2.17.1
+        id S1726421AbgJSMLJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 08:11:09 -0400
+Received: from m15111.mail.126.com ([220.181.15.111]:42118 "EHLO
+        m15111.mail.126.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726249AbgJSMLJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 08:11:09 -0400
+X-Greylist: delayed 1849 seconds by postgrey-1.27 at vger.kernel.org; Mon, 19 Oct 2020 08:11:08 EDT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=0gw4hOkCV2VI5B0MD3
+        VgbMMqagNWtz7m5fojK0FM+mc=; b=gcCXOxi2JLLFkWlHbXMBgnFWugp6U+5DI7
+        etV9poOpJclwAcDI5R/0yDiyXGbq3rRtrttrZ0zHiixCG0Lru6lgYK/ftY3V9rHE
+        O8w8PgZZ93xV2rcq6G0sW0QYudo+UGFnftczVRmCWZkYS1xDoyKQ5Z8mA734f01l
+        0UgPemG0o=
+Received: from localhost.localdomain (unknown [36.112.86.14])
+        by smtp1 (Coremail) with SMTP id C8mowABHCkrmeo1fTJVBKg--.33783S2;
+        Mon, 19 Oct 2020 19:39:19 +0800 (CST)
+From:   Defang Bo <bodefang@126.com>
+To:     davem@davemloft.net, johan@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Defang Bo <bodefang@126.com>
+Subject: [PATCH] nfc: Ensure presence of NFC_ATTR_FIRMWARE_NAME attribute in nfc_genl_fw_download()
+Date:   Mon, 19 Oct 2020 19:38:58 +0800
+Message-Id: <1603107538-4744-1-git-send-email-bodefang@126.com>
+X-Mailer: git-send-email 1.9.1
+X-CM-TRANSID: C8mowABHCkrmeo1fTJVBKg--.33783S2
+X-Coremail-Antispam: 1Uf129KBjvdXoW7XFyDZw13XF43Zw4kGF4kJFb_yoWDKFXEyF
+        WFv3yv9w15XF4rCw47Aw1SvFySgw1fWF18AFySkrZrZryF93W5urn2q39xGF1fWw4jyasx
+        XFySgryfG343AjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUnw0ePUUUUU==
+X-Originating-IP: [36.112.86.14]
+X-CM-SenderInfo: pergvwxdqjqiyswou0bp/1tbitQfC11pECOkg1wAAsv
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-MPTCP_KUNIT_TESTS selects MPTCP, thus enabling an optional feature the
-user may not want to enable.  Fix this by making the test depend on
-MPTCP instead.
+check that the NFC_ATTR_FIRMWARE_NAME attributes are provided by the netlink client prior to accessing them.This prevents potential unhandled NULL pointer
+dereference exceptions which can be triggered by malicious user-mode programs, if they omit one or both of these attributes. Just similar to commit <a0323b979f81>("nfc: Ensure presence of required attributes in the activate_target handler").
 
-Fixes: a00a582203dbc43e ("mptcp: move crypto test to KUNIT")
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Defang Bo <bodefang@126.com>
 ---
- net/mptcp/Kconfig | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ net/nfc/netlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/mptcp/Kconfig b/net/mptcp/Kconfig
-index 698bc35251609755..abb0a992d4a0855a 100644
---- a/net/mptcp/Kconfig
-+++ b/net/mptcp/Kconfig
-@@ -22,11 +22,8 @@ config MPTCP_IPV6
- 	select IPV6
- 	default y
+diff --git a/net/nfc/netlink.c b/net/nfc/netlink.c
+index e894254..8709f3d 100644
+--- a/net/nfc/netlink.c
++++ b/net/nfc/netlink.c
+@@ -1217,7 +1217,7 @@ static int nfc_genl_fw_download(struct sk_buff *skb, struct genl_info *info)
+ 	u32 idx;
+ 	char firmware_name[NFC_FIRMWARE_NAME_MAXSIZE + 1];
  
--endif
--
- config MPTCP_KUNIT_TESTS
- 	tristate "This builds the MPTCP KUnit tests" if !KUNIT_ALL_TESTS
--	select MPTCP
- 	depends on KUNIT
- 	default KUNIT_ALL_TESTS
- 	help
-@@ -39,3 +36,4 @@ config MPTCP_KUNIT_TESTS
+-	if (!info->attrs[NFC_ATTR_DEVICE_INDEX])
++	if (!info->attrs[NFC_ATTR_DEVICE_INDEX] || !info->attrs[NFC_ATTR_FIRMWARE_NAME])
+ 		return -EINVAL;
  
- 	  If unsure, say N.
- 
-+endif
+ 	idx = nla_get_u32(info->attrs[NFC_ATTR_DEVICE_INDEX]);
 -- 
-2.17.1
+1.9.1
 
