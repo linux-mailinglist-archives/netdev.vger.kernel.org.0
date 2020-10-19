@@ -2,134 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD22629272C
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 14:25:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 938FA292728
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 14:24:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727150AbgJSMZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 08:25:44 -0400
-Received: from mx0a-00191d01.pphosted.com ([67.231.149.140]:62176 "EHLO
-        mx0a-00191d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726249AbgJSMZo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 08:25:44 -0400
-X-Greylist: delayed 1232 seconds by postgrey-1.27 at vger.kernel.org; Mon, 19 Oct 2020 08:25:44 EDT
-Received: from pps.filterd (m0049297.ppops.net [127.0.0.1])
-        by m0049297.ppops.net-00191d01. (8.16.0.42/8.16.0.42) with SMTP id 09JCMMYZ006512;
-        Mon, 19 Oct 2020 08:25:42 -0400
-Received: from tlpd255.enaf.dadc.sbc.com (sbcsmtp3.sbc.com [144.160.112.28])
-        by m0049297.ppops.net-00191d01. with ESMTP id 3492uccrcf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 19 Oct 2020 08:25:41 -0400
-Received: from enaf.dadc.sbc.com (localhost [127.0.0.1])
-        by tlpd255.enaf.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id 09JCPe8g082036;
-        Mon, 19 Oct 2020 07:25:41 -0500
-Received: from zlp30494.vci.att.com (zlp30494.vci.att.com [135.46.181.159])
-        by tlpd255.enaf.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id 09JCPZVv081932
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Mon, 19 Oct 2020 07:25:35 -0500
-Received: from zlp30494.vci.att.com (zlp30494.vci.att.com [127.0.0.1])
-        by zlp30494.vci.att.com (Service) with ESMTP id 1156B4005C32;
-        Mon, 19 Oct 2020 12:25:35 +0000 (GMT)
-Received: from tlpd252.dadc.sbc.com (unknown [135.31.184.157])
-        by zlp30494.vci.att.com (Service) with ESMTP id F06454005C31;
-        Mon, 19 Oct 2020 12:25:34 +0000 (GMT)
-Received: from dadc.sbc.com (localhost [127.0.0.1])
-        by tlpd252.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id 09JCPYmL091809;
-        Mon, 19 Oct 2020 07:25:34 -0500
-Received: from mail.eng.vyatta.net (mail.eng.vyatta.net [10.156.50.82])
-        by tlpd252.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id 09JCPSr6091409;
-        Mon, 19 Oct 2020 07:25:28 -0500
-Received: from [10.156.47.164] (unknown [10.156.47.164])
-        by mail.eng.vyatta.net (Postfix) with ESMTPA id AEF663601CE;
-        Mon, 19 Oct 2020 05:24:27 -0700 (PDT)
-Reply-To: mmanning@vyatta.att-mail.com
-Subject: Re: Why revert commit 2271c95 ("vrf: mark skb for multicast or
- link-local as enslaved to VRF")?
-From:   Mike Manning <mmanning@vyatta.att-mail.com>
-To:     David Ahern <dsahern@gmail.com>,
-        Stephen Suryaputra <ssuryaextr@gmail.com>
-Cc:     netdev@vger.kernel.org, sashal@kernel.org
-References: <20201018132436.GA11729@ICIPI.localdomain>
- <75fda8c7-adf3-06a4-298f-b75ac6e6969b@gmail.com>
- <20201018160624.GB11729@ICIPI.localdomain>
- <33c7f9b3-aec6-6327-53b3-3b54f74ddcf6@gmail.com>
- <544357d4-1481-8563-323a-addf8b89d9e4@vyatta.att-mail.com>
-Message-ID: <b407b5d0-13cd-a506-24dc-1d705f55275d@vyatta.att-mail.com>
-Date:   Mon, 19 Oct 2020 13:24:26 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1726943AbgJSMYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 08:24:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50242 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726249AbgJSMYb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 08:24:31 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9073FC0613CE
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 05:24:31 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id a72so10072974wme.5
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 05:24:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fV6aDJT9SCLWBKgibQdt925gka8bWxfaTxdU1yxURVc=;
+        b=xPhmD6RDgC2Y1b9G1hf8Aa66xzW5ZhLmWUGSvqGgIusk8tGLo4g1lmLp6IDjDVzpdm
+         0X3IGamDr2+kO0kKqQWAXrUMXbhkG4XCJcA2k9qjpLfrF2NqG+dDz1I3uO/c8ra1Qr4A
+         Kd292ZneX6ThfHrC4gjX6OSr9CcwsB6OVeRT/ayvtW47BGIKbpAchI50Je9vg72N2FTo
+         XpxVm41NxmS9kYHkoRGaabk3zB8M9aT6GDvWq7AZLievsk3CVAaPJ3mRJ7uMyWK9h/Pf
+         xPEL3ELkyzy5tMcB2FTZ6KDSW0nquhXUf75SvJRJ8mQZDQdP3DnJ3+bykbM33UmNmNRm
+         ucAQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fV6aDJT9SCLWBKgibQdt925gka8bWxfaTxdU1yxURVc=;
+        b=K0aanCjgBlGrP0xbn7zNAkMfVENcpoZp4MVh5l3gx1YWLds6thCGS0MqDPyQ6rHC+u
+         Hgat4TejdNOIYeu9nAMI3325hH4F2ceGkMLVSD7PdpA0Cw+PYHTdNCsjBJoVbv7Z4qA5
+         Oc9EVif+6IcP6fdYSRedhm5xTNvS/4YxI+aR7t1z4y91ip/iQ7xIdAILLCpVb6PPKrzv
+         Y4OsFVKXbXpI090vIl/UdIEKvAm7Ly9vzxpV0+KDZsPlseboeI5Yy5m4J7+n/eG11PBg
+         mSXRM6SEtMSUpFJXRzFLBUu61zYVj0+LuWy5aIWoKVMDqZFCi0kk+AyYdGnyWFE1WHhE
+         HdiQ==
+X-Gm-Message-State: AOAM530Nrr9DrLQimEsf9TL0Y32L152RXg7LpDLmm0ETOpOFxf8jNo1k
+        JvOplz4POG3WM2gy43FTSuVBeg==
+X-Google-Smtp-Source: ABdhPJy7Ywf6WjeuOkbTQPu40S/5XtMjEqjhnWIU6ZYwcM3ElgnXDbFrzzTbNcNBOFvMNZ9KI+s0mQ==
+X-Received: by 2002:a1c:5641:: with SMTP id k62mr16701791wmb.108.1603110270362;
+        Mon, 19 Oct 2020 05:24:30 -0700 (PDT)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id 205sm16799284wme.38.2020.10.19.05.24.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Oct 2020 05:24:29 -0700 (PDT)
+Date:   Mon, 19 Oct 2020 14:24:28 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Danielle Ratson <danieller@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ido Schimmel <idosch@idosch.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>, mlxsw <mlxsw@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>
+Subject: Re: [PATCH net-next 1/6] ethtool: Extend link modes settings uAPI
+ with lanes
+Message-ID: <20201019122428.GB11282@nanopsycho.orion>
+References: <20201010154119.3537085-1-idosch@idosch.org>
+ <20201010154119.3537085-2-idosch@idosch.org>
+ <20201011153759.1bcb6738@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <DM6PR12MB3865B2FBA17BABBC747190D8D8070@DM6PR12MB3865.namprd12.prod.outlook.com>
+ <20201012085803.61e256e6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <DM6PR12MB3865E4CB3854ECF70F5864D7D8040@DM6PR12MB3865.namprd12.prod.outlook.com>
+ <20201016221553.GN139700@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <544357d4-1481-8563-323a-addf8b89d9e4@vyatta.att-mail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-10-19_05:2020-10-16,2020-10-19 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_policy_notspam policy=outbound_policy score=0 mlxlogscore=999
- phishscore=0 priorityscore=1501 mlxscore=0 malwarescore=0 clxscore=1015
- bulkscore=0 impostorscore=0 lowpriorityscore=0 adultscore=0 spamscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010190090
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201016221553.GN139700@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/10/2020 13:04, Mike Manning wrote:
-> On 19/10/2020 02:53, David Ahern wrote:
->> On 10/18/20 10:06 AM, Stephen Suryaputra wrote:
->>> $ git --no-pager show afed1a4
->>>
->>> commit afed1a4dbb76c81900f10fd77397fb91ad442702
->>> Author: Sasha Levin <sashal@kernel.org>
->>> Date:   Mon Mar 23 16:21:31 2020 -0400
->>>
->>>     Revert "vrf: mark skb for multicast or link-local as enslaved to VRF"
->>>     
->>>     This reverts commit 2271c9500434af2a26b2c9eadeb3c0b075409fb5.
->>>     
->>>     This patch shouldn't have been backported to 4.14.
->>>     
->>>     Signed-off-by: Sasha Levin <sashal@kernel.org>
->>>
->> My response last November was:
->>
->> 'backporting this patch and it's bug fix, "ipv6: Fix handling of LLA
->> with VRF and sockets bound to VRF" to 4.14 is a bit questionable. They
->> definitely do not need to come back to 4.9.'
->>
->> Basically, my point is that this is work that was committed to 4.19-next
->> I believe and given the state of the VRF feature over the releases, I
->> could not confirm for 4.14 that everything works as intended. Hence, the
->> comment about it being questionable.
->>
->> If you / your company are actively using and testing VRF on 4.14 and can
->> confirm it works, then I am fine with the patch (and its bugfix) getting
->> applied.
-> Hi,
+Sat, Oct 17, 2020 at 12:15:53AM CEST, andrew@lunn.ch wrote:
+>> Example:
+>> - swp1 is a 200G port with 4 lanes.
+>> - QSFP28 is plugged in.
+>> - The user wants to select configuration of 100G speed using 2 lanes, 50G each.
+>> 
+>> $ ethtool swp1
+>> Settings for swp1:
+>>         Supported ports: [ FIBRE         Backplane ]
+>>         Supported link modes:   1000baseT/Full
+>>                                 10000baseT/Full
+>>                                 1000baseKX/Full
+>>                                 10000baseKR/Full
+>>                                 10000baseR_FEC
+>>                                 40000baseKR4/Full
+>>                                 40000baseCR4/Full
+>>                                 40000baseSR4/Full
+>>                                 40000baseLR4/Full
+>>                                 25000baseCR/Full
+>>                                 25000baseKR/Full
+>>                                 25000baseSR/Full
+>>                                 50000baseCR2/Full
+>>                                 50000baseKR2/Full
+>>                                 100000baseKR4/Full
+>>                                 100000baseSR4/Full
+>>                                 100000baseCR4/Full
+>>                                 100000baseLR4_ER4/Full
+>>                                 50000baseSR2/Full
+>>                                 10000baseCR/Full
+>>                                 10000baseSR/Full
+>>                                 10000baseLR/Full
+>>                                 10000baseER/Full
+>>                                 50000baseKR/Full
+>>                                 50000baseSR/Full
+>>                                 50000baseCR/Full
+>>                                 50000baseLR_ER_FR/Full
+>>                                 50000baseDR/Full
 >
-> This fix is part of a series "vrf: allow simultaneous service instances
-> in default and other VRFs" that is present in 5.x kernels and should not
-> be used in isolation.
+>>                                 100000baseKR2/Full
+>>                                 100000baseSR2/Full
+>>                                 100000baseCR2/Full
+>>                                 100000baseLR2_ER2_FR2/Full
+>>                                 100000baseDR2/Full
 >
-> But it was at a later stage erroneously backported as a standalone fix
-> (without the rest of the series) to 4.14 and 4.19.
+>I'm not sure i fully understand all these different link modes, but i
+>thought these 5 are all 100G using 2 lanes? So why cannot the user
+>simply do
 >
-> So it was reverted from these kernels, especially as it was causing this
-> regression:
+>ethtool -s swp1 advertise 100000baseKR2/Full
 >
-> VRF: All router multicast entry(FF02:2) not added to VRF Dev but added
-> on VLAN Dev
->
-> Sorry for any inconvenience.
->
-> Thanks, Mike
->
->
->
-To clarify, the regression in 4.14 only occurred when the commit was
-used in isolation, not when applied with the rest of the series.
+>and the driver can figure out it needs to use two lanes at 50G?
 
-It may be worth mentioning that we had been extensively using the series
-in our local fork with 4.14 & 4.19 kernels before proceeding with
-submitting the series and then switching to 5.x kernel, so that may be
-an approach you can take.
+100000baseKR2 is 2 lanes. No need to figure anything out. What do you
+mean by that?
 
+>
+>    Andrew
