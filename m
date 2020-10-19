@@ -2,75 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5636293139
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 00:29:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90678293150
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 00:36:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388045AbgJSW3a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 18:29:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60462 "EHLO
+        id S2388341AbgJSWg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 18:36:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388004AbgJSW33 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 18:29:29 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BF3C0613CE;
-        Mon, 19 Oct 2020 15:29:29 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id t9so977376qtp.9;
-        Mon, 19 Oct 2020 15:29:29 -0700 (PDT)
+        with ESMTP id S2388333AbgJSWg0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 18:36:26 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED410C0613CE;
+        Mon, 19 Oct 2020 15:36:25 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id w11so556144pll.8;
+        Mon, 19 Oct 2020 15:36:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=f5ZUl9Xi221hdFB7g/FeVPKVF9Q8oGlQ3rF/8wdmx+s=;
-        b=PaZOnKdwX3/fLeP+73PAmJedkPONTwWiPBYnw695BNuasD3fkUuM3z6mYbSBO6lbjy
-         AzK1OBIw8UyPTf7mMK1hO5VcKfKxXYqr7MneANZ1j8M/GKj44lC79oUQJSKf+/4qC9Xe
-         ZS51FgNF26dTHP2G4P9lXyNy6iGJ1K8Nyg58x0pQYRactpKSkEpQ+S8Yz4WdyBCHojWz
-         Qyq1kgUPqSrE3MjygMNXVYPHeCW1AiNBUFiFGW8JkckpSNp9Qgzj3obbNyVXLy8MLX9a
-         IdjKjB+eUN0ov/Ptbr+8vPOeStC+m6piwNtHd0Dp9dtP91z2+fQf3SGgNUSszdbgayQ/
-         0sXw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3LnmzR0q/ws5cE1pDcIgvetl2imJASrTHrTXQbd+sfA=;
+        b=oQZz3I53O6Oc2sr3Oc9F2xw37mI/wEYXFuQ8F0DZ1AT4/epLMy4YZ4YTiUwYWI+S9X
+         ChaV69cZrI71ItNipS/GKEtJitB66CyS3av0pZrFlb9bpkgvT2pu7jyj4DJZpltaceWB
+         orFdDXZd+UvEuNAt3j1z4DTwzo3q6gg6/XrF/CtjQs57X/P0nfcNiuLB2FACQ3181BjI
+         B9Oj2jD4N+ez7cMUAwy6gVx+kI/9tJqGW/89Zj9CW+9TwihPyAM7E76jeQDLLhhZw3hY
+         9V5/oW84fctN1g88+bRT74XhDCW+DgGN4fMGAnKMK0AWOJEagMrmIAw0qK/nIwbWaRm2
+         UNpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=f5ZUl9Xi221hdFB7g/FeVPKVF9Q8oGlQ3rF/8wdmx+s=;
-        b=jDZCckMwIzPbAwl/iEF0acxiAThzVQ97vobSV/zo8KmoGilKO0JbNQfI/C7oxArgeP
-         fOpD0Lg6+Hhfe/tqCViXDXZbSSmfr5HqXIDo9xsyL1e5w1+W+WLCsGBpiPv8MHdeW1Ys
-         JXsalffb4H21zIU4cOrwyuB0hYqpICM0ECue6Vo44bXA06DYqHeZWf7KrAK4ch3rSv9R
-         q9cet3fnD0hLNTdJLyolvPBRmYGtDDS+Tiwawl9bDHgWg0Tm2HS3bvIFL2Ovr11liz7z
-         vEWEG7gETgzUVSeycfoarriSIcDzkbeOlUr/8FRnn/fLM5IJJAAHZLcN1XFzOWJbaJPE
-         3MZg==
-X-Gm-Message-State: AOAM532N/NoUismE5mTe5MPoHMI2Lai7BeT8OZN80AIw4Rx6r6dA7mXm
-        UVFBs5H2nHErffgWK5dM3Kw=
-X-Google-Smtp-Source: ABdhPJzGGFO3WIuofiHYaTilFXCsqNn4DvtdQij1ACxs1CzQP+DwMZ+R7kz3OTJfWeJi3+SY/oIRbw==
-X-Received: by 2002:ac8:33e8:: with SMTP id d37mr1680278qtb.310.1603146566980;
-        Mon, 19 Oct 2020 15:29:26 -0700 (PDT)
-Received: from localhost.localdomain ([2001:1284:f013:5091:9c4f:6b95:2ed0:130e])
-        by smtp.gmail.com with ESMTPSA id x5sm562725qtk.68.2020.10.19.15.29.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Oct 2020 15:29:26 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 2EB05C1632; Mon, 19 Oct 2020 19:29:24 -0300 (-03)
-Date:   Mon, 19 Oct 2020 19:29:24 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Michael Tuexen <tuexen@fh-muenster.de>, davem@davemloft.net,
-        gnault@redhat.com, pabeni@redhat.com,
-        willemdebruijn.kernel@gmail.com
-Subject: Re: [PATCHv4 net-next 16/16] sctp: enable udp tunneling socks
-Message-ID: <20201019222924.GE11030@localhost.localdomain>
-References: <cover.1603110316.git.lucien.xin@gmail.com>
- <b65bdc11e5a17e328227676ea283cee617f973fb.1603110316.git.lucien.xin@gmail.com>
- <20201019221545.GD11030@localhost.localdomain>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3LnmzR0q/ws5cE1pDcIgvetl2imJASrTHrTXQbd+sfA=;
+        b=eQAdL+4Iv0wiIPzpfzc6VJtL/T/dFv0ZjubDdEOlPbBvQwnh3LP8vIhHctPPDILzOw
+         p0tXjqhZmm8BE9Ok6jrX+xrRK9ZCYATg7zSoLcD4eJdkkHAQeOrpPdMehF3LEttzBDI5
+         ulgqCJBmxLsoTOz8qtESvjYxu1VbrDuEBz2gHNQP7HFiIVtPCpkoo1o1GPjhGY1W37uH
+         g82M7f7ylITLw8L4Gi4JxdA4bUVvHwEghZG4SYNgN16cN0f7fF0K9LUKBhD7laOXsCn+
+         9S/KcyH3J5o5HeMAEOn7cgghWW1ARP/wzxOqCnQGD9H+woTC2H9sujjakm/CFJ9880xv
+         TDNg==
+X-Gm-Message-State: AOAM530hlinu+R09pjalYGKzk2t9VoOM/8m8l5TN2Ni9sL01/5QvGRyq
+        LuRwXjdGczxUZuXvj9uDGLVAQadHjVCIkTIJ1VY=
+X-Google-Smtp-Source: ABdhPJzW3kdQHwc39I8I06PvhmSjRsDqL8os5OsLCdufGOL2HqAPpoRHLYiwqQ1Ptw6VRhvkMREX+qbdU2y34X+TfcI=
+X-Received: by 2002:a17:902:d90d:b029:d5:ee36:3438 with SMTP id
+ c13-20020a170902d90db02900d5ee363438mr1871844plz.77.1603146985567; Mon, 19
+ Oct 2020 15:36:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201019221545.GD11030@localhost.localdomain>
+References: <20201019104942.364914-1-xie.he.0141@gmail.com> <20201019142226.4503ed65@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201019142226.4503ed65@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Mon, 19 Oct 2020 15:36:14 -0700
+Message-ID: <CAJht_EMNza4ChbhnCvEKQkYs14SpcjdajnDA6okr9actVzQp9Q@mail.gmail.com>
+Subject: Re: [PATCH net] drivers/net/wan/hdlc: In hdlc_rcv, check to make sure
+ dev is an HDLC device
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Krzysztof Halasa <khc@pm.waw.pl>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ah, please note that net-next is closed.
-https://lore.kernel.org/netdev/20201015123116.743005ca%40kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/T/
+On Mon, Oct 19, 2020 at 2:22 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> Looks correct to me. I spotted there is also IFF_WAN_HDLC added by
+> 7cdc15f5f9db ("WAN: Generic HDLC now uses IFF_WAN_HDLC private flag.")
+> would using that flag also be correct and cleaner potentially?
+>
+> Up to you, just wanted to make sure you considered it.
 
-  Marcelo
+Oh, Yes! I see IFF_WAN_HDLC is set for all HDLC devices. I also
+searched through the kernel code and see no other uses of
+IFF_WAN_HDLC. So I think we can use IFF_WAN_HDLC to reliably check if
+a device is an HDLC device. This should be cleaner than checking
+ndo_start_xmit.
+
+Thanks! I'll change this patch to use IFF_WAN_HDLC.
