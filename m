@@ -2,28 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C35DB292CCC
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 19:30:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D57E292CD4
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 19:31:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727215AbgJSRaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 13:30:01 -0400
-Received: from mailout08.rmx.de ([94.199.90.85]:39633 "EHLO mailout08.rmx.de"
+        id S1727663AbgJSRb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 13:31:27 -0400
+Received: from mailout06.rmx.de ([94.199.90.92]:34599 "EHLO mailout06.rmx.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725887AbgJSRaB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Oct 2020 13:30:01 -0400
+        id S1726354AbgJSRb1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Oct 2020 13:31:27 -0400
+X-Greylist: delayed 315 seconds by postgrey-1.27 at vger.kernel.org; Mon, 19 Oct 2020 13:31:25 EDT
 Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mailout08.rmx.de (Postfix) with ESMTPS id 4CFP041pC8zMvJF;
-        Mon, 19 Oct 2020 19:29:56 +0200 (CEST)
+        by mailout06.rmx.de (Postfix) with ESMTPS id 4CFP1k0xchz9tny;
+        Mon, 19 Oct 2020 19:31:22 +0200 (CEST)
 Received: from mta.arri.de (unknown [217.111.95.66])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by kdin01.retarus.com (Postfix) with ESMTPS id 4CFNyb2j6Kz2xFY;
-        Mon, 19 Oct 2020 19:28:39 +0200 (CEST)
+        by kdin01.retarus.com (Postfix) with ESMTPS id 4CFP0B75hxz2xKS;
+        Mon, 19 Oct 2020 19:30:02 +0200 (CEST)
 Received: from N95HX1G2.wgnetz.xx (192.168.54.91) by mta.arri.de
  (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Mon, 19 Oct
- 2020 19:26:28 +0200
+ 2020 19:27:03 +0200
 From:   Christian Eggers <ceggers@arri.de>
 To:     Vladimir Oltean <olteanv@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
@@ -42,9 +43,9 @@ CC:     Helmut Grohne <helmut.grohne@intenta.de>,
         "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
         Christian Eggers <ceggers@arri.de>, <netdev@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [RFC PATCH net-next 3/9] net: dsa: microchip: rename ksz9477.c to ksz9477_main.o
-Date:   Mon, 19 Oct 2020 19:24:29 +0200
-Message-ID: <20201019172435.4416-4-ceggers@arri.de>
+Subject: [RFC PATCH net-next 4/9] dt-bindings: net: dsa: microchip,ksz: add interrupt property
+Date:   Mon, 19 Oct 2020 19:24:30 +0200
+Message-ID: <20201019172435.4416-5-ceggers@arri.de>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201019172435.4416-1-ceggers@arri.de>
 References: <20201019172435.4416-1-ceggers@arri.de>
@@ -52,38 +53,52 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [192.168.54.91]
-X-RMX-ID: 20201019-192845-4CFNyb2j6Kz2xFY-0@kdin01
+X-RMX-ID: 20201019-193007-4CFP0B75hxz2xKS-0@kdin01
 X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PTP functionality will be built into a separate source file
-(ksz9477_ptp.c).
+The devices have an optional interrupt line.
 
 Signed-off-by: Christian Eggers <ceggers@arri.de>
 ---
- drivers/net/dsa/microchip/Makefile                      | 1 +
- drivers/net/dsa/microchip/{ksz9477.c => ksz9477_main.c} | 0
- 2 files changed, 1 insertion(+)
- rename drivers/net/dsa/microchip/{ksz9477.c => ksz9477_main.c} (100%)
+ .../devicetree/bindings/net/dsa/microchip,ksz.yaml        | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/dsa/microchip/Makefile b/drivers/net/dsa/microchip/Makefile
-index 929caa81e782..c5cc1d5dea06 100644
---- a/drivers/net/dsa/microchip/Makefile
-+++ b/drivers/net/dsa/microchip/Makefile
-@@ -1,6 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0-only
- obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ_COMMON)	+= ksz_common.o
- obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ9477)		+= ksz9477.o
-+ksz9477-objs := ksz9477_main.o
- obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ9477_I2C)	+= ksz9477_i2c.o
- obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ9477_SPI)	+= ksz9477_spi.o
- obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8795)		+= ksz8795.o
-diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477_main.c
-similarity index 100%
-rename from drivers/net/dsa/microchip/ksz9477.c
-rename to drivers/net/dsa/microchip/ksz9477_main.c
+diff --git a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+index f93c3bdd0b83..be927a3a370b 100644
+--- a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
++++ b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+@@ -32,6 +32,11 @@ properties:
+       Should be a gpio specifier for a reset line.
+     maxItems: 1
+ 
++  interrupts:
++    description:
++      Interrupt specifier for the INTRP_N line from the device.
++    maxItems: 1
++
+   microchip,synclko-125:
+     $ref: /schemas/types.yaml#/definitions/flag
+     description:
+@@ -44,6 +49,7 @@ required:
+ examples:
+   - |
+     #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
+ 
+     // Ethernet switch connected via SPI to the host, CPU port wired to eth0:
+     eth0 {
+@@ -65,6 +71,8 @@ examples:
+             compatible = "microchip,ksz9477";
+             reg = <0>;
+             reset-gpios = <&gpio5 0 GPIO_ACTIVE_LOW>;
++            interrupt-parent = <&gpio5>;
++            interrupts = <1 IRQ_TYPE_LEVEL_LOW>;  /* INTRP_N line */
+ 
+             spi-max-frequency = <44000000>;
+             spi-cpha;
 -- 
 Christian Eggers
 Embedded software developer
