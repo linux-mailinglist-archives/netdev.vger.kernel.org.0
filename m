@@ -2,84 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B9B6293063
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 23:19:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56FC4293066
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 23:22:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732775AbgJSVTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 17:19:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49588 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732742AbgJSVTT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 17:19:19 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6114DC0613CE;
-        Mon, 19 Oct 2020 14:19:19 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id dt13so1026502ejb.12;
-        Mon, 19 Oct 2020 14:19:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8Ty8dwHSeXQPAOmP4uMgdH5+uEFMpgtnYRrEFF0f/Qs=;
-        b=kwL1DDLqX5lnIM7eJyhiC8HPP9Tj6rE6CGHbQeS357ozxRgyzZMulSzigIqXpxj/Oo
-         /JzEktIL2l7x+FdroTe9bZ3WKJ7lycYKt7pkFFaQPkD/r5es4NiBS9dkt7zf6iX4hgc/
-         qllop4/Nsp1WCSV4KQetgl/DGjPvGCK0UxyQnmZIPqFd+lfxHSBVng/VOMHu4lOyJS6X
-         BzJpB0cnyTQwXHqAkZfVXWQCDaBGcrTeCBcHocrkON6bjjt22BWcVAbk0vgGX9Vhdux+
-         0qvA8kBBxGt2kaXFyPEo9WjaTHy8nC62jO4YH4MjziUgv1Jq8JMBdUYC53kP1Gz+Iffp
-         vrxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8Ty8dwHSeXQPAOmP4uMgdH5+uEFMpgtnYRrEFF0f/Qs=;
-        b=o+uTChWcQIs9y15gI2cluGob4pqLu/HTSdRJdO7g256DyXKF4Y+qg3PY4++gfdjrza
-         bW7iDXmZYO01QuKgE4DDfzotQvd2KEcQrdY+XAuhwdBFtai7pE8NEf+ynkzEl0vON/Dv
-         u6DKQN9FtD8mb2MgVp+Jd3tYdN83CcTqvjnQkhzvIhLvu1SpsIS+xNg4hiC2U0io2DxP
-         9OqnzR9zpEBkMlazFt8s9lTKrmN4LHwmj3h/gcpGX9iBUAA08ZRhlKMio4RovFPdg8TX
-         DLO4054TQVaxCp/jAHJ3q3dmgoNVqZtHfK1FjlfgYDWD/hRYCObXAdKpmDoArngA+JYP
-         Bniw==
-X-Gm-Message-State: AOAM530/tF9IxP9UPRWRBLQLp2U+PrFGi9JpfePJ3pqdCh8EyN9UEBpn
-        4S/Kpvdxqw/+T6glTK2mCic=
-X-Google-Smtp-Source: ABdhPJy5pUJ/NhXH0Rf87vh8sDkSni/NPSvsrDv4FzGxUQ2Y652bR8yjYGuKdhpL6MifZnOgocKALA==
-X-Received: by 2002:a17:906:364d:: with SMTP id r13mr1738370ejb.521.1603142358009;
-        Mon, 19 Oct 2020 14:19:18 -0700 (PDT)
-Received: from skbuf ([188.26.174.215])
-        by smtp.gmail.com with ESMTPSA id k21sm1073749edv.31.2020.10.19.14.19.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Oct 2020 14:19:17 -0700 (PDT)
-Date:   Tue, 20 Oct 2020 00:19:16 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Yunjian Wang <wangyunjian@huawei.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] net: Have netpoll bring-up DSA management interface
-Message-ID: <20201019211916.j77jptfpryrhau4z@skbuf>
-References: <20201019171746.991720-1-f.fainelli@gmail.com>
- <20201019200258.jrtymxikwrijkvpq@skbuf>
- <58b07285-bb70-3115-eb03-5e43a4abeae6@gmail.com>
+        id S1732870AbgJSVWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 17:22:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58846 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732775AbgJSVWa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Oct 2020 17:22:30 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 106E522246;
+        Mon, 19 Oct 2020 21:22:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603142549;
+        bh=XfamQnzOuHXtb2xKfCzFkOlu+JDj24CRCKFBhgQ886g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=F/Jyde13dU7Z2kMfbu14Y3HfmicK7XWZ7+5WH+6ZlAUj43q0zNwtg9zTalkKAdxuP
+         LGGSGZzwSZJJ7cyYO46ZVfITpAF/F9bxVChtQiiAAl+t56qur+l2WB2+ge0FH0zzNK
+         bckyt6Vxrk4TijP4Cmr8r/ZqFjp32Kk2nKE0CJFw=
+Date:   Mon, 19 Oct 2020 14:22:26 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Krzysztof Halasa <khc@pm.waw.pl>
+Subject: Re: [PATCH net] drivers/net/wan/hdlc: In hdlc_rcv, check to make
+ sure dev is an HDLC device
+Message-ID: <20201019142226.4503ed65@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201019104942.364914-1-xie.he.0141@gmail.com>
+References: <20201019104942.364914-1-xie.he.0141@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <58b07285-bb70-3115-eb03-5e43a4abeae6@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 19, 2020 at 02:03:40PM -0700, Florian Fainelli wrote:
-> > Completely crazy and outlandish idea, I know, but what's wrong with
-> > doing this in DSA?
+On Mon, 19 Oct 2020 03:49:42 -0700 Xie He wrote:
+> The hdlc_rcv function is used as hdlc_packet_type.func to process any
+> skb received in the kernel with skb->protocol == htons(ETH_P_HDLC).
+> The purpose of this function is to provide second-stage processing for
+> skbs not assigned a "real" L3 skb->protocol value in the first stage.
 > 
-> I really do not have a problem with that approach however other stacked
-> devices like 802.1Q do not do that. It certainly scales a lot better to
-> do this within DSA rather than sprinkling DSA specific knowledge
-> throughout the network stack. Maybe for "configuration less" stacked
-> devices such as DSA, 802.1Q (bridge ports?), bond etc. it would be
-> acceptable to ensure that the lower device is always brought up?
+> This function assumes the device from which the skb is received is an
+> HDLC device (a device created by this module). It assumes that
+> netdev_priv(dev) returns a pointer to "struct hdlc_device".
+> 
+> However, it is possible that some driver in the kernel (not necessarily
+> in our control) submits a received skb with skb->protocol ==
+> htons(ETH_P_HDLC), from a non-HDLC device. In this case, the skb would
+> still be received by hdlc_rcv. This will cause problems.
+> 
+> hdlc_rcv should be able to recognize and drop invalid skbs. It should
+> first make sure "dev" is actually an HDLC device, before starting its
+> processing.
+> 
+> To reliably check if a device is an HDLC device, we can check if its
+> dev->netdev_ops->ndo_start_xmit == hdlc_start_xmit, because all HDLC
+> devices are required to set their ndo_start_xmit to hdlc_start_xmit
+> (and all non-HDLC devices would not set their ndo_start_xmit to this).
+> 
+> Cc: Krzysztof Halasa <khc@pm.waw.pl>
+> Signed-off-by: Xie He <xie.he.0141@gmail.com>
+> ---
+>  drivers/net/wan/hdlc.c | 10 +++++++++-
+>  1 file changed, 9 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/wan/hdlc.c b/drivers/net/wan/hdlc.c
+> index 9b00708676cf..0a392fb9aff8 100644
+> --- a/drivers/net/wan/hdlc.c
+> +++ b/drivers/net/wan/hdlc.c
+> @@ -46,7 +46,15 @@ static struct hdlc_proto *first_proto;
+>  static int hdlc_rcv(struct sk_buff *skb, struct net_device *dev,
+>  		    struct packet_type *p, struct net_device *orig_dev)
+>  {
+> -	struct hdlc_device *hdlc = dev_to_hdlc(dev);
+> +	struct hdlc_device *hdlc;
+> +
+> +	/* First make sure "dev" is an HDLC device */
+> +	if (dev->netdev_ops->ndo_start_xmit != hdlc_start_xmit) {
 
-For upper interfaces with more than one lower (bridge, bond) I'm not so
-sure. For uppers with a single lower (DSA, 8021q), it's pretty much a
-no-brainer to me. Question is, where to code this? I think it's ok to
-leave it in DSA, then 8021q could copy it as well if there was a need.
+Looks correct to me. I spotted there is also IFF_WAN_HDLC added by 
+7cdc15f5f9db ("WAN: Generic HDLC now uses IFF_WAN_HDLC private flag.")
+would using that flag also be correct and cleaner potentially? 
+
+Up to you, just wanted to make sure you considered it.
+
+> +		kfree_skb(skb);
+> +		return NET_RX_SUCCESS;
+> +	}
+> +
+> +	hdlc = dev_to_hdlc(dev);
+>  
+>  	if (!net_eq(dev_net(dev), &init_net)) {
+>  		kfree_skb(skb);
+
