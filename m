@@ -2,220 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E3622922E0
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 09:19:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 07AB729230F
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 09:40:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727420AbgJSHTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 03:19:37 -0400
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:10601 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727223AbgJSHTg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 03:19:36 -0400
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5f8d3dfc0000>; Mon, 19 Oct 2020 00:19:24 -0700
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 19 Oct
- 2020 07:19:36 +0000
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.102)
- by HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Mon, 19 Oct 2020 07:19:35 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TLzpdjxHPZ+KxmwO3RWTbOd2ticVEimp4iJ77feRZCwMUkB+a6e2sdFCIEs5345rLEYoGloUc+jK8K1l38l85vzQRGSgc2+vGYRHZIQr3iiOx83V+0uyWFNmmfC/BykSI5iWhzXcfKC7GPgsqALSMCwmEaVUHw6RTgmOAMJl8JFdtrZqX7pdzYiXyCcAomBEv7cRfhV5eIlnYvRNZIS+nuS5b4L+T6JS3Fj4A0xecsaTjzlT1Ao7c1p3Wt3x/iYZTKC5j+fAIhEDj4HcmSJnsjmVcL1GxeNNZxw9gYb6FbvrATTApTT/1Ucnk9fpAgZHfHuvBxcx5zTm/pGt+DYixw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kAw0BHcelu87tceIWTDcc0RJt2SXiBawmBbnXC9lcEs=;
- b=jUMb+GNiJ80RXkpYkWu2Zv/76Ffz1at3xXzOyQIDIUF7isweZoon2WuuQyJ2DX/RSDVsrb7SXRSJfAydiCh1D831/PAEK+aqDmNbe1DbiJx02pzpR1nTGlOUaiV60qSoZ2olWJc0t/WdAlL8wJ3KGg/2d3BRKPk7QDUivLCEZe1c/DiUmKgfroE5hjF9vIAsfyieejqcQ0kQA3e8oOPjFop+20bqACRoyQcd7rF9D7No9NY8qm7uiDoVf7JIq6vQcBq1V850XmwA4otsnRv5mUDGE2ShMCvgTbeWElMRsjNtkAo/ehMjoX4ncylPh/crMp/BQn/9z9NibVqf7qCqTw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3865.namprd12.prod.outlook.com (2603:10b6:5:1c4::14)
- by DM6PR12MB4957.namprd12.prod.outlook.com (2603:10b6:5:20d::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.21; Mon, 19 Oct
- 2020 07:19:34 +0000
-Received: from DM6PR12MB3865.namprd12.prod.outlook.com
- ([fe80::e4a1:5c3f:8b16:5e88]) by DM6PR12MB3865.namprd12.prod.outlook.com
- ([fe80::e4a1:5c3f:8b16:5e88%7]) with mapi id 15.20.3477.028; Mon, 19 Oct 2020
- 07:19:34 +0000
-From:   Danielle Ratson <danieller@nvidia.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     Jakub Kicinski <kuba@kernel.org>, Ido Schimmel <idosch@idosch.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>, mlxsw <mlxsw@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>
-Subject: RE: [PATCH net-next 1/6] ethtool: Extend link modes settings uAPI
- with lanes
-Thread-Topic: [PATCH net-next 1/6] ethtool: Extend link modes settings uAPI
- with lanes
-Thread-Index: AQHWnxvjfEscixWoTUGw9NLDRcgaq6mTAB+AgAEV0YCAAAzGgIABa6aQgAVHPoCAAh/yQA==
-Date:   Mon, 19 Oct 2020 07:19:34 +0000
-Message-ID: <DM6PR12MB3865B000BE04105A4373FD08D81E0@DM6PR12MB3865.namprd12.prod.outlook.com>
-References: <20201010154119.3537085-1-idosch@idosch.org>
- <20201010154119.3537085-2-idosch@idosch.org>
- <20201011153759.1bcb6738@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <DM6PR12MB3865B2FBA17BABBC747190D8D8070@DM6PR12MB3865.namprd12.prod.outlook.com>
- <20201012085803.61e256e6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <DM6PR12MB3865E4CB3854ECF70F5864D7D8040@DM6PR12MB3865.namprd12.prod.outlook.com>
- <20201016221553.GN139700@lunn.ch>
-In-Reply-To: <20201016221553.GN139700@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=nvidia.com;
-x-originating-ip: [147.236.146.106]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 282a68de-61f8-4f1c-da7d-08d873ff54bc
-x-ms-traffictypediagnostic: DM6PR12MB4957:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR12MB4957C33E3AF934A3C1C2113FD81E0@DM6PR12MB4957.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1169;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: YFCsHg+BNWGeG/3qUX5ScRs+/sISwhzRZdHVOZ+OImnXuHg7K87c3jBPfuc6RXgOzEtPYocMF0mBBJs1aP2KNEOEk/6vkPaYCSDha+a5JeJgowb2uBwAzG8exyyK2ddw4Q+BhMb+AvjjrL10mc7sKY1V4nEQpDePqpH1Oi0k7NMXx+tyOTgfkoFor7RQHCdUyDIcjdKsRGrnst0+8Wn0tPa1fCiZXXEMV+g1uIffrenSW8TvpG+JWsP6rrg7gK4iPUTEndIvkEaLfEB2Vliq+ndxUyfus+//9xuuU1VkojLFIjTLDsGXqh91GIm88HYUK+Bso89DHxQIJpMr4+5XLA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3865.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(396003)(346002)(136003)(376002)(366004)(86362001)(52536014)(186003)(8936002)(66946007)(64756008)(66556008)(66476007)(76116006)(26005)(6916009)(66446008)(55016002)(33656002)(5660300002)(6506007)(316002)(53546011)(2906002)(8676002)(54906003)(4326008)(9686003)(7696005)(83380400001)(71200400001)(478600001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: eWqRbR/DelIAR4tzNZGAO0n5JSbG7AnmHEMyFiYvgKrn+oxFzLQpbWSGNW5W+QlNy7C5L8ml2SFUNVy2ExQ5pgcX45TsHXwY+nOhODw5nRvKsbwRvAPtsHminD28hFOzjaO8QvhZUCEIAQXhmy2QXZFGsUn/Ba3TRV1lNoCCT4epNWrikl7qdl+2ZQsVKdfsAHIeMeIDeUbXLggsGCRvV25IW91GWdnTHTx90KCiTnwUpC9FlTNT5MqMZTuqkMW8W60rnp9f/OHrb6ncbqXQRNLAWmny52NyetJeMsrvLxw2FRjjCqF8z4pE/ZFBqP2/Vo5d0WhdvdIrwS4d7tm9HyuuoGwCe13UKfI2w4J3B+vGK+v9GPtjp4V6W6ST/mKnBiLxO5VkUv/51xSQEaGlCHGl0GGZHkwTgf5JGoD515uUSydWBPddZ1HHsbAKzZjaG2URJP9u8rMstg6IjSPvZYe2QWM+vTapggIKfZFW6r8p3cbYXBc3x7AIpKXXGqGp8CKXm3gOMsdSyQxw1OOcO5uM0WPcGUI6RIBTN0HOHvKr9T0/Ox3DawPZ+9N9byjFW5abQeoa34SfdKHDoE7eOcGWUzq7qtgApY34lqx9nC1JTLnbhczZnRwWaxZcdgoPl6f7CJGGbODKJtuuYp4W3g==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727842AbgJSHkV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 03:40:21 -0400
+Received: from esa1.mentor.iphmx.com ([68.232.129.153]:61907 "EHLO
+        esa1.mentor.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727612AbgJSHkU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 03:40:20 -0400
+X-Greylist: delayed 427 seconds by postgrey-1.27 at vger.kernel.org; Mon, 19 Oct 2020 03:40:20 EDT
+IronPort-SDR: 0vfhQ4TKOy46x3X9FsKpxxu4nIrYHHT4Z7vcZpw5Vz87tJTIi8HGFEzcdUNPjIxl6PuLab9eNs
+ 5yi4kZ2A6Eu1ET9Qm9WfCjtJQI9zf/LSqkn2y0Q9d5qPWxdxSgSbI7dyz4nRNxHtkqFikdMaQo
+ VbjOV+wsmqPHq7Kq7CmAgYTRn9JVoRM2r+Zr3s140s/L0/weo5LGcFKYAdf5+ZavA/VX2zKwc6
+ IVee9cs8gf6ukkRq8aEV4mPrw5zoVhXxYjH5osZOvK50kwKZQ9RGpElQpdiNWEtZlfUwUR2Cc/
+ qAg=
+X-IronPort-AV: E=Sophos;i="5.77,394,1596528000"; 
+   d="scan'208";a="56358194"
+Received: from orw-gwy-02-in.mentorg.com ([192.94.38.167])
+  by esa1.mentor.iphmx.com with ESMTP; 18 Oct 2020 23:33:13 -0800
+IronPort-SDR: 94hb2TNwQ8JmgpSo2vHl8oKWvzJ8X0FVboOZLH3MKnNwe7RVC9xgbCP5W5P4nM4tIpxzeqhX98
+ 4JNWMru1i7HV1/5cEohaKd+4fZV/tBcW7SjKhiGtTO11USDx65mQ42O8WZo6O8L8gNd3S0kG+Z
+ Hy4ouYgEiaXiMI9Nf795/czEtfvk5xnSKbPe6Am5A5kjfLSVqzz04gzjcQxS+xtxIXotEo2B9H
+ 3Tbm5SJkDJPhG4Mo/uiII5+LOV1B8nhcS8sAGXTmZrKEENj1FdCLRd6mq4K/CKng2ySrWbmmlY
+ j5k=
+From:   Andrew Gabbasov <andrew_gabbasov@mentor.com>
+To:     'Sergei Shtylyov' <sergei.shtylyov@gmail.com>
+CC:     <linux-renesas-soc@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, <geert+renesas@glider.be>,
+        Julia Lawall <julia.lawall@inria.fr>,
+        "Behme, Dirk - Bosch" <dirk.behme@de.bosch.com>,
+        Eugeniu Rosca <erosca@de.adit-jv.com>
+References: <20200930192124.25060-1-andrew_gabbasov@mentor.com> <000001d697c2$71651d70$542f5850$@mentor.com> <2819a14d-500c-561b-337e-417201eb040f@gmail.com>
+In-Reply-To: <2819a14d-500c-561b-337e-417201eb040f@gmail.com>
+Subject: RE: [PATCH net] ravb: Fix bit fields checking in ravb_hwtstamp_get()
+Date:   Mon, 19 Oct 2020 10:32:59 +0300
+Organization: Mentor Graphics Corporation
+Message-ID: <000001d6a5ea$16fe8e80$44fbab80$@mentor.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3865.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 282a68de-61f8-4f1c-da7d-08d873ff54bc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Oct 2020 07:19:34.8022
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5VTPBuChX8n7OlXcn33N3CVNNlmthgQE97U/QfVXYMiLmhRGauwBpkmdWV9IeISYxIB/9SsAiuEkv8YoYAXSSQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4957
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1603091964; bh=kAw0BHcelu87tceIWTDcc0RJt2SXiBawmBbnXC9lcEs=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
-         CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
-         In-Reply-To:Accept-Language:Content-Language:X-MS-Has-Attach:
-         X-MS-TNEF-Correlator:authentication-results:x-originating-ip:
-         x-ms-publictraffictype:x-ms-office365-filtering-correlation-id:
-         x-ms-traffictypediagnostic:x-ms-exchange-transport-forked:
-         x-microsoft-antispam-prvs:x-ms-oob-tlc-oobclassifiers:
-         x-ms-exchange-senderadcheck:x-microsoft-antispam:
-         x-microsoft-antispam-message-info:x-forefront-antispam-report:
-         x-ms-exchange-antispam-messagedata:Content-Type:
-         Content-Transfer-Encoding:MIME-Version:
-         X-MS-Exchange-CrossTenant-AuthAs:
-         X-MS-Exchange-CrossTenant-AuthSource:
-         X-MS-Exchange-CrossTenant-Network-Message-Id:
-         X-MS-Exchange-CrossTenant-originalarrivaltime:
-         X-MS-Exchange-CrossTenant-fromentityheader:
-         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
-         X-MS-Exchange-CrossTenant-userprincipalname:
-         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=O3z4n6t5PowYl1Nwj7LDOvuVcE439+Zlz+DM9ibnswcNRh27Oj/zRRZQeKZn2dkr0
-         jKEQVtvThV/TceMz+CjsVSICbuv+9zDbc1H9CThG64scOC5ORTGku9BH7IbJt7iBCz
-         fNdLqVkI/Y+O75sPHmmlCP0bCgBkmHl14Tc5RX5kyI0VoqS3QCPB8K2AohqN4J209I
-         o9vuXhVT5J9J5waxf+gycaEXbWk80YbGKYDmG8W03t4PuF9WIiQ6FsYX9XBw/12fnv
-         tMvXFvoqNCMgCiqAMEkmc5DJtpyV8prGRrD5MU7ccv+d13TXWyjV0JaJNtf7NCZ3J2
-         5ldyKBH/IFD1g==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 15.0
+Thread-Index: AQHWl179dggpQ/YNgUW3t7t7L6TDlKmcTonagAJPmgA=
+Content-Language: en-us
+X-Originating-IP: [137.202.0.90]
+X-ClientProxiedBy: SVR-IES-MBX-03.mgc.mentorg.com (139.181.222.3) To
+ svr-ies-mbx-02.mgc.mentorg.com (139.181.222.2)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
+Hello Sergei,
 
 > -----Original Message-----
-> From: Andrew Lunn <andrew@lunn.ch>
-> Sent: Saturday, October 17, 2020 1:16 AM
-> To: Danielle Ratson <danieller@nvidia.com>
-> Cc: Jakub Kicinski <kuba@kernel.org>; Ido Schimmel <idosch@idosch.org>;
-> netdev@vger.kernel.org; davem@davemloft.net; Jiri Pirko
-> <jiri@nvidia.com>; f.fainelli@gmail.com; mkubecek@suse.cz; mlxsw
-> <mlxsw@nvidia.com>; Ido Schimmel <idosch@nvidia.com>;
-> johannes@sipsolutions.net
-> Subject: Re: [PATCH net-next 1/6] ethtool: Extend link modes settings uAP=
-I
-> with lanes
->=20
-> > Example:
-> > - swp1 is a 200G port with 4 lanes.
-> > - QSFP28 is plugged in.
-> > - The user wants to select configuration of 100G speed using 2 lanes, 5=
-0G
-> each.
+> From: Sergei Shtylyov [mailto:sergei.shtylyov@gmail.com]
+> Sent: Saturday, October 17, 2020 10:49 PM
+> To: Gabbasov, Andrew <Andrew_Gabbasov@mentor.com>
+> Cc: linux-renesas-soc@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; David S. Miller
+> <davem@davemloft.net>; geert+renesas@glider.be; Julia Lawall <julia.lawall@inria.fr>; Behme, Dirk - Bosch
+> <dirk.behme@de.bosch.com>; Eugeniu Rosca <erosca@de.adit-jv.com>
+> Subject: Re: [PATCH net] ravb: Fix bit fields checking in ravb_hwtstamp_get()
+> 
+> Hello!
+> 
+> On 10/1/20 10:13 AM, Andrew Gabbasov wrote:
+> 
+>    The patch was set to the "Changes Requested" state -- most probably because of this
+> mail. Though unintentionally, it served to throttle actions on this patch. I did only
+> remember about this patch yesterday... :-)
+> 
+> [...]
+> >> In the function ravb_hwtstamp_get() in ravb_main.c with the existing
+> > values
+> >> for RAVB_RXTSTAMP_TYPE_V2_L2_EVENT (0x2) and RAVB_RXTSTAMP_TYPE_ALL
+> >> (0x6)
+> >>
+> >> if (priv->tstamp_rx_ctrl & RAVB_RXTSTAMP_TYPE_V2_L2_EVENT)
+> >> 	config.rx_filter = HWTSTAMP_FILTER_PTP_V2_L2_EVENT;
+> >> else if (priv->tstamp_rx_ctrl & RAVB_RXTSTAMP_TYPE_ALL)
+> >> 	config.rx_filter = HWTSTAMP_FILTER_ALL;
+> >>
+> >> if the test on RAVB_RXTSTAMP_TYPE_ALL should be true, it will never be
+> >> reached.
+> >>
+> >> This issue can be verified with 'hwtstamp_config' testing program
+> >> (tools/testing/selftests/net/hwtstamp_config.c). Setting filter type to
+> > ALL
+> >> and subsequent retrieving it gives incorrect value:
+> >>
+> >> $ hwtstamp_config eth0 OFF ALL
+> >> flags = 0
+> >> tx_type = OFF
+> >> rx_filter = ALL
+> >> $ hwtstamp_config eth0
+> >> flags = 0
+> >> tx_type = OFF
+> >> rx_filter = PTP_V2_L2_EVENT
+> >>
+> >> Correct this by converting if-else's to switch.
 > >
-> > $ ethtool swp1
-> > Settings for swp1:
-> >         Supported ports: [ FIBRE         Backplane ]
-> >         Supported link modes:   1000baseT/Full
-> >                                 10000baseT/Full
-> >                                 1000baseKX/Full
-> >                                 10000baseKR/Full
-> >                                 10000baseR_FEC
-> >                                 40000baseKR4/Full
-> >                                 40000baseCR4/Full
-> >                                 40000baseSR4/Full
-> >                                 40000baseLR4/Full
-> >                                 25000baseCR/Full
-> >                                 25000baseKR/Full
-> >                                 25000baseSR/Full
-> >                                 50000baseCR2/Full
-> >                                 50000baseKR2/Full
-> >                                 100000baseKR4/Full
-> >                                 100000baseSR4/Full
-> >                                 100000baseCR4/Full
-> >                                 100000baseLR4_ER4/Full
-> >                                 50000baseSR2/Full
-> >                                 10000baseCR/Full
-> >                                 10000baseSR/Full
-> >                                 10000baseLR/Full
-> >                                 10000baseER/Full
-> >                                 50000baseKR/Full
-> >                                 50000baseSR/Full
-> >                                 50000baseCR/Full
-> >                                 50000baseLR_ER_FR/Full
-> >                                 50000baseDR/Full
->=20
-> >                                 100000baseKR2/Full
-> >                                 100000baseSR2/Full
-> >                                 100000baseCR2/Full
-> >                                 100000baseLR2_ER2_FR2/Full
-> >                                 100000baseDR2/Full
->=20
-> I'm not sure i fully understand all these different link modes, but i tho=
-ught
-> these 5 are all 100G using 2 lanes? So why cannot the user simply do
->=20
-> ethtool -s swp1 advertise 100000baseKR2/Full
->=20
-> and the driver can figure out it needs to use two lanes at 50G?
->=20
->     Andrew
+> > Earlier you proposed to fix this issue by changing the value
+> > of RAVB_RXTSTAMP_TYPE_ALL constant to 0x4.
+> > Unfortunately, simple changing of the constant value will not
+> > be enough, since the code in ravb_rx() (actually determining
+> > if timestamp is needed)
+> >
+> > u32 get_ts = priv->tstamp_rx_ctrl & RAVB_RXTSTAMP_TYPE;
+> > [...]
+> > get_ts &= (q == RAVB_NC) ?
+> >                 RAVB_RXTSTAMP_TYPE_V2_L2_EVENT :
+> >                 ~RAVB_RXTSTAMP_TYPE_V2_L2_EVENT;
+> >
+> > will work incorrectly and will need to be fixed too, making this
+> > piece of code more complicated.
+> >
+> > So, it's probably easier and safer to keep the constant value and
+> > the code in ravb_rx() intact, and just fix the get ioctl code,
+> > where the issue is actually located.
+> 
+>    We have one more issue with the current driver: bit 2 of priv->tstamp_rx_ctrl
+> can only be set as a part of the ALL mask, not individually. I'm now thinking we
+> should set RAVB_RXTSTAMP_TYPE[_ALL] to 2 (and probably just drop the ALL mask)...
 
-Hi Andrew,
+[skipped]
 
-Thanks for the feedback.
+>    Yeah, that's better. But do we really need am anonymous bit 2 that can't be
+> toggled other than via passing the ALL mask?
 
-I guess you mean " ethtool -s swp1 advertise 100000baseKR2/Full on".
+The driver supports setting timestamps either for all packets or for some
+particular kind of packets (events). Bit 1 in internal mask corresponds
+to this selected kind. Bit 2 corresponds to all other packets, and ALL mask 
+combines both variants. Although bit 2 can't be controlled individually
+(since there is no much sense to Request stamping of only packets, other than
+events, moreover, there is no user-visible filter constant to represent it),
+and that's why is anonymous, it provides a convenient way to handle stamping
+logic in ravb_rx(), so I don't see an immediate need to get rid of it.
 
-First, the idea might work but only for auto negotiation mode, whereas the =
-lanes parameter is a solution for both.
+Thanks.
 
-Second, the command as you have suggested it, wouldn't change anything in t=
-he current situation as I checked. We can disable all the others and leave =
-only the one we want but the command doesn't filter the other link modes bu=
-t it just turns the mentioned link modes up if they aren't. However, the la=
-nes parameter is a selector, which make it much more user friendly in my op=
-inion.
-
-Also, we can't turn only one of them up. But you have to set for example:
-
-$ ethtool -s swp1 advertise 100000baseKR2/Full on 100000baseSR2/Full on 100=
-000baseCR2/Full on 100000baseLR2_ER2_FR2/Full on 100000baseDR2/Full on
-
-Am I missing something?
+Best regards,
+Andrew
 
