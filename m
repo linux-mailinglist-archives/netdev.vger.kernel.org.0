@@ -2,151 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D66BB292183
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 05:55:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64D6929218D
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 06:01:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731706AbgJSDz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Oct 2020 23:55:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55028 "EHLO
+        id S1725975AbgJSEBf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 00:01:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731306AbgJSDz1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Oct 2020 23:55:27 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC75FC061755;
-        Sun, 18 Oct 2020 20:55:26 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id i2so10390615ljg.4;
-        Sun, 18 Oct 2020 20:55:26 -0700 (PDT)
+        with ESMTP id S1725800AbgJSEBe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 00:01:34 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89400C061755;
+        Sun, 18 Oct 2020 21:01:34 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id w21so5209245pfc.7;
+        Sun, 18 Oct 2020 21:01:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JGRhD4PEJkPED9SetcvHdpE4f5nhMr/c5YW65Q6YUlE=;
-        b=bZKO7VCR4I4+1wjrFBmZMGZJByH62WFATFg4GFd9UJ3PoVJc61jcpktT837bgYflPH
-         pPbcHo/EoNXIcaELhtfthGYs14cwBs5X7iWwQqfn4yTz9kT75biUXGTa+V491Jso3uOk
-         AzounLT1cQiKiacmbmCeeQnjWVKEw5uehZnaumjcRWC7wPERdZ5G1RmwBnU4Z1MBBMjR
-         2ZydHN7DYREUresYmd7CFGxSwrVswiBYIo60LsaJqBW6MolZvXx0gEAnISn5ChulmMWD
-         D2HSB6kazz42AFlYeKiy5n9gSFh0JC7jJgRrU+opKX9e/soEbGOQdsGJnpuR0XWbBg8E
-         tTqg==
+        h=from:to:cc:subject:date:message-id;
+        bh=4a7zDL5lInqafK1HE5+sC1LmnDT92uD20FAhjTWB/2c=;
+        b=RvEzsoLrMfPyOdrlyYzVhc5jxIJ82HKocYt5yBF5R+opSXGiwTWfIYzSwfXc172XQJ
+         jmpbSl4/RPWfBf5qTWxJpYlj/gpfnSE7BkVPwR/8uVMmfARhUSqlK4xdE1WwkWg0RDDQ
+         khOkaauhEB3zlk01eH9SvIP8F7OY395QKiPLgf5QufBvHcAh0Z45cqqFK49zGxtpuO0j
+         t1aobSAJq8WxGWN/lkS5f9wocSqZMEJoJxp6AnigJgjrHmjbKMcVAQqxBPi3aR6Ftaju
+         h0AKWESOzFehc6R/PVhCrgYmgdvvGTk0iBrnXDZAkHpJKwcv0ucEZNtyfBTqlz3o5k4i
+         7V8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JGRhD4PEJkPED9SetcvHdpE4f5nhMr/c5YW65Q6YUlE=;
-        b=o4l25ftcfRf+7Ac4+HOYlxcMTpnXo8zBi7XsK7O+I8JCPs9Ss0B8jKkpSjdYn9Zq7f
-         rWdPFwkg9vCwhN0O1KXgcSbppBjgkLSjl4GgSSkOGwJBFsExbtKjuUhAVxRy8FX0FE1F
-         rKuXNDeDcylGKEmtxHCxBUtz1RFa5Q7AozJpc1nr7lARFtv0gvZdzSlbAPsW1GZIq5Zz
-         OXNMLLF7nJbAn0On9BcV8EqgpXG87Vm8UZYgE7pTs273xe0g0W2R3ShOuU62RX0LpJXE
-         qRlDHsTV78nzg5ECWtlOcWKC8HWp7VQ4ENGXHFW4GMzIKREYYTNHHZmRTA76/DNmj8cH
-         zSYg==
-X-Gm-Message-State: AOAM530xanLmumm7nPiSs1XCmN7GzDN0E1X3ltsLHXIu8QHPjZTKt8y3
-        aSH03Bmsr2cx8bzIxZzAGZG2I2lghn94k9EN20PFJmx/cUo6
-X-Google-Smtp-Source: ABdhPJyHm+0O32JklLtr5FJF0K/1T/HeWFTvyT0kyXME7dMRKYtreYmTbSuK6mwqOj05evXptiwtcym6EZ9dCEU7hsE=
-X-Received: by 2002:a2e:8e72:: with SMTP id t18mr4948814ljk.445.1603079725084;
- Sun, 18 Oct 2020 20:55:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201015082119.68287-1-rejithomas@juniper.net> <20201018160147.6b3c940a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201018160147.6b3c940a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Reji Thomas <rejithomas.d@gmail.com>
-Date:   Mon, 19 Oct 2020 09:25:12 +0530
-Message-ID: <CAA8Zg7Gcua1=6CgSkJ-z8uKJneDjedB4z6zm2a+DcYt-_YcmSQ@mail.gmail.com>
-Subject: Re: [PATCH v2] IPv6: sr: Fix End.X nexthop to use oif.
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Reji Thomas <rejithomas@juniper.net>, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel test robot <lkp@intel.com>,
-        Mathieu Xhonneux <m.xhonneux@gmail.com>,
-        David Lebrun <david.lebrun@uclouvain.be>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=4a7zDL5lInqafK1HE5+sC1LmnDT92uD20FAhjTWB/2c=;
+        b=APBsQRQBmp5H8UTF5A+pRZkZicberL9A6ELdgVm53TQ57/nFscvwoUL32mc/nW5Wq4
+         /P+oTGGyMfwZBHZJ7wLDaajWLA1SnJcUQF4csloGXeLjv3urnyHdmKTwA8F80yUGxT/0
+         aIbDGUUyljezyVQItJH3tV20jcGMOeXK+aTAGQ/CAz2C6uCmwIhpTNzODXWbRBEbFgBa
+         BvKaXhH3PDaCjKHpurtVN3Zed/OI+Z+86AxB2l5G1zRlLBZzMlS/ic9zFiVBi73uxaH7
+         M2bq6rXwdcNJhIUrIf/1XbVN0yPFHFdXg1m9aKeUu6kPFnO1MDNpFN3HLWtAzklvm3Tx
+         sa8Q==
+X-Gm-Message-State: AOAM532dFzKLiM+fnP2sGysVaKzZVzvRJXaIc3sq+KhH0e5+hzkURbOV
+        onbx3SYW+gt38i8ZEKoqI/w=
+X-Google-Smtp-Source: ABdhPJztDuVlMAnRcVxSdRk+FuiekKjqKUVpF7mJfP8K8jNq4BgbaRbn1Ptdy3yHvVoUUmfzQKqNrw==
+X-Received: by 2002:aa7:9245:0:b029:156:552a:1275 with SMTP id 5-20020aa792450000b0290156552a1275mr15111588pfp.12.1603080094167;
+        Sun, 18 Oct 2020 21:01:34 -0700 (PDT)
+Received: from oslab.tsinghua.edu.cn ([166.111.139.137])
+        by smtp.gmail.com with ESMTPSA id o15sm10385457pfd.16.2020.10.18.21.01.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 18 Oct 2020 21:01:33 -0700 (PDT)
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+To:     pkshih@realtek.com, kvalo@codeaurora.org, davem@davemloft.net,
+        kuba@kernel.org, Larry.Finger@lwfinger.net,
+        christophe.jaillet@wanadoo.fr, zhengbin13@huawei.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [PATCH] rtl8723ae: avoid accessing the data mapped to streaming DMA
+Date:   Mon, 19 Oct 2020 12:01:25 +0800
+Message-Id: <20201019040125.6892-1-baijiaju1990@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+In rtl8723e_tx_fill_cmddesc(), skb->data is mapped to streaming DMA on
+line 531:
+  dma_addr_t mapping = dma_map_single(..., skb->data, ...);
 
-Please find my replies inline below.
+On line 534, skb->data is assigned to hdr after cast:
+  struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
 
-Regards
-Reji
+Then hdr->frame_control is accessed on line 535:
+  __le16 fc = hdr->frame_control;
 
-On Mon, Oct 19, 2020 at 4:31 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 15 Oct 2020 13:51:19 +0530 Reji Thomas wrote:
-> > Currently End.X action doesn't consider the outgoing interface
-> > while looking up the nexthop.This breaks packet path functionality
-> > specifically while using link local address as the End.X nexthop.
-> > The patch fixes this by enforcing End.X action to have both nh6 and
-> > oif and using oif in lookup.It seems this is a day one issue.
-> >
-> > Fixes: 140f04c33bbc ("ipv6: sr: implement several seg6local actions")
-> > Signed-off-by: Reji Thomas <rejithomas@juniper.net>
->
-> David, Mathiey - any comments?
->
-> > @@ -239,6 +250,8 @@ static int input_action_end(struct sk_buff *skb, struct seg6_local_lwt *slwt)
-> >  static int input_action_end_x(struct sk_buff *skb, struct seg6_local_lwt *slwt)
-> >  {
-> >       struct ipv6_sr_hdr *srh;
-> > +     struct net_device *odev;
-> > +     struct net *net = dev_net(skb->dev);
->
-> Order longest to shortest.
-Sorry. Will fix it.
+This DMA access may cause data inconsistency between CPU and hardwre.
 
->
->
-> >
-> >       srh = get_and_validate_srh(skb);
-> >       if (!srh)
-> > @@ -246,7 +259,11 @@ static int input_action_end_x(struct sk_buff *skb, struct seg6_local_lwt *slwt)
-> >
-> >       advance_nextseg(srh, &ipv6_hdr(skb)->daddr);
-> >
-> > -     seg6_lookup_nexthop(skb, &slwt->nh6, 0);
-> > +     odev = dev_get_by_index_rcu(net, slwt->oif);
-> > +     if (!odev)
-> > +             goto drop;
->
-> Are you doing this lookup just to make sure that oif exists?
-> Looks a little wasteful for fast path, but more importantly
-> it won't be backward compatible, right? See below..
->
-Please see reply below.
+To fix this bug, hdr->frame_control is accessed before the DMA mapping.
 
-> > +
-> > +     seg6_strict_lookup_nexthop(skb, &slwt->nh6, odev->ifindex, 0);
-> >
-> >       return dst_input(skb);
-> >
->
-> > @@ -566,7 +583,8 @@ static struct seg6_action_desc seg6_action_table[] = {
-> >       },
-> >       {
-> >               .action         = SEG6_LOCAL_ACTION_END_X,
-> > -             .attrs          = (1 << SEG6_LOCAL_NH6),
-> > +             .attrs          = ((1 << SEG6_LOCAL_NH6) |
-> > +                                (1 << SEG6_LOCAL_OIF)),
-> >               .input          = input_action_end_x,
-> >       },
-> >       {
->
-> If you set this parse_nla_action() will reject all
-> SEG6_LOCAL_ACTION_END_X without OIF.
->
-> As you say the OIF is only required for using link local addresses,
-> so this change breaks perfectly legitimate configurations.
->
-> Can we instead only warn about the missing OIF, and only do that when
-> nh is link local?
->
-End.X is defined as an adjacency-sid and is used to select a specific link to a
-neighbor for both global and link-local addresses. The intention was
-to drop the
-packet even for global addresses if the route via the specific
-interface is not found.
-Alternatively(believe semantically correct for End.X definition) I
-could do a neighbor lookup
-for nexthop address over specific interface and send the packet out.
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+---
+ drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-> Also doesn't SEG6_LOCAL_ACTION_END_DX6 need a similar treatment?
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c
+index e3ee91b7ea8d..340b3d68a54e 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8723ae/trx.c
+@@ -528,12 +528,12 @@ void rtl8723e_tx_fill_cmddesc(struct ieee80211_hw *hw,
+ 	u8 fw_queue = QSLT_BEACON;
+ 	__le32 *pdesc = (__le32 *)pdesc8;
+ 
+-	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
+-					    skb->len, DMA_TO_DEVICE);
+-
+ 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
+ 	__le16 fc = hdr->frame_control;
+ 
++	dma_addr_t mapping = dma_map_single(&rtlpci->pdev->dev, skb->data,
++					    skb->len, DMA_TO_DEVICE);
++
+ 	if (dma_mapping_error(&rtlpci->pdev->dev, mapping)) {
+ 		rtl_dbg(rtlpriv, COMP_SEND, DBG_TRACE,
+ 			"DMA mapping error\n");
+-- 
+2.17.1
 
-Yes. I will update the patch for End.DX6 based on the patch finalized for End.X.
