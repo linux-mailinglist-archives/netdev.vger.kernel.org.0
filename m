@@ -2,87 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2D04293128
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 00:21:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A1C0029312B
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 00:22:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728083AbgJSWVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 18:21:21 -0400
-Received: from sonic307-22.consmr.mail.sg3.yahoo.com ([106.10.241.39]:38113
-        "EHLO sonic307-22.consmr.mail.sg3.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726730AbgJSWVV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 18:21:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1603146078; bh=RchYhSnUH4D8ir65x6OKK1yxktPnAGhcFCbackPivPM=; h=Date:From:Reply-To:Subject:References:From:Subject; b=M8yPQE++9rBoSi6r2VImsrQXY1dZ0RwG9RROdbO1tFrG5Sfm+mZLamVhl8OXrz+L8C48F2tFRGV5MsEC7N/UJo/7csMlWwnYAXn/65RvdUZE/GTh91xLqTTLHS4Kneq5DO2mkmrd47Ri4dmEkdl6dbbsfs1qp4LdZerU8yQoApB0BwhIjjm4yy8m2W2P/n+bMUK27uSv/9nwaVcqznVMNWcLXCVYg9z2MVGaJ1NcF3iddJ0bGkapQ5bs8IpkQLBUexDrS/sieRNQjgovKjSf50gJS9J1kFtHemzIjLyHNzaPR0lzjLAfmCyePkkLsFXP4HuubgR4QdBmilvi5bb9Uw==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1603146078; bh=TRWfeXDBWu77Gyd83GEHGvyvGNd1SU5iyGZqsMdo0hh=; h=Date:From:Subject; b=tjDOR/wDnuPz/V7Kq8FrgclPzLQO+lW1h48/2jIJip49+Hbevd9Zxn9SDZKWErdUXZ135x42H0/pLb+jvSYCvwth5lTMgsfUHXWupnbnC/ox+7ndhgZa4M6OsBdN5MDoc6oHhbNWINwLEp17Bg+tEuYLkwIGpjm3Zjo7mh+mX8RJMBtfgP7f1X0qEeEQQvng8R91QT+Fi6OXUmBoVmBu8Q760c5hBJlcOG0UMD8d+buq1W906pITjI4ek6lWEwSEU19cl/cfh46HTpoctOdFCDmQ+l3TxBC5H7LQ4eUrOKAiWso27Hn8uwRQ5B63kPdEZ8uq/AFp1j0UXzQ2xO/t/Q==
-X-YMail-OSG: kAi.BCEVM1lumlzjTsXJKK2nJH443v9AcsVFoF2BPWIQnI2GClC1Ixx48Wo9Qu3
- Q_mhtwn.mpctmZaVViKiJq56LmCaLwJMjYelgujRPYw4TvshR56h7Wjv7wCCj2.c48LbKm.WOadc
- otDl6af58LYJVZtwBsS04dRmCFMILUurEVWu7XVcutlUpT2czBDv4qxoPRWMTLuR2D5kwycdK1G.
- rg.OhtnIkwRJHbtVpusW9LSWvMPhFr65BhIoVG.E1NNoUWfjnSDGynkzU_GmYZzYbAPoVAuZ8dg8
- 15qpvsOzu3JvLmESGGnqypTu9PJRZ_4M66CvQ8UwPOXzuVPhfA9BIzrg7XbQ8BgtmN6bwYgilUki
- GXXo4T0HtHBRAs3TZjQAzxVUjfrk8ZxhjyLIuD0z0kD1W1u4jHYKSFe0H1EO7tmt4pWiY1WoAUoL
- nXSKCty09KAFQubixFx4eDQ6Rxq1K66.0W_n1_pbHYny7A.4FqBsp5M01pZk9F_o0rziI0uKA27B
- dOiVAODa.9jbWkvims7swdRVGM4NkPOQfF4aDFws4C3Ef4EysmBGYGMy5YCB.4vHYJv.0JKT01MK
- 1TDQY9PK_j98vEIU5DaIuvyRtrRUcO.l6mApSxbLwAgRXXHpX2XOnxFDk9_nxmwo2pVVKc.nbBue
- lhWWUyX9t874k5gtk8goEblr7PFMR910OSy626_YQweLKMMl7Dj.zjfFC0Q6hnqeHB8AvtBkesFs
- OyKUhCAb88xOkgXfJC9PPhApmf9DGdmlI.H9E.s75sdztUuQFq6atv7mL0VQFn0M.Tp5zB4AhhAT
- B95Ie7YPPegCbH0xY1GEk4zuAL.64pe0iZz.I18UXf3fUTleDrD0YWedtjAmyCst.akuTWJfGU0f
- KQ9EvEDnLcsUZ2tu7vDjHOkLgQ1thWuKTmldbaT0N9vaKXjiAnYBGFKu8SWuW6vOVzSoix1XKwK_
- cHfxYy1ABD2EK6rh37aaCaLE1maje5t5d.rhrlprWWi9NbyGm2D5jklMk5vXZ3F4NPqiNuC9V7PV
- s6ZpiptRBWgZtradnDq.I1r3izynIGEg3.tZBhFpPT2XOYg8_vztDZj_YMLIiJweK3MwZoZAEzLj
- Zb5cXVpjW3uZCFIQzPOGGlkajkE5eTCoToL91Bbnp9nQV4rSWeeAST0ZZ2bT._iN.ntHnGhehClI
- Nl2L3FEJuDl9z60dqnpHZna63Od96ZcStjZRS2oqzYoC_2ZF6HQIhIJlIpsdPXDgmZ0uRB0hcmwy
- R7_EUWdyfjkXu_t79mwBcHAYpQbMnI77sJ7XeDBUOBRBs5pquM7zNrUga2.lPmNz4IEQL3aZ8wmz
- yO_3ZtXLbp1w8XfSkMwWsZMPwbqB3rIMQoTTtvLCG1P5Y4wL5rHpbXZLiALxuRd9X8WX0K8lvScC
- T.nT61o6xc0Z5ejbC_UZX_XrqBiK6zNpzwZ.PyIKm1zTVrdPGE7a_oPuWgZj.KLPoz6lHUVY1q3Z
- NmMRRt_g-
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic307.consmr.mail.sg3.yahoo.com with HTTP; Mon, 19 Oct 2020 22:21:18 +0000
-Date:   Mon, 19 Oct 2020 22:21:15 +0000 (UTC)
-From:   "Mrs. Grace Williams" <gw78986@gmail.com>
-Reply-To: gw78986@gmail.com
-Message-ID: <220474977.794929.1603146075326@mail.yahoo.com>
-Subject: FORM MRS.GRACE WILLIAMS
+        id S1728844AbgJSWWB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 18:22:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59312 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728386AbgJSWWB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 18:22:01 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 330BAC0613CE
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 15:22:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=5PO86Zr88F0Fnk+CGMKrRv8Xg89gFWnynN6gPPhdl7E=; b=qYoKLhF203CIcy42d0mKHPKR4
+        4ZK4gEZoW3Yw1h//9CAj7eoFVLHlCUaeo8M7zXvWfHZa8fBNW3MliC/DXaxM/+k6TWIRmeyThBiA7
+        qnAPNqJbuRuCyT5cRAaB95YyBOJUKHqahIkuZ9c9JbPqV8l+PKltHwhNrsdVxKBE3v5k5AwhcZ/t5
+        AR+LhzyqXjhmW7CfK0nYusCOE5WpULKXXjT9HVWE8qhkkJr5icIAr9x9yP3eJhBv7SkLJHm5gd9R8
+        QwUfd4qmFn/VI2JteeHhBQZrzYuhGgzSbh8k6QFsT9L4mzRN5gZPslgh5AqPB4QehoYGFy7d6FnBw
+        Q7prGAaeQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48406)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kUdXQ-0006RE-Gw; Mon, 19 Oct 2020 23:21:56 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kUdXN-0004cH-LX; Mon, 19 Oct 2020 23:21:53 +0100
+Date:   Mon, 19 Oct 2020 23:21:53 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Robert Hancock <robert.hancock@calian.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] net: phy: marvell: add special handling of Finisar
+ modules with 81E1111
+Message-ID: <20201019222153.GZ1551@shell.armlinux.org.uk>
+References: <20201019204913.467287-1-robert.hancock@calian.com>
+ <20201019210852.GW1551@shell.armlinux.org.uk>
+ <30161ca241d03c201e801af7089dada5b6481c24.camel@calian.com>
+ <20201019214536.GX139700@lunn.ch>
+ <1f3243e15a8600dd9876b97410b450029674c50c.camel@calian.com>
+ <20201019221232.GB139700@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-References: <220474977.794929.1603146075326.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.16868 YMailNodin Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201019221232.GB139700@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello To Whom It May Concern,
-Dear Friend,
+On Tue, Oct 20, 2020 at 12:12:32AM +0200, Andrew Lunn wrote:
+> > The auto-negotiation is a bit of a weird thing in this case, as there
+> > are two negotiations occurring, the 1000BaseX between the PCS/PMA PHY
+> > and the module PHY, and the 1000BaseT between the module PHY and the
+> > copper link partner. I believe the 88E1111 has some smarts to delay the
+> > copper negotiation until it gets the advertisement over 1000BaseX, uses
+> > those to figure out its advertisement, and then uses the copper link
+> > partner's response to determine the 1000BaseX response.
+> 
+> But as far as i know you can only report duplex and pause over
+> 1000BaseX, not speed, since it is always 1G.
 
-Please forgive me for stressing you with my predicaments as I know
-that this letter may come to you as big surprise. Actually, as my
-pastor advised me to reject earthly reward and thanks by handing the
-project to someone I have never seen or met for a greater reward in
-heaven waits for whoever can give such a costly donation. I came
-across your E-mail from my personal search, and I decided to email you
-directly believing that you will be honest to fulfill my final wish
-before or after my death.
+That is correct.
 
-Meanwhile, I am Madam Grace Williams, 53 years, am from UK, married
-JO Williams my mother she from South Korea, we live together in USA
-before he dead. I am suffering from Adenocarcinoma Cancer of the lungs
-for the past 8 years and from all indication my condition is really
-deteriorating as my doctors have confirmed and courageously advised me
-that I may not live beyond 2 weeks from now for the reason that my
-tumor has reached a critical stage which has defiled all forms of
-medical treatment.
-
-Since my days are numbered, I=E2=80=99ve decided willingly to fulfill my
-long-time vow to donate to the underprivileged the sum of Eight
-Million Five Hundred Thousand Dollars I deposited in a different
-account over 10 years now because I have tried to handle this project
-by myself but I have seen that my health could not allow me to do so
-anymore. My promise for the poor includes building of well-equipped
-charity foundation hospital and a technical school for their survival.
-
-If you will be honest, kind and willing to assist me handle this
-charity project as I=E2=80=99ve mentioned here, I will like you to Contact =
-me
-through this email address (gracewillia01@gmail.com).
-
-Best Regards!
-Mrs. Grace Williams
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
