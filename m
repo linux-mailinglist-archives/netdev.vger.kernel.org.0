@@ -2,104 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99FCF292CC1
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 19:28:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99F07292CA5
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 19:26:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727022AbgJSR2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 13:28:13 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:42940 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725952AbgJSR2N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 13:28:13 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09JHMg8W017795;
-        Mon, 19 Oct 2020 17:27:57 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding;
- s=corp-2020-01-29; bh=pGnY5GYUyhri6gQa1/cFHNQMG5DjWL8tkM5jJLXjTbk=;
- b=iAi5v4D6o78VpgY8atDp5PnvtydOhQUBP7J/afP/cqsDYGPfSz4/xyNErxj9QBI2zunW
- 0gEPOdcpyo/bKaTYmhVLTgKTpk3bZATwuMJrwfRf77mSy9xvhb6ZhWnVpWIyVhWYvCes
- 677S8Jp9EHwzCHR9xXxluIL1F93t2fC0fHxbkvKEfVOBI38O/5buzdRoJdKJlCk8xTsj
- DSlQ8+7Np6SfR26a8MBmgw/yo49M78YGjRRuKim9qUr6NkZXFDv2FaX2olNIXPuudOnR
- iPnZXd8z0hAAvRBWGsXMfiioS2SY+9DnGCXPfS1x3biCzlMo7YCOcx/SqgEU1dt9JknV +Q== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2130.oracle.com with ESMTP id 347p4apwuw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 19 Oct 2020 17:27:57 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09JHOqF9023649;
-        Mon, 19 Oct 2020 17:25:56 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3030.oracle.com with ESMTP id 348ahv7852-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 19 Oct 2020 17:25:56 +0000
-Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 09JHPtxa026342;
-        Mon, 19 Oct 2020 17:25:55 GMT
-Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.147.25.63])
-        by userp3030.oracle.com with ESMTP id 348ahv784h-1;
-        Mon, 19 Oct 2020 17:25:55 +0000
-From:   saeed.mirzamohammadi@oracle.com
-To:     linux-kernel@vger.kernel.org
-Cc:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
-        davem@davemloft.net, kuba@kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH linux-5.9 1/1] net: netfilter: fix KASAN: slab-out-of-bounds Read in nft_flow_rule_create
-Date:   Mon, 19 Oct 2020 10:25:32 -0700
-Message-Id: <20201019172532.3906-1-saeed.mirzamohammadi@oracle.com>
-X-Mailer: git-send-email 2.27.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9779 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=1 priorityscore=1501
- clxscore=1011 malwarescore=0 mlxscore=0 bulkscore=0 lowpriorityscore=0
- phishscore=0 adultscore=0 mlxlogscore=999 impostorscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2010190118
+        id S1730788AbgJSR0V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 13:26:21 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:59377 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725952AbgJSR0U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 13:26:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603128380;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=aVNN1C4LAhUWrEh6nN2bC8yXuvzsPM7VbyNnh38X8Js=;
+        b=Rsh5xzuHY+r/MRriW12Ox5sRMMMVO7bhd6kzfAA8niqjIASxsmd9iOfegJtW1tRTeGM2QA
+        STF4N1xL75QwORjgFtHD9p8/RiSBuShhFkHtTOEloUIWr3qx4vXK2sKFz1XNZZfzSsYM4G
+        M+bQpJfkzLKfEGf9vF32HWu5lCpFYWw=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-79-4oDZjNM8P22EoaJmcVjXHg-1; Mon, 19 Oct 2020 13:26:14 -0400
+X-MC-Unique: 4oDZjNM8P22EoaJmcVjXHg-1
+Received: by mail-qt1-f200.google.com with SMTP id z12so417472qto.4
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 10:26:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=aVNN1C4LAhUWrEh6nN2bC8yXuvzsPM7VbyNnh38X8Js=;
+        b=im06KES5yrmbEJ9EuMCBjx/q3sM2cmtd5vT03rySwOUngV/aFvZa17tf2kVRg82/Vu
+         y6EhzDj4jdnhT4byctiAWOhQV3K0/N3eMz/NPfU6exIR6ppZ7XUFI/gPuQydDBr5e3Lx
+         4sqEYBBDUXqspv5gCugNurgHhBuM0Kh1IsfcVJdwYrsCLyCqab+eTfaskiPDvb5irzBa
+         Dq4jfoyAd5+9vv5bNvE9AsM1pCQfUFPNpYTBqsJlXARXklWWiaX4UgCKQ79AeBQScpck
+         5WybVKp31xBB7+mUFia2C2p4npYtZxNvkkXu/WCaFyAKP1X6l1OHpsio/8NkeXSmraJC
+         S5qQ==
+X-Gm-Message-State: AOAM530U32HORkl9G31h1JWnZBKcxCS1ecAmCHBm+EKyHgtsZMWGrcPr
+        SRJ18qnnVFFyL66Gz6PNkzYodiwOhwF10hKAflcQFrRMTIxsJYrAZhUpXBT5YMCsMizvOmWFRXh
+        +Q9wYQn6qohyqF7VS
+X-Received: by 2002:a37:a251:: with SMTP id l78mr562665qke.291.1603128373875;
+        Mon, 19 Oct 2020 10:26:13 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyJsKJNW3l1vaCdXKu71mlHfkWuJrWdzvbnm3fDmbdSsQlxEmc6RtS4ldJcTGmPfXxmIylQKw==
+X-Received: by 2002:a37:a251:: with SMTP id l78mr562637qke.291.1603128373609;
+        Mon, 19 Oct 2020 10:26:13 -0700 (PDT)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id a21sm228385qtb.30.2020.10.19.10.26.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Oct 2020 10:26:12 -0700 (PDT)
+From:   trix@redhat.com
+To:     irusskikh@marvell.com, davem@davemloft.net, kuba@kernel.org,
+        benve@cisco.com, _govind@gmx.com, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, bigeasy@linutronix.de,
+        tglx@linutronix.de
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        intel-wired-lan@lists.osuosl.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] net: remove unneeded break
+Date:   Mon, 19 Oct 2020 10:26:07 -0700
+Message-Id: <20201019172607.31622-1-trix@redhat.com>
+X-Mailer: git-send-email 2.18.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>
+From: Tom Rix <trix@redhat.com>
 
-This patch fixes the issue due to:
+A break is not needed if it is preceded by a return or goto
 
-BUG: KASAN: slab-out-of-bounds in nft_flow_rule_create+0x622/0x6a2
-net/netfilter/nf_tables_offload.c:40
-Read of size 8 at addr ffff888103910b58 by task syz-executor227/16244
-
-The error happens when expr->ops is accessed early on before performing the boundary check and after nft_expr_next() moves the expr to go out-of-bounds.
-
-This patch checks the boundary condition before expr->ops that fixes the slab-out-of-bounds Read issue.
-
-Signed-off-by: Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>
+Signed-off-by: Tom Rix <trix@redhat.com>
 ---
- net/netfilter/nf_tables_offload.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/aquantia/atlantic/aq_nic.c | 1 -
+ drivers/net/ethernet/cisco/enic/enic_ethtool.c  | 1 -
+ drivers/net/ethernet/intel/ixgbe/ixgbe_x540.c   | 1 -
+ drivers/net/wan/lmc/lmc_proto.c                 | 4 ----
+ 4 files changed, 7 deletions(-)
 
-diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
-index 9ef37c1b7b3b..1273e3c0d4b8 100644
---- a/net/netfilter/nf_tables_offload.c
-+++ b/net/netfilter/nf_tables_offload.c
-@@ -37,7 +37,7 @@ struct nft_flow_rule *nft_flow_rule_create(struct net *net,
- 	struct nft_expr *expr;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+index 0f865daeb36d..bf5e0e9bd0e2 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_nic.c
+@@ -1163,7 +1163,6 @@ int aq_nic_set_link_ksettings(struct aq_nic_s *self,
+ 		default:
+ 			err = -1;
+ 			goto err_exit;
+-		break;
+ 		}
+ 		if (!(self->aq_nic_cfg.aq_hw_caps->link_speed_msk & rate)) {
+ 			err = -1;
+diff --git a/drivers/net/ethernet/cisco/enic/enic_ethtool.c b/drivers/net/ethernet/cisco/enic/enic_ethtool.c
+index a4dd52bba2c3..1a9803f2073e 100644
+--- a/drivers/net/ethernet/cisco/enic/enic_ethtool.c
++++ b/drivers/net/ethernet/cisco/enic/enic_ethtool.c
+@@ -434,7 +434,6 @@ static int enic_grxclsrule(struct enic *enic, struct ethtool_rxnfc *cmd)
+ 		break;
+ 	default:
+ 		return -EINVAL;
+-		break;
+ 	}
  
- 	expr = nft_expr_first(rule);
--	while (expr->ops && expr != nft_expr_last(rule)) {
-+	while (expr != nft_expr_last(rule) && expr->ops) {
- 		if (expr->ops->offload_flags & NFT_OFFLOAD_F_ACTION)
- 			num_actions++;
+ 	fsp->h_u.tcp_ip4_spec.ip4src = flow_get_u32_src(&n->keys);
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_x540.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_x540.c
+index de563cfd294d..4b93ba149ec5 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_x540.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_x540.c
+@@ -350,7 +350,6 @@ static s32 ixgbe_calc_eeprom_checksum_X540(struct ixgbe_hw *hw)
+ 		if (ixgbe_read_eerd_generic(hw, pointer, &length)) {
+ 			hw_dbg(hw, "EEPROM read failed\n");
+ 			return IXGBE_ERR_EEPROM;
+-			break;
+ 		}
  
-@@ -61,7 +61,7 @@ struct nft_flow_rule *nft_flow_rule_create(struct net *net,
- 	ctx->net = net;
- 	ctx->dep.type = NFT_OFFLOAD_DEP_UNSPEC;
+ 		/* Skip pointer section if length is invalid. */
+diff --git a/drivers/net/wan/lmc/lmc_proto.c b/drivers/net/wan/lmc/lmc_proto.c
+index e8b0b902b424..4e9cc83b615a 100644
+--- a/drivers/net/wan/lmc/lmc_proto.c
++++ b/drivers/net/wan/lmc/lmc_proto.c
+@@ -89,17 +89,13 @@ __be16 lmc_proto_type(lmc_softc_t *sc, struct sk_buff *skb) /*FOLD00*/
+     switch(sc->if_type){
+     case LMC_PPP:
+ 	    return hdlc_type_trans(skb, sc->lmc_device);
+-	    break;
+     case LMC_NET:
+         return htons(ETH_P_802_2);
+-        break;
+     case LMC_RAW: /* Packet type for skbuff kind of useless */
+         return htons(ETH_P_802_2);
+-        break;
+     default:
+         printk(KERN_WARNING "%s: No protocol set for this interface, assuming 802.2 (which is wrong!!)\n", sc->name);
+         return htons(ETH_P_802_2);
+-        break;
+     }
+ }
  
--	while (expr->ops && expr != nft_expr_last(rule)) {
-+	while (expr != nft_expr_last(rule) && expr->ops) {
- 		if (!expr->ops->offload) {
- 			err = -EOPNOTSUPP;
- 			goto err_out;
 -- 
-2.27.0
+2.18.1
 
