@@ -2,157 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E49AC292EAD
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 21:45:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1D90292E9A
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 21:42:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731343AbgJSTop (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 15:44:45 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:4338 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731325AbgJSTnH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 15:43:07 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09JJh5xG013084
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 12:43:06 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=facebook;
- bh=nRTRnVV23/hgDHMf8uKxDVRGLfawh+dD8m9mZng5Yl0=;
- b=p5UT42tSYyLpLJUnGcQU7XjNlzgsJOioIsysFr2KYGCHH4h4ENUGz4iNyyasFq+zoK3D
- m2n7rM4jkNvhHNYbC6gARZp/RQWWurxs4NrJrCuEocEIimjrAXq6BpLnZsWMonoIZI9i
- yAMSubyFAykR6kZr4QPzwnkQsPQfMrIkers= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 348gekprg4-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 12:43:06 -0700
-Received: from intmgw004.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 19 Oct 2020 12:42:27 -0700
-Received: by devbig005.ftw2.facebook.com (Postfix, from userid 6611)
-        id E51DB2946269; Mon, 19 Oct 2020 12:42:12 -0700 (PDT)
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Hao Luo <haoluo@google.com>, <kernel-team@fb.com>,
-        <netdev@vger.kernel.org>, Yonghong Song <yhs@fb.com>
-Subject: [PATCH bpf 1/3] bpf: Enforce id generation for all may-be-null register type
-Date:   Mon, 19 Oct 2020 12:42:12 -0700
-Message-ID: <20201019194212.1050855-1-kafai@fb.com>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20201019194206.1050591-1-kafai@fb.com>
-References: <20201019194206.1050591-1-kafai@fb.com>
+        id S1731223AbgJSTmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 15:42:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34380 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731214AbgJSTm2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 15:42:28 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D63DCC0613D7
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 12:42:27 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id t4so303467plq.13
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 12:42:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=no6WOfZDuAXhTDfVia9Vunkz4L7BthY0F8m0jo4//vs=;
+        b=vqIoQqfPtCUD7ceHGEmbvFqqUZd/9dE0IpLQQ4p4nyONBXQMSFxBG5OzgCaJfT8eu8
+         Ez0DMwUntzcU9c2WJzs/WqMvxG3bzlj0mstlcz+E4fW0gt02sZNjrL1HdU6SHVwmCE5R
+         WFeHYzJRJuPZspqj8YJ2wlUmUN4Mc8MNrI6kLekCJ8yejCepkvkgEUeb7TbpDze1NnEh
+         TP2SjhqdakZDUedR00qYjd62k5W2m7FgfHIpcuS/rhjqMGxVL3Apppn+UDRO/ftdIfoh
+         duvoKavmXDacw9mysFV+xdp1Tg4QxCPiDxNSeCeZyO+34Y2S1kYSdX61NJzSKhmGsX5T
+         HLpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=no6WOfZDuAXhTDfVia9Vunkz4L7BthY0F8m0jo4//vs=;
+        b=pcg5/SpS0/8SBqMS2lDEknI7oOovoW7HRB6Ezu/QoTchkMHv0y/PBXBbRJ2dJ2y3Im
+         oWhhz9kYJg6+Vysed4QUtSxdn6a/oLYEMhLDwVeJHOOS5n4NGHglZnOFJlF6esYqiUtK
+         7m6d6MGMnHapAA7Z0/Xox3l1191OVvDcklHR5FsN7EVSK/gb5zxUP8U3PzYoHQlDjn21
+         372JXc5rZMQwbV/E3W+gX3j9JYQwwXE7oForlLFtul+ErKt5a/vYE0FhfwHVca7vgTq3
+         ZujJGX5rRsJZEF2wnoHB/0f6IDreM9BwEYi6jnB0g5YYcu0QAlLpZcCOkmlmfhqYLGuT
+         g/Rw==
+X-Gm-Message-State: AOAM532AzXE0DdMk5JhDgREjlA46ubNH5XPMiACEojdy7IdQBoVv5lfN
+        fIXR2oUeUH95/3G1cZVNzl24RO1KbOglN6gOfcZUEA==
+X-Google-Smtp-Source: ABdhPJxy4K+2uRaBuhFTeTSlHPetqrP1uAAP7dKvm6UBZz10SCa23PJUxb54E5JJmlle9J/y892Qp+TTrKvO4GeNXIk=
+X-Received: by 2002:a17:90a:ee87:: with SMTP id i7mr921476pjz.25.1603136546933;
+ Mon, 19 Oct 2020 12:42:26 -0700 (PDT)
 MIME-Version: 1.0
-X-FB-Internal: Safe
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-10-19_10:2020-10-16,2020-10-19 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
- phishscore=0 spamscore=0 bulkscore=0 priorityscore=1501 suspectscore=13
- mlxscore=0 lowpriorityscore=0 adultscore=0 mlxlogscore=872 malwarescore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010190133
-X-FB-Internal: deliver
+References: <20201017160928.12698-1-trix@redhat.com> <20201018054332.GB593954@kroah.com>
+In-Reply-To: <20201018054332.GB593954@kroah.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 19 Oct 2020 12:42:15 -0700
+Message-ID: <CAKwvOdkR_Ttfo7_JKUiZFVqr=Uh=4b05KCPCSuzwk=zaWtA2_Q@mail.gmail.com>
+Subject: Re: [RFC] treewide: cleanup unreachable breaks
+To:     Tom Rix <trix@redhat.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, linux-edac@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
+        xen-devel@lists.xenproject.org, linux-block@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net,
+        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
+        <linux-crypto@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-power@fi.rohmeurope.com, linux-gpio@vger.kernel.org,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        nouveau@lists.freedesktop.org,
+        virtualization@lists.linux-foundation.org,
+        spice-devel@lists.freedesktop.org, linux-iio@vger.kernel.org,
+        linux-amlogic@lists.infradead.org,
+        industrypack-devel@lists.sourceforge.net,
+        linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com,
+        linux-scsi@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-can@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        intel-wired-lan@lists.osuosl.org, ath10k@lists.infradead.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com, linux-nfc@lists.01.org,
+        linux-nvdimm <linux-nvdimm@lists.01.org>,
+        linux-pci@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, patches@opensource.cirrus.com,
+        storagedev@microchip.com, devel@driverdev.osuosl.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        usb-storage@lists.one-eyed-alien.net,
+        linux-watchdog@vger.kernel.org, ocfs2-devel@oss.oracle.com,
+        bpf <bpf@vger.kernel.org>, linux-integrity@vger.kernel.org,
+        linux-security-module@vger.kernel.org, keyrings@vger.kernel.org,
+        alsa-devel@alsa-project.org,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        George Burgess <gbiv@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit af7ec1383361 ("bpf: Add bpf_skc_to_tcp6_sock() helper")
-introduces RET_PTR_TO_BTF_ID_OR_NULL and
-the commit eaa6bcb71ef6 ("bpf: Introduce bpf_per_cpu_ptr()")
-introduces RET_PTR_TO_MEM_OR_BTF_ID_OR_NULL.
-Note that for RET_PTR_TO_MEM_OR_BTF_ID_OR_NULL, the reg0->type
-could become PTR_TO_MEM_OR_NULL which is not covered by
-BPF_PROBE_MEM.
+On Sat, Oct 17, 2020 at 10:43 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Sat, Oct 17, 2020 at 09:09:28AM -0700, trix@redhat.com wrote:
+> > From: Tom Rix <trix@redhat.com>
+> >
+> > This is a upcoming change to clean up a new warning treewide.
+> > I am wondering if the change could be one mega patch (see below) or
+> > normal patch per file about 100 patches or somewhere half way by collecting
+> > early acks.
+>
+> Please break it up into one-patch-per-subsystem, like normal, and get it
+> merged that way.
+>
+> Sending us a patch, without even a diffstat to review, isn't going to
+> get you very far...
 
-The BPF_REG_0 will then hold a _OR_NULL pointer type. This _OR_NULL
-pointer type requires the bpf program to explicitly do a NULL check first=
-.
-After NULL check, the verifier will mark all registers having
-the same reg->id as safe to use.  However, the reg->id
-is not set for those new _OR_NULL return types.  One of the ways
-that may be wrong is, checking NULL for one btf_id typed pointer will
-end up validating all other btf_id typed pointers because
-all of them have id =3D=3D 0.  The later tests will exercise
-this path.
+Tom,
+If you're able to automate this cleanup, I suggest checking in a
+script that can be run on a directory.  Then for each subsystem you
+can say in your commit "I ran scripts/fix_whatever.py on this subdir."
+ Then others can help you drive the tree wide cleanup.  Then we can
+enable -Wunreachable-code-break either by default, or W=2 right now
+might be a good idea.
 
-To fix it and also avoid similar issue in the future, this patch
-moves the id generation logic out of each individual RET type
-test in check_helper_call().  Instead, it does one
-reg_type_may_be_null() test and then do the id generation
-if needed.
+Ah, George (gbiv@, cc'ed), did an analysis recently of
+`-Wunreachable-code-loop-increment`, `-Wunreachable-code-break`, and
+`-Wunreachable-code-return` for Android userspace.  From the review:
+```
+Spoilers: of these, it seems useful to turn on
+-Wunreachable-code-loop-increment and -Wunreachable-code-return by
+default for Android
+...
+While these conventions about always having break arguably became
+obsolete when we enabled -Wfallthrough, my sample turned up zero
+potential bugs caught by this warning, and we'd need to put a lot of
+effort into getting a clean tree. So this warning doesn't seem to be
+worth it.
+```
+Looks like there's an order of magnitude of `-Wunreachable-code-break`
+than the other two.
 
-This patch also adds a WARN_ON_ONCE in mark_ptr_or_null_reg()
-to catch future breakage.
-
-The _OR_NULL pointer usage in the bpf_iter_reg.ctx_arg_info is
-fine because it just happens that the existing id generation after
-check_ctx_access() has covered it.  It is also using the
-reg_type_may_be_null() to decide if id generation is needed or not.
-
-Fixes: af7ec1383361 ("bpf: Add bpf_skc_to_tcp6_sock() helper")
-Fixes: eaa6bcb71ef6 ("bpf: Introduce bpf_per_cpu_ptr()")
-Cc: Yonghong Song <yhs@fb.com>
-Cc: Hao Luo <haoluo@google.com>
-Signed-off-by: Martin KaFai Lau <kafai@fb.com>
----
- kernel/bpf/verifier.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
-
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 39d7f44e7c92..6200519582a6 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -5133,24 +5133,19 @@ static int check_helper_call(struct bpf_verifier_=
-env *env, int func_id, int insn
- 				regs[BPF_REG_0].id =3D ++env->id_gen;
- 		} else {
- 			regs[BPF_REG_0].type =3D PTR_TO_MAP_VALUE_OR_NULL;
--			regs[BPF_REG_0].id =3D ++env->id_gen;
- 		}
- 	} else if (fn->ret_type =3D=3D RET_PTR_TO_SOCKET_OR_NULL) {
- 		mark_reg_known_zero(env, regs, BPF_REG_0);
- 		regs[BPF_REG_0].type =3D PTR_TO_SOCKET_OR_NULL;
--		regs[BPF_REG_0].id =3D ++env->id_gen;
- 	} else if (fn->ret_type =3D=3D RET_PTR_TO_SOCK_COMMON_OR_NULL) {
- 		mark_reg_known_zero(env, regs, BPF_REG_0);
- 		regs[BPF_REG_0].type =3D PTR_TO_SOCK_COMMON_OR_NULL;
--		regs[BPF_REG_0].id =3D ++env->id_gen;
- 	} else if (fn->ret_type =3D=3D RET_PTR_TO_TCP_SOCK_OR_NULL) {
- 		mark_reg_known_zero(env, regs, BPF_REG_0);
- 		regs[BPF_REG_0].type =3D PTR_TO_TCP_SOCK_OR_NULL;
--		regs[BPF_REG_0].id =3D ++env->id_gen;
- 	} else if (fn->ret_type =3D=3D RET_PTR_TO_ALLOC_MEM_OR_NULL) {
- 		mark_reg_known_zero(env, regs, BPF_REG_0);
- 		regs[BPF_REG_0].type =3D PTR_TO_MEM_OR_NULL;
--		regs[BPF_REG_0].id =3D ++env->id_gen;
- 		regs[BPF_REG_0].mem_size =3D meta.mem_size;
- 	} else if (fn->ret_type =3D=3D RET_PTR_TO_MEM_OR_BTF_ID_OR_NULL ||
- 		   fn->ret_type =3D=3D RET_PTR_TO_MEM_OR_BTF_ID) {
-@@ -5199,6 +5194,9 @@ static int check_helper_call(struct bpf_verifier_en=
-v *env, int func_id, int insn
- 		return -EINVAL;
- 	}
-=20
-+	if (reg_type_may_be_null(regs[BPF_REG_0].type))
-+		regs[BPF_REG_0].id =3D ++env->id_gen;
-+
- 	if (is_ptr_cast_function(func_id)) {
- 		/* For release_reference() */
- 		regs[BPF_REG_0].ref_obj_id =3D meta.ref_obj_id;
-@@ -7212,7 +7210,8 @@ static void mark_ptr_or_null_reg(struct bpf_func_st=
-ate *state,
- 				 struct bpf_reg_state *reg, u32 id,
- 				 bool is_null)
- {
--	if (reg_type_may_be_null(reg->type) && reg->id =3D=3D id) {
-+	if (reg_type_may_be_null(reg->type) && reg->id =3D=3D id &&
-+	    !WARN_ON_ONCE(!reg->id)) {
- 		/* Old offset (both fixed and variable parts) should
- 		 * have been known-zero, because we don't allow pointer
- 		 * arithmetic on pointers that might be NULL.
---=20
-2.24.1
-
+We probably should add all 3 to W=2 builds (wrapped in cc-option).
+I've filed https://github.com/ClangBuiltLinux/linux/issues/1180 to
+follow up on.
+-- 
+Thanks,
+~Nick Desaulniers
