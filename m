@@ -2,66 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A6BA2926D4
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 13:56:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE88F292666
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 13:32:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727446AbgJSL4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 07:56:04 -0400
-Received: from m15114.mail.126.com ([220.181.15.114]:53640 "EHLO
-        m15114.mail.126.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726249AbgJSL4D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 07:56:03 -0400
-X-Greylist: delayed 1855 seconds by postgrey-1.27 at vger.kernel.org; Mon, 19 Oct 2020 07:56:02 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=BMUY5GjtFzTai0Y5GG
-        +2gzfUve2D878aEo2Z6x6PbUM=; b=aRhrEUMwSjvaH48e/J3gJul9rdWk+FIJSH
-        L0HD3FYyabiPRI5bd7Z5OuUNEYSWhjqZ3A1B+kLx1zBPCETBGFrppEdQTNuplxr6
-        BdvXSebeK2g9coNmT6oaFJv5hBbHoTFTX921FCISUYwVTHwW2g/nJ8uKKToqw3E7
-        OIivtWrQE=
-Received: from localhost.localdomain (unknown [36.112.86.14])
-        by smtp7 (Coremail) with SMTP id DsmowACnrW0cd41fgBoPKQ--.45370S2;
-        Mon, 19 Oct 2020 19:23:09 +0800 (CST)
-From:   Defang Bo <bodefang@126.com>
-To:     siva.kallam@broadcom.com, prashant@broadcom.com,
-        mchan@broadcom.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Defang Bo <bodefang@126.com>
-Subject: [PATCH] tg3: Avoid NULL pointer dereference in netif_device_attach()
-Date:   Mon, 19 Oct 2020 19:22:47 +0800
-Message-Id: <1603106567-4589-1-git-send-email-bodefang@126.com>
-X-Mailer: git-send-email 1.9.1
-X-CM-TRANSID: DsmowACnrW0cd41fgBoPKQ--.45370S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrKF17trW7Jw17GFy5Kr1xZrb_yoW3Crc_KF
-        1UZrZ3Cr4UGr9FkF4Ykr43Ary5Ka1qvayF9F1Iv3yaqrZFkr1UJF4kZrn3ArnrWrWUJFyD
-        Jr1aqFWfJw4UKjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU1JGYtUUUUU==
-X-Originating-IP: [36.112.86.14]
-X-CM-SenderInfo: pergvwxdqjqiyswou0bp/1tbitR3C11pECOj-eQAAsF
+        id S1727915AbgJSLcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 07:32:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42204 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727883AbgJSLcq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 07:32:46 -0400
+Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2565AC0613CE
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 04:32:46 -0700 (PDT)
+Received: from ramsan ([84.195.186.194])
+        by laurent.telenet-ops.be with bizsmtp
+        id hnYi230024C55Sk01nYiAJ; Mon, 19 Oct 2020 13:32:43 +0200
+Received: from rox.of.borg ([192.168.97.57])
+        by ramsan with esmtp (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1kUTP8-000055-11; Mon, 19 Oct 2020 13:32:42 +0200
+Received: from geert by rox.of.borg with local (Exim 4.90_1)
+        (envelope-from <geert@linux-m68k.org>)
+        id 1kUTP7-00030U-VE; Mon, 19 Oct 2020 13:32:41 +0200
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+To:     Paolo Abeni <pabeni@redhat.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, mptcp@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: [PATCH] mptcp: MPTCP_KUNIT_TESTS should depend on MPTCP instead of selecting it
+Date:   Mon, 19 Oct 2020 13:32:40 +0200
+Message-Id: <20201019113240.11516-1-geert@linux-m68k.org>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to commit<1b0ff89852d7>("tg3: Avoid NULL pointer dereference in tg3_io_error_detected()")
-This patch avoids NULL pointer dereference add a check for netdev being NULL on tg3_resume().
+MPTCP_KUNIT_TESTS selects MPTCP, thus enabling an optional feature the
+user may not want to enable.  Fix this by making the test depend on
+MPTCP instead.
 
-Signed-off-by: Defang Bo <bodefang@126.com>
+Fixes: a00a582203dbc43e ("mptcp: move crypto test to KUNIT")
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 ---
- drivers/net/ethernet/broadcom/tg3.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/mptcp/Kconfig | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
-index ebff1fc..ae756dd 100644
---- a/drivers/net/ethernet/broadcom/tg3.c
-+++ b/drivers/net/ethernet/broadcom/tg3.c
-@@ -18099,7 +18099,7 @@ static int tg3_resume(struct device *device)
+diff --git a/net/mptcp/Kconfig b/net/mptcp/Kconfig
+index 698bc35251609755..abb0a992d4a0855a 100644
+--- a/net/mptcp/Kconfig
++++ b/net/mptcp/Kconfig
+@@ -22,11 +22,8 @@ config MPTCP_IPV6
+ 	select IPV6
+ 	default y
  
- 	rtnl_lock();
+-endif
+-
+ config MPTCP_KUNIT_TESTS
+ 	tristate "This builds the MPTCP KUnit tests" if !KUNIT_ALL_TESTS
+-	select MPTCP
+ 	depends on KUNIT
+ 	default KUNIT_ALL_TESTS
+ 	help
+@@ -39,3 +36,4 @@ config MPTCP_KUNIT_TESTS
  
--	if (!netif_running(dev))
-+	if (!netdev || !netif_running(dev))
- 		goto unlock;
+ 	  If unsure, say N.
  
- 	netif_device_attach(dev);
++endif
 -- 
-1.9.1
+2.17.1
 
