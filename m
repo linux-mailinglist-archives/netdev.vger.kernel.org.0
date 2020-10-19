@@ -2,85 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAA042923F0
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 10:52:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36526292401
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 10:57:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729415AbgJSIwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 04:52:39 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:21254 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729287AbgJSIwj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 04:52:39 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1603097558; x=1634633558;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=tJ/a1JvUOjBjoPtEuJeWoMkuf2rsk+6hMQF3y1Sz3mw=;
-  b=qMeEnYvdXeZAw3yedp76hOAh+rTbpXp+oJIsZnoDFSWkwqF4xEGevHO3
-   87cxwYnGZ2CD69MSj0SZEJaaW0JMiLh/NXhjltZrZK3jl6VCrEJrHYfr9
-   73RkfI9FyWY/IWdwSyxZuBJtZ2B5vrq3WpOBwxJ3M8yr2tWpY6dmKqbJf
-   3OmIgJnE1YDFczeB4XjcgkjPrB6ohVUWYGv2G/E55gDi7qkaB32/jdMWV
-   5g77R7WZLeX81wpsENGe6Tr60uTNUpQj5P4JmMM/ZwJU68pX0TZqVqE4P
-   S05IP+8RvDYgUVPbNZU1OdIZ6OyHAlFVvPKreRff7BHqRG9B9p8sSaQcj
-   Q==;
-IronPort-SDR: Xjs9Y3nloL7WeTI9F5WakznkLOCdoQdi1582lAkA0C7Z3S3NKwTvCbzEPATNuv0L+l91fVjIup
- 1hGemwGMGYLlkpB5IMAWkINGC0nS0m09CNxRpnQTytqAs7ALTMO7G9mGUbYmVOb5totGOv5V7I
- 3yUw/zibH+ZYyDYHkm3J6CS3tRhpG09ITAYLvxLZx/AbGpEiAr+3Eq68WUBfwoqfbOHH50/3pc
- Us8gACj93lDBn0dqEFwb3ylt4zn/wiz68gwccDHNIKO/nSy7F9YuFjgdEemoNIDKea61vCmESG
- SzI=
-X-IronPort-AV: E=Sophos;i="5.77,394,1596524400"; 
-   d="scan'208";a="93092731"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Oct 2020 01:52:38 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 19 Oct 2020 01:52:37 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Mon, 19 Oct 2020 01:52:37 -0700
-Date:   Mon, 19 Oct 2020 08:51:04 +0000
-From:   Henrik Bjoernlund <henrik.bjoernlund@microchip.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <roopa@nvidia.com>, <nikolay@nvidia.com>,
-        <jiri@mellanox.com>, <idosch@mellanox.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>,
-        <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: Re: [PATCH net-next v6 07/10] bridge: cfm: Netlink SET configuration
- Interface.
-Message-ID: <20201019085104.2hkz2za2o2juliab@soft-test08>
-References: <20201015115418.2711454-1-henrik.bjoernlund@microchip.com>
- <20201015115418.2711454-8-henrik.bjoernlund@microchip.com>
- <20201015103431.25d66c8b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1729745AbgJSI5S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 04:57:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45784 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729415AbgJSI5S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 04:57:18 -0400
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E870C0613D0;
+        Mon, 19 Oct 2020 01:57:16 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id h12so5626729qtu.1;
+        Mon, 19 Oct 2020 01:57:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4wXjVJ2kLM9uL5zZqS31DB6qTzRp54/Wsz/d0bgYSzU=;
+        b=TDyea6ULvpGU7a0Dhx1tL4D0rwfJbSJTi4VN7qeh/4elwEKNOUpmDVqizB19jpmbi5
+         ik+Tv9QgHViUgEFekp/zfJOGt55BpkejTYlZIzmBM2jWyoDSQXPgmZgYIHY54csWtczN
+         Hf40iCTF2f9opr6ioMeyyzHWYeFWWjCrMULiI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4wXjVJ2kLM9uL5zZqS31DB6qTzRp54/Wsz/d0bgYSzU=;
+        b=AYyKyQux9AS/bR1ljH/CHjCLSGkHSCtTvsRrnSSFYFGbMu4nW7/UwyrnKkmq3q2bSC
+         GcJfYa87qwkjJHBPSBh0LZ6VZEuqWO3RuXzIlmgi4lez3gHTiupl2v/hcdbRStPfGT2F
+         Cg2M4qdzTcmIulsgso/p/wOWTtVGvOAYYa9oo/MbaMTL7CJW02MzC8//Z/P/dFzT3/Bi
+         uL8GgMleMK9bBwsTJ2+h1xwDNPzTsX28UdaS97WSKD0qoXF4mL9OU2brhS+RPTdr0Z41
+         5EDFmrjLRBQGIEleFo829briFLmVro6jPT8OvAyCYkIGmN7E1fIEwzSc/E3leKdlUClg
+         Ay/A==
+X-Gm-Message-State: AOAM531tuz1ddyVF5dmmVfL4VoHd8jKEeIJ4Lis9Y451d0imaKp33Vn7
+        +B8DHpYpFBOC283LJgJ3RfyprgwWZ39kz4ONLK0=
+X-Google-Smtp-Source: ABdhPJziaiqhweWLOlZxU+9528F62BwFkgOqsRM3uuTjs1fr/ZaPnhcOPrPNTkmmTVOf98mby6Bwx3/NXCsuhATsdZI=
+X-Received: by 2002:ac8:5b82:: with SMTP id a2mr14060369qta.176.1603097835819;
+ Mon, 19 Oct 2020 01:57:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20201015103431.25d66c8b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20201019073908.32262-1-dylan_hung@aspeedtech.com>
+In-Reply-To: <20201019073908.32262-1-dylan_hung@aspeedtech.com>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Mon, 19 Oct 2020 08:57:03 +0000
+Message-ID: <CACPK8Xfn+Gn0PHCfhX-vgLTA6e2=RT+D+fnLF67_1j1iwqh7yg@mail.gmail.com>
+Subject: Re: [PATCH] net: ftgmac100: Fix missing TX-poll issue
+To:     Dylan Hung <dylan_hung@aspeedtech.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Po-Yu Chuang <ratbert@faraday-tech.com>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        BMC-SW <BMC-SW@aspeedtech.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thank you for the review. Comments below.
+On Mon, 19 Oct 2020 at 07:39, Dylan Hung <dylan_hung@aspeedtech.com> wrote:
+>
+> The cpu accesses the register and the memory via different bus/path on
+> aspeed soc.  So we can not guarantee that the tx-poll command
 
-The 10/15/2020 10:34, Jakub Kicinski wrote:
-> 
-> On Thu, 15 Oct 2020 11:54:15 +0000 Henrik Bjoernlund wrote:
-> > +     [IFLA_BRIDGE_CFM_MEP_CONFIG_MDLEVEL]     = {
-> > +     .type = NLA_U32, .validation_type = NLA_VALIDATE_MAX, .max = 7 },
-> 
->         NLA_POLICY_MAX(NLA_U32, 7)
+Just the 2600, or other versions too?
 
-I will change as requested.
+> (register access) is always behind the tx descriptor (memory).  In other
+> words, the HW may start working even the data is not yet ready.  By
 
-> 
-> Also why did you keep the validation in the code in patch 4?
+even if the
 
-In patch 4 there is no CFM NETLINK so I desided to keep the validation in the
-code until NETLINK was added that is now doing the check.
-I this a problem?
+> adding a dummy read after the last data write, we can ensure the data
+> are pushed to the memory, then guarantee the processing sequence
+>
+> Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
+> ---
+>  drivers/net/ethernet/faraday/ftgmac100.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+> index 00024dd41147..9a99a87f29f3 100644
+> --- a/drivers/net/ethernet/faraday/ftgmac100.c
+> +++ b/drivers/net/ethernet/faraday/ftgmac100.c
+> @@ -804,7 +804,8 @@ static netdev_tx_t ftgmac100_hard_start_xmit(struct sk_buff *skb,
+>          * before setting the OWN bit on the first descriptor.
+>          */
+>         dma_wmb();
+> -       first->txdes0 = cpu_to_le32(f_ctl_stat);
+> +       WRITE_ONCE(first->txdes0, cpu_to_le32(f_ctl_stat));
+> +       READ_ONCE(first->txdes0);
 
--- 
-/Henrik
+I understand what you're trying to do here, but I'm not sure that this
+is the correct way to go about it.
+
+It does cause the compiler to produce a store and then a load.
+
+>
+>         /* Update next TX pointer */
+>         priv->tx_pointer = pointer;
+> --
+> 2.17.1
+>
