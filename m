@@ -2,116 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FC01292609
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 12:50:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF620292631
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 13:04:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727372AbgJSKt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 06:49:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35630 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726606AbgJSKt4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 06:49:56 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85108C0613CE;
-        Mon, 19 Oct 2020 03:49:56 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id b6so3130206pju.1;
-        Mon, 19 Oct 2020 03:49:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BZeXQB503+W7irppENYUXNUt9TL7p7KQ2c0tGFSb0Ww=;
-        b=Q7uTNJ6d2CLKNsu67mfAofdTcCvVFozvXWJ6iIEn3DJqYkhNRKYpY2xX8lBjDbOOFN
-         Y8I+H46ZSOVSPWni8neUPrJQ6JrmNEhwoQF3ppOCFnK5y4+242b5ZI9wD4TE8tnCGqCT
-         MYlsjeWl6pkcCBtW6i8ALiLL3nKIAews+q3npApTaqIJHvZQ9VXrRDlO6w0/X3nTNwaF
-         HdKjFKUo70U+OXywVkqbPNfMU8uny27ENVw7VYLC3pcyYtX7G32uhvNPBLZqMGUn7B7p
-         tQqeUu8THLcgHU10a3lkUv1Wc3DVGoEcSZSBBZaR98KiTQpE+sNx7hs0d4oRAOOyPTMf
-         yRzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BZeXQB503+W7irppENYUXNUt9TL7p7KQ2c0tGFSb0Ww=;
-        b=KtNAPcqkdmhZO0daRK6eo3ytEOf9Lp+SQhCbDZxCvI8nAgeIDEVNIf0bqXxRtSH3nI
-         B8M+3oawFoyXiJMeGjbfdYB2syLRx4K8PENHVn+ePnb5VBwNeSMDNJBDDdh3woeL7nJ5
-         mgo4sBESHVhVw4GSNKYTrH6HPTzmoU+XJq6ySW+U3PN6XlGaq5sQVvt7dG1uKEjh35Lj
-         aQulJk2O9DLpPzUt1ifaQL37/JyqXzYO5VOVuW+A+y+32DAFJpdEP+jjxxKGuGdLNCU4
-         rGleztaPlPsUwyDY9mOZmENggcU1glJjFiGqXGWlS+ij4gX0HhNRaLFJ+rhuoSD/XlPZ
-         u9ew==
-X-Gm-Message-State: AOAM530AAWExfYv5n/uiv/CjoPS08qXXPkdXYXM56ggn+yd7MHObKDu6
-        zVz5gLCexQnLS+XMaIU6Wbk=
-X-Google-Smtp-Source: ABdhPJwD9HD7pSgL5Ol97zW0d1cfKEe8k5iy5UGa6MeEf+b8hl7dAmKnMLFAmMkpyEV3aRcxRNWvFQ==
-X-Received: by 2002:a17:902:7284:b029:d5:e92b:fe67 with SMTP id d4-20020a1709027284b02900d5e92bfe67mr3139202pll.44.1603104596095;
-        Mon, 19 Oct 2020 03:49:56 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:b903:ac74:ad6d:beb7])
-        by smtp.gmail.com with ESMTPSA id f4sm11194694pjs.8.2020.10.19.03.49.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Oct 2020 03:49:55 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Krzysztof Halasa <khc@pm.waw.pl>
-Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH net] drivers/net/wan/hdlc: In hdlc_rcv, check to make sure dev is an HDLC device
-Date:   Mon, 19 Oct 2020 03:49:42 -0700
-Message-Id: <20201019104942.364914-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1727556AbgJSLE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 07:04:26 -0400
+Received: from mx2.suse.de ([195.135.220.15]:40350 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725776AbgJSLEY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Oct 2020 07:04:24 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 2390EAF47;
+        Mon, 19 Oct 2020 11:04:23 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 8FAC760563; Mon, 19 Oct 2020 13:04:22 +0200 (CEST)
+Date:   Mon, 19 Oct 2020 13:04:22 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Danielle Ratson <danieller@nvidia.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Ido Schimmel <idosch@idosch.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        mlxsw <mlxsw@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>
+Subject: Re: [PATCH net-next 1/6] ethtool: Extend link modes settings uAPI
+ with lanes
+Message-ID: <20201019110422.gj3ebxttwtfssvem@lion.mk-sys.cz>
+References: <20201010154119.3537085-1-idosch@idosch.org>
+ <20201010154119.3537085-2-idosch@idosch.org>
+ <20201011153759.1bcb6738@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <DM6PR12MB3865B2FBA17BABBC747190D8D8070@DM6PR12MB3865.namprd12.prod.outlook.com>
+ <20201012085803.61e256e6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <DM6PR12MB3865E4CB3854ECF70F5864D7D8040@DM6PR12MB3865.namprd12.prod.outlook.com>
+ <20201016221553.GN139700@lunn.ch>
+ <DM6PR12MB3865B000BE04105A4373FD08D81E0@DM6PR12MB3865.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DM6PR12MB3865B000BE04105A4373FD08D81E0@DM6PR12MB3865.namprd12.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The hdlc_rcv function is used as hdlc_packet_type.func to process any
-skb received in the kernel with skb->protocol == htons(ETH_P_HDLC).
-The purpose of this function is to provide second-stage processing for
-skbs not assigned a "real" L3 skb->protocol value in the first stage.
+On Mon, Oct 19, 2020 at 07:19:34AM +0000, Danielle Ratson wrote:
+> > -----Original Message-----
+> > From: Andrew Lunn <andrew@lunn.ch>
+> > Sent: Saturday, October 17, 2020 1:16 AM
+> > 
+> > I'm not sure i fully understand all these different link modes, but
+> > i thought these 5 are all 100G using 2 lanes? So why cannot the user
+> > simply do
+> > 
+> > ethtool -s swp1 advertise 100000baseKR2/Full
+> > 
+> > and the driver can figure out it needs to use two lanes at 50G?
+> > 
+> >     Andrew
+> 
+> Hi Andrew,
+> 
+> Thanks for the feedback.
+> 
+> I guess you mean " ethtool -s swp1 advertise 100000baseKR2/Full on".
+> 
+> First, the idea might work but only for auto negotiation mode, whereas
+> the lanes parameter is a solution for both.
+> 
+> Second, the command as you have suggested it, wouldn't change anything
+> in the current situation as I checked. We can disable all the others
+> and leave only the one we want but the command doesn't filter the
+> other link modes but it just turns the mentioned link modes up if they
+> aren't. However, the lanes parameter is a selector, which make it much
+> more user friendly in my opinion.
 
-This function assumes the device from which the skb is received is an
-HDLC device (a device created by this module). It assumes that
-netdev_priv(dev) returns a pointer to "struct hdlc_device".
+It would be quite easy to extend the ethtool command line parser to
+allow also
 
-However, it is possible that some driver in the kernel (not necessarily
-in our control) submits a received skb with skb->protocol ==
-htons(ETH_P_HDLC), from a non-HDLC device. In this case, the skb would
-still be received by hdlc_rcv. This will cause problems.
+  ethtool -s <dev> advertise <mode> ...
 
-hdlc_rcv should be able to recognize and drop invalid skbs. It should
-first make sure "dev" is actually an HDLC device, before starting its
-processing.
+in addition to already supported
 
-To reliably check if a device is an HDLC device, we can check if its
-dev->netdev_ops->ndo_start_xmit == hdlc_start_xmit, because all HDLC
-devices are required to set their ndo_start_xmit to hdlc_start_xmit
-(and all non-HDLC devices would not set their ndo_start_xmit to this).
+  ethtool -s <dev> advertise <mask>
+  ethtool -s <dev> advertise <mask>/<mask>
+  ethtool -s { <mode> { on | off } } ...
 
-Cc: Krzysztof Halasa <khc@pm.waw.pl>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
- drivers/net/wan/hdlc.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+Parser converting simple list of values into a maskless bitset is
+already there so it would be only matter of checking if there are at
+least two arguments and second is "on" or "off" and using corresponding
+parser. I think it would be useful independently of this series.
 
-diff --git a/drivers/net/wan/hdlc.c b/drivers/net/wan/hdlc.c
-index 9b00708676cf..0a392fb9aff8 100644
---- a/drivers/net/wan/hdlc.c
-+++ b/drivers/net/wan/hdlc.c
-@@ -46,7 +46,15 @@ static struct hdlc_proto *first_proto;
- static int hdlc_rcv(struct sk_buff *skb, struct net_device *dev,
- 		    struct packet_type *p, struct net_device *orig_dev)
- {
--	struct hdlc_device *hdlc = dev_to_hdlc(dev);
-+	struct hdlc_device *hdlc;
-+
-+	/* First make sure "dev" is an HDLC device */
-+	if (dev->netdev_ops->ndo_start_xmit != hdlc_start_xmit) {
-+		kfree_skb(skb);
-+		return NET_RX_SUCCESS;
-+	}
-+
-+	hdlc = dev_to_hdlc(dev);
- 
- 	if (!net_eq(dev_net(dev), &init_net)) {
- 		kfree_skb(skb);
--- 
-2.25.1
+> Also, we can't turn only one of them up. But you have to set for
+> example:
+> 
+> $ ethtool -s swp1 advertise 100000baseKR2/Full on 100000baseSR2/Full on 100000baseCR2/Full on 100000baseLR2_ER2_FR2/Full on 100000baseDR2/Full on
+> 
+> Am I missing something?
 
+IIUC Jakub's concern is rather about real life need for such selectors,
+i.e. how realistic is "I want a(ny) 100Gb/s mode with two lanes" as an
+actual user need; if it wouldn't be mostly (or only) used as a quick way
+to distinguish between two supported 100Gb/s modes.
+
+IMHO if we go this way, we should consider going all the way, i.e. allow
+also selecting by the remaining part of the mode ("media type", e.g.
+"LR", not sure what the official name is) and, more important, get full
+information about link mode in use from driver (we only get speed and
+duplex at the moment). But that would require changes in the
+get_linksettings() interface and drivers.
+
+Michal
