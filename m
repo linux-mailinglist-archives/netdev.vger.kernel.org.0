@@ -2,109 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72D56292E27
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 21:06:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 776C8292E2B
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 21:07:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731187AbgJSTGF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 15:06:05 -0400
-Received: from mga04.intel.com ([192.55.52.120]:28167 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730975AbgJSTGE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Oct 2020 15:06:04 -0400
-IronPort-SDR: yYHiRwqpJWDLpfVSDdTLLYblMZecw7J/XW5pqftl1SjeFmJNcFDchJrV81Gbn8wAYBlQjSXro4
- h4zEaD7XcWAg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9779"; a="164474232"
-X-IronPort-AV: E=Sophos;i="5.77,395,1596524400"; 
-   d="scan'208";a="164474232"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Oct 2020 12:06:01 -0700
-IronPort-SDR: vF4U9Cw6jM3JeIIkSoPVjlgGhxSUHGXS3EBo1OrDabF1Ulhc1TKPFxbB1+HX3HuvZNBKqY087h
- RzexSZSXAL3A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,395,1596524400"; 
-   d="scan'208";a="347550174"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga004.fm.intel.com with ESMTP; 19 Oct 2020 12:06:01 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 19 Oct 2020 12:05:35 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 19 Oct 2020 12:05:34 -0700
-Received: from orsmsx610.amr.corp.intel.com ([10.22.229.23]) by
- ORSMSX610.amr.corp.intel.com ([10.22.229.23]) with mapi id 15.01.1713.004;
- Mon, 19 Oct 2020 12:05:34 -0700
-From:   "Keller, Jacob E" <jacob.e.keller@intel.com>
-To:     David Ahern <dsahern@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>
-CC:     Shannon Nelson <snelson@pensando.io>
-Subject: RE: [iproute2-next v3] devlink: display elapsed time during flash
- update
-Thread-Topic: [iproute2-next v3] devlink: display elapsed time during flash
- update
-Thread-Index: AQHWonnWKtoNJhPZsE2hQ2IktOcUK6mcZoKAgALpatA=
-Date:   Mon, 19 Oct 2020 19:05:34 +0000
-Message-ID: <a6814a14af5c45fbad329b9a4f59b4a8@intel.com>
-References: <20201014223104.3494850-1-jacob.e.keller@intel.com>
- <f510e3b5-b856-e1a0-3c2b-149b85f9588f@gmail.com>
-In-Reply-To: <f510e3b5-b856-e1a0-3c2b-149b85f9588f@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [10.22.254.132]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1731072AbgJSTHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 15:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57144 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730820AbgJSTHM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 15:07:12 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B551C0613CE
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 12:07:12 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id b19so285217pld.0
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 12:07:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GUF042H9Bl6WBF+3mGwYODLvg45SplP1rM20FcE3nu8=;
+        b=WmIiltsJIktNYIibJ9CcVWm5AxTIpGg+CcoLvOOTHInWoIiMU+f/XhpEYHSzOTs0l9
+         D6KMJmjeAzUXtJj/u9RgHeUjkHvM7TjnwpYVcdx2TxirFLT6+K91zYPImlgbmyjmJHbI
+         OqoVrGxWqhz5k7ppjxxWZ3dE2kOwMOopTQ4lVHNz7hRYKpG2s20aJD1zYrZRnnRcQTTh
+         OGXKBxM3a5Rpf7fdizSI4F9qfadY3linGAqX5QSEpgIGeAQCABNmscsx76f6B8OvOsFi
+         HgAqkeef4bV4QGLIn0YniZdhXbu2ZeJPr1Yz0wegCgBTlFOyLzssXFAcKwcdySs/6MY5
+         2WvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GUF042H9Bl6WBF+3mGwYODLvg45SplP1rM20FcE3nu8=;
+        b=eisi1c10rtvE4l+I0Id4S7CxHXDk0cJOyvLvcW3/tFIeYdlPHKZKqAEU/YHt81rvkZ
+         MV1fQHLRUGOmBm0HcGKIW72t09chUy5GQWQKBOQrsF6SIAHV/B9r5X6m8zrbjrn8hfQr
+         Od16R2bJeUTK0P5FColyvM1gXX+HMiwYUBE0xtB0JU06aeSA12f1S5EbwA1UeICdXGqY
+         rw5SrpEuOl+wHnYhVOPm7wvRBibcKor9/hpBB4pyltzz0v2actrxWdOXh9AAqZnJM2KA
+         f5AwAh5GuqN1D4mjgI78w6HJ7sm6Wh/76tgbrmDKZbnN87hcn7V5aqjL7DxpIh16sFFH
+         TUTA==
+X-Gm-Message-State: AOAM530Sx6rXZjSqbD9NXjmSdVinmKiEonDgekX5zevoXdCTPg7l5kK6
+        nlYcnX9WfLCwdgmA6wFe15LOWD7imrNPrA==
+X-Google-Smtp-Source: ABdhPJyd1+pi2GLkHWFvJVGq1ov/7erF59AXoW3rbJaP+ce0x9S1k7tVyWeEU2r+A6VX7884DsSM8w==
+X-Received: by 2002:a17:90a:678a:: with SMTP id o10mr850886pjj.180.1603134430815;
+        Mon, 19 Oct 2020 12:07:10 -0700 (PDT)
+Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id z5sm533193pfn.20.2020.10.19.12.07.10
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Oct 2020 12:07:10 -0700 (PDT)
+Date:   Mon, 19 Oct 2020 12:07:01 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: [ANNOUNCE] iproute2 5.9
+Message-ID: <20201019120701.25764e73@hermes.local>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBEYXZpZCBBaGVybiA8ZHNhaGVy
-bkBnbWFpbC5jb20+DQo+IFNlbnQ6IFNhdHVyZGF5LCBPY3RvYmVyIDE3LCAyMDIwIDg6MzUgQU0N
-Cj4gVG86IEtlbGxlciwgSmFjb2IgRSA8amFjb2IuZS5rZWxsZXJAaW50ZWwuY29tPjsgbmV0ZGV2
-QHZnZXIua2VybmVsLm9yZzsgSmlyaSBQaXJrbw0KPiA8amlyaUByZXNudWxsaS51cz4NCj4gQ2M6
-IFNoYW5ub24gTmVsc29uIDxzbmVsc29uQHBlbnNhbmRvLmlvPg0KPiBTdWJqZWN0OiBSZTogW2lw
-cm91dGUyLW5leHQgdjNdIGRldmxpbms6IGRpc3BsYXkgZWxhcHNlZCB0aW1lIGR1cmluZyBmbGFz
-aCB1cGRhdGUNCj4gDQo+IE9uIDEwLzE0LzIwIDQ6MzEgUE0sIEphY29iIEtlbGxlciB3cm90ZToN
-Cj4gPiBGb3Igc29tZSBkZXZpY2VzLCB1cGRhdGluZyB0aGUgZmxhc2ggY2FuIHRha2Ugc2lnbmlm
-aWNhbnQgdGltZSBkdXJpbmcNCj4gPiBvcGVyYXRpb25zIHdoZXJlIG5vIHN0YXR1cyBjYW4gbWVh
-bmluZ2Z1bGx5IGJlIHJlcG9ydGVkLiBUaGlzIGNhbiBiZQ0KPiA+IHNvbWV3aGF0IGNvbmZ1c2lu
-ZyB0byBhIHVzZXIgd2hvIHNlZXMgZGV2bGluayBhcHBlYXIgdG8gaGFuZyBvbiB0aGUNCj4gPiB0
-ZXJtaW5hbCB3YWl0aW5nIGZvciB0aGUgZGV2aWNlIHRvIHVwZGF0ZS4NCj4gPg0KPiA+IFJlY2Vu
-dCBjaGFuZ2VzIHRvIHRoZSBrZXJuZWwgaW50ZXJmYWNlIGFsbG93IHN1Y2ggbG9uZyBydW5uaW5n
-IGNvbW1hbmRzDQo+ID4gdG8gcHJvdmlkZSBhIHRpbWVvdXQgdmFsdWUgaW5kaWNhdGluZyBzb21l
-IHVwcGVyIGJvdW5kIG9uIGhvdyBsb25nIHRoZQ0KPiA+IHJlbGV2YW50IGFjdGlvbiBjb3VsZCB0
-YWtlLg0KPiA+DQo+ID4gUHJvdmlkZSBhIHRpY2tpbmcgY291bnRlciBvZiB0aGUgdGltZSBlbGFw
-c2VkIHNpbmNlIHRoZSBwcmV2aW91cyBzdGF0dXMNCj4gPiBtZXNzYWdlIGluIG9yZGVyIHRvIG1h
-a2UgaXQgY2xlYXIgdGhhdCB0aGUgcHJvZ3JhbSBpcyBub3Qgc2ltcGx5IHN0dWNrLg0KPiA+DQo+
-ID4gRGlzcGxheSB0aGlzIG1lc3NhZ2Ugd2hlbmV2ZXIgdGhlIHN0YXR1cyBtZXNzYWdlIGZyb20g
-dGhlIGtlcm5lbA0KPiA+IGluZGljYXRlcyBhIHRpbWVvdXQgdmFsdWUuIEFkZGl0aW9uYWxseSBh
-bHNvIGRpc3BsYXkgdGhlIG1lc3NhZ2UgaWYNCj4gPiB3ZSd2ZSByZWNlaXZlZCBubyBzdGF0dXMg
-Zm9yIG1vcmUgdGhhbiBjb3VwbGUgb2Ygc2Vjb25kcy4gSWYgd2UgZWxhcHNlDQo+ID4gbW9yZSB0
-aGFuIHRoZSB0aW1lb3V0IHByb3ZpZGVkIGJ5IHRoZSBzdGF0dXMgbWVzc2FnZSwgcmVwbGFjZSB0
-aGUNCj4gPiB0aW1lb3V0IGRpc3BsYXkgd2l0aCAidGltZW91dCByZWFjaGVkIi4NCj4gPg0KPiA+
-IFNpZ25lZC1vZmYtYnk6IEphY29iIEtlbGxlciA8amFjb2IuZS5rZWxsZXJAaW50ZWwuY29tPg0K
-PiA+IC0tLQ0KPiA+IENoYW5nZXMgc2luY2UgdjINCj4gPiAqIHVzZSBjbG9ja19nZXR0aW1lIG9u
-IENMT0NLX01PTk9UT05JQyBpbnN0ZWFkIG9mIGdldHRpbWVvZmRheQ0KPiA+ICogcmVtb3ZlIHVz
-ZSBvZiB0aW1lcnN1YiBzaW5jZSB3ZSdyZSBub3cgdXNpbmcgc3RydWN0IHRpbWVzcGVjDQo+ID4N
-Cj4gPiAgZGV2bGluay9kZXZsaW5rLmMgfCAxMDUgKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrLQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgMTA0IGluc2VydGlvbnMo
-KyksIDEgZGVsZXRpb24oLSkNCj4gPg0KPiANCj4gYXBwbGllZCB0byBpcHJvdXRlMi1uZXh0Lg0K
-PiANCj4gVGhlIERFVkxJTksgYXR0cmlidXRlcyBhcmUgcmlkaWN1bG91c2x5IGxvbmcgLS0NCj4g
-REVWTElOS19BVFRSX0ZMQVNIX1VQREFURV9TVEFUVVNfVElNRU9VVCBpcyA0MCBjaGFyYWN0ZXJz
-IC0tIHdoaWNoDQo+IGZvcmNlcyByZWFsbHkgbG9uZyBjb2RlIGxpbmVzIG9yIG9kZGx5IHdyYXBw
-ZWQgbGluZXMuIEdvaW5nIGZvcndhcmQNCj4gcGxlYXNlIGNvbnNpZGVyIGFiYnJldmlhdGlvbnMg
-b24gbmFtZSBjb21wb25lbnRzIHRvIHJlZHVjZSB0aGVpciBsZW5ndGhzLg0KDQpUaGlzIGlzIHBy
-b2JhYmx5IGEgbGFyZ2VyIGRpc2N1c3Npb24sIHNpbmNlIGJhc2ljYWxseSBldmVyeSBkZXZsaW5r
-IGF0dHJpYnV0ZSBuYW1lIGlzIGxvbmcuDQoNCkppcmksIEpha3ViLCBhbnkgdGhvdWdodHMgb24g
-dGhpcz8gSSdkIGxpa2UgdG8gc2VlIHdoYXRldmVyIGFiYnJldmlhdGlvbiBzY2hlbWUgd2UgdXNl
-IGJlIGNvbnNpc3RlbnQuDQoNClRoYW5rcywNCkpha2UNCg==
+Time for a new version of iproute2 to go with the 5.9 kernel.
+There are not a lot of changes in this version.
+
+Note: iproute2 is now maintained on the "main" branch.
+There are parallel copies (both updated) on kernel.org and github.
+
+As always, it is recommended to always use the latest iproute2.
+Do not treat iproute2 like perf and require matching packages.
+The latest code will always run on older kernels (and vice versa);
+this is possible because of the kernel API/ABI guarantees.
+
+Except for rare cases, iproute2 does not do maintenance releases
+and there is no long term stable version.
+
+
+Download:
+    https://www.kernel.org/pub/linux/utils/net/iproute2/iproute2-5.9.0.tar.=
+gz
+
+Repository for current release
+    https://github.com/shemminger/iproute2.git
+    git://git.kernel.org/pub/scm/network/iproute2/iproute2.git
+
+And future release (net-next):
+    git://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
+
+Thanks for all the contributions.
+
+Report problems (or enhancements) to the netdev@vger.kernel.org mailing lis=
+t.
+
+Alexandre Cassen (1):
+      add support to keepalived rtm_protocol
+
+Amit Cohen (1):
+      devlink: Add fflush() in cmd_mon_show_cb()
+
+Briana Oursler (1):
+      tc: Add space after format specifier
+
+Danielle Ratson (2):
+      devlink: Expose number of port lanes
+      devlink: Expose port split ability
+
+David Ahern (3):
+      Update kernel headers
+      Update kernel headers
+      Update kernel headers
+
+Dmitry Yakunin (1):
+      lib: ignore invalid mounts in cg_init_map
+
+Eyal Birger (1):
+      ipntable: add missing ndts_table_fulls ntable stat
+
+Jan Engelhardt (2):
+      build: avoid make jobserver warnings
+      ip: add error reporting when RTM_GETNSID failed
+
+Kamal Heib (1):
+      ip: iplink_ipoib.c: Remove extra spaces
+
+Leon Romanovsky (2):
+      rdma: Fix owner name for the kernel resources
+      rdma: Properly print device and link names in CLI output
+
+Maor Gottlieb (4):
+      rdma: update uapi headers
+      rdma: Add support to get QP in raw format
+      rdma: Add support to get CQ in raw format
+      rdma: Add support to get MR in raw format
+
+Mark Zhang (3):
+      rdma: update uapi headers
+      rdma: Add "PID" criteria support for statistic counter auto mode
+      rdma: Document the new "pid" criteria for auto mode
+
+Murali Karicheri (2):
+      iplink: hsr: add support for creating PRP device similar to HSR
+      ip: iplink: prp: update man page for new parameter
+
+Paolo Abeni (1):
+      ss: mptcp: add msk diag interface support
+
+Parav Pandit (3):
+      devlink: Move devlink port code at start to reuse
+      devlink: Support querying hardware address of port function
+      devlink: Support setting port function hardware address
+
+Petr Machata (5):
+      tc: Add helpers to support qevent handling
+      man: tc: Describe qevents
+      tc: q_red: Add support for qevents "mark" and "early_drop"
+      tc: Look for blocks in qevents
+      tc: q_red: Implement has_block for RED
+
+Petr Van=C4=9Bk (1):
+      ip-xfrm: add support for oseq-may-wrap extra flag
+
+Phil Sutter (1):
+      ip link: Fix indenting in help text
+
+Po Liu (2):
+      action police: change the print message quotes style
+      action police: make 'mtu' could be set independently in police action
+
+Roman Mashak (1):
+      ip: updated ip-link man page
+
+Roopa Prabhu (2):
+      ipnexthop: support for fdb nexthops
+      bridge: support for nexthop id in fdb entries
+
+Sascha Hauer (1):
+      iproute2: ip maddress: Check multiaddr length
+
+Stephen Hemminger (6):
+      v5.8.0
+      uapi: update kernel headers
+      uapi: update bpf.h
+      uapi: update headers from 5.9-rc7
+      addr: Fix noprefixroute and autojoin for IPv4
+      uapi: add new SNMP entry
+
+Vasundhara Volam (1):
+      devlink: Add board.serial_number to info subcommand.
+
+Vladyslav Tarasiuk (3):
+      devlink: Add a possibility to print arrays of devlink port handles
+      devlink: Add devlink port health command
+      devlink: Update devlink-health and devlink-port manpages
+
+zhangkaiheb@126.com (1):
+      tc: fq: clarify the length of orphan_mask.
+
