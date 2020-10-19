@@ -2,139 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C60E292C7B
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 19:17:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50BF1292C95
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 19:23:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730791AbgJSRRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 13:17:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40142 "EHLO
+        id S1730878AbgJSRXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 13:23:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729916AbgJSRRx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 13:17:53 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B03C0613CE;
-        Mon, 19 Oct 2020 10:17:53 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id y14so299324pfp.13;
-        Mon, 19 Oct 2020 10:17:53 -0700 (PDT)
+        with ESMTP id S1730336AbgJSRXk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 13:23:40 -0400
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA027C0613D0
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 10:23:39 -0700 (PDT)
+Received: by mail-lf1-x142.google.com with SMTP id l28so392480lfp.10
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 10:23:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kVXu+0Ku8pFxkjaLJbcVBjbu1+5Ssr4Lq2DXPPsKrG0=;
-        b=GoJpQwp+MzHtT2MHfa5uAVuEkXzu7EfwhJbD9UXGqw4Q8jnCvU1oFKfAsMgJG9rOyo
-         N4vLWDPbXBPXZNhRbDrmf7dxYdrryTSkpgEnIvtRyhAuqNErangPXCfmYjRe6L0QuGLw
-         A+RqHtJMlAGlzUejS7fTzj0stZ8ZFd4Pc6qR3FVEIeOp1JYn7i01IhtwWYaABcBFYMGw
-         Mx2jn5XiSHsQe4vlroNlamTF/gSpO2MhTzr3kI6OFQf373OKFqbGQGQy6NE2GkBG2LOP
-         oFGhbEpVNGL0XlRl7T2Z5sn/IWERccsgjFODk5OlgsYlGTB5Bj5nKPVKINW4h9TUgV0O
-         r92Q==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=iyXXWfOQa+1d+k4Kfi8s1b5PhoxBW70UL1MRANY5iTA=;
+        b=o9jkQBUpkBGEwOPcru1DIzTI4hADMkSZb2pfw2EQWRKUHSYKt6lOgBGbe0/PbjBsyj
+         gkCeKyOJfMcHu8JQBuIGXYq2bMyUO23p7qpUH07+K7VJuHC15dj9M6Jixv+0kGJ3I484
+         bibfM3wj1lSg02RVEGxrX4Vn06BnYQ9Fkpzq6GOiAp/P6ZC5OVnYSRqS0zxc14K0j6WJ
+         cCjXupRPGQ3TQDsCBLaS0PxaOBRob35h4AyY0tvNebkGYNGxcnr2o07kc5d9g5o6COFY
+         ILq2uDK4Y0klCUbaiEoIjmZxvz8kx/FNpsGUPC+D11xVFrfoxaJk055Yiql09wfYplO5
+         TC/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kVXu+0Ku8pFxkjaLJbcVBjbu1+5Ssr4Lq2DXPPsKrG0=;
-        b=hjE5f12tV0oC43On3Bxai95xIcnIQx9qT2RXy6RAQzKGYSx/vwtPZ+13JiuDFsUWgx
-         Mt/jMj2dqSGTeGkRwfEtHkY7bsqMQCOP3oVex+/pQgzerThYKGDigoGoVoRh/0Rwz+v2
-         WBFIi3+b8QJXt/sU2XzRFGic6Dcmi2Z8lLnONAX0it66pExsCrpKxJs34QRtOXFVYHe9
-         D/S5LuPhQ4+HrUozU5wDNzKdOl21Fu96u3Z1al6p37W7HwH6czYwFN028kBFtAwaEAOT
-         202TMIo40HM1dCF3VcZyJwFHexdGTBRnv5TDLr/4/RYRTov0N7jHikdE+1bJ9UI3BImJ
-         oNkw==
-X-Gm-Message-State: AOAM530nPGmf0pfYWXljyr0u5lZqCjgKPDUx9LQYNQzDEKf1GCeJAsCt
-        RkD8Ubz4BoyCA7nok1Wce6Hg0wGpLAU=
-X-Google-Smtp-Source: ABdhPJz+VHySnwFA/jCNjbdhhJ36otWFUapb2xj2oqhToviJ8N50CoCLVyjyfiRx+iPljgzG+RkLUA==
-X-Received: by 2002:a05:6a00:8c5:b029:142:2501:39e6 with SMTP id s5-20020a056a0008c5b0290142250139e6mr567237pfu.53.1603127871930;
-        Mon, 19 Oct 2020 10:17:51 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id c12sm118536pjq.50.2020.10.19.10.17.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Oct 2020 10:17:51 -0700 (PDT)
-From:   Florian Fainelli <f.fainelli@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     olteanv@gmail.com, kuba@kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Yunjian Wang <wangyunjian@huawei.com>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH net] net: Have netpoll bring-up DSA management interface
-Date:   Mon, 19 Oct 2020 10:17:44 -0700
-Message-Id: <20201019171746.991720-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=iyXXWfOQa+1d+k4Kfi8s1b5PhoxBW70UL1MRANY5iTA=;
+        b=g84pTZlLTFA4yY58vipCSBe87ev1IQ+Q313C8H5qAc8fNEYF/tskSHPVinpbOiqfvK
+         RcDFAeOCiQsN5DJ1+9OXXV9gbEemcirn7+G/RuH5Lweoo1X0922SYn14C5tqMuWl9h/1
+         vebq9oNTmyudjnTokR4nuZot3LyTAzUz//kK55P9hWTjI/CMdZ1FouFbTQqqJ9dx5lPu
+         6xCmG3H2gI1g1tpOpaKKJlGKKlCcTj1+v97/wuXzrbG/beUigHjsy0U1ZUVk081DNSvv
+         KQE+dbZGbrgxawnfv3sQHsNfi1fp9JEaMVslvhu/JzdE+ud6BS3njc3EPggMntCN7mVg
+         OOpg==
+X-Gm-Message-State: AOAM532d3hI+SQifwxxmM+sH7mEEy0p0lzfrMYCDWAHOuNqUY9Gm8qmD
+        KS2KhO3NzGlr74QvLH6nGLkou1Rp3suI6/n/RYxQmQ==
+X-Google-Smtp-Source: ABdhPJwSXb1dY6AgaVzNQLt+reDscKrvoARfXRBXfeo2h9MZNArk1CXUTqLg5bs0YhI3mYrfPTwBL8qmTMYBnfbcX4E=
+X-Received: by 2002:a19:d10:: with SMTP id 16mr216317lfn.385.1603128217818;
+ Mon, 19 Oct 2020 10:23:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201010103854.66746-1-songmuchun@bytedance.com>
+ <CAM_iQpUQXctR8UBNRP6td9dWTA705tP5fWKj4yZe9gOPTn_8oQ@mail.gmail.com>
+ <CAMZfGtUhVx_iYY3bJZRY5s1PG0N1mCsYGS9Oku8cTqPiMDze-g@mail.gmail.com>
+ <CANn89iKprp7WYeZy4RRO5jHykprnSCcVBc7Tk14Ui_MA9OK7Fg@mail.gmail.com>
+ <CAMZfGtXVKER_GM-wwqxrUshDzcEg9FkS3x_BaMTVyeqdYPGSkw@mail.gmail.com>
+ <9262ea44-fc3a-0b30-54dd-526e16df85d1@gmail.com> <CAMZfGtVF6OjNuJFUExRMY1k-EaDS744=nKy6_a2cYdrJRncTgQ@mail.gmail.com>
+ <20201013080906.GD4251@kernel.org> <8d1558e7-cd09-1f9e-edab-5f22c5bfc342@suse.cz>
+ <20201016205336.GE1976566@google.com>
+In-Reply-To: <20201016205336.GE1976566@google.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Mon, 19 Oct 2020 10:23:26 -0700
+Message-ID: <CALvZod78tJDZauFvYfWmMyd+Z3Ci7Lsruyd_-nU00WL0EjN6vQ@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH] mm: proc: add Sock to /proc/meminfo
+To:     Minchan Kim <minchan@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Vlastimil Babka <vbabka@suse.cz>, Mike Rapoport <rppt@kernel.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Greg KH <gregkh@linuxfoundation.org>, rafael@kernel.org,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Will Deacon <will@kernel.org>, Michal Hocko <mhocko@suse.com>,
+        Roman Gushchin <guro@fb.com>, Neil Brown <neilb@suse.de>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Feng Tang <feng.tang@intel.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Florian Westphal <fw@strlen.de>, gustavoars@kernel.org,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Michel Lespinasse <walken@google.com>,
+        Jann Horn <jannh@google.com>, chenqiwu@xiaomi.com,
+        Christophe Leroy <christophe.leroy@c-s.fr>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Kees Cook <keescook@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-mm <linux-mm@kvack.org>,
+        Michael Kerrisk <mtk.manpages@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DSA network devices rely on having their DSA management interface up and
-running otherwise their ndo_open() will return -ENETDOWN. Without doing
-this it would not be possible to use DSA devices as netconsole when
-configured on the command line. These devices also do not utilize the
-upper/lower linking so the check about the netpoll device having upper
-is not going to be a problem.
+CCed: Paolo Bonzini
 
-The solution adopted here is identical to the one done for
-net/ipv4/ipconfig.c with 728c02089a0e ("net: ipv4: handle DSA enabled
-master network devices"), with the network namespace scope being
-restricted to that of the process configuring netpoll.
+On Fri, Oct 16, 2020 at 1:53 PM Minchan Kim <minchan@kernel.org> wrote:
+[snip]
+> > And there might be others, and adding everything to /proc/meminfo is not
+> > feasible. I have once proposed adding a counter called "Unaccounted:" which
+> > would at least tell the user easily if a significant portion is occupied by
+> > memory not explained by the other meminfo counters, and look for trends
+> > (increase = potential memory leak?). For specific prominent consumers not
+> > covered by meminfo but that have some kind of internal counters, we could
+> > document where to look, such as /proc/net/sockstat or maybe create some
+> > /proc/ or /sys directory with file per consumer so that it's still easy to
+> > check, but without the overhead of global counters and bloated
+> > /proc/meminfo?
+>
+> What have in my mind is to support simple general sysfs infra from MM for
+> driver/subysstems rather than creating each own memory stat. The API
+> could support flexible accounting like just global memory consumption and/or
+> consmption by key(e.g,. pid or each own special) for the detail.
+>
+> So, they are all shown under /sys/kernel/mm/misc/ with detail as well as
+> /proc/meminfo with simple line for global.
 
-Fixes: 04ff53f96a93 ("net: dsa: Add netconsole support")
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
- net/core/netpoll.c | 22 ++++++++++++++++++----
- 1 file changed, 18 insertions(+), 4 deletions(-)
+This reminds me of statsfs [1]. I am wondering if this can be another
+useful use-case for statsfs.
 
-diff --git a/net/core/netpoll.c b/net/core/netpoll.c
-index c310c7c1cef7..960948290001 100644
---- a/net/core/netpoll.c
-+++ b/net/core/netpoll.c
-@@ -29,6 +29,7 @@
- #include <linux/slab.h>
- #include <linux/export.h>
- #include <linux/if_vlan.h>
-+#include <net/dsa.h>
- #include <net/tcp.h>
- #include <net/udp.h>
- #include <net/addrconf.h>
-@@ -657,15 +658,15 @@ EXPORT_SYMBOL_GPL(__netpoll_setup);
- 
- int netpoll_setup(struct netpoll *np)
- {
--	struct net_device *ndev = NULL;
-+	struct net_device *ndev = NULL, *dev = NULL;
-+	struct net *net = current->nsproxy->net_ns;
- 	struct in_device *in_dev;
- 	int err;
- 
- 	rtnl_lock();
--	if (np->dev_name[0]) {
--		struct net *net = current->nsproxy->net_ns;
-+	if (np->dev_name[0])
- 		ndev = __dev_get_by_name(net, np->dev_name);
--	}
-+
- 	if (!ndev) {
- 		np_err(np, "%s doesn't exist, aborting\n", np->dev_name);
- 		err = -ENODEV;
-@@ -673,6 +674,19 @@ int netpoll_setup(struct netpoll *np)
- 	}
- 	dev_hold(ndev);
- 
-+	/* bring up DSA management network devices up first */
-+	for_each_netdev(net, dev) {
-+		if (!netdev_uses_dsa(dev))
-+			continue;
-+
-+		err = dev_change_flags(dev, dev->flags | IFF_UP, NULL);
-+		if (err < 0) {
-+			np_err(np, "%s failed to open %s\n",
-+			       np->dev_name, dev->name);
-+			goto put;
-+		}
-+	}
-+
- 	if (netdev_master_upper_dev_get(ndev)) {
- 		np_err(np, "%s is a slave device, aborting\n", np->dev_name);
- 		err = -EBUSY;
--- 
-2.25.1
-
+[1] https://lkml.org/lkml/2020/5/26/332
