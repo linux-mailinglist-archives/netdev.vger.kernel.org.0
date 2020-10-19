@@ -2,144 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80FCF292225
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 07:27:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D53F292243
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 07:43:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726359AbgJSF1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 01:27:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42606 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726199AbgJSF1n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Oct 2020 01:27:43 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 702D12223C;
-        Mon, 19 Oct 2020 05:27:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603085262;
-        bh=h9z88xQxsjjhv2T1XsSCt0UIaZrHKx3S8kfXoaSlPyM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=EQyT7Qcix2oVtJai5By0EXIFjYj0udmEQFYYgYa+EirzLop03aG6ooGp2wVB5sn0u
-         9wiCfSe1JbUzqL9FITdOjSHqg8LApQ/99bKBSa8Fd80/vE4+LaGcWfObJWnILn4tVV
-         9e4p4Tz4MkSrz9LZUnUCFOYVzdlSgQROaABWPO6o=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Parav Pandit <parav@nvidia.com>, Jakub Kicinski <kuba@kernel.org>,
-        Jiri Pirko <jiri@mellanox.com>, linux-rdma@vger.kernel.org,
-        Michael Guralnik <michaelgur@mellanox.com>,
-        netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH rdma-rc] RDMA/mlx5: Fix devlink deadlock on net namespace deletion
-Date:   Mon, 19 Oct 2020 08:27:36 +0300
-Message-Id: <20201019052736.628909-1-leon@kernel.org>
-X-Mailer: git-send-email 2.26.2
+        id S1726506AbgJSFnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 01:43:17 -0400
+Received: from mail-vi1eur05on2120.outbound.protection.outlook.com ([40.107.21.120]:32864
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725306AbgJSFnR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Oct 2020 01:43:17 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ACGRJZRFwGkSb8Ua2ukqNn9+G4lRKCizymqcF8cAsh9k/Mlt/CSxLSCLrkMUn5dzPGfjoQrJDgs0knm2ek7zC2oeVwBw9uWU3IkR57CO73kLaWnGFvJCTF8nL6WaDa5HUkiuMBaE7ZF0jxYKc4+ugR48rwsjicXnikUcw/abLwhC6oq6VwaxDlP4AbLRZ5i6ryMoNk50cCCTLS3qXDXkzJeJE3YzxOWNeQyMHf32EqQF8h6Ioi7bbjQWVXP3efDbEoNMqeX7+nUHxTmwm8B978tJ/Olh/OWi3Bs3d3ceD95cgFDhCPA0whv6WpB2KhoRrSWZQPg6WgJN0qozWqy5Ug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Fn/B+6qClhlBPXAcecN6lTr+8ITwB9lPwE+1ADa8d5k=;
+ b=DxXe1IMLqukElwibKMS9lROQzjkGWocTN83C+vR1RRyddLaT2hLOfYQdp9SlSHFegScq/x1x8sBnTQ0M4U1yn3INa+0DTEEbFLfC0iNDMcN0eHxJxcgBS22N091rwakobClDXbnR6oPqGJhbBK+Hb4+20e+E0bOJQzgqVjhffWUqK4JNqqSzYHDd5rsFvmomugGozDR5+NEW/L5avZ3V+MXAhOTjr5CYGS31IIhySzozKnnnsBPv6dsHuAZK4ZdO1nzQ4PID2/xz6K0Wf80WNqAhgAqbO9nxzSdXNev6LfXcwCpKYcZyh6tEMBc0OEz1UPKKmzskPkx9WtcMhQ/f8w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=voleatech.de; dmarc=pass action=none header.from=voleatech.de;
+ dkim=pass header.d=voleatech.de; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=voleatech.de;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Fn/B+6qClhlBPXAcecN6lTr+8ITwB9lPwE+1ADa8d5k=;
+ b=DmgH73oXTm13UTYi3rBIKvYvPIu9SKU+RxfdFaBM+y1xsqBD7gzF9oJy5f0/dGbysBew0P1BEfPfkpD8ZxXsdBJ7X3iX1oXi6I+bJ6R2mFCLAXDDlkpWv7Y66Xhc0lmw2Biujq7NIHX8TnH7vG8zZCqASEGm2ZfhhTr5+ftWwEk=
+Authentication-Results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=voleatech.de;
+Received: from AM8PR05MB7251.eurprd05.prod.outlook.com (2603:10a6:20b:1d4::23)
+ by AM0PR05MB5364.eurprd05.prod.outlook.com (2603:10a6:208:f8::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.20; Mon, 19 Oct
+ 2020 05:43:12 +0000
+Received: from AM8PR05MB7251.eurprd05.prod.outlook.com
+ ([fe80::f132:2cc:34f2:5e4]) by AM8PR05MB7251.eurprd05.prod.outlook.com
+ ([fe80::f132:2cc:34f2:5e4%7]) with mapi id 15.20.3477.028; Mon, 19 Oct 2020
+ 05:43:12 +0000
+Date:   Mon, 19 Oct 2020 07:43:10 +0200
+From:   Sven Auhagen <sven.auhagen@voleatech.de>
+To:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Cc:     anthony.l.nguyen@intel.com, davem@davemloft.net,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
+        sandeep.penigalapati@intel.com, brouer@redhat.com
+Subject: Re: [PATCH v2 0/6] igb: xdp patches followup
+Message-ID: <20201019054310.uwy4whq2eizvdolz@SvensMacBookAir-2.local>
+References: <20201017071238.95190-1-sven.auhagen@voleatech.de>
+ <20201018133951.GB34104@ranger.igk.intel.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201018133951.GB34104@ranger.igk.intel.com>
+X-Originating-IP: [109.193.235.168]
+X-ClientProxiedBy: AM4PR07CA0009.eurprd07.prod.outlook.com
+ (2603:10a6:205:1::22) To AM8PR05MB7251.eurprd05.prod.outlook.com
+ (2603:10a6:20b:1d4::23)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from SvensMacBookAir-2.local (109.193.235.168) by AM4PR07CA0009.eurprd07.prod.outlook.com (2603:10a6:205:1::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.11 via Frontend Transport; Mon, 19 Oct 2020 05:43:11 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ef1ce936-b474-4c97-1074-08d873f1dda2
+X-MS-TrafficTypeDiagnostic: AM0PR05MB5364:
+X-Microsoft-Antispam-PRVS: <AM0PR05MB5364C6C1241699DC296E460BEF1E0@AM0PR05MB5364.eurprd05.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FyxB3y8K+qMxm4W74atUYo3mfDmUPAexre3QyyifjOcMmbg9IEPwSGdjtlbwBVjGEHh+uQgTB6BhOMdkw43OzMFsvbCrJtBF5EoW5lFGZsIdIDXGj7xgfccfMFnfFCw2wijhYK7M1heL5RXu/vjCLD6ZZqGin/O2Q4N2LykifsshLv0r2dP+paGmxbOAaIRR0epWIvzFOqtpDKV1ZjE0875UXggfKMd+05FWuqd9/MNlxYRIWzzS05s1AEOVGoeppi9f76+/CjGaITpDW1I6Xgg5UdXhSi8bxDJvHUJXgA14gYVs9J5pZlMTCIH1HKRlF0p2nso45J36wnDDs4/j2A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR05MB7251.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39830400003)(136003)(366004)(376002)(396003)(316002)(478600001)(6506007)(5660300002)(44832011)(956004)(26005)(86362001)(83380400001)(1076003)(66476007)(66556008)(2906002)(7696005)(52116002)(8676002)(55016002)(66946007)(16526019)(186003)(9686003)(6916009)(4326008)(8936002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: IrWW0EXIvnLb+EaoWNOei+ExqJPlm47AtDnHVTo9OAUpqkEGRRBb+nWdNTyCqMUfpFnBU7MAKoGt1+WgI5sXO56Kmv/w9hlz68uIOikpv9c0EplHs0XFJ/a252b8xYtxEzGW909oGJ8VfIX3tUpTLQVl13jGERhdxMtyURbO/ai5dYIxXHGnzlWvnXl7SnFsV3qZLI00nX0lrnelpN+FX8xD6hCqeBgocOvSaBDIYEiJ+kfvztma+IvDvKB89hhqcAQBxm864zSmc6iWg3DPAJu3x2R+TWy6v8ZQv9GBhfljNJYNoOR5JTivkOPTW5D25LmtiB6DjipgIioRQu1fawyNS4aXCpEd/qcpTvNd1tanE5i7cpH8BBx0wFEP3Ws0iXH33E8Uf2y+5jap9AgL1Y9d/3MjLAHO0ry87UYujvP2OQeVRAhaRgd4oHBasYeJTm/26yfFGMB87Jool0asJNXRwH0mQ27uF8FSJ2/mF0nLpXd1zZJjW8goWXGQWTgJrerPpFGt4NpHJOWWMiSmQ5ny0Mx2wlacAMm2s9I2CkPJlKVMfj7DvvOlL54TTFAFWlyqwyQgRLijgqRqkac6wRQoTy4kwBE+5w6cengJN5GDwKTsAt/NdWAga18q6RQiB6+D4yG5b4lTiBwsPMmIcQ==
+X-OriginatorOrg: voleatech.de
+X-MS-Exchange-CrossTenant-Network-Message-Id: ef1ce936-b474-4c97-1074-08d873f1dda2
+X-MS-Exchange-CrossTenant-AuthSource: AM8PR05MB7251.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2020 05:43:12.3648
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: b82a99f6-7981-4a72-9534-4d35298f847b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SbJtv1iO3rjMmgRpsAfoULBqruwCIQmUVSMdlYp79P3udBw8e15J7KHr2lqz45epFsFI7DrGptTZAWE7q+gCNrilIFqdv6bSHdGek9gw5AM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB5364
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Parav Pandit <parav@nvidia.com>
+On Sun, Oct 18, 2020 at 03:39:51PM +0200, Maciej Fijalkowski wrote:
+> On Sat, Oct 17, 2020 at 09:12:32AM +0200, sven.auhagen@voleatech.de wrote:
+> > From: Sven Auhagen <sven.auhagen@voleatech.de>
+> > 
+> > This patch series addresses some of the comments that came back
+> > after the igb XDP patch was accepted.
+> > Most of it is code cleanup.
+> > The last patch contains a fix for a tx queue timeout
+> > that can occur when using xdp.
+> > 
+> > Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
+> 
+> Sorry for not getting back at v1 discussion, I took some time off.
+> 
+> For the series:
+> Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> 
+> Couple nits:
+> - you don't need SOB line within cover letter, I suppose
+> - next time please specify the tree in the subject that you're targetting
+>   this set to land; is it net or net-next? net-next is currently closed so
+>   you probably would have to come back with this once it will be open
+>   again
+> - SOB line should be at the end of tags within commit message of patch;
+>   I'm saying 'should' because I'm not sure if it's hard requirement.
 
-When a mlx5 core devlink instance is reloaded in different net
-namespace, its associated IB device is deleted and recreated.
+Thank you, I will fix that and send a v3.
 
-Example sequence is:
-$ ip netns add foo
-$ devlink dev reload pci/0000:00:08.0 netns foo
-$ ip netns del foo
+Best
+Sven
 
-mlx5 IB device needs to attach and detach the netdevice to it
-through the netdev notifier chain during load and unload sequence.
-A below call graph of the unload flow.
-
-cleanup_net()
-   down_read(&pernet_ops_rwsem); <- first sem acquired
-     ops_pre_exit_list()
-       pre_exit()
-         devlink_pernet_pre_exit()
-           devlink_reload()
-             mlx5_devlink_reload_down()
-               mlx5_unload_one()
-               [...]
-                 mlx5_ib_remove()
-                   mlx5_ib_unbind_slave_port()
-                     mlx5_remove_netdev_notifier()
-                       unregister_netdevice_notifier()
-                         down_write(&pernet_ops_rwsem);<- recurrsive lock
-
-Hence, when net namespace is deleted, mlx5 reload results in deadlock.
-
-When deadlock occurs, devlink mutex is also held. This not only deadlocks
-the mlx5 device under reload, but all the processes which attempt to access
-unrelated devlink devices are deadlocked.
-
-Hence, fix this by mlx5 ib driver to register for per net netdev
-notifier instead of global one, which operats on the net namespace
-without holding the pernet_ops_rwsem.
-
-Fixes: 4383cfcc65e7 ("net/mlx5: Add devlink reload")
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- drivers/infiniband/hw/mlx5/main.c                  | 6 ++++--
- drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h | 5 -----
- include/linux/mlx5/driver.h                        | 5 +++++
- 3 files changed, 9 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
-index 944bb7691913..b1b3e563c15e 100644
---- a/drivers/infiniband/hw/mlx5/main.c
-+++ b/drivers/infiniband/hw/mlx5/main.c
-@@ -3323,7 +3323,8 @@ static int mlx5_add_netdev_notifier(struct mlx5_ib_dev *dev, u8 port_num)
- 	int err;
-
- 	dev->port[port_num].roce.nb.notifier_call = mlx5_netdev_event;
--	err = register_netdevice_notifier(&dev->port[port_num].roce.nb);
-+	err = register_netdevice_notifier_net(mlx5_core_net(dev->mdev),
-+					      &dev->port[port_num].roce.nb);
- 	if (err) {
- 		dev->port[port_num].roce.nb.notifier_call = NULL;
- 		return err;
-@@ -3335,7 +3336,8 @@ static int mlx5_add_netdev_notifier(struct mlx5_ib_dev *dev, u8 port_num)
- static void mlx5_remove_netdev_notifier(struct mlx5_ib_dev *dev, u8 port_num)
- {
- 	if (dev->port[port_num].roce.nb.notifier_call) {
--		unregister_netdevice_notifier(&dev->port[port_num].roce.nb);
-+		unregister_netdevice_notifier_net(mlx5_core_net(dev->mdev),
-+						  &dev->port[port_num].roce.nb);
- 		dev->port[port_num].roce.nb.notifier_call = NULL;
- 	}
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
-index d046db7bb047..3a9fa629503f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
-@@ -90,9 +90,4 @@ int mlx5_create_encryption_key(struct mlx5_core_dev *mdev,
- 			       u32 key_type, u32 *p_key_id);
- void mlx5_destroy_encryption_key(struct mlx5_core_dev *mdev, u32 key_id);
-
--static inline struct net *mlx5_core_net(struct mlx5_core_dev *dev)
--{
--	return devlink_net(priv_to_devlink(dev));
--}
--
- #endif
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index c484805d8a22..1c810911d367 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -1210,4 +1210,9 @@ static inline bool mlx5_is_roce_enabled(struct mlx5_core_dev *dev)
- 	return val.vbool;
- }
-
-+static inline struct net *mlx5_core_net(struct mlx5_core_dev *dev)
-+{
-+	return devlink_net(priv_to_devlink(dev));
-+}
-+
- #endif /* MLX5_DRIVER_H */
---
-2.26.2
-
+> 
+> > 
+> > Change from v1:
+> >     * Drop patch 5 as the igb_rx_frame_truesize won't match
+> >     * Fix typo in comment
+> >     * Add Suggested-by and Reviewed-by tags
+> >     * Add how to avoid transmit queue timeout in xdp path
+> >       is fixed in the commit message
+> > 
+> > Sven Auhagen (6):
+> >   igb: XDP xmit back fix error code
+> >   igb: take vlan double header into account
+> >   igb: XDP extack message on error
+> >   igb: skb add metasize for xdp
+> >   igb: use xdp_do_flush
+> >   igb: avoid transmit queue timeout in xdp path
+> > 
+> >  drivers/net/ethernet/intel/igb/igb.h      |  5 ++++
+> >  drivers/net/ethernet/intel/igb/igb_main.c | 32 +++++++++++++++--------
+> >  2 files changed, 26 insertions(+), 11 deletions(-)
+> > 
+> > -- 
+> > 2.20.1
+> > 
