@@ -2,95 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 859C3292857
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 15:39:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAC5529288A
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 15:48:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728391AbgJSNjw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 09:39:52 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:21751 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727796AbgJSNjw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 09:39:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603114790;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZfVuaGzIPbXuxbuS2tqkcBD53V5zAA46m/GFS3P7v8k=;
-        b=DbAB3HXtIPFryHPBDeJZGM1Zvh7Mm1zARZGS4VivEHLyJmwtIp0Y8ugo/ty0WTZ0sKLN15
-        Wjo8hI7j7f86BMXk6R2pk54R/orgzOTSBFu27oPSy7bKkXcI39tKO9uz3Ubbs06o1EOF5/
-        PAU0EKFVQjjS3K+3I4XjtpaZaUvBAyU=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-275-PKoHPYCvOgq6Ck5lsc0oSQ-1; Mon, 19 Oct 2020 09:39:48 -0400
-X-MC-Unique: PKoHPYCvOgq6Ck5lsc0oSQ-1
-Received: by mail-wr1-f69.google.com with SMTP id 47so7440861wrc.19
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 06:39:48 -0700 (PDT)
+        id S1728721AbgJSNsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 09:48:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35038 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728713AbgJSNsp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 09:48:45 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68764C0613CE
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 06:48:44 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id c2so7778134qkf.10
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 06:48:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=RYiDVZoGpVj44jx8tHHfoDfUQPS2AdMAiB3HH1NTatQ=;
+        b=nlaaeqZ1Jfl/Ms4tkTJQsEfu0JxR3HAnQVIx/qiuGGAtcfQ/MbepJUOPQ+TSdgzZcF
+         Y1CzToqRFT6egYK68jozwrHALKgGnM1DcVFycLn5dGIpwYGL5WM23++J7oGpes8YdpXx
+         7n1/Dybw1yI/RwzMFy/4cF2yGLXYOtutyReQ0ly2oEh0KzNt5Tto+XpM6/n9zpqa6Jml
+         z9UmuEH8sUBgevYUMM31Bug8YhEp/gU9kB0dtzsicGw6KAA+wYMHbwoAdeV0v1c0qdWp
+         mXkfQkt5Vn0+naM2QwNGUXwUCsuphMSjxAI8SC0sU1dGIKNA3jL5lbBJL8M6OBqxYR6B
+         E8ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZfVuaGzIPbXuxbuS2tqkcBD53V5zAA46m/GFS3P7v8k=;
-        b=k3R5Lu1lVyXGGEzCAa7gGisvkgYClEYK4yy9aAmakmr/xaU/XUw36NtKLRg4M4FdcD
-         /YOmWjILson+V26S15gLCYWBp7YvSbpQj+krDMZ9+pabFHH+uxNjI1meA6cI71AuEG/D
-         BlpC53UIO2bjs8Ci//6Jt8mj5b4OSUt0lhh75Tr+XFjWsUo4U7iHJMjHDj4VI3nIgPk3
-         u+dcf7HJGaNqSbZZEuQj9Dol3NvL7zVaAt26war4yIEaj/HObGLjTbeQOt1+/nzS7dk1
-         G3lsZX0+2RcU0I0xZlulhuz+yYiEt/oOPXQeFo0bFS+Qq+PzY7b948vhsFvu4iCpL/++
-         QmuA==
-X-Gm-Message-State: AOAM532zXGg7v0YVZmx/cqs+Pc8AoQEutOra7nLdjeD2L/OID2nD33Mt
-        I5sMJ4IMydfoErKJmLp90ZQY6tVJO4jNKZLOcfx3DKYtZLkUPU5Nj6jaJ7v6i416axlhytPm0q+
-        cZGuj8E9Yjp4G1f88
-X-Received: by 2002:a1c:f719:: with SMTP id v25mr17591763wmh.186.1603114787852;
-        Mon, 19 Oct 2020 06:39:47 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyKvOFfkPBLSAQwXjf2PJGyW7v2RuOH8jFvGr9iqjzjqn4nKcdJDvXm8x8e8o7M4YFdLJ35TQ==
-X-Received: by 2002:a1c:f719:: with SMTP id v25mr17591754wmh.186.1603114787689;
-        Mon, 19 Oct 2020 06:39:47 -0700 (PDT)
-Received: from pc-2.home (2a01cb058d4f8400c9f0d639f7c74c26.ipv6.abo.wanadoo.fr. [2a01:cb05:8d4f:8400:c9f0:d639:f7c7:4c26])
-        by smtp.gmail.com with ESMTPSA id c185sm31830wma.44.2020.10.19.06.39.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Oct 2020 06:39:46 -0700 (PDT)
-Date:   Mon, 19 Oct 2020 15:39:45 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, martin.varghese@nokia.com
-Subject: Re: [PATCH iproute2-next 2/2] m_mpls: add mac_push action
-Message-ID: <20201019133945.GA634@pc-2.home>
-References: <cover.1602598178.git.gnault@redhat.com>
- <622d70e7bb6158c6f207661dea8c47e129f16107.1602598178.git.gnault@redhat.com>
- <5804f20b-b8ea-9f02-7aac-129d35f46a2c@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=RYiDVZoGpVj44jx8tHHfoDfUQPS2AdMAiB3HH1NTatQ=;
+        b=Jlc5hs6OB53xWCcpgJaIvJ+WU3h++lL0y+zhHeH7l+GaCPY1RNvAD+tWZOT/SIdRRV
+         5aQbTp24hwczRwEd/ioUrwZhI2JSLIuSGOwItFtjF4YmKZMtxWN2g1ixBTC+e3eMaYXi
+         zWTsiWgfQpHMTGMjFKc4+Kvzw5FyCMNIRm0ALbW8w0J2+ariI96m/xB5YvE9yB3WBtv/
+         lBQA/oqRhGr+iDqng+ivTqZyODg8e7hUKpv2YxXR2G7wEXaFWCDethYmAGQtG7CQX/kh
+         li9ISeKwBlR0Sp9GHEtYzz6S1pADL6KYQHRXmjF+ea6ke3g7zSKGcNt0QbnHKDS+u+rI
+         r2Ug==
+X-Gm-Message-State: AOAM532ndqSSju2wpPu3G2YkSotKkQ7T1kxjlROawTYkwTxT9HMga1Ik
+        uVL2RwH6kALcEqFN+/DNt1NjXQ==
+X-Google-Smtp-Source: ABdhPJx4L70Hru3wJ8ZLeUoOvouNCEM6ZywGK19AoXkx6ZKJU1aeEy5eG6hFmpRJKY19F397KuqrHw==
+X-Received: by 2002:a37:664f:: with SMTP id a76mr16972606qkc.370.1603115323567;
+        Mon, 19 Oct 2020 06:48:43 -0700 (PDT)
+Received: from [192.168.2.28] (bras-base-kntaon1617w-grc-10-184-147-165-106.dsl.bell.ca. [184.147.165.106])
+        by smtp.googlemail.com with ESMTPSA id j92sm4217406qtd.1.2020.10.19.06.48.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 19 Oct 2020 06:48:42 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next v3 2/2] tc: implement support for terse dump
+To:     Vlad Buslov <vlad@buslov.dev>
+Cc:     Vlad Buslov <vladbu@nvidia.com>, dsahern@gmail.com,
+        stephen@networkplumber.org, netdev@vger.kernel.org,
+        davem@davemloft.net, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        ivecera@redhat.com, Vlad Buslov <vladbu@mellanox.com>
+References: <20201016144205.21787-1-vladbu@nvidia.com>
+ <20201016144205.21787-3-vladbu@nvidia.com>
+ <0bb6f625-c987-03d7-7225-eee03345168e@mojatatu.com>
+ <87a6wm15rz.fsf@buslov.dev>
+ <ac25fd12-0ba9-47c2-25d7-7a6c01e94115@mojatatu.com>
+ <877drn20h3.fsf@buslov.dev>
+From:   Jamal Hadi Salim <jhs@mojatatu.com>
+Message-ID: <b8138715-8fd7-cbef-d220-76bdb8c52ba5@mojatatu.com>
+Date:   Mon, 19 Oct 2020 09:48:41 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5804f20b-b8ea-9f02-7aac-129d35f46a2c@gmail.com>
+In-Reply-To: <877drn20h3.fsf@buslov.dev>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Oct 17, 2020 at 09:23:52AM -0600, David Ahern wrote:
-> On 10/13/20 8:32 AM, Guillaume Nault wrote:
-> > @@ -41,12 +44,12 @@ static void usage(void)
-> >  
-> >  static bool can_modify_mpls_fields(unsigned int action)
-> >  {
-> > -	return action == TCA_MPLS_ACT_PUSH || action == TCA_MPLS_ACT_MODIFY;
-> > +	return action == TCA_MPLS_ACT_PUSH || action == TCA_MPLS_ACT_MAC_PUSH || action == TCA_MPLS_ACT_MODIFY;
-> >  }
-> >  
-> > -static bool can_modify_ethtype(unsigned int action)
-> > +static bool can_set_ethtype(unsigned int action)
-> >  {
-> > -	return action == TCA_MPLS_ACT_PUSH || action == TCA_MPLS_ACT_POP;
-> > +	return action == TCA_MPLS_ACT_PUSH || action == TCA_MPLS_ACT_MAC_PUSH || action == TCA_MPLS_ACT_POP;
-> >  }
-> >  
-> >  static bool is_valid_label(__u32 label)
+On 2020-10-18 8:16 a.m., Vlad Buslov wrote:
+> On Sat 17 Oct 2020 at 14:20, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
+>> On 2020-10-16 12:42 p.m., Vlad Buslov wrote:
+>>
+
+>> Either one sounds appealing - the refactoring feels simpler
+>> as opposed to a->terse_print().
 > 
-> nit: please wrap the lines with the new action.
+> With such refactoring we action type will be printed before some basic
+> validation which can lead to outputting the type together with error
+> message. Consider tunnel key action output callback as example:
+> 
+> static int print_tunnel_key(struct action_util *au, FILE *f, struct rtattr *arg)
+> {
+> 	struct rtattr *tb[TCA_TUNNEL_KEY_MAX + 1];
+> 	struct tc_tunnel_key *parm;
+> 
+> 	if (!arg)
+> 		return 0;
+> 
+> 	parse_rtattr_nested(tb, TCA_TUNNEL_KEY_MAX, arg);
+> 
+> 	if (!tb[TCA_TUNNEL_KEY_PARMS]) {
+> 		fprintf(stderr, "Missing tunnel_key parameters\n");
+> 		return -1;
+> 	}
+> 	parm = RTA_DATA(tb[TCA_TUNNEL_KEY_PARMS]);
+> 
+> 	print_string(PRINT_ANY, "kind", "%s ", "tunnel_key");
+> 
+> If print "kind" call is moved before checking the arg it will always be
+> printed, even when immediately followed by "Missing tunnel_key
+> parameters\n" string. Is this a concern?
+> 
 
-Will do.
+That could be a good thing, no? you get to see the action name with the
+error. Its really not a big deal if you decide to do a->terse_print()
+instead.
 
-> Besides the nit, very nice and complete change set - man page, help, and
->  tests.
+>>
+>> BTW: the action index, unless i missed something, is not transported
+>> from the kernel for terse option. It is an important parameter
+>> when actions are shared by filters (since they will have the same
+>> index).
+>> Am i missing something?
+> 
+> Yes, tc_action_ops->dump(), which outputs action index among other data,
+> is not called at all by terse dump.
 
-Thanks!
+I am suggesting it is an important detail that is currently missing.
+Alternatively since you have the cookies in there - it is feasible that
+someone who creates the action could "encode" the index in the cookie.
+But that makes it a "proprietary" choice of whoever is creating
+the filter/action.
+
+cheers,
+jamal
 
