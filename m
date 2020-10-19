@@ -2,102 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0998292C6A
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 19:15:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39D55292C70
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 19:16:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730938AbgJSRPK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 13:15:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39672 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730646AbgJSRPK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 13:15:10 -0400
-X-Greylist: delayed 393 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 19 Oct 2020 10:15:09 PDT
-Received: from edrik.securmail.fr (edrik.securmail.fr [IPv6:2a0e:f41:0:1::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08755C0613CE
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 10:15:09 -0700 (PDT)
-Received: from irc-clt.no.as208627.net (irc-clt.no.as208627.net [IPv6:2a0e:f42:a::3])
-        (using TLSv1.2 with cipher DHE-RSA-CHACHA20-POLY1305 (256/256 bits))
+        id S1731002AbgJSRP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 13:15:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39254 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730817AbgJSRP6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Oct 2020 13:15:58 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: alarig@swordarmor.fr)
-        by edrik.securmail.fr (Postfix) with ESMTPSA id A7D2AB0D05;
-        Mon, 19 Oct 2020 19:08:30 +0200 (CEST)
-Authentication-Results: edrik.securmail.fr/A7D2AB0D05; dmarc=none (p=none dis=none) header.from=swordarmor.fr
-Date:   Mon, 19 Oct 2020 19:08:28 +0200
-From:   Alarig Le Lay <alarig@swordarmor.fr>
-To:     =?utf-8?B?15zXmdeo158g15DXldeT15nXlg==?= <liranodiz@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: GRE Tunnel Over Linux VRF
-Message-ID: <20201019170828.GA11371@irc-clt.no.as208627.net>
-References: <CAFZsvkmCyRdOePeedok0b6Hn4PR-FPcNjfY7sWBzSBOAW+HRWg@mail.gmail.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id 556CE208B3;
+        Mon, 19 Oct 2020 17:15:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603127757;
+        bh=1r7FJNOlQi+D2PYDhxnkwdmwaf5e4OghjY06cClKrwM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=e6ziEi8ZEGxWbn6seamf/3dtKuMyD1XmIjSIbHJT+UaL2/FBpnDWXhSHoPuw1NCFC
+         eYxrITejYbUrzLqbovvVuYYVLCdX6x7phOrSbswvT58dkrkTRtotEfjT/Ccby+GGDi
+         tRlR2tKHG3eNInAfx4BgnvXPykLwFRXbaWH0hW7A=
+Date:   Mon, 19 Oct 2020 10:15:55 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "zhudi (J)" <zhudi21@huawei.com>
+Cc:     Michal Kubecek <mkubecek@suse.cz>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Chenxiang (EulerOS)" <rose.chen@huawei.com>
+Subject: Re: [PATCH] rtnetlink: fix data overflow in rtnl_calcit()
+Message-ID: <20201019101555.64b9f723@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <0DCA8173C37AD8458D6BA40EB0C660918CA689@DGGEMI532-MBX.china.huawei.com>
+References: <0DCA8173C37AD8458D6BA40EB0C660918CA689@DGGEMI532-MBX.china.huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAFZsvkmCyRdOePeedok0b6Hn4PR-FPcNjfY7sWBzSBOAW+HRWg@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Mon 19 Oct 2020 17:59:56 GMT, לירן אודיז wrote:
-> Hi, i am trying to create GRE tunnel over vrf.
-> after binding  the GRE tunnel interface (also the LAN & WAN
-> interfaces) to VRF, the traffic didn't forwarded via the WAN
-> interface,  the path is LAN(VRx)----->GRE--x-->WAN(VRx) .
-> only while the WAN interface is binding to the default router, the
-> traffic forwarded correctly via the WAN interface, the path is
-> LAN(VRx)----->GRE----->WAN(VRx).
+On Mon, 19 Oct 2020 01:59:19 +0000 zhudi (J) wrote:
+> > zhudi, why not use size_t? Seems like the most natural fit for counting size.  
 > 
-> used configuration:
-> ifconfig lan1 80.80.80.1/24 up
-> ifconfig wan2 50.50.50.1/24 up
-> ip link add VR2 type vrf table 2
-> ip link set dev VR2 up
-> ip route add table 2 unreachable default metric 4278198272
-> ip tunnel add greT2 mode gre local 50.50.50.1 remote 50.50.50.2
-> ip addr add 55.55.55.1/24 dev greT2
-> ip link set greT2 up
-> ip link set dev greT2 master VR2
-> ip link set dev lan1 master VR2
-> ip link set dev wan2 master VR2
-> ip route add vrf VR2 90.90.90.0/24 via 55.55.55.2
-> 
-> what is the correct way to create GRE tunnel over VRF.
-> Thank for support.
-> 
-> BR, Liran
+> Thanks for your replying.
+> min_dump_alloc original type used is u16 and it's eventually assigned to 
+> struct netlink_callback{}. min_dump_alloc which data type is u32. So I just simply
+> promote to u32.
+> Should be used size_t instead of u32?
 
-The IPs used as tunnel endpoints must be reachable via the GRT (and not
-on the tunnel).
+I had a closer look, and I agree that u32 should be fine in struct
+netlink_dump_control, rtnetlink_rcv_msg(), and as a return value from
+rtnl_calcit().
 
-Here is an example of how I set it up here:
-core01-arendal ~ # ip link show gre2
-17: gre2@NONE: <POINTOPOINT,NOARP,UP,LOWER_UP> mtu 1476 qdisc noqueue master as208627 state UNKNOWN mode DEFAULT group default qlen 1000
-    link/gre 85.166.254.210 peer 45.134.89.103
-    alias Core: edge03
-core01-arendal ~ # ip r g 85.166.254.210
-local 85.166.254.210 dev lo table local src 85.166.254.210 uid 0
-    cache <local>
-core01-arendal ~ # ip r g 45.134.89.103
-45.134.89.103 via 85.166.252.1 dev enp2s0 src 85.166.254.210 uid 0
-    cache
-core01-arendal ~ # ip addr show gre2
-17: gre2@NONE: <POINTOPOINT,NOARP,UP,LOWER_UP> mtu 1476 qdisc noqueue master as208627 state UNKNOWN group default qlen 1000
-    link/gre 85.166.254.210 peer 45.134.89.103
-    inet 45.91.126.224/31 scope global gre2
-       valid_lft forever preferred_lft forever
-    inet6 2a0e:f42:fffe:1::1a/127 scope global
-       valid_lft forever preferred_lft forever
-    inet6 fe80::200:5efe:55a6:fed2/64 scope link
-       valid_lft forever preferred_lft forever
-core01-arendal ~ # ip link show as208627
-6: as208627: <NOARP,MASTER,UP,LOWER_UP> mtu 65536 qdisc noqueue state UP mode DEFAULT group default qlen 1000
-    link/ether 4e:82:77:cd:dd:b7 brd ff:ff:ff:ff:ff:ff
-core01-arendal ~ # ip vrf sh
-Name              Table
------------------------
-as208627         208627
+But please use size_t for the local variable in rtnl_calcit().
+This way you can convert the max_t() to a max().
 
--- 
-Alarig
+When you send v2 please move the declaration of min_ifinfo_dump_size
+after struct net *net = sock_net(skb->sk); (to get closer to longest 
+to shortest declaration order).
