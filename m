@@ -2,201 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21463292ECF
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 21:52:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15AB7292F15
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 22:03:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731405AbgJSTwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 15:52:39 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:43966 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727936AbgJSTwi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 15:52:38 -0400
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09JJX5ml073465
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 15:52:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : mime-version : content-type; s=pp1;
- bh=gf2tRQ9mhyRFCQEBNlvIw8oOmrztT2DAPGb5augNDHo=;
- b=IhJ98JRVdBWENZm6vSj5XBHh9a6qf8XkfdR0OfPLP5N4iMCdVSGktPyQWJ/+WwWA96Zv
- AEVci297sR/+L9hm+CDc5hgUe6iR6c4woZbCK3bEUaCaJ5q4TOzF+EUWoIgkCZrF5zmc
- MlUfO9fuLGFgq7kOlTHVU+06iU09KxiIgKpTO5tBj2OsjfTKM2MRK2FD50ngpOGME8q2
- tJcnmL4dS3X7pU63NJpMhsKzmnLCuu4eXEuAWZiyM1UMlb9e6NTrgk8zzn8g41U1M0c/
- 0JXZArEyOsLcnk/0M4OPX03RLAbW2hwc8CVJRRcZmEUq+oEMQSra9OXaql7wxua4Juxb 9g== 
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 349gs510dm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 15:52:37 -0400
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 09JJkool019008
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 19:52:37 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma03wdc.us.ibm.com with ESMTP id 347r88teg0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 19:52:37 +0000
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 09JJqaHv32178486
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 19 Oct 2020 19:52:36 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 72C54B2071;
-        Mon, 19 Oct 2020 19:52:36 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 577E4B2066;
-        Mon, 19 Oct 2020 19:52:36 +0000 (GMT)
-Received: from suka-w540.localdomain (unknown [9.85.152.173])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 19 Oct 2020 19:52:36 +0000 (GMT)
-Received: by suka-w540.localdomain (Postfix, from userid 1000)
-        id 8AE852E11A3; Mon, 19 Oct 2020 12:52:33 -0700 (PDT)
-Date:   Mon, 19 Oct 2020 12:52:33 -0700
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     Dany Madden <drt@linux.vnet.ibm.com>, Lijun Pan <ljp@linux.ibm.com>
-Subject: [PATCH v2 1/1] powerpc/vnic: Extend "failover pending" window
-Message-ID: <20201019195233.GA1282438@us.ibm.com>
+        id S1728332AbgJSUDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 16:03:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37718 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726385AbgJSUDC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 16:03:02 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE4D4C0613CE;
+        Mon, 19 Oct 2020 13:03:01 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id z5so802583ejw.7;
+        Mon, 19 Oct 2020 13:03:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=18BK5QABG5QnCnKw4efSXgYTiRd7IX1w5DP5yy+9I9I=;
+        b=rFDnMP98hbleUk2ilEizlHXP674Bq3lV8+edQSDV3d11umzEPWtjx8SQmsPOSlZWEV
+         yDTXSwJg9qZUAxfjAA98CYUBOQJWs0+RPJry16l8727hgHMJc1SaDjpT+cHnZNNGoUCh
+         1Lluv4t5NPXLJpoVbn/OxAJEmguv1vLKfpxlwThO4J8lCmVKct06cv2k2wdXpgHn5GrM
+         hGLM3Eo1Gmh5tZj/CuOvR1pyFXcdIBr8iJupLy6M9rWqzWb4fAOdlqdDw7LOXXTKLBwS
+         +hQvI24VZiYj6QWwZlN2+VCV+F1bB4ZaB+h/35o/7iVrnd3+AJ9stXWE4eiNbcmBRRpr
+         7Ckw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=18BK5QABG5QnCnKw4efSXgYTiRd7IX1w5DP5yy+9I9I=;
+        b=PPi53IAMhUSoTVYs1+WU00aFZ0lg+LnfGB84nNOUY3baTWPithoPVTxLbRX0GmHXY8
+         2aXjyNvZ3jPMddsit53mw/4F2yGZ5LnVJvi4uUmSqLZkTQxUdtjQPQuiHOAWPU2cvcdS
+         VsCCPeVMMZ9EokrJBJ117LM8M5+SwHvWBVLigiCaWgcNuEwCV/cJge/iAJ5BjbP1AAtw
+         C3x86uOn2VNUt2e2a6hZHofSqoI1T08ipwaclWrJAMEF42PIP79jDXczd6c8Eu2zKFr2
+         U9hJ6GQp3Fy/YgFn8Rz9ql1+XT+RZtfvwkmqapJAw16T1fINcuS1U4gjPPgUbzZkU9PW
+         Ogfg==
+X-Gm-Message-State: AOAM533ZMcq3t8RAyXcRNC8VXdeirQfWyYHl3NZl2A0fqY5/SK5pJG9c
+        8nJexTcDMd3TpLft7FGGqsk=
+X-Google-Smtp-Source: ABdhPJzkCeWXmQnav763Ok076vRwgRnjdn4adsktoySJMo8mM09SCNxvBPJVR7s4jDoKLkHpD+5uWQ==
+X-Received: by 2002:a17:906:95d1:: with SMTP id n17mr1605193ejy.75.1603137780335;
+        Mon, 19 Oct 2020 13:03:00 -0700 (PDT)
+Received: from skbuf ([188.26.174.215])
+        by smtp.gmail.com with ESMTPSA id v14sm834988edy.68.2020.10.19.13.02.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Oct 2020 13:02:59 -0700 (PDT)
+Date:   Mon, 19 Oct 2020 23:02:58 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Yunjian Wang <wangyunjian@huawei.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] net: Have netpoll bring-up DSA management interface
+Message-ID: <20201019200258.jrtymxikwrijkvpq@skbuf>
+References: <20201019171746.991720-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Operating-System: Linux 2.0.32 on an i486
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-10-19_08:2020-10-16,2020-10-19 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=3
- bulkscore=0 clxscore=1015 malwarescore=0 impostorscore=0
- priorityscore=1501 spamscore=0 mlxlogscore=999 phishscore=0 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010190131
+In-Reply-To: <20201019171746.991720-1-f.fainelli@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From 67f8977f636e462a1cd1eadb28edd98ef4f2b756 Mon Sep 17 00:00:00 2001
-From: Sukadev Bhattiprolu <sukadev@linux.vnet.ibm.com>
-Date: Thu, 10 Sep 2020 11:18:41 -0700
-Subject: [PATCH 1/1] powerpc/vnic: Extend "failover pending" window
+On Mon, Oct 19, 2020 at 10:17:44AM -0700, Florian Fainelli wrote:
+> These devices also do not utilize the upper/lower linking so the
+> check about the netpoll device having upper is not going to be a
+> problem.
 
-Commit 5a18e1e0c193b introduced the 'failover_pending' state to track
-the "failover pending window" - where we wait for the partner to become
-ready (after a transport event) before actually attempting to failover.
-i.e window is between following two events:
+They do as of 2f1e8ea726e9 ("net: dsa: link interfaces with the DSA
+master to get rid of lockdep warnings"), don't they? The question is why
+that doesn't work, and the answer is, I believe, that the linkage needs
+to be the other way around than DSA has it.
 
-        a. we get a transport event due to a FAILOVER
+> 
+> The solution adopted here is identical to the one done for
+> net/ipv4/ipconfig.c with 728c02089a0e ("net: ipv4: handle DSA enabled
+> master network devices"), with the network namespace scope being
+> restricted to that of the process configuring netpoll.
 
-        b. later, we get CRQ_INITIALIZED indicating the partner is
-           ready  at which point we schedule a FAILOVER reset.
+... and further restricted to the only network namespace that DSA
+supports. As a side note, we should declare NETIF_F_NETNS_LOCAL_BIT for
+DSA interfaces.
 
-and ->failover_pending is true during this window.
+> 
+> Fixes: 04ff53f96a93 ("net: dsa: Add netconsole support")
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>  net/core/netpoll.c | 22 ++++++++++++++++++----
+>  1 file changed, 18 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/core/netpoll.c b/net/core/netpoll.c
+> index c310c7c1cef7..960948290001 100644
+> --- a/net/core/netpoll.c
+> +++ b/net/core/netpoll.c
+> @@ -29,6 +29,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/export.h>
+>  #include <linux/if_vlan.h>
+> +#include <net/dsa.h>
+>  #include <net/tcp.h>
+>  #include <net/udp.h>
+>  #include <net/addrconf.h>
+> @@ -657,15 +658,15 @@ EXPORT_SYMBOL_GPL(__netpoll_setup);
+>  
+>  int netpoll_setup(struct netpoll *np)
+>  {
+> -	struct net_device *ndev = NULL;
+> +	struct net_device *ndev = NULL, *dev = NULL;
+> +	struct net *net = current->nsproxy->net_ns;
+>  	struct in_device *in_dev;
+>  	int err;
+>  
+>  	rtnl_lock();
+> -	if (np->dev_name[0]) {
+> -		struct net *net = current->nsproxy->net_ns;
+> +	if (np->dev_name[0])
+>  		ndev = __dev_get_by_name(net, np->dev_name);
+> -	}
+> +
+>  	if (!ndev) {
+>  		np_err(np, "%s doesn't exist, aborting\n", np->dev_name);
+>  		err = -ENODEV;
+> @@ -673,6 +674,19 @@ int netpoll_setup(struct netpoll *np)
+>  	}
+>  	dev_hold(ndev);
+>  
+> +	/* bring up DSA management network devices up first */
+> +	for_each_netdev(net, dev) {
+> +		if (!netdev_uses_dsa(dev))
+> +			continue;
+> +
+> +		err = dev_change_flags(dev, dev->flags | IFF_UP, NULL);
+> +		if (err < 0) {
+> +			np_err(np, "%s failed to open %s\n",
+> +			       np->dev_name, dev->name);
+> +			goto put;
+> +		}
+> +	}
+> +
 
-If during this window, we attempt to open (or close) a device, we pretend
-that the operation succeded and let the FAILOVER reset path complete the
-operation.
+Completely crazy and outlandish idea, I know, but what's wrong with
+doing this in DSA?
 
-This is fine, except if the transport event ("a" above) occurs during the
-open and after open has already checked whether a failover is pending. If
-that happens, we fail the open, which can cause the boot scripts to leave
-the interface down requiring administrator to manually bring up the device.
-
-This fix "extends" the failover pending window till we are _actually_
-ready to perform the failover reset (i.e until after we get the RTNL
-lock). Since open() holds the RTNL lock, we can be sure that we either
-finish the open or if the open() fails due to the failover pending window,
-we can again pretend that open is done and let the failover complete it.
-
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
----
-Changelog [v2]:
-	[Brian King] Ensure we clear failover_pending during hard reset
----
- drivers/net/ethernet/ibm/ibmvnic.c | 36 ++++++++++++++++++++++++++----
- 1 file changed, 32 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 1b702a43a5d0..2a0f6f6820db 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -1197,18 +1197,27 @@ static int ibmvnic_open(struct net_device *netdev)
- 	if (adapter->state != VNIC_CLOSED) {
- 		rc = ibmvnic_login(netdev);
- 		if (rc)
--			return rc;
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 33788b5c1742..e5927c4498a2 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -68,8 +68,14 @@ static int dsa_slave_open(struct net_device *dev)
+ 	struct dsa_port *dp = dsa_slave_to_port(dev);
+ 	int err;
+ 
+-	if (!(master->flags & IFF_UP))
+-		return -ENETDOWN;
++	if (!(master->flags & IFF_UP)) {
++		err = dev_change_flags(master, master->flags | IFF_UP, NULL);
++		if (err < 0) {
++			netdev_err(dev, "failed to open master %s\n",
++				   master->name);
 +			goto out;
- 
- 		rc = init_resources(adapter);
- 		if (rc) {
- 			netdev_err(netdev, "failed to initialize resources\n");
- 			release_resources(adapter);
--			return rc;
-+			goto out;
- 		}
- 	}
- 
- 	rc = __ibmvnic_open(netdev);
- 
-+out:
-+	/*
-+	 * If open fails due to a pending failover, set device state and
-+	 * return. Device operation will be handled by reset routine.
-+	 */
-+	if (rc && adapter->failover_pending) {
-+		adapter->state = VNIC_OPEN;
-+		rc = 0;
++		}
 +	}
- 	return rc;
- }
  
-@@ -1931,6 +1940,13 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 		   rwi->reset_reason);
- 
- 	rtnl_lock();
-+	/*
-+	 * Now that we have the rtnl lock, clear any pending failover.
-+	 * This will ensure ibmvnic_open() has either completed or will
-+	 * block until failover is complete.
-+	 */
-+	if (rwi->reset_reason == VNIC_RESET_FAILOVER)
-+		adapter->failover_pending = false;
- 
- 	netif_carrier_off(netdev);
- 	adapter->reset_reason = rwi->reset_reason;
-@@ -2211,6 +2227,13 @@ static void __ibmvnic_reset(struct work_struct *work)
- 			/* CHANGE_PARAM requestor holds rtnl_lock */
- 			rc = do_change_param_reset(adapter, rwi, reset_state);
- 		} else if (adapter->force_reset_recovery) {
-+			/*
-+			 * Since we are doing a hard reset now, clear the
-+			 * failover_pending flag so we don't ignore any
-+			 * future MOBILITY or other resets.
-+			 */
-+			adapter->failover_pending = false;
-+
- 			/* Transport event occurred during previous reset */
- 			if (adapter->wait_for_reset) {
- 				/* Previous was CHANGE_PARAM; caller locked */
-@@ -2275,9 +2298,15 @@ static int ibmvnic_reset(struct ibmvnic_adapter *adapter,
- 	unsigned long flags;
- 	int ret;
- 
-+	/*
-+	 * If failover is pending don't schedule any other reset.
-+	 * Instead let the failover complete. If there is already a
-+	 * a failover reset scheduled, we will detect and drop the
-+	 * duplicate reset when walking the ->rwi_list below.
-+	 */
- 	if (adapter->state == VNIC_REMOVING ||
- 	    adapter->state == VNIC_REMOVED ||
--	    adapter->failover_pending) {
-+	    (adapter->failover_pending && reason != VNIC_RESET_FAILOVER)) {
- 		ret = EBUSY;
- 		netdev_dbg(netdev, "Adapter removing or pending failover, skipping reset\n");
- 		goto err;
-@@ -4653,7 +4682,6 @@ static void ibmvnic_handle_crq(union ibmvnic_crq *crq,
- 		case IBMVNIC_CRQ_INIT:
- 			dev_info(dev, "Partner initialized\n");
- 			adapter->from_passive_init = true;
--			adapter->failover_pending = false;
- 			if (!completion_done(&adapter->init_done)) {
- 				complete(&adapter->init_done);
- 				adapter->init_done_rc = -EIO;
+ 	if (!ether_addr_equal(dev->dev_addr, master->dev_addr)) {
+ 		err = dev_uc_add(master, dev->dev_addr);
 -- 
-2.25.4
+2.25.1
 
+It has the benefit that user space can now remove DSA-specific
+workarounds, like systemd-networkd with BindCarrier:
+https://github.com/systemd/systemd/issues/7478
+And we could remove one of the 2 bullets in the "Common pitfalls using
+DSA setups" chapter:
+https://www.kernel.org/doc/Documentation/networking/dsa/dsa.txt
+And....
+We could remove the DSA workaround from net/ipv4/ipconfig.c as well.
+Just saying.
+
+>  	if (netdev_master_upper_dev_get(ndev)) {
+>  		np_err(np, "%s is a slave device, aborting\n", np->dev_name);
+>  		err = -EBUSY;
+> -- 
+> 2.25.1
+> 
