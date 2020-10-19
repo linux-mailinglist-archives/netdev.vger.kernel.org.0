@@ -2,64 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E73A5292B12
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 18:05:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9189D292B10
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 18:05:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730593AbgJSQFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 12:05:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:35502 "EHLO
+        id S1730587AbgJSQFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 12:05:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58962 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730348AbgJSQFH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 12:05:07 -0400
+        by vger.kernel.org with ESMTP id S1730286AbgJSQFF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 12:05:05 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603123504;
+        s=mimecast20190719; t=1603123502;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Kmt0WMa62xVCs6SB3wAxK5lbZg4p3l5bpggGEAqxZT4=;
-        b=LSX6mVuXHseY9045kNZYPziGZD6em6jMdzo5rzZJJdHYtz1ZNi7tZJDAeMyG1eNQK4+J8d
-        OQgEddrIhq6vlTRxSDzLxy/QquwSwcO50l8OpzfhRoKOrnMehYB+CB+seirMUDTb5nt8mh
-        chzS0rrifPWtKcEKMTZZ3YRU1WxpVsg=
+        bh=oNPjravVaxcCo6ufyTkom4COG7g6erShkorV8bvLIFg=;
+        b=IsqVmcOtlSaqMYadQzkzzTbV7pN8CZfhPN473LSJ6THjOqWGFWudYmlr/pYqhCaRiz7Hfk
+        rlmatl/iUyOVu3uQH8BPyspo5RnPq5GqM9Y5PiY7kteK+u0fbXrHtOmDJ+KzOhUKueUfXX
+        bb6gB/8mCROG8+sBoMnT8fShti6Aq3M=
 Received: from mail-vk1-f200.google.com (mail-vk1-f200.google.com
  [209.85.221.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-540-6gAjthnQOTqWw45fQQj8pw-1; Mon, 19 Oct 2020 12:04:59 -0400
-X-MC-Unique: 6gAjthnQOTqWw45fQQj8pw-1
-Received: by mail-vk1-f200.google.com with SMTP id e6so100799vkb.11
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 09:04:59 -0700 (PDT)
+ us-mta-475-SEFnLyahMAaXGLIh3XvyKw-1; Mon, 19 Oct 2020 12:05:00 -0400
+X-MC-Unique: SEFnLyahMAaXGLIh3XvyKw-1
+Received: by mail-vk1-f200.google.com with SMTP id s6so97908vkg.12
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 09:05:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=Kmt0WMa62xVCs6SB3wAxK5lbZg4p3l5bpggGEAqxZT4=;
-        b=XxvMsrxcrUDJs9bY79IRbr+1qiQ9kce7KaEMo21P3BilnxAJUGtowM7askKX+o+NUg
-         y51sMHm25w0lQH2asPbu3zibok5wQT+XA66KlV4W9B/24ix7SEaxIxhg61AsKgg+RY2s
-         /xAB4If9NZZ2wxrji2z/dhjgKj2wlUcFgnsFWV90Q6aiQBSSKx/l+6H4m1dbZEBvDOuo
-         QLKow/ucd3pcpezEFoMreaSbpATdn9Wkz6bHcsbS44298bM6xFlHwnK4Jr8+7tywQJXy
-         XiXV6ggqTQrVgb46pIIhsPDQZDh+hCVGbx2mCGXvDk75wzAEGBRz6j0u4nh4fDGIWkxc
-         IorA==
-X-Gm-Message-State: AOAM530bwsp6VEQqqZCreZuAQOsEL4hDTDebwAVFpx61bTjnNsaDRAe1
-        KlxPFhbEmK/WGuClkZoFWNkAmFudrmB+jH6RscAyTDCv7VBrurrTKMwy2iaFF/ZbjCoMqq6cn67
-        pXj8uJSD9vTmmtmHG
-X-Received: by 2002:a67:8785:: with SMTP id j127mr661305vsd.52.1603123498803;
-        Mon, 19 Oct 2020 09:04:58 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwbHshGxEcUacrODitowNaHXHV96xHt9gEm3c04csAoifDEuYo8pKsXyyjcLpJtGKlYe48a4g==
-X-Received: by 2002:a67:8785:: with SMTP id j127mr661251vsd.52.1603123498433;
-        Mon, 19 Oct 2020 09:04:58 -0700 (PDT)
+        bh=oNPjravVaxcCo6ufyTkom4COG7g6erShkorV8bvLIFg=;
+        b=K8rb+/n1OtlyioMcK9BBRUYdW9UUs4/ZZwkQO+0AzQLMPuZCAugGG7zC/4ju/cs3kt
+         /npX1n2OG/6C7fvUGDf2pKdphaKqu38AtSNH+4mfRCaE+aaa/NzZ9y9/baWsnZzcZznC
+         N2Sh+7KMz1f8RSeSNoetVGfwUxvI65Cn8fDS6iK/tlkVUmiHIO9eIAjKIWQDUroIrRH8
+         9fIvJnrXjXSB7UEv/DLV+lejIAIh2ZCKV6jlUWwty+Mu28tEXEBLy9015v3qH2NIa6Y+
+         ekhVv2afK5tn+O/gi7O0FH/UHZHmbD1OhoJjbOrV+ChJBsRR70xxCzWqBt5nVkf8RTzT
+         ynlg==
+X-Gm-Message-State: AOAM530xSD6+tF6OE+N1723dcpGsOJZWHkvH+0T8fPG0blJ2stNMw/4w
+        0xmX2HB5yvdemujWH4FFGMvFL6QAkkjDgemZ4EzGgTY7EOY5NNZtNaPt/xblf300F5I6PndcXLp
+        Eqp6En2JvT163CYVD
+X-Received: by 2002:a67:fd59:: with SMTP id g25mr644184vsr.29.1603123499498;
+        Mon, 19 Oct 2020 09:04:59 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJykanLKQDu6ikfoanjSVL64s34Jz+KxL3muYO7CNjH7kGwaVwMqrW7AMXxfl0mIFz7FSmDSkw==
+X-Received: by 2002:a67:fd59:: with SMTP id g25mr644143vsr.29.1603123499187;
+        Mon, 19 Oct 2020 09:04:59 -0700 (PDT)
 Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id 1sm51467vsv.10.2020.10.19.09.04.57
+        by smtp.gmail.com with ESMTPSA id j15sm30858vke.49.2020.10.19.09.04.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Mon, 19 Oct 2020 09:04:57 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 1D9C71838FE; Mon, 19 Oct 2020 18:04:55 +0200 (CEST)
-Subject: [PATCH bpf 1/2] bpf_redirect_neigh: Support supplying the nexthop as
- a helper parameter
+        id 357D21838FF; Mon, 19 Oct 2020 18:04:56 +0200 (CEST)
+Subject: [PATCH bpf 2/2] selftests: Update test_tc_redirect.sh to use the
+ modified bpf_redirect_neigh()
 From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>
 Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Date:   Mon, 19 Oct 2020 18:04:55 +0200
-Message-ID: <160312349501.7917.13131363910387009253.stgit@toke.dk>
+Date:   Mon, 19 Oct 2020 18:04:56 +0200
+Message-ID: <160312349612.7917.2292641333686513322.stgit@toke.dk>
 In-Reply-To: <160312349392.7917.6673239142315191801.stgit@toke.dk>
 References: <160312349392.7917.6673239142315191801.stgit@toke.dk>
 User-Agent: StGit/0.23
@@ -72,442 +72,256 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-Based on the discussion in [0], update the bpf_redirect_neigh() helper to
-accept an optional parameter specifying the nexthop information. This makes
-it possible to combine bpf_fib_lookup() and bpf_redirect_neigh() without
-incurring a duplicate FIB lookup - since the FIB lookup helper will return
-the nexthop information even if no neighbour is present, this can simply be
-passed on to bpf_redirect_neigh() if bpf_fib_lookup() returns
-BPF_FIB_LKUP_RET_NO_NEIGH.
+This updates the test_tc_neigh prog in selftests to use the new syntax of
+bpf_redirect_neigh(). To exercise the helper both with and without the
+optional parameter, add an additional test_tc_neigh_fib test program, which
+does a bpf_fib_lookup() followed by a call to bpf_redirect_neigh() instead
+of looking up the ifindex in a map.
 
-[0] https://lore.kernel.org/bpf/393e17fc-d187-3a8d-2f0d-a627c7c63fca@iogearbox.net/
+Update the test_tc_redirect.sh script to run both versions of the test, and
+while we're add it, fix it to work on systems that have a consolidated
+dual-stack 'ping' binary instead of separate ping/ping6 versions.
 
 Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
 ---
- include/linux/filter.h         |    9 ++
- include/uapi/linux/bpf.h       |   22 +++++-
- net/core/filter.c              |  159 +++++++++++++++++++++++++---------------
- scripts/bpf_helpers_doc.py     |    1 
- tools/include/uapi/linux/bpf.h |   22 +++++-
- 5 files changed, 145 insertions(+), 68 deletions(-)
+ tools/testing/selftests/bpf/progs/test_tc_neigh.c  |    5 -
+ .../selftests/bpf/progs/test_tc_neigh_fib.c        |  142 ++++++++++++++++++++
+ tools/testing/selftests/bpf/test_tc_redirect.sh    |   27 +++-
+ 3 files changed, 169 insertions(+), 5 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/test_tc_neigh_fib.c
 
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index 20fc24c9779a..ba9de7188cd0 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -607,12 +607,21 @@ struct bpf_skb_data_end {
- 	void *data_end;
- };
+diff --git a/tools/testing/selftests/bpf/progs/test_tc_neigh.c b/tools/testing/selftests/bpf/progs/test_tc_neigh.c
+index fe182616b112..b985ac4e7a81 100644
+--- a/tools/testing/selftests/bpf/progs/test_tc_neigh.c
++++ b/tools/testing/selftests/bpf/progs/test_tc_neigh.c
+@@ -1,4 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
++#include <stddef.h>
+ #include <stdint.h>
+ #include <stdbool.h>
  
-+struct bpf_nh_params {
-+	u8 nh_family;
-+	union {
-+		__u32 ipv4_nh;
-+		struct in6_addr ipv6_nh;
-+	};
-+};
-+
- struct bpf_redirect_info {
- 	u32 flags;
- 	u32 tgt_index;
- 	void *tgt_value;
- 	struct bpf_map *map;
- 	u32 kern_flags;
-+	struct bpf_nh_params nh;
- };
- 
- DECLARE_PER_CPU(struct bpf_redirect_info, bpf_redirect_info);
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index bf5a99d803e4..82fd73ac1a13 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -3677,15 +3677,19 @@ union bpf_attr {
-  * 	Return
-  * 		The id is returned or 0 in case the id could not be retrieved.
-  *
-- * long bpf_redirect_neigh(u32 ifindex, u64 flags)
-+ * long bpf_redirect_neigh(u32 ifindex, struct bpf_redir_neigh *params, int plen, u64 flags)
-  * 	Description
-  * 		Redirect the packet to another net device of index *ifindex*
-  * 		and fill in L2 addresses from neighboring subsystem. This helper
-  * 		is somewhat similar to **bpf_redirect**\ (), except that it
-  * 		populates L2 addresses as well, meaning, internally, the helper
-- * 		performs a FIB lookup based on the skb's networking header to
-- * 		get the address of the next hop and then relies on the neighbor
-- * 		lookup for the L2 address of the nexthop.
-+ * 		relies on the neighbor lookup for the L2 address of the nexthop.
-+ *
-+ * 		The helper will perform a FIB lookup based on the skb's
-+ * 		networking header to get the address of the next hop, unless
-+ * 		this is supplied by the caller in the *params* argument. The
-+ * 		*plen* argument indicates the len of *params* and should be set
-+ * 		to 0 if *params* is NULL.
-  *
-  * 		The *flags* argument is reserved and must be 0. The helper is
-  * 		currently only supported for tc BPF program types, and enabled
-@@ -4906,6 +4910,16 @@ struct bpf_fib_lookup {
- 	__u8	dmac[6];     /* ETH_ALEN */
- };
- 
-+struct bpf_redir_neigh {
-+	/* network family for lookup (AF_INET, AF_INET6) */
-+	__u8	nh_family;
-+	/* network address of nexthop; skips fib lookup to find gateway */
-+	union {
-+		__be32		ipv4_nh;
-+		__u32		ipv6_nh[4];  /* in6_addr; network order */
-+	};
-+};
-+
- enum bpf_task_fd_type {
- 	BPF_FD_TYPE_RAW_TRACEPOINT,	/* tp name */
- 	BPF_FD_TYPE_TRACEPOINT,		/* tp name */
-diff --git a/net/core/filter.c b/net/core/filter.c
-index c5e2a1c5fd8d..af8634cd4ba2 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -2165,12 +2165,12 @@ static int __bpf_redirect(struct sk_buff *skb, struct net_device *dev,
- }
- 
- #if IS_ENABLED(CONFIG_IPV6)
--static int bpf_out_neigh_v6(struct net *net, struct sk_buff *skb)
-+static int bpf_out_neigh_v6(struct net *net, struct sk_buff *skb,
-+			    struct net_device *dev, struct bpf_nh_params *nh)
- {
--	struct dst_entry *dst = skb_dst(skb);
--	struct net_device *dev = dst->dev;
- 	u32 hh_len = LL_RESERVED_SPACE(dev);
- 	const struct in6_addr *nexthop;
-+	struct dst_entry *dst = NULL;
- 	struct neighbour *neigh;
- 
- 	if (dev_xmit_recursion()) {
-@@ -2196,8 +2196,13 @@ static int bpf_out_neigh_v6(struct net *net, struct sk_buff *skb)
- 	}
- 
- 	rcu_read_lock_bh();
--	nexthop = rt6_nexthop(container_of(dst, struct rt6_info, dst),
--			      &ipv6_hdr(skb)->daddr);
-+	if (!nh) {
-+		dst = skb_dst(skb);
-+		nexthop = rt6_nexthop(container_of(dst, struct rt6_info, dst),
-+				      &ipv6_hdr(skb)->daddr);
-+	} else {
-+		nexthop = &nh->ipv6_nh;
-+	}
- 	neigh = ip_neigh_gw6(dev, nexthop);
- 	if (likely(!IS_ERR(neigh))) {
- 		int ret;
-@@ -2210,36 +2215,43 @@ static int bpf_out_neigh_v6(struct net *net, struct sk_buff *skb)
- 		return ret;
- 	}
- 	rcu_read_unlock_bh();
--	IP6_INC_STATS(dev_net(dst->dev),
--		      ip6_dst_idev(dst), IPSTATS_MIB_OUTNOROUTES);
-+	if (dst)
-+		IP6_INC_STATS(dev_net(dst->dev),
-+			      ip6_dst_idev(dst), IPSTATS_MIB_OUTNOROUTES);
- out_drop:
- 	kfree_skb(skb);
- 	return -ENETDOWN;
- }
- 
--static int __bpf_redirect_neigh_v6(struct sk_buff *skb, struct net_device *dev)
-+static int __bpf_redirect_neigh_v6(struct sk_buff *skb, struct net_device *dev,
-+				   struct bpf_nh_params *nh)
- {
- 	const struct ipv6hdr *ip6h = ipv6_hdr(skb);
- 	struct net *net = dev_net(dev);
- 	int err, ret = NET_XMIT_DROP;
--	struct dst_entry *dst;
--	struct flowi6 fl6 = {
--		.flowi6_flags	= FLOWI_FLAG_ANYSRC,
--		.flowi6_mark	= skb->mark,
--		.flowlabel	= ip6_flowinfo(ip6h),
--		.flowi6_oif	= dev->ifindex,
--		.flowi6_proto	= ip6h->nexthdr,
--		.daddr		= ip6h->daddr,
--		.saddr		= ip6h->saddr,
--	};
- 
--	dst = ipv6_stub->ipv6_dst_lookup_flow(net, NULL, &fl6, NULL);
--	if (IS_ERR(dst))
--		goto out_drop;
-+	if (!nh) {
-+		struct dst_entry *dst;
-+		struct flowi6 fl6 = {
-+			.flowi6_flags = FLOWI_FLAG_ANYSRC,
-+			.flowi6_mark  = skb->mark,
-+			.flowlabel    = ip6_flowinfo(ip6h),
-+			.flowi6_oif   = dev->ifindex,
-+			.flowi6_proto = ip6h->nexthdr,
-+			.daddr	      = ip6h->daddr,
-+			.saddr	      = ip6h->saddr,
-+		};
-+
-+		dst = ipv6_stub->ipv6_dst_lookup_flow(net, NULL, &fl6, NULL);
-+		if (IS_ERR(dst))
-+			goto out_drop;
- 
--	skb_dst_set(skb, dst);
-+		skb_dst_set(skb, dst);
-+	} else if (nh->nh_family != AF_INET6) {
-+		goto out_drop;
-+	}
- 
--	err = bpf_out_neigh_v6(net, skb);
-+	err = bpf_out_neigh_v6(net, skb, dev, nh);
- 	if (unlikely(net_xmit_eval(err)))
- 		dev->stats.tx_errors++;
- 	else
-@@ -2252,7 +2264,8 @@ static int __bpf_redirect_neigh_v6(struct sk_buff *skb, struct net_device *dev)
- 	return ret;
- }
- #else
--static int __bpf_redirect_neigh_v6(struct sk_buff *skb, struct net_device *dev)
-+static int __bpf_redirect_neigh_v6(struct sk_buff *skb, struct net_device *dev,
-+				   struct net_device *dev, struct bpf_nh_params *nh)
- {
- 	kfree_skb(skb);
- 	return NET_XMIT_DROP;
-@@ -2260,11 +2273,9 @@ static int __bpf_redirect_neigh_v6(struct sk_buff *skb, struct net_device *dev)
- #endif /* CONFIG_IPV6 */
- 
- #if IS_ENABLED(CONFIG_INET)
--static int bpf_out_neigh_v4(struct net *net, struct sk_buff *skb)
-+static int bpf_out_neigh_v4(struct net *net, struct sk_buff *skb,
-+			    struct net_device *dev, struct bpf_nh_params *nh)
- {
--	struct dst_entry *dst = skb_dst(skb);
--	struct rtable *rt = container_of(dst, struct rtable, dst);
--	struct net_device *dev = dst->dev;
- 	u32 hh_len = LL_RESERVED_SPACE(dev);
- 	struct neighbour *neigh;
- 	bool is_v6gw = false;
-@@ -2292,7 +2303,21 @@ static int bpf_out_neigh_v4(struct net *net, struct sk_buff *skb)
- 	}
- 
- 	rcu_read_lock_bh();
--	neigh = ip_neigh_for_gw(rt, skb, &is_v6gw);
-+	if (!nh) {
-+		struct dst_entry *dst = skb_dst(skb);
-+		struct rtable *rt = container_of(dst, struct rtable, dst);
-+
-+		neigh = ip_neigh_for_gw(rt, skb, &is_v6gw);
-+	} else if (nh->nh_family == AF_INET6) {
-+		neigh = ip_neigh_gw6(dev, &nh->ipv6_nh);
-+		is_v6gw = true;
-+	} else if (nh->nh_family == AF_INET) {
-+		neigh = ip_neigh_gw4(dev, nh->ipv4_nh);
-+	} else {
-+		rcu_read_unlock_bh();
-+		goto out_drop;
-+	}
-+
- 	if (likely(!IS_ERR(neigh))) {
- 		int ret;
- 
-@@ -2309,33 +2334,37 @@ static int bpf_out_neigh_v4(struct net *net, struct sk_buff *skb)
- 	return -ENETDOWN;
- }
- 
--static int __bpf_redirect_neigh_v4(struct sk_buff *skb, struct net_device *dev)
-+static int __bpf_redirect_neigh_v4(struct sk_buff *skb, struct net_device *dev,
-+				   struct bpf_nh_params *nh)
- {
- 	const struct iphdr *ip4h = ip_hdr(skb);
- 	struct net *net = dev_net(dev);
- 	int err, ret = NET_XMIT_DROP;
--	struct rtable *rt;
--	struct flowi4 fl4 = {
--		.flowi4_flags	= FLOWI_FLAG_ANYSRC,
--		.flowi4_mark	= skb->mark,
--		.flowi4_tos	= RT_TOS(ip4h->tos),
--		.flowi4_oif	= dev->ifindex,
--		.flowi4_proto	= ip4h->protocol,
--		.daddr		= ip4h->daddr,
--		.saddr		= ip4h->saddr,
--	};
- 
--	rt = ip_route_output_flow(net, &fl4, NULL);
--	if (IS_ERR(rt))
--		goto out_drop;
--	if (rt->rt_type != RTN_UNICAST && rt->rt_type != RTN_LOCAL) {
--		ip_rt_put(rt);
--		goto out_drop;
--	}
-+	if (!nh) {
-+		struct flowi4 fl4 = {
-+			.flowi4_flags = FLOWI_FLAG_ANYSRC,
-+			.flowi4_mark  = skb->mark,
-+			.flowi4_tos   = RT_TOS(ip4h->tos),
-+			.flowi4_oif   = dev->ifindex,
-+			.flowi4_proto = ip4h->protocol,
-+			.daddr	      = ip4h->daddr,
-+			.saddr	      = ip4h->saddr,
-+		};
-+		struct rtable *rt;
-+
-+		rt = ip_route_output_flow(net, &fl4, NULL);
-+		if (IS_ERR(rt))
-+			goto out_drop;
-+		if (rt->rt_type != RTN_UNICAST && rt->rt_type != RTN_LOCAL) {
-+			ip_rt_put(rt);
-+			goto out_drop;
-+		}
- 
--	skb_dst_set(skb, &rt->dst);
-+		skb_dst_set(skb, &rt->dst);
-+	}
- 
--	err = bpf_out_neigh_v4(net, skb);
-+	err = bpf_out_neigh_v4(net, skb, dev, nh);
- 	if (unlikely(net_xmit_eval(err)))
- 		dev->stats.tx_errors++;
- 	else
-@@ -2348,14 +2377,16 @@ static int __bpf_redirect_neigh_v4(struct sk_buff *skb, struct net_device *dev)
- 	return ret;
- }
- #else
--static int __bpf_redirect_neigh_v4(struct sk_buff *skb, struct net_device *dev)
-+static int __bpf_redirect_neigh_v4(struct sk_buff *skb, struct net_device *dev,
-+				   struct net_device *dev, struct bpf_nh_params *nh)
- {
- 	kfree_skb(skb);
- 	return NET_XMIT_DROP;
- }
- #endif /* CONFIG_INET */
- 
--static int __bpf_redirect_neigh(struct sk_buff *skb, struct net_device *dev)
-+static int __bpf_redirect_neigh(struct sk_buff *skb, struct net_device *dev,
-+				struct bpf_nh_params *nh)
- {
- 	struct ethhdr *ethh = eth_hdr(skb);
- 
-@@ -2370,9 +2401,9 @@ static int __bpf_redirect_neigh(struct sk_buff *skb, struct net_device *dev)
- 	skb_reset_network_header(skb);
- 
- 	if (skb->protocol == htons(ETH_P_IP))
--		return __bpf_redirect_neigh_v4(skb, dev);
-+		return __bpf_redirect_neigh_v4(skb, dev, nh);
- 	else if (skb->protocol == htons(ETH_P_IPV6))
--		return __bpf_redirect_neigh_v6(skb, dev);
-+		return __bpf_redirect_neigh_v6(skb, dev, nh);
- out:
- 	kfree_skb(skb);
- 	return -ENOTSUPP;
-@@ -2382,7 +2413,8 @@ static int __bpf_redirect_neigh(struct sk_buff *skb, struct net_device *dev)
- enum {
- 	BPF_F_NEIGH	= (1ULL << 1),
- 	BPF_F_PEER	= (1ULL << 2),
--#define BPF_F_REDIRECT_INTERNAL	(BPF_F_NEIGH | BPF_F_PEER)
-+	BPF_F_NEXTHOP	= (1ULL << 3),
-+#define BPF_F_REDIRECT_INTERNAL	(BPF_F_NEIGH | BPF_F_PEER | BPF_F_NEXTHOP)
- };
- 
- BPF_CALL_3(bpf_clone_redirect, struct sk_buff *, skb, u32, ifindex, u64, flags)
-@@ -2455,8 +2487,8 @@ int skb_do_redirect(struct sk_buff *skb)
- 		return -EAGAIN;
- 	}
- 	return flags & BPF_F_NEIGH ?
--	       __bpf_redirect_neigh(skb, dev) :
--	       __bpf_redirect(skb, dev, flags);
-+		__bpf_redirect_neigh(skb, dev, flags & BPF_F_NEXTHOP ? &ri->nh : NULL) :
-+		__bpf_redirect(skb, dev, flags);
- out_drop:
- 	kfree_skb(skb);
- 	return -EINVAL;
-@@ -2504,16 +2536,21 @@ static const struct bpf_func_proto bpf_redirect_peer_proto = {
- 	.arg2_type      = ARG_ANYTHING,
- };
- 
--BPF_CALL_2(bpf_redirect_neigh, u32, ifindex, u64, flags)
-+BPF_CALL_4(bpf_redirect_neigh, u32, ifindex, struct bpf_redir_neigh *, params,
-+	   int, plen, u64, flags)
- {
- 	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
- 
--	if (unlikely(flags))
-+	if (unlikely((plen && plen < sizeof(*params)) || flags))
+@@ -118,7 +119,7 @@ SEC("dst_ingress") int tc_dst(struct __sk_buff *skb)
+ 	if (bpf_skb_store_bytes(skb, 0, &zero, sizeof(zero), 0) < 0)
  		return TC_ACT_SHOT;
  
--	ri->flags = BPF_F_NEIGH;
-+	ri->flags = BPF_F_NEIGH | (plen ? BPF_F_NEXTHOP : 0);
- 	ri->tgt_index = ifindex;
- 
-+	BUILD_BUG_ON(sizeof(struct bpf_redir_neigh) != sizeof(struct bpf_nh_params));
-+	if (plen)
-+		memcpy(&ri->nh, params, sizeof(ri->nh));
-+
- 	return TC_ACT_REDIRECT;
+-	return bpf_redirect_neigh(get_dev_ifindex(dev_src), 0);
++	return bpf_redirect_neigh(get_dev_ifindex(dev_src), NULL, 0, 0);
  }
  
-@@ -2522,7 +2559,9 @@ static const struct bpf_func_proto bpf_redirect_neigh_proto = {
- 	.gpl_only	= false,
- 	.ret_type	= RET_INTEGER,
- 	.arg1_type	= ARG_ANYTHING,
--	.arg2_type	= ARG_ANYTHING,
-+	.arg2_type      = ARG_PTR_TO_MEM_OR_NULL,
-+	.arg3_type      = ARG_CONST_SIZE_OR_ZERO,
-+	.arg4_type	= ARG_ANYTHING,
- };
+ SEC("src_ingress") int tc_src(struct __sk_buff *skb)
+@@ -142,7 +143,7 @@ SEC("src_ingress") int tc_src(struct __sk_buff *skb)
+ 	if (bpf_skb_store_bytes(skb, 0, &zero, sizeof(zero), 0) < 0)
+ 		return TC_ACT_SHOT;
  
- BPF_CALL_2(bpf_msg_apply_bytes, struct sk_msg *, msg, u32, bytes)
-diff --git a/scripts/bpf_helpers_doc.py b/scripts/bpf_helpers_doc.py
-index 7d86fdd190be..6769caae142f 100755
---- a/scripts/bpf_helpers_doc.py
-+++ b/scripts/bpf_helpers_doc.py
-@@ -453,6 +453,7 @@ class PrinterHelpers(Printer):
-             'struct bpf_perf_event_data',
-             'struct bpf_perf_event_value',
-             'struct bpf_pidns_info',
-+            'struct bpf_redir_neigh',
-             'struct bpf_sk_lookup',
-             'struct bpf_sock',
-             'struct bpf_sock_addr',
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index bf5a99d803e4..82fd73ac1a13 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -3677,15 +3677,19 @@ union bpf_attr {
-  * 	Return
-  * 		The id is returned or 0 in case the id could not be retrieved.
-  *
-- * long bpf_redirect_neigh(u32 ifindex, u64 flags)
-+ * long bpf_redirect_neigh(u32 ifindex, struct bpf_redir_neigh *params, int plen, u64 flags)
-  * 	Description
-  * 		Redirect the packet to another net device of index *ifindex*
-  * 		and fill in L2 addresses from neighboring subsystem. This helper
-  * 		is somewhat similar to **bpf_redirect**\ (), except that it
-  * 		populates L2 addresses as well, meaning, internally, the helper
-- * 		performs a FIB lookup based on the skb's networking header to
-- * 		get the address of the next hop and then relies on the neighbor
-- * 		lookup for the L2 address of the nexthop.
-+ * 		relies on the neighbor lookup for the L2 address of the nexthop.
-+ *
-+ * 		The helper will perform a FIB lookup based on the skb's
-+ * 		networking header to get the address of the next hop, unless
-+ * 		this is supplied by the caller in the *params* argument. The
-+ * 		*plen* argument indicates the len of *params* and should be set
-+ * 		to 0 if *params* is NULL.
-  *
-  * 		The *flags* argument is reserved and must be 0. The helper is
-  * 		currently only supported for tc BPF program types, and enabled
-@@ -4906,6 +4910,16 @@ struct bpf_fib_lookup {
- 	__u8	dmac[6];     /* ETH_ALEN */
- };
+-	return bpf_redirect_neigh(get_dev_ifindex(dev_dst), 0);
++	return bpf_redirect_neigh(get_dev_ifindex(dev_dst), NULL, 0, 0);
+ }
  
-+struct bpf_redir_neigh {
-+	/* network family for lookup (AF_INET, AF_INET6) */
-+	__u8	nh_family;
-+	/* network address of nexthop; skips fib lookup to find gateway */
-+	union {
-+		__be32		ipv4_nh;
-+		__u32		ipv6_nh[4];  /* in6_addr; network order */
-+	};
-+};
+ char __license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/progs/test_tc_neigh_fib.c b/tools/testing/selftests/bpf/progs/test_tc_neigh_fib.c
+new file mode 100644
+index 000000000000..055c7582c86c
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_tc_neigh_fib.c
+@@ -0,0 +1,142 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <stdint.h>
++#include <stdbool.h>
++#include <stddef.h>
 +
- enum bpf_task_fd_type {
- 	BPF_FD_TYPE_RAW_TRACEPOINT,	/* tp name */
- 	BPF_FD_TYPE_TRACEPOINT,		/* tp name */
++#include <linux/bpf.h>
++#include <linux/stddef.h>
++#include <linux/pkt_cls.h>
++#include <linux/if_ether.h>
++#include <linux/in.h>
++#include <linux/ip.h>
++#include <linux/ipv6.h>
++
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_endian.h>
++
++#ifndef ctx_ptr
++# define ctx_ptr(field)		(void *)(long)(field)
++#endif
++
++#define AF_INET 2
++#define AF_INET6 10
++
++static __always_inline int fill_fib_params_v4(struct __sk_buff *skb,
++					      struct bpf_fib_lookup *fib_params)
++{
++	void *data_end = ctx_ptr(skb->data_end);
++	void *data = ctx_ptr(skb->data);
++	struct iphdr *ip4h;
++
++	if (data + sizeof(struct ethhdr) > data_end)
++		return -1;
++
++	ip4h = (struct iphdr *)(data + sizeof(struct ethhdr));
++	if ((void *)(ip4h + 1) > data_end)
++		return -1;
++
++	fib_params->family = AF_INET;
++	fib_params->tos = ip4h->tos;
++	fib_params->l4_protocol = ip4h->protocol;
++	fib_params->sport = 0;
++	fib_params->dport = 0;
++	fib_params->tot_len = bpf_ntohs(ip4h->tot_len);
++	fib_params->ipv4_src = ip4h->saddr;
++	fib_params->ipv4_dst = ip4h->daddr;
++
++	return 0;
++}
++
++static __always_inline int fill_fib_params_v6(struct __sk_buff *skb,
++					      struct bpf_fib_lookup *fib_params)
++{
++	struct in6_addr *src = (struct in6_addr *)fib_params->ipv6_src;
++	struct in6_addr *dst = (struct in6_addr *)fib_params->ipv6_dst;
++	void *data_end = ctx_ptr(skb->data_end);
++	void *data = ctx_ptr(skb->data);
++	struct ipv6hdr *ip6h;
++
++	if (data + sizeof(struct ethhdr) > data_end)
++		return -1;
++
++	ip6h = (struct ipv6hdr *)(data + sizeof(struct ethhdr));
++	if ((void *)(ip6h + 1) > data_end)
++		return -1;
++
++	fib_params->family = AF_INET6;
++	fib_params->flowinfo = 0;
++	fib_params->l4_protocol = ip6h->nexthdr;
++	fib_params->sport = 0;
++	fib_params->dport = 0;
++	fib_params->tot_len = bpf_ntohs(ip6h->payload_len);
++	*src = ip6h->saddr;
++	*dst = ip6h->daddr;
++
++	return 0;
++}
++
++SEC("chk_egress") int tc_chk(struct __sk_buff *skb)
++{
++	void *data_end = ctx_ptr(skb->data_end);
++	void *data = ctx_ptr(skb->data);
++	__u32 *raw = data;
++
++	if (data + sizeof(struct ethhdr) > data_end)
++		return TC_ACT_SHOT;
++
++	return !raw[0] && !raw[1] && !raw[2] ? TC_ACT_SHOT : TC_ACT_OK;
++}
++
++SEC("redir_ingress") int tc_dst(struct __sk_buff *skb)
++{
++	struct bpf_fib_lookup fib_params = { .ifindex = skb->ingress_ifindex };
++	__u8 zero[ETH_ALEN * 2];
++	int ret = -1;
++
++	switch (skb->protocol) {
++	case __bpf_constant_htons(ETH_P_IP):
++		ret = fill_fib_params_v4(skb, &fib_params);
++		break;
++	case __bpf_constant_htons(ETH_P_IPV6):
++		ret = fill_fib_params_v6(skb, &fib_params);
++		break;
++	}
++
++	if (ret)
++		return TC_ACT_OK;
++
++	ret = bpf_fib_lookup(skb, &fib_params, sizeof(fib_params), 0);
++	if (ret == BPF_FIB_LKUP_RET_NOT_FWDED || ret < 0)
++		return TC_ACT_OK;
++
++	__builtin_memset(&zero, 0, sizeof(zero));
++	if (bpf_skb_store_bytes(skb, 0, &zero, sizeof(zero), 0) < 0)
++		return TC_ACT_SHOT;
++
++	if (ret == BPF_FIB_LKUP_RET_SUCCESS) {
++		void *data_end = ctx_ptr(skb->data_end);
++		struct ethhdr *eth = ctx_ptr(skb->data);
++
++		if (eth + 1 > data_end)
++			return TC_ACT_SHOT;
++
++		__builtin_memcpy(eth->h_dest, fib_params.dmac, ETH_ALEN);
++		__builtin_memcpy(eth->h_source, fib_params.smac, ETH_ALEN);
++
++		return bpf_redirect(fib_params.ifindex, 0);
++
++	} else if (ret == BPF_FIB_LKUP_RET_NO_NEIGH) {
++		struct bpf_redir_neigh nh_params = {};
++
++		nh_params.nh_family = fib_params.family;
++		__builtin_memcpy(&nh_params.ipv6_nh, &fib_params.ipv6_dst,
++				 sizeof(nh_params.ipv6_nh));
++
++		return bpf_redirect_neigh(fib_params.ifindex, &nh_params,
++					  sizeof(nh_params), 0);
++	}
++
++	return TC_ACT_SHOT;
++}
++
++char __license[] SEC("license") = "GPL";
+diff --git a/tools/testing/selftests/bpf/test_tc_redirect.sh b/tools/testing/selftests/bpf/test_tc_redirect.sh
+index 6d7482562140..a4903739846d 100755
+--- a/tools/testing/selftests/bpf/test_tc_redirect.sh
++++ b/tools/testing/selftests/bpf/test_tc_redirect.sh
+@@ -24,8 +24,7 @@ command -v timeout >/dev/null 2>&1 || \
+ 	{ echo >&2 "timeout is not available"; exit 1; }
+ command -v ping >/dev/null 2>&1 || \
+ 	{ echo >&2 "ping is not available"; exit 1; }
+-command -v ping6 >/dev/null 2>&1 || \
+-	{ echo >&2 "ping6 is not available"; exit 1; }
++if command -v ping6 >/dev/null 2>&1; then PING6=ping6; else PING6=ping; fi
+ command -v perl >/dev/null 2>&1 || \
+ 	{ echo >&2 "perl is not available"; exit 1; }
+ command -v jq >/dev/null 2>&1 || \
+@@ -152,7 +151,7 @@ netns_test_connectivity()
+ 	echo -e "${TEST}: ${GREEN}PASS${NC}"
+ 
+ 	TEST="ICMPv6 connectivity test"
+-	ip netns exec ${NS_SRC} ping6 $PING_ARG ${IP6_DST}
++	ip netns exec ${NS_SRC} $PING6 $PING_ARG ${IP6_DST}
+ 	if [ $? -ne 0 ]; then
+ 		echo -e "${TEST}: ${RED}FAIL${NC}"
+ 		exit 1
+@@ -192,6 +191,24 @@ netns_setup_bpf()
+ 	done
+ }
+ 
++netns_setup_bpf_fib()
++{
++	local obj=$1
++
++	ip netns exec ${NS_FWD} tc qdisc add dev veth_src_fwd clsact
++	ip netns exec ${NS_FWD} tc filter add dev veth_src_fwd ingress bpf da obj $obj sec redir_ingress
++	ip netns exec ${NS_FWD} tc filter add dev veth_src_fwd egress  bpf da obj $obj sec chk_egress
++
++	ip netns exec ${NS_FWD} tc qdisc add dev veth_dst_fwd clsact
++	ip netns exec ${NS_FWD} tc filter add dev veth_dst_fwd ingress bpf da obj $obj sec redir_ingress
++	ip netns exec ${NS_FWD} tc filter add dev veth_dst_fwd egress  bpf da obj $obj sec chk_egress
++
++	# bpf_fib_lookup() checks if forwarding is enabled
++	ip netns exec ${NS_FWD} sysctl -w net.ipv4.ip_forward=1
++	ip netns exec ${NS_FWD} sysctl -w net.ipv6.conf.veth_dst_fwd.forwarding=1
++	ip netns exec ${NS_FWD} sysctl -w net.ipv6.conf.veth_src_fwd.forwarding=1
++}
++
+ trap netns_cleanup EXIT
+ set -e
+ 
+@@ -200,5 +217,9 @@ netns_setup_bpf test_tc_neigh.o
+ netns_test_connectivity
+ netns_cleanup
+ netns_setup
++netns_setup_bpf_fib test_tc_neigh_fib.o
++netns_test_connectivity
++netns_cleanup
++netns_setup
+ netns_setup_bpf test_tc_peer.o
+ netns_test_connectivity
 
