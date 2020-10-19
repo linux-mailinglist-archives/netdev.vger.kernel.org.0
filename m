@@ -2,136 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 938FA292728
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 14:24:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD34029272D
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 14:25:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726943AbgJSMYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 08:24:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50242 "EHLO
+        id S1727126AbgJSMZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 08:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50428 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726249AbgJSMYb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 08:24:31 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9073FC0613CE
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 05:24:31 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id a72so10072974wme.5
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 05:24:31 -0700 (PDT)
+        with ESMTP id S1726623AbgJSMZo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 08:25:44 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FDC7C0613CE;
+        Mon, 19 Oct 2020 05:25:42 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id h6so5934907pgk.4;
+        Mon, 19 Oct 2020 05:25:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=fV6aDJT9SCLWBKgibQdt925gka8bWxfaTxdU1yxURVc=;
-        b=xPhmD6RDgC2Y1b9G1hf8Aa66xzW5ZhLmWUGSvqGgIusk8tGLo4g1lmLp6IDjDVzpdm
-         0X3IGamDr2+kO0kKqQWAXrUMXbhkG4XCJcA2k9qjpLfrF2NqG+dDz1I3uO/c8ra1Qr4A
-         Kd292ZneX6ThfHrC4gjX6OSr9CcwsB6OVeRT/ayvtW47BGIKbpAchI50Je9vg72N2FTo
-         XpxVm41NxmS9kYHkoRGaabk3zB8M9aT6GDvWq7AZLievsk3CVAaPJ3mRJ7uMyWK9h/Pf
-         xPEL3ELkyzy5tMcB2FTZ6KDSW0nquhXUf75SvJRJ8mQZDQdP3DnJ3+bykbM33UmNmNRm
-         ucAQ==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=By2GR9vzJp/xRv9eT99/+c+sLmkLzzgGZ0ccjQX/ZTk=;
+        b=NgUNFZmnUc4FPUBlQ0g+Cdo6HsuFaGEwJBRJRn+dbqFCi1FIP7S6/cSyEFBrV9ojad
+         FuKTQLycJiZYMRlB8gMGCA5oyykfx0QkFcOt6zKWdYR0ZOJSKyzrHXiH86d1pp7LYW9j
+         Ms9bU0SA2vEAjs09ylNevJDuRzAQZ/dhgAG2eBblDcvi27aguATGvLGw36u5pP9+Urc6
+         L6t6vWrUIVH1QAzNT5L1f0OqRMcskWtZE1uvboX2ry/dqRhLi6iEfDEkj/+OJ0vCl2vb
+         U1g1TopkEIehs9RivUkN0w2OiURTKdXwCQNG/iXHJNxZUjblWMrUR35+EwoiTD33Twum
+         WwBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fV6aDJT9SCLWBKgibQdt925gka8bWxfaTxdU1yxURVc=;
-        b=K0aanCjgBlGrP0xbn7zNAkMfVENcpoZp4MVh5l3gx1YWLds6thCGS0MqDPyQ6rHC+u
-         Hgat4TejdNOIYeu9nAMI3325hH4F2ceGkMLVSD7PdpA0Cw+PYHTdNCsjBJoVbv7Z4qA5
-         Oc9EVif+6IcP6fdYSRedhm5xTNvS/4YxI+aR7t1z4y91ip/iQ7xIdAILLCpVb6PPKrzv
-         Y4OsFVKXbXpI090vIl/UdIEKvAm7Ly9vzxpV0+KDZsPlseboeI5Yy5m4J7+n/eG11PBg
-         mSXRM6SEtMSUpFJXRzFLBUu61zYVj0+LuWy5aIWoKVMDqZFCi0kk+AyYdGnyWFE1WHhE
-         HdiQ==
-X-Gm-Message-State: AOAM530Nrr9DrLQimEsf9TL0Y32L152RXg7LpDLmm0ETOpOFxf8jNo1k
-        JvOplz4POG3WM2gy43FTSuVBeg==
-X-Google-Smtp-Source: ABdhPJy7Ywf6WjeuOkbTQPu40S/5XtMjEqjhnWIU6ZYwcM3ElgnXDbFrzzTbNcNBOFvMNZ9KI+s0mQ==
-X-Received: by 2002:a1c:5641:: with SMTP id k62mr16701791wmb.108.1603110270362;
-        Mon, 19 Oct 2020 05:24:30 -0700 (PDT)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id 205sm16799284wme.38.2020.10.19.05.24.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Oct 2020 05:24:29 -0700 (PDT)
-Date:   Mon, 19 Oct 2020 14:24:28 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Danielle Ratson <danieller@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@idosch.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>, mlxsw <mlxsw@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>
-Subject: Re: [PATCH net-next 1/6] ethtool: Extend link modes settings uAPI
- with lanes
-Message-ID: <20201019122428.GB11282@nanopsycho.orion>
-References: <20201010154119.3537085-1-idosch@idosch.org>
- <20201010154119.3537085-2-idosch@idosch.org>
- <20201011153759.1bcb6738@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <DM6PR12MB3865B2FBA17BABBC747190D8D8070@DM6PR12MB3865.namprd12.prod.outlook.com>
- <20201012085803.61e256e6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <DM6PR12MB3865E4CB3854ECF70F5864D7D8040@DM6PR12MB3865.namprd12.prod.outlook.com>
- <20201016221553.GN139700@lunn.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201016221553.GN139700@lunn.ch>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=By2GR9vzJp/xRv9eT99/+c+sLmkLzzgGZ0ccjQX/ZTk=;
+        b=V63II2DXfU/hRs3UVxYrb+wEYQWSmRcMks8Vl5bRP6Q4Skb0GHzjF0chb9lM+awo5T
+         cQcQeXlufa/Dmq8RcB4Wlj+lSRcUuZINAVp+iX4pp8+KiJwSNGQYgDt8G+leklvBOQcD
+         b6mtLNNwC7FpLADLMLSGBrotoI9Xge3nmQBeZO0aeXzJ572eU01w+Jic7sdDj/KV+HAC
+         Rev9ghJY9KRzdse8pl9J2m0lTBgeRdp9nVxZU2AJrrN+O/mGI0p7MyUOGJhg6ABXAFvR
+         /Lqd8d7M4u4VHenYtfwfogTn3S3NvtD1KX837KlJPAm6I27uvaKc2Md5nE7VckDVi+m4
+         X4BA==
+X-Gm-Message-State: AOAM533PvxUaJnhd4/viUK6NUOVeRQODjHkoZOr2DjFr7Tyd1XPNm4A6
+        +vzOW42geAabRzxvL5U5Rob76/CwcxM=
+X-Google-Smtp-Source: ABdhPJxC1IQDIFy4jKJeidpylId72/QlcENiaxLxwjEcJtz1bPNQoE4Ze8HDhlUzyX4FCJ9kXMuqWQ==
+X-Received: by 2002:a65:688a:: with SMTP id e10mr14091047pgt.347.1603110341786;
+        Mon, 19 Oct 2020 05:25:41 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id 198sm11827884pfy.41.2020.10.19.05.25.40
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 19 Oct 2020 05:25:41 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Michael Tuexen <tuexen@fh-muenster.de>, davem@davemloft.net,
+        gnault@redhat.com, pabeni@redhat.com,
+        willemdebruijn.kernel@gmail.com
+Subject: [PATCHv4 net-next 00/16] sctp: Implement RFC6951: UDP Encapsulation of SCTP
+Date:   Mon, 19 Oct 2020 20:25:17 +0800
+Message-Id: <cover.1603110316.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sat, Oct 17, 2020 at 12:15:53AM CEST, andrew@lunn.ch wrote:
->> Example:
->> - swp1 is a 200G port with 4 lanes.
->> - QSFP28 is plugged in.
->> - The user wants to select configuration of 100G speed using 2 lanes, 50G each.
->> 
->> $ ethtool swp1
->> Settings for swp1:
->>         Supported ports: [ FIBRE         Backplane ]
->>         Supported link modes:   1000baseT/Full
->>                                 10000baseT/Full
->>                                 1000baseKX/Full
->>                                 10000baseKR/Full
->>                                 10000baseR_FEC
->>                                 40000baseKR4/Full
->>                                 40000baseCR4/Full
->>                                 40000baseSR4/Full
->>                                 40000baseLR4/Full
->>                                 25000baseCR/Full
->>                                 25000baseKR/Full
->>                                 25000baseSR/Full
->>                                 50000baseCR2/Full
->>                                 50000baseKR2/Full
->>                                 100000baseKR4/Full
->>                                 100000baseSR4/Full
->>                                 100000baseCR4/Full
->>                                 100000baseLR4_ER4/Full
->>                                 50000baseSR2/Full
->>                                 10000baseCR/Full
->>                                 10000baseSR/Full
->>                                 10000baseLR/Full
->>                                 10000baseER/Full
->>                                 50000baseKR/Full
->>                                 50000baseSR/Full
->>                                 50000baseCR/Full
->>                                 50000baseLR_ER_FR/Full
->>                                 50000baseDR/Full
->
->>                                 100000baseKR2/Full
->>                                 100000baseSR2/Full
->>                                 100000baseCR2/Full
->>                                 100000baseLR2_ER2_FR2/Full
->>                                 100000baseDR2/Full
->
->I'm not sure i fully understand all these different link modes, but i
->thought these 5 are all 100G using 2 lanes? So why cannot the user
->simply do
->
->ethtool -s swp1 advertise 100000baseKR2/Full
->
->and the driver can figure out it needs to use two lanes at 50G?
+Description From the RFC:
 
-100000baseKR2 is 2 lanes. No need to figure anything out. What do you
-mean by that?
+   The Main Reasons:
 
->
->    Andrew
+   o  To allow SCTP traffic to pass through legacy NATs, which do not
+      provide native SCTP support as specified in [BEHAVE] and
+      [NATSUPP].
+
+   o  To allow SCTP to be implemented on hosts that do not provide
+      direct access to the IP layer.  In particular, applications can
+      use their own SCTP implementation if the operating system does not
+      provide one.
+
+   Implementation Notes:
+
+   UDP-encapsulated SCTP is normally communicated between SCTP stacks
+   using the IANA-assigned UDP port number 9899 (sctp-tunneling) on both
+   ends.  There are circumstances where other ports may be used on
+   either end, and it might be required to use ports other than the
+   registered port.
+
+   Each SCTP stack uses a single local UDP encapsulation port number as
+   the destination port for all its incoming SCTP packets, this greatly
+   simplifies implementation design.
+
+   An SCTP implementation supporting UDP encapsulation MUST maintain a
+   remote UDP encapsulation port number per destination address for each
+   SCTP association.  Again, because the remote stack may be using ports
+   other than the well-known port, each port may be different from each
+   stack.  However, because of remapping of ports by NATs, the remote
+   ports associated with different remote IP addresses may not be
+   identical, even if they are associated with the same stack.
+
+   Because the well-known port might not be used, implementations need
+   to allow other port numbers to be specified as a local or remote UDP
+   encapsulation port number through APIs.
+
+Patches:
+
+   This patchset is using the udp4/6 tunnel APIs to implement the UDP
+   Encapsulation of SCTP with not much change in SCTP protocol stack
+   and with all current SCTP features keeped in Linux Kernel.
+
+   1 - 4: Fix some UDP issues that may be triggered by SCTP over UDP.
+   5 - 7: Process incoming UDP encapsulated packets and ICMP packets.
+   8 -10: Remote encap port's update by sysctl, sockopt and packets.
+   11-14: Process outgoing pakects with UDP encapsulated and its GSO.
+   15-16: Add the part from draft-tuexen-tsvwg-sctp-udp-encaps-cons-03.
+      17: Enable this feature.
+
+Tests:
+
+  - lksctp-tools/src/func_tests with UDP Encapsulation enabled/disabled:
+
+      Both make v4test and v6test passed.
+
+  - sctp-tests with UDP Encapsulation enabled/disabled:
+
+      repeatability/procdumps/sctpdiag/gsomtuchange/extoverflow/
+      sctphashtable passed. Others failed as expected due to those
+      "iptables -p sctp" rules.
+
+  - netperf on lo/netns/virtio_net, with gso enabled/disabled and
+    with ip_checksum enabled/disabled, with UDP Encapsulation
+    enabled/disabled:
+
+      No clear performance dropped.
+
+v1->v2:
+  - Fix some incorrect code in the patches 5,6,8,10,11,13,14,17, suggested
+    by Marcelo.
+  - Append two patches 15-16 to add the Additional Considerations for UDP
+    Encapsulation of SCTP from draft-tuexen-tsvwg-sctp-udp-encaps-cons-03.
+v2->v3:
+  - remove the cleanup code in patch 2, suggested by Willem.
+  - remove the patch 3 and fix the checksum in the new patch 3 after
+    talking with Paolo, Marcelo and Guillaume.
+  - add 'select NET_UDP_TUNNEL' in patch 4 to solve a compiling error.
+  - fix __be16 type cast warning in patch 8.
+  - fix the wrong endian orders when setting values in 14,16.
+v3->v4:
+  - add entries in ip-sysctl.rst in patch 7,16, as Marcelo Suggested.
+  - not create udp socks when udp_port is set to 0 in patch 16, as
+    Marcelo noticed.
+
+Xin Long (16):
+  udp: check udp sock encap_type in __udp_lib_err
+  udp6: move the mss check after udp gso tunnel processing
+  udp: support sctp over udp in skb_udp_tunnel_segment
+  sctp: create udp4 sock and add its encap_rcv
+  sctp: create udp6 sock and set its encap_rcv
+  sctp: add encap_err_lookup for udp encap socks
+  sctp: add encap_port for netns sock asoc and transport
+  sctp: add SCTP_REMOTE_UDP_ENCAPS_PORT sockopt
+  sctp: allow changing transport encap_port by peer packets
+  sctp: add udphdr to overhead when udp_port is set
+  sctp: call sk_setup_caps in sctp_packet_transmit instead
+  sctp: support for sending packet over udp4 sock
+  sctp: support for sending packet over udp6 sock
+  sctp: add the error cause for new encapsulation port restart
+  sctp: handle the init chunk matching an existing asoc
+  sctp: enable udp tunneling socks
+
+ Documentation/networking/ip-sysctl.rst |  15 ++++
+ include/linux/sctp.h                   |  20 +++++
+ include/net/netns/sctp.h               |   8 ++
+ include/net/sctp/constants.h           |   2 +
+ include/net/sctp/sctp.h                |   9 +-
+ include/net/sctp/sm.h                  |   4 +
+ include/net/sctp/structs.h             |  14 ++--
+ include/uapi/linux/sctp.h              |   7 ++
+ net/ipv4/udp.c                         |   2 +-
+ net/ipv4/udp_offload.c                 |   3 +
+ net/ipv6/udp.c                         |   2 +-
+ net/ipv6/udp_offload.c                 |   8 +-
+ net/sctp/Kconfig                       |   1 +
+ net/sctp/associola.c                   |   4 +
+ net/sctp/ipv6.c                        |  44 +++++++---
+ net/sctp/offload.c                     |   6 +-
+ net/sctp/output.c                      |  22 +++--
+ net/sctp/protocol.c                    | 148 ++++++++++++++++++++++++++++++---
+ net/sctp/sm_make_chunk.c               |  21 +++++
+ net/sctp/sm_statefuns.c                |  52 ++++++++++++
+ net/sctp/socket.c                      | 116 ++++++++++++++++++++++++++
+ net/sctp/sysctl.c                      |  62 ++++++++++++++
+ 22 files changed, 520 insertions(+), 50 deletions(-)
+
+-- 
+2.1.0
+
