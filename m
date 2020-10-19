@@ -2,164 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9978C292C09
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 18:58:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF12E292BA4
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 18:40:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730820AbgJSQ6u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 12:58:50 -0400
-Received: from gateway31.websitewelcome.com ([192.185.143.234]:40598 "EHLO
-        gateway31.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730635AbgJSQ6u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 12:58:50 -0400
-Received: from cm11.websitewelcome.com (cm11.websitewelcome.com [100.42.49.5])
-        by gateway31.websitewelcome.com (Postfix) with ESMTP id B91A120E94FE
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 11:32:35 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id UY5LkSkR4OIGpUY5LkZxUp; Mon, 19 Oct 2020 11:32:35 -0500
-X-Authority-Reason: nr=8
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=v58y/uoe8Kv3a3HEuASe1O7T7WVx11+I5SfIzUyKNiI=; b=vZfU3lti1WUzlZoCDEgltRah+f
-        ag+ZD0dqhHrqTgHuxC5ZvSWs1RsIegE323WH5CV8RKTDeUCreRRjp7xv872aVSDe8Nb6kfb5FxHBA
-        7YQTq0P0wL01gXrNJ7LGwqMNuTiQSdnI8URKgeIf2MhJbAGkZ7/XRDpjNHjTPFiMdLA+OgeypxW0i
-        Rd0Ps8Ki+Rwd704LRHvg89X8Laqu6RSrUgdCVnl7R+rrnRVuN/lXSgid5LRfuGC0VTh840LiTl8av
-        sc9rbaP9e9tlCyGuST1j/6XSJinwzveQZHCiKtGEj8A5rg4HqZvAanZkHH5ZDYaC8eIfVm/mXBk0Y
-        pvgs9DQg==;
-Received: from 187-162-31-110.static.axtel.net ([187.162.31.110]:32944 helo=[192.168.15.4])
-        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1kUY5K-0023px-E1; Mon, 19 Oct 2020 11:32:34 -0500
-Subject: Re: [PATCH] wireless: remove unneeded break
-To:     Joe Perches <joe@perches.com>,
-        Christian Lamparter <chunkeey@gmail.com>, trix@redhat.com,
-        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
-        ath9k-devel@qca.qualcomm.com, johannes.berg@intel.com,
-        emmanuel.grumbach@intel.com, luciano.coelho@intel.com,
-        linuxwifi@intel.com, chunkeey@googlemail.com, pkshih@realtek.com,
-        sara.sharon@intel.com, tova.mussai@intel.com,
-        nathan.errera@intel.com, lior2.cohen@intel.com, john@phrozen.org,
-        shaul.triebitz@intel.com, shahar.s.matityahu@intel.com,
-        Larry.Finger@lwfinger.net, zhengbin13@huawei.com,
-        christophe.jaillet@wanadoo.fr, yanaijie@huawei.com,
-        saurav.girepunje@gmail.com
-Cc:     ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-References: <20201019150507.20574-1-trix@redhat.com>
- <b31478ea-979a-1c9c-65db-32325233a715@gmail.com>
- <859112e91c3d221dc599e381dbaecb90dd6467a1.camel@perches.com>
- <fb38b96a-b666-1a6d-211d-b79278a8d878@embeddedor.com>
- <5964d734e81c198421bb7f6516dabcad37c1740d.camel@perches.com>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Autocrypt: addr=gustavo@embeddedor.com; keydata=
- xsFNBFssHAwBEADIy3ZoPq3z5UpsUknd2v+IQud4TMJnJLTeXgTf4biSDSrXn73JQgsISBwG
- 2Pm4wnOyEgYUyJd5tRWcIbsURAgei918mck3tugT7AQiTUN3/5aAzqe/4ApDUC+uWNkpNnSV
- tjOx1hBpla0ifywy4bvFobwSh5/I3qohxDx+c1obd8Bp/B/iaOtnq0inli/8rlvKO9hp6Z4e
- DXL3PlD0QsLSc27AkwzLEc/D3ZaqBq7ItvT9Pyg0z3Q+2dtLF00f9+663HVC2EUgP25J3xDd
- 496SIeYDTkEgbJ7WYR0HYm9uirSET3lDqOVh1xPqoy+U9zTtuA9NQHVGk+hPcoazSqEtLGBk
- YE2mm2wzX5q2uoyptseSNceJ+HE9L+z1KlWW63HhddgtRGhbP8pj42bKaUSrrfDUsicfeJf6
- m1iJRu0SXYVlMruGUB1PvZQ3O7TsVfAGCv85pFipdgk8KQnlRFkYhUjLft0u7CL1rDGZWDDr
- NaNj54q2CX9zuSxBn9XDXvGKyzKEZ4NY1Jfw+TAMPCp4buawuOsjONi2X0DfivFY+ZsjAIcx
- qQMglPtKk/wBs7q2lvJ+pHpgvLhLZyGqzAvKM1sVtRJ5j+ARKA0w4pYs5a5ufqcfT7dN6TBk
- LXZeD9xlVic93Ju08JSUx2ozlcfxq+BVNyA+dtv7elXUZ2DrYwARAQABzStHdXN0YXZvIEEu
- IFIuIFNpbHZhIDxndXN0YXZvYXJzQGtlcm5lbC5vcmc+wsGrBBMBCAA+FiEEkmRahXBSurMI
- g1YvRwW0y0cG2zEFAl6zFvQCGyMFCQlmAYAFCwkIBwIGFQoJCAsCBBYCAwECHgECF4AAIQkQ
- RwW0y0cG2zEWIQSSZFqFcFK6swiDVi9HBbTLRwbbMZsEEACWjJyXLjtTAF21Vuf1VDoGzitP
- oE69rq9UhXIGR+e0KACyIFoB9ibG/1j/ESMa0RPSwLpJDLgfvi/I18H/9cKtdo2uz0XNbDT8
- i3llIu0b43nzGIDzRudINBXC8Coeob+hrp/MMZueyzt0CUoAnY4XqpHQbQsTfTrpFeHT02Qz
- ITw6kTSmK7dNbJj2naH2vSrU11qGdU7aFzI7jnVvGgv4NVQLPxm/t4jTG1o+P1Xk4N6vKafP
- zqzkxj99JrUAPt+LyPS2VpNvmbSNq85PkQ9gpeTHpkio/D9SKsMW62njITPgy6M8TFAmx8JF
- ZAI6k8l1eU29F274WnlQ6ZokkJoNctwHa+88euWKHWUDolCmQpegJJ8932www83GLn1mdUZn
- NsymjFSdMWE+y8apWaV9QsDOKWf7pY2uBuE6GMPRhX7e7h5oQwa1lYeO2L9LTDeXkEOJe+hE
- qQdEEvkC/nok0eoRlBlZh433DQlv4+IvSsfN/uWld2TuQFyjDCLIm1CPRfe7z0TwiCM27F+O
- lHnUspCFSgpnrxqNH6CM4aj1EF4fEX+ZyknTSrKL9BGZ/qRz7Xe9ikU2/7M1ov6rOXCI4NR9
- THsNax6etxCBMzZs2bdMHMcajP5XdRsOIARuN08ytRjDolR2r8SkTN2YMwxodxNWWDC3V8X2
- RHZ4UwQw487BTQRbLBwMARAAsHCE31Ffrm6uig1BQplxMV8WnRBiZqbbsVJBH1AAh8tq2ULl
- 7udfQo1bsPLGGQboJSVN9rckQQNahvHAIK8ZGfU4Qj8+CER+fYPp/MDZj+t0DbnWSOrG7z9H
- IZo6PR9z4JZza3Hn/35jFggaqBtuydHwwBANZ7A6DVY+W0COEU4of7CAahQo5NwYiwS0lGis
- LTqks5R0Vh+QpvDVfuaF6I8LUgQR/cSgLkR//V1uCEQYzhsoiJ3zc1HSRyOPotJTApqGBq80
- X0aCVj1LOiOF4rrdvQnj6iIlXQssdb+WhSYHeuJj1wD0ZlC7ds5zovXh+FfFl5qH5RFY/qVn
- 3mNIVxeO987WSF0jh+T5ZlvUNdhedGndRmwFTxq2Li6GNMaolgnpO/CPcFpDjKxY/HBUSmaE
- 9rNdAa1fCd4RsKLlhXda+IWpJZMHlmIKY8dlUybP+2qDzP2lY7kdFgPZRU+ezS/pzC/YTzAv
- CWM3tDgwoSl17vnZCr8wn2/1rKkcLvTDgiJLPCevqpTb6KFtZosQ02EGMuHQI6Zk91jbx96n
- rdsSdBLGH3hbvLvjZm3C+fNlVb9uvWbdznObqcJxSH3SGOZ7kCHuVmXUcqozol6ioMHMb+In
- rHPP16aVDTBTPEGwgxXI38f7SUEn+NpbizWdLNz2hc907DvoPm6HEGCanpcAEQEAAcLBZQQY
- AQgADwUCWywcDAIbDAUJCWYBgAAKCRBHBbTLRwbbMdsZEACUjmsJx2CAY+QSUMebQRFjKavw
- XB/xE7fTt2ahuhHT8qQ/lWuRQedg4baInw9nhoPE+VenOzhGeGlsJ0Ys52sdXvUjUocKgUQq
- 6ekOHbcw919nO5L9J2ejMf/VC/quN3r3xijgRtmuuwZjmmi8ct24TpGeoBK4WrZGh/1hAYw4
- ieARvKvgjXRstcEqM5thUNkOOIheud/VpY+48QcccPKbngy//zNJWKbRbeVnimua0OpqRXhC
- rEVm/xomeOvl1WK1BVO7z8DjSdEBGzbV76sPDJb/fw+y+VWrkEiddD/9CSfgfBNOb1p1jVnT
- 2mFgGneIWbU0zdDGhleI9UoQTr0e0b/7TU+Jo6TqwosP9nbk5hXw6uR5k5PF8ieyHVq3qatJ
- 9K1jPkBr8YWtI5uNwJJjTKIA1jHlj8McROroxMdI6qZ/wZ1ImuylpJuJwCDCORYf5kW61fcr
- HEDlIvGc371OOvw6ejF8ksX5+L2zwh43l/pKkSVGFpxtMV6d6J3eqwTafL86YJWH93PN+ZUh
- 6i6Rd2U/i8jH5WvzR57UeWxE4P8bQc0hNGrUsHQH6bpHV2lbuhDdqo+cM9ehGZEO3+gCDFmK
- rjspZjkJbB5Gadzvts5fcWGOXEvuT8uQSvl+vEL0g6vczsyPBtqoBLa9SNrSVtSixD1uOgyt
- AP7RWS474w==
-Message-ID: <715ddf72-978c-a525-0625-ea740a104f2a@embeddedor.com>
-Date:   Mon, 19 Oct 2020 11:38:25 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <5964d734e81c198421bb7f6516dabcad37c1740d.camel@perches.com>
-Content-Type: text/plain; charset=utf-8
+        id S1730509AbgJSQkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 12:40:23 -0400
+Received: from mail-eopbgr110100.outbound.protection.outlook.com ([40.107.11.100]:9687
+        "EHLO GBR01-CWL-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729879AbgJSQkX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Oct 2020 12:40:23 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hkCzrtby9ZKn/jmFxtoQplCC8Y0yz5aanwTde2bujErWtgESQj79IRg2aI6kRi7L6IgLe+0BiAgMGrXUqHwzEphCQkIqmkjSM1Sy9QOkaXB+Ir0XkZmMlLeCmh2lWVPiLLRPRCR8GpuCNLL/xYn9n8oJg3OonhjsJbDY5j+tqnPO2mgA3t0w0mUYHXzSsyJzEg/j4zP4vLPIF0nn4sZjk+4rRv8ChZcxLv6bB4HdYO0FYz6lFOBCMSJGDNW+dYymek9YuNWy/tdnUEvbepk1apSSVekMIUydcoCyd2GwhsGdzg9efnPdH3r7ABR3bEK7Dcn3c2ET6Oa1cn+2ALxFBw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Jt7VgHIx8NbG+Ds4qlxxYKfCHWmI55iZZzKpHh0ODJg=;
+ b=T0ljcSv71N1Ez11i7legQFzei9dnglEH4MLaSnd+dhd/AqoRJZaswYinzRvbTEpKM9Wa59gM6G4rl07mLhNTT3V3jdot9suvFueACH1LLIOyahze543MEnN/wXARejh/zofJvsDrwkBGUbySRyuB6pS+0MCW6eO3aSIVRAycxtavm1Vb/+dp1sbGjf8AGWjHMet1h8HhGUqkYjprp/WEgZOyX1rxSxPmm8xwOFfVErfC0IGGuWGbNll0ZXQXBeVJgsF7F3MWxrAqFzb32gathwCfQf8tlhQMPKnTuCKZV8953sTr08gxA7mKopCeSTm5d6bDrgoGTNMXuF2mF86PCw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=purelifi.com; dmarc=pass action=none header.from=purelifi.com;
+ dkim=pass header.d=purelifi.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=purevlc.onmicrosoft.com; s=selector2-purevlc-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Jt7VgHIx8NbG+Ds4qlxxYKfCHWmI55iZZzKpHh0ODJg=;
+ b=VRxkYGbbD5S7RfqiqG1s3OBputk3zVW63fwllubvjQszxUMlgwzk2LlS7TJStwEKeLxL01pfqMHO9xffprSc98/rqKesqyHJJdoHi9KkXajOrNzWb7WL94qJAGTeiG3RiOm2DPt+W0Q3u0wGTm8agADgA/xweLTw7oXftGEzu4k=
+Received: from LOYP265MB1918.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:ef::9) by
+ LO3P265MB2314.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:107::6) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3477.21; Mon, 19 Oct 2020 16:40:18 +0000
+Received: from LOYP265MB1918.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::b8d7:c2a7:cbbd:6c2b]) by LOYP265MB1918.GBRP265.PROD.OUTLOOK.COM
+ ([fe80::b8d7:c2a7:cbbd:6c2b%7]) with mapi id 15.20.3477.028; Mon, 19 Oct 2020
+ 16:40:18 +0000
+From:   Srinivasan Raju <srini.raju@purelifi.com>
+To:     Krishna Chaitanya <chaitanya.mgit@gmail.com>
+CC:     Mostafa Afgani <mostafa.afgani@purelifi.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS (WIRELESS)" 
+        <linux-wireless@vger.kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] [v6] wireless: Initial driver submission for pureLiFi STA
+ devices
+Thread-Topic: [PATCH] [v6] wireless: Initial driver submission for pureLiFi
+ STA devices
+Thread-Index: AQHWpfNnC69OUf5kyEqGJu+7PrU+76mfGBIAgAAIROQ=
+Date:   Mon, 19 Oct 2020 16:40:18 +0000
+Message-ID: <LOYP265MB1918B212C618FF60333BFD85E01E0@LOYP265MB1918.GBRP265.PROD.OUTLOOK.COM>
+References: <20201019031744.17916-1-srini.raju@purelifi.com>
+ <20201019083914.10932-1-srini.raju@purelifi.com>,<CABPxzYJaB5_zZshs3JCnPDgUZQZc+XRN+DuE3BjGjJKsiJh0uA@mail.gmail.com>
+In-Reply-To: <CABPxzYJaB5_zZshs3JCnPDgUZQZc+XRN+DuE3BjGjJKsiJh0uA@mail.gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 187.162.31.110
-X-Source-L: No
-X-Exim-ID: 1kUY5K-0023px-E1
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: 187-162-31-110.static.axtel.net ([192.168.15.4]) [187.162.31.110]:32944
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 30
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=purelifi.com;
+x-originating-ip: [103.8.116.159]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d15a6967-27ea-40ee-9674-08d8744daa08
+x-ms-traffictypediagnostic: LO3P265MB2314:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <LO3P265MB2314BDAB5CFD5502838C6AC5E01E0@LO3P265MB2314.GBRP265.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: KMg6AFXO29vhVv6O6kaJ7up0Mntw1b7Q5XbD3eVAfiDUELMb2AaK8JCWedDodnBJJk2/bqMnhZmo4z+WFysxk9zd20w74UNmKGA6N4MnfaeN7PZkerqrQZVppkZiRNsKxbi8dqYLriZM2gKgl/ecPPL8cphzOuEWMbDxAAziRr0RncEbgCnX7FivSrecViUlpz4t/RBsjybb0V0+Ay/M+0ValUtoDXLa0OqMCB4/UkfvVBKq8F6TImwVJ+THuM5DB/Id+hzKinm6gZYowVatE9KHl21/hErkPKeDwDfJFOC/xdHUFjJcVFL6NzFT2902
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:LOYP265MB1918.GBRP265.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(6029001)(4636009)(366004)(396003)(376002)(346002)(39830400003)(136003)(9686003)(8936002)(52536014)(8676002)(478600001)(186003)(26005)(7696005)(6506007)(4326008)(66556008)(66476007)(76116006)(66946007)(64756008)(91956017)(66446008)(558084003)(33656002)(6916009)(71200400001)(54906003)(55016002)(7416002)(2906002)(86362001)(5660300002)(316002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: 9CrjTJCpjzsUEDJgdrO/B2jbb+eD+KjkcWwp2gaBAuLlG84QawhFMtmjga4H42Mk0sEzUkl7etC3KgTh1qgKJlmEni64c+2AsXCLj7pFZnhEZNkjGBz9nCsT4yUZYOqAU5w+ogT16KuhzWaOMQ3KnNp8NbhKO0ERwwqCdebG3YPuOVe+ynI8hYvnPvLumOKOCsESgJDdXofOZRj+d2NFhLkXKkvYQpEa0xNl41rxV97+OmJziPJZT5R7D2AFm2EScwb9UVqQeRz3jql4WuXDglAFoK+rfaTjlf2hD8c0RVB5UrcP0ZvdxTm+TP/M3UwCm1t1yF4LDa6yVTCzmxxiQpW8RUnhI/Rd7Z9K1t4w6w34to65TiNad2/SrO82ly0HQQjQdBWDWYwm22LZXsgYGXTdEiorY3qWm59XQ8IH8Np7AuIH70QMUIxXrEsTMv2pYVugzPMqUG9IPi5ACeLCApzb3Y+PIFPY/Ym9qt8BDG2aXMKL7U7XjkR8S05rt4OQmqEwFqcLYvO26JYkEE1t2kUEUNvZX2iwPcMg8+zAkZWMIfI6h9XmGKTMwehtCO1YO+++XhFQvblJ5udz9eT/uAxkvEq7+qnU7Er9NAnJJHe8p4Gs/So7MAn2L2A0aUS8OtskTMpQ18OkdXvvIy1UDg==
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: purelifi.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: LOYP265MB1918.GBRP265.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: d15a6967-27ea-40ee-9674-08d8744daa08
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Oct 2020 16:40:18.5703
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 5cf4eba2-7b8f-4236-bed4-a2ac41f1a6dc
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: QC3byEguPfVZkJrQ0SlFk1m90RXW8cUUGdCk+fX7b/jb7RuqqLnMuhRYzaVe/szQ8aCUjj6qrkGTTKeaoAU76A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LO3P265MB2314
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 10/19/20 11:20, Joe Perches wrote:
-> On Mon, 2020-10-19 at 10:54 -0500, Gustavo A. R. Silva wrote:
->> On 10/19/20 10:21, Joe Perches wrote:
->>> On Mon, 2020-10-19 at 17:14 +0200, Christian Lamparter wrote:
->>>> On 19/10/2020 17:05, trix@redhat.com wrote:
->>>>> From: Tom Rix <trix@redhat.com>
->>>>>
->>>>> A break is not needed if it is preceded by a return or goto
->>>>>
->>>>> Signed-off-by: Tom Rix <trix@redhat.com>
->>>>> diff --git a/drivers/net/wireless/intersil/p54/eeprom.c b/drivers/net/wireless/intersil/p54/eeprom.c
-> []
->>>>> @@ -870,7 +870,6 @@ int p54_parse_eeprom(struct ieee80211_hw *dev, void *eeprom, int len)
->>>>>   			} else {
->>>>>   				goto good_eeprom;
->>>>>   			}
->>>>> -			break;
->>>> Won't the compiler (gcc) now complain about a missing fallthrough annotation?
->>
->> Clang would definitely complain about this.
-> 
-> As far as I can tell, clang 10.0.0 doesn't complain.
-
-Oh, yeah. I didn't see the other "goto err;" in the if clause above. Clang doesn't
-complain because there is actually no chance of any implicit fall-through.
-
---
-Gustavo
+> Overall, there are many magic numbers without comments, this makes it har=
+d to=0A=
+> understand the code. Using defines with proper naming helps and for 802.1=
+1 stuff=0A=
+> can use ieee80211_*/IEEE80211_* should be used.=0A=
+=0A=
+Thanks for your comments Krishna, will work on them.=0A=
+=0A=
+Regards,=0A=
+Srini=
