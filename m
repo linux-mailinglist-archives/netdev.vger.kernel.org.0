@@ -2,326 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9189D292B10
-	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 18:05:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 079B1292B16
+	for <lists+netdev@lfdr.de>; Mon, 19 Oct 2020 18:06:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730587AbgJSQFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 12:05:05 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58962 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730286AbgJSQFF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 12:05:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603123502;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oNPjravVaxcCo6ufyTkom4COG7g6erShkorV8bvLIFg=;
-        b=IsqVmcOtlSaqMYadQzkzzTbV7pN8CZfhPN473LSJ6THjOqWGFWudYmlr/pYqhCaRiz7Hfk
-        rlmatl/iUyOVu3uQH8BPyspo5RnPq5GqM9Y5PiY7kteK+u0fbXrHtOmDJ+KzOhUKueUfXX
-        bb6gB/8mCROG8+sBoMnT8fShti6Aq3M=
-Received: from mail-vk1-f200.google.com (mail-vk1-f200.google.com
- [209.85.221.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-475-SEFnLyahMAaXGLIh3XvyKw-1; Mon, 19 Oct 2020 12:05:00 -0400
-X-MC-Unique: SEFnLyahMAaXGLIh3XvyKw-1
-Received: by mail-vk1-f200.google.com with SMTP id s6so97908vkg.12
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 09:05:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=oNPjravVaxcCo6ufyTkom4COG7g6erShkorV8bvLIFg=;
-        b=K8rb+/n1OtlyioMcK9BBRUYdW9UUs4/ZZwkQO+0AzQLMPuZCAugGG7zC/4ju/cs3kt
-         /npX1n2OG/6C7fvUGDf2pKdphaKqu38AtSNH+4mfRCaE+aaa/NzZ9y9/baWsnZzcZznC
-         N2Sh+7KMz1f8RSeSNoetVGfwUxvI65Cn8fDS6iK/tlkVUmiHIO9eIAjKIWQDUroIrRH8
-         9fIvJnrXjXSB7UEv/DLV+lejIAIh2ZCKV6jlUWwty+Mu28tEXEBLy9015v3qH2NIa6Y+
-         ekhVv2afK5tn+O/gi7O0FH/UHZHmbD1OhoJjbOrV+ChJBsRR70xxCzWqBt5nVkf8RTzT
-         ynlg==
-X-Gm-Message-State: AOAM530xSD6+tF6OE+N1723dcpGsOJZWHkvH+0T8fPG0blJ2stNMw/4w
-        0xmX2HB5yvdemujWH4FFGMvFL6QAkkjDgemZ4EzGgTY7EOY5NNZtNaPt/xblf300F5I6PndcXLp
-        Eqp6En2JvT163CYVD
-X-Received: by 2002:a67:fd59:: with SMTP id g25mr644184vsr.29.1603123499498;
-        Mon, 19 Oct 2020 09:04:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJykanLKQDu6ikfoanjSVL64s34Jz+KxL3muYO7CNjH7kGwaVwMqrW7AMXxfl0mIFz7FSmDSkw==
-X-Received: by 2002:a67:fd59:: with SMTP id g25mr644143vsr.29.1603123499187;
-        Mon, 19 Oct 2020 09:04:59 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id j15sm30858vke.49.2020.10.19.09.04.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Oct 2020 09:04:57 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 357D21838FF; Mon, 19 Oct 2020 18:04:56 +0200 (CEST)
-Subject: [PATCH bpf 2/2] selftests: Update test_tc_redirect.sh to use the
- modified bpf_redirect_neigh()
-From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Date:   Mon, 19 Oct 2020 18:04:56 +0200
-Message-ID: <160312349612.7917.2292641333686513322.stgit@toke.dk>
-In-Reply-To: <160312349392.7917.6673239142315191801.stgit@toke.dk>
-References: <160312349392.7917.6673239142315191801.stgit@toke.dk>
-User-Agent: StGit/0.23
+        id S1730529AbgJSQG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 12:06:28 -0400
+Received: from mail-bn8nam11on2051.outbound.protection.outlook.com ([40.107.236.51]:30081
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730320AbgJSQG1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Oct 2020 12:06:27 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TXqS4D4BH7CccWuKtmfPzTGN09y8hAg1RL2EsbwhTF1JMdETHNpDFk5UBrB/PsPbos8FUPx+QqR1L5hlFfhaLNIVrJbQrIzARrglL8v9h31GA1zkyxijZv2g6hFIQ/csdU3L+ElQw5Tb7yWUq+cSbjC4GssT+hArDu1KffEQoFk8OVH3gFV8Wl9tZq5/hfVR3/t7mM+qOpsObYWL7qKR//SV8aA+DrkIxzUrSQMRJ+bI0UqnD6XNLx3ESQsYal/td4wmVWDJ0nFom0hxl4gsn/hEUxbY1w/dbxkjUd0ROTYDeygzOoKgXuD+68EE6fnmEii2hDGGFXYQHL97JdWtuQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Co6dGmH4SD6AAetVLlUR+nXTWfolf7Say6+3lluM7fo=;
+ b=Sd/YnsmNKQvmMaNMpe+5CqaIqUIYDQCh3Kaf3Rtx2qeCpEKPdwvbfuNLAsXZXuliJ3dC+cBKLR21biqMT5X/DcGXECN0PKsXo8zLkhcMlTeLg42YZW5rEwdnX4xdQPMfqBP+pUjqvrvibgzYkue4PqI/Dkkhob7/7Xa1ld8sZTh/77pmpoguw6jnK3IwMEWDmjgdA2PdxLYwxUnrtHXS0etdFQbDE6fTlYe02Rg88oah43eSIVllPwCsNQgzCrApeBKtT+MGb1Yo2eZTW0C+2TLrQEqi/VofuVeQVvgtM8XBn27o66lixGouBxEdzRRzxgr3e3s//2qJWKAO1tDNbQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Co6dGmH4SD6AAetVLlUR+nXTWfolf7Say6+3lluM7fo=;
+ b=Z3XfwT1aM5FxBM/vZWOXIBp9wcq+Ky0YDXKHZtFEVLlKnXgI40frkGr7jPsF7zYKV/e70dTWqo3sDezEBqznFmGh9qKhWEzJMPSSxEwtgkQIjB475S82uivNLkmabfl4/nsSHBu8wW69zcpfhTB14nQ0B32/6J4HpFSGnShBtD4=
+Authentication-Results: driverdev.osuosl.org; dkim=none (message not signed)
+ header.d=none;driverdev.osuosl.org; dmarc=none action=none
+ header.from=silabs.com;
+Received: from SN6PR11MB2718.namprd11.prod.outlook.com (2603:10b6:805:63::18)
+ by SA2PR11MB5129.namprd11.prod.outlook.com (2603:10b6:806:11f::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.27; Mon, 19 Oct
+ 2020 16:06:24 +0000
+Received: from SN6PR11MB2718.namprd11.prod.outlook.com
+ ([fe80::4f5:fbe5:44a7:cb8a]) by SN6PR11MB2718.namprd11.prod.outlook.com
+ ([fe80::4f5:fbe5:44a7:cb8a%5]) with mapi id 15.20.3477.028; Mon, 19 Oct 2020
+ 16:06:24 +0000
+From:   Jerome Pouiller <Jerome.Pouiller@silabs.com>
+To:     devel@driverdev.osuosl.org, linux-wireless@vger.kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
+        <jerome.pouiller@silabs.com>, kernel test robot <lkp@intel.com>,
+        Nathan Chancellor <natechancellor@gmail.com>
+Subject: [PATCH 1/2] staging: wfx: fix use of uninitialized pointer
+Date:   Mon, 19 Oct 2020 18:06:03 +0200
+Message-Id: <20201019160604.1609180-1-Jerome.Pouiller@silabs.com>
+X-Mailer: git-send-email 2.28.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-Originating-IP: [37.71.187.125]
+X-ClientProxiedBy: PR0P264CA0225.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:100:1e::21) To SN6PR11MB2718.namprd11.prod.outlook.com
+ (2603:10b6:805:63::18)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from pc-42.silabs.com (37.71.187.125) by PR0P264CA0225.FRAP264.PROD.OUTLOOK.COM (2603:10a6:100:1e::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.21 via Frontend Transport; Mon, 19 Oct 2020 16:06:22 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 15ebb35f-f089-47fd-2389-08d87448ed77
+X-MS-TrafficTypeDiagnostic: SA2PR11MB5129:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <SA2PR11MB512995FD44BFBA6FDF723E3A931E0@SA2PR11MB5129.namprd11.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1284;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: yyyObbQxzjw5UpK42fAOHCoIDMokRhZBcTjf7vhYSigi+Gty936kgsOTGnM7yRABPksGzxROYaZW1KbfLIsPfRFN6RO6JlgBv3Sea5fMajNIkcpaNrka9IwWK3Qx2J8/JvXNpV/8FECJwtsx1stJh6uPD5/7lIS9r9mdO6gyEBr5RwttmPeiR3f21soi3bvtGddAaSRLp3sYC0PH0YsJzMInA3UoKiDXQA2QNMafYfORcT9092FZWfhqydOlBLOIg/WF9scD6+p1AqrsPXgMJIjZy+TDnOfr5ViqF2LiWLqXG56vMa8dySMQ3m6ILdXk
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB2718.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(346002)(136003)(396003)(39850400004)(366004)(26005)(8936002)(54906003)(186003)(6486002)(16526019)(316002)(478600001)(8676002)(52116002)(7696005)(6666004)(2906002)(4326008)(1076003)(36756003)(66574015)(956004)(66946007)(66476007)(86362001)(2616005)(66556008)(5660300002)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: XG440Te/cMYsrd0DmOHwgF5/hKgmxUvoGMMZ1eFV2vnqKD5EbcshZdu59XTY16VsTtIIJPKHFUa8CyXOwl9uOLFPtaYbIKf3T4Bq1f/DFBUcWjrsDsFrZuRTMfq/HezA0PEqjsvzgCEtA+TBbN+aNX/W8GBCF0HpHJ+t8JV90bEIZOI+8yOfNDMZ/UWCas5lUqNpS+pHyBaoA3oy+sMe3v2AepxrCMUvRA07aWESXINcCJHZKy+NZE0CWybwH+SGbKB8oX66teX6d1I+DUda6B3xqhRG0oFsfE8mmTXgRjB9zznnYEVrx4KUoPcVH7N1HvVM5AanYxSnXoFkFiQyd7CCPU623WHDgSTNeXFVhXxSKVGFSPbd5C+TI8KUzWPRnUlgCVm6nTAwipLEnRaLj1gLRvZKanp6A7qjrmlUwRDMn0iobrpd4zqSvzJ3tkGVCL+hRvPW8P8e7cPL8KAuf1FmRHB/X9qqz+ZRKFzNSQ64m7W3UzIXMmne1vLruCJKl+J+43ey737GUtKbLAbFomumuOx03hFCgXkd+nvaeWaNMkjoo4sME5U3FKv/wICXVzP+B2MH5sjG7irKsikrM59Ocyv09jBuK/AhY6PrnINCV8qghgmlYwhF9z7hR7abl+y9HQDxDNbOrxA7iI82qQ==
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 15ebb35f-f089-47fd-2389-08d87448ed77
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB2718.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2020 16:06:24.5649
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: F2fpIke7WEJN9xGDyCOCFhhTWIoFdu8a9HNlSaz2f8pFpe0ZpJiD1XhcqXj1EkVfzeWGkIfEK6zvYgYH98eOuQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB5129
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
-
-This updates the test_tc_neigh prog in selftests to use the new syntax of
-bpf_redirect_neigh(). To exercise the helper both with and without the
-optional parameter, add an additional test_tc_neigh_fib test program, which
-does a bpf_fib_lookup() followed by a call to bpf_redirect_neigh() instead
-of looking up the ifindex in a map.
-
-Update the test_tc_redirect.sh script to run both versions of the test, and
-while we're add it, fix it to work on systems that have a consolidated
-dual-stack 'ping' binary instead of separate ping/ping6 versions.
-
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
----
- tools/testing/selftests/bpf/progs/test_tc_neigh.c  |    5 -
- .../selftests/bpf/progs/test_tc_neigh_fib.c        |  142 ++++++++++++++++++++
- tools/testing/selftests/bpf/test_tc_redirect.sh    |   27 +++-
- 3 files changed, 169 insertions(+), 5 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/test_tc_neigh_fib.c
-
-diff --git a/tools/testing/selftests/bpf/progs/test_tc_neigh.c b/tools/testing/selftests/bpf/progs/test_tc_neigh.c
-index fe182616b112..b985ac4e7a81 100644
---- a/tools/testing/selftests/bpf/progs/test_tc_neigh.c
-+++ b/tools/testing/selftests/bpf/progs/test_tc_neigh.c
-@@ -1,4 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0
-+#include <stddef.h>
- #include <stdint.h>
- #include <stdbool.h>
- 
-@@ -118,7 +119,7 @@ SEC("dst_ingress") int tc_dst(struct __sk_buff *skb)
- 	if (bpf_skb_store_bytes(skb, 0, &zero, sizeof(zero), 0) < 0)
- 		return TC_ACT_SHOT;
- 
--	return bpf_redirect_neigh(get_dev_ifindex(dev_src), 0);
-+	return bpf_redirect_neigh(get_dev_ifindex(dev_src), NULL, 0, 0);
- }
- 
- SEC("src_ingress") int tc_src(struct __sk_buff *skb)
-@@ -142,7 +143,7 @@ SEC("src_ingress") int tc_src(struct __sk_buff *skb)
- 	if (bpf_skb_store_bytes(skb, 0, &zero, sizeof(zero), 0) < 0)
- 		return TC_ACT_SHOT;
- 
--	return bpf_redirect_neigh(get_dev_ifindex(dev_dst), 0);
-+	return bpf_redirect_neigh(get_dev_ifindex(dev_dst), NULL, 0, 0);
- }
- 
- char __license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/progs/test_tc_neigh_fib.c b/tools/testing/selftests/bpf/progs/test_tc_neigh_fib.c
-new file mode 100644
-index 000000000000..055c7582c86c
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_tc_neigh_fib.c
-@@ -0,0 +1,142 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <stdint.h>
-+#include <stdbool.h>
-+#include <stddef.h>
-+
-+#include <linux/bpf.h>
-+#include <linux/stddef.h>
-+#include <linux/pkt_cls.h>
-+#include <linux/if_ether.h>
-+#include <linux/in.h>
-+#include <linux/ip.h>
-+#include <linux/ipv6.h>
-+
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_endian.h>
-+
-+#ifndef ctx_ptr
-+# define ctx_ptr(field)		(void *)(long)(field)
-+#endif
-+
-+#define AF_INET 2
-+#define AF_INET6 10
-+
-+static __always_inline int fill_fib_params_v4(struct __sk_buff *skb,
-+					      struct bpf_fib_lookup *fib_params)
-+{
-+	void *data_end = ctx_ptr(skb->data_end);
-+	void *data = ctx_ptr(skb->data);
-+	struct iphdr *ip4h;
-+
-+	if (data + sizeof(struct ethhdr) > data_end)
-+		return -1;
-+
-+	ip4h = (struct iphdr *)(data + sizeof(struct ethhdr));
-+	if ((void *)(ip4h + 1) > data_end)
-+		return -1;
-+
-+	fib_params->family = AF_INET;
-+	fib_params->tos = ip4h->tos;
-+	fib_params->l4_protocol = ip4h->protocol;
-+	fib_params->sport = 0;
-+	fib_params->dport = 0;
-+	fib_params->tot_len = bpf_ntohs(ip4h->tot_len);
-+	fib_params->ipv4_src = ip4h->saddr;
-+	fib_params->ipv4_dst = ip4h->daddr;
-+
-+	return 0;
-+}
-+
-+static __always_inline int fill_fib_params_v6(struct __sk_buff *skb,
-+					      struct bpf_fib_lookup *fib_params)
-+{
-+	struct in6_addr *src = (struct in6_addr *)fib_params->ipv6_src;
-+	struct in6_addr *dst = (struct in6_addr *)fib_params->ipv6_dst;
-+	void *data_end = ctx_ptr(skb->data_end);
-+	void *data = ctx_ptr(skb->data);
-+	struct ipv6hdr *ip6h;
-+
-+	if (data + sizeof(struct ethhdr) > data_end)
-+		return -1;
-+
-+	ip6h = (struct ipv6hdr *)(data + sizeof(struct ethhdr));
-+	if ((void *)(ip6h + 1) > data_end)
-+		return -1;
-+
-+	fib_params->family = AF_INET6;
-+	fib_params->flowinfo = 0;
-+	fib_params->l4_protocol = ip6h->nexthdr;
-+	fib_params->sport = 0;
-+	fib_params->dport = 0;
-+	fib_params->tot_len = bpf_ntohs(ip6h->payload_len);
-+	*src = ip6h->saddr;
-+	*dst = ip6h->daddr;
-+
-+	return 0;
-+}
-+
-+SEC("chk_egress") int tc_chk(struct __sk_buff *skb)
-+{
-+	void *data_end = ctx_ptr(skb->data_end);
-+	void *data = ctx_ptr(skb->data);
-+	__u32 *raw = data;
-+
-+	if (data + sizeof(struct ethhdr) > data_end)
-+		return TC_ACT_SHOT;
-+
-+	return !raw[0] && !raw[1] && !raw[2] ? TC_ACT_SHOT : TC_ACT_OK;
-+}
-+
-+SEC("redir_ingress") int tc_dst(struct __sk_buff *skb)
-+{
-+	struct bpf_fib_lookup fib_params = { .ifindex = skb->ingress_ifindex };
-+	__u8 zero[ETH_ALEN * 2];
-+	int ret = -1;
-+
-+	switch (skb->protocol) {
-+	case __bpf_constant_htons(ETH_P_IP):
-+		ret = fill_fib_params_v4(skb, &fib_params);
-+		break;
-+	case __bpf_constant_htons(ETH_P_IPV6):
-+		ret = fill_fib_params_v6(skb, &fib_params);
-+		break;
-+	}
-+
-+	if (ret)
-+		return TC_ACT_OK;
-+
-+	ret = bpf_fib_lookup(skb, &fib_params, sizeof(fib_params), 0);
-+	if (ret == BPF_FIB_LKUP_RET_NOT_FWDED || ret < 0)
-+		return TC_ACT_OK;
-+
-+	__builtin_memset(&zero, 0, sizeof(zero));
-+	if (bpf_skb_store_bytes(skb, 0, &zero, sizeof(zero), 0) < 0)
-+		return TC_ACT_SHOT;
-+
-+	if (ret == BPF_FIB_LKUP_RET_SUCCESS) {
-+		void *data_end = ctx_ptr(skb->data_end);
-+		struct ethhdr *eth = ctx_ptr(skb->data);
-+
-+		if (eth + 1 > data_end)
-+			return TC_ACT_SHOT;
-+
-+		__builtin_memcpy(eth->h_dest, fib_params.dmac, ETH_ALEN);
-+		__builtin_memcpy(eth->h_source, fib_params.smac, ETH_ALEN);
-+
-+		return bpf_redirect(fib_params.ifindex, 0);
-+
-+	} else if (ret == BPF_FIB_LKUP_RET_NO_NEIGH) {
-+		struct bpf_redir_neigh nh_params = {};
-+
-+		nh_params.nh_family = fib_params.family;
-+		__builtin_memcpy(&nh_params.ipv6_nh, &fib_params.ipv6_dst,
-+				 sizeof(nh_params.ipv6_nh));
-+
-+		return bpf_redirect_neigh(fib_params.ifindex, &nh_params,
-+					  sizeof(nh_params), 0);
-+	}
-+
-+	return TC_ACT_SHOT;
-+}
-+
-+char __license[] SEC("license") = "GPL";
-diff --git a/tools/testing/selftests/bpf/test_tc_redirect.sh b/tools/testing/selftests/bpf/test_tc_redirect.sh
-index 6d7482562140..a4903739846d 100755
---- a/tools/testing/selftests/bpf/test_tc_redirect.sh
-+++ b/tools/testing/selftests/bpf/test_tc_redirect.sh
-@@ -24,8 +24,7 @@ command -v timeout >/dev/null 2>&1 || \
- 	{ echo >&2 "timeout is not available"; exit 1; }
- command -v ping >/dev/null 2>&1 || \
- 	{ echo >&2 "ping is not available"; exit 1; }
--command -v ping6 >/dev/null 2>&1 || \
--	{ echo >&2 "ping6 is not available"; exit 1; }
-+if command -v ping6 >/dev/null 2>&1; then PING6=ping6; else PING6=ping; fi
- command -v perl >/dev/null 2>&1 || \
- 	{ echo >&2 "perl is not available"; exit 1; }
- command -v jq >/dev/null 2>&1 || \
-@@ -152,7 +151,7 @@ netns_test_connectivity()
- 	echo -e "${TEST}: ${GREEN}PASS${NC}"
- 
- 	TEST="ICMPv6 connectivity test"
--	ip netns exec ${NS_SRC} ping6 $PING_ARG ${IP6_DST}
-+	ip netns exec ${NS_SRC} $PING6 $PING_ARG ${IP6_DST}
- 	if [ $? -ne 0 ]; then
- 		echo -e "${TEST}: ${RED}FAIL${NC}"
- 		exit 1
-@@ -192,6 +191,24 @@ netns_setup_bpf()
- 	done
- }
- 
-+netns_setup_bpf_fib()
-+{
-+	local obj=$1
-+
-+	ip netns exec ${NS_FWD} tc qdisc add dev veth_src_fwd clsact
-+	ip netns exec ${NS_FWD} tc filter add dev veth_src_fwd ingress bpf da obj $obj sec redir_ingress
-+	ip netns exec ${NS_FWD} tc filter add dev veth_src_fwd egress  bpf da obj $obj sec chk_egress
-+
-+	ip netns exec ${NS_FWD} tc qdisc add dev veth_dst_fwd clsact
-+	ip netns exec ${NS_FWD} tc filter add dev veth_dst_fwd ingress bpf da obj $obj sec redir_ingress
-+	ip netns exec ${NS_FWD} tc filter add dev veth_dst_fwd egress  bpf da obj $obj sec chk_egress
-+
-+	# bpf_fib_lookup() checks if forwarding is enabled
-+	ip netns exec ${NS_FWD} sysctl -w net.ipv4.ip_forward=1
-+	ip netns exec ${NS_FWD} sysctl -w net.ipv6.conf.veth_dst_fwd.forwarding=1
-+	ip netns exec ${NS_FWD} sysctl -w net.ipv6.conf.veth_src_fwd.forwarding=1
-+}
-+
- trap netns_cleanup EXIT
- set -e
- 
-@@ -200,5 +217,9 @@ netns_setup_bpf test_tc_neigh.o
- netns_test_connectivity
- netns_cleanup
- netns_setup
-+netns_setup_bpf_fib test_tc_neigh_fib.o
-+netns_test_connectivity
-+netns_cleanup
-+netns_setup
- netns_setup_bpf test_tc_peer.o
- netns_test_connectivity
-
+RnJvbTogSsOpcsO0bWUgUG91aWxsZXIgPGplcm9tZS5wb3VpbGxlckBzaWxhYnMuY29tPgoKV2l0
+aCAtV3VuaW5pdGlhbGl6ZWQsIHRoZSBjb21waWxlciBjb21wbGFpbnM6Cgpkcml2ZXJzL3N0YWdp
+bmcvd2Z4L2RhdGFfdHguYzozNDoxOTogd2FybmluZzogdmFyaWFibGUgJ2JhbmQnIGlzIHVuaW5p
+dGlhbGl6ZWQgd2hlbiB1c2VkIGhlcmUgWy1XdW5pbml0aWFsaXplZF0KICAgIGlmIChyYXRlLT5p
+ZHggPj0gYmFuZC0+bl9iaXRyYXRlcykgewogICAgICAgICAgICAgICAgICAgICAgICAgXn5+fgoK
+UmVwb3J0ZWQtYnk6IGtlcm5lbCB0ZXN0IHJvYm90IDxsa3BAaW50ZWwuY29tPgpSZXBvcnRlZC1i
+eTogTmF0aGFuIENoYW5jZWxsb3IgPG5hdGVjaGFuY2VsbG9yQGdtYWlsLmNvbT4KRml4ZXM6IDg2
+OGZkOTcwZTE4NyAoInN0YWdpbmc6IHdmeDogaW1wcm92ZSByb2J1c3RuZXNzIG9mIHdmeF9nZXRf
+aHdfcmF0ZSgpIikKU2lnbmVkLW9mZi1ieTogSsOpcsO0bWUgUG91aWxsZXIgPGplcm9tZS5wb3Vp
+bGxlckBzaWxhYnMuY29tPgotLS0KIGRyaXZlcnMvc3RhZ2luZy93ZngvZGF0YV90eC5jIHwgOCAr
+KysrLS0tLQogMSBmaWxlIGNoYW5nZWQsIDQgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkK
+CmRpZmYgLS1naXQgYS9kcml2ZXJzL3N0YWdpbmcvd2Z4L2RhdGFfdHguYyBiL2RyaXZlcnMvc3Rh
+Z2luZy93ZngvZGF0YV90eC5jCmluZGV4IDQxZjZhNjA0YTY5Ny4uMzZiMzZlZjM5ZDA1IDEwMDY0
+NAotLS0gYS9kcml2ZXJzL3N0YWdpbmcvd2Z4L2RhdGFfdHguYworKysgYi9kcml2ZXJzL3N0YWdp
+bmcvd2Z4L2RhdGFfdHguYwpAQCAtMzEsMTMgKzMxLDEzIEBAIHN0YXRpYyBpbnQgd2Z4X2dldF9o
+d19yYXRlKHN0cnVjdCB3ZnhfZGV2ICp3ZGV2LAogCQl9CiAJCXJldHVybiByYXRlLT5pZHggKyAx
+NDsKIAl9Ci0JaWYgKHJhdGUtPmlkeCA+PSBiYW5kLT5uX2JpdHJhdGVzKSB7Ci0JCVdBUk4oMSwg
+Indyb25nIHJhdGUtPmlkeCB2YWx1ZTogJWQiLCByYXRlLT5pZHgpOwotCQlyZXR1cm4gLTE7Ci0J
+fQogCS8vIFdGeCBvbmx5IHN1cHBvcnQgMkdIeiwgZWxzZSBiYW5kIGluZm9ybWF0aW9uIHNob3Vs
+ZCBiZSByZXRyaWV2ZWQKIAkvLyBmcm9tIGllZWU4MDIxMV90eF9pbmZvCiAJYmFuZCA9IHdkZXYt
+Pmh3LT53aXBoeS0+YmFuZHNbTkw4MDIxMV9CQU5EXzJHSFpdOworCWlmIChyYXRlLT5pZHggPj0g
+YmFuZC0+bl9iaXRyYXRlcykgeworCQlXQVJOKDEsICJ3cm9uZyByYXRlLT5pZHggdmFsdWU6ICVk
+IiwgcmF0ZS0+aWR4KTsKKwkJcmV0dXJuIC0xOworCX0KIAlyZXR1cm4gYmFuZC0+Yml0cmF0ZXNb
+cmF0ZS0+aWR4XS5od192YWx1ZTsKIH0KIAotLSAKMi4yOC4wCgo=
