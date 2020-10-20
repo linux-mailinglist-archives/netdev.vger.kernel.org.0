@@ -2,239 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 086F829327D
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 02:59:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D7ED29327C
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 02:59:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389684AbgJTA7F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 20:59:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55834 "EHLO
+        id S2389672AbgJTA7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 20:59:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389661AbgJTA66 (ORCPT
+        with ESMTP id S2389662AbgJTA66 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 20:58:58 -0400
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D178C0613D1
+Received: from mout-p-202.mailbox.org (mout-p-202.mailbox.org [IPv6:2001:67c:2050::465:202])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A83CFC0613CE
         for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 17:58:58 -0700 (PDT)
 Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4CFZy82GJqzQkm3;
+        by mout-p-202.mailbox.org (Postfix) with ESMTPS id 4CFZy85wtszQkmC;
         Tue, 20 Oct 2020 02:58:56 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1603155534;
+        s=MBO0001; t=1603155535;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=zOFr59+7kVdMDUU/vlVjeIe6NFA6FcnD4T5Gz9qFq3Q=;
-        b=EkTcs7/vJklYCrMRDkwXuFZuwZQIZ4gghH0M1dbh2nVD7neYwIJAX7lt5c0LkZzIeEnhPd
-        qwbmBB5a6lD1pNkfni9Ejj32ZDsogFuckqHv+G6P4MWFkkS4RoXfOHUW+ME9kEkgme20GP
-        0EcqAqn+RzgMUUQxlVmJhrBRn9cCf6QB1BJ0EU57uqh05evDafaWsBYLNM8ThrJkIWRy/S
-        wQjNVArp/eOD8aLFFmFP3lZtcRSmlu4gZP/JhyM00Tv+oAAM53abgVbqdRagzYmOYfJaZD
-        uNXmYsgpDB2plufLjmlL/hqoUfJkNxHnuN8dtS91+ueIupt+y6ZVJ3h03Y2sUA==
+        bh=fgcVMprNydWwSMOG/kvq0fcYmMeCQGKrbYNPSWJQi98=;
+        b=qXvCbagWhl8RFnxhu9XNDLR8dHq8ZeOt9ia+qnPqRmqG+ib9y0BNClmdSPE8/r3NAYRTvx
+        iSbo1CXuc7Dg4NB+UKI8gFFh/ud/66ihAG/80eeVLpRmsD9QbMmZMmC8Hm9l7tOkKaZX8I
+        UMTQuOCJSuZISyLrsWfRNpAsXLAqwK6stmk7sBsNhnplBpo05Gz6nGuE/fZNGk5iCDrNXL
+        2N7xBQSs/XeY3UiJxfE2p5bb9q4stGcz964T9eMT04SBf9xGsWzj7qp1fDw5XLnkzGHdRv
+        famAwvFTcDV5wtp86AzFaEV0+RqQI9QEvbhyHzeUTz3pmm+Ievnrg7DnPeJsDw==
 Received: from smtp1.mailbox.org ([80.241.60.240])
-        by gerste.heinlein-support.de (gerste.heinlein-support.de [91.198.250.173]) (amavisd-new, port 10030)
-        with ESMTP id r_6kqv1mik3v; Tue, 20 Oct 2020 02:58:52 +0200 (CEST)
+        by spamfilter04.heinlein-hosting.de (spamfilter04.heinlein-hosting.de [80.241.56.122]) (amavisd-new, port 10030)
+        with ESMTP id Q8A__0ggYiPh; Tue, 20 Oct 2020 02:58:53 +0200 (CEST)
 From:   Petr Machata <me@pmachata.org>
 To:     netdev@vger.kernel.org, dsahern@gmail.com,
         stephen@networkplumber.org
 Cc:     john.fastabend@gmail.com, jiri@nvidia.com, idosch@nvidia.com,
         Petr Machata <me@pmachata.org>
-Subject: [PATCH iproute2-next 10/15] lib: Extract from devlink/mnlg a helper, mnlu_socket_recv_run()
-Date:   Tue, 20 Oct 2020 02:58:18 +0200
-Message-Id: <0879bff80744c8253266054fb3da497cc9044376.1603154867.git.me@pmachata.org>
+Subject: [PATCH iproute2-next 11/15] lib: Extract from iplink_vlan a helper to parse key:value arrays
+Date:   Tue, 20 Oct 2020 02:58:19 +0200
+Message-Id: <233147e872018f538306e5f8dad3f3be07540d81.1603154867.git.me@pmachata.org>
 In-Reply-To: <cover.1603154867.git.me@pmachata.org>
 References: <cover.1603154867.git.me@pmachata.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-MBO-SPAM-Probability: *
-X-Rspamd-Score: 1.11 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 4BB6B17E0
-X-Rspamd-UID: e5d71d
+X-MBO-SPAM-Probability: **
+X-Rspamd-Score: 1.51 / 15.00 / 15.00
+X-Rspamd-Queue-Id: D302617E6
+X-Rspamd-UID: c74065
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Receiving a message in libmnl is a somewhat involved operation. Devlink's
-mnlg library has an implementation that is going to be handy for other
-tools as well. Extract it into a new helper.
+VLAN netdevices have two similar attributes: ingress-qos-map and
+egress-qos-map. These attributes can be configured with a series of
+802.1-priority-to-skb-priority (and vice versa) mappings. A reusable helper
+along those lines will be handy for configuration of various
+priority-to-tc, tc-to-algorithm, and other arrays in DCB. Therefore extract
+the logic to a function parse_mapping(), move to utils.c, and dispatch to
+utils.c from iplink_vlan.c.
 
 Signed-off-by: Petr Machata <me@pmachata.org>
 ---
- devlink/mnlg.c      | 56 ++---------------------------------------
- include/mnl_utils.h |  2 ++
- lib/mnl_utils.c     | 61 +++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 65 insertions(+), 54 deletions(-)
+ include/utils.h  |  4 ++++
+ ip/iplink_vlan.c | 37 ++++++++++++++++---------------------
+ lib/utils.c      | 28 ++++++++++++++++++++++++++++
+ 3 files changed, 48 insertions(+), 21 deletions(-)
 
-diff --git a/devlink/mnlg.c b/devlink/mnlg.c
-index 4995b7af06a3..21b10c5a5669 100644
---- a/devlink/mnlg.c
-+++ b/devlink/mnlg.c
-@@ -28,7 +28,6 @@ struct mnlg_socket {
- 	uint32_t id;
- 	uint8_t version;
- 	unsigned int seq;
--	unsigned int portid;
- };
+diff --git a/include/utils.h b/include/utils.h
+index 681110fcf8af..8323e3cf1103 100644
+--- a/include/utils.h
++++ b/include/utils.h
+@@ -339,4 +339,8 @@ int parse_on_off(const char *msg, const char *realval, int *p_err);
+ void parse_flag_on_off(const char *msg, const char *realval,
+ 		       unsigned int *p_flags, unsigned int flag, int *p_ret);
  
- static struct nlmsghdr *__mnlg_msg_prepare(struct mnlg_socket *nlg, uint8_t cmd,
-@@ -57,61 +56,10 @@ int mnlg_socket_send(struct mnlg_socket *nlg, const struct nlmsghdr *nlh)
- 	return mnl_socket_sendto(nlg->nl, nlh, nlh->nlmsg_len);
++int parse_mapping(int *argcp, char ***argvp,
++		  int (*mapping_cb)(__u32 key, char *value, void *data),
++		  void *mapping_cb_data);
++
+ #endif /* __UTILS_H__ */
+diff --git a/ip/iplink_vlan.c b/ip/iplink_vlan.c
+index 66c4c0fb57f1..73aa94acde3c 100644
+--- a/ip/iplink_vlan.c
++++ b/ip/iplink_vlan.c
+@@ -43,36 +43,31 @@ static void explain(void)
+ 	print_explain(stderr);
  }
  
--static int mnlg_cb_noop(const struct nlmsghdr *nlh, void *data)
--{
--	return MNL_CB_OK;
--}
--
--static int mnlg_cb_error(const struct nlmsghdr *nlh, void *data)
--{
--	const struct nlmsgerr *err = mnl_nlmsg_get_payload(nlh);
--
--	/* Netlink subsystems returns the errno value with different signess */
--	if (err->error < 0)
--		errno = -err->error;
--	else
--		errno = err->error;
--
--	if (nl_dump_ext_ack(nlh, NULL))
--		return MNL_CB_ERROR;
--
--	return err->error == 0 ? MNL_CB_STOP : MNL_CB_ERROR;
--}
--
--static int mnlg_cb_stop(const struct nlmsghdr *nlh, void *data)
--{
--	int len = *(int *)NLMSG_DATA(nlh);
--
--	if (len < 0) {
--		errno = -len;
--		nl_dump_ext_ack_done(nlh, len);
--		return MNL_CB_ERROR;
--	}
--	return MNL_CB_STOP;
--}
--
--static mnl_cb_t mnlg_cb_array[NLMSG_MIN_TYPE] = {
--	[NLMSG_NOOP]	= mnlg_cb_noop,
--	[NLMSG_ERROR]	= mnlg_cb_error,
--	[NLMSG_DONE]	= mnlg_cb_stop,
--	[NLMSG_OVERRUN]	= mnlg_cb_noop,
--};
--
- int mnlg_socket_recv_run(struct mnlg_socket *nlg, mnl_cb_t data_cb, void *data)
++static int parse_qos_mapping(__u32 key, char *value, void *data)
++{
++	struct nlmsghdr *n = data;
++	struct ifla_vlan_qos_mapping m = {
++		.from = key,
++	};
++
++	if (get_u32(&m.to, value, 0))
++		return 1;
++
++	addattr_l(n, 1024, IFLA_VLAN_QOS_MAPPING, &m, sizeof(m));
++	return 0;
++}
++
+ static int vlan_parse_qos_map(int *argcp, char ***argvp, struct nlmsghdr *n,
+ 			      int attrtype)
  {
--	int err;
+-	int argc = *argcp;
+-	char **argv = *argvp;
+-	struct ifla_vlan_qos_mapping m;
+ 	struct rtattr *tail;
+ 
+ 	tail = addattr_nest(n, 1024, attrtype);
+ 
+-	while (argc > 0) {
+-		char *colon = strchr(*argv, ':');
 -
--	do {
--		err = mnl_socket_recvfrom(nlg->nl, nlg->buf,
--					  MNL_SOCKET_BUFFER_SIZE);
--		if (err <= 0)
+-		if (!colon)
 -			break;
--		err = mnl_cb_run2(nlg->buf, err, nlg->seq, nlg->portid,
--				  data_cb, data, mnlg_cb_array,
--				  ARRAY_SIZE(mnlg_cb_array));
--	} while (err > 0);
+-		*colon = '\0';
 -
--	return err;
-+	return mnlu_socket_recv_run(nlg->nl, nlg->seq, nlg->buf, MNL_SOCKET_BUFFER_SIZE,
-+				    data_cb, data);
+-		if (get_u32(&m.from, *argv, 0))
+-			return 1;
+-		if (get_u32(&m.to, colon + 1, 0))
+-			return 1;
+-		argc--, argv++;
+-
+-		addattr_l(n, 1024, IFLA_VLAN_QOS_MAPPING, &m, sizeof(m));
+-	}
++	if (parse_mapping(argcp, argvp, &parse_qos_mapping, n))
++		return 1;
+ 
+ 	addattr_nest_end(n, tail);
+-
+-	*argcp = argc;
+-	*argvp = argv;
+ 	return 0;
  }
  
- struct group_info {
-diff --git a/include/mnl_utils.h b/include/mnl_utils.h
-index 86ce30f49a94..fa826ef1f8fe 100644
---- a/include/mnl_utils.h
-+++ b/include/mnl_utils.h
-@@ -5,5 +5,7 @@
- struct mnl_socket *mnlu_socket_open(int bus);
- struct nlmsghdr *mnlu_msg_prepare(void *buf, uint32_t nlmsg_type, uint16_t flags,
- 				  void *extra_header, size_t extra_header_size);
-+int mnlu_socket_recv_run(struct mnl_socket *nl, unsigned int seq, void *buf, size_t buf_size,
-+			 mnl_cb_t cb, void *data);
+diff --git a/lib/utils.c b/lib/utils.c
+index fb25c64d36ff..93521a49eaec 100644
+--- a/lib/utils.c
++++ b/lib/utils.c
+@@ -1774,3 +1774,31 @@ void parse_flag_on_off(const char *msg, const char *realval,
  
- #endif /* __MNL_UTILS_H__ */
-diff --git a/lib/mnl_utils.c b/lib/mnl_utils.c
-index 87df1e81faf5..e9461d6d6b6b 100644
---- a/lib/mnl_utils.c
-+++ b/lib/mnl_utils.c
-@@ -8,11 +8,14 @@
-  *
-  */
- 
-+#include <errno.h>
- #include <string.h>
- #include <time.h>
- #include <libmnl/libmnl.h>
- 
-+#include "libnetlink.h"
- #include "mnl_utils.h"
-+#include "utils.h"
- 
- struct mnl_socket *mnlu_socket_open(int bus)
- {
-@@ -52,3 +55,61 @@ struct nlmsghdr *mnlu_msg_prepare(void *buf, uint32_t nlmsg_type, uint16_t flags
- 
- 	return nlh;
+ 	set_flag(p_flags, flag, on_off);
  }
 +
-+static int mnlu_cb_noop(const struct nlmsghdr *nlh, void *data)
++int parse_mapping(int *argcp, char ***argvp,
++		  int (*mapping_cb)(__u32 key, char *value, void *data),
++		  void *mapping_cb_data)
 +{
-+	return MNL_CB_OK;
-+}
++	int argc = *argcp;
++	char **argv = *argvp;
 +
-+static int mnlu_cb_error(const struct nlmsghdr *nlh, void *data)
-+{
-+	const struct nlmsgerr *err = mnl_nlmsg_get_payload(nlh);
++	while (argc > 0) {
++		char *colon = strchr(*argv, ':');
++		__u32 key;
 +
-+	/* Netlink subsystems returns the errno value with different signess */
-+	if (err->error < 0)
-+		errno = -err->error;
-+	else
-+		errno = err->error;
-+
-+	if (nl_dump_ext_ack(nlh, NULL))
-+		return MNL_CB_ERROR;
-+
-+	return err->error == 0 ? MNL_CB_STOP : MNL_CB_ERROR;
-+}
-+
-+static int mnlu_cb_stop(const struct nlmsghdr *nlh, void *data)
-+{
-+	int len = *(int *)NLMSG_DATA(nlh);
-+
-+	if (len < 0) {
-+		errno = -len;
-+		nl_dump_ext_ack_done(nlh, len);
-+		return MNL_CB_ERROR;
-+	}
-+	return MNL_CB_STOP;
-+}
-+
-+static mnl_cb_t mnlu_cb_array[NLMSG_MIN_TYPE] = {
-+	[NLMSG_NOOP]	= mnlu_cb_noop,
-+	[NLMSG_ERROR]	= mnlu_cb_error,
-+	[NLMSG_DONE]	= mnlu_cb_stop,
-+	[NLMSG_OVERRUN]	= mnlu_cb_noop,
-+};
-+
-+int mnlu_socket_recv_run(struct mnl_socket *nl, unsigned int seq, void *buf, size_t buf_size,
-+			 mnl_cb_t cb, void *data)
-+{
-+	unsigned int portid = mnl_socket_get_portid(nl);
-+	int err;
-+
-+	do {
-+		err = mnl_socket_recvfrom(nl, buf, buf_size);
-+		if (err <= 0)
++		if (!colon)
 +			break;
-+		err = mnl_cb_run2(buf, err, seq, portid,
-+				  cb, data, mnlu_cb_array,
-+				  ARRAY_SIZE(mnlu_cb_array));
-+	} while (err > 0);
++		*colon = '\0';
 +
-+	return err;
++		if (get_u32(&key, *argv, 0))
++			return 1;
++		if (mapping_cb(key, colon + 1, mapping_cb_data))
++			return 1;
++
++		argc--, argv++;
++	}
++
++	*argcp = argc;
++	*argvp = argv;
++	return 0;
 +}
 -- 
 2.25.1
