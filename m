@@ -2,87 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15F8C2944F0
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 00:08:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 941482944F6
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 00:10:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2410364AbgJTWIX convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 20 Oct 2020 18:08:23 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:25750 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2410358AbgJTWIW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 18:08:22 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-218-r6pM3my1Ncyr0-LS7n86EQ-1; Tue, 20 Oct 2020 23:08:18 +0100
-X-MC-Unique: r6pM3my1Ncyr0-LS7n86EQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Tue, 20 Oct 2020 23:08:17 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Tue, 20 Oct 2020 23:08:17 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>,
-        Michael Tuexen <tuexen@fh-muenster.de>
-CC:     Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        davem <davem@davemloft.net>, Guillaume Nault <gnault@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: RE: [PATCHv4 net-next 16/16] sctp: enable udp tunneling socks
-Thread-Topic: [PATCHv4 net-next 16/16] sctp: enable udp tunneling socks
-Thread-Index: AQHWpydLGSoHIJDNH0uB1ZnpfnejBqmhC7cA
-Date:   Tue, 20 Oct 2020 22:08:17 +0000
-Message-ID: <1614a5aa143147a385f7db7bdda0bfd3@AcuMS.aculab.com>
-References: <cover.1603110316.git.lucien.xin@gmail.com>
- <b65bdc11e5a17e328227676ea283cee617f973fb.1603110316.git.lucien.xin@gmail.com>
- <20201019221545.GD11030@localhost.localdomain>
- <CADvbK_ezWXMxpKkt3kxbXhcgu73PTJ1zpChb_sCgDu38xcROtA@mail.gmail.com>
- <20201020211108.GF11030@localhost.localdomain>
- <3BC2D946-9EA7-4847-9C6E-B3C9DA6A6618@fh-muenster.de>
- <20201020212338.GG11030@localhost.localdomain>
-In-Reply-To: <20201020212338.GG11030@localhost.localdomain>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
-MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+        id S2410397AbgJTWKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 18:10:47 -0400
+Received: from kernel.crashing.org ([76.164.61.194]:43522 "EHLO
+        kernel.crashing.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2393563AbgJTWKr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 18:10:47 -0400
+Received: from localhost (gate.crashing.org [63.228.1.57])
+        (authenticated bits=0)
+        by kernel.crashing.org (8.14.7/8.14.7) with ESMTP id 09KMA9S4006827
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Tue, 20 Oct 2020 17:10:14 -0500
+Message-ID: <32bfb619bbb3cd6f52f9e5da205673702fed228f.camel@kernel.crashing.org>
+Subject: Re: [PATCH] net: ftgmac100: Fix missing TX-poll issue
+From:   Benjamin Herrenschmidt <benh@kernel.crashing.org>
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Dylan Hung <dylan_hung@aspeedtech.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Joel Stanley <joel@jms.id.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Po-Yu Chuang <ratbert@faraday-tech.com>,
+        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        BMC-SW <BMC-SW@aspeedtech.com>
+Date:   Wed, 21 Oct 2020 09:10:02 +1100
+In-Reply-To: <CAK8P3a2pEfbLDWTppVHmGxXduOWPCwBw-8bMY9h3EbEecsVfTA@mail.gmail.com>
+References: <20201019073908.32262-1-dylan_hung@aspeedtech.com>
+         <CACPK8Xfn+Gn0PHCfhX-vgLTA6e2=RT+D+fnLF67_1j1iwqh7yg@mail.gmail.com>
+         <20201019120040.3152ea0b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+         <PS1PR0601MB1849166CBF6D1678E6E1210C9C1F0@PS1PR0601MB1849.apcprd06.prod.outlook.com>
+         <CAK8P3a2pEfbLDWTppVHmGxXduOWPCwBw-8bMY9h3EbEecsVfTA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marcelo Ricardo Leitner
-> Sent: 20 October 2020 22:24
-...
-> > > Did FreeBSD enable it by default too?
-> > No. The default is 0, which means that the encapsulation is turned off.
-> > Setting this sysctl variable to a non-zero value enables the UDP tunneling
-> > with the given port.
+On Tue, 2020-10-20 at 21:49 +0200, Arnd Bergmann wrote:
+> On Tue, Oct 20, 2020 at 11:37 AM Dylan Hung <dylan_hung@aspeedtech.com> wrote:
+> > > +1 @first is system memory from dma_alloc_coherent(), right?
+> > > 
+> > > You shouldn't have to do this. Is coherent DMA memory broken on your
+> > > platform?
+> > 
+> > It is about the arbitration on the DRAM controller.  There are two queues in the dram controller, one is for the CPU access and the other is for the HW engines.
+> > When CPU issues a store command, the dram controller just acknowledges cpu's request and pushes the request into the queue.  Then CPU triggers the HW MAC engine, the HW engine starts to fetch the DMA memory.
+> > But since the cpu's request may still stay in the queue, the HW engine may fetch the wrong data.
+
+Actually, I take back what I said earlier, the above seems to imply
+this is more generic.
+
+Dylan, please confirm, does this affect *all* DMA capable devices ? If
+yes, then it's a really really bad design bug in your chips
+unfortunately and the proper fix is indeed to make dma_wmb() do a dummy
+read of some sort (what address though ? would any dummy non-cachable
+page do ?) to force the data out as *all* drivers will potentially be
+affected.
+
+I was under the impression that it was a specific timing issue in the
+vhub and ethernet parts, but if it's more generic then it needs to be
+fixed globally.
+
+> There is still something missing in the explanation: The iowrite32()
+> only tells the
+> device that it should check the queue, but not where the data is. I would expect
+> the device to either see the correct data that was marked valid by the
+> 'dma_wmb();first->txdes0 = cpu_to_le32(f_ctl_stat);' operation, or it would see
+> the old f_ctl_stat value telling it that the data is not yet valid and
+> not look at
+> the rest of the descriptor. In the second case you would see the data
+> not getting sent out until the next start_xmit(), but the device should not
+> fetch wrong data.
 > 
-> Thanks Michael.
-> Xin, then we should change this default value (and update the
-> documentation above accordingly, to still have the standard port #
-> readily available in there).
+> There are two possible scenarios in which your patch would still help:
+> 
+> a) the dma_wmb() does not serialize the stores as seen by DMA the
+>     way it is supposed to, so the device can observe the new value of txdec0
+>     before it observes the correct data.
+> 
+> b) The txdes0 field sometimes contains stale data that marks the
+>     descriptor as valid before the correct data is written. This field
+>     should have been set in ftgmac100_tx_complete_packet() earlier
+> 
+> If either of the two is the case, then the READ_ONCE() would just
+> introduce a long delay before the iowrite32() that makes it more likely
+> that the data is there, but the inconsistent state would still be observable
+> by the device if it is still working on previous frames.
 
-Does that mean that you can't have some 'normal' connections and
-others that use UDP encapsulation?
-Seems a pretty strong restriction.
+I think it just get stuck until we try another packet, ie, it doesn't
+see the new descriptor valid bit. But Dylan can elaborate.
 
-(I'm waiting for one of our customers to ask for this...)
+Cheers,
+Ben.
 
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
 
