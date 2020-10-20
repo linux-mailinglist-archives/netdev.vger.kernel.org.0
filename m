@@ -2,61 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F3072937F6
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 11:26:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A32B72937F9
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 11:27:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392804AbgJTJ0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 05:26:53 -0400
-Received: from sonic314-21.consmr.mail.sg3.yahoo.com ([106.10.240.145]:35084
-        "EHLO sonic314-21.consmr.mail.sg3.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2392800AbgJTJ0w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 05:26:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1603186008; bh=TCEah6dQDVULXjjJd0DMU7TiZ3f8rT/CjPbt58XpL8M=; h=Date:From:Reply-To:Subject:References:From:Subject; b=FMI/ihJ5DaI73SrDwl9fT1g/btJ3WLPOgO5K2RyhDyQK2cWo1eD/Xccy2QW30voa6kidG3YCwFOjVwAsYwMDAa7r8s+9s/lzSfXZ+7+HGNSYDhX3hEd2HNas2aJT6xefq6soPRBbhWE6eP23HDwRhOpSz5ZNIqFq1YJS+RrZnL4Y+XgHagT7SHp9qiJiZefcgWMw+M36lXZvZ3slVxEgqdbdI06h2OM9J70cSC5/xLlMhgGniHRVaxOqajGF7pFVEPEiKKbGkfTk+5L0AaZNIRffp5Nmavnj7xdrpWWvttKtoSjCOvs1YMXmeM9qPZJZ+jGzLe0xXFQJWum2kKbKJg==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1603186008; bh=T1zLEBPJuOgljP06VuzqEc8dZaL+OEoUygKukEuVR3h=; h=Date:From:Subject; b=Lte2fv1o90XP+YZ2WLpMWw1T66tOuJoEzImXF/5rgmBacS048qct9zMlfrvUZMlmKMchS15YJIuy116ID6fxTjcoEcWFCDGx+EvKR2OT/83itELcFKUl69Gl2khRRJOsmwCEa2rCstFun6DCpNsgaaoWYLeEfnhLNcsQTYI8gTWDUBfrkmluG/kypuKB6C8Bj0h0YlOa9evA5OMA7pntELDPPiuC+rCFozE9IqtYHKe1pY8vv5Ohm68maxhfdsC8hnXs5Y4vISIASP3XoB5KzeJxVubpXLysnIZex7JYF6nDHwh/d3UvNCD8qFDlEo2k4WeG8yc5jLvY9vHa8P+cUw==
-X-YMail-OSG: WCiqO9UVM1lkAPpnmjtKUFsdwYTayOGUoE5sji5apKEUZk23pb5KrCAZlh.Y6kp
- ekDlkQ4OuuyUBqT1pANtG7mc7XgrBZRZjg5ksSTY.v9F6k6Xspo2E3SZ7r218ubujNU834St3aQJ
- nihx.XLeorkpErmCRxA5wR0OvQyCoLJNyVEe.e8dgkb5ir9pmHsxj0BfVAGEhBlg6PcZ4txWWwGP
- 85CyHGxo64A.OfLfb2nSikMX38fBGdaD16HvVeiudJmf._9qBy1cRYPfCZWCdTFHY_REGXbYJH1r
- 3VX9GtMfhHSkyRiBl1W4DJl.n3lDsQiGubWClIC6MDcprWDP5IvlNViTDm0EBf6_XeOsS4jzKC5E
- lt4xVWblxOjeHdCAeWbpovLNFzveRqtyoE.Ij_oDXCuawGaOcJqljxfzoOTf6lo5Abl8hiJVSzyu
- NEkjYsd8JQ74F164hCM2q0rXeCLLIneYdmisb5L8qOsqOuuvnJUf1R78NTg7ufhgwmatHllsB2Xz
- oKZWg58CpGts8Hy5G0q1ahLT93tMWNzQnGXzo5h4zft_fty5s6qq7T5ZdY_z7xe9F3ZBj36C7AHf
- rcNXos6Fn.74INpKfuRVUxxIPvWVKeuEdOt2P8Gvq7WkPhghDXFAqVeLP3hJDtK87wqUTx1NFh4F
- Fw.GYvr_7pwlvO1LZ2R1NWGKPuI5s4Ozg99cA1zegSaiRURraL4x3v1qth0zmtuwuUDfIUCoQ_X7
- 68.MGAwac62_vNv09EkyFjHJPLsKGtRfDR7gueXsbmU721eIBpvRWza2NmrvTztuX_YWGAWswhTU
- 6o5KNtf5nAvGB9kdwVBr4FRhTT8KRTjyuTnyIBh3q5s2gWv1JX3knUv_a1D3JWJXF_gymOoPAzBz
- bjQ_4c7aO6.AvzlHFLRmUaZQW7kB2OioRw8_eUPKbpK7DIQMbIbQhzIDq4ee_Fd2llsVZaWBf7b6
- HgckAc4xit.KbSIkMsiPzOv6Yn_musp0YNuiDR8UsaHlyJcLvJ6tAPYsmM56szDpCjibzH6Y6Db.
- kKUnpJi1B2Txh7e1YA6Y4bSfBarRwheA82DVhOrkzDTdk4HuVcRfHtH0ZBnxBBwVbTC3JVk6vt3R
- OId5.2pnzzvCEXbK4VeUeyZJsdb7bqGbiJzQnu4M9FkDmeJ0gDS8SayxU7iRu.SSNjPVRi0BxXdE
- FL3YU35tHV6XwGQlIJ5FPu1Rtcffog_3SJHoY6Ao497ZJEgsMDuLemxJGz1NGn1sruXYnSqzVjKd
- 52N0TNcxWGmmWwvULBSIgJ.OYZXHhccgRLDB5sAFEdFPc1B3orO6crCzNeUPMz7d_qTc.un8EFaO
- KqnxuJPAGtNz_6K4FyVhw9cHZv9l0W5jDitxo4qRztLdqVSMMFFvb.nDDmit23fzMzTX4sRjpZ6v
- DpZ9RSD8oIbTmDxDYckj6SavzUdyjQ6DNV2xL7c4VAkx.bw_8aYsemA--
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic314.consmr.mail.sg3.yahoo.com with HTTP; Tue, 20 Oct 2020 09:26:48 +0000
-Date:   Tue, 20 Oct 2020 09:26:47 +0000 (UTC)
-From:   "Mr. Mohamed Musa" <mohmedmusa1964@gmail.com>
-Reply-To: mohamedmusa1962@gmail.com
-Message-ID: <1405560628.1022654.1603186007602@mail.yahoo.com>
-Subject: REPLY ME IMMEDIATELY
+        id S2392785AbgJTJ1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 05:27:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49636 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391615AbgJTJ1s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 05:27:48 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC8C3C061755
+        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 02:27:47 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id e22so1665537ejr.4
+        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 02:27:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=PxgZngH4K0i7hap3s+j68QYGxBsMIhq98RbhJPg+MGo=;
+        b=qVggNb8CLSe0frJzMo5t1fAFp3ZBNqZHuhhjOA/MppoyHTRTbX9wb3lI02LuUx8TYz
+         IBOFzGHCeQUmRdJLeOOE6saF6YYwM/t2ssRb7QGfnKxz7riQ1i02EqErOiQpnjjyE20T
+         Vb5nXJRny78jlp5LxblGWXEOF0vAr2LoQOzObvNBAr/oU3C2fKEMiTv/GDtLncTjx/tD
+         uLN2OHmOu+UJ/RweBA/F+6IlDIM2vMrIe/Wc4cohASrWtlhn56md6840WV709sFlsDlv
+         XpaV57/ySsHqu0hJDnXVD/Mnxc2+iH50zwy2H+1LRksp+EA5hIywOI0IvhFmMCSK01ij
+         V49g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=PxgZngH4K0i7hap3s+j68QYGxBsMIhq98RbhJPg+MGo=;
+        b=hVeXISYUwL/CCoPUaGmZi+LGHzKk42REoDf1gD2idSpfE3h5cJJ6/ilzd0GYyCGJBC
+         WXsIfXPkfOYSe1pPwJe6xFo1M/+DhopJw6wmN6D7LZPIBWZJppFg7mnmVQDSzaFqbizz
+         J14z29nEAJmKso4NrmuCWg+5/ZIh9m64Z0TNgGIu+XGJkhdgWplkZNiH52QfPKymygCA
+         DUPawgqw1WRpBpz//efE3cc2jpsjiNZJOEqrUGB3Dx5loc1FlG2iLOgTgqjZilKCFlPz
+         AmEGwuhOEUAmjJMlaweuVwa6L33Sjo3Jp1vVIDGQ157sCUgIDd7cdquhVL0FfogCvDWO
+         wuqA==
+X-Gm-Message-State: AOAM533JbfVslQ+Vnzkp0svv09hc/+miACFaCi2dRj3Sv0C+NPO3ZL/P
+        BAyQme80p4XIvObByuI5wRUtmA==
+X-Google-Smtp-Source: ABdhPJw0f/EKrjwZ1Ry+hSjxOriWoaKlahve1JDK7I9GpKxwxutt6/lLzYczBqJQAYlpyr4BWC0R/A==
+X-Received: by 2002:a17:906:660f:: with SMTP id b15mr2296323ejp.333.1603186066538;
+        Tue, 20 Oct 2020 02:27:46 -0700 (PDT)
+Received: from tsr-lap-08.nix.tessares.net ([2a02:578:85b0:e00:53fa:8da9:45da:8127])
+        by smtp.gmail.com with ESMTPSA id js16sm1864960ejb.91.2020.10.20.02.27.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 20 Oct 2020 02:27:45 -0700 (PDT)
+Subject: Re: [PATCH] mptcp: MPTCP_KUNIT_TESTS should depend on MPTCP instead
+ of selecting it
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>, mptcp@lists.01.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20201019113240.11516-1-geert@linux-m68k.org>
+ <1968b7a6-a553-c882-c386-4b4fde2d7a87@tessares.net>
+ <CAMuHMdUDpVVejmrr3ayxnN=tgHrgDmUCVMG0VJht1Y-FUUv42Q@mail.gmail.com>
+ <CAMuHMdWEKszUOA6Q9Y+vpLdRnq3wstCj1ubV=8iUKZAQkew_wg@mail.gmail.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Message-ID: <2945fd68-6323-30f1-db6b-9ed1dba582a6@tessares.net>
+Date:   Tue, 20 Oct 2020 11:27:45 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <CAMuHMdWEKszUOA6Q9Y+vpLdRnq3wstCj1ubV=8iUKZAQkew_wg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
-References: <1405560628.1022654.1603186007602.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.16868 YMailNodin Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Geert,
 
+On 20/10/2020 09:40, Geert Uytterhoeven wrote:
+> On Mon, Oct 19, 2020 at 10:38 PM Geert Uytterhoeven
+> <geert@linux-m68k.org> wrote:
+>> On Mon, Oct 19, 2020 at 5:47 PM Matthieu Baerts
+>> <matthieu.baerts@tessares.net> wrote:
+>>> On 19/10/2020 13:32, Geert Uytterhoeven wrote:
+>>>> MPTCP_KUNIT_TESTS selects MPTCP, thus enabling an optional feature the
+>>>> user may not want to enable.  Fix this by making the test depend on
+>>>> MPTCP instead.
+>>>
+>>> I think the initial intension was to select MPTCP to have an easy way to
+>>> enable all KUnit tests. We imitated what was and is still done in
+>>> fs/ext4/Kconfig.
+>>>
+>>> But it probably makes sense to depend on MPTCP instead of selecting it.
+>>> So that's fine for me. But then please also send a patch to ext4
+>>> maintainer to do the same there.
+>>
+>> Thanks, good point.  I didn't notice, as I did have ext4 enabled anyway.
+>> Will send a patch for ext4.  Looks like ext4 and MPTCP where the only
+>> test modules selecting their dependencies.
+> 
+> FTR, "[PATCH] ext: EXT4_KUNIT_TESTS should depend on EXT4_FS instead
+> of  selecting it"
+> https://lore.kernel.org/lkml/20201020073740.29081-1-geert@linux-m68k.org/
 
-Assalamu alaikum
+Thank you for having sent this other patch and shared the link here!
 
-My name is Mr. Mohamed Musa, I am a staff working with the Bank of Africa here in Ouagadougou,Burkina Faso.
-
-I want you to help me in receiving the sum of Twenty Seven Million Two Hundred thousand Dollars ($27,200,000) into your Bank Account. This fund was deposited in the bank here by a foreign customer who died accidentally alongside with his entire family members many years ago.
-
-Nobody had asked for this fund till now please contact me through my private email address: (mohamedmusa1962@gmail.com) for more details.
-
-Mr. Mohamed Musa.
+Groetjes,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
