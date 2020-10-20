@@ -2,114 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10C3B293D1B
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 15:15:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D20E6293D2F
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 15:18:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407318AbgJTNPT convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 20 Oct 2020 09:15:19 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:57615 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2407286AbgJTNPT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 09:15:19 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-91-WlibNx1BNMemSMrpm2jZzw-1; Tue, 20 Oct 2020 14:15:12 +0100
-X-MC-Unique: WlibNx1BNMemSMrpm2jZzw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Tue, 20 Oct 2020 14:15:12 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Tue, 20 Oct 2020 14:15:12 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Dylan Hung' <dylan_hung@aspeedtech.com>,
-        Jakub Kicinski <kuba@kernel.org>, Joel Stanley <joel@jms.id.au>
-CC:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Po-Yu Chuang <ratbert@faraday-tech.com>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        BMC-SW <BMC-SW@aspeedtech.com>
-Subject: RE: [PATCH] net: ftgmac100: Fix missing TX-poll issue
-Thread-Topic: [PATCH] net: ftgmac100: Fix missing TX-poll issue
-Thread-Index: AQHWper5b6m5IMpmJk2Uyk3yAiWzCqmen8qAgACopgCAALYZ4IAAd6yw
-Date:   Tue, 20 Oct 2020 13:15:11 +0000
-Message-ID: <f75555e09d47476a871669ffe017c4f8@AcuMS.aculab.com>
-References: <20201019073908.32262-1-dylan_hung@aspeedtech.com>
-        <CACPK8Xfn+Gn0PHCfhX-vgLTA6e2=RT+D+fnLF67_1j1iwqh7yg@mail.gmail.com>
- <20201019120040.3152ea0b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <PS1PR0601MB1849166CBF6D1678E6E1210C9C1F0@PS1PR0601MB1849.apcprd06.prod.outlook.com>
-In-Reply-To: <PS1PR0601MB1849166CBF6D1678E6E1210C9C1F0@PS1PR0601MB1849.apcprd06.prod.outlook.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S2407103AbgJTNSn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 09:18:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57222 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406741AbgJTNSn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 09:18:43 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FD5BC061755
+        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 06:18:42 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id qp15so2672701ejb.3
+        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 06:18:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=JDOVYVFvlW2cJ3cPdc7NzP6056HGitwNe25Sb3BmfXU=;
+        b=ZOs2nJDDK9g3UIVHvcX7KWRXgeXh8T2dv0/bFyGyRawzCeji3KYSp+t6+l1G6vF+H9
+         odPTy4epdtdVn0m+pXrfrXGdbZzUeJZiJSvrLlG1zxgufbiL+XsgDzrK0z1BKD5cbMnT
+         giogSAfrfpkzPFzTMiT8yccQqYJJeW1yP0XNwSszji+9KGGH/RLYd0zeobJt+cPBYFSI
+         rn6xSONW6cl6kr+gXHEbe4LBISWJ046AIQnWu88ZupuDX4vNLvZ5o0uef9W46tqRZSlZ
+         yVh/hQkOX+p6folXPeH6rO4+RcNUZ5MZt46rNYR5g5fgPURaO6asCjBNDaaEOigWI6ub
+         uemQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=JDOVYVFvlW2cJ3cPdc7NzP6056HGitwNe25Sb3BmfXU=;
+        b=IVuUuVy9hXVCpWCaWZz6EWnPgUaod/8Cx2a+emBIym2Jo4bhDPQCLX+nJbES/sR2b4
+         IiQ+I7t4DrIRJ2flhpYeLEriizz+sz34HHCQ69nbUOBqbynBdm8ubNYFQn3pOTBuH56U
+         Z1U4my2EcIJ7WsnYLCZdwMt7n5xDu9laKbnJP3sUpURWA1RkdDN8U+tczjcPx/spjMoe
+         zRME12snLEllWe7W1hP1wh2vSqe80MH+eTCNtrrv05gPZF5Zwx78Z5sa8tj8//DriE+f
+         xqdUGHP3SBeU94WAyyIZzdZ81fc9AjOX1Qf6dxVL9QH2LvHKwHwbLymsyRiBwWVLt/Pc
+         4zww==
+X-Gm-Message-State: AOAM532kkHLN/q6SUw4Aaf9Uur0WGh2aVXk6NS9Q7uizBQ9cfx0mya+C
+        YUb3CxtU8OTvG6VRa9seUO/QDg==
+X-Google-Smtp-Source: ABdhPJwoKLOUtTFpoHIZQeV3sSH17MZoaevG8KEWL7kHrwUcf5yvXtqjZ1h4Kdv5ARV8Ktwi0f6VEA==
+X-Received: by 2002:a17:906:bc42:: with SMTP id s2mr2982259ejv.251.1603199920554;
+        Tue, 20 Oct 2020 06:18:40 -0700 (PDT)
+Received: from tsr-lap-08.nix.tessares.net ([37.184.95.216])
+        by smtp.gmail.com with ESMTPSA id v14sm2387783edy.68.2020.10.20.06.18.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 20 Oct 2020 06:18:39 -0700 (PDT)
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Geliang Tang <geliangtang@gmail.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        mptcp@lists.01.org, linux-kernel@vger.kernel.org
+References: <cover.1603102503.git.geliangtang@gmail.com>
+ <7766357d-0838-1603-9967-8910aa312f65@tessares.net>
+ <20201019134048.11c75c9a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: Re: [MPTCP][PATCH net-next 0/2] init ahmac and port of
+ mptcp_options_received
+Message-ID: <91a59216-a1c7-1ffe-c263-b3bddcd2d801@tessares.net>
+Date:   Tue, 20 Oct 2020 15:18:38 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.2
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20201019134048.11c75c9a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dylan Hung
-> Sent: 20 October 2020 07:15
+Hi Jakub,
+
+On 19/10/2020 22:40, Jakub Kicinski wrote:
+> On Mon, 19 Oct 2020 18:27:55 +0200 Matthieu Baerts wrote:
+>> Hi Geliang,
+>>
+>> On 19/10/2020 12:23, Geliang Tang wrote:
+>>> This patchset deals with initializations of mptcp_options_received's two
+>>> fields, ahmac and port.
+>>>
+>>> Geliang Tang (2):
+>>>     mptcp: initialize mptcp_options_received's ahmac
+>>>     mptcp: move mptcp_options_received's port initialization
+>>
+>> Thank you for these two patches. They look good to me except one detail:
+>> these two patches are for -net and not net-next.
+>>
+>> I don't know if it is alright for Jakub to apply them to -net or if it
+>> is clearer to re-send them with an updated subject.
+>>
+>> If it is OK to apply them to -net without a re-submit, here is my:
+>>
+>> Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 > 
-> > -----Original Message-----
-> > From: Jakub Kicinski [mailto:kuba@kernel.org]
-> >
-> > On Mon, 19 Oct 2020 08:57:03 +0000 Joel Stanley wrote:
-> > > > diff --git a/drivers/net/ethernet/faraday/ftgmac100.c
-> > > > b/drivers/net/ethernet/faraday/ftgmac100.c
-> > > > index 00024dd41147..9a99a87f29f3 100644
-> > > > --- a/drivers/net/ethernet/faraday/ftgmac100.c
-> > > > +++ b/drivers/net/ethernet/faraday/ftgmac100.c
-> > > > @@ -804,7 +804,8 @@ static netdev_tx_t
-> > ftgmac100_hard_start_xmit(struct sk_buff *skb,
-> > > >          * before setting the OWN bit on the first descriptor.
-> > > >          */
-> > > >         dma_wmb();
-> > > > -       first->txdes0 = cpu_to_le32(f_ctl_stat);
-> > > > +       WRITE_ONCE(first->txdes0, cpu_to_le32(f_ctl_stat));
-> > > > +       READ_ONCE(first->txdes0);
-> > >
-> > > I understand what you're trying to do here, but I'm not sure that this
-> > > is the correct way to go about it.
-> > >
-> > > It does cause the compiler to produce a store and then a load.
+> Thanks, I can apply to net.
+
+Great, thank you!
+
+BTW, nice work with the maintenance of Net! More reasons for davem to 
+take time recovering :)
+
 > 
-> Yes, the load instruction here is to guarantee the previous store is indeed
-> pushed onto the physical memory.
+>> Also, if you don't mind and while I am here, I never know: is it OK for
+>> you the maintainers to send one Acked/Reviewed-by for a whole series --
+>> but then this is not reflected on patchwork -- or should we send one tag
+>> for each patch?
+> 
+> It's fine, we propagate those semi-manually, but it's not a problem.
+> Hopefully patchwork will address this at some point :(
 
-That rather depends where the data is 'stuck'.
+Thank you for your reply, good to know!
 
-An old sparc cpu would flush the cpu store buffer before the read.
-But a modern x86 cpu will satisfy the read from the store buffer
-for cached data.
+Then next time, I will send these tags per patch to save you some 
+semi-manual operations :)
 
-If the write is 'posted' on a PCI(e) bus then the read can't overtake it.
-But that is a memory access so shouldn't be to a PCI(e) address.
+Some preparation works have been done on patchwork side but the feature 
+is not available yet:
 
-Shouldn't dma_wb() actually force your 'cpu to dram' queue be flushed?
-In which case you need one after writing the ring descriptor and
-before the poke of the mac engine.
+   https://github.com/getpatchwork/patchwork/issues/113
 
-The barrier before the descriptor write only needs to guarantee
-ordering of the writes - it can probably be a lighter barrier?
+Hopefully soon!
 
-It might be that your dma_wmb() needs to do a write+read of
-an uncached DRAM location in order to empty the cpu to dram queue.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+Cheers,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
