@@ -2,66 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EE5829401D
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 18:00:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DDDE29404B
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 18:14:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437093AbgJTQAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 12:00:42 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:36888 "EHLO vps0.lunn.ch"
+        id S2394507AbgJTQOp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 12:14:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37860 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2437088AbgJTQAl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Oct 2020 12:00:41 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kUu3z-002gSq-GG; Tue, 20 Oct 2020 18:00:39 +0200
-Date:   Tue, 20 Oct 2020 18:00:39 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+        id S2394501AbgJTQOo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Oct 2020 12:14:44 -0400
+Received: from localhost (otava-0257.koleje.cuni.cz [78.128.181.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4D4522224A;
+        Tue, 20 Oct 2020 16:14:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603210484;
+        bh=GH5eLxFTIak/Bl39mkFyPnKqsM5t7joc+f3vvBIjjzs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=X/Dm/TF/p/o/v790VzKzgi5JdH9WH3frVzAgXrYVIoZdvtXYul2P07y5uz9L/hK7H
+         oQmgzgZ4o7QT4FVP4CBkJRnXJkVIvSp+6uSN1kZPJLytHCnOMEZGI1VhczR+8EyoVt
+         Hgvvs0NvIp7RH9w2oP8dZ7+yuE+z438TOmqhl190=
+Date:   Tue, 20 Oct 2020 18:14:38 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
 Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
         netdev@vger.kernel.org
-Subject: Re: [PATCH russell-kings-net-queue v2 1/3] net: phy: mdio-i2c:
- support I2C MDIO protocol for RollBall SFP modules
-Message-ID: <20201020160039.GI139700@lunn.ch>
+Subject: Re: [PATCH russell-kings-net-queue v2 2/3] net: phy: sfp: add
+ support for multigig RollBall modules
+Message-ID: <20201020181438.1b3e972a@kernel.org>
+In-Reply-To: <20201020155126.GH139700@lunn.ch>
 References: <20201020150615.11969-1-kabel@kernel.org>
- <20201020150615.11969-2-kabel@kernel.org>
+        <20201020150615.11969-3-kabel@kernel.org>
+        <20201020155126.GH139700@lunn.ch>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201020150615.11969-2-kabel@kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> This extends the mdio-i2c driver so that when SFP PHY address 17 is used
-> (which in mdio-i2c terms corresponds to I2C address 0x51), then this
-> different protocol is used for MDIO access.
+On Tue, 20 Oct 2020 17:51:26 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
 
-Hi Marek
+> > @@ -2006,6 +2040,23 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
+> >  
+> >  	sfp->id = id;
+> >  
+> > +	sfp->phy_addr = SFP_PHY_ADDR;
+> > +
+> > +	rollball = ((!memcmp(id.base.vendor_name, "OEM             ", 16) ||
+> > +		     !memcmp(id.base.vendor_name, "Turris          ", 16)) &&
+> > +		    (!memcmp(id.base.vendor_pn, "SFP-10G-T       ", 16) ||
+> > +		     !memcmp(id.base.vendor_pn, "RTSFP-10", 8)));  
+> 
+> Are you customising the SFP, so that it has your vendor name?
+> 
+> Is the generic SFP OEM/SFP-10G-T, and your customized one Turris/ 
+> RTSFP-10?
+> 
+> 	Andrew
 
-I don't see that being very scalable. What happens when the next SFP
-comes along which has a different protocol at address 0x51. Since you
-can identify the SFP via the EEPROM information, i would prefer you
-explicitly tell it to use the rollball protocol when instantiating the
-MDIO bus.
+Hilink puts OEM/SFP-10G-T into their modules.
+RollBall puts OEM/RTSFP-10 and sometimes OEM/RTSFP-10G.
+They are rebranding these modules for us to Turris/RTSFP-10.
 
->   * I2C bus addresses 0x50 and 0x51 are normally an EEPROM, which is
->   * specified to be present in SFP modules.  These correspond with PHY
-> - * addresses 16 and 17.  Disallow access to these "phy" addresses.
-> + * addresses 16 and 17.  Disallow access to 0x50 "phy" address.
-> + * Use RollBall protocol when accessing via the 0x51 address.
->   */
->  static bool i2c_mii_valid_phy_id(int phy_id)
->  {
-> -	return phy_id != 0x10 && phy_id != 0x11;
-> +	return phy_id != 0x10;
-> +}
-
-I'm not sure that is safe. It means that we will scan address 0x11 to
-see if there is a PHY there. And if the SFP does have diagnostics
-registers, that might be enough that phylib thinks there is a PHY
-there.
-
-I think you only need to allow access to 0x11 if rollball protocol has
-been enabled.
-
-     Andrew
+Marek
