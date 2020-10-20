@@ -2,100 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D572229386D
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 11:46:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0232C2938D6
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 12:05:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403978AbgJTJq2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 05:46:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58200 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728062AbgJTJq2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 05:46:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603187187;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=knt9S68tgKirjQKsf7Zso0Y78A5lUiSAACpKMVJzeN8=;
-        b=UP1Mi+zpGG9b2ssmgVBqS4N4qPeeK7q2Qx6iy5cZJvSTP3oRsDBx3usPvnFPeyZZiry4iX
-        0WeN4SblcBtpOz/jsKSahPtFX3Mjn49odEIOW2MxufygwDnPWqHQCScCLVojRnQwXIl980
-        guAqZxNz1k+2eDtE8GHvHFFt4CfQN+M=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-325-IaPcN5B_O_i6gFbNsz2Www-1; Tue, 20 Oct 2020 05:46:24 -0400
-X-MC-Unique: IaPcN5B_O_i6gFbNsz2Www-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 632A018A0760;
-        Tue, 20 Oct 2020 09:46:23 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.29])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B7B5A5B4A3;
-        Tue, 20 Oct 2020 09:46:14 +0000 (UTC)
-Date:   Tue, 20 Oct 2020 11:46:13 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        kuba@kernel.org, lorenzo.bianconi@redhat.com,
-        ilias.apalodimas@linaro.org, brouer@redhat.com
-Subject: Re: [RFC 1/2] net: xdp: introduce bulking for xdp tx return path
-Message-ID: <20201020114613.752a979c@carbon>
-In-Reply-To: <62165fcacf47521edae67ae739827aa5f751fb8b.1603185591.git.lorenzo@kernel.org>
-References: <cover.1603185591.git.lorenzo@kernel.org>
-        <62165fcacf47521edae67ae739827aa5f751fb8b.1603185591.git.lorenzo@kernel.org>
+        id S2405924AbgJTKFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 06:05:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55642 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729133AbgJTKFa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 06:05:30 -0400
+Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2030DC061755;
+        Tue, 20 Oct 2020 03:05:30 -0700 (PDT)
+Received: by mail-lf1-x141.google.com with SMTP id 184so1386627lfd.6;
+        Tue, 20 Oct 2020 03:05:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=YKO69m9GIUyAgq9zP8NOSQHmVAdJ/gUS0MMiKmKZ6jg=;
+        b=qOrMe8Hq+6G5pM2CoZ63NLIZNnwaOnlTKIVr7oi0qiWzq9EW2VxVzZvLFUSeNAoqNb
+         b0DHM2tW8EGGk1WP1V27VaAqCme6xeSbd06kPDSxLhXxmrVqjPqeRQc5l+cO8ce2xIWg
+         JaeEowfzYSccwxpZfNY7bxBUu2n/7h3UtKkiSWjWsUvqdSWEPPzlbgRBSnVgBTxmZuyq
+         AixqQe0zAG8CTn+qyuGukx5+q8fhqJUpSoctvD2ESiyDYRRbYxrXl2Vyhf0SER27fKdB
+         3M0s3NfpMJiT6sGekyLEebzzDu2WEkbROH2lDReLAVOne+ul1hBGWOAKH/x3lzhjGi5p
+         53wQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=YKO69m9GIUyAgq9zP8NOSQHmVAdJ/gUS0MMiKmKZ6jg=;
+        b=B296+a1sp+dlMarrZRq/gbyo18IoMJxUzTBkfhqWSrxj7RDh7dOCgytHPPHxhbnVIE
+         CtHG2wNDN5uVBcqaEDsf3vXu8qR4hSi0+xRgyAnuTo4vEqUXAAVwFYXDNeB8lpUsJ+af
+         9qIWucN4Xws0lF69auqMYTOGAJjTu9CMULf+SVMTmW/hEfmssYwscKbxxEq4I5A9unOp
+         ecii3MXvARzL5Wn8NNMnFuyQtsCLx1pZ5K+bpHSpjEl3CFuJtBQDJbV6xK339faDb68x
+         iGOINWJixODVeAOUPpDFK9vX/cn7t+Na1wL3fqwnxvIhheEssqkDdQw6oyb+Myl3SYw8
+         oimg==
+X-Gm-Message-State: AOAM531phyWNg0TAw7QDwceDsGn6rOGgVW+q9nufcquNgPJ/sGKaXR+0
+        6EScIonTBTaGILQjV1pjrF/+ZGf8n6321JJ/BKU=
+X-Google-Smtp-Source: ABdhPJy2nmaqm1jT8wSt3AQn7oWDyvTYsXu3yiDPHIW2jwxyt8jEHtIrUs+Ej0TtQHIRVHd9AnMOPX0/t6XWhxxfHF4=
+X-Received: by 2002:a19:f207:: with SMTP id q7mr639182lfh.588.1603188328643;
+ Tue, 20 Oct 2020 03:05:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+References: <20201019090657.131-1-zhenzhong.duan@gmail.com> <7ef3b498-bdc5-4a3d-d23b-ad58205ae1b7@redhat.com>
+In-Reply-To: <7ef3b498-bdc5-4a3d-d23b-ad58205ae1b7@redhat.com>
+From:   Zhenzhong Duan <zhenzhong.duan@gmail.com>
+Date:   Tue, 20 Oct 2020 18:05:16 +0800
+Message-ID: <CAFH1YnNsoPeOe6fVZOasy_GiLE7-tiSKeezSEoxv4+wTU+FUAg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] KVM: not register a IRQ bypass producer if
+ unsupported or disabled
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     linux-kernel <linux-kernel@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        netdev@vger.kernel.org, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, vkuznets@redhat.com,
+        wanpengli@tencent.com, jmattson@google.com,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        mst@redhat.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 20 Oct 2020 11:33:37 +0200
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+On Tue, Oct 20, 2020 at 2:23 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> On 2020/10/19 =E4=B8=8B=E5=8D=885:06, Zhenzhong Duan wrote:
+> > If Post interrupt is disabled due to hardware limit or forcely disabled
+> > by "intremap=3Dnopost" parameter, return -EINVAL so that the legacy mod=
+e IRQ
+> > isn't registered as IRQ bypass producer.
+>
+>
+> Is there any side effect if it was still registered?
 
-> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-> index 54b0bf574c05..af33cc62ed4c 100644
-> --- a/drivers/net/ethernet/marvell/mvneta.c
-> +++ b/drivers/net/ethernet/marvell/mvneta.c
-> @@ -663,6 +663,8 @@ struct mvneta_tx_queue {
->  
->  	/* Affinity mask for CPUs*/
->  	cpumask_t affinity_mask;
-> +
-> +	struct xdp_frame_bulk bq;
->  };
->  
->  struct mvneta_rx_queue {
-> @@ -1854,12 +1856,10 @@ static void mvneta_txq_bufs_free(struct mvneta_port *pp,
->  			dev_kfree_skb_any(buf->skb);
->  		} else if (buf->type == MVNETA_TYPE_XDP_TX ||
->  			   buf->type == MVNETA_TYPE_XDP_NDO) {
-> -			if (napi && buf->type == MVNETA_TYPE_XDP_TX)
-> -				xdp_return_frame_rx_napi(buf->xdpf);
-> -			else
-> -				xdp_return_frame(buf->xdpf);
-> +			xdp_return_frame_bulk(buf->xdpf, &txq->bq, napi);
+Not much side effect in theory, just some legacy mode IRQs in producer
+list and it's not easy to distinguish them with PI interrupt mode IRQ.
+The main purpose of this patch is to provide a way for people to know
+if a device IRQ is really offloaded from kernel by a print.
+>
+>
+> >
+> > With this change, below message is printed:
+> > "vfio-pci 0000:db:00.0: irq bypass producer (token 0000000060c8cda5) re=
+gistration fails: -22"
+>
+>
+> I may miss something, but the patch only touches vhost-vDPA instead of VF=
+IO?
 
-Hmm, I don't think you can use 'napi' directly here.
+VFIO already has above print in vfio_msi_set_vector_signal() but vhost-vDPA=
+ not.
 
-You are circumventing check (buf->type == MVNETA_TYPE_XDP_TX), and will
-now also allow XDP_NDO (XDP_REDIRECT) to basically use xdp_return_frame_rx_napi().
-
-
->  		}
->  	}
-> +	xdp_flush_frame_bulk(&txq->bq, napi);
->  
->  	netdev_tx_completed_queue(nq, pkts_compl, bytes_compl);
->  }
-
-
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Regards
+Zhenzhong
