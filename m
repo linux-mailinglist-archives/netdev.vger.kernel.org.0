@@ -2,147 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B5A2293DCD
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 15:52:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3329293DDF
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 15:56:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407652AbgJTNwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 09:52:49 -0400
-Received: from mail-am6eur05on2068.outbound.protection.outlook.com ([40.107.22.68]:55553
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2407628AbgJTNws (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Oct 2020 09:52:48 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Gbkcrl8tmyQRZ3x08hUSQauK+bxUDeYtgX07FhvIVQacKiqOwzaZtx7m/8PSNYwnwcYjsvTWQbKF4AgDHsszlqPJgq2u9qJlArGqtMDG6j2NBsmS+WscRslrxe1LqRIIra319h08W8lz0jmrXQ8f7EJhPd8l/CEGXlks1q9TDDrearZDTWc9uVleIeFinIK7BxaznqMQUqCCac5LUy+RlVoBpQ3EDlGcYyP24JuDG7pU+I0WS/Ij3oDkUGVp9LWjKz8V4Bs5cZpRMUs//K2+vneOMnExZ5LS8y/F9ZvpzCy6X61+TCvgdmQMXXgyyU6WFbpG0Vi4KnIwnIXUNdh6AA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tI80Bvde7p7dm5r405ce2dTyL2qWylvLEH7wJsg+wfE=;
- b=QbXydb3MIq9+7Ap5C/F2xhXESsvqbBpAB/bTIUljn88f2Vrt3BV63g+IeNtF6TopAqFU990MozfuD2HOl9qJBMsxkEN9DN9igr7uNsREYGXc3BcHogqFI5xY1/C7XXyrn8OtlZwk5CFi/qZvBXEe7NbMClD58ohuvfZZKtc6kvtsNgRjGU9iRCQzOiUReBacoN2/mKIt2qARSgyxaHVV7/rmha5YO6sW2b1Gf+fHxWQYOfTbofYowuaznlww2sJJN7Ngui/fRJNJQKOtYM5u2sv5kUJnxRD7OXlWpSfb8rKAijIIRbrgbsAT2KxR2FE6dtYEFPwvO4L21Q2s9pPbqA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tI80Bvde7p7dm5r405ce2dTyL2qWylvLEH7wJsg+wfE=;
- b=l1lcoyYsJ0hHZZd7gSgdelOIgy1BZJaVF0kQMtNJ25HGJwi5j5r07KkLUE59rM4HbjDEve49HytYq7v8oBTkaGnX709JttkvGs8262jk5X5ZhFZYttKt/j+wQs5iPZt+YXNqQnVIz4fJZStUNBFgycH3H2PwzBjAjvKGQRmUUx0=
-Received: from AM8PR04MB7315.eurprd04.prod.outlook.com (2603:10a6:20b:1d4::7)
- by AM0PR04MB4897.eurprd04.prod.outlook.com (2603:10a6:208:c8::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.21; Tue, 20 Oct
- 2020 13:52:45 +0000
-Received: from AM8PR04MB7315.eurprd04.prod.outlook.com
- ([fe80::11e6:d413:2d3d:d271]) by AM8PR04MB7315.eurprd04.prod.outlook.com
- ([fe80::11e6:d413:2d3d:d271%6]) with mapi id 15.20.3477.028; Tue, 20 Oct 2020
- 13:52:45 +0000
-From:   Andy Duan <fugang.duan@nxp.com>
-To:     Chris Healy <cphealy@gmail.com>
-CC:     Andrew Lunn <andrew@lunn.ch>, Greg Ungerer <gerg@linux-m68k.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [EXT] Re: [PATCH] net: ethernet: fec: Replace interrupt driven
- MDIO with polled IO
-Thread-Topic: [EXT] Re: [PATCH] net: ethernet: fec: Replace interrupt driven
- MDIO with polled IO
-Thread-Index: AQHWpoauv6yGoz1SREmyP2rAbcRdI6mfx44AgAAFGyCAAKn6AIAACnOQ
-Date:   Tue, 20 Oct 2020 13:52:44 +0000
-Message-ID: <AM8PR04MB7315470E5A26BB757F503025FF1F0@AM8PR04MB7315.eurprd04.prod.outlook.com>
-References: <c8143134-1df9-d3bc-8ce7-79cb71148d49@linux-m68k.org>
- <20201020024000.GV456889@lunn.ch>
- <AM8PR04MB73150BDBA6E79ABE662B6762FF1F0@AM8PR04MB7315.eurprd04.prod.outlook.com>
- <CAFXsbZopA5esZzdNkFAxUpfwK6zmtRKn07TUfa2ShR4Y-qXBNw@mail.gmail.com>
-In-Reply-To: <CAFXsbZopA5esZzdNkFAxUpfwK6zmtRKn07TUfa2ShR4Y-qXBNw@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [101.86.122.105]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 56f7b5aa-cd57-4fb0-31cd-08d874ff6c05
-x-ms-traffictypediagnostic: AM0PR04MB4897:
-x-microsoft-antispam-prvs: <AM0PR04MB48974B1122572220975EF35FFF1F0@AM0PR04MB4897.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1388;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 9eMv6uodKOX9z3bFZCzDJqUFJQV4Auf56+PzcBK3ZlqzPq+SfP9sLGuJmIw0G/xB+w22WLB3iC1ONf0yGi25x0YQiygmZZrQfe5T6UUpslvaLkef2SDWnAtF65k6LATkZp4aFNeM0bl5NFqYXgdiqESmnFRp9/iIaFDXSPM2G0ZJmgly8M1fAEM+bvadRxk6u3Y1Gedq6gCBtYoxAIu8GSikraJ6S/1QPAgKqb78I8CfKsXK5CLfCJr6ArHj4hzJFAV+aTjIlHMHvlmqwwXiBIRYNLGyHf0BgHwKpnRe/0kGsX86DFaQhROTKERFf/xrtgGpK7Jg4veeLopdlz2yxA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR04MB7315.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(39850400004)(346002)(136003)(376002)(366004)(52536014)(66556008)(86362001)(33656002)(66476007)(186003)(66946007)(8936002)(66446008)(76116006)(6916009)(55016002)(5660300002)(26005)(53546011)(316002)(6506007)(64756008)(8676002)(478600001)(4326008)(71200400001)(54906003)(9686003)(7696005)(83380400001)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: D4X14+AihEH+HbA28/tXtbDaO1vOKtLxXIO5AFpRMAGazqlpkOiKwq2o2f1FfQuFFMtm/aF6fWbyzGEN2HaRViKwJ6W/o81YUfEKWH8p94mcEmiTRLhyBhatiNoBe9nIJblzHgVuHnXdiHVVFoVakCjlkATMxCt73O7BS96uw1qKD74nx0qnQ949PSqlh6QIcOowbz1ssuFp9FrC46/wj24slu/Fw4TtaEyLpoKuCqxWbPViZflutzjDzb+BBayI96GbQ9K8RoJV89p6pCmnbHugtV9Je+Lc6zNls+naSgzYszKGORbcWXz3f9bjb68Bx3KzyPrjIFtW0Kypm0AWYn0jv5k4UTcMIXWRotJDcZNSxhaWGOhPSx0+0CFD4JeJCBegeVxd2ZzGA/avu9GIomqHsrLOV7uq6X6PlX+Vb9rtlBs2G2skj24I1S3BE9lEHhRMA6qBijYc4Lm0aS1JEOfC1Hmpnf45zIKJrOA2Rluaw7oVy5KqRdjMwu4hN1G1MD+yecRdTiQTXPi9YSXAfGraO9JZL4BV7/9IX/Isa4LQW9iwhPpd6WoLcxmQ30lK4lCo9JJyGcW0grzyJyuy002r57TS03TgCKsuAU/mXz7gZlOviGzTblpHNoyaGTeSvggEvhc9FhcAOwMMIXb6kw==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S2407716AbgJTN4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 09:56:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:25842 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2407693AbgJTN4F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 09:56:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603202163;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HyQ28xr5/lapv6azTtFCvHFT5XQ1+OzeHk+84iEm66Y=;
+        b=QUp+Tm/49C2D2ArfwdGiXcYEZLmxY3ITF9bXZyS+HEfcJJoqaGxmch+2EHiNHeADDWpHNz
+        Ouzap4oFcZixuWmorb4Ub+lRVmWRZDipZO+0tL8W1vnU06zVM/xfLz81/8VfcBPp80A1RW
+        EdBHqnK2mgm1gY9dzcmZeB2rW1Al8Fc=
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
+ [209.85.222.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-214-erk4qYIlMMO2PHk86WuiIQ-1; Tue, 20 Oct 2020 09:56:01 -0400
+X-MC-Unique: erk4qYIlMMO2PHk86WuiIQ-1
+Received: by mail-qk1-f199.google.com with SMTP id r128so1807817qkc.9
+        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 06:56:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=HyQ28xr5/lapv6azTtFCvHFT5XQ1+OzeHk+84iEm66Y=;
+        b=eHTmnnt7zHOpbDw07L4M+WGZcQ7iAIjX7rKhdREQTe0llfWz/WwDNSYpRC0vOzIKKI
+         VXOTcvtkY4bHC/HZ+hrshHnDjt9Hi1FpfAaD9ILik4X/aGU1aAEdQuQ/QTxiKCUDIj5v
+         QLJnsIkgmaUzJnfUtSlGCznmN/VE4hKr1Mae+ZsXZWX76+ItEMwmr5fk9510+t/TNSIg
+         6gxWP0Qo/Yu67fPFd+iQGVlELyv4SOgI2ARqvg4YEOeoWvhRLtA0h+krAY7jEbXRK7sV
+         gZuB0oTPCmXJ0DS5RwhB+R/jRfZD4zNJ9U9leNp1O0TMmaxxtIb/I6/rUXfiTi7yypqa
+         2wIA==
+X-Gm-Message-State: AOAM532ZD7St2WYsYrVxGoMoIrRNXSDfJHMv5bcOxsFFdwcu9fbVOs28
+        ahdrAJF2sclKx7yMf5aixxLsFLlDqNF3uQdXlDnULCdDJqmDmYd/JJM34EVZtN2HVwL3pJXNq+x
+        m50hGXibHB85fIO+H
+X-Received: by 2002:a05:6214:174f:: with SMTP id dc15mr3370418qvb.25.1603202160686;
+        Tue, 20 Oct 2020 06:56:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyLUAfqrAOJzxwKF3+voCBF5yQYNbMOvfOkDZhumkJj3bEnT15V4x8vUJ5iQ5pWt9KusIZtsQ==
+X-Received: by 2002:a05:6214:174f:: with SMTP id dc15mr3370377qvb.25.1603202160139;
+        Tue, 20 Oct 2020 06:56:00 -0700 (PDT)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id b8sm775938qkn.133.2020.10.20.06.55.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 20 Oct 2020 06:55:59 -0700 (PDT)
+Subject: Re: [RFC] treewide: cleanup unreachable breaks
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, linux-edac@vger.kernel.org,
+        linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
+        xen-devel@lists.xenproject.org, linux-block@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net,
+        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
+        <linux-crypto@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-power@fi.rohmeurope.com, linux-gpio@vger.kernel.org,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        nouveau@lists.freedesktop.org,
+        virtualization@lists.linux-foundation.org,
+        spice-devel@lists.freedesktop.org, linux-iio@vger.kernel.org,
+        linux-amlogic@lists.infradead.org,
+        industrypack-devel@lists.sourceforge.net,
+        linux-media@vger.kernel.org, MPT-FusionLinux.pdl@broadcom.com,
+        linux-scsi@vger.kernel.org, linux-mtd@lists.infradead.org,
+        linux-can@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        intel-wired-lan@lists.osuosl.org, ath10k@lists.infradead.org,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com, linux-nfc@lists.01.org,
+        linux-nvdimm <linux-nvdimm@lists.01.org>,
+        linux-pci@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, patches@opensource.cirrus.com,
+        storagedev@microchip.com, devel@driverdev.osuosl.org,
+        linux-serial@vger.kernel.org, linux-usb@vger.kernel.org,
+        usb-storage@lists.one-eyed-alien.net,
+        linux-watchdog@vger.kernel.org, ocfs2-devel@oss.oracle.com,
+        bpf <bpf@vger.kernel.org>, linux-integrity@vger.kernel.org,
+        linux-security-module@vger.kernel.org, keyrings@vger.kernel.org,
+        alsa-devel@alsa-project.org,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        George Burgess <gbiv@google.com>, Joe Perches <joe@perches.com>
+References: <20201017160928.12698-1-trix@redhat.com>
+ <20201018054332.GB593954@kroah.com>
+ <CAKwvOdkR_Ttfo7_JKUiZFVqr=Uh=4b05KCPCSuzwk=zaWtA2_Q@mail.gmail.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <ca1f50d6-1005-8e3d-8d5c-98c82a704338@redhat.com>
+Date:   Tue, 20 Oct 2020 06:55:52 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM8PR04MB7315.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 56f7b5aa-cd57-4fb0-31cd-08d874ff6c05
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Oct 2020 13:52:44.9686
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: b3WU+qvsm9lW01Xi5gB44oXjamO4PefDy25fn4T1XHp+uq6b15LqDfUyUZV+CnalItnrAaMweCBD4algIGmKjA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4897
+In-Reply-To: <CAKwvOdkR_Ttfo7_JKUiZFVqr=Uh=4b05KCPCSuzwk=zaWtA2_Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogQ2hyaXMgSGVhbHkgPGNwaGVhbHlAZ21haWwuY29tPiBTZW50OiBUdWVzZGF5LCBPY3Rv
-YmVyIDIwLCAyMDIwIDk6MDcgUE0NCj4gT24gTW9uLCBPY3QgMTksIDIwMjAgYXQgODowMiBQTSBB
-bmR5IER1YW4gPGZ1Z2FuZy5kdWFuQG54cC5jb20+IHdyb3RlOg0KPiA+DQo+ID4gRnJvbTogQW5k
-cmV3IEx1bm4gPGFuZHJld0BsdW5uLmNoPiBTZW50OiBUdWVzZGF5LCBPY3RvYmVyIDIwLCAyMDIw
-DQo+ID4gMTA6NDAgQU0NCj4gPiA+IE9uIFR1ZSwgT2N0IDIwLCAyMDIwIGF0IDEyOjE0OjA0UE0g
-KzEwMDAsIEdyZWcgVW5nZXJlciB3cm90ZToNCj4gPiA+ID4gSGkgQW5kcmV3LA0KPiA+ID4gPg0K
-PiA+ID4gPiBDb21taXQgZjE2NmY4OTBjOGYwICgiW1BBVENIXSBuZXQ6IGV0aGVybmV0OiBmZWM6
-IFJlcGxhY2UNCj4gPiA+ID4gaW50ZXJydXB0IGRyaXZlbiBNRElPIHdpdGggcG9sbGVkIElPIikg
-YnJlYWtzIHRoZSBGRUMgZHJpdmVyIG9uIGF0DQo+ID4gPiA+IGxlYXN0IG9uZSBvZiB0aGUgQ29s
-ZEZpcmUgcGxhdGZvcm1zICh0aGUgNTIwOCkuIE1heWJlIG90aGVycywgdGhhdA0KPiA+ID4gPiBp
-cyBhbGwgSSBoYXZlIHRlc3RlZCBvbiBzbyBmYXIuDQo+ID4gPiA+DQo+ID4gPiA+IFNwZWNpZmlj
-YWxseSB0aGUgZHJpdmVyIG5vIGxvbmdlciBmaW5kcyBhbnkgUEhZIGRldmljZXMgd2hlbiBpdA0K
-PiA+ID4gPiBwcm9iZXMgdGhlIE1ESU8gYnVzIGF0IGtlcm5lbCBzdGFydCB0aW1lLg0KPiA+ID4g
-Pg0KPiA+ID4gPiBJIGhhdmUgcGlubmVkIHRoZSBwcm9ibGVtIGRvd24gdG8gdGhpcyBvbmUgc3Bl
-Y2lmaWMgY2hhbmdlIGluIHRoaXMgY29tbWl0Og0KPiA+ID4gPg0KPiA+ID4gPiA+IEBAIC0yMTQz
-LDggKzIxNDIsMjEgQEAgc3RhdGljIGludCBmZWNfZW5ldF9taWlfaW5pdChzdHJ1Y3QNCj4gPiA+
-IHBsYXRmb3JtX2RldmljZSAqcGRldikNCj4gPiA+ID4gPiAgICAgaWYgKHN1cHByZXNzX3ByZWFt
-YmxlKQ0KPiA+ID4gPiA+ICAgICAgICAgICAgIGZlcC0+cGh5X3NwZWVkIHw9IEJJVCg3KTsNCj4g
-PiA+ID4gPiArICAgLyogQ2xlYXIgTU1GUiB0byBhdm9pZCB0byBnZW5lcmF0ZSBNSUkgZXZlbnQg
-Ynkgd3JpdGluZyBNU0NSLg0KPiA+ID4gPiA+ICsgICAgKiBNSUkgZXZlbnQgZ2VuZXJhdGlvbiBj
-b25kaXRpb246DQo+ID4gPiA+ID4gKyAgICAqIC0gd3JpdGluZyBNU0NSOg0KPiA+ID4gPiA+ICsg
-ICAgKiAgICAgIC0gbW1mclszMTowXV9ub3RfemVybyAmIG1zY3JbNzowXV9pc196ZXJvICYNCj4g
-PiA+ID4gPiArICAgICogICAgICAgIG1zY3JfcmVnX2RhdGFfaW5bNzowXSAhPSAwDQo+ID4gPiA+
-ID4gKyAgICAqIC0gd3JpdGluZyBNTUZSOg0KPiA+ID4gPiA+ICsgICAgKiAgICAgIC0gbXNjcls3
-OjBdX25vdF96ZXJvDQo+ID4gPiA+ID4gKyAgICAqLw0KPiA+ID4gPiA+ICsgICB3cml0ZWwoMCwg
-ZmVwLT5od3AgKyBGRUNfTUlJX0RBVEEpOw0KPiA+ID4gPg0KPiA+ID4gPiBBdCBsZWFzdCBieSBy
-ZW1vdmluZyB0aGlzIEkgZ2V0IHRoZSBvbGQgYmVoYXZpb3IgYmFjayBhbmQNCj4gPiA+ID4gZXZl
-cnl0aGluZyB3b3JrcyBhcyBpdCBkaWQgYmVmb3JlLg0KPiA+ID4gPg0KPiA+ID4gPiBXaXRoIHRo
-YXQgd3JpdGUgb2YgdGhlIEZFQ19NSUlfREFUQSByZWdpc3RlciBpbiBwbGFjZSBpdCBzZWVtcw0K
-PiA+ID4gPiB0aGF0IHN1YnNlcXVlbnQgTURJTyBvcGVyYXRpb25zIHJldHVybiBpbW1lZGlhdGVs
-eSAodGhhdCBpcw0KPiA+ID4gPiBGRUNfSUVWRU5UIGlzDQo+ID4gPiA+IHNldCkgLSBldmVuIHRo
-b3VnaCBpdCBpcyBvYnZpb3VzIHRoZSBNRElPIHRyYW5zYWN0aW9uIGhhcyBub3QgY29tcGxldGVk
-DQo+IHlldC4NCj4gPiA+ID4NCj4gPiA+ID4gQW55IGlkZWFzPw0KPiA+ID4NCj4gPiA+IEhpIEdy
-ZWcNCj4gPiA+DQo+ID4gPiBUaGlzIGhhcyBjb21lIHVwIGJlZm9yZSwgYnV0IHRoZSBkaXNjdXNz
-aW9uIGZpenpsZWQgb3V0IHdpdGhvdXQgYQ0KPiA+ID4gZmluYWwgcGF0Y2ggZml4aW5nIHRoZSBp
-c3N1ZS4gTlhQIHN1Z2dlc3RlZCB0aGlzDQo+ID4gPg0KPiA+ID4gd3JpdGVsKDAsIGZlcC0+aHdw
-ICsgRkVDX01JSV9EQVRBKTsNCj4gPiA+DQo+ID4gPiBXaXRob3V0IGl0LCBzb21lIG90aGVyIEZF
-QyB2YXJpYW50cyBicmVhayBiZWNhdXNlIHRoZXkgZG8gZ2VuZXJhdGUNCj4gPiA+IGFuIGludGVy
-cnVwdCBhdCB0aGUgd3JvbmcgdGltZSBjYXVzaW5nIGFsbCBmb2xsb3dpbmcgTURJTyB0cmFuc2Fj
-dGlvbnMgdG8NCj4gZmFpbC4NCj4gPiA+DQo+ID4gPiBBdCB0aGUgbW9tZW50LCB3ZSBkb24ndCBz
-ZWVtIHRvIGhhdmUgYSBjbGVhciB1bmRlcnN0YW5kaW5nIG9mIHRoZQ0KPiA+ID4gZGlmZmVyZW50
-IEZFQyB2ZXJzaW9ucywgYW5kIGhvdyB0aGVpciBNRElPIGltcGxlbWVudGF0aW9ucyB2YXJ5Lg0K
-PiA+ID4NCj4gPiA+ICAgICAgICAgICBBbmRyZXcNCj4gPg0KPiA+IEFuZHJldywgZGlmZmVyZW50
-IHZhcmFudHMgaGFzIGxpdHRsZSBkaWZmZXJlbnQgYmVoYXZpb3IsIHNvIHRoZSBsaW5lDQo+ID4g
-aXMgcmVxdWlyZWQgZm9yDQo+ID4gSW14Ni83LzcgcGxhdGZvcm1zIGJ1dCBzaG91bGQgYmUgcmVt
-b3ZlZCBpbiBpbXg1IGFuZCBDb2xkRmlyZS4NCj4gDQo+IERvIHdlIGtub3cgd2hpY2ggdmFyaWFu
-dHMgb2YgaS5NWDYgYW5kIGkuTVg3IGRvIGFuZCBkb24ndCBuZWVkIHRoaXM/DQo+IEknbSBzdWNj
-ZXNzZnVsbHkgcnVubmluZyB3aXRoIHBvbGxpbmcgbW9kZSB1c2luZyB0aGUgaS5NWDZxLCBpLk1Y
-NnFwLCBpLk1YN2QsDQo+IGFuZCBWeWJyaWQsIGFsbCBvZiB3aGljaCBiZW5lZml0IGZyb20gdGhl
-IGNvbnNpZGVyYWJseSBoaWdoZXIgdGhyb3VnaHB1dA0KPiBhY2hpZXZlZCB3aXRoIHBvbGxpbmcu
-ICAoSW4gYWxsIG15IHVzZSBjYXNlcyBJJ20gd29ya2luZyB3aXRoIGFuIEV0aGVybmV0IFN3aXRj
-aA0KPiBhdHRhY2hlZCB2aWEgTURJTy4pDQo+IA0KSSB0aGluayB0aGUgb2xkIHZlcnNpb24gbGlr
-ZSBpbXg1MyBhbmQgQ29sZEZpcmUgZG9uJ3QgbmVlZCB0aGlzLg0KT3RoZXJzIGxpa2UgaW14Ni83
-Lzggc2VyaWVzIHJlcXVpcmVkIHRoaXMuDQoNCj4gPg0KPiA+IEFzIHdlIGRpc2N1c3Mgb25lIHNv
-bHV0aW9uIHRvIHJlc29sdmUgdGhlIGlzc3VlLCBidXQgaXQgYnJpbmcgMzBtcyBsYXRlbmN5IGZv
-cg0KPiBrZXJuZWwgYm9vdC4NCj4gPg0KPiA+IE5vdywgSSB3YW50IHRvIHJldmVydCB0aGUgcG9s
-bGluZyBtb2RlIHRvIG9yaWdpbmFsIGludGVycnVwdCBtb2RlLCBkbyB5b3UNCj4gYWdyZWUgPw0K
-PiA+DQo+ID4gQW5keQ0K
+
+On 10/19/20 12:42 PM, Nick Desaulniers wrote:
+> On Sat, Oct 17, 2020 at 10:43 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+>> On Sat, Oct 17, 2020 at 09:09:28AM -0700, trix@redhat.com wrote:
+>>> From: Tom Rix <trix@redhat.com>
+>>>
+>>> This is a upcoming change to clean up a new warning treewide.
+>>> I am wondering if the change could be one mega patch (see below) or
+>>> normal patch per file about 100 patches or somewhere half way by collecting
+>>> early acks.
+>> Please break it up into one-patch-per-subsystem, like normal, and get it
+>> merged that way.
+>>
+>> Sending us a patch, without even a diffstat to review, isn't going to
+>> get you very far...
+> Tom,
+> If you're able to automate this cleanup, I suggest checking in a
+> script that can be run on a directory.  Then for each subsystem you
+> can say in your commit "I ran scripts/fix_whatever.py on this subdir."
+>  Then others can help you drive the tree wide cleanup.  Then we can
+> enable -Wunreachable-code-break either by default, or W=2 right now
+> might be a good idea.
+
+I should have waited for Joe Perches's fixer addition to checkpatch :)
+
+The easy fixes I did only cover about 1/2 of the problems.
+
+Remaining are mostly nested switches, which from a complexity standpoint is bad.
+
+>
+> Ah, George (gbiv@, cc'ed), did an analysis recently of
+> `-Wunreachable-code-loop-increment`, `-Wunreachable-code-break`, and
+> `-Wunreachable-code-return` for Android userspace.  From the review:
+> ```
+> Spoilers: of these, it seems useful to turn on
+> -Wunreachable-code-loop-increment and -Wunreachable-code-return by
+> default for Android
+
+In my simple add-a-cflag bot, i see there are about 250
+
+issues for -Wunreachable-code-return.
+
+I'll see about doing this one next.
+
+> ...
+> While these conventions about always having break arguably became
+> obsolete when we enabled -Wfallthrough, my sample turned up zero
+> potential bugs caught by this warning, and we'd need to put a lot of
+> effort into getting a clean tree. So this warning doesn't seem to be
+> worth it.
+> ```
+> Looks like there's an order of magnitude of `-Wunreachable-code-break`
+> than the other two.
+>
+> We probably should add all 3 to W=2 builds (wrapped in cc-option).
+> I've filed https://github.com/ClangBuiltLinux/linux/issues/1180 to
+> follow up on.
+
+Yes, i think think these should be added.
+
+Tom
+
