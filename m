@@ -2,159 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D692293921
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 12:28:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 974EB293927
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 12:29:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393139AbgJTK16 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 06:27:58 -0400
-Received: from de-smtp-delivery-102.mimecast.com ([62.140.7.102]:32898 "EHLO
-        de-smtp-delivery-102.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388880AbgJTK16 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 06:27:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
-        t=1603189675;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PdZl73UkO228CMKkGpG7RCB+Mqm8Rde2aTDWhxT5jWc=;
-        b=A/Fv3JrNwD4uizdnEA9h5hbrmY0jTl8X06jB7Adw5z/3+KsS1CYdk8wFaC2If056fEkyss
-        AFHIkVshyuKB8V1geJtQn1AZi7HHs7bVzs4hHzmDOm2U3aAfVLtT8mc7ZaxiN/l2hpTFGw
-        057im7TP/rOUMhgA04PKLfTnNvntAiQ=
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com
- (mail-vi1eur04lp2059.outbound.protection.outlook.com [104.47.14.59]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- de-mta-16-baJakCy-OZOIl5ao64_ptQ-1; Tue, 20 Oct 2020 12:27:53 +0200
-X-MC-Unique: baJakCy-OZOIl5ao64_ptQ-1
+        id S2393155AbgJTK3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 06:29:39 -0400
+Received: from mail-eopbgr60084.outbound.protection.outlook.com ([40.107.6.84]:61505
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2388927AbgJTK3j (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Oct 2020 06:29:39 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QBiSLMA1Q6JEXWNgCsGBY+WpoLnWAipcmN3Q8mghlLgIF+DmJxY3gw2k7uamtO7b1msisVwIlWZmx+c1CfrwJaMTye0LxZQGqSGCF+WxmDYyTECioDXcQgHtT3zVyOZ4flklUym+NYbRkP5c3bVshBPhnRj6k3zIgyy01ooSBeyQfBLcVDqxGpsxRBZKN39vp7IoqQ9UK0AZug+pteJU4AM1U+j++DqI87h6w7P/0IYxsEcaEux50s5nR0+ZeM+3zsqxxdbtTQeKUhuW5+F7nKdCNGyFHyDZELo0oneIdRz33INRuAqHYjEwEFDDoaIYeceydfz1KJrhPRbqFrjTbg==
+ b=lMwMdlvapABDBWR2DypLggv8hj6NhFYhVY57M2WsnyJxl4cEba5FpFonYfx4yN6v2E9qknvxYw8fpFL0MJ0rOPZGYXBNFLEXDGJDn1zqesg7brWIWv80Lx8tFGgS6L0HnOPppUZPcFbUVaqzwK3xkw0x5ANfkqBlVpudIGjpZgKv4mXMQbamAzsr4bZruCsf/Wc2j//f17mMkcPP6XZwgsvAbEZ/QLhEvdAvwToFzfxYKiYpzNbTR5sNyu0wynjdsAWn46tI9WrDbA0BfSUbv57mXW1Uf2CuJvEulkD0G4UjibzvZ5jeeefJqM1qWZLXZGw01BxE5Q1rAcMUV5z4Xw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PdZl73UkO228CMKkGpG7RCB+Mqm8Rde2aTDWhxT5jWc=;
- b=WlcVUQCjHxaVIYzuDvleKvgmdGvByjZ35jAF69IH7hgMxk5Peg+IYvyvzfYBpivtg0+7dm7Df1yW5BU4loIIpUUg9PMGYdqXPAgBeAN/nEubWpyI56wE2ZLi+eF74eBWfTzqlArIN+lsDmwUyqvL9Sj6F/OsyDAPKp7MSZhmUc281l0cBELDO+tpFDOHiR/op1HjKxwhV6vEsgQ5eVe7y9buBNqxjO7HjMKCamNe6fbc4r+vEDsF8OAj/fROIwh7RL45lCUE+KQ6vuSsLjFpg1RwP3bdKDUHl/G6UZ3kQ8DVa3QYOJo7mFF+7JYaFn2xrfNtlv99zV1wPQvvhYqlyw==
+ bh=bsLRvOO1wBfVjmyGo/NdKwM2xLKfgp6XxBNCxYat+CA=;
+ b=aq8Ufl0TOdY+xgJZe4V2TW81/Px2+6MUi8Tb6OvByhlJVZINnk3IoFM/keu0cyQd3PJytdf34M0t5Veue/1ugCB5tUhNE5Owv84qJZ5IxPklrOy60A4M8cuCpDcBa8H8T4Q0GjqFd/inSRQJIzabOT+QYXNvoUDqhNJDraE8VF0r9P2ss6lVvgXMGujkTfHZBVwIHfT0iD7fqecOv5EguzdGFJ9mDYbtW9HbN3VjsPmBFztUqfFNcgaUcaMlAeyajAZ98viGjhccvuHdLvAGNLtU/OqedUr7EGJxHcRIYe8JNALIZQBVzCXnfuav6J0iBQUqq93IF3bMb9W1fPM+Ng==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-Authentication-Results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=suse.com;
-Received: from DB7PR04MB5177.eurprd04.prod.outlook.com (2603:10a6:10:20::21)
- by DB8PR04MB7113.eurprd04.prod.outlook.com (2603:10a6:10:12a::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.27; Tue, 20 Oct
- 2020 10:27:51 +0000
-Received: from DB7PR04MB5177.eurprd04.prod.outlook.com
- ([fe80::7585:5b21:1072:f5ff]) by DB7PR04MB5177.eurprd04.prod.outlook.com
- ([fe80::7585:5b21:1072:f5ff%7]) with mapi id 15.20.3477.028; Tue, 20 Oct 2020
- 10:27:51 +0000
-Date:   Tue, 20 Oct 2020 18:27:41 +0800
-From:   Shung-Hsi Yu <shung-hsi.yu@suse.com>
-To:     Coiby Xu <coiby.xu@gmail.com>
-Cc:     devel@driverdev.osuosl.org,
-        Benjamin Poirier <benjamin.poirier@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        Manish Chopra <manishc@marvell.com>,
-        "supporter:QLOGIC QLGE 10Gb ETHERNET DRIVER" 
-        <GR-Linux-NIC-Dev@marvell.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:QLOGIC QLGE 10Gb ETHERNET DRIVER" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3 2/8] staging: qlge: Initialize devlink health dump
- framework
-Message-ID: <20201020102741.GE23594@syu-laptop>
-References: <20201016115407.170821-1-coiby.xu@gmail.com>
- <20201016115407.170821-3-coiby.xu@gmail.com>
- <20201020085711.GM7183@syu-laptop>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20201020085711.GM7183@syu-laptop>
-X-Originating-IP: [2001:b400:e256:5604:908c:43ff:fe8c:2fe3]
-X-ClientProxiedBy: AM0PR06CA0078.eurprd06.prod.outlook.com
- (2603:10a6:208:fa::19) To DB7PR04MB5177.eurprd04.prod.outlook.com
- (2603:10a6:10:20::21)
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bsLRvOO1wBfVjmyGo/NdKwM2xLKfgp6XxBNCxYat+CA=;
+ b=MObm/IfW8cJ2CcthGezQlCumGgWuZ+EttwzlkJd0P9AjrvqpRwNLthsOWaPwF1owBlnZZ35heGOuP5vRJIVC4I0YjMfxxn5+8JwLM3zqEfqGyufq2zSNesZc7Rfv5c5VIhxkC5FkhH/mc9t1PtSpGHF441BqZ3uWGLdtvhVFtkU=
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DB6PR04MB3206.eurprd04.prod.outlook.com (2603:10a6:6:d::27) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3477.25; Tue, 20 Oct 2020 10:29:35 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::3c3a:58b9:a1cc:cbcc]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::3c3a:58b9:a1cc:cbcc%9]) with mapi id 15.20.3477.028; Tue, 20 Oct 2020
+ 10:29:35 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>
+CC:     "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        dl-linux-imx <linux-imx@nxp.com>, Ying Liu <victor.liu@nxp.com>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        Pankaj Bansal <pankaj.bansal@nxp.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH V3 06/10] can: flexcan: disable wakeup in flexcan_remove()
+Thread-Topic: [PATCH V3 06/10] can: flexcan: disable wakeup in
+ flexcan_remove()
+Thread-Index: AQHWprY9cR7f3d0oi0qrc1aRv609RamgOhcAgAAPDeA=
+Date:   Tue, 20 Oct 2020 10:29:35 +0000
+Message-ID: <DB8PR04MB6795126625F3AE3B9BFBC9EBE61F0@DB8PR04MB6795.eurprd04.prod.outlook.com>
+References: <20201020155402.30318-1-qiangqing.zhang@nxp.com>
+ <20201020155402.30318-7-qiangqing.zhang@nxp.com>
+ <c5a5a84a-1ed0-5413-d909-074d8ad6b102@pengutronix.de>
+In-Reply-To: <c5a5a84a-1ed0-5413-d909-074d8ad6b102@pengutronix.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: pengutronix.de; dkim=none (message not signed)
+ header.d=none;pengutronix.de; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 2d4a4cba-5a61-4b02-4ddd-08d874e30a43
+x-ms-traffictypediagnostic: DB6PR04MB3206:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB6PR04MB32061264B7E6A3F4C3FFBC01E61F0@DB6PR04MB3206.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3276;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: u31VOfavoqIeNJRYnJfWAfCZqhVXWVeJGUN1YfFkX0+qDMBHBoXXglb4BrYhQrulXZuea80HIoQTlB4sqHT/SQR4+NVKQkJYPyrPYqWogLfIUKMViuFTCfIUBFWM8GS+YTm2e6EnUe250XCiSrBe4zTkSVr1LeqmdUBv6zN1t9QWaO7U361xd1UuvV5V0jHQxuuVH28C+lNHzw5bEeuwi2+6zKwt5lhxzL8Eblr4DZx/IvWcZ6MPmZd+IDwx+KKq6JcbIXT4ZaAT3Q5JMRMhfLO26XnCkXLd7RhvD9ov/MJ18DkfPFR75UJVVeA4Ha7K1c3MZzf1S+55usSy/+pDDf8GH+lP378yP4rQY0m5rqEqu/e68XR/7b9cydqDdnUa1uGQ31moUbF/HWZ3Wr/+xQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(396003)(136003)(346002)(366004)(376002)(64756008)(66946007)(66446008)(5660300002)(33656002)(966005)(4326008)(26005)(186003)(6506007)(2906002)(478600001)(53546011)(8936002)(110136005)(76116006)(66556008)(66476007)(86362001)(9686003)(8676002)(83380400001)(54906003)(7696005)(52536014)(316002)(71200400001)(55016002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: 9Htmgr4tosjm9MduUaxEiMFFmONA6qmNB2mwq+/eCaeZhjqeVN0Wyabw48IxMfmhUoQyPxDmpqCi5SvJMFEui/f07nIiETZ9Mf+8eCgCNPBILElyjXiaDInsS0llGnI17TL0e8za9TbrxrOa3dGvoS45G1CbQhMrZWhlRIypihUVxVpI2i5OSbZWlEtk+P13iStErRCButoNbaYtZMWBT5VRgL+rQnkCHVhkjw3Prsi4v+fclyqnzhDlm9dTQZAq5p93mA6wS3v7DL3+pgSn5+OS5ryVQu41KBQErbMAambBSMl9ZqNcj9lDVZuBkGyqXgqJQF5VESDqZHJDW3wWlUNzMlwI6v2hV3qiVtFU7rfv/vzXFAFUmdkMa6Sm1hF9sj7WCafR+fArGga4nULriHBR6MdtYR/oA8L45HOR4G75iU8/RwWkn36q2S8MvFIVrcXvT35zEwaYnjyvUn1xXrKxIULB0RZimYpuk6fqVfnNwNmTpG3iL177fYW3kb3wztVuGq7hZjRUu1a/BcsGnlGpb6CzvWz6UUmspOmENASg7UwmYcnTeqWBTONEWTOR1uIZW4XP83OHUczNt/dJgXN1QIXQu49SuCEzo2wYPxPztgGIWdh3RYkCZietTvq/KPwXYW/ugHaJWISdxSVqPg==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from syu-laptop (2001:b400:e256:5604:908c:43ff:fe8c:2fe3) by AM0PR06CA0078.eurprd06.prod.outlook.com (2603:10a6:208:fa::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Tue, 20 Oct 2020 10:27:47 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: eebca617-8bfc-4757-84c8-08d874e2cc33
-X-MS-TrafficTypeDiagnostic: DB8PR04MB7113:
-X-Microsoft-Antispam-PRVS: <DB8PR04MB7113078B45A6A021238335A2BF1F0@DB8PR04MB7113.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7pneU13RNd7OIRybxvXkbsqoO9ZON2R4Oa46RezXi/g4JySjvodvw0f1+YYxxH6uyeQmoqag7qhR0TveHOQCt4kFtuBGhDNLl1mwOFZB1lx6bsw2mPYEq867zZOlblypgMAGlLP0fninbTx99YInp+O1105vVSSU/XKIeRzoWTYm5Iewp1RFeWYB9rPAq3pV42BjipjleHeyxz1s7fvicFrfDOnTwkg6wgq6+WXbbfC58roxVRUwlFZctzU8cyMqVdwMN0OX5QaAUU1qn0EHHp7XVtltxt+173Fbbo4IoAu0Y31wl/Su92ZDacEajVbLWjHCxbOvzgH3GnnzmdQ1lA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR04MB5177.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(39860400002)(346002)(366004)(396003)(136003)(66946007)(4326008)(86362001)(6496006)(54906003)(33716001)(6666004)(8676002)(8936002)(316002)(55016002)(7416002)(33656002)(2906002)(66556008)(66476007)(6916009)(9686003)(5660300002)(83380400001)(478600001)(52116002)(16526019)(186003)(1076003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: GmwTzXrQWs+dNLcwXgRWTLV3yvhqeCfxOm0JvoREj8Njf90Izbxr6399uCsO4YfDDnKfcTCPEoaygDVxqAiwORzQ0mhAheawowbAfDT8NPGyQ9oFb/XYyFxYWWGj12nGWrsbx2Z+ZfkACb/ny34HkwWllalfk9J0c8X6aknKTpU0E5QK6xUjLlOAfRzSQXHqLdKEa03V3RARCMC0pl02l8Pc1bRZJTzR3z49RH8OhE+c4NC9oXkuL1Tb0zns3uPBjENi0ihbg2sxkxGB+1PaKYGAxc5Jx8Lyw9Qyma5R7vjuEA8ClcpN87BBwQmUBqhEWEkgGsmoWfJRE6RD3zL13W/80xVokmkkJlsrMAzRQFteh6a6QeoLptL5tKiLHTSlnZHQnUVlp+QSJ21em+KbyN6FK4OasXA6ekUavW7Bn+y/rCQZ3UFeXf/09+J8rCZ3r6xW+qJRSya5OUdP5GDHFIFlAxI0kbTyRLGnDzE3tANk5ivHmrBsQ29QwjMtKbQnlrOPDa/cG4f/Wxh8SmrTOWFouii0+qsVNYeACIfEC3xhaQjksSv1EAPoIUzqwusCHXPHpiVdY7DDyNzdyOGRWqtNaw+/J9w4/17Pin0nJLK6xDfd4uLBUkH+5bXcW9rcErlD0bbjc6jxp7Hww9ja4nHOIwiABb3J5UDlcAVMkhC91YwgGEEH/DtqPqRL6jW2+ZiQnkIWyr4Fgmc9sBKRGQ==
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: eebca617-8bfc-4757-84c8-08d874e2cc33
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR04MB5177.eurprd04.prod.outlook.com
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2020 10:27:51.3212
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2d4a4cba-5a61-4b02-4ddd-08d874e30a43
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Oct 2020 10:29:35.0271
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eZb3kKLR3Tmt3I4VwCSzPW7d1hwBCU0PsQdK7u9KY4OD59AnTFGNPtBoZfQDqXxEkyUUG6NybTwxt9tMUopt0Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB7113
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ResRJMYNajAqP8p/HAYYu8GBk7Ic1WPHlPmLhRa/iCF4S/8F9h+H8ae08J/PI0xqYe62Be+7jeYe8KWH/T4ijg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR04MB3206
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 20, 2020 at 04:57:11PM +0800, Shung-Hsi Yu wrote:
-> Hi,
-> 
-> This patch trigger the following KASAN error inside qlge_init_device().
-> 
-> [...] general protection fault, probably for non-canonical address 0xdffffc000000004b: 0000 [#1] SMP DEBUG_PAGEALLOC KASAN PTI
-> [...] KASAN: null-ptr-deref in range [0x0000000000000258-0x000000000000025f]
-> [...] CPU: 0 PID: 438 Comm: systemd-udevd Tainted: G         C  E     5.9.0-kvmsmall+ #7
-> [...] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.13.0-48-
-> g...ilt.opensuse.org 04/01/2014
-> [...] RIP: 0010:qlge_get_8000_flash_params+0x377/0x6e0 [qlge]
-> [...] Code: 03 80 3c 02 00 0f 85 57 03 00 00 49 8b af 68 08 00 00 48 b8 00 00 00 00 00 fc ff df 48 8d bd 5f 02 00 00 48 89 fa 48 c1 ea 03 <0f> b6 04 02 48 89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 c6 02 00 00
-> [...] RSP: 0018:ffffc90000f97788 EFLAGS: 00010207
-> [...] RAX: dffffc0000000000 RBX: 0000000000000000 RCX: 0000000000000000
-> [...] RDX: 000000000000004b RSI: ffffffffc08cb843 RDI: 000000000000025f
-> [...] R10: fffffbfff5f718a0 R11: 0000000000000001 R12: dffffc0000000000
-> [...] R13: ffff888111085d40 R14: ffff888111085d40 R15: ffff888111080280
-> [...] FS:  00007f315f5db280(0000) GS:ffff8881f5200000(0000) knlGS:0000000000000000
-> [...] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [...] CR2: 000055bb25297170 CR3: 0000000110674000 CR4: 00000000000006f0
-> [...] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [...] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [...] Call Trace:
-> [...]  ? qlge_get_8012_flash_params+0x600/0x600 [qlge]
-> [...]  ? static_obj+0x8a/0xc0
-> [...]  ? lockdep_init_map_waits+0x26a/0x700
-> [...]  qlge_init_device+0x425/0x1000 [qlge]
-> [...]  ? debug_mutex_init+0x31/0x60
-> [...]  qlge_probe+0xfe/0x6c0 [qlge]
-> <snip>
-> 
-> With qlge_get_8000_flash_params+0x377/0x6e0 corresponding to the following:
-> 
-> 	if (qdev->flash.flash_params_8000.data_type1 == 2)
-> 		memcpy(mac_addr,
-> 		       qdev->flash.flash_params_8000.mac_addr1,
-> 		       qdev->ndev->addr_len); // <---- Here
-
-This is because qdev->ndev == 0.
-
-The reason is that before qlge_get_8000_flash_params() get called qdev is memset-ed inside qlge_init_device().
-
-static int qlge_init_device(struct pci_dev *pdev, struct qlge_adapter *qdev,
-				    int cards_found)
-	{
-	struct net_device *ndev = qdev->ndev;
-	int err = 0;
-
-	memset((void *)qdev, 0, sizeof(*qdev));
-
-	// ...
-
-	// qlge_get_8000_flash_params() get's called
-	err = qdev->nic_ops->get_flash(qdev);
-
-	// ...
-	}
-
+DQpIaSBNYXJjLA0KDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IE1hcmMg
+S2xlaW5lLUJ1ZGRlIDxta2xAcGVuZ3V0cm9uaXguZGU+DQo+IFNlbnQ6IDIwMjDlubQxMOaciDIw
+5pelIDE3OjMxDQo+IFRvOiBKb2FraW0gWmhhbmcgPHFpYW5ncWluZy56aGFuZ0BueHAuY29tPjsg
+cm9iaCtkdEBrZXJuZWwub3JnOw0KPiBzaGF3bmd1b0BrZXJuZWwub3JnOyBzLmhhdWVyQHBlbmd1
+dHJvbml4LmRlDQo+IENjOiBrZXJuZWxAcGVuZ3V0cm9uaXguZGU7IGRsLWxpbnV4LWlteCA8bGlu
+dXgtaW14QG54cC5jb20+OyBZaW5nIExpdQ0KPiA8dmljdG9yLmxpdUBueHAuY29tPjsgbGludXgt
+Y2FuQHZnZXIua2VybmVsLm9yZzsgUGFua2FqIEJhbnNhbA0KPiA8cGFua2FqLmJhbnNhbEBueHAu
+Y29tPjsgbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsNCj4gbGludXgta2VybmVsQHZnZXIua2VybmVs
+Lm9yZw0KPiBTdWJqZWN0OiBSZTogW1BBVENIIFYzIDA2LzEwXSBjYW46IGZsZXhjYW46IGRpc2Fi
+bGUgd2FrZXVwIGluIGZsZXhjYW5fcmVtb3ZlKCkNCj4gDQo+IE9uIDEwLzIwLzIwIDU6NTMgUE0s
+IEpvYWtpbSBaaGFuZyB3cm90ZToNCj4gPiBEaXNhYmxlIHdha2V1cCBpbiBmbGV4Y2FuX3JlbW92
+ZSgpLg0KPiANCj4gVGhlIHBhdGNoIGxvb2tzIGdvb2QsIHBsZWFzZSBleHBsYWluIHdoeSB0aGlz
+IGlzIG5lZWRlZC4NCg0KT2theSwgQ2FuIEkgcmVzZW5kIHRoaXMgcGF0Y2ggaW5kaXZpZHVhbGx5
+Pw0KDQpKb2FraW0NCj4gTWFyYw0KPiANCj4gPg0KPiA+IEZpeGVzOiBkZTM1NzhjMTk4YzYgKCJj
+YW46IGZsZXhjYW46IGFkZCBzZWxmIHdha2V1cCBzdXBwb3J0IikNCj4gPiBGaXhlczogOTE1Zjk2
+NjY0MjFjICgiY2FuOiBmbGV4Y2FuOiBhZGQgc3VwcG9ydCBmb3IgRFQgcHJvcGVydHkNCj4gPiAn
+d2FrZXVwLXNvdXJjZSciKQ0KPiA+IFNpZ25lZC1vZmYtYnk6IEpvYWtpbSBaaGFuZyA8cWlhbmdx
+aW5nLnpoYW5nQG54cC5jb20+DQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvbmV0L2Nhbi9mbGV4Y2Fu
+LmMgfCAyICsrDQo+ID4gIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKykNCj4gPg0KPiA+
+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9jYW4vZmxleGNhbi5jIGIvZHJpdmVycy9uZXQvY2Fu
+L2ZsZXhjYW4uYw0KPiA+IGluZGV4IDA2Zjk0YjZmMGViZS4uODgxNzk5YmQ5YzVlIDEwMDY0NA0K
+PiA+IC0tLSBhL2RyaXZlcnMvbmV0L2Nhbi9mbGV4Y2FuLmMNCj4gPiArKysgYi9kcml2ZXJzL25l
+dC9jYW4vZmxleGNhbi5jDQo+ID4gQEAgLTIwNjIsNiArMjA2Miw4IEBAIHN0YXRpYyBpbnQgZmxl
+eGNhbl9yZW1vdmUoc3RydWN0IHBsYXRmb3JtX2RldmljZQ0KPiA+ICpwZGV2KSAgew0KPiA+ICAJ
+c3RydWN0IG5ldF9kZXZpY2UgKmRldiA9IHBsYXRmb3JtX2dldF9kcnZkYXRhKHBkZXYpOw0KPiA+
+DQo+ID4gKwlkZXZpY2Vfc2V0X3dha2V1cF9lbmFibGUoJnBkZXYtPmRldiwgZmFsc2UpOw0KPiA+
+ICsJZGV2aWNlX3NldF93YWtldXBfY2FwYWJsZSgmcGRldi0+ZGV2LCBmYWxzZSk7DQo+ID4gIAl1
+bnJlZ2lzdGVyX2ZsZXhjYW5kZXYoZGV2KTsNCj4gPiAgCXBtX3J1bnRpbWVfZGlzYWJsZSgmcGRl
+di0+ZGV2KTsNCj4gPiAgCWZyZWVfY2FuZGV2KGRldik7DQo+ID4NCj4gDQo+IA0KPiAtLQ0KPiBQ
+ZW5ndXRyb25peCBlLksuICAgICAgICAgICAgICAgICB8IE1hcmMgS2xlaW5lLUJ1ZGRlICAgICAg
+ICAgICB8DQo+IEVtYmVkZGVkIExpbnV4ICAgICAgICAgICAgICAgICAgIHwgaHR0cHM6Ly93d3cu
+cGVuZ3V0cm9uaXguZGUgIHwNCj4gVmVydHJldHVuZyBXZXN0L0RvcnRtdW5kICAgICAgICAgfCBQ
+aG9uZTogKzQ5LTIzMS0yODI2LTkyNCAgICAgfA0KPiBBbXRzZ2VyaWNodCBIaWxkZXNoZWltLCBI
+UkEgMjY4NiB8IEZheDogICArNDktNTEyMS0yMDY5MTctNTU1NSB8DQoNCg==
