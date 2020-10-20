@@ -2,80 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8895293F31
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 17:04:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA0DC293F3A
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 17:06:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407644AbgJTPEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 11:04:50 -0400
-Received: from www62.your-server.de ([213.133.104.62]:56692 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729180AbgJTPEu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 11:04:50 -0400
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kUtBt-0001LI-3n; Tue, 20 Oct 2020 17:04:45 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kUtBs-000HJs-UX; Tue, 20 Oct 2020 17:04:44 +0200
-Subject: Re: [PATCH bpf v2 2/3] bpf_fib_lookup: optionally skip neighbour
- lookup
-To:     David Ahern <dsahern@gmail.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vu?= =?UTF-8?Q?sen?= 
-        <toke@redhat.com>
-Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <160319106111.15822.18417665895694986295.stgit@toke.dk>
- <160319106331.15822.2945713836148003890.stgit@toke.dk>
- <20784134-7f4c-c263-5d62-facbb2adb8a8@gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <9506a687-64a7-8cf4-008f-c4a10f867c01@iogearbox.net>
-Date:   Tue, 20 Oct 2020 17:04:44 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S2407829AbgJTPGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 11:06:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38752 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727760AbgJTPGU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Oct 2020 11:06:20 -0400
+Received: from dellmb.labs.office.nic.cz (nat-1.nic.cz [217.31.205.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0096021481;
+        Tue, 20 Oct 2020 15:06:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603206379;
+        bh=ju0GFgfmQHvknG0rXi1slSIBIIPq1+eeSrJL9EokVFI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=00C7TIl16s5cIx1IjBqLdxVErPlqMqHpOVk3eyyB3zAkB4QNZV9LIJOEWzi3lVecu
+         Czd8P2/qYZ5jKACsilypJz8/d/lTL5chDsThagttz9u4KlFWKfPK8MlWysIeW2E8Mo
+         tO/hR83SHqguPkpg/w+8fIoAtF/1l5jSah8WVrBQ=
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH russell-kings-net-queue v2 0/3] Support for RollBall 10G copper SFP modules
+Date:   Tue, 20 Oct 2020 17:06:12 +0200
+Message-Id: <20201020150615.11969-1-kabel@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20784134-7f4c-c263-5d62-facbb2adb8a8@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25963/Tue Oct 20 16:00:29 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/20/20 3:49 PM, David Ahern wrote:
-> On 10/20/20 4:51 AM, Toke Høiland-Jørgensen wrote:
->> From: Toke Høiland-Jørgensen <toke@redhat.com>
->>
->> The bpf_fib_lookup() helper performs a neighbour lookup for the destination
->> IP and returns BPF_FIB_LKUP_NO_NEIGH if this fails, with the expectation
->> that the BPF program will deal with this condition, either by passing the
->> packet up the stack, or by using bpf_redirect_neigh().
->>
->> The neighbour lookup is done via a hash table (through ___neigh_lookup_noref()),
->> which incurs some overhead. If the caller knows this is likely to fail
->> anyway, it may want to skip that and go unconditionally to
->> bpf_redirect_neigh(). For this use case, add a flag to bpf_fib_lookup()
->> that will make it skip the neighbour lookup and instead always return
->> BPF_FIB_LKUP_RET_NO_NEIGH (but still populate the gateway and target
->> ifindex).
->>
->> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
->> ---
->>   include/uapi/linux/bpf.h       |   10 ++++++----
->>   net/core/filter.c              |   16 ++++++++++++++--
->>   tools/include/uapi/linux/bpf.h |   10 ++++++----
->>   3 files changed, 26 insertions(+), 10 deletions(-)
-> 
-> Nack. Please don't.
-> 
-> As I mentioned in my reply to Daniel, I would prefer such logic be
-> pushed to the bpf programs. There is no reason for rare run time events
-> to warrant a new flag and new check in the existing FIB helpers. The bpf
-> programs can take the hit of the extra lookup.
+Hi Russell,
 
-Fair enough, lets push it to progs then.
+this series should apply on linux-arm git repository, on branch
+net-queue.
+
+Some internet providers are already starting to offer 2.5G copper
+connectivity to their users. On Turris Omnia the SFP port is capable
+of 2.5G speed, so we tested some copper SFP modules.
+
+This adds support to the SFP subsystem for 10G RollBall copper modules
+which contain a Marvell 88X3310 PHY. By default these modules are
+configured in 10GKR only mode on the host interface, and also contain
+some bad information in EEPROM (the extended_cc byte).
+
+The PHY in these modules is also accessed via a different I2C protocol
+than the standard one.
+
+Patch 1 adds support for this different I2C MDIO bus.
+Patch 2 adds support for these modules into the SFP driver.
+Patch 3 changes phylink code so that a PHY can be attached even though
+802.3z mode is requested.
+
+Marek
+
+Marek Behún (3):
+  net: phy: mdio-i2c: support I2C MDIO protocol for RollBall SFP modules
+  net: phy: sfp: add support for multigig RollBall modules
+  net: phylink: don't fail attaching phy on 1000base-x/2500base-x mode
+
+ drivers/net/phy/mdio-i2c.c | 196 +++++++++++++++++++++++++++++++++++--
+ drivers/net/phy/phylink.c  |   4 +-
+ drivers/net/phy/sfp.c      |  69 +++++++++++--
+ 3 files changed, 250 insertions(+), 19 deletions(-)
+
+
+base-commit: a32e90737c1c92653767d3c95c63c16b9b72c6c2
+-- 
+2.26.2
+
