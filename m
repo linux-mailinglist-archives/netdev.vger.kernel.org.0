@@ -2,60 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B07AC2943A7
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 22:00:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B361F2943F8
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 22:37:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405689AbgJTUAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 16:00:02 -0400
-Received: from www62.your-server.de ([213.133.104.62]:39162 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733109AbgJTUAC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 16:00:02 -0400
-Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kUxnc-0008IX-HE; Tue, 20 Oct 2020 22:00:00 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     ast@kernel.org
-Cc:     daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH bpf] bpf, doc: Fix patchwork URL to point to kernel.org instance
-Date:   Tue, 20 Oct 2020 21:59:55 +0200
-Message-Id: <f73ae01c7e6f9cf0a3890f2ca988a8e69190c50b.1603223852.git.daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S2409563AbgJTUhk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 16:37:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60206 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2409556AbgJTUhi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Oct 2020 16:37:38 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8816F2224A;
+        Tue, 20 Oct 2020 20:37:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603226258;
+        bh=XBAXsJHUIh/+mN7SPuRDyEtONViRC+xODcGlgkYavhs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=d7vR50K2xNLEXigSR6Frzb+C625m+1+FGiXuZmFRBMN1q5EhhXx2s+itZpOJfMBKy
+         tmKTjd79POBrhA9xwn8f46h67fIolwcRsXuLTfMVg0lNZ4gy7CFIBMLJfdPzmlCYq1
+         ypCJg32++eRsqgayiVnCeW9O1uvU6ynExv+5TcYU=
+Date:   Tue, 20 Oct 2020 13:37:32 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, allan.nielsen@microchip.com,
+        joergen.andreasen@microchip.com, UNGLinuxDriver@microchip.com,
+        vinicius.gomes@intel.com, michael.chan@broadcom.com,
+        vishal@chelsio.com, saeedm@mellanox.com, jiri@mellanox.com,
+        idosch@mellanox.com, alexandre.belloni@bootlin.com, po.liu@nxp.com,
+        claudiu.manoil@nxp.com, alexandru.marginean@nxp.com,
+        vladimir.oltean@nxp.com, leoyang.li@nxp.com, mingkai.hu@nxp.com
+Subject: Re: [PATCH v1 net-next 0/5] net: dsa: felix: psfp support on
+Message-ID: <20201020133732.035d8df4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201020072321.36921-1-xiaoliang.yang_1@nxp.com>
+References: <20201020072321.36921-1-xiaoliang.yang_1@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25963/Tue Oct 20 16:00:29 2020)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Follow-up on ebb034b15bfa ("bpf: Migrate from patchwork.ozlabs.org
-to patchwork.kernel.org.") in order to fix up the patchwork URL (Q)
-in the MAINTAINERS file for BPF subsystem.
+On Tue, 20 Oct 2020 15:23:16 +0800 Xiaoliang Yang wrote:
+> This patch series add gate and police action for tc flower offload to
+> support Per-Stream Filtering and Policing(PSFP), which is defined in
+> IEEE802.1Qci.
+> 
+> There is also a TC flower offload to set up VCAPs on ocelot driver.
+> Because VCAPs use chain 10000-21255, we set chain 30000 to offload to
+> gate and police action to run PSFP module.
 
-While at it, also add the official website (W) entry.
+We have already sent a pull request for 5.10 and therefore net-next 
+is closed for new drivers, features, and code refactoring.
 
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
----
- MAINTAINERS | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Please repost when net-next reopens after 5.10-rc1 is cut.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 0f59b0412953..6d50cbf198b5 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3244,7 +3244,8 @@ R:	KP Singh <kpsingh@chromium.org>
- L:	netdev@vger.kernel.org
- L:	bpf@vger.kernel.org
- S:	Supported
--Q:	https://patchwork.ozlabs.org/project/netdev/list/?delegate=77147
-+W:	https://bpf.io/
-+Q:	https://patchwork.kernel.org/project/netdevbpf/list/?delegate=121173
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
- F:	Documentation/bpf/
--- 
-2.21.0
+(http://vger.kernel.org/~davem/net-next.html will not be up to date 
+ this time around, sorry about that).
 
+RFC patches sent for review only are obviously welcome at any time.
