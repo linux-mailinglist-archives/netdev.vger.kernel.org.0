@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A90C72935D6
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 09:33:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E0E82935D4
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 09:33:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405209AbgJTHcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 03:32:50 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:36676 "EHLO inva020.nxp.com"
+        id S2405240AbgJTHc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 03:32:59 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:36916 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405167AbgJTHcr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Oct 2020 03:32:47 -0400
+        id S2405199AbgJTHcu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Oct 2020 03:32:50 -0400
 Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 154A41A0773;
-        Tue, 20 Oct 2020 09:32:41 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 750B91A0795;
+        Tue, 20 Oct 2020 09:32:47 +0200 (CEST)
 Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id CACE41A0757;
-        Tue, 20 Oct 2020 09:32:32 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 618F61A06F1;
+        Tue, 20 Oct 2020 09:32:39 +0200 (CEST)
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 87DFA402F3;
-        Tue, 20 Oct 2020 09:32:22 +0200 (CEST)
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id B9C15402FC;
+        Tue, 20 Oct 2020 09:32:24 +0200 (CEST)
 From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -31,9 +31,9 @@ Cc:     allan.nielsen@microchip.com, joergen.andreasen@microchip.com,
         xiaoliang.yang_1@nxp.com, po.liu@nxp.com, claudiu.manoil@nxp.com,
         alexandru.marginean@nxp.com, vladimir.oltean@nxp.com,
         leoyang.li@nxp.com, mingkai.hu@nxp.com
-Subject: [PATCH v1 net-next 3/5] net: dsa: felix: add gate action offload based on tc flower
-Date:   Tue, 20 Oct 2020 15:23:19 +0800
-Message-Id: <20201020072321.36921-4-xiaoliang.yang_1@nxp.com>
+Subject: [PATCH v1 net-next 4/5] net: mscc: ocelot: use index to set vcap policer
+Date:   Tue, 20 Oct 2020 15:23:20 +0800
+Message-Id: <20201020072321.36921-5-xiaoliang.yang_1@nxp.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201020072321.36921-1-xiaoliang.yang_1@nxp.com>
 References: <20201020072321.36921-1-xiaoliang.yang_1@nxp.com>
@@ -42,854 +42,314 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VSC9959 supports Per-Stream Filtering and Policing(PSFP). Sream is
-identified by Null Stream identification which is defined in
-IEEE802.1Qci.
+Police action of tc flower now uses index to set an entry. This patch
+uses the police index to add or delete vcap policers, so that one
+policer can be shared by several rules.
 
-For IEEE 802.1Qci, there are four tables need to set: stream table,
-stream filter table, stream gate table, and flow meter table. This
-patch is using TC flower gate action to set stream gate table, using
-TC flower keys{dst_mac, vlan_id} to identify a stream and set the
-stream table. Stream filter table is maintained automatically, and
-it's index is determined by SGID(stream gate index) and FMID(flow
-meter index).
-
-On the ocelot driver, there is also a TC flower offload to set up
-VCAPs. We check the chain ID to offload the rule on felix driver to
-run PSFP flow.
-
-An example to set stream gate:
-	> tc qdisc add dev swp0 clsact
-	> tc filter add dev swp0 ingress chain 30000 protocol 802.1Q
-		flower skip_sw dst_mac  CA:9C:00:BC:6D:68 vlan_id 1 \
-		action gate index 1 base-time 0 \
-			sched-entry CLOSE 6000 3 -1
+VCAP policers and PSFP policers share a same policer pool, so VCAP policer
+add or delete operations can be exported and shared with PSFP set.
 
 Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
 ---
- drivers/net/dsa/ocelot/Makefile        |   3 +-
- drivers/net/dsa/ocelot/felix.c         |  23 +
- drivers/net/dsa/ocelot/felix.h         |  16 +
- drivers/net/dsa/ocelot/felix_flower.c  | 651 +++++++++++++++++++++++++
- drivers/net/dsa/ocelot/felix_vsc9959.c |  10 +-
- include/soc/mscc/ocelot_ana.h          |  10 +
- 6 files changed, 709 insertions(+), 4 deletions(-)
- create mode 100644 drivers/net/dsa/ocelot/felix_flower.c
+ drivers/net/dsa/ocelot/felix.c            |   2 +
+ drivers/net/dsa/ocelot/felix.h            |   2 +
+ drivers/net/dsa/ocelot/felix_vsc9959.c    |   4 +
+ drivers/net/ethernet/mscc/ocelot_flower.c |   5 +
+ drivers/net/ethernet/mscc/ocelot_vcap.c   | 107 ++++++++++++++--------
+ include/soc/mscc/ocelot.h                 |  11 ++-
+ 6 files changed, 94 insertions(+), 37 deletions(-)
 
-diff --git a/drivers/net/dsa/ocelot/Makefile b/drivers/net/dsa/ocelot/Makefile
-index f6dd131e7491..22f3f98914e3 100644
---- a/drivers/net/dsa/ocelot/Makefile
-+++ b/drivers/net/dsa/ocelot/Makefile
-@@ -4,7 +4,8 @@ obj-$(CONFIG_NET_DSA_MSCC_SEVILLE) += mscc_seville.o
- 
- mscc_felix-objs := \
- 	felix.o \
--	felix_vsc9959.o
-+	felix_vsc9959.o \
-+	felix_flower.o
- 
- mscc_seville-objs := \
- 	felix.o \
 diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index f791860d495f..42f972d10539 100644
+index 42f972d10539..d2185ead36e1 100644
 --- a/drivers/net/dsa/ocelot/felix.c
 +++ b/drivers/net/dsa/ocelot/felix.c
-@@ -716,6 +716,13 @@ static int felix_cls_flower_add(struct dsa_switch *ds, int port,
- 				struct flow_cls_offload *cls, bool ingress)
- {
- 	struct ocelot *ocelot = ds->priv;
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+
-+	if (felix->info->flower_replace) {
-+		if (cls->common.chain_index == OCELOT_PSFP_CHAIN)
-+			return felix->info->flower_replace(ocelot, port, cls,
-+							   ingress);
-+	}
- 
- 	return ocelot_cls_flower_replace(ocelot, port, cls, ingress);
- }
-@@ -724,6 +731,14 @@ static int felix_cls_flower_del(struct dsa_switch *ds, int port,
- 				struct flow_cls_offload *cls, bool ingress)
- {
- 	struct ocelot *ocelot = ds->priv;
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+	int ret;
-+
-+	if (felix->info->flower_destroy) {
-+		ret = felix->info->flower_destroy(ocelot, port, cls, ingress);
-+		if (!ret)
-+			return 0;
-+	}
- 
- 	return ocelot_cls_flower_destroy(ocelot, port, cls, ingress);
- }
-@@ -732,6 +747,14 @@ static int felix_cls_flower_stats(struct dsa_switch *ds, int port,
- 				  struct flow_cls_offload *cls, bool ingress)
- {
- 	struct ocelot *ocelot = ds->priv;
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+	int ret;
-+
-+	if (felix->info->flower_stats) {
-+		ret = felix->info->flower_stats(ocelot, port, cls, ingress);
-+		if (!ret)
-+			return 0;
-+	}
- 
- 	return ocelot_cls_flower_stats(ocelot, port, cls, ingress);
- }
+@@ -435,6 +435,8 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 	ocelot->shared_queue_sz	= felix->info->shared_queue_sz;
+ 	ocelot->num_mact_rows	= felix->info->num_mact_rows;
+ 	ocelot->vcap		= felix->info->vcap;
++	ocelot->vcap_pol.base	= felix->info->vcap_pol_base;
++	ocelot->vcap_pol.max	= felix->info->vcap_pol_max;
+ 	ocelot->ops		= felix->info->ops;
+ 	ocelot->inj_prefix	= OCELOT_TAG_PREFIX_SHORT;
+ 	ocelot->xtr_prefix	= OCELOT_TAG_PREFIX_SHORT;
 diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
-index 4c717324ac2f..9ea880deb2a0 100644
+index 9ea880deb2a0..41a147c978f4 100644
 --- a/drivers/net/dsa/ocelot/felix.h
 +++ b/drivers/net/dsa/ocelot/felix.h
-@@ -37,6 +37,12 @@ struct felix_info {
- 	void	(*port_sched_speed_set)(struct ocelot *ocelot, int port,
- 					u32 speed);
- 	void	(*xmit_template_populate)(struct ocelot *ocelot, int port);
-+	int	(*flower_replace)(struct ocelot *ocelot, int port,
-+				  struct flow_cls_offload *f, bool ingress);
-+	int	(*flower_destroy)(struct ocelot *ocelot, int port,
-+				  struct flow_cls_offload *f, bool ingress);
-+	int	(*flower_stats)(struct ocelot *ocelot, int port,
-+				struct flow_cls_offload *f, bool ingress);
- };
- 
- extern const struct dsa_switch_ops felix_switch_ops;
-@@ -55,4 +61,14 @@ struct felix {
- struct net_device *felix_port_to_netdev(struct ocelot *ocelot, int port);
- int felix_netdev_to_port(struct net_device *dev);
- 
-+void vsc9959_new_base_time(struct ocelot *ocelot, ktime_t base_time,
-+			   u64 cycle_time, struct timespec64 *new_base_ts);
-+int felix_flower_stream_replace(struct ocelot *ocelot, int port,
-+				struct flow_cls_offload *f, bool ingress);
-+int felix_flower_stream_destroy(struct ocelot *ocelot, int port,
-+				struct flow_cls_offload *f, bool ingress);
-+int felix_flower_stream_stats(struct ocelot *ocelot, int port,
-+			      struct flow_cls_offload *f, bool ingress);
-+void felix_psfp_init(struct ocelot *ocelot);
-+
- #endif
-diff --git a/drivers/net/dsa/ocelot/felix_flower.c b/drivers/net/dsa/ocelot/felix_flower.c
-new file mode 100644
-index 000000000000..71894dcc0af2
---- /dev/null
-+++ b/drivers/net/dsa/ocelot/felix_flower.c
-@@ -0,0 +1,651 @@
-+// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-+/* Copyright 2020 NXP Semiconductors
-+ */
-+#include <soc/mscc/ocelot_ana.h>
-+#include <soc/mscc/ocelot_sys.h>
-+#include <net/tc_act/tc_gate.h>
-+#include <net/flow_offload.h>
-+#include <soc/mscc/ocelot.h>
-+#include <net/pkt_sched.h>
-+#include "felix.h"
-+
-+#define FELIX_PSFP_SFID_MAX		175
-+#define FELIX_PSFP_GATE_ID_MAX		183
-+#define FELIX_POLICER_PSFP_BASE		63
-+#define FELIX_POLICER_PSFP_MAX		383
-+#define FELIX_PSFP_GATE_LIST_NUM	4
-+#define FELIX_PSFP_GATE_CYCLETIME_MIN	5000
-+
-+struct felix_streamid {
-+	struct list_head list;
-+	u32 id;
-+	u8 dmac[ETH_ALEN];
-+	u16 vid;
-+	s8 prio;
-+	u8 sfid_valid;
-+	u32 sfid;
-+};
-+
-+struct felix_stream_gate_conf {
-+	u32 index;
-+	u8 enable;
-+	u8 ipv_valid;
-+	u8 init_ipv;
-+	u64 basetime;
-+	u64 cycletime;
-+	u64 cycletimext;
-+	u32 num_entries;
-+	struct action_gate_entry entries[0];
-+};
-+
-+struct felix_stream_filter {
-+	struct list_head list;
-+	refcount_t refcount;
-+	u32 index;
-+	u8 enable;
-+	u8 sg_valid;
-+	u32 sgid;
-+	u8 fm_valid;
-+	u32 fmid;
-+	u8 prio_valid;
-+	u8 prio;
-+	u32 maxsdu;
-+};
-+
-+struct felix_stream_gate {
-+	struct list_head list;
-+	refcount_t refcount;
-+	u32 index;
-+};
-+
-+struct felix_psfp_stream_counters {
-+	u32 match;
-+	u32 not_pass_gate;
-+	u32 not_pass_sdu;
-+	u32 red;
-+};
-+
-+struct felix_psfp_list {
-+	struct list_head stream_list;
-+	struct list_head gate_list;
-+	struct list_head sfi_list;
-+};
-+
-+static struct felix_psfp_list lpsfp;
-+
-+static u32 felix_sg_cfg_status(struct ocelot *ocelot)
-+{
-+	return ocelot_read(ocelot, ANA_SG_ACCESS_CTRL);
-+}
-+
-+static int felix_hw_sgi_set(struct ocelot *ocelot,
-+			    struct felix_stream_gate_conf *sgi)
-+{
-+	struct action_gate_entry *e;
-+	struct timespec64 base_ts;
-+	u32 interval_sum = 0;
-+	u32 val;
-+	int i;
-+
-+	if (sgi->index > FELIX_PSFP_GATE_ID_MAX)
-+		return -EINVAL;
-+
-+	ocelot_write(ocelot, ANA_SG_ACCESS_CTRL_SGID(sgi->index),
-+		     ANA_SG_ACCESS_CTRL);
-+
-+	if (!sgi->enable) {
-+		ocelot_rmw(ocelot, ANA_SG_CONFIG_REG_3_INIT_GATE_STATE,
-+			   ANA_SG_CONFIG_REG_3_INIT_GATE_STATE |
-+			   ANA_SG_CONFIG_REG_3_GATE_ENABLE,
-+			   ANA_SG_CONFIG_REG_3);
-+
-+		return 0;
-+	}
-+
-+	if (sgi->cycletime < FELIX_PSFP_GATE_CYCLETIME_MIN ||
-+	    sgi->cycletime > NSEC_PER_SEC)
-+		return -EINVAL;
-+
-+	if (sgi->num_entries > FELIX_PSFP_GATE_LIST_NUM)
-+		return -EINVAL;
-+
-+	vsc9959_new_base_time(ocelot, sgi->basetime, sgi->cycletime, &base_ts);
-+	ocelot_write(ocelot, base_ts.tv_nsec, ANA_SG_CONFIG_REG_1);
-+	val = lower_32_bits(base_ts.tv_sec);
-+	ocelot_write(ocelot, val, ANA_SG_CONFIG_REG_2);
-+
-+	val = upper_32_bits(base_ts.tv_sec);
-+	ocelot_write(ocelot,
-+		     (sgi->ipv_valid ? ANA_SG_CONFIG_REG_3_IPV_VALID : 0) |
-+		     ANA_SG_CONFIG_REG_3_INIT_IPV(sgi->init_ipv) |
-+		     ANA_SG_CONFIG_REG_3_GATE_ENABLE |
-+		     ANA_SG_CONFIG_REG_3_LIST_LENGTH(sgi->num_entries) |
-+		     ANA_SG_CONFIG_REG_3_INIT_GATE_STATE |
-+		     ANA_SG_CONFIG_REG_3_BASE_TIME_SEC_MSB(val),
-+		     ANA_SG_CONFIG_REG_3);
-+
-+	ocelot_write(ocelot, sgi->cycletime, ANA_SG_CONFIG_REG_4);
-+
-+	e = sgi->entries;
-+	for (i = 0; i < sgi->num_entries; i++) {
-+		u32 ips = (e[i].ipv < 0) ? 0 : (e[i].ipv + 8);
-+
-+		ocelot_write_rix(ocelot, ANA_SG_GCL_GS_CONFIG_IPS(ips) |
-+				 (e[i].gate_state ?
-+				  ANA_SG_GCL_GS_CONFIG_GATE_STATE : 0),
-+				 ANA_SG_GCL_GS_CONFIG, i);
-+
-+		interval_sum += e[i].interval;
-+		ocelot_write_rix(ocelot, interval_sum, ANA_SG_GCL_TI_CONFIG, i);
-+	}
-+
-+	ocelot_rmw(ocelot, ANA_SG_ACCESS_CTRL_CONFIG_CHANGE,
-+		   ANA_SG_ACCESS_CTRL_CONFIG_CHANGE,
-+		   ANA_SG_ACCESS_CTRL);
-+
-+	return readx_poll_timeout(felix_sg_cfg_status, ocelot, val,
-+				  (!(ANA_SG_ACCESS_CTRL_CONFIG_CHANGE & val)),
-+				  10, 100000);
-+}
-+
-+static u32 felix_sfi_access_status(struct ocelot *ocelot)
-+{
-+	return ocelot_read(ocelot, ANA_TABLES_SFIDACCESS);
-+}
-+
-+static int felix_hw_sfi_set(struct ocelot *ocelot,
-+			    struct felix_stream_filter *sfi)
-+{
-+	u32 val;
-+
-+	if (sfi->index > FELIX_PSFP_SFID_MAX)
-+		return -EINVAL;
-+
-+	if (!sfi->enable) {
-+		ocelot_write(ocelot, ANA_TABLES_SFIDTIDX_SFID_INDEX(sfi->index),
-+			     ANA_TABLES_SFIDTIDX);
-+
-+		val = ANA_TABLES_SFIDACCESS_SFID_TBL_CMD(SFIDACCESS_CMD_WRITE);
-+		ocelot_write(ocelot, val, ANA_TABLES_SFIDACCESS);
-+
-+		return readx_poll_timeout(felix_sfi_access_status, ocelot, val,
-+					  (!ANA_TABLES_SFIDACCESS_SFID_TBL_CMD(val)),
-+					  10, 100000);
-+	}
-+
-+	if (sfi->sgid > FELIX_PSFP_GATE_ID_MAX ||
-+	    sfi->fmid > FELIX_POLICER_PSFP_MAX)
-+		return -EINVAL;
-+
-+	ocelot_write(ocelot,
-+		     (sfi->sg_valid ? ANA_TABLES_SFIDTIDX_SGID_VALID : 0) |
-+		     ANA_TABLES_SFIDTIDX_SGID(sfi->sgid) |
-+		     (sfi->fm_valid ? ANA_TABLES_SFIDTIDX_POL_ENA : 0) |
-+		     ANA_TABLES_SFIDTIDX_POL_IDX(sfi->fmid) |
-+		     ANA_TABLES_SFIDTIDX_SFID_INDEX(sfi->index),
-+		     ANA_TABLES_SFIDTIDX);
-+
-+	ocelot_write(ocelot,
-+		     (sfi->prio_valid ? ANA_TABLES_SFIDACCESS_IGR_PRIO_MATCH_ENA : 0) |
-+		     ANA_TABLES_SFIDACCESS_IGR_PRIO(sfi->prio) |
-+		     ANA_TABLES_SFIDACCESS_MAX_SDU_LEN(sfi->maxsdu) |
-+		     ANA_TABLES_SFIDACCESS_SFID_TBL_CMD(SFIDACCESS_CMD_WRITE),
-+		     ANA_TABLES_SFIDACCESS);
-+
-+	return readx_poll_timeout(felix_sfi_access_status, ocelot, val,
-+				  (!ANA_TABLES_SFIDACCESS_SFID_TBL_CMD(val)),
-+				  10, 100000);
-+}
-+
-+static u32 felix_mact_status(struct ocelot *ocelot)
-+{
-+	return ocelot_read(ocelot, ANA_TABLES_MACACCESS);
-+}
-+
-+static int felix_mact_stream_update(struct ocelot *ocelot,
-+				    struct felix_streamid *stream,
-+				    struct netlink_ext_ack *extack)
-+{
-+	u32 row, col, reg, val;
-+	u8 type;
-+	int ret;
-+
-+	/* Stream identification desn't support to add a stream with non
-+	 * existent MAC (The MAC entry has not been learned in MAC table).
-+	 * return -EOPNOTSUPP to continue offloading to other modules.
-+	 */
-+	ret = ocelot_mact_lookup(ocelot, stream->dmac, stream->vid, &row, &col);
-+	if (ret) {
-+		if (extack)
-+			NL_SET_ERR_MSG_MOD(extack, "Stream is not learned in MAC table");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	ocelot_rmw(ocelot,
-+		   (stream->sfid_valid ? ANA_TABLES_STREAMDATA_SFID_VALID : 0) |
-+		   ANA_TABLES_STREAMDATA_SFID(stream->sfid),
-+		   ANA_TABLES_STREAMDATA_SFID_VALID |
-+		   ANA_TABLES_STREAMDATA_SFID_M,
-+		   ANA_TABLES_STREAMDATA);
-+
-+	reg = ocelot_read(ocelot, ANA_TABLES_STREAMDATA);
-+	reg &= (ANA_TABLES_STREAMDATA_SFID_VALID | ANA_TABLES_STREAMDATA_SSID_VALID);
-+	type = (reg ? ENTRYTYPE_LOCKED : ENTRYTYPE_NORMAL);
-+	ocelot_rmw(ocelot,  ANA_TABLES_MACACCESS_VALID |
-+		   ANA_TABLES_MACACCESS_ENTRYTYPE(type) |
-+		   ANA_TABLES_MACACCESS_MAC_TABLE_CMD(MACACCESS_CMD_WRITE),
-+		   ANA_TABLES_MACACCESS_VALID |
-+		   ANA_TABLES_MACACCESS_ENTRYTYPE_M |
-+		   ANA_TABLES_MACACCESS_MAC_TABLE_CMD_M,
-+		   ANA_TABLES_MACACCESS);
-+
-+	return readx_poll_timeout(felix_mact_status, ocelot, val,
-+				  (!ANA_TABLES_MACACCESS_MAC_TABLE_CMD(val)),
-+				  10, 100000);
-+}
-+
-+static void felix_stream_counters_get(struct ocelot *ocelot, u32 index,
-+				      struct felix_psfp_stream_counters *counters)
-+{
-+	ocelot_rmw(ocelot, SYS_STAT_CFG_STAT_VIEW(index),
-+		   SYS_STAT_CFG_STAT_VIEW_M,
-+		   SYS_STAT_CFG);
-+
-+	counters->match = ocelot_read_gix(ocelot, SYS_CNT, 0x200);
-+	counters->not_pass_gate = ocelot_read_gix(ocelot, SYS_CNT, 0x201);
-+	counters->not_pass_sdu = ocelot_read_gix(ocelot, SYS_CNT, 0x202);
-+	counters->red = ocelot_read_gix(ocelot, SYS_CNT, 0x203);
-+}
-+
-+static int felix_list_gate_add(struct ocelot *ocelot,
-+			       struct felix_stream_gate_conf *sgi)
-+{
-+	struct felix_stream_gate *gate, *tmp;
-+	struct list_head *pos, *q;
-+	int ret;
-+
-+	list_for_each_safe(pos, q, &lpsfp.gate_list) {
-+		tmp = list_entry(pos, struct felix_stream_gate, list);
-+		if (tmp->index == sgi->index) {
-+			refcount_inc(&tmp->refcount);
-+			return 0;
-+		}
-+		if (tmp->index > sgi->index)
-+			break;
-+	}
-+
-+	ret = felix_hw_sgi_set(ocelot, sgi);
-+	if (ret)
-+		return ret;
-+
-+	gate = kzalloc(sizeof(*gate), GFP_KERNEL);
-+	if (!gate)
-+		return -ENOMEM;
-+
-+	gate->index = sgi->index;
-+	refcount_set(&gate->refcount, 1);
-+	list_add(&gate->list, pos->prev);
-+
-+	return 0;
-+}
-+
-+static void felix_list_gate_del(struct ocelot *ocelot, u32 index)
-+{
-+	struct felix_stream_gate *tmp;
-+	struct felix_stream_gate_conf sgi;
-+	struct list_head *pos, *q;
-+	u8 z;
-+
-+	list_for_each_safe(pos, q, &lpsfp.gate_list) {
-+		tmp = list_entry(pos, struct felix_stream_gate, list);
-+		if (tmp->index == index) {
-+			z = refcount_dec_and_test(&tmp->refcount);
-+			if (z) {
-+				sgi.index = index;
-+				sgi.enable = 0;
-+				felix_hw_sgi_set(ocelot, &sgi);
-+				list_del(pos);
-+				kfree(tmp);
-+			}
-+			break;
-+		}
-+	}
-+}
-+
-+static int felix_list_stream_filter_add(struct ocelot *ocelot,
-+					struct felix_stream_filter *sfi)
-+{
-+	struct felix_stream_filter *sfi_entry, *tmp;
-+	struct list_head *last = &lpsfp.sfi_list;
-+	struct list_head *pos, *q;
-+	u32 insert = 0;
-+	int ret;
-+
-+	list_for_each_safe(pos, q, &lpsfp.sfi_list) {
-+		tmp = list_entry(pos, struct felix_stream_filter, list);
-+		if (sfi->sg_valid == tmp->sg_valid &&
-+		    tmp->sgid == sfi->sgid &&
-+		    tmp->fmid == sfi->fmid) {
-+			sfi->index = tmp->index;
-+			refcount_inc(&tmp->refcount);
-+			return 0;
-+		}
-+		if (tmp->index == insert) {
-+			last = pos;
-+			insert++;
-+		}
-+	}
-+	sfi->index = insert;
-+	ret = felix_hw_sfi_set(ocelot, sfi);
-+	if (ret)
-+		return ret;
-+
-+	sfi_entry = kzalloc(sizeof(*sfi_entry), GFP_KERNEL);
-+	if (!sfi_entry)
-+		return -ENOMEM;
-+
-+	memcpy(sfi_entry, sfi, sizeof(*sfi_entry));
-+	refcount_set(&sfi_entry->refcount, 1);
-+
-+	list_add(&sfi_entry->list, last->next);
-+
-+	return 0;
-+}
-+
-+static void felix_list_stream_filter_del(struct ocelot *ocelot, u32 index)
-+{
-+	struct felix_stream_filter *tmp;
-+	struct list_head *pos, *q;
-+	u8 z;
-+
-+	list_for_each_safe(pos, q, &lpsfp.sfi_list) {
-+		tmp = list_entry(pos, struct felix_stream_filter, list);
-+		if (tmp->index == index) {
-+			if (tmp->sg_valid)
-+				felix_list_gate_del(ocelot, tmp->sgid);
-+
-+			z = refcount_dec_and_test(&tmp->refcount);
-+			if (z) {
-+				tmp->enable = 0;
-+				felix_hw_sfi_set(ocelot, tmp);
-+				list_del(pos);
-+				kfree(tmp);
-+			}
-+			break;
-+		}
-+	}
-+}
-+
-+static int felix_list_stream_add(struct felix_streamid *stream)
-+{
-+	struct felix_streamid *stream_entry;
-+	struct list_head *pos;
-+
-+	stream_entry = kzalloc(sizeof(*stream_entry), GFP_KERNEL);
-+	if (!stream_entry)
-+		return -ENOMEM;
-+
-+	memcpy(stream_entry, stream, sizeof(*stream_entry));
-+
-+	if (list_empty(&lpsfp.stream_list)) {
-+		list_add(&stream_entry->list, &lpsfp.stream_list);
-+		return 0;
-+	}
-+
-+	pos = &lpsfp.stream_list;
-+	list_add(&stream_entry->list, pos->prev);
-+
-+	return 0;
-+}
-+
-+static int felix_list_stream_lookup(struct felix_streamid *stream)
-+{
-+	struct felix_streamid *tmp;
-+
-+	list_for_each_entry(tmp, &lpsfp.stream_list, list) {
-+		if (tmp->dmac[0] == stream->dmac[0] &&
-+		    tmp->dmac[1] == stream->dmac[1] &&
-+		    tmp->dmac[2] == stream->dmac[2] &&
-+		    tmp->dmac[3] == stream->dmac[3] &&
-+		    tmp->dmac[4] == stream->dmac[4] &&
-+		    tmp->dmac[5] == stream->dmac[5] &&
-+		    tmp->vid == stream->vid &&
-+		    (tmp->sfid_valid & stream->sfid_valid))
-+			return 0;
-+	}
-+
-+	return -ENOENT;
-+}
-+
-+static struct felix_streamid *felix_list_stream_get(u32 id)
-+{
-+	struct felix_streamid *tmp;
-+	struct list_head *pos, *q;
-+
-+	list_for_each_safe(pos, q, &lpsfp.stream_list) {
-+		tmp = list_entry(pos, struct felix_streamid, list);
-+		if (tmp->id == id)
-+			return tmp;
-+	}
-+
-+	return NULL;
-+}
-+
-+static int felix_list_stream_del(struct ocelot *ocelot, u32 id)
-+{
-+	struct felix_streamid *tmp;
-+	struct list_head *pos, *q;
-+
-+	list_for_each_safe(pos, q, &lpsfp.stream_list) {
-+		tmp = list_entry(pos, struct felix_streamid, list);
-+		if (tmp->id == id) {
-+			tmp->sfid_valid = 0;
-+			felix_list_stream_filter_del(ocelot, tmp->sfid);
-+			felix_mact_stream_update(ocelot, tmp, NULL);
-+			list_del(pos);
-+			kfree(tmp);
-+
-+			return 0;
-+		}
-+	}
-+
-+	return -ENOENT;
-+}
-+
-+static int felix_psfp_set(struct ocelot *ocelot,
-+			  struct felix_streamid *stream,
-+			  struct felix_stream_filter *sfi,
-+			  struct netlink_ext_ack *extack)
-+{
-+	int ret;
-+
-+	sfi->prio_valid = (stream->prio < 0 ? 0 : 1);
-+	sfi->prio = (sfi->prio_valid ? stream->prio : 0);
-+	sfi->enable = 1;
-+	ret = felix_list_stream_filter_add(ocelot, sfi);
-+	if (ret) {
-+		if (sfi->sg_valid)
-+			felix_list_gate_del(ocelot, sfi->sgid);
-+		return ret;
-+	}
-+
-+	stream->sfid = sfi->index;
-+	ret = felix_mact_stream_update(ocelot, stream, extack);
-+	if (ret) {
-+		felix_list_stream_filter_del(ocelot, sfi->index);
-+		return ret;
-+	}
-+
-+	ret = felix_list_stream_add(stream);
-+	if (ret)
-+		felix_list_stream_filter_del(ocelot, sfi->index);
-+
-+	return ret;
-+}
-+
-+static void felix_parse_gate(const struct flow_action_entry *entry,
-+			     struct felix_stream_gate_conf *sgi)
-+{
-+	struct action_gate_entry *e;
-+	int i;
-+
-+	sgi->index = entry->gate.index;
-+	sgi->ipv_valid = (entry->gate.prio < 0) ? 0 : 1;
-+	sgi->init_ipv = (sgi->ipv_valid) ? entry->gate.prio : 0;
-+	sgi->basetime = entry->gate.basetime;
-+	sgi->cycletime = entry->gate.cycletime;
-+	sgi->num_entries = entry->gate.num_entries;
-+	sgi->enable = 1;
-+
-+	e = sgi->entries;
-+	for (i = 0; i < entry->gate.num_entries; i++) {
-+		e[i].gate_state = entry->gate.entries[i].gate_state;
-+		e[i].interval = entry->gate.entries[i].interval;
-+		e[i].ipv = entry->gate.entries[i].ipv;
-+		e[i].maxoctets = entry->gate.entries[i].maxoctets;
-+	}
-+}
-+
-+static int felix_flower_parse_key(struct flow_cls_offload *f,
-+				  struct felix_streamid *stream)
-+{
-+	struct flow_rule *rule = flow_cls_offload_flow_rule(f);
-+	struct flow_dissector *dissector = rule->match.dissector;
-+
-+	if (dissector->used_keys &
-+	    ~(BIT(FLOW_DISSECTOR_KEY_CONTROL) |
-+	      BIT(FLOW_DISSECTOR_KEY_BASIC) |
-+	      BIT(FLOW_DISSECTOR_KEY_VLAN) |
-+	      BIT(FLOW_DISSECTOR_KEY_ETH_ADDRS)))
-+		return -EOPNOTSUPP;
-+
-+	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ETH_ADDRS)) {
-+		struct flow_match_eth_addrs match;
-+
-+		flow_rule_match_eth_addrs(rule, &match);
-+		ether_addr_copy(stream->dmac, match.key->dst);
-+		if (!is_zero_ether_addr(match.mask->src))
-+			return -EOPNOTSUPP;
-+	} else {
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_VLAN)) {
-+		struct flow_match_vlan match;
-+
-+		flow_rule_match_vlan(rule, &match);
-+		if (match.mask->vlan_priority)
-+			stream->prio = match.key->vlan_priority;
-+		else
-+			stream->prio = -1;
-+
-+		if (!match.mask->vlan_id)
-+			return -EOPNOTSUPP;
-+		stream->vid = match.key->vlan_id;
-+	} else {
-+		return -EOPNOTSUPP;
-+	}
-+
-+	stream->id = f->cookie;
-+
-+	return 0;
-+}
-+
-+int felix_flower_stream_replace(struct ocelot *ocelot, int port,
-+				struct flow_cls_offload *f, bool ingress)
-+{
-+	struct netlink_ext_ack *extack = f->common.extack;
-+	struct felix_stream_filter sfi = {0};
-+	struct felix_streamid stream = {0};
-+	struct felix_stream_gate_conf *sgi;
-+	const struct flow_action_entry *a;
-+	int ret, size, i;
-+	u32 index;
-+
-+	ret = felix_flower_parse_key(f, &stream);
-+	if (ret) {
-+		NL_SET_ERR_MSG_MOD(extack, "Only can match on VID, PCP, and dest MAC");
-+		return ret;
-+	}
-+
-+	if (!flow_action_basic_hw_stats_check(&f->rule->action,
-+					      f->common.extack))
-+		return -EOPNOTSUPP;
-+
-+	flow_action_for_each(i, a, &f->rule->action) {
-+		switch (a->id) {
-+		case FLOW_ACTION_GATE:
-+			if (f->common.chain_index != OCELOT_PSFP_CHAIN) {
-+				NL_SET_ERR_MSG_MOD(extack,
-+						   "Gate action only be offloaded to PSFP chain");
-+				return -EOPNOTSUPP;
-+			}
-+
-+			size = struct_size(sgi, entries, a->gate.num_entries);
-+			sgi = kzalloc(size, GFP_KERNEL);
-+			felix_parse_gate(a, sgi);
-+			ret = felix_list_gate_add(ocelot, sgi);
-+			if (ret) {
-+				kfree(sgi);
-+				return ret;
-+			}
-+
-+			sfi.sg_valid = 1;
-+			sfi.sgid = sgi->index;
-+			stream.sfid_valid = 1;
-+			kfree(sgi);
-+			break;
-+		default:
-+			return -EOPNOTSUPP;
-+		}
-+	}
-+
-+	/* Check if stream is set. */
-+	ret = felix_list_stream_lookup(&stream);
-+	if (!ret) {
-+		if (sfi.sg_valid)
-+			felix_list_gate_del(ocelot, sfi.sgid);
-+
-+		NL_SET_ERR_MSG_MOD(extack, "This stream is already added");
-+
-+		return -EEXIST;
-+	}
-+
-+	if (stream.sfid_valid)
-+		return felix_psfp_set(ocelot, &stream, &sfi, extack);
-+
-+	return -EOPNOTSUPP;
-+}
-+
-+int felix_flower_stream_destroy(struct ocelot *ocelot, int port,
-+				struct flow_cls_offload *f, bool ingress)
-+{
-+	return felix_list_stream_del(ocelot, f->cookie);
-+}
-+
-+int felix_flower_stream_stats(struct ocelot *ocelot, int port,
-+			      struct flow_cls_offload *f, bool ingress)
-+{
-+	struct felix_psfp_stream_counters counters;
-+	struct felix_streamid *stream;
-+	struct flow_stats stats;
-+
-+	stream = felix_list_stream_get(f->cookie);
-+	if (!stream)
-+		return -ENOENT;
-+
-+	felix_stream_counters_get(ocelot, stream->sfid, &counters);
-+	stats.pkts = counters.match;
-+
-+	flow_stats_update(&f->stats, 0x0, stats.pkts, 0x0, 0,
-+			  FLOW_ACTION_HW_STATS_IMMEDIATE);
-+
-+	return 0;
-+}
-+
-+void felix_psfp_init(struct ocelot *ocelot)
-+{
-+	INIT_LIST_HEAD(&lpsfp.stream_list);
-+	INIT_LIST_HEAD(&lpsfp.gate_list);
-+	INIT_LIST_HEAD(&lpsfp.sfi_list);
-+}
+@@ -22,6 +22,8 @@ struct felix_info {
+ 	int				num_ports;
+ 	int				num_tx_queues;
+ 	struct vcap_props		*vcap;
++	u16				vcap_pol_base;
++	u16				vcap_pol_max;
+ 	int				switch_pci_bar;
+ 	int				imdio_pci_bar;
+ 	const struct ptp_clock_info	*ptp_caps;
 diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index 3e925b8d5306..f171e6f3fc98 100644
+index f171e6f3fc98..32c9b4f60575 100644
 --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
 +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -931,6 +931,8 @@ static int vsc9959_reset(struct ocelot *ocelot)
- 	/* enable switch core */
- 	ocelot_field_write(ocelot, SYS_RESET_CFG_CORE_ENA, 1);
+@@ -17,6 +17,8 @@
+ #include "felix.h"
  
-+	felix_psfp_init(ocelot);
+ #define VSC9959_TAS_GCL_ENTRY_MAX	63
++#define VSC9959_VCAP_POLICER_BASE	63
++#define VSC9959_VCAP_POLICER_MAX	383
+ 
+ static const u32 vsc9959_ana_regmap[] = {
+ 	REG(ANA_ADVLEARN,			0x0089a0),
+@@ -1357,6 +1359,8 @@ static const struct felix_info felix_info_vsc9959 = {
+ 	.stats_layout		= vsc9959_stats_layout,
+ 	.num_stats		= ARRAY_SIZE(vsc9959_stats_layout),
+ 	.vcap			= vsc9959_vcap_props,
++	.vcap_pol_base		= VSC9959_VCAP_POLICER_BASE,
++	.vcap_pol_max		= VSC9959_VCAP_POLICER_MAX,
+ 	.shared_queue_sz	= 128 * 1024,
+ 	.num_mact_rows		= 2048,
+ 	.num_ports		= 6,
+diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
+index 89f35aecbda7..4957016d503e 100644
+--- a/drivers/net/ethernet/mscc/ocelot_flower.c
++++ b/drivers/net/ethernet/mscc/ocelot_flower.c
+@@ -225,6 +225,11 @@ static int ocelot_flower_parse_action(struct ocelot *ocelot, int port,
+ 				return -EOPNOTSUPP;
+ 			}
+ 			filter->action.police_ena = true;
++			filter->action.pol_ix = a->police.index +
++						ocelot->vcap_pol.base;
++			if (filter->action.pol_ix > ocelot->vcap_pol.max)
++				return -EINVAL;
 +
+ 			rate = a->police.rate_bytes_ps;
+ 			filter->action.pol.rate = div_u64(rate, 1000) * 8;
+ 			filter->action.pol.burst = a->police.burst;
+diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
+index d8c778ee6f1b..f68b5af591b1 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vcap.c
++++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
+@@ -886,10 +886,19 @@ static void vcap_entry_set(struct ocelot *ocelot, int ix,
+ 		return es0_entry_set(ocelot, ix, filter);
+ }
+ 
+-static int ocelot_vcap_policer_add(struct ocelot *ocelot, u32 pol_ix,
+-				   struct ocelot_policer *pol)
++struct vcap_policer_entry {
++	struct list_head list;
++	refcount_t refcount;
++	u32 pol_ix;
++};
++
++int ocelot_vcap_policer_add(struct ocelot *ocelot, u32 pol_ix,
++			    struct ocelot_policer *pol)
+ {
+ 	struct qos_policer_conf pp = { 0 };
++	struct vcap_policer_entry *tmp;
++	struct list_head *pos, *q;
++	int ret;
+ 
+ 	if (!pol)
+ 		return -EINVAL;
+@@ -898,57 +907,79 @@ static int ocelot_vcap_policer_add(struct ocelot *ocelot, u32 pol_ix,
+ 	pp.pir = pol->rate;
+ 	pp.pbs = pol->burst;
+ 
+-	return qos_policer_conf_set(ocelot, 0, pol_ix, &pp);
++	list_for_each_safe(pos, q, &ocelot->vcap_pol.pol_list) {
++		tmp = list_entry(pos, struct vcap_policer_entry, list);
++		if (tmp->pol_ix == pol_ix) {
++			refcount_inc(&tmp->refcount);
++			return 0;
++		}
++		if (tmp->pol_ix > pol_ix)
++			break;
++	}
++
++	ret = qos_policer_conf_set(ocelot, 0, pol_ix, &pp);
++	if (ret)
++		return ret;
++
++	tmp = kzalloc(sizeof(*tmp), GFP_KERNEL);
++	if (!tmp)
++		return -ENOMEM;
++
++	tmp->pol_ix = pol_ix;
++	refcount_set(&tmp->refcount, 1);
++	list_add(&tmp->list, pos->prev);
++
++	return 0;
+ }
++EXPORT_SYMBOL(ocelot_vcap_policer_add);
+ 
+-static void ocelot_vcap_policer_del(struct ocelot *ocelot,
+-				    struct ocelot_vcap_block *block,
+-				    u32 pol_ix)
++int ocelot_vcap_policer_del(struct ocelot *ocelot, u32 pol_ix)
+ {
+-	struct ocelot_vcap_filter *filter;
+ 	struct qos_policer_conf pp = {0};
+-	int index = -1;
+-
+-	if (pol_ix < block->pol_lpr)
+-		return;
+-
+-	list_for_each_entry(filter, &block->rules, list) {
+-		index++;
+-		if (filter->block_id == VCAP_IS2 &&
+-		    filter->action.police_ena &&
+-		    filter->action.pol_ix < pol_ix) {
+-			filter->action.pol_ix += 1;
+-			ocelot_vcap_policer_add(ocelot, filter->action.pol_ix,
+-						&filter->action.pol);
+-			is2_entry_set(ocelot, index, filter);
++	struct vcap_policer_entry *tmp;
++	struct list_head *pos, *q;
++	u8 z = 0;
++
++	list_for_each_safe(pos, q, &ocelot->vcap_pol.pol_list) {
++		tmp = list_entry(pos, struct vcap_policer_entry, list);
++		if (tmp->pol_ix == pol_ix) {
++			z = refcount_dec_and_test(&tmp->refcount);
++			if (z) {
++				list_del(pos);
++				kfree(tmp);
++			}
+ 		}
+ 	}
+ 
+-	pp.mode = MSCC_QOS_RATE_MODE_DISABLED;
+-	qos_policer_conf_set(ocelot, 0, pol_ix, &pp);
++	if (z) {
++		pp.mode = MSCC_QOS_RATE_MODE_DISABLED;
++		return qos_policer_conf_set(ocelot, 0, pol_ix, &pp);
++	}
+ 
+-	block->pol_lpr++;
++	return 0;
+ }
++EXPORT_SYMBOL(ocelot_vcap_policer_del);
+ 
+-static void ocelot_vcap_filter_add_to_block(struct ocelot *ocelot,
+-					    struct ocelot_vcap_block *block,
+-					    struct ocelot_vcap_filter *filter)
++static int ocelot_vcap_filter_add_to_block(struct ocelot *ocelot,
++					   struct ocelot_vcap_block *block,
++					   struct ocelot_vcap_filter *filter)
+ {
+ 	struct ocelot_vcap_filter *tmp;
+ 	struct list_head *pos, *n;
++	int ret;
+ 
+ 	if (filter->block_id == VCAP_IS2 && filter->action.police_ena) {
+-		block->pol_lpr--;
+-		filter->action.pol_ix = block->pol_lpr;
+-		ocelot_vcap_policer_add(ocelot, filter->action.pol_ix,
+-					&filter->action.pol);
++		ret = ocelot_vcap_policer_add(ocelot, filter->action.pol_ix,
++					      &filter->action.pol);
++		if (ret)
++			return ret;
+ 	}
+ 
+ 	block->count++;
+ 
+ 	if (list_empty(&block->rules)) {
+ 		list_add(&filter->list, &block->rules);
+-		return;
++		return 0;
+ 	}
+ 
+ 	list_for_each_safe(pos, n, &block->rules) {
+@@ -957,6 +988,8 @@ static void ocelot_vcap_filter_add_to_block(struct ocelot *ocelot,
+ 			break;
+ 	}
+ 	list_add(&filter->list, pos->prev);
++
++	return 0;
+ }
+ 
+ static int ocelot_vcap_block_get_filter_index(struct ocelot_vcap_block *block,
+@@ -1122,7 +1155,7 @@ int ocelot_vcap_filter_add(struct ocelot *ocelot,
+ 			   struct netlink_ext_ack *extack)
+ {
+ 	struct ocelot_vcap_block *block = &ocelot->block[filter->block_id];
+-	int i, index;
++	int i, index, ret;
+ 
+ 	if (!ocelot_exclusive_mac_etype_filter_rules(ocelot, filter)) {
+ 		NL_SET_ERR_MSG_MOD(extack,
+@@ -1131,7 +1164,9 @@ int ocelot_vcap_filter_add(struct ocelot *ocelot,
+ 	}
+ 
+ 	/* Add filter to the linked list */
+-	ocelot_vcap_filter_add_to_block(ocelot, block, filter);
++	ret = ocelot_vcap_filter_add_to_block(ocelot, block, filter);
++	if (ret)
++		return ret;
+ 
+ 	/* Get the index of the inserted filter */
+ 	index = ocelot_vcap_block_get_filter_index(block, filter);
+@@ -1163,7 +1198,7 @@ static void ocelot_vcap_block_remove_filter(struct ocelot *ocelot,
+ 		if (tmp->id == filter->id) {
+ 			if (tmp->block_id == VCAP_IS2 &&
+ 			    tmp->action.police_ena)
+-				ocelot_vcap_policer_del(ocelot, block,
++				ocelot_vcap_policer_del(ocelot,
+ 							tmp->action.pol_ix);
+ 
+ 			list_del(pos);
+@@ -1338,13 +1373,13 @@ int ocelot_vcap_init(struct ocelot *ocelot)
+ 		struct vcap_props *vcap = &ocelot->vcap[i];
+ 
+ 		INIT_LIST_HEAD(&block->rules);
+-		block->pol_lpr = OCELOT_POLICER_DISCARD - 1;
+ 
+ 		ocelot_vcap_detect_constants(ocelot, vcap);
+ 		ocelot_vcap_init_one(ocelot, vcap);
+ 	}
+ 
+ 	INIT_LIST_HEAD(&ocelot->dummy_rules);
++	INIT_LIST_HEAD(&ocelot->vcap_pol.pol_list);
+ 
  	return 0;
  }
- 
-@@ -1150,9 +1152,8 @@ static void vsc9959_sched_speed_set(struct ocelot *ocelot, int port,
- 		       QSYS_TAG_CONFIG, port);
- }
- 
--static void vsc9959_new_base_time(struct ocelot *ocelot, ktime_t base_time,
--				  u64 cycle_time,
--				  struct timespec64 *new_base_ts)
-+void vsc9959_new_base_time(struct ocelot *ocelot, ktime_t base_time,
-+			   u64 cycle_time, struct timespec64 *new_base_ts)
- {
- 	struct timespec64 ts;
- 	ktime_t new_base_time;
-@@ -1370,6 +1371,9 @@ static const struct felix_info felix_info_vsc9959 = {
- 	.port_setup_tc		= vsc9959_port_setup_tc,
- 	.port_sched_speed_set	= vsc9959_sched_speed_set,
- 	.xmit_template_populate	= vsc9959_xmit_template_populate,
-+	.flower_replace		= felix_flower_stream_replace,
-+	.flower_destroy		= felix_flower_stream_destroy,
-+	.flower_stats		= felix_flower_stream_stats,
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 67e71d75fc97..71b69e58ece5 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -575,10 +575,15 @@ struct ocelot_ops {
+ 	u16 (*wm_enc)(u16 value);
  };
  
- static irqreturn_t felix_irq_handler(int irq, void *data)
-diff --git a/include/soc/mscc/ocelot_ana.h b/include/soc/mscc/ocelot_ana.h
-index 1669481d9779..c5a0b7174518 100644
---- a/include/soc/mscc/ocelot_ana.h
-+++ b/include/soc/mscc/ocelot_ana.h
-@@ -227,6 +227,11 @@
- #define ANA_TABLES_SFIDACCESS_SFID_TBL_CMD(x)             ((x) & GENMASK(1, 0))
- #define ANA_TABLES_SFIDACCESS_SFID_TBL_CMD_M              GENMASK(1, 0)
- 
-+#define SFIDACCESS_CMD_IDLE                             0
-+#define SFIDACCESS_CMD_READ                             1
-+#define SFIDACCESS_CMD_WRITE                            2
-+#define SFIDACCESS_CMD_INIT				3
++struct ocelot_vcap_policer {
++	struct list_head pol_list;
++	u16 base;
++	u16 max;
++};
 +
- #define ANA_TABLES_SFIDTIDX_SGID_VALID                    BIT(26)
- #define ANA_TABLES_SFIDTIDX_SGID(x)                       (((x) << 18) & GENMASK(25, 18))
- #define ANA_TABLES_SFIDTIDX_SGID_M                        GENMASK(25, 18)
-@@ -255,6 +260,11 @@
- #define ANA_SG_CONFIG_REG_3_INIT_IPS(x)                   (((x) << 21) & GENMASK(24, 21))
- #define ANA_SG_CONFIG_REG_3_INIT_IPS_M                    GENMASK(24, 21)
- #define ANA_SG_CONFIG_REG_3_INIT_IPS_X(x)                 (((x) & GENMASK(24, 21)) >> 21)
-+#define ANA_SG_CONFIG_REG_3_IPV_VALID                     BIT(24)
-+#define ANA_SG_CONFIG_REG_3_IPV_INVALID(x)		  (((x) << 24) & GENMASK(24, 24))
-+#define ANA_SG_CONFIG_REG_3_INIT_IPV(x)                   (((x) << 21) & GENMASK(23, 21))
-+#define ANA_SG_CONFIG_REG_3_INIT_IPV_M                    GENMASK(23, 21)
-+#define ANA_SG_CONFIG_REG_3_INIT_IPV_X(x)                 (((x) & GENMASK(23, 21)) >> 21)
- #define ANA_SG_CONFIG_REG_3_INIT_GATE_STATE               BIT(25)
+ struct ocelot_vcap_block {
+ 	struct list_head rules;
+ 	int count;
+-	int pol_lpr;
+ };
  
- #define ANA_SG_GCL_GS_CONFIG_RSZ                          0x4
+ struct ocelot_port {
+@@ -645,6 +650,7 @@ struct ocelot {
+ 
+ 	struct list_head		dummy_rules;
+ 	struct ocelot_vcap_block	block[3];
++	struct ocelot_vcap_policer	vcap_pol;
+ 	struct vcap_props		*vcap;
+ 
+ 	/* Workqueue to check statistics for overflow with its lock */
+@@ -798,5 +804,8 @@ int ocelot_port_mdb_add(struct ocelot *ocelot, int port,
+ 			const struct switchdev_obj_port_mdb *mdb);
+ int ocelot_port_mdb_del(struct ocelot *ocelot, int port,
+ 			const struct switchdev_obj_port_mdb *mdb);
++int ocelot_vcap_policer_add(struct ocelot *ocelot, u32 pol_ix,
++			    struct ocelot_policer *pol);
++int ocelot_vcap_policer_del(struct ocelot *ocelot, u32 pol_ix);
+ 
+ #endif
 -- 
 2.17.1
 
