@@ -2,68 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F531294166
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 19:25:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF05029417F
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 19:34:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395412AbgJTRZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 13:25:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39448 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2395362AbgJTRZ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 13:25:29 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2A77C0613D1
-        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 10:25:27 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id j7so3130113wrt.9
-        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 10:25:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=2yQFOrpOscE2O+axEdR/xov7xxujPOu5CGipkGFYWnE=;
-        b=YoprQYpEB2O6X6y0Hq+KsWQh3IQNUeCsxgNDyIz/d47QdjuVPxxrA9kQRWjjxQHws1
-         AUejkAFUmX7N/9UmJS6Gb4hbhOOFGTpuGPcmLO05Ybu191pt00QnQZGHafRUa8HfFaZW
-         f0FWY0UqUB2tGsRPWfnrqBf3rAlx2puB5N2gAUfYynIqDNG5MFW4bCmoTybogXtYe0j9
-         8IYYW3nHb7T8oIocim9dFq5XrRREV3X4C+QuIn+vdb/5hB0AKPkYd5X5xupWhJVaz0Pw
-         DClLJjW3X+fcT2/hANfuD7NyZ9Wgm6eJicFUzz5HlNU4+1JHfb1C668izRYfrg5wKl/3
-         3HXw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=2yQFOrpOscE2O+axEdR/xov7xxujPOu5CGipkGFYWnE=;
-        b=tYbpFprdvqawJSwSmim6ANQ97SoZc5GiXV+OYaLIrv2Lem+iwwplNPLMujA6bbz4m7
-         +7AsCtl1LYqeUM1W1TfXF1DEK+cL7yLOvBTOTENW0EsoDIGlh1A55ODWxai+ugXUSvRl
-         CF866k0mF8fUwICg3SGe8dMiFQR71mGs6HEaoll26MseeFIV7+wCKCrrVVZD9KqXEf96
-         iWEP6F+ygC10Erg+T5AMf2dG8eJ7G+Pfv3RkAdEpjroHue6R6IRdpn7X4anEfoBltP7y
-         c+bU5VoRM94OTWSIGnZ2RzOQNJqkBfg0E1wTGBF9EhncUAtKaIuA52A/LAzLQshpFPqj
-         7CHw==
-X-Gm-Message-State: AOAM530Gi+gcK049LG0L40OzIfNwlqvPfUWZb9t6OsDMPbqD7v5WFlMZ
-        haagdjNDjiVS1FgmGU1j40DheAOJi4dorsPt6jY=
-X-Google-Smtp-Source: ABdhPJwjpY5lYBmVuucniA7GzZd6Q18KlIYLJxa6MoS+c7UQDyTn0qtOHkVJcYUfjOKeKgQ0rZoSulRBYgbH4LgrxbE=
-X-Received: by 2002:a5d:4a06:: with SMTP id m6mr4582921wrq.209.1603214726472;
- Tue, 20 Oct 2020 10:25:26 -0700 (PDT)
+        id S2395550AbgJTReq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 13:34:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35210 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2395541AbgJTRep (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Oct 2020 13:34:45 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0D5BD2222D;
+        Tue, 20 Oct 2020 17:34:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603215285;
+        bh=AD5oVSPzJ1zd5FClS+hyWvNYZp4xz20dNie3ffoZsRw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jSdfk20aErjXh9JkUEjItNT65BmMBv237o0NL8aGwAGZIo6cbsx0lHjnnvdydO0xD
+         j6QS8Cr0nYkzoHTxkeD9/EiXLzJb4xW3KSpkEvlIZcEnpdEe+6akRUXKfKhlNKX1Gm
+         29AXIHZTjDK7rhT+kMBAfBkCw2JoBFhCXxBT02DM=
+Date:   Tue, 20 Oct 2020 10:34:41 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     trix@redhat.com
+Cc:     irusskikh@marvell.com, davem@davemloft.net, benve@cisco.com,
+        _govind@gmx.com, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, bigeasy@linutronix.de,
+        tglx@linutronix.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org
+Subject: Re: [PATCH] net: remove unneeded break
+Message-ID: <20201020103441.06dc6247@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201019172607.31622-1-trix@redhat.com>
+References: <20201019172607.31622-1-trix@redhat.com>
 MIME-Version: 1.0
-Received: by 2002:a5d:4390:0:0:0:0:0 with HTTP; Tue, 20 Oct 2020 10:25:26
- -0700 (PDT)
-Reply-To: deanshils0918@gmail.com
-From:   Deema Abdel <gombilptyr@gmail.com>
-Date:   Tue, 20 Oct 2020 10:25:26 -0700
-Message-ID: <CAGufDaNR9fhgDZ33QmwyaJS=PFV7jAKOQbJFYEa_vg6=zqd2rA@mail.gmail.com>
-Subject: wdr
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
--- 
-Attention: Fund Recipient
+On Mon, 19 Oct 2020 10:26:07 -0700 trix@redhat.com wrote:
+> From: Tom Rix <trix@redhat.com>
+> 
+> A break is not needed if it is preceded by a return or goto
+> 
+> Signed-off-by: Tom Rix <trix@redhat.com>
 
-We have received an irrevocable payment guarantee for your payment
-from the Imf. We would like to inform you that the European investment
-bank has decided to compensate you with the sum of $1.800,000 (One
-Million Eight Hundred Thousand United state dollars ) and transfer it
-to your bank account via (ATM VISA-CARD). so contact our correspondent
-bank head office secretary Mr Deanson Hillary to give you guideline on
-how to receive you fund (deanshils0918@gmail.com) contact her now so that
-we can start your transaction today. Your best regard Mr Hillary Deanson .
+Applied, thanks!
