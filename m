@@ -2,131 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F04DA2937B4
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 11:12:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 980602937F5
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 11:26:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391025AbgJTJMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 05:12:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47218 "EHLO
+        id S2392789AbgJTJ0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 05:26:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390974AbgJTJMT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 05:12:19 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DB1EC061755;
-        Tue, 20 Oct 2020 02:12:19 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id n15so1206843wrq.2;
-        Tue, 20 Oct 2020 02:12:19 -0700 (PDT)
+        with ESMTP id S2391503AbgJTJ0i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 05:26:38 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CF91C061755
+        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 02:26:38 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id 33so1073266edq.13
+        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 02:26:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=92SLYfdJI297isdHxutj998j2GxP03O4p2KdaKj+HWM=;
-        b=gnlyuInUfaQEbtzn6BFjlC4qzQX4a3qkIab7r+J2Qn/e07w/3jHIgpLTbQTOykmzOJ
-         ueBsXeNlVYa+fjKyz2ovILJ/3Z5ZhLLNSywubWU2vvywwPXMEWkJnvLZxRKlEEwipyJp
-         mxJiEcaOre+TZZLryPTNRCtS2FzM7Fave/J0k08+MR4D33AZvsPrFZ1PeHKK6/I+YzvH
-         3CQb5BKF/bMqbGXJE4MUdqHLaHLgZP5rDDJ1Qy6ULw6TauhBYvM38MDClJp8pTV+2/J5
-         3dW2bJaSm/3mWubiz4sLM4o8+dNnVQGgXTxa5KGmtjdsYdcT49frwwR7jzdp8omeGgDx
-         VtYg==
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=if02MItxpFpQD7CS13GFSz6oa7VooxpaKXbIaJtGIlk=;
+        b=LwyoecrOIWf1QjIlGH5XyEFZSruVH8CNEDOgKXK5tkJFwfxSGp5zSLG8occ90AwSVq
+         DVCaqXUYL60d4dftdLVUIsB4HNYBZLb4DEJPrIjCQy37D17RrfHJuMXTg9jJcOidxgyw
+         IPCU8A57Dv2eShEtZNoCXnYDRJcGCIaUhnL2ROhGgVDRdI0dXoCnIuUFQ+pw1xRLGN6X
+         /TVTBgLrU6Jok2fn08tbNXEZWGgHYl25qxwp1jzbiffualrTyJHbcPJo710WMQYJylks
+         owP/DEK74M8mH8V2RKGovjy/Q9YGI3kyYDvGB9a09xqJTL/I/Hw/RAHQqGl/i9CaeUQL
+         2OwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=92SLYfdJI297isdHxutj998j2GxP03O4p2KdaKj+HWM=;
-        b=RimhKdYK/Hxyh/nArHTzw6Sj/mb50GfH1JLDMaVptFdSADjrgFSyeBrR0KC27sFnS7
-         SZmwiNSBEV2MqxdmZR/9weeFimAXp0eGBGWXngZhxjH3L0NcrWv9gZL0phWxA8fIaSv/
-         159JiQzGLZz9z80R2aJwEWRit6vOisTEQsGXAops7ghZ+7EzTX108nyTT2LkyDoM7yfP
-         /IT/PiKhnwhFUcFTWwu0gsS1G0P12NW4aHwYIkWFyH2V7+Mvdbi4fZpFjmYbpi+4rlv6
-         qXZNlFYndaExjHdkLuHyXvwB8VzZla12pbDyNEj9386Mn8oxmiASZX8HSYuip5E6VGIU
-         xbsg==
-X-Gm-Message-State: AOAM531tCC2drOkzzj/QgJKYwML9Kdf5knodKCQGzPx0iOIODuKwUBgl
-        xlKo2zroOP/oG//qqpl47w2O7pdSjjB6fK45/10PC+VpkCA=
-X-Google-Smtp-Source: ABdhPJxyEVYgVwYwghGgNXg65Uu8Y+703SeqBprdWXx5g433etT4RmmhlCjLgOdn1/TULoLP9sY6oX+HaxiaEJIEy1c=
-X-Received: by 2002:a5d:5748:: with SMTP id q8mr2296520wrw.299.1603185137830;
- Tue, 20 Oct 2020 02:12:17 -0700 (PDT)
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=if02MItxpFpQD7CS13GFSz6oa7VooxpaKXbIaJtGIlk=;
+        b=her7qaXHUkw8rBMnyshTkrbAFL/dJiQfbvLQgN2KRcbE+qeKJBH43a4grGVrOeip9Q
+         5lSU0FWHjTNHBl1aIGg5L4PlzrtEu+QhPs1alVkl74TzswW1WYtXMWlpemS9voCQhqXe
+         rvsVGDlQE7nsuoKbyXwfnTgq7RWvnHs5JyVAwMr8rn1ufSXpIeCR+lPUa4W2iE0riJH/
+         DKHOToFrLFdszNVBYuzm30i5q/b+3yiQ0rE2sUxSv6jFl+iZJpEs6rzPg421Inb9DuZk
+         g3Yhs1RydQxoxHAlaFNt5ANBJXeqPe56t5Z39lkGhJpz/NW2uBNZ+6SO6xiP6x0lUyff
+         Y4KQ==
+X-Gm-Message-State: AOAM532MKu6PKLCTXeyREKgadlZcJ7KsTkkRUMUbDq/a6ZdmZqROYZIm
+        yYtBeb6IK1J3Bzcx4vzd0U06pOgmKy/Yo3uy
+X-Google-Smtp-Source: ABdhPJzBPT8wAuoJ4LDtodbHJb7iR/mwFWeeH/HgvVIjgdM3r+cThQeWOOztPAMHgJQT2EJhsvfGyw==
+X-Received: by 2002:a05:6402:184f:: with SMTP id v15mr1881639edy.341.1603185996658;
+        Tue, 20 Oct 2020 02:26:36 -0700 (PDT)
+Received: from tsr-lap-08.nix.tessares.net ([2a02:578:85b0:e00:53fa:8da9:45da:8127])
+        by smtp.gmail.com with ESMTPSA id d1sm1872796ejo.17.2020.10.20.02.26.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 20 Oct 2020 02:26:35 -0700 (PDT)
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Florian Westphal <fw@strlen.de>,
+        Peter Krystad <peter.krystad@linux.intel.com>
+Cc:     netdev@vger.kernel.org, mptcp@lists.01.org,
+        linux-kernel@vger.kernel.org
+References: <20201020073839.29226-1-geert@linux-m68k.org>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: Re: [PATCH] mptcp: MPTCP_IPV6 should depend on IPV6 instead of
+ selecting it
+Message-ID: <5dddd3fe-86d7-d07f-dbc9-51b89c7c8173@tessares.net>
+Date:   Tue, 20 Oct 2020 11:26:34 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.2
 MIME-Version: 1.0
-References: <cover.1603110316.git.lucien.xin@gmail.com> <b65bdc11e5a17e328227676ea283cee617f973fb.1603110316.git.lucien.xin@gmail.com>
- <20201019221545.GD11030@localhost.localdomain>
-In-Reply-To: <20201019221545.GD11030@localhost.localdomain>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Tue, 20 Oct 2020 17:12:06 +0800
-Message-ID: <CADvbK_ezWXMxpKkt3kxbXhcgu73PTJ1zpChb_sCgDu38xcROtA@mail.gmail.com>
-Subject: Re: [PATCHv4 net-next 16/16] sctp: enable udp tunneling socks
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        Neil Horman <nhorman@tuxdriver.com>,
-        Michael Tuexen <tuexen@fh-muenster.de>,
-        davem <davem@davemloft.net>, Guillaume Nault <gnault@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201020073839.29226-1-geert@linux-m68k.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 20, 2020 at 6:15 AM Marcelo Ricardo Leitner
-<marcelo.leitner@gmail.com> wrote:
->
-> On Mon, Oct 19, 2020 at 08:25:33PM +0800, Xin Long wrote:
-> > --- a/Documentation/networking/ip-sysctl.rst
-> > +++ b/Documentation/networking/ip-sysctl.rst
-> > @@ -2640,6 +2640,12 @@ addr_scope_policy - INTEGER
-> >
-> >       Default: 1
-> >
-> > +udp_port - INTEGER
->
-> Need to be more verbose here, and also mention the RFC.
->
-> > +     The listening port for the local UDP tunneling sock.
->         , shared by all applications in the same net namespace.
-> > +     UDP encapsulation will be disabled when it's set to 0.
->
->         "Note, however, that setting just this is not enough to actually
->         use it. ..."
-When it's a client, yes,  but when it's a server, the encap_port can
-be got from the incoming packet.
+Hi Geert,
 
->
-> > +
-> > +     Default: 9899
-> > +
-> >  encap_port - INTEGER
-> >       The default remote UDP encapsalution port.
-> >       When UDP tunneling is enabled, this global value is used to set
->
-> When is it enabled, which conditions are needed? Maybe it can be
-> explained only in the one above.
-Thanks!
-pls check if this one will be better:
+Thank you for the patch!
 
-udp_port - INTEGER
+On 20/10/2020 09:38, Geert Uytterhoeven wrote:
+> MPTCP_IPV6 selects IPV6, thus enabling an optional feature the user may
+> not want to enable.  Fix this by making MPTCP_IPV6 depend on IPV6, like
+> is done for all other IPv6 features.
 
-The listening port for the local UDP tunneling sock.
+Here again, the intension was to select IPv6 from MPTCP but I understand 
+the issue: if we enable MPTCP, we will select IPV6 as well by default. 
+Maybe not what we want on some embedded devices with very limited memory 
+where IPV6 is already off. We should instead enable MPTCP_IPV6 only if 
+IPV6=y. LGTM then!
 
-This UDP sock is used for processing the incoming UDP-encapsulated
-SCTP packets (from RFC6951), and shared by all applications in the
-same net namespace. This UDP sock will be closed when the value is
-set to 0.
+Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-The value will also be used to set the src port of the UDP header
-for the outgoing UDP-encapsulated SCTP packets. For the dest port,
-please refer to 'encap_port' below.
-
-Default: 9899
-
-encap_port - INTEGER
-
-The default remote UDP encapsulation port.
-
-This value is used to set the dest port of the UDP header for the
-outgoing UDP-encapsulated SCTP packets by default. Users can also
-change the value for each sock/asoc/transport by using setsockopt.
-For further information, please refer to RFC6951.
-
-Note that when connecting to a remote server, the client should set
-this to the port that the UDP tunneling sock on the peer server is
-listening to and the local UDP tunneling sock on the client also
-must be started. On the server, it would get the encap_port from
-the incoming packet's source port.
-
-Default: 0
+Cheers,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
