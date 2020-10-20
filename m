@@ -2,99 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 912AD293399
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 05:21:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01AAE2933B3
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 05:46:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729293AbgJTDVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 23:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49640 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729227AbgJTDVa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 23:21:30 -0400
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62F73C0613CE
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 20:21:30 -0700 (PDT)
-Received: by mail-il1-x12b.google.com with SMTP id g7so492043ilr.12
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 20:21:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fxBet3/S4Fra7VEvI44Fid5pB+keqf7wtJ5PK6Pg1uE=;
-        b=R35ryTAQVvuO6AsPY2ruf5tBmJpfqBN/7gcI8gR2u2Ob/FuNfmR6bA+BnFBhC/IFg3
-         50AzWE3kP5/4JLlcLO5aqVP8FChkSSO6wkS5lN9SKVMoGmh8SiJ29uXWUOfPQHNW2FDh
-         e0gRG47aodOTxUL4AaVzEjQs6NlylmRQr9s66VKatjFfPv2j7KcfK1RVBwBYWR7XOT9U
-         nGufYNnycxzUb5MDb3Km8HZ7nNzRNyhoI6Sh6gXEG4HUmk+QTLyb9syEwJEAZ8EtW+Kj
-         eaPhVPufO/HW4tmE3odCilO5MOl6VLgjtjBRlq9gT/pH8289jWm61FRYAkr8ylLHPwLc
-         oeFA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=fxBet3/S4Fra7VEvI44Fid5pB+keqf7wtJ5PK6Pg1uE=;
-        b=OxBIBFW18GorfHmvRImNBPIDzGhUhIXHQcbtMbVy42yk9hCerrrjnPOMGTWyeLGd1c
-         rlzIEe/mMogO/D6ofuSE2kZqbemhVWp4IZ0AGIMLaXzm0ten62vGxMHlLGm0UQbgceBv
-         tvMTzfipOuBYNymQRfzmu4exkzCZLn8CpPjfRVa48xIxEjpJtyDdOzsPG/4H1ZufcPs6
-         52hbpdXq8TC5qdiYb9y1tSLmMgkIh61Lx064DnpaxxKxCBv0qnXiZ4akzLrVhzqQnJ5n
-         ipduUD4o/bojMSn+UJfXowlYc9UPpBUCjTRNFuop57/XVrZ3GsL5OVZGIUX9WQ08Zpal
-         dkJA==
-X-Gm-Message-State: AOAM530a7N+2jUml8kiC0pzhAspVcPd5dW4DnOc+KDgJtOEzljilfXp4
-        HKMZNQtIyOQf6URzBBir810=
-X-Google-Smtp-Source: ABdhPJx3DbnB1L9Sa6H5xRQLRkYkbVqoAEB37D6PVRqjmYdjionwodNEgTV0rmDmU1mbHIGdNoXg7w==
-X-Received: by 2002:a92:b006:: with SMTP id x6mr504068ilh.130.1603164089640;
-        Mon, 19 Oct 2020 20:21:29 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:9d8a:40ec:eef5:44b4])
-        by smtp.googlemail.com with ESMTPSA id m66sm763549ill.69.2020.10.19.20.21.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Oct 2020 20:21:28 -0700 (PDT)
-Subject: Re: [iproute2-next v3] devlink: display elapsed time during flash
- update
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "Keller, Jacob E" <jacob.e.keller@intel.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Shannon Nelson <snelson@pensando.io>
-References: <20201014223104.3494850-1-jacob.e.keller@intel.com>
- <f510e3b5-b856-e1a0-3c2b-149b85f9588f@gmail.com>
- <a6814a14af5c45fbad329b9a4f59b4a8@intel.com>
- <20201019122040.2eaf4272@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <e48b91b3-c085-9e39-57e9-1d21b3dd4e35@gmail.com>
-Date:   Mon, 19 Oct 2020 21:21:26 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.1
+        id S2391211AbgJTDqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 23:46:05 -0400
+Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:33455 "EHLO
+        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391206AbgJTDqF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 23:46:05 -0400
+Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id D7747806B5;
+        Tue, 20 Oct 2020 16:46:02 +1300 (NZDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1603165562;
+        bh=zzxOcIuFi0MxWpOQTLXjFZSqkuicDStOBOZPTA20Zds=;
+        h=From:To:Cc:Subject:Date;
+        b=TmAr+hm/2ku13ZWIcywAj4TTh+T+YkjX0tsm2n4wF+lx6Wn1D1wJguSuhpLrka86b
+         MMXwd4dr4NKxidmavpRHQaoMi5GJZdJhsFlU7pdXM+VVHJ2E9uiAQ1/M6a/gjYVujJ
+         F070jfEAHzeILrTFUtxOyUXJSJ10cCbAhpXYdmOQsAdVZRIb+AMqyzXfxJXK+B5huC
+         twXy2IlujAmw9tEK9+3K3wDtEms7FZY2gYWJFQuubY/LF2hN+F8QXkPL/Fk/5Pdfb7
+         Fnt/+2sYx10V3SakKdt9aAHqR+6xGiXh3VYIgS1L3Y7Rha2IOsovDyxhJ0SUwPhnVZ
+         Y/GI/y77A6J2w==
+Received: from smtp (Not Verified[10.32.16.33]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
+        id <B5f8e5d7a0000>; Tue, 20 Oct 2020 16:46:02 +1300
+Received: from chrisp-dl.ws.atlnz.lc (chrisp-dl.ws.atlnz.lc [10.33.22.20])
+        by smtp (Postfix) with ESMTP id 4F69613EEBB;
+        Tue, 20 Oct 2020 16:46:02 +1300 (NZDT)
+Received: by chrisp-dl.ws.atlnz.lc (Postfix, from userid 1030)
+        id 972F6283A9C; Tue, 20 Oct 2020 16:46:02 +1300 (NZDT)
+From:   Chris Packham <chris.packham@alliedtelesis.co.nz>
+To:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux@armlinux.org.uk
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>
+Subject: [PATCH v3 0/3] net: dsa: mv88e6xxx: serdes link without phy
+Date:   Tue, 20 Oct 2020 16:45:55 +1300
+Message-Id: <20201020034558.19438-1-chris.packham@alliedtelesis.co.nz>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-In-Reply-To: <20201019122040.2eaf4272@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
+x-atlnz-ls: pat
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/19/20 1:20 PM, Jakub Kicinski wrote:
-> On Mon, 19 Oct 2020 19:05:34 +0000 Keller, Jacob E wrote:
->>> The DEVLINK attributes are ridiculously long --
->>> DEVLINK_ATTR_FLASH_UPDATE_STATUS_TIMEOUT is 40 characters -- which
->>> forces really long code lines or oddly wrapped lines. Going forward
->>> please consider abbreviations on name components to reduce their lengths.  
->>
->> This is probably a larger discussion, since basically every devlink attribute name is long.
->>
->> Jiri, Jakub, any thoughts on this? I'd like to see whatever abbreviation scheme we use be consistent.
-> 
-> As David said - let's keep an eye on this going forward. We already 
-> pushed back with Moshe's live reload work.
-> 
-> If you really want to make things better for this particular name
-> you could probably drop the word _STATUS from it.
-> 
+This small series gets my hardware into a working state. The key points a=
+re to
+make sure we don't force the link and that we ask the MAC for the link st=
+atus.
+I also have updated my dts to say `phy-mode =3D "1000base-x";` and `manag=
+ed =3D
+"in-band-status";`
 
-and typical strategies - like dropping vowels.
+I've included patch #3 in this series but I don't have anything to test i=
+t on.
+It's just a guess based on the datasheets. I'd suggest applying patch 1 &=
+ 2
+and leaving 3 for the mailing list archives.
 
-DEVLINK_ATTR_ is the established prefix so every attribute starts at 13
-characters. In this case dropping STATUS and shortening TIMEOUT so it
-becomes DEVLINK_ATTR_FLASH_UPDATE_TMOUT does not overly harm the
-readability yet drops the char count to 31. Still long but is an example
-of what can be done.
+Chris Packham (3):
+  net: dsa: mv88e6xxx: Don't force link when using in-band-status
+  net: dsa: mv88e6xxx: Support serdes ports on MV88E6097/6095/6185
+  net: dsa: mv88e6xxx: Support serdes ports on MV88E6123/6131
+
+ drivers/net/dsa/mv88e6xxx/chip.c   |  26 ++++++-
+ drivers/net/dsa/mv88e6xxx/serdes.c | 106 +++++++++++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/serdes.h |   9 +++
+ 3 files changed, 139 insertions(+), 2 deletions(-)
+
+--=20
+2.28.0
+
