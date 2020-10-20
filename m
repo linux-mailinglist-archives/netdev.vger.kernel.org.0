@@ -2,140 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6700293258
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 02:28:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 215CD29325C
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 02:32:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389429AbgJTA22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 20:28:28 -0400
-Received: from mail-eopbgr60065.outbound.protection.outlook.com ([40.107.6.65]:37440
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2389215AbgJTA22 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Oct 2020 20:28:28 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TYlFUewdtRpwBSbdOSxJAvqsVnh1yTfZCUGKRIngrXLOycxNrKzr5Y8zjcMkL2Fz0U2H0nEEH1aO+x8edN9LCvLR2OPJOn+LBxza1ElDZ6Y928TSf9CuhwYIucZDWyUcvsc9HP3DpxKd6r+BEmTCJzmh1NUPia7pj+qPRnX6MGZeptzPVsHqZ9T5k4pEqH7St8ayJVnryH9f9WdkDAX4YwKcNhVIrBRtYKQ35pS1dY5qIkz+vvub03KoFwpDOKpYOpJY30PQd0EtcEA5GFL5PHmYMj14GhBCuWuVZ/yz/R/wD+upvLzD1QxEi8IR+w/BrAKcgz6Ku0CAYem+qU6+eA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3dPrOhxfNqPCvrokyrXB/NjuZ+L0PVu1sLi8U7XuUh8=;
- b=O9dS0WurJ8gFRZMG2ecD41hNELo3BcZdcDXqyOiQxDxviLNL5BXdW88wP/We63M93v5KwPdC2wq51qezfQ/8jb5LBU40k5zkUPjsmXTNe/IHygjGvsql6qxRI9Uu+1pYsFKditLsyj5rP75AbqbGin0x73Q03hWbcxkuhXKvEtbiX6CjvRVuT04eGVTE5y/BC5kr/0fIFjBkQM0BkLvNpBHXXWyMkLWhilRYZE992R3bUuG5RwePITLnYkSilf24AyzmHBQcY1zPifQ2S8XTCZXGrRD7OSI9gN5HVjTbSL9Ft5PXef2nbVxlR/dxjTsSkO1N9mGX9upwINJ+voc0hA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3dPrOhxfNqPCvrokyrXB/NjuZ+L0PVu1sLi8U7XuUh8=;
- b=K4RvramG4rJOMeyz/8+UpgSPUNZOHNoeCAmPQ4F8RWpzpjN1JVgWT1ut+UixeQy+HGpmJkWKksxPeCx5En6GWYl6QGC67co7iw/E2AwWCD3NCmfHu5iEehL+YTgZWMHbAaxR8Iwsa2/dLesYM/drglkmLqg1TV1Nu6Z21N1xYRw=
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VI1PR0402MB3549.eurprd04.prod.outlook.com (2603:10a6:803:8::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.27; Tue, 20 Oct
- 2020 00:28:25 +0000
-Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
- ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3477.028; Tue, 20 Oct 2020
- 00:28:25 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>
-Subject: Re: [PATCH net] net: dsa: reference count the host mdb addresses
-Thread-Topic: [PATCH net] net: dsa: reference count the host mdb addresses
-Thread-Index: AQHWozn45OsHCx59Jk67oCoKlCMeg6mfo0cAgAAGG4A=
-Date:   Tue, 20 Oct 2020 00:28:24 +0000
-Message-ID: <20201020002823.jedjcn6hp5gyfdib@skbuf>
-References: <20201015212711.724678-1-vladimir.oltean@nxp.com>
- <20201020000632.GQ456889@lunn.ch>
-In-Reply-To: <20201020000632.GQ456889@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.26.174.215]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: f829c164-7624-4f62-71aa-08d8748f0ecd
-x-ms-traffictypediagnostic: VI1PR0402MB3549:
-x-microsoft-antispam-prvs: <VI1PR0402MB35491DE0C9C76B4922D8ECC9E01F0@VI1PR0402MB3549.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: mW0+jrXxh33+mB7AOsXIpUXZ8mVE9C65qphi8Kk9swRHiA1lMijyqwrcxDF7nURxePcLjSEeMV/PKcXRO3cT3Pa0PrHTSu9I0wXLsAWcBfOlWIP4AeL/zlnRIy5hIR+gFznQHNSTx6sMNBu9gnjAuor2dlX/AE07uyJvoVZC6JF7VypvnmFE8gPEKwgytWA87WNOV1Q+iSdXdkhj2gG1JKMs7cjdYJ1tGdp3IL1E16dul1E8gnbxJ5E0DmA55AIJSyAlEf0EQ/UmoiwHGKAx3mehaGhuRl+WkwGjmCZOChhweASYVk67Nu8fOanoy9gl
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(136003)(366004)(396003)(39860400002)(376002)(346002)(8936002)(2906002)(4326008)(6486002)(6916009)(316002)(54906003)(8676002)(83380400001)(33716001)(6506007)(64756008)(478600001)(186003)(1076003)(6512007)(9686003)(5660300002)(66556008)(44832011)(66446008)(76116006)(91956017)(86362001)(66476007)(71200400001)(26005)(66946007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: QsDScgN1qbHSSEw+awUZWJwB8Bh2BXSVlityLS3Yen+IOMupTikOpB90ONKn8lxMH4tjCqofbUJ3Jxw6UxnNWp10tRuLTl8JG6gvVcQFU1+Oh3tEduPkG4+xhb8bAE+0xyMMY3yZLmeuYxOnfy3Sc3hxFf3KWCwGXRO6iNPdUeG4Nrze2vv/BtuuZfCwXMicO2TEfpZQkXZO02k/2veHkJyC3Zek6NHuqcXHbXdj/qgmC4800EJV/ZZZiizAr+Ypgh2bxp4FbYBs6rqNvqwtxw8buwjtYrL/em3vpFd0TT25MhIY15Rmp+/wDWtD61FG/lcRZt5gg0Kuz0xPVVmWMEPJFB5Sljo588SeZ/V2pvHsc0B6aA6kySCOwlQWgDX3Bqp1nr3AZ+OPvuqkY+Smi2v0QP9Y86TValb/XFjmoeIUG5xGU2p5Pj9AP4JdFzjea43KX+ScsHXmvx+9pXjELzcU8YuKRAtiA/GoYZb/39dUvGPZabfQwn/dw6A1wNvnMAp57Patr7JTFkeIWWEaobCapWv15JqOskFi250EgjWuENj1aVrdneTZv6Lg70nhZ5dTsVvIHvUsCRSzrfe4/Ds6sBCEGJcuRK6Do9nBOuj7TleXsPgFGpNz/uxESu+joKhrKy98LkJJdDYGAmqelA==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <5750201EC1E13F478B31964247D973A8@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S2389440AbgJTAcP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 20:32:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51724 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727192AbgJTAcO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 20:32:14 -0400
+Received: from mx0b-00190b01.pphosted.com (mx0b-00190b01.pphosted.com [IPv6:2620:100:9005:57f::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B77C5C0613CE
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 17:32:14 -0700 (PDT)
+Received: from pps.filterd (m0122330.ppops.net [127.0.0.1])
+        by mx0b-00190b01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09K0W2s5018335;
+        Tue, 20 Oct 2020 01:32:08 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=jan2016.eng;
+ bh=mrspxpKaIj3MQZ8vKyklBN2Bf3azi2rHdAMyQlEJoqw=;
+ b=jAPUMmVLaKqRJ2Q5a4sawmSNoeT3DujGl4/5oHYxnHhfKgJ0CcPxX84EMaGcY6cKpogp
+ lthklU0bykZ2Ysx3VoLI+eGi+oFc/HUUjZRBqS+c8baP3dC9k3qHKuKelOhbwpBnoK5F
+ 4kUTtRfRU1j3vUXhI7bkvE7QVCM1Y6Ln493+GdGV4UH/ce7xfqJrLXS7bVB/NwqsPpL+
+ 4Mmd3doL1hnzc6pUl2K84ZBzX+oB2lyeej6dOSeNVzDCnvHyvryhs4NsdAK47e+Cs9qz
+ JJUqsmQM17OBgaDhChWJ3l/4KlhYV0q1KojYdLsbbyVz8Lp9V1cR/2DwbRACDRsV7p4M eQ== 
+Received: from prod-mail-ppoint7 (a72-247-45-33.deploy.static.akamaitechnologies.com [72.247.45.33] (may be forged))
+        by mx0b-00190b01.pphosted.com with ESMTP id 347r91v1ds-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 20 Oct 2020 01:32:07 +0100
+Received: from pps.filterd (prod-mail-ppoint7.akamai.com [127.0.0.1])
+        by prod-mail-ppoint7.akamai.com (8.16.0.42/8.16.0.42) with SMTP id 09K0LCdW026288;
+        Mon, 19 Oct 2020 20:32:07 -0400
+Received: from email.msg.corp.akamai.com ([172.27.165.112])
+        by prod-mail-ppoint7.akamai.com with ESMTP id 347uxxryw8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 19 Oct 2020 20:32:07 -0400
+Received: from bos-lhv87c.bos01.corp.akamai.com (172.28.41.203) by
+ ustx2ex-dag1mb6.msg.corp.akamai.com (172.27.165.124) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.2; Mon, 19 Oct 2020 19:32:06 -0500
+From:   Ke Li <keli@akamai.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
+        <kli@udel.edu>, Ke Li <keli@akamai.com>, Ji Li <jli@akamai.com>
+Subject: [PATCH net] net: Properly typecast int values to set sk_max_pacing_rate
+Date:   Mon, 19 Oct 2020 20:31:49 -0400
+Message-ID: <20201020003149.215357-1-keli@akamai.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f829c164-7624-4f62-71aa-08d8748f0ecd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Oct 2020 00:28:24.9715
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: N4eMp+u/T5cfMqecuauEUwt6gbSJSvobvM4YP6StaDP79egqxzSwygIlsltC3W4N1FVv2xdlKJz7yyTwTqVzkA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3549
+Content-Type: text/plain
+X-Originating-IP: [172.28.41.203]
+X-ClientProxiedBy: usma1ex-cas4.msg.corp.akamai.com (172.27.123.57) To
+ ustx2ex-dag1mb6.msg.corp.akamai.com (172.27.165.124)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-10-19_13:2020-10-16,2020-10-19 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=958 adultscore=0
+ malwarescore=0 spamscore=0 mlxscore=0 phishscore=0 bulkscore=0
+ suspectscore=1 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2010200000
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-10-19_13:2020-10-16,2020-10-19 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 priorityscore=1501
+ spamscore=0 impostorscore=0 clxscore=1011 malwarescore=0
+ lowpriorityscore=0 mlxscore=0 suspectscore=1 bulkscore=0 mlxlogscore=939
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2010200001
+X-Agari-Authentication-Results: mx.akamai.com; spf=${SPFResult} (sender IP is 72.247.45.33)
+ smtp.mailfrom=keli@akamai.com smtp.helo=prod-mail-ppoint7
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 20, 2020 at 02:06:32AM +0200, Andrew Lunn wrote:
-> I agree with the analysis. This is how i designed it!
-[...]
-> So i decided to keep it KISS and not bother with reference counting.
+In setsockopt(SO_MAX_PACING_RATE) on 64bit systems, sk_max_pacing_rate,
+after extended from 'u32' to 'unsigned long', takes unintentionally
+hiked value whenever assigned from an 'int' value with MSB=1, due to
+binary sign extension in promoting s32 to u64, e.g. 0x80000000 becomes
+0xFFFFFFFF80000000.
 
-Well, I can't argue with that then...
+Thus inflated sk_max_pacing_rate causes subsequent getsockopt to return
+~0U unexpectedly. It may also result in increased pacing rate.
 
-> The other part of the argument is that DSA is stateless, in that there
-> is no dynamic memory allocation. Drivers are also stateless in terms
-> of dynamically allocating memory.
+Fix by explicitly casting the 'int' value to 'unsigned int' before
+assigning it to sk_max_pacing_rate, for zero extension to happen.
 
-And is that some sort of design goal? I think you'll run out of things
-to do very quickly if you set out to never call kmalloc().
+Fixes: 76a9ebe811fb ("net: extend sk_pacing_rate to unsigned long")
+Signed-off-by: Ji Li <jli@akamai.com>
+Signed-off-by: Ke Li <keli@akamai.com>
+Cc: Eric Dumazet <edumazet@google.com>
+---
+ net/core/filter.c | 2 +-
+ net/core/sock.c   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-> So, what value do this code add? Why do we actually need reference
-> counting?
+diff --git a/net/core/filter.c b/net/core/filter.c
+index c5e2a1c5fd8d..43f20c14864c 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -4693,7 +4693,7 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
+ 				cmpxchg(&sk->sk_pacing_status,
+ 					SK_PACING_NONE,
+ 					SK_PACING_NEEDED);
+-			sk->sk_max_pacing_rate = (val == ~0U) ? ~0UL : val;
++			sk->sk_max_pacing_rate = (val == ~0U) ? ~0UL : (unsigned int)val;
+ 			sk->sk_pacing_rate = min(sk->sk_pacing_rate,
+ 						 sk->sk_max_pacing_rate);
+ 			break;
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 4e8729357122..727ea1cc633c 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1163,7 +1163,7 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+ 
+ 	case SO_MAX_PACING_RATE:
+ 		{
+-		unsigned long ulval = (val == ~0U) ? ~0UL : val;
++		unsigned long ulval = (val == ~0U) ? ~0UL : (unsigned int)val;
+ 
+ 		if (sizeof(ulval) != sizeof(val) &&
+ 		    optlen >= sizeof(ulval) &&
 
-Well, for one thing, if you have multiple bridge interfaces spanning the
-ports of a single switch ASIC (and this is not uncommon with port count > 4=
-)
-then you'll have the timer expiry from one bridge clear the host MDB
-entries of the other. Weird. And in general, you can't just "add first,
-delete first" with this type of things. I actually got some pushback
-from Vivien an year ago on a topic very similar to this: in the other
-place where DSA is "lazy" and does not implement refcounting, which is
-VLANs on the CPU port, at least the VLAN is not deleted. That would be
-more correct, at least, than performing 6 additions, then 1 single
-deletion which would invalidate the entry for all the other ports.
+base-commit: 0e8b8d6a2d85344d80dda5beadd98f5f86e8d3d3
+-- 
+2.17.1
 
-Also, I am taking the opportunity to add the refcounting infrastructure
-for host FDB entries (this goes back to the patch series about DSA RX
-filtering). At the moment, host addresses are added from a single type
-of source (aka, a switchdev HOST_MDB object). But with unicast, there
-could be more than one sources that a unicast address could be
-added from:
-- the MAC addresses of the ports. These addresses should be installed as
-  host FDB entries
-- the MAC addresses of the upper interfaces. Similar argument here.
-- the local (master) FDB of the bridge. My plan of record is to offload
-  this using a new switchdev HOST_FDB object, similar to what you've
-  done for HOST_MDB.
-In this case, having reference counting is pretty much something to
-have, when an address could come from more than one place, we wouldn't
-want to break anything.
-Also, consider what happens when you start having the ability to install
-the MAC address of the switch ports as a host FDB entry. DSA configures
-all interfaces to have the same MAC address, which is inherited from the
-master's MAC address. But you can also change the MAC address of a
-switch interface. What do you do with the old one? Do you delete it? Do
-you keep it? If you don't delete it, you might run out of FDB space
-after enough MAC address changes. If you delete it, you might break
-traffic for the other switch ports that are still using it...=
