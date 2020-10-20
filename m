@@ -2,92 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14874294480
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 23:24:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD39E294482
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 23:26:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2409896AbgJTVYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 17:24:11 -0400
-Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:34611 "EHLO
-        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388189AbgJTVYI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 17:24:08 -0400
-Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 52B6B806B7;
-        Wed, 21 Oct 2020 10:24:05 +1300 (NZDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1603229045;
-        bh=0ivsRHeT+t3HrWxbqemy5pdAuw1H/86srNARdUIHiP4=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To;
-        b=rGL0GJJRZLZFLUzqci7nUrRLxmykpLbs+lJrl25qAnxUZveMn805gX8DuitX4AYI3
-         L7l93PhYXfnlKPyKMxPum8whdiywVkHhBqVpWm9YaB5jySK3AQ2t8vc7XYBbDdtnIl
-         jCfISaCVUD+kcQcZY7BIlq/+MiuuSfzFpTCbBdChng7R30N4LFWGSu0hRsSFl7qarS
-         DPdUlBGoxPkVLSYSK/k0HLtXodPFY0O0VkZjPy5wTK9An+pTrJMKbRaJL0m9l/4ZQ1
-         l1/2elykpFFV1G5yBKHjoAxWVmZknZ3JvGj6PLpWbVegVv7dpvIDIf1rtyPa6jwO5W
-         SM1nKtFGQVo0g==
-Received: from svr-chch-ex1.atlnz.lc (Not Verified[10.32.16.77]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
-        id <B5f8f55760001>; Wed, 21 Oct 2020 10:24:06 +1300
-Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8)
- by svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8) with
- Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 21 Oct 2020 10:24:04 +1300
-Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
- svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
- 15.00.1497.006; Wed, 21 Oct 2020 10:24:04 +1300
-From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "olteanv@gmail.com" <olteanv@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 3/3] net: dsa: mv88e6xxx: Support serdes ports on
- MV88E6123/6131
-Thread-Topic: [PATCH v3 3/3] net: dsa: mv88e6xxx: Support serdes ports on
- MV88E6123/6131
-Thread-Index: AQHWppOIHo6sjfIsxk6UhS3TBwc3O6mfbbqAgAC53AA=
-Date:   Tue, 20 Oct 2020 21:24:04 +0000
-Message-ID: <d4f6fab0-8099-7cc2-dfce-bd7a3363c131@alliedtelesis.co.nz>
-References: <20201020034558.19438-1-chris.packham@alliedtelesis.co.nz>
- <20201020034558.19438-4-chris.packham@alliedtelesis.co.nz>
- <20201020101851.GC1551@shell.armlinux.org.uk>
-In-Reply-To: <20201020101851.GC1551@shell.armlinux.org.uk>
-Accept-Language: en-NZ, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.32.1.11]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <46F921CF8320284AB2383F39140BC84E@atlnz.lc>
-Content-Transfer-Encoding: base64
+        id S2409910AbgJTV0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 17:26:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:33793 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388188AbgJTV0C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 17:26:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603229160;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vdxj7wwck99hwiPOLIiRh/bcID2cwGqfhg3CmYVD7tM=;
+        b=HxPFjU0eNfjipY7hu8RhrvMzu6SQvbcv5AtGwH2Tym8Mi7IrCGOCl+wK6b3h3DxKalmVdC
+        Fn3VHZOFQwr7DooHV476/TUR2gW0iGUPLDOSJPMGQKK02+yBLDxGVnEk8urQXxXogteRyy
+        9eazPTL6yuWh/ms32xAv6l1jTHdqPlU=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-175-_s9opKRuOBucxM8KsOg9mQ-1; Tue, 20 Oct 2020 17:25:59 -0400
+X-MC-Unique: _s9opKRuOBucxM8KsOg9mQ-1
+Received: by mail-ej1-f71.google.com with SMTP id k13so54715ejv.16
+        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 14:25:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
+         :mime-version:content-transfer-encoding;
+        bh=vdxj7wwck99hwiPOLIiRh/bcID2cwGqfhg3CmYVD7tM=;
+        b=DoUhzKc2H3sJWe++XkLCmntIWphhfqtQaujabkHP8M1RsvSAixbkKjugYlaWXSwi/Z
+         gYyV/B7U71+l/KI9P6zvFplUwms9jBPigX+W0BNDqaylXHuR5fRH8Vz5KxSTY4uKprk1
+         B/x7babwubsZD+NjvmoBucxqY1pEcUYfygGhKEUpx5sy+A/Y9mJoefSyQsfqAy0ENSj8
+         gTlBeOTZaUUK9FUCQa8cBo/XEkHek1NfULYADNX5clChHjjKz3kgvWkephU+mGz6NGVP
+         k+IZnZD4HhRmKBJOA5NOhryc5TtIdfyWra6sGi7+4mJriUlrO7qrTz3WEvUiIn38w7cL
+         j/xw==
+X-Gm-Message-State: AOAM531/RJHTElzS79jY1RJKwZtwcWl0BKSFFDp9yg9gwthxoLcJICH4
+        cV31g9ACNkrI2HRb3y4NXOLdWQqpZ2PKDURXVUA3BdR88OwUFTCyhco+1HeT+vGNnPXCRntAksa
+        Xr9V5xV7Xqh6D9BNq
+X-Received: by 2002:aa7:d30d:: with SMTP id p13mr4830405edq.315.1603229157530;
+        Tue, 20 Oct 2020 14:25:57 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz4XMFVzIobX6MHENn+jpLOcr1qxr0DeCYqHmX303v0OuzdqXQPMQjdbrY8T8M0jCFBcLjtAQ==
+X-Received: by 2002:aa7:d30d:: with SMTP id p13mr4830372edq.315.1603229157141;
+        Tue, 20 Oct 2020 14:25:57 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id gv10sm44968ejb.46.2020.10.20.14.25.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Oct 2020 14:25:56 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 2496D1838FA; Tue, 20 Oct 2020 23:25:55 +0200 (CEST)
+Subject: [PATCH bpf v3 0/2] bpf: Rework bpf_redirect_neigh() to allow
+ supplying nexthop from caller
+From:   =?utf-8?q?Toke_H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Date:   Tue, 20 Oct 2020 23:25:55 +0200
+Message-ID: <160322915507.32199.17907734403861652183.stgit@toke.dk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiAyMC8xMC8yMCAxMToxOCBwbSwgUnVzc2VsbCBLaW5nIC0gQVJNIExpbnV4IGFkbWluIHdy
-b3RlOg0KPiBPbiBUdWUsIE9jdCAyMCwgMjAyMCBhdCAwNDo0NTo1OFBNICsxMzAwLCBDaHJpcyBQ
-YWNraGFtIHdyb3RlOg0KPj4gK3ZvaWQgbXY4OGU2MTIzX3NlcmRlc19nZXRfcmVncyhzdHJ1Y3Qg
-bXY4OGU2eHh4X2NoaXAgKmNoaXAsIGludCBwb3J0LCB2b2lkICpfcCkNCj4+ICt7DQo+PiArCXUx
-NiAqcCA9IF9wOw0KPj4gKwl1MTYgcmVnOw0KPj4gKwlpbnQgaTsNCj4+ICsNCj4+ICsJaWYgKG12
-ODhlNnh4eF9zZXJkZXNfZ2V0X2xhbmUoY2hpcCwgcG9ydCkgPT0gMCkNCj4+ICsJCXJldHVybjsN
-Cj4+ICsNCj4+ICsJZm9yIChpID0gMDsgaSA8IDI2OyBpKyspIHsNCj4+ICsJCW12ODhlNnh4eF9w
-aHlfcmVhZChjaGlwLCBwb3J0LCBpLCAmcmVnKTsNCj4gU2hvdWxkbid0IHRoaXMgZGVhbCB3aXRo
-IGEgZmFpbGVkIHJlYWQgaW4gc29tZSB3YXksIHJhdGhlciB0aGFuIGp1c3QNCj4gYXNzaWduaW5n
-IHRoZSBsYXN0IG9yIHBvc3NpYmx5IHVuaW5pdGlhbGlzZWQgdmFsdWUgdG8gcFtpXSA/DQoNCm12
-ODhlNjM5MF9zZXJkZXNfZ2V0X3JlZ3MoKSBhbmQgbXY4OGU2MzUyX3NlcmRlc19nZXRfcmVncygp
-IGFsc28gaWdub3JlIA0KdGhlIGVycm9yLiBUaGUgZ2VuZXJpYyBtdjg4ZTZ4eHhfZ2V0X3JlZ3Mo
-KSBtZW1zZXRzIHBbXSB0byAweGZmIHNvIGlmIA0KdGhlIHNlcmRlc19nZXRfcmVncyBmdW5jdGlv
-bnMganVzdCBsZWZ0IGl0IGFsb25lIHdlJ2QgcmV0dXJuIDB4ZmZmZiANCndoaWNoIGlzIHByb2Jh
-Ymx5IGJldHRlciB0aGFuIHJlcGVhdGluZyB0aGUgbGFzdCB2YWx1ZSBhbHRob3VnaCBpdCdzIA0K
-c3RpbGwgYW1iaWd1b3VzIGJlY2F1c2UgMHhmZmZmIGlzIGEgdmFsaWQgdmFsdWUgZm9yIHBsZW50
-eSBvZiB0aGVzZSANCnJlZ2lzdGVycy4NCg0KU2luY2UgaXQgbG9va3MgbGlrZSBJIG5lZWQgdG8g
-Y29tZSB1cCB3aXRoIGFuIGFsdGVybmF0aXZlIHRvIHBhdGNoICMxIA0KSSdsbCBjb25jZW50cmF0
-ZSBvbiB0aGF0IGJ1dCBtYWtpbmcgdGhlIHNlcmRlc19nZXRfcmVncygpIGEgbGl0dGxlIG1vcmUg
-DQplcnJvciB0b2xlcmFudCBpcyBhIGNsZWFudXAgSSBjYW4gZWFzaWx5IHRhY2sgb24gb250byB0
-aGlzIHNlcmllcy4NCg==
+Based on previous discussion[0], we determined that it would be beneficial to
+rework bpf_redirect_neigh() so the caller can supply the nexthop information
+(e.g., from a previous call to bpf_fib_lookup()). This way, the two helpers can
+be combined without incurring a second FIB lookup to find the nexthop, and
+bpf_fib_lookup() becomes usable even if no nexthop entry currently exists.
+
+This patch (and accompanying selftest update) accomplishes this by way of an
+optional paramter to bpf_redirect_neigh(). This series is against the -bpf tree,
+since we need to change this call signature before it becomes API.
+
+[0] https://lore.kernel.org/bpf/393e17fc-d187-3a8d-2f0d-a627c7c63fca@iogearbox.net/
+
+Changelog:
+
+v3:
+- Just use a u32 for nh_family instead of filling the hole with 'u8 unused[3]' (Daniel)
+- Drop the SKIP_NEIGH flag to bpf_fib_lookup() (David Ahern)
+
+v2:
+- Add 'unused' member to fill hole in bpf_redir_neigh struct (David Ahern)
+- Fix compilation with INET/INET6 disabled - properly this time (kbot)
+- Add back the BPF_FIB_LOOKUP_SKIP_NEIGH flag as new patch 2 (Daniel)
+
+v1:
+- Rebase on -bpf tree
+- Fix compilation with INET/INET6 disabled (kbot)
+- Keep v4/v6 signatures similar, use internal flag (Daniel)
+- Use a separate selftest BPF program instead of modifying existing one (Daniel)
+- Fix a few style nits (David Ahern)
+
+---
+
+Toke Høiland-Jørgensen (2):
+      bpf_redirect_neigh: Support supplying the nexthop as a helper parameter
+      selftests: Update test_tc_redirect.sh to use the modified bpf_redirect_neigh()
+
+
+ .../selftests/bpf/progs/test_tc_neigh.c       |   5 +-
+ .../selftests/bpf/progs/test_tc_neigh_fib.c   | 155 ++++++++++++++++++
+ .../testing/selftests/bpf/test_tc_redirect.sh |  18 +-
+ 3 files changed, 173 insertions(+), 5 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/test_tc_neigh_fib.c
+
