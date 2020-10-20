@@ -2,44 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E82A2293260
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 02:36:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A564C293270
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 02:53:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389470AbgJTAgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 20:36:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35226 "EHLO mail.kernel.org"
+        id S2389610AbgJTAx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 20:53:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39908 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389441AbgJTAgg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Oct 2020 20:36:36 -0400
+        id S2389341AbgJTAx3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Oct 2020 20:53:29 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 489302242C;
-        Tue, 20 Oct 2020 00:36:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2BFCE2242F;
+        Tue, 20 Oct 2020 00:53:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603154195;
-        bh=jq/u7h99KoaQMSz59H5LmVaxbG751C0Nlkv/jdx65BQ=;
+        s=default; t=1603155209;
+        bh=LMQKAiX32s0mkVGD3WAfn2HWSOmt6O1YO5RZVdo02vk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=w9B0/9D9bie9wqWfdtCkz/Uv6ZqW0Yehh6u71LocnjL0AXq6P7Qz0iw0nYQldNGjx
-         rMwBa2gXoBiBtsaJ8A1WXKmEKbgGqnwrUP5QDqMWoy5YLu91Q5Fm650M6n81TtbDVY
-         sJOC+JhIpfljo++f0uzJ5mfdsNOGtqFw+M4E+WPs=
-Date:   Mon, 19 Oct 2020 17:36:33 -0700
+        b=GKsZpdaOj6vRnk+OrDbq5xpIPpmixf2Rw8Si3PEPUIIfCC3V3PdHvth9o/LtcadV1
+         lR1DnYW0RXy9FIe9FpTA+tZ8YGW39ERm/c9idhBzuU+yULwHuoWRw3n0HH3T/aZD+Q
+         bqgp868YRwzBvKzkG1+Ezq7qWvjLvzSlbS3c56dE=
+Date:   Mon, 19 Oct 2020 17:53:26 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Christian Eggers <ceggers@arri.de>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] net: dsa: tag_ksz: KSZ8795 and KSZ9477 also use
- tail tags
-Message-ID: <20201019173633.5af4ab24@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201016172449.nvfflbbkrdbzukwz@skbuf>
-References: <20201016171603.10587-1-ceggers@arri.de>
-        <20201016172449.nvfflbbkrdbzukwz@skbuf>
+To:     Vincent Bernat <vincent@bernat.ch>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
+        Andy Gospodarek <gospo@cumulusnetworks.com>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH net-next v1] net: evaluate
+ net.conf.ipvX.all.ignore_routes_with_linkdown
+Message-ID: <20201019175326.0e06b89d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201017125011.2655391-1-vincent@bernat.ch>
+References: <20201017125011.2655391-1-vincent@bernat.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -47,16 +42,24 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 16 Oct 2020 20:24:49 +0300 Vladimir Oltean wrote:
-> On Fri, Oct 16, 2020 at 07:16:03PM +0200, Christian Eggers wrote:
-> > I added it manually because the commit ID is not from Linus' tree. Is there any
-> > value using Fixes tags with id's from other trees?  
+On Sat, 17 Oct 2020 14:50:11 +0200 Vincent Bernat wrote:
+> Introduced in 0eeb075fad73, the "ignore_routes_with_linkdown" sysctl
+> ignores a route whose interface is down. It is provided as a
+> per-interface sysctl. However, while a "all" variant is exposed, it
+> was a noop since it was never evaluated. We use the usual "or" logic
+> for this kind of sysctls.
+
+> Without this patch, the two last lines would fail on H1 (the one using
+> the "all" sysctl). With the patch, everything succeeds as expected.
 > 
-> Yes, that's what "git merge" does, it keeps sha1sums.
-> You should check out "git log --oneline --graph --decorate" some time.
-> Every maintainer's history is linear, and so is Linus's.
+> Also document the sysctl in `ip-sysctl.rst`.
+> 
+> Fixes: 0eeb075fad73 ("net: ipv4 sysctl option to ignore routes when nexthop link is down")
+> Signed-off-by: Vincent Bernat <vincent@bernat.ch>
 
-One thing to add is that we never rebase net or net-next trees
-(some maintainers would do that occasionally).
-
-Applied, thanks everyone!
+I'm not hearing any objections, but I have two questions:
+ - do you intend to merge it for 5.10 or 5.11? Because it has a fixes
+   tag, yet it's marked for net-next. If we put it in 5.10 it may get
+   pulled into stable immediately, knowing how things work lately.
+ - we have other sysctls that use IN_DEV_CONF_GET(), 
+   e.g. "proxy_arp_pvlan" should those also be converted?
