@@ -2,148 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBACF29370C
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 10:49:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 624832936FA
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 10:48:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392151AbgJTItK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 04:49:10 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:41530 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389490AbgJTItF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 04:49:05 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09K8i7rI188082;
-        Tue, 20 Oct 2020 08:48:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : message-id :
- content-type : mime-version : subject : date : in-reply-to : cc : to :
- references; s=corp-2020-01-29;
- bh=UBSvDuZX45rcdCwz1yIzvCzCqfd2joSCizhea4x+Xao=;
- b=q8gn83IPPWdFm1HT3taLhd9DUF/VTUU+yXtsd8f9nD6wriupB19ul4FsqzWGdtIZMcde
- GW+G9oeRVHaGmJfZ8muagtVwvuWLE6AywXuhak+OXkSgdFP6EIR2H2OqKDUhR7yIW2Vz
- zpamQMFlTWRfwdWHBA7I0p8HYGgPlEg7NOi5pNpKeOCI5/Zqu82RI3DyvlSb3YeNhNvu
- 1nAbi2LxPOnr/RtC4QoVHdNGHfdCdQB+x9xvmqx+BqjtbEr8lrxt1aMjIali/bjhTn7W
- dzqjxrXdOv4FjsFo2kwRKNjQX5RScYby9/qqSUitUFXIKeMy4YBvXYVTZYkhax1TMfnU 0w== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 347s8msmp0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 20 Oct 2020 08:48:12 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09K8is45150623;
-        Tue, 20 Oct 2020 08:48:12 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3030.oracle.com with ESMTP id 348ahw07cp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 20 Oct 2020 08:48:12 +0000
-Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 09K8mAEe159753;
-        Tue, 20 Oct 2020 08:48:10 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3030.oracle.com with ESMTP id 348ahw07bh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 20 Oct 2020 08:48:10 +0000
-Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 09K8lvTX021447;
-        Tue, 20 Oct 2020 08:47:58 GMT
-Received: from [10.175.164.120] (/10.175.164.120)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 20 Oct 2020 01:47:57 -0700
-From:   John Haxby <john.haxby@oracle.com>
-Message-Id: <27A23102-A7F5-48C5-8972-48CE4C283C6E@oracle.com>
-Content-Type: multipart/signed;
-        boundary="Apple-Mail=_9F9749E9-79EA-41AB-B516-003ECE07BEE3";
-        protocol="application/pgp-signature";
-        micalg=pgp-sha256
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.4\))
-Subject: Re: [Ocfs2-devel] [RFC] treewide: cleanup unreachable breaks
-Date:   Tue, 20 Oct 2020 09:47:45 +0100
-In-Reply-To: <CAKwvOdkR_Ttfo7_JKUiZFVqr=Uh=4b05KCPCSuzwk=zaWtA2_Q@mail.gmail.com>
-Cc:     Tom Rix <trix@redhat.com>, alsa-devel@alsa-project.org,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, nouveau@lists.freedesktop.org,
-        storagedev@microchip.com,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        virtualization@lists.linux-foundation.org,
-        keyrings@vger.kernel.org, linux-mtd@lists.infradead.org,
-        ath10k@lists.infradead.org, MPT-FusionLinux.pdl@broadcom.com,
-        linux-stm32@st-md-mailman.stormreply.com,
-        usb-storage@lists.one-eyed-alien.net,
-        linux-watchdog@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-samsung-soc@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-nvdimm <linux-nvdimm@lists.01.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        linux-acpi@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        industrypack-devel@lists.sourceforge.net,
-        linux-pci@vger.kernel.org, spice-devel@lists.freedesktop.org,
-        linux-media@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-nfc@lists.01.org, linux-pm@vger.kernel.org,
-        linux-can@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-gpio@vger.kernel.org, xen-devel@lists.xenproject.org,
-        linux-amlogic@lists.infradead.org,
-        openipmi-developer@lists.sourceforge.net,
-        platform-driver-x86@vger.kernel.org,
-        linux-integrity@vger.kernel.org,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, George Burgess <gbiv@google.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-usb@vger.kernel.org,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-security-module@vger.kernel.org,
-        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
-        <linux-crypto@vger.kernel.org>, patches@opensource.cirrus.com,
-        bpf <bpf@vger.kernel.org>, ocfs2-devel@oss.oracle.com,
-        linux-power@fi.rohmeurope.com
-To:     Nick Desaulniers <ndesaulniers@google.com>
-References: <20201017160928.12698-1-trix@redhat.com>
- <20201018054332.GB593954@kroah.com>
- <CAKwvOdkR_Ttfo7_JKUiZFVqr=Uh=4b05KCPCSuzwk=zaWtA2_Q@mail.gmail.com>
-X-Mailer: Apple Mail (2.3608.120.23.2.4)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9779 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 suspectscore=0
- lowpriorityscore=0 mlxlogscore=999 priorityscore=1501 spamscore=0
- phishscore=0 clxscore=1011 bulkscore=0 impostorscore=0 adultscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010200059
+        id S2389448AbgJTIsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 04:48:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43434 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389337AbgJTIsE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 04:48:04 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398C9C061755
+        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 01:48:04 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id h5so1096562wrv.7
+        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 01:48:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=LXyAg9hcDD8VFPSdZOXejRQpIbfpi1YJ4IZqycAiC4I=;
+        b=awFwRfUikFbE0LrmYKXiQdTIhY/teG2EAUOOp4HH+ihN/XGig7mlnYI5z5gRPJCc3Y
+         rfeu23On8Eh7xTCJ5Lcb8T4zwE3ZQUxdfz3fbUYRShAHEKPgkRLA17WcWkB/OMFHyf5p
+         aQTC3OTnaB/0pQkbY1FRKrPZIxMEAbEFZQbURkmwlm2Qq2y4KyqQ4LpvyB1MtwFeLmpN
+         HeO4eKDB4oliUWQhPCqABrh9PQfargDQqVwl9DyuQVzRB6MLTjmFxFq4TVwNjtD6CvAr
+         6QcQ7BrwOGNQKFUzpebQThHSYz2UsXTuQfxiKCyuzfq8eJe1pOIRgPytet3pkilL1U0N
+         cOzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LXyAg9hcDD8VFPSdZOXejRQpIbfpi1YJ4IZqycAiC4I=;
+        b=o6KNBMqBVSKbzDPeshamuE4SDJJ32EitXlaHulf49qgPox8b2cYwPBLYG8C7nd9vAk
+         6P57lVpP0frPyje4CSMkXTLxuy4O74/zsbMRyKq2JUdPnwLsynEY4lJkvHpUPTRwY2rt
+         czOMTy1+CXNQfwjonPuDg6N2SXmofNATjlhWuPLxjiIiW2C6hOeeNlR3k4lFoiQbr4rw
+         cmIeQexR7mJEQmA3MNTLFoEkn7+XD9kbpW1fV4OfBpPJaBku1HomKZ6fqgziXiWyPDWE
+         5ger0aRvcFiPW2UTFUKfyUG7Mlj95/eMOU7L3dV62QZJX98wX8DiiCqseoxO5tZQ6D0T
+         hHiw==
+X-Gm-Message-State: AOAM532MsipovNDyTLdCK6uG8hK5RLksy5GOyEvEix9lvDaywj1AmOe/
+        xRQ8MMwXgNgvq5DYB2QM2sZwIQ==
+X-Google-Smtp-Source: ABdhPJyKjr2tTwnUbmqSxstyUCPQVPzkaOKs3cIY8TIHg8EpU2DTLNqT9e4sTKkMBaltYNJ1BJiwJA==
+X-Received: by 2002:a5d:4e8d:: with SMTP id e13mr2215445wru.368.1603183682935;
+        Tue, 20 Oct 2020 01:48:02 -0700 (PDT)
+Received: from apalos.home (athedsl-246545.home.otenet.gr. [85.73.10.175])
+        by smtp.gmail.com with ESMTPSA id i10sm2124614wrq.27.2020.10.20.01.48.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Oct 2020 01:48:02 -0700 (PDT)
+Date:   Tue, 20 Oct 2020 11:47:59 +0300
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>, Jassi Brar <jaswinder.singh@linaro.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Willy Liu <willy.liu@realtek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Masahisa Kojima <masahisa.kojima@linaro.org>,
+        Serge Semin <fancer.lancer@gmail.com>
+Subject: Re: [PATCH net] netsec: ignore 'phy-mode' device property on ACPI
+ systems
+Message-ID: <20201020084759.GA1837463@apalos.home>
+References: <20201018163625.2392-1-ardb@kernel.org>
+ <20201018175218.GG456889@lunn.ch>
+ <20201018203225.GA1790657@apalos.home>
+ <CAMj1kXEtLx_5_Hyuk=nU6PhnYZm3F33uWGiRHH2Yb3X2ENxRSw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAMj1kXEtLx_5_Hyuk=nU6PhnYZm3F33uWGiRHH2Yb3X2ENxRSw@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Ard, 
 
---Apple-Mail=_9F9749E9-79EA-41AB-B516-003ECE07BEE3
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain;
-	charset=us-ascii
+On Mon, Oct 19, 2020 at 08:30:45AM +0200, Ard Biesheuvel wrote:
+> On Sun, 18 Oct 2020 at 22:32, Ilias Apalodimas
+> <ilias.apalodimas@linaro.org> wrote:
+> >
+> > On Sun, Oct 18, 2020 at 07:52:18PM +0200, Andrew Lunn wrote:
+> > > > --- a/Documentation/devicetree/bindings/net/socionext-netsec.txt
+> > > > +++ b/Documentation/devicetree/bindings/net/socionext-netsec.txt
+> > > > @@ -30,7 +30,9 @@ Optional properties: (See ethernet.txt file in the same directory)
+> > > >  - max-frame-size: See ethernet.txt in the same directory.
+> > > >
+> > > >  The MAC address will be determined using the optional properties
+> > > > -defined in ethernet.txt.
+> > > > +defined in ethernet.txt. The 'phy-mode' property is required, but may
+> > > > +be set to the empty string if the PHY configuration is programmed by
+> > > > +the firmware or set by hardware straps, and needs to be preserved.
+> > >
+> > > In general, phy-mode is not mandatory. of_get_phy_mode() does the
+> > > right thing if it is not found, it sets &priv->phy_interface to
+> > > PHY_INTERFACE_MODE_NA, but returns -ENODEV. Also, it does not break
+> > > backwards compatibility to convert a mandatory property to
+> > > optional. So you could just do
+> > >
+> > >       of_get_phy_mode(pdev->dev.of_node, &priv->phy_interface);
+> > >
+> > > skip all the error checking, and document it as optional.
+> >
+> > Why ?
+> > The patch as is will not affect systems built on any firmware implementations
+> > that use ACPI and somehow configure the hardware.
+> > Although the only firmware implementations I am aware of on upsteream are based
+> > on EDK2, I prefer the explicit error as is now, in case a firmware does on
+> > initialize the PHY properly (and is using a DT).
+> >
+> 
+> We will also lose the ability to report bogus values for phy-mode this
+> way, so I think we should stick with the check.
 
+I hope Andrew is fine with the current changes
 
-
-> On 19 Oct 2020, at 20:42, Nick Desaulniers <ndesaulniers@google.com> =
-wrote:
->=20
-> We probably should add all 3 to W=3D2 builds (wrapped in cc-option).
-> I've filed https://github.com/ClangBuiltLinux/linux/issues/1180 to
-> follow up on.
-
-It looks as though the URL mangling has been fixed.   If anyone sees =
-that specific URL mangled, please let me know.
-
-jch
-
---Apple-Mail=_9F9749E9-79EA-41AB-B516-003ECE07BEE3
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename=signature.asc
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP
-
------BEGIN PGP SIGNATURE-----
-Comment: GPGTools - http://gpgtools.org
-
-iHUEAREIAB0WIQT+pxvb11CFWUkNSOVFC7t+lC+jyAUCX46kMQAKCRBFC7t+lC+j
-yBKiAP90JVXdPzuAwtRGkROpw1eVCo7wCaZ5nOa8Oo0sN6gC9gD/S0eGTqQhmg+n
-sXPJxPYqQsg09qmS6k/HX+AP5Oz2AMo=
-=xx66
------END PGP SIGNATURE-----
-
---Apple-Mail=_9F9749E9-79EA-41AB-B516-003ECE07BEE3--
+Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
