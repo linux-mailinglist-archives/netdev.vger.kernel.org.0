@@ -2,155 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA65B2944ED
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 00:07:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15F8C2944F0
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 00:08:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2410355AbgJTWHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 18:07:44 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:7752 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2393428AbgJTWHo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 18:07:44 -0400
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09KLXWBQ190388;
-        Tue, 20 Oct 2020 18:07:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=content-type :
- mime-version : subject : from : in-reply-to : date : cc :
- content-transfer-encoding : message-id : references : to; s=pp1;
- bh=XfW1tn+u/qEjbp5MUESQSydzzcXgxN5CVPqt689qW9s=;
- b=HbJK+3IKb7kAd89QzVCT+BItPu7sIXc/ctHa/OvjVnjiNSaNwrp/KiTDUA0U1lobB6aT
- +ITGG5GAnsRiCwt58uu/cRv/bJIJDoPKgN86X6bIIFAjScPWELEiQ8Mq211G+Olx+Rld
- mNv0cW+U9Z/gG3F3wn83qGRCcVh5RG/3wkT1IoKxQoxvqf7Q/K5Ch6ZPLceORKn1Rl4x
- XwOQQytJsFqlbH986E+0CRfawsPUYFqDKzEoC35AbzlcJNq4xdefS/ngF8P7v7s8mGDa
- I460ltLnXm0esmiJf/5nz+Bb64ltIP+af6uKl5CsVjo3XaPAfqqhR7nKjyA98Srxd25/ Wg== 
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 34a3wwfngt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 20 Oct 2020 18:07:41 -0400
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
-        by ppma03dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 09KM23vt018368;
-        Tue, 20 Oct 2020 22:07:40 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com [9.57.198.24])
-        by ppma03dal.us.ibm.com with ESMTP id 347r89a37s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 20 Oct 2020 22:07:40 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 09KM7dVO40042840
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 20 Oct 2020 22:07:39 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C46DE112064;
-        Tue, 20 Oct 2020 22:07:39 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 855D0112063;
-        Tue, 20 Oct 2020 22:07:39 +0000 (GMT)
-Received: from [9.85.179.149] (unknown [9.85.179.149])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTPS;
-        Tue, 20 Oct 2020 22:07:39 +0000 (GMT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [PATCH net] ibmvnic: save changed mac address to
- adapter->mac_addr
-From:   Lijun Pan <ljp@linux.vnet.ibm.com>
-In-Reply-To: <20201020143352.04cee401@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Date:   Tue, 20 Oct 2020 17:07:38 -0500
-Cc:     Lijun Pan <ljp@linux.ibm.com>, netdev@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <8AEE4003-FA15-4D69-9355-F15E1B737C0F@linux.vnet.ibm.com>
-References: <20201016045715.26768-1-ljp@linux.ibm.com>
- <20201019171152.6592e0c7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <456A40F4-7C46-4147-A22E-8B09209FD13A@linux.vnet.ibm.com>
- <20201020143352.04cee401@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.737
- definitions=2020-10-20_12:2020-10-20,2020-10-20 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 bulkscore=0
- clxscore=1015 priorityscore=1501 spamscore=0 mlxscore=0 phishscore=0
- adultscore=0 mlxlogscore=714 malwarescore=0 suspectscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010200143
+        id S2410364AbgJTWIX convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 20 Oct 2020 18:08:23 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:25750 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2410358AbgJTWIW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 18:08:22 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-218-r6pM3my1Ncyr0-LS7n86EQ-1; Tue, 20 Oct 2020 23:08:18 +0100
+X-MC-Unique: r6pM3my1Ncyr0-LS7n86EQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Tue, 20 Oct 2020 23:08:17 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Tue, 20 Oct 2020 23:08:17 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Marcelo Ricardo Leitner' <marcelo.leitner@gmail.com>,
+        Michael Tuexen <tuexen@fh-muenster.de>
+CC:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        davem <davem@davemloft.net>, Guillaume Nault <gnault@redhat.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Subject: RE: [PATCHv4 net-next 16/16] sctp: enable udp tunneling socks
+Thread-Topic: [PATCHv4 net-next 16/16] sctp: enable udp tunneling socks
+Thread-Index: AQHWpydLGSoHIJDNH0uB1ZnpfnejBqmhC7cA
+Date:   Tue, 20 Oct 2020 22:08:17 +0000
+Message-ID: <1614a5aa143147a385f7db7bdda0bfd3@AcuMS.aculab.com>
+References: <cover.1603110316.git.lucien.xin@gmail.com>
+ <b65bdc11e5a17e328227676ea283cee617f973fb.1603110316.git.lucien.xin@gmail.com>
+ <20201019221545.GD11030@localhost.localdomain>
+ <CADvbK_ezWXMxpKkt3kxbXhcgu73PTJ1zpChb_sCgDu38xcROtA@mail.gmail.com>
+ <20201020211108.GF11030@localhost.localdomain>
+ <3BC2D946-9EA7-4847-9C6E-B3C9DA6A6618@fh-muenster.de>
+ <20201020212338.GG11030@localhost.localdomain>
+In-Reply-To: <20201020212338.GG11030@localhost.localdomain>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Marcelo Ricardo Leitner
+> Sent: 20 October 2020 22:24
+...
+> > > Did FreeBSD enable it by default too?
+> > No. The default is 0, which means that the encapsulation is turned off.
+> > Setting this sysctl variable to a non-zero value enables the UDP tunneling
+> > with the given port.
+> 
+> Thanks Michael.
+> Xin, then we should change this default value (and update the
+> documentation above accordingly, to still have the standard port #
+> readily available in there).
 
+Does that mean that you can't have some 'normal' connections and
+others that use UDP encapsulation?
+Seems a pretty strong restriction.
 
-> On Oct 20, 2020, at 4:33 PM, Jakub Kicinski <kuba@kernel.org> wrote:
->=20
-> On Tue, 20 Oct 2020 16:18:04 -0500 Lijun Pan wrote:
->>> On Oct 19, 2020, at 7:11 PM, Jakub Kicinski <kuba@kernel.org> wrote:
->>>=20
->>> On Thu, 15 Oct 2020 23:57:15 -0500 Lijun Pan wrote: =20
->>>> After mac address change request completes successfully, the new =
-mac
->>>> address need to be saved to adapter->mac_addr as well as
->>>> netdev->dev_addr. Otherwise, adapter->mac_addr still holds old
->>>> data. =20
->>>=20
->>> Do you observe this in practice? Can you show us which path in
->>> particular you see this happen on?
->>>=20
->>> AFAICS ibmvnic_set_mac() copies the new MAC addr into =
-adapter->mac_addr
->>> before making a request.
->>>=20
->>> If anything is wrong here is that it does so regardless if MAC addr=20=
+(I'm waiting for one of our customers to ask for this...)
 
->>> is valid.
->>=20
->> Yes, I ran some internal test to check the mac address in =
-adapter->mac_addr, and
->> it is the old data. If you run ifconfig command to change mac addr, =
-the netdev->dev_addr
->> is changed afterwards, and if you run ifocnfig again, it will show =
-the new mac addr. However,
->> since we did not check adapter->mac_addr in this use case, this bug =
-was not exposed.
->>=20
->> This vnic driver is little bit different than other physical NIC =
-driver. All the control paths
->> are negotaited with VIOS server, and data paths are through DMA =
-mapping.
->>=20
->> __ibmvnic_set_mac copies the new mac addr to crq by
->> 	ether_addr_copy(&crq.change_mac_addr.mac_addr[0], dev_addr);
->> and then send the change request by
->> 	rc =3D ibmvnic_send_crq(adapter, &crq);
->> Now adapter->mac_addr still has the old data.
->>=20
->> When the request is handled by VIOS server, an interrupt is =
-triggered, and=20
->> handle_change_mac_rsp is called.=20
->> Now it is time to copy the new mac to netdev->dev_addr, and =
-adatper->mac_addr.
->> 	ether_addr_copy(netdev->dev_addr,
->> 			&crq->change_mac_addr_rsp.mac_addr[0]);
->> It missed the copy for adapter->mac_addr, which is what I add in this =
-patch.
->> +	ether_addr_copy(adapter->mac_addr,
->> +			&crq->change_mac_addr_rsp.mac_addr[0]);
->=20
-> Please read my reply carefully.
->=20
-> What's the call path that leads to the address being wrong? If you set
-> the address via ifconfig it will call ibmvnic_set_mac() of the driver.
-> ibmvnic_set_mac() does the copy.
->=20
-> But it doesn't validate the address, which it should.
+	David
 
-Sorry about that. The mac addr validation is performed on vios side when =
-it receives the
-change request. That=E2=80=99s why there is no mac validation code in =
-vnic driver.=20
-In handle_change_mac_rsp(), &crq->change_mac_addr_rsp.mac_addr[0]
-contains the current valid mac address, which may be different than the =
-requested one,=20
-that is &crq->change_mac_addr.mac_addr[0].
-crq->change_mac_addr.mac_addr is the requested one.
-crq->change_mac_addr_rsp.mac_addr is the returned valid one.
-
-Hope the above answers your doubt.
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
