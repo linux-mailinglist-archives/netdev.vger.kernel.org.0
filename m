@@ -2,64 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C877B29323C
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 02:13:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58D64293250
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 02:18:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389249AbgJTANz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 20:13:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60270 "EHLO mail.kernel.org"
+        id S2389341AbgJTASN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 20:18:13 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:35704 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389221AbgJTANz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Oct 2020 20:13:55 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E256620637;
-        Tue, 20 Oct 2020 00:13:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603152835;
-        bh=UL606fIo3DvsNwqvpY6R1cEuc8k22snjyK3hHJ53iQA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VKc3l9jO2bXxzu7AFaaExy/RUrCmZYSL68S6nswyK5kol1DmJ+mEFkm0fJqeoRjh1
-         rIl8myyUy1kMJrJ3TN+wJdV0HMjw3ZS+G4LKiogTcMV9Yt/q5Q5AoPW6+1XmpWR9sG
-         RB/7hj8FkH8eDrSvi13AzUHFbxXPzb3qc3HS4DkM=
-Date:   Mon, 19 Oct 2020 17:13:52 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com
-Subject: Re: [PATCH net] net: dsa: reference count the host mdb addresses
-Message-ID: <20201019171352.529f1133@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201020000746.GR456889@lunn.ch>
-References: <20201015212711.724678-1-vladimir.oltean@nxp.com>
-        <20201019165514.1fe7d8f3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20201020000746.GR456889@lunn.ch>
+        id S2389331AbgJTASN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Oct 2020 20:18:13 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kUfLj-002Zrt-JM; Tue, 20 Oct 2020 02:17:59 +0200
+Date:   Tue, 20 Oct 2020 02:17:59 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>
+Cc:     vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, linux@armlinux.org.uk,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] net: dsa: mv88e6xxx: Support serdes ports on
+ MV88E6097/6095/6185
+Message-ID: <20201020001759.GT456889@lunn.ch>
+References: <20201019024355.30717-1-chris.packham@alliedtelesis.co.nz>
+ <20201019024355.30717-3-chris.packham@alliedtelesis.co.nz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201019024355.30717-3-chris.packham@alliedtelesis.co.nz>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 20 Oct 2020 02:07:46 +0200 Andrew Lunn wrote:
-> On Mon, Oct 19, 2020 at 04:55:14PM -0700, Jakub Kicinski wrote:
-> > On Fri, 16 Oct 2020 00:27:11 +0300 Vladimir Oltean wrote:  
-> > > Currently any DSA switch that implements the multicast ops (properly,
-> > > that is) gets these errors after just sitting for a while, with at least
-> > > 2 ports bridged:
-> > > 
-> > > [  286.013814] mscc_felix 0000:00:00.5 swp3: failed (err=-2) to del object (id=3)
-> > > 
-> > > The reason has to do with this piece of code:
-> > > 
-> > > 	netdev_for_each_lower_dev(dev, lower_dev, iter)
-> > > 		br_mdb_switchdev_host_port(dev, lower_dev, mp, type);  
-> > 
-> > We need a review on this one, anyone?  
+On Mon, Oct 19, 2020 at 03:43:54PM +1300, Chris Packham wrote:
+> Implement serdes_power, serdes_get_lane and serdes_pcs_get_state ops for
+> the MV88E6097/6095/6185 so that ports 8 & 9 can be supported as serdes
+> ports and directly connected to other network interfaces or to SFPs
+> without a PHY.
 > 
-> Hi Jakub
-> 
-> Thanks for the reminder. It has been on my TODO list since i got back
-> from vacation.
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
 
-Good to have you back! :)
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+Just a nit pick below.
+
+> +int mv88e6185_serdes_power(struct mv88e6xxx_chip *chip, int port, u8 lane,
+> +			   bool up)
+> +{
+> +	/* The serdes power can't be controlled on this switch chip but we need
+> +	 * to supply this function to avoid returning -EOPNOTSUPP in
+> +	 * mv88e6xxx_serdes_power_up/mv88e6xxx_serdes_power_down
+> +	 */
+> +	return 0;
+> +}
+> +
+> +u8 mv88e6185_serdes_get_lane(struct mv88e6xxx_chip *chip, int port)
+> +{
+> +	switch (chip->ports[port].cmode) {
+> +	case MV88E6185_PORT_STS_CMODE_SERDES:
+> +	case MV88E6185_PORT_STS_CMODE_1000BASE_X:
+> +		return 0xff; /* Unused */
+> +	default:
+> +		return 0;
+> +	}
+> +}
+
+mv88e6185_serdes_power() has a nice comment about why it exists and
+just returns 0. It would be nice to have something similar here, that
+there are no SERDES lane registers, but something other than 0 has to
+be returned to indicate there is in fact a SERDES for the given port.
+
+   Andrew
