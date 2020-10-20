@@ -2,72 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 942E9293D41
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 15:23:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36FB1293D67
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 15:36:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407206AbgJTNXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 09:23:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41036 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406476AbgJTNXp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Oct 2020 09:23:45 -0400
-Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 16B7F20BED
-        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 13:23:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603200225;
-        bh=UsZJ0B25Cc9dD239hUGdtus7OX00Zt4EJkjU9ohMAL4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=piq95wxt1sqJzBv8cpehijNaXeDsBl5A4ICY74oWyyMR9S89vcbsxIxCKU49EmX7y
-         5Aaz0NiOooW4qdKSjsTy+EYz9KxHmGM3Fo53Dm1/GL8JEu2zz+e315O8knNQlBN1Iq
-         Sn/UBZqxB1qw8vUlzYv84y40B9fRRbXjRiZIZ5Mc=
-Received: by mail-oi1-f174.google.com with SMTP id n3so2126379oie.1
-        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 06:23:45 -0700 (PDT)
-X-Gm-Message-State: AOAM531CIR9QFg5X66+A4dx/KIxziCUH00gwF6Iu5b8G88EJ68POv9Rm
-        Mxt7iQr02sVXrFiBIS2RUe3OZWfVAUiN0zOXjug=
-X-Google-Smtp-Source: ABdhPJzDNSixTiOK8zHQXA6Ohq8dyrUVKpJU8UNUb1UKhANbmP0jmN8dTFPktQis7hXZBWLvPPh8yln9fH5qKbcngnQ=
-X-Received: by 2002:aca:4085:: with SMTP id n127mr1810709oia.33.1603200222302;
- Tue, 20 Oct 2020 06:23:42 -0700 (PDT)
+        id S2407502AbgJTNf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 09:35:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59868 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2407474AbgJTNf6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 09:35:58 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D185C061755
+        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 06:35:58 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id z5so3335088iob.1
+        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 06:35:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=5lD39euqnLLWALUOK+cga3/qrcq4Set5HCzS7aBLz9o=;
+        b=ZYxNKKe36jo71IgodYslRfai3yZbpXkf32WvcvB2vCjialhyfewyrxobrTAavq94fB
+         LrMMLoHWo2t9/t1PEb4UIdx/lfte/Z2iAWssFkrxf7gCf7w9Hv1vjhLWs+cYA24hMccP
+         8jdASVqAXzqHRBPz0Q4Z0/4lenikMdCabXLZ7p9VQymZy/kYxX03G5sr2xRtvzudAA5X
+         wki9FG0RsrQPBPPwIjY+/b0aC25XtI/6LNmYadSy/ejegBJ7hvlFSHeIISguffOXMfZr
+         UOlOPIGtGYLHXuCPvG9Y/XiuuEbbmoMZ31caQfMQR73+o9bmIsAZVZmLy5FK5tFGLJK/
+         qNkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=5lD39euqnLLWALUOK+cga3/qrcq4Set5HCzS7aBLz9o=;
+        b=ZdXXYiiWIj5hQToKxT6PMY63RyXFePIc0dbgoZsQHPu5fRXhNbWv6KXtbLPclFEbjN
+         hkn36ibf9ZuFCjvZTtqi66FaGXo0lgsjgmioL+2fyUtj+qMAJmiahppbPKywZbji58h7
+         HC3RPV4ckW6JexrLhiNMr0oa2fn6zgPbajrh/1POfvm6k7XLbrslxEOl7tb8Bj7XuG0t
+         EsXvYVEs5iv7lblnxewcxlztl7QU/e4EMEBJDnwAmFYtPny8zOR4mSCsPsUQGIXW1eIy
+         KtjQBJCU9bF+75pPxhmkOorS5VjBuW6a5WYCGG0AekwDHvcf1IpitzAghih70aMsDAHe
+         v3vg==
+X-Gm-Message-State: AOAM5305qGOxniot+JW3tfRLS+ZNww+ycDIYYLZzahXA8w5MUi/h+UcS
+        SUR/o/vabY7kPPx0ZG3ONkdvIFuOmltaueeBCMA=
+X-Google-Smtp-Source: ABdhPJx+sHOV6KH0XgzsYOULcM9A72X1Js+dySGAORiq0YPdowlNPRSz+86ByAJLCpboh3c6cVXPXB41twKB0HgJkQ0=
+X-Received: by 2002:a02:ccac:: with SMTP id t12mr2003283jap.109.1603200957959;
+ Tue, 20 Oct 2020 06:35:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20201018163625.2392-1-ardb@kernel.org> <20201018175218.GG456889@lunn.ch>
- <20201018203225.GA1790657@apalos.home> <CAMj1kXEtLx_5_Hyuk=nU6PhnYZm3F33uWGiRHH2Yb3X2ENxRSw@mail.gmail.com>
- <20201020084759.GA1837463@apalos.home> <20201020124937.GW456889@lunn.ch>
-In-Reply-To: <20201020124937.GW456889@lunn.ch>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 20 Oct 2020 15:23:31 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXEEBe4Se1jy07B=5gnfGxty=cPM_5fJ2+5A-dZ6BX3uHw@mail.gmail.com>
-Message-ID: <CAMj1kXEEBe4Se1jy07B=5gnfGxty=cPM_5fJ2+5A-dZ6BX3uHw@mail.gmail.com>
-Subject: Re: [PATCH net] netsec: ignore 'phy-mode' device property on ACPI systems
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
-        <netdev@vger.kernel.org>, Jassi Brar <jaswinder.singh@linaro.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Willy Liu <willy.liu@realtek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Masahisa Kojima <masahisa.kojima@linaro.org>,
-        Serge Semin <fancer.lancer@gmail.com>
+Received: by 2002:a92:d247:0:0:0:0:0 with HTTP; Tue, 20 Oct 2020 06:35:57
+ -0700 (PDT)
+Reply-To: nascointt@hotmail.com
+From:   Nayef Abu Sakran <chrisdickson4040@gmail.com>
+Date:   Tue, 20 Oct 2020 06:35:57 -0700
+Message-ID: <CAKi7aMDYg8wDQAqJgnuH6UOjVpupUqb1KJrcgjPf1=dfe-ZZhw@mail.gmail.com>
+Subject: hi many thanks
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 20 Oct 2020 at 14:49, Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > I hope Andrew is fine with the current changes
->
-> Yes, i'm O.K. with it.
-
-Thanks
-
-> Making phy-mode optional would just make the
-> driver more uniform with others.
->
-
-
-Making phy-mode optional is fine with me, but I think it would belong
-in a separate patch in any case. But I'd still prefer having the
-possibility to spot bogus phy-mode values rather than ignoring them.
+Did you received the mail i send to you?
