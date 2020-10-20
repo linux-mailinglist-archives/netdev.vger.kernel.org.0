@@ -2,97 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 297562934D3
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 08:21:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B8F262934EA
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 08:23:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404004AbgJTGUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 02:20:53 -0400
-Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:47233 "EHLO
-        wout2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2403993AbgJTGUs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 02:20:48 -0400
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.west.internal (Postfix) with ESMTP id 48765C38;
-        Tue, 20 Oct 2020 02:20:46 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Tue, 20 Oct 2020 02:20:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bernat.ch; h=
-        from:to:cc:subject:references:date:in-reply-to:message-id
-        :mime-version:content-type:content-transfer-encoding; s=fm1; bh=
-        wjjec6ic/gl/14+2+vUByl2Px4ePo0YT/nvkiquon6o=; b=yp404x6vPJiZuBic
-        xX95qp0HoWBq4KFlB69ZC/zC/tWJjv6n1mq9XvRa10d3bRBC2wIXLTBLFyZXfCt6
-        3cnwMN9/QIhiczn4q3WebORYAVdfYmc2JqHolMI9dV1y5ZC8NK/5cbm/hRKAHHAw
-        1ySfzg6j4njhUuDs2sNc149OkqskrATG4tFFa8INwrhh/ZvhFxEE6Nf4uQCgjyA6
-        Zxh52jgpUdR+IWX1kEwbou2dobd0NNYPXTMO3skpwOsA7ZK9zIDg7QtyWLwFCv3d
-        skGzAjWqmV48HwXol/7jrfTf4psKqOma0MDGdm+/SFxuJetSvIe3KnkVAt/oIxd8
-        suOtEw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=wjjec6ic/gl/14+2+vUByl2Px4ePo0YT/nvkiquon
-        6o=; b=h1HNZbEFSbhaZo/jAmA42R6EXo0vnynrdFMUPFynQeq9i0EK2vJVZcXjh
-        HZGl5ajjHR2yzSfxGo/UR4C5o5FRK5EB2MicC+KAIzLm6dWB80Qaw/VRzA16NPLQ
-        yjqUnhguIZ5qnwPUxU08f8lv/u1ogOfG/9WKK/5KGx9iZ1NXptk+tK1RnEQzkYGB
-        mygZCKl8Iwx8AtVXOTcO6vX9m+xmZw2Ss8Zc5aFR/heJZyoG/TKJlzkxVCJ1oAni
-        Dh97jf4mMIFzM3VIxL2ItqSDXZrSwRrM163KLKV1ft/zDosJbphOcVtCYP8fhmYK
-        TulNMFwwqeB9/uaaDuTuQ+3GuCAsw==
-X-ME-Sender: <xms:vIGOX7pztR3hDy5fxRosZKGBHtUDEqVF9CIdaVeyKTIKPO8hr941uw>
-    <xme:vIGOX1p-qe9kd4y3swmTgvtdgHjBfW6QGdWoBrhS-rf7X9nwBkHRm_uayRqjx4p0j
-    s2xpch7XYi7k51GXlk>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrjedvgddufeegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvufhfffgjkfgfgggtgfesthekredttderjeenucfhrhhomhepgghinhgt
-    vghnthcuuegvrhhnrghtuceovhhinhgtvghnthessggvrhhnrghtrdgthheqnecuggftrf
-    grthhtvghrnhepudeuveeggedtveduudejgfeiffeiveduiedvjedvudefleetgfefvdfh
-    kedtieejnecukfhppeekvddruddvgedrvddukedrgeehnecuvehluhhsthgvrhfuihiivg
-    eptdenucfrrghrrghmpehmrghilhhfrhhomhepvhhinhgtvghnthessggvrhhnrghtrdgt
-    hh
-X-ME-Proxy: <xmx:vIGOX4MACNF-e-DulcGfwu_tktiOndbCT2aLmYA4nzW9A5dlZ8426A>
-    <xmx:vIGOX-5VhYhRf00MJf7zq5_jDBG3y9PVuoiTqWEbNhRoAwVVzf-pMg>
-    <xmx:vIGOX64upcNlbmq4UXohnTf1_QaZT-q-Rhz1Yu2f1dKPlUMf59aYew>
-    <xmx:vYGOX6EjOl5-awq0fxEzhQCsohCMOAGfeI_hPvLqJuADzbzRazZHSQ>
-Received: from neo.luffy.cx (lfbn-idf1-1-134-45.w82-124.abo.wanadoo.fr [82.124.218.45])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 82EF73064684;
-        Tue, 20 Oct 2020 02:20:44 -0400 (EDT)
-Received: by neo.luffy.cx (Postfix, from userid 500)
-        id 576C1931; Tue, 20 Oct 2020 08:20:43 +0200 (CEST)
-From:   Vincent Bernat <vincent@bernat.ch>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jonathan Corbet <corbet@lwn.net>, netdev@vger.kernel.org,
-        Andy Gospodarek <andy@greyhouse.net>
-Subject: Re: [PATCH net-next v1] net: evaluate
- net.conf.ipvX.all.ignore_routes_with_linkdown
-References: <20201017125011.2655391-1-vincent@bernat.ch>
-        <20201019175326.0e06b89d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Date:   Tue, 20 Oct 2020 08:20:43 +0200
-In-Reply-To: <20201019175326.0e06b89d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        (Jakub Kicinski's message of "Mon, 19 Oct 2020 17:53:26 -0700")
-Message-ID: <m34kmp8ll0.fsf@bernat.ch>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        id S2404011AbgJTGXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 02:23:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:38959 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726894AbgJTGXa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 02:23:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603175009;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SYBBFaywtQ+WHSPP8mqHtlCXgzq0Xbm6CyO640a+IUg=;
+        b=ZgYnZwNHN5zFaq8R/fEilz6BTb9ik2PsSD+6T8sEx//L7IlAi26gcLNbmCBqyfuMobcGjG
+        AmXF+22fZ/iHpTIersjFke7I3u/X+DPecTAngdgSE7fPRk/bO4YMowybu/rlIchtBFibqZ
+        S3i6nZjJ2GxrF1CjrpCEq9HOmdw3Jm8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-589-v9xI-lB8Obado3FWNetisw-1; Tue, 20 Oct 2020 02:23:27 -0400
+X-MC-Unique: v9xI-lB8Obado3FWNetisw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9E63D85EE94;
+        Tue, 20 Oct 2020 06:23:24 +0000 (UTC)
+Received: from [10.72.13.171] (ovpn-13-171.pek2.redhat.com [10.72.13.171])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A389461983;
+        Tue, 20 Oct 2020 06:23:16 +0000 (UTC)
+Subject: Re: [PATCH 1/2] KVM: not register a IRQ bypass producer if
+ unsupported or disabled
+To:     Zhenzhong Duan <zhenzhong.duan@gmail.com>,
+        linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org
+Cc:     netdev@vger.kernel.org, pbonzini@redhat.com,
+        sean.j.christopherson@intel.com, vkuznets@redhat.com,
+        wanpengli@tencent.com, jmattson@google.com, joro@8bytes.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de, mst@redhat.com
+References: <20201019090657.131-1-zhenzhong.duan@gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <7ef3b498-bdc5-4a3d-d23b-ad58205ae1b7@redhat.com>
+Date:   Tue, 20 Oct 2020 14:23:14 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20201019090657.131-1-zhenzhong.duan@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- ❦ 19 octobre 2020 17:53 -07, Jakub Kicinski:
 
-> I'm not hearing any objections, but I have two questions:
->  - do you intend to merge it for 5.10 or 5.11? Because it has a fixes
->    tag, yet it's marked for net-next. If we put it in 5.10 it may get
->    pulled into stable immediately, knowing how things work lately.
+On 2020/10/19 下午5:06, Zhenzhong Duan wrote:
+> If Post interrupt is disabled due to hardware limit or forcely disabled
+> by "intremap=nopost" parameter, return -EINVAL so that the legacy mode IRQ
+> isn't registered as IRQ bypass producer.
 
-I have never been super-familiar with net/net-next. I am always using
-net-next and let people sort it out.
 
->  - we have other sysctls that use IN_DEV_CONF_GET(), e.g.
-> "proxy_arp_pvlan" should those also be converted?
+Is there any side effect if it was still registered?
 
-I can check them and do that.
--- 
-Use library functions.
-            - The Elements of Programming Style (Kernighan & Plauger)
+
+>
+> With this change, below message is printed:
+> "vfio-pci 0000:db:00.0: irq bypass producer (token 0000000060c8cda5) registration fails: -22"
+
+
+I may miss something, but the patch only touches vhost-vDPA instead of VFIO?
+
+Thanks
+
+
+>
+> ..which also hints us if a vfio or vdpa device works in PI mode or legacy
+> remapping mode.
+>
+> Add a print to vdpa code just like what vfio_msi_set_vector_signal() does.
+>
+> Signed-off-by: Zhenzhong Duan <zhenzhong.duan@gmail.com>
+> ---
+>   arch/x86/kvm/svm/avic.c | 3 +--
+>   arch/x86/kvm/vmx/vmx.c  | 5 ++---
+>   drivers/vhost/vdpa.c    | 5 +++++
+>   3 files changed, 8 insertions(+), 5 deletions(-)
+>
+> diff --git a/arch/x86/kvm/svm/avic.c b/arch/x86/kvm/svm/avic.c
+> index ac830cd..316142a 100644
+> --- a/arch/x86/kvm/svm/avic.c
+> +++ b/arch/x86/kvm/svm/avic.c
+> @@ -814,7 +814,7 @@ int svm_update_pi_irte(struct kvm *kvm, unsigned int host_irq,
+>   
+>   	if (!kvm_arch_has_assigned_device(kvm) ||
+>   	    !irq_remapping_cap(IRQ_POSTING_CAP))
+> -		return 0;
+> +		return ret;
+>   
+>   	pr_debug("SVM: %s: host_irq=%#x, guest_irq=%#x, set=%#x\n",
+>   		 __func__, host_irq, guest_irq, set);
+> @@ -899,7 +899,6 @@ int svm_update_pi_irte(struct kvm *kvm, unsigned int host_irq,
+>   		}
+>   	}
+>   
+> -	ret = 0;
+>   out:
+>   	srcu_read_unlock(&kvm->irq_srcu, idx);
+>   	return ret;
+> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+> index f0a9954..1fed6d6 100644
+> --- a/arch/x86/kvm/vmx/vmx.c
+> +++ b/arch/x86/kvm/vmx/vmx.c
+> @@ -7716,12 +7716,12 @@ static int vmx_update_pi_irte(struct kvm *kvm, unsigned int host_irq,
+>   	struct kvm_lapic_irq irq;
+>   	struct kvm_vcpu *vcpu;
+>   	struct vcpu_data vcpu_info;
+> -	int idx, ret = 0;
+> +	int idx, ret = -EINVAL;
+>   
+>   	if (!kvm_arch_has_assigned_device(kvm) ||
+>   		!irq_remapping_cap(IRQ_POSTING_CAP) ||
+>   		!kvm_vcpu_apicv_active(kvm->vcpus[0]))
+> -		return 0;
+> +		return ret;
+>   
+>   	idx = srcu_read_lock(&kvm->irq_srcu);
+>   	irq_rt = srcu_dereference(kvm->irq_routing, &kvm->irq_srcu);
+> @@ -7787,7 +7787,6 @@ static int vmx_update_pi_irte(struct kvm *kvm, unsigned int host_irq,
+>   		}
+>   	}
+>   
+> -	ret = 0;
+>   out:
+>   	srcu_read_unlock(&kvm->irq_srcu, idx);
+>   	return ret;
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 62a9bb0..b20060a 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -107,6 +107,11 @@ static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, u16 qid)
+>   	vq->call_ctx.producer.token = vq->call_ctx.ctx;
+>   	vq->call_ctx.producer.irq = irq;
+>   	ret = irq_bypass_register_producer(&vq->call_ctx.producer);
+> +	if (unlikely(ret))
+> +		dev_info(&vdpa->dev,
+> +		"irq bypass producer (token %p) registration fails: %d\n",
+> +		vq->call_ctx.producer.token, ret);
+> +
+>   	spin_unlock(&vq->call_ctx.ctx_lock);
+>   }
+>   
+
