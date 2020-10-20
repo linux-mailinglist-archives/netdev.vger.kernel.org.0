@@ -2,555 +2,603 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CB85293282
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 02:59:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66A98293281
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 02:59:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389713AbgJTA7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Oct 2020 20:59:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55858 "EHLO
+        id S2389706AbgJTA7N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Oct 2020 20:59:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389678AbgJTA7D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 20:59:03 -0400
-Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D670C0613CE
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 17:59:03 -0700 (PDT)
+        with ESMTP id S2389682AbgJTA7F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 20:59:05 -0400
+Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB5BC0613D3
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 17:59:04 -0700 (PDT)
 Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4CFZyF4gQzzQkmG;
-        Tue, 20 Oct 2020 02:59:01 +0200 (CEST)
+        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4CFZyH2BgBzKmXH;
+        Tue, 20 Oct 2020 02:59:03 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1603155539;
+        s=MBO0001; t=1603155541;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=gzMFZ+FNM7MuwnVbdkog27ewSAYn05vdEdmYZjvnLO4=;
-        b=mFSg8kUxe95l9U7qfU6pQ3qPS8qkuCEashUpaHqkpKeOo5uD6lGG4yGbWJUK6YcZN+ARFn
-        o9sxlXTnnFamgD+OMFHZZW4fq78Lrrie9yfcbM7gfvXAo/NgC583ek2SeAk/aFHOBRPWoa
-        KKr6YG/KZk4CDXuJCtZX8DAmXSFowKSBrW6JQjqQ/fRI8ROjjAF/9pFzjbC49tR6HfzeN9
-        uUqP8/ivDjy2Fe5hMW36+taPkxkLZviGdWuEkRdgKPnWSLdD/0nd1dB584LPC5fi5f57Zw
-        7f6LdgOr0736WgBnQN1j1b1sQQkl9d5h0XUklx117lBq6CY89bWqrjjjN6kQvw==
+        bh=bZD+yrjHtUm7OJOwkfDlPO+KN9rrBUmYM2Y+B0suq7w=;
+        b=NEERcw9OeeqIs/OjdcJUrQmBCH2iT2EOkxI1VD1Ok4AZycFI6KDNaL59/eFiKUcGs3D0mx
+        Nt+lQysywHo58nJCCIPxCBhLGjAcsWM3HqaV51jRJVmQsHoKrFiK0m43ijdbNLPtJFZqOn
+        BK5RwJXlbpUrHZUy97RQ/eHpMVit3AT5NWOM0j72rnHn7KLpAuJ1i6WCeZp8jP6U2y33hr
+        nd0nxgI4KMhMMNNSReAWZ2QAbzuGOBIsVOc2LSaItOk2gKbQhYHIISimsxuTH6+B/OmZ5H
+        5u//LvF6lFaRVDukfoT42Z144gqTtcGVI8l5XVKe4gnj1pS3I+SMpUT/O4wIZw==
 Received: from smtp1.mailbox.org ([80.241.60.240])
-        by gerste.heinlein-support.de (gerste.heinlein-support.de [91.198.250.173]) (amavisd-new, port 10030)
-        with ESMTP id jjUUwgdijNo6; Tue, 20 Oct 2020 02:58:57 +0200 (CEST)
+        by spamfilter01.heinlein-hosting.de (spamfilter01.heinlein-hosting.de [80.241.56.115]) (amavisd-new, port 10030)
+        with ESMTP id 6HHLv47Hz0_K; Tue, 20 Oct 2020 02:58:59 +0200 (CEST)
 From:   Petr Machata <me@pmachata.org>
 To:     netdev@vger.kernel.org, dsahern@gmail.com,
         stephen@networkplumber.org
 Cc:     john.fastabend@gmail.com, jiri@nvidia.com, idosch@nvidia.com,
         Petr Machata <me@pmachata.org>
-Subject: [PATCH iproute2-next 14/15] Add skeleton of a new tool, dcb
-Date:   Tue, 20 Oct 2020 02:58:22 +0200
-Message-Id: <59a6e0bd537efbb8ecdfb623f074bb623a06237c.1603154867.git.me@pmachata.org>
+Subject: [PATCH iproute2-next 15/15] dcb: Add a subtool for the DCB ETS object
+Date:   Tue, 20 Oct 2020 02:58:23 +0200
+Message-Id: <c2bd8a2525a0686618ba247e43f2694c01e76a94.1603154867.git.me@pmachata.org>
 In-Reply-To: <cover.1603154867.git.me@pmachata.org>
 References: <cover.1603154867.git.me@pmachata.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-MBO-SPAM-Probability: *
 X-Rspamd-Score: 0.08 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 69A2017DC
-X-Rspamd-UID: 2d4de1
+X-Rspamd-Queue-Id: 23EF9271
+X-Rspamd-UID: ef1e62
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Linux DCB interface allows configuration of a broad range of
-hardware-specific attributes, such as TC scheduling, flow control, per-port
-buffer configuration, TC rate, etc. Add a new tool to show that
-configuration and tweak it.
+ETS, for "Enhanced Transmission Selection", is a set of configurations that
+permit configuration of mapping of priorities to traffic classes, traffic
+selection algorithm to use per traffic class, bandwidth allocation, etc.
 
-DCB allows configuration of several objects, and possibly could expand to
-pre-standard CEE interfaces. Therefore the tool itself is a lean shell that
-dispatches to subtools each dedicated to one of the objects.
+Add a dcb subtool to allow showing and tweaking of individual ETS
+configuration options. For example:
+
+    # dcb ets show dev eni1np1
+    willing on ets_cap 8 cbs off
+    tc-bw 0:0 1:0 2:0 3:0 4:100 5:0 6:0 7:0
+    pg-bw 0:0 1:0 2:0 3:0 4:0 5:0 6:0 7:0
+    tc-tsa 0:strict 1:strict 2:strict 3:strict 4:ets 5:strict 6:strict 7:strict
+    prio-tc 0:1 1:3 2:5 3:0 4:0 5:0 6:0 7:0
+    reco-tc-bw 0:0 1:0 2:0 3:0 4:0 5:0 6:0 7:0
+    reco-tc-tsa 0:strict 1:strict 2:strict 3:strict 4:strict 5:strict 6:strict 7:strict
+    reco-prio-tc 0:0 1:0 2:0 3:0 4:0 5:0 6:0 7:0
 
 Signed-off-by: Petr Machata <me@pmachata.org>
 ---
- Makefile       |   2 +-
- dcb/Makefile   |  24 ++++
- dcb/dcb.c      | 377 +++++++++++++++++++++++++++++++++++++++++++++++++
- dcb/dcb.h      |  32 +++++
- man/man8/dcb.8 | 103 ++++++++++++++
- 5 files changed, 537 insertions(+), 1 deletion(-)
- create mode 100644 dcb/Makefile
- create mode 100644 dcb/dcb.c
- create mode 100644 dcb/dcb.h
- create mode 100644 man/man8/dcb.8
+ dcb/Makefile       |   2 +-
+ dcb/dcb.c          |   4 +-
+ dcb/dcb.h          |   4 +
+ dcb/dcb_ets.c      | 450 +++++++++++++++++++++++++++++++++++++++++++++
+ man/man8/dcb-ets.8 | 185 +++++++++++++++++++
+ man/man8/dcb.8     |  11 ++
+ 6 files changed, 654 insertions(+), 2 deletions(-)
+ create mode 100644 dcb/dcb_ets.c
+ create mode 100644 man/man8/dcb-ets.8
 
-diff --git a/Makefile b/Makefile
-index 5b040415a12b..e64c65992585 100644
---- a/Makefile
-+++ b/Makefile
-@@ -55,7 +55,7 @@ WFLAGS += -Wmissing-declarations -Wold-style-definition -Wformat=2
- CFLAGS := $(WFLAGS) $(CCOPTS) -I../include -I../include/uapi $(DEFINES) $(CFLAGS)
- YACCFLAGS = -d -t -v
- 
--SUBDIRS=lib ip tc bridge misc netem genl tipc devlink rdma man
-+SUBDIRS=lib ip tc bridge misc netem genl tipc devlink rdma dcb man
- 
- LIBNETLINK=../lib/libutil.a ../lib/libnetlink.a
- LDLIBS += $(LIBNETLINK)
 diff --git a/dcb/Makefile b/dcb/Makefile
-new file mode 100644
-index 000000000000..9966c8f0bfa4
---- /dev/null
+index 9966c8f0bfa4..895817163562 100644
+--- a/dcb/Makefile
 +++ b/dcb/Makefile
-@@ -0,0 +1,24 @@
-+# SPDX-License-Identifier: GPL-2.0
-+include ../config.mk
-+
-+TARGETS :=
-+
-+ifeq ($(HAVE_MNL),y)
-+
-+DCBOBJ = dcb.o
-+TARGETS += dcb
-+
-+endif
-+
-+all: $(TARGETS) $(LIBS)
-+
-+dcb: $(DCBOBJ) $(LIBNETLINK)
-+	$(QUIET_LINK)$(CC) $^ $(LDFLAGS) $(LDLIBS) -o $@
-+
-+install: all
-+	for i in $(TARGETS); \
-+	do install -m 0755 $$i $(DESTDIR)$(SBINDIR); \
-+	done
-+
-+clean:
-+	rm -f $(DCBOBJ) $(TARGETS)
+@@ -5,7 +5,7 @@ TARGETS :=
+ 
+ ifeq ($(HAVE_MNL),y)
+ 
+-DCBOBJ = dcb.o
++DCBOBJ = dcb.o dcb_ets.o
+ TARGETS += dcb
+ 
+ endif
 diff --git a/dcb/dcb.c b/dcb/dcb.c
-new file mode 100644
-index 000000000000..c85008bbe1e9
---- /dev/null
+index c85008bbe1e9..7df69b065522 100644
+--- a/dcb/dcb.c
 +++ b/dcb/dcb.c
-@@ -0,0 +1,377 @@
+@@ -262,7 +262,7 @@ static void dcb_help(void)
+ 	fprintf(stderr,
+ 		"Usage: dcb [ OPTIONS ] OBJECT { COMMAND | help }\n"
+ 		"       dcb [ -f[orce] ] -b[atch] filename -N[etns] netnsname\n"
+-		"where  OBJECT :=\n"
++		"where  OBJECT := ets\n"
+ 		"       OPTIONS := { -V[ersion] | -j[son] | -p[retty] | -v[erbose] }\n");
+ }
+ 
+@@ -271,6 +271,8 @@ static int dcb_cmd(struct dcb *dcb, int argc, char **argv)
+ 	if (!argc || matches(*argv, "help") == 0) {
+ 		dcb_help();
+ 		return 0;
++	} else if (matches(*argv, "ets") == 0) {
++		return dcb_cmd_ets(dcb, argc - 1, argv + 1);
+ 	}
+ 
+ 	fprintf(stderr, "Object \"%s\" is unknown\n", *argv);
+diff --git a/dcb/dcb.h b/dcb/dcb.h
+index 7334ef7a94d8..12aa9c9d2427 100644
+--- a/dcb/dcb.h
++++ b/dcb/dcb.h
+@@ -29,4 +29,8 @@ void dcb_print_array_num(FILE *fp, const __u8 *array, size_t size);
+ void dcb_print_array_kw(FILE *fp, const __u8 *array, size_t array_size,
+ 			const char *const kw[], size_t kw_size);
+ 
++/* dcb_ets.c */
++
++int dcb_cmd_ets(struct dcb *dcb, int argc, char **argv);
++
+ #endif /* __DCB_H__ */
+diff --git a/dcb/dcb_ets.c b/dcb/dcb_ets.c
+new file mode 100644
+index 000000000000..c0d6cede5411
+--- /dev/null
++++ b/dcb/dcb_ets.c
+@@ -0,0 +1,450 @@
 +// SPDX-License-Identifier: GPL-2.0+
 +
++#include <errno.h>
 +#include <stdio.h>
 +#include <linux/dcbnl.h>
-+#include <libmnl/libmnl.h>
-+#include <getopt.h>
 +
 +#include "dcb.h"
-+#include "mnl_utils.h"
-+#include "namespace.h"
 +#include "utils.h"
-+#include "version.h"
 +
-+static int dcb_init(struct dcb *dcb)
++static void dcb_ets_help_set(void)
 +{
-+	dcb->buf = malloc(MNL_SOCKET_BUFFER_SIZE);
-+	if (dcb->buf == NULL) {
-+		perror("Netlink buffer allocation");
-+		return -1;
-+	}
-+
-+	dcb->nl = mnlu_socket_open(NETLINK_ROUTE);
-+	if (dcb->nl == NULL) {
-+		perror("Open netlink socket");
-+		goto err_socket_open;
-+	}
-+
-+	new_json_obj_plain(dcb->json_output);
-+	return 0;
-+
-+err_socket_open:
-+	free(dcb->buf);
-+	return -1;
++	fprintf(stderr,
++		"Usage: dcb ets set dev STRING\n"
++		"           [ willing { on | off } ]\n"
++		"           [ { tc-tsa | reco-tc-tsa } TSA-MAP ]\n"
++		"           [ { pg-bw | tc-bw | reco-tc-bw } BW-MAP ]\n"
++		"           [ { prio-tc | reco-prio-tc } PRIO-MAP ]\n"
++		"\n"
++		" where TSA-MAP := [ TSA-MAP ] TSA-MAPPING\n"
++		"       TSA-MAPPING := { all | TC }:{ strict | cbs | ets | vendor }\n"
++		"       BW-MAP := [ BW-MAP ] BW-MAPPING\n"
++		"       BW-MAPPING := { all | TC }:INTEGER\n"
++		"       PRIO-MAP := [ PRIO-MAP ] PRIO-MAPPING\n"
++		"       PRIO-MAPPING := { all | PRIO }:TC\n"
++		"       TC := { 0 .. 7 }\n"
++		"       PRIO := { 0 .. 7 }\n"
++		"\n"
++	);
 +}
 +
-+static void dcb_fini(struct dcb *dcb)
++static void dcb_ets_help_show(void)
 +{
-+	delete_json_obj_plain();
-+	mnl_socket_close(dcb->nl);
++	fprintf(stderr,
++		"Usage: dcb ets show dev STRING\n"
++		"           [ willing | ets-cap | cbs | tc-tsa | reco-tc-tsa |\n"
++		"             pg-bw | tc-bw | reco-tc-bw | prio-tc |\n"
++		"             reco-prio-tc ]\n"
++		"\n"
++	);
 +}
 +
-+static struct dcb *dcb_alloc(void)
++static void dcb_ets_help(void)
 +{
-+	struct dcb *dcb;
-+
-+	dcb = calloc(1, sizeof(*dcb));
-+	if (!dcb)
-+		return NULL;
-+	return dcb;
++	fprintf(stderr,
++		"Usage: dcb ets help\n"
++		"\n"
++	);
++	dcb_ets_help_show();
++	dcb_ets_help_set();
 +}
 +
-+static void dcb_free(struct dcb *dcb)
-+{
-+	free(dcb);
-+}
-+
-+struct dcb_get_attribute {
-+	struct dcb *dcb;
-+	int attr;
-+	void *data;
-+	size_t data_len;
++static const char *const tsa_names[] = {
++	[IEEE_8021QAZ_TSA_STRICT] = "strict",
++	[IEEE_8021QAZ_TSA_CB_SHAPER] = "cbs",
++	[IEEE_8021QAZ_TSA_ETS] = "ets",
++	[IEEE_8021QAZ_TSA_VENDOR] = "vendor",
 +};
 +
-+static int dcb_get_attribute_attr_ieee_cb(const struct nlattr *attr, void *data)
++static int dcb_ets_parse_mapping(__u32 key, __u8 value, __u8 max_value,
++				 __u8 *array, const char *what)
 +{
-+	struct dcb_get_attribute *ga = data;
-+	uint16_t len;
++	bool is_all = key == (__u32) -1;
 +
-+	if (mnl_attr_get_type(attr) != ga->attr)
-+		return MNL_CB_OK;
-+
-+	len = mnl_attr_get_payload_len(attr);
-+	if (len != ga->data_len) {
-+		fprintf(stderr, "Wrong len %d, expected %zd\n", len, ga->data_len);
-+		return MNL_CB_ERROR;
++	if (!is_all && key >= IEEE_8021QAZ_MAX_TCS) {
++		fprintf(stderr, "In %s mapping, TC is expected to be 0..%d\n", what,
++			IEEE_8021QAZ_MAX_TCS - 1);
++		return -EINVAL;
 +	}
 +
-+	memcpy(ga->data, mnl_attr_get_payload(attr), ga->data_len);
-+	return MNL_CB_STOP;
-+}
-+
-+static int dcb_get_attribute_attr_cb(const struct nlattr *attr, void *data)
-+{
-+	if (mnl_attr_get_type(attr) != DCB_ATTR_IEEE)
-+		return MNL_CB_OK;
-+
-+	return mnl_attr_parse_nested(attr, dcb_get_attribute_attr_ieee_cb, data);
-+}
-+
-+static int dcb_get_attribute_cb(const struct nlmsghdr *nlh, void *data)
-+{
-+	return mnl_attr_parse(nlh, sizeof(struct dcbmsg), dcb_get_attribute_attr_cb, data);
-+}
-+
-+static int dcb_set_attribute_attr_cb(const struct nlattr *attr, void *data)
-+{
-+	uint16_t len;
-+	uint8_t err;
-+
-+	if (mnl_attr_get_type(attr) != DCB_ATTR_IEEE)
-+		return MNL_CB_OK;
-+
-+	len = mnl_attr_get_payload_len(attr);
-+	if (len != 1) {
-+		fprintf(stderr, "Response attribute expected to have size 1, not %d\n", len);
-+		return MNL_CB_ERROR;
++	if (value > max_value) {
++		fprintf(stderr, "In %s mapping, the value is expected to be 0..%d\n",
++			what, max_value);
++		return -EINVAL;
 +	}
 +
-+	err = mnl_attr_get_u8(attr);
-+	if (err) {
-+		fprintf(stderr, "Error when attempting to set attribute: %s\n",
-+			strerror(err));
-+		return MNL_CB_ERROR;
++	if (is_all) {
++		for (key = 0; key < IEEE_8021QAZ_MAX_TCS; key++)
++			array[key] = value;
++	} else {
++		array[key] = value;
 +	}
 +
-+	return MNL_CB_STOP;
-+}
-+
-+static int dcb_set_attribute_cb(const struct nlmsghdr *nlh, void *data)
-+{
-+	return mnl_attr_parse(nlh, sizeof(struct dcbmsg), dcb_set_attribute_attr_cb, data);
-+}
-+
-+static int dcb_talk(struct dcb *dcb, struct nlmsghdr *nlh, mnl_cb_t cb, void *data)
-+{
-+	int ret;
-+
-+	ret = mnl_socket_sendto(dcb->nl, nlh, nlh->nlmsg_len);
-+	if (ret < 0) {
-+		perror("mnl_socket_sendto");
-+		return -1;
-+	}
-+
-+	return mnlu_socket_recv_run(dcb->nl, nlh->nlmsg_seq, dcb->buf, MNL_SOCKET_BUFFER_SIZE,
-+				    cb, data);
-+}
-+
-+static struct nlmsghdr *dcb_prepare(struct dcb *dcb, const char *dev,
-+				    uint32_t nlmsg_type, uint8_t dcb_cmd)
-+{
-+	struct dcbmsg dcbm = {
-+		.cmd = dcb_cmd,
-+	};
-+	struct nlmsghdr *nlh;
-+
-+	nlh = mnlu_msg_prepare(dcb->buf, nlmsg_type, NLM_F_REQUEST, &dcbm, sizeof(dcbm));
-+	mnl_attr_put_strz(nlh, DCB_ATTR_IFNAME, dev);
-+	return nlh;
-+}
-+
-+int dcb_get_attribute(struct dcb *dcb, const char *dev, int attr, void *data, size_t data_len)
-+{
-+	struct dcb_get_attribute ga;
-+	struct nlmsghdr *nlh;
-+	int ret;
-+
-+	nlh = dcb_prepare(dcb, dev, RTM_GETDCB, DCB_CMD_IEEE_GET);
-+
-+	ga = (struct dcb_get_attribute) {
-+		.dcb = dcb,
-+		.attr = attr,
-+		.data = data,
-+		.data_len = data_len,
-+	};
-+	ret = dcb_talk(dcb, nlh, dcb_get_attribute_cb, &ga);
-+	if (ret) {
-+		perror("Attribute read");
-+		return ret;
-+	}
 +	return 0;
 +}
 +
-+int dcb_set_attribute(struct dcb *dcb, const char *dev, int attr, const void *data, size_t data_len)
++static int dcb_ets_parse_mapping_tc_tsa(__u32 key, char *value, void *data)
 +{
-+	struct nlmsghdr *nlh;
-+	struct nlattr *nest;
++	__u8 tsa;
 +	int ret;
 +
-+	nlh = dcb_prepare(dcb, dev, RTM_GETDCB, DCB_CMD_IEEE_SET);
-+
-+	nest = mnl_attr_nest_start(nlh, DCB_ATTR_IEEE);
-+	mnl_attr_put(nlh, attr, data_len, data);
-+	mnl_attr_nest_end(nlh, nest);
-+
-+	ret = dcb_talk(dcb, nlh, dcb_set_attribute_cb, NULL);
-+	if (ret) {
-+		perror("Attribute write");
++	tsa = parse_one_of("TSA", value, tsa_names, ARRAY_SIZE(tsa_names), &ret);
++	if (ret)
 +		return ret;
++
++	return dcb_ets_parse_mapping(key, tsa, -1, data, "TC:TSA");
++}
++
++static int dcb_ets_parse_mapping_tc_int(__u32 key, char *value, __u8 max_value,
++					__u8 *array, const char *what)
++{
++	__u8 int_value;
++
++	if (get_u8(&int_value, value, 0))
++		return -EINVAL;
++
++	return dcb_ets_parse_mapping(key, int_value, max_value, array, what);
++}
++
++static int dcb_ets_parse_mapping_tc_bw(__u32 key, char *value, void *data)
++{
++	return dcb_ets_parse_mapping_tc_int(key, value, 100, data, "TC:BW");
++}
++
++static int dcb_ets_parse_mapping_prio_tc(unsigned int key, char *value, void *data)
++{
++	return dcb_ets_parse_mapping_tc_int(key, value, IEEE_8021QAZ_MAX_TCS, data, "PRIO:TC");
++}
++
++static void dcb_print_array_tsa(FILE *fp, const __u8 *array, size_t size)
++{
++	dcb_print_array_kw(fp, array, size, tsa_names, ARRAY_SIZE(tsa_names));
++}
++
++static void dcb_ets_print_willing(FILE *fp, const struct ieee_ets *ets)
++{
++	print_string(PRINT_ANY, "willing", "willing %s ", ets->willing ? "on" : "off");
++}
++
++static void dcb_ets_print_ets_cap(FILE *fp, const struct ieee_ets *ets)
++{
++	print_uint(PRINT_ANY, "ets_cap", "ets_cap %d ", ets->ets_cap);
++}
++
++static void dcb_ets_print_cbs(FILE *fp, const struct ieee_ets *ets)
++{
++	print_string(PRINT_ANY, "cbs", "cbs %s ", ets->cbs ? "on" : "off");
++}
++
++static void dcb_ets_print_tc_bw(FILE *fp, const struct ieee_ets *ets)
++{
++	dcb_print_named_array(fp, "tc-bw", ets->tc_tx_bw, ARRAY_SIZE(ets->tc_tx_bw),
++			      dcb_print_array_num);
++}
++
++static void dcb_ets_print_pg_bw(FILE *fp, const struct ieee_ets *ets)
++{
++	dcb_print_named_array(fp, "pg-bw", ets->tc_rx_bw, ARRAY_SIZE(ets->tc_rx_bw),
++			      dcb_print_array_num);
++}
++
++static void dcb_ets_print_tc_tsa(FILE *fp, const struct ieee_ets *ets)
++{
++	dcb_print_named_array(fp, "tc-tsa", ets->tc_tsa, ARRAY_SIZE(ets->tc_tsa),
++			      dcb_print_array_tsa);
++}
++
++static void dcb_ets_print_prio_tc(FILE *fp, const struct ieee_ets *ets)
++{
++	dcb_print_named_array(fp, "prio-tc", ets->prio_tc, ARRAY_SIZE(ets->prio_tc),
++			      dcb_print_array_num);
++}
++
++static void dcb_ets_print_reco_tc_bw(FILE *fp, const struct ieee_ets *ets)
++{
++	dcb_print_named_array(fp, "reco-tc-bw", ets->tc_reco_bw, ARRAY_SIZE(ets->tc_reco_bw),
++			      dcb_print_array_num);
++}
++
++static void dcb_ets_print_reco_tc_tsa(FILE *fp, const struct ieee_ets *ets)
++{
++	dcb_print_named_array(fp, "reco-tc-tsa", ets->tc_reco_tsa, ARRAY_SIZE(ets->tc_reco_tsa),
++			      dcb_print_array_tsa);
++}
++
++static void dcb_ets_print_reco_prio_tc(FILE *fp, const struct ieee_ets *ets)
++{
++	dcb_print_named_array(fp, "reco-prio-tc", ets->reco_prio_tc, ARRAY_SIZE(ets->reco_prio_tc),
++			      dcb_print_array_num);
++}
++
++static void dcb_ets_print(FILE *fp, const struct ieee_ets *ets)
++{
++	dcb_ets_print_willing(fp, ets);
++	dcb_ets_print_ets_cap(fp, ets);
++	dcb_ets_print_cbs(fp, ets);
++	print_nl();
++
++	dcb_ets_print_tc_bw(fp, ets);
++	print_nl();
++
++	dcb_ets_print_pg_bw(fp, ets);
++	print_nl();
++
++	dcb_ets_print_tc_tsa(fp, ets);
++	print_nl();
++
++	dcb_ets_print_prio_tc(fp, ets);
++	print_nl();
++
++	dcb_ets_print_reco_tc_bw(fp, ets);
++	print_nl();
++
++	dcb_ets_print_reco_tc_tsa(fp, ets);
++	print_nl();
++
++	dcb_ets_print_reco_prio_tc(fp, ets);
++	print_nl();
++}
++
++static int dcb_ets_get(struct dcb *dcb, const char *dev, struct ieee_ets *ets)
++{
++	return dcb_get_attribute(dcb, dev, DCB_ATTR_IEEE_ETS, ets, sizeof(*ets));
++}
++
++static int dcb_ets_validate_bw(const __u8 bw[], const __u8 tsa[], const char *what)
++{
++	bool has_ets = false;
++	unsigned int total = 0;
++	unsigned int tc;
++
++	for (tc = 0; tc < IEEE_8021QAZ_MAX_TCS; tc++) {
++		if (tsa[tc] == IEEE_8021QAZ_TSA_ETS) {
++			has_ets = true;
++			break;
++		}
 +	}
-+	return 0;
-+}
 +
-+void dcb_print_array_num(FILE *fp, const __u8 *array, size_t size)
-+{
-+	SPRINT_BUF(b1);
-+	SPRINT_BUF(b2);
-+	size_t i;
-+
-+	for (i = 0; i < size; i++) {
-+		snprintf(b1, sizeof(b1), "%zd", i);
-+		snprintf(b2, sizeof(b2), "%zd:%%d ", i);
-+		print_uint(PRINT_ANY, b1, b2, array[i]);
-+	}
-+}
-+
-+void dcb_print_array_kw(FILE *fp, const __u8 *array, size_t array_size,
-+			const char *const kw[], size_t kw_size)
-+{
-+	SPRINT_BUF(b1);
-+	SPRINT_BUF(b2);
-+	size_t i;
-+
-+	for (i = 0; i < array_size; i++) {
-+		__u8 emt = array[i];
-+
-+		snprintf(b1, sizeof(b1), "%zd", i);
-+		snprintf(b2, sizeof(b2), "%zd:%%s ", i);
-+		if (emt < kw_size && kw[emt])
-+			print_string(PRINT_ANY, b1, b2, kw[emt]);
-+		else
-+			print_string(PRINT_ANY, b1, b2, "???");
-+	}
-+}
-+
-+void dcb_print_named_array(FILE *fp, const char *name, const __u8 *array, size_t size,
-+			   void (*print_array)(FILE *, const __u8 *, size_t))
-+{
-+	open_json_object(name);
-+	print_string(PRINT_FP, NULL, "%s ", name);
-+	print_array(fp, array, size);
-+	close_json_object();
-+}
-+
-+int dcb_cmd_parse_dev(struct dcb *dcb, int argc, char **argv,
-+		      int (*and_then)(struct dcb *dcb, const char *dev,
-+				      int argc, char **argv),
-+		      void (*help)(void))
-+{
-+	const char *dev;
-+
-+	if (!argc || matches(*argv, "help") == 0) {
-+		help();
-+		return 0;
-+	} else if (matches(*argv, "dev") == 0) {
-+		NEXT_ARG();
-+		dev = *argv;
-+		if (check_ifname(dev)) {
-+			invarg("not a valid ifname", *argv);
++	/* TC bandwidth is only intended for ETS, but 802.1Q-2018 only requires
++	 * that the sum be 100, and individual entries 0..100. It explicitly
++	 * notes that non-ETS TCs can have non-0 TC bandwidth during
++	 * reconfiguration.
++	 */
++	for (tc = 0; tc < IEEE_8021QAZ_MAX_TCS; tc++) {
++		if (bw[tc] > 100) {
++			fprintf(stderr, "%d%% for TC %d of %s is not a valid bandwidth percentage, expected 0..100%%\n",
++				bw[tc], tc, what);
 +			return -EINVAL;
 +		}
++		total += bw[tc];
++	}
++
++	/* This is what 802.1Q-2018 requires. */
++	if (total == 100)
++		return 0;
++
++	/* But this requirement does not make sense for all-strict
++	 * configurations. Anything else than 0 does not make sense: either BW
++	 * has not been reconfigured for the all-strict allocation yet, at which
++	 * point we expect sum of 100. Or it has already been reconfigured, at
++	 * which point accept 0.
++	 */
++	if (!has_ets && total == 0)
++		return 0;
++
++	fprintf(stderr, "Bandwidth percentages in %s sum to %d%%, expected %d%%\n",
++		what, total, has_ets ? 100 : 0);
++	return -EINVAL;
++}
++
++static int dcb_ets_set(struct dcb *dcb, const char *dev, const struct ieee_ets *ets)
++{
++	/* Do not validate pg-bw, which is not standard and has unclear
++	 * meaning.
++	 */
++	if (dcb_ets_validate_bw(ets->tc_tx_bw, ets->tc_tsa, "tc-bw") ||
++	    dcb_ets_validate_bw(ets->tc_reco_bw, ets->tc_reco_tsa, "reco-tc-bw"))
++		return -EINVAL;
++
++	return dcb_set_attribute(dcb, dev, DCB_ATTR_IEEE_ETS, ets, sizeof(*ets));
++}
++
++static int dcb_cmd_ets_set(struct dcb *dcb, const char *dev, int argc, char **argv)
++{
++	struct ieee_ets ets;
++	int ret;
++
++	if (!argc) {
++		dcb_ets_help_set();
++		return 0;
++	}
++
++	ret = dcb_ets_get(dcb, dev, &ets);
++	if (ret)
++		return ret;
++
++	do {
++		if (matches(*argv, "help") == 0) {
++			dcb_ets_help_set();
++			return 0;
++		} else if (matches(*argv, "willing") == 0) {
++			NEXT_ARG();
++			ets.willing = parse_on_off("willing", *argv, &ret);
++			if (ret)
++				return ret;
++		} else if (matches(*argv, "tc-tsa") == 0) {
++			NEXT_ARG();
++			ret = parse_mapping(&argc, &argv, true, &dcb_ets_parse_mapping_tc_tsa,
++					    ets.tc_tsa);
++			if (ret) {
++				fprintf(stderr, "Invalid tc-tsa mapping %s\n", *argv);
++				return ret;
++			}
++			continue;
++		} else if (matches(*argv, "reco-tc-tsa") == 0) {
++			NEXT_ARG();
++			ret = parse_mapping(&argc, &argv, true, &dcb_ets_parse_mapping_tc_tsa,
++					    ets.tc_reco_tsa);
++			if (ret) {
++				fprintf(stderr, "Invalid reco-tc-tsa mapping %s\n", *argv);
++				return ret;
++			}
++			continue;
++		} else if (matches(*argv, "tc-bw") == 0) {
++			NEXT_ARG();
++			ret = parse_mapping(&argc, &argv, true, &dcb_ets_parse_mapping_tc_bw,
++					    ets.tc_tx_bw);
++			if (ret) {
++				fprintf(stderr, "Invalid tc-bw mapping %s\n", *argv);
++				return ret;
++			}
++			continue;
++		} else if (matches(*argv, "pg-bw") == 0) {
++			NEXT_ARG();
++			ret = parse_mapping(&argc, &argv, true, &dcb_ets_parse_mapping_tc_bw,
++					    ets.tc_rx_bw);
++			if (ret) {
++				fprintf(stderr, "Invalid pg-bw mapping %s\n", *argv);
++				return ret;
++			}
++			continue;
++		} else if (matches(*argv, "reco-tc-bw") == 0) {
++			NEXT_ARG();
++			ret = parse_mapping(&argc, &argv, true, &dcb_ets_parse_mapping_tc_bw,
++					    ets.tc_reco_bw);
++			if (ret) {
++				fprintf(stderr, "Invalid reco-tc-bw mapping %s\n", *argv);
++				return ret;
++			}
++			continue;
++		} else if (matches(*argv, "prio-tc") == 0) {
++			NEXT_ARG();
++			ret = parse_mapping(&argc, &argv, true, &dcb_ets_parse_mapping_prio_tc,
++					    ets.prio_tc);
++			if (ret) {
++				fprintf(stderr, "Invalid prio-tc mapping %s\n", *argv);
++				return ret;
++			}
++			continue;
++		} else if (matches(*argv, "reco-prio-tc") == 0) {
++			NEXT_ARG();
++			ret = parse_mapping(&argc, &argv, true, &dcb_ets_parse_mapping_prio_tc,
++					    ets.reco_prio_tc);
++			if (ret) {
++				fprintf(stderr, "Invalid reco-prio-tc mapping %s\n", *argv);
++				return ret;
++			}
++			continue;
++		} else {
++			fprintf(stderr, "What is \"%s\"?\n", *argv);
++			dcb_ets_help_set();
++			return -EINVAL;
++		}
++
 +		NEXT_ARG_FWD();
-+		return and_then(dcb, dev, argc, argv);
++	} while (argc > 0);
++
++	return dcb_ets_set(dcb, dev, &ets);
++}
++
++static int dcb_cmd_ets_show(struct dcb *dcb, const char *dev, int argc, char **argv)
++{
++	struct ieee_ets ets;
++	int ret;
++
++	ret = dcb_ets_get(dcb, dev, &ets);
++	if (ret)
++		return ret;
++
++	open_json_object(NULL);
++
++	if (!argc) {
++		dcb_ets_print(stdout, &ets);
++		goto out;
++	}
++
++	do {
++		if (matches(*argv, "help") == 0) {
++			dcb_ets_help();
++			return 0;
++		} else if (matches(*argv, "willing") == 0) {
++			dcb_ets_print_willing(stdout, &ets);
++			print_nl();
++		} else if (matches(*argv, "ets-cap") == 0) {
++			dcb_ets_print_ets_cap(stdout, &ets);
++			print_nl();
++		} else if (matches(*argv, "cbs") == 0) {
++			dcb_ets_print_cbs(stdout, &ets);
++			print_nl();
++		} else if (matches(*argv, "tc-tsa") == 0) {
++			dcb_ets_print_tc_tsa(stdout, &ets);
++			print_nl();
++		} else if (matches(*argv, "reco-tc-tsa") == 0) {
++			dcb_ets_print_reco_tc_tsa(stdout, &ets);
++			print_nl();
++		} else if (matches(*argv, "tc-bw") == 0) {
++			dcb_ets_print_tc_bw(stdout, &ets);
++			print_nl();
++		} else if (matches(*argv, "pg-bw") == 0) {
++			dcb_ets_print_pg_bw(stdout, &ets);
++			print_nl();
++		} else if (matches(*argv, "reco-tc-bw") == 0) {
++			dcb_ets_print_reco_tc_bw(stdout, &ets);
++			print_nl();
++		} else if (matches(*argv, "prio-tc") == 0) {
++			dcb_ets_print_prio_tc(stdout, &ets);
++			print_nl();
++		} else if (matches(*argv, "reco-prio-tc") == 0) {
++			dcb_ets_print_reco_prio_tc(stdout, &ets);
++			print_nl();
++		} else {
++			fprintf(stderr, "What is \"%s\"?\n", *argv);
++			dcb_ets_help();
++			return -EINVAL;
++		}
++
++		NEXT_ARG_FWD();
++	} while (argc > 0);
++
++out:
++	close_json_object();
++	return 0;
++}
++
++int dcb_cmd_ets(struct dcb *dcb, int argc, char **argv)
++{
++	if (!argc || matches(*argv, "help") == 0) {
++		dcb_ets_help();
++		return 0;
++	} else if (matches(*argv, "show") == 0) {
++		NEXT_ARG_FWD();
++		return dcb_cmd_parse_dev(dcb, argc, argv, dcb_cmd_ets_show, dcb_ets_help_show);
++	} else if (matches(*argv, "set") == 0) {
++		NEXT_ARG_FWD();
++		return dcb_cmd_parse_dev(dcb, argc, argv, dcb_cmd_ets_set, dcb_ets_help_set);
 +	} else {
-+		fprintf(stderr, "Expected `dev DEV', not `%s'", *argv);
-+		help();
++		fprintf(stderr, "What is \"%s\"?\n", *argv);
++		dcb_ets_help();
 +		return -EINVAL;
 +	}
 +}
-+
-+static void dcb_help(void)
-+{
-+	fprintf(stderr,
-+		"Usage: dcb [ OPTIONS ] OBJECT { COMMAND | help }\n"
-+		"       dcb [ -f[orce] ] -b[atch] filename -N[etns] netnsname\n"
-+		"where  OBJECT :=\n"
-+		"       OPTIONS := { -V[ersion] | -j[son] | -p[retty] | -v[erbose] }\n");
-+}
-+
-+static int dcb_cmd(struct dcb *dcb, int argc, char **argv)
-+{
-+	if (!argc || matches(*argv, "help") == 0) {
-+		dcb_help();
-+		return 0;
-+	}
-+
-+	fprintf(stderr, "Object \"%s\" is unknown\n", *argv);
-+	return -ENOENT;
-+}
-+
-+static int dcb_batch_cmd(int argc, char *argv[], void *data)
-+{
-+	struct dcb *dcb = data;
-+
-+	return dcb_cmd(dcb, argc, argv);
-+}
-+
-+static int dcb_batch(struct dcb *dcb, const char *name, bool force)
-+{
-+	return do_batch(name, force, dcb_batch_cmd, dcb);
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	static const struct option long_options[] = {
-+		{ "Version",		no_argument,		NULL, 'V' },
-+		{ "force",		no_argument,		NULL, 'f' },
-+		{ "batch",		required_argument,	NULL, 'b' },
-+		{ "json",		no_argument,		NULL, 'j' },
-+		{ "pretty",		no_argument,		NULL, 'p' },
-+		{ "Netns",		required_argument,	NULL, 'N' },
-+		{ NULL, 0, NULL, 0 }
-+	};
-+	const char *batch_file = NULL;
-+	bool force = false;
-+	struct dcb *dcb;
-+	int opt;
-+	int err;
-+	int ret;
-+
-+	dcb = dcb_alloc();
-+	if (!dcb) {
-+		fprintf(stderr, "Failed to allocate memory for dcb\n");
-+		return EXIT_FAILURE;
-+	}
-+
-+	while ((opt = getopt_long(argc, argv, "Vfb:njpvsN:",
-+				  long_options, NULL)) >= 0) {
-+
-+		switch (opt) {
-+		case 'V':
-+			printf("dcb utility, iproute2-%s\n", version);
-+			ret = EXIT_SUCCESS;
-+			goto dcb_free;
-+		case 'f':
-+			force = true;
-+			break;
-+		case 'b':
-+			batch_file = optarg;
-+			break;
-+		case 'j':
-+			dcb->json_output = true;
-+			break;
-+		case 'p':
-+			pretty = true;
-+			break;
-+		case 'N':
-+			if (netns_switch(optarg)) {
-+				ret = EXIT_FAILURE;
-+				goto dcb_free;
-+			}
-+			break;
-+		default:
-+			fprintf(stderr, "Unknown option.\n");
-+			dcb_help();
-+			ret = EXIT_FAILURE;
-+			goto dcb_free;
-+		}
-+	}
-+
-+	argc -= optind;
-+	argv += optind;
-+
-+	err = dcb_init(dcb);
-+	if (err) {
-+		ret = EXIT_FAILURE;
-+		goto dcb_free;
-+	}
-+
-+	if (batch_file)
-+		err = dcb_batch(dcb, batch_file, force);
-+	else
-+		err = dcb_cmd(dcb, argc, argv);
-+
-+	if (err) {
-+		ret = EXIT_FAILURE;
-+		goto dcb_fini;
-+	}
-+
-+	ret = EXIT_SUCCESS;
-+
-+dcb_fini:
-+	dcb_fini(dcb);
-+dcb_free:
-+	dcb_free(dcb);
-+
-+	return ret;
-+}
-diff --git a/dcb/dcb.h b/dcb/dcb.h
+diff --git a/man/man8/dcb-ets.8 b/man/man8/dcb-ets.8
 new file mode 100644
-index 000000000000..7334ef7a94d8
+index 000000000000..5286199f180f
 --- /dev/null
-+++ b/dcb/dcb.h
-@@ -0,0 +1,32 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef __DCB_H__
-+#define __DCB_H__ 1
-+
-+#include <stdbool.h>
-+#include <stddef.h>
-+
-+/* dcb.c */
-+
-+struct dcb {
-+	char *buf;
-+	struct mnl_socket *nl;
-+	bool json_output;
-+};
-+
-+int dcb_cmd_parse_dev(struct dcb *dcb, int argc, char **argv,
-+		      int (*and_then)(struct dcb *dcb, const char *dev,
-+				      int argc, char **argv),
-+		      void (*help)(void));
-+
-+int dcb_get_attribute(struct dcb *dcb, const char *dev, int attr,
-+		      void *data, size_t data_len);
-+int dcb_set_attribute(struct dcb *dcb, const char *dev, int attr,
-+		      const void *data, size_t data_len);
-+
-+void dcb_print_named_array(FILE *fp, const char *name, const __u8 *array, size_t size,
-+			   void (*print_array)(FILE *, const __u8 *, size_t));
-+void dcb_print_array_num(FILE *fp, const __u8 *array, size_t size);
-+void dcb_print_array_kw(FILE *fp, const __u8 *array, size_t array_size,
-+			const char *const kw[], size_t kw_size);
-+
-+#endif /* __DCB_H__ */
-diff --git a/man/man8/dcb.8 b/man/man8/dcb.8
-new file mode 100644
-index 000000000000..25ddf204d60e
---- /dev/null
-+++ b/man/man8/dcb.8
-@@ -0,0 +1,103 @@
-+.TH DCB 8 "19 October 2020" "iproute2" "Linux"
++++ b/man/man8/dcb-ets.8
+@@ -0,0 +1,185 @@
++.TH DCB-ETS 8 "19 October 2020" "iproute2" "Linux"
 +.SH NAME
-+dcb \- show / manipulate DCB (Data Center Bridging) settings
++dcb-ets \- show / manipulate ETS (Enhanced Transmission Selection) settings of
++the DCB (Data Center Bridging) subsystem
 +.SH SYNOPSIS
 +.sp
 +.ad l
@@ -558,90 +606,171 @@ index 000000000000..25ddf204d60e
 +
 +.ti -8
 +.B dcb
-+.RB "[ " -force " ] "
-+.BI "-batch " filename
++.RI "[ " OPTIONS " ] "
++.B ets
++.RI "{ " COMMAND " | " help " }"
 +.sp
 +
 +.ti -8
-+.B dcb
-+.RI "[ " OPTIONS " ] "
-+.B help
-+.sp
++.B dcb ets show dev
++.RI DEV
++.B "[ {" willing "|" ets-cap "|" cbs "|" tc-tsa "|" reco-tc-tsa "|"
++.B pg-bw "|" tc-bw "|" reco-tc-bw "|" prio-tc "|"
++.B reco-prio-tc "} ]"
 +
-+.SH OPTIONS
++.ti -8
++.B dcb ets set dev
++.RI DEV
++.B "[" willing "{" on "|" off "} ]"
++.B "[ {" tc-tsa "|" reco-tc-tsa "}" \fITSA-MAP\fB "]"
++.B "[ {" pg-bw "|" tc-bw "|" reco-tc-bw "}" \fIBW-MAP\fB "]"
++.B "[ {" prio-tc "|" reco-prio-tc "}" \fIPRIO-MAP\fB "]"
++
++.ti -8
++.IR TSA-MAP " := [ " TSA-MAP " ] " TSA-MAPPING
++
++.ti -8
++.IR TSA-MAPPING " := { " TC " | " \fBall " }" \fB: "{ " \fBstrict\fR " | "
++.IR \fBcbs\fR " | " \fBets\fR " | " \fBvendor\fR " }"
++
++.ti -8
++.IR BW-MAP " := [ " BW-MAP " ] " BW-MAPPING
++
++.ti -8
++.IR BW-MAPPING " := { " TC " | " \fBall " }" \fB:\fIINTEGER\fR
++
++.ti -8
++.IR PRIO-MAP " := [ " PRIO-MAP " ] " PRIO-MAPPING
++
++.ti -8
++.IR PRIO-MAPPING " := { " PRIO " | " \fBall " }" \fB:\fITC\fR
++
++.ti -8
++.IR TC " := { " \fB0\fR " .. " \fB7\fR " }"
++
++.ti -8
++.IR PRIO " := { " \fB0\fR " .. " \fB7\fR " }"
++
++
++.SH DESCRIPTION
++
++.B dcb ets
++is used to configure Enhanced Transmission Selection attributes through Linux
++DCB (Data Center Bridging) interface. ETS permits configuration of mapping of
++priorities to traffic classes, traffic selection algorithm to use per traffic
++class, bandwidth allocation, etc.
++
++Two DCB TLVs are related to the ETS feature: a configuration and recommendation
++values. Recommendation values are named with a prefix
++.B reco-,
++while the configuration ones have plain names.
++
++.SH PARAMETERS
++
++For read-write parameters, the following describes only the write direction,
++i.e. as used with the \fBset\fR command. For the \fBshow\fR command, the
++parameter name is to be used as a simple keyword without further arguments. This
++instructs the tool to show the value of a given parameter. When no parameters
++are given, the tool shows the complete ETS configuration.
 +
 +.TP
-+.BR "\-V" , " --Version"
-+Print the version of the
-+.B dcb
-+utility and exit.
++.B ets-cap
++A read-only property that shows the number of supported ETS traffic classes.
 +
 +.TP
-+.BR "\-b", " \-batch " <FILENAME>
-+Read commands from provided file or standard input and invoke them. First
-+failure will cause termination of dcb.
++.B cbs
++A read-only property that is enabled if the driver and the hardware support the
++CBS Transmission Selection Algorithm.
 +
 +.TP
-+.B \-force
-+Don't terminate dcb on errors in batch mode. If there were any errors during
-+execution of the commands, the application return code will be non zero.
++.B willing \fR{ \fBon\fR | \fBoff\fR }
++Whether local host should accept configuration from peer TLVs.
 +
 +.TP
-+.BR "\-j" , " --json"
-+Generate JSON output.
++.B prio-tc \fITC-MAP
++.TQ
++.B reco-prio-tc \fITC-MAP
++\fITC-MAP\fR uses the array parameter syntax, see dcb(8) for details. Keys are
++priorities, values are traffic classes. For each priority sets a TC where
++traffic with that priority is directed to.
 +
 +.TP
-+.BR "\-p" , " --pretty"
-+When combined with -j generate a pretty JSON output.
++.B tc-tsa \fITSA-MAP
++.TQ
++.B reco-tc-tsa \fITSA-MAP
++\fITC-MAP\fR uses the array parameter syntax, see dcb(8) for details. Keys are
++TCs, values are Transmission Selection Algorithm (TSA) keywords described below.
++For each TC sets an algorithm used for deciding how traffic queued up at this TC
++is scheduled for transmission. Supported TSAs are:
 +
-+.SH OBJECTS
++.B strict
++- for strict priority, where traffic in higher-numbered TCs always takes
++precedence over traffic in lower-numbered TCs.
++.br
++.B ets
++- for Enhanced Traffic Selection, where available bandwidth is distributed among
++the ETS-enabled TCs according to the weights set by
++.B tc-bw
++and
++.B reco-tc-bw\fR,
++respectively.
++.br
++.B cbs
++- for Credit Based Shaper, where traffic is scheduled in a strict manner up to
++the limit set by a shaper.
++.br
++.B vendor
++- for vendor-specific traffic selection algorithm.
 +
-+.SH COMMANDS
++.TP
++.B tc-bw \fIBW-MAP
++.TQ
++.B reco-tc-bw \fIBW-MAP
++\fIBW-MAP\fR uses the array parameter syntax, see dcb(8) for details. Keys are
++TCs, values are integers representing percent of available bandwidth given to
++the traffic class in question. The value should be 0 for TCs whose TSA is not
++\fBets\fR, and the sum of all values shall be 100. As an exception to the
++standard wording, a configuration with no ETS TCs is permitted to sum up to 0
++instead.
++.br
 +
-+A \fICOMMAND\fR specifies the action to perform on the object. The set of
-+possible actions depends on the object type. As a rule, it is possible to
-+.B show
-+objects and to invoke topical
-+.B help,
-+which prints a list of available commands and argument syntax conventions.
++.TP
++.B pg-bw \fIBW-MAP
++The precise meaning of \fBpg-bw\fR is not standardized, but the assumption seems
++to be that the same scheduling process as on the transmit side is applicable on
++receive side as well, and configures receive bandwidth allocation for \fBets\fR
++ingress traffic classes (priority groups).
 +
-+.SH ARRAY PARAMETERS
++.SH EXAMPLE & USAGE
 +
-+Like commands, specification of parameters is in the domain of individual
-+objects (and their commands) as well. However, much of the DCB interface
-+revolves around arrays of fixed size that specify one value per some key, such
-+as per traffic class or per priority. There is therefore a single syntax for
-+adjusting elements of these arrays. It consists of a series of
-+\fIKEY\fB:\fIVALUE\fR pairs, where the meaning of the individual keys and values
-+depends on the parameter.
-+
-+The elements are evaluated in order from left to right, and the latter ones
-+override the earlier ones. The elements that are not specified on the command
-+line are queried from the kernel and their current value is retained.
-+
-+As an example, take a made-up parameter tc-juju, which can be set to charm
-+traffic in a given TC with either good luck or bad luck. \fIKEY\fR can therefore
-+be 0..7 (as is usual for TC numbers in DCB), and \fIVALUE\fR either of
-+\fBnone\fR, \fBgood\fR, and \fBbad\fR. An example of changing a juju value of
-+TCs 0 and 7, while leaving all other intact, would then be:
++Configure ETS priomap in a one-to-one fashion:
 +
 +.P
-+# dcb foo set dev eth0 tc-juju 0:good 7:bad
++# dcb ets set dev eth0 prio-tc 0:0 1:1 2:2 3:3 4:4 5:5 6:6 7:7
 +
-+A special key, \fBall\fR, is recognized which sets the same value to all array
-+elements. This can be combined with the usual single-element syntax. E.g. in the
-+following, the juju or all keys is set to \fBnone\fR, except 0 and 7, which have
-+other values:
++Set TSA and transmit bandwidth configuration:
 +
 +.P
-+# dcb foo set dev eth0 tc-juju all:none 0:good 7:bad
++# dcb ets set dev eth0 tc-tsa all:strict 0:ets 1:ets 2:ets \\
++.br
++                       tc-bw all:0 0:33 1:33 2:34
++
++Show what was set:
++
++.P
++# dcb ets show dev eth0 prio-tc tc-tsa tc-bw
++.br
++prio-tc 0:0 1:1 2:2 3:3 4:4 5:5 6:6 7:7
++.br
++tc-tsa 0:ets 1:ets 2:ets 3:strict 4:strict 5:strict 6:strict 7:strict
++.br
++tc-bw 0:33 1:33 2:34 3:0 4:0 5:0 6:0 7:0
 +
 +.SH EXIT STATUS
 +Exit status is 0 if command was successful or a positive integer upon failure.
 +
 +.SH SEE ALSO
-+.BR dcb-ets (8)
-+.br
++.BR dcb (8)
 +
 +.SH REPORTING BUGS
 +Report any bugs to the Network Developers mailing list
@@ -651,6 +780,35 @@ index 000000000000..25ddf204d60e
 +
 +.SH AUTHOR
 +Petr Machata <me@pmachata.org>
+diff --git a/man/man8/dcb.8 b/man/man8/dcb.8
+index 25ddf204d60e..ec116f6ce265 100644
+--- a/man/man8/dcb.8
++++ b/man/man8/dcb.8
+@@ -6,6 +6,13 @@ dcb \- show / manipulate DCB (Data Center Bridging) settings
+ .ad l
+ .in +8
+ 
++.ti -8
++.B dcb
++.RI "[ " OPTIONS " ] "
++.B ets
++.RI "{ " COMMAND " | " help " }"
++.sp
++
+ .ti -8
+ .B dcb
+ .RB "[ " -force " ] "
+@@ -46,6 +53,10 @@ When combined with -j generate a pretty JSON output.
+ 
+ .SH OBJECTS
+ 
++.TP
++.B ets
++- Configuration of ETS (Enhanced Transmission Selection)
++
+ .SH COMMANDS
+ 
+ A \fICOMMAND\fR specifies the action to perform on the object. The set of
 -- 
 2.25.1
 
