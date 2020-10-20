@@ -2,259 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31629293277
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 02:59:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14FBE293284
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 02:59:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389631AbgJTA6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2389620AbgJTA6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 19 Oct 2020 20:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55798 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389614AbgJTA6v (ORCPT
+        with ESMTP id S1726258AbgJTA6v (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 19 Oct 2020 20:58:51 -0400
-Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0C7AC0613D3
-        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 17:58:50 -0700 (PDT)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
+Received: from mout-p-103.mailbox.org (mout-p-103.mailbox.org [IPv6:2001:67c:2050::465:103])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E34C0613CE
+        for <netdev@vger.kernel.org>; Mon, 19 Oct 2020 17:58:51 -0700 (PDT)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4CFZy03kDvzKmXL;
-        Tue, 20 Oct 2020 02:58:48 +0200 (CEST)
+        by mout-p-103.mailbox.org (Postfix) with ESMTPS id 4CFZy11SwHzKmWG;
+        Tue, 20 Oct 2020 02:58:49 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
-        s=MBO0001; t=1603155526;
+        s=MBO0001; t=1603155527;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=L8gPvARuOucKpeeGtwIx19zoR5UzyAayT53YkNHfC9Y=;
-        b=gR27rRlAae+WDFTnZKaac/JXtj+vew8LA6tHlqJIzbS8ANI9tcO6USGj2v8kBT/VbCLY8i
-        UgN3JRHL3NvzGl1aK+ai9lKDvqWJvTBOK4IbD2H5IYsaHejaSzyNMnj/PXuNIZqpq7/cLQ
-        7LOHUdqFGkg7hupPjWtSSRRKOSNwleI1ITaZ2juU4quzCKkXhofStY1kXzv08oW4Tlsvh8
-        v+EGCo3xxWZxczl3emMSd12K5Koihr2Yp72OakXA7Pmk9eDwaFSPCs/T6EWcUMMhLxAMh1
-        kdNqKsEPveLzxZre7ftwWhET8qBaUciOJsMBnWl6wWrkgWJhxozvKQmOomjEOg==
+        bh=dUS9jOOAuzSoUyy/xwxRj5MFhtbHRbp7RM71rXERF2I=;
+        b=bJkkDGq8fg+QPGEom3/Xw1g6Nr7VgnXd4Qc6/F8dqCu3SERO8Qhw9corysL7teLvrVyc1G
+        xYpf73E9tepCBx+f7Lrfj7ECeGdCPWPNsgf5MZ9WA2IqWcz9jQffQtfDVD94PQUny9n59q
+        TxOYwwTohhUcq9QZceJLG6VZC7i59G/SwDkODKykmY5lrYGkz1c5GK9G/RpDWTQpXzs842
+        tNf3bFoByqXONBKtves/BbioB80xo46tCk0O73slnypyL3hdHSx6rmSBahghHAsq73/91T
+        w90LCMJ0Ap6KZ3AxZKNKy5vZuHMAIKWQ/y9z92+O2DceBGPcxmH8bVGvoHuueQ==
 Received: from smtp1.mailbox.org ([80.241.60.240])
-        by gerste.heinlein-support.de (gerste.heinlein-support.de [91.198.250.173]) (amavisd-new, port 10030)
-        with ESMTP id fcDZ5kpgNTUB; Tue, 20 Oct 2020 02:58:44 +0200 (CEST)
+        by spamfilter04.heinlein-hosting.de (spamfilter04.heinlein-hosting.de [80.241.56.122]) (amavisd-new, port 10030)
+        with ESMTP id FnylqeZXqBtR; Tue, 20 Oct 2020 02:58:45 +0200 (CEST)
 From:   Petr Machata <me@pmachata.org>
 To:     netdev@vger.kernel.org, dsahern@gmail.com,
         stephen@networkplumber.org
 Cc:     john.fastabend@gmail.com, jiri@nvidia.com, idosch@nvidia.com,
         Petr Machata <me@pmachata.org>
-Subject: [PATCH iproute2-next 02/15] lib: Add parse_one_of(), parse_on_off()
-Date:   Tue, 20 Oct 2020 02:58:10 +0200
-Message-Id: <194ae677df465086d6cd1d7962c07d790e6d049d.1603154867.git.me@pmachata.org>
+Subject: [PATCH iproute2-next 03/15] bridge: link: Port over to parse_on_off()
+Date:   Tue, 20 Oct 2020 02:58:11 +0200
+Message-Id: <4e5714891e92d927d0c296e2f54151e597d95303.1603154867.git.me@pmachata.org>
 In-Reply-To: <cover.1603154867.git.me@pmachata.org>
 References: <cover.1603154867.git.me@pmachata.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-MBO-SPAM-Probability: *
 X-Rspamd-Score: 1.09 / 15.00 / 15.00
-X-Rspamd-Queue-Id: 6F38E15
-X-Rspamd-UID: 1d7c42
+X-Rspamd-Queue-Id: 05F61271
+X-Rspamd-UID: 708d14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Take from the macsec code parse_one_of() and adapt so that it passes the
-primary result as the main return value, and error result through a
-pointer. That is the simplest way to make the code reusable across data
-types without introducing extra magic.
-
-Also from macsec take the specialization of parse_one_of() for parsing
-specifically the strings "off" and "on".
-
-Convert the macsec code to the new helpers.
+Convert bridge/link.c from a custom on_off parser to the new global one.
 
 Signed-off-by: Petr Machata <me@pmachata.org>
 ---
- include/utils.h |  4 ++++
- ip/ipmacsec.c   | 52 +++++++++++--------------------------------------
- lib/utils.c     | 28 ++++++++++++++++++++++++++
- 3 files changed, 43 insertions(+), 41 deletions(-)
+ bridge/link.c | 79 ++++++++++++++++++++++++---------------------------
+ 1 file changed, 37 insertions(+), 42 deletions(-)
 
-diff --git a/include/utils.h b/include/utils.h
-index 085b17b1f6e3..bd62cdcd7122 100644
---- a/include/utils.h
-+++ b/include/utils.h
-@@ -325,4 +325,8 @@ char *sprint_time64(__s64 time, char *buf);
- int do_batch(const char *name, bool force,
- 	     int (*cmd)(int argc, char *argv[], void *user), void *user);
- 
-+int parse_one_of(const char *msg, const char *realval, const char * const *list,
-+		 size_t len, int *p_err);
-+int parse_on_off(const char *msg, const char *realval, int *p_err);
-+
- #endif /* __UTILS_H__ */
-diff --git a/ip/ipmacsec.c b/ip/ipmacsec.c
-index 18289ecd6d9e..bf48e8b5d0b2 100644
---- a/ip/ipmacsec.c
-+++ b/ip/ipmacsec.c
-@@ -23,8 +23,6 @@
- #include "ll_map.h"
- #include "libgenl.h"
- 
--static const char * const values_on_off[] = { "off", "on" };
--
- static const char * const validate_str[] = {
- 	[MACSEC_VALIDATE_DISABLED] = "disabled",
- 	[MACSEC_VALIDATE_CHECK] = "check",
-@@ -108,25 +106,6 @@ static void ipmacsec_usage(void)
+diff --git a/bridge/link.c b/bridge/link.c
+index 3bc7af209b8b..fa6eda849b32 100644
+--- a/bridge/link.c
++++ b/bridge/link.c
+@@ -275,22 +275,6 @@ static void usage(void)
  	exit(-1);
  }
  
--static int one_of(const char *msg, const char *realval, const char * const *list,
--		  size_t len, int *index)
+-static bool on_off(char *arg, __s8 *attr, char *val)
 -{
--	int i;
--
--	for (i = 0; i < len; i++) {
--		if (matches(realval, list[i]) == 0) {
--			*index = i;
--			return 0;
--		}
+-	if (strcmp(val, "on") == 0)
+-		*attr = 1;
+-	else if (strcmp(val, "off") == 0)
+-		*attr = 0;
+-	else {
+-		fprintf(stderr,
+-			"Error: argument of \"%s\" must be \"on\" or \"off\"\n",
+-			arg);
+-		return false;
 -	}
 -
--	fprintf(stderr, "Error: argument of \"%s\" must be one of ", msg);
--	for (i = 0; i < len; i++)
--		fprintf(stderr, "\"%s\", ", list[i]);
--	fprintf(stderr, "not \"%s\"\n", realval);
--	return -1;
+-	return true;
 -}
 -
- static int get_an(__u8 *val, const char *arg)
+ static int brlink_modify(int argc, char **argv)
  {
- 	int ret = get_u8(val, arg, 0);
-@@ -559,8 +538,7 @@ static int do_offload(enum cmd c, int argc, char **argv)
- 	if (argc == 0)
- 		ipmacsec_usage();
+ 	struct {
+@@ -323,6 +307,7 @@ static int brlink_modify(int argc, char **argv)
+ 	__s16 mode = -1;
+ 	__u16 flags = 0;
+ 	struct rtattr *nest;
++	int ret;
  
--	ret = one_of("offload", *argv, offload_str, ARRAY_SIZE(offload_str),
--		     (int *)&offload);
-+	offload = parse_one_of("offload", *argv, offload_str, ARRAY_SIZE(offload_str), &ret);
- 	if (ret)
- 		ipmacsec_usage();
- 
-@@ -1334,8 +1312,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+ 	while (argc > 0) {
+ 		if (strcmp(*argv, "dev") == 0) {
+@@ -330,40 +315,49 @@ static int brlink_modify(int argc, char **argv)
+ 			d = *argv;
+ 		} else if (strcmp(*argv, "guard") == 0) {
  			NEXT_ARG();
- 			int i;
- 
--			ret = one_of("encrypt", *argv, values_on_off,
--				     ARRAY_SIZE(values_on_off), &i);
-+			i = parse_on_off("encrypt", *argv, &ret);
- 			if (ret != 0)
- 				return ret;
- 			addattr8(n, MACSEC_BUFLEN, IFLA_MACSEC_ENCRYPT, i);
-@@ -1343,8 +1320,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+-			if (!on_off("guard", &bpdu_guard, *argv))
+-				return -1;
++			bpdu_guard = parse_on_off("guard", *argv, &ret);
++			if (ret)
++				return ret;
+ 		} else if (strcmp(*argv, "hairpin") == 0) {
  			NEXT_ARG();
- 			int i;
- 
--			ret = one_of("send_sci", *argv, values_on_off,
--				     ARRAY_SIZE(values_on_off), &i);
-+			i = parse_on_off("send_sci", *argv, &ret);
- 			if (ret != 0)
- 				return ret;
- 			send_sci = i;
-@@ -1354,8 +1330,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+-			if (!on_off("hairpin", &hairpin, *argv))
+-				return -1;
++			hairpin = parse_on_off("hairpin", *argv, &ret);
++			if (ret)
++				return ret;
+ 		} else if (strcmp(*argv, "fastleave") == 0) {
  			NEXT_ARG();
- 			int i;
- 
--			ret = one_of("end_station", *argv, values_on_off,
--				     ARRAY_SIZE(values_on_off), &i);
-+			i = parse_on_off("end_station", *argv, &ret);
- 			if (ret != 0)
- 				return ret;
- 			es = i;
-@@ -1364,8 +1339,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+-			if (!on_off("fastleave", &fast_leave, *argv))
+-				return -1;
++			fast_leave = parse_on_off("fastleave", *argv, &ret);
++			if (ret)
++				return ret;
+ 		} else if (strcmp(*argv, "root_block") == 0) {
  			NEXT_ARG();
- 			int i;
- 
--			ret = one_of("scb", *argv, values_on_off,
--				     ARRAY_SIZE(values_on_off), &i);
-+			i = parse_on_off("scb", *argv, &ret);
- 			if (ret != 0)
- 				return ret;
- 			scb = i;
-@@ -1374,8 +1348,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+-			if (!on_off("root_block", &root_block, *argv))
+-				return -1;
++			root_block = parse_on_off("root_block", *argv, &ret);
++			if (ret)
++				return ret;
+ 		} else if (strcmp(*argv, "learning") == 0) {
  			NEXT_ARG();
- 			int i;
- 
--			ret = one_of("protect", *argv, values_on_off,
--				     ARRAY_SIZE(values_on_off), &i);
-+			i = parse_on_off("protect", *argv, &ret);
- 			if (ret != 0)
- 				return ret;
- 			addattr8(n, MACSEC_BUFLEN, IFLA_MACSEC_PROTECT, i);
-@@ -1383,8 +1356,7 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
+-			if (!on_off("learning", &learning, *argv))
+-				return -1;
++			learning = parse_on_off("learning", *argv, &ret);
++			if (ret)
++				return ret;
+ 		} else if (strcmp(*argv, "learning_sync") == 0) {
  			NEXT_ARG();
- 			int i;
- 
--			ret = one_of("replay", *argv, values_on_off,
--				     ARRAY_SIZE(values_on_off), &i);
-+			i = parse_on_off("replay", *argv, &ret);
- 			if (ret != 0)
- 				return ret;
- 			replay_protect = !!i;
-@@ -1395,9 +1367,8 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
- 				invarg("expected replay window size", *argv);
- 		} else if (strcmp(*argv, "validate") == 0) {
+-			if (!on_off("learning_sync", &learning_sync, *argv))
+-				return -1;
++			learning_sync = parse_on_off("learning_sync", *argv, &ret);
++			if (ret)
++				return ret;
+ 		} else if (strcmp(*argv, "flood") == 0) {
  			NEXT_ARG();
--			ret = one_of("validate", *argv,
--				     validate_str, ARRAY_SIZE(validate_str),
--				     (int *)&validate);
-+			validate = parse_one_of("validate", *argv, validate_str,
-+						ARRAY_SIZE(validate_str), &ret);
- 			if (ret != 0)
- 				return ret;
- 			addattr8(n, MACSEC_BUFLEN,
-@@ -1411,9 +1382,8 @@ static int macsec_parse_opt(struct link_util *lu, int argc, char **argv,
- 				invarg("expected an { 0..3 }", *argv);
- 		} else if (strcmp(*argv, "offload") == 0) {
+-			if (!on_off("flood", &flood, *argv))
+-				return -1;
++			flood = parse_on_off("flood", *argv, &ret);
++			if (ret)
++				return ret;
+ 		} else if (strcmp(*argv, "mcast_flood") == 0) {
  			NEXT_ARG();
--			ret = one_of("offload", *argv,
--				     offload_str, ARRAY_SIZE(offload_str),
--				     (int *)&offload);
-+			offload = parse_one_of("offload", *argv, offload_str,
-+					       ARRAY_SIZE(offload_str), &ret);
- 			if (ret != 0)
- 				return ret;
- 			addattr8(n, MACSEC_BUFLEN,
-diff --git a/lib/utils.c b/lib/utils.c
-index 9815e328c9e0..930877ae0f0d 100644
---- a/lib/utils.c
-+++ b/lib/utils.c
-@@ -1735,3 +1735,31 @@ int do_batch(const char *name, bool force,
- 
- 	return ret;
- }
-+
-+int parse_one_of(const char *msg, const char *realval, const char * const *list,
-+		 size_t len, int *p_err)
-+{
-+	int i;
-+
-+	for (i = 0; i < len; i++) {
-+		if (list[i] && matches(realval, list[i]) == 0) {
-+			*p_err = 0;
-+			return i;
-+		}
-+	}
-+
-+	fprintf(stderr, "Error: argument of \"%s\" must be one of ", msg);
-+	for (i = 0; i < len; i++)
-+		if (list[i])
-+			fprintf(stderr, "\"%s\", ", list[i]);
-+	fprintf(stderr, "not \"%s\"\n", realval);
-+	*p_err = -EINVAL;
-+	return 0;
-+}
-+
-+int parse_on_off(const char *msg, const char *realval, int *p_err)
-+{
-+	static const char * const values_on_off[] = { "off", "on" };
-+
-+	return parse_one_of(msg, realval, values_on_off, ARRAY_SIZE(values_on_off), p_err);
-+}
+-			if (!on_off("mcast_flood", &mcast_flood, *argv))
+-				return -1;
++			mcast_flood = parse_on_off("mcast_flood", *argv, &ret);
++			if (ret)
++				return ret;
+ 		} else if (strcmp(*argv, "mcast_to_unicast") == 0) {
+ 			NEXT_ARG();
+-			if (!on_off("mcast_to_unicast", &mcast_to_unicast, *argv))
+-				return -1;
++			mcast_to_unicast = parse_on_off("mcast_to_unicast", *argv, &ret);
++			if (ret)
++				return ret;
+ 		} else if (strcmp(*argv, "cost") == 0) {
+ 			NEXT_ARG();
+ 			cost = atoi(*argv);
+@@ -404,18 +398,19 @@ static int brlink_modify(int argc, char **argv)
+ 			flags |= BRIDGE_FLAGS_MASTER;
+ 		} else if (strcmp(*argv, "neigh_suppress") == 0) {
+ 			NEXT_ARG();
+-			if (!on_off("neigh_suppress", &neigh_suppress,
+-				    *argv))
+-				return -1;
++			neigh_suppress = parse_on_off("neigh_suppress", *argv, &ret);
++			if (ret)
++				return ret;
+ 		} else if (strcmp(*argv, "vlan_tunnel") == 0) {
+ 			NEXT_ARG();
+-			if (!on_off("vlan_tunnel", &vlan_tunnel,
+-				    *argv))
+-				return -1;
++			vlan_tunnel = parse_on_off("vlan_tunnel", *argv, &ret);
++			if (ret)
++				return ret;
+ 		} else if (strcmp(*argv, "isolated") == 0) {
+ 			NEXT_ARG();
+-			if (!on_off("isolated", &isolated, *argv))
+-				return -1;
++			isolated = parse_on_off("isolated", *argv, &ret);
++			if (ret)
++				return ret;
+ 		} else if (strcmp(*argv, "backup_port") == 0) {
+ 			NEXT_ARG();
+ 			backup_port_idx = ll_name_to_index(*argv);
 -- 
 2.25.1
 
