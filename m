@@ -2,97 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBFF6293F46
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 17:08:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D32A293F61
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 17:15:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408528AbgJTPIr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 11:08:47 -0400
-Received: from www62.your-server.de ([213.133.104.62]:57264 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731500AbgJTPIq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 11:08:46 -0400
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kUtFi-0001ad-Hn; Tue, 20 Oct 2020 17:08:42 +0200
-Received: from [178.196.57.75] (helo=pc-9.home)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kUtFi-00011m-DE; Tue, 20 Oct 2020 17:08:42 +0200
-Subject: Re: [PATCH bpf v2 1/3] bpf_redirect_neigh: Support supplying the
- nexthop as a helper parameter
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-References: <160319106111.15822.18417665895694986295.stgit@toke.dk>
- <160319106221.15822.2629789706666194966.stgit@toke.dk>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <d6967cfe-fd0e-268a-5526-dd03f0e476e6@iogearbox.net>
-Date:   Tue, 20 Oct 2020 17:08:42 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S2408622AbgJTPPq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 11:15:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41938 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2408610AbgJTPPq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Oct 2020 11:15:46 -0400
+Received: from localhost (otava-0257.koleje.cuni.cz [78.128.181.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id EF52E2222D;
+        Tue, 20 Oct 2020 15:15:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603206945;
+        bh=Kk3kTHYNw886Gm3sRDZNzSaMqbQpyJr3dHuuESCvyM4=;
+        h=Date:From:To:Cc:Subject:From;
+        b=U5p8CK5ngA4y7YyB0I1iwmUEeDnPDzqXrGrO7OnFn4ZzK1VOzGcR+luz6SyO0QSB7
+         C5/dtEwN7MknrPn2cJXV4bMX0tMt5n3Qxf79TyMEVC5Knvg39hrw2Ek5r0Lafr7inZ
+         t9S2Yw8wePio04QZgpaBzc/sZ8cetni+g1rTN9hA=
+Date:   Tue, 20 Oct 2020 17:15:39 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org
+Subject: russell's net-queue question
+Message-ID: <20201020171539.27c33230@kernel.org>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <160319106221.15822.2629789706666194966.stgit@toke.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25963/Tue Oct 20 16:00:29 2020)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/20/20 12:51 PM, Toke Høiland-Jørgensen wrote:
-> From: Toke Høiland-Jørgensen <toke@redhat.com>
-[...]
->   BPF_CALL_3(bpf_clone_redirect, struct sk_buff *, skb, u32, ifindex, u64, flags)
-> @@ -2455,8 +2487,8 @@ int skb_do_redirect(struct sk_buff *skb)
->   		return -EAGAIN;
->   	}
->   	return flags & BPF_F_NEIGH ?
-> -	       __bpf_redirect_neigh(skb, dev) :
-> -	       __bpf_redirect(skb, dev, flags);
-> +		__bpf_redirect_neigh(skb, dev, flags & BPF_F_NEXTHOP ? &ri->nh : NULL) :
-> +		__bpf_redirect(skb, dev, flags);
->   out_drop:
->   	kfree_skb(skb);
->   	return -EINVAL;
-> @@ -2504,16 +2536,25 @@ static const struct bpf_func_proto bpf_redirect_peer_proto = {
->   	.arg2_type      = ARG_ANYTHING,
->   };
->   
-> -BPF_CALL_2(bpf_redirect_neigh, u32, ifindex, u64, flags)
-> +BPF_CALL_4(bpf_redirect_neigh, u32, ifindex, struct bpf_redir_neigh *, params,
-> +	   int, plen, u64, flags)
->   {
->   	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
->   
-> -	if (unlikely(flags))
-> +	if (unlikely((plen && plen < sizeof(*params)) || flags))
-> +		return TC_ACT_SHOT;
-> +
-> +	if (unlikely(plen && (params->unused[0] || params->unused[1] ||
-> +			      params->unused[2])))
+Russell,
 
-small nit: maybe fold this into the prior check that already tests non-zero plen
+I think the following commits in your net-queue should be still made better:
 
-if (unlikely((plen && (plen < sizeof(*params) ||
-                        (params->unused[0] | params->unused[1] |
-                         params->unused[2]))) || flags))
-         return TC_ACT_SHOT;
+7f79709b7a15 ("net: phy: pass supported PHY interface types to phylib")
+eba49a289d09 ("net: phy: marvell10g: select host interface configuration")
 
->   		return TC_ACT_SHOT;
->   
-> -	ri->flags = BPF_F_NEIGH;
-> +	ri->flags = BPF_F_NEIGH | (plen ? BPF_F_NEXTHOP : 0);
->   	ri->tgt_index = ifindex;
->   
-> +	BUILD_BUG_ON(sizeof(struct bpf_redir_neigh) != sizeof(struct bpf_nh_params));
-> +	if (plen)
-> +		memcpy(&ri->nh, params, sizeof(ri->nh));
-> +
->   	return TC_ACT_REDIRECT;
->   }
->   
+http://git.arm.linux.org.uk/cgit/linux-arm.git/commit/?h=net-queue&id=eba49a289d0959eab3dfbc0320334eb5a855ca68
+http://git.arm.linux.org.uk/cgit/linux-arm.git/commit/?h=net-queue&id=eba49a289d0959eab3dfbc0320334eb5a855ca68
+
+The first one adds filling of the phydev->host_interfaces bitmap into
+the phylink_sfp_connect_phy function. It should also fill this bitmap
+in functions phylink_connect_phy and phylink_of_phy_connect (direct
+copy of pl->config->supported_interfaces).
+The reason is that phy devices may want to know what interfaces are
+supported by host even if no SFP is used (Marvell 88X3310 is an exmaple
+of this).
+
+The second patch (adding mactype selection to marvell10g) can get rid
+of the rate matching code, and also
+should update the mv3310_update_interface code accordignly.
+
+Should I sent you these patches updated or should I create new patches
+on top of yours?
+
+Marek
