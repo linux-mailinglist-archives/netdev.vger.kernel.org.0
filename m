@@ -2,252 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8934B29358B
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 09:13:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4124D293596
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 09:16:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730381AbgJTHNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 03:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57062 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730126AbgJTHNT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 03:13:19 -0400
-Received: from mail-qv1-xf44.google.com (mail-qv1-xf44.google.com [IPv6:2607:f8b0:4864:20::f44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D55C061755;
-        Tue, 20 Oct 2020 00:13:18 -0700 (PDT)
-Received: by mail-qv1-xf44.google.com with SMTP id t6so431175qvz.4;
-        Tue, 20 Oct 2020 00:13:18 -0700 (PDT)
+        id S2404888AbgJTHQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 03:16:34 -0400
+Received: from mail-eopbgr40109.outbound.protection.outlook.com ([40.107.4.109]:10387
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2404706AbgJTHQd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Oct 2020 03:16:33 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=d8qmGAluYGzURmex3vDda/XsivnjH8PQtQcR/tLJUWdPas8ejqaKBagHE/yqYe0mZPhDdpNULLmFVAP1rHSacRaU/7LsnSlhyFXx/q7ezA9ZEQJzCFprgsB7XvZ0KFma1JTC7QEHrQbWpLSd8Xk/5WQXo7r8LxVemMUbQuvl1v73sqswqyPXkb/0eB5BFVDZFG5hsZFZGe4nXnc0w2bMHdvN1+8B1SxCsHgfqZJbKlAfn7usaePdCpkx5uit1BxxYgrrVoVray+iMV7ZZlUoX3iJBiB2eMWBR5l1f/0Rk3QA4Ebh5Q8/EME/G3KI5PEBLOFyT+LLNjYmCeptmWAkQg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZMjZ3BDEyu6+2aJ2mVgKnwgRNs9fBuz8sH2yp1fSanc=;
+ b=eNsFDrdaku/eOmQLTxRb2BLoAHpFH9OlaAv5NRC5eZ1KQZyuuALR8RsrT2KQset8Ek0KnHCujaFL0JUqAMI8QVnyrC1GYFFZER9idk69iHnI27KH6bybGc0LbVnOdoYI+7xzOC7hLTQBJ9uRpa01InujxqrfWWE1SdNZz6BViZi2zmQoZkrNAFuZdcArZq0amIxRaj/Xkv7OVAZpFP1WosLh+KehV+2RvNobHTa2soKR/2G3qk5e1+6UERdXH4BTzlayzWJUK69KyguHjkpOhy7kx+tyidr8XIY+LUVwcHL2Oh1DD98cplWBRXNcoTDWwBOKILEtLfJTKzwbbXZraQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=prodrive-technologies.com; dmarc=pass action=none
+ header.from=prodrive-technologies.com; dkim=pass
+ header.d=prodrive-technologies.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PA9Wa1SiY6hyH8FIU50gSMSHYgRTDfYciP+5Dx8W34s=;
-        b=XzEidc1j3N/4sD7YZjTcKaCT5N+dqpIimWd6+RnFSCNH5kdHm+AYT1mNcciLT7VlVJ
-         POc6hqBRw1mP+KNalXcEdAgAZDdgQWBWLXL0zm1166LDpoVqYVJeAn3XstkYuvL3Qzge
-         JEy+ZczvzwOxpLdKHGKpCVHWWvFgwoC/zPCrk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PA9Wa1SiY6hyH8FIU50gSMSHYgRTDfYciP+5Dx8W34s=;
-        b=bji2XYANHbpAXqsx33dRcJ4h92ZbmSOncLrDNHGzbelH7ZyNcx8nxQq5EkwbXOpZu2
-         fiF4VJdY/L6UG5ryMckCYcKEaCKFkNQa2hQlfonh0UzWnIaEVI9COFY5EDIV7kofHkrp
-         37Mr23adbwrlufGRvojsFIoBHqNR6QJBoDupD/KPpFEupNyZ5RoN4RYBpNEKtcjWpl49
-         zjS+BkCLVeuliqx9lQlY7eVpvT/fteN6DEfssaYINJrJs77HnZP4nLuzq7Sz94dtu1N2
-         Seci7fCiDD4yqVuz1+V0yS5KIDDk9EUdVktwaE9zjBemweskq6/lpJLacxf8qg3hqans
-         rPug==
-X-Gm-Message-State: AOAM532jseHW6M40gpMBH/mIojmoCuAA3b8GJ0qkwBig+WyqzlPQJ42y
-        gkAj9n+42fv3zk1mMraKSy7mEs9211GtmwJjI4g=
-X-Google-Smtp-Source: ABdhPJw4XY9rW9EJ2taaPzlNLDZ3itQS/JkWnqB6+HKcVZOvGs56YafEB2G9/ugJ6/j5nkkwiDJQwWKU/EUOxf5hYE4=
-X-Received: by 2002:a05:6214:11e4:: with SMTP id e4mr1682340qvu.61.1603177997875;
- Tue, 20 Oct 2020 00:13:17 -0700 (PDT)
+ d=prodrive-technologies.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ZMjZ3BDEyu6+2aJ2mVgKnwgRNs9fBuz8sH2yp1fSanc=;
+ b=SOeCKn78nE3RkWLa/snaMohPWqamW5RxIA1yyKpgrtNDYSjiiCxXRacjZTHX+BgmHa13CtHE3q6TSM95GY4J69iyEcyT7Eyl85bYxEhRGFOb9K6QWPbhE7J+O2i27aeGnl9CI/aPE1BztbS8b2KdUemP4vfBJvu074LoPuZwdz8=
+Received: from AM0PR02MB3716.eurprd02.prod.outlook.com (2603:10a6:208:40::21)
+ by AM0PR02MB4546.eurprd02.prod.outlook.com (2603:10a6:208:ed::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.26; Tue, 20 Oct
+ 2020 07:16:28 +0000
+Received: from AM0PR02MB3716.eurprd02.prod.outlook.com
+ ([fe80::f108:787f:22cd:6f74]) by AM0PR02MB3716.eurprd02.prod.outlook.com
+ ([fe80::f108:787f:22cd:6f74%5]) with mapi id 15.20.3477.028; Tue, 20 Oct 2020
+ 07:16:28 +0000
+From:   Martijn de Gouw <martijn.de.gouw@prodrive-technologies.com>
+To:     "J. Bruce Fields" <bfields@fieldses.org>
+CC:     Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, NeilBrown <neilb@suse.de>,
+        Alexey Dobriyan <adobriyan@gmail.com>,
+        Roberto Bergantinos Corpas <rbergant@redhat.com>,
+        "open list:NFS, SUNRPC, AND LOCKD CLIENTS" 
+        <linux-nfs@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] SUNRPC: fix copying of multiple pages in
+ gss_read_proxy_verf()
+Thread-Topic: [PATCH] SUNRPC: fix copying of multiple pages in
+ gss_read_proxy_verf()
+Thread-Index: AQHWpgz5jo9GE3xLcU6eFbSXAImdyqmfC1yAgAAGm4CAAGmcgIAAmiyA
+Date:   Tue, 20 Oct 2020 07:16:28 +0000
+Message-ID: <8ed0fa80-cc75-88ec-6b17-3f9cc300e9bb@prodrive-technologies.com>
+References: <20201019114229.52973-1-martijn.de.gouw@prodrive-technologies.com>
+ <20201019152301.GC32403@fieldses.org>
+ <834dc52b-34fc-fee5-0274-fdc8932040e6@prodrive-technologies.com>
+ <20201019220439.GC6692@fieldses.org>
+In-Reply-To: <20201019220439.GC6692@fieldses.org>
+Accept-Language: en-NL, en-US
+Content-Language: aa
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:24.0) Gecko/20100101
+ Thunderbird/24.0
+authentication-results: fieldses.org; dkim=none (message not signed)
+ header.d=none;fieldses.org; dmarc=none action=none
+ header.from=prodrive-technologies.com;
+x-originating-ip: [84.27.64.62]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ffeb5e33-93f5-4ef2-e1e1-08d874c80fe7
+x-ms-traffictypediagnostic: AM0PR02MB4546:
+x-microsoft-antispam-prvs: <AM0PR02MB45462F060E39F12F508170B2F51F0@AM0PR02MB4546.eurprd02.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: xgHltBy1PwlQq5ppXvnRNoAguwz3dEMCCG9ZN+vwUNxjYUs8h/tAUwTA8yTjGObj2e2Q1YLSzygqscuIGU2oKvWnBXpoeFTmtjjYO5sQY5yw4ZXAeqtXGInWcoq7I8meFydYchzroqjNnla5JJO4m36c86d5gmYTORSEUelWwGvOO3zIHa3RKSIYW/g0jaK5rV10TvapUEnHgQIMltOmhlTOWEVC3HjlZi0B6xn+Spxwx4xtG8y5zSXHAOywhi+pBHP+rFOvYp3UQS5iuIPLea48ggAgYKrM6CukIJbkWSyDY9ijaQCJkO721wDfF5xmlxOhygpecgGlBMEVBNmi82hOfEzDE3aSOS9jPwA4z6c7giz9UYeWAJgfQfsgdLS/
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR02MB3716.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(376002)(39850400004)(136003)(396003)(8936002)(6512007)(54906003)(66946007)(316002)(76116006)(4326008)(8676002)(478600001)(83380400001)(31686004)(7416002)(6506007)(36756003)(66446008)(64756008)(66476007)(66556008)(86362001)(71200400001)(6486002)(6916009)(31696002)(2616005)(5660300002)(186003)(26005)(2906002)(53546011)(43740500002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: J8kQ3Ec52w+Ob330U1e91Sy/Dm+861XpInbrf2TcwAFA77IzvSGQdbeJLSYL/Q4ZTuSP3mFia5TYgu7RY1FLs19W1UdGL2hpKL9T7mQjoYxF4GZicst4zm3UUw8u39wEQCBKHjoHr6mWMT1Ov9As429UPtConB8dQETeR3QgIsWQGuOtm4VpJRubpr2PfbwcIyf8PN+8eCIH+hBjgmEIl/JgVzy2gah1um7bFz2kO7D1THrboHuA/xkpXlelk93uqObzYGvtTwr6fphbXhHVSI8qAkaAcdd7eL1lgXdqG+qjN+AODM9m9v2Vkcinl2fnKSDTf3nLqH76gwzOBW7PlL17jTe1lEcTTrCUCRfjCdaRP7Jx1LkuKMWByrzm6agD5Ikr+k8JQNV/erPek23UO5wyffABUIAd8pLHTVBdwBrqc5T0x216Lnbg5471WYThdozRJqC85fj5Gox7DADkKfKB2JCk2tkwwS0Nt/cSayey/ZeOmDBYMPcNQfvJzrKFfEVMg6WFRPwV1OxpCwr6Pz9CTfINyPexADhFkMevgpQJAo63VZuh8oWWj3D/tJIQoh489BZOxAlEHTc0zay5jX+CX286GwsMHrBKquijRWwPwlc6SkuY8MYocqgTB6wMUiZHn9+g13UxvrLNJ44HsQ==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <2898F976F9037B4687887D18696294C3@eurprd02.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20201019085717.32413-1-dylan_hung@aspeedtech.com>
- <20201019085717.32413-2-dylan_hung@aspeedtech.com> <be7a978c48c9f1c6c29583350dee6168385c3039.camel@kernel.crashing.org>
- <CACPK8XdECaKwdQgWFQ=sRBiCjDLXHtMKo=o-xQZPmMZyevOukQ@mail.gmail.com> <d5c4682b3e049f7dac66b17e7a726b8c20ee5789.camel@kernel.crashing.org>
-In-Reply-To: <d5c4682b3e049f7dac66b17e7a726b8c20ee5789.camel@kernel.crashing.org>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Tue, 20 Oct 2020 07:13:05 +0000
-Message-ID: <CACPK8Xdyw7eSw6RqJcku_PHANviovmkbjNSONAB4_K+_+Tt1KQ@mail.gmail.com>
-Subject: Re: [PATCH 1/4] ftgmac100: Fix race issue on TX descriptor[0]
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc:     Dylan Hung <dylan_hung@aspeedtech.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Po-Yu Chuang <ratbert@faraday-tech.com>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        BMC-SW <BMC-SW@aspeedtech.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: prodrive-technologies.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR02MB3716.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ffeb5e33-93f5-4ef2-e1e1-08d874c80fe7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Oct 2020 07:16:28.0732
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 612607c9-5af7-4e7f-8976-faf1ae77be60
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: zlP4Z5JuWfIA569R3GM6+Q4qtFM96MWogQWGtSvsP+EUFJ10TrlGuiwFYkgOEjtcmp8Gv+7o2uoZmURpraxDk2xcLxfnbGbVFjVsTPELuyif4GaDqJUp1pjAXhE31jPb4VhMfhLRrKksnzvP0iCH6A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR02MB4546
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 20 Oct 2020 at 06:23, Benjamin Herrenschmidt
-<benh@kernel.crashing.org> wrote:
->
-> On Tue, 2020-10-20 at 04:13 +0000, Joel Stanley wrote:
-> > On Mon, 19 Oct 2020 at 23:20, Benjamin Herrenschmidt
-> > <benh@kernel.crashing.org> wrote:
-> > >
-> > > On Mon, 2020-10-19 at 16:57 +0800, Dylan Hung wrote:
-> > > > These rules must be followed when accessing the TX descriptor:
-> > > >
-> > > > 1. A TX descriptor is "cleanable" only when its value is non-zero
-> > > > and the owner bit is set to "software"
-> > >
-> > > Can you elaborate ? What is the point of that change ? The owner
-> > > bit
-> > > should be sufficient, why do we need to check other fields ?
-> >
-> > I would like Dylan to clarify too. The datasheet has a footnote below
-> > the descriptor layout:
-> >
-> >  - TXDES#0: Bits 27 ~ 14 are valid only when FTS = 1
-> >  - TXDES#1: Bits 31 ~ 0 are valid only when FTS = 1
-> >
-> > So the ownership bit (31) is not valid unless FTS is set. However,
-> > this isn't what his patch does. It adds checks for EDOTR.
->
-> No I think it adds a check for everything except EDOTR which just marks
-> the end of ring and needs to be ignored in the comparison.
-
-Of course. I missed the invert.
-
-I did some testing with just this patch (and "[4/4] ftgmac100: Restart
-MAC HW once") from Dylan. It seemed to resolve the hang, but there
-were occasional retries. Putting in some tracing I only hit the
-condition in ftgmac100_tx_complete_packet, never in
-ftgmac100_hard_start_xmit.
-
-> That said, we do need a better explanation.
->
-> One potential bug I did find by looking at my code however is:
->
-> static bool ftgmac100_tx_complete_packet(struct ftgmac100 *priv)
-> {
->         struct net_device *netdev = priv->netdev;
->         struct ftgmac100_txdes *txdes;
->         struct sk_buff *skb;
->         unsigned int pointer;
->         u32 ctl_stat;
->
->         pointer = priv->tx_clean_pointer;
->         txdes = &priv->txdes[pointer];
->
->         ctl_stat = le32_to_cpu(txdes->txdes0);
->         if (ctl_stat & FTGMAC100_TXDES0_TXDMA_OWN)
->                 return false;
->
->         skb = priv->tx_skbs[pointer];
->         netdev->stats.tx_packets++;
->         netdev->stats.tx_bytes += skb->len;
->         ftgmac100_free_tx_packet(priv, pointer, skb, txdes, ctl_stat);
->         txdes->txdes0 = cpu_to_le32(ctl_stat & priv->txdes0_edotr_mask);
->
->   ^^^^ There should probably be an smp_wmb() here to ensure that all the above
-> stores are visible before the tx clean pointer is updated.
->
->         priv->tx_clean_pointer = ftgmac100_next_tx_pointer(priv, pointer);
->
->         return true;
-> }
->
-> Similarly we probablu should have one before setting tx_pointer in start_xmit().
-
-I added the two smp_wmb you suggested (with only 4/4 applied). This
-did the trick; iperf on a gigabit link is running well with no
-retries.
-
-diff --git a/drivers/net/ethernet/faraday/ftgmac100.c
-b/drivers/net/ethernet/faraday/ftgmac100.c
-index 331d4bdd4a67..15cdfeb135b0 100644
---- a/drivers/net/ethernet/faraday/ftgmac100.c
-+++ b/drivers/net/ethernet/faraday/ftgmac100.c
-@@ -653,6 +653,11 @@ static bool ftgmac100_tx_complete_packet(struct
-ftgmac100 *priv)
-     ftgmac100_free_tx_packet(priv, pointer, skb, txdes, ctl_stat);
-     txdes->txdes0 = cpu_to_le32(ctl_stat & priv->txdes0_edotr_mask);
-
-+    /* Ensure the descriptor config is visible before setting the tx
-+     * pointer.
-+     */
-+    smp_wmb();
-+
-     priv->tx_clean_pointer = ftgmac100_next_tx_pointer(priv, pointer);
-
-     return true;
-@@ -806,6 +811,11 @@ static netdev_tx_t
-ftgmac100_hard_start_xmit(struct sk_buff *skb,
-     dma_wmb();
-     first->txdes0 = cpu_to_le32(f_ctl_stat);
-
-+    /* Ensure the descriptor config is visible before setting the tx
-+     * pointer.
-+     */
-+    smp_wmb();
-+
-     /* Update next TX pointer */
-     priv->tx_pointer = pointer;
-
-I left the test running while writing this email and I did start to
-see some retries. I'm not sure if that's because my laptop is one of
-the test machines, or if we have another issue.
-
-I will do some further testing over night.
-
-Cheers,
-
-Joel
-
->
-> As for the read side of this, I'm not 100% sure, I'll have to think more about
-> it, it *think* the existing barriers are sufficient at first sight.
->
-> Cheers,
-> Ben.
->
-> > >
-> > > > 2. A TX descriptor is "writable" only when its value is zero
-> > > > regardless the edotr mask.
-> > >
-> > > Again, why is that ? Can you elaborate ? What race are you trying
-> > > to
-> > > address here ?
-> > >
-> > > Cheers,
-> > > Ben.
-> > >
-> > > > Fixes: 52c0cae87465 ("ftgmac100: Remove tx descriptor accessors")
-> > > > Signed-off-by: Dylan Hung <dylan_hung@aspeedtech.com>
-> > > > Signed-off-by: Joel Stanley <joel@jms.id.au>
-> > > > ---
-> > > >  drivers/net/ethernet/faraday/ftgmac100.c | 10 ++++++++++
-> > > >  1 file changed, 10 insertions(+)
-> > > >
-> > > > diff --git a/drivers/net/ethernet/faraday/ftgmac100.c
-> > > > b/drivers/net/ethernet/faraday/ftgmac100.c
-> > > > index 00024dd41147..7cacbe4aecb7 100644
-> > > > --- a/drivers/net/ethernet/faraday/ftgmac100.c
-> > > > +++ b/drivers/net/ethernet/faraday/ftgmac100.c
-> > > > @@ -647,6 +647,9 @@ static bool
-> > > > ftgmac100_tx_complete_packet(struct
-> > > > ftgmac100 *priv)
-> > > >       if (ctl_stat & FTGMAC100_TXDES0_TXDMA_OWN)
-> > > >               return false;
-> > > >
-> > > > +     if ((ctl_stat & ~(priv->txdes0_edotr_mask)) == 0)
-> > > > +             return false;
-> > > > +
-> > > >       skb = priv->tx_skbs[pointer];
-> > > >       netdev->stats.tx_packets++;
-> > > >       netdev->stats.tx_bytes += skb->len;
-> > > > @@ -756,6 +759,9 @@ static netdev_tx_t
-> > > > ftgmac100_hard_start_xmit(struct sk_buff *skb,
-> > > >       pointer = priv->tx_pointer;
-> > > >       txdes = first = &priv->txdes[pointer];
-> > > >
-> > > > +     if (le32_to_cpu(txdes->txdes0) & ~priv->txdes0_edotr_mask)
-> > > > +             goto drop;
-> > > > +
-> > > >       /* Setup it up with the packet head. Don't write the head
-> > > > to
-> > > > the
-> > > >        * ring just yet
-> > > >        */
-> > > > @@ -787,6 +793,10 @@ static netdev_tx_t
-> > > > ftgmac100_hard_start_xmit(struct sk_buff *skb,
-> > > >               /* Setup descriptor */
-> > > >               priv->tx_skbs[pointer] = skb;
-> > > >               txdes = &priv->txdes[pointer];
-> > > > +
-> > > > +             if (le32_to_cpu(txdes->txdes0) & ~priv-
-> > > > > txdes0_edotr_mask)
-> > > >
-> > > > +                     goto dma_err;
-> > > > +
-> > > >               ctl_stat = ftgmac100_base_tx_ctlstat(priv,
-> > > > pointer);
-> > > >               ctl_stat |= FTGMAC100_TXDES0_TXDMA_OWN;
-> > > >               ctl_stat |= FTGMAC100_TXDES0_TXBUF_SIZE(len);
->
+SGksDQoNCk9uIDIwLTEwLTIwMjAgMDA6MDQsIEouIEJydWNlIEZpZWxkcyB3cm90ZToNCj4gT24g
+TW9uLCBPY3QgMTksIDIwMjAgYXQgMDM6NDY6MzlQTSArMDAwMCwgTWFydGlqbiBkZSBHb3V3IHdy
+b3RlOg0KPj4gSGkNCj4+DQo+PiBPbiAxOS0xMC0yMDIwIDE3OjIzLCBKLiBCcnVjZSBGaWVsZHMg
+d3JvdGU6DQo+Pj4gT24gTW9uLCBPY3QgMTksIDIwMjAgYXQgMDE6NDI6MjdQTSArMDIwMCwgTWFy
+dGlqbiBkZSBHb3V3IHdyb3RlOg0KPj4+PiBXaGVuIHRoZSBwYXNzZWQgdG9rZW4gaXMgbG9uZ2Vy
+IHRoYW4gNDAzMiBieXRlcywgdGhlIHJlbWFpbmluZyBwYXJ0DQo+Pj4+IG9mIHRoZSB0b2tlbiBt
+dXN0IGJlIGNvcGllZCBmcm9tIHRoZSBycXN0cC0+cnFfYXJnLnBhZ2VzLiBCdXQgdGhlDQo+Pj4+
+IGNvcHkgbXVzdCBtYWtlIHN1cmUgaXQgaGFwcGVucyBpbiBhIGNvbnNlY3V0aXZlIHdheS4NCj4+
+Pg0KPj4+IFRoYW5rcy4gIEFwb2xvZ2llcywgYnV0IEkgZG9uJ3QgaW1tZWRpYXRlbHkgc2VlIHdo
+ZXJlIHRoZSBjb3B5IGlzDQo+Pj4gbm9uLWNvbnNlY3V0aXZlLiAgV2hhdCBleGFjdGx5IGlzIHRo
+ZSBidWcgaW4gdGhlIGV4aXN0aW5nIGNvZGU/DQo+Pg0KPj4gSW4gdGhlIGZpcnN0IG1lbWNweSAn
+bGVuZ3RoJyBieXRlcyBhcmUgY29waWVkIGZyb20gYXJndi0+aW9iYXNlLCBidXQNCj4+IHNpbmNl
+IHRoZSBoZWFkZXIgaXMgaW4gZnJvbnQsIHRoaXMgbmV2ZXIgZmlsbHMgdGhlIHdob2xlIGZpcnN0
+IHBhZ2Ugb2YNCj4+IGluX3Rva2VuLT5wYWdlcy4NCj4+DQo+PiBUaGUgbWVtY3B5IGluIHRoZSBs
+b29wIGNvcGllcyB0aGUgZm9sbG93aW5nIGJ5dGVzLCBidXQgc3RhcnRzIHdyaXRpbmcgYXQNCj4+
+IHRoZSBuZXh0IHBhZ2Ugb2YgaW5fdG9rZW4tPnBhZ2VzLiBUaGlzIGxlYXZlcyB0aGUgbGFzdCBi
+eXRlcyBvZiBwYWdlIDANCj4+IHVud3JpdHRlbi4NCj4+DQo+PiBOZXh0IHRvIHRoYXQsIHRoZSBy
+ZW1haW5pbmcgZGF0YSBpcyBpbiBwYWdlIDAgb2YgcnFzdHAtPnJxX2FyZy5wYWdlcywNCj4+IG5v
+dCBwYWdlIDEuDQo+IA0KPiBHb3QgaXQsIHRoYW5rcy4gIExvb2tzIGxpa2UgdGhlIGN1bHByaXQg
+bWlnaHQgYmUgYSBwYXRjaCBmcm9tIGEgeWVhciBhZ28NCj4gZnJvbSBDaHVjaywgNTg2NmVmYThj
+YmZiICJTVU5SUEM6IEZpeCBzdmNhdXRoX2dzc19wcm94eV9pbml0KCkiPyAgQXQNCj4gbGVhc3Qs
+IHRoYXQncyB0aGUgbGFzdCBtYWpvciBwYXRjaCB0byB0b3VjaCB0aGlzIGNvZGUuDQoNCkkgZm91
+bmQgdGhpcyBpc3N1ZSB3aGVuIHNldHRpbmcgdXAgTkZTdjQgd2l0aCBBY3RpdmUgRGlyZWN0b3J5
+IGFzIEtEQyANCmFuZCBnc3Nwcm94eS4gVXNlcnMgd2l0aCBtYW55IGdyb3VwcyB3aGVyZSBub3Qg
+YWJsZSB0byBhY2Nlc3MgdGhlIE5GUyANCnNoYXJlcywgd2hpbGUgb3RoZXJzIGNvdWxkIGFjY2Vz
+cyB0aGVtIGp1c3QgZmluZS4gRHVyaW5nIGRlYnVnZ2luZyBJIA0KZm91bmQgdGhhdCB0aGUgdG9r
+ZW4gd2FzIG5vdCB0aGUgc2FtZSBvbiBib3RoIHNpZGVzLg0KDQpJIGRvIG5vdCBoYXZlIHRoZSBI
+VyB0byBzZXR1cCBhIHJkbWEgdmVyc2lvbiBvZiBORlN2NCwgc28gSSdtIHVuYWJsZSB0byANCnRl
+c3QgaWYgaXQgc3RpbGwgd29ya3MgdmlhIHJkbWEuDQoNClJlZ2FyZHMsIE1hcnRpam4NCg0KPiAN
+Cj4gLS1iLg0KPiANCj4+DQo+PiBSZWdhcmRzLCBNYXJ0aWpuDQo+Pg0KPj4+DQo+Pj4gLS1iLg0K
+Pj4+DQo+Pj4+DQo+Pj4+IFNpZ25lZC1vZmYtYnk6IE1hcnRpam4gZGUgR291dyA8bWFydGlqbi5k
+ZS5nb3V3QHByb2RyaXZlLXRlY2hub2xvZ2llcy5jb20+DQo+Pj4+IC0tLQ0KPj4+PiAgICBuZXQv
+c3VucnBjL2F1dGhfZ3NzL3N2Y2F1dGhfZ3NzLmMgfCAyNyArKysrKysrKysrKysrKysrKy0tLS0t
+LS0tLS0NCj4+Pj4gICAgMSBmaWxlIGNoYW5nZWQsIDE3IGluc2VydGlvbnMoKyksIDEwIGRlbGV0
+aW9ucygtKQ0KPj4+Pg0KPj4+PiBkaWZmIC0tZ2l0IGEvbmV0L3N1bnJwYy9hdXRoX2dzcy9zdmNh
+dXRoX2dzcy5jIGIvbmV0L3N1bnJwYy9hdXRoX2dzcy9zdmNhdXRoX2dzcy5jDQo+Pj4+IGluZGV4
+IDI1OGIwNDM3MmY4NS4uYmQ0Njc4ZGI5ZDc2IDEwMDY0NA0KPj4+PiAtLS0gYS9uZXQvc3VucnBj
+L2F1dGhfZ3NzL3N2Y2F1dGhfZ3NzLmMNCj4+Pj4gKysrIGIvbmV0L3N1bnJwYy9hdXRoX2dzcy9z
+dmNhdXRoX2dzcy5jDQo+Pj4+IEBAIC0xMTQ3LDkgKzExNDcsOSBAQCBzdGF0aWMgaW50IGdzc19y
+ZWFkX3Byb3h5X3ZlcmYoc3RydWN0IHN2Y19ycXN0ICpycXN0cCwNCj4+Pj4gICAgCQkJICAgICAg
+IHN0cnVjdCBnc3NwX2luX3Rva2VuICppbl90b2tlbikNCj4+Pj4gICAgew0KPj4+PiAgICAJc3Ry
+dWN0IGt2ZWMgKmFyZ3YgPSAmcnFzdHAtPnJxX2FyZy5oZWFkWzBdOw0KPj4+PiAtCXVuc2lnbmVk
+IGludCBwYWdlX2Jhc2UsIGxlbmd0aDsNCj4+Pj4gLQlpbnQgcGFnZXMsIGksIHJlczsNCj4+Pj4g
+LQlzaXplX3QgaW5sZW47DQo+Pj4+ICsJdW5zaWduZWQgaW50IGxlbmd0aCwgcGd0b19vZmZzLCBw
+Z2Zyb21fb2ZmczsNCj4+Pj4gKwlpbnQgcGFnZXMsIGksIHJlcywgcGd0bywgcGdmcm9tOw0KPj4+
+PiArCXNpemVfdCBpbmxlbiwgdG9fb2ZmcywgZnJvbV9vZmZzOw0KPj4+PiAgICANCj4+Pj4gICAg
+CXJlcyA9IGdzc19yZWFkX2NvbW1vbl92ZXJmKGdjLCBhcmd2LCBhdXRocCwgaW5faGFuZGxlKTsN
+Cj4+Pj4gICAgCWlmIChyZXMpDQo+Pj4+IEBAIC0xMTc3LDE3ICsxMTc3LDI0IEBAIHN0YXRpYyBp
+bnQgZ3NzX3JlYWRfcHJveHlfdmVyZihzdHJ1Y3Qgc3ZjX3Jxc3QgKnJxc3RwLA0KPj4+PiAgICAJ
+bWVtY3B5KHBhZ2VfYWRkcmVzcyhpbl90b2tlbi0+cGFnZXNbMF0pLCBhcmd2LT5pb3ZfYmFzZSwg
+bGVuZ3RoKTsNCj4+Pj4gICAgCWlubGVuIC09IGxlbmd0aDsNCj4+Pj4gICAgDQo+Pj4+IC0JaSA9
+IDE7DQo+Pj4+IC0JcGFnZV9iYXNlID0gcnFzdHAtPnJxX2FyZy5wYWdlX2Jhc2U7DQo+Pj4+ICsJ
+dG9fb2ZmcyA9IGxlbmd0aDsNCj4+Pj4gKwlmcm9tX29mZnMgPSBycXN0cC0+cnFfYXJnLnBhZ2Vf
+YmFzZTsNCj4+Pj4gICAgCXdoaWxlIChpbmxlbikgew0KPj4+PiAtCQlsZW5ndGggPSBtaW5fdCh1
+bnNpZ25lZCBpbnQsIGlubGVuLCBQQUdFX1NJWkUpOw0KPj4+PiAtCQltZW1jcHkocGFnZV9hZGRy
+ZXNzKGluX3Rva2VuLT5wYWdlc1tpXSksDQo+Pj4+IC0JCSAgICAgICBwYWdlX2FkZHJlc3MocnFz
+dHAtPnJxX2FyZy5wYWdlc1tpXSkgKyBwYWdlX2Jhc2UsDQo+Pj4+ICsJCXBndG8gPSB0b19vZmZz
+ID4+IFBBR0VfU0hJRlQ7DQo+Pj4+ICsJCXBnZnJvbSA9IGZyb21fb2ZmcyA+PiBQQUdFX1NISUZU
+Ow0KPj4+PiArCQlwZ3RvX29mZnMgPSB0b19vZmZzICYgflBBR0VfTUFTSzsNCj4+Pj4gKwkJcGdm
+cm9tX29mZnMgPSBmcm9tX29mZnMgJiB+UEFHRV9NQVNLOw0KPj4+PiArDQo+Pj4+ICsJCWxlbmd0
+aCA9IG1pbl90KHVuc2lnbmVkIGludCwgaW5sZW4sDQo+Pj4+ICsJCQkgbWluX3QodW5zaWduZWQg
+aW50LCBQQUdFX1NJWkUgLSBwZ3RvX29mZnMsDQo+Pj4+ICsJCQkgICAgICAgUEFHRV9TSVpFIC0g
+cGdmcm9tX29mZnMpKTsNCj4+Pj4gKwkJbWVtY3B5KHBhZ2VfYWRkcmVzcyhpbl90b2tlbi0+cGFn
+ZXNbcGd0b10pICsgcGd0b19vZmZzLA0KPj4+PiArCQkgICAgICAgcGFnZV9hZGRyZXNzKHJxc3Rw
+LT5ycV9hcmcucGFnZXNbcGdmcm9tXSkgKyBwZ2Zyb21fb2ZmcywNCj4+Pj4gICAgCQkgICAgICAg
+bGVuZ3RoKTsNCj4+Pj4gICAgDQo+Pj4+ICsJCXRvX29mZnMgKz0gbGVuZ3RoOw0KPj4+PiArCQlm
+cm9tX29mZnMgKz0gbGVuZ3RoOw0KPj4+PiAgICAJCWlubGVuIC09IGxlbmd0aDsNCj4+Pj4gLQkJ
+cGFnZV9iYXNlID0gMDsNCj4+Pj4gLQkJaSsrOw0KPj4+PiAgICAJfQ0KPj4+PiAgICAJcmV0dXJu
+IDA7DQo+Pj4+ICAgIH0NCj4+Pj4gLS0gDQo+Pj4+IDIuMjAuMQ0KPj4NCj4+IC0tIA0KPj4gTWFy
+dGlqbiBkZSBHb3V3DQo+PiBEZXNpZ25lcg0KPj4gUHJvZHJpdmUgVGVjaG5vbG9naWVzDQo+PiBN
+b2JpbGU6ICszMSA2MyAxNyA3NiAxNjENCj4+IFBob25lOiAgKzMxIDQwIDI2IDc2IDIwMA0KDQot
+LSANCk1hcnRpam4gZGUgR291dw0KRGVzaWduZXINClByb2RyaXZlIFRlY2hub2xvZ2llcw0KTW9i
+aWxlOiArMzEgNjMgMTcgNzYgMTYxDQpQaG9uZTogICszMSA0MCAyNiA3NiAyMDANCg==
