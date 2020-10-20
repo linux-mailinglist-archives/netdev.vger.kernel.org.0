@@ -2,114 +2,447 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3199293FD8
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 17:45:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BEAE293FE6
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 17:51:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436790AbgJTPpV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 11:45:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52124 "EHLO
+        id S2436871AbgJTPvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 11:51:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436778AbgJTPpR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 11:45:17 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ED39C061755
-        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 08:45:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=VwCOlZxmYHNmAaSDbehVDPMIx+3Ci/hYIXqD9j+vv3Q=; b=kuuot+24WiSaqJ4immXbFx97b
-        P2yc7rOP/BdQwvXwEHbYNEBQQOdIx83PvKVXLUSYhcW7FdEMj4qKv2Sw1DTcot7BoA24gTo2pvxyo
-        Y6dxUIMkyfI+0rhJMpmPBbiOZ+pd33LZGu8aU9iysctHYUoTTy7i5m63UJFKfz7uPxQqgtdTHp9ko
-        VUaitVjb1vf0Z+G5mIrv2MMBNwYYbpTyJrfy8mn9XubwJTGp2DbJcP4fOpoKVsJBqtagaB6StAIJH
-        C1zKSG3bFqOAeIz+V4Zaw0njHiILFsu4KBgbT44CaTKqzUualQX2vRTO1cwMbOo2h1LzIATRhTzcB
-        J7K2GTsCg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:48718)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        with ESMTP id S2436858AbgJTPvF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 11:51:05 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2074C0613CE
+        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 08:51:04 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kUtp5-0007i8-8I; Tue, 20 Oct 2020 16:45:15 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kUtp5-0005Ou-1g; Tue, 20 Oct 2020 16:45:15 +0100
-Date:   Tue, 20 Oct 2020 16:45:15 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     netdev@vger.kernel.org
-Subject: Re: russell's net-queue question
-Message-ID: <20201020154514.GE1551@shell.armlinux.org.uk>
-References: <20201020171539.27c33230@kernel.org>
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kUtuW-0006hF-U5; Tue, 20 Oct 2020 17:50:53 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:c351:f59d:74d9:d207] (unknown [IPv6:2a03:f580:87bc:d400:c351:f59d:74d9:d207])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 41E6D57E557;
+        Tue, 20 Oct 2020 15:50:51 +0000 (UTC)
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>, robh+dt@kernel.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de
+Cc:     kernel@pengutronix.de, linux-imx@nxp.com, victor.liu@nxp.com,
+        linux-can@vger.kernel.org, pankaj.bansal@nxp.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20201020155402.30318-1-qiangqing.zhang@nxp.com>
+ <20201020155402.30318-11-qiangqing.zhang@nxp.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Subject: Re: [PATCH V3 10/10] can: flexcan: add CAN wakeup function for
+ i.MX8QM
+Message-ID: <b334edc4-cdaa-e7e6-5f1c-9bc046cbb255@pengutronix.de>
+Date:   Tue, 20 Oct 2020 17:50:47 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201020171539.27c33230@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+In-Reply-To: <20201020155402.30318-11-qiangqing.zhang@nxp.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="gRoJHpvHipkIHg2UxeKi9VIujwNMEK2qJ"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 20, 2020 at 05:15:39PM +0200, Marek Behún wrote:
-> Russell,
-> 
-> I think the following commits in your net-queue should be still made better:
-> 
-> 7f79709b7a15 ("net: phy: pass supported PHY interface types to phylib")
-> eba49a289d09 ("net: phy: marvell10g: select host interface configuration")
-> 
-> http://git.arm.linux.org.uk/cgit/linux-arm.git/commit/?h=net-queue&id=eba49a289d0959eab3dfbc0320334eb5a855ca68
-> http://git.arm.linux.org.uk/cgit/linux-arm.git/commit/?h=net-queue&id=eba49a289d0959eab3dfbc0320334eb5a855ca68
-> 
-> The first one adds filling of the phydev->host_interfaces bitmap into
-> the phylink_sfp_connect_phy function. It should also fill this bitmap
-> in functions phylink_connect_phy and phylink_of_phy_connect (direct
-> copy of pl->config->supported_interfaces).
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--gRoJHpvHipkIHg2UxeKi9VIujwNMEK2qJ
+Content-Type: multipart/mixed; boundary="NwKCTYajUq4t6f3dnUVQmrIBqaqtZoCHx";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Joakim Zhang <qiangqing.zhang@nxp.com>, robh+dt@kernel.org,
+ shawnguo@kernel.org, s.hauer@pengutronix.de
+Cc: kernel@pengutronix.de, linux-imx@nxp.com, victor.liu@nxp.com,
+ linux-can@vger.kernel.org, pankaj.bansal@nxp.com, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Message-ID: <b334edc4-cdaa-e7e6-5f1c-9bc046cbb255@pengutronix.de>
+Subject: Re: [PATCH V3 10/10] can: flexcan: add CAN wakeup function for
+ i.MX8QM
+References: <20201020155402.30318-1-qiangqing.zhang@nxp.com>
+ <20201020155402.30318-11-qiangqing.zhang@nxp.com>
+In-Reply-To: <20201020155402.30318-11-qiangqing.zhang@nxp.com>
 
-First, the whole way interfaces are handled is really not good, even
-with the addition of the interfaces bitmap. However, it tries to solve
-at least some of the issues.
+--NwKCTYajUq4t6f3dnUVQmrIBqaqtZoCHx
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-Secondly, what should we fill this in with?
+On 10/20/20 5:54 PM, Joakim Zhang wrote:
+> The System Controller Firmware (SCFW) is a low-level system function
+> which runs on a dedicated Cortex-M core to provide power, clock, and
+> resource management. It exists on some i.MX8 processors. e.g. i.MX8QM
+> (QM, QP), and i.MX8QX (QXP, DX). SCU driver manages the IPC interface
+> between host CPU and the SCU firmware running on M4.
+>=20
+> For i.MX8QM, stop mode request is controlled by System Controller Unit(=
+SCU)
+> firmware, this patch introduces FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW quir=
+k
+> for this function.
+>=20
+> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+> ---
+>  drivers/net/can/flexcan.c | 127 +++++++++++++++++++++++++++++++++-----=
 
-Do we fill it with the firmware specified phy-mode setting? Or all the
-capabilities of the network driver's interface? What if the network
-driver supports RGMII/SGMII/10GBASE-R/etc but not all of these are
-wired?
+>  1 file changed, 110 insertions(+), 17 deletions(-)
+>=20
+> diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+> index 8f578c867493..97840b3e0a8a 100644
+> --- a/drivers/net/can/flexcan.c
+> +++ b/drivers/net/can/flexcan.c
+> @@ -9,6 +9,7 @@
+>  //
+>  // Based on code originally by Andrey Volkov <avolkov@varma-el.com>
+> =20
+> +#include <dt-bindings/firmware/imx/rsrc.h>
+>  #include <linux/bitfield.h>
+>  #include <linux/can.h>
+>  #include <linux/can/dev.h>
+> @@ -17,6 +18,7 @@
+>  #include <linux/can/rx-offload.h>
+>  #include <linux/clk.h>
+>  #include <linux/delay.h>
+> +#include <linux/firmware/imx/sci.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/io.h>
+>  #include <linux/mfd/syscon.h>
+> @@ -242,6 +244,8 @@
+>  #define FLEXCAN_QUIRK_SUPPORT_FD BIT(9)
+>  /* support memory detection and correction */
+>  #define FLEXCAN_QUIRK_SUPPORT_ECC BIT(10)
+> +/* Setup stop mode with SCU firmware to support wakeup */
+> +#define FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW BIT(11)
+> =20
+>  /* Structure of the message buffer */
+>  struct flexcan_mb {
+> @@ -347,6 +351,7 @@ struct flexcan_priv {
+>  	u8 mb_count;
+>  	u8 mb_size;
+>  	u8 clk_src;	/* clock source of CAN Protocol Engine */
+> +	u8 can_idx;
 
-We really don't want the PHY changing what was configured via hardware
-when it's "built in", because it's ambiguous in a very many situations
-which mode should be selected. If we take the view that the firmware
-specified phy-mode should only be specified, then the 88X3310 will
-switch to MACTYPE=6 instead of 4 on the Macchiatobin, which is the rate
-adaption mode - and this will lead to lost packets (it's a plain
-88X3310 without the MACSEC, so the PHY is not capable of generating
-flow control packets to pace the host.)
+please name it like the DT property, scu_index.
 
-> The reason is that phy devices may want to know what interfaces are
-> supported by host even if no SFP is used (Marvell 88X3310 is an exmaple
-> of this).
+> =20
+>  	u64 rx_mask;
+>  	u64 tx_mask;
+> @@ -358,6 +363,9 @@ struct flexcan_priv {
+>  	struct regulator *reg_xceiver;
+>  	struct flexcan_stop_mode stm;
+> =20
+> +	/* IPC handle when setup stop mode by System Controller firmware(scfw=
+) */
+> +	struct imx_sc_ipc *sc_ipc_handle;
+> +
+>  	/* Read and Write APIs */
+>  	u32 (*read)(void __iomem *addr);
+>  	void (*write)(u32 val, void __iomem *addr);
+> @@ -387,7 +395,7 @@ static const struct flexcan_devtype_data fsl_imx6q_=
+devtype_data =3D {
+>  static const struct flexcan_devtype_data fsl_imx8qm_devtype_data =3D {=
 
-If a SFP is not being used, then the connectivity is described via DT
-and the hardware configuration of the PHY (which we rely on for the
-88X3310.) I don't see much of a solution to that for the 88X3310.
-If DT describes the interface mode as 10gbase-r, then that ambiguously
-could refer to MACTYPE=4,5,6 - the driver can't know.
+>  	.quirks =3D FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_R=
+RS |
+>  		FLEXCAN_QUIRK_USE_OFF_TIMESTAMP | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
+> -		FLEXCAN_QUIRK_SUPPORT_FD,
+> +		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW,
+>  };
+> =20
+>  static struct flexcan_devtype_data fsl_imx8mp_devtype_data =3D {
+> @@ -546,18 +554,42 @@ static void flexcan_enable_wakeup_irq(struct flex=
+can_priv *priv, bool enable)
+>  	priv->write(reg_mcr, &regs->mcr);
+>  }
+> =20
+> +static int flexcan_stop_mode_enable_scfw(struct flexcan_priv *priv, bo=
+ol enabled)
+> +{
+> +	u8 idx =3D priv->can_idx;
+> +	u32 rsrc_id, val;
+> +
+> +	rsrc_id =3D IMX_SC_R_CAN(idx);
+> +
+> +	if (enabled)
+> +		val =3D 1;
+> +	else
+> +		val =3D 0;
+> +
+> +	/* stop mode request via scu firmware */
+> +	return imx_sc_misc_set_control(priv->sc_ipc_handle, rsrc_id,
+> +				       IMX_SC_C_IPG_STOP, val);
+> +}
+> +
+>  static inline int flexcan_enter_stop_mode(struct flexcan_priv *priv)
+>  {
+>  	struct flexcan_regs __iomem *regs =3D priv->regs;
+>  	u32 reg_mcr;
+> +	int ret;
+> =20
+>  	reg_mcr =3D priv->read(&regs->mcr);
+>  	reg_mcr |=3D FLEXCAN_MCR_SLF_WAK;
+>  	priv->write(reg_mcr, &regs->mcr);
+> =20
+>  	/* enable stop request */
+> -	regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
+> -			   1 << priv->stm.req_bit, 1 << priv->stm.req_bit);
+> +	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW) =
+{
+> +		ret =3D flexcan_stop_mode_enable_scfw(priv, true);
+> +		if (ret < 0)
+> +			return ret;
+> +	} else {
+> +		regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
+> +				   1 << priv->stm.req_bit, 1 << priv->stm.req_bit);
+> +	}
+> =20
+>  	return flexcan_low_power_enter_ack(priv);
+>  }
+> @@ -566,10 +598,17 @@ static inline int flexcan_exit_stop_mode(struct f=
+lexcan_priv *priv)
+>  {
+>  	struct flexcan_regs __iomem *regs =3D priv->regs;
+>  	u32 reg_mcr;
+> +	int ret;
+> =20
+>  	/* remove stop request */
+> -	regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
+> -			   1 << priv->stm.req_bit, 0);
+> +	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW) =
+{
+> +		ret =3D flexcan_stop_mode_enable_scfw(priv, false);
+> +		if (ret < 0)
+> +			return ret;
+> +	} else {
+> +		regmap_update_bits(priv->stm.gpr, priv->stm.req_gpr,
+> +				   1 << priv->stm.req_bit, 0);
+> +	}
+> =20
+>  	reg_mcr =3D priv->read(&regs->mcr);
+>  	reg_mcr &=3D ~FLEXCAN_MCR_SLF_WAK;
+> @@ -1838,7 +1877,7 @@ static void unregister_flexcandev(struct net_devi=
+ce *dev)
+>  	unregister_candev(dev);
+>  }
+> =20
+> -static int flexcan_setup_stop_mode(struct platform_device *pdev)
+> +static int flexcan_setup_stop_mode_gpr(struct platform_device *pdev)
+>  {
+>  	struct net_device *dev =3D platform_get_drvdata(pdev);
+>  	struct device_node *np =3D pdev->dev.of_node;
+> @@ -1883,11 +1922,6 @@ static int flexcan_setup_stop_mode(struct platfo=
+rm_device *pdev)
+>  		"gpr %s req_gpr=3D0x02%x req_bit=3D%u\n",
+>  		gpr_np->full_name, priv->stm.req_gpr, priv->stm.req_bit);
+> =20
+> -	device_set_wakeup_capable(&pdev->dev, true);
+> -
+> -	if (of_property_read_bool(np, "wakeup-source"))
+> -		device_set_wakeup_enable(&pdev->dev, true);
+> -
+>  	return 0;
+> =20
+>  out_put_node:
+> @@ -1895,6 +1929,62 @@ static int flexcan_setup_stop_mode(struct platfo=
+rm_device *pdev)
+>  	return ret;
+>  }
+> =20
+> +static int flexcan_setup_stop_mode_scfw(struct platform_device *pdev)
+> +{
+> +	struct net_device *dev =3D platform_get_drvdata(pdev);
+> +	struct flexcan_priv *priv;
+> +	u8 can_idx;
+> +	int ret;
+> +
+> +	ret =3D of_property_read_u8(pdev->dev.of_node, "fsl,scu-index", &can_=
+idx);
+> +	if (ret < 0) {
+> +		dev_dbg(&pdev->dev, "failed to get scu index\n");
+> +		return ret;
+> +	}
+> +
+> +	priv =3D netdev_priv(dev);
+> +	priv->can_idx =3D can_idx;
+> +
+> +	/* this function could be defered probe, return -EPROBE_DEFER */
+> +	ret =3D imx_scu_get_handle(&priv->sc_ipc_handle);
 
-So, I don't think there is a simple answer here.
+return imx_scu_get_handle(&priv->sc_ipc_handle);
 
-> The second patch (adding mactype selection to marvell10g) can get rid
-> of the rate matching code, and also
-> should update the mv3310_update_interface code accordignly.
-> 
-> Should I sent you these patches updated or should I create new patches
-> on top of yours?
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+> +/* flexcan_setup_stop_mode - Setup stop mode for wakeup
+> + *
+> + * Return: =3D 0 setup stop mode successfully or doesn't support this =
+feature
+> + *         < 0 fail to setup stop mode (could be defered probe)
+> + */
+> +static int flexcan_setup_stop_mode(struct platform_device *pdev)
+> +{
+> +	struct net_device *dev =3D platform_get_drvdata(pdev);
+> +	struct flexcan_priv *priv;
+> +	int ret;
+> +
+> +	priv =3D netdev_priv(dev);
+> +
+> +	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW)
+> +		ret =3D flexcan_setup_stop_mode_scfw(pdev);
+> +	else if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_G=
+PR)
+> +		ret =3D flexcan_setup_stop_mode_gpr(pdev);
+> +	else
+> +		/* return 0 directly if doesn't support stop mode feature */
+> +		return 0;
+> +
+> +	if (ret)
+> +		return ret;
+> +
+> +	device_set_wakeup_capable(&pdev->dev, true);
+> +
+> +	if (of_property_read_bool(pdev->dev.of_node, "wakeup-source"))
+> +		device_set_wakeup_enable(&pdev->dev, true);
+> +
+> +	return 0;
+> +}
+> +
+>  static const struct of_device_id flexcan_of_match[] =3D {
+>  	{ .compatible =3D "fsl,imx8qm-flexcan", .data =3D &fsl_imx8qm_devtype=
+_data, },
+>  	{ .compatible =3D "fsl,imx8mp-flexcan", .data =3D &fsl_imx8mp_devtype=
+_data, },
+> @@ -2040,17 +2130,20 @@ static int flexcan_probe(struct platform_device=
+ *pdev)
+>  		goto failed_register;
+>  	}
+> =20
+> +	err =3D flexcan_setup_stop_mode(pdev);
+> +	if (err < 0) {
+> +		if (err !=3D -EPROBE_DEFER)
+> +			dev_err(&pdev->dev, "setup stop mode failed\n");
+> +		goto failed_canregister;
 
-These are experimental, and for the reasons I mention above, they
-need careful thought.
+better name this failed_setup_stop_mode
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+> +	}
+> +
+>  	of_can_transceiver(dev);
+>  	devm_can_led_init(dev);
+> =20
+> -	if (priv->devtype_data->quirks & FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR) {=
+
+> -		err =3D flexcan_setup_stop_mode(pdev);
+> -		if (err)
+> -			dev_dbg(&pdev->dev, "failed to setup stop-mode\n");
+> -	}
+> -
+>  	return 0;
+> =20
+> + failed_canregister:
+> +	unregister_flexcandev(dev);
+>   failed_register:
+>  	pm_runtime_put_noidle(&pdev->dev);
+>  	pm_runtime_disable(&pdev->dev);
+>=20
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--NwKCTYajUq4t6f3dnUVQmrIBqaqtZoCHx--
+
+--gRoJHpvHipkIHg2UxeKi9VIujwNMEK2qJ
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+PB1cACgkQqclaivrt
+76lcPQf/W3PbVrGVUGO7mylRjf62nGEETpX4iyGVH4PFTTOu4y8RhjrU6ybOd1t3
+tvQFLPSWhK0+/qKorsaup1X1NhPiC1On9JpLgLXBlbLBeiNwaIvQwOVwowcN+LUX
+Xy2kTxBglcwOigfQUFlMTMk3a8+WdB2sjGJXg5+6tlisJ6uz1gsd66gItREiCSj1
+meFzxC2QsrZckeYpS01MWBeNb7x7XHzxkDQZ47VDZdeD5I4P1cks4tjQbB7I+FMo
+w+UoqwXnAM2o+mwH/rBtQACOS4tXpfGF6n/sREQp3UjOCXDYSGHHTcf9zVggKBaE
+pnvhsYtqhyZhbnRlN4WXVOinBfC6lQ==
+=yHL8
+-----END PGP SIGNATURE-----
+
+--gRoJHpvHipkIHg2UxeKi9VIujwNMEK2qJ--
