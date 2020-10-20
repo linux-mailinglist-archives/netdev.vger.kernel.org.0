@@ -2,110 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DE76293E6D
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 16:17:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00B7A293EBF
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 16:32:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407968AbgJTOQ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 10:16:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38114 "EHLO
+        id S1731020AbgJTOcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 10:32:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407843AbgJTOQz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 10:16:55 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 860AAC0613E6;
-        Tue, 20 Oct 2020 07:16:55 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1603203413;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Y4j/jlD3xH1hIPmnRimMNEHfyReLuBug0kSJdYGLDZI=;
-        b=t0yRH0YFC/n/d0l325g1g0JhblRbNkPW3BVDIyb+F8lusCrsxVjj4xzkXPw/Nvwx7UxE1K
-        Vufxd0mOwUR3cEOF/abhAHTCyhgONpu/F2rFc4vz9WnR8qCTb9zjNoVHp3CbK6miOmQK0S
-        gtlGwzghB2PA3pkPRUNl+2yyboAmGJQ3UNMLbU1p4blxlri4dogPyBWNZtOEh/2gRbnLU1
-        T9+Z0A+l+7NBNxE9DjN9JMrNZsAYFjhaH/UvwP0qXuH680clZ21H4YttTc0IqLOgfALoDf
-        v/Cxy/s6qvIhBJAqVcPmGE2WZ9ynjvs9P4KYVcaq7n8qiaypdzKSzedAFM1/bg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1603203413;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Y4j/jlD3xH1hIPmnRimMNEHfyReLuBug0kSJdYGLDZI=;
-        b=i62r4hnTA8GOzp3DZqiFe48GBrMmgNmkT35gUCsmZuKo662RRxjarZreuX1S3duTNrW69/
-        9ng1HHw/l4f6xJCg==
-To:     Nitesh Narayan Lal <nitesh@redhat.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        frederic@kernel.org, mtosatti@redhat.com, sassmann@redhat.com,
-        jesse.brandeburg@intel.com, lihong.yang@intel.com,
-        helgaas@kernel.org, nitesh@redhat.com, jeffrey.t.kirsher@intel.com,
-        jacob.e.keller@intel.com, jlelli@redhat.com, hch@infradead.org,
-        bhelgaas@google.com, mike.marciniszyn@intel.com,
-        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
-        jiri@nvidia.com, mingo@redhat.com, peterz@infradead.org,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        lgoncalv@redhat.com
-Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to housekeeping CPUs
-In-Reply-To: <20200928183529.471328-5-nitesh@redhat.com>
-References: <20200928183529.471328-1-nitesh@redhat.com> <20200928183529.471328-5-nitesh@redhat.com>
-Date:   Tue, 20 Oct 2020 16:16:52 +0200
-Message-ID: <87v9f57zjf.fsf@nanos.tec.linutronix.de>
+        with ESMTP id S1728056AbgJTOcH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 10:32:07 -0400
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30BD7C061755
+        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 07:32:07 -0700 (PDT)
+Received: by mail-il1-x12f.google.com with SMTP id z2so2461050ilh.11
+        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 07:32:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Cg6g8EUa9aMYsveNpphQSbwDB9pxfXJrBONsPnATloY=;
+        b=SRnBAquT2Kf05gkBlFMVIoh73dSp4JCrV83QKC+a82Ym2dD3m6o2SUJx3Llh9fD/Fy
+         RRS1JWUEn6LEROURpeBkuyHUTzWjIs5DP29e+WKLcvOIaD4dmTzOy8uM86vba7ZBXacn
+         uJmm7jdeGPi6dOxaeC53kOnETjAVGEGMuJ4eBC0k8OQkrPn2jeefwCk24DxqgCWEFUBb
+         gj98J1OTuVcZRX3pHSi0JJUV13lG2rIdTgNX0HqRjY3QRvhoqOtUYewTbbJyTlq8Fvcd
+         PNRT1ciG18Zdj/z671eMuKXaV4sSCosdBykQlv1Kj7rhs0vK2uiA1IXxcAxCeEQckW9m
+         7sLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Cg6g8EUa9aMYsveNpphQSbwDB9pxfXJrBONsPnATloY=;
+        b=Ro9llyynl9f0bpW2qa8F8MaFwq9MupEoWI5RBnys+ghI3GBnVlCf1wT+scZfB3ixLk
+         HDMoBh3V8nL+wMtyqE9uBhBXKSr3X28vhd/qLnQ2/tIsrp0QbM+gYySJBOoZ96zmBZA2
+         DhA8UpP6oRYv/DHDtq3WGGf3Y6wkFHC9itNBv5ZCc+vlR1FuAop2cB1TES/H2ABknc12
+         eJYoPmpOjPBXVBGmDirX1SlK/ZLLHEtDldcEAIVq8bGztx8ojNRn9nfvN/rArmGXpjtY
+         UPXjmr0jyh0l1ElR3uMs/l58eaAqjC6Xm2hecK8wMtTpZjEStdcWN6SA+mpHQaGq3gKb
+         x1Eg==
+X-Gm-Message-State: AOAM532P0bSWczQ3yZlRtHt5KMTnnIp7Clw5f+Z5ZS8jQzpXwgXWCNoT
+        25sUiCSBTsNdeVj5Ovl9KkU=
+X-Google-Smtp-Source: ABdhPJxfmUdV48LyolYdTt+23SYORwj0ljxDOms5eIXXAVN2jk9lxPKKqXJiFqvhNGFSkYRDh6TpNw==
+X-Received: by 2002:a05:6e02:eeb:: with SMTP id j11mr2176394ilk.295.1603204325080;
+        Tue, 20 Oct 2020 07:32:05 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:9d8a:40ec:eef5:44b4])
+        by smtp.googlemail.com with ESMTPSA id s10sm2065739ilh.33.2020.10.20.07.32.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 20 Oct 2020 07:32:04 -0700 (PDT)
+Subject: Re: [iproute2-next v3] devlink: display elapsed time during flash
+ update
+To:     Jiri Pirko <jiri@resnulli.us>,
+        "Keller, Jacob E" <jacob.e.keller@intel.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Shannon Nelson <snelson@pensando.io>
+References: <20201014223104.3494850-1-jacob.e.keller@intel.com>
+ <f510e3b5-b856-e1a0-3c2b-149b85f9588f@gmail.com>
+ <a6814a14af5c45fbad329b9a4f59b4a8@intel.com>
+ <20201020064519.GD11282@nanopsycho.orion>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <0ebae10f-60f7-8fff-86d6-00df5c72ecf2@gmail.com>
+Date:   Tue, 20 Oct 2020 08:32:01 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20201020064519.GD11282@nanopsycho.orion>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Sep 28 2020 at 14:35, Nitesh Narayan Lal wrote:
->  
-> +	hk_cpus = housekeeping_num_online_cpus(HK_FLAG_MANAGED_IRQ);
-> +
-> +	/*
-> +	 * If we have isolated CPUs for use by real-time tasks, to keep the
-> +	 * latency overhead to a minimum, device-specific IRQ vectors are moved
-> +	 * to the housekeeping CPUs from the userspace by changing their
-> +	 * affinity mask. Limit the vector usage to keep housekeeping CPUs from
-> +	 * running out of IRQ vectors.
-> +	 */
+On 10/20/20 12:45 AM, Jiri Pirko wrote:
+> I prefer long and easy to understand.
 
-This is not true for managed interrupts. The interrupts affinity of
-those cannot be changed by user space.
-
-> +	if (hk_cpus < num_online_cpus()) {
-> +		if (hk_cpus < min_vecs)
-> +			max_vecs = min_vecs;
-> +		else if (hk_cpus < max_vecs)
-> +			max_vecs = hk_cpus;
-> +	}
-
-So now with that assume a 16 core machine (HT off for simplicity)
-
-17 Requested interrupts (1 general, 16 queues)
-
-Managed interrupts will allocate
-
-   1  general interrupt which is free movable by user space
-   16 managed interrupts for queues (one per CPU)
-
-This allows the driver to have 16 queues, i.e. one queue per CPU. These
-interrupts are only used when an application on a CPU issues I/O.
-
-With the above change this will result
-
-   1  general interrupt which is free movable by user space
-   1  managed interrupts (possible affinity to all 16 CPUs, but routed
-      to housekeeping CPU as long as there is one online)
-
-So the device is now limited to a single queue which also affects the
-housekeeping CPUs because now they have to share a single queue.
-
-With larger machines this gets even worse.
-
-So no. This needs way more thought for managed interrupts and you cannot
-do that at the PCI layer. Only the affinity spreading mechanism can do
-the right thing here.
-
-Thanks,
-
-        tglx
+and the code needs to be readable as well. There is middle ground here
+and reasonable naming schemes.
