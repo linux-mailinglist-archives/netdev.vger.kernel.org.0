@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D6752935CB
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 09:32:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 200F52935CC
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 09:32:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405148AbgJTHch (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 03:32:37 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:36512 "EHLO inva020.nxp.com"
+        id S2405165AbgJTHcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 03:32:41 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:36566 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405114AbgJTHcg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Oct 2020 03:32:36 -0400
+        id S2405152AbgJTHci (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Oct 2020 03:32:38 -0400
 Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 8A9BE1A06C3;
-        Tue, 20 Oct 2020 09:32:34 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id D8C981A03AC;
+        Tue, 20 Oct 2020 09:32:36 +0200 (CEST)
 Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id A7AAE1A03AC;
-        Tue, 20 Oct 2020 09:32:26 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id B61771A0693;
+        Tue, 20 Oct 2020 09:32:28 +0200 (CEST)
 Received: from localhost.localdomain (mega.ap.freescale.net [10.192.208.232])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 5A1E740243;
-        Tue, 20 Oct 2020 09:32:16 +0200 (CEST)
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id A56E5402BE;
+        Tue, 20 Oct 2020 09:32:18 +0200 (CEST)
 From:   Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
 To:     davem@davemloft.net, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -31,54 +31,138 @@ Cc:     allan.nielsen@microchip.com, joergen.andreasen@microchip.com,
         xiaoliang.yang_1@nxp.com, po.liu@nxp.com, claudiu.manoil@nxp.com,
         alexandru.marginean@nxp.com, vladimir.oltean@nxp.com,
         leoyang.li@nxp.com, mingkai.hu@nxp.com
-Subject: [PATCH v1 net-next 0/5] net: dsa: felix: psfp support on
-Date:   Tue, 20 Oct 2020 15:23:16 +0800
-Message-Id: <20201020072321.36921-1-xiaoliang.yang_1@nxp.com>
+Subject: [PATCH v1 net-next 1/5] net: mscc: ocelot: add and export MAC table lookup operations
+Date:   Tue, 20 Oct 2020 15:23:17 +0800
+Message-Id: <20201020072321.36921-2-xiaoliang.yang_1@nxp.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20201020072321.36921-1-xiaoliang.yang_1@nxp.com>
+References: <20201020072321.36921-1-xiaoliang.yang_1@nxp.com>
 X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series add gate and police action for tc flower offload to
-support Per-Stream Filtering and Policing(PSFP), which is defined in
-IEEE802.1Qci.
+Add ocelot_mact_lookup() function to retrieve the row and column at
+which an FDB entry with the given {DMAC, VID} key is found.
 
-There is also a TC flower offload to set up VCAPs on ocelot driver.
-Because VCAPs use chain 10000-21255, we set chain 30000 to offload to
-gate and police action to run PSFP module.
+This function is needed in felix DSA driver, so export it.
 
-example:
-	> tc qdisc add dev swp0 clsact
-	> tc filter add dev swp0 ingress chain 0 pref 49152 flower \
-		skip_sw action goto chain 30000
-	> tc filter add dev swp0 ingress chain 30000 protocol 802.1Q \
-		flower skip_sw dst_mac  42:01:3E:72:2F:6B vlan_id 1 \
-		action gate index 1 base-time 0 \
-			sched-entry OPEN 6000 3 -1 \
-		action police index 1 rate 10Mbit burst 10000
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+---
+ drivers/net/ethernet/mscc/ocelot.c | 33 ++++++++++++++++++++++++------
+ drivers/net/ethernet/mscc/ocelot.h | 13 ------------
+ include/soc/mscc/ocelot.h          | 22 ++++++++++++++++++++
+ 3 files changed, 49 insertions(+), 19 deletions(-)
 
-Xiaoliang Yang (5):
-  net: mscc: ocelot: add and export MAC table lookup operations
-  net: mscc: ocelot: set vcap IS2 chain to goto PSFP chain
-  net: dsa: felix: add gate action offload based on tc flower
-  net: mscc: ocelot: use index to set vcap policer
-  net: dsa: felix: add police action for tc flower offload
-
- drivers/net/dsa/ocelot/Makefile           |   3 +-
- drivers/net/dsa/ocelot/felix.c            |  25 +
- drivers/net/dsa/ocelot/felix.h            |  18 +
- drivers/net/dsa/ocelot/felix_flower.c     | 683 ++++++++++++++++++++++
- drivers/net/dsa/ocelot/felix_vsc9959.c    |  14 +-
- drivers/net/ethernet/mscc/ocelot.c        |  33 +-
- drivers/net/ethernet/mscc/ocelot.h        |  13 -
- drivers/net/ethernet/mscc/ocelot_flower.c |  19 +-
- drivers/net/ethernet/mscc/ocelot_vcap.c   | 107 ++--
- include/soc/mscc/ocelot.h                 |  43 +-
- include/soc/mscc/ocelot_ana.h             |  10 +
- 11 files changed, 903 insertions(+), 65 deletions(-)
- create mode 100644 drivers/net/dsa/ocelot/felix_flower.c
-
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 70bf8c67d7ef..5571867a11db 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -12,12 +12,6 @@
+ #define TABLE_UPDATE_SLEEP_US 10
+ #define TABLE_UPDATE_TIMEOUT_US 100000
+ 
+-struct ocelot_mact_entry {
+-	u8 mac[ETH_ALEN];
+-	u16 vid;
+-	enum macaccess_entry_type type;
+-};
+-
+ static inline u32 ocelot_mact_read_macaccess(struct ocelot *ocelot)
+ {
+ 	return ocelot_read(ocelot, ANA_TABLES_MACACCESS);
+@@ -87,6 +81,33 @@ int ocelot_mact_forget(struct ocelot *ocelot,
+ }
+ EXPORT_SYMBOL(ocelot_mact_forget);
+ 
++int ocelot_mact_lookup(struct ocelot *ocelot, const unsigned char mac[ETH_ALEN],
++		       unsigned int vid, int *row, int *col)
++{
++	int val;
++
++	ocelot_mact_select(ocelot, mac, vid);
++
++	/* Issue a read command with MACACCESS_VALID=1. */
++	ocelot_write(ocelot, ANA_TABLES_MACACCESS_VALID |
++		     ANA_TABLES_MACACCESS_MAC_TABLE_CMD(MACACCESS_CMD_READ),
++		     ANA_TABLES_MACACCESS);
++
++	if (ocelot_mact_wait_for_completion(ocelot))
++		return -ETIMEDOUT;
++
++	/* Read back the entry flags */
++	val = ocelot_read(ocelot, ANA_TABLES_MACACCESS);
++	if (!(val & ANA_TABLES_MACACCESS_VALID))
++		return -ENOENT;
++
++	ocelot_field_read(ocelot, ANA_TABLES_MACTINDX_M_INDEX, row);
++	ocelot_field_read(ocelot, ANA_TABLES_MACTINDX_BUCKET, col);
++
++	return 0;
++}
++EXPORT_SYMBOL(ocelot_mact_lookup);
++
+ static void ocelot_mact_init(struct ocelot *ocelot)
+ {
+ 	/* Configure the learning mode entries attributes:
+diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
+index abb407dff93c..44e39683a5a4 100644
+--- a/drivers/net/ethernet/mscc/ocelot.h
++++ b/drivers/net/ethernet/mscc/ocelot.h
+@@ -74,19 +74,6 @@ struct ocelot_dump_ctx {
+ 	int idx;
+ };
+ 
+-/* MAC table entry types.
+- * ENTRYTYPE_NORMAL is subject to aging.
+- * ENTRYTYPE_LOCKED is not subject to aging.
+- * ENTRYTYPE_MACv4 is not subject to aging. For IPv4 multicast.
+- * ENTRYTYPE_MACv6 is not subject to aging. For IPv6 multicast.
+- */
+-enum macaccess_entry_type {
+-	ENTRYTYPE_NORMAL = 0,
+-	ENTRYTYPE_LOCKED,
+-	ENTRYTYPE_MACv4,
+-	ENTRYTYPE_MACv6,
+-};
+-
+ int ocelot_port_fdb_do_dump(const unsigned char *addr, u16 vid,
+ 			    bool is_static, void *data);
+ int ocelot_mact_learn(struct ocelot *ocelot, int port,
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 1e9db9577441..31da33fdb7ac 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -659,6 +659,28 @@ struct ocelot_policer {
+ 	u32 burst; /* bytes */
+ };
+ 
++/* MAC table entry types.
++ * ENTRYTYPE_NORMAL is subject to aging.
++ * ENTRYTYPE_LOCKED is not subject to aging.
++ * ENTRYTYPE_MACv4 is not subject to aging. For IPv4 multicast.
++ * ENTRYTYPE_MACv6 is not subject to aging. For IPv6 multicast.
++ */
++enum macaccess_entry_type {
++	ENTRYTYPE_NORMAL = 0,
++	ENTRYTYPE_LOCKED,
++	ENTRYTYPE_MACv4,
++	ENTRYTYPE_MACv6,
++};
++
++struct ocelot_mact_entry {
++	u8 mac[ETH_ALEN];
++	u16 vid;
++	enum macaccess_entry_type type;
++};
++
++int ocelot_mact_lookup(struct ocelot *ocelot, const unsigned char mac[ETH_ALEN],
++		       unsigned int vid, int *row, int *col);
++
+ #define ocelot_read_ix(ocelot, reg, gi, ri) __ocelot_read_ix(ocelot, reg, reg##_GSZ * (gi) + reg##_RSZ * (ri))
+ #define ocelot_read_gix(ocelot, reg, gi) __ocelot_read_ix(ocelot, reg, reg##_GSZ * (gi))
+ #define ocelot_read_rix(ocelot, reg, ri) __ocelot_read_ix(ocelot, reg, reg##_RSZ * (ri))
 -- 
 2.17.1
 
