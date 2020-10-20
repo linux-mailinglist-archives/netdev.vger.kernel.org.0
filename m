@@ -2,63 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A6FF294105
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 19:02:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE08A294116
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 19:09:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395118AbgJTRCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 13:02:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41146 "EHLO mail.kernel.org"
+        id S2395153AbgJTRJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 13:09:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47458 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2395114AbgJTRCn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Oct 2020 13:02:43 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S2395149AbgJTRJS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Oct 2020 13:09:18 -0400
+Received: from dellmb.labs.office.nic.cz (nat-1.nic.cz [217.31.205.1])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5F5ED2177B;
-        Tue, 20 Oct 2020 17:02:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A6DE82177B;
+        Tue, 20 Oct 2020 17:09:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603213362;
-        bh=m41l1QG+vq5Iziw+pChnU5k9eeRD2kOnLqQuh+zyajI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MPUUZcD7/SZ5Gnsqg2dJF3fqM+sBe+F/qCP/lNGUkH3cyDpOnyauFxyWlDHxGGEWM
-         Ei51994cuZI4Sj5iT0yQL0wtk/2ne2ognsuq0gp3neSnswxi9Uq9rHB90PUbmTRkgx
-         yNB1TVPIZ+PANd2iACViUsm9Jl/IlqKOznI/6HpM=
-Date:   Tue, 20 Oct 2020 10:02:40 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     zhudi <zhudi21@huawei.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <rose.chen@huawei.com>
-Subject: Re: [PATCH v2] rtnetlink: fix data overflow in rtnl_calcit()
-Message-ID: <20201020100240.5ab806ac@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201020055115.1268-1-zhudi21@huawei.com>
-References: <20201020055115.1268-1-zhudi21@huawei.com>
+        s=default; t=1603213757;
+        bh=9okKdgs6yArjf4mMDWyzMJE+o/l8srWvdz0xqyEZXDM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=YAPZcXyRNuKo5/htm7wVkuHtE/Z2QvRAmqDhwd/CE72dDZaTf/TXoS4RWFEhJJzUQ
+         gtzm825v938NSfMZ/7yWqcseywLe3z5H/Zt9yZZNmWVEXycetSaeenkWSDLatNANiY
+         eOuVa9Q0rdT+VklnkXlcHU6R06mjWllapJ/Xd+4g=
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH russell-kings-net-queue 0/2] net: dsa: mv88e6xxx: fill phylink's supported interfaces to make SFP modules work under DSA ports
+Date:   Tue, 20 Oct 2020 19:09:10 +0200
+Message-Id: <20201020170912.25959-1-kabel@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 20 Oct 2020 13:51:15 +0800 zhudi wrote:
-> @@ -3735,7 +3735,7 @@ static u16 rtnl_calcit(struct sk_buff *skb, struct nlmsghdr *nlh)
->  	 */
->  	rcu_read_lock();
->  	for_each_netdev_rcu(net, dev) {
-> -		min_ifinfo_dump_size = max_t(u16, min_ifinfo_dump_size,
-> +		min_ifinfo_dump_size = max(min_ifinfo_dump_size,
->  					     if_nlmsg_size(dev,
->  						           ext_filter_mask));
+Hi Russell,
 
-Patch looks good, one trivial adjustment.
+this series applies on your net-queue branch.
 
-As checkpatch.pl points out you need to re-align the continuation lines:
+It adds a new DSA switch operation which is used to determine a DSA
+switch port's supported PHY interface modes to fill in phylink's config
+supported_interfaces member to make SFP modules work under DSA ports.
 
-CHECK: Alignment should match open parenthesis
-#70: FILE: net/core/rtnetlink.c:3739:
-+		min_ifinfo_dump_size = max(min_ifinfo_dump_size,
- 					     if_nlmsg_size(dev,
+This operation is then implemented for mv88e6xxx.
 
-In fact the second parameter should now fit on one line, like this:
+I was thinking whether this method should be renamed to something like
+serdes_supported_interfaces or what, so that it is clear that we are
+not interested in RGMII and other non-SERDES modes...
 
-		min_ifinfo_dump_size = max(min_ifinfo_dump_size,
-					   if_nlmsg_size(dev, ext_filter_mask));
+BTW: You once complained that you don't like that this needs again to
+add a new op to DSA switch and for mv88e6xxx driver to add a new op for
+the each chip... So maybe phylink_validate code can be refactored to do
+this?
+My opinion is that it is cleaner if we just add another op, but I am
+open to other opinions.
+
+Marek
+
+Marek Behún (2):
+  net: dsa: fill phylink's config supported_interfaces member
+  net: dsa: mv88e6xxx: implement .phylink_get_interfaces operation
+
+ drivers/net/dsa/mv88e6xxx/chip.c | 57 ++++++++++++++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/chip.h |  2 ++
+ include/net/dsa.h                |  2 ++
+ net/dsa/slave.c                  |  4 +++
+ 4 files changed, 65 insertions(+)
+
+
+base-commit: a32e90737c1c92653767d3c95c63c16b9b72c6c2
+prerequisite-patch-id: 74af250a98f8d7d48da6b7655000995dd9d9310b
+prerequisite-patch-id: 1ab9d0fedae2be621a821aac01ebf680627279d3
+prerequisite-patch-id: 24af4837bacf2f8c9afcedd497a7d61c7cb7cdf1
+-- 
+2.26.2
+
