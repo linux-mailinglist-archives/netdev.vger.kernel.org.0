@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF188294129
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 19:12:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8415A29412C
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 19:12:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395252AbgJTRMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 13:12:38 -0400
-Received: from fllv0016.ext.ti.com ([198.47.19.142]:56226 "EHLO
+        id S2395269AbgJTRMo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 13:12:44 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:56238 "EHLO
         fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390192AbgJTRMi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 13:12:38 -0400
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 09KHCX0m128348;
-        Tue, 20 Oct 2020 12:12:33 -0500
+        with ESMTP id S2395260AbgJTRMn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 13:12:43 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 09KHCdWZ128360;
+        Tue, 20 Oct 2020 12:12:39 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1603213953;
-        bh=SlH0ks1TW1FrmbMLWhVzBd/4zTAVOP/3L+dhplYAzA4=;
+        s=ti-com-17Q1; t=1603213959;
+        bh=YFlWf6fc30NMtx+BOA420w19hwu2TBE8PcvcNPrx4AY=;
         h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=lUqqfy+Nl41lB6sxEJaOJbQpDsB5KwWf8SvyjPTQcWx9FyG7RqIydHHDdMn/pgJjk
-         tKdrSGR3DOkJvXjcqCrTQLqYbPN1/T6ah1QBO+Uw7MT1SIhR4wank7QO/nl/svDuS5
-         3JGG4zIBbncihcykzoVEyJQDEFQ8Zw7hMO4Oio/s=
+        b=yb40pazkFBl+cEEANEU/SjhWUzerqUbrLErJtBLdmwjQBQJXdt1O2aC4wqChpOKGk
+         ecoSy8la4+UtcMfrosw6oDK4tmdeMw0GywzDhSR9jqSJ9199MPSr9W2LCsLTUawzD9
+         xAwtLi54w7eBCMxfhBvfJYU3jj5n47GaXx+U8Iag=
 Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
-        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 09KHCXLt100947
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 09KHCcI8099033
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 20 Oct 2020 12:12:33 -0500
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE115.ent.ti.com
+        Tue, 20 Oct 2020 12:12:38 -0500
+Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE115.ent.ti.com
  (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 20
- Oct 2020 12:12:33 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ Oct 2020 12:12:38 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Tue, 20 Oct 2020 12:12:33 -0500
+ Frontend Transport; Tue, 20 Oct 2020 12:12:38 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 09KHCXBO119662;
-        Tue, 20 Oct 2020 12:12:33 -0500
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 09KHCcoA094618;
+        Tue, 20 Oct 2020 12:12:38 -0500
 From:   Dan Murphy <dmurphy@ti.com>
 To:     <davem@davemloft.net>, <andrew@lunn.ch>, <f.fainelli@gmail.com>,
         <hkallweit1@gmail.com>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH net-next v2 1/3] ethtool: Add 10base-T1L link mode entries
-Date:   Tue, 20 Oct 2020 12:12:19 -0500
-Message-ID: <20201020171221.730-2-dmurphy@ti.com>
+Subject: [PATCH net-next v2 2/3] dt-bindings: dp83td510: Add binding for DP83TD510 Ethernet PHY
+Date:   Tue, 20 Oct 2020 12:12:20 -0500
+Message-ID: <20201020171221.730-3-dmurphy@ti.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201020171221.730-1-dmurphy@ti.com>
 References: <20201020171221.730-1-dmurphy@ti.com>
@@ -55,100 +55,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add entries for the 10base-T1L full and half duplex supported modes.
-
-$ ethtool eth0
-        Supported ports: [ TP    MII  ]
-        Supported link modes:   10baseT1L/Half 10baseT1L/Full
-        Supported pause frame use: Symmetric Receive-only
-        Supports auto-negotiation: Yes
-        Supported FEC modes: Not reported
-        Advertised link modes:  10baseT1L/Half 10baseT1L/Full
-        Advertised pause frame use: No
-        Advertised auto-negotiation: No
-        Advertised FEC modes: Not reported
-        Speed: 10Mb/s
-        Duplex: Full
-        Auto-negotiation: on
-        Port: MII
-        PHYAD: 1
-        Transceiver: external
-        Supports Wake-on: gs
-        Wake-on: d
-        SecureOn password: 00:00:00:00:00:00
-        Current message level: 0x00000000 (0)
-
-        Link detected: yes
+The DP83TD510 is a 10M single twisted pair Ethernet PHY
 
 Signed-off-by: Dan Murphy <dmurphy@ti.com>
 ---
- drivers/net/phy/phy-core.c   | 4 +++-
- include/uapi/linux/ethtool.h | 2 ++
- net/ethtool/common.c         | 2 ++
- net/ethtool/linkmodes.c      | 2 ++
- 4 files changed, 9 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/net/ti,dp83td510.yaml | 72 +++++++++++++++++++
+ 1 file changed, 72 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/ti,dp83td510.yaml
 
-diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-index 8d333d3084ed..616fae7f0c86 100644
---- a/drivers/net/phy/phy-core.c
-+++ b/drivers/net/phy/phy-core.c
-@@ -13,7 +13,7 @@
-  */
- const char *phy_speed_to_str(int speed)
- {
--	BUILD_BUG_ON_MSG(__ETHTOOL_LINK_MODE_MASK_NBITS != 92,
-+	BUILD_BUG_ON_MSG(__ETHTOOL_LINK_MODE_MASK_NBITS != 94,
- 		"Enum ethtool_link_mode_bit_indices and phylib are out of sync. "
- 		"If a speed or mode has been added please update phy_speed_to_str "
- 		"and the PHY settings array.\n");
-@@ -175,6 +175,8 @@ static const struct phy_setting settings[] = {
- 	/* 10M */
- 	PHY_SETTING(     10, FULL,     10baseT_Full		),
- 	PHY_SETTING(     10, HALF,     10baseT_Half		),
-+	PHY_SETTING(     10, FULL,     10baseT1L_Full		),
-+	PHY_SETTING(     10, HALF,     10baseT1L_Half		),
- };
- #undef PHY_SETTING
- 
-diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-index 9ca87bc73c44..16b6ea7548d3 100644
---- a/include/uapi/linux/ethtool.h
-+++ b/include/uapi/linux/ethtool.h
-@@ -1619,6 +1619,8 @@ enum ethtool_link_mode_bit_indices {
- 	ETHTOOL_LINK_MODE_400000baseCR4_Full_BIT	 = 89,
- 	ETHTOOL_LINK_MODE_100baseFX_Half_BIT		 = 90,
- 	ETHTOOL_LINK_MODE_100baseFX_Full_BIT		 = 91,
-+	ETHTOOL_LINK_MODE_10baseT1L_Half_BIT		 = 92,
-+	ETHTOOL_LINK_MODE_10baseT1L_Full_BIT		 = 93,
- 	/* must be last entry */
- 	__ETHTOOL_LINK_MODE_MASK_NBITS
- };
-diff --git a/net/ethtool/common.c b/net/ethtool/common.c
-index 24036e3055a1..95f87febc742 100644
---- a/net/ethtool/common.c
-+++ b/net/ethtool/common.c
-@@ -194,6 +194,8 @@ const char link_mode_names[][ETH_GSTRING_LEN] = {
- 	__DEFINE_LINK_MODE_NAME(400000, CR4, Full),
- 	__DEFINE_LINK_MODE_NAME(100, FX, Half),
- 	__DEFINE_LINK_MODE_NAME(100, FX, Full),
-+	__DEFINE_LINK_MODE_NAME(10, T1L, Half),
-+	__DEFINE_LINK_MODE_NAME(10, T1L, Full),
- };
- static_assert(ARRAY_SIZE(link_mode_names) == __ETHTOOL_LINK_MODE_MASK_NBITS);
- 
-diff --git a/net/ethtool/linkmodes.c b/net/ethtool/linkmodes.c
-index c5bcb9abc8b9..a8fab6fb1b30 100644
---- a/net/ethtool/linkmodes.c
-+++ b/net/ethtool/linkmodes.c
-@@ -264,6 +264,8 @@ static const struct link_mode_info link_mode_params[] = {
- 	__DEFINE_LINK_MODE_PARAMS(400000, CR4, Full),
- 	__DEFINE_LINK_MODE_PARAMS(100, FX, Half),
- 	__DEFINE_LINK_MODE_PARAMS(100, FX, Full),
-+	__DEFINE_LINK_MODE_PARAMS(10, T1L, Half),
-+	__DEFINE_LINK_MODE_PARAMS(10, T1L, Full),
- };
- 
- const struct nla_policy ethnl_linkmodes_set_policy[] = {
+diff --git a/Documentation/devicetree/bindings/net/ti,dp83td510.yaml b/Documentation/devicetree/bindings/net/ti,dp83td510.yaml
+new file mode 100644
+index 000000000000..171aed0f2503
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/ti,dp83td510.yaml
+@@ -0,0 +1,72 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) 2020 Texas Instruments Incorporated
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/net/ti,dp83td510.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: TI DP83TD510 ethernet PHY
++
++allOf:
++  - $ref: "ethernet-controller.yaml#"
++  - $ref: "ethernet-phy.yaml#"
++
++maintainers:
++  - Dan Murphy <dmurphy@ti.com>
++
++description: |
++  The PHY is an twisted pair 10Mbps Ethernet PHY that support MII, RMII and
++  RGMII interfaces.
++
++  Specifications about the Ethernet PHY can be found at:
++    http://www.ti.com/lit/ds/symlink/dp83td510e.pdf
++
++properties:
++  reg:
++    maxItems: 1
++
++  tx-fifo-depth:
++    description: |
++       Transmitt FIFO depth for RMII mode.  The PHY only exposes 4 nibble
++       depths. The valid nibble depths are 4, 5, 6 and 8.
++    default: 5
++
++  rx-internal-delay-ps:
++    description: |
++       Setting this property to a non-zero number sets the RX internal delay
++       for the PHY.  The internal delay for the PHY is fixed to 30ns relative
++       to receive data.
++
++  tx-internal-delay-ps:
++    description: |
++       Setting this property to a non-zero number sets the TX internal delay
++       for the PHY.  The internal delay for the PHY has a range of -4 to 4ns
++       relative to transmit data.
++
++  ti,master-slave-mode:
++    $ref: /schemas/types.yaml#definitions/uint32
++    default: 0
++    description: |
++      Force the PHY to be configured to a specific mode.
++      Force Auto Negotiation - 0
++      Force Master mode at 1v p2p - 1
++      Force Master mode at 2.4v p2p - 2
++      Force Slave mode at 1v p2p - 3
++      Force Slave mode at 2.4v p2p - 4
++    enum: [ 0, 1, 2, 3, 4 ]
++
++required:
++  - reg
++
++examples:
++  - |
++    mdio0 {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      ethphy0: ethernet-phy@0 {
++        reg = <0>;
++        tx-fifo-depth = <5>;
++        rx-internal-delay-ps = <1>;
++        tx-internal-delay-ps = <1>;
++      };
++    };
 -- 
 2.28.0.585.ge1cfff676549
 
