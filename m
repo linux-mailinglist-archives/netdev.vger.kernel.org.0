@@ -2,79 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00B7A293EBF
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 16:32:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36843293ED3
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 16:35:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731020AbgJTOcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 10:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40688 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728056AbgJTOcH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 10:32:07 -0400
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30BD7C061755
-        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 07:32:07 -0700 (PDT)
-Received: by mail-il1-x12f.google.com with SMTP id z2so2461050ilh.11
-        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 07:32:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Cg6g8EUa9aMYsveNpphQSbwDB9pxfXJrBONsPnATloY=;
-        b=SRnBAquT2Kf05gkBlFMVIoh73dSp4JCrV83QKC+a82Ym2dD3m6o2SUJx3Llh9fD/Fy
-         RRS1JWUEn6LEROURpeBkuyHUTzWjIs5DP29e+WKLcvOIaD4dmTzOy8uM86vba7ZBXacn
-         uJmm7jdeGPi6dOxaeC53kOnETjAVGEGMuJ4eBC0k8OQkrPn2jeefwCk24DxqgCWEFUBb
-         gj98J1OTuVcZRX3pHSi0JJUV13lG2rIdTgNX0HqRjY3QRvhoqOtUYewTbbJyTlq8Fvcd
-         PNRT1ciG18Zdj/z671eMuKXaV4sSCosdBykQlv1Kj7rhs0vK2uiA1IXxcAxCeEQckW9m
-         7sLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Cg6g8EUa9aMYsveNpphQSbwDB9pxfXJrBONsPnATloY=;
-        b=Ro9llyynl9f0bpW2qa8F8MaFwq9MupEoWI5RBnys+ghI3GBnVlCf1wT+scZfB3ixLk
-         HDMoBh3V8nL+wMtyqE9uBhBXKSr3X28vhd/qLnQ2/tIsrp0QbM+gYySJBOoZ96zmBZA2
-         DhA8UpP6oRYv/DHDtq3WGGf3Y6wkFHC9itNBv5ZCc+vlR1FuAop2cB1TES/H2ABknc12
-         eJYoPmpOjPBXVBGmDirX1SlK/ZLLHEtDldcEAIVq8bGztx8ojNRn9nfvN/rArmGXpjtY
-         UPXjmr0jyh0l1ElR3uMs/l58eaAqjC6Xm2hecK8wMtTpZjEStdcWN6SA+mpHQaGq3gKb
-         x1Eg==
-X-Gm-Message-State: AOAM532P0bSWczQ3yZlRtHt5KMTnnIp7Clw5f+Z5ZS8jQzpXwgXWCNoT
-        25sUiCSBTsNdeVj5Ovl9KkU=
-X-Google-Smtp-Source: ABdhPJxfmUdV48LyolYdTt+23SYORwj0ljxDOms5eIXXAVN2jk9lxPKKqXJiFqvhNGFSkYRDh6TpNw==
-X-Received: by 2002:a05:6e02:eeb:: with SMTP id j11mr2176394ilk.295.1603204325080;
-        Tue, 20 Oct 2020 07:32:05 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:9d8a:40ec:eef5:44b4])
-        by smtp.googlemail.com with ESMTPSA id s10sm2065739ilh.33.2020.10.20.07.32.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Oct 2020 07:32:04 -0700 (PDT)
-Subject: Re: [iproute2-next v3] devlink: display elapsed time during flash
- update
-To:     Jiri Pirko <jiri@resnulli.us>,
-        "Keller, Jacob E" <jacob.e.keller@intel.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Shannon Nelson <snelson@pensando.io>
-References: <20201014223104.3494850-1-jacob.e.keller@intel.com>
- <f510e3b5-b856-e1a0-3c2b-149b85f9588f@gmail.com>
- <a6814a14af5c45fbad329b9a4f59b4a8@intel.com>
- <20201020064519.GD11282@nanopsycho.orion>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0ebae10f-60f7-8fff-86d6-00df5c72ecf2@gmail.com>
-Date:   Tue, 20 Oct 2020 08:32:01 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.1
+        id S2408221AbgJTOfb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 10:35:31 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:49942 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731020AbgJTOfa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 10:35:30 -0400
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.143])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 84F3520168;
+        Tue, 20 Oct 2020 14:35:29 +0000 (UTC)
+Received: from us4-mdac16-45.at1.mdlocal (unknown [10.110.48.16])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 7364F800D2;
+        Tue, 20 Oct 2020 14:35:29 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.108])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id E04B740081;
+        Tue, 20 Oct 2020 14:35:28 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 9491A14005A;
+        Tue, 20 Oct 2020 14:35:28 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 20 Oct
+ 2020 15:35:19 +0100
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH net] sfc: move initialisation of efx->filter_sem to
+ efx_init_struct()
+To:     <linux-net-drivers@solarflare.com>, <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+Message-ID: <24fad43e-887d-051e-25e3-506f23f63abf@solarflare.com>
+Date:   Tue, 20 Oct 2020 15:35:08 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-In-Reply-To: <20201020064519.GD11282@nanopsycho.orion>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25736.003
+X-TM-AS-Result: No-2.311800-8.000000-10
+X-TMASE-MatchedRID: Ll6vM9Ck4lBBZRZcGhF8ocGNvKPnBgOapys9s25Gmbo6Vn8xMTQihXi8
+        nIGQFeXxPEoGb8keCDpTvVffeIwvQwUcfW/oedmqnFVnNmvv47uWODD/yzpvdwdkFovAReUoilv
+        Ab18i4hODTRo8xmcmTo2nDYlsf+ksLPVNKiCZUVNtawJSSsDgSX0tCKdnhB58vqq8s2MNhPCZMP
+        CnTMzfOiq2rl3dzGQ1NhgPeftSrBXhUxVrz8SuFTuaf+OlDslhVdG9MruYqeAy9rLAeKIrd6rii
+        IUVji5eqzEv7+9/x+/5XoQ0xrtUjO7RDmnKgNnfbVz7QXEKhl1Dgw2OfwbhLKMa5OkNpiHkifsL
+        +6CY4RlXTTnZwS8L+e90JQgW5qyr
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10-2.311800-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25736.003
+X-MDID: 1603204529-KNovId6pO0Qt
+X-PPE-DISP: 1603204529;KNovId6pO0Qt
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/20/20 12:45 AM, Jiri Pirko wrote:
-> I prefer long and easy to understand.
+efx_probe_filters() has not been called yet when EF100 calls into
+ efx_mcdi_filter_table_probe(), for which it wants to take the
+ filter_sem.
 
-and the code needs to be readable as well. There is middle ground here
-and reasonable naming schemes.
+Fixes: a9dc3d5612ce ("sfc_ef100: RX filter table management and related gubbins")
+Signed-off-by: Edward Cree <ecree@solarflare.com>
+---
+ drivers/net/ethernet/sfc/efx_common.c | 1 +
+ drivers/net/ethernet/sfc/rx_common.c  | 1 -
+ 2 files changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/efx_common.c
+index 72a3f0e09f52..de797e1ac5a9 100644
+--- a/drivers/net/ethernet/sfc/efx_common.c
++++ b/drivers/net/ethernet/sfc/efx_common.c
+@@ -1014,6 +1014,7 @@ int efx_init_struct(struct efx_nic *efx,
+ 	efx->num_mac_stats = MC_CMD_MAC_NSTATS;
+ 	BUILD_BUG_ON(MC_CMD_MAC_NSTATS - 1 != MC_CMD_MAC_GENERATION_END);
+ 	mutex_init(&efx->mac_lock);
++	init_rwsem(&efx->filter_sem);
+ #ifdef CONFIG_RFS_ACCEL
+ 	mutex_init(&efx->rps_mutex);
+ 	spin_lock_init(&efx->rps_hash_lock);
+diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/rx_common.c
+index 5e29284c89c9..19cf7cac1e6e 100644
+--- a/drivers/net/ethernet/sfc/rx_common.c
++++ b/drivers/net/ethernet/sfc/rx_common.c
+@@ -797,7 +797,6 @@ int efx_probe_filters(struct efx_nic *efx)
+ {
+ 	int rc;
+ 
+-	init_rwsem(&efx->filter_sem);
+ 	mutex_lock(&efx->mac_lock);
+ 	down_write(&efx->filter_sem);
+ 	rc = efx->type->filter_table_probe(efx);
