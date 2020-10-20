@@ -2,248 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D0982942BF
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 21:10:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31E9E2942C0
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 21:11:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437982AbgJTTKG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 15:10:06 -0400
-Received: from mail-eopbgr660052.outbound.protection.outlook.com ([40.107.66.52]:42970
+        id S2390695AbgJTTLH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 15:11:07 -0400
+Received: from mail-eopbgr660076.outbound.protection.outlook.com ([40.107.66.76]:47360
         "EHLO CAN01-QB1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2437957AbgJTTKF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Oct 2020 15:10:05 -0400
+        id S1730430AbgJTTLG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Oct 2020 15:11:06 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ngtLBnLWfA4QnDEfXWMqHmlaSsYO84CvuwMAxjc6Ev74uuxep4XamEw6b7AId1sjkJpp81LL+2K+Rty4keIN1Uz+TJkA8LMvatJxn4HQzwCvd3xpm0x5LoI6ee6LtXMJvUbDRyxfp6bQBiD5/nfP+OgHoaL3msKu6HN1qPT5fYsbtY8/2CvNrdUU/IUGOlGtA6Oc97xsJJHcpXDay1Lchq/GLX4aMhRLtZB2glXUE5y7oKVf3i072IoWA9eUTRTPtfETS51PgLSIJFjEoVUskTVnsrJ3SD62mE3nwWefZNdr2HqKSEq0FV4ZaJXHgI9nZVAL+qWVW8pECQx9flqs7w==
+ b=LaUMJl0BcprFkTxilYIB+Lwc+auoP6MSTtnO+y9GgUBQSIFvvOIDkW5jJVahjofspL4//BOqWfEpLz+UdjXRMnblIFit9VmyUMhpJ8kzOQDb+XTZRbDgCVIc1e6ch6lMkFaLrfG5njNzxb4CnYKkwVuaL/H+MbYyIRr+mV/9oswvKPvgOcDqsX4VGLbd7HBO7P3rTWh9J7vRE+i/pkW0wptHDnfSuNyatHtetVMyX1cmdg6AUaGU040thb5DIfTtZxxCVKb/qkZ5qA76XpPFsH847hVndPAoJb8epiFq1jDykaJ2qhL3DarXLY6NC9njD/rAA62lorAAvWdyf5dr4w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xJ5gQ4TREAu3vWAoEWHjbWPEDA61lmjQX7ItCANsKlM=;
- b=NKOXAOcAnSSQzE1L2IzeNgnFu8FT3lBCfAKDPsIVazOBE0Ob8DICqCRyL9hMsUSFLEsJgE412E+ZQG4omwkuMncS2cy6DaVIq9toY2mOQuXwV+Hb3/6WNliHwOtQb2L00X94H8i4JfjhbIXpcFCn1kSDAPxa3tpdh74N24OWR3qhSN0F6Sui2NB9zG8QdOO0UxlCttTPXcaD60EdZaEol0lTxCq//xpCuj4hCp0PconjDucq0CXBpvVySdX/2WghbkFXX7vGXhCbmLVEjZRswLGVa07as8vJYiixqHTvDj2HSQmAxZnYisRpBl4TJrdH5PN1Vt8f+hn/MmModLcyxQ==
+ bh=6tKw9Vk+m2zj0xTJHAJrF/10ErdvqTnJRLYjtHd0JPM=;
+ b=J1XYguB8mMlS32EVfR3PIPneZt7x4zPW+AmC/NRRnJDGVx142HsalRtcj8Cfpv93HOEDA0qebtErSPa3Vv7/Som5+r2qSL3MJcIJsEbU+plK9c64k2aplgRc+TZMoxkKSEa7kzxXA5bAISM2JSKKZUd8Qx8B77EXilPrd4eX4g1fwFRAA+pc7kBFkFT5n/13PO70+odXv79Cg2m9bQAtxvcsvy4Fm8JO22y8E/gG4iS/z7r3tG9n7hr+hNAM7Rt0Doa8Dji39o7JP+egVIfLLBb9hmz505o6n3ihSTSFmra6HFz6fVmg9zY6rl0cZGS0uPzL/Esrr5S+4lRN/dmjRQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
  dkim=pass header.d=calian.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xJ5gQ4TREAu3vWAoEWHjbWPEDA61lmjQX7ItCANsKlM=;
- b=iaYE67bDR3K+lxy1rssi5j/mzzXbKu3hRVNSMBPc2/0cfNPvvK7N8U233CXOikEQaBUD0jpvE6LZQA44mpdsve+TEXcaq9mUSOBbsgxi9z7YzkLG6wdvlZYB1kPT9bqBQtlzUeR2yQhuHggOHUopUJqJe4hKTZkCiKoiV49uXCw=
-Authentication-Results: xilinx.com; dkim=none (message not signed)
- header.d=none;xilinx.com; dmarc=none action=none header.from=calian.com;
+ bh=6tKw9Vk+m2zj0xTJHAJrF/10ErdvqTnJRLYjtHd0JPM=;
+ b=XLqZ/SIK0kkLvPLzfJOlE9KUaXLStuwY5a4fywGcIYiu3T8vxVS9G6o1CbhhmVDOB51X+yFwkpU/UrNLz3Jh4AyvvH9r5jfamtwsNwIq4/3/i4yIaPHV6Rv9aiPOMBoo4tfPgKMotI93pX1M2oRz/BDXPCdjodQKdchOlbbUA9A=
+Authentication-Results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=calian.com;
 Received: from YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:f::20)
- by YTBPR01MB2926.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:15::26) with
+ by YTBPR01MB2558.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:15::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.21; Tue, 20 Oct
- 2020 19:10:01 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.20; Tue, 20 Oct
+ 2020 19:11:03 +0000
 Received: from YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
  ([fe80::5c60:6462:fef4:793]) by YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
  ([fe80::5c60:6462:fef4:793%3]) with mapi id 15.20.3477.028; Tue, 20 Oct 2020
- 19:10:01 +0000
+ 19:11:03 +0000
 From:   Robert Hancock <robert.hancock@calian.com>
-To:     radhey.shyam.pandey@xilinx.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     michal.simek@xilinx.com, linux@armlinux.org.uk, andrew@lunn.ch,
-        netdev@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>
-Subject: [PATCH v2] net: axienet: Properly handle PCS/PMA PHY for 1000BaseX mode
-Date:   Tue, 20 Oct 2020 13:09:41 -0600
-Message-Id: <20201020190941.756540-1-robert.hancock@calian.com>
+To:     andrew@lunn.ch, hkallweit1@gmail.com
+Cc:     linux@armlinux.org.uk, davem@davemloft.net, netdev@vger.kernel.org,
+        Robert Hancock <robert.hancock@calian.com>
+Subject: [PATCH v2] net: phy: marvell: add special handling of Finisar modules with 88E1111
+Date:   Tue, 20 Oct 2020 13:10:48 -0600
+Message-Id: <20201020191048.756652-1-robert.hancock@calian.com>
 X-Mailer: git-send-email 2.18.4
 Content-Type: text/plain
 X-Originating-IP: [204.83.154.189]
-X-ClientProxiedBy: YT1PR01CA0140.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:2f::19) To YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+X-ClientProxiedBy: MWHPR22CA0069.namprd22.prod.outlook.com
+ (2603:10b6:300:12a::31) To YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
  (2603:10b6:b01:f::20)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (204.83.154.189) by YT1PR01CA0140.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:2f::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.21 via Frontend Transport; Tue, 20 Oct 2020 19:10:00 +0000
+Received: from localhost.localdomain (204.83.154.189) by MWHPR22CA0069.namprd22.prod.outlook.com (2603:10b6:300:12a::31) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Tue, 20 Oct 2020 19:11:01 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dab21bf0-e574-423e-901f-08d8752bbe67
-X-MS-TrafficTypeDiagnostic: YTBPR01MB2926:
+X-MS-Office365-Filtering-Correlation-Id: 88bd34d4-4e20-42ce-506a-08d8752be32c
+X-MS-TrafficTypeDiagnostic: YTBPR01MB2558:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <YTBPR01MB29267CF919FBB0595C3618E6EC1F0@YTBPR01MB2926.CANPRD01.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2657;
+X-Microsoft-Antispam-PRVS: <YTBPR01MB25580C2482C464E0C92A7AF4EC1F0@YTBPR01MB2558.CANPRD01.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gVEfE/7sS91CHq2Ibd8GPmyit31W5eogBlBkNLgo1wZYwjz9jLvECZnR9c4PAw6HAtnJDt5EZIIkHFv8EAJK7yKYIUmtJISsvOVJnZC0MJL2NMVA7o6ytyivkzYZAObdQvL3e1rk7JDC3AL+7JTdcelrCWbarvrfMlmvLZlij1z5YM1+2uuR4DdmRErtHuYc3mSM+4XGrKbwdpThuIhtMz/OMYS8XscMWINLk21o4mKj/4qk4ftdVaISl3qHRuLwAWYZwZp/aHO+MAhJXr7VhaVHrx2tbV7FUm/MO5XPy6owX8jChmxU3WQyv7w4KF98tQ68UcNrinfknsBK0GnLERjI+WI9fe+7NOFi3SeNrkRnmQwGWx965+hqnkwtXUOS
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(396003)(346002)(376002)(136003)(366004)(2906002)(8676002)(44832011)(86362001)(8936002)(69590400008)(6666004)(316002)(66556008)(66476007)(16526019)(52116002)(6512007)(2616005)(186003)(478600001)(6486002)(4326008)(956004)(36756003)(6506007)(66946007)(5660300002)(26005)(83380400001)(1076003)(107886003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: HIAnDFqR1U5ryhauNlz8pYa2MRkrskbybMcCudo1rv6Wpf+nCq3/SLaO9n1FdOQlGnrs1BQuKCpP6HUvuITsxs7luKyd0mVpGFfKjaJe4RzSgBcoYXoeCk8SRvFd5IDBsBLnnmvJnknm+sP80SXZirpHcY/bejxMWFn+AazJRcJbB2gJyEWVTdJLcJeV5WHVWiwFHGLgSC2vTIAM6KFVbL8ZcCkqlD5k1vqX461pBV0kKBdLeD29PJxpga+t4O9e8OcZ/seWltfXwjjyMEomhacTENtcAG6/fcAJq6MiQvtxxgPLgm7ABCAEy5XRP6BtgDIBJbgoNWo2UZxy+zKoJhwxSt1SlHFFp/tcWUE/pyYh0xI4EHVCDaBuc9dEPPDKetueVAv5jX/yhzLEBvUI+KK9RxB7WaMrh69DatLAIZdD9e74u+qYxjEs8HW8qDyma1Wodyox9YyjbBSkkRc2t2h8aGYCxO2C8shXcae32T5HBVFDMPk+8ZCtepnYpTq493zbNhTF3C4GcyqkzPuscoyszw4qv7aNtAfgRgKLjvEHzszqlnnD9Ol8wpZ9XBLiZoMLlLQg5Hn49u3/8LRFZQkKKTGxTiDeG4dQ4nWnhnCddbFpKFoG8untRFY/iVNT2uZQlihvFLcpBVQ59VN0eA==
+X-Microsoft-Antispam-Message-Info: 5xPpnA9c/WOqS2Mbhel9CamKCnFD+uzP/8/yR89Y0ViCewgLsxekIlVbdkVf7GAjZbCaE5xGWb5SE4gJre548sHnj2jeUUCCTiQ5Idz9tpUiBySli6AOcYWyKpadNIWmTFdXGsgZglnepjOig5ruFw/tRbLbovEKZdh+SIXg1wvW2hURYZqXPJyyVPVT24aOYnfBFtpK/geSngnlHs4FbSsDu2RyQki0xRHJv/EVBbty2jpgF4mJlm5AkiJkMSSQdeiO6kamNF7FqgKRK61KJh1t6LFL9wXe0KfKovQqbOFHganHqktMBS3ex6tgLJAksXEBw3jjEjAJkKXfYezJ0Tw9M6Gt+wLsRtFOLZp3T/2aaydxN7dV5YmjL6JhPCO8HHZt7ZwIkIIYlL6TGV0pIacUrv7bRESSXeSF/G5C9xfsXBRPtqn9my90v/wSvL395J+OgHzNMQ3DYTwRryg2qg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(136003)(346002)(396003)(376002)(366004)(39850400004)(66946007)(6486002)(8936002)(4326008)(8676002)(26005)(186003)(16526019)(69590400008)(36756003)(83380400001)(107886003)(6512007)(478600001)(86362001)(2906002)(44832011)(66556008)(966005)(52116002)(66476007)(316002)(6506007)(1076003)(956004)(2616005)(5660300002)(6666004);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: g5eUFumI9SEWDAGp6U90WqzLlGhEXWOcpA51/X636ocGbbSlOBuF/d1F8yT9qWdQGub7mJqtiJmJvQwXKlhmiNnoqrD99Dl/r5peBRBQr+3JHsnMuWEIRi+2Ov5vEkVddg68xxYXrjb37QJAShLqOo+7nbe9nRhuJInPdqlAxvHRnVQ7Y/vytAeoWXiSDBsU4jCmomxaFs72JvI1F+h9yXYYLVjRMPa/5vcNbFrcDmS9TjhKSqIVwKafF8uEvm9bNbTuSVf0GE3C63it5yV+wFrOdtM+XcPLRyg2/SsFEpddsPTKJN1a/7gzczPhdN+pyq1QFTw+Wa/5q3dsVymlDnl0tzd56GicrICtCxtE3t34aUIkDaii3VLfRvEhLyBsqxw+dsLNE9qxKTo7Oaf4dXtzeOnueDUbDhGFYa5pDlkWpN9jtXkFPVoxUInYWjhwz40UM+ELRJ+dprsY79NJt7m1tlCSYPkgy7OTHuPb3k/HNS/AmmLQ9D0YiB8ZdUS3pkfj80MNqPeyv+gRM0I0sU/XjRjM3AfTuwHmJMEaX9QsLgz24wjS53LxW0e1ZyqxkXjfU9ZU6YfhUy91gBzYFKdXXZzjHLdvR8FgpMsY9GAdiXvCKIfKYjaeRne8nSQV+twG/VcQLDuSjhjdqK47Zw==
 X-OriginatorOrg: calian.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dab21bf0-e574-423e-901f-08d8752bbe67
+X-MS-Exchange-CrossTenant-Network-Message-Id: 88bd34d4-4e20-42ce-506a-08d8752be32c
 X-MS-Exchange-CrossTenant-AuthSource: YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2020 19:10:01.3725
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Oct 2020 19:11:02.9949
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: huQe/8WmRqQbidMfEWmF/Me8Mg/upGaUJxj4UUkRNrLdp0iGRMr8OLwX/MM+SHF9j6dVhYDrLN3deru6AL1K+XpwSM3siU+2Zl3SbS7Yq8I=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: YTBPR01MB2926
+X-MS-Exchange-CrossTenant-UserPrincipalName: OMtvG5LeYx7q7Bm3Stj62tSdDtg+HAPOppntkN1xH3+vcEfVQysLfkuWyrcgFDq8VstlJ3Q1sB5uQJVQnSnD6IFcRC9Yk4WIjQJZp9jGCP4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: YTBPR01MB2558
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update the axienet driver to properly support the Xilinx PCS/PMA PHY
-component which is used for 1000BaseX and SGMII modes, including
-properly configuring the auto-negotiation mode of the PHY and reading
-the negotiated state from the PHY.
+The Finisar FCLF8520P2BTL 1000BaseT SFP module uses a Marvel 88E1111 PHY
+with a modified PHY ID. Add support for this ID using the 88E1111
+methods.
+
+By default these modules do not have 1000BaseX auto-negotiation enabled,
+which is not generally desirable with Linux networking drivers. Add
+handling to enable 1000BaseX auto-negotiation when these modules are
+used in 1000BaseX mode. Also, some special handling is required to ensure
+that 1000BaseT auto-negotiation is enabled properly when desired.
+
+Based on existing handling in the AMD xgbe driver and the information in
+the Finisar FAQ:
+https://www.finisar.com/sites/default/files/resources/an-2036_1000base-t_sfp_faqreve1.pdf
 
 Signed-off-by: Robert Hancock <robert.hancock@calian.com>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet.h  |  3 +
- .../net/ethernet/xilinx/xilinx_axienet_main.c | 96 ++++++++++++++-----
- 2 files changed, 73 insertions(+), 26 deletions(-)
+ drivers/net/phy/marvell.c   | 99 ++++++++++++++++++++++++++++++++++++-
+ include/linux/marvell_phy.h |  3 ++
+ 2 files changed, 101 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-index f34c7903ff52..7326ad4d5e1c 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
-@@ -419,6 +419,9 @@ struct axienet_local {
- 	struct phylink *phylink;
- 	struct phylink_config phylink_config;
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index 5aec673a0120..49392d15035c 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -80,8 +80,11 @@
+ #define MII_M1111_HWCFG_MODE_FIBER_RGMII	0x3
+ #define MII_M1111_HWCFG_MODE_SGMII_NO_CLK	0x4
+ #define MII_M1111_HWCFG_MODE_RTBI		0x7
++#define MII_M1111_HWCFG_MODE_COPPER_1000BX_AN	0x8
+ #define MII_M1111_HWCFG_MODE_COPPER_RTBI	0x9
+ #define MII_M1111_HWCFG_MODE_COPPER_RGMII	0xb
++#define MII_M1111_HWCFG_MODE_COPPER_1000BX_NOAN 0xc
++#define MII_M1111_HWCFG_SERIAL_AN_BYPASS	BIT(12)
+ #define MII_M1111_HWCFG_FIBER_COPPER_RES	BIT(13)
+ #define MII_M1111_HWCFG_FIBER_COPPER_AUTO	BIT(15)
  
-+	/* Reference to PCS/PMA PHY if used */
-+	struct mdio_device *pcs_phy;
-+
- 	/* Clock for AXI bus */
- 	struct clk *clk;
- 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-index 9aafd3ecdaa4..f46595ef2822 100644
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -1517,10 +1517,29 @@ static void axienet_validate(struct phylink_config *config,
- 
- 	phylink_set(mask, Asym_Pause);
- 	phylink_set(mask, Pause);
--	phylink_set(mask, 1000baseX_Full);
--	phylink_set(mask, 10baseT_Full);
--	phylink_set(mask, 100baseT_Full);
--	phylink_set(mask, 1000baseT_Full);
-+
-+	switch (state->interface) {
-+	case PHY_INTERFACE_MODE_NA:
-+	case PHY_INTERFACE_MODE_1000BASEX:
-+	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_GMII:
-+	case PHY_INTERFACE_MODE_RGMII:
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
-+		phylink_set(mask, 1000baseX_Full);
-+		phylink_set(mask, 1000baseT_Full);
-+		if (state->interface == PHY_INTERFACE_MODE_1000BASEX)
-+			break;
-+		phylink_set(mask, 100baseT_Full);
-+		phylink_set(mask, 10baseT_Full);
-+		break;
-+	case PHY_INTERFACE_MODE_MII:
-+		phylink_set(mask, 100baseT_Full);
-+		phylink_set(mask, 10baseT_Full);
-+	default:
-+		break;
-+	}
- 
- 	bitmap_and(supported, supported, mask,
- 		   __ETHTOOL_LINK_MODE_MASK_NBITS);
-@@ -1533,38 +1552,46 @@ static void axienet_mac_pcs_get_state(struct phylink_config *config,
- {
- 	struct net_device *ndev = to_net_dev(config->dev);
- 	struct axienet_local *lp = netdev_priv(ndev);
--	u32 emmc_reg, fcc_reg;
--
--	state->interface = lp->phy_mode;
- 
--	emmc_reg = axienet_ior(lp, XAE_EMMC_OFFSET);
--	if (emmc_reg & XAE_EMMC_LINKSPD_1000)
--		state->speed = SPEED_1000;
--	else if (emmc_reg & XAE_EMMC_LINKSPD_100)
--		state->speed = SPEED_100;
--	else
--		state->speed = SPEED_10;
--
--	state->pause = 0;
--	fcc_reg = axienet_ior(lp, XAE_FCC_OFFSET);
--	if (fcc_reg & XAE_FCC_FCTX_MASK)
--		state->pause |= MLO_PAUSE_TX;
--	if (fcc_reg & XAE_FCC_FCRX_MASK)
--		state->pause |= MLO_PAUSE_RX;
--
--	state->an_complete = 0;
--	state->duplex = 1;
-+	switch (state->interface) {
-+	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_1000BASEX:
-+		phylink_mii_c22_pcs_get_state(lp->pcs_phy, state);
-+		break;
-+	default:
-+		break;
-+	}
+@@ -629,6 +632,51 @@ static int marvell_config_aneg_fiber(struct phy_device *phydev)
+ 	return genphy_check_and_restart_aneg(phydev, changed);
  }
  
- static void axienet_mac_an_restart(struct phylink_config *config)
- {
--	/* Unsupported, do nothing */
-+	struct net_device *ndev = to_net_dev(config->dev);
-+	struct axienet_local *lp = netdev_priv(ndev);
++static int m88e1111_config_aneg(struct phy_device *phydev)
++{
++	int err;
++	int extsr = phy_read(phydev, MII_M1111_PHY_EXT_SR);
 +
-+	phylink_mii_c22_pcs_an_restart(lp->pcs_phy);
++	if (extsr < 0)
++		return extsr;
++
++	/* If not using SGMII or copper 1000BaseX modes, use normal process.
++	 * Steps below are only required for these modes.
++	 */
++	if (phydev->interface != PHY_INTERFACE_MODE_SGMII &&
++	    (extsr & MII_M1111_HWCFG_MODE_MASK) !=
++	    MII_M1111_HWCFG_MODE_COPPER_1000BX_AN)
++		return marvell_config_aneg(phydev);
++
++	err = marvell_set_page(phydev, MII_MARVELL_COPPER_PAGE);
++	if (err < 0)
++		goto error;
++
++	/* Configure the copper link first */
++	err = marvell_config_aneg(phydev);
++	if (err < 0)
++		goto error;
++
++	/* Do not touch the fiber page if we're in copper->sgmii mode */
++	if (phydev->interface == PHY_INTERFACE_MODE_SGMII)
++		return 0;
++
++	/* Then the fiber link */
++	err = marvell_set_page(phydev, MII_MARVELL_FIBER_PAGE);
++	if (err < 0)
++		goto error;
++
++	err = marvell_config_aneg_fiber(phydev);
++	if (err < 0)
++		goto error;
++
++	return marvell_set_page(phydev, MII_MARVELL_COPPER_PAGE);
++
++error:
++	marvell_set_page(phydev, MII_MARVELL_COPPER_PAGE);
++	return err;
++}
++
+ static int m88e1510_config_aneg(struct phy_device *phydev)
+ {
+ 	int err;
+@@ -814,6 +862,27 @@ static int m88e1111_config_init_rtbi(struct phy_device *phydev)
+ 		MII_M1111_HWCFG_FIBER_COPPER_AUTO);
  }
  
- static void axienet_mac_config(struct phylink_config *config, unsigned int mode,
- 			       const struct phylink_link_state *state)
- {
--	/* nothing meaningful to do */
-+	struct net_device *ndev = to_net_dev(config->dev);
-+	struct axienet_local *lp = netdev_priv(ndev);
-+	int ret;
++static int m88e1111_config_init_1000basex(struct phy_device *phydev)
++{
++	int extsr = phy_read(phydev, MII_M1111_PHY_EXT_SR);
 +
-+	switch (state->interface) {
-+	case PHY_INTERFACE_MODE_SGMII:
-+	case PHY_INTERFACE_MODE_1000BASEX:
-+		ret = phylink_mii_c22_pcs_config(lp->pcs_phy, mode,
-+						 state->interface,
-+						 state->advertising);
-+		if (ret < 0)
-+			netdev_warn(ndev, "Failed to configure PCS: %d\n",
-+				    ret);
-+		break;
++	if (extsr < 0)
++		return extsr;
 +
-+	default:
-+		break;
++	/* If using copper mode, ensure 1000BaseX auto-negotiation is enabled */
++	if ((extsr & MII_M1111_HWCFG_MODE_MASK) ==
++	    MII_M1111_HWCFG_MODE_COPPER_1000BX_NOAN) {
++		int err = phy_modify(phydev, MII_M1111_PHY_EXT_SR,
++			  MII_M1111_HWCFG_MODE_MASK |
++			  MII_M1111_HWCFG_SERIAL_AN_BYPASS,
++			  MII_M1111_HWCFG_MODE_COPPER_1000BX_AN |
++			  MII_M1111_HWCFG_SERIAL_AN_BYPASS);
++		if (err < 0)
++			return err;
 +	}
- }
- 
- static void axienet_mac_link_down(struct phylink_config *config,
-@@ -1999,6 +2026,20 @@ static int axienet_probe(struct platform_device *pdev)
- 			dev_warn(&pdev->dev,
- 				 "error registering MDIO bus: %d\n", ret);
++	return 0;
++}
++
+ static int m88e1111_config_init(struct phy_device *phydev)
+ {
+ 	int err;
+@@ -836,6 +905,12 @@ static int m88e1111_config_init(struct phy_device *phydev)
+ 			return err;
  	}
-+	if (lp->phy_mode == PHY_INTERFACE_MODE_SGMII ||
-+	    lp->phy_mode == PHY_INTERFACE_MODE_1000BASEX) {
-+		if (!lp->phy_node) {
-+			dev_err(&pdev->dev, "phy-handle required for 1000BaseX/SGMII\n");
-+			ret = -EINVAL;
-+			goto free_netdev;
-+		}
-+		lp->pcs_phy = of_mdio_find_device(lp->phy_node);
-+		if (!lp->pcs_phy) {
-+			ret = -EPROBE_DEFER;
-+			goto free_netdev;
-+		}
-+		lp->phylink_config.pcs_poll = true;
+ 
++	if (phydev->interface == PHY_INTERFACE_MODE_1000BASEX) {
++		err = m88e1111_config_init_1000basex(phydev);
++		if (err < 0)
++			return err;
 +	}
- 
- 	lp->phylink_config.dev = &ndev->dev;
- 	lp->phylink_config.type = PHYLINK_NETDEV;
-@@ -2036,6 +2077,9 @@ static int axienet_remove(struct platform_device *pdev)
- 	if (lp->phylink)
- 		phylink_destroy(lp->phylink);
- 
-+	if (lp->pcs_phy)
-+		put_device(&lp->pcs_phy->dev);
 +
- 	axienet_mdio_teardown(lp);
+ 	err = marvell_of_reg_init(phydev);
+ 	if (err < 0)
+ 		return err;
+@@ -2658,7 +2733,28 @@ static struct phy_driver marvell_drivers[] = {
+ 		/* PHY_GBIT_FEATURES */
+ 		.probe = marvell_probe,
+ 		.config_init = m88e1111_config_init,
+-		.config_aneg = marvell_config_aneg,
++		.config_aneg = m88e1111_config_aneg,
++		.read_status = marvell_read_status,
++		.ack_interrupt = marvell_ack_interrupt,
++		.config_intr = marvell_config_intr,
++		.resume = genphy_resume,
++		.suspend = genphy_suspend,
++		.read_page = marvell_read_page,
++		.write_page = marvell_write_page,
++		.get_sset_count = marvell_get_sset_count,
++		.get_strings = marvell_get_strings,
++		.get_stats = marvell_get_stats,
++		.get_tunable = m88e1111_get_tunable,
++		.set_tunable = m88e1111_set_tunable,
++	},
++	{
++		.phy_id = MARVELL_PHY_ID_88E1111_FINISAR,
++		.phy_id_mask = MARVELL_PHY_ID_MASK,
++		.name = "Marvell 88E1111 (Finisar)",
++		/* PHY_GBIT_FEATURES */
++		.probe = marvell_probe,
++		.config_init = m88e1111_config_init,
++		.config_aneg = m88e1111_config_aneg,
+ 		.read_status = marvell_read_status,
+ 		.ack_interrupt = marvell_ack_interrupt,
+ 		.config_intr = marvell_config_intr,
+@@ -2989,6 +3085,7 @@ static struct mdio_device_id __maybe_unused marvell_tbl[] = {
+ 	{ MARVELL_PHY_ID_88E1101, MARVELL_PHY_ID_MASK },
+ 	{ MARVELL_PHY_ID_88E1112, MARVELL_PHY_ID_MASK },
+ 	{ MARVELL_PHY_ID_88E1111, MARVELL_PHY_ID_MASK },
++	{ MARVELL_PHY_ID_88E1111_FINISAR, MARVELL_PHY_ID_MASK },
+ 	{ MARVELL_PHY_ID_88E1118, MARVELL_PHY_ID_MASK },
+ 	{ MARVELL_PHY_ID_88E1121R, MARVELL_PHY_ID_MASK },
+ 	{ MARVELL_PHY_ID_88E1145, MARVELL_PHY_ID_MASK },
+diff --git a/include/linux/marvell_phy.h b/include/linux/marvell_phy.h
+index ff7b7607c8cf..52b1610eae68 100644
+--- a/include/linux/marvell_phy.h
++++ b/include/linux/marvell_phy.h
+@@ -25,6 +25,9 @@
+ #define MARVELL_PHY_ID_88X3310		0x002b09a0
+ #define MARVELL_PHY_ID_88E2110		0x002b09b0
  
- 	clk_disable_unprepare(lp->clk);
++/* Marvel 88E1111 in Finisar SFP module with modified PHY ID */
++#define MARVELL_PHY_ID_88E1111_FINISAR	0x01ff0cc0
++
+ /* The MV88e6390 Ethernet switch contains embedded PHYs. These PHYs do
+  * not have a model ID. So the switch driver traps reads to the ID2
+  * register and returns the switch family ID
 -- 
 2.18.4
 
