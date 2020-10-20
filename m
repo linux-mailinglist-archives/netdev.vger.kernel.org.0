@@ -2,74 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2AE6294275
-	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 20:51:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 537DF29428F
+	for <lists+netdev@lfdr.de>; Tue, 20 Oct 2020 20:56:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437740AbgJTSu6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 14:50:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54972 "EHLO mail.kernel.org"
+        id S2437875AbgJTS4L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 14:56:11 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:37116 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2437710AbgJTSu5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Oct 2020 14:50:57 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8C7072222D;
-        Tue, 20 Oct 2020 18:50:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603219856;
-        bh=Z9eyHQfQRqB9BMwZRnDTlB9ZhBAPjADQ4injAvC7ns4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=j9RDhL9AkeZmHQ7m0hrgPi7ZL2T5ALGnkr3j8h16fGsFdTQBtz/QZUCaZCmb0EUwl
-         9H4TvHxrLIz30HJSXAc5jsFakVT7XXXfm76wiysxWpRMtp9a9eekL4jy/0jwGUwgRy
-         2C7p4K5a3X0ZRSZ9e/gYFfvAjoNBSrfqeXPv+wjk=
-Date:   Tue, 20 Oct 2020 11:50:54 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH bpf v2 1/3] bpf_redirect_neigh: Support supplying the
- nexthop as a helper parameter
-Message-ID: <20201020115054.3a097b78@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <e8c261bf-2d43-ca4b-945d-353ada65c20a@gmail.com>
-References: <160319106111.15822.18417665895694986295.stgit@toke.dk>
-        <160319106221.15822.2629789706666194966.stgit@toke.dk>
-        <20201020093405.59079473@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <87zh4g22ro.fsf@toke.dk>
-        <e8c261bf-2d43-ca4b-945d-353ada65c20a@gmail.com>
+        id S2437774AbgJTS4K (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Oct 2020 14:56:10 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kUwnh-002hR6-MN; Tue, 20 Oct 2020 20:56:01 +0200
+Date:   Tue, 20 Oct 2020 20:56:01 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Dan Murphy <dmurphy@ti.com>
+Cc:     davem@davemloft.net, f.fainelli@gmail.com, hkallweit1@gmail.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v2 2/3] dt-bindings: dp83td510: Add binding for
+ DP83TD510 Ethernet PHY
+Message-ID: <20201020185601.GJ139700@lunn.ch>
+References: <20201020171221.730-1-dmurphy@ti.com>
+ <20201020171221.730-3-dmurphy@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201020171221.730-3-dmurphy@ti.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 20 Oct 2020 12:14:16 -0600 David Ahern wrote:
-> On 10/20/20 12:03 PM, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> > Jakub Kicinski <kuba@kernel.org> writes:
-> >> On Tue, 20 Oct 2020 12:51:02 +0200 Toke H=C3=B8iland-J=C3=B8rgensen wr=
-ote: =20
-> >>> +struct bpf_nh_params {
-> >>> +	u8 nh_family;
-> >>> +	union {
-> >>> +		__u32 ipv4_nh;
-> >>> +		struct in6_addr ipv6_nh;
-> >>> +	};
-> >>> +}; =20
-> >>
-> >> Folks, not directly related to this set, but there's a SRv6 patch going
-> >> around which adds ifindex, otherwise nh can't be link local.
-> >>
-> >> I wonder if we want to consider this use case from the start (or the
-> >> close approximation of start in this case ;)). =20
-> >=20
-> > The ifindex is there, it's just in the function call signature instead
-> > of the struct... Or did you mean something different?
->=20
-> ifindex as the first argument qualifies the device for the address.
+> +  ti,master-slave-mode:
+> +    $ref: /schemas/types.yaml#definitions/uint32
+> +    default: 0
+> +    description: |
+> +      Force the PHY to be configured to a specific mode.
+> +      Force Auto Negotiation - 0
+> +      Force Master mode at 1v p2p - 1
+> +      Force Master mode at 2.4v p2p - 2
+> +      Force Slave mode at 1v p2p - 3
+> +      Force Slave mode at 2.4v p2p - 4
+> +    enum: [ 0, 1, 2, 3, 4 ]
 
-Ah, I should have read closer. Seeing there is a plen I assumed all
-args would naturally be in the structure, but I'm guessing the case
-where params are NULL will be quite common. Don't mind me.
+Is this a board hardware property? The fact value 0 means auto-neg
+suggests not.
+
+We already have ethtool configuration of master/slave for T1 PHYs:
+
+ommit bdbdac7649fac05f88c9f7ab18121a17fb591687
+Author: Oleksij Rempel <linux@rempel-privat.de>
+Date:   Tue May 5 08:35:05 2020 +0200
+
+    ethtool: provide UAPI for PHY master/slave configuration.
+    
+    This UAPI is needed for BroadR-Reach 100BASE-T1 devices. Due to lack of
+    auto-negotiation support, we needed to be able to configure the
+    MASTER-SLAVE role of the port manually or from an application in user
+    space.
+
+Please can you look at using that UAPI.
+
+I assume that 1v p2p is the voltage of the signal put onto the twisted
+pair? I know the Marvell 1000BaseT PHYs allow this to be configured as
+well, but just downwards to save power. Maybe a PHY tunable would be
+better?
+
+Humm. Are 1v and 2.4v advertised so it can be auto negotiated? Maybe a
+PHY tunable is not correct? Is this voltage selection actually more
+like pause and EEE?
+
+	Andrew
