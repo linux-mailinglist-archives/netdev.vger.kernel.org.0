@@ -2,95 +2,367 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 90AAF294ACE
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 11:52:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7DAE294B56
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 12:38:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2441537AbgJUJwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 05:52:35 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:43906 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2441494AbgJUJwf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 05:52:35 -0400
-Received: by mail-ot1-f68.google.com with SMTP id k68so1274909otk.10;
-        Wed, 21 Oct 2020 02:52:32 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kJkrnozfaMLpPcgeu/Q+YTzE8Ukz50ZnvbK5wInOKOU=;
-        b=hsJrxhB23aYwgW88F304oLcUlluJ1SHAZKZYo5o2QyOv31yqelwKHXh2NbMutyrvxI
-         cRjsqXAIErONu+pOtQiWApXhHPXNxjXbx5Sthe8Uu+jXuUwRw9lwLwVVxMgRNgplgo9A
-         ZIepRsbEFh4R3999oOFGA5X/d2b3BVQpOposPMK7k1LZzjSMmvOa9tfzqMvsKXOuECDF
-         0T/7GYMS9SIxDeIgVVzQtRCHw7W6XN/gu0yDVl5PVzLU4p9JygUfhYGXdfcvtbkFpM7i
-         io4kOo9hmGm0173yA3gaflTQ5GFrrSMKpmDJaEfqz+B0gZhg0WQOaRAR1nCjY7G5qAb6
-         0tyg==
-X-Gm-Message-State: AOAM531JHpCpafpqIECIK2IUcMbiBzHfQh0s5+yFYupKyG4Zq+11W9Uc
-        jlqZ7hvePWEyJsdciAO5jV4RO8ZlbXL9V+0mHME=
-X-Google-Smtp-Source: ABdhPJxRL1fZFFVN/iPeCd5oyAHWxUtsED20zwFi/bX4gbl91pWAbXJ1nSc2fCMrLdWhZW8medycvhcheAmarhLGqVM=
-X-Received: by 2002:a9d:3b76:: with SMTP id z109mr2017856otb.250.1603273952560;
- Wed, 21 Oct 2020 02:52:32 -0700 (PDT)
+        id S2410029AbgJUKiH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 06:38:07 -0400
+Received: from regular1.263xmail.com ([211.150.70.203]:44574 "EHLO
+        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2393418AbgJUKiG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 06:38:06 -0400
+X-Greylist: delayed 432 seconds by postgrey-1.27 at vger.kernel.org; Wed, 21 Oct 2020 06:38:02 EDT
+Received: from localhost (unknown [192.168.167.13])
+        by regular1.263xmail.com (Postfix) with ESMTP id 3427D8A5;
+        Wed, 21 Oct 2020 18:30:41 +0800 (CST)
+X-MAIL-GRAY: 0
+X-MAIL-DELIVERY: 1
+X-ADDR-CHECKED4: 1
+X-ANTISPAM-LEVEL: 2
+X-SKE-CHECKED: 1
+X-ABS-CHECKED: 1
+Received: from localhost.localdomain (unknown [14.18.236.70])
+        by smtp.263.net (postfix) whith ESMTP id P1670T140083357271808S1603276236392023_;
+        Wed, 21 Oct 2020 18:30:41 +0800 (CST)
+X-IP-DOMAINF: 1
+X-UNIQUE-TAG: <b346cdfd5b5fe8bb0d7b6df686e0b309>
+X-RL-SENDER: yili@winhong.com
+X-SENDER: yili@winhong.com
+X-LOGIN-NAME: yili@winhong.com
+X-FST-TO: netdev@vger.kernel.org
+X-SENDER-IP: 14.18.236.70
+X-ATTACHMENT-NUM: 0
+X-DNS-TYPE: 0
+X-System-Flag: 0
+From:   Yi Li <yili@winhong.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     davem@davemloft.net, Yi Li <yili@winhong.com>
+Subject: [PATCH] net treewide: Use skb_is_gso
+Date:   Wed, 21 Oct 2020 18:30:30 +0800
+Message-Id: <20201021103030.3432231-1-yili@winhong.com>
+X-Mailer: git-send-email 2.25.3
 MIME-Version: 1.0
-References: <20201020073839.29226-1-geert@linux-m68k.org> <5dddd3fe-86d7-d07f-dbc9-51b89c7c8173@tessares.net>
- <20201020205647.20ab7009@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CAMuHMdW=1LfE8UoGRVBvrvrintQMNKUdTe5PPQz=PN3=gJmw=Q@mail.gmail.com> <619601b2-40c1-9257-ef2a-2c667361aa75@tessares.net>
-In-Reply-To: <619601b2-40c1-9257-ef2a-2c667361aa75@tessares.net>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 21 Oct 2020 11:52:21 +0200
-Message-ID: <CAMuHMdXUs_2DodcYva8bP+Df979TMrmRD=+LUiVVzdH0zmxK1Q@mail.gmail.com>
-Subject: Re: [PATCH] mptcp: MPTCP_IPV6 should depend on IPV6 instead of
- selecting it
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Westphal <fw@strlen.de>,
-        Peter Krystad <peter.krystad@linux.intel.com>,
-        netdev <netdev@vger.kernel.org>, mptcp@lists.01.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Matthieu,
+This patch introduces the use of the inline func skb_is_gso in place of
+tests for skb_shinfo(skb)->gso_size.
 
-On Wed, Oct 21, 2020 at 11:47 AM Matthieu Baerts
-<matthieu.baerts@tessares.net> wrote:
-> On 21/10/2020 11:43, Geert Uytterhoeven wrote:
-> > On Wed, Oct 21, 2020 at 5:56 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >> On Tue, 20 Oct 2020 11:26:34 +0200 Matthieu Baerts wrote:
-> >>> On 20/10/2020 09:38, Geert Uytterhoeven wrote:
-> >>>> MPTCP_IPV6 selects IPV6, thus enabling an optional feature the user may
-> >>>> not want to enable.  Fix this by making MPTCP_IPV6 depend on IPV6, like
-> >>>> is done for all other IPv6 features.
-> >>>
-> >>> Here again, the intension was to select IPv6 from MPTCP but I understand
-> >>> the issue: if we enable MPTCP, we will select IPV6 as well by default.
-> >>> Maybe not what we want on some embedded devices with very limited memory
-> >>> where IPV6 is already off. We should instead enable MPTCP_IPV6 only if
-> >>> IPV6=y. LGTM then!
-> >>>
-> >>> Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> >>
-> >> Applied, thanks!
-> >
-> > My apologies, this fails for the CONFIG_IPV6=m and CONFIG_MPTCP=y
-> > case:
->
-> Good point, MPTCP cannot be compiled as a module (like TCP). It should
-> then depends on IPV6=y. I thought it would be the case.
->
-> Do you want me to send a patch or do you already have one?
+- if (skb_shinfo(skb)->gso_size)
++ if (skb_is_gso(skb))
 
-I don't have a patch yet, so feel free to send one.
+- if (unlikely(skb_shinfo(skb)->gso_size))
++ if (unlikely(skb_is_gso(skb)))
 
-Gr{oetje,eeting}s,
+- if (!skb_shinfo(skb)->gso_size)
++ if (!skb_is_gso(skb))
 
-                        Geert
+Signed-off-by: Yi Li <yili@winhong.com>
+---
+ drivers/net/ethernet/atheros/atlx/atl1.c               | 2 +-
+ drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c        | 2 +-
+ drivers/net/ethernet/cavium/liquidio/lio_main.c        | 2 +-
+ drivers/net/ethernet/cavium/liquidio/lio_vf_main.c     | 2 +-
+ drivers/net/ethernet/cavium/thunder/nicvf_queues.c     | 2 +-
+ drivers/net/ethernet/chelsio/cxgb/sge.c                | 2 +-
+ drivers/net/ethernet/chelsio/cxgb3/sge.c               | 4 ++--
+ drivers/net/ethernet/chelsio/cxgb4/sge.c               | 8 ++++----
+ drivers/net/ethernet/chelsio/cxgb4vf/sge.c             | 2 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c        | 2 +-
+ drivers/net/ethernet/ibm/ibmveth.c                     | 2 +-
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c | 4 ++--
+ drivers/net/ethernet/qlogic/qede/qede_fp.c             | 2 +-
+ drivers/net/ethernet/tehuti/tehuti.c                   | 2 +-
+ drivers/net/usb/r8152.c                                | 2 +-
+ drivers/net/xen-netfront.c                             | 2 +-
+ net/core/dev.c                                         | 2 +-
+ net/mac80211/tx.c                                      | 2 +-
+ 18 files changed, 23 insertions(+), 23 deletions(-)
 
+diff --git a/drivers/net/ethernet/atheros/atlx/atl1.c b/drivers/net/ethernet/atheros/atlx/atl1.c
+index eaf96d002fa5..dc08cb38d4f8 100644
+--- a/drivers/net/ethernet/atheros/atlx/atl1.c
++++ b/drivers/net/ethernet/atheros/atlx/atl1.c
+@@ -2101,7 +2101,7 @@ static int atl1_tso(struct atl1_adapter *adapter, struct sk_buff *skb,
+ 	u8 hdr_len, ip_off;
+ 	u32 real_len;
+ 
+-	if (skb_shinfo(skb)->gso_size) {
++	if (skb_is_gso(skb)) {
+ 		int err;
+ 
+ 		err = skb_cow_head(skb, 0);
+diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+index 1a6ec1a12d53..af20884cd772 100644
+--- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
++++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.c
+@@ -732,7 +732,7 @@ static void bnx2x_gro_receive(struct bnx2x *bp, struct bnx2x_fastpath *fp,
+ 			       struct sk_buff *skb)
+ {
+ #ifdef CONFIG_INET
+-	if (skb_shinfo(skb)->gso_size) {
++	if (skb_is_gso(skb)) {
+ 		switch (be16_to_cpu(skb->protocol)) {
+ 		case ETH_P_IP:
+ 			bnx2x_gro_csum(bp, skb, bnx2x_gro_ip_csum);
+diff --git a/drivers/net/ethernet/cavium/liquidio/lio_main.c b/drivers/net/ethernet/cavium/liquidio/lio_main.c
+index 7d00d3a8ded4..87f79f95a1bc 100644
+--- a/drivers/net/ethernet/cavium/liquidio/lio_main.c
++++ b/drivers/net/ethernet/cavium/liquidio/lio_main.c
+@@ -2476,7 +2476,7 @@ static netdev_tx_t liquidio_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 		tx_info = (union tx_info *)&ndata.cmd.cmd2.ossp[0];
+ 	}
+ 
+-	if (skb_shinfo(skb)->gso_size) {
++	if (skb_is_gso(skb)) {
+ 		tx_info->s.gso_size = skb_shinfo(skb)->gso_size;
+ 		tx_info->s.gso_segs = skb_shinfo(skb)->gso_segs;
+ 		stats->tx_gso++;
+diff --git a/drivers/net/ethernet/cavium/liquidio/lio_vf_main.c b/drivers/net/ethernet/cavium/liquidio/lio_vf_main.c
+index 103440f97bc8..39cbb3c9a2c7 100644
+--- a/drivers/net/ethernet/cavium/liquidio/lio_vf_main.c
++++ b/drivers/net/ethernet/cavium/liquidio/lio_vf_main.c
+@@ -1571,7 +1571,7 @@ static netdev_tx_t liquidio_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 	irh = (struct octeon_instr_irh *)&ndata.cmd.cmd3.irh;
+ 	tx_info = (union tx_info *)&ndata.cmd.cmd3.ossp[0];
+ 
+-	if (skb_shinfo(skb)->gso_size) {
++	if (skb_is_gso(skb)) {
+ 		tx_info->s.gso_size = skb_shinfo(skb)->gso_size;
+ 		tx_info->s.gso_segs = skb_shinfo(skb)->gso_segs;
+ 	}
+diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_queues.c b/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
+index 7a141ce32e86..ee0701bfd9ca 100644
+--- a/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
++++ b/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
+@@ -1395,7 +1395,7 @@ nicvf_sq_add_hdr_subdesc(struct nicvf *nic, struct snd_queue *sq, int qentry,
+ 	}
+ 
+ 	/* Tx timestamping not supported along with TSO, so ignore request */
+-	if (skb_shinfo(skb)->gso_size)
++	if (skb_is_gso(skb))
+ 		return;
+ 
+ 	/* HW supports only a single outstanding packet to timestamp */
+diff --git a/drivers/net/ethernet/chelsio/cxgb/sge.c b/drivers/net/ethernet/chelsio/cxgb/sge.c
+index 2d9c2b5a690a..49d5fe0a97cb 100644
+--- a/drivers/net/ethernet/chelsio/cxgb/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb/sge.c
+@@ -1799,7 +1799,7 @@ netdev_tx_t t1_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			return NETDEV_TX_OK;
+ 	}
+ 
+-	if (skb_shinfo(skb)->gso_size) {
++	if (skb_is_gso(skb)) {
+ 		int eth_type;
+ 		struct cpl_tx_pkt_lso *hdr;
+ 
+diff --git a/drivers/net/ethernet/chelsio/cxgb3/sge.c b/drivers/net/ethernet/chelsio/cxgb3/sge.c
+index e18e9ce27f94..686705deee9d 100644
+--- a/drivers/net/ethernet/chelsio/cxgb3/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb3/sge.c
+@@ -949,7 +949,7 @@ static inline unsigned int calc_tx_descs(const struct sk_buff *skb)
+ 		return 1;
+ 
+ 	flits = sgl_len(skb_shinfo(skb)->nr_frags + 1) + 2;
+-	if (skb_shinfo(skb)->gso_size)
++	if (skb_is_gso(skb))
+ 		flits++;
+ 	return flits_to_desc(flits);
+ }
+@@ -1333,7 +1333,7 @@ netdev_tx_t t3_eth_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	/* update port statistics */
+ 	if (skb->ip_summed == CHECKSUM_PARTIAL)
+ 		qs->port_stats[SGE_PSTAT_TX_CSUM]++;
+-	if (skb_shinfo(skb)->gso_size)
++	if (skb_is_gso(skb))
+ 		qs->port_stats[SGE_PSTAT_TSO]++;
+ 	if (skb_vlan_tag_present(skb))
+ 		qs->port_stats[SGE_PSTAT_VLANINS]++;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/sge.c b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+index a9e9c7ae565d..91d382c94b52 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/sge.c
+@@ -778,7 +778,7 @@ static inline unsigned int calc_tx_flits(const struct sk_buff *skb,
+ 	 * with an embedded TX Packet Write CPL message.
+ 	 */
+ 	flits = sgl_len(skb_shinfo(skb)->nr_frags + 1);
+-	if (skb_shinfo(skb)->gso_size) {
++	if (skb_is_gso(skb)) {
+ 		if (skb->encapsulation && chip_ver > CHELSIO_T5) {
+ 			hdrlen = sizeof(struct fw_eth_tx_pkt_wr) +
+ 				 sizeof(struct cpl_tx_tnl_lso);
+@@ -1373,7 +1373,7 @@ static void *write_eo_udp_wr(struct sk_buff *skb, struct fw_eth_tx_eo_wr *wr,
+ 	wr->u.udpseg.udplen = sizeof(struct udphdr);
+ 	wr->u.udpseg.rtplen = 0;
+ 	wr->u.udpseg.r4 = 0;
+-	if (skb_shinfo(skb)->gso_size)
++	if (skb_is_gso(skb))
+ 		wr->u.udpseg.mss = cpu_to_be16(skb_shinfo(skb)->gso_size);
+ 	else
+ 		wr->u.udpseg.mss = cpu_to_be16(skb->len - hdr_len);
+@@ -1693,7 +1693,7 @@ static inline unsigned int t4vf_calc_tx_flits(const struct sk_buff *skb)
+ 	 * with an embedded TX Packet Write CPL message.
+ 	 */
+ 	flits = sgl_len(skb_shinfo(skb)->nr_frags + 1);
+-	if (skb_shinfo(skb)->gso_size)
++	if (skb_is_gso(skb))
+ 		flits += (sizeof(struct fw_eth_tx_pkt_vm_wr) +
+ 			  sizeof(struct cpl_tx_pkt_lso_core) +
+ 			  sizeof(struct cpl_tx_pkt_core)) / sizeof(__be64);
+@@ -2258,7 +2258,7 @@ static int ethofld_hard_xmit(struct net_device *dev,
+ 				d->addr);
+ 	}
+ 
+-	if (skb_shinfo(skb)->gso_size) {
++	if (skb_is_gso(skb)) {
+ 		if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4)
+ 			eohw_txq->uso++;
+ 		else
+diff --git a/drivers/net/ethernet/chelsio/cxgb4vf/sge.c b/drivers/net/ethernet/chelsio/cxgb4vf/sge.c
+index 95657da0aa4b..b4e7ad6a6b8d 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4vf/sge.c
++++ b/drivers/net/ethernet/chelsio/cxgb4vf/sge.c
+@@ -871,7 +871,7 @@ static inline unsigned int calc_tx_flits(const struct sk_buff *skb)
+ 	 * with an embedded TX Packet Write CPL message.
+ 	 */
+ 	flits = sgl_len(skb_shinfo(skb)->nr_frags + 1);
+-	if (skb_shinfo(skb)->gso_size)
++	if (skb_is_gso(skb))
+ 		flits += (sizeof(struct fw_eth_tx_pkt_vm_wr) +
+ 			  sizeof(struct cpl_tx_pkt_lso_core) +
+ 			  sizeof(struct cpl_tx_pkt_core)) / sizeof(__be64);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index a362516a3185..e694c99ee540 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -2990,7 +2990,7 @@ static int hns3_set_gro_and_checksum(struct hns3_enet_ring *ring,
+ 						    HNS3_RXD_GRO_SIZE_M,
+ 						    HNS3_RXD_GRO_SIZE_S);
+ 	/* if there is no HW GRO, do not set gro params */
+-	if (!skb_shinfo(skb)->gso_size) {
++	if (!skb_is_gso(skb)) {
+ 		hns3_rx_checksum(ring, skb, l234info, bd_base_info, ol_info);
+ 		return 0;
+ 	}
+diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
+index 7ef3369953b6..9c264768f166 100644
+--- a/drivers/net/ethernet/ibm/ibmveth.c
++++ b/drivers/net/ethernet/ibm/ibmveth.c
+@@ -1251,7 +1251,7 @@ static void ibmveth_rx_mss_helper(struct sk_buff *skb, u16 mss, int lrg_pkt)
+ 		tcph->check = 0;
+ 	}
+ 
+-	if (skb_shinfo(skb)->gso_size) {
++	if (skb_is_gso(skb)) {
+ 		hdr_len = offset + tcph->doff * 4;
+ 		skb_shinfo(skb)->gso_segs =
+ 				DIV_ROUND_UP(skb->len - hdr_len,
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+index d5d7a2f37493..c01d1cfada51 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+@@ -509,7 +509,7 @@ static void otx2_sqe_add_ext(struct otx2_nic *pfvf, struct otx2_snd_queue *sq,
+ 
+ 	ext = (struct nix_sqe_ext_s *)(sq->sqe_base + *offset);
+ 	ext->subdc = NIX_SUBDC_EXT;
+-	if (skb_shinfo(skb)->gso_size) {
++	if (skb_is_gso(skb)) {
+ 		ext->lso = 1;
+ 		ext->lso_sb = skb_transport_offset(skb) + tcp_hdrlen(skb);
+ 		ext->lso_mps = skb_shinfo(skb)->gso_size;
+@@ -813,7 +813,7 @@ static bool is_hw_tso_supported(struct otx2_nic *pfvf,
+ 
+ static int otx2_get_sqe_count(struct otx2_nic *pfvf, struct sk_buff *skb)
+ {
+-	if (!skb_shinfo(skb)->gso_size)
++	if (!skb_is_gso(skb))
+ 		return 1;
+ 
+ 	/* HW TSO */
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+index a2494bf85007..092e24893cb9 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+@@ -934,7 +934,7 @@ static void qede_gro_receive(struct qede_dev *edev,
+ 	}
+ 
+ #ifdef CONFIG_INET
+-	if (skb_shinfo(skb)->gso_size) {
++	if (skb_is_gso(skb)) {
+ 		skb_reset_network_header(skb);
+ 
+ 		switch (skb->protocol) {
+diff --git a/drivers/net/ethernet/tehuti/tehuti.c b/drivers/net/ethernet/tehuti/tehuti.c
+index b8f4f419173f..1c4f4329850e 100644
+--- a/drivers/net/ethernet/tehuti/tehuti.c
++++ b/drivers/net/ethernet/tehuti/tehuti.c
+@@ -1613,7 +1613,7 @@ static netdev_tx_t bdx_tx_transmit(struct sk_buff *skb,
+ 	if (unlikely(skb->ip_summed != CHECKSUM_PARTIAL))
+ 		txd_checksum = 0;
+ 
+-	if (skb_shinfo(skb)->gso_size) {
++	if (skb_is_gso(skb)) {
+ 		txd_mss = skb_shinfo(skb)->gso_size;
+ 		txd_lgsnd = 1;
+ 		DBG("skb %p skb len %d gso size = %d\n", skb, skb->len,
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index b1770489aca5..b8220f50fe13 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -1918,7 +1918,7 @@ static struct tx_agg *r8152_get_tx_agg(struct r8152 *tp)
+ static void r8152_csum_workaround(struct r8152 *tp, struct sk_buff *skb,
+ 				  struct sk_buff_head *list)
+ {
+-	if (skb_shinfo(skb)->gso_size) {
++	if (skb_is_gso(skb)) {
+ 		netdev_features_t features = tp->netdev->features;
+ 		struct sk_buff *segs, *seg, *next;
+ 		struct sk_buff_head seg_list;
+diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+index 3e9895bec15f..c68565fbb582 100644
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -723,7 +723,7 @@ static netdev_tx_t xennet_start_xmit(struct sk_buff *skb, struct net_device *dev
+ 		tx->flags |= XEN_NETTXF_data_validated;
+ 
+ 	/* Optional extra info after the first request. */
+-	if (skb_shinfo(skb)->gso_size) {
++	if (skb_is_gso(skb)) {
+ 		struct xen_netif_extra_info *gso;
+ 
+ 		gso = (struct xen_netif_extra_info *)
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 751e5264fd49..f2ddf08fb603 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3205,7 +3205,7 @@ int skb_checksum_help(struct sk_buff *skb)
+ 	if (skb->ip_summed == CHECKSUM_COMPLETE)
+ 		goto out_set_summed;
+ 
+-	if (unlikely(skb_shinfo(skb)->gso_size)) {
++	if (unlikely(skb_is_gso(skb))) {
+ 		skb_warn_bad_offload(skb);
+ 		return -EINVAL;
+ 	}
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index 8ba10a48ded4..21567ffe5683 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -3403,7 +3403,7 @@ static void ieee80211_xmit_fast_finish(struct ieee80211_sub_if_data *sdata,
+ 		sdata->sequence_number += 0x10;
+ 	}
+ 
+-	if (skb_shinfo(skb)->gso_size)
++	if (skb_is_gso(skb))
+ 		sta->tx_stats.msdu[tid] +=
+ 			DIV_ROUND_UP(skb->len, skb_shinfo(skb)->gso_size);
+ 	else
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.25.3
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+
+
