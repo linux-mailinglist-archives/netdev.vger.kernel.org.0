@@ -2,268 +2,1057 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54A602945EA
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 02:18:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 560C92945FD
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 02:23:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393566AbgJUASi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 20:18:38 -0400
-Received: from mail-eopbgr660057.outbound.protection.outlook.com ([40.107.66.57]:38274
-        "EHLO CAN01-QB1-obe.outbound.protection.outlook.com"
+        id S2410913AbgJUAXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 20:23:12 -0400
+Received: from mail-am6eur05on2087.outbound.protection.outlook.com ([40.107.22.87]:28128
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2393433AbgJUASi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Oct 2020 20:18:38 -0400
+        id S2410905AbgJUAXM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Oct 2020 20:23:12 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Du3YtAQdVF4SsQVCBsBYhi3q/Xb6F4AkNDBtFexnhD9w4kOFKvzG0ra/Ed6hL9iJR0ZEydydkGGIcjQHoe3aeksfj8Rj/yoRfTj8qDYZaGXMJ8uaHMUvZJP8ZdgjRFVNEJP0ANG4dOtH6EMP5/yr5OefyIFx3sH42VpRirSF46z7MXGoUrs7p3uiMM283kQhS2w+mkq+gxxSaiAeq9zPksr6Yv4NKsUnil963QTHzVJ74mf4zO2fhRP9xv3LqqLzdTWWm/dCfhs1vGX6HpxBn6+WWprKI1FS7hvQsaqu6oVyVeqjG4rxmcRzEnF/OzAc83XLDaPV3IW5M9Igz/curQ==
+ b=ddZlW7roB00S98UNnRhBb8+dIi9Zoem7zRwaE+E2A2hpj7JDmU2v54PnH6uvYPQya1oqot6NV1wI+7u0pcr/1n2iDd5laNF10a6C/zAtvswFOjWsyuRsEzt/Gbg2kNByTnnlSi/VM4YTpH1EbwAouHQqeEJlID4gO1caHjxisf6FK/y8Yad2DEADrAQ1l2fDIi+W3Ue8rqvChs/lKQjB6XyKS839YYx7S+iyppSW90qYzB7PHjka7qpdyv1brM58ozN8PunIsoBdUkx7lOOnrsj1P6x5mLrUtUztvwgqtSuiMDo+D3QHTfmdvo9nUFsr/Rk93w2KM5zSOf+vIieCtw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iidhGDKRqvNMJxY1t0kek/MbhrkF3ugYgAgbNDOpFVc=;
- b=nlM/O6x8TX39D7pg6YBbe4V36HY2mM55Ni85UyPvpyymfQ8B3nByqOSa+29+0OKqnpoW3TTT0k3S5RUsd2VQ4BVlaUDeNAtnnjI5ohGlFx4UmFE00bU4ANp1kZSd2/eHx/jGeOZKOSLpQg+ffuruzdBU58baE/XPJ1D2GCztOp7N3EMWJtPu7Hg9ewQwS4FxNLXpyhwg4jjoRi08Fnwwoc9pHYpDIXWeE7kblDNnlR9t8WlpWDIfbExBkU9HTZ4+K9z61u0sdqNSMQ3ifMpNobFSbcbKkx7E3n90oF1hvyMtaYk1gBLTAKNbeoMaKffO6Trr1PNOfdlb2FhV0TVbBQ==
+ bh=+tr/2q/KeYP4vxHlrUlbQ003RavHqPfTFpQ45Q+9gkU=;
+ b=Ir3Q7HWVJSmpMoXT5B6EVtdHfzp9fqi14i3R1s0TAG9gQQ8bCPaDCP6ERbrHqux+W4Ghfhpjel0xDAZV2Gt9vKnoU5T07nOjZwdpXVTCzMe95gY1EfbNK83M0V/LOVghkJ4rd1JkOaKgRcdTlGZ9dLS4uckyFagSRs8GLCKPQ1iN+/AxGFOuWPTKKnIOEM6jFHhKRTi7sot9a1U5tlSXfAP0Hvu4lPFU5zQynkJ8+h3WPUbZ5uL0vQ735oIhAHjr8C4lWY2JW+PbtXSrbDdUxG8fDoSEVJfwgMsywkHWvPnC3aMrAnW8vBkGPX49rMuP1gOPapYWxlM7nYontWepjw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
- dkim=pass header.d=calian.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
- s=selector1;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iidhGDKRqvNMJxY1t0kek/MbhrkF3ugYgAgbNDOpFVc=;
- b=ayrr/GcoRLHS9QECJIlDxJhHlIKjmaWUQYhANOQoiBzlOURZH7ZUiP6wbf2djHPxkrd1yqGA733RHt2HvjJ6XLH4Dzh67pIBO1dB6yyHpUwrPz7XG/0cqlIa1q/mh+vPsxUZSHrrLNrwTNYpL/5tLMl089lzvNuEd2Noz4lpQ3o=
-Authentication-Results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=calian.com;
-Received: from YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:f::20)
- by YTBPR01MB3039.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:22::20) with
+ bh=+tr/2q/KeYP4vxHlrUlbQ003RavHqPfTFpQ45Q+9gkU=;
+ b=bfe0PAIhdpTQK4ZdOgSm3iRlseAbjS1XfDzTwXwQkQPWEut4KmiKe4bSxBfa6l9o4nWCWCP0t+UB5awz4OFszPYNWnABW/qzC9AzU/HV2QwLYq68bqVTmujP2AGAh/O4PlyNLuXKpnz3st7zzUwBA1n1lBQsH39nMrQnz9bgZkA=
+Received: from AM6PR04MB5685.eurprd04.prod.outlook.com (2603:10a6:20b:a4::30)
+ by AM6PR04MB4183.eurprd04.prod.outlook.com (2603:10a6:209:43::33) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.20; Wed, 21 Oct
- 2020 00:18:34 +0000
-Received: from YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
- ([fe80::5c60:6462:fef4:793]) by YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
- ([fe80::5c60:6462:fef4:793%3]) with mapi id 15.20.3477.028; Wed, 21 Oct 2020
- 00:18:34 +0000
-From:   Robert Hancock <robert.hancock@calian.com>
-To:     andrew@lunn.ch, hkallweit1@gmail.com
-Cc:     linux@armlinux.org.uk, davem@davemloft.net, netdev@vger.kernel.org,
-        Robert Hancock <robert.hancock@calian.com>
-Subject: [PATCH v3] net: phy: marvell: add special handling of Finisar modules with 88E1111
-Date:   Tue, 20 Oct 2020 18:18:21 -0600
-Message-Id: <20201021001821.783249-1-robert.hancock@calian.com>
-X-Mailer: git-send-email 2.18.4
-Content-Type: text/plain
-X-Originating-IP: [204.83.154.189]
-X-ClientProxiedBy: MWHPR18CA0058.namprd18.prod.outlook.com
- (2603:10b6:300:39::20) To YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b01:f::20)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.24; Wed, 21 Oct
+ 2020 00:23:05 +0000
+Received: from AM6PR04MB5685.eurprd04.prod.outlook.com
+ ([fe80::c62:742e:bcca:e226]) by AM6PR04MB5685.eurprd04.prod.outlook.com
+ ([fe80::c62:742e:bcca:e226%4]) with mapi id 15.20.3499.018; Wed, 21 Oct 2020
+ 00:23:05 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
+        "joergen.andreasen@microchip.com" <joergen.andreasen@microchip.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        "vishal@chelsio.com" <vishal@chelsio.com>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        "jiri@mellanox.com" <jiri@mellanox.com>,
+        "idosch@mellanox.com" <idosch@mellanox.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "kuba@kernel.org" <kuba@kernel.org>, Po Liu <po.liu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Leo Li <leoyang.li@nxp.com>, Mingkai Hu <mingkai.hu@nxp.com>
+Subject: Re: [PATCH v1 net-next 3/5] net: dsa: felix: add gate action offload
+ based on tc flower
+Thread-Topic: [PATCH v1 net-next 3/5] net: dsa: felix: add gate action offload
+ based on tc flower
+Thread-Index: AQHWprM0Dmu58BxP1keaaga2Kx2pwqmhM0gA
+Date:   Wed, 21 Oct 2020 00:23:05 +0000
+Message-ID: <20201021002304.l3evf3e7czd36qgo@skbuf>
+References: <20201020072321.36921-1-xiaoliang.yang_1@nxp.com>
+ <20201020072321.36921-4-xiaoliang.yang_1@nxp.com>
+In-Reply-To: <20201020072321.36921-4-xiaoliang.yang_1@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: nxp.com; dkim=none (message not signed)
+ header.d=none;nxp.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.26.174.215]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: b24eabdb-94db-4879-debd-08d875577ab7
+x-ms-traffictypediagnostic: AM6PR04MB4183:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR04MB41838DA00B2C26C57009A8D2E01C0@AM6PR04MB4183.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: KFvpd5QeerxZwUL8Iuh78WKotkC7G78XuFUj9aPLGIQ19FDYXu4FtTwKIJHGqgplMbWauE7ZlSJpqNr7tmHk8/M/JwfB4UzGJk+XgTlM+q1SjH5WLTc0jDOQZoQh8opGZF8eKim24wy2FK+V6NTm3G9ZPWID9IF29159C4lp6zy0/NDT7daPaduCfSlw3gVDYtZgnqrecIaORmBEfHmCCEI2IloB3dDqMaTA15nVaau8Kc0rpgoel5150HSs9MGG7Oa/32Ug+ILYVbfWqQ3zi/rgCqyW4YYZiVDjUBIWXxOJhyES8OnYaGljmwbfgyGREWz3r38mYgsHWIcgexAcBgFV+BRgFcuHjARR76lKfAIftAG0oEfftZXWginvFbAztq57dvKGK6Hw5RYG+dVsJKrIc9OvrZf/b07LD3eqaa09D9uB3TULVzNl/zgkIxMkjmMhfLvkrSyTlFE5FYIvBA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB5685.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(39860400002)(136003)(366004)(376002)(346002)(396003)(8676002)(33716001)(6506007)(316002)(54906003)(8936002)(26005)(6486002)(186003)(83380400001)(71200400001)(86362001)(2906002)(64756008)(76116006)(6862004)(6512007)(4326008)(9686003)(44832011)(30864003)(5660300002)(478600001)(6636002)(1076003)(66446008)(7416002)(91956017)(966005)(66556008)(66946007)(66476007)(461764006)(559001)(579004);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: XXTJqxCjot3dqPRpUA+hEFNI9AjyGxabSkrK48GQ79KliXQlFbCaaFe/LEc7eABUNCCGBocKjU06iits6e4oqpcWNvjC/BTk1o6n4MpcE6ghUTSGFzgpiGfxwvXFOqSCiftUw/bxdcqjlSoMusF4sQXvaIh6I1F4JS6rHqtuyV8vKgkNek6d9rMWL6y7YlNPFEpaVptzWzq5X/6Udvwd7/RXh8fiQ1KqkFlUF2b4tdhppggXPJSer4w4KoUk120sVyphp1iZCfi0I9TyRiSMMsenmSwf68qX99U9l+qXPbbUdgZjf3afjCXbF+UP0EKLmeKN6gkxr6wSnXe5t2DoBXUR+AyVQyDcH7Aku1+c9ACMjX2+8pJpPtbedTbsUWWUrpSVQQsTImFTWzNpV9dq3ldPqmbHDFpNjY2bVfkKNVeHAadeV7s8i+81C4sqzEt6FJFv5hGaUedgmWkmfZ513yCo8xkr+WDml5+Lomz/JxWSmd8gdtztVcpA/Jbh0Ki6sIH2bGtrHwyX52NHzHsQS3g9z4JndFB5jXvS/UX6Hwta5DNW/sI77jSWEMpT/y+ho1rNlpK+wXkH+Vn6iingh+vw+G7DulIWrSn+Fx1UDLBVHV8XbW04ohjPUtuaurTK4njD1uRDqq2Ui0OSd4T92A==
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <89F690775AA2B541BC14983952998AA4@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from localhost.localdomain (204.83.154.189) by MWHPR18CA0058.namprd18.prod.outlook.com (2603:10b6:300:39::20) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.25 via Frontend Transport; Wed, 21 Oct 2020 00:18:33 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1b86ff30-132b-4f5a-43d2-08d87556d8e8
-X-MS-TrafficTypeDiagnostic: YTBPR01MB3039:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <YTBPR01MB3039BDD1DF90F911A9F40B72EC1C0@YTBPR01MB3039.CANPRD01.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: oi4OCvgIk0E1triBbaDXQJl7N5ZIkExVCQZPPbeD1Rhfg/6o3jyGJiFEzS15qwLlFsBzC5J7e+JzHyemwiQY7dWJKE+c9SZYTUno1DG0OVPcv1juAhgrGPeSLe3hT3f98C01b2SdHLBmvHFbsGuyGvsPPLMFfCwlm9zkaMcYlpJbtaK/L2Eqg8nFyzpnXxK7kIxLyj6e1iQlMKx3T0O+H+WtagCC+2QSkWI0z1eTxyetB1E/39uQf0npN5KfXsRzodKdnVgVfkcUEZHh8X59qC5tlMC1uoR+jAdYRKgSX5pr7rJj7Gfbir1i77xRWRmSabE+jkR8JeUriFTi3q6kRPMBI/rn+500YZWpp/yn0PXDP+nohISdmrYFrZaNebR+DdiK+7A19T+Iw2ZHCFm/w1EN/ypRHpEHHcdgNKQ8FFRZ20dcmQS9lWa5xb9YG6oDloLsrPShRyNDl1EW8211ow==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(366004)(39850400004)(396003)(136003)(2906002)(1076003)(69590400008)(6486002)(6666004)(66946007)(66476007)(66556008)(5660300002)(316002)(83380400001)(8936002)(6512007)(8676002)(36756003)(44832011)(478600001)(86362001)(966005)(4326008)(26005)(186003)(16526019)(107886003)(956004)(2616005)(52116002)(6506007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: fD+8/f9ZCxOErn1FTOsLR5smQWSCR+ggQtgx5Yc/ZJoEvOrxB80SWSBz3NncMEPeoqNErM/dNaunNxlneZFA9OSb4be/l8+wHgXm6yq789zjIrXzLbhVTRkz4P7L/t0Xpfz89+U5D9MidsFSfx2fweD55AKms9CnYMQbSB4hhbnr9wMGyEOeNcmN9d2U2kNXIujxcuCjlpjM2vfSY5CMf+kCQO/DhUTl8aOcEb84kxEFnzQfx482rW8N6UDbbyBQbEDtnMFEXFNySFciuGENNhMJII24uXBGOjCncI7alTSVASS9MOH332p+bryil9UiNpYTvv81aOylOkOACRNw6PPnDS2s9P9VqOtscO2UW87cpEMXLXWI0z0555WFDGpQH3jqz1sk4WlqrUdQ9/3AVTGrCxwfoVttSmlfWVdidjjCY6UiVFavMeZBt6ax7nD9lxrG0nGWw39JBnthqfqbf4AaKl9bsovGqVPPTddhfwugyaU8Y0PZJiaXFdDSiZf5TwoMQtJ2EsMqcaJ/Vz9qS/mvlaCElp5YTfTL0QACn1To5PqOm08n+bGw0H/NO485YFgKBNj4qVP+TK/zXntZ0b3zJzoi1V2p058vWxKlF9pYYiX1lESds+39LDDnwLcZOPXIRkCMRS80D5/MIwo+3g==
-X-OriginatorOrg: calian.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1b86ff30-132b-4f5a-43d2-08d87556d8e8
-X-MS-Exchange-CrossTenant-AuthSource: YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Oct 2020 00:18:34.1391
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB5685.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b24eabdb-94db-4879-debd-08d875577ab7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Oct 2020 00:23:05.3200
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8wl+H6+TxHAFlqhXYNErLx2YuokCl/IIe3UDGSip5AgGK2tDQOYhYb7kP3SVe+exAQpnAkiDM/t2sHqKozZX3X0MZjcWcziU5cTsJ6t1oWc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: YTBPR01MB3039
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: OF2ibea3n3b/HgSu9fTZlxYzFzNBn2AHSt7TUyH8ZCs9Tog9tbSUQSK/VkylqJlidjvsO8dDBa9H0YHLIp+nWg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB4183
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Finisar FCLF8520P2BTL 1000BaseT SFP module uses a Marvel 88E1111 PHY
-with a modified PHY ID. Add support for this ID using the 88E1111
-methods.
+On Tue, Oct 20, 2020 at 03:23:19PM +0800, Xiaoliang Yang wrote:
+> VSC9959 supports Per-Stream Filtering and Policing(PSFP). Sream is
+> identified by Null Stream identification which is defined in
+> IEEE802.1Qci.
+>=20
+> For IEEE 802.1Qci, there are four tables need to set: stream table,
+> stream filter table, stream gate table, and flow meter table. This
+> patch is using TC flower gate action to set stream gate table, using
+> TC flower keys{dst_mac, vlan_id} to identify a stream and set the
+> stream table. Stream filter table is maintained automatically, and
+> it's index is determined by SGID(stream gate index) and FMID(flow
+> meter index).
+>=20
+> On the ocelot driver, there is also a TC flower offload to set up
+> VCAPs. We check the chain ID to offload the rule on felix driver to
+> run PSFP flow.
+>=20
+> An example to set stream gate:
+> 	> tc qdisc add dev swp0 clsact
+> 	> tc filter add dev swp0 ingress chain 30000 protocol 802.1Q
+> 		flower skip_sw dst_mac  CA:9C:00:BC:6D:68 vlan_id 1 \
+> 		action gate index 1 base-time 0 \
+> 			sched-entry CLOSE 6000 3 -1
 
-By default these modules do not have 1000BaseX auto-negotiation enabled,
-which is not generally desirable with Linux networking drivers. Add
-handling to enable 1000BaseX auto-negotiation when these modules are
-used in 1000BaseX mode. Also, some special handling is required to ensure
-that 1000BaseT auto-negotiation is enabled properly when desired.
+I believe there is one extra level of indentation here than you
+intended. Also, since we're speaking of examples. Would you be kind
+enough to create a new selftest where you demonstrate the tc-gate
+functionality? You can easily base that selftest on
+tools/testing/selftests/drivers/net/ocelot/tc_flower_chains.sh which
+uses a loopback scheme with the 4 switch ports. And because you would be
+using ports in loopback, you don't even need to run PTP, because the
+sender, receiver and switch ports will all be in sync with one another,
+as they share the same PHC.
 
-Based on existing handling in the AMD xgbe driver and the information in
-the Finisar FAQ:
-https://www.finisar.com/sites/default/files/resources/an-2036_1000base-t_sfp_faqreve1.pdf
+What I would like to see is:
 
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
----
+           swp0          |        swp1       |    swp2     |   swp3
+---------------------------------------------------------------------
+           Sender             ingress           egress
+(scheduled with tc-taprio)    ------>   switch  -------->   Receiver
+                           (tc-gate here)
 
-Changed since v2: Renamed 1000BX -> 1000X to avoid confusion with 1000Base-BX
+If you have no better idea how to send time-based traffic and you can't
+get mausezahn to do that either (I don't think you can), you can use
+isochron:
+https://github.com/vladimiroltean/tsn-scripts/tree/isochron/isochron
 
- drivers/net/phy/marvell.c   | 99 ++++++++++++++++++++++++++++++++++++-
- include/linux/marvell_phy.h |  3 ++
- 2 files changed, 101 insertions(+), 1 deletion(-)
+Once you do that, everybody will have a good understanding of how to use
+it, as well as a working example and not just a wall of text.
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 5aec673a0120..f9cef5ef6f5e 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -80,8 +80,11 @@
- #define MII_M1111_HWCFG_MODE_FIBER_RGMII	0x3
- #define MII_M1111_HWCFG_MODE_SGMII_NO_CLK	0x4
- #define MII_M1111_HWCFG_MODE_RTBI		0x7
-+#define MII_M1111_HWCFG_MODE_COPPER_1000X_AN	0x8
- #define MII_M1111_HWCFG_MODE_COPPER_RTBI	0x9
- #define MII_M1111_HWCFG_MODE_COPPER_RGMII	0xb
-+#define MII_M1111_HWCFG_MODE_COPPER_1000X_NOAN	0xc
-+#define MII_M1111_HWCFG_SERIAL_AN_BYPASS	BIT(12)
- #define MII_M1111_HWCFG_FIBER_COPPER_RES	BIT(13)
- #define MII_M1111_HWCFG_FIBER_COPPER_AUTO	BIT(15)
- 
-@@ -629,6 +632,51 @@ static int marvell_config_aneg_fiber(struct phy_device *phydev)
- 	return genphy_check_and_restart_aneg(phydev, changed);
- }
- 
-+static int m88e1111_config_aneg(struct phy_device *phydev)
-+{
-+	int err;
-+	int extsr = phy_read(phydev, MII_M1111_PHY_EXT_SR);
-+
-+	if (extsr < 0)
-+		return extsr;
-+
-+	/* If not using SGMII or copper 1000BaseX modes, use normal process.
-+	 * Steps below are only required for these modes.
-+	 */
-+	if (phydev->interface != PHY_INTERFACE_MODE_SGMII &&
-+	    (extsr & MII_M1111_HWCFG_MODE_MASK) !=
-+	    MII_M1111_HWCFG_MODE_COPPER_1000X_AN)
-+		return marvell_config_aneg(phydev);
-+
-+	err = marvell_set_page(phydev, MII_MARVELL_COPPER_PAGE);
-+	if (err < 0)
-+		goto error;
-+
-+	/* Configure the copper link first */
-+	err = marvell_config_aneg(phydev);
-+	if (err < 0)
-+		goto error;
-+
-+	/* Do not touch the fiber page if we're in copper->sgmii mode */
-+	if (phydev->interface == PHY_INTERFACE_MODE_SGMII)
-+		return 0;
-+
-+	/* Then the fiber link */
-+	err = marvell_set_page(phydev, MII_MARVELL_FIBER_PAGE);
-+	if (err < 0)
-+		goto error;
-+
-+	err = marvell_config_aneg_fiber(phydev);
-+	if (err < 0)
-+		goto error;
-+
-+	return marvell_set_page(phydev, MII_MARVELL_COPPER_PAGE);
-+
-+error:
-+	marvell_set_page(phydev, MII_MARVELL_COPPER_PAGE);
-+	return err;
-+}
-+
- static int m88e1510_config_aneg(struct phy_device *phydev)
- {
- 	int err;
-@@ -814,6 +862,27 @@ static int m88e1111_config_init_rtbi(struct phy_device *phydev)
- 		MII_M1111_HWCFG_FIBER_COPPER_AUTO);
- }
- 
-+static int m88e1111_config_init_1000basex(struct phy_device *phydev)
-+{
-+	int extsr = phy_read(phydev, MII_M1111_PHY_EXT_SR);
-+
-+	if (extsr < 0)
-+		return extsr;
-+
-+	/* If using copper mode, ensure 1000BaseX auto-negotiation is enabled */
-+	if ((extsr & MII_M1111_HWCFG_MODE_MASK) ==
-+	    MII_M1111_HWCFG_MODE_COPPER_1000X_NOAN) {
-+		int err = phy_modify(phydev, MII_M1111_PHY_EXT_SR,
-+			  MII_M1111_HWCFG_MODE_MASK |
-+			  MII_M1111_HWCFG_SERIAL_AN_BYPASS,
-+			  MII_M1111_HWCFG_MODE_COPPER_1000X_AN |
-+			  MII_M1111_HWCFG_SERIAL_AN_BYPASS);
-+		if (err < 0)
-+			return err;
-+	}
-+	return 0;
-+}
-+
- static int m88e1111_config_init(struct phy_device *phydev)
- {
- 	int err;
-@@ -836,6 +905,12 @@ static int m88e1111_config_init(struct phy_device *phydev)
- 			return err;
- 	}
- 
-+	if (phydev->interface == PHY_INTERFACE_MODE_1000BASEX) {
-+		err = m88e1111_config_init_1000basex(phydev);
-+		if (err < 0)
-+			return err;
-+	}
-+
- 	err = marvell_of_reg_init(phydev);
- 	if (err < 0)
- 		return err;
-@@ -2658,7 +2733,28 @@ static struct phy_driver marvell_drivers[] = {
- 		/* PHY_GBIT_FEATURES */
- 		.probe = marvell_probe,
- 		.config_init = m88e1111_config_init,
--		.config_aneg = marvell_config_aneg,
-+		.config_aneg = m88e1111_config_aneg,
-+		.read_status = marvell_read_status,
-+		.ack_interrupt = marvell_ack_interrupt,
-+		.config_intr = marvell_config_intr,
-+		.resume = genphy_resume,
-+		.suspend = genphy_suspend,
-+		.read_page = marvell_read_page,
-+		.write_page = marvell_write_page,
-+		.get_sset_count = marvell_get_sset_count,
-+		.get_strings = marvell_get_strings,
-+		.get_stats = marvell_get_stats,
-+		.get_tunable = m88e1111_get_tunable,
-+		.set_tunable = m88e1111_set_tunable,
-+	},
-+	{
-+		.phy_id = MARVELL_PHY_ID_88E1111_FINISAR,
-+		.phy_id_mask = MARVELL_PHY_ID_MASK,
-+		.name = "Marvell 88E1111 (Finisar)",
-+		/* PHY_GBIT_FEATURES */
-+		.probe = marvell_probe,
-+		.config_init = m88e1111_config_init,
-+		.config_aneg = m88e1111_config_aneg,
- 		.read_status = marvell_read_status,
- 		.ack_interrupt = marvell_ack_interrupt,
- 		.config_intr = marvell_config_intr,
-@@ -2989,6 +3085,7 @@ static struct mdio_device_id __maybe_unused marvell_tbl[] = {
- 	{ MARVELL_PHY_ID_88E1101, MARVELL_PHY_ID_MASK },
- 	{ MARVELL_PHY_ID_88E1112, MARVELL_PHY_ID_MASK },
- 	{ MARVELL_PHY_ID_88E1111, MARVELL_PHY_ID_MASK },
-+	{ MARVELL_PHY_ID_88E1111_FINISAR, MARVELL_PHY_ID_MASK },
- 	{ MARVELL_PHY_ID_88E1118, MARVELL_PHY_ID_MASK },
- 	{ MARVELL_PHY_ID_88E1121R, MARVELL_PHY_ID_MASK },
- 	{ MARVELL_PHY_ID_88E1145, MARVELL_PHY_ID_MASK },
-diff --git a/include/linux/marvell_phy.h b/include/linux/marvell_phy.h
-index ff7b7607c8cf..52b1610eae68 100644
---- a/include/linux/marvell_phy.h
-+++ b/include/linux/marvell_phy.h
-@@ -25,6 +25,9 @@
- #define MARVELL_PHY_ID_88X3310		0x002b09a0
- #define MARVELL_PHY_ID_88E2110		0x002b09b0
- 
-+/* Marvel 88E1111 in Finisar SFP module with modified PHY ID */
-+#define MARVELL_PHY_ID_88E1111_FINISAR	0x01ff0cc0
-+
- /* The MV88e6390 Ethernet switch contains embedded PHYs. These PHYs do
-  * not have a model ID. So the switch driver traps reads to the ID2
-  * register and returns the switch family ID
--- 
-2.18.4
+>=20
+> Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+> ---
+>  drivers/net/dsa/ocelot/Makefile        |   3 +-
+>  drivers/net/dsa/ocelot/felix.c         |  23 +
+>  drivers/net/dsa/ocelot/felix.h         |  16 +
+>  drivers/net/dsa/ocelot/felix_flower.c  | 651 +++++++++++++++++++++++++
+>  drivers/net/dsa/ocelot/felix_vsc9959.c |  10 +-
+>  include/soc/mscc/ocelot_ana.h          |  10 +
+>  6 files changed, 709 insertions(+), 4 deletions(-)
+>  create mode 100644 drivers/net/dsa/ocelot/felix_flower.c
+>=20
+> diff --git a/drivers/net/dsa/ocelot/Makefile b/drivers/net/dsa/ocelot/Mak=
+efile
+> index f6dd131e7491..22f3f98914e3 100644
+> --- a/drivers/net/dsa/ocelot/Makefile
+> +++ b/drivers/net/dsa/ocelot/Makefile
+> @@ -4,7 +4,8 @@ obj-$(CONFIG_NET_DSA_MSCC_SEVILLE) +=3D mscc_seville.o
+> =20
+>  mscc_felix-objs :=3D \
+>  	felix.o \
+> -	felix_vsc9959.o
+> +	felix_vsc9959.o \
+> +	felix_flower.o
+> =20
+>  mscc_seville-objs :=3D \
+>  	felix.o \
+> diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/feli=
+x.c
+> index f791860d495f..42f972d10539 100644
+> --- a/drivers/net/dsa/ocelot/felix.c
+> +++ b/drivers/net/dsa/ocelot/felix.c
+> @@ -716,6 +716,13 @@ static int felix_cls_flower_add(struct dsa_switch *d=
+s, int port,
+>  				struct flow_cls_offload *cls, bool ingress)
+>  {
+>  	struct ocelot *ocelot =3D ds->priv;
+> +	struct felix *felix =3D ocelot_to_felix(ocelot);
+> +
+> +	if (felix->info->flower_replace) {
+> +		if (cls->common.chain_index =3D=3D OCELOT_PSFP_CHAIN)
+> +			return felix->info->flower_replace(ocelot, port, cls,
+> +							   ingress);
+> +	}
+> =20
+>  	return ocelot_cls_flower_replace(ocelot, port, cls, ingress);
+>  }
+> @@ -724,6 +731,14 @@ static int felix_cls_flower_del(struct dsa_switch *d=
+s, int port,
+>  				struct flow_cls_offload *cls, bool ingress)
+>  {
+>  	struct ocelot *ocelot =3D ds->priv;
+> +	struct felix *felix =3D ocelot_to_felix(ocelot);
+> +	int ret;
+> +
+> +	if (felix->info->flower_destroy) {
+> +		ret =3D felix->info->flower_destroy(ocelot, port, cls, ingress);
+> +		if (!ret)
+> +			return 0;
 
+To be honest I don't particularly enjoy having these function pointers
+mask the functionality from mscc_ocelot like this. For example here. If
+felix->info->flower_destroy for a PSFP rule returns an error, what you
+do is you go ahead and call ocelot_cls_flower_destroy which is incorrect,
+you should just return that error code to the user.
+
+Have you tried putting these ops for the PSFP chain in struct
+ocelot_ops, and just let ocelot_flower.c check the chain number and the
+presence of those function pointers? The code path would be:
+
+slave.c: dsa_slave_add_cls_flower
+-> felix.c: felix_cls_flower_add
+   -> ocelot_flower.c: ocelot_cls_flower_replace
+      -> felix_vsc9959.c: pick a name here (vsc9959_gate_entry_add ?)
+
+I recommend implementing the features that are only available on the
+VSC9959 hardware in felix_vsc9959.c. Then, when new hardware will come
+and we'll have a real idea of what's common and what isn't (unlike now
+when we would just be guessing), and we'll refactor appropriately like
+we did with the Lynx PCS. But that doesn't mean we should completely
+bypass ocelot_flower.c.
+
+> +	}
+> =20
+>  	return ocelot_cls_flower_destroy(ocelot, port, cls, ingress);
+>  }
+> @@ -732,6 +747,14 @@ static int felix_cls_flower_stats(struct dsa_switch =
+*ds, int port,
+>  				  struct flow_cls_offload *cls, bool ingress)
+>  {
+>  	struct ocelot *ocelot =3D ds->priv;
+> +	struct felix *felix =3D ocelot_to_felix(ocelot);
+> +	int ret;
+> +
+> +	if (felix->info->flower_stats) {
+> +		ret =3D felix->info->flower_stats(ocelot, port, cls, ingress);
+> +		if (!ret)
+> +			return 0;
+> +	}
+> =20
+>  	return ocelot_cls_flower_stats(ocelot, port, cls, ingress);
+>  }
+> diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/feli=
+x.h
+> index 4c717324ac2f..9ea880deb2a0 100644
+> --- a/drivers/net/dsa/ocelot/felix.h
+> +++ b/drivers/net/dsa/ocelot/felix.h
+> @@ -37,6 +37,12 @@ struct felix_info {
+>  	void	(*port_sched_speed_set)(struct ocelot *ocelot, int port,
+>  					u32 speed);
+>  	void	(*xmit_template_populate)(struct ocelot *ocelot, int port);
+> +	int	(*flower_replace)(struct ocelot *ocelot, int port,
+> +				  struct flow_cls_offload *f, bool ingress);
+> +	int	(*flower_destroy)(struct ocelot *ocelot, int port,
+> +				  struct flow_cls_offload *f, bool ingress);
+> +	int	(*flower_stats)(struct ocelot *ocelot, int port,
+> +				struct flow_cls_offload *f, bool ingress);
+>  };
+> =20
+>  extern const struct dsa_switch_ops felix_switch_ops;
+> @@ -55,4 +61,14 @@ struct felix {
+>  struct net_device *felix_port_to_netdev(struct ocelot *ocelot, int port)=
+;
+>  int felix_netdev_to_port(struct net_device *dev);
+> =20
+> +void vsc9959_new_base_time(struct ocelot *ocelot, ktime_t base_time,
+> +			   u64 cycle_time, struct timespec64 *new_base_ts);
+> +int felix_flower_stream_replace(struct ocelot *ocelot, int port,
+> +				struct flow_cls_offload *f, bool ingress);
+> +int felix_flower_stream_destroy(struct ocelot *ocelot, int port,
+> +				struct flow_cls_offload *f, bool ingress);
+> +int felix_flower_stream_stats(struct ocelot *ocelot, int port,
+> +			      struct flow_cls_offload *f, bool ingress);
+> +void felix_psfp_init(struct ocelot *ocelot);
+> +
+>  #endif
+> diff --git a/drivers/net/dsa/ocelot/felix_flower.c b/drivers/net/dsa/ocel=
+ot/felix_flower.c
+> new file mode 100644
+> index 000000000000..71894dcc0af2
+> --- /dev/null
+> +++ b/drivers/net/dsa/ocelot/felix_flower.c
+> @@ -0,0 +1,651 @@
+> +// SPDX-License-Identifier: (GPL-2.0 OR MIT)
+> +/* Copyright 2020 NXP Semiconductors
+> + */
+> +#include <soc/mscc/ocelot_ana.h>
+> +#include <soc/mscc/ocelot_sys.h>
+> +#include <net/tc_act/tc_gate.h>
+> +#include <net/flow_offload.h>
+> +#include <soc/mscc/ocelot.h>
+> +#include <net/pkt_sched.h>
+> +#include "felix.h"
+> +
+> +#define FELIX_PSFP_SFID_MAX		175
+> +#define FELIX_PSFP_GATE_ID_MAX		183
+> +#define FELIX_POLICER_PSFP_BASE		63
+> +#define FELIX_POLICER_PSFP_MAX		383
+> +#define FELIX_PSFP_GATE_LIST_NUM	4
+> +#define FELIX_PSFP_GATE_CYCLETIME_MIN	5000
+> +
+> +struct felix_streamid {
+> +	struct list_head list;
+> +	u32 id;
+> +	u8 dmac[ETH_ALEN];
+> +	u16 vid;
+> +	s8 prio;
+> +	u8 sfid_valid;
+> +	u32 sfid;
+> +};
+> +
+> +struct felix_stream_gate_conf {
+> +	u32 index;
+> +	u8 enable;
+> +	u8 ipv_valid;
+> +	u8 init_ipv;
+> +	u64 basetime;
+> +	u64 cycletime;
+> +	u64 cycletimext;
+> +	u32 num_entries;
+> +	struct action_gate_entry entries[0];
+> +};
+> +
+> +struct felix_stream_filter {
+> +	struct list_head list;
+> +	refcount_t refcount;
+> +	u32 index;
+> +	u8 enable;
+> +	u8 sg_valid;
+> +	u32 sgid;
+> +	u8 fm_valid;
+> +	u32 fmid;
+> +	u8 prio_valid;
+> +	u8 prio;
+> +	u32 maxsdu;
+> +};
+> +
+> +struct felix_stream_gate {
+> +	struct list_head list;
+> +	refcount_t refcount;
+> +	u32 index;
+> +};
+> +
+> +struct felix_psfp_stream_counters {
+> +	u32 match;
+> +	u32 not_pass_gate;
+> +	u32 not_pass_sdu;
+> +	u32 red;
+> +};
+> +
+> +struct felix_psfp_list {
+> +	struct list_head stream_list;
+> +	struct list_head gate_list;
+> +	struct list_head sfi_list;
+> +};
+> +
+> +static struct felix_psfp_list lpsfp;
+> +
+> +static u32 felix_sg_cfg_status(struct ocelot *ocelot)
+> +{
+> +	return ocelot_read(ocelot, ANA_SG_ACCESS_CTRL);
+> +}
+> +
+> +static int felix_hw_sgi_set(struct ocelot *ocelot,
+> +			    struct felix_stream_gate_conf *sgi)
+> +{
+> +	struct action_gate_entry *e;
+> +	struct timespec64 base_ts;
+> +	u32 interval_sum =3D 0;
+> +	u32 val;
+> +	int i;
+> +
+> +	if (sgi->index > FELIX_PSFP_GATE_ID_MAX)
+> +		return -EINVAL;
+> +
+> +	ocelot_write(ocelot, ANA_SG_ACCESS_CTRL_SGID(sgi->index),
+> +		     ANA_SG_ACCESS_CTRL);
+> +
+> +	if (!sgi->enable) {
+> +		ocelot_rmw(ocelot, ANA_SG_CONFIG_REG_3_INIT_GATE_STATE,
+> +			   ANA_SG_CONFIG_REG_3_INIT_GATE_STATE |
+> +			   ANA_SG_CONFIG_REG_3_GATE_ENABLE,
+> +			   ANA_SG_CONFIG_REG_3);
+> +
+> +		return 0;
+> +	}
+> +
+> +	if (sgi->cycletime < FELIX_PSFP_GATE_CYCLETIME_MIN ||
+> +	    sgi->cycletime > NSEC_PER_SEC)
+> +		return -EINVAL;
+> +
+> +	if (sgi->num_entries > FELIX_PSFP_GATE_LIST_NUM)
+> +		return -EINVAL;
+> +
+> +	vsc9959_new_base_time(ocelot, sgi->basetime, sgi->cycletime, &base_ts);
+
+See, either you rename vsc9959_new_base_time to something more generic
+(in my opinion you could even provide this functionality as part of the
+tc-taprio API, as long as you replace "struct ocelot *ocelot" with
+"u64 now"), or you move the entire felix_flower.c into felix_vsc9959.c,
+or you rename felix_flower.c into felix_vsc9959_flower.c to indicate
+that it is hardware-specific functionality and not common with seville
+(which does use felix.c but would not use felix_flower.c).
+
+> +	ocelot_write(ocelot, base_ts.tv_nsec, ANA_SG_CONFIG_REG_1);
+> +	val =3D lower_32_bits(base_ts.tv_sec);
+> +	ocelot_write(ocelot, val, ANA_SG_CONFIG_REG_2);
+> +
+> +	val =3D upper_32_bits(base_ts.tv_sec);
+> +	ocelot_write(ocelot,
+> +		     (sgi->ipv_valid ? ANA_SG_CONFIG_REG_3_IPV_VALID : 0) |
+> +		     ANA_SG_CONFIG_REG_3_INIT_IPV(sgi->init_ipv) |
+> +		     ANA_SG_CONFIG_REG_3_GATE_ENABLE |
+> +		     ANA_SG_CONFIG_REG_3_LIST_LENGTH(sgi->num_entries) |
+> +		     ANA_SG_CONFIG_REG_3_INIT_GATE_STATE |
+> +		     ANA_SG_CONFIG_REG_3_BASE_TIME_SEC_MSB(val),
+> +		     ANA_SG_CONFIG_REG_3);
+> +
+> +	ocelot_write(ocelot, sgi->cycletime, ANA_SG_CONFIG_REG_4);
+> +
+> +	e =3D sgi->entries;
+> +	for (i =3D 0; i < sgi->num_entries; i++) {
+> +		u32 ips =3D (e[i].ipv < 0) ? 0 : (e[i].ipv + 8);
+> +
+> +		ocelot_write_rix(ocelot, ANA_SG_GCL_GS_CONFIG_IPS(ips) |
+> +				 (e[i].gate_state ?
+> +				  ANA_SG_GCL_GS_CONFIG_GATE_STATE : 0),
+> +				 ANA_SG_GCL_GS_CONFIG, i);
+> +
+> +		interval_sum +=3D e[i].interval;
+> +		ocelot_write_rix(ocelot, interval_sum, ANA_SG_GCL_TI_CONFIG, i);
+> +	}
+> +
+> +	ocelot_rmw(ocelot, ANA_SG_ACCESS_CTRL_CONFIG_CHANGE,
+> +		   ANA_SG_ACCESS_CTRL_CONFIG_CHANGE,
+> +		   ANA_SG_ACCESS_CTRL);
+> +
+> +	return readx_poll_timeout(felix_sg_cfg_status, ocelot, val,
+> +				  (!(ANA_SG_ACCESS_CTRL_CONFIG_CHANGE & val)),
+> +				  10, 100000);
+> +}
+> +
+> +static u32 felix_sfi_access_status(struct ocelot *ocelot)
+> +{
+> +	return ocelot_read(ocelot, ANA_TABLES_SFIDACCESS);
+> +}
+> +
+> +static int felix_hw_sfi_set(struct ocelot *ocelot,
+> +			    struct felix_stream_filter *sfi)
+> +{
+> +	u32 val;
+> +
+> +	if (sfi->index > FELIX_PSFP_SFID_MAX)
+> +		return -EINVAL;
+> +
+> +	if (!sfi->enable) {
+> +		ocelot_write(ocelot, ANA_TABLES_SFIDTIDX_SFID_INDEX(sfi->index),
+> +			     ANA_TABLES_SFIDTIDX);
+> +
+> +		val =3D ANA_TABLES_SFIDACCESS_SFID_TBL_CMD(SFIDACCESS_CMD_WRITE);
+> +		ocelot_write(ocelot, val, ANA_TABLES_SFIDACCESS);
+> +
+> +		return readx_poll_timeout(felix_sfi_access_status, ocelot, val,
+> +					  (!ANA_TABLES_SFIDACCESS_SFID_TBL_CMD(val)),
+> +					  10, 100000);
+> +	}
+> +
+> +	if (sfi->sgid > FELIX_PSFP_GATE_ID_MAX ||
+> +	    sfi->fmid > FELIX_POLICER_PSFP_MAX)
+> +		return -EINVAL;
+> +
+> +	ocelot_write(ocelot,
+> +		     (sfi->sg_valid ? ANA_TABLES_SFIDTIDX_SGID_VALID : 0) |
+> +		     ANA_TABLES_SFIDTIDX_SGID(sfi->sgid) |
+> +		     (sfi->fm_valid ? ANA_TABLES_SFIDTIDX_POL_ENA : 0) |
+> +		     ANA_TABLES_SFIDTIDX_POL_IDX(sfi->fmid) |
+> +		     ANA_TABLES_SFIDTIDX_SFID_INDEX(sfi->index),
+> +		     ANA_TABLES_SFIDTIDX);
+> +
+> +	ocelot_write(ocelot,
+> +		     (sfi->prio_valid ? ANA_TABLES_SFIDACCESS_IGR_PRIO_MATCH_ENA : 0) =
+|
+> +		     ANA_TABLES_SFIDACCESS_IGR_PRIO(sfi->prio) |
+> +		     ANA_TABLES_SFIDACCESS_MAX_SDU_LEN(sfi->maxsdu) |
+> +		     ANA_TABLES_SFIDACCESS_SFID_TBL_CMD(SFIDACCESS_CMD_WRITE),
+> +		     ANA_TABLES_SFIDACCESS);
+> +
+> +	return readx_poll_timeout(felix_sfi_access_status, ocelot, val,
+> +				  (!ANA_TABLES_SFIDACCESS_SFID_TBL_CMD(val)),
+> +				  10, 100000);
+> +}
+> +
+> +static u32 felix_mact_status(struct ocelot *ocelot)
+> +{
+> +	return ocelot_read(ocelot, ANA_TABLES_MACACCESS);
+> +}
+> +
+> +static int felix_mact_stream_update(struct ocelot *ocelot,
+> +				    struct felix_streamid *stream,
+> +				    struct netlink_ext_ack *extack)
+> +{
+> +	u32 row, col, reg, val;
+> +	u8 type;
+> +	int ret;
+> +
+> +	/* Stream identification desn't support to add a stream with non
+> +	 * existent MAC (The MAC entry has not been learned in MAC table).
+> +	 * return -EOPNOTSUPP to continue offloading to other modules.
+> +	 */
+> +	ret =3D ocelot_mact_lookup(ocelot, stream->dmac, stream->vid, &row, &co=
+l);
+> +	if (ret) {
+> +		if (extack)
+> +			NL_SET_ERR_MSG_MOD(extack, "Stream is not learned in MAC table");
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	ocelot_rmw(ocelot,
+> +		   (stream->sfid_valid ? ANA_TABLES_STREAMDATA_SFID_VALID : 0) |
+> +		   ANA_TABLES_STREAMDATA_SFID(stream->sfid),
+> +		   ANA_TABLES_STREAMDATA_SFID_VALID |
+> +		   ANA_TABLES_STREAMDATA_SFID_M,
+> +		   ANA_TABLES_STREAMDATA);
+> +
+> +	reg =3D ocelot_read(ocelot, ANA_TABLES_STREAMDATA);
+> +	reg &=3D (ANA_TABLES_STREAMDATA_SFID_VALID | ANA_TABLES_STREAMDATA_SSID=
+_VALID);
+> +	type =3D (reg ? ENTRYTYPE_LOCKED : ENTRYTYPE_NORMAL);
+> +	ocelot_rmw(ocelot,  ANA_TABLES_MACACCESS_VALID |
+> +		   ANA_TABLES_MACACCESS_ENTRYTYPE(type) |
+> +		   ANA_TABLES_MACACCESS_MAC_TABLE_CMD(MACACCESS_CMD_WRITE),
+> +		   ANA_TABLES_MACACCESS_VALID |
+> +		   ANA_TABLES_MACACCESS_ENTRYTYPE_M |
+> +		   ANA_TABLES_MACACCESS_MAC_TABLE_CMD_M,
+> +		   ANA_TABLES_MACACCESS);
+> +
+> +	return readx_poll_timeout(felix_mact_status, ocelot, val,
+> +				  (!ANA_TABLES_MACACCESS_MAC_TABLE_CMD(val)),
+> +				  10, 100000);
+> +}
+> +
+> +static void felix_stream_counters_get(struct ocelot *ocelot, u32 index,
+> +				      struct felix_psfp_stream_counters *counters)
+> +{
+> +	ocelot_rmw(ocelot, SYS_STAT_CFG_STAT_VIEW(index),
+> +		   SYS_STAT_CFG_STAT_VIEW_M,
+> +		   SYS_STAT_CFG);
+> +
+> +	counters->match =3D ocelot_read_gix(ocelot, SYS_CNT, 0x200);
+> +	counters->not_pass_gate =3D ocelot_read_gix(ocelot, SYS_CNT, 0x201);
+> +	counters->not_pass_sdu =3D ocelot_read_gix(ocelot, SYS_CNT, 0x202);
+> +	counters->red =3D ocelot_read_gix(ocelot, SYS_CNT, 0x203);
+> +}
+> +
+> +static int felix_list_gate_add(struct ocelot *ocelot,
+> +			       struct felix_stream_gate_conf *sgi)
+> +{
+> +	struct felix_stream_gate *gate, *tmp;
+> +	struct list_head *pos, *q;
+> +	int ret;
+> +
+> +	list_for_each_safe(pos, q, &lpsfp.gate_list) {
+> +		tmp =3D list_entry(pos, struct felix_stream_gate, list);
+> +		if (tmp->index =3D=3D sgi->index) {
+> +			refcount_inc(&tmp->refcount);
+> +			return 0;
+> +		}
+> +		if (tmp->index > sgi->index)
+> +			break;
+> +	}
+> +
+> +	ret =3D felix_hw_sgi_set(ocelot, sgi);
+> +	if (ret)
+> +		return ret;
+> +
+> +	gate =3D kzalloc(sizeof(*gate), GFP_KERNEL);
+> +	if (!gate)
+> +		return -ENOMEM;
+> +
+> +	gate->index =3D sgi->index;
+> +	refcount_set(&gate->refcount, 1);
+> +	list_add(&gate->list, pos->prev);
+> +
+> +	return 0;
+> +}
+> +
+> +static void felix_list_gate_del(struct ocelot *ocelot, u32 index)
+> +{
+> +	struct felix_stream_gate *tmp;
+> +	struct felix_stream_gate_conf sgi;
+> +	struct list_head *pos, *q;
+> +	u8 z;
+> +
+> +	list_for_each_safe(pos, q, &lpsfp.gate_list) {
+> +		tmp =3D list_entry(pos, struct felix_stream_gate, list);
+> +		if (tmp->index =3D=3D index) {
+> +			z =3D refcount_dec_and_test(&tmp->refcount);
+> +			if (z) {
+> +				sgi.index =3D index;
+> +				sgi.enable =3D 0;
+> +				felix_hw_sgi_set(ocelot, &sgi);
+> +				list_del(pos);
+> +				kfree(tmp);
+> +			}
+> +			break;
+> +		}
+> +	}
+> +}
+> +
+> +static int felix_list_stream_filter_add(struct ocelot *ocelot,
+> +					struct felix_stream_filter *sfi)
+> +{
+> +	struct felix_stream_filter *sfi_entry, *tmp;
+> +	struct list_head *last =3D &lpsfp.sfi_list;
+> +	struct list_head *pos, *q;
+> +	u32 insert =3D 0;
+> +	int ret;
+> +
+> +	list_for_each_safe(pos, q, &lpsfp.sfi_list) {
+> +		tmp =3D list_entry(pos, struct felix_stream_filter, list);
+> +		if (sfi->sg_valid =3D=3D tmp->sg_valid &&
+> +		    tmp->sgid =3D=3D sfi->sgid &&
+> +		    tmp->fmid =3D=3D sfi->fmid) {
+> +			sfi->index =3D tmp->index;
+> +			refcount_inc(&tmp->refcount);
+> +			return 0;
+> +		}
+> +		if (tmp->index =3D=3D insert) {
+> +			last =3D pos;
+> +			insert++;
+> +		}
+> +	}
+> +	sfi->index =3D insert;
+> +	ret =3D felix_hw_sfi_set(ocelot, sfi);
+> +	if (ret)
+> +		return ret;
+> +
+> +	sfi_entry =3D kzalloc(sizeof(*sfi_entry), GFP_KERNEL);
+> +	if (!sfi_entry)
+> +		return -ENOMEM;
+> +
+> +	memcpy(sfi_entry, sfi, sizeof(*sfi_entry));
+> +	refcount_set(&sfi_entry->refcount, 1);
+> +
+> +	list_add(&sfi_entry->list, last->next);
+> +
+> +	return 0;
+> +}
+> +
+> +static void felix_list_stream_filter_del(struct ocelot *ocelot, u32 inde=
+x)
+> +{
+> +	struct felix_stream_filter *tmp;
+> +	struct list_head *pos, *q;
+> +	u8 z;
+> +
+> +	list_for_each_safe(pos, q, &lpsfp.sfi_list) {
+> +		tmp =3D list_entry(pos, struct felix_stream_filter, list);
+> +		if (tmp->index =3D=3D index) {
+> +			if (tmp->sg_valid)
+> +				felix_list_gate_del(ocelot, tmp->sgid);
+> +
+> +			z =3D refcount_dec_and_test(&tmp->refcount);
+> +			if (z) {
+> +				tmp->enable =3D 0;
+> +				felix_hw_sfi_set(ocelot, tmp);
+> +				list_del(pos);
+> +				kfree(tmp);
+> +			}
+> +			break;
+> +		}
+> +	}
+> +}
+> +
+> +static int felix_list_stream_add(struct felix_streamid *stream)
+> +{
+> +	struct felix_streamid *stream_entry;
+> +	struct list_head *pos;
+> +
+> +	stream_entry =3D kzalloc(sizeof(*stream_entry), GFP_KERNEL);
+> +	if (!stream_entry)
+> +		return -ENOMEM;
+> +
+> +	memcpy(stream_entry, stream, sizeof(*stream_entry));
+> +
+> +	if (list_empty(&lpsfp.stream_list)) {
+> +		list_add(&stream_entry->list, &lpsfp.stream_list);
+> +		return 0;
+> +	}
+> +
+> +	pos =3D &lpsfp.stream_list;
+> +	list_add(&stream_entry->list, pos->prev);
+> +
+> +	return 0;
+> +}
+> +
+> +static int felix_list_stream_lookup(struct felix_streamid *stream)
+> +{
+> +	struct felix_streamid *tmp;
+> +
+> +	list_for_each_entry(tmp, &lpsfp.stream_list, list) {
+> +		if (tmp->dmac[0] =3D=3D stream->dmac[0] &&
+> +		    tmp->dmac[1] =3D=3D stream->dmac[1] &&
+> +		    tmp->dmac[2] =3D=3D stream->dmac[2] &&
+> +		    tmp->dmac[3] =3D=3D stream->dmac[3] &&
+> +		    tmp->dmac[4] =3D=3D stream->dmac[4] &&
+> +		    tmp->dmac[5] =3D=3D stream->dmac[5] &&
+
+ether_addr_equal
+
+Did you even read the internal review comments?
+
+> +		    tmp->vid =3D=3D stream->vid &&
+> +		    (tmp->sfid_valid & stream->sfid_valid))
+> +			return 0;
+> +	}
+> +
+> +	return -ENOENT;
+> +}
+> +
+> +static struct felix_streamid *felix_list_stream_get(u32 id)
+> +{
+> +	struct felix_streamid *tmp;
+> +	struct list_head *pos, *q;
+> +
+> +	list_for_each_safe(pos, q, &lpsfp.stream_list) {
+> +		tmp =3D list_entry(pos, struct felix_streamid, list);
+
+list_for_each_entry
+
+Please revise the way you use the kernel lists API, I won't go over the
+whole file with these comments because it would pollute the entire
+discussion.
+
+> +		if (tmp->id =3D=3D id)
+> +			return tmp;
+> +	}
+> +
+> +	return NULL;
+> +}
+> +
+> +static int felix_list_stream_del(struct ocelot *ocelot, u32 id)
+> +{
+> +	struct felix_streamid *tmp;
+> +	struct list_head *pos, *q;
+> +
+> +	list_for_each_safe(pos, q, &lpsfp.stream_list) {
+> +		tmp =3D list_entry(pos, struct felix_streamid, list);
+> +		if (tmp->id =3D=3D id) {
+> +			tmp->sfid_valid =3D 0;
+> +			felix_list_stream_filter_del(ocelot, tmp->sfid);
+> +			felix_mact_stream_update(ocelot, tmp, NULL);
+> +			list_del(pos);
+> +			kfree(tmp);
+> +
+> +			return 0;
+> +		}
+> +	}
+> +
+> +	return -ENOENT;
+> +}
+> +
+> +static int felix_psfp_set(struct ocelot *ocelot,
+> +			  struct felix_streamid *stream,
+> +			  struct felix_stream_filter *sfi,
+> +			  struct netlink_ext_ack *extack)
+> +{
+> +	int ret;
+> +
+> +	sfi->prio_valid =3D (stream->prio < 0 ? 0 : 1);
+> +	sfi->prio =3D (sfi->prio_valid ? stream->prio : 0);
+> +	sfi->enable =3D 1;
+> +	ret =3D felix_list_stream_filter_add(ocelot, sfi);
+> +	if (ret) {
+> +		if (sfi->sg_valid)
+> +			felix_list_gate_del(ocelot, sfi->sgid);
+> +		return ret;
+> +	}
+> +
+> +	stream->sfid =3D sfi->index;
+> +	ret =3D felix_mact_stream_update(ocelot, stream, extack);
+> +	if (ret) {
+> +		felix_list_stream_filter_del(ocelot, sfi->index);
+> +		return ret;
+> +	}
+> +
+> +	ret =3D felix_list_stream_add(stream);
+> +	if (ret)
+> +		felix_list_stream_filter_del(ocelot, sfi->index);
+> +
+> +	return ret;
+> +}
+> +
+> +static void felix_parse_gate(const struct flow_action_entry *entry,
+> +			     struct felix_stream_gate_conf *sgi)
+> +{
+> +	struct action_gate_entry *e;
+> +	int i;
+> +
+> +	sgi->index =3D entry->gate.index;
+> +	sgi->ipv_valid =3D (entry->gate.prio < 0) ? 0 : 1;
+> +	sgi->init_ipv =3D (sgi->ipv_valid) ? entry->gate.prio : 0;
+> +	sgi->basetime =3D entry->gate.basetime;
+> +	sgi->cycletime =3D entry->gate.cycletime;
+> +	sgi->num_entries =3D entry->gate.num_entries;
+> +	sgi->enable =3D 1;
+> +
+> +	e =3D sgi->entries;
+> +	for (i =3D 0; i < entry->gate.num_entries; i++) {
+> +		e[i].gate_state =3D entry->gate.entries[i].gate_state;
+> +		e[i].interval =3D entry->gate.entries[i].interval;
+> +		e[i].ipv =3D entry->gate.entries[i].ipv;
+> +		e[i].maxoctets =3D entry->gate.entries[i].maxoctets;
+> +	}
+> +}
+> +
+> +static int felix_flower_parse_key(struct flow_cls_offload *f,
+> +				  struct felix_streamid *stream)
+> +{
+> +	struct flow_rule *rule =3D flow_cls_offload_flow_rule(f);
+> +	struct flow_dissector *dissector =3D rule->match.dissector;
+> +
+> +	if (dissector->used_keys &
+> +	    ~(BIT(FLOW_DISSECTOR_KEY_CONTROL) |
+> +	      BIT(FLOW_DISSECTOR_KEY_BASIC) |
+> +	      BIT(FLOW_DISSECTOR_KEY_VLAN) |
+> +	      BIT(FLOW_DISSECTOR_KEY_ETH_ADDRS)))
+> +		return -EOPNOTSUPP;
+> +
+> +	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ETH_ADDRS)) {
+> +		struct flow_match_eth_addrs match;
+> +
+> +		flow_rule_match_eth_addrs(rule, &match);
+> +		ether_addr_copy(stream->dmac, match.key->dst);
+> +		if (!is_zero_ether_addr(match.mask->src))
+> +			return -EOPNOTSUPP;
+> +	} else {
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_VLAN)) {
+> +		struct flow_match_vlan match;
+> +
+> +		flow_rule_match_vlan(rule, &match);
+> +		if (match.mask->vlan_priority)
+> +			stream->prio =3D match.key->vlan_priority;
+> +		else
+> +			stream->prio =3D -1;
+> +
+> +		if (!match.mask->vlan_id)
+> +			return -EOPNOTSUPP;
+> +		stream->vid =3D match.key->vlan_id;
+> +	} else {
+> +		return -EOPNOTSUPP;
+> +	}
+> +
+> +	stream->id =3D f->cookie;
+> +
+> +	return 0;
+> +}
+> +
+> +int felix_flower_stream_replace(struct ocelot *ocelot, int port,
+> +				struct flow_cls_offload *f, bool ingress)
+> +{
+> +	struct netlink_ext_ack *extack =3D f->common.extack;
+> +	struct felix_stream_filter sfi =3D {0};
+> +	struct felix_streamid stream =3D {0};
+> +	struct felix_stream_gate_conf *sgi;
+> +	const struct flow_action_entry *a;
+> +	int ret, size, i;
+> +	u32 index;
+> +
+> +	ret =3D felix_flower_parse_key(f, &stream);
+> +	if (ret) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Only can match on VID, PCP, and dest MAC")=
+;
+> +		return ret;
+> +	}
+> +
+> +	if (!flow_action_basic_hw_stats_check(&f->rule->action,
+> +					      f->common.extack))
+> +		return -EOPNOTSUPP;
+> +
+> +	flow_action_for_each(i, a, &f->rule->action) {
+> +		switch (a->id) {
+> +		case FLOW_ACTION_GATE:
+> +			if (f->common.chain_index !=3D OCELOT_PSFP_CHAIN) {
+> +				NL_SET_ERR_MSG_MOD(extack,
+> +						   "Gate action only be offloaded to PSFP chain");
+> +				return -EOPNOTSUPP;
+> +			}
+> +
+> +			size =3D struct_size(sgi, entries, a->gate.num_entries);
+> +			sgi =3D kzalloc(size, GFP_KERNEL);
+> +			felix_parse_gate(a, sgi);
+> +			ret =3D felix_list_gate_add(ocelot, sgi);
+> +			if (ret) {
+> +				kfree(sgi);
+> +				return ret;
+> +			}
+> +
+> +			sfi.sg_valid =3D 1;
+> +			sfi.sgid =3D sgi->index;
+> +			stream.sfid_valid =3D 1;
+> +			kfree(sgi);
+> +			break;
+> +		default:
+> +			return -EOPNOTSUPP;
+> +		}
+> +	}
+> +
+> +	/* Check if stream is set. */
+> +	ret =3D felix_list_stream_lookup(&stream);
+> +	if (!ret) {
+> +		if (sfi.sg_valid)
+> +			felix_list_gate_del(ocelot, sfi.sgid);
+> +
+> +		NL_SET_ERR_MSG_MOD(extack, "This stream is already added");
+> +
+> +		return -EEXIST;
+> +	}
+> +
+> +	if (stream.sfid_valid)
+> +		return felix_psfp_set(ocelot, &stream, &sfi, extack);
+> +
+> +	return -EOPNOTSUPP;
+> +}
+> +
+> +int felix_flower_stream_destroy(struct ocelot *ocelot, int port,
+> +				struct flow_cls_offload *f, bool ingress)
+> +{
+> +	return felix_list_stream_del(ocelot, f->cookie);
+> +}
+> +
+> +int felix_flower_stream_stats(struct ocelot *ocelot, int port,
+> +			      struct flow_cls_offload *f, bool ingress)
+> +{
+> +	struct felix_psfp_stream_counters counters;
+> +	struct felix_streamid *stream;
+> +	struct flow_stats stats;
+> +
+> +	stream =3D felix_list_stream_get(f->cookie);
+> +	if (!stream)
+> +		return -ENOENT;
+> +
+> +	felix_stream_counters_get(ocelot, stream->sfid, &counters);
+> +	stats.pkts =3D counters.match;
+> +
+> +	flow_stats_update(&f->stats, 0x0, stats.pkts, 0x0, 0,
+> +			  FLOW_ACTION_HW_STATS_IMMEDIATE);
+> +
+> +	return 0;
+> +}
+> +
+> +void felix_psfp_init(struct ocelot *ocelot)
+> +{
+> +	INIT_LIST_HEAD(&lpsfp.stream_list);
+> +	INIT_LIST_HEAD(&lpsfp.gate_list);
+> +	INIT_LIST_HEAD(&lpsfp.sfi_list);
+> +}
+> diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/oce=
+lot/felix_vsc9959.c
+> index 3e925b8d5306..f171e6f3fc98 100644
+> --- a/drivers/net/dsa/ocelot/felix_vsc9959.c
+> +++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
+> @@ -931,6 +931,8 @@ static int vsc9959_reset(struct ocelot *ocelot)
+>  	/* enable switch core */
+>  	ocelot_field_write(ocelot, SYS_RESET_CFG_CORE_ENA, 1);
+> =20
+> +	felix_psfp_init(ocelot);
+> +
+>  	return 0;
+>  }
+> =20
+> @@ -1150,9 +1152,8 @@ static void vsc9959_sched_speed_set(struct ocelot *=
+ocelot, int port,
+>  		       QSYS_TAG_CONFIG, port);
+>  }
+> =20
+> -static void vsc9959_new_base_time(struct ocelot *ocelot, ktime_t base_ti=
+me,
+> -				  u64 cycle_time,
+> -				  struct timespec64 *new_base_ts)
+> +void vsc9959_new_base_time(struct ocelot *ocelot, ktime_t base_time,
+> +			   u64 cycle_time, struct timespec64 *new_base_ts)
+>  {
+>  	struct timespec64 ts;
+>  	ktime_t new_base_time;
+> @@ -1370,6 +1371,9 @@ static const struct felix_info felix_info_vsc9959 =
+=3D {
+>  	.port_setup_tc		=3D vsc9959_port_setup_tc,
+>  	.port_sched_speed_set	=3D vsc9959_sched_speed_set,
+>  	.xmit_template_populate	=3D vsc9959_xmit_template_populate,
+> +	.flower_replace		=3D felix_flower_stream_replace,
+> +	.flower_destroy		=3D felix_flower_stream_destroy,
+> +	.flower_stats		=3D felix_flower_stream_stats,
+>  };
+> =20
+>  static irqreturn_t felix_irq_handler(int irq, void *data)
+> diff --git a/include/soc/mscc/ocelot_ana.h b/include/soc/mscc/ocelot_ana.=
+h
+> index 1669481d9779..c5a0b7174518 100644
+> --- a/include/soc/mscc/ocelot_ana.h
+> +++ b/include/soc/mscc/ocelot_ana.h
+> @@ -227,6 +227,11 @@
+>  #define ANA_TABLES_SFIDACCESS_SFID_TBL_CMD(x)             ((x) & GENMASK=
+(1, 0))
+>  #define ANA_TABLES_SFIDACCESS_SFID_TBL_CMD_M              GENMASK(1, 0)
+> =20
+> +#define SFIDACCESS_CMD_IDLE                             0
+> +#define SFIDACCESS_CMD_READ                             1
+> +#define SFIDACCESS_CMD_WRITE                            2
+> +#define SFIDACCESS_CMD_INIT				3
+> +
+
+Again, do you even read review comments?
+
+>  #define ANA_TABLES_SFIDTIDX_SGID_VALID                    BIT(26)
+>  #define ANA_TABLES_SFIDTIDX_SGID(x)                       (((x) << 18) &=
+ GENMASK(25, 18))
+>  #define ANA_TABLES_SFIDTIDX_SGID_M                        GENMASK(25, 18=
+)
+> @@ -255,6 +260,11 @@
+>  #define ANA_SG_CONFIG_REG_3_INIT_IPS(x)                   (((x) << 21) &=
+ GENMASK(24, 21))
+>  #define ANA_SG_CONFIG_REG_3_INIT_IPS_M                    GENMASK(24, 21=
+)
+>  #define ANA_SG_CONFIG_REG_3_INIT_IPS_X(x)                 (((x) & GENMAS=
+K(24, 21)) >> 21)
+> +#define ANA_SG_CONFIG_REG_3_IPV_VALID                     BIT(24)
+> +#define ANA_SG_CONFIG_REG_3_IPV_INVALID(x)		  (((x) << 24) & GENMASK(24,=
+ 24))
+> +#define ANA_SG_CONFIG_REG_3_INIT_IPV(x)                   (((x) << 21) &=
+ GENMASK(23, 21))
+> +#define ANA_SG_CONFIG_REG_3_INIT_IPV_M                    GENMASK(23, 21=
+)
+> +#define ANA_SG_CONFIG_REG_3_INIT_IPV_X(x)                 (((x) & GENMAS=
+K(23, 21)) >> 21)
+>  #define ANA_SG_CONFIG_REG_3_INIT_GATE_STATE               BIT(25)
+> =20
+>  #define ANA_SG_GCL_GS_CONFIG_RSZ                          0x4
+> --=20
+> 2.17.1
+> =
