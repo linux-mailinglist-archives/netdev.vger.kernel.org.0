@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 347B829521B
+	by mail.lfdr.de (Postfix) with ESMTP id D435229521C
 	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 20:20:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504013AbgJUSUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 14:20:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44544 "EHLO
+        id S2504019AbgJUSUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 14:20:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2503991AbgJUSUU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 14:20:20 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 710B9C0613CE;
-        Wed, 21 Oct 2020 11:20:20 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id a17so1591964pju.1;
-        Wed, 21 Oct 2020 11:20:20 -0700 (PDT)
+        with ESMTP id S2504008AbgJUSUW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 14:20:22 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D60C0613CF;
+        Wed, 21 Oct 2020 11:20:22 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id o3so1953195pgr.11;
+        Wed, 21 Oct 2020 11:20:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=DuW+ZJ7V0jmdNv0h6ocl0HA+XhmKiKl5KtvsemfeKbg=;
-        b=nm+z7io4EjpKYTd+xgnD0eqOZMy8B76SkkHGfxEuYD7x5tLbqP6QSqIVxN3a/C0Azt
-         FgmD9AgqPuSUg9z93/etdYkZ3ppFFJTtvns4RQH+p5zowoTy5BAL7iOqLUg/F3VBxIRy
-         OAm/lHfK0OjaJBn54RJqfWWlsR95z1pJEWC/00pUHYQ2T3Tdt6ZN3Sq07jz10pJ5u3JY
-         Jp4Qh5Fe+8DycWAeRy4MufdCdyOy/4994jNRHpbkgJHu4nWvpr4+Z1bzfwk7rDcdqyij
-         hgBoSjiu3x4f7c19MIoKr5qNHAapNZqBtJBimHLlmc/jP3xwZacGRgWh55SrtUyfkz0b
-         yZPA==
+        bh=C49i2eC03EUjvenOyg50V4AuCt+6TtwxmRPvVIVD7zc=;
+        b=ky77SRCAJ5qy62yCMqMbGQAopzp8GIDYUHXIL/MKvktTnuJDNp31Rye4+HTo7vWFRL
+         Ptr1zLYiAGBd/Vw0M59NqVZyTuCu921UKeJnvtHiY6+MfKGVAwjBLSnvwH+kcALTez2T
+         kxvBxPguZw0u4tpUmu885GCHfR0xx1ux7ZUS1+kdJLAEBvAmktdEJuR5PFVtx9WiedwT
+         LkfOAz+W7ttknAX7/eSJH3T0czd0EkANKe98364xLT+YOR2r/ijGTSaFbnqyIrO+7cpB
+         G7pC6UogXCUjWP2P58Ud66xMq1ytjCV/Ccye5EFXB/E+JHAiXgjXwyFUWMg/Cllu6YeW
+         f3kw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=DuW+ZJ7V0jmdNv0h6ocl0HA+XhmKiKl5KtvsemfeKbg=;
-        b=I1Mts597/plsEzmflhETo32NIz0AShyHjWg78RM+A5BCQ61wX9CJ3x+yDak8eRx5Eo
-         xmBLvVsYDpuD42iltjFsChEVlZYw50rjjfzoEMSk/oJPSV30r7qBdm0B9CD82K5o2IJi
-         wKiSETMkqnqDSslr0tU8PjrzXzUcV4HuRf3mbZzSgloUd43+JTOt4knf8JefFETZOwNP
-         4/ZsDTQfImG9czCRVCX0Ju9vfLbcc76ajR9R242rps4obfVNcB87T06ZRdbdLJcJm74q
-         KTTZQCT+gHj96W381YW+Miu8BuwLb3ggIlc3QWpY+3gdI9HRs4jibxwXB3N+onErr1g1
-         yAHQ==
-X-Gm-Message-State: AOAM530xBu1cMUfzVwGETQUYcMdf8kuNqMghh2M/zimSKfIJyVPK/fIn
-        zt0wTyMfiPov7zK/9L5RZzs=
-X-Google-Smtp-Source: ABdhPJxHS/urP7j9OahNP9rNEDVW/D4MBYb2peAAcQAqA2pT9/Qj0TJK4T+NEkMY+X+N6ygsRztdvA==
-X-Received: by 2002:a17:90a:3f82:: with SMTP id m2mr4416256pjc.222.1603304419999;
-        Wed, 21 Oct 2020 11:20:19 -0700 (PDT)
+        bh=C49i2eC03EUjvenOyg50V4AuCt+6TtwxmRPvVIVD7zc=;
+        b=coLcix4M6D4XQwhzdkmM1qmh42tFQkPMuu/UUCyRxfjpuGUXkUuT5uoeSeZPkvnok8
+         lkZZ5yiR7VXEsfLN0OoFUPvcpfm/qeKAr84xqhs6E5oXX8KVxc0IQtwdjp7fdUbrx6DR
+         xEsetUAY1gwMw5q/EoG5zMxM+T+FycCrNPKU6zIidSTkemSkVMoowLY038ASGnvSkrg8
+         VH/eBpBYzgxjKj+Z5Cta10e/Ewq7wOvvhDzOt9IYxLDoOcZYX2/K8ZZ6x5WriCeLV46c
+         fE+yJU/F+6+Ie4rM0Np8JGR2+r9poYstXl12rCEbH+8DjBmTnwx2dSVM/EwSLWxW8dCP
+         XjQw==
+X-Gm-Message-State: AOAM5329qmCEOYaffhP1hR85nqqBrzefKB/zYJwr4n53JL5AQuUrxwoM
+        yRmkviIA/n9drY+tpgs6K4A=
+X-Google-Smtp-Source: ABdhPJxax/0zTQxXHwghU5dz91wTTVgkY69LMr/IpMlABc7b5kT5joPbjnfjWR46ML8SEglHnQD0fg==
+X-Received: by 2002:a62:7d14:0:b029:155:2add:290e with SMTP id y20-20020a627d140000b02901552add290emr4889432pfc.41.1603304421808;
+        Wed, 21 Oct 2020 11:20:21 -0700 (PDT)
 Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id v3sm2618672pfu.165.2020.10.21.11.20.18
+        by smtp.gmail.com with ESMTPSA id v3sm2618672pfu.165.2020.10.21.11.20.20
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 21 Oct 2020 11:20:19 -0700 (PDT)
+        Wed, 21 Oct 2020 11:20:20 -0700 (PDT)
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
 To:     davem@davemloft.net
 Cc:     daniel@iogearbox.net, john.fastabend@gmail.com, jolsa@kernel.org,
         netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH bpf-next 1/3] bpf: Support for pointers beyond pkt_end.
-Date:   Wed, 21 Oct 2020 11:20:13 -0700
-Message-Id: <20201021182015.39000-2-alexei.starovoitov@gmail.com>
+Subject: [PATCH bpf-next 2/3] selftests/bpf: Add skb_pkt_end test
+Date:   Wed, 21 Oct 2020 11:20:14 -0700
+Message-Id: <20201021182015.39000-3-alexei.starovoitov@gmail.com>
 X-Mailer: git-send-email 2.13.5
 In-Reply-To: <20201021182015.39000-1-alexei.starovoitov@gmail.com>
 References: <20201021182015.39000-1-alexei.starovoitov@gmail.com>
@@ -62,290 +62,152 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Alexei Starovoitov <ast@kernel.org>
 
-This patch adds the verifier support to recognize inlined branch conditions.
-The LLVM knows that the branch evaluates to the same value, but the verifier
-couldn't track it. Hence causing valid programs to be rejected.
-The potential LLVM workaround: https://reviews.llvm.org/D87428
-can have undesired side effects, since LLVM doesn't know that
-skb->data/data_end are being compared. LLVM has to introduce extra boolean
-variable and use inline_asm trick to force easier for the verifier assembly.
+Add a test that currently makes LLVM generate assembly code:
 
-Instead teach the verifier to recognize that
-r1 = skb->data;
-r1 += 10;
-r2 = skb->data_end;
-if (r1 > r2) {
-  here r1 points beyond packet_end and
-  subsequent
-  if (r1 > r2) // always evaluates to "true".
-}
+$ llvm-objdump -S skb_pkt_end.o
+0000000000000000 <main_prog>:
+; 	if (skb_shorter(skb, ETH_IPV4_TCP_SIZE))
+       0:	61 12 50 00 00 00 00 00	r2 = *(u32 *)(r1 + 80)
+       1:	61 14 4c 00 00 00 00 00	r4 = *(u32 *)(r1 + 76)
+       2:	bf 43 00 00 00 00 00 00	r3 = r4
+       3:	07 03 00 00 36 00 00 00	r3 += 54
+       4:	b7 01 00 00 00 00 00 00	r1 = 0
+       5:	2d 23 02 00 00 00 00 00	if r3 > r2 goto +2 <LBB0_2>
+       6:	07 04 00 00 0e 00 00 00	r4 += 14
+; 	if (skb_shorter(skb, ETH_IPV4_TCP_SIZE))
+       7:	bf 41 00 00 00 00 00 00	r1 = r4
+0000000000000040 <LBB0_2>:
+       8:	b4 00 00 00 ff ff ff ff	w0 = -1
+; 	if (!(ip = get_iphdr(skb)))
+       9:	2d 23 05 00 00 00 00 00	if r3 > r2 goto +5 <LBB0_6>
+; 	proto = ip->protocol;
+      10:	71 12 09 00 00 00 00 00	r2 = *(u8 *)(r1 + 9)
+; 	if (proto != IPPROTO_TCP)
+      11:	56 02 03 00 06 00 00 00	if w2 != 6 goto +3 <LBB0_6>
+; 	if (tcp->dest != 0)
+      12:	69 12 16 00 00 00 00 00	r2 = *(u16 *)(r1 + 22)
+      13:	56 02 01 00 00 00 00 00	if w2 != 0 goto +1 <LBB0_6>
+; 	return tcp->urg_ptr;
+      14:	69 10 26 00 00 00 00 00	r0 = *(u16 *)(r1 + 38)
+0000000000000078 <LBB0_6>:
+; }
+      15:	95 00 00 00 00 00 00 00	exit
 
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 ---
- include/linux/bpf_verifier.h |   2 +-
- kernel/bpf/verifier.c        | 131 +++++++++++++++++++++++++++++------
- 2 files changed, 110 insertions(+), 23 deletions(-)
+ .../bpf/prog_tests/test_skb_pkt_end.c         | 41 ++++++++++++++
+ .../testing/selftests/bpf/progs/skb_pkt_end.c | 54 +++++++++++++++++++
+ 2 files changed, 95 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/test_skb_pkt_end.c
+ create mode 100644 tools/testing/selftests/bpf/progs/skb_pkt_end.c
 
-diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
-index e83ef6f6bf43..306869d4743b 100644
---- a/include/linux/bpf_verifier.h
-+++ b/include/linux/bpf_verifier.h
-@@ -45,7 +45,7 @@ struct bpf_reg_state {
- 	enum bpf_reg_type type;
- 	union {
- 		/* valid when type == PTR_TO_PACKET */
--		u16 range;
-+		int range;
- 
- 		/* valid when type == CONST_PTR_TO_MAP | PTR_TO_MAP_VALUE |
- 		 *   PTR_TO_MAP_VALUE_OR_NULL
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 39d7f44e7c92..303c5fc1701b 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -2739,7 +2739,9 @@ static int check_packet_access(struct bpf_verifier_env *env, u32 regno, int off,
- 			regno);
- 		return -EACCES;
- 	}
--	err = __check_mem_access(env, regno, off, size, reg->range,
+diff --git a/tools/testing/selftests/bpf/prog_tests/test_skb_pkt_end.c b/tools/testing/selftests/bpf/prog_tests/test_skb_pkt_end.c
+new file mode 100644
+index 000000000000..cf1215531920
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/test_skb_pkt_end.c
+@@ -0,0 +1,41 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2020 Facebook */
++#include <test_progs.h>
++#include <network_helpers.h>
++#include "skb_pkt_end.skel.h"
 +
-+	err = reg->range < 0 ? -EINVAL :
-+	      __check_mem_access(env, regno, off, size, reg->range,
- 				 zero_size_allowed);
- 	if (err) {
- 		verbose(env, "R%d offset is outside of the packet\n", regno);
-@@ -4687,6 +4689,32 @@ static void clear_all_pkt_pointers(struct bpf_verifier_env *env)
- 		__clear_all_pkt_pointers(env, vstate->frame[i]);
- }
- 
-+enum {
-+	AT_PKT_END = -1,
-+	BEYOND_PKT_END = -2,
-+};
-+
-+static void mark_pkt_end(struct bpf_verifier_state *vstate, int regn, bool range_open)
++static int sanity_run(struct bpf_program *prog)
 +{
-+	struct bpf_func_state *state = vstate->frame[vstate->curframe];
-+	struct bpf_reg_state *reg = &state->regs[regn];
++	__u32 duration, retval;
++	int err, prog_fd;
 +
-+	if (reg->type != PTR_TO_PACKET)
-+		/* PTR_TO_PACKET_META is not supported yet */
-+		return;
-+
-+	/* The 'reg' is pkt > pkt_end or pkt >= pkt_end.
-+	 * How far beyond pkt_end it goes is unknown.
-+	 * if (!range_open) it's the case of pkt >= pkt_end
-+	 * if (range_open) it's the case of pkt > pkt_end
-+	 * hence this pointer is at least 1 byte bigger than pkt_end
-+	 */
-+	if (range_open)
-+		reg->range = BEYOND_PKT_END;
-+	else
-+		reg->range = AT_PKT_END;
++	prog_fd = bpf_program__fd(prog);
++	err = bpf_prog_test_run(prog_fd, 1, &pkt_v4, sizeof(pkt_v4),
++				NULL, NULL, &retval, &duration);
++	if (CHECK(err || retval != 123, "test_run",
++		  "err %d errno %d retval %d duration %d\n",
++		  err, errno, retval, duration))
++		return -1;
++	return 0;
 +}
 +
- static void release_reg_references(struct bpf_verifier_env *env,
- 				   struct bpf_func_state *state,
- 				   int ref_obj_id)
-@@ -6697,7 +6725,7 @@ static int check_alu_op(struct bpf_verifier_env *env, struct bpf_insn *insn)
- 
- static void __find_good_pkt_pointers(struct bpf_func_state *state,
- 				     struct bpf_reg_state *dst_reg,
--				     enum bpf_reg_type type, u16 new_range)
-+				     enum bpf_reg_type type, int new_range)
- {
- 	struct bpf_reg_state *reg;
- 	int i;
-@@ -6722,8 +6750,7 @@ static void find_good_pkt_pointers(struct bpf_verifier_state *vstate,
- 				   enum bpf_reg_type type,
- 				   bool range_right_open)
- {
--	u16 new_range;
--	int i;
-+	int new_range, i;
- 
- 	if (dst_reg->off < 0 ||
- 	    (dst_reg->off == 0 && range_right_open))
-@@ -6974,6 +7001,69 @@ static int is_branch_taken(struct bpf_reg_state *reg, u64 val, u8 opcode,
- 	return is_branch64_taken(reg, val, opcode);
- }
- 
-+static int flip_opcode(u32 opcode)
++void test_test_skb_pkt_end(void)
 +{
-+	/* How can we transform "a <op> b" into "b <op> a"? */
-+	static const u8 opcode_flip[16] = {
-+		/* these stay the same */
-+		[BPF_JEQ  >> 4] = BPF_JEQ,
-+		[BPF_JNE  >> 4] = BPF_JNE,
-+		[BPF_JSET >> 4] = BPF_JSET,
-+		/* these swap "lesser" and "greater" (L and G in the opcodes) */
-+		[BPF_JGE  >> 4] = BPF_JLE,
-+		[BPF_JGT  >> 4] = BPF_JLT,
-+		[BPF_JLE  >> 4] = BPF_JGE,
-+		[BPF_JLT  >> 4] = BPF_JGT,
-+		[BPF_JSGE >> 4] = BPF_JSLE,
-+		[BPF_JSGT >> 4] = BPF_JSLT,
-+		[BPF_JSLE >> 4] = BPF_JSGE,
-+		[BPF_JSLT >> 4] = BPF_JSGT
-+	};
-+	return opcode_flip[opcode >> 4];
++	struct skb_pkt_end *skb_pkt_end_skel = NULL;
++	__u32 duration = 0;
++	int err;
++
++	skb_pkt_end_skel = skb_pkt_end__open_and_load();
++	if (CHECK(!skb_pkt_end_skel, "skb_pkt_end_skel_load", "skb_pkt_end skeleton failed\n"))
++		goto cleanup;
++
++	err = skb_pkt_end__attach(skb_pkt_end_skel);
++	if (CHECK(err, "skb_pkt_end_attach", "skb_pkt_end attach failed: %d\n", err))
++		goto cleanup;
++
++	if (sanity_run(skb_pkt_end_skel->progs.main_prog))
++		goto cleanup;
++
++cleanup:
++	skb_pkt_end__destroy(skb_pkt_end_skel);
++}
+diff --git a/tools/testing/selftests/bpf/progs/skb_pkt_end.c b/tools/testing/selftests/bpf/progs/skb_pkt_end.c
+new file mode 100644
+index 000000000000..cf6823f42e80
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/skb_pkt_end.c
+@@ -0,0 +1,54 @@
++// SPDX-License-Identifier: GPL-2.0
++#define BPF_NO_PRESERVE_ACCESS_INDEX
++#include <vmlinux.h>
++#include <bpf/bpf_core_read.h>
++#include <bpf/bpf_helpers.h>
++
++#define NULL 0
++#define INLINE __always_inline
++
++#define skb_shorter(skb, len) ((void *)(long)(skb)->data + (len) > (void *)(long)skb->data_end)
++
++#define ETH_IPV4_TCP_SIZE (14 + sizeof(struct iphdr) + sizeof(struct tcphdr))
++
++static INLINE struct iphdr *get_iphdr(struct __sk_buff *skb)
++{
++	struct iphdr *ip = NULL;
++	struct ethhdr *eth;
++
++	if (skb_shorter(skb, ETH_IPV4_TCP_SIZE))
++		goto out;
++
++	eth = (void *)(long)skb->data;
++	ip = (void *)(eth + 1);
++
++out:
++	return ip;
 +}
 +
-+static int is_pkt_ptr_branch_taken(struct bpf_reg_state *dst_reg,
-+				   struct bpf_reg_state *src_reg,
-+				   u8 opcode)
++SEC("classifier/cls")
++int main_prog(struct __sk_buff *skb)
 +{
-+	struct bpf_reg_state *pkt_end, *pkt;
++	struct iphdr *ip = NULL;
++	struct tcphdr *tcp;
++	__u8 proto = 0;
 +
-+	if (src_reg->type == PTR_TO_PACKET_END) {
-+		pkt_end = src_reg;
-+		pkt = dst_reg;
-+	} else if (dst_reg->type == PTR_TO_PACKET_END) {
-+		pkt_end = dst_reg;
-+		pkt = src_reg;
-+		opcode = flip_opcode(opcode);
-+	} else {
-+		return -1;
-+	}
++	if (!(ip = get_iphdr(skb)))
++		goto out;
 +
-+	if (pkt->range >= 0)
-+		return -1;
++	proto = ip->protocol;
 +
-+	switch (opcode) {
-+	case BPF_JLE:
-+		/* pkt <= pkt_end */
-+		fallthrough;
-+	case BPF_JGT:
-+		/* pkt > pkt_end */
-+		if (pkt->range == BEYOND_PKT_END)
-+			/* pkt has at last one extra byte beyond pkt_end */
-+			return opcode == BPF_JGT;
-+		break;
-+	case BPF_JLT:
-+		/* pkt < pkt_end */
-+		fallthrough;
-+	case BPF_JGE:
-+		/* pkt >= pkt_end */
-+		if (pkt->range == BEYOND_PKT_END || pkt->range == AT_PKT_END)
-+			return opcode == BPF_JGE;
-+		break;
-+	}
++	if (proto != IPPROTO_TCP)
++		goto out;
++
++	tcp = (void*)(ip + 1);
++	if (tcp->dest != 0)
++		goto out;
++	if (!tcp)
++		goto out;
++
++	return tcp->urg_ptr;
++out:
 +	return -1;
 +}
-+
- /* Adjusts the register min/max values in the case that the dst_reg is the
-  * variable register that we are working on, and src_reg is a constant or we're
-  * simply doing a BPF_K check.
-@@ -7137,23 +7227,7 @@ static void reg_set_min_max_inv(struct bpf_reg_state *true_reg,
- 				u64 val, u32 val32,
- 				u8 opcode, bool is_jmp32)
- {
--	/* How can we transform "a <op> b" into "b <op> a"? */
--	static const u8 opcode_flip[16] = {
--		/* these stay the same */
--		[BPF_JEQ  >> 4] = BPF_JEQ,
--		[BPF_JNE  >> 4] = BPF_JNE,
--		[BPF_JSET >> 4] = BPF_JSET,
--		/* these swap "lesser" and "greater" (L and G in the opcodes) */
--		[BPF_JGE  >> 4] = BPF_JLE,
--		[BPF_JGT  >> 4] = BPF_JLT,
--		[BPF_JLE  >> 4] = BPF_JGE,
--		[BPF_JLT  >> 4] = BPF_JGT,
--		[BPF_JSGE >> 4] = BPF_JSLE,
--		[BPF_JSGT >> 4] = BPF_JSLT,
--		[BPF_JSLE >> 4] = BPF_JSGE,
--		[BPF_JSLT >> 4] = BPF_JSGT
--	};
--	opcode = opcode_flip[opcode >> 4];
-+	opcode = flip_opcode(opcode);
- 	/* This uses zero as "not present in table"; luckily the zero opcode,
- 	 * BPF_JA, can't get here.
- 	 */
-@@ -7334,6 +7408,7 @@ static bool try_match_pkt_pointers(const struct bpf_insn *insn,
- 			/* pkt_data' > pkt_end, pkt_meta' > pkt_data */
- 			find_good_pkt_pointers(this_branch, dst_reg,
- 					       dst_reg->type, false);
-+			mark_pkt_end(other_branch, insn->dst_reg, true);
- 		} else if ((dst_reg->type == PTR_TO_PACKET_END &&
- 			    src_reg->type == PTR_TO_PACKET) ||
- 			   (reg_is_init_pkt_pointer(dst_reg, PTR_TO_PACKET) &&
-@@ -7341,6 +7416,7 @@ static bool try_match_pkt_pointers(const struct bpf_insn *insn,
- 			/* pkt_end > pkt_data', pkt_data > pkt_meta' */
- 			find_good_pkt_pointers(other_branch, src_reg,
- 					       src_reg->type, true);
-+			mark_pkt_end(this_branch, insn->src_reg, false);
- 		} else {
- 			return false;
- 		}
-@@ -7353,6 +7429,7 @@ static bool try_match_pkt_pointers(const struct bpf_insn *insn,
- 			/* pkt_data' < pkt_end, pkt_meta' < pkt_data */
- 			find_good_pkt_pointers(other_branch, dst_reg,
- 					       dst_reg->type, true);
-+			mark_pkt_end(this_branch, insn->dst_reg, false);
- 		} else if ((dst_reg->type == PTR_TO_PACKET_END &&
- 			    src_reg->type == PTR_TO_PACKET) ||
- 			   (reg_is_init_pkt_pointer(dst_reg, PTR_TO_PACKET) &&
-@@ -7360,6 +7437,7 @@ static bool try_match_pkt_pointers(const struct bpf_insn *insn,
- 			/* pkt_end < pkt_data', pkt_data > pkt_meta' */
- 			find_good_pkt_pointers(this_branch, src_reg,
- 					       src_reg->type, false);
-+			mark_pkt_end(other_branch, insn->src_reg, true);
- 		} else {
- 			return false;
- 		}
-@@ -7372,6 +7450,7 @@ static bool try_match_pkt_pointers(const struct bpf_insn *insn,
- 			/* pkt_data' >= pkt_end, pkt_meta' >= pkt_data */
- 			find_good_pkt_pointers(this_branch, dst_reg,
- 					       dst_reg->type, true);
-+			mark_pkt_end(other_branch, insn->dst_reg, false);
- 		} else if ((dst_reg->type == PTR_TO_PACKET_END &&
- 			    src_reg->type == PTR_TO_PACKET) ||
- 			   (reg_is_init_pkt_pointer(dst_reg, PTR_TO_PACKET) &&
-@@ -7379,6 +7458,7 @@ static bool try_match_pkt_pointers(const struct bpf_insn *insn,
- 			/* pkt_end >= pkt_data', pkt_data >= pkt_meta' */
- 			find_good_pkt_pointers(other_branch, src_reg,
- 					       src_reg->type, false);
-+			mark_pkt_end(this_branch, insn->src_reg, true);
- 		} else {
- 			return false;
- 		}
-@@ -7391,6 +7471,7 @@ static bool try_match_pkt_pointers(const struct bpf_insn *insn,
- 			/* pkt_data' <= pkt_end, pkt_meta' <= pkt_data */
- 			find_good_pkt_pointers(other_branch, dst_reg,
- 					       dst_reg->type, false);
-+			mark_pkt_end(this_branch, insn->dst_reg, true);
- 		} else if ((dst_reg->type == PTR_TO_PACKET_END &&
- 			    src_reg->type == PTR_TO_PACKET) ||
- 			   (reg_is_init_pkt_pointer(dst_reg, PTR_TO_PACKET) &&
-@@ -7398,6 +7479,7 @@ static bool try_match_pkt_pointers(const struct bpf_insn *insn,
- 			/* pkt_end <= pkt_data', pkt_data <= pkt_meta' */
- 			find_good_pkt_pointers(this_branch, src_reg,
- 					       src_reg->type, true);
-+			mark_pkt_end(other_branch, insn->src_reg, false);
- 		} else {
- 			return false;
- 		}
-@@ -7497,6 +7579,10 @@ static int check_cond_jmp_op(struct bpf_verifier_env *env,
- 				       src_reg->var_off.value,
- 				       opcode,
- 				       is_jmp32);
-+	} else if (reg_is_pkt_pointer_any(dst_reg) &&
-+		   reg_is_pkt_pointer_any(src_reg) &&
-+		   !is_jmp32) {
-+		pred = is_pkt_ptr_branch_taken(dst_reg, src_reg, opcode);
- 	}
- 
- 	if (pred >= 0) {
-@@ -7505,7 +7591,8 @@ static int check_cond_jmp_op(struct bpf_verifier_env *env,
- 		 */
- 		if (!__is_pointer_value(false, dst_reg))
- 			err = mark_chain_precision(env, insn->dst_reg);
--		if (BPF_SRC(insn->code) == BPF_X && !err)
-+		if (BPF_SRC(insn->code) == BPF_X && !err &&
-+		    !__is_pointer_value(false, src_reg))
- 			err = mark_chain_precision(env, insn->src_reg);
- 		if (err)
- 			return err;
++char _license[] SEC("license") = "GPL";
 -- 
 2.23.0
 
