@@ -2,118 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7A7F294B80
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 12:52:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FE17294B86
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 12:54:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439137AbgJUKwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 06:52:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59818 "EHLO
+        id S2439005AbgJUKyQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 06:54:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2439102AbgJUKwN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 06:52:13 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 113E4C0613CF
-        for <netdev@vger.kernel.org>; Wed, 21 Oct 2020 03:52:13 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id dn5so2070163edb.10
-        for <netdev@vger.kernel.org>; Wed, 21 Oct 2020 03:52:12 -0700 (PDT)
+        with ESMTP id S2390849AbgJUKyQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 06:54:16 -0400
+Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63EC6C0613CE
+        for <netdev@vger.kernel.org>; Wed, 21 Oct 2020 03:54:14 -0700 (PDT)
+Received: by mail-ej1-x643.google.com with SMTP id t25so2489578ejd.13
+        for <netdev@vger.kernel.org>; Wed, 21 Oct 2020 03:54:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=tessares-net.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=r5nYDPMP7i+kIxn8tnUUMEhReWaflkAWF7EfJa0hm4Y=;
-        b=eIzq3gcxnrFq0TSGT3/1GueFjwSt3l8xKNXZzB3F2CrNfubZgRGL+zm68uJl9RqRIX
-         4ARq8Sg6QI0a+nBS2PSg4XRp/IEspzUwlfxjN1SKPWZcyPy3kFkqX1fpRTgPkuQQ54IY
-         jnp1uynvobPnHqfbe7FcAESpIifU8bn0aLAYuCXFyjaymysuz46FHmgQFMrctfTQXK4A
-         0eYwTEpR6kFgQ+O+S3YiIIpQhix+fJqMCTUpegWRMlYyQ9yyyAKumGDYvzZBEz1mC7zB
-         HFEUw0y8VQ4zsikf4mtAtl9cuMlS2/bIQKNyGbKqRSrxwvnwk9ZxU9/W1oMLfe82yfl1
-         umQA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=HfW34gsf7g1g/Ty9vqXj5/WoQ9OW8/EuoLSIxqDJrBw=;
+        b=BAx9KIFOKJ3zL+agOvEbRnKvR+kquRN6xghHcsGlLod/LB+2PUFRGIpt+fyQdMkhCE
+         cA+JP/1VPJ4zra/4AP6f7d0uYLDDcVi221bFKH0jTUfcC57PvDbxNcXxA8uSdrRmSq6k
+         BYGIqEFRzFegZoEklykvXGbeNygK1/gesH4fa+e3ZOYPXMgH7nU81/AOooK5bxYnr5YI
+         pIdygi6DVhdGpGpkvtLOBZLBpdGgXhSX5bg/5Hp8q9N6alD9ARzn/wrP5mW/tw/UWMk4
+         DyEVLWKBakdCha0x6tMdSQLep5J7KAgUluUoIwvhyGpYBcQcQm/7o2fn+vrsFbizwA6O
+         jDOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=r5nYDPMP7i+kIxn8tnUUMEhReWaflkAWF7EfJa0hm4Y=;
-        b=UbJ6FEP4BidQRoZRGKJzj+7LH98f2WuuRhoXtmboJLsLy3ug7ta1BDLFupz/VfVs1+
-         5voFgzz25UDZaz9k4udWa5qd9u45SIiBl08jlREU3VJtr7MPzfUFCbINV3ICcaYIxgcN
-         XMWQgynr65U/nqD8bAcOKQfJxzoJ3Tfl+plGSKicDp/Q26lCapqRq0QgVQ7ax1lyIp+0
-         5scm7ETejTJeDe8OKYIYAo2AcdTty01dETf+G9IdVbmxcnPoCAEAMPcvm3Rn4HSmwNCm
-         9fHvOfO7TV1Axgnj5AN+Yuu3pA9fvJfIRanFMjozf5je7AcCGJ9oJW38qGUJN5tNHol7
-         iEYA==
-X-Gm-Message-State: AOAM531DAXt4IpqoXZT7Qo4qnhBaACV4waseGt7tdZ4Puw6hM5BFOl5e
-        cEgH8haG1zDcvoVdNf6JtVbq5w==
-X-Google-Smtp-Source: ABdhPJzM94ne2tVbzhczM/ZCWUmUniQPQP9idtuvm3bgr1LPn3BRwjfweSLz1fWu/kWLEIMLlK0AHA==
-X-Received: by 2002:a05:6402:396:: with SMTP id o22mr2377871edv.361.1603277531516;
-        Wed, 21 Oct 2020 03:52:11 -0700 (PDT)
-Received: from tsr-vdi-mbaerts.nix.tessares.net (static.23.216.130.94.clients.your-server.de. [94.130.216.23])
-        by smtp.gmail.com with ESMTPSA id ec3sm1756620ejb.34.2020.10.21.03.52.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Oct 2020 03:52:11 -0700 (PDT)
+        bh=HfW34gsf7g1g/Ty9vqXj5/WoQ9OW8/EuoLSIxqDJrBw=;
+        b=nUyn3CmW9PnruMpidKE2GFfyroVgJsE3YepPFnInAeNIiIQTJCmt6Qu30CYEVCyfMa
+         aTGdMJ1XWpHEB0JEIEXc30feiuGjCwcwgQmNjmsjIUCq5Yjp0IPM2AP7LwVAgGLEPERT
+         sb3e+jW3xcHuEVJXKixUG/rNmQ4jp20oGi1+WN7MoOdP44yjKuIKngcVveSj+zOklbCH
+         VC6s94ZZLL/SIWl6J19PK15UZ0tYT2iJQ56prFG7XAzt311bIV1w+T/VsDlGCJzCG444
+         lfXDyL85VOw4TQpQHJNEvhxWPA+Jdb07Cw6EQBGZf9FAM1pmk6fWxqCtlQKW+42g/shM
+         7s8w==
+X-Gm-Message-State: AOAM532FgKWtCCRMZIxtxYyLqhtJ8+KWFo1+52LvtuDt2thXRbNGddCW
+        5jDB43zfZm/0/i/2T1NhFivrqotAf6fOq98D
+X-Google-Smtp-Source: ABdhPJwLxqM2i3gZnaB2H4ECV6ww6BmzkBlev8VYw0Ieio7hGbJv6GHRneJUXwOMJAAz+uHYD1JHmw==
+X-Received: by 2002:a17:906:b1a:: with SMTP id u26mr2796253ejg.23.1603277653004;
+        Wed, 21 Oct 2020 03:54:13 -0700 (PDT)
+Received: from tsr-lap-08.nix.tessares.net ([2a02:578:85b0:e00:9bd7:d012:64eb:ce81])
+        by smtp.gmail.com with ESMTPSA id g18sm2073166eje.12.2020.10.21.03.54.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 21 Oct 2020 03:54:12 -0700 (PDT)
+Subject: Re: [PATCH] mptcp: MPTCP_IPV6 should depend on IPV6 instead of
+ selecting it
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Florian Westphal <fw@strlen.de>,
+        netdev <netdev@vger.kernel.org>, mptcp@lists.01.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20201020073839.29226-1-geert@linux-m68k.org>
+ <5dddd3fe-86d7-d07f-dbc9-51b89c7c8173@tessares.net>
+ <20201020205647.20ab7009@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <CAMuHMdW=1LfE8UoGRVBvrvrintQMNKUdTe5PPQz=PN3=gJmw=Q@mail.gmail.com>
+ <619601b2-40c1-9257-ef2a-2c667361aa75@tessares.net>
+ <CAMuHMdXUs_2DodcYva8bP+Df979TMrmRD=+LUiVVzdH0zmxK1Q@mail.gmail.com>
 From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     netdev@vger.kernel.org, mptcp@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net] mptcp: depends on IPV6 but not as a module
-Date:   Wed, 21 Oct 2020 12:51:53 +0200
-Message-Id: <20201021105154.628257-1-matthieu.baerts@tessares.net>
-X-Mailer: git-send-email 2.27.0
+Message-ID: <f414539c-1370-1636-137e-38c735f449f6@tessares.net>
+Date:   Wed, 21 Oct 2020 12:54:11 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAMuHMdXUs_2DodcYva8bP+Df979TMrmRD=+LUiVVzdH0zmxK1Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Like TCP, MPTCP cannot be compiled as a module. Obviously, MPTCP IPv6'
-support also depends on CONFIG_IPV6. But not all functions from IPv6
-code are exported.
+Hi Geert,
 
-To simplify the code and reduce modifications outside MPTCP, it was
-decided from the beginning to support MPTCP with IPv6 only if
-CONFIG_IPV6 was built inlined. That's also why CONFIG_MPTCP_IPV6 was
-created. More modifications are needed to support CONFIG_IPV6=m.
+On 21/10/2020 11:52, Geert Uytterhoeven wrote:
+> Hi Matthieu,
+> 
+> On Wed, Oct 21, 2020 at 11:47 AM Matthieu Baerts
+> <matthieu.baerts@tessares.net> wrote:
+>> On 21/10/2020 11:43, Geert Uytterhoeven wrote:
+>>> On Wed, Oct 21, 2020 at 5:56 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>>>> On Tue, 20 Oct 2020 11:26:34 +0200 Matthieu Baerts wrote:
+>>>>> On 20/10/2020 09:38, Geert Uytterhoeven wrote:
+>>>>>> MPTCP_IPV6 selects IPV6, thus enabling an optional feature the user may
+>>>>>> not want to enable.  Fix this by making MPTCP_IPV6 depend on IPV6, like
+>>>>>> is done for all other IPv6 features.
+>>>>>
+>>>>> Here again, the intension was to select IPv6 from MPTCP but I understand
+>>>>> the issue: if we enable MPTCP, we will select IPV6 as well by default.
+>>>>> Maybe not what we want on some embedded devices with very limited memory
+>>>>> where IPV6 is already off. We should instead enable MPTCP_IPV6 only if
+>>>>> IPV6=y. LGTM then!
+>>>>>
+>>>>> Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+>>>>
+>>>> Applied, thanks!
+>>>
+>>> My apologies, this fails for the CONFIG_IPV6=m and CONFIG_MPTCP=y
+>>> case:
+>>
+>> Good point, MPTCP cannot be compiled as a module (like TCP). It should
+>> then depends on IPV6=y. I thought it would be the case.
+>>
+>> Do you want me to send a patch or do you already have one?
+> 
+> I don't have a patch yet, so feel free to send one.
 
-Even if it was not explicit, until recently, we were forcing CONFIG_IPV6
-to be built-in because we had "select IPV6" in Kconfig. Now that we have
-"depends on IPV6", we have to explicitly set "IPV6=y" to force
-CONFIG_IPV6 not to be built as a module.
+Just did:
 
-In other words, we can now only have CONFIG_MPTCP_IPV6=y if
-CONFIG_IPV6=y.
+https://lore.kernel.org/netdev/20201021105154.628257-1-matthieu.baerts@tessares.net/
 
-Note that the new dependency might hide the fact IPv6 is not supported
-in MPTCP even if we have CONFIG_IPV6=m. But selecting IPV6 like we did
-before was forcing it to be built-in while it was maybe not what the
-user wants.
-
-Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Fixes: 010b430d5df5 ("mptcp: MPTCP_IPV6 should depend on IPV6 instead of selecting it")
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
----
-
-Notes:
-    For more details about the issue we have when we try to compile
-    CONFIG_IPV6=m and CONFIG_MPTCP_IPV6=y, please refer to:
-    
-    https://lore.kernel.org/netdev/CAMuHMdW=1LfE8UoGRVBvrvrintQMNKUdTe5PPQz=PN3=gJmw=Q@mail.gmail.com/
-
- net/mptcp/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/mptcp/Kconfig b/net/mptcp/Kconfig
-index 8936604b3bf9..a014149aa323 100644
---- a/net/mptcp/Kconfig
-+++ b/net/mptcp/Kconfig
-@@ -19,7 +19,7 @@ config INET_MPTCP_DIAG
- 
- config MPTCP_IPV6
- 	bool "MPTCP: IPv6 support for Multipath TCP"
--	depends on IPV6
-+	depends on IPV6=y
- 	default y
- 
- config MPTCP_KUNIT_TESTS
+Groetjes,
+Matt
 -- 
-2.27.0
-
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
