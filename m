@@ -2,308 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A97A29497B
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 10:48:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BA96294978
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 10:48:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2441089AbgJUIsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 04:48:06 -0400
-Received: from mailout07.rmx.de ([94.199.90.95]:42820 "EHLO mailout07.rmx.de"
+        id S2441065AbgJUIrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 04:47:36 -0400
+Received: from mx2.suse.de ([195.135.220.15]:56464 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2441068AbgJUIsF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Oct 2020 04:48:05 -0400
-Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mailout07.rmx.de (Postfix) with ESMTPS id 4CGPJv6ytNzBxvh;
-        Wed, 21 Oct 2020 10:47:59 +0200 (CEST)
-Received: from mta.arri.de (unknown [217.111.95.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by kdin02.retarus.com (Postfix) with ESMTPS id 4CGPJW2Gj3z2TTLb;
-        Wed, 21 Oct 2020 10:47:39 +0200 (CEST)
-Received: from n95hx1g2.localnet (192.168.54.165) by mta.arri.de
- (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Wed, 21 Oct
- 2020 10:46:35 +0200
-From:   Christian Eggers <ceggers@arri.de>
-To:     Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
-CC:     Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
+        id S2441061AbgJUIrg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Oct 2020 04:47:36 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 50E72ABBE;
+        Wed, 21 Oct 2020 08:47:34 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id C630A60563; Wed, 21 Oct 2020 10:47:33 +0200 (CEST)
+Date:   Wed, 21 Oct 2020 10:47:33 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Danielle Ratson <danieller@nvidia.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Helmut Grohne <helmut.grohne@intenta.de>,
-        Paul Barker <pbarker@konsulko.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Marek Vasut <marex@denx.de>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH net-next 1/9] dt-bindings: net: dsa: convert ksz bindings document to yaml
-Date:   Wed, 21 Oct 2020 10:46:34 +0200
-Message-ID: <4900322.CrMBUKQtxU@n95hx1g2>
-Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-In-Reply-To: <87lfg0rrzi.fsf@kurt>
-References: <20201019172435.4416-1-ceggers@arri.de> <20201019172435.4416-2-ceggers@arri.de> <87lfg0rrzi.fsf@kurt>
+        Ido Schimmel <idosch@idosch.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        mlxsw <mlxsw@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>
+Subject: Re: [PATCH net-next 1/6] ethtool: Extend link modes settings uAPI
+ with lanes
+Message-ID: <20201021084733.sb4rpzwyzxgczvrg@lion.mk-sys.cz>
+References: <20201012085803.61e256e6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <DM6PR12MB3865E4CB3854ECF70F5864D7D8040@DM6PR12MB3865.namprd12.prod.outlook.com>
+ <20201016221553.GN139700@lunn.ch>
+ <DM6PR12MB3865B000BE04105A4373FD08D81E0@DM6PR12MB3865.namprd12.prod.outlook.com>
+ <20201019110422.gj3ebxttwtfssvem@lion.mk-sys.cz>
+ <20201019122643.GC11282@nanopsycho.orion>
+ <20201019132446.tgtelkzmfjdonhfx@lion.mk-sys.cz>
+ <DM6PR12MB386532E855FD89F87072D0D7D81F0@DM6PR12MB3865.namprd12.prod.outlook.com>
+ <20201021070820.oszrgnsqxddi2m43@lion.mk-sys.cz>
+ <DM6PR12MB38651062E363459E66140B23D81C0@DM6PR12MB3865.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Originating-IP: [192.168.54.165]
-X-RMX-ID: 20201021-104741-4CGPJW2Gj3z2TTLb-0@kdin02
-X-RMX-SOURCE: 217.111.95.66
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DM6PR12MB38651062E363459E66140B23D81C0@DM6PR12MB3865.namprd12.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wednesday, 21 October 2020, 08:52:01 CEST, Kurt Kanzenbach wrote:
-> On Mon Oct 19 2020, Christian Eggers wrote:
-> > Convert the bindings document for Microchip KSZ Series Ethernet switches
-> > from txt to yaml.
+On Wed, Oct 21, 2020 at 07:20:22AM +0000, Danielle Ratson wrote:
+> > -----Original Message-----
+> > From: Michal Kubecek <mkubecek@suse.cz>
+> > Sent: Wednesday, October 21, 2020 10:08 AM
+> > 
+> > On Tue, Oct 20, 2020 at 07:39:13AM +0000, Danielle Ratson wrote:
+> > > > -----Original Message-----
+> > > > From: Michal Kubecek <mkubecek@suse.cz>
+> > > > Sent: Monday, October 19, 2020 4:25 PM
+> > > >
+> > > > As I said, I meant the extension suggested in my mail as independent
+> > > > of what this series is about. For lanes count selector, I find
+> > > > proposed
+> > > >
+> > > >   ethtool -s <dev> ... lanes <lanes_num> ...
+> > > >
+> > > > the most natural.
+> > > >
+> > > > From purely syntactic/semantic point of view, there are three types
+> > > > of
+> > > > requests:
+> > > >
+> > > >   (1) enable specific set of modes, disable the rest
+> > > >   (2) enable/disable specific modes, leave the rest as they are
+> > > >   (3) enable modes matching a condition (and disable the rest)
+> > > >
+> > > > What I proposed was to allow the use symbolic names instead of masks
+> > > > (which are getting more and more awful with each new mode) also for
+> > > > (1), like they can already be used for (2).
+> > > >
+> > > > The lanes selector is an extension of (3) which I would prefer not
+> > > > to mix with
+> > > > (1) or (2) within one command line, i.e. either "advertise" or
+> > > > "speed / duplex / lanes".
+> > > >
+> > > > IIUC Jakub's and Andrew's comments were not so much about the syntax
+> > > > and semantic (which is quite clear) but rather about the question if
+> > > > the requests like "advertise exactly the modes with (100Gb/s speed
+> > > > and) two lanes" would really address a real life need and wouldn't
+> > > > be more often used as shortcuts for "advertise 100000baseKR2/Full".
+> > > > (On the other hand, I suspect existing speed and duplex selectors
+> > > > are often used the same way.)
+> > > >
+> > > > Michal
+> > >
+> > > So, do you want to change the current approach somehow or we are good
+> > > to go with this one, keeping in mind the future extension you have
+> > > suggested?
+> > 
+> > As far as I'm concerned, it makes sense as it is. The only thing I'm not happy
+> > about is ETHTOOL_A_LINKMODES_LANES being a "write only" attribute
+> > (unlike _SPEED and _DUPLEX) but being able to query this information would
+> > require extensive changes far beyond the scope of this series.
 > 
-> A few comments/questions below.
-> 
-> > diff --git a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
-> > b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml new file
-> > mode 100644
-> > index 000000000000..f93c3bdd0b83
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
-> 
-> Currently the bindings don't have the company names in front of it.
-All current bindings are in .txt format. In other subsystems (like iio),
-company names have been added when converting to yaml.
+> If I understood you correctly, patch #5 does that query, isn't it?
+> "mlxsw: ethtool: Expose the number of lanes in use"
 
-> > @@ -0,0 +1,147 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/net/dsa/microchip,ksz.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Microchip KSZ Series Ethernet switches
-> > +
-> > +maintainers:
-> > +  - Marek Vasut <marex@denx.de>
-> > +  - Woojung Huh <Woojung.Huh@microchip.com>
-> > +
-> > +properties:
-> > +  # See Documentation/devicetree/bindings/net/dsa/dsa.yaml for a list of
-> > additional +  # required and optional properties.
-> 
-> Don't you need to reference the dsa.yaml binding somehow?
-I should have taken a look into your binding beforehand...
-allOf:
-  - $ref: dsa.yaml#
+Ah, right, it does. But as you extend struct ethtool_link_ksettings and
+drivers will need to be updated to provide this information, wouldn't it
+be more useful to let the driver provide link mode in use instead (and
+derive number of lanes from it)?
 
-> > ...
-> > +examples:
-> > +  - |
-> > +    #include <dt-bindings/gpio/gpio.h>
-> > +
-> > +    // Ethernet switch connected via SPI to the host, CPU port wired to eth0:
-> > +    eth0 {
-> > +        fixed-link {
-> > +            speed = <1000>;
-> > +            full-duplex;
-> > +        };
-> > +    };
-> > +
-> > +    spi0 {
-> > +        #address-cells = <1>;
-> > +        #size-cells = <0>;
-> > +
-> > +        pinctrl-0 = <&pinctrl_spi_ksz>;
-> > +        cs-gpios = <&pioC 25 0>;
-> > +        id = <1>;
-> > +
-> > +        ksz9477: ksz9477@0 {
-> 
-> The node names should be switch. See dsa.yaml.
-changed
-
-> 
-> > +            compatible = "microchip,ksz9477";
-> > +            reg = <0>;
-> > +            reset-gpios = <&gpio5 0 GPIO_ACTIVE_LOW>;
-> > +
-> > +            spi-max-frequency = <44000000>;
-> > +            spi-cpha;
-> > +            spi-cpol;
-> > +
-> > +            ports {
-> 
-> ethernet-ports are preferred.
-"ports" is also used in the existing driver code (ksz_switch_register()).
-Would like to keep it for now, probably I can be changed later.
-
-> 
-> Thanks,
-> Kurt
-
-Below the current version for the version of the patch series.
-
-Best regards
-Christian
-
-
-# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-%YAML 1.2
----
-$id: http://devicetree.org/schemas/net/dsa/microchip,ksz.yaml#
-$schema: http://devicetree.org/meta-schemas/core.yaml#
-
-title: Microchip KSZ Series Ethernet switches
-
-allOf:
-  - $ref: dsa.yaml#
-
-maintainers:
-  - Marek Vasut <marex@denx.de>
-  - Woojung Huh <Woojung.Huh@microchip.com>
-
-properties:
-  # See Documentation/devicetree/bindings/net/dsa/dsa.yaml for a list of additional
-  # required and optional properties.
-  compatible:
-    enum:
-      - "microchip,ksz8765"
-      - "microchip,ksz8794"
-      - "microchip,ksz8795"
-      - "microchip,ksz9477"
-      - "microchip,ksz9897"
-      - "microchip,ksz9896"
-      - "microchip,ksz9567"
-      - "microchip,ksz8565"
-      - "microchip,ksz9893"
-      - "microchip,ksz9563"
-      - "microchip,ksz8563"
-
-  reset-gpios:
-    description:
-      Should be a gpio specifier for a reset line.
-    maxItems: 1
-
-  microchip,synclko-125:
-    $ref: /schemas/types.yaml#/definitions/flag
-    description:
-      Set if the output SYNCLKO frequency should be set to 125MHz instead of 25MHz.
-
-required:
-  - compatible
-  - reg
-
-examples:
-  - |
-    #include <dt-bindings/gpio/gpio.h>
-
-    // Ethernet switch connected via SPI to the host, CPU port wired to eth0:
-    eth0 {
-        fixed-link {
-            speed = <1000>;
-            full-duplex;
-        };
-    };
-
-    spi0 {
-        #address-cells = <1>;
-        #size-cells = <0>;
-
-        pinctrl-0 = <&pinctrl_spi_ksz>;
-        cs-gpios = <&pioC 25 0>;
-        id = <1>;
-
-        ksz9477: switch@0 {
-            compatible = "microchip,ksz9477";
-            reg = <0>;
-            reset-gpios = <&gpio5 0 GPIO_ACTIVE_LOW>;
-
-            spi-max-frequency = <44000000>;
-            spi-cpha;
-            spi-cpol;
-
-            ethernet-ports {
-                #address-cells = <1>;
-                #size-cells = <0>;
-                port@0 {
-                    reg = <0>;
-                    label = "lan1";
-                };
-                port@1 {
-                    reg = <1>;
-                    label = "lan2";
-                };
-                port@2 {
-                    reg = <2>;
-                    label = "lan3";
-                };
-                port@3 {
-                    reg = <3>;
-                    label = "lan4";
-                };
-                port@4 {
-                    reg = <4>;
-                    label = "lan5";
-                };
-                port@5 {
-                    reg = <5>;
-                    label = "cpu";
-                    ethernet = <&eth0>;
-                    fixed-link {
-                        speed = <1000>;
-                        full-duplex;
-                    };
-                };
-            };
-        };
-
-        ksz8565: switch@1 {
-            compatible = "microchip,ksz8565";
-            reg = <1>;
-
-            spi-max-frequency = <44000000>;
-            spi-cpha;
-            spi-cpol;
-
-            ethernet-ports {
-                #address-cells = <1>;
-                #size-cells = <0>;
-                port@0 {
-                    reg = <0>;
-                    label = "lan1";
-                };
-                port@1 {
-                    reg = <1>;
-                    label = "lan2";
-                };
-                port@2 {
-                    reg = <2>;
-                    label = "lan3";
-                };
-                port@3 {
-                    reg = <3>;
-                    label = "lan4";
-                };
-                port@6 {
-                    reg = <6>;
-                    label = "cpu";
-                    ethernet = <&eth0>;
-                    fixed-link {
-                        speed = <1000>;
-                        full-duplex;
-                    };
-                };
-            };
-        };
-    };
-...
-
-
-
-
-
-
-
+Michal
