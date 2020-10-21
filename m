@@ -2,105 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B864B2954DF
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 00:43:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3E6F295512
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 01:19:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2506855AbgJUWnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 18:43:53 -0400
-Received: from mga02.intel.com ([134.134.136.20]:54378 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2437959AbgJUWnx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Oct 2020 18:43:53 -0400
-IronPort-SDR: BoIL2V81CJRbN75q7Um2jvqNUaNHIxdWrS7foyPHTMX3xhANshD4gQkgNNHyisdTFyn0EyJvSJ
- xqZzcSDwrQFQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9781"; a="154396939"
-X-IronPort-AV: E=Sophos;i="5.77,402,1596524400"; 
-   d="scan'208";a="154396939"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2020 15:43:51 -0700
-IronPort-SDR: aHgyraovD422DLCcODMvFY7vJ/mC86PBNeRpAEt984R3IBvoyR9p6iJPqI009IcjFPZrslVovP
- j/HB5ZYcEHlw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,402,1596524400"; 
-   d="scan'208";a="524057805"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by fmsmga005.fm.intel.com with ESMTP; 21 Oct 2020 15:43:50 -0700
-Date:   Thu, 22 Oct 2020 00:34:25 +0200
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Lijun Pan <ljp@linux.ibm.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net v2] ibmvnic: fix ibmvnic_set_mac
-Message-ID: <20201021223425.GA61349@ranger.igk.intel.com>
-References: <20201021060712.48806-1-ljp@linux.ibm.com>
+        id S2507080AbgJUXTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 19:19:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34156 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2507075AbgJUXTK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 19:19:10 -0400
+Received: from mail-yb1-xb42.google.com (mail-yb1-xb42.google.com [IPv6:2607:f8b0:4864:20::b42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07F7DC0613CE;
+        Wed, 21 Oct 2020 16:19:10 -0700 (PDT)
+Received: by mail-yb1-xb42.google.com with SMTP id h196so3229925ybg.4;
+        Wed, 21 Oct 2020 16:19:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ar6jrRsq8Jc9wwIORfLIFd8TWz+FT+7hcaKCO2a0axg=;
+        b=Bht8XCzLsW9GF1oOUNGUzNfNEfuo0C/UqZS9GNUTTcV0jqdPbrCB4l4Bhwb29hqczb
+         fwMxj6ukKrz/aE3JskJJFnRuSlcgZBsThy//MBFKNovno+8GcA2ku7ZWFhxDsFFQTeDp
+         XkgtGmMPG+a1zFiMLfHBuyKG2zSbIbU+TCzBIPL5EJDtHeZKjq9RijhZKUJlxNndrUbD
+         Kk9FutgdLx3TYxYMDaB24hLJotjdOhfKi8y3d43FaZ26+Qny6n1TzNYGXALToN/EAqiY
+         aU/RO+JJiA2fYc4D59AkKb5Go3MnLDSoJZn25GVzfE/BpmozLC6VMHN3Mz9Byv0gYhQ0
+         VWoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ar6jrRsq8Jc9wwIORfLIFd8TWz+FT+7hcaKCO2a0axg=;
+        b=VzPtl+PE1wYtW1xrJt7EDceJe2b2s5gHhd65QBUrWYcjQ9asH4YDiJ/IaHpEhJgKw4
+         aXdSvUfkwshRYgfQ9T64Uqt7WW1j/Z4PwBp/7g8UF7WxOz+uG8iVzpbUJbya+ycX6DDo
+         gf6obOyTeqFWYcrf0aOBRCrkpkmFdOsawnZyo5hlCYcLAdROm2eqMTJLR7iGI+QvBCbS
+         C0Wb98hV4qLb1He/5/ptKQk1/EHc8adJRCVrhMsIDVOqeaE6xPzQ9lXnBQ8ul5+7I1sl
+         DYxT8YruY7S2fzBEEQG3LvXnutEuO2L1OgEmRR6A38Lp7rrAm7JOml9qO9gChs1obkVS
+         xGWA==
+X-Gm-Message-State: AOAM530i1huX40u58QwyAkEjkf9zk5IU42gZ2u+1dYK55SAF9gmt92ri
+        yr6htWXuY6mO8FJZ/7EJdsNY16GC5qfZ0S6pQbs=
+X-Google-Smtp-Source: ABdhPJz+xR4Ocp6YRAtM17TpeO9OpSvhKGCP2Ynz7BNf3AoTKEBKoq9YfbLmF14Mim7YbsN5/9F4R5svw0wQadD+3FI=
+X-Received: by 2002:a25:b0d:: with SMTP id 13mr8878401ybl.347.1603322349082;
+ Wed, 21 Oct 2020 16:19:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201021060712.48806-1-ljp@linux.ibm.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20201021203257.26223-1-daniel@iogearbox.net>
+In-Reply-To: <20201021203257.26223-1-daniel@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 21 Oct 2020 16:18:58 -0700
+Message-ID: <CAEf4Bzbvhv6v0X6w50N4LozMH5vvrHO7M776TyEO53iYsccOgg@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf, libbpf: guard bpf inline asm from bpf_tail_call_static
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Yaniv Agman <yanivagman@gmail.com>, Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 21, 2020 at 01:07:12AM -0500, Lijun Pan wrote:
-> Jakub Kicinski brought up a concern in ibmvnic_set_mac().
-> ibmvnic_set_mac() does this:
-> 
-> 	ether_addr_copy(adapter->mac_addr, addr->sa_data);
-> 	if (adapter->state != VNIC_PROBED)
-> 		rc = __ibmvnic_set_mac(netdev, addr->sa_data);
-> 
-> So if state == VNIC_PROBED, the user can assign an invalid address to
-> adapter->mac_addr, and ibmvnic_set_mac() will still return 0.
-> 
-> The fix is to add the handling for "adapter->state == VNIC_PROBED" case,
-> which saves the old mac address back to adapter->mac_addr, and
-> returns an error code.
-> 
-> Fixes: 62740e97881c ("net/ibmvnic: Update MAC address settings after adapter reset")
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
+On Wed, Oct 21, 2020 at 1:33 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> Yaniv reported a compilation error after pulling latest libbpf:
+>
+>   [...]
+>   ../libbpf/src/root/usr/include/bpf/bpf_helpers.h:99:10: error:
+>   unknown register name 'r0' in asm
+>                      : "r0", "r1", "r2", "r3", "r4", "r5");
+>   [...]
+>
+> The issue got triggered given Yaniv was compiling tracing programs with native
+> target (e.g. x86) instead of BPF target, hence no BTF generated vmlinux.h nor
+> CO-RE used, and later llc with -march=bpf was invoked to compile from LLVM IR
+> to BPF object file. Given that clang was expecting x86 inline asm and not BPF
+> one the error complained that these regs don't exist on the former.
+>
+> Guard bpf_tail_call_static() with defined(__bpf__) where BPF inline asm is valid
+> to use. BPF tracing programs on more modern kernels use BPF target anyway and
+> thus the bpf_tail_call_static() function will be available for them. BPF inline
+> asm is supported since clang 7 (clang <= 6 otherwise throws same above error),
+> and __bpf_unreachable() since clang 8, therefore include the latter condition
+> in order to prevent compilation errors for older clang versions. Given even an
+> old Ubuntu 18.04 LTS has official LLVM packages all the way up to llvm-10, I did
+> not bother to special case the __bpf_unreachable() inside bpf_tail_call_static()
+> further.
+>
+> Fixes: 0e9f6841f664 ("bpf, libbpf: Add bpf_tail_call_static helper for bpf programs")
+> Reported-by: Yaniv Agman <yanivagman@gmail.com>
+> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+> Link: https://lore.kernel.org/bpf/CAMy7=ZUk08w5Gc2Z-EKi4JFtuUCaZYmE4yzhJjrExXpYKR4L8w@mail.gmail.com
 > ---
-> v2: change the subject from v1's 
->     "ibmvnic: no need to update adapter->mac_addr before it completes"
->     handle adapter->state==VNIC_PROBED case in else statement.
-> 
->  drivers/net/ethernet/ibm/ibmvnic.c | 6 +++++-
->  1 file changed, 5 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-> index 4dd3625a4fbc..0d78e1e3d44c 100644
-> --- a/drivers/net/ethernet/ibm/ibmvnic.c
-> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-> @@ -1829,8 +1829,12 @@ static int ibmvnic_set_mac(struct net_device *netdev, void *p)
->  
->  	rc = 0;
->  	ether_addr_copy(adapter->mac_addr, addr->sa_data);
-> -	if (adapter->state != VNIC_PROBED)
-> +	if (adapter->state != VNIC_PROBED) {
->  		rc = __ibmvnic_set_mac(netdev, addr->sa_data);
-> +	} else {
-> +		ether_addr_copy(adapter->mac_addr, netdev->dev_addr);
-> +		rc = -EIO;
 
-Why suddenly you want to change the behavior for case when ibmvnic_set_mac
-is called for VNIC_PROBED state?
+LGTM!
 
-I went through the previous discussion and I have a feeling that Jakub
-meant to simply call the is_valid_ether_addr() on addr->sa_data before the
-first ether_addr_copy and then act accordingly based on the validity of
-user supplied mac addr.
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
-And instead of yet another write to adapter->mac_addr that you're
-introducing you could just move the first ether_addr_copy (if
-addr->sa_data is valid) onto the if (adapter->state != VNIC_PROBED)
-condition. Right?
-
-> +	}
->  
->  	return rc;
+>  tools/lib/bpf/bpf_helpers.h | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+> index 2bdb7d6dbad2..72b251110c4d 100644
+> --- a/tools/lib/bpf/bpf_helpers.h
+> +++ b/tools/lib/bpf/bpf_helpers.h
+> @@ -72,6 +72,7 @@
+>  /*
+>   * Helper function to perform a tail call with a constant/immediate map slot.
+>   */
+> +#if __clang_major__ >= 8 && defined(__bpf__)
+>  static __always_inline void
+>  bpf_tail_call_static(void *ctx, const void *map, const __u32 slot)
+>  {
+> @@ -98,6 +99,7 @@ bpf_tail_call_static(void *ctx, const void *map, const __u32 slot)
+>                      :: [ctx]"r"(ctx), [map]"r"(map), [slot]"i"(slot)
+>                      : "r0", "r1", "r2", "r3", "r4", "r5");
 >  }
-> -- 
-> 2.23.0
-> 
+> +#endif
+>
+>  /*
+>   * Helper structure used by eBPF C program
+> --
+> 2.17.1
+>
