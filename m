@@ -2,99 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B828D295371
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 22:26:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31C04295380
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 22:33:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440877AbgJUUZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 16:25:51 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:42750 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2408285AbgJUUZv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 16:25:51 -0400
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1603311949;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0ErBlktAm/VDZfe11k5xiz2G5eeFjMBryMubxpLgI90=;
-        b=lAs4GHqKsxFj2ehxfTNtvW6HA/OFk73TgWU9NNny0xClUy9lV3pa0W2oLtGILx/5+6IOaj
-        kiP+OrcbeSZswKH0PNvs6kl+cZ0yljZA20keIiuAoOoLHbuecNCk8Rk7WG952LfmSVCq5Z
-        Kkgn0blrKnDKJ0DGDhdgUUZT6JSwy1B/BeEfXU+3zCGjCO3nkdjSO4BZcPPh3twnJ3kdLz
-        vih60WESW5odQfOVoD1IRz2ZqSOjovNza8g9gJZQEB8ZfYnFLyHc3WZ0IgVDfqSAPygZyd
-        8jx0pYbfQ9rwtnwciHVhkCutMekhR4bTANCWeuz3KyofRgJNMLsMNNPZ2JOoDA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1603311949;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0ErBlktAm/VDZfe11k5xiz2G5eeFjMBryMubxpLgI90=;
-        b=CKysLuROojLRHKTKNJPL+SuMqZe5T2j0BnTXahqjamQZMuEe9GG6lsjkfBNsx0nVCUNULw
-        mVjXQAOmVi6sOoCg==
-To:     Nitesh Narayan Lal <nitesh@redhat.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        frederic@kernel.org, mtosatti@redhat.com, sassmann@redhat.com,
-        jesse.brandeburg@intel.com, lihong.yang@intel.com,
-        helgaas@kernel.org, jeffrey.t.kirsher@intel.com,
-        jacob.e.keller@intel.com, jlelli@redhat.com, hch@infradead.org,
-        bhelgaas@google.com, mike.marciniszyn@intel.com,
-        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
-        jiri@nvidia.com, mingo@redhat.com, peterz@infradead.org,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        lgoncalv@redhat.com, Jakub Kicinski <kuba@kernel.org>,
-        Dave Miller <davem@davemloft.net>
-Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to housekeeping CPUs
-In-Reply-To: <87lfg093fo.fsf@nanos.tec.linutronix.de>
-References: <20200928183529.471328-1-nitesh@redhat.com> <20200928183529.471328-5-nitesh@redhat.com> <87v9f57zjf.fsf@nanos.tec.linutronix.de> <3bca9eb1-a318-1fc6-9eee-aacc0293a193@redhat.com> <87lfg093fo.fsf@nanos.tec.linutronix.de>
-Date:   Wed, 21 Oct 2020 22:25:48 +0200
-Message-ID: <877drj72cz.fsf@nanos.tec.linutronix.de>
+        id S2505373AbgJUUdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 16:33:18 -0400
+Received: from www62.your-server.de ([213.133.104.62]:58516 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2505367AbgJUUdR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 16:33:17 -0400
+Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kVKnK-0000A7-Ho; Wed, 21 Oct 2020 22:33:14 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     alexei.starovoitov@gmail.com
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, yanivagman@gmail.com,
+        yhs@fb.com, andrii.nakryiko@gmail.com,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: [PATCH bpf] bpf, libbpf: guard bpf inline asm from bpf_tail_call_static
+Date:   Wed, 21 Oct 2020 22:32:57 +0200
+Message-Id: <20201021203257.26223-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25512/Tue Jul 16 10:09:55 2019)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 20 2020 at 20:07, Thomas Gleixner wrote:
-> On Tue, Oct 20 2020 at 12:18, Nitesh Narayan Lal wrote:
->> However, IMHO we would still need a logic to prevent the devices from
->> creating excess vectors.
->
-> Managed interrupts are preventing exactly that by pinning the interrupts
-> and queues to one or a set of CPUs, which prevents vector exhaustion on
-> CPU hotplug.
->
-> Non-managed, yes that is and always was a problem. One of the reasons
-> why managed interrupts exist.
+Yaniv reported a compilation error after pulling latest libbpf:
 
-But why is this only a problem for isolation? The very same problem
-exists vs. CPU hotplug and therefore hibernation.
+  [...]
+  ../libbpf/src/root/usr/include/bpf/bpf_helpers.h:99:10: error:
+  unknown register name 'r0' in asm
+                     : "r0", "r1", "r2", "r3", "r4", "r5");
+  [...]
 
-On x86 we have at max. 204 vectors available for device interrupts per
-CPU. So assumed the only device interrupt in use is networking then any
-machine which has more than 204 network interrupts (queues, aux ...)
-active will prevent the machine from hibernation.
+The issue got triggered given Yaniv was compiling tracing programs with native
+target (e.g. x86) instead of BPF target, hence no BTF generated vmlinux.h nor
+CO-RE used, and later llc with -march=bpf was invoked to compile from LLVM IR
+to BPF object file. Given that clang was expecting x86 inline asm and not BPF
+one the error complained that these regs don't exist on the former.
 
-Aside of that it's silly to have multiple queues targeted at a single
-CPU in case of hotplug. And that's not a theoretical problem.  Some
-power management schemes shut down sockets when the utilization of a
-system is low enough, e.g. outside of working hours.
+Guard bpf_tail_call_static() with defined(__bpf__) where BPF inline asm is valid
+to use. BPF tracing programs on more modern kernels use BPF target anyway and
+thus the bpf_tail_call_static() function will be available for them. BPF inline
+asm is supported since clang 7 (clang <= 6 otherwise throws same above error),
+and __bpf_unreachable() since clang 8, therefore include the latter condition
+in order to prevent compilation errors for older clang versions. Given even an
+old Ubuntu 18.04 LTS has official LLVM packages all the way up to llvm-10, I did
+not bother to special case the __bpf_unreachable() inside bpf_tail_call_static()
+further.
 
-The whole point of multi-queue is to have locality so that traffic from
-a CPU goes through the CPU local queue. What's the point of having two
-or more queues on a CPU in case of hotplug?
+Fixes: 0e9f6841f664 ("bpf, libbpf: Add bpf_tail_call_static helper for bpf programs")
+Reported-by: Yaniv Agman <yanivagman@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/CAMy7=ZUk08w5Gc2Z-EKi4JFtuUCaZYmE4yzhJjrExXpYKR4L8w@mail.gmail.com
+---
+ tools/lib/bpf/bpf_helpers.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-The right answer to this is to utilize managed interrupts and have
-according logic in your network driver to handle CPU hotplug. When a CPU
-goes down, then the queue which is associated to that CPU is quiesced
-and the interrupt core shuts down the relevant interrupt instead of
-moving it to an online CPU (which causes the whole vector exhaustion
-problem on x86). When the CPU comes online again, then the interrupt is
-reenabled in the core and the driver reactivates the queue.
-
-Thanks,
-
-        tglx
-
-
+diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+index 2bdb7d6dbad2..72b251110c4d 100644
+--- a/tools/lib/bpf/bpf_helpers.h
++++ b/tools/lib/bpf/bpf_helpers.h
+@@ -72,6 +72,7 @@
+ /*
+  * Helper function to perform a tail call with a constant/immediate map slot.
+  */
++#if __clang_major__ >= 8 && defined(__bpf__)
+ static __always_inline void
+ bpf_tail_call_static(void *ctx, const void *map, const __u32 slot)
+ {
+@@ -98,6 +99,7 @@ bpf_tail_call_static(void *ctx, const void *map, const __u32 slot)
+ 		     :: [ctx]"r"(ctx), [map]"r"(map), [slot]"i"(slot)
+ 		     : "r0", "r1", "r2", "r3", "r4", "r5");
+ }
++#endif
+ 
+ /*
+  * Helper structure used by eBPF C program
+-- 
+2.17.1
 
