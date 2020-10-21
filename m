@@ -2,57 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A14C7295306
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 21:35:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5280295321
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 21:51:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2505026AbgJUTfu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 15:35:50 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38666 "EHLO vps0.lunn.ch"
+        id S2438943AbgJUTvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 15:51:11 -0400
+Received: from mga07.intel.com ([134.134.136.100]:57150 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2505022AbgJUTfu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Oct 2020 15:35:50 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kVJtk-002rMt-1D; Wed, 21 Oct 2020 21:35:48 +0200
-Date:   Wed, 21 Oct 2020 21:35:48 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Juerg Haefliger <juerg.haefliger@canonical.com>
-Cc:     netdev@vger.kernel.org, woojung.huh@microchip.com
-Subject: Re: lan78xx: /sys/class/net/eth0/carrier stuck at 1
-Message-ID: <20201021193548.GU139700@lunn.ch>
-References: <20201021170053.4832d1ad@gollum>
+        id S2410316AbgJUTvL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Oct 2020 15:51:11 -0400
+IronPort-SDR: ihiLIbR0cEFWWrklo9gLB8CUYtfWXSo3d0m3K5/2UhEpkV5D0F1Ens6Dcjio08HDxdIg7buS0n
+ DIsXqQSHr9TA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9781"; a="231618706"
+X-IronPort-AV: E=Sophos;i="5.77,402,1596524400"; 
+   d="scan'208";a="231618706"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2020 12:51:10 -0700
+IronPort-SDR: 6E08S0l4CjvlAFRX2B1j/RMlD+FACzGfzX2fOVUT4fM3QFOfF4al/dJGKpUvCLLg5CO7E4jrS/
+ 4IXu5NCVNgIQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,402,1596524400"; 
+   d="scan'208";a="392834634"
+Received: from harshitha-linux4.jf.intel.com ([10.166.17.87])
+  by orsmga001.jf.intel.com with ESMTP; 21 Oct 2020 12:51:10 -0700
+From:   Harshitha Ramamurthy <harshitha.ramamurthy@intel.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
+Cc:     tom@herbertland.com, carolyn.wyborny@intel.com,
+        jacob.e.keller@intel.com, amritha.nambiar@intel.com,
+        Harshitha Ramamurthy <harshitha.ramamurthy@intel.com>
+Subject: [RFC PATCH net-next 0/3] sock: Fix sock queue mapping to include device
+Date:   Wed, 21 Oct 2020 12:47:40 -0700
+Message-Id: <20201021194743.781583-1-harshitha.ramamurthy@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201021170053.4832d1ad@gollum>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 21, 2020 at 05:00:53PM +0200, Juerg Haefliger wrote:
-> Hi,
-> 
-> If the lan78xx driver is compiled into the kernel and the network cable is
-> plugged in at boot, /sys/class/net/eth0/carrier is stuck at 1 and doesn't
-> toggle if the cable is unplugged and replugged.
-> 
-> If the network cable is *not* plugged in at boot, all seems to work fine.
-> I.e., post-boot cable plugs and unplugs toggle the carrier flag.
-> 
-> Also, everything seems to work fine if the driver is compiled as a module.
-> 
-> There's an older ticket for the raspi kernel [1] but I've just tested this
-> with a 5.8 kernel on a Pi 3B+ and still see that behavior.
+In XPS, the transmit queue selected for a packet is saved in the associated
+sock for the packet and is then used to avoid recalculating the queue
+on subsequent sends. The problem is that the corresponding device is not
+also recorded so that when the queue mapping is referenced it may
+correspond to a different device than the sending one, resulting in an
+incorrect queue being used for transmit. Particularly with xps_rxqs, this
+can lead to non-deterministic behaviour as illustrated below.
 
-Hi Jürg
+Consider a case where xps_rxqs is configured and there is a difference
+in number of Tx and Rx queues. Suppose we have 2 devices A and B. Device A
+has 0-7 queues and device B has 0-15 queues. Packets are transmitted from
+Device A but packets are received on B. For packets received on queue 0-7
+of Device B, xps_rxqs will be applied for reply packets to transmit on
+Device A's queues 0-7. However, when packets are received on queues
+8-15 of Device B, normal XPS is used to reply packets when transmitting
+from Device A. This leads to non-deterministic behaviour. The case where
+there are fewer receive queues is even more insidious. Consider Device
+A, the trasmitting device has queues 0-15 and Device B, the receiver
+has queues 0-7. With xps_rxqs enabled, the packets will be received only
+on queues 0-7 of Device B, but sent only on 0-7 queues of Device A
+thereby causing a load imbalance.
 
-Could you check if a different PHY driver is being used when it is
-built and broken vs module or built in and working.
+This patch set fixes the issue by recording both the device (via
+ifindex) and the queue in the sock mapping. The pair is set and
+retrieved atomically. While retrieving the queue using the get
+functions, we check if the ifindex held is the same as the ifindex
+stored before returning the queue held. For instance during transmit,
+we return a valid queue number only after checking if the ifindex stored
+matches the device currently held.
 
-Look at /sys/class/net/eth0/phydev/driver
+This patch set contains:
+	- Definition of dev_and_queue structure to hold the ifindex
+	  and queue number
+	- Generic functions to get, set, and clear dev_and_queue
+	  structure
+	- Change sk_tx_queue_{get,set,clear} to
+	  sk_tx_dev_and_queue_{get,set,clear}
+	- Modify callers of above to use new interface
+	- Change sk_rx_queue_{get,set,clear} to 
+          sk_rx_dev_and_queue_{get,set,clear}
+        - Modify callers of above to use new interface
 
-I'm wondering if in the builtin case, it is using genphy, but with
-modules it uses a more specific vendor driver.
+This patch set was tested as follows:
+	- XPS with both xps_cpus and xps_rxqs works as expected
+	- the Q index is calculated only once when picking a tx queue
+	  per connection. For ex: in netdev_pick_tx
 
-	Andrew
+Tom Herbert (3):
+  sock: Definition and general functions for dev_and_queue structure
+  sock: Use dev_and_queue structure for RX queue mapping in sock
+  sock: Use dev_and_queue structure for TX queue mapping in sock
+
+ .../mellanox/mlx5/core/en_accel/ktls_rx.c     |   6 +-
+ drivers/net/hyperv/netvsc_drv.c               |   4 +-
+ include/net/busy_poll.h                       |   2 +-
+ include/net/request_sock.h                    |   2 +-
+ include/net/sock.h                            | 107 ++++++++++++------
+ net/core/dev.c                                |   6 +-
+ net/core/filter.c                             |   7 +-
+ net/core/sock.c                               |  10 +-
+ net/ipv4/tcp_input.c                          |   2 +-
+ 9 files changed, 93 insertions(+), 53 deletions(-)
+
+-- 
+2.26.2
+
