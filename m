@@ -2,90 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8731A294681
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 04:28:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1B8629469A
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 04:37:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439976AbgJUC21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 22:28:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38300 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2439972AbgJUC21 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 22:28:27 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E26C0613CE
-        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 19:28:27 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id l16so861623ilj.9
-        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 19:28:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=w9bwqRjlEPnVTslhROgv52HhohbcAn/B24oc/NWj44Y=;
-        b=Fx8+AdNkEZIAYEozLveUYRyfa33RNXA3RFyaLCw7VFFLML+q3X8y1+5sGOium2oayR
-         0miGy/Tsiy/XPJYLX1IbERA4SgVs5pHPFQ2UvmimHhmQha1YDmVp2wGX+/Fx3FSLjpl4
-         PRrsEwBboNcrAjFRmlE0Amfn4+IPPUSNi1En7pgWRDcKv2nImLRW8lX5BXi92v6kSWVP
-         OheMFfot/FSaLjJuWDLyWIYlit6gxg5+cfkSLBkvWmuQj/l2+DxPB8/epF1/gAv0j9CI
-         7G309V3No2JusIrbDSBolt/ot3bLsx1I7xe8AX9U0al3uyqRzG+0REOJ8VxzAm6cJAEJ
-         mhXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=w9bwqRjlEPnVTslhROgv52HhohbcAn/B24oc/NWj44Y=;
-        b=NhCpZsfPR0dng1l4UPWF3HbT4kLJ05hg1S+B6k5428uA2nB4OMqBGkpGUjVMIvbUZG
-         TUmWq+XiTCQ6Lgs/HB56sxF+V8BNxW6Jg4zBXJz8EXtIb540TSRfBChMsKMC3Vu9ZA4x
-         p8nz2cph4BaxhDsjWFTrs+ZIw8CddcBi9qA88Q/0P+cOrtGcxu8WJU23EZMnUtyNKt4W
-         o9M2ELuH9PwhNZMPK2USmtRERLaLU+lglJhvxGuCsoHl/g43s3DQFpVNcumqGqFygyoF
-         9T/9FdVHjkvb7+VpAJNqUWH0fI3Vt/50klbQF9E+zR0aM1R2ETOCEZC3WdloUEAYyQxi
-         5GzQ==
-X-Gm-Message-State: AOAM530X7T/vBKQpSDRdl6D/NcgTIsCYcZiCGqPJD6pX/rT0eJ3fX5F5
-        f9OoS0+Z4AhDUzW7lMPjsmX2QQwEdF0=
-X-Google-Smtp-Source: ABdhPJyJVWOXAF6EV/U3m9eHuj8rHQfFHAEFnQpI/Tq1RPT0NivzuMUQpkzNjGyB/A2blO0xLd+YNA==
-X-Received: by 2002:a92:c88e:: with SMTP id w14mr642033ilo.185.1603247306505;
-        Tue, 20 Oct 2020 19:28:26 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:2cd9:64d4:cacf:1e54])
-        by smtp.googlemail.com with ESMTPSA id f65sm330653ilg.88.2020.10.20.19.28.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Oct 2020 19:28:25 -0700 (PDT)
-Subject: Re: [PATCH net v2] mpls: load mpls_gso after mpls_iptunnel
-To:     Alexander Ovechkin <ovov@yandex-team.ru>, netdev@vger.kernel.org
-References: <20201020114333.26866-1-ovov@yandex-team.ru>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <8d95a3f7-6839-5cf8-f844-2b0b14e50890@gmail.com>
-Date:   Tue, 20 Oct 2020 20:28:25 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.1
+        id S2440034AbgJUChQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 22:37:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54240 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2440051AbgJUChE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Oct 2020 22:37:04 -0400
+Received: from [10.44.0.192] (unknown [103.48.210.53])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 64CD722251;
+        Wed, 21 Oct 2020 02:37:02 +0000 (UTC)
+Subject: Re: [EXT] Re: [PATCH] net: ethernet: fec: Replace interrupt driven
+ MDIO with polled IO
+To:     Andy Duan <fugang.duan@nxp.com>, Andrew Lunn <andrew@lunn.ch>
+Cc:     Chris Heally <cphealy@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <c8143134-1df9-d3bc-8ce7-79cb71148d49@linux-m68k.org>
+ <20201020024000.GV456889@lunn.ch>
+ <9fa61ea8-11b4-ef3c-c04e-cb124490c9ae@linux-m68k.org>
+ <AM8PR04MB73153FA5CF4C0B88CE65EF87FF1C0@AM8PR04MB7315.eurprd04.prod.outlook.com>
+From:   Greg Ungerer <gerg@linux-m68k.org>
+Message-ID: <bdf3f11b-a62e-405c-fb7a-bcd7491937fd@linux-m68k.org>
+Date:   Wed, 21 Oct 2020 12:37:10 +1000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20201020114333.26866-1-ovov@yandex-team.ru>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <AM8PR04MB73153FA5CF4C0B88CE65EF87FF1C0@AM8PR04MB7315.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/20/20 5:43 AM, Alexander Ovechkin wrote:
-> mpls_iptunnel is used only for mpls encapsuation, and if encaplusated
-> packet is larger than MTU we need mpls_gso for segmentation.
-> 
-> Signed-off-by: Alexander Ovechkin <ovov@yandex-team.ru>
-> Acked-by: Dmitry Yakunin <zeil@yandex-team.ru>
-> ---
->  net/mpls/mpls_iptunnel.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/net/mpls/mpls_iptunnel.c b/net/mpls/mpls_iptunnel.c
-> index 2def85718d94..ef59e25dc482 100644
-> --- a/net/mpls/mpls_iptunnel.c
-> +++ b/net/mpls/mpls_iptunnel.c
-> @@ -300,5 +300,6 @@ static void __exit mpls_iptunnel_exit(void)
->  module_exit(mpls_iptunnel_exit);
->  
->  MODULE_ALIAS_RTNL_LWT(MPLS);
-> +MODULE_SOFTDEP("post: mpls_gso");
->  MODULE_DESCRIPTION("MultiProtocol Label Switching IP Tunnels");
->  MODULE_LICENSE("GPL v2");
-> 
+Hi Andy,
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+On 21/10/20 12:19 pm, Andy Duan wrote:
+> From: Greg Ungerer <gerg@linux-m68k.org> Sent: Wednesday, October 21, 2020 9:52 AM
+>> Hi Andrew,
+>>
+>> Thanks for the quick response.
+>>
+>>
+>> On 20/10/20 12:40 pm, Andrew Lunn wrote:
+>>> On Tue, Oct 20, 2020 at 12:14:04PM +1000, Greg Ungerer wrote:
+>>>> Hi Andrew,
+>>>>
+>>>> Commit f166f890c8f0 ("[PATCH] net: ethernet: fec: Replace interrupt
+>>>> driven MDIO with polled IO") breaks the FEC driver on at least one of
+>>>> the ColdFire platforms (the 5208). Maybe others, that is all I have
+>>>> tested on so far.
+>>>>
+>>>> Specifically the driver no longer finds any PHY devices when it
+>>>> probes the MDIO bus at kernel start time.
+>>>>
+>>>> I have pinned the problem down to this one specific change in this commit:
+>>>>
+>>>>> @@ -2143,8 +2142,21 @@ static int fec_enet_mii_init(struct
+>> platform_device *pdev)
+>>>>>      if (suppress_preamble)
+>>>>>              fep->phy_speed |= BIT(7);
+>>>>> +   /* Clear MMFR to avoid to generate MII event by writing MSCR.
+>>>>> +    * MII event generation condition:
+>>>>> +    * - writing MSCR:
+>>>>> +    *      - mmfr[31:0]_not_zero & mscr[7:0]_is_zero &
+>>>>> +    *        mscr_reg_data_in[7:0] != 0
+>>>>> +    * - writing MMFR:
+>>>>> +    *      - mscr[7:0]_not_zero
+>>>>> +    */
+>>>>> +   writel(0, fep->hwp + FEC_MII_DATA);
+>>>>
+>>>> At least by removing this I get the old behavior back and everything
+>>>> works as it did before.
+>>>>
+>>>> With that write of the FEC_MII_DATA register in place it seems that
+>>>> subsequent MDIO operations return immediately (that is FEC_IEVENT is
+>>>> set) - even though it is obvious the MDIO transaction has not completed yet.
+>>>>
+>>>> Any ideas?
+>>>
+>>> Hi Greg
+>>>
+>>> This has come up before, but the discussion fizzled out without a
+>>> final patch fixing the issue. NXP suggested this
+>>>
+>>> writel(0, fep->hwp + FEC_MII_DATA);
+>>>
+>>> Without it, some other FEC variants break because they do generate an
+>>> interrupt at the wrong time causing all following MDIO transactions to
+>>> fail.
+>>>
+>>> At the moment, we don't seem to have a clear understanding of the
+>>> different FEC versions, and how their MDIO implementations vary.
+>>
+>> Based on Andy and Chris' comments is something like the attached patch what
+>> we need?
+> 
+> Greg, imx28 platform also requires the flag.
+
+Got it, thanks. I will update the patch. I won't resend a v2 just yet, 
+wait and see if there is any other comments.
+
+Regards
+Greg
+
+
