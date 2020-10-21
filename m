@@ -2,103 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C16829511C
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 18:49:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEA3B29513E
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 18:59:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503173AbgJUQtu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 12:49:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:57913 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2503157AbgJUQtr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 12:49:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603298986;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EBKIX4NScpYanL37LvbZAWmxt6PXSYIFIAOMsAhRQoo=;
-        b=eoPI6/Z2mGJhytO/cdFMkzjpJDVgwv6gH8Y498gWOwS6YdaDSTJ/VslOUNeSy1RK1SvN8G
-        7V6CmAnL98aic+Q0Gi65bXg4pPCYrGamRBsqyY3SpRWb0L3UUDklIe+Wt5bbJbgh28wCnv
-        OMv9vCSfwa5jdJzdSacxqK4KOAqwTHE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-429-IGvRjFQzPdiBi1AylCyuRA-1; Wed, 21 Oct 2020 12:49:39 -0400
-X-MC-Unique: IGvRjFQzPdiBi1AylCyuRA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0A50B5F9C1;
-        Wed, 21 Oct 2020 16:49:37 +0000 (UTC)
-Received: from x2.localnet (ovpn-117-184.rdu2.redhat.com [10.10.117.184])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 406B6389;
-        Wed, 21 Oct 2020 16:49:26 +0000 (UTC)
-From:   Steve Grubb <sgrubb@redhat.com>
-To:     Paul Moore <paul@paul-moore.com>, linux-audit@redhat.com
-Cc:     nhorman@tuxdriver.com, linux-api@vger.kernel.org,
-        containers@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
-        Linux-Audit Mailing List <linux-audit@redhat.com>,
-        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
-        simo@redhat.com, netdev@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
-        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>,
-        Richard Guy Briggs <rgb@redhat.com>
-Subject: Re: [PATCH ghak90 V9 05/13] audit: log container info of syscalls
-Date:   Wed, 21 Oct 2020 12:49:25 -0400
-Message-ID: <2174083.ElGaqSPkdT@x2>
-Organization: Red Hat
-In-Reply-To: <20201021163926.GA3929765@madcap2.tricolour.ca>
-References: <cover.1593198710.git.rgb@redhat.com> <20201002195231.GH2882171@madcap2.tricolour.ca> <20201021163926.GA3929765@madcap2.tricolour.ca>
+        id S2503308AbgJUQ7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 12:59:18 -0400
+Received: from esa4.microchip.iphmx.com ([68.232.154.123]:2831 "EHLO
+        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2503290AbgJUQ7O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 12:59:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1603299553; x=1634835553;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Gv8zeiN6SuGFQ/VMgl/Nsqse/mSIqJnzICPQ/4DBg5s=;
+  b=c9gl3B+SHHx7ybySDydQdIY1gSJ9+ZMuwgbUBULGclA3ekgya+qKiCKD
+   3bbz8JLrHtF4uou833tQoc40w6NC7wdUQQua6I3xPAD00dk+CsENnVI7M
+   +r7ZXOA9QFrhjAGAAhneR/CCHA7FmH82NGvOHJ+1G4ktX1hplPLMZymF2
+   Yiqwnck9vDqi4jykcYaYyNUisDZnoTHqint5K4A9sshybJNy8WCh2crsr
+   TWaTu+2kjuwheiu5gMM7N+TP1adiUPdKrFfF0bbzrxFLHAhzgvvAnu0dV
+   qv3UBtK0c11qRvg0I4lROKL0Ao99tXQuYcGDubRSfRKakrxMRAEpkmy03
+   Q==;
+IronPort-SDR: YqqHvhrwDSHLgjLdGmxCgE61Mb2GDH/LRpkDT5+Gr73l2iB1wqW2pYIMkENCazJyWJHN0GEkn2
+ 1WH2Ad/x0U2Z9eJ3Hu0mjhFMgHCvoC8xpeYZkkg9hTdIK6zZ5l89ZT+ZB2t/Y524m99rgqQzV6
+ IYMGp9C3lz1XEUMS/E0sduJFv9htxivZbE8GBZN2mXxO1INPI/6dt9N/tyDh1INfl9UQDb8Q3c
+ qtUP3EyUCD+dZ9Vo7ee6vOIA0GSjs9IgZDfVPHNeFBXs3JsTqPny6X1iApw1JeC4Qlrf0BunBW
+ UJU=
+X-IronPort-AV: E=Sophos;i="5.77,401,1596524400"; 
+   d="scan'208";a="90945691"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Oct 2020 09:59:12 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 21 Oct 2020 09:59:12 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Wed, 21 Oct 2020 09:59:12 -0700
+Date:   Wed, 21 Oct 2020 18:59:11 +0200
+From:   "joergen.andreasen@microchip.com" <joergen.andreasen@microchip.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+CC:     Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "vinicius.gomes@intel.com" <vinicius.gomes@intel.com>,
+        "michael.chan@broadcom.com" <michael.chan@broadcom.com>,
+        "vishal@chelsio.com" <vishal@chelsio.com>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        "jiri@mellanox.com" <jiri@mellanox.com>,
+        "idosch@mellanox.com" <idosch@mellanox.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "kuba@kernel.org" <kuba@kernel.org>, Po Liu <po.liu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "Alexandru Marginean" <alexandru.marginean@nxp.com>,
+        Leo Li <leoyang.li@nxp.com>, "Mingkai Hu" <mingkai.hu@nxp.com>
+Subject: Re: [PATCH v1 net-next 2/5] net: mscc: ocelot: set vcap IS2 chain to
+ goto PSFP chain
+Message-ID: <20201021165911.7aj4ksqqj4cof2tb@soft-dev16>
+References: <20201020072321.36921-1-xiaoliang.yang_1@nxp.com>
+ <20201020072321.36921-3-xiaoliang.yang_1@nxp.com>
+ <20201020232713.vyu3afhnhicf6xn2@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20201020232713.vyu3afhnhicf6xn2@skbuf>
+User-Agent: NeoMutt/20171215
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wednesday, October 21, 2020 12:39:26 PM EDT Richard Guy Briggs wrote:
-> > I think I have a way to generate a signal to multiple targets in one
-> > syscall...  The added challenge is to also give those targets different
-> > audit container identifiers.
+The 10/20/2020 23:27, Vladimir Oltean wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
 > 
-> Here is an exmple I was able to generate after updating the testsuite
-> script to include a signalling example of a nested audit container
-> identifier:
+> On Tue, Oct 20, 2020 at 03:23:18PM +0800, Xiaoliang Yang wrote:
+> > VSC9959 supports Per-Stream Filtering and Policing(PSFP), which is
+> > processing after VCAP blocks. We set this block on chain 30000 and
+> > set vcap IS2 chain to goto PSFP chain if hardware support.
+> >
+> > An example set is:
+> >       > tc filter add dev swp0 ingress chain 21000 flower
+> >               skip_sw action goto chain 30000
+> >
+> > Signed-off-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+> > ---
 > 
-> ----
-> type=PROCTITLE msg=audit(2020-10-21 10:31:16.655:6731) :
-> proctitle=/usr/bin/perl -w containerid/test type=CONTAINER_ID
-> msg=audit(2020-10-21 10:31:16.655:6731) :
-> contid=7129731255799087104^3333941723245477888 type=OBJ_PID
-> msg=audit(2020-10-21 10:31:16.655:6731) : opid=115583 oauid=root ouid=root
-> oses=1 obj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
-> ocomm=perl type=CONTAINER_ID msg=audit(2020-10-21 10:31:16.655:6731) :
-> contid=3333941723245477888 type=OBJ_PID msg=audit(2020-10-21
-> 10:31:16.655:6731) : opid=115580 oauid=root ouid=root oses=1
-> obj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 ocomm=perl
-> type=CONTAINER_ID msg=audit(2020-10-21 10:31:16.655:6731) :
-> contid=8098399240850112512^3333941723245477888 type=OBJ_PID
-> msg=audit(2020-10-21 10:31:16.655:6731) : opid=115582 oauid=root ouid=root
-> oses=1 obj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
-> ocomm=perl type=SYSCALL msg=audit(2020-10-21 10:31:16.655:6731) :
-> arch=x86_64 syscall=kill success=yes exit=0 a0=0xfffe3c84 a1=SIGTERM
-> a2=0x4d524554 a3=0x0 items=0 ppid=115564 pid=115567 auid=root uid=root
-> gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root
-> tty=ttyS0 ses=1 comm=perl exe=/usr/bin/perl
-> subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
-> key=testsuite-1603290671-AcLtUulY ----
-> 
-> There are three CONTAINER_ID records which need some way of associating
-> with OBJ_PID records.  An additional CONTAINER_ID record would be present
-> if the killing process itself had an audit container identifier.  I think
-> the most obvious way to connect them is with a pid= field in the
-> CONTAINER_ID record.
+> I will defer to Microchip people whether 30000 is a good chain number
+> for TSN offloads. Do you have other ingress VCAPs that you would like to
+> number 30000?
 
-pid is the process sending the signal, opid is the process receiving the 
-signal. I think you mean opid?
-
--Steve
-
-
+We see no problems with using ingress chain 30000 for PSFP.
+-- 
+Joergen Andreasen, Microchip
