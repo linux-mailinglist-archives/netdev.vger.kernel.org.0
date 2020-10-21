@@ -2,84 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E0FB294CE3
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 14:40:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66D4B294D3C
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 15:10:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2442501AbgJUMkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 08:40:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39066 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2394405AbgJUMkW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Oct 2020 08:40:22 -0400
-Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5AEEF2242F;
-        Wed, 21 Oct 2020 12:40:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603284021;
-        bh=D2u3+25VPgAQHY5Nn343gmMQCCel5dPS87ZHZwoyNjM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=SulhYNa9FDK7tCPx33fBxxU+9Yxu+f5QO9QlRPrywEn983DgQfusZOtcpYTDYgJtl
-         0jc9q7B7J7DkpABX85e7jROgeSzwaPxWLHB12B0gNmJLxAJCLZ35PWuBDL+WAGWqOK
-         LX9z2XZfy4yU4K1vKtZXacaRvI8yXZxvYo7JhGZQ=
-Received: by mail-qk1-f174.google.com with SMTP id 188so2106396qkk.12;
-        Wed, 21 Oct 2020 05:40:21 -0700 (PDT)
-X-Gm-Message-State: AOAM53068OFj3P5j1hpIYInsaU2EowYBR4PYKe3uHHBfrTMaI17I3tzv
-        e+9J1II58X0PQEQr+pAqp9XOVVLlwYc5rWgSex8=
-X-Google-Smtp-Source: ABdhPJxaYfqMELfS/UA0bXc2jA/eaagXcZCcnNsgAaV8d9zfQVqdARFwKphCh/C0TXvS9gdaX5eGQgOxG4PgPN+L8lc=
-X-Received: by 2002:a37:2dc6:: with SMTP id t189mr2894076qkh.394.1603284020397;
- Wed, 21 Oct 2020 05:40:20 -0700 (PDT)
+        id S2442849AbgJUNJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 09:09:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52826 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2441166AbgJUNJ6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 09:09:58 -0400
+Received: from mail-qk1-x742.google.com (mail-qk1-x742.google.com [IPv6:2607:f8b0:4864:20::742])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C221EC0613CE
+        for <netdev@vger.kernel.org>; Wed, 21 Oct 2020 06:09:56 -0700 (PDT)
+Received: by mail-qk1-x742.google.com with SMTP id 188so2231649qkk.12
+        for <netdev@vger.kernel.org>; Wed, 21 Oct 2020 06:09:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=l8CzYNxUOxYJ9aS4i6ldcbySxqQpPBvkizlmhAVK1Co=;
+        b=wRExLQTECGOE6jf/VWRwbwVxr2VzsZt3CqPfle3HfV/kirzws3CgoddXEVnYi7e/0v
+         hvlUKo/f89fSMEfdji50yrCYfZmHNc72aZuxR8l7e0N/p43es+hPsodeQarDPpfHteGc
+         ktEB8kylky6+cLzdbQhKtlCp+/3qqz/cjXg7D7xnMZ45HKjfrsVaZvd1US2fv+OzMdSV
+         agDSrVTPk2zF6WQLhhx6427HR8wGP21QnM9iL3GWJf4Uf/SBrbI3a31F7MeaOjiT7SF3
+         xH83LXe6jfcnPwC5tO/urEq9Rb6RLyTMqpBj1ipv0jkkpPCrUXDK7c+l1Zyo9O2eHkbc
+         oWHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=l8CzYNxUOxYJ9aS4i6ldcbySxqQpPBvkizlmhAVK1Co=;
+        b=GLqUXmOrTDK+hAmAKk/OwbOja9zvnKiIxqan2+9as6oRgFEDdGvtonLSf6FPUKADrv
+         o/uyEMchbYqd4LDdhAPW4GWH6g/ikNpx70Fk9ya5bzeY6qyLq3wYSbRZ4rOK/uTb5plU
+         z/q072SPZJERxpYkpRvZwUXkZ+e1OiMPaTi6d6rLPPOKex9LQCjvZEvbkQwWoEm6ps0a
+         v1jPXBfLnOUCLO8Fr7vf5NxztD9yCu7ebQxUzBHXN+WLdWIU6EWUV5NdP/clnp847Kef
+         TA0Oo+dKyVYL+ys24gXsk2kcfv72+XnuSEdFrJYHkjt9hAyG3ehuVWZBrfS8ES2AVWzX
+         hXmw==
+X-Gm-Message-State: AOAM532PNS5rRmeXEmrYHANZbFwjZ6tTF/SMoB6qLT5iMgwM0LYEnSUB
+        CvfIE1wnLLnca9GymgDbhrPlttbVx0tHoEiq+wnTcg==
+X-Google-Smtp-Source: ABdhPJychB7r3nWhKMzXrze1M2JHn0D2/XGPU2wLFpddHzsaCbpUAVQZsHAyysxcjLj/O8PcvOF+zfMijACuDowT95M=
+X-Received: by 2002:a05:620a:1188:: with SMTP id b8mr3124172qkk.265.1603285795684;
+ Wed, 21 Oct 2020 06:09:55 -0700 (PDT)
 MIME-Version: 1.0
-References: <20201020220639.130696-1-joel@jms.id.au>
-In-Reply-To: <20201020220639.130696-1-joel@jms.id.au>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Wed, 21 Oct 2020 14:40:04 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a3gz4rMSkvZZ+TPaBx3B1yHXcUVFDdMFQMGUtEi4xXzyg@mail.gmail.com>
-Message-ID: <CAK8P3a3gz4rMSkvZZ+TPaBx3B1yHXcUVFDdMFQMGUtEi4xXzyg@mail.gmail.com>
-Subject: Re: [PATCH] net: ftgmac100: Ensure tx descriptor updates are visible
-To:     Joel Stanley <joel@jms.id.au>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Dylan Hung <dylan_hung@aspeedtech.com>,
-        Networking <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>
+References: <000000000000e921b305b18ba0a7@google.com> <000000000000f9990805b1cfab64@google.com>
+In-Reply-To: <000000000000f9990805b1cfab64@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Wed, 21 Oct 2020 15:09:44 +0200
+Message-ID: <CACT4Y+bWhOxXM1Owg7nPwAj6+ssZFF_VXNUTsYiwAdYysXfFQA@mail.gmail.com>
+Subject: Re: BUG: using __this_cpu_read() in preemptible code in trace_hardirqs_on
+To:     syzbot <syzbot+53f8ce8bbc07924b6417@syzkaller.appspotmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Will Deacon <will@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 21, 2020 at 12:39 PM Joel Stanley <joel@jms.id.au> wrote:
+On Fri, Oct 16, 2020 at 10:33 PM syzbot
+<syzbot+53f8ce8bbc07924b6417@syzkaller.appspotmail.com> wrote:
+>
+> syzbot has bisected this issue to:
+>
+> commit 4d004099a668c41522242aa146a38cc4eb59cb1e
+> Author: Peter Zijlstra <peterz@infradead.org>
+> Date:   Fri Oct 2 09:04:21 2020 +0000
+>
+>     lockdep: Fix lockdep recursion
+>
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=174a766f900000
+> start commit:   9ff9b0d3 Merge tag 'net-next-5.10' of git://git.kernel.org..
+> git tree:       net-next
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=14ca766f900000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=10ca766f900000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=d13c3fa80bc4bcc1
+> dashboard link: https://syzkaller.appspot.com/bug?extid=53f8ce8bbc07924b6417
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15b63310500000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1565657f900000
+>
+> Reported-by: syzbot+53f8ce8bbc07924b6417@syzkaller.appspotmail.com
+> Fixes: 4d004099a668 ("lockdep: Fix lockdep recursion")
+>
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
 
->
-> diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
-> index 331d4bdd4a67..15cdfeb135b0 100644
-> --- a/drivers/net/ethernet/faraday/ftgmac100.c
-> +++ b/drivers/net/ethernet/faraday/ftgmac100.c
-> @@ -653,6 +653,11 @@ static bool ftgmac100_tx_complete_packet(struct ftgmac100 *priv)
->         ftgmac100_free_tx_packet(priv, pointer, skb, txdes, ctl_stat);
->         txdes->txdes0 = cpu_to_le32(ctl_stat & priv->txdes0_edotr_mask);
->
-> +       /* Ensure the descriptor config is visible before setting the tx
-> +        * pointer.
-> +        */
-> +       smp_wmb();
-> +
->         priv->tx_clean_pointer = ftgmac100_next_tx_pointer(priv, pointer);
->
->         return true;
-> @@ -806,6 +811,11 @@ static netdev_tx_t ftgmac100_hard_start_xmit(struct sk_buff *skb,
->         dma_wmb();
->         first->txdes0 = cpu_to_le32(f_ctl_stat);
->
-> +       /* Ensure the descriptor config is visible before setting the tx
-> +        * pointer.
-> +        */
-> +       smp_wmb();
-> +
 
-Shouldn't these be paired with smp_rmb() on the reader side?
-
-      Arnd
+This is now one of top crashers with 190K crashes in the past 12 days:
+https://syzkaller.appspot.com/bug?id=e7cbd9d7047a1c4e14bbdc194a7d87de1f168289
+This is now almost the only bug syzbot triggers.
