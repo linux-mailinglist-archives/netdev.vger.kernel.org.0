@@ -2,112 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1B8629469A
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 04:37:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BA9B29469B
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 04:37:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440034AbgJUChQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 22:37:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54240 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2440051AbgJUChE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Oct 2020 22:37:04 -0400
-Received: from [10.44.0.192] (unknown [103.48.210.53])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 64CD722251;
-        Wed, 21 Oct 2020 02:37:02 +0000 (UTC)
-Subject: Re: [EXT] Re: [PATCH] net: ethernet: fec: Replace interrupt driven
- MDIO with polled IO
-To:     Andy Duan <fugang.duan@nxp.com>, Andrew Lunn <andrew@lunn.ch>
-Cc:     Chris Heally <cphealy@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <c8143134-1df9-d3bc-8ce7-79cb71148d49@linux-m68k.org>
- <20201020024000.GV456889@lunn.ch>
- <9fa61ea8-11b4-ef3c-c04e-cb124490c9ae@linux-m68k.org>
- <AM8PR04MB73153FA5CF4C0B88CE65EF87FF1C0@AM8PR04MB7315.eurprd04.prod.outlook.com>
-From:   Greg Ungerer <gerg@linux-m68k.org>
-Message-ID: <bdf3f11b-a62e-405c-fb7a-bcd7491937fd@linux-m68k.org>
-Date:   Wed, 21 Oct 2020 12:37:10 +1000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S2440090AbgJUCht (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 22:37:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39716 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2440082AbgJUChs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Oct 2020 22:37:48 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFE2EC0613CE;
+        Tue, 20 Oct 2020 19:37:46 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id i5so851128edr.5;
+        Tue, 20 Oct 2020 19:37:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=y3k7r6MRALM8QYMM8r4V3Z5YJ0zPqyut63Xahu5+4sw=;
+        b=a4cJ1bkdtV7u42x/LEoQn8WDnK3R06Chgjyw8HVEiPOawX1nAM532Oj2NGzqU/PYq1
+         iHlJRsH9/LxcUoX/WRpJAaVWbF8C2Sk/BDx8fOcDHZSVZD1JRXDKgvvSNUKIRDkq+Z3r
+         qoJJfb748p5vcVkATXh/rKb+ghirS1gclZMRTAnXUi7g4xjpZsC8sH/KAsqWOP+5gTL1
+         sWtNnRZiuLdK64Rodb69OT4hHswR/JgHKcxvDDDLw6KJnPi0nXHRQp2lGGsNU0JjvFSN
+         NvVRRQeR7qflZOaaVZ3bWB+q5jDy5SyCjtpCeV593CnHC+ANCsBIWW7kA5foaWBSGUJL
+         UJfw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=y3k7r6MRALM8QYMM8r4V3Z5YJ0zPqyut63Xahu5+4sw=;
+        b=lCyV9NaJzQcx33DWEIi1Mdg4o0RPlJr3yiXGaJazTE1eEtjx0vjuOB2xjOOHAdZ8aZ
+         aV/j47ADu9FUKdeaFSd0Z0JbpyvVz/OPX6CfpkEr5HBOJdbsfDBxWwrLUNBGeg8aB0OH
+         iB6RNOpPwi8Mla718i/b9t5zdsSGXW6An3ETNV5gqfRNBeBJN2uDTIl6xNRKpL/llQm9
+         BcUta6ByrVEiMzuCZAdc4R7VIQL9QpA9wYc78GTZldSX2Ikyx0wMyvxtnQ/jXkCVf9tR
+         joKPUjIfcjwdVJfw8+S/4i4NWddmlswr1KBVc6ijF2LCc96U5QH2S3jQUfAXGiipDFlo
+         MRfQ==
+X-Gm-Message-State: AOAM532b1AUeW7+5046fg05Zj12aWYRlIXbO7jqbdvoLVMFj6ztC/7B4
+        ZGwNEInCvcGwzpR9GH8EZsiG0e6FEfuQKt54f0s=
+X-Google-Smtp-Source: ABdhPJx8Ke+fSB76kZaruZsNhiqb4vwaXpNG/8cynM3eDnwxnamN3L9gEKlyb2buUHK8mOtte0EArdln9NXREw2+lE0=
+X-Received: by 2002:a05:6402:1a43:: with SMTP id bf3mr936992edb.8.1603247865582;
+ Tue, 20 Oct 2020 19:37:45 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <AM8PR04MB73153FA5CF4C0B88CE65EF87FF1C0@AM8PR04MB7315.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <cover.1603102503.git.geliangtang@gmail.com> <20201020163923.6feef9ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201020163923.6feef9ef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Geliang Tang <geliangtang@gmail.com>
+Date:   Wed, 21 Oct 2020 10:37:33 +0800
+Message-ID: <CA+WQbwuHpxpSLK1Y4bTArNm1QxMQ28WQiFT+gyJoN_Neid3sow@mail.gmail.com>
+Subject: Re: [MPTCP][PATCH net-next 0/2] init ahmac and port of mptcp_options_received
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Peter Krystad <peter.krystad@linux.intel.com>,
+        netdev@vger.kernel.org, mptcp <mptcp@lists.01.org>,
+        "To: Phillip Lougher <phillip@squashfs.org.uk>, Andrew Morton
+        <akpm@linux-foundation.org>, Kees Cook <keescook@chromium.org>, Coly Li
+        <colyli@suse.de>, linux-fsdevel@vger.kernel.org," 
+        <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andy,
+Hi Jakub,
 
-On 21/10/20 12:19 pm, Andy Duan wrote:
-> From: Greg Ungerer <gerg@linux-m68k.org> Sent: Wednesday, October 21, 2020 9:52 AM
->> Hi Andrew,
->>
->> Thanks for the quick response.
->>
->>
->> On 20/10/20 12:40 pm, Andrew Lunn wrote:
->>> On Tue, Oct 20, 2020 at 12:14:04PM +1000, Greg Ungerer wrote:
->>>> Hi Andrew,
->>>>
->>>> Commit f166f890c8f0 ("[PATCH] net: ethernet: fec: Replace interrupt
->>>> driven MDIO with polled IO") breaks the FEC driver on at least one of
->>>> the ColdFire platforms (the 5208). Maybe others, that is all I have
->>>> tested on so far.
->>>>
->>>> Specifically the driver no longer finds any PHY devices when it
->>>> probes the MDIO bus at kernel start time.
->>>>
->>>> I have pinned the problem down to this one specific change in this commit:
->>>>
->>>>> @@ -2143,8 +2142,21 @@ static int fec_enet_mii_init(struct
->> platform_device *pdev)
->>>>>      if (suppress_preamble)
->>>>>              fep->phy_speed |= BIT(7);
->>>>> +   /* Clear MMFR to avoid to generate MII event by writing MSCR.
->>>>> +    * MII event generation condition:
->>>>> +    * - writing MSCR:
->>>>> +    *      - mmfr[31:0]_not_zero & mscr[7:0]_is_zero &
->>>>> +    *        mscr_reg_data_in[7:0] != 0
->>>>> +    * - writing MMFR:
->>>>> +    *      - mscr[7:0]_not_zero
->>>>> +    */
->>>>> +   writel(0, fep->hwp + FEC_MII_DATA);
->>>>
->>>> At least by removing this I get the old behavior back and everything
->>>> works as it did before.
->>>>
->>>> With that write of the FEC_MII_DATA register in place it seems that
->>>> subsequent MDIO operations return immediately (that is FEC_IEVENT is
->>>> set) - even though it is obvious the MDIO transaction has not completed yet.
->>>>
->>>> Any ideas?
->>>
->>> Hi Greg
->>>
->>> This has come up before, but the discussion fizzled out without a
->>> final patch fixing the issue. NXP suggested this
->>>
->>> writel(0, fep->hwp + FEC_MII_DATA);
->>>
->>> Without it, some other FEC variants break because they do generate an
->>> interrupt at the wrong time causing all following MDIO transactions to
->>> fail.
->>>
->>> At the moment, we don't seem to have a clear understanding of the
->>> different FEC versions, and how their MDIO implementations vary.
->>
->> Based on Andy and Chris' comments is something like the attached patch what
->> we need?
-> 
-> Greg, imx28 platform also requires the flag.
+Jakub Kicinski <kuba@kernel.org> =E4=BA=8E2020=E5=B9=B410=E6=9C=8821=E6=97=
+=A5=E5=91=A8=E4=B8=89 =E4=B8=8A=E5=8D=887:39=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Mon, 19 Oct 2020 18:23:14 +0800 Geliang Tang wrote:
+> > This patchset deals with initializations of mptcp_options_received's tw=
+o
+> > fields, ahmac and port.
+>
+> Applied, but two extra comments:
+>  - please make sure the commit messages are in imperative form
+>    e.g. "Initialize x..." rather than "This patches initializes x.."
+>  - I dropped the Fixes tag from patch 2, and only queued patch 1 for
+>    stable - patch 2 is a minor clean up, right?
 
-Got it, thanks. I will update the patch. I won't resend a v2 just yet, 
-wait and see if there is any other comments.
+Yes, that's right. Thanks for applying and updating the patches.
 
-Regards
-Greg
+-Geliang
 
-
+>
+> Thanks!
