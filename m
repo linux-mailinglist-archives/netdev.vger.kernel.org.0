@@ -2,73 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C671294906
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 09:40:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F3F6294918
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 09:52:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502024AbgJUHkY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 03:40:24 -0400
-Received: from mx3.wp.pl ([212.77.101.9]:36306 "EHLO mx3.wp.pl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729556AbgJUHkY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Oct 2020 03:40:24 -0400
-Received: (wp-smtpd smtp.wp.pl 23640 invoked from network); 21 Oct 2020 09:40:19 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wp.pl; s=1024a;
-          t=1603266020; bh=7J4v0YRthy4YkQw5jJP8rQj01iofTsTkYYNFVS9hzQ4=;
-          h=From:To:Cc:Subject;
-          b=S3UC7jybl+UJOXSMxmWwNVNXUQIlAETCu+A8kjm20Cky8TSKWvjo7KkQkLdWcd0+z
-           G6V4gerg3iSaapLDFVV3t7uIKZg2+rxaNZ5BhdWYf3vOnP6Glc0Hlqx565kbpjIQMl
-           Toe1TrBFaARqGRAEi6rA9EpWlH0qe2fRrLFvQ2d8=
-Received: from ip4-46-39-164-203.cust.nbox.cz (HELO localhost) (stf_xl@wp.pl@[46.39.164.203])
-          (envelope-sender <stf_xl@wp.pl>)
-          by smtp.wp.pl (WP-SMTPD) with ECDHE-RSA-AES256-GCM-SHA384 encrypted SMTP
-          for <markov.mikhail@itmh.ru>; 21 Oct 2020 09:40:19 +0200
-Date:   Wed, 21 Oct 2020 09:40:18 +0200
-From:   Stanislaw Gruszka <stf_xl@wp.pl>
-To:     =?utf-8?B?0JzQsNGA0LrQvtCyINCc0LjRhdCw0LjQuyDQkNC70LXQutGB0LDQvdC00YA=?=
-         =?utf-8?B?0L7QstC40Yc=?= <markov.mikhail@itmh.ru>
-Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        Helmut Schaa <helmut.schaa@googlemail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "\"David S. Miller\"" <davem@davemloft.net>,
+        id S2502070AbgJUHwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 03:52:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:34397 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2502066AbgJUHwz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 03:52:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603266774;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZJOdTyhI/dub5oZWC0RRrxke8AfF/6NA81FyCUT56ZA=;
+        b=arWmnMoTH8HVH8MScKXtdfbbRQ8/uvgpURrEHv8z927JcQDWzBStcBc3/dqXaDB/iCxQDf
+        mg3w/yCdZis8/RlG1yFiX9CTv9UYMOOhQO/85cIFptctRYKLHZz+aAS0UmjgkDHAcIrfvj
+        l4vPIewizvBGUjquMGSxLdZawg4OLz0=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-172-NzbHUWWNMwiOjbLPkGo-Pg-1; Wed, 21 Oct 2020 03:52:50 -0400
+X-MC-Unique: NzbHUWWNMwiOjbLPkGo-Pg-1
+Received: by mail-wm1-f70.google.com with SMTP id u5so199471wme.3
+        for <netdev@vger.kernel.org>; Wed, 21 Oct 2020 00:52:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZJOdTyhI/dub5oZWC0RRrxke8AfF/6NA81FyCUT56ZA=;
+        b=euo+Z6PxFD/f1KjCH9JIZqr4zZJKJ5NASc4nGHhheNx9A7YvquxaKkz5sxZ15aqk7u
+         dCihm9J0+dh9U04ss4GdKSx984ipLQjn3qIVQE8hQXuciB+S/jAH3iueWaLCdorSZ8Fz
+         Dl7ThinY44FxfpYI/ZHpciT414I4t+QRUNTn/gLew4rlyTL0feidLvLrFUVmMsZPjd3H
+         YjF9ko012j374r5YMpND9ymE5j0woAO3sLaANZurG2vbWnIhkrL8U7j+BnMWwjFERgtm
+         qNuHe+eKAz4Yx0oaOi8vRU83nVG8bJLQXvs0dzb6cljb3raOeCSXVUTtKiKN2PZsIquu
+         z0qw==
+X-Gm-Message-State: AOAM531+B+gTOXWe+RNbTijrb2prbpe7Mbuv55Yu/EUdiMCUMn1u0g6e
+        vgDERcphr4YELiPM6GesBU1IvR32Yk0jEPwBctBVG5UJ+EiN5nA36hICFjlZ6HtgxXOoin7RVLl
+        Bixw3I1AvGRh9e//t
+X-Received: by 2002:adf:9f0a:: with SMTP id l10mr2923916wrf.427.1603266769244;
+        Wed, 21 Oct 2020 00:52:49 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwMN5BmJiN6AH7AIcTE+JbHN8jA9gEgCL6xTJ52VhUPXiYFEv4EunVtqQFbSXrC2dTBobNGGA==
+X-Received: by 2002:adf:9f0a:: with SMTP id l10mr2923900wrf.427.1603266768990;
+        Wed, 21 Oct 2020 00:52:48 -0700 (PDT)
+Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id p4sm2422181wrf.67.2020.10.21.00.52.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Oct 2020 00:52:48 -0700 (PDT)
+Date:   Wed, 21 Oct 2020 09:52:43 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "illumin@yandex.ru" <illumin@yandex.ru>
-Subject: Re: [PATCH v2] rt2x00: save survey for every channel visited
-Message-ID: <20201021074018.GA308308@wp.pl>
-References: <1603134408870.78805@itmh.ru>
- <20201020071243.GA302394@wp.pl>
- <1603222991841.29674@itmh.ru>
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>, Po Liu <Po.Liu@nxp.com>
+Subject: Re: [PATCH net] net/sched: act_gate: Unlock ->tcfa_lock in
+ tc_setup_flow_action()
+Message-ID: <20201021075243.GA3789@linux.home>
+References: <12f60e385584c52c22863701c0185e40ab08a7a7.1603207948.git.gnault@redhat.com>
+ <CAM_iQpXEPshoMYc5hkePa85T-H5uP3EGfHFRSDDqYrLuuB-bbg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1603222991841.29674@itmh.ru>
-X-WP-MailID: d3ddd05d646a03e064a13c2d48fdf2d2
-X-WP-AV: skaner antywirusowy Poczty Wirtualnej Polski
-X-WP-SPAM: NO 0000000 [wQMR]                               
+In-Reply-To: <CAM_iQpXEPshoMYc5hkePa85T-H5uP3EGfHFRSDDqYrLuuB-bbg@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 20, 2020 at 07:43:12PM +0000, Марков Михаил Александрович wrote:
-> rt2800 only gives you survey for current channel.
+On Tue, Oct 20, 2020 at 05:37:22PM -0700, Cong Wang wrote:
+> On Tue, Oct 20, 2020 at 8:34 AM Guillaume Nault <gnault@redhat.com> wrote:
+> >
+> > We need to jump to the "err_out_locked" label when
+> > tcf_gate_get_entries() fails. Otherwise, tc_setup_flow_action() exits
+> > with ->tcfa_lock still held.
+> >
+> > Fixes: d29bdd69ecdd ("net: schedule: add action gate offloading")
+> > Signed-off-by: Guillaume Nault <gnault@redhat.com>
 > 
-> Survey-based ACS algorithms are failing to perform their job when working
-> with rt2800.
-> 
-> Make rt2800 save survey for every channel visited and be able to give away
-> that information.
-> 
-> There is a bug registered https://dev.archive.openwrt.org/ticket/19081 and
-> this patch solves the issue.
-> 
-> Signed-off-by: Markov Mikhail <markov.mikhail@itmh.ru>
->
-> ---
-> Changes are now aggregated in rt2800lib.c.
+> Looks like the err_out label can be just removed after this patch?
 
-Acked-by: Stanislaw Gruszka <stf_xl@wp.pl>
+That'd require reworking the error path, as err_out is used there. I
+don't feel that doing so would improve readability much.
 
-Thanks
-Stanislaw
+> If any compiler complains, you have to fix it in v2, otherwise can be in a
+> separate patch.
+> 
+> Other than this,
+> 
+> Acked-by: Cong Wang <xiyou.wangcong@gmail.com>
+
+Thanks.
+
