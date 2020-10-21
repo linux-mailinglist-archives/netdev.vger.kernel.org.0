@@ -2,84 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E63A295553
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 01:48:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D72E295554
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 01:49:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2507297AbgJUXsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 19:48:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38700 "EHLO
+        id S2507305AbgJUXtM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 19:49:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2408091AbgJUXsj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 19:48:39 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E443C0613CE
-        for <netdev@vger.kernel.org>; Wed, 21 Oct 2020 16:48:39 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id a200so2424048pfa.10
-        for <netdev@vger.kernel.org>; Wed, 21 Oct 2020 16:48:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=f10vmgX7jXKo9E3thDnh3S0Y4fRJR8z4hDcpxjP8T+g=;
-        b=SSiuK9Hq+WzNgZWEJtiFvDoomfJr/Xi6SGtiB3J0TJmw1+PSqkQMZndBNPrXlAQYV7
-         19TmcfEpR1CjVKGWhfRpr3eKqWHv5cuy6kBViF12WikINxrdTii/QyKh7JdBS7DCP9J+
-         EmDPc5dfzep+2IRH7zsclqQ6lZC20B7tnQ7lE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=f10vmgX7jXKo9E3thDnh3S0Y4fRJR8z4hDcpxjP8T+g=;
-        b=I2rIeDEbxKBFbiyLuxY4dt/z04dYiyoZ4znoPwAVXYA+U5Z1vbb7NNlPBtp/ACUIFl
-         FWkbus1fKkZ3povil6z+nN/qkOHbuMfXHb55LY5YGeHtlauzC+LxHFfoYhsqXkoITNlB
-         ya3r7qTpLsZZznkzSqKaKH/jI27kb0ab0W8RdNf2LM4rU0nacdezwP71rLBniwslgigZ
-         s1B0uOTH2DiwzgNtCGF6EIxrOP90/9IULiRVTBBpW3AJfXu9BlXCTG2tTIdW0SrJBReV
-         EGWUZfdN33BEzgSFGCYeRrgq0kHK16CM4svUZXbgfsvSCttMjqBAykxxQs8+WBiO1SZq
-         +8pA==
-X-Gm-Message-State: AOAM533s18GcEGHPZXb4c0OziW40adtfS2nD+oWttNZaG7co7MUfh//z
-        Vj2JsMBzHLlkSeustAkZyddpfg==
-X-Google-Smtp-Source: ABdhPJxqbDqLPvR+s6SlaFCJTQyNZAo8JVF2fzS2DVEHzp+Kzr27m/Ow1Zi17gLvmPgEspBua8YrAQ==
-X-Received: by 2002:aa7:97ba:0:b029:152:879f:4789 with SMTP id d26-20020aa797ba0000b0290152879f4789mr16223pfq.81.1603324118711;
-        Wed, 21 Oct 2020 16:48:38 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id 186sm3370129pff.95.2020.10.21.16.48.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Oct 2020 16:48:38 -0700 (PDT)
-Date:   Wed, 21 Oct 2020 16:48:37 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     laniel_francis@privacyrequired.com
-Cc:     linux-hardening@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org
-Subject: Re: [RFC][PATCH v3 2/3] Modify return value of nla_strlcpy to match
- that of strscpy.
-Message-ID: <202010211648.4CBF3805A9@keescook>
-References: <20201020164707.30402-1-laniel_francis@privacyrequired.com>
- <20201020164707.30402-3-laniel_francis@privacyrequired.com>
+        with ESMTP id S2507293AbgJUXtM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 19:49:12 -0400
+Received: from mout-p-201.mailbox.org (mout-p-201.mailbox.org [IPv6:2001:67c:2050::465:201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1092EC0613CE
+        for <netdev@vger.kernel.org>; Wed, 21 Oct 2020 16:49:11 -0700 (PDT)
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-201.mailbox.org (Postfix) with ESMTPS id 4CGnJh6Xl7zQlKL;
+        Thu, 22 Oct 2020 01:49:08 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmachata.org;
+        s=MBO0001; t=1603324142;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ro0uW4Gm8fMOKTcs/f19Si6fIoH99Mcx+GA4CBw8sWw=;
+        b=r/CM+juhKSdlN1pTEXXaQduztUZE/tUWUne+GapSJteA1w26GVelivVRYg3ebb5DuTuxgJ
+        9jjzUY0HullmQ7+nUyzQJi9tNxGP7bAsmEAcSVXCH/ClbN9vzMX1SvZzwvOGt7ynS298sl
+        5/Mr1abguBiL7812VzbFUiw0WYW2ixmIu8IDRG4++OawCVT4nyRDqcBYqguO2w4E0b0+Fb
+        k9Z8QkJvkW13GZJWEU2ColpTIsJ2Zw5Trk0sfqOmzNZ/TYN672d88QvuLcQn7ur42KSSed
+        aM0aPgXWRWc52BRyM0NKjY8jAWpsua+qusnyWcLgRehU6SvbQ8DduSWvxHvU/w==
+Received: from smtp2.mailbox.org ([80.241.60.241])
+        by spamfilter01.heinlein-hosting.de (spamfilter01.heinlein-hosting.de [80.241.56.115]) (amavisd-new, port 10030)
+        with ESMTP id K2aVCmCavvVU; Thu, 22 Oct 2020 01:49:01 +0200 (CEST)
+References: <20201020114141.53391942@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <877drkk4qu.fsf@nvidia.com> <20201021112838.3026a648@hermes.local>
+From:   Petr Machata <me@pmachata.org>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        dsahern@gmail.com, john.fastabend@gmail.com, jiri@nvidia.com,
+        idosch@nvidia.com
+Subject: Re: [PATCH iproute2-next 15/15] dcb: Add a subtool for the DCB ETS object
+In-reply-to: <20201021112838.3026a648@hermes.local>
+Date:   Thu, 22 Oct 2020 01:48:58 +0200
+Message-ID: <873627jg2d.fsf@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201020164707.30402-3-laniel_francis@privacyrequired.com>
+Content-Type: text/plain
+X-MBO-SPAM-Probability: 
+X-Rspamd-Score: -3.70 / 15.00 / 15.00
+X-Rspamd-Queue-Id: 9B9EA271
+X-Rspamd-UID: 45dd1d
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 20, 2020 at 06:47:06PM +0200, laniel_francis@privacyrequired.com wrote:
-> From: Francis Laniel <laniel_francis@privacyrequired.com>
-> 
-> nla_strlcpy now returns -E2BIG if src was truncated when written to dst.
-> It also returns this error value if dstsize is 0 or higher than INT_MAX.
-> 
-> For example, if src is "foo\0" and dst is 3 bytes long, the result will be:
-> 1. "foG" after memcpy (G means garbage).
-> 2. "fo\0" after memset.
-> 3. -E2BIG is returned because src was not completely written into dst.
-> 
-> The callers of nla_strlcpy were modified to take into account this modification.
-> 
-> Signed-off-by: Francis Laniel <laniel_francis@privacyrequired.com>
 
-This looks correct to me. Thanks for the respin!
+Stephen Hemminger <stephen@networkplumber.org> writes:
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+> On Tue, 20 Oct 2020 22:43:37 +0200
+> Petr Machata <me@pmachata.org> wrote:
+>
+>> Jakub Kicinski <kuba@kernel.org> writes:
+>>
+>> > On Tue, 20 Oct 2020 02:58:23 +0200 Petr Machata wrote:
+>> >> +static void dcb_ets_print_cbs(FILE *fp, const struct ieee_ets *ets)
+>> >> +{
+>> >> +	print_string(PRINT_ANY, "cbs", "cbs %s ", ets->cbs ? "on" : "off");
+>> >> +}
+>> >
+>> > I'd personally lean in the direction ethtool is taking and try to limit
+>> > string values in json output as much as possible. This would be a good
+>> > fit for bool.
+>>
+>> Yep, makes sense. The value is not user-toggleable, so the on / off
+>> there is just arbitrary.
+>>
+>> I'll consider it for "willing" as well. That one is user-toggleable, and
+>> the "on" / "off" makes sense for consistency with the command line. But
+>> that doesn't mean it can't be a boolean in JSON.
+>
+> There are three ways of representing a boolean. You chose the worst.
+> Option 1: is to use a json null value to indicate presence.
+>       this works well for a flag.
+> Option 2: is to use json bool.
+> 	this looks awkward in non-json output
+> Option 3: is to use a string
+>      	but this makes the string output something harder to consume
+> 	in json.
 
--- 
-Kees Cook
+What seems to be used commonly for these on/off toggles is the following
+pattern:
+
+	print_string(PRINT_FP, NULL, "willing %s ", ets->willing ? "on" : "off");
+	print_bool(PRINT_JSON, "willing", NULL, true);
+
+That way the JSON output is easy to query and the FP output is obvious
+and compatible with the command line. Does that work for you?
