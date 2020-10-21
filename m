@@ -2,96 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDC6A294A5D
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 11:19:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3472A294A85
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 11:28:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2441241AbgJUJTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 05:19:00 -0400
-Received: from esa2.microchip.iphmx.com ([68.232.149.84]:61420 "EHLO
-        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437569AbgJUJTA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 05:19:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1603271939; x=1634807939;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+rVpCXr52dnGbmc7Y9HfkgfgWTlzu8JQ4Bcf4/Mlfb4=;
-  b=BD4riH1AWyNHwErYYV5N1xuAtNzKOQM5k1N5TmF2fWSCAOO0J7K17N99
-   aFHs0WrJsDxErYy5GlM8jKNOvWuIEslaqIfmdjTYXBhJhoyIECZe6C9IO
-   S7FN5s3WYF3b4N5FG0j/Ntaxd5XS7LLU5cB0OdDX/PcLHDTdOuE9b+eHS
-   CrfxZXAnTE6MwMAKg/ynjH3UhxiekTvYaOP88ax8EWNIUJy+PtGonMc9P
-   vFN5ofwWWfCeA/8qu0cNLYVBCzcVsYONYgiZ/oH5/D31F6fjpkfQAldft
-   Tmr5Op+zPr+wa6zKyTce+4DjZLFu97POdBzwVXFd0mwPtS1bGHNlFna53
-   Q==;
-IronPort-SDR: ifd+PM8WlqYDzsrG7H1uCjR08Q9aQWKZa34JgqBZuyNrHqiuXfx8QaadFSmhnks9/QiFDnGJMq
- fdVKydKlRSNg3ZslmwsLCUR7vRZtaI7EzPQJhAbFKpjnKge9rm1hgqGGIZ04L36Nk4xVx4Aa3Z
- /1zVm9SmCs6ckMiZ+r+9IzIUyWbQXcltDRnQ8OanlV7gPrWF/odULI+wBAskxjYpNFF292GTyU
- AvygR5gMmrYYdEou1wSeultoMHMyj6sbHaWxgc4V9sUnDXEQmr+TrAs0QTbQs7ZSaoBk/T6Ero
- DxI=
-X-IronPort-AV: E=Sophos;i="5.77,400,1596524400"; 
-   d="scan'208";a="93389639"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Oct 2020 02:18:59 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 21 Oct 2020 02:18:58 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Wed, 21 Oct 2020 02:18:58 -0700
-Date:   Wed, 21 Oct 2020 09:17:29 +0000
-From:   Henrik Bjoernlund <henrik.bjoernlund@microchip.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <roopa@nvidia.com>, <nikolay@nvidia.com>,
-        <jiri@mellanox.com>, <idosch@mellanox.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>,
-        <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: Re: [PATCH net-next v6 07/10] bridge: cfm: Netlink SET configuration
- Interface.
-Message-ID: <20201021091729.a6wlccjlin5muejt@soft-test08>
-References: <20201015115418.2711454-1-henrik.bjoernlund@microchip.com>
- <20201015115418.2711454-8-henrik.bjoernlund@microchip.com>
- <20201015103431.25d66c8b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201019085104.2hkz2za2o2juliab@soft-test08>
- <20201019092143.258cb256@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20201019092143.258cb256@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S2437029AbgJUJ2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 05:28:31 -0400
+Received: from m9785.mail.qiye.163.com ([220.181.97.85]:16342 "EHLO
+        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2395089AbgJUJ2b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 05:28:31 -0400
+Received: from localhost.localdomain (unknown [123.59.132.129])
+        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 4B5E55C0F36
+        for <netdev@vger.kernel.org>; Wed, 21 Oct 2020 17:21:56 +0800 (CST)
+From:   wenxu@ucloud.cn
+To:     netdev@vger.kernel.org
+Subject: [PATCH net] ip_tunnel: fix over-mtu packet send fail without TUNNEL_DONT_FRAGMENT flags
+Date:   Wed, 21 Oct 2020 17:21:55 +0800
+Message-Id: <1603272115-25351-1-git-send-email-wenxu@ucloud.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
+        oVCBIfWUFZSUNOSUxLTE8fHksZVkpNS0hJTElKSk1IQkpVGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
+        FZT0tIVUpKS0hKTFVLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6ND46LDo*Dz5WCUo*HzQ0SUIa
+        KzBPFB5VSlVKTUtISUxJSkpNTUhMVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
+        QlVKSElVSklCWVdZCAFZQUpPQ0g3Bg++
+X-HM-Tid: 0a754a7708592087kuqy4b5e55c0f36
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thank you for the review. Comments below.
+From: wenxu <wenxu@ucloud.cn>
 
-The 10/19/2020 09:21, Jakub Kicinski wrote:> 
-> On Mon, 19 Oct 2020 08:51:04 +0000 Henrik Bjoernlund wrote:
-> > Thank you for the review. Comments below.
-> >
-> > The 10/15/2020 10:34, Jakub Kicinski wrote:
-> > >
-> > > On Thu, 15 Oct 2020 11:54:15 +0000 Henrik Bjoernlund wrote:
-> > > > +     [IFLA_BRIDGE_CFM_MEP_CONFIG_MDLEVEL]     = {
-> > > > +     .type = NLA_U32, .validation_type = NLA_VALIDATE_MAX, .max = 7 },
-> > >
-> > >         NLA_POLICY_MAX(NLA_U32, 7)
-> >
-> > I will change as requested.
-> >
-> > >
-> > > Also why did you keep the validation in the code in patch 4?
-> >
-> > In patch 4 there is no CFM NETLINK so I desided to keep the validation in the
-> > code until NETLINK was added that is now doing the check.
-> > I this a problem?
-> 
-> Nothing calls those functions until patch 7, so there's no need for
-> that code to be added.
+The TUNNEL_DONT_FRAGMENT flags specific the tunnel outer ip can do
+fragment or not in the md mode. Without the TUNNEL_DONT_FRAGMENT
+should always do fragment. So it should not care the frag_off in
+inner ip.
 
-I will change as requested.
+Fixes: cfc7381b3002 ("ip_tunnel: add collect_md mode to IPIP tunnel")
+Signed-off-by: wenxu <wenxu@ucloud.cn>
+---
+ net/ipv4/ip_tunnel.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
+diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+index 8b04d1d..ee65c92 100644
+--- a/net/ipv4/ip_tunnel.c
++++ b/net/ipv4/ip_tunnel.c
+@@ -608,9 +608,6 @@ void ip_md_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+ 			ttl = ip4_dst_hoplimit(&rt->dst);
+ 	}
+ 
+-	if (!df && skb->protocol == htons(ETH_P_IP))
+-		df = inner_iph->frag_off & htons(IP_DF);
+-
+ 	headroom += LL_RESERVED_SPACE(rt->dst.dev) + rt->dst.header_len;
+ 	if (headroom > dev->needed_headroom)
+ 		dev->needed_headroom = headroom;
 -- 
-/Henrik
+1.8.3.1
+
