@@ -2,421 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7ADF294BD2
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 13:32:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7087A294C1A
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 14:00:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439512AbgJULcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 07:32:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:47678 "EHLO
+        id S2442146AbgJUMAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 08:00:11 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:48312 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2410706AbgJULcz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 07:32:55 -0400
+        by vger.kernel.org with ESMTP id S2442137AbgJUMAK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 08:00:10 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603279972;
+        s=mimecast20190719; t=1603281608;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=T4qa4Gs2TMUCM8ArM6KEs5M9/k6qdbwXygnEcb+hu4A=;
-        b=BxYq/++vre8+3/tB3ii2Mj7OjG+/YSDSSPlR/T9ZyhYI4h/aHltM84V1xrEb/E2Pm+/OGM
-        eZqCDtlNJTCfaoGskKfelKeBO2pL4/ya/L449REkH/1qzcMiCkQU4bDCn2JhraGenydEL+
-        jS2eCurQ8A3jPHRqblSMDXYeB/+ra3U=
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=pxAYkLMUlXZmhSrxMkkVA7xzSBZBqBAu29co/36XlCk=;
+        b=c/NoVnkEPeCe0N7uSX8roptYzevPBs5DG4kQzvFK4kLADZpw91kMET5zUIeIwdY25UYBH/
+        xX8TbNohISllagvCGfVo8Cu/0qWpKJ7exTFgd4/k+SEPQyIEmhRMgHM0ImAuWlqqqLjdDI
+        NVPSm18i5yV2KvSAsoAO9qrIihuj3Jw=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-590-MmQYUyUdMA625l6_u-0cUw-1; Wed, 21 Oct 2020 07:32:48 -0400
-X-MC-Unique: MmQYUyUdMA625l6_u-0cUw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+ us-mta-8-nngBpXg3NLSCF7SCpRq9zg-1; Wed, 21 Oct 2020 08:00:03 -0400
+X-MC-Unique: nngBpXg3NLSCF7SCpRq9zg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5A2F2186DD24;
-        Wed, 21 Oct 2020 11:32:46 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.29])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id AF4DC5D9CA;
-        Wed, 21 Oct 2020 11:32:39 +0000 (UTC)
-Date:   Wed, 21 Oct 2020 13:32:37 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Maciej =?UTF-8?B?xbtlbmN6eWtvd3NraQ==?= <maze@google.com>,
-        Eyal Birger <eyal.birger@gmail.com>, brouer@redhat.com
-Cc:     bpf <bpf@vger.kernel.org>, Linux NetDev <netdev@vger.kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Shaun Crampton <shaun@tigera.io>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Marek Majkowski <marek@cloudflare.com>,
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 372871018F61;
+        Wed, 21 Oct 2020 12:00:01 +0000 (UTC)
+Received: from redhat.com (ovpn-115-38.ams2.redhat.com [10.36.115.38])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C8CA555760;
+        Wed, 21 Oct 2020 11:59:56 +0000 (UTC)
+Date:   Wed, 21 Oct 2020 07:59:54 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        kernel test robot <lkp@intel.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH bpf-next V3 3/6] bpf: add BPF-helper for MTU checking
-Message-ID: <20201021133237.2885eab2@carbon>
-In-Reply-To: <CANP3RGdq-irQ7w8=1xWNPh0Fn+72d9wrKR24vQJTFMa8w4+b6w@mail.gmail.com>
-References: <160216609656.882446.16642490462568561112.stgit@firesoul>
-        <160216615258.882446.12640007391672866038.stgit@firesoul>
-        <CANP3RGdq-irQ7w8=1xWNPh0Fn+72d9wrKR24vQJTFMa8w4+b6w@mail.gmail.com>
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH v3] Revert "virtio-net: ethtool configurable RXCSUM"
+Message-ID: <20201021115915.8286-1-mst@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mutt-Fcc: =sent
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 9 Oct 2020 16:29:46 -0700
-Maciej =C5=BBenczykowski <maze@google.com> wrote:
+This reverts commit 3618ad2a7c0e78e4258386394d5d5f92a3dbccf8.
 
-> On Thu, Oct 8, 2020 at 7:09 AM Jesper Dangaard Brouer <brouer@redhat.com>=
- wrote:
-> >
-> > This BPF-helper bpf_mtu_check() works for both XDP and TC-BPF programs.=
- =20
->=20
-> bpf_check_mtu() seems a better name.
+When control vq is not negotiated, that commit causes a crash:
 
-Okay, we can rename it. I will go through the patch and change the name
-of all the functions (so it resembles the helper name).
+[   72.229171] kernel BUG at drivers/net/virtio_net.c:1667!
+[   72.230266] invalid opcode: 0000 [#1] PREEMPT SMP
+[   72.231172] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.9.0-rc8-02934-g3618ad2a7c0e7 #1
+[   72.231172] EIP: virtnet_send_command+0x120/0x140
+[   72.231172] Code: 00 0f 94 c0 8b 7d f0 65 33 3d 14 00 00 00 75 1c 8d 65 f4 5b 5e 5f 5d c3 66 90 be 01 00 00 00 e9 6e ff ff ff 8d b6 00
++00 00 00 <0f> 0b e8 d9 bb 82 00 eb 17 8d b4 26 00 00 00 00 8d b4 26 00 00 00
+[   72.231172] EAX: 0000000d EBX: f72895c0 ECX: 00000017 EDX: 00000011
+[   72.231172] ESI: f7197800 EDI: ed69bd00 EBP: ed69bcf4 ESP: ed69bc98
+[   72.231172] DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068 EFLAGS: 00010246
+[   72.231172] CR0: 80050033 CR2: 00000000 CR3: 02c84000 CR4: 000406f0
+[   72.231172] Call Trace:
+[   72.231172]  ? __virt_addr_valid+0x45/0x60
+[   72.231172]  ? ___cache_free+0x51f/0x760
+[   72.231172]  ? kobject_uevent_env+0xf4/0x560
+[   72.231172]  virtnet_set_guest_offloads+0x4d/0x80
+[   72.231172]  virtnet_set_features+0x85/0x120
+[   72.231172]  ? virtnet_set_guest_offloads+0x80/0x80
+[   72.231172]  __netdev_update_features+0x27a/0x8e0
+[   72.231172]  ? kobject_uevent+0xa/0x20
+[   72.231172]  ? netdev_register_kobject+0x12c/0x160
+[   72.231172]  register_netdevice+0x4fe/0x740
+[   72.231172]  register_netdev+0x1c/0x40
+[   72.231172]  virtnet_probe+0x728/0xb60
+[   72.231172]  ? _raw_spin_unlock+0x1d/0x40
+[   72.231172]  ? virtio_vdpa_get_status+0x1c/0x20
+[   72.231172]  virtio_dev_probe+0x1c6/0x271
+[   72.231172]  really_probe+0x195/0x2e0
+[   72.231172]  driver_probe_device+0x26/0x60
+[   72.231172]  device_driver_attach+0x49/0x60
+[   72.231172]  __driver_attach+0x46/0xc0
+[   72.231172]  ? device_driver_attach+0x60/0x60
+[   72.231172]  bus_add_driver+0x197/0x1c0
+[   72.231172]  driver_register+0x66/0xc0
+[   72.231172]  register_virtio_driver+0x1b/0x40
+[   72.231172]  virtio_net_driver_init+0x61/0x86
+[   72.231172]  ? veth_init+0x14/0x14
+[   72.231172]  do_one_initcall+0x76/0x2e4
+[   72.231172]  ? rdinit_setup+0x2a/0x2a
+[   72.231172]  do_initcalls+0xb2/0xd5
+[   72.231172]  kernel_init_freeable+0x14f/0x179
+[   72.231172]  ? rest_init+0x100/0x100
+[   72.231172]  kernel_init+0xd/0xe0
+[   72.231172]  ret_from_fork+0x1c/0x30
+[   72.231172] Modules linked in:
+[   72.269563] ---[ end trace a6ebc4afea0e6cb1 ]---
 
+The reason is that virtnet_set_features now calls virtnet_set_guest_offloads
+unconditionally, it used to only call it when there is something
+to configure.
 
-> >
-> > The API is designed to help the BPF-programmer, that want to do packet
-> > context size changes, which involves other helpers. These other helpers
-> > usually does a delta size adjustment. This helper also support a delta
-> > size (len_diff), which allow BPF-programmer to reuse arguments needed by
-> > these other helpers, and perform the MTU check prior to doing any actual
-> > size adjustment of the packet context.
-> >
-> > V3: Take L2/ETH_HLEN header size into account and document it.
-> >
-> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> > ---
-> >  include/uapi/linux/bpf.h       |   63 +++++++++++++++++++++
-> >  net/core/filter.c              |  119 ++++++++++++++++++++++++++++++++=
-++++++++
-> >  tools/include/uapi/linux/bpf.h |   63 +++++++++++++++++++++
-> >  3 files changed, 245 insertions(+)
-> >
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index 4a46a1de6d16..1dcf5d8195f4 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -3718,6 +3718,56 @@ union bpf_attr {
-> >   *             never return NULL.
-> >   *     Return
-> >   *             A pointer pointing to the kernel percpu variable on thi=
-s cpu.
-> > + *
-> > + * int bpf_mtu_check(void *ctx, u32 ifindex, u32 *mtu_result, s32 len_=
-diff, u64 flags)
-> > + *     Description
-> > + *             Check ctx packet size against MTU of net device (based =
-on
-> > + *             *ifindex*).  This helper will likely be used in combina=
-tion with
-> > + *             helpers that adjust/change the packet size.  The argume=
-nt
-> > + *             *len_diff* can be used for querying with a planned size
-> > + *             change. This allows to check MTU prior to changing pack=
-et ctx.
-> > + *
-> > + *             The Linux kernel route table can configure MTUs on a mo=
-re
-> > + *             specific per route level, which is not provided by this=
- helper.
-> > + *             For route level MTU checks use the **bpf_fib_lookup**\ =
-()
-> > + *             helper.
-> > + *
-> > + *             *ctx* is either **struct xdp_md** for XDP programs or
-> > + *             **struct sk_buff** for tc cls_act programs.
-> > + *
-> > + *             The *flags* argument can be a combination of one or mor=
-e of the
-> > + *             following values:
-> > + *
-> > + *              **BPF_MTU_CHK_RELAX**
-> > + *                     This flag relax or increase the MTU with room f=
-or one
-> > + *                     VLAN header (4 bytes) and take into account net=
- device
-> > + *                     hard_header_len.  This relaxation is also used =
-by the
-> > + *                     kernels own forwarding MTU checks.
-> > + *
-> > + *             **BPF_MTU_CHK_GSO**
-> > + *                     This flag will only works for *ctx* **struct sk=
-_buff**.
-> > + *                     If packet context contains extra packet segment=
- buffers
-> > + *                     (often knows as frags), then those are also che=
-cked
-> > + *                     against the MTU size. =20
->=20
-> naming is weird... what does GSO have to do with frags?
-> Aren't these orthogonal things?
+If device does not have a control vq, everything breaks.
 
-They are connected implementation wise. The name "frags" comes from the
-implementation detail that GSO segments use "frags", but looking at
-implementation details, it does seem like GSO segments actually use
-member 'frag_list' (in struct skb_shared_info).  I actually hate the
-name/term "frags" as it is very confusing to talk/write above, and
-usually people talk past each-other (e.g. frags vs frag_list, and
-general concepts packet fragments).
+Looking at this some more, I noticed that it's not really checking the
+hardware too much. E.g.
 
-I think I will rename BPF_MTU_CHK_GSO to BPF_MTU_CHK_SEGMENTS.  I want
-a more general flag name, as I also want Lorenzo to use this for
-checking XDP multi-buffer segments.
+        if ((dev->features ^ features) & NETIF_F_LRO) {
+                if (features & NETIF_F_LRO)
+                        offloads |= GUEST_OFFLOAD_LRO_MASK &
+                                    vi->guest_offloads_capable;
+                else
+                        offloads &= ~GUEST_OFFLOAD_LRO_MASK;
+        }
+
+and
+
+                                (1ULL << VIRTIO_NET_F_GUEST_TSO6) | \
+                                (1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
+                                (1ULL << VIRTIO_NET_F_GUEST_UFO))
+
+But there's no guarantee that e.g. VIRTIO_NET_F_GUEST_TSO6 is set.
+
+If it isn't command should not send it.
+
+Revert the original commit for now.
+
+Cc: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+Cc: Willem de Bruijn <willemb@google.com>
+Fixes: 3618ad2a7c0e7 ("virtio-net: ethtool configurable RXCSUM")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+---
 
 
-> > + *
-> > + *             The *mtu_result* pointer contains the MTU value of the =
-net
-> > + *             device including the L2 header size (usually 14 bytes E=
-thernet
-> > + *             header). The net device configured MTU is the L3 size, =
-but as
-> > + *             XDP and TX length operate at L2 this helper include L2 =
-header
-> > + *             size in reported MTU.
-> > + *
-> > + *     Return
-> > + *             * 0 on success, and populate MTU value in *mtu_result* =
-pointer.
-> > + *
-> > + *             * < 0 if any input argument is invalid (*mtu_result* no=
-t updated) =20
->=20
-> not -EINVAL?
+ drivers/net/virtio_net.c | 50 +++++++++++-----------------------------
+ 1 file changed, 13 insertions(+), 37 deletions(-)
 
-Yes, also -EINVAL.
-
-> > + *
-> > + *             MTU violations return positive values, but also populat=
-e MTU
-> > + *             value in *mtu_result* pointer, as this can be needed for
-> > + *             implemeting PMTU handing: =20
-> implementing
-
-Fixed
-
-> > + *
-> > + *             * **BPF_MTU_CHK_RET_FRAG_NEEDED**
-> > + *             * **BPF_MTU_CHK_RET_GSO_TOOBIG**
-> > + *
-> >   */
-> >  #define __BPF_FUNC_MAPPER(FN)          \
-> >         FN(unspec),                     \
-> > @@ -3875,6 +3925,7 @@ union bpf_attr {
-> >         FN(redirect_neigh),             \
-> >         FN(bpf_per_cpu_ptr),            \
-> >         FN(bpf_this_cpu_ptr),           \
-> > +       FN(mtu_check),                  \
-> >         /* */
-> >
-> >  /* integer value in 'imm' field of BPF_CALL instruction selects which =
-helper
-> > @@ -4889,6 +4940,18 @@ struct bpf_fib_lookup {
-> >         __u8    dmac[6];     /* ETH_ALEN */
-> >  };
-> >
-> > +/* bpf_mtu_check flags*/
-> > +enum  bpf_mtu_check_flags {
-> > +       BPF_MTU_CHK_RELAX =3D (1U << 0),
-> > +       BPF_MTU_CHK_GSO   =3D (1U << 1),
-> > +};
-> > +
-> > +enum bpf_mtu_check_ret {
-> > +       BPF_MTU_CHK_RET_SUCCESS,      /* check and lookup successful */
-> > +       BPF_MTU_CHK_RET_FRAG_NEEDED,  /* fragmentation required to fwd =
-*/
-> > +       BPF_MTU_CHK_RET_GSO_TOOBIG,   /* GSO re-segmentation needed to =
-fwd */
-> > +};
-> > +
-> >  enum bpf_task_fd_type {
-> >         BPF_FD_TYPE_RAW_TRACEPOINT,     /* tp name */
-> >         BPF_FD_TYPE_TRACEPOINT,         /* tp name */
-> > diff --git a/net/core/filter.c b/net/core/filter.c
-> > index da74d6ddc4d7..5986156e700e 100644
-> > --- a/net/core/filter.c
-> > +++ b/net/core/filter.c
-> > @@ -5513,6 +5513,121 @@ static const struct bpf_func_proto bpf_skb_fib_=
-lookup_proto =3D {
-> >         .arg4_type      =3D ARG_ANYTHING,
-> >  };
-> >
-> > +static int bpf_mtu_lookup(struct net *netns, u32 ifindex, u64 flags) =
-=20
->=20
-> bpf_lookup_mtu() ???
-
-Sure, I can rename this but this is a helper function (not exported).
-=20
-> > +{
-> > +       struct net_device *dev;
-> > +       int mtu;
-> > +
-> > +       dev =3D dev_get_by_index_rcu(netns, ifindex); =20
->=20
-> my understanding is this is a bit of a perf hit, maybe ifindex 0 means
-> use skb->dev ???
-
-Might be a good idea.
-
-> or have bpf_lookup_mtu(skb) function as well?
-
-No, you can easily give parameters to bpf_check_mtu() that gives you a
-lookup functionality, there is no need to create a second helper call.
-
->=20
-> > +       if (!dev)
-> > +               return -ENODEV;
-> > +
-> > +       /* XDP+TC len is L2: Add L2-header as dev MTU is L3 size */
-> > +       mtu =3D dev->mtu + dev->hard_header_len;
-> > +
-> > +       /*  Same relax as xdp_ok_fwd_dev() and is_skb_forwardable() */
-> > +       if (flags & BPF_MTU_CHK_RELAX) =20
->=20
-> could this check device vlan tx offload state instead?
->=20
-> > +               mtu +=3D VLAN_HLEN;
-> > +
-> > +       return mtu;
-> > +}
-> > +
-> > +static unsigned int __bpf_len_adjust_positive(unsigned int len, int le=
-n_diff)
-> > +{
-> > +       int len_new =3D len + len_diff; /* notice len_diff can be negat=
-ive */
-> > +
-> > +       if (len_new > 0)
-> > +               return len_new;
-> > +
-> > +       return 0; =20
->=20
-> not return len ?
-
-I prefer returning 0 here, but return len would also be okay for the
-boarderline case/error that I want to handle.
-
->=20
-> oh I see the function doesn't do what the name implies...
-
-Okay, suggestions for a better name?
-
-> nor sure this func is helpful... why not simply
-> int len_new =3D (int)len + (int)len_diff;=20
-
-(you do write int len_new, but I assume we want unsigned int len_new)
-
-I don't like this approach, as a shrink that cause negative value, will
-be turned into a very large value, which will failed the MTU check.
-
-I'm actually trying to anticipate/help the BPF-programmer.  I can easily
-imagine a BPF-prog that pops a VXLAN header, so programmer always call
-bpf_check_mtu with len_diff and drops packets that exceed MTU, but
-small packet that goes negative suddenly gets dropped with your
-approach.  Thus, we force BPF-prog to do more checks before using our
-BPF-helper, which I would like to avoid.
-
-> directly down below and check < 0 there?
-
-Because I use this helper function in two functions below.
-
-
-> >2GB skb->len is meaningless anyway =20
->=20
-> > +}
-> > +
-> > +BPF_CALL_5(bpf_skb_mtu_check, struct sk_buff *, skb,
-> > +          u32, ifindex, u32 *, mtu_result, s32, len_diff, u64, flags)
-> > +{
-> > +       struct net *netns =3D dev_net(skb->dev);
-> > +       int ret =3D BPF_MTU_CHK_RET_SUCCESS;
-> > +       unsigned int len =3D skb->len;
-> > +       int mtu;
-> > +
-> > +       if (flags & ~(BPF_MTU_CHK_RELAX | BPF_MTU_CHK_GSO))
-> > +               return -EINVAL;
-> > +
-> > +       mtu =3D bpf_mtu_lookup(netns, ifindex, flags);
-> > +       if (unlikely(mtu < 0))
-> > +               return mtu; /* errno */
-> > +
-> > +       len =3D __bpf_len_adjust_positive(len, len_diff);
-> > +       if (len > mtu) {
-> > +               ret =3D BPF_MTU_CHK_RET_FRAG_NEEDED; =20
->=20
-> Can't this fail if skb->len includes the entire packet, and yet gso is
-> on, and packet is greater then mtu, yet gso size is smaller?
->
-> Think 200 byte gso packet with 2 100 byte segs, and a 150 byte mtu.
-> Does gso actually require frags?  [As you can tell I don't have a good
-> handle on gso vs frags vs skb->len, maybe what I"m asking is bogus]
-
-Oh oh, does skb->len include the size of GSO segments (the individual
-packet segments)? ... argh yes is does!  So, this *is* a bug, I will
-fix.  Thanks for spotting it!
-
-Looking at the code it is clear and also make more sense that people
-are complaining that as long as skb_is_gso(skb) it can bypass these MTU
-checks.
-
-I could calculate the "first"/"head" packet length via subtracting
-skb->data_len (which should contain the len of fragments). Well, I'll
-figure out how to solve it in the code.
-
-
->=20
-> > +               goto out;
-> > +       }
-> > +
-> > +       if (flags & BPF_MTU_CHK_GSO &&
-> > +           skb_is_gso(skb) &&
-> > +           skb_gso_validate_network_len(skb, mtu)) {
-> > +               ret =3D BPF_MTU_CHK_RET_GSO_TOOBIG;
-> > +               goto out;
-> > +       }
-> > +
-> > +out:
-> > +       if (mtu_result)
-> > +               *mtu_result =3D mtu;
-> > +
-> > +       return ret;
-> > +}
-> > +
-> > +BPF_CALL_5(bpf_xdp_mtu_check, struct xdp_buff *, xdp,
-> > +          u32, ifindex, u32 *, mtu_result, s32, len_diff, u64, flags)
-> > +{
-> > +       unsigned int len =3D xdp->data_end - xdp->data;
-> > +       struct net_device *dev =3D xdp->rxq->dev;
-> > +       struct net *netns =3D dev_net(dev);
-> > +       int ret =3D BPF_MTU_CHK_RET_SUCCESS;
-> > +       int mtu;
-> > +
-> > +       /* XDP variant doesn't support multi-buffer segment check (yet)=
- */
-> > +       if (flags & ~BPF_MTU_CHK_RELAX)
-> > +               return -EINVAL;
-> > +
-> > +       mtu =3D bpf_mtu_lookup(netns, ifindex, flags);
-> > +       if (unlikely(mtu < 0))
-> > +               return mtu; /* errno */
-> > +
-> > +       len =3D __bpf_len_adjust_positive(len, len_diff);
-> > +       if (len > mtu) {
-> > +               ret =3D BPF_MTU_CHK_RET_FRAG_NEEDED;
-> > +               goto out;
-> > +       }
-> > +out:
-> > +       if (mtu_result)
-> > +               *mtu_result =3D mtu;
-> > +
-> > +       return ret;
-> > +}
-
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index d2d2c4a53cf2..21b71148c532 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -68,8 +68,6 @@ static const unsigned long guest_offloads[] = {
+ 				(1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
+ 				(1ULL << VIRTIO_NET_F_GUEST_UFO))
+ 
+-#define GUEST_OFFLOAD_CSUM_MASK (1ULL << VIRTIO_NET_F_GUEST_CSUM)
+-
+ struct virtnet_stat_desc {
+ 	char desc[ETH_GSTRING_LEN];
+ 	size_t offset;
+@@ -2524,48 +2522,29 @@ static int virtnet_get_phys_port_name(struct net_device *dev, char *buf,
+ 	return 0;
+ }
+ 
+-static netdev_features_t virtnet_fix_features(struct net_device *netdev,
+-					      netdev_features_t features)
+-{
+-	/* If Rx checksum is disabled, LRO should also be disabled. */
+-	if (!(features & NETIF_F_RXCSUM))
+-		features &= ~NETIF_F_LRO;
+-
+-	return features;
+-}
+-
+ static int virtnet_set_features(struct net_device *dev,
+ 				netdev_features_t features)
+ {
+ 	struct virtnet_info *vi = netdev_priv(dev);
+-	u64 offloads = vi->guest_offloads;
++	u64 offloads;
+ 	int err;
+ 
+-	/* Don't allow configuration while XDP is active. */
+-	if (vi->xdp_queue_pairs)
+-		return -EBUSY;
+-
+ 	if ((dev->features ^ features) & NETIF_F_LRO) {
++		if (vi->xdp_queue_pairs)
++			return -EBUSY;
++
+ 		if (features & NETIF_F_LRO)
+-			offloads |= GUEST_OFFLOAD_LRO_MASK &
+-				    vi->guest_offloads_capable;
++			offloads = vi->guest_offloads_capable;
+ 		else
+-			offloads &= ~GUEST_OFFLOAD_LRO_MASK;
++			offloads = vi->guest_offloads_capable &
++				   ~GUEST_OFFLOAD_LRO_MASK;
++
++		err = virtnet_set_guest_offloads(vi, offloads);
++		if (err)
++			return err;
++		vi->guest_offloads = offloads;
+ 	}
+ 
+-	if ((dev->features ^ features) & NETIF_F_RXCSUM) {
+-		if (features & NETIF_F_RXCSUM)
+-			offloads |= GUEST_OFFLOAD_CSUM_MASK &
+-				    vi->guest_offloads_capable;
+-		else
+-			offloads &= ~GUEST_OFFLOAD_CSUM_MASK;
+-	}
+-
+-	err = virtnet_set_guest_offloads(vi, offloads);
+-	if (err)
+-		return err;
+-
+-	vi->guest_offloads = offloads;
+ 	return 0;
+ }
+ 
+@@ -2584,7 +2563,6 @@ static const struct net_device_ops virtnet_netdev = {
+ 	.ndo_features_check	= passthru_features_check,
+ 	.ndo_get_phys_port_name	= virtnet_get_phys_port_name,
+ 	.ndo_set_features	= virtnet_set_features,
+-	.ndo_fix_features	= virtnet_fix_features,
+ };
+ 
+ static void virtnet_config_changed_work(struct work_struct *work)
+@@ -3035,10 +3013,8 @@ static int virtnet_probe(struct virtio_device *vdev)
+ 	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+ 	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
+ 		dev->features |= NETIF_F_LRO;
+-	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS)) {
+-		dev->hw_features |= NETIF_F_RXCSUM;
++	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
+ 		dev->hw_features |= NETIF_F_LRO;
+-	}
+ 
+ 	dev->vlan_features = dev->features;
+ 
+-- 
+MST
 
