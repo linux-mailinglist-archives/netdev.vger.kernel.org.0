@@ -2,20 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1665929526D
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 20:50:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D38A7295275
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 20:51:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504400AbgJUSuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 14:50:08 -0400
-Received: from smtp.uniroma2.it ([160.80.6.22]:47171 "EHLO smtp.uniroma2.it"
+        id S2504458AbgJUSvH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 14:51:07 -0400
+Received: from smtp.uniroma2.it ([160.80.6.22]:47193 "EHLO smtp.uniroma2.it"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2394632AbgJUSuH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Oct 2020 14:50:07 -0400
-X-Greylist: delayed 406 seconds by postgrey-1.27 at vger.kernel.org; Wed, 21 Oct 2020 14:50:06 EDT
+        id S2437233AbgJUSvH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Oct 2020 14:51:07 -0400
 Received: from localhost.localdomain ([160.80.103.126])
-        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 09LIga9f005673
+        by smtp-2015.uniroma2.it (8.14.4/8.14.4/Debian-8) with ESMTP id 09LIga9g005673
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 21 Oct 2020 20:42:37 +0200
+        Wed, 21 Oct 2020 20:42:38 +0200
 From:   Andrea Mayer <andrea.mayer@uniroma2.it>
 To:     "David S. Miller" <davem@davemloft.net>,
         David Ahern <dsahern@kernel.org>,
@@ -30,10 +29,12 @@ Cc:     Stefano Salsano <stefano.salsano@uniroma2.it>,
         Paolo Lungaroni <paolo.lungaroni@cnit.it>,
         Ahmed Abdelsalam <ahabdels.dev@gmail.com>,
         Andrea Mayer <andrea.mayer@uniroma2.it>
-Subject: [RFC,net-next, 0/4] seg6: add support for SRv6 End.DT4 behavior
-Date:   Wed, 21 Oct 2020 20:41:12 +0200
-Message-Id: <20201021184116.2722-1-andrea.mayer@uniroma2.it>
+Subject: [RFC,net-next, 1/4] vrf: push mac header for tunneled packets when sniffer is attached
+Date:   Wed, 21 Oct 2020 20:41:13 +0200
+Message-Id: <20201021184116.2722-2-andrea.mayer@uniroma2.it>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20201021184116.2722-1-andrea.mayer@uniroma2.it>
+References: <20201021184116.2722-1-andrea.mayer@uniroma2.it>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Virus-Scanned: clamav-milter 0.100.0 at smtp-2015
@@ -42,46 +43,131 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset adds support for the SRv6 End.DT4 behavior.
+Before this patch, a sniffer attached to a VRF used as the receiving
+interface of L3 tunneled packets detects them as malformed packets and
+it complains about that (i.e.: tcpdump shows bogus packets).
 
-The SRv6 End.DT4 is used to implement multi-tenant IPv4 L3VPN. It decapsulates
-the received packets and performs IPv4 routing lookup in the routing table of
-the tenant. The SRv6 End.DT4 Linux implementation leverages a VRF device. SRv6
-End.DT4 is defined in the SRv6 Network Programming [1].
+The reason is that a tunneled L3 packet does not carry any L2
+information and when the VRF is set as the receiving interface of a
+decapsulated L3 packet, no mac header is currently set or valid.
+Therefore the purpose of this patch consists of adding a MAC header to
+any packet which is directly received on the VRF interface ONLY IF:
 
-- Patch 1/4 is needed to solve a pre-existing issue with tunneled packets
-  when a sniffer is attached;
+ i) a sniffer is attached on the VRF and ii) the mac header is not set.
 
-- Patch 2/4 introduces two callbacks used for customizing the
-  creation/destruction of a SRv6 behavior;
+In this case, the mac address of the VRF is copied in both the
+destination and the source address of the ethernet header. The protocol
+type is set either to IPv4 or IPv6, depending on which L3 packet is
+received.
 
-- Patch 3/4 is the core patch that adds support for the SRv6 End.DT4 behavior;
+Signed-off-by: Andrea Mayer <andrea.mayer@uniroma2.it>
+---
+ drivers/net/vrf.c | 78 +++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 72 insertions(+), 6 deletions(-)
 
-- Patch 4/4 adds the selftest for SRv6 End.DT4.
-
-I would like to thank David Ahern for his support during the development of
-this patch set.
-
-Comments, suggestions and improvements are very welcome!
-
-Thanks,
-Andrea Mayer
-
-[1] https://tools.ietf.org/html/draft-ietf-spring-srv6-network-programming
-
-Andrea Mayer (4):
-  vrf: push mac header for tunneled packets when sniffer is attached
-  seg6: add callbacks for customizing the creation/destruction of a
-    behavior
-  seg6: add support for the SRv6 End.DT4 behavior
-  add selftest for the SRv6 End.DT4 behavior
-
- drivers/net/vrf.c                             |  78 ++-
- net/ipv6/seg6_local.c                         | 261 ++++++++++
- .../selftests/net/srv6_end_dt4_l3vpn_test.sh  | 490 ++++++++++++++++++
- 3 files changed, 823 insertions(+), 6 deletions(-)
- create mode 100755 tools/testing/selftests/net/srv6_end_dt4_l3vpn_test.sh
-
+diff --git a/drivers/net/vrf.c b/drivers/net/vrf.c
+index 60c1aadece89..abb09c6036a6 100644
+--- a/drivers/net/vrf.c
++++ b/drivers/net/vrf.c
+@@ -1263,6 +1263,61 @@ static void vrf_ip6_input_dst(struct sk_buff *skb, struct net_device *vrf_dev,
+ 	skb_dst_set(skb, &rt6->dst);
+ }
+ 
++static int vrf_prepare_mac_header(struct sk_buff *skb,
++				  struct net_device *vrf_dev, u16 proto)
++{
++	struct ethhdr *eth;
++	int err;
++
++	/* in general, we do not know if there is enough space in the head of
++	 * the packet for hosting the mac header.
++	 */
++	err = skb_cow_head(skb, LL_RESERVED_SPACE(vrf_dev));
++	if (unlikely(err))
++		/* no space in the skb head */
++		return -ENOBUFS;
++
++	__skb_push(skb, ETH_HLEN);
++	eth = (struct ethhdr *)skb->data;
++
++	skb_reset_mac_header(skb);
++
++	/* we set the ethernet destination and the source addresses to the
++	 * address of the VRF device.
++	 */
++	ether_addr_copy(eth->h_dest, vrf_dev->dev_addr);
++	ether_addr_copy(eth->h_source, vrf_dev->dev_addr);
++	eth->h_proto = htons(proto);
++
++	/* the destination address of the Ethernet frame corresponds to the
++	 * address set on the VRF interface; therefore, the packet is intended
++	 * to be processed locally.
++	 */
++	skb->protocol = eth->h_proto;
++	skb->pkt_type = PACKET_HOST;
++
++	skb_postpush_rcsum(skb, skb->data, ETH_HLEN);
++
++	skb_pull_inline(skb, ETH_HLEN);
++
++	return 0;
++}
++
++/* prepare and add the mac header to the packet if it was not previously set.
++ * In this way, packet sniffers such as tcpdump can parse the packet correctly.
++ * If the mac header was previously set, the original mac header is left
++ * untouched and the function returns immediately.
++ */
++static int vrf_add_mac_header_if_unset(struct sk_buff *skb,
++				       struct net_device *vrf_dev,
++				       u16 proto)
++{
++	if (skb_mac_header_was_set(skb))
++		return 0;
++
++	return vrf_prepare_mac_header(skb, vrf_dev, proto);
++}
++
+ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
+ 				   struct sk_buff *skb)
+ {
+@@ -1289,9 +1344,15 @@ static struct sk_buff *vrf_ip6_rcv(struct net_device *vrf_dev,
+ 		skb->skb_iif = vrf_dev->ifindex;
+ 
+ 		if (!list_empty(&vrf_dev->ptype_all)) {
+-			skb_push(skb, skb->mac_len);
+-			dev_queue_xmit_nit(skb, vrf_dev);
+-			skb_pull(skb, skb->mac_len);
++			int err;
++
++			err = vrf_add_mac_header_if_unset(skb, vrf_dev,
++							  ETH_P_IPV6);
++			if (likely(!err)) {
++				skb_push(skb, skb->mac_len);
++				dev_queue_xmit_nit(skb, vrf_dev);
++				skb_pull(skb, skb->mac_len);
++			}
+ 		}
+ 
+ 		IP6CB(skb)->flags |= IP6SKB_L3SLAVE;
+@@ -1334,9 +1395,14 @@ static struct sk_buff *vrf_ip_rcv(struct net_device *vrf_dev,
+ 	vrf_rx_stats(vrf_dev, skb->len);
+ 
+ 	if (!list_empty(&vrf_dev->ptype_all)) {
+-		skb_push(skb, skb->mac_len);
+-		dev_queue_xmit_nit(skb, vrf_dev);
+-		skb_pull(skb, skb->mac_len);
++		int err;
++
++		err = vrf_add_mac_header_if_unset(skb, vrf_dev, ETH_P_IP);
++		if (likely(!err)) {
++			skb_push(skb, skb->mac_len);
++			dev_queue_xmit_nit(skb, vrf_dev);
++			skb_pull(skb, skb->mac_len);
++		}
+ 	}
+ 
+ 	skb = vrf_rcv_nfhook(NFPROTO_IPV4, NF_INET_PRE_ROUTING, skb, vrf_dev);
 -- 
 2.20.1
 
