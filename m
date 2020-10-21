@@ -2,231 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 133672953CF
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 23:04:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68CA9295479
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 23:50:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2505713AbgJUVES (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 17:04:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46321 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2505706AbgJUVER (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 17:04:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603314254;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-        bh=0YUWo4bZCexSnwTeOfkLwPeIOKqXO7B7hpyZe6AULyI=;
-        b=RdC9nW+lvSJwcVcGLdZqvJdndegSrQtuzfEm96Nq/giY/TuoMZ8x1CwQG5VY47oR0QLS00
-        03BdwLVSOmAN3TevqxNp0z4ONeRj2EUvdvzOU7SyuPBaCTrZG7H2VNMzFyGawDAnazD4Qz
-        7JYH6aNCG0WAOixl3HYnO+4Y8a4uR8Y=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-251-Hc3Fxz0DPIG6xn3tdr7GgA-1; Wed, 21 Oct 2020 17:04:12 -0400
-X-MC-Unique: Hc3Fxz0DPIG6xn3tdr7GgA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 74FC9800050;
-        Wed, 21 Oct 2020 21:04:09 +0000 (UTC)
-Received: from [10.10.115.73] (ovpn-115-73.rdu2.redhat.com [10.10.115.73])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 993DB5C1C7;
-        Wed, 21 Oct 2020 21:04:03 +0000 (UTC)
-Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to housekeeping
- CPUs
-To:     Thomas Gleixner <tglx@linutronix.de>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, frederic@kernel.org,
-        mtosatti@redhat.com, sassmann@redhat.com,
-        jesse.brandeburg@intel.com, lihong.yang@intel.com,
-        helgaas@kernel.org, jeffrey.t.kirsher@intel.com,
-        jacob.e.keller@intel.com, jlelli@redhat.com, hch@infradead.org,
-        bhelgaas@google.com, mike.marciniszyn@intel.com,
-        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
-        jiri@nvidia.com, mingo@redhat.com, peterz@infradead.org,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        lgoncalv@redhat.com, Jakub Kicinski <kuba@kernel.org>,
-        Dave Miller <davem@davemloft.net>
-References: <20200928183529.471328-1-nitesh@redhat.com>
- <20200928183529.471328-5-nitesh@redhat.com>
- <87v9f57zjf.fsf@nanos.tec.linutronix.de>
- <3bca9eb1-a318-1fc6-9eee-aacc0293a193@redhat.com>
- <87lfg093fo.fsf@nanos.tec.linutronix.de>
- <877drj72cz.fsf@nanos.tec.linutronix.de>
-From:   Nitesh Narayan Lal <nitesh@redhat.com>
-Autocrypt: addr=nitesh@redhat.com; prefer-encrypt=mutual; keydata=
- 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
- VujM7c/b4pps
-Organization: Red Hat Inc,
-Message-ID: <9fa39be6-45ab-01a6-86b0-b077f368f4cf@redhat.com>
-Date:   Wed, 21 Oct 2020 17:04:01 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S2506451AbgJUVuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 17:50:03 -0400
+Received: from mailout2.w1.samsung.com ([210.118.77.12]:57519 "EHLO
+        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2443049AbgJUVuC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 17:50:02 -0400
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20201021214944euoutp0212afd1c3023f15ec312303f7a9e9d49c~AIE2CGFxZ1593215932euoutp02N
+        for <netdev@vger.kernel.org>; Wed, 21 Oct 2020 21:49:44 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20201021214944euoutp0212afd1c3023f15ec312303f7a9e9d49c~AIE2CGFxZ1593215932euoutp02N
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1603316984;
+        bh=gwwjrxfgxaNZsPGAiCkyHWUSc8RJJJ8snj/08cO1Z50=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=ozp4klCXkl7Gjss4dc07kUvbFALqFiu5fSzC3ap7KgTUxw84rsSexKscCKwbdkE/i
+         I8oqMdgDzoqF68cYnacbp1qSVN6hoa0/LooKdBklS/8e1iuf4Z4ROBdRVXjbmx8wLb
+         G4sP91JxuqQA/18bnPoPjq7WONz31MQ43+pdLNEc=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20201021214930eucas1p2b04707283fdede67307472138e90bbea~AIEpPsHsR2056620566eucas1p29;
+        Wed, 21 Oct 2020 21:49:30 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id DE.8C.06318.AECA09F5; Wed, 21
+        Oct 2020 22:49:30 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+        20201021214930eucas1p1cf406b35bbe4b643db287643e4a5b85b~AIEotzf4G2857528575eucas1p1j;
+        Wed, 21 Oct 2020 21:49:30 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20201021214930eusmtrp296fba8512128bc2a40ca96c9d81700b6~AIEotDWwj0512505125eusmtrp2Z;
+        Wed, 21 Oct 2020 21:49:30 +0000 (GMT)
+X-AuditID: cbfec7f5-371ff700000018ae-c2-5f90aceafb82
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+        eusmgms1.samsung.com (EUCPMTA) with SMTP id 34.69.06314.AECA09F5; Wed, 21
+        Oct 2020 22:49:30 +0100 (BST)
+Received: from localhost (unknown [106.120.51.46]) by eusmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20201021214930eusmtip21f5d911bee91a8bab67933a9fa891fe5~AIEoj7gXE0505105051eusmtip2o;
+        Wed, 21 Oct 2020 21:49:30 +0000 (GMT)
+From:   =?UTF-8?q?=C5=81ukasz=20Stelmach?= <l.stelmach@samsung.com>
+To:     Andrew Lunn <andrew@lunn.ch>, jim.cromie@gmail.com,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org
+Cc:     =?UTF-8?q?Bart=C5=82omiej=20=C5=BBolnierkiewicz?= 
+        <b.zolnierkie@samsung.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        =?UTF-8?q?=C5=81ukasz=20Stelmach?= <l.stelmach@samsung.com>
+Subject: [PATCH v3 0/5] AX88796C SPI Ethernet Adapter
+Date:   Wed, 21 Oct 2020 23:49:05 +0200
+Message-Id: <20201021214910.20001-1-l.stelmach@samsung.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <877drj72cz.fsf@nanos.tec.linutronix.de>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=nitesh@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="19tJzs4pDB5hORMaKvDJ8V6aBKOyjfvgw"
+Organization: Samsung R&D Institute Poland
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA02SeUhUURTGu/PmLYlTz1HyYGE5VqDghhkXDCkTekVQFIgYpmM+l3JjxiUl
+        UNLUxNSsyGxIMU0Tl1IzFZ10MrUsxxb3NY2sCSsybbeceSP53++e8333OwcOQ0hHSSsmLDKG
+        V0TKw2WUibih80evg64y19+5+6Yr1o5rCHw3v4bEKm2qGBd29JK4+FM+iQfmxkicM/OBwFrt
+        HRr3NWSTeFhTjnDtzACJXzarKJyvVYuw5korwlUd4zTuLNqAz7V20LvNuJcDzwmu/vawiGsq
+        GKe52orzFFdXksQ1Nc6LuOz6CsTN11ofZnxNdgXx4WFxvMLJI8Ak9NZiQnSK9emMwQ4qGakt
+        M9FaBtgdkK4bpPUsZcsRfCtzFvgrgpHFvZnIZJnnEfxRz4tXDCMvSkmhUYYg9W+J0T2LIG/I
+        W88UuwdySrsNIgt2goCa9CmkfxCsGkHTxGVCrzJn3WC6ONngFrPboGu81RAhYd0h79ckJcRt
+        hvSy+5RQN4PH194YNOtZe6g8O2hgYlmTcu86oQ8A9gcNVUtLxlm9oDLtPS2wOei66o28Cf42
+        FYoyEbPMSXApb6fgzULQoPpu9LrDWO9PSq8hWDuoaXYSynvgQdkIIVjXwdCcmTDCOshruGos
+        SyAjTSqot0J1TovxQyu4oCtHAnNQ1TZH5yKbglWLFaxapuB/bhEiKpAlH6uMCOGVrpF8vKNS
+        HqGMjQxxPBEVUYuWT65nqWuhEal/B2oQyyCZqeTzwVx/KSmPUyZEaBAwhMxC4vms57hUEiRP
+        SOQVUf6K2HBeqUEbGbHMUuJa/N5PyobIY/hTPB/NK1a6ImatVTJSpLZken3pPPLoULu9xtb3
+        zfnSydxQyZbK6UPuFqFv7Ux9qh3WePq4Dets6mbpsKNBD7P7nZ7GZ/m8a/945phbYMCTNr+u
+        /bOy0ZgAxoeSebp7Jk68XkhOfBTc7b1vKt6jP7iPiz1w0sU2yWUuxeaT6mKdXyq3/VWzavHa
+        w4sZH27MysTKULmLPaFQyv8BPuhlfm4DAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrKIsWRmVeSWpSXmKPExsVy+t/xe7qv1kyIN5j1QsDi/N1DzBYbZ6xn
+        tZhzvoXFYv6Rc6wWi97PYLW49vYOq0X/49fMFufPb2C3uLCtj9Xi5qEVjBabHl9jtbi8aw6b
+        xYzz+5gsDk3dy2ix9shddotjC8QsWvceYXcQ9Lh87SKzx5aVN5k8ds66y+6xaVUnm8fmJfUe
+        O3d8ZvLo27KK0ePzJrkAjig9m6L80pJUhYz84hJbpWhDCyM9Q0sLPSMTSz1DY/NYKyNTJX07
+        m5TUnMyy1CJ9uwS9jGXfKgua5So6rh9ha2DcJ97FyMkhIWAicevSUlYQW0hgKaPE9XPpXYwc
+        QHEpiZVz0yFKhCX+XOti62LkAip5yiixZH8rI0iCTcBRon/pCVaQhIjAG2aJpntv2UEcZoF9
+        jBL7jy5mB6kSFjCVeLSoAcxmEVCVOH53LwuIzStgLTHp9302iBXyEu3Lt7NBxAUlTs58wgJy
+        BbOAusT6eUIgYX4BLYk1TdfBWpmBypu3zmaewCgwC0nHLISOWUiqFjAyr2IUSS0tzk3PLTbU
+        K07MLS7NS9dLzs/dxAiM0m3Hfm7ewXhpY/AhRgEORiUe3g8+E+KFWBPLiitzDzFKcDArifA6
+        nT0dJ8SbklhZlVqUH19UmpNafIjRFOidicxSosn5wASSVxJvaGpobmFpaG5sbmxmoSTO2yFw
+        MEZIID2xJDU7NbUgtQimj4mDU6qB0XjnZv0p9dcWH2fa6v7q7a3sEu3vmSwvN+fEyDz6/S9l
+        3iO70/fmWjBHuqya0fI680NHc72bTrFo+sZpPKFbc5xPv9H+k5dk1d1+5+55br05xhG9pb4m
+        1aVS+6XMpy7p3aI0jY9hdnf8zbWr1rT5FJY57XQJDV9kVrdhQyv3PROhoFubz504osRSnJFo
+        qMVcVJwIANX6vZPoAgAA
+X-CMS-MailID: 20201021214930eucas1p1cf406b35bbe4b643db287643e4a5b85b
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20201021214930eucas1p1cf406b35bbe4b643db287643e4a5b85b
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20201021214930eucas1p1cf406b35bbe4b643db287643e4a5b85b
+References: <CGME20201021214930eucas1p1cf406b35bbe4b643db287643e4a5b85b@eucas1p1.samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---19tJzs4pDB5hORMaKvDJ8V6aBKOyjfvgw
-Content-Type: multipart/mixed; boundary="fpjpftGGct6Kgqold4nIRFi6tHAQ5oppN"
+This is a driver for AX88796C Ethernet Adapter connected in SPI mode as
+found on ARTIK5 evaluation board. The driver has been ported from a
+v3.10.9 vendor kernel for ARTIK5 board.
 
---fpjpftGGct6Kgqold4nIRFi6tHAQ5oppN
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Content-Language: en-US
+Changes in v3:
+  - modify vendor-prefixes.yaml in a separate patch
+  - fix several problems in the dt binding
+    - removed unnecessary descriptions and properties
+    - changed the order of entries
+    - fixed problems with missing defines in the example
+  - change (1 << N) to BIT(N), left a few (0 << N)
+  - replace ax88796c_get_link(), ax88796c_get_link_ksettings(),
+    ax88796c_set_link_ksettings(), ax88796c_nway_reset(),
+    ax88796c_set_mac_address() with appropriate kernel functions.
+  - disable PHY auto-polling in MAC and use PHYLIB to track the state
+    of PHY and configure MAC
+  - propagate return values instead of returning constants in several
+    places
+  - add WARN_ON() for unlocked mutex
+  - remove local work queue and use the system_wq
+  - replace phy_connect_direct() with phy_connect() and move
+    devm_register_netdev() to the end of ax88796c_probe()
+    (Unlike phy_connect_direct() phy_connect() does not crash if the
+    network device isn't registered yet.)
+  - remove error messages on ENOMEM
+  - move free_irq() to the end of ax88796c_close() to avoid race
+    condition
+  - implement flow-control
 
+Changes in v2:
+  - use phylib
+  - added DT bindings
+  - moved #includes to *.c files
+  - used mutex instead of a semaphore for locking
+  - renamed some constants
+  - added error propagation for several functions
+  - used ethtool for dumping registers
+  - added control over checksum offloading
+  - remove vendor specific PM
+  - removed macaddr module parameter and added support for reading a MAC
+    address from platform data (e.g. DT)
+  - removed dependency on SPI from NET_VENDOR_ASIX
+  - added an entry in the MAINTAINERS file
+  - simplified logging with appropriate netif_* and netdev_* helpers
+  - lots of style fixes
 
-On 10/21/20 4:25 PM, Thomas Gleixner wrote:
-> On Tue, Oct 20 2020 at 20:07, Thomas Gleixner wrote:
->> On Tue, Oct 20 2020 at 12:18, Nitesh Narayan Lal wrote:
->>> However, IMHO we would still need a logic to prevent the devices from
->>> creating excess vectors.
->> Managed interrupts are preventing exactly that by pinning the interrupts
->> and queues to one or a set of CPUs, which prevents vector exhaustion on
->> CPU hotplug.
->>
->> Non-managed, yes that is and always was a problem. One of the reasons
->> why managed interrupts exist.
-> But why is this only a problem for isolation? The very same problem
-> exists vs. CPU hotplug and therefore hibernation.
->
-> On x86 we have at max. 204 vectors available for device interrupts per
-> CPU. So assumed the only device interrupt in use is networking then any
-> machine which has more than 204 network interrupts (queues, aux ...)
-> active will prevent the machine from hibernation.
+Łukasz Stelmach (5):
+  dt-bindings: vendor-prefixes: Add asix prefix
+  dt-bindings: net: Add bindings for AX88796C SPI Ethernet Adapter
+  net: ax88796c: ASIX AX88796C SPI Ethernet Adapter Driver
+  ARM: dts: exynos: Add Ethernet to Artik 5 board
+  ARM: defconfig: Enable ax88796c driver
 
-Yes, that is indeed the case.
+ .../bindings/net/asix,ax88796c.yaml           |   69 +
+ .../devicetree/bindings/vendor-prefixes.yaml  |    2 +
+ MAINTAINERS                                   |    6 +
+ arch/arm/boot/dts/exynos3250-artik5-eval.dts  |   29 +
+ arch/arm/configs/exynos_defconfig             |    2 +
+ arch/arm/configs/multi_v7_defconfig           |    2 +
+ drivers/net/ethernet/Kconfig                  |    1 +
+ drivers/net/ethernet/Makefile                 |    1 +
+ drivers/net/ethernet/asix/Kconfig             |   22 +
+ drivers/net/ethernet/asix/Makefile            |    6 +
+ drivers/net/ethernet/asix/ax88796c_ioctl.c    |  197 +++
+ drivers/net/ethernet/asix/ax88796c_ioctl.h    |   27 +
+ drivers/net/ethernet/asix/ax88796c_main.c     | 1144 +++++++++++++++++
+ drivers/net/ethernet/asix/ax88796c_main.h     |  578 +++++++++
+ drivers/net/ethernet/asix/ax88796c_spi.c      |  111 ++
+ drivers/net/ethernet/asix/ax88796c_spi.h      |   69 +
+ 16 files changed, 2266 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/asix,ax88796c.yaml
+ create mode 100644 drivers/net/ethernet/asix/Kconfig
+ create mode 100644 drivers/net/ethernet/asix/Makefile
+ create mode 100644 drivers/net/ethernet/asix/ax88796c_ioctl.c
+ create mode 100644 drivers/net/ethernet/asix/ax88796c_ioctl.h
+ create mode 100644 drivers/net/ethernet/asix/ax88796c_main.c
+ create mode 100644 drivers/net/ethernet/asix/ax88796c_main.h
+ create mode 100644 drivers/net/ethernet/asix/ax88796c_spi.c
+ create mode 100644 drivers/net/ethernet/asix/ax88796c_spi.h
 
->
-> Aside of that it's silly to have multiple queues targeted at a single
-> CPU in case of hotplug. And that's not a theoretical problem.  Some
-> power management schemes shut down sockets when the utilization of a
-> system is low enough, e.g. outside of working hours.
->
-> The whole point of multi-queue is to have locality so that traffic from
-> a CPU goes through the CPU local queue. What's the point of having two
-> or more queues on a CPU in case of hotplug?
->
-> The right answer to this is to utilize managed interrupts and have
-> according logic in your network driver to handle CPU hotplug. When a CPU
-> goes down, then the queue which is associated to that CPU is quiesced
-> and the interrupt core shuts down the relevant interrupt instead of
-> moving it to an online CPU (which causes the whole vector exhaustion
-> problem on x86). When the CPU comes online again, then the interrupt is
-> reenabled in the core and the driver reactivates the queue.
-
-IIRC then i40e does have something like that where it suspends all IRQs
-before hibernation and restores them when the CPU is back online.
-
-I am not particularly sure about the other drivers.
-
-This brings me to another discussion that Peter initiated that is to
-perform the proposed restriction without any condition for all non-managed
-IRQs.
-
-Something on the lines:
-
-+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (!pci_is_managed(dev))
-+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 max_vecs =3D clamp(hk_cpus, min_vecs, max_vecs);
-
-
-I am not particularly sure about this because I am not sure what kind of
-performance penalty this will have on the drivers in general and if
-that will be acceptable at all. Any thoughts?
-
-However, this still doesn't solve the generic problem, and an ideal solutio=
-n
-will be something that you suggested.
-
-Will it be sensible to think about having a generic API that can be
-consumed by all the drivers and that can do both the things you mentioned?
-
->
-> Thanks,
->
->         tglx
->
->
->
---=20
-Thanks
-Nitesh
-
-
---fpjpftGGct6Kgqold4nIRFi6tHAQ5oppN--
-
---19tJzs4pDB5hORMaKvDJ8V6aBKOyjfvgw
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEkXcoRVGaqvbHPuAGo4ZA3AYyozkFAl+QokEACgkQo4ZA3AYy
-ozm8/BAAw3Ss+bADPfbH0Btpugh729jC6rE1B3DjGvzYJ31x04H+qfcbMeyAMoUB
-p+JMNfMAINsS2QgwgzC5sEP825/CWCxpMsWDpjYjaxegrC+4KW/uWlRtTddYoDlU
-vjJclY7406kHZr+djsB6kiPVJPxxsYhtsgUh0bsGrOpLHj3M6q5QmwF9eRQPuJgn
-xt7IEM+xtL/0S/QiHPOMIfRbMeAouYO9eeXMRDiCHL/uADwFHz6j8MSOpwZJ9zBk
-gpS/3ly0cL8t1sU1k36OE7V+oelMzqt1DTIv/KF9/LEhPeb7+Np/R2MGWrrYDAPv
-4b8PzJCgC6uCaKQMIsqi9nciTogeTibOUKoh5PCdeRv86cDj815NqSeiRVCOaWuT
-xUGPQgrWIQzPMN4fdt7Ile6lRVv4e8wlRdgAMlBcW4gFamp97zyzcUHTZ957hOWE
-AKHWDUZizoaOPiL6hIHTGkHljv6uvVv5lv6+UlZz+fR9ArRYSZ8Y2BibBj/GRLqR
-IQD5BWjXNcq9izSNESPd6ionkxosjF8dmlP4PpZBMwwRfZ4toWLaDQvhfF7L5ODO
-aSqfFsdqSeZBDbB4zy6QpOmTraLKHly0cE4gD408BGbySJn8FoNXb7be/hNWQfJN
-F74wifFccM4/h26iT1M/EPn3R9h2y7keMrRL1p5OosZHKTRi9Bo=
-=oi9x
------END PGP SIGNATURE-----
-
---19tJzs4pDB5hORMaKvDJ8V6aBKOyjfvgw--
-
+-- 
+2.26.2
