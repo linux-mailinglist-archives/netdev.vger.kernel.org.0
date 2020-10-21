@@ -2,130 +2,308 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6784F294945
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 10:20:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A97A29497B
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 10:48:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502256AbgJUIT6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 04:19:58 -0400
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:4431 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2408686AbgJUIT5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 04:19:57 -0400
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5f8feecf0000>; Wed, 21 Oct 2020 01:18:23 -0700
-Received: from reg-r-vrt-018-180.nvidia.com (172.20.13.39) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3; Wed, 21 Oct 2020 08:19:44 +0000
-References: <20201016144205.21787-1-vladbu@nvidia.com> <20201016144205.21787-3-vladbu@nvidia.com> <0bb6f625-c987-03d7-7225-eee03345168e@mojatatu.com> <87a6wm15rz.fsf@buslov.dev> <ac25fd12-0ba9-47c2-25d7-7a6c01e94115@mojatatu.com> <877drn20h3.fsf@buslov.dev> <b8138715-8fd7-cbef-d220-76bdb8c52ba5@mojatatu.com> <87362a1byb.fsf@buslov.dev> <5c79152f-1532-141a-b1d3-729fdd798b3f@mojatatu.com>
-User-agent: mu4e 1.4.12; emacs 26.2.90
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     Jamal Hadi Salim <jhs@mojatatu.com>
-CC:     Vlad Buslov <vlad@buslov.dev>, <dsahern@gmail.com>,
-        <stephen@networkplumber.org>, <netdev@vger.kernel.org>,
-        <davem@davemloft.net>, <xiyou.wangcong@gmail.com>,
-        <jiri@resnulli.us>, <ivecera@redhat.com>,
-        Vlad Buslov <vladbu@mellanox.com>
-Subject: Re: [PATCH iproute2-next v3 2/2] tc: implement support for terse dump
-In-Reply-To: <5c79152f-1532-141a-b1d3-729fdd798b3f@mojatatu.com>
-Message-ID: <ygnh8sc03s9u.fsf@nvidia.com>
-Date:   Wed, 21 Oct 2020 11:19:41 +0300
+        id S2441089AbgJUIsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 04:48:06 -0400
+Received: from mailout07.rmx.de ([94.199.90.95]:42820 "EHLO mailout07.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2441068AbgJUIsF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Oct 2020 04:48:05 -0400
+Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout07.rmx.de (Postfix) with ESMTPS id 4CGPJv6ytNzBxvh;
+        Wed, 21 Oct 2020 10:47:59 +0200 (CEST)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin02.retarus.com (Postfix) with ESMTPS id 4CGPJW2Gj3z2TTLb;
+        Wed, 21 Oct 2020 10:47:39 +0200 (CEST)
+Received: from n95hx1g2.localnet (192.168.54.165) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Wed, 21 Oct
+ 2020 10:46:35 +0200
+From:   Christian Eggers <ceggers@arri.de>
+To:     Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
+CC:     Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH net-next 1/9] dt-bindings: net: dsa: convert ksz bindings document to yaml
+Date:   Wed, 21 Oct 2020 10:46:34 +0200
+Message-ID: <4900322.CrMBUKQtxU@n95hx1g2>
+Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+In-Reply-To: <87lfg0rrzi.fsf@kurt>
+References: <20201019172435.4416-1-ceggers@arri.de> <20201019172435.4416-2-ceggers@arri.de> <87lfg0rrzi.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.20.13.39]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1603268303; bh=pXWiSmM4edHjjS3N1NcnwzbdF7SLyaJB5iAtJDQxW3U=;
-        h=References:User-agent:From:To:CC:Subject:In-Reply-To:Message-ID:
-         Date:MIME-Version:Content-Type:X-Originating-IP:X-ClientProxiedBy;
-        b=dE4Z32kQkFxCM0krJBgEa5YZZiABoTB10k8HyFzPlCNOEULYDENpJIA83pEFiZvN/
-         fhjdQHfj/GOwD/V0s0i4W7iNoSacO3osGUi60MJlFkUquLggpMBJFsusUh+Pyyhikk
-         nXFtz8RbQCsEh6DZjQkykM9Qer21JiP4zQhW5bKu4GPvTN8X6o8tuz1Z8epNtyGCrt
-         PhaDIIwAvPQyv2cvzijSKqsT5WDEZE8cSWWOiPSLGNp1I63EWiIw2CAPtcrfLFhmRa
-         2lcxH/QifDBqpkq62djiPDTmPrFofqiDLQ/rIZYjrK6sVf3TZx4Y64zOZX1wQk/cBO
-         hTLKn1rNhRshg==
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Originating-IP: [192.168.54.165]
+X-RMX-ID: 20201021-104741-4CGPJW2Gj3z2TTLb-0@kdin02
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wednesday, 21 October 2020, 08:52:01 CEST, Kurt Kanzenbach wrote:
+> On Mon Oct 19 2020, Christian Eggers wrote:
+> > Convert the bindings document for Microchip KSZ Series Ethernet switches
+> > from txt to yaml.
+> 
+> A few comments/questions below.
+> 
+> > diff --git a/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+> > b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml new file
+> > mode 100644
+> > index 000000000000..f93c3bdd0b83
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
+> 
+> Currently the bindings don't have the company names in front of it.
+All current bindings are in .txt format. In other subsystems (like iio),
+company names have been added when converting to yaml.
 
-On Tue 20 Oct 2020 at 15:29, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
-> On 2020-10-19 11:18 a.m., Vlad Buslov wrote:
->>
->> On Mon 19 Oct 2020 at 16:48, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
->>> On 2020-10-18 8:16 a.m., Vlad Buslov wrote:
->
-> [..]
->
->>> That could be a good thing, no? you get to see the action name with the
->>> error. Its really not a big deal if you decide to do a->terse_print()
->>> instead.
->>
->> Maybe. Just saying that this change would also change user-visible
->> iproute2 behavior.
->>
->
-> You are right(for the non-terse output). tbh, not sure if it is a big
-> deal given it happens only for the error case (where scripts look
-> for exit codes typically); having said that:
-> a ->terse_print() would be ok
->
->> It is not a trivial change. To get this data we need to call
->> tc_action_ops->dump() which puts bunch of other unrelated info in
->> TCA_OPTIONS nested attr. This hurts both dump size and runtime
->> performance. Even if we add another argument to dump "terse dump, print
->> only index", index is still part of larger options structure which
->> includes at least following fields:
->>
->> #define tc_gen \
->> 	__u32                 index; \
->> 	__u32                 capab; \
->> 	int                   action; \
->> 	int                   refcnt; \
->> 	int                   bindcnt
->>
->
->
-> index is the _only_ important field for analytics purposes in that list.
-> i.e if i know the index i can correlate stats with one or more
-> filters (whether shared or not).
-> My worry is you have a very specific use case for your hardware or
-> maybe it is ovs - where counters are uniquely tied to filters and
-> there is no sharing. And possibly maybe only one counter can be tied
-> to a filter (was not sure if you could handle more than one action
-> in the terse from looking at the code).
+> > @@ -0,0 +1,147 @@
+> > +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/net/dsa/microchip,ksz.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Microchip KSZ Series Ethernet switches
+> > +
+> > +maintainers:
+> > +  - Marek Vasut <marex@denx.de>
+> > +  - Woojung Huh <Woojung.Huh@microchip.com>
+> > +
+> > +properties:
+> > +  # See Documentation/devicetree/bindings/net/dsa/dsa.yaml for a list of
+> > additional +  # required and optional properties.
+> 
+> Don't you need to reference the dsa.yaml binding somehow?
+I should have taken a look into your binding beforehand...
+allOf:
+  - $ref: dsa.yaml#
 
-OVS uses cookie to uniquely identify the flow and it does support
-multiple actions per flow.
+> > ...
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/gpio/gpio.h>
+> > +
+> > +    // Ethernet switch connected via SPI to the host, CPU port wired to eth0:
+> > +    eth0 {
+> > +        fixed-link {
+> > +            speed = <1000>;
+> > +            full-duplex;
+> > +        };
+> > +    };
+> > +
+> > +    spi0 {
+> > +        #address-cells = <1>;
+> > +        #size-cells = <0>;
+> > +
+> > +        pinctrl-0 = <&pinctrl_spi_ksz>;
+> > +        cs-gpios = <&pioC 25 0>;
+> > +        id = <1>;
+> > +
+> > +        ksz9477: ksz9477@0 {
+> 
+> The node names should be switch. See dsa.yaml.
+changed
 
-> Our assumptions so far had no such constraints.
-> Maybe a new TERSE_OPTIONS TLV, and then add an extra flag
-> to indicate interest in the tlv? Peharps store the stats in it as well.
+> 
+> > +            compatible = "microchip,ksz9477";
+> > +            reg = <0>;
+> > +            reset-gpios = <&gpio5 0 GPIO_ACTIVE_LOW>;
+> > +
+> > +            spi-max-frequency = <44000000>;
+> > +            spi-cpha;
+> > +            spi-cpol;
+> > +
+> > +            ports {
+> 
+> ethernet-ports are preferred.
+"ports" is also used in the existing driver code (ksz_switch_register()).
+Would like to keep it for now, probably I can be changed later.
 
-Maybe, but wouldn't that require making it a new dump mode? Current
-terse dump is already in released kernel and this seems like a
-backward-incompatible change.
+> 
+> Thanks,
+> Kurt
 
->
->> This wouldn't be much of a terse dump anymore. What prevents user that
->> needs all action info from calling regular dump? It is not like terse
->> dump substitutes it or somehow makes it harder to use.
->
-> Both scaling and correctness are important. You have the cookie
-> in the terse dump, thats a lot of data.
+Below the current version for the version of the patch series.
 
-Cookie only consumes space in resulting netlink packet if used set the
-cookie during action init. Otherwise, the cookie attribute is omitted.
+Best regards
+Christian
 
-> In our case we totally bypass filters to reduce the amount of data
-> crossing to user space (tc action ls). Theres still a lot of data
-> crossing which we could trim with a terse dump. All we are interested
-> in are stats. Another alternative is perhaps to introduce the index for
-> the direct dump.
 
-What is the direct dump?
+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+%YAML 1.2
+---
+$id: http://devicetree.org/schemas/net/dsa/microchip,ksz.yaml#
+$schema: http://devicetree.org/meta-schemas/core.yaml#
 
->
-> cheers,
-> jamal
+title: Microchip KSZ Series Ethernet switches
+
+allOf:
+  - $ref: dsa.yaml#
+
+maintainers:
+  - Marek Vasut <marex@denx.de>
+  - Woojung Huh <Woojung.Huh@microchip.com>
+
+properties:
+  # See Documentation/devicetree/bindings/net/dsa/dsa.yaml for a list of additional
+  # required and optional properties.
+  compatible:
+    enum:
+      - "microchip,ksz8765"
+      - "microchip,ksz8794"
+      - "microchip,ksz8795"
+      - "microchip,ksz9477"
+      - "microchip,ksz9897"
+      - "microchip,ksz9896"
+      - "microchip,ksz9567"
+      - "microchip,ksz8565"
+      - "microchip,ksz9893"
+      - "microchip,ksz9563"
+      - "microchip,ksz8563"
+
+  reset-gpios:
+    description:
+      Should be a gpio specifier for a reset line.
+    maxItems: 1
+
+  microchip,synclko-125:
+    $ref: /schemas/types.yaml#/definitions/flag
+    description:
+      Set if the output SYNCLKO frequency should be set to 125MHz instead of 25MHz.
+
+required:
+  - compatible
+  - reg
+
+examples:
+  - |
+    #include <dt-bindings/gpio/gpio.h>
+
+    // Ethernet switch connected via SPI to the host, CPU port wired to eth0:
+    eth0 {
+        fixed-link {
+            speed = <1000>;
+            full-duplex;
+        };
+    };
+
+    spi0 {
+        #address-cells = <1>;
+        #size-cells = <0>;
+
+        pinctrl-0 = <&pinctrl_spi_ksz>;
+        cs-gpios = <&pioC 25 0>;
+        id = <1>;
+
+        ksz9477: switch@0 {
+            compatible = "microchip,ksz9477";
+            reg = <0>;
+            reset-gpios = <&gpio5 0 GPIO_ACTIVE_LOW>;
+
+            spi-max-frequency = <44000000>;
+            spi-cpha;
+            spi-cpol;
+
+            ethernet-ports {
+                #address-cells = <1>;
+                #size-cells = <0>;
+                port@0 {
+                    reg = <0>;
+                    label = "lan1";
+                };
+                port@1 {
+                    reg = <1>;
+                    label = "lan2";
+                };
+                port@2 {
+                    reg = <2>;
+                    label = "lan3";
+                };
+                port@3 {
+                    reg = <3>;
+                    label = "lan4";
+                };
+                port@4 {
+                    reg = <4>;
+                    label = "lan5";
+                };
+                port@5 {
+                    reg = <5>;
+                    label = "cpu";
+                    ethernet = <&eth0>;
+                    fixed-link {
+                        speed = <1000>;
+                        full-duplex;
+                    };
+                };
+            };
+        };
+
+        ksz8565: switch@1 {
+            compatible = "microchip,ksz8565";
+            reg = <1>;
+
+            spi-max-frequency = <44000000>;
+            spi-cpha;
+            spi-cpol;
+
+            ethernet-ports {
+                #address-cells = <1>;
+                #size-cells = <0>;
+                port@0 {
+                    reg = <0>;
+                    label = "lan1";
+                };
+                port@1 {
+                    reg = <1>;
+                    label = "lan2";
+                };
+                port@2 {
+                    reg = <2>;
+                    label = "lan3";
+                };
+                port@3 {
+                    reg = <3>;
+                    label = "lan4";
+                };
+                port@6 {
+                    reg = <6>;
+                    label = "cpu";
+                    ethernet = <&eth0>;
+                    fixed-link {
+                        speed = <1000>;
+                        full-duplex;
+                    };
+                };
+            };
+        };
+    };
+...
+
+
+
+
+
+
 
