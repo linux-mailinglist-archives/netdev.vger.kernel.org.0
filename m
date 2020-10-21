@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0686294736
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 06:20:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A57D2294737
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 06:20:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440133AbgJUEUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 00:20:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55482 "EHLO
+        id S2440139AbgJUEUW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 00:20:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2411910AbgJUEUS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 00:20:18 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1AAC0613CE
-        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 21:20:18 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id p21so489565pju.0
-        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 21:20:18 -0700 (PDT)
+        with ESMTP id S2411910AbgJUEUV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 00:20:21 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC594C0613CE
+        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 21:20:21 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id a200so697429pfa.10
+        for <netdev@vger.kernel.org>; Tue, 20 Oct 2020 21:20:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=o6n2OPJ58nquKMSqfzMR9b8mb/o0kOk5sAPsUBVTASo=;
-        b=L9d49Ia9P45T0xNs0+rh5uslx00fGJ5AftAFF3AM0S8XFtf5rWaW3LPKeZPbHkEpy/
-         n/yngPIZxj1T4R8usfAVcL+TJJU97IRgrf/KO1NoarNJ+sOQ/LojCnxIylpEU7rjbiDC
-         vBbTpTWrD6vR36BE6RZDin9TwDYFmtcr7I+DLmROpGSNn79GpSfVYoRYPGmaCkECXFyp
-         BTQL3/S19JoH1lspUulHbeilOaqwq2hK9Sj5PUQpP+Q9E7aoQ5mGf0RNF+Tmyq/whFUN
-         Odsjr8kDZPLX32b0uQ8jLp4uvZVCJFnFI9MGmbotRMiqf++PHtPh3EMK7L/nM/YuOwpS
-         I8cg==
+        bh=hxGRlL5LeTHpC2PaGOKhYJ+cD81YRHfTwaT5dBtJdNc=;
+        b=IaIvvfiocblReIvzb7QeizBSDLZezoSmu3dplj7wAoqxmUWc1VJf4BDutu/Avb+owy
+         80Yl79KrP+3Lnk8qgQ9yDvw/ubB+bhoKzydxHvhuWcMO+TFgHODzxsKhBSWtpX6Nw7C7
+         9t+5y9xyK0kg+WuNyMaoF2/3tAF7vXtgTTXbHTRBSTmw+DbGmNthk9eqOlvz0UjrkQs4
+         /fIzkZJAeGWqE/vEpzw2jGrdVQN7++hWv+BQ5tQ0qO7BlvCBkUo1f9RA6y8w3rrr2FyS
+         fpcdtORdIoqyeHJHOZ9116RH8yYkGz/FRSX3H/UpO9ysEZH+kjeSqv8yqY4JHgOpLSe+
+         ImSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=o6n2OPJ58nquKMSqfzMR9b8mb/o0kOk5sAPsUBVTASo=;
-        b=oTaKMEy00lwHEZ1N9e9q6jAh6jrC0od50K/RegNUyAIS7aIFnLN4hurgyntWqpNMvP
-         cecV1VAUR2wHO/oRLtCqi5lQ+TwSm1QKIoqxk0b2zD8kvaaYF2W8UXQEJOgyzgyWZGVb
-         +qqu3j4jb/B9Zz/9jjnuRvqR0Ptr2PgsfmVSYmJctsaACc2RTVnIBcdup4l6Wd8ZQ1sC
-         QuAd/ioaKRQZj9uC8Xzwmq7kC8VXg/4vQFQ/4APC0GfNhE25wJsGToi0cyehWLhlPoyA
-         akbmwn7sWHvhPi98g/jBBJD9zflpBkMT0Om3HHKkmkaeqa+g9tNmboL04NXjMsHyYJ6B
-         hIiA==
-X-Gm-Message-State: AOAM533U4ttdUzd6A4W8gORDi5WJS6pdCtoaKVpwPz45UkeMqxlRZhgf
-        qSWPpl4i7RiJN6fxU0i4b1zNnQuSUxuYDE68
-X-Google-Smtp-Source: ABdhPJzRBfnB+67ilqO78CV91Q4yCM7T2QHeVvckPNAcjYY4SAwNyAiMGq5FBkXw77WUGJKPN+dSaA==
-X-Received: by 2002:a17:902:c3c5:b029:d3:df24:1ffb with SMTP id j5-20020a170902c3c5b02900d3df241ffbmr1569399plj.35.1603254018064;
-        Tue, 20 Oct 2020 21:20:18 -0700 (PDT)
+        bh=hxGRlL5LeTHpC2PaGOKhYJ+cD81YRHfTwaT5dBtJdNc=;
+        b=S8bDBQgyZaLPm+0VWcliRekGCWsWt+wgexqvfjgQah1CJvXuWZlu7KfkHu8H++hAJ3
+         kMZJhXrBG8vH8bZcH+CRrgioMe/kEtxM6ti1emxXDr43oL/dqnBSqbwfHTuY1rJurv7i
+         KtVjOkHNa+H5wm/bvn12vibmBn6EqHzuhOiEU6+VpWYgqbYkEnnMqn0WW98hlTWbVrWL
+         2dTJUrqJvrWP9iU1P/6yp0VmuEexwdzxVVkrQlbqr60m/xh48ZwMdffZ9WqgOz8liIFo
+         +byVt+aS1ccLgFHps4daKQ9bza/FiUwzu8KaMeJq2Hs8ONfbo3jAm0O79+Ezjd8pjRDZ
+         uDDg==
+X-Gm-Message-State: AOAM533mg6mlmwdsywNhuVOZZFINnJL6naBLeZfNEnY30kFgImGXdI3n
+        TLmb8pHj167iG/rtQ16AIxxKjW4m71uBzqfY
+X-Google-Smtp-Source: ABdhPJxmLrmmDASJstRo/2KCDKvMBQHVy0057bKkTT092vW8BuOFIGmFiggTqBFdqjJhYV5p1hjv+w==
+X-Received: by 2002:a63:ab45:: with SMTP id k5mr1468664pgp.240.1603254021167;
+        Tue, 20 Oct 2020 21:20:21 -0700 (PDT)
 Received: from localhost.localdomain.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id e21sm545796pfl.22.2020.10.20.21.20.14
+        by smtp.gmail.com with ESMTPSA id e21sm545796pfl.22.2020.10.20.21.20.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Oct 2020 21:20:17 -0700 (PDT)
+        Tue, 20 Oct 2020 21:20:20 -0700 (PDT)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
@@ -56,90 +56,45 @@ Cc:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
         "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <eric.dumazet@gmail.com>,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv2 net 0/2] IPv6: reply ICMP error with fragment doesn't contain all headers
-Date:   Wed, 21 Oct 2020 12:20:03 +0800
-Message-Id: <20201021042005.736568-1-liuhangbin@gmail.com>
+Subject: [PATCHv2 net 1/2] ICMPv6: Add ICMPv6 Parameter Problem, code 3 definition
+Date:   Wed, 21 Oct 2020 12:20:04 +0800
+Message-Id: <20201021042005.736568-2-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20201007035502.3928521-1-liuhangbin@gmail.com>
+In-Reply-To: <20201021042005.736568-1-liuhangbin@gmail.com>
 References: <20201007035502.3928521-1-liuhangbin@gmail.com>
+ <20201021042005.736568-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When our Engineer run latest IPv6 Core Conformance test, test v6LC.1.3.6:
-First Fragment Doesn’t Contain All Headers[1] failed. The test purpose is to
-verify that the node(Linux for example) should properly process IPv6 packets
-that don’t include all the headers through the Upper-Layer header.
+Based on RFC7112, Section 6:
 
-Based on RFC 8200, Section 4.5 Fragment Header
+   IANA has added the following "Type 4 - Parameter Problem" message to
+   the "Internet Control Message Protocol version 6 (ICMPv6) Parameters"
+   registry:
 
-  -  If the first fragment does not include all headers through an
-     Upper-Layer header, then that fragment should be discarded and
-     an ICMP Parameter Problem, Code 3, message should be sent to
-     the source of the fragment, with the Pointer field set to zero.
+      CODE     NAME/DESCRIPTION
+       3       IPv6 First Fragment has incomplete IPv6 Header Chain
 
-The first patch add a definition for ICMPv6 Parameter Problem, code 3.
-The second patch add a check for the 1st fragment packet to make sure
-Upper-Layer header exist.
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ include/uapi/linux/icmpv6.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-[1] Page 68, v6LC.1.3.6: First Fragment Doesn’t Contain All Headers part A, B,
-C and D at https://ipv6ready.org/docs/Core_Conformance_5_0_0.pdf
-[2] My reproducer:
-#!/usr/bin/env python3
-
-import sys, os
-from scapy.all import *
-
-# Test v6LC.1.3.6: First Fragment Doesn’t Contain All Headers
-def send_frag_dst_opt(src_ip6, dst_ip6):
-    ip6 = IPv6(src = src_ip6, dst = dst_ip6, nh = 44)
-
-    frag_1 = IPv6ExtHdrFragment(nh = 60, m = 1)
-    dst_opt = IPv6ExtHdrDestOpt(nh = 58)
-
-    frag_2 = IPv6ExtHdrFragment(nh = 58, offset = 4, m = 1)
-    icmp_echo = ICMPv6EchoRequest(seq = 1)
-
-    pkt_1 = ip6/frag_1/dst_opt
-    pkt_2 = ip6/frag_2/icmp_echo
-
-    send(pkt_1)
-    send(pkt_2)
-
-def send_frag_route_opt(src_ip6, dst_ip6):
-    ip6 = IPv6(src = src_ip6, dst = dst_ip6, nh = 44)
-
-    frag_1 = IPv6ExtHdrFragment(nh = 43, m = 1)
-    route_opt = IPv6ExtHdrRouting(nh = 58)
-
-    frag_2 = IPv6ExtHdrFragment(nh = 58, offset = 4, m = 1)
-    icmp_echo = ICMPv6EchoRequest(seq = 2)
-
-    pkt_1 = ip6/frag_1/route_opt
-    pkt_2 = ip6/frag_2/icmp_echo
-
-    send(pkt_1)
-    send(pkt_2)
-
-if __name__ == '__main__':
-    src = sys.argv[1]
-    dst = sys.argv[2]
-    conf.iface = sys.argv[3]
-    send_frag_dst_opt(src, dst)
-    send_frag_route_opt(src, dst)
-
-Hangbin Liu (2):
-  ICMPv6: Add ICMPv6 Parameter Problem, code 3 definition
-  IPv6: reply ICMP error if the first fragment don't include all headers
-
- include/uapi/linux/icmpv6.h |  1 +
- net/ipv6/icmp.c             | 13 ++++++++++++-
- net/ipv6/reassembly.c       | 18 +++++++++++++++++-
- 3 files changed, 30 insertions(+), 2 deletions(-)
-
+diff --git a/include/uapi/linux/icmpv6.h b/include/uapi/linux/icmpv6.h
+index c1661febc2dc..0564fd7ccde4 100644
+--- a/include/uapi/linux/icmpv6.h
++++ b/include/uapi/linux/icmpv6.h
+@@ -138,6 +138,7 @@ struct icmp6hdr {
+ #define ICMPV6_HDR_FIELD		0
+ #define ICMPV6_UNK_NEXTHDR		1
+ #define ICMPV6_UNK_OPTION		2
++#define ICMPV6_HDR_INCOMP		3
+ 
+ /*
+  *	constants for (set|get)sockopt
 -- 
 2.25.4
 
