@@ -2,121 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34FD12951D3
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 19:53:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 157242951E8
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 19:59:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503767AbgJURxc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 13:53:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:22250 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2503763AbgJURxb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 13:53:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603302810;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0aM6MG+N6GRh+zh31VWFPduo2rgWm3emASszSAw8inM=;
-        b=OWDTTe0SiGQKjc0mlEJCoVfy8KB0qeKRwNh34kmfl75kbHUp2t1k4Pqpi9YDFtoYuu/++3
-        fa+5IzxIDvNRpnolkxrwuA4Gs7N+uZ2IoeO9rD33K3nvcBofBo/4A51eQeG5wGWloi3uCM
-        oMV/LW+Vvw7kojkSlkSwJUO8gTQd7J4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-582-0BAAGVqzMda2Ab5lMPFbVA-1; Wed, 21 Oct 2020 13:53:23 -0400
-X-MC-Unique: 0BAAGVqzMda2Ab5lMPFbVA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S2409410AbgJUR7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 13:59:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33704 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2391484AbgJUR7g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Oct 2020 13:59:36 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 57DDD804B66;
-        Wed, 21 Oct 2020 17:53:20 +0000 (UTC)
-Received: from madcap2.tricolour.ca (unknown [10.10.110.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id E934B5D9EF;
-        Wed, 21 Oct 2020 17:53:06 +0000 (UTC)
-Date:   Wed, 21 Oct 2020 13:53:03 -0400
-From:   Richard Guy Briggs <rgb@redhat.com>
-To:     Steve Grubb <sgrubb@redhat.com>
-Cc:     Paul Moore <paul@paul-moore.com>, linux-audit@redhat.com,
-        nhorman@tuxdriver.com, linux-api@vger.kernel.org,
-        containers@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>, dhowells@redhat.com,
-        netfilter-devel@vger.kernel.org, ebiederm@xmission.com,
-        simo@redhat.com, netdev@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, Eric Paris <eparis@parisplace.org>,
-        mpatel@redhat.com, Serge Hallyn <serge@hallyn.com>
-Subject: Re: [PATCH ghak90 V9 05/13] audit: log container info of syscalls
-Message-ID: <20201021175303.GH2882171@madcap2.tricolour.ca>
-References: <cover.1593198710.git.rgb@redhat.com>
- <20201002195231.GH2882171@madcap2.tricolour.ca>
- <20201021163926.GA3929765@madcap2.tricolour.ca>
- <2174083.ElGaqSPkdT@x2>
+        by mail.kernel.org (Postfix) with ESMTPSA id 94B092098B;
+        Wed, 21 Oct 2020 17:59:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603303175;
+        bh=iLacT0QkMnamwhZDWEufR1kZCKUgqHCZEntyFZ4IygE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=DCrSlELP4WrzT3T64xUYd5onWfeOSM1ySGLzqgOR+B2ZloGlNpBfQfB3kbQqq84Or
+         o7OxJHMuBQBMjt4nXlSasSW47a13dlMSMU86G0LGQgFTj+sC8NFkn9ngdnWI6ulpbW
+         XFGdssXLiMt+zYmN5x0GBkQYaLk4cs34HiuZisa4=
+Date:   Wed, 21 Oct 2020 10:59:33 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Claudiu Manoil <claudiu.manoil@nxp.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        james.jurack@ametek.com
+Subject: Re: [PATCH net] gianfar: Account for Tx PTP timestamp in the skb
+ headroom
+Message-ID: <20201021105933.2cfa7176@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201020173605.1173-1-claudiu.manoil@nxp.com>
+References: <fa12d66e-de52-3e2e-154c-90c775bb4fe4@ametek.com>
+        <20201020173605.1173-1-claudiu.manoil@nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2174083.ElGaqSPkdT@x2>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-10-21 12:49, Steve Grubb wrote:
-> On Wednesday, October 21, 2020 12:39:26 PM EDT Richard Guy Briggs wrote:
-> > > I think I have a way to generate a signal to multiple targets in one
-> > > syscall...  The added challenge is to also give those targets different
-> > > audit container identifiers.
-> > 
-> > Here is an exmple I was able to generate after updating the testsuite
-> > script to include a signalling example of a nested audit container
-> > identifier:
-> > 
-> > ----
-> > type=PROCTITLE msg=audit(2020-10-21 10:31:16.655:6731) :
-> > proctitle=/usr/bin/perl -w containerid/test type=CONTAINER_ID
-> > msg=audit(2020-10-21 10:31:16.655:6731) :
-> > contid=7129731255799087104^3333941723245477888 type=OBJ_PID
-> > msg=audit(2020-10-21 10:31:16.655:6731) : opid=115583 oauid=root ouid=root
-> > oses=1 obj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
-> > ocomm=perl type=CONTAINER_ID msg=audit(2020-10-21 10:31:16.655:6731) :
-> > contid=3333941723245477888 type=OBJ_PID msg=audit(2020-10-21
-> > 10:31:16.655:6731) : opid=115580 oauid=root ouid=root oses=1
-> > obj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 ocomm=perl
-> > type=CONTAINER_ID msg=audit(2020-10-21 10:31:16.655:6731) :
-> > contid=8098399240850112512^3333941723245477888 type=OBJ_PID
-> > msg=audit(2020-10-21 10:31:16.655:6731) : opid=115582 oauid=root ouid=root
-> > oses=1 obj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
-> > ocomm=perl type=SYSCALL msg=audit(2020-10-21 10:31:16.655:6731) :
-> > arch=x86_64 syscall=kill success=yes exit=0 a0=0xfffe3c84 a1=SIGTERM
-> > a2=0x4d524554 a3=0x0 items=0 ppid=115564 pid=115567 auid=root uid=root
-> > gid=root euid=root suid=root fsuid=root egid=root sgid=root fsgid=root
-> > tty=ttyS0 ses=1 comm=perl exe=/usr/bin/perl
-> > subj=unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023
-> > key=testsuite-1603290671-AcLtUulY ----
-> > 
-> > There are three CONTAINER_ID records which need some way of associating
-> > with OBJ_PID records.  An additional CONTAINER_ID record would be present
-> > if the killing process itself had an audit container identifier.  I think
-> > the most obvious way to connect them is with a pid= field in the
-> > CONTAINER_ID record.
+On Tue, 20 Oct 2020 20:36:05 +0300 Claudiu Manoil wrote:
+> When PTP timestamping is enabled on Tx, the controller
+> inserts the Tx timestamp at the beginning of the frame
+> buffer, between SFD and the L2 frame header. This means
+> that the skb provided by the stack is required to have
+> enough headroom otherwise a new skb needs to be created
+> by the driver to accommodate the timestamp inserted by h/w.
+> Up until now the driver was relying on the second option,
+> using skb_realloc_headroom() to create a new skb to accommodate
+> PTP frames. Turns out that this method is not reliable, as
+> reallocation of skbs for PTP frames along with the required
+> overhead (skb_set_owner_w, consume_skb) is causing random
+> crashes in subsequent skb_*() calls, when multiple concurrent
+> TCP streams are run at the same time on the same device
+> (as seen in James' report).
+> Note that these crashes don't occur with a single TCP stream,
+> nor with multiple concurrent UDP streams, but only when multiple
+> TCP streams are run concurrently with the PTP packet flow
+> (doing skb reallocation).
+> This patch enforces the first method, by requesting enough
+> headroom from the stack to accommodate PTP frames, and so avoiding
+> skb_realloc_headroom() & co, and the crashes no longer occur.
+> There's no reason not to set needed_headroom to a large enough
+> value to accommodate PTP frames, so in this regard this patch
+> is a fix.
 > 
-> pid is the process sending the signal, opid is the process receiving the 
-> signal. I think you mean opid?
+> Reported-by: James Jurack <james.jurack@ametek.com>
+> Fixes: bee9e58c9e98 ("gianfar:don't add FCB length to hard_header_len")
+> Signed-off-by: Claudiu Manoil <claudiu.manoil@nxp.com>
+> ---
+>  drivers/net/ethernet/freescale/gianfar.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
+> index 41dd3d0f3452..d0842c2c88f3 100644
+> --- a/drivers/net/ethernet/freescale/gianfar.c
+> +++ b/drivers/net/ethernet/freescale/gianfar.c
+> @@ -3380,7 +3380,7 @@ static int gfar_probe(struct platform_device *ofdev)
+>  
+>  	if (dev->features & NETIF_F_IP_CSUM ||
+>  	    priv->device_flags & FSL_GIANFAR_DEV_HAS_TIMER)
+> -		dev->needed_headroom = GMAC_FCB_LEN;
+> +		dev->needed_headroom = GMAC_FCB_LEN + GMAC_TXPAL_LEN;
+>  
+>  	/* Initializing some of the rx/tx queue level parameters */
+>  	for (i = 0; i < priv->num_tx_queues; i++) {
 
-If the process sending the signal (it has a pid= field) has an audit
-container identifier, it will generate a CONTAINER_ID record.  Each
-process being signalled (each has an opid= field) that has an audit
-container identifier will also generate a CONTAINER_ID record.  The
-former will be much more common.  Which do we use in the CONTAINER_ID
-record?  Having swinging fields, pid vs opid does not seem like a
-reasonable solution.  Do we go back to "ref=pid=..." vs "ref=opid=..."?
+Claudiu, I think this may be papering over the real issue.
+needed_headroom is best effort, if you were seeing crashes
+the missing checks for skb being the right geometry are still
+out there, they just not get hit in the case needed_headroom 
+is respected.
 
-> -Steve
-
-- RGB
-
---
-Richard Guy Briggs <rgb@redhat.com>
-Sr. S/W Engineer, Kernel Security, Base Operating Systems
-Remote, Ottawa, Red Hat Canada
-IRC: rgb, SunRaycer
-Voice: +1.647.777.2635, Internal: (81) 32635
-
+So updating needed_headroom is definitely fine, but the cause of
+crashes has to be found first.
