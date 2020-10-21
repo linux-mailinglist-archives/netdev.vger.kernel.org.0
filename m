@@ -2,40 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBCEC29463E
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 03:20:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3695F29463F
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 03:20:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2411035AbgJUBUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 21:20:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54342 "EHLO mail.kernel.org"
+        id S2411045AbgJUBUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Oct 2020 21:20:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54428 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405040AbgJUBUN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Oct 2020 21:20:13 -0400
+        id S2411041AbgJUBUW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Oct 2020 21:20:22 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A795922253;
-        Wed, 21 Oct 2020 01:20:12 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 233F522253;
+        Wed, 21 Oct 2020 01:20:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603243213;
-        bh=fz1w7NFMCYtkUS5K2lXAhqvcDP0rC/WBFTJUM8Cgnn8=;
+        s=default; t=1603243222;
+        bh=J7RoMMyRpp2siLAhRjA046+/isVgKeIMYaMweXeJVtY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=vR78tVBktZeXIDLhYieC8Ou9d8ydr61lvalyoQg+4l0KspF/UihP60+V2gmutkLFU
-         NfOd0UklFj1VYRV3gwP7CEHBiBLQwumwOD2Fr0vWuZ3HtTCNLFZrE1ErvgNrQoFXjR
-         uUfVKgvwfjFrSO3YdiJDJmgUlj7nwDq0owK7BLLs=
-Date:   Tue, 20 Oct 2020 18:20:10 -0700
+        b=W07d3x0NKOr9+PlnKs7Qgv9FfcvoHoEFZoFeBaRB8VQhEJqavnh4+5ZVC2vfEG0ma
+         Bc9MBoCGUFEtG0YEDb8gpRZzcGffBI/88BiMfisWjatwHT41sK+0d47KIuLF6IJ3Ru
+         HSoMkFouGD3xfV82FJMxOPbuSCU9WL/4ts2Ioj9E=
+Date:   Tue, 20 Oct 2020 18:20:20 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
-        netdev@vger.kernel.org, Ayush Sawal <ayush.sawal@chelsio.com>,
-        Rohit Maheshwari <rohitm@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] net: chelsio: inline_crypto: fix Kconfig and build
- errors
-Message-ID: <20201020182010.39f11e21@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201019181059.22634-1-rdunlap@infradead.org>
-References: <20201019181059.22634-1-rdunlap@infradead.org>
+To:     Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, secdev@chelsio.com
+Subject: Re: [PATCH net 0/6] chelsio/chtls: Fix inline tls bugs
+Message-ID: <20201020182020.00b7b797@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201019115025.24233-1-vinay.yadav@chelsio.com>
+References: <20201019115025.24233-1-vinay.yadav@chelsio.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -43,27 +38,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 19 Oct 2020 11:10:59 -0700 Randy Dunlap wrote:
-> Fix build errors when TLS=m, TLS_TOE=y, and CRYPTO_DEV_CHELSIO_TLS=y.
+On Mon, 19 Oct 2020 17:20:19 +0530 Vinay Kumar Yadav wrote:
+> This series of patches fix following bugs in chelsio inline tls driver.
 > 
-> Having (tristate) CRYPTO_DEV_CHELSIO_TLS depend on (bool) TLS_TOE
-> is not strong enough to prevent the bad combination of TLS=m and
-> CRYPTO_DEV_CHELSIO_TLS=y, so add a dependency on TLS to prevent the
-> problematic kconfig combination.
-> 
-> Fixes these build errors:
-> 
-> hppa-linux-ld: drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_main.o: in function `chtls_free_uld':
->  drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_main.c:165: undefined reference to `tls_toe_unregister_device'
-> hppa-linux-ld: drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_main.o: in function `chtls_register_dev':
-> drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_main.c:204: undefined reference to `tls_toe_register_device'
-> 
-> Fixes: 44fd1c1fd821 ("chelsio/chtls: separate chelsio tls driver from crypto driver")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Patch1: Fix incorrect socket lock.
+> Patch2: correct netdevice for vlan interface.
+> Patch3: Fix panic when server is listening on ipv6.
+> Patch4: Fix panic when listen on multiadapter.
+> Patch5: correct function return and return type.
+> Patch6: Fix writing freed memory.
 
-Applied, thanks Randy!
-
-But I swapped the Fixes tag for:
-
-Fixes: 53b4414a7003 ("net/tls: allow compiling TLS TOE out")
+Applied, thanks.
