@@ -2,88 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C69F2954D2
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 00:30:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B864B2954DF
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 00:43:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2506738AbgJUWaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 18:30:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59430 "EHLO mail.kernel.org"
+        id S2506855AbgJUWnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 18:43:53 -0400
+Received: from mga02.intel.com ([134.134.136.20]:54378 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2506724AbgJUWaY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Oct 2020 18:30:24 -0400
-Received: from pali.im (pali.im [31.31.79.79])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4F2AD241A6;
-        Wed, 21 Oct 2020 22:30:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603319423;
-        bh=cBtXpIIfhVm6w9APhIRH4zZW2n9okENfsHWwVXqkh9E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uudD92JS8Rp5LZ+HGLEOwObocJh9sdHq6wjae/U14waD7vjJIC49BnBAMnaYgJ6C2
-         zvYE/ITJsmbOHcWerZyV8CQ9PkiQoedVGgkG3D3pSZ0Od90psxiTWL28Wa3FfX6pi6
-         AzhINpqA4vgAwHRChu3LrC31Tvq3yY5yeoah+WcY=
-Received: by pali.im (Postfix)
-        id 7537BA83; Thu, 22 Oct 2020 00:30:20 +0200 (CEST)
-Date:   Thu, 22 Oct 2020 00:30:20 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Jerome Pouiller <Jerome.Pouiller@silabs.com>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-mmc@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v2 01/24] mmc: sdio: add SDIO IDs for Silabs WF200 chip
-Message-ID: <20201021223020.btkgdo7cgzavxbpk@pali>
-References: <20201020125817.1632995-1-Jerome.Pouiller@silabs.com>
- <20201020125817.1632995-2-Jerome.Pouiller@silabs.com>
+        id S2437959AbgJUWnx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Oct 2020 18:43:53 -0400
+IronPort-SDR: BoIL2V81CJRbN75q7Um2jvqNUaNHIxdWrS7foyPHTMX3xhANshD4gQkgNNHyisdTFyn0EyJvSJ
+ xqZzcSDwrQFQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9781"; a="154396939"
+X-IronPort-AV: E=Sophos;i="5.77,402,1596524400"; 
+   d="scan'208";a="154396939"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2020 15:43:51 -0700
+IronPort-SDR: aHgyraovD422DLCcODMvFY7vJ/mC86PBNeRpAEt984R3IBvoyR9p6iJPqI009IcjFPZrslVovP
+ j/HB5ZYcEHlw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,402,1596524400"; 
+   d="scan'208";a="524057805"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by fmsmga005.fm.intel.com with ESMTP; 21 Oct 2020 15:43:50 -0700
+Date:   Thu, 22 Oct 2020 00:34:25 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Lijun Pan <ljp@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net v2] ibmvnic: fix ibmvnic_set_mac
+Message-ID: <20201021223425.GA61349@ranger.igk.intel.com>
+References: <20201021060712.48806-1-ljp@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201020125817.1632995-2-Jerome.Pouiller@silabs.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20201021060712.48806-1-ljp@linux.ibm.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tuesday 20 October 2020 14:57:54 Jerome Pouiller wrote:
-> From: Jérôme Pouiller <jerome.pouiller@silabs.com>
+On Wed, Oct 21, 2020 at 01:07:12AM -0500, Lijun Pan wrote:
+> Jakub Kicinski brought up a concern in ibmvnic_set_mac().
+> ibmvnic_set_mac() does this:
 > 
-> Add Silabs SDIO ID to sdio_ids.h.
+> 	ether_addr_copy(adapter->mac_addr, addr->sa_data);
+> 	if (adapter->state != VNIC_PROBED)
+> 		rc = __ibmvnic_set_mac(netdev, addr->sa_data);
 > 
-> Note that the values used by Silabs are uncommon. A driver cannot fully
-> rely on the SDIO PnP. It should also check if the device is declared in
-> the DT.
+> So if state == VNIC_PROBED, the user can assign an invalid address to
+> adapter->mac_addr, and ibmvnic_set_mac() will still return 0.
 > 
-> Signed-off-by: Jérôme Pouiller <jerome.pouiller@silabs.com>
-
-Looks good!
-
-Acked-by: Pali Rohár <pali@kernel.org>
-
+> The fix is to add the handling for "adapter->state == VNIC_PROBED" case,
+> which saves the old mac address back to adapter->mac_addr, and
+> returns an error code.
+> 
+> Fixes: 62740e97881c ("net/ibmvnic: Update MAC address settings after adapter reset")
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
 > ---
->  include/linux/mmc/sdio_ids.h | 5 +++++
->  1 file changed, 5 insertions(+)
+> v2: change the subject from v1's 
+>     "ibmvnic: no need to update adapter->mac_addr before it completes"
+>     handle adapter->state==VNIC_PROBED case in else statement.
 > 
-> diff --git a/include/linux/mmc/sdio_ids.h b/include/linux/mmc/sdio_ids.h
-> index 12036619346c..20a48162f7fc 100644
-> --- a/include/linux/mmc/sdio_ids.h
-> +++ b/include/linux/mmc/sdio_ids.h
-> @@ -25,6 +25,11 @@
->   * Vendors and devices.  Sort key: vendor first, device next.
->   */
+>  drivers/net/ethernet/ibm/ibmvnic.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+> index 4dd3625a4fbc..0d78e1e3d44c 100644
+> --- a/drivers/net/ethernet/ibm/ibmvnic.c
+> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
+> @@ -1829,8 +1829,12 @@ static int ibmvnic_set_mac(struct net_device *netdev, void *p)
 >  
-> +// Silabs does not use a reliable vendor ID. To avoid conflicts, the driver
-> +// won't probe the device if it is not also declared in the DT.
-> +#define SDIO_VENDOR_ID_SILABS			0x0000
-> +#define SDIO_DEVICE_ID_SILABS_WF200		0x1000
-> +
->  #define SDIO_VENDOR_ID_STE			0x0020
->  #define SDIO_DEVICE_ID_STE_CW1200		0x2280
+>  	rc = 0;
+>  	ether_addr_copy(adapter->mac_addr, addr->sa_data);
+> -	if (adapter->state != VNIC_PROBED)
+> +	if (adapter->state != VNIC_PROBED) {
+>  		rc = __ibmvnic_set_mac(netdev, addr->sa_data);
+> +	} else {
+> +		ether_addr_copy(adapter->mac_addr, netdev->dev_addr);
+> +		rc = -EIO;
+
+Why suddenly you want to change the behavior for case when ibmvnic_set_mac
+is called for VNIC_PROBED state?
+
+I went through the previous discussion and I have a feeling that Jakub
+meant to simply call the is_valid_ether_addr() on addr->sa_data before the
+first ether_addr_copy and then act accordingly based on the validity of
+user supplied mac addr.
+
+And instead of yet another write to adapter->mac_addr that you're
+introducing you could just move the first ether_addr_copy (if
+addr->sa_data is valid) onto the if (adapter->state != VNIC_PROBED)
+condition. Right?
+
+> +	}
 >  
+>  	return rc;
+>  }
 > -- 
-> 2.28.0
+> 2.23.0
 > 
