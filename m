@@ -2,123 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B454229521F
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 20:20:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A4D3295232
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 20:28:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504023AbgJUSUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 14:20:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44558 "EHLO
+        id S2504081AbgJUS2r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 14:28:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2504015AbgJUSUY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 14:20:24 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5AC4C0613CE;
-        Wed, 21 Oct 2020 11:20:23 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id l18so1988321pgg.0;
-        Wed, 21 Oct 2020 11:20:23 -0700 (PDT)
+        with ESMTP id S2438929AbgJUS2r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 14:28:47 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36214C0613CE
+        for <netdev@vger.kernel.org>; Wed, 21 Oct 2020 11:28:47 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id o7so1983279pgv.6
+        for <netdev@vger.kernel.org>; Wed, 21 Oct 2020 11:28:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=bQDv4ngMFmZAdWeS/hQnXH5tSvDx9O8/9xskgAUaTrI=;
-        b=X46oR3eBSh2053rRWIWetOLLHKNJC5MrkUFbuZYYQ/Emwu53GxqgsjpFHsP182RTOg
-         tg0Hvs0XgywmeepsO/wM69unwC7S32euFaI92MMaJPUGSOiREUOrVaLG6WIQlg4wZ4Eg
-         Juxh+3c5jU702Tlz3AnQ0niO9BYF93kc5JTFrOvPaOwFgnfa+7y2NR6/VjF/GMLm6mAf
-         ftEgb9SGgARMUdwV9ErhD3Ny4YBz7viLqpCwdlHvElG6EHNMkbl4Na7DMGFsteP5/7xh
-         5U/Yg73+0qKO61cupIfA7Ic3Q0bx1u1UtQMrJJRd4k93jYE/Ph2xzZjvfo1pcdxSjCqq
-         GuJg==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=pdV8toHhUoGEzI+3zGwdo0L/IUP2+YszA0KBpT7i3tk=;
+        b=ByftFS0aApkdGly2d+f8cbyo2r6vzMcIx6tT7jsp94RmsunPGz2oMVQ4j2PB7aXn2i
+         WMElzMVm6SeRzaGWUTqBpWVKj3RcJveD5uou+f6jouKAErqNKs6n4BAlrXhJN9DGkVFJ
+         6JbOyOHPWAFY+yJJfp9D5qHvT1kEFTBhE+nBEKMABGswTkgiHAZj2lb3Ph+p7mCAFgfA
+         0DuVLkR2FgTbFWbz2/xhR7ObgoF/O91tDJHDRDD3IP9s+lq9SojOwu1QDzDNLfSDUEZv
+         zdIwaZcyA4hc/A528e4Pv0RZVoKdnEPWQ2q3A8UYkq4hxJfigFitsXqT6H4laduFqr3n
+         0+uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=bQDv4ngMFmZAdWeS/hQnXH5tSvDx9O8/9xskgAUaTrI=;
-        b=a7TO4cEiQ1ZM1IZckB7fZVtRCyFDGBzgqLjeHBKJ8dM43sKUU5FF5dDvejGVsDdUQ8
-         sXueiYJcavQSWTDukHtAo9WwEhDUklwPU6STqJI9AwaaUFoNKtXM/3xmOrXACcmyLUAR
-         KJE8pzlpXyX3LniLwpy5aPcpb6iWtsjClDc1LoDVS5GbaoFjAv5U5Vxqm9Rdvz9dGnbt
-         PKODa1QarQ3HVWqf2XIGdrKLSX13KMfIzWmD+x7YGzUYC52Tw5mIhxbDhzoWywUSgQ93
-         uDmP330Lj7xwVG2xA6U+YF5AICNh53zAAqU1ia/Gxh0QDMWIt2LC56dv5yNmDbagz2EM
-         cdUw==
-X-Gm-Message-State: AOAM531fbV59ezJ3zBD4hFju6kNiD2/xjdC+awUcbKyVyPosniKLE/tj
-        4pRYWLAwbedMobKt/2s9zrkS/zLJYKQWBQ==
-X-Google-Smtp-Source: ABdhPJxZyxDtbzpG5mUyRqAWvs7NoPaBMFcVzJ7dRJ6jytmimjb6flMakIqqNwVqaAUnCBbIbHg2kQ==
-X-Received: by 2002:a63:e:: with SMTP id 14mr4635728pga.426.1603304423461;
-        Wed, 21 Oct 2020 11:20:23 -0700 (PDT)
-Received: from ast-mbp.thefacebook.com ([163.114.132.7])
-        by smtp.gmail.com with ESMTPSA id v3sm2618672pfu.165.2020.10.21.11.20.21
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 21 Oct 2020 11:20:22 -0700 (PDT)
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, john.fastabend@gmail.com, jolsa@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-Subject: [PATCH bpf-next 3/3] selftests/bpf: Add asm tests for pkt vs pkt_end comparison.
-Date:   Wed, 21 Oct 2020 11:20:15 -0700
-Message-Id: <20201021182015.39000-4-alexei.starovoitov@gmail.com>
-X-Mailer: git-send-email 2.13.5
-In-Reply-To: <20201021182015.39000-1-alexei.starovoitov@gmail.com>
-References: <20201021182015.39000-1-alexei.starovoitov@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=pdV8toHhUoGEzI+3zGwdo0L/IUP2+YszA0KBpT7i3tk=;
+        b=brplhUtRwoNylZyts6X0iqwKeijtkYTp6rU3u+8K7+bEwqNedIMihm6/x8N1UAKlxc
+         ZMNBWN3dnwVIe+hARLOKLDBSCtrKkRswZKvUvJCO4DK/9sox2Co7h/EleQjXcxJRoFa7
+         MBfmKrF8hqhB+6aSrFkwWsS3qJrBaPmJ1voOtWKAR/lGHkjFtxXoxjYjcgBV+gMGEUfz
+         asriP/lZsGMFwaYQjWRrdVcyOXFI4DjsWkbRZbOfghkKKGq8afKdP2lrRgJAISLz1SUg
+         EFiInPGzC/EXJan2LK+gZgPlrAeGBDmfbWVgbPX4/3INnY2pxfg32MVEScUkhEeIDxaf
+         52QQ==
+X-Gm-Message-State: AOAM533u+KVJgyCgkmVQBtGowoDn9FyWM6Gg35DjevmwMJezeyQYAl8v
+        cJQ8UR6zlA67wHKp3vzF89VBMA==
+X-Google-Smtp-Source: ABdhPJwquAZ2TOLErdL2OQTzMlBRE+8tkVWuERXLM4gN92uS2qR3Gq0k90Flsa9B1eVBqEW+WkKljA==
+X-Received: by 2002:a63:f701:: with SMTP id x1mr4388980pgh.378.1603304926788;
+        Wed, 21 Oct 2020 11:28:46 -0700 (PDT)
+Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id b3sm2907890pfd.66.2020.10.21.11.28.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Oct 2020 11:28:46 -0700 (PDT)
+Date:   Wed, 21 Oct 2020 11:28:38 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Petr Machata <me@pmachata.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        dsahern@gmail.com, john.fastabend@gmail.com, jiri@nvidia.com,
+        idosch@nvidia.com
+Subject: Re: [PATCH iproute2-next 15/15] dcb: Add a subtool for the DCB ETS
+ object
+Message-ID: <20201021112838.3026a648@hermes.local>
+In-Reply-To: <877drkk4qu.fsf@nvidia.com>
+References: <20201020114141.53391942@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <877drkk4qu.fsf@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexei Starovoitov <ast@kernel.org>
+On Tue, 20 Oct 2020 22:43:37 +0200
+Petr Machata <me@pmachata.org> wrote:
 
-Add few assembly tests for packet comparison.
+> Jakub Kicinski <kuba@kernel.org> writes:
+> 
+> > On Tue, 20 Oct 2020 02:58:23 +0200 Petr Machata wrote:  
+> >> +static void dcb_ets_print_cbs(FILE *fp, const struct ieee_ets *ets)
+> >> +{
+> >> +	print_string(PRINT_ANY, "cbs", "cbs %s ", ets->cbs ? "on" : "off");
+> >> +}  
+> >
+> > I'd personally lean in the direction ethtool is taking and try to limit
+> > string values in json output as much as possible. This would be a good
+> > fit for bool.  
+> 
+> Yep, makes sense. The value is not user-toggleable, so the on / off
+> there is just arbitrary.
+> 
+> I'll consider it for "willing" as well. That one is user-toggleable, and
+> the "on" / "off" makes sense for consistency with the command line. But
+> that doesn't mean it can't be a boolean in JSON.
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
- .../testing/selftests/bpf/verifier/ctx_skb.c  | 42 +++++++++++++++++++
- 1 file changed, 42 insertions(+)
-
-diff --git a/tools/testing/selftests/bpf/verifier/ctx_skb.c b/tools/testing/selftests/bpf/verifier/ctx_skb.c
-index 2e16b8e268f2..2022c0f2cd75 100644
---- a/tools/testing/selftests/bpf/verifier/ctx_skb.c
-+++ b/tools/testing/selftests/bpf/verifier/ctx_skb.c
-@@ -1089,3 +1089,45 @@
- 	.errstr_unpriv = "R1 leaks addr",
- 	.result = REJECT,
- },
-+{
-+       "pkt > pkt_end taken check",
-+       .insns = {
-+       BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1,                //  0. r2 = *(u32 *)(r1 + data_end)
-+                   offsetof(struct __sk_buff, data_end)),
-+       BPF_LDX_MEM(BPF_W, BPF_REG_4, BPF_REG_1,                //  1. r4 = *(u32 *)(r1 + data)
-+                   offsetof(struct __sk_buff, data)),
-+       BPF_MOV64_REG(BPF_REG_3, BPF_REG_4),                    //  2. r3 = r4
-+       BPF_ALU64_IMM(BPF_ADD, BPF_REG_3, 42),                  //  3. r3 += 42
-+       BPF_MOV64_IMM(BPF_REG_1, 0),                            //  4. r1 = 0
-+       BPF_JMP_REG(BPF_JGT, BPF_REG_3, BPF_REG_2, 2),          //  5. if r3 > r2 goto 8
-+       BPF_ALU64_IMM(BPF_ADD, BPF_REG_4, 14),                  //  6. r4 += 14
-+       BPF_MOV64_REG(BPF_REG_1, BPF_REG_4),                    //  7. r1 = r4
-+       BPF_JMP_REG(BPF_JGT, BPF_REG_3, BPF_REG_2, 1),          //  8. if r3 > r2 goto 10
-+       BPF_LDX_MEM(BPF_H, BPF_REG_2, BPF_REG_1, 9),            //  9. r2 = *(u8 *)(r1 + 9)
-+       BPF_MOV64_IMM(BPF_REG_0, 0),                            // 10. r0 = 0
-+       BPF_EXIT_INSN(),                                        // 11. exit
-+       },
-+       .result = ACCEPT,
-+       .prog_type = BPF_PROG_TYPE_SK_SKB,
-+},
-+{
-+       "pkt_end < pkt taken check",
-+       .insns = {
-+       BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1,                //  0. r2 = *(u32 *)(r1 + data_end)
-+                   offsetof(struct __sk_buff, data_end)),
-+       BPF_LDX_MEM(BPF_W, BPF_REG_4, BPF_REG_1,                //  1. r4 = *(u32 *)(r1 + data)
-+                   offsetof(struct __sk_buff, data)),
-+       BPF_MOV64_REG(BPF_REG_3, BPF_REG_4),                    //  2. r3 = r4
-+       BPF_ALU64_IMM(BPF_ADD, BPF_REG_3, 42),                  //  3. r3 += 42
-+       BPF_MOV64_IMM(BPF_REG_1, 0),                            //  4. r1 = 0
-+       BPF_JMP_REG(BPF_JGT, BPF_REG_3, BPF_REG_2, 2),          //  5. if r3 > r2 goto 8
-+       BPF_ALU64_IMM(BPF_ADD, BPF_REG_4, 14),                  //  6. r4 += 14
-+       BPF_MOV64_REG(BPF_REG_1, BPF_REG_4),                    //  7. r1 = r4
-+       BPF_JMP_REG(BPF_JLT, BPF_REG_2, BPF_REG_3, 1),          //  8. if r2 < r3 goto 10
-+       BPF_LDX_MEM(BPF_H, BPF_REG_2, BPF_REG_1, 9),            //  9. r2 = *(u8 *)(r1 + 9)
-+       BPF_MOV64_IMM(BPF_REG_0, 0),                            // 10. r0 = 0
-+       BPF_EXIT_INSN(),                                        // 11. exit
-+       },
-+       .result = ACCEPT,
-+       .prog_type = BPF_PROG_TYPE_SK_SKB,
-+},
--- 
-2.23.0
+There are three ways of representing a boolean. You chose the worst.
+Option 1: is to use a json null value to indicate presence.
+      this works well for a flag.
+Option 2: is to use json bool.
+	this looks awkward in non-json output
+Option 3: is to use a string
+     	but this makes the string output something harder to consume
+	in json.
 
