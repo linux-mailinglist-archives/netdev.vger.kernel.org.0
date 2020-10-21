@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A8F03294715
-	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 05:57:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49FD5294718
+	for <lists+netdev@lfdr.de>; Wed, 21 Oct 2020 06:00:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2411876AbgJUD4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Oct 2020 23:56:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55788 "EHLO mail.kernel.org"
+        id S1725765AbgJUEAI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 00:00:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56372 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406735AbgJUD4u (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Oct 2020 23:56:50 -0400
+        id S1725446AbgJUEAH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Oct 2020 00:00:07 -0400
 Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.5])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5F8B121741;
-        Wed, 21 Oct 2020 03:56:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AF68121D6C;
+        Wed, 21 Oct 2020 04:00:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603252609;
-        bh=XBGNkaYEUqlMFMVtbOPtDEIt72DqySZrBEAbtk/WssY=;
+        s=default; t=1603252807;
+        bh=U3C1dRUEOXaw854OlDNkuD1V3QaQr/gEZ7O/9uscTFE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=E8XjB3dAbYeiUgwvMORYBfO8EloEGDBXwEcgT9T0qXp0rkvzDtpREpia2yYO9/2mJ
-         lxMjwxE/i6yzA6kfG1dHF48tWBJHivX8KNFDtgCT2i8k6uUrUUm21bYjRqFSszJ2No
-         r1grpg3zlJ/XVbMGhIs4zob2RuajikrN0RpPR1Ts=
-Date:   Tue, 20 Oct 2020 20:56:47 -0700
+        b=M9ZYfvhByjtwDWRTflH//ypwtk7ek7hB3gq8GffdPJ5mEsiNgt2NyjFOKwq4GiFqj
+         AetrPKBr7ISMq+K3ncvznRw+YT69GXjDFZxDnKnu7X3wisBXJzFQWH8Lb4NwBP5h/9
+         ue6zPIBm6nhpYGg8R7N33e6DCp7V6i12U+DXgFr4=
+Date:   Tue, 20 Oct 2020 21:00:05 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Matthieu Baerts <matthieu.baerts@tessares.net>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Westphal <fw@strlen.de>,
-        Peter Krystad <peter.krystad@linux.intel.com>,
-        netdev@vger.kernel.org, mptcp@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mptcp: MPTCP_IPV6 should depend on IPV6 instead of
- selecting it
-Message-ID: <20201020205647.20ab7009@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <5dddd3fe-86d7-d07f-dbc9-51b89c7c8173@tessares.net>
-References: <20201020073839.29226-1-geert@linux-m68k.org>
-        <5dddd3fe-86d7-d07f-dbc9-51b89c7c8173@tessares.net>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Colin King <colin.king@canonical.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: dsa: bcm_sf2: make const array static, makes
+ object smaller
+Message-ID: <20201020210005.7871ff74@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <0cdc86a4-66a0-2f1f-ba23-03b54ccacd69@gmail.com>
+References: <20201020165029.56383-1-colin.king@canonical.com>
+        <0cdc86a4-66a0-2f1f-ba23-03b54ccacd69@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -46,18 +45,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 20 Oct 2020 11:26:34 +0200 Matthieu Baerts wrote:
-> On 20/10/2020 09:38, Geert Uytterhoeven wrote:
-> > MPTCP_IPV6 selects IPV6, thus enabling an optional feature the user may
-> > not want to enable.  Fix this by making MPTCP_IPV6 depend on IPV6, like
-> > is done for all other IPv6 features.  
+On Tue, 20 Oct 2020 09:51:39 -0700 Florian Fainelli wrote:
+> On 10/20/20 9:50 AM, Colin King wrote:
+> > From: Colin Ian King <colin.king@canonical.com>
+> > 
+> > Don't populate the const array rate_table on the stack but instead it
+> > static. Makes the object code smaller by 46 bytes.
+> > 
+> > Before:
+> >    text	   data	    bss	    dec	    hex	filename
+> >   29812	   3824	    192	  33828	   8424	drivers/net/dsa/bcm_sf2.o
+> > 
+> > After:
+> >    text	   data	    bss	    dec	    hex	filename
+> >   29670	   3920	    192	  33782	   83f6	drivers/net/dsa/bcm_sf2.o
+> > 
+> > (gcc version 10.2.0)
+> > 
+> > Signed-off-by: Colin Ian King <colin.king@canonical.com>  
 > 
-> Here again, the intension was to select IPv6 from MPTCP but I understand 
-> the issue: if we enable MPTCP, we will select IPV6 as well by default. 
-> Maybe not what we want on some embedded devices with very limited memory 
-> where IPV6 is already off. We should instead enable MPTCP_IPV6 only if 
-> IPV6=y. LGTM then!
-> 
-> Reviewed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 
 Applied, thanks!
