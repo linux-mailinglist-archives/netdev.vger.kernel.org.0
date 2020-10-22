@@ -2,421 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BF6D29663D
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 22:56:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BB75296649
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 22:59:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S371984AbgJVUwf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 16:52:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43168 "EHLO mail.kernel.org"
+        id S372092AbgJVU7i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 16:59:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47852 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S371977AbgJVUwd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Oct 2020 16:52:33 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
+        id S2897292AbgJVU7h (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Oct 2020 16:59:37 -0400
+Received: from gmail.com (unknown [104.132.1.76])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E001320795;
-        Thu, 22 Oct 2020 20:52:30 +0000 (UTC)
-Date:   Thu, 22 Oct 2020 16:52:29 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Jesper Brouer <jbrouer@redhat.com>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Viktor Malik <vmalik@redhat.com>
-Subject: Re: [RFC bpf-next 00/16] bpf: Speed up trampoline attach
-Message-ID: <20201022165229.34cd5141@gandalf.local.home>
-In-Reply-To: <20201022122150.45e81da0@gandalf.local.home>
-References: <20201022082138.2322434-1-jolsa@kernel.org>
-        <20201022093510.37e8941f@gandalf.local.home>
-        <20201022141154.GB2332608@krava>
-        <20201022104205.728dd135@gandalf.local.home>
-        <20201022122150.45e81da0@gandalf.local.home>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8D47120874;
+        Thu, 22 Oct 2020 20:59:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603400375;
+        bh=Xexx6LzGU5CEQ5pUb/Rnl3sbc1IKJSCv776XJ3IiUZY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=zdUyA37A1L47KHgoyE+FT2EuXbQ76eLgYxDhD0pRsQ/vZP9VSxvex63p/S7m2wh2S
+         LPo1qkQ3neXSHmpGEcAArmow8IRVH9ABGEBSoWdWkIGldhGddb2MyLlCZgza1+BxJr
+         XSVfJ1lZvRBFbHtiVn91WdB+7mhw78zhWJSY/86E=
+Date:   Thu, 22 Oct 2020 13:59:32 -0700
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Matthew Wilcox <willy@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Christoph Hellwig <hch@lst.de>,
+        David Hildenbrand <david@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        "kernel-team@android.com" <kernel-team@android.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-aio@kvack.org" <linux-aio@kvack.org>,
+        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>
+Subject: Re: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
+ rw_copy_check_uvector() into lib/iov_iter.c"
+Message-ID: <20201022205932.GB3613750@gmail.com>
+References: <df2e0758-b8ed-5aec-6adc-a18f499c0179@redhat.com>
+ <20201022090155.GA1483166@kroah.com>
+ <e04d0c5d-e834-a15b-7844-44dcc82785cc@redhat.com>
+ <a1533569-948a-1d5b-e231-5531aa988047@redhat.com>
+ <bc0a091865f34700b9df332c6e9dcdfd@AcuMS.aculab.com>
+ <5fd6003b-55a6-2c3c-9a28-8fd3a575ca78@redhat.com>
+ <20201022132342.GB8781@lst.de>
+ <8f1fff0c358b4b669d51cc80098dbba1@AcuMS.aculab.com>
+ <20201022164040.GV20115@casper.infradead.org>
+ <CAKwvOdnq-yYLcF_coo=jMV-RH-SkuNp_kMB+KCBF5cz3PwiB8g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKwvOdnq-yYLcF_coo=jMV-RH-SkuNp_kMB+KCBF5cz3PwiB8g@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 22 Oct 2020 12:21:50 -0400
-Steven Rostedt <rostedt@goodmis.org> wrote:
+On Thu, Oct 22, 2020 at 10:00:44AM -0700, Nick Desaulniers wrote:
+> On Thu, Oct 22, 2020 at 9:40 AM Matthew Wilcox <willy@infradead.org> wrote:
+> >
+> > On Thu, Oct 22, 2020 at 04:35:17PM +0000, David Laight wrote:
+> > > Wait...
+> > > readv(2) defines:
+> > >       ssize_t readv(int fd, const struct iovec *iov, int iovcnt);
+> >
+> > It doesn't really matter what the manpage says.  What does the AOSP
+> > libc header say?
+> 
+> Same: https://android.googlesource.com/platform/bionic/+/refs/heads/master/libc/include/sys/uio.h#38
+> 
+> Theoretically someone could bypass libc to make a system call, right?
+> 
+> >
+> > > But the syscall is defined as:
+> > >
+> > > SYSCALL_DEFINE3(readv, unsigned long, fd, const struct iovec __user *, vec,
+> > >                 unsigned long, vlen)
+> > > {
+> > >         return do_readv(fd, vec, vlen, 0);
+> > > }
+> >
+> 
 
-> On Thu, 22 Oct 2020 10:42:05 -0400
-> Steven Rostedt <rostedt@goodmis.org> wrote:
-> 
-> > I'd like to see how batch functions will work. I guess I need to start
-> > looking at the bpf trampoline, to see if we can modify the ftrace
-> > trampoline to have a quick access to parameters. It would be much more
-> > beneficial to update the existing generic function tracer to have access to
-> > function parameters that all users could benefit from, than to tweak a
-> > single use case into giving this feature to a single user.  
-> 
-> Looking at the creation of the bpf trampoline, I think I can modify ftrace
-> to have a more flexible callback. Something that passes the callback the
-> following:
-> 
->  the function being traced.
->  a pointer to the parent caller (that could be modified)
->  a pointer to the original stack frame (what the stack was when the
->       function is entered)
->  An array of the arguments of the function (which could also be modified)
-> 
-> This is a change I've been wanting to make for some time, because it would
-> allow function graph to be a user of function tracer, and would give
-> everything access to the arguments.
-> 
-> We would still need a helper function to store all regs to keep kprobes
-> working unmodified, but this would still only be done if asked.
-> 
-> The above change shouldn't hurt performance for either ftrace or bpf
-> because it appears they both do the same. If BPF wants to have a batch
-> processing of functions, then I think we should modify ftrace to do this
-> new approach instead of creating another set of function trampolines.
+FWIW, glibc makes the readv() syscall assuming that fd and vlen are 'int' as
+well.  So this problem isn't specific to Android's libc.
 
-The below is a quick proof of concept patch I whipped up. It will always
-save 6 arguments, so if BPF is really interested in just saving the bare
-minimum of arguments before calling, it can still use direct. But if you
-are going to have a generic callback, you'll need to save all parameters
-otherwise you can corrupt the function's parameter if traced function uses
-more than you save.
+From objdump -d /lib/x86_64-linux-gnu/libc.so.6:
 
-Which looking at the bpf trampoline code, I noticed that if the verifier
-can't find the btf func, it falls back to saving 5 parameters. Which can be
-a bug on x86 if the function itself uses 6 or more. If you only save 5
-parameters, then call a bpf program that calls a helper function that uses
-more than 5 parameters, it will likely corrupt the 6th parameter of the
-function being traced.
+	00000000000f4db0 <readv@@GLIBC_2.2.5>:
+	   f4db0:       64 8b 04 25 18 00 00    mov    %fs:0x18,%eax
+	   f4db7:       00
+	   f4db8:       85 c0                   test   %eax,%eax
+	   f4dba:       75 14                   jne    f4dd0 <readv@@GLIBC_2.2.5+0x20>
+	   f4dbc:       b8 13 00 00 00          mov    $0x13,%eax
+	   f4dc1:       0f 05                   syscall
+	   ...
 
-The code in question is this:
+There's some code for pthread cancellation, but no zeroing of the upper half of
+the fd and vlen arguments, which are in %edi and %edx respectively.  But the
+glibc function prototype uses 'int' for them, not 'unsigned long'
+'ssize_t readv(int fd, const struct iovec *iov, int iovcnt);'.
 
-int btf_distill_func_proto(struct bpf_verifier_log *log,
-			   struct btf *btf,
-			   const struct btf_type *func,
-			   const char *tname,
-			   struct btf_func_model *m)
+So the high halves of the fd and iovcnt registers can contain garbage.  Or at
+least that's what gcc (9.3.0) and clang (9.0.1) assume; they both compile the
+following
+
+void g(unsigned int x);
+
+void f(unsigned long x)
 {
-	const struct btf_param *args;
-	const struct btf_type *t;
-	u32 i, nargs;
-	int ret;
+        g(x);
+}
 
-	if (!func) {
-		/* BTF function prototype doesn't match the verifier types.
-		 * Fall back to 5 u64 args.
-		 */
-		for (i = 0; i < 5; i++)
-			m->arg_size[i] = 8;
-		m->ret_size = 8;
-		m->nr_args = 5;
-		return 0;
+into f() making a tail call to g(), without zeroing the top half of %rdi.
+
+Also note the following program succeeds on Linux 5.9 on x86_64.  On kernels
+that have this bug, it should fail.  (I couldn't get it to actually fail, so it
+must depend on the compiler and/or the kernel config...)
+
+	#include <fcntl.h>
+	#include <stdio.h>
+	#include <sys/syscall.h>
+	#include <sys/uio.h>
+	#include <unistd.h>
+
+	int main()
+	{
+		int fd = open("/dev/zero", O_RDONLY);
+		char buf[1000];
+		struct iovec iov = { .iov_base = buf, .iov_len = sizeof(buf) };
+		long ret;
+
+		ret = syscall(__NR_readv, fd, &iov, 0x100000001);
+		if (ret < 0)
+			perror("readv failed");
+		else
+			printf("read %ld bytes\n", ret);
 	}
 
-Shouldn't it be falling back to 6, not 5?
+I think the right fix is to change the readv() (and writev(), etc.) syscalls to
+take 'unsigned int' rather than 'unsigned long', as that is what the users are
+assuming...
 
--- Steve
-
-diff --git a/arch/x86/kernel/ftrace.c b/arch/x86/kernel/ftrace.c
-index 7edbd5ee5ed4..b65d73f430ed 100644
---- a/arch/x86/kernel/ftrace.c
-+++ b/arch/x86/kernel/ftrace.c
-@@ -287,6 +287,10 @@ extern void ftrace_caller_end(void);
- extern void ftrace_caller_op_ptr(void);
- extern void ftrace_regs_caller_op_ptr(void);
- extern void ftrace_regs_caller_jmp(void);
-+extern void ftrace_args_caller(void);
-+extern void ftrace_args_call(void);
-+extern void ftrace_args_caller_end(void);
-+extern void ftrace_args_caller_op_ptr(void);
- 
- /* movq function_trace_op(%rip), %rdx */
- /* 0x48 0x8b 0x15 <offset-to-ftrace_trace_op (4 bytes)> */
-@@ -317,7 +321,7 @@ create_trampoline(struct ftrace_ops *ops, unsigned int *tramp_size)
- 	unsigned long end_offset;
- 	unsigned long op_offset;
- 	unsigned long call_offset;
--	unsigned long jmp_offset;
-+	unsigned long jmp_offset = 0;
- 	unsigned long offset;
- 	unsigned long npages;
- 	unsigned long size;
-@@ -336,12 +340,16 @@ create_trampoline(struct ftrace_ops *ops, unsigned int *tramp_size)
- 		op_offset = (unsigned long)ftrace_regs_caller_op_ptr;
- 		call_offset = (unsigned long)ftrace_regs_call;
- 		jmp_offset = (unsigned long)ftrace_regs_caller_jmp;
-+	} else if (ops->flags & FTRACE_OPS_FL_ARGS) {
-+		start_offset = (unsigned long)ftrace_args_caller;
-+		end_offset = (unsigned long)ftrace_args_caller_end;
-+		op_offset = (unsigned long)ftrace_args_caller_op_ptr;
-+		call_offset = (unsigned long)ftrace_args_call;
- 	} else {
- 		start_offset = (unsigned long)ftrace_caller;
- 		end_offset = (unsigned long)ftrace_caller_end;
- 		op_offset = (unsigned long)ftrace_caller_op_ptr;
- 		call_offset = (unsigned long)ftrace_call;
--		jmp_offset = 0;
- 	}
- 
- 	size = end_offset - start_offset;
-diff --git a/arch/x86/kernel/ftrace_64.S b/arch/x86/kernel/ftrace_64.S
-index ac3d5f22fe64..65ca634d0b37 100644
---- a/arch/x86/kernel/ftrace_64.S
-+++ b/arch/x86/kernel/ftrace_64.S
-@@ -176,6 +176,58 @@ SYM_INNER_LABEL_ALIGN(ftrace_stub, SYM_L_WEAK)
- 	retq
- SYM_FUNC_END(ftrace_epilogue)
- 
-+SYM_FUNC_START(ftrace_args_caller)
-+#ifdef CONFIG_FRAME_POINTER
-+	push %rdp
-+	movq %rsp %rdp
-+# define CALLED_OFFEST (7 * 8)
-+# define PARENT_OFFSET (8 * 8)
-+#else
-+# define CALLED_OFFSET (6 * 8)
-+# define PARENT_OFFSET (7 * 8)
-+#endif
-+	/* save args */
-+	pushq %r9
-+	pushq %r8
-+	pushq %rcx
-+	pushq %rdx
-+	pushq %rsi
-+	pushq %rdi
-+
-+	/*
-+	 * Parameters:
-+	 *   Called site (function called)
-+	 *   Address of parent location
-+	 *   pointer to ftrace_ops
-+	 *   Location of stack when function was called
-+	 *   Array of arguments.
-+	 */
-+	movq CALLED_OFFSET(%rsp), %rdi
-+	leaq PARENT_OFFSET(%rsp), %rsi
-+SYM_INNER_LABEL(ftrace_args_caller_op_ptr, SYM_L_GLOBAL)
-+	/* Load the ftrace_ops into the 3rd parameter */
-+	movq function_trace_op(%rip), %rdx
-+	movq %rsi, %rcx
-+	leaq 0(%rsp), %r8
-+
-+SYM_INNER_LABEL(ftrace_args_call, SYM_L_GLOBAL)
-+	callq ftrace_stub
-+
-+	popq %rdi
-+	popq %rsi
-+	popq %rdx
-+	popq %rcx
-+	popq %r8
-+	popq %r9
-+
-+#ifdef CONFIG_FRAME_POINTER
-+	popq %rdp
-+#endif
-+
-+SYM_INNER_LABEL(ftrace_args_caller_end, SYM_L_GLOBAL)
-+	jmp ftrace_epilogue
-+SYM_FUNC_END(ftrace_args_caller)
-+
- SYM_FUNC_START(ftrace_regs_caller)
- 	/* Save the current flags before any operations that can change them */
- 	pushfq
-diff --git a/include/linux/ftrace.h b/include/linux/ftrace.h
-index 1bd3a0356ae4..0d077e8d7bb4 100644
---- a/include/linux/ftrace.h
-+++ b/include/linux/ftrace.h
-@@ -92,6 +92,17 @@ struct ftrace_ops;
- typedef void (*ftrace_func_t)(unsigned long ip, unsigned long parent_ip,
- 			      struct ftrace_ops *op, struct pt_regs *regs);
- 
-+typedef void (*ftrace_args_func_t)(unsigned long ip, unsigned long *parent_ip,
-+				   struct ftrace_ops *op, unsigned long *stack,
-+				   unsigned long *args);
-+
-+union ftrace_callback {
-+	ftrace_func_t		func;
-+	ftrace_args_func_t	args_func;
-+};
-+
-+typedef union ftrace_callback ftrace_callback_t;
-+
- ftrace_func_t ftrace_ops_get_func(struct ftrace_ops *ops);
- 
- /*
-@@ -169,6 +180,7 @@ enum {
- 	FTRACE_OPS_FL_TRACE_ARRAY		= BIT(15),
- 	FTRACE_OPS_FL_PERMANENT                 = BIT(16),
- 	FTRACE_OPS_FL_DIRECT			= BIT(17),
-+	FTRACE_OPS_FL_ARGS			= BIT(18),
- };
- 
- #ifdef CONFIG_DYNAMIC_FTRACE
-@@ -447,9 +459,11 @@ enum {
- 	FTRACE_FL_DISABLED	= (1UL << 25),
- 	FTRACE_FL_DIRECT	= (1UL << 24),
- 	FTRACE_FL_DIRECT_EN	= (1UL << 23),
-+	FTRACE_FL_ARGS		= (1UL << 22),
-+	FTRACE_FL_ARGS_EN	= (1UL << 21),
- };
- 
--#define FTRACE_REF_MAX_SHIFT	23
-+#define FTRACE_REF_MAX_SHIFT	21
- #define FTRACE_REF_MAX		((1UL << FTRACE_REF_MAX_SHIFT) - 1)
- 
- #define ftrace_rec_count(rec)	((rec)->flags & FTRACE_REF_MAX)
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index 4833b6a82ce7..5632b0809dc0 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -1721,6 +1721,9 @@ static bool __ftrace_hash_rec_update(struct ftrace_ops *ops,
- 			if (ops->flags & FTRACE_OPS_FL_DIRECT)
- 				rec->flags |= FTRACE_FL_DIRECT;
- 
-+			else if (ops->flags & FTRACE_OPS_FL_ARGS)
-+				rec->flags |= FTRACE_FL_ARGS;
-+
- 			/*
- 			 * If there's only a single callback registered to a
- 			 * function, and the ops has a trampoline registered
-@@ -1757,6 +1760,10 @@ static bool __ftrace_hash_rec_update(struct ftrace_ops *ops,
- 			if (ops->flags & FTRACE_OPS_FL_DIRECT)
- 				rec->flags &= ~FTRACE_FL_DIRECT;
- 
-+			/* POC: but we will have more than one */
-+			if (ops->flags & FTRACE_OPS_FL_ARGS)
-+				rec->flags &= ~FTRACE_FL_ARGS;
-+
- 			/*
- 			 * If the rec had REGS enabled and the ops that is
- 			 * being removed had REGS set, then see if there is
-@@ -2103,6 +2110,13 @@ static int ftrace_check_record(struct dyn_ftrace *rec, bool enable, bool update)
- 		    !(rec->flags & FTRACE_FL_TRAMP_EN))
- 			flag |= FTRACE_FL_TRAMP;
- 
-+		/* Proof of concept */
-+		if (ftrace_rec_count(rec) == 1) {
-+			if (!(rec->flags & FTRACE_FL_ARGS) !=
-+			    !(rec->flags & FTRACE_FL_ARGS_EN))
-+				flag |= FTRACE_FL_ARGS;
-+		}
-+
- 		/*
- 		 * Direct calls are special, as count matters.
- 		 * We must test the record for direct, if the
-@@ -2144,6 +2158,17 @@ static int ftrace_check_record(struct dyn_ftrace *rec, bool enable, bool update)
- 				else
- 					rec->flags &= ~FTRACE_FL_TRAMP_EN;
- 			}
-+			if (flag & FTRACE_FL_ARGS) {
-+				if (ftrace_rec_count(rec) == 1) {
-+					if (rec->flags & FTRACE_FL_ARGS)
-+						rec->flags |= FTRACE_FL_ARGS_EN;
-+					else
-+						rec->flags &= ~FTRACE_FL_ARGS_EN;
-+				} else {
-+					rec->flags &= ~FTRACE_FL_ARGS_EN;
-+				}
-+			}
-+
- 			if (flag & FTRACE_FL_DIRECT) {
- 				/*
- 				 * If there's only one user (direct_ops helper)
-@@ -2192,7 +2217,8 @@ static int ftrace_check_record(struct dyn_ftrace *rec, bool enable, bool update)
- 			 * and REGS states. The _EN flags must be disabled though.
- 			 */
- 			rec->flags &= ~(FTRACE_FL_ENABLED | FTRACE_FL_TRAMP_EN |
--					FTRACE_FL_REGS_EN | FTRACE_FL_DIRECT_EN);
-+					FTRACE_FL_REGS_EN | FTRACE_FL_DIRECT_EN |
-+					FTRACE_FL_ARGS_EN);
- 	}
- 
- 	ftrace_bug_type = FTRACE_BUG_NOP;
-@@ -3630,7 +3656,8 @@ static int t_show(struct seq_file *m, void *v)
- 			   ftrace_rec_count(rec),
- 			   rec->flags & FTRACE_FL_REGS ? " R" : "  ",
- 			   rec->flags & FTRACE_FL_IPMODIFY ? " I" : "  ",
--			   rec->flags & FTRACE_FL_DIRECT ? " D" : "  ");
-+			   rec->flags & FTRACE_FL_DIRECT ? " D" :
-+			   rec->flags & FTRACE_FL_ARGS ? " A" : "  ");
- 		if (rec->flags & FTRACE_FL_TRAMP_EN) {
- 			ops = ftrace_find_tramp_ops_any(rec);
- 			if (ops) {
-diff --git a/kernel/trace/trace_functions.c b/kernel/trace/trace_functions.c
-index 2c2126e1871d..a3da84b0e599 100644
---- a/kernel/trace/trace_functions.c
-+++ b/kernel/trace/trace_functions.c
-@@ -86,9 +86,48 @@ void ftrace_destroy_function_files(struct trace_array *tr)
- 	ftrace_free_ftrace_ops(tr);
- }
- 
-+static void function_args_trace_call(unsigned long ip,
-+				     unsigned long *parent_ip,
-+				     struct ftrace_ops *op,
-+				     unsigned long *stack,
-+				     unsigned long *args)
-+{
-+	struct trace_array *tr = op->private;
-+	struct trace_array_cpu *data;
-+	unsigned long flags;
-+	int bit;
-+	int cpu;
-+	int pc;
-+
-+	if (unlikely(!tr->function_enabled))
-+		return;
-+
-+	pc = preempt_count();
-+	preempt_disable_notrace();
-+
-+	bit = trace_test_and_set_recursion(TRACE_FTRACE_START, TRACE_FTRACE_MAX);
-+	if (bit < 0)
-+		goto out;
-+
-+	cpu = smp_processor_id();
-+	data = per_cpu_ptr(tr->array_buffer.data, cpu);
-+	if (!atomic_read(&data->disabled)) {
-+		local_save_flags(flags);
-+		trace_function(tr, ip, *parent_ip, flags, pc);
-+		trace_printk("%pS %lx %lx %lx %lx %lx %lx\n",
-+			     (void *)ip, args[0], args[1], args[2], args[3],
-+			     args[4], args[5]);
-+	}
-+	trace_clear_recursion(bit);
-+
-+ out:
-+	preempt_enable_notrace();
-+
-+}
-+
- static int function_trace_init(struct trace_array *tr)
- {
--	ftrace_func_t func;
-+	ftrace_callback_t callback;
- 
- 	/*
- 	 * Instance trace_arrays get their ops allocated
-@@ -101,11 +140,14 @@ static int function_trace_init(struct trace_array *tr)
- 	/* Currently only the global instance can do stack tracing */
- 	if (tr->flags & TRACE_ARRAY_FL_GLOBAL &&
- 	    func_flags.val & TRACE_FUNC_OPT_STACK)
--		func = function_stack_trace_call;
--	else
--		func = function_trace_call;
-+		callback.func = function_stack_trace_call;
-+	else {
-+		tr->ops->flags |= FTRACE_OPS_FL_ARGS;
-+		callback.args_func = function_args_trace_call;
-+	}
-+//		func = function_trace_call;
- 
--	ftrace_init_array_ops(tr, func);
-+	ftrace_init_array_ops(tr, callback.func);
- 
- 	tr->array_buffer.cpu = get_cpu();
- 	put_cpu();
+- Eric
