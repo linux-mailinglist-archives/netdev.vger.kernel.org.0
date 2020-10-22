@@ -2,240 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71508295A29
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 10:23:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5558295A41
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 10:26:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2895492AbgJVIXC convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 22 Oct 2020 04:23:02 -0400
-Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:56546 "EHLO
-        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2895445AbgJVIW5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 04:22:57 -0400
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-566-IawCvyt2OLSZqIgMHxnCnQ-1; Thu, 22 Oct 2020 04:22:53 -0400
-X-MC-Unique: IawCvyt2OLSZqIgMHxnCnQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S2895251AbgJVI0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 04:26:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56800 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2444122AbgJVI0S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Oct 2020 04:26:18 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0070510E2186;
-        Thu, 22 Oct 2020 08:22:52 +0000 (UTC)
-Received: from krava.redhat.com (unknown [10.40.195.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D845060BFA;
-        Thu, 22 Oct 2020 08:22:48 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Jesper Brouer <jbrouer@redhat.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Viktor Malik <vmalik@redhat.com>
-Subject: [RFC bpf-next 16/16] selftests/bpf: Add attach batch test (NOT TO BE MERGED)
-Date:   Thu, 22 Oct 2020 10:21:38 +0200
-Message-Id: <20201022082138.2322434-17-jolsa@kernel.org>
-In-Reply-To: <20201022082138.2322434-1-jolsa@kernel.org>
-References: <20201022082138.2322434-1-jolsa@kernel.org>
+        by mail.kernel.org (Postfix) with ESMTPSA id 2ABFB2065D;
+        Thu, 22 Oct 2020 08:26:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603355177;
+        bh=dmCNgDGTpNmF+8O2fjJO2XplnMkrwwsAXNmOMHG4kDE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=zDx/QVbNU8SimNSxRnLGamZjzaL0aYk8447/KE6GRihUCtWhJ6Z86tE/3/Weg2vwC
+         GiWZsECpqwLisbFLZe5yubGxrkvnswusVy8o3gK7vn/eUfbf4ADoW/+TTZixBrP7Y/
+         ZuwgVCa1BoOMrly/6gJ13uZ1QxD/B6i974xOGQS0=
+Date:   Thu, 22 Oct 2020 10:26:54 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Al Viro <viro@zeniv.linux.org.uk>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Christoph Hellwig <hch@lst.de>, kernel-team@android.com,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        David Laight <David.Laight@aculab.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-aio@kvack.org, io-uring@vger.kernel.org,
+        linux-arch@vger.kernel.org, linux-mm@kvack.org,
+        netdev@vger.kernel.org, keyrings@vger.kernel.org,
+        linux-security-module@vger.kernel.org
+Subject: Re: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
+ rw_copy_check_uvector() into lib/iov_iter.c"
+Message-ID: <20201022082654.GA1477657@kroah.com>
+References: <20200925045146.1283714-1-hch@lst.de>
+ <20200925045146.1283714-3-hch@lst.de>
+ <20201021161301.GA1196312@kroah.com>
+ <20201021233914.GR3576660@ZenIV.linux.org.uk>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201021233914.GR3576660@ZenIV.linux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding test that attaches to 50 known functions,
-that are also added to kernel.
+On Thu, Oct 22, 2020 at 12:39:14AM +0100, Al Viro wrote:
+> On Wed, Oct 21, 2020 at 06:13:01PM +0200, Greg KH wrote:
+> > On Fri, Sep 25, 2020 at 06:51:39AM +0200, Christoph Hellwig wrote:
+> > > From: David Laight <David.Laight@ACULAB.COM>
+> > > 
+> > > This lets the compiler inline it into import_iovec() generating
+> > > much better code.
+> > > 
+> > > Signed-off-by: David Laight <david.laight@aculab.com>
+> > > Signed-off-by: Christoph Hellwig <hch@lst.de>
+> > > ---
+> > >  fs/read_write.c | 179 ------------------------------------------------
+> > >  lib/iov_iter.c  | 176 +++++++++++++++++++++++++++++++++++++++++++++++
+> > >  2 files changed, 176 insertions(+), 179 deletions(-)
+> > 
+> > Strangely, this commit causes a regression in Linus's tree right now.
+> > 
+> > I can't really figure out what the regression is, only that this commit
+> > triggers a "large Android system binary" from working properly.  There's
+> > no kernel log messages anywhere, and I don't have any way to strace the
+> > thing in the testing framework, so any hints that people can provide
+> > would be most appreciated.
+> 
+> It's a pure move - modulo changed line breaks in the argument lists
+> the functions involved are identical before and after that (just checked
+> that directly, by checking out the trees before and after, extracting two
+> functions in question from fs/read_write.c and lib/iov_iter.c (before and
+> after, resp.) and checking the diff between those.
+> 
+> How certain is your bisection?
 
-This test is meant only for fast check on attach times,
-and can be probably in a different mergeable way, but
-at the moment it fits the need.
+The bisection is very reproducable.
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- net/bpf/test_run.c                            | 55 ++++++++++++++++
- .../selftests/bpf/prog_tests/attach_test.c    | 27 ++++++++
- .../testing/selftests/bpf/progs/attach_test.c | 62 +++++++++++++++++++
- 3 files changed, 144 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/attach_test.c
- create mode 100644 tools/testing/selftests/bpf/progs/attach_test.c
+But, this looks now to be a compiler bug.  I'm using the latest version
+of clang and if I put "noinline" at the front of the function,
+everything works.
 
-diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-index c1c30a9f76f3..8fc6d27fc07f 100644
---- a/net/bpf/test_run.c
-+++ b/net/bpf/test_run.c
-@@ -167,6 +167,61 @@ int noinline bpf_modify_return_test(int a, int *b)
- 	*b += 1;
- 	return a + *b;
- }
-+
-+#define ATTACH_TEST(__n) \
-+	int noinline __PASTE(bpf_attach_test, __n)(void) { return 0; }
-+
-+ATTACH_TEST(0)
-+ATTACH_TEST(1)
-+ATTACH_TEST(2)
-+ATTACH_TEST(3)
-+ATTACH_TEST(4)
-+ATTACH_TEST(5)
-+ATTACH_TEST(6)
-+ATTACH_TEST(7)
-+ATTACH_TEST(8)
-+ATTACH_TEST(9)
-+ATTACH_TEST(10)
-+ATTACH_TEST(11)
-+ATTACH_TEST(12)
-+ATTACH_TEST(13)
-+ATTACH_TEST(14)
-+ATTACH_TEST(15)
-+ATTACH_TEST(16)
-+ATTACH_TEST(17)
-+ATTACH_TEST(18)
-+ATTACH_TEST(19)
-+ATTACH_TEST(20)
-+ATTACH_TEST(21)
-+ATTACH_TEST(22)
-+ATTACH_TEST(23)
-+ATTACH_TEST(24)
-+ATTACH_TEST(25)
-+ATTACH_TEST(26)
-+ATTACH_TEST(27)
-+ATTACH_TEST(28)
-+ATTACH_TEST(29)
-+ATTACH_TEST(30)
-+ATTACH_TEST(31)
-+ATTACH_TEST(32)
-+ATTACH_TEST(33)
-+ATTACH_TEST(34)
-+ATTACH_TEST(35)
-+ATTACH_TEST(36)
-+ATTACH_TEST(37)
-+ATTACH_TEST(38)
-+ATTACH_TEST(39)
-+ATTACH_TEST(40)
-+ATTACH_TEST(41)
-+ATTACH_TEST(42)
-+ATTACH_TEST(43)
-+ATTACH_TEST(44)
-+ATTACH_TEST(45)
-+ATTACH_TEST(46)
-+ATTACH_TEST(47)
-+ATTACH_TEST(48)
-+ATTACH_TEST(49)
-+
- __diag_pop();
- 
- ALLOW_ERROR_INJECTION(bpf_modify_return_test, ERRNO);
-diff --git a/tools/testing/selftests/bpf/prog_tests/attach_test.c b/tools/testing/selftests/bpf/prog_tests/attach_test.c
-new file mode 100644
-index 000000000000..c5c6534c49c9
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/attach_test.c
-@@ -0,0 +1,27 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+#include "attach_test.skel.h"
-+
-+void test_attach_test(void)
-+{
-+	DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts);
-+	struct attach_test *attach_skel = NULL;
-+	__u32 duration = 0;
-+	int err;
-+
-+	opts.trampoline_attach_batch = true;
-+	attach_skel = attach_test__open_opts(&opts);
-+	if (CHECK(!attach_skel, "attach_test__open_opts", "open skeleton failed\n"))
-+		goto cleanup;
-+
-+	err = attach_test__load(attach_skel);
-+	if (CHECK(err, "attach_skel_load", "attach skeleton failed\n"))
-+		goto cleanup;
-+
-+	err = attach_test__attach(attach_skel);
-+	if (CHECK(err, "attach", "attach failed: %d\n", err))
-+		goto cleanup;
-+
-+cleanup:
-+	attach_test__destroy(attach_skel);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/attach_test.c b/tools/testing/selftests/bpf/progs/attach_test.c
-new file mode 100644
-index 000000000000..51b18f83c109
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/attach_test.c
-@@ -0,0 +1,62 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2019 Facebook */
-+#include <linux/bpf.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_tracing.h>
-+
-+char _license[] SEC("license") = "GPL";
-+
-+#define ATTACH_PROG(__n)			\
-+SEC("fentry/bpf_attach_test" #__n)		\
-+int BPF_PROG(prog ## __n) { return 0; }
-+
-+ATTACH_PROG(0)
-+ATTACH_PROG(1)
-+ATTACH_PROG(2)
-+ATTACH_PROG(3)
-+ATTACH_PROG(4)
-+ATTACH_PROG(5)
-+ATTACH_PROG(6)
-+ATTACH_PROG(7)
-+ATTACH_PROG(8)
-+ATTACH_PROG(9)
-+ATTACH_PROG(10)
-+ATTACH_PROG(11)
-+ATTACH_PROG(12)
-+ATTACH_PROG(13)
-+ATTACH_PROG(14)
-+ATTACH_PROG(15)
-+ATTACH_PROG(16)
-+ATTACH_PROG(17)
-+ATTACH_PROG(18)
-+ATTACH_PROG(19)
-+ATTACH_PROG(20)
-+ATTACH_PROG(21)
-+ATTACH_PROG(22)
-+ATTACH_PROG(23)
-+ATTACH_PROG(24)
-+ATTACH_PROG(25)
-+ATTACH_PROG(26)
-+ATTACH_PROG(27)
-+ATTACH_PROG(28)
-+ATTACH_PROG(29)
-+ATTACH_PROG(30)
-+ATTACH_PROG(31)
-+ATTACH_PROG(32)
-+ATTACH_PROG(33)
-+ATTACH_PROG(34)
-+ATTACH_PROG(35)
-+ATTACH_PROG(36)
-+ATTACH_PROG(37)
-+ATTACH_PROG(38)
-+ATTACH_PROG(39)
-+ATTACH_PROG(40)
-+ATTACH_PROG(41)
-+ATTACH_PROG(42)
-+ATTACH_PROG(43)
-+ATTACH_PROG(44)
-+ATTACH_PROG(45)
-+ATTACH_PROG(46)
-+ATTACH_PROG(47)
-+ATTACH_PROG(48)
-+ATTACH_PROG(49)
--- 
-2.26.2
+Nick, any ideas here as to who I should report this to?
 
+I'll work on a fixup patch for the Android kernel tree to see if I can
+work around it there, but others will hit this in Linus's tree sooner or
+later...
+
+thanks,
+
+greg k-h
