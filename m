@@ -2,78 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C71B7296299
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 18:21:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CB6B2962A8
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 18:27:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2901649AbgJVQV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 12:21:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38072 "EHLO mail.kernel.org"
+        id S2901747AbgJVQ1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 12:27:42 -0400
+Received: from mx2.suse.de ([195.135.220.15]:48746 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2444383AbgJVQV4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Oct 2020 12:21:56 -0400
-Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C456C208B6;
-        Thu, 22 Oct 2020 16:21:52 +0000 (UTC)
-Date:   Thu, 22 Oct 2020 12:21:50 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Jesper Brouer <jbrouer@redhat.com>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
-        Viktor Malik <vmalik@redhat.com>
-Subject: Re: [RFC bpf-next 00/16] bpf: Speed up trampoline attach
-Message-ID: <20201022122150.45e81da0@gandalf.local.home>
-In-Reply-To: <20201022104205.728dd135@gandalf.local.home>
-References: <20201022082138.2322434-1-jolsa@kernel.org>
-        <20201022093510.37e8941f@gandalf.local.home>
-        <20201022141154.GB2332608@krava>
-        <20201022104205.728dd135@gandalf.local.home>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S2897127AbgJVQ1m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Oct 2020 12:27:42 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 68D73AC48;
+        Thu, 22 Oct 2020 16:27:40 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 0D4F0604F6; Thu, 22 Oct 2020 18:27:40 +0200 (CEST)
+Date:   Thu, 22 Oct 2020 18:27:40 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Danielle Ratson <danieller@nvidia.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ido Schimmel <idosch@idosch.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        mlxsw <mlxsw@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        "johannes@sipsolutions.net" <johannes@sipsolutions.net>
+Subject: Re: [PATCH net-next 1/6] ethtool: Extend link modes settings uAPI
+ with lanes
+Message-ID: <20201022162740.nisrhdzc4keuosgw@lion.mk-sys.cz>
+References: <20201016221553.GN139700@lunn.ch>
+ <DM6PR12MB3865B000BE04105A4373FD08D81E0@DM6PR12MB3865.namprd12.prod.outlook.com>
+ <20201019110422.gj3ebxttwtfssvem@lion.mk-sys.cz>
+ <20201019122643.GC11282@nanopsycho.orion>
+ <20201019132446.tgtelkzmfjdonhfx@lion.mk-sys.cz>
+ <DM6PR12MB386532E855FD89F87072D0D7D81F0@DM6PR12MB3865.namprd12.prod.outlook.com>
+ <20201021070820.oszrgnsqxddi2m43@lion.mk-sys.cz>
+ <DM6PR12MB38651062E363459E66140B23D81C0@DM6PR12MB3865.namprd12.prod.outlook.com>
+ <20201021084733.sb4rpzwyzxgczvrg@lion.mk-sys.cz>
+ <DM6PR12MB3865D0B8F8F1BD32532D1DDFD81D0@DM6PR12MB3865.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DM6PR12MB3865D0B8F8F1BD32532D1DDFD81D0@DM6PR12MB3865.namprd12.prod.outlook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 22 Oct 2020 10:42:05 -0400
-Steven Rostedt <rostedt@goodmis.org> wrote:
+On Thu, Oct 22, 2020 at 06:15:48AM +0000, Danielle Ratson wrote:
+> > -----Original Message-----
+> > From: Michal Kubecek <mkubecek@suse.cz>
+> > Sent: Wednesday, October 21, 2020 11:48 AM
+> > 
+> > Ah, right, it does. But as you extend struct ethtool_link_ksettings
+> > and drivers will need to be updated to provide this information,
+> > wouldn't it be more useful to let the driver provide link mode in
+> > use instead (and derive number of lanes from it)?
+> 
+> This is the way it is done with the speed parameter, so I have aligned
+> it to it. Why the lanes should be done differently comparing to the
+> speed?
 
-> I'd like to see how batch functions will work. I guess I need to start
-> looking at the bpf trampoline, to see if we can modify the ftrace
-> trampoline to have a quick access to parameters. It would be much more
-> beneficial to update the existing generic function tracer to have access to
-> function parameters that all users could benefit from, than to tweak a
-> single use case into giving this feature to a single user.
+Speed and duplex have worked this way since ages and the interface was
+probably introduced back in times when combination of speed and duplex
+was sufficient to identify the link mode. This is no longer the case and
+even adding number of lanes wouldn't make the combination unique. So if
+we are going to extend the interface now and update drivers to provide
+extra information, I believe it would be more useful to provide full
+information.
 
-Looking at the creation of the bpf trampoline, I think I can modify ftrace
-to have a more flexible callback. Something that passes the callback the
-following:
-
- the function being traced.
- a pointer to the parent caller (that could be modified)
- a pointer to the original stack frame (what the stack was when the
-      function is entered)
- An array of the arguments of the function (which could also be modified)
-
-This is a change I've been wanting to make for some time, because it would
-allow function graph to be a user of function tracer, and would give
-everything access to the arguments.
-
-We would still need a helper function to store all regs to keep kprobes
-working unmodified, but this would still only be done if asked.
-
-The above change shouldn't hurt performance for either ftrace or bpf
-because it appears they both do the same. If BPF wants to have a batch
-processing of functions, then I think we should modify ftrace to do this
-new approach instead of creating another set of function trampolines.
-
--- Steve
+Michal
