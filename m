@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 873D52965A3
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 22:06:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF2BB2965BB
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 22:09:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S370816AbgJVUGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 16:06:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57484 "EHLO
+        id S2897285AbgJVUJZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 16:09:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S370843AbgJVUGn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 16:06:43 -0400
+        with ESMTP id S2502779AbgJVUJV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 16:09:21 -0400
 Received: from ZenIV.linux.org.uk (zeniv.linux.org.uk [IPv6:2002:c35c:fd02::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F9B1C0613CE;
-        Thu, 22 Oct 2020 13:06:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B97AC0613CE;
+        Thu, 22 Oct 2020 13:09:21 -0700 (PDT)
 Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1kVgqz-006SmZ-1W; Thu, 22 Oct 2020 20:06:29 +0000
-Date:   Thu, 22 Oct 2020 21:06:29 +0100
+        id 1kVgte-006StU-Kc; Thu, 22 Oct 2020 20:09:14 +0000
+Date:   Thu, 22 Oct 2020 21:09:14 +0100
 From:   Al Viro <viro@zeniv.linux.org.uk>
 To:     Nick Desaulniers <ndesaulniers@google.com>
 Cc:     Arnd Bergmann <arnd@arndb.de>,
@@ -49,9 +49,8 @@ Cc:     Arnd Bergmann <arnd@arndb.de>,
         <linux-security-module@vger.kernel.org>
 Subject: Re: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
  rw_copy_check_uvector() into lib/iov_iter.c"
-Message-ID: <20201022200629.GX3576660@ZenIV.linux.org.uk>
-References: <e04d0c5d-e834-a15b-7844-44dcc82785cc@redhat.com>
- <a1533569-948a-1d5b-e231-5531aa988047@redhat.com>
+Message-ID: <20201022200914.GY3576660@ZenIV.linux.org.uk>
+References: <a1533569-948a-1d5b-e231-5531aa988047@redhat.com>
  <bc0a091865f34700b9df332c6e9dcdfd@AcuMS.aculab.com>
  <5fd6003b-55a6-2c3c-9a28-8fd3a575ca78@redhat.com>
  <20201022132342.GB8781@lst.de>
@@ -60,36 +59,29 @@ References: <e04d0c5d-e834-a15b-7844-44dcc82785cc@redhat.com>
  <CAK8P3a3LjG+ZvmQrkb9zpgov8xBkQQWrkHBPgjfYSqBKGrwT4w@mail.gmail.com>
  <CAKwvOdnhONvrHLAuz_BrAuEpnF5mD9p0YPGJs=NZZ0EZNo7dFQ@mail.gmail.com>
  <20201022192458.GV3576660@ZenIV.linux.org.uk>
+ <20201022200629.GX3576660@ZenIV.linux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201022192458.GV3576660@ZenIV.linux.org.uk>
+In-Reply-To: <20201022200629.GX3576660@ZenIV.linux.org.uk>
 Sender: Al Viro <viro@ftp.linux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 22, 2020 at 08:24:58PM +0100, Al Viro wrote:
+On Thu, Oct 22, 2020 at 09:06:29PM +0100, Al Viro wrote:
+> On Thu, Oct 22, 2020 at 08:24:58PM +0100, Al Viro wrote:
+> 
+> > Depending upon the calling conventions, compiler might do truncation in caller or
+> > in a callee, but it must be done _somewhere_.
+> 
+> Unless I'm misreading AAPCS64,
+> 	"Unlike in the 32-bit AAPCS, named integral values must be narrowed by the callee
+> 	 rather than the caller"
+> in 6.4.2 means that callee must not _not_ expect the upper 32 bits of %x0..%x7 to contain
 
-> Depending upon the calling conventions, compiler might do truncation in caller or
-> in a callee, but it must be done _somewhere_.
+Sorry, artefact of editing - that's
 
-Unless I'm misreading AAPCS64,
-	"Unlike in the 32-bit AAPCS, named integral values must be narrowed by the callee
-	 rather than the caller"
-in 6.4.2 means that callee must not _not_ expect the upper 32 bits of %x0..%x7 to contain
-anything valid for 32bit arguments and it must zero-extend %w0..%w7 when passing that to
-something that expects a 64bit argument.  On inlining it should be the same situation as
-storing unsigned int argument into unsigned long local variable and working with that - if
+"in 6.4.2 means that callee must _not_ expect the upper 32 bits of %x0..%x7 to contain"
 
-void f(unsigned int w)
-{
-	unsigned long x = w;
-	printf("%lx\n", x);
-}
-
-ends up passing %x0 to printf, it's an obvious bug - it must do something like
-	uxtw x0, w0
-first.
-
-What am I missing here?
+obviously.
