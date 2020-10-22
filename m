@@ -2,154 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD1B3295D56
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 13:25:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53533295D68
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 13:32:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2897224AbgJVLZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 07:25:46 -0400
-Received: from jabberwock.ucw.cz ([46.255.230.98]:44806 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2897214AbgJVLZp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 07:25:45 -0400
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 1C1561C0B78; Thu, 22 Oct 2020 13:25:41 +0200 (CEST)
-Date:   Thu, 22 Oct 2020 13:25:40 +0200
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
-Cc:     linux-can@vger.kernel.org, devicetree@vger.kernel.org,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        David Miller <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>, mark.rutland@arm.com,
-        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Jiri Novak <jnovak@fel.cvut.cz>,
-        Jaroslav Beran <jara.beran@gmail.com>,
-        Petr Porazil <porazil@pikron.com>,
-        Drew Fustini <pdp7pdp7@gmail.com>
-Subject: Re: [PATCH v6 6/6] docs: ctucanfd: CTU CAN FD open-source IP core
- documentation.
-Message-ID: <20201022112540.GB30566@duo.ucw.cz>
-References: <cover.1603354744.git.pisa@cmp.felk.cvut.cz>
- <213155c64da5a97c574cd15de1cb06f8d0acef6a.1603354744.git.pisa@cmp.felk.cvut.cz>
+        id S2897307AbgJVLcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 07:32:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34120 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2897299AbgJVLcr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 07:32:47 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F24EC0613CE;
+        Thu, 22 Oct 2020 04:32:47 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id t20so1391986edr.11;
+        Thu, 22 Oct 2020 04:32:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jIaIAx6jS/4uqnHJUBuWWcGf2+UjzZ+gZdm819hN/VU=;
+        b=ThtOsYEM5zerzLpBETqFjB3YKpeIJRvrmxJZEf3w4Kz9TeYMus9fkxqZomDOjrPcYl
+         IRCDlFO5p8JDQHy/VyN3aDs8OMHv2Wwg/jkcPE+UDEx8jSV6kGPWZlCihR+1me/mVfwe
+         1beaL4nlFZ48dotOLhiSl03EchBgg+kfFcMdyzY82YyEI4FHOfvKBvhFaU1viBQG8JaS
+         hn/STTq4JcywsW2SUbtbfIAnz1gMWTAboVM8+1ahVW0S3ElzI2rsSFxKD6EAsbSa4NGf
+         KCvvjO+9p8XX9w8Je31XyrVwsxQ7bwV1GbDHSqQX8D2+oisv55xDvdT8H161tNFSshC+
+         SvWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jIaIAx6jS/4uqnHJUBuWWcGf2+UjzZ+gZdm819hN/VU=;
+        b=fKZHZygcI8qImIoOsHY/hwHDCTQCHdlL2r2+irDBLZN2TuUfgOGEibqOrvTNCm+e24
+         X38WK2FGusaIyt+6qvcuMJQLlW5ARSr9UscXZODJ4jvFNZxf/Qfz5KZYCmWPBTex7+dS
+         KGXll4WTUFiJFGu3+kKTvmu/JEgNNU9XuUqjJqTlKigJAM6sHUP/Tbd4hPNX7cNI+nen
+         11ET+j/5AyWV0qHyIE6BqPTiJbwSqMu+kduuz+TGSzh8Zecy+8y928ObswASWxaEaKT8
+         /HXc2twogAUucSBSrWgiBkpULylEYD24XT+DPA6luN6XVcdmmmoGi5Me3gyUp2ewqhv8
+         +mUA==
+X-Gm-Message-State: AOAM531lIOw9N5d2TDLgjRadlcv3fUe0CMr0HZ5TlTrmDnWhTLtUlgtA
+        bDYUGOOGMvW5Wc4obSF7N4M=
+X-Google-Smtp-Source: ABdhPJwkhqe63VnyxqwGSnytPajTDBSuPz6CsHi5+yS9NQpJLA8jC8m4X3b+pysB2hGKfZ+pmlegxA==
+X-Received: by 2002:a50:f389:: with SMTP id g9mr1834189edm.367.1603366365840;
+        Thu, 22 Oct 2020 04:32:45 -0700 (PDT)
+Received: from skbuf ([188.26.174.215])
+        by smtp.gmail.com with ESMTPSA id d6sm601729edr.26.2020.10.22.04.32.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Oct 2020 04:32:45 -0700 (PDT)
+Date:   Thu, 22 Oct 2020 14:32:43 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Eggers <ceggers@arri.de>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH net-next 7/9] net: dsa: microchip: ksz9477: add
+ hardware time stamping support
+Message-ID: <20201022113243.4shddtywgvpcqq6c@skbuf>
+References: <20201019172435.4416-1-ceggers@arri.de>
+ <20201022090126.h64hfnlajqelveku@skbuf>
+ <20201022105014.gflswfpie4qvbw3h@skbuf>
+ <2541271.Km786uMvHt@n95hx1g2>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="f2QGlHpHGjS2mn6Y"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <213155c64da5a97c574cd15de1cb06f8d0acef6a.1603354744.git.pisa@cmp.felk.cvut.cz>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <2541271.Km786uMvHt@n95hx1g2>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Oct 22, 2020 at 01:11:40PM +0200, Christian Eggers wrote:
+> Hi Vladimir,
+> 
+> On Thursday, 22 October 2020, 12:50:14 CEST, Vladimir Oltean wrote:
+> after applying the RX timestamp correctly to the correction field (shifting
+> the nanoseconds by 16),
 
---f2QGlHpHGjS2mn6Y
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+That modification should have been done anyway, since the unit of
+measurement for correctionField is scaled ppb (48 bits nanoseconds, 16
+bits scaled nanoseconds), and not nanoseconds.
 
-On Thu 2020-10-22 10:36:21, Pavel Pisa wrote:
-> CTU CAN FD IP core documentation based on Martin Je=C5=99=C3=A1bek's dipl=
-oma theses
-> Open-source and Open-hardware CAN FD Protocol Support
-> https://dspace.cvut.cz/handle/10467/80366
-> .
+> it seems that "moving" the timestamp back to the tail tag on TX is not
+> required anymore. Keeping the RX timestamp simply in the correction
+> field (negative value), works fine now. So this halves the effort in
+> the tag_ksz driver.
 
-> ---
->  .../ctu/FSM_TXT_Buffer_user.png               | Bin 0 -> 174807 bytes
+Ok, this makes sense.
+Depending on what Richard responds, it now looks like the cleanest
+approach would be to move your implementation that is currently in
+ksz9477_update_ptp_correction_field() into a generic function called
 
-Maybe picture should stay on website, somewhere. It is rather big for
-kernel sources.
+static inline void ptp_onestep_p2p_move_t2_to_correction(struct sk_buff *skb,
+							 unsigned int ptp_type,
+							 struct ptp_header *ptp_header,
+							 ktime_t t2)
 
-> +About SocketCAN
-> +---------------
-> +
-> +SocketCAN is a standard common interface for CAN devices in the Linux
-> +kernel. As the name suggests, the bus is accessed via sockets, similarly
-> +to common network devices. The reasoning behind this is in depth
-> +described in `Linux SocketCAN <https://git.kernel.org/cgit/linux/kernel/=
-git/torvalds/linux.git/tree/Documentation/networking/can.rst>`_.
-> +In short, it offers a
-> +natural way to implement and work with higher layer protocols over CAN,
-> +in the same way as, e.g., UDP/IP over Ethernet.
-
-Drop? Or at least link directly to the file in kernel tree?
-
-> +Device probe
-> +~~~~~~~~~~~~
-> +
-> +Before going into detail about the structure of a CAN bus device driver,
-> +let's reiterate how the kernel gets to know about the device at all.
-> +Some buses, like PCI or PCIe, support device enumeration. That is, when
-> +the system boots, it discovers all the devices on the bus and reads
-> +their configuration. The kernel identifies the device via its vendor ID
-> +and device ID, and if there is a driver registered for this identifier
-> +combination, its probe method is invoked to populate the driver's
-> +instance for the given hardware. A similar situation goes with USB, only
-> +it allows for device hot-plug.
-> +
-> +The situation is different for peripherals which are directly embedded
-> +in the SoC and connected to an internal system bus (AXI, APB, Avalon,
-> +and others). These buses do not support enumeration, and thus the kernel
-> +has to learn about the devices from elsewhere. This is exactly what the
-> +Device Tree was made for.
-
-Dunno. Is it suitable? This is supposed to be ctu-can documentation,
-not "how hardware works" docs.
-
-> +Platform device driver
-> +^^^^^^^^^^^^^^^^^^^^^^
-> +
-> +In the case of Zynq, the core is connected via the AXI system bus, which
-> +does not have enumeration support, and the device must be specified in
-> +Device Tree. This kind of devices is called *platform device* in the
-> +kernel and is handled by a *platform device driver*\  [1]_.
-> +
-> +A platform device driver provides the following things:
-> +
-> +-  A *probe* function
-> +
-> +-  A *remove* function
-> +
-> +-  A table of *compatible* devices that the driver can handle
-> +
-> +The *probe* function is called exactly once when the device appears (or
-> +the driver is loaded, whichever happens later). If there are more
-> +devices handled by the same driver, the *probe* function is called for
-> +each one of them. Its role is to allocate and initialize resources
-> +required for handling the device, as well as set up low-level functions
-> +for the platform-independent layer, e.g., *read_reg* and *write_reg*.
-> +After that, the driver registers the device to a higher layer, in our
-> +case as a *network device*.
-> +
-> +The *remove* function is called when the device disappears, or the
-> +driver is about to be unloaded. It serves to free the resources
-> +allocated in *probe* and to unregister the device from higher layers.
-> +
-> +Finally, the table of *compatible* devices states which devices the
-> +driver can handle. The Device Tree entry ``compatible`` is matched
-> +against the tables of all *platform drivers*.
-
-And this is "how to write a kernel driver" documentation. Like, why
-not, but maybe it does not need to be in kernel tree, and certainly
-should be separate from real "what is ctucan and how to use it" docs.
-
-Best regards,
-								Pavel
---=20
-http://www.livejournal.com/~pavelmachek
-
---f2QGlHpHGjS2mn6Y
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCX5FsNAAKCRAw5/Bqldv6
-8jKBAKCmizHIJCj3VPyqOohSfi3GtrmUCACfcxb6hpq3N7kbuJ2u8CONZ1K74u4=
-=+fFG
------END PGP SIGNATURE-----
-
---f2QGlHpHGjS2mn6Y--
+You should then clearly document that this function is needed for
+hardware capable of one-step P2P that does not already modify the
+correctionField of Pdelay_Req event messages on ingress.
