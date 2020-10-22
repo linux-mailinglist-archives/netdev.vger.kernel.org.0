@@ -2,54 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86B7D295563
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 02:02:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A81B295569
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 02:16:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2507388AbgJVAC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 20:02:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34470 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2507379AbgJVAC2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Oct 2020 20:02:28 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EA8C42068E;
-        Thu, 22 Oct 2020 00:02:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603324947;
-        bh=3UPSINPAND/lqccE62eGQN/0o8y3xZbQAeiWy+GF/To=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Xi7ym5utmWSTIoAwg6r9dGp4x6QleovpXhk6RRUPw8uIK2epUTOTLeZqLsOBoTZ19
-         ELd7dNL9gY8j3J05Mxzer4ue+0NTsCSAEGuGanmBsKvABq5hoi8LfnAGOujo9faeNV
-         noUD3Q1gU/QxClDHx7T+3JvxvIM24UHqI5n5p3vc=
-Date:   Wed, 21 Oct 2020 17:02:24 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Nitesh Narayan Lal <nitesh@redhat.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        frederic@kernel.org, mtosatti@redhat.com, sassmann@redhat.com,
-        jesse.brandeburg@intel.com, lihong.yang@intel.com,
-        helgaas@kernel.org, jeffrey.t.kirsher@intel.com,
-        jacob.e.keller@intel.com, jlelli@redhat.com, hch@infradead.org,
-        bhelgaas@google.com, mike.marciniszyn@intel.com,
-        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
-        jiri@nvidia.com, mingo@redhat.com, peterz@infradead.org,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        lgoncalv@redhat.com, Dave Miller <davem@davemloft.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to
- housekeeping CPUs
-Message-ID: <20201021170224.55aea948@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <877drj72cz.fsf@nanos.tec.linutronix.de>
-References: <20200928183529.471328-1-nitesh@redhat.com>
-        <20200928183529.471328-5-nitesh@redhat.com>
-        <87v9f57zjf.fsf@nanos.tec.linutronix.de>
-        <3bca9eb1-a318-1fc6-9eee-aacc0293a193@redhat.com>
-        <87lfg093fo.fsf@nanos.tec.linutronix.de>
-        <877drj72cz.fsf@nanos.tec.linutronix.de>
+        id S2507388AbgJVALM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 20:11:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42160 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2442449AbgJVALM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 20:11:12 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6AE6C0613CE
+        for <netdev@vger.kernel.org>; Wed, 21 Oct 2020 17:11:10 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id az3so16176pjb.4
+        for <netdev@vger.kernel.org>; Wed, 21 Oct 2020 17:11:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Sd8F01A0fjP3MYfcQsz+f0VIbN1tvxRub+s7hVzqnU0=;
+        b=JGNw9vojYWmsRXXisF4hvBMgdaMVJXGA3ZhExfLR1POvOX/F1H8FBck6vgGetpc4lF
+         svC6o/lpMWFO4dMDlFLHCC9xIKTKtRTOMIisRbET43lSaNedRnS3996oavGz+z/1FX2J
+         sGXvIdb132Up+LEJV5+sXFru/2pUMdxbe+P8GHC7fKlKkpsmAt1HcEyXrGid5YNRiR7Q
+         19zsUBYmPylYIqQbaC472A00GiI+GJQWIWk3hC5Povbg8xYk9LZdk7D8OfJy40QTwWkH
+         qM7MBccsCtSWUGREOaqJU56BjlxTbEd7UQ19tRA6re3P36i/zLO4SOfHOELhSfjr77P1
+         WOIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Sd8F01A0fjP3MYfcQsz+f0VIbN1tvxRub+s7hVzqnU0=;
+        b=hEYrzhp9L1wkGXV492GJ+mdFF8xBIXzw8ygGdrltNCvmhcT8d/jhzztajz1D5ocAvf
+         nygI7GmmrQIvq2v7jK6pFgKB3X37NnTwesEKsqclfn7SUzVXhG1xiGDP6+3OUA90Mm/K
+         vLx1on6A0tNwZhFpprdQaEMaNT320CKRgnjhlpI9i40UiR/w4agg+L9yr2D2XUfqJ7mM
+         8FtAD0lzlOCq+EDJyewW7Wjzx21+DZzMsmhLgYH9Kb0qm35DGRr5kSsIZPyZuPH6T52/
+         ilYBt7XKLQd81FaDEcagBgDPMvCE2Sv/NLJBrKSZKFs1sag0W8PhcQrnP4k3bkL+0yW6
+         BrBg==
+X-Gm-Message-State: AOAM533TcCm07PNmhErwBSe2clVa//DMIsIcceKFON/x+Cw3Y5wmdRy+
+        If+oUZbQpLd0jJGuBJxJ40LnaA==
+X-Google-Smtp-Source: ABdhPJyj9tkg2BA4Hw+lTrzdP4Fe1UAxLlFf6pV3hmR/H2HHK1rRSy8kP6yBHtGAuGpJalKH0002Wg==
+X-Received: by 2002:a17:90a:6b04:: with SMTP id v4mr98185pjj.101.1603325470046;
+        Wed, 21 Oct 2020 17:11:10 -0700 (PDT)
+Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id v3sm3014735pfu.165.2020.10.21.17.11.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Oct 2020 17:11:09 -0700 (PDT)
+Date:   Wed, 21 Oct 2020 17:11:01 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Petr Machata <me@pmachata.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        dsahern@gmail.com, john.fastabend@gmail.com, jiri@nvidia.com,
+        idosch@nvidia.com
+Subject: Re: [PATCH iproute2-next 15/15] dcb: Add a subtool for the DCB ETS
+ object
+Message-ID: <20201021171101.60a7bd38@hermes.local>
+In-Reply-To: <873627jg2d.fsf@nvidia.com>
+References: <20201020114141.53391942@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <877drkk4qu.fsf@nvidia.com>
+        <20201021112838.3026a648@hermes.local>
+        <873627jg2d.fsf@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,58 +68,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 21 Oct 2020 22:25:48 +0200 Thomas Gleixner wrote:
-> On Tue, Oct 20 2020 at 20:07, Thomas Gleixner wrote:
-> > On Tue, Oct 20 2020 at 12:18, Nitesh Narayan Lal wrote:  
-> >> However, IMHO we would still need a logic to prevent the devices from
-> >> creating excess vectors.  
+On Thu, 22 Oct 2020 01:48:58 +0200
+Petr Machata <me@pmachata.org> wrote:
+
+> Stephen Hemminger <stephen@networkplumber.org> writes:
+> 
+> > On Tue, 20 Oct 2020 22:43:37 +0200
+> > Petr Machata <me@pmachata.org> wrote:
+> >  
+> >> Jakub Kicinski <kuba@kernel.org> writes:
+> >>  
+> >> > On Tue, 20 Oct 2020 02:58:23 +0200 Petr Machata wrote:  
+> >> >> +static void dcb_ets_print_cbs(FILE *fp, const struct ieee_ets *ets)
+> >> >> +{
+> >> >> +	print_string(PRINT_ANY, "cbs", "cbs %s ", ets->cbs ? "on" : "off");
+> >> >> +}  
+> >> >
+> >> > I'd personally lean in the direction ethtool is taking and try to limit
+> >> > string values in json output as much as possible. This would be a good
+> >> > fit for bool.  
+> >>
+> >> Yep, makes sense. The value is not user-toggleable, so the on / off
+> >> there is just arbitrary.
+> >>
+> >> I'll consider it for "willing" as well. That one is user-toggleable, and
+> >> the "on" / "off" makes sense for consistency with the command line. But
+> >> that doesn't mean it can't be a boolean in JSON.  
 > >
-> > Managed interrupts are preventing exactly that by pinning the interrupts
-> > and queues to one or a set of CPUs, which prevents vector exhaustion on
-> > CPU hotplug.
-> >
-> > Non-managed, yes that is and always was a problem. One of the reasons
-> > why managed interrupts exist.  
+> > There are three ways of representing a boolean. You chose the worst.
+> > Option 1: is to use a json null value to indicate presence.
+> >       this works well for a flag.
+> > Option 2: is to use json bool.
+> > 	this looks awkward in non-json output
+> > Option 3: is to use a string
+> >      	but this makes the string output something harder to consume
+> > 	in json.  
 > 
-> But why is this only a problem for isolation? The very same problem
-> exists vs. CPU hotplug and therefore hibernation.
+> What seems to be used commonly for these on/off toggles is the following
+> pattern:
 > 
-> On x86 we have at max. 204 vectors available for device interrupts per
-> CPU. So assumed the only device interrupt in use is networking then any
-> machine which has more than 204 network interrupts (queues, aux ...)
-> active will prevent the machine from hibernation.
+> 	print_string(PRINT_FP, NULL, "willing %s ", ets->willing ? "on" : "off");
+> 	print_bool(PRINT_JSON, "willing", NULL, true);
 > 
-> Aside of that it's silly to have multiple queues targeted at a single
-> CPU in case of hotplug. And that's not a theoretical problem.  Some
-> power management schemes shut down sockets when the utilization of a
-> system is low enough, e.g. outside of working hours.
-> 
-> The whole point of multi-queue is to have locality so that traffic from
-> a CPU goes through the CPU local queue. What's the point of having two
-> or more queues on a CPU in case of hotplug?
-> 
-> The right answer to this is to utilize managed interrupts and have
-> according logic in your network driver to handle CPU hotplug. When a CPU
-> goes down, then the queue which is associated to that CPU is quiesced
-> and the interrupt core shuts down the relevant interrupt instead of
-> moving it to an online CPU (which causes the whole vector exhaustion
-> problem on x86). When the CPU comes online again, then the interrupt is
-> reenabled in the core and the driver reactivates the queue.
+> That way the JSON output is easy to query and the FP output is obvious
+> and compatible with the command line. Does that work for you?
 
-I think Mellanox folks made some forays into managed irqs, but I don't
-remember/can't find the details now.
-
-For networking the locality / queue per core does not always work,
-since the incoming traffic is usually spread based on a hash. Many
-applications perform better when network processing is done on a small
-subset of CPUs, and application doesn't get interrupted every 100us. 
-So we do need extra user control here.
-
-We have a bit of a uAPI problem since people had grown to depend on
-IRQ == queue == NAPI to configure their systems. "The right way" out
-would be a proper API which allows associating queues with CPUs rather
-than IRQs, then we can use managed IRQs and solve many other problems.
-
-Such new API has been in the works / discussions for a while now.
-
-(Magnus keep me honest here, if you disagree the queue API solves this.)
+Yes, that is hybrid, maybe it should be a helper function?
