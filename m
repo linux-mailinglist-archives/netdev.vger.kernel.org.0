@@ -2,167 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0595C2956A1
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 05:13:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E9E42956B3
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 05:22:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2443220AbgJVDNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 23:13:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41902 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2442068AbgJVDNL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 23:13:11 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30884C0613CE;
-        Wed, 21 Oct 2020 20:13:11 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id k21so255819wmi.1;
-        Wed, 21 Oct 2020 20:13:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RPuifGNGlhjVfszqKMOn5Y70zir8Fda3sApRhgcK6+Q=;
-        b=aSTwHLEY7nFTj7UAOZerhSz/J2mUFJ14Nbahqk4pXY2hDc7mrZ9LjzeaU200od3sSW
-         EFmZY+tz5VkbfHqn9o/QChW7LJ+4S0IjsI5wEd8rcRSyGMdVmsUBV5repgTuPKXdx9Xw
-         9ceno6rmkHg98ysf7rYevtOXb1bY8CKXwe4lSKVI4hqu2FRSFoPXJMuBGN7tRv9Ld1KJ
-         pFd7uNKFStH3ZZQfn4y2PmBW/H4M10tYuWAcj8SMq0zRs7nI23sGSI2OK2W6AQ3L1BqJ
-         yHB3u4OLe6JgCMxpf+yf2Vd43v9ddGWAKNrQs3xEIptfzmLradxZA9r562rRJberpN0j
-         pOgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RPuifGNGlhjVfszqKMOn5Y70zir8Fda3sApRhgcK6+Q=;
-        b=lE7D/0/RK9K2s/zKNHuO1C838dQsjPiDVpmv/RP/+/rF2BD7muSjjleLqOUhN0IkLF
-         NJvVUVKvZ3x43XMkemhFs9MiboCBkVhd78ouNCCReduQyWscKWLzsb+6koUxolr0C1ds
-         hxNVRteWXqlr0cxKxO5R3En+Wp6OdGc+b2/L2FMJEFS1v51MPGU2hCwJCCdsmC8dqAUj
-         NNk5p2hPTf0uItbuj1+22XndDL8PV2OvqO/hPOiXtIOD1AXjrDV2zBcXLDtnhA90yV8F
-         44FKUznN6wc8u8qJm1jD1HYNRdbJaPoFUhvb+sc05F55g7Kzm49a8rO+f4XkDTxS/idB
-         Oyig==
-X-Gm-Message-State: AOAM533q1yNJ8ZF9HGbQZVUfXw+J/1YfS0Gy87R/p8UOTSoTVMPBfAl0
-        ej653+Ao/Z7EEGfOzDzMuJRML6ekhfKocwDTqwo=
-X-Google-Smtp-Source: ABdhPJwWsgx/DUHbCS7KE/aIhJ67wk2PwIXEpFxpQX1FfYa39D49TgF89m+1oz2HouJpaYLgF69N8pJUeKaPGvazuTc=
-X-Received: by 2002:a1c:4683:: with SMTP id t125mr431708wma.110.1603336389731;
- Wed, 21 Oct 2020 20:13:09 -0700 (PDT)
+        id S2895338AbgJVDWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 23:22:53 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:54833 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2443490AbgJVDWw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 23:22:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603336969;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=lcNyG5kZlVTOvNSi+KB5ie4eDdxWcxoVSBpvVyq9VHY=;
+        b=esB7BmG4IEpXYr/fd7NMGLbUBd2XdWJ9ygQXcU01iCZX1Ch/o8eSOtyJQJg3qL3mxhkjV8
+        GUW65ZtNQRm3u+VPf4P26e9ogWo8QnR62VEe1uVtvmZDq0s7pOR4R3Lx0UCPr3mJp6+F11
+        PkLNwOAuFrbDX4xdtwuQkym36mtipBM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-504-nLIADEqzMoSH34_WQJdXzg-1; Wed, 21 Oct 2020 23:22:45 -0400
+X-MC-Unique: nLIADEqzMoSH34_WQJdXzg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C9AEC5F9C2;
+        Thu, 22 Oct 2020 03:22:43 +0000 (UTC)
+Received: from [10.72.13.119] (ovpn-13-119.pek2.redhat.com [10.72.13.119])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8F4CC5D9DD;
+        Thu, 22 Oct 2020 03:22:32 +0000 (UTC)
+Subject: Re: [PATCH v4] Revert "virtio-net: ethtool configurable RXCSUM"
+To:     "Michael S. Tsirkin" <mst@redhat.com>, linux-kernel@vger.kernel.org
+Cc:     Tonghao Zhang <xiangxia.m.yue@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        kernel test robot <lkp@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+References: <20201021142944.13615-1-mst@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <807f793c-70ff-072c-c8d8-a4ca06eba2c6@redhat.com>
+Date:   Thu, 22 Oct 2020 11:22:30 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <cover.1603110316.git.lucien.xin@gmail.com> <b65bdc11e5a17e328227676ea283cee617f973fb.1603110316.git.lucien.xin@gmail.com>
- <20201019221545.GD11030@localhost.localdomain> <CADvbK_ezWXMxpKkt3kxbXhcgu73PTJ1zpChb_sCgDu38xcROtA@mail.gmail.com>
- <20201020211108.GF11030@localhost.localdomain> <3BC2D946-9EA7-4847-9C6E-B3C9DA6A6618@fh-muenster.de>
- <20201020212338.GG11030@localhost.localdomain> <CADvbK_csZzHwQ04rMnCDw6=4meY-rrH--19VWm8ROafYSQWWeQ@mail.gmail.com>
- <5EE3969E-CE57-4D9E-99E9-9A9D39C60425@fh-muenster.de>
-In-Reply-To: <5EE3969E-CE57-4D9E-99E9-9A9D39C60425@fh-muenster.de>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 22 Oct 2020 11:12:57 +0800
-Message-ID: <CADvbK_cZua_+2e=u--cV4jH5tR=24DvcEtwcHfAp1kyq9sYofA@mail.gmail.com>
-Subject: Re: [PATCHv4 net-next 16/16] sctp: enable udp tunneling socks
-To:     Michael Tuexen <tuexen@fh-muenster.de>
-Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        linux-sctp@vger.kernel.org, Neil Horman <nhorman@tuxdriver.com>,
-        davem <davem@davemloft.net>, Guillaume Nault <gnault@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201021142944.13615-1-mst@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 21, 2020 at 5:13 PM Michael Tuexen <tuexen@fh-muenster.de> wrote:
->
-> > On 21. Oct 2020, at 06:16, Xin Long <lucien.xin@gmail.com> wrote:
-> >
-> > On Wed, Oct 21, 2020 at 5:23 AM Marcelo Ricardo Leitner
-> > <marcelo.leitner@gmail.com> wrote:
-> >>
-> >> On Tue, Oct 20, 2020 at 11:15:26PM +0200, Michael Tuexen wrote:
-> >>>> On 20. Oct 2020, at 23:11, Marcelo Ricardo Leitner <marcelo.leitner@gmail.com> wrote:
-> >>>>
-> >>>> On Tue, Oct 20, 2020 at 05:12:06PM +0800, Xin Long wrote:
-> >>>>> On Tue, Oct 20, 2020 at 6:15 AM Marcelo Ricardo Leitner
-> >>>>> <marcelo.leitner@gmail.com> wrote:
-> >>>>>>
-> >>>>>> On Mon, Oct 19, 2020 at 08:25:33PM +0800, Xin Long wrote:
-> >>>>>>> --- a/Documentation/networking/ip-sysctl.rst
-> >>>>>>> +++ b/Documentation/networking/ip-sysctl.rst
-> >>>>>>> @@ -2640,6 +2640,12 @@ addr_scope_policy - INTEGER
-> >>>>>>>
-> >>>>>>>     Default: 1
-> >>>>>>>
-> >>>>>>> +udp_port - INTEGER
-> >>>>>>
-> >>>>>> Need to be more verbose here, and also mention the RFC.
-> >>>>>>
-> >>>>>>> +     The listening port for the local UDP tunneling sock.
-> >>>>>>       , shared by all applications in the same net namespace.
-> >>>>>>> +     UDP encapsulation will be disabled when it's set to 0.
-> >>>>>>
-> >>>>>>       "Note, however, that setting just this is not enough to actually
-> >>>>>>       use it. ..."
-> >>>>> When it's a client, yes,  but when it's a server, the encap_port can
-> >>>>> be got from the incoming packet.
-> >>>>>
-> >>>>>>
-> >>>>>>> +
-> >>>>>>> +     Default: 9899
-> >>>>>>> +
-> >>>>>>> encap_port - INTEGER
-> >>>>>>>     The default remote UDP encapsalution port.
-> >>>>>>>     When UDP tunneling is enabled, this global value is used to set
-> >>>>>>
-> >>>>>> When is it enabled, which conditions are needed? Maybe it can be
-> >>>>>> explained only in the one above.
-> >>>>> Thanks!
-> >>>>> pls check if this one will be better:
-> >>>>
-> >>>> It is. Verbose enough now, thx.
-> >>>> (one other comment below)
-> >>>>
-> >>>>>
-> >>>>> udp_port - INTEGER
-> >>>>>
-> >>>>> The listening port for the local UDP tunneling sock.
-> >>>>>
-> >>>>> This UDP sock is used for processing the incoming UDP-encapsulated
-> >>>>> SCTP packets (from RFC6951), and shared by all applications in the
-> >>>>> same net namespace. This UDP sock will be closed when the value is
-> >>>>> set to 0.
-> >>>>>
-> >>>>> The value will also be used to set the src port of the UDP header
-> >>>>> for the outgoing UDP-encapsulated SCTP packets. For the dest port,
-> >>>>> please refer to 'encap_port' below.
-> >>>>>
-> >>>>> Default: 9899
-> >>>>
-> >>>> I'm now wondering if this is the right default. I mean, it is the
-> >>>> standard port for it, yes, but at the same time, it means loading SCTP
-> >>>> module will steal/use that UDP port on all net namespaces and can lead
-> >>>> to conflicts with other apps. A more conservative approach here is to
-> >>>> document the standard port, but set the default to 0 and require the
-> >>>> user to set it in if it is expected to be used.
-> >>>>
-> >>>> Did FreeBSD enable it by default too?
-> >>> No. The default is 0, which means that the encapsulation is turned off.
-> >>> Setting this sysctl variable to a non-zero value enables the UDP tunneling
-> >>> with the given port.
-> >>
-> >> Thanks Michael.
-> >> Xin, then we should change this default value (and update the
-> >> documentation above accordingly, to still have the standard port #
-> >> readily available in there).
-> > OK, I misunderstood the RFC.
-> Does that RFC mandate that the feature is on by default? Can you point me to
-> that text?
-Not really.
 
-I was thinking that by leaving it to 9899 by default users don't need to
-know the port when want to use it, and yet I didn't want to add another
-sysctl member. :D
+On 2020/10/21 下午10:30, Michael S. Tsirkin wrote:
+> This reverts commit 3618ad2a7c0e78e4258386394d5d5f92a3dbccf8.
+>
+> When control vq is not negotiated, that commit causes a crash:
+>
+> [   72.229171] kernel BUG at drivers/net/virtio_net.c:1667!
+> [   72.230266] invalid opcode: 0000 [#1] PREEMPT SMP
+> [   72.231172] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.9.0-rc8-02934-g3618ad2a7c0e7 #1
+> [   72.231172] EIP: virtnet_send_command+0x120/0x140
+> [   72.231172] Code: 00 0f 94 c0 8b 7d f0 65 33 3d 14 00 00 00 75 1c 8d 65 f4 5b 5e 5f 5d c3 66 90 be 01 00 00 00 e9 6e ff ff ff 8d b6 00
+> +00 00 00 <0f> 0b e8 d9 bb 82 00 eb 17 8d b4 26 00 00 00 00 8d b4 26 00 00 00
+> [   72.231172] EAX: 0000000d EBX: f72895c0 ECX: 00000017 EDX: 00000011
+> [   72.231172] ESI: f7197800 EDI: ed69bd00 EBP: ed69bcf4 ESP: ed69bc98
+> [   72.231172] DS: 007b ES: 007b FS: 00d8 GS: 00e0 SS: 0068 EFLAGS: 00010246
+> [   72.231172] CR0: 80050033 CR2: 00000000 CR3: 02c84000 CR4: 000406f0
+> [   72.231172] Call Trace:
+> [   72.231172]  ? __virt_addr_valid+0x45/0x60
+> [   72.231172]  ? ___cache_free+0x51f/0x760
+> [   72.231172]  ? kobject_uevent_env+0xf4/0x560
+> [   72.231172]  virtnet_set_guest_offloads+0x4d/0x80
+> [   72.231172]  virtnet_set_features+0x85/0x120
+> [   72.231172]  ? virtnet_set_guest_offloads+0x80/0x80
+> [   72.231172]  __netdev_update_features+0x27a/0x8e0
+> [   72.231172]  ? kobject_uevent+0xa/0x20
+> [   72.231172]  ? netdev_register_kobject+0x12c/0x160
+> [   72.231172]  register_netdevice+0x4fe/0x740
+> [   72.231172]  register_netdev+0x1c/0x40
+> [   72.231172]  virtnet_probe+0x728/0xb60
+> [   72.231172]  ? _raw_spin_unlock+0x1d/0x40
+> [   72.231172]  ? virtio_vdpa_get_status+0x1c/0x20
+> [   72.231172]  virtio_dev_probe+0x1c6/0x271
+> [   72.231172]  really_probe+0x195/0x2e0
+> [   72.231172]  driver_probe_device+0x26/0x60
+> [   72.231172]  device_driver_attach+0x49/0x60
+> [   72.231172]  __driver_attach+0x46/0xc0
+> [   72.231172]  ? device_driver_attach+0x60/0x60
+> [   72.231172]  bus_add_driver+0x197/0x1c0
+> [   72.231172]  driver_register+0x66/0xc0
+> [   72.231172]  register_virtio_driver+0x1b/0x40
+> [   72.231172]  virtio_net_driver_init+0x61/0x86
+> [   72.231172]  ? veth_init+0x14/0x14
+> [   72.231172]  do_one_initcall+0x76/0x2e4
+> [   72.231172]  ? rdinit_setup+0x2a/0x2a
+> [   72.231172]  do_initcalls+0xb2/0xd5
+> [   72.231172]  kernel_init_freeable+0x14f/0x179
+> [   72.231172]  ? rest_init+0x100/0x100
+> [   72.231172]  kernel_init+0xd/0xe0
+> [   72.231172]  ret_from_fork+0x1c/0x30
+> [   72.231172] Modules linked in:
+> [   72.269563] ---[ end trace a6ebc4afea0e6cb1 ]---
+>
+> The reason is that virtnet_set_features now calls virtnet_set_guest_offloads
+> unconditionally, it used to only call it when there is something
+> to configure.
+>
+> If device does not have a control vq, everything breaks.
+>
+> Revert the original commit for now.
+>
+> Cc: Tonghao Zhang <xiangxia.m.yue@gmail.com>
+> Cc: Willem de Bruijn <willemb@google.com>
+> Fixes: 3618ad2a7c0e7 ("virtio-net: ethtool configurable RXCSUM")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> ---
+
+
+Acked-by: Jason Wang <jasowang@redhat.com>
+
 
 >
-> Best regards
-> Michael
-> >
-> > I will remove the call to sctp_udp_sock_start/stop() from
-> > sctp_ctrlsock_init/exit(), and set the udp_port as 0 by default.
-> >
-> > Thanks.
 >
+> Same patch as all of v1-v3, just tweaking the commit log.
+>
+>   drivers/net/virtio_net.c | 50 +++++++++++-----------------------------
+>   1 file changed, 13 insertions(+), 37 deletions(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index d2d2c4a53cf2..21b71148c532 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -68,8 +68,6 @@ static const unsigned long guest_offloads[] = {
+>   				(1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
+>   				(1ULL << VIRTIO_NET_F_GUEST_UFO))
+>   
+> -#define GUEST_OFFLOAD_CSUM_MASK (1ULL << VIRTIO_NET_F_GUEST_CSUM)
+> -
+>   struct virtnet_stat_desc {
+>   	char desc[ETH_GSTRING_LEN];
+>   	size_t offset;
+> @@ -2524,48 +2522,29 @@ static int virtnet_get_phys_port_name(struct net_device *dev, char *buf,
+>   	return 0;
+>   }
+>   
+> -static netdev_features_t virtnet_fix_features(struct net_device *netdev,
+> -					      netdev_features_t features)
+> -{
+> -	/* If Rx checksum is disabled, LRO should also be disabled. */
+> -	if (!(features & NETIF_F_RXCSUM))
+> -		features &= ~NETIF_F_LRO;
+> -
+> -	return features;
+> -}
+> -
+>   static int virtnet_set_features(struct net_device *dev,
+>   				netdev_features_t features)
+>   {
+>   	struct virtnet_info *vi = netdev_priv(dev);
+> -	u64 offloads = vi->guest_offloads;
+> +	u64 offloads;
+>   	int err;
+>   
+> -	/* Don't allow configuration while XDP is active. */
+> -	if (vi->xdp_queue_pairs)
+> -		return -EBUSY;
+> -
+>   	if ((dev->features ^ features) & NETIF_F_LRO) {
+> +		if (vi->xdp_queue_pairs)
+> +			return -EBUSY;
+> +
+>   		if (features & NETIF_F_LRO)
+> -			offloads |= GUEST_OFFLOAD_LRO_MASK &
+> -				    vi->guest_offloads_capable;
+> +			offloads = vi->guest_offloads_capable;
+>   		else
+> -			offloads &= ~GUEST_OFFLOAD_LRO_MASK;
+> +			offloads = vi->guest_offloads_capable &
+> +				   ~GUEST_OFFLOAD_LRO_MASK;
+> +
+> +		err = virtnet_set_guest_offloads(vi, offloads);
+> +		if (err)
+> +			return err;
+> +		vi->guest_offloads = offloads;
+>   	}
+>   
+> -	if ((dev->features ^ features) & NETIF_F_RXCSUM) {
+> -		if (features & NETIF_F_RXCSUM)
+> -			offloads |= GUEST_OFFLOAD_CSUM_MASK &
+> -				    vi->guest_offloads_capable;
+> -		else
+> -			offloads &= ~GUEST_OFFLOAD_CSUM_MASK;
+> -	}
+> -
+> -	err = virtnet_set_guest_offloads(vi, offloads);
+> -	if (err)
+> -		return err;
+> -
+> -	vi->guest_offloads = offloads;
+>   	return 0;
+>   }
+>   
+> @@ -2584,7 +2563,6 @@ static const struct net_device_ops virtnet_netdev = {
+>   	.ndo_features_check	= passthru_features_check,
+>   	.ndo_get_phys_port_name	= virtnet_get_phys_port_name,
+>   	.ndo_set_features	= virtnet_set_features,
+> -	.ndo_fix_features	= virtnet_fix_features,
+>   };
+>   
+>   static void virtnet_config_changed_work(struct work_struct *work)
+> @@ -3035,10 +3013,8 @@ static int virtnet_probe(struct virtio_device *vdev)
+>   	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
+>   	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6))
+>   		dev->features |= NETIF_F_LRO;
+> -	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS)) {
+> -		dev->hw_features |= NETIF_F_RXCSUM;
+> +	if (virtio_has_feature(vdev, VIRTIO_NET_F_CTRL_GUEST_OFFLOADS))
+>   		dev->hw_features |= NETIF_F_LRO;
+> -	}
+>   
+>   	dev->vlan_features = dev->features;
+>   
+
