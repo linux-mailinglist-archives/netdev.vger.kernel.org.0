@@ -2,113 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 739412963D1
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 19:34:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 17F1B2963D5
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 19:38:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S368035AbgJVReu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 13:34:50 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.51]:22748 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2900620AbgJVReu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 13:34:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1603388085;
-        s=strato-dkim-0002; d=hartkopp.net;
-        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=sCoMIGL7KWIQgDxcIKVQFpQUBV1hAWoEYlxe7X4a+Jw=;
-        b=ONJGUVhZYRdi0vioGxpTi21rTAbmDBdShN4JX1iDJkks8QtYl6wOfsfOxWfIzYglo5
-        GRz0ZQVtJ0HnfYp54RF7mnuhUUjVa/mRyS9RzMD3Um0t2TQZrtPOkZd7A1AD81dpQXII
-        vy5WWcNzTAYWpb2wXXboDkkaDLdTZn+kw7vaGxzUwyAS3yRsTY9y+7gP8nS8d5Mvps25
-        jsF2U+MQd36p73HgbdS5DrymdmfcKDnM3AHxLKgdg3iMVPQK77G33Koj5JQAiY/J+BEK
-        KAXq/HJ/Y/57pVlBegWzoph744sPCxBKxxlHvl1yfw+7nxHWjqmerQrr1xZgMdoDHEd2
-        I/NQ==
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMGXsh5mUj+"
-X-RZG-CLASS-ID: mo00
-Received: from [192.168.50.177]
-        by smtp.strato.de (RZmta 47.2.1 DYNA|AUTH)
-        with ESMTPSA id D0b41cw9MHYKw3Q
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-        Thu, 22 Oct 2020 19:34:20 +0200 (CEST)
-Subject: Re: [PATCH] can: vxcan: Fix memleak in vxcan_newlink
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Dinghao Liu <dinghao.liu@zju.edu.cn>, kjlu@umn.edu,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20201021052150.25914-1-dinghao.liu@zju.edu.cn>
- <986c27bf-29b4-a4f7-1dcd-4cb5a446334b@hartkopp.net>
- <20201022091435.2449cf41@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-Message-ID: <a7c5884d-2c7d-1868-8b93-414b43b3f7c1@hartkopp.net>
-Date:   Thu, 22 Oct 2020 19:34:14 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S2900769AbgJVRit (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 13:38:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34590 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2900746AbgJVRir (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 13:38:47 -0400
+Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87D3C0613CE
+        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 10:38:47 -0700 (PDT)
+Received: by mail-vs1-xe42.google.com with SMTP id h5so1358673vsp.3
+        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 10:38:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eYefmRwbgqJTol4WaDtjkEqyLGdHQWBQtu/EopsoHeo=;
+        b=J1Ggp5kogdjocTvKsil9ZgAv8W03dUb6ltL2nhHuKEbeZiumhOY6sDqH4XlUjSMNVA
+         2UKWzb1j1CYBF7BCaF1VjFl+VGVxOuecK8VJBTAgNirn/mEyexrUcYwQ6apjQB87i2GL
+         Ipm4O2hQ9juQ3PnokpAupVsl1PfE4LAipjOmdQFOW++8v+A+RvMY9Cj80DO0oIwCHLHS
+         +rBnHhj/vvFB9Jykrb9EEHqXglmAQko3W/q60E0czLo4HmWkjsXqA2zvTSRWpjiVCrWR
+         k1gS+XJzS0Q117Qcn1lMMdGEPa3i+UZjU+2Pc6GAHf4gQK1YjveKQYF3/UjadjJPfm/z
+         rgZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eYefmRwbgqJTol4WaDtjkEqyLGdHQWBQtu/EopsoHeo=;
+        b=tz/qEg663WRzHMKJB7VTiDjwT1mEN08TdbL0D8XKovZ+ZnzrnoOD1/4FUgSXmWUtlx
+         SYuxSWua0ip3ND2ns6hZkKsZR1GHEo0Wn9V9re8u7Eg7JfaEppEtKEp4xxVwPANybEBC
+         lRrSn83HjpVW78QUyKEjMb6X4rCzfoUEn/E4FWHnOJwe4UaeSXaAzacjevPdf82Qy/xv
+         XzSxVnr2ByINlQ6FbksprhNOzR3tFb8A5d7TfazKPOf+1RI2vWt4/9KKgDhogFehLKep
+         JkNecp0s7KP7Kgh8RoIa1tDqgzcyF6qqFNfPoDh+FIZNJI7XyPKQw7//2fvCDN5daKyi
+         tntw==
+X-Gm-Message-State: AOAM532jhOjzzSShnJYsApVb3STjaxnrVgCuLkdPZJ29YYsMQp7rI1lN
+        NwDQT/ZJPJ+prZS18sqXWoJLyUTcMdo=
+X-Google-Smtp-Source: ABdhPJwWkyfNDjvEU96pAYjzm1y8QDo1Hnd7Y+PsaIFEiAMhv/nSdIuYtIQA3oOLyx5H7u0Vq/tt/A==
+X-Received: by 2002:a05:6102:2266:: with SMTP id v6mr3044198vsd.0.1603388325407;
+        Thu, 22 Oct 2020 10:38:45 -0700 (PDT)
+Received: from mail-vs1-f44.google.com (mail-vs1-f44.google.com. [209.85.217.44])
+        by smtp.gmail.com with ESMTPSA id y186sm321696vky.46.2020.10.22.10.38.43
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 22 Oct 2020 10:38:44 -0700 (PDT)
+Received: by mail-vs1-f44.google.com with SMTP id p25so1357946vsq.4
+        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 10:38:43 -0700 (PDT)
+X-Received: by 2002:a67:fb96:: with SMTP id n22mr2983559vsr.13.1603388323259;
+ Thu, 22 Oct 2020 10:38:43 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20201022091435.2449cf41@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20201021194743.781583-1-harshitha.ramamurthy@intel.com>
+In-Reply-To: <20201021194743.781583-1-harshitha.ramamurthy@intel.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Thu, 22 Oct 2020 13:38:06 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSdjL4bFYHXyH8dv2x-ZEQZSuA7R8ecttzdZMRwyPEF-=A@mail.gmail.com>
+Message-ID: <CA+FuTSdjL4bFYHXyH8dv2x-ZEQZSuA7R8ecttzdZMRwyPEF-=A@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 0/3] sock: Fix sock queue mapping to include device
+To:     Harshitha Ramamurthy <harshitha.ramamurthy@intel.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tom Herbert <tom@herbertland.com>, carolyn.wyborny@intel.com,
+        "Keller, Jacob E" <jacob.e.keller@intel.com>,
+        amritha.nambiar@intel.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Oct 21, 2020 at 3:51 PM Harshitha Ramamurthy
+<harshitha.ramamurthy@intel.com> wrote:
+>
+> In XPS, the transmit queue selected for a packet is saved in the associated
+> sock for the packet and is then used to avoid recalculating the queue
+> on subsequent sends. The problem is that the corresponding device is not
+> also recorded so that when the queue mapping is referenced it may
+> correspond to a different device than the sending one, resulting in an
+> incorrect queue being used for transmit. Particularly with xps_rxqs, this
+> can lead to non-deterministic behaviour as illustrated below.
+>
+> Consider a case where xps_rxqs is configured and there is a difference
+> in number of Tx and Rx queues. Suppose we have 2 devices A and B. Device A
+> has 0-7 queues and device B has 0-15 queues. Packets are transmitted from
+> Device A but packets are received on B. For packets received on queue 0-7
+> of Device B, xps_rxqs will be applied for reply packets to transmit on
+> Device A's queues 0-7. However, when packets are received on queues
+> 8-15 of Device B, normal XPS is used to reply packets when transmitting
+> from Device A. This leads to non-deterministic behaviour. The case where
+> there are fewer receive queues is even more insidious. Consider Device
+> A, the trasmitting device has queues 0-15 and Device B, the receiver
+> has queues 0-7. With xps_rxqs enabled, the packets will be received only
+> on queues 0-7 of Device B, but sent only on 0-7 queues of Device A
+> thereby causing a load imbalance.
 
+So the issue is limited to xps_rxqs with multiple nics.
 
-On 22.10.20 18:14, Jakub Kicinski wrote:
-> On Wed, 21 Oct 2020 13:20:16 +0200 Oliver Hartkopp wrote:
->> On 21.10.20 07:21, Dinghao Liu wrote:
->>> When rtnl_configure_link() fails, peer needs to be
->>> freed just like when register_netdevice() fails.
->>>
->>> Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
->>
->> Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
->>
->> Btw. as the vxcan.c driver bases on veth.c the same issue can be found
->> there!
->>
->> At this point:
->> https://elixir.bootlin.com/linux/latest/source/drivers/net/veth.c#L1398
->>
->> err_register_dev:
->>           /* nothing to do */
->> err_configure_peer:
->>           unregister_netdevice(peer);
->>           return err; <<<<<<<<<<<<<<<<<<<<<<<
->>
->> err_register_peer:
->>           free_netdev(peer);
->>           return err;
->> }
->>
->> IMO the return must be removed to fall through the next label and free
->> the netdevice too.
->>
->> Would you like so send a patch for veth.c too?
-> 
-> Ah, this is where Liu Dinghao got the veth suggestion :)
-> 
-> Does vxcan actually need this patch?
-> 
-> static void vxcan_setup(struct net_device *dev)
-> {
-> 	[...]
->          dev->needs_free_netdev  = true;
-> 
+When do we need sk_tx_dev_and_queue_mapping (patch 3/3)? It is used in
+netdev_pick_tx, but associations are reset on route change and
+recomputed if queue_index would exceed the current device queue count.
 
-Oh!
+> This patch set fixes the issue by recording both the device (via
+> ifindex) and the queue in the sock mapping. The pair is set and
+> retrieved atomically.
 
-In fact the vxcan.c is really similar to veth.c in these code snippets - 
-so I wondered why this never had been seen in veth.c.
+I guess this is the reason for the somewhat convoluted cast to u64
+logic in patch 1/3. Is the assumption that 64-bit loads and stores are
+atomic on all platforms? That is not correct.
 
-Then vxcan.c doesn't need that patch too :-/
+Is atomicity even needed? For the purpose of load balancing it isn't.
+Just adding a sk->rx_ifindex would be a lot simpler.
 
-Thanks for the heads up!
+sk->sk_napi_id already uniquely identifies the device. Unfortunately,
+dev_get_by_napi_id is not cheap (traverses a hashtable bucket). Though
+purely for the purpose of load balancing this validation could be
+sample based.
 
-@Marc: Can you please make sure that it doesn't get into upstream? Tnx!
-
-Best,
-Oliver
-
+The rx ifindex is also already recorded for inet sockets in
+rx_dst_ifindex, and the sk_rx_queue_get functions are limited to
+those, so could conceivably use that. But it is derived from skb_iif,
+which is overwritten with every reentry of __netif_receive_skb_core.
