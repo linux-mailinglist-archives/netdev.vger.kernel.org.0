@@ -2,94 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C49282963BA
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 19:29:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 739412963D1
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 19:34:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2900191AbgJVR3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 13:29:42 -0400
-Received: from correo.us.es ([193.147.175.20]:54168 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2900170AbgJVR3k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Oct 2020 13:29:40 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id DEA531C438D
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 19:29:38 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id D223BDA84A
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 19:29:38 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id C7E58DA730; Thu, 22 Oct 2020 19:29:38 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id AC7C1DA73D;
-        Thu, 22 Oct 2020 19:29:36 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 22 Oct 2020 19:29:36 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id 7FA9F42EE38E;
-        Thu, 22 Oct 2020 19:29:36 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH 7/7] netfilter: nf_fwd_netdev: clear timestamp in forwarding path
-Date:   Thu, 22 Oct 2020 19:29:25 +0200
-Message-Id: <20201022172925.22770-8-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201022172925.22770-1-pablo@netfilter.org>
-References: <20201022172925.22770-1-pablo@netfilter.org>
+        id S368035AbgJVReu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 13:34:50 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.51]:22748 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2900620AbgJVReu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 13:34:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1603388085;
+        s=strato-dkim-0002; d=hartkopp.net;
+        h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=sCoMIGL7KWIQgDxcIKVQFpQUBV1hAWoEYlxe7X4a+Jw=;
+        b=ONJGUVhZYRdi0vioGxpTi21rTAbmDBdShN4JX1iDJkks8QtYl6wOfsfOxWfIzYglo5
+        GRz0ZQVtJ0HnfYp54RF7mnuhUUjVa/mRyS9RzMD3Um0t2TQZrtPOkZd7A1AD81dpQXII
+        vy5WWcNzTAYWpb2wXXboDkkaDLdTZn+kw7vaGxzUwyAS3yRsTY9y+7gP8nS8d5Mvps25
+        jsF2U+MQd36p73HgbdS5DrymdmfcKDnM3AHxLKgdg3iMVPQK77G33Koj5JQAiY/J+BEK
+        KAXq/HJ/Y/57pVlBegWzoph744sPCxBKxxlHvl1yfw+7nxHWjqmerQrr1xZgMdoDHEd2
+        I/NQ==
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1o3PMaViOoLMGXsh5mUj+"
+X-RZG-CLASS-ID: mo00
+Received: from [192.168.50.177]
+        by smtp.strato.de (RZmta 47.2.1 DYNA|AUTH)
+        with ESMTPSA id D0b41cw9MHYKw3Q
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+        Thu, 22 Oct 2020 19:34:20 +0200 (CEST)
+Subject: Re: [PATCH] can: vxcan: Fix memleak in vxcan_newlink
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Dinghao Liu <dinghao.liu@zju.edu.cn>, kjlu@umn.edu,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20201021052150.25914-1-dinghao.liu@zju.edu.cn>
+ <986c27bf-29b4-a4f7-1dcd-4cb5a446334b@hartkopp.net>
+ <20201022091435.2449cf41@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+Message-ID: <a7c5884d-2c7d-1868-8b93-414b43b3f7c1@hartkopp.net>
+Date:   Thu, 22 Oct 2020 19:34:14 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <20201022091435.2449cf41@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to 7980d2eabde8 ("ipvs: clear skb->tstamp in forwarding path").
-fq qdisc requires tstamp to be cleared in forwarding path.
 
-Fixes: 8203e2d844d3 ("net: clear skb->tstamp in forwarding paths")
-Fixes: fb420d5d91c1 ("tcp/fq: move back to CLOCK_MONOTONIC")
-Fixes: 80b14dee2bea ("net: Add a new socket option for a future transmit time.")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nf_dup_netdev.c  | 1 +
- net/netfilter/nft_fwd_netdev.c | 1 +
- 2 files changed, 2 insertions(+)
 
-diff --git a/net/netfilter/nf_dup_netdev.c b/net/netfilter/nf_dup_netdev.c
-index 2b01a151eaa8..a579e59ee5c5 100644
---- a/net/netfilter/nf_dup_netdev.c
-+++ b/net/netfilter/nf_dup_netdev.c
-@@ -19,6 +19,7 @@ static void nf_do_netdev_egress(struct sk_buff *skb, struct net_device *dev)
- 		skb_push(skb, skb->mac_len);
- 
- 	skb->dev = dev;
-+	skb->tstamp = 0;
- 	dev_queue_xmit(skb);
- }
- 
-diff --git a/net/netfilter/nft_fwd_netdev.c b/net/netfilter/nft_fwd_netdev.c
-index 3087e23297db..b77985986b24 100644
---- a/net/netfilter/nft_fwd_netdev.c
-+++ b/net/netfilter/nft_fwd_netdev.c
-@@ -138,6 +138,7 @@ static void nft_fwd_neigh_eval(const struct nft_expr *expr,
- 		return;
- 
- 	skb->dev = dev;
-+	skb->tstamp = 0;
- 	neigh_xmit(neigh_table, dev, addr, skb);
- out:
- 	regs->verdict.code = verdict;
--- 
-2.20.1
+On 22.10.20 18:14, Jakub Kicinski wrote:
+> On Wed, 21 Oct 2020 13:20:16 +0200 Oliver Hartkopp wrote:
+>> On 21.10.20 07:21, Dinghao Liu wrote:
+>>> When rtnl_configure_link() fails, peer needs to be
+>>> freed just like when register_netdevice() fails.
+>>>
+>>> Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
+>>
+>> Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+>>
+>> Btw. as the vxcan.c driver bases on veth.c the same issue can be found
+>> there!
+>>
+>> At this point:
+>> https://elixir.bootlin.com/linux/latest/source/drivers/net/veth.c#L1398
+>>
+>> err_register_dev:
+>>           /* nothing to do */
+>> err_configure_peer:
+>>           unregister_netdevice(peer);
+>>           return err; <<<<<<<<<<<<<<<<<<<<<<<
+>>
+>> err_register_peer:
+>>           free_netdev(peer);
+>>           return err;
+>> }
+>>
+>> IMO the return must be removed to fall through the next label and free
+>> the netdevice too.
+>>
+>> Would you like so send a patch for veth.c too?
+> 
+> Ah, this is where Liu Dinghao got the veth suggestion :)
+> 
+> Does vxcan actually need this patch?
+> 
+> static void vxcan_setup(struct net_device *dev)
+> {
+> 	[...]
+>          dev->needs_free_netdev  = true;
+> 
+
+Oh!
+
+In fact the vxcan.c is really similar to veth.c in these code snippets - 
+so I wondered why this never had been seen in veth.c.
+
+Then vxcan.c doesn't need that patch too :-/
+
+Thanks for the heads up!
+
+@Marc: Can you please make sure that it doesn't get into upstream? Tnx!
+
+Best,
+Oliver
 
