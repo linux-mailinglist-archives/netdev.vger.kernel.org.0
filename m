@@ -2,107 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABEF0295C94
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 12:19:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59874295C9F
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 12:24:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2896452AbgJVKTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 06:19:08 -0400
-Received: from mailout08.rmx.de ([94.199.90.85]:55927 "EHLO mailout08.rmx.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2896433AbgJVKTH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Oct 2020 06:19:07 -0400
-Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mailout08.rmx.de (Postfix) with ESMTPS id 4CH3HW1WpQzMsy6;
-        Thu, 22 Oct 2020 12:19:03 +0200 (CEST)
-Received: from mta.arri.de (unknown [217.111.95.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by kdin02.retarus.com (Postfix) with ESMTPS id 4CH3HG3XSJz2TTM3;
-        Thu, 22 Oct 2020 12:18:50 +0200 (CEST)
-Received: from n95hx1g2.localnet (192.168.54.85) by mta.arri.de
- (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Thu, 22 Oct
- 2020 12:17:49 +0200
-From:   Christian Eggers <ceggers@arri.de>
-To:     Richard Cochran <richardcochran@gmail.com>
-CC:     Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Helmut Grohne <helmut.grohne@intenta.de>,
-        Paul Barker <pbarker@konsulko.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Marek Vasut <marex@denx.de>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH net-next 7/9] net: dsa: microchip: ksz9477: add hardware time stamping support
-Date:   Thu, 22 Oct 2020 12:17:48 +0200
-Message-ID: <1680734.pGj3N1mgWS@n95hx1g2>
-Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-In-Reply-To: <2975985.V79r5fVmzq@n95hx1g2>
-References: <20201019172435.4416-1-ceggers@arri.de> <20201022023233.GA904@hoboy.vegasvil.org> <2975985.V79r5fVmzq@n95hx1g2>
+        id S2896450AbgJVKY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 06:24:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51810 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2896431AbgJVKY0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 06:24:26 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10DC4C0613CF
+        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 03:24:25 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id 13so1392611wmf.0
+        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 03:24:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
+        h=message-id:subject:from:reply-to:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=/yj2rbbQBTkccNot+4ztSL0oINISL4HD8xkeO52XNZM=;
+        b=Wn64FWlnY8/HVIlOpxkjCGjT//turhz2yOZ3EY/vf7AhDnvUAMiRRhwuianc8aLC+p
+         jfjnnRSXLvRazZFS7aOjvx/VnUchJjV8d5x14no1Xd9XXBNpCvDpZdZnss5zLveHTSj+
+         b/FVVkFsqHnMdEXCdf0oUHnCktIx8EQGjgfl+AZ4rXKfYZ3LNLXDkl3FjURAS03aXtkn
+         9IaDDHoCurBfiygMi06Fl5GPdhLjLWsVZZzEpzXzCj0uyZFALlzAMd9k+8XdbU1953FT
+         mZxCRRTzmPRDKJsr36Ot7H/LVQpPnvPTMbIuMmILt08I/w5zsFP1WuHVD5chBFCti0BW
+         AXPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:subject:from:reply-to:to:cc:date
+         :in-reply-to:references:user-agent:mime-version
+         :content-transfer-encoding;
+        bh=/yj2rbbQBTkccNot+4ztSL0oINISL4HD8xkeO52XNZM=;
+        b=bLFS4n8MLgW/rWUlLUR7ZaCydWi2SExBPq1whA4KO5bmEy0f1+xo0S4sn/dur1Mmp3
+         vnvu7+14C44NfHxnM5tI0N5yMuaz47y0VAF2pdLGEJFwMeulCHZwfir6Z31IrzBe/pHV
+         q+Fu+qVz0Xke8IT7sH6vQsRqRznXGpZRo/WSICtomRG0JAdYa9a0gN9RGet4zsfUhwIg
+         vspdHlxPJP9DolJUgsLZNfT99x9XdLlXGrQmSWsOt7d03o2kG4N6KO97OiFmZggzPFmC
+         G/XsBSjwGljm9dosLu2GZaVgALHDtaU4t1GTmHHZoU/raf3fvolIR5XmdekK4Jnhnhrh
+         hDuw==
+X-Gm-Message-State: AOAM530Gq5pkdFbBjoRb+LqmcYsTXsQKWRx6tD6TEf6+MeEa40DTNHqP
+        jeohhFjONwVnidrgh0TR4kfh+g==
+X-Google-Smtp-Source: ABdhPJzk60Z9E5p7HQXp7eVUqpPQVts4rnUUTUaxweOC3NP3BzfEO75TRSyt6HpQnsEK0LNZGWluZA==
+X-Received: by 2002:a7b:cb98:: with SMTP id m24mr1939467wmi.133.1603362263550;
+        Thu, 22 Oct 2020 03:24:23 -0700 (PDT)
+Received: from debil (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id p9sm2695332wma.12.2020.10.22.03.24.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Oct 2020 03:24:22 -0700 (PDT)
+Message-ID: <a0d79083b43d212351d56718a0ec40d8e9b4888b.camel@blackwall.org>
+Subject: Re: [PATCH net-next,v2 4/9] bridge: resolve forwarding path for
+ bridge devices
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+Reply-To: razor@blackwall.org
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Date:   Thu, 22 Oct 2020 13:24:21 +0300
+In-Reply-To: <20201015163038.26992-5-pablo@netfilter.org>
+References: <20201015163038.26992-1-pablo@netfilter.org>
+         <20201015163038.26992-5-pablo@netfilter.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 (3.34.4-1.fc31) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Originating-IP: [192.168.54.85]
-X-RMX-ID: 20201022-121850-4CH3HG3XSJz2TTM3-0@kdin02
-X-RMX-SOURCE: 217.111.95.66
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thursday, 22 October 2020, 09:30:57 CEST, Christian Eggers wrote:
-> On Thursday, 22 October 2020, 04:42:01 CEST, Richard Cochran wrote:
-> > On Thu, Oct 22, 2020 at 02:39:35AM +0300, Vladimir Oltean wrote:
-> > > On Mon, Oct 19, 2020 at 07:24:33PM +0200, Christian Eggers wrote:
-> > > > The PTP hardware performs internal detection of PTP frames (likely
-> > > > similar as ptp_classify_raw() and ptp_parse_header()). As these
-> > > > filters
-> > > > cannot be disabled, the current delay mode (E2E/P2P) and the clock
-> > > > mode
-> > > > (master/slave) must be configured via sysfs attributes.
-> > 
-> > This is a complete no-go.  NAK.
+On Thu, 2020-10-15 at 18:30 +0200, Pablo Neira Ayuso wrote:
+> Add .ndo_fill_forward_path for bridge devices.
 > 
-> I didn't design the hardware nor do I have access to adequate documentation.
-> I will try to figure out what functionality is concretely affected by these
-> two settings.
-I tried to study the effect of setting the ocmode bit on the KSZ either to
-master or to slave. The main visible change is, that some PTP message types
-are be filtered out on RX:
-- in "master" mode, "Sync" messages from other nodes will not be received
-(but everything else like "Announce" seem to work)
-- in "slave" mode, "Delay_Req" messages from other nodes will not be received
+> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> ---
+> v2: no changes
+> 
+>  include/linux/netdevice.h |  1 +
+>  net/bridge/br_device.c    | 22 ++++++++++++++++++++++
+>  2 files changed, 23 insertions(+)
+> 
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index d4263ed5dd79..4cabdbc672d3 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -836,6 +836,7 @@ typedef u16 (*select_queue_fallback_t)(struct net_device *dev,
+>  enum net_device_path_type {
+>  	DEV_PATH_ETHERNET = 0,
+>  	DEV_PATH_VLAN,
+> +	DEV_PATH_BRIDGE,
+>  };
+>  
+>  struct net_device_path {
+> diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
+> index 6f742fee874a..06046a35868d 100644
+> --- a/net/bridge/br_device.c
+> +++ b/net/bridge/br_device.c
+> @@ -391,6 +391,27 @@ static int br_del_slave(struct net_device *dev, struct net_device *slave_dev)
+>  	return br_del_if(br, slave_dev);
+>  }
+>  
+> +static int br_fill_forward_path(struct net_device_path_ctx *ctx,
+> +				struct net_device_path *path)
+> +{
+> +	struct net_bridge_fdb_entry *f;
+> +	struct net_bridge *br;
+> +
+> +	if (netif_is_bridge_port(ctx->dev))
+> +		return -1;
+> +
+> +	br = netdev_priv(ctx->dev);
+> +	f = br_fdb_find_rcu(br, ctx->daddr, 0);
+> +	if (!f || !f->dst)
+> +		return -1;
+> +
+> +	path->type = DEV_PATH_BRIDGE;
+> +	path->dev = f->dst->br->dev;
+> +	ctx->dev = f->dst->dev;
 
-I am not an expert for PTP, so the following is only the idea of a beginner how
-this could probably be handled:
+Please use READ_ONCE() for f->dst since it can become NULL if the entry
+is changed to point to the bridge device itself after the check above. I've had
+a patch in my queue that changes the bridge to use WRITE_ONCE() to annotate it
+as a lockless read.
 
-As PTP announce messages are received all the time, the BMCA should always
-be able to work. The KSZ hardware needs to be set to "master" when a node
-is becoming master (in order to be able to receive (and answer) Delay_Req
-messages). The setting "slave" is equired when the BCMA decides not being
-master anymore (in order to receive Sync messages).
+Thanks,
+ Nik
 
-Handling the transition to "master" mode could probably be done easily in the 
-driver (when a Sync message is seen in TX direction by the time stamping code).
-But transition to slave seems to be difficult, because the tagging driver cannot
-see when the node stops being master. For user space (ptp4l), the decision for
-master/slave mode could probably be done easier.
-
-If Richard (or somebody else) decides that "mode switching" of the KSZ device
-would not be appropriate, I suspect the functionality of the KSZ has to be
-limited to "Slave Only Clock".
-
-regards
-Christian
-
+> +
+> +	return 0;
+> +}
+> +
+>  static const struct ethtool_ops br_ethtool_ops = {
+>  	.get_drvinfo		 = br_getinfo,
+>  	.get_link		 = ethtool_op_get_link,
+> @@ -425,6 +446,7 @@ static const struct net_device_ops br_netdev_ops = {
+>  	.ndo_bridge_setlink	 = br_setlink,
+>  	.ndo_bridge_dellink	 = br_dellink,
+>  	.ndo_features_check	 = passthru_features_check,
+> +	.ndo_fill_forward_path	 = br_fill_forward_path,
+>  };
+>  
+>  static struct device_type br_type = {
 
 
