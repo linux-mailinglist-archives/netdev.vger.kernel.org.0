@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85119295A25
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 10:23:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 780CF295A27
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 10:23:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726082AbgJVIWy convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 22 Oct 2020 04:22:54 -0400
-Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:55759 "EHLO
+        id S2895471AbgJVIW5 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 22 Oct 2020 04:22:57 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:52621 "EHLO
         us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2895391AbgJVIWw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 04:22:52 -0400
+        by vger.kernel.org with ESMTP id S2895438AbgJVIWz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 04:22:55 -0400
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-234-HbLvGENtOjCNNqMn1YckvA-1; Thu, 22 Oct 2020 04:22:46 -0400
-X-MC-Unique: HbLvGENtOjCNNqMn1YckvA-1
+ us-mta-552-CuehPYyMNMiBU6pwuZxr1g-1; Thu, 22 Oct 2020 04:22:50 -0400
+X-MC-Unique: CuehPYyMNMiBU6pwuZxr1g-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D611C8049E7;
-        Thu, 22 Oct 2020 08:22:44 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 812C28049E7;
+        Thu, 22 Oct 2020 08:22:48 +0000 (UTC)
 Received: from krava.redhat.com (unknown [10.40.195.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D9ACB60BFA;
-        Thu, 22 Oct 2020 08:22:38 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 357E760BFA;
+        Thu, 22 Oct 2020 08:22:45 +0000 (UTC)
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -36,9 +36,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Jesper Brouer <jbrouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Viktor Malik <vmalik@redhat.com>
-Subject: [RFC bpf-next 14/16] libbpf: Add trampoline batch detach support
-Date:   Thu, 22 Oct 2020 10:21:36 +0200
-Message-Id: <20201022082138.2322434-15-jolsa@kernel.org>
+Subject: [RFC bpf-next 15/16] selftests/bpf: Add trampoline batch test
+Date:   Thu, 22 Oct 2020 10:21:37 +0200
+Message-Id: <20201022082138.2322434-16-jolsa@kernel.org>
 In-Reply-To: <20201022082138.2322434-1-jolsa@kernel.org>
 References: <20201022082138.2322434-1-jolsa@kernel.org>
 MIME-Version: 1.0
@@ -53,150 +53,151 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding trampoline batch attach support so it's possible to use
-batch mode to load tracing programs.
-
-Adding trampoline_attach_batch bool to struct bpf_object_open_opts.
-When set to true the bpf_object__detach_skeleton will try to detach
-all tracing programs via batch mode.
+Adding simple test that loads fentry tracing programs to
+bpf_fentry_test* functions and uses trampoline_attach_batch
+bool in struct bpf_object_open_opts to attach them in batch
+mode.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- tools/lib/bpf/bpf.c      | 16 +++++++++++--
- tools/lib/bpf/bpf.h      |  1 +
- tools/lib/bpf/libbpf.c   | 50 ++++++++++++++++++++++++++++++++++++++++
- tools/lib/bpf/libbpf.map |  1 +
- 4 files changed, 66 insertions(+), 2 deletions(-)
+ .../bpf/prog_tests/trampoline_batch.c         | 45 +++++++++++
+ .../bpf/progs/trampoline_batch_test.c         | 75 +++++++++++++++++++
+ 2 files changed, 120 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/trampoline_batch.c
+ create mode 100644 tools/testing/selftests/bpf/progs/trampoline_batch_test.c
 
-diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
-index 21fffff5e237..9af13e511851 100644
---- a/tools/lib/bpf/bpf.c
-+++ b/tools/lib/bpf/bpf.c
-@@ -858,7 +858,7 @@ int bpf_raw_tracepoint_open(const char *name, int prog_fd)
- 	return sys_bpf(BPF_RAW_TRACEPOINT_OPEN, &attr, sizeof(attr));
- }
- 
--int bpf_trampoline_batch_attach(int *ifds, int *ofds, int count)
-+static int bpf_trampoline_batch(int cmd, int *ifds, int *ofds, int count)
- {
- 	union bpf_attr attr;
- 
-@@ -867,7 +867,19 @@ int bpf_trampoline_batch_attach(int *ifds, int *ofds, int count)
- 	attr.trampoline_batch.out = ptr_to_u64(ofds);
- 	attr.trampoline_batch.count = count;
- 
--	return sys_bpf(BPF_TRAMPOLINE_BATCH_ATTACH, &attr, sizeof(attr));
-+	return sys_bpf(cmd, &attr, sizeof(attr));
-+}
+diff --git a/tools/testing/selftests/bpf/prog_tests/trampoline_batch.c b/tools/testing/selftests/bpf/prog_tests/trampoline_batch.c
+new file mode 100644
+index 000000000000..98929ac0bef6
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/trampoline_batch.c
+@@ -0,0 +1,45 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2019 Facebook */
++#include <test_progs.h>
++#include "trampoline_batch_test.skel.h"
 +
-+int bpf_trampoline_batch_attach(int *ifds, int *ofds, int count)
++void test_trampoline_batch(void)
 +{
-+	return bpf_trampoline_batch(BPF_TRAMPOLINE_BATCH_ATTACH,
-+				    ifds, ofds, count);
-+}
++	DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts);
++	struct trampoline_batch_test *skel = NULL;
++	int err, prog_fd, i;
++	__u32 duration = 0, retval;
++	__u64 *result;
 +
-+int bpf_trampoline_batch_detach(int *ifds, int *ofds, int count)
-+{
-+	return bpf_trampoline_batch(BPF_TRAMPOLINE_BATCH_DETACH,
-+				    ifds, ofds, count);
- }
- 
- int bpf_load_btf(const void *btf, __u32 btf_size, char *log_buf, __u32 log_buf_size,
-diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
-index ba3b0b6e3cb0..c6fb5977de79 100644
---- a/tools/lib/bpf/bpf.h
-+++ b/tools/lib/bpf/bpf.h
-@@ -236,6 +236,7 @@ LIBBPF_API int bpf_prog_query(int target_fd, enum bpf_attach_type type,
- 			      __u32 *prog_ids, __u32 *prog_cnt);
- LIBBPF_API int bpf_raw_tracepoint_open(const char *name, int prog_fd);
- LIBBPF_API int bpf_trampoline_batch_attach(int *ifds, int *ofds, int count);
-+LIBBPF_API int bpf_trampoline_batch_detach(int *ifds, int *ofds, int count);
- LIBBPF_API int bpf_load_btf(const void *btf, __u32 btf_size, char *log_buf,
- 			    __u32 log_buf_size, bool do_log);
- LIBBPF_API int bpf_task_fd_query(int pid, int fd, __u32 flags, char *buf,
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 584da3b401ac..02e9e8279aa7 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -10874,6 +10874,47 @@ static int attach_trace_batch(struct bpf_object_skeleton *s)
- 	return ret;
- }
- 
-+static int detach_trace_batch(struct bpf_object_skeleton *s)
-+{
-+	int *in_fds, *out_fds, cnt;
-+	int i, ret = -ENOMEM;
++	opts.trampoline_attach_batch = true;
 +
-+	in_fds = calloc(s->prog_cnt, sizeof(in_fds[0]));
-+	out_fds = calloc(s->prog_cnt, sizeof(out_fds[0]));
-+	if (!in_fds || !out_fds)
-+		goto out_clean;
++	skel = trampoline_batch_test__open_opts(&opts);
++	if (CHECK(!skel, "skel_open", "open failed\n"))
++		goto cleanup;
 +
-+	for (cnt = 0, i = 0; i < s->prog_cnt; i++) {
-+		struct bpf_program *prog = *s->progs[i].prog;
-+		struct bpf_link **link = s->progs[i].link;
++	err = trampoline_batch_test__load(skel);
++	if (CHECK(err, "skel_load", "load failed: %d\n", err))
++		goto cleanup;
 +
-+		if (!is_trampoline(prog))
-+			continue;
-+		in_fds[cnt++] = (*link)->fd;
++	err = trampoline_batch_test__attach(skel);
++	if (CHECK(err, "skel_attach", "attach failed: %d\n", err))
++		goto cleanup;
++
++	prog_fd = bpf_program__fd(skel->progs.test1);
++	err = bpf_prog_test_run(prog_fd, 1, NULL, 0,
++				NULL, NULL, &retval, &duration);
++	CHECK(err || retval, "test_run",
++	      "err %d errno %d retval %d duration %d\n",
++	      err, errno, retval, duration);
++
++	result = (__u64 *)skel->bss;
++	for (i = 0; i < 6; i++) {
++		if (CHECK(result[i] != 1, "result",
++			  "trampoline_batch_test fentry_test%d failed err %lld\n",
++			  i + 1, result[i]))
++			goto cleanup;
 +	}
 +
-+	ret = bpf_trampoline_batch_detach(in_fds, out_fds, cnt);
-+	if (ret)
-+		goto out_clean;
++cleanup:
++	trampoline_batch_test__destroy(skel);
++}
+diff --git a/tools/testing/selftests/bpf/progs/trampoline_batch_test.c b/tools/testing/selftests/bpf/progs/trampoline_batch_test.c
+new file mode 100644
+index 000000000000..ff93799037f0
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/trampoline_batch_test.c
+@@ -0,0 +1,75 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright (c) 2019 Facebook */
++#include <linux/bpf.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_tracing.h>
 +
-+	for (i = 0; i < s->prog_cnt; i++) {
-+		struct bpf_program *prog = *s->progs[i].prog;
-+		struct bpf_link **link = s->progs[i].link;
++char _license[] SEC("license") = "GPL";
 +
-+		if (!is_trampoline(prog))
-+			continue;
-+
-+		bpf_link__disconnect(*link);
-+		bpf_link__destroy(*link);
-+		*link = NULL;
-+	}
-+
-+out_clean:
-+	free(in_fds);
-+	free(out_fds);
-+	return ret;
++__u64 test1_result = 0;
++SEC("fentry/bpf_fentry_test1")
++int BPF_PROG(test1, int a)
++{
++	test1_result = 1;
++	return 0;
 +}
 +
- int bpf_object__attach_skeleton(struct bpf_object_skeleton *s)
- {
- 	struct bpf_object *obj = *s->obj;
-@@ -10914,11 +10955,20 @@ int bpf_object__attach_skeleton(struct bpf_object_skeleton *s)
- 
- void bpf_object__detach_skeleton(struct bpf_object_skeleton *s)
- {
-+	struct bpf_object *obj = *s->obj;
- 	int i;
- 
-+	if (obj->trampoline_attach_batch)
-+		detach_trace_batch(s);
++__u64 test2_result = 0;
++SEC("fentry/bpf_fentry_test2")
++int BPF_PROG(test2, int a, __u64 b)
++{
++	test2_result = 1;
++	return 0;
++}
 +
- 	for (i = 0; i < s->prog_cnt; i++) {
-+		struct bpf_program *prog = *s->progs[i].prog;
- 		struct bpf_link **link = s->progs[i].link;
- 
-+		/* Program was attached via batch mode. */
-+		if (obj->trampoline_attach_batch && is_trampoline(prog))
-+			continue;
++__u64 test3_result = 0;
++SEC("fentry/bpf_fentry_test3")
++int BPF_PROG(test3, char a, int b, __u64 c)
++{
++	test3_result = 1;
++	return 0;
++}
 +
- 		bpf_link__destroy(*link);
- 		*link = NULL;
- 	}
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index 5a5ce921956d..cfe0b3d52172 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -337,4 +337,5 @@ LIBBPF_0.2.0 {
- 		perf_buffer__consume_buffer;
- 		xsk_socket__create_shared;
- 		bpf_trampoline_batch_attach;
-+		bpf_trampoline_batch_detach;
- } LIBBPF_0.1.0;
++__u64 test4_result = 0;
++SEC("fentry/bpf_fentry_test4")
++int BPF_PROG(test4, void *a, char b, int c, __u64 d)
++{
++	test4_result = 1;
++	return 0;
++}
++
++__u64 test5_result = 0;
++SEC("fentry/bpf_fentry_test5")
++int BPF_PROG(test5, __u64 a, void *b, short c, int d, __u64 e)
++{
++	test5_result = 1;
++	return 0;
++}
++
++__u64 test6_result = 0;
++SEC("fentry/bpf_fentry_test6")
++int BPF_PROG(test6, __u64 a, void *b, short c, int d, void * e, __u64 f)
++{
++	test6_result = 1;
++	return 0;
++}
++
++struct bpf_fentry_test_t {
++	struct bpf_fentry_test_t *a;
++};
++
++__u64 test7_result = 0;
++SEC("fentry/bpf_fentry_test7")
++int BPF_PROG(test7, struct bpf_fentry_test_t *arg)
++{
++	test7_result = 1;
++	return 0;
++}
++
++__u64 test8_result = 0;
++SEC("fentry/bpf_fentry_test8")
++int BPF_PROG(test8, struct bpf_fentry_test_t *arg)
++{
++	test8_result = 1;
++	return 0;
++}
 -- 
 2.26.2
 
