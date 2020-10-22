@@ -2,109 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F86C29677D
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 01:04:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23AD2296780
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 01:05:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S373147AbgJVXES (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 19:04:18 -0400
-Received: from bedivere.hansenpartnership.com ([96.44.175.130]:47630 "EHLO
-        bedivere.hansenpartnership.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S373136AbgJVXES (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 19:04:18 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 21AE51281E42;
-        Thu, 22 Oct 2020 16:04:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
-        s=20151216; t=1603407858;
-        bh=YF9ZLRJ5Wmd29VMCSDUBdN9scxQBSKiZF6i1sPMZ4cs=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=Rp43OBNeRff7l6xXQQprJM/m/WMbF15ErMCUULCrOGIpWCNqppgte+USb5NryvBJ5
-         War0Kohqc5idoDlXO+afQei1xfY//CINxzd3xmUM3zW/BrEbGtPgJCAUCtusJ41H2q
-         ZqwBd/RzMW6JiIiE1aUEqb3gsIRU2wNiUMyhtghs=
-Received: from bedivere.hansenpartnership.com ([127.0.0.1])
-        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Q3sVWPD8CWVy; Thu, 22 Oct 2020 16:04:18 -0700 (PDT)
-Received: from jarvis.int.hansenpartnership.com (unknown [IPv6:2601:600:8280:66d1::c447])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 759B41281E39;
-        Thu, 22 Oct 2020 16:04:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
-        s=20151216; t=1603407857;
-        bh=YF9ZLRJ5Wmd29VMCSDUBdN9scxQBSKiZF6i1sPMZ4cs=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=mBMQkLZBj9y05L4DkBJ+6L7KVSJNkpwwj8Zle4lznjtwYUJu+0MqDsmQnbVz9vlA3
-         IyiV2YPkSZ5LVBnyRQUiwij5DmcUrmGCVSXXsnKtc5qZmFrqYM2+08vIYtr35rd1oP
-         aTqAKkb2akyYD7It4zMkcKI4NAiK2FUCp5LlcFdM=
-Message-ID: <f1ff32ec2970f1ee808e2da946e6514e71694e71.camel@HansenPartnership.com>
-Subject: Re: [PATCH/RFC net] net: dec: tulip: de2104x: Add shutdown handler
- to stop NIC
-From:   James Bottomley <James.Bottomley@HansenPartnership.com>
-To:     Moritz Fischer <mdf@kernel.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, linux-parisc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lucyyan@google.com
-Date:   Thu, 22 Oct 2020 16:04:16 -0700
-In-Reply-To: <20201022220636.609956-1-mdf@kernel.org>
-References: <20201022220636.609956-1-mdf@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.4 
+        id S373208AbgJVXF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 19:05:29 -0400
+Received: from sonic307-22.consmr.mail.sg3.yahoo.com ([106.10.241.39]:38918
+        "EHLO sonic307-22.consmr.mail.sg3.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S373202AbgJVXF2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 19:05:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1603407923; bh=k6qD474V9VtXKDobcCBmjOJywgarZvgPlTt0r+34qBY=; h=Date:From:Reply-To:Subject:References:From:Subject; b=fbQk6k4MXT7JNPH17Z9fr+45Nwh16g1hTNGxd/kq0mHXRPqo26RRjBAnS6PcqOVyBYn0PTAqyKYPAW7dQRnzG5di0lpG/ZUbdrxbt0Xe11/8d/yDZQIM16vkw4yD8NveeDcEJ3wkGUcyNjTv8onu1uMfH1xbRGoJpX3/HzfBRGImoZzAu8vCDVFn6DsTI9UQnkp1MkAAVhwAf/SakZeS2D+1y1FOiNBdFnmcE/6hAjV0QI0aZv/6+uOmtccj6jg+jaZZXygprB3Vad2RdU5xmwGdPSZuRBwycVZyyL5lCm9CcVrbUaElIX8jmIN03QIz5QtOymdruFwIgRsI3oeSkg==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1603407923; bh=eK/h8nLbBveiV5edWtwL57Q4Iye4YQrAm8IDE29WPaf=; h=Date:From:Subject; b=RKShrmlAqhgZNMFqlD/CsXMb79ePGFG+oQCbsb3xkYcn9cs9LoMZUfEu2lFZaEHMfgr4qM8265cYQTbtvWbpru+kbY02ubNV74xPe82rjWEZWpPJIpcIrkIfIrSCl7n8fzC6wVCY61D531qCUjDk9VUPhM/w+/WcXyr+B4q/bS2zW2Mo5ev12+SrPvokhijhZ/ItoR08xjVZ0rcyziDdVCqsA1suu2BB5/Td+/NMeOXc3z8yC/DtaaK7fWK1w/XjNXmvUxijw7Uxe37pq6e6mnPNAOZfLCo/MZQksMfZ2Nw07gxPpmmpm1WaTLtlKoSORotVV/Ymsz/JSOHdM7ZGtw==
+X-YMail-OSG: 2i_dsNUVM1mVKaPehiQmqWa_VC6gwIfdWcdvbw5cuXX8I7LfW2VlchsgFVdkGQ_
+ OlX0QYWupmx6ZlP02Anl2QwHuqtpui7qrl8vfIOlfKzAm3jLFAGnr3HuYwbGt0hb2g2tu.J.rdbM
+ tF2LyNm63c0E.x9rJ0gMZj3QbkHl6DKXs3O.oPrnnaWivza_SztpxPH7SLq0gycdLobNssw82s23
+ v16ed_wvAEHAdt_EMmCY6FW.cVb8iOzsohgmgLRSgrQToYipjOHK4235jT1Hg93BH4fXS.zhoS9.
+ 7pN7iQpZ7iYrNsh9V9q5gioZrIpLq_8eEf5thhkDzGGquW1F9fSuKrrvAFmA0emI4vZCbwzSYRVI
+ 3LgOB76zhSoX6Lnh.Af37yaNcX5MKSuYMBwmLSmrqimWnOG8e5T_jwWUcYWy2K027iBB3qs9OxXk
+ bm.Wn4aImp8O7_vFPoiZPRKGVOyzs_LW53F_OBiVU_JhTqn.zFMdfA.KnJpada.D75lii27QrKUb
+ 3bYOoWINcIiVecfvNGBTA8r.WAa5F5wpIArQ.aOcLTx5qm6jbJtIeFzc_LAbI5DCyymxpPU2P3.Z
+ ZSmsN.tfQcHUhLDlcVMIiyvNBdAp556aWAjoHvWLY_QpTXnb5dbSdchB6Nvk1jReLNGPLdR0MC6V
+ mIJ38AhENGFDoFyHQ9ooC44pSmhRqb2wqiW8i90SI8GgO.P9jaSp72TV.K5xyk3UZajM6Uc3Xvnq
+ ZA2KCQ.Z74fBApckbAVDNNKwyfps3NxPMB4qx8OKvWdIUWDbaKiRLeivxGEZ8PTyhjW4zhK12GSs
+ Y1JOXz6pynKs6lHzRJz34kMAERqshS64HBZW3zdfQWVtGAZl_I5LRoJ_dFpgbTdAx4RFR4_z26fw
+ Us4VnB2Tj623_R1wd4OerrStao.2r92fP98liPLAfbCacLIF_s8gt.hSjJnSi4CvFEs0TCDsv854
+ pX9R0tLA1F4IvVJbcKC1JjnCLb57fllRLh2baGE88Jux.tpXlc19UoIceXKxK0Tz0.hYVoVcUWtr
+ GuiSBubABtNYueEFI0OcbARxt2vS3RLMpt4nodeCI_MKIX3Q3_56bFhKI7nZ5zJDJ3QuaWlQmUdl
+ X9zXfYsrfwqS.QRJSrsGdAgiMVWblG1z5vBC75unWpxXb.33DS_3hu.JKrFbI0bg1YBNSQ7O1OXt
+ bvCidSZzPvdBHk33k.mRy4ivn1zMPP_StvgMRrFlCN8JxpfRNVdX9qk7gQoTWxO0TNs2RsezXeXf
+ F7j.ZHdScdmac.iL4vPk9GVIPDRmxztQKbbRhI207.cNBIp0vzLEtOfgMh4bZCoXsLUPO6Ji9ynW
+ _nXBnRks.JMLmdXIM2jRL2B7.l8act4Dv.kiZZW1yzI.DyYTrsIunP8Q4evaIbCCdVsRALNMGeGy
+ RQwrGKQni1iJw3ayXb916Ik4tEPS1gGFe3h44l50.5CL59_pRh1Gb.j_GzFPki3BlalXnSoC30Tp
+ vsowLNKBGmZPLUMesvkMW3YaE8BTs1rkdf9csDyQongeSO4gCnazQ65YCUCiw67ikoCFFsviOXWu
+ UctFF6I1_d9BJQmOWr.deEiIVlEqaZfO3pDncShnGIKZVXtSXOD3_9nD9bxpAQZcF62PDPeEUyym
+ s2ILjKiQ7a63rRioF.330.r9Di1SXYs.Om6iHZXIxZ2UwMjrwL.c5iA8dK4wgT8niOQvLTuTChU8
+ OgezwUM9ztr5mz38VfI4oUT7pO7XneIfhoC2T7JTHZnMQO4LE3GoeFlM32e46D2loM6pK5mIhpUK
+ cNAOaUM1FFe7eCmAx1uV0WNmLzdsnYIJ37q3vxg9I9GGETvWAfVj63ikGkwBd9Hw6U3Jjj046cI1
+ ssUJzkpRs19a.1XTHQOD7us0S6g4lHVzinnjK2nvsf2h6YSe7hMWo54jwQXsovj_CKo7R1Lm.5l8
+ fkmjCPciKkUX1Q7xXcf2Qc_xFDYIkHj.9GbtwGKnuhQIc9XzSKsetOgnru8VDPRGh57_hO1ASxl2
+ tJ3m4I8p2yRZPzsqK.6hDHjuzfWltUKaaKeyC3Oe7eoVUYt9YEek4bTDumcpvlfmgHE5nhE0uvHi
+ g8swT9Frbs0tc3LwiwRhzZhWtR.wGE2unNxfebrUD8tMuyfDn5avW1a6RLJB6esJcTVdcXzbdOFk
+ u6Hw9JkynyYPbetkcILxO3IZO3wmXyWADIcyD_SBvo4c..2WB_RUvagtaQ3EiXQL_ukD6EdCS6.6
+ YndozMb8mFOEJkLJ1hmTF_5tg4JME5CLrWV8i9CAOHz0JQl2Sjz6xZxif.uEMYqCl0UXq6c2LnmM
+ .Yg2Sk3gvg8UqDnXkYS.BqKPoktq7Gos6LNTLqgvm7aeABkuEl4WmE5hApLkbmQPt_uzzP9UQyyh
+ QwEWxLh_KFYUXZ4eu6gDFSGb5GNGJ_Y2O1vqVWqZDcj3tcxvGpq2.66DDZC75Pz.eSBvV75_o1Oh
+ VA6X0PiF9olSkCEsobMv9cJ_XPywWZQfqZE5LB7ET0AIHZYv8MH1SlvaMzVqaYkKOSt5Fot7hZjY
+ Yi7whK.FV0MMbXjBG7ruHkfOIvjFPWZTnjWpiqQcpDpMeKvFwz6bl4SW1jYq0IoKNql9qRNP6yhj
+ wzuHb4jwiaDDNmWMzgBqnIVy.DQD6xQUGEEykgaL11M7Sy9TfMp036Kfm_t8YcafWal7mDmBONCc
+ p23N1k6H8ibY_LL2kTmtUD7GYE67xa3XhAlnCSeXGUi656KSbh42EOuk7j_ViTsq.8BTARnDBjD4
+ aZquq3qLHXzcVLLb6dQjnK.OT1yoAri1Wzpi4tdfs2RLhI.JT7UHGlTHkMrjwKha9VBW7jl6A7nx
+ uD.Ab8.yNMZzBJqSZqzpgVDnVjhSCalPUhrank.0uRZVp7Oy55akLNW3hYXlOFW3oFfCVNR_yQWO
+ KeZWJjSlQTCa15eXQ.wEZOUNq8G3efPUq3laW5eovJHY_216xsUUTGOdgdjL_rOHtZopX4En7WU5
+ VzUFkGiM3bog5S7pfq8raOvA.zccFm8DtPws52HvHtisHKIMDsTeDhec5RBTHQgaFsKtVmVNb8Iy
+ o0mlu679GwlN3CVd23N.UCk1CCILYAkSjloj_ib3zJH4BnLqzlAwHFXVKfuh7j6YEH2ueg2o_bIG
+ YlQPqADJ3KwYW5h4dd9vyZqWQY0yhivggYvlMufQaFwm1a1Ld9xdMkkykO6kVKBAnWs8nCczpbLC
+ Z3mdtjIOJWe6Ig_lJgcI2oOsjnv_wA.yDddU3Ol56ukK1kzREgUmn2e1hyua7ejAxv3GW7iqYYh_
+ 0mT7yhU678peqSHeQYO32AQuorBq1_8tVnD1FyTAnC1gpV2xPaRwbHRCBYxWYiuhj71gZozkFGGC
+ .Dhlm0PhNeUf2UMWw42L5Dxyu_AdS3IzNifvgSv9cHFt6GSamjuEGwTDI5DDSxT9fXWbzRoEd5QA
+ jMykq7hUPRq0VjcWVZIXcqngZUT.FsLxv1faIJgi6AjOKBjL_FWG1NIjuhbeZrfH83TT59u5VPDE
+ _cHIWvkyx35nqnTNbxWIkMEJFtbgZY4LGqa8wk5Y583Xqj._MMlBWvsxsbiD2kVQlxjysRkaLivA
+ pM7oyvyIaV1LElhmo02UYi_g50pGjEMm6cKfmDBnG3eBaL9.ZZ71mvemZR1qPuBAz_wy8k04gQs3
+ TVv5LEIPSGRSfUCJZOd2VeHzAcx1cR6S8cuFxQGo9vTVFnbOC_GmpzA1o75FFGLkbyis5Y6Q1PZU
+ g.9KXzPKPYbxNVOo0vncLtA756fk0SCE7UDZxRoP3y8wtTjnRlbjdKvlkxE7lOFt_7RqAsARpHi1
+ vzSwRKX98.NC.n2bESXRPM00cxXzsNzB9axOim9Q9Xs3KQ4yJXDlXdl2iVdu2NBkYXZxFaem1bTw
+ 0lTSQWWlyd6fUCtZxXKJvEKH8U50We1XYcCrUY1RP6n08XNYOCc0NgzqctaMXoVcv6KCqiq14Agr
+ GF_X7xkecGjLbtc5YXcKDoykNBGOOcDIIsNNFKwTlD7zR6HIpp1kw7HNZGHQVRKLdXU1863cuF3h
+ 8t4iSTObdK9fijHz9U_nbZEPpPhJLmvqcQPldGisjXb.JWoCH7EsthbTuMxNr79K6XAqatizER.0
+ fiSOrg5MIBqk3cZRaP6vcyNd7elj7jQV1uCY1NX6Cfg.tLVucmeSzCEvfRuAX.t2WUhCKHWcjYpn
+ lIxIpkon0PgvFoxY74Rbfl94MYgqT_XMnDpXnrWCXkgD.8RHBdsh7fcVkQ61c_rbdHdt1rI7HDb5
+ 6LJq4hbPkJT6FVNwY.LU5QzRrMNKneT3XzEvaIGdKrIBs_6TbVFmPh3xmkWNCXimOA648SW71Bep
+ LpzU151CF8ySN5FdabM2c816..J63YkaVuSZ15l..VtWa06RcDIbtcRfwf.iM.hojrx8.io.fOPg
+ D3jvoGStu9.2I5FvWLAIPld2fDH87yic8KW7FrFwJQACVCJzwUpXT5xcuHo2eEXFd9KbIgU12q1r
+ NtaaHxp8WDQivoj.EXCC7Fdfbdh4DLOPPHdcLvH1cqLhhFkjob5hAc.Z62uzY_LtvAgaUBw7eZXy
+ 7ls8w8E2LCDLuCuWLQ3K4CRsgZfbUG4DWqqEna919fuFrItUmP5ojP5hkYcImpn0jcTo3i3xGM7J
+ z53Kig1nOMvdR2VJI0G70JjHPsq0qxh0YlzSmvaEJJG6n.yH4sz5QJU2QJxSPFKlamWXthQheCT7
+ ggP7B8Mk_3wgMPoDe5MBrfsKzYJJOMr9mipTJXj4Ak4WU4yXzfdDkyzk84.YFqQwqTHPpYbXCUEF
+ 8WcsLuOSzfez2DWl9hcg_iXTh0uicitTA5f8eqTDETllYawR2KULPdrGJSqguT_w62TxCNJrw6dB
+ G4izkBxf3QoaKp4Ix0CTfQkJJDW6.oXqJyidNxIDIuTSGA2ZEYWXs2xXKhcwxTvViPvl_pfsTA5r
+ 2wxLo5oAyg7fVXeR7ySoGLTxwm5O0w6rvRFRNZ._0cvwdipy9Ml17Otc7tq7iU8gNYoe3yGIPosC
+ 512yL472FLTjE3xNA4ZIg2C1cC6a2vL8gwWW85_Ic3LlfcrNzHl_F8yqyJ24Etz8tZhCFZ7s3FoJ
+ LoEzS2rq6GWDYtBY_3LYHhY0uXcW1Or1TDPqGFFJMm6x_f24XH9zTSBtv2N2omW9_xFjCUA70dPd
+ Opc4RNYrq.uF2k8qb0TlUfO61nvYRs.4yQ3wOih_03ClOgCjLGTp1AIE7_nHwflHb.0LY7i9QkD8
+ vpP2AKuzUnqz0VMn7iMqUhq7_xLT6fPh9bh0HQAgfv4tzsvk-
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic307.consmr.mail.sg3.yahoo.com with HTTP; Thu, 22 Oct 2020 23:05:23 +0000
+Date:   Thu, 22 Oct 2020 23:05:22 +0000 (UTC)
+From:   MONICA BROWN <monicabrown4098@gmail.com>
+Reply-To: monicabrown4098@gmail.com
+Message-ID: <471243842.1834091.1603407922782@mail.yahoo.com>
+Subject: FROM SERGEANT MONICA BROWN
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+References: <471243842.1834091.1603407922782.ref@mail.yahoo.com>
+X-Mailer: WebService/1.1.16868 YMailNodin Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2020-10-22 at 15:06 -0700, Moritz Fischer wrote:
-> The driver does not implement a shutdown handler which leads to
-> issues
-> when using kexec in certain scenarios. The NIC keeps on fetching
-> descriptors which gets flagged by the IOMMU with errors like this:
-> 
-> DMAR: DMAR:[DMA read] Request device [5e:00.0]fault addr fffff000
-> DMAR: DMAR:[DMA read] Request device [5e:00.0]fault addr fffff000
-> DMAR: DMAR:[DMA read] Request device [5e:00.0]fault addr fffff000
-> DMAR: DMAR:[DMA read] Request device [5e:00.0]fault addr fffff000
-> DMAR: DMAR:[DMA read] Request device [5e:00.0]fault addr fffff000
-> 
-> Signed-off-by: Moritz Fischer <mdf@kernel.org>
-> ---
-> 
-> Hi all,
-> 
-> I'm not sure if this is the proper way for a shutdown handler,
-> I've tried to look at a bunch of examples and couldn't find a
-> specific
-> solution, in my tests on hardware this works, though.
-> 
-> Open to suggestions.
-> 
-> Thanks,
-> Moritz
-> 
-> ---
->  drivers/net/ethernet/dec/tulip/de2104x.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/net/ethernet/dec/tulip/de2104x.c
-> b/drivers/net/ethernet/dec/tulip/de2104x.c
-> index f1a2da15dd0a..372c62c7e60f 100644
-> --- a/drivers/net/ethernet/dec/tulip/de2104x.c
-> +++ b/drivers/net/ethernet/dec/tulip/de2104x.c
-> @@ -2185,6 +2185,7 @@ static struct pci_driver de_driver = {
->  	.id_table	= de_pci_tbl,
->  	.probe		= de_init_one,
->  	.remove		= de_remove_one,
-> +	.shutdown	= de_remove_one,
+I am Sergeant Monica Brown, originally from Lake Jackson Texas. I have 
+personally conducted a special research on the internet and came across 
+your information. I am writing you this mail from US Military Base Kabul 
+Afghanistan. I have a secured business proposal for you. If you are 
+interested in my private email (monicabrown4098@gmail.com), please contact me 
+immediately for more information.
+Thank you.
 
-This doesn't look right: shutdown is supposed to turn off the device
-without disturbing the tree or causing any knock on effects (I think
-that rule is mostly because you don't want anything in userspace
-triggering since it's likely to be nearly dead).  Remove removes the
-device from the tree and cleans up everything.  I think the function
-you want that's closest to what shutdown needs is de_close().  That
-basically just turns off the chip and frees the interrupt ... you'll
-have to wrapper it to call it from the pci_driver, though.
 
-James
+
+
+
 
 
