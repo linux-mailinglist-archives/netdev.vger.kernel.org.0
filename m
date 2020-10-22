@@ -2,74 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CB6B2962A8
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 18:27:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B6962962C6
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 18:35:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2901747AbgJVQ1m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 12:27:42 -0400
-Received: from mx2.suse.de ([195.135.220.15]:48746 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2897127AbgJVQ1m (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Oct 2020 12:27:42 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 68D73AC48;
-        Thu, 22 Oct 2020 16:27:40 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 0D4F0604F6; Thu, 22 Oct 2020 18:27:40 +0200 (CEST)
-Date:   Thu, 22 Oct 2020 18:27:40 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Danielle Ratson <danieller@nvidia.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@idosch.org>,
+        id S2901858AbgJVQfd convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 22 Oct 2020 12:35:33 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:45869 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2901834AbgJVQfW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 12:35:22 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-276-A1zb3avLNamAEPsIomTLEw-1; Thu, 22 Oct 2020 17:35:18 +0100
+X-MC-Unique: A1zb3avLNamAEPsIomTLEw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 22 Oct 2020 17:35:17 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 22 Oct 2020 17:35:17 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Christoph Hellwig' <hch@lst.de>,
+        David Hildenbrand <david@redhat.com>
+CC:     Greg KH <gregkh@linuxfoundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "kernel-team@android.com" <kernel-team@android.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Jens Axboe" <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-aio@kvack.org" <linux-aio@kvack.org>,
+        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        mlxsw <mlxsw@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>
-Subject: Re: [PATCH net-next 1/6] ethtool: Extend link modes settings uAPI
- with lanes
-Message-ID: <20201022162740.nisrhdzc4keuosgw@lion.mk-sys.cz>
-References: <20201016221553.GN139700@lunn.ch>
- <DM6PR12MB3865B000BE04105A4373FD08D81E0@DM6PR12MB3865.namprd12.prod.outlook.com>
- <20201019110422.gj3ebxttwtfssvem@lion.mk-sys.cz>
- <20201019122643.GC11282@nanopsycho.orion>
- <20201019132446.tgtelkzmfjdonhfx@lion.mk-sys.cz>
- <DM6PR12MB386532E855FD89F87072D0D7D81F0@DM6PR12MB3865.namprd12.prod.outlook.com>
- <20201021070820.oszrgnsqxddi2m43@lion.mk-sys.cz>
- <DM6PR12MB38651062E363459E66140B23D81C0@DM6PR12MB3865.namprd12.prod.outlook.com>
- <20201021084733.sb4rpzwyzxgczvrg@lion.mk-sys.cz>
- <DM6PR12MB3865D0B8F8F1BD32532D1DDFD81D0@DM6PR12MB3865.namprd12.prod.outlook.com>
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>
+Subject: RE: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
+ rw_copy_check_uvector() into lib/iov_iter.c"
+Thread-Topic: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
+ rw_copy_check_uvector() into lib/iov_iter.c"
+Thread-Index: AQHWqE5GNDfnH4y9nkGWtfqJueR1KKmjTCJQgAAN4UiAAAD2IIAAQY5tgAAwVkA=
+Date:   Thu, 22 Oct 2020 16:35:17 +0000
+Message-ID: <8f1fff0c358b4b669d51cc80098dbba1@AcuMS.aculab.com>
+References: <20201021233914.GR3576660@ZenIV.linux.org.uk>
+ <20201022082654.GA1477657@kroah.com>
+ <80a2e5fa-718a-8433-1ab0-dd5b3e3b5416@redhat.com>
+ <5d2ecb24db1e415b8ff88261435386ec@AcuMS.aculab.com>
+ <df2e0758-b8ed-5aec-6adc-a18f499c0179@redhat.com>
+ <20201022090155.GA1483166@kroah.com>
+ <e04d0c5d-e834-a15b-7844-44dcc82785cc@redhat.com>
+ <a1533569-948a-1d5b-e231-5531aa988047@redhat.com>
+ <bc0a091865f34700b9df332c6e9dcdfd@AcuMS.aculab.com>
+ <5fd6003b-55a6-2c3c-9a28-8fd3a575ca78@redhat.com>
+ <20201022132342.GB8781@lst.de>
+In-Reply-To: <20201022132342.GB8781@lst.de>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DM6PR12MB3865D0B8F8F1BD32532D1DDFD81D0@DM6PR12MB3865.namprd12.prod.outlook.com>
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 22, 2020 at 06:15:48AM +0000, Danielle Ratson wrote:
-> > -----Original Message-----
-> > From: Michal Kubecek <mkubecek@suse.cz>
-> > Sent: Wednesday, October 21, 2020 11:48 AM
-> > 
-> > Ah, right, it does. But as you extend struct ethtool_link_ksettings
-> > and drivers will need to be updated to provide this information,
-> > wouldn't it be more useful to let the driver provide link mode in
-> > use instead (and derive number of lanes from it)?
+From: Christoph Hellwig
+> Sent: 22 October 2020 14:24
 > 
-> This is the way it is done with the speed parameter, so I have aligned
-> it to it. Why the lanes should be done differently comparing to the
-> speed?
+> On Thu, Oct 22, 2020 at 11:36:40AM +0200, David Hildenbrand wrote:
+> > My thinking: if the compiler that calls import_iovec() has garbage in
+> > the upper 32 bit
+> >
+> > a) gcc will zero it out and not rely on it being zero.
+> > b) clang will not zero it out, assuming it is zero.
+> >
+> > But
+> >
+> > a) will zero it out when calling the !inlined variant
+> > b) clang will zero it out when calling the !inlined variant
+> >
+> > When inlining, b) strikes. We access garbage. That would mean that we
+> > have calling code that's not generated by clang/gcc IIUC.
+> 
+> Most callchains of import_iovec start with the assembly syscall wrappers.
 
-Speed and duplex have worked this way since ages and the interface was
-probably introduced back in times when combination of speed and duplex
-was sufficient to identify the link mode. This is no longer the case and
-even adding number of lanes wouldn't make the combination unique. So if
-we are going to extend the interface now and update drivers to provide
-extra information, I believe it would be more useful to provide full
-information.
+Wait...
+readv(2) defines:
+	ssize_t readv(int fd, const struct iovec *iov, int iovcnt);
 
-Michal
+But the syscall is defined as:
+
+SYSCALL_DEFINE3(readv, unsigned long, fd, const struct iovec __user *, vec,
+                unsigned long, vlen)
+{
+        return do_readv(fd, vec, vlen, 0);
+}
+
+I'm guessing that nothing actually masks the high bits that come
+from an application that is compiled with clang?
+
+The vlen is 'unsigned long' through the first few calls.
+So unless there is a non-inlined function than takes vlen
+as 'int' the high garbage bits from userspace are kept.
+
+Which makes it a bug in the kernel C syscall wrappers.
+They need to explicitly mask the high bits of 32bit
+arguments on arm64 but not x86-64.
+
+What does the ARM EABI say about register parameters?
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
