@@ -2,80 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A17182958A7
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 08:56:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DD9D2958D3
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 09:10:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504581AbgJVGzs convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 22 Oct 2020 02:55:48 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:33012 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2411545AbgJVGzr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 02:55:47 -0400
-Received: by mail-ed1-f67.google.com with SMTP id w23so673889edl.0;
-        Wed, 21 Oct 2020 23:55:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=wMeB1zJzZMK8x7XA1QSAy+WdSIpZ6mUMkpBppzeyvnw=;
-        b=YUB39IHhYcaI2qkgIOOKfF/XmPoHGFfS0TeVQ5CYM8KIr46Hlm6BYTmEPtnTVBBOrf
-         469ysRGQNWLHxg8rIUW1IeGJqTlAjNz2HvPvi2IR5C3t9/YhO9/h5Hx/1ylKO159eTCr
-         4b4fBYw8GzF8SZdauEty6jU6JheOV7S910v2N/jowVaI98dguhBd1Ash0Abm6wMhgQ4P
-         SHmy01vlio0jOOpGVpmsS1JNZki5Nwdp2YJDo335mquEmwCe2XmAwaQ+B04yMylEJdo2
-         ujecThgzXFV2/GJWkDRou9vq6DBDohQwgz+KF6whTYG7lvNpdBT3GegKCCRFhRbJCxEd
-         N4eg==
-X-Gm-Message-State: AOAM530Y8/lwqUkAA/eOTLhjrtNVz5a8k8EG5d8szMXRFyChO+5z/4OE
-        8FtrIPF1v22yHJQaH1YQBvM=
-X-Google-Smtp-Source: ABdhPJygfj7Hlq2E4HbV0n7CfCdPnc4i/J7eKS1StJBSG5I6GXjoEvLuS0tOu+gGxnqqzYGmz4+Zqg==
-X-Received: by 2002:aa7:c98f:: with SMTP id c15mr973061edt.200.1603349746176;
-        Wed, 21 Oct 2020 23:55:46 -0700 (PDT)
-Received: from kozik-lap ([194.230.155.171])
-        by smtp.googlemail.com with ESMTPSA id e7sm303568ejm.4.2020.10.21.23.55.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Oct 2020 23:55:45 -0700 (PDT)
-Date:   Thu, 22 Oct 2020 08:55:42 +0200
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     =?utf-8?Q?=C5=81ukasz?= Stelmach <l.stelmach@samsung.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, jim.cromie@gmail.com,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Kukjin Kim <kgene@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org,
-        =?utf-8?Q?Bart=C5=82omiej_=C5=BBolnierkiewicz?= 
-        <b.zolnierkie@samsung.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH v3 2/5] dt-bindings: net: Add bindings for AX88796C SPI
- Ethernet Adapter
-Message-ID: <20201022065542.GB3829@kozik-lap>
-References: <20201021214910.20001-1-l.stelmach@samsung.com>
- <CGME20201021214933eucas1p152c8fc594793aca56a1cbf008f8415a4@eucas1p1.samsung.com>
- <20201021214910.20001-3-l.stelmach@samsung.com>
+        id S2505280AbgJVHKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 03:10:11 -0400
+Received: from aserp2130.oracle.com ([141.146.126.79]:33040 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2505183AbgJVHKL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 03:10:11 -0400
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09M79d0r162787;
+        Thu, 22 Oct 2020 07:09:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=XqvNAC90CyFQXW1Z3vcE+rjxX+IqxetT35/EghdWeXU=;
+ b=V86ymzEfRe3xJ2hKotVxvsvlE867+vkxT0TkxDpF5+mL9/nmIkPWbMFgoi6hi+KkDPXj
+ LQnTFTEMa2VrlI59DE9KnljaDBKYfcmbnKOBvxvgo+wKnAfDp1jHRQaHYNF/Vj2GDU6g
+ Kf86YmdA+eBTlUejsx9mSax7RwHc52VfMAGsoN/kGWzytUvSITLecxAow1GuUdYj/yeH
+ AhjgEeE/x3FewdEkqAkrmqTah1qBJZGaHiEhG/4RwomDnqcOmkxftEj4nZsVGkbq1OHW
+ iAeYVMDGg41iS0pFsy88XF1kPWJu70yf46ATbO017iSEfXB9uD/rARl1lEOCdav7dtgO 0A== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2130.oracle.com with ESMTP id 347p4b4avf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 22 Oct 2020 07:09:54 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09M6oAuX047546;
+        Thu, 22 Oct 2020 07:07:54 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3030.oracle.com with ESMTP id 348a6q9b9e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 22 Oct 2020 07:07:53 +0000
+Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 09M77lCt010460;
+        Thu, 22 Oct 2020 07:07:47 GMT
+Received: from mwanda (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 22 Oct 2020 00:07:47 -0700
+Date:   Thu, 22 Oct 2020 10:07:39 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Karsten Keil <isdn@linux-pingi.de>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH net] mISDN: hfcpci: Fix a use after free in hfcmulti_tx()
+Message-ID: <20201022070739.GB2817762@mwanda>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <20201021214910.20001-3-l.stelmach@samsung.com>
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9781 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxlogscore=999
+ bulkscore=0 spamscore=0 adultscore=0 suspectscore=0 mlxscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2010220044
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9781 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 priorityscore=1501
+ clxscore=1011 malwarescore=0 mlxscore=0 bulkscore=0 lowpriorityscore=0
+ phishscore=0 adultscore=0 mlxlogscore=999 impostorscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2010220045
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 21, 2020 at 11:49:07PM +0200, Łukasz Stelmach wrote:
-> Add bindings for AX88796C SPI Ethernet Adapter.
-> 
-> Signed-off-by: Łukasz Stelmach <l.stelmach@samsung.com>
-> ---
->  .../bindings/net/asix,ax88796c.yaml           | 69 +++++++++++++++++++
->  1 file changed, 69 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/asix,ax88796c.yaml
-> 
+This frees "*sp" before dereferencing it to get "len = (*sp)->len;".
 
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+Fixes: af69fb3a8ffa ("Add mISDN HFC multiport driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+ drivers/isdn/hardware/mISDN/hfcmulti.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/isdn/hardware/mISDN/hfcmulti.c b/drivers/isdn/hardware/mISDN/hfcmulti.c
+index 7013a3f08429..ce6c160e0df4 100644
+--- a/drivers/isdn/hardware/mISDN/hfcmulti.c
++++ b/drivers/isdn/hardware/mISDN/hfcmulti.c
+@@ -2152,16 +2152,14 @@ hfcmulti_tx(struct hfc_multi *hc, int ch)
+ 		HFC_wait_nodebug(hc);
+ 	}
+ 
++	len = (*sp)->len;
+ 	dev_kfree_skb(*sp);
+ 	/* check for next frame */
+-	if (bch && get_next_bframe(bch)) {
+-		len = (*sp)->len;
++	if (bch && get_next_bframe(bch))
+ 		goto next_frame;
+-	}
+-	if (dch && get_next_dframe(dch)) {
+-		len = (*sp)->len;
++
++	if (dch && get_next_dframe(dch))
+ 		goto next_frame;
+-	}
+ 
+ 	/*
+ 	 * now we have no more data, so in case of transparent,
+-- 
+2.28.0
+
