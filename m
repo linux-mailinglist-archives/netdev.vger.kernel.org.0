@@ -2,180 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 21E21295E0E
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 14:09:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A708C295E30
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 14:18:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2897913AbgJVMJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 08:09:06 -0400
-Received: from mail-eopbgr130075.outbound.protection.outlook.com ([40.107.13.75]:11943
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2897910AbgJVMJD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Oct 2020 08:09:03 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GCsSk0qrrbMphVTt2NCx1e6qorqtVA6gyEyihd3hWOnmA1YeMDAxqFo1mZGUWRhlSOzgPl2ewmy6tLxnQA4auSS4OlVlT79JWmaOEfat4D+RC21JbazSDcOiLyiNVce2pHdXUAukeIuSVJyWNppcOOpd65Tgn51elUpwV8FIHelrFhBGv7ih9vR2Djb40UOWNBn+owQRy/QBDh+UeShTmnGXjTT0BFNT5i9oDteY9NMyQ0mKShaiPYnLhGYs9oU6YhKt22QpzsiIYOLYLEbZc8jg/LCbI5AaUV/QMcGEipCjaXn3wudSSwLnd4v7Gdq0ocWVKV2ffY44kxYRZUUBsw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CWLlslJ4TEzXes9ELpw5Q7yx/bJan4R9x3okT+cWNcg=;
- b=PHcIYRmGmWsXfoXUuUr0BvRJZ2PwKrphqvC/v1WXuDoHYDDQ1V1FpQ0Bkb3GHHX5GkZYBHCylP23GQS0VKetIH/5Tgk/g16MZirSSsJk6mhV0Xltc/sRbf7XlvjrtdzguzH3MKEDCprv5I++cjZs7dT3kzl59gJ+fkhQ8Doe1fwctY4qFzPbv89pQhaFkwPFkjFWtwlajgEO4U6gWaXCKMAkskAiaFlrd1PFSinKpcypJD+pla1y7EVc+s9EVFCxyG+LDEIK4i1HLAhTErDMB5Kym3cAbv4SGRBp/t5F4hk1wl2TMIeY1hFmSgGrUJPND6AMXvi0lWH43lSl9u7otQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CWLlslJ4TEzXes9ELpw5Q7yx/bJan4R9x3okT+cWNcg=;
- b=kH/OE7Q9vG7BvqqINdHNfPHJhlYlgmHRa+ZbmkWcaaVz4FKIQbj8uBhAygHdz3WGaU/QaP3AzF8E/F02YBTcI6b+MoWSVC3M97S/KKdCGBPw0Uu3dLc5YEccguytrfm1gtYXlks37PLe5Qy2F1/c9aH1TGfNFWAnGbc5+fTOoxo=
-Received: from AM0PR04MB6754.eurprd04.prod.outlook.com (2603:10a6:208:170::28)
- by AM9PR04MB7682.eurprd04.prod.outlook.com (2603:10a6:20b:2db::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Thu, 22 Oct
- 2020 12:09:00 +0000
-Received: from AM0PR04MB6754.eurprd04.prod.outlook.com
- ([fe80::21b9:fda3:719f:f37b]) by AM0PR04MB6754.eurprd04.prod.outlook.com
- ([fe80::21b9:fda3:719f:f37b%3]) with mapi id 15.20.3477.028; Thu, 22 Oct 2020
- 12:09:00 +0000
-From:   Claudiu Manoil <claudiu.manoil@nxp.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        "james.jurack@ametek.com" <james.jurack@ametek.com>
-Subject: RE: [PATCH net] gianfar: Account for Tx PTP timestamp in the skb
- headroom
-Thread-Topic: [PATCH net] gianfar: Account for Tx PTP timestamp in the skb
- headroom
-Thread-Index: AQHWpweGcRhcwMsnREqE1tK8TP9eu6miWc2AgAEekxA=
-Date:   Thu, 22 Oct 2020 12:09:00 +0000
-Message-ID: <AM0PR04MB6754877DC2BBA688F2DC249A961D0@AM0PR04MB6754.eurprd04.prod.outlook.com>
-References: <fa12d66e-de52-3e2e-154c-90c775bb4fe4@ametek.com>
-        <20201020173605.1173-1-claudiu.manoil@nxp.com>
- <20201021105933.2cfa7176@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201021105933.2cfa7176@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [188.27.120.177]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 18ffde49-bce4-4c27-d340-08d876834294
-x-ms-traffictypediagnostic: AM9PR04MB7682:
-x-microsoft-antispam-prvs: <AM9PR04MB76825B8E7BFB9DD325860EC2961D0@AM9PR04MB7682.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3173;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: h6nhBUKF9VgkD5gigK1fpY0pQwsfSBGV/wAzhfFDCz4NwDYtZbWD1NFzUs0t56yUx5IEZSZboK6dJA3rCWhIRsJTwNI7/LZuiwVm/m7Cx1GVq1OSh7QKKRHyylMqjEFD0WPWrtUwWxZb3iWaEtvAce30A7ozBQiu2NhcqvHCGpHLu4Okv2zDTvZD1mTpzZPB820DC2NbhMB2othNq470B5klFh+59mpM5ik9KBYfNkvNOwzDKhGfM6vqfzaM0unGJEXHhbGbne8gEAlpID/RKxPFLvvC2v70F+U5wmq0bz7RYLD+aZ0PZJCzpl7Q55OU8DYkcoTICt/EmLVQj62ubw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6754.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(39860400002)(396003)(346002)(136003)(54906003)(316002)(26005)(478600001)(66556008)(186003)(71200400001)(66946007)(66446008)(66476007)(6506007)(6916009)(86362001)(76116006)(64756008)(44832011)(7696005)(15650500001)(55016002)(5660300002)(52536014)(9686003)(4326008)(2906002)(8676002)(33656002)(83380400001)(8936002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: prnmJ1b+/FCR3opZa7nX3OI7l7LjboIg6x5zZbgdUxHqN20ML0FTO4oRYV9pvc1HGuIo+K6PW6j7pqSRNzreoNDgnUmxdYUaffA/A8VWCpmMLTbl5UC31XjVqGhOZ+1fzY6/kXfmPJcr4S90GajpTAP8YqMRVEdnZpzHmL9HsbOh59llYbs2hjSfW2G5ai6jXyW+BXM6X79b4ZZa06QYTcW2Ai9oau+HnhewyPvW+kgm825Kom670yEFyhiSkiYPmSNRYTYbfzt2uElffxGUdwzKvYBMLpsBNc3WBh0X1jgTqcuNBFr+7o/yTkjIWOWR8vwE5ECwwQqYYCf0PWXE8BZRpcyWwqpOCp/sb96rEaM0L+Q7dbaxLF0krTpfLHm7OXyiWZcA2VF4UqwkZq0zy1BU0fci3ikK5yo0eZKt5OnGvkfMnEEZovKDGdsBblf58eayE2GeXhcOqII/pizimdDd6INxmIcrxi9ErT7atreUbgKn6fZ9tPm068aFTTLfwTY46A+SSF/w9BMKAV7nuN7LJ3Uvb1N/I74aX6kV045e7RX9iJNiyZDXqk8BiDuTiRXrYtpMY+pjBaBTChz+VcyqeLh8rhP8pU6btOsHNiUldiYDEF+GxMM7CLkv9BmhttrPOzpf1ujwXVGsdDh+ZQ==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S2898028AbgJVMSO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 08:18:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52164 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2898003AbgJVMSN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Oct 2020 08:18:13 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1C49F221FB;
+        Thu, 22 Oct 2020 12:18:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603369091;
+        bh=f9fHT6RQINipQR9cdhFI9rs3NSFDci2lYjU5Ip8ZnP0=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=n8jf6tlUdap5jlr4t0Cg2lsbhvnaH72P2gVCqZLKUuxs8bAAWAClanPfE+zPwidaB
+         ZFmAyLOFo2OtmjN/+QTkr1IWCvNwAi65T2ABP5/m/R1LV/h/GTeY9DsKfGHUUKRGmT
+         qWRzyp9nLifa3lkVAOBlw5wcV0RoEHaGv9ShJ/SY=
+Date:   Thu, 22 Oct 2020 14:18:49 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     David Laight <David.Laight@aculab.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "kernel-team@android.com" <kernel-team@android.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-aio@kvack.org" <linux-aio@kvack.org>,
+        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>
+Subject: Re: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
+ rw_copy_check_uvector() into lib/iov_iter.c"
+Message-ID: <20201022121849.GA1664412@kroah.com>
+References: <20201022082654.GA1477657@kroah.com>
+ <80a2e5fa-718a-8433-1ab0-dd5b3e3b5416@redhat.com>
+ <5d2ecb24db1e415b8ff88261435386ec@AcuMS.aculab.com>
+ <df2e0758-b8ed-5aec-6adc-a18f499c0179@redhat.com>
+ <20201022090155.GA1483166@kroah.com>
+ <e04d0c5d-e834-a15b-7844-44dcc82785cc@redhat.com>
+ <a1533569-948a-1d5b-e231-5531aa988047@redhat.com>
+ <bc0a091865f34700b9df332c6e9dcdfd@AcuMS.aculab.com>
+ <5fd6003b-55a6-2c3c-9a28-8fd3a575ca78@redhat.com>
+ <20201022104805.GA1503673@kroah.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6754.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 18ffde49-bce4-4c27-d340-08d876834294
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Oct 2020 12:09:00.1658
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: PXynlSrP5bw3YbpHC96ib1t6Y960+ycZXpIC8oERChQ2fZErIs4x72XulYZd1qCX76Fjj7vjUi/etH6lU0E3NA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB7682
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201022104805.GA1503673@kroah.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Oct 22, 2020 at 12:48:05PM +0200, Greg KH wrote:
+> On Thu, Oct 22, 2020 at 11:36:40AM +0200, David Hildenbrand wrote:
+> > On 22.10.20 11:32, David Laight wrote:
+> > > From: David Hildenbrand
+> > >> Sent: 22 October 2020 10:25
+> > > ...
+> > >> ... especially because I recall that clang and gcc behave slightly
+> > >> differently:
+> > >>
+> > >> https://github.com/hjl-tools/x86-psABI/issues/2
+> > >>
+> > >> "Function args are different: narrow types are sign or zero extended to
+> > >> 32 bits, depending on their type. clang depends on this for incoming
+> > >> args, but gcc doesn't make that assumption. But both compilers do it
+> > >> when calling, so gcc code can call clang code.
+> > > 
+> > > It really is best to use 'int' (or even 'long') for all numeric
+> > > arguments (and results) regardless of the domain of the value.
+> > > 
+> > > Related, I've always worried about 'bool'....
+> > > 
+> > >> The upper 32 bits of registers are always undefined garbage for types
+> > >> smaller than 64 bits."
+> > > 
+> > > On x86-64 the high bits are zeroed by all 32bit loads.
+> > 
+> > Yeah, but does not help here.
+> > 
+> > 
+> > My thinking: if the compiler that calls import_iovec() has garbage in
+> > the upper 32 bit
+> > 
+> > a) gcc will zero it out and not rely on it being zero.
+> > b) clang will not zero it out, assuming it is zero.
+> > 
+> > But
+> > 
+> > a) will zero it out when calling the !inlined variant
+> > b) clang will zero it out when calling the !inlined variant
+> > 
+> > When inlining, b) strikes. We access garbage. That would mean that we
+> > have calling code that's not generated by clang/gcc IIUC.
+> > 
+> > We can test easily by changing the parameters instead of adding an "inline".
+> 
+> Let me try that as well, as I seem to have a good reproducer, but it
+> takes a while to run...
 
->-----Original Message-----
->From: Jakub Kicinski <kuba@kernel.org>
->Sent: Wednesday, October 21, 2020 9:00 PM
->To: Claudiu Manoil <claudiu.manoil@nxp.com>
->Cc: netdev@vger.kernel.org; David S . Miller <davem@davemloft.net>;
->james.jurack@ametek.com
->Subject: Re: [PATCH net] gianfar: Account for Tx PTP timestamp in the skb
->headroom
->
->On Tue, 20 Oct 2020 20:36:05 +0300 Claudiu Manoil wrote:
-[...]
->>
->>  	if (dev->features & NETIF_F_IP_CSUM ||
->>  	    priv->device_flags & FSL_GIANFAR_DEV_HAS_TIMER)
->> -		dev->needed_headroom =3D GMAC_FCB_LEN;
->> +		dev->needed_headroom =3D GMAC_FCB_LEN + GMAC_TXPAL_LEN;
->>
->>  	/* Initializing some of the rx/tx queue level parameters */
->>  	for (i =3D 0; i < priv->num_tx_queues; i++) {
->
->Claudiu, I think this may be papering over the real issue.
->needed_headroom is best effort, if you were seeing crashes
->the missing checks for skb being the right geometry are still
->out there, they just not get hit in the case needed_headroom
->is respected.
->
->So updating needed_headroom is definitely fine, but the cause of
->crashes has to be found first.
+Ok, that didn't work.
 
-I agree Jakub, but this is a simple (and old) ring based driver. So the
-question is what checks or operations may be missing or be wrong
-in the below sequence of operations made on the skb designated for
-timestamping?
-As hinted in the commit description, the code is not crashing when
-multiple TCP streams are transmitted alone (skb frags manipulation was
-omitted for brevity below, and this is a well exercised path known to work)=
-,
-but only crashes when multiple TCP stream are run concurrently
-with a PTP Tx packet flow taking the skb_realloc_headroom() path.
-I don't find other drivers doing skb_realloc_headroom() for PTP packets,
-so maybe is this an untested use case of skb usage?
+And I can't seem to "fix" this by adding noinline to patches further
+along in the patch series (because this commit's function is no longer
+present due to later patches.)
 
-init:
-dev->needed_headroom =3D GMAC_FCB_LEN;
+Will keep digging...
 
-start_xmit:
-netdev_tx_t gfar_start_xmit(struct sk_buff *skb, struct net_device *dev)
-{
-	do_tstamp =3D (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
-		    priv->hwts_tx_en;
-	fcb_len =3D GMAC_FCB_LEN; // can also be 0
-	if (do_tstamp)
-		fcb_len =3D GMAC_FCB_LEN + GMAC_TXPAL_LEN;
-
-	if (skb_headroom(skb) < fcb_len) {
-		skb_new =3D skb_realloc_headroom(skb, fcb_len);
-		if (!skb_new) {
-			dev_kfree_skb_any(skb);
-			return NETDEV_TX_OK;
-		}
-		if (skb->sk)
-			skb_set_owner_w(skb_new, skb->sk);
-		dev_consume_skb_any(skb);
-		skb =3D skb_new;
-	}
-	[...]
-	if (do_tstamp)
-		skb_push(skb, GMAC_TXPAL_LEN);
-	if (fcb_len)
-		skb_push(skb, GMAC_FCB_LEN);
-
-	// dma map and send the frame
-}
-
-Tx napi (xmit completion):
-gfar_clean_tx_ring()
-{
-	do_tstamp =3D (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
-		    priv->hwts_tx_en;
-	// dma unmap
-	if (do_tstamp) {
-		struct skb_shared_hwtstamps shhwtstamps;
-
-		// read timestamp from skb->data and write it to shhwtstamps
-		skb_pull(skb, GMAC_FCB_LEN + GMAC_TXPAL_LEN);
-		skb_tstamp_tx(skb, &shhwtstamps);
-	}
-	dev_kfree_skb_any(skb);
-}
-
+greg k-h
