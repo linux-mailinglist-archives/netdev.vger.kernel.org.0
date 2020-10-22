@@ -2,108 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB2DA295B63
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 11:06:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34A21295B75
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 11:11:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2895243AbgJVJGq convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 22 Oct 2020 05:06:46 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:23551 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2894855AbgJVJGo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 05:06:44 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-39-8GHPp09oP0SD-2EKgdt0nA-1; Thu, 22 Oct 2020 10:06:39 +0100
-X-MC-Unique: 8GHPp09oP0SD-2EKgdt0nA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Thu, 22 Oct 2020 10:06:38 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Thu, 22 Oct 2020 10:06:38 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Greg KH' <gregkh@linuxfoundation.org>,
-        David Hildenbrand <david@redhat.com>
-CC:     Al Viro <viro@zeniv.linux.org.uk>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Christoph Hellwig <hch@lst.de>,
-        "kernel-team@android.com" <kernel-team@android.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
-        David Howells <dhowells@redhat.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-aio@kvack.org" <linux-aio@kvack.org>,
-        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>
-Subject: RE: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
- rw_copy_check_uvector() into lib/iov_iter.c"
-Thread-Topic: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
- rw_copy_check_uvector() into lib/iov_iter.c"
-Thread-Index: AQHWqE5GNDfnH4y9nkGWtfqJueR1KKmjTCJQgAAHFcaAAABxcA==
-Date:   Thu, 22 Oct 2020 09:06:38 +0000
-Message-ID: <96aa868fdee24fd5af8ca06a9bbc0933@AcuMS.aculab.com>
-References: <20200925045146.1283714-1-hch@lst.de>
- <20200925045146.1283714-3-hch@lst.de> <20201021161301.GA1196312@kroah.com>
- <20201021233914.GR3576660@ZenIV.linux.org.uk>
- <20201022082654.GA1477657@kroah.com>
- <80a2e5fa-718a-8433-1ab0-dd5b3e3b5416@redhat.com>
- <5d2ecb24db1e415b8ff88261435386ec@AcuMS.aculab.com>
- <df2e0758-b8ed-5aec-6adc-a18f499c0179@redhat.com>
- <20201022090155.GA1483166@kroah.com>
-In-Reply-To: <20201022090155.GA1483166@kroah.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S2509365AbgJVJLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 05:11:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:44350 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2503963AbgJVJLv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 05:11:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603357910;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=gHzULOT3VOnkW/ImLdIo7YhLXMKjnV2V9o8V5VzEafU=;
+        b=AurSUJRv2FZExMW917P0Sy8X6w1kqpiFRh2njx/9ozgRbOVlJNYWnTJMZXejfTWdgW736I
+        WCcW1O0Op3FprX9re4ysN1rxdG6AWuRNt0wXbKoHNt5Fq8Ry/x1LwK2zfOLbb0c8hd3+m9
+        xvAtQvHevl/UCjWPyttA+J8TeWRdLiE=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-438-8Bi5nHvjON26T6NTNX-OZQ-1; Thu, 22 Oct 2020 05:11:48 -0400
+X-MC-Unique: 8Bi5nHvjON26T6NTNX-OZQ-1
+Received: by mail-wm1-f70.google.com with SMTP id o15so370914wmh.1
+        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 02:11:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=gHzULOT3VOnkW/ImLdIo7YhLXMKjnV2V9o8V5VzEafU=;
+        b=fkve0zpjrr3ds8MihwXoDZwNtD9ad73ugfE1SBzKPATH75UJpPbAArCu9FN1UGd620
+         e6wtCJM3FPcc3aAPGkN9Pf6oeIN6t6c2N1TWTvoyQlev6YrGRC3JQVs7tvYQccXEWgMY
+         tcqGsOUtpkYX8UOudGBOoQakb5TRjSPqC9LxlefjGJHLNFf9p+hvPL+oA7tAFG1mNLFy
+         r4rcCJPf6p1qTKD7S5TKn95E1iLWLmJtufMI6lPH87SQxTQseod2N1oR3bBf7WocLzFx
+         38/J900MjIuM+Q1yovc4EGLlEMUDyOfhI5mSBGFQu0eVRu8qSrW7xgzvcXaVBSGSMdiB
+         i5NQ==
+X-Gm-Message-State: AOAM530pl8LCUIp5WYOyipIbFota1xI+RN7jKjGdqcDretPDhzXnEAYN
+        pp+73LC9tHsqgubVSwNSz2XD+omc3Pd07Ixk4XPMYDSa7jHLENPMazpIbLvIgkV9R1gKDluCzdt
+        7MrW3Tjqt2aRqG7Se
+X-Received: by 2002:adf:e5cb:: with SMTP id a11mr1564561wrn.353.1603357906960;
+        Thu, 22 Oct 2020 02:11:46 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxa8ExFhQWLsLMr0/nLupBmHExyR3egauTG4tuukH+ADjiSR3vlfGQ74SifFeC1b/FurYtTfA==
+X-Received: by 2002:adf:e5cb:: with SMTP id a11mr1564545wrn.353.1603357906815;
+        Thu, 22 Oct 2020 02:11:46 -0700 (PDT)
+Received: from pc-2.home (2a01cb058d4f8400c9f0d639f7c74c26.ipv6.abo.wanadoo.fr. [2a01:cb05:8d4f:8400:c9f0:d639:f7c7:4c26])
+        by smtp.gmail.com with ESMTPSA id 24sm2354940wmg.8.2020.10.22.02.11.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Oct 2020 02:11:45 -0700 (PDT)
+Date:   Thu, 22 Oct 2020 11:11:44 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        martin.varghese@nokia.com
+Subject: [PATCH iproute2-next] m_mpls: test the 'mac_push' action after
+ 'modify'
+Message-ID: <4340721b2347c9290d2e379ee22b3a1a05083eb6.1603357855.git.gnault@redhat.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Greg KH
-> Sent: 22 October 2020 10:02
-...
-> I'm running some more tests, trying to narrow things down as just adding
-> a "noinline" to the function that got moved here doesn't work on Linus's
-> tree at the moment because the function was split into multiple
-> functions.
+Commit 02a261b5ba1c ("m_mpls: add mac_push action") added a matches()
+test for the "mac_push" string before the test for "modify".
+This changes the previous behaviour as 'action m' used to match
+"modify" while it now matches "mac_push".
 
-I was going to look at that once rc2 is in - and the kernel is
-likely to work.
+Revert to the original behaviour by moving the "mac_push" test after
+"modify".
 
-I suspect the split version doesn't get inlined the same way?
-Which leaves the horrid argument conversion the inline got
-rid of back there again.
+Fixes: 02a261b5ba1c ("m_mpls: add mac_push action")
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+---
+ tc/m_mpls.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Which all rather begs the question of why the compiler doesn't
-generate the expected code.
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/tc/m_mpls.c b/tc/m_mpls.c
+index cb8019b1..2c3752ba 100644
+--- a/tc/m_mpls.c
++++ b/tc/m_mpls.c
+@@ -99,14 +99,14 @@ static int parse_mpls(struct action_util *a, int *argc_p, char ***argv_p,
+ 			if (check_double_action(action, *argv))
+ 				return -1;
+ 			action = TCA_MPLS_ACT_PUSH;
+-		} else if (matches(*argv, "mac_push") == 0) {
+-			if (check_double_action(action, *argv))
+-				return -1;
+-			action = TCA_MPLS_ACT_MAC_PUSH;
+ 		} else if (matches(*argv, "modify") == 0) {
+ 			if (check_double_action(action, *argv))
+ 				return -1;
+ 			action = TCA_MPLS_ACT_MODIFY;
++		} else if (matches(*argv, "mac_push") == 0) {
++			if (check_double_action(action, *argv))
++				return -1;
++			action = TCA_MPLS_ACT_MAC_PUSH;
+ 		} else if (matches(*argv, "dec_ttl") == 0) {
+ 			if (check_double_action(action, *argv))
+ 				return -1;
+-- 
+2.21.3
 
