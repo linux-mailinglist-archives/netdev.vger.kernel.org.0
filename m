@@ -2,82 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 340862960B7
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 16:11:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 683C22960B9
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 16:12:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2894798AbgJVOLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 10:11:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58854 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2439034AbgJVOLu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 10:11:50 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4EDEC0613CE
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 07:11:49 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id z5so1787605iob.1
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 07:11:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/ZEXAHRiSsbDNXxyCWI0WWEhqPVUdIb4dcbDNf0EVqU=;
-        b=fuXedzVOa2YsfchGIHSkLn3gRqkkcp6GHxPE332ApvPuU15zIN/Df/a8qzCSZtuTRv
-         EKdTdPMQr0ETqjaYp93QTY4JTgJIz8ovn/coXRHwnK8eG2iRbl43XfXjQkWBdclAVVKM
-         C4CroeSd6PRX+5WU1AIEJUtfvZ5S6AK6+I8itwWhzh+sV47H0tWFtwGCZKJAHuqMngY3
-         oQHIIWmt+vZFmEk7Ooe3qGWTUGC4oqUrbFAeO0/kj+d748qltDeN8x0OxpmdtSyTqiHs
-         itPU/2+z/DZ+V5KpCl4HN6ZON2eRYW67hLaKbdaDc9qer+A2FzaY4+DidPEA8dmpsRYU
-         QDQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/ZEXAHRiSsbDNXxyCWI0WWEhqPVUdIb4dcbDNf0EVqU=;
-        b=JIzctPrjSRFzySlTgmdnw8xzH2RM7m7y3PfSTyN4RCu/JunsfBbTbuipV45J5aZ+tf
-         mX2MG14mrhsn+kT6tqY6ZmAA/cijW0QvKA8Yb9JOqgFG9ARfAlGumbweSJy81Nt5gVwm
-         IJhVEHUqVNGUY+mMOZJ0vPulwMKyWqkqBkzsceVYsNCCisNFLPKVpJKwEWx2tgSL+lFv
-         kQa8F7Zoc5SEQfgj1vrQpiVVIBfe4NLTquOn300HW29SdsvDs4stNeAU88r9nQ2jrE/M
-         n/2VB/EXzwHkQpsbXT1pw51uFKNQ3vc8Puq97UrX0IljySU+/tMreW13ZYSjhPaQIbLH
-         n+DQ==
-X-Gm-Message-State: AOAM530flJ6oRW9/QvzRcBBSL1dSUy12KfE9MSzj95tRmKMea6vy7CdM
-        gjFt3Og90IFP0mJKkLGcy4T0iHf//Us=
-X-Google-Smtp-Source: ABdhPJwy0JZFdOZWUYaMejMfniQlMiHF39BtYZYX9g+7LeKOD3XXZjMr9hpk/v+GxYHZLlYgKhiKAA==
-X-Received: by 2002:a5d:8b4c:: with SMTP id c12mr1951029iot.167.1603375909222;
-        Thu, 22 Oct 2020 07:11:49 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:e8b3:f32:310b:8617])
-        by smtp.googlemail.com with ESMTPSA id c3sm1383503ila.47.2020.10.22.07.11.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Oct 2020 07:11:48 -0700 (PDT)
-Subject: Re: [PATCH v2 iproute2-next 1/2] m_vlan: add pop_eth and push_eth
- actions
-To:     Guillaume Nault <gnault@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev@vger.kernel.org, martin.varghese@nokia.com
-References: <cover.1603120726.git.gnault@redhat.com>
- <a35ef5479e7a47f25d0f07e31d13b89256f4b4cc.1603120726.git.gnault@redhat.com>
- <20201021113234.56052cb2@hermes.local> <20201022083655.GA1728@pc-2.home>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <4eca7616-96bd-9fab-bf15-b03717753440@gmail.com>
-Date:   Thu, 22 Oct 2020 08:11:45 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.1
+        id S2895076AbgJVOMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 10:12:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:59061 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2443552AbgJVOMK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 10:12:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603375929;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=9xm/wjrf+bJwVnEJL99y1rb6Xy0StOQXlEFvSqTpGFo=;
+        b=CELH3up2Qk3d1FAPUDUcB6I0GB9HZfnjscqy6wAPaplJxmsfKzeZ3H62U9dvFuMWWFj7Gu
+        iSNKuf7E9o1bRiv/fbABcN7Q1d1N1cqCw6u3/j5fEA8wC1Y+gFb8yo/wSsC1JnbLn3UtJi
+        4cX0VweeX2rpBZJbqWHqYsKX4r69b+w=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-549-3-nMc0O0MkqmeFiqWz2eKw-1; Thu, 22 Oct 2020 10:12:04 -0400
+X-MC-Unique: 3-nMc0O0MkqmeFiqWz2eKw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C309E1006CA8;
+        Thu, 22 Oct 2020 14:12:01 +0000 (UTC)
+Received: from krava (unknown [10.40.195.55])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 38EA91002C01;
+        Thu, 22 Oct 2020 14:11:55 +0000 (UTC)
+Date:   Thu, 22 Oct 2020 16:11:54 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Jesper Brouer <jbrouer@redhat.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Viktor Malik <vmalik@redhat.com>
+Subject: Re: [RFC bpf-next 00/16] bpf: Speed up trampoline attach
+Message-ID: <20201022141154.GB2332608@krava>
+References: <20201022082138.2322434-1-jolsa@kernel.org>
+ <20201022093510.37e8941f@gandalf.local.home>
 MIME-Version: 1.0
-In-Reply-To: <20201022083655.GA1728@pc-2.home>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201022093510.37e8941f@gandalf.local.home>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/22/20 2:36 AM, Guillaume Nault wrote:
+On Thu, Oct 22, 2020 at 09:35:10AM -0400, Steven Rostedt wrote:
+> On Thu, 22 Oct 2020 10:21:22 +0200
+> Jiri Olsa <jolsa@kernel.org> wrote:
 > 
->> Is it time to use full string compare for these options?
+> > hi,
+> > this patchset tries to speed up the attach time for trampolines
+> > and make bpftrace faster for wildcard use cases like:
+> > 
+> >   # bpftrace -ve "kfunc:__x64_sys_s* { printf("test\n"); }"
+> > 
+> > Profiles show mostly ftrace backend, because we add trampoline
+> > functions one by one and ftrace direct function registering is
+> > quite expensive. Thus main change in this patchset is to allow
+> > batch attach and use just single ftrace call to attach or detach
+> > multiple ips/trampolines.
 > 
-> If there's consensus that matches() should be avoided for new options,
-> I'll also follow up on this and replace it with strcmp(). However, that
-> should be a clear project-wide policy IMHO.
+> The issue I have with this change is that the purpose of the direct
+> trampoline was to give bpf access to the parameters of a function as if it
+> was called directly. That is, it could see the parameters of a function
+> quickly. I even made the direct function work if it wanted to also trace
+> the return code.
 > 
+> What the direct calls is NOT, is a generic tracing function tracer. If that
+> is required, then bpftrace should be registering itself with ftrace.
+> If you are attaching to a set of functions, where it becomes obvious that
+> its not being used to access specific parameters, then that's an abuse of
+> the direct calls.
+> 
+> We already have one generic function tracer, we don't need another.
 
-we can't change existing uses of 'matches'; it needs to be a policy
-change going forward hence the discussion now.
+I understand direct calls as a way that bpf trampolines and ftrace can
+co-exist together - ebpf trampolines need that functionality of accessing
+parameters of a function as if it was called directly and at the same
+point we need to be able attach to any function and to as many functions
+as we want in a fast way
+
+the bpftrace example above did not use arguments for simplicity, but they
+could have been there ... I think we could detect arguments presence in
+ebpf programs and use ftrace_ops directly in case they are not needed
+
+jirka
+
