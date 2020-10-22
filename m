@@ -2,57 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56E30295CFD
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 12:51:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C588295D04
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 12:55:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2896737AbgJVKvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 06:51:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55846 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2896731AbgJVKuS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 06:50:18 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3D74C0613CF;
-        Thu, 22 Oct 2020 03:50:17 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id u8so1624665ejg.1;
-        Thu, 22 Oct 2020 03:50:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=AqJYgFfxf1zWkOlgQREW7xW14ZLBvpYa1x30aNKm68E=;
-        b=pbufEwGlldI/bNKzoAlD6JH/1Kgwp7LL9n0IaPmYRMej2U9bzqt6blEz40JNSaI7Lh
-         2O682xKGy0D4TGwYimdte1eCaB73TcXuT/kE3v++8oLlmEb9N9Rm+jz9b9m7ThDmMQ8H
-         GRdACCf/1DPz265510ArcI2ZKTPUGthTquqzLZt8UYV/Vl0qgSfAmxkdRjrb6nRNqYBA
-         dGUHWDNuShmo3IYCrxndoMPak5+LWmhkl+EwHYH3M0Jvz2Qug22e3q2HCL8e6C1g76E/
-         E0OOdFkCaAncynTartJBUe1oObiFSfir4TcxGNpQ7DHArFB0u17w4I0oMi6BXlKUiGoW
-         SKKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=AqJYgFfxf1zWkOlgQREW7xW14ZLBvpYa1x30aNKm68E=;
-        b=hn1cvuqNQyfNekRceOuAuZlX2ZfparHjXCcQxAf6+laesjsWgpt1nf36JRh07/Hwuu
-         +xQZuLgH01Ine1B4YDjEVn6G8U985dabHYnaDF7v+lEE+B7rh3fWUViD4KnR9/NSVWX1
-         AdBqQ/03ivyy24jcs/RwSkPN36hIWZJFcs07ZpygVAKVkMzukEQTidGBoSsyddjETA2q
-         apcvQz4AsLNGEYONB+X2Wb5tcZYmCKyNxpuzbnGzMqEquNxYoiPWQRz6NjucdYwNRTGS
-         /rnREPVjw335atVO7dAhAV4HCLGN4Pu5G72pCbPw9EpwbxghVOisJd5Wvw0lONch9B7F
-         uH/w==
-X-Gm-Message-State: AOAM532Ge3IybvfP0dEeW29jy1dREK5BlAZ3RxU+E4nYlcts9L3rV/U5
-        JMLhAflRU+y+31nU8wAHvnw=
-X-Google-Smtp-Source: ABdhPJxlaNs46tjTA8JqdR82AAN+XEw2zh8WIgYvHXdrCYzojKv7n/lWrrOyKNMRJG16aQh/eLKBXw==
-X-Received: by 2002:a17:906:bc57:: with SMTP id s23mr1621953ejv.94.1603363816451;
-        Thu, 22 Oct 2020 03:50:16 -0700 (PDT)
-Received: from skbuf ([188.26.174.215])
-        by smtp.gmail.com with ESMTPSA id h13sm547472edz.43.2020.10.22.03.50.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Oct 2020 03:50:15 -0700 (PDT)
-Date:   Thu, 22 Oct 2020 13:50:14 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Christian Eggers <ceggers@arri.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+        id S2896802AbgJVKy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 06:54:57 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:46776 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2444354AbgJVKy5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 06:54:57 -0400
+From:   Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1603364094;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=M/fC5Y7y3IxeDmxl+3w+jc+KFBzOSk//96ieJ/UONk0=;
+        b=viQtrCkKSe30Qieil1Gu5eZpDPKTS8n4OBk34mB3YNQe02Dp7rchwDv09VV2ywHi952kLI
+        BG64szPZnlLvxpDXRwBgDApGkdg6BYyNOmumdMivLSc7+5hzmDmGsm8XcMbe49RpWpv49D
+        PBHnMOHxEbhCAs4d9zwgKist/vgI6r9C0lYh3YepYxcbAX1XcyxwkIvT6cZstwS1SqT6ca
+        XRM1A6/vsKo7VSKelcAHMvFOL9AvVsDHkFSMmbaPtwq0Z1HqhtIoeZm+eozl31zVa34dOu
+        HsYWEiQP6c255ydM1+7t7HFPkQi4/pLCZOW/dPpBrPaoZWZ0TI5fjK+6wWa+Tw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1603364094;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=M/fC5Y7y3IxeDmxl+3w+jc+KFBzOSk//96ieJ/UONk0=;
+        b=NLUz3CmcxqLBMNZvyJBu++JD+0bv79htNvwhfhBi4+dWJgUZ/Tfw9yX3Wt26nvZey4k6Q4
+        U/8kjN4l2Quxh0AQ==
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     Christian Eggers <ceggers@arri.de>, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -67,62 +48,77 @@ Cc:     Christian Eggers <ceggers@arri.de>,
         Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH net-next 7/9] net: dsa: microchip: ksz9477: add
- hardware time stamping support
-Message-ID: <20201022105014.gflswfpie4qvbw3h@skbuf>
-References: <20201019172435.4416-1-ceggers@arri.de>
- <20201019172435.4416-8-ceggers@arri.de>
- <20201021233935.ocj5dnbdz7t7hleu@skbuf>
- <20201022030217.GA2105@hoboy.vegasvil.org>
- <20201022090126.h64hfnlajqelveku@skbuf>
+Subject: Re: [RFC PATCH net-next 1/9] dt-bindings: net: dsa: convert ksz bindings document to yaml
+In-Reply-To: <3cf2e7f8-7dc8-323f-0cee-5a025f748426@gmail.com>
+References: <20201019172435.4416-1-ceggers@arri.de> <20201019172435.4416-2-ceggers@arri.de> <87lfg0rrzi.fsf@kurt> <20201022001639.ozbfnyc4j2zlysff@skbuf> <3cf2e7f8-7dc8-323f-0cee-5a025f748426@gmail.com>
+Date:   Thu, 22 Oct 2020 12:54:52 +0200
+Message-ID: <87h7qmil8j.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201022090126.h64hfnlajqelveku@skbuf>
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 22, 2020 at 12:01:26PM +0300, Vladimir Oltean wrote:
-> On Wed, Oct 21, 2020 at 08:02:17PM -0700, Richard Cochran wrote:
-> > On Thu, Oct 22, 2020 at 02:39:35AM +0300, Vladimir Oltean wrote:
-> > > So how _does_ that work for TI PHYTER?
-> > >
-> > > As far as we understand, the PHYTER appears to autonomously mangle PTP packets
-> > > in the following way:
-> > > - subtracting t2 on RX from the correctionField of the Pdelay_Req
-> > > - adding t3 on TX to the correctionField of the Pdelay_Resp
-> >
-> > The Phyter does not support peer-to-peer one step.
-> 
-> Ok, that's my mistake for not double-checking, sorry.
-> 
-> > The only driver that implements it is ptp_ines.c.
-> >
-> > And *that* driver/HW implements it correctly.
-> 
-> Is there documentation available for this timestamping block? I might be
-> missing some data, as the kernel driver is fairly pass-through for the
-> TX timestamping of the Pdelay_Resp, so the hardware might just 'do the
-> right thing'. I believe the answer lies within the timestamper's
-> per-port RX FIFO. Just guessing here, but I suspect that the RX FIFO
-> doesn't get cleared immediately after the host queries it, and the
-> hardware caches the last 100 events from the pool and uses the RX
-> timestamps of Pdelay_Req as t2 in the process of updating the
-> correctionField of Pdelay_Resp on TX. Would that be correct?
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-Ah, no, I think I'm wrong. As per your own description here:
-https://lwn.net/Articles/807970/
+On Wed Oct 21 2020, Florian Fainelli wrote:
+> On 10/21/2020 5:16 PM, Vladimir Oltean wrote:
+>> On Wed, Oct 21, 2020 at 08:52:01AM +0200, Kurt Kanzenbach wrote:
+>>> On Mon Oct 19 2020, Christian Eggers wrote:
+>>> The node names should be switch. See dsa.yaml.
+>>>
+>>>> +            compatible =3D "microchip,ksz9477";
+>>>> +            reg =3D <0>;
+>>>> +            reset-gpios =3D <&gpio5 0 GPIO_ACTIVE_LOW>;
+>>>> +
+>>>> +            spi-max-frequency =3D <44000000>;
+>>>> +            spi-cpha;
+>>>> +            spi-cpol;
+>>>> +
+>>>> +            ports {
+>>>
+>>> ethernet-ports are preferred.
+>>=20
+>> This is backwards to me, instead of an 'ethernet-switch' with 'ports',
+>> we have a 'switch' with 'ethernet-ports'. Whatever.
+>
+> The rationale AFAIR was that dual Ethernet port controllers like TI's=20
+> CPSW needed to describe each port as a pseudo Ethernet MAC and using=20
+> 'ethernet-ports' as a contained allowed to disambiguate with the 'ports'=
+=20
+> container used in display subsystem descriptions.
 
-If the hardware supports p2p one-step, it subtracts the ingress time
-stamp value from the Pdelay_Request correction field.  The user space
-software stack then simply copies the correction field into the
-Pdelay_Response, and on transmission the hardware adds the egress time
-stamp into the correction field.
+Yes, that was the outcome of previous discussions.
 
-So we were correct about the behavior, just not about the target
-hardware.
+> We should probably enforce or recommend 'ethernet-switch' to be used
+> as the node name for Ethernet switch devices though.
 
-So, that's just not how this hardware works. What do you recommend?
-Keeping a FIFO of Pdelay_Req RX timestamps, and matching them to
-Pdelay_Resp messages on TX, all of that contained within tag_ksz.c?
+After using grep, it seems like 'ethernet-switch' as well as simply
+'switch' are being used today. Yes, maybe both should be allowed.
+
+Thanks,
+Kurt
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAl+RZPwACgkQeSpbgcuY
+8KZ1Zg/+O1K8qE24ikz3QxBFBaUfbiSIbx8FLtvGbeYwH+KwOgx2Qi6KZQaGBKjP
+MHIoWH2k8SrxY9JdMTanf7YK8b7/vrQ0GuGjl1D0gTrvoU3sT1FgTP8gcnN/aoxh
+mPwZpj2QWiYbcr25tmPHW757+eo8TQ9GR8A2Jh+Sb/wucV+vdpToV3fMTuIGL55r
+WFJ/Es5/ZoSqa52i/YHXgD6e/zlChqDh6/MPJhvvznjbg3ehHSw3OTB8fane82+r
+/8MlavfklKX7mPawBYPZPZxXerElc9lQ1GUoYC7w6M6nF6HWhPhDIM1Q2LjCGRFa
+YUhtB6mcP+oIMSQc6RjcBX2pVGzs/K+uvhZZ3LxUTeseUbX4teoKp1cz3M//e6Yt
+hwsIb1EbfIzm2DMatNzE+kjmq7uBdNHtuiDpja5gaoEx+/JjnpwBcEubVfT9YBaH
+J6kBRwueamWEVDMoJmojar/rG7yBURS/BZaUouXl+J+EYY3kIrknNnwjh78qF+cM
+FURCf/EgSSuxfiIf+t3CorDWpbr0+2eYIkWFACU1OWeszFsFTGEpJCIaO6bHxoAy
+vYkzzYSxwWjyoV4nonErHaYId4ixojSiE3cad5w2UQxvI8tvYPuFcFbHtwUnPSJ4
+fOmcXPjSzzG5iieus7POa6n7+Mf6xJl/uPdtbnwDupu1UoAutBc=
+=Ks1w
+-----END PGP SIGNATURE-----
+--=-=-=--
