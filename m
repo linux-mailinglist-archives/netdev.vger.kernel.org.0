@@ -2,92 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 492AC29676C
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 00:39:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F86C29677D
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 01:04:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S372992AbgJVWja (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 18:39:30 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:50106 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S372971AbgJVWj3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 18:39:29 -0400
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1603406366;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=SrnDQ4pBHMGHEMhYZ0N79a51WfK6iJHdrjE3kDgVDiI=;
-        b=iy4bIK/ZpYUnzYJlhG1X4xFIb08cTGDBQ+HlR6v5IxdhK7umkvHwCM+mPE40K9vypjbHfE
-        io4BMQy2A5SBBcVjsI76MvcSWRoHDgIWZpVprt99G0b31BAZFCe/eZc03927hcTrVhy2zj
-        ka0HpBxBsB3+1Ctwmx4ULj3/xBVV3wVakTbKJdu8z7y12AMtI30/PTVK71CE6RIrfI9zgM
-        yoK17mBSmBj6XQHXYYO9QBqtuHVlXg5CRwNXh/MbYPuEbZn2oMPyK5ihBSBLpGARixsoBQ
-        04jNkCIjrFrEr9bGMYI6+7ZmQ7G9zSkUr3ghrmkeXOxZ0L34xwJz3qETxpIQhw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1603406366;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=SrnDQ4pBHMGHEMhYZ0N79a51WfK6iJHdrjE3kDgVDiI=;
-        b=4oNDdQ0Jz1ulYn3D+b0WK6DPec8o3QKBDso61BYhMIyNImFm1hDcbSdyP0ulQOGdcTp7p7
-        1WzNdwrla364OSDw==
-To:     Marcelo Tosatti <mtosatti@redhat.com>
-Cc:     Nitesh Narayan Lal <nitesh@redhat.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        frederic@kernel.org, sassmann@redhat.com,
-        jesse.brandeburg@intel.com, lihong.yang@intel.com,
-        helgaas@kernel.org, jeffrey.t.kirsher@intel.com,
-        jacob.e.keller@intel.com, jlelli@redhat.com, hch@infradead.org,
-        bhelgaas@google.com, mike.marciniszyn@intel.com,
-        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
-        jiri@nvidia.com, mingo@redhat.com, peterz@infradead.org,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        lgoncalv@redhat.com, Jakub Kicinski <kuba@kernel.org>,
-        Dave Miller <davem@davemloft.net>
-Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to housekeeping CPUs
-In-Reply-To: <20201022122849.GA148426@fuller.cnet>
-References: <20200928183529.471328-1-nitesh@redhat.com> <20200928183529.471328-5-nitesh@redhat.com> <87v9f57zjf.fsf@nanos.tec.linutronix.de> <3bca9eb1-a318-1fc6-9eee-aacc0293a193@redhat.com> <87lfg093fo.fsf@nanos.tec.linutronix.de> <877drj72cz.fsf@nanos.tec.linutronix.de> <20201022122849.GA148426@fuller.cnet>
-Date:   Fri, 23 Oct 2020 00:39:25 +0200
-Message-ID: <87pn596g2q.fsf@nanos.tec.linutronix.de>
+        id S373147AbgJVXES (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 19:04:18 -0400
+Received: from bedivere.hansenpartnership.com ([96.44.175.130]:47630 "EHLO
+        bedivere.hansenpartnership.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S373136AbgJVXES (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 19:04:18 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by bedivere.hansenpartnership.com (Postfix) with ESMTP id 21AE51281E42;
+        Thu, 22 Oct 2020 16:04:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
+        s=20151216; t=1603407858;
+        bh=YF9ZLRJ5Wmd29VMCSDUBdN9scxQBSKiZF6i1sPMZ4cs=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=Rp43OBNeRff7l6xXQQprJM/m/WMbF15ErMCUULCrOGIpWCNqppgte+USb5NryvBJ5
+         War0Kohqc5idoDlXO+afQei1xfY//CINxzd3xmUM3zW/BrEbGtPgJCAUCtusJ41H2q
+         ZqwBd/RzMW6JiIiE1aUEqb3gsIRU2wNiUMyhtghs=
+Received: from bedivere.hansenpartnership.com ([127.0.0.1])
+        by localhost (bedivere.hansenpartnership.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Q3sVWPD8CWVy; Thu, 22 Oct 2020 16:04:18 -0700 (PDT)
+Received: from jarvis.int.hansenpartnership.com (unknown [IPv6:2601:600:8280:66d1::c447])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by bedivere.hansenpartnership.com (Postfix) with ESMTPSA id 759B41281E39;
+        Thu, 22 Oct 2020 16:04:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=hansenpartnership.com;
+        s=20151216; t=1603407857;
+        bh=YF9ZLRJ5Wmd29VMCSDUBdN9scxQBSKiZF6i1sPMZ4cs=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=mBMQkLZBj9y05L4DkBJ+6L7KVSJNkpwwj8Zle4lznjtwYUJu+0MqDsmQnbVz9vlA3
+         IyiV2YPkSZ5LVBnyRQUiwij5DmcUrmGCVSXXsnKtc5qZmFrqYM2+08vIYtr35rd1oP
+         aTqAKkb2akyYD7It4zMkcKI4NAiK2FUCp5LlcFdM=
+Message-ID: <f1ff32ec2970f1ee808e2da946e6514e71694e71.camel@HansenPartnership.com>
+Subject: Re: [PATCH/RFC net] net: dec: tulip: de2104x: Add shutdown handler
+ to stop NIC
+From:   James Bottomley <James.Bottomley@HansenPartnership.com>
+To:     Moritz Fischer <mdf@kernel.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, linux-parisc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lucyyan@google.com
+Date:   Thu, 22 Oct 2020 16:04:16 -0700
+In-Reply-To: <20201022220636.609956-1-mdf@kernel.org>
+References: <20201022220636.609956-1-mdf@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 22 2020 at 09:28, Marcelo Tosatti wrote:
-> On Wed, Oct 21, 2020 at 10:25:48PM +0200, Thomas Gleixner wrote:
->> The right answer to this is to utilize managed interrupts and have
->> according logic in your network driver to handle CPU hotplug. When a CPU
->> goes down, then the queue which is associated to that CPU is quiesced
->> and the interrupt core shuts down the relevant interrupt instead of
->> moving it to an online CPU (which causes the whole vector exhaustion
->> problem on x86). When the CPU comes online again, then the interrupt is
->> reenabled in the core and the driver reactivates the queue.
->
-> Aha... But it would be necessary to do that from userspace (for runtime
-> isolate/unisolate).
+On Thu, 2020-10-22 at 15:06 -0700, Moritz Fischer wrote:
+> The driver does not implement a shutdown handler which leads to
+> issues
+> when using kexec in certain scenarios. The NIC keeps on fetching
+> descriptors which gets flagged by the IOMMU with errors like this:
+> 
+> DMAR: DMAR:[DMA read] Request device [5e:00.0]fault addr fffff000
+> DMAR: DMAR:[DMA read] Request device [5e:00.0]fault addr fffff000
+> DMAR: DMAR:[DMA read] Request device [5e:00.0]fault addr fffff000
+> DMAR: DMAR:[DMA read] Request device [5e:00.0]fault addr fffff000
+> DMAR: DMAR:[DMA read] Request device [5e:00.0]fault addr fffff000
+> 
+> Signed-off-by: Moritz Fischer <mdf@kernel.org>
+> ---
+> 
+> Hi all,
+> 
+> I'm not sure if this is the proper way for a shutdown handler,
+> I've tried to look at a bunch of examples and couldn't find a
+> specific
+> solution, in my tests on hardware this works, though.
+> 
+> Open to suggestions.
+> 
+> Thanks,
+> Moritz
+> 
+> ---
+>  drivers/net/ethernet/dec/tulip/de2104x.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/ethernet/dec/tulip/de2104x.c
+> b/drivers/net/ethernet/dec/tulip/de2104x.c
+> index f1a2da15dd0a..372c62c7e60f 100644
+> --- a/drivers/net/ethernet/dec/tulip/de2104x.c
+> +++ b/drivers/net/ethernet/dec/tulip/de2104x.c
+> @@ -2185,6 +2185,7 @@ static struct pci_driver de_driver = {
+>  	.id_table	= de_pci_tbl,
+>  	.probe		= de_init_one,
+>  	.remove		= de_remove_one,
+> +	.shutdown	= de_remove_one,
 
-For anything which uses managed interrupts this is a non-problem and
-userspace has absolutely no business with it.
+This doesn't look right: shutdown is supposed to turn off the device
+without disturbing the tree or causing any knock on effects (I think
+that rule is mostly because you don't want anything in userspace
+triggering since it's likely to be nearly dead).  Remove removes the
+device from the tree and cleans up everything.  I think the function
+you want that's closest to what shutdown needs is de_close().  That
+basically just turns off the chip and frees the interrupt ... you'll
+have to wrapper it to call it from the pci_driver, though.
 
-Isolation does not shut down queues, at least not the block multi-queue
-ones which are only active when I/O is issued from that isolated CPU.
+James
 
-So transitioning out of isolation requires no action at all.
 
-Transitioning in or changing the housekeeping mask needs some trivial
-tweak to handle the case where there is an overlap in the cpuset of a
-queue (housekeeping and isolated). This is handled already for setup and
-affinity changes, but of course not for runtime isolation mask changes,
-but that's a trivial thing to do.
-
-What's more interesting is how to deal with the network problem where
-there is no guarantee that the "response" ends up on the same queue as
-the "request" which is what the block people rely on. And that problem
-is not really an interrupt affinity problem in the first place.
-
-Thanks,
-
-        tglx
