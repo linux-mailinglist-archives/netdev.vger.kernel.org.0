@@ -2,100 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0F3129556D
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 02:16:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE6FF29557F
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 02:27:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2507419AbgJVAQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Oct 2020 20:16:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43004 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2507390AbgJVAQn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Oct 2020 20:16:43 -0400
-Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75443C0613CE;
-        Wed, 21 Oct 2020 17:16:43 -0700 (PDT)
-Received: by mail-ej1-x641.google.com with SMTP id t25so5725001ejd.13;
-        Wed, 21 Oct 2020 17:16:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7b2u20oLzpg5xmAK+uboOrAZqd6ZJqxePLoN4+CIlJo=;
-        b=F1Z+pBO+HHWdKgWOUyNMIX9FcvSi9R/EvzqVBDLeMeJRxYdPs2Yf20HaBrNmGzautS
-         cwLoJr1DXi5N69PCmZhIrxXXdbg9jI0ALeR8ldsERvEADOh+kpLq5E2mz6fDh05SGeMw
-         mqk2KAHNtv06U9vCWYdrZqw/LSRe5v53POgGkvERFAtpfzLdp2vzoXqf5PcROBjRmYD4
-         JZZGlNzqh+C6P3e7iV0XITUV6Sgx474irZhJ5LLdbeurfKDSHSffVhW3V0zWjWwYpkBQ
-         dsY86wBT2EyYdsd2AIqgPNAwHLHstpxBi3fIfx+dZCNbFhMyLQR+aygqUR83WYxos9D4
-         gyJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7b2u20oLzpg5xmAK+uboOrAZqd6ZJqxePLoN4+CIlJo=;
-        b=IfYygW/4jH8eFNTYTEzR4LyP+n8g8Mm3+A1sSCfnorifx49WtY1dlrhkvyiNPF+FUe
-         QJ3alB95TM/4MFsJOB2cpeM3xFh5kHgkt/VwySo7Z9DE7G/HyOKD7esVqr5nIuEhmMKE
-         +KVZXjSKaJETg9DqFQRVGWXXqLHO0zFYDs97IjlGYisfxyeDKYovWnd94+UmKmj32Phx
-         AUz4Y21CINa4ymMtxlEjBLiPX6xsfzun1MXa8eB80PhWPszsojvRfDaBM6MG+Y1zxew1
-         8gI1hTgUgOhWv/4olKs+hO0dJhaLDBifMhUgxs9hPRqMX690VV7EcB6JaZXMuCYTPK/o
-         FIkg==
-X-Gm-Message-State: AOAM533r4Z0ueQmbQ/EcVzX26byoYqRnAfo8i9PVKK90aaGc9bs9/Fop
-        fbwg59mD5soZvswB7Z34oyU=
-X-Google-Smtp-Source: ABdhPJwcQwIDkW+sZoPbYSiYr6zhbCieIzNCaCk5TpAGDifLXmyu7L8gx1ZdNrYVX8jCw1vo8ot5sQ==
-X-Received: by 2002:a17:907:2041:: with SMTP id pg1mr5911132ejb.321.1603325802173;
-        Wed, 21 Oct 2020 17:16:42 -0700 (PDT)
-Received: from skbuf ([188.26.174.215])
-        by smtp.gmail.com with ESMTPSA id g18sm2926116eje.12.2020.10.21.17.16.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Oct 2020 17:16:41 -0700 (PDT)
-Date:   Thu, 22 Oct 2020 03:16:39 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
-Cc:     Christian Eggers <ceggers@arri.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Helmut Grohne <helmut.grohne@intenta.de>,
-        Paul Barker <pbarker@konsulko.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Marek Vasut <marex@denx.de>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH net-next 1/9] dt-bindings: net: dsa: convert ksz
- bindings document to yaml
-Message-ID: <20201022001639.ozbfnyc4j2zlysff@skbuf>
-References: <20201019172435.4416-1-ceggers@arri.de>
- <20201019172435.4416-2-ceggers@arri.de>
- <87lfg0rrzi.fsf@kurt>
+        id S2507491AbgJVA1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Oct 2020 20:27:34 -0400
+Received: from mga17.intel.com ([192.55.52.151]:26848 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2440647AbgJVA1e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Oct 2020 20:27:34 -0400
+IronPort-SDR: c8K/DDwrquZrqYATLWcUgQWUIzZi5dL2koLTm+EwZCepV9pc6fzmujwjC/PSG8ItqACe4O3Lph
+ 2JslZEEpSQug==
+X-IronPort-AV: E=McAfee;i="6000,8403,9781"; a="147311327"
+X-IronPort-AV: E=Sophos;i="5.77,402,1596524400"; 
+   d="scan'208";a="147311327"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2020 17:27:31 -0700
+IronPort-SDR: 1Ma8nA7sjOvVStgOnzIylMyaFuV52Ohtj7fxjd8IkeVlQmA9SrnuaTHQBSN746g9c1VlsDbLrp
+ zHd9Be+NoaXQ==
+X-IronPort-AV: E=Sophos;i="5.77,402,1596524400"; 
+   d="scan'208";a="359067328"
+Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.209.13.114]) ([10.209.13.114])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Oct 2020 17:27:24 -0700
+Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to housekeeping
+ CPUs
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Cc:     Nitesh Narayan Lal <nitesh@redhat.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        frederic@kernel.org, mtosatti@redhat.com, sassmann@redhat.com,
+        jesse.brandeburg@intel.com, lihong.yang@intel.com,
+        helgaas@kernel.org, jeffrey.t.kirsher@intel.com, jlelli@redhat.com,
+        hch@infradead.org, bhelgaas@google.com, mike.marciniszyn@intel.com,
+        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
+        jiri@nvidia.com, mingo@redhat.com, peterz@infradead.org,
+        juri.lelli@redhat.com, vincent.guittot@linaro.org,
+        lgoncalv@redhat.com, Dave Miller <davem@davemloft.net>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+References: <20200928183529.471328-1-nitesh@redhat.com>
+ <20200928183529.471328-5-nitesh@redhat.com>
+ <87v9f57zjf.fsf@nanos.tec.linutronix.de>
+ <3bca9eb1-a318-1fc6-9eee-aacc0293a193@redhat.com>
+ <87lfg093fo.fsf@nanos.tec.linutronix.de>
+ <877drj72cz.fsf@nanos.tec.linutronix.de>
+ <20201021170224.55aea948@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jacob Keller <jacob.e.keller@intel.com>
+Organization: Intel Corporation
+Message-ID: <a1c6cdcd-7f89-5ed3-c869-ffec05929786@intel.com>
+Date:   Wed, 21 Oct 2020 17:27:21 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87lfg0rrzi.fsf@kurt>
+In-Reply-To: <20201021170224.55aea948@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 21, 2020 at 08:52:01AM +0200, Kurt Kanzenbach wrote:
-> On Mon Oct 19 2020, Christian Eggers wrote:
-> The node names should be switch. See dsa.yaml.
-> 
-> > +            compatible = "microchip,ksz9477";
-> > +            reg = <0>;
-> > +            reset-gpios = <&gpio5 0 GPIO_ACTIVE_LOW>;
-> > +
-> > +            spi-max-frequency = <44000000>;
-> > +            spi-cpha;
-> > +            spi-cpol;
-> > +
-> > +            ports {
-> 
-> ethernet-ports are preferred.
 
-This is backwards to me, instead of an 'ethernet-switch' with 'ports',
-we have a 'switch' with 'ethernet-ports'. Whatever.
+
+On 10/21/2020 5:02 PM, Jakub Kicinski wrote:
+> On Wed, 21 Oct 2020 22:25:48 +0200 Thomas Gleixner wrote:
+>> On Tue, Oct 20 2020 at 20:07, Thomas Gleixner wrote:
+>>> On Tue, Oct 20 2020 at 12:18, Nitesh Narayan Lal wrote:  
+>>>> However, IMHO we would still need a logic to prevent the devices from
+>>>> creating excess vectors.  
+>>>
+>>> Managed interrupts are preventing exactly that by pinning the interrupts
+>>> and queues to one or a set of CPUs, which prevents vector exhaustion on
+>>> CPU hotplug.
+>>>
+>>> Non-managed, yes that is and always was a problem. One of the reasons
+>>> why managed interrupts exist.  
+>>
+>> But why is this only a problem for isolation? The very same problem
+>> exists vs. CPU hotplug and therefore hibernation.
+>>
+>> On x86 we have at max. 204 vectors available for device interrupts per
+>> CPU. So assumed the only device interrupt in use is networking then any
+>> machine which has more than 204 network interrupts (queues, aux ...)
+>> active will prevent the machine from hibernation.
+>>
+>> Aside of that it's silly to have multiple queues targeted at a single
+>> CPU in case of hotplug. And that's not a theoretical problem.  Some
+>> power management schemes shut down sockets when the utilization of a
+>> system is low enough, e.g. outside of working hours.
+>>
+>> The whole point of multi-queue is to have locality so that traffic from
+>> a CPU goes through the CPU local queue. What's the point of having two
+>> or more queues on a CPU in case of hotplug?
+>>
+>> The right answer to this is to utilize managed interrupts and have
+>> according logic in your network driver to handle CPU hotplug. When a CPU
+>> goes down, then the queue which is associated to that CPU is quiesced
+>> and the interrupt core shuts down the relevant interrupt instead of
+>> moving it to an online CPU (which causes the whole vector exhaustion
+>> problem on x86). When the CPU comes online again, then the interrupt is
+>> reenabled in the core and the driver reactivates the queue.
+> 
+> I think Mellanox folks made some forays into managed irqs, but I don't
+> remember/can't find the details now.
+> 
+
+I remember looking into this a few years ago, and not getting very far
+either.
+
+> For networking the locality / queue per core does not always work,
+> since the incoming traffic is usually spread based on a hash. Many
+> applications perform better when network processing is done on a small
+> subset of CPUs, and application doesn't get interrupted every 100us. 
+> So we do need extra user control here.
+> 
+> We have a bit of a uAPI problem since people had grown to depend on
+> IRQ == queue == NAPI to configure their systems. "The right way" out
+> would be a proper API which allows associating queues with CPUs rather
+> than IRQs, then we can use managed IRQs and solve many other problems.
+> 
+
+I think we (Intel) hit some of the same issues you mention.
+
+I know I personally would like to see something that lets a lot of the
+current driver-specific policy be moved out. I think it should be
+possible to significantly simplify the abstraction used by the drivers.
+
+> Such new API has been in the works / discussions for a while now.
+> 
+> (Magnus keep me honest here, if you disagree the queue API solves this.)
+>
