@@ -2,100 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDFAE2965F6
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 22:27:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7156629662A
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 22:50:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2900969AbgJVU1z convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 22 Oct 2020 16:27:55 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:52852 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2895043AbgJVU1z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 16:27:55 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09MK4WNR008120
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 13:27:54 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 34b07sd9mt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 13:27:54 -0700
-Received: from intmgw001.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 22 Oct 2020 13:27:53 -0700
-Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id 671D32EC8370; Thu, 22 Oct 2020 13:27:48 -0700 (PDT)
-From:   Andrii Nakryiko <andrii@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
-        Song Liu <songliubraving@fb.com>
-Subject: [PATCH bpf] selftest/bpf: fix profiler test using CO-RE relocation for enums
-Date:   Thu, 22 Oct 2020 13:27:38 -0700
-Message-ID: <20201022202739.3667367-1-andrii@kernel.org>
-X-Mailer: git-send-email 2.24.1
+        id S371940AbgJVUuY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 16:50:24 -0400
+Received: from jabberwock.ucw.cz ([46.255.230.98]:53594 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S371931AbgJVUuX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 16:50:23 -0400
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id B536D1C0B8A; Thu, 22 Oct 2020 22:50:19 +0200 (CEST)
+Date:   Thu, 22 Oct 2020 22:50:19 +0200
+From:   Pavel Machek <pavel@ucw.cz>
+To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Cc:     linux-can@vger.kernel.org, devicetree@vger.kernel.org,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        David Miller <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, mark.rutland@arm.com,
+        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Marin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Jiri Novak <jnovak@fel.cvut.cz>,
+        Jaroslav Beran <jara.beran@gmail.com>,
+        Petr Porazil <porazil@pikron.com>,
+        Drew Fustini <pdp7pdp7@gmail.com>,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v6 5/6] can: ctucanfd: CTU CAN FD open-source IP core -
+ platform/SoC support.
+Message-ID: <20201022205019.GA17917@duo.ucw.cz>
+References: <cover.1603354744.git.pisa@cmp.felk.cvut.cz>
+ <2a90e1a7d57f0fec42604cd399acf25af5689148.1603354744.git.pisa@cmp.felk.cvut.cz>
+ <20201022114306.GA31933@duo.ucw.cz>
+ <202010221806.19253.pisa@cmp.felk.cvut.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.737
- definitions=2020-10-22_15:2020-10-20,2020-10-22 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 phishscore=0
- mlxlogscore=638 spamscore=0 bulkscore=0 impostorscore=0 malwarescore=0
- mlxscore=0 adultscore=0 priorityscore=1501 suspectscore=8
- lowpriorityscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2009150000 definitions=main-2010220131
-X-FB-Internal: deliver
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="x+6KMIRAuhnl3hBn"
+Content-Disposition: inline
+In-Reply-To: <202010221806.19253.pisa@cmp.felk.cvut.cz>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of hard-coding invalid pids_cgrp_id, use Kconfig to detect the
-presence of that enum value and CO-RE to capture its actual value in the
-hosts's kernel.
 
-Tested-by: Song Liu <songliubraving@fb.com>
-Fixes: 03d4d13fab3f ("selftests/bpf: Add profiler test")
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
----
- tools/testing/selftests/bpf/progs/profiler.inc.h | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+--x+6KMIRAuhnl3hBn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/tools/testing/selftests/bpf/progs/profiler.inc.h b/tools/testing/selftests/bpf/progs/profiler.inc.h
-index 00578311a423..30982a7e4d0f 100644
---- a/tools/testing/selftests/bpf/progs/profiler.inc.h
-+++ b/tools/testing/selftests/bpf/progs/profiler.inc.h
-@@ -243,7 +243,10 @@ static ino_t get_inode_from_kernfs(struct kernfs_node* node)
- 	}
- }
- 
--int pids_cgrp_id = 1;
-+extern bool CONFIG_CGROUP_PIDS __kconfig __weak;
-+enum cgroup_subsys_id___local {
-+	pids_cgrp_id___local = 123, /* value doesn't matter */
-+};
- 
- static INLINE void* populate_cgroup_info(struct cgroup_data_t* cgroup_data,
- 					 struct task_struct* task,
-@@ -253,7 +256,9 @@ static INLINE void* populate_cgroup_info(struct cgroup_data_t* cgroup_data,
- 		BPF_CORE_READ(task, nsproxy, cgroup_ns, root_cset, dfl_cgrp, kn);
- 	struct kernfs_node* proc_kernfs = BPF_CORE_READ(task, cgroups, dfl_cgrp, kn);
- 
--	if (ENABLE_CGROUP_V1_RESOLVER) {
-+	if (ENABLE_CGROUP_V1_RESOLVER && CONFIG_CGROUP_PIDS) {
-+		int cgrp_id = bpf_core_enum_value(enum cgroup_subsys_id___local,
-+						  pids_cgrp_id___local);
- #ifdef UNROLL
- #pragma unroll
- #endif
-@@ -262,7 +267,7 @@ static INLINE void* populate_cgroup_info(struct cgroup_data_t* cgroup_data,
- 				BPF_CORE_READ(task, cgroups, subsys[i]);
- 			if (subsys != NULL) {
- 				int subsys_id = BPF_CORE_READ(subsys, ss, id);
--				if (subsys_id == pids_cgrp_id) {
-+				if (subsys_id == cgrp_id) {
- 					proc_kernfs = BPF_CORE_READ(subsys, cgroup, kn);
- 					root_kernfs = BPF_CORE_READ(subsys, ss, root, kf_root, kn);
- 					break;
--- 
-2.24.1
+Hi!
 
+> > > +++ b/drivers/net/can/ctucanfd/Kconfig
+> > > @@ -21,4 +21,15 @@ config CAN_CTUCANFD_PCI
+> > >  	  PCIe board with PiKRON.com designed transceiver riser shield is
+> > > available at https://gitlab.fel.cvut.cz/canbus/pcie-ctu_can_fd .
+> > >
+> > > +config CAN_CTUCANFD_PLATFORM
+> > > +	tristate "CTU CAN-FD IP core platform (FPGA, SoC) driver"
+> > > +	depends on OF || COMPILE_TEST
+> > > +	help
+> >
+> > This is likely wrong, as it can enable config of CAN_CTUCANFD=3DM,
+> > CAN_CTUCANFD_PLATFORM=3Dy, right?
+>=20
+> My original code has not || COMPILE_TEST alternative.
+>=20
+> But I have been asked to add it
+>=20
+> On Sunday 16 of August 2020 01:28:13 Randy Dunlap wrote:
+> > Can this be
+> >         depends on OF || COMPILE_TEST
+> > ?
+>=20
+> I have send discussion later that I am not sure if it is right
+> but followed suggestion. If there is no other reply now,
+> I would drop || COMPILE_TEST. I believe that then it is correct
+> for regular use. I ma not sure about all consequences of COMPILE_TEST
+> missing.
+
+COMPILE_TEST is not a problem. But you need to make this depend on
+main CONFIG_ option to disallow CAN_CTUCANFD=3DM,
+CAN_CTUCANFD_PLATFORM=3Dy combination.
+
+> > > @@ -8,3 +8,6 @@ ctucanfd-y :=3D ctu_can_fd.o ctu_can_fd_hw.o
+> > >
+> > >  obj-$(CONFIG_CAN_CTUCANFD_PCI) +=3D ctucanfd_pci.o
+> > >  ctucanfd_pci-y :=3D ctu_can_fd_pci.o
+> > > +
+> > > +obj-$(CONFIG_CAN_CTUCANFD_PLATFORM) +=3D ctucanfd_platform.o
+> > > +ctucanfd_platform-y +=3D ctu_can_fd_platform.o
+> >
+> > Can you simply add right object files directly?
+>=20
+> This is more tough question. We have kept sources
+> as ctu_can_fd.c, ctu_can_fd_hw.c etc. to produce
+> final ctucanfd.ko which matches device tree entry etc.
+> after name simplification now...
+> So we move from underscores to ctucanfd on more places.
+> So yes, we can rename ctu_can_fd.c to ctucanfd_drv.c + others
+> keep final ctucanfd.ko and change to single file based objects
+> ctucanfd_platform.c and ctucanfd_pci.c
+>=20
+> If you think that it worth to be redone, I would do that.
+> It would disrupt sources history, may it be blames, merging
+> etc... but I would invest effort into it if asked for.
+
+git can handle renames. Or you can use the new names for module
+names...?
+
+Best regards,
+							Pavel
+
+--=20
+http://www.livejournal.com/~pavelmachek
+
+--x+6KMIRAuhnl3hBn
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCX5HwiwAKCRAw5/Bqldv6
+8otNAKCRHncA0/7cMK6P5zN9pp3Zg3XgBQCbBmonFCAxsSs65RLBG4AHYrIZnbk=
+=sINk
+-----END PGP SIGNATURE-----
+
+--x+6KMIRAuhnl3hBn--
