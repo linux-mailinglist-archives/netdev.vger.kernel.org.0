@@ -2,140 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7327B295CF4
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 12:51:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA15B295CEE
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 12:49:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502491AbgJVKvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 06:51:00 -0400
-Received: from m9785.mail.qiye.163.com ([220.181.97.85]:1213 "EHLO
-        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2896645AbgJVKtE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 06:49:04 -0400
-Received: from [192.168.188.14] (unknown [106.75.220.2])
-        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id AF9F95C1BD9;
-        Thu, 22 Oct 2020 18:41:01 +0800 (CST)
-Subject: mlx5_vdpa problem
-References: <401b2eb1-f77b-f7d5-8d6f-03ec30e81d6a@ucloud.cn>
-To:     Eli Cohen <elic@nvidia.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-From:   wenxu <wenxu@ucloud.cn>
-X-Forwarded-Message-Id: <401b2eb1-f77b-f7d5-8d6f-03ec30e81d6a@ucloud.cn>
-Message-ID: <258f86a8-d6ae-010a-11f8-c155b1df4723@ucloud.cn>
-Date:   Thu, 22 Oct 2020 18:40:56 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        id S2896707AbgJVKry (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 06:47:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56268 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2896574AbgJVKr3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Oct 2020 06:47:29 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8BA392177B;
+        Thu, 22 Oct 2020 10:47:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603363648;
+        bh=xBsbKD5SBQCcLeBR2tpUTrjFtW93i8KwvEiKlew6y/M=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=feiTNY176OhJVWL6CnkF4kiU6NigFm/VD3Ui4E+wpATVknPWx7I4BQqdiJv/sMgNJ
+         H4Eb2Bc9W6InfW+morvNSQUtX8ZVPuBvKSpQrb3i+BcForuB10ZbuKl1VEpEEP0vUn
+         prey8EZuMSul8lL3YVDZeBuHUKxl2I6g/LFzXfXQ=
+Date:   Thu, 22 Oct 2020 12:48:05 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     David Laight <David.Laight@aculab.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "kernel-team@android.com" <kernel-team@android.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-aio@kvack.org" <linux-aio@kvack.org>,
+        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>
+Subject: Re: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
+ rw_copy_check_uvector() into lib/iov_iter.c"
+Message-ID: <20201022104805.GA1503673@kroah.com>
+References: <20201021233914.GR3576660@ZenIV.linux.org.uk>
+ <20201022082654.GA1477657@kroah.com>
+ <80a2e5fa-718a-8433-1ab0-dd5b3e3b5416@redhat.com>
+ <5d2ecb24db1e415b8ff88261435386ec@AcuMS.aculab.com>
+ <df2e0758-b8ed-5aec-6adc-a18f499c0179@redhat.com>
+ <20201022090155.GA1483166@kroah.com>
+ <e04d0c5d-e834-a15b-7844-44dcc82785cc@redhat.com>
+ <a1533569-948a-1d5b-e231-5531aa988047@redhat.com>
+ <bc0a091865f34700b9df332c6e9dcdfd@AcuMS.aculab.com>
+ <5fd6003b-55a6-2c3c-9a28-8fd3a575ca78@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <401b2eb1-f77b-f7d5-8d6f-03ec30e81d6a@ucloud.cn>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
-        oVCBIfWUFZSUNJGkhJTE5NQh1KVkpNS0hITUhJTUpDSE1VGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS09ISVVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MCo6NAw4Nz5CFUkxFj8DGEkO
-        ECwKCyxVSlVKTUtISE1ISU1JSkpNVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpLTVVM
-        TlVJSUtVSVlXWQgBWUFITEpINwY+
-X-HM-Tid: 0a754fe5cd552087kuqyaf9f95c1bd9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5fd6003b-55a6-2c3c-9a28-8fd3a575ca78@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Oct 22, 2020 at 11:36:40AM +0200, David Hildenbrand wrote:
+> On 22.10.20 11:32, David Laight wrote:
+> > From: David Hildenbrand
+> >> Sent: 22 October 2020 10:25
+> > ...
+> >> ... especially because I recall that clang and gcc behave slightly
+> >> differently:
+> >>
+> >> https://github.com/hjl-tools/x86-psABI/issues/2
+> >>
+> >> "Function args are different: narrow types are sign or zero extended to
+> >> 32 bits, depending on their type. clang depends on this for incoming
+> >> args, but gcc doesn't make that assumption. But both compilers do it
+> >> when calling, so gcc code can call clang code.
+> > 
+> > It really is best to use 'int' (or even 'long') for all numeric
+> > arguments (and results) regardless of the domain of the value.
+> > 
+> > Related, I've always worried about 'bool'....
+> > 
+> >> The upper 32 bits of registers are always undefined garbage for types
+> >> smaller than 64 bits."
+> > 
+> > On x86-64 the high bits are zeroed by all 32bit loads.
+> 
+> Yeah, but does not help here.
+> 
+> 
+> My thinking: if the compiler that calls import_iovec() has garbage in
+> the upper 32 bit
+> 
+> a) gcc will zero it out and not rely on it being zero.
+> b) clang will not zero it out, assuming it is zero.
+> 
+> But
+> 
+> a) will zero it out when calling the !inlined variant
+> b) clang will zero it out when calling the !inlined variant
+> 
+> When inlining, b) strikes. We access garbage. That would mean that we
+> have calling code that's not generated by clang/gcc IIUC.
+> 
+> We can test easily by changing the parameters instead of adding an "inline".
 
-Hi mellanox team,
+Let me try that as well, as I seem to have a good reproducer, but it
+takes a while to run...
 
-
-I test the mlx5 vdpa  in linux-5.9 and meet several problem.
-
-
-# lspci | grep Ether | grep Dx
-b3:00.0 Ethernet controller: Mellanox Technologies MT2892 Family [ConnectX-6 Dx]
-b3:00.1 Ethernet controller: Mellanox Technologies MT2892 Family [ConnectX-6 Dx]
-
-# ethtool -i net2
-driver: mlx5e_rep
-version: 5.9.0
-firmware-version: 22.28.1002 (MT_0000000430)
-expansion-rom-version:
-bus-info: 0000:b3:00.0
-supports-statistics: yes
-supports-test: no
-supports-eeprom-access: no
-supports-register-dump: no
-supports-priv-flags: no
-
-
-init switchdev:
-
-
-# echo 1 > /sys/class/net/net2/device/sriov_numvfs
-# echo 0000:b3:00.2 > /sys/bus/pci/drivers/mlx5_core/unbind
-# devlink dev eswitch set pci/0000:b3:00.0  mode switchdev encap enable
-
-# modprobe vdpa vhost-vdpa mlx5_vdpa
-
-# ip l set dev net2 vf 0 mac 52:90:01:00:02:13
-# echo 0000:b3:00.2 > /sys/bus/pci/drivers/mlx5_core/bind
-
-
-setup vm:
-
-# qemu-system-x86_64 -name test  -enable-kvm -smp 16,sockets=2,cores=8,threads=1 -m 8192 -drive file=./centos7.qcow2,format=qcow2,if=none,id=drive-virtio-disk0 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x7,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 -netdev type=vhost-vdpa,vhostdev=/dev/vhost-vdpa-0,id=vhost-vdpa0 -device virtio-net-pci,netdev=vhost-vdpa0,page-per-vq=on,iommu_platform=on,id=net0,bus=pci.0,addr=0x3,disable-legacy=on -vnc 0.0.0.0:0
-
-
-In the vm:  virtio net device  eth0 with ip address 10.0.0.75/24
-
-On the host: VF0 rep device pf0vf0 with ip address 10.0.0.7/24
-
-
-problem 1:
-
-On the host:
-
-# ping 10.0.0.75
-
-Some times there will be loss packets.
-
-And in the VM:
-
-dmesg shows:
-
-eth0: bad tso: type 100, size: 0
-
-eth0: bad tso: type 10, size: 28
-
-
-So I think maybe the vnet header is not init with 0?  And Then I clear the gso_type, gso_size and flags in the virtio_net driver.  There is no packets dropped.
-
-
-problem 2:
-
-In the vm: iperf -s
-
-On the host: iperf -c 10.0.0.75 -t 100 -i 2.
-
-
-The tcp connection can't established for the syn+ack with partail cum but not handle correct by hardware.
-
-After I set the csum off  for eth0 in the vm, the problem is resolved. Although the mlx5_vnet support VIRTIO_NET_F_CSUM feature.
-
-
-
-problem 3:
-
-
-The iperf perofrmance not stable before I disable the pf0vf0 tso offload
-
-#ethtool -K pf0vf0 tso off
-
-
-I know the mlx5_vnet did not support feature VIRTIO_NET_F_GUEST_TSO4. But the hardware can't  cut the big tso packet to several small tcp packet and send to virtio  net device?
-
-
-
-
-BR
-
-wenxu
-
-
-
+greg k-h
