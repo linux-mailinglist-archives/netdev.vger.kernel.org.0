@@ -2,57 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 774442967BC
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 01:52:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EB7F2967BF
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 01:53:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S373559AbgJVXww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 19:52:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60246 "EHLO mail.kernel.org"
+        id S373578AbgJVXxm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 19:53:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60410 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2901066AbgJVXww (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Oct 2020 19:52:52 -0400
+        id S373574AbgJVXxm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Oct 2020 19:53:42 -0400
 Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.7])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3D1EC2173E;
-        Thu, 22 Oct 2020 23:52:51 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7C74720724;
+        Thu, 22 Oct 2020 23:53:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603410771;
-        bh=9gAIxJL4MV+DJ7QNOAOCU6zMYw5ESLqP5vy1OgMaj+M=;
+        s=default; t=1603410821;
+        bh=XTuP5V6m1sgf8FYoUOE8gLVuSS7t2nTxM3D1KfsKd1M=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gUyaE9FiJhe5aKayEyvos2Sb7cM1x/zGC8u54uk8HGcaBSRdYjDtkUPcI8CMCZJ+X
-         vqXJgpnjwj2YTQ/vdUyV7Z8A1km0SL6ETztC2cXOLwOjomdrd7MyRe7pKsCjzq2T44
-         p0hKQsuX0i2Mg41jr33aCR28CY87A8lz00DAsGgs=
-Date:   Thu, 22 Oct 2020 16:52:49 -0700
+        b=FfYmnRDQzAynKO+YjC12hyiUuqoe/WmLQggexxKwvtp8RyUjMIzhAwTL4IvyoUtYW
+         n/cePtQWwB7xwagWFzux6t8/S4VNODAk1DFE2wdMP8TR3vg5eNQ2F0EF71kp7HeOS+
+         IKR6LSYpuJH7S8Oz3eFAw4up7+OLbCz0M0OTKLis=
+Date:   Thu, 22 Oct 2020 16:53:40 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Rohit Maheshwari <rohitm@chelsio.com>
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, secdev@chelsio.com
-Subject: Re: [net 6/7] ch_ktls/cxgb4: handle partial tag alone SKBs
-Message-ID: <20201022165249.0d8079ce@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201022101019.7363-7-rohitm@chelsio.com>
+Subject: Re: [net 3/7] cxgb4/ch_ktls: creating skbs causes panic
+Message-ID: <20201022165340.34068bb4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201022101019.7363-4-rohitm@chelsio.com>
 References: <20201022101019.7363-1-rohitm@chelsio.com>
-        <20201022101019.7363-7-rohitm@chelsio.com>
+        <20201022101019.7363-4-rohitm@chelsio.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 22 Oct 2020 15:40:18 +0530 Rohit Maheshwari wrote:
-> If TCP congestion caused a very small packets which only has some
-> part fo the TAG, and that too is not till the end. HW can't handle
-> such case, so falling back to sw crypto in such cases.
->=20
+On Thu, 22 Oct 2020 15:40:15 +0530 Rohit Maheshwari wrote:
+> Creating SKB per tls record and freeing the original one causes
+> panic. There will be race if connection reset is requested. By
+> freeing original skb, refcnt will be decremented and that means,
+> there is no pending record to send, and so tls_dev_del will be
+> requested in control path while SKB of related connection is in
+> queue.
+>  Better approach is to use same SKB to send one record (partial
+> data) at a time. We still have to create a new SKB when partial
+> last part of a record is requested.
+>  This fix introduces new API cxgb4_write_partial_sgl() to send
+> partial part of skb. Present cxgb4_write_sgl can only provide
+> feasibility to start from an offset which limits to header only
+> and it can write sgls for the whole skb len. But this new API
+> will help in both. It can start from any offset and can end
+> writing in middle of the skb.
+> 
+> Fixes: 429765a149f1 ("chcr: handle partial end part of a record"
 > Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
 
-drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c: At top leve=
-l:
-drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c:1864:5: warn=
-ing: no previous prototype for =E2=80=98chcr_ktls_sw_fallback=E2=80=99 [-Wm=
-issing-prototypes]
- 1864 | int chcr_ktls_sw_fallback(struct sk_buff *skb, struct chcr_ktls_inf=
-o *tx_info,
-      |     ^~~~~~~~~~~~~~~~~~~~~
-drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c:1864:5: warn=
-ing: symbol 'chcr_ktls_sw_fallback' was not declared. Should it be static?
+Fixes tag: Fixes: 429765a149f1 ("chcr: handle partial end part of a record"
+Has these problem(s):
+	- Subject has leading but no trailing parentheses
