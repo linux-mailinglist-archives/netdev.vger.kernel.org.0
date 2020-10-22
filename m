@@ -2,74 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02E16295FE9
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 15:23:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CCAA295FF5
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 15:25:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2894575AbgJVNXt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 09:23:49 -0400
-Received: from verein.lst.de ([213.95.11.211]:52840 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2442738AbgJVNXs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Oct 2020 09:23:48 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id D291467373; Thu, 22 Oct 2020 15:23:42 +0200 (CEST)
-Date:   Thu, 22 Oct 2020 15:23:42 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     David Laight <David.Laight@ACULAB.COM>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Christoph Hellwig <hch@lst.de>,
-        "kernel-team@android.com" <kernel-team@android.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
-        David Howells <dhowells@redhat.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-aio@kvack.org" <linux-aio@kvack.org>,
-        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>
-Subject: Re: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
- rw_copy_check_uvector() into lib/iov_iter.c"
-Message-ID: <20201022132342.GB8781@lst.de>
-References: <20201021233914.GR3576660@ZenIV.linux.org.uk> <20201022082654.GA1477657@kroah.com> <80a2e5fa-718a-8433-1ab0-dd5b3e3b5416@redhat.com> <5d2ecb24db1e415b8ff88261435386ec@AcuMS.aculab.com> <df2e0758-b8ed-5aec-6adc-a18f499c0179@redhat.com> <20201022090155.GA1483166@kroah.com> <e04d0c5d-e834-a15b-7844-44dcc82785cc@redhat.com> <a1533569-948a-1d5b-e231-5531aa988047@redhat.com> <bc0a091865f34700b9df332c6e9dcdfd@AcuMS.aculab.com> <5fd6003b-55a6-2c3c-9a28-8fd3a575ca78@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5fd6003b-55a6-2c3c-9a28-8fd3a575ca78@redhat.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+        id S2899768AbgJVNZo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 09:25:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51718 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2894957AbgJVNZn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 09:25:43 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF8BC0613CE;
+        Thu, 22 Oct 2020 06:25:43 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id 33so1736655edq.13;
+        Thu, 22 Oct 2020 06:25:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=f4qzo7l2XRXPibYCmsETjjzPgdp095iWPj5AGr/pxpg=;
+        b=Iuzy4qwCkg0a6mh3LwbSx8O0wmwrtlwfso3MYI4eJO8ec3QjJnUv50v6zQ0fzBzF6d
+         EdsVHFA2Vydovh/4d9qiQW3C76VHtMcINjvjS6j888Z5U41WPsrlAZe+Fkyyx3pASaRn
+         wCwwj6FRUrhUurd82IqdepURLh93C+vDEibhB3jfzo7weHmL+aXIoHgCqlZRAHGvWD3o
+         ojMZvg96bFG8uJcWl0mm2eoQtqg7KAaE7IY74Vei3tjteYBbnXN1Rq5DJgVsSYmnCJlL
+         VGC2EIdbGENxqOA08mnuv71jclu8ve4VMzQzNBsZFFYSNVXJtQQdRuYc6GPiRFUy1k7o
+         cpIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=f4qzo7l2XRXPibYCmsETjjzPgdp095iWPj5AGr/pxpg=;
+        b=pUnuuN5wibGo+9MYC0DBVtrKFRv76EKI/Ax8zhsNVsiffCmmbOcrZbZQ1hET5Rl8UG
+         1wgRNdY/b9lU9n7fvlDGiKKydzAq/UUTlesUsEdRCmJSBncWrHx2c1MvmdR0Eep7lyK1
+         ay6RrFLg6KjvVve34PEnxYbyYYdYUKlW+IJD1rI9lXHmivK9t4dPThjMZztRvmDoG1cL
+         uXUrZvoRzn4HfRshlmUMu5CVUHvtuoC9R4Pt0VmZd1RcJbtAUl+v2BXOh96I6QKIlWJ2
+         vpRU6pgiiRA09IacfC4qdc+XhP3c8+DDgpuvjP5oBIc/8ZvOEyarq8LkiWiuB58Uo+5i
+         20Zg==
+X-Gm-Message-State: AOAM531BDqj0ACHuGECgulQ1qgTaVT8jD1bPG1YETVvqyZlmD7q7M9Dd
+        FFe3hZF3lUZlAPKIqLihoP6OlFqVrvM=
+X-Google-Smtp-Source: ABdhPJyPSBuzZFkxp36I5C3eTIv0SwlPqKbewFltadF8+AjiJVRDuvzsT8lHgfXNDQQV1nM1U8FhTw==
+X-Received: by 2002:aa7:d892:: with SMTP id u18mr2281589edq.305.1603373142043;
+        Thu, 22 Oct 2020 06:25:42 -0700 (PDT)
+Received: from development1.visionsystems.de (mail.visionsystems.de. [213.209.99.202])
+        by smtp.gmail.com with ESMTPSA id pj5sm843452ejb.118.2020.10.22.06.25.41
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 22 Oct 2020 06:25:41 -0700 (PDT)
+From:   yegorslists@googlemail.com
+To:     linux-can@vger.kernel.org
+Cc:     mkl@pengutronix.de, netdev@vger.kernel.org,
+        dev.kurt@vandijck-laurijssen.be,
+        Yegor Yefremov <yegorslists@googlemail.com>
+Subject: [PATCH v2] can: j1939: convert PGN structure to a table
+Date:   Thu, 22 Oct 2020 15:25:34 +0200
+Message-Id: <20201022132534.22888-1-yegorslists@googlemail.com>
+X-Mailer: git-send-email 2.17.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 22, 2020 at 11:36:40AM +0200, David Hildenbrand wrote:
-> My thinking: if the compiler that calls import_iovec() has garbage in
-> the upper 32 bit
-> 
-> a) gcc will zero it out and not rely on it being zero.
-> b) clang will not zero it out, assuming it is zero.
-> 
-> But
-> 
-> a) will zero it out when calling the !inlined variant
-> b) clang will zero it out when calling the !inlined variant
-> 
-> When inlining, b) strikes. We access garbage. That would mean that we
-> have calling code that's not generated by clang/gcc IIUC.
+From: Yegor Yefremov <yegorslists@googlemail.com>
 
-Most callchains of import_iovec start with the assembly syscall wrappers.
+Use table markup to show the PGN structure.
+
+Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
+---
+Changes v1 -> v2:
+  - add descrption for the bit position
+
+ Documentation/networking/j1939.rst | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/Documentation/networking/j1939.rst b/Documentation/networking/j1939.rst
+index faf2eb5c5052..bd1584ec90f9 100644
+--- a/Documentation/networking/j1939.rst
++++ b/Documentation/networking/j1939.rst
+@@ -71,10 +71,14 @@ PGN
+ 
+ The PGN (Parameter Group Number) is a number to identify a packet. The PGN
+ is composed as follows:
+-1 bit  : Reserved Bit
+-1 bit  : Data Page
+-8 bits : PF (PDU Format)
+-8 bits : PS (PDU Specific)
++
++  ============  ==============  ===============  =================
++  Bit position of PGN fields in the 29-bit CAN identifier
++  ----------------------------------------------------------------
++  25            24              23 ... 16        15 ... 8
++  ============  ==============  ===============  =================
++  R (Reserved)  DP (Data Page)  PF (PDU Format)  PS (PDU Specific)
++  ============  ==============  ===============  =================
+ 
+ In J1939-21 distinction is made between PDU1 format (where PF < 240) and PDU2
+ format (where PF >= 240). Furthermore, when using the PDU2 format, the PS-field
+-- 
+2.17.0
+
