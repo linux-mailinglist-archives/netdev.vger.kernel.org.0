@@ -2,121 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6206C2961DD
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 17:47:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DFEC296256
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 18:07:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S368722AbgJVPrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 11:47:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45442 "EHLO
+        id S2509975AbgJVQH0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 12:07:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S368712AbgJVPrc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 11:47:32 -0400
-Received: from mail-vs1-xe2d.google.com (mail-vs1-xe2d.google.com [IPv6:2607:f8b0:4864:20::e2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24ECFC0613CE
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 08:47:31 -0700 (PDT)
-Received: by mail-vs1-xe2d.google.com with SMTP id b3so1137900vsc.5
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 08:47:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6wvMv9Md2sSISoTclu+OgN5pXWov5G9guga5hBIc0wQ=;
-        b=gOKBP9RfR0J6spY0h+J1wwptmSHuhhgdGBCrZ8OQCzxjZSVacZrLyi/YHNZqg3ZFvL
-         5eKF1/rfHjqg0M6k3SFe31VmAqEVJXgwH6VCvt+8L6AKOaJOySX0e+N/inpkYFNRKyxz
-         GIkcocPL18TNP5OyUcGF7d09GCOyHMke09VfjMoCBdI+pqXFMitTjZLZHqL28zYxqbcx
-         am+CSji6WlsjxcTLVJwIjbdqY+wsg/cDqYZ1ePrf/MpGtwQZagQqokUHm+jjS2c87dDL
-         0fY48TVSyOe+rrzc1eD1aMfq65tgYM2vs9tful4bI+Nyga4gFt1nivt50j1a46u3sCbu
-         WZPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6wvMv9Md2sSISoTclu+OgN5pXWov5G9guga5hBIc0wQ=;
-        b=Rfb7PfPxt5b0yvh9MMmdO475YyCsz+8p2hfn011v66pXf92QvDSkL5KKiYq/Y28MNq
-         95YXH8xIgAoidy/s/7189kpFY/DTGqb4aur32Th75iHrjcKaH1DVwSB0Xwv/hCuaZ5TT
-         yI+Y3qbK6hpwh3KA5Xsmd9Rux90pxPFCvcn1YpySWgILGySk48P8E6pZ3ryGf1FqH8bZ
-         q+mb42WTgDPWaOLsHxalpYs1pZB1jSWq7rahEX3a71soJvaErfQcTekiHcMCQIaPer79
-         PTVHRE1iKUehO4j7qcSuvioF8bh7bAqjFBSPIA6lOyEdF/Qn8mwHurjQp1Oecz37hLTB
-         0Izw==
-X-Gm-Message-State: AOAM533hhlzC6ttLSPkUPkDqMlimUDhgOXaeZgubdgXUGAYOC3DgROVL
-        MvPw5cGH8ODsEkWOi74rbb24POFWO9k=
-X-Google-Smtp-Source: ABdhPJzndwFvxTSUHmFW+2hYMMFdMZWLSFQaq77p42jEg3AksepZuTS7jL8OCWXYrtPYqwfFuU6fow==
-X-Received: by 2002:a67:eb48:: with SMTP id x8mr2449727vso.11.1603381649575;
-        Thu, 22 Oct 2020 08:47:29 -0700 (PDT)
-Received: from mail-ua1-f42.google.com (mail-ua1-f42.google.com. [209.85.222.42])
-        by smtp.gmail.com with ESMTPSA id z1sm277233vkf.41.2020.10.22.08.47.26
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 22 Oct 2020 08:47:27 -0700 (PDT)
-Received: by mail-ua1-f42.google.com with SMTP id y1so579611uac.13
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 08:47:26 -0700 (PDT)
-X-Received: by 2002:ab0:668a:: with SMTP id a10mr1750523uan.108.1603381645605;
- Thu, 22 Oct 2020 08:47:25 -0700 (PDT)
+        with ESMTP id S2509549AbgJVQH0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 12:07:26 -0400
+Received: from relay.felk.cvut.cz (relay.felk.cvut.cz [IPv6:2001:718:2:1611:0:1:0:70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9D179C0613CE
+        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 09:07:25 -0700 (PDT)
+Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
+        by relay.felk.cvut.cz (8.15.2/8.15.2) with ESMTP id 09MG6Kbr083350;
+        Thu, 22 Oct 2020 18:06:20 +0200 (CEST)
+        (envelope-from pisa@cmp.felk.cvut.cz)
+Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
+        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 09MG6Kbh004044;
+        Thu, 22 Oct 2020 18:06:20 +0200
+Received: (from pisa@localhost)
+        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 09MG6K7J004041;
+        Thu, 22 Oct 2020 18:06:20 +0200
+X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
+From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
+To:     Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH v6 5/6] can: ctucanfd: CTU CAN FD open-source IP core - platform/SoC support.
+Date:   Thu, 22 Oct 2020 18:06:19 +0200
+User-Agent: KMail/1.9.10
+Cc:     linux-can@vger.kernel.org, devicetree@vger.kernel.org,
+        "Marc Kleine-Budde" <mkl@pengutronix.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        David Miller <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, mark.rutland@arm.com,
+        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Marin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Jiri Novak <jnovak@fel.cvut.cz>,
+        Jaroslav Beran <jara.beran@gmail.com>,
+        Petr Porazil <porazil@pikron.com>,
+        Drew Fustini <pdp7pdp7@gmail.com>,
+        Randy Dunlap <rdunlap@infradead.org>
+References: <cover.1603354744.git.pisa@cmp.felk.cvut.cz> <2a90e1a7d57f0fec42604cd399acf25af5689148.1603354744.git.pisa@cmp.felk.cvut.cz> <20201022114306.GA31933@duo.ucw.cz>
+In-Reply-To: <20201022114306.GA31933@duo.ucw.cz>
+X-KMail-QuotePrefix: > 
 MIME-Version: 1.0
-References: <20201007035502.3928521-1-liuhangbin@gmail.com>
- <20201021042005.736568-1-liuhangbin@gmail.com> <20201021042005.736568-3-liuhangbin@gmail.com>
- <CA+FuTSdCG4yVDb85M=fChfrkU9=F7j88TJujJy_y0pv-Ks_MwQ@mail.gmail.com> <20201022091205.GN2531@dhcp-12-153.nay.redhat.com>
-In-Reply-To: <20201022091205.GN2531@dhcp-12-153.nay.redhat.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 22 Oct 2020 11:46:50 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSfQrSqDau=e7-MXNannZ8kCqKizEMX5KZD4OzNVkyMeiA@mail.gmail.com>
-Message-ID: <CA+FuTSfQrSqDau=e7-MXNannZ8kCqKizEMX5KZD4OzNVkyMeiA@mail.gmail.com>
-Subject: Re: [PATCHv2 net 2/2] IPv6: reply ICMP error if the first fragment
- don't include all headers
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <202010221806.19253.pisa@cmp.felk.cvut.cz>
+X-FELK-MailScanner-Information: 
+X-MailScanner-ID: 09MG6Kbr083350
+X-FELK-MailScanner: Found to be clean
+X-FELK-MailScanner-SpamCheck: not spam, SpamAssassin (not cached,
+        score=-0.099, required 6, BAYES_00 -0.50, KHOP_HELO_FCRDNS 0.40,
+        NICE_REPLY_A -0.00, SPF_HELO_NONE 0.00, SPF_NONE 0.00,
+        URIBL_BLOCKED 0.00)
+X-FELK-MailScanner-From: pisa@cmp.felk.cvut.cz
+X-FELK-MailScanner-Watermark: 1603987585.63094@DauQioNUM05pHvR5CIXLhA
+X-Spam-Status: No
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 22, 2020 at 5:12 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
->
-> Hi Willem,
->
-> Thanks for the comments, see replies below.
->
-> On Wed, Oct 21, 2020 at 10:02:55AM -0400, Willem de Bruijn wrote:
-> > > +       is_frag = (ipv6_find_hdr(skb, &offs, NEXTHDR_FRAGMENT, NULL, NULL) == NEXTHDR_FRAGMENT);
-> > > +
-> >
-> > ipv6_skip_exthdr already walks all headers. Should we not already see
-> > frag_off != 0 if skipped over a fragment header? Analogous to the test
-> > in ipv6_frag_rcv below.
->
-> Ah, yes, I forgot we can use this check.
->
-> > > +       nexthdr = hdr->nexthdr;
-> > > +       offset = ipv6_skip_exthdr(skb, skb_transport_offset(skb), &nexthdr, &frag_off);
-> > > +       if (offset >= 0 && frag_off == htons(IP6_MF) && (offset + 1) > skb->len) {
-> >
-> > Offset +1 does not fully test "all headers through an upper layer
-> > header". You note the caveat in your commit message. Perhaps for the
-> > small list of common protocols at least use a length derived from
-> > nexthdr?
->
-> Do you mean check the header like
->
-> if (nexthdr == IPPROTO_ICMPV6)
->         offset = offset + seizeof(struct icmp6hdr);
-> else if (nexthdr == ...)
->         offset = ...
-> else
->         offset += 1;
->
-> if (frag_off == htons(IP6_MF) && offset > skb->len) {
->         icmpv6_param_prob(skb, ICMPV6_HDR_INCOMP, 0);
->         return -1;
-> }
->
-> Another questions is how to define the list, does TCP/UDP/SCTP/ICMPv6 enough?
+Hello Pavel,
 
-Exactly. But only if it's possible without adding a ton of #include's.
-It is best effort.
+thanks for review.
 
-If feasible, TCP + UDP alone would suffice to cover most traffic.
+On Thursday 22 of October 2020 13:43:06 Pavel Machek wrote:
+> Hi!
+>
+> > +++ b/drivers/net/can/ctucanfd/Kconfig
+> > @@ -21,4 +21,15 @@ config CAN_CTUCANFD_PCI
+> >  	  PCIe board with PiKRON.com designed transceiver riser shield is
+> > available at https://gitlab.fel.cvut.cz/canbus/pcie-ctu_can_fd .
+> >
+> > +config CAN_CTUCANFD_PLATFORM
+> > +	tristate "CTU CAN-FD IP core platform (FPGA, SoC) driver"
+> > +	depends on OF || COMPILE_TEST
+> > +	help
+>
+> This is likely wrong, as it can enable config of CAN_CTUCANFD=M,
+> CAN_CTUCANFD_PLATFORM=y, right?
+
+My original code has not || COMPILE_TEST alternative.
+
+But I have been asked to add it
+
+On Sunday 16 of August 2020 01:28:13 Randy Dunlap wrote:
+> Can this be
+>         depends on OF || COMPILE_TEST
+> ?
+
+I have send discussion later that I am not sure if it is right
+but followed suggestion. If there is no other reply now,
+I would drop || COMPILE_TEST. I believe that then it is correct
+for regular use. I ma not sure about all consequences of COMPILE_TEST
+missing.
+
+> > @@ -8,3 +8,6 @@ ctucanfd-y := ctu_can_fd.o ctu_can_fd_hw.o
+> >
+> >  obj-$(CONFIG_CAN_CTUCANFD_PCI) += ctucanfd_pci.o
+> >  ctucanfd_pci-y := ctu_can_fd_pci.o
+> > +
+> > +obj-$(CONFIG_CAN_CTUCANFD_PLATFORM) += ctucanfd_platform.o
+> > +ctucanfd_platform-y += ctu_can_fd_platform.o
+>
+> Can you simply add right object files directly?
+
+This is more tough question. We have kept sources
+as ctu_can_fd.c, ctu_can_fd_hw.c etc. to produce
+final ctucanfd.ko which matches device tree entry etc.
+after name simplification now...
+So we move from underscores to ctucanfd on more places.
+So yes, we can rename ctu_can_fd.c to ctucanfd_drv.c + others
+keep final ctucanfd.ko and change to single file based objects
+ctucanfd_platform.c and ctucanfd_pci.c
+
+If you think that it worth to be redone, I would do that.
+It would disrupt sources history, may it be blames, merging
+etc... but I would invest effort into it if asked for. 
+
+Best wishes,
+
+                Pavel
