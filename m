@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98F7D295A0E
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 10:22:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90DD5295A10
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 10:22:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2895227AbgJVIWM convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 22 Oct 2020 04:22:12 -0400
-Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:34514 "EHLO
+        id S2895244AbgJVIWP convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 22 Oct 2020 04:22:15 -0400
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:36010 "EHLO
         us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2895214AbgJVIWL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 04:22:11 -0400
+        by vger.kernel.org with ESMTP id S2895214AbgJVIWO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 04:22:14 -0400
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-480-dGRBVbSkNiSXPOmlsQg_8w-1; Thu, 22 Oct 2020 04:22:05 -0400
-X-MC-Unique: dGRBVbSkNiSXPOmlsQg_8w-1
+ us-mta-341-t04g1738PrSBKV3W_FzIHQ-1; Thu, 22 Oct 2020 04:22:09 -0400
+X-MC-Unique: t04g1738PrSBKV3W_FzIHQ-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DC25B1006C9F;
-        Thu, 22 Oct 2020 08:22:03 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7B11110E2180;
+        Thu, 22 Oct 2020 08:22:07 +0000 (UTC)
 Received: from krava.redhat.com (unknown [10.40.195.55])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7837760BFA;
-        Thu, 22 Oct 2020 08:21:56 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3F00160BFA;
+        Thu, 22 Oct 2020 08:22:04 +0000 (UTC)
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -36,13 +36,15 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Jesper Brouer <jbrouer@redhat.com>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Viktor Malik <vmalik@redhat.com>
-Subject: [RFC bpf-next 04/16] ftrace: Add ftrace_set_filter_ips function
-Date:   Thu, 22 Oct 2020 10:21:26 +0200
-Message-Id: <20201022082138.2322434-5-jolsa@kernel.org>
+Subject: [RFC bpf-next 05/16] ftrace: Add register_ftrace_direct_ips function
+Date:   Thu, 22 Oct 2020 10:21:27 +0200
+Message-Id: <20201022082138.2322434-6-jolsa@kernel.org>
 In-Reply-To: <20201022082138.2322434-1-jolsa@kernel.org>
 References: <20201022082138.2322434-1-jolsa@kernel.org>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: kernel.org
 Content-Transfer-Encoding: 8BIT
@@ -51,128 +53,122 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding ftrace_set_filter_ips function that allows to set
-filter on multiple ip addresses. These are provided as
-array of unsigned longs together with the array count:
+Adding register_ftrace_direct_ips function that llows
+to register array of ip addresses and trampolines
+for direct filter. the interface is:
 
-  int ftrace_set_filter_ips(struct ftrace_ops *ops,
-                            unsigned long *ips,
-                            int count, int remove);
+  int register_ftrace_direct_ips(unsigned long *ips,
+                                 unsigned long *addrs,
+                                 int count);
 
-The function copies logic of ftrace_set_filter_ip but
-over multiple ip addresses.
-
-It will be used in following patches for faster direct
-ip/addr trampolines update.
+It wil be used in following patches to register bpf
+trampolines in batch mode.
 
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- include/linux/ftrace.h |  3 +++
- kernel/trace/ftrace.c  | 56 ++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 59 insertions(+)
+ include/linux/ftrace.h |  2 ++
+ kernel/trace/ftrace.c  | 75 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 77 insertions(+)
 
 diff --git a/include/linux/ftrace.h b/include/linux/ftrace.h
-index 1bd3a0356ae4..d71d88d10517 100644
+index d71d88d10517..9ed52755667a 100644
 --- a/include/linux/ftrace.h
 +++ b/include/linux/ftrace.h
-@@ -463,6 +463,8 @@ struct dyn_ftrace {
- int ftrace_force_update(void);
- int ftrace_set_filter_ip(struct ftrace_ops *ops, unsigned long ip,
- 			 int remove, int reset);
-+int ftrace_set_filter_ips(struct ftrace_ops *ops, unsigned long *ips,
-+			 int count, int remove);
- int ftrace_set_filter(struct ftrace_ops *ops, unsigned char *buf,
- 		       int len, int reset);
- int ftrace_set_notrace(struct ftrace_ops *ops, unsigned char *buf,
-@@ -738,6 +740,7 @@ static inline unsigned long ftrace_location(unsigned long ip)
- #define ftrace_regex_open(ops, flag, inod, file) ({ -ENODEV; })
- #define ftrace_set_early_filter(ops, buf, enable) do { } while (0)
- #define ftrace_set_filter_ip(ops, ip, remove, reset) ({ -ENODEV; })
-+#define ftrace_set_filter_ips(ops, ip, remove) ({ -ENODEV; })
- #define ftrace_set_filter(ops, buf, len, reset) ({ -ENODEV; })
- #define ftrace_set_notrace(ops, buf, len, reset) ({ -ENODEV; })
- #define ftrace_free_filter(ops) do { } while (0)
+@@ -291,6 +291,8 @@ int ftrace_modify_direct_caller(struct ftrace_func_entry *entry,
+ 				unsigned long old_addr,
+ 				unsigned long new_addr);
+ unsigned long ftrace_find_rec_direct(unsigned long ip);
++int register_ftrace_direct_ips(unsigned long *ips, unsigned long *addrs,
++			       int count);
+ #else
+ # define ftrace_direct_func_count 0
+ static inline int register_ftrace_direct(unsigned long ip, unsigned long addr)
 diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index 95ef7e2a6a57..44c2d21b8c19 100644
+index 44c2d21b8c19..770bcd1a245a 100644
 --- a/kernel/trace/ftrace.c
 +++ b/kernel/trace/ftrace.c
-@@ -4977,6 +4977,47 @@ ftrace_set_hash(struct ftrace_ops *ops, unsigned char *buf, int len,
- 	return ret;
+@@ -5231,6 +5231,81 @@ int register_ftrace_direct(unsigned long ip, unsigned long addr)
  }
+ EXPORT_SYMBOL_GPL(register_ftrace_direct);
  
-+static int
-+ftrace_set_hash_ips(struct ftrace_ops *ops, unsigned long *ips,
-+		    int count, int remove, int enable)
++int register_ftrace_direct_ips(unsigned long *ips, unsigned long *addrs,
++			       int count)
 +{
-+	struct ftrace_hash **orig_hash;
-+	struct ftrace_hash *hash;
-+	int ret, i;
++	struct ftrace_hash *free_hash = NULL;
++	struct ftrace_direct_func *direct;
++	struct ftrace_func_entry *entry;
++	int i, j;
++	int ret;
 +
-+	if (unlikely(ftrace_disabled))
-+		return -ENODEV;
++	mutex_lock(&direct_mutex);
 +
-+	mutex_lock(&ops->func_hash->regex_lock);
-+
-+	if (enable)
-+		orig_hash = &ops->func_hash->filter_hash;
-+	else
-+		orig_hash = &ops->func_hash->notrace_hash;
-+
-+	hash = alloc_and_copy_ftrace_hash(FTRACE_HASH_DEFAULT_BITS, *orig_hash);
-+	if (!hash) {
-+		ret = -ENOMEM;
-+		goto out_regex_unlock;
++	/* Check all the ips */
++	for (i = 0; i < count; i++) {
++		ret = check_direct_ip(ips[i]);
++		if (ret)
++			goto out_unlock;
 +	}
++
++	ret = -ENOMEM;
++	if (adjust_direct_size(direct_functions->count + count, &free_hash))
++		goto out_unlock;
 +
 +	for (i = 0; i < count; i++) {
-+		ret = ftrace_match_addr(hash, ips[i], remove);
-+		if (ret < 0)
-+			goto out_regex_unlock;
++		entry = kmalloc(sizeof(*entry), GFP_KERNEL);
++		if (!entry)
++			goto out_clean;
++
++		direct = get_direct_func(addrs[i]);
++		if (!direct) {
++			kfree(entry);
++			goto out_clean;
++		}
++
++		direct->count++;
++		entry->ip = ips[i];
++		entry->direct = addrs[i];
++		__add_hash_entry(direct_functions, entry);
 +	}
 +
-+	mutex_lock(&ftrace_lock);
-+	ret = ftrace_hash_move_and_update_ops(ops, orig_hash, hash, enable);
-+	mutex_unlock(&ftrace_lock);
++	ret = ftrace_set_filter_ips(&direct_ops, ips, count, 0);
 +
-+ out_regex_unlock:
-+	mutex_unlock(&ops->func_hash->regex_lock);
++	if (!ret && !(direct_ops.flags & FTRACE_OPS_FL_ENABLED)) {
++		ret = register_ftrace_function(&direct_ops);
++		if (ret)
++			ftrace_set_filter_ips(&direct_ops, ips, count, 1);
++	}
 +
-+	free_ftrace_hash(hash);
++ out_clean:
++	if (ret) {
++		for (j = 0; j < i; j++) {
++			direct = get_direct_func(addrs[j]);
++			if (!direct)
++				continue;
++
++			if (!direct->count)
++				put_direct_func(direct);
++
++			entry = ftrace_lookup_ip(direct_functions, ips[j]);
++			if (WARN_ON_ONCE(!entry))
++				continue;
++			free_hash_entry(direct_functions, entry);
++		}
++	}
++ out_unlock:
++	mutex_unlock(&direct_mutex);
++
++	if (free_hash) {
++		synchronize_rcu_tasks();
++		free_ftrace_hash(free_hash);
++	}
++
 +	return ret;
 +}
++EXPORT_SYMBOL_GPL(register_ftrace_direct_ips);
 +
- static int
- ftrace_set_addr(struct ftrace_ops *ops, unsigned long ip, int remove,
- 		int reset, int enable)
-@@ -4984,6 +5025,13 @@ ftrace_set_addr(struct ftrace_ops *ops, unsigned long ip, int remove,
- 	return ftrace_set_hash(ops, NULL, 0, ip, remove, reset, enable);
- }
- 
-+static int
-+ftrace_set_addrs(struct ftrace_ops *ops, unsigned long *ips,
-+		 int count, int remove, int enable)
-+{
-+	return ftrace_set_hash_ips(ops, ips, count, remove, enable);
-+}
-+
- #ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
- 
- struct ftrace_direct_func {
-@@ -5395,6 +5443,14 @@ int ftrace_set_filter_ip(struct ftrace_ops *ops, unsigned long ip,
- }
- EXPORT_SYMBOL_GPL(ftrace_set_filter_ip);
- 
-+int ftrace_set_filter_ips(struct ftrace_ops *ops, unsigned long *ips,
-+			 int count, int remove)
-+{
-+	ftrace_ops_init(ops);
-+	return ftrace_set_addrs(ops, ips, count, remove, 1);
-+}
-+EXPORT_SYMBOL_GPL(ftrace_set_filter_ips);
-+
- /**
-  * ftrace_ops_set_global_filter - setup ops to use global filters
-  * @ops - the ops which will use the global filters
+ static struct ftrace_func_entry *find_direct_entry(unsigned long *ip,
+ 						   struct dyn_ftrace **recp)
+ {
 -- 
 2.26.2
 
