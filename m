@@ -2,225 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0300A295B70
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 11:09:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C98A295B2B
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 11:01:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2895788AbgJVJJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 05:09:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40372 "EHLO
+        id S2509935AbgJVJBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 05:01:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2502677AbgJVJJw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 05:09:52 -0400
-Received: from relay.felk.cvut.cz (relay.felk.cvut.cz [IPv6:2001:718:2:1611:0:1:0:70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AD4F3C0613CE;
-        Thu, 22 Oct 2020 02:09:51 -0700 (PDT)
-Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
-        by relay.felk.cvut.cz (8.15.2/8.15.2) with ESMTP id 09M8atlN059938;
-        Thu, 22 Oct 2020 10:36:55 +0200 (CEST)
-        (envelope-from pisa@cmp.felk.cvut.cz)
-Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
-        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 09M8asg6005336;
-        Thu, 22 Oct 2020 10:36:54 +0200
-Received: (from pisa@localhost)
-        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 09M8arj0005332;
-        Thu, 22 Oct 2020 10:36:53 +0200
-From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
-To:     linux-can@vger.kernel.org, devicetree@vger.kernel.org,
-        "Marc Kleine-Budde" <mkl@pengutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        David Miller <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>, mark.rutland@arm.com,
-        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Jiri Novak <jnovak@fel.cvut.cz>,
-        Jaroslav Beran <jara.beran@gmail.com>,
-        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
-        Drew Fustini <pdp7pdp7@gmail.com>,
-        Pavel Pisa <pisa@cmp.felk.cvut.cz>
-Subject: [PATCH v6 0/6] CTU CAN FD open-source IP core SocketCAN driver, PCI, platform integration and documentation
-Date:   Thu, 22 Oct 2020 10:36:15 +0200
-Message-Id: <cover.1603354744.git.pisa@cmp.felk.cvut.cz>
-X-Mailer: git-send-email 2.20.1
+        with ESMTP id S2509188AbgJVJBc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 05:01:32 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AC3EC0613CE;
+        Thu, 22 Oct 2020 02:01:30 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id z5so1157994ejw.7;
+        Thu, 22 Oct 2020 02:01:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=biKYzJ6rw5v7zotuxQlwelGlaL61xs7Y0POZsNN6hQ0=;
+        b=G0lOaK/oWzaiYS1X4nfuWV2b9kpCSeHlywHLk4cWIaxwxW8oHkY4+VPazQDpqLbNHs
+         xKzSmZHqodXCuFS4okFcUq7clRYkdnp7pr/dzSTeuXm2kzveGdU9KqYURkWu3Wnkum0O
+         xJZntcnyb1wh6U4SHVkW2Px4ySD5TgNc7juOUxpprAcV4MvB1BYlpminey55jc9ehSWz
+         IchM2mQK4+MKYEC+GZ5g4VY5ohooABNX1mWtg+JLUPmaRpqDUnvf4qAF8ANZ7OeE0Ju1
+         JRsvKU9VG5AnzeAL3LCjlInbIv6/3LpaZqdhKce32p5ctplC7glIhz1/svnMWS3T+y3V
+         PpcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=biKYzJ6rw5v7zotuxQlwelGlaL61xs7Y0POZsNN6hQ0=;
+        b=XlqKZo2IkarFwFEhotu/Zvc6+7qiUylgCRo7xx83aaBnsnCG5IbXrjvlDjnd5Y0PJw
+         KoOahQYnQZwLtRjWId32XwfflwD+EKl+8T+q25YzhaxOrKGgonWSRlpctNGndHDfPh+S
+         GoKRQ4THSVk20QbjWX8cA1Z42cqbbgQVxSlhH/yg2Jr6hKQ4o5gLwzl1+BTkgoFGeKK9
+         8TUhRSOTuU/N8BqB40lMSMOYjpRVpV6MKiVWZ/F0N2T3axFuRx7kvnkWZag46D35aF2g
+         +UGTdelkze75R1vGE2lvFM1ExgiSIyuM+SZel6QRshOSQPCTWMCSBJyUpOFB0LSUDybG
+         PSRg==
+X-Gm-Message-State: AOAM532Ovhx+ty7R4q7uHzKou7uA6aaDYvGjzS4IVN53bSfRi6glpeL2
+        NW4dsTq8P618Tq06BYcxN7M=
+X-Google-Smtp-Source: ABdhPJzuUK4ka/iRomK+tIFIGOiAes2PQTeTEaI8Tr9CXPZvwjfYQxfMyqGn4bjP3MRbT+QVSs2Ihw==
+X-Received: by 2002:a17:906:444:: with SMTP id e4mr1409273eja.218.1603357288909;
+        Thu, 22 Oct 2020 02:01:28 -0700 (PDT)
+Received: from skbuf ([188.26.174.215])
+        by smtp.gmail.com with ESMTPSA id j3sm388785edh.25.2020.10.22.02.01.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Oct 2020 02:01:28 -0700 (PDT)
+Date:   Thu, 22 Oct 2020 12:01:26 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Christian Eggers <ceggers@arri.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Helmut Grohne <helmut.grohne@intenta.de>,
+        Paul Barker <pbarker@konsulko.com>,
+        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Marek Vasut <marex@denx.de>,
+        Tristram Ha <Tristram.Ha@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH net-next 7/9] net: dsa: microchip: ksz9477: add
+ hardware time stamping support
+Message-ID: <20201022090126.h64hfnlajqelveku@skbuf>
+References: <20201019172435.4416-1-ceggers@arri.de>
+ <20201019172435.4416-8-ceggers@arri.de>
+ <20201021233935.ocj5dnbdz7t7hleu@skbuf>
+ <20201022030217.GA2105@hoboy.vegasvil.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-FELK-MailScanner-Information: 
-X-MailScanner-ID: 09M8atlN059938
-X-FELK-MailScanner: Found to be clean
-X-FELK-MailScanner-SpamCheck: not spam, SpamAssassin (not cached,
-        score=-0.098, required 6, BAYES_00 -0.50, KHOP_HELO_FCRDNS 0.40,
-        SPF_HELO_NONE 0.00, SPF_NONE 0.00, URIBL_BLOCKED 0.00)
-X-FELK-MailScanner-From: pisa@cmp.felk.cvut.cz
-X-FELK-MailScanner-Watermark: 1603960616.34788@a890JZBJRfcsNouW9Cu67A
-X-Spam-Status: No
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201022030217.GA2105@hoboy.vegasvil.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This driver adds support for the CTU CAN FD open-source IP core.
-More documentation and core sources at project page
-(https://gitlab.fel.cvut.cz/canbus/ctucanfd_ip_core).
-The core integration to Xilinx Zynq system as platform driver
-is available (https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top).
-Implementation on Intel FPGA based PCI Express board is available
-from project (https://gitlab.fel.cvut.cz/canbus/pcie-ctu_can_fd).
-The CTU CAN FD core emulation send for review for QEMU mainline.
-Development repository for QEMU emulation - ctu-canfd branch of
-  https://gitlab.fel.cvut.cz/canbus/qemu-canbus
+On Wed, Oct 21, 2020 at 08:02:17PM -0700, Richard Cochran wrote:
+> On Thu, Oct 22, 2020 at 02:39:35AM +0300, Vladimir Oltean wrote:
+> > So how _does_ that work for TI PHYTER?
+> >
+> > As far as we understand, the PHYTER appears to autonomously mangle PTP packets
+> > in the following way:
+> > - subtracting t2 on RX from the correctionField of the Pdelay_Req
+> > - adding t3 on TX to the correctionField of the Pdelay_Resp
+>
+> The Phyter does not support peer-to-peer one step.
 
-More about CAN bus related projects used and developed at CTU FEE
-on the guidepost page http://canbus.pages.fel.cvut.cz/ .
+Ok, that's my mistake for not double-checking, sorry.
 
-Martin Jerabek (1):
-  can: ctucanfd: add support for CTU CAN FD open-source IP core - bus
-    independent part.
+> The only driver that implements it is ptp_ines.c.
+>
+> And *that* driver/HW implements it correctly.
 
-Pavel Pisa (5):
-  dt-bindings: vendor-prefix: add prefix for the Czech Technical
-    University in Prague.
-  dt-bindings: net: can: binding for CTU CAN FD open-source IP core.
-  can: ctucanfd: CTU CAN FD open-source IP core - PCI bus support.
-  can: ctucanfd: CTU CAN FD open-source IP core - platform/SoC support.
-  docs: ctucanfd: CTU CAN FD open-source IP core documentation.
-
-The version 6 changes:
-  - sent at 2020-10-22
-  - the driver has been tested with 5.9 bigendian MIPS kernel
-    against QEMU CTU CAN FD model and correct behavior on PCIe
-    virtual board for big-endian system passed
-  - documentation updated to reflect inclusion of SocketCAN FD
-    and CTU CAN FD functional model support into QEMU mainline
-  - the integration for Cyclone V 5CSEMA4U23C6 based DE0-Nano-SoC
-    Terasic board used for SkodaAuto research projects at our
-    university has been clean up by its author (Jaroslav Beran)
-    and published
-    https://gitlab.fel.cvut.cz/canbus/intel-soc-ctucanfd
-  - Xilinx Zynq Microzed MZ_APO based target for automatic test
-    updated to Debian 10 base.
-
-The version 5 changes:
-  - sent at 2020-08-15
-  - correct Kconfig formatting according to Randy Dunlap
-  - silence warnings reported by make W=1 C=1 flags.
-    Changes suggested by Jakub Kicinski
-  - big thanks for core patch review by Pavel Machek
-    resulting in more readability and formating updates
-  - fix power management errors found by Pavel Machek
-  - removed comments from d-t bindings as suggested by Rob Herring
-  - selected ctu,ctucanfd-2 as alternative name to ctu,ctucanfd
-    which allows to bind to actual major HDL core sources version 2.x
-    if for some reason driver adaptation would not work on version
-    read from the core
-  - line length limit relaxed to 100 characters on some cases
-    where it helps to readability
-
-The version 4 changes:
-  - sent at 2020-08-04
-  - changes summary, 169 non-merge commits, 6 driver,
-    32 IP core sources enhancements and fixes, 58 tests
-    in master and about additional 30 iso-testbench
-    preparation branch.
-  - convert device-tree binding documentation to YAML
-  - QEMU model of CTU CAN FD IP core and generic extension
-    of QEMU CAN bus emulation developed by Jan Charvat.
-  - driver tested on QEMU emulated Malta big-endian MIPS
-    platform and big endian-support fixed.
-  - checkpatch from 5.4 kernel used to cleanup driver formatting
-  - header files generated from IP core IP-Xact description
-    updated to include protocol exception (pex) field.
-    Mechanism to set it from the driver is not provided yet.
-
-The version 3 changes:
-  - sent at 2019-12-21
-  - adapts device tree bindings documentation according to
-    Rob Herring suggestions.
-  - the driver has been separated to individual modules for core support,
-    PCI bus integration and platform, SoC integration.
-  - the FPGA design has been cleaned up and CAN protocol FSM redesigned
-    by Ondrej Ille (the core redesign has been reason to pause attempts to driver
-    submission)
-  - the work from February 2019 on core, test framework and driver
-    1601 commits in total, 436 commits in the core sources, 144 commits
-    in the driver, 151 documentation, 502 in tests.
-  - not all continuous integration tests updated for latest design version yet
-    https://gitlab.fel.cvut.cz/canbus/ctucanfd_ip_core/pipelines
-  - Zynq hardware in the loop test show no issues for after driver PCI and platform
-    separation and latest VHDL sources updates.
-  - driver code has been periodically tested on 4.18.5-rt3 and 4.19 long term
-    stable kernels.
-  - test of the patches before submission is run on 5.4 kernel
-  - the core has been integrated by Jaroslav Beran <jara.beran@gmail.com>
-    into Intel FPGA based SoC used in the tester developed for Skoda auto
-    at Department of Measurement, Faculty of Electrical Engineering,
-    Czech Technical University https://meas.fel.cvut.cz/ . He has contributed
-    feedback and fixes to the project.
-
-The version 2 sent at 2019-02-27
-
-The version 1 sent at 2019-02-22
-
-Ondrej Ille has prepared the CTU CAN IP Core sources for new release.
-We are waiting with it for the driver review, our intention
-is to release IP when driver is reviewed and mainlined.
-
-DKMS CTU CAN FD driver build by OpenBuildService to ease integration
-into Debian systems when driver is not provided by the distribution
-
-https://build.opensuse.org/package/show/home:ppisa/ctu_can_fd
-
-Jan Charvat <charvj10@fel.cvut.cz> finished work to extend already
-mainlined QEMU SJA1000 and SocketCAN support to provide even CAN FD
-support and CTU CAN FD core support.
-
-  https://gitlab.fel.cvut.cz/canbus/qemu-canbus/-/tree/ctu-canfd
-
-The patches has been sent for review to QEMU mainlining list.
-
-Thanks in advance to all who help us to deliver the project into public.
-
-Thanks to all colleagues, reviewers and other providing feedback,
-infrastructure and enthusiasm and motivation for open-source work.
-
-Build infrastructure and hardware is provided by
-  Department of Control Engineering,
-  Faculty of Electrical Engineering,
-  Czech Technical University in Prague
-  https://dce.fel.cvut.cz/en
-
- .../bindings/net/can/ctu,ctucanfd.yaml        |   63 +
- .../devicetree/bindings/vendor-prefixes.yaml  |    2 +
- .../ctu/FSM_TXT_Buffer_user.png               |  Bin 0 -> 174807 bytes
- .../device_drivers/ctu/ctucanfd-driver.rst    |  638 ++++++++++
- drivers/net/can/Kconfig                       |    1 +
- drivers/net/can/Makefile                      |    1 +
- drivers/net/can/ctucanfd/Kconfig              |   35 +
- drivers/net/can/ctucanfd/Makefile             |   13 +
- drivers/net/can/ctucanfd/ctu_can_fd.c         | 1105 +++++++++++++++++
- drivers/net/can/ctucanfd/ctu_can_fd.h         |   87 ++
- drivers/net/can/ctucanfd/ctu_can_fd_frame.h   |  189 +++
- drivers/net/can/ctucanfd/ctu_can_fd_hw.c      |  790 ++++++++++++
- drivers/net/can/ctucanfd/ctu_can_fd_hw.h      |  916 ++++++++++++++
- drivers/net/can/ctucanfd/ctu_can_fd_pci.c     |  314 +++++
- .../net/can/ctucanfd/ctu_can_fd_platform.c    |  142 +++
- drivers/net/can/ctucanfd/ctu_can_fd_regs.h    |  971 +++++++++++++++
- 16 files changed, 5267 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/can/ctu,ctucanfd.yaml
- create mode 100644 Documentation/networking/device_drivers/ctu/FSM_TXT_Buffer_user.png
- create mode 100644 Documentation/networking/device_drivers/ctu/ctucanfd-driver.rst
- create mode 100644 drivers/net/can/ctucanfd/Kconfig
- create mode 100644 drivers/net/can/ctucanfd/Makefile
- create mode 100644 drivers/net/can/ctucanfd/ctu_can_fd.c
- create mode 100644 drivers/net/can/ctucanfd/ctu_can_fd.h
- create mode 100644 drivers/net/can/ctucanfd/ctu_can_fd_frame.h
- create mode 100644 drivers/net/can/ctucanfd/ctu_can_fd_hw.c
- create mode 100644 drivers/net/can/ctucanfd/ctu_can_fd_hw.h
- create mode 100644 drivers/net/can/ctucanfd/ctu_can_fd_pci.c
- create mode 100644 drivers/net/can/ctucanfd/ctu_can_fd_platform.c
- create mode 100644 drivers/net/can/ctucanfd/ctu_can_fd_regs.h
-
--- 
-2.20.1
-
+Is there documentation available for this timestamping block? I might be
+missing some data, as the kernel driver is fairly pass-through for the
+TX timestamping of the Pdelay_Resp, so the hardware might just 'do the
+right thing'. I believe the answer lies within the timestamper's
+per-port RX FIFO. Just guessing here, but I suspect that the RX FIFO
+doesn't get cleared immediately after the host queries it, and the
+hardware caches the last 100 events from the pool and uses the RX
+timestamps of Pdelay_Req as t2 in the process of updating the
+correctionField of Pdelay_Resp on TX. Would that be correct?
