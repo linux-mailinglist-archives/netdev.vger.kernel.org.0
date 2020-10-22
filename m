@@ -2,129 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F20E2963B7
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 19:29:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DAE52963C5
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 19:30:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2900134AbgJVR3i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 13:29:38 -0400
-Received: from correo.us.es ([193.147.175.20]:54092 "EHLO mail.us.es"
+        id S368007AbgJVR36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 13:29:58 -0400
+Received: from correo.us.es ([193.147.175.20]:54110 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2900086AbgJVR3g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Oct 2020 13:29:36 -0400
+        id S2900108AbgJVR3h (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Oct 2020 13:29:37 -0400
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id D00731C438B
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 19:29:34 +0200 (CEST)
+        by mail.us.es (Postfix) with ESMTP id BFA751C4398
+        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 19:29:35 +0200 (CEST)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id C1E8ADA72F
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 19:29:34 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id B16E4DA853
+        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 19:29:35 +0200 (CEST)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id B6867DA730; Thu, 22 Oct 2020 19:29:34 +0200 (CEST)
+        id A7244DA840; Thu, 22 Oct 2020 19:29:35 +0200 (CEST)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
-        version=3.4.1
+        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
+        autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id A27E2DA722;
-        Thu, 22 Oct 2020 19:29:31 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 6C980DA84A;
+        Thu, 22 Oct 2020 19:29:33 +0200 (CEST)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Thu, 22 Oct 2020 19:29:31 +0200 (CEST)
+ Thu, 22 Oct 2020 19:29:33 +0200 (CEST)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from localhost.localdomain (unknown [90.77.255.23])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id 7488442EE38E;
-        Thu, 22 Oct 2020 19:29:31 +0200 (CEST)
+        by entrada.int (Postfix) with ESMTPSA id 41B6C42EE38E;
+        Thu, 22 Oct 2020 19:29:33 +0200 (CEST)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH 0/7] Netfilter fixes for net
-Date:   Thu, 22 Oct 2020 19:29:18 +0200
-Message-Id: <20201022172925.22770-1-pablo@netfilter.org>
+Subject: [PATCH 1/7] ipvs: adjust the debug info in function set_tcp_state
+Date:   Thu, 22 Oct 2020 19:29:19 +0200
+Message-Id: <20201022172925.22770-2-pablo@netfilter.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20201022172925.22770-1-pablo@netfilter.org>
+References: <20201022172925.22770-1-pablo@netfilter.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+From: "longguang.yue" <bigclouds@163.com>
 
-The following patchset contains Netfilter fixes for net:
+Outputting client,virtual,dst addresses info when tcp state changes,
+which makes the connection debug more clear
 
-1) Update debugging in IPVS tcp protocol handler to make it easier
-   to understand, from longguang.yue
+Signed-off-by: longguang.yue <bigclouds@163.com>
+Acked-by: Julian Anastasov <ja@ssi.bg>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+---
+ net/netfilter/ipvs/ip_vs_proto_tcp.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-2) Update TCP tracker to deal with keepalive packet after
-   re-registration, from Franceso Ruggeri.
+diff --git a/net/netfilter/ipvs/ip_vs_proto_tcp.c b/net/netfilter/ipvs/ip_vs_proto_tcp.c
+index dc2e7da2742a..7da51390cea6 100644
+--- a/net/netfilter/ipvs/ip_vs_proto_tcp.c
++++ b/net/netfilter/ipvs/ip_vs_proto_tcp.c
+@@ -539,8 +539,8 @@ set_tcp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
+ 	if (new_state != cp->state) {
+ 		struct ip_vs_dest *dest = cp->dest;
+ 
+-		IP_VS_DBG_BUF(8, "%s %s [%c%c%c%c] %s:%d->"
+-			      "%s:%d state: %s->%s conn->refcnt:%d\n",
++		IP_VS_DBG_BUF(8, "%s %s [%c%c%c%c] c:%s:%d v:%s:%d "
++			      "d:%s:%d state: %s->%s conn->refcnt:%d\n",
+ 			      pd->pp->name,
+ 			      ((state_off == TCP_DIR_OUTPUT) ?
+ 			       "output " : "input "),
+@@ -548,10 +548,12 @@ set_tcp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
+ 			      th->fin ? 'F' : '.',
+ 			      th->ack ? 'A' : '.',
+ 			      th->rst ? 'R' : '.',
+-			      IP_VS_DBG_ADDR(cp->daf, &cp->daddr),
+-			      ntohs(cp->dport),
+ 			      IP_VS_DBG_ADDR(cp->af, &cp->caddr),
+ 			      ntohs(cp->cport),
++			      IP_VS_DBG_ADDR(cp->af, &cp->vaddr),
++			      ntohs(cp->vport),
++			      IP_VS_DBG_ADDR(cp->daf, &cp->daddr),
++			      ntohs(cp->dport),
+ 			      tcp_state_name(cp->state),
+ 			      tcp_state_name(new_state),
+ 			      refcount_read(&cp->refcnt));
+-- 
+2.20.1
 
-3) Missing IP6SKB_FRAGMENTED from netfilter fragment reassembly,
-   from Georg Kohmann.
-
-4) Fix bogus packet drop in ebtables nat extensions, from
-   Thimothee Cocault.
-
-5) Fix typo in flowtable documentation.
-
-6) Reset skb timestamp in nft_fwd_netdev.
-
-Please, pull these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
-
-Thanks.
-
-----------------------------------------------------------------
-
-The following changes since commit df6afe2f7c19349de2ee560dc62ea4d9ad3ff889:
-
-  nexthop: Fix performance regression in nexthop deletion (2020-10-19 20:07:15 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
-
-for you to fetch changes up to c77761c8a59405cb7aa44188b30fffe13fbdd02d:
-
-  netfilter: nf_fwd_netdev: clear timestamp in forwarding path (2020-10-22 14:49:36 +0200)
-
-----------------------------------------------------------------
-Francesco Ruggeri (1):
-      netfilter: conntrack: connection timeout after re-register
-
-Georg Kohmann (1):
-      netfilter: Drop fragmented ndisc packets assembled in netfilter
-
-Jeremy Sowden (1):
-      docs: nf_flowtable: fix typo.
-
-Pablo Neira Ayuso (1):
-      netfilter: nf_fwd_netdev: clear timestamp in forwarding path
-
-Saeed Mirzamohammadi (1):
-      netfilter: nftables_offload: KASAN slab-out-of-bounds Read in nft_flow_rule_create
-
-Timothée COCAULT (1):
-      netfilter: ebtables: Fixes dropping of small packets in bridge nat
-
-longguang.yue (1):
-      ipvs: adjust the debug info in function set_tcp_state
-
- Documentation/networking/nf_flowtable.rst |  2 +-
- include/net/netfilter/nf_tables.h         |  6 ++++++
- net/bridge/netfilter/ebt_dnat.c           |  2 +-
- net/bridge/netfilter/ebt_redirect.c       |  2 +-
- net/bridge/netfilter/ebt_snat.c           |  2 +-
- net/ipv6/netfilter/nf_conntrack_reasm.c   |  1 +
- net/netfilter/ipvs/ip_vs_proto_tcp.c      | 10 ++++++----
- net/netfilter/nf_conntrack_proto_tcp.c    | 19 +++++++++++++------
- net/netfilter/nf_dup_netdev.c             |  1 +
- net/netfilter/nf_tables_api.c             |  6 +++---
- net/netfilter/nf_tables_offload.c         |  4 ++--
- net/netfilter/nft_fwd_netdev.c            |  1 +
- 12 files changed, 37 insertions(+), 19 deletions(-)
