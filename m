@@ -2,115 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 23AD2296780
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 01:05:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E01AB296781
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 01:05:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S373208AbgJVXF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 19:05:29 -0400
-Received: from sonic307-22.consmr.mail.sg3.yahoo.com ([106.10.241.39]:38918
-        "EHLO sonic307-22.consmr.mail.sg3.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S373202AbgJVXF2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 19:05:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1603407923; bh=k6qD474V9VtXKDobcCBmjOJywgarZvgPlTt0r+34qBY=; h=Date:From:Reply-To:Subject:References:From:Subject; b=fbQk6k4MXT7JNPH17Z9fr+45Nwh16g1hTNGxd/kq0mHXRPqo26RRjBAnS6PcqOVyBYn0PTAqyKYPAW7dQRnzG5di0lpG/ZUbdrxbt0Xe11/8d/yDZQIM16vkw4yD8NveeDcEJ3wkGUcyNjTv8onu1uMfH1xbRGoJpX3/HzfBRGImoZzAu8vCDVFn6DsTI9UQnkp1MkAAVhwAf/SakZeS2D+1y1FOiNBdFnmcE/6hAjV0QI0aZv/6+uOmtccj6jg+jaZZXygprB3Vad2RdU5xmwGdPSZuRBwycVZyyL5lCm9CcVrbUaElIX8jmIN03QIz5QtOymdruFwIgRsI3oeSkg==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1603407923; bh=eK/h8nLbBveiV5edWtwL57Q4Iye4YQrAm8IDE29WPaf=; h=Date:From:Subject; b=RKShrmlAqhgZNMFqlD/CsXMb79ePGFG+oQCbsb3xkYcn9cs9LoMZUfEu2lFZaEHMfgr4qM8265cYQTbtvWbpru+kbY02ubNV74xPe82rjWEZWpPJIpcIrkIfIrSCl7n8fzC6wVCY61D531qCUjDk9VUPhM/w+/WcXyr+B4q/bS2zW2Mo5ev12+SrPvokhijhZ/ItoR08xjVZ0rcyziDdVCqsA1suu2BB5/Td+/NMeOXc3z8yC/DtaaK7fWK1w/XjNXmvUxijw7Uxe37pq6e6mnPNAOZfLCo/MZQksMfZ2Nw07gxPpmmpm1WaTLtlKoSORotVV/Ymsz/JSOHdM7ZGtw==
-X-YMail-OSG: 2i_dsNUVM1mVKaPehiQmqWa_VC6gwIfdWcdvbw5cuXX8I7LfW2VlchsgFVdkGQ_
- OlX0QYWupmx6ZlP02Anl2QwHuqtpui7qrl8vfIOlfKzAm3jLFAGnr3HuYwbGt0hb2g2tu.J.rdbM
- tF2LyNm63c0E.x9rJ0gMZj3QbkHl6DKXs3O.oPrnnaWivza_SztpxPH7SLq0gycdLobNssw82s23
- v16ed_wvAEHAdt_EMmCY6FW.cVb8iOzsohgmgLRSgrQToYipjOHK4235jT1Hg93BH4fXS.zhoS9.
- 7pN7iQpZ7iYrNsh9V9q5gioZrIpLq_8eEf5thhkDzGGquW1F9fSuKrrvAFmA0emI4vZCbwzSYRVI
- 3LgOB76zhSoX6Lnh.Af37yaNcX5MKSuYMBwmLSmrqimWnOG8e5T_jwWUcYWy2K027iBB3qs9OxXk
- bm.Wn4aImp8O7_vFPoiZPRKGVOyzs_LW53F_OBiVU_JhTqn.zFMdfA.KnJpada.D75lii27QrKUb
- 3bYOoWINcIiVecfvNGBTA8r.WAa5F5wpIArQ.aOcLTx5qm6jbJtIeFzc_LAbI5DCyymxpPU2P3.Z
- ZSmsN.tfQcHUhLDlcVMIiyvNBdAp556aWAjoHvWLY_QpTXnb5dbSdchB6Nvk1jReLNGPLdR0MC6V
- mIJ38AhENGFDoFyHQ9ooC44pSmhRqb2wqiW8i90SI8GgO.P9jaSp72TV.K5xyk3UZajM6Uc3Xvnq
- ZA2KCQ.Z74fBApckbAVDNNKwyfps3NxPMB4qx8OKvWdIUWDbaKiRLeivxGEZ8PTyhjW4zhK12GSs
- Y1JOXz6pynKs6lHzRJz34kMAERqshS64HBZW3zdfQWVtGAZl_I5LRoJ_dFpgbTdAx4RFR4_z26fw
- Us4VnB2Tj623_R1wd4OerrStao.2r92fP98liPLAfbCacLIF_s8gt.hSjJnSi4CvFEs0TCDsv854
- pX9R0tLA1F4IvVJbcKC1JjnCLb57fllRLh2baGE88Jux.tpXlc19UoIceXKxK0Tz0.hYVoVcUWtr
- GuiSBubABtNYueEFI0OcbARxt2vS3RLMpt4nodeCI_MKIX3Q3_56bFhKI7nZ5zJDJ3QuaWlQmUdl
- X9zXfYsrfwqS.QRJSrsGdAgiMVWblG1z5vBC75unWpxXb.33DS_3hu.JKrFbI0bg1YBNSQ7O1OXt
- bvCidSZzPvdBHk33k.mRy4ivn1zMPP_StvgMRrFlCN8JxpfRNVdX9qk7gQoTWxO0TNs2RsezXeXf
- F7j.ZHdScdmac.iL4vPk9GVIPDRmxztQKbbRhI207.cNBIp0vzLEtOfgMh4bZCoXsLUPO6Ji9ynW
- _nXBnRks.JMLmdXIM2jRL2B7.l8act4Dv.kiZZW1yzI.DyYTrsIunP8Q4evaIbCCdVsRALNMGeGy
- RQwrGKQni1iJw3ayXb916Ik4tEPS1gGFe3h44l50.5CL59_pRh1Gb.j_GzFPki3BlalXnSoC30Tp
- vsowLNKBGmZPLUMesvkMW3YaE8BTs1rkdf9csDyQongeSO4gCnazQ65YCUCiw67ikoCFFsviOXWu
- UctFF6I1_d9BJQmOWr.deEiIVlEqaZfO3pDncShnGIKZVXtSXOD3_9nD9bxpAQZcF62PDPeEUyym
- s2ILjKiQ7a63rRioF.330.r9Di1SXYs.Om6iHZXIxZ2UwMjrwL.c5iA8dK4wgT8niOQvLTuTChU8
- OgezwUM9ztr5mz38VfI4oUT7pO7XneIfhoC2T7JTHZnMQO4LE3GoeFlM32e46D2loM6pK5mIhpUK
- cNAOaUM1FFe7eCmAx1uV0WNmLzdsnYIJ37q3vxg9I9GGETvWAfVj63ikGkwBd9Hw6U3Jjj046cI1
- ssUJzkpRs19a.1XTHQOD7us0S6g4lHVzinnjK2nvsf2h6YSe7hMWo54jwQXsovj_CKo7R1Lm.5l8
- fkmjCPciKkUX1Q7xXcf2Qc_xFDYIkHj.9GbtwGKnuhQIc9XzSKsetOgnru8VDPRGh57_hO1ASxl2
- tJ3m4I8p2yRZPzsqK.6hDHjuzfWltUKaaKeyC3Oe7eoVUYt9YEek4bTDumcpvlfmgHE5nhE0uvHi
- g8swT9Frbs0tc3LwiwRhzZhWtR.wGE2unNxfebrUD8tMuyfDn5avW1a6RLJB6esJcTVdcXzbdOFk
- u6Hw9JkynyYPbetkcILxO3IZO3wmXyWADIcyD_SBvo4c..2WB_RUvagtaQ3EiXQL_ukD6EdCS6.6
- YndozMb8mFOEJkLJ1hmTF_5tg4JME5CLrWV8i9CAOHz0JQl2Sjz6xZxif.uEMYqCl0UXq6c2LnmM
- .Yg2Sk3gvg8UqDnXkYS.BqKPoktq7Gos6LNTLqgvm7aeABkuEl4WmE5hApLkbmQPt_uzzP9UQyyh
- QwEWxLh_KFYUXZ4eu6gDFSGb5GNGJ_Y2O1vqVWqZDcj3tcxvGpq2.66DDZC75Pz.eSBvV75_o1Oh
- VA6X0PiF9olSkCEsobMv9cJ_XPywWZQfqZE5LB7ET0AIHZYv8MH1SlvaMzVqaYkKOSt5Fot7hZjY
- Yi7whK.FV0MMbXjBG7ruHkfOIvjFPWZTnjWpiqQcpDpMeKvFwz6bl4SW1jYq0IoKNql9qRNP6yhj
- wzuHb4jwiaDDNmWMzgBqnIVy.DQD6xQUGEEykgaL11M7Sy9TfMp036Kfm_t8YcafWal7mDmBONCc
- p23N1k6H8ibY_LL2kTmtUD7GYE67xa3XhAlnCSeXGUi656KSbh42EOuk7j_ViTsq.8BTARnDBjD4
- aZquq3qLHXzcVLLb6dQjnK.OT1yoAri1Wzpi4tdfs2RLhI.JT7UHGlTHkMrjwKha9VBW7jl6A7nx
- uD.Ab8.yNMZzBJqSZqzpgVDnVjhSCalPUhrank.0uRZVp7Oy55akLNW3hYXlOFW3oFfCVNR_yQWO
- KeZWJjSlQTCa15eXQ.wEZOUNq8G3efPUq3laW5eovJHY_216xsUUTGOdgdjL_rOHtZopX4En7WU5
- VzUFkGiM3bog5S7pfq8raOvA.zccFm8DtPws52HvHtisHKIMDsTeDhec5RBTHQgaFsKtVmVNb8Iy
- o0mlu679GwlN3CVd23N.UCk1CCILYAkSjloj_ib3zJH4BnLqzlAwHFXVKfuh7j6YEH2ueg2o_bIG
- YlQPqADJ3KwYW5h4dd9vyZqWQY0yhivggYvlMufQaFwm1a1Ld9xdMkkykO6kVKBAnWs8nCczpbLC
- Z3mdtjIOJWe6Ig_lJgcI2oOsjnv_wA.yDddU3Ol56ukK1kzREgUmn2e1hyua7ejAxv3GW7iqYYh_
- 0mT7yhU678peqSHeQYO32AQuorBq1_8tVnD1FyTAnC1gpV2xPaRwbHRCBYxWYiuhj71gZozkFGGC
- .Dhlm0PhNeUf2UMWw42L5Dxyu_AdS3IzNifvgSv9cHFt6GSamjuEGwTDI5DDSxT9fXWbzRoEd5QA
- jMykq7hUPRq0VjcWVZIXcqngZUT.FsLxv1faIJgi6AjOKBjL_FWG1NIjuhbeZrfH83TT59u5VPDE
- _cHIWvkyx35nqnTNbxWIkMEJFtbgZY4LGqa8wk5Y583Xqj._MMlBWvsxsbiD2kVQlxjysRkaLivA
- pM7oyvyIaV1LElhmo02UYi_g50pGjEMm6cKfmDBnG3eBaL9.ZZ71mvemZR1qPuBAz_wy8k04gQs3
- TVv5LEIPSGRSfUCJZOd2VeHzAcx1cR6S8cuFxQGo9vTVFnbOC_GmpzA1o75FFGLkbyis5Y6Q1PZU
- g.9KXzPKPYbxNVOo0vncLtA756fk0SCE7UDZxRoP3y8wtTjnRlbjdKvlkxE7lOFt_7RqAsARpHi1
- vzSwRKX98.NC.n2bESXRPM00cxXzsNzB9axOim9Q9Xs3KQ4yJXDlXdl2iVdu2NBkYXZxFaem1bTw
- 0lTSQWWlyd6fUCtZxXKJvEKH8U50We1XYcCrUY1RP6n08XNYOCc0NgzqctaMXoVcv6KCqiq14Agr
- GF_X7xkecGjLbtc5YXcKDoykNBGOOcDIIsNNFKwTlD7zR6HIpp1kw7HNZGHQVRKLdXU1863cuF3h
- 8t4iSTObdK9fijHz9U_nbZEPpPhJLmvqcQPldGisjXb.JWoCH7EsthbTuMxNr79K6XAqatizER.0
- fiSOrg5MIBqk3cZRaP6vcyNd7elj7jQV1uCY1NX6Cfg.tLVucmeSzCEvfRuAX.t2WUhCKHWcjYpn
- lIxIpkon0PgvFoxY74Rbfl94MYgqT_XMnDpXnrWCXkgD.8RHBdsh7fcVkQ61c_rbdHdt1rI7HDb5
- 6LJq4hbPkJT6FVNwY.LU5QzRrMNKneT3XzEvaIGdKrIBs_6TbVFmPh3xmkWNCXimOA648SW71Bep
- LpzU151CF8ySN5FdabM2c816..J63YkaVuSZ15l..VtWa06RcDIbtcRfwf.iM.hojrx8.io.fOPg
- D3jvoGStu9.2I5FvWLAIPld2fDH87yic8KW7FrFwJQACVCJzwUpXT5xcuHo2eEXFd9KbIgU12q1r
- NtaaHxp8WDQivoj.EXCC7Fdfbdh4DLOPPHdcLvH1cqLhhFkjob5hAc.Z62uzY_LtvAgaUBw7eZXy
- 7ls8w8E2LCDLuCuWLQ3K4CRsgZfbUG4DWqqEna919fuFrItUmP5ojP5hkYcImpn0jcTo3i3xGM7J
- z53Kig1nOMvdR2VJI0G70JjHPsq0qxh0YlzSmvaEJJG6n.yH4sz5QJU2QJxSPFKlamWXthQheCT7
- ggP7B8Mk_3wgMPoDe5MBrfsKzYJJOMr9mipTJXj4Ak4WU4yXzfdDkyzk84.YFqQwqTHPpYbXCUEF
- 8WcsLuOSzfez2DWl9hcg_iXTh0uicitTA5f8eqTDETllYawR2KULPdrGJSqguT_w62TxCNJrw6dB
- G4izkBxf3QoaKp4Ix0CTfQkJJDW6.oXqJyidNxIDIuTSGA2ZEYWXs2xXKhcwxTvViPvl_pfsTA5r
- 2wxLo5oAyg7fVXeR7ySoGLTxwm5O0w6rvRFRNZ._0cvwdipy9Ml17Otc7tq7iU8gNYoe3yGIPosC
- 512yL472FLTjE3xNA4ZIg2C1cC6a2vL8gwWW85_Ic3LlfcrNzHl_F8yqyJ24Etz8tZhCFZ7s3FoJ
- LoEzS2rq6GWDYtBY_3LYHhY0uXcW1Or1TDPqGFFJMm6x_f24XH9zTSBtv2N2omW9_xFjCUA70dPd
- Opc4RNYrq.uF2k8qb0TlUfO61nvYRs.4yQ3wOih_03ClOgCjLGTp1AIE7_nHwflHb.0LY7i9QkD8
- vpP2AKuzUnqz0VMn7iMqUhq7_xLT6fPh9bh0HQAgfv4tzsvk-
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic307.consmr.mail.sg3.yahoo.com with HTTP; Thu, 22 Oct 2020 23:05:23 +0000
-Date:   Thu, 22 Oct 2020 23:05:22 +0000 (UTC)
-From:   MONICA BROWN <monicabrown4098@gmail.com>
-Reply-To: monicabrown4098@gmail.com
-Message-ID: <471243842.1834091.1603407922782@mail.yahoo.com>
-Subject: FROM SERGEANT MONICA BROWN
+        id S373215AbgJVXFz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 19:05:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48202 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S373210AbgJVXFy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Oct 2020 19:05:54 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D7245223BF;
+        Thu, 22 Oct 2020 23:05:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603407954;
+        bh=7B683fiZBdj0VRUX2fu8XxbR2rPaeo50RNyuPG3ILDQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lBRUyGGkMZVPoln+2s7NvyR8jgq0jTEu+OoYJ0k9jgIzZT6fuKGUfNKt0G0AiDde/
+         KT0oqsagXwIN2+TSLa6xrqDWeyIQuKGqDXnUgzm2guGg/G1BukDy89XK4Scmyf5XtW
+         dOaOLdzJP2xe+rFuZMSexDBqkUlksCGciQsUetOM=
+Date:   Thu, 22 Oct 2020 16:05:51 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Francis Laniel <laniel_francis@privacyrequired.com>,
+        linux-hardening@vger.kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net
+Subject: Re: [RFC][PATCH v3 3/3] Rename nla_strlcpy to nla_strscpy.
+Message-ID: <20201022160551.33d85912@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <202010221302.5BA047AC9@keescook>
+References: <20201020164707.30402-1-laniel_francis@privacyrequired.com>
+        <20201020164707.30402-4-laniel_francis@privacyrequired.com>
+        <202010211649.ABD53841B@keescook>
+        <2286512.66XcFyAlgq@machine>
+        <202010221302.5BA047AC9@keescook>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-References: <471243842.1834091.1603407922782.ref@mail.yahoo.com>
-X-Mailer: WebService/1.1.16868 YMailNodin Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I am Sergeant Monica Brown, originally from Lake Jackson Texas. I have 
-personally conducted a special research on the internet and came across 
-your information. I am writing you this mail from US Military Base Kabul 
-Afghanistan. I have a secured business proposal for you. If you are 
-interested in my private email (monicabrown4098@gmail.com), please contact me 
-immediately for more information.
-Thank you.
+On Thu, 22 Oct 2020 13:04:32 -0700 Kees Cook wrote:
+> > > > From: Francis Laniel <laniel_francis@privacyrequired.com>
+> > > > 
+> > > > Calls to nla_strlcpy are now replaced by calls to nla_strscpy which is the
+> > > > new name of this function.
+> > > > 
+> > > > Signed-off-by: Francis Laniel <laniel_francis@privacyrequired.com>  
+> > > 
+> > > The Subject could also be: "treewide: Rename nla_strlcpy to nla_strscpy"
+> > > 
+> > > But otherwise, yup, easy mechanical change.  
+> > 
+> > Should I submit a v4 for this change?  
+> 
+> I'll say yes. :) Drop the RFC, bump to v4, and send it to netdev (along
+> with all the other CCs you have here already), and add the Reviewed-bys
+> from v3.
 
-
-
-
-
-
-
+Maybe wait until next week, IIRC this doesn't fix any bugs, so it's
+-next material. We don't apply anything to net-next during the merge
+window.
