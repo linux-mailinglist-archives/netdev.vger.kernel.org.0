@@ -2,115 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85F16296588
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 21:52:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 299DC296592
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 22:00:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S370438AbgJVTwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 15:52:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55294 "EHLO
+        id S370500AbgJVUAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 16:00:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2509834AbgJVTwb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 15:52:31 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8CF1C0613CF
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 12:52:29 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id t4so1508644plq.13
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 12:52:29 -0700 (PDT)
+        with ESMTP id S2895997AbgJVT76 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 15:59:58 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58148C0613CE;
+        Thu, 22 Oct 2020 12:59:57 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id n9so1613543pgt.8;
+        Thu, 22 Oct 2020 12:59:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=3dm/6UU7gzYtewq70pBYmJhrFBt9p+uK9v/LY5XBQe8=;
-        b=WdHQm9X1Ao2rROrM/DL9Ob5ETV5dcmcxbbi05C5ioxMtbjEFPu3amCoERC6BHS5ppC
-         jUCpJ54iUYioZDSSbRWoRxCclHJU2JtZBbuzhQKlaoGfRi2P3C3aoYELYkdM3Ek82NIg
-         /ql2TOC/FiXWF3ne/NQAZ463k3oht0RbEiVAsKFptqY+29o7VcNwnZHW3zobc8msa2X1
-         zO5gOJQMcdg6oEVFJShVA7kglwRFhbHPbFKzO/ozeQPE39n/MLVVx9kgdzBxWcAPTbDC
-         +1ZEfeuMQ8ZS2WXFxUtATlwTjKv7PedQHfi0mdzi0cs+G6RgmmJ67hNItyrWmZIM4FVf
-         /Txw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NVYq2lxM8Jy8MOdpSgTfvMFC8iKFhaG2uSMStbk3rOM=;
+        b=Ho5+J2YZQpzQybBSezYK/SjOO6x0QGV1hrD0ATojFVVP8FF2ZpnaaEM2CF6sbePY0w
+         0d0Nu8qt2rAWEp80HKBqaBlRcUoCh6wRDuUh2UMX08txKc6a1xNTozKKBwMLgMCjHXy7
+         C4QzhWngh7dcMyJ0xJ2dhwieq5jZrAh5gnDpqpRZwqQUBJdsJOA4JJ2Xp3UpVeX0deAg
+         8wRZSAQHCaF+ryPr6tf9HRtcKNXS4RAQJhY8sD6S3W74NuPiol7IBykqNC7xIzFwNtDG
+         LjgjcabC0q6Yy2M5jeo0Cixw14T9lvi7cjBTs57q8vZ615i2lcQ7UjRlEjaKSkPpuAeK
+         mBiw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=3dm/6UU7gzYtewq70pBYmJhrFBt9p+uK9v/LY5XBQe8=;
-        b=rzCub75J4PAjT3cG4jbwBM7MivHubT5lJ80uh5SAPSIP8+GnNC6WHdrS3nUHux3ZMA
-         K2p5QbJqPOyb6aVlLIhCEdo00Xpy+akNjCjOly5IxKiOssvfh4snWvap1y/ZW7DaNM7q
-         zte6PvXwslgQUQ6S5dRU9z/f4+tZinyOxhm6dsAOc+xW9LKaVyye2G/UJc83jW5l8ynl
-         dujjhcRY8NI/YBVPuRStn2BLmo3EAJH3In463RE6pKxn8pGFPO2P/MFyAXrWFUW6WNX1
-         zSdFAv1gXo5Xv1nsOuSi1pqRqQJtSC633Ky2x3S1kLswaiLZT81VJyMsaF71KBqJBqcb
-         Mtgg==
-X-Gm-Message-State: AOAM532Pfi/0rfBIzguxLAh/qqv1PPsXSLx1m8m/Ank7oTprabKkALJL
-        /HzA1CIrMqxqTr8xFbA6BCWqsw==
-X-Google-Smtp-Source: ABdhPJzjyClw+3ELYGBsJotUZeOWmDVypimCCUAzTRMpJKmazRpYQ3aDqmDvNYm9l9y12zeiB5Whew==
-X-Received: by 2002:a17:902:d697:b029:d6:48f:2974 with SMTP id v23-20020a170902d697b02900d6048f2974mr3724561ply.30.1603396349196;
-        Thu, 22 Oct 2020 12:52:29 -0700 (PDT)
-Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id b6sm2981568pjq.42.2020.10.22.12.52.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Oct 2020 12:52:28 -0700 (PDT)
-Date:   Thu, 22 Oct 2020 12:52:20 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     David Ahern <dsahern@gmail.com>, Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        bridge@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, andrew@lunn.ch, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, jiri@mellanox.com, idosch@idosch.org
-Subject: Re: [RFC PATCH iproute2] bridge: add support for L2 multicast
- groups
-Message-ID: <20201022125220.45c24b30@hermes.local>
-In-Reply-To: <20201017184526.2333840-1-vladimir.oltean@nxp.com>
-References: <20201017184526.2333840-1-vladimir.oltean@nxp.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NVYq2lxM8Jy8MOdpSgTfvMFC8iKFhaG2uSMStbk3rOM=;
+        b=Rbc9m2CmOYpX23HyIJE2//G0cDni8ncPYRFtZ8NTa0//C3o+hZ2iq6QLzqQ1j/MgyQ
+         VVlbWqwpP36yLicZIAIw10EPShyOthgeeqYe/qbfDSPOxUNMzuXp99qKlNONCQHxs76c
+         oCO1M4gLpdyzjy9e4BRrTWY18PClu3euGndl9DHwS+NlTwezR2zEsYR/5Nl15iyerfHY
+         WnCy9CAPty6mfpFNAd0foNQae2PunVH1nWvrMrHsyGmsqI3xHLl4t0fdqJq1MVO+t9mf
+         J0cebeqL3mtj9W1+MCZR+NjsZNuouFL0WiHbgdgjwjhOi/vxDHERuXWqzy0wud3f02e5
+         9OcA==
+X-Gm-Message-State: AOAM530HbB5pezrQtVWLRPFdqa0lBmU68y8dQIwW4FdCM/+3YfIr01H1
+        3XQVqYk5fBpxwwrVgogLKArS+tw0/6q7eEhIHMM=
+X-Google-Smtp-Source: ABdhPJw8piBAPYmytYLQl19g1SSKv9sWzxuXax0G0rGPBeTLjPLOyTseYwLxr00lL4FORkf+Hc1/B6LSYS3kC1Efdmg=
+X-Received: by 2002:a17:90a:17ad:: with SMTP id q42mr4015604pja.36.1603396796881;
+ Thu, 22 Oct 2020 12:59:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201022072814.91560-1-xie.he.0141@gmail.com> <CAJht_ENMQ3nZb1BOCyyVzJjBK87yk+E1p+Jv5UQuZ1+g1jK1cg@mail.gmail.com>
+ <20201022082239.2ae23264@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201022082239.2ae23264@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Thu, 22 Oct 2020 12:59:45 -0700
+Message-ID: <CAJht_EM638CQDb5opnVxfQ81Z2U9hGZbnE581RFZrAQvenn+qQ@mail.gmail.com>
+Subject: Re: [PATCH net RFC] net: Clear IFF_TX_SKB_SHARING for all Ethernet
+ devices using skb_padto
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 17 Oct 2020 21:45:26 +0300
-Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+On Thu, Oct 22, 2020 at 8:22 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> Are most of these drivers using skb_padto()? Is that the reason they
+> can't be sharing the SKB?
 
-> Extend the 'bridge mdb' command for the following syntax:
-> bridge mdb add dev br0 port swp0 grp 01:02:03:04:05:06 permanent
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
->  bridge/mdb.c                   | 54 ++++++++++++++++++++++++++--------
->  include/uapi/linux/if_bridge.h |  2 ++
->  2 files changed, 43 insertions(+), 13 deletions(-)
-> 
-> diff --git a/bridge/mdb.c b/bridge/mdb.c
-> index 4cd7ca762b78..af160250928e 100644
-> --- a/bridge/mdb.c
-> +++ b/bridge/mdb.c
-> @@ -149,6 +149,7 @@ static void print_mdb_entry(FILE *f, int ifindex, const struct br_mdb_entry *e,
->  			    struct nlmsghdr *n, struct rtattr **tb)
->  {
->  	const void *grp, *src;
-> +	const char *addr;
->  	SPRINT_BUF(abuf);
->  	const char *dev;
->  	int af;
-> @@ -156,9 +157,16 @@ static void print_mdb_entry(FILE *f, int ifindex, const struct br_mdb_entry *e,
->  	if (filter_vlan && e->vid != filter_vlan)
->  		return;
->  
-> -	af = e->addr.proto == htons(ETH_P_IP) ? AF_INET : AF_INET6;
-> -	grp = af == AF_INET ? (const void *)&e->addr.u.ip4 :
-> -			      (const void *)&e->addr.u.ip6;
-> +	if (!e->addr.proto) {
-> +		af = AF_PACKET;
-> +		grp = (const void *)&e->addr.u.mac_addr;
-> +	} else if (e->addr.proto == htons(ETH_P_IP)) {
-> +		af = AF_INET;
-> +		grp = (const void *)&e->addr.u.ip4;
-> +	} else {
-> +		af = AF_INET6;
-> +		grp = (const void *)&e->addr.u.ip6;
-> +	}
->  	dev = ll_index_to_name(ifindex);
->  
+Yes, I think if a driver calls skb_pad / skb_padto / skb_put_padto /
+eth_skb_pad, the driver can't accept shared skbs because it may modify
+the skbs.
 
-In C casts of pointer to void are not necessary.
+> I think the IFF_TX_SKB_SHARING flag is only used by pktgen, so perhaps
+> we can make sure pktgen doesn't generate skbs < dev->min_mtu, and then
+> the drivers won't pad?
+
+Yes, I see a lot of drivers just want to pad the skb to ETH_ZLEN, or
+just call eth_skb_pad. In this case, requiring the shared skb to be at
+least dev->min_mtu long can solve the problem for these drivers.
+
+But I also see some drivers that want to pad the skb to a strange
+length, and don't set their special min_mtu to match this length. For
+example:
+
+drivers/net/ethernet/packetengines/yellowfin.c wants to pad the skb to
+a dynamically calculated value.
+
+drivers/net/ethernet/ti/cpsw.c, cpsw_new.c and tlan.c want to pad the
+skb to macro defined values.
+
+drivers/net/ethernet/intel/iavf/iavf_txrx.c wants to pad the skb to
+IAVF_MIN_TX_LEN (17).
+
+drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c wants to pad the skb to 17.
+
+Another solution I can think of is to add a "skb_shared" check to
+"__skb_pad", so that if __skb_pad encounters a shared skb, it just
+returns an error. The driver would think this is a memory allocation
+failure. This way we can ensure shared skbs are not modified.
