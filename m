@@ -2,103 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5558295A41
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 10:26:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 607B8295A4E
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 10:28:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2895251AbgJVI0W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 04:26:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56800 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2444122AbgJVI0S (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Oct 2020 04:26:18 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2ABFB2065D;
-        Thu, 22 Oct 2020 08:26:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603355177;
-        bh=dmCNgDGTpNmF+8O2fjJO2XplnMkrwwsAXNmOMHG4kDE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=zDx/QVbNU8SimNSxRnLGamZjzaL0aYk8447/KE6GRihUCtWhJ6Z86tE/3/Weg2vwC
-         GiWZsECpqwLisbFLZe5yubGxrkvnswusVy8o3gK7vn/eUfbf4ADoW/+TTZixBrP7Y/
-         ZuwgVCa1BoOMrly/6gJ13uZ1QxD/B6i974xOGQS0=
-Date:   Thu, 22 Oct 2020 10:26:54 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Al Viro <viro@zeniv.linux.org.uk>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Christoph Hellwig <hch@lst.de>, kernel-team@android.com,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
-        David Howells <dhowells@redhat.com>,
-        David Laight <David.Laight@aculab.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-        sparclinux@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-aio@kvack.org, io-uring@vger.kernel.org,
-        linux-arch@vger.kernel.org, linux-mm@kvack.org,
-        netdev@vger.kernel.org, keyrings@vger.kernel.org,
-        linux-security-module@vger.kernel.org
-Subject: Re: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
- rw_copy_check_uvector() into lib/iov_iter.c"
-Message-ID: <20201022082654.GA1477657@kroah.com>
-References: <20200925045146.1283714-1-hch@lst.de>
- <20200925045146.1283714-3-hch@lst.de>
- <20201021161301.GA1196312@kroah.com>
- <20201021233914.GR3576660@ZenIV.linux.org.uk>
+        id S2507639AbgJVI2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 04:28:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33894 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2502102AbgJVI2E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 04:28:04 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2AEC0613CE;
+        Thu, 22 Oct 2020 01:28:04 -0700 (PDT)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1603355282;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GDhoWshQhIJouOHjZSfLuoOEJxu0EfOG35UztahVv2w=;
+        b=xO76q4yJbm65fuck7iz3vwSLDh5wOZfcG351wfUx99gofOUvgSSC6IgTYprLS4gBLnRyJq
+        VSjjIjZzrxdbDYcfv+h9PF1thMOBsoqAlwyz7r+lDyYa55Oo28Veei4LYZhRTmwN7vGhoE
+        U+JXgOEEC2pTJ6dW5sXTWIQ7RIbRrt+sTIEfVZI83ff4jjnMM1ZAG1sFDppIyLBO4FGM/b
+        j2N6SIj4Q2yQfTQ1B+LiKvfArtu0eOrSe7ZetBALhboJnxbE9LvBCb26SpMILSxBUVVNAL
+        34a2qwD6nsafD8YWroyYBBt5fGeUAbfpoVs93x1D+dTgYHg1DmOAtKm0jOrZNQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1603355282;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=GDhoWshQhIJouOHjZSfLuoOEJxu0EfOG35UztahVv2w=;
+        b=XH5DF74AogSgwXx150G9wVhi90K5iIu3AqOkToxAoXmKjngRwt+o/wTS+4gj88tkTv5K0C
+        Aec6QzsbbzCWQhCw==
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Nitesh Narayan Lal <nitesh@redhat.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        frederic@kernel.org, mtosatti@redhat.com, sassmann@redhat.com,
+        jesse.brandeburg@intel.com, lihong.yang@intel.com,
+        helgaas@kernel.org, jeffrey.t.kirsher@intel.com,
+        jacob.e.keller@intel.com, jlelli@redhat.com, hch@infradead.org,
+        bhelgaas@google.com, mike.marciniszyn@intel.com,
+        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
+        jiri@nvidia.com, mingo@redhat.com, peterz@infradead.org,
+        juri.lelli@redhat.com, vincent.guittot@linaro.org,
+        lgoncalv@redhat.com, Dave Miller <davem@davemloft.net>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to housekeeping CPUs
+In-Reply-To: <20201021170224.55aea948@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20200928183529.471328-1-nitesh@redhat.com> <20200928183529.471328-5-nitesh@redhat.com> <87v9f57zjf.fsf@nanos.tec.linutronix.de> <3bca9eb1-a318-1fc6-9eee-aacc0293a193@redhat.com> <87lfg093fo.fsf@nanos.tec.linutronix.de> <877drj72cz.fsf@nanos.tec.linutronix.de> <20201021170224.55aea948@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Date:   Thu, 22 Oct 2020 10:28:02 +0200
+Message-ID: <874kmm7jhp.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201021233914.GR3576660@ZenIV.linux.org.uk>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 22, 2020 at 12:39:14AM +0100, Al Viro wrote:
-> On Wed, Oct 21, 2020 at 06:13:01PM +0200, Greg KH wrote:
-> > On Fri, Sep 25, 2020 at 06:51:39AM +0200, Christoph Hellwig wrote:
-> > > From: David Laight <David.Laight@ACULAB.COM>
-> > > 
-> > > This lets the compiler inline it into import_iovec() generating
-> > > much better code.
-> > > 
-> > > Signed-off-by: David Laight <david.laight@aculab.com>
-> > > Signed-off-by: Christoph Hellwig <hch@lst.de>
-> > > ---
-> > >  fs/read_write.c | 179 ------------------------------------------------
-> > >  lib/iov_iter.c  | 176 +++++++++++++++++++++++++++++++++++++++++++++++
-> > >  2 files changed, 176 insertions(+), 179 deletions(-)
-> > 
-> > Strangely, this commit causes a regression in Linus's tree right now.
-> > 
-> > I can't really figure out what the regression is, only that this commit
-> > triggers a "large Android system binary" from working properly.  There's
-> > no kernel log messages anywhere, and I don't have any way to strace the
-> > thing in the testing framework, so any hints that people can provide
-> > would be most appreciated.
-> 
-> It's a pure move - modulo changed line breaks in the argument lists
-> the functions involved are identical before and after that (just checked
-> that directly, by checking out the trees before and after, extracting two
-> functions in question from fs/read_write.c and lib/iov_iter.c (before and
-> after, resp.) and checking the diff between those.
-> 
-> How certain is your bisection?
+On Wed, Oct 21 2020 at 17:02, Jakub Kicinski wrote:
+> On Wed, 21 Oct 2020 22:25:48 +0200 Thomas Gleixner wrote:
+>> The right answer to this is to utilize managed interrupts and have
+>> according logic in your network driver to handle CPU hotplug. When a CPU
+>> goes down, then the queue which is associated to that CPU is quiesced
+>> and the interrupt core shuts down the relevant interrupt instead of
+>> moving it to an online CPU (which causes the whole vector exhaustion
+>> problem on x86). When the CPU comes online again, then the interrupt is
+>> reenabled in the core and the driver reactivates the queue.
+>
+> I think Mellanox folks made some forays into managed irqs, but I don't
+> remember/can't find the details now.
+>
+> For networking the locality / queue per core does not always work,
+> since the incoming traffic is usually spread based on a hash. Many
 
-The bisection is very reproducable.
+That makes it problematic and is fundamentally different from block I/O.
 
-But, this looks now to be a compiler bug.  I'm using the latest version
-of clang and if I put "noinline" at the front of the function,
-everything works.
+> applications perform better when network processing is done on a small
+> subset of CPUs, and application doesn't get interrupted every 100us. 
+> So we do need extra user control here.
 
-Nick, any ideas here as to who I should report this to?
+Ok.
 
-I'll work on a fixup patch for the Android kernel tree to see if I can
-work around it there, but others will hit this in Linus's tree sooner or
-later...
+> We have a bit of a uAPI problem since people had grown to depend on
+> IRQ == queue == NAPI to configure their systems. "The right way" out
+> would be a proper API which allows associating queues with CPUs rather
+> than IRQs, then we can use managed IRQs and solve many other problems.
+>
+> Such new API has been in the works / discussions for a while now.
 
-thanks,
+If there is anything which needs to be done/extended on the irq side
+please let me know.
 
-greg k-h
+Thanks
+
+        tglx
