@@ -2,127 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FE0F296105
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 16:39:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26C1E296111
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 16:42:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2900990AbgJVOjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 10:39:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49228 "EHLO mail.kernel.org"
+        id S2901007AbgJVOmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 10:42:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49642 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2900951AbgJVOjq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Oct 2020 10:39:46 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        id S2900871AbgJVOmK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Oct 2020 10:42:10 -0400
+Received: from gandalf.local.home (cpe-66-24-58-225.stny.res.rr.com [66.24.58.225])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 276A224171;
-        Thu, 22 Oct 2020 14:39:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603377583;
-        bh=ma7f6ciQXaB7O32bDDp+GeQJ6WrSJ5EDDu1VyaA7rGo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PxugVsee9PWrXt/gXzudeuTvI47TjXebpNxq+V4HCmVCe1sKZHLosNqAbXuuvW+/i
-         F3Omc7qJjCGcZpsoZ0gvdBLvvwF6P71x/p/bcwNCyzTjDInFt6yyFfEubOEEK8j98S
-         eCVIVyZ2FmbbCU8ALan3OPjQJXwF2/c6hnwwd7rg=
-Date:   Thu, 22 Oct 2020 16:40:21 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     David Hildenbrand <david@redhat.com>,
-        David Laight <David.Laight@aculab.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Christoph Hellwig <hch@lst.de>,
-        "kernel-team@android.com" <kernel-team@android.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        David Howells <dhowells@redhat.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-aio@kvack.org" <linux-aio@kvack.org>,
-        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>
-Subject: Re: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
- rw_copy_check_uvector() into lib/iov_iter.c"
-Message-ID: <20201022144021.GA1969554@kroah.com>
-References: <e04d0c5d-e834-a15b-7844-44dcc82785cc@redhat.com>
- <a1533569-948a-1d5b-e231-5531aa988047@redhat.com>
- <bc0a091865f34700b9df332c6e9dcdfd@AcuMS.aculab.com>
- <5fd6003b-55a6-2c3c-9a28-8fd3a575ca78@redhat.com>
- <20201022104805.GA1503673@kroah.com>
- <20201022121849.GA1664412@kroah.com>
- <98d9df88-b7ef-fdfb-7d90-2fa7a9d7bab5@redhat.com>
- <20201022125759.GA1685526@kroah.com>
- <20201022135036.GA1787470@kroah.com>
- <CAK8P3a1B7OVdyzW0-97JwzZiwp0D0fnSfyete16QTvPp_1m07A@mail.gmail.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id 098A824171;
+        Thu, 22 Oct 2020 14:42:07 +0000 (UTC)
+Date:   Thu, 22 Oct 2020 10:42:05 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Jesper Brouer <jbrouer@redhat.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Viktor Malik <vmalik@redhat.com>
+Subject: Re: [RFC bpf-next 00/16] bpf: Speed up trampoline attach
+Message-ID: <20201022104205.728dd135@gandalf.local.home>
+In-Reply-To: <20201022141154.GB2332608@krava>
+References: <20201022082138.2322434-1-jolsa@kernel.org>
+        <20201022093510.37e8941f@gandalf.local.home>
+        <20201022141154.GB2332608@krava>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a1B7OVdyzW0-97JwzZiwp0D0fnSfyete16QTvPp_1m07A@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 22, 2020 at 04:28:20PM +0200, Arnd Bergmann wrote:
-> On Thu, Oct 22, 2020 at 3:50 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> > On Thu, Oct 22, 2020 at 02:57:59PM +0200, Greg KH wrote:
-> > > On Thu, Oct 22, 2020 at 02:42:24PM +0200, David Hildenbrand wrote:
-> 
-> > > >  struct iovec *iovec_from_user(const struct iovec __user *uvec,
-> > > > -               unsigned long nr_segs, unsigned long fast_segs,
-> > > > +               unsigned nr_segs, unsigned fast_segs,
-> > > >                 struct iovec *fast_iov, bool compat)
-> > > >  {
-> > > >         struct iovec *iov = fast_iov;
-> > > > @@ -1738,7 +1738,7 @@ ssize_t __import_iovec(int type, const struct
-> > > > iovec __user *uvec,
-> > > >                  struct iov_iter *i, bool compat)
-> > > >  {
-> > > >         ssize_t total_len = 0;
-> > > > -       unsigned long seg;
-> > > > +       unsigned seg;
-> > > >         struct iovec *iov;
-> > > >
-> > > >         iov = iovec_from_user(uvec, nr_segs, fast_segs, *iovp, compat);
-> > > >
-> > >
-> > > Ah, I tested the other way around, making everything "unsigned long"
-> > > instead.  Will go try this too, as other tests are still running...
-> >
-> > Ok, no, this didn't work either.
-> >
-> > Nick, I think I need some compiler help here.  Any ideas?
-> 
-> I don't think the patch above would reliably clear the upper bits if they
-> contain garbage.
-> 
-> If the integer extension is the problem, the way I'd try it is to make the
-> function take an 'unsigned long' and then explictly mask the upper
-> bits with
-> 
->      seg = lower_32_bits(seg);
-> 
-> Can you attach the iov_iter.s files from the broken build, plus the
-> one with 'noinline' for comparison? Maybe something can be seen
-> in there.
+On Thu, 22 Oct 2020 16:11:54 +0200
+Jiri Olsa <jolsa@redhat.com> wrote:
 
-I don't know how to extract the .s files easily from the AOSP build
-system, I'll look into that.  I'm also now testing by downgrading to an
-older version of clang (10 instead of 11), to see if that matters at all
-or not...
+> I understand direct calls as a way that bpf trampolines and ftrace can
+> co-exist together - ebpf trampolines need that functionality of accessing
+> parameters of a function as if it was called directly and at the same
+> point we need to be able attach to any function and to as many functions
+> as we want in a fast way
 
-thanks,
+I was sold that bpf needed a quick and fast way to get the arguments of a
+function, as the only way to do that with ftrace is to save all registers,
+which, I was told was too much overhead, as if you only care about
+arguments, there's much less that is needed to save.
 
-greg k-h
+Direct calls wasn't added so that bpf and ftrace could co-exist, it was
+that for certain cases, bpf wanted a faster way to access arguments,
+because it still worked with ftrace, but the saving of regs was too
+strenuous.
+
+> 
+> the bpftrace example above did not use arguments for simplicity, but they
+> could have been there ... I think we could detect arguments presence in
+> ebpf programs and use ftrace_ops directly in case they are not needed
+
+What I don't see, is how one would need to access arguments for a lot of
+calls directly? The direct trampoline was for "one-offs", because for every
+function that has a direct trampoline, it prevents kretprobes and function
+graph tracer from accessing it. Before I allow a "batch" direct caller, I
+need it to not break function graph tracing.
+
+If we are going to have a way to get parameters for multiple functions, I
+would then like to have that be directly part of the ftrace infrastructure.
+That is, allow more than just bpf to have access to this. If it's going to
+be generic, then let's have it work for all function trace users and not
+just bpf.
+
+I'd like to see how batch functions will work. I guess I need to start
+looking at the bpf trampoline, to see if we can modify the ftrace
+trampoline to have a quick access to parameters. It would be much more
+beneficial to update the existing generic function tracer to have access to
+function parameters that all users could benefit from, than to tweak a
+single use case into giving this feature to a single user.
+
+-- Steve
