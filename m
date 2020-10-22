@@ -2,113 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9FE7295B76
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 11:12:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE2BD295B95
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 11:19:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2509402AbgJVJMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 05:12:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40744 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2509377AbgJVJMQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 05:12:16 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47E5CC0613CE
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 02:12:16 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id m3so651707pjf.4
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 02:12:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=68Id1Td7qZiXpCfHbw0wdh+d+tIk3pr9bl0i80PQwK4=;
-        b=UKGk+L8HZXhDadGcbn0A5xC+Tkz1Y7yCiDstWUJmYrfCMD1doAlcn92AaCueGovorb
-         3kRftO1gRLvO9l2vDkw1faSN+wzkJrEGUIZxOK8csFj0zlUYLy8ZWnOS6IVZbGw4Woxs
-         Eu43dNxMohY8WRRuRa7Y1nexhHR86N4eZhX6JPA+za0e+MpvhBcntp04mr9MnXJG0tc5
-         UNGNOFSLdJQMSM5y6y6W/eRvAsxLA8gSKYRQlKZpMbDmKLPKzjzIMj4Xe0F0TC0uFHQe
-         YOiazVtEZ0TvSsnEnMzZmeGTXcPphKvqdXfiuNG7g9EzJZ0xpmH9CwpZq+9hWWQHUVJB
-         xuRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=68Id1Td7qZiXpCfHbw0wdh+d+tIk3pr9bl0i80PQwK4=;
-        b=PA+KHfyo4kZ6AWkHQga4RugqW8xgF9tbeUnkxiPnqMWzfzJJPEk3PurMbJaG+Aa4+n
-         hd4YlKm+hQ8Xat0lVd+Op15tE5sTKC4BbY1u3yDL56+VpKWfIsv+QaAiQcVoatWLAjl1
-         N7g8ARb6tMvWaipLol9JAHdR2nJUSkhlSKP9IoJBYgmNN3d3UEGaZIjDGWFe/LIWh0lL
-         WmfIAuoo5cq04ads5/F0IfCb8yTrDtHEOT6+mIz+vmZNtCFVoj2ixqfHUy8KHGjGP7FI
-         sToYNSmt2d3BCt3dfqPw5BE6G3I1F1Ftd5bzvkHm/qgjHcQ8J3gatijRlGI8+sQzG1AH
-         WJYw==
-X-Gm-Message-State: AOAM530IwG8GKJRAIpYsfRA3wUF16WNSoy7GgDuIhUoay5v4JW/sbSy+
-        BmE2ooHa08NA0n81ti0NL6s=
-X-Google-Smtp-Source: ABdhPJzBaLYd8Y73eza4TnF0hSiUjJZB9h/lcSxajvKtMoGPRU4qjZZDK44/AcV3xamnbqn7QqGvIA==
-X-Received: by 2002:a17:902:bcc9:b029:d3:c7de:5cfc with SMTP id o9-20020a170902bcc9b02900d3c7de5cfcmr1734213pls.19.1603357935867;
-        Thu, 22 Oct 2020 02:12:15 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 38sm1429126pgx.43.2020.10.22.02.12.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Oct 2020 02:12:15 -0700 (PDT)
-Date:   Thu, 22 Oct 2020 17:12:05 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: Re: [PATCHv2 net 2/2] IPv6: reply ICMP error if the first fragment
- don't include all headers
-Message-ID: <20201022091205.GN2531@dhcp-12-153.nay.redhat.com>
-References: <20201007035502.3928521-1-liuhangbin@gmail.com>
- <20201021042005.736568-1-liuhangbin@gmail.com>
- <20201021042005.736568-3-liuhangbin@gmail.com>
- <CA+FuTSdCG4yVDb85M=fChfrkU9=F7j88TJujJy_y0pv-Ks_MwQ@mail.gmail.com>
+        id S2895806AbgJVJTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 05:19:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:40264 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2505549AbgJVJTc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 05:19:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603358370;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=GAx1sXwCwRg93ixXlQ7CLSdqwfjOuLlYgV9gYDuI6Ww=;
+        b=PBDa7/Yl7azx5dBg3CGg9XXji6PtU1nO7Wak/Jodjwb0h45RSijw66byyFl5dbud8svGlz
+        LWw6+UgEnCCkREpX1lMm+TngvGcNWR0Z7ZRdaUJKq7unckSQefJ4iYLIzUp886FKo6UCK6
+        v6tmcKYqbuwYzJvc+13ddRQttfZuwyw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-509-YuC2ea8uNjCRXVsi9pVVtQ-1; Thu, 22 Oct 2020 05:19:26 -0400
+X-MC-Unique: YuC2ea8uNjCRXVsi9pVVtQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 64F581006C9F;
+        Thu, 22 Oct 2020 09:19:22 +0000 (UTC)
+Received: from [10.36.113.152] (ovpn-113-152.ams2.redhat.com [10.36.113.152])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C826360BFA;
+        Thu, 22 Oct 2020 09:19:16 +0000 (UTC)
+Subject: Re: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
+ rw_copy_check_uvector() into lib/iov_iter.c"
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     David Laight <David.Laight@aculab.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "kernel-team@android.com" <kernel-team@android.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-aio@kvack.org" <linux-aio@kvack.org>,
+        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>
+References: <20200925045146.1283714-1-hch@lst.de>
+ <20200925045146.1283714-3-hch@lst.de> <20201021161301.GA1196312@kroah.com>
+ <20201021233914.GR3576660@ZenIV.linux.org.uk>
+ <20201022082654.GA1477657@kroah.com>
+ <80a2e5fa-718a-8433-1ab0-dd5b3e3b5416@redhat.com>
+ <5d2ecb24db1e415b8ff88261435386ec@AcuMS.aculab.com>
+ <df2e0758-b8ed-5aec-6adc-a18f499c0179@redhat.com>
+ <20201022090155.GA1483166@kroah.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat GmbH
+Message-ID: <e04d0c5d-e834-a15b-7844-44dcc82785cc@redhat.com>
+Date:   Thu, 22 Oct 2020 11:19:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+FuTSdCG4yVDb85M=fChfrkU9=F7j88TJujJy_y0pv-Ks_MwQ@mail.gmail.com>
+In-Reply-To: <20201022090155.GA1483166@kroah.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Willem,
-
-Thanks for the comments, see replies below.
-
-On Wed, Oct 21, 2020 at 10:02:55AM -0400, Willem de Bruijn wrote:
-> > +       is_frag = (ipv6_find_hdr(skb, &offs, NEXTHDR_FRAGMENT, NULL, NULL) == NEXTHDR_FRAGMENT);
-> > +
+On 22.10.20 11:01, Greg KH wrote:
+> On Thu, Oct 22, 2020 at 10:48:59AM +0200, David Hildenbrand wrote:
+>> On 22.10.20 10:40, David Laight wrote:
+>>> From: David Hildenbrand
+>>>> Sent: 22 October 2020 09:35
+>>>>
+>>>> On 22.10.20 10:26, Greg KH wrote:
+>>>>> On Thu, Oct 22, 2020 at 12:39:14AM +0100, Al Viro wrote:
+>>>>>> On Wed, Oct 21, 2020 at 06:13:01PM +0200, Greg KH wrote:
+>>>>>>> On Fri, Sep 25, 2020 at 06:51:39AM +0200, Christoph Hellwig wrote:
+>>>>>>>> From: David Laight <David.Laight@ACULAB.COM>
+>>>>>>>>
+>>>>>>>> This lets the compiler inline it into import_iovec() generating
+>>>>>>>> much better code.
+>>>>>>>>
+>>>>>>>> Signed-off-by: David Laight <david.laight@aculab.com>
+>>>>>>>> Signed-off-by: Christoph Hellwig <hch@lst.de>
+>>>>>>>> ---
+>>>>>>>>  fs/read_write.c | 179 ------------------------------------------------
+>>>>>>>>  lib/iov_iter.c  | 176 +++++++++++++++++++++++++++++++++++++++++++++++
+>>>>>>>>  2 files changed, 176 insertions(+), 179 deletions(-)
+>>>>>>>
+>>>>>>> Strangely, this commit causes a regression in Linus's tree right now.
+>>>>>>>
+>>>>>>> I can't really figure out what the regression is, only that this commit
+>>>>>>> triggers a "large Android system binary" from working properly.  There's
+>>>>>>> no kernel log messages anywhere, and I don't have any way to strace the
+>>>>>>> thing in the testing framework, so any hints that people can provide
+>>>>>>> would be most appreciated.
+>>>>>>
+>>>>>> It's a pure move - modulo changed line breaks in the argument lists
+>>>>>> the functions involved are identical before and after that (just checked
+>>>>>> that directly, by checking out the trees before and after, extracting two
+>>>>>> functions in question from fs/read_write.c and lib/iov_iter.c (before and
+>>>>>> after, resp.) and checking the diff between those.
+>>>>>>
+>>>>>> How certain is your bisection?
+>>>>>
+>>>>> The bisection is very reproducable.
+>>>>>
+>>>>> But, this looks now to be a compiler bug.  I'm using the latest version
+>>>>> of clang and if I put "noinline" at the front of the function,
+>>>>> everything works.
+>>>>
+>>>> Well, the compiler can do more invasive optimizations when inlining. If
+>>>> you have buggy code that relies on some unspecified behavior, inlining
+>>>> can change the behavior ... but going over that code, there isn't too
+>>>> much action going on. At least nothing screamed at me.
+>>>
+>>> Apart from all the optimisations that get rid off the 'pass be reference'
+>>> parameters and strange conditional tests.
+>>> Plenty of scope for the compiler getting it wrong.
+>>> But nothing even vaguely illegal.
+>>
+>> Not the first time that people blame the compiler to then figure out
+>> that something else is wrong ... but maybe this time is different :)
 > 
-> ipv6_skip_exthdr already walks all headers. Should we not already see
-> frag_off != 0 if skipped over a fragment header? Analogous to the test
-> in ipv6_frag_rcv below.
-
-Ah, yes, I forgot we can use this check.
-
-> > +       nexthdr = hdr->nexthdr;
-> > +       offset = ipv6_skip_exthdr(skb, skb_transport_offset(skb), &nexthdr, &frag_off);
-> > +       if (offset >= 0 && frag_off == htons(IP6_MF) && (offset + 1) > skb->len) {
+> I agree, I hate to blame the compiler, that's almost never the real
+> problem, but this one sure "feels" like it.
 > 
-> Offset +1 does not fully test "all headers through an upper layer
-> header". You note the caveat in your commit message. Perhaps for the
-> small list of common protocols at least use a length derived from
-> nexthdr?
+> I'm running some more tests, trying to narrow things down as just adding
+> a "noinline" to the function that got moved here doesn't work on Linus's
+> tree at the moment because the function was split into multiple
+> functions.
+> 
+> Give me a few hours...
 
-Do you mean check the header like
+I might be wrong but
 
-if (nexthdr == IPPROTO_ICMPV6)
-	offset = offset + seizeof(struct icmp6hdr);
-else if (nexthdr == ...)
-	offset = ...
-else
-	offset += 1;
+a) import_iovec() uses:
+- unsigned nr_segs -> int
+- unsigned fast_segs -> int
+b) rw_copy_check_uvector() uses:
+- unsigned long nr_segs -> long
+- unsigned long fast_seg -> long
 
-if (frag_off == htons(IP6_MF) && offset > skb->len) {
-	icmpv6_param_prob(skb, ICMPV6_HDR_INCOMP, 0);
-	return -1;
-}
+So when calling rw_copy_check_uvector(), we have to zero-extend the
+registers used for passing the arguments. That's definitely done when
+calling the function explicitly. Maybe when inlining something is messed up?
 
-Another questions is how to define the list, does TCP/UDP/SCTP/ICMPv6 enough?
+Just a thought ...
 
-Thanks
-Hangbin
+-- 
+Thanks,
+
+David / dhildenb
+
