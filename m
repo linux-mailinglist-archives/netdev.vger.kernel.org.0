@@ -2,140 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DB0EA2966FA
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 00:07:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 492AC29676C
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 00:39:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S370028AbgJVWHJ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 22 Oct 2020 18:07:09 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:43598 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2898305AbgJVWHI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 18:07:08 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-164-7-H9NMQeNwGwZfcU7aRApw-1; Thu, 22 Oct 2020 23:07:03 +0100
-X-MC-Unique: 7-H9NMQeNwGwZfcU7aRApw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Thu, 22 Oct 2020 23:07:02 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Thu, 22 Oct 2020 23:07:02 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Al Viro' <viro@zeniv.linux.org.uk>,
-        Nick Desaulniers <ndesaulniers@google.com>
-CC:     Arnd Bergmann <arnd@arndb.de>, Christoph Hellwig <hch@lst.de>,
-        "David Hildenbrand" <david@redhat.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        "kernel-team@android.com" <kernel-team@android.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        David Howells <dhowells@redhat.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-aio@kvack.org" <linux-aio@kvack.org>,
-        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>
-Subject: RE: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
- rw_copy_check_uvector() into lib/iov_iter.c"
-Thread-Topic: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
- rw_copy_check_uvector() into lib/iov_iter.c"
-Thread-Index: AQHWqE5GNDfnH4y9nkGWtfqJueR1KKmjTCJQgAAN4UiAAAD2IIAAQY5tgAAwVkCAADSfg4AALKrQ
-Date:   Thu, 22 Oct 2020 22:07:02 +0000
-Message-ID: <f35a74d034054d7fa8ce8835afb1ca6c@AcuMS.aculab.com>
-References: <20201022090155.GA1483166@kroah.com>
- <e04d0c5d-e834-a15b-7844-44dcc82785cc@redhat.com>
- <a1533569-948a-1d5b-e231-5531aa988047@redhat.com>
- <bc0a091865f34700b9df332c6e9dcdfd@AcuMS.aculab.com>
- <5fd6003b-55a6-2c3c-9a28-8fd3a575ca78@redhat.com>
- <20201022132342.GB8781@lst.de>
- <8f1fff0c358b4b669d51cc80098dbba1@AcuMS.aculab.com>
- <CAKwvOdnix6YGFhsmT_mY8ORNPTOsN3HwS33Dr0Ykn-pyJ6e-Bw@mail.gmail.com>
- <CAK8P3a3LjG+ZvmQrkb9zpgov8xBkQQWrkHBPgjfYSqBKGrwT4w@mail.gmail.com>
- <CAKwvOdnhONvrHLAuz_BrAuEpnF5mD9p0YPGJs=NZZ0EZNo7dFQ@mail.gmail.com>
- <20201022192458.GV3576660@ZenIV.linux.org.uk>
-In-Reply-To: <20201022192458.GV3576660@ZenIV.linux.org.uk>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S372992AbgJVWja (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 18:39:30 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:50106 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S372971AbgJVWj3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 18:39:29 -0400
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1603406366;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SrnDQ4pBHMGHEMhYZ0N79a51WfK6iJHdrjE3kDgVDiI=;
+        b=iy4bIK/ZpYUnzYJlhG1X4xFIb08cTGDBQ+HlR6v5IxdhK7umkvHwCM+mPE40K9vypjbHfE
+        io4BMQy2A5SBBcVjsI76MvcSWRoHDgIWZpVprt99G0b31BAZFCe/eZc03927hcTrVhy2zj
+        ka0HpBxBsB3+1Ctwmx4ULj3/xBVV3wVakTbKJdu8z7y12AMtI30/PTVK71CE6RIrfI9zgM
+        yoK17mBSmBj6XQHXYYO9QBqtuHVlXg5CRwNXh/MbYPuEbZn2oMPyK5ihBSBLpGARixsoBQ
+        04jNkCIjrFrEr9bGMYI6+7ZmQ7G9zSkUr3ghrmkeXOxZ0L34xwJz3qETxpIQhw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1603406366;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SrnDQ4pBHMGHEMhYZ0N79a51WfK6iJHdrjE3kDgVDiI=;
+        b=4oNDdQ0Jz1ulYn3D+b0WK6DPec8o3QKBDso61BYhMIyNImFm1hDcbSdyP0ulQOGdcTp7p7
+        1WzNdwrla364OSDw==
+To:     Marcelo Tosatti <mtosatti@redhat.com>
+Cc:     Nitesh Narayan Lal <nitesh@redhat.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        frederic@kernel.org, sassmann@redhat.com,
+        jesse.brandeburg@intel.com, lihong.yang@intel.com,
+        helgaas@kernel.org, jeffrey.t.kirsher@intel.com,
+        jacob.e.keller@intel.com, jlelli@redhat.com, hch@infradead.org,
+        bhelgaas@google.com, mike.marciniszyn@intel.com,
+        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
+        jiri@nvidia.com, mingo@redhat.com, peterz@infradead.org,
+        juri.lelli@redhat.com, vincent.guittot@linaro.org,
+        lgoncalv@redhat.com, Jakub Kicinski <kuba@kernel.org>,
+        Dave Miller <davem@davemloft.net>
+Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to housekeeping CPUs
+In-Reply-To: <20201022122849.GA148426@fuller.cnet>
+References: <20200928183529.471328-1-nitesh@redhat.com> <20200928183529.471328-5-nitesh@redhat.com> <87v9f57zjf.fsf@nanos.tec.linutronix.de> <3bca9eb1-a318-1fc6-9eee-aacc0293a193@redhat.com> <87lfg093fo.fsf@nanos.tec.linutronix.de> <877drj72cz.fsf@nanos.tec.linutronix.de> <20201022122849.GA148426@fuller.cnet>
+Date:   Fri, 23 Oct 2020 00:39:25 +0200
+Message-ID: <87pn596g2q.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Al Viro
-> Sent: 22 October 2020 20:25
-> 
-> On Thu, Oct 22, 2020 at 12:04:52PM -0700, Nick Desaulniers wrote:
-> 
-> > Passing an `unsigned long` as an `unsigned int` does no such
-> > narrowing: https://godbolt.org/z/TvfMxe (same vice-versa, just tail
-> > calls, no masking instructions).
-> > So if rw_copy_check_uvector() is inlined into import_iovec() (looking
-> > at the mainline@1028ae406999), then children calls of
-> > `rw_copy_check_uvector()` will be interpreting the `nr_segs` register
-> > unmodified, ie. garbage in the upper 32b.
-> 
-> FWIW,
-> 
-> void f(unsinged long v)
-> {
-> 	if (v != 1)
-> 		printf("failed\n");
-> }
-> 
-> void g(unsigned int v)
-> {
-> 	f(v);
-> }
-> 
-> void h(unsigned long v)
-> {
-> 	g(v);
-> }
-> 
-> main()
-> {
-> 	h(0x100000001);
-> }
-> 
-> must not produce any output on a host with 32bit int and 64bit long, regardless of
-> the inlining, having functions live in different compilation units, etc.
-> 
-> Depending upon the calling conventions, compiler might do truncation in caller or
-> in a callee, but it must be done _somewhere_.
+On Thu, Oct 22 2020 at 09:28, Marcelo Tosatti wrote:
+> On Wed, Oct 21, 2020 at 10:25:48PM +0200, Thomas Gleixner wrote:
+>> The right answer to this is to utilize managed interrupts and have
+>> according logic in your network driver to handle CPU hotplug. When a CPU
+>> goes down, then the queue which is associated to that CPU is quiesced
+>> and the interrupt core shuts down the relevant interrupt instead of
+>> moving it to an online CPU (which causes the whole vector exhaustion
+>> problem on x86). When the CPU comes online again, then the interrupt is
+>> reenabled in the core and the driver reactivates the queue.
+>
+> Aha... But it would be necessary to do that from userspace (for runtime
+> isolate/unisolate).
 
-Put g() in a separate compilation unit and use the 'wrong' type
-in the prototypes t() used to call g() and g() uses to call f().
+For anything which uses managed interrupts this is a non-problem and
+userspace has absolutely no business with it.
 
-Then you might see where and masking does (or does not) happen.
+Isolation does not shut down queues, at least not the block multi-queue
+ones which are only active when I/O is issued from that isolated CPU.
 
-	David
+So transitioning out of isolation requires no action at all.
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Transitioning in or changing the housekeeping mask needs some trivial
+tweak to handle the case where there is an overlap in the cpuset of a
+queue (housekeeping and isolated). This is handled already for setup and
+affinity changes, but of course not for runtime isolation mask changes,
+but that's a trivial thing to do.
 
+What's more interesting is how to deal with the network problem where
+there is no guarantee that the "response" ends up on the same queue as
+the "request" which is what the block people rely on. And that problem
+is not really an interrupt affinity problem in the first place.
+
+Thanks,
+
+        tglx
