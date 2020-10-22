@@ -2,112 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAE4C296280
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 18:15:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B694296290
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 18:20:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2901607AbgJVQPP convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 22 Oct 2020 12:15:15 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:28957 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2901602AbgJVQPK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 12:15:10 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-158-p8RgjWwGO4aFW5kpOv-aSA-1; Thu, 22 Oct 2020 17:15:06 +0100
-X-MC-Unique: p8RgjWwGO4aFW5kpOv-aSA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Thu, 22 Oct 2020 17:15:05 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Thu, 22 Oct 2020 17:15:05 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Greg KH' <gregkh@linuxfoundation.org>,
-        Arnd Bergmann <arnd@arndb.de>
-CC:     David Hildenbrand <david@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Christoph Hellwig <hch@lst.de>,
-        "kernel-team@android.com" <kernel-team@android.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        David Howells <dhowells@redhat.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-aio@kvack.org" <linux-aio@kvack.org>,
-        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>
-Subject: RE: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
- rw_copy_check_uvector() into lib/iov_iter.c"
-Thread-Topic: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
- rw_copy_check_uvector() into lib/iov_iter.c"
-Thread-Index: AQHWqE5GNDfnH4y9nkGWtfqJueR1KKmjTCJQgAAN4UiAAAD2IIAAVswJgAAaEtA=
-Date:   Thu, 22 Oct 2020 16:15:05 +0000
-Message-ID: <80332728fbc3438f806aee74003e26c1@AcuMS.aculab.com>
-References: <e04d0c5d-e834-a15b-7844-44dcc82785cc@redhat.com>
- <a1533569-948a-1d5b-e231-5531aa988047@redhat.com>
- <bc0a091865f34700b9df332c6e9dcdfd@AcuMS.aculab.com>
- <5fd6003b-55a6-2c3c-9a28-8fd3a575ca78@redhat.com>
- <20201022104805.GA1503673@kroah.com> <20201022121849.GA1664412@kroah.com>
- <98d9df88-b7ef-fdfb-7d90-2fa7a9d7bab5@redhat.com>
- <20201022125759.GA1685526@kroah.com> <20201022135036.GA1787470@kroah.com>
- <CAK8P3a1B7OVdyzW0-97JwzZiwp0D0fnSfyete16QTvPp_1m07A@mail.gmail.com>
- <20201022144021.GA1969554@kroah.com>
-In-Reply-To: <20201022144021.GA1969554@kroah.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S2901623AbgJVQUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 12:20:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2901602AbgJVQUw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 12:20:52 -0400
+Received: from relay.felk.cvut.cz (relay.felk.cvut.cz [IPv6:2001:718:2:1611:0:1:0:70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EDE6FC0613CE
+        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 09:20:51 -0700 (PDT)
+Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
+        by relay.felk.cvut.cz (8.15.2/8.15.2) with ESMTP id 09MGJuHh083783;
+        Thu, 22 Oct 2020 18:19:56 +0200 (CEST)
+        (envelope-from pisa@cmp.felk.cvut.cz)
+Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
+        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 09MGJtlF005960;
+        Thu, 22 Oct 2020 18:19:55 +0200
+Received: (from pisa@localhost)
+        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 09MGJtY1005958;
+        Thu, 22 Oct 2020 18:19:55 +0200
+X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
+From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
+To:     Pavel Machek <pavel@ucw.cz>
+Subject: Re: [PATCH v6 4/6] can: ctucanfd: CTU CAN FD open-source IP core - PCI bus support.
+Date:   Thu, 22 Oct 2020 18:19:55 +0200
+User-Agent: KMail/1.9.10
+Cc:     linux-can@vger.kernel.org, devicetree@vger.kernel.org,
+        "Marc Kleine-Budde" <mkl@pengutronix.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        David Miller <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>, mark.rutland@arm.com,
+        Carsten Emde <c.emde@osadl.org>, armbru@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Marin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        Jiri Novak <jnovak@fel.cvut.cz>,
+        Jaroslav Beran <jara.beran@gmail.com>,
+        Petr Porazil <porazil@pikron.com>,
+        Drew Fustini <pdp7pdp7@gmail.com>
+References: <cover.1603354744.git.pisa@cmp.felk.cvut.cz> <9783a6d0a3e79ca4106cf1794aa06c8436700137.1603354744.git.pisa@cmp.felk.cvut.cz> <20201022113952.GC30566@duo.ucw.cz>
+In-Reply-To: <20201022113952.GC30566@duo.ucw.cz>
+X-KMail-QuotePrefix: > 
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <202010221819.55087.pisa@cmp.felk.cvut.cz>
+X-FELK-MailScanner-Information: 
+X-MailScanner-ID: 09MGJuHh083783
+X-FELK-MailScanner: Found to be clean
+X-FELK-MailScanner-SpamCheck: not spam, SpamAssassin (not cached,
+        score=-0.099, required 6, BAYES_00 -0.50, KHOP_HELO_FCRDNS 0.40,
+        NICE_REPLY_A -0.00, SPF_HELO_NONE 0.00, SPF_NONE 0.00,
+        URIBL_BLOCKED 0.00)
+X-FELK-MailScanner-From: pisa@cmp.felk.cvut.cz
+X-FELK-MailScanner-Watermark: 1603988397.44586@OFvO2wL68sLNnqNSsO0ziw
+X-Spam-Status: No
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Greg KH
-> Sent: 22 October 2020 15:40
-> 
-> On Thu, Oct 22, 2020 at 04:28:20PM +0200, Arnd Bergmann wrote:
-...
-> > Can you attach the iov_iter.s files from the broken build, plus the
-> > one with 'noinline' for comparison? Maybe something can be seen
-> > in there.
-> 
-> I don't know how to extract the .s files easily from the AOSP build
-> system, I'll look into that.  I'm also now testing by downgrading to an
-> older version of clang (10 instead of 11), to see if that matters at all
-> or not...
+Hello Pavel,
 
-Back from a day out - after it stopped raining.
-Trying to use up leave before the end of the year.
+thanks for review.
 
-Can you use objdump on the kernel binary itself and cut out
-the single function?
+On Thursday 22 of October 2020 13:39:52 Pavel Machek wrote:
+> Hi!
+>
+> > @@ -12,4 +12,13 @@ config CAN_CTUCANFD
+> >
+> >  if CAN_CTUCANFD
+> >
+> > +config CAN_CTUCANFD_PCI
+> > +	tristate "CTU CAN-FD IP core PCI/PCIe driver"
+> > +	depends on PCI
+> > +	help
+> > +	  This driver adds PCI/PCIe support for CTU CAN-FD IP core.
+> > +	  The project providing FPGA design for Intel EP4CGX15 based DB4CGX15
+> > +	  PCIe board with PiKRON.com designed transceiver riser shield is
+> > available +	  at https://gitlab.fel.cvut.cz/canbus/pcie-ctu_can_fd .
+> > +
+> >  endif
+>
+> Ok, now the if in the first patch makes sense. It can stay.
+>
+> And it is separate module, so EXPORT_SYMBOLs make sense. Ok.
 
-	David
+Great.
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+> > +#ifndef PCI_VENDOR_ID_TEDIA
+> > +#define PCI_VENDOR_ID_TEDIA 0x1760
+> > +#endif
+> >
+> > +#define PCI_DEVICE_ID_ALTERA_CTUCAN_TEST  0xCAFD
+> > +#define PCI_DEVICE_ID_TEDIA_CTUCAN_VER21 0xff00
+>
+> These should go elsewhere.
 
+They should propagate somehow from
+
+https://pci-ids.ucw.cz/read/PC/1760/ff00
+
+We have registered them long time ago.
+I am not sure what is right mechanism.
+
+> > +#ifndef PCI_VENDOR_ID_TEDIA
+> > +#define PCI_VENDOR_ID_TEDIA 0x1760
+> > +#endif
+
+So this one should be known to kernel globally, but I would
+be happy if driver build even if global process to introduce
+define did not proceed end even backports would be required
+for long time until kernel including CTU CAN FD propagates
+into distributions, and industrial systems distributions
+lag often a lot
+
+> > +#define PCI_DEVICE_ID_ALTERA_CTUCAN_TEST  0xCAFD
+
+We drop this, I hope we have no system running old test
+version of the core integration before Tedia offered us
+to reserve some IDs (promissed that they would never use them
+in future) for us.
+
+> > +#define PCI_DEVICE_ID_TEDIA_CTUCAN_VER21 0xff00
+
+This should propagate into kernel from registry or at least
+match registry.
+
+> > +static bool use_msi = 1;
+> > +static bool pci_use_second = 1;
+>
+> true?
+
+Done
+
+Best wishes,
+
+                Pavel
