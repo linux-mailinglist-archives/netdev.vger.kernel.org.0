@@ -2,72 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA12429650D
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 21:09:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47EDA29651C
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 21:14:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S369948AbgJVTJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 15:09:56 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:34687 "EHLO
+        id S369974AbgJVTOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 15:14:17 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:8994 "EHLO
         stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S369943AbgJVTJz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 15:09:55 -0400
+        with ESMTP id S369967AbgJVTOQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 15:14:16 -0400
 Received: from localhost.localdomain (vardah.blr.asicdesigners.com [10.193.186.1])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 09MJ9nIQ016503;
-        Thu, 22 Oct 2020 12:09:50 -0700
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 09MJEBJY016514;
+        Thu, 22 Oct 2020 12:14:12 -0700
 From:   Vinay Kumar Yadav <vinay.yadav@chelsio.com>
 To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org
 Cc:     secdev@chelsio.com, Vinay Kumar Yadav <vinay.yadav@chelsio.com>
-Subject: [PATCH net,v2] chelsio/chtls: fix tls record info to user
-Date:   Fri, 23 Oct 2020 00:35:57 +0530
-Message-Id: <20201022190556.21308-1-vinay.yadav@chelsio.com>
+Subject: [PATCH net] chelsio/chtls: fix memory leak
+Date:   Fri, 23 Oct 2020 00:43:33 +0530
+Message-Id: <20201022191332.21436-1-vinay.yadav@chelsio.com>
 X-Mailer: git-send-email 2.18.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-chtls_pt_recvmsg() receives a skb with tls header and subsequent
-skb with data, need to finalize the data copy whenever next skb
-with tls header is available. but here current tls header is
-overwritten by next available tls header, ends up corrupting
-user buffer data. fixing it by finalizing current record whenever
-next skb contains tls header.
+Correct skb refcount in alloc_ctrl_skb(), causing skb memleak
+when chtls_send_abort() called with NULL skb.
+Also race between user context and softirq causing memleak,
+consider the call sequence scenario
 
-v1->v2:
-- Improved commit message.
+chtls_setkey()         //user context
+chtls_peer_close()
+chtls_abort_req_rss()
+chtls_setkey()         //user context
 
-Fixes: 17a7d24aa89d ("crypto: chtls - generic handling of data and hdr")
+work request skb queued in chtls_setkey() won't be freed
+because resource is already cleaned for this connection,
+fix it by not queuing work request while socket is closing
+
+Fixes: cc35c88ae4db ("crypto : chtls - CPL handler definition")
 Signed-off-by: Vinay Kumar Yadav <vinay.yadav@chelsio.com>
 ---
- .../net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c   | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c | 2 +-
+ drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c | 3 +++
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c
-index 9fb5ca6682ea..a5dcc576ba3c 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_io.c
-@@ -1585,6 +1585,7 @@ static int chtls_pt_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 			tp->urg_data = 0;
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+index 24154816d1d1..63aacc184f68 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+@@ -212,7 +212,7 @@ static struct sk_buff *alloc_ctrl_skb(struct sk_buff *skb, int len)
+ {
+ 	if (likely(skb && !skb_shared(skb) && !skb_cloned(skb))) {
+ 		__skb_trim(skb, 0);
+-		refcount_add(2, &skb->users);
++		refcount_inc(&skb->users);
+ 	} else {
+ 		skb = alloc_skb(len, GFP_KERNEL | __GFP_NOFAIL);
+ 	}
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c
+index f1820aca0d33..e37cbfc34dd3 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c
+@@ -377,6 +377,9 @@ int chtls_setkey(struct chtls_sock *csk, u32 keylen,
+ 	kwr->sc_imm.len = cpu_to_be32(klen);
  
- 		if ((avail + offset) >= skb->len) {
-+			struct sk_buff *next_skb;
- 			if (ULP_SKB_CB(skb)->flags & ULPCB_FLAG_TLS_HDR) {
- 				tp->copied_seq += skb->len;
- 				hws->rcvpld = skb->hdr_len;
-@@ -1595,9 +1596,12 @@ static int chtls_pt_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 			chtls_free_skb(sk, skb);
- 			buffers_freed++;
- 			hws->copied_seq = 0;
--			if (copied >= target &&
--			    !skb_peek(&sk->sk_receive_queue))
-+			next_skb = skb_peek(&sk->sk_receive_queue);
-+			if (copied >= target && !next_skb)
- 				break;
-+			if (ULP_SKB_CB(next_skb)->flags & ULPCB_FLAG_TLS_HDR)
-+				break;
+ 	lock_sock(sk);
++	if (unlikely(csk_flag(sk, CSK_ABORT_SHUTDOWN)))
++		goto out_notcb;
 +
- 		}
- 	} while (len > 0);
- 
+ 	/* key info */
+ 	kctx = (struct _key_ctx *)(kwr + 1);
+ 	ret = chtls_key_info(csk, kctx, keylen, optname, cipher_type);
 -- 
 2.18.1
 
