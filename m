@@ -2,98 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C088A295A7C
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 10:37:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0E5F295A7E
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 10:37:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2508136AbgJVIhE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 04:37:04 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:47596 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2503152AbgJVIhD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 04:37:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603355822;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=eGQZb/KXMIHaskS+Kcn9Rje/EuhYhf4evjpU37MP9eQ=;
-        b=gNzXS/5ea/iidfZwu0pV5OZHJKrIP3JYZER701IbYtArwpm1dzUI2MIF5DsGK5qP+5eiJB
-        tTqB1I0rWGxTRJ+URF0BySL6G78QjOYksRdPPmAhECzEsu8KDMt5rMMYVNCRa5zJ9ybE3y
-        ZC5OWqow0M15wUm9WWiPo8ZdRAPeA1g=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-594-qhuDEXaTMY208_UWPnEjvw-1; Thu, 22 Oct 2020 04:37:00 -0400
-X-MC-Unique: qhuDEXaTMY208_UWPnEjvw-1
-Received: by mail-wm1-f70.google.com with SMTP id g71so337770wmg.2
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 01:36:59 -0700 (PDT)
+        id S2509361AbgJVIhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 04:37:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35342 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2508193AbgJVIhV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 04:37:21 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF155C0613CE;
+        Thu, 22 Oct 2020 01:37:20 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id l24so917792edj.8;
+        Thu, 22 Oct 2020 01:37:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=EoBlqRFhkkSNn7Y09jombg3gcIxThC7vA4TcMP8jIBE=;
+        b=cCND1jmC7kpdG17HFYH5UjDzYpADfsDedLEwz8zngOgu5VTefsEcxWzD6PDRouDwJ8
+         m48WOMMfuKzOgeuSy9yu9YolddoG84LdH4C62Mg7g1SbdykXQsaD8kmge6JMmP+Kd/3i
+         vpLwfnY+knBC9TodN9YT0JaxjrCz5+7pmjfXGTGMpKiwVxLjqbUrY9bT1Fn2aibiQp1S
+         KI2ht9Eb/8gvVrx2bfXyaK/cPUdoolKY/vIpRsvGPUO6CJPBkupFUZ/AkW7PcArz/xXG
+         oC39uQxgvdqtGoxM1GbFFuWjvpuC0D7oI2htwnQl1PhA0aFS2AC71aVBCdXgw48ImXUK
+         V07g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eGQZb/KXMIHaskS+Kcn9Rje/EuhYhf4evjpU37MP9eQ=;
-        b=Rh/WxC2SOlwZfK5SFXZ43EtIpfyvtCKiTd1TF0UWyGYtEsCH9v8WZuqeUyFAEPQmW5
-         ifSwxyW1PW9NtZa9LkH5fzZYshFU7Zf5qjPq2RMQEyro9Wpo5FOn7fpXbcDXguVpheWt
-         MEyHzDl7IVUvUCQye0wAsYz9jynh4YprX5etNGBukSx3qGuZFPuly4zJlpXVk+pJhP5T
-         UVEmv88NVcKcZufm1hb4AHaCf85f30s2jyz2Dcjttdb/lI3iL6Bfk26BZz7aEnuP8Qgq
-         PwcX3rYAd8Htw1KEIAQydfkchLTDo2r9rPmf/rMsqPN/P9XlDB2tddeqjeQ7KtZkOepV
-         6nbw==
-X-Gm-Message-State: AOAM533/9e7KbTb5qQPRldK2rcq3GhN36EAqHOFLa7zskKkvfevTxB7s
-        /Wj8jOWoXsvUrvEyJ/Nhtl4/DamfBKS5r/VwcmTCqNBir6uaW0FFlczSu7FPCFwiQWlIXgF1jqE
-        sYvPczrx5IjCt3DI2
-X-Received: by 2002:adf:e8c7:: with SMTP id k7mr1473739wrn.102.1603355818333;
-        Thu, 22 Oct 2020 01:36:58 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJztu6pjDuig7uOEbV4MQZd6NtskL1eF1nPF+owKxj5iWxg1JtVVjS/r0BEnbJiHITxRPlNHEw==
-X-Received: by 2002:adf:e8c7:: with SMTP id k7mr1473725wrn.102.1603355818154;
-        Thu, 22 Oct 2020 01:36:58 -0700 (PDT)
-Received: from pc-2.home (2a01cb058d4f8400c9f0d639f7c74c26.ipv6.abo.wanadoo.fr. [2a01:cb05:8d4f:8400:c9f0:d639:f7c7:4c26])
-        by smtp.gmail.com with ESMTPSA id y4sm2236666wrp.74.2020.10.22.01.36.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Oct 2020 01:36:57 -0700 (PDT)
-Date:   Thu, 22 Oct 2020 10:36:55 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        martin.varghese@nokia.com
-Subject: Re: [PATCH v2 iproute2-next 1/2] m_vlan: add pop_eth and push_eth
- actions
-Message-ID: <20201022083655.GA1728@pc-2.home>
-References: <cover.1603120726.git.gnault@redhat.com>
- <a35ef5479e7a47f25d0f07e31d13b89256f4b4cc.1603120726.git.gnault@redhat.com>
- <20201021113234.56052cb2@hermes.local>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201021113234.56052cb2@hermes.local>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=EoBlqRFhkkSNn7Y09jombg3gcIxThC7vA4TcMP8jIBE=;
+        b=V4VJLtmSHd2KjgkGxOpYU+OM1yeCXivEpNedItWpKLWiGbQdBDYgZIzLFGyz2D5qgz
+         qxpB7u/0vUhc2DP4YgxqcmwRuqaHCsAyd8eGXxlwJUjTLPyaa87MX9F2ra+FtwJy9xWr
+         muRRtFcgxcAHvvbEqWSl+6VGLAAS5UExXVQkBHUJgL/9w9QPi3s+pPKDzqkH3zzH59FH
+         vC4Gq4fnL0xagEZ/IyS1ERy6rBEQj/A+CSgACYPK5/mriZ2jXQoa/vC9/IPLMRSU+buP
+         mmDmB+hPR2wnh90MqCG0AwnsryygW5kNzag1gJcUIMq8tM2wanu3xmEvp0KdTAuTLWCy
+         y9tg==
+X-Gm-Message-State: AOAM5327jSmov5jA1UEk94i67de1C4wepDeJzhLi4GjYqjqJWEcOEGl8
+        jro17zeEZW5fCn9oaBb/5vrO5LCK2Ok=
+X-Google-Smtp-Source: ABdhPJzKG6JTJY+I7vRS0mK6M79cTjoH7sQa5Q0a9/riod4tpZJUOq+GUdn3g/YkJbgtj6T8Imu6zg==
+X-Received: by 2002:a05:6402:128c:: with SMTP id w12mr1198063edv.242.1603355839265;
+        Thu, 22 Oct 2020 01:37:19 -0700 (PDT)
+Received: from development1.visionsystems.de (mail.visionsystems.de. [213.209.99.202])
+        by smtp.gmail.com with ESMTPSA id op24sm436295ejb.56.2020.10.22.01.37.18
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 22 Oct 2020 01:37:18 -0700 (PDT)
+From:   yegorslists@googlemail.com
+To:     linux-can@vger.kernel.org
+Cc:     mkl@pengutronix.de, netdev@vger.kernel.org,
+        Yegor Yefremov <yegorslists@googlemail.com>
+Subject: [PATCH] can: j1939: swap addr and pgn in the send example
+Date:   Thu, 22 Oct 2020 10:37:08 +0200
+Message-Id: <20201022083708.8755-1-yegorslists@googlemail.com>
+X-Mailer: git-send-email 2.17.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 21, 2020 at 11:32:34AM -0700, Stephen Hemminger wrote:
-> On Mon, 19 Oct 2020 17:23:01 +0200
-> Guillaume Nault <gnault@redhat.com> wrote:
-> 
-> > +		} else if (matches(*argv, "pop_eth") == 0) {
-> 
-> Using matches allows for shorter command lines but can be make
-> for bad user experience if strings overlap.
-> 
-> For example 'p' here will match the pop_eth and not the push_eth.
+From: Yegor Yefremov <yegorslists@googlemail.com>
 
-Well, the action names are tested in the following order:
-  * pop (old action)
-  * push (old action)
-  * pop_eth (new action)
-  * push_eth (new action)
+The address was wrongly assigned to the PGN field and vice versa.
 
-Therefore, 'p' matches 'pop', thus retaining the original behaviour.
+Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
+---
+ Documentation/networking/j1939.rst | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-I realise that for m_mpls.c, I put the 'mac_push' action before
-'modify', and thus changed the behaviour of 'm'. I'll send a patch to
-move the 'mac_push' test.
-
-> Is it time to use full string compare for these options?
-
-If there's consensus that matches() should be avoided for new options,
-I'll also follow up on this and replace it with strcmp(). However, that
-should be a clear project-wide policy IMHO.
+diff --git a/Documentation/networking/j1939.rst b/Documentation/networking/j1939.rst
+index be59fcece3bf..faf2eb5c5052 100644
+--- a/Documentation/networking/j1939.rst
++++ b/Documentation/networking/j1939.rst
+@@ -414,8 +414,8 @@ Send:
+ 		.can_family = AF_CAN,
+ 		.can_addr.j1939 = {
+ 			.name = J1939_NO_NAME;
+-			.pgn = 0x30,
+-			.addr = 0x12300,
++			.addr = 0x30,
++			.pgn = 0x12300,
+ 		},
+ 	};
+ 
+-- 
+2.17.0
 
