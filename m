@@ -2,76 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88EE0295F4A
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 15:04:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02E16295FE9
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 15:23:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2899235AbgJVNEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 09:04:25 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:39930 "EHLO vps0.lunn.ch"
+        id S2894575AbgJVNXt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 09:23:49 -0400
+Received: from verein.lst.de ([213.95.11.211]:52840 "EHLO verein.lst.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2507448AbgJVNEZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Oct 2020 09:04:25 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kVaGV-002yOS-8X; Thu, 22 Oct 2020 15:04:23 +0200
-Date:   Thu, 22 Oct 2020 15:04:23 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Charles Hsu <hsu.yuegteng@gmail.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH] hwmon: (pmbus) Add driver for STMicroelectronics
- PM6764TR Voltage Regulator
-Message-ID: <20201022130423.GC688778@lunn.ch>
-References: <CAJArhDY9MYZ4UN1-=mmZRYj8zJ7JtF9=xtpLBiyPux6bjg-FaQ@mail.gmail.com>
+        id S2442738AbgJVNXs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Oct 2020 09:23:48 -0400
+Received: by verein.lst.de (Postfix, from userid 2407)
+        id D291467373; Thu, 22 Oct 2020 15:23:42 +0200 (CEST)
+Date:   Thu, 22 Oct 2020 15:23:42 +0200
+From:   Christoph Hellwig <hch@lst.de>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     David Laight <David.Laight@ACULAB.COM>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "kernel-team@android.com" <kernel-team@android.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-aio@kvack.org" <linux-aio@kvack.org>,
+        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>
+Subject: Re: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
+ rw_copy_check_uvector() into lib/iov_iter.c"
+Message-ID: <20201022132342.GB8781@lst.de>
+References: <20201021233914.GR3576660@ZenIV.linux.org.uk> <20201022082654.GA1477657@kroah.com> <80a2e5fa-718a-8433-1ab0-dd5b3e3b5416@redhat.com> <5d2ecb24db1e415b8ff88261435386ec@AcuMS.aculab.com> <df2e0758-b8ed-5aec-6adc-a18f499c0179@redhat.com> <20201022090155.GA1483166@kroah.com> <e04d0c5d-e834-a15b-7844-44dcc82785cc@redhat.com> <a1533569-948a-1d5b-e231-5531aa988047@redhat.com> <bc0a091865f34700b9df332c6e9dcdfd@AcuMS.aculab.com> <5fd6003b-55a6-2c3c-9a28-8fd3a575ca78@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAJArhDY9MYZ4UN1-=mmZRYj8zJ7JtF9=xtpLBiyPux6bjg-FaQ@mail.gmail.com>
+In-Reply-To: <5fd6003b-55a6-2c3c-9a28-8fd3a575ca78@redhat.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 22, 2020 at 07:51:51PM +0800, Charles Hsu wrote:
-> Add the pmbus driver for the STMicroelectronics pm6764tr voltage regulator.
+On Thu, Oct 22, 2020 at 11:36:40AM +0200, David Hildenbrand wrote:
+> My thinking: if the compiler that calls import_iovec() has garbage in
+> the upper 32 bit
 > 
-> Signed-off-by: Charles Hsu <hsu.yungteng@gmail.com>
+> a) gcc will zero it out and not rely on it being zero.
+> b) clang will not zero it out, assuming it is zero.
+> 
+> But
+> 
+> a) will zero it out when calling the !inlined variant
+> b) clang will zero it out when calling the !inlined variant
+> 
+> When inlining, b) strikes. We access garbage. That would mean that we
+> have calling code that's not generated by clang/gcc IIUC.
 
-Hi Charles
-
-Seems a bit odd sending a HWMON driver to the netdev list!
-
-
-> diff --git a/drivers/hwmon/pmbus/Makefile b/drivers/hwmon/pmbus/Makefile
-> index 4c97ad0bd791..bb89fcf9544d 100644
-> --- a/drivers/hwmon/pmbus/Makefile
-> +++ b/drivers/hwmon/pmbus/Makefile
-> @@ -32,3 +32,4 @@ obj-$(CONFIG_SENSORS_UCD9000) += ucd9000.o
->  obj-$(CONFIG_SENSORS_UCD9200) += ucd9200.o
->  obj-$(CONFIG_SENSORS_XDPE122) += xdpe12284.o
->  obj-$(CONFIG_SENSORS_ZL6100) += zl6100.o
-> +obj-$(CONFIG_SENSORS_PM6764TR) += pm6764tr.o
-
-This file is sorted. Please don't insert at the end.
-
-> +#define PM6764TR_PMBUS_READ_VOUT 0xD4
-> +
-> +static int pm6764tr_read_word_data(struct i2c_client *client, int
-> page, int reg)
-> +{
-> + int ret;
-> +
-> + switch (reg) {
-> + case PMBUS_VIRT_READ_VMON:
-> + ret = pmbus_read_word_data(client, page,
-> +   PM6764TR_PMBUS_READ_VOUT);
-> + break;
-> + default:
-> + ret = -ENODATA;
-> + break;
-> + }
-> + return ret;
-> +}
-
-
-It looks like your mailer has corrupted your patch.
-
-   Andrew
+Most callchains of import_iovec start with the assembly syscall wrappers.
