@@ -2,87 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E0C229610D
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 16:40:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FE0F296105
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 16:39:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2900998AbgJVOkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 10:40:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35010 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2900978AbgJVOkL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 10:40:11 -0400
-Received: from mail-ua1-x941.google.com (mail-ua1-x941.google.com [IPv6:2607:f8b0:4864:20::941])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4824BC0613CE
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 07:40:11 -0700 (PDT)
-Received: by mail-ua1-x941.google.com with SMTP id x26so529195uau.0
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 07:40:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vt5F6KjNkmlnBeWxGhnHoc3bQg0jZFtZbaw7129oA3s=;
-        b=AMq0UAvnkW9myH4lLhbH+zoRftq1BDpywSbP4m1vMOrJY5t7cbM/YtIkVDUP5xeT0J
-         1KbN8Gi3+0lJt8qnnh+DMvPen9E1qzHSpLp58y24FLTKL+q86DTqgfZM0SOXoBHsmDpT
-         hdoke0YqHf1CWFAsGvIuYcHYGOf4PIsdV3ISB0CbQCzbxfZRO6xw6dmlIIXvpScLOZdA
-         FHTX+1EMkn3B4clOVJTH8ifvnDkYotwKqJbOA8/evkWVEU/As3rvDJaGcw19xPMUBiPa
-         UnIvKouiJ+bgOR4qztjhYxyt7JZ1LE9CRmI52bt++aNtmanfU1yjfhjQuOOTsWd3z8J8
-         9JeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vt5F6KjNkmlnBeWxGhnHoc3bQg0jZFtZbaw7129oA3s=;
-        b=GGSMGZp3ePc0If8TX09bMGU2mqDR970FNvdJ6PeQppYOU2cSV/tIXZTUOj4lc6ooiO
-         KSY6AJc93uj6mdFmI9iy1OV03JUtnXzs+6VE0UIN88SMu+ZNbdekJqMqFUaPgj7kanYK
-         1mkUECOojvNCsAl4UrjD4IEfHo78l2rLhp9ApSACMqp245wAe4STKsPn+Kqp1nBFSu+z
-         u7K4V4Sob7SCNuv3ALRJOxmApra2QhUfkGh+KOQRAVKk92WFRzEhiUP0v38p7R0TZfer
-         OjcV1gEkMBBKTwSncxsbvOOBpgRkLKyKAAZ4zLwHJy51Ep4fTrb6oJceTGhmtoYiCgVw
-         056Q==
-X-Gm-Message-State: AOAM532t1WLYuCZWyxZ9jD3vjsBmEJvrjKzZIeFnJXxHQDkUGkxgKRVp
-        2J/qSqavt+W/tXHJ3nkqpovs6LJFGE4ekQlcWAWGE+mWOeS4fg==
-X-Google-Smtp-Source: ABdhPJxpQwR1l/zSQXGR1FZ+gBuONWjh6daQsMmfwnlDyM+b1IPMRUdELKqO7YXucWygIf2luKJLzPX4iaqSBD6xaqo=
-X-Received: by 2002:ab0:5b55:: with SMTP id v21mr1521733uae.65.1603377609017;
- Thu, 22 Oct 2020 07:40:09 -0700 (PDT)
+        id S2900990AbgJVOjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 10:39:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49228 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2900951AbgJVOjq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Oct 2020 10:39:46 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 276A224171;
+        Thu, 22 Oct 2020 14:39:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603377583;
+        bh=ma7f6ciQXaB7O32bDDp+GeQJ6WrSJ5EDDu1VyaA7rGo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PxugVsee9PWrXt/gXzudeuTvI47TjXebpNxq+V4HCmVCe1sKZHLosNqAbXuuvW+/i
+         F3Omc7qJjCGcZpsoZ0gvdBLvvwF6P71x/p/bcwNCyzTjDInFt6yyFfEubOEEK8j98S
+         eCVIVyZ2FmbbCU8ALan3OPjQJXwF2/c6hnwwd7rg=
+Date:   Thu, 22 Oct 2020 16:40:21 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     David Hildenbrand <david@redhat.com>,
+        David Laight <David.Laight@aculab.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "kernel-team@android.com" <kernel-team@android.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        David Howells <dhowells@redhat.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-aio@kvack.org" <linux-aio@kvack.org>,
+        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>
+Subject: Re: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
+ rw_copy_check_uvector() into lib/iov_iter.c"
+Message-ID: <20201022144021.GA1969554@kroah.com>
+References: <e04d0c5d-e834-a15b-7844-44dcc82785cc@redhat.com>
+ <a1533569-948a-1d5b-e231-5531aa988047@redhat.com>
+ <bc0a091865f34700b9df332c6e9dcdfd@AcuMS.aculab.com>
+ <5fd6003b-55a6-2c3c-9a28-8fd3a575ca78@redhat.com>
+ <20201022104805.GA1503673@kroah.com>
+ <20201022121849.GA1664412@kroah.com>
+ <98d9df88-b7ef-fdfb-7d90-2fa7a9d7bab5@redhat.com>
+ <20201022125759.GA1685526@kroah.com>
+ <20201022135036.GA1787470@kroah.com>
+ <CAK8P3a1B7OVdyzW0-97JwzZiwp0D0fnSfyete16QTvPp_1m07A@mail.gmail.com>
 MIME-Version: 1.0
-References: <87eelz4abk.fsf@marvin.dmesg.gr> <CADVnQym6OPVRcJ6PdR3hjN5Krcn0pugshdLZsrnzNQe1c52HXA@mail.gmail.com>
- <CAK6E8=fCwjP47DvSj4YQQ6xn25bVBN_1mFtrBwOJPYU6jXVcgQ@mail.gmail.com>
- <87blh33zr7.fsf@marvin.dmesg.gr> <CADVnQym2cJGRP8JnRAdzHfWEeEbZrmXd3eXD-nFP6pRNK7beWw@mail.gmail.com>
- <878sc63y8j.fsf@marvin.dmesg.gr> <87eelqs9za.fsf@marvin.dmesg.gr>
-In-Reply-To: <87eelqs9za.fsf@marvin.dmesg.gr>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Thu, 22 Oct 2020 10:39:51 -0400
-Message-ID: <CADVnQy=owUxBjPcHC1u0Xn_Uwd3wBVoQFO+5Wo-TzO0=1+3HMQ@mail.gmail.com>
-Subject: Re: TCP sender stuck in persist despite peer advertising non-zero window
-To:     Apollon Oikonomopoulos <apoikos@dmesg.gr>
-Cc:     Yuchung Cheng <ycheng@google.com>, Netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAK8P3a1B7OVdyzW0-97JwzZiwp0D0fnSfyete16QTvPp_1m07A@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 22, 2020 at 8:47 AM Apollon Oikonomopoulos <apoikos@dmesg.gr> wrote:
->
-> Apollon Oikonomopoulos <apoikos@dmesg.gr> writes:
-> > We are now running the patched kernel on the machines involved. I want
-> > to give it some time just to be sure, so I'll get back to you by
-> > Thursday if everything goes well.
->
-> It has been almost a week and we have had zero hangs in 60 rsync runs,
-> so I guess we can call it fixed. At the same time we didn't notice any
-> ill side-effects. In the unlikely event it hangs again, I will let you
-> know.
+On Thu, Oct 22, 2020 at 04:28:20PM +0200, Arnd Bergmann wrote:
+> On Thu, Oct 22, 2020 at 3:50 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> > On Thu, Oct 22, 2020 at 02:57:59PM +0200, Greg KH wrote:
+> > > On Thu, Oct 22, 2020 at 02:42:24PM +0200, David Hildenbrand wrote:
+> 
+> > > >  struct iovec *iovec_from_user(const struct iovec __user *uvec,
+> > > > -               unsigned long nr_segs, unsigned long fast_segs,
+> > > > +               unsigned nr_segs, unsigned fast_segs,
+> > > >                 struct iovec *fast_iov, bool compat)
+> > > >  {
+> > > >         struct iovec *iov = fast_iov;
+> > > > @@ -1738,7 +1738,7 @@ ssize_t __import_iovec(int type, const struct
+> > > > iovec __user *uvec,
+> > > >                  struct iov_iter *i, bool compat)
+> > > >  {
+> > > >         ssize_t total_len = 0;
+> > > > -       unsigned long seg;
+> > > > +       unsigned seg;
+> > > >         struct iovec *iov;
+> > > >
+> > > >         iov = iovec_from_user(uvec, nr_segs, fast_segs, *iovp, compat);
+> > > >
+> > >
+> > > Ah, I tested the other way around, making everything "unsigned long"
+> > > instead.  Will go try this too, as other tests are still running...
+> >
+> > Ok, no, this didn't work either.
+> >
+> > Nick, I think I need some compiler help here.  Any ideas?
+> 
+> I don't think the patch above would reliably clear the upper bits if they
+> contain garbage.
+> 
+> If the integer extension is the problem, the way I'd try it is to make the
+> function take an 'unsigned long' and then explictly mask the upper
+> bits with
+> 
+>      seg = lower_32_bits(seg);
+> 
+> Can you attach the iov_iter.s files from the broken build, plus the
+> one with 'noinline' for comparison? Maybe something can be seen
+> in there.
 
-Great. Many thanks for your testing and thorough analysis!
+I don't know how to extract the .s files easily from the AOSP build
+system, I'll look into that.  I'm also now testing by downgrading to an
+older version of clang (10 instead of 11), to see if that matters at all
+or not...
 
-I agree that it's a little surprising that this bug would be there for
-so long (looks like since Linux v2.1.8 in Nov 1996), but I also agree
-with your analysis about why this might be so.
+thanks,
 
-I have posted the proposed patch here:
-
-  https://patchwork.ozlabs.org/project/netdev/patch/20201022143331.1887495-1-ncardwell.kernel@gmail.com/
-
-best,
-neal
+greg k-h
