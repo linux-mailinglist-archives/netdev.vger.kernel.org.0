@@ -2,271 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CA4329598A
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 09:46:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3224295990
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 09:46:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2507170AbgJVHqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 03:46:19 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:43438 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2442286AbgJVHqS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 03:46:18 -0400
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09M7YPF1011958;
-        Thu, 22 Oct 2020 03:46:05 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 34aq7pjq7a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 22 Oct 2020 03:46:05 -0400
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 09M7k48P051143
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Thu, 22 Oct 2020 03:46:04 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Thu, 22 Oct
- 2020 03:46:03 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Thu, 22 Oct 2020 03:46:03 -0400
-Received: from saturn.ad.analog.com ([10.48.65.100])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 09M7jsT7007023;
-        Thu, 22 Oct 2020 03:46:00 -0400
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <ardeleanalex@gmail.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v2 2/2] net: phy: adin: implement cable-test support
-Date:   Thu, 22 Oct 2020 10:45:51 +0300
-Message-ID: <20201022074551.11520-2-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201022074551.11520-1-alexandru.ardelean@analog.com>
-References: <20201022074551.11520-1-alexandru.ardelean@analog.com>
+        id S2508881AbgJVHqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 03:46:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55746 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2507291AbgJVHqu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 03:46:50 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13387C0613CE;
+        Thu, 22 Oct 2020 00:46:50 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id 144so629842pfb.4;
+        Thu, 22 Oct 2020 00:46:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+        bh=DjVsY0xAnNtykPjvDvdv0gDbonayFSuWFGNvaQeMQys=;
+        b=lcWG0fxegSY3gQG71WBdHrJXocCZ+nMibr/5nkOHiUO6N9cb8ujW76q2uLskTqtrvQ
+         BgCUYWasFQflP8nvmsXROA9/oDCvzFqgVLUnvnQcqnw8byD9vTseo9YKbuyA7Vm6yQW1
+         yQzO0DpNKUw/d11vZ8mNDo03TYaBDeUgbdYeK04RqepgO30rIOmBXFMGFGJJpbnADvwg
+         t7A2HFP6IniqXvgjj9l4nElEs2e+A/XpRhH2CECZMaR0o/uEzKHXcf3OWHdfX0agvYY6
+         CPbY5xYdCG2QhV+HJADqoft+BfvVGdD37+StaSNJkNLFa2Jgv3QXTIbbVenFMky781d/
+         42aQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to;
+        bh=DjVsY0xAnNtykPjvDvdv0gDbonayFSuWFGNvaQeMQys=;
+        b=EUv9FtF5hvIeFIhYAkglzY6z/N+QXNJko1Rn4Q0SBSswwMdJ1c3yroE9GPS6TN9Xgt
+         Ypd/IBLRNHfeITCtudn2QhRgXMLY8Jkwt7DzVWI3K50Mm/9s6aSTUCYRApQdsDRPHWfJ
+         6tog+Id0a2I7l7RooqNOrPn3xmvEvml7WBY/Xaogaz3aClQ8PjMqRQgBYlDLKwouFTRO
+         Uiex/8tZyj7E1i51ic351+SDCNI/7nqh7VpGsCz8VlcARDCRej9tPKFEYEzVbgKr+Kae
+         nWl2LqpZiG29LVmgSNg2GFiaBwIF0gzKmcbiZkQgB2p+KOhro/1ffhEpQFr0Vgj/htdp
+         pDXg==
+X-Gm-Message-State: AOAM532runaTIBEqn0AYmbc3sfeTVbb2TY3ESbHfDLtjSX34BRonM15S
+        BGs1cGHpv2pYHA0zkdaAKrfvoWDkAubl9tg7Oe8PszL6J8k=
+X-Google-Smtp-Source: ABdhPJweZnF5kuJtxfCE257vphXsmrJ09m8YyALSO8OyyTYWy3KFCdJyI3U3VkTfske0F2l0D++YMg/kIvk9TseQIxQ=
+X-Received: by 2002:a65:52cb:: with SMTP id z11mr1188109pgp.368.1603352809612;
+ Thu, 22 Oct 2020 00:46:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.737
- definitions=2020-10-22_02:2020-10-20,2020-10-22 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
- priorityscore=1501 phishscore=0 spamscore=0 malwarescore=0 mlxlogscore=891
- lowpriorityscore=0 bulkscore=0 impostorscore=0 suspectscore=0
- clxscore=1015 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010220049
+References: <20201022072814.91560-1-xie.he.0141@gmail.com>
+In-Reply-To: <20201022072814.91560-1-xie.he.0141@gmail.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Thu, 22 Oct 2020 00:46:38 -0700
+Message-ID: <CAJht_ENMQ3nZb1BOCyyVzJjBK87yk+E1p+Jv5UQuZ1+g1jK1cg@mail.gmail.com>
+Subject: Re: [PATCH net RFC] net: Clear IFF_TX_SKB_SHARING for all Ethernet
+ devices using skb_padto
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Neil Horman <nhorman@tuxdriver.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ADIN1300/ADIN1200 support cable diagnostics using TDR.
+Sorry. I spotted some errors in this patch. Some drivers use "ndev" as
+the variable name but I mistakenly used "dev".
 
-The cable fault detection is automatically run on all four pairs looking at
-all combinations of pair faults by first putting the PHY in standby (clear
-the LINK_EN bit, PHY_CTRL_3 register, Address 0x0017) and then enabling the
-diagnostic clock (set the DIAG_CLK_EN bit, PHY_CTRL_1 register, Address
-0x0012).
-
-Cable diagnostics can then be run (set the CDIAG_RUN bit in the
-CDIAG_RUN register, Address 0xBA1B). The results are reported for each pair
-in the cable diagnostics results registers, CDIAG_DTLD_RSLTS_0,
-CDIAG_DTLD_RSLTS_1, CDIAG_DTLD_RSLTS_2, and CDIAG_DTLD_RSLTS_3, Address
-0xBA1D to Address 0xBA20).
-
-The distance to the first fault for each pair is reported in the cable
-fault distance registers, CDIAG_FLT_DIST_0, CDIAG_FLT_DIST_1,
-CDIAG_FLT_DIST_2, and CDIAG_FLT_DIST_3, Address 0xBA21 to Address 0xBA24).
-
-This change implements support for this using phylib's cable-test support.
-
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
- drivers/net/phy/adin.c | 138 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 138 insertions(+)
-
-diff --git a/drivers/net/phy/adin.c b/drivers/net/phy/adin.c
-index 619d36685b5d..3e66f97c7611 100644
---- a/drivers/net/phy/adin.c
-+++ b/drivers/net/phy/adin.c
-@@ -8,6 +8,7 @@
- #include <linux/bitfield.h>
- #include <linux/delay.h>
- #include <linux/errno.h>
-+#include <linux/ethtool_netlink.h>
- #include <linux/init.h>
- #include <linux/module.h>
- #include <linux/mii.h>
-@@ -70,6 +71,31 @@
- #define ADIN1300_CLOCK_STOP_REG			0x9400
- #define ADIN1300_LPI_WAKE_ERR_CNT_REG		0xa000
- 
-+#define ADIN1300_CDIAG_RUN			0xba1b
-+#define   ADIN1300_CDIAG_RUN_EN			BIT(0)
-+
-+/*
-+ * The XSIM3/2/1 and XSHRT3/2/1 are actually relative.
-+ * For CDIAG_DTLD_RSLTS(0) it's ADIN1300_CDIAG_RSLT_XSIM3/2/1
-+ * For CDIAG_DTLD_RSLTS(1) it's ADIN1300_CDIAG_RSLT_XSIM3/2/0
-+ * For CDIAG_DTLD_RSLTS(2) it's ADIN1300_CDIAG_RSLT_XSIM3/1/0
-+ * For CDIAG_DTLD_RSLTS(3) it's ADIN1300_CDIAG_RSLT_XSIM2/1/0
-+ */
-+#define ADIN1300_CDIAG_DTLD_RSLTS(x)		(0xba1d + (x))
-+#define   ADIN1300_CDIAG_RSLT_BUSY		BIT(10)
-+#define   ADIN1300_CDIAG_RSLT_XSIM3		BIT(9)
-+#define   ADIN1300_CDIAG_RSLT_XSIM2		BIT(8)
-+#define   ADIN1300_CDIAG_RSLT_XSIM1		BIT(7)
-+#define   ADIN1300_CDIAG_RSLT_SIM		BIT(6)
-+#define   ADIN1300_CDIAG_RSLT_XSHRT3		BIT(5)
-+#define   ADIN1300_CDIAG_RSLT_XSHRT2		BIT(4)
-+#define   ADIN1300_CDIAG_RSLT_XSHRT1		BIT(3)
-+#define   ADIN1300_CDIAG_RSLT_SHRT		BIT(2)
-+#define   ADIN1300_CDIAG_RSLT_OPEN		BIT(1)
-+#define   ADIN1300_CDIAG_RSLT_GOOD		BIT(0)
-+
-+#define ADIN1300_CDIAG_FLT_DIST(x)		(0xba21 + (x))
-+
- #define ADIN1300_GE_SOFT_RESET_REG		0xff0c
- #define   ADIN1300_GE_SOFT_RESET		BIT(0)
- 
-@@ -741,10 +767,117 @@ static int adin_probe(struct phy_device *phydev)
- 	return 0;
- }
- 
-+static int adin_cable_test_start(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = phy_clear_bits(phydev, ADIN1300_PHY_CTRL3, ADIN1300_LINKING_EN);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = phy_clear_bits(phydev, ADIN1300_PHY_CTRL1, ADIN1300_DIAG_CLK_EN);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* wait a bit for the clock to stabilize */
-+	msleep(50);
-+
-+	return phy_set_bits_mmd(phydev, MDIO_MMD_VEND1, ADIN1300_CDIAG_RUN,
-+				ADIN1300_CDIAG_RUN_EN);
-+}
-+
-+static int adin_cable_test_report_trans(int result)
-+{
-+	int mask;
-+
-+	if (result & ADIN1300_CDIAG_RSLT_GOOD)
-+		return ETHTOOL_A_CABLE_RESULT_CODE_OK;
-+	if (result & ADIN1300_CDIAG_RSLT_OPEN)
-+		return ETHTOOL_A_CABLE_RESULT_CODE_OPEN;
-+
-+	/* short with other pairs */
-+	mask = ADIN1300_CDIAG_RSLT_XSHRT3 |
-+	       ADIN1300_CDIAG_RSLT_XSHRT2 |
-+	       ADIN1300_CDIAG_RSLT_XSHRT1;
-+	if (result & mask)
-+		return ETHTOOL_A_CABLE_RESULT_CODE_CROSS_SHORT;
-+
-+	if (result & ADIN1300_CDIAG_RSLT_SHRT)
-+		return ETHTOOL_A_CABLE_RESULT_CODE_SAME_SHORT;
-+
-+	return ETHTOOL_A_CABLE_RESULT_CODE_UNSPEC;
-+}
-+
-+static int adin_cable_test_report_pair(struct phy_device *phydev,
-+				       unsigned int pair)
-+{
-+	int fault_rslt;
-+	int ret;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND1,
-+			   ADIN1300_CDIAG_DTLD_RSLTS(pair));
-+	if (ret < 0)
-+		return ret;
-+
-+	fault_rslt = adin_cable_test_report_trans(ret);
-+
-+	ret = ethnl_cable_test_result(phydev, pair, fault_rslt);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND1,
-+			   ADIN1300_CDIAG_FLT_DIST(pair));
-+	if (ret < 0)
-+		return ret;
-+
-+	switch (fault_rslt) {
-+	case ETHTOOL_A_CABLE_RESULT_CODE_OPEN:
-+	case ETHTOOL_A_CABLE_RESULT_CODE_SAME_SHORT:
-+	case ETHTOOL_A_CABLE_RESULT_CODE_CROSS_SHORT:
-+		return ethnl_cable_test_fault_length(phydev, pair, ret * 100);
-+	default:
-+		return  0;
-+	}
-+}
-+
-+static int adin_cable_test_report(struct phy_device *phydev)
-+{
-+	unsigned int pair;
-+	int ret;
-+
-+	for (pair = ETHTOOL_A_CABLE_PAIR_A; pair <= ETHTOOL_A_CABLE_PAIR_D; pair++) {
-+		ret = adin_cable_test_report_pair(phydev, pair);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int adin_cable_test_get_status(struct phy_device *phydev,
-+				      bool *finished)
-+{
-+	int ret;
-+
-+	*finished = false;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND1, ADIN1300_CDIAG_RUN);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ret & ADIN1300_CDIAG_RUN_EN)
-+		return 0;
-+
-+	*finished = true;
-+
-+	return adin_cable_test_report(phydev);
-+}
-+
- static struct phy_driver adin_driver[] = {
- 	{
- 		PHY_ID_MATCH_MODEL(PHY_ID_ADIN1200),
- 		.name		= "ADIN1200",
-+		.flags		= PHY_POLL_CABLE_TEST,
- 		.probe		= adin_probe,
- 		.config_init	= adin_config_init,
- 		.soft_reset	= adin_soft_reset,
-@@ -761,10 +894,13 @@ static struct phy_driver adin_driver[] = {
- 		.suspend	= genphy_suspend,
- 		.read_mmd	= adin_read_mmd,
- 		.write_mmd	= adin_write_mmd,
-+		.cable_test_start	= adin_cable_test_start,
-+		.cable_test_get_status	= adin_cable_test_get_status,
- 	},
- 	{
- 		PHY_ID_MATCH_MODEL(PHY_ID_ADIN1300),
- 		.name		= "ADIN1300",
-+		.flags		= PHY_POLL_CABLE_TEST,
- 		.probe		= adin_probe,
- 		.config_init	= adin_config_init,
- 		.soft_reset	= adin_soft_reset,
-@@ -781,6 +917,8 @@ static struct phy_driver adin_driver[] = {
- 		.suspend	= genphy_suspend,
- 		.read_mmd	= adin_read_mmd,
- 		.write_mmd	= adin_write_mmd,
-+		.cable_test_start	= adin_cable_test_start,
-+		.cable_test_get_status	= adin_cable_test_get_status,
- 	},
- };
- 
--- 
-2.25.1
-
+It was very hard for me to attempt fixing. There are too many drivers
+that need to be fixed. Fixing them is very time-consuming and may also
+be error-prone. So I think it may be better to just remove
+IFF_TX_SKB_SHARING from ether_setup. Drivers that support this feature
+should add this flag by themselves. This also makes our code cleaner.
