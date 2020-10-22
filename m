@@ -2,109 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C98A295B2B
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 11:01:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5550D295B20
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 11:01:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2509935AbgJVJBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 05:01:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39092 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2509188AbgJVJBc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 05:01:32 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AC3EC0613CE;
-        Thu, 22 Oct 2020 02:01:30 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id z5so1157994ejw.7;
-        Thu, 22 Oct 2020 02:01:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=biKYzJ6rw5v7zotuxQlwelGlaL61xs7Y0POZsNN6hQ0=;
-        b=G0lOaK/oWzaiYS1X4nfuWV2b9kpCSeHlywHLk4cWIaxwxW8oHkY4+VPazQDpqLbNHs
-         xKzSmZHqodXCuFS4okFcUq7clRYkdnp7pr/dzSTeuXm2kzveGdU9KqYURkWu3Wnkum0O
-         xJZntcnyb1wh6U4SHVkW2Px4ySD5TgNc7juOUxpprAcV4MvB1BYlpminey55jc9ehSWz
-         IchM2mQK4+MKYEC+GZ5g4VY5ohooABNX1mWtg+JLUPmaRpqDUnvf4qAF8ANZ7OeE0Ju1
-         JRsvKU9VG5AnzeAL3LCjlInbIv6/3LpaZqdhKce32p5ctplC7glIhz1/svnMWS3T+y3V
-         PpcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=biKYzJ6rw5v7zotuxQlwelGlaL61xs7Y0POZsNN6hQ0=;
-        b=XlqKZo2IkarFwFEhotu/Zvc6+7qiUylgCRo7xx83aaBnsnCG5IbXrjvlDjnd5Y0PJw
-         KoOahQYnQZwLtRjWId32XwfflwD+EKl+8T+q25YzhaxOrKGgonWSRlpctNGndHDfPh+S
-         GoKRQ4THSVk20QbjWX8cA1Z42cqbbgQVxSlhH/yg2Jr6hKQ4o5gLwzl1+BTkgoFGeKK9
-         8TUhRSOTuU/N8BqB40lMSMOYjpRVpV6MKiVWZ/F0N2T3axFuRx7kvnkWZag46D35aF2g
-         +UGTdelkze75R1vGE2lvFM1ExgiSIyuM+SZel6QRshOSQPCTWMCSBJyUpOFB0LSUDybG
-         PSRg==
-X-Gm-Message-State: AOAM532Ovhx+ty7R4q7uHzKou7uA6aaDYvGjzS4IVN53bSfRi6glpeL2
-        NW4dsTq8P618Tq06BYcxN7M=
-X-Google-Smtp-Source: ABdhPJzuUK4ka/iRomK+tIFIGOiAes2PQTeTEaI8Tr9CXPZvwjfYQxfMyqGn4bjP3MRbT+QVSs2Ihw==
-X-Received: by 2002:a17:906:444:: with SMTP id e4mr1409273eja.218.1603357288909;
-        Thu, 22 Oct 2020 02:01:28 -0700 (PDT)
-Received: from skbuf ([188.26.174.215])
-        by smtp.gmail.com with ESMTPSA id j3sm388785edh.25.2020.10.22.02.01.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Oct 2020 02:01:28 -0700 (PDT)
-Date:   Thu, 22 Oct 2020 12:01:26 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Christian Eggers <ceggers@arri.de>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Helmut Grohne <helmut.grohne@intenta.de>,
-        Paul Barker <pbarker@konsulko.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Marek Vasut <marex@denx.de>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH net-next 7/9] net: dsa: microchip: ksz9477: add
- hardware time stamping support
-Message-ID: <20201022090126.h64hfnlajqelveku@skbuf>
-References: <20201019172435.4416-1-ceggers@arri.de>
- <20201019172435.4416-8-ceggers@arri.de>
- <20201021233935.ocj5dnbdz7t7hleu@skbuf>
- <20201022030217.GA2105@hoboy.vegasvil.org>
+        id S2509920AbgJVJBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 05:01:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41206 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2509093AbgJVJBT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Oct 2020 05:01:19 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 28A9221775;
+        Thu, 22 Oct 2020 09:01:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603357277;
+        bh=rAUCu3y7+03C75oqJ/20IK+Enh1/ET9ZKI7jdElMjo4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ad/zpVq/zKZLTkR1qraoAyhbAOsAvF+KdoSyEBs42/YLrGpiLyddqpRptp/SZLyPi
+         jIHhSoabF1qMfT1ObkraxF/Ul+8o1N2gos3O4YOsvBymdBfz2InJa17WOryGKFU6TA
+         RNvXrxZvulro6hjQh6nEdXR7Oy+/eCOK/s20i5z4=
+Date:   Thu, 22 Oct 2020 11:01:55 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     David Laight <David.Laight@aculab.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "kernel-team@android.com" <kernel-team@android.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-aio@kvack.org" <linux-aio@kvack.org>,
+        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>
+Subject: Re: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
+ rw_copy_check_uvector() into lib/iov_iter.c"
+Message-ID: <20201022090155.GA1483166@kroah.com>
+References: <20200925045146.1283714-1-hch@lst.de>
+ <20200925045146.1283714-3-hch@lst.de>
+ <20201021161301.GA1196312@kroah.com>
+ <20201021233914.GR3576660@ZenIV.linux.org.uk>
+ <20201022082654.GA1477657@kroah.com>
+ <80a2e5fa-718a-8433-1ab0-dd5b3e3b5416@redhat.com>
+ <5d2ecb24db1e415b8ff88261435386ec@AcuMS.aculab.com>
+ <df2e0758-b8ed-5aec-6adc-a18f499c0179@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201022030217.GA2105@hoboy.vegasvil.org>
+In-Reply-To: <df2e0758-b8ed-5aec-6adc-a18f499c0179@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 21, 2020 at 08:02:17PM -0700, Richard Cochran wrote:
-> On Thu, Oct 22, 2020 at 02:39:35AM +0300, Vladimir Oltean wrote:
-> > So how _does_ that work for TI PHYTER?
-> >
-> > As far as we understand, the PHYTER appears to autonomously mangle PTP packets
-> > in the following way:
-> > - subtracting t2 on RX from the correctionField of the Pdelay_Req
-> > - adding t3 on TX to the correctionField of the Pdelay_Resp
->
-> The Phyter does not support peer-to-peer one step.
+On Thu, Oct 22, 2020 at 10:48:59AM +0200, David Hildenbrand wrote:
+> On 22.10.20 10:40, David Laight wrote:
+> > From: David Hildenbrand
+> >> Sent: 22 October 2020 09:35
+> >>
+> >> On 22.10.20 10:26, Greg KH wrote:
+> >>> On Thu, Oct 22, 2020 at 12:39:14AM +0100, Al Viro wrote:
+> >>>> On Wed, Oct 21, 2020 at 06:13:01PM +0200, Greg KH wrote:
+> >>>>> On Fri, Sep 25, 2020 at 06:51:39AM +0200, Christoph Hellwig wrote:
+> >>>>>> From: David Laight <David.Laight@ACULAB.COM>
+> >>>>>>
+> >>>>>> This lets the compiler inline it into import_iovec() generating
+> >>>>>> much better code.
+> >>>>>>
+> >>>>>> Signed-off-by: David Laight <david.laight@aculab.com>
+> >>>>>> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> >>>>>> ---
+> >>>>>>  fs/read_write.c | 179 ------------------------------------------------
+> >>>>>>  lib/iov_iter.c  | 176 +++++++++++++++++++++++++++++++++++++++++++++++
+> >>>>>>  2 files changed, 176 insertions(+), 179 deletions(-)
+> >>>>>
+> >>>>> Strangely, this commit causes a regression in Linus's tree right now.
+> >>>>>
+> >>>>> I can't really figure out what the regression is, only that this commit
+> >>>>> triggers a "large Android system binary" from working properly.  There's
+> >>>>> no kernel log messages anywhere, and I don't have any way to strace the
+> >>>>> thing in the testing framework, so any hints that people can provide
+> >>>>> would be most appreciated.
+> >>>>
+> >>>> It's a pure move - modulo changed line breaks in the argument lists
+> >>>> the functions involved are identical before and after that (just checked
+> >>>> that directly, by checking out the trees before and after, extracting two
+> >>>> functions in question from fs/read_write.c and lib/iov_iter.c (before and
+> >>>> after, resp.) and checking the diff between those.
+> >>>>
+> >>>> How certain is your bisection?
+> >>>
+> >>> The bisection is very reproducable.
+> >>>
+> >>> But, this looks now to be a compiler bug.  I'm using the latest version
+> >>> of clang and if I put "noinline" at the front of the function,
+> >>> everything works.
+> >>
+> >> Well, the compiler can do more invasive optimizations when inlining. If
+> >> you have buggy code that relies on some unspecified behavior, inlining
+> >> can change the behavior ... but going over that code, there isn't too
+> >> much action going on. At least nothing screamed at me.
+> > 
+> > Apart from all the optimisations that get rid off the 'pass be reference'
+> > parameters and strange conditional tests.
+> > Plenty of scope for the compiler getting it wrong.
+> > But nothing even vaguely illegal.
+> 
+> Not the first time that people blame the compiler to then figure out
+> that something else is wrong ... but maybe this time is different :)
 
-Ok, that's my mistake for not double-checking, sorry.
+I agree, I hate to blame the compiler, that's almost never the real
+problem, but this one sure "feels" like it.
 
-> The only driver that implements it is ptp_ines.c.
->
-> And *that* driver/HW implements it correctly.
+I'm running some more tests, trying to narrow things down as just adding
+a "noinline" to the function that got moved here doesn't work on Linus's
+tree at the moment because the function was split into multiple
+functions.
 
-Is there documentation available for this timestamping block? I might be
-missing some data, as the kernel driver is fairly pass-through for the
-TX timestamping of the Pdelay_Resp, so the hardware might just 'do the
-right thing'. I believe the answer lies within the timestamper's
-per-port RX FIFO. Just guessing here, but I suspect that the RX FIFO
-doesn't get cleared immediately after the host queries it, and the
-hardware caches the last 100 events from the pool and uses the RX
-timestamps of Pdelay_Req as t2 in the process of updating the
-correctionField of Pdelay_Resp on TX. Would that be correct?
+Give me a few hours...
+
+thanks,
+
+greg k-h
