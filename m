@@ -2,120 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EB640295E79
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 14:37:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94383295EB7
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 14:40:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2898274AbgJVMhl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 08:37:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2898263AbgJVMhk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 08:37:40 -0400
-Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41FDCC0613CE;
-        Thu, 22 Oct 2020 05:37:39 -0700 (PDT)
-Received: by mail-ej1-x642.google.com with SMTP id c15so2081137ejs.0;
-        Thu, 22 Oct 2020 05:37:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Of9gR7+alpUYr+QS/dPqMyV5JIcvv8ObtrAkaPg8ZQg=;
-        b=V4mejo6IOjWjLn+Wmkukq7fTAQSOFlVyGGbLV8CDdpxEuTM6PLqgmoUQo6zqLMyXQ6
-         PPszwvOze3p5bXON2FM+n6BAOr8OMXj6Air9zAnjoJavcb2N9uYKMPCDpLw5Uw1j0B6R
-         AQ8cZRny/9R0mmpSMs81jauyl+cyYh5wbOZ+2qshA2HEl68tXQYvZw/cq0XEPz90wGDm
-         UvQdSttqXgq+vw19ylBVEq0Slk26kqbLbm2Ok5A+RXDpyQEFdHSFAzC6lKwVWXhTCMqT
-         9xcZ9ijnPkCcLytsh2NkpJYdUCySlM+LwkmkP0yn5BAjMGEelzsizmKfbaT34frS0vVN
-         kLcQ==
+        id S2505276AbgJVMkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 08:40:12 -0400
+Received: from mail-il1-f197.google.com ([209.85.166.197]:43110 "EHLO
+        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2504575AbgJVMkH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 08:40:07 -0400
+Received: by mail-il1-f197.google.com with SMTP id p15so904028ilq.10
+        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 05:40:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Of9gR7+alpUYr+QS/dPqMyV5JIcvv8ObtrAkaPg8ZQg=;
-        b=umvcE0MnOcgIyfPOoIgD67SHiFhLyES55cXHnoZjMrqjWvu0frSobjf9zgRexSliXC
-         0uDY7QOu00iuh8Ijc4GaJBZbk80qH9JPjpKhbfDhbEi2mC5gCFC3kq+/sWJSuQoKSChA
-         pmfBKobUuRM2qMSVAzG0n0GEMETduNRZO8wB4UlnSyBjpK2i8gTPi0V3zCg/ULydC43I
-         sOdEzrQavFU2aAa7hJ8yk3oUObf/rVigzXysdfHZnJIpfy0tmOCG5QVGGGUsLrnmRvge
-         IkQT5uLfrV/8agoHe/x9y4vZAn+brj1kizX39oie6ZGrMCKPDbKdSeBKMK8T3KKZiYwL
-         9joA==
-X-Gm-Message-State: AOAM533GwnMLO/179GdPq7eF1j7ffyFng4MW+LvJ+TkS7+JFEcUDi32C
-        /KSQYXrrIP4BZXGgOLBLgzM=
-X-Google-Smtp-Source: ABdhPJwLPw6DYZxywEBJg8d1MKBLabehYnfyjvNlHAyAZ7OG3xfj5H67dR2zm8FCDNxKpmSOhbFjSA==
-X-Received: by 2002:a17:906:48b:: with SMTP id f11mr2108309eja.293.1603370257906;
-        Thu, 22 Oct 2020 05:37:37 -0700 (PDT)
-Received: from skbuf ([188.26.174.215])
-        by smtp.gmail.com with ESMTPSA id bx24sm799025ejb.51.2020.10.22.05.37.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Oct 2020 05:37:37 -0700 (PDT)
-Date:   Thu, 22 Oct 2020 15:37:35 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Christian Eggers <ceggers@arri.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Helmut Grohne <helmut.grohne@intenta.de>,
-        Paul Barker <pbarker@konsulko.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Marek Vasut <marex@denx.de>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH net-next 1/9] dt-bindings: net: dsa: convert ksz
- bindings document to yaml
-Message-ID: <20201022123735.3mnlzkfmqqrho6n5@skbuf>
-References: <20201019172435.4416-1-ceggers@arri.de>
- <20201019172435.4416-2-ceggers@arri.de>
- <87lfg0rrzi.fsf@kurt>
- <20201022001639.ozbfnyc4j2zlysff@skbuf>
- <3cf2e7f8-7dc8-323f-0cee-5a025f748426@gmail.com>
- <87h7qmil8j.fsf@kurt>
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=YPsm7wTqwgB7HM8NoGjpzt0jTQrojzltFX1YmnCyMgA=;
+        b=acZ2c6lwSLj/AiGjgiCCIGCQ2Q7Q8KP+uvXyRMCWBF/Uej08yLGqzIKPuSt7TmGxJY
+         BtvX0JKS5GoC9xI85mKJyig0Gw7e8odj6NsTad1rXsNonVrGWkuextXVAFQOXfylgrJG
+         lQcsozJNSnSk4nWL5k/O0dHawfUrIBbBPGiQ2Wcz5IycYmUE7qIOj5KIDhQarukWCFPg
+         ONTmhLm/GLrDYMP82deIxCkTolotMzz235mpR6IeF/eS74PIUxqBby+pFHnh8FGJD2Fu
+         0RNDEUMDGtaDHfl8SzxssAK9opsx4clk9YtVCTZpYaP4Au24z1T0Jv3H3NMrCYglatfS
+         9sqw==
+X-Gm-Message-State: AOAM531cC2aZ+MnG0yBSbzjs8DAImQPfzwmfatFPY8wWXIsBUu9/yiKM
+        xG+aCHyuNT2aYtiYSmgTy3/s3gIjKVxyPeTENz0FpAKzcJYV
+X-Google-Smtp-Source: ABdhPJz6S3j+p9N8Mn8XnEFCZqzaJIEIlYealXw2z4J2EQRPPGK94GoFSGIbIevJK22mOLgyD6udTcjXwHdyUItSiH/g+Idl4r+7
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87h7qmil8j.fsf@kurt>
+X-Received: by 2002:a05:6602:6ce:: with SMTP id n14mr1671095iox.34.1603370405018;
+ Thu, 22 Oct 2020 05:40:05 -0700 (PDT)
+Date:   Thu, 22 Oct 2020 05:40:05 -0700
+In-Reply-To: <000000000000add83505a8e38c4c@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000006f439b05b241c3c5@google.com>
+Subject: Re: WARNING: suspicious RCU usage in ctrl_cmd_new_lookup
+From:   syzbot <syzbot+3025b9294f8cb0ede850@syzkaller.appspotmail.com>
+To:     anant.thazhemadam@gmail.com, bjorn.andersson@linaro.org,
+        colin.king@canonical.com, dan.carpenter@oracle.com,
+        davem@davemloft.net, dragonjetli@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, manivannan.sadhasivam@linaro.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 22, 2020 at 12:54:52PM +0200, Kurt Kanzenbach wrote:
-> On Wed Oct 21 2020, Florian Fainelli wrote:
-> > On 10/21/2020 5:16 PM, Vladimir Oltean wrote:
-> >> On Wed, Oct 21, 2020 at 08:52:01AM +0200, Kurt Kanzenbach wrote:
-> >>> On Mon Oct 19 2020, Christian Eggers wrote:
-> >>> The node names should be switch. See dsa.yaml.
-> >>>
-> >>>> +            compatible = "microchip,ksz9477";
-> >>>> +            reg = <0>;
-> >>>> +            reset-gpios = <&gpio5 0 GPIO_ACTIVE_LOW>;
-> >>>> +
-> >>>> +            spi-max-frequency = <44000000>;
-> >>>> +            spi-cpha;
-> >>>> +            spi-cpol;
-> >>>> +
-> >>>> +            ports {
-> >>>
-> >>> ethernet-ports are preferred.
-> >> 
-> >> This is backwards to me, instead of an 'ethernet-switch' with 'ports',
-> >> we have a 'switch' with 'ethernet-ports'. Whatever.
-> >
-> > The rationale AFAIR was that dual Ethernet port controllers like TI's 
-> > CPSW needed to describe each port as a pseudo Ethernet MAC and using 
-> > 'ethernet-ports' as a contained allowed to disambiguate with the 'ports' 
-> > container used in display subsystem descriptions.
-> 
-> Yes, that was the outcome of previous discussions.
+syzbot suspects this issue was fixed by commit:
 
-And why would that disambiguation be necessary in the first place? My
-understanding is that the whole node path provides the necessary
-namespacing to avoid the confusion. For example, the 'reg' property
-means 100 things to 100 buses, and no one has an issue with that. I am
-not expecting an Ethernet switch to have an HDMI port, I might be wrong
-though.
+commit a7809ff90ce6c48598d3c4ab54eb599bec1e9c42
+Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Date:   Sat Sep 26 16:56:25 2020 +0000
+
+    net: qrtr: ns: Protect radix_tree_deref_slot() using rcu read locks
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=143867c8500000
+start commit:   7ae77150 Merge tag 'powerpc-5.8-1' of git://git.kernel.org..
+git tree:       upstream
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d195fe572fb15312
+dashboard link: https://syzkaller.appspot.com/bug?extid=3025b9294f8cb0ede850
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11802cf9100000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=144acc03100000
+
+If the result looks correct, please mark the issue as fixed by replying with:
+
+#syz fix: net: qrtr: ns: Protect radix_tree_deref_slot() using rcu read locks
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
