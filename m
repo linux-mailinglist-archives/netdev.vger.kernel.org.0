@@ -2,37 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5550D295B20
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 11:01:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B292295B45
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 11:03:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2509920AbgJVJBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 05:01:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41206 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2509093AbgJVJBT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Oct 2020 05:01:19 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 28A9221775;
-        Thu, 22 Oct 2020 09:01:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603357277;
-        bh=rAUCu3y7+03C75oqJ/20IK+Enh1/ET9ZKI7jdElMjo4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ad/zpVq/zKZLTkR1qraoAyhbAOsAvF+KdoSyEBs42/YLrGpiLyddqpRptp/SZLyPi
-         jIHhSoabF1qMfT1ObkraxF/Ul+8o1N2gos3O4YOsvBymdBfz2InJa17WOryGKFU6TA
-         RNvXrxZvulro6hjQh6nEdXR7Oy+/eCOK/s20i5z4=
-Date:   Thu, 22 Oct 2020 11:01:55 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     David Laight <David.Laight@aculab.com>,
+        id S2509976AbgJVJDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 05:03:03 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:37746 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2509961AbgJVJDB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 05:03:01 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id uk-mta-7-8sQ7tBxKMG-Qg2of8o1bsA-1;
+ Thu, 22 Oct 2020 10:02:55 +0100
+X-MC-Unique: 8sQ7tBxKMG-Qg2of8o1bsA-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 22 Oct 2020 10:02:54 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 22 Oct 2020 10:02:54 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'David Hildenbrand' <david@redhat.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
         Al Viro <viro@zeniv.linux.org.uk>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Christoph Hellwig <hch@lst.de>,
+        "Nick Desaulniers" <ndesaulniers@google.com>
+CC:     Christoph Hellwig <hch@lst.de>,
         "kernel-team@android.com" <kernel-team@android.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        "Jens Axboe" <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
         David Howells <dhowells@redhat.com>,
         "linux-arm-kernel@lists.infradead.org" 
         <linux-arm-kernel@lists.infradead.org>,
@@ -53,91 +50,59 @@ Cc:     David Laight <David.Laight@aculab.com>,
         "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
         "linux-security-module@vger.kernel.org" 
         <linux-security-module@vger.kernel.org>
-Subject: Re: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
+Subject: RE: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
  rw_copy_check_uvector() into lib/iov_iter.c"
-Message-ID: <20201022090155.GA1483166@kroah.com>
+Thread-Topic: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
+ rw_copy_check_uvector() into lib/iov_iter.c"
+Thread-Index: AQHWqE5GNDfnH4y9nkGWtfqJueR1KKmjTCJQ///y24CAABLOsA==
+Date:   Thu, 22 Oct 2020 09:02:54 +0000
+Message-ID: <789c746b1abc45598fe1e44c6f60104d@AcuMS.aculab.com>
 References: <20200925045146.1283714-1-hch@lst.de>
- <20200925045146.1283714-3-hch@lst.de>
- <20201021161301.GA1196312@kroah.com>
+ <20200925045146.1283714-3-hch@lst.de> <20201021161301.GA1196312@kroah.com>
  <20201021233914.GR3576660@ZenIV.linux.org.uk>
  <20201022082654.GA1477657@kroah.com>
  <80a2e5fa-718a-8433-1ab0-dd5b3e3b5416@redhat.com>
  <5d2ecb24db1e415b8ff88261435386ec@AcuMS.aculab.com>
  <df2e0758-b8ed-5aec-6adc-a18f499c0179@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
 In-Reply-To: <df2e0758-b8ed-5aec-6adc-a18f499c0179@redhat.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 22, 2020 at 10:48:59AM +0200, David Hildenbrand wrote:
-> On 22.10.20 10:40, David Laight wrote:
-> > From: David Hildenbrand
-> >> Sent: 22 October 2020 09:35
-> >>
-> >> On 22.10.20 10:26, Greg KH wrote:
-> >>> On Thu, Oct 22, 2020 at 12:39:14AM +0100, Al Viro wrote:
-> >>>> On Wed, Oct 21, 2020 at 06:13:01PM +0200, Greg KH wrote:
-> >>>>> On Fri, Sep 25, 2020 at 06:51:39AM +0200, Christoph Hellwig wrote:
-> >>>>>> From: David Laight <David.Laight@ACULAB.COM>
-> >>>>>>
-> >>>>>> This lets the compiler inline it into import_iovec() generating
-> >>>>>> much better code.
-> >>>>>>
-> >>>>>> Signed-off-by: David Laight <david.laight@aculab.com>
-> >>>>>> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> >>>>>> ---
-> >>>>>>  fs/read_write.c | 179 ------------------------------------------------
-> >>>>>>  lib/iov_iter.c  | 176 +++++++++++++++++++++++++++++++++++++++++++++++
-> >>>>>>  2 files changed, 176 insertions(+), 179 deletions(-)
-> >>>>>
-> >>>>> Strangely, this commit causes a regression in Linus's tree right now.
-> >>>>>
-> >>>>> I can't really figure out what the regression is, only that this commit
-> >>>>> triggers a "large Android system binary" from working properly.  There's
-> >>>>> no kernel log messages anywhere, and I don't have any way to strace the
-> >>>>> thing in the testing framework, so any hints that people can provide
-> >>>>> would be most appreciated.
-> >>>>
-> >>>> It's a pure move - modulo changed line breaks in the argument lists
-> >>>> the functions involved are identical before and after that (just checked
-> >>>> that directly, by checking out the trees before and after, extracting two
-> >>>> functions in question from fs/read_write.c and lib/iov_iter.c (before and
-> >>>> after, resp.) and checking the diff between those.
-> >>>>
-> >>>> How certain is your bisection?
-> >>>
-> >>> The bisection is very reproducable.
-> >>>
-> >>> But, this looks now to be a compiler bug.  I'm using the latest version
-> >>> of clang and if I put "noinline" at the front of the function,
-> >>> everything works.
-> >>
-> >> Well, the compiler can do more invasive optimizations when inlining. If
-> >> you have buggy code that relies on some unspecified behavior, inlining
-> >> can change the behavior ... but going over that code, there isn't too
-> >> much action going on. At least nothing screamed at me.
-> > 
-> > Apart from all the optimisations that get rid off the 'pass be reference'
-> > parameters and strange conditional tests.
-> > Plenty of scope for the compiler getting it wrong.
-> > But nothing even vaguely illegal.
-> 
-> Not the first time that people blame the compiler to then figure out
-> that something else is wrong ... but maybe this time is different :)
+RnJvbTogRGF2aWQgSGlsZGVuYnJhbmQNCj4gU2VudDogMjIgT2N0b2JlciAyMDIwIDA5OjQ5DQou
+Li4NCj4gPj4+IEJ1dCwgdGhpcyBsb29rcyBub3cgdG8gYmUgYSBjb21waWxlciBidWcuICBJJ20g
+dXNpbmcgdGhlIGxhdGVzdCB2ZXJzaW9uDQo+ID4+PiBvZiBjbGFuZyBhbmQgaWYgSSBwdXQgIm5v
+aW5saW5lIiBhdCB0aGUgZnJvbnQgb2YgdGhlIGZ1bmN0aW9uLA0KPiA+Pj4gZXZlcnl0aGluZyB3
+b3Jrcy4NCj4gPj4NCj4gPj4gV2VsbCwgdGhlIGNvbXBpbGVyIGNhbiBkbyBtb3JlIGludmFzaXZl
+IG9wdGltaXphdGlvbnMgd2hlbiBpbmxpbmluZy4gSWYNCj4gPj4geW91IGhhdmUgYnVnZ3kgY29k
+ZSB0aGF0IHJlbGllcyBvbiBzb21lIHVuc3BlY2lmaWVkIGJlaGF2aW9yLCBpbmxpbmluZw0KPiA+
+PiBjYW4gY2hhbmdlIHRoZSBiZWhhdmlvciAuLi4gYnV0IGdvaW5nIG92ZXIgdGhhdCBjb2RlLCB0
+aGVyZSBpc24ndCB0b28NCj4gPj4gbXVjaCBhY3Rpb24gZ29pbmcgb24uIEF0IGxlYXN0IG5vdGhp
+bmcgc2NyZWFtZWQgYXQgbWUuDQo+ID4NCj4gPiBBcGFydCBmcm9tIGFsbCB0aGUgb3B0aW1pc2F0
+aW9ucyB0aGF0IGdldCByaWQgb2ZmIHRoZSAncGFzcyBiZSByZWZlcmVuY2UnDQo+ID4gcGFyYW1l
+dGVycyBhbmQgc3RyYW5nZSBjb25kaXRpb25hbCB0ZXN0cy4NCj4gPiBQbGVudHkgb2Ygc2NvcGUg
+Zm9yIHRoZSBjb21waWxlciBnZXR0aW5nIGl0IHdyb25nLg0KPiA+IEJ1dCBub3RoaW5nIGV2ZW4g
+dmFndWVseSBpbGxlZ2FsLg0KPiANCj4gTm90IHRoZSBmaXJzdCB0aW1lIHRoYXQgcGVvcGxlIGJs
+YW1lIHRoZSBjb21waWxlciB0byB0aGVuIGZpZ3VyZSBvdXQNCj4gdGhhdCBzb21ldGhpbmcgZWxz
+ZSBpcyB3cm9uZyAuLi4gYnV0IG1heWJlIHRoaXMgdGltZSBpcyBkaWZmZXJlbnQgOikNCg0KVXN1
+YWxseSBkb3duIHRvIG1pc3NpbmcgYXNtICdtZW1vcnknIGNvbnN0cmFpbnRzLi4uDQoNCk5lZWQg
+dG8gcmVhZCB0aGUgb2JqIGZpbGUgdG8gc2VlIHdoYXQgdGhlIGNvbXBpbGVyIGRpZC4NCg0KVGhl
+IGNvZGUgbXVzdCBiZSAnYXBwcm94aW1hdGVseSByaWdodCcgb3Igbm90aGluZyB3b3VsZCBydW4u
+DQpTbyBJJ2QgZ3Vlc3MgaXQgaGFzIHRvIGRvIHdpdGggPiA4IGZyYWdtZW50cy4NCg0KCURhdmlk
+DQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJhbWxleSBSb2FkLCBNb3VudCBG
+YXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0cmF0aW9uIE5vOiAxMzk3Mzg2
+IChXYWxlcykNCg==
 
-I agree, I hate to blame the compiler, that's almost never the real
-problem, but this one sure "feels" like it.
-
-I'm running some more tests, trying to narrow things down as just adding
-a "noinline" to the function that got moved here doesn't work on Linus's
-tree at the moment because the function was split into multiple
-functions.
-
-Give me a few hours...
-
-thanks,
-
-greg k-h
