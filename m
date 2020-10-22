@@ -2,101 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 683C22960B9
-	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 16:12:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 771662960C8
+	for <lists+netdev@lfdr.de>; Thu, 22 Oct 2020 16:17:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2895076AbgJVOMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 10:12:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:59061 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2443552AbgJVOMK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 10:12:10 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603375929;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=9xm/wjrf+bJwVnEJL99y1rb6Xy0StOQXlEFvSqTpGFo=;
-        b=CELH3up2Qk3d1FAPUDUcB6I0GB9HZfnjscqy6wAPaplJxmsfKzeZ3H62U9dvFuMWWFj7Gu
-        iSNKuf7E9o1bRiv/fbABcN7Q1d1N1cqCw6u3/j5fEA8wC1Y+gFb8yo/wSsC1JnbLn3UtJi
-        4cX0VweeX2rpBZJbqWHqYsKX4r69b+w=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-549-3-nMc0O0MkqmeFiqWz2eKw-1; Thu, 22 Oct 2020 10:12:04 -0400
-X-MC-Unique: 3-nMc0O0MkqmeFiqWz2eKw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C309E1006CA8;
-        Thu, 22 Oct 2020 14:12:01 +0000 (UTC)
-Received: from krava (unknown [10.40.195.55])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 38EA91002C01;
-        Thu, 22 Oct 2020 14:11:55 +0000 (UTC)
-Date:   Thu, 22 Oct 2020 16:11:54 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
-        Jesper Brouer <jbrouer@redhat.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Viktor Malik <vmalik@redhat.com>
-Subject: Re: [RFC bpf-next 00/16] bpf: Speed up trampoline attach
-Message-ID: <20201022141154.GB2332608@krava>
-References: <20201022082138.2322434-1-jolsa@kernel.org>
- <20201022093510.37e8941f@gandalf.local.home>
+        id S2900764AbgJVORi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 10:17:38 -0400
+Received: from www62.your-server.de ([213.133.104.62]:45056 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2895076AbgJVORh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 10:17:37 -0400
+Received: from 75.57.196.178.dynamic.wline.res.cust.swisscom.ch ([178.196.57.75] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kVbPB-0005lw-Dm; Thu, 22 Oct 2020 16:17:25 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net
+Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf 2020-10-22
+Date:   Thu, 22 Oct 2020 16:17:24 +0200
+Message-Id: <20201022141724.11010-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201022093510.37e8941f@gandalf.local.home>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25965/Thu Oct 22 14:59:23 2020)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 22, 2020 at 09:35:10AM -0400, Steven Rostedt wrote:
-> On Thu, 22 Oct 2020 10:21:22 +0200
-> Jiri Olsa <jolsa@kernel.org> wrote:
-> 
-> > hi,
-> > this patchset tries to speed up the attach time for trampolines
-> > and make bpftrace faster for wildcard use cases like:
-> > 
-> >   # bpftrace -ve "kfunc:__x64_sys_s* { printf("test\n"); }"
-> > 
-> > Profiles show mostly ftrace backend, because we add trampoline
-> > functions one by one and ftrace direct function registering is
-> > quite expensive. Thus main change in this patchset is to allow
-> > batch attach and use just single ftrace call to attach or detach
-> > multiple ips/trampolines.
-> 
-> The issue I have with this change is that the purpose of the direct
-> trampoline was to give bpf access to the parameters of a function as if it
-> was called directly. That is, it could see the parameters of a function
-> quickly. I even made the direct function work if it wanted to also trace
-> the return code.
-> 
-> What the direct calls is NOT, is a generic tracing function tracer. If that
-> is required, then bpftrace should be registering itself with ftrace.
-> If you are attaching to a set of functions, where it becomes obvious that
-> its not being used to access specific parameters, then that's an abuse of
-> the direct calls.
-> 
-> We already have one generic function tracer, we don't need another.
+Hi David, hi Jakub,
 
-I understand direct calls as a way that bpf trampolines and ftrace can
-co-exist together - ebpf trampolines need that functionality of accessing
-parameters of a function as if it was called directly and at the same
-point we need to be able attach to any function and to as many functions
-as we want in a fast way
+The following pull-request contains BPF updates for your *net* tree.
 
-the bpftrace example above did not use arguments for simplicity, but they
-could have been there ... I think we could detect arguments presence in
-ebpf programs and use ftrace_ops directly in case they are not needed
+We've added 8 non-merge commits during the last 4 day(s) which contain
+a total of 16 files changed, 426 insertions(+), 102 deletions(-).
 
-jirka
+The main changes are:
 
+1) Fix enforcing NULL check in verifier for new helper return types of
+   RET_PTR_TO_{BTF_ID,MEM_OR_BTF_ID}_OR_NULL, from Martin KaFai Lau.
+
+2) Fix bpf_redirect_neigh() helper API before it becomes frozen by adding
+   nexthop information as argument, from Toke Høiland-Jørgensen.
+
+3) Guard & fix compilation of bpf_tail_call_static() when __bpf__ arch is
+   not defined by compiler or clang too old, from Daniel Borkmann.
+
+4) Remove misplaced break after return in attach_type_to_prog_type(), from
+   Tom Rix.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
+
+Thanks a lot!
+
+Also thanks to reporters, reviewers and testers of commits in this pull-request:
+
+Andrii Nakryiko, David Ahern, Yaniv Agman, Yonghong Song
+
+----------------------------------------------------------------
+
+The following changes since commit 0e8b8d6a2d85344d80dda5beadd98f5f86e8d3d3:
+
+  net: core: use list_del_init() instead of list_del() in netdev_run_todo() (2020-10-18 14:50:25 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
+
+for you to fetch changes up to 3652c9a1b1fe6cbdd4510eb220db548bff8704ae:
+
+  bpf, libbpf: Guard bpf inline asm from bpf_tail_call_static (2020-10-22 01:46:52 +0200)
+
+----------------------------------------------------------------
+Daniel Borkmann (2):
+      bpf, doc: Fix patchwork URL to point to kernel.org instance
+      bpf, libbpf: Guard bpf inline asm from bpf_tail_call_static
+
+Martin KaFai Lau (3):
+      bpf: Enforce id generation for all may-be-null register type
+      bpf: selftest: Ensure the return value of bpf_skc_to helpers must be checked
+      bpf: selftest: Ensure the return value of the bpf_per_cpu_ptr() must be checked
+
+Toke Høiland-Jørgensen (2):
+      bpf: Fix bpf_redirect_neigh helper api to support supplying nexthop
+      bpf, selftests: Extend test_tc_redirect to use modified bpf_redirect_neigh()
+
+Tom Rix (1):
+      bpf: Remove unneeded break
+
+ MAINTAINERS                                        |   3 +-
+ include/linux/filter.h                             |   9 ++
+ include/uapi/linux/bpf.h                           |  22 ++-
+ kernel/bpf/syscall.c                               |   1 -
+ kernel/bpf/verifier.c                              |  11 +-
+ net/core/filter.c                                  | 158 +++++++++++++--------
+ samples/bpf/sockex3_kern.c                         |   8 +-
+ scripts/bpf_helpers_doc.py                         |   1 +
+ tools/include/uapi/linux/bpf.h                     |  22 ++-
+ tools/lib/bpf/bpf_helpers.h                        |   2 +
+ tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  57 +++++---
+ .../bpf/progs/test_ksyms_btf_null_check.c          |  31 ++++
+ tools/testing/selftests/bpf/progs/test_tc_neigh.c  |   5 +-
+ .../selftests/bpf/progs/test_tc_neigh_fib.c        | 155 ++++++++++++++++++++
+ tools/testing/selftests/bpf/test_tc_redirect.sh    |  18 ++-
+ tools/testing/selftests/bpf/verifier/sock.c        |  25 ++++
+ 16 files changed, 426 insertions(+), 102 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_btf_null_check.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_tc_neigh_fib.c
