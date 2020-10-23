@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C05AE2976C1
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 20:18:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 019682976CA
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 20:20:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1750118AbgJWSSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 14:18:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51100 "EHLO mail.kernel.org"
+        id S1754385AbgJWSUa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 14:20:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51460 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750086AbgJWSSn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Oct 2020 14:18:43 -0400
+        id S1750463AbgJWSU3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Oct 2020 14:20:29 -0400
 Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.6])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CFBF6208E4;
-        Fri, 23 Oct 2020 18:18:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B64832192A;
+        Fri, 23 Oct 2020 18:20:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603477123;
-        bh=ylITAyPxL1iTJDK7oIOh/4MeeDKSIBOSRZU9Lcrcnl0=;
+        s=default; t=1603477229;
+        bh=QjJQ1djuvt9qqAazUX+8bLpM2PEI9Imum/LHktieF4U=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sF864kXITXfnbH35wqTtEx/g7TDbHkqBfFTLfisF3CDHjRcDAiIVkY6wT6P9rRA8i
-         i4lApyeRYlYtpeHsZsrGaWzpEfMvU7cb+yQmCLsUsCvWOPakqaNaUtGeLArl2DLSN3
-         Gu/U0Wscm7wjCw+HP5/try4AP8w+TOU74N8S4tt8=
-Date:   Fri, 23 Oct 2020 11:18:41 -0700
+        b=FHRrRMChg5JF4NMkb06ect8VeyjcQkkpZjw/lBsYd5FVj/jdsAKRNLA2vVWgXb/0h
+         GEVAsYEq3ZplQtFI3JAdPdYb1e7XuYlmpmWl4WRUo0PewI2tvHghjSqP/QSgnAP8QH
+         oRMlm9EVrdKb9zeIxe3ojJYHpuGWfOp3DeYN1GGc=
+Date:   Fri, 23 Oct 2020 11:20:27 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     netdev@vger.kernel.org, Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Subject: Re: [PATCHv3 net 2/2] IPv6: reply ICMP error if the first fragment
- doesn't include all headers
-Message-ID: <20201023111841.5b0991cc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201023064347.206431-3-liuhangbin@gmail.com>
-References: <20201021042005.736568-1-liuhangbin@gmail.com>
-        <20201023064347.206431-1-liuhangbin@gmail.com>
-        <20201023064347.206431-3-liuhangbin@gmail.com>
+To:     izabela.bakollari@gmail.com
+Cc:     nhorman@tuxdriver.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org
+Subject: Re: [PATCHv4 net-next] dropwatch: Support monitoring of dropped
+ frames
+Message-ID: <20201023112027.74ae41d1@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201023042943.563284-1-izabela.bakollari@gmail.com>
+References: <20200707171515.110818-1-izabela.bakollari@gmail.com>
+        <20201023042943.563284-1-izabela.bakollari@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 23 Oct 2020 14:43:47 +0800 Hangbin Liu wrote:
-> diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
-> index ec448b71bf9a..0bda77d7e6b8 100644
-> --- a/net/ipv6/icmp.c
-> +++ b/net/ipv6/icmp.c
-> @@ -145,6 +145,7 @@ static bool is_ineligible(const struct sk_buff *skb)
->  	int ptr =3D (u8 *)(ipv6_hdr(skb) + 1) - skb->data;
->  	int len =3D skb->len - ptr;
->  	__u8 nexthdr =3D ipv6_hdr(skb)->nexthdr;
-> +	unsigned int offs =3D 0;
->  	__be16 frag_off;
-> =20
->  	if (len < 0)
+On Fri, 23 Oct 2020 06:29:43 +0200 izabela.bakollari@gmail.com wrote:
+> From: Izabela Bakollari <izabela.bakollari@gmail.com>
+> 
+> Dropwatch is a utility that monitors dropped frames by having userspace
+> record them over the dropwatch protocol over a file. This augument
+> allows live monitoring of dropped frames using tools like tcpdump.
+> 
+> With this feature, dropwatch allows two additional commands (start and
+> stop interface) which allows the assignment of a net_device to the
+> dropwatch protocol. When assinged, dropwatch will clone dropped frames,
+> and receive them on the assigned interface, allowing tools like tcpdump
+> to monitor for them.
+> 
+> With this feature, create a dummy ethernet interface (ip link add dev
+> dummy0 type dummy), assign it to the dropwatch kernel subsystem, by using
+> these new commands, and then monitor dropped frames in real time by
+> running tcpdump -i dummy0.
+> 
+> Signed-off-by: Izabela Bakollari <izabela.bakollari@gmail.com>
 
-net/ipv6/icmp.c: In function =E2=80=98is_ineligible=E2=80=99:
-net/ipv6/icmp.c:148:15: warning: unused variable =E2=80=98offs=E2=80=99 [-W=
-unused-variable]
-  148 |  unsigned int offs =3D 0;
-      |               ^~~~
+Doesn't seem to apply to net-next, also the tree is closed during the
+merge window so please rebase and repost after the weekend.
