@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 07DE52968D6
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 05:39:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2D552968D9
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 05:39:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S374947AbgJWDjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 23:39:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56649 "EHLO
+        id S374953AbgJWDjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 23:39:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:54337 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S374942AbgJWDjW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 23:39:22 -0400
+        by vger.kernel.org with ESMTP id S374949AbgJWDjY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 23:39:24 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603424359;
+        s=mimecast20190719; t=1603424363;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=RF080hbCeFBejWHZk/VcDT588s1pQBHBg+FY7OyT4yk=;
-        b=DkUtdLVxeFTDcdF3iJh2wDQsmWzTqYd6NBgJpbUqWO+r53aG0inIR9fF7Mxxc1hDZipNIh
-        6Q7SUO8TPwtQHZxek9mZ9ZIb8h03M9/b47hPIkb7OTgX2sm/19JfHL0oMqz8/DGqt7Z674
-        EkPqcM4YWb6EABJmBpXNXiqft0zrXk0=
-Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
- [209.85.210.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-445-IzOPmHl-Nd2GlNbthUhWaA-1; Thu, 22 Oct 2020 23:39:16 -0400
-X-MC-Unique: IzOPmHl-Nd2GlNbthUhWaA-1
-Received: by mail-pf1-f199.google.com with SMTP id a12so25862pfo.5
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 20:39:16 -0700 (PDT)
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=B3C3SM+mTODeDpoZqXrRuy+dLn2cT9haezbBAbLVhV4=;
+        b=ZxW0+OMaAjRRqZpXwm1DTALDm653bAh6eEnLuXZML3DgCxS4xBkec4K0sB5uMBfm2Q1W9R
+        XPk070Lv6XKnC3womDZaskktbdIh63JvFoub9oXXVrvrV1O77oisZHfOordMiwGqLn28SD
+        BAk1p2YkTFZztzIgbMnuCVodXZFW1fs=
+Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com
+ [209.85.215.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-459-niPznBS5PKaToGZWp7ox3Q-1; Thu, 22 Oct 2020 23:39:21 -0400
+X-MC-Unique: niPznBS5PKaToGZWp7ox3Q-1
+Received: by mail-pg1-f200.google.com with SMTP id t195so138828pgb.15
+        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 20:39:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=RF080hbCeFBejWHZk/VcDT588s1pQBHBg+FY7OyT4yk=;
-        b=QfDCbyrQQswPbWHeF4odhBkm74lYcdiVAOLE/pkuxHMeNiimFoP8jJvbMZ/UWpdeOJ
-         FlgH4J6aW1rqeotiXdLQaB9CpvNN4exxF3IS9QmohO2BYFq2BFX5rj39zQHuKyRlLMTW
-         0tJHGM5NDOoIyPRIc/bbkPAMcvTMeYXbz8cruts+AN+sqnWWJJyfgiGyGIcns4G6TsbU
-         P2z/Hr49K8qXWM3GAq4Hd19YOYVjJUqOGOgMsS4nw+YaIQT16fVly9EUWLIClKtpOVVv
-         2LjBFJ2HZxvLx7NvmutrgPaWgQLn+oNa2f53sPeNupDH/XnZU75x1nYdrgLq+F5LZNpt
-         7C1g==
-X-Gm-Message-State: AOAM530slqnikiA9iGEJ918Yn2hkQ6G3fNsPKv9omMSogsZ5gnytzXcH
-        BQGoIhmqbRXkZcZbY088pNZHTkAvSNlB6R6uw6JbYtO9UopOVDM6dZr9J3AYSkwwKOb3zQ99Y4C
-        omTwekEM4HEZtVUs=
-X-Received: by 2002:a17:90a:3d03:: with SMTP id h3mr225616pjc.11.1603424355489;
-        Thu, 22 Oct 2020 20:39:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyv23uYqZDffkjIj1VsRJUyvZIEjyebK4Ka+EAFWFmRpLbzio51czi97udeP2fBj2vX5OLETQ==
-X-Received: by 2002:a17:90a:3d03:: with SMTP id h3mr225583pjc.11.1603424355093;
-        Thu, 22 Oct 2020 20:39:15 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=B3C3SM+mTODeDpoZqXrRuy+dLn2cT9haezbBAbLVhV4=;
+        b=M7Czujio3D4ZJnM1g6nqOkC6OrcliOwxGGZV3j2YvROYZ1H1HOfogwv+nJfcLEdvXK
+         XleDeD2PrEDOTlKiE2Z1oa7IztxRwCVeuZfHEhqn1NORnRU8T+hVB4gMEII9erYfiqmy
+         yHz0PbHe0kgzWwdT9SsWJNteVVJl7MhXDzPYjWmlQpwD4sKe/xK3BaLsqR7SYyRG+bYo
+         MJ3ceYWw2qAyJEiTe2lThW9GRFvqXoyzsVHIIw9zo8ExWly9DyhaAW7Id0X8Bpb7Sv0+
+         GJPvJ5AYXT4b4ZHSuYNPqZOCZOP/uOm/fTmbSXw0od8M6ZqhT3Z3DO/0U6DinTnPJDm6
+         dwtg==
+X-Gm-Message-State: AOAM533gkGm64Ay2C1WW2DIqrZs4pAnRtT49QYRtQ98mklFIW/r+pSd+
+        xhscJXl1K3nTrG1+BYwIQ8HGQFZgt1qmHEq9Cgn6S7/xUc027UYQz248PPbsYZlLYdPI5Ksn5jh
+        OuoBCcp5+MsPbXKo=
+X-Received: by 2002:a17:902:7102:b029:d3:ef48:e51e with SMTP id a2-20020a1709027102b02900d3ef48e51emr381257pll.72.1603424360479;
+        Thu, 22 Oct 2020 20:39:20 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwQDklxYjdiPoiDKucBCtpdVJp7y3DdzO7/hWtma/5zMPURfCb/2pQ1Ulp7RYDQXxssh+BnTA==
+X-Received: by 2002:a17:902:7102:b029:d3:ef48:e51e with SMTP id a2-20020a1709027102b02900d3ef48e51emr381242pll.72.1603424360239;
+        Thu, 22 Oct 2020 20:39:20 -0700 (PDT)
 Received: from localhost.localdomain.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id e23sm185442pfi.191.2020.10.22.20.39.10
+        by smtp.gmail.com with ESMTPSA id e23sm185442pfi.191.2020.10.22.20.39.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Oct 2020 20:39:14 -0700 (PDT)
+        Thu, 22 Oct 2020 20:39:19 -0700 (PDT)
 From:   Hangbin Liu <haliu@redhat.com>
 To:     Stephen Hemminger <stephen@networkplumber.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -62,469 +63,98 @@ Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
         Andrii Nakryiko <andrii@kernel.org>,
         =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Hangbin Liu <haliu@redhat.com>
-Subject: [PATCH iproute2-next 0/5] iproute2: add libbpf support
-Date:   Fri, 23 Oct 2020 11:38:50 +0800
-Message-Id: <20201023033855.3894509-1-haliu@redhat.com>
+Subject: [PATCH iproute2-next 1/5] configure: add check_libbpf() for later libbpf support
+Date:   Fri, 23 Oct 2020 11:38:51 +0800
+Message-Id: <20201023033855.3894509-2-haliu@redhat.com>
 X-Mailer: git-send-email 2.25.4
+In-Reply-To: <20201023033855.3894509-1-haliu@redhat.com>
+References: <20201023033855.3894509-1-haliu@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series converts iproute2 to use libbpf for loading and attaching
-BPF programs when it is available. This means that iproute2 will
-correctly process BTF information and support the new-style BTF-defined
-maps, while keeping compatibility with the old internal map definition
-syntax.
+This patch adds a check to see if we support libbpf. By default the
+system libbpf will be used, but static linking against a custom libbpf
+version can be achieved by passing LIBBPF_DIR to configure. FORCE_LIBBPF
+can be set to force configure to abort if no suitable libbpf is found,
+which is useful for automatic packaging that wants to enforce the
+dependency.
 
-This is achieved by checking for libbpf at './configure' time, and using
-it if available. By default the system libbpf will be used, but static
-linking against a custom libbpf version can be achieved by passing
-LIBBPF_DIR to configure. FORCE_LIBBPF can be set to force configure to
-abort if no suitable libbpf is found (useful for automatic packaging
-that wants to enforce the dependency).
+Reviewed-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Signed-off-by: Hangbin Liu <haliu@redhat.com>
+---
+ configure | 48 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
-The old iproute2 bpf code is kept and will be used if no suitable libbpf
-is available. When using libbpf, wrapper code ensures that iproute2 will
-still understand the old map definition format, including populating
-map-in-map and tail call maps before load.
-
-The examples in bpf/examples are kept, and a separate set of examples
-are added with BTF-based map definitions for those examples where this
-is possible (libbpf doesn't currently support declaratively populating
-tail call maps).
-
-At last, Thanks a lot for Toke's help on this patch set.
-
-Here are the test results with patched iproute2:
-
-== setup env
-# clang -O2 -Wall -g -target bpf -c bpf_graft.c -o btf_graft.o
-# clang -O2 -Wall -g -target bpf -c bpf_map_in_map.c -o btf_map_in_map.o
-# clang -O2 -Wall -g -target bpf -c bpf_shared.c -o btf_shared.o
-# clang -O2 -Wall -g -target bpf -c legacy/bpf_cyclic.c -o bpf_cyclic.o
-# clang -O2 -Wall -g -target bpf -c legacy/bpf_graft.c -o bpf_graft.o
-# clang -O2 -Wall -g -target bpf -c legacy/bpf_map_in_map.c -o bpf_map_in_map.o
-# clang -O2 -Wall -g -target bpf -c legacy/bpf_shared.c -o bpf_shared.o
-# clang -O2 -Wall -g -target bpf -c legacy/bpf_tailcall.c -o bpf_tailcall.o
-# rm -rf /sys/fs/bpf/xdp/globals
-# /root/iproute2/ip/ip link add type veth
-# /root/iproute2/ip/ip link set veth0 up
-# /root/iproute2/ip/ip link set veth1 up
-
-
-== Load objs
-# /root/iproute2/ip/ip link set veth0 xdp obj bpf_graft.o sec aaa
-# /root/iproute2/ip/ip link show veth0
-5: veth0@veth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc noqueue state UP mode DEFAULT group default qlen 1000
-    link/ether 6a:e6:fa:2b:4e:1f brd ff:ff:ff:ff:ff:ff
-    prog/xdp id 4 tag 3056d2382e53f27c jited
-# ls /sys/fs/bpf/xdp/globals
-jmp_tc
-# bpftool map show
-1: prog_array  name jmp_tc  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-# bpftool prog show
-4: xdp  name cls_aaa  tag 3056d2382e53f27c  gpl
-        loaded_at 2020-10-22T08:04:21-0400  uid 0
-        xlated 80B  jited 71B  memlock 4096B
-        btf_id 5
-# /root/iproute2/ip/ip link set veth0 xdp off
-# /root/iproute2/ip/ip link set veth0 xdp obj bpf_map_in_map.o sec ingress
-# /root/iproute2/ip/ip link show veth0
-5: veth0@veth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc noqueue state UP mode DEFAULT group default qlen 1000
-    link/ether 6a:e6:fa:2b:4e:1f brd ff:ff:ff:ff:ff:ff
-    prog/xdp id 8 tag 4420e72b2a601ed7 jited
-# ls /sys/fs/bpf/xdp/globals
-jmp_tc  map_inner  map_outer
-# bpftool map show
-1: prog_array  name jmp_tc  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-2: array  name map_inner  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-3: array_of_maps  name map_outer  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-# bpftool prog show
-8: xdp  name imain  tag 4420e72b2a601ed7  gpl
-        loaded_at 2020-10-22T08:04:23-0400  uid 0
-        xlated 336B  jited 193B  memlock 4096B  map_ids 3
-        btf_id 10
-# /root/iproute2/ip/ip link set veth0 xdp off
-# /root/iproute2/ip/ip link set veth0 xdp obj bpf_shared.o sec ingress
-# /root/iproute2/ip/ip link show veth0
-5: veth0@veth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc noqueue state UP mode DEFAULT group default qlen 1000
-    link/ether 6a:e6:fa:2b:4e:1f brd ff:ff:ff:ff:ff:ff
-    prog/xdp id 12 tag 9cbab549c3af3eab jited
-# ls /sys/fs/bpf/xdp/7a1422e90cd81478f97bc33fbd7782bcb3b868ef /sys/fs/bpf/xdp/globals
-/sys/fs/bpf/xdp/7a1422e90cd81478f97bc33fbd7782bcb3b868ef:
-map_sh
-
-/sys/fs/bpf/xdp/globals:
-jmp_tc  map_inner  map_outer
-# bpftool map show
-1: prog_array  name jmp_tc  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-2: array  name map_inner  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-3: array_of_maps  name map_outer  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-4: array  name map_sh  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-# bpftool prog show
-12: xdp  name imain  tag 9cbab549c3af3eab  gpl
-        loaded_at 2020-10-22T08:04:25-0400  uid 0
-        xlated 224B  jited 139B  memlock 4096B  map_ids 4
-        btf_id 15
-# /root/iproute2/ip/ip link set veth0 xdp off
-
-
-== Load objs again to make sure maps could be reused
-# /root/iproute2/ip/ip link set veth0 xdp obj bpf_graft.o sec aaa
-# /root/iproute2/ip/ip link show veth0
-5: veth0@veth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc noqueue state UP mode DEFAULT group default qlen 1000
-    link/ether 6a:e6:fa:2b:4e:1f brd ff:ff:ff:ff:ff:ff
-    prog/xdp id 16 tag 3056d2382e53f27c jited
-# ls /sys/fs/bpf/xdp/7a1422e90cd81478f97bc33fbd7782bcb3b868ef /sys/fs/bpf/xdp/globals
-/sys/fs/bpf/xdp/7a1422e90cd81478f97bc33fbd7782bcb3b868ef:
-map_sh
-
-/sys/fs/bpf/xdp/globals:
-jmp_tc  map_inner  map_outer
-# bpftool map show
-1: prog_array  name jmp_tc  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-2: array  name map_inner  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-3: array_of_maps  name map_outer  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-4: array  name map_sh  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-# bpftool prog show
-16: xdp  name cls_aaa  tag 3056d2382e53f27c  gpl
-        loaded_at 2020-10-22T08:04:27-0400  uid 0
-        xlated 80B  jited 71B  memlock 4096B
-        btf_id 20
-# /root/iproute2/ip/ip link set veth0 xdp off
-# /root/iproute2/ip/ip link set veth0 xdp obj bpf_map_in_map.o sec ingress
-# /root/iproute2/ip/ip link show veth0
-5: veth0@veth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc noqueue state UP mode DEFAULT group default qlen 1000
-    link/ether 6a:e6:fa:2b:4e:1f brd ff:ff:ff:ff:ff:ff
-    prog/xdp id 20 tag 4420e72b2a601ed7 jited
-# ls /sys/fs/bpf/xdp/7a1422e90cd81478f97bc33fbd7782bcb3b868ef /sys/fs/bpf/xdp/globals
-/sys/fs/bpf/xdp/7a1422e90cd81478f97bc33fbd7782bcb3b868ef:
-map_sh
-
-/sys/fs/bpf/xdp/globals:
-jmp_tc  map_inner  map_outer
-# bpftool map show                                                                                                                                                                   [236/4518]
-1: prog_array  name jmp_tc  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-2: array  name map_inner  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-3: array_of_maps  name map_outer  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-4: array  name map_sh  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-# bpftool prog show
-20: xdp  name imain  tag 4420e72b2a601ed7  gpl
-        loaded_at 2020-10-22T08:04:29-0400  uid 0
-        xlated 336B  jited 193B  memlock 4096B  map_ids 3
-        btf_id 25
-# /root/iproute2/ip/ip link set veth0 xdp off
-# /root/iproute2/ip/ip link set veth0 xdp obj bpf_shared.o sec ingress
-# /root/iproute2/ip/ip link show veth0
-5: veth0@veth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc noqueue state UP mode DEFAULT group default qlen 1000
-    link/ether 6a:e6:fa:2b:4e:1f brd ff:ff:ff:ff:ff:ff
-    prog/xdp id 24 tag 9cbab549c3af3eab jited
-# ls /sys/fs/bpf/xdp/7a1422e90cd81478f97bc33fbd7782bcb3b868ef /sys/fs/bpf/xdp/globals
-/sys/fs/bpf/xdp/7a1422e90cd81478f97bc33fbd7782bcb3b868ef:
-map_sh
-
-/sys/fs/bpf/xdp/globals:
-jmp_tc  map_inner  map_outer
-# bpftool map show
-1: prog_array  name jmp_tc  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-2: array  name map_inner  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-3: array_of_maps  name map_outer  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-4: array  name map_sh  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-# bpftool prog show
-24: xdp  name imain  tag 9cbab549c3af3eab  gpl
-        loaded_at 2020-10-22T08:04:31-0400  uid 0
-        xlated 224B  jited 139B  memlock 4096B  map_ids 4
-        btf_id 30
-# /root/iproute2/ip/ip link set veth0 xdp off
-# rm -rf /sys/fs/bpf/xdp/7a1422e90cd81478f97bc33fbd7782bcb3b868ef /sys/fs/bpf/xdp/globals
-
-== Testing if we can load new-style objects (using xdp-filter as an example)
-# /root/iproute2/ip/ip link set veth0 xdp obj /usr/lib64/bpf/xdpfilt_alw_all.o sec xdp_filter
-# /root/iproute2/ip/ip link show veth0
-5: veth0@veth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc noqueue state UP mode DEFAULT group default qlen 1000
-    link/ether 6a:e6:fa:2b:4e:1f brd ff:ff:ff:ff:ff:ff
-    prog/xdp id 28 tag e29eeda1489a6520 jited
-# ls /sys/fs/bpf/xdp/globals
-filter_ethernet  filter_ipv4  filter_ipv6  filter_ports  xdp_stats_map
-# bpftool map show
-5: percpu_array  name xdp_stats_map  flags 0x0
-        key 4B  value 16B  max_entries 5  memlock 4096B
-        btf_id 35
-6: percpu_array  name filter_ports  flags 0x0
-        key 4B  value 8B  max_entries 65536  memlock 1576960B
-        btf_id 35
-7: percpu_hash  name filter_ipv4  flags 0x0
-        key 4B  value 8B  max_entries 10000  memlock 1064960B
-        btf_id 35
-8: percpu_hash  name filter_ipv6  flags 0x0
-        key 16B  value 8B  max_entries 10000  memlock 1142784B
-        btf_id 35
-9: percpu_hash  name filter_ethernet  flags 0x0
-        key 6B  value 8B  max_entries 10000  memlock 1064960B
-        btf_id 35
-# bpftool prog show
-28: xdp  name xdpfilt_alw_all  tag e29eeda1489a6520  gpl
-        loaded_at 2020-10-22T08:04:33-0400  uid 0
-        xlated 2408B  jited 1405B  memlock 4096B  map_ids 9,5,7,8,6
-        btf_id 35
-# /root/iproute2/ip/ip link set veth0 xdp off
-# /root/iproute2/ip/ip link set veth0 xdp obj /usr/lib64/bpf/xdpfilt_alw_ip.o sec xdp_filter
-# /root/iproute2/ip/ip link show veth0
-5: veth0@veth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc noqueue state UP mode DEFAULT group default qlen 1000
-    link/ether 6a:e6:fa:2b:4e:1f brd ff:ff:ff:ff:ff:ff
-    prog/xdp id 32 tag 2f2b9dbfb786a5a2 jited
-# ls /sys/fs/bpf/xdp/globals
-filter_ethernet  filter_ipv4  filter_ipv6  filter_ports  xdp_stats_map
-# bpftool map show
-5: percpu_array  name xdp_stats_map  flags 0x0
-        key 4B  value 16B  max_entries 5  memlock 4096B
-        btf_id 35
-6: percpu_array  name filter_ports  flags 0x0
-        key 4B  value 8B  max_entries 65536  memlock 1576960B
-        btf_id 35
-7: percpu_hash  name filter_ipv4  flags 0x0
-        key 4B  value 8B  max_entries 10000  memlock 1064960B
-        btf_id 35
-8: percpu_hash  name filter_ipv6  flags 0x0
-        key 16B  value 8B  max_entries 10000  memlock 1142784B
-        btf_id 35
-9: percpu_hash  name filter_ethernet  flags 0x0
-        key 6B  value 8B  max_entries 10000  memlock 1064960B
-        btf_id 35
-# bpftool prog show
-32: xdp  name xdpfilt_alw_ip  tag 2f2b9dbfb786a5a2  gpl
-        loaded_at 2020-10-22T08:04:35-0400  uid 0
-        xlated 1336B  jited 778B  memlock 4096B  map_ids 7,8,5
-        btf_id 40
-# /root/iproute2/ip/ip link set veth0 xdp off
-# /root/iproute2/ip/ip link set veth0 xdp obj /usr/lib64/bpf/xdpfilt_alw_tcp.o sec xdp_filter
-# /root/iproute2/ip/ip link show veth0
-5: veth0@veth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc noqueue state UP mode DEFAULT group default qlen 1000
-    link/ether 6a:e6:fa:2b:4e:1f brd ff:ff:ff:ff:ff:ff
-    prog/xdp id 36 tag 18c1bb25084030bc jited
-# ls /sys/fs/bpf/xdp/globals
-filter_ethernet  filter_ipv4  filter_ipv6  filter_ports  xdp_stats_map
-# bpftool map show
-5: percpu_array  name xdp_stats_map  flags 0x0
-        key 4B  value 16B  max_entries 5  memlock 4096B
-        btf_id 35
-6: percpu_array  name filter_ports  flags 0x0
-        key 4B  value 8B  max_entries 65536  memlock 1576960B
-        btf_id 35
-7: percpu_hash  name filter_ipv4  flags 0x0
-        key 4B  value 8B  max_entries 10000  memlock 1064960B
-        btf_id 35
-8: percpu_hash  name filter_ipv6  flags 0x0
-        key 16B  value 8B  max_entries 10000  memlock 1142784B
-        btf_id 35
-9: percpu_hash  name filter_ethernet  flags 0x0
-        key 6B  value 8B  max_entries 10000  memlock 1064960B
-        btf_id 35
-# bpftool prog show
-36: xdp  name xdpfilt_alw_tcp  tag 18c1bb25084030bc  gpl
-        loaded_at 2020-10-22T08:04:37-0400  uid 0
-        xlated 1128B  jited 690B  memlock 4096B  map_ids 6,5
-        btf_id 45
-# /root/iproute2/ip/ip link set veth0 xdp off
-# rm -rf /sys/fs/bpf/xdp/globals
-
-
-== Load new btf defined maps
-# /root/iproute2/ip/ip link set veth0 xdp obj btf_graft.o sec aaa
-# /root/iproute2/ip/ip link show veth0
-5: veth0@veth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc noqueue state UP mode DEFAULT group default qlen 1000
-    link/ether 6a:e6:fa:2b:4e:1f brd ff:ff:ff:ff:ff:ff
-    prog/xdp id 40 tag 3056d2382e53f27c jited
-# ls /sys/fs/bpf/xdp/globals
-jmp_tc
-# bpftool map show
-10: prog_array  name jmp_tc  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-# bpftool prog show
-40: xdp  name cls_aaa  tag 3056d2382e53f27c  gpl
-        loaded_at 2020-10-22T08:04:39-0400  uid 0
-        xlated 80B  jited 71B  memlock 4096B
-        btf_id 50
-# /root/iproute2/ip/ip link set veth0 xdp off
-# /root/iproute2/ip/ip link set veth0 xdp obj btf_map_in_map.o sec ingress
-# /root/iproute2/ip/ip link show veth0
-5: veth0@veth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc noqueue state UP mode DEFAULT group default qlen 1000
-    link/ether 6a:e6:fa:2b:4e:1f brd ff:ff:ff:ff:ff:ff
-    prog/xdp id 44 tag 4420e72b2a601ed7 jited
-# ls /sys/fs/bpf/xdp/globals
-jmp_tc  map_outer
-# bpftool map show
-10: prog_array  name jmp_tc  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-11: array  name map_inner  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-13: array_of_maps  name map_outer  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-# bpftool prog show
-44: xdp  name imain  tag 4420e72b2a601ed7  gpl
-        loaded_at 2020-10-22T08:04:41-0400  uid 0
-        xlated 336B  jited 193B  memlock 4096B  map_ids 13
-        btf_id 55
-# /root/iproute2/ip/ip link set veth0 xdp off
-# /root/iproute2/ip/ip link set veth0 xdp obj btf_shared.o sec ingress
-# /root/iproute2/ip/ip link show veth0
-5: veth0@veth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 xdp qdisc noqueue state UP mode DEFAULT group default qlen 1000
-    link/ether 6a:e6:fa:2b:4e:1f brd ff:ff:ff:ff:ff:ff
-    prog/xdp id 48 tag 9cbab549c3af3eab jited
-# ls /sys/fs/bpf/xdp/globals
-jmp_tc  map_outer  map_sh
-# bpftool map show
-10: prog_array  name jmp_tc  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-11: array  name map_inner  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-13: array_of_maps  name map_outer  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-14: array  name map_sh  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-# bpftool prog show
-48: xdp  name imain  tag 9cbab549c3af3eab  gpl
-        loaded_at 2020-10-22T08:04:43-0400  uid 0
-        xlated 224B  jited 139B  memlock 4096B  map_ids 14
-        btf_id 60
-# /root/iproute2/ip/ip link set veth0 xdp off
-# rm -rf /sys/fs/bpf/xdp/globals
-
-
-== Test load objs by tc
-# /root/iproute2/tc/tc qdisc add dev veth0 ingress
-# /root/iproute2/tc/tc filter add dev veth0 ingress bpf da obj bpf_cyclic.o sec 0xabccba/0
-# /root/iproute2/tc/tc filter add dev veth0 parent ffff: bpf obj bpf_graft.o
-# /root/iproute2/tc/tc filter add dev veth0 ingress bpf da obj bpf_tailcall.o sec 42/0
-# /root/iproute2/tc/tc filter add dev veth0 ingress bpf da obj bpf_tailcall.o sec 42/1
-# /root/iproute2/tc/tc filter add dev veth0 ingress bpf da obj bpf_tailcall.o sec 43/0
-# /root/iproute2/tc/tc filter add dev veth0 ingress bpf da obj bpf_tailcall.o sec classifier
-# /root/iproute2/ip/ip link show veth0
-5: veth0@veth1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
-    link/ether 6a:e6:fa:2b:4e:1f brd ff:ff:ff:ff:ff:ff
-# ls /sys/fs/bpf/xdp/37e88cb3b9646b2ea5f99ab31069ad88db06e73d /sys/fs/bpf/xdp/fc68fe3e96378a0cba284ea6acbe17e898d8b11f /sys/fs/bpf/xdp/globals
-/sys/fs/bpf/xdp/37e88cb3b9646b2ea5f99ab31069ad88db06e73d:
-jmp_tc
-
-/sys/fs/bpf/xdp/fc68fe3e96378a0cba284ea6acbe17e898d8b11f:
-jmp_ex  jmp_tc  map_sh
-
-/sys/fs/bpf/xdp/globals:
-jmp_tc
-# bpftool map show
-15: prog_array  name jmp_tc  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-        owner_prog_type sched_cls  owner jited
-16: prog_array  name jmp_tc  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-        owner_prog_type sched_cls  owner jited
-17: prog_array  name jmp_ex  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-        owner_prog_type sched_cls  owner jited
-18: prog_array  name jmp_tc  flags 0x0
-        key 4B  value 4B  max_entries 2  memlock 4096B
-        owner_prog_type sched_cls  owner jited
-19: array  name map_sh  flags 0x0
-        key 4B  value 4B  max_entries 1  memlock 4096B
-# bpftool prog show
-52: sched_cls  name cls_loop  tag 3e98a40b04099d36  gpl
-        loaded_at 2020-10-22T08:04:45-0400  uid 0
-        xlated 168B  jited 133B  memlock 4096B  map_ids 15
-        btf_id 65
-56: sched_cls  name cls_entry  tag 0fbb4d9310a6ee26  gpl
-        loaded_at 2020-10-22T08:04:45-0400  uid 0
-        xlated 144B  jited 121B  memlock 4096B  map_ids 16
-        btf_id 70
-60: sched_cls  name cls_case1  tag e06a3bd62293d65d  gpl
-        loaded_at 2020-10-22T08:04:45-0400  uid 0
-        xlated 328B  jited 216B  memlock 4096B  map_ids 19,17
-        btf_id 75
-66: sched_cls  name cls_case1  tag e06a3bd62293d65d  gpl
-        loaded_at 2020-10-22T08:04:45-0400  uid 0
-        xlated 328B  jited 216B  memlock 4096B  map_ids 19,17
-        btf_id 80
-72: sched_cls  name cls_case1  tag e06a3bd62293d65d  gpl
-        loaded_at 2020-10-22T08:04:45-0400  uid 0
-        xlated 328B  jited 216B  memlock 4096B  map_ids 19,17
-        btf_id 85
-78: sched_cls  name cls_case1  tag e06a3bd62293d65d  gpl
-        loaded_at 2020-10-22T08:04:45-0400  uid 0
-        xlated 328B  jited 216B  memlock 4096B  map_ids 19,17
-        btf_id 90
-79: sched_cls  name cls_case2  tag ee218ff893dca823  gpl
-        loaded_at 2020-10-22T08:04:45-0400  uid 0
-        xlated 336B  jited 218B  memlock 4096B  map_ids 19,18
-        btf_id 90
-80: sched_cls  name cls_exit  tag e78a58140deed387  gpl
-        loaded_at 2020-10-22T08:04:45-0400  uid 0
-        xlated 288B  jited 177B  memlock 4096B  map_ids 19
-        btf_id 90
-
-I also run the following upstream kselftest with patches iproute2 and
-all passed.
-
-test_lwt_ip_encap.sh
-test_xdp_redirect.sh
-test_tc_redirect.sh
-test_xdp_meta.sh
-test_xdp_veth.sh
-test_xdp_vlan.sh
-
-
-Hangbin Liu (5):
-  configure: add check_libbpf() for later libbpf support
-  lib: rename bpf.c to bpf_legacy.c
-  lib: add libbpf support
-  examples/bpf: move struct bpf_elf_map defined maps to legacy folder
-  examples/bpf: add bpf examples with BTF defined maps
-
- configure                                |  48 ++++
- examples/bpf/README                      |  18 +-
- examples/bpf/bpf_graft.c                 |  14 +-
- examples/bpf/bpf_map_in_map.c            |  37 ++-
- examples/bpf/bpf_shared.c                |  14 +-
- examples/bpf/{ => legacy}/bpf_cyclic.c   |   2 +-
- examples/bpf/legacy/bpf_graft.c          |  66 +++++
- examples/bpf/legacy/bpf_map_in_map.c     |  56 ++++
- examples/bpf/legacy/bpf_shared.c         |  53 ++++
- examples/bpf/{ => legacy}/bpf_tailcall.c |   2 +-
- include/bpf_api.h                        |  13 +
- include/bpf_util.h                       |  17 +-
- ip/ipvrf.c                               |   4 +-
- lib/Makefile                             |   6 +-
- lib/{bpf.c => bpf_legacy.c}              | 184 +++++++++++-
- lib/bpf_libbpf.c                         | 338 +++++++++++++++++++++++
- 16 files changed, 824 insertions(+), 48 deletions(-)
- rename examples/bpf/{ => legacy}/bpf_cyclic.c (95%)
- create mode 100644 examples/bpf/legacy/bpf_graft.c
- create mode 100644 examples/bpf/legacy/bpf_map_in_map.c
- create mode 100644 examples/bpf/legacy/bpf_shared.c
- rename examples/bpf/{ => legacy}/bpf_tailcall.c (98%)
- rename lib/{bpf.c => bpf_legacy.c} (94%)
- create mode 100644 lib/bpf_libbpf.c
-
+diff --git a/configure b/configure
+index 307912aa..77f475d9 100755
+--- a/configure
++++ b/configure
+@@ -240,6 +240,51 @@ check_elf()
+     fi
+ }
+ 
++check_libbpf()
++{
++    if ${PKG_CONFIG} libbpf --exists || [ -n "$LIBBPF_DIR" ] ; then
++
++        if [ -n "$LIBBPF_DIR" ]; then
++            LIBBPF_CFLAGS="-I${LIBBPF_DIR}/include -L${LIBBPF_DIR}/lib64"
++            LIBBPF_LDLIBS="${LIBBPF_DIR}/lib64/libbpf.a -lz -lelf"
++        else
++            LIBBPF_CFLAGS=$(${PKG_CONFIG} libbpf --cflags)
++            LIBBPF_LDLIBS=$(${PKG_CONFIG} libbpf --libs)
++        fi
++
++        cat >$TMPDIR/libbpftest.c <<EOF
++#include <bpf/libbpf.h>
++int main(int argc, char **argv) {
++    void *ptr;
++    DECLARE_LIBBPF_OPTS(bpf_object_open_opts, opts, .relaxed_maps = true, .pin_root_path = "/path");
++    (void) bpf_object__open_file("file", &opts);
++    (void) bpf_map__name(ptr);
++    (void) bpf_map__ifindex(ptr);
++    (void) bpf_map__reuse_fd(ptr, 0);
++    (void) bpf_map__pin(ptr, "/path");
++    return 0;
++}
++EOF
++
++        if $CC -o $TMPDIR/libbpftest $TMPDIR/libbpftest.c $LIBBPF_CFLAGS -lbpf 2>&1; then
++            echo "HAVE_LIBBPF:=y" >>$CONFIG
++            echo 'CFLAGS += -DHAVE_LIBBPF ' $LIBBPF_CFLAGS >> $CONFIG
++            echo 'LDLIBS += ' $LIBBPF_LDLIBS >>$CONFIG
++            echo "yes"
++            return 0
++        fi
++    fi
++
++    echo "no"
++
++    # if set FORCE_LIBBPF but no libbpf support, just exist the config
++    # process to make sure we don't build without libbpf.
++    if [ -n "$FORCE_LIBBPF" ]; then
++	    echo "FORCE_LIBBPF set, but couldn't find a usable libbpf"
++	    exit 1
++    fi
++}
++
+ check_selinux()
+ # SELinux is a compile time option in the ss utility
+ {
+@@ -385,6 +430,9 @@ check_setns
+ echo -n "SELinux support: "
+ check_selinux
+ 
++echo -n "libbpf support: "
++check_libbpf
++
+ echo -n "ELF support: "
+ check_elf
+ 
 -- 
 2.25.4
 
