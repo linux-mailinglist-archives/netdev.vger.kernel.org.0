@@ -2,48 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B62529781B
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 22:12:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D883297827
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 22:18:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1755867AbgJWUK6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 16:10:58 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42272 "EHLO vps0.lunn.ch"
+        id S1755995AbgJWUSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 16:18:18 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:42302 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1755859AbgJWUK5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Oct 2020 16:10:57 -0400
+        id S1755987AbgJWUSS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Oct 2020 16:18:18 -0400
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1kW3Og-003AhL-PB; Fri, 23 Oct 2020 22:10:46 +0200
-Date:   Fri, 23 Oct 2020 22:10:46 +0200
+        id 1kW3Vn-003Ake-7G; Fri, 23 Oct 2020 22:18:07 +0200
+Date:   Fri, 23 Oct 2020 22:18:07 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Jakub Kicinski <kuba@kernel.org>,
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Sekhar Nori <nsekhar@ti.com>, linux-kernel@vger.kernel.org,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Roger Quadros <rogerq@ti.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Subject: Re: [PATCH] RFC: net: phy: of phys probe/reset issue
-Message-ID: <20201023201046.GB752111@lunn.ch>
-References: <20201023174750.21356-1-grygorii.strashko@ti.com>
- <450d262e-242c-77f1-9f06-e25943cc595c@gmail.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        David Jander <david@protonic.nl>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
+        Marek Vasut <marex@denx.de>, linux-can@vger.kernel.org
+Subject: Re: [RFC PATCH v1 1/6] net: phy: add CAN PHY Virtual Bus
+Message-ID: <20201023201807.GC752111@lunn.ch>
+References: <20201023105626.6534-1-o.rempel@pengutronix.de>
+ <20201023105626.6534-2-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <450d262e-242c-77f1-9f06-e25943cc595c@gmail.com>
+In-Reply-To: <20201023105626.6534-2-o.rempel@pengutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Yes there is: have your Ethernet PHY compatible string be of the form
-> "ethernetAAAA.BBBB" and then there is no need for such hacking.
-> of_get_phy_id() will parse that compatible and that will trigger
-> of_mdiobus_register_phy() to take the phy_device_create() path.
+On Fri, Oct 23, 2020 at 12:56:21PM +0200, Oleksij Rempel wrote:
+> Most of CAN PHYs (transceivers) are not attached to any data bus, so we
+> are not able to communicate with them. For this case, we introduce a CAN
+> specific virtual bus to make use of existing PHY framework.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  drivers/net/phy/Kconfig       |   8 ++
+>  drivers/net/phy/Makefile      |   1 +
+>  drivers/net/phy/can_phy_bus.c | 196 ++++++++++++++++++++++++++++++++++
 
-Yep. That does seem like the cleanest way to do this. Let the PHY
-driver deal with the resources it needs.
+Hi Oleksij
 
-       Andrew
+mdio drivers have moved to drivers/net/mdio.
+
+>  include/linux/can/phy.h       |  21 ++++
+>  4 files changed, 226 insertions(+)
+>  create mode 100644 drivers/net/phy/can_phy_bus.c
+>  create mode 100644 include/linux/can/phy.h
+> 
+> diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
+> index 698bea312adc..39e3f57ea60a 100644
+> --- a/drivers/net/phy/Kconfig
+> +++ b/drivers/net/phy/Kconfig
+> @@ -153,6 +153,14 @@ config BCM_CYGNUS_PHY
+>  config BCM_NET_PHYLIB
+>  	tristate
+>  
+> +config CAN_PHY_BUS
+> +	tristate "Virtual CAN PHY Bus"
+> +	depends on PHYLIB
+> +	help
+> +	  Most CAN PHYs (transceivers) are not attached to any data bus, so we
+> +	  are not able to communicate with them. For this case, a CAN specific
+> +	  virtual bus to make use of existing PHY framework.
+
+Is there anything CAN specific here? Maybe we should just call it a
+virtual PHY bus?
+
+	Andrew
