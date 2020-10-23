@@ -2,133 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A44D29789B
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 23:01:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E6712978A3
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 23:04:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S465760AbgJWVA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 17:00:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34208 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S370824AbgJWVA5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 17:00:57 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94939C0613CE;
-        Fri, 23 Oct 2020 14:00:56 -0700 (PDT)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1603486852;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0RSzWnnhjduTWCuacybUxNyH2jm/Ejki0DZB09ZfMEo=;
-        b=uC/F8SS7ceachXOn7laO0v51Jz5qp/rU44VpsVtuP1Na+r9KOVItKiq2MvIK91/vJKqdM/
-        Yon7/psKTWzxsjJayfT4a72WsiroXOtKf7tzvwjPn5Fri6uLj7pDlxOtFwe4DM4XqReG3m
-        QiPGbJhJac2HT/rR70hkUr0UOq7Pn6lKWKmgnTr40/2fMqKA7qiZguR2dxaaMgmmeJGHzC
-        bv6taa5peKBeMMjOF71Ta78FrppqLS9dSNpODsEjYibkDhoIylQ2mQwweYG4g9fc0pDJfr
-        qKrJ7YsxMLUrh+7aRcH/GMIBQYf42IvPRrPsiYLISmDrqKxG2zoiTpaIIwOLxg==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1603486852;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0RSzWnnhjduTWCuacybUxNyH2jm/Ejki0DZB09ZfMEo=;
-        b=7RgxZS9baabbqKcQfsa0dn/XjSu7U/Vml4D0Og0NWaVNkzdzTSdGSZiL1/090nxRSD5pkh
-        LfLURkRpikZlX+Dg==
-To:     Nitesh Narayan Lal <nitesh@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>
-Cc:     Marcelo Tosatti <mtosatti@redhat.com>, helgaas@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        frederic@kernel.org, sassmann@redhat.com,
-        jesse.brandeburg@intel.com, lihong.yang@intel.com,
-        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
-        jlelli@redhat.com, hch@infradead.org, bhelgaas@google.com,
-        mike.marciniszyn@intel.com, dennis.dalessandro@intel.com,
-        thomas.lendacky@amd.com, jiri@nvidia.com, mingo@redhat.com,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        lgoncalv@redhat.com
-Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to housekeeping CPUs
-In-Reply-To: <9ee77056-ef02-8696-5b96-46007e35ab00@redhat.com>
-References: <20200928183529.471328-5-nitesh@redhat.com> <20201016122046.GP2611@hirez.programming.kicks-ass.net> <79f382a7-883d-ff42-394d-ec4ce81fed6a@redhat.com> <20201019111137.GL2628@hirez.programming.kicks-ass.net> <20201019140005.GB17287@fuller.cnet> <20201020073055.GY2611@hirez.programming.kicks-ass.net> <078e659e-d151-5bc2-a7dd-fe0070267cb3@redhat.com> <20201020134128.GT2628@hirez.programming.kicks-ass.net> <6736e643-d4ae-9919-9ae1-a73d5f31463e@redhat.com> <260f4191-5b9f-6dc1-9f11-085533ac4f55@redhat.com> <20201023085826.GP2611@hirez.programming.kicks-ass.net> <9ee77056-ef02-8696-5b96-46007e35ab00@redhat.com>
-Date:   Fri, 23 Oct 2020 23:00:52 +0200
-Message-ID: <87ft6464jf.fsf@nanos.tec.linutronix.de>
+        id S1752338AbgJWVEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 17:04:33 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:42410 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751213AbgJWVEd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Oct 2020 17:04:33 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kW4Eb-003Azi-6p; Fri, 23 Oct 2020 23:04:25 +0200
+Date:   Fri, 23 Oct 2020 23:04:25 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v3 18/56] net: phy: fix kernel-doc markups
+Message-ID: <20201023210425.GG752111@lunn.ch>
+References: <cover.1603469755.git.mchehab+huawei@kernel.org>
+ <d23c5638c4fd0e7b9f294f2bf647d2386428eb7e.1603469755.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d23c5638c4fd0e7b9f294f2bf647d2386428eb7e.1603469755.git.mchehab+huawei@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 23 2020 at 09:10, Nitesh Narayan Lal wrote:
-> On 10/23/20 4:58 AM, Peter Zijlstra wrote:
->> On Thu, Oct 22, 2020 at 01:47:14PM -0400, Nitesh Narayan Lal wrote:
->> So shouldn't we then fix the drivers / interface first, to get rid of
->> this inconsistency?
->>
-> Considering we agree that excess vector is a problem that needs to be
-> solved across all the drivers and that you are comfortable with the other
-> three patches in the set. If I may suggest the following:
->
-> - We can pick those three patches for now, as that will atleast fix a
-> =C2=A0 driver that is currently impacting RT workloads. Is that a fair
-> =C2=A0 expectation?
+On Fri, Oct 23, 2020 at 06:33:05PM +0200, Mauro Carvalho Chehab wrote:
+> Some functions have different names between their prototypes
+> and the kernel-doc markup.
+> 
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+> ---
+>  drivers/net/phy/mdio_bus.c   | 2 +-
+>  drivers/net/phy/phy-c45.c    | 2 +-
+>  drivers/net/phy/phy.c        | 2 +-
+>  drivers/net/phy/phy_device.c | 2 +-
+>  drivers/net/phy/phylink.c    | 2 +-
+>  5 files changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+> index 757e950fb745..e59067c64e97 100644
+> --- a/drivers/net/phy/mdio_bus.c
+> +++ b/drivers/net/phy/mdio_bus.c
+> @@ -472,7 +472,7 @@ static inline void of_mdiobus_link_mdiodev(struct mii_bus *mdio,
+>  #endif
+>  
+>  /**
+> - * mdiobus_create_device_from_board_info - create a full MDIO device given
+> + * mdiobus_create_device - create a full MDIO device given
+>   * a mdio_board_info structure
+>   * @bus: MDIO bus to create the devices on
+>   * @bi: mdio_board_info structure describing the devices
 
-No. Blindly reducing the maximum vectors to the number of housekeeping
-CPUs is patently wrong. The PCI core _cannot_ just nilly willy decide
-what the right number of interrupts for this situation is.
+Hi Mauro
 
-Many of these drivers need more than queue interrupts, admin, error
-interrupt and some operate best with seperate RX/TX interrupts per
-queue. They all can "work" with a single PCI interrupt of course, but
-the price you pay is performance.
+If you need to repost, could you make use of:
 
-An isolated setup, which I'm familiar with, has two housekeeping
-CPUs. So far I restricted the number of network queues with a module
-argument to two, which allocates two management interrupts for the
-device and two interrupts (RX/TX) per queue, i.e. a total of six.
+-U<n>
+--unified=<n>
+Generate diffs with <n> lines of context instead of the usual three.
 
-Now I reduced the number of available interrupts to two according to
-your hack, which makes it use one queue RX/TX combined and one
-management interrupt. Guess what happens? Network performance tanks to
-the points that it breaks a carefully crafted setup.
+to increase the number of lines of context. Often three lines is not
+enough to include the function declaration in the patch, so i need to
+go look at the sources to do a review. 
 
-The same applies to a device which is application specific and wants one
-channel including an interrupt per isolated application core. Today I
-can isolate 8 out of 12 CPUs and let the device create 8 channels and
-set one interrupt and channel affine to each isolated CPU. With your
-hack, I get only 4 interrupts and channels. Fail!
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-You cannot declare that all this is perfectly fine, just because it does
-not matter for your particular use case.
-
-So without information from the driver which tells what the best number
-of interrupts is with a reduced number of CPUs, this cutoff will cause
-more problems than it solves. Regressions guaranteed.
-
-Managed interrupts base their interrupt allocation and spreading on
-information which is handed in by the individual driver and not on crude
-assumptions. They are not imposing restrictions on the use case.
-
-It's perfectly fine for isolated work to save a data set to disk after
-computation has finished and that just works with the per-cpu I/O queue
-which is otherwise completely silent. All isolated workers can do the
-same in parallel without trampling on each other toes by competing for a
-reduced number of queues which are affine to the housekeeper CPUs.
-
-Unfortunately network multi-queue is substantially different from block
-multi-queue (as I learned in this conversation), so the concept cannot
-be applied one-to-one to networking as is. But there are certainly part
-of it which can be reused.
-
-This needs a lot more thought than just these crude hacks.
-
-Especially under the aspect that there are talks about making isolation
-runtime switchable. Are you going to rmmod/insmod the i40e network
-driver to do so? That's going to work fine if you do that
-reconfiguration over network...
-
-Thanks,
-
-        tglx
+    Andrew
