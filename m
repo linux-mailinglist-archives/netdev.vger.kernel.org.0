@@ -2,58 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC06D29724D
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 17:29:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83468297260
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 17:34:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S465826AbgJWP3X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 11:29:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53246 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S465813AbgJWP3X (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Oct 2020 11:29:23 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S465906AbgJWPeh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 11:34:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:34737 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S462662AbgJWPeh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 11:34:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603467276;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ADAkD04qBn0B56sR0AT6lBpOwDqugN8IZrafwTxz76g=;
+        b=eG88lGXGygBi0iqfHOorbRDDY27yfRke7h7SuhIx5J+3s3D7Sj9XcAYe5KWu3lZexvsPg1
+        gjI+61y10+4t4AVLL0rHMU/bK572E41XqhIcZC+N0oDWmlKPs2JEBNVHLFbJpdhTu1oxx+
+        kF9kabttyc4w2LA//lLWoFi5h1FAl4M=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-234-6fLU9xqyN5Wrrt4Zl_bywg-1; Fri, 23 Oct 2020 11:34:33 -0400
+X-MC-Unique: 6fLU9xqyN5Wrrt4Zl_bywg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 801ED21D47;
-        Fri, 23 Oct 2020 15:29:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603466962;
-        bh=S5Kn3O68f3PPLfkqkvktfe3VeUC3zGbtEVTjNDfQ1dI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=k2SO/YRozuovEuKIf8sn6zUN/XwdtHaF9gL3hkJKPAE6Cs643zu+niAbpUS4R4MtE
-         ECSBECy/GVl/FeWRYrh2+Ce0w0QPLyOF+eEzKzhkkpFk24bKCBubpTQ56pPrt2l1gy
-         7So0ful2VpPJKGQZVYEeMaKyIsl2cYqkIWzORdN4=
-Date:   Fri, 23 Oct 2020 08:29:20 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Subject: Re: [RFC][PATCH v3 3/3] Rename nla_strlcpy to nla_strscpy.
-Message-ID: <20201023082920.6addf3cb@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <b55d502089c44b3589973fa4e0d90617@AcuMS.aculab.com>
-References: <20201020164707.30402-1-laniel_francis@privacyrequired.com>
-        <20201020164707.30402-4-laniel_francis@privacyrequired.com>
-        <202010211649.ABD53841B@keescook>
-        <2286512.66XcFyAlgq@machine>
-        <202010221302.5BA047AC9@keescook>
-        <20201022160551.33d85912@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <b55d502089c44b3589973fa4e0d90617@AcuMS.aculab.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CB22818B9F09;
+        Fri, 23 Oct 2020 15:34:31 +0000 (UTC)
+Received: from redhat.com (ovpn-113-117.ams2.redhat.com [10.36.113.117])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3C41070597;
+        Fri, 23 Oct 2020 15:34:28 +0000 (UTC)
+Date:   Fri, 23 Oct 2020 11:34:25 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, kuba@kernel.org
+Subject: Re: [PATCH net] vhost_vdpa: Return -EFUALT if copy_from_user() fails
+Message-ID: <20201023113326-mutt-send-email-mst@kernel.org>
+References: <20201023120853.GI282278@mwanda>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201023120853.GI282278@mwanda>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 23 Oct 2020 08:07:44 +0000 David Laight wrote:
-> FWIW I suspect  the 'return -ERR on overflow' is going to bite us.
-> Code that does p += strsxxx(p, ..., lim - p, ...) assuming (or not
-> caring) about overflow goes badly wrong.
+On Fri, Oct 23, 2020 at 03:08:53PM +0300, Dan Carpenter wrote:
+> The copy_to/from_user() functions return the number of bytes which we
+> weren't able to copy but the ioctl should return -EFAULT if they fail.
+> 
+> Fixes: a127c5bbb6a8 ("vhost-vdpa: fix backend feature ioctls")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-I don't really care either way, but in netlink there's usually an
-attribute per value, nothing combines strings like p += strx..().
-Looking at the conversion in patch 2 the callers just want to 
-check for overflow.
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Needed for stable I guess.
+
+> ---
+>  drivers/vhost/vdpa.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 62a9bb0efc55..c94a97b6bd6d 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -428,12 +428,11 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+>  	void __user *argp = (void __user *)arg;
+>  	u64 __user *featurep = argp;
+>  	u64 features;
+> -	long r;
+> +	long r = 0;
+>  
+>  	if (cmd == VHOST_SET_BACKEND_FEATURES) {
+> -		r = copy_from_user(&features, featurep, sizeof(features));
+> -		if (r)
+> -			return r;
+> +		if (copy_from_user(&features, featurep, sizeof(features)))
+> +			return -EFAULT;
+>  		if (features & ~VHOST_VDPA_BACKEND_FEATURES)
+>  			return -EOPNOTSUPP;
+>  		vhost_set_backend_features(&v->vdev, features);
+> @@ -476,7 +475,8 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+>  		break;
+>  	case VHOST_GET_BACKEND_FEATURES:
+>  		features = VHOST_VDPA_BACKEND_FEATURES;
+> -		r = copy_to_user(featurep, &features, sizeof(features));
+> +		if (copy_to_user(featurep, &features, sizeof(features)))
+> +			r = -EFAULT;
+>  		break;
+>  	default:
+>  		r = vhost_dev_ioctl(&v->vdev, cmd, argp);
+
