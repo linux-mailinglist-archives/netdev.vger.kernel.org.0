@@ -2,181 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 849262976D6
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 20:22:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8DFA2976D2
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 20:22:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1754617AbgJWSWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 14:22:06 -0400
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:37260 "EHLO
-        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754606AbgJWSWF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 14:22:05 -0400
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20201023182147euoutp016c6be17a9c294223d32c3b489b261f6d~Ash2Hu-Yf1136811368euoutp01F;
-        Fri, 23 Oct 2020 18:21:47 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20201023182147euoutp016c6be17a9c294223d32c3b489b261f6d~Ash2Hu-Yf1136811368euoutp01F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1603477307;
-        bh=oMLuD5Wlc163X55ToCaD9F6Rp3haPPYODKde631RbUI=;
-        h=From:To:Cc:Subject:In-Reply-To:Date:References:From;
-        b=bjbw8tCFLdVKpMayoigm7twPIpeW5fYTSD4DQkQgLhu0iyvbxjBWWXItkSrsOGzha
-         EfaXJPvC/U0EQxVZEN5EetGp9g8Q6sx1qBYOA8WfJCMtzMpn75/OaEoDwe3n3l3TjD
-         XZ4LHsGOVJObovuObBW8gpjKP9oUdiPgEQ7XemfM=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20201023182138eucas1p2547f9bb105780c316eff28635ce69a31~AshthqH502955929559eucas1p25;
-        Fri, 23 Oct 2020 18:21:38 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id 46.44.06318.13F139F5; Fri, 23
-        Oct 2020 19:21:37 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20201023182136eucas1p28518b30e23ae4204840c3d5526bd3400~Ashsh8Fq72954729547eucas1p2r;
-        Fri, 23 Oct 2020 18:21:36 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20201023182136eusmtrp1957cbd06d4b18261c94cfea214e22975~AshshN-b71506915069eusmtrp1q;
-        Fri, 23 Oct 2020 18:21:36 +0000 (GMT)
-X-AuditID: cbfec7f5-38bff700000018ae-29-5f931f31f0f9
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id 4B.2D.06314.03F139F5; Fri, 23
-        Oct 2020 19:21:36 +0100 (BST)
-Received: from localhost (unknown [106.120.51.46]) by eusmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20201023182136eusmtip1e9e6409348152c60d21f3b329a094456~AshsXFfXY0446104461eusmtip1j;
-        Fri, 23 Oct 2020 18:21:36 +0000 (GMT)
-From:   Lukasz Stelmach <l.stelmach@samsung.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>,
-        Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org, Kukjin Kim <kgene@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        =?utf-8?Q?Bart=C5=82omiej_=C5=BBolnierkiewic?= =?utf-8?Q?z?= 
-        <b.zolnierkie@samsung.com>,
-        "linux-samsung-soc\@vger.kernel.org" 
-        <linux-samsung-soc@vger.kernel.org>, jim.cromie@gmail.com,
-        Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v3 2/5] dt-bindings: net: Add bindings for AX88796C SPI
- Ethernet Adapter
-In-Reply-To: <CAJKOXPeNhXrBa0ZK-k37uhs5izukrhHN-rkxgsjiQBHCMmZs7g@mail.gmail.com>
-        (Krzysztof Kozlowski's message of "Fri, 23 Oct 2020 18:27:18 +0200")
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-Date:   Fri, 23 Oct 2020 20:21:25 +0200
-Message-ID: <dleftjwnzgyfa2.fsf%l.stelmach@samsung.com>
+        id S1754598AbgJWSV4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 14:21:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37754 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750611AbgJWSVz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 14:21:55 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74839C0613CE;
+        Fri, 23 Oct 2020 11:21:55 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id h2so1344046pll.11;
+        Fri, 23 Oct 2020 11:21:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DhJ2M9etE05g9DAQn74dGP4ADoN0HRdR9kAVpceJW1k=;
+        b=icdOmlayutfegPWtHkHoQY6Hr8UxDj6zRe4vkAtEZQ4m1ieIiCb60V96j8jZ+9U5W3
+         /A702KPQV1FZiKX2fuMANZhVOSKnPpLOKfjt1/Hs1SZUSOqYhwraO7sed09JBvpmQTGi
+         eqVpJ7zTHgEc8F3h5+eDjKR3rdWiu7bQl/aU2SHP+50lmmE+mqi7OwOQxDRJ24nxUusG
+         do2AYoe86SBd0yUbQIwpZsCzva7xyHopxQs7MzCPT5fMn17YbnH4qzvhHY/ZoQjs1ENV
+         XgtwowSFYiQ4fxaNrbb205ItVe8sH9WdUgHd0IR4Fo+oT8z/mXjaRU/k0VbyPYqB7GLp
+         ZhxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=DhJ2M9etE05g9DAQn74dGP4ADoN0HRdR9kAVpceJW1k=;
+        b=VjvPyK2uAxtzUs9Ejnv0iMLMcAw7ZoL8ACw4yJkixymH3KekJENdoSgZlKfYH05elY
+         1eO0ti588DwdZ0HxC+sajqW9xxc8oUgV/3I9tixq3YbowNBcl64nZ6hFMCD40cjR7lgO
+         cC/eszMXPGujzGeHwBTErCWckFoX3B3prEcZulPa8OtjLoy+SQsOAibbtPZF1BXH622f
+         rZNrhcJAHkC+Oou8gzymRVNhrVL1eGL26KoFmX7BqfuAIasUAreKpGLaN0tb/04tfAN2
+         gJBBNXm91yvt8qdWa+7Dvd0BLEIW6AWivCHW08T+vMvCxGRX55J+W0rb9Ez/NYW0xFuG
+         mw8g==
+X-Gm-Message-State: AOAM530En3aZ2zau4VhieiU5Ks1kFnWB5SxfZclkv4aAt5ZevZ1UVrIJ
+        HdKx223qcVJkDYFVJvXoatc=
+X-Google-Smtp-Source: ABdhPJy1XzMfYNd2QCT+9Ss1DEpdoJEPrtCgVx8Bq4QnkYsOb5bxDFEbc2MZnPYGr7H8KZtFTyPlrg==
+X-Received: by 2002:a17:902:b113:b029:d3:c5c2:e667 with SMTP id q19-20020a170902b113b02900d3c5c2e667mr335497plr.35.1603477314809;
+        Fri, 23 Oct 2020 11:21:54 -0700 (PDT)
+Received: from [10.67.48.230] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id e4sm2513777pgg.37.2020.10.23.11.21.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 23 Oct 2020 11:21:54 -0700 (PDT)
+Subject: Re: [PATCH] RFC: net: phy: of phys probe/reset issue
+To:     Grygorii Strashko <grygorii.strashko@ti.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Sekhar Nori <nsekhar@ti.com>, linux-kernel@vger.kernel.org,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Roger Quadros <rogerq@ti.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+References: <20201023174750.21356-1-grygorii.strashko@ti.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <450d262e-242c-77f1-9f06-e25943cc595c@gmail.com>
+Date:   Fri, 23 Oct 2020 11:21:52 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-="; micalg="pgp-sha256";
-        protocol="application/pgp-signature"
-X-Brightmail-Tracker: H4sIAAAAAAAAA02SWUxTQRSGM70r1erQop6AWxo1rixujFGJ28ONTz6YaDSCVW5woa32CirG
-        gImgVqDKZimooLiAgdLaYDFiTEXQVKmKqYKiibghAho0LjEg14uJb9858/9n/jMZntIeYsP5
-        7aY9osVkSNazarqu6WfLnJhJ+QnRWWWxJNDho4jL7mRIaeAwTc42tjDkXJ+dIcGeFwyxdXZT
-        JBCo5cjDulyGuDuDDGm9XsoSe+CmivgKGxCpbuzgSFPZWJLZ0MiRwRteblmo0Bp8RAmeyjaV
-        UO/o4AR31TFWuFqRLtR7+1VCrqcKCf3uiWv4DeoliWLy9lTREhW3Wb3te/AeteuWbl+BY18G
-        6sVWFMIDng+Xmjs5K1LzWnwZwZliJ6MUXxGcrK9AStGPoKi1S/XP4uyzIpm1+BKCvMEwRfQe
-        wfny55QV8TyLI6G6er2sCcMC3C9ro2QNhYsYsL0rUckaHY4H/9OVcj8E2xFkt1tZ2TAGLwLP
-        h1eczDSeOsQ5f1mDY6HH2jXMoXCv+A0tM4WNUBz49Dcp4As82I6cRkrSVeDxBodT6+Bjs4dT
-        eDz487NpOQTgdMjPW6h4sxHUlf6gFc1ieNHyi1V4OfgLvnCKfhQ86wlV7h0FeXWnKKWtgaNZ
-        WkU9BWpsN4anhEPOx8vDaQQYeOJnlbeqQOCydVAn0GTHf+s4/lvHMTSWwjPAeT1Kac+Ci+Xd
-        lMJLoaamjy5DTBUaJ6ZIxiRRmmcS90ZKBqOUYkqK3Go2utHQZ/QPNH/zopu/t/gQ5pF+pCbj
-        WV6CljGkSvuNPjRlaNLr2isPUThtMptEfZhmxQN/vFaTaNifJlrMCZaUZFHyoQie1o/TzDvX
-        tUmLkwx7xJ2iuEu0/DtV8SHhGYibfrzXuLYTLWjSXTS70Oj4Qlfl27jbntg3pyOf3LUEdxRc
-        /exKLWyP5mYnR1Wpc67ZX5dMWxcqbXDuLH/nXs2OOBYzd+D34UmJI/iIruiaTG/mgqgE5uXB
-        C0fNG72lEw60rrnTMLtSeFrbJsbo2lNn7i4u0n/rH3lnVlvaY2jKOqGnpW2GmJmURTL8ARBq
-        cw6UAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrJIsWRmVeSWpSXmKPExsVy+t/xu7oG8pPjDa4cM7M4f/cQs8XGGetZ
-        Leacb2GxmH/kHKvFovczWC2uvb3DatH/+DWzxfnzG9gtLmzrY7XY9Pgaq8XlXXPYLGac38dk
-        cWjqXkaLtUfuslscWyBm0br3CLvF/z072B0EPS5fu8jssWXlTSaPnbPusntsWtXJ5rF5Sb3H
-        zh2fmTz6tqxi9Pi8SS6AI0rPpii/tCRVISO/uMRWKdrQwkjP0NJCz8jEUs/Q2DzWyshUSd/O
-        JiU1J7MstUjfLkEv4/u1k8wFB4QrpsyqaGB8J9DFyMkhIWAisf59F2MXIxeHkMBSRok1L78y
-        dTFyACWkJFbOTYeoEZb4c62LDcQWEnjKKNG0rAakhE1AT2Lt2giQsIiAh8SZBTeZQcYwC8xi
-        lbgz7QM7SEJYIEbi/b6nYPM5BWYwSvTcghkUIDH3yCFmEFtUwFJiy4v7YA0sAqpAdi+YzStg
-        LvG26yWULShxcuYTFhCbWSBb4uvq58wTGAVmIUnNQpKaBXQfs4CmxPpd+hBhbYllC18zQ9i2
-        EuvWvWdZwMi6ilEktbQ4Nz232FCvODG3uDQvXS85P3cTIzCqtx37uXkH46WNwYcYBTgYlXh4
-        da5NihdiTSwrrsw9xKgCNObRhtUXGKVY8vLzUpVEeJ3Ono4T4k1JrKxKLcqPLyrNSS0+xGgK
-        9M9EZinR5HxgIsoriTc0NTS3sDQ0NzY3NrNQEuftEDgYIySQnliSmp2aWpBaBNPHxMEp1cBY
-        sGsr28/pT/mbWC7UPj/8iddt842/dbduNtddKpZlnqPZG9JYGdAaZPBpwekfT0J5CxssGeWl
-        DX49ZuTm9lpmsPpDinhh3BFmlowmj9nbGH8vfSNeYyvYdXxjo3zjSu09TTNd7gid0GFndclV
-        OHOWvfv8q2W2Fk+f/k8W2n1a5/CkCR90M+SVWIozEg21mIuKEwE6zHgqDAMAAA==
-X-CMS-MailID: 20201023182136eucas1p28518b30e23ae4204840c3d5526bd3400
-X-Msg-Generator: CA
-X-RootMTR: 20201023182136eucas1p28518b30e23ae4204840c3d5526bd3400
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20201023182136eucas1p28518b30e23ae4204840c3d5526bd3400
-References: <CAJKOXPeNhXrBa0ZK-k37uhs5izukrhHN-rkxgsjiQBHCMmZs7g@mail.gmail.com>
-        <CGME20201023182136eucas1p28518b30e23ae4204840c3d5526bd3400@eucas1p2.samsung.com>
+In-Reply-To: <20201023174750.21356-1-grygorii.strashko@ti.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+On 10/23/20 10:47 AM, Grygorii Strashko wrote:
+> Hi All,
+> 
+> The main intention of this mail is to trigger discussion to find a proper
+> solution. All code is hackish and based on v5.9.
+> 
+> Problem statement:
+> 
+> There is an issue observed with MDIO OF PHYs discover/reset sequence in
+> case PHY has reset line with default state is (1).
+> In this case, when Linux boots PHY is in reset and following code fails:
+> 
+> of_mdiobus_register()
+> |- for_each_available_child_of_node(np, child)
+>    |- of_mdiobus_register_phy
+>       |- get_phy_device
+>          |- get_phy_c22_id ---- > *fails as PHY is in reset*
+>       ...
+>       |- of_mdiobus_phy_device_register() --> can't be reached
+> 
+> The current PHY allows to specify PHY reset line for PHY:
+> &mdio {
+>         phy0: ethernet-phy@0 {
+>                 reg = <0>;
+>                 ti,rx-internal-delay = <DP83867_RGMIIDCTL_2_00_NS>;
+>                 ti,fifo-depth = <DP83867_PHYCR_FIFO_DEPTH_4_B_NIB>;
+> +               reset-gpios = <&pca9555 4 GPIO_ACTIVE_LOW>;
+>                 ti,dp83867-rxctrl-strap-quirk;
+>         };
+>  };
+> 
+> But it doesn't help in this case, as PHY's reset code is initialized when
+> PHY's mdio_device is registered, which, in turn, happens after
+> get_phy_device() call (and get_phy_device() is failed).
+> 
+> of_mdiobus_phy_device_register()
+>  |-phy_device_register
+>    |-mdiobus_register_device()
+>      |-mdiobus_register_gpiod(mdiodev);
+>      |-mdiobus_register_reset(mdiodev);
+> 
+> There is also possibility to add GPIO reset line to MDIO node itself, but
+> It also doesn't help when there are >1 PHY and every PHY has it own reset
+> line.
+> 
+> Only one possible W/A now is to use GPIO HOG, with drawback that PHY will
+> stay active always.
+> 
+> Some history:
+> 
+> - commit 69226896ad63 ("mdio_bus: Issue GPIO RESET to PHYs") from Roger
+> Quadros <rogerq@ti.com> originally added possibility to specify >1 GPIO
+> reset line in MDIO node, which allowed to solve such issues.
+>  - commit 4c5e7a2c0501 ("dt-bindings: mdio: Clarify binding document") and
+> follow up commit d396e84c5604 ("mdio_bus: handle only single PHY reset
+> GPIO") rolled back original solution to only one GPIO reset line, which
+> causes problems now.
+> 
+> Possible solutions I come up with:
+>  1) Try to add PHY reset code around get_phy_device() call in of_mdiobus_register_phy()
+>   cons:
+>    - need to extract/share mdio_device reset code as PHY may have not only GPIO,
+>      but also reset_control object assigned.
+>      And all current mdio_device rest code expected to have mdio_device already initialized.
+>    - There 12 calls to get_phy_device() in v5.9 Kernel
+>  2) Try to consolidate OF mdio_device/PHY initialization in one place, as
+> illustrated by of_phy_device_create() function (marked by "// option 2" in
+> code).
+>  3) Return back possibility to use >1 GPIO reset line in MDIO node. Even if
+> It seems right thing to do by itself (Devices attached to MDIO bus may have
+> any combination of shared reset lines - not always "one for all"), there
+> are more things to consider:
+>    - PHY reset_control objects handling
+>    - the fact that MDIO reset will put PHY out of reset and not allow to
+>      reset it again (more like gpio-hog)
+> 
+> I'd be appreciated for any comments to help resolve it. May be there is
+> better way to handle this?
 
-It was <2020-10-23 pi=C4=85 18:27>, when Krzysztof Kozlowski wrote:
-> On Fri, 23 Oct 2020 at 18:05, Rob Herring <robh@kernel.org> wrote:
->>
->> On Wed, 21 Oct 2020 23:49:07 +0200, =C5=81ukasz Stelmach wrote:
->> > Add bindings for AX88796C SPI Ethernet Adapter.
->> >
->> > Signed-off-by: =C5=81ukasz Stelmach <l.stelmach@samsung.com>
->> > ---
->> >  .../bindings/net/asix,ax88796c.yaml           | 69 +++++++++++++++++++
->> >  1 file changed, 69 insertions(+)
->> >  create mode 100644 Documentation/devicetree/bindings/net/asix,ax88796=
-c.yaml
->> >
->>
->>
->> My bot found errors running 'make dt_binding_check' on your patch:
->>
->> yamllint warnings/errors:
->>
->> dtschema/dtc warnings/errors:
->> ./Documentation/devicetree/bindings/net/asix,ax88796c.yaml: $id:
->> relative path/filename doesn't match actual path or filename
->>         expected:
->> https://protect2.fireeye.com/v1/url?k=3Db676d09f-eb1194b9-b6775bd0-0cc47=
-a31384a-e1cc7da4db18c501&q=3D1&e=3Dea7ae062-8c39-4ee3-82fa-37d28062f086&u=
-=3Dhttp%3A%2F%2Fdevicetree.org%2Fschemas%2Fnet%2Fasix%2Cax88796c.yaml%23
->> Documentation/devicetree/bindings/net/asix,ax88796c.example.dts:20:18:
->> fatal error: dt-bindings/interrupt-controller/gpio.h: No such file
->> or directory
+Yes there is: have your Ethernet PHY compatible string be of the form
+"ethernetAAAA.BBBB" and then there is no need for such hacking.
+of_get_phy_id() will parse that compatible and that will trigger
+of_mdiobus_register_phy() to take the phy_device_create() path.
 
-Fixed.
+The other advantage I see to the explicit PHY ID in compatible string
+approach is that it is easier to scale to other bus subsystems that have
+similar requirements like PCI, USB, SPI, I2C etc.
 
-> =C5=81ukasz,
->
-> So you really did not compile/test these patches... It's the second
-> build failure in the patchset. All sent patches should at least be
-> compiled on the latest kernel, if you cannot test them. However this
-> patchset should be testable - Artik5 should boot on mainline kernel
+Your solution is not inelegant in that you took care of parsing the
+Ethernet PHY (child) device_node, however I see two problems with it:
 
-Yes, I messed up a bit. I made moved some code around without changing
-it just before sending and I didn't run dt_binding_check. My fault, I am
-sorry.
+- it deals only with reset, but there are other essential resources such
+as clocks and regulators that would need an equivalent treatment. While
+the CLK API has support for device_node references, the regulator API
+does not AFAICT.
 
-=2D-=20
-=C5=81ukasz Stelmach
-Samsung R&D Institute Poland
-Samsung Electronics
+0 in a world where we move towards supporting ACPI (there is work in
+progress on this). We would need a solution that scales to both
+"firmware" implementations and using APIs that expect a device_node
+reference does not really make that possible. You could argue that the
+solution I am offering is currently OF centric and that is true, however
+it is easily extensible to ACPI as well (if the ACPI folks and kernel
+developers manage to settle on what an appropriate representation for
+MDIO/PHY/SFPs looks like).
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEXpuyqjq9kGEVr9UQsK4enJilgBAFAl+THyUACgkQsK4enJil
-gBDA3AgAgLMuK0JPBXpBA5PWakifRLC3bGtiJbKxSRzfNrHcVL0xFTwB5A0rs1Dl
-b61fHAO945x8XDB7j1Gp0Z2GycAuZVL0fuE63ia4H8gPBqwpEGIQ/1k1ZiDRVLTc
-5cGyy9zYazeJkX1+wNZAgnqZ9FgXxrn2vhgF6WzYwiUPnRILxbca82Tidezc88V0
-x64WkKpSwFXr4jE2g+aKpDhfI9UZjJ2sB6lzF1rlhg/ZcOg4Iq5WHj6IXIdJVrv2
-5NbmVY6JgQgHwCsVxanCWquhbi/DRLZnLuh+oD+VHFntVGKUwe2iYX5/rt8zbGBi
-yil22ZMJWOUfvOW/K+uBS7GDgIp+qg==
-=xBy1
------END PGP SIGNATURE-----
---=-=-=--
+Since I am officially no longer a PHY library maintainer, you would need
+someone more authoritative to weigh in the approach you have taken.
+-- 
+Florian
