@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99E64296B6E
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 10:51:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C94B296B75
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 10:52:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S460828AbgJWIvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 04:51:36 -0400
+        id S460818AbgJWIvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 04:51:35 -0400
 Received: from mga04.intel.com ([192.55.52.120]:3681 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S460809AbgJWIvd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S460795AbgJWIvd (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 23 Oct 2020 04:51:33 -0400
-IronPort-SDR: SBu8VFUwrjfVCnbIH4qcZzEVgl240wmoQTdvLwK/1LHblayoGzWQI/wBDxbKx+oXqQXwxJAOLS
- dsSQEGGpA0Ng==
-X-IronPort-AV: E=McAfee;i="6000,8403,9782"; a="165055343"
+IronPort-SDR: hGJGRNE7NdbC0jztt4g4ekXhURPV867uv0//Fxpk9r88nbwNSxhr0GzLsNkeo78YarfwAPyKlz
+ rY/KH1uQ7r3g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9782"; a="165055350"
 X-IronPort-AV: E=Sophos;i="5.77,407,1596524400"; 
-   d="scan'208";a="165055343"
+   d="scan'208";a="165055350"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2020 01:51:23 -0700
-IronPort-SDR: ITN+aGUIW2EVSTVKvOM48cwwJmkNgnDak9ms1HVqLuSbPBHxvYUg2Hr7+wikSnMBGIup7Ux+SS
- Bb4Cf+0Hgq2A==
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2020 01:51:28 -0700
+IronPort-SDR: K4oZfZCCnO0lV5Rn2qZ7ySCvU6HqdSLW0sPdJrAi4l+j3GDk+sfRQG1GIORXFNbCIC9XxOdcd6
+ KJ+YtQwPiQPg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.77,407,1596524400"; 
-   d="scan'208";a="523436275"
+   d="scan'208";a="523436281"
 Received: from yilunxu-optiplex-7050.sh.intel.com ([10.239.159.141])
-  by fmsmga006.fm.intel.com with ESMTP; 23 Oct 2020 01:51:20 -0700
+  by fmsmga006.fm.intel.com with ESMTP; 23 Oct 2020 01:51:24 -0700
 From:   Xu Yilun <yilun.xu@intel.com>
 To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
         davem@davemloft.net, kuba@kernel.org, mdf@kernel.org,
@@ -34,9 +34,9 @@ To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
 Cc:     linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
         netdev@vger.kernel.org, trix@redhat.com, lgoncalv@redhat.com,
         yilun.xu@intel.com, hao.wu@intel.com
-Subject: [RFC PATCH 1/6] docs: networking: add the document for DFL Ether Group driver
-Date:   Fri, 23 Oct 2020 16:45:40 +0800
-Message-Id: <1603442745-13085-2-git-send-email-yilun.xu@intel.com>
+Subject: [RFC PATCH 2/6] fpga: dfl: export network configuration info for DFL based FPGA
+Date:   Fri, 23 Oct 2020 16:45:41 +0800
+Message-Id: <1603442745-13085-3-git-send-email-yilun.xu@intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1603442745-13085-1-git-send-email-yilun.xu@intel.com>
 References: <1603442745-13085-1-git-send-email-yilun.xu@intel.com>
@@ -44,135 +44,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds the document for DFL Ether Group driver.
+This patch makes preparation for supporting DFL Ether Group private
+feature driver, which reads bitstream_id.vendor_net_cfg field to
+determin the interconnection of network components on FPGA device.
 
 Signed-off-by: Xu Yilun <yilun.xu@intel.com>
 ---
- .../networking/device_drivers/ethernet/index.rst   |   1 +
- .../ethernet/intel/dfl-eth-group.rst               | 102 +++++++++++++++++++++
- 2 files changed, 103 insertions(+)
- create mode 100644 Documentation/networking/device_drivers/ethernet/intel/dfl-eth-group.rst
+ drivers/fpga/dfl-fme-main.c | 10 ++--------
+ drivers/fpga/dfl.c          | 21 +++++++++++++++++++++
+ drivers/fpga/dfl.h          | 12 ++++++++++++
+ include/linux/dfl.h         |  2 ++
+ 4 files changed, 37 insertions(+), 8 deletions(-)
 
-diff --git a/Documentation/networking/device_drivers/ethernet/index.rst b/Documentation/networking/device_drivers/ethernet/index.rst
-index cbb75a18..eb7c443 100644
---- a/Documentation/networking/device_drivers/ethernet/index.rst
-+++ b/Documentation/networking/device_drivers/ethernet/index.rst
-@@ -26,6 +26,7 @@ Contents:
-    freescale/gianfar
-    google/gve
-    huawei/hinic
-+   intel/dfl-eth-group
-    intel/e100
-    intel/e1000
-    intel/e1000e
-diff --git a/Documentation/networking/device_drivers/ethernet/intel/dfl-eth-group.rst b/Documentation/networking/device_drivers/ethernet/intel/dfl-eth-group.rst
-new file mode 100644
-index 0000000..525807e
---- /dev/null
-+++ b/Documentation/networking/device_drivers/ethernet/intel/dfl-eth-group.rst
-@@ -0,0 +1,102 @@
-+.. SPDX-License-Identifier: GPL-2.0+
+diff --git a/drivers/fpga/dfl-fme-main.c b/drivers/fpga/dfl-fme-main.c
+index 77ea04d..a2b8ba0 100644
+--- a/drivers/fpga/dfl-fme-main.c
++++ b/drivers/fpga/dfl-fme-main.c
+@@ -46,14 +46,8 @@ static DEVICE_ATTR_RO(ports_num);
+ static ssize_t bitstream_id_show(struct device *dev,
+ 				 struct device_attribute *attr, char *buf)
+ {
+-	void __iomem *base;
+-	u64 v;
+-
+-	base = dfl_get_feature_ioaddr_by_id(dev, FME_FEATURE_ID_HEADER);
+-
+-	v = readq(base + FME_HDR_BITSTREAM_ID);
+-
+-	return scnprintf(buf, PAGE_SIZE, "0x%llx\n", (unsigned long long)v);
++	return scnprintf(buf, PAGE_SIZE, "0x%llx\n",
++			 (unsigned long long)dfl_get_bitstream_id(dev));
+ }
+ static DEVICE_ATTR_RO(bitstream_id);
+ 
+diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
+index bc35750..ca3c678 100644
+--- a/drivers/fpga/dfl.c
++++ b/drivers/fpga/dfl.c
+@@ -537,6 +537,27 @@ void dfl_driver_unregister(struct dfl_driver *dfl_drv)
+ }
+ EXPORT_SYMBOL(dfl_driver_unregister);
+ 
++int dfl_dev_get_vendor_net_cfg(struct dfl_device *dfl_dev)
++{
++	struct device *fme_dev;
++	u64 v;
 +
-+=======================================================================
-+DFL device driver for Ether Group private feature on Intel(R) PAC N3000
-+=======================================================================
++	if (!dfl_dev)
++		return -EINVAL;
 +
-+This is the driver for Ether Group private feature on Intel(R)
-+PAC (Programmable Acceleration Card) N3000.
++	if (dfl_dev->type == FME_ID)
++		fme_dev = dfl_dev->dev.parent;
++	else
++		fme_dev = dfl_dev->cdev->fme_dev;
 +
-+The Intel(R) PAC N3000 is a FPGA based SmartNIC platform for multi-workload
-+networking application acceleration. A simple diagram below to for the board:
++	if (!fme_dev)
++		return -EINVAL;
 +
-+                     +----------------------------------------+
-+                     |                  FPGA                  |
-++----+   +-------+   +-----------+  +----------+  +-----------+   +----------+
-+|QSFP|---|retimer|---|Line Side  |--|User logic|--|Host Side  |---|XL710     |
-++----+   +-------+   |Ether Group|  |          |  |Ether Group|   |Ethernet  |
-+                     |(PHY + MAC)|  |wiring &  |  |(MAC + PHY)|   |Controller|
-+                     +-----------+  |offloading|  +-----------+   +----------+
-+                     |              +----------+              |
-+                     |                                        |
-+                     +----------------------------------------+
++	v = dfl_get_bitstream_id(fme_dev);
++	return (int)FIELD_GET(FME_BID_VENDOR_NET_CFG, v);
++}
++EXPORT_SYMBOL_GPL(dfl_dev_get_vendor_net_cfg);
 +
-+The FPGA is composed of FPGA Interface Module (FIM) and Accelerated Function
-+Unit (AFU). The FIM implements the basic functionalities for FPGA access,
-+management and reprograming, while the AFU is the FPGA reprogramable region for
-+users.
+ #define is_header_feature(feature) ((feature)->id == FEATURE_ID_FIU_HEADER)
+ 
+ /**
+diff --git a/drivers/fpga/dfl.h b/drivers/fpga/dfl.h
+index 2b82c96..6c7a6961 100644
+--- a/drivers/fpga/dfl.h
++++ b/drivers/fpga/dfl.h
+@@ -104,6 +104,9 @@
+ #define FME_CAP_CACHE_SIZE	GENMASK_ULL(43, 32)	/* cache size in KB */
+ #define FME_CAP_CACHE_ASSOC	GENMASK_ULL(47, 44)	/* Associativity */
+ 
++/* FME BITSTREAM_ID Register Bitfield */
++#define FME_BID_VENDOR_NET_CFG	GENMASK_ULL(35, 32)     /* vendor net cfg */
 +
-+The Line Side & Host Side Ether Groups are soft IP blocks embedded in FIM. They
-+are internally wire connected to AFU and communicate with AFU with MAC packets.
-+The user logic is developed by the FPGA users and re-programmed to AFU,
-+providing the user defined wire connections between line side & host side data
-+interfaces, as well as the MAC layer offloading.
+ /* FME Port Offset Register Bitfield */
+ /* Offset to port device feature header */
+ #define FME_PORT_OFST_DFH_OFST	GENMASK_ULL(23, 0)
+@@ -397,6 +400,15 @@ static inline bool is_dfl_feature_present(struct device *dev, u16 id)
+ 	return !!dfl_get_feature_ioaddr_by_id(dev, id);
+ }
+ 
++static inline u64 dfl_get_bitstream_id(struct device *dev)
++{
++	void __iomem *base;
 +
-+There are 2 types of interfaces for the Ether Groups:
++	base = dfl_get_feature_ioaddr_by_id(dev, FME_FEATURE_ID_HEADER);
 +
-+1. The data interfaces connects the Ether Groups and the AFU, host has no
-+ability to control the data stream . So the FPGA is like a pipe between the
-+host ethernet controller and the retimer chip.
++	return readq(base + FME_HDR_BITSTREAM_ID);
++}
 +
-+2. The management interfaces connects the Ether Groups to the host, so host
-+could access the Ether Group registers for configuration and statistics
-+reading.
+ static inline
+ struct device *dfl_fpga_pdata_to_parent(struct dfl_feature_platform_data *pdata)
+ {
+diff --git a/include/linux/dfl.h b/include/linux/dfl.h
+index e1b2471..5ee2b1e 100644
+--- a/include/linux/dfl.h
++++ b/include/linux/dfl.h
+@@ -67,6 +67,8 @@ struct dfl_driver {
+ #define to_dfl_dev(d) container_of(d, struct dfl_device, dev)
+ #define to_dfl_drv(d) container_of(d, struct dfl_driver, drv)
+ 
++int dfl_dev_get_vendor_net_cfg(struct dfl_device *dfl_dev);
 +
-+The Intel(R) PAC N3000 could be programmed to various configurations (with
-+different link numbers and speeds, e.g. 8x10G, 4x25G ...). It is done by
-+programing different variants of the Ether Group IP blocks, and doing
-+corresponding configuration to the retimer chips.
-+
-+The DFL Ether Group driver registers netdev for each line side link. Users
-+could use standard commands (ethtool, ip, ifconfig) for configuration and
-+link state/statistics reading. For host side links, they are always connected
-+to the host ethernet controller, so they should always have same features as
-+the host ethernet controller. There is no need to register netdevs for them.
-+The driver just enables these links on probe.
-+
-+The retimer chips are managed by onboard BMC (Board Management Controller)
-+firmware, host driver is not capable to access them directly. So it is mostly
-+like an external fixed PHY. However the link states detected by the retimer
-+chips can not be propagated to the Ether Groups for hardware limitation, in
-+order to manage the link state, a PHY driver (intel-m10-bmc-retimer) is
-+introduced to query the BMC for the retimer's link state. The Ether Group
-+driver would connect to the PHY devices and get the link states. The
-+intel-m10-bmc-retimer driver creates a peseudo MDIO bus for each board, so
-+that the Ether Group driver could find the PHY devices by their peseudo PHY
-+addresses.
-+
-+
-+2. Features supported
-+=====================
-+
-+Data Path
-+---------
-+Since the driver can't control the data stream, the Ether Group driver
-+doesn't implement the valid tx/rx functions. Any transmit attempt on these
-+links from host will be dropped, and no data could be received to host from
-+these links. Users should operate on the netdev of host ethernet controller
-+for networking data traffic.
-+
-+
-+Speed/Duplex
-+------------
-+The Ether Group doesn't support auto-negotiation. The link speed is fixed to
-+10G, 25G or 40G full duplex according to which Ether Group IP is programmed.
-+
-+Statistics
-+----------
-+The Ether Group IP has the statistics counters for ethernet traffic and errors.
-+The user can obtain these MAC-level statistics using "ethtool -S" option.
-+
-+MTU
-+---
-+The Ether Group IP is capable of detecting oversized packets. It will not drop
-+the packet but pass it up and increment the tx/rx oversize counters. The MTU
-+could be changed via ip or ifconfig commands.
-+
-+Flow Control
-+------------
-+Ethernet Flow Control (IEEE 802.3x) can be configured with ethtool to enable
-+transmitting pause frames. Receiving pause request from outside to Ether Group
-+MAC is not supported. The flow control auto-negotiation is not supported. The
-+user can enable or disable Tx Flow Control using "ethtool -A eth? tx <on|off>"
+ /*
+  * use a macro to avoid include chaining to get THIS_MODULE.
+  */
 -- 
 2.7.4
 
