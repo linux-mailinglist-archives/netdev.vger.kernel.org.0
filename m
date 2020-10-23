@@ -2,112 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31F312967E3
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 02:15:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D53D296815
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 02:36:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S373737AbgJWAP2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 20:15:28 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:38577 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S373727AbgJWAP1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 20:15:27 -0400
-Received: by mail-pg1-f194.google.com with SMTP id j7so2069256pgk.5;
-        Thu, 22 Oct 2020 17:15:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=nJuvv8IL2p3H3QZp8m2iSM8qkccByy2xhG+R9HNdsCs=;
-        b=SF8WLgxrdQ21PFMbugp4WbrMXswElufb2YP2VOo+IgsGfr4aAUYNI9ObI38l89vpTL
-         8tOpdyhv4XhF/0ObZMS3CiQIPAp80o0ix20uAnFTTVvjJqAmYMJkb2ZtNOu/uRXmLdBK
-         mfdGgj66sKsA5Z9/VSIaFXix+AcMxBxwcn0BKff5sGkKmSWKwl0FeTr2HhBRcOhGo+KA
-         CHx+U3oXf8D1nvjGusM0GM1Eylsa38p7AbyIacXjB21KG/u0Kye80wpOyVaA4wYI6dtL
-         qSjEPH6cbcD3N/KI2Fb2eY1mMkDkFtV7SUnVba+nsUnIc0VpPzxP9NEWbKFBx2/1XnzF
-         T5fA==
-X-Gm-Message-State: AOAM530U12Q45Wy0ArwbEvN4U8juJFQHjAqWx6i3ZFjaybksZz87pyWD
-        jFvxjH7lEOwGALZdbTelTh8=
-X-Google-Smtp-Source: ABdhPJzlSCn1Jx4Lbr89cvlqse38aVOniqNXgGBir7jh1wf05/RXLm/4UMRiic8qg0fAMCNa7xvFdg==
-X-Received: by 2002:a17:90a:7f93:: with SMTP id m19mr5102760pjl.67.1603412125534;
-        Thu, 22 Oct 2020 17:15:25 -0700 (PDT)
-Received: from localhost ([2601:647:5b00:1161:a4cc:eef9:fbc0:2781])
-        by smtp.gmail.com with ESMTPSA id f21sm3503438pfn.173.2020.10.22.17.15.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Oct 2020 17:15:24 -0700 (PDT)
-Date:   Thu, 22 Oct 2020 17:15:23 -0700
-From:   Moritz Fischer <mdf@kernel.org>
-To:     James Bottomley <James.Bottomley@hansenpartnership.com>
-Cc:     Moritz Fischer <mdf@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, linux-parisc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lucyyan@google.com
-Subject: Re: [PATCH/RFC net] net: dec: tulip: de2104x: Add shutdown handler
- to stop NIC
-Message-ID: <20201023001523.GA620527@epycbox.lan>
-References: <20201022220636.609956-1-mdf@kernel.org>
- <f1ff32ec2970f1ee808e2da946e6514e71694e71.camel@HansenPartnership.com>
+        id S373835AbgJWAfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 20:35:23 -0400
+Received: from mga11.intel.com ([192.55.52.93]:43009 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2901453AbgJWAfX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Oct 2020 20:35:23 -0400
+IronPort-SDR: uF9uhln7GFPUDmkL1l/hDiR7U9ji+3A/AZ101O3r5wAw+Svk6XQ+ftYxUX9DNvDJooTcLyBJp7
+ fPiy+nalIKaQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9782"; a="164118632"
+X-IronPort-AV: E=Sophos;i="5.77,404,1596524400"; 
+   d="scan'208";a="164118632"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2020 17:35:22 -0700
+IronPort-SDR: Q0vYJK3IIx1bpfF7ffd8SfMQQ6c4gVRoh/N7/vgHheTRyd1k0QnMDx8lAbgtbg980RviDabYGL
+ x9XX0YVIXqnQ==
+X-IronPort-AV: E=Sophos;i="5.77,404,1596524400"; 
+   d="scan'208";a="302505775"
+Received: from dmert-dev.jf.intel.com ([10.166.241.5])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2020 17:35:22 -0700
+From:   Dave Ertman <david.m.ertman@intel.com>
+To:     alsa-devel@alsa-project.org
+Cc:     tiwai@suse.de, broonie@kernel.org, linux-rdma@vger.kernel.org,
+        jgg@nvidia.com, dledford@redhat.com, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
+        ranjani.sridharan@linux.intel.com,
+        pierre-louis.bossart@linux.intel.com, fred.oh@linux.intel.com,
+        parav@mellanox.com, shiraz.saleem@intel.com,
+        dan.j.williams@intel.com, kiran.patil@intel.com,
+        linux-kernel@vger.kernel.org, leonro@nvidia.com
+Subject: [PATCH v3 00/10] Auxiliary bus implementation and SOF multi-client support
+Date:   Thu, 22 Oct 2020 17:33:28 -0700
+Message-Id: <20201023003338.1285642-1-david.m.ertman@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f1ff32ec2970f1ee808e2da946e6514e71694e71.camel@HansenPartnership.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 22, 2020 at 04:04:16PM -0700, James Bottomley wrote:
-> On Thu, 2020-10-22 at 15:06 -0700, Moritz Fischer wrote:
-> > The driver does not implement a shutdown handler which leads to
-> > issues
-> > when using kexec in certain scenarios. The NIC keeps on fetching
-> > descriptors which gets flagged by the IOMMU with errors like this:
-> > 
-> > DMAR: DMAR:[DMA read] Request device [5e:00.0]fault addr fffff000
-> > DMAR: DMAR:[DMA read] Request device [5e:00.0]fault addr fffff000
-> > DMAR: DMAR:[DMA read] Request device [5e:00.0]fault addr fffff000
-> > DMAR: DMAR:[DMA read] Request device [5e:00.0]fault addr fffff000
-> > DMAR: DMAR:[DMA read] Request device [5e:00.0]fault addr fffff000
-> > 
-> > Signed-off-by: Moritz Fischer <mdf@kernel.org>
-> > ---
-> > 
-> > Hi all,
-> > 
-> > I'm not sure if this is the proper way for a shutdown handler,
-> > I've tried to look at a bunch of examples and couldn't find a
-> > specific
-> > solution, in my tests on hardware this works, though.
-> > 
-> > Open to suggestions.
-> > 
-> > Thanks,
-> > Moritz
-> > 
-> > ---
-> >  drivers/net/ethernet/dec/tulip/de2104x.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/drivers/net/ethernet/dec/tulip/de2104x.c
-> > b/drivers/net/ethernet/dec/tulip/de2104x.c
-> > index f1a2da15dd0a..372c62c7e60f 100644
-> > --- a/drivers/net/ethernet/dec/tulip/de2104x.c
-> > +++ b/drivers/net/ethernet/dec/tulip/de2104x.c
-> > @@ -2185,6 +2185,7 @@ static struct pci_driver de_driver = {
-> >  	.id_table	= de_pci_tbl,
-> >  	.probe		= de_init_one,
-> >  	.remove		= de_remove_one,
-> > +	.shutdown	= de_remove_one,
-> 
-> This doesn't look right: shutdown is supposed to turn off the device
-> without disturbing the tree or causing any knock on effects (I think
-> that rule is mostly because you don't want anything in userspace
-> triggering since it's likely to be nearly dead).  Remove removes the
-> device from the tree and cleans up everything.  I think the function
-> you want that's closest to what shutdown needs is de_close().  That
-> basically just turns off the chip and frees the interrupt ... you'll
-> have to wrapper it to call it from the pci_driver, though.
+Brief history of Auxiliary Bus
+==============================
+The auxiliary bus code was originally submitted upstream as virtual
+bus, and was submitted through the netdev tree.  This process generated
+up to v4.  This discussion can be found here:
+https://lore.kernel.org/netdev/20191111192219.30259-1-jeffrey.t.kirsher@intel.com/#t
 
-Thanks for the suggestion, I like that better. I'll send a v2 after
-testing.
-I think anything that hits on de_stop_hw() will keep the NIC from
-fetching further descriptors.
+At this point, GregKH requested that we take the review and revision
+process to an internal mailing list and garner the buy-in of a respected
+kernel contributor.
 
-Cheers,
-Moritz
+The auxiliary bus (then known as virtual bus) was originally submitted
+along with implementation code for the ice driver and irdma drive,
+causing the complication of also having dependencies in the rdma tree.
+This new submission is utilizing an auxiliary bus consumer in only the
+sound driver tree to create the initial implementation and a single
+user.
+
+Since implementation work has started on this patch set, there have been
+multiple inquiries about the time frame of its completion.  It appears
+that there will be numerous consumers of this functionality.
+
+The process of internal review and implementation using the sound
+drivers generated 19 internal versions.  The changes, including the name
+change from virtual bus to auxiliary bus, from these versions can be
+summarized as the following:
+
+- Fixed compilation and checkpatch errors
+- Improved documentation to address the motivation for virtual bus.
+- Renamed virtual bus to auxiliary bus
+- increased maximum device name size
+- Correct order in Kconfig and Makefile
+- removed the mid-layer adev->release layer for device unregister
+- pushed adev->id management to parent driver
+- all error paths out of ancillary_device_register return error code
+- all error paths out of ancillary_device_register use put_device
+- added adev->name element
+- modname in register cannot be NULL
+- added KBUILD_MODNAME as prefix for match_name
+- push adev->id responsibility to registering driver
+- uevent now parses adev->dev name
+- match_id function now parses adev->dev name
+- changed drivers probe function to also take an ancillary_device_id param
+- split ancillary_device_register into device_initialize and device_add
+- adjusted what is done in device_initialize and device_add
+- change adev to ancildev and adrv to ancildrv
+- change adev to ancildev in documentation
+
+==========================
+
+Introduces the auxiliary bus implementation along with the example usage
+in the Sound Open Firmware(SOF) audio driver.
+
+In some subsystems, the functionality of the core device
+(PCI/ACPI/other) may be too complex for a single device to be managed as
+a monolithic block or a part of the functionality might need to be
+exposed to a different subsystem.  Splitting the functionality into
+smaller orthogonal devices makes it easier to manage data, power
+management and domain-specific communication with the hardware.  Also,
+common auxiliary_device functionality across primary devices can be
+handled by a common auxiliary_device. A key requirement for such a split
+is that there is no dependency on a physical bus, device, register
+accesses or regmap support. These individual devices split from the core
+cannot live on the platform bus as they are not physical devices that
+are controlled by DT/ACPI. The same argument applies for not using MFD
+in this scenario as it relies on individual function devices being
+physical devices that are DT enumerated.
+
+An example for this kind of requirement is the audio subsystem where a
+single IP handles multiple entities such as HDMI, Soundwire, local
+devices such as mics/speakers etc. The split for the core's
+functionality can be arbitrary or be defined by the DSP firmware
+topology and include hooks for test/debug. This allows for the audio
+core device to be minimal and tightly coupled with handling the
+hardware-specific logic and communication.
+
+The auxiliary bus is intended to be minimal, generic and avoid
+domain-specific assumptions. Each auxiliary bus device represents a part
+of its parent functionality. The generic behavior can be extended and
+specialized as needed by encapsulating an auxiliary bus device within
+other domain-specific structures and the use of .ops callbacks.
+
+The SOF driver adopts the auxiliary bus for implementing the
+multi-client support. A client in the context of the SOF driver
+represents a part of the core device's functionality. It is not a
+physical device but rather an auxiliary device that needs to communicate
+with the DSP via IPCs. With multi-client support,the sound card can be
+separated into multiple orthogonal auxiliary devices for local devices
+(mic/speakers etc), HDMI, sensing, probes, debug etc.  In this series,
+we demonstrate the usage of the auxiliary bus with the help of the IPC
+test client which is used for testing the serialization of IPCs when
+multiple clients talk to the DSP at the same time.
+
+v3 changes:
+rename to auxiliary bus
+move .c file to drivers/base/
+split auxdev unregister flow into uninitialize and delete steps
+update kernel-doc on register functions for new unregister model
+update documentation with new name and unregister flow
+remove check for release in auxiliary bus, allow core to catch
+Change driver register so only probe and id_table mandatory
+Fix matching logic in auxillary_match_id to account for longer id->name
+utilize auxiliary_bus callbacks for probe, remove and shutdown
+add auxiliary_find_device function
+add code to ensure unique auxdrv name
+shorten initialize/uninitialize in function names to init/uninit
+simplify looping logic in match_id
+in drives/base/Kconfig changed from tristate to bool
+Modified signature SOF client register/unregister API
+Modified PM runtime enabling sequence in the SOF ipc test aux driver
+Removed driver.name from the aux driver
+Added Probes client aux driver and device registration in the
+        SOF driver. This allows for enabling the probes functionality in the SOF
+        firmware for audio data extraction from specific points in the audio
+        pipeline. Without auxiliary bus, the implementation requires modifying
+        existing 15+ machine drivers to add the probes DAI links to the sounds
+        cards. Using the auxiliary bus allows for splitting the probes
+        implementation from the SOF core making it easy to maintain.
+
+v2 changes:
+defined pr_fmt for kernel messages
+replaced WARN_ON calls in registration with pr_err calls
+adding kernel-doc function comments for device_initialize and device_add
+fix typo in documentation
+removed inaccurate line in documentation
+fixed formatting in drivers/bus/Makefile
+changed unwind path for sof_client_dev_alloc()
+improved comments for client list and mem freeing during client unreg
+removed debugfs entries in sof_ipc_test_client_drv during remove
+changed the signature of sof_debug_ipc_flood_test()
+fix a looping error in ancillary_match_id
+updated error value in sof_client_dev_register()
+mutex held while traversing client list when unregistering clients
+updated includes in sof-client.h
+
+Dave Ertman (1):
+  Add auxiliary bus support
+
+Ranjani Sridharan (9):
+  ASoC: SOF: Introduce descriptors for SOF client
+  ASoC: SOF: Create client driver for IPC test
+  ASoC: SOF: ops: Add ops for client registration
+  ASoC: SOF: Intel: Define ops for client registration
+  ASoC: SOF: Intel: Remove IPC flood test support in SOF core
+  ASoC: SOF: sof-client: Add client APIs to access probes ops
+  ASoC: SOF: compress: move and export sof_probe_compr_ops
+  ASoC: SOF: Add new client driver for probes support
+  ASoC: SOF: Intel: CNL: register probes client
+
+ Documentation/driver-api/auxiliary_bus.rst | 228 ++++++++++
+ Documentation/driver-api/index.rst         |   1 +
+ drivers/base/Kconfig                       |   3 +
+ drivers/base/Makefile                      |   1 +
+ drivers/base/auxiliary.c                   | 267 ++++++++++++
+ include/linux/auxiliary_bus.h              |  78 ++++
+ include/linux/mod_devicetable.h            |   8 +
+ scripts/mod/devicetable-offsets.c          |   3 +
+ scripts/mod/file2alias.c                   |   8 +
+ sound/soc/sof/Kconfig                      |  47 ++-
+ sound/soc/sof/Makefile                     |  10 +-
+ sound/soc/sof/compress.c                   |  60 +--
+ sound/soc/sof/compress.h                   |   1 +
+ sound/soc/sof/core.c                       |  18 +-
+ sound/soc/sof/debug.c                      | 457 ---------------------
+ sound/soc/sof/intel/Kconfig                |   9 +
+ sound/soc/sof/intel/Makefile               |   3 +
+ sound/soc/sof/intel/apl.c                  |  16 +
+ sound/soc/sof/intel/bdw.c                  |  16 +
+ sound/soc/sof/intel/byt.c                  |  20 +
+ sound/soc/sof/intel/cnl.c                  |  32 ++
+ sound/soc/sof/intel/hda-dai.c              |  27 --
+ sound/soc/sof/intel/hda.h                  |   6 -
+ sound/soc/sof/intel/intel-client.c         |  40 ++
+ sound/soc/sof/intel/intel-client.h         |  26 ++
+ sound/soc/sof/ops.h                        |  14 +
+ sound/soc/sof/pcm.c                        |  11 -
+ sound/soc/sof/probe.c                      | 124 +++---
+ sound/soc/sof/probe.h                      |  41 +-
+ sound/soc/sof/sof-client.c                 | 170 ++++++++
+ sound/soc/sof/sof-client.h                 |  91 ++++
+ sound/soc/sof/sof-ipc-test-client.c        | 321 +++++++++++++++
+ sound/soc/sof/sof-priv.h                   |  23 +-
+ sound/soc/sof/sof-probes-client.c          | 414 +++++++++++++++++++
+ 34 files changed, 1968 insertions(+), 626 deletions(-)
+ create mode 100644 Documentation/driver-api/auxiliary_bus.rst
+ create mode 100644 drivers/base/auxiliary.c
+ create mode 100644 include/linux/auxiliary_bus.h
+ create mode 100644 sound/soc/sof/intel/intel-client.c
+ create mode 100644 sound/soc/sof/intel/intel-client.h
+ create mode 100644 sound/soc/sof/sof-client.c
+ create mode 100644 sound/soc/sof/sof-client.h
+ create mode 100644 sound/soc/sof/sof-ipc-test-client.c
+ create mode 100644 sound/soc/sof/sof-probes-client.c
+
+-- 
+2.26.2
+
