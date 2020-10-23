@@ -2,78 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E67C297297
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 17:42:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5D352972A1
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 17:44:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S463256AbgJWPma (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 11:42:30 -0400
-Received: from mail2-relais-roc.national.inria.fr ([192.134.164.83]:38732 "EHLO
-        mail2-relais-roc.national.inria.fr" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S463246AbgJWPma (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 11:42:30 -0400
-X-IronPort-AV: E=Sophos;i="5.77,408,1596492000"; 
-   d="scan'208";a="474078905"
-Received: from 173.121.68.85.rev.sfr.net (HELO hadrien) ([85.68.121.173])
-  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Oct 2020 17:42:28 +0200
-Date:   Fri, 23 Oct 2020 17:42:28 +0200 (CEST)
-From:   Julia Lawall <julia.lawall@inria.fr>
-X-X-Sender: jll@hadrien
-To:     Rohit Maheshwari <rohitm@chelsio.com>
-cc:     kuba@kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
-        secdev@chelsio.com, Rohit Maheshwari <rohitm@chelsio.com>,
-        kbuild-all@lists.01.org
-Subject: [PATCH] cxgb4/ch_ktls: fix call_kern.cocci warnings
-Message-ID: <alpine.DEB.2.22.394.2010231739500.2707@hadrien>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+        id S463306AbgJWPo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 11:44:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33542 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S463290AbgJWPo2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Oct 2020 11:44:28 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 64A8120797;
+        Fri, 23 Oct 2020 15:44:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603467867;
+        bh=H8eXypMJmvED8c4AbWAZuLI6IlQyVnn99rD6pDfTxgs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Z9MfPtIHp+Uz1Ui3DHvurgveBtfd/zcr5hNWhz18Kjys1DJcwHdl2+zvxNHscez/Q
+         OaY5C2uXNiHuVmr98eaLO9pqHTmQdB7TbgN1ZrxjkzSYI1S7lH56rii2rs62fJ1xUl
+         nHrKD8L4xfJO8h+q1n0aLWBICCP7mivsBYm8R4ng=
+Date:   Fri, 23 Oct 2020 08:44:25 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hemant Kumar <hemantk@codeaurora.org>
+Cc:     Loic Poulain <loic.poulain@linaro.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, manivannan.sadhasivam@linaro.org,
+        eric.dumazet@gmail.com, Jeffrey Hugo <jhugo@codeaurora.org>,
+        Bhaumik Bhatt <bbhatt@codeaurora.org>
+Subject: Re: [PATCH v6 1/2] bus: mhi: Add mhi_queue_is_full function
+Message-ID: <20201023084425.22bbf069@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <8c384f6a-df21-1a39-f586-6077da373c04@codeaurora.org>
+References: <1602840007-27140-1-git-send-email-loic.poulain@linaro.org>
+        <8c384f6a-df21-1a39-f586-6077da373c04@codeaurora.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
+On Thu, 22 Oct 2020 20:06:37 -0700 Hemant Kumar wrote:
+> > @@ -1173,6 +1173,17 @@ int mhi_queue_buf(struct mhi_device *mhi_dev, enum dma_data_direction dir,
+> >   }
+> >   EXPORT_SYMBOL_GPL(mhi_queue_buf);
+> >   
+> > +bool mhi_queue_is_full(struct mhi_device *mhi_dev, enum dma_data_direction dir)
+> > +{
+> > +	struct mhi_controller *mhi_cntrl = mhi_dev->mhi_cntrl;
+> > +	struct mhi_chan *mhi_chan = (dir == DMA_TO_DEVICE) ?
+> > +					mhi_dev->ul_chan : mhi_dev->dl_chan;
+> > +	struct mhi_ring *tre_ring = &mhi_chan->tre_ring;
+> > +
+> > +	return mhi_is_ring_full(mhi_cntrl, tre_ring);
+> > +}
+> > +EXPORT_SYMBOL_GPL(mhi_queue_is_full);
+> >   
+> i was wondering if you can make use of mhi_get_free_desc() API (pushed 
+> as part of MHI UCI - User Control Interface driver) here?
 
-drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c:1592:22-32: ERROR: function chcr_end_part_handler called on line 1885 inside lock on line 1822 but uses GFP_KERNEL
+Let me ask you one more time. Where is this MHI UCI code you're talking
+about?
 
- Find functions that refer to GFP_KERNEL but are called with locks held.
-
-Semantic patch information:
- The proposed change of converting the GFP_KERNEL is not necessarily the
- correct one.  It may be desired to unlock the lock, or to not call the
- function under the lock in the first place.
-
-Generated by: scripts/coccinelle/locks/call_kern.cocci
-
-CC: Rohit Maheshwari <rohitm@chelsio.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Julia Lawall <julia.lawall@inria.fr>
----
-
-Hello,
-
-Please check on this.  Normally, it relates to the call site of the
-function.
-
-julia
-
-url:    https://github.com/0day-ci/linux/commits/Rohit-Maheshwari/cxgb4-ch_ktls-Fixes-in-nic-tls-code/20201023-133301
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 18ded910b589839e38a51623a179837ab4cc3789
-:::::: branch date: 3 hours ago
-:::::: commit date: 3 hours ago
-
-Please take the patch only if it's a positive warning. Thanks!
-
- chcr_ktls.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c
-@@ -1589,7 +1589,7 @@ static int chcr_end_part_handler(struct
- 		/* TAG needs to be calculated so, need to send complete record,
- 		 * free the original skb and send a new one.
- 		 */
--		nskb = alloc_skb(0, GFP_KERNEL);
-+		nskb = alloc_skb(0, GFP_ATOMIC);
- 		if (!nskb) {
- 			dev_kfree_skb_any(skb);
- 			return NETDEV_TX_BUSY;
+linux$ git remote show linux
+* remote linux
+  Fetch URL: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+  Push  URL: https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+  HEAD branch: master
+  Remote branch:
+    master tracked
+linux$ git fetch linux
+linux$ git checkout linux/master
+HEAD is now at f9893351acae Merge tag 'kconfig-v5.10' of git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild
+linux$ git grep mhi_get_free_desc
+linux$
