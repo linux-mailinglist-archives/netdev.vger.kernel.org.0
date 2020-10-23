@@ -2,98 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 366452973AE
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 18:27:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4595E297409
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 18:33:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1750615AbgJWQ1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 12:27:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57522 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750560AbgJWQ1d (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Oct 2020 12:27:33 -0400
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1751792AbgJWQdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 12:33:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59631 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1751776AbgJWQdQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 12:33:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603470795;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qFpT9rw9kU+fUUj5fb7jig81eZVzobxvui7gAjawuH0=;
+        b=jCYqKvBkG2GdjY1DUZF5NWtsiGLJ9YC9z4syTQqWdOsQP24r17aal+fMLECtc6M16OeA+H
+        sJO1g/XAwINGnDOdywtyqoFs750it4J40vpWJkXU1aCWX1qtF/ZzR2f9esOsXxjH+N2ZKl
+        6mB4s7bi6imBga23sFFsjcyTuCrAh2s=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-42-mE4iRpoaPm6zGEfodl9TZg-1; Fri, 23 Oct 2020 12:33:11 -0400
+X-MC-Unique: mE4iRpoaPm6zGEfodl9TZg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9F5852245A;
-        Fri, 23 Oct 2020 16:27:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603470452;
-        bh=iCHkIQPJ9n5EWAybizUiQrLv56EkwfuRfXJFQDdLbf8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=sOAdbMxX7Z0ofhR6ZaWxCxigrQTz6XBbi5Vsh7C1TRB0ZJ2LwtU7q7gAqE7FUpuww
-         PPe3kRve/CHZ9vb0YrIczrro2tsTPsF090jYWiAQeAWlntO9NmsGbMFSUrbSV5BV2f
-         y0TBC39FCF6vO+/4XdTzjKfgvXiw3OtRb7oy8rjo=
-Received: by mail-ej1-f43.google.com with SMTP id z5so3191989ejw.7;
-        Fri, 23 Oct 2020 09:27:32 -0700 (PDT)
-X-Gm-Message-State: AOAM5310syJ5Bg+sA/vTjptaWt3DzLeD2W1es+7/WXxffdSI8oxaw0nF
-        v3dRJb2xJlQ5i/DzUeJzFfOVp7YnXMnrWAepnaM=
-X-Google-Smtp-Source: ABdhPJzu+YDikCuMcAnUApzZlJV6sL/IS32lCeHPts0kyQkHSfjRrliCpF8fPOOJK4vCW1eILVUdMAK34rIBeJ7ZUOA=
-X-Received: by 2002:a17:906:6a07:: with SMTP id o7mr2717056ejr.454.1603470451015;
- Fri, 23 Oct 2020 09:27:31 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201021214910.20001-1-l.stelmach@samsung.com>
- <CGME20201021214933eucas1p152c8fc594793aca56a1cbf008f8415a4@eucas1p1.samsung.com>
- <20201021214910.20001-3-l.stelmach@samsung.com> <20201023160521.GA2787938@bogus>
-In-Reply-To: <20201023160521.GA2787938@bogus>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-Date:   Fri, 23 Oct 2020 18:27:18 +0200
-X-Gmail-Original-Message-ID: <CAJKOXPeNhXrBa0ZK-k37uhs5izukrhHN-rkxgsjiQBHCMmZs7g@mail.gmail.com>
-Message-ID: <CAJKOXPeNhXrBa0ZK-k37uhs5izukrhHN-rkxgsjiQBHCMmZs7g@mail.gmail.com>
-Subject: Re: [PATCH v3 2/5] dt-bindings: net: Add bindings for AX88796C SPI
- Ethernet Adapter
-To:     Rob Herring <robh@kernel.org>
-Cc:     =?UTF-8?Q?=C5=81ukasz_Stelmach?= <l.stelmach@samsung.com>,
-        devicetree@vger.kernel.org, Kukjin Kim <kgene@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 47449108E1B2;
+        Fri, 23 Oct 2020 16:33:07 +0000 (UTC)
+Received: from [10.36.114.18] (ovpn-114-18.ams2.redhat.com [10.36.114.18])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 139D160BFA;
+        Fri, 23 Oct 2020 16:33:00 +0000 (UTC)
+Subject: Re: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
+ rw_copy_check_uvector() into lib/iov_iter.c"
+To:     'Greg KH' <gregkh@linuxfoundation.org>,
+        David Laight <David.Laight@aculab.com>
+Cc:     Al Viro <viro@zeniv.linux.org.uk>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "kernel-team@android.com" <kernel-team@android.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
+        David Howells <dhowells@redhat.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        =?UTF-8?Q?Bart=C5=82omiej_=C5=BBolnierkiewicz?= 
-        <b.zolnierkie@samsung.com>,
-        "linux-samsung-soc@vger.kernel.org" 
-        <linux-samsung-soc@vger.kernel.org>, jim.cromie@gmail.com,
-        Rob Herring <robh+dt@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-aio@kvack.org" <linux-aio@kvack.org>,
+        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>
+References: <5fd6003b-55a6-2c3c-9a28-8fd3a575ca78@redhat.com>
+ <20201022104805.GA1503673@kroah.com> <20201022121849.GA1664412@kroah.com>
+ <98d9df88-b7ef-fdfb-7d90-2fa7a9d7bab5@redhat.com>
+ <20201022125759.GA1685526@kroah.com> <20201022135036.GA1787470@kroah.com>
+ <134f162d711d466ebbd88906fae35b33@AcuMS.aculab.com>
+ <935f7168-c2f5-dd14-7124-412b284693a2@redhat.com>
+ <999e2926-9a75-72fd-007a-1de0af341292@redhat.com>
+ <35d0ec90ef4f4a35a75b9df7d791f719@AcuMS.aculab.com>
+ <20201023144718.GA2525489@kroah.com>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat GmbH
+Message-ID: <52fe0398-02be-33fb-3a64-e394cc819b60@redhat.com>
+Date:   Fri, 23 Oct 2020 18:33:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.1
+MIME-Version: 1.0
+In-Reply-To: <20201023144718.GA2525489@kroah.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 23 Oct 2020 at 18:05, Rob Herring <robh@kernel.org> wrote:
->
-> On Wed, 21 Oct 2020 23:49:07 +0200, =C5=81ukasz Stelmach wrote:
-> > Add bindings for AX88796C SPI Ethernet Adapter.
-> >
-> > Signed-off-by: =C5=81ukasz Stelmach <l.stelmach@samsung.com>
-> > ---
-> >  .../bindings/net/asix,ax88796c.yaml           | 69 +++++++++++++++++++
-> >  1 file changed, 69 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/net/asix,ax88796c=
-.yaml
-> >
->
->
-> My bot found errors running 'make dt_binding_check' on your patch:
->
-> yamllint warnings/errors:
->
-> dtschema/dtc warnings/errors:
-> ./Documentation/devicetree/bindings/net/asix,ax88796c.yaml: $id: relative=
- path/filename doesn't match actual path or filename
->         expected: http://devicetree.org/schemas/net/asix,ax88796c.yaml#
-> Documentation/devicetree/bindings/net/asix,ax88796c.example.dts:20:18: fa=
-tal error: dt-bindings/interrupt-controller/gpio.h: No such file or directo=
-ry
+On 23.10.20 16:47, 'Greg KH' wrote:
+> On Fri, Oct 23, 2020 at 02:39:24PM +0000, David Laight wrote:
+>> From: David Hildenbrand
+>>> Sent: 23 October 2020 15:33
+>> ...
+>>> I just checked against upstream code generated by clang 10 and it
+>>> properly discards the upper 32bit via a mov w23 w2.
+>>>
+>>> So at least clang 10 indeed properly assumes we could have garbage and
+>>> masks it off.
+>>>
+>>> Maybe the issue is somewhere else, unrelated to nr_pages ... or clang 11
+>>> behaves differently.
+>>
+>> We'll need the disassembly from a failing kernel image.
+>> It isn't that big to hand annotate.
+> 
+> I've worked around the merge at the moment in the android tree, but it
+> is still quite reproducable, and will try to get a .o file to
+> disassemble on Monday or so...
 
-=C5=81ukasz,
+I just compiled pre and post fb041b598997d63c0f7d7305dfae70046bf66fe1 with
 
-So you really did not compile/test these patches... It's the second
-build failure in the patchset. All sent patches should at least be
-compiled on the latest kernel, if you cannot test them. However this
-patchset should be testable - Artik5 should boot on mainline kernel
+clang version 11.0.0 (Fedora 11.0.0-0.2.rc1.fc33)
 
-Best regards,
-Krzysztof
+for aarch64 with defconfig and extracted import_iovec and
+rw_copy_check_uvector (skipping the compat things)
+
+Pre fb041b598997d63c0f7d7305dfae70046bf66fe1 import_iovec
+-> https://pastebin.com/LtnYMLJt
+Post fb041b598997d63c0f7d7305dfae70046bf66fe1 import_iovec
+-> https://pastebin.com/BWPmXrAf
+Pre fb041b598997d63c0f7d7305dfae70046bf66fe1 rw_copy_check_uvector
+-> https://pastebin.com/4nSBYRbf
+Post fb041b598997d63c0f7d7305dfae70046bf66fe1 rw_copy_check_uvector
+-> https://pastebin.com/hPtEgaEW
+
+I'm only able to spot minor differences ... less gets inlined than I
+would have expected. But there are some smaller differences.
+
+Maybe someone wants to have a look before we have object files as used
+by Greg ...
+
+-- 
+Thanks,
+
+David / dhildenb
+
