@@ -2,150 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B2A7296DA2
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 13:26:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88C2A296DD0
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 13:37:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S462965AbgJWL0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 07:26:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S462868AbgJWL0A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 07:26:00 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F378C0613CE;
-        Fri, 23 Oct 2020 04:26:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=6PDeYQxNtg045NRHc1XlULYVUVuYGlzxkJDnsao8G9w=; b=mLHlNYkyyDY2dlrmBpuK+nB+I
-        eWLwkgic9XNJO0sY6G1oiTmQk35hqisG7P2IytIqtGtwvI10087RIBgxxyahx2tKnLFkcv1ayDmuT
-        w2X6xmYN4vw20+72kbP3ROUcycOOfya4qLN2xr9WiT6oAeqsvdDnqaibYH0AMs59QVGFgB/Ffgpjj
-        wnoYXQ9Q7at1qznZL4l0exWRRShzprq/6GkuDA9mgyYl+qGzDMZ45b2uq4jal2oGLKOOf1he27Y/m
-        gtQ8Ti+GviHhfb4sRZJ9N6WCE3+KeBzK4nfEYkDrGLcl5qudKidDJ0r3DWyK9Ab2hRboU/jBPUhNQ
-        4hoQpfBRA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:49950)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kVvCj-0003MW-Et; Fri, 23 Oct 2020 12:25:53 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kVvCf-0008Ov-Qv; Fri, 23 Oct 2020 12:25:49 +0100
-Date:   Fri, 23 Oct 2020 12:25:49 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Parshuram Raju Thombare <pthombar@cadence.com>
-Cc:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Milind Parab <mparab@cadence.com>
-Subject: Re: [PATCH v3] net: macb: add support for high speed interface
-Message-ID: <20201023112549.GB1551@shell.armlinux.org.uk>
-References: <1603302245-30654-1-git-send-email-pthombar@cadence.com>
- <20201021185056.GN1551@shell.armlinux.org.uk>
- <DM5PR07MB31961F14DD8A38B7FFA8DA24C11D0@DM5PR07MB3196.namprd07.prod.outlook.com>
- <DM5PR07MB3196723723F236F6113DDF9EC11A0@DM5PR07MB3196.namprd07.prod.outlook.com>
+        id S463112AbgJWLhs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 07:37:48 -0400
+Received: from mail-db8eur05on2060.outbound.protection.outlook.com ([40.107.20.60]:39744
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S463048AbgJWLhr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Oct 2020 07:37:47 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hAlibZdf7bG7TK8mNJ1/oL0q+wh84SH6yOFqGlBG6nZu3otW4xWu9jWx+u2rO4/l+6AxUbQXtSOHFPF98fRbJFNNaIJaqpA/s0yV9IE7iTQqDHhR8/PJdUzQCyND1xDycMQ6jdxL1yfF5mFE57/SGIwPGhllFxTfyVTv6CNjS7HhQf/CEiSkUe6BJj1QVASWWdbbYHV+UWNFIuszDcJlGWXe0rUBUBzGJE0HRUxMRvXn5OvPZsIlPrJvwQnR2X9AQDNz8nilecp5jQlLA5XrN5j7CG41jf7iQBb1Uxg2zPWbW1+dAd6ao0oycx7yCi9itvkSJcGmEheOxwfwtmBmHw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NLEr1K94IvAh4KDzSNGkju6vlNZ0CduPVEy6mPqrD4U=;
+ b=JAgL4vLdJ0F68p9u2X1vcoP4De9IIQOVlRA82JOrnXLsUPStthRbJv3FYkv68BFe5ilImtSDmgxIgPeMNV+zEgE2pi4oOQCVe8FRCJzS0SrmhZWFVxj4MOSEsMeJ6+6xIbcKiUPp8MnwmlxCaeKQ26F+FpXAzTo1WMZORM/PmsoEtkSP0ijQDNr/76Z8OytMF6apbzAwvLleASMwEma6GaBvInt4LXpSc6tFxW0n4dj+nmqCgY9wYgehgdh84Lg5q/9lTaK5g5o1JTdRddtR8ApcejkL+XVgxV1TLoBVPtFCRQ/u92DfkDjOLupZzme5NlQyLCeRnh6UnaobtpmqcA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NLEr1K94IvAh4KDzSNGkju6vlNZ0CduPVEy6mPqrD4U=;
+ b=T7yyqQAWbWw3eN58CvVelC79Dql/iV2dBOIDi9T2iWp3cKDMAo3WfaALjEKPiFeNRsHz1sFXrKWyp2mDzqbhKWRLq29a4bRPLE2hJDFgRxfSIkYlUUWzE09P1cWcI+0flEPXT80HdMrbgVNj1dxRSWL0Awh/0ZusdOJrId8on9A=
+Received: from AM0PR04MB6754.eurprd04.prod.outlook.com (2603:10a6:208:170::28)
+ by AM0PR04MB5364.eurprd04.prod.outlook.com (2603:10a6:208:11f::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.21; Fri, 23 Oct
+ 2020 11:37:45 +0000
+Received: from AM0PR04MB6754.eurprd04.prod.outlook.com
+ ([fe80::21b9:fda3:719f:f37b]) by AM0PR04MB6754.eurprd04.prod.outlook.com
+ ([fe80::21b9:fda3:719f:f37b%3]) with mapi id 15.20.3477.028; Fri, 23 Oct 2020
+ 11:37:44 +0000
+From:   Claudiu Manoil <claudiu.manoil@nxp.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        "james.jurack@ametek.com" <james.jurack@ametek.com>
+Subject: RE: [PATCH net] gianfar: Account for Tx PTP timestamp in the skb
+ headroom
+Thread-Topic: [PATCH net] gianfar: Account for Tx PTP timestamp in the skb
+ headroom
+Thread-Index: AQHWpweGcRhcwMsnREqE1tK8TP9eu6miWc2AgAEekxCAAQlWgIAAfBoA
+Date:   Fri, 23 Oct 2020 11:37:44 +0000
+Message-ID: <AM0PR04MB67541E97634368B5B2CF1D5C961A0@AM0PR04MB6754.eurprd04.prod.outlook.com>
+References: <fa12d66e-de52-3e2e-154c-90c775bb4fe4@ametek.com>
+        <20201020173605.1173-1-claudiu.manoil@nxp.com>
+        <20201021105933.2cfa7176@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <AM0PR04MB6754877DC2BBA688F2DC249A961D0@AM0PR04MB6754.eurprd04.prod.outlook.com>
+ <20201022195455.09939040@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201022195455.09939040@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.27.120.177]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 2df2e8ff-8153-4082-62f0-08d877480f3d
+x-ms-traffictypediagnostic: AM0PR04MB5364:
+x-microsoft-antispam-prvs: <AM0PR04MB5364141BC51509E4DB95EDE2961A0@AM0PR04MB5364.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1468;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: QrKbX3wC3L4oPhKtakY7l9yZvrA2zZ4Y/IBB2QxevV1mND7L+hb5qVKpeAE1Yv2oAhlH/+EHX1Ho/hL3uQIG+SzgVoty6+y4EAbT43XEPuGjhI6d+30RjeKwbKex1VA0jitvM1Kc9CFk8A4ZWHqyp06kJQQebdxn6lg0vTzkmDbYi+P9cvAFUWUeo49mnXzS6i8HKZkNe+0sXufswV5ZpLKHXvTMGgGx0BIgnXugPy6gu/0NSTEL8BfeyDb8020ZsH4n3YsXBypQJuLvH8HtI/ivcbthHlkj2eijNOUnNGajD5ZCovKIxhyUWV5tREPR5xodB4K85Hz01mnFIUEtHw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB6754.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(376002)(396003)(39850400004)(346002)(366004)(316002)(86362001)(33656002)(478600001)(4326008)(8936002)(6506007)(9686003)(6916009)(55016002)(8676002)(26005)(2906002)(186003)(71200400001)(64756008)(76116006)(44832011)(66946007)(66476007)(7696005)(66556008)(83380400001)(5660300002)(66446008)(54906003)(15650500001)(52536014);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: e55PeHcLHAGxsnGAaH+RfB9mUGv3Sjrp67anN0yxJHPIabqGzJOFHCW/bLj/0sisuYZHXsT976b9wNOgNODks85zVT6NFShHF0C7rZQaLQPBq0qkO3w5sjzTjZAni8w8a+tO81fL06sAq7kNQcNUvGhUSqLweys+4BTqceLbncZNv9hgIW8PAcK92hCmxITXx2paIjolQrPafUbG2WeO1vvJ/WHO+nG/uueqK25Ql/6tjhEB+xtVJ/VI9h6fFnxWUDa1+ykeuC5b62dS08tU0glO3mkNV6XGQpozD5EGDB7XeqU5nTWY4Jo8rgXCttKL0ZKT1t+TLPbrFhP/2E9Sj7X7a6IdlAxXHeC7uB8T2hqGo3Xeo7QoePQ9UakPaHFiTbl+kYC1g8jSBXTS6tmhmOcbb5hFqry62TehVgvIBjPrNP35rwK26xfk/6KrDPN1RXgOn64cbW0u3dSc2+4MYfCs1d6Y/VBpSjYXY7lHH3+05NypQuay77OymK0ACavmSLIFW1aRbvSOLqhR1+n9QADezz0lzRd6WQzG5zfymBwHrBUGBcLsChhr0whVcvbCrfwoJSIZdxSNfzDafHWanvTLb1XaykthnPg/5E1VRD3BzKIcCyAVvM/6eu6OzBVoDPP8Nngq/TSJLNVcW0f5Vg==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DM5PR07MB3196723723F236F6113DDF9EC11A0@DM5PR07MB3196.namprd07.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB6754.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2df2e8ff-8153-4082-62f0-08d877480f3d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Oct 2020 11:37:44.9257
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: MuVmwRU+lP8gxNtwU1eXz0q6cI27MC3fhf2MAOjOCxXsbybBckfCyaJ5JjNWAezMBRoyo2OTP0x9x6MLk4ypyw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5364
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 23, 2020 at 10:59:42AM +0000, Parshuram Raju Thombare wrote:
-> Hi,
-> 
-> I was trying to find out any ethernet driver where this issue of selecting appropriate
-> pcs_ops due to phylink changing interface mode dynamically is handled. 
-> But, apparently, so far only mvpp2 has adapted pcs_ops. And even in mvpp2, it is
-> not obvious how this case is handled. 
 
-Yes, mvpp2 is the only driver that has been converted.  I'm not sure
-why you say that it's not obvious how it's handled.
 
-Whenever the interface changes, we go through the full reconfiguration
-procedure that I've already outlined. This involves calling the
-mac_prepare() method which calls into mvpp2_mac_prepare() and its
-child mvpp2__mac_prepare().
+>-----Original Message-----
+>From: Jakub Kicinski <kuba@kernel.org>
+>Sent: Friday, October 23, 2020 5:55 AM
+>To: Claudiu Manoil <claudiu.manoil@nxp.com>
+>Cc: netdev@vger.kernel.org; David S . Miller <davem@davemloft.net>;
+>james.jurack@ametek.com
+>Subject: Re: [PATCH net] gianfar: Account for Tx PTP timestamp in the skb
+>headroom
+>
+>On Thu, 22 Oct 2020 12:09:00 +0000 Claudiu Manoil wrote:
+>> >-----Original Message-----
+>> >From: Jakub Kicinski <kuba@kernel.org>
+>> >Sent: Wednesday, October 21, 2020 9:00 PM
+>> >To: Claudiu Manoil <claudiu.manoil@nxp.com>
+>> >Cc: netdev@vger.kernel.org; David S . Miller <davem@davemloft.net>;
+>> >james.jurack@ametek.com
+>> >Subject: Re: [PATCH net] gianfar: Account for Tx PTP timestamp in the s=
+kb
+>> >headroom
+>> >
+>> >On Tue, 20 Oct 2020 20:36:05 +0300 Claudiu Manoil wrote:
+>> [...]
+>> >>
+>> >>  	if (dev->features & NETIF_F_IP_CSUM ||
+>> >>  	    priv->device_flags & FSL_GIANFAR_DEV_HAS_TIMER)
+>> >> -		dev->needed_headroom =3D GMAC_FCB_LEN;
+>> >> +		dev->needed_headroom =3D GMAC_FCB_LEN +
+>GMAC_TXPAL_LEN;
+>> >>
+>> >>  	/* Initializing some of the rx/tx queue level parameters */
+>> >>  	for (i =3D 0; i < priv->num_tx_queues; i++) {
+>> >
+>> >Claudiu, I think this may be papering over the real issue.
+>> >needed_headroom is best effort, if you were seeing crashes
+>> >the missing checks for skb being the right geometry are still
+>> >out there, they just not get hit in the case needed_headroom
+>> >is respected.
+>> >
+>> >So updating needed_headroom is definitely fine, but the cause of
+>> >crashes has to be found first.
+>>
+>> I agree Jakub, but this is a simple (and old) ring based driver. So the
+>> question is what checks or operations may be missing or be wrong
+>> in the below sequence of operations made on the skb designated for
+>> timestamping?
+>> As hinted in the commit description, the code is not crashing when
+>> multiple TCP streams are transmitted alone (skb frags manipulation was
+>> omitted for brevity below, and this is a well exercised path known to wo=
+rk),
+>> but only crashes when multiple TCP stream are run concurrently
+>> with a PTP Tx packet flow taking the skb_realloc_headroom() path.
+>> I don't find other drivers doing skb_realloc_headroom() for PTP packets,
+>> so maybe is this an untested use case of skb usage?
+>>
+>> init:
+>> dev->needed_headroom =3D GMAC_FCB_LEN;
+>>
+>> start_xmit:
+>> netdev_tx_t gfar_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>> {
+>> 	do_tstamp =3D (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
+>> 		    priv->hwts_tx_en;
+>> 	fcb_len =3D GMAC_FCB_LEN; // can also be 0
+>> 	if (do_tstamp)
+>> 		fcb_len =3D GMAC_FCB_LEN + GMAC_TXPAL_LEN;
+>>
+>> 	if (skb_headroom(skb) < fcb_len) {
+>> 		skb_new =3D skb_realloc_headroom(skb, fcb_len);
+>> 		if (!skb_new) {
+>> 			dev_kfree_skb_any(skb);
+>> 			return NETDEV_TX_OK;
+>> 		}
+>> 		if (skb->sk)
+>> 			skb_set_owner_w(skb_new, skb->sk);
+>> 		dev_consume_skb_any(skb);
+>> 		skb =3D skb_new;
+>> 	}
+>
+>Try replacing this if () with skb_cow_head(). The skbs you're getting
+>are probably cloned.
+>
 
-In mvpp2__mac_prepare(), we switch the "ops" for port->phylink_pcs,
-and then back in mvpp2_mac_prepare(), we ensure that the PCS instance
-is set to the port->phylink_pcs (which internally updates the
-pl->pcs_ops pointer in phylink.)
+That seems to be it(!), Jakub.  With this change the test that was failing
+immediately before passes now.  I'm going to do some more tests, and
+I'll send 2 stable fixes for v2 if everything is fine.
+Not sure if this particular breakage was triggered by cloned skbs, though
+probably timestamping skbs can get cloned, but could also be other aspect
+/ side effect of using skb_realloc_headroom/skb_set_owner_w vs skb_cow_head=
+,
+as the 2 APIs differ in many ways.
 
-That results in phylink switching between the XLG and GMAC PCS
-operations depending on the interface in use.
+Thanks for the help.
 
-> Also, apart from interface mode changed due to SFPs with different types of PHY
-> being used, it is not clear when phylink selects interface mode different than it
-> initially requested to the ethernet driver.
+Regards,
+Claudiu
 
-The ethernet driver's initial interface mode has no real bearing when a
-SFP is inserted. A SFP or SFP+ module can require one of several
-different interface modes, and generally can not be programmed to
-operate in any other mode.
 
-For example, a 1G fiber SFP can _only_ operate in 1000BASE-X. SGMII and
-10G modes are not permissible. Trying to use RGMII (for example) is a
-nonsense because there aren't enough pins on the module to connect
-RGMII, and the module would not know what to do with it.
-
-If the module is a 10M/100M/1G copper SFP, then things get more fun -
-and what can be done depends whether the SFP has an accessible PHY we
-can drive. The PHY may support 1000BASE-X and/or SGMII, and there is
-no real way to determine which the SFP supports. The EEPROM does _not_
-help with this. We work around that at present by always using SGMII
-(there are copper modules that the PHY is inaccessible but is in SGMII
-mode - Mikrotik S-RJ01 for example). For others where the PHY is
-accessible, it is generally an 88E1111, which may power up in either
-SGMII or 1000BASE-X mode. We always select SGMII for these, and the
-88E1111 driver knows how to reprogram the PHY to operate in this mode.
-
-If it's a SFP+ module, then similar games occur. If it's a fiber module,
-then 10GBASE-R needs to be selected, since that's the protocol that is
-defined to be used over 10G fiber connections. Otherwise, again, it's
-up to the PHY - and the PHY can be one that switches between 10GBASE-R,
-2500BASE-X, and SGMII depending on the speed that was negotiated on its
-copper side.
-
-There is nothing simple here - but as far as the MAC driver is
-concerned, phylink will ask the MAC driver to reconfigure itself for
-the interface mode as appropriate.
-
-> >pcs_config and pcs_link_up passes "interface" as an argument, and in
-> >pcs_get_state call "state->interface" appeared to be populated just before
-> >calling it and hence should be valid.
-> 
-> It seems state->interface in pcs_get_state is not always valid when SFPs with
-> different types of PHY are used.
-> 
-> There is a chance of SFP with different type of PHY is inserted,
-> eventually invoking phylink_resolve for interface mode different than
-> phylink initially requested, and causing major reconfiguration.
-> 
-> However, pcs_get_state is called before major reconfiguration, where selecting
-> which pcs_ops and PCS to be used is difficult without correct interface mode.  
-
-Correct - state->interface will always be the currently configured
-interface mode, because that's the one that the MAC hardware is
-configured for. Other PCS interfaces may be powered down and/or
-disconnected from the serdes lane.
-
-However, the interface will not change at the point you are referring
-to when in in-band mode (there is no support for dynamic changes of
-interface in that circumstance.) The change of interface happens when
-a SFP module is being brought up either via the phylink_sfp_config*()
-functions, or if there is a PHY, via the phylib driver propagating its
-operating interface mode back through phylink (but in this case, we
-will not be in in-band mode, and pcs_get_state() will not be called.)
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
