@@ -2,169 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 133A12969A8
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 08:22:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F9892969B5
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 08:30:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S372612AbgJWGWC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 02:22:02 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:40860 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S372575AbgJWGWC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Oct 2020 02:22:02 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id BCE4A303D0F4FAFBD422;
-        Fri, 23 Oct 2020 14:21:59 +0800 (CST)
-Received: from [10.74.191.121] (10.74.191.121) by
- DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
- 14.3.487.0; Fri, 23 Oct 2020 14:21:49 +0800
-Subject: Re: [PATCH net] net: hns3: Clear the CMDQ registers before unmapping
- BAR region
-To:     Zenghui Yu <yuzenghui@huawei.com>, <yisen.zhuang@huawei.com>,
-        <salil.mehta@huawei.com>, <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <wanghaibin.wang@huawei.com>, <tanhuazhong@huawei.com>
-References: <20201023051550.793-1-yuzenghui@huawei.com>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <3c5c98f9-b4a0-69a2-d58d-bfef977c68ad@huawei.com>
-Date:   Fri, 23 Oct 2020 14:22:58 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        id S372768AbgJWGaH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 02:30:07 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:54020 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S369628AbgJWGaH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 02:30:07 -0400
+Received: from mail-ed1-f69.google.com ([209.85.208.69])
+        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <juerg.haefliger@canonical.com>)
+        id 1kVqaS-0007aj-Gg
+        for netdev@vger.kernel.org; Fri, 23 Oct 2020 06:30:04 +0000
+Received: by mail-ed1-f69.google.com with SMTP id w24so193225edl.3
+        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 23:30:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version;
+        bh=R+UPQ0SAC5WUEZ/WeOnQ4tTbzSomGSi7J0a/EeK94tk=;
+        b=GM3WSIbnVwQA3lLzgNmy8W/r8aJCumb0JZ5oAIItzk9k8gcN+KafCkWFzXanBOFEas
+         JC7A/GcBu6gSx+piWiOrg1y/kxTP9OShSGpzUOWQudl4GfygBZj/H+6wtmubSfeQ5mGK
+         Jq9MM4l+cE0NdG3YGsIRTiSRmSTedEwcQdlmA0Ou1uXsUmZjHx7KkABQrZzk7zE8G0j9
+         GHK+pv30mvKxWTJZGWn9RWa7f0Lc9jMsm4APjfANer+wMUkaL9WEyG4iFqdZ2o8Dj9c2
+         Hudf7zMo02qVhinajzVQqq6jtos1MR0J35y+AXQaqQBXXKvdxipQxOd8QrvV3vaMAAhM
+         TxOA==
+X-Gm-Message-State: AOAM533AUs5WfD/id9o5GjyO3nZfYUo+0p/PqFNQSDtsHYzfyCCCSX4x
+        bH91UxY3RviNRlZt0BVqTy5HelEO5K41b7w+j5xCWZBGvi/tZM1GRur4yp9hqa5meXCKbvtMaey
+        i3hMKPGAA+7cueD6AyfXMH0Q+C+1qyphrAg==
+X-Received: by 2002:a17:906:c094:: with SMTP id f20mr564930ejz.550.1603434603274;
+        Thu, 22 Oct 2020 23:30:03 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxny7xCdywvvQFzJeu7Rg0+itD8Jdx8nCfOTcaDibTWjGQQ3eCJFbLJQxjKLVIZZutpTKmhhQ==
+X-Received: by 2002:a17:906:c094:: with SMTP id f20mr564828ejz.550.1603434601826;
+        Thu, 22 Oct 2020 23:30:01 -0700 (PDT)
+Received: from gollum ([194.191.244.86])
+        by smtp.gmail.com with ESMTPSA id qw1sm235780ejb.44.2020.10.22.23.30.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Oct 2020 23:30:00 -0700 (PDT)
+From:   Juerg Haefliger <juerg.haefliger@canonical.com>
+X-Google-Original-From: Juerg Haefliger <juergh@canonical.com>
+Date:   Fri, 23 Oct 2020 08:29:59 +0200
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Juerg Haefliger <juerg.haefliger@canonical.com>,
+        netdev@vger.kernel.org, woojung.huh@microchip.com
+Subject: Re: lan78xx: /sys/class/net/eth0/carrier stuck at 1
+Message-ID: <20201023082959.496d4596@gollum>
+In-Reply-To: <20201021193548.GU139700@lunn.ch>
+References: <20201021170053.4832d1ad@gollum>
+        <20201021193548.GU139700@lunn.ch>
+Organization: Canonical Ltd
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20201023051550.793-1-yuzenghui@huawei.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.191.121]
-X-CFilter-Loop: Reflected
+Content-Type: multipart/signed; boundary="Sig_/Kaxv=3M7LcEc4VvkzHwOJ9r";
+ protocol="application/pgp-signature"; micalg=pgp-sha512
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020/10/23 13:15, Zenghui Yu wrote:
-> When unbinding the hns3 driver with the HNS3 VF, I got the following
-> kernel panic:
-> 
-> [  265.709989] Unable to handle kernel paging request at virtual address ffff800054627000
-> [  265.717928] Mem abort info:
-> [  265.720740]   ESR = 0x96000047
-> [  265.723810]   EC = 0x25: DABT (current EL), IL = 32 bits
-> [  265.729126]   SET = 0, FnV = 0
-> [  265.732195]   EA = 0, S1PTW = 0
-> [  265.735351] Data abort info:
-> [  265.738227]   ISV = 0, ISS = 0x00000047
-> [  265.742071]   CM = 0, WnR = 1
-> [  265.745055] swapper pgtable: 4k pages, 48-bit VAs, pgdp=0000000009b54000
-> [  265.751753] [ffff800054627000] pgd=0000202ffffff003, p4d=0000202ffffff003, pud=00002020020eb003, pmd=00000020a0dfc003, pte=0000000000000000
-> [  265.764314] Internal error: Oops: 96000047 [#1] SMP
-> [  265.830357] CPU: 61 PID: 20319 Comm: bash Not tainted 5.9.0+ #206
-> [  265.836423] Hardware name: Huawei TaiShan 2280 V2/BC82AMDDA, BIOS 1.05 09/18/2019
-> [  265.843873] pstate: 80400009 (Nzcv daif +PAN -UAO -TCO BTYPE=--)
-> [  265.843890] pc : hclgevf_cmd_uninit+0xbc/0x300
-> [  265.861988] lr : hclgevf_cmd_uninit+0xb0/0x300
-> [  265.861992] sp : ffff80004c983b50
-> [  265.881411] pmr_save: 000000e0
-> [  265.884453] x29: ffff80004c983b50 x28: ffff20280bbce500
-> [  265.889744] x27: 0000000000000000 x26: 0000000000000000
-> [  265.895034] x25: ffff800011a1f000 x24: ffff800011a1fe90
-> [  265.900325] x23: ffff0020ce9b00d8 x22: ffff0020ce9b0150
-> [  265.905616] x21: ffff800010d70e90 x20: ffff800010d70e90
-> [  265.910906] x19: ffff0020ce9b0080 x18: 0000000000000004
-> [  265.916198] x17: 0000000000000000 x16: ffff800011ae32e8
-> [  265.916201] x15: 0000000000000028 x14: 0000000000000002
-> [  265.916204] x13: ffff800011ae32e8 x12: 0000000000012ad8
-> [  265.946619] x11: ffff80004c983b50 x10: 0000000000000000
-> [  265.951911] x9 : ffff8000115d0888 x8 : 0000000000000000
-> [  265.951914] x7 : ffff800011890b20 x6 : c0000000ffff7fff
-> [  265.951917] x5 : ffff80004c983930 x4 : 0000000000000001
-> [  265.951919] x3 : ffffa027eec1b000 x2 : 2b78ccbbff369100
-> [  265.964487] x1 : 0000000000000000 x0 : ffff800054627000
-> [  265.964491] Call trace:
-> [  265.964494]  hclgevf_cmd_uninit+0xbc/0x300
-> [  265.964496]  hclgevf_uninit_ae_dev+0x9c/0xe8
-> [  265.964501]  hnae3_unregister_ae_dev+0xb0/0x130
-> [  265.964516]  hns3_remove+0x34/0x88 [hns3]
-> [  266.009683]  pci_device_remove+0x48/0xf0
-> [  266.009692]  device_release_driver_internal+0x114/0x1e8
-> [  266.030058]  device_driver_detach+0x28/0x38
-> [  266.034224]  unbind_store+0xd4/0x108
-> [  266.037784]  drv_attr_store+0x40/0x58
-> [  266.041435]  sysfs_kf_write+0x54/0x80
-> [  266.045081]  kernfs_fop_write+0x12c/0x250
-> [  266.049076]  vfs_write+0xc4/0x248
-> [  266.052378]  ksys_write+0x74/0xf8
-> [  266.055677]  __arm64_sys_write+0x24/0x30
-> [  266.059584]  el0_svc_common.constprop.3+0x84/0x270
-> [  266.064354]  do_el0_svc+0x34/0xa0
-> [  266.067658]  el0_svc+0x38/0x40
-> [  266.070700]  el0_sync_handler+0x8c/0xb0
-> [  266.074519]  el0_sync+0x140/0x180
-> 
-> It looks like the BAR memory region had already been unmapped before we
-> start clearing CMDQ registers in it, which is pretty bad and the kernel
-> happily kills itself because of a Current EL Data Abort (on arm64).
-> 
-> Moving the CMDQ uninitialization a bit early fixes the issue for me.
+--Sig_/Kaxv=3M7LcEc4VvkzHwOJ9r
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-Yes, this seems a obvious bug, and below patch seems the obvious fix too.
+On Wed, 21 Oct 2020 21:35:48 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
 
-We has testcase to test the loading and unloading process, but does not
-seem to catch this error, and testing it again using the latest internal
-version seems ok too:
+> On Wed, Oct 21, 2020 at 05:00:53PM +0200, Juerg Haefliger wrote:
+> > Hi,
+> >=20
+> > If the lan78xx driver is compiled into the kernel and the network cable=
+ is
+> > plugged in at boot, /sys/class/net/eth0/carrier is stuck at 1 and doesn=
+'t
+> > toggle if the cable is unplugged and replugged.
+> >=20
+> > If the network cable is *not* plugged in at boot, all seems to work fin=
+e.
+> > I.e., post-boot cable plugs and unplugs toggle the carrier flag.
+> >=20
+> > Also, everything seems to work fine if the driver is compiled as a modu=
+le.
+> >=20
+> > There's an older ticket for the raspi kernel [1] but I've just tested t=
+his
+> > with a 5.8 kernel on a Pi 3B+ and still see that behavior. =20
+>=20
+> Hi J=C3=BCrg
 
-[root@localhost ~]# rmmod hclgevf
-[ 8035.010715] hns3 0000:7d:01.0 eth8: net stop
-[ 8035.079917] hns3 0000:7d:01.0 eth8: link down
-[ 8036.402491] hns3 0000:7d:01.1 eth9: net stop
-[ 8036.472946] hns3 0000:7d:01.1 eth9: link down
-[root@localhost ~]# rmmod hns3
-[ 8045.938705] hns3 0000:bd:00.3 eth7: net stop
-[ 8046.354308] hns3 0000:bd:00.2 eth6: net stop
-[ 8046.627653] hns3 0000:bd:00.1 eth5: net stop
-[ 8046.632251] hns3 0000:bd:00.1 eth5: link down
-[ 8047.050235] hns3 0000:bd:00.0 eth4: net stop
-[ 8047.054837] hns3 0000:bd:00.0 eth4: link down
-[ 8047.340528] hns3 0000:7d:00.3 eth3: net stop
-[ 8047.347633] hns3 0000:7d:00.3 eth3: link down
-[ 8048.879299] hns3 0000:7d:00.2 eth2: net stop
-[ 8050.271999] hns3 0000:7d:00.1 eth1: net stop
-[ 8050.278755] hns3 0000:7d:00.1 eth1: link down
-[ 8051.650607] pci 0000:7d:01.0: Removing from iommu group 44
-[ 8051.657909] pci 0000:7d:01.1: Removing from iommu group 45
-[ 8052.794671] hns3 0000:7d:00.0 eth0: net stop
-[ 8052.800385] hns3 0000:7d:00.0 eth0: link down
-[root@localhost ~]#
-[root@localhost ~]#
+Hi Andrew,
 
 
-Do you care to provide the testcase for above calltrace?
+> Could you check if a different PHY driver is being used when it is
+> built and broken vs module or built in and working.
+>=20
+> Look at /sys/class/net/eth0/phydev/driver
 
-> 
-> Signed-off-by: Zenghui Yu <yuzenghui@huawei.com>
-> ---
-> 
-> I have almost zero knowledge about the hns3 driver. You can regard this
-> as a report and make a better fix if possible.
-> 
-> I can't even figure out that how can we live with this issue for a long
-> time... It should exists since commit 34f81f049e35 ("net: hns3: clear
-> command queue's registers when unloading VF driver"), where we start
-> writing something into the unmapped area.
-> 
->  drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-> index 50c84c5e65d2..c8e3fdd5999c 100644
-> --- a/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-> +++ b/drivers/net/ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c
-> @@ -3262,8 +3262,8 @@ static void hclgevf_uninit_hdev(struct hclgevf_dev *hdev)
->  		hclgevf_uninit_msi(hdev);
->  	}
->  
-> -	hclgevf_pci_uninit(hdev);
->  	hclgevf_cmd_uninit(hdev);
-> +	hclgevf_pci_uninit(hdev);
->  	hclgevf_uninit_mac_list(hdev);
->  }
->  
-> 
+There's no such file.
+
+=20
+> I'm wondering if in the builtin case, it is using genphy, but with
+> modules it uses a more specific vendor driver.
+
+Given that all works fine as long as the cable is unplugged at boot points
+more towards a race at boot or incorrect initialization sequence or somethi=
+ng.
+
+
+...Juerg
+=20
+> 	Andrew
+
+
+--Sig_/Kaxv=3M7LcEc4VvkzHwOJ9r
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEhZfU96IuprviLdeLD9OLCQumQrcFAl+SeGcACgkQD9OLCQum
+Qrcl4BAAkhZzuNj0yfXC6mvLOrIALs8ilIFX0EOz99Kw7ETCPr3d0LYiUbeNsbmr
+Ut2nVVBsEVk61A0Kr9MHW2vvMOnNyetjK6l3n+nAx9EFKvN5eVyNG9ezWQv2mbXS
+Ma10hI9OE55TAQYCsoh+O1DsRNaCTihQJTczK8YLRzq39FEIrk/vobRVenRQLLTA
+OuwH4ElocL11sYOzXh8Ym/hJ0GiTzMjXPvYiXJKxKghEy1Dnl/ODf3H1BUkEFhzl
+hIKdHuyDudkTXO+nOTGE2O4nvTz6l2UusEiq4UitFqvQF9gHWUUkqGY33xxFBdxZ
+FUfSO1Wq9+zZV76NAyqPREd3RJJchS+XEfoqejFIfN8Apmdlh7lGYaiQi/8An5YZ
+99WO00z103J29Dhj0HRyVqcMfds8He5dB9sSqpMcjRIsZl60I4H1aIflYBRJsK6m
+rsPkqSuHL2GKKKPACOoZn1To01pEtHWd6PxvTIUCDMD/jmxXD061qdqufiu0EbcZ
+67Hk48j0st43Hp+/+BywbwDKIJROdGstLWcUtOVs0zjFOYduMUlPXazJ2+20oElW
+eTzhky5pYraCbR5UuBOzcoWx7iopro54nB10uHBZ2WIz+OuUiruNnhMIWhb8VbIF
+sWNtI1AdW+WVyrx5XguPVwjDvautHKfaqg8yg7bOEUNC50hHl+o=
+=mykk
+-----END PGP SIGNATURE-----
+
+--Sig_/Kaxv=3M7LcEc4VvkzHwOJ9r--
