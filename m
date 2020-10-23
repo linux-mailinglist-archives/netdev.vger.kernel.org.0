@@ -2,111 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B117E29732E
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 18:06:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A687297372
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 18:20:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1751286AbgJWQGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 12:06:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44704 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S465065AbgJWQGc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 12:06:32 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41880C0613D2
-        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 09:06:32 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id q5so2255905wmq.0
-        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 09:06:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=memsql.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=euExVQPA72xd2lVFnWoLuf29tkwnJwV+/7v1rKWYMoY=;
-        b=YMf/AuBQZJeprX8rwYV8MDjzl85nrWVVMNJunVFNRYNF4FCk7xxBQlyC2mRlclOvls
-         ibOxrcWwN5G9tfh4dsMkXZ2Dnf+3T6hwt53ke5ZFPOui4Jo5oOdF9iyexc3Pv5/gKUpX
-         8RKl65IEYsaEzyTbGnvRPP4qkLyYdPMfntS+k=
+        id S1750315AbgJWQUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 12:20:45 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:49713 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1750279AbgJWQTq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 12:19:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603469985;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=9EGrxKtjQ9ilV8o4tlp69vDV7/fso4Ay+SJaaWwWPeg=;
+        b=AslGKHJN9PvSmZPPuVrYwn5rXwHlQRSpLzdMZsim7FZMZx6pMICF4yQsDOKin7LPtoLFa8
+        eBdytti1EcHSAnpb9FlbG1ChQxD/wyupeleJ2UVOaPXHm6wBTvkUA92NDy7o7p0fLK5Zl9
+        +9nqkVUSfBykNnjr+41ctfvpKixEixo=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-32-aaFx9VWmMhaaNdU342SbGA-1; Fri, 23 Oct 2020 12:19:43 -0400
+X-MC-Unique: aaFx9VWmMhaaNdU342SbGA-1
+Received: by mail-wr1-f69.google.com with SMTP id j15so757481wrd.16
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 09:19:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=euExVQPA72xd2lVFnWoLuf29tkwnJwV+/7v1rKWYMoY=;
-        b=R9HyJmzDG7Q1e+89EqKkePCjGLtJvk7aa98R3sNutHDsxOBLbOD5AnjMklD7eK41ye
-         lFVHuAHmXM+R1F9XFCVolcdZe1kUbboz0GFI06NYuLlC/ebb9NQrGordb/0DkOAFPTxq
-         gjI/wzQf6Js9t1+TmCnVW5xq8WJORZxI+ZBUZKckFVX/u0jIs/8X7/e7CRsP1pQgbVRy
-         5ocu7tGAwqN8FA/szY7mHyeNvRnhiVVrS/FcMMej04XiXR0sd65IVV4YWlaZ0+nahE+x
-         P81Wz3BiE6dx1jz4qyhnYXgKYYG6gIiqlp3gmDVWfMztj4l1lo5EB9lx/nMKHvBAJty0
-         htYw==
-X-Gm-Message-State: AOAM533umaMCKPSmxhvG+fdJPVKJGV0nUsBbVS2IyANbFFg7JVbIvbKl
-        +iK+xnqawY18kLkbWirEUfMLennO4kIvVF2x1+k=
-X-Google-Smtp-Source: ABdhPJwisw9TKSCnTKqraDv49s4Pd+yLYGAqVzYvIyPs4/IEZFdmeyxiVttF1HObyY9e0sZk50btVw==
-X-Received: by 2002:a05:600c:216:: with SMTP id 22mr2889313wmi.149.1603469190929;
-        Fri, 23 Oct 2020 09:06:30 -0700 (PDT)
-Received: from rdias-suse-pc.lan (bl13-26-148.dsl.telepac.pt. [85.246.26.148])
-        by smtp.gmail.com with ESMTPSA id n62sm4501175wmb.10.2020.10.23.09.06.29
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=9EGrxKtjQ9ilV8o4tlp69vDV7/fso4Ay+SJaaWwWPeg=;
+        b=gU9qoawjIi+aBPo/WmbRzZVanyE7pBYEP5wYVtw6babduw4bDmLhjq3MfKjxoCGip9
+         U1z0WRxrWL6lsszqfy/PxcsERvTDGQP6UmnPqd4wVqC+jshjeB+uC64Bj/XOLwQIHtgk
+         rfJ+8HgAbRMSWDxeGMxINmhQVUdY8k1R/+28C+Rht0N6Ll3wrhxwoXabxXN7YiCOly7F
+         pt2tIKKK2vT7lNG2o4qk/oNQTxEBQX+DlCai8TXi3mCiKBlB3spHYuql/sGMTjsKKfIF
+         TNWxMD2Y/OxkMsc8jXaSEz5cftwgrylFY11rcT7Njy4qK4KodkrpTOB1zWx+zXtLiAC1
+         BaLw==
+X-Gm-Message-State: AOAM531njNff6AJg1FT9VFreqmdWEn5E7L3IaeX4cktBYQaOjGwTN+EO
+        9193GLOxHuiZzgvXKvDC3V1M/XJRoRTNpBMZsEXhGy8+LP1tgsqAyqUzLTex7Tni6OZesfJ5wGj
+        pr4OkseztsceXQCZr
+X-Received: by 2002:a5d:49cc:: with SMTP id t12mr3693886wrs.342.1603469982097;
+        Fri, 23 Oct 2020 09:19:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJys3dJfaIby5+r5nJU84dm/ESZVvwxMEA+vGiZ9gtIphJV0LSyqrG6AN8FhP3KC+0s/7xdOww==
+X-Received: by 2002:a5d:49cc:: with SMTP id t12mr3693859wrs.342.1603469981795;
+        Fri, 23 Oct 2020 09:19:41 -0700 (PDT)
+Received: from pc-2.home (2a01cb058d4f8400c9f0d639f7c74c26.ipv6.abo.wanadoo.fr. [2a01:cb05:8d4f:8400:c9f0:d639:f7c7:4c26])
+        by smtp.gmail.com with ESMTPSA id y5sm4130996wrw.52.2020.10.23.09.19.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Oct 2020 09:06:30 -0700 (PDT)
-Date:   Fri, 23 Oct 2020 17:06:28 +0100
-From:   Ricardo Dias <rdias@memsql.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] tcp: fix race condition when creating child sockets from
- syncookies
-Message-ID: <20201023160628.GA316690@rdias-suse-pc.lan>
-References: <20201023111352.GA289522@rdias-suse-pc.lan>
- <CANn89iJDt=XpUZA_uYK98cK8tctW6M=f4RFtGQpTxRaqwnnqSQ@mail.gmail.com>
- <20201023155145.GA316015@rdias-suse-pc.lan>
- <CANn89iL2VOH+Mg9-U7pkpMkKykDfhoX-GMRnF-oBmZmCGohDtA@mail.gmail.com>
+        Fri, 23 Oct 2020 09:19:41 -0700 (PDT)
+Date:   Fri, 23 Oct 2020 18:19:39 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Alexander Ovechkin <ovov@yandex-team.ru>,
+        David Ahern <dsahern@gmail.com>
+Subject: [PATCH net 0/2] mpls: fix dependencies on mpls_gso.ko
+Message-ID: <cover.1603469145.git.gnault@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CANn89iL2VOH+Mg9-U7pkpMkKykDfhoX-GMRnF-oBmZmCGohDtA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 23, 2020 at 05:56:07PM +0200, Eric Dumazet wrote:
-> On Fri, Oct 23, 2020 at 5:51 PM Ricardo Dias <rdias@memsql.com> wrote:
-> >
-> > On Fri, Oct 23, 2020 at 04:03:27PM +0200, Eric Dumazet wrote:
-> > > On Fri, Oct 23, 2020 at 1:14 PM Ricardo Dias <rdias@memsql.com> wrote:
-> > >
-> > > ...
-> > >
-> > > Note that normally, all packets for the same 4-tuple should be handled
-> > > by the same cpu,
-> > > so this race is quite unlikely to happen in standard setups.
-> >
-> > I was able to write a small client/server program that used the
-> > loopback interface to create connections, which could hit the race
-> > condition in 1/200 runs.
-> >
-> > The server when accepts a connection sends an 8 byte identifier to
-> > the client, and then waits for the client to echo the same identifier.
-> > The client creates hundreds of simultaneous connections to the server,
-> > and in each connection it sends one byte as soon as the connection is
-> > established, then reads the 8 byte identifier from the server and sends
-> > it back to the server.
-> >
-> > When we hit the race condition, one of the server connections gets an 8
-> > byte identifier different from its own identifier.
-> 
-> That is on loopback, right ?
+Since commit b7c24497baea ("mpls: load mpls_gso after mpls_iptunnel"),
+mpls_iptunnel tries to load mpls_gso. Therefore, we need to build
+mpls_gso when mpls_iptunnel is selected (patch 1).
 
-Yes it's on loopback.
+There's also the act_mpls module that can push MPLS headers on GSO
+packets. This module also depends on mpls_gso (patch 2).
 
-> 
-> A server under syn flood is usually hit on a physical NIC, and a NIC
-> will always put all packets of a TCP flow in a single RX queue.
-> The cpu associated with this single RX queue won't process two packets
-> in parallel.
+Guillaume Nault (2):
+  mpls: Make MPLS_IPTUNNEL select NET_MPLS_GSO
+  net/sched: act_mpls: Add softdep on mpls_gso.ko
 
-And what about the loopback interface? Why couldn't the loopback
-interface also use a single RX queue?
+ net/mpls/Kconfig     | 1 +
+ net/sched/Kconfig    | 2 ++
+ net/sched/act_mpls.c | 1 +
+ 3 files changed, 4 insertions(+)
 
-> 
-> Note this issue is known, someone tried to fix it in the past but the
-> attempt went nowhere.
+-- 
+2.21.3
+
