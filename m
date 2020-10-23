@@ -2,128 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC9E42977B5
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 21:24:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 727102977D6
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 21:46:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1751102AbgJWTYd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 15:24:33 -0400
-Received: from m42-4.mailgun.net ([69.72.42.4]:44361 "EHLO m42-4.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750881AbgJWTYd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Oct 2020 15:24:33 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1603481072; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=lBoZniQkYO/mnF63FaYEaqqudsCX8eh303z2QHXuUWs=; b=idux4c8XMrHgehjHXs4HvcLH+2TAovNjtYaP0RNYJvFp0NTYOMAYOYCsL15PPjNCoA4BPnwf
- pAQ0e6ykgXbSq6PgVsyBLqoojfqnQkn2juLyZcNiYr1DtpbW62xgikpnrjX5WVM3fxF1VrdR
- /G1ibnggWGp++5BdWO5eFwe19fU=
-X-Mailgun-Sending-Ip: 69.72.42.4
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
- 5f932def8eea157089e81617 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 23 Oct 2020 19:24:31
- GMT
-Sender: jhugo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id C1E8DC433F0; Fri, 23 Oct 2020 19:24:31 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-3.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from [10.226.59.216] (i-global254.qualcomm.com [199.106.103.254])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: jhugo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id C5160C433C9;
-        Fri, 23 Oct 2020 19:24:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C5160C433C9
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=jhugo@codeaurora.org
-Subject: Re: [PATCH v6 1/2] bus: mhi: Add mhi_queue_is_full function
-To:     Loic Poulain <loic.poulain@linaro.org>,
-        Hemant Kumar <hemantk@codeaurora.org>
-Cc:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Bhaumik Bhatt <bbhatt@codeaurora.org>
-References: <1602840007-27140-1-git-send-email-loic.poulain@linaro.org>
- <8c384f6a-df21-1a39-f586-6077da373c04@codeaurora.org>
- <CAMZdPi_NZ5PaONpePHHFOosiuQ50R0_o3bymwzKfp2DJ37BCig@mail.gmail.com>
-From:   Jeffrey Hugo <jhugo@codeaurora.org>
-Message-ID: <95c91cfd-cbf2-2496-4c0d-c8490591fd19@codeaurora.org>
-Date:   Fri, 23 Oct 2020 13:24:26 -0600
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.2
+        id S1754933AbgJWTq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 15:46:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50870 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754901AbgJWTq1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 15:46:27 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F176C0613CE;
+        Fri, 23 Oct 2020 12:46:27 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id f140so2158737ybg.3;
+        Fri, 23 Oct 2020 12:46:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8K+Yumi9kyjveoiqi6yCm6sjzyyeKTQw8sa+wYBvFMo=;
+        b=UnopzMWWSCyXa63QdFguw02OBGdWTikzQkQudqsAMrJnUscWSSlVL12UcCk9TalHc4
+         r1rVyrStj+d4nRjVXCqzgeHNyA8P1DXoLDw+g5k2aqc6JEgRcM6Y8DbwtXcb+r8cAsdQ
+         8NwVZweudhjbO7Jnt78nq3XLaI6JLPi/PGOBq0mS0dFCYg5qRKiou+u+em5UYHOJwcjW
+         +NLeJUhq2WL2Qim97fwCGzNF1tINbLYOp1axLgvVKxxlIpd31LJ0IzUj+SgXF5SFkKL9
+         cxH1mYxVAQRlSLjCkNEJm9bSPEu54qD0FHxXXGMwhrhFhgijFxwm/8i5pr7YGBpKlWGV
+         Yajg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8K+Yumi9kyjveoiqi6yCm6sjzyyeKTQw8sa+wYBvFMo=;
+        b=IJGIZIAedjfhGwXXQ7BN4ngvR2NeY3H5YtVnCUpxRp0pUX8U0kp8OuG8h7V9rlXh05
+         O8+PU80j0W5SPBjAQs8s6LQzkvGRySSH0TXMHGdvFkFttS93xVMRVmdL4f+tDw47QMFL
+         c9FkdbEwwKQUo1lPMfyWycq92ZTCxNmcbtxbadz5SJryai5Hv3OV2ggagL33G5rAcgLw
+         rtNkxdrsHc9kn0/3j2Sv7sWU+8t7F6uyY15dfXNkvCGbFfiq5GP6/YIyfVUSqO5Iy6TN
+         15D6OxV+spXfjtJKKUnw9OBwQmV56Vhj6YuRnqsFWXROrAoUd+1Voh9ae4zr7mAUEgVs
+         33rg==
+X-Gm-Message-State: AOAM532eUw+3oW9Nccrs5O8vvxDT7lrBDBDKIzz8RgVBoW7gwo2RkaX0
+        Gbu6gjDFGGIg+IG7aYapp56Nt9D/wny0RQnstW0=
+X-Google-Smtp-Source: ABdhPJx/dzB7rSkpRF2uaX2RK0YpyYc9XOQ8HwbGIfnAuAF6ycqR7/0I8zKjHkG3TQdzvF4dzym2Ix6k3/a5rAqToZc=
+X-Received: by 2002:a25:3443:: with SMTP id b64mr5587652yba.510.1603482386320;
+ Fri, 23 Oct 2020 12:46:26 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CAMZdPi_NZ5PaONpePHHFOosiuQ50R0_o3bymwzKfp2DJ37BCig@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20201022082138.2322434-1-jolsa@kernel.org> <20201022082138.2322434-9-jolsa@kernel.org>
+In-Reply-To: <20201022082138.2322434-9-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 23 Oct 2020 12:46:15 -0700
+Message-ID: <CAEf4BzZ9zwA=SrLTx9JT50OeM6fVPg0Py0Gx+K9ah2we8YtCRA@mail.gmail.com>
+Subject: Re: [RFC bpf-next 08/16] bpf: Use delayed link free in bpf_link_put
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Jesper Brouer <jbrouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Viktor Malik <vmalik@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/23/2020 1:11 PM, Loic Poulain wrote:
-> Hi Hemant,
-> 
-> On Fri, 23 Oct 2020 at 05:06, Hemant Kumar <hemantk@codeaurora.org 
-> <mailto:hemantk@codeaurora.org>> wrote:
-> 
->     Hi Loic,
-> 
->     On 10/16/20 2:20 AM, Loic Poulain wrote:
->      > This function can be used by client driver to determine whether it's
->      > possible to queue new elements in a channel ring.
->      >
->      > Signed-off-by: Loic Poulain <loic.poulain@linaro.org
->     <mailto:loic.poulain@linaro.org>>
->     [..]
->      > +static inline bool mhi_is_ring_full(struct mhi_controller
->     *mhi_cntrl,
->      > +                                 struct mhi_ring *ring)
->      >   {
->      >       void *tmp = ring->wp + ring->el_size;
->      >
->      > @@ -1173,6 +1173,17 @@ int mhi_queue_buf(struct mhi_device
->     *mhi_dev, enum dma_data_direction dir,
->      >   }
->      >   EXPORT_SYMBOL_GPL(mhi_queue_buf);
->      >
->      > +bool mhi_queue_is_full(struct mhi_device *mhi_dev, enum
->     dma_data_direction dir)
->      > +{
->      > +     struct mhi_controller *mhi_cntrl = mhi_dev->mhi_cntrl;
->      > +     struct mhi_chan *mhi_chan = (dir == DMA_TO_DEVICE) ?
->      > +                                     mhi_dev->ul_chan :
->     mhi_dev->dl_chan;
->      > +     struct mhi_ring *tre_ring = &mhi_chan->tre_ring;
->      > +
->      > +     return mhi_is_ring_full(mhi_cntrl, tre_ring);
->      > +}
->      > +EXPORT_SYMBOL_GPL(mhi_queue_is_full);
->      >
->     i was wondering if you can make use of mhi_get_free_desc() API (pushed
->     as part of MHI UCI - User Control Interface driver) here?
-> 
-> 
-> I prefer not to depend on PR that is not yet merged to keep things 
-> simple, though I could integrate it in my PR... I think this function is 
-> good to have anyway for client drivers, and slightly faster since this 
-> is just a pointer comparison.
+On Thu, Oct 22, 2020 at 8:01 AM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> Moving bpf_link_free call into delayed processing so we don't
+> need to wait for it when releasing the link.
+>
+> For example bpf_tracing_link_release could take considerable
+> amount of time in bpf_trampoline_put function due to
+> synchronize_rcu_tasks call.
+>
+> It speeds up bpftrace release time in following example:
+>
+> Before:
+>
+>  Performance counter stats for './src/bpftrace -ve kfunc:__x64_sys_s*
+>     { printf("test\n"); } i:ms:10 { printf("exit\n"); exit();}' (5 runs):
+>
+>      3,290,457,628      cycles:k                                 ( +-  0.27% )
+>        933,581,973      cycles:u                                 ( +-  0.20% )
+>
+>              50.25 +- 4.79 seconds time elapsed  ( +-  9.53% )
+>
+> After:
+>
+>  Performance counter stats for './src/bpftrace -ve kfunc:__x64_sys_s*
+>     { printf("test\n"); } i:ms:10 { printf("exit\n"); exit();}' (5 runs):
+>
+>      2,535,458,767      cycles:k                                 ( +-  0.55% )
+>        940,046,382      cycles:u                                 ( +-  0.27% )
+>
+>              33.60 +- 3.27 seconds time elapsed  ( +-  9.73% )
+>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  kernel/bpf/syscall.c | 8 ++------
+>  1 file changed, 2 insertions(+), 6 deletions(-)
+>
+> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> index 1110ecd7d1f3..61ef29f9177d 100644
+> --- a/kernel/bpf/syscall.c
+> +++ b/kernel/bpf/syscall.c
+> @@ -2346,12 +2346,8 @@ void bpf_link_put(struct bpf_link *link)
+>         if (!atomic64_dec_and_test(&link->refcnt))
+>                 return;
+>
+> -       if (in_atomic()) {
+> -               INIT_WORK(&link->work, bpf_link_put_deferred);
+> -               schedule_work(&link->work);
+> -       } else {
+> -               bpf_link_free(link);
+> -       }
+> +       INIT_WORK(&link->work, bpf_link_put_deferred);
+> +       schedule_work(&link->work);
 
-Its a little bit more than that.  Frankly, unless you are counting 
-assembly instructions for both methods, the difference is likely to be 
-in the noise.
+We just recently reverted this exact change. Doing this makes it
+non-deterministic from user-space POV when the BPF program is
+**actually** detached. This makes user-space programming much more
+complicated and unpredictable. So please don't do this. Let's find
+some other way to speed this up.
 
-However, I wonder why core MHI changes were not copied to the proper 
-list (namely linux-arm-msm)?
-
--- 
-Jeffrey Hugo
-Qualcomm Technologies, Inc. is a member of the
-Code Aurora Forum, a Linux Foundation Collaborative Project.
+>  }
+>
+>  static int bpf_link_release(struct inode *inode, struct file *filp)
+> --
+> 2.26.2
+>
