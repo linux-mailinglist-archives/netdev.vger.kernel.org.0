@@ -2,92 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 055FD297368
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 18:19:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25BFA297367
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 18:19:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1751440AbgJWQTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 12:19:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:54731 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1751432AbgJWQTw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 12:19:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603469991;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=JEpuK5wbf5EappTK6rQ4OSbn1qz2A6hQ1PGrAbTk7j4=;
-        b=i1Z6icDnfpmjs0FiN7oeNtl+MG4NAUS70eHPpPOQr6Ypu6sm1D6HGAehORrfjchGSQ58Bu
-        /VyEF2zvWeUwOWz+MRFniAlYJ20gGmX0K4+DmlVrmpl8hrSgAZHNeSwT/rCtw8EevUaeYm
-        OwYJtrS0B0IGky+IxFneS7vZN5ItFIk=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-28-ySbAQJCyPLiIhAuHzTKPLg-1; Fri, 23 Oct 2020 12:19:48 -0400
-X-MC-Unique: ySbAQJCyPLiIhAuHzTKPLg-1
-Received: by mail-wr1-f71.google.com with SMTP id i6so757434wrx.11
-        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 09:19:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JEpuK5wbf5EappTK6rQ4OSbn1qz2A6hQ1PGrAbTk7j4=;
-        b=NLOp/euwCLkPVCO6TdtgFq5f9wYJUdhJbZMm+IvevGA4bZ6GZ5kPS/l00k/hs2jVn5
-         2vdmU8t+VIzAwUFk2wIPAfnXcL1aRpORw6K7gp2i5GfaC6OOJiSV0Fw4EOpzYILSdb+N
-         E0E7h87FN45DxtTkAmNH3uhweQn1z+p5JdT7U1CvVhZFkCIfW0ly+QkZeP5JcOvcgdkY
-         FbhW9eKjNXBOGdKdo5bA9KeG43+a8qhswmFoblWupOWEb/YuPnDYbK1cwMQHqlqStP9T
-         MaCcDy9MqDpGlzeNUvS0X2jpVYtXaAc+0ePqNFOlctoqOgx7pRD2QcDO17RFWBPg0zsS
-         +4WA==
-X-Gm-Message-State: AOAM530UJ18H9ApwKrK0lku/b0UGWkNURRT2rY9Vzt4UplSdiJgl1fEg
-        d/1ZOfCF5v/pNUgSvR1pmKORJQC+s7ElhxX+1fMdupihPxNGBTBWzHW/tjTVJ4DZdiygJG5iV2V
-        rlWp94hPDAangckFv
-X-Received: by 2002:a1c:9854:: with SMTP id a81mr3249726wme.72.1603469986550;
-        Fri, 23 Oct 2020 09:19:46 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyZqm1RTGWeZAHmj4MXGjlfd/lwg84Tvbw8VauBzDqmQH3RAw47a8ifRkIwd2g4MI5bbpyvqg==
-X-Received: by 2002:a1c:9854:: with SMTP id a81mr3249706wme.72.1603469986382;
-        Fri, 23 Oct 2020 09:19:46 -0700 (PDT)
-Received: from pc-2.home (2a01cb058d4f8400c9f0d639f7c74c26.ipv6.abo.wanadoo.fr. [2a01:cb05:8d4f:8400:c9f0:d639:f7c7:4c26])
-        by smtp.gmail.com with ESMTPSA id t62sm4130429wmf.22.2020.10.23.09.19.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Oct 2020 09:19:45 -0700 (PDT)
-Date:   Fri, 23 Oct 2020 18:19:43 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Alexander Ovechkin <ovov@yandex-team.ru>,
-        David Ahern <dsahern@gmail.com>
-Subject: [PATCH net 1/2] mpls: Make MPLS_IPTUNNEL select NET_MPLS_GSO
-Message-ID: <5f5132fd657daa503c709b86c87ae147e28a78ad.1603469145.git.gnault@redhat.com>
-References: <cover.1603469145.git.gnault@redhat.com>
+        id S1751437AbgJWQTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 12:19:50 -0400
+Received: from m42-4.mailgun.net ([69.72.42.4]:37322 "EHLO m42-4.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751432AbgJWQTt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Oct 2020 12:19:49 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1603469988; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=Np2z36pVrJFtIYoaOo04mONohKb4HMfgGDx6cRuOgyA=; b=fmXx1pugVhxbMyYFQcSO64ti+K7uyuCxweojo6IQ14HEE0DSvxHJqHa+YF/GXJmhr9XA3kZR
+ /SFk574mapHBaaZX0ZpA70+PoUK2wTAkntCKwT26uh1HL+oz+RXZ0pVveUlqqqsq7mtJ/i8+
+ LMJ8UagilJFX2k4UkGplDiljArU=
+X-Mailgun-Sending-Ip: 69.72.42.4
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
+ 5f9302a23d9da80170beb185 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 23 Oct 2020 16:19:46
+ GMT
+Sender: jhugo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id BB614C433C9; Fri, 23 Oct 2020 16:19:46 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from [10.226.59.216] (i-global254.qualcomm.com [199.106.103.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: jhugo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 452B1C433C9;
+        Fri, 23 Oct 2020 16:19:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 452B1C433C9
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=jhugo@codeaurora.org
+Subject: Re: [PATCH v6 1/2] bus: mhi: Add mhi_queue_is_full function
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Hemant Kumar <hemantk@codeaurora.org>
+Cc:     Loic Poulain <loic.poulain@linaro.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, manivannan.sadhasivam@linaro.org,
+        eric.dumazet@gmail.com, Bhaumik Bhatt <bbhatt@codeaurora.org>
+References: <1602840007-27140-1-git-send-email-loic.poulain@linaro.org>
+ <8c384f6a-df21-1a39-f586-6077da373c04@codeaurora.org>
+ <20201023084425.22bbf069@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Jeffrey Hugo <jhugo@codeaurora.org>
+Message-ID: <a03293b6-71bb-50f7-870c-2db463e6499e@codeaurora.org>
+Date:   Fri, 23 Oct 2020 10:19:44 -0600
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1603469145.git.gnault@redhat.com>
+In-Reply-To: <20201023084425.22bbf069@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since commit b7c24497baea ("mpls: load mpls_gso after mpls_iptunnel"),
-mpls_iptunnel.ko has a softdep on mpls_gso.ko. For this to work, we
-need to ensure that mpls_gso.ko is built whenever MPLS_IPTUNNEL is set.
+On 10/23/2020 9:44 AM, Jakub Kicinski wrote:
+> On Thu, 22 Oct 2020 20:06:37 -0700 Hemant Kumar wrote:
+>>> @@ -1173,6 +1173,17 @@ int mhi_queue_buf(struct mhi_device *mhi_dev, enum dma_data_direction dir,
+>>>    }
+>>>    EXPORT_SYMBOL_GPL(mhi_queue_buf);
+>>>    
+>>> +bool mhi_queue_is_full(struct mhi_device *mhi_dev, enum dma_data_direction dir)
+>>> +{
+>>> +	struct mhi_controller *mhi_cntrl = mhi_dev->mhi_cntrl;
+>>> +	struct mhi_chan *mhi_chan = (dir == DMA_TO_DEVICE) ?
+>>> +					mhi_dev->ul_chan : mhi_dev->dl_chan;
+>>> +	struct mhi_ring *tre_ring = &mhi_chan->tre_ring;
+>>> +
+>>> +	return mhi_is_ring_full(mhi_cntrl, tre_ring);
+>>> +}
+>>> +EXPORT_SYMBOL_GPL(mhi_queue_is_full);
+>>>    
+>> i was wondering if you can make use of mhi_get_free_desc() API (pushed
+>> as part of MHI UCI - User Control Interface driver) here?
+> 
+> Let me ask you one more time. Where is this MHI UCI code you're talking
+> about?
 
-Fixes: b7c24497baea ("mpls: load mpls_gso after mpls_iptunnel")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
----
- net/mpls/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+https://lkml.org/lkml/2020/10/22/186
 
-diff --git a/net/mpls/Kconfig b/net/mpls/Kconfig
-index d672ab72ab12..b83093bcb48f 100644
---- a/net/mpls/Kconfig
-+++ b/net/mpls/Kconfig
-@@ -33,6 +33,7 @@ config MPLS_ROUTING
- config MPLS_IPTUNNEL
- 	tristate "MPLS: IP over MPLS tunnel support"
- 	depends on LWTUNNEL && MPLS_ROUTING
-+	select NET_MPLS_GSO
- 	help
- 	 mpls ip tunnel support.
- 
 -- 
-2.21.3
-
+Jeffrey Hugo
+Qualcomm Technologies, Inc. is a member of the
+Code Aurora Forum, a Linux Foundation Collaborative Project.
