@@ -2,115 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61D27296800
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 02:35:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE4D9296828
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 02:44:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S373919AbgJWAfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 20:35:36 -0400
-Received: from mga11.intel.com ([192.55.52.93]:43009 "EHLO mga11.intel.com"
+        id S374108AbgJWAoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 20:44:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37604 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S373864AbgJWAfa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Oct 2020 20:35:30 -0400
-IronPort-SDR: igoJ/56H5YAygkgJOWJaBHtXaEFukSA2G3jDMGvLkkfa9qeypL8ICdKMxmc8HO6U/QFQYF8Exb
- 0g0PXeSsa/Zg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9782"; a="164118655"
-X-IronPort-AV: E=Sophos;i="5.77,404,1596524400"; 
-   d="scan'208";a="164118655"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2020 17:35:29 -0700
-IronPort-SDR: AmNrptTHi/qxndARhN2/6LgX9EtDqEMC7c+p3z+rBNqomsEsGFcmp6cWKzFipvTpj3fv7+DjD3
- tghWbrJuAywg==
-X-IronPort-AV: E=Sophos;i="5.77,404,1596524400"; 
-   d="scan'208";a="302505834"
-Received: from dmert-dev.jf.intel.com ([10.166.241.5])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2020 17:35:28 -0700
-From:   Dave Ertman <david.m.ertman@intel.com>
-To:     alsa-devel@alsa-project.org
-Cc:     tiwai@suse.de, broonie@kernel.org, linux-rdma@vger.kernel.org,
-        jgg@nvidia.com, dledford@redhat.com, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org, gregkh@linuxfoundation.org,
-        ranjani.sridharan@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com, fred.oh@linux.intel.com,
-        parav@mellanox.com, shiraz.saleem@intel.com,
-        dan.j.williams@intel.com, kiran.patil@intel.com,
-        linux-kernel@vger.kernel.org, leonro@nvidia.com
-Subject: [PATCH v3 10/10] ASoC: SOF: Intel: CNL: register probes client
-Date:   Thu, 22 Oct 2020 17:33:38 -0700
-Message-Id: <20201023003338.1285642-11-david.m.ertman@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201023003338.1285642-1-david.m.ertman@intel.com>
-References: <20201023003338.1285642-1-david.m.ertman@intel.com>
+        id S374101AbgJWAoy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Oct 2020 20:44:54 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C0F7421531;
+        Fri, 23 Oct 2020 00:44:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603413893;
+        bh=P801yupGfVJZpJBFR3gSGi8IVI4N2T8jCC9UpMeYlcU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=RCpc0n0ynyU9G0HiDO1pxAr1GSVz8bTo+B7+WpVhG9/rbaSTsDV/6GS+1s0PKqRTz
+         TsaEQjrYU2rQRy1HEriSjWlzH2E6ZKUElVXmVnA0FBxk5nyBaN/1PPNziuBHN8UxGm
+         rx1wYWPuMpNxbQwIRyvvHur2Aw8KNqNDRx7WApwI=
+Date:   Thu, 22 Oct 2020 17:44:51 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>
+Subject: Re: [PATCH net RFC] net: Clear IFF_TX_SKB_SHARING for all Ethernet
+ devices using skb_padto
+Message-ID: <20201022174451.1cd858ae@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <CAJht_EM638CQDb5opnVxfQ81Z2U9hGZbnE581RFZrAQvenn+qQ@mail.gmail.com>
+References: <20201022072814.91560-1-xie.he.0141@gmail.com>
+        <CAJht_ENMQ3nZb1BOCyyVzJjBK87yk+E1p+Jv5UQuZ1+g1jK1cg@mail.gmail.com>
+        <20201022082239.2ae23264@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <CAJht_EM638CQDb5opnVxfQ81Z2U9hGZbnE581RFZrAQvenn+qQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+On Thu, 22 Oct 2020 12:59:45 -0700 Xie He wrote:
+> On Thu, Oct 22, 2020 at 8:22 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> >
+> > Are most of these drivers using skb_padto()? Is that the reason they
+> > can't be sharing the SKB?  
+> 
+> Yes, I think if a driver calls skb_pad / skb_padto / skb_put_padto /
+> eth_skb_pad, the driver can't accept shared skbs because it may modify
+> the skbs.
+> 
+> > I think the IFF_TX_SKB_SHARING flag is only used by pktgen, so perhaps
+> > we can make sure pktgen doesn't generate skbs < dev->min_mtu, and then
+> > the drivers won't pad?  
+> 
+> Yes, I see a lot of drivers just want to pad the skb to ETH_ZLEN, or
+> just call eth_skb_pad. In this case, requiring the shared skb to be at
+> least dev->min_mtu long can solve the problem for these drivers.
+> 
+> But I also see some drivers that want to pad the skb to a strange
+> length, and don't set their special min_mtu to match this length. For
+> example:
+> 
+> drivers/net/ethernet/packetengines/yellowfin.c wants to pad the skb to
+> a dynamically calculated value.
+> 
+> drivers/net/ethernet/ti/cpsw.c, cpsw_new.c and tlan.c want to pad the
+> skb to macro defined values.
+> 
+> drivers/net/ethernet/intel/iavf/iavf_txrx.c wants to pad the skb to
+> IAVF_MIN_TX_LEN (17).
+> 
+> drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c wants to pad the skb to 17.
 
-Register the client device for probes support on the
-CNL platform. Creating this client device alleviates the
-need for modifying the sound card definitions in the existing
-machine drivers to add support for the new probes feature in
-the FW. This will result in the creation of a separate sound
-card that can be used for audio data extraction from user
-specified points in the audio pipeline.
+Hm, I see, that would be a slight loss of functionality if we started
+requiring 64B, for example, while the driver could in practice xmit
+17B frames (would matter only to VFs, but nonetheless).
 
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Tested-by: Fred Oh <fred.oh@linux.intel.com>
-Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
----
- sound/soc/sof/intel/cnl.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+> Another solution I can think of is to add a "skb_shared" check to
+> "__skb_pad", so that if __skb_pad encounters a shared skb, it just
+> returns an error. The driver would think this is a memory allocation
+> failure. This way we can ensure shared skbs are not modified.
 
-diff --git a/sound/soc/sof/intel/cnl.c b/sound/soc/sof/intel/cnl.c
-index 20afb622c315..6d15b871dc17 100644
---- a/sound/soc/sof/intel/cnl.c
-+++ b/sound/soc/sof/intel/cnl.c
-@@ -19,6 +19,7 @@
- #include "hda.h"
- #include "hda-ipc.h"
- #include "../sof-audio.h"
-+#include "../sof-client.h"
- #include "intel-client.h"
- 
- static const struct snd_sof_debugfs_map cnl_dsp_debugfs[] = {
-@@ -233,12 +234,26 @@ void cnl_ipc_dump(struct snd_sof_dev *sdev)
- 
- static int cnl_register_clients(struct snd_sof_dev *sdev)
- {
--	return intel_register_ipc_test_clients(sdev);
-+	int ret;
-+
-+	ret = intel_register_ipc_test_clients(sdev);
-+	if (ret < 0)
-+		return ret;
-+
-+#if IS_ENABLED(CONFIG_SND_SOC_SOF_HDA_PROBES)
-+	return sof_client_dev_register(sdev, "probes", 0);
-+#endif
-+
-+	return 0;
- }
- 
- static void cnl_unregister_clients(struct snd_sof_dev *sdev)
- {
- 	intel_unregister_ipc_test_clients(sdev);
-+
-+#if IS_ENABLED(CONFIG_SND_SOC_SOF_HDA_PROBES)
-+	sof_client_dev_unregister(sdev, "probes", 0);
-+#endif
- }
- 
- /* cannonlake ops */
-@@ -409,3 +424,4 @@ const struct sof_intel_dsp_desc jsl_chip_info = {
- };
- EXPORT_SYMBOL_NS(jsl_chip_info, SND_SOC_SOF_INTEL_HDA_COMMON);
- MODULE_IMPORT_NS(SND_SOC_SOF_INTEL_CLIENT);
-+MODULE_IMPORT_NS(SND_SOC_SOF_CLIENT);
--- 
-2.26.2
+I'm not sure if we want to be adding checks to __skb_pad() to handle
+what's effectively a pktgen specific condition.
 
+We could create a new field in struct netdevice for min_frame_len, but I
+think your patch is the simplest solution. Let's see if anyone objects.
+
+BTW it seems like there is more drivers which will need the flag
+cleared, e.g. drivers/net/ethernet/broadcom/bnxt/bnxt.c?
