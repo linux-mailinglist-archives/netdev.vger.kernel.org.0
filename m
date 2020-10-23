@@ -2,122 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DEC22968C2
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 05:30:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43A712968CD
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 05:33:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S374851AbgJWDac (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 23:30:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40728 "EHLO
+        id S374868AbgJWDdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 23:33:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S374856AbgJWDa3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 23:30:29 -0400
-Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0405C0613D4
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 20:30:27 -0700 (PDT)
-Received: by mail-qt1-x849.google.com with SMTP id r4so9215qta.9
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 20:30:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=6HFlEVpudWH5pffnpQkc+Yc/oxstkbax6tUIXieA0lk=;
-        b=iVgGGpv/7FVDQ3pQoJo5ENDkVCIPPnAb2W/P85Q5YObYQ2qOZxGF5aIUBugdD4WxjU
-         Z5RiS70Guwrf2/je+hqDDOaMglLC2zunZShamfYLdW7/LeCKyl0Jm+323jMv/JP4bdLn
-         Cnc1mlvlswebVTlRL7llKF7A6RsRxb5HywKIzg2GugnXeaGy2yJebCLgsW4mT3HNGT67
-         Q9Ykutn29AadOxcTFqlJfponLBNNUotM0TG5bkKPWwVkNvEfLOzYa4mI5lFBvayOC1b3
-         zP5wOtjf8ftz3PMQHQr6qhUXN6Jm0YYw/T2c3+BrXI0d1YjElTouA69Vo9i4xhiZB1ok
-         Vx0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=6HFlEVpudWH5pffnpQkc+Yc/oxstkbax6tUIXieA0lk=;
-        b=S3SvhxZ+qiQrqAYjHJM+HWAtCc/FKW7IRNHN9DNMPp/+8/nuDemHxb+r2dw1G8sG4m
-         hrTqL8EAojv5yBXqMAJKxUtU3xJQHRQhV3ZYdYrUUxzMiiU64YMSjN3ts/eJmDuuEzLE
-         eplExfnmVRTuw2Zo8+340HryV1ZPAo96XLa67hbR6WjzCw+53DHOP0YEkWK9PogI/8Et
-         Fz/AWw8X46PSYIWfxP84UAqAPHim33yvUwQekH0jiDrSDa3Vah8SfBTljuIeAz095TjN
-         XQmo3n1Wd2Mncz8JPF9aP5cGzppSlBre1VuRBYY3MHGeftrWqOKkZMgKdZkkGLLqHsSb
-         n34g==
-X-Gm-Message-State: AOAM5339nb7qaszreUGCmCfma9WYyZceQSib9Cb7rwgDhS+lqSM4Th9k
-        b/DimdkRxQTMf9LLPE9y1mS9O+CgZ7+E
-X-Google-Smtp-Source: ABdhPJywFZ9nl2zxccBBMSoKLsYKnTzcd6iRKtoGpdGnB7NFOH56JsDER6SvXGz5MrN+E2VlfKYlk66r6HEj
-Sender: "joshdon via sendgmr" <joshdon@joshdon.svl.corp.google.com>
-X-Received: from joshdon.svl.corp.google.com ([2620:15c:2cd:202:a28c:fdff:fee1:cc86])
- (user=joshdon job=sendgmr) by 2002:ad4:43ca:: with SMTP id
- o10mr376677qvs.33.1603423826790; Thu, 22 Oct 2020 20:30:26 -0700 (PDT)
-Date:   Thu, 22 Oct 2020 20:29:44 -0700
-In-Reply-To: <20201023032944.399861-1-joshdon@google.com>
-Message-Id: <20201023032944.399861-3-joshdon@google.com>
-Mime-Version: 1.0
-References: <20201023032944.399861-1-joshdon@google.com>
-X-Mailer: git-send-email 2.29.0.rc1.297.gfa9743e501-goog
-Subject: [PATCH 3/3] net: better handling for network busy poll
-From:   Josh Don <joshdon@google.com>
-To:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, Josh Don <joshdon@google.com>,
-        Xi Wang <xii@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S374825AbgJWDdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 23:33:50 -0400
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40350C0613CE;
+        Thu, 22 Oct 2020 20:33:50 -0700 (PDT)
+Received: by ozlabs.org (Postfix, from userid 1034)
+        id 4CHVFQ6MvJz9sSs; Fri, 23 Oct 2020 14:33:46 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
+        s=201909; t=1603424026;
+        bh=AwOSiExI8NbntUvUtGVI5OP3bq4Ymzz/W7ahgDUbvLY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=D10j4BBwWTAKb5ZBcmye4YTVu192Aio1PIHlJoc0gPDo1/RvtnE1CjJxnTlMmw2vO
+         xfA1Bq8AAl1zIdzdgkBYgQ1Y4Rt5hze4WKVymcV6nG8fCbcxCUnriJzp4fIyed2YtV
+         maOOINbUB9y6sFyMXE6F14y5/zM6/il5Nu4ekBJGZTe0StrL0CfONe65QPTWh0wTL+
+         as7pwNnbt2PSuYUECVqGmrXI6836PRw9UzyyYKjorsNTHJWV72CUEi0szipbRUeLMF
+         dE8KYBp2hnkkJVXzQIJn3z2y40L0XxN8TXgd/TdsbUtQhXzo2cYLn0D8fMZtK+5gaB
+         JiN5R9azn9MPw==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     linuxppc-dev@ozlabs.org, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, linux-kernel@vger.kernel.org, kuba@kernel.org,
+        leoyang.li@nxp.com
+Subject: [PATCH] net: ucc_geth: Drop extraneous parentheses in comparison
+Date:   Fri, 23 Oct 2020 14:32:36 +1100
+Message-Id: <20201023033236.3296988-1-mpe@ellerman.id.au>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the new functions prepare_to_busy_poll() and friends to
-napi_busy_loop(). The busy polling cpu will be considered an idle
-target during wake up balancing.
+Clang warns about the extra parentheses in this comparison:
 
-Suggested-by: Xi Wang <xii@google.com>
-Signed-off-by: Josh Don <joshdon@google.com>
-Signed-off-by: Xi Wang <xii@google.com>
+  drivers/net/ethernet/freescale/ucc_geth.c:1361:28:
+  warning: equality comparison with extraneous parentheses
+    if ((ugeth->phy_interface == PHY_INTERFACE_MODE_SGMII))
+         ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+It seems clear the intent here is to do a comparison not an
+assignment, so drop the extra parentheses to avoid any confusion.
+
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
 ---
- net/core/dev.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/freescale/ucc_geth.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 266073e300b5..4fb4ae4b27fc 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -6476,7 +6476,7 @@ void napi_busy_loop(unsigned int napi_id,
- 	if (!napi)
- 		goto out;
- 
--	preempt_disable();
-+	prepare_to_busy_poll(); /* disables preemption */
- 	for (;;) {
- 		int work = 0;
- 
-@@ -6509,10 +6509,10 @@ void napi_busy_loop(unsigned int napi_id,
- 		if (!loop_end || loop_end(loop_end_arg, start_time))
- 			break;
- 
--		if (unlikely(need_resched())) {
-+		if (unlikely(!continue_busy_poll())) {
- 			if (napi_poll)
- 				busy_poll_stop(napi, have_poll_lock);
--			preempt_enable();
-+			end_busy_poll(true);
- 			rcu_read_unlock();
- 			cond_resched();
- 			if (loop_end(loop_end_arg, start_time))
-@@ -6523,7 +6523,7 @@ void napi_busy_loop(unsigned int napi_id,
+diff --git a/drivers/net/ethernet/freescale/ucc_geth.c b/drivers/net/ethernet/freescale/ucc_geth.c
+index db791f60b884..d8ad478a0a13 100644
+--- a/drivers/net/ethernet/freescale/ucc_geth.c
++++ b/drivers/net/ethernet/freescale/ucc_geth.c
+@@ -1358,7 +1358,7 @@ static int adjust_enet_interface(struct ucc_geth_private *ugeth)
+ 	    (ugeth->phy_interface == PHY_INTERFACE_MODE_RTBI)) {
+ 		upsmr |= UCC_GETH_UPSMR_TBIM;
  	}
- 	if (napi_poll)
- 		busy_poll_stop(napi, have_poll_lock);
--	preempt_enable();
-+	end_busy_poll(true);
- out:
- 	rcu_read_unlock();
- }
+-	if ((ugeth->phy_interface == PHY_INTERFACE_MODE_SGMII))
++	if (ugeth->phy_interface == PHY_INTERFACE_MODE_SGMII)
+ 		upsmr |= UCC_GETH_UPSMR_SGMM;
+ 
+ 	out_be32(&uf_regs->upsmr, upsmr);
 -- 
-2.29.0.rc1.297.gfa9743e501-goog
+2.25.1
 
