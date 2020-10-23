@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E5372967FC
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 02:35:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3BDD296814
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 02:36:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S373898AbgJWAfe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 20:35:34 -0400
-Received: from mga11.intel.com ([192.55.52.93]:43009 "EHLO mga11.intel.com"
+        id S373987AbgJWAgT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 20:36:19 -0400
+Received: from mga11.intel.com ([192.55.52.93]:43016 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S373770AbgJWAf3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S373791AbgJWAf3 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 22 Oct 2020 20:35:29 -0400
-IronPort-SDR: rrERpKOvlna9bh5Q3qTVaYESJRmDBkNYJteJ8RUUH1QwieL3XtMMXuAXMdLO0hfUVeqMZ95ktg
- FbFxb7PNSTQw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9782"; a="164118645"
+IronPort-SDR: 4GQUuxDWy9cAeqppVlIQtafA3HDfHvgri3duOEs/8Acw5sJg43D3CKMBUK8FmA5PxwnMXamAj8
+ YQ6qMkY2jOUg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9782"; a="164118647"
 X-IronPort-AV: E=Sophos;i="5.77,404,1596524400"; 
-   d="scan'208";a="164118645"
+   d="scan'208";a="164118647"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
   by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2020 17:35:26 -0700
-IronPort-SDR: GOPPfUznrnoPCOI9L3kQiMf5F77UMC0HoNYLxnOlb2ufHHRUanNBzi0ieX3myL2ArMV1jOUkik
- ue2i8R4Wr5FQ==
+IronPort-SDR: 6Pptt0QEJl+6NDAsOUm3bC0SzSV690gnyVhTidKs6s1Oo0y5OX+ZNJ4Igk7sUUdjBJUGQD7UVP
+ IVJvuOyZIHGw==
 X-IronPort-AV: E=Sophos;i="5.77,404,1596524400"; 
-   d="scan'208";a="302505806"
+   d="scan'208";a="302505814"
 Received: from dmert-dev.jf.intel.com ([10.166.241.5])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2020 17:35:25 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2020 17:35:26 -0700
 From:   Dave Ertman <david.m.ertman@intel.com>
 To:     alsa-devel@alsa-project.org
 Cc:     tiwai@suse.de, broonie@kernel.org, linux-rdma@vger.kernel.org,
@@ -36,9 +36,9 @@ Cc:     tiwai@suse.de, broonie@kernel.org, linux-rdma@vger.kernel.org,
         parav@mellanox.com, shiraz.saleem@intel.com,
         dan.j.williams@intel.com, kiran.patil@intel.com,
         linux-kernel@vger.kernel.org, leonro@nvidia.com
-Subject: [PATCH v3 05/10] ASoC: SOF: Intel: Define ops for client registration
-Date:   Thu, 22 Oct 2020 17:33:33 -0700
-Message-Id: <20201023003338.1285642-6-david.m.ertman@intel.com>
+Subject: [PATCH v3 06/10] ASoC: SOF: Intel: Remove IPC flood test support in SOF core
+Date:   Thu, 22 Oct 2020 17:33:34 -0700
+Message-Id: <20201023003338.1285642-7-david.m.ertman@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201023003338.1285642-1-david.m.ertman@intel.com>
 References: <20201023003338.1285642-1-david.m.ertman@intel.com>
@@ -50,353 +50,335 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
 
-Define client ops for Intel platforms. For now, we only add
-2 IPC test clients that will be used for run tandem IPC flood
-tests for.
-
-For ACPI platforms, change the Kconfig to select
-SND_SOC_SOF_PROBE_WORK_QUEUE to allow the ancillary driver
-to probe when the client is registered.
+Remove the IPC flood test support in the SOF core as it is
+now added in the IPC flood test client.
 
 Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Co-developed-by: Fred Oh <fred.oh@linux.intel.com>
 Signed-off-by: Fred Oh <fred.oh@linux.intel.com>
+Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
 Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
 ---
- sound/soc/sof/intel/Kconfig        |  9 +++++++
- sound/soc/sof/intel/Makefile       |  3 +++
- sound/soc/sof/intel/apl.c          | 16 ++++++++++++
- sound/soc/sof/intel/bdw.c          | 16 ++++++++++++
- sound/soc/sof/intel/byt.c          | 20 +++++++++++++++
- sound/soc/sof/intel/cnl.c          | 16 ++++++++++++
- sound/soc/sof/intel/intel-client.c | 40 ++++++++++++++++++++++++++++++
- sound/soc/sof/intel/intel-client.h | 26 +++++++++++++++++++
- 8 files changed, 146 insertions(+)
- create mode 100644 sound/soc/sof/intel/intel-client.c
- create mode 100644 sound/soc/sof/intel/intel-client.h
+ sound/soc/sof/Kconfig    |   8 --
+ sound/soc/sof/debug.c    | 230 ---------------------------------------
+ sound/soc/sof/sof-priv.h |   6 +-
+ 3 files changed, 1 insertion(+), 243 deletions(-)
 
-diff --git a/sound/soc/sof/intel/Kconfig b/sound/soc/sof/intel/Kconfig
-index a066e08860cb..b449fa2f8005 100644
---- a/sound/soc/sof/intel/Kconfig
-+++ b/sound/soc/sof/intel/Kconfig
-@@ -13,6 +13,8 @@ config SND_SOC_SOF_INTEL_ACPI
- 	def_tristate SND_SOC_SOF_ACPI
- 	select SND_SOC_SOF_BAYTRAIL  if SND_SOC_SOF_BAYTRAIL_SUPPORT
- 	select SND_SOC_SOF_BROADWELL if SND_SOC_SOF_BROADWELL_SUPPORT
-+	select SND_SOC_SOF_PROBE_WORK_QUEUE if SND_SOC_SOF_CLIENT
-+	select SND_SOC_SOF_INTEL_CLIENT if SND_SOC_SOF_CLIENT
- 	help
- 	  This option is not user-selectable but automagically handled by
- 	  'select' statements at a higher level
-@@ -29,6 +31,7 @@ config SND_SOC_SOF_INTEL_PCI
- 	select SND_SOC_SOF_TIGERLAKE   if SND_SOC_SOF_TIGERLAKE_SUPPORT
- 	select SND_SOC_SOF_ELKHARTLAKE if SND_SOC_SOF_ELKHARTLAKE_SUPPORT
- 	select SND_SOC_SOF_JASPERLAKE  if SND_SOC_SOF_JASPERLAKE_SUPPORT
-+	select SND_SOC_SOF_INTEL_CLIENT if SND_SOC_SOF_CLIENT
- 	help
- 	  This option is not user-selectable but automagically handled by
- 	  'select' statements at a higher level
-@@ -57,6 +60,12 @@ config SND_SOC_SOF_INTEL_COMMON
- 	  This option is not user-selectable but automagically handled by
- 	  'select' statements at a higher level
+diff --git a/sound/soc/sof/Kconfig b/sound/soc/sof/Kconfig
+index 13bde36cc5d7..a0f9474b8143 100644
+--- a/sound/soc/sof/Kconfig
++++ b/sound/soc/sof/Kconfig
+@@ -182,14 +182,6 @@ config SND_SOC_SOF_DEBUG_ENABLE_FIRMWARE_TRACE
+ 	  module parameter (similar to dynamic debug)
+ 	  If unsure, select "N".
  
-+config SND_SOC_SOF_INTEL_CLIENT
-+	tristate
-+	help
-+	  This option is not user-selectable but automagically handled by
-+	  'select' statements at a higher level.
-+
- if SND_SOC_SOF_INTEL_ACPI
- 
- config SND_SOC_SOF_BAYTRAIL_SUPPORT
-diff --git a/sound/soc/sof/intel/Makefile b/sound/soc/sof/intel/Makefile
-index 72d85b25df7d..683e64c627c1 100644
---- a/sound/soc/sof/intel/Makefile
-+++ b/sound/soc/sof/intel/Makefile
-@@ -5,6 +5,8 @@ snd-sof-intel-bdw-objs := bdw.o
- 
- snd-sof-intel-ipc-objs := intel-ipc.o
- 
-+snd-sof-intel-client-objs := intel-client.o
-+
- snd-sof-intel-hda-common-objs := hda.o hda-loader.o hda-stream.o hda-trace.o \
- 				 hda-dsp.o hda-ipc.o hda-ctrl.o hda-pcm.o \
- 				 hda-dai.o hda-bus.o \
-@@ -18,3 +20,4 @@ obj-$(CONFIG_SND_SOC_SOF_BROADWELL) += snd-sof-intel-bdw.o
- obj-$(CONFIG_SND_SOC_SOF_INTEL_HIFI_EP_IPC) += snd-sof-intel-ipc.o
- obj-$(CONFIG_SND_SOC_SOF_HDA_COMMON) += snd-sof-intel-hda-common.o
- obj-$(CONFIG_SND_SOC_SOF_HDA) += snd-sof-intel-hda.o
-+obj-$(CONFIG_SND_SOC_SOF_INTEL_CLIENT) += snd-sof-intel-client.o
-diff --git a/sound/soc/sof/intel/apl.c b/sound/soc/sof/intel/apl.c
-index 4eeade2e77f7..ce2dcd6aa7de 100644
---- a/sound/soc/sof/intel/apl.c
-+++ b/sound/soc/sof/intel/apl.c
-@@ -18,6 +18,7 @@
- #include "../sof-priv.h"
- #include "hda.h"
- #include "../sof-audio.h"
-+#include "intel-client.h"
- 
- static const struct snd_sof_debugfs_map apl_dsp_debugfs[] = {
- 	{"hda", HDA_DSP_HDA_BAR, 0, 0x4000, SOF_DEBUGFS_ACCESS_ALWAYS},
-@@ -25,6 +26,16 @@ static const struct snd_sof_debugfs_map apl_dsp_debugfs[] = {
- 	{"dsp", HDA_DSP_BAR,  0, 0x10000, SOF_DEBUGFS_ACCESS_ALWAYS},
- };
- 
-+static int apl_register_clients(struct snd_sof_dev *sdev)
-+{
-+	return intel_register_ipc_test_clients(sdev);
-+}
-+
-+static void apl_unregister_clients(struct snd_sof_dev *sdev)
-+{
-+	intel_unregister_ipc_test_clients(sdev);
-+}
-+
- /* apollolake ops */
- const struct snd_sof_dsp_ops sof_apl_ops = {
- 	/* probe and remove */
-@@ -101,6 +112,10 @@ const struct snd_sof_dsp_ops sof_apl_ops = {
- 	.trace_release = hda_dsp_trace_release,
- 	.trace_trigger = hda_dsp_trace_trigger,
- 
-+	/* client ops */
-+	.register_clients = apl_register_clients,
-+	.unregister_clients = apl_unregister_clients,
-+
- 	/* DAI drivers */
- 	.drv		= skl_dai,
- 	.num_drv	= SOF_SKL_NUM_DAIS,
-@@ -140,3 +155,4 @@ const struct sof_intel_dsp_desc apl_chip_info = {
- 	.ssp_base_offset = APL_SSP_BASE_OFFSET,
- };
- EXPORT_SYMBOL_NS(apl_chip_info, SND_SOC_SOF_INTEL_HDA_COMMON);
-+MODULE_IMPORT_NS(SND_SOC_SOF_INTEL_CLIENT);
-diff --git a/sound/soc/sof/intel/bdw.c b/sound/soc/sof/intel/bdw.c
-index 50a4a73e6b9f..d6fb5e228e93 100644
---- a/sound/soc/sof/intel/bdw.c
-+++ b/sound/soc/sof/intel/bdw.c
-@@ -18,6 +18,7 @@
- #include "../ops.h"
- #include "shim.h"
- #include "../sof-audio.h"
-+#include "intel-client.h"
- 
- /* BARs */
- #define BDW_DSP_BAR 0
-@@ -563,6 +564,16 @@ static void bdw_set_mach_params(const struct snd_soc_acpi_mach *mach,
- 	mach_params->platform = dev_name(dev);
+-config SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST
+-	bool "SOF enable IPC flood test"
+-	help
+-	  This option enables the IPC flood test which can be used to flood
+-	  the DSP with test IPCs and gather stats about response times.
+-	  Say Y if you want to enable IPC flood test.
+-	  If unsure, select "N".
+-
+ config SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST_CLIENT
+ 	tristate "SOF enable IPC flood test client"
+ 	depends on SND_SOC_SOF_CLIENT
+diff --git a/sound/soc/sof/debug.c b/sound/soc/sof/debug.c
+index 9419a99bab53..d224641768da 100644
+--- a/sound/soc/sof/debug.c
++++ b/sound/soc/sof/debug.c
+@@ -232,120 +232,10 @@ static int snd_sof_debugfs_probe_item(struct snd_sof_dev *sdev,
  }
+ #endif
  
-+static int bdw_register_clients(struct snd_sof_dev *sdev)
-+{
-+	return intel_register_ipc_test_clients(sdev);
-+}
-+
-+static void bdw_unregister_clients(struct snd_sof_dev *sdev)
-+{
-+	intel_unregister_ipc_test_clients(sdev);
-+}
-+
- /* Broadwell DAIs */
- static struct snd_soc_dai_driver bdw_dai[] = {
+-#if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST)
+-#define MAX_IPC_FLOOD_DURATION_MS 1000
+-#define MAX_IPC_FLOOD_COUNT 10000
+-#define IPC_FLOOD_TEST_RESULT_LEN 512
+-
+-static int sof_debug_ipc_flood_test(struct snd_sof_dev *sdev,
+-				    struct snd_sof_dfsentry *dfse,
+-				    bool flood_duration_test,
+-				    unsigned long ipc_duration_ms,
+-				    unsigned long ipc_count)
+-{
+-	struct sof_ipc_cmd_hdr hdr;
+-	struct sof_ipc_reply reply;
+-	u64 min_response_time = U64_MAX;
+-	ktime_t start, end, test_end;
+-	u64 avg_response_time = 0;
+-	u64 max_response_time = 0;
+-	u64 ipc_response_time;
+-	int i = 0;
+-	int ret;
+-
+-	/* configure test IPC */
+-	hdr.cmd = SOF_IPC_GLB_TEST_MSG | SOF_IPC_TEST_IPC_FLOOD;
+-	hdr.size = sizeof(hdr);
+-
+-	/* set test end time for duration flood test */
+-	if (flood_duration_test)
+-		test_end = ktime_get_ns() + ipc_duration_ms * NSEC_PER_MSEC;
+-
+-	/* send test IPC's */
+-	while (1) {
+-		start = ktime_get();
+-		ret = sof_ipc_tx_message(sdev->ipc, hdr.cmd, &hdr, hdr.size,
+-					 &reply, sizeof(reply));
+-		end = ktime_get();
+-
+-		if (ret < 0)
+-			break;
+-
+-		/* compute min and max response times */
+-		ipc_response_time = ktime_to_ns(ktime_sub(end, start));
+-		min_response_time = min(min_response_time, ipc_response_time);
+-		max_response_time = max(max_response_time, ipc_response_time);
+-
+-		/* sum up response times */
+-		avg_response_time += ipc_response_time;
+-		i++;
+-
+-		/* test complete? */
+-		if (flood_duration_test) {
+-			if (ktime_to_ns(end) >= test_end)
+-				break;
+-		} else {
+-			if (i == ipc_count)
+-				break;
+-		}
+-	}
+-
+-	if (ret < 0)
+-		dev_err(sdev->dev,
+-			"error: ipc flood test failed at %d iterations\n", i);
+-
+-	/* return if the first IPC fails */
+-	if (!i)
+-		return ret;
+-
+-	/* compute average response time */
+-	do_div(avg_response_time, i);
+-
+-	/* clear previous test output */
+-	memset(dfse->cache_buf, 0, IPC_FLOOD_TEST_RESULT_LEN);
+-
+-	if (flood_duration_test) {
+-		dev_dbg(sdev->dev, "IPC Flood test duration: %lums\n",
+-			ipc_duration_ms);
+-		snprintf(dfse->cache_buf, IPC_FLOOD_TEST_RESULT_LEN,
+-			 "IPC Flood test duration: %lums\n", ipc_duration_ms);
+-	}
+-
+-	dev_dbg(sdev->dev,
+-		"IPC Flood count: %d, Avg response time: %lluns\n",
+-		i, avg_response_time);
+-	dev_dbg(sdev->dev, "Max response time: %lluns\n",
+-		max_response_time);
+-	dev_dbg(sdev->dev, "Min response time: %lluns\n",
+-		min_response_time);
+-
+-	/* format output string */
+-	snprintf(dfse->cache_buf + strlen(dfse->cache_buf),
+-		 IPC_FLOOD_TEST_RESULT_LEN - strlen(dfse->cache_buf),
+-		 "IPC Flood count: %d\nAvg response time: %lluns\n",
+-		 i, avg_response_time);
+-
+-	snprintf(dfse->cache_buf + strlen(dfse->cache_buf),
+-		 IPC_FLOOD_TEST_RESULT_LEN - strlen(dfse->cache_buf),
+-		 "Max response time: %lluns\nMin response time: %lluns\n",
+-		 max_response_time, min_response_time);
+-
+-	return ret;
+-}
+-#endif
+ 
+ static ssize_t sof_dfsentry_write(struct file *file, const char __user *buffer,
+ 				  size_t count, loff_t *ppos)
  {
-@@ -638,6 +649,10 @@ const struct snd_sof_dsp_ops sof_bdw_ops = {
- 	/*Firmware loading */
- 	.load_firmware	= snd_sof_load_firmware_memcpy,
+-#if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST)
+-	struct snd_sof_dfsentry *dfse = file->private_data;
+-	struct snd_sof_dev *sdev = dfse->sdev;
+-	unsigned long ipc_duration_ms = 0;
+-	bool flood_duration_test = false;
+-	unsigned long ipc_count = 0;
+-	struct dentry *dentry;
+-	int err;
+-#endif
+ 	size_t size;
+ 	char *string;
+ 	int ret;
+@@ -357,78 +247,6 @@ static ssize_t sof_dfsentry_write(struct file *file, const char __user *buffer,
+ 	size = simple_write_to_buffer(string, count, ppos, buffer, count);
+ 	ret = size;
  
-+	/* client ops */
-+	.register_clients = bdw_register_clients,
-+	.unregister_clients = bdw_unregister_clients,
-+
- 	/* DAI drivers */
- 	.drv = bdw_dai,
- 	.num_drv = ARRAY_SIZE(bdw_dai),
-@@ -662,3 +677,4 @@ EXPORT_SYMBOL_NS(bdw_chip_info, SND_SOC_SOF_BROADWELL);
- MODULE_LICENSE("Dual BSD/GPL");
- MODULE_IMPORT_NS(SND_SOC_SOF_INTEL_HIFI_EP_IPC);
- MODULE_IMPORT_NS(SND_SOC_SOF_XTENSA);
-+MODULE_IMPORT_NS(SND_SOC_SOF_INTEL_CLIENT);
-diff --git a/sound/soc/sof/intel/byt.c b/sound/soc/sof/intel/byt.c
-index 186736ee5fc2..a42820606ace 100644
---- a/sound/soc/sof/intel/byt.c
-+++ b/sound/soc/sof/intel/byt.c
-@@ -19,6 +19,7 @@
- #include "shim.h"
- #include "../sof-audio.h"
- #include "../../intel/common/soc-intel-quirks.h"
-+#include "intel-client.h"
- 
- /* DSP memories */
- #define IRAM_OFFSET		0x0C0000
-@@ -821,6 +822,16 @@ static int byt_acpi_probe(struct snd_sof_dev *sdev)
+-#if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST)
+-	/*
+-	 * write op is only supported for ipc_flood_count or
+-	 * ipc_flood_duration_ms debugfs entries atm.
+-	 * ipc_flood_count floods the DSP with the number of IPC's specified.
+-	 * ipc_duration_ms test floods the DSP for the time specified
+-	 * in the debugfs entry.
+-	 */
+-	dentry = file->f_path.dentry;
+-	if (strcmp(dentry->d_name.name, "ipc_flood_count") &&
+-	    strcmp(dentry->d_name.name, "ipc_flood_duration_ms")) {
+-		ret = -EINVAL;
+-		goto out;
+-	}
+-
+-	if (!strcmp(dentry->d_name.name, "ipc_flood_duration_ms"))
+-		flood_duration_test = true;
+-
+-	/* test completion criterion */
+-	if (flood_duration_test)
+-		ret = kstrtoul(string, 0, &ipc_duration_ms);
+-	else
+-		ret = kstrtoul(string, 0, &ipc_count);
+-	if (ret < 0)
+-		goto out;
+-
+-	/* limit max duration/ipc count for flood test */
+-	if (flood_duration_test) {
+-		if (!ipc_duration_ms) {
+-			ret = size;
+-			goto out;
+-		}
+-
+-		/* find the minimum. min() is not used to avoid warnings */
+-		if (ipc_duration_ms > MAX_IPC_FLOOD_DURATION_MS)
+-			ipc_duration_ms = MAX_IPC_FLOOD_DURATION_MS;
+-	} else {
+-		if (!ipc_count) {
+-			ret = size;
+-			goto out;
+-		}
+-
+-		/* find the minimum. min() is not used to avoid warnings */
+-		if (ipc_count > MAX_IPC_FLOOD_COUNT)
+-			ipc_count = MAX_IPC_FLOOD_COUNT;
+-	}
+-
+-	ret = pm_runtime_get_sync(sdev->dev);
+-	if (ret < 0 && ret != -EACCES) {
+-		dev_err_ratelimited(sdev->dev,
+-				    "error: debugfs write failed to resume %d\n",
+-				    ret);
+-		pm_runtime_put_noidle(sdev->dev);
+-		goto out;
+-	}
+-
+-	/* flood test */
+-	ret = sof_debug_ipc_flood_test(sdev, dfse, flood_duration_test,
+-				       ipc_duration_ms, ipc_count);
+-
+-	pm_runtime_mark_last_busy(sdev->dev);
+-	err = pm_runtime_put_autosuspend(sdev->dev);
+-	if (err < 0)
+-		dev_err_ratelimited(sdev->dev,
+-				    "error: debugfs write failed to idle %d\n",
+-				    err);
+-
+-	/* return size if test is successful */
+-	if (ret >= 0)
+-		ret = size;
+-out:
+-#endif
+ 	kfree(string);
  	return ret;
  }
+@@ -444,25 +262,6 @@ static ssize_t sof_dfsentry_read(struct file *file, char __user *buffer,
+ 	int size;
+ 	u8 *buf;
  
-+static int byt_register_clients(struct snd_sof_dev *sdev)
-+{
-+	return intel_register_ipc_test_clients(sdev);
-+}
-+
-+static void byt_unregister_clients(struct snd_sof_dev *sdev)
-+{
-+	intel_unregister_ipc_test_clients(sdev);
-+}
-+
- /* baytrail ops */
- const struct snd_sof_dsp_ops sof_byt_ops = {
- 	/* device init */
-@@ -879,6 +890,10 @@ const struct snd_sof_dsp_ops sof_byt_ops = {
- 	.suspend = byt_suspend,
- 	.resume = byt_resume,
+-#if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST)
+-	struct dentry *dentry;
+-
+-	dentry = file->f_path.dentry;
+-	if ((!strcmp(dentry->d_name.name, "ipc_flood_count") ||
+-	     !strcmp(dentry->d_name.name, "ipc_flood_duration_ms")) &&
+-	    dfse->cache_buf) {
+-		if (*ppos)
+-			return 0;
+-
+-		count = strlen(dfse->cache_buf);
+-		size_ret = copy_to_user(buffer, dfse->cache_buf, count);
+-		if (size_ret)
+-			return -EFAULT;
+-
+-		*ppos += count;
+-		return count;
+-	}
+-#endif
+ 	size = dfse->size;
  
-+	/* client ops */
-+	.register_clients = byt_register_clients,
-+	.unregister_clients = byt_unregister_clients,
-+
- 	/* DAI drivers */
- 	.drv = byt_dai,
- 	.num_drv = 3, /* we have only 3 SSPs on byt*/
-@@ -958,6 +973,10 @@ const struct snd_sof_dsp_ops sof_cht_ops = {
- 	.suspend = byt_suspend,
- 	.resume = byt_resume,
+ 	/* validate position & count */
+@@ -606,17 +405,6 @@ int snd_sof_debugfs_buf_item(struct snd_sof_dev *sdev,
+ 	dfse->size = size;
+ 	dfse->sdev = sdev;
  
-+	/* client ops */
-+	.register_clients = byt_register_clients,
-+	.unregister_clients = byt_unregister_clients,
-+
- 	/* DAI drivers */
- 	.drv = byt_dai,
- 	/* all 6 SSPs may be available for cherrytrail */
-@@ -985,3 +1004,4 @@ EXPORT_SYMBOL_NS(cht_chip_info, SND_SOC_SOF_BAYTRAIL);
- MODULE_LICENSE("Dual BSD/GPL");
- MODULE_IMPORT_NS(SND_SOC_SOF_INTEL_HIFI_EP_IPC);
- MODULE_IMPORT_NS(SND_SOC_SOF_XTENSA);
-+MODULE_IMPORT_NS(SND_SOC_SOF_INTEL_CLIENT);
-diff --git a/sound/soc/sof/intel/cnl.c b/sound/soc/sof/intel/cnl.c
-index a5d3258104c0..20afb622c315 100644
---- a/sound/soc/sof/intel/cnl.c
-+++ b/sound/soc/sof/intel/cnl.c
-@@ -19,6 +19,7 @@
- #include "hda.h"
- #include "hda-ipc.h"
- #include "../sof-audio.h"
-+#include "intel-client.h"
+-#if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST)
+-	/*
+-	 * cache_buf is unused for SOF_DFSENTRY_TYPE_BUF debugfs entries.
+-	 * So, use it to save the results of the last IPC flood test.
+-	 */
+-	dfse->cache_buf = devm_kzalloc(sdev->dev, IPC_FLOOD_TEST_RESULT_LEN,
+-				       GFP_KERNEL);
+-	if (!dfse->cache_buf)
+-		return -ENOMEM;
+-#endif
+-
+ 	debugfs_create_file(name, mode, sdev->debugfs_root, dfse,
+ 			    &sof_dfs_fops);
+ 	/* add to dfsentry list */
+@@ -662,24 +450,6 @@ int snd_sof_dbg_init(struct snd_sof_dev *sdev)
+ 		return err;
+ #endif
  
- static const struct snd_sof_debugfs_map cnl_dsp_debugfs[] = {
- 	{"hda", HDA_DSP_HDA_BAR, 0, 0x4000, SOF_DEBUGFS_ACCESS_ALWAYS},
-@@ -230,6 +231,16 @@ void cnl_ipc_dump(struct snd_sof_dev *sdev)
- 		hipcida, hipctdr, hipcctl);
+-#if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST)
+-	/* create read-write ipc_flood_count debugfs entry */
+-	err = snd_sof_debugfs_buf_item(sdev, NULL, 0,
+-				       "ipc_flood_count", 0666);
+-
+-	/* errors are only due to memory allocation, not debugfs */
+-	if (err < 0)
+-		return err;
+-
+-	/* create read-write ipc_flood_duration_ms debugfs entry */
+-	err = snd_sof_debugfs_buf_item(sdev, NULL, 0,
+-				       "ipc_flood_duration_ms", 0666);
+-
+-	/* errors are only due to memory allocation, not debugfs */
+-	if (err < 0)
+-		return err;
+-#endif
+-
+ 	return 0;
  }
+ EXPORT_SYMBOL_GPL(snd_sof_dbg_init);
+diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
+index cca239c09d0e..e44158410b24 100644
+--- a/sound/soc/sof/sof-priv.h
++++ b/sound/soc/sof/sof-priv.h
+@@ -50,10 +50,6 @@ extern int sof_core_debug;
+ #define SOF_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S24_LE | \
+ 	SNDRV_PCM_FMTBIT_S32_LE | SNDRV_PCM_FMTBIT_FLOAT)
  
-+static int cnl_register_clients(struct snd_sof_dev *sdev)
-+{
-+	return intel_register_ipc_test_clients(sdev);
-+}
-+
-+static void cnl_unregister_clients(struct snd_sof_dev *sdev)
-+{
-+	intel_unregister_ipc_test_clients(sdev);
-+}
-+
- /* cannonlake ops */
- const struct snd_sof_dsp_ops sof_cnl_ops = {
- 	/* probe and remove */
-@@ -306,6 +317,10 @@ const struct snd_sof_dsp_ops sof_cnl_ops = {
- 	.trace_release = hda_dsp_trace_release,
- 	.trace_trigger = hda_dsp_trace_trigger,
+-#define ENABLE_DEBUGFS_CACHEBUF \
+-	(IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_ENABLE_DEBUGFS_CACHE) || \
+-	 IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST))
+-
+ /* So far the primary core on all DSPs has ID 0 */
+ #define SOF_DSP_PRIMARY_CORE 0
  
-+	/* client ops */
-+	.register_clients = cnl_register_clients,
-+	.unregister_clients = cnl_unregister_clients,
-+
- 	/* DAI drivers */
- 	.drv		= skl_dai,
- 	.num_drv	= SOF_SKL_NUM_DAIS,
-@@ -393,3 +408,4 @@ const struct sof_intel_dsp_desc jsl_chip_info = {
- 	.ssp_base_offset = CNL_SSP_BASE_OFFSET,
- };
- EXPORT_SYMBOL_NS(jsl_chip_info, SND_SOC_SOF_INTEL_HDA_COMMON);
-+MODULE_IMPORT_NS(SND_SOC_SOF_INTEL_CLIENT);
-diff --git a/sound/soc/sof/intel/intel-client.c b/sound/soc/sof/intel/intel-client.c
-new file mode 100644
-index 000000000000..a612de365fc5
---- /dev/null
-+++ b/sound/soc/sof/intel/intel-client.c
-@@ -0,0 +1,40 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+//
-+// Copyright(c) 2020 Intel Corporation. All rights reserved.
-+//
-+// Author: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-+//
-+
-+#include <linux/module.h>
-+#include "../sof-priv.h"
-+#include "../sof-client.h"
-+#include "intel-client.h"
-+
-+#if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST_CLIENT)
-+int intel_register_ipc_test_clients(struct snd_sof_dev *sdev)
-+{
-+	int ret;
-+
-+	/*
-+	 * Register 2 IPC clients to facilitate tandem flood test. The device name below is
-+	 * appended with the device ID assigned automatically when the auxiliary device is
-+	 * registered making them unique.
-+	 */
-+	ret = sof_client_dev_register(sdev, "ipc_test", 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	return sof_client_dev_register(sdev, "ipc_test", 1);
-+}
-+EXPORT_SYMBOL_NS_GPL(intel_register_ipc_test_clients, SND_SOC_SOF_INTEL_CLIENT);
-+
-+void intel_unregister_ipc_test_clients(struct snd_sof_dev *sdev)
-+{
-+	sof_client_dev_unregister(sdev, "ipc_test", 0);
-+	sof_client_dev_unregister(sdev, "ipc_test", 1);
-+}
-+EXPORT_SYMBOL_NS_GPL(intel_unregister_ipc_test_clients, SND_SOC_SOF_INTEL_CLIENT);
-+#endif
-+
-+MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS(SND_SOC_SOF_CLIENT);
-diff --git a/sound/soc/sof/intel/intel-client.h b/sound/soc/sof/intel/intel-client.h
-new file mode 100644
-index 000000000000..49b2c6c0dcc4
---- /dev/null
-+++ b/sound/soc/sof/intel/intel-client.h
-@@ -0,0 +1,26 @@
-+/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-+/*
-+ * This file is provided under a dual BSD/GPLv2 license.  When using or
-+ * redistributing this file, you may do so under either license.
-+ *
-+ * Copyright(c) 2020 Intel Corporation. All rights reserved.
-+ *
-+ * Author: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-+ */
-+
-+#ifndef __INTEL_CLIENT_H
-+#define __INTEL_CLIENT_H
-+
-+#if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_IPC_FLOOD_TEST_CLIENT)
-+int intel_register_ipc_test_clients(struct snd_sof_dev *sdev);
-+void intel_unregister_ipc_test_clients(struct snd_sof_dev *sdev);
-+#else
-+static inline int intel_register_ipc_test_clients(struct snd_sof_dev *sdev)
-+{
-+	return 0;
-+}
-+
-+static void intel_unregister_ipc_test_clients(struct snd_sof_dev *sdev) {}
-+#endif
-+
-+#endif
+@@ -301,7 +297,7 @@ struct snd_sof_dfsentry {
+ 	 * or if it is accessible only when the DSP is in D0.
+ 	 */
+ 	enum sof_debugfs_access_type access_type;
+-#if ENABLE_DEBUGFS_CACHEBUF
++#if IS_ENABLED(CONFIG_SND_SOC_SOF_DEBUG_ENABLE_DEBUGFS_CACHE)
+ 	char *cache_buf; /* buffer to cache the contents of debugfs memory */
+ #endif
+ 	struct snd_sof_dev *sdev;
 -- 
 2.26.2
 
