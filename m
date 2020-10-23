@@ -2,75 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7514296BF8
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 11:21:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D86DB296C21
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 11:30:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S461345AbgJWJVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 05:21:22 -0400
-Received: from smtp21.cstnet.cn ([159.226.251.21]:49876 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S461338AbgJWJVW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Oct 2020 05:21:22 -0400
-Received: from localhost.localdomain (unknown [124.16.141.242])
-        by APP-01 (Coremail) with SMTP id qwCowACHjuaGoJJfbPJ1Aw--.34707S2;
-        Fri, 23 Oct 2020 17:21:10 +0800 (CST)
-From:   Xu Wang <vulab@iscas.ac.cn>
-To:     bryan.whitehead@microchip.com, UNGLinuxDriver@microchip.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH] net: microchip: Remove unneeded variable ret
-Date:   Fri, 23 Oct 2020 09:21:07 +0000
-Message-Id: <20201023092107.28065-1-vulab@iscas.ac.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: qwCowACHjuaGoJJfbPJ1Aw--.34707S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7GFy7ZryrCFW7Xr48AF1xuFg_yoWDWFg_Cr
-        1Fqw1xtr1DJw4q9r4qkw4DJ34v9FWDXw1kAa1kKrWfAwn8Ja109r97ZFnxAF18XrW5KF4D
-        urnaqF1UA3WxtjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb2xYjsxI4VWkCwAYFVCjjxCrM7AC8VAFwI0_Jr0_Gr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW5JVW7JwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVW8JVWxJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4
-        A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IE
-        w4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r4j6F4UMc
-        vjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCY02Avz4vE14v_GFWl42xK82IY
-        c2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s
-        026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF
-        0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0x
-        vE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E
-        87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjxUxT5dDUUUU
-X-Originating-IP: [124.16.141.242]
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCQUSA102ZqG+cAAAs-
+        id S461455AbgJWJaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 05:30:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39612 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S461425AbgJWJav (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 05:30:51 -0400
+Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFAAAC0613D2
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 02:30:50 -0700 (PDT)
+Received: by mail-qk1-x744.google.com with SMTP id 188so453650qkk.12
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 02:30:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=dj3qfXJ4Iec3raMLz9uZPv/2iNP/sFcmUQrTQYmXPI4=;
+        b=uCQDC9ziTtUtPBfANMUf3YdSV542K5pqkmHilmKmDx+pgdMdDu2dRfxqqADpueWQ9M
+         cfFBQF321DnpZXVHuCKIy18POodyJdUFotn9KX/Mvg2IZ6yWVjwFM9w80YFM57Yvqu2P
+         aA/870fan6OrtITJ9cRRFrODaN00CZW4O/FCD8sYe0HDdeDCaVIS7LCz7LMx3D9QxPYD
+         KuNH2MNVEhuDHSmML86Dd8hIa+j/9RRXPM65bOKgbpdFC6/gSnygqbngPCvRIid0HE6F
+         VAXBK010IvmOz4+DjnLCL4iZzBErWgBV2MOh9lpCMIvdzdamWAmvt2x4AqtWuesM5Xf0
+         jm0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=dj3qfXJ4Iec3raMLz9uZPv/2iNP/sFcmUQrTQYmXPI4=;
+        b=h9dYkhPVyOUw4yxkjDEbBPf6h3z6YmZHsGzl1d57G9wZFSkrtiOGvE/MbdrpjRfc7R
+         DkOmr/068GhKdlDoxUe1HpjaT1J8P3SZpVNq2siYdmuNKATipcnR3tDdoQ3QQYBkzqmB
+         RG2e7GPRHkXNdmmnRUjPSn22GF6Ya0yTg0Q6oFYXwlWxaVc60Edy2WlHkEG4mkJ1j034
+         gYvyrPkbrA/Q4K9htYpLfZ2hsoybjAQ2Y+dt2P4engrgJBFNcd689Eg0isAA1jdq+LZQ
+         n54AeeP7k7DkLrTtOgltWDtaI0A1v0nLdIpm+4g/Sks3KM8tIgObgvKlg4kN3uugmHWZ
+         wYwg==
+X-Gm-Message-State: AOAM533T/Zo0HynS7SfHZN4aQqOOqxyDPWAfG8xX0+9+Aibd5/mHy0oq
+        6YNCUAjTSjI7z2HNdJv+FSAs5U7pZwtKRW0yLdo=
+X-Google-Smtp-Source: ABdhPJwVkgTHR6SB5B1Uw60DAbtdj1UdljbJrBOSIpzohYiZh9GXlpF7vJXU85Zpx684f8mdSXUQFqIvkXQQnpBXhYI=
+X-Received: by 2002:ae9:e40c:: with SMTP id q12mr1249818qkc.309.1603445450037;
+ Fri, 23 Oct 2020 02:30:50 -0700 (PDT)
+MIME-Version: 1.0
+Sender: ms.aishagaddafi00@gmail.com
+Received: by 2002:ad4:4850:0:0:0:0:0 with HTTP; Fri, 23 Oct 2020 02:30:49
+ -0700 (PDT)
+From:   Ms Nadia Emaan <mrsnadiaemaan50@gmail.com>
+Date:   Fri, 23 Oct 2020 09:30:49 +0000
+X-Google-Sender-Auth: E3ClDvyBwBI5eftflMnhAZO748w
+Message-ID: <CAPHg+rHB2TfMmcH4KhKYydtxHDYrD0DeU9ieONOkD_L0d1g2OQ@mail.gmail.com>
+Subject: Please I Really Need Your Urgent and Sincere Response:
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove unneeded variable ret used to store return value.
+May God Bless you My beloved,
 
-Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
----
- drivers/net/ethernet/microchip/lan743x_main.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+I am contacting you through this means because I need your urgent
+assistance and also help me to carry a charity project in your
+country. I found your email address as a true child of God for past
+few days now that I have been praying to know if you are really the
+chosen one for this great charity project, according to God's
+direction, after all prayers I am convinced, and I have decided to
+contact you. Please, i want you use the funds for the Lord's work,
+with confidence, read and respond now.
 
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index a1938842f828..8ea0b4eec19c 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.c
-+++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -834,14 +834,13 @@ static int lan743x_mac_init(struct lan743x_adapter *adapter)
- 
- static int lan743x_mac_open(struct lan743x_adapter *adapter)
- {
--	int ret = 0;
- 	u32 temp;
- 
- 	temp = lan743x_csr_read(adapter, MAC_RX);
- 	lan743x_csr_write(adapter, MAC_RX, temp | MAC_RX_RXEN_);
- 	temp = lan743x_csr_read(adapter, MAC_TX);
- 	lan743x_csr_write(adapter, MAC_TX, temp | MAC_TX_TXEN_);
--	return ret;
-+	return 0;
- }
- 
- static void lan743x_mac_close(struct lan743x_adapter *adapter)
--- 
-2.17.1
 
+My name is Ms. Nadia Emaan , a widow,  but currently based in West
+Africa since my life with my late husband, who was a businessman in
+this country before dying some years ago. We were married to many
+years without a child. He died after a brief illness that lasted only
+six days and I myself have been suffering from an ovarian cancer
+disease. At this moment I am about to finish the race in this way
+because the disease has reached a very bad stage, without any family
+member and without children. I hope you do not expose or betray this
+trust and I am sure that I am about to trust you for the mutual
+benefit of orphans and the less privileged. I have some funds that I
+inherited from my late husband, the total sum of ($ 12,500,000.00)
+deposited at a bank here in Burkina Faso. After knowing my current
+state of health, I decided to trust you with this fund, believing that
+you will use it in the way I will instruct here.
+
+
+you will use this $12.5 Million for public benefit as follows;
+
+1. Establish An Orphanage Home To Help The Orphanages Children.
+2. Build A Hospital To Help The Poor.
+3. Build A Nursing Home For Elderly People Need Care & Meal.
+
+You  will named them after my late husband.Therefore, I need you to
+help me and claim this money and use it for charities, for orphanages
+and provide justice and help to the poor, needy and to promote the
+words of God and the effort to maintain the house of God, according to
+the bible in the book of. Jeremiah 22: 15-16.
+
+It will be a pleasure to compensate with 40% percent of the total
+money for your effort in handling the transaction, while 60% of the
+money will go to charity project.
+
+All I need from you is sincerity and ability to complete the task of
+God without any failure. It will be my pleasure to see that the bank
+has finally released and transferred the fund to your bank account in
+the country, even before I die here in the hospital, due to my current
+state of health, everything must be processed as soon as possible.
+
+ I am waiting for your immediate response, if you are only interested
+in obtaining more details about the transaction and execution of this
+humanitarian project for the glory and honor of God.
+
+Sorry if you received this letter in your spam, is due to recent
+connection/network error here in the country.
+
+Please I am waiting for your urgent reply now.
+
+May God Bless you,
+Ms Nadia Emaan .
