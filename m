@@ -2,331 +2,303 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06B692968E1
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 05:39:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC8E7296922
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 06:30:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S374972AbgJWDjr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 23:39:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:51132 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S369518AbgJWDjp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 23:39:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603424382;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=mNpTnhqVT/lkkDzOBStmitBv9qqoRpOHiUUiZ8tRN8I=;
-        b=DiFXm7lYzRpONrMYAE+o2tq94B6PggkQ039BavbkjK/dulfA98fIy6ageaSmAFvEb28Y1D
-        JbVEGi9lmDHCqxqGdcrssBWfWJ3PTdxswUcblA++oOEzfX9WBE7zan0msIlfcDMoU769Ej
-        4UO50yP/8iC6yiFtebhr9h+Srh5GZc8=
-Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com
- [209.85.210.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-450-3S7eLHxwMY6s-TRawk3FDg-1; Thu, 22 Oct 2020 23:39:41 -0400
-X-MC-Unique: 3S7eLHxwMY6s-TRawk3FDg-1
-Received: by mail-pf1-f200.google.com with SMTP id 9so480pfj.22
-        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 20:39:40 -0700 (PDT)
+        id S375271AbgJWE3t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 00:29:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49824 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S370373AbgJWE3s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 00:29:48 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967D2C0613CE;
+        Thu, 22 Oct 2020 21:29:48 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id c15so524117ejs.0;
+        Thu, 22 Oct 2020 21:29:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=JCYEtAknaYoow1p4w2UL35VcfGDZh6EnoPxbBlVBVmQ=;
+        b=Vg7g80b18r5hVqjFLMqOqqBgsFNMXuRbcpjLlvcgoVEkDmwxNEk+6/LIhFmoIN7My8
+         dBFQchZ7iN5v8BX2QuNiszhSMOh8ZCuwwkI2LpRazvfO/Y1H8dP4hLJ7acXhiMNkv7EX
+         77Mn69chczT1n0AsYA+qpDUKF4+Qel50Bnxc/xYxqHTk54m2gNZvTX0ElLWGPw8PE8Sr
+         UTDrZcfYdQ/XPsRzxDsT26MLCIbUoc0Obh73hnY73op/wNOF2GwczfD4Qt/4jomXjA0K
+         J9+v9S5VFuydyNLkUnE1YKqYOnGj6xHTuzRpYBHlw6qIk7oT2tezaEXQhrAy3nAlrYGW
+         nuew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mNpTnhqVT/lkkDzOBStmitBv9qqoRpOHiUUiZ8tRN8I=;
-        b=SQSGBRfJJSzFAi9E9bjaNqqyMVeHiUvMTIJvqoH1J8GChaD/gHpzkj4Kf0mjtZCuGL
-         9ylI7psmDoTA6CGGYXO3e3gESagbnZvKdHXQ0wPFbTrd2YgAyXZS8wHgrFAiOvpRC464
-         vGfvFjRtb2+f4emfu83tap9q4Qsf2V7Yfj2pG8l7aFyiUETFGzo7172C1GtoN9DRjKHO
-         v2v4w7Ndx67Euaj72HnO7fh8D+6HHvI0pQ6AOD/UvHAblXST+r7jGpcx6gtD/2gL1i+F
-         eAjOsrHmHP27lF7xZioo9pTTiiFmyK9qgMkq9J/QY8mwnySRm/b1zafMLgoaZT6TIr8N
-         lLTg==
-X-Gm-Message-State: AOAM530AwblcGHVFVFaJw6ozQyArE+yzk2AG+ihVYZWVOXdyXv3FsE78
-        wcdhEe6uo9YmhZ+9s9fgTNkD5y7MLZDex/IKnUNe5cXsbxvIV+3lczfVON128x9OyqZxNWSZoMl
-        SeK7zPYlls5T5J6c=
-X-Received: by 2002:a17:90a:fa96:: with SMTP id cu22mr231930pjb.80.1603424379756;
-        Thu, 22 Oct 2020 20:39:39 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz4xiU89odVDnj7icVmrqB6X6PMVtfCkeN3FXBtqwJtLcmLO76O7PAANpizBcpXQC+F03suEw==
-X-Received: by 2002:a17:90a:fa96:: with SMTP id cu22mr231905pjb.80.1603424379502;
-        Thu, 22 Oct 2020 20:39:39 -0700 (PDT)
-Received: from localhost.localdomain.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id e23sm185442pfi.191.2020.10.22.20.39.35
+         :references;
+        bh=JCYEtAknaYoow1p4w2UL35VcfGDZh6EnoPxbBlVBVmQ=;
+        b=lJJlFlQFXH22b8eRJV6Mb5Gye9i69vLdtoa+TM97Mv8bxYmiMR6V+wI1DiDAhUfBib
+         72GVdOMuFKfNnP2TaLcrm0AH1zbcLDgKG1Yo2RAMqPlwFa/y2pDGg+CIkBuvIPv+W6UH
+         2ArYpeqH56S6eqIzs+OpwEAMrwJPWEs8mwnFbnByDq90XOW5ZY4qaGLjB2BOyYPiDe24
+         gdaVZJ1EUQsP1VdwKnnKhjueoDIUD26aLO03SxU6tIi1/dBzSyduhY4Rlw3mzvo+1P2b
+         eKCXkBtUbNrM4C4m3cK9DSBhs1tjG61ixs9tCm0wfZuzSzqABFFNJUCZQLLwCmNPyOvZ
+         IswQ==
+X-Gm-Message-State: AOAM532PgWBH1bQRHZdKxNkRQyLXeRJfo/pFLXlFx5iAFQK8xFw4hXZj
+        B832VDr5TxUnt3imLsUo6VY=
+X-Google-Smtp-Source: ABdhPJxmDFsd9WNvB74m7EN9pR9l7vA33L9BOWqceY7JGz59kfaLVT7PirjNqnXzr+FVBryLisHEJw==
+X-Received: by 2002:a17:906:3397:: with SMTP id v23mr223950eja.212.1603427387230;
+        Thu, 22 Oct 2020 21:29:47 -0700 (PDT)
+Received: from localhost.localdomain ([185.200.214.168])
+        by smtp.gmail.com with ESMTPSA id r26sm123349eja.13.2020.10.22.21.29.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Oct 2020 20:39:38 -0700 (PDT)
-From:   Hangbin Liu <haliu@redhat.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Ahern <dsahern@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Hangbin Liu <haliu@redhat.com>
-Subject: [PATCH iproute2-next 5/5] examples/bpf: add bpf examples with BTF defined maps
-Date:   Fri, 23 Oct 2020 11:38:55 +0800
-Message-Id: <20201023033855.3894509-6-haliu@redhat.com>
-X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20201023033855.3894509-1-haliu@redhat.com>
-References: <20201023033855.3894509-1-haliu@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Thu, 22 Oct 2020 21:29:46 -0700 (PDT)
+From:   izabela.bakollari@gmail.com
+To:     nhorman@tuxdriver.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        izabela.bakollari@gmail.com
+Subject: [PATCHv4 net-next] dropwatch: Support monitoring of dropped frames
+Date:   Fri, 23 Oct 2020 06:29:43 +0200
+Message-Id: <20201023042943.563284-1-izabela.bakollari@gmail.com>
+X-Mailer: git-send-email 2.18.4
+In-Reply-To: <20200707171515.110818-1-izabela.bakollari@gmail.com>
+References: <20200707171515.110818-1-izabela.bakollari@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Users should try use the new BTF defined maps instead of struct
-bpf_elf_map defined maps. The tail call examples are not added yet
-as libbpf doesn't currently support declaratively populating tail call
-maps.
+From: Izabela Bakollari <izabela.bakollari@gmail.com>
 
-Reviewed-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Signed-off-by: Hangbin Liu <haliu@redhat.com>
+Dropwatch is a utility that monitors dropped frames by having userspace
+record them over the dropwatch protocol over a file. This augument
+allows live monitoring of dropped frames using tools like tcpdump.
+
+With this feature, dropwatch allows two additional commands (start and
+stop interface) which allows the assignment of a net_device to the
+dropwatch protocol. When assinged, dropwatch will clone dropped frames,
+and receive them on the assigned interface, allowing tools like tcpdump
+to monitor for them.
+
+With this feature, create a dummy ethernet interface (ip link add dev
+dummy0 type dummy), assign it to the dropwatch kernel subsystem, by using
+these new commands, and then monitor dropped frames in real time by
+running tcpdump -i dummy0.
+
+Signed-off-by: Izabela Bakollari <izabela.bakollari@gmail.com>
 ---
- examples/bpf/README           |  6 ++++
- examples/bpf/bpf_graft.c      | 66 +++++++++++++++++++++++++++++++++++
- examples/bpf/bpf_map_in_map.c | 55 +++++++++++++++++++++++++++++
- examples/bpf/bpf_shared.c     | 53 ++++++++++++++++++++++++++++
- include/bpf_api.h             | 13 +++++++
- 5 files changed, 193 insertions(+)
- create mode 100644 examples/bpf/bpf_graft.c
- create mode 100644 examples/bpf/bpf_map_in_map.c
- create mode 100644 examples/bpf/bpf_shared.c
+ include/uapi/linux/net_dropmon.h |   3 +
+ net/core/drop_monitor.c          | 120 +++++++++++++++++++++++++++++++
+ 2 files changed, 123 insertions(+)
 
-diff --git a/examples/bpf/README b/examples/bpf/README
-index 732bcc83..b7261191 100644
---- a/examples/bpf/README
-+++ b/examples/bpf/README
-@@ -1,6 +1,12 @@
- eBPF toy code examples (running in kernel) to familiarize yourself
- with syntax and features:
+diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
+index 67e31f329190..e8e861e03a8a 100644
+--- a/include/uapi/linux/net_dropmon.h
++++ b/include/uapi/linux/net_dropmon.h
+@@ -58,6 +58,8 @@ enum {
+ 	NET_DM_CMD_CONFIG_NEW,
+ 	NET_DM_CMD_STATS_GET,
+ 	NET_DM_CMD_STATS_NEW,
++	NET_DM_CMD_START_IFC,
++	NET_DM_CMD_STOP_IFC,
+ 	_NET_DM_CMD_MAX,
+ };
  
-+- BTF defined map examples
-+ - bpf_graft.c		-> Demo on altering runtime behaviour
-+ - bpf_shared.c 	-> Ingress/egress map sharing example
-+ - bpf_map_in_map.c	-> Using map in map example
+@@ -93,6 +95,7 @@ enum net_dm_attr {
+ 	NET_DM_ATTR_SW_DROPS,			/* flag */
+ 	NET_DM_ATTR_HW_DROPS,			/* flag */
+ 	NET_DM_ATTR_FLOW_ACTION_COOKIE,		/* binary */
++	NET_DM_ATTR_IFNAME,			/* string */
+ 
+ 	__NET_DM_ATTR_MAX,
+ 	NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
+diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+index 8e33cec9fc4e..dea85291808b 100644
+--- a/net/core/drop_monitor.c
++++ b/net/core/drop_monitor.c
+@@ -30,6 +30,7 @@
+ #include <net/genetlink.h>
+ #include <net/netevent.h>
+ #include <net/flow_offload.h>
++#include <net/sock.h>
+ 
+ #include <trace/events/skb.h>
+ #include <trace/events/napi.h>
+@@ -46,6 +47,7 @@
+  */
+ static int trace_state = TRACE_OFF;
+ static bool monitor_hw;
++struct net_device *interface;
+ 
+ /* net_dm_mutex
+  *
+@@ -54,6 +56,8 @@ static bool monitor_hw;
+  */
+ static DEFINE_MUTEX(net_dm_mutex);
+ 
++static DEFINE_SPINLOCK(interface_lock);
 +
-+- legacy struct bpf_elf_map defined map examples
-  - legacy/bpf_shared.c		-> Ingress/egress map sharing example
-  - legacy/bpf_tailcall.c	-> Using tail call chains
-  - legacy/bpf_cyclic.c		-> Simple cycle as tail calls
-diff --git a/examples/bpf/bpf_graft.c b/examples/bpf/bpf_graft.c
-new file mode 100644
-index 00000000..8066dcce
---- /dev/null
-+++ b/examples/bpf/bpf_graft.c
-@@ -0,0 +1,66 @@
-+#include "../../include/bpf_api.h"
+ struct net_dm_stats {
+ 	u64 dropped;
+ 	struct u64_stats_sync syncp;
+@@ -217,6 +221,7 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
+ 	struct nlattr *nla;
+ 	int i;
+ 	struct sk_buff *dskb;
++	struct sk_buff *nskb = NULL;
+ 	struct per_cpu_dm_data *data;
+ 	unsigned long flags;
+ 
+@@ -255,6 +260,20 @@ static void trace_drop_common(struct sk_buff *skb, void *location)
+ 
+ out:
+ 	spin_unlock_irqrestore(&data->lock, flags);
++	spin_lock_irqsave(&interface_lock, flags);
++	if (interface && interface != skb->dev) {
++		nskb = skb_clone(skb, GFP_ATOMIC);
++		if (!nskb)
++			goto free;
++		nskb->dev = interface;
++	}
++	spin_unlock_irqrestore(&interface_lock, flags);
++	if (nskb)
++		netif_receive_skb(nskb);
 +
-+/* This example demonstrates how classifier run-time behaviour
-+ * can be altered with tail calls. We start out with an empty
-+ * jmp_tc array, then add section aaa to the array slot 0, and
-+ * later on atomically replace it with section bbb. Note that
-+ * as shown in other examples, the tc loader can prepopulate
-+ * tail called sections, here we start out with an empty one
-+ * on purpose to show it can also be done this way.
-+ *
-+ * tc filter add dev foo parent ffff: bpf obj graft.o
-+ * tc exec bpf dbg
-+ *   [...]
-+ *   Socket Thread-20229 [001] ..s. 138993.003923: : fallthrough
-+ *   <idle>-0            [001] ..s. 138993.202265: : fallthrough
-+ *   Socket Thread-20229 [001] ..s. 138994.004149: : fallthrough
-+ *   [...]
-+ *
-+ * tc exec bpf graft m:globals/jmp_tc key 0 obj graft.o sec aaa
-+ * tc exec bpf dbg
-+ *   [...]
-+ *   Socket Thread-19818 [002] ..s. 139012.053587: : aaa
-+ *   <idle>-0            [002] ..s. 139012.172359: : aaa
-+ *   Socket Thread-19818 [001] ..s. 139012.173556: : aaa
-+ *   [...]
-+ *
-+ * tc exec bpf graft m:globals/jmp_tc key 0 obj graft.o sec bbb
-+ * tc exec bpf dbg
-+ *   [...]
-+ *   Socket Thread-19818 [002] ..s. 139022.102967: : bbb
-+ *   <idle>-0            [002] ..s. 139022.155640: : bbb
-+ *   Socket Thread-19818 [001] ..s. 139022.156730: : bbb
-+ *   [...]
-+ */
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_PROG_ARRAY);
-+	__uint(key_size, sizeof(uint32_t));
-+	__uint(value_size, sizeof(uint32_t));
-+	__uint(max_entries, 1);
-+	__uint(pinning, LIBBPF_PIN_BY_NAME);
-+} jmp_tc __section(".maps");
-+
-+__section("aaa")
-+int cls_aaa(struct __sk_buff *skb)
++free:
++	spin_unlock_irqrestore(&interface_lock, flags);
++	return;
+ }
+ 
+ static void trace_kfree_skb_hit(void *ignore, struct sk_buff *skb, void *location)
+@@ -1315,6 +1334,89 @@ static int net_dm_cmd_trace(struct sk_buff *skb,
+ 	return -EOPNOTSUPP;
+ }
+ 
++static bool is_dummy_dev(struct net_device *dev)
 +{
-+	printt("aaa\n");
-+	return TC_H_MAKE(1, 42);
++	struct ethtool_drvinfo drvinfo;
++
++	if (dev->ethtool_ops && dev->ethtool_ops->get_drvinfo) {
++		memset(&drvinfo, 0, sizeof(drvinfo));
++		dev->ethtool_ops->get_drvinfo(dev, &drvinfo);
++
++		if (strcmp(drvinfo.driver, "dummy"))
++			return false;
++		return true;
++	}
++	return false;
 +}
 +
-+__section("bbb")
-+int cls_bbb(struct __sk_buff *skb)
++static int net_dm_interface_start(struct net *net, const char *ifname)
 +{
-+	printt("bbb\n");
-+	return TC_H_MAKE(1, 43);
++	struct net_device *dev = dev_get_by_name(net, ifname);
++	unsigned long flags;
++	int rc = -EBUSY;
++
++	if (!dev)
++		return -ENODEV;
++
++	if (!is_dummy_dev(dev)) {
++		rc = -EOPNOTSUPP;
++		goto out;
++	}
++
++	spin_lock_irqsave(&interface_lock, flags);
++	if (!interface) {
++		interface = dev;
++		rc = 0;
++	}
++	spin_unlock_irqrestore(&interface_lock, flags);
++
++	goto out;
++
++out:
++	dev_put(dev);
++	return rc;
 +}
 +
-+__section_cls_entry
-+int cls_entry(struct __sk_buff *skb)
++static int net_dm_interface_stop(struct net *net, const char *ifname)
 +{
-+	tail_call(skb, &jmp_tc, 0);
-+	printt("fallthrough\n");
-+	return BPF_H_DEFAULT;
++	unsigned long flags;
++	int rc = -ENODEV;
++
++	spin_lock_irqsave(&interface_lock, flags);
++	if (interface && interface->name == ifname) {
++		dev_put(interface);
++		interface = NULL;
++		rc = 0;
++	}
++	spin_unlock_irqrestore(&interface_lock, flags);
++
++	return rc;
 +}
 +
-+BPF_LICENSE("GPL");
-diff --git a/examples/bpf/bpf_map_in_map.c b/examples/bpf/bpf_map_in_map.c
-new file mode 100644
-index 00000000..39c86268
---- /dev/null
-+++ b/examples/bpf/bpf_map_in_map.c
-@@ -0,0 +1,55 @@
-+#include "../../include/bpf_api.h"
++static int net_dm_cmd_ifc_trace(struct sk_buff *skb, struct genl_info *info)
++{
++	struct net *net = sock_net(skb->sk);
++	char ifname[IFNAMSIZ];
 +
-+struct inner_map {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(key_size, sizeof(uint32_t));
-+	__uint(value_size, sizeof(uint32_t));
-+	__uint(max_entries, 1);
-+} map_inner __section(".maps");
++	if (net_dm_is_monitoring())
++		return -EBUSY;
 +
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY_OF_MAPS);
-+	__uint(key_size, sizeof(uint32_t));
-+	__uint(value_size, sizeof(uint32_t));
-+	__uint(max_entries, 1);
-+	__uint(pinning, LIBBPF_PIN_BY_NAME);
-+	__array(values, struct inner_map);
-+} map_outer __section(".maps") = {
-+	.values = {
-+		[0] = &map_inner,
++	if (!info->attrs[NET_DM_ATTR_IFNAME])
++		return -EINVAL;
++
++	memset(ifname, 0, IFNAMSIZ);
++	nla_strlcpy(ifname, info->attrs[NET_DM_ATTR_IFNAME], IFNAMSIZ - 1);
++
++	switch (info->genlhdr->cmd) {
++	case NET_DM_CMD_START_IFC:
++		return net_dm_interface_start(net, ifname);
++	case NET_DM_CMD_STOP_IFC:
++		return net_dm_interface_stop(net, ifname);
++	}
++
++	return 0;
++}
++
+ static int net_dm_config_fill(struct sk_buff *msg, struct genl_info *info)
+ {
+ 	void *hdr;
+@@ -1503,6 +1605,7 @@ static int dropmon_net_event(struct notifier_block *ev_block,
+ 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+ 	struct dm_hw_stat_delta *new_stat = NULL;
+ 	struct dm_hw_stat_delta *tmp;
++	unsigned long flags;
+ 
+ 	switch (event) {
+ 	case NETDEV_REGISTER:
+@@ -1529,6 +1632,12 @@ static int dropmon_net_event(struct notifier_block *ev_block,
+ 				}
+ 			}
+ 		}
++		spin_lock_irqsave(&interface_lock, flags);
++		if (interface && interface == dev) {
++			dev_put(interface);
++			interface = NULL;
++		}
++		spin_unlock_irqrestore(&interface_lock, flags);
+ 		mutex_unlock(&net_dm_mutex);
+ 		break;
+ 	}
+@@ -1543,6 +1652,7 @@ static const struct nla_policy net_dm_nl_policy[NET_DM_ATTR_MAX + 1] = {
+ 	[NET_DM_ATTR_QUEUE_LEN] = { .type = NLA_U32 },
+ 	[NET_DM_ATTR_SW_DROPS]	= {. type = NLA_FLAG },
+ 	[NET_DM_ATTR_HW_DROPS]	= {. type = NLA_FLAG },
++	[NET_DM_ATTR_IFNAME] = {. type = NLA_STRING, .len = IFNAMSIZ },
+ };
+ 
+ static const struct genl_ops dropmon_ops[] = {
+@@ -1570,6 +1680,16 @@ static const struct genl_ops dropmon_ops[] = {
+ 		.cmd = NET_DM_CMD_STATS_GET,
+ 		.doit = net_dm_cmd_stats_get,
+ 	},
++	{
++		.cmd = NET_DM_CMD_START_IFC,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.doit = net_dm_cmd_ifc_trace,
 +	},
-+};
-+
-+__section("egress")
-+int emain(struct __sk_buff *skb)
-+{
-+	struct bpf_elf_map *map_inner;
-+	int key = 0, *val;
-+
-+	map_inner = map_lookup_elem(&map_outer, &key);
-+	if (map_inner) {
-+		val = map_lookup_elem(map_inner, &key);
-+		if (val)
-+			lock_xadd(val, 1);
-+	}
-+
-+	return BPF_H_DEFAULT;
-+}
-+
-+__section("ingress")
-+int imain(struct __sk_buff *skb)
-+{
-+	struct bpf_elf_map *map_inner;
-+	int key = 0, *val;
-+
-+	map_inner = map_lookup_elem(&map_outer, &key);
-+	if (map_inner) {
-+		val = map_lookup_elem(map_inner, &key);
-+		if (val)
-+			printt("map val: %d\n", *val);
-+	}
-+
-+	return BPF_H_DEFAULT;
-+}
-+
-+BPF_LICENSE("GPL");
-diff --git a/examples/bpf/bpf_shared.c b/examples/bpf/bpf_shared.c
-new file mode 100644
-index 00000000..99a332f4
---- /dev/null
-+++ b/examples/bpf/bpf_shared.c
-@@ -0,0 +1,53 @@
-+#include "../../include/bpf_api.h"
-+
-+/* Minimal, stand-alone toy map pinning example:
-+ *
-+ * clang -target bpf -O2 [...] -o bpf_shared.o -c bpf_shared.c
-+ * tc filter add dev foo parent 1: bpf obj bpf_shared.o sec egress
-+ * tc filter add dev foo parent ffff: bpf obj bpf_shared.o sec ingress
-+ *
-+ * Both classifier will share the very same map instance in this example,
-+ * so map content can be accessed from ingress *and* egress side!
-+ *
-+ * This example has a pinning of PIN_OBJECT_NS, so it's private and
-+ * thus shared among various program sections within the object.
-+ *
-+ * A setting of PIN_GLOBAL_NS would place it into a global namespace,
-+ * so that it can be shared among different object files. A setting
-+ * of PIN_NONE (= 0) means no sharing, so each tc invocation a new map
-+ * instance is being created.
-+ */
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_ARRAY);
-+	__uint(key_size, sizeof(uint32_t));
-+	__uint(value_size, sizeof(uint32_t));
-+	__uint(max_entries, 1);
-+	__uint(pinning, LIBBPF_PIN_BY_NAME);	/* or LIBBPF_PIN_NONE */
-+} map_sh __section(".maps");
-+
-+__section("egress")
-+int emain(struct __sk_buff *skb)
-+{
-+	int key = 0, *val;
-+
-+	val = map_lookup_elem(&map_sh, &key);
-+	if (val)
-+		lock_xadd(val, 1);
-+
-+	return BPF_H_DEFAULT;
-+}
-+
-+__section("ingress")
-+int imain(struct __sk_buff *skb)
-+{
-+	int key = 0, *val;
-+
-+	val = map_lookup_elem(&map_sh, &key);
-+	if (val)
-+		printt("map val: %d\n", *val);
-+
-+	return BPF_H_DEFAULT;
-+}
-+
-+BPF_LICENSE("GPL");
-diff --git a/include/bpf_api.h b/include/bpf_api.h
-index 89d3488d..82c47089 100644
---- a/include/bpf_api.h
-+++ b/include/bpf_api.h
-@@ -19,6 +19,19 @@
++	{
++		.cmd = NET_DM_CMD_STOP_IFC,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.doit = net_dm_cmd_ifc_trace,
++	},
+ };
  
- #include "bpf_elf.h"
- 
-+/** libbpf pin type. */
-+enum libbpf_pin_type {
-+	LIBBPF_PIN_NONE,
-+	/* PIN_BY_NAME: pin maps by name (in /sys/fs/bpf by default) */
-+	LIBBPF_PIN_BY_NAME,
-+};
-+
-+/** Type helper macros. */
-+
-+#define __uint(name, val) int (*name)[val]
-+#define __type(name, val) typeof(val) *name
-+#define __array(name, val) typeof(val) *name[]
-+
- /** Misc macros. */
- 
- #ifndef __stringify
+ static int net_dm_nl_pre_doit(const struct genl_ops *ops,
 -- 
-2.25.4
+2.18.4
 
