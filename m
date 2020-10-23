@@ -2,99 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95FCF297278
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 17:37:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C52A8297282
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 17:39:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S465947AbgJWPho (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 11:37:44 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41834 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S462875AbgJWPhn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Oct 2020 11:37:43 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kVz8F-0039CC-Gm; Fri, 23 Oct 2020 17:37:31 +0200
-Date:   Fri, 23 Oct 2020 17:37:31 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Xu Yilun <yilun.xu@intel.com>
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, mdf@kernel.org,
-        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
-        linux-fpga@vger.kernel.org, netdev@vger.kernel.org,
-        trix@redhat.com, lgoncalv@redhat.com, hao.wu@intel.com
-Subject: Re: [RFC PATCH 1/6] docs: networking: add the document for DFL Ether
- Group driver
-Message-ID: <20201023153731.GC718124@lunn.ch>
-References: <1603442745-13085-1-git-send-email-yilun.xu@intel.com>
- <1603442745-13085-2-git-send-email-yilun.xu@intel.com>
+        id S1750909AbgJWPjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 11:39:02 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:24197 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1750917AbgJWPjB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 11:39:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603467539;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=J409roG8zhXcXXCErK007R3MrYblBFNCZHcPyX0EW1c=;
+        b=ato4djoxJfdL0DPdufQLUuA2IuDBu0X8yUSJyklvDkNC6173YgfMrb8eJggCJjth2SQWkM
+        X8oija8Vnn9wN8n8oxEfeN5QNNaZY0NDcsm/k5flYvWWPYxf0sE3w/6DgmjuTF3juHA0JO
+        wlB54QYgwWpzWbEi7i5wcSqJR7F0rmw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-190-WxrfRJEEOtWeuf0CbspCdA-1; Fri, 23 Oct 2020 11:38:56 -0400
+X-MC-Unique: WxrfRJEEOtWeuf0CbspCdA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B8F7E80400B;
+        Fri, 23 Oct 2020 15:38:53 +0000 (UTC)
+Received: from redhat.com (ovpn-113-117.ams2.redhat.com [10.36.113.117])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 948346EF5D;
+        Fri, 23 Oct 2020 15:38:34 +0000 (UTC)
+Date:   Fri, 23 Oct 2020 11:38:32 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        borntraeger@de.ibm.com, david@redhat.com, elic@nvidia.com,
+        jasowang@redhat.com, lingshan.zhu@intel.com, li.wang@windriver.com,
+        mst@redhat.com, pankaj.gupta.linux@gmail.com, pmorel@linux.ibm.com,
+        rikard.falkeborn@gmail.com, sgarzare@redhat.com,
+        stable@vger.kernel.org, tiantao6@hisilicon.com
+Subject: [GIT PULL] vhost,vdpa,virtio: cleanups, fixes
+Message-ID: <20201023113832-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1603442745-13085-2-git-send-email-yilun.xu@intel.com>
+X-Mutt-Fcc: =sent
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Xu
+Was holding out for a couple of big new features including vop and rpmsg
+support for 1.0, but it looks like they won't make it in time.
+virtio i2c might be ready soon but that's a new driver so
+if it's ready soon it's probably ok to merge outside the merge
+window ... we'll see.
 
-Before i look at the other patches, i want to understand the
-architecture properly.
+The following changes since commit bbf5c979011a099af5dc76498918ed7df445635b:
 
-> +=======================================================================
-> +DFL device driver for Ether Group private feature on Intel(R) PAC N3000
-> +=======================================================================
-> +
-> +This is the driver for Ether Group private feature on Intel(R)
-> +PAC (Programmable Acceleration Card) N3000.
+  Linux 5.9 (2020-10-11 14:15:50 -0700)
 
-I assume this is just one implementation. The FPGA could be placed on
-other boards. So some of the limitations you talk about with the BMC
-artificial, and the overall architecture of the drivers is more
-generic?
+are available in the Git repository at:
 
-> +The Intel(R) PAC N3000 is a FPGA based SmartNIC platform for multi-workload
-> +networking application acceleration. A simple diagram below to for the board:
-> +
-> +                     +----------------------------------------+
-> +                     |                  FPGA                  |
-> ++----+   +-------+   +-----------+  +----------+  +-----------+   +----------+
-> +|QSFP|---|retimer|---|Line Side  |--|User logic|--|Host Side  |---|XL710     |
-> ++----+   +-------+   |Ether Group|  |          |  |Ether Group|   |Ethernet  |
-> +                     |(PHY + MAC)|  |wiring &  |  |(MAC + PHY)|   |Controller|
-> +                     +-----------+  |offloading|  +-----------+   +----------+
-> +                     |              +----------+              |
-> +                     |                                        |
-> +                     +----------------------------------------+
+  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
 
-Is XL710 required? I assume any MAC with the correct MII interface
-will work?
+for you to fetch changes up to 88a0d60c6445f315fbcfff3db792021bb3a67b28:
 
-Do you really mean PHY? I actually expect it is PCS? 
+  MAINTAINERS: add URL for virtio-mem (2020-10-21 10:48:11 -0400)
 
-> +The DFL Ether Group driver registers netdev for each line side link. Users
-> +could use standard commands (ethtool, ip, ifconfig) for configuration and
-> +link state/statistics reading. For host side links, they are always connected
-> +to the host ethernet controller, so they should always have same features as
-> +the host ethernet controller. There is no need to register netdevs for them.
+----------------------------------------------------------------
+vhost,vdpa,virtio: cleanups, fixes
 
-So lets say the XL710 is eth0. The line side netif is eth1. Where do i
-put the IP address? What interface do i add to quagga OSPF? 
+A very quiet cycle, no new features.
 
-> +The driver just enables these links on probe.
-> +
-> +The retimer chips are managed by onboard BMC (Board Management Controller)
-> +firmware, host driver is not capable to access them directly.
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 
-What about the QSPF socket? Can the host get access to the I2C bus?
-The pins for TX enable, etc. ethtool -m?
+----------------------------------------------------------------
+David Hildenbrand (1):
+      MAINTAINERS: add URL for virtio-mem
 
-> +Speed/Duplex
-> +------------
-> +The Ether Group doesn't support auto-negotiation. The link speed is fixed to
-> +10G, 25G or 40G full duplex according to which Ether Group IP is programmed.
+Eli Cohen (3):
+      vdpa/mlx5: Make use of a specific 16 bit endianness API
+      vdpa/mlx5: Fix failure to bring link up
+      vdpa/mlx5: Setup driver only if VIRTIO_CONFIG_S_DRIVER_OK
 
-So that means, if i pop out the SFP and put in a different one which
-supports a different speed, it is expected to be broken until the FPGA
-is reloaded?
+Li Wang (1):
+      vhost: reduce stack usage in log_used
 
-     Andrew
+Pierre Morel (2):
+      virtio: let arch advertise guest's memory access restrictions
+      s390: virtio: PV needs VIRTIO I/O device protection
+
+Rikard Falkeborn (3):
+      virtio-balloon: Constify id_table
+      virtio_input: Constify id_table
+      virtio-mem: Constify mem_id_table
+
+Stefano Garzarella (1):
+      vringh: fix __vringh_iov() when riov and wiov are different
+
+Tian Tao (1):
+      vhost_vdpa: Fix duplicate included kernel.h
+
+Zhu Lingshan (1):
+      vhost_vdpa: remove unnecessary spin_lock in vhost_vring_call
+
+ MAINTAINERS                       |  1 +
+ arch/s390/Kconfig                 |  1 +
+ arch/s390/mm/init.c               | 11 +++++++++++
+ drivers/vdpa/mlx5/net/mlx5_vnet.c | 12 ++++++++++--
+ drivers/vhost/vdpa.c              |  9 +--------
+ drivers/vhost/vhost.c             |  5 +----
+ drivers/vhost/vhost.h             |  2 +-
+ drivers/vhost/vringh.c            |  9 +++++----
+ drivers/virtio/Kconfig            |  6 ++++++
+ drivers/virtio/virtio.c           | 15 +++++++++++++++
+ drivers/virtio/virtio_balloon.c   |  2 +-
+ drivers/virtio/virtio_input.c     |  2 +-
+ drivers/virtio/virtio_mem.c       |  2 +-
+ include/linux/virtio_config.h     | 10 ++++++++++
+ 14 files changed, 65 insertions(+), 22 deletions(-)
+
