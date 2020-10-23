@@ -2,181 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F968296D3E
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 13:00:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96492296D68
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 13:14:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S462628AbgJWLAB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 07:00:01 -0400
-Received: from mx0b-0014ca01.pphosted.com ([208.86.201.193]:45336 "EHLO
-        mx0a-0014ca01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S462528AbgJWLAA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 07:00:00 -0400
-Received: from pps.filterd (m0042333.ppops.net [127.0.0.1])
-        by mx0b-0014ca01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09NAtMLd006790;
-        Fri, 23 Oct 2020 03:59:44 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=proofpoint;
- bh=pu6njqF/MSq873WAUnvZbegm5gUB/82WzkLH/03rJkU=;
- b=Z2VM8HdUJHSF+O4bUJ7gPGuvVCOdu/tVSkZT6WRBAflXsw/75kJBhHSEFXbGsRCIii7a
- vLIOR0cCSxm9Hz+tRGChoKi34EhiJFa33KppzhxkkqMKs7ub0n/lT2PBUBAyD1QSA018
- PDI2cPGz/UJdRo44wNAxK95FlPwsRZo2xss9DcaReob1k01SklznYBSKk3QixPQ9NBfO
- UjZrxmOAartkFmBDcLcSYmxRH2KqxviEwyvYo6w74E51sYVSvbGqXMbW2FnHgUrLw4F8
- SxlJHyiSBGUfhhP9nwUn80NPADMhzbs0H/yUBd/suV+S+ElT4O2VS1k3dGdIcrdTHJKZ Eg== 
-Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2109.outbound.protection.outlook.com [104.47.58.109])
-        by mx0b-0014ca01.pphosted.com with ESMTP id 347v6ys55h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 23 Oct 2020 03:59:44 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fG3nFt4lX6kBnrvtgzL11+TQTyggpnE7J8GDV/5yEJ4MfRTxjrZ+D3zwHtSmVKyVjdGAFd2IKnDkW7SsJo3FHbIUQAzQ1f2hU9ViEIVe1yutr+6caqb5OMxc2aYbSTO/3eNZuLw9yahHfhDCJNalfYoLLTYGR/b4vtvpR3v4PAL/BFhJUAlSTUuBuUV3LgSexjhjeHGweQWCLHKowTslSoOZuhVWCUrgFfTs6BpaTJo3ic1fKvRqUj/MhXaI+5Mx+Oh8KTSSAlvbvJZfrFDk89LfPyvU9h0ZkFjzzg9GIg6JOk0wDAqaCSIhPjxBEuyyyxk75dzUx+k0Wbaykf7O5w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pu6njqF/MSq873WAUnvZbegm5gUB/82WzkLH/03rJkU=;
- b=ag0bT/EUdedQDCRYZ+xW1FwNivyITCeUg9jdSleVRO8vALTDbwPvbYqqGbnLlCv1HB/+qj8aoCQWXKqGORpRVCcxwlTurFlxHTRIFX/maG3ZrrVKze6wyfcBs9iurvn1QD5SYP7pNl/SG/juWI61t2h2eJ2I5oa4FKaRLAMR9r79m7O8JOWZ3oAJgR2UU3XClI8bhMEkK10lf+CecfeTkS0riNKCJ/Q4xU6Sd8Qs1TudDq0FegfaTkrlDmJ4knIlk+wA5zE931+JrO6D5SioEVztNJ9be+rJx4YWjiDo6D2xbnyp5VzLOQrvxFgYjKGF6d2BoKtPcVJlCGoxHPsudQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=cadence.com; dmarc=pass action=none header.from=cadence.com;
- dkim=pass header.d=cadence.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pu6njqF/MSq873WAUnvZbegm5gUB/82WzkLH/03rJkU=;
- b=IywMrMwdn70PlruEzhCgyjuiTnHlspQbGhjPy153EiOUAAmlwmL2eRV2DQREqBX1RBijPD+XBrWi66KHEpLvWINPYu8DpGVrGRkIGrPO1GpfzPDzewoy5lMqJDzlxeJJbGHvWS74+iMskeV1kt+DlHeCjI7l8YhOblNnHIojCOM=
-Received: from DM5PR07MB3196.namprd07.prod.outlook.com (2603:10b6:3:e4::16) by
- DM6PR07MB5564.namprd07.prod.outlook.com (2603:10b6:5:36::14) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3477.21; Fri, 23 Oct 2020 10:59:42 +0000
-Received: from DM5PR07MB3196.namprd07.prod.outlook.com
- ([fe80::e183:a7f3:3bcd:fa64]) by DM5PR07MB3196.namprd07.prod.outlook.com
- ([fe80::e183:a7f3:3bcd:fa64%7]) with mapi id 15.20.3499.019; Fri, 23 Oct 2020
- 10:59:42 +0000
-From:   Parshuram Raju Thombare <pthombar@cadence.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Milind Parab <mparab@cadence.com>
-Subject: RE: [PATCH v3] net: macb: add support for high speed interface
-Thread-Topic: [PATCH v3] net: macb: add support for high speed interface
-Thread-Index: AQHWp9HS4UctazNdVUWuQbMULgmNwKmiZpMAgAEAG1CAAY/28A==
-Date:   Fri, 23 Oct 2020 10:59:42 +0000
-Message-ID: <DM5PR07MB3196723723F236F6113DDF9EC11A0@DM5PR07MB3196.namprd07.prod.outlook.com>
-References: <1603302245-30654-1-git-send-email-pthombar@cadence.com>
- <20201021185056.GN1551@shell.armlinux.org.uk>
- <DM5PR07MB31961F14DD8A38B7FFA8DA24C11D0@DM5PR07MB3196.namprd07.prod.outlook.com>
-In-Reply-To: <DM5PR07MB31961F14DD8A38B7FFA8DA24C11D0@DM5PR07MB3196.namprd07.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-dg-ref: PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNccHRob21iYXJcYXBwZGF0YVxyb2FtaW5nXDA5ZDg0OWI2LTMyZDMtNGE0MC04NWVlLTZiODRiYTI5ZTM1Ylxtc2dzXG1zZy1kNzhiZTQ2Ni0xNTFlLTExZWItODYwZi0wMDUwNTZjMDAwMDhcYW1lLXRlc3RcZDc4YmU0NjctMTUxZS0xMWViLTg2MGYtMDA1MDU2YzAwMDA4Ym9keS50eHQiIHN6PSIyNDQ1IiB0PSIxMzI0NzkyNDM3ODUyNTQ2MTgiIGg9InU3bDFYR1F0MWxEVVFJR1JHbHZFeHN6R2diOD0iIGlkPSIiIGJsPSIwIiBibz0iMSIvPjwvbWV0YT4=
-x-dg-rorf: true
-authentication-results: armlinux.org.uk; dkim=none (message not signed)
- header.d=none;armlinux.org.uk; dmarc=none action=none
- header.from=cadence.com;
-x-originating-ip: [34.98.221.38]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 450d27ca-ebcf-4bd2-3821-08d87742bed4
-x-ms-traffictypediagnostic: DM6PR07MB5564:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR07MB556419925D99E231F9C47842C11A0@DM6PR07MB5564.namprd07.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Nkcj3XtTL/jcqqjDa2475j8accWIV093seZZXhn0Sc143Xs4lAk1QRVKh/1n2QxaZe2E9eVqKL+iZabPPoqS8oFyrpH/34Qj67qLjK72thgtdM6aPlRpFv2RIka4b2lM5IiWMIFZs6JzGz3PjsstyLelffoWamhhTBiXParntCdQxQFNX4qrnOSQlj4s+b014PiYicsbeZOMfq7qAwGJWFnQItMyv0Ke38IoFajqFQRJqJKNLqUx6P3W8EKEdrCM4oPAxOHzSFGwqfdsy6eYw9IlGT5jC7p/HI7oZn9p6UQiLjikcCaFowNNsZICtE4HvfJoaYjbTfKUg61v3vW56JWl8l4yCvrTWVoa61MnEvsjLMT5yXS4MIP0PD1jj1jQ
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR07MB3196.namprd07.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(136003)(376002)(39860400002)(366004)(346002)(36092001)(4326008)(107886003)(66446008)(66556008)(54906003)(7696005)(66946007)(64756008)(55016002)(76116006)(71200400001)(66476007)(9686003)(8936002)(186003)(26005)(5660300002)(316002)(6506007)(478600001)(8676002)(33656002)(83380400001)(6916009)(52536014)(2906002)(86362001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: CPM76feRAKKCWZMslxe3svoaQnwttBj0oS5aKUPW8u1WJTxMnNd/rAVd8TYorkWPEIdiMGv9ZTminGuPXhtGDXqN3uBrcvdkOJCr5LV5PLPprAtQhrSXlle6IvfWan/m7uzC87p29eim/P9xZTVR06pCrjuZdjIX8fWovBKhegn7MmB5WhzRfszhPmxunQctTGaT9Fo7yWCo8qqGJAb0e/3XWShZ/Vg2mpyXcPjibCjc+8Ct/TtlOVQbZcbvPPJnBMud9/xMJhfQPAZwFfceyahTCyAv8cZiuFYRGlr2G/5xfXJA+tKTsyaQDrpug6L+V2AbeKYeiCNT+/k9J+lcvxeuIq2h4Ric9KvvZUjCMNs8VJmBHGkyKFXjLM8Y8/oSvTB5jOEr4xAiU1/O5sRVU+NqAXdWtxWkw4r+NRMdBmd7Rl31cKGJE7BnRwRygyxwjISgsALd82OOM0pcDqLEo4mCZYhVrVaKKea9hf/P/eqP5T3O2KUMj7dRipqLLlsWyxUqqWCJlLWHVjm5MPUPNT4ZDnSqzGP2CBviPXvJrQ52WukHkgelB/90tclvHNoHYZS4p1nm/hsn2l27pUea3kOboeIhxcOdj25R8BYbZNPglvr5cN+ZCwZkCWZc16IOQ94GBhsR02dl0kP8cAtJNQ==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S462817AbgJWLOD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 07:14:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55556 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S462811AbgJWLOD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 07:14:03 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85A0EC0613CE
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 04:14:01 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id k21so889745wmi.1
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 04:14:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=memsql.com; s=google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=GF9B6SYLRzLidzBBztBZX6WXKZIvIfWHBORPObBW6Xg=;
+        b=N6PdIeG6ldrqc6d0LiMR+wuU6XlqBbBv958Vkf8bbgXEA10mpsxSx5YqP0OnCmjtoN
+         gaa+cfAwZsHCBd4q22ghwCKsjMNTWFl6EsuKlHafyCh4JBOpGFVssHoJ0iiRQE/RHLLB
+         LvwaSubDIaALd8pfwP4q1x8P063eilFg3TAwg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=GF9B6SYLRzLidzBBztBZX6WXKZIvIfWHBORPObBW6Xg=;
+        b=rpR1xIvtDSGwPruVWV2ZVPqPNUWDEViEzWpZuTheYZfk6CvodB+7UvahOvcEnKd9Lb
+         b3AA0MWeu6PCbt9iyvaeE2MsU8nbLVh0XLT1I4cdw8crnbtsVnXgljZW8JeI6O5gW5HK
+         r77xaZBucMp80UlJgNSsI50QvVXIxp590hYGTVixPrEo32phmG6xlPfYWHZoM1I1kvmH
+         r009eJnLIvZ8ZQ3ZyT0CVkm3lMfDLGnODN2IrR8b17GwMlSmK+SY6jPN294+bhhzRoqt
+         cT7ALn5DxltEcS8WY5JfxLGBV5EP6Ak6Tb+ra5AxXmsWXgteTcD50ePKRf66t0vhieAc
+         x/RQ==
+X-Gm-Message-State: AOAM531YTK3DBNu7ARrFAhaffV6u85jwiq3ESyC41DWq/p+y6qaJMaug
+        eMo6Ivu7masxE0ycCugbkVTjqeUfUjm+mOBeOvo=
+X-Google-Smtp-Source: ABdhPJzFKRrv0FYAom527u+/LPePhF6kldFDrU2pQjDJZ93oTplTJEtCzAh4XGaOwSbIJ1zZ1bgIFg==
+X-Received: by 2002:a7b:c957:: with SMTP id i23mr743086wml.155.1603451640129;
+        Fri, 23 Oct 2020 04:14:00 -0700 (PDT)
+Received: from rdias-suse-pc.lan (bl13-26-148.dsl.telepac.pt. [85.246.26.148])
+        by smtp.gmail.com with ESMTPSA id o129sm2452861wmb.25.2020.10.23.04.13.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Oct 2020 04:13:59 -0700 (PDT)
+Date:   Fri, 23 Oct 2020 12:13:52 +0100
+From:   Ricardo Dias <rdias@memsql.com>
+To:     davem@davemloft.net, kuba@kernel.org, kuznet@ms2.inr.ac.ru,
+        yoshfuji@linux-ipv6.org, edumazet@google.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] tcp: fix race condition when creating child sockets from
+ syncookies
+Message-ID: <20201023111352.GA289522@rdias-suse-pc.lan>
 MIME-Version: 1.0
-X-OriginatorOrg: cadence.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR07MB3196.namprd07.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 450d27ca-ebcf-4bd2-3821-08d87742bed4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Oct 2020 10:59:42.4781
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: d36035c5-6ce6-4662-a3dc-e762e61ae4c9
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: qtoR4RCA/jbUdwFIUeZiM3U1HGMoSF+3kld6r7KKyiPBHqnxMo37zY3mqAbyOjBXrXx1CChfAU51u/TGzjm8Ge+eeQAiIVOXAaNXpL6trX0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR07MB5564
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.737
- definitions=2020-10-23_04:2020-10-23,2020-10-23 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_check_notspam policy=outbound_check score=0 clxscore=1015
- mlxlogscore=945 phishscore=0 suspectscore=0 malwarescore=0 impostorscore=0
- adultscore=0 lowpriorityscore=0 mlxscore=0 priorityscore=1501 bulkscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010230077
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+When the TCP stack is in SYN flood mode, the server child socket is
+created from the SYN cookie received in a TCP packet with the ACK flag
+set.
 
-I was trying to find out any ethernet driver where this issue of selecting =
-appropriate
-pcs_ops due to phylink changing interface mode dynamically is handled.=20
-But, apparently, so far only mvpp2 has adapted pcs_ops. And even in mvpp2, =
-it is
-not obvious how this case is handled.=20
+The child socket is created when the server receives the first TCP
+packet with a valid SYN cookie from the client. Usually, this packet
+corresponds to the final step of the TCP 3-way handshake, the ACK
+packet. But is also possible to receive a valid SYN cookie from the
+first TCP data packet sent by the client, and thus create a child socket
+from that SYN cookie.
 
-Also, apart from interface mode changed due to SFPs with different types of=
- PHY
-being used, it is not clear when phylink selects interface mode different t=
-han it
-initially requested to the ethernet driver.
+Since a client socket is ready to send data as soon as it receives the
+SYN+ACK packet from the server, the client can send the ACK packet (sent
+by the TCP stack code), and the first data packet (sent by the userspace
+program) almost at the same time, and thus the server will equally
+receive the two TCP packets with valid SYN cookies almost at the same
+instant.
 
->pcs_config and pcs_link_up passes "interface" as an argument, and in
->pcs_get_state call "state->interface" appeared to be populated just before
->calling it and hence should be valid.
+When such event happens, the TCP stack code has a race condition that
+occurs between the momement a lookup is done to the established
+connections hashtable to check for the existence of a connection for the
+same client, and the moment that the child socket is added to the
+established connections hashtable. As a consequence, this race condition
+can lead to a situation where we add two child sockets to the
+established connections hashtable and deliver two sockets to the
+userspace program to the same client.
 
-It seems state->interface in pcs_get_state is not always valid when SFPs wi=
-th
-different types of PHY are used. =20
-There is a chance of SFP with different type of PHY is inserted, eventually=
- invoking
-phylink_resolve for interface mode different than phylink initially request=
-ed,
-and causing major reconfiguration.
+This patch fixes the race condition by checking if an existing child
+socket exists for the same client when we are adding the second child
+socket to the established connections socket. If an existing child
+socket exists, we return that socket and use it to process the TCP
+packet received, and discard the second child socket to the same client.
 
-However, pcs_get_state is called before major reconfiguration, where select=
-ing
-which pcs_ops and PCS to be used is difficult without correct interface mod=
-e. =20
+Signed-off-by: Ricardo Dias <rdias@memsql.com>
+---
+ include/net/inet_hashtables.h |  1 +
+ net/ipv4/inet_hashtables.c    | 59 +++++++++++++++++++++++++++++++++++
+ net/ipv4/syncookies.c         |  5 ++-
+ net/ipv4/tcp_ipv4.c           | 16 +++++++++-
+ 4 files changed, 79 insertions(+), 2 deletions(-)
 
-As struct phylink and hence phy_state is private to phylink layer, IMO this=
- need to be
-handled at phylink level by passing appropriate interface mode to all neces=
-sary
-methods registered by drivers.
+diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+index 92560974ea67..e1d7fd20468a 100644
+--- a/include/net/inet_hashtables.h
++++ b/include/net/inet_hashtables.h
+@@ -248,6 +248,7 @@ void inet_hashinfo2_init(struct inet_hashinfo *h, const char *name,
+ int inet_hashinfo2_init_mod(struct inet_hashinfo *h);
+ 
+ bool inet_ehash_insert(struct sock *sk, struct sock *osk);
++struct sock *inet_ehash_insert_chk_dup(struct sock *sk);
+ bool inet_ehash_nolisten(struct sock *sk, struct sock *osk);
+ int __inet_hash(struct sock *sk, struct sock *osk);
+ int inet_hash(struct sock *sk);
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index 239e54474b65..5dbe3aa291e6 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -539,6 +539,65 @@ bool inet_ehash_insert(struct sock *sk, struct sock *osk)
+ 	return ret;
+ }
+ 
++/* Inserts a socket into ehash if no existing socket exists for the same
++ * quadruple (saddr, sport, daddr, dport).
++ * If there is an existing socket, returns that socket, otherwise returns NULL.
++ */
++struct sock *inet_ehash_insert_chk_dup(struct sock *sk)
++{
++	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
++	struct hlist_nulls_head *list;
++	struct inet_ehash_bucket *head;
++	const struct hlist_nulls_node *node;
++	struct sock *esk;
++	spinlock_t *lock; /* protects hashinfo socket entry */
++	struct net *net = sock_net(sk);
++	const int dif, sdif = sk->sk_bound_dev_if;
++
++	INET_ADDR_COOKIE(acookie, sk->sk_daddr, sk->sk_rcv_saddr);
++	const __portpair ports = INET_COMBINED_PORTS(sk->sk_dport, sk->sk_num);
++
++	WARN_ON_ONCE(!sk_unhashed(sk));
++
++	sk->sk_hash = sk_ehashfn(sk);
++	head = inet_ehash_bucket(hashinfo, sk->sk_hash);
++	list = &head->chain;
++	lock = inet_ehash_lockp(hashinfo, sk->sk_hash);
++
++	spin_lock(lock);
++begin:
++	sk_nulls_for_each_rcu(esk, node, list) {
++		if (esk->sk_hash != sk->sk_hash)
++			continue;
++		if (likely(INET_MATCH(esk, net, acookie,
++				      sk->sk_daddr, sk->sk_rcv_saddr, ports,
++				      dif, sdif))) {
++			if (unlikely(!refcount_inc_not_zero(&esk->sk_refcnt)))
++				goto out;
++			if (unlikely(!INET_MATCH(esk, net, acookie,
++						 sk->sk_daddr,
++						 sk->sk_rcv_saddr, ports,
++						 dif, sdif))) {
++				sock_gen_put(esk);
++				goto begin;
++			}
++			goto found;
++		}
++	}
++out:
++	esk = NULL;
++	__sk_nulls_add_node_rcu(sk, list);
++found:
++	spin_unlock(lock);
++	if (esk) {
++		percpu_counter_inc(sk->sk_prot->orphan_count);
++		inet_sk_set_state(sk, TCP_CLOSE);
++		sock_set_flag(sk, SOCK_DEAD);
++		inet_csk_destroy_sock(sk);
++	}
++	return esk;
++}
++
+ bool inet_ehash_nolisten(struct sock *sk, struct sock *osk)
+ {
+ 	bool ok = inet_ehash_insert(sk, osk);
+diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
+index e03756631541..c4bb895085f0 100644
+--- a/net/ipv4/syncookies.c
++++ b/net/ipv4/syncookies.c
+@@ -208,7 +208,7 @@ struct sock *tcp_get_cookie_sock(struct sock *sk, struct sk_buff *skb,
+ 
+ 	child = icsk->icsk_af_ops->syn_recv_sock(sk, skb, req, dst,
+ 						 NULL, &own_req);
+-	if (child) {
++	if (child && own_req) {
+ 		refcount_set(&req->rsk_refcnt, 1);
+ 		tcp_sk(child)->tsoffset = tsoff;
+ 		sock_rps_save_rxhash(child, skb);
+@@ -223,6 +223,9 @@ struct sock *tcp_get_cookie_sock(struct sock *sk, struct sk_buff *skb,
+ 
+ 		bh_unlock_sock(child);
+ 		sock_put(child);
++	}  else if (child && !own_req) {
++		__reqsk_free(req);
++		return child;
+ 	}
+ 	__reqsk_free(req);
+ 
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 592c73962723..c705d335bd80 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1501,6 +1501,8 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
+ 	int l3index;
+ #endif
+ 	struct ip_options_rcu *inet_opt;
++	struct sock *esk = NULL;
++	bool syncookie = false;
+ 
+ 	if (sk_acceptq_is_full(sk))
+ 		goto exit_overflow;
+@@ -1535,6 +1537,7 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
+ 			goto put_and_exit;
+ 	} else {
+ 		/* syncookie case : see end of cookie_v4_check() */
++		syncookie = true;
+ 	}
+ 	sk_setup_caps(newsk, dst);
+ 
+@@ -1565,7 +1568,18 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
+ 
+ 	if (__inet_inherit_port(sk, newsk) < 0)
+ 		goto put_and_exit;
+-	*own_req = inet_ehash_nolisten(newsk, req_to_sk(req_unhash));
++	if (!syncookie) {
++		*own_req = inet_ehash_nolisten(newsk, req_to_sk(req_unhash));
++	} else {
++		esk = inet_ehash_insert_chk_dup(newsk);
++		/* We're going to notify tcp_get_cookie_sock through own_req
++		 * that an existing socket is going to be returned instead,
++		 * since own_req is not used by the syncookies code.
++		 */
++		*own_req = !esk;
++		if (esk)
++			newsk = esk;
++	}
+ 	if (likely(*own_req)) {
+ 		tcp_move_syn(newtp, req);
+ 		ireq->ireq_opt = NULL;
+-- 
+2.25.1
 
-Something like
-
-523 static void phylink_mac_pcs_get_state(struct phylink *pl,
- 524                                       struct phylink_link_state *state=
-)
- 525 {
- 526         linkmode_copy(state->advertising, pl->link_config.advertising)=
-;
- 527         linkmode_zero(state->lp_advertising);
- 528         if (pl->phydev)
- 529                 state->interface =3D pl->phy_state.interface;
- 530         else
- 531                 state->interface =3D pl->link_config.interface;
- 532         state->an_enabled =3D pl->link_config.an_enabled;
- 533         state->speed =3D SPEED_UNKNOWN;
- 534         state->duplex =3D DUPLEX_UNKNOWN;
- 535         state->pause =3D MLO_PAUSE_NONE;
- 536         state->an_complete =3D 0;
- 537         state->link =3D 1;
- 538
- 539         if (pl->pcs_ops)
- 540                 pl->pcs_ops->pcs_get_state(pl->pcs, state);
- 541         else
- 542                 pl->mac_ops->mac_pcs_get_state(pl->config, state);
-
-
-Regards,
-Parshuram Thombare
