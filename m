@@ -2,174 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D84C9296E1A
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 13:59:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEBBC296E36
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 14:09:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S463317AbgJWL7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 07:59:12 -0400
-Received: from stargate.chelsio.com ([12.32.117.8]:26732 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S463312AbgJWL7M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 07:59:12 -0400
-Received: from v4.asicdesigners.com (v4.blr.asicdesigners.com [10.193.186.237])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 09NBx7Ve018990;
-        Fri, 23 Oct 2020 04:59:08 -0700
-From:   Raju Rangoju <rajur@chelsio.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, vishal@chelsio.com, rajur@chelsio.com
-Subject: [PATCH net] cxgb4: set up filter action after rewrites
-Date:   Fri, 23 Oct 2020 17:28:52 +0530
-Message-Id: <20201023115852.18262-1-rajur@chelsio.com>
-X-Mailer: git-send-email 2.9.5
+        id S463452AbgJWMJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 08:09:07 -0400
+Received: from aserp2130.oracle.com ([141.146.126.79]:46530 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S463180AbgJWMJH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 08:09:07 -0400
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09NC5Au7095975;
+        Fri, 23 Oct 2020 12:09:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=3u747VZC52iNeeNmOWRTKOGyZ8opg2btTPcZQUCsvGw=;
+ b=g/GRiX9jjXejYbgaoQuSWf8mDKwf1QHkoc/k3V5GOM3mCrZ6r+su6cuS6jETcHwiCNdy
+ T5lClorzd8RKcR0ifgboclLHVtg9aevcQqyI704DhbSq3Z6jH6H4jf9nSTa435BePGfK
+ GKPsQivycYyys7T5j+4VixT+JP7JKgJ7MHFAJwv4LezfTxxPfb06pDDbar2Lp5dPHqDO
+ 1CLFnXX31cIlaqUVNLRxBQFGjy1P9wY6hYwfDvLLVQwtq+eVz6fbZuu388iTknY3lnY5
+ c0nxcgHMCi4vaKMhyKDU/B74Xs2psh1yLMyP+gPOlNNnntABNohMFXcOYy9SP0JnjGPe qg== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by aserp2130.oracle.com with ESMTP id 347p4bavxq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 23 Oct 2020 12:09:03 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09NC558Y104567;
+        Fri, 23 Oct 2020 12:09:02 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by userp3030.oracle.com with ESMTP id 348aj0wyb3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 23 Oct 2020 12:09:02 +0000
+Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 09NC9099026344;
+        Fri, 23 Oct 2020 12:09:01 GMT
+Received: from mwanda (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 23 Oct 2020 05:08:59 -0700
+Date:   Fri, 23 Oct 2020 15:08:53 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>
+Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH net] vhost_vdpa: Return -EFUALT if copy_from_user() fails
+Message-ID: <20201023120853.GI282278@mwanda>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9782 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0 bulkscore=0
+ malwarescore=0 spamscore=0 mlxlogscore=999 mlxscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2010230086
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9782 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 priorityscore=1501
+ clxscore=1015 malwarescore=0 mlxscore=0 bulkscore=0 lowpriorityscore=0
+ phishscore=0 adultscore=0 mlxlogscore=999 impostorscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2010230086
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current code sets up the filter action field before
-rewrites are set up. When the action 'switch' is used
-with rewrites, this may result in initial few packets
-that get switched out don't have rewrites applied
-on them.
+The copy_to/from_user() functions return the number of bytes which we
+weren't able to copy but the ioctl should return -EFAULT if they fail.
 
-So, make sure filter action is set up along with rewrites
-or only after everything else is set up for rewrites.
-
-Fixes: 12b276fbf6e0 ("cxgb4: add support to create hash filters")
-Signed-off-by: Raju Rangoju <rajur@chelsio.com>
+Fixes: a127c5bbb6a8 ("vhost-vdpa: fix backend feature ioctls")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 ---
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c | 56 +++++++++++------------
- drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h       |  4 ++
- 2 files changed, 31 insertions(+), 29 deletions(-)
+ drivers/vhost/vdpa.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
-index 6ec5f2f26f05..4e55f7081644 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
-@@ -145,13 +145,13 @@ static int configure_filter_smac(struct adapter *adap, struct filter_entry *f)
- 	int err;
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 62a9bb0efc55..c94a97b6bd6d 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -428,12 +428,11 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+ 	void __user *argp = (void __user *)arg;
+ 	u64 __user *featurep = argp;
+ 	u64 features;
+-	long r;
++	long r = 0;
  
- 	/* do a set-tcb for smac-sel and CWR bit.. */
--	err = set_tcb_tflag(adap, f, f->tid, TF_CCTRL_CWR_S, 1, 1);
--	if (err)
--		goto smac_err;
--
- 	err = set_tcb_field(adap, f, f->tid, TCB_SMAC_SEL_W,
- 			    TCB_SMAC_SEL_V(TCB_SMAC_SEL_M),
- 			    TCB_SMAC_SEL_V(f->smt->idx), 1);
-+	if (err)
-+		goto smac_err;
-+
-+	err = set_tcb_tflag(adap, f, f->tid, TF_CCTRL_CWR_S, 1, 1);
- 	if (!err)
- 		return 0;
- 
-@@ -862,6 +862,7 @@ int set_filter_wr(struct adapter *adapter, int fidx)
- 		      FW_FILTER_WR_DIRSTEERHASH_V(f->fs.dirsteerhash) |
- 		      FW_FILTER_WR_LPBK_V(f->fs.action == FILTER_SWITCH) |
- 		      FW_FILTER_WR_DMAC_V(f->fs.newdmac) |
-+		      FW_FILTER_WR_SMAC_V(f->fs.newsmac) |
- 		      FW_FILTER_WR_INSVLAN_V(f->fs.newvlan == VLAN_INSERT ||
- 					     f->fs.newvlan == VLAN_REWRITE) |
- 		      FW_FILTER_WR_RMVLAN_V(f->fs.newvlan == VLAN_REMOVE ||
-@@ -879,7 +880,7 @@ int set_filter_wr(struct adapter *adapter, int fidx)
- 		 FW_FILTER_WR_OVLAN_VLD_V(f->fs.val.ovlan_vld) |
- 		 FW_FILTER_WR_IVLAN_VLDM_V(f->fs.mask.ivlan_vld) |
- 		 FW_FILTER_WR_OVLAN_VLDM_V(f->fs.mask.ovlan_vld));
--	fwr->smac_sel = 0;
-+	fwr->smac_sel = f->smt->idx;
- 	fwr->rx_chan_rx_rpl_iq =
- 		htons(FW_FILTER_WR_RX_CHAN_V(0) |
- 		      FW_FILTER_WR_RX_RPL_IQ_V(adapter->sge.fw_evtq.abs_id));
-@@ -1323,11 +1324,8 @@ static void mk_act_open_req6(struct filter_entry *f, struct sk_buff *skb,
- 			    TX_QUEUE_V(f->fs.nat_mode) |
- 			    T5_OPT_2_VALID_F |
- 			    RX_CHANNEL_V(cxgb4_port_e2cchan(f->dev)) |
--			    CONG_CNTRL_V((f->fs.action == FILTER_DROP) |
--					 (f->fs.dirsteer << 1)) |
- 			    PACE_V((f->fs.maskhash) |
--				   ((f->fs.dirsteerhash) << 1)) |
--			    CCTRL_ECN_V(f->fs.action == FILTER_SWITCH));
-+				   ((f->fs.dirsteerhash) << 1)));
- }
- 
- static void mk_act_open_req(struct filter_entry *f, struct sk_buff *skb,
-@@ -1363,11 +1361,8 @@ static void mk_act_open_req(struct filter_entry *f, struct sk_buff *skb,
- 			    TX_QUEUE_V(f->fs.nat_mode) |
- 			    T5_OPT_2_VALID_F |
- 			    RX_CHANNEL_V(cxgb4_port_e2cchan(f->dev)) |
--			    CONG_CNTRL_V((f->fs.action == FILTER_DROP) |
--					 (f->fs.dirsteer << 1)) |
- 			    PACE_V((f->fs.maskhash) |
--				   ((f->fs.dirsteerhash) << 1)) |
--			    CCTRL_ECN_V(f->fs.action == FILTER_SWITCH));
-+				   ((f->fs.dirsteerhash) << 1)));
- }
- 
- static int cxgb4_set_hash_filter(struct net_device *dev,
-@@ -2039,6 +2034,20 @@ void hash_filter_rpl(struct adapter *adap, const struct cpl_act_open_rpl *rpl)
- 			}
- 			return;
- 		}
-+		switch (f->fs.action) {
-+		case FILTER_PASS:
-+			if (f->fs.dirsteer)
-+				set_tcb_tflag(adap, f, tid,
-+					      TF_DIRECT_STEER_S, 1, 1);
-+			break;
-+		case FILTER_DROP:
-+			set_tcb_tflag(adap, f, tid, TF_DROP_S, 1, 1);
-+			break;
-+		case FILTER_SWITCH:
-+			set_tcb_tflag(adap, f, tid, TF_LPBK_S, 1, 1);
-+			break;
-+		}
-+
+ 	if (cmd == VHOST_SET_BACKEND_FEATURES) {
+-		r = copy_from_user(&features, featurep, sizeof(features));
+-		if (r)
+-			return r;
++		if (copy_from_user(&features, featurep, sizeof(features)))
++			return -EFAULT;
+ 		if (features & ~VHOST_VDPA_BACKEND_FEATURES)
+ 			return -EOPNOTSUPP;
+ 		vhost_set_backend_features(&v->vdev, features);
+@@ -476,7 +475,8 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
  		break;
- 
+ 	case VHOST_GET_BACKEND_FEATURES:
+ 		features = VHOST_VDPA_BACKEND_FEATURES;
+-		r = copy_to_user(featurep, &features, sizeof(features));
++		if (copy_to_user(featurep, &features, sizeof(features)))
++			r = -EFAULT;
+ 		break;
  	default:
-@@ -2106,22 +2115,11 @@ void filter_rpl(struct adapter *adap, const struct cpl_set_tcb_rpl *rpl)
- 			if (ctx)
- 				ctx->result = 0;
- 		} else if (ret == FW_FILTER_WR_FLT_ADDED) {
--			int err = 0;
--
--			if (f->fs.newsmac)
--				err = configure_filter_smac(adap, f);
--
--			if (!err) {
--				f->pending = 0;  /* async setup completed */
--				f->valid = 1;
--				if (ctx) {
--					ctx->result = 0;
--					ctx->tid = idx;
--				}
--			} else {
--				clear_filter(adap, f);
--				if (ctx)
--					ctx->result = err;
-+			f->pending = 0;  /* async setup completed */
-+			f->valid = 1;
-+			if (ctx) {
-+				ctx->result = 0;
-+				ctx->tid = idx;
- 			}
- 		} else {
- 			/* Something went wrong.  Issue a warning about the
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h b/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h
-index 50232e063f49..92473dda55d9 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h
-@@ -50,6 +50,10 @@
- #define TCB_T_FLAGS_M		0xffffffffffffffffULL
- #define TCB_T_FLAGS_V(x)	((__u64)(x) << TCB_T_FLAGS_S)
- 
-+#define TF_DROP_S		22
-+#define TF_DIRECT_STEER_S	23
-+#define TF_LPBK_S		59
-+
- #define TF_CCTRL_ECE_S		60
- #define TF_CCTRL_CWR_S		61
- #define TF_CCTRL_RFR_S		62
--- 
-2.9.5
-
+ 		r = vhost_dev_ioctl(&v->vdev, cmd, argp);
