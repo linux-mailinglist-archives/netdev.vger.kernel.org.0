@@ -2,94 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0670C296B53
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 10:39:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D40B296B6B
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 10:51:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S460717AbgJWIju (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 04:39:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57726 "EHLO mail.kernel.org"
+        id S460789AbgJWIvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 04:51:24 -0400
+Received: from mga06.intel.com ([134.134.136.31]:21778 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S460709AbgJWIju (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Oct 2020 04:39:50 -0400
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BA01422253;
-        Fri, 23 Oct 2020 08:39:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603442389;
-        bh=VvRSe/OoqsH6RWGRZu9ZjCYTv4OyRkDtBy9Tp5f+wyM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=ImXHeoN1ZKHEd/w7JhcCdvImXbJuvOX4ynCQAR4ku/jRK+hDMf2kn5k3NiR7MazIl
-         QXhvZ5LF+658kVs8Kx2ja2RFsEKb5EL/2uhZHlWlvaLt4SUBqAqFkAGFoKSkWMZSR0
-         lfSF6PyCATPOiwVtUyEI7hguvwsECyXG2QnK0rvE=
-Received: by mail-qv1-f50.google.com with SMTP id cv1so305657qvb.2;
-        Fri, 23 Oct 2020 01:39:49 -0700 (PDT)
-X-Gm-Message-State: AOAM533x0FUQrqbrfXAy9loujORhFI0svUQ3dZljvhmQzgUchnKWpDSH
-        Br+NOF2wKyhw5nfhgEk2bhYLw1DEa2n7/FrIvoU=
-X-Google-Smtp-Source: ABdhPJyJjzoKaK5cagyt39oBcijtYdW9B/rA44OHpXj7KabOoID/HljAtUFY9foobN6cU/y9qnZy0qQaSzJxUuB8HBI=
-X-Received: by 2002:ad4:4203:: with SMTP id k3mr1182611qvp.8.1603442388461;
- Fri, 23 Oct 2020 01:39:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201019073908.32262-1-dylan_hung@aspeedtech.com>
- <CACPK8Xfn+Gn0PHCfhX-vgLTA6e2=RT+D+fnLF67_1j1iwqh7yg@mail.gmail.com>
- <20201019120040.3152ea0b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <PS1PR0601MB1849166CBF6D1678E6E1210C9C1F0@PS1PR0601MB1849.apcprd06.prod.outlook.com>
- <CAK8P3a2pEfbLDWTppVHmGxXduOWPCwBw-8bMY9h3EbEecsVfTA@mail.gmail.com>
- <32bfb619bbb3cd6f52f9e5da205673702fed228f.camel@kernel.crashing.org>
- <CAK8P3a2j7fV5EFmC8UvSyvXixU8=Nmp6hrJco-fdP2Z+w8bLnA@mail.gmail.com>
- <CAK8P3a0qzyb0z-OH-hGNJ8iQoLckVkkz4DQfYpFFd=UuXP3gwA@mail.gmail.com> <f3f4243408afb4e31a72b8ccb8cef4ba539c67a3.camel@kernel.crashing.org>
-In-Reply-To: <f3f4243408afb4e31a72b8ccb8cef4ba539c67a3.camel@kernel.crashing.org>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Fri, 23 Oct 2020 10:39:32 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1JD57NSz+_ffyNwX-ERnDq56taNXryoVyV6ZXzEXft0g@mail.gmail.com>
-Message-ID: <CAK8P3a1JD57NSz+_ffyNwX-ERnDq56taNXryoVyV6ZXzEXft0g@mail.gmail.com>
-Subject: Re: [PATCH] net: ftgmac100: Fix missing TX-poll issue
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc:     Arnd Bergmann <arnd@kernel.org>,
-        Dylan Hung <dylan_hung@aspeedtech.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joel Stanley <joel@jms.id.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Po-Yu Chuang <ratbert@faraday-tech.com>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        BMC-SW <BMC-SW@aspeedtech.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S460780AbgJWIvY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Oct 2020 04:51:24 -0400
+IronPort-SDR: r39RP5t1aU5kun1+XBHyYYIVi9E4H8t+sReYuwpj+OYLdh575+r+pIJrX49IPD6X0HwmO1r3Xk
+ +tmAMXm41H5w==
+X-IronPort-AV: E=McAfee;i="6000,8403,9782"; a="229282346"
+X-IronPort-AV: E=Sophos;i="5.77,407,1596524400"; 
+   d="scan'208";a="229282346"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Oct 2020 01:51:18 -0700
+IronPort-SDR: e5D8J8ANtiZrUIeI9fZG06QikJYcgjQ3jENW3lLQFxOBu19EV2cXl41p5xrbLTQarINd7bYqth
+ M+nti4oQj3WQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,407,1596524400"; 
+   d="scan'208";a="523436244"
+Received: from yilunxu-optiplex-7050.sh.intel.com ([10.239.159.141])
+  by fmsmga006.fm.intel.com with ESMTP; 23 Oct 2020 01:51:15 -0700
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, mdf@kernel.org,
+        lee.jones@linaro.org
+Cc:     linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
+        netdev@vger.kernel.org, trix@redhat.com, lgoncalv@redhat.com,
+        yilun.xu@intel.com, hao.wu@intel.com
+Subject: [RFC PATCH 0/6] Add the netdev support for Intel PAC N3000 FPGA
+Date:   Fri, 23 Oct 2020 16:45:39 +0800
+Message-Id: <1603442745-13085-1-git-send-email-yilun.xu@intel.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 22, 2020 at 9:41 AM Benjamin Herrenschmidt
-<benh@kernel.crashing.org> wrote:
-> On Wed, 2020-10-21 at 14:11 +0200, Arnd Bergmann wrote:
->
-> > > At the moment, the only chips that need the heavy barrier are
-> > > omap4 and mstar_v7, and early l2 cache controllers (not the one
-> > > on Cortex-A7) have another synchronization callback that IIRC
-> > > is used for streaming mappings.
->
->  .../...
->
-> > > Obviously, adding one of these for ast2600 would slow down every
-> > > mb() and writel() a lot, but if it is a chip-wide problem rather than
-> > > one isolated to the network device, it would be the correct solution,
-> > > provided that a correct code sequence can be found.
->
-> I'm surprised that problem doesn't already exist on the ast2400 and
-> 2500 and I thus worry about the performance impact of such a workaround
-> applied generally to every MMIO writes....
->
-> But we did kill mmiowb so ... ;-)
+This patchset adds the driver for FPGA DFL (Device Feature List)
+Ether Group private feature. It also adds the driver for the retimer
+chips on the Intel MAX 10 BMC (Board Management Controller). These
+devices are the networking components on Intel PAC N3000.
 
-The real cost would have to be measured of course, and it depends a
-lot on how it's done. The read-from-uncached-memory as in the 1/4
-patch here seems fairly expensive, the mstarv7_mb() method (spinning
-on an mmio read) seems worse, but the omap4 method (a posted write
-to a mmio address in the memory controller to enforce a barrier between
-the two ports) doesn't seem that bad and would correspond to what
-the chip should be doing in the first place.
+Patch #1 provides the document which gives a overview of the hardware
+and basic driver design.
 
-       Arnd
+Patch #2 & #3 export some APIs to fetch necessary networking
+information in DFL framework. These information will be used in the 
+retimer driver and Ether Group driver.
+
+Patch #4 implements the retimer driver.
+
+Patch #5 implements the Ether Group driver for 25G.
+
+Patch #6 adds 10G support for the Ether Group driver.
+
+
+Xu Yilun (6):
+  docs: networking: add the document for DFL Ether Group driver
+  fpga: dfl: export network configuration info for DFL based FPGA
+  fpga: dfl: add an API to get the base device for dfl device
+  ethernet: m10-retimer: add support for retimers on Intel MAX 10 BMC
+  ethernet: dfl-eth-group: add DFL eth group private feature driver
+  ethernet: dfl-eth-group: add support for the 10G configurations
+
+ .../ABI/testing/sysfs-class-net-dfl-eth-group      |  19 +
+ .../networking/device_drivers/ethernet/index.rst   |   1 +
+ .../ethernet/intel/dfl-eth-group.rst               | 102 ++++
+ drivers/fpga/dfl-fme-main.c                        |  10 +-
+ drivers/fpga/dfl-n3000-nios.c                      |  11 +-
+ drivers/fpga/dfl.c                                 |  30 +
+ drivers/fpga/dfl.h                                 |  12 +
+ drivers/mfd/intel-m10-bmc.c                        |  18 +
+ drivers/net/ethernet/intel/Kconfig                 |  30 +
+ drivers/net/ethernet/intel/Makefile                |   4 +
+ drivers/net/ethernet/intel/dfl-eth-group-10g.c     | 544 ++++++++++++++++++
+ drivers/net/ethernet/intel/dfl-eth-group-25g.c     | 525 +++++++++++++++++
+ drivers/net/ethernet/intel/dfl-eth-group-main.c    | 635 +++++++++++++++++++++
+ drivers/net/ethernet/intel/dfl-eth-group.h         |  84 +++
+ drivers/net/ethernet/intel/intel-m10-bmc-retimer.c | 231 ++++++++
+ include/linux/dfl.h                                |   3 +
+ include/linux/mfd/intel-m10-bmc.h                  |  16 +
+ 17 files changed, 2265 insertions(+), 10 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-class-net-dfl-eth-group
+ create mode 100644 Documentation/networking/device_drivers/ethernet/intel/dfl-eth-group.rst
+ create mode 100644 drivers/net/ethernet/intel/dfl-eth-group-10g.c
+ create mode 100644 drivers/net/ethernet/intel/dfl-eth-group-25g.c
+ create mode 100644 drivers/net/ethernet/intel/dfl-eth-group-main.c
+ create mode 100644 drivers/net/ethernet/intel/dfl-eth-group.h
+ create mode 100644 drivers/net/ethernet/intel/intel-m10-bmc-retimer.c
+
+-- 
+2.7.4
+
