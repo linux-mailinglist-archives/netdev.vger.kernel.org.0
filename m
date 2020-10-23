@@ -2,67 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ADC6E297966
-	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 00:48:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95C11297978
+	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 01:01:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1758348AbgJWWsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 18:48:10 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:42526 "EHLO vps0.lunn.ch"
+        id S1758440AbgJWXB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 19:01:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35674 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1757785AbgJWWsK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Oct 2020 18:48:10 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kW5qx-003Bef-NA; Sat, 24 Oct 2020 00:48:07 +0200
-Date:   Sat, 24 Oct 2020 00:48:07 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, ardeleanalex@gmail.com
-Subject: Re: [PATCH v2 2/2] net: phy: adin: implement cable-test support
-Message-ID: <20201023224807.GG745568@lunn.ch>
-References: <20201022074551.11520-1-alexandru.ardelean@analog.com>
- <20201022074551.11520-2-alexandru.ardelean@analog.com>
+        id S1758431AbgJWXB0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Oct 2020 19:01:26 -0400
+Content-Type: text/plain; charset="utf-8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603494086;
+        bh=TxA3WnHhq5EwG2OIhSC59C3XM5I/OAa7M69E6u83CLU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=B+1MZg6x+kQpE6TfwrPPxiu1/nZkxGXqX2XyztRICqiBUgRkFC+Bj/S46bs99RgNn
+         llLP2qy6sShDr8yj+/ZFmfzV0GZsPNWFin1FyuKwDjNdr1PfOdt/yzn406k5GFl3G2
+         3ZvomTLXAQ8HVWdn6CDtIScrRqfpxtOPyBifMMEA=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201022074551.11520-2-alexandru.ardelean@analog.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [GIT PULL] Networking
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160349408591.25602.7882024733775862361.git-patchwork-notify@kernel.org>
+Date:   Fri, 23 Oct 2020 23:01:25 +0000
+References: <20201022144826.45665c12@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201022144826.45665c12@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 22, 2020 at 10:45:51AM +0300, Alexandru Ardelean wrote:
-> The ADIN1300/ADIN1200 support cable diagnostics using TDR.
-> 
-> The cable fault detection is automatically run on all four pairs looking at
-> all combinations of pair faults by first putting the PHY in standby (clear
-> the LINK_EN bit, PHY_CTRL_3 register, Address 0x0017) and then enabling the
-> diagnostic clock (set the DIAG_CLK_EN bit, PHY_CTRL_1 register, Address
-> 0x0012).
-> 
-> Cable diagnostics can then be run (set the CDIAG_RUN bit in the
-> CDIAG_RUN register, Address 0xBA1B). The results are reported for each pair
-> in the cable diagnostics results registers, CDIAG_DTLD_RSLTS_0,
-> CDIAG_DTLD_RSLTS_1, CDIAG_DTLD_RSLTS_2, and CDIAG_DTLD_RSLTS_3, Address
-> 0xBA1D to Address 0xBA20).
-> 
-> The distance to the first fault for each pair is reported in the cable
-> fault distance registers, CDIAG_FLT_DIST_0, CDIAG_FLT_DIST_1,
-> CDIAG_FLT_DIST_2, and CDIAG_FLT_DIST_3, Address 0xBA21 to Address 0xBA24).
-> 
-> This change implements support for this using phylib's cable-test support.
-> 
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Hello:
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+This pull request was applied to netdev/net.git (refs/heads/master):
 
-For a patch series, it is normal to include a cover letter explaining
-what the series as a whole does.
+On Thu, 22 Oct 2020 14:48:26 -0700 you wrote:
+> Hi Linus!
+> 
+> Latest fixes from the networking tree. Experimenting with the format
+> of the description further, I'll find out if you liked it based on how
+> it ends up looking in the tree :)
+> 
+> The following changes since commit 9ff9b0d392ea08090cd1780fb196f36dbb586529:
+> 
+> [...]
 
-Also the subject should indicate which tree the patchset is for.
+Here is the summary with links:
+  - [GIT,PULL] Networking
+    https://git.kernel.org/netdev/net/c/3cb12d27ff65
 
-See the netdev FAQ.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-    Andrew
 
