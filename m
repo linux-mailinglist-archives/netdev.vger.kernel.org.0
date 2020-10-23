@@ -2,119 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D86DB296C21
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 11:30:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95891296C27
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 11:33:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S461455AbgJWJaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 05:30:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39612 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S461425AbgJWJav (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 05:30:51 -0400
-Received: from mail-qk1-x744.google.com (mail-qk1-x744.google.com [IPv6:2607:f8b0:4864:20::744])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFAAAC0613D2
-        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 02:30:50 -0700 (PDT)
-Received: by mail-qk1-x744.google.com with SMTP id 188so453650qkk.12
-        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 02:30:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=dj3qfXJ4Iec3raMLz9uZPv/2iNP/sFcmUQrTQYmXPI4=;
-        b=uCQDC9ziTtUtPBfANMUf3YdSV542K5pqkmHilmKmDx+pgdMdDu2dRfxqqADpueWQ9M
-         cfFBQF321DnpZXVHuCKIy18POodyJdUFotn9KX/Mvg2IZ6yWVjwFM9w80YFM57Yvqu2P
-         aA/870fan6OrtITJ9cRRFrODaN00CZW4O/FCD8sYe0HDdeDCaVIS7LCz7LMx3D9QxPYD
-         KuNH2MNVEhuDHSmML86Dd8hIa+j/9RRXPM65bOKgbpdFC6/gSnygqbngPCvRIid0HE6F
-         VAXBK010IvmOz4+DjnLCL4iZzBErWgBV2MOh9lpCMIvdzdamWAmvt2x4AqtWuesM5Xf0
-         jm0A==
+        id S461532AbgJWJdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 05:33:21 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:55528 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S461523AbgJWJdT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 05:33:19 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603445598;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dhjktOBoRTQaSYJPiSgNw60+MzGJGvfEgx56IsafvOg=;
+        b=gZhw/q0ZC/Wkt/7MpUoTB9P+Vm3DhGSHRSS0Uy1nXDtcSFm0LM1BSvZbLvtJKNUYhYkmfP
+        mKAUYNl8mLUVz1Zby8tVyDjwvm54un9A8Bdy5BysREnRya36bi2N/jV8Dn1o+VHp2Mz7wz
+        X3ogQYweIwW4ilGyk8wIvO+STnLs/64=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-567-nQyyDPGvNzOP6fG0QUnz3A-1; Fri, 23 Oct 2020 05:33:15 -0400
+X-MC-Unique: nQyyDPGvNzOP6fG0QUnz3A-1
+Received: by mail-wr1-f72.google.com with SMTP id v5so390312wrr.0
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 02:33:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=dj3qfXJ4Iec3raMLz9uZPv/2iNP/sFcmUQrTQYmXPI4=;
-        b=h9dYkhPVyOUw4yxkjDEbBPf6h3z6YmZHsGzl1d57G9wZFSkrtiOGvE/MbdrpjRfc7R
-         DkOmr/068GhKdlDoxUe1HpjaT1J8P3SZpVNq2siYdmuNKATipcnR3tDdoQ3QQYBkzqmB
-         RG2e7GPRHkXNdmmnRUjPSn22GF6Ya0yTg0Q6oFYXwlWxaVc60Edy2WlHkEG4mkJ1j034
-         gYvyrPkbrA/Q4K9htYpLfZ2hsoybjAQ2Y+dt2P4engrgJBFNcd689Eg0isAA1jdq+LZQ
-         n54AeeP7k7DkLrTtOgltWDtaI0A1v0nLdIpm+4g/Sks3KM8tIgObgvKlg4kN3uugmHWZ
-         wYwg==
-X-Gm-Message-State: AOAM533T/Zo0HynS7SfHZN4aQqOOqxyDPWAfG8xX0+9+Aibd5/mHy0oq
-        6YNCUAjTSjI7z2HNdJv+FSAs5U7pZwtKRW0yLdo=
-X-Google-Smtp-Source: ABdhPJwVkgTHR6SB5B1Uw60DAbtdj1UdljbJrBOSIpzohYiZh9GXlpF7vJXU85Zpx684f8mdSXUQFqIvkXQQnpBXhYI=
-X-Received: by 2002:ae9:e40c:: with SMTP id q12mr1249818qkc.309.1603445450037;
- Fri, 23 Oct 2020 02:30:50 -0700 (PDT)
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=dhjktOBoRTQaSYJPiSgNw60+MzGJGvfEgx56IsafvOg=;
+        b=SLf5BHRdb9BBFjlLMKCLVyHcAO0/OI8FOdNQM0csToMOBMp28bisJVTEGobxUtgqee
+         HsuL6EguaVZvAqOo6Xs1kqAv1HOm+zTxPABMNTGot4LJmMCMYyGMM/37vyqaKq0XOFn9
+         KVxPbVoHD+PIyXwttLEA4Ka0ovWwyi3N3ZIdoZOvlZLnWb9H3tVMM/0inKoZ2uaUBXDi
+         2r9t5qn7WWoZsurJdVUEfhmLH/1AelAwGyfrp6R7p4dV1VHxy9bHHqgl3NcVJF38+xq6
+         x4eGdHi8hD6j+IbaL1+rF2DC779kZrEJ6r729+HR6qzsJnaSwHkpOdKbxHqb789Tw/yJ
+         ueQw==
+X-Gm-Message-State: AOAM533DOBckQw1gAi1+Jei/m5l3xHDYsWc/vqVGgtSWrH8padaIZC7J
+        ee+BkMWO8Rq2c7f3fBk1d6llt/wiFD1H+RudFLKy2/CEL05Sl1jD4ik0RKTG5QL/hloNdZn/pbV
+        Gw7fBH3xQYEDM4x2F
+X-Received: by 2002:a1c:4306:: with SMTP id q6mr1448475wma.189.1603445591336;
+        Fri, 23 Oct 2020 02:33:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw03dE4BvokvwSb4DY1v456I8rv/1zCQjMQg386djUX5vLasV/K1FS7SwEMTZT11Lnp0+2jXQ==
+X-Received: by 2002:a1c:4306:: with SMTP id q6mr1448442wma.189.1603445591095;
+        Fri, 23 Oct 2020 02:33:11 -0700 (PDT)
+Received: from ?IPv6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.gmail.com with ESMTPSA id q8sm2147629wro.32.2020.10.23.02.33.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 23 Oct 2020 02:33:10 -0700 (PDT)
+To:     Peter Zijlstra <peterz@infradead.org>,
+        Josh Don <joshdon@google.com>,
+        g@hirez.programming.kicks-ass.net
+Cc:     Ingo Molnar <mingo@redhat.com>, Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, Xi Wang <xii@google.com>
+References: <20201023032944.399861-1-joshdon@google.com>
+ <20201023071905.GL2611@hirez.programming.kicks-ass.net>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+Subject: Re: [PATCH 1/3] sched: better handling for busy polling loops
+Message-ID: <ef03ceac-e7dc-f17a-8d4d-28adf90f6ded@redhat.com>
+Date:   Fri, 23 Oct 2020 11:33:09 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.1
 MIME-Version: 1.0
-Sender: ms.aishagaddafi00@gmail.com
-Received: by 2002:ad4:4850:0:0:0:0:0 with HTTP; Fri, 23 Oct 2020 02:30:49
- -0700 (PDT)
-From:   Ms Nadia Emaan <mrsnadiaemaan50@gmail.com>
-Date:   Fri, 23 Oct 2020 09:30:49 +0000
-X-Google-Sender-Auth: E3ClDvyBwBI5eftflMnhAZO748w
-Message-ID: <CAPHg+rHB2TfMmcH4KhKYydtxHDYrD0DeU9ieONOkD_L0d1g2OQ@mail.gmail.com>
-Subject: Please I Really Need Your Urgent and Sincere Response:
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201023071905.GL2611@hirez.programming.kicks-ass.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-May God Bless you My beloved,
+On 23/10/20 09:19, Peter Zijlstra wrote:
+>> +	/*
+>> +	 * preemption needs to be kept disabled between prepare_to_busy_poll()
+>> +	 * and end_busy_poll().
+>> +	 */
+>> +	BUG_ON(preemptible());
+>> +	if (allow_resched)
+>> +		preempt_enable();
+>> +	else
+>> +		preempt_enable_no_resched();
+> NAK on @allow_resched
+> 
 
-I am contacting you through this means because I need your urgent
-assistance and also help me to carry a charity project in your
-country. I found your email address as a true child of God for past
-few days now that I have been praying to know if you are really the
-chosen one for this great charity project, according to God's
-direction, after all prayers I am convinced, and I have decided to
-contact you. Please, i want you use the funds for the Lord's work,
-with confidence, read and respond now.
+Since KVM is the one passing false, indeed I see no reason for the
+argument; you can just use preempt_enable().  There is no impact for
+example on the tracking of how much time was spent polling; that
+ktime_get() for the end of the polling period is done before calling
+end_busy_poll().
 
+Paolo
 
-My name is Ms. Nadia Emaan , a widow,  but currently based in West
-Africa since my life with my late husband, who was a businessman in
-this country before dying some years ago. We were married to many
-years without a child. He died after a brief illness that lasted only
-six days and I myself have been suffering from an ovarian cancer
-disease. At this moment I am about to finish the race in this way
-because the disease has reached a very bad stage, without any family
-member and without children. I hope you do not expose or betray this
-trust and I am sure that I am about to trust you for the mutual
-benefit of orphans and the less privileged. I have some funds that I
-inherited from my late husband, the total sum of ($ 12,500,000.00)
-deposited at a bank here in Burkina Faso. After knowing my current
-state of health, I decided to trust you with this fund, believing that
-you will use it in the way I will instruct here.
-
-
-you will use this $12.5 Million for public benefit as follows;
-
-1. Establish An Orphanage Home To Help The Orphanages Children.
-2. Build A Hospital To Help The Poor.
-3. Build A Nursing Home For Elderly People Need Care & Meal.
-
-You  will named them after my late husband.Therefore, I need you to
-help me and claim this money and use it for charities, for orphanages
-and provide justice and help to the poor, needy and to promote the
-words of God and the effort to maintain the house of God, according to
-the bible in the book of. Jeremiah 22: 15-16.
-
-It will be a pleasure to compensate with 40% percent of the total
-money for your effort in handling the transaction, while 60% of the
-money will go to charity project.
-
-All I need from you is sincerity and ability to complete the task of
-God without any failure. It will be my pleasure to see that the bank
-has finally released and transferred the fund to your bank account in
-the country, even before I die here in the hospital, due to my current
-state of health, everything must be processed as soon as possible.
-
- I am waiting for your immediate response, if you are only interested
-in obtaining more details about the transaction and execution of this
-humanitarian project for the glory and honor of God.
-
-Sorry if you received this letter in your spam, is due to recent
-connection/network error here in the country.
-
-Please I am waiting for your urgent reply now.
-
-May God Bless you,
-Ms Nadia Emaan .
