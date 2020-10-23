@@ -2,156 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AF852971C4
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 16:55:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B82E297213
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 17:15:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S465396AbgJWOzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 10:55:49 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:40843 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S465391AbgJWOzt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 10:55:49 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@nvidia.com)
-        with SMTP; 23 Oct 2020 17:55:42 +0300
-Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 09NEtgp5012350;
-        Fri, 23 Oct 2020 17:55:42 +0300
-From:   Vlad Buslov <vladbu@nvidia.com>
-To:     dsahern@gmail.com, stephen@networkplumber.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, ivecera@redhat.com,
-        vlad@buslov.dev, Vlad Buslov <vladbu@mellanox.com>
-Subject: [PATCH iproute2-next v4 2/2] tc: implement support for terse dump
-Date:   Fri, 23 Oct 2020 17:55:36 +0300
-Message-Id: <20201023145536.27578-3-vladbu@nvidia.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20201023145536.27578-1-vladbu@nvidia.com>
-References: <20201023145536.27578-1-vladbu@nvidia.com>
+        id S465669AbgJWPPM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 11:15:12 -0400
+Received: from latitanza.investici.org ([82.94.249.234]:43525 "EHLO
+        latitanza.investici.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S465662AbgJWPPM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 11:15:12 -0400
+X-Greylist: delayed 106472 seconds by postgrey-1.27 at vger.kernel.org; Fri, 23 Oct 2020 11:15:11 EDT
+Received: from mx3.investici.org (unknown [127.0.0.1])
+        by latitanza.investici.org (Postfix) with ESMTP id 4CHnpj6bg5z8sfZ;
+        Fri, 23 Oct 2020 15:15:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=privacyrequired.com;
+        s=stigmate; t=1603466109;
+        bh=xrzfXBanp0mZ0wD0TDNdDaKsHaPTHuPJOdUq/1FcMqM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YhYSKXxwz/ysMAb2ivI8QK975QNdDoum9gJTw7gNHqvUWAXTR0iaI0uoq5/ruJW7l
+         kgBp5pmnwS2dxbeE9xjBsgUiLznqNyHEr+aJSficemTDiz4PZ3n/Uaf+G4DIjLnCOH
+         3DAWC5a7A6jfZBfmT2OtWI7wiWSbp7a51BTdT1D4=
+Received: from [82.94.249.234] (mx3.investici.org [82.94.249.234]) (Authenticated sender: laniel_francis@privacyrequired.com) by localhost (Postfix) with ESMTPSA id 4CHnpj19zdz8sfY;
+        Fri, 23 Oct 2020 15:15:08 +0000 (UTC)
+From:   Francis Laniel <laniel_francis@privacyrequired.com>
+To:     David Laight <David.Laight@aculab.com>
+Cc:     'Jakub Kicinski' <kuba@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [RFC][PATCH v3 3/3] Rename nla_strlcpy to nla_strscpy.
+Date:   Fri, 23 Oct 2020 17:15:08 +0200
+Message-ID: <1915509.OMjZjUUbeY@machine>
+In-Reply-To: <b55d502089c44b3589973fa4e0d90617@AcuMS.aculab.com>
+References: <20201020164707.30402-1-laniel_francis@privacyrequired.com> <20201022160551.33d85912@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net> <b55d502089c44b3589973fa4e0d90617@AcuMS.aculab.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vlad Buslov <vladbu@mellanox.com>
+Le vendredi 23 octobre 2020, 10:07:44 CEST David Laight a =E9crit :
+> From: Jakub Kicinski
+>=20
+> > Sent: 23 October 2020 00:06
+> >=20
+> > On Thu, 22 Oct 2020 13:04:32 -0700 Kees Cook wrote:
+> > > > > > From: Francis Laniel <laniel_francis@privacyrequired.com>
+> > > > > >=20
+> > > > > > Calls to nla_strlcpy are now replaced by calls to nla_strscpy
+> > > > > > which is the
+> > > > > > new name of this function.
+> > > > > >=20
+> > > > > > Signed-off-by: Francis Laniel <laniel_francis@privacyrequired.c=
+om>
+> > > > >=20
+> > > > > The Subject could also be: "treewide: Rename nla_strlcpy to
+> > > > > nla_strscpy"
+> > > > >=20
+> > > > > But otherwise, yup, easy mechanical change.
+> > > >=20
+> > > > Should I submit a v4 for this change?
+> > >=20
+> > > I'll say yes. :) Drop the RFC, bump to v4, and send it to netdev (alo=
+ng
+> > > with all the other CCs you have here already), and add the Reviewed-b=
+ys
+> > > from v3.
+> >=20
+> > Maybe wait until next week, IIRC this doesn't fix any bugs, so it's
+> > -next material. We don't apply anything to net-next during the merge
+> > window.
+>=20
+> Is this just a rename, or have you changed the result value?
+> In the latter case the subject is really right.
 
-Implement support for classifier/action terse dump using new TCA_DUMP_FLAGS
-tlv with only available flag value TCA_DUMP_FLAGS_TERSE. Set the flag when
-user requested it with following example CLI (-br for 'brief'):
+I changed the result value so it mimics the return value of strscpy.
 
-$ tc -s -br filter show dev ens1f0 ingress
-filter protocol ip pref 49151 flower chain 0
-filter protocol ip pref 49151 flower chain 0 handle 0x1
-  not_in_hw
-        action order 1: gact    Action statistics:
-        Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
-        backlog 0b 0p requeues 0
+> FWIW I suspect  the 'return -ERR on overflow' is going to bite us.
+> Code that does p +=3D strsxxx(p, ..., lim - p, ...) assuming (or not
+> caring) about overflow goes badly wrong.
 
-filter protocol ip pref 49152 flower chain 0
-filter protocol ip pref 49152 flower chain 0 handle 0x1
-  not_in_hw
-        action order 1: gact    Action statistics:
-        Sent 0 bytes 0 pkt (dropped 0, overlimits 0 requeues 0)
-        backlog 0b 0p requeues 0
+Normally, I updated all parts of the code that check the value returned by=
+=20
+nla_strscpy.
+But, if I understood correctly you are afraid of this type of code:
+nla_strscpy(p, nla, p_len);
+p +=3D strncat(p, something, lim - p, ...);
+Am I correct?
 
-In terse mode dump only outputs essential data needed to identify the
-filter and action (handle, cookie, etc.) and stats, if requested by the
-user. The intention is to significantly improve rule dump rate by omitting
-all static data that do not change after rule is created.
+> To my mind returning the full buffer length (ie include the '\0')
+> on overflow still allows overflow be checked but makes writes
+> outside the buffer very unlikely.
 
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
----
+Maybe I can keep the original behavior and add a pointer as argument which =
+is=20
+used to contain -ERR?
 
-Notes:
-    Changes V3 -> V4:
-    
-    - Update example action output according to changes in previous
-    patch.
-    
-    Changes V2 -> V3:
-    
-    - Add brief dump output example to commit message.
-    
-    Changes V1 -> V2:
-    
-    - Invoke terse dump with tc command '-brief' option instead of
-    filter-specific 'terse' flag.
-    
-    - Extend tc man and usage string with new option.
+> 	David
+>=20
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1
+> 1PT, UK Registration No: 1397386 (Wales)
 
- man/man8/tc.8  | 6 ++++++
- tc/tc.c        | 6 +++++-
- tc/tc_filter.c | 9 +++++++++
- 3 files changed, 20 insertions(+), 1 deletion(-)
 
-diff --git a/man/man8/tc.8 b/man/man8/tc.8
-index 7e9019f561ea..e8622053df65 100644
---- a/man/man8/tc.8
-+++ b/man/man8/tc.8
-@@ -854,6 +854,12 @@ option for creating
- alias.
- .RE
- 
-+.TP
-+.BR "\-br" , " \-brief"
-+Print only essential data needed to identify the filter and action (handle,
-+cookie, etc.) and stats. This option is currently only supported by
-+.BR "tc filter show " command.
-+
- .SH "EXAMPLES"
- .PP
- tc -g class show dev eth0
-diff --git a/tc/tc.c b/tc/tc.c
-index 5d57054b45fb..bdd5d4faf886 100644
---- a/tc/tc.c
-+++ b/tc/tc.c
-@@ -44,6 +44,7 @@ bool use_names;
- int json;
- int color;
- int oneline;
-+int brief;
- 
- static char *conf_file;
- 
-@@ -202,7 +203,8 @@ static void usage(void)
- 		"       OPTIONS := { -V[ersion] | -s[tatistics] | -d[etails] | -r[aw] |\n"
- 		"		    -o[neline] | -j[son] | -p[retty] | -c[olor]\n"
- 		"		    -b[atch] [filename] | -n[etns] name | -N[umeric] |\n"
--		"		     -nm | -nam[es] | { -cf | -conf } path }\n");
-+		"		     -nm | -nam[es] | { -cf | -conf } path\n"
-+		"		     -br[ief] }\n");
- }
- 
- static int do_cmd(int argc, char **argv)
-@@ -336,6 +338,8 @@ int main(int argc, char **argv)
- 			++json;
- 		} else if (matches(argv[1], "-oneline") == 0) {
- 			++oneline;
-+		}else if (matches(argv[1], "-brief") == 0) {
-+			++brief;
- 		} else {
- 			fprintf(stderr,
- 				"Option \"%s\" is unknown, try \"tc -help\".\n",
-diff --git a/tc/tc_filter.c b/tc/tc_filter.c
-index c591a19f3123..71be2e8119c9 100644
---- a/tc/tc_filter.c
-+++ b/tc/tc_filter.c
-@@ -721,6 +721,15 @@ static int tc_filter_list(int cmd, int argc, char **argv)
- 	if (filter_chain_index_set)
- 		addattr32(&req.n, sizeof(req), TCA_CHAIN, chain_index);
- 
-+	if (brief) {
-+		struct nla_bitfield32 flags = {
-+			.value = TCA_DUMP_FLAGS_TERSE,
-+			.selector = TCA_DUMP_FLAGS_TERSE
-+		};
-+
-+		addattr_l(&req.n, MAX_MSG, TCA_DUMP_FLAGS, &flags, sizeof(flags));
-+	}
-+
- 	if (rtnl_dump_request_n(&rth, &req.n) < 0) {
- 		perror("Cannot send dump request");
- 		return 1;
--- 
-2.21.0
 
