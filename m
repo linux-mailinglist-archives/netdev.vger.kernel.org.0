@@ -2,99 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 736D3297743
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 20:48:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F35A297745
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 20:49:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1755088AbgJWSsr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 14:48:47 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:38468 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1755068AbgJWSso (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 14:48:44 -0400
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09NIW78D006557;
-        Fri, 23 Oct 2020 14:48:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references; s=pp1;
- bh=EtOBXeHsVTWgjF3xlaS9V7J/jIGqh/Ulu/ZINruufCs=;
- b=n7Yt1+pRXJUNIgg9KBEiRVyrRZjK73h69OSIcfTiVvTlzhGeM9jgNZ79+wty3RXrF4om
- T95CtBP6jnzSv7msEjkN/y4Y5NiJcXXeIP0/JIfs7G7K5gw44gX/lbN55cYLGAlEMoox
- voYLedVQJkl5N9w91jCLBfJ/XVk01wknUKpQQBghKHN45L+dxZ/cjJHIcF8p/96Pn8Pm
- aonONFbzwsVtkoIpJGSng8IWpAsrBL6oMHfDl10zi3heCKUytGapbxKcTeiaEVED5bdl
- gscvojLC1HYXK8050stQtTp/gRY6oC8e1ILNb8623+NX75miJRpVKufSpuOoBaQQ91F7 GQ== 
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 34bx0s5ap9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 23 Oct 2020 14:48:43 -0400
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 09NIc38b023463;
-        Fri, 23 Oct 2020 18:48:41 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 347r88ewru-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 23 Oct 2020 18:48:40 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 09NImcqK31916322
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 23 Oct 2020 18:48:38 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 27F1342042;
-        Fri, 23 Oct 2020 18:48:38 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D3ADE42041;
-        Fri, 23 Oct 2020 18:48:37 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 23 Oct 2020 18:48:37 +0000 (GMT)
-From:   Karsten Graul <kgraul@linux.ibm.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        heiko.carstens@de.ibm.com, raspl@linux.ibm.com,
-        ubraun@linux.ibm.com
-Subject: [PATCH net 3/3] s390/ism: fix incorrect system EID
-Date:   Fri, 23 Oct 2020 20:48:30 +0200
-Message-Id: <20201023184830.59548-4-kgraul@linux.ibm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201023184830.59548-1-kgraul@linux.ibm.com>
-References: <20201023184830.59548-1-kgraul@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.737
- definitions=2020-10-23_12:2020-10-23,2020-10-23 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 adultscore=0
- mlxscore=0 lowpriorityscore=0 suspectscore=1 impostorscore=0 clxscore=1015
- spamscore=0 phishscore=0 mlxlogscore=884 priorityscore=1501 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2010230111
+        id S1755095AbgJWStS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 14:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42056 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755068AbgJWStR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 14:49:17 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D767C0613D5
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 11:49:17 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id k18so2995745wmj.5
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 11:49:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=q51TK8/PvlrJALSNBr7oRhEZ17+8vqbYI8em8LLff6M=;
+        b=D2JZ4jqmBFMI0jviR/yb+H4dpQs6CpplHKxqaSRiDzMlbLXyCT3KYKkETv4mQ7DzcA
+         I4SOWLzxKNfo15N/hj6Ffvq2Qa6ZOtAL3ygd1sErlhhfJ+TNOTAhcqIAxNESTgPv9v4c
+         /oxtIV7KPYyVv+wsYM+R2yIAhjiceMk/d5RFfS9u4Ns/3Dvlb/+wdY4iBZvPqR0OzB+d
+         9494sBoD11FYcKXJ0xS5dzxp6T8wL8vGisRTNHnjMLSfdK9veFQqRJyqA+rdx/uzcHHM
+         4Vszz4Tw4h6bxCmFS/Z7vonEDbyy2zXZB/N2Hstket/J9PpveJQ0Xa3/X0hGH3gjYrRP
+         tohA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=q51TK8/PvlrJALSNBr7oRhEZ17+8vqbYI8em8LLff6M=;
+        b=WZn2sDDT6HKoK6ql328aY822JSZcMakma1zuQ/sespFHeclE3StM8rrFe+sMd8fhlv
+         UlaY9/H5U8mC90p71giICcI78G2ITsub0H9MWpsamaSB6PsYXjyN7sUOvhdl1lucUcyP
+         /WJ45MxrDkcOaOxs4DpKwbXaN7I7yHVqrruuE4HioP2Brb2vrLy7BLG0BoKu13nEI8OX
+         UjNChyzz+wCwu74sSMl6rn8+5nAMLuis1mmmjS8gC3sn/QKX6wfObbzHilXXGMxcySf6
+         r0k/qa0T/JYvb7xPXaB0YpvCjgJBb9l1Abeb3Y6MzmbIA1GSpvMIFj8QUzVLoBXLX0ww
+         RdbA==
+X-Gm-Message-State: AOAM533t7ovBMH7yfNiIHun6BF8/rIh6u77nFL52twYMXxhHubXl0diw
+        kb7kJlamsMIHrYA8TYniepOonlTnC7Gs6ppZniYqMA==
+X-Google-Smtp-Source: ABdhPJxmf+2e5U6A163eq/nzohuUamTcf95MmirAW1BJwrPBD9Eqz3ke8pzfFCmyVqQaUoHw5h6anKXvVguc7xqpUSQ=
+X-Received: by 2002:a1c:740f:: with SMTP id p15mr3510441wmc.106.1603478955761;
+ Fri, 23 Oct 2020 11:49:15 -0700 (PDT)
+MIME-Version: 1.0
+References: <20201023174856.200394-1-arjunroy.kdev@gmail.com> <20201023113131.780be7f6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201023113131.780be7f6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Arjun Roy <arjunroy@google.com>
+Date:   Fri, 23 Oct 2020 11:49:04 -0700
+Message-ID: <CAOFY-A2TtTvm58DtsoBkhS-co8Qc=NYCG=jSfrNuTqt=D5Vg0A@mail.gmail.com>
+Subject: Re: [net] tcp: Prevent low rmem stalls with SO_RCVLOWAT.
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Arjun Roy <arjunroy.kdev@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Neal Cardwell <ncardwell@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The system EID that is defined by the ISM driver is not correct. Using
-an incorrect system EID allows to communicate with remote Linux systems
-that use the same incorrect system EID, but when it comes to
-interoperability with other operating systems then the system EIDs do
-never match which prevents SMC-Dv2 communication.
-Using the correct system EID fixes this problem.
+Acknowledged, I have rebased onto net master just now and I think that
+should fix the sha1 information. v2 patch has been mailed. Sorry for
+the error first time round :)
 
-Fixes: 201091ebb2a1 ("net/smc: introduce System Enterprise ID (SEID)")
-Signed-off-by: Karsten Graul <kgraul@linux.ibm.com>
----
- drivers/s390/net/ism_drv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+-Arjun
 
-diff --git a/drivers/s390/net/ism_drv.c b/drivers/s390/net/ism_drv.c
-index fe96ca3c88a5..26cc943d2034 100644
---- a/drivers/s390/net/ism_drv.c
-+++ b/drivers/s390/net/ism_drv.c
-@@ -390,7 +390,7 @@ static int ism_move(struct smcd_dev *smcd, u64 dmb_tok, unsigned int idx,
- }
- 
- static struct ism_systemeid SYSTEM_EID = {
--	.seid_string = "IBM-SYSZ-IBMSEID00000000",
-+	.seid_string = "IBM-SYSZ-ISMSEID00000000",
- 	.serial_number = "0000",
- 	.type = "0000",
- };
--- 
-2.17.1
-
+On Fri, Oct 23, 2020 at 11:31 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Fri, 23 Oct 2020 10:48:57 -0700 Arjun Roy wrote:
+> > From: Arjun Roy <arjunroy@google.com>
+> >
+> > With SO_RCVLOWAT, under memory pressure,
+> > it is possible to enter a state where:
+> >
+> > 1. We have not received enough bytes to satisfy SO_RCVLOWAT.
+> > 2. We have not entered buffer pressure (see tcp_rmem_pressure()).
+> > 3. But, we do not have enough buffer space to accept more packets.
+>
+> Doesn't apply cleanly to net:
+>
+> Applying: tcp: Prevent low rmem stalls with SO_RCVLOWAT.
+> error: sha1 information is lacking or useless (net/ipv4/tcp.c).
+> error: could not build fake ancestor
+> hint: Use 'git am --show-current-patch=diff' to see the failed patch
+> Patch failed at 0001 tcp: Prevent low rmem stalls with SO_RCVLOWAT.
+> When you have resolved this problem, run "git am --continue".
+> If you prefer to skip this patch, run "git am --skip" instead.
+> To restore the original branch and stop patching, run "git am --abort".
