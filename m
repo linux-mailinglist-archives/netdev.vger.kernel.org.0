@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 727102977D6
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 21:46:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63F4F29780A
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 22:05:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1754933AbgJWTq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 15:46:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50870 "EHLO
+        id S1755290AbgJWUDh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 16:03:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754901AbgJWTq1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 15:46:27 -0400
-Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F176C0613CE;
-        Fri, 23 Oct 2020 12:46:27 -0700 (PDT)
-Received: by mail-yb1-xb44.google.com with SMTP id f140so2158737ybg.3;
-        Fri, 23 Oct 2020 12:46:27 -0700 (PDT)
+        with ESMTP id S1755282AbgJWUDg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 16:03:36 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CAFBC0613CE;
+        Fri, 23 Oct 2020 13:03:34 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id d15so2165921ybl.10;
+        Fri, 23 Oct 2020 13:03:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=8K+Yumi9kyjveoiqi6yCm6sjzyyeKTQw8sa+wYBvFMo=;
-        b=UnopzMWWSCyXa63QdFguw02OBGdWTikzQkQudqsAMrJnUscWSSlVL12UcCk9TalHc4
-         r1rVyrStj+d4nRjVXCqzgeHNyA8P1DXoLDw+g5k2aqc6JEgRcM6Y8DbwtXcb+r8cAsdQ
-         8NwVZweudhjbO7Jnt78nq3XLaI6JLPi/PGOBq0mS0dFCYg5qRKiou+u+em5UYHOJwcjW
-         +NLeJUhq2WL2Qim97fwCGzNF1tINbLYOp1axLgvVKxxlIpd31LJ0IzUj+SgXF5SFkKL9
-         cxH1mYxVAQRlSLjCkNEJm9bSPEu54qD0FHxXXGMwhrhFhgijFxwm/8i5pr7YGBpKlWGV
-         Yajg==
+        bh=mZMLYvg9F1kA8EipanfdPEqGzP+y+I3fiu8XTpKKgdE=;
+        b=QOXNStIMaB9GXtzVwQ37Hbcr+tAdc4ZxYnpidXkHxA41ypUHS23UsrC/j/DGfIGqyD
+         /aYJ+FfrNXm3ibUQtHBVMdE3dJ3kTcvNbVgACUwW3yK+VlSKLFSsHT4q185EsG3XUw0E
+         xpTs/GsXYLAmjrveERhdHI2+WEtJq0TO6t2gvSUr/bjdL0LDtxMlWDXHAzOTbqnF5Vpu
+         w24Ze4VsshUX8qB9LU0ou3rJio/nnWma5OcrROsooC89lj5Jug2CNjaq9+0vhs2R82Zh
+         ASZftpi/VqA3nxwRnNOYZGkbC9g723PlY6Ru3iv+QlRCLHt0y5/AI3PNrR+Ct2lgO4Z9
+         1v5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=8K+Yumi9kyjveoiqi6yCm6sjzyyeKTQw8sa+wYBvFMo=;
-        b=IJGIZIAedjfhGwXXQ7BN4ngvR2NeY3H5YtVnCUpxRp0pUX8U0kp8OuG8h7V9rlXh05
-         O8+PU80j0W5SPBjAQs8s6LQzkvGRySSH0TXMHGdvFkFttS93xVMRVmdL4f+tDw47QMFL
-         c9FkdbEwwKQUo1lPMfyWycq92ZTCxNmcbtxbadz5SJryai5Hv3OV2ggagL33G5rAcgLw
-         rtNkxdrsHc9kn0/3j2Sv7sWU+8t7F6uyY15dfXNkvCGbFfiq5GP6/YIyfVUSqO5Iy6TN
-         15D6OxV+spXfjtJKKUnw9OBwQmV56Vhj6YuRnqsFWXROrAoUd+1Voh9ae4zr7mAUEgVs
-         33rg==
-X-Gm-Message-State: AOAM532eUw+3oW9Nccrs5O8vvxDT7lrBDBDKIzz8RgVBoW7gwo2RkaX0
-        Gbu6gjDFGGIg+IG7aYapp56Nt9D/wny0RQnstW0=
-X-Google-Smtp-Source: ABdhPJx/dzB7rSkpRF2uaX2RK0YpyYc9XOQ8HwbGIfnAuAF6ycqR7/0I8zKjHkG3TQdzvF4dzym2Ix6k3/a5rAqToZc=
-X-Received: by 2002:a25:3443:: with SMTP id b64mr5587652yba.510.1603482386320;
- Fri, 23 Oct 2020 12:46:26 -0700 (PDT)
+        bh=mZMLYvg9F1kA8EipanfdPEqGzP+y+I3fiu8XTpKKgdE=;
+        b=cTk/DDNGSfsOw9PJabvXrNV4oxWMegbWeYqapXB2HoITkbEPS4k1/K3aic3B18rys5
+         aeKKkvfOK+qKjurvXLelZ1YjYHIPB+qjv08bOlK/WUkW+2H8h1L8sa1H6R4UD5Mx2fg6
+         9N94jLIePtFVw59k0BQgZn68c0UFLApCFZHDOkCDpNelAui+X/4MmNvqNxpb9ID9uqrh
+         4Y7FtVMaiMbcs7G6dz19+2lDvTB/KwNK6vmqwybJz7OHWayol/+Cycr76FnLPsj3MXja
+         TC6RcD11gAvdQjbcXKRR4ciFDx0p8v87lhqos9Ime1NCUbH312BOFp4QZAruuvWWpY+h
+         RzMA==
+X-Gm-Message-State: AOAM532uh4Rw0yb/BRRA4HBOkrNAVldtnZUXzekvpWTLCXGqhDnjepFU
+        L/2l+pqCIxQv9XRYfMA5k/oNWbv7MBtFPbd0Ihg=
+X-Google-Smtp-Source: ABdhPJwhKtokx5ScT41RnoaZpbdTI2gJwWhVwhC3teiUlXTWYo8+14omDhJS3D37/9VrOqPVHC0aF52fipGxWeQes+I=
+X-Received: by 2002:a25:cb10:: with SMTP id b16mr5904989ybg.459.1603483413548;
+ Fri, 23 Oct 2020 13:03:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20201022082138.2322434-1-jolsa@kernel.org> <20201022082138.2322434-9-jolsa@kernel.org>
-In-Reply-To: <20201022082138.2322434-9-jolsa@kernel.org>
+References: <20201022082138.2322434-1-jolsa@kernel.org> <20201022082138.2322434-10-jolsa@kernel.org>
+In-Reply-To: <20201022082138.2322434-10-jolsa@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 23 Oct 2020 12:46:15 -0700
-Message-ID: <CAEf4BzZ9zwA=SrLTx9JT50OeM6fVPg0Py0Gx+K9ah2we8YtCRA@mail.gmail.com>
-Subject: Re: [RFC bpf-next 08/16] bpf: Use delayed link free in bpf_link_put
+Date:   Fri, 23 Oct 2020 13:03:22 -0700
+Message-ID: <CAEf4Bzb_HPmGSoUX+9+LvSP2Yb95OqEQKtjpMiW1Um-rixAM8Q@mail.gmail.com>
+Subject: Re: [RFC bpf-next 09/16] bpf: Add BPF_TRAMPOLINE_BATCH_ATTACH support
 To:     Jiri Olsa <jolsa@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -70,66 +70,95 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Thu, Oct 22, 2020 at 8:01 AM Jiri Olsa <jolsa@kernel.org> wrote:
 >
-> Moving bpf_link_free call into delayed processing so we don't
-> need to wait for it when releasing the link.
+> Adding BPF_TRAMPOLINE_BATCH_ATTACH support, that allows to attach
+> tracing multiple fentry/fexit pograms to trampolines within one
+> syscall.
 >
-> For example bpf_tracing_link_release could take considerable
-> amount of time in bpf_trampoline_put function due to
-> synchronize_rcu_tasks call.
->
-> It speeds up bpftrace release time in following example:
+> Currently each tracing program is attached in seprate bpf syscall
+> and more importantly by separate register_ftrace_direct call, which
+> registers trampoline in ftrace subsystem. We can save some cycles
+> by simple using its batch variant register_ftrace_direct_ips.
 >
 > Before:
 >
 >  Performance counter stats for './src/bpftrace -ve kfunc:__x64_sys_s*
 >     { printf("test\n"); } i:ms:10 { printf("exit\n"); exit();}' (5 runs):
 >
->      3,290,457,628      cycles:k                                 ( +-  0.27% )
->        933,581,973      cycles:u                                 ( +-  0.20% )
+>      2,199,433,771      cycles:k               ( +-  0.55% )
+>        936,105,469      cycles:u               ( +-  0.37% )
 >
->              50.25 +- 4.79 seconds time elapsed  ( +-  9.53% )
+>              26.48 +- 3.57 seconds time elapsed  ( +- 13.49% )
 >
 > After:
 >
 >  Performance counter stats for './src/bpftrace -ve kfunc:__x64_sys_s*
 >     { printf("test\n"); } i:ms:10 { printf("exit\n"); exit();}' (5 runs):
 >
->      2,535,458,767      cycles:k                                 ( +-  0.55% )
->        940,046,382      cycles:u                                 ( +-  0.27% )
+>      1,456,854,867      cycles:k               ( +-  0.57% )
+>        937,737,431      cycles:u               ( +-  0.13% )
 >
->              33.60 +- 3.27 seconds time elapsed  ( +-  9.73% )
+>              12.44 +- 2.98 seconds time elapsed  ( +- 23.95% )
 >
+> The new BPF_TRAMPOLINE_BATCH_ATTACH syscall command expects
+> following data in union bpf_attr:
+>
+>   struct {
+>           __aligned_u64   in;
+>           __aligned_u64   out;
+>           __u32           count;
+>   } trampoline_batch;
+>
+>   in    - pointer to user space array with file descrptors of loaded bpf
+>           programs to attach
+>   out   - pointer to user space array for resulting link descriptor
+>   count - number of 'in/out' file descriptors
+>
+> Basically the new code gets programs from 'in' file descriptors and
+> attaches them the same way the current code does, apart from the last
+> step that registers probe ip with trampoline. This is done at the end
+> with new register_ftrace_direct_ips function.
+>
+> The resulting link descriptors are written in 'out' array and match
+> 'in' array file descriptors order.
+>
+
+I think this is a pretty hard API to use correctly from user-space.
+Think about all those partially attached and/or partially detached BPF
+programs. And subsequent clean up for them. Also there is nothing even
+close to atomicity, so you might get a spurious invocation a few times
+before batch-attach fails mid-way and the kernel (hopefully) will
+detach those already attached programs in an attempt to clean
+everything up. Debugging and handling that is a big pain for users,
+IMO.
+
+Here's a raw idea, let's think if it would be possible to implement
+something like this. It seems like what you need is to create a set of
+logically-grouped placeholders for multiple functions you are about to
+attach to. Until the BPF program is attached, those placeholders are
+just no-ops (e.g., they might jump to an "inactive" single trampoline,
+which just immediately returns). Then you attach the BPF program
+atomically into a single place, and all those no-op jumps to a
+trampoline start to call the BPF program at the same time. It's not
+strictly atomic, but is much closer in time with each other. Also,
+because it's still a single trampoline, you get a nice mapping to a
+single bpf_link, so detaching is not an issue.
+
+Basically, maybe ftrace subsystem could provide a set of APIs to
+prepare a set of functions to attach to. Then BPF subsystem would just
+do what it does today, except instead of attaching to a specific
+kernel function, it would attach to ftrace's placeholder. I don't know
+anything about ftrace implementation, so this might be far off. But I
+thought that looking at this problem from a bit of a different angle
+would benefit the discussion. Thoughts?
+
+
 > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > ---
->  kernel/bpf/syscall.c | 8 ++------
->  1 file changed, 2 insertions(+), 6 deletions(-)
+>  include/linux/bpf.h      | 15 ++++++-
+>  include/uapi/linux/bpf.h |  7 ++++
+>  kernel/bpf/syscall.c     | 88 ++++++++++++++++++++++++++++++++++++++--
+>  kernel/bpf/trampoline.c  | 69 +++++++++++++++++++++++++++----
+>  4 files changed, 164 insertions(+), 15 deletions(-)
 >
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index 1110ecd7d1f3..61ef29f9177d 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -2346,12 +2346,8 @@ void bpf_link_put(struct bpf_link *link)
->         if (!atomic64_dec_and_test(&link->refcnt))
->                 return;
->
-> -       if (in_atomic()) {
-> -               INIT_WORK(&link->work, bpf_link_put_deferred);
-> -               schedule_work(&link->work);
-> -       } else {
-> -               bpf_link_free(link);
-> -       }
-> +       INIT_WORK(&link->work, bpf_link_put_deferred);
-> +       schedule_work(&link->work);
 
-We just recently reverted this exact change. Doing this makes it
-non-deterministic from user-space POV when the BPF program is
-**actually** detached. This makes user-space programming much more
-complicated and unpredictable. So please don't do this. Let's find
-some other way to speed this up.
-
->  }
->
->  static int bpf_link_release(struct inode *inode, struct file *filp)
-> --
-> 2.26.2
->
+[...]
