@@ -2,72 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F194296DEA
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 13:45:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D84C9296E1A
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 13:59:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S463193AbgJWLpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 07:45:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60348 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S463142AbgJWLpL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 07:45:11 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1ADCC0613CE;
-        Fri, 23 Oct 2020 04:45:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=6lSi9hSUneOKjKoOEI0EQ2kdi/7mfSkeNSqSK8XtkC4=; b=TAYvai1aLUZRqLMGogUsG9bxJ
-        Bg3N5E37TNGkH8pn1Lgko3IhgYJ4Jyj7G621KOm4uV/NR7gSpBRwXlNf2S7pmJrkLh4+rO26e7JLn
-        CELHyb4EyxC5D6TBYdU0ZnLcSkbUGOSt/iEzplsp+7rUeCTJlaeVZANF7KW5oKx5tuHbJYR9fO7by
-        LpsWJrFO4MpjPjIF20JxEMTUX+Bc1wzcQO1KKYG//6mmZAY7ut0QTTHBT17WBiFRk8Jq3Bp4An5/g
-        wB2R7dBtggbb7imRg/tC2rwuFbWIoSC8/BWuIUyPaug3eVkLUPmFYxCJlF882zHEFTINHaXmCH9KM
-        kZVQ58AiA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:49952)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kVvVI-0003Ni-Fu; Fri, 23 Oct 2020 12:45:04 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kVvVG-0008Q5-DT; Fri, 23 Oct 2020 12:45:02 +0100
-Date:   Fri, 23 Oct 2020 12:45:02 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        David Jander <david@protonic.nl>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        mkl@pengutronix.de, Marek Vasut <marex@denx.de>,
-        linux-can@vger.kernel.org
-Subject: Re: [RFC PATCH v1 0/6] add initial CAN PHY support
-Message-ID: <20201023114502.GC1551@shell.armlinux.org.uk>
-References: <20201023105626.6534-1-o.rempel@pengutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201023105626.6534-1-o.rempel@pengutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+        id S463317AbgJWL7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 07:59:12 -0400
+Received: from stargate.chelsio.com ([12.32.117.8]:26732 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S463312AbgJWL7M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 07:59:12 -0400
+Received: from v4.asicdesigners.com (v4.blr.asicdesigners.com [10.193.186.237])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 09NBx7Ve018990;
+        Fri, 23 Oct 2020 04:59:08 -0700
+From:   Raju Rangoju <rajur@chelsio.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, vishal@chelsio.com, rajur@chelsio.com
+Subject: [PATCH net] cxgb4: set up filter action after rewrites
+Date:   Fri, 23 Oct 2020 17:28:52 +0530
+Message-Id: <20201023115852.18262-1-rajur@chelsio.com>
+X-Mailer: git-send-email 2.9.5
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 23, 2020 at 12:56:20PM +0200, Oleksij Rempel wrote:
-> - The upcoming CAN SIC and CAN SIC XL PHYs use a different interface to
->   the CAN controller. This means the controller needs to know which type
->   of PHY is attached to configure the interface in the correct mode. Use
->   PHY link for that, too.
+The current code sets up the filter action field before
+rewrites are set up. When the action 'switch' is used
+with rewrites, this may result in initial few packets
+that get switched out don't have rewrites applied
+on them.
 
-Is this dynamic in some form?
+So, make sure filter action is set up along with rewrites
+or only after everything else is set up for rewrites.
 
+Fixes: 12b276fbf6e0 ("cxgb4: add support to create hash filters")
+Signed-off-by: Raju Rangoju <rajur@chelsio.com>
+---
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c | 56 +++++++++++------------
+ drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h       |  4 ++
+ 2 files changed, 31 insertions(+), 29 deletions(-)
+
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
+index 6ec5f2f26f05..4e55f7081644 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c
+@@ -145,13 +145,13 @@ static int configure_filter_smac(struct adapter *adap, struct filter_entry *f)
+ 	int err;
+ 
+ 	/* do a set-tcb for smac-sel and CWR bit.. */
+-	err = set_tcb_tflag(adap, f, f->tid, TF_CCTRL_CWR_S, 1, 1);
+-	if (err)
+-		goto smac_err;
+-
+ 	err = set_tcb_field(adap, f, f->tid, TCB_SMAC_SEL_W,
+ 			    TCB_SMAC_SEL_V(TCB_SMAC_SEL_M),
+ 			    TCB_SMAC_SEL_V(f->smt->idx), 1);
++	if (err)
++		goto smac_err;
++
++	err = set_tcb_tflag(adap, f, f->tid, TF_CCTRL_CWR_S, 1, 1);
+ 	if (!err)
+ 		return 0;
+ 
+@@ -862,6 +862,7 @@ int set_filter_wr(struct adapter *adapter, int fidx)
+ 		      FW_FILTER_WR_DIRSTEERHASH_V(f->fs.dirsteerhash) |
+ 		      FW_FILTER_WR_LPBK_V(f->fs.action == FILTER_SWITCH) |
+ 		      FW_FILTER_WR_DMAC_V(f->fs.newdmac) |
++		      FW_FILTER_WR_SMAC_V(f->fs.newsmac) |
+ 		      FW_FILTER_WR_INSVLAN_V(f->fs.newvlan == VLAN_INSERT ||
+ 					     f->fs.newvlan == VLAN_REWRITE) |
+ 		      FW_FILTER_WR_RMVLAN_V(f->fs.newvlan == VLAN_REMOVE ||
+@@ -879,7 +880,7 @@ int set_filter_wr(struct adapter *adapter, int fidx)
+ 		 FW_FILTER_WR_OVLAN_VLD_V(f->fs.val.ovlan_vld) |
+ 		 FW_FILTER_WR_IVLAN_VLDM_V(f->fs.mask.ivlan_vld) |
+ 		 FW_FILTER_WR_OVLAN_VLDM_V(f->fs.mask.ovlan_vld));
+-	fwr->smac_sel = 0;
++	fwr->smac_sel = f->smt->idx;
+ 	fwr->rx_chan_rx_rpl_iq =
+ 		htons(FW_FILTER_WR_RX_CHAN_V(0) |
+ 		      FW_FILTER_WR_RX_RPL_IQ_V(adapter->sge.fw_evtq.abs_id));
+@@ -1323,11 +1324,8 @@ static void mk_act_open_req6(struct filter_entry *f, struct sk_buff *skb,
+ 			    TX_QUEUE_V(f->fs.nat_mode) |
+ 			    T5_OPT_2_VALID_F |
+ 			    RX_CHANNEL_V(cxgb4_port_e2cchan(f->dev)) |
+-			    CONG_CNTRL_V((f->fs.action == FILTER_DROP) |
+-					 (f->fs.dirsteer << 1)) |
+ 			    PACE_V((f->fs.maskhash) |
+-				   ((f->fs.dirsteerhash) << 1)) |
+-			    CCTRL_ECN_V(f->fs.action == FILTER_SWITCH));
++				   ((f->fs.dirsteerhash) << 1)));
+ }
+ 
+ static void mk_act_open_req(struct filter_entry *f, struct sk_buff *skb,
+@@ -1363,11 +1361,8 @@ static void mk_act_open_req(struct filter_entry *f, struct sk_buff *skb,
+ 			    TX_QUEUE_V(f->fs.nat_mode) |
+ 			    T5_OPT_2_VALID_F |
+ 			    RX_CHANNEL_V(cxgb4_port_e2cchan(f->dev)) |
+-			    CONG_CNTRL_V((f->fs.action == FILTER_DROP) |
+-					 (f->fs.dirsteer << 1)) |
+ 			    PACE_V((f->fs.maskhash) |
+-				   ((f->fs.dirsteerhash) << 1)) |
+-			    CCTRL_ECN_V(f->fs.action == FILTER_SWITCH));
++				   ((f->fs.dirsteerhash) << 1)));
+ }
+ 
+ static int cxgb4_set_hash_filter(struct net_device *dev,
+@@ -2039,6 +2034,20 @@ void hash_filter_rpl(struct adapter *adap, const struct cpl_act_open_rpl *rpl)
+ 			}
+ 			return;
+ 		}
++		switch (f->fs.action) {
++		case FILTER_PASS:
++			if (f->fs.dirsteer)
++				set_tcb_tflag(adap, f, tid,
++					      TF_DIRECT_STEER_S, 1, 1);
++			break;
++		case FILTER_DROP:
++			set_tcb_tflag(adap, f, tid, TF_DROP_S, 1, 1);
++			break;
++		case FILTER_SWITCH:
++			set_tcb_tflag(adap, f, tid, TF_LPBK_S, 1, 1);
++			break;
++		}
++
+ 		break;
+ 
+ 	default:
+@@ -2106,22 +2115,11 @@ void filter_rpl(struct adapter *adap, const struct cpl_set_tcb_rpl *rpl)
+ 			if (ctx)
+ 				ctx->result = 0;
+ 		} else if (ret == FW_FILTER_WR_FLT_ADDED) {
+-			int err = 0;
+-
+-			if (f->fs.newsmac)
+-				err = configure_filter_smac(adap, f);
+-
+-			if (!err) {
+-				f->pending = 0;  /* async setup completed */
+-				f->valid = 1;
+-				if (ctx) {
+-					ctx->result = 0;
+-					ctx->tid = idx;
+-				}
+-			} else {
+-				clear_filter(adap, f);
+-				if (ctx)
+-					ctx->result = err;
++			f->pending = 0;  /* async setup completed */
++			f->valid = 1;
++			if (ctx) {
++				ctx->result = 0;
++				ctx->tid = idx;
+ 			}
+ 		} else {
+ 			/* Something went wrong.  Issue a warning about the
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h b/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h
+index 50232e063f49..92473dda55d9 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h
+@@ -50,6 +50,10 @@
+ #define TCB_T_FLAGS_M		0xffffffffffffffffULL
+ #define TCB_T_FLAGS_V(x)	((__u64)(x) << TCB_T_FLAGS_S)
+ 
++#define TF_DROP_S		22
++#define TF_DIRECT_STEER_S	23
++#define TF_LPBK_S		59
++
+ #define TF_CCTRL_ECE_S		60
+ #define TF_CCTRL_CWR_S		61
+ #define TF_CCTRL_RFR_S		62
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.9.5
+
