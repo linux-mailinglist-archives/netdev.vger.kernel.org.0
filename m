@@ -2,75 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 893B2297615
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 19:49:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B21E297617
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 19:49:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1753812AbgJWRs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 13:48:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39740 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S462375AbgJWRs4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Oct 2020 13:48:56 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2E2A021582;
-        Fri, 23 Oct 2020 17:48:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603475335;
-        bh=yB/s/IuPvxvA/D6puPVcHV6lCpGyQvaLhZjmJ20tayI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=k9fHBrAYM+wp3NSCtKkRtPQhXi4dbODGDL1e5+yrI0yvizi07AfTLwsncPus7fsq3
-         PgzedNtYAq/z8dABaFdKA5m0OuRfVF24Yw3iSKjqeu+QWxiEWHLtB6J+olk3nzZOzR
-         okJSUOlRqfDaLjGwcw8+aGODIQel3BFuv/X1NEiQ=
-Date:   Fri, 23 Oct 2020 10:48:53 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Josh Don <joshdon@google.com>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, Xi Wang <xii@google.com>
-Subject: Re: [PATCH 1/3] sched: better handling for busy polling loops
-Message-ID: <20201023104853.55ef1c20@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201023032944.399861-1-joshdon@google.com>
-References: <20201023032944.399861-1-joshdon@google.com>
+        id S1753823AbgJWRtQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 13:49:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60906 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S462542AbgJWRtQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 13:49:16 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D744CC0613CE
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 10:49:15 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id w21so1914749pfc.7
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 10:49:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aV6QdPRmZdiaIywzMHVh9a9OFu0naPJhaN7MVBrt6Zk=;
+        b=rlRYT7G66Se3Zs9EG6j4d0m3AG6IMEO0jzodI46JqSIhgaTimGhtvxfrMi2VfRamYm
+         YiR0weCnfv92Lmf4QVZ4S/r8OhyfhmnIjP7x3koRyQzme6tBEXVRsMXtRxV2g4OvhTKU
+         dfqC7P9uvxU8ao+mKQP+EvNF2orQcwFaQfRwB0qwgiIzlL6NHeTz0fB8zLwS9DTJM5Mb
+         420azfRfH9qh0XyUCjCTPkStdmmA6xyobPPs9UAQ+WibOa9hdN+opDOpGDXWCiqSAKE9
+         qB/kfpsURutS1M5rHCMLScEEs8Db1UB6fCgpqDPLPtX5Pwv19mjCHbUFzXcnnytqPzL4
+         ZT/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aV6QdPRmZdiaIywzMHVh9a9OFu0naPJhaN7MVBrt6Zk=;
+        b=GGoaSYud5kCfsa0ihtn8u9bp3ZEr4Qz394M36PwdODjGA6hq/FylbWE8ttmrZ3I/p0
+         DJouHZRkjzU1xa44PdDk1NsxTj6nL5uVJ1/6Q+DHCq90hK1H77JeQrUiuPYu66LOtL2O
+         p9cjJMb2PJSF24Gko8bJ6KNp13TeDxIH6rV7cccmmr38iPTdwkwZ1IVOJL0Et6JPjqxn
+         Qeq3TyYcq+kSnWDr5b3C+shdlfS1DXDKwzQZSih8IC1huwLy8vV8P+21o2ygvFEHVHTp
+         SNP11EEb2fsmeNzVspbLYhWmOpVPP/tOcGTkU+hWKZ5fpIM/JlUWT3bVLLTZM4OBgxSn
+         zEDg==
+X-Gm-Message-State: AOAM533O264iROC/jzydsO7nGJO4FtPtFI81e6BnGiXrGy9psTUMnGPy
+        o4UDEd41/Y+3ht3YDkxgjGnlAyPEXpA=
+X-Google-Smtp-Source: ABdhPJzV/tSK8Xxkdgcmnjt70RADve4wGoo717321iZEURNHG88sqwZItwcTnkJE90Xd1bh92H/NVQ==
+X-Received: by 2002:a65:508a:: with SMTP id r10mr3067751pgp.307.1603475355304;
+        Fri, 23 Oct 2020 10:49:15 -0700 (PDT)
+Received: from phantasmagoria.svl.corp.google.com ([2620:15c:2c4:201:f693:9fff:feea:f0b9])
+        by smtp.gmail.com with ESMTPSA id b6sm3060679pjq.42.2020.10.23.10.49.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Oct 2020 10:49:14 -0700 (PDT)
+From:   Arjun Roy <arjunroy.kdev@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     arjunroy@google.com, edumazet@google.com, soheil@google.com,
+        ncardwell@google.com
+Subject: [net] tcp: Prevent low rmem stalls with SO_RCVLOWAT.
+Date:   Fri, 23 Oct 2020 10:48:57 -0700
+Message-Id: <20201023174856.200394-1-arjunroy.kdev@gmail.com>
+X-Mailer: git-send-email 2.29.0.rc2.309.g374f81d7ae-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 22 Oct 2020 20:29:42 -0700 Josh Don wrote:
-> Busy polling loops in the kernel such as network socket poll and kvm
-> halt polling have performance problems related to process scheduler load
-> accounting.
-> 
-> Both of the busy polling examples are opportunistic - they relinquish
-> the cpu if another thread is ready to run.
+From: Arjun Roy <arjunroy@google.com>
 
-That makes it sound like the busy poll code is trying to behave like an
-idle task. I thought need_resched() meant we leave when we run out of
-slice, or kernel needs to go through a resched for internal reasons. No?
+With SO_RCVLOWAT, under memory pressure,
+it is possible to enter a state where:
 
-> This design, however, doesn't
-> extend to multiprocessor load balancing very well. The scheduler still
-> sees the busy polling cpu as 100% busy and will be less likely to put
-> another thread on that cpu. In other words, if all cores are 100%
-> utilized and some of them are running real workloads and some others are
-> running busy polling loops, newly woken up threads will not prefer the
-> busy polling cpus. System wide throughput and latency may suffer.
+1. We have not received enough bytes to satisfy SO_RCVLOWAT.
+2. We have not entered buffer pressure (see tcp_rmem_pressure()).
+3. But, we do not have enough buffer space to accept more packets.
 
-IDK how well this extends to networking. Busy polling in networking is
-a conscious trade-off of CPU for latency, if application chooses to
-busy poll (which isn't the default) we should respect that.
+In this case, we advertise 0 rwnd (due to #3) but the application does
+not drain the receive queue (no wakeup because of #1 and #2) so the
+flow stalls.
 
-Is your use case primarily kvm?
+Modify the heuristic for SO_RCVLOWAT so that, if we are advertising
+rwnd<=rcv_mss, force a wakeup to prevent a stall.
+
+Without this patch, setting tcp_rmem to 6143 and disabling TCP
+autotune causes a stalled flow. With this patch, no stall occurs. This
+is with RPC-style traffic with large messages.
+
+Fixes: 03f45c883c6f ("tcp: avoid extra wakeups for SO_RCVLOWAT users")
+Signed-off-by: Arjun Roy <arjunroy@google.com>
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Acked-by: Neal Cardwell <ncardwell@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+
+---
+ net/ipv4/tcp.c       | 2 ++
+ net/ipv4/tcp_input.c | 3 ++-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index de19af65bc70..f605cf87b9be 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -521,6 +521,8 @@ static inline bool tcp_stream_is_readable(const struct tcp_sock *tp,
+ 			return true;
+ 		if (tcp_rmem_pressure(sk))
+ 			return true;
++		if (tcp_receive_window(tp) <= inet_csk(sk)->icsk_ack.rcv_mss)
++			return true;
+ 	}
+ 	if (sk->sk_prot->stream_memory_read)
+ 		return sk->sk_prot->stream_memory_read(sk);
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index d285d67c0ef2..30b450ebaae0 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -5294,7 +5294,8 @@ void tcp_data_ready(struct sock *sk)
+ 	int avail = tp->rcv_nxt - tp->copied_seq;
+ 
+ 	if (avail < sk->sk_rcvlowat && !tcp_rmem_pressure(sk) &&
+-	    !sock_flag(sk, SOCK_DONE))
++	    !sock_flag(sk, SOCK_DONE) &&
++	    tcp_receive_window(tp) > inet_csk(sk)->icsk_ack.rcv_mss)
+ 		return;
+ 
+ 	DIRECT_CALL(sock, sk_data_ready, sk->sk_data_ready, sk);
+-- 
+2.29.0.rc2.309.g374f81d7ae-goog
+
