@@ -2,106 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D377D297053
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 15:22:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF99D296FDC
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 15:05:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S464582AbgJWNWk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 09:22:40 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:36553 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2439273AbgJWNWj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 09:22:39 -0400
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.nyi.internal (Postfix) with ESMTP id 949CB5C017C;
-        Fri, 23 Oct 2020 09:22:38 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Fri, 23 Oct 2020 09:22:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bernat.ch; h=
-        from:to:cc:subject:references:date:in-reply-to:message-id
-        :mime-version:content-type:content-transfer-encoding; s=fm1; bh=
-        MGk7O0lzZXLldInFb/fhg44cUCyDne/PWofmN5A2z+g=; b=YPGHG9kZUixCvmmY
-        WZcXpPoFQsukF+/nOJdiI9STOTFC3XL9UvbTJp94UlWeGIfqinpbvaDyO7peKstX
-        wft8bA7PSuGz8Al7x7SZPvBzgvSlus+Z2RdrmRnUOAloxAEBwfMd/cHqvsscXlOs
-        wgcKnbYI+Ua6B1HO1ooimilQNCbFsqU+655aAsvoD7CrBANLGZZBUsJzXrIt71xj
-        nQiM1cndrfUxIy1C96hH6Ud3DbJKPqOaf3SgWpVdRp5D5Cd4aYQ09/K/0GoXq/Y9
-        PbJg4fRiR4Q1XJ/G4sFk9vBmRFJOT6rpgks/+MPY8b1yFQyfdWkbdN4fhEf6wyuM
-        J+IhXQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=MGk7O0lzZXLldInFb/fhg44cUCyDne/PWofmN5A2z
-        +g=; b=mSXtSKDFmN+x+in6n3r37vZihW9kJBofGEkNJFf17OdR7IkVrks52Y+US
-        3tKC4PiVqPdVumAX+2Sp1jSxIp9EOadpfZ5xv+kyDib4hKD7ijXmOkixoCjCNCu3
-        4DXXYCOX1W/CTcveDh2YZrtxfcgd1D9VqnR9gDwzmvesuObvt3mhQWCJZ3bx9hMS
-        3sBxIoL1OGwZV0LBQ7gDLL+4OMGYrK7RCQ/Om9o9kmi+lP0wG2dmJDTLYE4KUfJl
-        jotBXUHsOLzz3swc9Dd7FaDVfhDUTobc/UTnm3HDOSoeDKFm99IFyTenkdYsslAu
-        TJ3JezmQkFuaqx5f3WLxl4a0mdgmg==
-X-ME-Sender: <xms:HdmSX0AQ-sRkvFIDwxfTviMEovLTYDTkcovYSC6CQ9wk8I4Pl_xNxg>
-    <xme:HdmSX2iHCEzM7EwUnSo3FWUxLp3-K9n-c3GyFqHyz2m2SHpYjtdYDA0neRA4Mvl4O
-    GYR6ai-wTkSKhcLoZg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrkedtgdeifecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefhvffufhffjgfkfgggtgfgsehtkeertddtreejnecuhfhrohhmpeggihhntggv
-    nhhtuceuvghrnhgrthcuoehvihhntggvnhhtsegsvghrnhgrthdrtghhqeenucggtffrrg
-    htthgvrhhnpeduueevgeegtdevuddujefgieffieevudeivdejvddufeeltefgfedvhfek
-    tdeijeenucfkphepkedvrdduvdegrddvudekrdegheenucevlhhushhtvghrufhiiigvpe
-    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehvihhntggvnhhtsegsvghrnhgrthdrtghh
-X-ME-Proxy: <xmx:HdmSX3lviQQEwHZW34PKgt6OdZ_If6xGUTtbPmmoYHPgHGFQVb92Rw>
-    <xmx:HdmSX6yYGl-IeKOkBJU_XYbUeWQepDcotnE-23ywuTsB2kU8aL9Zcw>
-    <xmx:HdmSX5RNUYbJI8jMlxtL2zoEhMqRZQjYGJpwGWatv7BKk3sAthuJQw>
-    <xmx:HtmSX4KNc8ealzpYSAvovAnziGEeyg03bUy4ClrwNO1vf0LYh3pK_A>
-Received: from neo.luffy.cx (lfbn-idf1-1-134-45.w82-124.abo.wanadoo.fr [82.124.218.45])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 3D77A3064674;
-        Fri, 23 Oct 2020 09:22:37 -0400 (EDT)
-Received: by neo.luffy.cx (Postfix, from userid 500)
-        id 3F35F505; Fri, 23 Oct 2020 12:02:20 +0200 (CEST)
-From:   Vincent Bernat <vincent@bernat.ch>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
-        Laurent Fasnacht <fasnacht@protonmail.ch>
-Subject: Re: [PATCH net-next v2] net: core: enable SO_BINDTODEVICE for
- non-root users
-References: <20200331132009.1306283-1-vincent@bernat.ch>
-        <20200402.174735.1088204254915987225.davem@davemloft.net>
-Date:   Fri, 23 Oct 2020 12:02:20 +0200
-In-Reply-To: <20200402.174735.1088204254915987225.davem@davemloft.net> (David
-        Miller's message of "Thu, 02 Apr 2020 17:47:35 -0700 (PDT)")
-Message-ID: <m37drhs1jn.fsf@bernat.ch>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        id S464223AbgJWNFG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 09:05:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44556 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S464218AbgJWNFD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 09:05:03 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEB6BC0613CE
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 06:05:02 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kVwkO-0006S7-HF; Fri, 23 Oct 2020 15:04:44 +0200
+Received: from [IPv6:2a03:f580:87bc:d400:82a9:7e36:5f38:a03b] (unknown [IPv6:2a03:f580:87bc:d400:82a9:7e36:5f38:a03b])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 1DFD75805EF;
+        Fri, 23 Oct 2020 13:04:39 +0000 (UTC)
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, kernel@pengutronix.de,
+        David Jander <david@protonic.nl>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+References: <20201023105626.6534-1-o.rempel@pengutronix.de>
+ <20201023114502.GC1551@shell.armlinux.org.uk>
+ <043b37a0-5aa4-0311-a3f4-09c61ad20671@pengutronix.de>
+ <20201023122224.GD1551@shell.armlinux.org.uk>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Subject: Re: [RFC PATCH v1 0/6] add initial CAN PHY support
+Message-ID: <ac4ff09b-621f-6150-1681-e45371c7887a@pengutronix.de>
+Date:   Fri, 23 Oct 2020 15:04:35 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201023122224.GD1551@shell.armlinux.org.uk>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="hKtHScWuLtkFnWXE18jN68oAbxVj3ItBi"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
- ❦  2 avril 2020 17:47 -07, David Miller:
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--hKtHScWuLtkFnWXE18jN68oAbxVj3ItBi
+Content-Type: multipart/mixed; boundary="3OLTVDlv0DA3ZgGFFIQO6syKZNzhwIBbQ";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc: Oleksij Rempel <o.rempel@pengutronix.de>, Marek Vasut <marex@denx.de>,
+ Andrew Lunn <andrew@lunn.ch>, Florian Fainelli <f.fainelli@gmail.com>,
+ Oliver Hartkopp <socketcan@hartkopp.net>, linux-kernel@vger.kernel.org,
+ linux-can@vger.kernel.org, netdev@vger.kernel.org, kernel@pengutronix.de,
+ David Jander <david@protonic.nl>, Jakub Kicinski <kuba@kernel.org>,
+ "David S. Miller" <davem@davemloft.net>,
+ Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <ac4ff09b-621f-6150-1681-e45371c7887a@pengutronix.de>
+Subject: Re: [RFC PATCH v1 0/6] add initial CAN PHY support
+References: <20201023105626.6534-1-o.rempel@pengutronix.de>
+ <20201023114502.GC1551@shell.armlinux.org.uk>
+ <043b37a0-5aa4-0311-a3f4-09c61ad20671@pengutronix.de>
+ <20201023122224.GD1551@shell.armlinux.org.uk>
+In-Reply-To: <20201023122224.GD1551@shell.armlinux.org.uk>
 
->> Currently, SO_BINDTODEVICE requires CAP_NET_RAW. This change allows a
->> non-root user to bind a socket to an interface if it is not already
->> bound.
->  ...
->
-> Ok I'm convinced now, thanks for your patience.
+--3OLTVDlv0DA3ZgGFFIQO6syKZNzhwIBbQ
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-I've got some user feedback about this patch. I didn't think the patch
-would allow to circumvent routing policies on most common setups, but
-VPN may setup a default route with a lower metric and an application may
-(on purpose or by accident) use SO_BINDTODEVICE to circumvent the lower
-metric route:
+On 10/23/20 2:22 PM, Russell King - ARM Linux admin wrote:
+> On Fri, Oct 23, 2020 at 02:14:09PM +0200, Marc Kleine-Budde wrote:
+>> On 10/23/20 1:45 PM, Russell King - ARM Linux admin wrote:
+>>> On Fri, Oct 23, 2020 at 12:56:20PM +0200, Oleksij Rempel wrote:
+>>>> - The upcoming CAN SIC and CAN SIC XL PHYs use a different interface=
+ to
+>>>>   the CAN controller. This means the controller needs to know which =
+type
+>>>>   of PHY is attached to configure the interface in the correct mode.=
+ Use
+>>>>   PHY link for that, too.
+>>>
+>>> Is this dynamic in some form?
+>>
+>> There isn't any CAN SIC transceivers out there yet. I suspect there wi=
+ll be no
+>> auto detection possible, so we would describe the type of the attached=
 
-default via 10.81.0.1 dev tun0 proto static metric 50
-default via 192.168.122.1 dev enp1s0 proto dhcp metric 100
+>> transceiver via device tree.
+>>
+>> In the future I can think of some devices that have a MUX and use the =
+a classic
+>> transceiver (CAN high-speed) for legacy deployments and CAN SIC transc=
+eivers if
+>> connected to a "modern" CAN bus.
+>>
+>> Someone (i.e. the user or the system integrator) has to configure the =
+MUX to
+>> select the correct transceiver.
+>=20
+> Hmm. So it's static, and described in firmware.
 
-I am wondering if we should revert the patch for 5.10 while we can,
-waiting for a better solution (and breaking people relying on the new
-behavior in 5.9).
+The use case where the system has a MUX (to route the signals to either o=
+ne or
+the other transceiver), the used transceiver would be selected by softwar=
+e.
 
-Then, I can propose a patch with a sysctl to avoid breaking existing
-setups.
--- 
-I must have a prodigious quantity of mind; it takes me as much as a
-week sometimes to make it up.
-		-- Mark Twain, "The Innocents Abroad"
+It's static in that sense, as there is no hotplug of unknown devices, no-=
+one
+will swap the CAN-SPF+ module against a CAN-SIC-SFP+ module :)
+
+> So, that brings me to
+> the obvious question: why use phylink for this rather than the phylib
+> APIs?
+
+Oleksij is looking at code....
+
+> phylink isn't obsoleting phylib in any way, and phylib does support
+> the ability for the PHY to change its MAC side interface (if it didn't
+> then PHYs such as 88x3310 and similar wouldn't be usable.)
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--3OLTVDlv0DA3ZgGFFIQO6syKZNzhwIBbQ--
+
+--hKtHScWuLtkFnWXE18jN68oAbxVj3ItBi
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl+S1OMACgkQqclaivrt
+76ndpgf/TAN8nM7bjceQkKvTCKh7qMCg2ErfGrVtfW70xcrPgvfAZxlpIoVqv3KO
+XWVUB1doyoJuZricR8DJbAGuLXgld8hJ1mLPL7rTz9g9H5zzIHn2nuDzZ6skuLH+
+6hZgvD2rF3YXEFbrQ7KeDl1fTHW1gzgt7hx9RvJRV4y+rG4hFMDSHq86KmjMaFka
+zHbAEvXF5LyIrvcQodv+cSDh7DaZGp05ulUZgRCTGVAtedt7RH484M1FnABi81iv
+bw5KQFij/MQXFy1cR+Lx5u3Jmlet9YYKKgiCgXcT7pb/I2iTNEYundxcdlTAzhG5
+9E/fQtxHePY6hI5Y2YLA1iT3Ix3dtQ==
+=yS2f
+-----END PGP SIGNATURE-----
+
+--hKtHScWuLtkFnWXE18jN68oAbxVj3ItBi--
