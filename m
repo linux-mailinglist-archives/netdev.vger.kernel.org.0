@@ -2,98 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0212A297191
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 16:46:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 496752971C3
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 16:55:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S465272AbgJWOqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 10:46:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60908 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S375361AbgJWOqp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Oct 2020 10:46:45 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E45AF21527;
-        Fri, 23 Oct 2020 14:46:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603464403;
-        bh=LtX8NeyP+cZ+2j1IkUU1onEVvrv3sB8QAV9FejdlLLQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=n+Z3zXp7hD62WA2GyjU1CFbNrrDqUUtJgO3Hhs0qmS6IRk1kCefdPKHlJkGJDQDby
-         tb8m505yCaidWoXteLvLB2qPUN8tGHdSulV4hyYT/Cc4MZvzeSAaCs/I78FB9ZMO1G
-         o8KazfPZPnsdksdQupxOqy9g0C+sIFUJot2idFhI=
-Date:   Fri, 23 Oct 2020 16:47:18 +0200
-From:   'Greg KH' <gregkh@linuxfoundation.org>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     'David Hildenbrand' <david@redhat.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Christoph Hellwig <hch@lst.de>,
-        "kernel-team@android.com" <kernel-team@android.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jens Axboe <axboe@kernel.dk>, Arnd Bergmann <arnd@arndb.de>,
-        David Howells <dhowells@redhat.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-aio@kvack.org" <linux-aio@kvack.org>,
-        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
-        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>
-Subject: Re: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
- rw_copy_check_uvector() into lib/iov_iter.c"
-Message-ID: <20201023144718.GA2525489@kroah.com>
-References: <5fd6003b-55a6-2c3c-9a28-8fd3a575ca78@redhat.com>
- <20201022104805.GA1503673@kroah.com>
- <20201022121849.GA1664412@kroah.com>
- <98d9df88-b7ef-fdfb-7d90-2fa7a9d7bab5@redhat.com>
- <20201022125759.GA1685526@kroah.com>
- <20201022135036.GA1787470@kroah.com>
- <134f162d711d466ebbd88906fae35b33@AcuMS.aculab.com>
- <935f7168-c2f5-dd14-7124-412b284693a2@redhat.com>
- <999e2926-9a75-72fd-007a-1de0af341292@redhat.com>
- <35d0ec90ef4f4a35a75b9df7d791f719@AcuMS.aculab.com>
+        id S465389AbgJWOzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 10:55:44 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:40800 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S461140AbgJWOzo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 10:55:44 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@nvidia.com)
+        with SMTP; 23 Oct 2020 17:55:42 +0300
+Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 09NEtgp3012350;
+        Fri, 23 Oct 2020 17:55:42 +0300
+From:   Vlad Buslov <vladbu@nvidia.com>
+To:     dsahern@gmail.com, stephen@networkplumber.org
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, ivecera@redhat.com,
+        vlad@buslov.dev, Vlad Buslov <vladbu@nvidia.com>
+Subject: [PATCH iproute2-next v4 0/2] Implement filter terse dump mode support
+Date:   Fri, 23 Oct 2020 17:55:34 +0300
+Message-Id: <20201023145536.27578-1-vladbu@nvidia.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <35d0ec90ef4f4a35a75b9df7d791f719@AcuMS.aculab.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 23, 2020 at 02:39:24PM +0000, David Laight wrote:
-> From: David Hildenbrand
-> > Sent: 23 October 2020 15:33
-> ...
-> > I just checked against upstream code generated by clang 10 and it
-> > properly discards the upper 32bit via a mov w23 w2.
-> > 
-> > So at least clang 10 indeed properly assumes we could have garbage and
-> > masks it off.
-> > 
-> > Maybe the issue is somewhere else, unrelated to nr_pages ... or clang 11
-> > behaves differently.
-> 
-> We'll need the disassembly from a failing kernel image.
-> It isn't that big to hand annotate.
+Implement support for terse dump mode which provides only essential
+classifier/action info (handle, stats, cookie, etc.). Use new
+TCA_DUMP_FLAGS_TERSE flag to prevent copying of unnecessary data from
+kernel.
 
-I've worked around the merge at the moment in the android tree, but it
-is still quite reproducable, and will try to get a .o file to
-disassemble on Monday or so...
+Vlad Buslov (2):
+  tc: skip actions that don't have options attribute when printing
+  tc: implement support for terse dump
 
-thanks,
+ man/man8/tc.8     | 6 ++++++
+ tc/m_bpf.c        | 4 ++--
+ tc/m_connmark.c   | 4 ++--
+ tc/m_csum.c       | 4 ++--
+ tc/m_ct.c         | 5 ++---
+ tc/m_ctinfo.c     | 4 ++--
+ tc/m_gact.c       | 4 ++--
+ tc/m_ife.c        | 4 ++--
+ tc/m_ipt.c        | 2 +-
+ tc/m_mirred.c     | 4 ++--
+ tc/m_mpls.c       | 4 ++--
+ tc/m_nat.c        | 4 ++--
+ tc/m_pedit.c      | 4 ++--
+ tc/m_sample.c     | 4 ++--
+ tc/m_simple.c     | 2 +-
+ tc/m_skbedit.c    | 5 ++---
+ tc/m_skbmod.c     | 2 +-
+ tc/m_tunnel_key.c | 5 ++---
+ tc/m_vlan.c       | 4 ++--
+ tc/m_xt.c         | 2 +-
+ tc/m_xt_old.c     | 2 +-
+ tc/tc.c           | 6 +++++-
+ tc/tc_filter.c    | 9 +++++++++
+ 23 files changed, 55 insertions(+), 39 deletions(-)
 
-greg k-h
+-- 
+2.21.0
+
