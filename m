@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FD892967F8
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 02:35:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 466DE296807
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 02:36:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S373847AbgJWAfZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 20:35:25 -0400
+        id S373867AbgJWAfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 20:35:30 -0400
 Received: from mga11.intel.com ([192.55.52.93]:43009 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S373834AbgJWAfY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Oct 2020 20:35:24 -0400
-IronPort-SDR: RO3Isg84vrC7rLnUSu08y0dXQ3kAxHKrBWo6oW0Z5B5JnCg+RtkmGmCvjR8qne+3mbBjPCKDZc
- MqeDpUy2p+Zg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9782"; a="164118636"
+        id S2901453AbgJWAfZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Oct 2020 20:35:25 -0400
+IronPort-SDR: ipZCRaVb0HyUKR/nBmK+ubIZd6lg0N471x1LwEXRaGGwp2Am5kgvc0OofDZKi2J6CsRe/8sjky
+ PPxj+thj8QlA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9782"; a="164118638"
 X-IronPort-AV: E=Sophos;i="5.77,404,1596524400"; 
-   d="scan'208";a="164118636"
+   d="scan'208";a="164118638"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2020 17:35:23 -0700
-IronPort-SDR: dLZnqUDB1gNZ97cv3uf77piPNycszvInACaWTwTUu9UWqLu6HPzAGC2ioj7eDC8nux9gOpipBj
- pUIZ9mjzoNAQ==
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2020 17:35:24 -0700
+IronPort-SDR: jwomrjVvVE5G/79P2w4YBk87r4nYs91p2cM+SBam5ByjQI+Bx2iYQ6wp7MdCn8KyycWte+KQts
+ o7a3TZATlo+Q==
 X-IronPort-AV: E=Sophos;i="5.77,404,1596524400"; 
-   d="scan'208";a="302505781"
+   d="scan'208";a="302505788"
 Received: from dmert-dev.jf.intel.com ([10.166.241.5])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2020 17:35:22 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Oct 2020 17:35:23 -0700
 From:   Dave Ertman <david.m.ertman@intel.com>
 To:     alsa-devel@alsa-project.org
 Cc:     tiwai@suse.de, broonie@kernel.org, linux-rdma@vger.kernel.org,
@@ -36,9 +36,9 @@ Cc:     tiwai@suse.de, broonie@kernel.org, linux-rdma@vger.kernel.org,
         parav@mellanox.com, shiraz.saleem@intel.com,
         dan.j.williams@intel.com, kiran.patil@intel.com,
         linux-kernel@vger.kernel.org, leonro@nvidia.com
-Subject: [PATCH v3 01/10] Add auxiliary bus support
-Date:   Thu, 22 Oct 2020 17:33:29 -0700
-Message-Id: <20201023003338.1285642-2-david.m.ertman@intel.com>
+Subject: [PATCH v3 02/10] ASoC: SOF: Introduce descriptors for SOF client
+Date:   Thu, 22 Oct 2020 17:33:30 -0700
+Message-Id: <20201023003338.1285642-3-david.m.ertman@intel.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201023003338.1285642-1-david.m.ertman@intel.com>
 References: <20201023003338.1285642-1-david.m.ertman@intel.com>
@@ -48,727 +48,330 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for the Auxiliary Bus, auxiliary_device and auxiliary_driver.
-It enables drivers to create an auxiliary_device and bind an
-auxiliary_driver to it.
+From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
 
-The bus supports probe/remove shutdown and suspend/resume callbacks.
-Each auxiliary_device has a unique string based id; driver binds to
-an auxiliary_device based on this id through the bus.
+A client in the SOF (Sound Open Firmware) context is a
+device that needs to communicate with the DSP via IPC
+messages. The SOF core is responsible for serializing the
+IPC messages to the DSP from the different clients. One
+example of an SOF client would be an IPC test client that
+floods the DSP with test IPC messages to validate if the
+serialization works as expected. Multi-client support will
+also add the ability to split the existing audio cards
+into multiple ones, so as to e.g. to deal with HDMI with a
+dedicated client instead of adding HDMI to all cards.
 
-Co-developed-by: Kiran Patil <kiran.patil@intel.com>
-Signed-off-by: Kiran Patil <kiran.patil@intel.com>
-Co-developed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+This patch introduces descriptors for SOF client driver
+and SOF client device along with APIs for registering
+and unregistering a SOF client driver, sending IPCs from
+a client device and accessing the SOF core debugfs root entry.
+
+Along with this, add a couple of new members to struct
+snd_sof_dev that will be used for maintaining the list of
+clients.
+
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
 Co-developed-by: Fred Oh <fred.oh@linux.intel.com>
 Signed-off-by: Fred Oh <fred.oh@linux.intel.com>
-Co-developed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Shiraz Saleem <shiraz.saleem@intel.com>
-Reviewed-by: Parav Pandit <parav@mellanox.com>
-Reviewed-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Dave Ertman <david.m.ertman@intel.com>
 ---
- Documentation/driver-api/auxiliary_bus.rst | 228 ++++++++++++++++++
- Documentation/driver-api/index.rst         |   1 +
- drivers/base/Kconfig                       |   3 +
- drivers/base/Makefile                      |   1 +
- drivers/base/auxiliary.c                   | 267 +++++++++++++++++++++
- include/linux/auxiliary_bus.h              |  78 ++++++
- include/linux/mod_devicetable.h            |   8 +
- scripts/mod/devicetable-offsets.c          |   3 +
- scripts/mod/file2alias.c                   |   8 +
- 9 files changed, 597 insertions(+)
- create mode 100644 Documentation/driver-api/auxiliary_bus.rst
- create mode 100644 drivers/base/auxiliary.c
- create mode 100644 include/linux/auxiliary_bus.h
+ sound/soc/sof/Kconfig      |  19 ++++++
+ sound/soc/sof/Makefile     |   3 +
+ sound/soc/sof/core.c       |   2 +
+ sound/soc/sof/sof-client.c | 115 +++++++++++++++++++++++++++++++++++++
+ sound/soc/sof/sof-client.h |  66 +++++++++++++++++++++
+ sound/soc/sof/sof-priv.h   |   9 +++
+ 6 files changed, 214 insertions(+)
+ create mode 100644 sound/soc/sof/sof-client.c
+ create mode 100644 sound/soc/sof/sof-client.h
 
-diff --git a/Documentation/driver-api/auxiliary_bus.rst b/Documentation/driver-api/auxiliary_bus.rst
-new file mode 100644
-index 000000000000..500f29692c81
---- /dev/null
-+++ b/Documentation/driver-api/auxiliary_bus.rst
-@@ -0,0 +1,228 @@
-+.. SPDX-License-Identifier: GPL-2.0-only
-+
-+=============
-+Auxiliary Bus
-+=============
-+
-+In some subsystems, the functionality of the core device (PCI/ACPI/other) is
-+too complex for a single device to be managed as a monolithic block or a part of
-+the functionality needs to be exposed to a different subsystem.  Splitting the
-+functionality into smaller orthogonal devices would make it easier to manage
-+data, power management and domain-specific interaction with the hardware. A key
-+requirement for such a split is that there is no dependency on a physical bus,
-+device, register accesses or regmap support. These individual devices split from
-+the core cannot live on the platform bus as they are not physical devices that
-+are controlled by DT/ACPI. The same argument applies for not using MFD in this
-+scenario as MFD relies on individual function devices being physical devices.
-+
-+An example for this kind of requirement is the audio subsystem where a single
-+IP is handling multiple entities such as HDMI, Soundwire, local devices such as
-+mics/speakers etc. The split for the core's functionality can be arbitrary or
-+be defined by the DSP firmware topology and include hooks for test/debug. This
-+allows for the audio core device to be minimal and focused on hardware-specific
-+control and communication.
-+
-+The auxiliary bus is intended to be minimal, generic and avoid domain-specific
-+assumptions. Each auxiliary_device represents a part of its parent
-+functionality. The generic behavior can be extended and specialized as needed
-+by encapsulating an auxiliary_device within other domain-specific structures and
-+the use of .ops callbacks. Devices on the auxiliary bus do not share any
-+structures and the use of a communication channel with the parent is
-+domain-specific.
-+
-+When Should the Auxiliary Bus Be Used
-+=====================================
-+
-+The auxiliary bus is to be used when a driver and one or more kernel modules,
-+who share a common header file with the driver, need a mechanism to connect and
-+provide access to a shared object allocated by the auxiliary_device's
-+registering driver.  The registering driver for the auxiliary_device(s) and the
-+kernel module(s) registering auxiliary_drivers can be from the same subsystem,
-+or from multiple subsystems.
-+
-+The emphasis here is on a common generic interface that keeps subsystem
-+customization out of the bus infrastructure.
-+
-+One example could be a multi-port PCI network device that is rdma-capable and
-+needs to export this functionality and attach to an rdma driver in another
-+subsystem.  The PCI driver will allocate and register an auxiliary_device for
-+each physical function on the NIC.  The rdma driver will register an
-+auxiliary_driver that will be matched with and probed for each of these
-+auxiliary_devices.  This will give the rdma driver access to the shared data/ops
-+in the PCI drivers shared object to establish a connection with the PCI driver.
-+
-+Another use case is for the PCI device to be split out into multiple sub
-+functions.  For each sub function an auxiliary_device will be created.  A PCI
-+sub function driver will bind to such devices that will create its own one or
-+more class devices.  A PCI sub function auxiliary device will likely be
-+contained in a struct with additional attributes such as user defined sub
-+function number and optional attributes such as resources and a link to the
-+parent device.  These attributes could be used by systemd/udev; and hence should
-+be initialized before a driver binds to an auxiliary_device.
-+
-+Auxiliary Device
-+================
-+
-+An auxiliary_device is created and registered to represent a part of its parent
-+device's functionality. It is given a name that, combined with the registering
-+drivers KBUILD_MODNAME, creates a match_name that is used for driver binding,
-+and an id that combined with the match_name provide a unique name to register
-+with the bus subsystem.
-+
-+Registering an auxiliary_device is a two-step process.  First you must call
-+auxiliary_device_init(), which will check several aspects of the
-+auxiliary_device struct and perform a device_initialize().  After this step
-+completes, any error state must have a call to auxiliary_device_unin() in its
-+resolution path.  The second step in registering an auxiliary_device is to
-+perform a call to auxiliary_device_add(), which will set the name of the device
-+and add the device to the bus.
-+
-+Unregistering an auxiliary_device is also a two-step process to mirror the
-+register process.  First will be a call to auxiliary_device_delete(), then
-+followed by a call to auxiliary_device_unin().
-+
-+.. code-block:: c
-+
-+	struct auxiliary_device {
-+		struct device dev;
-+                const char *name;
-+		u32 id;
-+	};
-+
-+If two auxiliary_devices both with a match_name "mod.foo" are registered onto
-+the bus, they must have unique id values (e.g. "x" and "y") so that the
-+registered devices names will be "mod.foo.x" and "mod.foo.y".  If match_name +
-+id are not unique, then the device_add will fail and generate an error message.
-+
-+The auxiliary_device.dev.type.release or auxiliary_device.dev.release must be
-+populated with a non-NULL pointer to successfully register the auxiliary_device.
-+
-+The auxiliary_device.dev.parent must also be populated.
-+
-+Auxiliary Device Memory Model and Lifespan
-+------------------------------------------
-+
-+When a kernel driver registers an auxiliary_device on the auxiliary bus, we will
-+use the nomenclature to refer to this kernel driver as a registering driver.  It
-+is the entity that will allocate memory for the auxiliary_device and register it
-+on the auxiliary bus.  It is important to note that, as opposed to the platform
-+bus, the registering driver is wholly responsible for the management for the
-+memory used for the driver object.
-+
-+A parent object, defined in the shared header file, will contain the
-+auxiliary_device.  It will also contain a pointer to the shared object(s), which
-+will also be defined in the shared header.  Both the parent object and the
-+shared object(s) will be allocated by the registering driver.  This layout
-+allows the auxiliary_driver's registering module to perform a container_of()
-+call to go from the pointer to the auxiliary_device, that is passed during the
-+call to the auxiliary_driver's probe function, up to the parent object, and then
-+have access to the shared object(s).
-+
-+The memory for the auxiliary_device will be freed only in its release()
-+callback flow as defined by its registering driver.
-+
-+The memory for the shared object(s) must have a lifespan equal to, or greater
-+than, the lifespan of the memory for the auxiliary_device.  The auxiliary_driver
-+should only consider that this shared object is valid as long as the
-+auxiliary_device is still registered on the auxiliary bus.  It is up to the
-+registering driver to manage (e.g. free or keep available) the memory for the
-+shared object beyond the life of the auxiliary_device.
-+
-+Registering driver must unregister all auxiliary devices before its registering
-+parent device's remove() is completed.
-+
-+Auxiliary Drivers
-+=================
-+
-+Auxiliary drivers follow the standard driver model convention, where
-+discovery/enumeration is handled by the core, and drivers
-+provide probe() and remove() methods. They support power management
-+and shutdown notifications using the standard conventions.
-+
-+.. code-block:: c
-+
-+	struct auxiliary_driver {
-+		int (*probe)(struct auxiliary_device *,
-+                             const struct auxiliary_device_id *id);
-+		int (*remove)(struct auxiliary_device *);
-+		void (*shutdown)(struct auxiliary_device *);
-+		int (*suspend)(struct auxiliary_device *, pm_message_t);
-+		int (*resume)(struct auxiliary_device *);
-+		struct device_driver driver;
-+		const struct auxiliary_device_id *id_table;
-+	};
-+
-+Auxiliary drivers register themselves with the bus by calling
-+auxiliary_driver_register(). The id_table contains the match_names of auxiliary
-+devices that a driver can bind with.
-+
-+Example Usage
-+=============
-+
-+Auxiliary devices are created and registered by a subsystem-level core device
-+that needs to break up its functionality into smaller fragments. One way to
-+extend the scope of an auxiliary_device would be to encapsulate it within a
-+domain-specific structure defined by the parent device. This structure contains
-+the auxiliary_device and any associated shared data/callbacks needed to
-+establish the connection with the parent.
-+
-+An example would be:
-+
-+.. code-block:: c
-+
-+        struct foo {
-+		struct auxiliary_device auxdev;
-+		void (*connect)(struct auxiliary_device *auxdev);
-+		void (*disconnect)(struct auxiliary_device *auxdev);
-+		void *data;
-+        };
-+
-+The parent device would then register the auxiliary_device by calling
-+auxiliary_device_init(), and then auxiliary_device_add(), with the pointer to
-+the auxdev member of the above structure. The parent would provide a name for
-+the auxiliary_device that, combined with the parent's KBUILD_MODNAME, will
-+create a match_name that will be used for matching and binding with a driver.
-+
-+Whenever an auxiliary_driver is registered, based on the match_name, the
-+auxiliary_driver's probe() is invoked for the matching devices.  The
-+auxiliary_driver can also be encapsulated inside custom drivers that make the
-+core device's functionality extensible by adding additional domain-specific ops
-+as follows:
-+
-+.. code-block:: c
-+
-+	struct my_ops {
-+		void (*send)(struct auxiliary_device *auxdev);
-+		void (*receive)(struct auxiliary_device *auxdev);
-+	};
-+
-+
-+	struct my_driver {
-+		struct auxiliary_driver auxiliary_drv;
-+		const struct my_ops ops;
-+	};
-+
-+An example of this type of usage would be:
-+
-+.. code-block:: c
-+
-+	const struct auxiliary_device_id my_auxiliary_id_table[] = {
-+		{ .name = "foo_mod.foo_dev" },
-+		{ },
-+	};
-+
-+	const struct my_ops my_custom_ops = {
-+		.send = my_tx,
-+		.receive = my_rx,
-+	};
-+
-+	const struct my_driver my_drv = {
-+		.auxiliary_drv = {
-+			.name = "myauxiliarydrv",
-+			.id_table = my_auxiliary_id_table,
-+			.probe = my_probe,
-+			.remove = my_remove,
-+			.shutdown = my_shutdown,
-+		},
-+		.ops = my_custom_ops,
-+	};
-diff --git a/Documentation/driver-api/index.rst b/Documentation/driver-api/index.rst
-index 987d6e74ea6a..af206dc816ca 100644
---- a/Documentation/driver-api/index.rst
-+++ b/Documentation/driver-api/index.rst
-@@ -72,6 +72,7 @@ available subsections can be seen below.
-    thermal/index
-    fpga/index
-    acpi/index
-+   auxiliary_bus
-    backlight/lp855x-driver.rst
-    connector
-    console
-diff --git a/drivers/base/Kconfig b/drivers/base/Kconfig
-index 8d7001712062..040be48ce046 100644
---- a/drivers/base/Kconfig
-+++ b/drivers/base/Kconfig
-@@ -1,6 +1,9 @@
- # SPDX-License-Identifier: GPL-2.0
- menu "Generic Driver Options"
+diff --git a/sound/soc/sof/Kconfig b/sound/soc/sof/Kconfig
+index 8c1f0829de40..31e9911098fc 100644
+--- a/sound/soc/sof/Kconfig
++++ b/sound/soc/sof/Kconfig
+@@ -50,6 +50,24 @@ config SND_SOC_SOF_DEBUG_PROBES
+ 	  Say Y if you want to enable probes.
+ 	  If unsure, select "N".
  
-+config AUXILIARY_BUS
-+	bool
++config SND_SOC_SOF_CLIENT
++	tristate
++	select AUXILIARY_BUS
++	help
++	  This option is not user-selectable but automagically handled by
++	  'select' statements at a higher level.
 +
- config UEVENT_HELPER
- 	bool "Support for uevent helper"
++config SND_SOC_SOF_CLIENT_SUPPORT
++	bool "SOF enable clients"
++	depends on SND_SOC_SOF
++	help
++	  This adds support for auxiliary client devices to separate out the debug
++	  functionality for IPC tests, probes etc. into separate devices. This
++	  option would also allow adding client devices based on DSP firmware
++	  capabilities and ACPI/OF device information.
++	  Say Y if you want to enable clients with SOF.
++	  If unsure select "N".
++
+ config SND_SOC_SOF_DEVELOPER_SUPPORT
+ 	bool "SOF developer options support"
+ 	depends on EXPERT
+@@ -186,6 +204,7 @@ endif ## SND_SOC_SOF_DEVELOPER_SUPPORT
+ 
+ config SND_SOC_SOF
+ 	tristate
++	select SND_SOC_SOF_CLIENT if SND_SOC_SOF_CLIENT_SUPPORT
+ 	select SND_SOC_TOPOLOGY
+ 	select SND_SOC_SOF_NOCODEC if SND_SOC_SOF_NOCODEC_SUPPORT
  	help
-diff --git a/drivers/base/Makefile b/drivers/base/Makefile
-index 41369fc7004f..5e7bf9669a81 100644
---- a/drivers/base/Makefile
-+++ b/drivers/base/Makefile
-@@ -7,6 +7,7 @@ obj-y			:= component.o core.o bus.o dd.o syscore.o \
- 			   attribute_container.o transport_class.o \
- 			   topology.o container.o property.o cacheinfo.o \
- 			   swnode.o
-+obj-$(CONFIG_AUXILIARY_BUS) += auxiliary.o
- obj-$(CONFIG_DEVTMPFS)	+= devtmpfs.o
- obj-y			+= power/
- obj-$(CONFIG_ISA_BUS_API)	+= isa.o
-diff --git a/drivers/base/auxiliary.c b/drivers/base/auxiliary.c
+diff --git a/sound/soc/sof/Makefile b/sound/soc/sof/Makefile
+index 05718dfe6cd2..5e46f25a3851 100644
+--- a/sound/soc/sof/Makefile
++++ b/sound/soc/sof/Makefile
+@@ -2,6 +2,7 @@
+ 
+ snd-sof-objs := core.o ops.o loader.o ipc.o pcm.o pm.o debug.o topology.o\
+ 		control.o trace.o utils.o sof-audio.o
++snd-sof-client-objs := sof-client.o
+ snd-sof-$(CONFIG_SND_SOC_SOF_DEBUG_PROBES) += probe.o compress.o
+ 
+ snd-sof-pci-objs := sof-pci-dev.o
+@@ -18,6 +19,8 @@ obj-$(CONFIG_SND_SOC_SOF_ACPI) += snd-sof-acpi.o
+ obj-$(CONFIG_SND_SOC_SOF_OF) += snd-sof-of.o
+ obj-$(CONFIG_SND_SOC_SOF_PCI) += snd-sof-pci.o
+ 
++obj-$(CONFIG_SND_SOC_SOF_CLIENT) += snd-sof-client.o
++
+ obj-$(CONFIG_SND_SOC_SOF_INTEL_TOPLEVEL) += intel/
+ obj-$(CONFIG_SND_SOC_SOF_IMX_TOPLEVEL) += imx/
+ obj-$(CONFIG_SND_SOC_SOF_XTENSA) += xtensa/
+diff --git a/sound/soc/sof/core.c b/sound/soc/sof/core.c
+index adc7c37145d6..72a97219395f 100644
+--- a/sound/soc/sof/core.c
++++ b/sound/soc/sof/core.c
+@@ -314,8 +314,10 @@ int snd_sof_device_probe(struct device *dev, struct snd_sof_pdata *plat_data)
+ 	INIT_LIST_HEAD(&sdev->widget_list);
+ 	INIT_LIST_HEAD(&sdev->dai_list);
+ 	INIT_LIST_HEAD(&sdev->route_list);
++	INIT_LIST_HEAD(&sdev->client_list);
+ 	spin_lock_init(&sdev->ipc_lock);
+ 	spin_lock_init(&sdev->hw_lock);
++	mutex_init(&sdev->client_mutex);
+ 
+ 	if (IS_ENABLED(CONFIG_SND_SOC_SOF_PROBE_WORK_QUEUE))
+ 		INIT_WORK(&sdev->probe_work, sof_probe_work);
+diff --git a/sound/soc/sof/sof-client.c b/sound/soc/sof/sof-client.c
 new file mode 100644
-index 000000000000..b7c66785352e
+index 000000000000..dd75a0ba4c28
 --- /dev/null
-+++ b/drivers/base/auxiliary.c
-@@ -0,0 +1,267 @@
++++ b/sound/soc/sof/sof-client.c
+@@ -0,0 +1,115 @@
 +// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Software based bus for Auxiliary devices
-+ *
-+ * Copyright (c) 2019-2020 Intel Corporation
-+ *
-+ * Please see Documentation/driver-api/auxiliary_bus.rst for more information.
-+ */
++//
++// Copyright(c) 2020 Intel Corporation. All rights reserved.
++//
++// Author: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
++//
 +
-+#define pr_fmt(fmt) "%s:%s: " fmt, KBUILD_MODNAME, __func__
-+
-+#include <linux/device.h>
-+#include <linux/init.h>
++#include <linux/debugfs.h>
++#include <linux/errno.h>
++#include <linux/list.h>
 +#include <linux/module.h>
-+#include <linux/pm_domain.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/string.h>
-+#include <linux/auxiliary_bus.h>
++#include <linux/mutex.h>
++#include <linux/slab.h>
++#include "sof-client.h"
++#include "sof-priv.h"
 +
-+static const struct auxiliary_device_id *auxiliary_match_id(const struct auxiliary_device_id *id,
-+							    const struct auxiliary_device *auxdev)
++static void sof_client_auxdev_release(struct device *dev)
 +{
-+	for (; id->name[0]; id++) {
-+		const char *p = strrchr(dev_name(&auxdev->dev), '.');
-+		int match_size;
++	struct auxiliary_device *auxdev = to_auxiliary_dev(dev);
++	struct sof_client_dev *cdev = auxiliary_dev_to_sof_client_dev(auxdev);
 +
-+		if (!p)
-+			continue;
-+		match_size = p - dev_name(&auxdev->dev);
++	kfree(cdev);
++}
 +
-+		/* use dev_name(&auxdev->dev) prefix before last '.' char to match to */
-+		if (strlen(id->name) == match_size &&
-+		    !strncmp(dev_name(&auxdev->dev), id->name, match_size))
-+			return id;
++static struct sof_client_dev *sof_client_dev_alloc(struct snd_sof_dev *sdev, const char *name,
++						   u32 id)
++{
++	struct sof_client_dev *cdev;
++	struct auxiliary_device *auxdev;
++	int ret;
++
++	cdev = kzalloc(sizeof(*cdev), GFP_KERNEL);
++	if (!cdev)
++		return ERR_PTR(-ENOMEM);
++
++	cdev->sdev = sdev;
++	auxdev = &cdev->auxdev;
++	auxdev->name = name;
++	auxdev->dev.parent = sdev->dev;
++	auxdev->dev.release = sof_client_auxdev_release;
++	auxdev->id = id;
++
++	ret = auxiliary_device_init(auxdev);
++	if (ret < 0) {
++		dev_err(sdev->dev, "error: failed to initialize client dev %s\n", name);
++		goto err_free;
 +	}
++
++	return cdev;
++
++err_free:
++	kfree(cdev);
 +	return NULL;
 +}
 +
-+static int auxiliary_match(struct device *dev, struct device_driver *drv)
++int sof_client_dev_register(struct snd_sof_dev *sdev, const char *name, u32 id)
 +{
-+	struct auxiliary_device *auxdev = to_auxiliary_dev(dev);
-+	struct auxiliary_driver *auxdrv = to_auxiliary_drv(drv);
-+
-+	return !!auxiliary_match_id(auxdrv->id_table, auxdev);
-+}
-+
-+static int auxiliary_uevent(struct device *dev, struct kobj_uevent_env *env)
-+{
-+	const char *name, *p;
-+
-+	name = dev_name(dev);
-+	p = strrchr(name, '.');
-+
-+	return add_uevent_var(env, "MODALIAS=%s%.*s", AUXILIARY_MODULE_PREFIX, (int)(p - name),
-+			      name);
-+}
-+
-+static const struct dev_pm_ops auxiliary_dev_pm_ops = {
-+	SET_RUNTIME_PM_OPS(pm_generic_runtime_suspend, pm_generic_runtime_resume, NULL)
-+	SET_SYSTEM_SLEEP_PM_OPS(pm_generic_suspend, pm_generic_resume)
-+};
-+
-+static int auxiliary_bus_probe(struct device *dev)
-+{
-+	struct auxiliary_driver *auxdrv = to_auxiliary_drv(dev->driver);
-+	struct auxiliary_device *auxdev = to_auxiliary_dev(dev);
++	struct sof_client_dev *cdev;
 +	int ret;
 +
-+	ret = dev_pm_domain_attach(dev, true);
-+	if (ret) {
-+		dev_warn(dev, "Failed to attach to PM Domain : %d\n", ret);
++	cdev = sof_client_dev_alloc(sdev, name, id);
++	if (IS_ERR_OR_NULL(cdev))
++		return PTR_ERR(cdev);
++
++	ret = auxiliary_device_add(&cdev->auxdev);
++	if (ret < 0) {
++		dev_err(sdev->dev, "error: failed to add client dev %s\n", name);
++		/* cdev will be freed when the release callback is invoked through put_device() */
++		auxiliary_device_uninit(&cdev->auxdev);
 +		return ret;
 +	}
 +
-+	ret = auxdrv->probe(auxdev, auxiliary_match_id(auxdrv->id_table, auxdev));
-+	if (ret)
-+		dev_pm_domain_detach(dev, true);
++	/* add to list of SOF client devices */
++	mutex_lock(&sdev->client_mutex);
++	list_add(&cdev->list, &sdev->client_list);
++	mutex_unlock(&sdev->client_mutex);
 +
-+	return ret;
-+}
-+
-+static int auxiliary_bus_remove(struct device *dev)
-+{
-+	struct auxiliary_driver *auxdrv = to_auxiliary_drv(dev->driver);
-+	struct auxiliary_device *auxdev = to_auxiliary_dev(dev);
-+	int ret = 0;
-+
-+	if (auxdrv->remove)
-+		ret = auxdrv->remove(auxdev);
-+	dev_pm_domain_detach(dev, true);
-+
-+	return ret;
-+}
-+
-+static void auxiliary_bus_shutdown(struct device *dev)
-+{
-+	struct auxiliary_driver *auxdrv = to_auxiliary_drv(dev->driver);
-+	struct auxiliary_device *auxdev = to_auxiliary_dev(dev);
-+
-+	if (auxdrv->shutdown)
-+		auxdrv->shutdown(auxdev);
-+}
-+
-+static struct bus_type auxiliary_bus_type = {
-+	.name = "auxiliary",
-+	.probe = auxiliary_bus_probe,
-+	.remove = auxiliary_bus_remove,
-+	.shutdown = auxiliary_bus_shutdown,
-+	.match = auxiliary_match,
-+	.uevent = auxiliary_uevent,
-+	.pm = &auxiliary_dev_pm_ops,
-+};
-+
-+/**
-+ * auxiliary_device_init - check auxiliary_device and initialize
-+ * @auxdev: auxiliary device struct
-+ *
-+ * This is the first step in the two-step process to register an auxiliary_device.
-+ *
-+ * When this function returns an error code, then the device_initialize will *not* have
-+ * been performed, and the caller will be responsible to free any memory allocated for the
-+ * auxiliary_device in the error path directly.
-+ *
-+ * It returns 0 on success.  On success, the device_initialize has been performed.  After this
-+ * point any error unwinding will need to include a call to auxiliary_device_init().
-+ * In this post-initialize error scenario, a call to the device's .release callback will be
-+ * triggered by auxiliary_device_uninit(), and all memory clean-up is expected to be
-+ * handled there.
-+ */
-+int auxiliary_device_init(struct auxiliary_device *auxdev)
-+{
-+	struct device *dev = &auxdev->dev;
-+
-+	if (!dev->parent) {
-+		pr_err("auxiliary_device has a NULL dev->parent\n");
-+		return -EINVAL;
-+	}
-+
-+	if (!auxdev->name) {
-+		pr_err("auxiliary_device has a NULL name\n");
-+		return -EINVAL;
-+	}
-+
-+	dev->bus = &auxiliary_bus_type;
-+	device_initialize(&auxdev->dev);
 +	return 0;
 +}
-+EXPORT_SYMBOL_GPL(auxiliary_device_init);
++EXPORT_SYMBOL_NS_GPL(sof_client_dev_register, SND_SOC_SOF_CLIENT);
 +
-+/**
-+ * __auxiliary_device_add - add an auxiliary bus device
-+ * @auxdev: auxiliary bus device to add to the bus
-+ * @modname: name of the parent device's driver module
-+ *
-+ * This is the second step in the two-step process to register an auxiliary_device.
-+ *
-+ * This function must be called after a successful call to auxiliary_device_init(), which
-+ * will perform the device_initialize.  This means that if this returns an error code, then a
-+ * call to auxiliary_device_uninit() must be performed so that the .release callback will
-+ * be triggered to free the memory associated with the auxiliary_device.
-+ */
-+int __auxiliary_device_add(struct auxiliary_device *auxdev, const char *modname)
++void sof_client_dev_unregister(struct snd_sof_dev *sdev, const char *name, u32 id)
 +{
-+	struct device *dev = &auxdev->dev;
-+	int ret;
++	struct sof_client_dev *cdev, *_cdev;
 +
-+	if (!modname) {
-+		pr_err("auxiliary device modname is NULL\n");
-+		return -EINVAL;
++	mutex_lock(&sdev->client_mutex);
++
++	/* cdev will be freed when the release callback for the auxiliary device is invoked */
++	list_for_each_entry_safe(cdev, _cdev, &sdev->client_list, list) {
++		if (!strcmp(cdev->auxdev.name, name) && cdev->auxdev.id == id) {
++			auxiliary_device_delete(&cdev->auxdev);
++			auxiliary_device_uninit(&cdev->auxdev);
++			break;
++		}
 +	}
 +
-+	ret = dev_set_name(dev, "%s.%s.%d", modname, auxdev->name, auxdev->id);
-+	if (ret) {
-+		pr_err("auxiliary device dev_set_name failed: %d\n", ret);
-+		return ret;
-+	}
-+
-+	ret = device_add(dev);
-+	if (ret)
-+		dev_err(dev, "adding auxiliary device failed!: %d\n", ret);
-+
-+	return ret;
++	mutex_unlock(&sdev->client_mutex);
 +}
-+EXPORT_SYMBOL_GPL(__auxiliary_device_add);
++EXPORT_SYMBOL_NS_GPL(sof_client_dev_unregister, SND_SOC_SOF_CLIENT);
 +
-+/**
-+ * auxiliary_find_device - auxiliary device iterator for locating a particular device.
-+ * @start: Device to begin with
-+ * @data: Data to pass to match function
-+ * @match: Callback function to check device
-+ *
-+ * This function returns a reference to a device that is 'found'
-+ * for later use, as determined by the @match callback.
-+ *
-+ * The callback should return 0 if the device doesn't match and non-zero
-+ * if it does.  If the callback returns non-zero, this function will
-+ * return to the caller and not iterate over any more devices.
-+ */
-+struct auxiliary_device *
-+auxiliary_find_device(struct device *start, const void *data,
-+		      int (*match)(struct device *dev, const void *data))
++int sof_client_ipc_tx_message(struct sof_client_dev *cdev, u32 header, void *msg_data,
++			      size_t msg_bytes, void *reply_data, size_t reply_bytes)
 +{
-+	struct device *dev;
-+
-+	dev = bus_find_device(&auxiliary_bus_type, start, data, match);
-+	if (!dev)
-+		return NULL;
-+
-+	return to_auxiliary_dev(dev);
++	return sof_ipc_tx_message(cdev->sdev->ipc, header, msg_data, msg_bytes,
++				  reply_data, reply_bytes);
 +}
-+EXPORT_SYMBOL_GPL(auxiliary_find_device);
++EXPORT_SYMBOL_NS_GPL(sof_client_ipc_tx_message, SND_SOC_SOF_CLIENT);
 +
-+/**
-+ * __auxiliary_driver_register - register a driver for auxiliary bus devices
-+ * @auxdrv: auxiliary_driver structure
-+ * @owner: owning module/driver
-+ * @modname: KBUILD_MODNAME for parent driver
-+ */
-+int __auxiliary_driver_register(struct auxiliary_driver *auxdrv, struct module *owner,
-+				const char *modname)
++struct dentry *sof_client_get_debugfs_root(struct sof_client_dev *cdev)
 +{
-+	if (WARN_ON(!auxdrv->probe) || WARN_ON(!auxdrv->id_table))
-+		return -EINVAL;
-+
-+	if (auxdrv->name)
-+		auxdrv->driver.name = kasprintf(GFP_KERNEL, "%s.%s", modname, auxdrv->name);
-+	else
-+		auxdrv->driver.name = kasprintf(GFP_KERNEL, "%s", modname);
-+	if (!auxdrv->driver.name)
-+		return -ENOMEM;
-+
-+	auxdrv->driver.owner = owner;
-+	auxdrv->driver.bus = &auxiliary_bus_type;
-+	auxdrv->driver.mod_name = modname;
-+
-+	return driver_register(&auxdrv->driver);
++	return cdev->sdev->debugfs_root;
 +}
-+EXPORT_SYMBOL_GPL(__auxiliary_driver_register);
-+
-+/**
-+ * auxiliary_driver_unregister - unregister a driver
-+ * @auxdrv: auxiliary_driver structure
-+ */
-+void auxiliary_driver_unregister(struct auxiliary_driver *auxdrv)
-+{
-+	driver_unregister(&auxdrv->driver);
-+	kfree(auxdrv->driver.name);
-+}
-+EXPORT_SYMBOL_GPL(auxiliary_driver_unregister);
-+
-+static int __init auxiliary_bus_init(void)
-+{
-+	return bus_register(&auxiliary_bus_type);
-+}
-+
-+static void __exit auxiliary_bus_exit(void)
-+{
-+	bus_unregister(&auxiliary_bus_type);
-+}
-+
-+module_init(auxiliary_bus_init);
-+module_exit(auxiliary_bus_exit);
++EXPORT_SYMBOL_NS_GPL(sof_client_get_debugfs_root, SND_SOC_SOF_CLIENT);
 +
 +MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("Auxiliary Bus");
-+MODULE_AUTHOR("David Ertman <david.m.ertman@intel.com>");
-+MODULE_AUTHOR("Kiran Patil <kiran.patil@intel.com>");
-diff --git a/include/linux/auxiliary_bus.h b/include/linux/auxiliary_bus.h
+diff --git a/sound/soc/sof/sof-client.h b/sound/soc/sof/sof-client.h
 new file mode 100644
-index 000000000000..282fbf7bf9af
+index 000000000000..429282df9f65
 --- /dev/null
-+++ b/include/linux/auxiliary_bus.h
-@@ -0,0 +1,78 @@
++++ b/sound/soc/sof/sof-client.h
+@@ -0,0 +1,66 @@
 +/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (c) 2019-2020 Intel Corporation
-+ *
-+ * Please see Documentation/driver-api/auxiliary_bus.rst for more information.
-+ */
 +
-+#ifndef _AUXILIARY_BUS_H_
-+#define _AUXILIARY_BUS_H_
++#ifndef __SOUND_SOC_SOF_CLIENT_H
++#define __SOUND_SOC_SOF_CLIENT_H
 +
++#include <linux/auxiliary_bus.h>
 +#include <linux/device.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/slab.h>
++#include <linux/idr.h>
++#include <linux/list.h>
 +
-+struct auxiliary_device {
-+	struct device dev;
-+	const char *name;
-+	u32 id;
++#define SOF_CLIENT_PROBE_TIMEOUT_MS 2000
++
++struct snd_sof_dev;
++
++/* SOF client device */
++struct sof_client_dev {
++	struct auxiliary_device auxdev;
++	struct snd_sof_dev *sdev;
++	struct list_head list;	/* item in SOF core client dev list */
++	void *data;
 +};
 +
-+struct auxiliary_driver {
-+	int (*probe)(struct auxiliary_device *auxdev, const struct auxiliary_device_id *id);
-+	int (*remove)(struct auxiliary_device *auxdev);
-+	void (*shutdown)(struct auxiliary_device *auxdev);
-+	int (*suspend)(struct auxiliary_device *auxdev, pm_message_t state);
-+	int (*resume)(struct auxiliary_device *auxdev);
-+	const char *name;
-+	struct device_driver driver;
-+	const struct auxiliary_device_id *id_table;
++/* client-specific ops, all optional */
++struct sof_client_ops {
++	int (*client_ipc_rx)(struct sof_client_dev *cdev, u32 msg_cmd);
 +};
 +
-+static inline struct auxiliary_device *to_auxiliary_dev(struct device *dev)
++struct sof_client_drv {
++	const struct sof_client_ops ops;
++	struct auxiliary_driver auxiliary_drv;
++};
++
++#define auxiliary_dev_to_sof_client_dev(auxiliary_dev) \
++	container_of(auxiliary_dev, struct sof_client_dev, auxdev)
++
++static inline int sof_client_drv_register(struct sof_client_drv *drv)
 +{
-+	return container_of(dev, struct auxiliary_device, dev);
++	return auxiliary_driver_register(&drv->auxiliary_drv);
 +}
 +
-+static inline struct auxiliary_driver *to_auxiliary_drv(struct device_driver *drv)
++static inline void sof_client_drv_unregister(struct sof_client_drv *drv)
 +{
-+	return container_of(drv, struct auxiliary_driver, driver);
++	auxiliary_driver_unregister(&drv->auxiliary_drv);
 +}
 +
-+int auxiliary_device_init(struct auxiliary_device *auxdev);
-+int __auxiliary_device_add(struct auxiliary_device *auxdev, const char *modname);
-+#define auxiliary_device_add(auxdev) __auxiliary_device_add(auxdev, KBUILD_MODNAME)
++int sof_client_dev_register(struct snd_sof_dev *sdev, const char *name, u32 id);
++void sof_client_dev_unregister(struct snd_sof_dev *sdev, const char *name, u32 id);
 +
-+static inline void auxiliary_device_uninit(struct auxiliary_device *auxdev)
-+{
-+	put_device(&auxdev->dev);
-+}
++int sof_client_ipc_tx_message(struct sof_client_dev *cdev, u32 header, void *msg_data,
++			      size_t msg_bytes, void *reply_data, size_t reply_bytes);
 +
-+static inline void auxiliary_device_delete(struct auxiliary_device *auxdev)
-+{
-+	device_del(&auxdev->dev);
-+}
-+
-+int __auxiliary_driver_register(struct auxiliary_driver *auxdrv, struct module *owner,
-+				const char *modname);
-+#define auxiliary_driver_register(auxdrv) \
-+	__auxiliary_driver_register(auxdrv, THIS_MODULE, KBUILD_MODNAME)
-+
-+void auxiliary_driver_unregister(struct auxiliary_driver *auxdrv);
++struct dentry *sof_client_get_debugfs_root(struct sof_client_dev *cdev);
 +
 +/**
-+ * module_auxiliary_driver() - Helper macro for registering an auxiliary driver
-+ * @__auxiliary_driver: auxiliary driver struct
++ * module_sof_client_driver() - Helper macro for registering an SOF Client
++ * driver
++ * @__sof_client_driver: SOF client driver struct
 + *
-+ * Helper macro for auxiliary drivers which do not do anything special in
++ * Helper macro for SOF client drivers which do not do anything special in
 + * module init/exit. This eliminates a lot of boilerplate. Each module may only
 + * use this macro once, and calling it replaces module_init() and module_exit()
 + */
-+#define module_auxiliary_driver(__auxiliary_driver) \
-+	module_driver(__auxiliary_driver, auxiliary_driver_register, auxiliary_driver_unregister)
++#define module_sof_client_driver(__sof_client_driver) \
++	module_driver(__sof_client_driver, sof_client_drv_register, sof_client_drv_unregister)
 +
-+struct auxiliary_device *
-+auxiliary_find_device(struct device *start, const void *data,
-+		      int (*match)(struct device *dev, const void *data));
++#endif
+diff --git a/sound/soc/sof/sof-priv.h b/sound/soc/sof/sof-priv.h
+index 0aed2a7ab858..dceac73b858f 100644
+--- a/sound/soc/sof/sof-priv.h
++++ b/sound/soc/sof/sof-priv.h
+@@ -442,6 +442,15 @@ struct snd_sof_dev {
+ 
+ 	bool msi_enabled;
+ 
++	/*
++	 * Used to keep track of registered client devices so that they can be removed when the
++	 * parent SOF module is removed.
++	 */
++	struct list_head client_list;
 +
-+#endif /* _AUXILIARY_BUS_H_ */
-diff --git a/include/linux/mod_devicetable.h b/include/linux/mod_devicetable.h
-index 5b08a473cdba..c425290b21e2 100644
---- a/include/linux/mod_devicetable.h
-+++ b/include/linux/mod_devicetable.h
-@@ -838,4 +838,12 @@ struct mhi_device_id {
- 	kernel_ulong_t driver_data;
++	/* mutex to protect client list */
++	struct mutex client_mutex;
++
+ 	void *private;			/* core does not touch this */
  };
  
-+#define AUXILIARY_NAME_SIZE 32
-+#define AUXILIARY_MODULE_PREFIX "auxiliary:"
-+
-+struct auxiliary_device_id {
-+	char name[AUXILIARY_NAME_SIZE];
-+	kernel_ulong_t driver_data;
-+};
-+
- #endif /* LINUX_MOD_DEVICETABLE_H */
-diff --git a/scripts/mod/devicetable-offsets.c b/scripts/mod/devicetable-offsets.c
-index 27007c18e754..e377f52dbfa3 100644
---- a/scripts/mod/devicetable-offsets.c
-+++ b/scripts/mod/devicetable-offsets.c
-@@ -243,5 +243,8 @@ int main(void)
- 	DEVID(mhi_device_id);
- 	DEVID_FIELD(mhi_device_id, chan);
- 
-+	DEVID(auxiliary_device_id);
-+	DEVID_FIELD(auxiliary_device_id, name);
-+
- 	return 0;
- }
-diff --git a/scripts/mod/file2alias.c b/scripts/mod/file2alias.c
-index 2417dd1dee33..fb4827027536 100644
---- a/scripts/mod/file2alias.c
-+++ b/scripts/mod/file2alias.c
-@@ -1364,6 +1364,13 @@ static int do_mhi_entry(const char *filename, void *symval, char *alias)
- {
- 	DEF_FIELD_ADDR(symval, mhi_device_id, chan);
- 	sprintf(alias, MHI_DEVICE_MODALIAS_FMT, *chan);
-+	return 1;
-+}
-+
-+static int do_auxiliary_entry(const char *filename, void *symval, char *alias)
-+{
-+	DEF_FIELD_ADDR(symval, auxiliary_device_id, name);
-+	sprintf(alias, AUXILIARY_MODULE_PREFIX "%s", *name);
- 
- 	return 1;
- }
-@@ -1442,6 +1449,7 @@ static const struct devtable devtable[] = {
- 	{"tee", SIZE_tee_client_device_id, do_tee_entry},
- 	{"wmi", SIZE_wmi_device_id, do_wmi_entry},
- 	{"mhi", SIZE_mhi_device_id, do_mhi_entry},
-+	{"auxiliary", SIZE_auxiliary_device_id, do_auxiliary_entry},
- };
- 
- /* Create MODULE_ALIAS() statements.
 -- 
 2.26.2
 
