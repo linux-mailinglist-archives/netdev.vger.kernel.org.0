@@ -2,26 +2,26 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AB5C296C66
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 11:57:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7451F296C6E
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 12:00:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S461812AbgJWJ5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 05:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43692 "EHLO
+        id S461853AbgJWKAj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 06:00:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S461630AbgJWJ5Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 05:57:24 -0400
+        with ESMTP id S461738AbgJWKAj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 06:00:39 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E5E0C0613CE
-        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 02:57:24 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27D7CC0613CE
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 03:00:39 -0700 (PDT)
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1kVtox-0002Kh-94; Fri, 23 Oct 2020 11:57:15 +0200
+        id 1kVts8-0002gU-5a; Fri, 23 Oct 2020 12:00:32 +0200
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1kVtor-0001ih-Ry; Fri, 23 Oct 2020 11:57:09 +0200
+        id 1kVts7-0002XQ-GX; Fri, 23 Oct 2020 12:00:31 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
@@ -33,9 +33,9 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         Russell King <linux@armlinux.org.uk>, mkl@pengutronix.de,
         Marek Vasut <marex@denx.de>
-Subject: [PATCH v1] net: phy: remove spaces
-Date:   Fri, 23 Oct 2020 11:57:09 +0200
-Message-Id: <20201023095709.6544-1-o.rempel@pengutronix.de>
+Subject: [PATCH v2] net: phy: replace spaces by tabs
+Date:   Fri, 23 Oct 2020 12:00:30 +0200
+Message-Id: <20201023100030.9461-1-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -46,6 +46,9 @@ X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
+
+This patch replaces the spaces in the indention of the 56G PHYs by
+proper tabs.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
