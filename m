@@ -2,95 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85FBD296E5E
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 14:22:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AE4E296F7B
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 14:38:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S463604AbgJWMWc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 08:22:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37886 "EHLO
+        id S463954AbgJWMir (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 08:38:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S463591AbgJWMWa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 08:22:30 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5091DC0613D4;
-        Fri, 23 Oct 2020 05:22:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=ZqZwulKWsNeOfTRPnUtP6s+k2zE4Jglq98sJ21G983w=; b=CN5qPyYW/KGgKCqGUJA+vsxCy
-        yR2VXmwysHq99WJCJiNSr//TMWWaZUH7G+vI/fc9GAfvWivfnnIHfjne/DyNoSsCcCEm0lVypw8FQ
-        SB4oL7wlaHyj8lKHfGGh+8hTt/q50UnIlZtZO1+fxeYRtAK2LbSmsRqB6nz1M4B7wMk95LszILdDn
-        n6f0kO/tuD/yA3G6dGUX/MNGoEmFeW5JoqNBVYyFt/KcZyC3li8rvOtuXnOdW614W73BgpIqOOctb
-        QYMjY+2JoWDAvXdMyQueSxhLYRYXo3CMFcIHPlTG6ITfUHkbVESIy0CIwLhE+wBrh/RtcMTKnWHcl
-        6YYY3ZNOg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:49966)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kVw5S-0003Pn-7D; Fri, 23 Oct 2020 13:22:26 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kVw5Q-0008Rd-Cj; Fri, 23 Oct 2020 13:22:24 +0100
-Date:   Fri, 23 Oct 2020 13:22:24 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, kernel@pengutronix.de,
-        David Jander <david@protonic.nl>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [RFC PATCH v1 0/6] add initial CAN PHY support
-Message-ID: <20201023122224.GD1551@shell.armlinux.org.uk>
-References: <20201023105626.6534-1-o.rempel@pengutronix.de>
- <20201023114502.GC1551@shell.armlinux.org.uk>
- <043b37a0-5aa4-0311-a3f4-09c61ad20671@pengutronix.de>
+        with ESMTP id S373146AbgJWMiq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 08:38:46 -0400
+Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E37CC0613CE
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 05:38:46 -0700 (PDT)
+Received: by mail-ed1-x542.google.com with SMTP id v19so1378817edx.9
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 05:38:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eF+Zn7DuYonjJ2ozfYY/h+K5gxMSAwDfp+BFrCzRIuw=;
+        b=vnmgR7jMik8VcE2F0syGrUlVzA+SUtan5fTxvEjAcue5GzUVKzg78Vd/p50H2dov2t
+         S/Mjf3/8tQ9zzGmUbO7vjnDoA8GgROZ60QltXRWayxT2QM9X9atWa56o7kpgMrykoc9q
+         +UH1EmzXlpyDRv8SzJAOoCArdNKo5ozeKN6mSf23Lm4HDKRu342B+YHmLR0zEB4N8qN/
+         KTPh2S77imP2a5Wh1+zt8DkpAdMumLbVRprr5fTW6uDKVbwMbQKfWoPvCNHdULIliLxN
+         uL8cz0V4ejWXlGaqepioe7pyB0xVVtifyosRH1pE4Ghq/JUcBmqvM6WKGxyLJNz4+5ju
+         0QYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eF+Zn7DuYonjJ2ozfYY/h+K5gxMSAwDfp+BFrCzRIuw=;
+        b=XcC0W/B5EdlfR4eFDTikJwjqOrsEGKkUK+QhaOJ/KBVuttUbaZhBSeuBNIfmiTGOWV
+         aKLM80yy4UcyndHdCuML02vXfi7aEgIxJcGZlzStwa0Ts9O81Ixpa/QiJU/RjVGHLKrH
+         /zOgIptaPmtYAa8U+qo5GHRvwS/t5NxVurpLdaUfcmXa6HAkR1VCqVORsFA60ZPwqdhh
+         /AkjiHC86fwoME0zCSRG3WWv/rSdkxrk4u4NWwBHBPRv+L6fY7FIB266fcUxscb4oBgg
+         M7eY9Vo+cF+niCxnDC89f2TidNm7I6/b3f93pzzTaASnfnqDUqGiiRQV3CFDTEE0vdWo
+         SqKA==
+X-Gm-Message-State: AOAM533Jjk1bOzI/lMAEr0+efyta8ENnnwG9eIL99XUrXDSmPqF9G/sJ
+        olg1TSav8k+QrQgSbJ2ekJOfNg==
+X-Google-Smtp-Source: ABdhPJwUmLFSubZ4FH13AoDvRQGFrfwJbB2l1oc4tAHuuIgyNAEAFwZBDYXxAHqxeG0y5rXsdSdOgw==
+X-Received: by 2002:a50:d517:: with SMTP id u23mr1966767edi.338.1603456725142;
+        Fri, 23 Oct 2020 05:38:45 -0700 (PDT)
+Received: from localhost.localdomain ([2a02:a03f:689e:3400:b894:bc77:ad21:b2db])
+        by smtp.gmail.com with ESMTPSA id ds7sm799682ejc.83.2020.10.23.05.38.44
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 23 Oct 2020 05:38:44 -0700 (PDT)
+From:   David Verbeiren <david.verbeiren@tessares.net>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        David Verbeiren <david.verbeiren@tessares.net>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: [PATCH bpf] bpf: zero-fill re-used per-cpu map element
+Date:   Fri, 23 Oct 2020 14:37:54 +0200
+Message-Id: <20201023123754.30304-1-david.verbeiren@tessares.net>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <043b37a0-5aa4-0311-a3f4-09c61ad20671@pengutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 23, 2020 at 02:14:09PM +0200, Marc Kleine-Budde wrote:
-> On 10/23/20 1:45 PM, Russell King - ARM Linux admin wrote:
-> > On Fri, Oct 23, 2020 at 12:56:20PM +0200, Oleksij Rempel wrote:
-> >> - The upcoming CAN SIC and CAN SIC XL PHYs use a different interface to
-> >>   the CAN controller. This means the controller needs to know which type
-> >>   of PHY is attached to configure the interface in the correct mode. Use
-> >>   PHY link for that, too.
-> > 
-> > Is this dynamic in some form?
-> 
-> There isn't any CAN SIC transceivers out there yet. I suspect there will be no
-> auto detection possible, so we would describe the type of the attached
-> transceiver via device tree.
-> 
-> In the future I can think of some devices that have a MUX and use the a classic
-> transceiver (CAN high-speed) for legacy deployments and CAN SIC transceivers if
-> connected to a "modern" CAN bus.
-> 
-> Someone (i.e. the user or the system integrator) has to configure the MUX to
-> select the correct transceiver.
+Zero-fill element values for all cpus, just as when not using
+prealloc. This is the only way the bpf program can ensure known
+initial values for cpus other than the current one ('onallcpus'
+cannot be set when coming from the bpf program).
 
-Hmm. So it's static, and described in firmware. So, that brings me to
-the obvious question: why use phylink for this rather than the phylib
-APIs?
+The scenario is: bpf program inserts some elements in a per-cpu
+map, then deletes some (or userspace does). When later adding
+new elements using bpf_map_update_elem(), the bpf program can
+only set the value of the new elements for the current cpu.
+When prealloc is enabled, previously deleted elements are re-used.
+Without the fix, values for other cpus remain whatever they were
+when the re-used entry was previously freed.
 
-phylink isn't obsoleting phylib in any way, and phylib does support
-the ability for the PHY to change its MAC side interface (if it didn't
-then PHYs such as 88x3310 and similar wouldn't be usable.)
+Fixes: 6c9059817432 ("bpf: pre-allocate hash map elements")
+Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: David Verbeiren <david.verbeiren@tessares.net>
+---
+ kernel/bpf/hashtab.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index 1815e97d4c9c..667553cce65a 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -836,6 +836,7 @@ static struct htab_elem *alloc_htab_elem(struct bpf_htab *htab, void *key,
+ 	bool prealloc = htab_is_prealloc(htab);
+ 	struct htab_elem *l_new, **pl_new;
+ 	void __percpu *pptr;
++	int cpu;
+ 
+ 	if (prealloc) {
+ 		if (old_elem) {
+@@ -880,6 +881,17 @@ static struct htab_elem *alloc_htab_elem(struct bpf_htab *htab, void *key,
+ 		size = round_up(size, 8);
+ 		if (prealloc) {
+ 			pptr = htab_elem_get_ptr(l_new, key_size);
++
++			/* zero-fill element values for all cpus, just as when
++			 * not using prealloc. Only way for bpf program to
++			 * ensure known initial values for cpus other than
++			 * current one (onallcpus=false when coming from bpf
++			 * prog).
++			 */
++			if (!onallcpus)
++				for_each_possible_cpu(cpu)
++					memset((void *)per_cpu_ptr(pptr, cpu),
++					       0, size);
+ 		} else {
+ 			/* alloc_percpu zero-fills */
+ 			pptr = __alloc_percpu_gfp(size, 8,
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.29.0
+
