@@ -2,100 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27869296D8B
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 13:23:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B2A7296DA2
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 13:26:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S462908AbgJWLWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 07:22:48 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:34088 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S462778AbgJWLWr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 07:22:47 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09NBJ1NW008646;
-        Fri, 23 Oct 2020 11:22:22 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=Ij3kbeYHmjUPJ1In5uZ/O+jWnMmXyszv3wHt8UYtJRE=;
- b=knRh3c/Mg+yybdbvRMpoQm+glM7jOQUMan1Ua3F5jiGwbBTBk0ykXhR2p+dg5uUaf+UK
- IX9JW66QVXAkhs5fMN2B8bRvYcHKEYTSrvqCSoM8KHNIo198rN0bB5NygGlBiB+7xeNc
- iL1V2Nfmjy7FoGzs5DSC9n4NFqC2wMf9hGASXLVuJJcahMnoDpTQAEDmRfuJ8BlzCwRO
- Icom4LhPAO2MctXDsMzyBMeHK1bOkCz3epPK4faxlQqdhOxVey7EeUoqWSyO1i08jui3
- A9eWLL5Z7cC1XlYiS+OLacDEUl1Osh6m1VTtn+3G8DYi4ix+quDlFBdmbvZ2fgwl3fFF Zg== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2130.oracle.com with ESMTP id 347p4baqr2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 23 Oct 2020 11:22:22 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09NBKED5099291;
-        Fri, 23 Oct 2020 11:22:22 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by aserp3030.oracle.com with ESMTP id 348a6rndyx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 23 Oct 2020 11:22:21 +0000
-Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 09NBMKrO005923;
-        Fri, 23 Oct 2020 11:22:20 GMT
-Received: from mwanda (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 23 Oct 2020 04:22:20 -0700
-Date:   Fri, 23 Oct 2020 14:22:12 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Yisen Zhuang <yisen.zhuang@huawei.com>
-Cc:     Salil Mehta <salil.mehta@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Huazhong Tan <tanhuazhong@huawei.com>,
-        Yonglong Liu <liuyonglong@huawei.com>,
-        Yufeng Mo <moyufeng@huawei.com>,
-        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH net] net: hns3: clean up a return in hclge_tm_bp_setup()
-Message-ID: <20201023112212.GA282278@mwanda>
+        id S462965AbgJWL0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 07:26:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57378 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S462868AbgJWL0A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 07:26:00 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F378C0613CE;
+        Fri, 23 Oct 2020 04:26:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=6PDeYQxNtg045NRHc1XlULYVUVuYGlzxkJDnsao8G9w=; b=mLHlNYkyyDY2dlrmBpuK+nB+I
+        eWLwkgic9XNJO0sY6G1oiTmQk35hqisG7P2IytIqtGtwvI10087RIBgxxyahx2tKnLFkcv1ayDmuT
+        w2X6xmYN4vw20+72kbP3ROUcycOOfya4qLN2xr9WiT6oAeqsvdDnqaibYH0AMs59QVGFgB/Ffgpjj
+        wnoYXQ9Q7at1qznZL4l0exWRRShzprq/6GkuDA9mgyYl+qGzDMZ45b2uq4jal2oGLKOOf1he27Y/m
+        gtQ8Ti+GviHhfb4sRZJ9N6WCE3+KeBzK4nfEYkDrGLcl5qudKidDJ0r3DWyK9Ab2hRboU/jBPUhNQ
+        4hoQpfBRA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:49950)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kVvCj-0003MW-Et; Fri, 23 Oct 2020 12:25:53 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kVvCf-0008Ov-Qv; Fri, 23 Oct 2020 12:25:49 +0100
+Date:   Fri, 23 Oct 2020 12:25:49 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Parshuram Raju Thombare <pthombar@cadence.com>
+Cc:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Milind Parab <mparab@cadence.com>
+Subject: Re: [PATCH v3] net: macb: add support for high speed interface
+Message-ID: <20201023112549.GB1551@shell.armlinux.org.uk>
+References: <1603302245-30654-1-git-send-email-pthombar@cadence.com>
+ <20201021185056.GN1551@shell.armlinux.org.uk>
+ <DM5PR07MB31961F14DD8A38B7FFA8DA24C11D0@DM5PR07MB3196.namprd07.prod.outlook.com>
+ <DM5PR07MB3196723723F236F6113DDF9EC11A0@DM5PR07MB3196.namprd07.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9782 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxlogscore=999
- bulkscore=0 spamscore=0 adultscore=0 suspectscore=0 mlxscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010230080
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9782 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 priorityscore=1501
- clxscore=1011 malwarescore=0 mlxscore=0 bulkscore=0 lowpriorityscore=0
- phishscore=0 adultscore=0 mlxlogscore=999 impostorscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2010230080
+In-Reply-To: <DM5PR07MB3196723723F236F6113DDF9EC11A0@DM5PR07MB3196.namprd07.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Smatch complains that "ret" might be uninitialized if we don't enter
-the loop.  We do always enter the loop so it's a false positive, but
-it's cleaner to just return a literal zero and that silences the
-warning as well.
+On Fri, Oct 23, 2020 at 10:59:42AM +0000, Parshuram Raju Thombare wrote:
+> Hi,
+> 
+> I was trying to find out any ethernet driver where this issue of selecting appropriate
+> pcs_ops due to phylink changing interface mode dynamically is handled. 
+> But, apparently, so far only mvpp2 has adapted pcs_ops. And even in mvpp2, it is
+> not obvious how this case is handled. 
 
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Yes, mvpp2 is the only driver that has been converted.  I'm not sure
+why you say that it's not obvious how it's handled.
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-index 15f69fa86323..e8495f58a1a8 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c
-@@ -1373,7 +1373,7 @@ static int hclge_tm_bp_setup(struct hclge_dev *hdev)
- 			return ret;
- 	}
- 
--	return ret;
-+	return 0;
- }
- 
- int hclge_pause_setup_hw(struct hclge_dev *hdev, bool init)
+Whenever the interface changes, we go through the full reconfiguration
+procedure that I've already outlined. This involves calling the
+mac_prepare() method which calls into mvpp2_mac_prepare() and its
+child mvpp2__mac_prepare().
+
+In mvpp2__mac_prepare(), we switch the "ops" for port->phylink_pcs,
+and then back in mvpp2_mac_prepare(), we ensure that the PCS instance
+is set to the port->phylink_pcs (which internally updates the
+pl->pcs_ops pointer in phylink.)
+
+That results in phylink switching between the XLG and GMAC PCS
+operations depending on the interface in use.
+
+> Also, apart from interface mode changed due to SFPs with different types of PHY
+> being used, it is not clear when phylink selects interface mode different than it
+> initially requested to the ethernet driver.
+
+The ethernet driver's initial interface mode has no real bearing when a
+SFP is inserted. A SFP or SFP+ module can require one of several
+different interface modes, and generally can not be programmed to
+operate in any other mode.
+
+For example, a 1G fiber SFP can _only_ operate in 1000BASE-X. SGMII and
+10G modes are not permissible. Trying to use RGMII (for example) is a
+nonsense because there aren't enough pins on the module to connect
+RGMII, and the module would not know what to do with it.
+
+If the module is a 10M/100M/1G copper SFP, then things get more fun -
+and what can be done depends whether the SFP has an accessible PHY we
+can drive. The PHY may support 1000BASE-X and/or SGMII, and there is
+no real way to determine which the SFP supports. The EEPROM does _not_
+help with this. We work around that at present by always using SGMII
+(there are copper modules that the PHY is inaccessible but is in SGMII
+mode - Mikrotik S-RJ01 for example). For others where the PHY is
+accessible, it is generally an 88E1111, which may power up in either
+SGMII or 1000BASE-X mode. We always select SGMII for these, and the
+88E1111 driver knows how to reprogram the PHY to operate in this mode.
+
+If it's a SFP+ module, then similar games occur. If it's a fiber module,
+then 10GBASE-R needs to be selected, since that's the protocol that is
+defined to be used over 10G fiber connections. Otherwise, again, it's
+up to the PHY - and the PHY can be one that switches between 10GBASE-R,
+2500BASE-X, and SGMII depending on the speed that was negotiated on its
+copper side.
+
+There is nothing simple here - but as far as the MAC driver is
+concerned, phylink will ask the MAC driver to reconfigure itself for
+the interface mode as appropriate.
+
+> >pcs_config and pcs_link_up passes "interface" as an argument, and in
+> >pcs_get_state call "state->interface" appeared to be populated just before
+> >calling it and hence should be valid.
+> 
+> It seems state->interface in pcs_get_state is not always valid when SFPs with
+> different types of PHY are used.
+> 
+> There is a chance of SFP with different type of PHY is inserted,
+> eventually invoking phylink_resolve for interface mode different than
+> phylink initially requested, and causing major reconfiguration.
+> 
+> However, pcs_get_state is called before major reconfiguration, where selecting
+> which pcs_ops and PCS to be used is difficult without correct interface mode.  
+
+Correct - state->interface will always be the currently configured
+interface mode, because that's the one that the MAC hardware is
+configured for. Other PCS interfaces may be powered down and/or
+disconnected from the serdes lane.
+
+However, the interface will not change at the point you are referring
+to when in in-band mode (there is no support for dynamic changes of
+interface in that circumstance.) The change of interface happens when
+a SFP module is being brought up either via the phylink_sfp_config*()
+functions, or if there is a PHY, via the phylib driver propagating its
+operating interface mode back through phylink (but in this case, we
+will not be in in-band mode, and pcs_get_state() will not be called.)
+
 -- 
-2.28.0
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
