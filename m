@@ -2,78 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E959A2975CC
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 19:31:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81CC32975EB
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 19:42:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1753472AbgJWRbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 13:31:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34424 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753457AbgJWRbM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Oct 2020 13:31:12 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5BC4920EDD;
-        Fri, 23 Oct 2020 17:31:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603474271;
-        bh=5sJrPDSqlBqp4k079QLSvl4B+9r33Hetazy5nXQ2hfY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RY4KiNxZ+u9TS7Ur6zqq5ZIf/xYI65tdYeelwPgx0PwCRG3fnej4DEf0e8L48tPJm
-         jf+DUNQTh1bNhRnuI/br5zPQ/xabXtS0vJtg99TKB12RsWLrhrRfnCGd9PlwsOjsWW
-         yN1Vl4iGmt2uX7uTBwYDIM9u/VsRkQvS4uUq56xQ=
-Date:   Fri, 23 Oct 2020 10:31:10 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>
-Subject: Re: [PATCH net RFC] net: Clear IFF_TX_SKB_SHARING for all Ethernet
- devices using skb_padto
-Message-ID: <20201023103110.3017f961@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <CAJht_EMuVzRSp+OmKFY0nPnkC0a39k93KQAeaOFghLBy6TXgiQ@mail.gmail.com>
-References: <20201022072814.91560-1-xie.he.0141@gmail.com>
-        <CAJht_ENMQ3nZb1BOCyyVzJjBK87yk+E1p+Jv5UQuZ1+g1jK1cg@mail.gmail.com>
-        <20201022082239.2ae23264@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <CAJht_EM638CQDb5opnVxfQ81Z2U9hGZbnE581RFZrAQvenn+qQ@mail.gmail.com>
-        <20201022174451.1cd858ae@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <CAJht_EOo50TxEUJmQMBBnaH4FW_2Afpcrr0pStFEXH1Bg3vteg@mail.gmail.com>
-        <CAJht_EMuVzRSp+OmKFY0nPnkC0a39k93KQAeaOFghLBy6TXgiQ@mail.gmail.com>
+        id S461757AbgJWRl4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 13:41:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59738 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S461716AbgJWRlz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 13:41:55 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE4E8C0613D2
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 10:41:55 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id w21so1898126pfc.7
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 10:41:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=LXf+ps04hNA8w+H1+miMvzPAvHztSBOVbDdk9iOmq8k=;
+        b=MnFi588vQfQJmITiUeRUTl7N1y3NTrdlvWnV+UsAmYTKoHTRgUZ3s0jjA/mkUTrzsw
+         4jBvh0zMjF1cYrjvYrjJbeTW8e6RtzRIFzoi6nIfhIvJAN1Cut8E0Xh/fVSBmFcIecJE
+         d5IYeehTuGOCPdYKx4qrcIiIQaAthk1Q1km2k=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LXf+ps04hNA8w+H1+miMvzPAvHztSBOVbDdk9iOmq8k=;
+        b=HfKNIHYhlxrmEs0B7odtMITZy57rGKbq2K8X0/f2p6iT/RfH62SesTAQtufcmGzl3h
+         ZpbkFR+VcOxA1i5/7YNn75amZPDRruN7bm6xkZlPhwTlrMtxbwSG0m2IOg3ysQp2cx9t
+         5yfGZeEFACxRzKra8rsLVxJ0O6vVYsuk70yDu2ozCscLtw96CzpEO/j6tuVVUO1jFkfb
+         /gFwxkqWKX4xk0oDiuHDjAWuOQjwrLCXwMmnaIfkHiy6NzgiPTvEINSPL0bR1AEN22XI
+         17pUnsoXHltnIzNTx3sRoGR+cQUu5hyv45F48BblMqNRn/eUU++koLf057g9YX7teiEB
+         9SjQ==
+X-Gm-Message-State: AOAM533bhz9k1TxmIpLUiROtXqILJKpdTZBvrMgdLUYAFEb+NS1mr2js
+        4taJmKPr9LTIU/j1HRtWxQ3vfw==
+X-Google-Smtp-Source: ABdhPJzNjzldV09CDkT31lkmu0Subn56dMJ8RuLmx5OlvCyYHBlYpnyIwPrAXMJJyGw5A+/mQH1xqw==
+X-Received: by 2002:aa7:83c9:0:b029:158:11ce:4672 with SMTP id j9-20020aa783c90000b029015811ce4672mr3221655pfn.23.1603474915101;
+        Fri, 23 Oct 2020 10:41:55 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id 197sm2787448pfa.170.2020.10.23.10.41.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Oct 2020 10:41:54 -0700 (PDT)
+Date:   Fri, 23 Oct 2020 10:41:53 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Laight <David.Laight@ACULAB.COM>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [RFC][PATCH v3 3/3] Rename nla_strlcpy to nla_strscpy.
+Message-ID: <202010231041.9FAB4A2714@keescook>
+References: <20201020164707.30402-1-laniel_francis@privacyrequired.com>
+ <20201020164707.30402-4-laniel_francis@privacyrequired.com>
+ <202010211649.ABD53841B@keescook>
+ <2286512.66XcFyAlgq@machine>
+ <202010221302.5BA047AC9@keescook>
+ <20201022160551.33d85912@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <b55d502089c44b3589973fa4e0d90617@AcuMS.aculab.com>
+ <20201023082920.6addf3cb@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201023082920.6addf3cb@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 22 Oct 2020 19:25:40 -0700 Xie He wrote:
-> On Thu, Oct 22, 2020 at 6:56 PM Xie He <xie.he.0141@gmail.com> wrote:
-> > My patch isn't complete. Because there are so many drivers with this
-> > problem, I feel it's hard to solve them all at once. So I only grepped
-> > "skb_padto" under "drivers/net/ethernet". There are other drivers
-> > under "ethernet" using "skb_pad", "skb_put_padto" or "eth_skb_pad".
-> > There are also (fake) Ethernet drivers under "drivers/net/wireless". I
-> > feel it'd take a long time and also be error-prone to solve them all,
-> > so I feel it'd be the best if there are other solutions.  
+On Fri, Oct 23, 2020 at 08:29:20AM -0700, Jakub Kicinski wrote:
+> On Fri, 23 Oct 2020 08:07:44 +0000 David Laight wrote:
+> > FWIW I suspect  the 'return -ERR on overflow' is going to bite us.
+> > Code that does p += strsxxx(p, ..., lim - p, ...) assuming (or not
+> > caring) about overflow goes badly wrong.
 > 
-> BTW, I also see some Ethernet drivers calling skb_push to prepend
-> strange headers to the skbs. For example,
-> 
-> drivers/net/ethernet/mellanox/mlxsw/switchx2.c prepends a header of
-> MLXSW_TXHDR_LEN (16).
-> 
-> We can't send shared skbs to these drivers either because they modify the skbs.
-> 
-> It seems to me that many drivers have always assumed that they can
-> modify the skb whenever needed. They've never considered there might
-> be shared skbs. I guess adding IFF_TX_SKB_SHARING to ether_setup was a
-> bad idea. It not only made the code less clean, but also didn't agree
-> with the actual situations of the drivers.
+> I don't really care either way, but in netlink there's usually an
+> attribute per value, nothing combines strings like p += strx..().
+> Looking at the conversion in patch 2 the callers just want to 
+> check for overflow.
 
-Indeed. If we remove IFF_TX_SKB_SHARING from ether_setup we may need to
-add the flag to the drivers that used to work, otherwise people using
-pktgen will see a regression.
+Right -- this is a very narrow use-case (NLA). I think this series is
+fine as-is.
+
+-- 
+Kees Cook
