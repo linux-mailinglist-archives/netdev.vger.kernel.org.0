@@ -2,222 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E61E29700E
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 15:11:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26340297011
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 15:12:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S464367AbgJWNLW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 09:11:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:50253 "EHLO
+        id S372847AbgJWNMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 09:12:38 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:38953 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S372434AbgJWNLV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 09:11:21 -0400
+        by vger.kernel.org with ESMTP id S372860AbgJWNMh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 09:12:37 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603458679;
+        s=mimecast20190719; t=1603458756;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
-        bh=ndpmUdrqPfRnQOR1QB66RbMcult4c4e6pOI15l755so=;
-        b=Q10pBcowzdk8R7Rnu/0jI+LYNUycUO1l/I10rz9gY/KSbc0jJ5luTTK1YBhYJ0/QHSzZcJ
-        9sE/z7K9WQwNnoMdLdV+j5BC7FSnjVYYjvQiH8k6nZYvP+Hdpdb/yZkoBKBFJAm34JKKP9
-        JabJE504HH7bbmXGJkYnUBwXwnTip/4=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jTvh5muq91KS5CpSKJexFoXC1Qp8u72sWKaaLH+BBx8=;
+        b=Jo3aDhqMMpcWtLQYVz5jebmJdaCZTJg7UEX2OlXqzjjDl0DwiC7Sj1f+8xm5vlPDYcLGfR
+        Q9rEfKw6+quixfepfYo1kzCbywQ01j73hhE6/jnrAJ9smTZXAwmEjYChDJakDpQsgGFQsx
+        jMgiTw84h1fNoOCWeHRt3Bn01eUFkNY=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-328-J-0kNpkgOtKEnQ0ViZRblw-1; Fri, 23 Oct 2020 09:11:14 -0400
-X-MC-Unique: J-0kNpkgOtKEnQ0ViZRblw-1
+ us-mta-164-YV1Nynx1P4GwePi1t-8udg-1; Fri, 23 Oct 2020 09:12:32 -0400
+X-MC-Unique: YV1Nynx1P4GwePi1t-8udg-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C622C81EE66;
-        Fri, 23 Oct 2020 13:11:10 +0000 (UTC)
-Received: from [10.10.113.74] (ovpn-113-74.rdu2.redhat.com [10.10.113.74])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8C6C64D75F;
-        Fri, 23 Oct 2020 13:10:43 +0000 (UTC)
-Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to housekeeping
- CPUs
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Marcelo Tosatti <mtosatti@redhat.com>, helgaas@kernel.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        frederic@kernel.org, sassmann@redhat.com,
-        jesse.brandeburg@intel.com, lihong.yang@intel.com,
-        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
-        jlelli@redhat.com, hch@infradead.org, bhelgaas@google.com,
-        mike.marciniszyn@intel.com, dennis.dalessandro@intel.com,
-        thomas.lendacky@amd.com, jiri@nvidia.com, mingo@redhat.com,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        lgoncalv@redhat.com
-References: <20200928183529.471328-5-nitesh@redhat.com>
- <20201016122046.GP2611@hirez.programming.kicks-ass.net>
- <79f382a7-883d-ff42-394d-ec4ce81fed6a@redhat.com>
- <20201019111137.GL2628@hirez.programming.kicks-ass.net>
- <20201019140005.GB17287@fuller.cnet>
- <20201020073055.GY2611@hirez.programming.kicks-ass.net>
- <078e659e-d151-5bc2-a7dd-fe0070267cb3@redhat.com>
- <20201020134128.GT2628@hirez.programming.kicks-ass.net>
- <6736e643-d4ae-9919-9ae1-a73d5f31463e@redhat.com>
- <260f4191-5b9f-6dc1-9f11-085533ac4f55@redhat.com>
- <20201023085826.GP2611@hirez.programming.kicks-ass.net>
-From:   Nitesh Narayan Lal <nitesh@redhat.com>
-Autocrypt: addr=nitesh@redhat.com; prefer-encrypt=mutual; keydata=
- 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
- VujM7c/b4pps
-Organization: Red Hat Inc,
-Message-ID: <9ee77056-ef02-8696-5b96-46007e35ab00@redhat.com>
-Date:   Fri, 23 Oct 2020 09:10:41 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 44117192CC47;
+        Fri, 23 Oct 2020 13:12:29 +0000 (UTC)
+Received: from [10.36.114.18] (ovpn-114-18.ams2.redhat.com [10.36.114.18])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 55E915C1CF;
+        Fri, 23 Oct 2020 13:12:24 +0000 (UTC)
+Subject: Re: Buggy commit tracked to: "Re: [PATCH 2/9] iov_iter: move
+ rw_copy_check_uvector() into lib/iov_iter.c"
+To:     Al Viro <viro@zeniv.linux.org.uk>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        David Laight <David.Laight@aculab.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "kernel-team@android.com" <kernel-team@android.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jens Axboe <axboe@kernel.dk>,
+        David Howells <dhowells@redhat.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-aio@kvack.org" <linux-aio@kvack.org>,
+        "io-uring@vger.kernel.org" <io-uring@vger.kernel.org>,
+        "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>
+References: <20201022090155.GA1483166@kroah.com>
+ <e04d0c5d-e834-a15b-7844-44dcc82785cc@redhat.com>
+ <a1533569-948a-1d5b-e231-5531aa988047@redhat.com>
+ <bc0a091865f34700b9df332c6e9dcdfd@AcuMS.aculab.com>
+ <5fd6003b-55a6-2c3c-9a28-8fd3a575ca78@redhat.com>
+ <20201022132342.GB8781@lst.de>
+ <8f1fff0c358b4b669d51cc80098dbba1@AcuMS.aculab.com>
+ <CAKwvOdnix6YGFhsmT_mY8ORNPTOsN3HwS33Dr0Ykn-pyJ6e-Bw@mail.gmail.com>
+ <CAK8P3a3LjG+ZvmQrkb9zpgov8xBkQQWrkHBPgjfYSqBKGrwT4w@mail.gmail.com>
+ <CAKwvOdnhONvrHLAuz_BrAuEpnF5mD9p0YPGJs=NZZ0EZNo7dFQ@mail.gmail.com>
+ <20201022192458.GV3576660@ZenIV.linux.org.uk>
+From:   David Hildenbrand <david@redhat.com>
+Organization: Red Hat GmbH
+Message-ID: <e7a8f709-87b8-c328-6190-8371c6fa3ae8@redhat.com>
+Date:   Fri, 23 Oct 2020 15:12:23 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.1
 MIME-Version: 1.0
-In-Reply-To: <20201023085826.GP2611@hirez.programming.kicks-ass.net>
+In-Reply-To: <20201022192458.GV3576660@ZenIV.linux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=nitesh@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="oQlDKWr9GNJpxItvUxtXry58hfGBQpQgR"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---oQlDKWr9GNJpxItvUxtXry58hfGBQpQgR
-Content-Type: multipart/mixed; boundary="eL5tY0q3165KuTjpbfwfXLhzBvxhWkdwC"
+On 22.10.20 21:24, Al Viro wrote:
+> On Thu, Oct 22, 2020 at 12:04:52PM -0700, Nick Desaulniers wrote:
+> 
+>> Passing an `unsigned long` as an `unsigned int` does no such
+>> narrowing: https://godbolt.org/z/TvfMxe (same vice-versa, just tail
+>> calls, no masking instructions).
+>> So if rw_copy_check_uvector() is inlined into import_iovec() (looking
+>> at the mainline@1028ae406999), then children calls of
+>> `rw_copy_check_uvector()` will be interpreting the `nr_segs` register
+>> unmodified, ie. garbage in the upper 32b.
+> 
+> FWIW,
+> 
+> void f(unsinged long v)
+> {
+> 	if (v != 1)
+> 		printf("failed\n");
+> }
+> 
+> void g(unsigned int v)
+> {
+> 	f(v);
+> }
+> 
+> void h(unsigned long v)
+> {
+> 	g(v);
+> }
+> 
+> main()
+> {
+> 	h(0x100000001);
+> }
+> 
+> must not produce any output on a host with 32bit int and 64bit long, regardless of
+> the inlining, having functions live in different compilation units, etc.
+> 
+> Depending upon the calling conventions, compiler might do truncation in caller or
+> in a callee, but it must be done _somewhere_.
 
---eL5tY0q3165KuTjpbfwfXLhzBvxhWkdwC
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Content-Language: en-US
+The interesting case is having g() in a separate compilation unit and
+force-calling g() with 0x100000001 via inline ASM. So forcing garbage
+into high bits.
 
+I'll paly with it.
 
-On 10/23/20 4:58 AM, Peter Zijlstra wrote:
-> On Thu, Oct 22, 2020 at 01:47:14PM -0400, Nitesh Narayan Lal wrote:
->
->> Hi Peter,
->>
->> So based on the suggestions from you and Thomas, I think something like =
-the
->> following should do the job within pci_alloc_irq_vectors_affinity():
->>
->> + =C2=A0 =C2=A0 =C2=A0 if (!pci_is_managed(dev) && (hk_cpus < num_online=
-_cpus()))
->> + =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 max_vecs =3D clamp(hk=
-_cpus, min_vecs, max_vecs);
->>
->> I do know that you didn't like the usage of "hk_cpus < num_online_cpus()=
-"
->> and to an extent I agree that it does degrade the code clarity.
-> It's not just code clarity; I simply don't understand it. It feels like
-> a band-aid that breaks thing.
->
-> At the very least it needs a ginormous (and coherent) comment that
-> explains:
->
->  - the interface
->  - the usage
->  - this hack
+-- 
+Thanks,
 
-That make sense.
-
->
->> However, since there is a certain inconsistency in the number of vectors
->> that drivers request through this API IMHO we will need this, otherwise
->> we could cause an impact on the drivers even in setups that doesn't
->> have any isolated CPUs.
-> So shouldn't we then fix the drivers / interface first, to get rid of
-> this inconsistency?
->
-
-Considering we agree that excess vector is a problem that needs to be
-solved across all the drivers and that you are comfortable with the other
-three patches in the set. If I may suggest the following:
-
-- We can pick those three patches for now, as that will atleast fix a
-=C2=A0 driver that is currently impacting RT workloads. Is that a fair
-=C2=A0 expectation?
-
-- In the meanwhile, I will start looking into individual drivers that
-=C2=A0 consume this API to find out if there is a co-relation that can be
-=C2=A0 derived between the max_vecs and number of CPUs. If that exists then=
- I
-=C2=A0 can go ahead and tweak the API's max_vecs accordingly. However, if t=
-his
-=C2=A0 is absolutely random then I can come up with a sane comment
-=C2=A0 before this check that covers the list of items you suggested.
-
-- I also want to explore the comments made by Thomas which may take
-=C2=A0 some time.
-
-
---=20
-Thanks
-Nitesh
-
-
---eL5tY0q3165KuTjpbfwfXLhzBvxhWkdwC--
-
---oQlDKWr9GNJpxItvUxtXry58hfGBQpQgR
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEkXcoRVGaqvbHPuAGo4ZA3AYyozkFAl+S1lIACgkQo4ZA3AYy
-ozlo6xAAsLMkK9fG19Pf0OQkWpGzytSKDlGVOP/j0XAG6zJIEIlyAgGH0cPUI8WN
-ywYxTHZ8fval3yl0FkD85oOUKPW9dGdu8tOdJG3By8m3i2xNRX6QFLCR/QTGMaZI
-2JPMCmldC+yqzGLCGyWvAUNzMVqCwr4EVTg0uMiEA3TvTlhebHnAZy6un86yC/64
-Sscd5xkHZVu28srnr/nT73/2XRF+10ewJ3dASVOXtLw8nW0ct4q4oGxeYxd8Ek09
-FOkz2ENLbAk+K56CotPfYFnbtse0zuSqAr6mIm1wecqFUDUSZKm5UOn1bpMUFtcs
-Et8p2pncdVhajosuwfpb4lDoYcvrYfYf+FYzqBFGIy4hzfgPJfMCsXgCS7IMGgOf
-yTahwivWQcYr0PrlCmEfrRpRmaiyoep4v1M3TEngSqtAV4n/amFuiOsKqpIzBsMe
-QBWaYNtwNNasO3HoaPuB34BICMJFDe4av6BtG0LWzmti3FumwBkqrdfjmcBMdv7b
-AuY2DG5L8nLaHE8SdTMAgXRuPAp5JFnUifk7JUeommDJx620maU6PFUHM5O7Lx9j
-YPUwGboG/E9q8fEgj4aIXnsx2w1cQcyvxt0JLevDBwmK5K7jHJi6SJDe/1BM17T4
-hs399A5FGySMlA9L6G+YXYs6DsJqo30M2sGeYopzVNSWabEetu8=
-=gv+7
------END PGP SIGNATURE-----
-
---oQlDKWr9GNJpxItvUxtXry58hfGBQpQgR--
+David / dhildenb
 
