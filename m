@@ -2,80 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B29C29710C
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 16:03:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15A39297116
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 16:10:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1750250AbgJWODl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 10:03:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S374546AbgJWODl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 10:03:41 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDFCCC0613D2
-        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 07:03:39 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id g7so1441789ilr.12
-        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 07:03:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mRssJ8ydvqoiUM8sCx1vOe+z6Z5ELMLVEz5GB2mujoE=;
-        b=qVnKKmWEAm0tfevBxG8rohkBBkyKlxmoQaS3qyQab549eqEpSl0oV7ZaCdkNsJbuE/
-         kHi1jn95s1rccakqFUVXeSml70b7i34pPKIw9QgA/oAn4nwBJGMmeDt7oXiL20a25XYn
-         EtpfoTrKVJV9n11Kf1pR2NaFLqFzUvUqLI95fEX7R1//3V+5RGWmgfytn3HqwL2vZHww
-         s3BpqsuRXbNW36+STmgyfKDXJX08GZS3f9WAWGo2EuQVeDczmDwa04ag4Wf2De51teAf
-         JcbFqXGzwjreIWBEUAyHJlhHenkH4iRRke0qo/lb/6saPU51C+Dpbv3zJ1v5iXORC307
-         6S1Q==
+        id S1750301AbgJWOKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Oct 2020 10:10:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:59148 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S465171AbgJWOJ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 10:09:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603462198;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=rVRff8IalcLcFxZp8c6FdrS3ABLClcQs9SBrNtnDkw8=;
+        b=jCkrKLCTAUovvHLFOn4n5Ko2Incqp+kS0ZnkAYycZ89ZDk6lKTtj1HtkOdVjn0NZidyeXh
+        sAIditgUe7D1i4cqGpsQDxrh0MlP24/GExeo0xhi62eR7bcVAkiBsmBS/4xY1Cm1e2nExf
+        WJTwffWktH7eTmu6jXjct59+Iwh/AtU=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-519-rdnJmuB1MyKoZ_ZqGBtYtA-1; Fri, 23 Oct 2020 10:09:56 -0400
+X-MC-Unique: rdnJmuB1MyKoZ_ZqGBtYtA-1
+Received: by mail-wm1-f69.google.com with SMTP id 22so285354wmo.3
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 07:09:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mRssJ8ydvqoiUM8sCx1vOe+z6Z5ELMLVEz5GB2mujoE=;
-        b=m0oWfqAS8Urin8JHQReQOrba36xtt6uIly8UW44EJ/Ob+wywJlvDNXxqasGQvWIMmj
-         MxbE5iXyPz+s2ZWcRJXYJZ6BiYLI4Jw65qSzM/OnoR3buh8SDGcPKxsIYMRCYMb2bvSZ
-         VdijqFdxj/kCU4Z0CYAw6vyka7WTbQL1WhytnT4O9jK4sU2gRVTmFodjeVZ9s7dFokEq
-         XxreP76ZDcUXqq09mAvjBJHTkEcSckifOSHAbDVh9X6HSSTlDM3M4v5/KA+qVkI3Xfju
-         AiTqeopvKLvH9/oF85Mt/Q0OYudRJCL52rngKUMN0yqBvnx5p+93D4vX4lyyGQqPPGnD
-         Fg3Q==
-X-Gm-Message-State: AOAM531VhyRoY5hagsEkqWHkJ971bLiD8oeQ2DPE9kwmJtau01zvPXm6
-        SqEt24y+hBZnB+MWEuY5rqxotOK5NX9I3vws6u8hKg==
-X-Google-Smtp-Source: ABdhPJzrFPt45G3s0kkUubcqEPhNGKToH3X0KJNnX5ZYLf5G+oDxxsNkj03vFpNV0eVyJ5dgf2XfB+FJJrli479WSeQ=
-X-Received: by 2002:a05:6e02:970:: with SMTP id q16mr1766465ilt.69.1603461818703;
- Fri, 23 Oct 2020 07:03:38 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rVRff8IalcLcFxZp8c6FdrS3ABLClcQs9SBrNtnDkw8=;
+        b=gi2ZLcdny7qUAbEIb1D+pHCvnYf5EA55xMLsLecusrkvOKkN3fJhHKACVlwaRiug3N
+         O/xno7FgGWXqR6yNmhlx/fVJbu2uLJLEeW+352pCWj7NWeTeiVqc1RsqGoZ07X/dHsre
+         kyemoPbzRwJKbvf7opF9NsgUdhpAfbF10kcw3Uz64us71iQAuhvmUM3hGSD44v20x+JW
+         RSTVwJpPvv+jlPGlrvzsnR8Lhw5Yko/J++bAAUAOw8HRViNDsJ3Kxq8CpfXp9rfPNkQZ
+         HfCd6jv9VIlsx75kbP8MCMqdbgDgCDnADQwuqV5kq7iXekZtuz5+F2ndUai6Dvyt0Ont
+         909g==
+X-Gm-Message-State: AOAM532TYNaCSfNFgjkVfP4C6UvPOiYdDr3v1qWeXUhIdHkWhC/1Wajc
+        hwpwmWqcqO8lMYAPURQbnNkNyohRTbn0JPZMCdIyOgKPlyr80Qje9A9QnGzyna9Le5350gx3Y8i
+        e623Eba5zXilMMLk1
+X-Received: by 2002:a7b:c741:: with SMTP id w1mr2200125wmk.67.1603462195577;
+        Fri, 23 Oct 2020 07:09:55 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy/ohXINOadQoKRMbMO4rjSXcp5H+ohblZ7M/AnSdV3socDZSGjYZnpTkpuYZ0gzbQFumMEhA==
+X-Received: by 2002:a7b:c741:: with SMTP id w1mr2200104wmk.67.1603462195366;
+        Fri, 23 Oct 2020 07:09:55 -0700 (PDT)
+Received: from steredhat (c-115-213.cust-q.wadsl.it. [212.43.115.213])
+        by smtp.gmail.com with ESMTPSA id d129sm3848452wmd.5.2020.10.23.07.09.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Oct 2020 07:09:50 -0700 (PDT)
+Date:   Fri, 23 Oct 2020 16:09:47 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] vsock: ratelimit unknown ioctl error message
+Message-ID: <20201023140947.kurglnklaqteovkp@steredhat>
+References: <20201023122113.35517-1-colin.king@canonical.com>
 MIME-Version: 1.0
-References: <20201023111352.GA289522@rdias-suse-pc.lan>
-In-Reply-To: <20201023111352.GA289522@rdias-suse-pc.lan>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 23 Oct 2020 16:03:27 +0200
-Message-ID: <CANn89iJDt=XpUZA_uYK98cK8tctW6M=f4RFtGQpTxRaqwnnqSQ@mail.gmail.com>
-Subject: Re: [PATCH] tcp: fix race condition when creating child sockets from syncookies
-To:     Ricardo Dias <rdias@memsql.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20201023122113.35517-1-colin.king@canonical.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 23, 2020 at 1:14 PM Ricardo Dias <rdias@memsql.com> wrote:
+On Fri, Oct 23, 2020 at 01:21:13PM +0100, Colin King wrote:
+>From: Colin Ian King <colin.king@canonical.com>
 >
-> When the TCP stack is in SYN flood mode, the server child socket is
-> created from the SYN cookie received in a TCP packet with the ACK flag
-> set.
+>When exercising the kernel with stress-ng with some ioctl tests the
+>"Unknown ioctl" error message is spamming the kernel log at a high
+>rate. Rate limit this message to reduce the noise.
 >
-...
+>Signed-off-by: Colin Ian King <colin.king@canonical.com>
+>---
+> net/vmw_vsock/af_vsock.c | 2 +-
+> 1 file changed, 1 insertion(+), 1 deletion(-)
+>
+>diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>index 9e93bc201cc0..b8feb9223454 100644
+>--- a/net/vmw_vsock/af_vsock.c
+>+++ b/net/vmw_vsock/af_vsock.c
+>@@ -2072,7 +2072,7 @@ static long vsock_dev_do_ioctl(struct file *filp,
+> 		break;
+>
+> 	default:
+>-		pr_err("Unknown ioctl %d\n", cmd);
+>+		pr_err_ratelimited("Unknown ioctl %d\n", cmd);
 
-This patch only handles IPv4, unless I am missing something ?
+Make sense, or maybe can we remove the error message returning only the
+-EINVAL?
 
-It looks like the fix should be done in inet_ehash_insert(), not
-adding yet another helper in TCP.
-This would be family generic.
+Both cases are fine for me:
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-Note that normally, all packets for the same 4-tuple should be handled
-by the same cpu,
-so this race is quite unlikely to happen in standard setups.
+> 		retval = -EINVAL;
+> 	}
+>
+>-- 
+>2.27.0
+>
+
