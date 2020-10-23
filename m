@@ -2,101 +2,354 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 284AD2968A4
-	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 05:07:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 740672968BB
+	for <lists+netdev@lfdr.de>; Fri, 23 Oct 2020 05:30:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S460270AbgJWDGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Oct 2020 23:06:41 -0400
-Received: from m42-4.mailgun.net ([69.72.42.4]:54653 "EHLO m42-4.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S460266AbgJWDGk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Oct 2020 23:06:40 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1603422400; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=Nr9BZucj8jUtuCRAiR0LM44wljXrRqbutLb2S4Vohfk=; b=T62EDT6FYQ5oNt6Xpzxtvm99P6/Z4K78vhQQOmxjsFbVMVgOpXAVQw+LJnD/g3dOdxDhJ6Rk
- YWZtqVJnmo1db9ULnJjypefsDJVL29p+4WuhR1cNRSB23AT0UEV5QYVz0/n10IEWbMlvTncJ
- P1AJ1n1IS+4xG7xjDnUKa2kg1Ls=
-X-Mailgun-Sending-Ip: 69.72.42.4
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
- 5f9248bf319d4e9cb5e9c394 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 23 Oct 2020 03:06:39
- GMT
-Sender: hemantk=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 5EF0EC433C9; Fri, 23 Oct 2020 03:06:39 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-3.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from [10.46.162.249] (i-global254.qualcomm.com [199.106.103.254])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: hemantk)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 4B9E5C433C9;
-        Fri, 23 Oct 2020 03:06:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 4B9E5C433C9
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=hemantk@codeaurora.org
-Subject: Re: [PATCH v6 1/2] bus: mhi: Add mhi_queue_is_full function
-To:     Loic Poulain <loic.poulain@linaro.org>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, manivannan.sadhasivam@linaro.org,
-        eric.dumazet@gmail.com, Jeffrey Hugo <jhugo@codeaurora.org>,
-        Bhaumik Bhatt <bbhatt@codeaurora.org>
-References: <1602840007-27140-1-git-send-email-loic.poulain@linaro.org>
-From:   Hemant Kumar <hemantk@codeaurora.org>
-Message-ID: <8c384f6a-df21-1a39-f586-6077da373c04@codeaurora.org>
-Date:   Thu, 22 Oct 2020 20:06:37 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <1602840007-27140-1-git-send-email-loic.poulain@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S369511AbgJWDaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Oct 2020 23:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40680 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S368814AbgJWDaQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Oct 2020 23:30:16 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B443C0613CE
+        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 20:30:16 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id w4so136488plp.17
+        for <netdev@vger.kernel.org>; Thu, 22 Oct 2020 20:30:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=1nY3WP57swg6MAG4MDM8yKEtar1GITDnzwO2HHJz44U=;
+        b=i4wG/gwoPmGRZ6Mpz8QxDdp67CljbBwZPYy9aiHWtHbg4Yjk2zTjT5HniN2uRl+Qxv
+         gRv7AZgHdFg7vtaVzteuxIsZ/JmDzxnbuP6QEPQaJ9wOrJzESY9tyUgJ1m1pBv21m8KJ
+         hgT/1Ff73GDCmmnlabp4ozlnhXfW2f2muaShGzYcrkSkxd39qeaafQvRriM73XFnEuTY
+         Jcj50rqDVJPXGgZGvLAUuVxwweSabtVnQxF6wPoKxc/BsejfXtcXgHUaOghv3xYhkdnr
+         OsH4XdW+IsmDTCun6KJ5XbRjdwMI/OaApRCKkvVa5ZK3l3OfQKTuBJHfqLChyZMhXTlL
+         ShPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=1nY3WP57swg6MAG4MDM8yKEtar1GITDnzwO2HHJz44U=;
+        b=OlFq6WGxUvvRV4rso892cAVQxffZadXuZ8Uw8DFdO6rENH+Ha0YkUcbCL93rKI3rTi
+         qw0paOfqvdOgwAICWO3k70A1m1SB1j/S/QU/FjAuySu/QI8z20lcryejnAs4b2tn7BSm
+         4mU6y/VKzQTk7aW7RdcHIR2Cw5WQDpkbaUx/TiAUYpy4Qjlt9JNCweOEJqtejE2+1HYY
+         a24b+oREeCtG6PLoMbmaDCyba4CJ9/h5PCLkWRh6QTjmsv9pan/1bxOzOEhrLJ10DzFr
+         X+G6Q36tMOYNPtf5Ro2A2aDdgJaeucn/o3lylUCxk0aNrN/SJxu4fWhy14iv8vF97t35
+         wYmQ==
+X-Gm-Message-State: AOAM530rc1Oy9GNbW1KCQX8oSuyzi86dBKXKr9yfTL7kW/093Oy/FqFS
+        YBySxguoEAtoi7FtbHcbR+RZRDBYIclJ
+X-Google-Smtp-Source: ABdhPJzQxmKmCLQEWloUtqGTBdjOj0/OiTQmKmDlMAVk1e0OUR2bLkyYPhuESGhvRCGjWYhVdmZxT/FuxztA
+Sender: "joshdon via sendgmr" <joshdon@joshdon.svl.corp.google.com>
+X-Received: from joshdon.svl.corp.google.com ([2620:15c:2cd:202:a28c:fdff:fee1:cc86])
+ (user=joshdon job=sendgmr) by 2002:a05:6a00:8c5:b029:142:2501:39e6 with SMTP
+ id s5-20020a056a0008c5b0290142250139e6mr184421pfu.53.1603423815689; Thu, 22
+ Oct 2020 20:30:15 -0700 (PDT)
+Date:   Thu, 22 Oct 2020 20:29:42 -0700
+Message-Id: <20201023032944.399861-1-joshdon@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.29.0.rc1.297.gfa9743e501-goog
+Subject: [PATCH 1/3] sched: better handling for busy polling loops
+From:   Josh Don <joshdon@google.com>
+To:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, Josh Don <joshdon@google.com>,
+        Xi Wang <xii@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Loic,
+Busy polling loops in the kernel such as network socket poll and kvm
+halt polling have performance problems related to process scheduler load
+accounting.
 
-On 10/16/20 2:20 AM, Loic Poulain wrote:
-> This function can be used by client driver to determine whether it's
-> possible to queue new elements in a channel ring.
-> 
-> Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-[..]
-> +static inline bool mhi_is_ring_full(struct mhi_controller *mhi_cntrl,
-> +				    struct mhi_ring *ring)
->   {
->   	void *tmp = ring->wp + ring->el_size;
->   
-> @@ -1173,6 +1173,17 @@ int mhi_queue_buf(struct mhi_device *mhi_dev, enum dma_data_direction dir,
->   }
->   EXPORT_SYMBOL_GPL(mhi_queue_buf);
->   
-> +bool mhi_queue_is_full(struct mhi_device *mhi_dev, enum dma_data_direction dir)
-> +{
-> +	struct mhi_controller *mhi_cntrl = mhi_dev->mhi_cntrl;
-> +	struct mhi_chan *mhi_chan = (dir == DMA_TO_DEVICE) ?
-> +					mhi_dev->ul_chan : mhi_dev->dl_chan;
-> +	struct mhi_ring *tre_ring = &mhi_chan->tre_ring;
-> +
-> +	return mhi_is_ring_full(mhi_cntrl, tre_ring);
-> +}
-> +EXPORT_SYMBOL_GPL(mhi_queue_is_full);
-> 
-i was wondering if you can make use of mhi_get_free_desc() API (pushed 
-as part of MHI UCI - User Control Interface driver) here?
+Both of the busy polling examples are opportunistic - they relinquish
+the cpu if another thread is ready to run. This design, however, doesn't
+extend to multiprocessor load balancing very well. The scheduler still
+sees the busy polling cpu as 100% busy and will be less likely to put
+another thread on that cpu. In other words, if all cores are 100%
+utilized and some of them are running real workloads and some others are
+running busy polling loops, newly woken up threads will not prefer the
+busy polling cpus. System wide throughput and latency may suffer.
 
-Thanks,
-Hemant
+This change allows the scheduler to detect busy polling cpus in order to
+allow them to be more frequently considered for wake up balancing.
+
+This change also disables preemption for the duration of the busy
+polling loop. This is important, as it ensures that if a polling thread
+decides to end its poll to relinquish cpu to another thread, the polling
+thread will actually exit the busy loop and potentially block. When it
+later becomes runnable, it will have the opportunity to find an idle cpu
+via wakeup cpu selection.
+
+Suggested-by: Xi Wang <xii@google.com>
+Signed-off-by: Josh Don <joshdon@google.com>
+Signed-off-by: Xi Wang <xii@google.com>
+---
+ include/linux/sched.h |  5 +++
+ kernel/sched/core.c   | 94 +++++++++++++++++++++++++++++++++++++++++++
+ kernel/sched/fair.c   | 25 ++++++++----
+ kernel/sched/sched.h  |  2 +
+ 4 files changed, 119 insertions(+), 7 deletions(-)
+
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index afe01e232935..80ef477e5a87 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1651,6 +1651,7 @@ extern int can_nice(const struct task_struct *p, const int nice);
+ extern int task_curr(const struct task_struct *p);
+ extern int idle_cpu(int cpu);
+ extern int available_idle_cpu(int cpu);
++extern int polling_cpu(int cpu);
+ extern int sched_setscheduler(struct task_struct *, int, const struct sched_param *);
+ extern int sched_setscheduler_nocheck(struct task_struct *, int, const struct sched_param *);
+ extern void sched_set_fifo(struct task_struct *p);
+@@ -2048,4 +2049,8 @@ int sched_trace_rq_nr_running(struct rq *rq);
+ 
+ const struct cpumask *sched_trace_rd_span(struct root_domain *rd);
+ 
++extern void prepare_to_busy_poll(void);
++extern int continue_busy_poll(void);
++extern void end_busy_poll(bool allow_resched);
++
+ #endif
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 2d95dc3f4644..2783191d0bd4 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -5107,6 +5107,24 @@ int available_idle_cpu(int cpu)
+ 	return 1;
+ }
+ 
++/**
++ * polling_cpu - is a given CPU currently running a thread in a busy polling
++ * loop that could be preempted if a new thread were to be scheduled?
++ * @cpu: the CPU in question.
++ *
++ * Return: 1 if the CPU is currently polling. 0 otherwise.
++ */
++int polling_cpu(int cpu)
++{
++#ifdef CONFIG_SMP
++	struct rq *rq = cpu_rq(cpu);
++
++	return unlikely(rq->busy_polling);
++#else
++	return 0;
++#endif
++}
++
+ /**
+  * idle_task - return the idle task for a given CPU.
+  * @cpu: the processor in question.
+@@ -7191,6 +7209,7 @@ void __init sched_init(void)
+ 
+ 		rq_csd_init(rq, &rq->nohz_csd, nohz_csd_func);
+ #endif
++		rq->busy_polling = 0;
+ #endif /* CONFIG_SMP */
+ 		hrtick_rq_init(rq);
+ 		atomic_set(&rq->nr_iowait, 0);
+@@ -7417,6 +7436,81 @@ void ia64_set_curr_task(int cpu, struct task_struct *p)
+ 
+ #endif
+ 
++/*
++ * Calling this function before entering a preemptible busy polling loop will
++ * help the scheduler make better load balancing decisions. Wake up balance
++ * will treat the polling cpu as idle.
++ *
++ * Preemption is disabled inside this function and re-enabled in
++ * end_busy_poll(), thus the polling loop must periodically check
++ * continue_busy_poll().
++ *
++ * REQUIRES: prepare_to_busy_poll(), continue_busy_poll(), and end_busy_poll()
++ * must be used together.
++ */
++void prepare_to_busy_poll(void)
++{
++	struct rq __maybe_unused *rq = this_rq();
++	unsigned long __maybe_unused flags;
++
++	/* Preemption will be reenabled by end_busy_poll() */
++	preempt_disable();
++
++#ifdef CONFIG_SMP
++	raw_spin_lock_irqsave(&rq->lock, flags);
++	/* preemption disabled; only one thread can poll at a time */
++	WARN_ON_ONCE(rq->busy_polling);
++	rq->busy_polling++;
++	raw_spin_unlock_irqrestore(&rq->lock, flags);
++#endif
++}
++EXPORT_SYMBOL(prepare_to_busy_poll);
++
++int continue_busy_poll(void)
++{
++	if (!single_task_running())
++		return 0;
++
++	/* Important that we check this, since preemption is disabled */
++	if (need_resched())
++		return 0;
++
++	return 1;
++}
++EXPORT_SYMBOL(continue_busy_poll);
++
++/*
++ * Restore any state modified by prepare_to_busy_poll(), including re-enabling
++ * preemption.
++ *
++ * @allow_resched: If true, this potentially calls schedule() as part of
++ * enabling preemption. A busy poll loop can use false in order to have an
++ * opportunity to block before rescheduling.
++ */
++void end_busy_poll(bool allow_resched)
++{
++#ifdef CONFIG_SMP
++	struct rq *rq = this_rq();
++	unsigned long flags;
++
++	raw_spin_lock_irqsave(&rq->lock, flags);
++	BUG_ON(!rq->busy_polling); /* not paired with prepare() */
++	rq->busy_polling--;
++	raw_spin_unlock_irqrestore(&rq->lock, flags);
++#endif
++
++	/*
++	 * preemption needs to be kept disabled between prepare_to_busy_poll()
++	 * and end_busy_poll().
++	 */
++	BUG_ON(preemptible());
++	if (allow_resched)
++		preempt_enable();
++	else
++		preempt_enable_no_resched();
++}
++EXPORT_SYMBOL(end_busy_poll);
++
+ #ifdef CONFIG_CGROUP_SCHED
+ /* task_group_lock serializes the addition/removal of task groups */
+ static DEFINE_SPINLOCK(task_group_lock);
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 1a68a0536add..58e525c74cc6 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -5460,6 +5460,11 @@ static int sched_idle_cpu(int cpu)
+ {
+ 	return sched_idle_rq(cpu_rq(cpu));
+ }
++
++static int sched_idle_or_polling_cpu(int cpu)
++{
++	return sched_idle_cpu(cpu) || polling_cpu(cpu);
++}
+ #endif
+ 
+ /*
+@@ -5880,6 +5885,7 @@ find_idlest_group_cpu(struct sched_group *group, struct task_struct *p, int this
+ 	u64 latest_idle_timestamp = 0;
+ 	int least_loaded_cpu = this_cpu;
+ 	int shallowest_idle_cpu = -1;
++	int found_polling = 0;
+ 	int i;
+ 
+ 	/* Check if we have any choice: */
+@@ -5914,10 +5920,14 @@ find_idlest_group_cpu(struct sched_group *group, struct task_struct *p, int this
+ 				shallowest_idle_cpu = i;
+ 			}
+ 		} else if (shallowest_idle_cpu == -1) {
++			int polling = polling_cpu(i);
++
+ 			load = cpu_load(cpu_rq(i));
+-			if (load < min_load) {
++			if ((polling == found_polling && load < min_load) ||
++			    (polling && !found_polling)) {
+ 				min_load = load;
+ 				least_loaded_cpu = i;
++				found_polling = polling;
+ 			}
+ 		}
+ 	}
+@@ -6085,7 +6095,7 @@ static int select_idle_smt(struct task_struct *p, int target)
+ 	for_each_cpu(cpu, cpu_smt_mask(target)) {
+ 		if (!cpumask_test_cpu(cpu, p->cpus_ptr))
+ 			continue;
+-		if (available_idle_cpu(cpu) || sched_idle_cpu(cpu))
++		if (available_idle_cpu(cpu) || sched_idle_or_polling_cpu(cpu))
+ 			return cpu;
+ 	}
+ 
+@@ -6149,7 +6159,7 @@ static int select_idle_cpu(struct task_struct *p, struct sched_domain *sd, int t
+ 	for_each_cpu_wrap(cpu, cpus, target) {
+ 		if (!--nr)
+ 			return -1;
+-		if (available_idle_cpu(cpu) || sched_idle_cpu(cpu))
++		if (available_idle_cpu(cpu) || sched_idle_or_polling_cpu(cpu))
+ 			break;
+ 	}
+ 
+@@ -6179,7 +6189,7 @@ select_idle_capacity(struct task_struct *p, struct sched_domain *sd, int target)
+ 	for_each_cpu_wrap(cpu, cpus, target) {
+ 		unsigned long cpu_cap = capacity_of(cpu);
+ 
+-		if (!available_idle_cpu(cpu) && !sched_idle_cpu(cpu))
++		if (!available_idle_cpu(cpu) && !sched_idle_or_polling_cpu(cpu))
+ 			continue;
+ 		if (task_fits_capacity(p, cpu_cap))
+ 			return cpu;
+@@ -6223,14 +6233,14 @@ static int select_idle_sibling(struct task_struct *p, int prev, int target)
+ 	}
+ 
+ symmetric:
+-	if (available_idle_cpu(target) || sched_idle_cpu(target))
++	if (available_idle_cpu(target) || sched_idle_or_polling_cpu(target))
+ 		return target;
+ 
+ 	/*
+ 	 * If the previous CPU is cache affine and idle, don't be stupid:
+ 	 */
+ 	if (prev != target && cpus_share_cache(prev, target) &&
+-	    (available_idle_cpu(prev) || sched_idle_cpu(prev)))
++	    (available_idle_cpu(prev) || sched_idle_or_polling_cpu(prev)))
+ 		return prev;
+ 
+ 	/*
+@@ -6252,7 +6262,8 @@ static int select_idle_sibling(struct task_struct *p, int prev, int target)
+ 	if (recent_used_cpu != prev &&
+ 	    recent_used_cpu != target &&
+ 	    cpus_share_cache(recent_used_cpu, target) &&
+-	    (available_idle_cpu(recent_used_cpu) || sched_idle_cpu(recent_used_cpu)) &&
++	    (available_idle_cpu(recent_used_cpu) ||
++	     sched_idle_or_polling_cpu(recent_used_cpu)) &&
+ 	    cpumask_test_cpu(p->recent_used_cpu, p->cpus_ptr)) {
+ 		/*
+ 		 * Replace recent_used_cpu with prev as it is a potential
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index 28709f6b0975..45de468d0ffb 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -1003,6 +1003,8 @@ struct rq {
+ 
+ 	/* This is used to determine avg_idle's max value */
+ 	u64			max_idle_balance_cost;
++
++	unsigned int		busy_polling;
+ #endif /* CONFIG_SMP */
+ 
+ #ifdef CONFIG_IRQ_TIME_ACCOUNTING
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.29.0.rc1.297.gfa9743e501-goog
+
