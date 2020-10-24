@@ -2,195 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 190EC297CB2
-	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 15:59:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B570297CBC
+	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 16:10:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1761821AbgJXN7W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Oct 2020 09:59:22 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:56596 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1761811AbgJXN7V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Oct 2020 09:59:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603547959;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8KmBaS2YJr8kWdyqWOIZ92IbUvQAUIDpQIFRCq90/EQ=;
-        b=cptcjbWdAm8NuEMBFUb7G4NJ5xtAfbn4966lQAUKvsjPYwwkST6VbEGArMy7hwBDfpM/Ct
-        J6CXNZe0aMglbgHTwC+qxh7OqRmpR2PC3Wb6xFPRJAKDD1BKMz9LweaajK3Aust0S9S724
-        EEFnDZ/0a6aKKXhWIDApMy4HNU/Yyvk=
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
- [209.85.167.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-106-7sez2TbXM7qJ0Sk9RIjf4w-1; Sat, 24 Oct 2020 09:59:17 -0400
-X-MC-Unique: 7sez2TbXM7qJ0Sk9RIjf4w-1
-Received: by mail-oi1-f200.google.com with SMTP id e82so3195187oia.15
-        for <netdev@vger.kernel.org>; Sat, 24 Oct 2020 06:59:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=8KmBaS2YJr8kWdyqWOIZ92IbUvQAUIDpQIFRCq90/EQ=;
-        b=HSPA1pz1itAO6yJff9y4kMWXHqlm2yvPW3fD/eS0u6afDHYEvbhx3+DQ5itDTR8yJf
-         MFa7h2arRTtvwSZDbj5axUuN2yTWM5DyNWjChcnabJX3XFD29Lm2S7h5eXaFkqfptdNz
-         X4GKOBcJE3+Ij7L6P4GvOoAYKUdXDB76Z+ZOBIVk22EHFosM1QadmaNMgoO8mozlIeha
-         bdgCO/Xxqr6uDYnMgRIlqZHqyKr8cRlc3+nmDHnFKLoDmyA1on2ITrXn/4678Noe/mNg
-         r4p1n2/5Jvez4hPfKaG9SlLZADMps683pAP9xdC7Rzm5s1DsxLzChYLZCBOLUSTM5ANN
-         iPhA==
-X-Gm-Message-State: AOAM532B/ob9CHX+KeT+gMzG/27OpfWFKkvct9iYA16ScpLrogS7XiY6
-        yWhGBXLNU62noy//4YPTXyIEB5FNQaZ6npzdVcng7R7LJUfnKvHxrP/DIQkmcqShvrnsjpG6443
-        qm9Pzei5LpPdrhqFc
-X-Received: by 2002:aca:c64e:: with SMTP id w75mr5758431oif.134.1603547956984;
-        Sat, 24 Oct 2020 06:59:16 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxwVMVRpyHW964SEFmnh2ALQAff7JNNO5mS4ANH9Zf1jv0VgDT8+gvJOe2QUE14WeZWABsnsQ==
-X-Received: by 2002:aca:c64e:: with SMTP id w75mr5758417oif.134.1603547956725;
-        Sat, 24 Oct 2020 06:59:16 -0700 (PDT)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id d11sm1262078oti.69.2020.10.24.06.59.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 24 Oct 2020 06:59:16 -0700 (PDT)
-Subject: Re: [RFC PATCH 2/6] fpga: dfl: export network configuration info for
- DFL based FPGA
-To:     Xu Yilun <yilun.xu@intel.com>, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
-        mdf@kernel.org, lee.jones@linaro.org
-Cc:     linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
-        netdev@vger.kernel.org, lgoncalv@redhat.com, hao.wu@intel.com
-References: <1603442745-13085-1-git-send-email-yilun.xu@intel.com>
- <1603442745-13085-3-git-send-email-yilun.xu@intel.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <23767a73-dbd7-949a-1f58-176cf3d2d380@redhat.com>
-Date:   Sat, 24 Oct 2020 06:59:14 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-In-Reply-To: <1603442745-13085-3-git-send-email-yilun.xu@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+        id S1761905AbgJXOKC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Oct 2020 10:10:02 -0400
+Received: from mail-eopbgr130082.outbound.protection.outlook.com ([40.107.13.82]:11232
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1755692AbgJXOKB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 24 Oct 2020 10:10:01 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hEjoFvrzZhCE/APuqMf2hoTlYbsWyQesw74os7/8ecB3oSV+fdlZ/j7hhq3MKrWRZw/IrWHROLTQ1oAz8UjJgUc9McKmUOhLao8kBi4CZUhVOQ/qP0kBBSOkmIKKrkSl4JPjqRYaEnl5fQSmluXy4f32qZXIS1QsEaaizN4bQwEtaoJNBDlbkmSBx7W+QcS2jtPWrsBsgw/TlWxYIZgiR5Z/KIyIlEmq/dvyOkw3fjZO+5aLx0124Pd1pIiDaLo0QsPIo1uPMLR48tlct9sKfFOs3viX1PCCF98oA6aaJTTGyqoEXjx+wzoiQinTfb2Ry4JhpZs8bKLBJ+v+oqjbGg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=03NrHPKkKak8mZNn1IjOK324ODYG1N7kM0lWks7besE=;
+ b=Ym+loN0Yzqd/umOCEpQAqwMBVoWJpXVfUTWyBDWZFIkhc0jx5a6tKTqNeTraMMo4el/mblo7BUQ2zvNfkM2l8ROFSbj1MPIwCMWzFN2DUGidm3UjyNrbk+5LW1HYzBgyL2GdAyvYpu5IRw6cdjC6Ui8wuLuxPJp+vrqXtOdlKjCIsfEXtmKTdnZlZrrBaN3V32suVtLa8ZmYBXcBCYYNFEhGIgs1nc9rZM0+2nJRZxiZV9LNDIBYzRRS5VR9NEOoD0lQTnyBenugHflpq1bRwgSj92KLMa8wHUZ3/r5lyA55kJFDBaBUD5wrB8aYlzGpzLZAIM3l8EOeoNouuZMDdQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=03NrHPKkKak8mZNn1IjOK324ODYG1N7kM0lWks7besE=;
+ b=p9qqidoF+QvGMU/7dS0W6XqQBV+97Ayy7c6MtWAUs1TrcEFdt7IuF+RA8R21yLbO+fscK5QaPCdRZ5VzUpZoo+gBwGKAwVjvjQHdK7O/d64eKLuikP6TOeGdT2rkpGGv9EKPYUM5uQeXEaBAc7UF3WCqjpHb8aT11EVdOieNask=
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ (2603:10a6:803:16::14) by VI1PR04MB5885.eurprd04.prod.outlook.com
+ (2603:10a6:803:e1::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Sat, 24 Oct
+ 2020 14:09:54 +0000
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::607d:cbc4:9191:b324]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::607d:cbc4:9191:b324%5]) with mapi id 15.20.3499.019; Sat, 24 Oct 2020
+ 14:09:54 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        Andre Edich <andre.edich@microchip.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Christophe Leroy <christophe.leroy@c-s.fr>,
+        Dan Murphy <dmurphy@ti.com>,
+        Divya Koppera <Divya.Koppera@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Kavya Sree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marco Felsch <m.felsch@pengutronix.de>,
+        Marek Vasut <marex@denx.de>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Mathias Kresin <dev@kresin.me>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Michael Walle <michael@walle.cc>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Nisar Sayed <Nisar.Sayed@microchip.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        Willy Liu <willy.liu@realtek.com>,
+        Yuiko Oshino <yuiko.oshino@microchip.com>
+Subject: Re: [RFC net-next 0/5] net: phy: add support for shared interrupts
+Thread-Topic: [RFC net-next 0/5] net: phy: add support for shared interrupts
+Thread-Index: AQHWqf897amgBiGDU0S3g6psdVpuFqmmyrGA
+Date:   Sat, 24 Oct 2020 14:09:54 +0000
+Message-ID: <20201024140953.rwmkc4ldpruz7cqn@skbuf>
+References: <20201024121412.10070-1-ioana.ciornei@nxp.com>
+In-Reply-To: <20201024121412.10070-1-ioana.ciornei@nxp.com>
+Accept-Language: en-US
 Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.26.174.215]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 04640639-0855-447a-20ea-08d878267b67
+x-ms-traffictypediagnostic: VI1PR04MB5885:
+x-microsoft-antispam-prvs: <VI1PR04MB588573A38041708CBF2BF33AE01B0@VI1PR04MB5885.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: U1+lNVjbjH1sdgfm7cMfpVzJJDmSxgi/QW5Vapgz4DZ+gD4D0B8kipg+NZhLMW0UhnSd2vrZf9YvifofYsTKIEqbtX7Jou+MDJP2SIlFBheWD9YTvUvJm9xec6p3PwKuaNyrHH05qo88/JYBWrcurcEbGDuHRBUX5NetqTxTt9dj0keQzkKcVTuw0IRMdvjPvPvU8nJP7rZKG5gHPogQYE6C6umCz6PGC79n0Oa7LUvP8Y/CAkRoaeJMHL3fYkJzciLoYcKNlozPUIqGvT+ZCIJJ52B0Ei3EoEP1L8wydhOr0Y1gYDJOWNhmtDgUMXyLzjliBwTd2EiikH6q4KxD8lk/qrGqJtB/NO692aE6Ia5lThZm5kGHgxUQH0cP4vEYaOArMdU47X0gitOBG0YiOA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(136003)(39860400002)(376002)(396003)(366004)(346002)(91956017)(66556008)(2906002)(86362001)(44832011)(83380400001)(1076003)(4326008)(5660300002)(8676002)(76116006)(966005)(66946007)(478600001)(6486002)(4744005)(26005)(8936002)(64756008)(66476007)(54906003)(186003)(66446008)(71200400001)(110136005)(6506007)(6512007)(316002)(9686003)(7406005)(7416002)(33716001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: iGD05MuiUf96lJ5BF4V0lETZS+YXlSHxzav/5EvpZ4eXNC6Rrs6qXhL1wxkcpNy+QtArrZuqWkenYRxNJZMAjdMHQtCwHwg7xZmCTZDFCPbAEZP3Dh+Xku9pi4TvVttSS4TaUN/q5QFR6CIQLePy8BOs8qyYk8nqjaW6RSIqdlfx6gJfcrpAQjqm2n1fKG1tEQeyOTyszjnEYC1YAN2m7zGPK301oMvggikyRIzVWlhU2RLNo2Bwk4D8AfNXge7E5iFXpMjrDOWax4vP8dxyXrkjNfC96mBwr0XGEq3EF3EeYK1X+33iUAWg7xreQDtKMNefAU7yDMAe5XFayaBdqAs/4bXif5b4b35r0f/eVQq9SwpzSa6kAqH2wL5eEDLEfO/rB8QUA6WDav/1aho+8O4SjowR/KDlRAmJrktrZvQj9U8X6AWhRTPlj3CvnOa5gZS8FvWjcyt8n+vclMMugmKkD4tB8FHkGGwRS8ndXZswSGIlOLRO+Y79KWFFWXNyzlRU3PQf41ubuHnKFrYWyP+PbijgPB+srtKNi9pxHAPDosbkuYzYEGvl/Car2/5I4v55hm+MVJIMCCmCLVGmZ8lBkZIIylL20O0Kz5AS9X9McRP+fjqZ8mii/POmYUiecy/vKRXN6IojprE43A0Fqg==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2EBD8EDA8BE49D489B6F4F6EEEA1FE8D@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3871.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 04640639-0855-447a-20ea-08d878267b67
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Oct 2020 14:09:54.6322
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: gvQD8qLydsUAS5GsArwV3lKkPd4Z7OPfmIFgt4hPHfHN364eIKnc4DleKvE3N0NjQlou/DDhZqeQXHo/XqX8Ww==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5885
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Oct 24, 2020 at 03:14:07PM +0300, Ioana Ciornei wrote:
 
-On 10/23/20 1:45 AM, Xu Yilun wrote:
-> This patch makes preparation for supporting DFL Ether Group private
-> feature driver, which reads bitstream_id.vendor_net_cfg field to
-> determin the interconnection of network components on FPGA device.
->
-> Signed-off-by: Xu Yilun <yilun.xu@intel.com>
-> ---
->  drivers/fpga/dfl-fme-main.c | 10 ++--------
->  drivers/fpga/dfl.c          | 21 +++++++++++++++++++++
->  drivers/fpga/dfl.h          | 12 ++++++++++++
->  include/linux/dfl.h         |  2 ++
->  4 files changed, 37 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/fpga/dfl-fme-main.c b/drivers/fpga/dfl-fme-main.c
-> index 77ea04d..a2b8ba0 100644
-> --- a/drivers/fpga/dfl-fme-main.c
-> +++ b/drivers/fpga/dfl-fme-main.c
-> @@ -46,14 +46,8 @@ static DEVICE_ATTR_RO(ports_num);
->  static ssize_t bitstream_id_show(struct device *dev,
->  				 struct device_attribute *attr, char *buf)
->  {
-> -	void __iomem *base;
-> -	u64 v;
-> -
-> -	base = dfl_get_feature_ioaddr_by_id(dev, FME_FEATURE_ID_HEADER);
-> -
-> -	v = readq(base + FME_HDR_BITSTREAM_ID);
-> -
-> -	return scnprintf(buf, PAGE_SIZE, "0x%llx\n", (unsigned long long)v);
-> +	return scnprintf(buf, PAGE_SIZE, "0x%llx\n",
-> +			 (unsigned long long)dfl_get_bitstream_id(dev));
-should use sysfs_emit()
->  }
->  static DEVICE_ATTR_RO(bitstream_id);
->  
-> diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
-> index bc35750..ca3c678 100644
-> --- a/drivers/fpga/dfl.c
-> +++ b/drivers/fpga/dfl.c
-> @@ -537,6 +537,27 @@ void dfl_driver_unregister(struct dfl_driver *dfl_drv)
->  }
->  EXPORT_SYMBOL(dfl_driver_unregister);
->  
-> +int dfl_dev_get_vendor_net_cfg(struct dfl_device *dfl_dev)
-> +{
-> +	struct device *fme_dev;
-> +	u64 v;
-> +
-> +	if (!dfl_dev)
-> +		return -EINVAL;
-> +
-> +	if (dfl_dev->type == FME_ID)
-> +		fme_dev = dfl_dev->dev.parent;
-> +	else
-> +		fme_dev = dfl_dev->cdev->fme_dev;
-> +
-> +	if (!fme_dev)
-> +		return -EINVAL;
-> +
-> +	v = dfl_get_bitstream_id(fme_dev);
-> +	return (int)FIELD_GET(FME_BID_VENDOR_NET_CFG, v);
-> +}
-> +EXPORT_SYMBOL_GPL(dfl_dev_get_vendor_net_cfg);
-> +
->  #define is_header_feature(feature) ((feature)->id == FEATURE_ID_FIU_HEADER)
->  
->  /**
-> diff --git a/drivers/fpga/dfl.h b/drivers/fpga/dfl.h
-> index 2b82c96..6c7a6961 100644
-> --- a/drivers/fpga/dfl.h
-> +++ b/drivers/fpga/dfl.h
-> @@ -104,6 +104,9 @@
->  #define FME_CAP_CACHE_SIZE	GENMASK_ULL(43, 32)	/* cache size in KB */
->  #define FME_CAP_CACHE_ASSOC	GENMASK_ULL(47, 44)	/* Associativity */
->  
-> +/* FME BITSTREAM_ID Register Bitfield */
-> +#define FME_BID_VENDOR_NET_CFG	GENMASK_ULL(35, 32)     /* vendor net cfg */
+> This RFC just contains the patches for phylib and a single driver -
+> Atheros. The rest can be found on my Github branch here: TODO
+> They will be submitted as a multi-part series once the merge window
+> closes.
+>=20
 
-Are there any other similar #defines that could be added here for completeness?
+It seems that I forgot to add a link to the Github branch. Here it is:
 
-> +
->  /* FME Port Offset Register Bitfield */
->  /* Offset to port device feature header */
->  #define FME_PORT_OFST_DFH_OFST	GENMASK_ULL(23, 0)
-> @@ -397,6 +400,15 @@ static inline bool is_dfl_feature_present(struct device *dev, u16 id)
->  	return !!dfl_get_feature_ioaddr_by_id(dev, id);
->  }
->  
-> +static inline u64 dfl_get_bitstream_id(struct device *dev)
-> +{
-> +	void __iomem *base;
-> +
-> +	base = dfl_get_feature_ioaddr_by_id(dev, FME_FEATURE_ID_HEADER);
-> +
-> +	return readq(base + FME_HDR_BITSTREAM_ID);
-> +}
-
-This is is a generic change and should be split out.
-
-Tom
-
-> +
->  static inline
->  struct device *dfl_fpga_pdata_to_parent(struct dfl_feature_platform_data *pdata)
->  {
-> diff --git a/include/linux/dfl.h b/include/linux/dfl.h
-> index e1b2471..5ee2b1e 100644
-> --- a/include/linux/dfl.h
-> +++ b/include/linux/dfl.h
-> @@ -67,6 +67,8 @@ struct dfl_driver {
->  #define to_dfl_dev(d) container_of(d, struct dfl_device, dev)
->  #define to_dfl_drv(d) container_of(d, struct dfl_driver, drv)
->  
-> +int dfl_dev_get_vendor_net_cfg(struct dfl_device *dfl_dev);
-> +
->  /*
->   * use a macro to avoid include chaining to get THIS_MODULE.
->   */
-
+https://github.com/IoanaCiornei/linux/commits/phylib-shared-irq=
