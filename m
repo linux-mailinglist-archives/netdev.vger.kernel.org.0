@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B670B297C44
-	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 14:16:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38B40297C42
+	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 14:15:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1761252AbgJXMOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Oct 2020 08:14:41 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:59766 "EHLO inva021.nxp.com"
+        id S1761262AbgJXMOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Oct 2020 08:14:42 -0400
+Received: from inva020.nxp.com ([92.121.34.13]:35090 "EHLO inva020.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1761233AbgJXMOj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1761237AbgJXMOj (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 24 Oct 2020 08:14:39 -0400
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id CD4C9200F10;
-        Sat, 24 Oct 2020 14:14:35 +0200 (CEST)
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id EF14F1A0C0A;
+        Sat, 24 Oct 2020 14:14:36 +0200 (CEST)
 Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id B5A19200F0F;
-        Sat, 24 Oct 2020 14:14:35 +0200 (CEST)
+        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id DF0301A0BB1;
+        Sat, 24 Oct 2020 14:14:36 +0200 (CEST)
 Received: from fsr-ub1864-126.ea.freescale.net (fsr-ub1864-126.ea.freescale.net [10.171.82.212])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 9B59F20347;
-        Sat, 24 Oct 2020 14:14:34 +0200 (CEST)
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id C67F8202EC;
+        Sat, 24 Oct 2020 14:14:35 +0200 (CEST)
 From:   Ioana Ciornei <ioana.ciornei@nxp.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
@@ -51,103 +51,21 @@ Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
         Philippe Schenker <philippe.schenker@toradex.com>,
         Willy Liu <willy.liu@realtek.com>,
         Yuiko Oshino <yuiko.oshino@microchip.com>
-Subject: [RFC net-next 0/5] net: phy: add support for shared interrupts
-Date:   Sat, 24 Oct 2020 15:14:07 +0300
-Message-Id: <20201024121412.10070-1-ioana.ciornei@nxp.com>
+Subject: [RFC net-next 1/5] net: phy: export phy_error and phy_trigger_machine
+Date:   Sat, 24 Oct 2020 15:14:08 +0300
+Message-Id: <20201024121412.10070-2-ioana.ciornei@nxp.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20201024121412.10070-1-ioana.ciornei@nxp.com>
+References: <20201024121412.10070-1-ioana.ciornei@nxp.com>
 X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set aims to actually add support for shared interrupts in
-phylib and not only for multi-PHY devices. While we are at it,
-streamline the interrupt handling in phylib.
-
-For a bit of context, at the moment, there are multiple phy_driver ops
-that deal with this subject:
-
-- .config_intr() - Enable/disable the interrupt line.
-
-- .ack_interrupt() - Should quiesce any interrupts that may have been
-  fired.  It's also used by phylib in conjunction with .config_intr() to
-  clear any pending interrupts after the line was disabled, and before
-  it is going to be enabled.
-
-- .did_interrupt() - Intended for multi-PHY devices with a shared IRQ
-  line and used by phylib to discern which PHY from the package was the
-  one that actually fired the interrupt.
-
-- .handle_interrupt() - Completely overrides the default interrupt
-  handling logic from phylib. The PHY driver is responsible for checking
-  if any interrupt was fired by the respective PHY and choose
-  accordingly if it's the one that should trigger the link state machine.
-
-From my point of view, the interrupt handling in phylib has become
-somewhat confusing with all these callbacks that actually read the same
-PHY register - the interrupt status.  A more streamlined approach would
-be to just move the responsibility to write an interrupt handler to the
-driver (as any other device driver does) and make .handle_interrupt()
-the only way to deal with interrupts.
-
-Another advantage with this approach would be that phylib would gain
-support for shared IRQs between different PHY (not just multi-PHY
-devices), something which at the moment would require extending every
-PHY driver anyway in order to implement their .did_interrupt() callback
-and duplicate the same logic as in .ack_interrupt(). The disadvantage
-of making .did_interrupt() mandatory would be that we are slightly
-changing the semantics of the phylib API and that would increase
-confusion instead of reducing it.
-
-What I am proposing is the following:
-
-- As a first step, make the .ack_interrupt() callback optional so that
-  we do not break any PHY driver amid the transition.
-
-- Every PHY driver gains a .handle_interrupt() implementation that, for
-  the most part, would look like below:
-
-	irq_status = phy_read(phydev, INTR_STATUS);
-	if (irq_status < 0) {
-		phy_error(phydev);
-		return IRQ_NONE;
-	}
-
-	if (irq_status == 0)
-		return IRQ_NONE;
-
-	phy_trigger_machine(phydev);
-
-	return IRQ_HANDLED;
-
-- Remove each PHY driver's implementation of the .ack_interrupt() by
-  actually taking care of quiescing any pending interrupts before
-  enabling/after disabling the interrupt line.
-
-- Finally, after all drivers have been ported, remove the
-  .ack_interrupt() and .did_interrupt() callbacks from phy_driver.
-
-This RFC just contains the patches for phylib and a single driver -
-Atheros. The rest can be found on my Github branch here: TODO
-They will be submitted as a multi-part series once the merge window
-closes.
-
-I do not have access to most of these PHY's, therefore I Cc-ed the
-latest contributors to the individual PHY drivers in order to have
-access, hopefully, to more regression testing.
-
-Ioana Ciornei (5):
-  net: phy: export phy_error and phy_trigger_machine
-  net: phy: add a shutdown procedure
-  net: phy: make .ack_interrupt() optional
-  net: phy: at803x: implement generic .handle_interrupt() callback
-  net: phy: at803x: remove the use of .ack_interrupt()
-
- drivers/net/phy/at803x.c     | 42 ++++++++++++++++++++++++++++++------
- drivers/net/phy/phy.c        |  6 ++++--
- drivers/net/phy/phy_device.c | 10 ++++++++-
- include/linux/phy.h          |  2 ++
- 4 files changed, 50 insertions(+), 10 deletions(-)
+These functions are currently used by phy_interrupt() to either signal
+an error condition or to trigger the link state machine. In an attempt
+to actually support shared PHY IRQs, export these two functions so that
+the actual PHY drivers can use them.
 
 Cc: Alexandru Ardelean <alexandru.ardelean@analog.com>
 Cc: Andre Edich <andre.edich@microchip.com>
@@ -174,7 +92,61 @@ Cc: Oleksij Rempel <o.rempel@pengutronix.de>
 Cc: Philippe Schenker <philippe.schenker@toradex.com>
 Cc: Willy Liu <willy.liu@realtek.com>
 Cc: Yuiko Oshino <yuiko.oshino@microchip.com>
+Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+---
+ drivers/net/phy/phy.c | 6 ++++--
+ include/linux/phy.h   | 2 ++
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index 35525a671400..477bdf2f94df 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -493,10 +493,11 @@ EXPORT_SYMBOL(phy_queue_state_machine);
+  *
+  * @phydev: the phy_device struct
+  */
+-static void phy_trigger_machine(struct phy_device *phydev)
++void phy_trigger_machine(struct phy_device *phydev)
+ {
+ 	phy_queue_state_machine(phydev, 0);
+ }
++EXPORT_SYMBOL(phy_trigger_machine);
+ 
+ static void phy_abort_cable_test(struct phy_device *phydev)
+ {
+@@ -924,7 +925,7 @@ void phy_stop_machine(struct phy_device *phydev)
+  * Must not be called from interrupt context, or while the
+  * phydev->lock is held.
+  */
+-static void phy_error(struct phy_device *phydev)
++void phy_error(struct phy_device *phydev)
+ {
+ 	WARN_ON(1);
+ 
+@@ -934,6 +935,7 @@ static void phy_error(struct phy_device *phydev)
+ 
+ 	phy_trigger_machine(phydev);
+ }
++EXPORT_SYMBOL(phy_error);
+ 
+ /**
+  * phy_disable_interrupts - Disable the PHY interrupts from the PHY side
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index eb3cb1a98b45..566b39f6cd64 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1570,8 +1570,10 @@ void phy_drivers_unregister(struct phy_driver *drv, int n);
+ int phy_driver_register(struct phy_driver *new_driver, struct module *owner);
+ int phy_drivers_register(struct phy_driver *new_driver, int n,
+ 			 struct module *owner);
++void phy_error(struct phy_device *phydev);
+ void phy_state_machine(struct work_struct *work);
+ void phy_queue_state_machine(struct phy_device *phydev, unsigned long jiffies);
++void phy_trigger_machine(struct phy_device *phydev);
+ void phy_mac_interrupt(struct phy_device *phydev);
+ void phy_start_machine(struct phy_device *phydev);
+ void phy_stop_machine(struct phy_device *phydev);
 -- 
 2.28.0
 
