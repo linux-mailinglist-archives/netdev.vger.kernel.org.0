@@ -2,151 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03D4929815D
-	for <lists+netdev@lfdr.de>; Sun, 25 Oct 2020 11:50:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90AFC298179
+	for <lists+netdev@lfdr.de>; Sun, 25 Oct 2020 12:33:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1415261AbgJYKtv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Oct 2020 06:49:51 -0400
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:19213 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1415254AbgJYKtu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Oct 2020 06:49:50 -0400
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5f9558380002>; Sun, 25 Oct 2020 03:49:28 -0700
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sun, 25 Oct
- 2020 10:49:47 +0000
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.102)
- by HQMAIL109.nvidia.com (172.20.187.15) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Sun, 25 Oct 2020 10:49:47 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Dj+I4nO4qGCrQLxgNs2BwXU6LjIWdZ7lZ/EYdTvj7shf4mFg42E6ePSy4z9xuLgrRc/Lb22D5lntThlVvFCeWswdCJi1vuB/GA6RMphBNbVh7aheAbDvFzc7P3J4iYTQVDbPFb1OluPDOcJlw0iV3vI0tYZD/trMeu5DvBU2MCQDscCfsDYVy917geWiEy/gGYZBBqrJFQccTSbGC/Aw5hSjF635XHwDgRMD+ZV5orzsSy/k0sbCiNo41DlCvdIYfuOM3L5LMKt9LhFu561F3X302yhbIVMLxxboXMXk8RNdRglvQ/hjDWU22S+XGteWVW83zaTyMrVPw2okmzBWTQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rZJjK8MwFPJiAB6ZSfg+XPhCPuSLLZ1IEagXtnufFk8=;
- b=c+GfofARuJ+gMmLCeMC7LaVKtks2xmIN8U2miKma2SNkd8ObfZIusqj98xgK86DM77UOVjjBFvT1J4JJlrqFdJeu/xIIRjPM6HV4sZWg03PJ9M9t7O+E6zCDR6edXHsS3wfc9y1cC5YF8RmyVvu0MS8UHo6uGYnWTlnRikIC4KpjGGzVJHmAzwdeiYMNesatOPmx/yKPM+ZlxmFfjaQB5Y5VOLOi4twFNKTacXKbrF7w6zjjRJbce2CeCKV1FFmsd+74dXq4AJ8aVglas1cdebglsOlmpkGXOwRsQiJYSb2CW2jJL8piaxQA7AIn+vRrVSQB0D2sh+aGQK23cm78wQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from BN6PR12MB1233.namprd12.prod.outlook.com (2603:10b6:404:1c::19)
- by BN7PR12MB2802.namprd12.prod.outlook.com (2603:10b6:408:25::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.28; Sun, 25 Oct
- 2020 10:49:46 +0000
-Received: from BN6PR12MB1233.namprd12.prod.outlook.com
- ([fe80::f54d:4b1b:ab07:3c7c]) by BN6PR12MB1233.namprd12.prod.outlook.com
- ([fe80::f54d:4b1b:ab07:3c7c%3]) with mapi id 15.20.3499.018; Sun, 25 Oct 2020
- 10:49:46 +0000
-From:   Nikolay Aleksandrov <nikolay@nvidia.com>
-To:     "vladimir.oltean@nxp.com" <vladimir.oltean@nxp.com>
-CC:     "idosch@idosch.org" <idosch@idosch.org>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jiri@mellanox.com" <jiri@mellanox.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>
-Subject: Re: [RFC PATCH] net: bridge: multicast: add support for L2 entries
-Thread-Topic: [RFC PATCH] net: bridge: multicast: add support for L2 entries
-Thread-Index: AQHWpLVezD+KQNrkJ0WU0qqZi5aFVKmhzHkAgAYjAgCAAEA0gA==
-Date:   Sun, 25 Oct 2020 10:49:46 +0000
-Message-ID: <c6b2a63f635d57bd34bb96bbc4deecb506968314.camel@nvidia.com>
-References: <20201017184139.2331792-1-vladimir.oltean@nxp.com>
-         <98ac64d9b048278d2296f5b0ff3320c70ea13c72.camel@nvidia.com>
-         <20201025065957.5736elloorffcdif@skbuf>
-In-Reply-To: <20201025065957.5736elloorffcdif@skbuf>
-Reply-To: Nikolay Aleksandrov <nikolay@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.34.4 (3.34.4-1.fc31) 
-authentication-results: nxp.com; dkim=none (message not signed)
- header.d=none;nxp.com; dmarc=none action=none header.from=nvidia.com;
-x-originating-ip: [84.238.136.197]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6990aeeb-b3b4-461c-1cdd-08d878d3b031
-x-ms-traffictypediagnostic: BN7PR12MB2802:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN7PR12MB2802ACF6352AB7B9A9A9EE32DF180@BN7PR12MB2802.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: rEqb4KL4P2/3Zlzv+zFntDGfstl7sWHZ7+VMxKeyx+lH8htWyNDWevoFjfRLKKUQOBsh4+/MCdhg3T3uZOb1WthgPsIam9NU9UseFgqP3RjBmJFHCJqv4FYvfYL4JqhqpxocAVGPWtFZ2v6WRyGZROf2hDmr4XE4zceQwQo+mJDhC+Spx2/QK7UOjvHJSdwsTwMkzZPMHR/KGjWuNAsD6NvRGGyi2B/W3KCZcphaVWYHXZ5jX+1/LlUwzF/533ORr6gqiv5an5bZI6HlNekZRsm7VPHkbJbYDhaD/nUBTbuvj9mU12UEw8c8DlKo7gqb25Xf2p5WznDHT870Oec/Hw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR12MB1233.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39850400004)(376002)(396003)(346002)(366004)(136003)(478600001)(4326008)(83380400001)(36756003)(71200400001)(2616005)(6486002)(186003)(6916009)(26005)(3450700001)(91956017)(66946007)(8936002)(6506007)(66446008)(86362001)(66556008)(5660300002)(66476007)(316002)(76116006)(6512007)(4001150100001)(64756008)(7416002)(54906003)(8676002)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: wP/YDNyxCJNCGDSaL2BjBBzWT4P4qa7Su9uJfqA9z+UaVugF3cVeiUOgCNcVd3eIymy+i3stw1s4QxmcM21qM+C7tJ5UOtZsKXV80wA+U/r/M63H3xsIhk0woN7XHDoOnl2GONKjnXyz496sjk4wuns+KeUcQ5RyMUjxjsUZvu07DttpsvzlrOMcmDfMc1ZwwH6Ur9PQGB3ow6hsJgkXfHGcGDz8npd0pVXY3uZu+K4Mejmhg0ee8TMD3a93Qpm8sOyygHSkb1Sx9/SzWwUkKfaVt1yKBFqQkFWcsNEjm8n2PelRlfCjufP9exRWk0R+EBFwjdqoFINAvpfuDgJ9TzK8v4JXuDA3Fl2biywiqIB65+iK49ADU6ysQvK1gbJUOJGI9x2ISKdOo5i8N0wzU7+tlf9ORodf6wyHWE1dMoxX20Pb5hOM74Rv4plEbeMk2momuNguaQGohtkmt61gvmJ/Ms0GQuktv/0aU7/tXi/c72X3d+JNHYC4tWMQ+kUmP5XB54QxkrtBTtRGOyCYcHzVQ47ngOd2YfE1pvmHOtD5w+u/3mIZLu3+0fuQY/AStbpXs/ZOx2I+FwMwmridETLEzlDbmWRIti5xZhnzJt8VTMW1QW/Po68d1C08ufDA9ECWzDtFf4EJiCbfRLQy7w==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <3842ED0F0918F8418D174BD6D6A39FCB@namprd12.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1415438AbgJYLdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Oct 2020 07:33:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49528 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1415431AbgJYLdU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Oct 2020 07:33:20 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF0BC0613CE;
+        Sun, 25 Oct 2020 04:33:20 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id o1so1619864pjt.2;
+        Sun, 25 Oct 2020 04:33:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NLwOajz7aLbYTCZJfZv4NGxOgDz/dYsUjO8aQaKp6ps=;
+        b=j+7+X28549W+BrYcs7KatPfnkg3umYsdcjB+PsIuZdtA5kqWyqlnD230ae3p6VXXSs
+         DAdjbrvEPPncflGS63+zsp8q7v2j9GE5l0RIKlUGZb4U8g4dSaUnhUQqK7mOYDrqj8t6
+         eKYhyCZXwV1D6HqcendEtsrku+KR4IYroD7xcIchaNdOY6bnrHCQrHbUPHCUDs51oSbf
+         76PpSC6/bPxFkY71ie+EhIWZm25BzKlrd/jVET2Eu4m6UQAi8f0XhLRz1CN0hMnIQGpb
+         bUZ/5Io0D5U5C1BOwWXCui3acqh7toFHI+ldHY/y4dGtfrk3JWxyPEaVHLPXc/iY4IgI
+         oWcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NLwOajz7aLbYTCZJfZv4NGxOgDz/dYsUjO8aQaKp6ps=;
+        b=geYpW/Z3pwkgPQ9dMrSTW/PBhRRnehofjzC6aBhz6hcN3164LQP/mES4ATL90J9i3s
+         rON+Och2QBk1CU/QpuNli+a0RdP/JpBNqp0IxIQfu0wKXMGREMBNdtYhGNFg9AE+nTWu
+         vo+E86K/G5SEAo7Ctc+z3pCtM7C96KcdS5MemGhFwRc1YFRi7ps5M0AfAGqaEl/V41Sg
+         BqiMRAuNHrptilRseLiszdLI3P3JtRq3apk5DsDz6dxFPd1KrIcTVEjbIKRwLIasmhzk
+         5DwzVR6SI06oiNmZM0nKPT+cU4WeXKttxtmP2vF1O4leAFPLGNLaNpJo1djM+/WnX2VH
+         eEww==
+X-Gm-Message-State: AOAM532LalJLPWWgH+4Wt8EAJPYoq4RNp36XW4NGAaxzmBS3QxAJbIh7
+        LKOrfVE+RVmE0I5yhmFkbWg=
+X-Google-Smtp-Source: ABdhPJyETl+EMoUUbZE2de5fwBvYir5gEzAt9d8BzO/XXFUJWvOdwy4xs6N7rTzEH4QIMbduoyYj1w==
+X-Received: by 2002:a17:902:a50f:b029:d6:da2:aaa7 with SMTP id s15-20020a170902a50fb02900d60da2aaa7mr9034793plq.42.1603625599643;
+        Sun, 25 Oct 2020 04:33:19 -0700 (PDT)
+Received: from lte-devbox.localdomain (KD106154087147.au-net.ne.jp. [106.154.87.147])
+        by smtp.googlemail.com with ESMTPSA id cs21sm21557515pjb.0.2020.10.25.04.33.15
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 25 Oct 2020 04:33:18 -0700 (PDT)
+From:   Masahiro Fujiwara <fujiwara.masahiro@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Harald Welte <laforge@gnumonks.org>
+Cc:     fujiwara.masahiro@gmail.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andreas Schultz <aschultz@tpip.net>,
+        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net] gtp: fix an use-before-init in gtp_newlink()
+Date:   Sat, 24 Oct 2020 15:42:33 +0000
+Message-Id: <20201024154233.4024-1-fujiwara.masahiro@gmail.com>
+X-Mailer: git-send-email 2.24.3
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN6PR12MB1233.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6990aeeb-b3b4-461c-1cdd-08d878d3b031
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Oct 2020 10:49:46.0887
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: aJExWgfZbdkUKKw57dMCh3H55wFoLeYg185cglL8WZ5xcrn785E7ataV99O0mbMO7CO8fuwVvqKDFZ0XCGQPdQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR12MB2802
-X-OriginatorOrg: Nvidia.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1603622968; bh=rZJjK8MwFPJiAB6ZSfg+XPhCPuSLLZ1IEagXtnufFk8=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
-         CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
-         In-Reply-To:Reply-To:Accept-Language:Content-Language:
-         X-MS-Has-Attach:X-MS-TNEF-Correlator:user-agent:
-         authentication-results:x-originating-ip:x-ms-publictraffictype:
-         x-ms-office365-filtering-correlation-id:x-ms-traffictypediagnostic:
-         x-ms-exchange-transport-forked:x-microsoft-antispam-prvs:
-         x-ms-oob-tlc-oobclassifiers:x-ms-exchange-senderadcheck:
-         x-microsoft-antispam:x-microsoft-antispam-message-info:
-         x-forefront-antispam-report:x-ms-exchange-antispam-messagedata:
-         Content-Type:Content-ID:Content-Transfer-Encoding:MIME-Version:
-         X-MS-Exchange-CrossTenant-AuthAs:
-         X-MS-Exchange-CrossTenant-AuthSource:
-         X-MS-Exchange-CrossTenant-Network-Message-Id:
-         X-MS-Exchange-CrossTenant-originalarrivaltime:
-         X-MS-Exchange-CrossTenant-fromentityheader:
-         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
-         X-MS-Exchange-CrossTenant-userprincipalname:
-         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
-        b=R0uAYFpEE6cNBzlWXI4Fx3PbcKM7C1Pe+mJYOE6Ff1FwMvQxeSeaR+19arpuGa7dM
-         KB7RRpce651K6SKLEajQewdMugg9/cc8/EJBYzNizFvQtm6DxejwEfDBlLP0pkpBOt
-         QLJhlun0V4TharZoD/87T7pFMC6bk9UE4RISASY337/S9Pc9DO0ix36SY0RDhGmaU8
-         vc/8x405XOF1aURWBXkjqRxuYnqqtAE1AXCD0e/QNAj87Sm69SKYG9tX6Ez6ClaI+Z
-         p0YXl9pT2xKKUKishw/YYJ/A4ihYMOoMLtL9HeHrW4c5dY7uWVdSOWHCLIijvN2c+0
-         hZZ+QgpN6Nkfg==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gU3VuLCAyMDIwLTEwLTI1IGF0IDA2OjU5ICswMDAwLCBWbGFkaW1pciBPbHRlYW4gd3JvdGU6
-DQo+IE9uIFdlZCwgT2N0IDIxLCAyMDIwIGF0IDA5OjE3OjA3QU0gKzAwMDAsIE5pa29sYXkgQWxl
-a3NhbmRyb3Ygd3JvdGU6DQo+ID4gPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS91YXBpL2xpbnV4L2lm
-X2JyaWRnZS5oIGIvaW5jbHVkZS91YXBpL2xpbnV4L2lmX2JyaWRnZS5oDQo+ID4gPiBpbmRleCA0
-YzY4NzY4NmFhOGYuLmEyNWY2ZjlhYThjMyAxMDA2NDQNCj4gPiA+IC0tLSBhL2luY2x1ZGUvdWFw
-aS9saW51eC9pZl9icmlkZ2UuaA0KPiA+ID4gKysrIGIvaW5jbHVkZS91YXBpL2xpbnV4L2lmX2Jy
-aWRnZS5oDQo+ID4gPiBAQCAtNTIwLDEyICs1MjAsMTQgQEAgc3RydWN0IGJyX21kYl9lbnRyeSB7
-DQo+ID4gPiAgI2RlZmluZSBNREJfRkxBR1NfRkFTVF9MRUFWRQkoMSA8PCAxKQ0KPiA+ID4gICNk
-ZWZpbmUgTURCX0ZMQUdTX1NUQVJfRVhDTAkoMSA8PCAyKQ0KPiA+ID4gICNkZWZpbmUgTURCX0ZM
-QUdTX0JMT0NLRUQJKDEgPDwgMykNCj4gPiA+ICsjZGVmaW5lIE1EQl9GTEFHU19MMgkJKDEgPDwg
-NSkNCj4gPiANCj4gPiBJIHRoaW5rIHRoaXMgc2hvdWxkIGJlIDQuDQo+ID4gDQo+IA0KPiBTaG91
-bGRuJ3QgdGhpcyBiZSBpbiBzeW5jIHdpdGggTURCX1BHX0ZMQUdTX0wyIHRob3VnaD8gV2UgYWxz
-byBoYXZlDQo+IE1EQl9QR19GTEFHU19CTE9DS0VEIHdoaWNoIGlzIEJJVCg0KS4NCg0KVW5mb3J0
-dW5hdGVseSB0aGV5IGhhdmVuJ3QgYmVlbiBpbiBzeW5jIGZyb20gdGhlIHN0YXJ0LiBNREJfRkxB
-R1MgYml0DQowIGlzIG9mZmxvYWQsIHdoaWxlIE1EQl9QR19GTEFHUyBiaXQgMCBpcyBwZXJtYW5l
-bnQuIEFzIHlvdSBjYW4gc2VlDQpoZXJlIGJsb2NrZWQgaXMgYml0IDMsIHdoaWxlIGludGVybmFs
-bHkgaXQncyA0IGR1ZSB0byB0aGUgc2FtZSByZWFzb24uDQpXZSBjYW4ndCBhZmZvcmQgdG8gc2tp
-cCAxIGJpdCBzaW5jZSB0aGlzIGlzIHVBUEkgYW5kIHdlIG9ubHkgZ290IDggDQphdmFpbGFibGUg
-Yml0cy4gSSB3b25kZXIgaWYgd2UgbmVlZCB0aGVzZSBMMiBiaXRzIGF0IGFsbCwgd2h5IG5vdCB1
-c2UNCm9ubHkgcHJvdG8gPT0gMCB0byBkZW5vdGUgaXQncyBhIEwyIGVudHJ5PyBJIGNhbid0IHJl
-bWVtYmVyIHdoeSBJIGFkZGVkDQp0aGUgYml0cyBiYWNrIHRoZW4sIGJ1dCB1bnRpbCBub3cgcHJv
-dG8gPT0gMCB3YXNuJ3QgYWxsb3dlZCBhbmQgdGhlDQprZXJuZWwgY291bGRuJ3QgZXhwb3J0IGl0
-IGFzIHN1Y2gsIHNvIGl0IHNlZW1zIHBvc3NpYmxlIHRvIHVzZSBpdC4NCg0KDQoNCg0K
+*_pdp_find() from gtp_encap_recv() would trigger a crash when a peer
+sends GTP packets while creating new GTP device.
+
+RIP: 0010:gtp1_pdp_find.isra.0+0x68/0x90 [gtp]
+<SNIP>
+Call Trace:
+ <IRQ>
+ gtp_encap_recv+0xc2/0x2e0 [gtp]
+ ? gtp1_pdp_find.isra.0+0x90/0x90 [gtp]
+ udp_queue_rcv_one_skb+0x1fe/0x530
+ udp_queue_rcv_skb+0x40/0x1b0
+ udp_unicast_rcv_skb.isra.0+0x78/0x90
+ __udp4_lib_rcv+0x5af/0xc70
+ udp_rcv+0x1a/0x20
+ ip_protocol_deliver_rcu+0xc5/0x1b0
+ ip_local_deliver_finish+0x48/0x50
+ ip_local_deliver+0xe5/0xf0
+ ? ip_protocol_deliver_rcu+0x1b0/0x1b0
+
+gtp_encap_enable() should be called after gtp_hastable_new() otherwise
+*_pdp_find() will access the uninitialized hash table.
+
+Fixes: 1e3a3abd8 ("gtp: make GTP sockets in gtp_newlink optional")
+Signed-off-by: Masahiro Fujiwara <fujiwara.masahiro@gmail.com>
+---
+ drivers/net/gtp.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
+index 8e47d0112e5d..6c56337b02a3 100644
+--- a/drivers/net/gtp.c
++++ b/drivers/net/gtp.c
+@@ -663,10 +663,6 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
+ 
+ 	gtp = netdev_priv(dev);
+ 
+-	err = gtp_encap_enable(gtp, data);
+-	if (err < 0)
+-		return err;
+-
+ 	if (!data[IFLA_GTP_PDP_HASHSIZE]) {
+ 		hashsize = 1024;
+ 	} else {
+@@ -676,13 +672,18 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
+ 	}
+ 
+ 	err = gtp_hashtable_new(gtp, hashsize);
++	if (err < 0) {
++		return err;
++	}
++
++	err = gtp_encap_enable(gtp, data);
+ 	if (err < 0)
+ 		goto out_encap;
+ 
+ 	err = register_netdevice(dev);
+ 	if (err < 0) {
+ 		netdev_dbg(dev, "failed to register new netdev %d\n", err);
+-		goto out_hashtable;
++		goto out_encap;
+ 	}
+ 
+ 	gn = net_generic(dev_net(dev), gtp_net_id);
+@@ -693,11 +694,10 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
+ 
+ 	return 0;
+ 
+-out_hashtable:
+-	kfree(gtp->addr_hash);
+-	kfree(gtp->tid_hash);
+ out_encap:
+ 	gtp_encap_disable(gtp);
++	kfree(gtp->addr_hash);
++	kfree(gtp->tid_hash);
+ 	return err;
+ }
+ 
+-- 
+2.24.3
+
