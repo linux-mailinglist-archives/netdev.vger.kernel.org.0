@@ -2,78 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1098C297E78
-	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 22:37:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 573D5297E76
+	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 22:33:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1764481AbgJXUhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Oct 2020 16:37:10 -0400
-Received: from vmicros1.altlinux.org ([194.107.17.57]:45126 "EHLO
-        vmicros1.altlinux.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1764444AbgJXUhJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Oct 2020 16:37:09 -0400
-X-Greylist: delayed 386 seconds by postgrey-1.27 at vger.kernel.org; Sat, 24 Oct 2020 16:37:08 EDT
-Received: from imap.altlinux.org (imap.altlinux.org [194.107.17.38])
-        by vmicros1.altlinux.org (Postfix) with ESMTP id 2B2AC72CCE7;
-        Sat, 24 Oct 2020 23:30:41 +0300 (MSK)
-Received: from altlinux.org (sole.flsd.net [185.75.180.6])
-        by imap.altlinux.org (Postfix) with ESMTPSA id 10D974A4A16;
-        Sat, 24 Oct 2020 23:30:41 +0300 (MSK)
-Date:   Sat, 24 Oct 2020 23:30:40 +0300
-From:   Vitaly Chikunov <vt@altlinux.org>
-To:     bpf@vger.kernel.org, Will Deacon <will@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Sandipan Das <sandipan@linux.ibm.com>
-Cc:     "Dmitry V. Levin" <ldv@altlinux.org>
-Subject: Re: tools/bpf: Compilation issue on powerpc: unknown type name
- '__vector128'
-Message-ID: <20201024203040.4cjxnxrdy6qx557c@altlinux.org>
-References: <20201023230641.xomukhg3zrhtuxez@altlinux.org>
- <20201024082319.GA24131@altlinux.org>
+        id S1764442AbgJXUdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Oct 2020 16:33:36 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:43140 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1764434AbgJXUdf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 24 Oct 2020 16:33:35 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kWQE9-003JvX-TV; Sat, 24 Oct 2020 22:33:25 +0200
+Date:   Sat, 24 Oct 2020 22:33:25 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tom Rix <trix@redhat.com>
+Cc:     Xu Yilun <yilun.xu@intel.com>, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
+        mdf@kernel.org, lee.jones@linaro.org, linux-kernel@vger.kernel.org,
+        linux-fpga@vger.kernel.org, netdev@vger.kernel.org,
+        lgoncalv@redhat.com, hao.wu@intel.com
+Subject: Re: [RFC PATCH 4/6] ethernet: m10-retimer: add support for retimers
+ on Intel MAX 10 BMC
+Message-ID: <20201024203325.GM745568@lunn.ch>
+References: <1603442745-13085-1-git-send-email-yilun.xu@intel.com>
+ <1603442745-13085-5-git-send-email-yilun.xu@intel.com>
+ <dbc77c18-8076-bcfd-b4f7-03e62dc46a97@redhat.com>
+ <20201024163950.GJ745568@lunn.ch>
+ <a4415cfa-b43b-8606-e944-edeb00de06fc@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=koi8-r
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20201024082319.GA24131@altlinux.org>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a4415cfa-b43b-8606-e944-edeb00de06fc@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adding netdev and PowerPC maintainers JFYI.
-
-On Sat, Oct 24, 2020 at 11:23:19AM +0300, Dmitry V. Levin wrote:
-> Hi,
+On Sat, Oct 24, 2020 at 10:36:36AM -0700, Tom Rix wrote:
 > 
-> On Sat, Oct 24, 2020 at 02:06:41AM +0300, Vitaly Chikunov wrote:
-> > Hi,
-> > 
-> > Commit f143c11bb7b9 ("tools: bpf: Use local copy of headers including
-> > uapi/linux/filter.h") introduces compilation issue on powerpc:
-> >  
-> >   builder@powerpc64le:~/linux$ make -C tools/bpf V=1
-> >   make: Entering directory '/usr/src/linux/tools/bpf'
-> >   gcc -Wall -O2 -D__EXPORTED_HEADERS__ -I/usr/src/linux/tools/include/uapi -I/usr/src/linux/tools/include -DDISASM_FOUR_ARGS_SIGNATURE -c -o bpf_dbg.o /usr/src/linux/tools/bpf/bpf_dbg.c
-> >   In file included from /usr/include/asm/sigcontext.h:14,
-> > 		   from /usr/include/bits/sigcontext.h:30,
-> > 		   from /usr/include/signal.h:291,
-> > 		   from /usr/src/linux/tools/bpf/bpf_dbg.c:51:
-> >   /usr/include/asm/elf.h:160:9: error: unknown type name '__vector128'
-> >     160 | typedef __vector128 elf_vrreg_t;
-> > 	|         ^~~~~~~~~~~
-> >   make: *** [Makefile:67: bpf_dbg.o] Error 1
-> >   make: Leaving directory '/usr/src/linux/tools/bpf'
+> On 10/24/20 9:39 AM, Andrew Lunn wrote:
+> > On Sat, Oct 24, 2020 at 08:03:51AM -0700, Tom Rix wrote:
+> >> On 10/23/20 1:45 AM, Xu Yilun wrote:
+> >>> This driver supports the ethernet retimers (Parkvale) for the Intel PAC
+> >>> (Programmable Acceleration Card) N3000, which is a FPGA based Smart NIC.
+> >> Parkvale is a code name, it would be better if the public name was used.
+> >>
+> >> As this is a physical chip that could be used on other cards,
+> >>
+> >> I think the generic parts should be split out of intel-m10-bmc-retimer.c
+> >>
+> >> into a separate file, maybe retimer-c827.c
+> > This driver is not really a driver for the Parkvale. That driver is
+> > hidden away in the BMC. So we need to be a bit careful with the name,
+> > leaving it available for when somebody writes a real Linux driver for
+> > retimer.
 > 
-> __vector128 is defined in arch/powerpc/include/uapi/asm/types.h;
-> while include/uapi/linux/types.h does #include <asm/types.h>,
-> tools/include/uapi/linux/types.h doesn't, resulting to this
-> compilation error.
-
-This is too puzzling to fix portably.
-
-Thanks,
-
+> Then the parkvale verbage should be removed.
 > 
+> And the doc ascii diagram be updated with a
 > 
-> -- 
-> ldv
+> +---------+
+> 
+> |  BMC    |
+> 
+> | retimer |
+> 
+> +---------+
+
+Yes, i would like to get a better understanding of what the BMC is
+actually doing, particularly the SFP. Given my current limited
+understanding of the driver architecture, i'm not sure it is flexiable
+enough to handle other cards where Linux is controlling the SFPs, the
+retimer, the host side PCS of the Arria 10, etc. Once Linux is driving
+all that, you need phylink, not phylib. The proposed phylib
+driver/mdio bus driver actually looks like a hack.
+
+   Andrew
