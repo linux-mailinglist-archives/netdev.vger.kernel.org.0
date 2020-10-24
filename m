@@ -2,139 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ADB2297CD8
-	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 16:40:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3273297CF7
+	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 16:53:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1762057AbgJXOjh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Oct 2020 10:39:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:50368 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1762050AbgJXOjg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Oct 2020 10:39:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603550375;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ry89cem/wTBCz8O1darsRTxCLuVRm4xCsyF08Cu2Qe8=;
-        b=ZvZG9JrzW2Tpr7+P+EITLoIg1IoQ6537CIuKPIXI2S/EGS+FD+IgXCoU2uJ4VRAhPu+A+7
-        rEqMGAIvWQA8l17QdzrKqq4TdnLEXc3F8YFHpzUNAz/O1oP+PtZlKnN/+D3Ibh/fu5sXjj
-        mFnqpLAoe+JmINaJQ4mvZVR70mYil8U=
-Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
- [209.85.161.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-214-_R_Z325dPJSa-ESc9oBazQ-1; Sat, 24 Oct 2020 10:39:33 -0400
-X-MC-Unique: _R_Z325dPJSa-ESc9oBazQ-1
-Received: by mail-oo1-f70.google.com with SMTP id w3so3306907oov.6
-        for <netdev@vger.kernel.org>; Sat, 24 Oct 2020 07:39:33 -0700 (PDT)
+        id S2443542AbgJXOxZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Oct 2020 10:53:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57064 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2437496AbgJXOxY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Oct 2020 10:53:24 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778B2C0613CE;
+        Sat, 24 Oct 2020 07:53:23 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id l15so6012053wmi.3;
+        Sat, 24 Oct 2020 07:53:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OvxvbCK3gChEXNktCxCghpQANg+WJeJo/1Eq0X3W6wc=;
+        b=dae5oWKcrSjs6iXed3yr6KwpZ6a8DlUYtYNbiJpVuZbswBWMx2ZkjvlmPvb522zBMI
+         /1ZEqNq21dFAWsD4ZovjDXAzNNZD703eKt+KFxga0J3KMjQ3gwwMgZlKqIy0uKMSIgwl
+         GyLS2tl7UN+QIcHEZJ0b/cFsVZa1t5FNG5Okb2g0HUI076IA86S05aMtcEWb9YSq9Wb3
+         8HLXyheu4/Xn32azrBwF/RZ7vjxK7Fk29wt0epDDzw7bTGv9aWpQP391MjulTPzhvxW3
+         Lv3Eq9cJMwyh8pc+hptqM8w8zyRyP9ysZh1spPdOSfNwiqDGMZLrNHasNOJ0nIjiv6S+
+         7cSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=Ry89cem/wTBCz8O1darsRTxCLuVRm4xCsyF08Cu2Qe8=;
-        b=T8cZRPtCO5vQpgiFSATWATAN0MJc/rP4O/nDUTSt520D5HQeZ/JrcVYz/R3ULQjNlp
-         mzo98IY5hUeHxA2ojYgAORNf5WWe+XkZixvQRVKa1r0rjTxEll93YvDUgjvqSWpMktxb
-         /JAeQAFu1HkPUbW+mGKTrE3Bv3uJhkhYHr7AnLEN4ucO8C4D+puhBd15vVKRgflXGMEk
-         kFBTWNoU7o1YSUKwhFJLlccEUvSqAYXuCyAlzmSyvtd1Xn21TQh8kc99Sef0JDPSclRZ
-         Z5TKWc7JFwIDywXjvbDMiWEFiM0v7v8SikUhODbJR7DfeP4TH5n/FD59oQl8Pdu8++Od
-         D2Zg==
-X-Gm-Message-State: AOAM532HdBt4kYzqIR8KtHKuPQaBGbjSeMf97zBMSF/KW68aBOWhl8eV
-        r9DwdLPM8t/1kn/hpJKDVcM82I7WWGMAKA8bQAewOn00DGiV8IReM15I57CfbFnUbBlJszF38In
-        CJGyp5zkT6Uj2Es09
-X-Received: by 2002:a54:4588:: with SMTP id z8mr6416246oib.147.1603550372504;
-        Sat, 24 Oct 2020 07:39:32 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyo9STt2IooDvh0rYe35QbKRqdfyDKG60v+c/fhEIX+0Tr5CXgeE7ZQwDtyl0G/VLxHkDsaIA==
-X-Received: by 2002:a54:4588:: with SMTP id z8mr6416231oib.147.1603550372279;
-        Sat, 24 Oct 2020 07:39:32 -0700 (PDT)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id h25sm1225130otj.41.2020.10.24.07.39.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 24 Oct 2020 07:39:31 -0700 (PDT)
-Subject: Re: [RFC PATCH 3/6] fpga: dfl: add an API to get the base device for
- dfl device
-To:     Xu Yilun <yilun.xu@intel.com>, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
-        mdf@kernel.org, lee.jones@linaro.org
-Cc:     linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
-        netdev@vger.kernel.org, lgoncalv@redhat.com, hao.wu@intel.com
-References: <1603442745-13085-1-git-send-email-yilun.xu@intel.com>
- <1603442745-13085-4-git-send-email-yilun.xu@intel.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <32af36de-3ac5-ea7b-4d81-bccf4de3f11d@redhat.com>
-Date:   Sat, 24 Oct 2020 07:39:29 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OvxvbCK3gChEXNktCxCghpQANg+WJeJo/1Eq0X3W6wc=;
+        b=OkIxfJ0ojn3RyNSVLiAFcMor7rTNzDZ0ozGh6BVIFaTRtPWSVn5xHkVtN/1XZKZEvd
+         Bw3XNAt6zSkut+TFsEVnbULJmng0/Bw2vtF3S5WQnaeOWwUmR4msA3C8gYmaXHv7KQXd
+         mWhFDPJRc3rmv8aAbai7Iv+pTqHXb/cWvG+5HagAAJmAg0OvqeZPX/J4CPB4SQkfhXC0
+         ctnFcGWB4HvXdqjJo1Sh6axL3W2zuaTNvzjsAXGUI3+sOpKNfdPLtOu/cWR7Nz5eMEhO
+         J6NCJ8k1xYSd4rgZfiFeQREnCdkLd1TzGexsTsbNJk2gxI3pwFIqbf4SFKje3Kz9tPH9
+         Y0Dg==
+X-Gm-Message-State: AOAM531oiN9FDskss1AQJuHUsEaJe/uhW1x1oIxEJNDvwM9xw+CK8bO4
+        6cs0vA9du8K/yPRWdCDUZDogcgkPdX3kTg==
+X-Google-Smtp-Source: ABdhPJyL55MqJGEtqbg6gn8l1r2+b22Q5Os83L7473HpA1/k4PlKqBfAmyg6IkzpV6GQxkPnSlx9nQ==
+X-Received: by 2002:a1c:8093:: with SMTP id b141mr7298051wmd.139.1603551202205;
+        Sat, 24 Oct 2020 07:53:22 -0700 (PDT)
+Received: from localhost.localdomain (cpc83661-brig20-2-0-cust443.3-3.cable.virginm.net. [82.28.105.188])
+        by smtp.gmail.com with ESMTPSA id d2sm10896551wrq.34.2020.10.24.07.53.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 24 Oct 2020 07:53:21 -0700 (PDT)
+From:   Alex Dewar <alex.dewar90@gmail.com>
+Cc:     Alex Dewar <alex.dewar90@gmail.com>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Artur Molchanov <arturmolchanov@gmail.com>,
+        linux-nfs@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net/sunrpc: Fix return value from proc_do_xprt()
+Date:   Sat, 24 Oct 2020 15:52:40 +0100
+Message-Id: <20201024145240.23245-1-alex.dewar90@gmail.com>
+X-Mailer: git-send-email 2.29.1
 MIME-Version: 1.0
-In-Reply-To: <1603442745-13085-4-git-send-email-yilun.xu@intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Commit c09f56b8f68d ("net/sunrpc: Fix return value for sysctl
+sunrpc.transports") attempted to add error checking for the call to
+memory_read_from_buffer(), however its return value was assigned to a
+size_t variable, so any negative values would be lost in the cast. Fix
+this.
 
-On 10/23/20 1:45 AM, Xu Yilun wrote:
-> This patch adds an API for dfl devices to find which physical device
-> owns the DFL.
->
-> This patch makes preparation for supporting DFL Ether Group private
-> feature driver. It uses this information to determine which retimer
-> device physically connects to which ether group.
-device is physically
->
-> Signed-off-by: Xu Yilun <yilun.xu@intel.com>
-> ---
->  drivers/fpga/dfl.c  | 9 +++++++++
->  include/linux/dfl.h | 1 +
->  2 files changed, 10 insertions(+)
->
-> diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
-> index ca3c678..52d18e6 100644
-> --- a/drivers/fpga/dfl.c
-> +++ b/drivers/fpga/dfl.c
-> @@ -558,6 +558,15 @@ int dfl_dev_get_vendor_net_cfg(struct dfl_device *dfl_dev)
->  }
->  EXPORT_SYMBOL_GPL(dfl_dev_get_vendor_net_cfg);
->  
-> +struct device *dfl_dev_get_base_dev(struct dfl_device *dfl_dev)
-> +{
-> +	if (!dfl_dev || !dfl_dev->cdev)
-> +		return NULL;
-> +
-> +	return dfl_dev->cdev->parent;
-> +}
-> +EXPORT_SYMBOL_GPL(dfl_dev_get_base_dev);
+Addresses-Coverity-ID: 1498033: Control flow issues (NO_EFFECT)
+Fixes: c09f56b8f68d ("net/sunrpc: Fix return value for sysctl sunrpc.transports")
+Signed-off-by: Alex Dewar <alex.dewar90@gmail.com>
+---
+ net/sunrpc/sysctl.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-This name is awkward. maybe
-
-dfl_dev_parent() or dfl_dev_base()
-
-
-> +
->  #define is_header_feature(feature) ((feature)->id == FEATURE_ID_FIU_HEADER)
->  
->  /**
-> diff --git a/include/linux/dfl.h b/include/linux/dfl.h
-> index 5ee2b1e..dd313f2 100644
-> --- a/include/linux/dfl.h
-> +++ b/include/linux/dfl.h
-> @@ -68,6 +68,7 @@ struct dfl_driver {
->  #define to_dfl_drv(d) container_of(d, struct dfl_driver, drv)
->  
->  int dfl_dev_get_vendor_net_cfg(struct dfl_device *dfl_dev);
-> +struct device *dfl_dev_get_base_dev(struct dfl_device *dfl_dev);
-
-Because this is an external interface these should have comments
-
-This is another generic change and should be split out of the patchset.
-
-I believe the generic changes would have an easier time being accepted and could be done in parallel as the harder part of the private features is worked out.
-
-Tom
-
->  
->  /*
->   * use a macro to avoid include chaining to get THIS_MODULE.
+diff --git a/net/sunrpc/sysctl.c b/net/sunrpc/sysctl.c
+index a18b36b5422d..c95a2b84dd95 100644
+--- a/net/sunrpc/sysctl.c
++++ b/net/sunrpc/sysctl.c
+@@ -62,6 +62,7 @@ rpc_unregister_sysctl(void)
+ static int proc_do_xprt(struct ctl_table *table, int write,
+ 			void *buffer, size_t *lenp, loff_t *ppos)
+ {
++	ssize_t bytes_read;
+ 	char tmpbuf[256];
+ 	size_t len;
+ 
+@@ -70,12 +71,14 @@ static int proc_do_xprt(struct ctl_table *table, int write,
+ 		return 0;
+ 	}
+ 	len = svc_print_xprts(tmpbuf, sizeof(tmpbuf));
+-	*lenp = memory_read_from_buffer(buffer, *lenp, ppos, tmpbuf, len);
++	bytes_read = memory_read_from_buffer(buffer, *lenp, ppos, tmpbuf, len);
+ 
+-	if (*lenp < 0) {
++	if (bytes_read < 0) {
+ 		*lenp = 0;
+ 		return -EINVAL;
+ 	}
++
++	*lenp = bytes_read;
+ 	return 0;
+ }
+ 
+-- 
+2.29.1
 
