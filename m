@@ -2,220 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1251B297C9D
-	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 15:38:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 190EC297CB2
+	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 15:59:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1761764AbgJXNiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Oct 2020 09:38:11 -0400
-Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:52525 "EHLO
-        wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1761752AbgJXNiJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Oct 2020 09:38:09 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id CF902CAF;
-        Sat, 24 Oct 2020 09:38:07 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sat, 24 Oct 2020 09:38:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=cjqidKcNQOOceQWOj8m7rojktXcvRLtjjhT8bhD56hE=; b=ec65V2mN
-        1MrqQHVmX+KQsg2sTijfMO97scIVs8C1Ae9tJAyFMenfp/Tcou/CV8c59P/X/05Z
-        W+dvKJ8aEnCnQRDBQHAVWoy5av/tqqtBhMyTi45jFy5pYrL3edzEQWy4FmQwyrbc
-        HmgTLkmGwFAw2a1IN2U9nRKleXpyIOBQa2QPcMR2JD/Xwxov5Ky7ty6oRmlmz6Te
-        H7UMcrm0qBLH/leUPzPSV4tu40ZDDC6B1u6uKHi5XnKBTR2hzDsrzQl1f+4bX3uB
-        5kJkkjyf8R1Jjc6c3fH+odIMyJ3O/OUscLSK7g4YVpvdiKo/mzZKRCkz5HCrieWP
-        MX+9ihOsZl8mGg==
-X-ME-Sender: <xms:Py6UXz4oZ6tlCw1yZfpvInS_JinabvYGTe_kIGf8W-W7Ah6oi6DnBw>
-    <xme:Py6UX47yMc5BQuXHXqrFg7wW-_LxX_24HeFGMpZOPppgkWAzOsYQMPSAIrkkFodGa
-    _MVA6HA18LbhYY>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrkedvgdeijecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
-    ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeefteeijedugfejheffffeigeeijeehke
-    eltdfgudevgfefieekgefhffetgeduudenucffohhmrghinhepqhgvmhhurdhorhhgnecu
-    kfhppeekgedrvddvledrfeejrddvvdeknecuvehluhhsthgvrhfuihiivgeptdenucfrrg
-    hrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:Py6UX6cyeGEdBS0PWZhmEbe29uGEk7xFumqymThO1Zx6UXx7rQAkVw>
-    <xmx:Py6UX0IHh0bD8x2C2ueCwvsNqWBW52AaxVl4ayfRfHkGuph1MtS6oA>
-    <xmx:Py6UX3InH4Fpqw7BGBT6sgbHP0Nto4LW02rCmRSjLmVtrxTTnCoqag>
-    <xmx:Py6UX_1YFyLVM3xyxHpN8dw40mp7y4Ng3fyTeFV8Q74HkQbJY6MOyQ>
-Received: from shredder.mtl.com (igld-84-229-37-228.inter.net.il [84.229.37.228])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 0B9343280064;
-        Sat, 24 Oct 2020 09:38:05 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
-        amcohen@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net 3/3] mlxsw: core: Fix use-after-free in mlxsw_emad_trans_finish()
-Date:   Sat, 24 Oct 2020 16:37:33 +0300
-Message-Id: <20201024133733.2107509-4-idosch@idosch.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201024133733.2107509-1-idosch@idosch.org>
-References: <20201024133733.2107509-1-idosch@idosch.org>
+        id S1761821AbgJXN7W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Oct 2020 09:59:22 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:56596 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1761811AbgJXN7V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Oct 2020 09:59:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603547959;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8KmBaS2YJr8kWdyqWOIZ92IbUvQAUIDpQIFRCq90/EQ=;
+        b=cptcjbWdAm8NuEMBFUb7G4NJ5xtAfbn4966lQAUKvsjPYwwkST6VbEGArMy7hwBDfpM/Ct
+        J6CXNZe0aMglbgHTwC+qxh7OqRmpR2PC3Wb6xFPRJAKDD1BKMz9LweaajK3Aust0S9S724
+        EEFnDZ/0a6aKKXhWIDApMy4HNU/Yyvk=
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
+ [209.85.167.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-106-7sez2TbXM7qJ0Sk9RIjf4w-1; Sat, 24 Oct 2020 09:59:17 -0400
+X-MC-Unique: 7sez2TbXM7qJ0Sk9RIjf4w-1
+Received: by mail-oi1-f200.google.com with SMTP id e82so3195187oia.15
+        for <netdev@vger.kernel.org>; Sat, 24 Oct 2020 06:59:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=8KmBaS2YJr8kWdyqWOIZ92IbUvQAUIDpQIFRCq90/EQ=;
+        b=HSPA1pz1itAO6yJff9y4kMWXHqlm2yvPW3fD/eS0u6afDHYEvbhx3+DQ5itDTR8yJf
+         MFa7h2arRTtvwSZDbj5axUuN2yTWM5DyNWjChcnabJX3XFD29Lm2S7h5eXaFkqfptdNz
+         X4GKOBcJE3+Ij7L6P4GvOoAYKUdXDB76Z+ZOBIVk22EHFosM1QadmaNMgoO8mozlIeha
+         bdgCO/Xxqr6uDYnMgRIlqZHqyKr8cRlc3+nmDHnFKLoDmyA1on2ITrXn/4678Noe/mNg
+         r4p1n2/5Jvez4hPfKaG9SlLZADMps683pAP9xdC7Rzm5s1DsxLzChYLZCBOLUSTM5ANN
+         iPhA==
+X-Gm-Message-State: AOAM532B/ob9CHX+KeT+gMzG/27OpfWFKkvct9iYA16ScpLrogS7XiY6
+        yWhGBXLNU62noy//4YPTXyIEB5FNQaZ6npzdVcng7R7LJUfnKvHxrP/DIQkmcqShvrnsjpG6443
+        qm9Pzei5LpPdrhqFc
+X-Received: by 2002:aca:c64e:: with SMTP id w75mr5758431oif.134.1603547956984;
+        Sat, 24 Oct 2020 06:59:16 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxwVMVRpyHW964SEFmnh2ALQAff7JNNO5mS4ANH9Zf1jv0VgDT8+gvJOe2QUE14WeZWABsnsQ==
+X-Received: by 2002:aca:c64e:: with SMTP id w75mr5758417oif.134.1603547956725;
+        Sat, 24 Oct 2020 06:59:16 -0700 (PDT)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id d11sm1262078oti.69.2020.10.24.06.59.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 24 Oct 2020 06:59:16 -0700 (PDT)
+Subject: Re: [RFC PATCH 2/6] fpga: dfl: export network configuration info for
+ DFL based FPGA
+To:     Xu Yilun <yilun.xu@intel.com>, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net, kuba@kernel.org,
+        mdf@kernel.org, lee.jones@linaro.org
+Cc:     linux-kernel@vger.kernel.org, linux-fpga@vger.kernel.org,
+        netdev@vger.kernel.org, lgoncalv@redhat.com, hao.wu@intel.com
+References: <1603442745-13085-1-git-send-email-yilun.xu@intel.com>
+ <1603442745-13085-3-git-send-email-yilun.xu@intel.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <23767a73-dbd7-949a-1f58-176cf3d2d380@redhat.com>
+Date:   Sat, 24 Oct 2020 06:59:14 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1603442745-13085-3-git-send-email-yilun.xu@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amit Cohen <amcohen@nvidia.com>
 
-Each EMAD transaction stores the skb used to issue the EMAD request
-('trans->tx_skb') so that the request could be retried in case of a
-timeout. The skb can be freed when a corresponding response is received
-or as part of the retry logic (e.g., failed retransmit, exceeded maximum
-number of retries).
+On 10/23/20 1:45 AM, Xu Yilun wrote:
+> This patch makes preparation for supporting DFL Ether Group private
+> feature driver, which reads bitstream_id.vendor_net_cfg field to
+> determin the interconnection of network components on FPGA device.
+>
+> Signed-off-by: Xu Yilun <yilun.xu@intel.com>
+> ---
+>  drivers/fpga/dfl-fme-main.c | 10 ++--------
+>  drivers/fpga/dfl.c          | 21 +++++++++++++++++++++
+>  drivers/fpga/dfl.h          | 12 ++++++++++++
+>  include/linux/dfl.h         |  2 ++
+>  4 files changed, 37 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/fpga/dfl-fme-main.c b/drivers/fpga/dfl-fme-main.c
+> index 77ea04d..a2b8ba0 100644
+> --- a/drivers/fpga/dfl-fme-main.c
+> +++ b/drivers/fpga/dfl-fme-main.c
+> @@ -46,14 +46,8 @@ static DEVICE_ATTR_RO(ports_num);
+>  static ssize_t bitstream_id_show(struct device *dev,
+>  				 struct device_attribute *attr, char *buf)
+>  {
+> -	void __iomem *base;
+> -	u64 v;
+> -
+> -	base = dfl_get_feature_ioaddr_by_id(dev, FME_FEATURE_ID_HEADER);
+> -
+> -	v = readq(base + FME_HDR_BITSTREAM_ID);
+> -
+> -	return scnprintf(buf, PAGE_SIZE, "0x%llx\n", (unsigned long long)v);
+> +	return scnprintf(buf, PAGE_SIZE, "0x%llx\n",
+> +			 (unsigned long long)dfl_get_bitstream_id(dev));
+should use sysfs_emit()
+>  }
+>  static DEVICE_ATTR_RO(bitstream_id);
+>  
+> diff --git a/drivers/fpga/dfl.c b/drivers/fpga/dfl.c
+> index bc35750..ca3c678 100644
+> --- a/drivers/fpga/dfl.c
+> +++ b/drivers/fpga/dfl.c
+> @@ -537,6 +537,27 @@ void dfl_driver_unregister(struct dfl_driver *dfl_drv)
+>  }
+>  EXPORT_SYMBOL(dfl_driver_unregister);
+>  
+> +int dfl_dev_get_vendor_net_cfg(struct dfl_device *dfl_dev)
+> +{
+> +	struct device *fme_dev;
+> +	u64 v;
+> +
+> +	if (!dfl_dev)
+> +		return -EINVAL;
+> +
+> +	if (dfl_dev->type == FME_ID)
+> +		fme_dev = dfl_dev->dev.parent;
+> +	else
+> +		fme_dev = dfl_dev->cdev->fme_dev;
+> +
+> +	if (!fme_dev)
+> +		return -EINVAL;
+> +
+> +	v = dfl_get_bitstream_id(fme_dev);
+> +	return (int)FIELD_GET(FME_BID_VENDOR_NET_CFG, v);
+> +}
+> +EXPORT_SYMBOL_GPL(dfl_dev_get_vendor_net_cfg);
+> +
+>  #define is_header_feature(feature) ((feature)->id == FEATURE_ID_FIU_HEADER)
+>  
+>  /**
+> diff --git a/drivers/fpga/dfl.h b/drivers/fpga/dfl.h
+> index 2b82c96..6c7a6961 100644
+> --- a/drivers/fpga/dfl.h
+> +++ b/drivers/fpga/dfl.h
+> @@ -104,6 +104,9 @@
+>  #define FME_CAP_CACHE_SIZE	GENMASK_ULL(43, 32)	/* cache size in KB */
+>  #define FME_CAP_CACHE_ASSOC	GENMASK_ULL(47, 44)	/* Associativity */
+>  
+> +/* FME BITSTREAM_ID Register Bitfield */
+> +#define FME_BID_VENDOR_NET_CFG	GENMASK_ULL(35, 32)     /* vendor net cfg */
 
-The two tasks (i.e., response processing and retransmits) are
-synchronized by the atomic 'trans->active' field which ensures that
-responses to inactive transactions are ignored.
+Are there any other similar #defines that could be added here for completeness?
 
-In case of a failed retransmit the transaction is finished and all of
-its resources are freed. However, the current code does not mark it as
-inactive. Syzkaller was able to hit a race condition in which a
-concurrent response is processed while the transaction's resources are
-being freed, resulting in a use-after-free [1].
+> +
+>  /* FME Port Offset Register Bitfield */
+>  /* Offset to port device feature header */
+>  #define FME_PORT_OFST_DFH_OFST	GENMASK_ULL(23, 0)
+> @@ -397,6 +400,15 @@ static inline bool is_dfl_feature_present(struct device *dev, u16 id)
+>  	return !!dfl_get_feature_ioaddr_by_id(dev, id);
+>  }
+>  
+> +static inline u64 dfl_get_bitstream_id(struct device *dev)
+> +{
+> +	void __iomem *base;
+> +
+> +	base = dfl_get_feature_ioaddr_by_id(dev, FME_FEATURE_ID_HEADER);
+> +
+> +	return readq(base + FME_HDR_BITSTREAM_ID);
+> +}
 
-Fix the issue by making sure to mark the transaction as inactive after a
-failed retransmit and free its resources only if a concurrent task did
-not already do that.
+This is is a generic change and should be split out.
 
-[1]
-BUG: KASAN: use-after-free in consume_skb+0x30/0x370
-net/core/skbuff.c:833
-Read of size 4 at addr ffff88804f570494 by task syz-executor.0/1004
+Tom
 
-CPU: 0 PID: 1004 Comm: syz-executor.0 Not tainted 5.8.0-rc7+ #68
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0xf6/0x16e lib/dump_stack.c:118
- print_address_description.constprop.0+0x1c/0x250
-mm/kasan/report.c:383
- __kasan_report mm/kasan/report.c:513 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:530
- check_memory_region_inline mm/kasan/generic.c:186 [inline]
- check_memory_region+0x14e/0x1b0 mm/kasan/generic.c:192
- instrument_atomic_read include/linux/instrumented.h:56 [inline]
- atomic_read include/asm-generic/atomic-instrumented.h:27 [inline]
- refcount_read include/linux/refcount.h:147 [inline]
- skb_unref include/linux/skbuff.h:1044 [inline]
- consume_skb+0x30/0x370 net/core/skbuff.c:833
- mlxsw_emad_trans_finish+0x64/0x1c0 drivers/net/ethernet/mellanox/mlxsw/core.c:592
- mlxsw_emad_process_response drivers/net/ethernet/mellanox/mlxsw/core.c:651 [inline]
- mlxsw_emad_rx_listener_func+0x5c9/0xac0 drivers/net/ethernet/mellanox/mlxsw/core.c:672
- mlxsw_core_skb_receive+0x4df/0x770 drivers/net/ethernet/mellanox/mlxsw/core.c:2063
- mlxsw_pci_cqe_rdq_handle drivers/net/ethernet/mellanox/mlxsw/pci.c:595 [inline]
- mlxsw_pci_cq_tasklet+0x12a6/0x2520 drivers/net/ethernet/mellanox/mlxsw/pci.c:651
- tasklet_action_common.isra.0+0x13f/0x3e0 kernel/softirq.c:550
- __do_softirq+0x223/0x964 kernel/softirq.c:292
- asm_call_on_stack+0x12/0x20 arch/x86/entry/entry_64.S:711
-
-Allocated by task 1006:
- save_stack+0x1b/0x40 mm/kasan/common.c:48
- set_track mm/kasan/common.c:56 [inline]
- __kasan_kmalloc mm/kasan/common.c:494 [inline]
- __kasan_kmalloc.constprop.0+0xc2/0xd0 mm/kasan/common.c:467
- slab_post_alloc_hook mm/slab.h:586 [inline]
- slab_alloc_node mm/slub.c:2824 [inline]
- slab_alloc mm/slub.c:2832 [inline]
- kmem_cache_alloc+0xcd/0x2e0 mm/slub.c:2837
- __build_skb+0x21/0x60 net/core/skbuff.c:311
- __netdev_alloc_skb+0x1e2/0x360 net/core/skbuff.c:464
- netdev_alloc_skb include/linux/skbuff.h:2810 [inline]
- mlxsw_emad_alloc drivers/net/ethernet/mellanox/mlxsw/core.c:756 [inline]
- mlxsw_emad_reg_access drivers/net/ethernet/mellanox/mlxsw/core.c:787 [inline]
- mlxsw_core_reg_access_emad+0x1ab/0x1420 drivers/net/ethernet/mellanox/mlxsw/core.c:1817
- mlxsw_reg_trans_query+0x39/0x50 drivers/net/ethernet/mellanox/mlxsw/core.c:1831
- mlxsw_sp_sb_pm_occ_clear drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c:260 [inline]
- mlxsw_sp_sb_occ_max_clear+0xbff/0x10a0 drivers/net/ethernet/mellanox/mlxsw/spectrum_buffers.c:1365
- mlxsw_devlink_sb_occ_max_clear+0x76/0xb0 drivers/net/ethernet/mellanox/mlxsw/core.c:1037
- devlink_nl_cmd_sb_occ_max_clear_doit+0x1ec/0x280 net/core/devlink.c:1765
- genl_family_rcv_msg_doit net/netlink/genetlink.c:669 [inline]
- genl_family_rcv_msg net/netlink/genetlink.c:714 [inline]
- genl_rcv_msg+0x617/0x980 net/netlink/genetlink.c:731
- netlink_rcv_skb+0x152/0x440 net/netlink/af_netlink.c:2470
- genl_rcv+0x24/0x40 net/netlink/genetlink.c:742
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x53a/0x750 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x850/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0x150/0x190 net/socket.c:671
- ____sys_sendmsg+0x6d8/0x840 net/socket.c:2359
- ___sys_sendmsg+0xff/0x170 net/socket.c:2413
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2446
- do_syscall_64+0x56/0xa0 arch/x86/entry/common.c:384
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Freed by task 73:
- save_stack+0x1b/0x40 mm/kasan/common.c:48
- set_track mm/kasan/common.c:56 [inline]
- kasan_set_free_info mm/kasan/common.c:316 [inline]
- __kasan_slab_free+0x12c/0x170 mm/kasan/common.c:455
- slab_free_hook mm/slub.c:1474 [inline]
- slab_free_freelist_hook mm/slub.c:1507 [inline]
- slab_free mm/slub.c:3072 [inline]
- kmem_cache_free+0xbe/0x380 mm/slub.c:3088
- kfree_skbmem net/core/skbuff.c:622 [inline]
- kfree_skbmem+0xef/0x1b0 net/core/skbuff.c:616
- __kfree_skb net/core/skbuff.c:679 [inline]
- consume_skb net/core/skbuff.c:837 [inline]
- consume_skb+0xe1/0x370 net/core/skbuff.c:831
- mlxsw_emad_trans_finish+0x64/0x1c0 drivers/net/ethernet/mellanox/mlxsw/core.c:592
- mlxsw_emad_transmit_retry.isra.0+0x9d/0xc0 drivers/net/ethernet/mellanox/mlxsw/core.c:613
- mlxsw_emad_trans_timeout_work+0x43/0x50 drivers/net/ethernet/mellanox/mlxsw/core.c:625
- process_one_work+0xa3e/0x17a0 kernel/workqueue.c:2269
- worker_thread+0x9e/0x1050 kernel/workqueue.c:2415
- kthread+0x355/0x470 kernel/kthread.c:291
- ret_from_fork+0x22/0x30 arch/x86/entry/entry_64.S:293
-
-The buggy address belongs to the object at ffff88804f5703c0
- which belongs to the cache skbuff_head_cache of size 224
-The buggy address is located 212 bytes inside of
- 224-byte region [ffff88804f5703c0, ffff88804f5704a0)
-The buggy address belongs to the page:
-page:ffffea00013d5c00 refcount:1 mapcount:0 mapping:0000000000000000
-index:0x0
-flags: 0x100000000000200(slab)
-raw: 0100000000000200 dead000000000100 dead000000000122 ffff88806c625400
-raw: 0000000000000000 00000000000c000c 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff88804f570380: fc fc fc fc fc fc fc fc fb fb fb fb fb fb fb fb
- ffff88804f570400: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
->ffff88804f570480: fb fb fb fb fc fc fc fc fc fc fc fc fc fc fc fc
-                         ^
- ffff88804f570500: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff88804f570580: 00 00 00 00 00 00 00 00 00 00 00 00 fc fc fc fc
-
-Fixes: caf7297e7ab5f ("mlxsw: core: Introduce support for asynchronous EMAD register access")
-Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlxsw/core.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
-index a2efbb1e3cf4..937b8e46f8c7 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/core.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
-@@ -620,6 +620,9 @@ static void mlxsw_emad_transmit_retry(struct mlxsw_core *mlxsw_core,
- 		err = mlxsw_emad_transmit(trans->core, trans);
- 		if (err == 0)
- 			return;
-+
-+		if (!atomic_dec_and_test(&trans->active))
-+			return;
- 	} else {
- 		err = -EIO;
- 	}
--- 
-2.26.2
+> +
+>  static inline
+>  struct device *dfl_fpga_pdata_to_parent(struct dfl_feature_platform_data *pdata)
+>  {
+> diff --git a/include/linux/dfl.h b/include/linux/dfl.h
+> index e1b2471..5ee2b1e 100644
+> --- a/include/linux/dfl.h
+> +++ b/include/linux/dfl.h
+> @@ -67,6 +67,8 @@ struct dfl_driver {
+>  #define to_dfl_dev(d) container_of(d, struct dfl_device, dev)
+>  #define to_dfl_drv(d) container_of(d, struct dfl_driver, drv)
+>  
+> +int dfl_dev_get_vendor_net_cfg(struct dfl_device *dfl_dev);
+> +
+>  /*
+>   * use a macro to avoid include chaining to get THIS_MODULE.
+>   */
 
