@@ -2,68 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D26E3297FDE
-	for <lists+netdev@lfdr.de>; Sun, 25 Oct 2020 03:27:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 242FE298002
+	for <lists+netdev@lfdr.de>; Sun, 25 Oct 2020 05:24:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1766701AbgJYC1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Oct 2020 22:27:19 -0400
-Received: from smtprelay0241.hostedemail.com ([216.40.44.241]:53418 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729717AbgJYC1T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Oct 2020 22:27:19 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 5054F1730873;
-        Sun, 25 Oct 2020 02:27:18 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1540:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3870:3871:3872:4321:5007:10004:10400:10848:11026:11232:11658:11914:12043:12048:12295:12296:12297:12438:12740:12895:13069:13161:13229:13311:13357:13439:13894:13972:14659:14721:21080:21627:30034:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: grass98_27119d227267
-X-Filterd-Recvd-Size: 1760
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf10.hostedemail.com (Postfix) with ESMTPA;
-        Sun, 25 Oct 2020 02:27:16 +0000 (UTC)
-Message-ID: <a9bc6a8898116bc017152136265a523d5097da84.camel@perches.com>
-Subject: Re: [PATCH -next] neigh: remove the extra slash
-From:   Joe Perches <joe@perches.com>
-To:     Vasily Averin <vvs@virtuozzo.com>,
-        Zhang Qilong <zhangqilong3@huawei.com>, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     lirongqing@baidu.com, roopa@cumulusnetworks.com,
-        netdev@vger.kernel.org
-Date:   Sat, 24 Oct 2020 19:27:10 -0700
-In-Reply-To: <e3e6a453-6a73-3f88-e94b-fa39b38252d9@virtuozzo.com>
-References: <20201023100146.34948-1-zhangqilong3@huawei.com>
-         <e3e6a453-6a73-3f88-e94b-fa39b38252d9@virtuozzo.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.38.1-1 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1728140AbgJYEXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Oct 2020 00:23:17 -0400
+Received: from srv.gazetacaldas.com ([217.112.91.68]:34344 "EHLO
+        host.syrtelcos.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727679AbgJYEXR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Oct 2020 00:23:17 -0400
+X-Greylist: delayed 12228 seconds by postgrey-1.27 at vger.kernel.org; Sun, 25 Oct 2020 00:23:16 EDT
+Received: from syrtelcos.com (ec2-3-16-43-82.us-east-2.compute.amazonaws.com [3.16.43.82])
+        by host.syrtelcos.com (Postfix) with ESMTPA id BF96455B0496
+        for <netdev@vger.kernel.org>; Sun, 25 Oct 2020 00:20:46 +0100 (BST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 host.syrtelcos.com BF96455B0496
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=syrtelcos.com;
+        s=default; t=1603581647;
+        bh=wiB1ayGibL3mchP6F80I24bPE7gSOrpFGTN8wDd2Nf4=;
+        h=Reply-To:From:To:Subject:Date:From;
+        b=c78hMhDq9UqTAR9J2Ug6iUBsSrIiVfzE4iSdbbktWpziF+kkkCVPPlRSo0dunsYJC
+         rTwkhDbYAmhFQkwAXnDHfngYKqufZnxPTtpKkV2mjGAZecmsRAtDqtkO481JgZLZsZ
+         sNx0hYFnaDSTPDFfT6j052tyDp5RzFwJrNxW3sk4=
+DKIM-Filter: OpenDKIM Filter v2.11.0 host.syrtelcos.com BF96455B0496
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=syrtelcos.com;
+        s=default; t=1603581647;
+        bh=wiB1ayGibL3mchP6F80I24bPE7gSOrpFGTN8wDd2Nf4=;
+        h=Reply-To:From:To:Subject:Date:From;
+        b=c78hMhDq9UqTAR9J2Ug6iUBsSrIiVfzE4iSdbbktWpziF+kkkCVPPlRSo0dunsYJC
+         rTwkhDbYAmhFQkwAXnDHfngYKqufZnxPTtpKkV2mjGAZecmsRAtDqtkO481JgZLZsZ
+         sNx0hYFnaDSTPDFfT6j052tyDp5RzFwJrNxW3sk4=
+Reply-To: mfaraz201@securesvsmail.com
+From:   M Faraz <mfaraz201@syrtelcos.com>
+To:     netdev@vger.kernel.org
+Subject: Cooperation
+Date:   24 Oct 2020 23:20:43 +0000
+Message-ID: <20201024232043.99A20F71841993FD@syrtelcos.com>
+Mime-Version: 1.0
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2020-10-23 at 13:16 +0300, Vasily Averin wrote:
-> On 10/23/20 1:01 PM, Zhang Qilong wrote:
-> > The normal path has only one slash.
-> 
-> it is not normal path
-> this string is used to calculate number of symbols in "net/%s/neigh/%s" used below
+Hello there,
 
-Then probably better would be to add +1 rather than
-use a rather odd filename.
+I am Muhammad Faraz. I hope you and your family are keeping safe=20
+during this Covid-19 pandemic. I sent you an email a few days ago=20
+but I did not receive a reply. I am not sure if you got that=20
+email or not. Anyways, I got your contact from an online business=20
+directory and I am contacting you because I have a proposal that=20
+I think you may be interested in. Before I proceed, I want you to=20
+keep an open mind and try your best to read my proposal=20
+carefully. I represent the interest of my brother in-law who was=20
+a former top politician in the Syrian Government cabinet. As you=20
+probably know, there is a lot of crisis going on currently in=20
+Syria with regards to the senseless war and killings. My brother=20
+in-law is one of the few people that has spoken against this and=20
+have been trying to advocate for a more peaceful and prosperous=20
+country. Unfortunalely, his position has put him in a very=20
+difficult situation with the ruling political party and they are=20
+doing everything possible to falsely accuse him of plooting a=20
+coup againt the Government. Due to this situation, my brother in-
+law belives that he is at risk and he is now very scared for the=20
+safety of his family especially his kids. In order to ensure that=20
+his family is taken care of and protected incase anything happens=20
+to him, he has asked me to help him find a foreign businessman=20
+who can help him accommodate and invest the assets he has in=20
+Europe. He wants these assets safely invested so that the future=20
+and safety of his family can be secured.
 
-> > diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-[]
-> > @@ -3623,7 +3623,7 @@ int neigh_sysctl_register(struct net_device *dev, struct neigh_parms *p,
-> >  	int i;
-> >  	struct neigh_sysctl_table *t;
-> >  	const char *dev_name_source;
-> > -	char neigh_path[ sizeof("net//neigh/") + IFNAMSIZ + IFNAMSIZ ];
-> > +	char neigh_path[sizeof("net/neigh/") + IFNAMSIZ + IFNAMSIZ];
-> >  	char *p_name;
-> >  
-> > 
-> >  	t = kmemdup(&neigh_sysctl_template, sizeof(*t), GFP_KERNEL);
-> > 
+I am contacting you with the hope that you will be interested in=20
+helping us. We need your help to invest the funds in lucrative=20
+projects in your country that will yeild good profits. Everything=20
+will be handled in a legal and transparent manner and we will=20
+handle all the logistics involved in the movement of the funds to=20
+you. You will also be very much compensated for your help if you=20
+decide to work with us. If this proposal interests you, please=20
+kindly respond so that I can give you more details including the=20
+proof of funds and other relevant details. I hope to hear from=20
+you soon.
 
+Regards,
 
+Muhammad.
