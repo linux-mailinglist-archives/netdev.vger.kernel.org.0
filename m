@@ -2,127 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC371297DF9
-	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 20:15:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72BD4297DFD
+	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 20:19:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1763804AbgJXSPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Oct 2020 14:15:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50220 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1762940AbgJXSPS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 24 Oct 2020 14:15:18 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7B58F24650;
-        Sat, 24 Oct 2020 18:15:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603563317;
-        bh=hTHylvJInlhIshidRIoPG6FnbQIEujKIvKVJhi95JTM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UH5i3t4LoHB4nVC+RsKRlTvYbef1xoseWjnN9vkblzyIf0rFfWSLVUwgHDwDiKrmq
-         gNKd4NlJX4eFnBbMWeQGkVWhz4dAFvOSltEA706hvy1PpOlpp2t7/R6T5hgjilXqFL
-         VRV15DjWafg/19Ib6CrJnRC0n8lgugJYyQdnGeP8=
-Date:   Sat, 24 Oct 2020 11:15:16 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     syzbot <syzbot+34dc2fea3478e659af01@syzkaller.appspotmail.com>
-Cc:     christian.koenig@amd.com, dri-devel@lists.freedesktop.org,
-        hch@lst.de, iommu@lists.linux-foundation.org,
-        linaro-mm-sig-owner@lists.linaro.org,
-        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, m.szyprowski@samsung.com,
-        netdev@vger.kernel.org, robin.murphy@arm.com,
-        sumit.semwal@linaro.org, syzkaller-bugs@googlegroups.com,
-        linux-rdma@vger.kernel.org
-Subject: Re: WARNING in dma_map_page_attrs
-Message-ID: <20201024111516.59abc9ec@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <000000000000a0f8a305b261fe4a@google.com>
-References: <000000000000335adc05b23300f6@google.com>
-        <000000000000a0f8a305b261fe4a@google.com>
+        id S1763823AbgJXSTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Oct 2020 14:19:52 -0400
+Received: from mail-vi1eur05on2067.outbound.protection.outlook.com ([40.107.21.67]:31393
+        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1763816AbgJXSTv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 24 Oct 2020 14:19:51 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=n2I9c5fk9w4lIN1JcTe8UxAPJcsD4j1mxIzlAdTSLB5f03DnfxyW7u1QJJmcSFN1sdzl33N9vyq0OQqyQGQMVLRbf7pBE7TPnM4iai6zMFy+iTiu2mzyDTC34Esps2NyTw9Iy20X91oMOjh/brW0ask9jZiGVmIRCzzpFMISkXM2Hkj/f6eg9Z2clmUyv+ht2P3JevDgf6JRhY/3mthaql6Z81rVuvOm+Iog9KjWZ6PbJuYRJiWFTNEQItxqLI4Xd6VMl2xfOaX//G1Cb6jQx01DO+lg8dQLGaDUYpmTyaObxU9Nm8U2kvRC9Q4jLxDdWQ8mmkDdxiGxGVS3zXLKWQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ifBW5QnkknCNV87SMODOWAf7SWTI4EA1SDX6C+NMtj0=;
+ b=GIhKgUWejJFXTXAf/yppOWPmKe1hPyRWo0ys3M0vaCabuDfYd2kX0L+OWJ/N5mgdNGl3CQa+njPF/y6MVvkMCI2qU5jiLJl4/y8Motz9kvhPRPW/XEGcfhkoH8fE1Zz+gcCg13KzgY5EPPCuGlLYDcaaawMOjpGn9v3Ymr/vprJwHk9bAObSigpdrDovZJFefJS6Che9bYRFrpU7sE2jdGPf7YlmneWJlrMvvmxLo/6o1urL0ZWJEyLi58EfREBTQHFHhLiV31xQC6eQc6PCNB0lK+9Q5Oank2H6CjZf11h4iK7FyH+HhYxoSzK1uAc/B5rASt9rttr0MAt/s5IdQQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ifBW5QnkknCNV87SMODOWAf7SWTI4EA1SDX6C+NMtj0=;
+ b=WisfQI09EfSIzdS5AZGGIliuJZryAAiBMCQu6AEPxXusDBgixrpTsgLjEFW5u8OzWhl8DMin1aveW/UmBkI9jk8kY2MiK8NloU2z9dyNfpvMqrTOh7Rj7kgyFDtE5k0LvtAKMpgZ71q662F9qb5s155MKYvKO16WYQ9vgswJ834=
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ (2603:10a6:803:16::14) by VI1PR04MB7007.eurprd04.prod.outlook.com
+ (2603:10a6:803:13e::19) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Sat, 24 Oct
+ 2020 18:19:47 +0000
+Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::607d:cbc4:9191:b324]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
+ ([fe80::607d:cbc4:9191:b324%5]) with mapi id 15.20.3499.019; Sat, 24 Oct 2020
+ 18:19:47 +0000
+From:   Ioana Ciornei <ioana.ciornei@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        Andre Edich <andre.edich@microchip.com>,
+        Antoine Tenart <atenart@kernel.org>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Christophe Leroy <christophe.leroy@c-s.fr>,
+        Dan Murphy <dmurphy@ti.com>,
+        Divya Koppera <Divya.Koppera@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Kavya Sree Kotagiri <kavyasree.kotagiri@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marco Felsch <m.felsch@pengutronix.de>,
+        Marek Vasut <marex@denx.de>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Mathias Kresin <dev@kresin.me>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Michael Walle <michael@walle.cc>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Nisar Sayed <Nisar.Sayed@microchip.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        Willy Liu <willy.liu@realtek.com>,
+        Yuiko Oshino <yuiko.oshino@microchip.com>
+Subject: Re: [RFC net-next 0/5] net: phy: add support for shared interrupts
+Thread-Topic: [RFC net-next 0/5] net: phy: add support for shared interrupts
+Thread-Index: AQHWqf897amgBiGDU0S3g6psdVpuFqmm/v6AgAARg4A=
+Date:   Sat, 24 Oct 2020 18:19:46 +0000
+Message-ID: <20201024181945.pip6sdal6hpa6fns@skbuf>
+References: <20201024121412.10070-1-ioana.ciornei@nxp.com>
+ <20201024171705.GK745568@lunn.ch>
+In-Reply-To: <20201024171705.GK745568@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [188.26.174.215]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 0d498649-7e5e-4fb1-6c41-08d878496392
+x-ms-traffictypediagnostic: VI1PR04MB7007:
+x-microsoft-antispam-prvs: <VI1PR04MB70075F4F68BBFFA2154BD4B5E01B0@VI1PR04MB7007.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: HGCTnB3PLMEn2dKZXu3bJZm6QVOtZ0wioowy3+43xB9bAg/nKqyb5D38zKkTwhPMlOggGiMVaEmwoftf3jtCgdFU+ChL1mf0Al4lR1qa/epKnJ+D69NPJiDLCbBcsfq4fKQ3t80JHpS2Yut8a1tWDcF9U34RXfBeu79QRF1Zck6SF8mtjfOdDM03D5l7QgBacIYFa3hasElMbgWS0WV2LPWeR+vuDLEsdoE4rxS6hyi8rYQk+iDvGaXQ5J78SOuh8XoeiMHBlhDeL+A5IqfjR/S4KoRXs6axfXDNHoTFN/SiYvz2w8YOUXO7A08r7l1gKXqmNxMMZLOqCI3a18yuyQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(136003)(366004)(376002)(396003)(39860400002)(346002)(66446008)(186003)(66556008)(66476007)(8936002)(66946007)(76116006)(54906003)(64756008)(8676002)(316002)(26005)(33716001)(86362001)(6916009)(1076003)(6486002)(478600001)(44832011)(7416002)(5660300002)(9686003)(6512007)(71200400001)(6506007)(4326008)(7406005)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: wCQneeDgBeRCDrJr5Fc8+2tyW1ywy6Ja0r9tVhGzIPjChR5IhmVcP02TfHmmvH9Hd/Z3oCGDZp/39aDdokgKNKxFKTZpG/s7q/uak/aaXcwe52WEpUVaU9mqbqtY4tttg4/X/Frn7bO7k5UZCBYAUmO3BsWAo2vTmn6oYvTPeQzvqYpEYfMeS3RxRRmmKxhDypikEdXrAE8amwQF1Xml4g6F0qZ+jekPsYgxrY+ytwQocWcjT7Kbu2kpNlvuCBsWVcFd/mWXFjjJcmkdRDHsWe9xfkxy22OMAn/flJhweF7s18zGoqO6XcEXrlDXhdIL+HBiAm3seiq6iFeIJArWLA5FyipmMQuu8TpXsvBLkQHdFSVUxYmxkjgojVTIw8m0DohnSet3eCJJIniMgV4dU+Q9ck1MFfpk3N5O1JmIWRSIY57lOPfeNWzqpoZ+slxaUwUypJDvohHkpANWI+18aEo7xNYE6PM70jsbBCu66EKVbQtMk/sU3QXdsdJiF7tckosBiCui+7kUwjFxCw70mpxBH4nZNyXSoSWYPrrw/BDach1Q12/6FHWjfCEjZT2fQUJHi6ITUttylMm/D/si5SqUZWelS7mpcqL/qeYdKoWJg2/FNvPwGW1q59XBfKRUhFhSKkPWHELkH8DzKwIjeQ==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <34C67A79BAD7CF4E9A26C0FED74E9995@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3871.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0d498649-7e5e-4fb1-6c41-08d878496392
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Oct 2020 18:19:46.9132
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: vkoVdVvfzu7nBz6rlgR6EmMCY0JIEpee0heR2W4EkLhKLBkuw9oxY1JxRzi5QFGFHkn7Japuq8Ola0Z75wMQJA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7007
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CC: rdma, looks like rdma from the stack trace
+On Sat, Oct 24, 2020 at 07:17:05PM +0200, Andrew Lunn wrote:
+> > - Every PHY driver gains a .handle_interrupt() implementation that, for
+> >   the most part, would look like below:
+> >=20
+> > 	irq_status =3D phy_read(phydev, INTR_STATUS);
+> > 	if (irq_status < 0) {
+> > 		phy_error(phydev);
+> > 		return IRQ_NONE;
+> > 	}
+> >=20
+> > 	if (irq_status =3D=3D 0)
+> > 		return IRQ_NONE;
+> >=20
+> > 	phy_trigger_machine(phydev);
+> >=20
+> > 	return IRQ_HANDLED;
+>=20
+> Hi Ioana
+>=20
+> It looks like phy_trigger_machine(phydev) could be left in the core,
+> phy_interrupt(). It just needs to look at the return code, IRQ_HANDLED
+> means trigger the state machine.
 
-On Fri, 23 Oct 2020 20:07:17 -0700 syzbot wrote:
-> syzbot has found a reproducer for the following issue on:
-> 
-> HEAD commit:    3cb12d27 Merge tag 'net-5.10-rc1' of git://git.kernel.org/..
-> git tree:       net
-> console output: https://syzkaller.appspot.com/x/log.txt?x=13125390500000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=46c6fea3eb827ae1
-> dashboard link: https://syzkaller.appspot.com/bug?extid=34dc2fea3478e659af01
-> compiler:       gcc (GCC) 10.1.0-syz 20200507
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16858664500000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11f402ef900000
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+34dc2fea3478e659af01@syzkaller.appspotmail.com
-> 
-> netdevsim netdevsim0 netdevsim1: set [1, 0] type 2 family 0 port 6081 - 0
-> netdevsim netdevsim0 netdevsim2: set [1, 0] type 2 family 0 port 6081 - 0
-> netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family 0 port 6081 - 0
-> infiniband syz2: set active
-> infiniband syz2: added macvlan0
-> ------------[ cut here ]------------
-> WARNING: CPU: 1 PID: 8488 at kernel/dma/mapping.c:149 dma_map_page_attrs+0x493/0x700 kernel/dma/mapping.c:149
-> Modules linked in:
-> CPU: 1 PID: 8488 Comm: syz-executor144 Not tainted 5.9.0-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> RIP: 0010:dma_map_page_attrs+0x493/0x700 kernel/dma/mapping.c:149
-> Code: 80 3c 10 00 0f 85 ed 01 00 00 48 8b 1d 86 38 e9 0c e9 2d fc ff ff 48 89 c3 e9 d1 fd ff ff e8 04 11 12 00 0f 0b e8 fd 10 12 00 <0f> 0b 49 c7 c4 ff ff ff ff e9 d5 fd ff ff e8 ea 10 12 00 48 8d 7b
-> RSP: 0018:ffffc90000fdec68 EFLAGS: 00010293
-> RAX: 0000000000000000 RBX: ffffffff894d1060 RCX: ffffffff815df1e3
-> RDX: ffff8880208c1a40 RSI: ffffffff815df5b3 RDI: ffff8880196f8b00
-> RBP: ffff88801412d800 R08: 0000000000000002 R09: 0000000000000000
-> R10: 0000000000000002 R11: 0000000000000000 R12: ffffea0000504b40
-> R13: ffff8880196f86e8 R14: 00000000000008b8 R15: 0000000000000002
-> FS:  0000000001b26880(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 00000000200002c0 CR3: 0000000022446000 CR4: 00000000001506e0
-> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> Call Trace:
->  dma_map_single_attrs include/linux/dma-mapping.h:279 [inline]
->  ib_dma_map_single include/rdma/ib_verbs.h:3967 [inline]
->  ib_mad_post_receive_mads+0x23f/0xd60 drivers/infiniband/core/mad.c:2715
->  ib_mad_port_start drivers/infiniband/core/mad.c:2862 [inline]
->  ib_mad_port_open drivers/infiniband/core/mad.c:3016 [inline]
->  ib_mad_init_device+0x72b/0x1400 drivers/infiniband/core/mad.c:3092
->  add_client_context+0x405/0x5e0 drivers/infiniband/core/device.c:680
->  enable_device_and_get+0x1d5/0x3c0 drivers/infiniband/core/device.c:1301
->  ib_register_device drivers/infiniband/core/device.c:1376 [inline]
->  ib_register_device+0x7a7/0xa40 drivers/infiniband/core/device.c:1335
->  rxe_register_device+0x46d/0x570 drivers/infiniband/sw/rxe/rxe_verbs.c:1182
->  rxe_add+0x12fe/0x16d0 drivers/infiniband/sw/rxe/rxe.c:247
->  rxe_net_add+0x8c/0xe0 drivers/infiniband/sw/rxe/rxe_net.c:507
->  rxe_newlink drivers/infiniband/sw/rxe/rxe.c:269 [inline]
->  rxe_newlink+0xb7/0xe0 drivers/infiniband/sw/rxe/rxe.c:250
->  nldev_newlink+0x30e/0x540 drivers/infiniband/core/nldev.c:1555
->  rdma_nl_rcv_msg+0x367/0x690 drivers/infiniband/core/netlink.c:195
->  rdma_nl_rcv_skb drivers/infiniband/core/netlink.c:239 [inline]
->  rdma_nl_rcv+0x2f2/0x440 drivers/infiniband/core/netlink.c:259
->  netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
->  netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
->  netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
->  sock_sendmsg_nosec net/socket.c:651 [inline]
->  sock_sendmsg+0xcf/0x120 net/socket.c:671
->  ____sys_sendmsg+0x6e8/0x810 net/socket.c:2353
->  ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
->  __sys_sendmsg+0xe5/0x1b0 net/socket.c:2440
->  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> RIP: 0033:0x443699
-> Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db 0d fc ff c3 66 2e 0f 1f 84 00 00 00 00
-> RSP: 002b:00007ffc067db418 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000443699
-> RDX: 0000000000000000 RSI: 00000000200002c0 RDI: 0000000000000003
-> RBP: 00007ffc067db420 R08: 0000000001bbbbbb R09: 0000000001bbbbbb
-> R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffc067db430
-> R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-> 
+I tend to disagree that this would bring us any benefit.
 
+Keeping the phy_trigger_machine() inside the phy_interrupt() would mean
+that we are changing the convention of what the implementation of
+.handle_interrupt() should do.
+
+At the moment, there are drivers which use it to handle multiple
+interrupt sources within the same PHY device (e.g. MACSEC, 1588, link
+state). With your suggestion, when a MACSEC interrupt is received, the
+PHY driver would be forced to return IRQ_NONE just so phylib does not
+trigger the link state machine. I think this would eventually lead to
+some "irq X: nobody cared".
+
+Also, the vsc8584_handle_interrupt() already calls a wrapper over
+phy_trigger_machine() called phy_mac_interrupt() which was intended for
+MAC driver use only.
+
+Ioana
