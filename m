@@ -2,987 +2,490 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A90C297BF0
-	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 12:41:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7BB4297C0F
+	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 13:18:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1761037AbgJXKlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Oct 2020 06:41:47 -0400
-Received: from latitanza.investici.org ([82.94.249.234]:60303 "EHLO
-        latitanza.investici.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1761030AbgJXKlp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Oct 2020 06:41:45 -0400
-Received: from mx3.investici.org (unknown [127.0.0.1])
-        by latitanza.investici.org (Postfix) with ESMTP id 4CJHhh14yYz8wgZ;
-        Sat, 24 Oct 2020 10:41:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=privacyrequired.com;
-        s=stigmate; t=1603536100;
-        bh=7K2S+t3oYxbWIQc9iG2isb9FdYbU8BiOE3v8yNFkK/Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nFZnMIxyE2xKqOXoRlGWh4OxrUdnkyGdNbERkBu/BxT69wT2ACfDV2g/XXC+VNKap
-         QJTmKnPR/EWWssjIuztpFzI4wmwlo2M/KqK63rSyk6xs5zwhNMCk3F0xB451M5gt1I
-         blu46cXXwzcalqYuN8LRbYbsq0v6XvNTtXe1aoQc=
-Received: from [82.94.249.234] (mx3.investici.org [82.94.249.234]) (Authenticated sender: laniel_francis@privacyrequired.com) by localhost (Postfix) with ESMTPSA id 4CJHhg3w1Wz8wgV;
-        Sat, 24 Oct 2020 10:41:39 +0000 (UTC)
-From:   Francis Laniel <laniel_francis@privacyrequired.com>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     linux-hardening@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, kuba@kernel.org
-Subject: Re: [RFC][PATCH v3 3/3] Rename nla_strlcpy to nla_strscpy.
-Date:   Sat, 24 Oct 2020 12:41:39 +0200
-Message-ID: <14989414.U5IcmKQhkP@machine>
-In-Reply-To: <202010221302.5BA047AC9@keescook>
-References: <20201020164707.30402-1-laniel_francis@privacyrequired.com> <2286512.66XcFyAlgq@machine> <202010221302.5BA047AC9@keescook>
+        id S1759600AbgJXLSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Oct 2020 07:18:41 -0400
+Received: from mx0a-0014ca01.pphosted.com ([208.84.65.235]:36478 "EHLO
+        mx0a-0014ca01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1759572AbgJXLSj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Oct 2020 07:18:39 -0400
+Received: from pps.filterd (m0042385.ppops.net [127.0.0.1])
+        by mx0a-0014ca01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09OBHslj020949;
+        Sat, 24 Oct 2020 04:18:23 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=proofpoint;
+ bh=pxRWDdDYD92VnkhYx9RMweODih7ByJuu5T+67SduZNw=;
+ b=j5rKErG5uHVKx0CPUrlxNKa7WrQDIXmsTE2+vI2FZHomY60Wa6cpZ0Yc8a2PVIFUcmAf
+ ECy5eC+dYEg+HBX6hbJKvisFruhKUfy/CHejZwgbv2APGVP1vW5KDllCxy+NABt3txb0
+ oeKP/QygXzaJRZUdtkpGMSAUloHkB8f82eq3/XhMh3K+LuZVX1u0bb/4MJ20Fdjz2hGU
+ nkZodbkj8+XPqNXgRnhfeVO6gyRNbaFiEkksHbMrsOgRrFWy1zVHnZtbvSBHl772nxo+
+ ePzUBtUbOAIHfiWtaDrFDQVSjAeJTWmPw4vzXTBAECzjwZ1uHkhETNVm6VujTZtMVSj5 Vw== 
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2103.outbound.protection.outlook.com [104.47.58.103])
+        by mx0a-0014ca01.pphosted.com with ESMTP id 34cgtvg9y0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 24 Oct 2020 04:18:23 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WXmiJKxPPhPVD4WB/LR7p9zt7pv18ThH1E6JQmIUnd8XWzT6Dg6ZzU1pk9hWfCos0BFe0B0+4qkomFa5W624EasUXAkiv53p7DlNa3mRtPjalCzT21cirFkRxMmHSmvvH0eVzzgBzcn8t4szHPU5j8d5V35f956c9mnu9yMjqkTGUXZprGu2/Ax/UHzmQUX6coNvIV6USpcZLd/GHFXTdHSLP3bkTzFzStbXfZZwuBww01AEMskAsRHkNvc4XgbNuEmYzaX9YbqSCHuZXqZdM65GJVCLkqUw/nbxd+Fd9HWV4uD73EUoAJvErO56viug6ceuYvtgnmDWiSxOReWe+Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pxRWDdDYD92VnkhYx9RMweODih7ByJuu5T+67SduZNw=;
+ b=dVHyxDkT7rxAGceT6QW+R9gnoRyBfBxzLnIhPDd1Frd4np59gce1dHjY/YLRVgLIaQlbu0XG2E/qFrXwzy1RZSoc+jB+0qS3+p3+Q1CpCr+Xbfdw4JPs15LbSG34Bvybs8vWcV/3DA3QEr3vePmiNx1LcSNk3MVRIpnR3dy5LU6Z87BHLl+DJgPOSE9RFaIc2qQVdlg6kSnUxLjy5U+JA1VX4DpOsDWa0mGdjIOd3aVgT3KWVPi+gEK93xUV5BeO4edFUty3jJVeCuT4XXnKfUbas0QkDcTEyLt/lhBhSBAdVjel4fTixyDzvhc6JAIm3kvBTl/EbacWWj+XqadSFA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 158.140.1.147) smtp.rcpttodomain=microchip.com smtp.mailfrom=cadence.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=cadence.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cadence.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pxRWDdDYD92VnkhYx9RMweODih7ByJuu5T+67SduZNw=;
+ b=wegW8UbfMUgez/Pml/K+GqRCmgpnYE2NtKf3eQJs2ZtquFqdmtCuhKKc/eDLCXkfMnZKKSxzn/tjk/QiUwFIamvKxJjmGp0MKJdhiSUOHtevcok8eQvBI7K9dUdvM5+QLO5IvNuaaCdFePctnwONZfzHQyupZHbzw4yJcnusrJ4=
+Received: from BN0PR02CA0012.namprd02.prod.outlook.com (2603:10b6:408:e4::17)
+ by SJ0PR07MB7518.namprd07.prod.outlook.com (2603:10b6:a03:289::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.21; Sat, 24 Oct
+ 2020 11:18:19 +0000
+Received: from BN8NAM12FT050.eop-nam12.prod.protection.outlook.com
+ (2603:10b6:408:e4:cafe::78) by BN0PR02CA0012.outlook.office365.com
+ (2603:10b6:408:e4::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend
+ Transport; Sat, 24 Oct 2020 11:18:19 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 158.140.1.147)
+ smtp.mailfrom=cadence.com; microchip.com; dkim=none (message not signed)
+ header.d=none;microchip.com; dmarc=pass action=none header.from=cadence.com;
+Received-SPF: Pass (protection.outlook.com: domain of cadence.com designates
+ 158.140.1.147 as permitted sender) receiver=protection.outlook.com;
+ client-ip=158.140.1.147; helo=sjmaillnx1.cadence.com;
+Received: from sjmaillnx1.cadence.com (158.140.1.147) by
+ BN8NAM12FT050.mail.protection.outlook.com (10.13.182.143) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3520.9 via Frontend Transport; Sat, 24 Oct 2020 11:18:19 +0000
+Received: from maileu3.global.cadence.com (maileu3.cadence.com [10.160.88.99])
+        by sjmaillnx1.cadence.com (8.14.4/8.14.4) with ESMTP id 09OBIMtC022318
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Sat, 24 Oct 2020 04:18:23 -0700
+X-CrossPremisesHeadersFilteredBySendConnector: maileu3.global.cadence.com
+Received: from maileu3.global.cadence.com (10.160.88.99) by
+ maileu3.global.cadence.com (10.160.88.99) with Microsoft SMTP Server (TLS) id
+ 15.0.1367.3; Sat, 24 Oct 2020 13:18:15 +0200
+Received: from vleu-orange.cadence.com (10.160.88.83) by
+ maileu3.global.cadence.com (10.160.88.99) with Microsoft SMTP Server (TLS) id
+ 15.0.1367.3 via Frontend Transport; Sat, 24 Oct 2020 13:18:15 +0200
+Received: from vleu-orange.cadence.com (localhost.localdomain [127.0.0.1])
+        by vleu-orange.cadence.com (8.14.4/8.14.4) with ESMTP id 09OBIFD5028095;
+        Sat, 24 Oct 2020 13:18:15 +0200
+Received: (from pthombar@localhost)
+        by vleu-orange.cadence.com (8.14.4/8.14.4/Submit) id 09OBIBYb028094;
+        Sat, 24 Oct 2020 13:18:11 +0200
+From:   Parshuram Thombare <pthombar@cadence.com>
+To:     <linux@armlinux.org.uk>, <andrew@lunn.ch>
+CC:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <mparab@cadence.com>, Parshuram Thombare <pthombar@cadence.com>
+Subject: [PATCH v5] net: macb: add support for high speed interface
+Date:   Sat, 24 Oct 2020 13:18:09 +0200
+Message-ID: <1603538289-28057-1-git-send-email-pthombar@cadence.com>
+X-Mailer: git-send-email 2.2.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain
+X-OrganizationHeadersPreserved: maileu3.global.cadence.com
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e5ff3cec-a91e-4abb-940d-08d8780e82e2
+X-MS-TrafficTypeDiagnostic: SJ0PR07MB7518:
+X-Microsoft-Antispam-PRVS: <SJ0PR07MB7518F408DB10BD4EE6E8A1C7C11B0@SJ0PR07MB7518.namprd07.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: USYtUNkxX8rAn+GQCTbxno3gahdLnVj4Ht11ySOTqQU2YgmFjUP2Hz5hQsRpYfy4IQjXR2rRLP8+BF/XzxHk97Vm9t8UkcaVB8u6URqegMdpTFCcLBuvnRCTW812QurbTHNLcZYUtinLFHese4ThwKd1t1xYOBhfL6ibdRBYQrTkYKQde3NaF8rqWk0cN6GMiTPLb9m+bYOMjRbuF7FhFZN4vf4tPgd92er3qqICqQJflxJvEao6IT/5Rw/HfD+gL3Ju2q60DVwF147tse4d+aWv/nFSw2lqNUwFCoTWV0bejmRSDxZBqni6sGXSY3SMTP3tAwzR3aW/FIbqv963urbf2Vv+qQxAfqOCA3Eq9ti7KQ0zwD91mgJPprvTPBXhNJ5gNZ2nZVR8vYvZHzuYlhgcmQwajaQ1/sSKWaR49nw=
+X-Forefront-Antispam-Report: CIP:158.140.1.147;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:sjmaillnx1.cadence.com;PTR:unknown.Cadence.COM;CAT:NONE;SFS:(4636009)(396003)(136003)(346002)(376002)(39860400002)(36092001)(46966005)(2906002)(26005)(42186006)(82740400003)(36906005)(70586007)(5660300002)(316002)(2616005)(47076004)(186003)(110136005)(70206006)(54906003)(478600001)(30864003)(83380400001)(356005)(336012)(8676002)(8936002)(7636003)(4326008)(82310400003)(36756003)(426003)(107886003)(86362001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: cadence.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Oct 2020 11:18:19.1748
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e5ff3cec-a91e-4abb-940d-08d8780e82e2
+X-MS-Exchange-CrossTenant-Id: d36035c5-6ce6-4662-a3dc-e762e61ae4c9
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=d36035c5-6ce6-4662-a3dc-e762e61ae4c9;Ip=[158.140.1.147];Helo=[sjmaillnx1.cadence.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM12FT050.eop-nam12.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR07MB7518
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.737
+ definitions=2020-10-24_09:2020-10-23,2020-10-24 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_check_notspam policy=outbound_check score=0 phishscore=0
+ adultscore=0 spamscore=0 clxscore=1015 priorityscore=1501 mlxlogscore=999
+ suspectscore=0 impostorscore=0 mlxscore=0 lowpriorityscore=0 bulkscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2010240084
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le jeudi 22 octobre 2020, 22:04:32 CEST Kees Cook a =E9crit :
-> On Thu, Oct 22, 2020 at 11:41:31AM +0200, Francis Laniel wrote:
-> > Le jeudi 22 octobre 2020, 01:49:59 CEST Kees Cook a =E9crit :
-> > > On Tue, Oct 20, 2020 at 06:47:07PM +0200,
-> > > laniel_francis@privacyrequired.com>=20
-> > wrote:
-> > > > From: Francis Laniel <laniel_francis@privacyrequired.com>
-> > > >=20
-> > > > Calls to nla_strlcpy are now replaced by calls to nla_strscpy which=
- is
-> > > > the
-> > > > new name of this function.
-> > > >=20
-> > > > Signed-off-by: Francis Laniel <laniel_francis@privacyrequired.com>
-> > >=20
-> > > The Subject could also be: "treewide: Rename nla_strlcpy to nla_strsc=
-py"
-> > >=20
-> > > But otherwise, yup, easy mechanical change.
-> >=20
-> > Should I submit a v4 for this change?
->=20
-> I'll say yes. :) Drop the RFC, bump to v4, and send it to netdev (along
-> with all the other CCs you have here already), and add the Reviewed-bys
-> from v3.
+This patch adds support for 10GBASE-R interface to the linux driver for
+Cadence's ethernet controller.
+This controller has separate MAC's and PCS'es for low and high speed paths.
+High speed PCS supports 100M, 1G, 2.5G, 5G and 10G through rate adaptation
+implementation. However, since it doesn't support auto negotiation, linux
+driver is modified to support 10GBASE-R instead of USXGMII. 
 
-I will add it for the next version (which will be submitted Friday 30th=20
-October).
-About the "Reviewed-by" tags, yesterday I read this document:
-https://www.kernel.org/doc/html/latest/process/submitting-patches.html
-(I should have read it sooner)
-And I found about the "Suggested-by" tag, should I add this tag and quoting=
-=20
-you as the suggester? Since you put this issue on GitHub and I just=20
-implemented it.
+Signed-off-by: Parshuram Thombare <pthombar@cadence.com>
+---
+Changes between v4 and v5:
+1. Correctly programming MAC bits mac_config.
 
-> Thanks!
+Changes between v3 and v4:
+1. Adapted new phylink pcs_ops for low speed PCS.
+2. Moved high speed MAC configuration from pcs_config
+   to mac_config.
 
-You are welcome and thank you for all the reviews!
+Changes between v2 and v3:
+1. Replace USXGMII interface by 10GBASE-R interface.
+2. Adapted new phylink pcs_ops for high speed PCS.
+3. Added pcs_get_state for high speed PCS.
 
-> -Kees
->=20
-> > > Reviewed-by: Kees Cook <keescook@chromium.org>
-> > >=20
-> > > > ---
-> > > >=20
-> > > >  drivers/infiniband/core/nldev.c            | 10 +++++-----
-> > > >  drivers/net/can/vxcan.c                    |  4 ++--
-> > > >  drivers/net/veth.c                         |  4 ++--
-> > > >  include/linux/genl_magic_struct.h          |  2 +-
-> > > >  include/net/netlink.h                      |  4 ++--
-> > > >  include/net/pkt_cls.h                      |  2 +-
-> > > >  kernel/taskstats.c                         |  2 +-
-> > > >  lib/nlattr.c                               |  6 +++---
-> > > >  net/core/fib_rules.c                       |  4 ++--
-> > > >  net/core/rtnetlink.c                       | 12 ++++++------
-> > > >  net/decnet/dn_dev.c                        |  2 +-
-> > > >  net/ieee802154/nl-mac.c                    |  2 +-
-> > > >  net/ipv4/devinet.c                         |  2 +-
-> > > >  net/ipv4/fib_semantics.c                   |  2 +-
-> > > >  net/ipv4/metrics.c                         |  2 +-
-> > > >  net/netfilter/ipset/ip_set_hash_netiface.c |  4 ++--
-> > > >  net/netfilter/nf_tables_api.c              |  6 +++---
-> > > >  net/netfilter/nfnetlink_acct.c             |  2 +-
-> > > >  net/netfilter/nfnetlink_cthelper.c         |  4 ++--
-> > > >  net/netfilter/nft_ct.c                     |  2 +-
-> > > >  net/netfilter/nft_log.c                    |  2 +-
-> > > >  net/netlabel/netlabel_mgmt.c               |  2 +-
-> > > >  net/nfc/netlink.c                          |  2 +-
-> > > >  net/sched/act_api.c                        |  2 +-
-> > > >  net/sched/act_ipt.c                        |  2 +-
-> > > >  net/sched/act_simple.c                     |  4 ++--
-> > > >  net/sched/cls_api.c                        |  2 +-
-> > > >  net/sched/sch_api.c                        |  2 +-
-> > > >  net/tipc/netlink_compat.c                  |  2 +-
-> > > >  29 files changed, 49 insertions(+), 49 deletions(-)
-> > > >=20
-> > > > diff --git a/drivers/infiniband/core/nldev.c
-> > > > b/drivers/infiniband/core/nldev.c index 12d29d54a081..08366e254b1d
-> > > > 100644
-> > > > --- a/drivers/infiniband/core/nldev.c
-> > > > +++ b/drivers/infiniband/core/nldev.c
-> > > > @@ -932,7 +932,7 @@ static int nldev_set_doit(struct sk_buff *skb,
-> > > > struct
-> > > > nlmsghdr *nlh,>
-> > > >=20
-> > > >  	if (tb[RDMA_NLDEV_ATTR_DEV_NAME]) {
-> > > >  =09
-> > > >  		char name[IB_DEVICE_NAME_MAX] =3D {};
-> > > >=20
-> > > > -		nla_strlcpy(name, tb[RDMA_NLDEV_ATTR_DEV_NAME],
-> > > > +		nla_strscpy(name, tb[RDMA_NLDEV_ATTR_DEV_NAME],
-> > > >=20
-> > > >  			    IB_DEVICE_NAME_MAX);
-> > > >  	=09
-> > > >  		if (strlen(name) =3D=3D 0) {
-> > > >  	=09
-> > > >  			err =3D -EINVAL;
-> > > >=20
-> > > > @@ -1529,13 +1529,13 @@ static int nldev_newlink(struct sk_buff *sk=
-b,
-> > > > struct nlmsghdr *nlh,>
-> > > >=20
-> > > >  	    !tb[RDMA_NLDEV_ATTR_LINK_TYPE] ||
-> > > >  	    !tb[RDMA_NLDEV_ATTR_NDEV_NAME])
-> > > >  	=09
-> > > >  		return -EINVAL;
-> > > >=20
-> > > > -	nla_strlcpy(ibdev_name, tb[RDMA_NLDEV_ATTR_DEV_NAME],
-> > > > +	nla_strscpy(ibdev_name, tb[RDMA_NLDEV_ATTR_DEV_NAME],
-> > > >=20
-> > > >  		    sizeof(ibdev_name));
-> > > >  =09
-> > > >  	if (strchr(ibdev_name, '%') || strlen(ibdev_name) =3D=3D 0)
-> > > >  =09
-> > > >  		return -EINVAL;
-> > > >=20
-> > > > -	nla_strlcpy(type, tb[RDMA_NLDEV_ATTR_LINK_TYPE], sizeof(type));
-> > > > -	nla_strlcpy(ndev_name, tb[RDMA_NLDEV_ATTR_NDEV_NAME],
-> > > > +	nla_strscpy(type, tb[RDMA_NLDEV_ATTR_LINK_TYPE], sizeof(type));
-> > > > +	nla_strscpy(ndev_name, tb[RDMA_NLDEV_ATTR_NDEV_NAME],
-> > > >=20
-> > > >  		    sizeof(ndev_name));
-> > > >  =09
-> > > >  	ndev =3D dev_get_by_name(sock_net(skb->sk), ndev_name);
-> > > >=20
-> > > > @@ -1602,7 +1602,7 @@ static int nldev_get_chardev(struct sk_buff
-> > > > *skb,
-> > > > struct nlmsghdr *nlh,>
-> > > >=20
-> > > >  	if (err || !tb[RDMA_NLDEV_ATTR_CHARDEV_TYPE])
-> > > >  =09
-> > > >  		return -EINVAL;
-> > > >=20
-> > > > -	nla_strlcpy(client_name, tb[RDMA_NLDEV_ATTR_CHARDEV_TYPE],
-> > > > +	nla_strscpy(client_name, tb[RDMA_NLDEV_ATTR_CHARDEV_TYPE],
-> > > >=20
-> > > >  		    sizeof(client_name));
-> > > >  =09
-> > > >  	if (tb[RDMA_NLDEV_ATTR_DEV_INDEX]) {
-> > > >=20
-> > > > diff --git a/drivers/net/can/vxcan.c b/drivers/net/can/vxcan.c
-> > > > index d6ba9426be4d..fa47bab510bb 100644
-> > > > --- a/drivers/net/can/vxcan.c
-> > > > +++ b/drivers/net/can/vxcan.c
-> > > > @@ -186,7 +186,7 @@ static int vxcan_newlink(struct net *net, struct
-> > > > net_device *dev,>
-> > > >=20
-> > > >  	}
-> > > >  =09
-> > > >  	if (ifmp && tbp[IFLA_IFNAME]) {
-> > > >=20
-> > > > -		nla_strlcpy(ifname, tbp[IFLA_IFNAME], IFNAMSIZ);
-> > > > +		nla_strscpy(ifname, tbp[IFLA_IFNAME], IFNAMSIZ);
-> > > >=20
-> > > >  		name_assign_type =3D NET_NAME_USER;
-> > > >  =09
-> > > >  	} else {
-> > > >  =09
-> > > >  		snprintf(ifname, IFNAMSIZ, DRV_NAME "%%d");
-> > > >=20
-> > > > @@ -223,7 +223,7 @@ static int vxcan_newlink(struct net *net, struct
-> > > > net_device *dev,>
-> > > >=20
-> > > >  	/* register first device */
-> > > >  	if (tb[IFLA_IFNAME])
-> > > >=20
-> > > > -		nla_strlcpy(dev->name, tb[IFLA_IFNAME], IFNAMSIZ);
-> > > > +		nla_strscpy(dev->name, tb[IFLA_IFNAME], IFNAMSIZ);
-> > > >=20
-> > > >  	else
-> > > >  =09
-> > > >  		snprintf(dev->name, IFNAMSIZ, DRV_NAME "%%d");
-> > > >=20
-> > > > diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> > > > index 8c737668008a..359d3ab33c4d 100644
-> > > > --- a/drivers/net/veth.c
-> > > > +++ b/drivers/net/veth.c
-> > > > @@ -1329,7 +1329,7 @@ static int veth_newlink(struct net *src_net,
-> > > > struct
-> > > > net_device *dev,>
-> > > >=20
-> > > >  	}
-> > > >  =09
-> > > >  	if (ifmp && tbp[IFLA_IFNAME]) {
-> > > >=20
-> > > > -		nla_strlcpy(ifname, tbp[IFLA_IFNAME], IFNAMSIZ);
-> > > > +		nla_strscpy(ifname, tbp[IFLA_IFNAME], IFNAMSIZ);
-> > > >=20
-> > > >  		name_assign_type =3D NET_NAME_USER;
-> > > >  =09
-> > > >  	} else {
-> > > >  =09
-> > > >  		snprintf(ifname, IFNAMSIZ, DRV_NAME "%%d");
-> > > >=20
-> > > > @@ -1379,7 +1379,7 @@ static int veth_newlink(struct net *src_net,
-> > > > struct
-> > > > net_device *dev,>
-> > > >=20
-> > > >  		eth_hw_addr_random(dev);
-> > > >  =09
-> > > >  	if (tb[IFLA_IFNAME])
-> > > >=20
-> > > > -		nla_strlcpy(dev->name, tb[IFLA_IFNAME], IFNAMSIZ);
-> > > > +		nla_strscpy(dev->name, tb[IFLA_IFNAME], IFNAMSIZ);
-> > > >=20
-> > > >  	else
-> > > >  =09
-> > > >  		snprintf(dev->name, IFNAMSIZ, DRV_NAME "%%d");
-> > > >=20
-> > > > diff --git a/include/linux/genl_magic_struct.h
-> > > > b/include/linux/genl_magic_struct.h index eeae59d3ceb7..35d21fddaf2d
-> > > > 100644
-> > > > --- a/include/linux/genl_magic_struct.h
-> > > > +++ b/include/linux/genl_magic_struct.h
-> > > > @@ -89,7 +89,7 @@ static inline int nla_put_u64_0pad(struct sk_buff
-> > > > *skb,
-> > > > int attrtype, u64 value)>
-> > > >=20
-> > > >  			nla_get_u64, nla_put_u64_0pad, false)
-> > > > =20
-> > > >  #define __str_field(attr_nr, attr_flag, name, maxlen) \
-> > > > =20
-> > > >  	__array(attr_nr, attr_flag, name, NLA_NUL_STRING, char, maxlen, \
-> > > >=20
-> > > > -			nla_strlcpy, nla_put, false)
-> > > > +			nla_strscpy, nla_put, false)
-> > > >=20
-> > > >  #define __bin_field(attr_nr, attr_flag, name, maxlen) \
-> > > > =20
-> > > >  	__array(attr_nr, attr_flag, name, NLA_BINARY, char, maxlen, \
-> > > >  =09
-> > > >  			nla_memcpy, nla_put, false)
-> > > >=20
-> > > > diff --git a/include/net/netlink.h b/include/net/netlink.h
-> > > > index 446ca182e13d..1ceec518ab49 100644
-> > > > --- a/include/net/netlink.h
-> > > > +++ b/include/net/netlink.h
-> > > > @@ -142,7 +142,7 @@
-> > > >=20
-> > > >   * Attribute Misc:
-> > > >   *   nla_memcpy(dest, nla, count)	copy attribute into memory
-> > > >   *   nla_memcmp(nla, data, size)	compare attribute with memory area
-> > > >=20
-> > > > - *   nla_strlcpy(dst, nla, size)	copy attribute to a sized string
-> > > > + *   nla_strscpy(dst, nla, size)	copy attribute to a sized string
-> > > >=20
-> > > >   *   nla_strcmp(nla, str)		compare attribute with string
-> > > >   *
-> > > >=20
-> > > >   * Attribute Parsing:
-> > > > @@ -506,7 +506,7 @@ int __nla_parse(struct nlattr **tb, int maxtype,
-> > > > const
-> > > > struct nlattr *head,>
-> > > >=20
-> > > >  		struct netlink_ext_ack *extack);
-> > > > =20
-> > > >  int nla_policy_len(const struct nla_policy *, int);
-> > > >  struct nlattr *nla_find(const struct nlattr *head, int len, int
-> > > >  attrtype);
-> > > >=20
-> > > > -ssize_t nla_strlcpy(char *dst, const struct nlattr *nla, size_t
-> > > > dstsize);
-> > > > +ssize_t nla_strscpy(char *dst, const struct nlattr *nla, size_t
-> > > > dstsize);
-> > > >=20
-> > > >  char *nla_strdup(const struct nlattr *nla, gfp_t flags);
-> > > >  int nla_memcpy(void *dest, const struct nlattr *src, int count);
-> > > >  int nla_memcmp(const struct nlattr *nla, const void *data, size_t
-> > > >  size);
-> > > >=20
-> > > > diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
-> > > > index db9a828f4f4f..133f9ad4d4f9 100644
-> > > > --- a/include/net/pkt_cls.h
-> > > > +++ b/include/net/pkt_cls.h
-> > > > @@ -512,7 +512,7 @@ tcf_change_indev(struct net *net, struct nlattr
-> > > > *indev_tlv,>
-> > > >=20
-> > > >  	char indev[IFNAMSIZ];
-> > > >  	struct net_device *dev;
-> > > >=20
-> > > > -	if (nla_strlcpy(indev, indev_tlv, IFNAMSIZ) < 0) {
-> > > > +	if (nla_strscpy(indev, indev_tlv, IFNAMSIZ) < 0) {
-> > > >=20
-> > > >  		NL_SET_ERR_MSG_ATTR(extack, indev_tlv,
-> > > >  	=09
-> > > >  				    "Interface name too long");
-> > > >  	=09
-> > > >  		return -EINVAL;
-> > > >=20
-> > > > diff --git a/kernel/taskstats.c b/kernel/taskstats.c
-> > > > index a2802b6ff4bb..2b4898b4752e 100644
-> > > > --- a/kernel/taskstats.c
-> > > > +++ b/kernel/taskstats.c
-> > > > @@ -346,7 +346,7 @@ static int parse(struct nlattr *na, struct cpum=
-ask
-> > > > *mask)>
-> > > >=20
-> > > >  	data =3D kmalloc(len, GFP_KERNEL);
-> > > >  	if (!data)
-> > > >  =09
-> > > >  		return -ENOMEM;
-> > > >=20
-> > > > -	nla_strlcpy(data, na, len);
-> > > > +	nla_strscpy(data, na, len);
-> > > >=20
-> > > >  	ret =3D cpulist_parse(data, mask);
-> > > >  	kfree(data);
-> > > >  	return ret;
-> > > >=20
-> > > > diff --git a/lib/nlattr.c b/lib/nlattr.c
-> > > > index 447182543c03..09aa181569e0 100644
-> > > > --- a/lib/nlattr.c
-> > > > +++ b/lib/nlattr.c
-> > > > @@ -709,7 +709,7 @@ struct nlattr *nla_find(const struct nlattr *he=
-ad,
-> > > > int
-> > > > len, int attrtype)>
-> > > >=20
-> > > >  EXPORT_SYMBOL(nla_find);
-> > > > =20
-> > > >  /**
-> > > >=20
-> > > > - * nla_strlcpy - Copy string attribute payload into a sized buffer
-> > > > + * nla_strscpy - Copy string attribute payload into a sized buffer
-> > > >=20
-> > > >   * @dst: Where to copy the string to.
-> > > >   * @nla: Attribute to copy the string from.
-> > > >   * @dstsize: Size of destination buffer.
-> > > >=20
-> > > > @@ -722,7 +722,7 @@ EXPORT_SYMBOL(nla_find);
-> > > >=20
-> > > >   * * -E2BIG - If @dstsize is 0 or greater than U16_MAX or @nla len=
-gth
-> > > >   greater *            than @dstsize.
-> > > >   */
-> > > >=20
-> > > > -ssize_t nla_strlcpy(char *dst, const struct nlattr *nla, size_t
-> > > > dstsize)
-> > > > +ssize_t nla_strscpy(char *dst, const struct nlattr *nla, size_t
-> > > > dstsize)
-> > > >=20
-> > > >  {
-> > > > =20
-> > > >  	size_t srclen =3D nla_len(nla);
-> > > >  	char *src =3D nla_data(nla);
-> > > >=20
-> > > > @@ -749,7 +749,7 @@ ssize_t nla_strlcpy(char *dst, const struct nla=
-ttr
-> > > > *nla, size_t dstsize)>
-> > > >=20
-> > > >  	return ret;
-> > > > =20
-> > > >  }
-> > > >=20
-> > > > -EXPORT_SYMBOL(nla_strlcpy);
-> > > > +EXPORT_SYMBOL(nla_strscpy);
-> > > >=20
-> > > >  /**
-> > > > =20
-> > > >   * nla_strdup - Copy string attribute payload into a newly allocat=
-ed
-> > > >   buffer
-> > > >=20
-> > > > diff --git a/net/core/fib_rules.c b/net/core/fib_rules.c
-> > > > index 7bcfb16854cb..cd80ffed6d26 100644
-> > > > --- a/net/core/fib_rules.c
-> > > > +++ b/net/core/fib_rules.c
-> > > > @@ -563,7 +563,7 @@ static int fib_nl2rule(struct sk_buff *skb, str=
-uct
-> > > > nlmsghdr *nlh,>
-> > > >=20
-> > > >  		struct net_device *dev;
-> > > >  	=09
-> > > >  		nlrule->iifindex =3D -1;
-> > > >=20
-> > > > -		nla_strlcpy(nlrule->iifname, tb[FRA_IIFNAME], IFNAMSIZ);
-> > > > +		nla_strscpy(nlrule->iifname, tb[FRA_IIFNAME], IFNAMSIZ);
-> > > >=20
-> > > >  		dev =3D __dev_get_by_name(net, nlrule->iifname);
-> > > >  		if (dev)
-> > > >  	=09
-> > > >  			nlrule->iifindex =3D dev->ifindex;
-> > > >=20
-> > > > @@ -573,7 +573,7 @@ static int fib_nl2rule(struct sk_buff *skb, str=
-uct
-> > > > nlmsghdr *nlh,>
-> > > >=20
-> > > >  		struct net_device *dev;
-> > > >  	=09
-> > > >  		nlrule->oifindex =3D -1;
-> > > >=20
-> > > > -		nla_strlcpy(nlrule->oifname, tb[FRA_OIFNAME], IFNAMSIZ);
-> > > > +		nla_strscpy(nlrule->oifname, tb[FRA_OIFNAME], IFNAMSIZ);
-> > > >=20
-> > > >  		dev =3D __dev_get_by_name(net, nlrule->oifname);
-> > > >  		if (dev)
-> > > >  	=09
-> > > >  			nlrule->oifindex =3D dev->ifindex;
-> > > >=20
-> > > > diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> > > > index 68e0682450c6..e0059256fe93 100644
-> > > > --- a/net/core/rtnetlink.c
-> > > > +++ b/net/core/rtnetlink.c
-> > > > @@ -1939,7 +1939,7 @@ static const struct rtnl_link_ops
-> > > > *linkinfo_to_kind_ops(const struct nlattr *nla>
-> > > >=20
-> > > >  	if (linfo[IFLA_INFO_KIND]) {
-> > > >  =09
-> > > >  		char kind[MODULE_NAME_LEN];
-> > > >=20
-> > > > -		nla_strlcpy(kind, linfo[IFLA_INFO_KIND], sizeof(kind));
-> > > > +		nla_strscpy(kind, linfo[IFLA_INFO_KIND], sizeof(kind));
-> > > >=20
-> > > >  		ops =3D rtnl_link_ops_get(kind);
-> > > >  =09
-> > > >  	}
-> > > >=20
-> > > > @@ -2953,9 +2953,9 @@ static struct net_device *rtnl_dev_get(struct
-> > > > net
-> > > > *net,>
-> > > >=20
-> > > >  	if (!ifname) {
-> > > >  =09
-> > > >  		ifname =3D buffer;
-> > > >  		if (ifname_attr)
-> > > >=20
-> > > > -			nla_strlcpy(ifname, ifname_attr, IFNAMSIZ);
-> > > > +			nla_strscpy(ifname, ifname_attr, IFNAMSIZ);
-> > > >=20
-> > > >  		else if (altifname_attr)
-> > > >=20
-> > > > -			nla_strlcpy(ifname, altifname_attr, ALTIFNAMSIZ);
-> > > > +			nla_strscpy(ifname, altifname_attr, ALTIFNAMSIZ);
-> > > >=20
-> > > >  		else
-> > > >  	=09
-> > > >  			return NULL;
-> > > >  =09
-> > > >  	}
-> > > >=20
-> > > > @@ -2983,7 +2983,7 @@ static int rtnl_setlink(struct sk_buff *skb,
-> > > > struct
-> > > > nlmsghdr *nlh,>
-> > > >=20
-> > > >  		goto errout;
-> > > >  =09
-> > > >  	if (tb[IFLA_IFNAME])
-> > > >=20
-> > > > -		nla_strlcpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
-> > > > +		nla_strscpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
-> > > >=20
-> > > >  	else
-> > > >  =09
-> > > >  		ifname[0] =3D '\0';
-> > > >=20
-> > > > @@ -3264,7 +3264,7 @@ static int __rtnl_newlink(struct sk_buff *skb,
-> > > > struct nlmsghdr *nlh,>
-> > > >=20
-> > > >  		return err;
-> > > >  =09
-> > > >  	if (tb[IFLA_IFNAME])
-> > > >=20
-> > > > -		nla_strlcpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
-> > > > +		nla_strscpy(ifname, tb[IFLA_IFNAME], IFNAMSIZ);
-> > > >=20
-> > > >  	else
-> > > >  =09
-> > > >  		ifname[0] =3D '\0';
-> > > >=20
-> > > > @@ -3296,7 +3296,7 @@ static int __rtnl_newlink(struct sk_buff *skb,
-> > > > struct nlmsghdr *nlh,>
-> > > >=20
-> > > >  		memset(linkinfo, 0, sizeof(linkinfo));
-> > > >  =09
-> > > >  	if (linkinfo[IFLA_INFO_KIND]) {
-> > > >=20
-> > > > -		nla_strlcpy(kind, linkinfo[IFLA_INFO_KIND], sizeof(kind));
-> > > > +		nla_strscpy(kind, linkinfo[IFLA_INFO_KIND], sizeof(kind));
-> > > >=20
-> > > >  		ops =3D rtnl_link_ops_get(kind);
-> > > >  =09
-> > > >  	} else {
-> > > >  =09
-> > > >  		kind[0] =3D '\0';
-> > > >=20
-> > > > diff --git a/net/decnet/dn_dev.c b/net/decnet/dn_dev.c
-> > > > index 15d42353f1a3..d1c50a48614b 100644
-> > > > --- a/net/decnet/dn_dev.c
-> > > > +++ b/net/decnet/dn_dev.c
-> > > > @@ -658,7 +658,7 @@ static int dn_nl_newaddr(struct sk_buff *skb,
-> > > > struct
-> > > > nlmsghdr *nlh,>
-> > > >=20
-> > > >  	ifa->ifa_dev =3D dn_db;
-> > > >  =09
-> > > >  	if (tb[IFA_LABEL])
-> > > >=20
-> > > > -		nla_strlcpy(ifa->ifa_label, tb[IFA_LABEL], IFNAMSIZ);
-> > > > +		nla_strscpy(ifa->ifa_label, tb[IFA_LABEL], IFNAMSIZ);
-> > > >=20
-> > > >  	else
-> > > >  =09
-> > > >  		memcpy(ifa->ifa_label, dev->name, IFNAMSIZ);
-> > > >=20
-> > > > diff --git a/net/ieee802154/nl-mac.c b/net/ieee802154/nl-mac.c
-> > > > index 6d091e419d3e..9c640d670ffe 100644
-> > > > --- a/net/ieee802154/nl-mac.c
-> > > > +++ b/net/ieee802154/nl-mac.c
-> > > > @@ -149,7 +149,7 @@ static struct net_device
-> > > > *ieee802154_nl_get_dev(struct
-> > > > genl_info *info)>
-> > > >=20
-> > > >  	if (info->attrs[IEEE802154_ATTR_DEV_NAME]) {
-> > > >  =09
-> > > >  		char name[IFNAMSIZ + 1];
-> > > >=20
-> > > > -		nla_strlcpy(name, info->attrs[IEEE802154_ATTR_DEV_NAME],
-> > > > +		nla_strscpy(name, info->attrs[IEEE802154_ATTR_DEV_NAME],
-> > > >=20
-> > > >  			    sizeof(name));
-> > > >  	=09
-> > > >  		dev =3D dev_get_by_name(&init_net, name);
-> > > >  =09
-> > > >  	} else if (info->attrs[IEEE802154_ATTR_DEV_INDEX]) {
-> > > >=20
-> > > > diff --git a/net/ipv4/devinet.c b/net/ipv4/devinet.c
-> > > > index 123a6d39438f..a50951a90f63 100644
-> > > > --- a/net/ipv4/devinet.c
-> > > > +++ b/net/ipv4/devinet.c
-> > > > @@ -881,7 +881,7 @@ static struct in_ifaddr *rtm_to_ifaddr(struct n=
-et
-> > > > *net, struct nlmsghdr *nlh,>
-> > > >=20
-> > > >  		ifa->ifa_broadcast =3D nla_get_in_addr(tb[IFA_BROADCAST]);
-> > > >  =09
-> > > >  	if (tb[IFA_LABEL])
-> > > >=20
-> > > > -		nla_strlcpy(ifa->ifa_label, tb[IFA_LABEL], IFNAMSIZ);
-> > > > +		nla_strscpy(ifa->ifa_label, tb[IFA_LABEL], IFNAMSIZ);
-> > > >=20
-> > > >  	else
-> > > >  =09
-> > > >  		memcpy(ifa->ifa_label, dev->name, IFNAMSIZ);
-> > > >=20
-> > > > diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-> > > > index 1f75dc686b6b..4b505074b24f 100644
-> > > > --- a/net/ipv4/fib_semantics.c
-> > > > +++ b/net/ipv4/fib_semantics.c
-> > > > @@ -973,7 +973,7 @@ bool fib_metrics_match(struct fib_config *cfg,
-> > > > struct
-> > > > fib_info *fi)>
-> > > >=20
-> > > >  			char tmp[TCP_CA_NAME_MAX];
-> > > >  			bool ecn_ca =3D false;
-> > > >=20
-> > > > -			nla_strlcpy(tmp, nla, sizeof(tmp));
-> > > > +			nla_strscpy(tmp, nla, sizeof(tmp));
-> > > >=20
-> > > >  			val =3D tcp_ca_get_key_by_name(fi->fib_net, tmp, &ecn_ca);
-> > > >  	=09
-> > > >  		} else {
-> > > >  	=09
-> > > >  			if (nla_len(nla) !=3D sizeof(u32))
-> > > >=20
-> > > > diff --git a/net/ipv4/metrics.c b/net/ipv4/metrics.c
-> > > > index 3205d5f7c8c9..25ea6ac44db9 100644
-> > > > --- a/net/ipv4/metrics.c
-> > > > +++ b/net/ipv4/metrics.c
-> > > > @@ -31,7 +31,7 @@ static int ip_metrics_convert(struct net *net,
-> > > > struct
-> > > > nlattr *fc_mx,>
-> > > >=20
-> > > >  		if (type =3D=3D RTAX_CC_ALGO) {
-> > > >  	=09
-> > > >  			char tmp[TCP_CA_NAME_MAX];
-> > > >=20
-> > > > -			nla_strlcpy(tmp, nla, sizeof(tmp));
-> > > > +			nla_strscpy(tmp, nla, sizeof(tmp));
-> > > >=20
-> > > >  			val =3D tcp_ca_get_key_by_name(net, tmp, &ecn_ca);
-> > > >  			if (val =3D=3D TCP_CA_UNSPEC) {
-> > > >  		=09
-> > > >  				NL_SET_ERR_MSG(extack, "Unknown tcp congestion=20
-algorithm");
-> > > >=20
-> > > > diff --git a/net/netfilter/ipset/ip_set_hash_netiface.c
-> > > > b/net/netfilter/ipset/ip_set_hash_netiface.c index
-> > > > be5e95a0d876..b96fd0c55eaa 100644
-> > > > --- a/net/netfilter/ipset/ip_set_hash_netiface.c
-> > > > +++ b/net/netfilter/ipset/ip_set_hash_netiface.c
-> > > > @@ -225,7 +225,7 @@ hash_netiface4_uadt(struct ip_set *set, struct
-> > > > nlattr
-> > > > *tb[],>
-> > > >=20
-> > > >  		if (e.cidr > HOST_MASK)
-> > > >  	=09
-> > > >  			return -IPSET_ERR_INVALID_CIDR;
-> > > >  =09
-> > > >  	}
-> > > >=20
-> > > > -	nla_strlcpy(e.iface, tb[IPSET_ATTR_IFACE], IFNAMSIZ);
-> > > > +	nla_strscpy(e.iface, tb[IPSET_ATTR_IFACE], IFNAMSIZ);
-> > > >=20
-> > > >  	if (tb[IPSET_ATTR_CADT_FLAGS]) {
-> > > >  =09
-> > > >  		u32 cadt_flags =3D ip_set_get_h32(tb[IPSET_ATTR_CADT_FLAGS]);
-> > > >=20
-> > > > @@ -442,7 +442,7 @@ hash_netiface6_uadt(struct ip_set *set, struct
-> > > > nlattr
-> > > > *tb[],>
-> > > >=20
-> > > >  	ip6_netmask(&e.ip, e.cidr);
-> > > >=20
-> > > > -	nla_strlcpy(e.iface, tb[IPSET_ATTR_IFACE], IFNAMSIZ);
-> > > > +	nla_strscpy(e.iface, tb[IPSET_ATTR_IFACE], IFNAMSIZ);
-> > > >=20
-> > > >  	if (tb[IPSET_ATTR_CADT_FLAGS]) {
-> > > >  =09
-> > > >  		u32 cadt_flags =3D ip_set_get_h32(tb[IPSET_ATTR_CADT_FLAGS]);
-> > > >=20
-> > > > diff --git a/net/netfilter/nf_tables_api.c
-> > > > b/net/netfilter/nf_tables_api.c
-> > > > index 9957e0ed8658..90c39e694e87 100644
-> > > > --- a/net/netfilter/nf_tables_api.c
-> > > > +++ b/net/netfilter/nf_tables_api.c
-> > > > @@ -1281,7 +1281,7 @@ static struct nft_chain *nft_chain_lookup(str=
-uct
-> > > > net
-> > > > *net,>
-> > > >=20
-> > > >  	if (nla =3D=3D NULL)
-> > > >  =09
-> > > >  		return ERR_PTR(-EINVAL);
-> > > >=20
-> > > > -	nla_strlcpy(search, nla, sizeof(search));
-> > > > +	nla_strscpy(search, nla, sizeof(search));
-> > > >=20
-> > > >  	WARN_ON(!rcu_read_lock_held() &&
-> > > >  =09
-> > > >  		!lockdep_commit_lock_is_held(net));
-> > > >=20
-> > > > @@ -1721,7 +1721,7 @@ static struct nft_hook
-> > > > *nft_netdev_hook_alloc(struct
-> > > > net *net,>
-> > > >=20
-> > > >  		goto err_hook_alloc;
-> > > >  =09
-> > > >  	}
-> > > >=20
-> > > > -	nla_strlcpy(ifname, attr, IFNAMSIZ);
-> > > > +	nla_strscpy(ifname, attr, IFNAMSIZ);
-> > > >=20
-> > > >  	dev =3D __dev_get_by_name(net, ifname);
-> > > >  	if (!dev) {
-> > > >  =09
-> > > >  		err =3D -ENOENT;
-> > > >=20
-> > > > @@ -5734,7 +5734,7 @@ struct nft_object *nft_obj_lookup(const struct
-> > > > net
-> > > > *net,>
-> > > >=20
-> > > >  	struct rhlist_head *tmp, *list;
-> > > >  	struct nft_object *obj;
-> > > >=20
-> > > > -	nla_strlcpy(search, nla, sizeof(search));
-> > > > +	nla_strscpy(search, nla, sizeof(search));
-> > > >=20
-> > > >  	k.name =3D search;
-> > > >  =09
-> > > >  	WARN_ON_ONCE(!rcu_read_lock_held() &&
-> > > >=20
-> > > > diff --git a/net/netfilter/nfnetlink_acct.c
-> > > > b/net/netfilter/nfnetlink_acct.c index 5bfec829c12f..5e511df8d709
-> > > > 100644
-> > > > --- a/net/netfilter/nfnetlink_acct.c
-> > > > +++ b/net/netfilter/nfnetlink_acct.c
-> > > > @@ -112,7 +112,7 @@ static int nfnl_acct_new(struct net *net, struct
-> > > > sock
-> > > > *nfnl,>
-> > > >=20
-> > > >  		nfacct->flags =3D flags;
-> > > >  =09
-> > > >  	}
-> > > >=20
-> > > > -	nla_strlcpy(nfacct->name, tb[NFACCT_NAME], NFACCT_NAME_MAX);
-> > > > +	nla_strscpy(nfacct->name, tb[NFACCT_NAME], NFACCT_NAME_MAX);
-> > > >=20
-> > > >  	if (tb[NFACCT_BYTES]) {
-> > > >  =09
-> > > >  		atomic64_set(&nfacct->bytes,
-> > > >=20
-> > > > diff --git a/net/netfilter/nfnetlink_cthelper.c
-> > > > b/net/netfilter/nfnetlink_cthelper.c index 5b0d0a77379c..0f94fce1d3=
-ed
-> > > > 100644
-> > > > --- a/net/netfilter/nfnetlink_cthelper.c
-> > > > +++ b/net/netfilter/nfnetlink_cthelper.c
-> > > > @@ -146,7 +146,7 @@ nfnl_cthelper_expect_policy(struct
-> > > > nf_conntrack_expect_policy *expect_policy,>
-> > > >=20
-> > > >  	    !tb[NFCTH_POLICY_EXPECT_TIMEOUT])
-> > > >  	=09
-> > > >  		return -EINVAL;
-> > > >=20
-> > > > -	nla_strlcpy(expect_policy->name,
-> > > > +	nla_strscpy(expect_policy->name,
-> > > >=20
-> > > >  		    tb[NFCTH_POLICY_NAME], NF_CT_HELPER_NAME_LEN);
-> > > >  =09
-> > > >  	expect_policy->max_expected =3D
-> > > >  =09
-> > > >  		ntohl(nla_get_be32(tb[NFCTH_POLICY_EXPECT_MAX]));
-> > > >=20
-> > > > @@ -233,7 +233,7 @@ nfnl_cthelper_create(const struct nlattr * const
-> > > > tb[],
-> > > >=20
-> > > >  	if (ret < 0)
-> > > >  =09
-> > > >  		goto err1;
-> > > >=20
-> > > > -	nla_strlcpy(helper->name,
-> > > > +	nla_strscpy(helper->name,
-> > > >=20
-> > > >  		    tb[NFCTH_NAME], NF_CT_HELPER_NAME_LEN);
-> > > >  =09
-> > > >  	size =3D ntohl(nla_get_be32(tb[NFCTH_PRIV_DATA_LEN]));
-> > > >  	if (size > sizeof_field(struct nf_conn_help, data)) {
-> > > >=20
-> > > > diff --git a/net/netfilter/nft_ct.c b/net/netfilter/nft_ct.c
-> > > > index 322bd674963e..a8c4d442231c 100644
-> > > > --- a/net/netfilter/nft_ct.c
-> > > > +++ b/net/netfilter/nft_ct.c
-> > > > @@ -990,7 +990,7 @@ static int nft_ct_helper_obj_init(const struct
-> > > > nft_ctx
-> > > > *ctx,>
-> > > >=20
-> > > >  	if (!priv->l4proto)
-> > > >  =09
-> > > >  		return -ENOENT;
-> > > >=20
-> > > > -	nla_strlcpy(name, tb[NFTA_CT_HELPER_NAME], sizeof(name));
-> > > > +	nla_strscpy(name, tb[NFTA_CT_HELPER_NAME], sizeof(name));
-> > > >=20
-> > > >  	if (tb[NFTA_CT_HELPER_L3PROTO])
-> > > >  =09
-> > > >  		family =3D ntohs(nla_get_be16(tb[NFTA_CT_HELPER_L3PROTO]));
-> > > >=20
-> > > > diff --git a/net/netfilter/nft_log.c b/net/netfilter/nft_log.c
-> > > > index 57899454a530..a06a46b039c5 100644
-> > > > --- a/net/netfilter/nft_log.c
-> > > > +++ b/net/netfilter/nft_log.c
-> > > > @@ -152,7 +152,7 @@ static int nft_log_init(const struct nft_ctx *c=
-tx,
-> > > >=20
-> > > >  		priv->prefix =3D kmalloc(nla_len(nla) + 1, GFP_KERNEL);
-> > > >  		if (priv->prefix =3D=3D NULL)
-> > > >  	=09
-> > > >  			return -ENOMEM;
-> > > >=20
-> > > > -		nla_strlcpy(priv->prefix, nla, nla_len(nla) + 1);
-> > > > +		nla_strscpy(priv->prefix, nla, nla_len(nla) + 1);
-> > > >=20
-> > > >  	} else {
-> > > >  =09
-> > > >  		priv->prefix =3D (char *)nft_log_null_prefix;
-> > > >  =09
-> > > >  	}
-> > > >=20
-> > > > diff --git a/net/netlabel/netlabel_mgmt.c
-> > > > b/net/netlabel/netlabel_mgmt.c
-> > > > index eb1d66d20afb..df1b41ed73fd 100644
-> > > > --- a/net/netlabel/netlabel_mgmt.c
-> > > > +++ b/net/netlabel/netlabel_mgmt.c
-> > > > @@ -95,7 +95,7 @@ static int netlbl_mgmt_add_common(struct genl_info
-> > > > *info,
-> > > >=20
-> > > >  			ret_val =3D -ENOMEM;
-> > > >  			goto add_free_entry;
-> > > >  	=09
-> > > >  		}
-> > > >=20
-> > > > -		nla_strlcpy(entry->domain,
-> > > > +		nla_strscpy(entry->domain,
-> > > >=20
-> > > >  			    info->attrs[NLBL_MGMT_A_DOMAIN], tmp_size);
-> > > >  =09
-> > > >  	}
-> > > >=20
-> > > > diff --git a/net/nfc/netlink.c b/net/nfc/netlink.c
-> > > > index e894254c17d4..438ff1f30a33 100644
-> > > > --- a/net/nfc/netlink.c
-> > > > +++ b/net/nfc/netlink.c
-> > > > @@ -1226,7 +1226,7 @@ static int nfc_genl_fw_download(struct sk_buff
-> > > > *skb,
-> > > > struct genl_info *info)>
-> > > >=20
-> > > >  	if (!dev)
-> > > >  =09
-> > > >  		return -ENODEV;
-> > > >=20
-> > > > -	nla_strlcpy(firmware_name, info->attrs[NFC_ATTR_FIRMWARE_NAME],
-> > > > +	nla_strscpy(firmware_name, info->attrs[NFC_ATTR_FIRMWARE_NAME],
-> > > >=20
-> > > >  		    sizeof(firmware_name));
-> > > >  =09
-> > > >  	rc =3D nfc_fw_download(dev, firmware_name);
-> > > >=20
-> > > > diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-> > > > index 541574520c52..eac24a73115f 100644
-> > > > --- a/net/sched/act_api.c
-> > > > +++ b/net/sched/act_api.c
-> > > > @@ -935,7 +935,7 @@ struct tc_action *tcf_action_init_1(struct net
-> > > > *net,
-> > > > struct tcf_proto *tp,>
-> > > >=20
-> > > >  			NL_SET_ERR_MSG(extack, "TC action kind must be specified");
-> > > >  			goto err_out;
-> > > >  	=09
-> > > >  		}
-> > > >=20
-> > > > -		if (nla_strlcpy(act_name, kind, IFNAMSIZ) < 0) {
-> > > > +		if (nla_strscpy(act_name, kind, IFNAMSIZ) < 0) {
-> > > >=20
-> > > >  			NL_SET_ERR_MSG(extack, "TC action name too long");
-> > > >  			goto err_out;
-> > > >  	=09
-> > > >  		}
-> > > >=20
-> > > > diff --git a/net/sched/act_ipt.c b/net/sched/act_ipt.c
-> > > > index 8dc3bec0d325..ac7297f42355 100644
-> > > > --- a/net/sched/act_ipt.c
-> > > > +++ b/net/sched/act_ipt.c
-> > > > @@ -166,7 +166,7 @@ static int __tcf_ipt_init(struct net *net,
-> > > > unsigned
-> > > > int id, struct nlattr *nla,>
-> > > >=20
-> > > >  	if (unlikely(!tname))
-> > > >  =09
-> > > >  		goto err1;
-> > > >  =09
-> > > >  	if (tb[TCA_IPT_TABLE] =3D=3D NULL ||
-> > > >=20
-> > > > -	    nla_strlcpy(tname, tb[TCA_IPT_TABLE], IFNAMSIZ) >=3D IFNAMSIZ)
-> > > > +	    nla_strscpy(tname, tb[TCA_IPT_TABLE], IFNAMSIZ) >=3D IFNAMSIZ)
-> > > >=20
-> > > >  		strcpy(tname, "mangle");
-> > > >  =09
-> > > >  	t =3D kmemdup(td, td->u.target_size, GFP_KERNEL);
-> > > >=20
-> > > > diff --git a/net/sched/act_simple.c b/net/sched/act_simple.c
-> > > > index a4f3d0f0daa9..726cc956d06f 100644
-> > > > --- a/net/sched/act_simple.c
-> > > > +++ b/net/sched/act_simple.c
-> > > > @@ -52,7 +52,7 @@ static int alloc_defdata(struct tcf_defact *d, co=
-nst
-> > > > struct nlattr *defdata)>
-> > > >=20
-> > > >  	d->tcfd_defdata =3D kzalloc(SIMP_MAX_DATA, GFP_KERNEL);
-> > > >  	if (unlikely(!d->tcfd_defdata))
-> > > >  =09
-> > > >  		return -ENOMEM;
-> > > >=20
-> > > > -	nla_strlcpy(d->tcfd_defdata, defdata, SIMP_MAX_DATA);
-> > > > +	nla_strscpy(d->tcfd_defdata, defdata, SIMP_MAX_DATA);
-> > > >=20
-> > > >  	return 0;
-> > > > =20
-> > > >  }
-> > > >=20
-> > > > @@ -71,7 +71,7 @@ static int reset_policy(struct tc_action *a, const
-> > > > struct nlattr *defdata,>
-> > > >=20
-> > > >  	spin_lock_bh(&d->tcf_lock);
-> > > >  	goto_ch =3D tcf_action_set_ctrlact(a, p->action, goto_ch);
-> > > >  	memset(d->tcfd_defdata, 0, SIMP_MAX_DATA);
-> > > >=20
-> > > > -	nla_strlcpy(d->tcfd_defdata, defdata, SIMP_MAX_DATA);
-> > > > +	nla_strscpy(d->tcfd_defdata, defdata, SIMP_MAX_DATA);
-> > > >=20
-> > > >  	spin_unlock_bh(&d->tcf_lock);
-> > > >  	if (goto_ch)
-> > > >  =09
-> > > >  		tcf_chain_put_by_act(goto_ch);
-> > > >=20
-> > > > diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-> > > > index c78241c853a5..6ff3b817083a 100644
-> > > > --- a/net/sched/cls_api.c
-> > > > +++ b/net/sched/cls_api.c
-> > > > @@ -223,7 +223,7 @@ static inline u32 tcf_auto_prio(struct tcf_proto
-> > > > *tp)
-> > > >=20
-> > > >  static bool tcf_proto_check_kind(struct nlattr *kind, char *name)
-> > > >  {
-> > > > =20
-> > > >  	if (kind)
-> > > >=20
-> > > > -		return nla_strlcpy(name, kind, IFNAMSIZ) < 0;
-> > > > +		return nla_strscpy(name, kind, IFNAMSIZ) < 0;
-> > > >=20
-> > > >  	memset(name, 0, IFNAMSIZ);
-> > > >  	return false;
-> > > > =20
-> > > >  }
-> > > >=20
-> > > > diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-> > > > index f9b053b30a7b..cb4f30700c74 100644
-> > > > --- a/net/sched/sch_api.c
-> > > > +++ b/net/sched/sch_api.c
-> > > > @@ -1170,7 +1170,7 @@ static struct Qdisc *qdisc_create(struct
-> > > > net_device
-> > > > *dev,>
-> > > >=20
-> > > >  #ifdef CONFIG_MODULES
-> > > > =20
-> > > >  	if (ops =3D=3D NULL && kind !=3D NULL) {
-> > > >  =09
-> > > >  		char name[IFNAMSIZ];
-> > > >=20
-> > > > -		if (nla_strlcpy(name, kind, IFNAMSIZ) > 0) {
-> > > > +		if (nla_strscpy(name, kind, IFNAMSIZ) > 0) {
-> > > >=20
-> > > >  			/* We dropped the RTNL semaphore in order to
-> > > >  		=09
-> > > >  			 * perform the module load.  So, even if we
-> > > >  			 * succeeded in loading the module we have to
-> > > >=20
-> > > > diff --git a/net/tipc/netlink_compat.c b/net/tipc/netlink_compat.c
-> > > > index 1c7aa51cc2a3..644c7ec41ddf 100644
-> > > > --- a/net/tipc/netlink_compat.c
-> > > > +++ b/net/tipc/netlink_compat.c
-> > > > @@ -695,7 +695,7 @@ static int tipc_nl_compat_link_dump(struct
-> > > > tipc_nl_compat_msg *msg,>
-> > > >=20
-> > > >  	link_info.dest =3D nla_get_flag(link[TIPC_NLA_LINK_DEST]);
-> > > >  	link_info.up =3D htonl(nla_get_flag(link[TIPC_NLA_LINK_UP]));
-> > > >=20
-> > > > -	nla_strlcpy(link_info.str, link[TIPC_NLA_LINK_NAME],
-> > > > +	nla_strscpy(link_info.str, link[TIPC_NLA_LINK_NAME],
-> > > >=20
-> > > >  		    TIPC_MAX_LINK_NAME);
-> > > >  =09
-> > > >  	return tipc_add_tlv(msg->rep, TIPC_TLV_LINK_INFO,
+---
+ drivers/net/ethernet/cadence/macb.h      |  44 +++++++++++
+ drivers/net/ethernet/cadence/macb_main.c | 128 +++++++++++++++++++++++++++++--
+ 2 files changed, 166 insertions(+), 6 deletions(-)
 
-
-
+diff --git a/drivers/net/ethernet/cadence/macb.h b/drivers/net/ethernet/cadence/macb.h
+index 5de47f6..1f5da4e 100644
+--- a/drivers/net/ethernet/cadence/macb.h
++++ b/drivers/net/ethernet/cadence/macb.h
+@@ -77,10 +77,12 @@
+ #define MACB_RBQPH		0x04D4
+ 
+ /* GEM register offsets. */
++#define GEM_NCR			0x0000 /* Network Control */
+ #define GEM_NCFGR		0x0004 /* Network Config */
+ #define GEM_USRIO		0x000c /* User IO */
+ #define GEM_DMACFG		0x0010 /* DMA Configuration */
+ #define GEM_JML			0x0048 /* Jumbo Max Length */
++#define GEM_HS_MAC_CONFIG	0x0050 /* GEM high speed config */
+ #define GEM_HRB			0x0080 /* Hash Bottom */
+ #define GEM_HRT			0x0084 /* Hash Top */
+ #define GEM_SA1B		0x0088 /* Specific1 Bottom */
+@@ -166,6 +168,9 @@
+ #define GEM_DCFG7		0x0298 /* Design Config 7 */
+ #define GEM_DCFG8		0x029C /* Design Config 8 */
+ #define GEM_DCFG10		0x02A4 /* Design Config 10 */
++#define GEM_DCFG12		0x02AC /* Design Config 12 */
++#define GEM_USX_CONTROL		0x0A80 /* High speed PCS control register */
++#define GEM_USX_STATUS		0x0A88 /* High speed PCS status register */
+ 
+ #define GEM_TXBDCTRL	0x04cc /* TX Buffer Descriptor control register */
+ #define GEM_RXBDCTRL	0x04d0 /* RX Buffer Descriptor control register */
+@@ -272,11 +277,19 @@
+ #define MACB_IRXFCS_OFFSET	19
+ #define MACB_IRXFCS_SIZE	1
+ 
++/* GEM specific NCR bitfields. */
++#define GEM_ENABLE_HS_MAC_OFFSET	31
++#define GEM_ENABLE_HS_MAC_SIZE		1
++
+ /* GEM specific NCFGR bitfields. */
++#define GEM_FD_OFFSET		1 /* Full duplex */
++#define GEM_FD_SIZE		1
+ #define GEM_GBE_OFFSET		10 /* Gigabit mode enable */
+ #define GEM_GBE_SIZE		1
+ #define GEM_PCSSEL_OFFSET	11
+ #define GEM_PCSSEL_SIZE		1
++#define GEM_PAE_OFFSET		13 /* Pause enable */
++#define GEM_PAE_SIZE		1
+ #define GEM_CLK_OFFSET		18 /* MDC clock division */
+ #define GEM_CLK_SIZE		3
+ #define GEM_DBW_OFFSET		21 /* Data bus width */
+@@ -461,11 +474,17 @@
+ #define MACB_REV_OFFSET				0
+ #define MACB_REV_SIZE				16
+ 
++/* Bitfield in HS_MAC_CONFIG */
++#define GEM_HS_MAC_SPEED_OFFSET			0
++#define GEM_HS_MAC_SPEED_SIZE			3
++
+ /* Bitfields in DCFG1. */
+ #define GEM_IRQCOR_OFFSET			23
+ #define GEM_IRQCOR_SIZE				1
+ #define GEM_DBWDEF_OFFSET			25
+ #define GEM_DBWDEF_SIZE				3
++#define GEM_NO_PCS_OFFSET			0
++#define GEM_NO_PCS_SIZE				1
+ 
+ /* Bitfields in DCFG2. */
+ #define GEM_RX_PKT_BUFF_OFFSET			20
+@@ -500,6 +519,28 @@
+ #define GEM_RXBD_RDBUFF_OFFSET			8
+ #define GEM_RXBD_RDBUFF_SIZE			4
+ 
++/* Bitfields in DCFG12. */
++#define GEM_HIGH_SPEED_OFFSET			26
++#define GEM_HIGH_SPEED_SIZE			1
++
++/* Bitfields in USX_CONTROL. */
++#define GEM_USX_CTRL_SPEED_OFFSET		14
++#define GEM_USX_CTRL_SPEED_SIZE			3
++#define GEM_SERDES_RATE_OFFSET			12
++#define GEM_SERDES_RATE_SIZE			2
++#define GEM_RX_SCR_BYPASS_OFFSET		9
++#define GEM_RX_SCR_BYPASS_SIZE			1
++#define GEM_TX_SCR_BYPASS_OFFSET		8
++#define GEM_TX_SCR_BYPASS_SIZE			1
++#define GEM_TX_EN_OFFSET			1
++#define GEM_TX_EN_SIZE				1
++#define GEM_SIGNAL_OK_OFFSET			0
++#define GEM_SIGNAL_OK_SIZE			1
++
++/* Bitfields in USX_STATUS. */
++#define GEM_USX_BLOCK_LOCK_OFFSET		0
++#define GEM_USX_BLOCK_LOCK_SIZE			1
++
+ /* Bitfields in TISUBN */
+ #define GEM_SUBNSINCR_OFFSET			0
+ #define GEM_SUBNSINCRL_OFFSET			24
+@@ -663,6 +704,8 @@
+ #define MACB_CAPS_GIGABIT_MODE_AVAILABLE	0x20000000
+ #define MACB_CAPS_SG_DISABLED			0x40000000
+ #define MACB_CAPS_MACB_IS_GEM			0x80000000
++#define MACB_CAPS_PCS				0x01000000
++#define MACB_CAPS_HIGH_SPEED			0x02000000
+ 
+ /* LSO settings */
+ #define MACB_LSO_UFO_ENABLE			0x01
+@@ -1201,6 +1244,7 @@ struct macb {
+ 	struct mii_bus		*mii_bus;
+ 	struct phylink		*phylink;
+ 	struct phylink_config	phylink_config;
++	struct phylink_pcs	phylink_pcs;
+ 
+ 	u32			caps;
+ 	unsigned int		dma_burst_length;
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 883e47c..b7bc160 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -84,6 +84,9 @@ struct sifive_fu540_macb_mgmt {
+ #define MACB_WOL_HAS_MAGIC_PACKET	(0x1 << 0)
+ #define MACB_WOL_ENABLED		(0x1 << 1)
+ 
++#define HS_SPEED_10000M			4
++#define MACB_SERDES_RATE_10G		1
++
+ /* Graceful stop timeouts in us. We should allow up to
+  * 1 frame time (10 Mbits/s, full-duplex, ignoring collisions)
+  */
+@@ -513,6 +516,7 @@ static void macb_validate(struct phylink_config *config,
+ 	    state->interface != PHY_INTERFACE_MODE_RMII &&
+ 	    state->interface != PHY_INTERFACE_MODE_GMII &&
+ 	    state->interface != PHY_INTERFACE_MODE_SGMII &&
++	    state->interface != PHY_INTERFACE_MODE_10GBASER &&
+ 	    !phy_interface_mode_is_rgmii(state->interface)) {
+ 		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
+ 		return;
+@@ -525,10 +529,31 @@ static void macb_validate(struct phylink_config *config,
+ 		return;
+ 	}
+ 
++	if (state->interface == PHY_INTERFACE_MODE_10GBASER &&
++	    !(bp->caps & MACB_CAPS_HIGH_SPEED &&
++	      bp->caps & MACB_CAPS_PCS)) {
++		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
++		return;
++	}
++
+ 	phylink_set_port_modes(mask);
+ 	phylink_set(mask, Autoneg);
+ 	phylink_set(mask, Asym_Pause);
+ 
++	if (bp->caps & MACB_CAPS_GIGABIT_MODE_AVAILABLE &&
++	    (state->interface == PHY_INTERFACE_MODE_NA ||
++	     state->interface == PHY_INTERFACE_MODE_10GBASER)) {
++		phylink_set(mask, 10000baseCR_Full);
++		phylink_set(mask, 10000baseER_Full);
++		phylink_set(mask, 10000baseKR_Full);
++		phylink_set(mask, 10000baseLR_Full);
++		phylink_set(mask, 10000baseLRM_Full);
++		phylink_set(mask, 10000baseSR_Full);
++		phylink_set(mask, 10000baseT_Full);
++		if (state->interface != PHY_INTERFACE_MODE_NA)
++			goto out;
++	}
++
+ 	phylink_set(mask, 10baseT_Half);
+ 	phylink_set(mask, 10baseT_Full);
+ 	phylink_set(mask, 100baseT_Half);
+@@ -545,23 +570,80 @@ static void macb_validate(struct phylink_config *config,
+ 		if (!(bp->caps & MACB_CAPS_NO_GIGABIT_HALF))
+ 			phylink_set(mask, 1000baseT_Half);
+ 	}
+-
++out:
+ 	bitmap_and(supported, supported, mask, __ETHTOOL_LINK_MODE_MASK_NBITS);
+ 	bitmap_and(state->advertising, state->advertising, mask,
+ 		   __ETHTOOL_LINK_MODE_MASK_NBITS);
+ }
+ 
+-static void macb_mac_pcs_get_state(struct phylink_config *config,
++static void macb_usx_pcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
++				 phy_interface_t interface, int speed,
++				 int duplex)
++{
++	struct macb *bp = container_of(pcs, struct macb, phylink_pcs);
++	u32 config;
++
++	config = gem_readl(bp, USX_CONTROL);
++	config = GEM_BFINS(SERDES_RATE, MACB_SERDES_RATE_10G, config);
++	config = GEM_BFINS(USX_CTRL_SPEED, HS_SPEED_10000M, config);
++	config &= ~(GEM_BIT(TX_SCR_BYPASS) | GEM_BIT(RX_SCR_BYPASS));
++	config |= GEM_BIT(TX_EN);
++	gem_writel(bp, USX_CONTROL, config);
++}
++
++static void macb_usx_pcs_get_state(struct phylink_pcs *pcs,
+ 				   struct phylink_link_state *state)
+ {
++	struct macb *bp = container_of(pcs, struct macb, phylink_pcs);
++	u32 val;
++
++	state->speed = SPEED_10000;
++	state->duplex = 1;
++	state->an_complete = 1;
++
++	val = gem_readl(bp, USX_STATUS);
++	state->link = !!(val & GEM_BIT(USX_BLOCK_LOCK));
++	val = gem_readl(bp, NCFGR);
++	if (val & GEM_BIT(PAE))
++		state->pause = MLO_PAUSE_RX;
++}
++
++static int macb_usx_pcs_config(struct phylink_pcs *pcs,
++			       unsigned int mode,
++			       phy_interface_t interface,
++			       const unsigned long *advertising,
++			       bool permit_pause_to_mac)
++{
++	struct macb *bp = container_of(pcs, struct macb, phylink_pcs);
++
++	gem_writel(bp, USX_CONTROL, gem_readl(bp, USX_CONTROL) |
++		   GEM_BIT(SIGNAL_OK));
++
++	return 0;
++}
++
++static void macb_pcs_get_state(struct phylink_pcs *pcs,
++			       struct phylink_link_state *state)
++{
+ 	state->link = 0;
+ }
+ 
+-static void macb_mac_an_restart(struct phylink_config *config)
++static void macb_pcs_an_restart(struct phylink_pcs *pcs)
+ {
+ 	/* Not supported */
+ }
+ 
++static const struct phylink_pcs_ops macb_phylink_usx_pcs_ops = {
++	.pcs_get_state = macb_usx_pcs_get_state,
++	.pcs_config = macb_usx_pcs_config,
++	.pcs_link_up = macb_usx_pcs_link_up,
++};
++
++static const struct phylink_pcs_ops macb_phylink_pcs_ops = {
++	.pcs_get_state = macb_pcs_get_state,
++	.pcs_an_restart = macb_pcs_an_restart,
++};
++
+ static void macb_mac_config(struct phylink_config *config, unsigned int mode,
+ 			    const struct phylink_link_state *state)
+ {
+@@ -569,25 +651,35 @@ static void macb_mac_config(struct phylink_config *config, unsigned int mode,
+ 	struct macb *bp = netdev_priv(ndev);
+ 	unsigned long flags;
+ 	u32 old_ctrl, ctrl;
++	u32 old_ncr, ncr;
+ 
+ 	spin_lock_irqsave(&bp->lock, flags);
+ 
+ 	old_ctrl = ctrl = macb_or_gem_readl(bp, NCFGR);
++	old_ncr = ncr = macb_or_gem_readl(bp, NCR);
+ 
+ 	if (bp->caps & MACB_CAPS_MACB_IS_EMAC) {
+ 		if (state->interface == PHY_INTERFACE_MODE_RMII)
+ 			ctrl |= MACB_BIT(RM9200_RMII);
+ 	} else if (macb_is_gem(bp)) {
+ 		ctrl &= ~(GEM_BIT(SGMIIEN) | GEM_BIT(PCSSEL));
++		ncr &= ~GEM_BIT(ENABLE_HS_MAC);
+ 
+-		if (state->interface == PHY_INTERFACE_MODE_SGMII)
++		if (state->interface == PHY_INTERFACE_MODE_SGMII) {
+ 			ctrl |= GEM_BIT(SGMIIEN) | GEM_BIT(PCSSEL);
++		} else if (state->interface == PHY_INTERFACE_MODE_10GBASER) {
++			ctrl |= GEM_BIT(PCSSEL);
++			ncr |= GEM_BIT(ENABLE_HS_MAC);
++		}
+ 	}
+ 
+ 	/* Apply the new configuration, if any */
+ 	if (old_ctrl ^ ctrl)
+ 		macb_or_gem_writel(bp, NCFGR, ctrl);
+ 
++	if (old_ncr ^ ncr)
++		macb_or_gem_writel(bp, NCR, ncr);
++
+ 	spin_unlock_irqrestore(&bp->lock, flags);
+ }
+ 
+@@ -664,6 +756,10 @@ static void macb_mac_link_up(struct phylink_config *config,
+ 
+ 	macb_or_gem_writel(bp, NCFGR, ctrl);
+ 
++	if (bp->phy_interface == PHY_INTERFACE_MODE_10GBASER)
++		gem_writel(bp, HS_MAC_CONFIG, GEM_BFINS(HS_MAC_SPEED, HS_SPEED_10000M,
++							gem_readl(bp, HS_MAC_CONFIG)));
++
+ 	spin_unlock_irqrestore(&bp->lock, flags);
+ 
+ 	/* Enable Rx and Tx */
+@@ -672,10 +768,25 @@ static void macb_mac_link_up(struct phylink_config *config,
+ 	netif_tx_wake_all_queues(ndev);
+ }
+ 
++static int macb_mac_prepare(struct phylink_config *config, unsigned int mode,
++			    phy_interface_t interface)
++{
++	struct net_device *ndev = to_net_dev(config->dev);
++	struct macb *bp = netdev_priv(ndev);
++
++	if (interface == PHY_INTERFACE_MODE_10GBASER)
++		bp->phylink_pcs.ops = &macb_phylink_usx_pcs_ops;
++	else
++		bp->phylink_pcs.ops = &macb_phylink_pcs_ops;
++
++	phylink_set_pcs(bp->phylink, &bp->phylink_pcs);
++
++	return 0;
++}
++
+ static const struct phylink_mac_ops macb_phylink_ops = {
+ 	.validate = macb_validate,
+-	.mac_pcs_get_state = macb_mac_pcs_get_state,
+-	.mac_an_restart = macb_mac_an_restart,
++	.mac_prepare = macb_mac_prepare,
+ 	.mac_config = macb_mac_config,
+ 	.mac_link_down = macb_mac_link_down,
+ 	.mac_link_up = macb_mac_link_up,
+@@ -3523,6 +3634,11 @@ static void macb_configure_caps(struct macb *bp,
+ 		dcfg = gem_readl(bp, DCFG1);
+ 		if (GEM_BFEXT(IRQCOR, dcfg) == 0)
+ 			bp->caps |= MACB_CAPS_ISR_CLEAR_ON_WRITE;
++		if (GEM_BFEXT(NO_PCS, dcfg) == 0)
++			bp->caps |= MACB_CAPS_PCS;
++		dcfg = gem_readl(bp, DCFG12);
++		if (GEM_BFEXT(HIGH_SPEED, dcfg) == 1)
++			bp->caps |= MACB_CAPS_HIGH_SPEED;
+ 		dcfg = gem_readl(bp, DCFG2);
+ 		if ((dcfg & (GEM_BIT(RX_PKT_BUFF) | GEM_BIT(TX_PKT_BUFF))) == 0)
+ 			bp->caps |= MACB_CAPS_FIFO_MODE;
+-- 
+2.7.4
 
