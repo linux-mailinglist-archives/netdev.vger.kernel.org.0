@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2093A297C9B
+	by mail.lfdr.de (Postfix) with ESMTP id 98D6E297C9C
 	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 15:38:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1761756AbgJXNiJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Oct 2020 09:38:09 -0400
-Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:54171 "EHLO
+        id S1761760AbgJXNiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Oct 2020 09:38:10 -0400
+Received: from wout3-smtp.messagingengine.com ([64.147.123.19]:42543 "EHLO
         wout3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1761745AbgJXNiG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Oct 2020 09:38:06 -0400
+        by vger.kernel.org with ESMTP id S1761751AbgJXNiI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Oct 2020 09:38:08 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id C617ACAD;
-        Sat, 24 Oct 2020 09:38:04 -0400 (EDT)
+        by mailout.west.internal (Postfix) with ESMTP id 4C2B1CB4;
+        Sat, 24 Oct 2020 09:38:06 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sat, 24 Oct 2020 09:38:05 -0400
+  by compute3.internal (MEProxy); Sat, 24 Oct 2020 09:38:06 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=ygthwpBB9JERqR1fwYIri0UGRgUu0baDfw4Gk8Ml9UU=; b=BDIPBMCx
-        Gm/7KYWIYhm1jreAlX0pikYaNfTzUXBloMYXAIsz3nLyq/ybWeAvbP9EGsXJerCe
-        bUpAcdXQBx9XHrRmMyI1T5lwXlYqja7gf6qWA+zkNtVSt3qPhnvTNqVnyhhrSfXD
-        NM0x3wKc/uY42VwQl1ICHul1mCt2Hnbf22/y04xq3oO4Sna/yKgzhqzkxBVAJ9Oa
-        v2zBGaPv+qNpG1W4KnHAM3X+Ny0GBcMCw4LK+HB3stFtGttbfVpdCkHcdVEL+Dia
-        yqXOu1OjaAeD6TGO/FTA2DKEeOKCi9FAVL+3cT76TDQ9GGMa4VpZWPntDt9aRi5Y
-        mc7KT6ppsOan3A==
-X-ME-Sender: <xms:PC6UX6_laa4IY_Uyu81wYHkeeMWBDnOY0-zBmAC6KfejqEPY6kXG9A>
-    <xme:PC6UX6shvC4uUpeTxB7Y0pc_HHaUpsMaXcqR0h69hnq64R5dcIXskEUPXfxrlF2ge
-    Ma4PJeib7-lsSc>
+        fm1; bh=MQSD4PTUAQFUEciJle/Z0kLfBHVMsCQWy8FD5L0+4AQ=; b=d0FwmaQs
+        GwMMffayKZ5GrgmcnTjpR2TreaBHNTIsTQzVlmvuOl5TcgFsVu+GmCOpXv3czkh5
+        hLuS9xMfMyF6PLyRBgtWFxyFxJ7mANwhptqFme57c4M2zKh9LgOjMWHxR7KGKuXf
+        xZ7DULWQc7sOVzcSrSB2pOeQJDNRtwKPsK6BMCwwShVBt3ltyoUr3NwTSlDoADa/
+        nR7XRMHCuIJAQW17mtxRKsHQUS4FkdiDzMPDBvBvDo3CK/5usrURFrIvPcvg1BfZ
+        W79eBf/jHVjBRM9c0+DY0V2gLBWFdxNydQQU52K+0OxMN7TScTX4P8qBk/VSg4T8
+        jYePX262rChf4w==
+X-ME-Sender: <xms:PS6UX0vhNsH1s2VDPCSbiHdr19Uyt6I5BCp_dRlifVhes6V_638baA>
+    <xme:PS6UXxdr4ZUqNh3rc6drYq7vVUIjA9js0sYs38PoT9_uEkNdOc6mykQqJCK89HBFL
+    tpNlYZ_TOCGXcI>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrkedvgdeijecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
@@ -38,21 +38,21 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrkedvgdeijecutefuodetggdote
     fgtdfftefhledvjefggfehgfevjeekhfenucfkphepkeegrddvvdelrdefjedrvddvkeen
     ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
     gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:PC6UXwBQXjdy3MBRoH8WHZoFUMaHDlCfnwIuyEJbRYvl85x-NKMsHg>
-    <xmx:PC6UXyd861PZx0VbSCXaoFRkRSWC85m4W7OWXtfJX1nDgdrylKg_2Q>
-    <xmx:PC6UX_OqBs_1g6flhkL3IRgqOcTgPXJDS0dudd6rcyE5CA-m6i_Xug>
-    <xmx:PC6UX4rtKYlvTTeb_mE7buNEaPMOkb0VXao4486vHwmJ01mwPgGIqg>
+X-ME-Proxy: <xmx:PS6UX_yaxfmf86KDsTFgQ3u49jT4c4y81dzrII-lzzFucsf9HUojJg>
+    <xmx:PS6UX3PRlI-mxJRezif1oRBdap10iy9Wut4BCITqKm8nm55WDf0jmQ>
+    <xmx:PS6UX09E0uJzJwgMMnJjNr_io_gDparCiwZByQ8IRIWF0urYTEk7DQ>
+    <xmx:PS6UXza7lEJF4zQyW1z-tiHXPwpgZd98Gg-nASqVxIkMYJ7HnwKRIw>
 Received: from shredder.mtl.com (igld-84-229-37-228.inter.net.il [84.229.37.228])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 0503A3280065;
-        Sat, 24 Oct 2020 09:38:02 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 8296B3280060;
+        Sat, 24 Oct 2020 09:38:04 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jiri@nvidia.com,
         amcohen@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net 1/3] mlxsw: Only advertise link modes supported by both driver and device
-Date:   Sat, 24 Oct 2020 16:37:31 +0300
-Message-Id: <20201024133733.2107509-2-idosch@idosch.org>
+Subject: [PATCH net 2/3] mlxsw: core: Fix memory leak on module removal
+Date:   Sat, 24 Oct 2020 16:37:32 +0300
+Message-Id: <20201024133733.2107509-3-idosch@idosch.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20201024133733.2107509-1-idosch@idosch.org>
 References: <20201024133733.2107509-1-idosch@idosch.org>
@@ -62,144 +62,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Amit Cohen <amcohen@nvidia.com>
+From: Ido Schimmel <idosch@nvidia.com>
 
-During port creation the driver instructs the device to advertise all
-the supported link modes queried from the device.
+Free the devlink instance during the teardown sequence in the non-reload
+case to avoid the following memory leak.
 
-Since cited commit not all the link modes supported by the device are
-supported by the driver. This can result in the device negotiating a
-link mode that is not recognized by the driver causing ethtool to show
-an unsupported speed:
+unreferenced object 0xffff888232895000 (size 2048):
+  comm "modprobe", pid 1073, jiffies 4295568857 (age 164.871s)
+  hex dump (first 32 bytes):
+    00 01 00 00 00 00 ad de 22 01 00 00 00 00 ad de  ........".......
+    10 50 89 32 82 88 ff ff 10 50 89 32 82 88 ff ff  .P.2.....P.2....
+  backtrace:
+    [<00000000c704e9a6>] __kmalloc+0x13a/0x2a0
+    [<00000000ee30129d>] devlink_alloc+0xff/0x760
+    [<0000000092ab3e5d>] 0xffffffffa042e5b0
+    [<000000004f3f8a31>] 0xffffffffa042f6ad
+    [<0000000092800b4b>] 0xffffffffa0491df3
+    [<00000000c4843903>] local_pci_probe+0xcb/0x170
+    [<000000006993ded7>] pci_device_probe+0x2c2/0x4e0
+    [<00000000a8e0de75>] really_probe+0x2c5/0xf90
+    [<00000000d42ba75d>] driver_probe_device+0x1eb/0x340
+    [<00000000bcc95e05>] device_driver_attach+0x294/0x300
+    [<000000000e2bc177>] __driver_attach+0x167/0x2f0
+    [<000000007d44cd6e>] bus_for_each_dev+0x148/0x1f0
+    [<000000003cd5a91e>] driver_attach+0x45/0x60
+    [<000000000041ce51>] bus_add_driver+0x3b8/0x720
+    [<00000000f5215476>] driver_register+0x230/0x4e0
+    [<00000000d79356f5>] __pci_register_driver+0x190/0x200
 
-$ ethtool swp1
-...
-Speed: Unknown!
-
-This is especially problematic when the netdev is enslaved to a bond, as
-the bond driver uses unknown speed as an indication that the link is
-down:
-
-[13048.900895] net_ratelimit: 86 callbacks suppressed
-[13048.900902] t_bond0: (slave swp52): failed to get link speed/duplex
-[13048.912160] t_bond0: (slave swp49): failed to get link speed/duplex
-
-Fix this by making sure that only link modes that are supported by both
-the device and the driver are advertised.
-
-Fixes: b97cd891268d ("mlxsw: Remove 56G speed support")
-Signed-off-by: Amit Cohen <amcohen@nvidia.com>
+Fixes: a22712a96291 ("mlxsw: core: Fix devlink unregister flow")
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Reported-by: Vadim Pasternak <vadimp@nvidia.com>
+Tested-by: Oleksandr Shamray <oleksandrs@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlxsw/spectrum.c    |  9 ++++--
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |  1 +
- .../mellanox/mlxsw/spectrum_ethtool.c         | 30 +++++++++++++++++++
- 3 files changed, 38 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/core.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-index 16b47fce540b..b08853f71b2b 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
-@@ -1174,11 +1174,14 @@ mlxsw_sp_port_speed_by_width_set(struct mlxsw_sp_port *mlxsw_sp_port)
- 	u32 eth_proto_cap, eth_proto_admin, eth_proto_oper;
- 	const struct mlxsw_sp_port_type_speed_ops *ops;
- 	char ptys_pl[MLXSW_REG_PTYS_LEN];
-+	u32 eth_proto_cap_masked;
- 	int err;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/core.c b/drivers/net/ethernet/mellanox/mlxsw/core.c
+index 7f77c2a71d1c..a2efbb1e3cf4 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/core.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/core.c
+@@ -2064,6 +2064,8 @@ void mlxsw_core_bus_device_unregister(struct mlxsw_core *mlxsw_core,
+ 	if (!reload)
+ 		devlink_resources_unregister(devlink, NULL);
+ 	mlxsw_core->bus->fini(mlxsw_core->bus_priv);
++	if (!reload)
++		devlink_free(devlink);
  
- 	ops = mlxsw_sp->port_type_speed_ops;
+ 	return;
  
--	/* Set advertised speeds to supported speeds. */
-+	/* Set advertised speeds to speeds supported by both the driver
-+	 * and the device.
-+	 */
- 	ops->reg_ptys_eth_pack(mlxsw_sp, ptys_pl, mlxsw_sp_port->local_port,
- 			       0, false);
- 	err = mlxsw_reg_query(mlxsw_sp->core, MLXSW_REG(ptys), ptys_pl);
-@@ -1187,8 +1190,10 @@ mlxsw_sp_port_speed_by_width_set(struct mlxsw_sp_port *mlxsw_sp_port)
- 
- 	ops->reg_ptys_eth_unpack(mlxsw_sp, ptys_pl, &eth_proto_cap,
- 				 &eth_proto_admin, &eth_proto_oper);
-+	eth_proto_cap_masked = ops->ptys_proto_cap_masked_get(eth_proto_cap);
- 	ops->reg_ptys_eth_pack(mlxsw_sp, ptys_pl, mlxsw_sp_port->local_port,
--			       eth_proto_cap, mlxsw_sp_port->link.autoneg);
-+			       eth_proto_cap_masked,
-+			       mlxsw_sp_port->link.autoneg);
- 	return mlxsw_reg_write(mlxsw_sp->core, MLXSW_REG(ptys), ptys_pl);
- }
- 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-index 3e26eb6cb140..74b3959b36d4 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -342,6 +342,7 @@ struct mlxsw_sp_port_type_speed_ops {
- 				    u32 *p_eth_proto_cap,
- 				    u32 *p_eth_proto_admin,
- 				    u32 *p_eth_proto_oper);
-+	u32 (*ptys_proto_cap_masked_get)(u32 eth_proto_cap);
- };
- 
- static inline struct net_device *
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
-index 2096b6478958..540616469e28 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
-@@ -1303,6 +1303,20 @@ mlxsw_sp1_reg_ptys_eth_unpack(struct mlxsw_sp *mlxsw_sp, char *payload,
- 				  p_eth_proto_oper);
- }
- 
-+static u32 mlxsw_sp1_ptys_proto_cap_masked_get(u32 eth_proto_cap)
-+{
-+	u32 ptys_proto_cap_masked = 0;
-+	int i;
-+
-+	for (i = 0; i < MLXSW_SP1_PORT_LINK_MODE_LEN; i++) {
-+		if (mlxsw_sp1_port_link_mode[i].mask & eth_proto_cap)
-+			ptys_proto_cap_masked |=
-+				mlxsw_sp1_port_link_mode[i].mask;
-+	}
-+
-+	return ptys_proto_cap_masked;
-+}
-+
- const struct mlxsw_sp_port_type_speed_ops mlxsw_sp1_port_type_speed_ops = {
- 	.from_ptys_supported_port	= mlxsw_sp1_from_ptys_supported_port,
- 	.from_ptys_link			= mlxsw_sp1_from_ptys_link,
-@@ -1313,6 +1327,7 @@ const struct mlxsw_sp_port_type_speed_ops mlxsw_sp1_port_type_speed_ops = {
- 	.to_ptys_speed			= mlxsw_sp1_to_ptys_speed,
- 	.reg_ptys_eth_pack		= mlxsw_sp1_reg_ptys_eth_pack,
- 	.reg_ptys_eth_unpack		= mlxsw_sp1_reg_ptys_eth_unpack,
-+	.ptys_proto_cap_masked_get	= mlxsw_sp1_ptys_proto_cap_masked_get,
- };
- 
- static const enum ethtool_link_mode_bit_indices
-@@ -1731,6 +1746,20 @@ mlxsw_sp2_reg_ptys_eth_unpack(struct mlxsw_sp *mlxsw_sp, char *payload,
- 				      p_eth_proto_admin, p_eth_proto_oper);
- }
- 
-+static u32 mlxsw_sp2_ptys_proto_cap_masked_get(u32 eth_proto_cap)
-+{
-+	u32 ptys_proto_cap_masked = 0;
-+	int i;
-+
-+	for (i = 0; i < MLXSW_SP2_PORT_LINK_MODE_LEN; i++) {
-+		if (mlxsw_sp2_port_link_mode[i].mask & eth_proto_cap)
-+			ptys_proto_cap_masked |=
-+				mlxsw_sp2_port_link_mode[i].mask;
-+	}
-+
-+	return ptys_proto_cap_masked;
-+}
-+
- const struct mlxsw_sp_port_type_speed_ops mlxsw_sp2_port_type_speed_ops = {
- 	.from_ptys_supported_port	= mlxsw_sp2_from_ptys_supported_port,
- 	.from_ptys_link			= mlxsw_sp2_from_ptys_link,
-@@ -1741,4 +1770,5 @@ const struct mlxsw_sp_port_type_speed_ops mlxsw_sp2_port_type_speed_ops = {
- 	.to_ptys_speed			= mlxsw_sp2_to_ptys_speed,
- 	.reg_ptys_eth_pack		= mlxsw_sp2_reg_ptys_eth_pack,
- 	.reg_ptys_eth_unpack		= mlxsw_sp2_reg_ptys_eth_unpack,
-+	.ptys_proto_cap_masked_get	= mlxsw_sp2_ptys_proto_cap_masked_get,
- };
 -- 
 2.26.2
 
