@@ -2,126 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9C95297A74
-	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 05:07:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D5F7297B0A
+	for <lists+netdev@lfdr.de>; Sat, 24 Oct 2020 08:28:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1759252AbgJXDHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Oct 2020 23:07:19 -0400
-Received: from mail-il1-f199.google.com ([209.85.166.199]:50100 "EHLO
-        mail-il1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S463225AbgJXDHT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Oct 2020 23:07:19 -0400
-Received: by mail-il1-f199.google.com with SMTP id v29so3112837ilk.16
-        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 20:07:17 -0700 (PDT)
+        id S1759744AbgJXG0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Oct 2020 02:26:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36282 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1759740AbgJXG0Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Oct 2020 02:26:16 -0400
+Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FB67C0613CE
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 23:26:15 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id y12so4970228wrp.6
+        for <netdev@vger.kernel.org>; Fri, 23 Oct 2020 23:26:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FYw6hlF3zVU55hf6NO6+DeWBWQVJ7zIDenp+3zMY3rs=;
+        b=sQ9SsVq08i9FirE1oHBw1Ez3bpfkszUhJvDchfiQzdMMr4CUTUAQEeAh2aa7TQ6PpO
+         sJanjyxvalUeo7tcLvmyxE4PwDJUNHAi6OJt6AhbH52HV7lJwopMc5HHmdXiQ3o47l6f
+         yCTAA6eLOv9g5zgHdHNtIuJfojGO0YKyGXMntCWPoS+ZUi8bLwpTiTluYZpHyigmvnvi
+         uLtI17clRybRG1/73u3ThOT+V49ddLhLX6GB2WAcNjrXr2FnKnNDN8sq7/3OZrp//roq
+         /d2LHQ+i0Dcs1tflEbt1GSKTrNxaWWsI7jYNjMpRbsPMd4sxEiIvfyrFzw5o+IF3yomy
+         uuCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=+f5KaRkMNp2H9YTKaVRIxMmnVKmfIt7q48LvCaRF0Ns=;
-        b=hDp3T1YhDk/IoG5O4bPxqT3fE8BI73EorG6PfjnxtLVYd+o9a+Tgi60T5PL6fp3kK3
-         r/lbftQFgapIH6umbnw18BxY8iV3wvlFaJlnCwx6k4xeVsQpMr0dBvpF13ZDawo6YJDD
-         0vea3BNteaJoSHbrcUOBhv69DqUsrjOP+b6CPvNwr549S76RFmUKTjZ8P8rhhgOOzmPY
-         Nhx+w4SHvVTnOCseT1dE1AZbMNcjAAjXF4AIQmPcuj/lCVEVFKBEJhqWe715wgkWJEEo
-         TaLQD0G3PVivk+8wQeSiX/zAazmIe7Ke/LQFyHf2ruiaS9VjD3Jgppa6f8VWZLdmsjRJ
-         kpQw==
-X-Gm-Message-State: AOAM532CJOzGtQguhIKcPe3uEivhqMeEaf56SNiJwSBnd4UKwcCVjeCz
-        qgmbFDodmgK8SMTEprS1yavOWLFdXzfAW3GYAQrSPQiH7ywa
-X-Google-Smtp-Source: ABdhPJyX5CGjMWLoP15isE4qEaNneI+lMoj529yEcMzeMQUaUvz6w9wzt3J5qhiARVu2523YJ/lzwBOs4QaY8mpAEsQOou9UfSXn
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FYw6hlF3zVU55hf6NO6+DeWBWQVJ7zIDenp+3zMY3rs=;
+        b=q8Y+zL+ZWxWWb/Nv2TWD7e6ta9GhGcAM8hXQ17mFCS8gKlVdf0ZWGKeroVdTnmWKxw
+         Vk1Ct/rxOM9Pfi3iXtEfNJ0/ZUIJB3Hmq5BxVU1/MDwdb9ObdaNoRL6OipF1DBBUUims
+         WRWl4DdQYJyb+L167WMSZBM8UIQcdfeUMIWKoea89dnsCMbfNGD5NiCJ8Ax6zyY8RpYj
+         vNMYHVoceCVRoHddNmkcos0UEmxY3j7wc/ClWqLqVUxRfJGDNjJZQkX7xZmP2bRTgqEw
+         T7SxKWPS5QzcAC9XmmsmLWE+EyfQAwHNLDimCtYe3vWm87H1k+4+xDTO2Po3g3ZpccJA
+         xqIQ==
+X-Gm-Message-State: AOAM530RZh71lh2FysoImeEtS1hFyou0irxHGcCE33/ALIyn9sJWeOxU
+        FTZAgWVv68Ld55/hj41m7RSevw+xzSu51pWiTEXxyg==
+X-Google-Smtp-Source: ABdhPJwctYaDhweSm5lBc4LQdlJP3qXy30XsD8S9jwlycPm9AnJsfH8nV6N73nyZ5EDFM5f1lbTat70oZmPgrDFFbjs=
+X-Received: by 2002:a5d:63cb:: with SMTP id c11mr5780066wrw.243.1603520773607;
+ Fri, 23 Oct 2020 23:26:13 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a5e:9618:: with SMTP id a24mr4169239ioq.27.1603508837084;
- Fri, 23 Oct 2020 20:07:17 -0700 (PDT)
-Date:   Fri, 23 Oct 2020 20:07:17 -0700
-In-Reply-To: <000000000000335adc05b23300f6@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000a0f8a305b261fe4a@google.com>
-Subject: Re: WARNING in dma_map_page_attrs
-From:   syzbot <syzbot+34dc2fea3478e659af01@syzkaller.appspotmail.com>
-To:     christian.koenig@amd.com, dri-devel@lists.freedesktop.org,
-        hch@lst.de, iommu@lists.linux-foundation.org,
-        linaro-mm-sig-owner@lists.linaro.org,
-        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, m.szyprowski@samsung.com,
-        netdev@vger.kernel.org, robin.murphy@arm.com,
-        sumit.semwal@linaro.org, syzkaller-bugs@googlegroups.com
+References: <20201023184709.217614-1-arjunroy.kdev@gmail.com> <20201023191348.7a6003f4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201023191348.7a6003f4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Arjun Roy <arjunroy@google.com>
+Date:   Fri, 23 Oct 2020 23:26:02 -0700
+Message-ID: <CAOFY-A3myOA9WUAu08gbFXM=SrnkoPDK0GnfZjOyHTv5gGxStQ@mail.gmail.com>
+Subject: Re: [net v2] tcp: Prevent low rmem stalls with SO_RCVLOWAT.
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Arjun Roy <arjunroy.kdev@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Neal Cardwell <ncardwell@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following issue on:
+On Fri, Oct 23, 2020 at 7:13 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Fri, 23 Oct 2020 11:47:09 -0700 Arjun Roy wrote:
+> > From: Arjun Roy <arjunroy@google.com>
+> >
+> > With SO_RCVLOWAT, under memory pressure,
+> > it is possible to enter a state where:
+> >
+> > 1. We have not received enough bytes to satisfy SO_RCVLOWAT.
+> > 2. We have not entered buffer pressure (see tcp_rmem_pressure()).
+> > 3. But, we do not have enough buffer space to accept more packets.
+> >
+> > In this case, we advertise 0 rwnd (due to #3) but the application does
+> > not drain the receive queue (no wakeup because of #1 and #2) so the
+> > flow stalls.
+> >
+> > Modify the heuristic for SO_RCVLOWAT so that, if we are advertising
+> > rwnd<=rcv_mss, force a wakeup to prevent a stall.
+> >
+> > Without this patch, setting tcp_rmem to 6143 and disabling TCP
+> > autotune causes a stalled flow. With this patch, no stall occurs. This
+> > is with RPC-style traffic with large messages.
+> >
+> > Fixes: 03f45c883c6f ("tcp: avoid extra wakeups for SO_RCVLOWAT users")
+> > Signed-off-by: Arjun Roy <arjunroy@google.com>
+> > Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+> > Acked-by: Neal Cardwell <ncardwell@google.com>
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+>
+> Applied, thank you!
 
-HEAD commit:    3cb12d27 Merge tag 'net-5.10-rc1' of git://git.kernel.org/..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=13125390500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=46c6fea3eb827ae1
-dashboard link: https://syzkaller.appspot.com/bug?extid=34dc2fea3478e659af01
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=16858664500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11f402ef900000
+Ack, thanks for the quick review!
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+34dc2fea3478e659af01@syzkaller.appspotmail.com
-
-netdevsim netdevsim0 netdevsim1: set [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim2: set [1, 0] type 2 family 0 port 6081 - 0
-netdevsim netdevsim0 netdevsim3: set [1, 0] type 2 family 0 port 6081 - 0
-infiniband syz2: set active
-infiniband syz2: added macvlan0
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 8488 at kernel/dma/mapping.c:149 dma_map_page_attrs+0x493/0x700 kernel/dma/mapping.c:149
-Modules linked in:
-CPU: 1 PID: 8488 Comm: syz-executor144 Not tainted 5.9.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:dma_map_page_attrs+0x493/0x700 kernel/dma/mapping.c:149
-Code: 80 3c 10 00 0f 85 ed 01 00 00 48 8b 1d 86 38 e9 0c e9 2d fc ff ff 48 89 c3 e9 d1 fd ff ff e8 04 11 12 00 0f 0b e8 fd 10 12 00 <0f> 0b 49 c7 c4 ff ff ff ff e9 d5 fd ff ff e8 ea 10 12 00 48 8d 7b
-RSP: 0018:ffffc90000fdec68 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: ffffffff894d1060 RCX: ffffffff815df1e3
-RDX: ffff8880208c1a40 RSI: ffffffff815df5b3 RDI: ffff8880196f8b00
-RBP: ffff88801412d800 R08: 0000000000000002 R09: 0000000000000000
-R10: 0000000000000002 R11: 0000000000000000 R12: ffffea0000504b40
-R13: ffff8880196f86e8 R14: 00000000000008b8 R15: 0000000000000002
-FS:  0000000001b26880(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00000000200002c0 CR3: 0000000022446000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- dma_map_single_attrs include/linux/dma-mapping.h:279 [inline]
- ib_dma_map_single include/rdma/ib_verbs.h:3967 [inline]
- ib_mad_post_receive_mads+0x23f/0xd60 drivers/infiniband/core/mad.c:2715
- ib_mad_port_start drivers/infiniband/core/mad.c:2862 [inline]
- ib_mad_port_open drivers/infiniband/core/mad.c:3016 [inline]
- ib_mad_init_device+0x72b/0x1400 drivers/infiniband/core/mad.c:3092
- add_client_context+0x405/0x5e0 drivers/infiniband/core/device.c:680
- enable_device_and_get+0x1d5/0x3c0 drivers/infiniband/core/device.c:1301
- ib_register_device drivers/infiniband/core/device.c:1376 [inline]
- ib_register_device+0x7a7/0xa40 drivers/infiniband/core/device.c:1335
- rxe_register_device+0x46d/0x570 drivers/infiniband/sw/rxe/rxe_verbs.c:1182
- rxe_add+0x12fe/0x16d0 drivers/infiniband/sw/rxe/rxe.c:247
- rxe_net_add+0x8c/0xe0 drivers/infiniband/sw/rxe/rxe_net.c:507
- rxe_newlink drivers/infiniband/sw/rxe/rxe.c:269 [inline]
- rxe_newlink+0xb7/0xe0 drivers/infiniband/sw/rxe/rxe.c:250
- nldev_newlink+0x30e/0x540 drivers/infiniband/core/nldev.c:1555
- rdma_nl_rcv_msg+0x367/0x690 drivers/infiniband/core/netlink.c:195
- rdma_nl_rcv_skb drivers/infiniband/core/netlink.c:239 [inline]
- rdma_nl_rcv+0x2f2/0x440 drivers/infiniband/core/netlink.c:259
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:651 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:671
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2353
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2440
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x443699
-Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db 0d fc ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007ffc067db418 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000443699
-RDX: 0000000000000000 RSI: 00000000200002c0 RDI: 0000000000000003
-RBP: 00007ffc067db420 R08: 0000000001bbbbbb R09: 0000000001bbbbbb
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007ffc067db430
-R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
-
+-Arjun
