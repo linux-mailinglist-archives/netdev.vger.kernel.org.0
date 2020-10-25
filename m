@@ -2,142 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E371929839D
-	for <lists+netdev@lfdr.de>; Sun, 25 Oct 2020 22:05:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C611A2983A1
+	for <lists+netdev@lfdr.de>; Sun, 25 Oct 2020 22:09:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1418808AbgJYVFw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Oct 2020 17:05:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53956 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732087AbgJYVFv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 25 Oct 2020 17:05:51 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2F49A208B3;
-        Sun, 25 Oct 2020 21:05:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603659951;
-        bh=IWC2mraHXvnqqlJMze8XJ+U0kgMd9LFfpNCR3i6fDIo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uWHea8p+7opOynJtqFWPn/s1B+iCnWK7cfsioBC1gYVa7KRq2d18e6Py2SUzZGM4h
-         Ioq5Bz0GwqoNGjUJWhRSP2qyZbfaIi9X5QvdbWrkvYetrJ9tAJn3mFGa3AZhPpzZMy
-         BV5YbX24XN9q/skkSEka9J1OwNzS+Jd88DG5GeI8=
-Date:   Sun, 25 Oct 2020 14:05:50 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Masahiro Fujiwara <fujiwara.masahiro@gmail.com>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Harald Welte <laforge@gnumonks.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Andreas Schultz <aschultz@tpip.net>,
-        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] gtp: fix an use-before-init in gtp_newlink()
-Message-ID: <20201025140550.1e29f770@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201024154233.4024-1-fujiwara.masahiro@gmail.com>
-References: <20201024154233.4024-1-fujiwara.masahiro@gmail.com>
+        id S1418836AbgJYVJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Oct 2020 17:09:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52788 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729786AbgJYVJz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Oct 2020 17:09:55 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E41DBC061755
+        for <netdev@vger.kernel.org>; Sun, 25 Oct 2020 14:09:54 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id r9so7860634ioo.7
+        for <netdev@vger.kernel.org>; Sun, 25 Oct 2020 14:09:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=in0cG5oPnYev6Y8g6vBoZp5FtC0YlLh/tqYbQsrpq5Q=;
+        b=XXRNrGqkqFW0h70wH2o35uWEOX0hXMm4ScODswrhp0n0B7rOXs9n6pdtodyazP9QiK
+         seESTPkPVl/1u+SYvidGo/PKyEKJvZXqLsDma9PhJQVOqzZ16C3uXEsky6muEvVWRivp
+         d+SFGjTSpPAQXIwaReJld+KAjtWF6j0Djl4AsyktVy7sYvt5F9Shevhz0tPeUMXUyfsC
+         8f2PNFWjuwfp9OgVCuP5fs+pSsaQ5YqIbihSyq24oyZDvTHuOCsbsxc2ElzXvM6H2YRm
+         tPactYwdssS+iP1Vl97hNMfQ96CkFr9Wnl42cGK37KzP7mtpdYFCNNdPJjUIEIoGN6vZ
+         MocQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=in0cG5oPnYev6Y8g6vBoZp5FtC0YlLh/tqYbQsrpq5Q=;
+        b=ihvE0fuW4d08a+wszXiK8b+2UxryZiLFWgp6s0OriC6pvzTo/0KA86F8vNgD8lFneQ
+         2urrVwntbdzzE9wM5/c1guges3KmaX7FsZw7GkaDekNYW+wXFOqwJ+RbyeQnU8Ddcmfr
+         DCjJIsfouv5hp0HZ53vLeyLO59+dJD4OCTtfvVD8I7qg3iqm5mplqBHHZrx//hZ7lStA
+         58BpJMGUiG6gIm/bNsqS023lLZFQpAvdco6fyfgZjEO0mJnTBzokbJYk8jhrQ70lzdIu
+         4UvrGzFPs0Jq3KXIWnQCaIoi/WE0Ay7feLZtduJs1BLjKB9x5lEr7Res0fLR60F3so7y
+         GHrw==
+X-Gm-Message-State: AOAM530s7PCtysnQW5snyLY3s+wAyU4/7RujikPtQrcxUWW/v3EsvLJl
+        TNrJIGmJtPXkEw8l4TsgY5o=
+X-Google-Smtp-Source: ABdhPJymF0u49O5tmRqT8VobJsjjnctM59gPhjC6kp8xR9lg0LGfCQ6ZZwtlc5kb23/8puHtheZYpA==
+X-Received: by 2002:a5d:9481:: with SMTP id v1mr8349235ioj.168.1603660194242;
+        Sun, 25 Oct 2020 14:09:54 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:e928:c58a:d675:869a])
+        by smtp.googlemail.com with ESMTPSA id y17sm424301ilj.7.2020.10.25.14.09.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 25 Oct 2020 14:09:53 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next] m_mpls: test the 'mac_push' action after
+ 'modify'
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     netdev@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        martin.varghese@nokia.com
+References: <4340721b2347c9290d2e379ee22b3a1a05083eb6.1603357855.git.gnault@redhat.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <342316c3-d434-749a-dff9-63ec3dd25feb@gmail.com>
+Date:   Sun, 25 Oct 2020 15:09:52 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <4340721b2347c9290d2e379ee22b3a1a05083eb6.1603357855.git.gnault@redhat.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 24 Oct 2020 15:42:33 +0000 Masahiro Fujiwara wrote:
-> *_pdp_find() from gtp_encap_recv() would trigger a crash when a peer
-> sends GTP packets while creating new GTP device.
+On 10/22/20 3:11 AM, Guillaume Nault wrote:
+> Commit 02a261b5ba1c ("m_mpls: add mac_push action") added a matches()
+> test for the "mac_push" string before the test for "modify".
+> This changes the previous behaviour as 'action m' used to match
+> "modify" while it now matches "mac_push".
 > 
-> RIP: 0010:gtp1_pdp_find.isra.0+0x68/0x90 [gtp]
-> <SNIP>
-> Call Trace:
->  <IRQ>
->  gtp_encap_recv+0xc2/0x2e0 [gtp]
->  ? gtp1_pdp_find.isra.0+0x90/0x90 [gtp]
->  udp_queue_rcv_one_skb+0x1fe/0x530
->  udp_queue_rcv_skb+0x40/0x1b0
->  udp_unicast_rcv_skb.isra.0+0x78/0x90
->  __udp4_lib_rcv+0x5af/0xc70
->  udp_rcv+0x1a/0x20
->  ip_protocol_deliver_rcu+0xc5/0x1b0
->  ip_local_deliver_finish+0x48/0x50
->  ip_local_deliver+0xe5/0xf0
->  ? ip_protocol_deliver_rcu+0x1b0/0x1b0
+> Revert to the original behaviour by moving the "mac_push" test after
+> "modify".
 > 
-> gtp_encap_enable() should be called after gtp_hastable_new() otherwise
-> *_pdp_find() will access the uninitialized hash table.
+> Fixes: 02a261b5ba1c ("m_mpls: add mac_push action")
+> Signed-off-by: Guillaume Nault <gnault@redhat.com>
+> ---
+>  tc/m_mpls.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
 
-Looks good, minor nits:
- 
- - is the time zone broken on your system? Looks like your email has
-   arrived with the date far in the past, so the build systems have
-   missed it. Could you double check the time on your system?
-
-> Fixes: 1e3a3abd8 ("gtp: make GTP sockets in gtp_newlink optional")
-
-The hash looks short, should be at lest 12 chars:
-
-Fixes: 1e3a3abd8b28 ("gtp: make GTP sockets in gtp_newlink optional")
-
-> Signed-off-by: Masahiro Fujiwara <fujiwara.masahiro@gmail.com>
-
-> diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-> index 8e47d0112e5d..6c56337b02a3 100644
-> --- a/drivers/net/gtp.c
-> +++ b/drivers/net/gtp.c
-> @@ -663,10 +663,6 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
->  
->  	gtp = netdev_priv(dev);
->  
-> -	err = gtp_encap_enable(gtp, data);
-> -	if (err < 0)
-> -		return err;
-> -
->  	if (!data[IFLA_GTP_PDP_HASHSIZE]) {
->  		hashsize = 1024;
->  	} else {
-> @@ -676,13 +672,18 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
->  	}
->  
->  	err = gtp_hashtable_new(gtp, hashsize);
-> +	if (err < 0) {
-> +		return err;
-> +	}
-
-no need for braces around single statement
-
-> +
-> +	err = gtp_encap_enable(gtp, data);
->  	if (err < 0)
->  		goto out_encap;
->  
->  	err = register_netdevice(dev);
->  	if (err < 0) {
->  		netdev_dbg(dev, "failed to register new netdev %d\n", err);
-> -		goto out_hashtable;
-> +		goto out_encap;
->  	}
->  
->  	gn = net_generic(dev_net(dev), gtp_net_id);
-> @@ -693,11 +694,10 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
->  
->  	return 0;
->  
-> -out_hashtable:
-> -	kfree(gtp->addr_hash);
-> -	kfree(gtp->tid_hash);
->  out_encap:
->  	gtp_encap_disable(gtp);
-
-I'd personally move the out_hashtable: label here and keep it, just for
-clarity. Otherwise reader has to double check that gtp_encap_disable()
-can be safely called before gtp_encap_enable().
-
-Also gtp_encap_disable() could change in the future breaking this
-assumption.
-
-> +	kfree(gtp->addr_hash);
-> +	kfree(gtp->tid_hash);
->  	return err;
->  }
->  
-
+applied to iproute2-next. Thanks,
