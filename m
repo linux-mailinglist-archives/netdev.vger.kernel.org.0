@@ -2,100 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C1F12983D7
-	for <lists+netdev@lfdr.de>; Sun, 25 Oct 2020 23:12:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 084992984BB
+	for <lists+netdev@lfdr.de>; Sun, 25 Oct 2020 23:39:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1419155AbgJYWMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Oct 2020 18:12:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34164 "EHLO
+        id S1419347AbgJYWi5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Oct 2020 18:38:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1419150AbgJYWMi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Oct 2020 18:12:38 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9E3DC061755;
-        Sun, 25 Oct 2020 15:12:36 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id q25so7980780ioh.4;
-        Sun, 25 Oct 2020 15:12:36 -0700 (PDT)
+        with ESMTP id S1418971AbgJYWi5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Oct 2020 18:38:57 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF23CC061755
+        for <netdev@vger.kernel.org>; Sun, 25 Oct 2020 15:38:56 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id z17so8047730iog.11
+        for <netdev@vger.kernel.org>; Sun, 25 Oct 2020 15:38:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=CCLWLpAlHU9Dh1dZ7UTlBHF0U829I1FR53xIgiCWEt4=;
-        b=UX1w2aaSO2NmIgl6qUrz9WeLM/hr5vi2D/7bA4uwRGbF73qcp+ppTxihkIwWL2S7my
-         WTkN4+oU/UKqfv8HfNOgcpSchn5qATbvZ0QRikxHiBNbafP246Cg/6VeI4POt5Kl557h
-         ymlKcVUBepP0E1m+0xBLFK4X6n+oyraEzDoS7o8FCHsmZiq1r7TmUxMi5anU2HblrQU0
-         4Uj9VlGVStcCGrYNyvCpFwtUq/rIoEVKzfKCnEvnir0Lo9DqK10JENOKPsMgBeaDmwht
-         X6GzvN6jcBc5ubdWeSNS2RhffrOHY3mTEPxKydGErINOzfSLDG0Fx1531KkIffZh3oP6
-         FPYg==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=UHxF746S6sbmtOJfJcCJu8MyAxF7FMVjHr2KpqZr0V0=;
+        b=fHFfIxI9jQkpIuJy7yEMpEtmPPMTCN5TsrhFgjFJbTUFPdaFvx+4g7Ar1gU+mbMF34
+         hdPe2RsSuFGT6Fy9Pg4V3GwDIJHt0FeuC6k7tH2kCLmKmbDXkoeZSWwMI/A4VLq48sja
+         Ha9pOZ9j+z2DlQRq3IZa3khQuO3h8mioKK6Essnbde9G1DL6i4yqp5WqG8WRL1Pyd43y
+         jrQNTPzPGK04yAgpWNejkWLM9g41XUDfpzdmDy4jlxMYsyPRT9Ifh2yKx6RMHaaUVhYM
+         IA4yFm6yRN1O4CMjjyWq2HjdPzuaU3gNUKOjC43YDqUO/As0jfXqnQrD3M1dCjsrxXu7
+         pkqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=CCLWLpAlHU9Dh1dZ7UTlBHF0U829I1FR53xIgiCWEt4=;
-        b=CMl/yMBh5kCtA2QtcLQACZ6S6r2897YFrqufi2i57DGLU2gWUfiWV0hASPWWa2iChk
-         60yqu2Ccb+F+y4Bv2pWCWJMZppYLqh1djGdaJKLcAGudytWcfmCzY5pNp80tvbwMl1qm
-         r+mdS6ogk7G5ZJObWqqaZYpjIoZ+VZDM821y9NLEtgciHhWZfimRx1wL1gqly6Vf/S3E
-         /Q9QzdYyNg3mDlb9g08+ZoCZQI9/X6lV9CLCvH/NPVQxjlyhihbjkMG4WRK2N1gQ/gfr
-         yAiumBaXrh1VBh4gKxB8bOo+xVBiLDuMWmn0ezVi6SIgQ6p7Irz/oQjBdQSetPH7jjVR
-         Sibg==
-X-Gm-Message-State: AOAM531/dWecgCWpDF9FwxzNeVSZNh6WWqqetnOee/e3G8HH/Q24TFkV
-        Wou8pNjrqXJEBm9qgBfxKso=
-X-Google-Smtp-Source: ABdhPJwhCiI1HfU5Mwu6CE9suaF+u9PFOa6DguVcgdmsPQFuRJfGZ6+kXT9h2IMGGCZcIMXmzUceyQ==
-X-Received: by 2002:a02:1783:: with SMTP id 125mr9240721jah.121.1603663956272;
-        Sun, 25 Oct 2020 15:12:36 -0700 (PDT)
+        bh=UHxF746S6sbmtOJfJcCJu8MyAxF7FMVjHr2KpqZr0V0=;
+        b=MYsd/DsJ20olFYp2PUl2VeHgMw4W3+XjvzhHWJza+4WswqxkII6LfSYENC1ov0AfL1
+         yh0mrmel6u2PiOTWaGfvvP5P/XIAiGc/UcGbKXppK3tJnE7sQqRYH8poaY4/U7CMsy7g
+         nS//8ZqKwTEO2MuAGQsSMMD++TenB6Xu/fn1AMK0JnI+NebjdCF1rsAjXm5wVfPBvgig
+         hPJ8hQiMKQCub++zmoDxgENVsWSGHOeV0KLmmIp46hBkEpAXtfEgZsZAEtLXZe3FzSMp
+         0tj4OtXgtET2xH9ozNymYULfF/TI3P9kyKSXEOFfL4u68M2BzftS9J+lr3lF5i206GIj
+         OmmQ==
+X-Gm-Message-State: AOAM532++rO4PTS1yyPrzS9X9o9xIRwvKTglfJv7LMaaNhM2vRc8suRq
+        n9qBlcS2USZJWLOroi/z5ASx2CQk2g0=
+X-Google-Smtp-Source: ABdhPJxgDCuFlVbdTQ9z60hpQCC0KdQ92STRhQbql+Eh4BtIxwqr0UY7ao4DpPVOSj1D+oRBzSwQnw==
+X-Received: by 2002:a6b:ef15:: with SMTP id k21mr8964640ioh.37.1603665536308;
+        Sun, 25 Oct 2020 15:38:56 -0700 (PDT)
 Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:e928:c58a:d675:869a])
-        by smtp.googlemail.com with ESMTPSA id e13sm1010703ili.67.2020.10.25.15.12.35
+        by smtp.googlemail.com with ESMTPSA id f12sm4486070iop.45.2020.10.25.15.38.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 25 Oct 2020 15:12:35 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next 3/5] lib: add libbpf support
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Hangbin Liu <haliu@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>
-References: <20201023033855.3894509-1-haliu@redhat.com>
- <20201023033855.3894509-4-haliu@redhat.com>
- <29c13bd0-d2f6-b914-775c-2d90270f86d4@gmail.com> <87eelm5ofg.fsf@toke.dk>
+        Sun, 25 Oct 2020 15:38:55 -0700 (PDT)
+Subject: Re: Fw: [Bug 209823] New: system panic since commit
+ d18d22ce8f62839365c984b1df474d3975ed4eb2
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org
+References: <20201023082411.27a8a3a7@hermes.local>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <91aed9d1-d550-cf6c-d8bb-e6737d0740e0@gmail.com>
-Date:   Sun, 25 Oct 2020 16:12:34 -0600
+Message-ID: <4471a8bf-bfae-f7f9-9adc-d340f5a79809@gmail.com>
+Date:   Sun, 25 Oct 2020 16:38:55 -0600
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
  Gecko/20100101 Thunderbird/68.12.1
 MIME-Version: 1.0
-In-Reply-To: <87eelm5ofg.fsf@toke.dk>
+In-Reply-To: <20201023082411.27a8a3a7@hermes.local>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/25/20 9:13 AM, Toke Høiland-Jørgensen wrote:
-> David Ahern <dsahern@gmail.com> writes:
+On 10/23/20 9:24 AM, Stephen Hemminger wrote:
 > 
->> On 10/22/20 9:38 PM, Hangbin Liu wrote:
->>> Note: ip/ipvrf.c is not convert to use libbpf as it only encodes a few
->>> instructions and load directly.
->>
->> for completeness, libbpf should be able to load a program from a buffer
->> as well.
 > 
-> It can, but the particular use in ipvrf is just loading half a dozen
-> instructions defined inline in C - there's no object files, BTF or
-> anything. So why bother with going through libbpf in this case? The
-> actual attachment is using the existing code anyway...
+> Begin forwarded message:
 > 
+> Date: Fri, 23 Oct 2020 03:38:54 +0000
+> From: bugzilla-daemon@bugzilla.kernel.org
+> To: stephen@networkplumber.org
+> Subject: [Bug 209823] New: system panic since commit  d18d22ce8f62839365c984b1df474d3975ed4eb2
+> 
+> 
+> https://bugzilla.kernel.org/show_bug.cgi?id=209823
+> 
+>             Bug ID: 209823
+>            Summary: system panic since commit
+>                     d18d22ce8f62839365c984b1df474d3975ed4eb2
+>            Product: Networking
+>            Version: 2.5
+>     Kernel Version: 5.4.15
 
-actually, it already does: bpf_load_program
+Left a comment in the bugzilla.
 
-I recalled figuring out how to do it, just did not remember if it was
-local changes to libbpf. Does not look like any changes were needed:
+5.4 is now at 5.4.72, so 5.4.15 is really old in that line. The problem
+has most likely been fixed.
 
-https://github.com/dsahern/bpf-progs/blob/master/src/cgroup_sock.c
