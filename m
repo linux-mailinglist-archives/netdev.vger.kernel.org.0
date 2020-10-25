@@ -2,93 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C3B329823E
-	for <lists+netdev@lfdr.de>; Sun, 25 Oct 2020 16:13:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F4FF29829B
+	for <lists+netdev@lfdr.de>; Sun, 25 Oct 2020 17:51:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1416947AbgJYPNa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Oct 2020 11:13:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:23370 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2408107AbgJYPN3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Oct 2020 11:13:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603638808;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=BW0pmlSPihsKBpCrU+u9mnxvxiC531ZaObDfhIazzx0=;
-        b=fFnKSH26F5xQxp4Act0DZxwcqJ3+TxTZ9VGBlz1HL0YJOuNKkmOjzrUqfHYEawH/i7cLq2
-        6cNqRFZ51A/pc+4Uv4ogR2WmiJpKuqeAMARUfh5hCF619uBDUT3oFPLDpE2B6bAzAUjbRb
-        7iqCKA6XZUrMTCCJgx06aSL0RQLMEtU=
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
- [209.85.166.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-392-sgloDmfDPJKK16FxL_Lbvw-1; Sun, 25 Oct 2020 11:13:26 -0400
-X-MC-Unique: sgloDmfDPJKK16FxL_Lbvw-1
-Received: by mail-io1-f72.google.com with SMTP id e21so4305701iod.5
-        for <netdev@vger.kernel.org>; Sun, 25 Oct 2020 08:13:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=BW0pmlSPihsKBpCrU+u9mnxvxiC531ZaObDfhIazzx0=;
-        b=DRJ711hJw8vqA63vYAuE3ZCP0aiJxmFu1Rjyv2tT413eCaQ/lDozJxvpn+CvTKi2Fv
-         1xVBhjggnnl5FvQCJtmHfr02ZlyH+QI3Bh9c2CKG6qKtulkBGbzHu1p/90cwzJ5pZF0q
-         jlwm+BnkE4v3i1346jAJ5YhIdOE93l6Rp7OFSsDL8zIm8fG0lhTQND2sH5NPSSi8Qk9g
-         wAgTyWp25cu2dcUWJL0oFkg0JVh84BeF99kxwDPqmjoJMdmtxQHM1Ueut/YNvGUrFJG1
-         RgbRi+QIil1FiR7WKBm/4sRcqoX9oMq3NljeA+s7bZXQW7CqDoiOAS2WjhTUiPPGUbwV
-         JtPw==
-X-Gm-Message-State: AOAM531if5rUNPKlnV4Tp1ZC/U+/3MSpAApn8Diqusd8G/Bd7GV2dCBR
-        Tfek+FIApzLO6Na4MFtHS4H2j9hEUCXDdKNYA+NmNYZ948OD4XrU6ye/gK9E7HRuGONWtfb3m4V
-        z81Sn83/F7r32oJwZ
-X-Received: by 2002:a02:a518:: with SMTP id e24mr8689340jam.131.1603638805890;
-        Sun, 25 Oct 2020 08:13:25 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxlQldSJLlwusJU2GMA08/TIVvvRjeRtzaxuUFVvAU2jTRs4z6GmjyPCYejdk4BG+O81YDuqw==
-X-Received: by 2002:a02:a518:: with SMTP id e24mr8689318jam.131.1603638805601;
-        Sun, 25 Oct 2020 08:13:25 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id f22sm2347281ioh.34.2020.10.25.08.13.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 25 Oct 2020 08:13:24 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 1A55C181CEC; Sun, 25 Oct 2020 16:13:23 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     David Ahern <dsahern@gmail.com>, Hangbin Liu <haliu@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>
-Subject: Re: [PATCH iproute2-next 3/5] lib: add libbpf support
-In-Reply-To: <29c13bd0-d2f6-b914-775c-2d90270f86d4@gmail.com>
-References: <20201023033855.3894509-1-haliu@redhat.com>
- <20201023033855.3894509-4-haliu@redhat.com>
- <29c13bd0-d2f6-b914-775c-2d90270f86d4@gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Sun, 25 Oct 2020 16:13:23 +0100
-Message-ID: <87eelm5ofg.fsf@toke.dk>
+        id S1417279AbgJYQv2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Oct 2020 12:51:28 -0400
+Received: from relay1.mymailcheap.com ([144.217.248.102]:60072 "EHLO
+        relay1.mymailcheap.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1417274AbgJYQv2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Oct 2020 12:51:28 -0400
+X-Greylist: delayed 8631 seconds by postgrey-1.27 at vger.kernel.org; Sun, 25 Oct 2020 12:51:27 EDT
+Received: from filter1.mymailcheap.com (filter1.mymailcheap.com [149.56.130.247])
+        by relay1.mymailcheap.com (Postfix) with ESMTPS id 937B33F157;
+        Sun, 25 Oct 2020 16:51:26 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+        by filter1.mymailcheap.com (Postfix) with ESMTP id 6FEF92A35F;
+        Sun, 25 Oct 2020 12:51:26 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mymailcheap.com;
+        s=default; t=1603644686;
+        bh=FoSy3t/kqmgQC10lMSeyKa4t+0LPTjYELCvA/q1mA2o=;
+        h=Date:In-Reply-To:References:Subject:To:CC:From:From;
+        b=TP4oMSK3ey0LmvXRHT3xniPaw1slaNSi7tfUJlbQO/ohd3Som2GctRSWTa3BnIXUZ
+         6uGil/3mKVqeQOwhCWk52aoTvXcL8YyB4SYnB4Gt36J+4Qf/fMBWt8UHMaDmS7qbnc
+         q7xs5fBfG88AhxrlmcGRnabfDUbBB+8Tr1dE1FP8=
+X-Virus-Scanned: Debian amavisd-new at filter1.mymailcheap.com
+Received: from filter1.mymailcheap.com ([127.0.0.1])
+        by localhost (filter1.mymailcheap.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id iUw6f3I8ZitG; Sun, 25 Oct 2020 12:51:24 -0400 (EDT)
+Received: from mail20.mymailcheap.com (mail20.mymailcheap.com [51.83.111.147])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by filter1.mymailcheap.com (Postfix) with ESMTPS;
+        Sun, 25 Oct 2020 12:51:24 -0400 (EDT)
+Received: from [148.251.23.173] (ml.mymailcheap.com [148.251.23.173])
+        by mail20.mymailcheap.com (Postfix) with ESMTP id 38A2E400C5;
+        Sun, 25 Oct 2020 16:51:23 +0000 (UTC)
+Authentication-Results: mail20.mymailcheap.com;
+        dkim=pass (1024-bit key; unprotected) header.d=aosc.io header.i=@aosc.io header.b="ME4pA23y";
+        dkim-atps=neutral
+AI-Spam-Status: Not processed
+Received: from [172.19.0.1] (unknown [64.225.114.122])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail20.mymailcheap.com (Postfix) with ESMTPSA id 57B93400DA;
+        Sun, 25 Oct 2020 16:51:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=aosc.io; s=default;
+        t=1603644677; bh=FoSy3t/kqmgQC10lMSeyKa4t+0LPTjYELCvA/q1mA2o=;
+        h=Date:In-Reply-To:References:Subject:To:CC:From:From;
+        b=ME4pA23yrHW17q83vF3CgT1qui+uGUMm1GO0ysaPO/eX70g6RwckhnaV3kfR0UtDu
+         a4ng0NJX4Q1D5/JchKe/RnW8NQys5p0E4gITgqfuk4Ftc0DCImMjvkNNYzlBvxmu2T
+         GuoIWbiOk1ArA1fM5Slu70Wvpe9NDRQ92lvlbYhc=
+Date:   Mon, 26 Oct 2020 00:51:05 +0800
+User-Agent: K-9 Mail for Android
+In-Reply-To: <20201025143608.GD792004@lunn.ch>
+References: <20201025085556.2861021-1-icenowy@aosc.io> <20201025141825.GB792004@lunn.ch> <77AAA8B8-2918-4646-BE47-910DDDE38371@aosc.io> <20201025143608.GD792004@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [linux-sunxi] Re: [PATCH] net: phy: realtek: omit setting PHY-side delay when "rgmii" specified
+To:     andrew@lunn.ch, Andrew Lunn <andrew@lunn.ch>
+CC:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willy Liu <willy.liu@realtek.com>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-sunxi@googlegroups.com
+From:   Icenowy Zheng <icenowy@aosc.io>
+Message-ID: <F5D81295-B4CD-4B80-846A-39503B70E765@aosc.io>
+X-Rspamd-Queue-Id: 38A2E400C5
+X-Spamd-Result: default: False [1.40 / 10.00];
+         RCVD_VIA_SMTP_AUTH(0.00)[];
+         ARC_NA(0.00)[];
+         R_DKIM_ALLOW(0.00)[aosc.io:s=default];
+         MID_RHS_MATCH_FROM(0.00)[];
+         FROM_HAS_DN(0.00)[];
+         TO_DN_SOME(0.00)[];
+         FREEMAIL_ENVRCPT(0.00)[gmail.com];
+         TO_MATCH_ENVRCPT_ALL(0.00)[];
+         TAGGED_RCPT(0.00)[dt];
+         MIME_GOOD(-0.10)[text/plain];
+         DMARC_NA(0.00)[aosc.io];
+         R_SPF_SOFTFAIL(0.00)[~all];
+         HFILTER_HELO_BAREIP(3.00)[148.251.23.173,1];
+         ML_SERVERS(-3.10)[148.251.23.173];
+         DKIM_TRACE(0.00)[aosc.io:+];
+         RCPT_COUNT_TWELVE(0.00)[12];
+         RCVD_NO_TLS_LAST(0.10)[];
+         FROM_EQ_ENVFROM(0.00)[];
+         MIME_TRACE(0.00)[0:+];
+         ASN(0.00)[asn:24940, ipnet:148.251.0.0/16, country:DE];
+         FREEMAIL_CC(0.00)[gmail.com,armlinux.org.uk,davemloft.net,kernel.org,realtek.com,siol.net,vger.kernel.org,googlegroups.com];
+         SUSPICIOUS_RECIPS(1.50)[];
+         RCVD_COUNT_TWO(0.00)[2]
+X-Rspamd-Server: mail20.mymailcheap.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Ahern <dsahern@gmail.com> writes:
 
-> On 10/22/20 9:38 PM, Hangbin Liu wrote:
->> Note: ip/ipvrf.c is not convert to use libbpf as it only encodes a few
->> instructions and load directly.
+
+=E4=BA=8E 2020=E5=B9=B410=E6=9C=8825=E6=97=A5 GMT+08:00 =E4=B8=8B=E5=8D=88=
+10:36:08, Andrew Lunn <andrew@lunn=2Ech> =E5=86=99=E5=88=B0:
+>On Sun, Oct 25, 2020 at 10:27:05PM +0800, Icenowy Zheng wrote:
+>>=20
+>>=20
+>> =E4=BA=8E 2020=E5=B9=B410=E6=9C=8825=E6=97=A5 GMT+08:00 =E4=B8=8B=E5=8D=
+=8810:18:25, Andrew Lunn <andrew@lunn=2Ech> =E5=86=99=E5=88=B0:
+>> >On Sun, Oct 25, 2020 at 04:55:56PM +0800, Icenowy Zheng wrote:
+>> >> Currently there are many boards that just set "rgmii" as phy-mode
+>in
+>> >the
+>> >> device tree, and leave the hardware [TR]XDLY pins to set PHY delay
+>> >mode=2E
+>> >>=20
+>> >> In order to keep old device tree working, omit setting delay for
+>just
+>> >> "RGMII" without any internal delay suffix, otherwise many devices
+>are
+>> >> broken=2E
+>> >
+>> >Hi Icenowy
+>> >
+>> >We have been here before with the Atheros PHY=2E It did not correctly
+>> >implement one of the delay modes, until somebody really did need
+>that
+>> >mode=2E So the driver was fixed=2E And we then found a number of devic=
+e
+>> >trees were also buggy=2E It was painful for a while, but all the
+>device
+>> >trees got fixed=2E
+>>=20
+>> 1=2E As the PHY chip has hardware configuration for configuring delays,
+>> we should at least have a mode that respects what's set on the
+>hardware=2E
 >
-> for completeness, libbpf should be able to load a program from a buffer
-> as well.
+>Yes, that is PHY_INTERFACE_MODE_NA=2E In DT, set the phy-mode to ""=2E Or
+>for most MAC drivers, don't list a phy-mode at all=2E
 
-It can, but the particular use in ipvrf is just loading half a dozen
-instructions defined inline in C - there's no object files, BTF or
-anything. So why bother with going through libbpf in this case? The
-actual attachment is using the existing code anyway...
+However, we still need to tell the MAC it's RGMII mode that is in use, not
+MII/RMII/*MII=2E So the phy-mode still needs to be something that
+contains rgmii=2E
 
--Toke
-
+>
+>> 2=2E As I know, at least Fedora ships a device tree with their
+>bootloader, and
+>> the DT will not be updated with kernel=2E
+>
+>I would check that=2E Debian does the exact opposite, the last time i
+>looked=2E It always uses the DT that come with the kernel because it
+>understands DT can have bugs, like all software=2E
+>
+>      Andrew
