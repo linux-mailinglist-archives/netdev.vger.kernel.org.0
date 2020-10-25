@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 260D329809E
-	for <lists+netdev@lfdr.de>; Sun, 25 Oct 2020 08:00:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 739932980B4
+	for <lists+netdev@lfdr.de>; Sun, 25 Oct 2020 08:42:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1767737AbgJYHAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Oct 2020 03:00:13 -0400
-Received: from mail-eopbgr20077.outbound.protection.outlook.com ([40.107.2.77]:58298
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        id S1763079AbgJYHmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Oct 2020 03:42:12 -0400
+Received: from mail-db8eur05on2048.outbound.protection.outlook.com ([40.107.20.48]:3104
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1767730AbgJYHAD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 25 Oct 2020 03:00:03 -0400
+        id S2390858AbgJYHmL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 25 Oct 2020 03:42:11 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ARNG7nEISsaifMmufJcoS1Q80jAPtzazdyPkZRNx8hskG/fet0WT3VGYVdvAwm7x+aHKArKvq6WYfWQfQRtFueoQVVIqphpeeMaYM3JSKSSdAn3arneV0Na08MhSP62nZahGisU7I4FVy7fO9X1HUSKy5e8YMDxEeXzo9Nd9IRlOHFnFU/a97R/fBi74P/xGcPhjwdh8HHH8IZhNrta+gjngx3OBPxNJR4CswrCjOvfycZCVpNbBCY7woQ79TEUYypQd+fAInbzzKJZyG/T9b8pXHvVoZT55DktX/wTt3NtTHOJThN84OCP7D78udxOPhWCg7nIICWPfGLVTaXHjoQ==
+ b=MAYrP5QNWA6nNWulgcSsSP9yjvpbcolfWsz+sJ5tcHq+7tLzTmHiH/bqipVF94uCkfoC1TJAzb540I4/nk3TtwE5ceCc1pjSCunUrqvIhg0vEmMtkTAGwd5JnlZTaidMO5AIsD0xF4o/v+bsczoSw3E/RMPV7r0mVaEdYvplgXHm6G3WxEQ+tJCG22pOxvp7ng1xOzo4U3nwkU8up5eJ1cue+5/kOOKjiykPubb8w5mLxglhuX0fLEal/yDwsdUHZThesYaXbiJexZP/v0XPdoX50zLI0V7w9gHjsm71lhfqYP3e9Bp6cK9jhUg2wmnnV5KyzMRJkdTQrGl68PKx3Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ExT1E/vovGjsb2BsWR4V2OkMt2T0WQ4+w3CH5VGk3RQ=;
- b=l8BldvycmeF7x7rWdl09HwdDfOTw3sFqk4NW1KTBB7kf/aroNtdc++T8jMOrTuqc32QJSnyu2EWhOz+JURY6j58ow9/odk1St38yJVsmq3AH56ozMbeSBX7fsL0ghxiqmrLx3o0W/S0NNzVvG/NhVcSfWby7vZEw/Oo0Oca/AEHT+cJBdvKj8UYJ/6KzZlMkLiZBvlKxg/hZtu45yiclYwECcfVS7tOGno5d96hddiI3fDbghmTz9/tr6tYzZQ36kkyHGBm6n8AFv9CEQmjHP/8KrmkQZosDkRtReoqVMjFyxFc2hmfLnfGFu+zsNXXsc2aGP9ZMpzj5LGEjbV4S+w==
+ bh=VsH4hT/TBh+k+w8byxsDNwFapYnpkyKqn0RbVImo1TE=;
+ b=JWw6QBS/GjiMW6sq4VC88SAul4I4DUZkPf8cJ7krVTF07KaOLXFckNkxWgqa+8WN9uQsh6v37qYdNHHem9REKZQPhScIrxm81CvRpFFSvmWOVCSvfllpkflwnOTp/Yq6Yh0Dbxp71cYIVvOE9c4VVPXPKWvP+YvnGW9UGqoxw8XNfsmS/fccqGOFePIls6wOBKSJizdZTedlQBkgwA/lnXPlk1yefXIzAarlQnEsFzArhKQ/TU7WW9UpqowYvc/FwsJDVqb3xxBVLNSKVkoYH6zJNFZXsGlFK3fC43pOJWmTF4BocerDMjWqg2xowvSug9BlUZXJ9PLLw8TsEjeUEQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ExT1E/vovGjsb2BsWR4V2OkMt2T0WQ4+w3CH5VGk3RQ=;
- b=ExCPbwoFrf1q1AqHxsOIf1hue3NJlJRjXkHOk4UucqGFtDieZQcJQeqNQlZsCGoOghMbLm7FqIan8iLZMqLcu353MDVrQk135LvR8TY0zFuYvWLdN81eOg6t6ZUytzKfWJDXzWZ8YxsCoMNfqkJb79wWfZImmpmNun62VQUj2bA=
+ bh=VsH4hT/TBh+k+w8byxsDNwFapYnpkyKqn0RbVImo1TE=;
+ b=fQjt0cxIO5TBmWt2+Hd1GmLhtC9oTPcRn6fivdWtuqzKbgs9mJU2/g1TsfzbCsLGzN4zu8wqxg7I1ZoHeQ+xOdPozzT1V9AHNZI1SnrOt+Qna5NlOMdOD+uJZgsMasqFkq8aPsiGavdX/535fcC9yU+UOHVejlqdYuVnPY6Ytnk=
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
- by VE1PR04MB7341.eurprd04.prod.outlook.com (2603:10a6:800:1a6::18) with
+ by VI1PR04MB5856.eurprd04.prod.outlook.com (2603:10a6:803:eb::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Sun, 25 Oct
- 2020 06:59:58 +0000
+ 2020 07:42:07 +0000
 Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
  ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3499.018; Sun, 25 Oct 2020
- 06:59:58 +0000
+ 07:42:06 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     Nikolay Aleksandrov <nikolay@nvidia.com>
 CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
@@ -51,12 +51,13 @@ CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "andrew@lunn.ch" <andrew@lunn.ch>
 Subject: Re: [RFC PATCH] net: bridge: multicast: add support for L2 entries
 Thread-Topic: [RFC PATCH] net: bridge: multicast: add support for L2 entries
-Thread-Index: AQHWpLUt1nu/YGQhyEC74ZUB+LFl9KmhzHqAgAYjAYA=
-Date:   Sun, 25 Oct 2020 06:59:58 +0000
-Message-ID: <20201025065957.5736elloorffcdif@skbuf>
+Thread-Index: AQHWpLUt1nu/YGQhyEC74ZUB+LFl9KmhzHqAgAYjAYCAAAvGAA==
+Date:   Sun, 25 Oct 2020 07:42:06 +0000
+Message-ID: <20201025074206.sdtapjy45vqbsjof@skbuf>
 References: <20201017184139.2331792-1-vladimir.oltean@nxp.com>
  <98ac64d9b048278d2296f5b0ff3320c70ea13c72.camel@nvidia.com>
-In-Reply-To: <98ac64d9b048278d2296f5b0ff3320c70ea13c72.camel@nvidia.com>
+ <20201025065957.5736elloorffcdif@skbuf>
+In-Reply-To: <20201025065957.5736elloorffcdif@skbuf>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -66,49 +67,52 @@ authentication-results: nvidia.com; dkim=none (message not signed)
 x-originating-ip: [188.25.2.177]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 0da3ae2d-5769-4ece-3f04-08d878b39608
-x-ms-traffictypediagnostic: VE1PR04MB7341:
-x-microsoft-antispam-prvs: <VE1PR04MB734143AD48250C66E57F4DFCE0180@VE1PR04MB7341.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1303;
+x-ms-office365-filtering-correlation-id: 2514f1e2-b132-4e6b-9829-08d878b97921
+x-ms-traffictypediagnostic: VI1PR04MB5856:
+x-microsoft-antispam-prvs: <VI1PR04MB5856DB16E0EB9803D5B6739EE0180@VI1PR04MB5856.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2449;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: XXu4kXExMInXeP7V7JxLzgjGvnDKC/hGEsXb9abGqwhbgGB54fPI9pl5W0WWr8q56IpVQz99Mdy44LYH7AtlvYD0YJguxeI2QYV7w1u7Li9FmCNzlYqPlSgTyK+hupk3++2vQ3OoT7iOoikdgXZIQSdrb4zVaCla76BOnzCjitZtl2xMMEdf8pJTZN6z7rMWV4Saepw1yBB5L3KqzC45lgP1Eh2a4k75gx4eUAzme5nHDSBo/1+8uS0kBG19CszvCWmVnMPQddS86huHL5iJOJiTaT6V0jk3UkmCuOSoMfcVuxuu58l1BAYrqq7MBGWVYdrNtUsmnM+6FexPX7I/Jw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(376002)(136003)(366004)(346002)(396003)(39850400004)(86362001)(2906002)(478600001)(6486002)(83380400001)(8936002)(6916009)(26005)(8676002)(186003)(316002)(54906003)(33716001)(4326008)(71200400001)(4744005)(1076003)(6506007)(9686003)(66446008)(6512007)(64756008)(44832011)(66476007)(66946007)(66556008)(76116006)(7416002)(5660300002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: DDrC5q1xLWKf7Vva6pbVjser137/jEgyJGb2SwsPDANRh8bxoKyVxEqGhXbshpQJ/Z2bHRS2mp4jPwesOIChHtelsnG5+RNMdatHo3Bf8crJCxHkXZQCyFxntUUtj2+2+aXUMo45XDBH4F8eudy/1ypvNYLhQMvJ6bXUxMSoaAxAcXCosPjKrNGvsNjz5/o6MQTZmOdXYCmH0ufNJOCXub6AcPSutJTBSYdzryaOSunUcgJHD6wrpuP+TTV+alZwuTJb5hHsQ3/jPDEE/KwN+5wcUlObkLdNETOzBi7rFLa2W2Pmo+gTMgQJOlvEKcfebct0UTMD3NpjnXKaLKGfKVTkOoyF6GbVBSB+bqdmVr6eHLIQBK5sfroWSvFzmrUs9Rma/85c8IraB8l0ZJfEZgIAZta1bDjWPj9wbhU+ZJQFX7idXQtc3crphdDJ6Hao3WoODIWbJkdVWOSL+WgZrbL34Bc1bYwYFTVVWrPh09/j0R282S/jx/vLjAfWy5ZWkfY01/lziBOohCgnjrj2nYF5YylYAB2ck1F0KcbSHiemm1hLw5N5gdeAbgUWRnk8PCt4Dn/RxouU4uPlWxzpUvzLfxcdsMhRR2iNLOVMino73eq0W3juwrSEsgGwqi++wKk02IsJkaxNN3lMUV2+/g==
+x-microsoft-antispam-message-info: 3iK98/twlTYAJGtAhyI5jmvlHYw/HJNZOdzA17RXixFCI8IVn5vPbNJUJZo8s0cdld0l7+jCVZBJLcvh+JVVEPJS18+2WSr2iT4ULbJ0AxwFliVLmLqugixqjwVvb/AW0syWkQBVXmBanInBhXn2Hw7d14s9690FFdWcMy8PnjRl2ijmgMNRM6h+uH74T8tAaIDbj4tt27oBDw+2dVAEiHP8DQNjg22glmZqWDW1V8Z2qSeyB9gvMD8jBFKEqqqC+wO2KXYec8/ddK+rVPeTZo9yJFP2mRbwfFE/hYLK+MI8DiMg0xuJlciZWcPlBpLcjNan0ynPiApdQDprRJ1hbA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(396003)(39850400004)(366004)(136003)(376002)(346002)(33716001)(9686003)(86362001)(71200400001)(66446008)(2906002)(6486002)(76116006)(44832011)(66476007)(64756008)(66556008)(66946007)(4744005)(1076003)(5660300002)(54906003)(6916009)(7416002)(6512007)(316002)(8936002)(26005)(6506007)(478600001)(186003)(8676002)(83380400001)(4326008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: m0UqU8Ddi2jtnO4HHluDoTQTxcYg4fIqt2Vk58zmd0XTaQfyUVz3jP78+45qYVwtUeFupzam8Sr2N0cFhzwjbnjLuUTPsHI0HWsEL2gsGV5AYRMOYfqhTf5W3z3wumwv/+Aiy7W1mMoi3z/Zt36+63SVxFOb6R1jY594gBuwniayYmlvcgViTCWktSLNk9ZqPd/GSMc6Tgk1QA70116aYyJbokM+e5zcB9F3p1kxe6XH2767RQRrOSunRSOUbqdoJoujbiOBL3THfogtu3TTKaCOZVMZfvpOdWjFoxllRenrTaLOqeTFWL11ykEMAXXNClZlv4CZncIAeXMQZQcqpjeZh4IMHVkzE+XsJVclplXIerOzqU7pS6xSChdTRFneWrKpWgcMN8HjO1oYuvHGxonkgxGEASdmWN8s0eluoIN3y17+H/uslmcfJrRJWCAL33hfF9nq0llOtCWckgAFBI/nce+VxEUiPpB2xf772gmUgt7cQMgiEH2ZyZjD6ILxBIbKMs4JdeQUAhGzwkFqP0TyX6stMhgY+EO8fWZ+Hh4sP+pIJFixN4c7DasCdhSnRUQXeyAyaEHT9XpyC8yEeFqK+6bw1bC3cSwpbbmn4NdXkETQ6Nxza0EvxKZiAiOdsGN0XSS2tzFCfbzJrp2nhQ==
 x-ms-exchange-transport-forked: True
 Content-Type: text/plain; charset="us-ascii"
-Content-ID: <E16C77FF765849479CDE86712DB1ACC8@eurprd04.prod.outlook.com>
+Content-ID: <AD64E3253E4D9545ACC1B6397B7C6CD3@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0da3ae2d-5769-4ece-3f04-08d878b39608
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Oct 2020 06:59:58.3467
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2514f1e2-b132-4e6b-9829-08d878b97921
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Oct 2020 07:42:06.8923
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 8LgDo4lvMyi2JaQEOkUgma37m2C6I4gEJenmaORX9DoS4bIbll0O/U2x9EozTi/DTuwfcVd2AQ9DEM8TcpCt6w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB7341
+X-MS-Exchange-CrossTenant-userprincipalname: K38kmEP4yw7xBMv5V+725HajLxFqJYMM7si9iqVKqvVofoVx1nOBaBK9OXK0kBPwoxmYW8IhcteCNU9e5YpcjQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB5856
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 21, 2020 at 09:17:07AM +0000, Nikolay Aleksandrov wrote:
-> > diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_bri=
-dge.h
-> > index 4c687686aa8f..a25f6f9aa8c3 100644
-> > --- a/include/uapi/linux/if_bridge.h
-> > +++ b/include/uapi/linux/if_bridge.h
-> > @@ -520,12 +520,14 @@ struct br_mdb_entry {
-> >  #define MDB_FLAGS_FAST_LEAVE	(1 << 1)
-> >  #define MDB_FLAGS_STAR_EXCL	(1 << 2)
-> >  #define MDB_FLAGS_BLOCKED	(1 << 3)
-> > +#define MDB_FLAGS_L2		(1 << 5)
+On Sun, Oct 25, 2020 at 08:59:57AM +0200, Vladimir Oltean wrote:
+> On Wed, Oct 21, 2020 at 09:17:07AM +0000, Nikolay Aleksandrov wrote:
+> > > diff --git a/include/uapi/linux/if_bridge.h b/include/uapi/linux/if_b=
+ridge.h
+> > > index 4c687686aa8f..a25f6f9aa8c3 100644
+> > > --- a/include/uapi/linux/if_bridge.h
+> > > +++ b/include/uapi/linux/if_bridge.h
+> > > @@ -520,12 +520,14 @@ struct br_mdb_entry {
+> > >  #define MDB_FLAGS_FAST_LEAVE	(1 << 1)
+> > >  #define MDB_FLAGS_STAR_EXCL	(1 << 2)
+> > >  #define MDB_FLAGS_BLOCKED	(1 << 3)
+> > > +#define MDB_FLAGS_L2		(1 << 5)
+> >=20
+> > I think this should be 4.
+> >=20
 >=20
-> I think this should be 4.
->=20
+> Shouldn't this be in sync with MDB_PG_FLAGS_L2 though? We also have
+> MDB_PG_FLAGS_BLOCKED which is BIT(4).
 
-Shouldn't this be in sync with MDB_PG_FLAGS_L2 though? We also have
-MDB_PG_FLAGS_BLOCKED which is BIT(4).=
+Never mind, I'll make it 4.=
