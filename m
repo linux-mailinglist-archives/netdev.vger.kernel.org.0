@@ -2,133 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCBB42988BC
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 09:46:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 65CD32988BE
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 09:48:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1772062AbgJZIqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 04:46:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51474 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1771245AbgJZIqJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 04:46:09 -0400
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 63BC0223B0;
-        Mon, 26 Oct 2020 08:46:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603701968;
-        bh=qB8CzEhahOaemFq9YE9Yhqr27FC97Yq4A5dMZ2W97vA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=YJNlyfwJQditZkvquRY4rdDE6DpqfnPaFff4rU1MwySaJIOxFdeqpc6y+R7kGWWZL
-         I/tukEwESjrSwbzxCYBJzNLH5FBxALk/Q/v6jS9owoz33A9Ll/Wu8dLcq+BXWtPCea
-         fS1uMobVWUkzGZyos56M/aN2N2Tq413y6210TygY=
-Date:   Mon, 26 Oct 2020 08:46:02 +0000
-From:   Will Deacon <will@kernel.org>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Vitaly Chikunov <vt@altlinux.org>, bpf@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Sandipan Das <sandipan@linux.ibm.com>,
-        "Dmitry V. Levin" <ldv@altlinux.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: Re: tools/bpf: Compilation issue on powerpc: unknown type name
- '__vector128'
-Message-ID: <20201026084602.GD23739@willie-the-truck>
-References: <20201023230641.xomukhg3zrhtuxez@altlinux.org>
- <20201024082319.GA24131@altlinux.org>
- <20201024203040.4cjxnxrdy6qx557c@altlinux.org>
- <87y2jtwq64.fsf@mpe.ellerman.id.au>
+        id S1772074AbgJZIs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 04:48:28 -0400
+Received: from mail-ej1-f66.google.com ([209.85.218.66]:35053 "EHLO
+        mail-ej1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1771239AbgJZIs2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 04:48:28 -0400
+Received: by mail-ej1-f66.google.com with SMTP id p5so12196527ejj.2
+        for <netdev@vger.kernel.org>; Mon, 26 Oct 2020 01:48:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=CMq2mLbNL74WkLZ1bSnHIm39p11lGlRAoIf1ew+2tbQ=;
+        b=Q/QB3j8/IpxObQY6qPdYa7cbAi0sEDmT6CmkPLR4Ess7CkQJb+PA97JTGmDk/haHkh
+         3u5/kJKSIQk33he8fPuND4XRNN3kxTVZvAIg78U+x3nEfXe7F/oVwcUqXGy7GpJrzmKR
+         rYuayxbyuURfej5BAoNdDZG1+RV1kYG3XhKuoKwoFmkQGzODd4kin3auiRZwC3aNloaw
+         rNBBV7F6a+eAioCj5ftFLI0EhUzInbAr04Wpzi9BvWgkpZHxOh0kuxfar5PAnzfiaIEi
+         rjlbKTGkwFXRzTQqSFMWZ/fLtCVbOuQ6gyh2CSHKC6A+PkY7HcmNba4I98LxTWD/K+nJ
+         Jlew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=CMq2mLbNL74WkLZ1bSnHIm39p11lGlRAoIf1ew+2tbQ=;
+        b=DUHTXdBTl4IVmeAzLFum1KLArImM+LM1MH0QeMJCNSJCO8S1z0yop4BxdVb6M6jNlr
+         ls791TYgWGXGva2WZKYntiP+qkLy1tiqhaNF3AyRNJF+wSb3BHc21Z9PwfCeolVTWnrL
+         1Lqxd+ubLPqD2QkCkT1KUTICSy749yoMAhEA/2BEDCaXDB93K4+mJT+viHwm1RXFUoRi
+         Jht5zC8xYnEOqQGuIRg9ay1yWplcTxblQSPN+gvr5q6W33YKmgBcyeuUjPIzOlaENbz8
+         cKMji4/k9MyMikEw30RN35CCpnQo19RI/ZZHDHBe/Ryw9UI2/wvgpICc9VC4PlCLc5pp
+         LkhQ==
+X-Gm-Message-State: AOAM533Rn8DD9vjfd4Nn+3gbt/LmIhSVeHL/koCTzHCb+fgOol8qYmyH
+        170Shb5SJwD/19tsDYsiPBzS3w==
+X-Google-Smtp-Source: ABdhPJwRK4D9d8sEPV3gB1z/36n0v4t27P8vVnI8CMt3lDfadhwlftbORnaGv4rPAAZEvVAwnOhLkA==
+X-Received: by 2002:a17:906:f185:: with SMTP id gs5mr14418155ejb.107.1603702105891;
+        Mon, 26 Oct 2020 01:48:25 -0700 (PDT)
+Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
+        by smtp.gmail.com with ESMTPSA id l17sm5441023eji.14.2020.10.26.01.48.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Oct 2020 01:48:25 -0700 (PDT)
+Date:   Mon, 26 Oct 2020 09:48:24 +0100
+From:   Simon Horman <simon.horman@netronome.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Zahari Doychev <zahari.doychev@linux.com>, netdev@vger.kernel.org,
+        jhs@mojatatu.com
+Subject: Re: [iproute2-next] tc flower: use right ethertype in icmp/arp
+ parsing
+Message-ID: <20201026084824.GA29950@netronome.com>
+References: <20201019114708.1050421-1-zahari.doychev@linux.com>
+ <bd0eb394-72a3-1c95-6736-cd47a1d69585@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87y2jtwq64.fsf@mpe.ellerman.id.au>
+In-Reply-To: <bd0eb394-72a3-1c95-6736-cd47a1d69585@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 26, 2020 at 03:45:55PM +1100, Michael Ellerman wrote:
-> Vitaly Chikunov <vt@altlinux.org> writes:
-> > Adding netdev and PowerPC maintainers JFYI.
+On Sun, Oct 25, 2020 at 03:18:48PM -0600, David Ahern wrote:
+> On 10/19/20 5:47 AM, Zahari Doychev wrote:
+> > Currently the icmp and arp prsing functions are called with inccorect
+> > ethtype in case of vlan or cvlan filter options. In this case either
+> > cvlan_ethtype or vlan_ethtype has to be used.
+> > 
+> > Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
+> > ---
+> >  tc/f_flower.c | 43 ++++++++++++++++++++++++++-----------------
+> >  1 file changed, 26 insertions(+), 17 deletions(-)
+> > 
+> > diff --git a/tc/f_flower.c b/tc/f_flower.c
+> > index 00c919fd..dd9f3446 100644
+> > --- a/tc/f_flower.c
+> > +++ b/tc/f_flower.c
+> > @@ -1712,7 +1712,10 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
+> >  			}
+> >  		} else if (matches(*argv, "type") == 0) {
+> >  			NEXT_ARG();
+> > -			ret = flower_parse_icmp(*argv, eth_type, ip_proto,
+> > +			ret = flower_parse_icmp(*argv, cvlan_ethtype ?
+> > +						cvlan_ethtype : vlan_ethtype ?
+> > +						vlan_ethtype : eth_type,
+> > +						ip_proto,
 > 
-> Thanks.
-> 
-> > On Sat, Oct 24, 2020 at 11:23:19AM +0300, Dmitry V. Levin wrote:
-> >> Hi,
-> >> 
-> >> On Sat, Oct 24, 2020 at 02:06:41AM +0300, Vitaly Chikunov wrote:
-> >> > Hi,
-> >> > 
-> >> > Commit f143c11bb7b9 ("tools: bpf: Use local copy of headers including
-> >> > uapi/linux/filter.h") introduces compilation issue on powerpc:
-> >> >  
-> >> >   builder@powerpc64le:~/linux$ make -C tools/bpf V=1
-> >> >   make: Entering directory '/usr/src/linux/tools/bpf'
-> >> >   gcc -Wall -O2 -D__EXPORTED_HEADERS__ -I/usr/src/linux/tools/include/uapi -I/usr/src/linux/tools/include -DDISASM_FOUR_ARGS_SIGNATURE -c -o bpf_dbg.o /usr/src/linux/tools/bpf/bpf_dbg.c
-> 
-> Defining __EXPORTED_HEADERS__ is a hack to circumvent the checks in the
-> uapi headers.
-> 
-> So first comment is to stop doing that, although it doesn't actually fix
-> this issue.
-> 
-> >> >   In file included from /usr/include/asm/sigcontext.h:14,
-> >> > 		   from /usr/include/bits/sigcontext.h:30,
-> >> > 		   from /usr/include/signal.h:291,
-> >> > 		   from /usr/src/linux/tools/bpf/bpf_dbg.c:51:
-> >> >   /usr/include/asm/elf.h:160:9: error: unknown type name '__vector128'
-> >> >     160 | typedef __vector128 elf_vrreg_t;
-> >> > 	|         ^~~~~~~~~~~
-> >> >   make: *** [Makefile:67: bpf_dbg.o] Error 1
-> >> >   make: Leaving directory '/usr/src/linux/tools/bpf'
-> >> 
-> >> __vector128 is defined in arch/powerpc/include/uapi/asm/types.h;
-> >> while include/uapi/linux/types.h does #include <asm/types.h>,
-> >> tools/include/uapi/linux/types.h doesn't, resulting to this
-> >> compilation error.
-> >
-> > This is too puzzling to fix portably.
-> 
-> I don't really understand how this is expected to work.
-> 
-> We have tools/include/uapi/linux/types.h which is some sort of hand
-> hacked types.h, but doesn't match the real types.h from
-> include/uapi/linux.
-> 
-> In particular the tools/include types.h doesn't include asm/types.h,
-> which is why this breaks.
-> 
-> I can build bpf_dbg if I copy the properly exported header in:
-> 
->   $ make INSTALL_HDR_PATH=$PWD/headers headers_install
->   $ cp headers/include/linux/types.h tools/include/uapi/linux/
->   $ make -C tools/bpf bpf_dbg
->   make: Entering directory '/home/michael/linux/tools/bpf'
->   
->   Auto-detecting system features:
->   ...                        libbfd: [ on  ]
->   ...        disassembler-four-args: [ on  ]
->   
->     CC       bpf_dbg.o
->     LINK     bpf_dbg
->   make: Leaving directory '/home/michael/linux/tools/bpf
-> 
-> 
-> I'm not sure what the proper fix is.
-> 
-> Maybe sync the tools/include types.h with the real one?
+> looks correct to me, but would like confirmation of the intent from Simon.
 
-Yeah, all f143c11bb7b9 did was sync the local copy with the result of
-'headers_install', so if that's sufficient then I think that's the right
-way to fix the immediate breakage.
+Thanks, this appears to be correct to me as ultimately
+the code wants to operate on ETH_P_IP or ETH_P_IPV6 rather
+than a VLAN Ether type.
 
-> Or TBH I would have thought the best option is to not have
-> tools/include/uapi at all, but instead just run headers_install before
-> building and use the properly exported headers.
-
-Agreed, although in some cases I suspect that kernel-internal parts are
-being used.
-
-Wiil
+> Also, I am not a fan of the readability of that coding style. Rather
+> than repeat that expression multiple times, make a short helper to
+> return the relevant eth type and use a temp variable for it. You should
+> also comment that relevant eth type changes as arguments are parsed.
+> 
+> Thanks,
+> 
+> 
