@@ -2,208 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7659298BC0
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 12:20:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86BBC298C0A
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 12:23:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1773447AbgJZLTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 07:19:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48622 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1747080AbgJZLTf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 07:19:35 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3E7E222460;
-        Mon, 26 Oct 2020 11:19:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603711174;
-        bh=ECLdZtZi2ZiOf9v9nodXdxHO9s/+UDT9bsbzqmbZ1B4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OxOr+Z9qI2rXrmjPgKu6fHJYkS4h8AYdk/UN1r18CGYQGd4G7hZuG9nCQ60iVSdyB
-         Q3KVFdRdJKR2dcMcIEJfOcZRP/1Z/OdKF4QulAz1VxwjviDG9j3xFhrvpyVQM4qxpt
-         MveqhpaozPeXZCfhf5hg/L+NahN7ubqDQacO3teM=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Wang <jasowang@redhat.com>, linux-rdma@vger.kernel.org,
-        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        Parav Pandit <parav@nvidia.com>, Roi Dayan <roid@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        virtualization@lists.linux-foundation.org,
-        alsa-devel@alsa-project.org, tiwai@suse.de, broonie@kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        ranjani.sridharan@linux.intel.com,
-        pierre-louis.bossart@linux.intel.com, fred.oh@linux.intel.com,
-        shiraz.saleem@intel.com, dan.j.williams@intel.com,
-        kiran.patil@intel.com, linux-kernel@vger.kernel.org
-Subject: [PATCH mlx5-next 11/11] RDMA/mlx5: Remove IB representors dead code
-Date:   Mon, 26 Oct 2020 13:18:49 +0200
-Message-Id: <20201026111849.1035786-12-leon@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201026111849.1035786-1-leon@kernel.org>
-References: <20201026111849.1035786-1-leon@kernel.org>
-MIME-Version: 1.0
+        id S1773561AbgJZLXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 07:23:51 -0400
+Received: from mail-eopbgr70070.outbound.protection.outlook.com ([40.107.7.70]:11845
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1769188AbgJZLXu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 07:23:50 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RMhF+iLtMu6BsS6D45TpV8nce8172ViIRkd/93HhShNtjJyf6EXNUwZdpeLWy1ixIhxXWpZwoblB9U5JVWZ1xCSVzcw2NmWY7jpM69GyVZC22/rgr1wmO29k9/A2DHjdFH4CoXzJ3+Mb5rdoyXv0lgkyfWbsoBTsb/7w0kzgxTmT6b82Hqyj5yBwrY7KHOv73BRS3LpZvX0kjTAGOH1FjOCVJGchzI6cTEqucto0fQyC4dz3z1Tn2uO3bdFOZeoq3db86LFoSL3rXYU2kCQUJdpUKTA3L5IldYUXj0qkpaDCXcEP5iyjp+d7wX8saeYGJFA83yZnkYHB4BKSopk5Sw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IC/HKPZ46hvXjohoTFV/lfx27ApKYdp8xUCKODmJoPE=;
+ b=n4rg8l9bac65UyLewus7CyOP/LVbACHRKUwsvQ64dEo0E1fLzaNnvQrXsobJgeoXNIOEt12NaZG2kI/NAyyMkHGudDGKHurEP1CSAnmBwTDeh6nq7SFySXiz6xa6uYWE8txDS70UEvhJiqwqtisbOKUx5YNZg5b3ZVcSHeVd8pZn7bBu+v/IanqSfvjsBVKDjOfLsgB0hs38L5fz45fUWdBKJ1VwfJXwirOED+qafLx6lpHPtNMQguKk8R5wHR3CTZ4g0SsGTcL6xpgTWdatvrH4BePU33jez6jt7Kc8s7U0+AjFA3P5mMZ+uwiIEAxmYPLUFnJipo2OQJ2WCbh2cA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IC/HKPZ46hvXjohoTFV/lfx27ApKYdp8xUCKODmJoPE=;
+ b=B3KPyVJOCIJp7OYy1F5HwzeLgDS/BIMnAvHDJZIN1yeLjZy/Yzw0tZezjjWEIQlxuWBOr55FyTXIww7J/qNO5teItH0Ui63VhRR84De4uwnWKcIP2CFPNXmCGOiS1HeFiQKBdmQvaQIcmW78WjFJIYn01dpALu6dK5yaHFRqVf4=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nxp.com;
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com (2603:10a6:803:e7::13)
+ by VI1PR04MB4910.eurprd04.prod.outlook.com (2603:10a6:803:5c::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Mon, 26 Oct
+ 2020 11:23:43 +0000
+Received: from VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d]) by VI1PR04MB5696.eurprd04.prod.outlook.com
+ ([fe80::983b:73a7:cc93:e63d%3]) with mapi id 15.20.3499.018; Mon, 26 Oct 2020
+ 11:23:43 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     netdev@vger.kernel.org
+Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        claudiu.manoil@nxp.com, xiaoliang.yang_1@nxp.com,
+        hongbo.wang@nxp.com, kuba@kernel.org, UNGLinuxDriver@microchip.com
+Subject: [PATCH net] net: mscc: ocelot: populate the entry type in ocelot_mact_read
+Date:   Mon, 26 Oct 2020 13:22:57 +0200
+Message-Id: <20201026112257.1371229-1-vladimir.oltean@nxp.com>
+X-Mailer: git-send-email 2.25.1
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [188.25.2.177]
+X-ClientProxiedBy: AM0PR10CA0060.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:150::40) To VI1PR04MB5696.eurprd04.prod.outlook.com
+ (2603:10a6:803:e7::13)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (188.25.2.177) by AM0PR10CA0060.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:150::40) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.24 via Frontend Transport; Mon, 26 Oct 2020 11:23:42 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 394a778a-560d-462c-e5af-08d879a198b0
+X-MS-TrafficTypeDiagnostic: VI1PR04MB4910:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR04MB4910734C32778E2284AE06CDE0190@VI1PR04MB4910.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1923;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Vrr8OJTnfuc0lEbQ6OHTC7lX+jp/DalNSwcfGTvL36/NWbKnHMVkwQJGh0IK6gwa+KqrCRhEtdb+rUbJvERABHbbWMUJy9srDG75BcmXPP9MoJXtCrJebbpYl3/4apUPO+4AcQMm5nwns2QKHxU3/XdxiODcMnZxPK8muTZ+zw2oAf7QF8k0MmlqkBRth2+YzNwv4XpaF4lezhdznS1rpjljnvuHucb8bGaWTqV8r1iuJXbYWgW3f6VeqFZnKrwdKHplS35gOE7kMVUKX2/h+WAV2Sj7k4HjywSbPpgitAEDQiPJf9zXrGRQ1QGwrI6Or+0rHGJ+XlfRccFHdYVbyMU+1UUHaedj3B+xztpq8Kr/biRXmJLVvVtRCT4w8dky
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5696.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(346002)(366004)(39860400002)(136003)(52116002)(26005)(478600001)(44832011)(316002)(6506007)(86362001)(4326008)(16526019)(8936002)(6916009)(2906002)(6512007)(66476007)(956004)(36756003)(4744005)(186003)(2616005)(6486002)(66946007)(6666004)(5660300002)(66556008)(1076003)(8676002)(69590400008)(83380400001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: /Zkw8fHII2GnE3+RhIY5AUMoRg8LZmEth1OHJRxWLNZNrD3bziVGmTgIkjHVVV1r/PV2Wd83D9Gevsse5VKVStHWGOTJ87eRqvmOh7YQS+Qg3LHGgfRmu8DqsdFKqks/ZmVKCuk5PPPqGLbNV6yKNhHVBaj440/TvoCQ3bUgKvbkcSCAcITDoJHNloD72cbn+R2rSjlrseo668aixZbXL6g4K7uag6IEBCEYiYKI6wRo/tvHk2BjDYJ96AQyK+cISRPCn7joGq+bTxYa9yHAXS4ra5IzZxbvOjJ0R5v7Z7We4j5U6Pf3BWGZNJLWu8RVJLj6B//1C6DGES6/guzABPrRN3WO5vVcsEyXF6GQE0TquKM9q5zx6FxCyyIU3vo5Bi99n3IfGlQSYQx7VHcRVr2KopUjHHA9XeiIOkEUPEpcfvi3cGCO2IINhFYs6UAQjzgli6i3O14MTE5nQZFWc7Y/YR57wtohWDRO30cKjv/6e88E5PUfSmK9Lxmjd3Sb/MgJwnj6Fm4UH/0O38ijrJm/2qcO8y9+Dl8Xmx2yjWoNABQF/d48vFWr9Nzrfv9JmB9SOLxmQbrHjunoasK3eRgp5A6XREFcZIiGkdDgXgoAWdzJntCA+L7wyqdNDqV5RmQbnurIY5S5rzNXWki8OA==
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 394a778a-560d-462c-e5af-08d879a198b0
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5696.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2020 11:23:43.3669
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Rz73Uwfc3xXQLX6vDqzk8gD13+BO5rzLq9kAJ7Xv7RlOmQJFp6lnJamW5thPWo2CaNaX4uvIm5Poc2+Xv+KyLQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4910
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+Currently this boolean in ocelot_fdb_dump will always be set to false:
 
-Delete dead code.
+is_static = (entry.type == ENTRYTYPE_LOCKED);
 
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Fix it by ensuring the entry type is always read from hardware.
+
+Fixes: 64bfb05b74ad ("net: mscc: ocelot: break out fdb operations into abstract implementations")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/infiniband/hw/mlx5/ib_rep.c           | 31 +++++--------------
- drivers/infiniband/hw/mlx5/ib_rep.h           | 31 -------------------
- drivers/net/ethernet/mellanox/mlx5/core/dev.c |  4 +--
- 3 files changed, 9 insertions(+), 57 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/infiniband/hw/mlx5/ib_rep.c b/drivers/infiniband/hw/mlx5/ib_rep.c
-index 9810bdd7f3bc..a1a9450ed92c 100644
---- a/drivers/infiniband/hw/mlx5/ib_rep.c
-+++ b/drivers/infiniband/hw/mlx5/ib_rep.c
-@@ -13,7 +13,7 @@ mlx5_ib_set_vport_rep(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
- 	struct mlx5_ib_dev *ibdev;
- 	int vport_index;
-
--	ibdev = mlx5_ib_get_uplink_ibdev(dev->priv.eswitch);
-+	ibdev = mlx5_eswitch_uplink_get_proto_dev(dev->priv.eswitch, REP_IB);
- 	vport_index = rep->vport_index;
-
- 	ibdev->port[vport_index].rep = rep;
-@@ -74,6 +74,11 @@ mlx5_ib_vport_rep_load(struct mlx5_core_dev *dev, struct mlx5_eswitch_rep *rep)
- 	return ret;
- }
-
-+static void *mlx5_ib_rep_to_dev(struct mlx5_eswitch_rep *rep)
-+{
-+	return rep->rep_data[REP_IB].priv;
-+}
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 70bf8c67d7ef..860cd2390670 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -647,6 +647,8 @@ static int ocelot_mact_read(struct ocelot *ocelot, int port, int row, int col,
+ 	if (dst != port)
+ 		return -EINVAL;
+ 
++	entry->type = ANA_TABLES_MACACCESS_ENTRYTYPE_X(val);
 +
- static void
- mlx5_ib_vport_rep_unload(struct mlx5_eswitch_rep *rep)
- {
-@@ -91,40 +96,18 @@ mlx5_ib_vport_rep_unload(struct mlx5_eswitch_rep *rep)
- 		__mlx5_ib_remove(dev, dev->profile, MLX5_IB_STAGE_MAX);
- }
-
--static void *mlx5_ib_vport_get_proto_dev(struct mlx5_eswitch_rep *rep)
--{
--	return mlx5_ib_rep_to_dev(rep);
--}
--
- static const struct mlx5_eswitch_rep_ops rep_ops = {
- 	.load = mlx5_ib_vport_rep_load,
- 	.unload = mlx5_ib_vport_rep_unload,
--	.get_proto_dev = mlx5_ib_vport_get_proto_dev,
-+	.get_proto_dev = mlx5_ib_rep_to_dev,
- };
-
--struct mlx5_ib_dev *mlx5_ib_get_rep_ibdev(struct mlx5_eswitch *esw,
--					  u16 vport_num)
--{
--	return mlx5_eswitch_get_proto_dev(esw, vport_num, REP_IB);
--}
--
- struct net_device *mlx5_ib_get_rep_netdev(struct mlx5_eswitch *esw,
- 					  u16 vport_num)
- {
- 	return mlx5_eswitch_get_proto_dev(esw, vport_num, REP_ETH);
- }
-
--struct mlx5_ib_dev *mlx5_ib_get_uplink_ibdev(struct mlx5_eswitch *esw)
--{
--	return mlx5_eswitch_uplink_get_proto_dev(esw, REP_IB);
--}
--
--struct mlx5_eswitch_rep *mlx5_ib_vport_rep(struct mlx5_eswitch *esw,
--					   u16 vport_num)
--{
--	return mlx5_eswitch_vport_rep(esw, vport_num);
--}
--
- struct mlx5_flow_handle *create_flow_rule_vport_sq(struct mlx5_ib_dev *dev,
- 						   struct mlx5_ib_sq *sq,
- 						   u16 port)
-diff --git a/drivers/infiniband/hw/mlx5/ib_rep.h b/drivers/infiniband/hw/mlx5/ib_rep.h
-index 93f562735e89..ce1dcb105dbd 100644
---- a/drivers/infiniband/hw/mlx5/ib_rep.h
-+++ b/drivers/infiniband/hw/mlx5/ib_rep.h
-@@ -12,11 +12,6 @@
- extern const struct mlx5_ib_profile raw_eth_profile;
-
- #ifdef CONFIG_MLX5_ESWITCH
--struct mlx5_ib_dev *mlx5_ib_get_rep_ibdev(struct mlx5_eswitch *esw,
--					  u16 vport_num);
--struct mlx5_ib_dev *mlx5_ib_get_uplink_ibdev(struct mlx5_eswitch *esw);
--struct mlx5_eswitch_rep *mlx5_ib_vport_rep(struct mlx5_eswitch *esw,
--					   u16 vport_num);
- int mlx5r_rep_init(void);
- void mlx5r_rep_cleanup(void);
- struct mlx5_flow_handle *create_flow_rule_vport_sq(struct mlx5_ib_dev *dev,
-@@ -25,26 +20,6 @@ struct mlx5_flow_handle *create_flow_rule_vport_sq(struct mlx5_ib_dev *dev,
- struct net_device *mlx5_ib_get_rep_netdev(struct mlx5_eswitch *esw,
- 					  u16 vport_num);
- #else /* CONFIG_MLX5_ESWITCH */
--static inline
--struct mlx5_ib_dev *mlx5_ib_get_rep_ibdev(struct mlx5_eswitch *esw,
--					  u16 vport_num)
--{
--	return NULL;
--}
--
--static inline
--struct mlx5_ib_dev *mlx5_ib_get_uplink_ibdev(struct mlx5_eswitch *esw)
--{
--	return NULL;
--}
--
--static inline
--struct mlx5_eswitch_rep *mlx5_ib_vport_rep(struct mlx5_eswitch *esw,
--					   u16 vport_num)
--{
--	return NULL;
--}
--
- static inline int mlx5r_rep_init(void) { return 0; }
- static inline void mlx5r_rep_cleanup(void) {}
- static inline
-@@ -62,10 +37,4 @@ struct net_device *mlx5_ib_get_rep_netdev(struct mlx5_eswitch *esw,
- 	return NULL;
- }
- #endif
--
--static inline
--struct mlx5_ib_dev *mlx5_ib_rep_to_dev(struct mlx5_eswitch_rep *rep)
--{
--	return rep->rep_data[REP_IB].priv;
--}
- #endif /* __MLX5_IB_REP_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-index 842b6f8ae457..ca65a143e4ed 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/dev.c
-@@ -198,14 +198,14 @@ enum {
- 	MLX5_INTERFACE_PROTOCOL_MPIB,
- 	MLX5_INTERFACE_PROTOCOL_IB,
-
--	MLX5_INTERFACE_PROTOCOL_VDPA,
-+	MLX5_INTERFACE_PROTOCOL_VNET,
- };
-
- static const struct mlx5_adev_device {
- 	const char *suffix;
- 	bool (*is_supported)(struct mlx5_core_dev *dev);
- } mlx5_adev_devices[] = {
--	[MLX5_INTERFACE_PROTOCOL_VDPA] = { .suffix = "vnet",
-+	[MLX5_INTERFACE_PROTOCOL_VNET] = { .suffix = "vnet",
- 					   .is_supported = &is_vnet_supported },
- 	[MLX5_INTERFACE_PROTOCOL_IB] = { .suffix = "rdma",
- 					 .is_supported = &is_ib_supported },
---
-2.26.2
+ 	/* Get the entry's MAC address and VLAN id */
+ 	macl = ocelot_read(ocelot, ANA_TABLES_MACLDATA);
+ 	mach = ocelot_read(ocelot, ANA_TABLES_MACHDATA);
+-- 
+2.25.1
 
