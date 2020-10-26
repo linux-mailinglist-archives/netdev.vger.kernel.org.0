@@ -2,134 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 415E029884B
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 09:28:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4D7E2988BD
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 09:46:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1771710AbgJZI2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 04:28:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46030 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1771693AbgJZI2V (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 04:28:21 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 511FA222B9;
-        Mon, 26 Oct 2020 08:28:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603700900;
-        bh=zW23cEGE62zuYxwPApdEgc2f1jEQe4qQoejLAgsMtyI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jv3emd9RUXLW2L75Ao/+Z52h2W1D5DrIhipkpZ53SN2HFozdUHbr1vOaJek6MK2Ma
-         Ggsnmomi6A1aAxslpehqHkorXcBypDoundUjM8kzc6+kQ0IqZ7EFhOybbx4IQjjoSR
-         F0ALHxCGSHv7vcKyQ5qZCSuwgWJTs16ytj/g0fSM=
-Date:   Mon, 26 Oct 2020 10:28:15 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Vlad Buslov <vladbu@nvidia.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Subject: Re: [PATCH net] net: use proper block lock instead of RTNL lock
-Message-ID: <20201026082815.GB4821@unreal>
-References: <20201026060407.583080-1-leon@kernel.org>
- <ygnhd015z9u0.fsf@nvidia.com>
+        id S1772067AbgJZIqd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 04:46:33 -0400
+Received: from mail.persuitflow.com ([89.46.74.132]:33848 "EHLO
+        server1.mail.persuitflow.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1771260AbgJZIqd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 04:46:33 -0400
+X-Greylist: delayed 331 seconds by postgrey-1.27 at vger.kernel.org; Mon, 26 Oct 2020 04:46:32 EDT
+Received: by server1.mail.persuitflow.com (Postfix, from userid 1001)
+        id 783EBA367D; Mon, 26 Oct 2020 08:40:53 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=persuitflow.com;
+        s=mail; t=1603701659;
+        bh=LIG/EV9hZypKEB8e9JkxJFCirHVIBsQt3YrIS4TkXUA=;
+        h=Date:From:To:Subject:From;
+        b=R0LjYDWg4vfdEEW51XKpKOvAYLSqcNinS6WxlHlCILwgJAqvjV/0EyBZF9BMg4YJC
+         uvY2bLd418Sd1nbp8j139YrV58ifY8JkHyqO+vdsraZe/JmsrRAymUmqNL045O14JX
+         9iV3kwxCB4oBwo+XLT9EEIeoSBMSkMXO7y5eJPcabuIaeH3dcrXfCANCAr8FJ7XRhN
+         e9JY4j76KQgyeCFXFY6t2WLkHvaRIHjEs3XGivLg0WYFQA/RBF0G5ZRR+Z8ijrZxw1
+         Fp1fHB60x7Nrb65aDqOilmtaovMKIkIfJCu9jrq1/nA+xIDrypLwWD4LeAG5HMnzZi
+         MJWyNjWtAbMRA==
+Received: by mail.persuitflow.com for <netdev@vger.kernel.org>; Mon, 26 Oct 2020 08:40:48 GMT
+Message-ID: <20201026074501-0.1.10.28zs.0.zcmluhl70k@persuitflow.com>
+Date:   Mon, 26 Oct 2020 08:40:48 GMT
+From:   "Raquel Carvalho" <raquel.carvalho@persuitflow.com>
+To:     <netdev@vger.kernel.org>
+Subject: Desinfetante
+X-Mailer: mail.persuitflow.com
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ygnhd015z9u0.fsf@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 26, 2020 at 10:10:31AM +0200, Vlad Buslov wrote:
-> On Mon 26 Oct 2020 at 08:04, Leon Romanovsky <leon@kernel.org> wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> >
-> > The tcf_block_unbind() expects that the caller will take block->cb_lock
-> > before calling it, however the code took RTNL lock instead. This causes
-> > to the following kernel panic.
-> >
-> >  WARNING: CPU: 1 PID: 13524 at net/sched/cls_api.c:1488 tcf_block_unbind+0x2db/0x420
-> >  Modules linked in: mlx5_ib mlx5_core mlxfw ptp pps_core act_mirred act_tunnel_key cls_flower vxlan ip6_udp_tunnel udp_tunnel dummy sch_ingress openvswitch nsh xt_conntrack xt_MASQUERADE nf_conntrack_netlink nfnetlink xt_addrtype iptable_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 br_netfilter rpcrdma rdma_ucm ib_iser libiscsi scsi_transport_iscsi ib_umad ib_ipoib rdma_cm iw_cm ib_cm ib_uverbs ib_core overlay [last unloaded: mlxfw]
-> >  CPU: 1 PID: 13524 Comm: test-ecmp-add-v Tainted: G        W         5.9.0+ #1
-> >  Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
-> >  RIP: 0010:tcf_block_unbind+0x2db/0x420
-> >  Code: ff 48 83 c4 40 5b 5d 41 5c 41 5d 41 5e 41 5f c3 49 8d bc 24 30 01 00 00 be ff ff ff ff e8 7d 7f 70 00 85 c0 0f 85 7b fd ff ff <0f> 0b e9 74 fd ff ff 48 c7 c7 dc 6a 24 84 e8 02 ec fe fe e9 55 fd
-> >  RSP: 0018:ffff888117d17968 EFLAGS: 00010246
-> >  RAX: 0000000000000000 RBX: ffff88812f713c00 RCX: 1ffffffff0848d5b
-> >  RDX: 0000000000000001 RSI: ffff88814fbc8130 RDI: ffff888107f2b878
-> >  RBP: 1ffff11022fa2f3f R08: 0000000000000000 R09: ffffffff84115a87
-> >  R10: fffffbfff0822b50 R11: ffff888107f2b898 R12: ffff88814fbc8000
-> >  R13: ffff88812f713c10 R14: ffff888117d17a38 R15: ffff88814fbc80c0
-> >  FS:  00007f6593d36740(0000) GS:ffff8882a4f00000(0000) knlGS:0000000000000000
-> >  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> >  CR2: 00005607a00758f8 CR3: 0000000131aea006 CR4: 0000000000170ea0
-> >  Call Trace:
-> >   tc_block_indr_cleanup+0x3e0/0x5a0
-> >   ? tcf_block_unbind+0x420/0x420
-> >   ? __mutex_unlock_slowpath+0xe7/0x610
-> >   flow_indr_dev_unregister+0x5e2/0x930
-> >   ? mlx5e_restore_tunnel+0xdf0/0xdf0 [mlx5_core]
-> >   ? mlx5e_restore_tunnel+0xdf0/0xdf0 [mlx5_core]
-> >   ? flow_indr_block_cb_alloc+0x3c0/0x3c0
-> >   ? mlx5_db_free+0x37c/0x4b0 [mlx5_core]
-> >   mlx5e_cleanup_rep_tx+0x8b/0xc0 [mlx5_core]
-> >   mlx5e_detach_netdev+0xe5/0x120 [mlx5_core]
-> >   mlx5e_vport_rep_unload+0x155/0x260 [mlx5_core]
-> >   esw_offloads_disable+0x227/0x2b0 [mlx5_core]
-> >   mlx5_eswitch_disable_locked.cold+0x38e/0x699 [mlx5_core]
-> >   mlx5_eswitch_disable+0x94/0xf0 [mlx5_core]
-> >   mlx5_device_disable_sriov+0x183/0x1f0 [mlx5_core]
-> >   mlx5_core_sriov_configure+0xfd/0x230 [mlx5_core]
-> >   sriov_numvfs_store+0x261/0x2f0
-> >   ? sriov_drivers_autoprobe_store+0x110/0x110
-> >   ? sysfs_file_ops+0x170/0x170
-> >   ? sysfs_file_ops+0x117/0x170
-> >   ? sysfs_file_ops+0x170/0x170
-> >   kernfs_fop_write+0x1ff/0x3f0
-> >   ? rcu_read_lock_any_held+0x6e/0x90
-> >   vfs_write+0x1f3/0x620
-> >   ksys_write+0xf9/0x1d0
-> >   ? __x64_sys_read+0xb0/0xb0
-> >   ? lockdep_hardirqs_on_prepare+0x273/0x3f0
-> >   ? syscall_enter_from_user_mode+0x1d/0x50
-> >   do_syscall_64+0x2d/0x40
-> >   entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> >
-> > <...>
-> >
-> >  ---[ end trace bfdd028ada702879 ]---
-> >
-> > Fixes: 0fdcf78d5973 ("net: use flow_indr_dev_setup_offload()")
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >  net/sched/cls_api.c | 4 +---
-> >  1 file changed, 1 insertion(+), 3 deletions(-)
-> >
-> > diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-> > index faeabff283a2..fca147386ad2 100644
-> > --- a/net/sched/cls_api.c
-> > +++ b/net/sched/cls_api.c
-> > @@ -655,10 +655,8 @@ static void tc_block_indr_cleanup(struct flow_block_cb *block_cb)
-> >  	down_write(&block->cb_lock);
-> >  	list_del(&block_cb->driver_list);
-> >  	list_move(&block_cb->list, &bo.cb_list);
-> > -	up_write(&block->cb_lock);
-> > -	rtnl_lock();
-> >  	tcf_block_unbind(block, &bo);
-> > -	rtnl_unlock();
-> > +	up_write(&block->cb_lock);
->
-> Hi Leon,
->
-> This fix probably breaks all other drivers besides mlx5 that require
-> rtnl lock on TC filter update path (called from tp->ops->reoffload()).
-> I suggest both rtnl lock and cb_lock are required here.
+Bom Dia,
 
-You are not taking rtnl lock in other bind/unbind paths, why this is different?
-Are you taking rtnl lock in layers above?
+A demanda por desinfetantes eficazes que permitam a elimina=C3=A7=C3=A3o =
+de microrganismos prejudiciais =C3=A9 continuamente alta em todo o mundo.
 
-Thanks
+Expandir a oferta com uma gama profissional de produtos com atividade vir=
+icida e bactericida permite aumentar a posi=C3=A7=C3=A3o competitiva da e=
+mpresa e construir novas redes de vendas.
+
+Diversificamos a linha de atacadistas e distribuidores com sabonetes, l=C3=
+=ADquidos e g=C3=A9is para desinfec=C3=A7=C3=A3o das m=C3=A3os e outros p=
+rodutos de limpeza, entre eles: g=C3=A9is de banho, shampoos e condiciona=
+dores de cabelo, al=C3=A9m de detergentes concentrados.
+
+Nossos parceiros de neg=C3=B3cios est=C3=A3o aumentando sua participa=C3=A7=
+=C3=A3o no mercado externo devido =C3=A0 crescente satisfa=C3=A7=C3=A3o d=
+o cliente e oferta diversificada.
+
+O potencial de crescimento de nossas solu=C3=A7=C3=B5es resulta de pre=C3=
+=A7os acess=C3=ADveis, alto desempenho e versatilidade para se adaptar a =
+todos os tipos de pele.
+
+A extens=C3=A3o da gama de produtos proposta =C3=A9 um campo interessante=
+ para a coopera=C3=A7=C3=A3o?
+
+
+Cumprimentos,
+Raquel Carvalho
+Conselheiro do Cliente
