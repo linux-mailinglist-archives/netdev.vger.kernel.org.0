@@ -2,144 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFFDE298624
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 05:18:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3583298626
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 05:18:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1420966AbgJZESh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 00:18:37 -0400
-Received: from mail-pj1-f43.google.com ([209.85.216.43]:33655 "EHLO
-        mail-pj1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1420823AbgJZESg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 00:18:36 -0400
-Received: by mail-pj1-f43.google.com with SMTP id k8so1189565pjd.0
-        for <netdev@vger.kernel.org>; Sun, 25 Oct 2020 21:18:35 -0700 (PDT)
+        id S1421045AbgJZESk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 00:18:40 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:33789 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1420945AbgJZESh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 00:18:37 -0400
+Received: by mail-pf1-f193.google.com with SMTP id j18so5503933pfa.0
+        for <netdev@vger.kernel.org>; Sun, 25 Oct 2020 21:18:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=AUW8DaQudLFeTlc624ikva6Dlpr0wexoXiqMWFoNacM=;
-        b=RrXZpceOCQX7hJqRQM0MsO22THzjHm1Kj4HrOwfWxy8m3alXblO/ntUXSPU7jDhpeG
-         XhVIN7D6GrdCqdnxhhbgnfeR5UojvKq14drjbNM2O3IatNLtt1yO6xBz/Kc2DxLlrxjN
-         RMSXfvCwFn+yCGtFda1AygIYxpVclpcn7uyKU=
+        bh=vC3xozK2wZN6iUGIbKodyxCftG+54UZ6I8VNlV5QpNE=;
+        b=OTt1gOkNUsoKyD0ZfZZHAvJ/p8nPrK5Nqg9yG9Mg/Bvp2tT7N9oxVrXfi2CAD3x0A4
+         bpqCH5RdviQyO/PRZqmbeVENOOERtki2gfoeXFMF0wwuGTKLkpJljrFGZwAV817YH2Wy
+         WmfttLYTwWwApFvjDR6hokwnJpvJ5km/EKleg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=AUW8DaQudLFeTlc624ikva6Dlpr0wexoXiqMWFoNacM=;
-        b=aoO36QoB4bFn3qtHiZiJjpnUEastjF/C3XDxhwAehn0+eyHeIEESQz3JXQXv9OYCdc
-         PknWszcySxTj8Z6bbW6k1VZA57/SbefDsop0wp8e/KQsDsrbiHUdvUf527P/qbW3YGp2
-         aLdy6ASweYIR3Wd6fFZk20EBHuINOAxBiNjKWG/dKQh0175Gk42yKI/h+TL9bCsc6tJj
-         4/bxndpyINoK0KBUcoYxVHtLQzYvU8TDxgUtKqnikCk381fTC3l+CW1zc9AFYbBr/A08
-         3AtCJyYOUgssSq78faIcvTkhxLPqPThwNJMONZeTqebDxac3A5+atNw5lWdvYPHD6Kbz
-         Dn1A==
-X-Gm-Message-State: AOAM532jTN/N0utAsLU8JBhKPKaUwB1ZbtVtOqjXZY1FZDWmWX0y1H/s
-        7P7EOwWRER91cGwnOLVX5n2/oA==
-X-Google-Smtp-Source: ABdhPJzjo48rS0+EgiscZ33qCnfhkepuKuu67jFaY8eN2beAbhFDh5Ds4gUR19sXpn8CO1nk+cLTaA==
-X-Received: by 2002:a17:90a:348e:: with SMTP id p14mr15276150pjb.75.1603685914768;
-        Sun, 25 Oct 2020 21:18:34 -0700 (PDT)
+        bh=vC3xozK2wZN6iUGIbKodyxCftG+54UZ6I8VNlV5QpNE=;
+        b=g6w0JRR/qfkUsqL66DePBsCYNnkRqd/cpx1Y16Jvk9uoI8LXoQEVonrktFtwkFJU3c
+         htMhPSKn1bHey91ZpzFlbKOt0DBj4fLcNoVxnln49Kby2By4lVMW/Wjzlr5D/Euir/jc
+         XfWlSdz7+yhZs1Pa/fVdx8cHBeaQwVUoPRhMU7J4jRB6zs4xzEZ2MbsKvd7xY55lLzug
+         B29/e2Pewg2mrx87hjQiiB7yermpbTr0vdYJE5g+saa23SwUOF3FpxIphxqQwoJ6+WEa
+         TkRrdmDGSxoBsp3s67FiSrG8doZIgKDuiZ2FJrKkYc4nnC+LvC0dzau8v2IHLnqqEU8M
+         wJyA==
+X-Gm-Message-State: AOAM532sMAFGfRbPNIdwiDRt3TlzN2K/9AOVP6+P7b1S9FDxUzLvVHvd
+        cLk9C5i2gkl0mh/1Onc77mWftyFBndaDeg==
+X-Google-Smtp-Source: ABdhPJyKVoI+AEgt8ExLABJ0ofythjszofAn1ICSxSQD2Iv7ggsSOQhpvGhWQyCWrCoqn/4o/+ZYVg==
+X-Received: by 2002:a63:9508:: with SMTP id p8mr14376742pgd.189.1603685916043;
+        Sun, 25 Oct 2020 21:18:36 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 10sm11505835pjt.50.2020.10.25.21.18.33
+        by smtp.gmail.com with ESMTPSA id 10sm11505835pjt.50.2020.10.25.21.18.34
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 25 Oct 2020 21:18:33 -0700 (PDT)
+        Sun, 25 Oct 2020 21:18:35 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     kuba@kernel.org
-Cc:     netdev@vger.kernel.org, gospo@broadcom.com,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH net 3/5] bnxt_en: Re-write PCI BARs after PCI fatal error.
-Date:   Mon, 26 Oct 2020 00:18:19 -0400
-Message-Id: <1603685901-17917-4-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, gospo@broadcom.com
+Subject: [PATCH net 4/5] bnxt_en: Check abort error state in bnxt_open_nic().
+Date:   Mon, 26 Oct 2020 00:18:20 -0400
+Message-Id: <1603685901-17917-5-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1603685901-17917-1-git-send-email-michael.chan@broadcom.com>
 References: <1603685901-17917-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000004ec51505b28b39d2"
+        boundary="000000000000643e6105b28b39d7"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000004ec51505b28b39d2
+--000000000000643e6105b28b39d7
 
-From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+bnxt_open_nic() is called during configuration changes that require
+the NIC to be closed and then opened.  This call is protected by
+rtnl_lock.  Firmware reset can be happening at the same time.  Only
+critical portions of the entire firmware reset sequence are protected
+by the rtnl_lock.  It is possible that bnxt_open_nic() can be called
+when the firmware reset sequence is aborting.  In that case,
+bnxt_open_nic() needs to check if the ABORT_ERR flag is set and
+abort if it is.  The configuration change that resulted in the
+bnxt_open_nic() call will fail but the NIC will be brought to a
+consistent IF_DOWN state.
 
-When a PCIe fatal error occurs, the internal latched BAR addresses
-in the chip get reset even though the BAR register values in config
-space are retained.
+Without this patch, if bnxt_open_nic() were to continue in this error
+state, it may crash like this:
 
-pci_restore_state() will not rewrite the BAR addresses if the
-BAR address values are valid, causing the chip's internal BAR addresses
-to stay invalid.  So we need to zero the BAR registers during PCIe fatal
-error to force pci_restore_state() to restore the BAR addresses.  These
-write cycles to the BAR registers will cause the proper BAR addresses to
-latch internally.
+[ 1648.659736] BUG: unable to handle kernel NULL pointer dereference at           (null)
+[ 1648.659768] IP: [<ffffffffc01e9b3a>] bnxt_alloc_mem+0x50a/0x1140 [bnxt_en]
+[ 1648.659796] PGD 101e1b3067 PUD 101e1b2067 PMD 0
+[ 1648.659813] Oops: 0000 [#1] SMP
+[ 1648.659825] Modules linked in: xt_CHECKSUM iptable_mangle ipt_MASQUERADE nf_nat_masquerade_ipv4 iptable_nat nf_nat_ipv4 nf_nat nf_conntrack_ipv4 nf_defrag_ipv4 xt_conntrack nf_conntrack ipt_REJECT nf_reject_ipv4 tun bridge stp llc ebtable_filter ebtables ip6table_filter ip6_tables iptable_filter sunrpc dell_smbios dell_wmi_descriptor dcdbas amd64_edac_mod edac_mce_amd kvm_amd kvm irqbypass crc32_pclmul ghash_clmulni_intel aesni_intel lrw gf128mul glue_helper ablk_helper vfat cryptd fat pcspkr ipmi_ssif sg k10temp i2c_piix4 wmi ipmi_si ipmi_devintf ipmi_msghandler tpm_crb acpi_power_meter sch_fq_codel ip_tables xfs libcrc32c sd_mod crc_t10dif crct10dif_generic mgag200 i2c_algo_bit drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_fops ttm ahci drm libahci megaraid_sas crct10dif_pclmul crct10dif_common
+[ 1648.660063]  tg3 libata crc32c_intel bnxt_en(OE) drm_panel_orientation_quirks devlink ptp pps_core dm_mirror dm_region_hash dm_log dm_mod fuse
+[ 1648.660105] CPU: 13 PID: 3867 Comm: ethtool Kdump: loaded Tainted: G           OE  ------------   3.10.0-1152.el7.x86_64 #1
+[ 1648.660911] Hardware name: Dell Inc. PowerEdge R7515/0R4CNN, BIOS 1.2.14 01/28/2020
+[ 1648.661662] task: ffff94e64cbc9080 ti: ffff94f55df1c000 task.ti: ffff94f55df1c000
+[ 1648.662409] RIP: 0010:[<ffffffffc01e9b3a>]  [<ffffffffc01e9b3a>] bnxt_alloc_mem+0x50a/0x1140 [bnxt_en]
+[ 1648.663171] RSP: 0018:ffff94f55df1fba8  EFLAGS: 00010202
+[ 1648.663927] RAX: 0000000000000000 RBX: ffff94e6827e0000 RCX: 0000000000000000
+[ 1648.664684] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff94e6827e08c0
+[ 1648.665433] RBP: ffff94f55df1fc20 R08: 00000000000001ff R09: 0000000000000008
+[ 1648.666184] R10: 0000000000000d53 R11: ffff94f55df1f7ce R12: ffff94e6827e08c0
+[ 1648.666940] R13: ffff94e6827e08c0 R14: ffff94e6827e08c0 R15: ffffffffb9115e40
+[ 1648.667695] FS:  00007f8aadba5740(0000) GS:ffff94f57eb40000(0000) knlGS:0000000000000000
+[ 1648.668447] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[ 1648.669202] CR2: 0000000000000000 CR3: 0000001022772000 CR4: 0000000000340fe0
+[ 1648.669966] Call Trace:
+[ 1648.670730]  [<ffffffffc01f1d5d>] ? bnxt_need_reserve_rings+0x9d/0x170 [bnxt_en]
+[ 1648.671496]  [<ffffffffc01fa7ea>] __bnxt_open_nic+0x8a/0x9a0 [bnxt_en]
+[ 1648.672263]  [<ffffffffc01f7479>] ? bnxt_close_nic+0x59/0x1b0 [bnxt_en]
+[ 1648.673031]  [<ffffffffc01fb11b>] bnxt_open_nic+0x1b/0x50 [bnxt_en]
+[ 1648.673793]  [<ffffffffc020037c>] bnxt_set_ringparam+0x6c/0xa0 [bnxt_en]
+[ 1648.674550]  [<ffffffffb8a5f564>] dev_ethtool+0x1334/0x21a0
+[ 1648.675306]  [<ffffffffb8a719ff>] dev_ioctl+0x1ef/0x5f0
+[ 1648.676061]  [<ffffffffb8a324bd>] sock_do_ioctl+0x4d/0x60
+[ 1648.676810]  [<ffffffffb8a326bb>] sock_ioctl+0x1eb/0x2d0
+[ 1648.677548]  [<ffffffffb8663230>] do_vfs_ioctl+0x3a0/0x5b0
+[ 1648.678282]  [<ffffffffb8b8e678>] ? __do_page_fault+0x238/0x500
+[ 1648.679016]  [<ffffffffb86634e1>] SyS_ioctl+0xa1/0xc0
+[ 1648.679745]  [<ffffffffb8b93f92>] system_call_fastpath+0x25/0x2a
+[ 1648.680461] Code: 9e 60 01 00 00 0f 1f 40 00 45 8b 8e 48 01 00 00 31 c9 45 85 c9 0f 8e 73 01 00 00 66 0f 1f 44 00 00 49 8b 86 a8 00 00 00 48 63 d1 <48> 8b 14 d0 48 85 d2 0f 84 46 01 00 00 41 8b 86 44 01 00 00 c7
+[ 1648.681986] RIP  [<ffffffffc01e9b3a>] bnxt_alloc_mem+0x50a/0x1140 [bnxt_en]
+[ 1648.682724]  RSP <ffff94f55df1fba8>
+[ 1648.683451] CR2: 0000000000000000
 
-Fixes: 6316ea6db93d ("bnxt_en: Enable AER support.")
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Fixes: ec5d31e3c15d ("bnxt_en: Handle firmware reset status during IF_UP.")
+Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 19 ++++++++++++++++++-
- drivers/net/ethernet/broadcom/bnxt/bnxt.h |  1 +
- 2 files changed, 19 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 7be232018015..8012386b4a0f 100644
+index 8012386b4a0f..0165f70dba74 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -12852,6 +12852,9 @@ static pci_ers_result_t bnxt_io_error_detected(struct pci_dev *pdev,
- 		return PCI_ERS_RESULT_DISCONNECT;
- 	}
- 
-+	if (state == pci_channel_io_frozen)
-+		set_bit(BNXT_STATE_PCI_CHANNEL_IO_FROZEN, &bp->state);
-+
- 	if (netif_running(netdev))
- 		bnxt_close(netdev);
- 
-@@ -12878,7 +12881,7 @@ static pci_ers_result_t bnxt_io_slot_reset(struct pci_dev *pdev)
+@@ -9779,7 +9779,10 @@ int bnxt_open_nic(struct bnxt *bp, bool irq_re_init, bool link_re_init)
  {
- 	struct net_device *netdev = pci_get_drvdata(pdev);
- 	struct bnxt *bp = netdev_priv(netdev);
--	int err = 0;
-+	int err = 0, off;
- 	pci_ers_result_t result = PCI_ERS_RESULT_DISCONNECT;
+ 	int rc = 0;
  
- 	netdev_info(bp->dev, "PCI Slot Reset\n");
-@@ -12890,6 +12893,20 @@ static pci_ers_result_t bnxt_io_slot_reset(struct pci_dev *pdev)
- 			"Cannot re-enable PCI device after reset.\n");
- 	} else {
- 		pci_set_master(pdev);
-+		/* Upon fatal error, our device internal logic that latches to
-+		 * BAR value is getting reset and will restore only upon
-+		 * rewritting the BARs.
-+		 *
-+		 * As pci_restore_state() does not re-write the BARs if the
-+		 * value is same as saved value earlier, driver needs to
-+		 * write the BARs to 0 to force restore, in case of fatal error.
-+		 */
-+		if (test_and_clear_bit(BNXT_STATE_PCI_CHANNEL_IO_FROZEN,
-+				       &bp->state)) {
-+			for (off = PCI_BASE_ADDRESS_0;
-+			     off <= PCI_BASE_ADDRESS_5; off += 4)
-+				pci_write_config_dword(bp->pdev, off, 0);
-+		}
- 		pci_restore_state(pdev);
- 		pci_save_state(pdev);
- 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 21ef1c21f602..47b3c3127879 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1781,6 +1781,7 @@ struct bnxt {
- #define BNXT_STATE_ABORT_ERR	5
- #define BNXT_STATE_FW_FATAL_COND	6
- #define BNXT_STATE_DRV_REGISTERED	7
-+#define BNXT_STATE_PCI_CHANNEL_IO_FROZEN	8
- 
- #define BNXT_NO_FW_ACCESS(bp)					\
- 	(test_bit(BNXT_STATE_FW_FATAL_COND, &(bp)->state) ||	\
+-	rc = __bnxt_open_nic(bp, irq_re_init, link_re_init);
++	if (test_bit(BNXT_STATE_ABORT_ERR, &bp->state))
++		rc = -EIO;
++	if (!rc)
++		rc = __bnxt_open_nic(bp, irq_re_init, link_re_init);
+ 	if (rc) {
+ 		netdev_err(bp->dev, "nic open fail (rc: %x)\n", rc);
+ 		dev_close(bp->dev);
 -- 
 2.18.1
 
 
---0000000000004ec51505b28b39d2
+--000000000000643e6105b28b39d7
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -209,14 +207,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgBcQtj28Z7k0u
-v4FEDC04ybCIeqLoMblXURPSMJRfZpYwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAxMDI2MDQxODM1WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgQDAZ8k4ev+cY
+We3pCBReiIFNQ/yWAP2boXqRUdwgpAMwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAxMDI2MDQxODM2WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAFWKe8nVloKTlZq8SYq3Krqe1OL0Uw28
-Xff3/Pbwyl8eIdDCdsoksy7M2sfU3GSAznzzX7Ai8Xb9Sv0g218AdAV1sVuNVKRnp2hTsOM6dcZL
-G/2Ib6XjwvQ3P+DWCp3gHYnnhD3iTZwXilskjbhF+lpibEXrOhjGh6jeNN9j5Am8SCeKc3vupFcK
-uG6227Wh6Q35Dy7FF1hMWAq/G0TRFw2qb8U6XF+Bmj4AeyGuW6xye040ViKzpl+ARFSc2srn7CW/
-dYmz26cxokdkSE5CydC/1L1LA5YNBuiKJwEJgCPGIWfVxOdji5mNcPRu56yb4U2eICuAU4JBu/g0
-BSVfG1U=
---0000000000004ec51505b28b39d2--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAGW2zPUex8F7zf7jyv/qKSEcTFuac8Vc
+2MBf4dm+zCZqM5FDAoJ8QYwnDR72Vf4YBtCUysUW7MPbrSLZmPv6/M/L0ndECRYZvmEn/gB/1d3l
+Jzk+PlkbEL7+kzfxtp+jLLPu3jd+pmhG3xml+jJYr4KAyqxx9KgNejbSyTIl5G5MoGlZwUCvAmFD
+bBGFkfsSBedCS6N5chrgwfGuVK90m/cVzLUi7cCsIXjH2W/99NVNr61yBXiX6BJYgaazV03HHnNy
+Xlb+tgSICEZyTGwNNSSDe5caruTKwUCNoevXn/IAb8UubisokKO7eZ0MdABh+xlejUxFe0Jwk+Ge
+KAk6C14=
+--000000000000643e6105b28b39d7--
