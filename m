@@ -2,122 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4036D2999A3
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 23:26:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B43432999B8
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 23:33:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394354AbgJZW00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 18:26:26 -0400
-Received: from mail-yb1-f196.google.com ([209.85.219.196]:42625 "EHLO
-        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2394247AbgJZW0X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 18:26:23 -0400
-Received: by mail-yb1-f196.google.com with SMTP id a12so9017609ybg.9;
-        Mon, 26 Oct 2020 15:26:23 -0700 (PDT)
+        id S2394532AbgJZWdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 18:33:00 -0400
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:35555 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2394179AbgJZWdA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 18:33:00 -0400
+Received: by mail-yb1-f194.google.com with SMTP id m188so4036091ybf.2;
+        Mon, 26 Oct 2020 15:32:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=VzKLIOn5ZNMh+ZqIZ5v07+6ceTHcQcV1XTB2DtB+0Ts=;
-        b=nQDbuLLq1Djc0WyhCdBgEHdTisZtMaVebC8GnV+hrMP6JI4XeeJVig9a6Zfjsg53yx
-         MevxN8yNaidpf2Uekxj0qq4eRVuEPdaZlWpblKVTG8B5TEl/W+iYGxXzN1IqQCXMghGo
-         nOW16tmbpqcTwkE22hJLZDw6kiGht34Pj8pM7dsEKaD/J+3WSBs5IlCrBBeupiSxs2cG
-         rGR8PXVFG0ofiUYcTp9GfxlUj23WMDhnHAY9hGUOfZSCOLrMHhkPsejM4LK0yUuhc15E
-         rEFQNNJMh9c0QgJFFQxz8eH+4nqmUvpL4JBQTxby8Ha2jFCHQ5JZ00iSXCyrWLIO1O/Q
-         BC5g==
+         :cc;
+        bh=tYGKgBOvXd0V/keZVVJoez9jaPUFednPhovrcJOgA2g=;
+        b=kAauVYU8XtFtg2dOaqnJQwkbqB52ez/V5BY4VECXf1bDCA3xkrgRxmc8mhHkcL7Sh2
+         AnPLxWk9P9V1Lreux98xz77OgW9JboFSUIItFrvNvleQT0UzZqghu4150Ors4lsor85u
+         gRoREfMaYdYZhjfAARgesMNdkJCswegVeHEWUIfeRxBQ5gQle3JJN5ORqwnMaSZuqUbe
+         FALLq7z6Uf9W7P2t1zkJcuOiBjPeJbdCNQM82B7viQLfowGVyApJqeWkEBNtry0VWiCp
+         LtwOeOXqtIen5DMkS5jbnd6DPA+/SQfqUxiLg9kUyrnEEscb7eIv0G0MOnvPkiMCdVT0
+         RzUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=VzKLIOn5ZNMh+ZqIZ5v07+6ceTHcQcV1XTB2DtB+0Ts=;
-        b=roqICu8lh9dXPkhigrt1oHifv/o4fZCJK5VH1VQS2jBdr1dVN6UoAyjTT4EdeRjCoo
-         Jex3+6R65ks+g9McYCFCh1Pj1Oa98SHDNd4xauapSkRdYkEfD1rk3Ak+0J1ZupsQOXW8
-         ylFmDH36Xu09Fouw5yyT0smJeaxSAauc9lRr8VrWaueW/XOBURf5IxeVsIPf9jJX+H78
-         Lyh+gOsUV0uBNFG8OV1vAhthg11vkGj4YroxbLwlyTyqcWFCmzb68GZdd0/4YvMrXf+w
-         aLxutr580AMmDw2LZ2pQFeU9Ul+Za8jdFnElKOJ8HBcMafS0QOC9XFgTFOnQ6IRsgB+e
-         jUvg==
-X-Gm-Message-State: AOAM530xvdJ+SWIpdC40ByvmYKRKXmIpSri+J/X0LZ185LMdxXctDZC5
-        GhHmux2Rbn1nBh6PD2sBQHao/4pKJ4i80PoU2HA=
-X-Google-Smtp-Source: ABdhPJzRLYCjS2G1lOpTFXy7qNFv9ulEegJsGvKEB3KqUMBxYEQdJ5dyFqKL2xuWt6VfyFFZti/VFYl+McD15eFMlAE=
-X-Received: by 2002:a25:cb10:: with SMTP id b16mr23857239ybg.459.1603751182707;
- Mon, 26 Oct 2020 15:26:22 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=tYGKgBOvXd0V/keZVVJoez9jaPUFednPhovrcJOgA2g=;
+        b=O4YIv+7NEXQm19X/WYq0dMHS7qDu9RmEugG4/o2EAmxRWHNnlTQ9sLsiufFnBOfzwK
+         BoHa00e13JFh5fYF9mzvdYmjJPDk9si3OGZWzC92utChH3WNTv7UzoMjPKCuOmgot+yQ
+         bAZv1svxNNr8F8PxlLGuMuVOIkDwSHV1Hzn8PYBwKa9Vvb2SiwuvD4xx1dh+Uduks5wv
+         qSlhJTtGGvscj8v/09hjMnYzoJXFiAsj8XXAm+VFt+RmnrxP7B5fHNfa3z2d+n31yy5Q
+         xICSfmSVZ5hGuUKQ310a5ZhoTIZq83jEXTHOg3vzgyVTv/IEtYYNrG5QcBknQEy5Uqxa
+         7MPw==
+X-Gm-Message-State: AOAM532OJ+4sTGKHUXHMltBAOQkpO2Zn6B1IyXA0H9g5wbKrpRL+cgKU
+        uIkM8iPxcebuLnNQdHGOPP1nZcMgZrhCiJY/WcA=
+X-Google-Smtp-Source: ABdhPJzJ8WKki2YfYpJmDD9XUL4ndI92W9goc0lwvGF2XEbq+khib6ri7e9trS95QelSwRqFNcMe0EnnNUduMZUawrk=
+X-Received: by 2002:a25:bdc7:: with SMTP id g7mr27858824ybk.260.1603751578973;
+ Mon, 26 Oct 2020 15:32:58 -0700 (PDT)
 MIME-Version: 1.0
-References: <20201026210332.3885166-1-arnd@kernel.org>
-In-Reply-To: <20201026210332.3885166-1-arnd@kernel.org>
+References: <20201026210355.3885283-1-arnd@kernel.org>
+In-Reply-To: <20201026210355.3885283-1-arnd@kernel.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 26 Oct 2020 15:26:11 -0700
-Message-ID: <CAEf4BzaKSzEbPStm8EXk4RH417jHieSF3LCazQPXZ6qGskqB6Q@mail.gmail.com>
-Subject: Re: [PATCH] bpf: suppress -Wcast-function-type warning
+Date:   Mon, 26 Oct 2020 15:32:48 -0700
+Message-ID: <CAEf4BzYbH_x3s0Z4YGv4spOQ5oQAYbYNBf+3Fy5eopCK8=nuNw@mail.gmail.com>
+Subject: Re: [PATCH] bpf: fix incorrect initialization of bpf_ctx_convert_map
 To:     Arnd Bergmann <arnd@kernel.org>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
         Arnd Bergmann <arnd@arndb.de>, Martin KaFai Lau <kafai@fb.com>,
+        Marek Majkowski <marek@cloudflare.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andrii@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        David Miller <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
+        KP Singh <kpsingh@chromium.org>, Jiri Olsa <jolsa@kernel.org>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Hao Luo <haoluo@google.com>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 26, 2020 at 2:03 PM Arnd Bergmann <arnd@kernel.org> wrote:
+On Mon, Oct 26, 2020 at 2:04 PM Arnd Bergmann <arnd@kernel.org> wrote:
 >
 > From: Arnd Bergmann <arnd@arndb.de>
 >
-> Building with -Wextra shows lots of warnings in the bpf
-> code such as
+> gcc -Wextra points out that a field may get overridden in some
+> configurations such as x86 allmodconfig, when the next index after the one
+> that has been assigned last already had a value, in this case for index
+> BPF_PROG_TYPE_SK_LOOKUP, which comes after BPF_PROG_TYPE_LSM in the list:
 >
-> kernel/bpf/verifier.c: In function =E2=80=98jit_subprogs=E2=80=99:
-> include/linux/filter.h:345:4: warning: cast between incompatible function=
- types from =E2=80=98unsigned int (*)(const void *, const struct bpf_insn *=
-)=E2=80=99 to =E2=80=98u64 (*)(u64,  u64,  u64,  u64,  u64)=E2=80=99 {aka =
-=E2=80=98long long unsigned int (*)(long long unsigned int,  long long unsi=
-gned int,  long long unsigned int,  long long unsigned int,  long long unsi=
-gned int)=E2=80=99} [-Wcast-function-type]
->   345 |   ((u64 (*)(u64, u64, u64, u64, u64))(x))
->       |    ^
-> kernel/bpf/verifier.c:10706:16: note: in expansion of macro =E2=80=98BPF_=
-CAST_CALL=E2=80=99
-> 10706 |    insn->imm =3D BPF_CAST_CALL(func[subprog]->bpf_func) -
->       |                ^~~~~~~~~~~~~
+> kernel/bpf/btf.c:4225:2: warning: initialized field overwritten [-Woverride-init]
+>  4225 |  0, /* avoid empty array */
+>       |  ^
+> kernel/bpf/btf.c:4225:2: note: (near initialization for 'bpf_ctx_convert_map[30]')
 >
-> This appears to be intentional, so change the cast in a way that
-> suppresses the warning.
+> Move the zero-initializer first instead. This avoids the warning since
+> nothing else uses index 0, and the last element does not have to be zero.
+
+Wouldn't it be cleaner and more explicit to add __MAX_BPF_PROG_TYPE to
+enum bpf_prog_type in include/uapi/linux/bpf.h, similarly to how we do
+it with enum bpf_attach_type? Then just specify the size of the array
+here explicitly? Unless we are trying to save a few bytes for more
+minimal configurations where some BPF program types are not used (but
+still defined in an enum)?
+
+
 >
+> Fixes: e9ddbb7707ff ("bpf: Introduce SK_LOOKUP program type with a dedicated attach point")
+> Fixes: 4c80c7bc583a ("bpf: Fix build in minimal configurations, again")
 > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 > ---
-
-LGTM.
-
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
-
->  include/linux/filter.h | 2 +-
+>  kernel/bpf/btf.c | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/include/linux/filter.h b/include/linux/filter.h
-> index 1b62397bd124..20ba04583eaa 100644
-> --- a/include/linux/filter.h
-> +++ b/include/linux/filter.h
-> @@ -342,7 +342,7 @@ static inline bool insn_is_zext(const struct bpf_insn=
- *insn)
->  /* Function call */
->
->  #define BPF_CAST_CALL(x)                                       \
-> -               ((u64 (*)(u64, u64, u64, u64, u64))(x))
-> +               ((u64 (*)(u64, u64, u64, u64, u64))(uintptr_t)(x))
->
->  #define BPF_EMIT_CALL(FUNC)                                    \
->         ((struct bpf_insn) {                                    \
+> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> index ed7d02e8bc93..2a4a4aeeaac1 100644
+> --- a/kernel/bpf/btf.c
+> +++ b/kernel/bpf/btf.c
+> @@ -4218,11 +4218,11 @@ enum {
+>         __ctx_convert_unused, /* to avoid empty enum in extreme .config */
+>  };
+>  static u8 bpf_ctx_convert_map[] = {
+> +       [0] = 0, /* avoid empty array */
+>  #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type) \
+>         [_id] = __ctx_convert##_id,
+>  #include <linux/bpf_types.h>
+>  #undef BPF_PROG_TYPE
+> -       0, /* avoid empty array */
+>  };
+>  #undef BPF_MAP_TYPE
+>  #undef BPF_LINK_TYPE
 > --
 > 2.27.0
 >
