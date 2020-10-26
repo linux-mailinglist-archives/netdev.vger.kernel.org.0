@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89332299FC8
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 01:25:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE26E299FCB
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 01:25:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2410225AbgJZXxw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 19:53:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58712 "EHLO mail.kernel.org"
+        id S2441556AbgJ0AY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 20:24:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58834 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2410195AbgJZXxt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 19:53:49 -0400
+        id S2410224AbgJZXxw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 19:53:52 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4A99020770;
-        Mon, 26 Oct 2020 23:53:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DB94C21655;
+        Mon, 26 Oct 2020 23:53:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603756429;
-        bh=hGuou7LzEiV7Chw+A9QUZwOYpycAQZ55OtpYzWggFHw=;
+        s=default; t=1603756431;
+        bh=4Z1v4TALYvmiM+Jr6MSJrRkQL695zKhyYfCzHBl4R6U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PMT4dVheKbnI9frC/SVg4fSouj1tlUfh2CAvORxO1+1XOXBwFujx8l6WrkvYyEhu/
-         dmG4LJTrHTHJqWXdP6G4MNFm7pyO9HCsV3EiiKHlrgw3YndWHGel0IHgTZH+neTMvQ
-         u8FhZwiqJpTvVRRl/CEMuuT1CMqkrvNZcYGHp96Q=
+        b=mxnUjmOR7DQDLbHI/flc07VTInWg/o2qXQmbfWGG1VDTQ4sJFQFHjEtrS5XWG1YdC
+         9Ycu0b3akWaD2R6mJRmOR+kmoCpgF7mS2z/Ki/13CDfs11cEYGBVvMj1+8VoCGeFLz
+         wfWWChRv+tmwzXSxmeHd7IjxDrN8HgMbsdQruwuA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Carl Huang <cjhuang@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.8 084/132] ath11k: fix warning caused by lockdep_assert_held
-Date:   Mon, 26 Oct 2020 19:51:16 -0400
-Message-Id: <20201026235205.1023962-84-sashal@kernel.org>
+Cc:     Xie He <xie.he.0141@gmail.com>, Krzysztof Halasa <khc@pm.waw.pl>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.8 086/132] drivers/net/wan/hdlc_fr: Correctly handle special skb->protocol values
+Date:   Mon, 26 Oct 2020 19:51:18 -0400
+Message-Id: <20201026235205.1023962-86-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201026235205.1023962-1-sashal@kernel.org>
 References: <20201026235205.1023962-1-sashal@kernel.org>
@@ -43,75 +42,185 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Carl Huang <cjhuang@codeaurora.org>
+From: Xie He <xie.he.0141@gmail.com>
 
-[ Upstream commit 2f588660e34a982377109872757f1b99d7748d21 ]
+[ Upstream commit 8306266c1d51aac9aa7aa907fe99032a58c6382c ]
 
-Fix warning caused by lockdep_assert_held when CONFIG_LOCKDEP is enabled.
+The fr_hard_header function is used to prepend the header to skbs before
+transmission. It is used in 3 situations:
+1) When a control packet is generated internally in this driver;
+2) When a user sends an skb on an Ethernet-emulating PVC device;
+3) When a user sends an skb on a normal PVC device.
 
-[  271.940647] WARNING: CPU: 6 PID: 0 at drivers/net/wireless/ath/ath11k/hal.c:818 ath11k_hal_srng_access_begin+0x31/0x40 [ath11k]
-[  271.940655] Modules linked in: qrtr_mhi qrtr ns ath11k_pci mhi ath11k qmi_helpers nvme nvme_core
-[  271.940675] CPU: 6 PID: 0 Comm: swapper/6 Kdump: loaded Tainted: G        W         5.9.0-rc5-kalle-bringup-wt-ath+ #4
-[  271.940682] Hardware name: Dell Inc. Inspiron 7590/08717F, BIOS 1.3.0 07/22/2019
-[  271.940698] RIP: 0010:ath11k_hal_srng_access_begin+0x31/0x40 [ath11k]
-[  271.940708] Code: 48 89 f3 85 c0 75 11 48 8b 83 a8 00 00 00 8b 00 89 83 b0 00 00 00 5b c3 48 8d 7e 58 be ff ff ff ff e8 53 24 ec fa 85 c0 75 dd <0f> 0b eb d9 90 66 2e 0f 1f 84 00 00 00 00 00 55 53 48 89 f3 8b 35
-[  271.940718] RSP: 0018:ffffbdf0c0230df8 EFLAGS: 00010246
-[  271.940727] RAX: 0000000000000000 RBX: ffffa12b34e67680 RCX: ffffa12b57a0d800
-[  271.940735] RDX: 0000000000000000 RSI: 00000000ffffffff RDI: ffffa12b34e676d8
-[  271.940742] RBP: ffffa12b34e60000 R08: 0000000000000001 R09: 0000000000000001
-[  271.940753] R10: 0000000000000001 R11: 0000000000000046 R12: 0000000000000000
-[  271.940763] R13: ffffa12b34e60000 R14: ffffa12b34e60000 R15: 0000000000000000
-[  271.940774] FS:  0000000000000000(0000) GS:ffffa12b5a400000(0000) knlGS:0000000000000000
-[  271.940788] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  271.940798] CR2: 00007f8bef282008 CR3: 00000001f4224004 CR4: 00000000003706e0
-[  271.940805] Call Trace:
-[  271.940813]  <IRQ>
-[  271.940835]  ath11k_dp_tx_completion_handler+0x9e/0x950 [ath11k]
-[  271.940847]  ? lock_acquire+0xba/0x3b0
-[  271.940876]  ath11k_dp_service_srng+0x5a/0x2e0 [ath11k]
-[  271.940893]  ath11k_pci_ext_grp_napi_poll+0x1e/0x80 [ath11k_pci]
-[  271.940908]  net_rx_action+0x283/0x4f0
-[  271.940931]  __do_softirq+0xcb/0x499
-[  271.940950]  asm_call_on_stack+0x12/0x20
-[  271.940963]  </IRQ>
-[  271.940979]  do_softirq_own_stack+0x4d/0x60
-[  271.940991]  irq_exit_rcu+0xb0/0xc0
-[  271.941001]  common_interrupt+0xce/0x190
-[  271.941014]  asm_common_interrupt+0x1e/0x40
-[  271.941026] RIP: 0010:cpuidle_enter_state+0x115/0x500
+These 3 situations need to be handled differently by fr_hard_header.
+Different headers should be prepended to the skb in different situations.
 
-Tested-on: QCA6390 hw2.0 PCI WLAN.HST.1.0.1-01740-QCAHSTSWPLZ_V2_TO_X86-1
+Currently fr_hard_header distinguishes these 3 situations using
+skb->protocol. For situation 1 and 2, a special skb->protocol value
+will be assigned before calling fr_hard_header, so that it can recognize
+these 2 situations. All skb->protocol values other than these special ones
+are treated by fr_hard_header as situation 3.
 
-Signed-off-by: Carl Huang <cjhuang@codeaurora.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/1601463073-12106-5-git-send-email-kvalo@codeaurora.org
+However, it is possible that in situation 3, the user sends an skb with
+one of the special skb->protocol values. In this case, fr_hard_header
+would incorrectly treat it as situation 1 or 2.
+
+This patch tries to solve this issue by using skb->dev instead of
+skb->protocol to distinguish between these 3 situations. For situation
+1, skb->dev would be NULL; for situation 2, skb->dev->type would be
+ARPHRD_ETHER; and for situation 3, skb->dev->type would be ARPHRD_DLCI.
+
+This way fr_hard_header would be able to distinguish these 3 situations
+correctly regardless what skb->protocol value the user tries to use in
+situation 3.
+
+Cc: Krzysztof Halasa <khc@pm.waw.pl>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/dp_tx.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/wan/hdlc_fr.c | 98 ++++++++++++++++++++-------------------
+ 1 file changed, 51 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp_tx.c b/drivers/net/wireless/ath/ath11k/dp_tx.c
-index 41c990aec6b7d..7264bbdf76750 100644
---- a/drivers/net/wireless/ath/ath11k/dp_tx.c
-+++ b/drivers/net/wireless/ath/ath11k/dp_tx.c
-@@ -509,6 +509,8 @@ void ath11k_dp_tx_completion_handler(struct ath11k_base *ab, int ring_id)
- 	u32 msdu_id;
- 	u8 mac_id;
+diff --git a/drivers/net/wan/hdlc_fr.c b/drivers/net/wan/hdlc_fr.c
+index d6cfd51613ed8..3a44dad87602d 100644
+--- a/drivers/net/wan/hdlc_fr.c
++++ b/drivers/net/wan/hdlc_fr.c
+@@ -273,63 +273,69 @@ static inline struct net_device **get_dev_p(struct pvc_device *pvc,
  
-+	spin_lock_bh(&status_ring->lock);
+ static int fr_hard_header(struct sk_buff **skb_p, u16 dlci)
+ {
+-	u16 head_len;
+ 	struct sk_buff *skb = *skb_p;
+ 
+-	switch (skb->protocol) {
+-	case cpu_to_be16(NLPID_CCITT_ANSI_LMI):
+-		head_len = 4;
+-		skb_push(skb, head_len);
+-		skb->data[3] = NLPID_CCITT_ANSI_LMI;
+-		break;
+-
+-	case cpu_to_be16(NLPID_CISCO_LMI):
+-		head_len = 4;
+-		skb_push(skb, head_len);
+-		skb->data[3] = NLPID_CISCO_LMI;
+-		break;
+-
+-	case cpu_to_be16(ETH_P_IP):
+-		head_len = 4;
+-		skb_push(skb, head_len);
+-		skb->data[3] = NLPID_IP;
+-		break;
+-
+-	case cpu_to_be16(ETH_P_IPV6):
+-		head_len = 4;
+-		skb_push(skb, head_len);
+-		skb->data[3] = NLPID_IPV6;
+-		break;
+-
+-	case cpu_to_be16(ETH_P_802_3):
+-		head_len = 10;
+-		if (skb_headroom(skb) < head_len) {
+-			struct sk_buff *skb2 = skb_realloc_headroom(skb,
+-								    head_len);
++	if (!skb->dev) { /* Control packets */
++		switch (dlci) {
++		case LMI_CCITT_ANSI_DLCI:
++			skb_push(skb, 4);
++			skb->data[3] = NLPID_CCITT_ANSI_LMI;
++			break;
 +
- 	ath11k_hal_srng_access_begin(ab, status_ring);
- 
- 	while ((ATH11K_TX_COMPL_NEXT(tx_ring->tx_status_head) !=
-@@ -528,6 +530,8 @@ void ath11k_dp_tx_completion_handler(struct ath11k_base *ab, int ring_id)
- 
- 	ath11k_hal_srng_access_end(ab, status_ring);
- 
-+	spin_unlock_bh(&status_ring->lock);
++		case LMI_CISCO_DLCI:
++			skb_push(skb, 4);
++			skb->data[3] = NLPID_CISCO_LMI;
++			break;
 +
- 	while (ATH11K_TX_COMPL_NEXT(tx_ring->tx_status_tail) != tx_ring->tx_status_head) {
- 		struct hal_wbm_release_ring *tx_status;
- 		u32 desc_id;
++		default:
++			return -EINVAL;
++		}
++
++	} else if (skb->dev->type == ARPHRD_DLCI) {
++		switch (skb->protocol) {
++		case htons(ETH_P_IP):
++			skb_push(skb, 4);
++			skb->data[3] = NLPID_IP;
++			break;
++
++		case htons(ETH_P_IPV6):
++			skb_push(skb, 4);
++			skb->data[3] = NLPID_IPV6;
++			break;
++
++		default:
++			skb_push(skb, 10);
++			skb->data[3] = FR_PAD;
++			skb->data[4] = NLPID_SNAP;
++			/* OUI 00-00-00 indicates an Ethertype follows */
++			skb->data[5] = 0x00;
++			skb->data[6] = 0x00;
++			skb->data[7] = 0x00;
++			/* This should be an Ethertype: */
++			*(__be16 *)(skb->data + 8) = skb->protocol;
++		}
++
++	} else if (skb->dev->type == ARPHRD_ETHER) {
++		if (skb_headroom(skb) < 10) {
++			struct sk_buff *skb2 = skb_realloc_headroom(skb, 10);
+ 			if (!skb2)
+ 				return -ENOBUFS;
+ 			dev_kfree_skb(skb);
+ 			skb = *skb_p = skb2;
+ 		}
+-		skb_push(skb, head_len);
++		skb_push(skb, 10);
+ 		skb->data[3] = FR_PAD;
+ 		skb->data[4] = NLPID_SNAP;
+-		skb->data[5] = FR_PAD;
++		/* OUI 00-80-C2 stands for the 802.1 organization */
++		skb->data[5] = 0x00;
+ 		skb->data[6] = 0x80;
+ 		skb->data[7] = 0xC2;
++		/* PID 00-07 stands for Ethernet frames without FCS */
+ 		skb->data[8] = 0x00;
+-		skb->data[9] = 0x07; /* bridged Ethernet frame w/out FCS */
+-		break;
++		skb->data[9] = 0x07;
+ 
+-	default:
+-		head_len = 10;
+-		skb_push(skb, head_len);
+-		skb->data[3] = FR_PAD;
+-		skb->data[4] = NLPID_SNAP;
+-		skb->data[5] = FR_PAD;
+-		skb->data[6] = FR_PAD;
+-		skb->data[7] = FR_PAD;
+-		*(__be16*)(skb->data + 8) = skb->protocol;
++	} else {
++		return -EINVAL;
+ 	}
+ 
+ 	dlci_to_q922(skb->data, dlci);
+@@ -425,8 +431,8 @@ static netdev_tx_t pvc_xmit(struct sk_buff *skb, struct net_device *dev)
+ 				skb_put(skb, pad);
+ 				memset(skb->data + len, 0, pad);
+ 			}
+-			skb->protocol = cpu_to_be16(ETH_P_802_3);
+ 		}
++		skb->dev = dev;
+ 		if (!fr_hard_header(&skb, pvc->dlci)) {
+ 			dev->stats.tx_bytes += skb->len;
+ 			dev->stats.tx_packets++;
+@@ -494,10 +500,8 @@ static void fr_lmi_send(struct net_device *dev, int fullrep)
+ 	memset(skb->data, 0, len);
+ 	skb_reserve(skb, 4);
+ 	if (lmi == LMI_CISCO) {
+-		skb->protocol = cpu_to_be16(NLPID_CISCO_LMI);
+ 		fr_hard_header(&skb, LMI_CISCO_DLCI);
+ 	} else {
+-		skb->protocol = cpu_to_be16(NLPID_CCITT_ANSI_LMI);
+ 		fr_hard_header(&skb, LMI_CCITT_ANSI_DLCI);
+ 	}
+ 	data = skb_tail_pointer(skb);
 -- 
 2.25.1
 
