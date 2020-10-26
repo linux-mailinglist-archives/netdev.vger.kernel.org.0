@@ -2,124 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF3982986B5
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 07:04:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0A3B2986E7
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 07:38:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1770206AbgJZGEO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 02:04:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54558 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1770201AbgJZGEO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 02:04:14 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5DB57206A1;
-        Mon, 26 Oct 2020 06:04:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603692253;
-        bh=7zN02/yiv0TDK5EzVnHzHOhZlErFjMdSFSWhRurb/DA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=zUmpU0/hd1wzG0LToWzdxkfa2DgOoIGGRqXWKSM73/bLycF2QsJ6DyXgJqc1NM73D
-         Qbys8k/bRVYIjVFG1Kx87CNx04O4l+z8+KXdz5KgmY624ywuJ3deJrOhKg2wgjM6pM
-         UtZveUTpo+AydDpBd3HQ4N3CxIIEpGADwFAj1e9Y=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>, vladbu@nvidia.com
-Subject: [PATCH net] net: use proper block lock instead of RTNL lock
-Date:   Mon, 26 Oct 2020 08:04:07 +0200
-Message-Id: <20201026060407.583080-1-leon@kernel.org>
-X-Mailer: git-send-email 2.26.2
+        id S1770479AbgJZGiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 02:38:03 -0400
+Received: from mail-ej1-f66.google.com ([209.85.218.66]:37437 "EHLO
+        mail-ej1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1770472AbgJZGiC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 02:38:02 -0400
+Received: by mail-ej1-f66.google.com with SMTP id p9so11753052eji.4;
+        Sun, 25 Oct 2020 23:38:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dpR6HKBvLiwoLwNCGNwWMmEuYGZxFvFCHdWRL099Ijk=;
+        b=APjI9pp3dxEgoubORj970OY1HMGaZmmrNtD6GSJ4ALYEzB1E/1Px55Qm+guW09n/ql
+         2qa9jNO7fJ+jf/NGCSX7aBm8UIjg5Ck7TfnQ686uc3F4JmI4v58GhhAMr8PMPn421qQw
+         V3Xt8wK6aSVa1x9iqUbBgf+U/YQfpxFGSMOjZGzLG7NTBnfq6oo+2wsAy5uBz8N8DRxm
+         VAK1lPJg1XlSSgG75NgHW7q4e78QnXtNAWQ9GoeN6rbD37wynMoh2grQhvzFulFFJKCb
+         IoYynB6xWsgkZhYE4A8DUjJ7Y/eJETanuaFZKj91osHhz/g6EyFTgDUPEDR3/8u7y/7H
+         4ULg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dpR6HKBvLiwoLwNCGNwWMmEuYGZxFvFCHdWRL099Ijk=;
+        b=Y7yIzWM/PQOTKm7hdDKFWupV6Pi2hu9coWkshOLe1Jm3syM1rCMOXZy3bzTEnlu6uS
+         hj1FOXwNSkOYVm+sCmF6fwPq+Lu4AZYFsGN4G/kwU7d8Oj8GPCT9AQd/HZGV9ECIY1Ih
+         XzcKPqWq8ofO9vHl5bpxLPmC9QySzO1x0cHpK2PmtyaAfwQ7jDx0dk4YZ0Udyx6+d2py
+         XR91k1FStaL2jCCXNSteH3JzI5v+gh6AXZ+49Qd7UKCrOievBRGr1C1O3q1MxydT6tFy
+         8PphOFRh9iKndcL1DOqUs7vd/TJcyjDR+5Qm2X8jzHaDJEHycFsX0n807fVcpBqQQKfV
+         U1CQ==
+X-Gm-Message-State: AOAM532MtCSqMKAPdFc/4TiZYRu8M5ymOdbnRoPe4b6J9NQW6vxI0VQs
+        B3cdoxRyZptc+Po++aR2SGAvg1Nse5mio25D5/U=
+X-Google-Smtp-Source: ABdhPJxTwpbIrN+pmdDG9MX150R5eZazoaLR4My17R2VWPLwTd+VNsH9VziuTiklU0xBcEMNeT2Dz0YdXIs3x4wCMQ4=
+X-Received: by 2002:a17:906:a00d:: with SMTP id p13mr14561926ejy.183.1603694280382;
+ Sun, 25 Oct 2020 23:38:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201024154233.4024-1-fujiwara.masahiro@gmail.com> <20201025140550.1e29f770@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201025140550.1e29f770@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Masahiro Fujiwara <fujiwara.masahiro@gmail.com>
+Date:   Mon, 26 Oct 2020 15:37:48 +0900
+Message-ID: <CABBAZC+oQ64BcMRDgtXHes-Ri=20bh2GC-DuSZy7gPpKTFRMQw@mail.gmail.com>
+Subject: Re: [PATCH net] gtp: fix an use-before-init in gtp_newlink()
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Harald Welte <laforge@gnumonks.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andreas Schultz <aschultz@tpip.net>,
+        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+Hi,
 
-The tcf_block_unbind() expects that the caller will take block->cb_lock
-before calling it, however the code took RTNL lock instead. This causes
-to the following kernel panic.
+Thanks for the review. Will send a new patch with the fixes soon.
 
- WARNING: CPU: 1 PID: 13524 at net/sched/cls_api.c:1488 tcf_block_unbind+0x2db/0x420
- Modules linked in: mlx5_ib mlx5_core mlxfw ptp pps_core act_mirred act_tunnel_key cls_flower vxlan ip6_udp_tunnel udp_tunnel dummy sch_ingress openvswitch nsh xt_conntrack xt_MASQUERADE nf_conntrack_netlink nfnetlink xt_addrtype iptable_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 br_netfilter rpcrdma rdma_ucm ib_iser libiscsi scsi_transport_iscsi ib_umad ib_ipoib rdma_cm iw_cm ib_cm ib_uverbs ib_core overlay [last unloaded: mlxfw]
- CPU: 1 PID: 13524 Comm: test-ecmp-add-v Tainted: G        W         5.9.0+ #1
- Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
- RIP: 0010:tcf_block_unbind+0x2db/0x420
- Code: ff 48 83 c4 40 5b 5d 41 5c 41 5d 41 5e 41 5f c3 49 8d bc 24 30 01 00 00 be ff ff ff ff e8 7d 7f 70 00 85 c0 0f 85 7b fd ff ff <0f> 0b e9 74 fd ff ff 48 c7 c7 dc 6a 24 84 e8 02 ec fe fe e9 55 fd
- RSP: 0018:ffff888117d17968 EFLAGS: 00010246
- RAX: 0000000000000000 RBX: ffff88812f713c00 RCX: 1ffffffff0848d5b
- RDX: 0000000000000001 RSI: ffff88814fbc8130 RDI: ffff888107f2b878
- RBP: 1ffff11022fa2f3f R08: 0000000000000000 R09: ffffffff84115a87
- R10: fffffbfff0822b50 R11: ffff888107f2b898 R12: ffff88814fbc8000
- R13: ffff88812f713c10 R14: ffff888117d17a38 R15: ffff88814fbc80c0
- FS:  00007f6593d36740(0000) GS:ffff8882a4f00000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 00005607a00758f8 CR3: 0000000131aea006 CR4: 0000000000170ea0
- Call Trace:
-  tc_block_indr_cleanup+0x3e0/0x5a0
-  ? tcf_block_unbind+0x420/0x420
-  ? __mutex_unlock_slowpath+0xe7/0x610
-  flow_indr_dev_unregister+0x5e2/0x930
-  ? mlx5e_restore_tunnel+0xdf0/0xdf0 [mlx5_core]
-  ? mlx5e_restore_tunnel+0xdf0/0xdf0 [mlx5_core]
-  ? flow_indr_block_cb_alloc+0x3c0/0x3c0
-  ? mlx5_db_free+0x37c/0x4b0 [mlx5_core]
-  mlx5e_cleanup_rep_tx+0x8b/0xc0 [mlx5_core]
-  mlx5e_detach_netdev+0xe5/0x120 [mlx5_core]
-  mlx5e_vport_rep_unload+0x155/0x260 [mlx5_core]
-  esw_offloads_disable+0x227/0x2b0 [mlx5_core]
-  mlx5_eswitch_disable_locked.cold+0x38e/0x699 [mlx5_core]
-  mlx5_eswitch_disable+0x94/0xf0 [mlx5_core]
-  mlx5_device_disable_sriov+0x183/0x1f0 [mlx5_core]
-  mlx5_core_sriov_configure+0xfd/0x230 [mlx5_core]
-  sriov_numvfs_store+0x261/0x2f0
-  ? sriov_drivers_autoprobe_store+0x110/0x110
-  ? sysfs_file_ops+0x170/0x170
-  ? sysfs_file_ops+0x117/0x170
-  ? sysfs_file_ops+0x170/0x170
-  kernfs_fop_write+0x1ff/0x3f0
-  ? rcu_read_lock_any_held+0x6e/0x90
-  vfs_write+0x1f3/0x620
-  ksys_write+0xf9/0x1d0
-  ? __x64_sys_read+0xb0/0xb0
-  ? lockdep_hardirqs_on_prepare+0x273/0x3f0
-  ? syscall_enter_from_user_mode+0x1d/0x50
-  do_syscall_64+0x2d/0x40
-  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+----
+Fujiwara
 
-<...>
-
- ---[ end trace bfdd028ada702879 ]---
-
-Fixes: 0fdcf78d5973 ("net: use flow_indr_dev_setup_offload()")
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
- net/sched/cls_api.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index faeabff283a2..fca147386ad2 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -655,10 +655,8 @@ static void tc_block_indr_cleanup(struct flow_block_cb *block_cb)
- 	down_write(&block->cb_lock);
- 	list_del(&block_cb->driver_list);
- 	list_move(&block_cb->list, &bo.cb_list);
--	up_write(&block->cb_lock);
--	rtnl_lock();
- 	tcf_block_unbind(block, &bo);
--	rtnl_unlock();
-+	up_write(&block->cb_lock);
- }
-
- static bool tcf_block_offload_in_use(struct tcf_block *block)
---
-2.26.2
-
+On Mon, Oct 26, 2020 at 6:05 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Sat, 24 Oct 2020 15:42:33 +0000 Masahiro Fujiwara wrote:
+> > *_pdp_find() from gtp_encap_recv() would trigger a crash when a peer
+> > sends GTP packets while creating new GTP device.
+> >
+> > RIP: 0010:gtp1_pdp_find.isra.0+0x68/0x90 [gtp]
+> > <SNIP>
+> > Call Trace:
+> >  <IRQ>
+> >  gtp_encap_recv+0xc2/0x2e0 [gtp]
+> >  ? gtp1_pdp_find.isra.0+0x90/0x90 [gtp]
+> >  udp_queue_rcv_one_skb+0x1fe/0x530
+> >  udp_queue_rcv_skb+0x40/0x1b0
+> >  udp_unicast_rcv_skb.isra.0+0x78/0x90
+> >  __udp4_lib_rcv+0x5af/0xc70
+> >  udp_rcv+0x1a/0x20
+> >  ip_protocol_deliver_rcu+0xc5/0x1b0
+> >  ip_local_deliver_finish+0x48/0x50
+> >  ip_local_deliver+0xe5/0xf0
+> >  ? ip_protocol_deliver_rcu+0x1b0/0x1b0
+> >
+> > gtp_encap_enable() should be called after gtp_hastable_new() otherwise
+> > *_pdp_find() will access the uninitialized hash table.
+>
+> Looks good, minor nits:
+>
+>  - is the time zone broken on your system? Looks like your email has
+>    arrived with the date far in the past, so the build systems have
+>    missed it. Could you double check the time on your system?
+>
+> > Fixes: 1e3a3abd8 ("gtp: make GTP sockets in gtp_newlink optional")
+>
+> The hash looks short, should be at lest 12 chars:
+>
+> Fixes: 1e3a3abd8b28 ("gtp: make GTP sockets in gtp_newlink optional")
+>
+> > Signed-off-by: Masahiro Fujiwara <fujiwara.masahiro@gmail.com>
+>
+> > diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
+> > index 8e47d0112e5d..6c56337b02a3 100644
+> > --- a/drivers/net/gtp.c
+> > +++ b/drivers/net/gtp.c
+> > @@ -663,10 +663,6 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
+> >
+> >       gtp = netdev_priv(dev);
+> >
+> > -     err = gtp_encap_enable(gtp, data);
+> > -     if (err < 0)
+> > -             return err;
+> > -
+> >       if (!data[IFLA_GTP_PDP_HASHSIZE]) {
+> >               hashsize = 1024;
+> >       } else {
+> > @@ -676,13 +672,18 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
+> >       }
+> >
+> >       err = gtp_hashtable_new(gtp, hashsize);
+> > +     if (err < 0) {
+> > +             return err;
+> > +     }
+>
+> no need for braces around single statement
+>
+> > +
+> > +     err = gtp_encap_enable(gtp, data);
+> >       if (err < 0)
+> >               goto out_encap;
+> >
+> >       err = register_netdevice(dev);
+> >       if (err < 0) {
+> >               netdev_dbg(dev, "failed to register new netdev %d\n", err);
+> > -             goto out_hashtable;
+> > +             goto out_encap;
+> >       }
+> >
+> >       gn = net_generic(dev_net(dev), gtp_net_id);
+> > @@ -693,11 +694,10 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
+> >
+> >       return 0;
+> >
+> > -out_hashtable:
+> > -     kfree(gtp->addr_hash);
+> > -     kfree(gtp->tid_hash);
+> >  out_encap:
+> >       gtp_encap_disable(gtp);
+>
+> I'd personally move the out_hashtable: label here and keep it, just for
+> clarity. Otherwise reader has to double check that gtp_encap_disable()
+> can be safely called before gtp_encap_enable().
+>
+> Also gtp_encap_disable() could change in the future breaking this
+> assumption.
+>
+> > +     kfree(gtp->addr_hash);
+> > +     kfree(gtp->tid_hash);
+> >       return err;
+> >  }
+> >
+>
