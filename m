@@ -2,98 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C58882986A9
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 06:58:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8FC32986AD
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 07:00:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1770116AbgJZF6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 01:58:16 -0400
-Received: from mail-wr1-f52.google.com ([209.85.221.52]:35595 "EHLO
-        mail-wr1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1770109AbgJZF6Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 01:58:16 -0400
-Received: by mail-wr1-f52.google.com with SMTP id n15so11007567wrq.2;
-        Sun, 25 Oct 2020 22:58:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CKVG20c6o237CUyhCCGYjgzodFcI4lwb/+jy6XdBe+k=;
-        b=iqz4/KnVtU8iMD2GOjKAnm/JP/sI1dcLLhpY7sVJ3Vax/bEZ26JmIL2ogJ+iYXxPMb
-         rdRA4kL9yiYdMkFigZB0mwfpx2WO13gcLA7itBc5x/UdJb34uN/uRYAzdQQxIPx4CY0Q
-         uD2hodQ626wLrJM+i7BZqucqjm9FpclTT6XuYAzKdQcgAG+ecJ9y5kZGFyRb0s2U3WXf
-         W0oD4nyoHX1ap2fiO6GwPll4cdL7tJdOF29fO5KtiCBFs+3wVUi6IC/jbq1ytHGAH3qu
-         wGfvsxPScYLrf7dPK3oB5xvKhHCX9VBCGHdMnPoxmK60dV+xn3Qt+q7FboH8X0jWFHY7
-         8cwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CKVG20c6o237CUyhCCGYjgzodFcI4lwb/+jy6XdBe+k=;
-        b=g/YNGXKVyB6zgjhXRoRsXOJwgfj/GbrOe1Ay+fOQhXIrSm8SJcDHJ31WaGtOYGwlvT
-         3n04GGaOF5tepwdw+zpiST1yIsnKU8B9yufXlxe4gfwoYnd8dI816bLjhQXNHtESgQpm
-         wt+UPQRQIcnzL1grNcD4+LbpkfNVViLogD6ylC6IHABQW0T5ao9cxe7uOX6SwTXrsVQL
-         1Ed7yTbcoW74C0XJlh8zsnt2hV8y1igXSkGHJ0yJLy0EK0n0wl+SgPz2Lokf6357NC9S
-         sO1dxvrL22V3y945hbX37N5HTQnbrOvGlRXK6rTXHUSU/I1Hz3BW8mXSF3B+OZVNAuLk
-         A1eA==
-X-Gm-Message-State: AOAM531TSflDh72jr1xv6LTfQSNxx97iYpG34t+KVuHP639JBnmqUOPq
-        f4bCRpGBQdPdrStLmxDXJRlaTC2SkSVowW2DiPI=
-X-Google-Smtp-Source: ABdhPJxuK5xrMpzX3Y19K7NBzo/k1VAmR4Emro9UtLH3WyZesMBrp1ZQ4ycvRJi9vCRdL2RzOCcljxqWdaEJrz0OL5Y=
-X-Received: by 2002:adf:f043:: with SMTP id t3mr15100249wro.234.1603691893764;
- Sun, 25 Oct 2020 22:58:13 -0700 (PDT)
+        id S1770126AbgJZF6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 01:58:47 -0400
+Received: from outbound-ip23a.ess.barracuda.com ([209.222.82.205]:34602 "EHLO
+        outbound-ip23a.ess.barracuda.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1770119AbgJZF6r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 01:58:47 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10lp2105.outbound.protection.outlook.com [104.47.70.105]) by mx5.us-east-2a.ess.aws.cudaops.com (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO); Mon, 26 Oct 2020 05:58:39 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=URkEKEHTWqCMLq3f49sUv9Z1JfzySo73KbhDJc9UCWSfGfygWNBBTf1C3ton3wAnnS2dbpaNQXAHkzqdsJgV+GJT2MqiCnj+Pbi24lj6WkOQZpMjx76cY6MZEx/AXlsPnqFZF+ud/vM40xNj0cwfgYRs5kUto4hsxTI1iPgOtu332sk3lv8BXi1oLcVrdqR62tN3pZonLSnZthH5zUYwodrSjCMn0NfT35s4eH1TzyuS2Pj5f5nbDWE9+qyLAmx72TLKu9RNyx7jSGSjMgZPWnQyk8jr4LHDVgkUR1sTYz9ELYiyRuigZGxUtUR/TdBKFCxS05bx5BYBnM9ynz5DIw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WoQsKjQyTS0CZwmTjJM/6mrLSGowSeSrvYHtsgUV+WY=;
+ b=khQmQRk6PTUslCQCkVFKpm4xs4XdEzMe6xT5sYAPHdbKEN3JtNJ8X19mKlQ9uh8oMSYGBi48LhWI2fgkIRZkIsIDJcs/x8ATDMa3t0CymMXz2bclbrxWSmFUfFW2RYxu+D6IpOX33xdwdpgiPBJ/xOXZtuSvF0QwpqTjw0zC00BbHEyHnm67T57nRcnSgea/8i/wtSR+OxCxOHkd9/IcV2reHaeZhWL3LNd40WjVLI+nFeTWAoKKWPq+x05cPXBU4dixpfEx88zhOupH+6B53HUwiL/gTU4RoyJHNAtpgwPvLgWg6g/+oZ0FxpUJf1bo9QwZW0G5iBBUohkvK7bg9w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=digi.com; dmarc=pass action=none header.from=digi.com;
+ dkim=pass header.d=digi.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=digi.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=WoQsKjQyTS0CZwmTjJM/6mrLSGowSeSrvYHtsgUV+WY=;
+ b=CbaTyJ0NVkl8noaiOaf3h6abKMaXbyHk6OT/tzlIG6oTLD2MFK5zGylOSl+x37gY2NMmAJypISXwXqyBl+pMWZKB1fGuKduEXi/7dUYW2Igm8aU1stebmjNjLqQu4UjdFKwNVc098JpYsgg0R/WLx7WZzafa005Fu0ptvMedlH0=
+Authentication-Results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=digi.com;
+Received: from MN2PR10MB4174.namprd10.prod.outlook.com (2603:10b6:208:1dd::21)
+ by MN2PR10MB4253.namprd10.prod.outlook.com (2603:10b6:208:1d6::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.21; Mon, 26 Oct
+ 2020 05:58:38 +0000
+Received: from MN2PR10MB4174.namprd10.prod.outlook.com
+ ([fe80::b505:75ae:58c9:eb32]) by MN2PR10MB4174.namprd10.prod.outlook.com
+ ([fe80::b505:75ae:58c9:eb32%8]) with mapi id 15.20.3477.028; Mon, 26 Oct 2020
+ 05:58:38 +0000
+From:   Pavana Sharma <pavana.sharma@digi.com>
+To:     andrew@lunn.ch
+Cc:     davem@davemloft.net, f.fainelli@gmail.com,
+        gregkh@linuxfoundation.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pavana.sharma@digi.com, vivien.didelot@gmail.com
+Subject: [PATCH v4 2/3] Add phy interface for 5GBASER mode
+Date:   Mon, 26 Oct 2020 15:58:11 +1000
+Message-Id: <156717e3151d58bd51aef7b0e491ae5c63c07938.1603690202.git.pavana.sharma@digi.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <cover.1603690201.git.pavana.sharma@digi.com>
+References: <cover.1603690201.git.pavana.sharma@digi.com>
+Content-Type: text/plain
+X-Originating-IP: [58.84.104.89]
+X-ClientProxiedBy: SY3PR01CA0114.ausprd01.prod.outlook.com
+ (2603:10c6:0:1a::23) To MN2PR10MB4174.namprd10.prod.outlook.com
+ (2603:10b6:208:1dd::21)
 MIME-Version: 1.0
-References: <cover.1603110316.git.lucien.xin@gmail.com> <b65bdc11e5a17e328227676ea283cee617f973fb.1603110316.git.lucien.xin@gmail.com>
- <20201019221545.GD11030@localhost.localdomain> <CADvbK_ezWXMxpKkt3kxbXhcgu73PTJ1zpChb_sCgDu38xcROtA@mail.gmail.com>
- <20201020211108.GF11030@localhost.localdomain> <3BC2D946-9EA7-4847-9C6E-B3C9DA6A6618@fh-muenster.de>
- <20201020212338.GG11030@localhost.localdomain> <CADvbK_csZzHwQ04rMnCDw6=4meY-rrH--19VWm8ROafYSQWWeQ@mail.gmail.com>
- <5EE3969E-CE57-4D9E-99E9-9A9D39C60425@fh-muenster.de> <CADvbK_cZua_+2e=u--cV4jH5tR=24DvcEtwcHfAp1kyq9sYofA@mail.gmail.com>
- <d36e186fd50c44a29adb07f16242f3fd@AcuMS.aculab.com>
-In-Reply-To: <d36e186fd50c44a29adb07f16242f3fd@AcuMS.aculab.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Mon, 26 Oct 2020 13:58:02 +0800
-Message-ID: <CADvbK_fqqzJjm38Hv4BrpQwPdXmPojKE6RQWsowdh7AQ8Ha00Q@mail.gmail.com>
-Subject: Re: [PATCHv4 net-next 16/16] sctp: enable udp tunneling socks
-To:     David Laight <David.Laight@aculab.com>
-Cc:     Michael Tuexen <tuexen@fh-muenster.de>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        davem <davem@davemloft.net>, Guillaume Nault <gnault@redhat.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (58.84.104.89) by SY3PR01CA0114.ausprd01.prod.outlook.com (2603:10c6:0:1a::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Mon, 26 Oct 2020 05:58:35 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b6be3807-1a8d-4b5a-fbe7-08d879742ed1
+X-MS-TrafficTypeDiagnostic: MN2PR10MB4253:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <MN2PR10MB4253B2AA7B58A9CCDA76218495190@MN2PR10MB4253.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:296;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FnF3zAh2tr2R6jN8d+SogzGGoNWpLGu1R6y7X0odcHDA6Nbhd9cHspPZwm2uj3RjHwn1P1JuaEJ95TqAvoNfVPZRID4MVYbJMSwjtdrqx5Oy3rdEoTRi/03kAfrGWomxbCPvJ2VvhYuwarHqtqTTXz+nb2TI6Q2kZ3/WxfGS+ohwJzTN8qiIWJnLGF46mUWbnbQ5Aqdr6SQ6XYa1dtgPh1Nl0t857fcoIQQNcQx0FJ7opjcPwTsaKF9GS2oFNRNrh96HAk78rUzeafDT1LZwBHs7ycvcVhd2KWkBR/w4S7j77/Q8wFATpmyIuJBNyiqe87+0tHpDkPZiTwBn/7r4fpM+5aPBaUjcJnqJ6e2KXb92Jvk+Pvz7J7u3CLjupCAb
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR10MB4174.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(376002)(136003)(39840400004)(396003)(366004)(4326008)(16526019)(66476007)(2616005)(86362001)(26005)(36756003)(956004)(52116002)(316002)(6512007)(69590400008)(2906002)(8936002)(186003)(6506007)(478600001)(4744005)(44832011)(5660300002)(8676002)(66556008)(6916009)(6486002)(66946007)(6666004);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: AZScTecvPIQTdT+59VuvibgBuEtYk00uc/k8EXKCMzSFdq6Pv837iV4SIS74EKIeJSgsAPX8ygNePIDyHtyfbcO9UJZ+sIeMh+iYBqKp24MAH3XBjs8YH0pzkNIcjrC2yZo19kCbgBC36uv/ytDkCcDQNF+Ktf030c6EbTbxDZ7c8onzE1dutFCvX/0Gz9iz0PB34zv7zfGB7e9XZusgJX+4D3nkV6t1BPZsBokZvipL+HNEyPVis4oCjntYcO9XZ0nNfpVSoHwujF6pEzwYMP9gmFh/2iApQO+edLrGjkeDg9sJPZgBBwmXJCGxVeMgrUepigH25vUVucsua128FQ1cEj4ujYz6PAwFZ+Hu+c+RfJCQ5ph3V7E9wlLGRM/DrG5RpExcMY5qjkpEvnk7hV2krUAm1HbUeGgiKcgGGkTHe3Dzm1tcJp55i44UHhW8byUmr+Hz0hvAiexBM8uF+V2uaNrzpQHm1pOyFNQQ68cfdj+Iuq2/+jzvxKTR1DpjVukdEuLO4oAold4EU79Zxz4qcszVqKjBacfWeh1pFNICYBPS+aYZ1R4A+N+Zj4N3UCjuPGqS/4PWrQRmljRFfcGLUJJENhEh0BFgXaMO0ci/KP2fzwYBsUlzid0LorYCChYdmZAfmAxZyybU5KX0yA==
+X-OriginatorOrg: digi.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b6be3807-1a8d-4b5a-fbe7-08d879742ed1
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR10MB4174.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Oct 2020 05:58:38.5389
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: abb4cdb7-1b7e-483e-a143-7ebfd1184b9e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: zE5nx6y4UKXUguZ/IqX+rVnttGs6KLmEPz++u28JlM8DGLeqROBMXsOa/FPIFbxWaAVEOjZvIG1pVnSUaVMy0A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB4253
+X-BESS-ID: 1603691919-893008-20244-325328-1
+X-BESS-VER: 2019.1_20201021.2259
+X-BESS-Apparent-Source-IP: 104.47.70.105
+X-BESS-Outbound-Spam-Score: 1.20
+X-BESS-Outbound-Spam-Report: Code version 3.2, rules version 3.2.2.227798 [from 
+        cloudscan8-55.us-east-2a.ess.aws.cudaops.com]
+        Rule breakdown below
+         pts rule name              description
+        ---- ---------------------- --------------------------------
+        0.00 MSGID_FROM_MTA_HEADER  META: Message-Id was added by a relay 
+        1.20 SORTED_RECIPS          HEADER: Recipient list is sorted by address 
+        0.00 BSF_BESS_OUTBOUND      META: BESS Outbound 
+X-BESS-Outbound-Spam-Status: SCORE=1.20 using account:ESS112744 scores of KILL_LEVEL=7.0 tests=MSGID_FROM_MTA_HEADER, SORTED_RECIPS, BSF_BESS_OUTBOUND
+X-BESS-BRTS-Status: 1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 22, 2020 at 4:47 PM David Laight <David.Laight@aculab.com> wrote:
->
-> From: Xin Long
-> > Sent: 22 October 2020 04:13
-> ...
-> > I was thinking that by leaving it to 9899 by default users don't need to
-> > know the port when want to use it, and yet I didn't want to add another
-> > sysctl member. :D
->
-> Could you make 1 mean 9899?
-still feel not good, since it's called 'udp_port'.
+Signed-off-by: Pavana Sharma <pavana.sharma@digi.com>
+---
+ include/linux/phy.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-I will add a note in ip-sysctl.rst:
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 3a09d2bf69ea..9de7c57cfd38 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -107,6 +107,7 @@ typedef enum {
+ 	PHY_INTERFACE_MODE_2500BASEX,
+ 	PHY_INTERFACE_MODE_RXAUI,
+ 	PHY_INTERFACE_MODE_XAUI,
++	PHY_INTERFACE_MODE_5GBASER,
+ 	/* 10GBASE-R, XFI, SFI - single lane 10G Serdes */
+ 	PHY_INTERFACE_MODE_10GBASER,
+ 	PHY_INTERFACE_MODE_USXGMII,
+@@ -187,6 +188,8 @@ static inline const char *phy_modes(phy_interface_t interface)
+ 		return "rxaui";
+ 	case PHY_INTERFACE_MODE_XAUI:
+ 		return "xaui";
++	case PHY_INTERFACE_MODE_5GBASER:
++		return "5gbase-r";
+ 	case PHY_INTERFACE_MODE_10GBASER:
+ 		return "10gbase-r";
+ 	case PHY_INTERFACE_MODE_USXGMII:
+-- 
+2.17.1
 
-udp_port - INTEGER
-        The listening port for the local UDP tunneling sock. Normally it's
-        using the IANA-assigned UDP port number 9899 (sctp-tunneling).
-        ...
-
-Thanks.
-> So:
->   0 => disabled
->   1 => default port
->   n => use port n
-> I doubt that disallowing port 1 is a problem!
->
->         David
->
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
