@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96F2D29A123
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 01:47:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9701429A1E3
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 01:49:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2411508AbgJ0Ai0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 20:38:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47994 "EHLO mail.kernel.org"
+        id S2502218AbgJ0Aly (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 20:41:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48342 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2408790AbgJZXto (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 19:49:44 -0400
+        id S2408807AbgJZXtv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 19:49:51 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 972EC2075B;
-        Mon, 26 Oct 2020 23:49:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5A3FC21D41;
+        Mon, 26 Oct 2020 23:49:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603756183;
-        bh=C9mMF2VOdeFDUWtBZtyeimSiVyQQTfPYGjKoHQ4jZBk=;
+        s=default; t=1603756191;
+        bh=899kj4OFoGutfOJIbgzl2s7HGzYmf4My51J60XGMb2M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a3eAptjueu8+kyNbFCB9IoAQtJliM1PjS6diMX/qsqmbeVvfY7Vn4j0PfcV4vYNd4
-         5YqIWFoXJKlxF/15vIL90bjDmIdLfRb7D4bMqv89YDXFbPkQbJjuH1LurHpnZamZx+
-         nLvGlyR+erpNOfSZJVxnzn8KCLN1NxqbWRbHKN/8=
+        b=IVhOpscON9XCxoVVNVjtzuYJacSnJ3I66Rlee7A2tpWvDkhMve7mzKLHw36jcc1ND
+         e3MUC1M84rqCLo+r1dsRlz9kwMdlts1lAimwaGEMDAU0qgeL4iiMVCoogJUmoDzFil
+         Z4xUD5EHlbv80iF2q8pt3MrHMKqu3GLh82GBfbXc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Venkateswara Naralasetty <vnaralas@codeaurora.org>,
+Cc:     Sathishkumar Muruganandam <murugana@codeaurora.org>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.9 030/147] ath10k: fix retry packets update in station dump
-Date:   Mon, 26 Oct 2020 19:47:08 -0400
-Message-Id: <20201026234905.1022767-30-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.9 036/147] ath10k: fix VHT NSS calculation when STBC is enabled
+Date:   Mon, 26 Oct 2020 19:47:14 -0400
+Message-Id: <20201026234905.1022767-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201026234905.1022767-1-sashal@kernel.org>
 References: <20201026234905.1022767-1-sashal@kernel.org>
@@ -43,73 +43,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Venkateswara Naralasetty <vnaralas@codeaurora.org>
+From: Sathishkumar Muruganandam <murugana@codeaurora.org>
 
-[ Upstream commit 67b927f9820847d30e97510b2f00cd142b9559b6 ]
+[ Upstream commit 99f41b8e43b8b4b31262adb8ac3e69088fff1289 ]
 
-When tx status enabled, retry count is updated from tx completion status.
-which is not working as expected due to firmware limitation where
-firmware can not provide per MSDU rate statistics from tx completion
-status. Due to this tx retry count is always 0 in station dump.
+When STBC is enabled, NSTS_SU value need to be accounted for VHT NSS
+calculation for SU case.
 
-Fix this issue by updating the retry packet count from per peer
-statistics. This patch will not break on SDIO devices since, this retry
-count is already updating from peer statistics for SDIO devices.
+Without this fix, 1SS + STBC enabled case was reported wrongly as 2SS
+in radiotap header on monitor mode capture.
 
-Tested-on: QCA9984 PCI 10.4-3.6-00104
-Tested-on: QCA9882 PCI 10.2.4-1.0-00047
+Tested-on: QCA9984 10.4-3.10-00047
 
-Signed-off-by: Venkateswara Naralasetty <vnaralas@codeaurora.org>
+Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/1591856446-26977-1-git-send-email-vnaralas@codeaurora.org
+Link: https://lore.kernel.org/r/1597392971-3897-1-git-send-email-murugana@codeaurora.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/htt_rx.c | 8 +++++---
- drivers/net/wireless/ath/ath10k/mac.c    | 5 +++--
- 2 files changed, 8 insertions(+), 5 deletions(-)
+ drivers/net/wireless/ath/ath10k/htt_rx.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/wireless/ath/ath10k/htt_rx.c b/drivers/net/wireless/ath/ath10k/htt_rx.c
-index d787cbead56ab..cac05e7bb6b07 100644
+index cac05e7bb6b07..65fbc5957f94d 100644
 --- a/drivers/net/wireless/ath/ath10k/htt_rx.c
 +++ b/drivers/net/wireless/ath/ath10k/htt_rx.c
-@@ -3575,12 +3575,14 @@ ath10k_update_per_peer_tx_stats(struct ath10k *ar,
- 	}
+@@ -941,6 +941,7 @@ static void ath10k_htt_rx_h_rates(struct ath10k *ar,
+ 	u8 preamble = 0;
+ 	u8 group_id;
+ 	u32 info1, info2, info3;
++	u32 stbc, nsts_su;
  
- 	if (ar->htt.disable_tx_comp) {
--		arsta->tx_retries += peer_stats->retry_pkts;
- 		arsta->tx_failed += peer_stats->failed_pkts;
--		ath10k_dbg(ar, ATH10K_DBG_HTT, "htt tx retries %d tx failed %d\n",
--			   arsta->tx_retries, arsta->tx_failed);
-+		ath10k_dbg(ar, ATH10K_DBG_HTT, "tx failed %d\n",
-+			   arsta->tx_failed);
- 	}
+ 	info1 = __le32_to_cpu(rxd->ppdu_start.info1);
+ 	info2 = __le32_to_cpu(rxd->ppdu_start.info2);
+@@ -985,11 +986,16 @@ static void ath10k_htt_rx_h_rates(struct ath10k *ar,
+ 		 */
+ 		bw = info2 & 3;
+ 		sgi = info3 & 1;
++		stbc = (info2 >> 3) & 1;
+ 		group_id = (info2 >> 4) & 0x3F;
  
-+	arsta->tx_retries += peer_stats->retry_pkts;
-+	ath10k_dbg(ar, ATH10K_DBG_HTT, "htt tx retries %d", arsta->tx_retries);
-+
- 	if (ath10k_debug_is_extd_tx_stats_enabled(ar))
- 		ath10k_accumulate_per_peer_tx_stats(ar, arsta, peer_stats,
- 						    rate_idx);
-diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index 3c0c33a9f30cb..cc7208076ba4c 100644
---- a/drivers/net/wireless/ath/ath10k/mac.c
-+++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -8542,12 +8542,13 @@ static void ath10k_sta_statistics(struct ieee80211_hw *hw,
- 	sinfo->filled |= BIT_ULL(NL80211_STA_INFO_TX_BITRATE);
- 
- 	if (ar->htt.disable_tx_comp) {
--		sinfo->tx_retries = arsta->tx_retries;
--		sinfo->filled |= BIT_ULL(NL80211_STA_INFO_TX_RETRIES);
- 		sinfo->tx_failed = arsta->tx_failed;
- 		sinfo->filled |= BIT_ULL(NL80211_STA_INFO_TX_FAILED);
- 	}
- 
-+	sinfo->tx_retries = arsta->tx_retries;
-+	sinfo->filled |= BIT_ULL(NL80211_STA_INFO_TX_RETRIES);
-+
- 	ath10k_mac_sta_get_peer_stats_info(ar, sta, sinfo);
- }
- 
+ 		if (GROUP_ID_IS_SU_MIMO(group_id)) {
+ 			mcs = (info3 >> 4) & 0x0F;
+-			nss = ((info2 >> 10) & 0x07) + 1;
++			nsts_su = ((info2 >> 10) & 0x07);
++			if (stbc)
++				nss = (nsts_su >> 2) + 1;
++			else
++				nss = (nsts_su + 1);
+ 		} else {
+ 			/* Hardware doesn't decode VHT-SIG-B into Rx descriptor
+ 			 * so it's impossible to decode MCS. Also since
 -- 
 2.25.1
 
