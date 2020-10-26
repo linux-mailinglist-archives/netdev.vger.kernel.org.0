@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97C6C29909A
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 16:09:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 042332990A8
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 16:10:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1783226AbgJZPJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 11:09:16 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:55843 "EHLO
+        id S1783254AbgJZPJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 11:09:41 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:34020 "EHLO
         mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404123AbgJZPJP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 11:09:15 -0400
-Received: by mail-wm1-f67.google.com with SMTP id a72so12013238wme.5;
-        Mon, 26 Oct 2020 08:09:12 -0700 (PDT)
+        with ESMTP id S1783225AbgJZPJl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 11:09:41 -0400
+Received: by mail-wm1-f67.google.com with SMTP id k21so5920085wmi.1;
+        Mon, 26 Oct 2020 08:09:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=J+x1UhkmqmtmdEr4B0LaEa7qXm4z8dBJtIO4mmb7CBo=;
-        b=ObfSZkZngFEmZWxxEhZfGBELFBwIHk7G8xR3tiYx34nveLIbpidn//YH7s05TuxmRj
-         hdytqV8ozjYzWaFgCooqFToRZqT9aotWMFYarduQ3gJ7K/NOBTTGlbHvlb5F15cYb6CR
-         +vIAcqWqN/Yi5EJTYVFZvOWjIgj41XLkZJJ5VY96a4zu5C4QFR75Sj/50CqyOYI32WYV
-         YpsVK6lNyphBAXoD9EgyIV+A2+LaJIIaFgv6Te1/mFkk9CXMJ9js1i8Pw4nQ/cVpLgng
-         qvJyAARbAbAZ0mN8K/aBxiSnaxaAiolOTHHVPc3Lildb4CETex+DvKX//j4TzQOd8zhQ
-         Ay4g==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=jGncrBzeSrdZmyOiKkMYe800E1r8xGJD44x4nOUxG2s=;
+        b=UL0CF+D3uiKHsos40I0KWKysJ6LD5+XNTODWaR/a5zr5tSV2YsjL3n2TFtRDveuNAE
+         Y/Mxfv8TTKEVt2X3/Ra8izmjVYTBO3sgxg2OTgIvUsbiUcaN9bjPNaMRNLKZUL+jdVCf
+         iEZatnKIe/IAJP09OUVJMHsrJPV4DZgooyaPsFFSPQXqvKnuUuJvgITbd3Pe5pIkY1l7
+         r5mDvRFy0v1hG5/p+N80/L17k9ngRFXpR8OyfASxeVe7YSAkUd+Av4vvpi6LCERblLF/
+         zVfeEzMS20HQ5KOysHy2bGA6oigcemG6Wo8lTAKjDMEkU1Ixa2Lrufmi/74Rp0WHVWRU
+         z8Dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=J+x1UhkmqmtmdEr4B0LaEa7qXm4z8dBJtIO4mmb7CBo=;
-        b=pX+qtuz5cS+JoK0PGq7HEHhCJgJjccuovnieANFxC0ITiXGaWpYHZIv8TMXdtt8bi3
-         nPptVSnHCziovaaEWIHk4iF0qe6V+MNFf4CwQGxVy/+UdjH1L2Hh0Kz4wbqLb54kzATh
-         Zu+VBC2vxqG/8V2X2ZSgkwvASLBIRssdJA4IFeNZL4MxHn5kMmhKhp2O61ySDTu/0MRN
-         YHxI6lf6HbJncex1B9TexcPW7t6fqpiSiLb6ypGnvznQfBqV2eEeyfpwnRCnqEmWPRxa
-         FOHg1Q/W/KXaMB1T8003wQ3fmyWA5yR8m74K/steNFukOK7cH/qRRvjwF3npGDmRetWn
-         5Nbg==
-X-Gm-Message-State: AOAM532sT9JlztttyboQirvZJWWQurRIl7fMeQFkoF7N8FpmGAz158AN
-        bMaDBOkK9NtzuBmiZqIOVgw=
-X-Google-Smtp-Source: ABdhPJyWVKUwQ1tM9gAqB0j6VzRdQS6PG4/vx42gAhGgCegC2gOFzs3OyraKXyHK6edxylSL/4dEwA==
-X-Received: by 2002:a1c:9a46:: with SMTP id c67mr15876240wme.115.1603724951892;
-        Mon, 26 Oct 2020 08:09:11 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=jGncrBzeSrdZmyOiKkMYe800E1r8xGJD44x4nOUxG2s=;
+        b=mH87fKYcGHVFBkVuqgyeCrp0ZXsTK7pLRL7Pc8KO89ENlhKZs4IyShYU4qC/CSPvP1
+         ofF3Xd8+eVU29Sn+EPibxJwZ+AmvzGNTKH1jxHz1eKf1P2xuVlYBSg99YO3Gcw+8mpR0
+         3c6tmZFZFXqlsbA2+CSvAmlCpPwd9nZHlsCQD3Sgz09AVr3fIck1ssrR4WAOQhsSDKlP
+         k1yBYVU9KWN64ET7+esZ0LlonDGouxhyFU8FI/AX+dLaImCU2J5/jcv2QGIh57ppFgyJ
+         hR67bR1xDlmq/AtIsCkzZFb99oBci1u8xPYqbZOgpZ9qgafwApyNWOzjw3z7YgMWOtvm
+         fTSQ==
+X-Gm-Message-State: AOAM530SxTqPT3MBBKSN4p0fa/pvYy2RzS7cSq81DaKak4uT9IQwE9i4
+        ZNZ25cDNfs47J24MUBGtcXBvE9ZhxBXjaTRoawM=
+X-Google-Smtp-Source: ABdhPJx254j9rng1d26VwrYDPLdAk5fayxDDtSTxwWAD6kZqGCrog1IU52MJygYgMeuZLWt+BoWP2A==
+X-Received: by 2002:a7b:cc89:: with SMTP id p9mr17094670wma.4.1603724978723;
+        Mon, 26 Oct 2020 08:09:38 -0700 (PDT)
 Received: from nogikh.c.googlers.com.com (88.140.78.34.bc.googleusercontent.com. [34.78.140.88])
-        by smtp.gmail.com with ESMTPSA id 24sm20043967wmf.44.2020.10.26.08.09.10
+        by smtp.gmail.com with ESMTPSA id 24sm20043967wmf.44.2020.10.26.08.09.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2020 08:09:11 -0700 (PDT)
+        Mon, 26 Oct 2020 08:09:38 -0700 (PDT)
 From:   Aleksandr Nogikh <aleksandrnogikh@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, johannes@sipsolutions.net
 Cc:     edumazet@google.com, andreyknvl@google.com, dvyukov@google.com,
@@ -51,10 +51,12 @@ Cc:     edumazet@google.com, andreyknvl@google.com, dvyukov@google.com,
         netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
         willemdebruijn.kernel@gmail.com,
         Aleksandr Nogikh <nogikh@google.com>
-Subject: [PATCH v3 0/3] net, mac80211, kernel: enable KCOV remote coverage collection for 802.11 frame handling
-Date:   Mon, 26 Oct 2020 15:08:48 +0000
-Message-Id: <20201026150851.528148-1-aleksandrnogikh@gmail.com>
+Subject: [PATCH v3 1/3] kernel: make kcov_common_handle consider the current context
+Date:   Mon, 26 Oct 2020 15:08:49 +0000
+Message-Id: <20201026150851.528148-2-aleksandrnogikh@gmail.com>
 X-Mailer: git-send-email 2.29.0.rc1.297.gfa9743e501-goog
+In-Reply-To: <20201026150851.528148-1-aleksandrnogikh@gmail.com>
+References: <20201026150851.528148-1-aleksandrnogikh@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -63,66 +65,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Aleksandr Nogikh <nogikh@google.com>
 
-This patch series enables remote KCOV coverage collection during
-802.11 frames processing. These changes make it possible to perform
-coverage-guided fuzzing in search of remotely triggerable bugs.
+kcov_common_handle is a method that is used to obtain a "default" KCOV
+remote handle of the current process. The handle can later be passed
+to kcov_remote_start in order to collect coverage for the processing
+that is initiated by one process, but done in another. For details see
+Documentation/dev-tools/kcov.rst and comments in kernel/kcov.c.
 
-Normally, KCOV collects coverage information for the code that is
-executed inside the system call context. It is easy to identify where
-that coverage should go and whether it should be collected at all by
-looking at the current process. If KCOV was enabled on that process,
-coverage will be stored in a buffer specific to that process.
-Howerever, it is not always enough as handling can happen elsewhere
-(e.g. in separate kernel threads).
+Presently, if kcov_common_handle is called in an IRQ context, it will
+return a handle for the interrupted process. This may lead to
+unreliable and incorrect coverage collection.
 
-When it is impossible to infer KCOV-related info just by looking at
-the currently running process, one needs to manually pass some
-information to the code that should be instrumented. The information
-takes the form of 64 bit integers (KCOV remote handles). Zero is the
-special value that corresponds to an empty handle. More details on
-KCOV and remote coverage collection can be found in
-Documentation/dev-tools/kcov.rst.
+Adjust the behavior of kcov_common_handle in the following way. If it
+is called in a task context, return the common handle for the
+currently running task. Otherwise, return 0.
 
-The series consists of three commits.
-1. Apply a minor fix to kcov_common_handle() so that it returns a
-valid handle (zero) when called in an interrupt context.
-2. Take the remote handle from KCOV and attach it to newly allocated
-SKBs as an skb extension. If the allocation happens inside a system
-call context, the SKB will be tied to the process that issued the
-syscall (if that process is interested in remote coverage collection).
-3. Annotate the code that processes incoming 802.11 frames with
-kcov_remote_start()/kcov_remote_stop()
+Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
+Reviewed-by: Andrey Konovalov <andreyknvl@google.com>
+---
+ kernel/kcov.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-v3:
-* kcov_handle is now stored in skb extensions instead of sk_buff
-  itself.
-* Updated the cover letter.
-
-v2:
-https://lkml.kernel.org/r/20201009170202.103512-1-a.nogikh@gmail.com
-* Moved KCOV annotations from ieee80211_tasklet_handler to
-  ieee80211_rx.
-* Updated kcov_common_handle() to return 0 if it is called in
-  interrupt context.
-* Updated the cover letter.
-
-v1:
-https://lkml.kernel.org/r/20201007101726.3149375-1-a.nogikh@gmail.com
-
-Aleksandr Nogikh (3):
-  kernel: make kcov_common_handle consider the current context
-  net: add kcov handle to skb extensions
-  mac80211: add KCOV remote annotations to incoming frame processing
-
- include/linux/skbuff.h | 31 +++++++++++++++++++++++++++++++
- include/net/mac80211.h |  2 ++
- kernel/kcov.c          |  2 ++
- net/core/skbuff.c      | 11 +++++++++++
- net/mac80211/iface.c   |  2 ++
- 5 files changed, 48 insertions(+)
-
-
-base-commit: 2ef991b5fdbe828dc8fb8af473dab160729570ed
+diff --git a/kernel/kcov.c b/kernel/kcov.c
+index 6b8368be89c8..80bfe71bbe13 100644
+--- a/kernel/kcov.c
++++ b/kernel/kcov.c
+@@ -1023,6 +1023,8 @@ EXPORT_SYMBOL(kcov_remote_stop);
+ /* See the comment before kcov_remote_start() for usage details. */
+ u64 kcov_common_handle(void)
+ {
++	if (!in_task())
++		return 0;
+ 	return current->kcov_handle;
+ }
+ EXPORT_SYMBOL(kcov_common_handle);
 -- 
 2.29.0.rc1.297.gfa9743e501-goog
 
