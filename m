@@ -2,97 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 86B8C298717
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 07:53:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC348298759
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 08:22:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1770765AbgJZGxK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 02:53:10 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:55442 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390722AbgJZGxJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 02:53:09 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09Q6jBft087478;
-        Mon, 26 Oct 2020 06:52:47 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=ZCdYqwskaOvpapAfB2phd0RcmVu3e0MieFtG58z39f0=;
- b=K82V47ulVlrXf1V5GQII3mj90UVz8n8x2EzQ14TVSVM4CQONhcpGl7dYFZyZRbCTz9Kt
- CAFEqVXH1k8diXvHuNmkOm00mw07yAD9ctYNnDs8wAS1s0SOh91Ng7dI4B1aBr5MtvoX
- sc4NG57srMf2n9jMSQOYAmspog/bgFNcSyqE0FZvvc0eO7n7SZwwhAyOvReqOusqalf8
- oZJR/oxPJiiqtX2uJnAHzkY+3UQofYi2O6NapdXrEJ1baNJLLMBzGk+0EQHa9kpAzuw/
- 4kg0tQTlvF/GcjS05KtWPj4CVKFtjaL4oiUCKjOG0q+F1xJrckYd/3WLW4+dNHR/c2fF aA== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by aserp2130.oracle.com with ESMTP id 34c9sakanm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 26 Oct 2020 06:52:47 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09Q6oKUv087069;
-        Mon, 26 Oct 2020 06:52:47 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by aserp3030.oracle.com with ESMTP id 34cwujye7b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 26 Oct 2020 06:52:47 +0000
-Received: from abhmp0020.oracle.com (abhmp0020.oracle.com [141.146.116.26])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 09Q6qkVY027221;
-        Mon, 26 Oct 2020 06:52:46 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sun, 25 Oct 2020 23:52:45 -0700
-Date:   Mon, 26 Oct 2020 09:52:36 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
+        id S1769283AbgJZHWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 03:22:54 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:38320 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1769164AbgJZHWy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 03:22:54 -0400
+Received: by mail-pf1-f195.google.com with SMTP id 10so5716028pfp.5;
+        Mon, 26 Oct 2020 00:22:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=CoiP1SRYFw3dRE7KHCo2Xt8qwofyEh+WF/YMDll/K+c=;
+        b=GvOSPVA9pBC4VK6/qA8CKb/cm13ibcrCcuILBHK5nEodqKbfoGN6HeR/4wvn8BxuBq
+         Fw3bAaYr5zwtnpzHyCeqb1kXwLsyDzV/S78MOk7qKWqRoAN7RjEW3vOwB8q4KNea4cvT
+         AK3IaazTIAaY6uBLHlYlHiVehr0vZqdU2NBCXFlP/aoHHwH7VJUffc9Nw9d1t9Oh4Syq
+         Czi5rlJrUAdDOZaSN0zf8RAWTDf6k1KblAvbHiZzIdiM1w59o+Asdo96oDmgvEB1y2P7
+         ZSATANJ/PHTIkD4utD8Hnsj76/RZSktvOyP3LrxkcyLOCj8PfAXyx5vGhnm/cRYwLKHN
+         T6Qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=CoiP1SRYFw3dRE7KHCo2Xt8qwofyEh+WF/YMDll/K+c=;
+        b=LM6F4zJ50ginhLy9Crjl6bTVnRMdgF0VW99p9cAKeeVjsXJBFBiBZn/kFsKP8lvBz9
+         oLxCi8OOjcr8HOYAV9N51X427sd88LwhBjU2xV1QhwDHpyAw4tXDoPJCB8exz9fDpwmX
+         3rSgxpogqlXGkIRV7nOiEvp7e0grFN0N16W1zkfeyIS8oUMqFqHTPl3cWApHNVFpDWcA
+         l9BkUs5HSs/oUUyrKzcBT2lTLHCtj1tL0s6szD79EDEpdvF0HDFGCzBNTgGYpPjbONVF
+         jT1EOwaYOOYnuoEDr9YB6rC3yESQS7nhMB9yfDkKCAJ8+Qb4DZiYesv7Fpe7kC/YGzGq
+         gzBQ==
+X-Gm-Message-State: AOAM533yEvmNcj9PRzCLue51ECDSAo+sZ3LrqdSVLOKb7FtlYdiZpHX2
+        nV4ixZQr2/CLqS+WV8EkKEk=
+X-Google-Smtp-Source: ABdhPJy6s966DPXokAQoPL1Ku+1MQ7hK6MwHo1Ka3bj0BWa9wdplT3Qkh8NtX6gCuj2fiKIt+8GM2Q==
+X-Received: by 2002:a63:cd51:: with SMTP id a17mr15269064pgj.167.1603696973345;
+        Mon, 26 Oct 2020 00:22:53 -0700 (PDT)
+Received: from lte-devbox.localdomain (KD106154087157.au-net.ne.jp. [106.154.87.157])
+        by smtp.googlemail.com with ESMTPSA id h2sm11502178pjv.15.2020.10.26.00.22.49
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 26 Oct 2020 00:22:52 -0700 (PDT)
+From:   Masahiro Fujiwara <fujiwara.masahiro@gmail.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Harald Welte <laforge@gnumonks.org>
+Cc:     fujiwara.masahiro@gmail.com,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Huazhong Tan <tanhuazhong@huawei.com>,
-        Yonglong Liu <liuyonglong@huawei.com>,
-        Yufeng Mo <moyufeng@huawei.com>,
-        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net] net: hns3: clean up a return in hclge_tm_bp_setup()
-Message-ID: <20201026065235.GG18329@kadam>
-References: <20201023112212.GA282278@mwanda>
- <3fbcbfbd-deea-162e-9281-29e65b90996b@huawei.com>
+        Andreas Schultz <aschultz@tpip.net>,
+        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 net] gtp: fix an use-before-init in gtp_newlink()
+Date:   Mon, 26 Oct 2020 16:22:27 +0900
+Message-Id: <20201026072227.7280-1-fujiwara.masahiro@gmail.com>
+X-Mailer: git-send-email 2.24.3
+In-Reply-To: <20201025140550.1e29f770@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+References: <20201025140550.1e29f770@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3fbcbfbd-deea-162e-9281-29e65b90996b@huawei.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9785 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 mlxscore=0 bulkscore=0
- spamscore=0 adultscore=0 malwarescore=0 mlxlogscore=999 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2010260047
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9785 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 malwarescore=0 lowpriorityscore=0 bulkscore=0
- priorityscore=1501 spamscore=0 phishscore=0 clxscore=1011 suspectscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010260046
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 26, 2020 at 11:18:16AM +0800, Yunsheng Lin wrote:
-> On 2020/10/23 19:22, Dan Carpenter wrote:
-> > Smatch complains that "ret" might be uninitialized if we don't enter
-> > the loop.  We do always enter the loop so it's a false positive, but
-> > it's cleaner to just return a literal zero and that silences the
-> > warning as well.
-> 
-> Thanks for the clean up. Minor comment below:
-> Perhap it makes sense to limit ret scope within the for loop after
-> returning zero.
-> 
+*_pdp_find() from gtp_encap_recv() would trigger a crash when a peer
+sends GTP packets while creating new GTP device.
 
-It's not really normal to limit ret scope...  I think it's better to
-leave it as-is.
+RIP: 0010:gtp1_pdp_find.isra.0+0x68/0x90 [gtp]
+<SNIP>
+Call Trace:
+ <IRQ>
+ gtp_encap_recv+0xc2/0x2e0 [gtp]
+ ? gtp1_pdp_find.isra.0+0x90/0x90 [gtp]
+ udp_queue_rcv_one_skb+0x1fe/0x530
+ udp_queue_rcv_skb+0x40/0x1b0
+ udp_unicast_rcv_skb.isra.0+0x78/0x90
+ __udp4_lib_rcv+0x5af/0xc70
+ udp_rcv+0x1a/0x20
+ ip_protocol_deliver_rcu+0xc5/0x1b0
+ ip_local_deliver_finish+0x48/0x50
+ ip_local_deliver+0xe5/0xf0
+ ? ip_protocol_deliver_rcu+0x1b0/0x1b0
 
-regards,
-dan carpenter
+gtp_encap_enable() should be called after gtp_hastable_new() otherwise
+*_pdp_find() will access the uninitialized hash table.
+
+Fixes: 1e3a3abd8b28 ("gtp: make GTP sockets in gtp_newlink optional")
+Signed-off-by: Masahiro Fujiwara <fujiwara.masahiro@gmail.com>
+---
+v2:
+ - leave out_hashtable: label for clarity (Jakub).
+ - fix code and comment styles.
+
+ drivers/net/gtp.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
+index 8e47d0112e5d..07cb6d9495e8 100644
+--- a/drivers/net/gtp.c
++++ b/drivers/net/gtp.c
+@@ -663,10 +663,6 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
+ 
+ 	gtp = netdev_priv(dev);
+ 
+-	err = gtp_encap_enable(gtp, data);
+-	if (err < 0)
+-		return err;
+-
+ 	if (!data[IFLA_GTP_PDP_HASHSIZE]) {
+ 		hashsize = 1024;
+ 	} else {
+@@ -676,13 +672,17 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
+ 	}
+ 
+ 	err = gtp_hashtable_new(gtp, hashsize);
++	if (err < 0)
++		return err;
++
++	err = gtp_encap_enable(gtp, data);
+ 	if (err < 0)
+ 		goto out_encap;
+ 
+ 	err = register_netdevice(dev);
+ 	if (err < 0) {
+ 		netdev_dbg(dev, "failed to register new netdev %d\n", err);
+-		goto out_hashtable;
++		goto out_encap;
+ 	}
+ 
+ 	gn = net_generic(dev_net(dev), gtp_net_id);
+@@ -693,11 +693,11 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
+ 
+ 	return 0;
+ 
++out_encap:
++	gtp_encap_disable(gtp);
+ out_hashtable:
+ 	kfree(gtp->addr_hash);
+ 	kfree(gtp->tid_hash);
+-out_encap:
+-	gtp_encap_disable(gtp);
+ 	return err;
+ }
+ 
+-- 
+2.24.3
 
