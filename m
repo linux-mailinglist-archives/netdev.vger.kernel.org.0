@@ -2,105 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A0AA5299379
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 18:13:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEE8D2993DD
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 18:31:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1787406AbgJZRM7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 13:12:59 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:41398 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1787390AbgJZRM7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 13:12:59 -0400
-Received: by mail-qk1-f196.google.com with SMTP id b69so9042097qkg.8
-        for <netdev@vger.kernel.org>; Mon, 26 Oct 2020 10:12:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=tr/tHSNQP2fV94sMZ6KdpFbjVi2JwLl8zPoIG2ibueM=;
-        b=x4pdZBV8YJX6mAQF/6QML7Ogk//9/PCyGUdQS3QAyOfZyZeIMFOeZNs7goMwHwB6l3
-         JKmj2mrQcgiJ592lYXJ5kKM7I1EGzg2Ari7UbbsYFK16VPDWZ3WUDN+jqwq9wKVRWf5m
-         UO0ngBS8xfEGg5+9xZa/0N0wWBdpLfvyKYmYdsuqCstVr3XQyAGmQtFFG4kUkuV5Rzy/
-         kQ51/YU8z/E5PtesvA4S68TnPHorWodfsmSbqGjrKDM+k7ZEBZuqDdPDCVdkWu/ySbaP
-         DSzJrblZ6dTf8nsL2OQZrO+ChWjLrv8ywWZ804Y3Xvj4pQI9bYWUOIngOYp04moiEdYc
-         97BA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=tr/tHSNQP2fV94sMZ6KdpFbjVi2JwLl8zPoIG2ibueM=;
-        b=HXAqQgGDDULvpM9WiIEg3+36ezXUBoMIkLInvZJ0/Z0iqr9/X1dkgK9nZ7f+dCOI89
-         JdE7hhp0S3SfJbNqGRoK/XEhYE35RsJMa1weA1jdOqwF9WE+qSiBkrzUmlkfgs+jHFWX
-         igby9g3Lb6z6hhtbf15TL7vyjXLZhOkouSLplTJTtLN49+OQTz7C3OrzAfNsd/WBwI17
-         RuvwZhIjcAFuGvG+wQ+0ZKMdk2GNX4t6jk6aRIQttZK7OZAVeKHkBKKO4cOEwjE3w1yK
-         cDTTpmyODKdxiw2ZsJ+YxJT4bgxNPml1OoA1LSdBUTQCyUBs/9Ihsv0czxLRI7MewUtL
-         Iadg==
-X-Gm-Message-State: AOAM532syIgkKxpff++02h4h/ljx+Vu2RBiy5Q9CqIy542t+rlDSfUqe
-        a5RjUJYR6WfEFVBWm858DNRt7zm6dn9Eqg==
-X-Google-Smtp-Source: ABdhPJxqtnAx+GvAF7njZPvDBkloVkmubCd2zpL2qxgcofAZtZUm9dwR/vjj+v0hey+G16hxfCyFWw==
-X-Received: by 2002:a37:480e:: with SMTP id v14mr1710525qka.414.1603732377227;
-        Mon, 26 Oct 2020 10:12:57 -0700 (PDT)
-Received: from [192.168.2.28] (bras-base-kntaon1617w-grc-10-184-147-165-106.dsl.bell.ca. [184.147.165.106])
-        by smtp.googlemail.com with ESMTPSA id f1sm809095qto.18.2020.10.26.10.12.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Oct 2020 10:12:56 -0700 (PDT)
-Subject: Re: [PATCH iproute2-next v3 2/2] tc: implement support for terse dump
-To:     Vlad Buslov <vladbu@nvidia.com>
-Cc:     Vlad Buslov <vlad@buslov.dev>, dsahern@gmail.com,
-        stephen@networkplumber.org, netdev@vger.kernel.org,
-        davem@davemloft.net, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        ivecera@redhat.com, Vlad Buslov <vladbu@mellanox.com>
-References: <20201016144205.21787-1-vladbu@nvidia.com>
- <20201016144205.21787-3-vladbu@nvidia.com>
- <0bb6f625-c987-03d7-7225-eee03345168e@mojatatu.com>
- <87a6wm15rz.fsf@buslov.dev>
- <ac25fd12-0ba9-47c2-25d7-7a6c01e94115@mojatatu.com>
- <877drn20h3.fsf@buslov.dev>
- <b8138715-8fd7-cbef-d220-76bdb8c52ba5@mojatatu.com>
- <87362a1byb.fsf@buslov.dev>
- <5c79152f-1532-141a-b1d3-729fdd798b3f@mojatatu.com>
- <ygnh8sc03s9u.fsf@nvidia.com>
- <e91b2fe6-e2ca-21c7-0d7e-714e5cccc28c@mojatatu.com>
- <ygnh4kml9kh3.fsf@nvidia.com>
- <89a5434b-06e9-947a-d364-acd2a306fc4d@mojatatu.com>
- <ygnh7drdz0nf.fsf@nvidia.com>
-From:   Jamal Hadi Salim <jhs@mojatatu.com>
-Message-ID: <370dd8e0-315b-04a5-c137-3b4f3cbd02a0@mojatatu.com>
-Date:   Mon, 26 Oct 2020 13:12:54 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1787858AbgJZRbV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 13:31:21 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59119 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1738349AbgJZRbV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 13:31:21 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603733479;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fS08d8MBtu1ip55QD9RREObehqTj3BnkBGdOU4nJc8o=;
+        b=VOanpcLnuvd1yoT3rp46bd5uD5Gqc1ZeMqHOz498cLRCwj/J0YR7H01u2acFrwp8HN+Fz1
+        2l5ZFZAQ7qY5iPglAPObmfFrjTrNsJebdSIsO759lRUC1jVJptQvhlH2N8C5IjuQLr3919
+        3EeatD2pCrdnPJddi+U5dF2MmQ4PC88=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-106-6NgAv3PkPCycQ-VxP7BvvA-1; Mon, 26 Oct 2020 13:31:17 -0400
+X-MC-Unique: 6NgAv3PkPCycQ-VxP7BvvA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AEEE0809DC0;
+        Mon, 26 Oct 2020 17:31:10 +0000 (UTC)
+Received: from fuller.cnet (ovpn-112-4.gru2.redhat.com [10.97.112.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 230DA19D6C;
+        Mon, 26 Oct 2020 17:31:03 +0000 (UTC)
+Received: by fuller.cnet (Postfix, from userid 1000)
+        id 2B9B0417F242; Mon, 26 Oct 2020 14:30:12 -0300 (-03)
+Date:   Mon, 26 Oct 2020 14:30:12 -0300
+From:   Marcelo Tosatti <mtosatti@redhat.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Nitesh Narayan Lal <nitesh@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>, helgaas@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        frederic@kernel.org, sassmann@redhat.com,
+        jesse.brandeburg@intel.com, lihong.yang@intel.com,
+        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
+        jlelli@redhat.com, hch@infradead.org, bhelgaas@google.com,
+        mike.marciniszyn@intel.com, dennis.dalessandro@intel.com,
+        thomas.lendacky@amd.com, jiri@nvidia.com, mingo@redhat.com,
+        juri.lelli@redhat.com, vincent.guittot@linaro.org,
+        lgoncalv@redhat.com
+Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to
+ housekeeping CPUs
+Message-ID: <20201026173012.GA377978@fuller.cnet>
+References: <20201019111137.GL2628@hirez.programming.kicks-ass.net>
+ <20201019140005.GB17287@fuller.cnet>
+ <20201020073055.GY2611@hirez.programming.kicks-ass.net>
+ <078e659e-d151-5bc2-a7dd-fe0070267cb3@redhat.com>
+ <20201020134128.GT2628@hirez.programming.kicks-ass.net>
+ <6736e643-d4ae-9919-9ae1-a73d5f31463e@redhat.com>
+ <260f4191-5b9f-6dc1-9f11-085533ac4f55@redhat.com>
+ <20201023085826.GP2611@hirez.programming.kicks-ass.net>
+ <9ee77056-ef02-8696-5b96-46007e35ab00@redhat.com>
+ <87ft6464jf.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <ygnh7drdz0nf.fsf@nvidia.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87ft6464jf.fsf@nanos.tec.linutronix.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2020-10-26 7:28 a.m., Vlad Buslov wrote:
+On Fri, Oct 23, 2020 at 11:00:52PM +0200, Thomas Gleixner wrote:
+> On Fri, Oct 23 2020 at 09:10, Nitesh Narayan Lal wrote:
+> > On 10/23/20 4:58 AM, Peter Zijlstra wrote:
+> >> On Thu, Oct 22, 2020 at 01:47:14PM -0400, Nitesh Narayan Lal wrote:
+> >> So shouldn't we then fix the drivers / interface first, to get rid of
+> >> this inconsistency?
+> >>
+> > Considering we agree that excess vector is a problem that needs to be
+> > solved across all the drivers and that you are comfortable with the other
+> > three patches in the set. If I may suggest the following:
+> >
+> > - We can pick those three patches for now, as that will atleast fix a
+> >   driver that is currently impacting RT workloads. Is that a fair
+> >   expectation?
 > 
-> On Sat 24 Oct 2020 at 20:40, Jamal Hadi Salim <jhs@mojatatu.com> wrote:
-
-[..]
->>>
->>> Yes, that makes sense. I guess introducing something like 'tc action -br
->>> ls ..' mode implemented by means of existing terse flag + new 'also
->>> output action index' flag would achieve that goal.
->>>
->>
->> Right. There should be no interest in the cookie here at all. Maybe
->> it could be optional with a flag indication.
->> Have time to cook a patch? I'll taste/test it.
+> No. Blindly reducing the maximum vectors to the number of housekeeping
+> CPUs is patently wrong. The PCI core _cannot_ just nilly willy decide
+> what the right number of interrupts for this situation is.
 > 
-> Patch to make cookie in filter terse dump optional? That would break
-> existing terse dump users that rely on it (OVS).
+> Many of these drivers need more than queue interrupts, admin, error
+> interrupt and some operate best with seperate RX/TX interrupts per
+> queue. They all can "work" with a single PCI interrupt of course, but
+> the price you pay is performance.
+> 
+> An isolated setup, which I'm familiar with, has two housekeeping
+> CPUs. So far I restricted the number of network queues with a module
+> argument to two, which allocates two management interrupts for the
+> device and two interrupts (RX/TX) per queue, i.e. a total of six.
+> 
+> Now I reduced the number of available interrupts to two according to
+> your hack, which makes it use one queue RX/TX combined and one
+> management interrupt. Guess what happens? Network performance tanks to
+> the points that it breaks a carefully crafted setup.
+> 
+> The same applies to a device which is application specific and wants one
+> channel including an interrupt per isolated application core. Today I
+> can isolate 8 out of 12 CPUs and let the device create 8 channels and
+> set one interrupt and channel affine to each isolated CPU. With your
+> hack, I get only 4 interrupts and channels. Fail!
 
-Meant patch for 'tc action -br ls'
+Good point.
 
-Which by default would not include the cookie.
+> You cannot declare that all this is perfectly fine, just because it does
+> not matter for your particular use case.
+> 
+> So without information from the driver which tells what the best number
+> of interrupts is with a reduced number of CPUs, this cutoff will cause
+> more problems than it solves. Regressions guaranteed.
 
-cheers,
-jamal
+One might want to move from one interrupt per isolated app core
+to zero, or vice versa. It seems that "best number of interrupts 
+is with reduced number of CPUs" information, is therefore in userspace, 
+not in driver...
+
+No?
+
+> Managed interrupts base their interrupt allocation and spreading on
+> information which is handed in by the individual driver and not on crude
+> assumptions. They are not imposing restrictions on the use case.
+> 
+> It's perfectly fine for isolated work to save a data set to disk after
+> computation has finished and that just works with the per-cpu I/O queue
+> which is otherwise completely silent. 
+
+Userspace could only change the mask of interrupts which are not 
+triggered by requests from the local CPU (admin, error, mgmt, etc),
+to avoid the vector exhaustion problem.
+
+However, there is no explicit way for userspace to know that, as far as
+i know.
+
+ 130:      34845          0          0          0          0          0          0          0  IR-PCI-MSI 33554433-edge      nvme0q1
+ 131:          0      27062          0          0          0          0          0          0  IR-PCI-MSI 33554434-edge      nvme0q2
+ 132:          0          0      24393          0          0          0          0          0  IR-PCI-MSI 33554435-edge      nvme0q3
+ 133:          0          0          0      24313          0          0          0          0  IR-PCI-MSI 33554436-edge      nvme0q4
+ 134:          0          0          0          0      20608          0          0          0  IR-PCI-MSI 33554437-edge      nvme0q5
+ 135:          0          0          0          0          0      22163          0          0  IR-PCI-MSI 33554438-edge      nvme0q6
+ 136:          0          0          0          0          0          0      23020          0  IR-PCI-MSI 33554439-edge      nvme0q7
+ 137:          0          0          0          0          0          0          0      24285  IR-PCI-MSI 33554440-edge      nvme0q8
+
+
+Can that be retrieved from PCI-MSI information, or drivers
+have to inform this? 
+
+> All isolated workers can do the
+> same in parallel without trampling on each other toes by competing for a
+> reduced number of queues which are affine to the housekeeper CPUs.
+> 
+> Unfortunately network multi-queue is substantially different from block
+> multi-queue (as I learned in this conversation), so the concept cannot
+> be applied one-to-one to networking as is. But there are certainly part
+> of it which can be reused.
+> 
+> This needs a lot more thought than just these crude hacks.
+> 
+> Especially under the aspect that there are talks about making isolation
+> runtime switchable. Are you going to rmmod/insmod the i40e network
+> driver to do so? That's going to work fine if you do that
+> reconfiguration over network...
+> 
+> Thanks,
+> 
+>         tglx
+
 
