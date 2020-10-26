@@ -2,103 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65CD32988BE
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 09:48:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C51A2988E1
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 09:58:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1772074AbgJZIs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 04:48:28 -0400
-Received: from mail-ej1-f66.google.com ([209.85.218.66]:35053 "EHLO
-        mail-ej1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1771239AbgJZIs2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 04:48:28 -0400
-Received: by mail-ej1-f66.google.com with SMTP id p5so12196527ejj.2
-        for <netdev@vger.kernel.org>; Mon, 26 Oct 2020 01:48:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=CMq2mLbNL74WkLZ1bSnHIm39p11lGlRAoIf1ew+2tbQ=;
-        b=Q/QB3j8/IpxObQY6qPdYa7cbAi0sEDmT6CmkPLR4Ess7CkQJb+PA97JTGmDk/haHkh
-         3u5/kJKSIQk33he8fPuND4XRNN3kxTVZvAIg78U+x3nEfXe7F/oVwcUqXGy7GpJrzmKR
-         rYuayxbyuURfej5BAoNdDZG1+RV1kYG3XhKuoKwoFmkQGzODd4kin3auiRZwC3aNloaw
-         rNBBV7F6a+eAioCj5ftFLI0EhUzInbAr04Wpzi9BvWgkpZHxOh0kuxfar5PAnzfiaIEi
-         rjlbKTGkwFXRzTQqSFMWZ/fLtCVbOuQ6gyh2CSHKC6A+PkY7HcmNba4I98LxTWD/K+nJ
-         Jlew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=CMq2mLbNL74WkLZ1bSnHIm39p11lGlRAoIf1ew+2tbQ=;
-        b=DUHTXdBTl4IVmeAzLFum1KLArImM+LM1MH0QeMJCNSJCO8S1z0yop4BxdVb6M6jNlr
-         ls791TYgWGXGva2WZKYntiP+qkLy1tiqhaNF3AyRNJF+wSb3BHc21Z9PwfCeolVTWnrL
-         1Lqxd+ubLPqD2QkCkT1KUTICSy749yoMAhEA/2BEDCaXDB93K4+mJT+viHwm1RXFUoRi
-         Jht5zC8xYnEOqQGuIRg9ay1yWplcTxblQSPN+gvr5q6W33YKmgBcyeuUjPIzOlaENbz8
-         cKMji4/k9MyMikEw30RN35CCpnQo19RI/ZZHDHBe/Ryw9UI2/wvgpICc9VC4PlCLc5pp
-         LkhQ==
-X-Gm-Message-State: AOAM533Rn8DD9vjfd4Nn+3gbt/LmIhSVeHL/koCTzHCb+fgOol8qYmyH
-        170Shb5SJwD/19tsDYsiPBzS3w==
-X-Google-Smtp-Source: ABdhPJwRK4D9d8sEPV3gB1z/36n0v4t27P8vVnI8CMt3lDfadhwlftbORnaGv4rPAAZEvVAwnOhLkA==
-X-Received: by 2002:a17:906:f185:: with SMTP id gs5mr14418155ejb.107.1603702105891;
-        Mon, 26 Oct 2020 01:48:25 -0700 (PDT)
-Received: from netronome.com ([2001:982:7ed1:403:9eeb:e8ff:fe0d:5b6a])
-        by smtp.gmail.com with ESMTPSA id l17sm5441023eji.14.2020.10.26.01.48.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2020 01:48:25 -0700 (PDT)
-Date:   Mon, 26 Oct 2020 09:48:24 +0100
-From:   Simon Horman <simon.horman@netronome.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Zahari Doychev <zahari.doychev@linux.com>, netdev@vger.kernel.org,
-        jhs@mojatatu.com
-Subject: Re: [iproute2-next] tc flower: use right ethertype in icmp/arp
- parsing
-Message-ID: <20201026084824.GA29950@netronome.com>
-References: <20201019114708.1050421-1-zahari.doychev@linux.com>
- <bd0eb394-72a3-1c95-6736-cd47a1d69585@gmail.com>
+        id S1772370AbgJZI6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 04:58:10 -0400
+Received: from mga04.intel.com ([192.55.52.120]:36628 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1770820AbgJZI6J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 04:58:09 -0400
+IronPort-SDR: CE+i1vRpv5G5BS4PWLq4YZZkPmB3tX0+/ahsG50rPTS0lvtldQKyws6wN5WQPAShvPAp45JfOA
+ P8RBSn7LlxTw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9785"; a="165302367"
+X-IronPort-AV: E=Sophos;i="5.77,417,1596524400"; 
+   d="scan'208";a="165302367"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2020 01:58:07 -0700
+IronPort-SDR: W5gqznAoEYdXPhT1hfswbhbOJWaWO0JSF5mkzVqtcjuivJadlDvifzxH9rZ5BQ+aWfD0ul+flM
+ +d0d7L7clkcg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,417,1596524400"; 
+   d="scan'208";a="360925113"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.141])
+  by orsmga007.jf.intel.com with ESMTP; 26 Oct 2020 01:58:04 -0700
+Date:   Mon, 26 Oct 2020 16:52:47 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, mdf@kernel.org,
+        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
+        linux-fpga@vger.kernel.org, netdev@vger.kernel.org,
+        trix@redhat.com, lgoncalv@redhat.com, hao.wu@intel.com,
+        yilun.xu@intel.com
+Subject: Re: [RFC PATCH 1/6] docs: networking: add the document for DFL Ether
+  Group driver
+Message-ID: <20201026085246.GC25281@yilunxu-OptiPlex-7050>
+References: <1603442745-13085-1-git-send-email-yilun.xu@intel.com>
+ <1603442745-13085-2-git-send-email-yilun.xu@intel.com>
+ <20201023153731.GC718124@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <bd0eb394-72a3-1c95-6736-cd47a1d69585@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20201023153731.GC718124@lunn.ch>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 25, 2020 at 03:18:48PM -0600, David Ahern wrote:
-> On 10/19/20 5:47 AM, Zahari Doychev wrote:
-> > Currently the icmp and arp prsing functions are called with inccorect
-> > ethtype in case of vlan or cvlan filter options. In this case either
-> > cvlan_ethtype or vlan_ethtype has to be used.
-> > 
-> > Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
-> > ---
-> >  tc/f_flower.c | 43 ++++++++++++++++++++++++++-----------------
-> >  1 file changed, 26 insertions(+), 17 deletions(-)
-> > 
-> > diff --git a/tc/f_flower.c b/tc/f_flower.c
-> > index 00c919fd..dd9f3446 100644
-> > --- a/tc/f_flower.c
-> > +++ b/tc/f_flower.c
-> > @@ -1712,7 +1712,10 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
-> >  			}
-> >  		} else if (matches(*argv, "type") == 0) {
-> >  			NEXT_ARG();
-> > -			ret = flower_parse_icmp(*argv, eth_type, ip_proto,
-> > +			ret = flower_parse_icmp(*argv, cvlan_ethtype ?
-> > +						cvlan_ethtype : vlan_ethtype ?
-> > +						vlan_ethtype : eth_type,
-> > +						ip_proto,
-> 
-> looks correct to me, but would like confirmation of the intent from Simon.
+Hi Andrew
 
-Thanks, this appears to be correct to me as ultimately
-the code wants to operate on ETH_P_IP or ETH_P_IPV6 rather
-than a VLAN Ether type.
+Thanks for your fast response, see comments inline.
 
-> Also, I am not a fan of the readability of that coding style. Rather
-> than repeat that expression multiple times, make a short helper to
-> return the relevant eth type and use a temp variable for it. You should
-> also comment that relevant eth type changes as arguments are parsed.
+On Fri, Oct 23, 2020 at 05:37:31PM +0200, Andrew Lunn wrote:
+> Hi Xu
 > 
-> Thanks,
+> Before i look at the other patches, i want to understand the
+> architecture properly.
+
+I have a doc to describe the architecture:
+
+https://www.intel.com/content/www/us/en/programmable/documentation/xgz1560360700260.html
+
+The "Figure 1" is a more detailed figure for the arch. It should be
+helpful.
+
 > 
+> > +=======================================================================
+> > +DFL device driver for Ether Group private feature on Intel(R) PAC N3000
+> > +=======================================================================
+> > +
+> > +This is the driver for Ether Group private feature on Intel(R)
+> > +PAC (Programmable Acceleration Card) N3000.
 > 
+> I assume this is just one implementation. The FPGA could be placed on
+> other boards. So some of the limitations you talk about with the BMC
+> artificial, and the overall architecture of the drivers is more
+> generic?
+
+I could see if the retimer management is changed, e.g. access the retimer
+through a host controlled MDIO, maybe I need a more generic way to find the
+MDIO bus.
+
+Do you have other suggestions?
+
+> 
+> > +The Intel(R) PAC N3000 is a FPGA based SmartNIC platform for multi-workload
+> > +networking application acceleration. A simple diagram below to for the board:
+> > +
+> > +                     +----------------------------------------+
+> > +                     |                  FPGA                  |
+> > ++----+   +-------+   +-----------+  +----------+  +-----------+   +----------+
+> > +|QSFP|---|retimer|---|Line Side  |--|User logic|--|Host Side  |---|XL710     |
+> > ++----+   +-------+   |Ether Group|  |          |  |Ether Group|   |Ethernet  |
+> > +                     |(PHY + MAC)|  |wiring &  |  |(MAC + PHY)|   |Controller|
+> > +                     +-----------+  |offloading|  +-----------+   +----------+
+> > +                     |              +----------+              |
+> > +                     |                                        |
+> > +                     +----------------------------------------+
+> 
+> Is XL710 required? I assume any MAC with the correct MII interface
+> will work?
+
+The XL710 is required for this implementation, in which we have the Host
+Side Ether Group facing the host.  The Host Side Ether Group actually
+contains the same IP blocks as Line Side. It contains the compacted MAC &
+PHY functionalities for 25G/40G case. The 25G MAC-PHY soft IP SPEC can
+be found at:
+
+https://www.intel.com/content/www/us/en/programmable/documentation/ewo1447742896786.html
+
+So raw serial data is output from Host Side FPGA, and XL710 is good to
+handle this.
+
+> 
+> Do you really mean PHY? I actually expect it is PCS? 
+
+For this implementation, yes.
+
+I guess if you program another IP block on FPGA host side, e.g. a PCS interface,
+and replace XL710 with another MAC, it may also work. But I think there should
+be other drivers to handle this.
+
+I may contact with our Hardware designer if there is some concern we
+don't use MII for connection of FPGA & Host.
+
+The FPGA User is mainly concerned about the user logic part. The Ether
+Groups in FIU and Board components are not expected to be re-designed by
+the user. So I think I should still focus on the driver for this
+implementation.
+
+> 
+> > +The DFL Ether Group driver registers netdev for each line side link. Users
+> > +could use standard commands (ethtool, ip, ifconfig) for configuration and
+> > +link state/statistics reading. For host side links, they are always connected
+> > +to the host ethernet controller, so they should always have same features as
+> > +the host ethernet controller. There is no need to register netdevs for them.
+> 
+> So lets say the XL710 is eth0. The line side netif is eth1. Where do i
+> put the IP address? What interface do i add to quagga OSPF? 
+
+The IP address should be put in eth0. eth0 should always be used for the
+tools.
+
+The line/host side Ether Group is not the terminal of the network data stream.
+Eth1 will not paticipate in the network data exchange to host.
+
+The main purposes for eth1 are:
+1. For users to monitor the network statistics on Line Side, and by comparing the
+statistics between eth0 & eth1, users could get some knowledge of how the User
+logic is taking function.
+
+2. Get the link state of the front panel. The XL710 is now connected to
+Host Side of the FPGA and the its link state would be always on. So to
+check the link state of the front panel, we need to query eth1.
+
+> 
+> > +The driver just enables these links on probe.
+> > +
+> > +The retimer chips are managed by onboard BMC (Board Management Controller)
+> > +firmware, host driver is not capable to access them directly.
+> 
+> What about the QSPF socket? Can the host get access to the I2C bus?
+> The pins for TX enable, etc. ethtool -m?
+
+No, the QSPF/I2C are also managed by the BMC firmware, and host doesn't
+have interface to talk to BMC firmware about QSPF.
+
+> 
+> > +Speed/Duplex
+> > +------------
+> > +The Ether Group doesn't support auto-negotiation. The link speed is fixed to
+> > +10G, 25G or 40G full duplex according to which Ether Group IP is programmed.
+> 
+> So that means, if i pop out the SFP and put in a different one which
+> supports a different speed, it is expected to be broken until the FPGA
+> is reloaded?
+
+It is expected to be broken.
+
+Now the line side is expected to be configured to 4x10G, 4x25G, 2x25G, 1x25G.
+host side is expected to be 4x10G or 2x40G for XL710.
+
+So 4 channel SFP is expected to be inserted to front panel. And we should use
+4x25G SFP, which is compatible to 4x10G connection.
+
+Thanks,
+Yilun
+
+> 
+>      Andrew
