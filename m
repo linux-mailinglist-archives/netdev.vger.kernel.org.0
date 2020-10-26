@@ -2,120 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B43432999B8
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 23:33:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 82EB42999C2
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 23:37:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394532AbgJZWdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 18:33:00 -0400
-Received: from mail-yb1-f194.google.com ([209.85.219.194]:35555 "EHLO
-        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2394179AbgJZWdA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 18:33:00 -0400
-Received: by mail-yb1-f194.google.com with SMTP id m188so4036091ybf.2;
-        Mon, 26 Oct 2020 15:32:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tYGKgBOvXd0V/keZVVJoez9jaPUFednPhovrcJOgA2g=;
-        b=kAauVYU8XtFtg2dOaqnJQwkbqB52ez/V5BY4VECXf1bDCA3xkrgRxmc8mhHkcL7Sh2
-         AnPLxWk9P9V1Lreux98xz77OgW9JboFSUIItFrvNvleQT0UzZqghu4150Ors4lsor85u
-         gRoREfMaYdYZhjfAARgesMNdkJCswegVeHEWUIfeRxBQ5gQle3JJN5ORqwnMaSZuqUbe
-         FALLq7z6Uf9W7P2t1zkJcuOiBjPeJbdCNQM82B7viQLfowGVyApJqeWkEBNtry0VWiCp
-         LtwOeOXqtIen5DMkS5jbnd6DPA+/SQfqUxiLg9kUyrnEEscb7eIv0G0MOnvPkiMCdVT0
-         RzUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tYGKgBOvXd0V/keZVVJoez9jaPUFednPhovrcJOgA2g=;
-        b=O4YIv+7NEXQm19X/WYq0dMHS7qDu9RmEugG4/o2EAmxRWHNnlTQ9sLsiufFnBOfzwK
-         BoHa00e13JFh5fYF9mzvdYmjJPDk9si3OGZWzC92utChH3WNTv7UzoMjPKCuOmgot+yQ
-         bAZv1svxNNr8F8PxlLGuMuVOIkDwSHV1Hzn8PYBwKa9Vvb2SiwuvD4xx1dh+Uduks5wv
-         qSlhJTtGGvscj8v/09hjMnYzoJXFiAsj8XXAm+VFt+RmnrxP7B5fHNfa3z2d+n31yy5Q
-         xICSfmSVZ5hGuUKQ310a5ZhoTIZq83jEXTHOg3vzgyVTv/IEtYYNrG5QcBknQEy5Uqxa
-         7MPw==
-X-Gm-Message-State: AOAM532OJ+4sTGKHUXHMltBAOQkpO2Zn6B1IyXA0H9g5wbKrpRL+cgKU
-        uIkM8iPxcebuLnNQdHGOPP1nZcMgZrhCiJY/WcA=
-X-Google-Smtp-Source: ABdhPJzJ8WKki2YfYpJmDD9XUL4ndI92W9goc0lwvGF2XEbq+khib6ri7e9trS95QelSwRqFNcMe0EnnNUduMZUawrk=
-X-Received: by 2002:a25:bdc7:: with SMTP id g7mr27858824ybk.260.1603751578973;
- Mon, 26 Oct 2020 15:32:58 -0700 (PDT)
+        id S2394560AbgJZWhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 18:37:23 -0400
+Received: from m42-4.mailgun.net ([69.72.42.4]:32776 "EHLO m42-4.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2394549AbgJZWhW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 18:37:22 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1603751841; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=y1i8qtqfp0ZdnHugW/F30HmEn1D4bAHJAO0sjejblDA=; b=aMxEZYT2oT06MYHNHORvlxehyIxIBtyivOo/mEGtp0ZxJAjjb1rumQf4q0hqUvutu6tISK1i
+ c3uBhDxvMmfu8AcHPCa/dQc1KagnPZs2gHA52bZSvA24vrMlSnpWEJFOY6bPnJyI11LW+0wK
+ u4vPbHZunvVddpZmGi3D4JZVJAs=
+X-Mailgun-Sending-Ip: 69.72.42.4
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
+ 5f974f7e18530f07b72eba08 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 26 Oct 2020 22:36:46
+ GMT
+Sender: hemantk=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 7F7D3C433F0; Mon, 26 Oct 2020 22:36:46 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-5.1 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        NICE_REPLY_A,SPF_FAIL autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from [10.46.162.249] (i-global254.qualcomm.com [199.106.103.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: hemantk)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 79EA7C43382;
+        Mon, 26 Oct 2020 22:36:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 79EA7C43382
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=hemantk@codeaurora.org
+Subject: Re: [PATCH v9 3/4] docs: Add documentation for userspace client
+ interface
+To:     Jeffrey Hugo <jhugo@codeaurora.org>,
+        Dan Williams <dcbw@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     manivannan.sadhasivam@linaro.org, gregkh@linuxfoundation.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bbhatt@codeaurora.org, loic.poulain@linaro.org,
+        netdev@vger.kernel.org
+References: <1603495075-11462-1-git-send-email-hemantk@codeaurora.org>
+ <1603495075-11462-4-git-send-email-hemantk@codeaurora.org>
+ <20201025144627.65b2324e@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <e92a5a5b-ac62-a6d8-b6b4-b65587e64255@codeaurora.org>
+ <4e4dc63d0a0b5a820f7a70e30e29746fd6735a96.camel@redhat.com>
+ <7934e50d-72bd-f20a-54da-33f29c66c3fa@codeaurora.org>
+From:   Hemant Kumar <hemantk@codeaurora.org>
+Message-ID: <a0920f91-e043-8a67-f5c4-ea06eb1ddb2a@codeaurora.org>
+Date:   Mon, 26 Oct 2020 15:36:45 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20201026210355.3885283-1-arnd@kernel.org>
-In-Reply-To: <20201026210355.3885283-1-arnd@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 26 Oct 2020 15:32:48 -0700
-Message-ID: <CAEf4BzYbH_x3s0Z4YGv4spOQ5oQAYbYNBf+3Fy5eopCK8=nuNw@mail.gmail.com>
-Subject: Re: [PATCH] bpf: fix incorrect initialization of bpf_ctx_convert_map
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Arnd Bergmann <arnd@arndb.de>, Martin KaFai Lau <kafai@fb.com>,
-        Marek Majkowski <marek@cloudflare.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Jiri Olsa <jolsa@kernel.org>,
-        Alan Maguire <alan.maguire@oracle.com>,
-        Hao Luo <haoluo@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <7934e50d-72bd-f20a-54da-33f29c66c3fa@codeaurora.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 26, 2020 at 2:04 PM Arnd Bergmann <arnd@kernel.org> wrote:
->
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> gcc -Wextra points out that a field may get overridden in some
-> configurations such as x86 allmodconfig, when the next index after the one
-> that has been assigned last already had a value, in this case for index
-> BPF_PROG_TYPE_SK_LOOKUP, which comes after BPF_PROG_TYPE_LSM in the list:
->
-> kernel/bpf/btf.c:4225:2: warning: initialized field overwritten [-Woverride-init]
->  4225 |  0, /* avoid empty array */
->       |  ^
-> kernel/bpf/btf.c:4225:2: note: (near initialization for 'bpf_ctx_convert_map[30]')
->
-> Move the zero-initializer first instead. This avoids the warning since
-> nothing else uses index 0, and the last element does not have to be zero.
-
-Wouldn't it be cleaner and more explicit to add __MAX_BPF_PROG_TYPE to
-enum bpf_prog_type in include/uapi/linux/bpf.h, similarly to how we do
-it with enum bpf_attach_type? Then just specify the size of the array
-here explicitly? Unless we are trying to save a few bytes for more
-minimal configurations where some BPF program types are not used (but
-still defined in an enum)?
 
 
->
-> Fixes: e9ddbb7707ff ("bpf: Introduce SK_LOOKUP program type with a dedicated attach point")
-> Fixes: 4c80c7bc583a ("bpf: Fix build in minimal configurations, again")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  kernel/bpf/btf.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index ed7d02e8bc93..2a4a4aeeaac1 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -4218,11 +4218,11 @@ enum {
->         __ctx_convert_unused, /* to avoid empty enum in extreme .config */
->  };
->  static u8 bpf_ctx_convert_map[] = {
-> +       [0] = 0, /* avoid empty array */
->  #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type) \
->         [_id] = __ctx_convert##_id,
->  #include <linux/bpf_types.h>
->  #undef BPF_PROG_TYPE
-> -       0, /* avoid empty array */
->  };
->  #undef BPF_MAP_TYPE
->  #undef BPF_LINK_TYPE
-> --
-> 2.27.0
->
+On 10/26/20 6:56 AM, Jeffrey Hugo wrote:
+> On 10/26/2020 7:46 AM, Dan Williams wrote:
+>> On Mon, 2020-10-26 at 07:38 -0600, Jeffrey Hugo wrote:
+>>> On 10/25/2020 3:46 PM, Jakub Kicinski wrote:
+>>>> On Fri, 23 Oct 2020 16:17:54 -0700 Hemant Kumar wrote:
+>>>>> +UCI driver enables userspace clients to communicate to external
+>>>>> MHI devices
+>>>>> +like modem and WLAN. UCI driver probe creates standard character
+>>>>> device file
+>>>>> +nodes for userspace clients to perform open, read, write, poll
+>>>>> and release file
+>>>>> +operations.
+>>>>
+>>>> What's the user space that talks to this?
+>>>>
+>>>
+>>> Multiple.
+>>>
+>>> Each channel has a different purpose.  There it is expected that a
+>>> different userspace application would be using it.
+>>>
+>>> Hemant implemented the loopback channel, which is a simple channel
+>>> that
+>>> just sends you back anything you send it.  Typically this is consumed
+>>> by
+>>> a test application.
+>>>
+>>> Diag is a typical channel to be consumed by userspace.  This is
+>>> consumed
+>>> by various applications that talk to the remote device for
+>>> diagnostic
+>>> information (logs and such).
+>>
+>> QMI too?
+>> Dan
+> 
+> Interesting question.  My product doesn't use QMI.  I would expect that 
+> all QMI runs through Router these days, but I am seeing some QMI 
+> channels in the downstream source.
+> 
+> Hemant, Do you know what is the usecase for the QMI0/QMI1 channels?
+> 
+QMI0/QMI1 is used to send QMI message (control path) to bring the qmi 
+rmnet data call.
+
+Thanks,
+Hemant
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
