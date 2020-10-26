@@ -2,179 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 678DF298625
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 05:18:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CBD029863F
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 05:46:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1421006AbgJZESj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 00:18:39 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:42268 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1420967AbgJZESi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 00:18:38 -0400
-Received: by mail-pl1-f193.google.com with SMTP id t22so4115059plr.9
-        for <netdev@vger.kernel.org>; Sun, 25 Oct 2020 21:18:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=kHZxykr3MBtf9fNtmterRp5McBAJfcZeT+TwwHws64w=;
-        b=CERhcMSPoqKwEpCQkGYQVels6Utq+3dAwWapNYphF1hbl8QrAHVuLVa9y46qhjCA+d
-         FrwAiIabegfDMX5jRoWe3mMxMri0snlvlNmfYjnlp+FfKa3EthxMn/H+bPgi9bzgNIMB
-         lqWZBlAjSW1sFA6ck7bcMiB0uFX03LJamHvC8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=kHZxykr3MBtf9fNtmterRp5McBAJfcZeT+TwwHws64w=;
-        b=bm+q/PMJwlroFM0YWxaDVt16WvjNglYVn0JZEoEf2SBmr+q9J8yL3rLLHuOnv19SG/
-         f2cy79qHxX8L/J39xwfTz74gpnBlPDQCzPsXPkfvJI9v78YdCgAB+VldJtnnJ+PGXjO6
-         pWlJWiifLHHOhP10tR9ZGvwyjhrlNRVNntDy/ESYOaPTUt2ragF5rTS+Daw7yI0mHO1j
-         kejFDSHDAAvdEFMNWEAx9xGpshjfhj9Avz/W99gydkT+RtVMXuvD100yOifjRxTGnaNh
-         LMku4C7cPfOWUDjHnEkIRSfqJGgxTatOc+TiNh+ARoduvNXLgh56FprDLsben3oLCeye
-         RWxg==
-X-Gm-Message-State: AOAM532BWjWEG8qKtNbaNeF1VOkONPJPBzcSBGtQroorciUO1GS2CtVt
-        tZPjooa71ePze6aQUVDNq1juQg==
-X-Google-Smtp-Source: ABdhPJwIbiyxDTUbEZfXZB4pCiJ9h9uU8us/tV99Tvz4K7G859oa8HthM3BdN6fGlQHbju+nsTDRgA==
-X-Received: by 2002:a17:902:8502:b029:d5:b4f4:8555 with SMTP id bj2-20020a1709028502b02900d5b4f48555mr12912230plb.76.1603685917100;
-        Sun, 25 Oct 2020 21:18:37 -0700 (PDT)
-Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 10sm11505835pjt.50.2020.10.25.21.18.36
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 25 Oct 2020 21:18:36 -0700 (PDT)
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     kuba@kernel.org
-Cc:     netdev@vger.kernel.org, gospo@broadcom.com,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH net 5/5] bnxt_en: Send HWRM_FUNC_RESET fw command unconditionally.
-Date:   Mon, 26 Oct 2020 00:18:21 -0400
-Message-Id: <1603685901-17917-6-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1603685901-17917-1-git-send-email-michael.chan@broadcom.com>
-References: <1603685901-17917-1-git-send-email-michael.chan@broadcom.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000073795c05b28b3964"
+        id S1421586AbgJZEqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 00:46:00 -0400
+Received: from bilbo.ozlabs.org ([203.11.71.1]:44107 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1421573AbgJZEp7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 00:45:59 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4CKMjJ6PTPz9sT6;
+        Mon, 26 Oct 2020 15:45:56 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
+        s=201909; t=1603687557;
+        bh=AIzG1Bgj4Dpz5ClsRcl/SqGZTTqDaKHn7m3Fp6anYOw=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=KovvuKieWoUcYBZcyNUA0Y99eBdGXSESoKPKLFq2XlnfbdpBI5r8UjVBJDRS4iI0n
+         dmV3k+uPREp/cBFV6TFujJ9DV+BN3jMVb97rjRtTg1RqpI+iAp2syRE2bkg5oQr3HX
+         0ExyduMwkzURYEDoHi05s4hKOeWCzu/VKCIU21Zm523xkhB+k70R5XfwWdSFzgPquC
+         S+rBfIOG8iKHkmGoqXN4VnUMfdkSyB/Sk+6a2XNBV2SlLqd1OIzU6phrJUMnuUysCe
+         lnicy3i1w6dTg73n6XZWqr2oYKOdBnU67y7zuR+YPUkZ12JZ2epylCMmlplpbgAxr5
+         0SNaFyRRuN9lg==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Vitaly Chikunov <vt@altlinux.org>, bpf@vger.kernel.org,
+        Will Deacon <will@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Sandipan Das <sandipan@linux.ibm.com>
+Cc:     "Dmitry V. Levin" <ldv@altlinux.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: Re: tools/bpf: Compilation issue on powerpc: unknown type name '__vector128'
+In-Reply-To: <20201024203040.4cjxnxrdy6qx557c@altlinux.org>
+References: <20201023230641.xomukhg3zrhtuxez@altlinux.org> <20201024082319.GA24131@altlinux.org> <20201024203040.4cjxnxrdy6qx557c@altlinux.org>
+Date:   Mon, 26 Oct 2020 15:45:55 +1100
+Message-ID: <87y2jtwq64.fsf@mpe.ellerman.id.au>
+MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000073795c05b28b3964
+Vitaly Chikunov <vt@altlinux.org> writes:
+> Adding netdev and PowerPC maintainers JFYI.
 
-From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
+Thanks.
 
-In the AER or firmware reset flow, if we are in fatal error state or
-if pci_channel_offline() is true, we don't send any commands to the
-firmware because the commands will likely not reach the firmware and
-most commands don't matter much because the firmware is likely to be
-reset imminently.
+> On Sat, Oct 24, 2020 at 11:23:19AM +0300, Dmitry V. Levin wrote:
+>> Hi,
+>> 
+>> On Sat, Oct 24, 2020 at 02:06:41AM +0300, Vitaly Chikunov wrote:
+>> > Hi,
+>> > 
+>> > Commit f143c11bb7b9 ("tools: bpf: Use local copy of headers including
+>> > uapi/linux/filter.h") introduces compilation issue on powerpc:
+>> >  
+>> >   builder@powerpc64le:~/linux$ make -C tools/bpf V=1
+>> >   make: Entering directory '/usr/src/linux/tools/bpf'
+>> >   gcc -Wall -O2 -D__EXPORTED_HEADERS__ -I/usr/src/linux/tools/include/uapi -I/usr/src/linux/tools/include -DDISASM_FOUR_ARGS_SIGNATURE -c -o bpf_dbg.o /usr/src/linux/tools/bpf/bpf_dbg.c
 
-However, the HWRM_FUNC_RESET command is different and we should always
-attempt to send it.  In the AER flow for example, the .slot_reset()
-call will trigger this fw command and we need to try to send it to
-effect the proper reset.
+Defining __EXPORTED_HEADERS__ is a hack to circumvent the checks in the
+uapi headers.
 
-Fixes: b340dc680ed4 ("bnxt_en: Avoid sending firmware messages when AER error is detected.")
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
----
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+So first comment is to stop doing that, although it doesn't actually fix
+this issue.
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 0165f70dba74..7975f59735d6 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -4352,7 +4352,8 @@ static int bnxt_hwrm_do_send_msg(struct bnxt *bp, void *msg, u32 msg_len,
- 	u32 bar_offset = BNXT_GRCPF_REG_CHIMP_COMM;
- 	u16 dst = BNXT_HWRM_CHNL_CHIMP;
- 
--	if (BNXT_NO_FW_ACCESS(bp))
-+	if (BNXT_NO_FW_ACCESS(bp) &&
-+	    le16_to_cpu(req->req_type) != HWRM_FUNC_RESET)
- 		return -EBUSY;
- 
- 	if (msg_len > BNXT_HWRM_MAX_REQ_LEN) {
--- 
-2.18.1
+>> >   In file included from /usr/include/asm/sigcontext.h:14,
+>> > 		   from /usr/include/bits/sigcontext.h:30,
+>> > 		   from /usr/include/signal.h:291,
+>> > 		   from /usr/src/linux/tools/bpf/bpf_dbg.c:51:
+>> >   /usr/include/asm/elf.h:160:9: error: unknown type name '__vector128'
+>> >     160 | typedef __vector128 elf_vrreg_t;
+>> > 	|         ^~~~~~~~~~~
+>> >   make: *** [Makefile:67: bpf_dbg.o] Error 1
+>> >   make: Leaving directory '/usr/src/linux/tools/bpf'
+>> 
+>> __vector128 is defined in arch/powerpc/include/uapi/asm/types.h;
+>> while include/uapi/linux/types.h does #include <asm/types.h>,
+>> tools/include/uapi/linux/types.h doesn't, resulting to this
+>> compilation error.
+>
+> This is too puzzling to fix portably.
+
+I don't really understand how this is expected to work.
+
+We have tools/include/uapi/linux/types.h which is some sort of hand
+hacked types.h, but doesn't match the real types.h from
+include/uapi/linux.
+
+In particular the tools/include types.h doesn't include asm/types.h,
+which is why this breaks.
+
+I can build bpf_dbg if I copy the properly exported header in:
+
+  $ make INSTALL_HDR_PATH=$PWD/headers headers_install
+  $ cp headers/include/linux/types.h tools/include/uapi/linux/
+  $ make -C tools/bpf bpf_dbg
+  make: Entering directory '/home/michael/linux/tools/bpf'
+  
+  Auto-detecting system features:
+  ...                        libbfd: [ on  ]
+  ...        disassembler-four-args: [ on  ]
+  
+    CC       bpf_dbg.o
+    LINK     bpf_dbg
+  make: Leaving directory '/home/michael/linux/tools/bpf
 
 
---00000000000073795c05b28b3964
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+I'm not sure what the proper fix is.
 
-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
-ENt96uQJNu/QKZCsRxnu8bu9XkzIQTTFs7+NKghvf+h9ck5SSEvV5vlzS8HDlhKReyLBOxx5AgMB
-AAGjggHQMIIBzDAOBgNVHQ8BAf8EBAMCBaAwgZ4GCCsGAQUFBwEBBIGRMIGOME0GCCsGAQUFBzAC
-hkFodHRwOi8vc2VjdXJlLmdsb2JhbHNpZ24uY29tL2NhY2VydC9nc3BlcnNvbmFsc2lnbjJzaGEy
-ZzNvY3NwLmNydDA9BggrBgEFBQcwAYYxaHR0cDovL29jc3AyLmdsb2JhbHNpZ24uY29tL2dzcGVy
-c29uYWxzaWduMnNoYTJnMzBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYm
-aHR0cHM6Ly93d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBEBgNVHR8E
-PTA7MDmgN6A1hjNodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzcGVyc29uYWxzaWduMnNoYTJn
-My5jcmwwJAYDVR0RBB0wG4EZbWljaGFlbC5jaGFuQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggr
-BgEFBQcDBDAfBgNVHSMEGDAWgBRpcoJiMWeVRIV3kYDEBDZJnXsLYTAdBgNVHQ4EFgQUyZbpLEwR
-KZHEh+rXp6GbCZmMEwUwDQYJKoZIhvcNAQELBQADggEBADZsABrJEwqeVLJJcX+rKN/oFPl/Sb1f
-4NQRqf0J5IHlqI7oSUUaSVHviPvq4QyTMh7P9KHkuTwANTnTPr4f4y1SirdtxgZKy1xDmt1KjL5u
-nA4rBLSA+Kp/mo0DMxKKQY/LsZNS3Zn+HIAZpXTUEFotC5qgN35ua7sP0hTynKzfLG8Fi565tQkX
-Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
-3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
-BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
-LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgaZzBq+9FQk1W
-0BA7vQBYYdMmrvViopnlP1ZU7lbhRs8wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAxMDI2MDQxODM3WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
-hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAEikeeRfjzpmx1WFv3+Gbgwppsk8fqZP
-jct4DpvW63QsgayWg5PXejttpSXLMGDmBUxpGFKOcgV+rNH21sVBjGPCy13V/5lrXoBs8rEZ7Fup
-Qfmdg+PaX61RMjm88RhMRXD4ADIKPZX3lkIAKrmxuJGjrGZAdtdghGH+a5HAWVuGpZJ+AWwdZzxQ
-yk8xyyS34jR+cs83Cj07laBlCyTKu9hsGLuMcjsyQKs+lRPAOm0caK/XLS8BgGIva35wb2l/4yHZ
-3ELndvm8i9CJtLFaEew1PVxB5iGozFviPg6iP+Sykg+XcsaMTFTr8xvIDqhD31MOdaQol1Kc8z4Y
-3Yjhqaw=
---00000000000073795c05b28b3964--
+Maybe sync the tools/include types.h with the real one?
+
+Or TBH I would have thought the best option is to not have
+tools/include/uapi at all, but instead just run headers_install before
+building and use the properly exported headers.
+
+cheers
+
