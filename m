@@ -2,50 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DAEDE299881
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 22:03:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 737B6299883
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 22:04:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729551AbgJZVDm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 17:03:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57738 "EHLO mail.kernel.org"
+        id S1729621AbgJZVEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 17:04:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57988 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729508AbgJZVDm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 17:03:42 -0400
+        id S1729586AbgJZVEE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 17:04:04 -0400
 Received: from localhost.localdomain (unknown [192.30.34.233])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 18EE72076D;
-        Mon, 26 Oct 2020 21:03:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4555D20773;
+        Mon, 26 Oct 2020 21:03:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603746221;
-        bh=OZnv8+PjDr0EFxf38kgdpGPhhv077FnV6tC8I5FI3EI=;
+        s=default; t=1603746243;
+        bh=pJK1OJkuepgQNI/swpB2eC2t54KgsoqFayP1FDpJXfQ=;
         h=From:To:Cc:Subject:Date:From;
-        b=zPARCHdA9ue578l2WNv3HF5JQC66D+2G1czAaiUWHuljt43wVHu9Ag64RWvezDW5S
-         96QhQmAsHFlZfscCcGj7/BKu6q28YWewp7nWSScDPjVBtaxMkKtwKLm6knI2CKKcAt
-         nMNlKljZpXWPhqWmn7Ho1uzZPEqQmeLNMj50ILXk=
+        b=il+Ezvkv44gRlBOPG/TAjzsUspGL735bVU/p1dkTXRRr2677e7fkKH6WBUkYfghhK
+         Asd0ogLsUT8EZNaFDP+XWlMRSUiJQOudCF9pj+P/wWo+hYIqInx2uajeFs2o8rZQkN
+         VfuQHXsNQUb/ja8DpWG6qxO/QRhqewWqOJzQsbDM=
 From:   Arnd Bergmann <arnd@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Martin KaFai Lau <kafai@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Arnd Bergmann <arnd@arndb.de>, Martin KaFai Lau <kafai@fb.com>
+Cc:     Marek Majkowski <marek@cloudflare.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         Andrii Nakryiko <andrii@kernel.org>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        David Miller <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] bpf: suppress -Wcast-function-type warning
-Date:   Mon, 26 Oct 2020 22:03:20 +0100
-Message-Id: <20201026210332.3885166-1-arnd@kernel.org>
+        KP Singh <kpsingh@chromium.org>, Jiri Olsa <jolsa@kernel.org>,
+        Alan Maguire <alan.maguire@oracle.com>,
+        Hao Luo <haoluo@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] bpf: fix incorrect initialization of bpf_ctx_convert_map
+Date:   Mon, 26 Oct 2020 22:03:48 +0100
+Message-Id: <20201026210355.3885283-1-arnd@kernel.org>
 X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -53,38 +48,43 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Arnd Bergmann <arnd@arndb.de>
 
-Building with -Wextra shows lots of warnings in the bpf
-code such as
+gcc -Wextra points out that a field may get overridden in some
+configurations such as x86 allmodconfig, when the next index after the one
+that has been assigned last already had a value, in this case for index
+BPF_PROG_TYPE_SK_LOOKUP, which comes after BPF_PROG_TYPE_LSM in the list:
 
-kernel/bpf/verifier.c: In function ‘jit_subprogs’:
-include/linux/filter.h:345:4: warning: cast between incompatible function types from ‘unsigned int (*)(const void *, const struct bpf_insn *)’ to ‘u64 (*)(u64,  u64,  u64,  u64,  u64)’ {aka ‘long long unsigned int (*)(long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int,  long long unsigned int)’} [-Wcast-function-type]
-  345 |   ((u64 (*)(u64, u64, u64, u64, u64))(x))
-      |    ^
-kernel/bpf/verifier.c:10706:16: note: in expansion of macro ‘BPF_CAST_CALL’
-10706 |    insn->imm = BPF_CAST_CALL(func[subprog]->bpf_func) -
-      |                ^~~~~~~~~~~~~
+kernel/bpf/btf.c:4225:2: warning: initialized field overwritten [-Woverride-init]
+ 4225 |  0, /* avoid empty array */
+      |  ^
+kernel/bpf/btf.c:4225:2: note: (near initialization for 'bpf_ctx_convert_map[30]')
 
-This appears to be intentional, so change the cast in a way that
-suppresses the warning.
+Move the zero-initializer first instead. This avoids the warning since
+nothing else uses index 0, and the last element does not have to be zero.
 
+Fixes: e9ddbb7707ff ("bpf: Introduce SK_LOOKUP program type with a dedicated attach point")
+Fixes: 4c80c7bc583a ("bpf: Fix build in minimal configurations, again")
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- include/linux/filter.h | 2 +-
+ kernel/bpf/btf.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index 1b62397bd124..20ba04583eaa 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -342,7 +342,7 @@ static inline bool insn_is_zext(const struct bpf_insn *insn)
- /* Function call */
- 
- #define BPF_CAST_CALL(x)					\
--		((u64 (*)(u64, u64, u64, u64, u64))(x))
-+		((u64 (*)(u64, u64, u64, u64, u64))(uintptr_t)(x))
- 
- #define BPF_EMIT_CALL(FUNC)					\
- 	((struct bpf_insn) {					\
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index ed7d02e8bc93..2a4a4aeeaac1 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -4218,11 +4218,11 @@ enum {
+ 	__ctx_convert_unused, /* to avoid empty enum in extreme .config */
+ };
+ static u8 bpf_ctx_convert_map[] = {
++	[0] = 0, /* avoid empty array */
+ #define BPF_PROG_TYPE(_id, _name, prog_ctx_type, kern_ctx_type) \
+ 	[_id] = __ctx_convert##_id,
+ #include <linux/bpf_types.h>
+ #undef BPF_PROG_TYPE
+-	0, /* avoid empty array */
+ };
+ #undef BPF_MAP_TYPE
+ #undef BPF_LINK_TYPE
 -- 
 2.27.0
 
