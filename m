@@ -2,149 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC348298759
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 08:22:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 995ED298766
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 08:29:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1769283AbgJZHWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 03:22:54 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:38320 "EHLO
+        id S1769474AbgJZH3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 03:29:46 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:46817 "EHLO
         mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1769164AbgJZHWy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 03:22:54 -0400
-Received: by mail-pf1-f195.google.com with SMTP id 10so5716028pfp.5;
-        Mon, 26 Oct 2020 00:22:53 -0700 (PDT)
+        with ESMTP id S1769470AbgJZH3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 03:29:46 -0400
+Received: by mail-pf1-f195.google.com with SMTP id y14so5694270pfp.13
+        for <netdev@vger.kernel.org>; Mon, 26 Oct 2020 00:29:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=CoiP1SRYFw3dRE7KHCo2Xt8qwofyEh+WF/YMDll/K+c=;
-        b=GvOSPVA9pBC4VK6/qA8CKb/cm13ibcrCcuILBHK5nEodqKbfoGN6HeR/4wvn8BxuBq
-         Fw3bAaYr5zwtnpzHyCeqb1kXwLsyDzV/S78MOk7qKWqRoAN7RjEW3vOwB8q4KNea4cvT
-         AK3IaazTIAaY6uBLHlYlHiVehr0vZqdU2NBCXFlP/aoHHwH7VJUffc9Nw9d1t9Oh4Syq
-         Czi5rlJrUAdDOZaSN0zf8RAWTDf6k1KblAvbHiZzIdiM1w59o+Asdo96oDmgvEB1y2P7
-         ZSATANJ/PHTIkD4utD8Hnsj76/RZSktvOyP3LrxkcyLOCj8PfAXyx5vGhnm/cRYwLKHN
-         T6Qg==
+        bh=V9hY/hW3qODOdvbaB6VAC9KlZNtZBrOl2rIEHyTtF2U=;
+        b=utB+EIfZ9p3658WPKCf2yVaXbQGxYLpvBfVMEbgNcAeX5+KIh9ywPRYDYvVpGNx+dn
+         RNpiYcbjbuQhoTHH7QJj3J0XzClsiEkeQH9CWS8SoUdCfm7srujwM4O4xQi9s7xQd14A
+         TJteEdPOpcUQMuRIk+P37vYrgJnNtUZPPdIsU0Bjf4qH02vd4pAmMo1mAscS8OgKAO92
+         7OZHbbo/pyk2rr7NLcRnPYVS8zYcanUYaKn0hgGgaVn0VImCNrsdB2yfQYORNyE9Cv5z
+         dv4l61PdcbvMOGc9yEMxspulytTLs8oRe7Sa6iPc4mD2bcnerBwXkW49v+Vcz/H+Zz2H
+         B6ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CoiP1SRYFw3dRE7KHCo2Xt8qwofyEh+WF/YMDll/K+c=;
-        b=LM6F4zJ50ginhLy9Crjl6bTVnRMdgF0VW99p9cAKeeVjsXJBFBiBZn/kFsKP8lvBz9
-         oLxCi8OOjcr8HOYAV9N51X427sd88LwhBjU2xV1QhwDHpyAw4tXDoPJCB8exz9fDpwmX
-         3rSgxpogqlXGkIRV7nOiEvp7e0grFN0N16W1zkfeyIS8oUMqFqHTPl3cWApHNVFpDWcA
-         l9BkUs5HSs/oUUyrKzcBT2lTLHCtj1tL0s6szD79EDEpdvF0HDFGCzBNTgGYpPjbONVF
-         jT1EOwaYOOYnuoEDr9YB6rC3yESQS7nhMB9yfDkKCAJ8+Qb4DZiYesv7Fpe7kC/YGzGq
-         gzBQ==
-X-Gm-Message-State: AOAM533yEvmNcj9PRzCLue51ECDSAo+sZ3LrqdSVLOKb7FtlYdiZpHX2
-        nV4ixZQr2/CLqS+WV8EkKEk=
-X-Google-Smtp-Source: ABdhPJy6s966DPXokAQoPL1Ku+1MQ7hK6MwHo1Ka3bj0BWa9wdplT3Qkh8NtX6gCuj2fiKIt+8GM2Q==
-X-Received: by 2002:a63:cd51:: with SMTP id a17mr15269064pgj.167.1603696973345;
-        Mon, 26 Oct 2020 00:22:53 -0700 (PDT)
-Received: from lte-devbox.localdomain (KD106154087157.au-net.ne.jp. [106.154.87.157])
-        by smtp.googlemail.com with ESMTPSA id h2sm11502178pjv.15.2020.10.26.00.22.49
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 26 Oct 2020 00:22:52 -0700 (PDT)
-From:   Masahiro Fujiwara <fujiwara.masahiro@gmail.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Harald Welte <laforge@gnumonks.org>
-Cc:     fujiwara.masahiro@gmail.com,
-        "David S. Miller" <davem@davemloft.net>,
+        bh=V9hY/hW3qODOdvbaB6VAC9KlZNtZBrOl2rIEHyTtF2U=;
+        b=Kzywqf4mJbz0N0h34Fx5MYuYu6mEDY8tWyK0mR71lmxjGw8hBm1ViV3+NLSzGiRWdj
+         k8zuL3ojDi5QfYIa4Zeop+3v1f3WJJ0BjX6ICk5AQaBoXHEl+r98RdZ9+jxqLBa7lAfu
+         KIgnx9HGEM2fFKQ/81L/RyjvM76bOH0q4lAE6s5JT3qeC1q899lrqodgwm4Iuj92Ywqg
+         WIpNX2BAj/spjh4ZndGr1dhVT+JlSQwDmzSBMP/A8kPFQknYucKoFNbcqgBA8MSAwvmY
+         KOfrVkgBjrG9yC3kSE6bOD/SvqAygzKMcIqV1nwMyFMB1heMLL8jSFk8NOSxzkPpC782
+         MDDQ==
+X-Gm-Message-State: AOAM533NWBuxINCJAwLiFfMBdfWRftI/arbN4h/ycnp7BsU0JXaN+RSN
+        XrLJ64qW6NEr8qNFHl09rxkQs4JnwCNG9F1t
+X-Google-Smtp-Source: ABdhPJyeQiweGzc1lRrOUaHetUz2M+INof/Wvis2FZAEWOYBo2o1s4vHwLEFOE5/9iAy50PPlJ+csA==
+X-Received: by 2002:a63:9508:: with SMTP id p8mr15008804pgd.189.1603697385228;
+        Mon, 26 Oct 2020 00:29:45 -0700 (PDT)
+Received: from localhost.localdomain.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id v24sm9766547pgi.91.2020.10.26.00.29.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Oct 2020 00:29:44 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Andreas Schultz <aschultz@tpip.net>,
-        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net] gtp: fix an use-before-init in gtp_newlink()
-Date:   Mon, 26 Oct 2020 16:22:27 +0900
-Message-Id: <20201026072227.7280-1-fujiwara.masahiro@gmail.com>
-X-Mailer: git-send-email 2.24.3
-In-Reply-To: <20201025140550.1e29f770@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-References: <20201025140550.1e29f770@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        Willem de Bruijn <willemb@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv4 net 0/2] IPv6: reply ICMP error if fragment doesn't contain all headers
+Date:   Mon, 26 Oct 2020 15:29:24 +0800
+Message-Id: <20201026072926.3663480-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.25.4
+In-Reply-To: <20201023064347.206431-1-liuhangbin@gmail.com>
+References: <20201023064347.206431-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-*_pdp_find() from gtp_encap_recv() would trigger a crash when a peer
-sends GTP packets while creating new GTP device.
+When our Engineer run latest IPv6 Core Conformance test, test v6LC.1.3.6:
+First Fragment Doesn’t Contain All Headers[1] failed. The test purpose is to
+verify that the node(Linux for example) should properly process IPv6 packets
+that don’t include all the headers through the Upper-Layer header.
 
-RIP: 0010:gtp1_pdp_find.isra.0+0x68/0x90 [gtp]
-<SNIP>
-Call Trace:
- <IRQ>
- gtp_encap_recv+0xc2/0x2e0 [gtp]
- ? gtp1_pdp_find.isra.0+0x90/0x90 [gtp]
- udp_queue_rcv_one_skb+0x1fe/0x530
- udp_queue_rcv_skb+0x40/0x1b0
- udp_unicast_rcv_skb.isra.0+0x78/0x90
- __udp4_lib_rcv+0x5af/0xc70
- udp_rcv+0x1a/0x20
- ip_protocol_deliver_rcu+0xc5/0x1b0
- ip_local_deliver_finish+0x48/0x50
- ip_local_deliver+0xe5/0xf0
- ? ip_protocol_deliver_rcu+0x1b0/0x1b0
+Based on RFC 8200, Section 4.5 Fragment Header
 
-gtp_encap_enable() should be called after gtp_hastable_new() otherwise
-*_pdp_find() will access the uninitialized hash table.
+  -  If the first fragment does not include all headers through an
+     Upper-Layer header, then that fragment should be discarded and
+     an ICMP Parameter Problem, Code 3, message should be sent to
+     the source of the fragment, with the Pointer field set to zero.
 
-Fixes: 1e3a3abd8b28 ("gtp: make GTP sockets in gtp_newlink optional")
-Signed-off-by: Masahiro Fujiwara <fujiwara.masahiro@gmail.com>
----
-v2:
- - leave out_hashtable: label for clarity (Jakub).
- - fix code and comment styles.
+The first patch add a definition for ICMPv6 Parameter Problem, code 3.
+The second patch add a check for the 1st fragment packet to make sure
+Upper-Layer header exist.
 
- drivers/net/gtp.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+[1] Page 68, v6LC.1.3.6: First Fragment Doesn’t Contain All Headers part A, B,
+C and D at https://ipv6ready.org/docs/Core_Conformance_5_0_0.pdf
+[2] My reproducer:
+#!/usr/bin/env python3
 
-diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-index 8e47d0112e5d..07cb6d9495e8 100644
---- a/drivers/net/gtp.c
-+++ b/drivers/net/gtp.c
-@@ -663,10 +663,6 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
- 
- 	gtp = netdev_priv(dev);
- 
--	err = gtp_encap_enable(gtp, data);
--	if (err < 0)
--		return err;
--
- 	if (!data[IFLA_GTP_PDP_HASHSIZE]) {
- 		hashsize = 1024;
- 	} else {
-@@ -676,13 +672,17 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
- 	}
- 
- 	err = gtp_hashtable_new(gtp, hashsize);
-+	if (err < 0)
-+		return err;
-+
-+	err = gtp_encap_enable(gtp, data);
- 	if (err < 0)
- 		goto out_encap;
- 
- 	err = register_netdevice(dev);
- 	if (err < 0) {
- 		netdev_dbg(dev, "failed to register new netdev %d\n", err);
--		goto out_hashtable;
-+		goto out_encap;
- 	}
- 
- 	gn = net_generic(dev_net(dev), gtp_net_id);
-@@ -693,11 +693,11 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
- 
- 	return 0;
- 
-+out_encap:
-+	gtp_encap_disable(gtp);
- out_hashtable:
- 	kfree(gtp->addr_hash);
- 	kfree(gtp->tid_hash);
--out_encap:
--	gtp_encap_disable(gtp);
- 	return err;
- }
- 
+import sys, os
+from scapy.all import *
+
+# Test v6LC.1.3.6: First Fragment Doesn’t Contain All Headers
+def send_frag_dst_opt(src_ip6, dst_ip6):
+    ip6 = IPv6(src = src_ip6, dst = dst_ip6, nh = 44)
+
+    frag_1 = IPv6ExtHdrFragment(nh = 60, m = 1)
+    dst_opt = IPv6ExtHdrDestOpt(nh = 58)
+
+    frag_2 = IPv6ExtHdrFragment(nh = 58, offset = 4, m = 1)
+    icmp_echo = ICMPv6EchoRequest(seq = 1)
+
+    pkt_1 = ip6/frag_1/dst_opt
+    pkt_2 = ip6/frag_2/icmp_echo
+
+    send(pkt_1)
+    send(pkt_2)
+
+def send_frag_route_opt(src_ip6, dst_ip6):
+    ip6 = IPv6(src = src_ip6, dst = dst_ip6, nh = 44)
+
+    frag_1 = IPv6ExtHdrFragment(nh = 43, m = 1)
+    route_opt = IPv6ExtHdrRouting(nh = 58)
+
+    frag_2 = IPv6ExtHdrFragment(nh = 58, offset = 4, m = 1)
+    icmp_echo = ICMPv6EchoRequest(seq = 2)
+
+    pkt_1 = ip6/frag_1/route_opt
+    pkt_2 = ip6/frag_2/icmp_echo
+
+    send(pkt_1)
+    send(pkt_2)
+
+if __name__ == '__main__':
+    src = sys.argv[1]
+    dst = sys.argv[2]
+    conf.iface = sys.argv[3]
+    send_frag_dst_opt(src, dst)
+    send_frag_route_opt(src, dst)
+
+Hangbin Liu (2):
+  ICMPv6: Add ICMPv6 Parameter Problem, code 3 definition
+  IPv6: reply ICMP error if the first fragment don't include all headers
+
+ include/uapi/linux/icmpv6.h |  1 +
+ net/ipv6/icmp.c             |  8 +++++++-
+ net/ipv6/reassembly.c       | 33 ++++++++++++++++++++++++++++++++-
+ 3 files changed, 40 insertions(+), 2 deletions(-)
+
 -- 
-2.24.3
+2.25.4
 
