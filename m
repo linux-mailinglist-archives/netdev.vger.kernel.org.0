@@ -2,87 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 76DD9299A3E
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 00:13:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 245CF299A46
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 00:16:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395512AbgJZXN2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 19:13:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53504 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2395502AbgJZXN1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 19:13:27 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 73CE720719;
-        Mon, 26 Oct 2020 23:13:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603754006;
-        bh=M6TmwnSYX9ItNPqyO0jy4oi3nkENeh29xY8TzzevUdw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=vHsNgG6Jsyc4SR54/vO5jsWx+oNNH43YdSa9Sb+aehqT4ILeZPyU6d+c9giqaHNMw
-         U8cL6grbAHNt2H2RlZFEBV6L8MimobcGeN+8bEayiGFvP5g+40CaEwTkJrW1gqXSRx
-         pT5KfNNmlKR2LsVKJMIi/bhgMXD0aSM6IwxTHos8=
-Date:   Mon, 26 Oct 2020 16:13:25 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Zenghui Yu <yuzenghui@huawei.com>
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>, <yisen.zhuang@huawei.com>,
-        <salil.mehta@huawei.com>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <wanghaibin.wang@huawei.com>, <tanhuazhong@huawei.com>
-Subject: Re: [PATCH net] net: hns3: Clear the CMDQ registers before
- unmapping BAR region
-Message-ID: <20201026161325.6f33d9c8@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <e74f0a72-92d1-2ac9-1f4b-191477d673ef@huawei.com>
-References: <20201023051550.793-1-yuzenghui@huawei.com>
-        <3c5c98f9-b4a0-69a2-d58d-bfef977c68ad@huawei.com>
-        <e74f0a72-92d1-2ac9-1f4b-191477d673ef@huawei.com>
+        id S2403983AbgJZXQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 19:16:01 -0400
+Received: from mail-yb1-f196.google.com ([209.85.219.196]:39778 "EHLO
+        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2403923AbgJZXQA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 19:16:00 -0400
+Received: by mail-yb1-f196.google.com with SMTP id 67so9114929ybt.6;
+        Mon, 26 Oct 2020 16:15:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LiJKb3rNHBHV0g7paRfDUdXaN166fPs4Ik4Tz+yATK0=;
+        b=iURVlDor88SLf82CltlomOnUANa+7QQb3IeWZOQvArzvXKS229Il58ujiKPOCJzNQ3
+         AESC8KWJZtAyXQENZ5M2/jvbHfQ817NtQTj4WBO9aCWxbDCbx1IyuDt+H1WBZaV/M2Ja
+         FpGmFHfOUv2S7dPGzX/NkcYpd+mAm92+SzC45oE675rvnkCwbTxgp200ylm+5v6tW2f/
+         ZwrrL25tXkSPRji5KKpj9U4+ZiXl8O/kI4ylE1k+xW+7dxpakudibl3VCij5SCK38sSI
+         CBaQvReoQc1+emo/5a2VO7X/oV0ROg7K+/WCO3cXF5K3mRUkIYwPZSMUUrgEad3hHG4D
+         w1bQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LiJKb3rNHBHV0g7paRfDUdXaN166fPs4Ik4Tz+yATK0=;
+        b=q6VF8nra0+WfemfWE1Ylqwj7IX4sfKS2X+smkCRE14zTWL5XnWDPgZYQLZl/38FQr7
+         k3Ts64zEsM9JkOVhoKAlybs66PolLg1Cfl1m3x2KGEsIICzvBqYvbYIQ6qku6M/P7/34
+         q/XKhj3upeEEhMskjo7dZup4bW0gL7fQCBdMKDlSCRaRdTkHNtF59Dv+il+dvytzJX0T
+         YRszJYkL5E+QzYdkIeSJclbkWv+v4eC5a/v5Y4412bXDrMRXOo7eSFsbtpT36mPhfPSi
+         uk/U1QqxeI0zo3OP0nJdBKUlRme3wV6RZZ4whj7MOAq0+G+PHqh+wpKGzKD8OW5Crv0n
+         Yjdw==
+X-Gm-Message-State: AOAM531SAWzGGgVqfQgD56pacKiyAooWd9xJWf0BsJLu3FD3ZkDd80HX
+        RYC8ry/+Va/26dNqVA6aZKxuQO18bour2zvKJQI=
+X-Google-Smtp-Source: ABdhPJwN7RDFpaAh7FEHa6HVCTg6ng/kDVHVGpnw5GRCqCNrGhGaEiMVvDfF1S6aCS3TSxWqtRXue5ByGiXwSgGxSyI=
+X-Received: by 2002:a25:cb10:: with SMTP id b16mr24100302ybg.459.1603754158866;
+ Mon, 26 Oct 2020 16:15:58 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201022082138.2322434-1-jolsa@kernel.org> <20201022082138.2322434-14-jolsa@kernel.org>
+ <CAEf4Bzbch2SGNwG-tTUT6pPdDCsFyGPbS1Zkx4f6-nLmcv+wOA@mail.gmail.com> <20201025191147.GC2681365@krava>
+In-Reply-To: <20201025191147.GC2681365@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 26 Oct 2020 16:15:48 -0700
+Message-ID: <CAEf4BzaJByux3tJ=r47pj4SSzbDEShTW6yBVJg+g1sWsLerdbQ@mail.gmail.com>
+Subject: Re: [RFC bpf-next 13/16] libbpf: Add trampoline batch attach support
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>, Daniel Xu <dxu@dxuuu.xyz>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Jesper Brouer <jbrouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Viktor Malik <vmalik@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 23 Oct 2020 15:01:14 +0800 Zenghui Yu wrote:
-> On 2020/10/23 14:22, Yunsheng Lin wrote:
-> > On 2020/10/23 13:15, Zenghui Yu wrote:  
-> >> When unbinding the hns3 driver with the HNS3 VF, I got the following
-> >> kernel panic:
-> >>
-> >> [  265.709989] Unable to handle kernel paging request at virtual address ffff800054627000
-> >> [  265.717928] Mem abort info:
-> >> [  265.720740]   ESR = 0x96000047
-> >> [  265.723810]   EC = 0x25: DABT (current EL), IL = 32 bits
-> >> [  265.729126]   SET = 0, FnV = 0
-> >> [  265.732195]   EA = 0, S1PTW = 0
-> >> [  265.735351] Data abort info:
-> >> [  265.738227]   ISV = 0, ISS = 0x00000047
-> >> [  265.742071]   CM = 0, WnR = 1
-> >> [  265.745055] swapper pgtable: 4k pages, 48-bit VAs, pgdp=0000000009b54000
-> >> [  265.751753] [ffff800054627000] pgd=0000202ffffff003, p4d=0000202ffffff003, pud=00002020020eb003, pmd=00000020a0dfc003, pte=0000000000000000
-> >> [  265.764314] Internal error: Oops: 96000047 [#1] SMP
-> >> [  265.830357] CPU: 61 PID: 20319 Comm: bash Not tainted 5.9.0+ #206
-> >> [  265.836423] Hardware name: Huawei TaiShan 2280 V2/BC82AMDDA, BIOS 1.05 09/18/2019
-> > 
-> > Do you care to provide the testcase for above calltrace?  
-> 
-> I noticed it with VFIO, but it's easy to reproduce it manually. Here you
-> go:
-> 
->    # cat /sys/bus/pci/devices/0000\:7d\:00.2/sriov_totalvfs
-> 3
->    # echo 3 > /sys/bus/pci/devices/0000\:7d\:00.2/sriov_numvfs
->    # lspci | grep "Virtual Function"
-> 7d:01.6 Ethernet controller: Huawei Technologies Co., Ltd. HNS RDMA 
-> Network Controller (Virtual Function) (rev 21)
-> 7d:01.7 Ethernet controller: Huawei Technologies Co., Ltd. HNS RDMA 
-> Network Controller (Virtual Function) (rev 21)
-> 7d:02.0 Ethernet controller: Huawei Technologies Co., Ltd. HNS RDMA 
-> Network Controller (Virtual Function) (rev 21)
->    # echo 0000:7d:01.6 > /sys/bus/pci/devices/0000:7d:01.6/driver/unbind
+On Sun, Oct 25, 2020 at 12:12 PM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Fri, Oct 23, 2020 at 01:09:26PM -0700, Andrii Nakryiko wrote:
+> > On Thu, Oct 22, 2020 at 2:03 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> > >
+> > > Adding trampoline batch attach support so it's possible to use
+> > > batch mode to load tracing programs.
+> > >
+> > > Adding trampoline_attach_batch bool to struct bpf_object_open_opts.
+> > > When set to true the bpf_object__attach_skeleton will try to load
+> > > all tracing programs via batch mode.
+> > >
+> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > ---
+> >
+> > Assuming we go with the current kernel API for batch-attach, why can't
+> > libbpf just detect kernel support for it and just use it always,
+> > without requiring users to opt into anything?
+>
+> yea, it's rfc ;-) I wanted some simple usage of the
+> interface so it's obvious how it works
+>
+> if we'll end up with some batch interface I agree
+> we should use it as you suggested
+>
+> >
+> > But I'm also confused a bit how this is supposed to be used with BPF
+> > skeleton. You use case described in a cover letter (bpftrace glob
+> > attach, right?) would have a single BPF program attached to many
+> > different functions. While here you are trying to collect different
+> > programs and attach each one to its respective kernel function. Do you
+> > expect users to have hundreds of BPF programs in their skeletons? If
+> > not, I don't really see why adding this complexity. What am I missing?
+>
+> AFAIU when you use trampoline program you declare the attach point
+> at the load time, so you actually can't use same program for different
+> kernel functions - which would be great speed up actually, because
+> that's where the rest of the cycles in bpftrace is spent (in that cover
+> letter example) - load/verifier check of all those programs
 
-Do you know if the bug occurred on 5.4? Is this the correct fixes tag?
+Ah, I see, you are right. And yes, I agree, it would be nice to not
+have to clone the BPF program many times to attach to fentry/fexit, if
+the program itself doesn't really change.
 
-Fixes: 862d969a3a4d ("net: hns3: do VF's pci re-initialization while PF doing FLR")
+>
+> it's different for kprobe where you hook single kprobe via multiple
+> kprobe perf events to different kernel function
+>
+> >
+> > Now it also seems weird to me for the kernel API to allow attaching
+> > many-to-many BPF programs-to-attach points. One BPF program-to-many
+> > attach points seems like a more sane and common requirement, no?
+>
+> right, but that's the consequence of what I wrote above
 
+Well, maybe we should get rid of that limitation first ;)
+
+>
+> jirka
+>
+> >
+> >
+> > >  tools/lib/bpf/bpf.c      | 12 +++++++
+> > >  tools/lib/bpf/bpf.h      |  1 +
+> > >  tools/lib/bpf/libbpf.c   | 76 +++++++++++++++++++++++++++++++++++++++-
+> > >  tools/lib/bpf/libbpf.h   |  5 ++-
+> > >  tools/lib/bpf/libbpf.map |  1 +
+> > >  5 files changed, 93 insertions(+), 2 deletions(-)
+> > >
+> >
+> > [...]
+> >
+>
