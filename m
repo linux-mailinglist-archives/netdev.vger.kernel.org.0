@@ -2,40 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 468E0299F93
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 01:24:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2693299F7F
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 01:23:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2410334AbgJZXyJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 19:54:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59548 "EHLO mail.kernel.org"
+        id S2441357AbgJ0AWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 20:22:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34178 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2410309AbgJZXyH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 19:54:07 -0400
+        id S2410335AbgJZXzj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 19:55:39 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 30FFC218AC;
-        Mon, 26 Oct 2020 23:54:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5DE6D22384;
+        Mon, 26 Oct 2020 23:55:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603756447;
-        bh=DEOz1968i1iHFu4ybcACpbYocmslq+F9fVBPL5oWk0U=;
+        s=default; t=1603756538;
+        bh=0ae7PabnxCOKNlt1cA/HXiMihXNfOWTEJTsGHrkhhTQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2erZ0JaoaefwPlAs3ZAcWWJn8blsb7cseQZObqyDSXlOeGSSb3LzbVG/C/yYAYILH
-         TkBjQ5pK5GoeJ7T1W1v95JxARHeqSy9b+gKoht0czOZuHAsIZFeJHj6jeFxNBT+NUY
-         QN3223fnCMV9ufTncgeDY+BKgj3kboSYzEDdOQ4E=
+        b=T4hTpqUyb7LLniV4lsNJtAohwEG5QaMLX1aBRolpUj5qcmVB4z1vAxQCauATqSWxb
+         SX9XfvOFk09Pmjw3tOchHn6KtKnq4UnyU8Np/eqPlzgO57uY7hLDL2s2VSEqUviwjn
+         pLgDRBsbY0GHiZkGLTPcFaGrgPXdRL0iNZEeAZfI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Chan <michael.chan@broadcom.com>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        Edwin Peer <edwin.peer@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.8 099/132] bnxt_en: Log unknown link speed appropriately.
-Date:   Mon, 26 Oct 2020 19:51:31 -0400
-Message-Id: <20201026235205.1023962-99-sashal@kernel.org>
+Cc:     Wen Gong <wgong@codeaurora.org>, Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 17/80] ath10k: start recovery process when payload length exceeds max htc length for sdio
+Date:   Mon, 26 Oct 2020 19:54:13 -0400
+Message-Id: <20201026235516.1025100-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201026235205.1023962-1-sashal@kernel.org>
-References: <20201026235205.1023962-1-sashal@kernel.org>
+In-Reply-To: <20201026235516.1025100-1-sashal@kernel.org>
+References: <20201026235516.1025100-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,49 +42,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Chan <michael.chan@broadcom.com>
+From: Wen Gong <wgong@codeaurora.org>
 
-[ Upstream commit 8eddb3e7ce124dd6375d3664f1aae13873318b0f ]
+[ Upstream commit 2fd3c8f34d08af0a6236085f9961866ad92ef9ec ]
 
-If the VF virtual link is set to always enabled, the speed may be
-unknown when the physical link is down.  The driver currently logs
-the link speed as 4294967295 Mbps which is SPEED_UNKNOWN.  Modify
-the link up log message as "speed unknown" which makes more sense.
+When simulate random transfer fail for sdio write and read, it happened
+"payload length exceeds max htc length" and recovery later sometimes.
 
-Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Link: https://lore.kernel.org/r/1602493854-29283-7-git-send-email-michael.chan@broadcom.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Test steps:
+1. Add config and update kernel:
+CONFIG_FAIL_MMC_REQUEST=y
+CONFIG_FAULT_INJECTION=y
+CONFIG_FAULT_INJECTION_DEBUG_FS=y
+
+2. Run simulate fail:
+cd /sys/kernel/debug/mmc1/fail_mmc_request
+echo 10 > probability
+echo 10 > times # repeat until hitting issues
+
+3. It happened payload length exceeds max htc length.
+[  199.935506] ath10k_sdio mmc1:0001:1: payload length 57005 exceeds max htc length: 4088
+....
+[  264.990191] ath10k_sdio mmc1:0001:1: payload length 57005 exceeds max htc length: 4088
+
+4. after some time, such as 60 seconds, it start recovery which triggered
+by wmi command timeout for periodic scan.
+[  269.229232] ieee80211 phy0: Hardware restart was requested
+[  269.734693] ath10k_sdio mmc1:0001:1: device successfully recovered
+
+The simulate fail of sdio is not a real sdio transter fail, it only
+set an error status in mmc_should_fail_request after the transfer end,
+actually the transfer is success, then sdio_io_rw_ext_helper will
+return error status and stop transfer the left data. For example,
+the really RX len is 286 bytes, then it will split to 2 blocks in
+sdio_io_rw_ext_helper, one is 256 bytes, left is 30 bytes, if the
+first 256 bytes get an error status by mmc_should_fail_request,then
+the left 30 bytes will not read in this RX operation. Then when the
+next RX arrive, the left 30 bytes will be considered as the header
+of the read, the top 4 bytes of the 30 bytes will be considered as
+lookaheads, but actually the 4 bytes is not the lookaheads, so the len
+from this lookaheads is not correct, it exceeds max htc length 4088
+sometimes. When happened exceeds, the buffer chain is not matched between
+firmware and ath10k, then it need to start recovery ASAP. Recently then
+recovery will be started by wmi command timeout, but it will be long time
+later, for example, it is 60+ seconds later from the periodic scan, if
+it does not have periodic scan, it will be longer.
+
+Start recovery when it happened "payload length exceeds max htc length"
+will be reasonable.
+
+This patch only effect sdio chips.
+
+Tested with QCA6174 SDIO with firmware WLAN.RMH.4.4.1-00029.
+
+Signed-off-by: Wen Gong <wgong@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20200108031957.22308-3-wgong@codeaurora.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath10k/sdio.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index dd07db656a5c3..a7577642ab207 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -8428,6 +8428,11 @@ static void bnxt_report_link(struct bnxt *bp)
- 		u16 fec;
+diff --git a/drivers/net/wireless/ath/ath10k/sdio.c b/drivers/net/wireless/ath/ath10k/sdio.c
+index 8fe626deadeb0..24b1927a07518 100644
+--- a/drivers/net/wireless/ath/ath10k/sdio.c
++++ b/drivers/net/wireless/ath/ath10k/sdio.c
+@@ -550,6 +550,10 @@ static int ath10k_sdio_mbox_rx_alloc(struct ath10k *ar,
+ 				    le16_to_cpu(htc_hdr->len),
+ 				    ATH10K_HTC_MBOX_MAX_PAYLOAD_LENGTH);
+ 			ret = -ENOMEM;
++
++			queue_work(ar->workqueue, &ar->restart_work);
++			ath10k_warn(ar, "exceeds length, start recovery\n");
++
+ 			goto err;
+ 		}
  
- 		netif_carrier_on(bp->dev);
-+		speed = bnxt_fw_to_ethtool_speed(bp->link_info.link_speed);
-+		if (speed == SPEED_UNKNOWN) {
-+			netdev_info(bp->dev, "NIC Link is Up, speed unknown\n");
-+			return;
-+		}
- 		if (bp->link_info.duplex == BNXT_LINK_DUPLEX_FULL)
- 			duplex = "full";
- 		else
-@@ -8440,7 +8445,6 @@ static void bnxt_report_link(struct bnxt *bp)
- 			flow_ctrl = "ON - receive";
- 		else
- 			flow_ctrl = "none";
--		speed = bnxt_fw_to_ethtool_speed(bp->link_info.link_speed);
- 		netdev_info(bp->dev, "NIC Link is Up, %u Mbps %s duplex, Flow control: %s\n",
- 			    speed, duplex, flow_ctrl);
- 		if (bp->flags & BNXT_FLAG_EEE_CAP)
 -- 
 2.25.1
 
