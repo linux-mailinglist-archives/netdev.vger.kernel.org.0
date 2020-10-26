@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACE25298E4C
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 14:43:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E98D6298E4E
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 14:43:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1780413AbgJZNnE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 09:43:04 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:47010 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1774028AbgJZNnE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 09:43:04 -0400
-Received: by mail-pg1-f195.google.com with SMTP id n16so6071254pgv.13;
-        Mon, 26 Oct 2020 06:43:03 -0700 (PDT)
+        id S1780424AbgJZNnT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 09:43:19 -0400
+Received: from mail-pj1-f68.google.com ([209.85.216.68]:39772 "EHLO
+        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2442892AbgJZNnT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 09:43:19 -0400
+Received: by mail-pj1-f68.google.com with SMTP id m3so3124586pjf.4;
+        Mon, 26 Oct 2020 06:43:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fgWFMA33L1wvVRbeOYuXc7gj+7AZelua6opSAb+G+Hc=;
-        b=fOIjnYXQVOfuRo/MdtRMnsMNy5NGagFoJuCz2NulddbeM1dHB2Q7Wm0/gE19Sa9oY0
-         Dww3X/lnEnsI2j5vPrmjJHmzrmLciycPPROhhxU/VKkTBDZdww+F6gkovoYsSGP+MSnm
-         4y9p00TcGkfCdXddvuGHK9qsBZ9wDWO6HMhmcda6xoumTNzeUCGu6N/SJEiMJlq1GViN
-         zq4tt4CJjjCY9VgPHi8MsCrc0pQe+YTmCSiknmvhRtcBKi3/LN9dI0aFL/vJnfvaZNlu
-         udifmrrlmA/kxHZOnNMC2XJk6de9kj0DxV9JmGxWEoUlsXo1LOR1ZmhAB2tRPFRJpJ+m
-         NyIg==
+        bh=6tyo6/Rz9v1TVvQDDCsgVJqXw8PO3L48+d1JoVzKHlc=;
+        b=jRRiwl2oMxCN+44Rho1b8WdvpInvjlfPHuzjKE6Znjj9NxFRYX5x42eK29aAwGHtJw
+         r9WPBCsb3Z8vDp4lfw4wmtPX7H0KXkIpmvg2fje9wc485E+lReNZGcTdHE/ZxbtCZqLN
+         YFXvsm2kwuUxO6QyPTy2ICDIlyfyvWf6wUkZGHftshWyZLnRC4U6ZNwvfFcThCQLo6+w
+         eHzteYzwSTi+HXy/5fpZidu9yM7zSBdAT+XrTS/3a6193zxelQbeKwgj4skMyDtXf4UY
+         8wbksvHh9FUHFkoRQdfr5VjJxf6bxI+KTTUml8iMrjU5gty6fCuMvDOgIGqKwimzZYzz
+         +l3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=fgWFMA33L1wvVRbeOYuXc7gj+7AZelua6opSAb+G+Hc=;
-        b=WfCpo2+S08u4NRAdGd4GPXU1rVkaSe5y7DP6EuCZhm+wA3KT0NoRbUhn/Tw5KSatzN
-         6EJdjJlJ+KUp4RJn5nD+6o8azYnScwApiKzlHxiElZtKwQgdcWYnABa9pMvrvc16sks3
-         GWt6Y8wXA3XgLGeQlimTW7rXEVhhJbnBLYnCVrBJjCX51iEeD4gcvgliAQznH2eEcaoN
-         /EwVjDC7GMacxbh1gZd6fbspnFVCuRyrg82fRl5OCC2tj4Kt5t1DQxbEMJ15ujvU8zNl
-         XKuRyjxCAxueKHwi5zVInFu1TzTCzQ2t202ZKcd/k7aqYzHqri89DF+gWTKDuBrBOgsk
-         ZOPw==
-X-Gm-Message-State: AOAM533XDXWKR7O6YvmzHNEPxGm81QS4mOCSAgEFM/QgBkoRy76URtJI
-        9l4F2yfkxftLvhhBGww8JHU=
-X-Google-Smtp-Source: ABdhPJxVwznCid7iDM8IYdViDJcHAxHIJAQ1nRyq3A5AE3TEi/QrgGrB5JCpDGMkFeqExIKKdZ3Tlw==
-X-Received: by 2002:a63:180f:: with SMTP id y15mr13420281pgl.324.1603719783482;
-        Mon, 26 Oct 2020 06:43:03 -0700 (PDT)
+        bh=6tyo6/Rz9v1TVvQDDCsgVJqXw8PO3L48+d1JoVzKHlc=;
+        b=GSkSG8w/H2y+eaiTYxH2lWqzu7w+N1TBZtqpKL1bsbG2iY+u2L+1t/gNBZNW6QrxYd
+         dYXA56LbDtZhmjzLf8RSBkKJVEjkrDwMKIL0ruvQkcd1Gsr3gX0nPj091JXB0haUFYtp
+         ew9Ei7UHgGRowl8GuDs4mRvHMOF0h+amSUf0uJ1wlv0tpONB+R/KGpS3Frugomz9tik1
+         QabZSg+8BGBZG9z3h4RnGS5rllq5+icFDBcCMG++JoHR20xcTjU23aCVFh1SsXBYi2j3
+         dM3ZONfrqZGllR/4oczMkS8LKjyrN2LHdTIufpdtykYuB7GYyiTMDx1T7TAEN5zNCi6d
+         l1Fw==
+X-Gm-Message-State: AOAM531hZxiyo2mwZz5NnN7nCAlRu8OsuguJpBaTiLx47hNK2eGK0YBF
+        WAqjx706FM9+6/5IIsRj+Z8=
+X-Google-Smtp-Source: ABdhPJxG/YytS4NPFMynmf0hfmKobq2ZV6tqkLVUeQWPpmi9pN1+KcBF8TUkKuTQJscd9AmAZ7edAw==
+X-Received: by 2002:a17:902:d686:b029:d6:5192:345b with SMTP id v6-20020a170902d686b02900d65192345bmr2194533ply.66.1603719798548;
+        Mon, 26 Oct 2020 06:43:18 -0700 (PDT)
 Received: from [10.230.28.230] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id j1sm2068724pfa.96.2020.10.26.06.43.01
+        by smtp.gmail.com with ESMTPSA id ck21sm12483034pjb.56.2020.10.26.06.43.15
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Oct 2020 06:43:02 -0700 (PDT)
-Subject: Re: [PATCH v4 2/3] Add phy interface for 5GBASER mode
+        Mon, 26 Oct 2020 06:43:17 -0700 (PDT)
+Subject: Re: [PATCH v4 0/3] Add support for mv88e6393x family of Marvell.
 To:     Pavana Sharma <pavana.sharma@digi.com>, andrew@lunn.ch
 Cc:     davem@davemloft.net, gregkh@linuxfoundation.org, kuba@kernel.org,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         vivien.didelot@gmail.com
-References: <cover.1603690201.git.pavana.sharma@digi.com>
- <156717e3151d58bd51aef7b0e491ae5c63c07938.1603690202.git.pavana.sharma@digi.com>
+References: <20201017193044.GO456889@lunn.ch>
+ <cover.1603690201.git.pavana.sharma@digi.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <ea23320a-26bd-96bd-d46b-25eb3582b49e@gmail.com>
-Date:   Mon, 26 Oct 2020 06:42:59 -0700
+Message-ID: <3746c90e-a3da-5484-2a85-a1bb6fa926a3@gmail.com>
+Date:   Mon, 26 Oct 2020 06:43:15 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.4.0
 MIME-Version: 1.0
-In-Reply-To: <156717e3151d58bd51aef7b0e491ae5c63c07938.1603690202.git.pavana.sharma@digi.com>
+In-Reply-To: <cover.1603690201.git.pavana.sharma@digi.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -68,13 +68,25 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 
-On 10/25/2020 10:58 PM, Pavana Sharma wrote:
-> Signed-off-by: Pavana Sharma <pavana.sharma@digi.com>
+On 10/25/2020 10:52 PM, Pavana Sharma wrote:
+> Hi,
+> 
+> Thanks for the review.
+> Following is the updated patchset.
+> 
+> The 6393X family has MV88E6191X, MV88E6193X and MV88E6393X products listed in
+> Gigabit Ethernet and Gigabit 10G+ Ethernet categories. There are no 6393 devices
+> (without X) but there is 6191 device (without X)from a different family.
+> The product id is listed with the 'X' in the name so I prefer to retain the
+> product name 6393X in the driver whereas we can define the family name as
+> 'MV88E6XXX_FAMILY_6393' without 'X'.
+> 
+> The patchset adds support for modes 5GBASE-R, 10GBASE-R and USXGMII on
+> ports 0, 9 and 10.
+> 
+> Tested on MV88E6193X device.
 
-Please subject this patch properly with "net: phy: Add 5GBASER interface 
-mode" and please also consider updating other files that are relevant here:
-
-Documentation/devicetree/bindings/net/ethernet-controller.yaml
-drivers/net/phy/phy-core.c
+Please subject your patches appropriately using "net: dsa: mv88e6xxx: " 
+for DSA changes to the driver and "net: phy: " for PHY subsystem changes.
 -- 
 Florian
