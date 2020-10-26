@@ -2,111 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9F7D2999D6
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 23:46:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94ED62999D9
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 23:48:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394676AbgJZWqh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 18:46:37 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:43108 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2394668AbgJZWqg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 18:46:36 -0400
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1603752394;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=EMtaedWvWnlr8FoOiOT3OcNE6XEhbc2X12bxau6EyFI=;
-        b=hEPCG2un8FH9qImCrJqicTU+VJY6N/dn8Vx214yYX5jTIIQO7JoERJ1eR3Jkhj9V4/Ti/R
-        SG7as2v78lmp83DCYPgalSSV8hv90SSVnyRs71ktVW1GDHLbBgWoimuqaP+0LbfLZtPaZm
-        GZcRqTA+v8cOCm1Fna4Vj5eAdy3BQOKDSRHu0faEku/nIgNErV57rBf7FKhxn8vJFITvtV
-        ZI4L4fobzqX25UN2isZHvaNPI8/SvShskRbcvRyNurbf+OA5gbU02GN3XO4NZhIeUn+zjM
-        dR+/CAl/QmdJ/Tc8p8/16dRiok0JXoUztki/dlYYg9SmRfnHP6EPYkUF1qoNSQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1603752394;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=EMtaedWvWnlr8FoOiOT3OcNE6XEhbc2X12bxau6EyFI=;
-        b=/0MZUIzr/yPzfalGB8dky2AgJXYoZCXz552/jb8OMkHDcMOCA4OXvbG8ORFq2uO0pVJiLx
-        3TDr0Q1bRzyGSmAw==
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jacob Keller <jacob.e.keller@intel.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Nitesh Narayan Lal <nitesh@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>, helgaas@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        frederic@kernel.org, sassmann@redhat.com,
-        jesse.brandeburg@intel.com, lihong.yang@intel.com,
-        jeffrey.t.kirsher@intel.com, jlelli@redhat.com, hch@infradead.org,
-        bhelgaas@google.com, mike.marciniszyn@intel.com,
-        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
-        jiri@nvidia.com, mingo@redhat.com, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, lgoncalv@redhat.com
-Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to housekeeping CPUs
-In-Reply-To: <20201026151306.4af991a5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-References: <20201019111137.GL2628@hirez.programming.kicks-ass.net> <20201019140005.GB17287@fuller.cnet> <20201020073055.GY2611@hirez.programming.kicks-ass.net> <078e659e-d151-5bc2-a7dd-fe0070267cb3@redhat.com> <20201020134128.GT2628@hirez.programming.kicks-ass.net> <6736e643-d4ae-9919-9ae1-a73d5f31463e@redhat.com> <260f4191-5b9f-6dc1-9f11-085533ac4f55@redhat.com> <20201023085826.GP2611@hirez.programming.kicks-ass.net> <9ee77056-ef02-8696-5b96-46007e35ab00@redhat.com> <87ft6464jf.fsf@nanos.tec.linutronix.de> <20201026173012.GA377978@fuller.cnet> <875z6w4xt4.fsf@nanos.tec.linutronix.de> <86f8f667-bda6-59c4-91b7-6ba2ef55e3db@intel.com> <87v9ew3fzd.fsf@nanos.tec.linutronix.de> <85b5f53e-5be2-beea-269a-f70029bea298@intel.com> <87lffs3bd6.fsf@nanos.tec.linutronix.de> <20201026151306.4af991a5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Date:   Mon, 26 Oct 2020 23:46:34 +0100
-Message-ID: <878sbs38s5.fsf@nanos.tec.linutronix.de>
+        id S2394700AbgJZWsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 18:48:04 -0400
+Received: from mail-yb1-f195.google.com ([209.85.219.195]:38941 "EHLO
+        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2394693AbgJZWsE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 18:48:04 -0400
+Received: by mail-yb1-f195.google.com with SMTP id 67so9064508ybt.6;
+        Mon, 26 Oct 2020 15:48:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PA2hhwrwqtvoOE+FLl+y7isib+ymGtY6avG/tLKX2Xk=;
+        b=aJCbZos+nqsSXDhOpj87YejpT0j5KCVzCavOAn4pxK0wOV5swptqtNjXoISVn0F5ez
+         zu1fIF8KkCddX8aZIrHqPji48zEOcpSVshtT9u0LoNOwDt+FHF+fvWWbmDgHq9FjURzg
+         J6NOdtgsz4Gi9sH5eiY9a1QtZu7dGleQfGYkQ/UUxe9p4XReIGIg2oj6Xa3YxV50N3sS
+         aK86UYCU44CZ3aR+xs8JelKyOimYgBD+19eswAs5bUUBW7oPCS5dv+MyDaYIkK/0a/NO
+         nQKqG87dvbnTJlwSpTy7Prt2/ltqQ0Cn8t9I7iXl1f1hSJXsy9EHML6Vo/8Gd31L+734
+         gqPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PA2hhwrwqtvoOE+FLl+y7isib+ymGtY6avG/tLKX2Xk=;
+        b=akV56xis7vh6kwKoMCyzZ+ymMcfWfIHxm0Tai4fwVS1f05vN+TZBPpcOpcBYBAaCPs
+         uuzFW5bu8wMqJHi21SedF+KTukcSjPyJpNtoulc7KAKcJHZ6On9ON8m3Kv6G892C3P3k
+         e9rP7BIoaZAxSvXpZhMd/9pNKE65VPNnQw4F5kVbHNvSzhxJU4qsP+uCYQgzath4znYx
+         bwua4SllQ6fFP5Uq/Cp5XmU7wmHj1iiU/Ucwy1NysvLoXdaMl5bq+ajzcsC+4LjlIakb
+         KKM4p8jDF4NrM44aY0QQjgdaRtnlEexeeOQ5IfBMQddY9b5NGq6DM6wStySIGEdqR2ax
+         efzQ==
+X-Gm-Message-State: AOAM533273LEobYFqU9xSstD+DzojK9LTE9bUccnZ+8W181t3mfGs0Kh
+        xEVBKCJLdeHLId18nDPcxXopiZgZfWYM8GFFjqnM3/OUf8Q=
+X-Google-Smtp-Source: ABdhPJzqLzSh3NdCaWLdV1qCZnoGLPNbcf+wWI9Pi2IVD2005O92IpCE32wJVXJAXi7STygW/I0SZWVLilCg4kJE6Qk=
+X-Received: by 2002:a25:bdc7:: with SMTP id g7mr27942447ybk.260.1603752482632;
+ Mon, 26 Oct 2020 15:48:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20201023123754.30304-1-david.verbeiren@tessares.net>
+In-Reply-To: <20201023123754.30304-1-david.verbeiren@tessares.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 26 Oct 2020 15:47:51 -0700
+Message-ID: <CAEf4BzZaJaYw0tB0R+q3qoQX7=qy3T9jvzf5q=TH++t66wNd-w@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: zero-fill re-used per-cpu map element
+To:     David Verbeiren <david.verbeiren@tessares.net>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 26 2020 at 15:13, Jakub Kicinski wrote:
-> On Mon, 26 Oct 2020 22:50:45 +0100 Thomas Gleixner wrote:
->> But I still think that for curing that isolation stuff we want at least
->> some information from the driver. Alternative solution would be to grant
->> the allocation of interrupts and queues and have some sysfs knob to shut
->> down queues at runtime. If that shutdown results in releasing the queue
->> interrupt (via free_irq()) then the vector exhaustion problem goes away.
->> 
->> Needs more thought and information (for network oblivious folks like
->> me).
+On Fri, Oct 23, 2020 at 8:48 AM David Verbeiren
+<david.verbeiren@tessares.net> wrote:
 >
-> One piece of information that may be useful is that even tho the RX
-> packets may be spread semi-randomly the user space can still control
-> which queues are included in the mechanism. There is an indirection
-> table in the HW which allows to weigh queues differently, or exclude
-> selected queues from the spreading. Other mechanisms exist to filter
-> flows onto specific queues.
+> Zero-fill element values for all cpus, just as when not using
+> prealloc. This is the only way the bpf program can ensure known
+> initial values for cpus other than the current one ('onallcpus'
+> cannot be set when coming from the bpf program).
 >
-> IOW just because a core has an queue/interrupt does not mean that
-> interrupt will ever fire, provided its excluded from RSS.
+> The scenario is: bpf program inserts some elements in a per-cpu
+> map, then deletes some (or userspace does). When later adding
+> new elements using bpf_map_update_elem(), the bpf program can
+> only set the value of the new elements for the current cpu.
+> When prealloc is enabled, previously deleted elements are re-used.
+> Without the fix, values for other cpus remain whatever they were
+> when the re-used entry was previously freed.
 >
-> Another piece is that by default we suggest drivers allocate 8 RX
-> queues, and online_cpus TX queues. The number of queues can be
-> independently controlled via ethtool -L. Drivers which can't support
-> separate queues will default to online_cpus queue pairs, and let
-> ethtool -L only set the "combined" parameter.
+> Fixes: 6c9059817432 ("bpf: pre-allocate hash map elements")
+> Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+> Signed-off-by: David Verbeiren <david.verbeiren@tessares.net>
+> ---
+>  kernel/bpf/hashtab.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
 >
-> There are drivers which always allocate online_cpus interrupts, 
-> and then some of them will go unused if #qs < #cpus.
+> diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+> index 1815e97d4c9c..667553cce65a 100644
+> --- a/kernel/bpf/hashtab.c
+> +++ b/kernel/bpf/hashtab.c
+> @@ -836,6 +836,7 @@ static struct htab_elem *alloc_htab_elem(struct bpf_htab *htab, void *key,
+>         bool prealloc = htab_is_prealloc(htab);
+>         struct htab_elem *l_new, **pl_new;
+>         void __percpu *pptr;
+> +       int cpu;
+>
+>         if (prealloc) {
+>                 if (old_elem) {
+> @@ -880,6 +881,17 @@ static struct htab_elem *alloc_htab_elem(struct bpf_htab *htab, void *key,
+>                 size = round_up(size, 8);
+>                 if (prealloc) {
+>                         pptr = htab_elem_get_ptr(l_new, key_size);
+> +
+> +                       /* zero-fill element values for all cpus, just as when
+> +                        * not using prealloc. Only way for bpf program to
+> +                        * ensure known initial values for cpus other than
+> +                        * current one (onallcpus=false when coming from bpf
+> +                        * prog).
+> +                        */
+> +                       if (!onallcpus)
+> +                               for_each_possible_cpu(cpu)
+> +                                       memset((void *)per_cpu_ptr(pptr, cpu),
+> +                                              0, size);
 
-Thanks for the enlightment.
+Technically, you don't have to memset() for the current CPU, right?
+Don't know if extra check is cheaper than avoiding one memset() call,
+though.
 
-> My unpopular opinion is that for networking devices all the heuristics
-> we may come up with are going to be a dead end.
+But regardless, this 6 level nesting looks pretty bad, maybe move the
+for_each_possible_cpu() loop into a helper function?
 
-I agree. Heuristics suck.
+Also, does the per-CPU LRU hashmap need the same treatment?
 
-> We need an explicit API to allow users placing queues on cores, and
-> use managed IRQs for data queues. (I'm assuming that managed IRQs will
-> let us reliably map a MSI-X vector to a core :))
-
-Yes, they allow you to do that. That will need some tweaks to theway
-they work today (coming from the strict block mq semantics). You also
-need to be aware that managed irqs have also strict semantics vs. CPU
-hotplug. If the last CPU in the managed affinity set goes down then the
-interrupt is shut down by the irq core which means that you need to
-quiesce the associated queue before that happens. When the first CPU
-comes online again the interrupt is reenabled, so the queue should be
-able to handle it or has ensured that the device does not raise one
-before it is able to do so.
-
-Thanks,
-
-        tglx
+>                 } else {
+>                         /* alloc_percpu zero-fills */
+>                         pptr = __alloc_percpu_gfp(size, 8,
+> --
+> 2.29.0
+>
