@@ -2,91 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D8622998E8
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 22:34:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4B302998FA
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 22:42:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389515AbgJZVe0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 17:34:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45104 "EHLO mail.kernel.org"
+        id S2390190AbgJZVm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 17:42:27 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45816 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389407AbgJZVeZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 17:34:25 -0400
-Received: from localhost.localdomain (unknown [192.30.34.233])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ABA92207C4;
-        Mon, 26 Oct 2020 21:34:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603748065;
-        bh=nxOKKlKqMU4NDYkRtekhmwGMQw4/QJdTu+0OdBe0WDA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GxqbmCRIF+lLlTKSGb59T+3H/HmmR5SxAgB4Zivqnprwxke/yqr6jU5OpwPiPTpyE
-         AVjYwd32xXkfHh3tLYnKMcvGEDQ8yVnoxKNQL041KXg1Zk51BpD0cJaUQ1RDr143Vu
-         t3BIaPRSPSg/BvFGHAYwnJ5MABs99c9msl/xBrag=
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
+        id S2390157AbgJZVm1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 17:42:27 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kXAFg-003gCl-LB; Mon, 26 Oct 2020 22:42:04 +0100
+Date:   Mon, 26 Oct 2020 22:42:04 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Ayush Sawal <ayush.sawal@chelsio.com>,
+        Vinay Kumar Yadav <vinay.yadav@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Yuval Shaia <yuval.shaia@oracle.com>,
-        Leon Romanovsky <leon@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Xin Long <lucien.xin@gmail.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        Sven Eckelmann <sven@narfation.org>,
-        Fernando Gont <fgont@si6networks.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 11/11] ipv6: fix type mismatch warning
-Date:   Mon, 26 Oct 2020 22:29:58 +0100
-Message-Id: <20201026213040.3889546-11-arnd@kernel.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20201026213040.3889546-1-arnd@kernel.org>
+        Arnd Bergmann <arnd@arndb.de>,
+        YueHaibing <yuehaibing@huawei.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 10/11] ch_ktls: fix enum-conversion warning
+Message-ID: <20201026214204.GS752111@lunn.ch>
 References: <20201026213040.3889546-1-arnd@kernel.org>
+ <20201026213040.3889546-10-arnd@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201026213040.3889546-10-arnd@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Mon, Oct 26, 2020 at 10:29:57PM +0100, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> gcc points out an incorrect enum assignment:
+> 
+> drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c: In function 'chcr_ktls_cpl_set_tcb_rpl':
+> drivers/net/ethernet/chelsio/inline_crypto/ch_ktls/chcr_ktls.c:684:22: warning: implicit conversion from 'enum <anonymous>' to 'enum ch_ktls_open_state' [-Wenum-conversion]
+> 
+> This appears harmless, and should apparently use 'CH_KTLS_OPEN_SUCCESS'
+> instead of 'false', with the same value '0'.
+> 
+> Fixes: efca3878a5fb ("ch_ktls: Issue if connection offload fails")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Building with 'make W=2' shows a warning for every time this header
-gets included because of a pointer type mismatch:
+Hi Arnd
 
-net/addrconf.h:163:32: warning: passing 'unsigned char *' to parameter of type 'const char *' converts between pointers to integer
-types with different sign [-Wpointer-sign]
-        addrconf_addr_eui48_base(eui, dev->dev_addr);
+I have the same fix in my tree of W=1 fixes. I was just waiting for
+net-next to open.
 
-Change the type to unsigned according to the input argument.
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Fixes: 4d6f28591fe4 ("{net,IB}/{rxe,usnic}: Utilize generic mac to eui32 function")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- include/net/addrconf.h | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/include/net/addrconf.h b/include/net/addrconf.h
-index 18f783dcd55f..074ce761e482 100644
---- a/include/net/addrconf.h
-+++ b/include/net/addrconf.h
-@@ -127,7 +127,8 @@ int addrconf_prefix_rcv_add_addr(struct net *net, struct net_device *dev,
- 				 u32 addr_flags, bool sllao, bool tokenized,
- 				 __u32 valid_lft, u32 prefered_lft);
- 
--static inline void addrconf_addr_eui48_base(u8 *eui, const char *const addr)
-+static inline void addrconf_addr_eui48_base(u8 *eui,
-+					    const unsigned char *const addr)
- {
- 	memcpy(eui, addr, 3);
- 	eui[3] = 0xFF;
-@@ -135,7 +136,7 @@ static inline void addrconf_addr_eui48_base(u8 *eui, const char *const addr)
- 	memcpy(eui + 5, addr + 3, 3);
- }
- 
--static inline void addrconf_addr_eui48(u8 *eui, const char *const addr)
-+static inline void addrconf_addr_eui48(u8 *eui, const unsigned char *const addr)
- {
- 	addrconf_addr_eui48_base(eui, addr);
- 	eui[0] ^= 2;
--- 
-2.27.0
-
+    Andrew
