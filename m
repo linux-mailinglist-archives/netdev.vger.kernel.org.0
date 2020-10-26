@@ -2,194 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C51A2988E1
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 09:58:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A37C2988D8
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 09:56:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1772370AbgJZI6K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 04:58:10 -0400
-Received: from mga04.intel.com ([192.55.52.120]:36628 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1770820AbgJZI6J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 04:58:09 -0400
-IronPort-SDR: CE+i1vRpv5G5BS4PWLq4YZZkPmB3tX0+/ahsG50rPTS0lvtldQKyws6wN5WQPAShvPAp45JfOA
- P8RBSn7LlxTw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9785"; a="165302367"
-X-IronPort-AV: E=Sophos;i="5.77,417,1596524400"; 
-   d="scan'208";a="165302367"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2020 01:58:07 -0700
-IronPort-SDR: W5gqznAoEYdXPhT1hfswbhbOJWaWO0JSF5mkzVqtcjuivJadlDvifzxH9rZ5BQ+aWfD0ul+flM
- +d0d7L7clkcg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.77,417,1596524400"; 
-   d="scan'208";a="360925113"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.141])
-  by orsmga007.jf.intel.com with ESMTP; 26 Oct 2020 01:58:04 -0700
-Date:   Mon, 26 Oct 2020 16:52:47 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, mdf@kernel.org,
-        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
-        linux-fpga@vger.kernel.org, netdev@vger.kernel.org,
-        trix@redhat.com, lgoncalv@redhat.com, hao.wu@intel.com,
-        yilun.xu@intel.com
-Subject: Re: [RFC PATCH 1/6] docs: networking: add the document for DFL Ether
-  Group driver
-Message-ID: <20201026085246.GC25281@yilunxu-OptiPlex-7050>
-References: <1603442745-13085-1-git-send-email-yilun.xu@intel.com>
- <1603442745-13085-2-git-send-email-yilun.xu@intel.com>
- <20201023153731.GC718124@lunn.ch>
+        id S1772347AbgJZI43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 04:56:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:38141 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1772342AbgJZI40 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 04:56:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603702585;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=20CfvC0VxRiGqy0SH5xo/sYibgiWw3oxgj9p2QBZAiM=;
+        b=Z9l8iezwgGZYeSXGV6YRK9sUS/Pqse6F6V5nrQU7ou60nNdPDgwKmfx+mUnzLN2zZTaz5x
+        t0F7vwlP/YPD5I64W8hVlw9OShSJR/jlsVvH/O06UL49gZa+rWt+raSQUBedh+DyM+LhSC
+        bN+1qEuj/mG9EzQPOklXvIO7MSgiRHk=
+Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com
+ [209.85.210.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-336-aJ8lrXbpP-i-oKN1iVXwkg-1; Mon, 26 Oct 2020 04:56:23 -0400
+X-MC-Unique: aJ8lrXbpP-i-oKN1iVXwkg-1
+Received: by mail-pf1-f200.google.com with SMTP id a27so5218784pfl.17
+        for <netdev@vger.kernel.org>; Mon, 26 Oct 2020 01:56:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=20CfvC0VxRiGqy0SH5xo/sYibgiWw3oxgj9p2QBZAiM=;
+        b=ubw1bnG6CAeDTPvRAUuVoG9f2HN61rXrPsCxxiFCJFQsduH6bzsLUi7GmGhhRPaSfY
+         pE4NMwN6SBPPleevYYvg474SJCLLVqKYsr4TAQC2JclTCWLFUnEmSuBBJLq+PASfSRrz
+         TuodSUZjiCUcIl5U69gruSaYwA3OfJOzxumJJEoHiexffAXl9ZkOSBThUsH8f61hLsJp
+         ist26L96uvmIJNOCOgaV5xBhsOTVe5sexFEuT2rcKeZCErziD669+fQqKr5TkBbwqr7E
+         N/59wW0rv5Y5azqB/BYdi8A83ggrRP/FKtrumxf0uvpMxCpIiSgPasWVL22Asso9v3+w
+         wgJw==
+X-Gm-Message-State: AOAM532siGzH11QOhiEiR28CisMw2fLt4tQ19QOD32qB2sm2rLWvr79B
+        j+nrxV9BbHmvZ+W4TeTUAmH+Ypj7CGadZax6cdzndMB9+W9KAWM9BMgILf/CDdd0OdrXZX7QItO
+        W75Ur9p0uXsS66kw=
+X-Received: by 2002:a17:90a:740a:: with SMTP id a10mr15592998pjg.32.1603702582723;
+        Mon, 26 Oct 2020 01:56:22 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwKFTxGXGAON0ykGUN0CPQzsxogZ8ps0FJA64V5P3Gilprubpn5PKDTE5m+xi4IeCrUnp4/eA==
+X-Received: by 2002:a17:90a:740a:: with SMTP id a10mr15592971pjg.32.1603702582510;
+        Mon, 26 Oct 2020 01:56:22 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id f4sm11864366pjs.8.2020.10.26.01.56.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Oct 2020 01:56:21 -0700 (PDT)
+Date:   Mon, 26 Oct 2020 16:56:10 +0800
+From:   Hangbin Liu <haliu@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Jiri Benc <jbenc@redhat.com>,
+        Andrii Nakryiko <andrii@kernel.org>
+Subject: Re: [PATCH iproute2-next 3/5] lib: add libbpf support
+Message-ID: <20201026085610.GE2408@dhcp-12-153.nay.redhat.com>
+References: <20201023033855.3894509-1-haliu@redhat.com>
+ <20201023033855.3894509-4-haliu@redhat.com>
+ <29c13bd0-d2f6-b914-775c-2d90270f86d4@gmail.com>
+ <87eelm5ofg.fsf@toke.dk>
+ <91aed9d1-d550-cf6c-d8bb-e6737d0740e0@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20201023153731.GC718124@lunn.ch>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <91aed9d1-d550-cf6c-d8bb-e6737d0740e0@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew
 
-Thanks for your fast response, see comments inline.
+Hi David,
 
-On Fri, Oct 23, 2020 at 05:37:31PM +0200, Andrew Lunn wrote:
-> Hi Xu
+On Sun, Oct 25, 2020 at 04:12:34PM -0600, David Ahern wrote:
+> On 10/25/20 9:13 AM, Toke Høiland-Jørgensen wrote:
+> > David Ahern <dsahern@gmail.com> writes:
+> > 
+> >> On 10/22/20 9:38 PM, Hangbin Liu wrote:
+> >>> Note: ip/ipvrf.c is not convert to use libbpf as it only encodes a few
+> >>> instructions and load directly.
+> >>
+> >> for completeness, libbpf should be able to load a program from a buffer
+> >> as well.
+> > 
+> > It can, but the particular use in ipvrf is just loading half a dozen
+> > instructions defined inline in C - there's no object files, BTF or
+> > anything. So why bother with going through libbpf in this case? The
+> > actual attachment is using the existing code anyway...
+> > 
 > 
-> Before i look at the other patches, i want to understand the
-> architecture properly.
+> actually, it already does: bpf_load_program
 
-I have a doc to describe the architecture:
+Thanks for this info. Do you want to convert ipvrf.c to:
 
-https://www.intel.com/content/www/us/en/programmable/documentation/xgz1560360700260.html
+@@ -256,8 +262,13 @@ static int prog_load(int idx)
+ 		BPF_EXIT_INSN(),
+ 	};
+ 
++#ifdef HAVE_LIBBPF
++	return bpf_load_program(BPF_PROG_TYPE_CGROUP_SOCK, prog, sizeof(prog),
++				"GPL", 0, bpf_log_buf, sizeof(bpf_log_buf));
++#else
+ 	return bpf_prog_load_buf(BPF_PROG_TYPE_CGROUP_SOCK, prog, sizeof(prog),
+ 			         "GPL", bpf_log_buf, sizeof(bpf_log_buf));
++#endif
+ }
+ 
+ static int vrf_configure_cgroup(const char *path, int ifindex)
+@@ -288,7 +299,11 @@ static int vrf_configure_cgroup(const char *path, int ifindex)
+ 		goto out;
+ 	}
+ 
++#ifdef HAVE_LIBBPF
++	if (bpf_prog_attach(prog_fd, cg_fd, BPF_CGROUP_INET_SOCK_CREATE, 0)) {
++#else
+ 	if (bpf_prog_attach_fd(prog_fd, cg_fd, BPF_CGROUP_INET_SOCK_CREATE)) {
++#endif
+ 		fprintf(stderr, "Failed to attach prog to cgroup: '%s'\n",
+ 			strerror(errno));
+ 		goto out;
 
-The "Figure 1" is a more detailed figure for the arch. It should be
-helpful.
+Thanks
+Hangbin
 
-> 
-> > +=======================================================================
-> > +DFL device driver for Ether Group private feature on Intel(R) PAC N3000
-> > +=======================================================================
-> > +
-> > +This is the driver for Ether Group private feature on Intel(R)
-> > +PAC (Programmable Acceleration Card) N3000.
-> 
-> I assume this is just one implementation. The FPGA could be placed on
-> other boards. So some of the limitations you talk about with the BMC
-> artificial, and the overall architecture of the drivers is more
-> generic?
-
-I could see if the retimer management is changed, e.g. access the retimer
-through a host controlled MDIO, maybe I need a more generic way to find the
-MDIO bus.
-
-Do you have other suggestions?
-
-> 
-> > +The Intel(R) PAC N3000 is a FPGA based SmartNIC platform for multi-workload
-> > +networking application acceleration. A simple diagram below to for the board:
-> > +
-> > +                     +----------------------------------------+
-> > +                     |                  FPGA                  |
-> > ++----+   +-------+   +-----------+  +----------+  +-----------+   +----------+
-> > +|QSFP|---|retimer|---|Line Side  |--|User logic|--|Host Side  |---|XL710     |
-> > ++----+   +-------+   |Ether Group|  |          |  |Ether Group|   |Ethernet  |
-> > +                     |(PHY + MAC)|  |wiring &  |  |(MAC + PHY)|   |Controller|
-> > +                     +-----------+  |offloading|  +-----------+   +----------+
-> > +                     |              +----------+              |
-> > +                     |                                        |
-> > +                     +----------------------------------------+
-> 
-> Is XL710 required? I assume any MAC with the correct MII interface
-> will work?
-
-The XL710 is required for this implementation, in which we have the Host
-Side Ether Group facing the host.  The Host Side Ether Group actually
-contains the same IP blocks as Line Side. It contains the compacted MAC &
-PHY functionalities for 25G/40G case. The 25G MAC-PHY soft IP SPEC can
-be found at:
-
-https://www.intel.com/content/www/us/en/programmable/documentation/ewo1447742896786.html
-
-So raw serial data is output from Host Side FPGA, and XL710 is good to
-handle this.
-
-> 
-> Do you really mean PHY? I actually expect it is PCS? 
-
-For this implementation, yes.
-
-I guess if you program another IP block on FPGA host side, e.g. a PCS interface,
-and replace XL710 with another MAC, it may also work. But I think there should
-be other drivers to handle this.
-
-I may contact with our Hardware designer if there is some concern we
-don't use MII for connection of FPGA & Host.
-
-The FPGA User is mainly concerned about the user logic part. The Ether
-Groups in FIU and Board components are not expected to be re-designed by
-the user. So I think I should still focus on the driver for this
-implementation.
-
-> 
-> > +The DFL Ether Group driver registers netdev for each line side link. Users
-> > +could use standard commands (ethtool, ip, ifconfig) for configuration and
-> > +link state/statistics reading. For host side links, they are always connected
-> > +to the host ethernet controller, so they should always have same features as
-> > +the host ethernet controller. There is no need to register netdevs for them.
-> 
-> So lets say the XL710 is eth0. The line side netif is eth1. Where do i
-> put the IP address? What interface do i add to quagga OSPF? 
-
-The IP address should be put in eth0. eth0 should always be used for the
-tools.
-
-The line/host side Ether Group is not the terminal of the network data stream.
-Eth1 will not paticipate in the network data exchange to host.
-
-The main purposes for eth1 are:
-1. For users to monitor the network statistics on Line Side, and by comparing the
-statistics between eth0 & eth1, users could get some knowledge of how the User
-logic is taking function.
-
-2. Get the link state of the front panel. The XL710 is now connected to
-Host Side of the FPGA and the its link state would be always on. So to
-check the link state of the front panel, we need to query eth1.
-
-> 
-> > +The driver just enables these links on probe.
-> > +
-> > +The retimer chips are managed by onboard BMC (Board Management Controller)
-> > +firmware, host driver is not capable to access them directly.
-> 
-> What about the QSPF socket? Can the host get access to the I2C bus?
-> The pins for TX enable, etc. ethtool -m?
-
-No, the QSPF/I2C are also managed by the BMC firmware, and host doesn't
-have interface to talk to BMC firmware about QSPF.
-
-> 
-> > +Speed/Duplex
-> > +------------
-> > +The Ether Group doesn't support auto-negotiation. The link speed is fixed to
-> > +10G, 25G or 40G full duplex according to which Ether Group IP is programmed.
-> 
-> So that means, if i pop out the SFP and put in a different one which
-> supports a different speed, it is expected to be broken until the FPGA
-> is reloaded?
-
-It is expected to be broken.
-
-Now the line side is expected to be configured to 4x10G, 4x25G, 2x25G, 1x25G.
-host side is expected to be 4x10G or 2x40G for XL710.
-
-So 4 channel SFP is expected to be inserted to front panel. And we should use
-4x25G SFP, which is compatible to 4x10G connection.
-
-Thanks,
-Yilun
-
-> 
->      Andrew
