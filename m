@@ -2,167 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0A3B2986E7
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 07:38:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86B8C298717
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 07:53:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1770479AbgJZGiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 02:38:03 -0400
-Received: from mail-ej1-f66.google.com ([209.85.218.66]:37437 "EHLO
-        mail-ej1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1770472AbgJZGiC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 02:38:02 -0400
-Received: by mail-ej1-f66.google.com with SMTP id p9so11753052eji.4;
-        Sun, 25 Oct 2020 23:38:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dpR6HKBvLiwoLwNCGNwWMmEuYGZxFvFCHdWRL099Ijk=;
-        b=APjI9pp3dxEgoubORj970OY1HMGaZmmrNtD6GSJ4ALYEzB1E/1Px55Qm+guW09n/ql
-         2qa9jNO7fJ+jf/NGCSX7aBm8UIjg5Ck7TfnQ686uc3F4JmI4v58GhhAMr8PMPn421qQw
-         V3Xt8wK6aSVa1x9iqUbBgf+U/YQfpxFGSMOjZGzLG7NTBnfq6oo+2wsAy5uBz8N8DRxm
-         VAK1lPJg1XlSSgG75NgHW7q4e78QnXtNAWQ9GoeN6rbD37wynMoh2grQhvzFulFFJKCb
-         IoYynB6xWsgkZhYE4A8DUjJ7Y/eJETanuaFZKj91osHhz/g6EyFTgDUPEDR3/8u7y/7H
-         4ULg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dpR6HKBvLiwoLwNCGNwWMmEuYGZxFvFCHdWRL099Ijk=;
-        b=Y7yIzWM/PQOTKm7hdDKFWupV6Pi2hu9coWkshOLe1Jm3syM1rCMOXZy3bzTEnlu6uS
-         hj1FOXwNSkOYVm+sCmF6fwPq+Lu4AZYFsGN4G/kwU7d8Oj8GPCT9AQd/HZGV9ECIY1Ih
-         XzcKPqWq8ofO9vHl5bpxLPmC9QySzO1x0cHpK2PmtyaAfwQ7jDx0dk4YZ0Udyx6+d2py
-         XR91k1FStaL2jCCXNSteH3JzI5v+gh6AXZ+49Qd7UKCrOievBRGr1C1O3q1MxydT6tFy
-         8PphOFRh9iKndcL1DOqUs7vd/TJcyjDR+5Qm2X8jzHaDJEHycFsX0n807fVcpBqQQKfV
-         U1CQ==
-X-Gm-Message-State: AOAM532MtCSqMKAPdFc/4TiZYRu8M5ymOdbnRoPe4b6J9NQW6vxI0VQs
-        B3cdoxRyZptc+Po++aR2SGAvg1Nse5mio25D5/U=
-X-Google-Smtp-Source: ABdhPJxTwpbIrN+pmdDG9MX150R5eZazoaLR4My17R2VWPLwTd+VNsH9VziuTiklU0xBcEMNeT2Dz0YdXIs3x4wCMQ4=
-X-Received: by 2002:a17:906:a00d:: with SMTP id p13mr14561926ejy.183.1603694280382;
- Sun, 25 Oct 2020 23:38:00 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201024154233.4024-1-fujiwara.masahiro@gmail.com> <20201025140550.1e29f770@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201025140550.1e29f770@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   Masahiro Fujiwara <fujiwara.masahiro@gmail.com>
-Date:   Mon, 26 Oct 2020 15:37:48 +0900
-Message-ID: <CABBAZC+oQ64BcMRDgtXHes-Ri=20bh2GC-DuSZy7gPpKTFRMQw@mail.gmail.com>
-Subject: Re: [PATCH net] gtp: fix an use-before-init in gtp_newlink()
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Harald Welte <laforge@gnumonks.org>,
+        id S1770765AbgJZGxK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 02:53:10 -0400
+Received: from aserp2130.oracle.com ([141.146.126.79]:55442 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390722AbgJZGxJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 02:53:09 -0400
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09Q6jBft087478;
+        Mon, 26 Oct 2020 06:52:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=ZCdYqwskaOvpapAfB2phd0RcmVu3e0MieFtG58z39f0=;
+ b=K82V47ulVlrXf1V5GQII3mj90UVz8n8x2EzQ14TVSVM4CQONhcpGl7dYFZyZRbCTz9Kt
+ CAFEqVXH1k8diXvHuNmkOm00mw07yAD9ctYNnDs8wAS1s0SOh91Ng7dI4B1aBr5MtvoX
+ sc4NG57srMf2n9jMSQOYAmspog/bgFNcSyqE0FZvvc0eO7n7SZwwhAyOvReqOusqalf8
+ oZJR/oxPJiiqtX2uJnAHzkY+3UQofYi2O6NapdXrEJ1baNJLLMBzGk+0EQHa9kpAzuw/
+ 4kg0tQTlvF/GcjS05KtWPj4CVKFtjaL4oiUCKjOG0q+F1xJrckYd/3WLW4+dNHR/c2fF aA== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2130.oracle.com with ESMTP id 34c9sakanm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 26 Oct 2020 06:52:47 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09Q6oKUv087069;
+        Mon, 26 Oct 2020 06:52:47 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3030.oracle.com with ESMTP id 34cwujye7b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 26 Oct 2020 06:52:47 +0000
+Received: from abhmp0020.oracle.com (abhmp0020.oracle.com [141.146.116.26])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 09Q6qkVY027221;
+        Mon, 26 Oct 2020 06:52:46 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sun, 25 Oct 2020 23:52:45 -0700
+Date:   Mon, 26 Oct 2020 09:52:36 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+Cc:     Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Andreas Schultz <aschultz@tpip.net>,
-        osmocom-net-gprs@lists.osmocom.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>,
+        Huazhong Tan <tanhuazhong@huawei.com>,
+        Yonglong Liu <liuyonglong@huawei.com>,
+        Yufeng Mo <moyufeng@huawei.com>,
+        Pankaj Bharadiya <pankaj.laxminarayan.bharadiya@intel.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH net] net: hns3: clean up a return in hclge_tm_bp_setup()
+Message-ID: <20201026065235.GG18329@kadam>
+References: <20201023112212.GA282278@mwanda>
+ <3fbcbfbd-deea-162e-9281-29e65b90996b@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3fbcbfbd-deea-162e-9281-29e65b90996b@huawei.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9785 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 mlxscore=0 bulkscore=0
+ spamscore=0 adultscore=0 malwarescore=0 mlxlogscore=999 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2010260047
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9785 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 malwarescore=0 lowpriorityscore=0 bulkscore=0
+ priorityscore=1501 spamscore=0 phishscore=0 clxscore=1011 suspectscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2010260046
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Mon, Oct 26, 2020 at 11:18:16AM +0800, Yunsheng Lin wrote:
+> On 2020/10/23 19:22, Dan Carpenter wrote:
+> > Smatch complains that "ret" might be uninitialized if we don't enter
+> > the loop.  We do always enter the loop so it's a false positive, but
+> > it's cleaner to just return a literal zero and that silences the
+> > warning as well.
+> 
+> Thanks for the clean up. Minor comment below:
+> Perhap it makes sense to limit ret scope within the for loop after
+> returning zero.
+> 
 
-Thanks for the review. Will send a new patch with the fixes soon.
+It's not really normal to limit ret scope...  I think it's better to
+leave it as-is.
 
-----
-Fujiwara
+regards,
+dan carpenter
 
-On Mon, Oct 26, 2020 at 6:05 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Sat, 24 Oct 2020 15:42:33 +0000 Masahiro Fujiwara wrote:
-> > *_pdp_find() from gtp_encap_recv() would trigger a crash when a peer
-> > sends GTP packets while creating new GTP device.
-> >
-> > RIP: 0010:gtp1_pdp_find.isra.0+0x68/0x90 [gtp]
-> > <SNIP>
-> > Call Trace:
-> >  <IRQ>
-> >  gtp_encap_recv+0xc2/0x2e0 [gtp]
-> >  ? gtp1_pdp_find.isra.0+0x90/0x90 [gtp]
-> >  udp_queue_rcv_one_skb+0x1fe/0x530
-> >  udp_queue_rcv_skb+0x40/0x1b0
-> >  udp_unicast_rcv_skb.isra.0+0x78/0x90
-> >  __udp4_lib_rcv+0x5af/0xc70
-> >  udp_rcv+0x1a/0x20
-> >  ip_protocol_deliver_rcu+0xc5/0x1b0
-> >  ip_local_deliver_finish+0x48/0x50
-> >  ip_local_deliver+0xe5/0xf0
-> >  ? ip_protocol_deliver_rcu+0x1b0/0x1b0
-> >
-> > gtp_encap_enable() should be called after gtp_hastable_new() otherwise
-> > *_pdp_find() will access the uninitialized hash table.
->
-> Looks good, minor nits:
->
->  - is the time zone broken on your system? Looks like your email has
->    arrived with the date far in the past, so the build systems have
->    missed it. Could you double check the time on your system?
->
-> > Fixes: 1e3a3abd8 ("gtp: make GTP sockets in gtp_newlink optional")
->
-> The hash looks short, should be at lest 12 chars:
->
-> Fixes: 1e3a3abd8b28 ("gtp: make GTP sockets in gtp_newlink optional")
->
-> > Signed-off-by: Masahiro Fujiwara <fujiwara.masahiro@gmail.com>
->
-> > diff --git a/drivers/net/gtp.c b/drivers/net/gtp.c
-> > index 8e47d0112e5d..6c56337b02a3 100644
-> > --- a/drivers/net/gtp.c
-> > +++ b/drivers/net/gtp.c
-> > @@ -663,10 +663,6 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
-> >
-> >       gtp = netdev_priv(dev);
-> >
-> > -     err = gtp_encap_enable(gtp, data);
-> > -     if (err < 0)
-> > -             return err;
-> > -
-> >       if (!data[IFLA_GTP_PDP_HASHSIZE]) {
-> >               hashsize = 1024;
-> >       } else {
-> > @@ -676,13 +672,18 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
-> >       }
-> >
-> >       err = gtp_hashtable_new(gtp, hashsize);
-> > +     if (err < 0) {
-> > +             return err;
-> > +     }
->
-> no need for braces around single statement
->
-> > +
-> > +     err = gtp_encap_enable(gtp, data);
-> >       if (err < 0)
-> >               goto out_encap;
-> >
-> >       err = register_netdevice(dev);
-> >       if (err < 0) {
-> >               netdev_dbg(dev, "failed to register new netdev %d\n", err);
-> > -             goto out_hashtable;
-> > +             goto out_encap;
-> >       }
-> >
-> >       gn = net_generic(dev_net(dev), gtp_net_id);
-> > @@ -693,11 +694,10 @@ static int gtp_newlink(struct net *src_net, struct net_device *dev,
-> >
-> >       return 0;
-> >
-> > -out_hashtable:
-> > -     kfree(gtp->addr_hash);
-> > -     kfree(gtp->tid_hash);
-> >  out_encap:
-> >       gtp_encap_disable(gtp);
->
-> I'd personally move the out_hashtable: label here and keep it, just for
-> clarity. Otherwise reader has to double check that gtp_encap_disable()
-> can be safely called before gtp_encap_enable().
->
-> Also gtp_encap_disable() could change in the future breaking this
-> assumption.
->
-> > +     kfree(gtp->addr_hash);
-> > +     kfree(gtp->tid_hash);
-> >       return err;
-> >  }
-> >
->
