@@ -2,61 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2313C298C5B
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 12:54:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29E66298CC3
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 13:14:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1774101AbgJZLyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 07:54:38 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:34148 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1770594AbgJZLyh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 07:54:37 -0400
-X-Greylist: delayed 1296 seconds by postgrey-1.27 at vger.kernel.org; Mon, 26 Oct 2020 07:54:37 EDT
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1kX0kG-00CutW-3w; Mon, 26 Oct 2020 12:33:00 +0100
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>
-Subject: [PATCH] libnetlink: define __aligned conditionally
-Date:   Mon, 26 Oct 2020 12:32:52 +0100
-Message-Id: <20201026113252.18018-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.26.2
+        id S1774859AbgJZMN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 08:13:59 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44404 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1774787AbgJZMNP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 08:13:15 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kX1Mv-003bHn-3T; Mon, 26 Oct 2020 13:12:57 +0100
+Date:   Mon, 26 Oct 2020 13:12:57 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Icenowy Zheng <icenowy@aosc.io>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willy Liu <willy.liu@realtek.com>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-sunxi@googlegroups.com
+Subject: Re: [linux-sunxi] Re: [PATCH] net: phy: realtek: omit setting
+ PHY-side delay when "rgmii" specified
+Message-ID: <20201026121257.GB836546@lunn.ch>
+References: <20201025085556.2861021-1-icenowy@aosc.io>
+ <20201025141825.GB792004@lunn.ch>
+ <77AAA8B8-2918-4646-BE47-910DDDE38371@aosc.io>
+ <20201025143608.GD792004@lunn.ch>
+ <F5D81295-B4CD-4B80-846A-39503B70E765@aosc.io>
+ <20201025172848.GI792004@lunn.ch>
+ <C3279C11-EE7F-49FA-9BB3-ACA797B7B690@aosc.io>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <C3279C11-EE7F-49FA-9BB3-ACA797B7B690@aosc.io>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On some systems (e.g. current Debian/stable) the inclusion
-of utils.h pulled in some other things that may end up
-defining __aligned, in a possibly different way than what
-we had here.
+> By referring to linux/phy.h, NA means not applicable. This surely
+> do not apply when RGMII is really in use.
 
-Use our own definition only if there isn't one already.
+It means the PHY driver should not touch the mode, something else has
+set it up. That could be strapping, the bootloader, ACPI firmware,
+whatever.
 
-Fixes: d5acae244f9d ("libnetlink: add nl_print_policy() helper")
-Signed-off-by: Johannes Berg <johannes@sipsolutions.net>
----
- lib/libnetlink.c | 2 ++
- 1 file changed, 2 insertions(+)
+> I think no document declares RGMII must have all internal delays
+> of the PHY explicitly disabled. It just says RGMII.
 
-diff --git a/lib/libnetlink.c b/lib/libnetlink.c
-index a7b60d873afb..c958aa57d0cd 100644
---- a/lib/libnetlink.c
-+++ b/lib/libnetlink.c
-@@ -30,7 +30,9 @@
- #include "libnetlink.h"
- #include "utils.h"
- 
-+#ifndef __aligned
- #define __aligned(x)		__attribute__((aligned(x)))
-+#endif
- 
- #ifndef SOL_NETLINK
- #define SOL_NETLINK 270
--- 
-2.26.2
+Please take a look at all the other PHY drivers. They should all
+disable delays when passed PHY_INTERFACE_MODE_RGMII.
 
+	Andrew
