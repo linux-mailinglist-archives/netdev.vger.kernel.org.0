@@ -2,124 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 124262989D7
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 10:53:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AF75298A20
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 11:15:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1768652AbgJZJx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 05:53:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56838 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1768669AbgJZJwH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 05:52:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603705926;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=EzJl/A45Yba7R3oWiXbf0VIqJAG69+6BHxAA1BrHBdc=;
-        b=YqbzsfihbYm20b4Hkfsgax9M1FYpC7wbxumWvr53y0xklOWGBKwbm15t0d9UPnPkt/cI+R
-        gku2BLX/j5/Cl/mgT/JTmV2xcrv3FtPMVByqeonnSep0efUGRF8ypAvH/ZdvYROQUOp80K
-        VhcOpfipR1oqnD6pyrUwK7K8TUM8SYQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-399-I8qAw6eHMWeHc-dB1dn3GQ-1; Mon, 26 Oct 2020 05:52:02 -0400
-X-MC-Unique: I8qAw6eHMWeHc-dB1dn3GQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1769245AbgJZKOj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 06:14:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42510 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1768386AbgJZJrn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 05:47:43 -0400
+Received: from mail.kernel.org (ip5f5ad5a1.dynamic.kabel-deutschland.de [95.90.213.161])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 839F51006C93;
-        Mon, 26 Oct 2020 09:52:00 +0000 (UTC)
-Received: from ovpn-114-234.ams2.redhat.com (ovpn-114-234.ams2.redhat.com [10.36.114.234])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DA60E5C1C2;
-        Mon, 26 Oct 2020 09:51:57 +0000 (UTC)
-Message-ID: <acbb8a3a7bd83ee1121dfa91c207e4681a01d2d8.camel@redhat.com>
-Subject: Re: [PATCH] net: udp: increase UDP_MIB_RCVBUFERRORS when ENOBUFS
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Menglong Dong <menglong8.dong@gmail.com>, davem@davemloft.net
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Mon, 26 Oct 2020 10:51:56 +0100
-In-Reply-To: <20201026093907.13799-1-menglong8.dong@gmail.com>
-References: <20201026093907.13799-1-menglong8.dong@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
+        by mail.kernel.org (Postfix) with ESMTPSA id EED8420704;
+        Mon, 26 Oct 2020 09:47:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603705663;
+        bh=cm0DgYGOWrzWhAQoSMBRcvt64IJtdw58FGbr6XTCKpw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=eVW0Kh9mJcqAGqXz7Tc5qsUNbIaIgFX/WeC+zatS7ooQ/8UicBHJZrmUAlCfzOi8Z
+         Z3G9pE4WncM6z5lBJRPa0MaxWCbcMvUk/odUc8x8beaV9WUD43rG5a1Gz65xeeQio6
+         y/a4IWfbub0GY/Z9+LwShaWH6G7ez+RfSXK9oIXs=
+Received: from mchehab by mail.kernel.org with local (Exim 4.94)
+        (envelope-from <mchehab@kernel.org>)
+        id 1kWz6J-0030sz-Ke; Mon, 26 Oct 2020 10:47:39 +0100
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        "J. Bruce Fields" <bfields@fieldses.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, Andrii Nakryiko <andriin@fb.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Westphal <fw@strlen.de>,
+        Guillaume Nault <gnault@redhat.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Martin Varghese <martin.varghese@nokia.com>,
+        Maxim Mikityanskiy <maximmi@mellanox.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Sabrina Dubroca <sd@queasysnail.net>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Yadu Kishore <kyk.segfault@gmail.com>,
+        linux-nfs@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH RESEND 0/3] Fix wrong identifiers on kernel-doc markups
+Date:   Mon, 26 Oct 2020 10:47:35 +0100
+Message-Id: <cover.1603705472.git.mchehab+huawei@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Transfer-Encoding: 8bit
+Sender: Mauro Carvalho Chehab <mchehab@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Hi Mark/Jakub,
 
-On Mon, 2020-10-26 at 17:39 +0800, Menglong Dong wrote:
-> The error returned from __udp_enqueue_schedule_skb is ENOMEM or ENOBUFS.
-> For now, only ENOMEM is counted into UDP_MIB_RCVBUFERRORS in
-> __udp_queue_rcv_skb. UDP_MIB_RCVBUFERRORS should count all of the
-> failed skb because of memory errors during udp receiving, not just because of the limit of sock receive queue. We can see this
-> in __udp4_lib_mcast_deliver:
-> 
-> 		nskb = skb_clone(skb, GFP_ATOMIC);
-> 
-> 		if (unlikely(!nskb)) {
-> 			atomic_inc(&sk->sk_drops);
-> 			__UDP_INC_STATS(net, UDP_MIB_RCVBUFERRORS,
-> 					IS_UDPLITE(sk));
-> 			__UDP_INC_STATS(net, UDP_MIB_INERRORS,
-> 					IS_UDPLITE(sk));
-> 			continue;
-> 		}
-> 
-> See, UDP_MIB_RCVBUFERRORS is increased when skb clone failed. From this
-> point, ENOBUFS from __udp_enqueue_schedule_skb should be counted, too.
-> It means that the buffer used by all of the UDP sock is to the limit, and
-> it ought to be counted.
-> 
-> Signed-off-by: Menglong Dong <menglong8.dong@gmail.com>
-> ---
->  net/ipv4/udp.c | 4 +---
->  net/ipv6/udp.c | 4 +---
->  2 files changed, 2 insertions(+), 6 deletions(-)
-> 
-> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> index 09f0a23d1a01..49a69d8d55b3 100644
-> --- a/net/ipv4/udp.c
-> +++ b/net/ipv4/udp.c
-> @@ -2035,9 +2035,7 @@ static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
->  		int is_udplite = IS_UDPLITE(sk);
->  
->  		/* Note that an ENOMEM error is charged twice */
-> -		if (rc == -ENOMEM)
-> -			UDP_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS,
-> -					is_udplite);
-> +		UDP_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS, is_udplite);
->  		UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
->  		kfree_skb(skb);
->  		trace_udp_fail_queue_rcv_skb(rc, sk);
-> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-> index 29d9691359b9..d5e23b150fd9 100644
-> --- a/net/ipv6/udp.c
-> +++ b/net/ipv6/udp.c
-> @@ -634,9 +634,7 @@ static int __udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
->  		int is_udplite = IS_UDPLITE(sk);
->  
->  		/* Note that an ENOMEM error is charged twice */
-> -		if (rc == -ENOMEM)
-> -			UDP6_INC_STATS(sock_net(sk),
-> -					 UDP_MIB_RCVBUFERRORS, is_udplite);
-> +		UDP6_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS, is_udplite);
->  		UDP6_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
->  		kfree_skb(skb);
->  		return -1;
+As you requested, I'm resending the three -net patches
+from the /56 patch series I sent last Friday:
 
-The diffstat is nice, but I'm unsure we can do this kind of change
-(well, I really think we should not do it): it will fool any kind of
-existing users (application, scripts, admin) currently reading the
-above counters and expecting UDP_MIB_RCVBUFERRORS being increased with
-the existing schema.
+	[PATCH v3 00/56] Fix several bad kernel-doc markups
 
-Cheers,
+They fix a few kernel-doc markups that are using different
+identifiers than the function/struct that they are actually
+documenting.
 
-Paolo
+This should help checking them via CI automation.
+
+Regards,
+Mauro
+
+Mauro Carvalho Chehab (3):
+  net: phy: fix kernel-doc markups
+  net: datagram: fix some kernel-doc markups
+  net: core: fix some kernel-doc markups
+
+ drivers/net/phy/mdio_bus.c   |  2 +-
+ drivers/net/phy/phy-c45.c    |  2 +-
+ drivers/net/phy/phy.c        |  2 +-
+ drivers/net/phy/phy_device.c |  2 +-
+ drivers/net/phy/phylink.c    |  2 +-
+ include/linux/netdevice.h    | 11 +++++++++--
+ net/core/datagram.c          |  2 +-
+ net/core/dev.c               |  4 ++--
+ net/core/skbuff.c            |  2 +-
+ net/ethernet/eth.c           |  6 +++---
+ net/sunrpc/rpc_pipe.c        |  3 ++-
+ 11 files changed, 23 insertions(+), 15 deletions(-)
+
+-- 
+2.26.2
+
 
