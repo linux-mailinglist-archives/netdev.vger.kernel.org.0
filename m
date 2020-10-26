@@ -2,142 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5CF8298D0B
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 13:47:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94774298D54
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 13:55:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1775411AbgJZMrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 08:47:16 -0400
-Received: from mail-yb1-f193.google.com ([209.85.219.193]:36019 "EHLO
-        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1775403AbgJZMrP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 08:47:15 -0400
-Received: by mail-yb1-f193.google.com with SMTP id f140so7537490ybg.3;
-        Mon, 26 Oct 2020 05:47:14 -0700 (PDT)
+        id S1773386AbgJZMzc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 08:55:32 -0400
+Received: from mail-pj1-f48.google.com ([209.85.216.48]:35394 "EHLO
+        mail-pj1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1773347AbgJZMzb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 08:55:31 -0400
+Received: by mail-pj1-f48.google.com with SMTP id h4so3059201pjk.0
+        for <netdev@vger.kernel.org>; Mon, 26 Oct 2020 05:55:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=krigQ3i6dCn+qzXzyflYkj7VuDlk3im8wf3RIOQnyu0=;
-        b=pxj7fdi5TwNz1sp0SG2lcxXmD0z87mAO+WmV/PZXXxNp/FMCekwhBBg0DHy3OdGuOX
-         i31VsFgafs/VXGMZUvU6Biuar+lcVhGWctnL8wjUeER61KPnR/SQugSNcYNzTaweDqih
-         qMjYLUlUqfM6NUJ5Pt6dg8gnQMpOHvJF1ftBOrJrlCJGfDwMZ7OlyVIovhKARNYMfQZu
-         bdAx3bT4z5bDwJiEArnxN7p9prYUm3scJeMUnVVN8kF7wc0xSxdJNr4hOwYvfJgk5OlI
-         hoWBzGVln/nxok/OLuvN2VTGyymqZyPVj2wB17u+epv6X58lCuoMBJHhV888Sisqjtn3
-         G7kg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=M8Vw2QZFp/jt/eIW34XJjud6D53sQk4VNFp4sQsQZOs=;
+        b=VMi6+sGYflFqDFo9A4e0xwNxC7oK6kl0nXEM4HtOsfO8maweA34rrjkk6NOGeI6ck/
+         1+3zAjJ2qwI0ODg9OVEwUR+583vT1iuhkan1umk7IFCNUIBvvmZG4jAueHzkt7romfLQ
+         bU91p2JXndgTsmP2sWgL+1QPZW97M5dA59bi2ITT3uOwe6NgvcVnSjc8dVWjt3vuaHOL
+         iF7RPca3024fyXD++IoFurprP62cbjcKhXTfB5N1krw32tSKBglBUd8cinLslQImpVPm
+         +w3Ac6SZlRMuYbcHuv9KVMkoBxGqEsUYC+F6CwJMSzj0IuLorAqUvbKWmeg7buPwKhhq
+         xIvg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=krigQ3i6dCn+qzXzyflYkj7VuDlk3im8wf3RIOQnyu0=;
-        b=UpL5IQp0KFjCDqpOXvACVdLGU9aPzh/qFcDxojT737Du/2C6OiyMNAVDfPzH8/piox
-         qlIVDh3JkXUUn+F9mx00cjjfnq8Dwpu5qgPOPZkhKjhyAF+SNGuoF1edwkVcqKsgymmC
-         +t4bcD8MCZLj1JkUt+TMJGWWvL5MJCj/GDWUbEm2Wmj8og/Z2Jr5K2cotDkdLGu8nTyn
-         P7XxlDxgrfbCUMUSI99bapD9slu6YttM8V6LdbsglsPDbsIwrs9/kLcpWkahuQOGjiQH
-         aPNYx5XfA2r7U+aIVYF/JrDc6lhB5rdsTh//wNGpFcwztH1oCxmSsgiCskkBqt0daLZ/
-         GXaQ==
-X-Gm-Message-State: AOAM533wuzqxsWRoZ36rtgQ9oe0v6VYvn7U0oxfY3c0+2UxPGuXtWWUm
-        sBsOa1rhNngwMXxpXt7AtE2izWLgbU2w1ROKeTXR3nrNEcQ=
-X-Google-Smtp-Source: ABdhPJzrnX+CzY0KVfOlcv5KZkRi5XGyHH+EvYDjHWe0C/bOb802ge8/+ABSQDcFQ2AVcpP57bskV/8mSTnyaYvKz7c=
-X-Received: by 2002:a25:2e4c:: with SMTP id b12mr20497894ybn.336.1603716433785;
- Mon, 26 Oct 2020 05:47:13 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=M8Vw2QZFp/jt/eIW34XJjud6D53sQk4VNFp4sQsQZOs=;
+        b=dzKuO1GK7p9ZIhSP9/jk4A5Nrsz3HLL39UyMwzaQWeBxrSHGg9jAA5xGreJipJAL0M
+         voJMh4E7cyjRTEULCmYzBLqHsPtgl0xjfWcT+zoLeppivs0NP+V8vm1P6c3i0Y+z58IZ
+         b4LzdJbHuv7TrOkkzoWiTg8TvIE5Jq6ROhBFj7/kfH3UwzWWy7ABg4GE+gf9hLgg5s47
+         5w7cm8Xzi4hwh+AFV9Fx3VKgj4mz1HlR0AVA4pbpRqHmCku2sg31KtjFCrRU4FsssK4z
+         rB3cfigqdg59nW7P8L5p5FYibIGliF9Qmu0ZRPwqyJaGAN54fsTSu95wjL6sL5E9MOAS
+         lA6A==
+X-Gm-Message-State: AOAM530KTuEqLO8QL+GrPESArGrLSpDP1ouqxdg26TFZDuuwkCs1LW6Y
+        PqeJTKHhNtP/eZk4tzwQx47eObKbHRq5SamR
+X-Google-Smtp-Source: ABdhPJymoE6QZD6nkqoWX8v6j+xKztsdHjq6H6OVCAeLnXmEW2BLnLfzbfw3bbRDTxBj33K0TX43+g==
+X-Received: by 2002:a17:90a:d517:: with SMTP id t23mr16640918pju.141.1603716930848;
+        Mon, 26 Oct 2020 05:55:30 -0700 (PDT)
+Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id k127sm10652684pgk.10.2020.10.26.05.55.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Oct 2020 05:55:30 -0700 (PDT)
+Date:   Mon, 26 Oct 2020 20:55:19 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     "Georg Kohmann (geokohma)" <geokohma@cisco.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: Re: [PATCHv4 net 2/2] IPv6: reply ICMP error if the first fragment
+ don't include all headers
+Message-ID: <20201026125519.GO2531@dhcp-12-153.nay.redhat.com>
+References: <20201023064347.206431-1-liuhangbin@gmail.com>
+ <20201026072926.3663480-1-liuhangbin@gmail.com>
+ <20201026072926.3663480-3-liuhangbin@gmail.com>
+ <57fe774b-63bb-a270-4271-f1cb632a6423@cisco.com>
 MIME-Version: 1.0
-References: <20201026093907.13799-1-menglong8.dong@gmail.com> <acbb8a3a7bd83ee1121dfa91c207e4681a01d2d8.camel@redhat.com>
-In-Reply-To: <acbb8a3a7bd83ee1121dfa91c207e4681a01d2d8.camel@redhat.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Mon, 26 Oct 2020 20:47:01 +0800
-Message-ID: <CADxym3bwD+XBRmrtN6Bh1p9QQy_H7gx1o98eU+pWgPeDtVxX5w@mail.gmail.com>
-Subject: Re: [PATCH] net: udp: increase UDP_MIB_RCVBUFERRORS when ENOBUFS
-To:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net
-Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <57fe774b-63bb-a270-4271-f1cb632a6423@cisco.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello~
+On Mon, Oct 26, 2020 at 08:09:21AM +0000, Georg Kohmann (geokohma) wrote:
+> > +	nexthdr = hdr->nexthdr;
+> > +	offset = ipv6_skip_exthdr(skb, skb_transport_offset(skb), &nexthdr, &frag_off);
+> > +	if (offset < 0)
+> > +		goto fail_hdr;
+> > +
+> > +	/* Check some common protocols' header */
+> > +	if (nexthdr == IPPROTO_TCP)
+> > +		offset += sizeof(struct tcphdr);
+> > +	else if (nexthdr == IPPROTO_UDP)
+> > +		offset += sizeof(struct udphdr);
+> > +	else if (nexthdr == IPPROTO_ICMPV6)
+> > +		offset += sizeof(struct icmp6hdr);
+> > +	else
+> > +		offset += 1;
+> 
+> Maybe also check the special case IPPROTO_NONE?
 
-On Mon, Oct 26, 2020 at 5:52 PM Paolo Abeni <pabeni@redhat.com> wrote:
->
-> Hello,
->
-> On Mon, 2020-10-26 at 17:39 +0800, Menglong Dong wrote:
-> > The error returned from __udp_enqueue_schedule_skb is ENOMEM or ENOBUFS.
-> > For now, only ENOMEM is counted into UDP_MIB_RCVBUFERRORS in
-> > __udp_queue_rcv_skb. UDP_MIB_RCVBUFERRORS should count all of the
-> > failed skb because of memory errors during udp receiving, not just because of the limit of sock receive queue. We can see this
-> > in __udp4_lib_mcast_deliver:
-> >
-> >               nskb = skb_clone(skb, GFP_ATOMIC);
-> >
-> >               if (unlikely(!nskb)) {
-> >                       atomic_inc(&sk->sk_drops);
-> >                       __UDP_INC_STATS(net, UDP_MIB_RCVBUFERRORS,
-> >                                       IS_UDPLITE(sk));
-> >                       __UDP_INC_STATS(net, UDP_MIB_INERRORS,
-> >                                       IS_UDPLITE(sk));
-> >                       continue;
-> >               }
-> >
-> > See, UDP_MIB_RCVBUFERRORS is increased when skb clone failed. From this
-> > point, ENOBUFS from __udp_enqueue_schedule_skb should be counted, too.
-> > It means that the buffer used by all of the UDP sock is to the limit, and
-> > it ought to be counted.
-> >
-> > Signed-off-by: Menglong Dong <menglong8.dong@gmail.com>
-> > ---
-> >  net/ipv4/udp.c | 4 +---
-> >  net/ipv6/udp.c | 4 +---
-> >  2 files changed, 2 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> > index 09f0a23d1a01..49a69d8d55b3 100644
-> > --- a/net/ipv4/udp.c
-> > +++ b/net/ipv4/udp.c
-> > @@ -2035,9 +2035,7 @@ static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
-> >               int is_udplite = IS_UDPLITE(sk);
-> >
-> >               /* Note that an ENOMEM error is charged twice */
-> > -             if (rc == -ENOMEM)
-> > -                     UDP_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS,
-> > -                                     is_udplite);
-> > +             UDP_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS, is_udplite);
-> >               UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
-> >               kfree_skb(skb);
-> >               trace_udp_fail_queue_rcv_skb(rc, sk);
-> > diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-> > index 29d9691359b9..d5e23b150fd9 100644
-> > --- a/net/ipv6/udp.c
-> > +++ b/net/ipv6/udp.c
-> > @@ -634,9 +634,7 @@ static int __udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
-> >               int is_udplite = IS_UDPLITE(sk);
-> >
-> >               /* Note that an ENOMEM error is charged twice */
-> > -             if (rc == -ENOMEM)
-> > -                     UDP6_INC_STATS(sock_net(sk),
-> > -                                      UDP_MIB_RCVBUFERRORS, is_udplite);
-> > +             UDP6_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS, is_udplite);
-> >               UDP6_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
-> >               kfree_skb(skb);
-> >               return -1;
->
-> The diffstat is nice, but I'm unsure we can do this kind of change
-> (well, I really think we should not do it): it will fool any kind of
-> existing users (application, scripts, admin) currently reading the
-> above counters and expecting UDP_MIB_RCVBUFERRORS being increased with
-> the existing schema.
->
-> Cheers,
->
-> Paolo
->
+IPPROTO_NONE defines the same with NEXTHDR_NONE. So ipv6_skip_exthdr() will
+return -1, and we will goto fail_hdr and send ICMP parameter error message.
 
-Well, your words make sense, this change isn't friendly for the existing users.
-It really puzzled me when this ENOBUFS happened, no counters were done and
-I hardly figured out what happened.
+The question is if it's OK to reply a ICMP error for fragment + IPPROTO_NONE
+packet? For pure IPPROTO_NONE message, we should drop silently, but what about
+fragment message?
 
-So, is it a good idea to introduce a 'UDP_MIB_MEMERRORS'?
+> > +
+> > +	if (frag_off == htons(IP6_MF) && offset > skb->len) {
+> > +		__IP6_INC_STATS(net, __in6_dev_get_safely(skb->dev), IPSTATS_MIB_INHDRERRORS);
+> > +		icmpv6_param_prob(skb, ICMPV6_HDR_INCOMP, 0);
+> > +		return -1;
+> > +	}
+> > +
+> >  	iif = skb->dev ? skb->dev->ifindex : 0;
+> >  	fq = fq_find(net, fhdr->identification, hdr, iif);
+> >  	if (fq) {
+> 
+> Are you planning to also add this fix for the fragmentation handling in the netfilter?
+> 
+I have no plan to fix this on netfilter as netfilter is a module.
+It may have different behavior during defragment.
 
-Cheers,
-
-Menglong Dong
+Thanks
+Hangbin
