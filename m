@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E5BC29A17B
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 01:48:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 59C1529A182
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 01:48:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2502267AbgJ0AmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 20:42:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49678 "EHLO mail.kernel.org"
+        id S2408793AbgJ0Am3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 20:42:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49938 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2409091AbgJZXuU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 19:50:20 -0400
+        id S2409114AbgJZXu1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 19:50:27 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8549C217A0;
-        Mon, 26 Oct 2020 23:50:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BA5DA2075B;
+        Mon, 26 Oct 2020 23:50:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603756220;
-        bh=2NjS2MUM+tDZ4w36kX80jWMxxJyN/Gd+G3rpgJtSWeY=;
+        s=default; t=1603756227;
+        bh=OJovw4+EE6T2tMZzZ9+KnmyKFUOqNYdMeRbOvfdLj0k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ANvNvT8rujwDfB1WjKXlIt3iwLd+Tj5pZgx62nRRRN4QA1ypi2ACr4y4nPMUroCmA
-         xd47BgWEKItEXv6ELQHjbgLKW508u7IG1RA7b01+hf4ivoqbS/KM//fg/+ceQzxHjN
-         YCXWcKJmyguqJUV5dPXg6KkSgRmV+/QG2fTxjKvA=
+        b=fdJLT6lkkF5JMvlmE5nBc/kKS2kP0VU/x813UPD755myQs2ahMijwuWwh8GaZ5aSD
+         sMIXGLO7onmAXWV3IdkCXN7rUUgcs4OjPeO/rfH4t+LiycN74Zs5lj4CzUYa3ymHBy
+         EqDp5GZDS276YrRWQX7TsC5oMnD3yJsv8ohnz85Y=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: [PATCH AUTOSEL 5.9 060/147] bpf: Permit map_ptr arithmetic with opcode add and offset 0
-Date:   Mon, 26 Oct 2020 19:47:38 -0400
-Message-Id: <20201026234905.1022767-60-sashal@kernel.org>
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, linux-nfc@lists.01.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.9 066/147] nfc: s3fwrn5: Add missing CRYPTO_HASH dependency
+Date:   Mon, 26 Oct 2020 19:47:44 -0400
+Message-Id: <20201026234905.1022767-66-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201026234905.1022767-1-sashal@kernel.org>
 References: <20201026234905.1022767-1-sashal@kernel.org>
@@ -43,117 +43,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yonghong Song <yhs@fb.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
 
-[ Upstream commit 7c6967326267bd5c0dded0a99541357d70dd11ac ]
+[ Upstream commit 4aa62c62d4c41d71b2bda5ed01b78961829ee93c ]
 
-Commit 41c48f3a98231 ("bpf: Support access
-to bpf map fields") added support to access map fields
-with CORE support. For example,
+The driver uses crypto hash functions so it needs to select CRYPTO_HASH.
+This fixes build errors:
 
-            struct bpf_map {
-                    __u32 max_entries;
-            } __attribute__((preserve_access_index));
+  arc-linux-ld: drivers/nfc/s3fwrn5/firmware.o: in function `s3fwrn5_fw_download':
+  firmware.c:(.text+0x152): undefined reference to `crypto_alloc_shash'
 
-            struct bpf_array {
-                    struct bpf_map map;
-                    __u32 elem_size;
-            } __attribute__((preserve_access_index));
-
-            struct {
-                    __uint(type, BPF_MAP_TYPE_ARRAY);
-                    __uint(max_entries, 4);
-                    __type(key, __u32);
-                    __type(value, __u32);
-            } m_array SEC(".maps");
-
-            SEC("cgroup_skb/egress")
-            int cg_skb(void *ctx)
-            {
-                    struct bpf_array *array = (struct bpf_array *)&m_array;
-
-                    /* .. array->map.max_entries .. */
-            }
-
-In kernel, bpf_htab has similar structure,
-
-	    struct bpf_htab {
-		    struct bpf_map map;
-                    ...
-            }
-
-In the above cg_skb(), to access array->map.max_entries, with CORE, the clang will
-generate two builtin's.
-            base = &m_array;
-            /* access array.map */
-            map_addr = __builtin_preserve_struct_access_info(base, 0, 0);
-            /* access array.map.max_entries */
-            max_entries_addr = __builtin_preserve_struct_access_info(map_addr, 0, 0);
-	    max_entries = *max_entries_addr;
-
-In the current llvm, if two builtin's are in the same function or
-in the same function after inlining, the compiler is smart enough to chain
-them together and generates like below:
-            base = &m_array;
-            max_entries = *(base + reloc_offset); /* reloc_offset = 0 in this case */
-and we are fine.
-
-But if we force no inlining for one of functions in test_map_ptr() selftest, e.g.,
-check_default(), the above two __builtin_preserve_* will be in two different
-functions. In this case, we will have code like:
-   func check_hash():
-            reloc_offset_map = 0;
-            base = &m_array;
-            map_base = base + reloc_offset_map;
-            check_default(map_base, ...)
-   func check_default(map_base, ...):
-            max_entries = *(map_base + reloc_offset_max_entries);
-
-In kernel, map_ptr (CONST_PTR_TO_MAP) does not allow any arithmetic.
-The above "map_base = base + reloc_offset_map" will trigger a verifier failure.
-  ; VERIFY(check_default(&hash->map, map));
-  0: (18) r7 = 0xffffb4fe8018a004
-  2: (b4) w1 = 110
-  3: (63) *(u32 *)(r7 +0) = r1
-   R1_w=invP110 R7_w=map_value(id=0,off=4,ks=4,vs=8,imm=0) R10=fp0
-  ; VERIFY_TYPE(BPF_MAP_TYPE_HASH, check_hash);
-  4: (18) r1 = 0xffffb4fe8018a000
-  6: (b4) w2 = 1
-  7: (63) *(u32 *)(r1 +0) = r2
-   R1_w=map_value(id=0,off=0,ks=4,vs=8,imm=0) R2_w=invP1 R7_w=map_value(id=0,off=4,ks=4,vs=8,imm=0) R10=fp0
-  8: (b7) r2 = 0
-  9: (18) r8 = 0xffff90bcb500c000
-  11: (18) r1 = 0xffff90bcb500c000
-  13: (0f) r1 += r2
-  R1 pointer arithmetic on map_ptr prohibited
-
-To fix the issue, let us permit map_ptr + 0 arithmetic which will
-result in exactly the same map_ptr.
-
-Signed-off-by: Yonghong Song <yhs@fb.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Link: https://lore.kernel.org/bpf/20200908175702.2463625-1-yhs@fb.com
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/verifier.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/nfc/s3fwrn5/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index fba52d9ec8fc4..8c0f605e5ee94 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -5219,6 +5219,10 @@ static int adjust_ptr_min_max_vals(struct bpf_verifier_env *env,
- 			dst, reg_type_str[ptr_reg->type]);
- 		return -EACCES;
- 	case CONST_PTR_TO_MAP:
-+		/* smin_val represents the known value */
-+		if (known && smin_val == 0 && opcode == BPF_ADD)
-+			break;
-+		/* fall-through */
- 	case PTR_TO_PACKET_END:
- 	case PTR_TO_SOCKET:
- 	case PTR_TO_SOCKET_OR_NULL:
+diff --git a/drivers/nfc/s3fwrn5/Kconfig b/drivers/nfc/s3fwrn5/Kconfig
+index af9d18690afeb..3f8b6da582803 100644
+--- a/drivers/nfc/s3fwrn5/Kconfig
++++ b/drivers/nfc/s3fwrn5/Kconfig
+@@ -2,6 +2,7 @@
+ config NFC_S3FWRN5
+ 	tristate
+ 	select CRYPTO
++	select CRYPTO_HASH
+ 	help
+ 	  Core driver for Samsung S3FWRN5 NFC chip. Contains core utilities
+ 	  of chip. It's intended to be used by PHYs to avoid duplicating lots
 -- 
 2.25.1
 
