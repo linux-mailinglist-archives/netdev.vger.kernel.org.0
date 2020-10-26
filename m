@@ -2,107 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 01B9F299A35
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 00:08:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 76DD9299A3E
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 00:13:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395445AbgJZXIO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 19:08:14 -0400
-Received: from mga11.intel.com ([192.55.52.93]:39672 "EHLO mga11.intel.com"
+        id S2395512AbgJZXN2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 19:13:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53504 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2394676AbgJZXIN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 19:08:13 -0400
-IronPort-SDR: C0HKN+3xVxuhHup+b8wKNn5CD+V6moJckNtJIXbUN05IuMXEg5AFWXEUu8Z85WuxQatCL/28zj
- bU9dRqa88mTA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9786"; a="164500454"
-X-IronPort-AV: E=Sophos;i="5.77,421,1596524400"; 
-   d="scan'208";a="164500454"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2020 16:08:12 -0700
-IronPort-SDR: zy8W979PBVagL8i+Jv+r805cLR1FVBAasdYfpwLnnY5dMEYS9mo977q0BeEUHtu8ZSPkUShL6e
- ejjJSj2+O2cA==
-X-IronPort-AV: E=Sophos;i="5.77,421,1596524400"; 
-   d="scan'208";a="524468975"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.212.215.218]) ([10.212.215.218])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2020 16:08:10 -0700
-Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to housekeeping
- CPUs
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Nitesh Narayan Lal <nitesh@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>, helgaas@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        frederic@kernel.org, sassmann@redhat.com,
-        jesse.brandeburg@intel.com, lihong.yang@intel.com,
-        jeffrey.t.kirsher@intel.com, jlelli@redhat.com, hch@infradead.org,
-        bhelgaas@google.com, mike.marciniszyn@intel.com,
-        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
-        jiri@nvidia.com, mingo@redhat.com, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, lgoncalv@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>
-References: <20201019111137.GL2628@hirez.programming.kicks-ass.net>
- <20201019140005.GB17287@fuller.cnet>
- <20201020073055.GY2611@hirez.programming.kicks-ass.net>
- <078e659e-d151-5bc2-a7dd-fe0070267cb3@redhat.com>
- <20201020134128.GT2628@hirez.programming.kicks-ass.net>
- <6736e643-d4ae-9919-9ae1-a73d5f31463e@redhat.com>
- <260f4191-5b9f-6dc1-9f11-085533ac4f55@redhat.com>
- <20201023085826.GP2611@hirez.programming.kicks-ass.net>
- <9ee77056-ef02-8696-5b96-46007e35ab00@redhat.com>
- <87ft6464jf.fsf@nanos.tec.linutronix.de>
- <20201026173012.GA377978@fuller.cnet>
- <875z6w4xt4.fsf@nanos.tec.linutronix.de>
- <86f8f667-bda6-59c4-91b7-6ba2ef55e3db@intel.com>
- <87v9ew3fzd.fsf@nanos.tec.linutronix.de>
- <85b5f53e-5be2-beea-269a-f70029bea298@intel.com>
- <87lffs3bd6.fsf@nanos.tec.linutronix.de>
- <959997ee-f393-bab0-45c0-4144c37b9185@redhat.com>
- <875z6w38n4.fsf@nanos.tec.linutronix.de>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <586e249a-1078-9fe9-22d4-b3c1ec0a3a5e@intel.com>
-Date:   Mon, 26 Oct 2020 16:08:08 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.3
+        id S2395502AbgJZXN1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 19:13:27 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 73CE720719;
+        Mon, 26 Oct 2020 23:13:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603754006;
+        bh=M6TmwnSYX9ItNPqyO0jy4oi3nkENeh29xY8TzzevUdw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=vHsNgG6Jsyc4SR54/vO5jsWx+oNNH43YdSa9Sb+aehqT4ILeZPyU6d+c9giqaHNMw
+         U8cL6grbAHNt2H2RlZFEBV6L8MimobcGeN+8bEayiGFvP5g+40CaEwTkJrW1gqXSRx
+         pT5KfNNmlKR2LsVKJMIi/bhgMXD0aSM6IwxTHos8=
+Date:   Mon, 26 Oct 2020 16:13:25 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Zenghui Yu <yuzenghui@huawei.com>
+Cc:     Yunsheng Lin <linyunsheng@huawei.com>, <yisen.zhuang@huawei.com>,
+        <salil.mehta@huawei.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <wanghaibin.wang@huawei.com>, <tanhuazhong@huawei.com>
+Subject: Re: [PATCH net] net: hns3: Clear the CMDQ registers before
+ unmapping BAR region
+Message-ID: <20201026161325.6f33d9c8@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <e74f0a72-92d1-2ac9-1f4b-191477d673ef@huawei.com>
+References: <20201023051550.793-1-yuzenghui@huawei.com>
+        <3c5c98f9-b4a0-69a2-d58d-bfef977c68ad@huawei.com>
+        <e74f0a72-92d1-2ac9-1f4b-191477d673ef@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <875z6w38n4.fsf@nanos.tec.linutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 10/26/2020 3:49 PM, Thomas Gleixner wrote:
-> On Mon, Oct 26 2020 at 18:22, Nitesh Narayan Lal wrote:
->> On 10/26/20 5:50 PM, Thomas Gleixner wrote:
->>> But I still think that for curing that isolation stuff we want at least
->>> some information from the driver. Alternative solution would be to grant
->>> the allocation of interrupts and queues and have some sysfs knob to shut
->>> down queues at runtime. If that shutdown results in releasing the queue
->>> interrupt (via free_irq()) then the vector exhaustion problem goes away.
->>
->> I think this is close to what I and Marcelo were discussing earlier today
->> privately.
->>
->> I don't think there is currently a way to control the enablement/disablement of
->> interrupts from the userspace.
+On Fri, 23 Oct 2020 15:01:14 +0800 Zenghui Yu wrote:
+> On 2020/10/23 14:22, Yunsheng Lin wrote:
+> > On 2020/10/23 13:15, Zenghui Yu wrote:  
+> >> When unbinding the hns3 driver with the HNS3 VF, I got the following
+> >> kernel panic:
+> >>
+> >> [  265.709989] Unable to handle kernel paging request at virtual address ffff800054627000
+> >> [  265.717928] Mem abort info:
+> >> [  265.720740]   ESR = 0x96000047
+> >> [  265.723810]   EC = 0x25: DABT (current EL), IL = 32 bits
+> >> [  265.729126]   SET = 0, FnV = 0
+> >> [  265.732195]   EA = 0, S1PTW = 0
+> >> [  265.735351] Data abort info:
+> >> [  265.738227]   ISV = 0, ISS = 0x00000047
+> >> [  265.742071]   CM = 0, WnR = 1
+> >> [  265.745055] swapper pgtable: 4k pages, 48-bit VAs, pgdp=0000000009b54000
+> >> [  265.751753] [ffff800054627000] pgd=0000202ffffff003, p4d=0000202ffffff003, pud=00002020020eb003, pmd=00000020a0dfc003, pte=0000000000000000
+> >> [  265.764314] Internal error: Oops: 96000047 [#1] SMP
+> >> [  265.830357] CPU: 61 PID: 20319 Comm: bash Not tainted 5.9.0+ #206
+> >> [  265.836423] Hardware name: Huawei TaiShan 2280 V2/BC82AMDDA, BIOS 1.05 09/18/2019
+> > 
+> > Do you care to provide the testcase for above calltrace?  
 > 
-> You cannot just disable the interrupt. You need to make sure that the
-> associated queue is shutdown or quiesced _before_ the interrupt is shut
-> down.
+> I noticed it with VFIO, but it's easy to reproduce it manually. Here you
+> go:
 > 
-> Thanks,
-> 
->         tglx
-> 
+>    # cat /sys/bus/pci/devices/0000\:7d\:00.2/sriov_totalvfs
+> 3
+>    # echo 3 > /sys/bus/pci/devices/0000\:7d\:00.2/sriov_numvfs
+>    # lspci | grep "Virtual Function"
+> 7d:01.6 Ethernet controller: Huawei Technologies Co., Ltd. HNS RDMA 
+> Network Controller (Virtual Function) (rev 21)
+> 7d:01.7 Ethernet controller: Huawei Technologies Co., Ltd. HNS RDMA 
+> Network Controller (Virtual Function) (rev 21)
+> 7d:02.0 Ethernet controller: Huawei Technologies Co., Ltd. HNS RDMA 
+> Network Controller (Virtual Function) (rev 21)
+>    # echo 0000:7d:01.6 > /sys/bus/pci/devices/0000:7d:01.6/driver/unbind
 
-Could this be handled with a callback to the driver/hw? I know Intel HW
-should support this type of quiesce/shutdown.
+Do you know if the bug occurred on 5.4? Is this the correct fixes tag?
 
-Thanks,
-Jake
+Fixes: 862d969a3a4d ("net: hns3: do VF's pci re-initialization while PF doing FLR")
+
