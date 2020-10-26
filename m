@@ -2,121 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0CFE298E8D
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 14:54:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA35D298EA4
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 14:56:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1780749AbgJZNyz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 09:54:55 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:40076 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1780737AbgJZNyy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 09:54:54 -0400
-Received: by mail-ot1-f66.google.com with SMTP id f97so8051861otb.7;
-        Mon, 26 Oct 2020 06:54:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=b7baIeex9tBAg+HC/pCtQM4CcA9Yu/P2Kiz6rbkWWFQ=;
-        b=MtYW6Ad6rR+kaOc5JUFmVJKy7bNon8ZWrlNEuTOe1QIEPgFd4JIQCS7cGdbPSJEPGL
-         NC3/pf2WeY/quN4BSScvztd9/1/XroHjGgbg6/7pmTmYpl/W2bAZPcPllzdlmw0wovlN
-         7GL8sdPo0tdPERTb4ZO2x/T0fSA200sxicK15PBnFJQPIx1ph6IGRcgxYafimvT0y5B2
-         azMqZrKQ++Cc8t+n95kYTF8b//nTRogJ0+cwsND3lTZSCwUNdHtq+WFXmjm88U96Pw3n
-         L3FFVUjqvm5EGEktMyQY090KD1qO0XgN20xc+POCuPK2dD/NfWTnmDlqjTsEHjSVj4ky
-         hiDQ==
-X-Gm-Message-State: AOAM530xEmhrt1xGqMFE7ajQfxo/PNo7OnlhIqt4T0bDokO9F1QqBfE3
-        RVsbTDbHYkFJwQvIrvthbQ==
-X-Google-Smtp-Source: ABdhPJy+AVVJtyh1P388ilZ7a32F26K4IYL2djBrl+syNcAqhG7//EwYrauP3uzH8LOgA6YbEu+okg==
-X-Received: by 2002:a9d:2389:: with SMTP id t9mr10836030otb.329.1603720493673;
-        Mon, 26 Oct 2020 06:54:53 -0700 (PDT)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id f9sm3903361ooq.9.2020.10.26.06.54.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2020 06:54:52 -0700 (PDT)
-Received: (nullmailer pid 65566 invoked by uid 1000);
-        Mon, 26 Oct 2020 13:54:51 -0000
-Date:   Mon, 26 Oct 2020 08:54:51 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>,
-        Christian Eggers <ceggers@arri.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Helmut Grohne <helmut.grohne@intenta.de>,
-        Paul Barker <pbarker@konsulko.com>,
-        Codrin Ciubotariu <codrin.ciubotariu@microchip.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Marek Vasut <marex@denx.de>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [RFC PATCH net-next 1/9] dt-bindings: net: dsa: convert ksz
- bindings document to yaml
-Message-ID: <20201026135451.GA57974@bogus>
-References: <20201019172435.4416-1-ceggers@arri.de>
- <20201019172435.4416-2-ceggers@arri.de>
- <87lfg0rrzi.fsf@kurt>
- <20201022001639.ozbfnyc4j2zlysff@skbuf>
- <3cf2e7f8-7dc8-323f-0cee-5a025f748426@gmail.com>
- <87h7qmil8j.fsf@kurt>
- <20201022123735.3mnlzkfmqqrho6n5@skbuf>
- <63bc70fe-30b3-43f1-a54c-b8c82bbdc048@gmail.com>
+        id S1780811AbgJZN4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 09:56:49 -0400
+Received: from m42-4.mailgun.net ([69.72.42.4]:30936 "EHLO m42-4.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1774828AbgJZN4s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 09:56:48 -0400
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1603720607; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=6WReYE7EsI0TzLP4fHRo6o5oMyKnwMkBqs5Ms1eH5XM=; b=YVpbzR1SsSWlG3V688m4DsZ5JlYHzTYFiNrB1UNdIdzhTyYZYU260Fqp1xo86fOb6rvNe4Rx
+ 6CzVMqJDn9dxGtSzDbdUwGVaIWZ25gmcAXHVBXE595BiDjATHy+SqnM7AORTTCuKzyIG/H/F
+ hInIYP03K1Ys+WkiAu78vk11yfM=
+X-Mailgun-Sending-Ip: 69.72.42.4
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
+ 5f96d5936b827c4eefbbd18f (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 26 Oct 2020 13:56:35
+ GMT
+Sender: jhugo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id C74A9C43385; Mon, 26 Oct 2020 13:56:35 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-5.1 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        NICE_REPLY_A,SPF_FAIL autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from [10.226.59.216] (i-global254.qualcomm.com [199.106.103.254])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: jhugo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 520CDC433C9;
+        Mon, 26 Oct 2020 13:56:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 520CDC433C9
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=jhugo@codeaurora.org
+Subject: Re: [PATCH v9 3/4] docs: Add documentation for userspace client
+ interface
+To:     Dan Williams <dcbw@redhat.com>, Jakub Kicinski <kuba@kernel.org>,
+        Hemant Kumar <hemantk@codeaurora.org>
+Cc:     manivannan.sadhasivam@linaro.org, gregkh@linuxfoundation.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bbhatt@codeaurora.org, loic.poulain@linaro.org,
+        netdev@vger.kernel.org
+References: <1603495075-11462-1-git-send-email-hemantk@codeaurora.org>
+ <1603495075-11462-4-git-send-email-hemantk@codeaurora.org>
+ <20201025144627.65b2324e@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <e92a5a5b-ac62-a6d8-b6b4-b65587e64255@codeaurora.org>
+ <4e4dc63d0a0b5a820f7a70e30e29746fd6735a96.camel@redhat.com>
+From:   Jeffrey Hugo <jhugo@codeaurora.org>
+Message-ID: <7934e50d-72bd-f20a-54da-33f29c66c3fa@codeaurora.org>
+Date:   Mon, 26 Oct 2020 07:56:33 -0600
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.3.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <63bc70fe-30b3-43f1-a54c-b8c82bbdc048@gmail.com>
+In-Reply-To: <4e4dc63d0a0b5a820f7a70e30e29746fd6735a96.camel@redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 22, 2020 at 12:17:26PM -0700, Florian Fainelli wrote:
-> On 10/22/20 5:37 AM, Vladimir Oltean wrote:
-> > On Thu, Oct 22, 2020 at 12:54:52PM +0200, Kurt Kanzenbach wrote:
-> >> On Wed Oct 21 2020, Florian Fainelli wrote:
-> >>> On 10/21/2020 5:16 PM, Vladimir Oltean wrote:
-> >>>> On Wed, Oct 21, 2020 at 08:52:01AM +0200, Kurt Kanzenbach wrote:
-> >>>>> On Mon Oct 19 2020, Christian Eggers wrote:
-> >>>>> The node names should be switch. See dsa.yaml.
-> >>>>>
-> >>>>>> +            compatible = "microchip,ksz9477";
-> >>>>>> +            reg = <0>;
-> >>>>>> +            reset-gpios = <&gpio5 0 GPIO_ACTIVE_LOW>;
-> >>>>>> +
-> >>>>>> +            spi-max-frequency = <44000000>;
-> >>>>>> +            spi-cpha;
-> >>>>>> +            spi-cpol;
-> >>>>>> +
-> >>>>>> +            ports {
-> >>>>>
-> >>>>> ethernet-ports are preferred.
-> >>>>
-> >>>> This is backwards to me, instead of an 'ethernet-switch' with 'ports',
-> >>>> we have a 'switch' with 'ethernet-ports'. Whatever.
-> >>>
-> >>> The rationale AFAIR was that dual Ethernet port controllers like TI's 
-> >>> CPSW needed to describe each port as a pseudo Ethernet MAC and using 
-> >>> 'ethernet-ports' as a contained allowed to disambiguate with the 'ports' 
-> >>> container used in display subsystem descriptions.
-> >>
-> >> Yes, that was the outcome of previous discussions.
-> > 
-> > And why would that disambiguation be necessary in the first place? My
-> > understanding is that the whole node path provides the necessary
-> > namespacing to avoid the confusion. For example, the 'reg' property
-> > means 100 things to 100 buses, and no one has an issue with that. I am
-> > not expecting an Ethernet switch to have an HDMI port, I might be wrong
-> > though.
+On 10/26/2020 7:46 AM, Dan Williams wrote:
+> On Mon, 2020-10-26 at 07:38 -0600, Jeffrey Hugo wrote:
+>> On 10/25/2020 3:46 PM, Jakub Kicinski wrote:
+>>> On Fri, 23 Oct 2020 16:17:54 -0700 Hemant Kumar wrote:
+>>>> +UCI driver enables userspace clients to communicate to external
+>>>> MHI devices
+>>>> +like modem and WLAN. UCI driver probe creates standard character
+>>>> device file
+>>>> +nodes for userspace clients to perform open, read, write, poll
+>>>> and release file
+>>>> +operations.
+>>>
+>>> What's the user space that talks to this?
+>>>
+>>
+>> Multiple.
+>>
+>> Each channel has a different purpose.  There it is expected that a
+>> different userspace application would be using it.
+>>
+>> Hemant implemented the loopback channel, which is a simple channel
+>> that
+>> just sends you back anything you send it.  Typically this is consumed
+>> by
+>> a test application.
+>>
+>> Diag is a typical channel to be consumed by userspace.  This is
+>> consumed
+>> by various applications that talk to the remote device for
+>> diagnostic
+>> information (logs and such).
 > 
-> The disambiguation is more of a hint given to DT analysis tools to
-> validate a given node with little to no knowledge of the containing
-> node. I don't really have a dog in the fight here.
+> QMI too?
+> Dan
 
-A node name should mean 1 and only 1 type/class of node. 'ports' (and 
-'port') is for the graph binding.
+Interesting question.  My product doesn't use QMI.  I would expect that 
+all QMI runs through Router these days, but I am seeing some QMI 
+channels in the downstream source.
 
-Rob
+Hemant, Do you know what is the usecase for the QMI0/QMI1 channels?
+
+-- 
+Jeffrey Hugo
+Qualcomm Technologies, Inc. is a member of the
+Code Aurora Forum, a Linux Foundation Collaborative Project.
