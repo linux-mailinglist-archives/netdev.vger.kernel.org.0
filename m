@@ -2,176 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49769298E53
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 14:44:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE544298E61
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 14:46:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1780438AbgJZNoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 09:44:23 -0400
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:12700 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1737266AbgJZNoX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 09:44:23 -0400
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5f96d2be0002>; Mon, 26 Oct 2020 06:44:30 -0700
-Received: from c-235-2-1-007.mtl.labs.mlnx (172.20.13.39) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3; Mon, 26 Oct 2020 13:44:14 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     <dledford@redhat.com>, <jgg@nvidia.com>
-CC:     <jiri@mellanox.com>, <linux-rdma@vger.kernel.org>,
-        <michaelgur@mellanox.com>, <netdev@vger.kernel.org>,
-        <saeedm@nvidia.com>, Parav Pandit <parav@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>
-Subject: [PATCH rdma-rc RESEND v1] RDMA/mlx5: Fix devlink deadlock on net namespace deletion
-Date:   Mon, 26 Oct 2020 15:43:59 +0200
-Message-ID: <20201026134359.23150-1-parav@nvidia.com>
-X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20201019052736.628909-1-leon@kernel.org>
-References: <20201019052736.628909-1-leon@kernel.org>
+        id S1780604AbgJZNq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 09:46:27 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:50095 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1780592AbgJZNqX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 09:46:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603719982;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=WggU8sJjnCU79ulx2Z4/7PxGM5JXxOuI+ThKBBhTjS8=;
+        b=LI16Qy856mhQEWtcG83MzFIr7C8X4nPy6uQiaWSaYey4syJzphgkTMPADQ3/8Y826sOhR6
+        trfEYVvJdIhz2rJBCTgfk1FMhidiNddriel5JukeBt/sXlBFjgTikUX7SQTNHPlYTYdDu8
+        s89QeDxOg+Io5YmSKggafjdm4tMPyIc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-104-FkmYrTPFMMmnKK7KhHhXMw-1; Mon, 26 Oct 2020 09:46:18 -0400
+X-MC-Unique: FkmYrTPFMMmnKK7KhHhXMw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 72C58809DC2;
+        Mon, 26 Oct 2020 13:46:15 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.10.110.42])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D568A5B4A4;
+        Mon, 26 Oct 2020 13:46:13 +0000 (UTC)
+Message-ID: <4e4dc63d0a0b5a820f7a70e30e29746fd6735a96.camel@redhat.com>
+Subject: Re: [PATCH v9 3/4] docs: Add documentation for userspace client
+ interface
+From:   Dan Williams <dcbw@redhat.com>
+To:     Jeffrey Hugo <jhugo@codeaurora.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Hemant Kumar <hemantk@codeaurora.org>
+Cc:     manivannan.sadhasivam@linaro.org, gregkh@linuxfoundation.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bbhatt@codeaurora.org, loic.poulain@linaro.org,
+        netdev@vger.kernel.org
+Date:   Mon, 26 Oct 2020 08:46:13 -0500
+In-Reply-To: <e92a5a5b-ac62-a6d8-b6b4-b65587e64255@codeaurora.org>
+References: <1603495075-11462-1-git-send-email-hemantk@codeaurora.org>
+         <1603495075-11462-4-git-send-email-hemantk@codeaurora.org>
+         <20201025144627.65b2324e@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+         <e92a5a5b-ac62-a6d8-b6b4-b65587e64255@codeaurora.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-1.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-Originating-IP: [172.20.13.39]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1603719870; bh=5ASlmtGK2Tj7QQShBIK3RLL7SQQ9fCLLpyIGTItY0W8=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Transfer-Encoding:Content-Type:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=OxEW7EPevrSAXr6u+449cQF7d7rPCXUVZfNLTtPEdGIzM+ZQAQtwaGTIDGx9dQipP
-         EI7z5IYqhKLmJ7GPUafolIsw0bS7kKYNGx+AzePL9vHycQBbcBot8EKTNMhZZlWWUR
-         bquIhgiXY1CK/Jkgbyrteo5CfTRzIsoxXiho67Gv/f57iqcHMMyQNXH2p0TNXRPDj/
-         cKbaYW9+evSA19/GLRPOlJEdBtJ8zTTYoXQHiVB5qsj1ct+vvbxub00zxgorMa295D
-         Cpn3IFzvdY5gfYYd0Izi3OpZpv/+7zt/U/Pjri869sE0c7VFWLvXHS0p9GPx/qYdBt
-         QMte27IpJsJCA==
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a mlx5 core devlink instance is reloaded in different net
-namespace, its associated IB device is deleted and recreated.
+On Mon, 2020-10-26 at 07:38 -0600, Jeffrey Hugo wrote:
+> On 10/25/2020 3:46 PM, Jakub Kicinski wrote:
+> > On Fri, 23 Oct 2020 16:17:54 -0700 Hemant Kumar wrote:
+> > > +UCI driver enables userspace clients to communicate to external
+> > > MHI devices
+> > > +like modem and WLAN. UCI driver probe creates standard character
+> > > device file
+> > > +nodes for userspace clients to perform open, read, write, poll
+> > > and release file
+> > > +operations.
+> > 
+> > What's the user space that talks to this?
+> > 
+> 
+> Multiple.
+> 
+> Each channel has a different purpose.  There it is expected that a 
+> different userspace application would be using it.
+> 
+> Hemant implemented the loopback channel, which is a simple channel
+> that 
+> just sends you back anything you send it.  Typically this is consumed
+> by 
+> a test application.
+> 
+> Diag is a typical channel to be consumed by userspace.  This is
+> consumed 
+> by various applications that talk to the remote device for
+> diagnostic 
+> information (logs and such).
 
-Example sequence is:
-$ ip netns add foo
-$ devlink dev reload pci/0000:00:08.0 netns foo
-$ ip netns del foo
+QMI too?
+Dan
 
-mlx5 IB device needs to attach and detach the netdevice to it
-through the netdev notifier chain during load and unload sequence.
-A below call graph of the unload flow.
-
-cleanup_net()
-   down_read(&pernet_ops_rwsem); <- first sem acquired
-     ops_pre_exit_list()
-       pre_exit()
-         devlink_pernet_pre_exit()
-           devlink_reload()
-             mlx5_devlink_reload_down()
-               mlx5_unload_one()
-               [...]
-                 mlx5_ib_remove()
-                   mlx5_ib_unbind_slave_port()
-                     mlx5_remove_netdev_notifier()
-                       unregister_netdevice_notifier()
-                         down_write(&pernet_ops_rwsem);<- recurrsive lock
-
-Hence, when net namespace is deleted, mlx5 reload results in deadlock.
-
-When deadlock occurs, devlink mutex is also held. This not only deadlocks
-the mlx5 device under reload, but all the processes which attempt to access
-unrelated devlink devices are deadlocked.
-
-Hence, fix this by mlx5 ib driver to register for per net netdev
-notifier instead of global one, which operats on the net namespace
-without holding the pernet_ops_rwsem.
-
-Fixes: 4383cfcc65e7 ("net/mlx5: Add devlink reload")
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
-Changelog:
-v0->v1:
- - updated comment for mlx5_core_net API to be used by multiple mlx5
-   drivers
----
- drivers/infiniband/hw/mlx5/main.c              |  6 ++++--
- .../net/ethernet/mellanox/mlx5/core/lib/mlx5.h |  5 -----
- include/linux/mlx5/driver.h                    | 18 ++++++++++++++++++
- 3 files changed, 22 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5=
-/main.c
-index 89e04ca62ae0..246e3cbe0b2c 100644
---- a/drivers/infiniband/hw/mlx5/main.c
-+++ b/drivers/infiniband/hw/mlx5/main.c
-@@ -3305,7 +3305,8 @@ static int mlx5_add_netdev_notifier(struct mlx5_ib_de=
-v *dev, u8 port_num)
- 	int err;
-=20
- 	dev->port[port_num].roce.nb.notifier_call =3D mlx5_netdev_event;
--	err =3D register_netdevice_notifier(&dev->port[port_num].roce.nb);
-+	err =3D register_netdevice_notifier_net(mlx5_core_net(dev->mdev),
-+					      &dev->port[port_num].roce.nb);
- 	if (err) {
- 		dev->port[port_num].roce.nb.notifier_call =3D NULL;
- 		return err;
-@@ -3317,7 +3318,8 @@ static int mlx5_add_netdev_notifier(struct mlx5_ib_de=
-v *dev, u8 port_num)
- static void mlx5_remove_netdev_notifier(struct mlx5_ib_dev *dev, u8 port_n=
-um)
- {
- 	if (dev->port[port_num].roce.nb.notifier_call) {
--		unregister_netdevice_notifier(&dev->port[port_num].roce.nb);
-+		unregister_netdevice_notifier_net(mlx5_core_net(dev->mdev),
-+						  &dev->port[port_num].roce.nb);
- 		dev->port[port_num].roce.nb.notifier_call =3D NULL;
- 	}
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h b/drivers/n=
-et/ethernet/mellanox/mlx5/core/lib/mlx5.h
-index d046db7bb047..3a9fa629503f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/mlx5.h
-@@ -90,9 +90,4 @@ int mlx5_create_encryption_key(struct mlx5_core_dev *mdev=
-,
- 			       u32 key_type, u32 *p_key_id);
- void mlx5_destroy_encryption_key(struct mlx5_core_dev *mdev, u32 key_id);
-=20
--static inline struct net *mlx5_core_net(struct mlx5_core_dev *dev)
--{
--	return devlink_net(priv_to_devlink(dev));
--}
--
- #endif
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index c145de0473bc..3382855b7ef1 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -1209,4 +1209,22 @@ static inline bool mlx5_is_roce_enabled(struct mlx5_=
-core_dev *dev)
- 	return val.vbool;
- }
-=20
-+/**
-+ * mlx5_core_net - Provide net namespace of the mlx5_core_dev
-+ * @dev: mlx5 core device
-+ *
-+ * mlx5_core_net() returns the net namespace of mlx5 core device.
-+ * This can be called only in below described limited context.
-+ * (a) When a devlink instance for mlx5_core is registered and
-+ *     when devlink reload operation is disabled.
-+ *     or
-+ * (b) during devlink reload reload_down() and reload_up callbacks
-+ *     where it is ensured that devlink instance's net namespace is
-+ *     stable.
-+ */
-+static inline struct net *mlx5_core_net(struct mlx5_core_dev *dev)
-+{
-+	return devlink_net(priv_to_devlink(dev));
-+}
-+
- #endif /* MLX5_DRIVER_H */
---=20
-2.25.4
+> Sahara is another common channel that is usually used for the
+> multistage 
+> firmware loading process.
+> 
 
