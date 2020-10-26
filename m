@@ -2,100 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED534298D58
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 13:58:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 355C3298D5C
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 14:00:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1773481AbgJZM6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 08:58:20 -0400
-Received: from mail-bn8nam12on2050.outbound.protection.outlook.com ([40.107.237.50]:48097
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1773456AbgJZM6T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 08:58:19 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BUOaTBiyKk4MxIG2xqObYmMURqthpGGyYtsjY2VxP4K8dyO7D41BS83EePMDwYc67+rA8cu64A6JjeS1OOa2Fc8lOj2UemT24ZESzX17eTkBM7fbqWhJggJRt8jAA4u/IEFmsFVytBgmvPO+9SOw1K0ko+KpRyVuMKT/mJ6Nf5ilwFGR+m2RRw9cfRZ/9bq0raeG3rJ3UWuq1qegwSKtdW/umfVKzbnDTa88tMRNEfB1X2uBw6a1F/ywNUrfLZmgxnZOWBBR+vKjlhWwDEPxx4BUSSRk4Sa+hogY7YJRtwhTAayfk3u6jTc7bOo/kxzhtiqjrY+5o1ObwGaQanjvlQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=C+Axbw2QezwYHKa7/wc3NfwNdTH0wMgozLGcjnKbhRQ=;
- b=lyTxlY+QcJor4Oq85DNXIIPTPtsbj3fVuwXq2XGwBSF/QR64L9szLf7jtAIHFe1g1BZgHd6hLgzqDMC0wydLdaYf8qowqZZAGvOnYpQS+mf1tljk5oc8/EKFhtcVgHfbAvgALVTP+Aq9cxyOB/U7AJ+CMP7xXqXDrq47jElSrTs7kc/wCGVOTYO4ITsnWb+qAjY0AMx5sjnr6TB/PQTauV1WtK1L4zDK4a1UsgM6AK3PPeTF1ELygp6RWV2uTbB/hZBwOrrBEEgJahwjUzmJpV1zDTU2MySv6Y8CYI8Uws3nHUiFYkUj48r+f2UG6E3U+c7/zlTTgA9L6Oig9TZV8A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=infinera.com; dmarc=pass action=none header.from=infinera.com;
- dkim=pass header.d=infinera.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=infinera.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=C+Axbw2QezwYHKa7/wc3NfwNdTH0wMgozLGcjnKbhRQ=;
- b=DyUI3+kmDDdP1QQIVSzGurQmbycSAOYU+YECxvWb04OfzWsdP4y9LowxsGlu579zBEO8LXgXCOjNCUHBaJwktJwiSGNf33DzAVpg1j7SMc+/vg9fUDhKXHchEOkUZw6LsZCXYbJAt2FkLR3/Gli4pNqCsvUsBiqarT+D/Uoy3zQ=
-Received: from CY4PR1001MB2389.namprd10.prod.outlook.com
- (2603:10b6:910:45::21) by CY4PR1001MB2165.namprd10.prod.outlook.com
- (2603:10b6:910:42::25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.27; Mon, 26 Oct
- 2020 12:58:16 +0000
-Received: from CY4PR1001MB2389.namprd10.prod.outlook.com
- ([fe80::bd9d:bfc6:31c2:f5d8]) by CY4PR1001MB2389.namprd10.prod.outlook.com
- ([fe80::bd9d:bfc6:31c2:f5d8%6]) with mapi id 15.20.3477.028; Mon, 26 Oct 2020
- 12:58:16 +0000
-From:   Joakim Tjernlund <Joakim.Tjernlund@infinera.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: arping stuck with ENOBUFS in 4.19.150
-Thread-Topic: arping stuck with ENOBUFS in 4.19.150
-Thread-Index: AQHWqIbAhm/w52lyHEuPPxU5ZaHMxKmp3kiA
-Date:   Mon, 26 Oct 2020 12:58:16 +0000
-Message-ID: <e09b367a58a0499f3bb0394596a9f87cc20eb5de.camel@infinera.com>
-References: <9bede0ef7e66729034988f2d01681ca88a5c52d6.camel@infinera.com>
-In-Reply-To: <9bede0ef7e66729034988f2d01681ca88a5c52d6.camel@infinera.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.38.1 
-authentication-results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=infinera.com;
-x-originating-ip: [88.131.87.201]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ed723f51-716b-4d8b-85b9-08d879aece81
-x-ms-traffictypediagnostic: CY4PR1001MB2165:
-x-microsoft-antispam-prvs: <CY4PR1001MB216505D732135466619B5DB7F4190@CY4PR1001MB2165.namprd10.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:949;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: f7LsPR/Tra8E2qG+EKx8u3BSTqYkgp7Amu3l0LlGTt/KeWWMe4yfSZxQsY7BqPYVphCNO3b6Y8xn8YR3EWnPX3/NoNaTUtc2IGKbzPJcEBd6aCyQ4kklv6xHUTycc45ZEgfD3OALSaxujsoqaW0FoTZ6EGSqT02o4hbsjKHhs37HUuvqjvpgFcqLmoGEzQ87DZUNFdSwP6lYY3xXJN3NK/HaYKDOXDX5FEAcIWh7QRlMd49R0c4FTcYRcIboQBH7huyODhbxnH7x8k/olg1BUoWtwBftTTTDMc0Nb2CYPsmjey6h0VjLaE8bdqwUH3fpsaYVuUAA7QPgWdDxBSCliw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR1001MB2389.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(366004)(376002)(39860400002)(136003)(346002)(6506007)(91956017)(4001150100001)(6916009)(66446008)(76116006)(66946007)(66556008)(64756008)(66476007)(86362001)(478600001)(5660300002)(8936002)(4744005)(6512007)(6486002)(36756003)(316002)(2616005)(26005)(186003)(71200400001)(8676002)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: mLQM+eST02CZkSutIHZx5s7/OV3DK+icsbGiwTK+jy4y3wHlc18l8QNEM2VSkn/V3QpPPVv7XHP/JDPFPSoz0kybVbpAA4AYc0bkVFcnVh1XK40+l1alymtEXKdwsmeUYKwgG8yZX+jItAT2alIxKBsGABH6BQ9V/ExMiLArvsFYCOg9eEswYp3fvYpe5UIgao4aQvoXJaajzYFg2z98B7CEQbndB72I+kQl5z87pTle43p+D1qAC3KM8US5AsytQl/L3WK4cj+3D9TyCKXeu1W67VSAVUcnfXbsjcXlES9LHyLEM4uj7qcsOxv1SQAf5kZwZqt7U5x19VzJMgNoqdJ14UUstkfSDsJI8dH18NnAFU9IuaREEbSLsBNtZtomYGbyq5UZORDdXiXEj9D1X30xNu7LpS2SWc6rLndpTzJGYK7/0XvYM3l2LfhCPfxLMGksPvwvfupXu2iv88YQqJxeyTMPMSHmX7fL1yuQTPbEtO2kAEaVmQCuDlyqZpuryq903P4vQaR5k7Othf0s6XTV0keAcXjEY1QonXpmYaosYqgWuC+zHLlzgiWBKshzKLj7SPoqFLmUT3cXWb5noRif4pjcKEM1rQIv0Jcav4Xqfv24bZV2jZ1TZ/YqgTjTkrWDJ/DGFB7DbC7QBmr7Ig==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <62CE1460C4661743BF4B2908CB66B3AD@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1775983AbgJZNAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 09:00:10 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44488 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1773559AbgJZNAK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 09:00:10 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kX26T-003bac-Ue; Mon, 26 Oct 2020 14:00:01 +0100
+Date:   Mon, 26 Oct 2020 14:00:01 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Xu Yilun <yilun.xu@intel.com>
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, mdf@kernel.org,
+        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
+        linux-fpga@vger.kernel.org, netdev@vger.kernel.org,
+        trix@redhat.com, lgoncalv@redhat.com, hao.wu@intel.com
+Subject: Re: [RFC PATCH 1/6] docs: networking: add the document for DFL Ether
+ Group driver
+Message-ID: <20201026130001.GC836546@lunn.ch>
+References: <1603442745-13085-1-git-send-email-yilun.xu@intel.com>
+ <1603442745-13085-2-git-send-email-yilun.xu@intel.com>
+ <20201023153731.GC718124@lunn.ch>
+ <20201026085246.GC25281@yilunxu-OptiPlex-7050>
 MIME-Version: 1.0
-X-OriginatorOrg: infinera.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CY4PR1001MB2389.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ed723f51-716b-4d8b-85b9-08d879aece81
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Oct 2020 12:58:16.7661
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 285643de-5f5b-4b03-a153-0ae2dc8aaf77
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: uxhh0wMCdnhpXaBuuYaJHA8ZjjoeLf7qwdvPKC3/niwwcITMYgqpe/uWn1LmkxgqN7mZ8QO7c++/a76hslzwRg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1001MB2165
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201026085246.GC25281@yilunxu-OptiPlex-7050>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-UGluZyAgKG1heWJlIGl0IHNob3VsZCByZWFkICJhcnBpbmciIGluc3RlYWQgOikNCg0KIEpvY2tl
-DQoNCk9uIFRodSwgMjAyMC0xMC0yMiBhdCAxNzoxOSArMDIwMCwgSm9ha2ltIFRqZXJubHVuZCB3
-cm90ZToNCj4gc3RyYWNlIGFycGluZyAtcSAtYyAxIC1iIC1VICAtSSBldGgxIDAuMC4wLjANCj4g
-Li4uDQo+IHNlbmR0bygzLCAiXDBcMVwxMFwwXDZcNFwwXDFcMFw2XDIzNFx2XDYgXHZcdlx2XHZc
-Mzc3XDM3N1wzNzdcMzc3XDM3N1wzNzdcMFwwXDBcMCIsIDI4LCAwLCB7c2FfZmFtaWx5PUFGX1BB
-Q0tFVCwgcHJvdG89MHg4MDYsIGlmNCwgcGt0dHlwZT1QQUNLRVRfSE9TVCwgYWRkcig2KT17MSwg
-ZmZmZmZmZmZmZmZmfSwNCj4gMjApID0gLTEgRU5PQlVGUyAoTm8gYnVmZmVyIHNwYWNlIGF2YWls
-YWJsZSkNCj4gLi4uLg0KPiBhbmQgdGhlbiBhcnBpbmcgbG9vcHMuDQo+IA0KPiBpbiA0LjE5LjEy
-NyBpdCB3YXM6DQo+IHNlbmR0bygzLCAiXDBcMVwxMFwwXDZcNFwwXDFcMFw2XDIzNFw1XDI3MVwz
-NjJcblwzMjJcMjEyRVwzNzdcMzc3XDM3N1wzNzdcMzc3XDM3N1wwXDBcMFwwIiwgMjgsIDAsIHvi
-gItzYV9mYW1pbHk9QUZfUEFDS0VULCBwcm90bz0weDgwNiwgaWY0LCBwa3R0eXBlPVBBQ0tFVF9I
-T1NULCBhZGRyKDYpPXvigIsxLA0KPiBmZmZmZmZmZmZmZmZ94oCLLCAyMCkgPSAyOA0KPiANCj4g
-U2VlbXMgbGlrZSBzb21ldGhpbmcgaGFzIGNoYW5nZWQgdGhlIElQIGJlaGF2aW91ciBiZXR3ZWVu
-IG5vdyBhbmQgdGhlbiA/DQo+IGV0aDEgaXMgVVAgYnV0IG5vdCBSVU5OSU5HIGFuZCBoYXMgYW4g
-SVAgYWRkcmVzcy4NCj4gDQo+IMKgSm9ja2UNCg0K
+> > > +The Intel(R) PAC N3000 is a FPGA based SmartNIC platform for multi-workload
+> > > +networking application acceleration. A simple diagram below to for the board:
+> > > +
+> > > +                     +----------------------------------------+
+> > > +                     |                  FPGA                  |
+> > > ++----+   +-------+   +-----------+  +----------+  +-----------+   +----------+
+> > > +|QSFP|---|retimer|---|Line Side  |--|User logic|--|Host Side  |---|XL710     |
+> > > ++----+   +-------+   |Ether Group|  |          |  |Ether Group|   |Ethernet  |
+> > > +                     |(PHY + MAC)|  |wiring &  |  |(MAC + PHY)|   |Controller|
+> > > +                     +-----------+  |offloading|  +-----------+   +----------+
+> > > +                     |              +----------+              |
+> > > +                     |                                        |
+> > > +                     +----------------------------------------+
+> > 
+> > Is XL710 required? I assume any MAC with the correct MII interface
+> > will work?
+> 
+> The XL710 is required for this implementation, in which we have the Host
+> Side Ether Group facing the host.  The Host Side Ether Group actually
+> contains the same IP blocks as Line Side. It contains the compacted MAC &
+> PHY functionalities for 25G/40G case. The 25G MAC-PHY soft IP SPEC can
+> be found at:
+> 
+> https://www.intel.com/content/www/us/en/programmable/documentation/ewo1447742896786.html
+> 
+> So raw serial data is output from Host Side FPGA, and XL710 is good to
+> handle this.
+
+What i have seen working with Marvell Ethernet switches, is that
+Marvell normally recommends connecting them to the Ethernet interfaces
+of Marvell SoCs. But the switch just needs a compatible MII interface,
+and lots of boards make use of non-Marvell MAC chips. Freescale FEC is
+very popular.
+
+What i'm trying to say is that ideally we need a collection of generic
+drivers for the different major components on the board, and a board
+driver which glues it all together. That then allows somebody to build
+other boards, or integrate the FPGA directly into an embedded system
+directly connected to a SoC, etc.
+
+> > Do you really mean PHY? I actually expect it is PCS? 
+> 
+> For this implementation, yes.
+
+Yes, you have a PHY? Or Yes, it is PCS?
+
+To me, the phylib maintainer, having a PHY means you have a base-T
+interface, 25Gbase-T, 40Gbase-T?  That would be an odd and expensive
+architecture when you should be able to just connect SERDES interfaces
+together.
+
+> > > +The DFL Ether Group driver registers netdev for each line side link. Users
+> > > +could use standard commands (ethtool, ip, ifconfig) for configuration and
+> > > +link state/statistics reading. For host side links, they are always connected
+> > > +to the host ethernet controller, so they should always have same features as
+> > > +the host ethernet controller. There is no need to register netdevs for them.
+> > 
+> > So lets say the XL710 is eth0. The line side netif is eth1. Where do i
+> > put the IP address? What interface do i add to quagga OSPF? 
+> 
+> The IP address should be put in eth0. eth0 should always be used for the
+> tools.
+
+That was what i was afraid of :-)
+
+> 
+> The line/host side Ether Group is not the terminal of the network data stream.
+> Eth1 will not paticipate in the network data exchange to host.
+> 
+> The main purposes for eth1 are:
+> 1. For users to monitor the network statistics on Line Side, and by comparing the
+> statistics between eth0 & eth1, users could get some knowledge of how the User
+> logic is taking function.
+> 
+> 2. Get the link state of the front panel. The XL710 is now connected to
+> Host Side of the FPGA and the its link state would be always on. So to
+> check the link state of the front panel, we need to query eth1.
+
+This is very non-intuitive. We try to avoid this in the kernel and the
+API to userspace. Ethernet switches are always modelled as
+accelerators for what the Linux network stack can already do. You
+configure an Ethernet switch port in just the same way configure any
+other netdev. You add an IP address to the switch port, you get the
+Ethernet statistics from the switch port, routing protocols use the
+switch port.
+
+You design needs to be the same. All configuration needs to happen via
+eth1.
+
+Please look at the DSA architecture. What you have here is very
+similar to a two port DSA switch. In DSA terminology, we would call
+eth0 the master interface.  It needs to be up, but otherwise the user
+does not configure it. eth1 is the slave interface. It is the user
+facing interface of the switch. All configuration happens on this
+interface. Linux can also send/receive packets on this netdev. The
+slave TX function forwards the frame to the master interface netdev,
+via a DSA tagger. Frames which eth0 receive are passed through the
+tagger and then passed to the slave interface.
+
+All the infrastructure you need is already in place. Please use
+it. I'm not saying you need to write a DSA driver, but you should make
+use of the same ideas and low level hooks in the network stack which
+DSA uses.
+
+> > What about the QSPF socket? Can the host get access to the I2C bus?
+> > The pins for TX enable, etc. ethtool -m?
+> 
+> No, the QSPF/I2C are also managed by the BMC firmware, and host doesn't
+> have interface to talk to BMC firmware about QSPF.
+
+So can i even tell what SFP is in the socket? 
+
+> > > +Speed/Duplex
+> > > +------------
+> > > +The Ether Group doesn't support auto-negotiation. The link speed is fixed to
+> > > +10G, 25G or 40G full duplex according to which Ether Group IP is programmed.
+> > 
+> > So that means, if i pop out the SFP and put in a different one which
+> > supports a different speed, it is expected to be broken until the FPGA
+> > is reloaded?
+> 
+> It is expected to be broken.
+
+And since i have no access to the SFP information, i have no idea what
+is actually broken? How i should configure the various layers?
+
+> Now the line side is expected to be configured to 4x10G, 4x25G, 2x25G, 1x25G.
+> host side is expected to be 4x10G or 2x40G for XL710.
+> 
+> So 4 channel SFP is expected to be inserted to front panel. And we should use
+> 4x25G SFP, which is compatible to 4x10G connection.
+
+So if you had exported the SFP to linux, phylink could of handled some
+of this for you. Probably with some extensions to phylink, but Russell
+King would of probably helped you. phylink has a good idea how to
+decode the SFP EEPROM and figure out the link mode. It has interfaces
+to configure PCS blocks, So it could probably deal with the line side
+and host side PCS. And it would of been easy to send a udev
+notification that the SFP has changed, maybe user space needs to
+download a different FPGA bit file? So the user would not see a broken
+interface, the hardware could be reconfigured on the fly.
+
+This is one problem i have with this driver. It is based around this
+somewhat broken reference design. phylib, along with the hacks you
+have, are enough for this reference design. But really you want to
+make use of phylink in order to support less limited designs which
+will follow. Or you need to push a lot more into the BMC, and don't
+use phylib at all.
+
+    Andrew
+
