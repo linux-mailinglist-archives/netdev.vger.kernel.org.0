@@ -2,76 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93E742997B8
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 21:11:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74A0B2997E4
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 21:24:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730345AbgJZULF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 16:11:05 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:42196 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730303AbgJZULE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 16:11:04 -0400
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1603743062;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=y+PS6gYDSMvwJoN1FTHRdqvfX6lNIJ+gYdIEt2bNoQ8=;
-        b=kdQzswCGzg3Z+6EV7q0nZNMNXJ8qc9zZqXMPiqOeSORB6v2cw6FuaMmBBBt3doPeVr32cL
-        3Yc6LqeIgyNTfswN6zM6Aj84d6/Sb2E/hCRNiO2jZt4GEkAoOHzd8BTnn/XkFoJr1WsqKE
-        sizuxIbXYyMhe21s0gUlWhv9xlStvpfjpV5bOp/neVVPm7i+Jauf8Pz3jDa0cfiOc8ZYFn
-        pisu4H5ia1WUolOQKfrKF7nWkcH5WpR1ub7fhRk2dvExBoucgRUnvdwe9//eYaRIN/KjW7
-        cHdP5iVEDTNMYJWdZd2Fy39vXX0oWbq9HDQj5ctUlZR2viB/IAiV+nXli6769g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1603743062;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=y+PS6gYDSMvwJoN1FTHRdqvfX6lNIJ+gYdIEt2bNoQ8=;
-        b=75kDgynk1PiCyVqyRR1lvYBAb/SvfUPyH4B4xZqU8aMuSg9TGlvtaEz7zktx1sVq92mIKw
-        qpgsGbcLl8lpunAQ==
-To:     Jacob Keller <jacob.e.keller@intel.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Cc:     Nitesh Narayan Lal <nitesh@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>, helgaas@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        frederic@kernel.org, sassmann@redhat.com,
-        jesse.brandeburg@intel.com, lihong.yang@intel.com,
-        jeffrey.t.kirsher@intel.com, jlelli@redhat.com, hch@infradead.org,
-        bhelgaas@google.com, mike.marciniszyn@intel.com,
-        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
-        jiri@nvidia.com, mingo@redhat.com, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, lgoncalv@redhat.com
-Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to housekeeping CPUs
-In-Reply-To: <86f8f667-bda6-59c4-91b7-6ba2ef55e3db@intel.com>
-References: <20201019111137.GL2628@hirez.programming.kicks-ass.net> <20201019140005.GB17287@fuller.cnet> <20201020073055.GY2611@hirez.programming.kicks-ass.net> <078e659e-d151-5bc2-a7dd-fe0070267cb3@redhat.com> <20201020134128.GT2628@hirez.programming.kicks-ass.net> <6736e643-d4ae-9919-9ae1-a73d5f31463e@redhat.com> <260f4191-5b9f-6dc1-9f11-085533ac4f55@redhat.com> <20201023085826.GP2611@hirez.programming.kicks-ass.net> <9ee77056-ef02-8696-5b96-46007e35ab00@redhat.com> <87ft6464jf.fsf@nanos.tec.linutronix.de> <20201026173012.GA377978@fuller.cnet> <875z6w4xt4.fsf@nanos.tec.linutronix.de> <86f8f667-bda6-59c4-91b7-6ba2ef55e3db@intel.com>
-Date:   Mon, 26 Oct 2020 21:11:02 +0100
-Message-ID: <87v9ew3fzd.fsf@nanos.tec.linutronix.de>
+        id S1731397AbgJZUYi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 16:24:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57114 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731368AbgJZUYi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 16:24:38 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.4])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 87510207E8;
+        Mon, 26 Oct 2020 20:24:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603743877;
+        bh=INfT04YagxPwCUQS/ES/9gs9KqN/WO51F0pMbi77SHk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=0m6jYe7LJr+jTYKY8f8ALqMSdzc76hA/3yyBVgoKqSUJpoVx4M3ptduhSb1CXjQDr
+         rzVdorzvE1lsR2vdGyvBV3jZpRwm7g3MlRKtsI8OfN24DX6RgsL0R3yB9MMQ+i1nYb
+         JTCERyZUGoBhYp2n2TrUcGGQLPHjBJwBX46E5XFc=
+Date:   Mon, 26 Oct 2020 13:24:36 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Zhang Qilong <zhangqilong3@huawei.com>
+Cc:     <joe@perches.com>, <vvs@virtuozzo.com>, <davem@davemloft.net>,
+        <lirongqing@baidu.com>, <roopa@cumulusnetworks.com>,
+        <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 -next] neigh: Adjustment calculation method of
+ neighbour path symbols
+Message-ID: <20201026132436.3a57a98e@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201026022126.117741-1-zhangqilong3@huawei.com>
+References: <20201026022126.117741-1-zhangqilong3@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 26 2020 at 12:21, Jacob Keller wrote:
-> On 10/26/2020 12:00 PM, Thomas Gleixner wrote:
->> How does userspace know about the driver internals? Number of management
->> interrupts, optimal number of interrupts per queue?
->
-> I guess this is the problem solved in part by the queue management work
-> that would make queues a thing that userspace is aware of.
->
-> Are there drivers which use more than one interrupt per queue? I know
-> drivers have multiple management interrupts.. and I guess some drivers
-> do combined 1 interrupt per pair of Tx/Rx..  It's also plausible to to
-> have multiple queues for one interrupt .. I'm not sure how a single
-> queue with multiple interrupts would work though.
+On Mon, 26 Oct 2020 10:21:26 +0800 Zhang Qilong wrote:
+> Using size of "net//neigh/" is not clear, the use
+> of stitching("net/" + /neigh") should be clearer.
+> 
+> Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
+> ---
+>  net/core/neighbour.c | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+> index 8e39e28b0a8d..0474e73c4f9f 100644
+> --- a/net/core/neighbour.c
+> +++ b/net/core/neighbour.c
+> @@ -3623,7 +3623,14 @@ int neigh_sysctl_register(struct net_device *dev, struct neigh_parms *p,
+>  	int i;
+>  	struct neigh_sysctl_table *t;
+>  	const char *dev_name_source;
+> -	char neigh_path[ sizeof("net//neigh/") + IFNAMSIZ + IFNAMSIZ ];
+> +
+> +	/*
+> +	 * The path pattern is as follows
+> +	 * "net/%s/neigh/%s", minusing one
+> +	 * is for unnecessary terminators.
+> +	 */
+> +	char neigh_path[sizeof("net/") - 1 + IFNAMSIZ +
+> +			sizeof("/neigh/") + IFNAMSIZ];
 
-For block there is always one interrupt per queue. Some Network drivers
-seem to have seperate RX and TX interrupts per queue.
+Let's leave this. The code is fine, the re-factoring is not worth the 
+back an forth.
 
-Thanks,
+>  	char *p_name;
+>  
+>  	t = kmemdup(&neigh_sysctl_template, sizeof(*t), GFP_KERNEL);
 
-        tglx
