@@ -2,92 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E9ED29883A
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 09:23:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 008DA29883C
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 09:23:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1771566AbgJZIXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 04:23:38 -0400
-Received: from m9785.mail.qiye.163.com ([220.181.97.85]:30032 "EHLO
-        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1769486AbgJZIXi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 04:23:38 -0400
-Received: from [192.168.188.14] (unknown [106.75.220.2])
-        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 8B3575C1C0A;
-        Mon, 26 Oct 2020 16:23:30 +0800 (CST)
-Subject: Re: [PATCH net] ip_tunnel: fix over-mtu packet send fail without
- TUNNEL_DONT_FRAGMENT flags
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org
-References: <1603272115-25351-1-git-send-email-wenxu@ucloud.cn>
- <20201023141254.7102795d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-From:   wenxu <wenxu@ucloud.cn>
-Message-ID: <c4dae63c-6a99-922e-5bd0-03ac355779ae@ucloud.cn>
-Date:   Mon, 26 Oct 2020 16:23:29 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        id S1771574AbgJZIXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 04:23:42 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:39586 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1771568AbgJZIXm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 04:23:42 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 59A8020501;
+        Mon, 26 Oct 2020 09:23:40 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id bBK94TIIxWU1; Mon, 26 Oct 2020 09:23:39 +0100 (CET)
+Received: from mail-essen-01.secunet.de (unknown [10.53.40.204])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id CBB11200A3;
+        Mon, 26 Oct 2020 09:23:39 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
+ 14.3.487.0; Mon, 26 Oct 2020 09:23:39 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Mon, 26 Oct
+ 2020 09:23:39 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id ABD2B3184555;
+ Mon, 26 Oct 2020 09:23:38 +0100 (CET)
+Date:   Mon, 26 Oct 2020 09:23:38 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Zhuoliang Zhang <zhuoliang.zhang@mediatek.com>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>, <wsd_upstream@mediatek.com>
+Subject: Re: [PATCH v2] net: xfrm: fix a race condition during allocing spi
+Message-ID: <20201026082338.GS31157@gauss3.secunet.de>
+References: <20201022100126.19565-1-zhuoliang.zhang@mediatek.com>
 MIME-Version: 1.0
-In-Reply-To: <20201023141254.7102795d@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
-        oVCBIfWUFZQ0pPSE0aHRlCTB8eVkpNS0hMS0tNSktMSUJVGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS0hKQ1VLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NxQ6ESo4Sz5NP0gRTzYDATwC
-        QzgwFBlVSlVKTUtITEtLTUpLQktNVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpLTVVM
-        TlVJSUtVSVlXWQgBWUFISUlONwY+
-X-HM-Tid: 0a75640156562087kuqy8b3575c1c0a
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20201022100126.19565-1-zhuoliang.zhang@mediatek.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Oct 22, 2020 at 06:01:27PM +0800, Zhuoliang Zhang wrote:
+> From: zhuoliang zhang <zhuoliang.zhang@mediatek.com>
+> 
+> we found that the following race condition exists in
+> xfrm_alloc_userspi flow:
+> 
+> user thread                                    state_hash_work thread
+> ----                                           ----
+> xfrm_alloc_userspi()
+>  __find_acq_core()
+>    /*alloc new xfrm_state:x*/
+>    xfrm_state_alloc()
+>    /*schedule state_hash_work thread*/
+>    xfrm_hash_grow_check()   	               xfrm_hash_resize()
+>  xfrm_alloc_spi                                  /*hold lock*/
+>       x->id.spi = htonl(spi)                     spin_lock_bh(&net->xfrm.xfrm_state_lock)
+>       /*waiting lock release*/                     xfrm_hash_transfer()
+>       spin_lock_bh(&net->xfrm.xfrm_state_lock)      /*add x into hlist:net->xfrm.state_byspi*/
+> 	                                                hlist_add_head_rcu(&x->byspi)
+>                                                  spin_unlock_bh(&net->xfrm.xfrm_state_lock)
+> 
+>     /*add x into hlist:net->xfrm.state_byspi 2 times*/
+>     hlist_add_head_rcu(&x->byspi)
+> 
+> 1. a new state x is alloced in xfrm_state_alloc() and added into the bydst hlist
+> in  __find_acq_core() on the LHS;
+> 2. on the RHS, state_hash_work thread travels the old bydst and tranfers every xfrm_state
+> (include x) into the new bydst hlist and new byspi hlist;
+> 3. user thread on the LHS gets the lock and adds x into the new byspi hlist again.
+> 
+> So the same xfrm_state (x) is added into the same list_hash
+> (net->xfrm.state_byspi) 2 times that makes the list_hash become
+> an inifite loop.
+> 
+> To fix the race, x->id.spi = htonl(spi) in the xfrm_alloc_spi() is moved
+> to the back of spin_lock_bh, sothat state_hash_work thread no longer add x
+> which id.spi is zero into the hash_list.
+> 
+> Fixes: f034b5d4efdf ("[XFRM]: Dynamic xfrm_state hash table sizing.")
+> Signed-off-by: zhuoliang zhang <zhuoliang.zhang@mediatek.com>
 
-On 10/24/2020 5:12 AM, Jakub Kicinski wrote:
-> On Wed, 21 Oct 2020 17:21:55 +0800 wenxu@ucloud.cn wrote:
->> From: wenxu <wenxu@ucloud.cn>
->>
->> The TUNNEL_DONT_FRAGMENT flags specific the tunnel outer ip can do
->> fragment or not in the md mode. Without the TUNNEL_DONT_FRAGMENT
->> should always do fragment. So it should not care the frag_off in
->> inner ip.
-> Can you describe the use case better? My understanding is that we
-> should propagate DF in normally functioning networks, and let PMTU 
-> do its job.
+Applied, thanks a lot!
 
-Sorry for relying so late.  ip_md_tunnel_xmit send packet in the collect_md mode.
-
-For OpenVswitch example, ovs set the gre port with flags df_default=false which will not
-
-set TUNNEL_DONT_FRAGMENT for tun_flags.
-
-And the mtu of virtual machine is 1500 with default. And the tunnel underlay device mtu
-
-is 1500 default too. So if the size of packet send from vm +  underlay length > underlay device mtu.
-
-The packet always be dropped if the ip header of  packet set flags with DF.
-
-In the collect_md the outer packet can fragment or not should depends on the tun_flags but not inner
-
-ip header like vxlan device did.
-
->> Fixes: cfc7381b3002 ("ip_tunnel: add collect_md mode to IPIP tunnel")
->> Signed-off-by: wenxu <wenxu@ucloud.cn>
->> ---
->>  net/ipv4/ip_tunnel.c | 3 ---
->>  1 file changed, 3 deletions(-)
->>
->> diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
->> index 8b04d1d..ee65c92 100644
->> --- a/net/ipv4/ip_tunnel.c
->> +++ b/net/ipv4/ip_tunnel.c
->> @@ -608,9 +608,6 @@ void ip_md_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
->>  			ttl = ip4_dst_hoplimit(&rt->dst);
->>  	}
->>  
->> -	if (!df && skb->protocol == htons(ETH_P_IP))
->> -		df = inner_iph->frag_off & htons(IP_DF);
->> -
->>  	headroom += LL_RESERVED_SPACE(rt->dst.dev) + rt->dst.header_len;
->>  	if (headroom > dev->needed_headroom)
->>  		dev->needed_headroom = headroom;
->
+One remark, please don't use base64 encoding when you send patches.
+I had to hand edit your patch to get it applied.
