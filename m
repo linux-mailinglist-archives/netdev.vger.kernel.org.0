@@ -2,66 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0BFE299114
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 16:34:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D5B3D29912A
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 16:36:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1783952AbgJZPeG convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 26 Oct 2020 11:34:06 -0400
-Received: from mga11.intel.com ([192.55.52.93]:1757 "EHLO mga11.intel.com"
+        id S1784028AbgJZPg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 11:36:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60260 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1783948AbgJZPeF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 11:34:05 -0400
-IronPort-SDR: BeD7JecPN3cROovTRJAXgTsLaAmhfEZpyJJTA9Pmehi8Pbvnqpg/SgT3H3QgYakXtxPx3u3ELs
- jgwz75fWYjaw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9785"; a="164442767"
-X-IronPort-AV: E=Sophos;i="5.77,420,1596524400"; 
-   d="scan'208";a="164442767"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2020 08:34:03 -0700
-IronPort-SDR: bHLp3u9rWJruRvlfdwSmKZnRsIzhkd/dyEO0u8F0t2jYAtmQIXcLIkmHHMiFzpJKAmYtlO/Mmp
- CzaD0IEmwM2Q==
-X-IronPort-AV: E=Sophos;i="5.77,420,1596524400"; 
-   d="scan'208";a="317893389"
-Received: from jbrandeb-mobl4.amr.corp.intel.com (HELO localhost) ([10.212.236.36])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2020 08:33:58 -0700
-Date:   Mon, 26 Oct 2020 08:33:56 -0700
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
-To:     Christian Langrock <christian.langrock@secunet.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <anthony.l.nguyen@intel.com>
-Subject: Re: Subject: [PATCH net] drivers: net: ixgbe: Fix
- *_ipsec_offload_ok():, Use ip_hdr family
-Message-ID: <20201026083356.00001999@intel.com>
-In-Reply-To: <1581f61a-f405-008a-8f31-e9e696667d5a@secunet.com>
-References: <1581f61a-f405-008a-8f31-e9e696667d5a@secunet.com>
-X-Mailer: Claws Mail 3.12.0 (GTK+ 2.24.28; i686-w64-mingw32)
+        id S1783972AbgJZPg1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 11:36:27 -0400
+Received: from kozik-lap.mshome.net (unknown [194.230.155.184])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C4AF722404;
+        Mon, 26 Oct 2020 15:36:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603726586;
+        bh=0nSgFPUCz1doewmaEwSrcCLEaOm85Iixrcmcb5glcxg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=GsnGTtsubdanGJaWCG8+skz9VY+W7vlRpoPJVR5/4YylDQnZ/chlZDS6zJYULemPi
+         TOVJoiw0K6rubvfvDJn1YIi0snC5TSZgkLw0kSS4y5jmDcN74wymB/MSjXa6RYTXcB
+         J0O44mYQYqyy7/HK5nbRrobECYsk3Y5yV6Crvkr4=
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Dan Murphy <dmurphy@ti.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Rob Herring <robh@kernel.org>
+Subject: [RESEND PATCH v2] dt-bindings: net: correct interrupt flags in examples
+Date:   Mon, 26 Oct 2020 16:36:20 +0100
+Message-Id: <20201026153620.89268-1-krzk@kernel.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christian Langrock wrote:
+GPIO_ACTIVE_x flags are not correct in the context of interrupt flags.
+These are simple defines so they could be used in DTS but they will not
+have the same meaning:
+1. GPIO_ACTIVE_HIGH = 0 = IRQ_TYPE_NONE
+2. GPIO_ACTIVE_LOW  = 1 = IRQ_TYPE_EDGE_RISING
 
-Please fix your subject, remove the word 'Subject: '
+Correct the interrupt flags, assuming the author of the code wanted same
+logical behavior behind the name "ACTIVE_xxx", this is:
+  ACTIVE_LOW  => IRQ_TYPE_LEVEL_LOW
+  ACTIVE_HIGH => IRQ_TYPE_LEVEL_HIGH
 
-> Xfrm_dev_offload_ok() is called with the unencrypted SKB. So in case of
-> interfamily ipsec traffic (IPv4-in-IPv6 and IPv6 in IPv4) the check
-> assumes the wrong family of the skb (IP family of the state).
-> With this patch the ip header of the SKB is used to determine the
-> family.
-> 
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+Acked-by: Rob Herring <robh@kernel.org>
+Acked-by: Marc Kleine-Budde <mkl@pengutronix.de> # for tcan4x5x.txt
 
-missing "Fixes: " line? It's useful here because I think this looks
-like a good candidate for stable bug fix.
+---
 
-> Signed-off-by: Christian Langrock <christian.langrock@secunet.com>
-> ---
->  drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c | 2 +-
->  drivers/net/ethernet/intel/ixgbevf/ipsec.c     | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
+Changes since v1:
+1. Add acks
+---
+ Documentation/devicetree/bindings/net/can/tcan4x5x.txt | 2 +-
+ Documentation/devicetree/bindings/net/nfc/nxp-nci.txt  | 2 +-
+ Documentation/devicetree/bindings/net/nfc/pn544.txt    | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-The patch looks ok otherwise, thanks!
+diff --git a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
+index 3613c2c8f75d..0968b40aef1e 100644
+--- a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
++++ b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
+@@ -33,7 +33,7 @@ tcan4x5x: tcan4x5x@0 {
+ 		spi-max-frequency = <10000000>;
+ 		bosch,mram-cfg = <0x0 0 0 32 0 0 1 1>;
+ 		interrupt-parent = <&gpio1>;
+-		interrupts = <14 GPIO_ACTIVE_LOW>;
++		interrupts = <14 IRQ_TYPE_LEVEL_LOW>;
+ 		device-state-gpios = <&gpio3 21 GPIO_ACTIVE_HIGH>;
+ 		device-wake-gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
+ 		reset-gpios = <&gpio1 27 GPIO_ACTIVE_HIGH>;
+diff --git a/Documentation/devicetree/bindings/net/nfc/nxp-nci.txt b/Documentation/devicetree/bindings/net/nfc/nxp-nci.txt
+index cfaf88998918..9e4dc510a40a 100644
+--- a/Documentation/devicetree/bindings/net/nfc/nxp-nci.txt
++++ b/Documentation/devicetree/bindings/net/nfc/nxp-nci.txt
+@@ -25,7 +25,7 @@ Example (for ARM-based BeagleBone with NPC100 NFC controller on I2C2):
+ 		clock-frequency = <100000>;
+ 
+ 		interrupt-parent = <&gpio1>;
+-		interrupts = <29 GPIO_ACTIVE_HIGH>;
++		interrupts = <29 IRQ_TYPE_LEVEL_HIGH>;
+ 
+ 		enable-gpios = <&gpio0 30 GPIO_ACTIVE_HIGH>;
+ 		firmware-gpios = <&gpio0 31 GPIO_ACTIVE_HIGH>;
+diff --git a/Documentation/devicetree/bindings/net/nfc/pn544.txt b/Documentation/devicetree/bindings/net/nfc/pn544.txt
+index 92f399ec22b8..2bd82562ce8e 100644
+--- a/Documentation/devicetree/bindings/net/nfc/pn544.txt
++++ b/Documentation/devicetree/bindings/net/nfc/pn544.txt
+@@ -25,7 +25,7 @@ Example (for ARM-based BeagleBone with PN544 on I2C2):
+ 		clock-frequency = <400000>;
+ 
+ 		interrupt-parent = <&gpio1>;
+-		interrupts = <17 GPIO_ACTIVE_HIGH>;
++		interrupts = <17 IRQ_TYPE_LEVEL_HIGH>;
+ 
+ 		enable-gpios = <&gpio3 21 GPIO_ACTIVE_HIGH>;
+ 		firmware-gpios = <&gpio3 19 GPIO_ACTIVE_HIGH>;
+-- 
+2.25.1
+
