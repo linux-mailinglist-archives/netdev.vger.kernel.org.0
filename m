@@ -2,124 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82EB42999C2
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 23:37:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9F7D2999D6
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 23:46:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394560AbgJZWhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 18:37:23 -0400
-Received: from m42-4.mailgun.net ([69.72.42.4]:32776 "EHLO m42-4.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2394549AbgJZWhW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 18:37:22 -0400
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1603751841; h=Content-Transfer-Encoding: Content-Type:
- In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
- Subject: Sender; bh=y1i8qtqfp0ZdnHugW/F30HmEn1D4bAHJAO0sjejblDA=; b=aMxEZYT2oT06MYHNHORvlxehyIxIBtyivOo/mEGtp0ZxJAjjb1rumQf4q0hqUvutu6tISK1i
- c3uBhDxvMmfu8AcHPCa/dQc1KagnPZs2gHA52bZSvA24vrMlSnpWEJFOY6bPnJyI11LW+0wK
- u4vPbHZunvVddpZmGi3D4JZVJAs=
-X-Mailgun-Sending-Ip: 69.72.42.4
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
- 5f974f7e18530f07b72eba08 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 26 Oct 2020 22:36:46
- GMT
-Sender: hemantk=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 7F7D3C433F0; Mon, 26 Oct 2020 22:36:46 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-5.1 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        NICE_REPLY_A,SPF_FAIL autolearn=unavailable autolearn_force=no version=3.4.0
-Received: from [10.46.162.249] (i-global254.qualcomm.com [199.106.103.254])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: hemantk)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 79EA7C43382;
-        Mon, 26 Oct 2020 22:36:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 79EA7C43382
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=hemantk@codeaurora.org
-Subject: Re: [PATCH v9 3/4] docs: Add documentation for userspace client
- interface
-To:     Jeffrey Hugo <jhugo@codeaurora.org>,
-        Dan Williams <dcbw@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     manivannan.sadhasivam@linaro.org, gregkh@linuxfoundation.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bbhatt@codeaurora.org, loic.poulain@linaro.org,
-        netdev@vger.kernel.org
-References: <1603495075-11462-1-git-send-email-hemantk@codeaurora.org>
- <1603495075-11462-4-git-send-email-hemantk@codeaurora.org>
- <20201025144627.65b2324e@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
- <e92a5a5b-ac62-a6d8-b6b4-b65587e64255@codeaurora.org>
- <4e4dc63d0a0b5a820f7a70e30e29746fd6735a96.camel@redhat.com>
- <7934e50d-72bd-f20a-54da-33f29c66c3fa@codeaurora.org>
-From:   Hemant Kumar <hemantk@codeaurora.org>
-Message-ID: <a0920f91-e043-8a67-f5c4-ea06eb1ddb2a@codeaurora.org>
-Date:   Mon, 26 Oct 2020 15:36:45 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S2394676AbgJZWqh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 18:46:37 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:43108 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2394668AbgJZWqg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 18:46:36 -0400
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1603752394;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EMtaedWvWnlr8FoOiOT3OcNE6XEhbc2X12bxau6EyFI=;
+        b=hEPCG2un8FH9qImCrJqicTU+VJY6N/dn8Vx214yYX5jTIIQO7JoERJ1eR3Jkhj9V4/Ti/R
+        SG7as2v78lmp83DCYPgalSSV8hv90SSVnyRs71ktVW1GDHLbBgWoimuqaP+0LbfLZtPaZm
+        GZcRqTA+v8cOCm1Fna4Vj5eAdy3BQOKDSRHu0faEku/nIgNErV57rBf7FKhxn8vJFITvtV
+        ZI4L4fobzqX25UN2isZHvaNPI8/SvShskRbcvRyNurbf+OA5gbU02GN3XO4NZhIeUn+zjM
+        dR+/CAl/QmdJ/Tc8p8/16dRiok0JXoUztki/dlYYg9SmRfnHP6EPYkUF1qoNSQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1603752394;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=EMtaedWvWnlr8FoOiOT3OcNE6XEhbc2X12bxau6EyFI=;
+        b=/0MZUIzr/yPzfalGB8dky2AgJXYoZCXz552/jb8OMkHDcMOCA4OXvbG8ORFq2uO0pVJiLx
+        3TDr0Q1bRzyGSmAw==
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>,
+        Nitesh Narayan Lal <nitesh@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>, helgaas@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        frederic@kernel.org, sassmann@redhat.com,
+        jesse.brandeburg@intel.com, lihong.yang@intel.com,
+        jeffrey.t.kirsher@intel.com, jlelli@redhat.com, hch@infradead.org,
+        bhelgaas@google.com, mike.marciniszyn@intel.com,
+        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
+        jiri@nvidia.com, mingo@redhat.com, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, lgoncalv@redhat.com
+Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to housekeeping CPUs
+In-Reply-To: <20201026151306.4af991a5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+References: <20201019111137.GL2628@hirez.programming.kicks-ass.net> <20201019140005.GB17287@fuller.cnet> <20201020073055.GY2611@hirez.programming.kicks-ass.net> <078e659e-d151-5bc2-a7dd-fe0070267cb3@redhat.com> <20201020134128.GT2628@hirez.programming.kicks-ass.net> <6736e643-d4ae-9919-9ae1-a73d5f31463e@redhat.com> <260f4191-5b9f-6dc1-9f11-085533ac4f55@redhat.com> <20201023085826.GP2611@hirez.programming.kicks-ass.net> <9ee77056-ef02-8696-5b96-46007e35ab00@redhat.com> <87ft6464jf.fsf@nanos.tec.linutronix.de> <20201026173012.GA377978@fuller.cnet> <875z6w4xt4.fsf@nanos.tec.linutronix.de> <86f8f667-bda6-59c4-91b7-6ba2ef55e3db@intel.com> <87v9ew3fzd.fsf@nanos.tec.linutronix.de> <85b5f53e-5be2-beea-269a-f70029bea298@intel.com> <87lffs3bd6.fsf@nanos.tec.linutronix.de> <20201026151306.4af991a5@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Date:   Mon, 26 Oct 2020 23:46:34 +0100
+Message-ID: <878sbs38s5.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <7934e50d-72bd-f20a-54da-33f29c66c3fa@codeaurora.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Oct 26 2020 at 15:13, Jakub Kicinski wrote:
+> On Mon, 26 Oct 2020 22:50:45 +0100 Thomas Gleixner wrote:
+>> But I still think that for curing that isolation stuff we want at least
+>> some information from the driver. Alternative solution would be to grant
+>> the allocation of interrupts and queues and have some sysfs knob to shut
+>> down queues at runtime. If that shutdown results in releasing the queue
+>> interrupt (via free_irq()) then the vector exhaustion problem goes away.
+>> 
+>> Needs more thought and information (for network oblivious folks like
+>> me).
+>
+> One piece of information that may be useful is that even tho the RX
+> packets may be spread semi-randomly the user space can still control
+> which queues are included in the mechanism. There is an indirection
+> table in the HW which allows to weigh queues differently, or exclude
+> selected queues from the spreading. Other mechanisms exist to filter
+> flows onto specific queues.
+>
+> IOW just because a core has an queue/interrupt does not mean that
+> interrupt will ever fire, provided its excluded from RSS.
+>
+> Another piece is that by default we suggest drivers allocate 8 RX
+> queues, and online_cpus TX queues. The number of queues can be
+> independently controlled via ethtool -L. Drivers which can't support
+> separate queues will default to online_cpus queue pairs, and let
+> ethtool -L only set the "combined" parameter.
+>
+> There are drivers which always allocate online_cpus interrupts, 
+> and then some of them will go unused if #qs < #cpus.
 
+Thanks for the enlightment.
 
-On 10/26/20 6:56 AM, Jeffrey Hugo wrote:
-> On 10/26/2020 7:46 AM, Dan Williams wrote:
->> On Mon, 2020-10-26 at 07:38 -0600, Jeffrey Hugo wrote:
->>> On 10/25/2020 3:46 PM, Jakub Kicinski wrote:
->>>> On Fri, 23 Oct 2020 16:17:54 -0700 Hemant Kumar wrote:
->>>>> +UCI driver enables userspace clients to communicate to external
->>>>> MHI devices
->>>>> +like modem and WLAN. UCI driver probe creates standard character
->>>>> device file
->>>>> +nodes for userspace clients to perform open, read, write, poll
->>>>> and release file
->>>>> +operations.
->>>>
->>>> What's the user space that talks to this?
->>>>
->>>
->>> Multiple.
->>>
->>> Each channel has a different purpose.  There it is expected that a
->>> different userspace application would be using it.
->>>
->>> Hemant implemented the loopback channel, which is a simple channel
->>> that
->>> just sends you back anything you send it.  Typically this is consumed
->>> by
->>> a test application.
->>>
->>> Diag is a typical channel to be consumed by userspace.  This is
->>> consumed
->>> by various applications that talk to the remote device for
->>> diagnostic
->>> information (logs and such).
->>
->> QMI too?
->> Dan
-> 
-> Interesting question.  My product doesn't use QMI.  I would expect that 
-> all QMI runs through Router these days, but I am seeing some QMI 
-> channels in the downstream source.
-> 
-> Hemant, Do you know what is the usecase for the QMI0/QMI1 channels?
-> 
-QMI0/QMI1 is used to send QMI message (control path) to bring the qmi 
-rmnet data call.
+> My unpopular opinion is that for networking devices all the heuristics
+> we may come up with are going to be a dead end.
+
+I agree. Heuristics suck.
+
+> We need an explicit API to allow users placing queues on cores, and
+> use managed IRQs for data queues. (I'm assuming that managed IRQs will
+> let us reliably map a MSI-X vector to a core :))
+
+Yes, they allow you to do that. That will need some tweaks to theway
+they work today (coming from the strict block mq semantics). You also
+need to be aware that managed irqs have also strict semantics vs. CPU
+hotplug. If the last CPU in the managed affinity set goes down then the
+interrupt is shut down by the irq core which means that you need to
+quiesce the associated queue before that happens. When the first CPU
+comes online again the interrupt is reenabled, so the queue should be
+able to handle it or has ensured that the device does not raise one
+before it is able to do so.
 
 Thanks,
-Hemant
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+
+        tglx
