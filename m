@@ -2,111 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AD1FE298622
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 05:18:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6058A298623
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 05:18:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1420912AbgJZESe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 00:18:34 -0400
-Received: from mail-pj1-f68.google.com ([209.85.216.68]:51419 "EHLO
-        mail-pj1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1420823AbgJZESd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 00:18:33 -0400
-Received: by mail-pj1-f68.google.com with SMTP id a17so2485106pju.1
-        for <netdev@vger.kernel.org>; Sun, 25 Oct 2020 21:18:32 -0700 (PDT)
+        id S1420940AbgJZESg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 00:18:36 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:33421 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1419349AbgJZESf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 00:18:35 -0400
+Received: by mail-pg1-f196.google.com with SMTP id l18so5398036pgg.0
+        for <netdev@vger.kernel.org>; Sun, 25 Oct 2020 21:18:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Ia7W+Te5tnERYre+fEhaGeEB9dh9a5vlTs1WxqxQS2Y=;
-        b=NUlDznmz4Moulk1baLU8jYNlpNXicbAEBrlu7Y0dc/RR0ON1mtCGLWHTbv+eQO+Y2h
-         +FoSEu1lX7JVGn4ygjfkXa6fsyq4I045zcVUpk0nQd/Y2C3qlxkfaDIjiemYbUk/pwF1
-         RYY9mBRZtqchYunH616tTM43V+nD5GbocrTbs=
+        bh=uleZ8n+JgcCHc/so3hz6bo8kpeWA7SBxQDQu0n8Nwc0=;
+        b=F5k7xKi46sXA42eD+QkeDYwi4eyl5D3qBZ8tdMa8GikVsTlHGWxwtBhAmTtZgj+zPn
+         NQMk9tNLeSuNaV1w1EzsIo4Iv1sMos4da/R6wdxF0pC7eMx9WOFJyWdZtfdEA9dLI0N2
+         hiyJkpE+hjrzNp2FSqCi6R1NKxxBCt2k8oIYE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=Ia7W+Te5tnERYre+fEhaGeEB9dh9a5vlTs1WxqxQS2Y=;
-        b=ofAeFG5OmQ5X1/lpOBCmPmvUGe+3v4LwgrcCCZYOrBF80ii7I8VekAlY9ozQzC5ddZ
-         CjTIWmrby0tYCd59vziUEC8IRVxScX2b81S7FFGgzevwiL3/XXBpRW5xViL0Ir0ebA94
-         47HjYAbIIZW127sv7rUjsql/wBaS9EeL+IIeU8oByLbaMZ43yhDWZPZQu8D5VpZiDG8P
-         PPxHZQkegrnk3/Zk8e018WN7rW9X1qcbhkZUrQVWJM0HzM+tPxRNONrc5DhRjhf7Yt0p
-         0uoL2FlSqFsdXX8QAtan7K+jdfOJ/O4bqrDxm0gZOul6WONIRnOhiRj4wChIw7eRF/ZF
-         TCoA==
-X-Gm-Message-State: AOAM531296FmSJrbh6jaF3i7Cj66O1Bf5aQsIkFXvOzi0olg9/BZBB3N
-        ZPevs9etfexvbk2MeXMtNm/QiYATbbJxyg==
-X-Google-Smtp-Source: ABdhPJx4jHybt57I3LuxIJOmma9Fmg1z+nbvmWZSaNKS4Q9QzHow+IUsPqwOLSG4EMxcITJqJpD/uw==
-X-Received: by 2002:a17:90a:8b0f:: with SMTP id y15mr5206198pjn.194.1603685912169;
-        Sun, 25 Oct 2020 21:18:32 -0700 (PDT)
+        bh=uleZ8n+JgcCHc/so3hz6bo8kpeWA7SBxQDQu0n8Nwc0=;
+        b=fH1NWsOeOi+KcnIZb+8xfFjaLREvTQ9QZ+GISuUkAhG/GFU4aa1GO1CrurVJrJdQGx
+         asUcV1GV6m47SkFCbWx9eeIsZOBtBb6PdZWpiV5VJvbARX4HcqRaupekdflnGIJv/hHx
+         uSAeOg7hcQOTYerycHmo3Ifm97EdfGmX06gxRcslgPeM5p1qR8dAWOExPbvo22fSoQEk
+         WgBb1tN8r1eYdZNic/6OrbFPa9vIXGV14lgLkeiV6TVMulJu3MiuGd61GezwD1t9P1AX
+         fcATrV10jzY41zRq8VNcQFtfxUhktoP1I7Gqqduy1rUydzUCF+lnza3pWrtpvgCj02JS
+         fY3A==
+X-Gm-Message-State: AOAM533QD68m7wTB2u/+U3RAcOpp73FWbIDOgPrTqvfe9v6XkhC4ag/v
+        XvgPztY2RSsy/D41QHRuRV6kimNymnpjOA==
+X-Google-Smtp-Source: ABdhPJzwZDWhIWbIU6S4QVMka8wJnqDdokcDMWko8RgWF/pIpy49XMdbKh+/W75CkMgFdjGTcCLcGw==
+X-Received: by 2002:a63:f343:: with SMTP id t3mr11752446pgj.86.1603685913437;
+        Sun, 25 Oct 2020 21:18:33 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 10sm11505835pjt.50.2020.10.25.21.18.30
+        by smtp.gmail.com with ESMTPSA id 10sm11505835pjt.50.2020.10.25.21.18.32
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 25 Oct 2020 21:18:31 -0700 (PDT)
+        Sun, 25 Oct 2020 21:18:32 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     kuba@kernel.org
 Cc:     netdev@vger.kernel.org, gospo@broadcom.com,
         Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Subject: [PATCH net 1/5] bnxt_en: Fix regression in workqueue cleanup logic in bnxt_remove_one().
-Date:   Mon, 26 Oct 2020 00:18:17 -0400
-Message-Id: <1603685901-17917-2-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 2/5] bnxt_en: Invoke cancel_delayed_work_sync() for PFs also.
+Date:   Mon, 26 Oct 2020 00:18:18 -0400
+Message-Id: <1603685901-17917-3-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1603685901-17917-1-git-send-email-michael.chan@broadcom.com>
 References: <1603685901-17917-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="00000000000026b92305b28b39d7"
+        boundary="00000000000039a21d05b28b39e2"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---00000000000026b92305b28b39d7
+--00000000000039a21d05b28b39e2
 
 From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 
-A recent patch has moved the workqueue cleanup logic before
-calling unregister_netdev() in bnxt_remove_one().  This caused a
-regression because the workqueue can be restarted if the device is
-still open.  Workqueue cleanup must be done after unregister_netdev().
-The workqueue will not restart itself after the device is closed.
+As part of the commit b148bb238c02
+("bnxt_en: Fix possible crash in bnxt_fw_reset_task()."),
+cancel_delayed_work_sync() is called only for VFs to fix a possible
+crash by cancelling any pending delayed work items. It was assumed
+by mistake that the flush_workqueue() call on the PF would flush
+delayed work items as well.
 
-Call bnxt_cancel_sp_work() after unregister_netdev() and
-call bnxt_dl_fw_reporters_destroy() after that.  This fixes the
-regession and the original NULL ptr dereference issue.
+As flush_workqueue() does not cancel the delayed workqueue, extend
+the fix for PFs. This fix will avoid the system crash, if there are
+any pending delayed work items in fw_reset_task() during driver's
+.remove() call.
 
-Fixes: b16939b59cc0 ("bnxt_en: Fix NULL ptr dereference crash in bnxt_fw_reset_task()")
+Unify the workqueue cleanup logic for both PF and VF by calling
+cancel_work_sync() and cancel_delayed_work_sync() directly in
+bnxt_remove_one().
+
+Fixes: b148bb238c02 ("bnxt_en: Fix possible crash in bnxt_fw_reset_task().")
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
 Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 13 ++-----------
+ 1 file changed, 2 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index fa147865e33f..e4e5ea080391 100644
+index e4e5ea080391..7be232018015 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -12108,15 +12108,16 @@ static void bnxt_remove_one(struct pci_dev *pdev)
- 	if (BNXT_PF(bp))
- 		bnxt_sriov_disable(bp);
+@@ -1160,16 +1160,6 @@ static void bnxt_queue_sp_work(struct bnxt *bp)
+ 		schedule_work(&bp->sp_task);
+ }
  
-+	if (BNXT_PF(bp))
-+		devlink_port_type_clear(&bp->dl_port);
-+	pci_disable_pcie_error_reporting(pdev);
-+	unregister_netdev(dev);
+-static void bnxt_cancel_sp_work(struct bnxt *bp)
+-{
+-	if (BNXT_PF(bp)) {
+-		flush_workqueue(bnxt_pf_wq);
+-	} else {
+-		cancel_work_sync(&bp->sp_task);
+-		cancel_delayed_work_sync(&bp->fw_reset_task);
+-	}
+-}
+-
+ static void bnxt_sched_reset(struct bnxt *bp, struct bnxt_rx_ring_info *rxr)
+ {
+ 	if (!rxr->bnapi->in_reset) {
+@@ -12114,7 +12104,8 @@ static void bnxt_remove_one(struct pci_dev *pdev)
+ 	unregister_netdev(dev);
  	clear_bit(BNXT_STATE_IN_FW_RESET, &bp->state);
-+	/* Flush any pending tasks */
- 	bnxt_cancel_sp_work(bp);
+ 	/* Flush any pending tasks */
+-	bnxt_cancel_sp_work(bp);
++	cancel_work_sync(&bp->sp_task);
++	cancel_delayed_work_sync(&bp->fw_reset_task);
  	bp->sp_event = 0;
  
  	bnxt_dl_fw_reporters_destroy(bp, true);
--	if (BNXT_PF(bp))
--		devlink_port_type_clear(&bp->dl_port);
--	pci_disable_pcie_error_reporting(pdev);
--	unregister_netdev(dev);
- 	bnxt_dl_unregister(bp);
- 	bnxt_shutdown_tc(bp);
- 
 -- 
 2.18.1
 
 
---00000000000026b92305b28b39d7
+--00000000000039a21d05b28b39e2
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -176,14 +190,14 @@ Si7Gzq+VM1jcLa3+kjHalTIlC7q7gkvVhgEwmztW1SuO7pJn0/GOncxYGQXEk3PIH3QbPNO8VMkx
 3YeEtbaXosR5XLWchobv9S5HB9h4t0TUbZh2kX0HlGzgFLCPif27aL7ZpahFcoCS928kT+/V4tAj
 BB+IwnkxggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52
 LXNhMTMwMQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMC
-DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQg7DvRh2XE3yMI
-GAks3Vn1PAWf1W4uh+dXzP+WwjuG9fkwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
-9w0BCQUxDxcNMjAxMDI2MDQxODMyWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
+DF5npqHWO504Sj4Q1TANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgPjxq+0XX6fb3
+pf3fJw+Vu82siRjtQnRLSE7C8MW086owGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG
+9w0BCQUxDxcNMjAxMDI2MDQxODMzWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglg
 hkgBZQMEARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0B
-AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAJh1rSjlJtGTtwmv7osrVj7H75ueQ2/m
-ypJsCxE/WP9+zn7Jt0i9tSqblNBe85ewrF6gfbNUq5yiUGp6CHmtUjMM9sEO7wN8QHhSSgT0Gpfj
-3eyelQk4/RZE7p8FaJL8prtoS8MFYZ2m/vxlfhFPFXGgv49lNS43CSLYHeqH8J/Bb9gBPTaSy2XE
-Ys6c22AyJqEvH7KRaR/jC5oWkImbqZ+X8C4ihhEILThxFMLKF49CZNFtqKuZxDIRbUeOck8fJvbo
-kh1tFd5SzwFx46cki9Xs1P+flX1W01y6aaaxaVwmaI0uIqHR3/uRWuUCYLyJWCahzyfNiKpvzS6+
-/disTDg=
---00000000000026b92305b28b39d7--
+AQcwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAJpb8RjJH92AnTsgmwGPZQsI16rCF38c
+jt43gx0luQ84yzUySsK/vfGTsxIiICfcJRcik3LOiiyJwxsDTzBOktF9BGWa0oMUSANRqMbWHTUI
+XxEuRSdNOLrPh0ohGWuXbpYZ5EgeHhnUIrGPJsvfBL1gNluf+HVBDA6T5WxObJyDr4tfOyeLLW2E
+HCUkEjho0/sUnpqOFTK0e6CBSQ+t1VnBKPWUYbwHOm1D4/h9OWxmxuTGpZ9Zao97EhyD/DiGSW6d
+iIQdh1TfsrZcoFL09nl1DA/sTSki+owbNf7PVaBvBwVi4ySbvm5ob6uA713JeONLgUIOnsAG/4gm
+iJguTf8=
+--00000000000039a21d05b28b39e2--
