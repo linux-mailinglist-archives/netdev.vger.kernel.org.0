@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68B0E299D31
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 01:06:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2EF5299D05
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 01:03:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437588AbgJ0AEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 20:04:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35182 "EHLO mail.kernel.org"
+        id S2411058AbgJ0ADU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 20:03:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34788 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2411017AbgJZX4A (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 19:56:00 -0400
+        id S2411039AbgJZX4I (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 19:56:08 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 326CA22202;
-        Mon, 26 Oct 2020 23:55:59 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1351522202;
+        Mon, 26 Oct 2020 23:56:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603756559;
-        bh=xXQCAi1UanTxXmdmTXNwci+zWfS1jsM/sBq4Gzk2pFY=;
+        s=default; t=1603756567;
+        bh=8GCNzbKpvsqLPIFyh/3q+gb2kOaXod3PBysi3b/Cp+A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BlGwyHU8vUZjhbt0rqJ/G4w4PQpxbbbS60VrFztXa30uOsO2aCw+M4StsHT3giiLt
-         AwCF0AFygKj0kYhJFWoqoefZDvj9w8auNW8AgMXM1rdW6aZyBhxyU5KKSKoFyk205D
-         +jMPl3/BP3cuYluMs/UloOptjyv0QLOOGUkDm0eI=
+        b=cbLVt5nUlUe+Ig0rVJi8bRuNupOtttrWwnIx0lPgeD0TquK9iZmhlJuscF8AywIOm
+         +ovdo49Xwm6r2hx2IoL/ukgOVviLwOt25xdhk7IrZQp37K7R9v4WLwIN5iaJs4b85c
+         nOpBwRPXvxlk7+L16HfLBEPzyrgnTRRiJwXq8BRk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 35/80] samples/bpf: Fix possible deadlock in xdpsock
-Date:   Mon, 26 Oct 2020 19:54:31 -0400
-Message-Id: <20201026235516.1025100-35-sashal@kernel.org>
+Cc:     Chuck Lever <chuck.lever@oracle.com>,
+        Anna Schumaker <Anna.Schumaker@Netapp.com>,
+        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 42/80] SUNRPC: Mitigate cond_resched() in xprt_transmit()
+Date:   Mon, 26 Oct 2020 19:54:38 -0400
+Message-Id: <20201026235516.1025100-42-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201026235516.1025100-1-sashal@kernel.org>
 References: <20201026235516.1025100-1-sashal@kernel.org>
@@ -43,39 +43,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Magnus Karlsson <magnus.karlsson@intel.com>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-[ Upstream commit 5a2a0dd88f0f267ac5953acd81050ae43a82201f ]
+[ Upstream commit 6f9f17287e78e5049931af2037b15b26d134a32a ]
 
-Fix a possible deadlock in the l2fwd application in xdpsock that can
-occur when there is no space in the Tx ring. There are two ways to get
-the kernel to consume entries in the Tx ring: calling sendto() to make
-it send packets and freeing entries from the completion ring, as the
-kernel will not send a packet if there is no space for it to add a
-completion entry in the completion ring. The Tx loop in l2fwd only
-used to call sendto(). This patches adds cleaning the completion ring
-in that loop.
+The original purpose of this expensive call is to prevent a long
+queue of requests from blocking other work.
 
-Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/1599726666-8431-3-git-send-email-magnus.karlsson@gmail.com
+The cond_resched() call is unnecessary after just a single send
+operation.
+
+For longer queues, instead of invoking the kernel scheduler, simply
+release the transport send lock and return to the RPC scheduler.
+
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Anna Schumaker <Anna.Schumaker@Netapp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- samples/bpf/xdpsock_user.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/sunrpc/xprt.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-index df011ac334022..79d1005ff2ee3 100644
---- a/samples/bpf/xdpsock_user.c
-+++ b/samples/bpf/xdpsock_user.c
-@@ -677,6 +677,7 @@ static void l2fwd(struct xsk_socket_info *xsk, struct pollfd *fds)
- 	while (ret != rcvd) {
- 		if (ret < 0)
- 			exit_with_error(-ret);
-+		complete_tx_l2fwd(xsk, fds);
- 		if (xsk_ring_prod__needs_wakeup(&xsk->tx))
- 			kick_tx(xsk);
- 		ret = xsk_ring_prod__reserve(&xsk->tx, rcvd, &idx_tx);
+diff --git a/net/sunrpc/xprt.c b/net/sunrpc/xprt.c
+index 41df4c507193b..a6fee86f400ec 100644
+--- a/net/sunrpc/xprt.c
++++ b/net/sunrpc/xprt.c
+@@ -1503,10 +1503,13 @@ xprt_transmit(struct rpc_task *task)
+ {
+ 	struct rpc_rqst *next, *req = task->tk_rqstp;
+ 	struct rpc_xprt	*xprt = req->rq_xprt;
+-	int status;
++	int counter, status;
+ 
+ 	spin_lock(&xprt->queue_lock);
++	counter = 0;
+ 	while (!list_empty(&xprt->xmit_queue)) {
++		if (++counter == 20)
++			break;
+ 		next = list_first_entry(&xprt->xmit_queue,
+ 				struct rpc_rqst, rq_xmit);
+ 		xprt_pin_rqst(next);
+@@ -1514,7 +1517,6 @@ xprt_transmit(struct rpc_task *task)
+ 		status = xprt_request_transmit(next, task);
+ 		if (status == -EBADMSG && next != req)
+ 			status = 0;
+-		cond_resched();
+ 		spin_lock(&xprt->queue_lock);
+ 		xprt_unpin_rqst(next);
+ 		if (status == 0) {
 -- 
 2.25.1
 
