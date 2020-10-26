@@ -2,133 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A7FA9298CED
-	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 13:33:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5CF8298D0B
+	for <lists+netdev@lfdr.de>; Mon, 26 Oct 2020 13:47:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1775188AbgJZMdd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 08:33:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58838 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1767800AbgJZMdd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 08:33:33 -0400
-Received: from localhost (unknown [213.57.247.131])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5CAB6223B0;
-        Mon, 26 Oct 2020 12:33:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603715613;
-        bh=Zz3rPfuAsMmAU7X69Hykt6eH0WebalRUnJK00dglcfk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Fxgl9t3hKm/xuPwNw0bhm4/BQEONij4OLmt7NrTaTx90sazNSNMRa+dJNA7+4w/xd
-         UYgAp8GQIwhauGVZcF5QoOLgNBvIXCVDZeHYjCsoLyBvN5yEbLmx3qp3lUmEzb5lMb
-         Bj10ag4K54yOahQ15uZLWS+RLK98pre0xJpbswhQ=
-From:   Leon Romanovsky <leon@kernel.org>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Leon Romanovsky <leonro@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Vlad Buslov <vladbu@nvidia.com>
-Subject: [PATCH net v1] net: protect tcf_block_unbind with block lock
-Date:   Mon, 26 Oct 2020 14:33:27 +0200
-Message-Id: <20201026123327.1141066-1-leon@kernel.org>
-X-Mailer: git-send-email 2.26.2
+        id S1775411AbgJZMrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 08:47:16 -0400
+Received: from mail-yb1-f193.google.com ([209.85.219.193]:36019 "EHLO
+        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1775403AbgJZMrP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 08:47:15 -0400
+Received: by mail-yb1-f193.google.com with SMTP id f140so7537490ybg.3;
+        Mon, 26 Oct 2020 05:47:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=krigQ3i6dCn+qzXzyflYkj7VuDlk3im8wf3RIOQnyu0=;
+        b=pxj7fdi5TwNz1sp0SG2lcxXmD0z87mAO+WmV/PZXXxNp/FMCekwhBBg0DHy3OdGuOX
+         i31VsFgafs/VXGMZUvU6Biuar+lcVhGWctnL8wjUeER61KPnR/SQugSNcYNzTaweDqih
+         qMjYLUlUqfM6NUJ5Pt6dg8gnQMpOHvJF1ftBOrJrlCJGfDwMZ7OlyVIovhKARNYMfQZu
+         bdAx3bT4z5bDwJiEArnxN7p9prYUm3scJeMUnVVN8kF7wc0xSxdJNr4hOwYvfJgk5OlI
+         hoWBzGVln/nxok/OLuvN2VTGyymqZyPVj2wB17u+epv6X58lCuoMBJHhV888Sisqjtn3
+         G7kg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=krigQ3i6dCn+qzXzyflYkj7VuDlk3im8wf3RIOQnyu0=;
+        b=UpL5IQp0KFjCDqpOXvACVdLGU9aPzh/qFcDxojT737Du/2C6OiyMNAVDfPzH8/piox
+         qlIVDh3JkXUUn+F9mx00cjjfnq8Dwpu5qgPOPZkhKjhyAF+SNGuoF1edwkVcqKsgymmC
+         +t4bcD8MCZLj1JkUt+TMJGWWvL5MJCj/GDWUbEm2Wmj8og/Z2Jr5K2cotDkdLGu8nTyn
+         P7XxlDxgrfbCUMUSI99bapD9slu6YttM8V6LdbsglsPDbsIwrs9/kLcpWkahuQOGjiQH
+         aPNYx5XfA2r7U+aIVYF/JrDc6lhB5rdsTh//wNGpFcwztH1oCxmSsgiCskkBqt0daLZ/
+         GXaQ==
+X-Gm-Message-State: AOAM533wuzqxsWRoZ36rtgQ9oe0v6VYvn7U0oxfY3c0+2UxPGuXtWWUm
+        sBsOa1rhNngwMXxpXt7AtE2izWLgbU2w1ROKeTXR3nrNEcQ=
+X-Google-Smtp-Source: ABdhPJzrnX+CzY0KVfOlcv5KZkRi5XGyHH+EvYDjHWe0C/bOb802ge8/+ABSQDcFQ2AVcpP57bskV/8mSTnyaYvKz7c=
+X-Received: by 2002:a25:2e4c:: with SMTP id b12mr20497894ybn.336.1603716433785;
+ Mon, 26 Oct 2020 05:47:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20201026093907.13799-1-menglong8.dong@gmail.com> <acbb8a3a7bd83ee1121dfa91c207e4681a01d2d8.camel@redhat.com>
+In-Reply-To: <acbb8a3a7bd83ee1121dfa91c207e4681a01d2d8.camel@redhat.com>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Mon, 26 Oct 2020 20:47:01 +0800
+Message-ID: <CADxym3bwD+XBRmrtN6Bh1p9QQy_H7gx1o98eU+pWgPeDtVxX5w@mail.gmail.com>
+Subject: Re: [PATCH] net: udp: increase UDP_MIB_RCVBUFERRORS when ENOBUFS
+To:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net
+Cc:     kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+Hello~
 
-The tcf_block_unbind() expects that the caller will take block->cb_lock
-before calling it, however the code took RTNL lock and dropped cb_lock
-instead. This causes to the following kernel panic.
+On Mon, Oct 26, 2020 at 5:52 PM Paolo Abeni <pabeni@redhat.com> wrote:
+>
+> Hello,
+>
+> On Mon, 2020-10-26 at 17:39 +0800, Menglong Dong wrote:
+> > The error returned from __udp_enqueue_schedule_skb is ENOMEM or ENOBUFS.
+> > For now, only ENOMEM is counted into UDP_MIB_RCVBUFERRORS in
+> > __udp_queue_rcv_skb. UDP_MIB_RCVBUFERRORS should count all of the
+> > failed skb because of memory errors during udp receiving, not just because of the limit of sock receive queue. We can see this
+> > in __udp4_lib_mcast_deliver:
+> >
+> >               nskb = skb_clone(skb, GFP_ATOMIC);
+> >
+> >               if (unlikely(!nskb)) {
+> >                       atomic_inc(&sk->sk_drops);
+> >                       __UDP_INC_STATS(net, UDP_MIB_RCVBUFERRORS,
+> >                                       IS_UDPLITE(sk));
+> >                       __UDP_INC_STATS(net, UDP_MIB_INERRORS,
+> >                                       IS_UDPLITE(sk));
+> >                       continue;
+> >               }
+> >
+> > See, UDP_MIB_RCVBUFERRORS is increased when skb clone failed. From this
+> > point, ENOBUFS from __udp_enqueue_schedule_skb should be counted, too.
+> > It means that the buffer used by all of the UDP sock is to the limit, and
+> > it ought to be counted.
+> >
+> > Signed-off-by: Menglong Dong <menglong8.dong@gmail.com>
+> > ---
+> >  net/ipv4/udp.c | 4 +---
+> >  net/ipv6/udp.c | 4 +---
+> >  2 files changed, 2 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> > index 09f0a23d1a01..49a69d8d55b3 100644
+> > --- a/net/ipv4/udp.c
+> > +++ b/net/ipv4/udp.c
+> > @@ -2035,9 +2035,7 @@ static int __udp_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+> >               int is_udplite = IS_UDPLITE(sk);
+> >
+> >               /* Note that an ENOMEM error is charged twice */
+> > -             if (rc == -ENOMEM)
+> > -                     UDP_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS,
+> > -                                     is_udplite);
+> > +             UDP_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS, is_udplite);
+> >               UDP_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
+> >               kfree_skb(skb);
+> >               trace_udp_fail_queue_rcv_skb(rc, sk);
+> > diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+> > index 29d9691359b9..d5e23b150fd9 100644
+> > --- a/net/ipv6/udp.c
+> > +++ b/net/ipv6/udp.c
+> > @@ -634,9 +634,7 @@ static int __udpv6_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+> >               int is_udplite = IS_UDPLITE(sk);
+> >
+> >               /* Note that an ENOMEM error is charged twice */
+> > -             if (rc == -ENOMEM)
+> > -                     UDP6_INC_STATS(sock_net(sk),
+> > -                                      UDP_MIB_RCVBUFERRORS, is_udplite);
+> > +             UDP6_INC_STATS(sock_net(sk), UDP_MIB_RCVBUFERRORS, is_udplite);
+> >               UDP6_INC_STATS(sock_net(sk), UDP_MIB_INERRORS, is_udplite);
+> >               kfree_skb(skb);
+> >               return -1;
+>
+> The diffstat is nice, but I'm unsure we can do this kind of change
+> (well, I really think we should not do it): it will fool any kind of
+> existing users (application, scripts, admin) currently reading the
+> above counters and expecting UDP_MIB_RCVBUFERRORS being increased with
+> the existing schema.
+>
+> Cheers,
+>
+> Paolo
+>
 
- WARNING: CPU: 1 PID: 13524 at net/sched/cls_api.c:1488 tcf_block_unbind+0x2db/0x420
- Modules linked in: mlx5_ib mlx5_core mlxfw ptp pps_core act_mirred act_tunnel_key cls_flower vxlan ip6_udp_tunnel udp_tunnel dummy sch_ingress openvswitch nsh xt_conntrack xt_MASQUERADE nf_conntrack_netlink nfnetlink xt_addrtype iptable_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 br_netfilter rpcrdma rdma_ucm ib_iser libiscsi scsi_transport_iscsi ib_umad ib_ipoib rdma_cm iw_cm ib_cm ib_uverbs ib_core overlay [last unloaded: mlxfw]
- CPU: 1 PID: 13524 Comm: test-ecmp-add-v Tainted: G        W         5.9.0+ #1
- Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.13.0-0-gf21b5a4aeb02-prebuilt.qemu.org 04/01/2014
- RIP: 0010:tcf_block_unbind+0x2db/0x420
- Code: ff 48 83 c4 40 5b 5d 41 5c 41 5d 41 5e 41 5f c3 49 8d bc 24 30 01 00 00 be ff ff ff ff e8 7d 7f 70 00 85 c0 0f 85 7b fd ff ff <0f> 0b e9 74 fd ff ff 48 c7 c7 dc 6a 24 84 e8 02 ec fe fe e9 55 fd
- RSP: 0018:ffff888117d17968 EFLAGS: 00010246
- RAX: 0000000000000000 RBX: ffff88812f713c00 RCX: 1ffffffff0848d5b
- RDX: 0000000000000001 RSI: ffff88814fbc8130 RDI: ffff888107f2b878
- RBP: 1ffff11022fa2f3f R08: 0000000000000000 R09: ffffffff84115a87
- R10: fffffbfff0822b50 R11: ffff888107f2b898 R12: ffff88814fbc8000
- R13: ffff88812f713c10 R14: ffff888117d17a38 R15: ffff88814fbc80c0
- FS:  00007f6593d36740(0000) GS:ffff8882a4f00000(0000) knlGS:0000000000000000
- CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
- CR2: 00005607a00758f8 CR3: 0000000131aea006 CR4: 0000000000170ea0
- Call Trace:
-  tc_block_indr_cleanup+0x3e0/0x5a0
-  ? tcf_block_unbind+0x420/0x420
-  ? __mutex_unlock_slowpath+0xe7/0x610
-  flow_indr_dev_unregister+0x5e2/0x930
-  ? mlx5e_restore_tunnel+0xdf0/0xdf0 [mlx5_core]
-  ? mlx5e_restore_tunnel+0xdf0/0xdf0 [mlx5_core]
-  ? flow_indr_block_cb_alloc+0x3c0/0x3c0
-  ? mlx5_db_free+0x37c/0x4b0 [mlx5_core]
-  mlx5e_cleanup_rep_tx+0x8b/0xc0 [mlx5_core]
-  mlx5e_detach_netdev+0xe5/0x120 [mlx5_core]
-  mlx5e_vport_rep_unload+0x155/0x260 [mlx5_core]
-  esw_offloads_disable+0x227/0x2b0 [mlx5_core]
-  mlx5_eswitch_disable_locked.cold+0x38e/0x699 [mlx5_core]
-  mlx5_eswitch_disable+0x94/0xf0 [mlx5_core]
-  mlx5_device_disable_sriov+0x183/0x1f0 [mlx5_core]
-  mlx5_core_sriov_configure+0xfd/0x230 [mlx5_core]
-  sriov_numvfs_store+0x261/0x2f0
-  ? sriov_drivers_autoprobe_store+0x110/0x110
-  ? sysfs_file_ops+0x170/0x170
-  ? sysfs_file_ops+0x117/0x170
-  ? sysfs_file_ops+0x170/0x170
-  kernfs_fop_write+0x1ff/0x3f0
-  ? rcu_read_lock_any_held+0x6e/0x90
-  vfs_write+0x1f3/0x620
-  ksys_write+0xf9/0x1d0
-  ? __x64_sys_read+0xb0/0xb0
-  ? lockdep_hardirqs_on_prepare+0x273/0x3f0
-  ? syscall_enter_from_user_mode+0x1d/0x50
-  do_syscall_64+0x2d/0x40
-  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+Well, your words make sense, this change isn't friendly for the existing users.
+It really puzzled me when this ENOBUFS happened, no counters were done and
+I hardly figured out what happened.
 
-<...>
+So, is it a good idea to introduce a 'UDP_MIB_MEMERRORS'?
 
- ---[ end trace bfdd028ada702879 ]---
+Cheers,
 
-Fixes: 0fdcf78d5973 ("net: use flow_indr_dev_setup_offload()")
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
----
-v1:
- * Returned rtnl_lock()
-v0:
-https://lore.kernel.org/netdev/20201026060407.583080-1-leon@kernel.org
----
- net/sched/cls_api.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index faeabff283a2..838b3fd94d77 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -652,12 +652,12 @@ static void tc_block_indr_cleanup(struct flow_block_cb *block_cb)
- 			       block_cb->indr.binder_type,
- 			       &block->flow_block, tcf_block_shared(block),
- 			       &extack);
-+	rtnl_lock();
- 	down_write(&block->cb_lock);
- 	list_del(&block_cb->driver_list);
- 	list_move(&block_cb->list, &bo.cb_list);
--	up_write(&block->cb_lock);
--	rtnl_lock();
- 	tcf_block_unbind(block, &bo);
-+	up_write(&block->cb_lock);
- 	rtnl_unlock();
- }
-
---
-2.26.2
-
+Menglong Dong
