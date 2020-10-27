@@ -2,266 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54C2A29C0DE
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 18:20:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 201C229C354
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 18:46:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1818515AbgJ0RUx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 13:20:53 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:46598 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1818196AbgJ0RSH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 13:18:07 -0400
-Received: by mail-ot1-f66.google.com with SMTP id j21so1786693ota.13;
-        Tue, 27 Oct 2020 10:18:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7H+Lg0qir4fBM/+Ge4cbBHa1JZjzTa4EjScqkxv75EI=;
-        b=KzyV1rtFBY0FsDlMAcdbe1mlCFW2yUgg+t5Ggq0mdbbIAOs4NqSAZspO8AW009/Sf+
-         DCYedEujAbhwbvKdWYIzFJM7IN8EucnSNiwT9hkuYTRiC3mxADH90V+JWbdPvkO6O8gq
-         +wbkiVJ66G+/CX2ojuhgLaoLyeGP1d5Q5/t/vJ7Ae1mRNkCm9QtVLd3WlSdPaPSLU1Ah
-         feHRFfmFIk2nuFBuxXoCJdna8nfE3AUSE2ikQHM3GKScKU9lbWTWJqNwL1wT7JdN6E4z
-         bARsvNv+Zhn5WIgNrd5KYOom6emyQQ39seFr/zHq7wObI2z6kMqPuQrUuGuGv6yw24yr
-         TrzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7H+Lg0qir4fBM/+Ge4cbBHa1JZjzTa4EjScqkxv75EI=;
-        b=PEo6r5dCFxyV9ChE1RpRzK8cMqKSblpPiz8ZBnOhSEoV3RTo3+8RRFtiHSy2DCga3q
-         AzfWuPwI3SCIbDQ/kzlE5mDHNCdH7dUB1c4PFwjczOeSCWUjDu7PbS/gGxuwXYdJT6DS
-         DofLHn/+oPs1jXF6x2k0B/XiHz70ie8Hu+SdtUPEz2uVpQ54WwMRc/1znQl9qG7N+g0r
-         ohHWEhcutImFvgO4DBZ1sYntJwbu30aUu4iO6TmRJ+Ezvfks7wFPBZNdM3Qf63agIt2Y
-         /B38VTfS6HJqJi+1D4SO2QDd2CiBodWZKlcW39Vw3nGp6G3eZPW3mgUBewxgDQ/olHB0
-         wdbg==
-X-Gm-Message-State: AOAM530kaB/M6FmLb4Zkph2POg/WzVqCYuPI4+bdAiItHjiWX/q2RUKE
-        jNB0smvh+yaYCnHf9pBQaxh8Eg+oVHENO7vhu34=
-X-Google-Smtp-Source: ABdhPJwzWyVfYKukORY4wKtLu0o3+DLLOeIXp59ba2ugDU+wHNUy1vC9oR1e5a7sL4gNc54GOjUkySZjCY5HbpGJIkI=
-X-Received: by 2002:a05:6830:134c:: with SMTP id r12mr2138684otq.240.1603819085680;
- Tue, 27 Oct 2020 10:18:05 -0700 (PDT)
+        id S1760015AbgJ0Oaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 10:30:52 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:47278 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1759197AbgJ0O2S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 10:28:18 -0400
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1603808897;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WHVWY8Pt2cBEbxM1Jxi63g2Hj3JS0/EEW2zyuVGEPSs=;
+        b=2GQa6Ul8aOkAo3AXsA0aVITxroDZkL4AtCNdgNI3SDHsv3F+SU+7ED8PqGdbAeRfy0O4TB
+        icKZgLCvuhTR1kJhp3uq+KN+rs4RZzZQK7odWgDfiXaSUfApcsaWUkjSb7TZbo1M0cF8Ys
+        Ilcw/2OVZ4JEar/I/4TgEHp0ss+xXlb5kZcx2dZtVHI3WmN9kpwf10tXqdk4+lTtprnWUL
+        rIX41oWtJ5VehAeaG/J+tjCqxsEdrZIip7AsZUAUd8upg+lfYoD61K8xt1A4hEOq0c51ET
+        IqQ2a0jkuDj9QRkf8VK5YQABRVEB4rlGLAk8h9l8jbR5vJXlX+tBNT9AgUzSLw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1603808897;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WHVWY8Pt2cBEbxM1Jxi63g2Hj3JS0/EEW2zyuVGEPSs=;
+        b=iI4zzfmXqaQk8wTIlKzcoy2w3B7FkOtnUj2WNnQBCUCsHicUw1/TWMW/wUuiUSu0omFieQ
+        T9rGsHQGnc8YCiBQ==
+To:     Jacob Keller <jacob.e.keller@intel.com>,
+        Nitesh Narayan Lal <nitesh@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>
+Cc:     Peter Zijlstra <peterz@infradead.org>, helgaas@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        frederic@kernel.org, sassmann@redhat.com,
+        jesse.brandeburg@intel.com, lihong.yang@intel.com,
+        jeffrey.t.kirsher@intel.com, jlelli@redhat.com, hch@infradead.org,
+        bhelgaas@google.com, mike.marciniszyn@intel.com,
+        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
+        jiri@nvidia.com, mingo@redhat.com, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, lgoncalv@redhat.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to housekeeping CPUs
+In-Reply-To: <586e249a-1078-9fe9-22d4-b3c1ec0a3a5e@intel.com>
+References: <20201019111137.GL2628@hirez.programming.kicks-ass.net> <20201019140005.GB17287@fuller.cnet> <20201020073055.GY2611@hirez.programming.kicks-ass.net> <078e659e-d151-5bc2-a7dd-fe0070267cb3@redhat.com> <20201020134128.GT2628@hirez.programming.kicks-ass.net> <6736e643-d4ae-9919-9ae1-a73d5f31463e@redhat.com> <260f4191-5b9f-6dc1-9f11-085533ac4f55@redhat.com> <20201023085826.GP2611@hirez.programming.kicks-ass.net> <9ee77056-ef02-8696-5b96-46007e35ab00@redhat.com> <87ft6464jf.fsf@nanos.tec.linutronix.de> <20201026173012.GA377978@fuller.cnet> <875z6w4xt4.fsf@nanos.tec.linutronix.de> <86f8f667-bda6-59c4-91b7-6ba2ef55e3db@intel.com> <87v9ew3fzd.fsf@nanos.tec.linutronix.de> <85b5f53e-5be2-beea-269a-f70029bea298@intel.com> <87lffs3bd6.fsf@nanos.tec.linutronix.de> <959997ee-f393-bab0-45c0-4144c37b9185@redhat.com> <875z6w38n4.fsf@nanos.tec.linutronix.de> <586e249a-1078-9fe9-22d4-b3c1ec0a3a5e@intel.com>
+Date:   Tue, 27 Oct 2020 15:28:16 +0100
+Message-ID: <87mu07216n.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-References: <20200929080324.632523-1-tientzu@chromium.org> <CALiNf28k5C48_ivAeRW7sSEEXp0gd-h_1n03YH6jQhYhaCXUDA@mail.gmail.com>
- <CALWDO_UqPS2eETieKHN_enJ-x+6C0Y8C7A0Jjg=a+L=of7Fz1w@mail.gmail.com>
-In-Reply-To: <CALWDO_UqPS2eETieKHN_enJ-x+6C0Y8C7A0Jjg=a+L=of7Fz1w@mail.gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Tue, 27 Oct 2020 10:17:54 -0700
-Message-ID: <CABBYNZJd2hGhNreNWwVzghHsjycGo+a9h5s5cOY+dJx3pNJ-0A@mail.gmail.com>
-Subject: Re: [PATCH v2] Bluetooth: Move force_bredr_smp debugfs into hci_debugfs_create_bredr
-To:     Alain Michaud <alainmichaud@google.com>
-Cc:     Claire Chang <tientzu@chromium.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        BlueZ <linux-bluetooth@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 27, 2020 at 10:12 AM Alain Michaud <alainmichaud@google.com> wrote:
+On Mon, Oct 26 2020 at 16:08, Jacob Keller wrote:
+> On 10/26/2020 3:49 PM, Thomas Gleixner wrote:
+>> On Mon, Oct 26 2020 at 18:22, Nitesh Narayan Lal wrote:
+>>> I don't think there is currently a way to control the enablement/disablement of
+>>> interrupts from the userspace.
+>> 
+>> You cannot just disable the interrupt. You need to make sure that the
+>> associated queue is shutdown or quiesced _before_ the interrupt is shut
+>> down.
 >
-> Friendly ping and adding my review-by tag.
->
->
-> On Wed, Oct 7, 2020 at 12:38 AM Claire Chang <tientzu@chromium.org> wrote:
-> >
-> > Hi,
-> >
-> > This patch is to fix the kernel error
-> > [   46.271811] debugfs: File 'force_bredr_smp' in directory 'hci0'
-> > already present!
-> >
-> > When powering off and on the bluetooth, the smp_register will try to create the
-> > force_bredr_smp entry again.
-> > Move the creation to hci_debugfs_create_bredr so the force_bredr_smp entry will
-> > only be created when HCI_SETUP and HCI_CONFIG are not set.
-> >
-> > Thanks,
-> > Claire
-> >
-> > On Tue, Sep 29, 2020 at 4:03 PM Claire Chang <tientzu@chromium.org> wrote:
-> > >
-> > > Avoid multiple attempts to create the debugfs entry, force_bredr_smp,
-> > > by moving it from the SMP registration to the BR/EDR controller init
-> > > section. hci_debugfs_create_bredr is only called when HCI_SETUP and
-> > > HCI_CONFIG is not set.
-> > >
-> > > Signed-off-by: Claire Chang <tientzu@chromium.org>
-> Reviewed-by: Alain Michaud <alainm@chromium.org>
+> Could this be handled with a callback to the driver/hw? I know Intel HW
+> should support this type of quiesce/shutdown.
 
-Reviewed-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+We can't have a callback from the interrupt shutdown code as you have to
+wait for the queue to drain packets in flight. Something like this
 
-> > > ---
-> > > v2: correct a typo in commit message
-> > >
-> > >  net/bluetooth/hci_debugfs.c | 50 +++++++++++++++++++++++++++++++++++++
-> > >  net/bluetooth/smp.c         | 44 ++------------------------------
-> > >  net/bluetooth/smp.h         |  2 ++
-> > >  3 files changed, 54 insertions(+), 42 deletions(-)
-> > >
-> > > diff --git a/net/bluetooth/hci_debugfs.c b/net/bluetooth/hci_debugfs.c
-> > > index 5e8af2658e44..4626e0289a97 100644
-> > > --- a/net/bluetooth/hci_debugfs.c
-> > > +++ b/net/bluetooth/hci_debugfs.c
-> > > @@ -494,6 +494,45 @@ static int auto_accept_delay_get(void *data, u64 *val)
-> > >  DEFINE_SIMPLE_ATTRIBUTE(auto_accept_delay_fops, auto_accept_delay_get,
-> > >                         auto_accept_delay_set, "%llu\n");
-> > >
-> > > +static ssize_t force_bredr_smp_read(struct file *file,
-> > > +                                   char __user *user_buf,
-> > > +                                   size_t count, loff_t *ppos)
-> > > +{
-> > > +       struct hci_dev *hdev = file->private_data;
-> > > +       char buf[3];
-> > > +
-> > > +       buf[0] = hci_dev_test_flag(hdev, HCI_FORCE_BREDR_SMP) ? 'Y' : 'N';
-> > > +       buf[1] = '\n';
-> > > +       buf[2] = '\0';
-> > > +       return simple_read_from_buffer(user_buf, count, ppos, buf, 2);
-> > > +}
-> > > +
-> > > +static ssize_t force_bredr_smp_write(struct file *file,
-> > > +                                    const char __user *user_buf,
-> > > +                                    size_t count, loff_t *ppos)
-> > > +{
-> > > +       struct hci_dev *hdev = file->private_data;
-> > > +       bool enable;
-> > > +       int err;
-> > > +
-> > > +       err = kstrtobool_from_user(user_buf, count, &enable);
-> > > +       if (err)
-> > > +               return err;
-> > > +
-> > > +       err = smp_force_bredr(hdev, enable);
-> > > +       if (err)
-> > > +               return err;
-> > > +
-> > > +       return count;
-> > > +}
-> > > +
-> > > +static const struct file_operations force_bredr_smp_fops = {
-> > > +       .open           = simple_open,
-> > > +       .read           = force_bredr_smp_read,
-> > > +       .write          = force_bredr_smp_write,
-> > > +       .llseek         = default_llseek,
-> > > +};
-> > > +
-> > >  static int idle_timeout_set(void *data, u64 val)
-> > >  {
-> > >         struct hci_dev *hdev = data;
-> > > @@ -589,6 +628,17 @@ void hci_debugfs_create_bredr(struct hci_dev *hdev)
-> > >         debugfs_create_file("voice_setting", 0444, hdev->debugfs, hdev,
-> > >                             &voice_setting_fops);
-> > >
-> > > +       /* If the controller does not support BR/EDR Secure Connections
-> > > +        * feature, then the BR/EDR SMP channel shall not be present.
-> > > +        *
-> > > +        * To test this with Bluetooth 4.0 controllers, create a debugfs
-> > > +        * switch that allows forcing BR/EDR SMP support and accepting
-> > > +        * cross-transport pairing on non-AES encrypted connections.
-> > > +        */
-> > > +       if (!lmp_sc_capable(hdev))
-> > > +               debugfs_create_file("force_bredr_smp", 0644, hdev->debugfs,
-> > > +                                   hdev, &force_bredr_smp_fops);
-> > > +
-> > >         if (lmp_ssp_capable(hdev)) {
-> > >                 debugfs_create_file("ssp_debug_mode", 0444, hdev->debugfs,
-> > >                                     hdev, &ssp_debug_mode_fops);
-> > > diff --git a/net/bluetooth/smp.c b/net/bluetooth/smp.c
-> > > index 433227f96c73..8b817e4358fd 100644
-> > > --- a/net/bluetooth/smp.c
-> > > +++ b/net/bluetooth/smp.c
-> > > @@ -3353,31 +3353,8 @@ static void smp_del_chan(struct l2cap_chan *chan)
-> > >         l2cap_chan_put(chan);
-> > >  }
-> > >
-> > > -static ssize_t force_bredr_smp_read(struct file *file,
-> > > -                                   char __user *user_buf,
-> > > -                                   size_t count, loff_t *ppos)
-> > > +int smp_force_bredr(struct hci_dev *hdev, bool enable)
-> > >  {
-> > > -       struct hci_dev *hdev = file->private_data;
-> > > -       char buf[3];
-> > > -
-> > > -       buf[0] = hci_dev_test_flag(hdev, HCI_FORCE_BREDR_SMP) ? 'Y': 'N';
-> > > -       buf[1] = '\n';
-> > > -       buf[2] = '\0';
-> > > -       return simple_read_from_buffer(user_buf, count, ppos, buf, 2);
-> > > -}
-> > > -
-> > > -static ssize_t force_bredr_smp_write(struct file *file,
-> > > -                                    const char __user *user_buf,
-> > > -                                    size_t count, loff_t *ppos)
-> > > -{
-> > > -       struct hci_dev *hdev = file->private_data;
-> > > -       bool enable;
-> > > -       int err;
-> > > -
-> > > -       err = kstrtobool_from_user(user_buf, count, &enable);
-> > > -       if (err)
-> > > -               return err;
-> > > -
-> > >         if (enable == hci_dev_test_flag(hdev, HCI_FORCE_BREDR_SMP))
-> > >                 return -EALREADY;
-> > >
-> > > @@ -3399,16 +3376,9 @@ static ssize_t force_bredr_smp_write(struct file *file,
-> > >
-> > >         hci_dev_change_flag(hdev, HCI_FORCE_BREDR_SMP);
-> > >
-> > > -       return count;
-> > > +       return 0;
-> > >  }
-> > >
-> > > -static const struct file_operations force_bredr_smp_fops = {
-> > > -       .open           = simple_open,
-> > > -       .read           = force_bredr_smp_read,
-> > > -       .write          = force_bredr_smp_write,
-> > > -       .llseek         = default_llseek,
-> > > -};
-> > > -
-> > >  int smp_register(struct hci_dev *hdev)
-> > >  {
-> > >         struct l2cap_chan *chan;
-> > > @@ -3433,17 +3403,7 @@ int smp_register(struct hci_dev *hdev)
-> > >
-> > >         hdev->smp_data = chan;
-> > >
-> > > -       /* If the controller does not support BR/EDR Secure Connections
-> > > -        * feature, then the BR/EDR SMP channel shall not be present.
-> > > -        *
-> > > -        * To test this with Bluetooth 4.0 controllers, create a debugfs
-> > > -        * switch that allows forcing BR/EDR SMP support and accepting
-> > > -        * cross-transport pairing on non-AES encrypted connections.
-> > > -        */
-> > >         if (!lmp_sc_capable(hdev)) {
-> > > -               debugfs_create_file("force_bredr_smp", 0644, hdev->debugfs,
-> > > -                                   hdev, &force_bredr_smp_fops);
-> > > -
-> > >                 /* Flag can be already set here (due to power toggle) */
-> > >                 if (!hci_dev_test_flag(hdev, HCI_FORCE_BREDR_SMP))
-> > >                         return 0;
-> > > diff --git a/net/bluetooth/smp.h b/net/bluetooth/smp.h
-> > > index 121edadd5f8d..fc35a8bf358e 100644
-> > > --- a/net/bluetooth/smp.h
-> > > +++ b/net/bluetooth/smp.h
-> > > @@ -193,6 +193,8 @@ bool smp_irk_matches(struct hci_dev *hdev, const u8 irk[16],
-> > >  int smp_generate_rpa(struct hci_dev *hdev, const u8 irk[16], bdaddr_t *rpa);
-> > >  int smp_generate_oob(struct hci_dev *hdev, u8 hash[16], u8 rand[16]);
-> > >
-> > > +int smp_force_bredr(struct hci_dev *hdev, bool enable);
-> > > +
-> > >  int smp_register(struct hci_dev *hdev);
-> > >  void smp_unregister(struct hci_dev *hdev);
-> > >
-> > > --
-> > > 2.28.0.618.gf4bc123cb7-goog
-> > >
+     mark queue as going down (no more tx queueing)
+     tell hardware not to route RX packets to it
+     consume pending RX
+     wait for already queued TX packets to be sent
+
+Look what the block people did. They have a common multi-instance
+hotplug state and they register each context (queue) as an instance. The
+hotplug core invokes the corresponding callbacks when bringing a CPU up
+or when shutting it down.
+
+Thanks,
+
+        tglx
 
 
-
--- 
-Luiz Augusto von Dentz
