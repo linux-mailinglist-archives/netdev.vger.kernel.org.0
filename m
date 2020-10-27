@@ -2,110 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3437A29A770
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 10:11:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E35F729A791
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 10:17:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2895457AbgJ0JLY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 05:11:24 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:36186 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2895450AbgJ0JLY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 05:11:24 -0400
-Received: by mail-ed1-f65.google.com with SMTP id l16so641945eds.3
-        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 02:11:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9zQJghU+9XUe8RROu4DdeVFUv0UO4wHjGG2YFOVdDgg=;
-        b=J1K3lRL9DLfipbjM5sbnXBs6qnV9LOUwZ7PMbj2P+YwoY+w+Ub3ulnnCusAkL57zH8
-         khKdTt7TETkW04yliSq0bVvBlKGVcuuaAN4Ol0boT4KqUhwCE4qFvd4LzOAdn/CSTXYM
-         FtVpa8XzBxsI7ZjeWOrS4L5PfNkbVqItlkRyeKOj58aB+u8vjzkeY/jB1h775BM5ohse
-         O2bBmsTOLVQQKIRcGJCh3tHsHSuIPOtKtsy9td48xDBIJw9nYRmKYytthG4yCYYKHr2B
-         u0Fvu4YePQZTS5vEnMnnELQ8pQZB96bdRqSQ0snpK/x5RFX7CRooAj2CxfOmwf1A/DJY
-         lg/Q==
+        id S2437162AbgJ0JRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 05:17:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53212 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732117AbgJ0JRL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 05:17:11 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603790230;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2couyPS9oU8nqon9qRpsj1IaLZzKbO0wg6RKQog+8FE=;
+        b=gSgMIfrCjjqIcH1JbNWe9py0YG/2TPSHd6eKlakQoG8/sJr96UDTiZEGSsUzEAW+3I9X45
+        n7lykw6xrcKpnkzcqBz/G5zWTUZV0xKPGj4YkG4sO4yKEFSoUYXPghrOaUiEvKNbSfbmqk
+        BPW+PsWdc5u5hELUA0RCmkVIwGWODmQ=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-209-3xaNkHfGMqWRq_n0E6ZaRw-1; Tue, 27 Oct 2020 05:17:08 -0400
+X-MC-Unique: 3xaNkHfGMqWRq_n0E6ZaRw-1
+Received: by mail-wr1-f69.google.com with SMTP id v5so516675wrr.0
+        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 02:17:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=9zQJghU+9XUe8RROu4DdeVFUv0UO4wHjGG2YFOVdDgg=;
-        b=e4PJrFN+sHGHQsz5GRRneE+Ao0TycEc3Cy7+wm8IyApbRNq8yLyay8pUz3mZJg8Jf5
-         +/UK/nUeL7DtI3aTK0nmTYsGB6zmVYOPRcq7398meMMx4djVsQRQOYTeqMpw/9NII/6k
-         8Td31biIwmafr45qHlSNQOSwSEJ6Z71W8V/1G7xtY3BldKzxfAczWQ2Yl7Bg3HJAjGg7
-         cf1s691OATnKX3XVqUHJiCGa9l+DRXYXBc9scHWPe7akntvxGUj8gwWLo+N/7y7XHAI1
-         1nmIsu3eBkmZ14kgX1EB+v4gkNHh7JZNgMzqu8cRgofyHZ6lSM9C9DHNZv291WBV90E4
-         8W6w==
-X-Gm-Message-State: AOAM530EFHU8yC4oLedFPkQ/YEzFyMYAneRnNu4E5oHdlGy3Ks66lTFe
-        oMajL/+UNbEZhzf85ROpVhE=
-X-Google-Smtp-Source: ABdhPJwUbdrsbCVGPhvVbcHebc8vhAV3alIj/oP39anBnbMCRQclD2D5/g7NZVyI4+HypKv9GtlKJg==
-X-Received: by 2002:a05:6402:1d2c:: with SMTP id dh12mr1138841edb.256.1603789880948;
-        Tue, 27 Oct 2020 02:11:20 -0700 (PDT)
-Received: from tycho (ipbcc01043.dynamic.kabel-deutschland.de. [188.192.16.67])
-        by smtp.gmail.com with ESMTPSA id h26sm528084edr.71.2020.10.27.02.11.20
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=2couyPS9oU8nqon9qRpsj1IaLZzKbO0wg6RKQog+8FE=;
+        b=iR1baGhZ+bwM+DA1X38mL/sENxuKYeu6PyhQT5vCsYSr2IqF8a/8HIJ8Ud8NnCxwc+
+         Wwvim1nJL4X5V1qkOlUJSNaJUgJHNKYy4USR7WV/Us2VfKhji+jNqfQpULGmYCr0i+zP
+         WyKobtvLdvdujUyw6an10n32MaeWtSdGAE6yEhw/MkoHdFkutELaPzcITfyTdSF3PacN
+         mygXkf1qDLtTBrsq2/U2jFpCWj19e3sFltuMQuobcEzAZgfHqZqlWzGDSol5L1BXct/v
+         wN2DbcBvf6aDTvkhoOqZbajQiDrH2gMPFmU+8hgkgmW//WEeCsWBSnxiGg+lZS6H7YN+
+         cq5Q==
+X-Gm-Message-State: AOAM532Sn7gWUip05Z7GpsZUAYwp+5EnsitoyrS/WrW7cGHVbWWOjkYf
+        aEa+60SgLfkjSNo/LKEdplCECEXtvC/HQj8ONrFwbk5fZA7KGcQSVrkvuDWah6V+hyu+JHqCta4
+        8Yydbp06WFFGU9eFI
+X-Received: by 2002:a1c:4d13:: with SMTP id o19mr1709687wmh.185.1603790227289;
+        Tue, 27 Oct 2020 02:17:07 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxOw3Fses5vfPNkX+6A+Vrc5l4MfHYL1vm4mt1FXcRuczReog+9IDOi94XyxRsLvwlXundZ/g==
+X-Received: by 2002:a1c:4d13:: with SMTP id o19mr1709663wmh.185.1603790227042;
+        Tue, 27 Oct 2020 02:17:07 -0700 (PDT)
+Received: from steredhat (host-79-17-248-215.retail.telecomitalia.it. [79.17.248.215])
+        by smtp.gmail.com with ESMTPSA id e25sm1151755wra.71.2020.10.27.02.17.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Oct 2020 02:11:20 -0700 (PDT)
-Sender: Zahari Doychev <zahari.doychev@googlemail.com>
-Date:   Tue, 27 Oct 2020 10:11:16 +0100
-From:   Zahari Doychev <zahari.doychev@linux.com>
-To:     Simon Horman <simon.horman@netronome.com>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        jhs@mojatatu.com
-Subject: Re: [iproute2-next] tc flower: use right ethertype in icmp/arp
- parsing
-Message-ID: <20201027091116.6mteci6gs3urx4st@tycho>
-References: <20201019114708.1050421-1-zahari.doychev@linux.com>
- <bd0eb394-72a3-1c95-6736-cd47a1d69585@gmail.com>
- <20201026084824.GA29950@netronome.com>
+        Tue, 27 Oct 2020 02:17:06 -0700 (PDT)
+Date:   Tue, 27 Oct 2020 10:17:04 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2][V2] vsock: remove ratelimit unknown ioctl message
+Message-ID: <20201027091704.eovesxm3h5f5mi4j@steredhat>
+References: <20201027090942.14916-1-colin.king@canonical.com>
+ <20201027090942.14916-2-colin.king@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20201026084824.GA29950@netronome.com>
+In-Reply-To: <20201027090942.14916-2-colin.king@canonical.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 26, 2020 at 09:48:24AM +0100, Simon Horman wrote:
-> On Sun, Oct 25, 2020 at 03:18:48PM -0600, David Ahern wrote:
-> > On 10/19/20 5:47 AM, Zahari Doychev wrote:
-> > > Currently the icmp and arp prsing functions are called with inccorect
-> > > ethtype in case of vlan or cvlan filter options. In this case either
-> > > cvlan_ethtype or vlan_ethtype has to be used.
-> > > 
-> > > Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
-> > > ---
-> > >  tc/f_flower.c | 43 ++++++++++++++++++++++++++-----------------
-> > >  1 file changed, 26 insertions(+), 17 deletions(-)
-> > > 
-> > > diff --git a/tc/f_flower.c b/tc/f_flower.c
-> > > index 00c919fd..dd9f3446 100644
-> > > --- a/tc/f_flower.c
-> > > +++ b/tc/f_flower.c
-> > > @@ -1712,7 +1712,10 @@ static int flower_parse_opt(struct filter_util *qu, char *handle,
-> > >  			}
-> > >  		} else if (matches(*argv, "type") == 0) {
-> > >  			NEXT_ARG();
-> > > -			ret = flower_parse_icmp(*argv, eth_type, ip_proto,
-> > > +			ret = flower_parse_icmp(*argv, cvlan_ethtype ?
-> > > +						cvlan_ethtype : vlan_ethtype ?
-> > > +						vlan_ethtype : eth_type,
-> > > +						ip_proto,
-> > 
-> > looks correct to me, but would like confirmation of the intent from Simon.
-> 
-> Thanks, this appears to be correct to me as ultimately
-> the code wants to operate on ETH_P_IP or ETH_P_IPV6 rather
-> than a VLAN Ether type.
-> 
-> > Also, I am not a fan of the readability of that coding style. Rather
-> > than repeat that expression multiple times, make a short helper to
-> > return the relevant eth type and use a temp variable for it. You should
-> > also comment that relevant eth type changes as arguments are parsed.
+On Tue, Oct 27, 2020 at 09:09:41AM +0000, Colin King wrote:
+>From: Colin Ian King <colin.king@canonical.com>
+>
+>When exercising the kernel with stress-ng with some ioctl tests the
+>"Unknown ioctl" error message is spamming the kernel log at a high
+>rate. Remove this message.
+>
+>Signed-off-by: Colin Ian King <colin.king@canonical.com>
+>---
+> net/vmw_vsock/af_vsock.c | 1 -
+> 1 file changed, 1 deletion(-)
 
-I will add the helper and resend.
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-Thanks Zahari
+>
+>diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>index 9e93bc201cc0..865331b809e4 100644
+>--- a/net/vmw_vsock/af_vsock.c
+>+++ b/net/vmw_vsock/af_vsock.c
+>@@ -2072,7 +2072,6 @@ static long vsock_dev_do_ioctl(struct file *filp,
+> 		break;
+>
+> 	default:
+>-		pr_err("Unknown ioctl %d\n", cmd);
+> 		retval = -EINVAL;
+> 	}
+>
+>-- 
+>2.27.0
+>
 
-> > 
-> > Thanks,
-> > 
-> > 
