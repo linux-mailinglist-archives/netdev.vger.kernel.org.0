@@ -2,90 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0DB429C51E
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 19:08:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C98D29C500
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 19:08:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1824209AbgJ0SEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 14:04:09 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:57676 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756932AbgJ0OSk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 10:18:40 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09REFYLh152692;
-        Tue, 27 Oct 2020 14:18:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=nI3m8Y8OcNr/GVLvzRaUSo3wS/gzjtSUTYSe1wHMf7I=;
- b=FiY6WeDkT1tv1bqtXDMVPDMn/ZfLQafK5QYzCeaSQEjmjVkjoWPvrtzF+u0R5wemHtYc
- /tqFB650oaiDzjAbPhkeNM5u68OvWKV7nzwTjWuflPLTPNvwe3FcjxNe13JVtHWwYx3q
- AjwjNmDdk6IDarj64ypIgDzyWUAa8VeW9YqwZsqGjBOdQmV/Qw37YEFQ5LqYZ7jxmEmq
- 12R2FVYR3ewbtgDSegc+geLz7MF+IF4XJs1OOh6ipXV0bflV5nHTJZyFJb9Et5f2Ox7n
- 0xoSoQPtX96MuDpsf+XqqjIiKnhdmKPeR32sASuG9g5qUs5PzWp4NrGzYv3X4gHPvPEH rA== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by aserp2120.oracle.com with ESMTP id 34cc7kt7rq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 27 Oct 2020 14:18:39 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09REG2Dc089358;
-        Tue, 27 Oct 2020 14:18:38 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3020.oracle.com with ESMTP id 34cx5x66pu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 27 Oct 2020 14:18:38 +0000
-Received: from abhmp0014.oracle.com (abhmp0014.oracle.com [141.146.116.20])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 09REIb8x025107;
-        Tue, 27 Oct 2020 14:18:37 GMT
-Received: from [10.159.235.220] (/10.159.235.220)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 27 Oct 2020 07:18:37 -0700
-Subject: Re: [PATCH 0/2] rds: MR(Memory Region) related patches
-To:     santosh.shilimkar@oracle.com
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rama.nichanamatlu@oracle.com
-References: <1603144088-8769-1-git-send-email-manjunath.b.patil@oracle.com>
-From:   Manjunath Patil <manjunath.b.patil@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <dab2480c-64d9-0238-7737-eb0b2738922e@oracle.com>
-Date:   Tue, 27 Oct 2020 07:18:36 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        id S1824040AbgJ0SCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 14:02:00 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:36583 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1823727AbgJ0SA7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 14:00:59 -0400
+Received: by mail-io1-f68.google.com with SMTP id u19so2533427ion.3
+        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 11:00:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ed3AIF7qFllVghkuMSpgY+e4IbkAvQfdceeKpQaUdxk=;
+        b=UoiZn2ejgC7wXGBMzC5P1HZYY0nl6Wa3KE0/4S9Ciuieo7WYMXpDS0Iaqpc4XiAPdO
+         qMSPbldaS4qotDJxt10RTbnG9MLtwWkVWivTQZrOtp1ibfKEiirPfM/hcYKscWcE5G9+
+         hdA0OqGIyHCG+6wpH2Tcj5TcpWPTkljgGKnbGOzRrgHXz7X+jipA9gLH6g8zN/Jx0l4s
+         /OKkLzKstGxFD2CYIuU1B33wI1K0Ml8+qKW5x8c0LoZzpt+1zSKoX87G79JYtOSZ/rG6
+         gJ+d5QJ1DFf7m/UdqRG6MK7XEwKpEIVQ7cBBbC41y7jJlAMtCPK8jhzSkqrf6tO37h92
+         JCSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ed3AIF7qFllVghkuMSpgY+e4IbkAvQfdceeKpQaUdxk=;
+        b=NrZEIipYZkMx9BKnxXgapJ58dfEoNVpOWHnMOLkTFja2MT+wvmEcCEiv8q1DYR9lFI
+         HRhkxjZga6Tb3PQqmqBnIxprrgcaqzALbf3vEhl9nvtdutx2/a+sAKmXxbfITWJUn60U
+         Y6vKcdIp6qLwMtCkY6Eta4xNb12yCmWSR8qXAJsxAWa4zIormj+EvqOL6wqYFG0nfyPC
+         h2OXA9R5gpvJeCogAxGWl1Bf+lsrpuQxzgbGZAdTRWq1rChw5NY+8BcvdOiC7/ezIGHM
+         EqMJ4NMCjNUd0u+ALLirYYTiZ2h7JdflrC7slIDe0sJCcsLiretLr1dnUvCVhstbm+sB
+         MhFw==
+X-Gm-Message-State: AOAM5339iAhMEAJAXIr5NBrL0/2CAnFcYj9hsMG0Sz+ZLQIJLbcaNkd5
+        gk7eYuXZEGK+oEIt6gMnhsh0+qOUcDlrqnNuExq9rA==
+X-Google-Smtp-Source: ABdhPJwN08N0ZyzhoITVdnvB4ryeaKood+3vq0iIUYgCE2JJfuXumCj2bIDB2qD60OdiaWwDhRbGH3iAIo+DCc+ziro=
+X-Received: by 2002:a6b:f401:: with SMTP id i1mr3323522iog.130.1603821657825;
+ Tue, 27 Oct 2020 11:00:57 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1603144088-8769-1-git-send-email-manjunath.b.patil@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9786 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxscore=0 mlxlogscore=999
- suspectscore=1 bulkscore=0 malwarescore=0 spamscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2010270090
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9786 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 adultscore=0
- malwarescore=0 spamscore=0 clxscore=1015 mlxscore=0 suspectscore=1
- priorityscore=1501 impostorscore=0 bulkscore=0 phishscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010270090
+References: <20201027121725.24660-1-brgl@bgdev.pl> <20201027121725.24660-4-brgl@bgdev.pl>
+ <20201027112607-mutt-send-email-mst@kernel.org> <685d850347a1191bba8ba7766fc409b140d18f03.camel@perches.com>
+ <CAMpxmJU0C84DjPmqmWvPgv0zwgGLhkpKLRDuKkZHAa=wi+LvBA@mail.gmail.com> <2767969b94fd66db1fb0fc13b5783ae65b7deb2f.camel@perches.com>
+In-Reply-To: <2767969b94fd66db1fb0fc13b5783ae65b7deb2f.camel@perches.com>
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+Date:   Tue, 27 Oct 2020 19:00:46 +0100
+Message-ID: <CAMRc=McvW_E0aE2Ep=3aZvb=kNDMz6=ZH-EQzARAD-tyJG5Rrg@mail.gmail.com>
+Subject: Re: [PATCH 3/8] vhost: vringh: use krealloc_array()
+To:     Joe Perches <joe@perches.com>
+Cc:     Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Gustavo Padovan <gustavo@padovan.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jason Wang <jasowang@redhat.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        linux-media <linux-media@vger.kernel.org>,
+        linux-drm <dri-devel@lists.freedesktop.org>,
+        linaro-mm-sig@lists.linaro.org,
+        LKML <linux-kernel@vger.kernel.org>, linux-edac@vger.kernel.org,
+        linux-gpio <linux-gpio@vger.kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        netdev <netdev@vger.kernel.org>, linux-mm@kvack.org,
+        Linux-ALSA <alsa-devel@alsa-project.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ping!
+On Tue, Oct 27, 2020 at 6:08 PM Joe Perches <joe@perches.com> wrote:
+>
+> On Tue, 2020-10-27 at 17:58 +0100, Bartosz Golaszewski wrote:
+> > On Tue, Oct 27, 2020 at 5:50 PM Joe Perches <joe@perches.com> wrote:
+> > >
+> > > On Tue, 2020-10-27 at 11:28 -0400, Michael S. Tsirkin wrote:
+> > > > On Tue, Oct 27, 2020 at 01:17:20PM +0100, Bartosz Golaszewski wrote:
+> > > > > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> > > > >
+> > > > > Use the helper that checks for overflows internally instead of manually
+> > > > > calculating the size of the new array.
+> > > > >
+> > > > > Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> > > >
+> > > > No problem with the patch, it does introduce some symmetry in the code.
+> > >
+> > > Perhaps more symmetry by using kmemdup
+> > > ---
+> > >  drivers/vhost/vringh.c | 23 ++++++++++-------------
+> > >  1 file changed, 10 insertions(+), 13 deletions(-)
+> > >
+> > > diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+> > > index 8bd8b403f087..99222a3651cd 100644
+> > > --- a/drivers/vhost/vringh.c
+> > > +++ b/drivers/vhost/vringh.c
+> > > @@ -191,26 +191,23 @@ static int move_to_indirect(const struct vringh *vrh,
+> > >  static int resize_iovec(struct vringh_kiov *iov, gfp_t gfp)
+> > >  {
+> > >         struct kvec *new;
+> > > -       unsigned int flag, new_num = (iov->max_num & ~VRINGH_IOV_ALLOCATED) * 2;
+> > > +       size_t new_num = (iov->max_num & ~VRINGH_IOV_ALLOCATED) * 2;
+> > > +       size_t size;
+> > >
+> > >         if (new_num < 8)
+> > >                 new_num = 8;
+> > >
+> > > -       flag = (iov->max_num & VRINGH_IOV_ALLOCATED);
+> > > -       if (flag)
+> > > -               new = krealloc(iov->iov, new_num * sizeof(struct iovec), gfp);
+> > > -       else {
+> > > -               new = kmalloc_array(new_num, sizeof(struct iovec), gfp);
+> > > -               if (new) {
+> > > -                       memcpy(new, iov->iov,
+> > > -                              iov->max_num * sizeof(struct iovec));
+> > > -                       flag = VRINGH_IOV_ALLOCATED;
+> > > -               }
+> > > -       }
+> > > +       if (unlikely(check_mul_overflow(new_num, sizeof(struct iovec), &size)))
+> > > +               return -ENOMEM;
+> > > +
+> >
+> > The whole point of using helpers such as kmalloc_array() is not doing
+> > these checks manually.
+>
+> Tradeoffs for in readability for overflow and not mistyping or doing
+> the multiplication of iov->max_num * sizeof(struct iovec) twice.
+>
 
-On 10/19/2020 2:48 PM, Manjunath Patil wrote:
-> This patchset intends to add functionality to track MR usages by RDS
-> applications.
+It's out of scope for this series - I want to add users for
+krealloc_array(), not refactor code I don't really know. If the
+maintainer of this bit objects, it can be dropped.
+
+> Just fyi:
 >
-> Manjunath Patil (2):
->    rds: track memory region (MR) usage in kernel
->    rds: add functionality to print MR related information
->
->   include/uapi/linux/rds.h | 13 ++++++++++++-
->   net/rds/af_rds.c         | 42 ++++++++++++++++++++++++++++++++++++++++
->   net/rds/ib.c             |  1 +
->   net/rds/rdma.c           | 29 ++++++++++++++++++++-------
->   net/rds/rds.h            | 10 +++++++++-
->   5 files changed, 86 insertions(+), 9 deletions(-)
+> the realloc doesn't do a multiplication overflow test as written so the
+> suggestion is slightly more resistant to defect.
 >
 
+I'm not sure what your point is. I used krealloc_array() exactly for
+this reason - to add the overflow test.
+
+BTW I suppose kmalloc_array() here can be replaced with
+krealloc_array() if the original pointer is NULL the first time it's
+called.
+
+Bartosz
