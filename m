@@ -2,89 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 277A329C037
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 18:13:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B498529C041
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 18:13:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1817033AbgJ0RM2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 13:12:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32749 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1785149AbgJ0O7p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 10:59:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603810784;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=DmouFhWdVOl7EXhsYHcY5059mglYicevex/ysXBRMkw=;
-        b=KGIoMdqfRjpM322OJVPt+H5BeZy28quxKMdQGaNccOxJEfk9RivMbAtRai6INqx3iVVswj
-        WIEH5St4jMbemxuFH0K45oX9upj6uKVxs5QIvNjQ3syZoEhr3Eo8KR8iwZ7CMmqdFQWmyF
-        MrMRZ/c/kcpIJ/MaZ0rBxkqtW044SJI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-43-D0Ahy2h5Mq-ov21Ih-zN6A-1; Tue, 27 Oct 2020 10:59:42 -0400
-X-MC-Unique: D0Ahy2h5Mq-ov21Ih-zN6A-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0797010A0BAF;
-        Tue, 27 Oct 2020 14:59:29 +0000 (UTC)
-Received: from gerbillo.redhat.com (ovpn-114-61.ams2.redhat.com [10.36.114.61])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F15155577D;
-        Tue, 27 Oct 2020 14:59:27 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org
-Subject: [PATCH net] mptcp: add missing memory scheduling in the rx path
-Date:   Tue, 27 Oct 2020 15:59:14 +0100
-Message-Id: <f6143a6193a083574f11b00dbf7b5ad151bc4ff4.1603810630.git.pabeni@redhat.com>
+        id S1817097AbgJ0RNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 13:13:13 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:44845 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1784690AbgJ0O7b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 10:59:31 -0400
+Received: by mail-pf1-f193.google.com with SMTP id 133so1050146pfx.11
+        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 07:59:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=fp9DOIG89yQphhVtnUaB6Uhgg6cfJ/f6CEZSpcBxAQ4=;
+        b=UYbkYuZz+V4mrSNGV9sOj772Km/E4ZB7bT64Rbq2OmBMBkMYpC/7uQ71Ta7B2pS0a2
+         WLcDodpDC1YTDYaBRw1CbZbZOSp5ejCOMFhRTSm3DDK3rUHnvIQVXpUAP7h/bavtyd9B
+         AffszAuFp9L/C2x3u4KNpH126oHbtsOE0aVWv7t3FTD3lS67vj/zsohznzCAa6YABlL2
+         3edS17Pwz9ME/qPhAlc7lKiLmqmxq9d8kGG0ADppn1UWSKP1c9YqopZqB7918qfr+ep/
+         r2T39MEnfS2D3B9VQosD2qQEohJjelHEvQu8vgQdqqd5Z/sg+A0mgpmrBvaNIuXBQI0p
+         YG4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=fp9DOIG89yQphhVtnUaB6Uhgg6cfJ/f6CEZSpcBxAQ4=;
+        b=XnXz95uXsLD7dXmwvobNWFTP+pKg2muSm2CfB+Np4Q8zh6DUq4Jp+Dv4mRiQIvkSNN
+         zF7TwcJCRDUC6Io+Nlwie67tbEezMm9kjsdeJ6EwpdSRnYIYvfScrYvZBeAj1HNdbju5
+         YZWRlN22GCcNsiiksNb2y5WmFBw6YW6gedNbx0sUbq4v6lc3XvILq/qhHC3q6MOb/UmG
+         at85QYZ5+oRlboLqWtmIzziY+V49vNpe/kDriAb6RD44luyQLsOzj8+BJX6V76pe7444
+         fUeJBiXVu30K+rmN7SajAcPRtUP0ulNOprlWSvTqtM/lcPaYJ7loGm5DcwoxC5L2+UPN
+         BxbQ==
+X-Gm-Message-State: AOAM532eO6Z6qhS8szFac8v+LjP6BgBwGcBv1AxLyXLmh8AF+yX8BdYA
+        1ihw3x6Dyf2nWRaebtUjyPdTXA==
+X-Google-Smtp-Source: ABdhPJw8wLAWDU2hwTitO+GzNGBx1HZNCIcF13OgdjBXdNjI95nxmzgizBezFv/ZOrXBhMUNoGXivA==
+X-Received: by 2002:a63:3202:: with SMTP id y2mr2189277pgy.97.1603810770619;
+        Tue, 27 Oct 2020 07:59:30 -0700 (PDT)
+Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id u4sm2340541pjy.19.2020.10.27.07.59.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Oct 2020 07:59:30 -0700 (PDT)
+Date:   Tue, 27 Oct 2020 07:59:21 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Henrik Bjoernlund via Bridge <bridge@lists.linux-foundation.org>
+Cc:     Henrik Bjoernlund <henrik.bjoernlund@microchip.com>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <roopa@nvidia.com>,
+        <nikolay@nvidia.com>, <jiri@mellanox.com>, <idosch@mellanox.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <UNGLinuxDriver@microchip.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: Re: [Bridge] [PATCH net-next v7 01/10] net: bridge: extend the
+ process of special frames
+Message-ID: <20201027075921.69976131@hermes.local>
+In-Reply-To: <20201027100251.3241719-2-henrik.bjoernlund@microchip.com>
+References: <20201027100251.3241719-1-henrik.bjoernlund@microchip.com>
+        <20201027100251.3241719-2-henrik.bjoernlund@microchip.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When moving the skbs from the subflow into the msk receive
-queue, we must schedule there the required amount of memory.
+On Tue, 27 Oct 2020 10:02:42 +0000
+Henrik Bjoernlund via Bridge <bridge@lists.linux-foundation.org> wrote:
 
-Try to borrow the required memory from the subflow, if needed,
-so that we leverage the existing TCP heuristic.
+> +/* Return 0 if the frame was not processed otherwise 1
+> + * note: already called with rcu_read_lock
+> + */
+> +static int br_process_frame_type(struct net_bridge_port *p,
+> +				 struct sk_buff *skb)
+> +{
+> +	struct br_frame_type *tmp;
+> +
+> +	hlist_for_each_entry_rcu(tmp, &p->br->frame_type_list, list)
+> +		if (unlikely(tmp->type == skb->protocol))
+> +			return tmp->frame_handler(p, skb);
+> +
+> +	return 0;
+> +}
 
-Fixes: 6771bfd9ee24 ("mptcp: update mptcp ack sequence from work queue")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/protocol.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 185dacb39781..e7419fd15d84 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -274,6 +274,15 @@ static bool __mptcp_move_skb(struct mptcp_sock *msk, struct sock *ssk,
- 	skb_ext_reset(skb);
- 	skb_orphan(skb);
- 
-+	/* try to fetch required memory from subflow */
-+	if (!sk_rmem_schedule(sk, skb, skb->truesize)) {
-+		if (ssk->sk_forward_alloc < skb->truesize)
-+			goto drop;
-+		__sk_mem_reclaim(ssk, skb->truesize);
-+		if (!sk_rmem_schedule(sk, skb, skb->truesize))
-+			goto drop;
-+	}
-+
- 	/* the skb map_seq accounts for the skb offset:
- 	 * mptcp_subflow_get_mapped_dsn() is based on the current tp->copied_seq
- 	 * value
-@@ -301,6 +310,7 @@ static bool __mptcp_move_skb(struct mptcp_sock *msk, struct sock *ssk,
- 	 * will retransmit as needed, if needed.
- 	 */
- 	MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_DUPDATA);
-+drop:
- 	mptcp_drop(sk, skb);
- 	return false;
- }
--- 
-2.26.2
-
+Does the linear search of frame types have noticable impact on performance?
+Hint: maybe a bitmap or something would be faster.
