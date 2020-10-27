@@ -2,85 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A9DB29A353
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 04:29:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7834929A35C
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 04:33:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2504996AbgJ0D3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 23:29:13 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:47487 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2443825AbgJ0D3N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 23:29:13 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 09R3SrI52005632, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexmb03.realtek.com.tw[172.21.6.96])
-        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 09R3SrI52005632
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 27 Oct 2020 11:28:53 +0800
-Received: from RTEXMBS01.realtek.com.tw (172.21.6.36) by
- RTEXMB03.realtek.com.tw (172.21.6.96) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2044.4; Tue, 27 Oct 2020 11:28:52 +0800
-Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
- RTEXMBS01.realtek.com.tw (172.21.6.36) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Tue, 27 Oct 2020 11:28:52 +0800
-Received: from RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa]) by
- RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa%3]) with mapi id
- 15.01.2044.006; Tue, 27 Oct 2020 11:28:52 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "WeitaoWang-oc@zhaoxin.com" <WeitaoWang-oc@zhaoxin.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     "CobeChen@zhaoxin.com" <CobeChen@zhaoxin.com>,
-        "tonywwang@zhaoxin.com" <tonywwang@zhaoxin.com>,
-        "weitaowang@zhaoxin.com" <weitaowang@zhaoxin.com>,
-        "TimGuo@zhaoxin.com" <TimGuo@zhaoxin.com>,
-        "wwt8723@163.com" <wwt8723@163.com>
-Subject: Re: [PATCH] rtlwifi: Fix non-canonical address access issues
-Thread-Topic: [PATCH] rtlwifi: Fix non-canonical address access issues
-Thread-Index: AQHWrA+S0JbIDKfd1Ee3HJBnxIpYYKmqRCSA
-Date:   Tue, 27 Oct 2020 03:28:52 +0000
-Message-ID: <1603769287.14269.0.camel@realtek.com>
-References: <1603768580-2798-1-git-send-email-WeitaoWang-oc@zhaoxin.com>
-In-Reply-To: <1603768580-2798-1-git-send-email-WeitaoWang-oc@zhaoxin.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.0.1.1]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <62F3B27AEA3BDF4FAF41F96C09BE7D5D@realtek.com>
-Content-Transfer-Encoding: base64
+        id S2505069AbgJ0Dcz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 23:32:55 -0400
+Received: from mga11.intel.com ([192.55.52.93]:58213 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2442737AbgJ0Dcz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 23:32:55 -0400
+IronPort-SDR: +ZKM+gL9xpdpaHRd6e42OXbvAXaKXAnS8MTkVMkchcd2Gh/eRNyRflG2rmi/t0Lz2RcuzIPDi5
+ IKWvJ+Fibhpw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9786"; a="164522268"
+X-IronPort-AV: E=Sophos;i="5.77,422,1596524400"; 
+   d="scan'208";a="164522268"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2020 20:32:54 -0700
+IronPort-SDR: gDdf5aD0cVHkx3dm0A1nTvfc2YB+fIPjcoCHhXHmO8rJUkNHKa5BLGO5D2NyAOIr+Cud45heXx
+ S04aoJCfIZcA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,422,1596524400"; 
+   d="scan'208";a="361229685"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.141])
+  by orsmga007.jf.intel.com with ESMTP; 26 Oct 2020 20:32:51 -0700
+Date:   Tue, 27 Oct 2020 11:27:32 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        davem@davemloft.net, kuba@kernel.org, mdf@kernel.org,
+        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
+        linux-fpga@vger.kernel.org, netdev@vger.kernel.org,
+        trix@redhat.com, lgoncalv@redhat.com, hao.wu@intel.com
+Subject: Re: [RFC PATCH 1/6] docs: networking: add the document for DFL Ether
+  Group driver
+Message-ID: <20201027032732.GC10743@yilunxu-OptiPlex-7050>
+References: <1603442745-13085-1-git-send-email-yilun.xu@intel.com>
+ <1603442745-13085-2-git-send-email-yilun.xu@intel.com>
+ <20201023153731.GC718124@lunn.ch>
+ <20201026085246.GC25281@yilunxu-OptiPlex-7050>
+ <20201026130001.GC836546@lunn.ch>
+ <20201026173803.GA10743@yilunxu-OptiPlex-7050>
+ <20201026191400.GO752111@lunn.ch>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201026191400.GO752111@lunn.ch>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVHVlLCAyMDIwLTEwLTI3IGF0IDExOjE2ICswODAwLCBXZWl0YW9XYW5nb2Mgd3JvdGU6DQo+
-IER1cmluZyByZWFsdGVrIFVTQiB3aXJlbGVzcyBOSUMgaW5pdGlhbGl6YXRpb24sIGl0J3MgdW5l
-eHBlY3RlZA0KPiBkaXNjb25uZWN0aW9uIHdpbGwgY2F1c2UgdXJiIHN1bWJtaXQgZmFpbC4gT24g
-dGhlIG9uZSBoYW5kLA0KPiBfcnRsX3VzYl9jbGVhbnVwX3J4IHdpbGwgYmUgY2FsbGVkIHRvIGNs
-ZWFuIHVwIHJ4IHN0dWZmLCBlc3BlY2lhbGx5IGZvcg0KPiBydGxfd3EuIE9uIHRoZSBvdGhlciBo
-YW5kLCBkaXNjb25uZWN0aW9uIHdpbGwgY2F1c2UgcnRsX3VzYl9kaXNjb25uZWN0DQo+IGFuZCBf
-cnRsX3VzYl9jbGVhbnVwX3J4IHRvIGJlIGNhbGxlZC4gU28sIHJ0bF93cSB3aWxsIGJlIGZsdXNo
-L2Rlc3Ryb3kNCj4gdHdpY2UsIHdoaWNoIHdpbGwgY2F1c2Ugbm9uLWNhbm9uaWNhbCBhZGRyZXNz
-IDB4ZGVhZDAwMDAwMDAwMDEyMiBhY2Nlc3MNCj4gYW5kIGdlbmVyYWwgcHJvdGVjdGlvbiBmYXVs
-dC4NCj4gDQo+IEZpeGVkIHRoaXMgaXNzdWUgYnkgcmVtb3ZlIF9ydGxfdXNiX2NsZWFudXBfcngg
-d2hlbiB1cmIgc3VtYm1pdCBmYWlsLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogV2VpdGFvV2FuZ29j
-IDxXZWl0YW9XYW5nLW9jQHpoYW94aW4uY29tPg0KDQpUaGFua3MgZm9yIHlvdXIgcGF0Y2guDQoN
-CkFja2VkLWJ5OiBQaW5nLUtlIFNoaWggPHBrc2hpaEByZWFsdGVrLmNvbT4NCg0KPiAtLS0NCj4g
-wqBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvdXNiLmMgfCAxIC0NCj4gwqAx
-IGZpbGUgY2hhbmdlZCwgMSBkZWxldGlvbigtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
-bmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnRsd2lmaS91c2IuYw0KPiBiL2RyaXZlcnMvbmV0L3dpcmVs
-ZXNzL3JlYWx0ZWsvcnRsd2lmaS91c2IuYw0KPiBpbmRleCAwNmUwNzNkLi5kNjJiODdmIDEwMDY0
-NA0KPiAtLS0gYS9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvdXNiLmMNCj4g
-KysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydGx3aWZpL3VzYi5jDQo+IEBAIC03
-MzEsNyArNzMxLDYgQEAgc3RhdGljIGludCBfcnRsX3VzYl9yZWNlaXZlKHN0cnVjdCBpZWVlODAy
-MTFfaHcgKmh3KQ0KPiDCoA0KPiDCoGVycl9vdXQ6DQo+IMKgCXVzYl9raWxsX2FuY2hvcmVkX3Vy
-YnMoJnJ0bHVzYi0+cnhfc3VibWl0dGVkKTsNCj4gLQlfcnRsX3VzYl9jbGVhbnVwX3J4KGh3KTsN
-Cj4gwqAJcmV0dXJuIGVycjsNCj4gwqB9DQo+IMKgDQo=
+On Mon, Oct 26, 2020 at 08:14:00PM +0100, Andrew Lunn wrote:
+> > > > > Do you really mean PHY? I actually expect it is PCS? 
+> > > > 
+> > > > For this implementation, yes.
+> > > 
+> > > Yes, you have a PHY? Or Yes, it is PCS?
+> > 
+> > Sorry, I mean I have a PHY.
+> > 
+> > > 
+> > > To me, the phylib maintainer, having a PHY means you have a base-T
+> > > interface, 25Gbase-T, 40Gbase-T?  That would be an odd and expensive
+> > > architecture when you should be able to just connect SERDES interfaces
+> > > together.
+> 
+> You really have 25Gbase-T, 40Gbase-T? Between the FPGA & XL710?
+> What copper PHYs are using? 
+
+Sorry for the confusing. I'll check with our board designer and reply
+later.
+
+> 
+> > I see your concerns about the SERDES interface between FPGA & XL710.
+> 
+> I have no concerns about direct SERDES connections. That is the normal
+> way of doing this. It keeps it a lot simpler, since you don't have to
+> worry about driving the PHYs.
+> 
+> > I did some investigation about the DSA, and actually I wrote a
+> > experimental DSA driver. It works and almost meets my need, I can make
+> > configuration, run pktgen on slave inf.
+> 
+> Cool. As i said, I don't know if this actually needs to be a DSA
+> driver. It might just need to borrow some ideas from DSA.
+> 
+> > Mm.. seems the hardware should be changed, either let host directly
+> > access the QSFP, or re-design the BMC to provide more info for QSFP.
+> 
+> At a minimum, you need to support ethtool -m. It could be a firmware
+> call to the BMC, our you expose the i2c bus somehow. There are plenty
+> of MAC drivers which implement eththool -m without using phylink.
+> 
+> But i think you need to take a step back first, and look at the bigger
+> picture. What is Intel's goal? Are they just going to sell complete
+> cards? Or do they also want to sell the FPGA as a components anybody
+> get put onto their own board?
+> 
+> If there are only ever going to be compete cards, then you can go the
+> firmware direction, push a lot of functionality into the BMC, and have
+> the card driver make firmware calls to control the SFP, retimer,
+> etc. You can then throw away your mdio and phy driver hacks.
+> 
+> If however, the FPGA is going to be available as a component, can you
+> also assume there is a BMC? Running Intel firmware? Can the customer
+> also modify this firmware for their own needs? I think that is going
+> to be difficult. So you need to push as much as possible towards
+> linux, and let Linux drive all the hardware, the SFP, retimer, FPGA,
+> etc.
+
+This is a very helpful. I'll share with our team and reconsider about the
+design.
+
+Thanks,
+Yilun
+
+> 
+> 	Andrew
+> 
