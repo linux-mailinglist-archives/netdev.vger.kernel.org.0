@@ -2,97 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48E4829AD92
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 14:41:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F62229AE71
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 15:00:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1752385AbgJ0NlW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 09:41:22 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:6004 "EHLO
-        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2900799AbgJ0NlV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 09:41:21 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4CLCXh47XrzhcGc;
-        Tue, 27 Oct 2020 21:41:24 +0800 (CST)
-Received: from huawei.com (10.90.53.225) by DGGEMS404-HUB.china.huawei.com
- (10.3.19.204) with Microsoft SMTP Server id 14.3.487.0; Tue, 27 Oct 2020
- 21:41:14 +0800
-From:   Zhang Qilong <zhangqilong3@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>
-Subject: [PATCH -next] net/mac8390: discard unnecessary breaks
-Date:   Tue, 27 Oct 2020 21:51:59 +0800
-Message-ID: <20201027135159.71444-1-zhangqilong3@huawei.com>
-X-Mailer: git-send-email 2.26.0.106.g9fadedd
+        id S1753579AbgJ0OA2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 10:00:28 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:47332 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1736687AbgJ0OAP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Oct 2020 10:00:15 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kXPWH-003oXh-2A; Tue, 27 Oct 2020 15:00:13 +0100
+Date:   Tue, 27 Oct 2020 15:00:13 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 0/4] net: dsa: link aggregation support
+Message-ID: <20201027140013.GC878328@lunn.ch>
+References: <20201027105117.23052-1-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.90.53.225]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201027105117.23052-1-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 'break' is unnecessary because of previous 'return',
-and we could discard it.
+> (mv88e6xxx) What is the policy regarding the use of DSA vs. EDSA?  It
+> seems like all chips capable of doing EDSA are using that, except for
+> the Peridot.
 
-Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
----
- drivers/net/ethernet/8390/mac8390.c | 7 -------
- 1 file changed, 7 deletions(-)
+Hi Tobias
 
-diff --git a/drivers/net/ethernet/8390/mac8390.c b/drivers/net/ethernet/8390/mac8390.c
-index d60a86aa8aa8..9aac7119d382 100644
---- a/drivers/net/ethernet/8390/mac8390.c
-+++ b/drivers/net/ethernet/8390/mac8390.c
-@@ -175,7 +175,6 @@ static enum mac8390_type mac8390_ident(struct nubus_rsrc *fres)
- 		default:
- 			return MAC8390_APPLE;
- 		}
--		break;
- 
- 	case NUBUS_DRSW_APPLE:
- 		switch (fres->dr_hw) {
-@@ -186,11 +185,9 @@ static enum mac8390_type mac8390_ident(struct nubus_rsrc *fres)
- 		default:
- 			return MAC8390_APPLE;
- 		}
--		break;
- 
- 	case NUBUS_DRSW_ASANTE:
- 		return MAC8390_ASANTE;
--		break;
- 
- 	case NUBUS_DRSW_TECHWORKS:
- 	case NUBUS_DRSW_DAYNA2:
-@@ -199,11 +196,9 @@ static enum mac8390_type mac8390_ident(struct nubus_rsrc *fres)
- 			return MAC8390_CABLETRON;
- 		else
- 			return MAC8390_APPLE;
--		break;
- 
- 	case NUBUS_DRSW_FARALLON:
- 		return MAC8390_FARALLON;
--		break;
- 
- 	case NUBUS_DRSW_KINETICS:
- 		switch (fres->dr_hw) {
-@@ -212,7 +207,6 @@ static enum mac8390_type mac8390_ident(struct nubus_rsrc *fres)
- 		default:
- 			return MAC8390_KINETICS;
- 		}
--		break;
- 
- 	case NUBUS_DRSW_DAYNA:
- 		/*
-@@ -224,7 +218,6 @@ static enum mac8390_type mac8390_ident(struct nubus_rsrc *fres)
- 			return MAC8390_NONE;
- 		else
- 			return MAC8390_DAYNA;
--		break;
- 	}
- 	return MAC8390_NONE;
- }
--- 
-2.17.1
+Marvell removed the ability to use EDSA, in the way we do in Linux
+DSA, on Peridot. One of the configuration bits is gone. So i had to
+use DSA.  It could be i just don't understand how to configure
+Peridot, and EDSA could be used, but i never figured it out.
 
+I will get back to your other questions.
+
+  Andrew
