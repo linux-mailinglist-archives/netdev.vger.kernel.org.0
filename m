@@ -2,104 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 754DE29C943
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 20:52:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14D1729C95E
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 21:02:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503946AbgJ0Tvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 15:51:50 -0400
-Received: from mailout10.rmx.de ([94.199.88.75]:45567 "EHLO mailout10.rmx.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2411512AbgJ0Tvu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Oct 2020 15:51:50 -0400
-Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mailout10.rmx.de (Postfix) with ESMTPS id 4CLMm22dh0z3Bjl;
-        Tue, 27 Oct 2020 20:51:46 +0100 (CET)
-Received: from mta.arri.de (unknown [217.111.95.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by kdin01.retarus.com (Postfix) with ESMTPS id 4CLMln50Sjz2xD9;
-        Tue, 27 Oct 2020 20:51:33 +0100 (CET)
-Received: from N95HX1G2.wgnetz.xx (192.168.54.166) by mta.arri.de
- (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Tue, 27 Oct
- 2020 20:51:33 +0100
-From:   Christian Eggers <ceggers@arri.de>
-To:     "David S . Miller" <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, Christian Eggers <ceggers@arri.de>,
-        "Willem de Bruijn" <willemb@google.com>,
-        Deepa Dinamani <deepa.kernel@gmail.com>
-Subject: [PATCH] socket: don't clear SOCK_TSTAMP_NEW when SO_TIMESTAMPNS is disabled
-Date:   Tue, 27 Oct 2020 20:51:12 +0100
-Message-ID: <20201027195112.23921-1-ceggers@arri.de>
-X-Mailer: git-send-email 2.26.2
+        id S1830632AbgJ0UCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 16:02:25 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:43932 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727305AbgJ0UCY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 16:02:24 -0400
+Received: by mail-ed1-f68.google.com with SMTP id dn5so2741307edb.10
+        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 13:02:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0G9OKjR/V/MFCD6RZt0kNwqDdd7UFzCDFa82Mj0f478=;
+        b=WQZKcQcLXVKd9UWfh6ygAld1F8wvDIAYwpir2fiqFLMZQav29DauBCLUmOAh9Vff7j
+         S/Mg+nMgWG01QBmXp5cRrASl3DnygPaWu7SArVtwu9+Ps0igM59MsJj2NcH/5rn6e3Z9
+         ZC3iTsWDO7BctOXbnwCL12RjXzTGJLW08gP1yO55U7UEyhvOB9+rd5ercToctuDc0YqD
+         G+hIaNLFDaw/V3tMZPChQL95PDhGrckpbL9bqiOiUtfaAGpa3dCrfsGtX+OkbA4AHtHz
+         MTXaOI2EKxplZM2kn3J0TkHphT5zOSKlxu08tmkdUWO1kyTPC5IGRe71LdPuijqZomcQ
+         PfHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0G9OKjR/V/MFCD6RZt0kNwqDdd7UFzCDFa82Mj0f478=;
+        b=CDUUVVBohKreA56Xf0yzXxn0/ZTBB9BATAf364DM3c+DjXpZ/3Wd2Y6ArY5wlvuj+8
+         8N/h50GKmNIdC4jkw4ncFqRnF+/bHRLzaj9Z848nKDaI+sxKWCe5LgfYZSPhGjRL8iRO
+         8w9VgjpLzvvwgh+qhSw6iKX/8dUNNQULm9kEiPbxQKlvEXlDw/YRNko2TmmFe06LPXZw
+         NwIgizaHxmIIuwrqb94IcYhF53jgrnXd1033Bl4WWcRdKQHIaNw+h90rshy1HLl6kiEf
+         TzxHfORZwN2DZ49wWz4yropzehIpeTQs8NSVqDacu6wc6HtJw93CSEQ8UJMCkyf9XjI0
+         W3XA==
+X-Gm-Message-State: AOAM53358+yMDYxqbKmJuj93gn0kKADjD5Z1xhnXOcsxYBa2wy8WJvff
+        Ww6K9ZsrhXoCbtBaM61rezQ=
+X-Google-Smtp-Source: ABdhPJygp9DaQXfPjs2QiwDSMjMEi1nlc4wu/ftXOVQYxbMbmBPqxqhQuP3XfU9kWx+pwv/w74szxA==
+X-Received: by 2002:a05:6402:17ad:: with SMTP id j13mr1005984edy.347.1603828942325;
+        Tue, 27 Oct 2020 13:02:22 -0700 (PDT)
+Received: from skbuf ([188.25.2.177])
+        by smtp.gmail.com with ESMTPSA id 6sm1603650ejv.49.2020.10.27.13.02.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Oct 2020 13:02:21 -0700 (PDT)
+Date:   Tue, 27 Oct 2020 22:02:20 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Marek Behun <marek.behun@nic.cz>,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 0/4] net: dsa: link aggregation support
+Message-ID: <20201027200220.3ai2lcyrxkvmd2f4@skbuf>
+References: <20201027105117.23052-1-tobias@waldekranz.com>
+ <20201027160530.11fc42db@nic.cz>
+ <20201027152330.GF878328@lunn.ch>
+ <87k0vbv84z.fsf@waldekranz.com>
+ <20201027190034.utk3kkywc54zuxfn@skbuf>
+ <87blgnv4rt.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.54.166]
-X-RMX-ID: 20201027-205133-4CLMln50Sjz2xD9-0@kdin01
-X-RMX-SOURCE: 217.111.95.66
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87blgnv4rt.fsf@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[ Upstream commit 4e3bbb33e6f36e4b05be1b1b9b02e3dd5aaa3e69 ]
+On Tue, Oct 27, 2020 at 08:37:58PM +0100, Tobias Waldekranz wrote:
+> >> In order for this to work on transmit, we need to add forward offloading
+> >> to the bridge so that we can, for example, send one FORWARD from the CPU
+> >> to send an ARP broadcast to swp1..4 instead of four FROM_CPUs.
 
-SOCK_TSTAMP_NEW (timespec64 instead of timespec) is also used for
-hardware time stamps (configured via SO_TIMESTAMPING_NEW).
+[...]
 
-User space (ptp4l) first configures hardware time stamping via
-SO_TIMESTAMPING_NEW which sets SOCK_TSTAMP_NEW. In the next step, ptp4l
-disables SO_TIMESTAMPNS(_NEW) (software time stamps), but this must not
-switch hardware time stamps back to "32 bit mode".
+> In a single-chip system I agree that it is not needed, the CPU can do
+> the load-balancing in software. But in order to have the hardware do
+> load-balancing on a switch-to-switch LAG, you need to send a FORWARD.
+> 
+> FROM_CPUs would just follow whatever is in the device mapping table. You
+> essentially have the inverse of the TO_CPU problem, but on Tx FROM_CPU
+> would make up 100% of traffic.
 
-This problem happens on 32 bit platforms were the libc has already
-switched to struct timespec64 (from SO_TIMExxx_OLD to SO_TIMExxx_NEW
-socket options). ptp4l complains with "missing timestamp on transmitted
-peer delay request" because the wrong format is received (and
-discarded).
+Woah, hold on, could you explain in more detail for non-expert people
+like myself to understand.
 
-Fixes: 887feae36aee ("socket: Add SO_TIMESTAMP[NS]_NEW")
-Signed-off-by: Christian Eggers <ceggers@arri.de>
-Acked-by: Willem de Bruijn <willemb@google.com>
-Acked-by: Deepa Dinamani <deepa.kernel@gmail.com>
----
-This is a back port for 5.4. The original version has been applied to 5.8/5.9
-a few hours ago. It does the same as the upstream patch, only the affected code
-is at another position here. 
+So FROM_CPU frames (what tag_edsa.c uses now in xmit) can encode a
+_single_ destination port in the frame header.
 
-Please decide whether the Acked-by: tags (from the upstream patch) should
-be kept or removed.
+Whereas the FORWARD frames encode a _source_ port in the frame header.
+You inject FORWARD frames from the CPU port, and you just let the L2
+forwarding process select the adequate destination ports (or LAG, if
+any ports are under one) _automatically_. The reason why you do this, is
+because you want to take advantage of the switch's flooding abilities in
+order to replicate the packet into 4 packets. So you will avoid cloning
+that packet in the bridge in the first place.
 
-This back port is only required for 5.4, older kernels like 4.19 are not
-affected.
+But correct me if I'm wrong, sending a FORWARD frame from the CPU is a
+slippery slope, since you're never sure that the switch will perform the
+replication exactly as you intended to. The switch will replicate a
+FORWARD frame by looking up the FDB, and we don't even attempt in DSA to
+keep the FDB in sync between software and hardware. And that's why we
+send FROM_CPU frames in tag_edsa.c and not FORWARD frames.
 
-regards
-Christian
+What you are really looking for is hardware where the destination field
+for FROM_CPU packets is not a single port index, but a port mask.
 
+Right?
 
- net/core/sock.c | 1 -
- 1 file changed, 1 deletion(-)
+Also, this problem is completely orthogonal to LAG? Where does LAG even
+come into play here?
 
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 9a186d2ad36d..1eda7337b881 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -923,7 +923,6 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
- 		} else {
- 			sock_reset_flag(sk, SOCK_RCVTSTAMP);
- 			sock_reset_flag(sk, SOCK_RCVTSTAMPNS);
--			sock_reset_flag(sk, SOCK_TSTAMP_NEW);
- 		}
- 		break;
- 
--- 
-Christian Eggers
-Embedded software developer
+> Other than that there are some things that, while strictly speaking
+> possible to do without FORWARDs, become much easier to deal with:
+> 
+> - Multicast routing. This is one case where performance _really_ suffers
+>   from having to skb_clone() to each recipient.
+> 
+> - Bridging between virtual interfaces and DSA ports. Typical example is
+>   an L2 VPN tunnel or one end of a veth pair. On FROM_CPUs, the switch
+>   can not perform SA learning, which means that once you bridge traffic
+>   from the VPN out to a DSA port, the return traffic will be classified
+>   as unknown unicast by the switch and be flooded everywhere.
 
-Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
-Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
-Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
-Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
+And how is this going to solve that problem? You mean that the switch
+learns only from FORWARD, but not from FROM_CPU?
 
+Why don't you attempt to solve this more generically somehow? Your
+switch is not the only one that can't perform source address learning
+for injected traffic, there are tons more, some are not even DSA. We
+can't have everybody roll their own solution.
