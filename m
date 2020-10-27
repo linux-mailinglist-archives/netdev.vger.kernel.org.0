@@ -2,74 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4F0629A37B
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 04:56:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D75229A387
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 05:02:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2505293AbgJ0D4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 23:56:32 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:32949 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2503837AbgJ0D4b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 23:56:31 -0400
-Received: by mail-pg1-f194.google.com with SMTP id r186so17346pgr.0;
-        Mon, 26 Oct 2020 20:56:31 -0700 (PDT)
+        id S1732380AbgJ0ECS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 00:02:18 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:42786 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729986AbgJ0ECS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 00:02:18 -0400
+Received: by mail-pl1-f193.google.com with SMTP id t22so65498plr.9;
+        Mon, 26 Oct 2020 21:02:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=928Y6cCd6X7WfnBYvopP1Oa2ebBib5VLieFKDVDEi2w=;
-        b=X6v+3QJK/VS5UqSInpaGMsjoTfULx1WBJnoglunD0dwztyk+j76zyuuliPcfXojQqL
-         nGa8gkbaGIQM/MCJ67Y7uDBmaCVNfbpMfKmjb/1luBo5LEhBx0hz9XImMryKJHWPpsSv
-         BL4sUI+ZKpoveeXqMi0gW+uB/mPrEFjK9F4itvkRgULsEyPxPrLBMv/zzc42zLD7uLpp
-         zzg+Wy68Ns0ajIo/F5a8A84+bOkh7izxulhhk5iLBY//3xIn7xIQh8eICphbv7MStFhi
-         AwLrAQ2sM3bpWh6yXdr9WKluQzGZ9cG1olSAp+8Kahj/OSShOL8nkcoC6g1oxCsX6Bvv
-         4NMA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kEWfF2+wHDXs51FoMh8BpSfr6/k+l32KvU6FkfuYmZw=;
+        b=A8gZPcWpVxlr2DAl+5oIq9jH7CGdcsfJL1bZm36bBjnu6xbobQ27Q191lt1THV0xoi
+         T8lLq9Ed9M78d0HS3oHqRJjAO1gd7tyJfZ+924Xh1IBharef3PnyG18pcxWj8gCJp4OU
+         v96WqnZYKaW9Ad/U+FcOydcW7cySKlCzpA5PtRiqM5GTk6o2y6wwVN82DYIglzu7FEXM
+         ocZGcD2V1STjfLtBC7bSypAFpqZ4mnz2q5qHXKHVW+OuCwCdl619Cb2e9cfFCyO+HbLZ
+         HAE7N9TyzZAN+J0XQLMpgAc01IWQ64NZrBykV9gAYai8RAPwpGndqsoNeOmT8xOVokHK
+         o55g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=928Y6cCd6X7WfnBYvopP1Oa2ebBib5VLieFKDVDEi2w=;
-        b=Z73emwARnXuv9KRmzrBlmuwjKssMMwr4eVg0eGaD7jthPWAhFIkiSh8246Lb8i/Kdd
-         g+uONHpKosNIgh1ZSsuOAvqTPgwl5zPQJz8eq5zUAuxGnOW33oBdcqu9MMrU/QqAswx0
-         Pg7zZwzYa7igo2CW9QpeNeMeW8wMShYn3tNbzAwXxCEkH5CcAnpj7FWTWuJP26dmA9Tl
-         I8u+L/S3/iC9m157AfcUR+0pf/iLBjXp4s5BUiTrqAVRKoUwtwWDTDr0Dy3oeAWNasDR
-         L4KROgJZhzjmlOdo7ZCyI5ug3WvtucttuSjrmHYVh84Fke8yKJ/ZDWiDgw9sblrZH3mi
-         eOOQ==
-X-Gm-Message-State: AOAM533vdWZQTK09ZxB+urWpFbPcZ+E3aFYI2dpQbmjSI7toaDAHEYNk
-        tEK3zrzFUjrH9BTvFt76kfNj3WvS5fI=
-X-Google-Smtp-Source: ABdhPJxHBlE1wiWdIs0h7c8vreie4hIKCN0s6QZmaABbCv180f9n6Nc4xRdKkSigvrkO1FjPirDjow==
-X-Received: by 2002:a05:6a00:13a4:b029:163:f435:28b5 with SMTP id t36-20020a056a0013a4b0290163f43528b5mr299215pfg.45.1603770990931;
-        Mon, 26 Oct 2020 20:56:30 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:ac90:26e5:f63a:9f81])
-        by smtp.gmail.com with ESMTPSA id e5sm274355pfl.216.2020.10.26.20.56.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2020 20:56:30 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kEWfF2+wHDXs51FoMh8BpSfr6/k+l32KvU6FkfuYmZw=;
+        b=nbKY7cmdcjUopA4xsGNr1pNgwmraONsAEegg5FR0vLMJp50nKCvAUYjIH6hxol3xSO
+         AFeyYi41TADDLmNaCiP9kZDa8+m9tjyRvLtBQFanE/gUjcUngj6ViqU7TS7067AIoSg0
+         7k47fKO1n/21Yp/7dUDS6HI18gqmS5KkZdXHvVABuNsS7Qgq8zNAtt4dMeHyGIctFrWe
+         ucvdwgPEZIeIoMbsm3SHKf2THI5WQkQ7QzwooOjCTPq2Bexd/n+g2vMqbUV6F5VvGjSN
+         SxS+moWTur4ufwRS7VzmkjC5EAx4XFmq8R3ITJnBKUrch3QI5tTPYfghX0vJ2C5WQafx
+         LgLg==
+X-Gm-Message-State: AOAM532H9+UN5EKplgr7IgkxtgJ+zVX3ciropfD9EpiLc/EbEf+5O4Ek
+        CPpquiIeEUeQlmZjxSeOUqGGYTS1EIfxVt4TS7Q=
+X-Google-Smtp-Source: ABdhPJybZzqkdp/e+29ztmpiTqE7aMjqTOPhVPrxcYPwefdunbcDQaBo2qgbZgqOUUtGL/DQ2HLSPatdJkiU1rfSOwQ=
+X-Received: by 2002:a17:902:d90d:b029:d5:ee36:3438 with SMTP id
+ c13-20020a170902d90db02900d5ee363438mr480534plz.77.1603771336410; Mon, 26 Oct
+ 2020 21:02:16 -0700 (PDT)
+MIME-Version: 1.0
+References: <20201026213040.3889546-1-arnd@kernel.org> <20201027035558.16864-1-xie.he.0141@gmail.com>
+In-Reply-To: <20201027035558.16864-1-xie.he.0141@gmail.com>
 From:   Xie He <xie.he.0141@gmail.com>
+Date:   Mon, 26 Oct 2020 21:02:05 -0700
+Message-ID: <CAJht_EPSs6W-r6kpWUNQDPzCjL-+_8mqq2JBoY=qhsQREgn92g@mail.gmail.com>
+Subject: Re: [PATCH net-next 01/11] atm: horizon: shut up clang null pointer
+ arithmetic warning
 To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Xie He <xie.he.0141@gmail.com>, Chas Williams <3chas3@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
+Cc:     Chas Williams <3chas3@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
         Nathan Chancellor <natechancellor@gmail.com>,
         Nick Desaulniers <ndesaulniers@google.com>,
         "David S. Miller" <davem@davemloft.net>,
-        linux-atm-general@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH net-next 01/11] atm: horizon: shut up clang null pointer arithmetic warning
-Date:   Mon, 26 Oct 2020 20:55:58 -0700
-Message-Id: <20201027035558.16864-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201026213040.3889546-1-arnd@kernel.org>
-References: <20201026213040.3889546-1-arnd@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        linux-atm-general@lists.sourceforge.net,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        clang-built-linux@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -  for (mem = (HDW *) memmap; mem < (HDW *) (memmap + 1); ++mem)
-> +  for (mem = (HDW *) memmap; mem < (HDW *) ((uintptr_t)memmap + 1); ++mem)
+On Mon, Oct 26, 2020 at 8:56 PM Xie He <xie.he.0141@gmail.com> wrote:
+>
+> > -  for (mem = (HDW *) memmap; mem < (HDW *) (memmap + 1); ++mem)
+> > +  for (mem = (HDW *) memmap; mem < (HDW *) ((uintptr_t)memmap + 1); ++mem)
+>
+> Note that these two lines are semantically different. In the first line,
+> "+ 1" moves the pointer by (sizeof memmap) bytes. However in the second
+> line, "+ 1" moves the pointer by only 1 byte.
 
-Note that these two lines are semantically different. In the first line,
-"+ 1" moves the pointer by (sizeof memmap) bytes. However in the second
-line, "+ 1" moves the pointer by only 1 byte.
-
-This driver is old, but let's still keep its code correct!
+Correction: in the first line "+ 1" moves the pointer by (sizeof *memmap) bytes.
