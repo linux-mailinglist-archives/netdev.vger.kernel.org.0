@@ -2,156 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71E3829BEFC
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 18:01:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15DE929C16A
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 18:25:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1814690AbgJ0Q67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 12:58:59 -0400
-Received: from mail-ej1-f65.google.com ([209.85.218.65]:42384 "EHLO
-        mail-ej1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1794055AbgJ0Q65 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 12:58:57 -0400
-Received: by mail-ej1-f65.google.com with SMTP id h24so3234502ejg.9
-        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 09:58:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jbe/1MUIOazjJNoYCLbZSaF/EYC3tySch0SP+bPnG10=;
-        b=jVifv3wcHJtbLJO22cQhSQScaHCOkHk0uy60SV24XvvF7WpqIaa807hmufMDVKqnPF
-         3xm47weUtJacIjSqbcrwXivMAtenN13kZafFSMO2m8dHHXFLXYX56OUdOoMTcRWlbgDG
-         Thpj0UzfAOOdteCoRx63Xv7ZHZnjkyReDZ1Swoq+LyDarWGF0Mhj1KXWH3CO+MSgLHKb
-         ZCBeQPWb0noZpqy+qKiKznJoq/vsPZZzkzwPD8DcAe8kPG1EHjLxd45J8Yu892ID37T7
-         4/FpLOCqsI/vnQoRJn422RcKliIdkwc27vyhzCgMqyr6Vk10qaJ+O1CUPcx0OY5r8WIV
-         v25A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jbe/1MUIOazjJNoYCLbZSaF/EYC3tySch0SP+bPnG10=;
-        b=aq49ag0Yrwt5z0DE7Ko44s8E5CI2aC+Zfl9MfqFp89a4eYsCBFVeYh0bOT2I6S1B5i
-         jzo/YJ5C4k4PXacJ6dmQKvYmxWz+CNIh1ep5zLvLk+akjAQaUbMKSVj04nsch+8UxRjC
-         Ibwj65PEk3B9QWi3RJnNB/Cp3KuBfZ7OPcgmmxBYuSc+gaIq4DJ2bowmwfdPRxzkjPqy
-         hv5Obl20bZ1n3lpr6GCJihmNAz2hcrvp0g4WfhuQe1TZddzA2mQ0Ef90qL+q3WP7QD58
-         n/R4hVQPzIgXcZp+K38NzXWHZQTeHBj/8lNtc3fZ0AxwvI/9J+hjXULlRlxMK2fvejyr
-         UsQQ==
-X-Gm-Message-State: AOAM532mU/sYRBoNZGBT2SYNR6aXj5lc1mzU0YQpaS5uP/VtH6bFClJx
-        dOMJOFyGYYhbsRNbe76OEqeOb3t2mg8uQU0O65hoLw==
-X-Google-Smtp-Source: ABdhPJzA1XzwQDZrf0aO0vJ0GFK7TlKkhiOIHp72TDLrdQ3tpl8EeLXanxCM3mEYAMp7LHDhMqHnk4D8XhUXPqwrAS0=
-X-Received: by 2002:a17:906:d159:: with SMTP id br25mr3508153ejb.155.1603817934690;
- Tue, 27 Oct 2020 09:58:54 -0700 (PDT)
+        id S1775316AbgJ0Owj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 10:52:39 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:47384 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1762663AbgJ0On6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 10:43:58 -0400
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1603809836;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qctgPvENEAJLfDO1q5YNRd3BUpfW+QQFStcbBTc4zpc=;
+        b=XPCl5Yg1xGZbdGIwKfXbv3FBALQDzgvROfSBGRFmV7UCacEjG0QaeufIIEvbgJW7nqbzD2
+        vnBz6XrBKK3JZGx1wLfAlV9w35EhTuPCKGbRmnpfnJzrocvTJqaEdhf1SZeQmFk3FFK/hB
+        AtuUdpjvzy4urwwyaQKvogkRxe5tYfBnwhcZgilyPEFp9HGn9sOj5BUQ/UnB0BBRBjjuaT
+        7F8urq5UdIsT2//AZ/5dOjGolnV3HEmGoHyJBaK3y2JrAuJrGEsmBwHpC7MRtrSaCQuPzB
+        1Ls88sIVW7Fx1SGAdLygMeYISlhu92rAKCavx09rd5r5BR7n2cBsRf5dsbmGmg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1603809836;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=qctgPvENEAJLfDO1q5YNRd3BUpfW+QQFStcbBTc4zpc=;
+        b=SOWpoTtIdBo28YQ59UZQrIseztUo6FaAyC/yLmH/40n1JEHji3jhyfGLvO9YnTjEyLslEg
+        mcVTsLvHTdJ1/gDg==
+To:     Marcelo Tosatti <mtosatti@redhat.com>,
+        Nitesh Narayan Lal <nitesh@redhat.com>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>, helgaas@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        frederic@kernel.org, sassmann@redhat.com,
+        jesse.brandeburg@intel.com, lihong.yang@intel.com,
+        jeffrey.t.kirsher@intel.com, jlelli@redhat.com, hch@infradead.org,
+        bhelgaas@google.com, mike.marciniszyn@intel.com,
+        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
+        jiri@nvidia.com, mingo@redhat.com, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, lgoncalv@redhat.com,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to housekeeping CPUs
+In-Reply-To: <20201027114739.GA11336@fuller.cnet>
+References: <20201023085826.GP2611@hirez.programming.kicks-ass.net> <9ee77056-ef02-8696-5b96-46007e35ab00@redhat.com> <87ft6464jf.fsf@nanos.tec.linutronix.de> <20201026173012.GA377978@fuller.cnet> <875z6w4xt4.fsf@nanos.tec.linutronix.de> <86f8f667-bda6-59c4-91b7-6ba2ef55e3db@intel.com> <87v9ew3fzd.fsf@nanos.tec.linutronix.de> <85b5f53e-5be2-beea-269a-f70029bea298@intel.com> <87lffs3bd6.fsf@nanos.tec.linutronix.de> <959997ee-f393-bab0-45c0-4144c37b9185@redhat.com> <20201027114739.GA11336@fuller.cnet>
+Date:   Tue, 27 Oct 2020 15:43:56 +0100
+Message-ID: <87k0vb20gj.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-References: <20201027121725.24660-1-brgl@bgdev.pl> <20201027121725.24660-4-brgl@bgdev.pl>
- <20201027112607-mutt-send-email-mst@kernel.org> <685d850347a1191bba8ba7766fc409b140d18f03.camel@perches.com>
-In-Reply-To: <685d850347a1191bba8ba7766fc409b140d18f03.camel@perches.com>
-From:   Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Date:   Tue, 27 Oct 2020 17:58:43 +0100
-Message-ID: <CAMpxmJU0C84DjPmqmWvPgv0zwgGLhkpKLRDuKkZHAa=wi+LvBA@mail.gmail.com>
-Subject: Re: [PATCH 3/8] vhost: vringh: use krealloc_array()
-To:     Joe Perches <joe@perches.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Gustavo Padovan <gustavo@padovan.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Tony Luck <tony.luck@intel.com>,
-        James Morse <james.morse@arm.com>,
-        Robert Richter <rric@kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jason Wang <jasowang@redhat.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        linux-media <linux-media@vger.kernel.org>,
-        linux-drm <dri-devel@lists.freedesktop.org>,
-        linaro-mm-sig@lists.linaro.org,
-        LKML <linux-kernel@vger.kernel.org>, linux-edac@vger.kernel.org,
-        linux-gpio <linux-gpio@vger.kernel.org>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        netdev <netdev@vger.kernel.org>, linux-mm@kvack.org,
-        Linux-ALSA <alsa-devel@alsa-project.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 27, 2020 at 5:50 PM Joe Perches <joe@perches.com> wrote:
->
-> On Tue, 2020-10-27 at 11:28 -0400, Michael S. Tsirkin wrote:
-> > On Tue, Oct 27, 2020 at 01:17:20PM +0100, Bartosz Golaszewski wrote:
-> > > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> > >
-> > > Use the helper that checks for overflows internally instead of manually
-> > > calculating the size of the new array.
-> > >
-> > > Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> >
-> > No problem with the patch, it does introduce some symmetry in the code.
->
-> Perhaps more symmetry by using kmemdup
-> ---
->  drivers/vhost/vringh.c | 23 ++++++++++-------------
->  1 file changed, 10 insertions(+), 13 deletions(-)
->
-> diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
-> index 8bd8b403f087..99222a3651cd 100644
-> --- a/drivers/vhost/vringh.c
-> +++ b/drivers/vhost/vringh.c
-> @@ -191,26 +191,23 @@ static int move_to_indirect(const struct vringh *vrh,
->  static int resize_iovec(struct vringh_kiov *iov, gfp_t gfp)
->  {
->         struct kvec *new;
-> -       unsigned int flag, new_num = (iov->max_num & ~VRINGH_IOV_ALLOCATED) * 2;
-> +       size_t new_num = (iov->max_num & ~VRINGH_IOV_ALLOCATED) * 2;
-> +       size_t size;
->
->         if (new_num < 8)
->                 new_num = 8;
->
-> -       flag = (iov->max_num & VRINGH_IOV_ALLOCATED);
-> -       if (flag)
-> -               new = krealloc(iov->iov, new_num * sizeof(struct iovec), gfp);
-> -       else {
-> -               new = kmalloc_array(new_num, sizeof(struct iovec), gfp);
-> -               if (new) {
-> -                       memcpy(new, iov->iov,
-> -                              iov->max_num * sizeof(struct iovec));
-> -                       flag = VRINGH_IOV_ALLOCATED;
-> -               }
-> -       }
-> +       if (unlikely(check_mul_overflow(new_num, sizeof(struct iovec), &size)))
-> +               return -ENOMEM;
-> +
+On Tue, Oct 27 2020 at 08:47, Marcelo Tosatti wrote:
+> On Mon, Oct 26, 2020 at 06:22:29PM -0400, Nitesh Narayan Lal wrote:
+> However, if per-CPU interrupts are not disabled, then the (for example)
+> network device is free to include the CPU in its list of destinations.
+> Which would require one to say, configure RPS (or whatever mechanism
+> is distributing interrupts).
 
-The whole point of using helpers such as kmalloc_array() is not doing
-these checks manually.
+And why is that a problem? If that's possible then you can prevent
+getting RX interrupts already today.
 
-Bartosz
+> Hum, it would feel safer (rather than trust the #1 rule to be valid
+> in all cases) to ask the driver to disable the interrupt (after shutting
+> down queue) for that particular CPU.
+>
+> BTW, Thomas, software is free to configure a particular MSI-X interrupt
+> to point to any CPU:
+>
+> 10.11 MESSAGE SIGNALLED INTERRUPTS
 
-> +       if (iov->max_num & VRINGH_IOV_ALLOCATED)
-> +               new = krealloc(iov->iov, size, gfp);
-> +       else
-> +               new = kmemdup(iov->iov, size, gfp);
->         if (!new)
->                 return -ENOMEM;
->         iov->iov = new;
-> -       iov->max_num = (new_num | flag);
-> +       iov->max_num = new_num | VRINGH_IOV_ALLOCATED;
->         return 0;
->  }
->
->
->
+I know how MSI works :)
+
+> So taking the example where computation happens while isolated and later
+> stored via block interface, aren't we restricting the usage scenarios
+> by enforcing the "per-CPU queue has interrupt pointing to owner CPU"
+> rule?
+
+No. For block this is the ideal configuration (think locality) and it
+prevents vector exhaustion. If you make these interrupts freely routable
+then you bring back the vector exhaustion problem right away.
+
+Now we already established that networking has different requirements,
+so you have to come up with a different solution for it which allows to
+work for all use cases.
+
+Thanks,
+
+        tglx
+
