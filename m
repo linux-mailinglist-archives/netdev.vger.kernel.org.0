@@ -2,59 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C564429B17C
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 15:31:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6025129B363
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 15:56:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1759993AbgJ0Oat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 10:30:49 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:47414 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2902001AbgJ0O3t (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Oct 2020 10:29:49 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kXPys-003opd-A3; Tue, 27 Oct 2020 15:29:46 +0100
-Date:   Tue, 27 Oct 2020 15:29:46 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Tobias Waldekranz <tobias@waldekranz.com>,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 0/4] net: dsa: link aggregation support
-Message-ID: <20201027142946.GE878328@lunn.ch>
-References: <20201027105117.23052-1-tobias@waldekranz.com>
- <20201027122720.6jm4vuivi7tozzdq@skbuf>
+        id S1751610AbgJ0Osv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 10:48:51 -0400
+Received: from mail-ej1-f65.google.com ([209.85.218.65]:37758 "EHLO
+        mail-ej1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1766432AbgJ0Oss (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 10:48:48 -0400
+Received: by mail-ej1-f65.google.com with SMTP id p9so2633281eji.4
+        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 07:48:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kwzPKBS10xp0kZ0eSIGEka98bJnI718M6peMcnII3s0=;
+        b=gS0Qmln69qwRP6vm8nCUQMt+jleHtvUILQP6a5aeUv0EEWU2WZZ/MkWnVoI5Gg2PBo
+         UrRWGPxaeBOPJ9OdKHJXqHUBO9BIlQdNZTfd3xsAI5Xd1gQCyrHpodMhekLH6xEPCOok
+         V+zStFbxyf9sBLxc81xYt+7qn47clmnNxIQ1+GZbtgVZZ3CebpuxmAO+tN19c6t4VRcw
+         SLoPHqdYM7wT12+ItmV9uryWqbs7vutituOt6M1Th8Wd3nB9SCaDQ7BTp0at5Ucbdcc5
+         I1QkySuXvjnX6PfGe/oTPHP5I9udqmQ+UzKeb2Mo1op/m7cHYUrPDXeqEln0ljmPiROp
+         bb5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kwzPKBS10xp0kZ0eSIGEka98bJnI718M6peMcnII3s0=;
+        b=Qx/sud2xpmMTIGokahZl/8hYFb+gLRtCfUhW4oLI8nspVAhOsuzbpFWKt3+029zARN
+         2z6kay27BtJ5JEq8XvscvovmivVBtM5/Rha5nP8wWz3dB374RpaKhiSnq3luvxdiHAY+
+         fv+epEfVlXpeXipyVPYl7/q1Y9xwTgwAbCixGUP9vz1JfWyImBPVbwlUtUds7UHrTjX3
+         gyPlWYu0CGYgIEphsZWQXRNKsf+9/OH43Cl5yRMhr/nDb4YLNIJTUUTvwQ31cvgO97K+
+         MqmNxKdYdElY3fr2a+Ag5MjBvkPjPDRgzLwSBV4JL+0h/epjP4cHab8PAII55aOt4eHR
+         G56w==
+X-Gm-Message-State: AOAM5310JGLnTCeJwDtKynvhBMTOJ7HG++Evt/2zO0iSg57DhezXbyM3
+        uDfR6S/5AK5jjsspWZGpoHdB9LXGAiubDHMpJdLdSQ==
+X-Google-Smtp-Source: ABdhPJwWE1LJ1ZI3to6EJIQrY6e4ZoysSouUhDOOa74fUtzLN9La7DPUDFZL6wtiN0JdiQf0PsKqWZI4hUiO55jBhFE=
+X-Received: by 2002:a17:906:3a8c:: with SMTP id y12mr2645126ejd.531.1603810126576;
+ Tue, 27 Oct 2020 07:48:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201027122720.6jm4vuivi7tozzdq@skbuf>
+References: <20201023123754.30304-1-david.verbeiren@tessares.net> <CAEf4BzZaJaYw0tB0R+q3qoQX7=qy3T9jvzf5q=TH++t66wNd-w@mail.gmail.com>
+In-Reply-To: <CAEf4BzZaJaYw0tB0R+q3qoQX7=qy3T9jvzf5q=TH++t66wNd-w@mail.gmail.com>
+From:   David Verbeiren <david.verbeiren@tessares.net>
+Date:   Tue, 27 Oct 2020 15:48:28 +0100
+Message-ID: <CAHzPrnF0yZY8rk6_qMS55_=gLCKwHq1s7LaRtSqGy823gtwLMA@mail.gmail.com>
+Subject: Re: [PATCH bpf] bpf: zero-fill re-used per-cpu map element
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > (mv88e6xxx) What is the policy regarding the use of DSA vs. EDSA?  It
-> > seems like all chips capable of doing EDSA are using that, except for
-> > the Peridot.
-> 
-> I have no documentation whatsoever for mv88e6xxx, but just wondering,
-> what is the benefit brought by EDSA here vs DSA? Does DSA have the
-> same restriction when the ports are in a LAG?
+On Mon, Oct 26, 2020 at 11:48 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Fri, Oct 23, 2020 at 8:48 AM David Verbeiren
+> <david.verbeiren@tessares.net> wrote:
+> > [...]
+> > +                       if (!onallcpus)
+> > +                               for_each_possible_cpu(cpu)
+> > +                                       memset((void *)per_cpu_ptr(pptr, cpu),
+> > +                                              0, size);
+>
+> Technically, you don't have to memset() for the current CPU, right?
+> Don't know if extra check is cheaper than avoiding one memset() call,
+> though.
 
-Hi Vladimir
+I thought about that as well but, because it depends on the 'size',
+I decided to keep it simple. However, taking into account your other
+comments, I think there is a possibility to combine it all nicely in a
+separate function.
 
-One advantage of EDSA is that it uses a well known Ether Type. It was
-easy for me to add support to tcpdump to spot this Ether type, decode
-the EDSA header, and pass the rest of the frame on for further
-processing as normal.
+> But regardless, this 6 level nesting looks pretty bad, maybe move the
+> for_each_possible_cpu() loop into a helper function?
+>
+> Also, does the per-CPU LRU hashmap need the same treatment?
+I think it does. Good catch!
 
-With DSA, you cannot look at the packet and know it is DSA, and then
-correctly decode it. So tcpdump just show the packet as undecodable.
-
-Florian fixed this basic problem a while ago, since not being able to
-decode packets is a problem for all tagger except EDSA. So now there
-is extra meta information inserted into the pcap file, which gives
-tcpdump the hint it needs to do the extra decoding of the tagger
-header. But before that was added, it was much easier to debug EDSA vs
-DSA because of tcpdump decoding.
-
-	Andrew
+Thanks for your feedback. v2 is coming.
