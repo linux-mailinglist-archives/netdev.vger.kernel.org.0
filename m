@@ -2,56 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37FFF29A493
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 07:23:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8716829A551
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 08:15:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2506455AbgJ0GWy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 02:22:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56380 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2506440AbgJ0GVP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Oct 2020 02:21:15 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S2507451AbgJ0HOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 03:14:55 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:44166 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2507447AbgJ0HOz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 03:14:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603782893;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=qoFOH0EIYw+zRVkirbFvitnPatdYcGlTK08xwJlVXUc=;
+        b=KxhAsYMRdC6NWkrdJZ7AtIMZ4morPZ8TjG5ubPHqrj7JlfGtmbQKTqgHtjO1WLsrsiEhra
+        Y12J4ElAf/Hs4Lug5lNPlfRjAjh+yOb7WOvQsOTqOZo66I0+Xkh4GADjk7rnxUZUA6/Fyl
+        8uBXVD7eImk8UQqDy5+E30nifewkE2Y=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-100-bWtevY_hNLmjP3o_l2BPDw-1; Tue, 27 Oct 2020 03:14:51 -0400
+X-MC-Unique: bWtevY_hNLmjP3o_l2BPDw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 48BAB207DE;
-        Tue, 27 Oct 2020 06:21:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603779675;
-        bh=yP09p9hZPmd+16unIG3T+EwKYoIL0pNMvswa7AvAxT4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=OCXK1MqAXCw5aWvtyva7JWe+UcoOZ5sHTdsOJe8euA0Z9GAQ5oQ/5o9hngO4ggqOv
-         Sl/feiQXVE6RZyIvPh6UBuJF35zOv9GK6BaXFw9YnrFEV6y0fEZqg3PGjBiCZDCVrM
-         Rr0xlE0sI10yslvBYX3WpP1XRhMUJ2mXe5Wp9VWg=
-Date:   Tue, 27 Oct 2020 07:21:11 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>
-Cc:     stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        linux-kernel@vger.kernel.org, kadlec@netfilter.org, fw@strlen.de,
-        davem@davemloft.net, kuba@kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH linux-5.9 1/1] net: netfilter: fix KASAN:
- slab-out-of-bounds Read in nft_flow_rule_create
-Message-ID: <20201027062111.GD206502@kroah.com>
-References: <20201019172532.3906-1-saeed.mirzamohammadi@oracle.com>
- <20201020115047.GA15628@salvia>
- <28C74722-8F35-4397-B567-FA5BCF525891@oracle.com>
- <3BE1A64B-7104-4220-BAD1-870338A33B15@oracle.com>
- <566D38F7-7C99-40F4-A948-03F2F0439BBB@oracle.com>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6A93D1018F61;
+        Tue, 27 Oct 2020 07:14:50 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.9])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 023AF5D9E4;
+        Tue, 27 Oct 2020 07:14:41 +0000 (UTC)
+Date:   Tue, 27 Oct 2020 08:14:40 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
+Cc:     daniel@iogearbox.net, ast@fb.com, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, brouer@redhat.com,
+        Roman Gushchin <guro@fb.com>, kernel-team@fb.com
+Subject: Re: [PATCH bpf] samples/bpf: Set rlimit for memlock to infinity in
+ all samples
+Message-ID: <20201027081440.756cd175@carbon>
+In-Reply-To: <20201026233623.91728-1-toke@redhat.com>
+References: <20201026233623.91728-1-toke@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <566D38F7-7C99-40F4-A948-03F2F0439BBB@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Oct 25, 2020 at 04:31:57PM -0700, Saeed Mirzamohammadi wrote:
-> Adding stable.
+On Tue, 27 Oct 2020 00:36:23 +0100
+Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
 
-What did that do?
+> The memlock rlimit is a notorious source of failure for BPF programs. Most
+> of the samples just set it to infinity, but a few used a lower limit. The
+> problem with unconditionally setting a lower limit is that this will also
+> override the limit if the system-wide setting is *higher* than the limit
+> being set, which can lead to failures on systems that lock a lot of memor=
+y,
+> but set 'ulimit -l' to unlimited before running a sample.
+>=20
+> One fix for this is to only conditionally set the limit if the current
+> limit is lower, but it is simpler to just unify all the samples and have
+> them all set the limit to infinity.
+>=20
+> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
 
-confused,
+This change basically disable the memlock rlimit system. And this
+disable method is becoming standard in more and more BPF programs.
+IMHO using the system-wide memlock rlimit doesn't make sense for BPF.
 
-greg k-h
+I'm still ACKing the patch, as this seems the only way forward, to
+ignore and in-practice not use the memlock rlimit.
+
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+
+
+I saw some patches on the list (from Facebook) with a new system for
+policy limiting memory usage per BPF program or was it mem-cgroup, but
+I don't think that was ever merged... I would really like to see
+something replace (and remove) this memlock rlimit dependency. Anyone
+knows what happened to that effort?
+
+--=20
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
