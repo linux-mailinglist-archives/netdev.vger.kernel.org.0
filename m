@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9096D29CC5D
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 23:56:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D16329CC5E
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 23:56:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1832615AbgJ0W4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 18:56:31 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:50198 "EHLO
+        id S1832620AbgJ0W4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 18:56:39 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:50108 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1832548AbgJ0W4A (ORCPT
+        with ESMTP id S1832549AbgJ0W4A (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 18:56:00 -0400
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1603839357;
+        s=2020; t=1603839358;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=DjmStdTYpXx0Q5cgHBNYgoGt1xQMDGvpBhIAE5x62bo=;
-        b=IrVDFjU5wiUh3/1b+EWqAdpLz9jEaa0feaxAB0seewu3KP62xQWrIDIDRFVfJR88akb5V8
-        pixqewfSpPphy6wjIpk84kuwnoRmYibI+WPGXbSjRtkxqKuGHv479c5O+07RtRHzWP9EyO
-        /XS2O6gq02ndIa9jvIju3YeZBwPe7jdNPpcZYA5f5c/yCRKzmmvrHi/lomT6/LJwNTuzDq
-        79tALLYTDN3HvBlJ21WplNePz/PcB96jD/urLc/mb0VXNxgXdrKoOYIKtApY4oS3NuMRJx
-        udPmRn5otfroi+DJXX7goaPxUdhrmyFNBJYKUfaap+PqN/QIS+Vy6OoaWTLFrw==
+        bh=SYBcnGuL2Fv6XeYcZjE3LkVMNVEGa0a3exz1vREKTcg=;
+        b=S1Go9+9Xp1GErdJCi+ANF4TEINcRzr4AAM9/EjAfOm4GEAFc0SAG0j54/KDBMytSqwvQfq
+        RGUaLHTTjqE0QRPwHdSY+UdOuUmep7RPNXzM9oAi28hssNsjf7kGpFSOVeeC1JUfcKe6tz
+        bR/M0svDfG+smM3ZkcyuGLBREabdElvv/1cqPEpYchufXaGju3kscLwxVoombjHcDLxGdO
+        oqwvAjv2MmmHX2ZyDbISyl2mOuqmVj4hqglUIjxYCWCaCuU8KT/Chcnr+/MNAaCO88JXQr
+        vI1oB6Vkr8DY8OB3gr9Gp9LXg4bJyq5R50D4HAWZbvQWxrJvOHM+5ztGg+8i2g==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1603839357;
+        s=2020e; t=1603839358;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=DjmStdTYpXx0Q5cgHBNYgoGt1xQMDGvpBhIAE5x62bo=;
-        b=1hcOJSQqWKvZ0z3m9yg8HSR6q16whMj9tbVFBVxwm9sIAnvgysjdR0EPOnpijehHN6jTXv
-        eMzOMmrlvWnhypDQ==
+        bh=SYBcnGuL2Fv6XeYcZjE3LkVMNVEGa0a3exz1vREKTcg=;
+        b=gge+wRRsIsf6uzGIOrNEXhKbIkqdyeWoXun2w3tqw/cLzNfabNyfNxT4gS/Gwym/a3kk4u
+        vFpUXoU8eg4F39DA==
 To:     netdev@vger.kernel.org
 Cc:     Aymen Sghaier <aymen.sghaier@nxp.com>,
         Daniel Drake <dsd@gentoo.org>,
@@ -54,9 +54,9 @@ Cc:     Aymen Sghaier <aymen.sghaier@nxp.com>,
         Zhu Yanjun <zyjzyj2000@gmail.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH net-next 10/15] net: zd1211rw: Remove in_atomic() usage.
-Date:   Tue, 27 Oct 2020 23:54:49 +0100
-Message-Id: <20201027225454.3492351-11-bigeasy@linutronix.de>
+Subject: [PATCH net-next 11/15] net: rtlwifi: Remove in_interrupt() usage in is_any_client_connect_to_ap().
+Date:   Tue, 27 Oct 2020 23:54:50 +0100
+Message-Id: <20201027225454.3492351-12-bigeasy@linutronix.de>
 In-Reply-To: <20201027225454.3492351-1-bigeasy@linutronix.de>
 References: <20201027225454.3492351-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
@@ -65,67 +65,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The usage of in_atomic() in driver code is deprecated as it can not
-always detect all states where it is not allowed to sleep.
+is_any_client_connect_to_ap() is using in_interrupt() to determine whether
+it should acquire the lock prior accessing the list.
 
-All callers are in premptible thread context and all functions invoke core
-functions which have checks for invalid calling contexts already.
+The usage of in_interrupt() in drivers is phased out and Linus clearly
+requested that code which changes behaviour depending on context should
+either be separated or the context be conveyed in an argument passed by the
+caller, which usually knows the context.
+
+The function is called from:
+
+    - halbtc_get()
+
+    - halbtc_get()
+        halbtc_get_wifi_link_status()
+
+    - halbtc_display_dbg_msg()
+	halbtc_display_wifi_status()
+          halbtc_get_wifi_link_status()
+
+All top level callers are part of the btc_coexist callback inferface and
+are never invoked from a context which can hold the lock already.
+
+The contexts which hold the lock are either protecting list add/del
+operations or list walks which never call into any of the btc_coexist
+interfaces.
+
+In fact the conditional is outright dangerous because if this function
+would be invoked from a BH disabled context the check would avoid taking
+the lock while on another CPU the list could be manipulated under the lock.
+
+Remove the in_interrupt() check and always acquire the lock.
+
+To simplify the code further use list_empty() instead of walking the list
+and counting the entries just to check the count for > 0 at the end.
 
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: Daniel Drake <dsd@gentoo.org>
-Cc: Ulrich Kunitz <kune@deine-taler.de>
+Cc: Ping-Ke Shih <pkshih@realtek.com>
 Cc: Kalle Valo <kvalo@codeaurora.org>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: Jakub Kicinski <kuba@kernel.org>
 Cc: linux-wireless@vger.kernel.org
 Cc: netdev@vger.kernel.org
 ---
- drivers/net/wireless/zydas/zd1211rw/zd_usb.c | 15 ---------------
- 1 file changed, 15 deletions(-)
+ .../realtek/rtlwifi/btcoexist/halbtcoutsrc.c  | 25 +++++--------------
+ 1 file changed, 6 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/wireless/zydas/zd1211rw/zd_usb.c b/drivers/net/wir=
-eless/zydas/zd1211rw/zd_usb.c
-index 66367ab7e4c1e..5c4cd0e1adebb 100644
---- a/drivers/net/wireless/zydas/zd1211rw/zd_usb.c
-+++ b/drivers/net/wireless/zydas/zd1211rw/zd_usb.c
-@@ -1711,11 +1711,6 @@ int zd_usb_ioread16v(struct zd_usb *usb, u16 *values,
- 			 count, USB_MAX_IOREAD16_COUNT);
- 		return -EINVAL;
+diff --git a/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c =
+b/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c
+index 2c05369b79e4d..2155a6699ef8d 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c
++++ b/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtcoutsrc.c
+@@ -47,30 +47,17 @@ static bool is_any_client_connect_to_ap(struct btc_coex=
+ist *btcoexist)
+ {
+ 	struct rtl_priv *rtlpriv =3D btcoexist->adapter;
+ 	struct rtl_mac *mac =3D rtl_mac(rtlpriv);
+-	struct rtl_sta_info *drv_priv;
+-	u8 cnt =3D 0;
++	bool ret =3D false;
+=20
+ 	if (mac->opmode =3D=3D NL80211_IFTYPE_ADHOC ||
+ 	    mac->opmode =3D=3D NL80211_IFTYPE_MESH_POINT ||
+ 	    mac->opmode =3D=3D NL80211_IFTYPE_AP) {
+-		if (in_interrupt() > 0) {
+-			list_for_each_entry(drv_priv, &rtlpriv->entry_list,
+-					    list) {
+-				cnt++;
+-			}
+-		} else {
+-			spin_lock_bh(&rtlpriv->locks.entry_list_lock);
+-			list_for_each_entry(drv_priv, &rtlpriv->entry_list,
+-					    list) {
+-				cnt++;
+-			}
+-			spin_unlock_bh(&rtlpriv->locks.entry_list_lock);
+-		}
++		spin_lock_bh(&rtlpriv->locks.entry_list_lock);
++		if (!list_empty(&rtlpriv->entry_list))
++			ret =3D true;
++		spin_unlock_bh(&rtlpriv->locks.entry_list_lock);
  	}
--	if (in_atomic()) {
--		dev_dbg_f(zd_usb_dev(usb),
--			 "error: io in atomic context not supported\n");
--		return -EWOULDBLOCK;
--	}
- 	if (!usb_int_enabled(usb)) {
- 		dev_dbg_f(zd_usb_dev(usb),
- 			  "error: usb interrupt not enabled\n");
-@@ -1882,11 +1877,6 @@ int zd_usb_iowrite16v_async(struct zd_usb *usb, cons=
-t struct zd_ioreq16 *ioreqs,
- 			count, USB_MAX_IOWRITE16_COUNT);
- 		return -EINVAL;
- 	}
--	if (in_atomic()) {
--		dev_dbg_f(zd_usb_dev(usb),
--			"error: io in atomic context not supported\n");
--		return -EWOULDBLOCK;
--	}
+-	if (cnt > 0)
+-		return true;
+-	else
+-		return false;
++	return ret;
+ }
 =20
- 	udev =3D zd_usb_to_usbdev(usb);
-=20
-@@ -1966,11 +1956,6 @@ int zd_usb_rfwrite(struct zd_usb *usb, u32 value, u8=
- bits)
- 	int i, req_len, actual_req_len;
- 	u16 bit_value_template;
-=20
--	if (in_atomic()) {
--		dev_dbg_f(zd_usb_dev(usb),
--			"error: io in atomic context not supported\n");
--		return -EWOULDBLOCK;
--	}
- 	if (bits < USB_MIN_RFWRITE_BIT_COUNT) {
- 		dev_dbg_f(zd_usb_dev(usb),
- 			"error: bits %d are smaller than"
+ static bool halbtc_legacy(struct rtl_priv *adapter)
 --=20
 2.28.0
 
