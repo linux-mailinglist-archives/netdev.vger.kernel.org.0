@@ -2,107 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41C0C29C913
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 20:38:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47D4E29C933
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 20:48:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1830338AbgJ0TiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 15:38:04 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:43873 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2504319AbgJ0TiD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 15:38:03 -0400
-Received: by mail-lj1-f193.google.com with SMTP id d24so3107693ljg.10
-        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 12:38:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=NkVTrLYjwiqx7nHJvLva3j33YB/EaGDASWIlc2ET5KQ=;
-        b=aKcwZ+7vgGewYJ+drGS5yhF0nmWyKbZfDbdTVy5/mk7zCbpGWakFs1KgJ5ypM3v4HL
-         biq5xwsJTT3k7deB7vbY0SwNFv0GXdC6muZOF3McUWlkUvtfKcwp+ReP072D2s+h9UsP
-         XMusjuORlp8bLp3CAzwy+vO8ZSvVzFaytGRhe545q/vVYvJmRsvqtHrEzqdttBJ43E+Q
-         xB/J4WjNjhlLUZ35PJc51tr6x4nYd4G+4H+pOFKElNbPixQVZ7qsRzJITHsVoP6X6GbO
-         BJYpgKBe1B73cHQpm7JyzeH+1y1gzu2+C9VKJ4aP5gsegWQ6zKGHDfsAkiHV5YI9Z7RL
-         mlNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=NkVTrLYjwiqx7nHJvLva3j33YB/EaGDASWIlc2ET5KQ=;
-        b=fzGlSLEwuPP8CUKh6dqD9cQw4zrPpClTFjxxnOrTs0rCrTVJvR2wH5ngv8FiaYBHGm
-         2k2nzNEGlfrjeVSotpods8gc2oYsRMqe8MgRZAd2ZnnG98Do4bD2SC0GblIyKoZG7J9y
-         PEANacDuk3hZ0RK9yRe2XC40U4V1uGOFvZMp/LS6+MqG6zKbcwQXaddsqqEVOt9wtJXe
-         P+QtBtkcv8UV+6vN/I9raF8ir+xy9OWqaZDr6+iEz2fLbD7llgCEIweXMpv8C5yOXlQt
-         kqhM4xWrnmL0OTXDSxVjAFvmc8DtqYzFHlNrZt9Iaw6HdCi7Y0WM3E1zCjf3wiL3CkSE
-         ESaw==
-X-Gm-Message-State: AOAM532X/vcH9knN74PJALaA+bEVgfBRPDo1LJrK6i4IqLywJXfaio1g
-        HjFsldMZxiRea+xmOw530kvd3J0qJ5CFtwsE
-X-Google-Smtp-Source: ABdhPJzbNJ9yduFr7yOxQMf+9HQk93pVrDugSh9Cw1h7wE0B4sNsOT1avCeEbmeL99E4Qf/wawv8aQ==
-X-Received: by 2002:a05:651c:388:: with SMTP id e8mr1664175ljp.404.1603827479698;
-        Tue, 27 Oct 2020 12:37:59 -0700 (PDT)
-Received: from wkz-x280 (h-79-28.A259.priv.bahnhof.se. [79.136.79.28])
-        by smtp.gmail.com with ESMTPSA id j12sm291463ljg.22.2020.10.27.12.37.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Oct 2020 12:37:58 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Marek Behun <marek.behun@nic.cz>,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 0/4] net: dsa: link aggregation support
-In-Reply-To: <20201027190034.utk3kkywc54zuxfn@skbuf>
-References: <20201027105117.23052-1-tobias@waldekranz.com> <20201027160530.11fc42db@nic.cz> <20201027152330.GF878328@lunn.ch> <87k0vbv84z.fsf@waldekranz.com> <20201027190034.utk3kkywc54zuxfn@skbuf>
-Date:   Tue, 27 Oct 2020 20:37:58 +0100
-Message-ID: <87blgnv4rt.fsf@waldekranz.com>
+        id S1830507AbgJ0TrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 15:47:13 -0400
+Received: from mailout11.rmx.de ([94.199.88.76]:43422 "EHLO mailout11.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2506943AbgJ0TrM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Oct 2020 15:47:12 -0400
+Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout11.rmx.de (Postfix) with ESMTPS id 4CLMff6G64z43sx;
+        Tue, 27 Oct 2020 20:47:06 +0100 (CET)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin02.retarus.com (Postfix) with ESMTPS id 4CLMf80tPcz2TTJr;
+        Tue, 27 Oct 2020 20:46:40 +0100 (CET)
+Received: from N95HX1G2.wgnetz.xx (192.168.54.166) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Tue, 27 Oct
+ 2020 20:46:39 +0100
+From:   Christian Eggers <ceggers@arri.de>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Christian Eggers <ceggers@arri.de>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH] net: dsa: microchip: fix race condition
+Date:   Tue, 27 Oct 2020 20:45:34 +0100
+Message-ID: <20201027194534.23600-1-ceggers@arri.de>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.54.166]
+X-RMX-ID: 20201027-204640-4CLMf80tPcz2TTJr-0@kdin02
+X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 27, 2020 at 21:00, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Tue, Oct 27, 2020 at 07:25:16PM +0100, Tobias Waldekranz wrote:
->> > 1) trunk user ports, with team/bonding controlling it
->> > 2) trunk DSA ports, i.e. the ports between switches in a D in DSA setup
->> > 3) trunk CPU ports.
-> [...]
->> I think that (2) and (3) are essentially the same problem, i.e. creating
->> LAGs out of DSA links, be they switch-to-switch or switch-to-cpu
->> connections. I think you are correct that the CPU port can not be a
->> LAG/trunk, but I believe that limitation only applies to TO_CPU packets.
->
-> Which would still be ok? They are called "slow protocol PDUs" for a reason.
+[ Upstream commit 8098bd69bc4e925070313b1b95d03510f4f24738 ]
 
-Oh yes, completely agree. That was the point I was trying to make :)
+Between queuing the delayed work and finishing the setup of the dsa
+ports, the process may sleep in request_module() (via
+phy_device_create()) and the queued work may be executed prior to the
+switch net devices being registered. In ksz_mib_read_work(), a NULL
+dereference will happen within netof_carrier_ok(dp->slave).
 
->> In order for this to work on transmit, we need to add forward offloading
->> to the bridge so that we can, for example, send one FORWARD from the CPU
->> to send an ARP broadcast to swp1..4 instead of four FROM_CPUs.
->
-> That surely sounds like an interesting (and tough to implement)
-> optimization to increase the throughput, but why would it be _needed_
-> for things to work? What's wrong with 4 FROM_CPU packets?
+Not queuing the delayed work in ksz_init_mib_timer() makes things even
+worse because the work will now be queued for immediate execution
+(instead of 2000 ms) in ksz_mac_link_down() via
+dsa_port_link_register_of().
 
-We have internal patches that do this, and I can confirm that it is
-tough :) I really would like to figure out a way to solve this, that
-would also be acceptable upstream. I have some ideas, it is on my TODO.
+Call tree:
+ksz9477_i2c_probe()
+\--ksz9477_switch_register()
+   \--ksz_switch_register()
+      +--dsa_register_switch()
+      |  \--dsa_switch_probe()
+      |     \--dsa_tree_setup()
+      |        \--dsa_tree_setup_switches()
+      |           +--dsa_switch_setup()
+      |           |  +--ksz9477_setup()
+      |           |  |  \--ksz_init_mib_timer()
+      |           |  |     |--/* Start the timer 2 seconds later. */
+      |           |  |     \--schedule_delayed_work(&dev->mib_read, msecs_to_jiffies(2000));
+      |           |  \--__mdiobus_register()
+      |           |     \--mdiobus_scan()
+      |           |        \--get_phy_device()
+      |           |           +--get_phy_id()
+      |           |           \--phy_device_create()
+      |           |              |--/* sleeping, ksz_mib_read_work() can be called meanwhile */
+      |           |              \--request_module()
+      |           |
+      |           \--dsa_port_setup()
+      |              +--/* Called for non-CPU ports */
+      |              +--dsa_slave_create()
+      |              |  +--/* Too late, ksz_mib_read_work() may be called beforehand */
+      |              |  \--port->slave = ...
+      |             ...
+      |              +--Called for CPU port */
+      |              \--dsa_port_link_register_of()
+      |                 \--ksz_mac_link_down()
+      |                    +--/* mib_read must be initialized here */
+      |                    +--/* work is already scheduled, so it will be executed after 2000 ms */
+      |                    \--schedule_delayed_work(&dev->mib_read, 0);
+      \-- /* here port->slave is setup properly, scheduling the delayed work should be safe */
 
-In a single-chip system I agree that it is not needed, the CPU can do
-the load-balancing in software. But in order to have the hardware do
-load-balancing on a switch-to-switch LAG, you need to send a FORWARD.
+Solution:
+1. Do not queue (only initialize) delayed work in ksz_init_mib_timer().
+2. Only queue delayed work in ksz_mac_link_down() if init is completed.
+3. Queue work once in ksz_switch_register(), after dsa_register_switch()
+has completed.
 
-FROM_CPUs would just follow whatever is in the device mapping table. You
-essentially have the inverse of the TO_CPU problem, but on Tx FROM_CPU
-would make up 100% of traffic.
+Fixes: 7c6ff470aa86 ("net: dsa: microchip: add MIB counter reading support")
+Signed-off-by: Christian Eggers <ceggers@arri.de>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+This is a back port for 5.4. The original version has been applied to 5.8/5.9
+a few hours ago.
 
-Other than that there are some things that, while strictly speaking
-possible to do without FORWARDs, become much easier to deal with:
+Please decide whether the Reviewed-By: and Singed-off-by: tags shall be kept
+or removed when forwarding this to stable.
 
-- Multicast routing. This is one case where performance _really_ suffers
-  from having to skb_clone() to each recipient.
+regards
+Christian
 
-- Bridging between virtual interfaces and DSA ports. Typical example is
-  an L2 VPN tunnel or one end of a veth pair. On FROM_CPUs, the switch
-  can not perform SA learning, which means that once you bridge traffic
-  from the VPN out to a DSA port, the return traffic will be classified
-  as unknown unicast by the switch and be flooded everywhere.
+ drivers/net/dsa/microchip/ksz_common.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 7fabc0e3d807..b1a9d1012fc4 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -107,18 +107,11 @@ void ksz_init_mib_timer(struct ksz_device *dev)
+ {
+ 	int i;
+ 
+-	/* Read MIB counters every 30 seconds to avoid overflow. */
+-	dev->mib_read_interval = msecs_to_jiffies(30000);
+-
+ 	INIT_WORK(&dev->mib_read, ksz_mib_read_work);
+ 	timer_setup(&dev->mib_read_timer, mib_monitor, 0);
+ 
+ 	for (i = 0; i < dev->mib_port_cnt; i++)
+ 		dev->dev_ops->port_init_cnt(dev, i);
+-
+-	/* Start the timer 2 seconds later. */
+-	dev->mib_read_timer.expires = jiffies + msecs_to_jiffies(2000);
+-	add_timer(&dev->mib_read_timer);
+ }
+ EXPORT_SYMBOL_GPL(ksz_init_mib_timer);
+ 
+@@ -152,7 +145,9 @@ void ksz_adjust_link(struct dsa_switch *ds, int port,
+ 	/* Read all MIB counters when the link is going down. */
+ 	if (!phydev->link) {
+ 		p->read = true;
+-		schedule_work(&dev->mib_read);
++		/* timer started */
++		if (dev->mib_read_interval)
++			schedule_work(&dev->mib_read);
+ 	}
+ 	mutex_lock(&dev->dev_mutex);
+ 	if (!phydev->link)
+@@ -464,6 +459,13 @@ int ksz_switch_register(struct ksz_device *dev,
+ 		return ret;
+ 	}
+ 
++	/* Read MIB counters every 30 seconds to avoid overflow. */
++	dev->mib_read_interval = msecs_to_jiffies(30000);
++
++	/* Start the MIB timer. */
++	dev->mib_read_timer.expires = jiffies;
++	add_timer(&dev->mib_read_timer);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(ksz_switch_register);
+-- 
+Christian Eggers
+Embedded software developer
+
+Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
+Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
+Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
+
