@@ -2,100 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51FCD29ACC7
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 14:07:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 273D929ACED
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 14:14:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1751832AbgJ0NHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 09:07:11 -0400
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:18747 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751827AbgJ0NHK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 09:07:10 -0400
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5f981b850000>; Tue, 27 Oct 2020 06:07:17 -0700
-Received: from [172.27.0.89] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 27 Oct
- 2020 13:07:05 +0000
-Subject: Re: [PATCH rdma v2] RDMA: Add rdma_connect_locked()
-To:     Jason Gunthorpe <jgg@nvidia.com>, <linux-rdma@vger.kernel.org>
-CC:     Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Jack Wang <jinpu.wang@cloud.ionos.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Chao Leng <lengchao@huawei.com>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Keith Busch <kbusch@kernel.org>,
-        <linux-nvme@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <rds-devel@oss.oracle.com>, Sagi Grimberg <sagi@grimberg.me>
-References: <0-v2-53c22d5c1405+33-rdma_connect_locking_jgg@nvidia.com>
-From:   Max Gurtovoy <mgurtovoy@nvidia.com>
-Message-ID: <5b4368f9-c231-bcf4-28af-7a9bcac02eb4@nvidia.com>
-Date:   Tue, 27 Oct 2020 15:06:51 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+        id S2900529AbgJ0NOJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 09:14:09 -0400
+Received: from mail-ej1-f67.google.com ([209.85.218.67]:45723 "EHLO
+        mail-ej1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2900513AbgJ0NOH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 09:14:07 -0400
+Received: by mail-ej1-f67.google.com with SMTP id dt13so2122901ejb.12;
+        Tue, 27 Oct 2020 06:14:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=tXCh10L6SQ/i1jAypyelKxw6+jw7G2ndnRAA6TkZnhQ=;
+        b=bbdR283hpRGZjvgIPzlZojPzICFZFefNUuU5ZTlnsljeK+GFNOK7wCkzS+drlzHePv
+         g+hz5vMd0UqX5sfyP/Ykd2OekHy/yUcHcugq1BA0hVTv3fuiYpDof8I2xYYV2fL59aPD
+         Vr9fXAW/9YJSSBYiRN3cgyG0FapXrD+codJhGe8srHeEQXSJNxhT17h2wVqEDJpxDwHB
+         xD7q/2ySeRc0dA1BYSA8Xyg7PwQgKLUKyzZF+I0hC7HjGnxa9prORGUnCdUkEM7UXFPo
+         CQHANjdy6ZIQyBS8syaW7BOYCa1fU1lazGllPME/IPJ4IftHghTSqnUQelV3djkEoPCB
+         ybTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=tXCh10L6SQ/i1jAypyelKxw6+jw7G2ndnRAA6TkZnhQ=;
+        b=FA1JgR/NCfji4bCrgmMpWBCVf2e6WRwymjTpwtoFjVcPHosuDgGdSWH5lpl2Am6mmp
+         ODk6Y8OUDNsz4WED2B4/WMikwbQ3KOFvQrh0BTnOoUHqQttKuwUqpoQU/1KqGZnLoSh3
+         jC+FJUgBk6b/I2G0D35bdU/U976lCexuPrVuqYccy6fCQ4v1jlt/XZqr+K1RyvvS6fle
+         qeMXK8lqV2HOQEm+LqCRkzwcjutWwqM/RiBnTxqZS0667SHj+a65BE2gF/pIxPpLqSRr
+         t2coUoNd+46R3UkllzK+inoKauz2MvNZk8gEASXYnKo1AopbOzp+RDdQWwIWcm3nfWPB
+         qDHw==
+X-Gm-Message-State: AOAM530Q+lnAGsPAe1dhU8ijYeAItM3n9pD/xDMy9EZRzssRPTQFfq5Z
+        97E0Zz7te++r1Y7F6PzAw40mRb426lmEOYVHvjU=
+X-Google-Smtp-Source: ABdhPJxcm0RqztaYgbxFJmGIMA54GBLWoYl6lPTvCEjRgI13WS0Rexa+oJAp1pAe9g59yXpGqTrGVZ4eNr5FNBvZb1c=
+X-Received: by 2002:a17:907:204c:: with SMTP id pg12mr2239886ejb.464.1603804444784;
+ Tue, 27 Oct 2020 06:14:04 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <0-v2-53c22d5c1405+33-rdma_connect_locking_jgg@nvidia.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1603804037; bh=6Q/IdCWw38YxALtmasbIeodS+QkH/1f5Xs2g0ojNtug=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:
-         Content-Language:X-Originating-IP:X-ClientProxiedBy;
-        b=dO8XL3Inf54YR8XkHIfCgLVYwUP6+sbCHyysJElERfn38mZYsxUulhQDkvBP0+hhn
-         t5B3UnB65Y2ZPOCcCfdOXZt+om6cU4kaHzeQZjKtFAaFUMl0QJms6REmu3QVemlLXI
-         PMfOVkz/bNsKUYO73NIPOCi/Nu8+Sylur1e/7pNum9EmwKK+Hghiy/ChMBH8ieAbFJ
-         CFVdD1sm5yM6L9jpUT9asr3Bm/RHXfS8b37wdLRFMrOgu03DIXFL+gh+RagvJY2TI+
-         33Skylc/CMEBpp9JI2Juza/vGW25XVlz2tcAw6LN681v3pXp6KrqfeXBCDppHDTRFd
-         2j5KeEDTYOgxw==
+References: <20201026150851.528148-1-aleksandrnogikh@gmail.com>
+ <20201026150851.528148-3-aleksandrnogikh@gmail.com> <CA+FuTSeR5n4xSpzMxAYX=kyy0aJYz52FVR=EjqK8_-LVqcqpXA@mail.gmail.com>
+ <CANp29Y7WOFZ-YWV84BucHvFRg628He+NDsGqCZfdsn_crwVW2A@mail.gmail.com>
+In-Reply-To: <CANp29Y7WOFZ-YWV84BucHvFRg628He+NDsGqCZfdsn_crwVW2A@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 27 Oct 2020 09:13:29 -0400
+Message-ID: <CAF=yD-+izgrvj2diXK9=mztq+z0Gb8eVJYB78zUyP5U_WsMY4A@mail.gmail.com>
+Subject: Re: [PATCH v3 2/3] net: add kcov handle to skb extensions
+To:     Aleksandr Nogikh <nogikh@google.com>
+Cc:     Aleksandr Nogikh <aleksandrnogikh@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Marco Elver <elver@google.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Oct 27, 2020 at 8:31 AM Aleksandr Nogikh <nogikh@google.com> wrote:
+>
+> On Mon, Oct 26, 2020 at 7:57 PM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> [...]
+> > If the handle does not need to be set if zero, why then set it if the
+> > skb has extensions?
+>
+> The point of that condition is to avoid unnecessary allocations of skb ex=
+tension
+> objects. At the same time, one would expect skb_get_kcov_handle to return=
+ the
+> latest value that was set via skb_set_kcov_handle. So if a buffer already=
+ has a
+> non-zero kcov_handle and skb_set_kcov_handle is called to set it to zero,=
+ it
+> should be set to zero.
 
-On 10/27/2020 2:20 PM, Jason Gunthorpe wrote:
-> There are two flows for handling RDMA_CM_EVENT_ROUTE_RESOLVED, either the
-> handler triggers a completion and another thread does rdma_connect() or
-> the handler directly calls rdma_connect().
->
-> In all cases rdma_connect() needs to hold the handler_mutex, but when
-> handler's are invoked this is already held by the core code. This causes
-> ULPs using the 2nd method to deadlock.
->
-> Provide a rdma_connect_locked() and have all ULPs call it from their
-> handlers.
->
-> Link: https://lore.kernel.org/r/0-v1-75e124dbad74+b05-rdma_connect_locking_jgg@nvidia.com
-> Reported-and-tested-by: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
-> Fixes: 2a7cec538169 ("RDMA/cma: Fix locking for the RDMA_CM_CONNECT state")
-> Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
-> Acked-by: Jack Wang <jinpu.wang@cloud.ionos.com>
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
-> Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-> ---
->   drivers/infiniband/core/cma.c            | 40 +++++++++++++++++++++---
->   drivers/infiniband/ulp/iser/iser_verbs.c |  2 +-
->   drivers/infiniband/ulp/rtrs/rtrs-clt.c   |  4 +--
->   drivers/nvme/host/rdma.c                 |  4 +--
->   include/rdma/rdma_cm.h                   | 14 ++-------
->   net/rds/ib_cm.c                          |  5 +--
->   6 files changed, 46 insertions(+), 23 deletions(-)
->
-> v2:
->   - Remove extra code from nvme (Chao)
->   - Fix long lines (CH)
->
-> I've applied this version to rdma-rc - expecting to get these ULPs unbroken for rc2
-> release
->
-> Thanks,
-> Jason
->
-iser and nvme/rdma looks good to me,
+I see. I thought it was some best effort approach: if there happens to
+be space, use it, but don't allocate. Which I did not understand.
+Could you rephrase the comment to make more clear that this is about
+clearing a possibly previously set value.
 
-Reviewed-by: Max Gurtovoy <mgurtovoy@nvidia.com>
 
+> > skb_ext_add and skb_ext_find are not defined unless CONFIG_SKB_EXTENSIO=
+NS.
+> >
+> > Perhaps CONFIG_KCOV should be made to select that?
+>
+> Yes, thank you for pointing it out. I=E2=80=99ll fix it in the next versi=
+on.
