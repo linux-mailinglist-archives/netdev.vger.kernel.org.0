@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 615DB29CC54
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 23:56:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56BA229CC58
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 23:56:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1832584AbgJ0W4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 18:56:12 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:50362 "EHLO
+        id S1832594AbgJ0W4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 18:56:17 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:50108 "EHLO
         galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1832562AbgJ0W4F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 18:56:05 -0400
+        with ESMTP id S1832564AbgJ0W4H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 18:56:07 -0400
 From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1603839362;
+        s=2020; t=1603839365;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=JdH9fbe/FwP3XeKGJ3l0Cm+b4e3o/aTEE/5T4JYIZFo=;
-        b=HCswUXFnBU+7krIAiJOvKpJSk3khqzvmKXrOz1gM0erhfW+xw/741cfqlWqCbrRKLGLiBt
-        2ZUaoSP5ox8MMXp4zr4zTdeIQdrQbLDd0lfErEBFbuXJjY3Sl3TG4/ouW5bIhvmTNIXpU2
-        BTxYIVC5S4gOd9AbXC9lwhtY+aEdK+XsyZo+dmWM4PBHrMzxjgQL0BRejFLweIG6Bz/IjH
-        nC8PmUrMrQF9GbZZGnV1R5kFKPY2Fs+ZajwTg/K7K2jZYCeoeZvjAFEvEq0xdkMubwsmn/
-        UsR1mqQZqTsrHdN5Gr4QV7uqdaWF2X7OF6/NuBkY5fZeD4jNj5by8GNXbkDe4w==
+        bh=jttJQYUY921gdQBinUA2N0GBiq3HS7MmOYm/9rq3mlU=;
+        b=0GnEbZqlXJZLQfjONDg/KSujsSvfMvUdN9MjzKaP55p1OEL8105JJGIQe6F3XVpxye4QRG
+        RNPtf8SiqF6hXmGgkfl/1C/UqBtecqyV1R5ba28I2myfZGnsuvT0wtttW7aBU23i8cp0Kp
+        KPePrRqnO5QD3zsNjl0yz3RIKPYR9IqDfkJJwLOramUuxXxYnkd8Z0mwa5+ATFm5MBsojH
+        c1s8YWDtwJjB+Py3JzwS5Sia73LSJCXx75eylZj0Pz3x7x+1Nh9Y0AYUTJPGgc6ryex4na
+        0xwLG2EUr3iK9u8qT5n0uUKslQ2EpAHI1jsLzfDpVY5F44gyFbKLZ6KAepUyjA==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1603839362;
+        s=2020e; t=1603839365;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=JdH9fbe/FwP3XeKGJ3l0Cm+b4e3o/aTEE/5T4JYIZFo=;
-        b=oAEOw6n2K77vQLRBPQlNlkEg06bqlyVo2TatzLpimvX8utPK3aWhDMLaJa4tCTD6u/57ST
-        kccvLXygOL73iBBg==
+        bh=jttJQYUY921gdQBinUA2N0GBiq3HS7MmOYm/9rq3mlU=;
+        b=LsJR1NJ1kfuG7mH7WHiTgHjGj108g1qTNgV4c1oTVdGNGA/LhmC59JAAm3KDssv9bSM5bW
+        AvG+0+npRHIheYCA==
 To:     netdev@vger.kernel.org
 Cc:     Aymen Sghaier <aymen.sghaier@nxp.com>,
         Daniel Drake <dsd@gentoo.org>,
@@ -54,9 +54,9 @@ Cc:     Aymen Sghaier <aymen.sghaier@nxp.com>,
         Zhu Yanjun <zyjzyj2000@gmail.com>,
         Thomas Gleixner <tglx@linutronix.de>,
         Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Subject: [PATCH net-next 14/15] net: dpaa: Replace in_irq() usage.
-Date:   Tue, 27 Oct 2020 23:54:53 +0100
-Message-Id: <20201027225454.3492351-15-bigeasy@linutronix.de>
+Subject: [PATCH net-next 15/15] crypto: caam: Replace in_irq() usage.
+Date:   Tue, 27 Oct 2020 23:54:54 +0100
+Message-Id: <20201027225454.3492351-16-bigeasy@linutronix.de>
 In-Reply-To: <20201027225454.3492351-1-bigeasy@linutronix.de>
 References: <20201027225454.3492351-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
@@ -90,67 +90,44 @@ Cc: netdev@vger.kernel.org
 Cc: linuxppc-dev@lists.ozlabs.org
 Cc: linux-arm-kernel@lists.infradead.org
 ---
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/crypto/caam/qi.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/e=
-thernet/freescale/dpaa/dpaa_eth.c
-index 27835310b718e..2c949acd74c67 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -2300,9 +2300,9 @@ static void dpaa_tx_conf(struct net_device *net_dev,
+diff --git a/drivers/crypto/caam/qi.c b/drivers/crypto/caam/qi.c
+index 09ea398304c8b..79dbd90887f8a 100644
+--- a/drivers/crypto/caam/qi.c
++++ b/drivers/crypto/caam/qi.c
+@@ -545,14 +545,10 @@ static void cgr_cb(struct qman_portal *qm, struct qma=
+n_cgr *cgr, int congested)
+ 	}
  }
 =20
- static inline int dpaa_eth_napi_schedule(struct dpaa_percpu_priv *percpu_p=
-riv,
--					 struct qman_portal *portal)
-+					 struct qman_portal *portal, bool napi)
+-static int caam_qi_napi_schedule(struct qman_portal *p, struct caam_napi *=
+np)
++static int caam_qi_napi_schedule(struct qman_portal *p, struct caam_napi *=
+np,
++				 bool napi)
  {
+-	/*
+-	 * In case of threaded ISR, for RT kernels in_irq() does not return
+-	 * appropriate value, so use in_serving_softirq to distinguish between
+-	 * softirq and irq contexts.
+-	 */
 -	if (unlikely(in_irq() || !in_serving_softirq())) {
 +	if (napi) {
- 		/* Disable QMan IRQ and invoke NAPI */
- 		qman_p_irqsource_remove(portal, QM_PIRQ_DQRI);
+ 		/* Disable QMan IRQ source and invoke NAPI */
+ 		qman_p_irqsource_remove(p, QM_PIRQ_DQRI);
+ 		np->p =3D p;
+@@ -574,7 +570,7 @@ static enum qman_cb_dqrr_result caam_rsp_fq_dqrr_cb(str=
+uct qman_portal *p,
+ 	struct caam_drv_private *priv =3D dev_get_drvdata(qidev);
+ 	u32 status;
 =20
-@@ -2333,7 +2333,7 @@ static enum qman_cb_dqrr_result rx_error_dqrr(struct =
-qman_portal *portal,
-=20
- 	percpu_priv =3D this_cpu_ptr(priv->percpu_priv);
-=20
--	if (dpaa_eth_napi_schedule(percpu_priv, portal))
-+	if (dpaa_eth_napi_schedule(percpu_priv, portal, napi))
+-	if (caam_qi_napi_schedule(p, caam_napi))
++	if (caam_qi_napi_schedule(p, caam_napi, napi))
  		return qman_cb_dqrr_stop;
 =20
- 	dpaa_eth_refill_bpools(priv);
-@@ -2377,7 +2377,7 @@ static enum qman_cb_dqrr_result rx_default_dqrr(struc=
-t qman_portal *portal,
- 	percpu_priv =3D this_cpu_ptr(priv->percpu_priv);
- 	percpu_stats =3D &percpu_priv->stats;
-=20
--	if (unlikely(dpaa_eth_napi_schedule(percpu_priv, portal)))
-+	if (unlikely(dpaa_eth_napi_schedule(percpu_priv, portal, napi)))
- 		return qman_cb_dqrr_stop;
-=20
- 	/* Make sure we didn't run out of buffers */
-@@ -2474,7 +2474,7 @@ static enum qman_cb_dqrr_result conf_error_dqrr(struc=
-t qman_portal *portal,
-=20
- 	percpu_priv =3D this_cpu_ptr(priv->percpu_priv);
-=20
--	if (dpaa_eth_napi_schedule(percpu_priv, portal))
-+	if (dpaa_eth_napi_schedule(percpu_priv, portal, napi))
- 		return qman_cb_dqrr_stop;
-=20
- 	dpaa_tx_error(net_dev, priv, percpu_priv, &dq->fd, fq->fqid);
-@@ -2499,7 +2499,7 @@ static enum qman_cb_dqrr_result conf_dflt_dqrr(struct=
- qman_portal *portal,
-=20
- 	percpu_priv =3D this_cpu_ptr(priv->percpu_priv);
-=20
--	if (dpaa_eth_napi_schedule(percpu_priv, portal))
-+	if (dpaa_eth_napi_schedule(percpu_priv, portal, napi))
- 		return qman_cb_dqrr_stop;
-=20
- 	dpaa_tx_conf(net_dev, priv, percpu_priv, &dq->fd, fq->fqid);
+ 	fd =3D &dqrr->fd;
 --=20
 2.28.0
 
