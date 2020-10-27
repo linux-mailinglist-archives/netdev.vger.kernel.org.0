@@ -2,297 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4201729ABF0
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 13:20:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E90A229ABF7
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 13:21:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1751118AbgJ0MUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 08:20:46 -0400
-Received: from nat-hk.nvidia.com ([203.18.50.4]:14204 "EHLO nat-hk.nvidia.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2411653AbgJ0MUq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Oct 2020 08:20:46 -0400
-Received: from HKMAIL102.nvidia.com (Not Verified[10.18.92.100]) by nat-hk.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5f98109b0001>; Tue, 27 Oct 2020 20:20:43 +0800
-Received: from HKMAIL101.nvidia.com (10.18.16.10) by HKMAIL102.nvidia.com
- (10.18.16.11) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 27 Oct
- 2020 12:20:41 +0000
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.36.51) by
- HKMAIL101.nvidia.com (10.18.16.10) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Tue, 27 Oct 2020 12:20:40 +0000
+        id S1751251AbgJ0MVp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 08:21:45 -0400
+Received: from mail-mw2nam12on2066.outbound.protection.outlook.com ([40.107.244.66]:50779
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2440631AbgJ0MVo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Oct 2020 08:21:44 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TzWHcIrG/V/m/j6OEyZJidtOfXLWXH+QG8YEJzBZaEo2PwImJlBwihS2gvjL15UXsyEHoS878JLOz0u8kTJG+Yqk1csYZ/2MMqeM7T58iyyQaZkpAq7e8gJSnlqeVeHOFXGZBlB45hSYaZE7U5X+NCLtLMGQYcbjLku0U64tUtc2sjbMurgBtAEz8IGjTC4KfEMEcN6vJ/1+oh8vcO/v6SLJgvrq2GM/N9RYsA+R21cD7W4Au4Xk54TncguyeUpTmHJ6Sz+I2bRxjjt8zfATFdIyOc49Uup+C0SoMSB3LUN/WdOqMfcmboXu5XTr/OxkXHXdEyzrqQv7WZ7ufngTlw==
+ b=BLlrvziaIyuU3SspzYokz812M6cAod9QDKRsYTjeVro9M9hRQj7GGw7BPR11x2cN1uLC6DJssjbXuhiQ0L+yR2tZfVSBxjuzoiOJmAjVIMmbFYkt1oiLTIFtFSnyJXFECom9XqjoiFGTi9kLxE/2UfRmSAEzA8h2sCIqTZGe7A5k5OFfikGzDcHKgn7WMqDC1Q5SDou1EsnyzT8X5UPY67SqzkCOfvxJT8qlj9SpuitPsqKc2iQ1Fhpeixn5s2dwl91IfEBmPiwe1foLrgcKuu9EOrnwE507Ep3ExZudvwlyEtcT0IvyGWVybbwAj+fTl9w2/h56WpZDufSwZlZ5Og==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kXU5dK+Hgyn9y1Tu32kYWiWho/xuv/h7+IEfaXK84qg=;
- b=XcO49eJfMnVZOyNVJCIZbDFfEDMJtYdqaZnMwINJOwWVZ5FNb2eDpVXVv6G5Jc0nB8SxzUTpCqIqVu/zIV6oggXywZYX9VJlji5WYJHx/jmQP0mDFheJTru6vOBawBb4f3mfBduDSnMOb9IoMKw/WJGl31Apej/bSz1NP7Yvz9V3kZLB1zl/eUvAzzumHGDxNto9zelREhVjY0huZpHV6kiDTpC6RT2xOI24zp990u4HzvqIlX7IcJydZjmv9qeAtqzE4glhh44a43A9uCNNql2xP9jqQllPAeQiyVnWhajoo6Qlu/WqsMndeTCc5deJc4Wwir7Klok8OilDnekcAQ==
+ bh=Z0uywEG7ytgt5hsUFXKH12dLQ6cokqZFnsWdRhpAxSs=;
+ b=flQrEhDqknXkt2sCJuTO1KNW94HMgu43a/2yhpYZzhqPEb67GWtAJTEglRNDTqyVPexm8r9lCnynn1V8CbpmOzRsmRZnuF768h9IuzCtSkgTcI0+r5y+LdA1hqsyIOMkb6coLwu7+D+WBu5d1vfverFBpkJqF1APxaneI4tOcLprgjPG3HyB7RhSCcrEQkKNgAqsIcSRUr+xIHZrgnY943oaPnwDsnK6RAa5WmBCvi9t5CwPj/YyVZF65JKhUM2sBFybGz2vluHsMLG5XhXhTXAsowXsUQm0pqtFQ1+O+pi3LpjMMehXSAfOlQTBN0/GiLHe39Pi1K+ZmuuKV7evuw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB4617.namprd12.prod.outlook.com (2603:10b6:5:35::24) with
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Z0uywEG7ytgt5hsUFXKH12dLQ6cokqZFnsWdRhpAxSs=;
+ b=1BNOWCazcq7ahc70MoqU1trdaxNis6GohUxx3jzCA98xFHWR7SURRJNv5VqHsjjiZ9JzcV0S3t2selQp5r1wwDDrs1J6Bhu6WZmCc0JId52tWvLW6gWqHiRlDgpAuG18kXXKdaD6B25uN/2ofrPdV5tLTaPZnrWGY1SegCZ3zOQ=
+Authentication-Results: baylibre.com; dkim=none (message not signed)
+ header.d=none;baylibre.com; dmarc=none action=none header.from=amd.com;
+Received: from MN2PR12MB3775.namprd12.prod.outlook.com (2603:10b6:208:159::19)
+ by MN2PR12MB4536.namprd12.prod.outlook.com (2603:10b6:208:263::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Tue, 27 Oct
- 2020 12:20:38 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::cdbe:f274:ad65:9a78]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::cdbe:f274:ad65:9a78%7]) with mapi id 15.20.3477.028; Tue, 27 Oct 2020
- 12:20:38 +0000
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     <linux-rdma@vger.kernel.org>
-CC:     Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Jack Wang <jinpu.wang@cloud.ionos.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Chao Leng <lengchao@huawei.com>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Keith Busch <kbusch@kernel.org>,
-        <linux-nvme@lists.infradead.org>,
-        Max Gurtovoy <mgurtovoy@nvidia.com>, <netdev@vger.kernel.org>,
-        <rds-devel@oss.oracle.com>, Sagi Grimberg <sagi@grimberg.me>
-Subject: [PATCH rdma v2] RDMA: Add rdma_connect_locked()
-Date:   Tue, 27 Oct 2020 09:20:36 -0300
-Message-ID: <0-v2-53c22d5c1405+33-rdma_connect_locking_jgg@nvidia.com>
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-ClientProxiedBy: BL1PR13CA0030.namprd13.prod.outlook.com
- (2603:10b6:208:256::35) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.20; Tue, 27 Oct
+ 2020 12:21:40 +0000
+Received: from MN2PR12MB3775.namprd12.prod.outlook.com
+ ([fe80::f8f7:7403:1c92:3a60]) by MN2PR12MB3775.namprd12.prod.outlook.com
+ ([fe80::f8f7:7403:1c92:3a60%6]) with mapi id 15.20.3477.028; Tue, 27 Oct 2020
+ 12:21:40 +0000
+Subject: Re: [PATCH 8/8] dma-buf: use krealloc_array()
+To:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Gustavo Padovan <gustavo@padovan.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+Cc:     linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-gpio@vger.kernel.org,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, linux-mm@kvack.org,
+        alsa-devel@alsa-project.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+References: <20201027121725.24660-1-brgl@bgdev.pl>
+ <20201027121725.24660-9-brgl@bgdev.pl>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
+Message-ID: <0b41d541-30a9-a020-f065-fb55dc766bc1@amd.com>
+Date:   Tue, 27 Oct 2020 13:21:32 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <20201027121725.24660-9-brgl@bgdev.pl>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Originating-IP: [2a02:908:1252:fb60:be8a:bd56:1f94:86e7]
+X-ClientProxiedBy: AM0PR04CA0005.eurprd04.prod.outlook.com
+ (2603:10a6:208:122::18) To MN2PR12MB3775.namprd12.prod.outlook.com
+ (2603:10b6:208:159::19)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (156.34.48.30) by BL1PR13CA0030.namprd13.prod.outlook.com (2603:10b6:208:256::35) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.11 via Frontend Transport; Tue, 27 Oct 2020 12:20:38 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kXNxs-009IL8-RG; Tue, 27 Oct 2020 09:20:36 -0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1603801243; bh=X+1/YGB7J6D/kEBrmw3op9vkTO4OwW+pyHg15PTEfFQ=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
-         CC:Subject:Date:Message-ID:Content-Transfer-Encoding:Content-Type:
-         X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType;
-        b=LY1yBbAZO3LVre4QuP1SCFITZp0C/zBG3FQcqRWD1cmq2LoaRcJu2DOHIBH+bnqFG
-         N14VsjatbeCAScNgHCImhTfeJCcLRqlS61oPTWIc26UVTwz1Er98rhLfZ3Hvl4B4By
-         ZdHphUyxbTgsBl4kSDcOlKT4zeT92prCt8LQvKwiY/sH2qSW4KjGP65C3uB7bhcjgK
-         s+mErmc8J0OQGnzoXGYrdW3R7l8uMuFbSk5MTYgQJl6CGpCFRDTZQQvNTPnjiRNeBc
-         ZcUGFIcuUHPqyjeIJjEli6w/Q0oLPWqcILKbtqhbRZ3opVOICAqQzfsOuJiTA7/6Iz
-         1xURETmKlHBWA==
+Received: from [IPv6:2a02:908:1252:fb60:be8a:bd56:1f94:86e7] (2a02:908:1252:fb60:be8a:bd56:1f94:86e7) by AM0PR04CA0005.eurprd04.prod.outlook.com (2603:10a6:208:122::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Tue, 27 Oct 2020 12:21:35 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 4a9ccb29-0bf0-4bbc-8097-08d87a72dbcb
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4536:
+X-Microsoft-Antispam-PRVS: <MN2PR12MB453650BEAA05349A6A4E2BA283160@MN2PR12MB4536.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pqEq0WXz7JKgB6Ql3KJBLH5AYrTjK5M2jtAgZS6kH16rbGMXsVzP+JfXQ7zg8W69imE0I//FAjeKtQnAD2TIhsEiBUwKveQd4GNpiZ8yylbm7Jo9XSV3isikrahqC98Wy9DyBPGDIKgL3GFq47D2+03ouhYdRXwuSlIhrYKdBT3WRcB0uo2g1m3Dsh/3vwIvxUHq9zYmJHagvGRHwmNyGgJshBakvkmsOxNy2PlAFU+1p7FmH+xcizm15aKfdSC9HAQZ8usGklEJFwFGrkeY0RSB8H1Wx7VB0dzabYQej+qYBNkaVsjHHHWi2SRxyczrreMc/2KPgliWfBJi/aLcnDtWVjvpduwqEr3fo5Yb24OTL1jrpkAW0b4VBzxvpnk2v0QlMFTGy+8CD7/dszJWow==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB3775.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(136003)(366004)(39860400002)(346002)(376002)(4744005)(7406005)(5660300002)(83380400001)(66556008)(16526019)(66946007)(52116002)(8936002)(316002)(186003)(66476007)(6486002)(31696002)(110136005)(2616005)(6666004)(7416002)(2906002)(4326008)(478600001)(86362001)(8676002)(36756003)(31686004)(921003)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 97vJT1bWj4JuIqlB3lM08hOS0mbbkIwaaXA6HIMCZNnSevvdudkGUonMw0ndN+QpRlA3y/XWlf7zdiV3f60aiQYfbK7Tuu0gok7qk8Kl4TtW79Z7FeFIk1HsvnAP+Zmo2/deeOl+GNycCCX/ePKCNbThOaY8bQWv/LKUJ794ioHxdrFjF2EE40yqHrqZXlGhsc6t+I4WvCjqt7ly60LO6dFIDRDCYa7+2jDo7JtpulC9ytwm0TfqnuILkPJkGod2Si10tRDxSTD3YbcQorkCNTDRccQAGoCBCGKn0qt24xJIrZLswFNBb8rSvGBTu3oPpieaN9G4b9qp7jZ4E8OSOzTKaxKh0pEA7oHFxtv7HRHDJ8KScCMGjOdazN6IarDcf2jYchVCQYWactUH82DiKZJNQdy7tU3WVEMjf7W9y7hkWJIMOhzOlP/qeN9QpKC4UWJXzzH0z25BhlJCvYeCg55+ik2Wbe2MA0E8w6hkNtvdZKm59W6/JOCPWqC/uYvlUuTKFo4lewjVZfO9egZcJtNyWpX5Cnt8jcUiyeXOCo1Q5mVHaOazxJ+8hqYEABObaNNuMLo9QMuAYlP0Tg/YpLq7PNSaGJ9q9w6r9h+wfBvv7MOvej0d9laooqe/jvbEXyzdahKmpZVzcDACJCTJqp3RCr1ukyHHzTTj+/BYVJc4vZO0ue9kBNsIHg955Dio0EYLPZmb6JNURZI/lHBgJg==
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4a9ccb29-0bf0-4bbc-8097-08d87a72dbcb
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB3775.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2020 12:21:40.8550
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: oEKxYQK0NHX7xk+/r0yZhJpur2OX1UekLRtALy6oFy5OGVfFhixUWxfCnPfM0nef
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4536
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are two flows for handling RDMA_CM_EVENT_ROUTE_RESOLVED, either the
-handler triggers a completion and another thread does rdma_connect() or
-the handler directly calls rdma_connect().
+Am 27.10.20 um 13:17 schrieb Bartosz Golaszewski:
+> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+>
+> Use the helper that checks for overflows internally instead of manually
+> calculating the size of the new array.
+>
+> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-In all cases rdma_connect() needs to hold the handler_mutex, but when
-handler's are invoked this is already held by the core code. This causes
-ULPs using the 2nd method to deadlock.
+Acked-by: Christian König <christian.koenig@amd.com>
 
-Provide a rdma_connect_locked() and have all ULPs call it from their
-handlers.
-
-Link: https://lore.kernel.org/r/0-v1-75e124dbad74+b05-rdma_connect_locking_=
-jgg@nvidia.com
-Reported-and-tested-by: Guoqing Jiang <guoqing.jiang@cloud.ionos.com>
-Fixes: 2a7cec538169 ("RDMA/cma: Fix locking for the RDMA_CM_CONNECT state")
-Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
-Acked-by: Jack Wang <jinpu.wang@cloud.ionos.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
----
- drivers/infiniband/core/cma.c            | 40 +++++++++++++++++++++---
- drivers/infiniband/ulp/iser/iser_verbs.c |  2 +-
- drivers/infiniband/ulp/rtrs/rtrs-clt.c   |  4 +--
- drivers/nvme/host/rdma.c                 |  4 +--
- include/rdma/rdma_cm.h                   | 14 ++-------
- net/rds/ib_cm.c                          |  5 +--
- 6 files changed, 46 insertions(+), 23 deletions(-)
-
-v2:
- - Remove extra code from nvme (Chao)
- - Fix long lines (CH)
-
-I've applied this version to rdma-rc - expecting to get these ULPs unbroken=
- for rc2
-release
-
-Thanks,
-Jason
-
-diff --git a/drivers/infiniband/core/cma.c b/drivers/infiniband/core/cma.c
-index 7c2ab1f2fbea37..193c8902b9db26 100644
---- a/drivers/infiniband/core/cma.c
-+++ b/drivers/infiniband/core/cma.c
-@@ -405,10 +405,10 @@ static int cma_comp_exch(struct rdma_id_private *id_p=
-riv,
- 	/*
- 	 * The FSM uses a funny double locking where state is protected by both
- 	 * the handler_mutex and the spinlock. State is not allowed to change
--	 * away from a handler_mutex protected value without also holding
-+	 * to/from a handler_mutex protected value without also holding
- 	 * handler_mutex.
- 	 */
--	if (comp =3D=3D RDMA_CM_CONNECT)
-+	if (comp =3D=3D RDMA_CM_CONNECT || exch =3D=3D RDMA_CM_CONNECT)
- 		lockdep_assert_held(&id_priv->handler_mutex);
-=20
- 	spin_lock_irqsave(&id_priv->lock, flags);
-@@ -4038,13 +4038,21 @@ static int cma_connect_iw(struct rdma_id_private *i=
-d_priv,
- 	return ret;
- }
-=20
--int rdma_connect(struct rdma_cm_id *id, struct rdma_conn_param *conn_param=
-)
-+/**
-+ * rdma_connect_locked - Initiate an active connection request.
-+ * @id: Connection identifier to connect.
-+ * @conn_param: Connection information used for connected QPs.
-+ *
-+ * Same as rdma_connect() but can only be called from the
-+ * RDMA_CM_EVENT_ROUTE_RESOLVED handler callback.
-+ */
-+int rdma_connect_locked(struct rdma_cm_id *id,
-+			struct rdma_conn_param *conn_param)
- {
- 	struct rdma_id_private *id_priv =3D
- 		container_of(id, struct rdma_id_private, id);
- 	int ret;
-=20
--	mutex_lock(&id_priv->handler_mutex);
- 	if (!cma_comp_exch(id_priv, RDMA_CM_ROUTE_RESOLVED, RDMA_CM_CONNECT)) {
- 		ret =3D -EINVAL;
- 		goto err_unlock;
-@@ -4071,6 +4079,30 @@ int rdma_connect(struct rdma_cm_id *id, struct rdma_=
-conn_param *conn_param)
- err_state:
- 	cma_comp_exch(id_priv, RDMA_CM_CONNECT, RDMA_CM_ROUTE_RESOLVED);
- err_unlock:
-+	return ret;
-+}
-+EXPORT_SYMBOL(rdma_connect_locked);
-+
-+/**
-+ * rdma_connect - Initiate an active connection request.
-+ * @id: Connection identifier to connect.
-+ * @conn_param: Connection information used for connected QPs.
-+ *
-+ * Users must have resolved a route for the rdma_cm_id to connect with by =
-having
-+ * called rdma_resolve_route before calling this routine.
-+ *
-+ * This call will either connect to a remote QP or obtain remote QP inform=
-ation
-+ * for unconnected rdma_cm_id's.  The actual operation is based on the
-+ * rdma_cm_id's port space.
-+ */
-+int rdma_connect(struct rdma_cm_id *id, struct rdma_conn_param *conn_param=
-)
-+{
-+	struct rdma_id_private *id_priv =3D
-+		container_of(id, struct rdma_id_private, id);
-+	int ret;
-+
-+	mutex_lock(&id_priv->handler_mutex);
-+	ret =3D rdma_connect_locked(id, conn_param);
- 	mutex_unlock(&id_priv->handler_mutex);
- 	return ret;
- }
-diff --git a/drivers/infiniband/ulp/iser/iser_verbs.c b/drivers/infiniband/=
-ulp/iser/iser_verbs.c
-index 2f3ebc0a75d924..2bd18b00689341 100644
---- a/drivers/infiniband/ulp/iser/iser_verbs.c
-+++ b/drivers/infiniband/ulp/iser/iser_verbs.c
-@@ -620,7 +620,7 @@ static void iser_route_handler(struct rdma_cm_id *cma_i=
-d)
- 	conn_param.private_data	=3D (void *)&req_hdr;
- 	conn_param.private_data_len =3D sizeof(struct iser_cm_hdr);
-=20
--	ret =3D rdma_connect(cma_id, &conn_param);
-+	ret =3D rdma_connect_locked(cma_id, &conn_param);
- 	if (ret) {
- 		iser_err("failure connecting: %d\n", ret);
- 		goto failure;
-diff --git a/drivers/infiniband/ulp/rtrs/rtrs-clt.c b/drivers/infiniband/ul=
-p/rtrs/rtrs-clt.c
-index 776e89231c52f7..f298adc02acba2 100644
---- a/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-+++ b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-@@ -1674,9 +1674,9 @@ static int rtrs_rdma_route_resolved(struct rtrs_clt_c=
-on *con)
- 	uuid_copy(&msg.sess_uuid, &sess->s.uuid);
- 	uuid_copy(&msg.paths_uuid, &clt->paths_uuid);
-=20
--	err =3D rdma_connect(con->c.cm_id, &param);
-+	err =3D rdma_connect_locked(con->c.cm_id, &param);
- 	if (err)
--		rtrs_err(clt, "rdma_connect(): %d\n", err);
-+		rtrs_err(clt, "rdma_connect_locked(): %d\n", err);
-=20
- 	return err;
- }
-diff --git a/drivers/nvme/host/rdma.c b/drivers/nvme/host/rdma.c
-index aad829a2b50d0f..8bbc48cc45dc1d 100644
---- a/drivers/nvme/host/rdma.c
-+++ b/drivers/nvme/host/rdma.c
-@@ -1890,10 +1890,10 @@ static int nvme_rdma_route_resolved(struct nvme_rdm=
-a_queue *queue)
- 		priv.hsqsize =3D cpu_to_le16(queue->ctrl->ctrl.sqsize);
- 	}
-=20
--	ret =3D rdma_connect(queue->cm_id, &param);
-+	ret =3D rdma_connect_locked(queue->cm_id, &param);
- 	if (ret) {
- 		dev_err(ctrl->ctrl.device,
--			"rdma_connect failed (%d).\n", ret);
-+			"rdma_connect_locked failed (%d).\n", ret);
- 		goto out_destroy_queue_ib;
- 	}
-=20
-diff --git a/include/rdma/rdma_cm.h b/include/rdma/rdma_cm.h
-index c672ae1da26bb5..32a67af18415d6 100644
---- a/include/rdma/rdma_cm.h
-+++ b/include/rdma/rdma_cm.h
-@@ -227,19 +227,9 @@ void rdma_destroy_qp(struct rdma_cm_id *id);
- int rdma_init_qp_attr(struct rdma_cm_id *id, struct ib_qp_attr *qp_attr,
- 		       int *qp_attr_mask);
-=20
--/**
-- * rdma_connect - Initiate an active connection request.
-- * @id: Connection identifier to connect.
-- * @conn_param: Connection information used for connected QPs.
-- *
-- * Users must have resolved a route for the rdma_cm_id to connect with
-- * by having called rdma_resolve_route before calling this routine.
-- *
-- * This call will either connect to a remote QP or obtain remote QP
-- * information for unconnected rdma_cm_id's.  The actual operation is
-- * based on the rdma_cm_id's port space.
-- */
- int rdma_connect(struct rdma_cm_id *id, struct rdma_conn_param *conn_param=
-);
-+int rdma_connect_locked(struct rdma_cm_id *id,
-+			struct rdma_conn_param *conn_param);
-=20
- int rdma_connect_ece(struct rdma_cm_id *id, struct rdma_conn_param *conn_p=
-aram,
- 		     struct rdma_ucm_ece *ece);
-diff --git a/net/rds/ib_cm.c b/net/rds/ib_cm.c
-index 06603dd1c8aa38..b36b60668b1da9 100644
---- a/net/rds/ib_cm.c
-+++ b/net/rds/ib_cm.c
-@@ -956,9 +956,10 @@ int rds_ib_cm_initiate_connect(struct rdma_cm_id *cm_i=
-d, bool isv6)
- 	rds_ib_cm_fill_conn_param(conn, &conn_param, &dp,
- 				  conn->c_proposed_version,
- 				  UINT_MAX, UINT_MAX, isv6);
--	ret =3D rdma_connect(cm_id, &conn_param);
-+	ret =3D rdma_connect_locked(cm_id, &conn_param);
- 	if (ret)
--		rds_ib_conn_error(conn, "rdma_connect failed (%d)\n", ret);
-+		rds_ib_conn_error(conn, "rdma_connect_locked failed (%d)\n",
-+				  ret);
-=20
- out:
- 	/* Beware - returning non-zero tells the rdma_cm to destroy
---=20
-2.28.0
+> ---
+>   drivers/dma-buf/sync_file.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/dma-buf/sync_file.c b/drivers/dma-buf/sync_file.c
+> index 5a5a1da01a00..2925ea03eef0 100644
+> --- a/drivers/dma-buf/sync_file.c
+> +++ b/drivers/dma-buf/sync_file.c
+> @@ -270,8 +270,8 @@ static struct sync_file *sync_file_merge(const char *name, struct sync_file *a,
+>   		fences[i++] = dma_fence_get(a_fences[0]);
+>   
+>   	if (num_fences > i) {
+> -		nfences = krealloc(fences, i * sizeof(*fences),
+> -				  GFP_KERNEL);
+> +		nfences = krealloc_array(fences, i,
+> +					 sizeof(*fences), GFP_KERNEL);
+>   		if (!nfences)
+>   			goto err;
+>   
 
