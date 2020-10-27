@@ -2,122 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 013F929A881
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 10:56:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EA3F29A841
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 10:51:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2896525AbgJ0J4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 05:56:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:21573 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2410305AbgJ0J43 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 05:56:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603792587;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=JVIROt4xscPTv2bl+9dBZkGi/KmAAnHZ43ndwfcAS4s=;
-        b=bB+jRXhLlnKQCuJbpeOwsBh7oh+8kwGSocAoOAouv7s/xncBsWSuDeg7MNl8euVHHqFMRh
-        fUeHc8Jc2hNRpxJp6LIdOPdzTe20C8wxhRg4DFd7qt7qNoqNvqXiHIDWwBBfTfiREdxWae
-        4Owm2sYh7m97ZKtNum85/toKt2lax90=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-410-HcgxRTMQP4aCMXK2g1pL6A-1; Tue, 27 Oct 2020 05:56:23 -0400
-X-MC-Unique: HcgxRTMQP4aCMXK2g1pL6A-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S2896080AbgJ0Jvo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 05:51:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42660 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2896042AbgJ0Jvn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Oct 2020 05:51:43 -0400
+Received: from mail.kernel.org (ip5f5ad5af.dynamic.kabel-deutschland.de [95.90.213.175])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 883E2100CCFD;
-        Tue, 27 Oct 2020 09:56:20 +0000 (UTC)
-Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 5B3EC7367E;
-        Tue, 27 Oct 2020 09:55:56 +0000 (UTC)
-Received: by fuller.cnet (Postfix, from userid 1000)
-        id 00636417F242; Mon, 26 Oct 2020 16:11:07 -0300 (-03)
-Date:   Mon, 26 Oct 2020 16:11:07 -0300
-From:   Marcelo Tosatti <mtosatti@redhat.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Nitesh Narayan Lal <nitesh@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>, helgaas@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        frederic@kernel.org, sassmann@redhat.com,
-        jesse.brandeburg@intel.com, lihong.yang@intel.com,
-        jeffrey.t.kirsher@intel.com, jacob.e.keller@intel.com,
-        jlelli@redhat.com, hch@infradead.org, bhelgaas@google.com,
-        mike.marciniszyn@intel.com, dennis.dalessandro@intel.com,
-        thomas.lendacky@amd.com, jiri@nvidia.com, mingo@redhat.com,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        lgoncalv@redhat.com
-Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to
- housekeeping CPUs
-Message-ID: <20201026191107.GA407524@fuller.cnet>
-References: <20201020073055.GY2611@hirez.programming.kicks-ass.net>
- <078e659e-d151-5bc2-a7dd-fe0070267cb3@redhat.com>
- <20201020134128.GT2628@hirez.programming.kicks-ass.net>
- <6736e643-d4ae-9919-9ae1-a73d5f31463e@redhat.com>
- <260f4191-5b9f-6dc1-9f11-085533ac4f55@redhat.com>
- <20201023085826.GP2611@hirez.programming.kicks-ass.net>
- <9ee77056-ef02-8696-5b96-46007e35ab00@redhat.com>
- <87ft6464jf.fsf@nanos.tec.linutronix.de>
- <20201026173012.GA377978@fuller.cnet>
- <875z6w4xt4.fsf@nanos.tec.linutronix.de>
+        by mail.kernel.org (Postfix) with ESMTPSA id 8B7F6238E6;
+        Tue, 27 Oct 2020 09:51:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603792301;
+        bh=k2p7k6YrutH2g/MqEvjL1yqH8huj2qjYzbjROOMuBD4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wA5JisO8GsOPtW3h9IImBLoj7Z5OhDiq3AzadWYu95GsRb7fIQvWdMgABnbXuIz2O
+         De6cGCqlsV3BqYw9B519R7CX0fyRHvSoDFR4OcBZ7JYG1UlzpLpaYoMsBlSBp8DbMP
+         qoCiBg84n7E8liqnOeIdsswEyY7KYUcX+8QWhamU=
+Received: from mchehab by mail.kernel.org with local (Exim 4.94)
+        (envelope-from <mchehab@kernel.org>)
+        id 1kXLdj-003FF9-FH; Tue, 27 Oct 2020 10:51:39 +0100
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>, Jiri Pirko <jiri@nvidia.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH v3 16/32] ice: docs fix a devlink info that broke a table
+Date:   Tue, 27 Oct 2020 10:51:20 +0100
+Message-Id: <84ae28bda1987284033966b7b56a4b27ae40713b.1603791716.git.mchehab+huawei@kernel.org>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <cover.1603791716.git.mchehab+huawei@kernel.org>
+References: <cover.1603791716.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <875z6w4xt4.fsf@nanos.tec.linutronix.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Content-Transfer-Encoding: 8bit
+Sender: Mauro Carvalho Chehab <mchehab@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 26, 2020 at 08:00:39PM +0100, Thomas Gleixner wrote:
-> On Mon, Oct 26 2020 at 14:30, Marcelo Tosatti wrote:
-> > On Fri, Oct 23, 2020 at 11:00:52PM +0200, Thomas Gleixner wrote:
-> >> So without information from the driver which tells what the best number
-> >> of interrupts is with a reduced number of CPUs, this cutoff will cause
-> >> more problems than it solves. Regressions guaranteed.
-> >
-> > One might want to move from one interrupt per isolated app core
-> > to zero, or vice versa. It seems that "best number of interrupts 
-> > is with reduced number of CPUs" information, is therefore in userspace, 
-> > not in driver...
-> 
-> How does userspace know about the driver internals? Number of management
-> interrupts, optimal number of interrupts per queue?
-> 
-> >> Managed interrupts base their interrupt allocation and spreading on
-> >> information which is handed in by the individual driver and not on crude
-> >> assumptions. They are not imposing restrictions on the use case.
-> >> 
-> >> It's perfectly fine for isolated work to save a data set to disk after
-> >> computation has finished and that just works with the per-cpu I/O queue
-> >> which is otherwise completely silent. 
-> >
-> > Userspace could only change the mask of interrupts which are not 
-> > triggered by requests from the local CPU (admin, error, mgmt, etc),
-> > to avoid the vector exhaustion problem.
-> >
-> > However, there is no explicit way for userspace to know that, as far as
-> > i know.
-> >
-> >  130:      34845          0          0          0          0          0          0          0  IR-PCI-MSI 33554433-edge      nvme0q1
-> >  131:          0      27062          0          0          0          0          0          0  IR-PCI-MSI 33554434-edge      nvme0q2
-> >  132:          0          0      24393          0          0          0          0          0  IR-PCI-MSI 33554435-edge      nvme0q3
-> >  133:          0          0          0      24313          0          0          0          0  IR-PCI-MSI 33554436-edge      nvme0q4
-> >  134:          0          0          0          0      20608          0          0          0  IR-PCI-MSI 33554437-edge      nvme0q5
-> >  135:          0          0          0          0          0      22163          0          0  IR-PCI-MSI 33554438-edge      nvme0q6
-> >  136:          0          0          0          0          0          0      23020          0  IR-PCI-MSI 33554439-edge      nvme0q7
-> >  137:          0          0          0          0          0          0          0      24285  IR-PCI-MSI 33554440-edge      nvme0q8
-> >
-> > Can that be retrieved from PCI-MSI information, or drivers
-> > have to inform this?
-> 
-> The driver should use a different name for the admin queues.
+Changeset 410d06879c01 ("ice: add the DDP Track ID to devlink info")
+added description for a new devlink field, but forgot to add
+one of its columns, causing it to break:
 
-Works for me.
+	.../Documentation/networking/devlink/ice.rst:15: WARNING: Error parsing content block for the "list-table" directive: uniform two-level bullet list expected, but row 11 does not contain the same number of items as row 1 (3 vs 4).
 
-Sounds more like a heuristic which can break, so documenting this 
-as an "interface" seems appropriate.
+	.. list-table:: devlink info versions implemented
+	    :widths: 5 5 5 90
+...
+	    * - ``fw.app.bundle_id``
+	      - 0xc0000001
+	      - Unique identifier for the DDP package loaded in the device. Also
+	        referred to as the DDP Track ID. Can be used to uniquely identify
+	        the specific DDP package.
+
+Add the type field to the ``fw.app.bundle_id`` row.
+
+Fixes: 410d06879c01 ("ice: add the DDP Track ID to devlink info")
+Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+---
+ Documentation/networking/devlink/ice.rst | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/networking/devlink/ice.rst b/Documentation/networking/devlink/ice.rst
+index b165181d5d4d..a432dc419fa4 100644
+--- a/Documentation/networking/devlink/ice.rst
++++ b/Documentation/networking/devlink/ice.rst
+@@ -70,6 +70,7 @@ The ``ice`` driver reports the following versions
+         that both the name (as reported by ``fw.app.name``) and version are
+         required to uniquely identify the package.
+     * - ``fw.app.bundle_id``
++      - running
+       - 0xc0000001
+       - Unique identifier for the DDP package loaded in the device. Also
+         referred to as the DDP Track ID. Can be used to uniquely identify
+-- 
+2.26.2
 
