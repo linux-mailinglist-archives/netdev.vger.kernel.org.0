@@ -2,88 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 201C229C354
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 18:46:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D639229C201
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 18:32:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1760015AbgJ0Oaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 10:30:52 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:47278 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1759197AbgJ0O2S (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 10:28:18 -0400
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1603808897;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WHVWY8Pt2cBEbxM1Jxi63g2Hj3JS0/EEW2zyuVGEPSs=;
-        b=2GQa6Ul8aOkAo3AXsA0aVITxroDZkL4AtCNdgNI3SDHsv3F+SU+7ED8PqGdbAeRfy0O4TB
-        icKZgLCvuhTR1kJhp3uq+KN+rs4RZzZQK7odWgDfiXaSUfApcsaWUkjSb7TZbo1M0cF8Ys
-        Ilcw/2OVZ4JEar/I/4TgEHp0ss+xXlb5kZcx2dZtVHI3WmN9kpwf10tXqdk4+lTtprnWUL
-        rIX41oWtJ5VehAeaG/J+tjCqxsEdrZIip7AsZUAUd8upg+lfYoD61K8xt1A4hEOq0c51ET
-        IqQ2a0jkuDj9QRkf8VK5YQABRVEB4rlGLAk8h9l8jbR5vJXlX+tBNT9AgUzSLw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1603808897;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WHVWY8Pt2cBEbxM1Jxi63g2Hj3JS0/EEW2zyuVGEPSs=;
-        b=iI4zzfmXqaQk8wTIlKzcoy2w3B7FkOtnUj2WNnQBCUCsHicUw1/TWMW/wUuiUSu0omFieQ
-        T9rGsHQGnc8YCiBQ==
-To:     Jacob Keller <jacob.e.keller@intel.com>,
-        Nitesh Narayan Lal <nitesh@redhat.com>,
-        Marcelo Tosatti <mtosatti@redhat.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>, helgaas@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        frederic@kernel.org, sassmann@redhat.com,
-        jesse.brandeburg@intel.com, lihong.yang@intel.com,
-        jeffrey.t.kirsher@intel.com, jlelli@redhat.com, hch@infradead.org,
-        bhelgaas@google.com, mike.marciniszyn@intel.com,
-        dennis.dalessandro@intel.com, thomas.lendacky@amd.com,
-        jiri@nvidia.com, mingo@redhat.com, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, lgoncalv@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH v4 4/4] PCI: Limit pci_alloc_irq_vectors() to housekeeping CPUs
-In-Reply-To: <586e249a-1078-9fe9-22d4-b3c1ec0a3a5e@intel.com>
-References: <20201019111137.GL2628@hirez.programming.kicks-ass.net> <20201019140005.GB17287@fuller.cnet> <20201020073055.GY2611@hirez.programming.kicks-ass.net> <078e659e-d151-5bc2-a7dd-fe0070267cb3@redhat.com> <20201020134128.GT2628@hirez.programming.kicks-ass.net> <6736e643-d4ae-9919-9ae1-a73d5f31463e@redhat.com> <260f4191-5b9f-6dc1-9f11-085533ac4f55@redhat.com> <20201023085826.GP2611@hirez.programming.kicks-ass.net> <9ee77056-ef02-8696-5b96-46007e35ab00@redhat.com> <87ft6464jf.fsf@nanos.tec.linutronix.de> <20201026173012.GA377978@fuller.cnet> <875z6w4xt4.fsf@nanos.tec.linutronix.de> <86f8f667-bda6-59c4-91b7-6ba2ef55e3db@intel.com> <87v9ew3fzd.fsf@nanos.tec.linutronix.de> <85b5f53e-5be2-beea-269a-f70029bea298@intel.com> <87lffs3bd6.fsf@nanos.tec.linutronix.de> <959997ee-f393-bab0-45c0-4144c37b9185@redhat.com> <875z6w38n4.fsf@nanos.tec.linutronix.de> <586e249a-1078-9fe9-22d4-b3c1ec0a3a5e@intel.com>
-Date:   Tue, 27 Oct 2020 15:28:16 +0100
-Message-ID: <87mu07216n.fsf@nanos.tec.linutronix.de>
+        id S1819241AbgJ0R2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 13:28:44 -0400
+Received: from mail-io1-f43.google.com ([209.85.166.43]:33280 "EHLO
+        mail-io1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1819229AbgJ0R2m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 13:28:42 -0400
+Received: by mail-io1-f43.google.com with SMTP id p15so2428210ioh.0
+        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 10:28:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2rBY+rxllMAuu6X633d3gx4owrRmPzJZZ3hvHn7KU2E=;
+        b=kGk1MJx8womcscOt80gl1emc/j3xWfmrwfTGGd1CBZDDit59Unc3fLzojGWWrjHmS7
+         SthwnNeaQeOu9YACzMxlr1YOC2VuEYDMo9CU/tNsmYVKRg4V6fwNr66rXDxKvKctN9Hp
+         cMBbHTF3CaZ28S/Lx1CPnAQgwcBvwxTZBHNtsVu2kaY0t0zdepoQFHTZcaxi6ZTuJutZ
+         fthBXwaIYL+cKRKb7jzcQcJhe/C1qX6rxqCku8zvy3a9KkLEAAXMta2WMrKsDBZHpdD7
+         cn+tL6QMv8KWzQgaf985zFfLLKd0oyXPeTi88om/U1gE308pYtECcqh08cGEJd6lrIOV
+         BptA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2rBY+rxllMAuu6X633d3gx4owrRmPzJZZ3hvHn7KU2E=;
+        b=tp+SvletOW3TmsihdSya0QhciAM+P5JukxUT55V4gTHa2ge+vpaiNVjlQWlsmLdd+o
+         GjpIhKu+9uY9trK/7YoSomjFbHT6mXSsrXI50G/Xyq4dzEot7P2kvFICi8/lq79IKqj7
+         7vxA4pUjDhNHtQsV9pMlOl6eL07NYe/6ibi8a9uwC4fnOQl4bogqEd3W/xqPQ3XYaipP
+         B/PJ91GdlATUAYN7MNVuMZJcn/EotRSyAne3buYMRCRTllrz0+YnyG4F5sFrFzMS33rv
+         6H6VEZDh1ewsKKDbIc1GuaphEFJdmBYZ8ovVbcUXbsSGDmxLPmbZU91UHrD/R5mkBH2M
+         ygHg==
+X-Gm-Message-State: AOAM533UzXyt8yUyLrSe+k+mZDDc5P6sRT6b/1mNr+iPfQxiWQ2NIuia
+        j03yV8mabE81VuP+ir8xLhjfPhZTTWd4YykW1nU=
+X-Google-Smtp-Source: ABdhPJwF0J8FAW1b5tB3Pt93UOHmQmLbrnuDlzoQYPct1foEEG8szH0TenwMfzmGUUNb6MyshLswAYy7mYCbgkC1f24=
+X-Received: by 2002:a5e:8d15:: with SMTP id m21mr2990445ioj.134.1603819721070;
+ Tue, 27 Oct 2020 10:28:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <1f6cab15bbd15666795061c55563aaf6a386e90e.1603708007.git.gnault@redhat.com>
+In-Reply-To: <1f6cab15bbd15666795061c55563aaf6a386e90e.1603708007.git.gnault@redhat.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 27 Oct 2020 10:28:29 -0700
+Message-ID: <CAM_iQpVBpdJyzfexy8Vnxqa7wH0MhcxkatzQhdOtrskg=dva+A@mail.gmail.com>
+Subject: Re: [PATCH v2 net] net/sched: act_mpls: Add softdep on mpls_gso.ko
+To:     Guillaume Nault <gnault@redhat.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Alexander Ovechkin <ovov@yandex-team.ru>,
+        David Ahern <dsahern@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 26 2020 at 16:08, Jacob Keller wrote:
-> On 10/26/2020 3:49 PM, Thomas Gleixner wrote:
->> On Mon, Oct 26 2020 at 18:22, Nitesh Narayan Lal wrote:
->>> I don't think there is currently a way to control the enablement/disablement of
->>> interrupts from the userspace.
->> 
->> You cannot just disable the interrupt. You need to make sure that the
->> associated queue is shutdown or quiesced _before_ the interrupt is shut
->> down.
+On Mon, Oct 26, 2020 at 4:23 AM Guillaume Nault <gnault@redhat.com> wrote:
 >
-> Could this be handled with a callback to the driver/hw? I know Intel HW
-> should support this type of quiesce/shutdown.
+> TCA_MPLS_ACT_PUSH and TCA_MPLS_ACT_MAC_PUSH might be used on gso
+> packets. Such packets will thus require mpls_gso.ko for segmentation.
 
-We can't have a callback from the interrupt shutdown code as you have to
-wait for the queue to drain packets in flight. Something like this
-
-     mark queue as going down (no more tx queueing)
-     tell hardware not to route RX packets to it
-     consume pending RX
-     wait for already queued TX packets to be sent
-
-Look what the block people did. They have a common multi-instance
-hotplug state and they register each context (queue) as an instance. The
-hotplug core invokes the corresponding callbacks when bringing a CPU up
-or when shutting it down.
-
-Thanks,
-
-        tglx
-
-
+Any reason not to call request_module() at run time?
