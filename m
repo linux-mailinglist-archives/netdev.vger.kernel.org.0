@@ -2,178 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EDFB29CB7E
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 22:50:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2763C29CB88
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 22:51:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S374467AbgJ0VuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 17:50:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42602 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2505944AbgJ0VuI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Oct 2020 17:50:08 -0400
-Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7C71D2223C;
-        Tue, 27 Oct 2020 21:50:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603835407;
-        bh=qyrHE/X2UJDgA/JFIaVSiVdyn53ug8ZgwnqZeFlYcjo=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=sCBQ+hb2yT2a/vMKInv34fxKjFlNqRuH1xbNjJTauguMgPgA8tgK5j2Rkq9l9mMEs
-         xaHZSgDYlHIIM8C4IwcZ7jt5MaKI3J04aJFSnzhs4jcMBKtKMSBbemcLJaCnfph2ZF
-         DlITmUQmkfUvgEieWvpMSGKGF6LjTGRYh3wMrBYA=
-Received: by mail-ot1-f43.google.com with SMTP id m22so2510382ots.4;
-        Tue, 27 Oct 2020 14:50:07 -0700 (PDT)
-X-Gm-Message-State: AOAM531GBRNxBaYqCfH5yNKaGVyz+73CnHte7WPCoc8FZvpCROZQ7FwL
-        IWfK9Gl0cF/EVY2SWsRpkU5d6q1QjS65cBMglSg=
-X-Google-Smtp-Source: ABdhPJzHekgXLXtoajrpDMpUUyqQH/wvmIgYRBsoBBUPZ4ObqYcRCRWDbwRtmJZ/ohl9Cueb2yI771gfRaYP04oa18E=
-X-Received: by 2002:a05:6830:4028:: with SMTP id i8mr2875566ots.90.1603835406737;
- Tue, 27 Oct 2020 14:50:06 -0700 (PDT)
+        id S374490AbgJ0Vvx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 17:51:53 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:38800 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730075AbgJ0Vvx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 17:51:53 -0400
+Received: by mail-io1-f65.google.com with SMTP id y20so3225761iod.5
+        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 14:51:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=d5A0gkFZNwvEFTvdEC1ddcO8QHMKkmk4cRdd3AaJF6o=;
+        b=I0Lhd3WT3Be4jk2Th1xaWLjIYJzqcRssHMJO5QhsZ7dLmeOiF4pXBTcpx0xOJaojrK
+         wPk7AfEks+QxQWFp0f/Mu1wdPK8FqY+MfTYHH5yexc9wdgNZn4QQeBEBw/AiGNIPwLDE
+         8h/9UQ0mpyjDuAz0h5X2kfjq9Jmu+jKawz/SYLzJ1oEJmjqmUVxvJB1dsMcq1ZDXeovY
+         eKO7qiqydRZMuHk89amF8txnMBa2YFDuMOfvX8zcMMnpBmCqejwYGRHlJ0Zyn/qpe/za
+         sMe/2S3NjwToycSpJkcTGxCgbBOjszOaJIapF6K97wFsbeFU5fYkfFmSxDV4M6ASYAf5
+         30cw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=d5A0gkFZNwvEFTvdEC1ddcO8QHMKkmk4cRdd3AaJF6o=;
+        b=UPSrlq+QzLLzAX1Dg1JZJf60BYVRl5rx667FG3z3CYiNvwVjlinAhgonCYNbeobjhB
+         eIT9JvOG5O2S2SpjwnX6BoCv0Dsvc13RnmQe3vNe+7nGGHGwXPMyDFSUqf0MvCdt2scU
+         srwvd3plU1gk0tvJkbjrRMPb8ItNvJgnuD/7BlJ5v6mc7t1LRxgnc2DojVok6LaEcfhE
+         7q6pwH7MbTNTsrRPP+zhkeAB3W1cb0Jthtt5GSKIzPwBkChPrQ7BXCNUJeu755a4rljl
+         1k+3FpiogQP3sfcfLzG2Gwa4VoilibkYjhseTAnOYM5CWnr3KpMEtEFtxr3ySwXkXxYh
+         sYQw==
+X-Gm-Message-State: AOAM531vwF26EA87nHsnvEQZIHb61nhceNRizljc47ewE9PrntD/Ae5w
+        2fwyRNuRPYXqcb2t99Dg+Yg=
+X-Google-Smtp-Source: ABdhPJzVg+PCr16IE5QxWm3IpLlngdnejT8K2zSQPFXeINkYH5xIpaXceKolFtZ7JCutjLeal9U/pg==
+X-Received: by 2002:a05:6638:2603:: with SMTP id m3mr4252680jat.43.1603835512062;
+        Tue, 27 Oct 2020 14:51:52 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:f994:8208:36cb:5fef])
+        by smtp.googlemail.com with ESMTPSA id y17sm1508186ilj.7.2020.10.27.14.51.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Oct 2020 14:51:51 -0700 (PDT)
+Subject: Re: [PATCH v2 net] net/sched: act_mpls: Add softdep on mpls_gso.ko
+To:     Guillaume Nault <gnault@redhat.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Alexander Ovechkin <ovov@yandex-team.ru>
+References: <1f6cab15bbd15666795061c55563aaf6a386e90e.1603708007.git.gnault@redhat.com>
+ <CAM_iQpVBpdJyzfexy8Vnxqa7wH0MhcxkatzQhdOtrskg=dva+A@mail.gmail.com>
+ <20201027213951.GA13892@pc-2.home>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <6e8437c3-bea6-7988-af1a-d43128c95446@gmail.com>
+Date:   Tue, 27 Oct 2020 15:51:50 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.12.1
 MIME-Version: 1.0
-References: <20201027205723.12514-1-ardb@kernel.org> <CAKwvOdmSaVcgq2eKRjRL+_StdFNG2QnNe3nGCs2PWfH=HceadA@mail.gmail.com>
-In-Reply-To: <CAKwvOdmSaVcgq2eKRjRL+_StdFNG2QnNe3nGCs2PWfH=HceadA@mail.gmail.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Tue, 27 Oct 2020 22:49:55 +0100
-X-Gmail-Original-Message-ID: <CAMj1kXHb8Fe9fqpj4-90ccEMB+NJ6cbuuog-2Vuo7tr7VjZaTA@mail.gmail.com>
-Message-ID: <CAMj1kXHb8Fe9fqpj4-90ccEMB+NJ6cbuuog-2Vuo7tr7VjZaTA@mail.gmail.com>
-Subject: Re: [PATCH] bpf: don't rely on GCC __attribute__((optimize)) to
- disable GCSE
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Arvind Sankar <nivedita@alum.mit.edu>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Kees Cook <keescook@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201027213951.GA13892@pc-2.home>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 27 Oct 2020 at 22:20, Nick Desaulniers <ndesaulniers@google.com> wrote:
->
-> On Tue, Oct 27, 2020 at 1:57 PM Ard Biesheuvel <ardb@kernel.org> wrote:
-> >
-> > Commit 3193c0836f203 ("bpf: Disable GCC -fgcse optimization for
-> > ___bpf_prog_run()") introduced a __no_fgcse macro that expands to a
-> > function scope __attribute__((optimize("-fno-gcse"))), to disable a
-> > GCC specific optimization that was causing trouble on x86 builds, and
-> > was not expected to have any positive effect in the first place.
-> >
-> > However, as the GCC manual documents, __attribute__((optimize))
-> > is not for production use, and results in all other optimization
-> > options to be forgotten for the function in question. This can
-> > cause all kinds of trouble, but in one particular reported case,
-> > it causes -fno-asynchronous-unwind-tables to be disregarded,
-> > resulting in .eh_frame info to be emitted for the function
-> > inadvertently.
-> >
-> > This reverts commit 3193c0836f203, and instead, it disables the -fgcse
-> > optimization for the entire source file, but only when building for
-> > X86.
-> >
-> > Cc: Nick Desaulniers <ndesaulniers@google.com>
-> > Cc: Arvind Sankar <nivedita@alum.mit.edu>
-> > Cc: Randy Dunlap <rdunlap@infradead.org>
-> > Cc: Josh Poimboeuf <jpoimboe@redhat.com>
-> > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > Cc: Alexei Starovoitov <ast@kernel.org>
-> > Cc: Daniel Borkmann <daniel@iogearbox.net>
-> > Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
-> > Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-> > Cc: Kees Cook <keescook@chromium.org>
-> > Fixes: 3193c0836f203 ("bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()")
-> > Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-> > ---
-> >  include/linux/compiler-gcc.h   | 2 --
-> >  include/linux/compiler_types.h | 4 ----
-> >  kernel/bpf/Makefile            | 4 +++-
-> >  kernel/bpf/core.c              | 2 +-
-> >  4 files changed, 4 insertions(+), 8 deletions(-)
-> >
-> > diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
-> > index d1e3c6896b71..5deb37024574 100644
-> > --- a/include/linux/compiler-gcc.h
-> > +++ b/include/linux/compiler-gcc.h
-> > @@ -175,5 +175,3 @@
-> >  #else
-> >  #define __diag_GCC_8(s)
-> >  #endif
-> > -
-> > -#define __no_fgcse __attribute__((optimize("-fno-gcse")))
-> > diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-> > index 6e390d58a9f8..ac3fa37a84f9 100644
-> > --- a/include/linux/compiler_types.h
-> > +++ b/include/linux/compiler_types.h
-> > @@ -247,10 +247,6 @@ struct ftrace_likely_data {
-> >  #define asm_inline asm
-> >  #endif
-> >
-> > -#ifndef __no_fgcse
-> > -# define __no_fgcse
-> > -#endif
-> > -
-> >  /* Are two types/vars the same type (ignoring qualifiers)? */
-> >  #define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
-> >
-> > diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
-> > index bdc8cd1b6767..02b58f44c479 100644
-> > --- a/kernel/bpf/Makefile
-> > +++ b/kernel/bpf/Makefile
-> > @@ -1,6 +1,8 @@
-> >  # SPDX-License-Identifier: GPL-2.0
-> >  obj-y := core.o
-> > -CFLAGS_core.o += $(call cc-disable-warning, override-init)
-> > +# ___bpf_prog_run() needs GCSE disabled on x86; see 3193c0836f203 for details
-> > +cflags-core-$(CONFIG_X86) := -fno-gcse
->
-> -fno-gcse is not recognized by clang and will produce
-> -Wignored-optimization-argument.  It should at least be wrapped in
-> cc-option, though since it's unlikely to ever not be compiler
-> specific, I think it might be ok to guard with `ifdef
-> CONFIG_CC_IS_GCC`.  Also, might we want to only do this for `ifndef
-> CONFIG_RETPOLINE`, based on 3193c0836f203?
->
-> Finally, this is going to disable GCSE for the whole translation unit,
-> which may be overkill.   Previously it was isolated to one function
-> definition.  You could lower the definition of the preprocessor define
-> into kernel/bpf/core.c to keep its use isolated as far as possible.
->
+On 10/27/20 3:39 PM, Guillaume Nault wrote:
+> On Tue, Oct 27, 2020 at 10:28:29AM -0700, Cong Wang wrote:
+>> On Mon, Oct 26, 2020 at 4:23 AM Guillaume Nault <gnault@redhat.com> wrote:
+>>>
+>>> TCA_MPLS_ACT_PUSH and TCA_MPLS_ACT_MAC_PUSH might be used on gso
+>>> packets. Such packets will thus require mpls_gso.ko for segmentation.
+>>
+>> Any reason not to call request_module() at run time?
+> 
+> So that mpls_gso would be loaded only when initialising the
+> TCA_MPLS_ACT_PUSH or TCA_MPLS_ACT_MAC_PUSH modes?
+> 
+> That could be done, but the dependency on mpls_gso wouldn't be visible
+> anymore with modinfo. I don't really mind, I just felt that such
+> information could be important for the end user.
+> 
 
-Which preprocessor define?
-
-> I'm fine with either approach, but we should avoid new warnings for
-> clang.  Thanks for the patch!
->
-> > +CFLAGS_core.o += $(call cc-disable-warning, override-init) $(cflags-core-y)
-> >
-> >  obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o bpf_iter.o map_iter.o task_iter.o prog_iter.o
-> >  obj-$(CONFIG_BPF_SYSCALL) += hashtab.o arraymap.o percpu_freelist.o bpf_lru_list.o lpm_trie.o map_in_map.o
-> > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> > index 9268d77898b7..55454d2278b1 100644
-> > --- a/kernel/bpf/core.c
-> > +++ b/kernel/bpf/core.c
-> > @@ -1369,7 +1369,7 @@ u64 __weak bpf_probe_read_kernel(void *dst, u32 size, const void *unsafe_ptr)
-> >   *
-> >   * Decode and execute eBPF instructions.
-> >   */
-> > -static u64 __no_fgcse ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
-> > +static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn, u64 *stack)
-> >  {
-> >  #define BPF_INSN_2_LBL(x, y)    [BPF_##x | BPF_##y] = &&x##_##y
-> >  #define BPF_INSN_3_LBL(x, y, z) [BPF_##x | BPF_##y | BPF_##z] = &&x##_##y##_##z
-> > --
-> > 2.17.1
-> >
->
->
-> --
-> Thanks,
-> ~Nick Desaulniers
+I think the explicit dependency via modinfo is better.
