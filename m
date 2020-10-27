@@ -2,130 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14D1729C95E
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 21:02:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 36B2729CA9A
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 21:50:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1830632AbgJ0UCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 16:02:25 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:43932 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727305AbgJ0UCY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 16:02:24 -0400
-Received: by mail-ed1-f68.google.com with SMTP id dn5so2741307edb.10
-        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 13:02:23 -0700 (PDT)
+        id S373327AbgJ0Uuh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 16:50:37 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:33314 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S373322AbgJ0Uug (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 16:50:36 -0400
+Received: by mail-io1-f65.google.com with SMTP id p15so3078921ioh.0
+        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 13:50:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0G9OKjR/V/MFCD6RZt0kNwqDdd7UFzCDFa82Mj0f478=;
-        b=WQZKcQcLXVKd9UWfh6ygAld1F8wvDIAYwpir2fiqFLMZQav29DauBCLUmOAh9Vff7j
-         S/Mg+nMgWG01QBmXp5cRrASl3DnygPaWu7SArVtwu9+Ps0igM59MsJj2NcH/5rn6e3Z9
-         ZC3iTsWDO7BctOXbnwCL12RjXzTGJLW08gP1yO55U7UEyhvOB9+rd5ercToctuDc0YqD
-         G+hIaNLFDaw/V3tMZPChQL95PDhGrckpbL9bqiOiUtfaAGpa3dCrfsGtX+OkbA4AHtHz
-         MTXaOI2EKxplZM2kn3J0TkHphT5zOSKlxu08tmkdUWO1kyTPC5IGRe71LdPuijqZomcQ
-         PfHA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/WlVAvrRzwvSMfBLCz6hxhE3zrD/1tBJxa1OdJARRCE=;
+        b=GSIqil1ZfGN78OR6PaGlRDSmdSOUnRHY+cO5dHJ+oAkhHXs3uPiY+DMSNMrmEBOyWl
+         IucQ5aCp6486j28qZcVCge5fjSoTW3RF3JK5xA4BStM8JcuKzfRixqV4+AbreSAJVbCI
+         95mZ5H4/Z2ArQTooDPkC4ihBpImuGnfWyJEBRgCX7gZ8ciQNyw4geyrb5RtvBHD/nRVu
+         QfWDnJ+t/5B1Io9xrqhZy9U+qWMU0I2VyhK7pjM8rNRndkEcUvP30joR2I+qEsYg4HhM
+         FV0gnN8+4DjAyiwyzmVnuprVB6zbOCJHmPkgat9yVy3k1AST9bInAI+5YDVV5HOOWHQq
+         uRvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0G9OKjR/V/MFCD6RZt0kNwqDdd7UFzCDFa82Mj0f478=;
-        b=CDUUVVBohKreA56Xf0yzXxn0/ZTBB9BATAf364DM3c+DjXpZ/3Wd2Y6ArY5wlvuj+8
-         8N/h50GKmNIdC4jkw4ncFqRnF+/bHRLzaj9Z848nKDaI+sxKWCe5LgfYZSPhGjRL8iRO
-         8w9VgjpLzvvwgh+qhSw6iKX/8dUNNQULm9kEiPbxQKlvEXlDw/YRNko2TmmFe06LPXZw
-         NwIgizaHxmIIuwrqb94IcYhF53jgrnXd1033Bl4WWcRdKQHIaNw+h90rshy1HLl6kiEf
-         TzxHfORZwN2DZ49wWz4yropzehIpeTQs8NSVqDacu6wc6HtJw93CSEQ8UJMCkyf9XjI0
-         W3XA==
-X-Gm-Message-State: AOAM53358+yMDYxqbKmJuj93gn0kKADjD5Z1xhnXOcsxYBa2wy8WJvff
-        Ww6K9ZsrhXoCbtBaM61rezQ=
-X-Google-Smtp-Source: ABdhPJygp9DaQXfPjs2QiwDSMjMEi1nlc4wu/ftXOVQYxbMbmBPqxqhQuP3XfU9kWx+pwv/w74szxA==
-X-Received: by 2002:a05:6402:17ad:: with SMTP id j13mr1005984edy.347.1603828942325;
-        Tue, 27 Oct 2020 13:02:22 -0700 (PDT)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id 6sm1603650ejv.49.2020.10.27.13.02.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Oct 2020 13:02:21 -0700 (PDT)
-Date:   Tue, 27 Oct 2020 22:02:20 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Marek Behun <marek.behun@nic.cz>,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 0/4] net: dsa: link aggregation support
-Message-ID: <20201027200220.3ai2lcyrxkvmd2f4@skbuf>
-References: <20201027105117.23052-1-tobias@waldekranz.com>
- <20201027160530.11fc42db@nic.cz>
- <20201027152330.GF878328@lunn.ch>
- <87k0vbv84z.fsf@waldekranz.com>
- <20201027190034.utk3kkywc54zuxfn@skbuf>
- <87blgnv4rt.fsf@waldekranz.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/WlVAvrRzwvSMfBLCz6hxhE3zrD/1tBJxa1OdJARRCE=;
+        b=efjo0oUcMvfj5cC2pNfE6aCPQbpYBSA/Tbzeh3Ff7xScx3Y1guhk2Fi/tu3q5WyfEs
+         WanK28tW4vpMKBhu6K8jB2A8ftA/dwRCaFhvgscIHYRiIZ8vIb5YZ7xfvVIzhAlLYkAf
+         Isg1E4J8d5Jf59sSfLW+s1G4MZ6XOaseu6WA0eews9qJzQyLVQYrXv9WElJXzj5yA4+i
+         NaWQuw1kz9oougXPKNomIQ1ijd12iQhArP54crYYhC50iyBoyBQc+FNVlmzk4TG2DoyU
+         3XKd9XKH6Zz9I3DqHjAGh033alNgUBKG2JWwlZsovV4TCIjpFTiKkpWKTa78O2kME9zF
+         yikw==
+X-Gm-Message-State: AOAM530JKBxg0XzKKgGyzyKNKWUhZX9pqllhRr3F9wJ9CZJpgg4FmtvG
+        9FATH08QWhIafviEe8vfyjqXUqUw6lDaJfkMPnhvvA0ueOg=
+X-Google-Smtp-Source: ABdhPJyikaIl3oIF+0QsXDZ/zHbAfHJjf9IOjkjahkYRM/J2wPuWFVjofpY+tadG6g57TbMfb/Fb/cZ6BwkM68aXbmQ=
+X-Received: by 2002:a02:95ea:: with SMTP id b97mr4175651jai.16.1603831834070;
+ Tue, 27 Oct 2020 13:50:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87blgnv4rt.fsf@waldekranz.com>
+References: <20201027032403.1823-1-tung.q.nguyen@dektech.com.au>
+In-Reply-To: <20201027032403.1823-1-tung.q.nguyen@dektech.com.au>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Tue, 27 Oct 2020 13:50:23 -0700
+Message-ID: <CAM_iQpWsUyxSni9+4Khuu28jvski+vfphjJSVgXJH+xS_NWsUQ@mail.gmail.com>
+Subject: Re: [tipc-discussion] [net v3 1/1] tipc: fix memory leak caused by tipc_buf_append()
+To:     Tung Nguyen <tung.q.nguyen@dektech.com.au>
+Cc:     David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        tipc-discussion@lists.sourceforge.net
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 27, 2020 at 08:37:58PM +0100, Tobias Waldekranz wrote:
-> >> In order for this to work on transmit, we need to add forward offloading
-> >> to the bridge so that we can, for example, send one FORWARD from the CPU
-> >> to send an ARP broadcast to swp1..4 instead of four FROM_CPUs.
+On Tue, Oct 27, 2020 at 1:09 PM Tung Nguyen
+<tung.q.nguyen@dektech.com.au> wrote:
+>
+> Commit ed42989eab57 ("tipc: fix the skb_unshare() in tipc_buf_append()")
+> replaced skb_unshare() with skb_copy() to not reduce the data reference
+> counter of the original skb intentionally. This is not the correct
+> way to handle the cloned skb because it causes memory leak in 2
+> following cases:
+>  1/ Sending multicast messages via broadcast link
+>   The original skb list is cloned to the local skb list for local
+>   destination. After that, the data reference counter of each skb
+>   in the original list has the value of 2. This causes each skb not
+>   to be freed after receiving ACK:
 
-[...]
+This does not make sense at all.
 
-> In a single-chip system I agree that it is not needed, the CPU can do
-> the load-balancing in software. But in order to have the hardware do
-> load-balancing on a switch-to-switch LAG, you need to send a FORWARD.
-> 
-> FROM_CPUs would just follow whatever is in the device mapping table. You
-> essentially have the inverse of the TO_CPU problem, but on Tx FROM_CPU
-> would make up 100% of traffic.
+skb_unclone() expects refcnt == 1, as stated in the comments
+above pskb_expand_head(). skb_unclone() was used prior to
+Xin Long's commit.
 
-Woah, hold on, could you explain in more detail for non-expert people
-like myself to understand.
+So either the above is wrong, or something important is still missing
+in your changelog. None of them is addressed in your V3.
 
-So FROM_CPU frames (what tag_edsa.c uses now in xmit) can encode a
-_single_ destination port in the frame header.
+I also asked you two questions before you sent V3, you seem to
+intentionally ignore them. This is not how we collaborate.
 
-Whereas the FORWARD frames encode a _source_ port in the frame header.
-You inject FORWARD frames from the CPU port, and you just let the L2
-forwarding process select the adequate destination ports (or LAG, if
-any ports are under one) _automatically_. The reason why you do this, is
-because you want to take advantage of the switch's flooding abilities in
-order to replicate the packet into 4 packets. So you will avoid cloning
-that packet in the bridge in the first place.
-
-But correct me if I'm wrong, sending a FORWARD frame from the CPU is a
-slippery slope, since you're never sure that the switch will perform the
-replication exactly as you intended to. The switch will replicate a
-FORWARD frame by looking up the FDB, and we don't even attempt in DSA to
-keep the FDB in sync between software and hardware. And that's why we
-send FROM_CPU frames in tag_edsa.c and not FORWARD frames.
-
-What you are really looking for is hardware where the destination field
-for FROM_CPU packets is not a single port index, but a port mask.
-
-Right?
-
-Also, this problem is completely orthogonal to LAG? Where does LAG even
-come into play here?
-
-> Other than that there are some things that, while strictly speaking
-> possible to do without FORWARDs, become much easier to deal with:
-> 
-> - Multicast routing. This is one case where performance _really_ suffers
->   from having to skb_clone() to each recipient.
-> 
-> - Bridging between virtual interfaces and DSA ports. Typical example is
->   an L2 VPN tunnel or one end of a veth pair. On FROM_CPUs, the switch
->   can not perform SA learning, which means that once you bridge traffic
->   from the VPN out to a DSA port, the return traffic will be classified
->   as unknown unicast by the switch and be flooded everywhere.
-
-And how is this going to solve that problem? You mean that the switch
-learns only from FORWARD, but not from FROM_CPU?
-
-Why don't you attempt to solve this more generically somehow? Your
-switch is not the only one that can't perform source address learning
-for injected traffic, there are tons more, some are not even DSA. We
-can't have everybody roll their own solution.
+Thanks.
