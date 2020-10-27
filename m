@@ -2,188 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C230329A2B1
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 03:29:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1123629A2B8
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 03:39:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2409556AbgJ0C3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 22:29:08 -0400
-Received: from mail-pl1-f176.google.com ([209.85.214.176]:45045 "EHLO
-        mail-pl1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729249AbgJ0C3H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 22:29:07 -0400
-Received: by mail-pl1-f176.google.com with SMTP id h2so5673051pll.11
-        for <netdev@vger.kernel.org>; Mon, 26 Oct 2020 19:29:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=9AydZF2IzRQ/33nchTL9Pk5tq1fQReDa2QIz6Q7fwrI=;
-        b=o0BgQmDnXMCo8CEuHInv9HGgC/ESHETRqc+13o4k0Wj3LxaUsC56utwV1QRqFflMEC
-         CvhKzUE2KbPvf/4b2/Sx3a6eApPEGqSBi4/pnK+zOCNUdCUA47yj2pUVzKyEqLRQLzF4
-         KN7h1OGBwkWkc6iV4X16m7tTh0NAuUbacR6pUiu99LtI8WOBKOpe1em62enzHQHRrJfd
-         IQB3Wha/F6pfp9pGx1aIjtaq+46Abn7u24udXPuIDjfKSS/2ZQ6ybHGIgORnjFdtXgMC
-         BSR9OnLfOUw+BmwhIFzW0O0W4ouTvbg/45XF0e95t329atcyUnETLiJRVzggUPohgcer
-         8+SA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=9AydZF2IzRQ/33nchTL9Pk5tq1fQReDa2QIz6Q7fwrI=;
-        b=blwRlxT0WwA2LZfIXHiCjK8kgIjR1ps5sKnSOjq5Df2Gzksh2huXUmb678TT2Pkqbv
-         5hC80Gv0JvifuhLKjarnEIFOiacVsFt1kkqmKPQQMjCNh3yzbnAkMxkQoXQb0WvM/6KH
-         3/vb8HOvAlt4uRsTebhE/N26vbAjciS/F1C76Zbv45UcUTGQJLKie/aO6llXZgtA6vyW
-         LTMtnSwDTRmXMd6NDjeXciF5L//u8oD9zAn8kVvSayGPFmIbWnnkw6Kes6EUlV2w5oOf
-         04CT60XsGK1uJOf6HA0xq+6Xq8v38SwETP3IBrEOScVOUwWWfaMY+D64yNJhpzbKCuEU
-         gptw==
-X-Gm-Message-State: AOAM530WZxLdC2oMM4RPW6B/uSluSOKoCZpRXknH9nvLfqo4Uc4opbQr
-        lxznEWiFWaE1oIfzmTn4Ysc2mlOs0Y7AG070
-X-Google-Smtp-Source: ABdhPJzjaE6M2cWYWKDhKTKf0e9eV25xHfchFK74JdpZar0ge+74j2YjwqtwEfEX+J1rali2F3vt1A==
-X-Received: by 2002:a17:90a:7f81:: with SMTP id m1mr239149pjl.197.1603765747073;
-        Mon, 26 Oct 2020 19:29:07 -0700 (PDT)
-Received: from localhost.localdomain.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id o10sm5066131pgp.16.2020.10.26.19.29.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2020 19:29:06 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Georg Kohmann <geokohma@cisco.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv5 net 2/2] IPv6: reply ICMP error if the first fragment don't include all headers
-Date:   Tue, 27 Oct 2020 10:28:33 +0800
-Message-Id: <20201027022833.3697522-3-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20201027022833.3697522-1-liuhangbin@gmail.com>
-References: <20201026072926.3663480-1-liuhangbin@gmail.com>
- <20201027022833.3697522-1-liuhangbin@gmail.com>
+        id S1729206AbgJ0CjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 22:39:04 -0400
+Received: from mga06.intel.com ([134.134.136.31]:53965 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725870AbgJ0CjE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 22:39:04 -0400
+IronPort-SDR: iM/8/tU0pEVZlMwTRkqLxcZQBfXgitxTa8y55HCCzAZnDyvmq8kLMVfa3X+iOTA9G7H3qx53Zq
+ nDlHJP+PyTag==
+X-IronPort-AV: E=McAfee;i="6000,8403,9786"; a="229654143"
+X-IronPort-AV: E=Sophos;i="5.77,422,1596524400"; 
+   d="scan'208";a="229654143"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Oct 2020 19:39:03 -0700
+IronPort-SDR: dGxjWQwCTVLj1uQPrbtsN/moj71jVwos+OHzw9al21xHLh17oCZJ00hL0PB7nt2roPy6VkHY3c
+ YDARziN33ykQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,422,1596524400"; 
+   d="scan'208";a="361219355"
+Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.141])
+  by orsmga007.jf.intel.com with ESMTP; 26 Oct 2020 19:38:59 -0700
+Date:   Tue, 27 Oct 2020 10:33:41 +0800
+From:   Xu Yilun <yilun.xu@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com, davem@davemloft.net, mdf@kernel.org,
+        lee.jones@linaro.org, linux-kernel@vger.kernel.org,
+        linux-fpga@vger.kernel.org, netdev@vger.kernel.org,
+        trix@redhat.com, lgoncalv@redhat.com, hao.wu@intel.com,
+        yilun.xu@intel.com
+Subject: Re: [RFC PATCH 1/6] docs: networking: add the document for DFL
+  Ether  Group driver
+Message-ID: <20201027023341.GB10743@yilunxu-OptiPlex-7050>
+References: <1603442745-13085-1-git-send-email-yilun.xu@intel.com>
+ <1603442745-13085-2-git-send-email-yilun.xu@intel.com>
+ <20201023153731.GC718124@lunn.ch>
+ <20201026085246.GC25281@yilunxu-OptiPlex-7050>
+ <20201026130001.GC836546@lunn.ch>
+ <20201026173803.GA10743@yilunxu-OptiPlex-7050>
+ <20201026113552.78e7a2b4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201026113552.78e7a2b4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Based on RFC 8200, Section 4.5 Fragment Header:
+On Mon, Oct 26, 2020 at 11:35:52AM -0700, Jakub Kicinski wrote:
+> On Tue, 27 Oct 2020 01:38:04 +0800 Xu Yilun wrote:
+> > > > The line/host side Ether Group is not the terminal of the network data stream.
+> > > > Eth1 will not paticipate in the network data exchange to host.
+> > > > 
+> > > > The main purposes for eth1 are:
+> > > > 1. For users to monitor the network statistics on Line Side, and by comparing the
+> > > > statistics between eth0 & eth1, users could get some knowledge of how the User
+> > > > logic is taking function.
+> > > > 
+> > > > 2. Get the link state of the front panel. The XL710 is now connected to
+> > > > Host Side of the FPGA and the its link state would be always on. So to
+> > > > check the link state of the front panel, we need to query eth1.  
+> > > 
+> > > This is very non-intuitive. We try to avoid this in the kernel and the
+> > > API to userspace. Ethernet switches are always modelled as
+> > > accelerators for what the Linux network stack can already do. You
+> > > configure an Ethernet switch port in just the same way configure any
+> > > other netdev. You add an IP address to the switch port, you get the
+> > > Ethernet statistics from the switch port, routing protocols use the
+> > > switch port.
+> > > 
+> > > You design needs to be the same. All configuration needs to happen via
+> > > eth1.
+> > > 
+> > > Please look at the DSA architecture. What you have here is very
+> > > similar to a two port DSA switch. In DSA terminology, we would call
+> > > eth0 the master interface.  It needs to be up, but otherwise the user
+> > > does not configure it. eth1 is the slave interface. It is the user
+> > > facing interface of the switch. All configuration happens on this
+> > > interface. Linux can also send/receive packets on this netdev. The
+> > > slave TX function forwards the frame to the master interface netdev,
+> > > via a DSA tagger. Frames which eth0 receive are passed through the
+> > > tagger and then passed to the slave interface.
+> > > 
+> > > All the infrastructure you need is already in place. Please use
+> > > it. I'm not saying you need to write a DSA driver, but you should make
+> > > use of the same ideas and low level hooks in the network stack which
+> > > DSA uses.  
+> > 
+> > I did some investigation about the DSA, and actually I wrote a
+> > experimental DSA driver. It works and almost meets my need, I can make
+> > configuration, run pktgen on slave inf.
+> > 
+> > A main concern for dsa is the wiring from slave inf to master inf depends
+> > on the user logic. If FPGA users want to make their own user logic, they
+> > may need a new driver. But our original design for the FPGA is, kernel
+> > drivers support the fundamental parts - FPGA FIU (where Ether Group is in)
+> > & other peripherals on board, and userspace direct I/O access for User
+> > logic. Then FPGA user don't have to write & compile a driver for their
+> > user logic change.
+> > It seems not that case for netdev. The user logic is a part of the whole
+> > functionality of the netdev, we cannot split part of the hardware
+> > component to userspace and the rest in kernel. I really need to
+> > reconsider this.
+> 
+> This is obviously on purpose. Your design as it stands will not fly
+> upstream, sorry.
+> 
+> >From netdev perspective the user should not care how many hardware
+> blocks are in the pipeline, and on which piece of silicon. You have 
+> a 2 port (modulo port splitting) card, there should be 2 netdevs, and
+> the link config and forwarding should be configured through those.
+> 
+> Please let folks at Intel know that we don't like the "SDK in user
+> space with reuse [/abuse] of parts of netdev infra" architecture.
+> This is a second of those we see in a short time. Kernel is not a
+> library for your SDK to use. 
 
-  -  If the first fragment does not include all headers through an
-     Upper-Layer header, then that fragment should be discarded and
-     an ICMP Parameter Problem, Code 3, message should be sent to
-     the source of the fragment, with the Pointer field set to zero.
+I get your point. I'll share the information internally and reconsider
+the design.
 
-As the packet may be any kind of L4 protocol, I only checked some common
-protocols' header length and handle others by (offset + 1) > skb->len.
-Checking each packet header in IPv6 fast path will have performance impact,
-so I put the checking in ipv6_frag_rcv().
-
-When send ICMP error message, if the 1st truncated fragment is ICMP message,
-icmp6_send() will break as is_ineligible() return true. So I added a check
-in is_ineligible() to let fragment packet with nexthdr ICMP but no ICMP header
-return false.
-
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
-v5:
-Only check nexthdr if ipv6_skip_exthdr() does not return -1. For
-IPPROTO_NONE/NEXTHDR_NONE, later code will handle and ignore it.
-
-v4:
-remove unused variable
-
-v3:
-a) use frag_off to check if this is a fragment packet
-b) check some common protocols' header length
-
-v2:
-a) Move header check to ipv6_frag_rcv(). Also check the ipv6_skip_exthdr()
-   return value
-b) Fix ipv6_find_hdr() parameter type miss match in is_ineligible()
-
----
- net/ipv6/icmp.c       |  8 +++++++-
- net/ipv6/reassembly.c | 33 ++++++++++++++++++++++++++++++++-
- 2 files changed, 39 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
-index ec448b71bf9a..8956144ea65e 100644
---- a/net/ipv6/icmp.c
-+++ b/net/ipv6/icmp.c
-@@ -158,7 +158,13 @@ static bool is_ineligible(const struct sk_buff *skb)
- 		tp = skb_header_pointer(skb,
- 			ptr+offsetof(struct icmp6hdr, icmp6_type),
- 			sizeof(_type), &_type);
--		if (!tp || !(*tp & ICMPV6_INFOMSG_MASK))
-+
-+		/* Based on RFC 8200, Section 4.5 Fragment Header, return
-+		 * false if this is a fragment packet with no icmp header info.
-+		 */
-+		if (!tp && frag_off != 0)
-+			return false;
-+		else if (!tp || !(*tp & ICMPV6_INFOMSG_MASK))
- 			return true;
- 	}
- 	return false;
-diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
-index 1f5d4d196dcc..effe1d086e5d 100644
---- a/net/ipv6/reassembly.c
-+++ b/net/ipv6/reassembly.c
-@@ -42,6 +42,8 @@
- #include <linux/skbuff.h>
- #include <linux/slab.h>
- #include <linux/export.h>
-+#include <linux/tcp.h>
-+#include <linux/udp.h>
- 
- #include <net/sock.h>
- #include <net/snmp.h>
-@@ -322,7 +324,9 @@ static int ipv6_frag_rcv(struct sk_buff *skb)
- 	struct frag_queue *fq;
- 	const struct ipv6hdr *hdr = ipv6_hdr(skb);
- 	struct net *net = dev_net(skb_dst(skb)->dev);
--	int iif;
-+	__be16 frag_off;
-+	int iif, offset;
-+	u8 nexthdr;
- 
- 	if (IP6CB(skb)->flags & IP6SKB_FRAGMENTED)
- 		goto fail_hdr;
-@@ -351,6 +355,33 @@ static int ipv6_frag_rcv(struct sk_buff *skb)
- 		return 1;
- 	}
- 
-+	/* RFC 8200, Section 4.5 Fragment Header:
-+	 * If the first fragment does not include all headers through an
-+	 * Upper-Layer header, then that fragment should be discarded and
-+	 * an ICMP Parameter Problem, Code 3, message should be sent to
-+	 * the source of the fragment, with the Pointer field set to zero.
-+	 */
-+	nexthdr = hdr->nexthdr;
-+	offset = ipv6_skip_exthdr(skb, skb_transport_offset(skb), &nexthdr, &frag_off);
-+	if (offset >= 0) {
-+		/* Check some common protocols' header */
-+		if (nexthdr == IPPROTO_TCP)
-+			offset += sizeof(struct tcphdr);
-+		else if (nexthdr == IPPROTO_UDP)
-+			offset += sizeof(struct udphdr);
-+		else if (nexthdr == IPPROTO_ICMPV6)
-+			offset += sizeof(struct icmp6hdr);
-+		else
-+			offset += 1;
-+
-+		if (frag_off == htons(IP6_MF) && offset > skb->len) {
-+			__IP6_INC_STATS(net, __in6_dev_get_safely(skb->dev),
-+					IPSTATS_MIB_INHDRERRORS);
-+			icmpv6_param_prob(skb, ICMPV6_HDR_INCOMP, 0);
-+			return -1;
-+		}
-+	}
-+
- 	iif = skb->dev ? skb->dev->ifindex : 0;
- 	fq = fq_find(net, fhdr->identification, hdr, iif);
- 	if (fq) {
--- 
-2.25.4
-
+Thanks,
+Yilun
