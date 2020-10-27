@@ -2,164 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE0A029CABF
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 21:53:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0FC129CAC9
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 21:56:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1829446AbgJ0Uxv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 16:53:51 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:34097 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1829279AbgJ0Uxu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 16:53:50 -0400
-Received: by mail-lj1-f193.google.com with SMTP id y16so3379605ljk.1
-        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 13:53:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=EY7e0M//LBTB3jmWeULG57tZaR02Jfn1Iw7qLFkt/fk=;
-        b=trIeEBHzMzBWqvJukLhFZrLE5cFzX7id9cKEg8FgvLldNM1mLsebUvgRn9/OPUvRtU
-         nxQ675oDM9WghPSN4rtjFwB5BIvQGllb/IDWhICW9QlWW6/9rzQ2zTdpx+uGy7Qmz6/b
-         6xOCH2+i7JHirhgJ88ygaNFDsclc2RRo+0KPlWVD7x8ZnkHwa1P/BF/+qhnPRk6/OEqq
-         O0HPXINJYwxD6/NsHrVgp6CWROA3rOA3M3d94ZbmJLXPDSxTqYPHjfbC8Kww3zuIl7zO
-         5tDue9k6WoQFJwQ2w+TgqaXV10O57w8XMd+5AfZigmQEpYN5rs5LuL+ssjyz+z+Q0hEk
-         25VQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=EY7e0M//LBTB3jmWeULG57tZaR02Jfn1Iw7qLFkt/fk=;
-        b=dejJ86u/Mjo4lpOW8KtQdivg3/qzLywp5uD23nfMNvU1qZX6J+4A+SDFNHI2Z5xhPJ
-         8GQeWJHHFgIELvbJLex81MlBGiQu4GmSKYWtkHfn57KgeM77qgnpRy+LBctioUsbcavW
-         1Oibv5uwKYx3yST999Gj1gDGiPdoOmWRfdB/Wjbyk93Rh1vYCKIUFccFCIkfwhbLevNv
-         fdnb0Jk/eDOVZRpwTSrPw/oMWPaueGrVBjB4poIP1Ab25cqC8UQwZOjXAz8q5qXo5bNa
-         fb2Ad+gk8G5YdflXLLdXTUhBDIeUVQEIiaZnsOHRskkVHnpaeuJ68B80KOWyLGF/64Dv
-         fRfg==
-X-Gm-Message-State: AOAM531KW2uWZeXMxAcMJfubkOWPqXzIVOY6A1YZswIznOivrUio142X
-        vU9AQKstmpkBKfQcUwXSkiu1vjsK+FYFO+MF
-X-Google-Smtp-Source: ABdhPJxqO7adrO2mRxWn5vDD/htlZY5w1hgx8n8z5ze8xh4uQaJYaxy/Fl4jpV7LF8K3x9S8s67KXw==
-X-Received: by 2002:a2e:9f49:: with SMTP id v9mr1967992ljk.369.1603832026297;
-        Tue, 27 Oct 2020 13:53:46 -0700 (PDT)
-Received: from wkz-x280 (h-79-28.A259.priv.bahnhof.se. [79.136.79.28])
-        by smtp.gmail.com with ESMTPSA id e30sm172309ljp.90.2020.10.27.13.53.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Oct 2020 13:53:45 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Marek Behun <marek.behun@nic.cz>,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 0/4] net: dsa: link aggregation support
-In-Reply-To: <20201027200220.3ai2lcyrxkvmd2f4@skbuf>
-References: <20201027105117.23052-1-tobias@waldekranz.com> <20201027160530.11fc42db@nic.cz> <20201027152330.GF878328@lunn.ch> <87k0vbv84z.fsf@waldekranz.com> <20201027190034.utk3kkywc54zuxfn@skbuf> <87blgnv4rt.fsf@waldekranz.com> <20201027200220.3ai2lcyrxkvmd2f4@skbuf>
-Date:   Tue, 27 Oct 2020 21:53:45 +0100
-Message-ID: <878sbrv19i.fsf@waldekranz.com>
+        id S373424AbgJ0U4O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 16:56:14 -0400
+Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:45882 "EHLO
+        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2901068AbgJ0U4O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 16:56:14 -0400
+Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id EC99E891B1;
+        Wed, 28 Oct 2020 09:56:09 +1300 (NZDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
+        s=mail181024; t=1603832169;
+        bh=Uy/31KPPijVTs8IBYRdL4nxNBGuQ/WeGKM8tG7/Q+GA=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To;
+        b=bOkxmBKGee7T4qze9mhjJgtbD5h6hVVUM7DP8FyhXKphDWGgluW5NoGxdnUSaWFSI
+         L3DhfcLeJ/c7pMJopkjePp/+YXyG8hHe2aFqE4lHtQ3blNmaxVedTW3B5TjuEmnU3n
+         bs0MEiKbxqaQvz5CrTU+dldlNV5y+iXQks0YhDIgmOvNhqx1CLTFy0+COeEjoxnASP
+         apwXucI8UODPzWkU6AdBAaQCQmBU9qm0cLFex4U/vZfG/Cqp2arJwG5pDmmLnWwp2t
+         CPevHzr9ELmQ7t1lulV/HeB3lU0zTHCxxLtqIE+IiJm0epvXtdfL9Yexzf6+8VsZCe
+         IlWN6dso5LSMw==
+Received: from svr-chch-ex1.atlnz.lc (Not Verified[10.32.16.77]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
+        id <B5f98896a0002>; Wed, 28 Oct 2020 09:56:10 +1300
+Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8)
+ by svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8:409d:36f5:8899:92e8) with
+ Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 28 Oct 2020 09:56:09 +1300
+Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
+ svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
+ 15.00.1497.007; Wed, 28 Oct 2020 09:56:09 +1300
+From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "olteanv@gmail.com" <olteanv@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 4/4] net: dsa: mv88e6xxx: Support serdes ports on
+ MV88E6123/6131
+Thread-Topic: [PATCH 4/4] net: dsa: mv88e6xxx: Support serdes ports on
+ MV88E6123/6131
+Thread-Index: AQHWqBI06ed43/xsqEO3n+1up6ZkYqmk8XEAgAYrrYA=
+Date:   Tue, 27 Oct 2020 20:56:09 +0000
+Message-ID: <1b1d4c27-570b-8a2f-698b-d82b2ca8215d@alliedtelesis.co.nz>
+References: <20201022012516.18720-1-chris.packham@alliedtelesis.co.nz>
+ <20201022012516.18720-5-chris.packham@alliedtelesis.co.nz>
+ <20201023224216.GE745568@lunn.ch>
+In-Reply-To: <20201023224216.GE745568@lunn.ch>
+Accept-Language: en-NZ, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.32.1.11]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <DC5DFC1D1417CC4B80BA87AA0A8894F5@atlnz.lc>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 27, 2020 at 22:02, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Tue, Oct 27, 2020 at 08:37:58PM +0100, Tobias Waldekranz wrote:
->> >> In order for this to work on transmit, we need to add forward offloading
->> >> to the bridge so that we can, for example, send one FORWARD from the CPU
->> >> to send an ARP broadcast to swp1..4 instead of four FROM_CPUs.
->
-> [...]
->
->> In a single-chip system I agree that it is not needed, the CPU can do
->> the load-balancing in software. But in order to have the hardware do
->> load-balancing on a switch-to-switch LAG, you need to send a FORWARD.
->> 
->> FROM_CPUs would just follow whatever is in the device mapping table. You
->> essentially have the inverse of the TO_CPU problem, but on Tx FROM_CPU
->> would make up 100% of traffic.
->
-> Woah, hold on, could you explain in more detail for non-expert people
-> like myself to understand.
->
-> So FROM_CPU frames (what tag_edsa.c uses now in xmit) can encode a
-> _single_ destination port in the frame header.
-
-Correct.
-
-> Whereas the FORWARD frames encode a _source_ port in the frame header.
-> You inject FORWARD frames from the CPU port, and you just let the L2
-> forwarding process select the adequate destination ports (or LAG, if
-> any ports are under one) _automatically_. The reason why you do this, is
-> because you want to take advantage of the switch's flooding abilities in
-> order to replicate the packet into 4 packets. So you will avoid cloning
-> that packet in the bridge in the first place.
-
-Exactly so.
-
-> But correct me if I'm wrong, sending a FORWARD frame from the CPU is a
-> slippery slope, since you're never sure that the switch will perform the
-> replication exactly as you intended to. The switch will replicate a
-> FORWARD frame by looking up the FDB, and we don't even attempt in DSA to
-> keep the FDB in sync between software and hardware. And that's why we
-> send FROM_CPU frames in tag_edsa.c and not FORWARD frames.
-
-I'm not sure if I agree that it's a slippery slope. The whole point of
-the switchdev effort is to sync the switch with the bridge. We trust the
-fabric to do all the steps you describe for _all_ other ports.
-
-> What you are really looking for is hardware where the destination field
-> for FROM_CPU packets is not a single port index, but a port mask.
->
-> Right?
-
-Sure, if that's available it's great. Chips from Marvell's Prestera line
-can do this, and many others I'm sure. Alas, LinkStreet devices can not,
-and I still want the best performance I can get i that case.
-
-> Also, this problem is completely orthogonal to LAG? Where does LAG even
-> come into play here?
-
-It matters if you setup switch-to-switch LAGs. FROM_CPU packets encode
-the final device/port, and switches will forward those packet according
-to their device mapping tables, which selects a _single_ local port to
-use to reach a remote device/port. So all FROM_CPU packets to a given
-device/port will always travel through the same set of ports.
-
-In the FORWARD case, you look up the destination in the FDB of each
-device, find that it is located on the other side of a LAG, and the
-hardware will perform load-balancing.
-
->> Other than that there are some things that, while strictly speaking
->> possible to do without FORWARDs, become much easier to deal with:
->> 
->> - Multicast routing. This is one case where performance _really_ suffers
->>   from having to skb_clone() to each recipient.
->> 
->> - Bridging between virtual interfaces and DSA ports. Typical example is
->>   an L2 VPN tunnel or one end of a veth pair. On FROM_CPUs, the switch
->>   can not perform SA learning, which means that once you bridge traffic
->>   from the VPN out to a DSA port, the return traffic will be classified
->>   as unknown unicast by the switch and be flooded everywhere.
->
-> And how is this going to solve that problem? You mean that the switch
-> learns only from FORWARD, but not from FROM_CPU?
-
-Yes, so when you send the FORWARD the switch knows that the station is
-located somewhere behind the CPU port. It does not know exactly where,
-i.e. it has no knowledge of the VPN tunnel or anything. It just directs
-it towards the CPU and the bridge's FDB will take care of the rest.
-
-> Why don't you attempt to solve this more generically somehow? Your
-> switch is not the only one that can't perform source address learning
-> for injected traffic, there are tons more, some are not even DSA. We
-> can't have everybody roll their own solution.
-
-Who said anything about rolling my solution? I'm going for a generic
-solution where a netdev can announce to the bridge it is being added to
-that it can offload forwarding of packets for all ports belonging to the
-same switchdev device. Most probably modeled after how the macvlan
-offloading stuff is done.
-
-In the case of mv88e6xxx that would kill two birds with one stone -
-great! In other cases you might have to have the DSA subsystem listen to
-new neighbors appearing on the bridge and sync those to hardware or
-something. Hopefully someone working with that kind of hardware can
-solve that problem.
+DQpPbiAyNC8xMC8yMCAxMTo0MiBhbSwgQW5kcmV3IEx1bm4gd3JvdGU6DQo+PiAraW50IG12ODhl
+NjEyM19zZXJkZXNfZ2V0X3JlZ3NfbGVuKHN0cnVjdCBtdjg4ZTZ4eHhfY2hpcCAqY2hpcCwgaW50
+IHBvcnQpDQo+PiArew0KPj4gKwlpZiAobXY4OGU2eHh4X3NlcmRlc19nZXRfbGFuZShjaGlwLCBw
+b3J0KSA9PSAwKQ0KPj4gKwkJcmV0dXJuIDA7DQo+PiArDQo+PiArCXJldHVybiAyNiAqIHNpemVv
+Zih1MTYpOw0KPj4gK30NCj4gSGkgQ2hyaXMNCj4NCj4gV2hlcmUgZGlkIDI2IGNvbWUgZnJvbT8N
+CkluIHRoZSA4OEU2MTIzIFNlcmRlcyBSZWdpc3RlciBEZXNjcmlwdGlvbiB0aGUgaGlnaGVzdCBy
+ZWdpc3RlciBhZGRyZXNzIA0Kd2FzIDI2IHNvIHRoYXQncyB3aGF0IEkgdXNlZC4gVGVjaG5pY2Fs
+bHkgdGhlcmUgYXJlIDMyIHBvc3NpYmxlIA0KYWRkcmVzc2VzIGluIHRoYXQgc3BhY2Ugc28gSSBj
+b3VsZCBnbyB1cCB0byAzMi4gRXF1YWxseSByZWdpc3RlcnMgOS0xNCwgDQoyMCwgMjItMjMgYXJl
+ICJyZXNlcnZlZCIgc28gSSBjb3VsZCByZW1vdmUgdGhlbSBmcm9tIHRoZSB0b3RhbCBhbmQgaGF2
+ZSANCm12ODhlNjEyM19zZXJkZXNfZ2V0X3JlZ3MoKSBza2lwIG92ZXIgdGhlbS4gSSdtIGd1ZXNz
+aW5nIHNraXBwaW5nIHNvbWUgDQooMjctMzIpIGFuZCBub3Qgb3RoZXJzIGlzIHByb2JhYmx5IGxl
+c3MgdGhhbiBpZGVhbC4=
