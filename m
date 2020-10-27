@@ -2,162 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2FE229BF21
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 18:01:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00A8129BFDF
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 18:10:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1814992AbgJ0RBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 13:01:05 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:3989 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1814978AbgJ0RBC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 13:01:02 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 09RGwxFc028996;
-        Tue, 27 Oct 2020 10:00:47 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type :
- content-transfer-encoding : in-reply-to : mime-version; s=facebook;
- bh=pe2jzqEzr8r2D/1h/D0pOCO0M3ybkSpcpSUC6M0jssI=;
- b=Tat9mVBKVyo6cGxWrno/Rns93Rd5AnDkHb3MLNnutchGCKPkPO2Oa7p+8ntdXtnwdG7l
- 6G5Ty4hKjMwistbZn8BtR9vDD8y/uTEI94Eq1d3eLsJrj6ANb1ZYP9K7wj60z/B2NCvz
- o7HiEy6xx2eYdsOWTJK2JUM2NsPz5DaNB5o= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 34cfxn7y4b-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 27 Oct 2020 10:00:47 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 27 Oct 2020 10:00:42 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XM8vcR/hskPouIuR7qJTtp9eHXf9u+8gvHvW8OwocZDtUUg7U8yoHVrWWc+5CXZ8Pyc+xQ8WE2LCNrmqTf4an9IxCFDQk8Q92wihOAuXcG6mFMcfMEXF3M/pBHUkAbXpZkpIc5KdUksvKdrNoMQKHOXpXcraKrLPVOJ4HX+7zNOyk28Y9rQZ6VSmWJ3tImDKXACuNxfMECLeloxNPoBaOUD+E5DSnQ+4TI2xiJaXVdyDvGr8B9csDXne82YmkMVr6zDbA4bOZGmFHbeaU1Tdn+6fWvr0nyE7/zRXfdoGcAcbOhAQbklPBgXg2wk1iPJHhnx44MRvRwQKOY6ZgSfgHw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RHwsRREaRjivNbbwMtu55sqfPOAOv1j85F4BYQ8wIsI=;
- b=L8bb+o455KnMrOHMgtHULlkL8d2MqHhOSzcJKCckseKZD7/VZrySH+yD6CXZrVc789MNwFDQCjcq/uew2mciPkm1WynNa7DLEOuNNReFdV0rfJ+6onjU+ugA5f0vcNMbPqNF/tWRKzjDuimOLPlNpdoDIaaLAF0M3Mac9c1lfjkdUL5qSgCS4j9rVvzrlGfncsO5YDbrmwf9Fw4JKdDil+i6pvp0vm1lyRhhc5hje+AovfJz0Y7jX0A1YFe8f0DlR8r/NlUz4oh6M52uqgCZ9jad8p4iq/21fp6q9FsqyBn8NoJn4pHuw1n+kvDNTcCNLTY0HZIMAh5Zi4aH9Ds9/g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RHwsRREaRjivNbbwMtu55sqfPOAOv1j85F4BYQ8wIsI=;
- b=GXIBmMzwJyd46XnUeESO3PVr3kCo398bH2cItDCycTiy7FfhsS/0c1GJHHdIpJXfFqDMfklxGPlGZ8vCT6En4CWkIpgYkHIBzENBwPnvu5NWFHIHv4Ex1TwqYBkK4ono57oRp0ITXfTERam+J8UVdaypOomcmi6cjRFeq7p4SQw=
-Authentication-Results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4136.namprd15.prod.outlook.com (2603:10b6:a03:96::24)
- by BYAPR15MB2936.namprd15.prod.outlook.com (2603:10b6:a03:f9::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.28; Tue, 27 Oct
- 2020 17:00:40 +0000
-Received: from BYAPR15MB4136.namprd15.prod.outlook.com
- ([fe80::d834:4987:4916:70f2]) by BYAPR15MB4136.namprd15.prod.outlook.com
- ([fe80::d834:4987:4916:70f2%5]) with mapi id 15.20.3477.028; Tue, 27 Oct 2020
- 17:00:40 +0000
-Date:   Tue, 27 Oct 2020 10:00:35 -0700
-From:   Roman Gushchin <guro@fb.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-CC:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        <daniel@iogearbox.net>, <ast@fb.com>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <kernel-team@fb.com>
-Subject: Re: [PATCH bpf] samples/bpf: Set rlimit for memlock to infinity in
- all samples
-Message-ID: <20201027170035.GA725724@carbon.dhcp.thefacebook.com>
-References: <20201026233623.91728-1-toke@redhat.com>
- <20201027081440.756cd175@carbon>
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201027081440.756cd175@carbon>
-X-Originating-IP: [2620:10d:c090:400::4:a17b]
-X-ClientProxiedBy: MW3PR06CA0022.namprd06.prod.outlook.com
- (2603:10b6:303:2a::27) To BYAPR15MB4136.namprd15.prod.outlook.com
- (2603:10b6:a03:96::24)
+        id S1816657AbgJ0RIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 13:08:17 -0400
+Received: from smtprelay0063.hostedemail.com ([216.40.44.63]:47840 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1816629AbgJ0RIO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 13:08:14 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay08.hostedemail.com (Postfix) with ESMTP id 45489182CED2A;
+        Tue, 27 Oct 2020 17:08:10 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:69:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:1801:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3354:3622:3865:3866:3867:3868:3870:3871:3872:3874:4321:4605:5007:6742:6743:7576:7903:8603:10004:10400:10848:11026:11232:11473:11658:11783:11914:12043:12296:12297:12438:12555:12679:12740:12895:12986:13161:13229:13439:13894:14096:14097:14181:14659:14721:21080:21451:21627:21990:30012:30054:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: rake71_590ddfb2727d
+X-Filterd-Recvd-Size: 4916
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf05.hostedemail.com (Postfix) with ESMTPA;
+        Tue, 27 Oct 2020 17:08:04 +0000 (UTC)
+Message-ID: <2767969b94fd66db1fb0fc13b5783ae65b7deb2f.camel@perches.com>
+Subject: Re: [PATCH 3/8] vhost: vringh: use krealloc_array()
+From:   Joe Perches <joe@perches.com>
+To:     Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Gustavo Padovan <gustavo@padovan.org>,
+        Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jason Wang <jasowang@redhat.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        linux-media <linux-media@vger.kernel.org>,
+        linux-drm <dri-devel@lists.freedesktop.org>,
+        linaro-mm-sig@lists.linaro.org,
+        LKML <linux-kernel@vger.kernel.org>, linux-edac@vger.kernel.org,
+        linux-gpio <linux-gpio@vger.kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        netdev <netdev@vger.kernel.org>, linux-mm@kvack.org,
+        Linux-ALSA <alsa-devel@alsa-project.org>
+Date:   Tue, 27 Oct 2020 10:08:02 -0700
+In-Reply-To: <CAMpxmJU0C84DjPmqmWvPgv0zwgGLhkpKLRDuKkZHAa=wi+LvBA@mail.gmail.com>
+References: <20201027121725.24660-1-brgl@bgdev.pl>
+         <20201027121725.24660-4-brgl@bgdev.pl>
+         <20201027112607-mutt-send-email-mst@kernel.org>
+         <685d850347a1191bba8ba7766fc409b140d18f03.camel@perches.com>
+         <CAMpxmJU0C84DjPmqmWvPgv0zwgGLhkpKLRDuKkZHAa=wi+LvBA@mail.gmail.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.38.1-1 
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from carbon.dhcp.thefacebook.com (2620:10d:c090:400::4:a17b) by MW3PR06CA0022.namprd06.prod.outlook.com (2603:10b6:303:2a::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.24 via Frontend Transport; Tue, 27 Oct 2020 17:00:39 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 13ac3269-16fa-47b5-51f5-08d87a99d589
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2936:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB29368AB16E8D500E16D5A9B9BE160@BYAPR15MB2936.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: cMAMJHAwxhn/0zNa1ulQT8Wf1bRqomVtoRhV5OXBBusw9COXOwXzJ7oGtoh2UJMygdu7Thq9HFxuHul2d3/QjGmf45rSoVrTII+TOT3qDsiwHCgKfTEkLuwbqki2hi+rqP1xr3V6I4nzEGpH6UviAnq2T6mcLTiB3PSv2TqfOluMulB5gqrLIKZuXUqEdy45VViUKQdwaxhnsZeyPSVmBbl/kRbvj59bLbF+xGEWguOt+nJtgF5cCToeXT+e7TZRmxOORE6NfLpJCPYRMSP1gtaZxU2bxeRUCZhCCgDAHEZAZHhpq4qE+sCnT9dLwWP2zopMlBQK8WkV5vefrBOrvA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4136.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(376002)(366004)(136003)(346002)(396003)(6666004)(6506007)(86362001)(9686003)(83380400001)(316002)(5660300002)(66574015)(52116002)(7696005)(33656002)(2906002)(1076003)(66946007)(4326008)(8676002)(478600001)(66556008)(66476007)(8936002)(55016002)(186003)(16526019)(6916009);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: I6rVWBdwGWiKz2LEfYry/t4lRJLE7EoXZEYklaidC4V73qaAuinmg+VQ4J7tuVAeHXX5nHhFgiPk040sCeNWoANOF76Xrr4sXKHXzNSLRrb1BkmAgLaD7QzN7SLwPkKHc2M3M6speDjlJ82ieL/v2j5sArrSC1E+NbCTK8pupweVw1uYEcJNkx9+1U3SIYVpx10nZqyKQl3XivNaHTsFyz0QlMKjAP1hbcK+HHOBeOWhErVF3eUJeny9vN3L9HX4MVvQa9JXyoCUyNb6skLlDM2VOYTAYXSwn8mPTGXEEq8YnhEHWaJXEWgfoFuX7xn3NKcwJTXgOK0G3yEq4M9ITefEEK8+WXlIrAAigo08hudnCn+2hcRf9BjVB4Cbshjc30+B+fEu3IYBRf3Xsk+v8RcXrcsHPICXM3/Ja4zA1qJL4r2IcPWo5Oi+n8mdHImz4gEDJHak8QAON2yiFM6/m1PnSVX28aVj8RpsLZh3IKCC/5tp2H7nmBc2OapoiJ9wIh4JZhG54szAsYEnxaro/lko/HxhcxMhxlvLK1bAVv0zy81n9EIAcMH/88MjEN1RdvV90BqS8+jDBjwzgAOH94mR0gLe2Lj1VrOo19oZJD5K+6dTQYJiGEQpxsvOmwHcvkIo2iEE3RmKI4b/tdGjIARYS2InxcpJGshmCA3bQaP71Q3ZVBoJ5kEnnOvoFNaZ
-X-MS-Exchange-CrossTenant-Network-Message-Id: 13ac3269-16fa-47b5-51f5-08d87a99d589
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4136.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Oct 2020 17:00:40.6555
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: x//0Qn6MceMLWF3Z7hPDxmBeRM2dALjKgw4VpWcBVH0nAHg337oJuEv3EbQwEsrE
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2936
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-10-27_10:2020-10-26,2020-10-27 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 impostorscore=0
- suspectscore=1 malwarescore=0 priorityscore=1501 spamscore=0 mlxscore=0
- clxscore=1011 phishscore=0 lowpriorityscore=0 adultscore=0 mlxlogscore=999
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010270102
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 27, 2020 at 08:14:40AM +0100, Jesper Dangaard Brouer wrote:
-> On Tue, 27 Oct 2020 00:36:23 +0100
-> Toke Høiland-Jørgensen <toke@redhat.com> wrote:
-> 
-> > The memlock rlimit is a notorious source of failure for BPF programs. Most
-> > of the samples just set it to infinity, but a few used a lower limit. The
-> > problem with unconditionally setting a lower limit is that this will also
-> > override the limit if the system-wide setting is *higher* than the limit
-> > being set, which can lead to failures on systems that lock a lot of memory,
-> > but set 'ulimit -l' to unlimited before running a sample.
+On Tue, 2020-10-27 at 17:58 +0100, Bartosz Golaszewski wrote:
+> On Tue, Oct 27, 2020 at 5:50 PM Joe Perches <joe@perches.com> wrote:
 > > 
-> > One fix for this is to only conditionally set the limit if the current
-> > limit is lower, but it is simpler to just unify all the samples and have
-> > them all set the limit to infinity.
+> > On Tue, 2020-10-27 at 11:28 -0400, Michael S. Tsirkin wrote:
+> > > On Tue, Oct 27, 2020 at 01:17:20PM +0100, Bartosz Golaszewski wrote:
+> > > > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> > > > 
+> > > > Use the helper that checks for overflows internally instead of manually
+> > > > calculating the size of the new array.
+> > > > 
+> > > > Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> > > 
+> > > No problem with the patch, it does introduce some symmetry in the code.
 > > 
-> > Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+> > Perhaps more symmetry by using kmemdup
+> > ---
+> >  drivers/vhost/vringh.c | 23 ++++++++++-------------
+> >  1 file changed, 10 insertions(+), 13 deletions(-)
+> > 
+> > diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+> > index 8bd8b403f087..99222a3651cd 100644
+> > --- a/drivers/vhost/vringh.c
+> > +++ b/drivers/vhost/vringh.c
+> > @@ -191,26 +191,23 @@ static int move_to_indirect(const struct vringh *vrh,
+> >  static int resize_iovec(struct vringh_kiov *iov, gfp_t gfp)
+> >  {
+> >         struct kvec *new;
+> > -       unsigned int flag, new_num = (iov->max_num & ~VRINGH_IOV_ALLOCATED) * 2;
+> > +       size_t new_num = (iov->max_num & ~VRINGH_IOV_ALLOCATED) * 2;
+> > +       size_t size;
+> > 
+> >         if (new_num < 8)
+> >                 new_num = 8;
+> > 
+> > -       flag = (iov->max_num & VRINGH_IOV_ALLOCATED);
+> > -       if (flag)
+> > -               new = krealloc(iov->iov, new_num * sizeof(struct iovec), gfp);
+> > -       else {
+> > -               new = kmalloc_array(new_num, sizeof(struct iovec), gfp);
+> > -               if (new) {
+> > -                       memcpy(new, iov->iov,
+> > -                              iov->max_num * sizeof(struct iovec));
+> > -                       flag = VRINGH_IOV_ALLOCATED;
+> > -               }
+> > -       }
+> > +       if (unlikely(check_mul_overflow(new_num, sizeof(struct iovec), &size)))
+> > +               return -ENOMEM;
+> > +
 > 
-> This change basically disable the memlock rlimit system. And this
-> disable method is becoming standard in more and more BPF programs.
-> IMHO using the system-wide memlock rlimit doesn't make sense for BPF.
+> The whole point of using helpers such as kmalloc_array() is not doing
+> these checks manually.
 
-Hi Jesper,
+Tradeoffs for in readability for overflow and not mistyping or doing
+the multiplication of iov->max_num * sizeof(struct iovec) twice.
 
-+1
+Just fyi:
 
-> 
-> I'm still ACKing the patch, as this seems the only way forward, to
-> ignore and in-practice not use the memlock rlimit.
-> 
-> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> 
-> 
-> I saw some patches on the list (from Facebook) with a new system for
-> policy limiting memory usage per BPF program or was it mem-cgroup, but
-> I don't think that was ever merged... I would really like to see
-> something replace (and remove) this memlock rlimit dependency. Anyone
-> knows what happened to that effort?
+the realloc doesn't do a multiplication overflow test as written so the
+suggestion is slightly more resistant to defect.
 
-I'm working on it.
+   
 
-It required some heavy changes on the mm side: accounting of the percpu memory,
-which required a framework for accounting of arbitrary non page-sized objects,
-support of accounting from an interrupt context and some manipulations with
-page flags in order to allow accounted vmallocs to be mapped to userspace.
-
-It's mostly done with the last part expected to reach linux-next in few days.
-Then I'll rebase and repost the bpf part.
-
-Thanks!
