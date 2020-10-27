@@ -2,124 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 309AB299DB2
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 01:09:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DDEA299EF5
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 01:19:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439085AbgJ0AJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 20:09:20 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:38435 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2393730AbgJ0AJJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 20:09:09 -0400
-Received: by mail-pg1-f194.google.com with SMTP id i26so6655789pgl.5
-        for <netdev@vger.kernel.org>; Mon, 26 Oct 2020 17:09:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LsJlRjdqhDVAHhw47g/atIos95r5K18qubNura+3fzc=;
-        b=DV6OWsJ8YTis4RWe74HnMoSPHx2wnbbnih3F0P+HiF57IXnyKrAIcBplDa0TuQW0fe
-         aii8O67y5CuNtSNcN0q+CPIFocqT+ma+us4RoqX4TC6tMgaGBGUnwVHQJ/N6qPZoUIZl
-         N8PZQaTFtDJvhHp2KmiMn99XHribiQTVBqggOOByg6ZsC+AIdPeSZ7IIhzJWtbXj8peQ
-         vUIkbSwJfbOC01KBcysHUuhejsj0lkLWHowENLgMtxCKJmsxzr5jKuNTtJsywdn514eT
-         kI7wIhvyoH92wMz2QHWzCBEBrmMggfxor976qEm1YW1xHPKbqwPNkX7lWR3OAQC8rWrk
-         OKFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=LsJlRjdqhDVAHhw47g/atIos95r5K18qubNura+3fzc=;
-        b=hYgQM3DkMMSf2IvuMtCS2xdYv8gVbTq07ltx2xqHdhbWHTIBLVDbTD6M+Vf99mXf8y
-         M2iOkAigSXMx6r3BeLcJEURBKPz4xRfxbJvAFTZrGDe5mBfFKfQ7bWJ9IHIHE2CDoZZr
-         +0OmKjVqlWp1fmdGlnltYBemP1Px3VPtzZPOQdk+ToUP9bwsj5wQ425di6t/AqBWDLvf
-         STD5Quh9xLf1p48gOx8ATUy1my2cZbWEFaNRnKZWCSS7kcCwy5AluDLEwJ3DBen2RBYa
-         gWaQS+HeDRfzAWHZ4LeH/PnwQU9I8c7Lv7c5u0/YEFSj96dr8qb8gQF4FcgrqfpLMwff
-         IMPw==
-X-Gm-Message-State: AOAM533nM5PNPkg0WmnPaksRdrDQEC1tf1gDTzSYYqlb4UTg7P5LL/Fx
-        /KZ8oLVnnxPk6WnyYY3Wy/yAlA==
-X-Google-Smtp-Source: ABdhPJzyk1CokDb3PmPO6AYN5WbyxmkTO2goVocCEnl70vwlgJZot7evNIwwh9o3S+Q92QVwXSE2HA==
-X-Received: by 2002:a65:5c02:: with SMTP id u2mr18125891pgr.173.1603757348944;
-        Mon, 26 Oct 2020 17:09:08 -0700 (PDT)
-Received: from [192.168.1.134] ([66.219.217.173])
-        by smtp.gmail.com with ESMTPSA id e16sm13676837pfh.45.2020.10.26.17.09.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Oct 2020 17:09:08 -0700 (PDT)
-Subject: Re: [REGRESSION] mm: process_vm_readv testcase no longer works after
- compat_prcoess_vm_readv removed
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Kyle Huey <me@kylehuey.com>,
-        open list <linux-kernel@vger.kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Robert O'Callahan <robert@ocallahan.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        David Howells <dhowells@redhat.com>,
-        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-        "maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)" <x86@kernel.org>,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
-        sparclinux@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-scsi@vger.kernel.org,
-        "open list:FILESYSTEMS (VFS and infrastructure)" 
-        <linux-fsdevel@vger.kernel.org>, linux-aio@kvack.org,
-        io-uring@vger.kernel.org, linux-arch@vger.kernel.org,
-        linux-mm@kvack.org, netdev@vger.kernel.org,
-        keyrings@vger.kernel.org, linux-security-module@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>
-References: <CAP045Aqrsb=CXHDHx4nS-pgg+MUDj14r-kN8_Jcbn-NAUziVag@mail.gmail.com>
- <70d5569e-4ad6-988a-e047-5d12d298684c@kernel.dk>
- <20201027000521.GD3576660@ZenIV.linux.org.uk>
-From:   Jens Axboe <axboe@kernel.dk>
-Message-ID: <0127a542-3f93-7bd0-e00d-4a0e49846c8f@kernel.dk>
-Date:   Mon, 26 Oct 2020 18:09:06 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S2440920AbgJ0ATA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 20:19:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58576 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2438827AbgJ0AKB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 20:10:01 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A256021707;
+        Tue, 27 Oct 2020 00:09:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603757400;
+        bh=3wxls2AP0w+Y7HE7+L8EckEFchu/rB2Kbp1zFYiCEtk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=DfKDA5FuoCHPQoN/kJGqh6h6kCAc3dA1FJD4sl5uM7rMVLCCINLM+k/bACltQOi13
+         X04BNp5/16N8tLA/Fdc1hRUjOP7nsOWRzeLUsEIKPtvcgWoHufWL+d3rcSFYZ2nrYM
+         fjgAStsKujXkkKgNnhpNvOKSANEqz9XxCciDSTwI=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Wen Gong <wgong@codeaurora.org>, Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 11/46] ath10k: start recovery process when payload length exceeds max htc length for sdio
+Date:   Mon, 26 Oct 2020 20:09:10 -0400
+Message-Id: <20201027000946.1026923-11-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20201027000946.1026923-1-sashal@kernel.org>
+References: <20201027000946.1026923-1-sashal@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20201027000521.GD3576660@ZenIV.linux.org.uk>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/26/20 6:05 PM, Al Viro wrote:
-> On Mon, Oct 26, 2020 at 05:56:11PM -0600, Jens Axboe wrote:
->> On 10/26/20 4:55 PM, Kyle Huey wrote:
->>> A test program from the rr[0] test suite, vm_readv_writev[1], no
->>> longer works on 5.10-rc1 when compiled as a 32 bit binary and executed
->>> on a 64 bit kernel. The first process_vm_readv call (on line 35) now
->>> fails with EFAULT. I have bisected this to
->>> c3973b401ef2b0b8005f8074a10e96e3ea093823.
->>>
->>> It should be fairly straightforward to extract the test case from our
->>> repository into a standalone program.
->>
->> Can you check with this applied?
->>
->> diff --git a/mm/process_vm_access.c b/mm/process_vm_access.c
->> index fd12da80b6f2..05676722d9cd 100644
->> --- a/mm/process_vm_access.c
->> +++ b/mm/process_vm_access.c
->> @@ -273,7 +273,8 @@ static ssize_t process_vm_rw(pid_t pid,
->>  		return rc;
->>  	if (!iov_iter_count(&iter))
->>  		goto free_iov_l;
->> -	iov_r = iovec_from_user(rvec, riovcnt, UIO_FASTIOV, iovstack_r, false);
->> +	iov_r = iovec_from_user(rvec, riovcnt, UIO_FASTIOV, iovstack_r,
->> +				in_compat_syscall());
-> 
-> _ouch_
-> 
-> There's a bug, all right, but I'm not sure that this is all there is
-> to it. For now it's probably the right fix, but...  Consider the fun
-> trying to use that from 32bit process to access the memory of 64bit
-> one.  IOW, we might want to add an explicit flag for "force 64bit
-> addresses/sizes in rvec".
+From: Wen Gong <wgong@codeaurora.org>
 
-Ouch yes good point, nice catch.
+[ Upstream commit 2fd3c8f34d08af0a6236085f9961866ad92ef9ec ]
 
+When simulate random transfer fail for sdio write and read, it happened
+"payload length exceeds max htc length" and recovery later sometimes.
+
+Test steps:
+1. Add config and update kernel:
+CONFIG_FAIL_MMC_REQUEST=y
+CONFIG_FAULT_INJECTION=y
+CONFIG_FAULT_INJECTION_DEBUG_FS=y
+
+2. Run simulate fail:
+cd /sys/kernel/debug/mmc1/fail_mmc_request
+echo 10 > probability
+echo 10 > times # repeat until hitting issues
+
+3. It happened payload length exceeds max htc length.
+[  199.935506] ath10k_sdio mmc1:0001:1: payload length 57005 exceeds max htc length: 4088
+....
+[  264.990191] ath10k_sdio mmc1:0001:1: payload length 57005 exceeds max htc length: 4088
+
+4. after some time, such as 60 seconds, it start recovery which triggered
+by wmi command timeout for periodic scan.
+[  269.229232] ieee80211 phy0: Hardware restart was requested
+[  269.734693] ath10k_sdio mmc1:0001:1: device successfully recovered
+
+The simulate fail of sdio is not a real sdio transter fail, it only
+set an error status in mmc_should_fail_request after the transfer end,
+actually the transfer is success, then sdio_io_rw_ext_helper will
+return error status and stop transfer the left data. For example,
+the really RX len is 286 bytes, then it will split to 2 blocks in
+sdio_io_rw_ext_helper, one is 256 bytes, left is 30 bytes, if the
+first 256 bytes get an error status by mmc_should_fail_request,then
+the left 30 bytes will not read in this RX operation. Then when the
+next RX arrive, the left 30 bytes will be considered as the header
+of the read, the top 4 bytes of the 30 bytes will be considered as
+lookaheads, but actually the 4 bytes is not the lookaheads, so the len
+from this lookaheads is not correct, it exceeds max htc length 4088
+sometimes. When happened exceeds, the buffer chain is not matched between
+firmware and ath10k, then it need to start recovery ASAP. Recently then
+recovery will be started by wmi command timeout, but it will be long time
+later, for example, it is 60+ seconds later from the periodic scan, if
+it does not have periodic scan, it will be longer.
+
+Start recovery when it happened "payload length exceeds max htc length"
+will be reasonable.
+
+This patch only effect sdio chips.
+
+Tested with QCA6174 SDIO with firmware WLAN.RMH.4.4.1-00029.
+
+Signed-off-by: Wen Gong <wgong@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20200108031957.22308-3-wgong@codeaurora.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/ath/ath10k/sdio.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/wireless/ath/ath10k/sdio.c b/drivers/net/wireless/ath/ath10k/sdio.c
+index fef313099e08a..34e8b4344f40a 100644
+--- a/drivers/net/wireless/ath/ath10k/sdio.c
++++ b/drivers/net/wireless/ath/ath10k/sdio.c
+@@ -561,6 +561,10 @@ static int ath10k_sdio_mbox_rx_alloc(struct ath10k *ar,
+ 				    le16_to_cpu(htc_hdr->len),
+ 				    ATH10K_HTC_MBOX_MAX_PAYLOAD_LENGTH);
+ 			ret = -ENOMEM;
++
++			queue_work(ar->workqueue, &ar->restart_work);
++			ath10k_warn(ar, "exceeds length, start recovery\n");
++
+ 			goto err;
+ 		}
+ 
 -- 
-Jens Axboe
+2.25.1
 
