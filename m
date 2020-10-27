@@ -2,87 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B498529C041
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 18:13:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EA25E29C03D
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 18:13:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1817097AbgJ0RNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 13:13:13 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:44845 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1784690AbgJ0O7b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 10:59:31 -0400
-Received: by mail-pf1-f193.google.com with SMTP id 133so1050146pfx.11
-        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 07:59:31 -0700 (PDT)
+        id S1817089AbgJ0RNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 13:13:08 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:40741 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1784700AbgJ0O7f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 10:59:35 -0400
+Received: by mail-lf1-f66.google.com with SMTP id a9so2708071lfc.7
+        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 07:59:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=fp9DOIG89yQphhVtnUaB6Uhgg6cfJ/f6CEZSpcBxAQ4=;
-        b=UYbkYuZz+V4mrSNGV9sOj772Km/E4ZB7bT64Rbq2OmBMBkMYpC/7uQ71Ta7B2pS0a2
-         WLcDodpDC1YTDYaBRw1CbZbZOSp5ejCOMFhRTSm3DDK3rUHnvIQVXpUAP7h/bavtyd9B
-         AffszAuFp9L/C2x3u4KNpH126oHbtsOE0aVWv7t3FTD3lS67vj/zsohznzCAa6YABlL2
-         3edS17Pwz9ME/qPhAlc7lKiLmqmxq9d8kGG0ADppn1UWSKP1c9YqopZqB7918qfr+ep/
-         r2T39MEnfS2D3B9VQosD2qQEohJjelHEvQu8vgQdqqd5Z/sg+A0mgpmrBvaNIuXBQI0p
-         YG4A==
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=C+qpU7upM+JQxch4WhcQ6VXYVZiD9niPVaw9YQVcUjQ=;
+        b=yKT1wk2H1xeWhLAlCYrlqPLw61xxN+wtqxrf6qssvkhRiL4Y7mchUTkcm2Hw2sM0gQ
+         O8vSqkl9RpLo0AahYcCOkIRTYcK+/ZJokPHK/9xstfSsgG8nDvrWad/sncUsxgUibB8m
+         5+gJiWHn50OzzOT+RGAXWXvDfeppOKl7IdOniyPYVvdHEDftNkSAesSLzpmnwypKs+qo
+         eBrT9glWwOUGeMPxCGE1ldbuOyubavaVFTOLKW8awSiKXyy9MTSYxgaUhGn4KtWXNxA9
+         5AhWybEcYvo7oHVjixPbn1DlMV6WHnp+I3vVknMhmtq77Ttkj6Z3RgNnOS3T1Y8sYeFk
+         y4ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fp9DOIG89yQphhVtnUaB6Uhgg6cfJ/f6CEZSpcBxAQ4=;
-        b=XnXz95uXsLD7dXmwvobNWFTP+pKg2muSm2CfB+Np4Q8zh6DUq4Jp+Dv4mRiQIvkSNN
-         zF7TwcJCRDUC6Io+Nlwie67tbEezMm9kjsdeJ6EwpdSRnYIYvfScrYvZBeAj1HNdbju5
-         YZWRlN22GCcNsiiksNb2y5WmFBw6YW6gedNbx0sUbq4v6lc3XvILq/qhHC3q6MOb/UmG
-         at85QYZ5+oRlboLqWtmIzziY+V49vNpe/kDriAb6RD44luyQLsOzj8+BJX6V76pe7444
-         fUeJBiXVu30K+rmN7SajAcPRtUP0ulNOprlWSvTqtM/lcPaYJ7loGm5DcwoxC5L2+UPN
-         BxbQ==
-X-Gm-Message-State: AOAM532eO6Z6qhS8szFac8v+LjP6BgBwGcBv1AxLyXLmh8AF+yX8BdYA
-        1ihw3x6Dyf2nWRaebtUjyPdTXA==
-X-Google-Smtp-Source: ABdhPJw8wLAWDU2hwTitO+GzNGBx1HZNCIcF13OgdjBXdNjI95nxmzgizBezFv/ZOrXBhMUNoGXivA==
-X-Received: by 2002:a63:3202:: with SMTP id y2mr2189277pgy.97.1603810770619;
-        Tue, 27 Oct 2020 07:59:30 -0700 (PDT)
-Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id u4sm2340541pjy.19.2020.10.27.07.59.29
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=C+qpU7upM+JQxch4WhcQ6VXYVZiD9niPVaw9YQVcUjQ=;
+        b=ASwcHQ+Yvw9zVHRc4PDP72zT38wWEw3JoCGovCpI6zzEYsdBWWkw6LP8f85vHT99ju
+         lUHdYIBis5350z8zYb49MQlgdN3FWNTwdQmHgk/OUoGRS2jau+imdV0RvDelsyazJrco
+         ASH8BuwlOHq5hVBBZ74qnBxuYqv6xfy4TCSMWFtZmDexTTBz99En+ldF55F7Un1swSMp
+         2TH0GzrVJ6t3OWLuXGozp2/v3QD/nY3/vugg7xbhWOXBZXHdwqCUI/01z/Gu2zG4nwrY
+         GVADpS560zdBf/9xVmfXqN5homcjS46MXls91or2DxD6Mq4d1zxk62bzvku60/va5aLr
+         oH3Q==
+X-Gm-Message-State: AOAM531Vvpc03BjyqO9uLHgvRnZijrD/2pTyHsNbR646D3nabjgD6qYt
+        rDonP2YwyT7WqA/cIntInS866MQSDjPCwKPp
+X-Google-Smtp-Source: ABdhPJyywo75nYL4HVb6aB32xtHjhJhR6fMy4/VJRC3UaDDakJz4m+GncDU/d/KKaDR1fWUl9phXWg==
+X-Received: by 2002:a05:6512:3055:: with SMTP id b21mr1060776lfb.229.1603810772072;
+        Tue, 27 Oct 2020 07:59:32 -0700 (PDT)
+Received: from wkz-x280 (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id l129sm199897lfd.279.2020.10.27.07.59.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Oct 2020 07:59:30 -0700 (PDT)
-Date:   Tue, 27 Oct 2020 07:59:21 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Henrik Bjoernlund via Bridge <bridge@lists.linux-foundation.org>
-Cc:     Henrik Bjoernlund <henrik.bjoernlund@microchip.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <roopa@nvidia.com>,
-        <nikolay@nvidia.com>, <jiri@mellanox.com>, <idosch@mellanox.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <UNGLinuxDriver@microchip.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: Re: [Bridge] [PATCH net-next v7 01/10] net: bridge: extend the
- process of special frames
-Message-ID: <20201027075921.69976131@hermes.local>
-In-Reply-To: <20201027100251.3241719-2-henrik.bjoernlund@microchip.com>
-References: <20201027100251.3241719-1-henrik.bjoernlund@microchip.com>
-        <20201027100251.3241719-2-henrik.bjoernlund@microchip.com>
+        Tue, 27 Oct 2020 07:59:31 -0700 (PDT)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 0/4] net: dsa: link aggregation support
+In-Reply-To: <20201027122720.6jm4vuivi7tozzdq@skbuf>
+References: <20201027105117.23052-1-tobias@waldekranz.com> <20201027122720.6jm4vuivi7tozzdq@skbuf>
+Date:   Tue, 27 Oct 2020 15:59:30 +0100
+Message-ID: <87tuufvhnx.fsf@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 27 Oct 2020 10:02:42 +0000
-Henrik Bjoernlund via Bridge <bridge@lists.linux-foundation.org> wrote:
+On Tue, Oct 27, 2020 at 14:27, Vladimir Oltean <olteanv@gmail.com> wrote:
+>> The LAG driver ops all receive the LAG netdev as an argument when this
+>> information is already available through the port's lag pointer. This
+>> was done to match the way that the bridge netdev is passed to all VLAN
+>> ops even though it is in the port's bridge_dev. Is there a reason for
+>> this or should I just remove it from the LAG ops?
+>
+> Maybe because on "leave", the bridge/LAG net device pointer inside
+> struct dsa_port is first set to NULL, then the DSA notifier is called?
 
-> +/* Return 0 if the frame was not processed otherwise 1
-> + * note: already called with rcu_read_lock
-> + */
-> +static int br_process_frame_type(struct net_bridge_port *p,
-> +				 struct sk_buff *skb)
-> +{
-> +	struct br_frame_type *tmp;
-> +
-> +	hlist_for_each_entry_rcu(tmp, &p->br->frame_type_list, list)
-> +		if (unlikely(tmp->type == skb->protocol))
-> +			return tmp->frame_handler(p, skb);
-> +
-> +	return 0;
-> +}
+Right, that makes sense. For LAGs I keep ds->lag set until the leave ops
+have run. But perhaps I should change it to match the VLAN ops?
 
-Does the linear search of frame types have noticable impact on performance?
-Hint: maybe a bitmap or something would be faster.
+> Since ocelot/felix does not have this restriction, and supports
+> individual port addressing even under a LAG, you can imagine I am not
+> very happy to see the RX data path punishing everyone else that is not
+> mv88e6xxx.
+
+I understand that, for sure. Though to be clear, the only penalty in
+terms of performance is an extra call to dsa_slave_check, which is just
+a load and compare on skb->dev->netdev_ops.
+
+>> (mv88e6xxx) What is the policy regarding the use of DSA vs. EDSA?  It
+>> seems like all chips capable of doing EDSA are using that, except for
+>> the Peridot.
+>
+> I have no documentation whatsoever for mv88e6xxx, but just wondering,
+> what is the benefit brought by EDSA here vs DSA? Does DSA have the
+> same restriction when the ports are in a LAG?
+
+The same restrictions apply I'm afraid. The only difference is that you
+prepend a proper ethertype before the tag.
+
+The idea (as far as I know) is that you can trap control traffic (TO_CPU
+in DSA parlance) to the CPU and receive (E)DSA tagged to implement
+things like STP and LLDP, but you receive the data traffic (FORWARD)
+untagged or with an 802.1Q tag.
+
+This means you can use standard VLAN accelerators on NICs to
+remove/insert the 1Q tags. In a routing scenario this can bring a
+significant speed-up as you skip two memcpys per packet to remove and
+insert the tag.
