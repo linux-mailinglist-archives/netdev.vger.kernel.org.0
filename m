@@ -2,92 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8716829A551
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 08:15:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5451A29A55F
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 08:17:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2507451AbgJ0HOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 03:14:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:44166 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2507447AbgJ0HOz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 03:14:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603782893;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qoFOH0EIYw+zRVkirbFvitnPatdYcGlTK08xwJlVXUc=;
-        b=KxhAsYMRdC6NWkrdJZ7AtIMZ4morPZ8TjG5ubPHqrj7JlfGtmbQKTqgHtjO1WLsrsiEhra
-        Y12J4ElAf/Hs4Lug5lNPlfRjAjh+yOb7WOvQsOTqOZo66I0+Xkh4GADjk7rnxUZUA6/Fyl
-        8uBXVD7eImk8UQqDy5+E30nifewkE2Y=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-100-bWtevY_hNLmjP3o_l2BPDw-1; Tue, 27 Oct 2020 03:14:51 -0400
-X-MC-Unique: bWtevY_hNLmjP3o_l2BPDw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6A93D1018F61;
-        Tue, 27 Oct 2020 07:14:50 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.9])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 023AF5D9E4;
-        Tue, 27 Oct 2020 07:14:41 +0000 (UTC)
-Date:   Tue, 27 Oct 2020 08:14:40 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Cc:     daniel@iogearbox.net, ast@fb.com, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, brouer@redhat.com,
-        Roman Gushchin <guro@fb.com>, kernel-team@fb.com
-Subject: Re: [PATCH bpf] samples/bpf: Set rlimit for memlock to infinity in
- all samples
-Message-ID: <20201027081440.756cd175@carbon>
-In-Reply-To: <20201026233623.91728-1-toke@redhat.com>
-References: <20201026233623.91728-1-toke@redhat.com>
+        id S2436750AbgJ0HRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 03:17:47 -0400
+Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:41503 "EHLO
+        wout2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2436609AbgJ0HRq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 03:17:46 -0400
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
+        by mailout.west.internal (Postfix) with ESMTP id A8FA7C75;
+        Tue, 27 Oct 2020 03:17:44 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Tue, 27 Oct 2020 03:17:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bernat.ch; h=
+        from:to:cc:subject:references:date:in-reply-to:message-id
+        :mime-version:content-type:content-transfer-encoding; s=fm1; bh=
+        wGIbbS7r8/VVCcX7kCb3aZJRinzEzbwFqUjq4FrFGr0=; b=QYjyypW+hlxVIHsT
+        r2mKQhnoj+vG6Uad/Eb9grqcWJkDrfGBjFvGHdYn+skktZbZ3wgA/4evPUicUDPs
+        aU6K+I1MbQV0DJCG7WeeCxJMGofr3dsY11evj/cgMQoV7hSNkj80t0M9hvzvU8Fc
+        BgopnM+vdyJuwvLVDJiNV/z5NUgV7Vcx97aMjnijArimCh0yhU1jlmy7//ivFQ2T
+        PPPZ2iQpNYbifHlNX3ruAAuwe7TBj06dHmWTbHoxCgmpldi+Xb6i5nswRtLuqe6D
+        Ja/XUIf6bo+dipc+Tywuh0nzRt77qik4IVjfBc7a08DwTiGknWEt+Nnr3d3buhMf
+        Zv9sRw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; bh=wGIbbS7r8/VVCcX7kCb3aZJRinzEzbwFqUjq4FrFG
+        r0=; b=eWBvMyn+C3IvzgnvX9accmNO4HFfDSVSb5dM9BVNsE/qOQW6DCfM+nD+C
+        ceKWhanXYN9eJTn0AixPniT7DRtA5IdmExMoK7CrYA8F69uviiQhuGYcWy/yb0eV
+        vr5dZIF1XEMDUfzkulZWqYelnkKf677P/YzgCxH5pOyshuj9YBYJoJrH64ilxll7
+        rRFmYDpWBfKzMAUvuoMVQGONwyMb2AHbBaH86fXhSyYkNueAY8diiBB+RJktbqKN
+        r7igRK4tWkcqzGO20ExEPfU4NfrRy9CRr/uEeW9GA1twzGNfgoPx/lB2pwCbsljL
+        4cOq/5ZiJQ9yPpXu94q7V0g2bbkqw==
+X-ME-Sender: <xms:l8mXX6l2p5q7pv9JtXXqW0_wn6i4Q9M-u1ISfWgxbuIujqjZfH6ssg>
+    <xme:l8mXXx14q4dkT51cdNCzG6kLMq2D-csX6cDObeprnvDCp9Rsadx-JLRJ1x3koUN2B
+    C0GwevZ1fpM0inFpN8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrkeekgddutdegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvufhfffgjkfgfgggtgfesthekredttderjeenucfhrhhomhepgghinhgt
+    vghnthcuuegvrhhnrghtuceovhhinhgtvghnthessggvrhhnrghtrdgthheqnecuggftrf
+    grthhtvghrnhepudeuveeggedtveduudejgfeiffeiveduiedvjedvudefleetgfefvdfh
+    kedtieejnecukfhppeeluddrudejuddrvdegfedrudeinecuvehluhhsthgvrhfuihiivg
+    eptdenucfrrghrrghmpehmrghilhhfrhhomhepvhhinhgtvghnthessggvrhhnrghtrdgt
+    hh
+X-ME-Proxy: <xmx:l8mXX4qKCKqx4n7t7HgVEndDk_GC2TH6JFd0eK53nOuvgyR99N5f8A>
+    <xmx:l8mXX-lkNroxXs8q9oMFVeVNh5uwARRG81z7IcPiZC9UgNlgrMRa7w>
+    <xmx:l8mXX40R4nikMFqEiVkQm235p_ZTTpROakMNezaBTINQa6EoAb71sg>
+    <xmx:mMmXX1_EszHaVYQKzIrqXZ-iuHIC6oR3L1lY-MVJmzwdFN2zcKHGKA>
+Received: from guybrush.luffy.cx (91-171-243-16.subs.proxad.net [91.171.243.16])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 616743280065;
+        Tue, 27 Oct 2020 03:17:43 -0400 (EDT)
+Received: by guybrush.luffy.cx (Postfix, from userid 1000)
+        id C2B411FE71; Tue, 27 Oct 2020 08:17:41 +0100 (CET)
+From:   Vincent Bernat <vincent@bernat.ch>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Laurent Fasnacht <fasnacht@protonmail.ch>
+Subject: Re: [PATCH net-next v2] net: core: enable SO_BINDTODEVICE for
+ non-root users
+References: <20200331132009.1306283-1-vincent@bernat.ch>
+        <20200402.174735.1088204254915987225.davem@davemloft.net>
+        <m37drhs1jn.fsf@bernat.ch>
+        <ac5341e0-2ed7-2cfb-ec96-5e063fca9598@gmail.com>
+Date:   Tue, 27 Oct 2020 08:17:41 +0100
+In-Reply-To: <ac5341e0-2ed7-2cfb-ec96-5e063fca9598@gmail.com> (David Ahern's
+        message of "Fri, 23 Oct 2020 08:40:31 -0600")
+Message-ID: <87tuugkui2.fsf@bernat.ch>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 27 Oct 2020 00:36:23 +0100
-Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com> wrote:
+ ❦ 23 octobre 2020 08:40 -06, David Ahern:
 
-> The memlock rlimit is a notorious source of failure for BPF programs. Most
-> of the samples just set it to infinity, but a few used a lower limit. The
-> problem with unconditionally setting a lower limit is that this will also
-> override the limit if the system-wide setting is *higher* than the limit
-> being set, which can lead to failures on systems that lock a lot of memor=
-y,
-> but set 'ulimit -l' to unlimited before running a sample.
->=20
-> One fix for this is to only conditionally set the limit if the current
-> limit is lower, but it is simpler to just unify all the samples and have
-> them all set the limit to infinity.
->=20
-> Signed-off-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+>> I am wondering if we should revert the patch for 5.10 while we can,
+>> waiting for a better solution (and breaking people relying on the new
+>> behavior in 5.9).
+>> 
+>> Then, I can propose a patch with a sysctl to avoid breaking existing
+>> setups.
+>> 
+>
+> I have not walked the details, but it seems like a security policy can
+> be installed to get the previous behavior.
 
-This change basically disable the memlock rlimit system. And this
-disable method is becoming standard in more and more BPF programs.
-IMHO using the system-wide memlock rlimit doesn't make sense for BPF.
+libtorrent is using SO_BINDTODEVICE for some reason (code is quite old,
+so not git history). Previously, the call was unsuccesful and the error
+was logged and ignored. Now, it succeeds and circumvent the routing
+policy. Using Netfiler does not help as libtorrent won't act on dropped
+packets as the socket is already configured on the wrong interface.
+kprobe is unable to modify a syscall and seccomp cannot be applied
+globally. LSM are usually distro specific. What kind of security policy
+do you have in mind?
 
-I'm still ACKing the patch, as this seems the only way forward, to
-ignore and in-practice not use the memlock rlimit.
-
-Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-
-
-I saw some patches on the list (from Facebook) with a new system for
-policy limiting memory usage per BPF program or was it mem-cgroup, but
-I don't think that was ever merged... I would really like to see
-something replace (and remove) this memlock rlimit dependency. Anyone
-knows what happened to that effort?
-
---=20
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+Thanks.
+-- 
+Don't over-comment.
+            - The Elements of Programming Style (Kernighan & Plauger)
