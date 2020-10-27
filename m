@@ -2,85 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6555029C7CD
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 19:53:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8CB229C808
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 20:02:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1829155AbgJ0Sui (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 14:50:38 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:34054 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1829117AbgJ0SuJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 14:50:09 -0400
-Received: by mail-io1-f65.google.com with SMTP id z5so2704102iob.1
-        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 11:50:08 -0700 (PDT)
+        id S1760007AbgJ0TAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 15:00:49 -0400
+Received: from mail-wr1-f51.google.com ([209.85.221.51]:40979 "EHLO
+        mail-wr1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S371354AbgJ0TAH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 15:00:07 -0400
+Received: by mail-wr1-f51.google.com with SMTP id s9so3112814wro.8
+        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 12:00:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YpkiPLar3R5c4dVI2xBXh3hedPGoWq35CkBmPh//SmU=;
-        b=ik1b7e5HS6xJuo57JwEVbGjdzAhGnUubhKFP4XPEtDVrlEJMStEBKQYrAvrs+cU4lp
-         ojyEgvkmjDxEbsInjD/oLJmWH9NzaX5H1tYdARoo3bh3EDVi/BdcKWFU2tUe3PvapgUK
-         uN13wNj1wxinRXTnARcata4sdWPnN9TtPr6AC7pEVpoSfuW62kPkL2Cy+YwnogAB9BQF
-         4DLkI2LIBj7UVzEcg2D9UCXLbYvRTasV1q1KqEcAnQjp42DboEIrJhowIWYj5fhNnFGg
-         egjXukQJ5KqcHmkzp6zTU4+YuUg+0tk3IqAxzYO7YE+Q81GwpB2LQ8SEi+JDLoE8RQ56
-         uXtw==
+        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kDUiHW1MfcT0hQvQpNHHUdUqPUEuNLL0EOKagikppV4=;
+        b=zozL3O4fhwV+eInXCTSiOV/1/3ZJZr/1Mg1iWR7NTjUN5J+d5vk3gAwc+U3YrN/JmL
+         Nhvk7NI8SSSHjVUTaI0DLZvyWMmcrjiXBevmcrvUMl8LQ3Gesx/uqHwRDI+QgBxFEBTN
+         poDsOAM1SO96mRkJ5ebtAX0uXFP1Eeo7HcPOQOWKb74Y1cmIAVFsE+CKTSYu1pV4hZ4j
+         s3hL6JxUBxjYvkXCeajLJe1axdZJH2aFRlCKx3IfVwbvgBopxKu6jvbM5Ymv90s0ZO2+
+         0AYkOfhQoCvkSJhVWGZ8ftbIQf8JTRNKWkufCgsxGzg031FjnlgFUQBY/Us1col8I+qp
+         F/QA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YpkiPLar3R5c4dVI2xBXh3hedPGoWq35CkBmPh//SmU=;
-        b=dOqQM6gv9hp1J6IpXI83q9dU9TI4B7tnrsfFHe++gmhnlTbMq+g4gCnqXXYZN1fR17
-         uKsucSACQmSBDcKYQ9mP3m+LbJ2qAC06ykyKoBN7NTp3C5J35zOOIJLqLljeboUh2CO2
-         TjFQRCs8pQng4kNoOmOn+dRr6MnwglchNMbPnibKbEtTqBCeay3CyaU+4kApL3RidfE0
-         eAcpimlHJ9Hh7AebRVdU4cGI9v+voR/rsqFJM9j6ONhSO2EOSJUYhbwuwzcFJ9AEkU4V
-         fS5XzmUS1Cp+bbPvrBFK+ndsrUKinzFqimdtuC+k0aB/RG9Wxz8q1z4U9BtdR+CW1ZwE
-         aNRg==
-X-Gm-Message-State: AOAM530frgUHPYWHiSnK4UmfLSO1od0E94PfxPIYIDOZp9NKRfd7vjox
-        EjkxAPzDkydBO244Py8Ys1DPoX6lY1JTlNgIX5M6dLqRu20FEg==
-X-Google-Smtp-Source: ABdhPJwmqq3MH7omXKmK5oKNQ1fPIKs9GfF1K1UddU4N6z3k1VQMyR0at3tInay0kYmtLof+Lb9u1Xh7inC8X5/IAdM=
-X-Received: by 2002:a02:95ea:: with SMTP id b97mr3813350jai.16.1603824607681;
- Tue, 27 Oct 2020 11:50:07 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=kDUiHW1MfcT0hQvQpNHHUdUqPUEuNLL0EOKagikppV4=;
+        b=dy2VB0axjxGBuc0LWc0aQfsGvt816YAaIwktl5y3gipN5yarLJchbAWJ/1Uqn4aBmo
+         vNb57nq2xvHJ62fyN/ps/O6Oej/762hWjS4/S/kDFFtFjby7BDWOv8l+cdjUtz3OqIN6
+         yDGvegjrzSMForhfOoQFnGjquggLrAvqrh/pD//XgVl2wsIBbmNxlDdgF5Eoex1128jv
+         OfMh2PSp6mBP2oHb/plRZpkABICV41LiqyV75GCTIYLYWZeYbYEkoffZ120Aoz838cAs
+         KdgTBFMzKAX47/0f6cFJxZSz9VtaLd74wr5ddNR1N9G7H90zClsLc/wDc+1TBR13bWQs
+         PPnQ==
+X-Gm-Message-State: AOAM532FxsHdWF9YGuuJY0l0bISCuQ1wmEb/kTQjxr264rbdKWnv1+bh
+        qGAHYzY2OrMf1WPlkmCPZUD7aHLUVmwPrsqM
+X-Google-Smtp-Source: ABdhPJyJ6A+tYawPoWsuF/hnWiKAJbeMENBKvV8iueGQAYqw4SxPi6PBuksOWw/1HX+Akf06ZSEtLQ==
+X-Received: by 2002:adf:9027:: with SMTP id h36mr4416494wrh.163.1603825204749;
+        Tue, 27 Oct 2020 12:00:04 -0700 (PDT)
+Received: from localhost.localdomain (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id x6sm3219803wmb.17.2020.10.27.12.00.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Oct 2020 12:00:03 -0700 (PDT)
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, kuba@kernel.org,
+        bridge@lists.linux-foundation.org,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: [PATCH net-next 00/16] selftests: net: bridge: add tests for IGMPv3
+Date:   Tue, 27 Oct 2020 20:59:18 +0200
+Message-Id: <20201027185934.227040-1-razor@blackwall.org>
+X-Mailer: git-send-email 2.25.4
 MIME-Version: 1.0
-References: <20201026104333.13008-1-tung.q.nguyen@dektech.com.au> <CAM_iQpXnsiGP_x-D5YEWbVmqzP2ZhRdtG1ReDQq2wr6YUs2J0w@mail.gmail.com>
-In-Reply-To: <CAM_iQpXnsiGP_x-D5YEWbVmqzP2ZhRdtG1ReDQq2wr6YUs2J0w@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 27 Oct 2020 11:49:56 -0700
-Message-ID: <CAM_iQpUSC5Xxos=P=kLx4_ocFOvX=8GXLn4rB5+Uhy_Gs9zzaw@mail.gmail.com>
-Subject: Re: [tipc-discussion] [net v2 1/1] tipc: fix memory leak caused by tipc_buf_append()
-To:     Tung Nguyen <tung.q.nguyen@dektech.com.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        tipc-discussion@lists.sourceforge.net
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 27, 2020 at 11:21 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> On Mon, Oct 26, 2020 at 3:46 AM Tung Nguyen
-> <tung.q.nguyen@dektech.com.au> wrote:
-> >
-> > Commit ed42989eab57 ("fix the skb_unshare() in tipc_buf_append()")
-> > replaced skb_unshare() with skb_copy() to not reduce the data reference
-> > counter of the original skb intentionally. This is not the correct
-> > way to handle the cloned skb because it causes memory leak in 2
-> > following cases:
-> >  1/ Sending multicast messages via broadcast link
-> >   The original skb list is cloned to the local skb list for local
-> >   destination. After that, the data reference counter of each skb
-> >   in the original list has the value of 2. This causes each skb not
-> >   to be freed after receiving ACK:
->
-> Interesting, I can not immediately see how tipc_link_advance_transmq()
-> clones the skb. You point out how it is freed but not cloned.
->
-> It looks really odd to see the skb is held by some caller, then expected
-> to be released by the unshare in tipc_buf_append(). IMHO, the refcnt
-> should be released where it is held.
+From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-More importantly, prior to Xin Long's change of skb_unshare(),
-skb_unclone() was used, which does not touch the skb refcnt either.
-So, why does it rely on skb_unshare() to release this refcnt now?
+Hi,
+This set adds tests for the bridge's new IGMPv3 support. The tests use
+precooked packets which are sent via mausezahn and the resulting state
+after each test is checked for proper X,Y sets, (*,G) source list, source
+list entry timers, (S,G) existence and flags, packet forwarding and
+blocking, exclude group expiration and (*,G) auto-add. The first 3 patches
+prepare the existing IGMPv2 tests, then patch 4 adds new helpers which are
+used throughout the rest of the v3 tests.
+The following new tests are added:
+ - base case: IGMPv3 report 239.10.10.10 is_include (A)
+ - include -> allow report
+ - include -> is_include report
+ - include -> is_exclude report
+ - include -> to_exclude report
+ - exclude -> allow report
+ - exclude -> is_include report
+ - exclude -> is_exclude report
+ - exclude -> to_exclude report
+ - include -> block report
+ - exclude -> block report
+ - exclude timeout (move to include + entry deletion)
+ - S,G port entry automatic add to a *,G,exclude port
 
-Thanks.
+The variable names and set notation are the same as per RFC 3376,
+for more information check RFC 3376 sections 4.2.15 and 6.4.1.
+MLDv2 tests will be added by a separate patch-set.
+
+Thanks,
+ Nik
+
+Nikolay Aleksandrov (16):
+  selftests: net: bridge: rename current igmp tests to igmpv2
+  selftests: net: bridge: igmp: add support for packet source address
+  selftests: net: bridge: igmp: check for specific udp ip protocol
+  selftests: net: bridge: igmp: add IGMPv3 entries' state helpers
+  selftests: net: bridge: add tests for igmpv3 is_include and inc ->
+    allow reports
+  selftests: net: bridge: add test for igmpv3 inc -> is_include report
+  selftests: net: bridge: add test for igmpv3 inc -> is_exclude report
+  selftests: net: bridge: add test for igmpv3 inc -> to_exclude report
+  selftests: net: bridge: add test for igmpv3 exc -> allow report
+  selftests: net: bridge: add test for igmpv3 exc -> is_include report
+  selftests: net: bridge: add test for igmpv3 exc -> is_exclude report
+  selftests: net: bridge: add test for igmpv3 exc -> to_exclude report
+  selftests: net: bridge: add test for igmpv3 inc -> block report
+  selftests: net: bridge: add test for igmpv3 exc -> block report
+  selftests: net: bridge: add test for igmpv3 exclude timeout
+  selftests: net: bridge: add test for igmpv3 *,g auto-add
+
+ .../selftests/net/forwarding/bridge_igmp.sh   | 532 +++++++++++++++++-
+ 1 file changed, 520 insertions(+), 12 deletions(-)
+
+-- 
+2.25.4
+
