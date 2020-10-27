@@ -2,58 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9ABF299CAF
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 01:01:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9529299F10
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 01:20:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437274AbgJ0AAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 20:00:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36486 "EHLO mail.kernel.org"
+        id S2438802AbgJ0AGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 20:06:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52990 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2436479AbgJZX4d (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 19:56:33 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S2437672AbgJ0AEc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 20:04:32 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D1B1D21655;
-        Mon, 26 Oct 2020 23:56:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 49663218AC;
+        Tue, 27 Oct 2020 00:04:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603756592;
-        bh=Iw0X268hAE10aeLSNpUJ115dksciv1Y8+UeHUMuS4LI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=F8yPyw4K35UD0WRUH+EHg4FT6xJPIByqgqaqqbJbXtQKelf87Y5ynL5gtbgB3H3lM
-         K/N2cJfLkSmDpy/9cKBkihNmW+vVv/zV5XHzdeNAdAQpWAbfRdKjstNcMEVvaIywDE
-         jDauVLxDR7TVaQMeqbZLtLIlRjQJJkOU/AhEUId8=
-Date:   Mon, 26 Oct 2020 16:56:20 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@nvidia.com,
-        amcohen@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net 0/3] mlxsw: Various fixes
-Message-ID: <20201026165620.6de65e9f@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20201024133733.2107509-1-idosch@idosch.org>
-References: <20201024133733.2107509-1-idosch@idosch.org>
+        s=default; t=1603757072;
+        bh=54F8B07oVU1PIZCdMVA/jCVj/22iIuemI7aaFawfh0k=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aywaKlce+8NtY7FC0hF1CqbYc3yx2fiHc/v7olUG052s5JD47d3hnDWr+UEzC6btf
+         pJ74CI2Nzzy0tktOMc45J55Oag1WIzlbnwKIEseZOxnaS7MiIKt7fpMl87+ezvWYrQ
+         19qrRxILazrkCDCs1JLF0+u1GTtxSgE0UWqvW8XU=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Wen Gong <wgong@codeaurora.org>, Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 13/60] ath10k: start recovery process when payload length exceeds max htc length for sdio
+Date:   Mon, 26 Oct 2020 20:03:28 -0400
+Message-Id: <20201027000415.1026364-13-sashal@kernel.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20201027000415.1026364-1-sashal@kernel.org>
+References: <20201027000415.1026364-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 24 Oct 2020 16:37:30 +0300 Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
-> 
-> This patch set contains various fixes for mlxsw.
-> 
-> Patch #1 ensures that only link modes that are supported by both the
-> device and the driver are advertised. When a link mode that is not
-> supported by the driver is negotiated by the device, it will be
-> presented as an unknown speed by ethtool, causing the bond driver to
-> wrongly assume that the link is down.
-> 
-> Patch #2 fixes a trivial memory leak upon module removal.
-> 
-> Patch #3 fixes a use-after-free that syzkaller was able to trigger once
-> on a slow emulator after a few months of fuzzing.
+From: Wen Gong <wgong@codeaurora.org>
 
-Applied, queued #1 and #2, thanks!
+[ Upstream commit 2fd3c8f34d08af0a6236085f9961866ad92ef9ec ]
+
+When simulate random transfer fail for sdio write and read, it happened
+"payload length exceeds max htc length" and recovery later sometimes.
+
+Test steps:
+1. Add config and update kernel:
+CONFIG_FAIL_MMC_REQUEST=y
+CONFIG_FAULT_INJECTION=y
+CONFIG_FAULT_INJECTION_DEBUG_FS=y
+
+2. Run simulate fail:
+cd /sys/kernel/debug/mmc1/fail_mmc_request
+echo 10 > probability
+echo 10 > times # repeat until hitting issues
+
+3. It happened payload length exceeds max htc length.
+[  199.935506] ath10k_sdio mmc1:0001:1: payload length 57005 exceeds max htc length: 4088
+....
+[  264.990191] ath10k_sdio mmc1:0001:1: payload length 57005 exceeds max htc length: 4088
+
+4. after some time, such as 60 seconds, it start recovery which triggered
+by wmi command timeout for periodic scan.
+[  269.229232] ieee80211 phy0: Hardware restart was requested
+[  269.734693] ath10k_sdio mmc1:0001:1: device successfully recovered
+
+The simulate fail of sdio is not a real sdio transter fail, it only
+set an error status in mmc_should_fail_request after the transfer end,
+actually the transfer is success, then sdio_io_rw_ext_helper will
+return error status and stop transfer the left data. For example,
+the really RX len is 286 bytes, then it will split to 2 blocks in
+sdio_io_rw_ext_helper, one is 256 bytes, left is 30 bytes, if the
+first 256 bytes get an error status by mmc_should_fail_request,then
+the left 30 bytes will not read in this RX operation. Then when the
+next RX arrive, the left 30 bytes will be considered as the header
+of the read, the top 4 bytes of the 30 bytes will be considered as
+lookaheads, but actually the 4 bytes is not the lookaheads, so the len
+from this lookaheads is not correct, it exceeds max htc length 4088
+sometimes. When happened exceeds, the buffer chain is not matched between
+firmware and ath10k, then it need to start recovery ASAP. Recently then
+recovery will be started by wmi command timeout, but it will be long time
+later, for example, it is 60+ seconds later from the periodic scan, if
+it does not have periodic scan, it will be longer.
+
+Start recovery when it happened "payload length exceeds max htc length"
+will be reasonable.
+
+This patch only effect sdio chips.
+
+Tested with QCA6174 SDIO with firmware WLAN.RMH.4.4.1-00029.
+
+Signed-off-by: Wen Gong <wgong@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20200108031957.22308-3-wgong@codeaurora.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/ath/ath10k/sdio.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/wireless/ath/ath10k/sdio.c b/drivers/net/wireless/ath/ath10k/sdio.c
+index 0cdaecb0e28a9..28d86da65c051 100644
+--- a/drivers/net/wireless/ath/ath10k/sdio.c
++++ b/drivers/net/wireless/ath/ath10k/sdio.c
+@@ -561,6 +561,10 @@ static int ath10k_sdio_mbox_rx_alloc(struct ath10k *ar,
+ 				    le16_to_cpu(htc_hdr->len),
+ 				    ATH10K_HTC_MBOX_MAX_PAYLOAD_LENGTH);
+ 			ret = -ENOMEM;
++
++			queue_work(ar->workqueue, &ar->restart_work);
++			ath10k_warn(ar, "exceeds length, start recovery\n");
++
+ 			goto err;
+ 		}
+ 
+-- 
+2.25.1
+
