@@ -2,58 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 659BE29A232
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 02:26:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 587FB29A239
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 02:30:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503947AbgJ0B0A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 21:26:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38498 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2503939AbgJ0BZ7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 21:25:59 -0400
-Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (unknown [163.114.132.6])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1E3B32080A;
-        Tue, 27 Oct 2020 01:25:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603761958;
-        bh=eRxg91Vif7Hr1e9AN7SedTexl2F5jN3mSWEmfAproKU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=1KY0t2ntYJ3C5zqSePGezBS83g1RvdMkdcL4lpFB5yIHlx1twpHVGAgCsrqgGFjoA
-         VN+/v/m69y+0B3fFCREfR5JUdoQnJLhhULBWnFgaev5F+fnaNuvNzpRvXy4U3EESZ1
-         lPLrYcx6KE4g984ykHIbpUy1v30E+p1+ChFGV7/8=
-Date:   Mon, 26 Oct 2020 18:25:57 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yunsheng Lin <linyunsheng@huawei.com>
-Cc:     Zenghui Yu <yuzenghui@huawei.com>, <yisen.zhuang@huawei.com>,
-        <salil.mehta@huawei.com>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <wanghaibin.wang@huawei.com>, <tanhuazhong@huawei.com>
-Subject: Re: [PATCH net] net: hns3: Clear the CMDQ registers before
- unmapping BAR region
-Message-ID: <20201026182557.43dcb486@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <bca7fb17-2390-7ff3-d62d-fe279af6a225@huawei.com>
-References: <20201023051550.793-1-yuzenghui@huawei.com>
-        <3c5c98f9-b4a0-69a2-d58d-bfef977c68ad@huawei.com>
-        <e74f0a72-92d1-2ac9-1f4b-191477d673ef@huawei.com>
-        <20201026161325.6f33d9c8@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-        <bca7fb17-2390-7ff3-d62d-fe279af6a225@huawei.com>
+        id S2437798AbgJ0B3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 21:29:54 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:50778 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2410547AbgJ0B3y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 21:29:54 -0400
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 09R1TJrtC025293, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexmb01.realtek.com.tw[172.21.6.94])
+        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 09R1TJrtC025293
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 27 Oct 2020 09:29:19 +0800
+Received: from RTEXDAG01.realtek.com.tw (172.21.6.100) by
+ RTEXMB01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2044.4; Tue, 27 Oct 2020 09:29:19 +0800
+Received: from RTEXMB04.realtek.com.tw (172.21.6.97) by
+ RTEXDAG01.realtek.com.tw (172.21.6.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2044.4; Tue, 27 Oct 2020 09:29:18 +0800
+Received: from RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa]) by
+ RTEXMB04.realtek.com.tw ([fe80::89f7:e6c3:b043:15fa%3]) with mapi id
+ 15.01.2044.006; Tue, 27 Oct 2020 09:29:18 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "arnd@kernel.org" <arnd@kernel.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Larry.Finger@lwfinger.net" <Larry.Finger@lwfinger.net>,
+        "saurav.girepunje@gmail.com" <saurav.girepunje@gmail.com>,
+        "zhengbin13@huawei.com" <zhengbin13@huawei.com>,
+        "gustavoars@kernel.org" <gustavoars@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "arnd@arndb.de" <arnd@arndb.de>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+Subject: Re: [PATCH net-next 06/11] rtlwifi: fix -Wpointer-sign warning
+Thread-Topic: [PATCH net-next 06/11] rtlwifi: fix -Wpointer-sign warning
+Thread-Index: AQHWq9+Tm3vvNpn170mPpXALIlujyamqIxyA
+Date:   Tue, 27 Oct 2020 01:29:18 +0000
+Message-ID: <1603762113.2765.1.camel@realtek.com>
+References: <20201026213040.3889546-1-arnd@kernel.org>
+         <20201026213040.3889546-6-arnd@kernel.org>
+In-Reply-To: <20201026213040.3889546-6-arnd@kernel.org>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.213]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <E56EB1C0789D88419866E78DD4B37A86@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 27 Oct 2020 09:24:10 +0800 Yunsheng Lin wrote:
-> > Fixes: 862d969a3a4d ("net: hns3: do VF's pci re-initialization while PF doing FLR")  
-> 
-> The correct Fixes tag should be:
-> 
-> Fixes: e3338205f0c7 ("net: hns3: uninitialize pci in the hclgevf_uninit")
-
-Why is that?
-
-Isn't the issue the order of cmd vs pci calls? e3338205f0c7 only takes
-the pci call from under an if, the order was wrong before.
+T24gTW9uLCAyMDIwLTEwLTI2IGF0IDIyOjI5ICswMTAwLCBBcm5kIEJlcmdtYW5uIHdyb3RlOg0K
+PiBGcm9tOiBBcm5kIEJlcmdtYW5uIDxhcm5kQGFybmRiLmRlPg0KPiANCj4gVGhlcmUgYXJlIHRo
+b3VzYW5kcyBvZiB3YXJuaW5ncyBpbiBhIFc9MiBidWlsZCBmcm9tIGp1c3Qgb25lIGZpbGU6DQo+
+IA0KPiBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvcnRsODgyMWFlL3RhYmxl
+LmM6Mzc4ODoxNTogd2FybmluZzoNCj4gcG9pbnRlciB0YXJnZXRzIGluIGluaXRpYWxpemF0aW9u
+IG9mICd1OCAqJyB7YWthICd1bnNpZ25lZCBjaGFyIConfSBmcm9tICdjaGFyDQo+IConIGRpZmZl
+ciBpbiBzaWduZWRuZXNzIFstV3BvaW50ZXItc2lnbl0NCj4gDQo+IENoYW5nZSB0aGUgdHlwZXMg
+dG8gY29uc2lzdGVudGx5IHVzZSAnY29uc3QgY2hhciAqJyBmb3IgdGhlDQo+IHN0cmluZ3MuDQo+
+IA0KPiBTaWduZWQtb2ZmLWJ5OiBBcm5kIEJlcmdtYW5uIDxhcm5kQGFybmRiLmRlPg0KDQpBY2tl
+ZC1ieTogUGluZy1LZSBTaGloIDxwa3NoaWhAcmVhbHRlay5jb20+DQoNCj4gLS0tDQo+IMKgLi4u
+L3dpcmVsZXNzL3JlYWx0ZWsvcnRsd2lmaS9ydGw4ODIxYWUvcGh5LmPCoMKgfCA4MSArKysrKysr
+KysrLS0tLS0tLS0tDQo+IMKgLi4uL3JlYWx0ZWsvcnRsd2lmaS9ydGw4ODIxYWUvdGFibGUuY8Kg
+wqDCoMKgwqDCoMKgwqDCoHzCoMKgNCArLQ0KPiDCoC4uLi9yZWFsdGVrL3J0bHdpZmkvcnRsODgy
+MWFlL3RhYmxlLmjCoMKgwqDCoMKgwqDCoMKgwqB8wqDCoDQgKy0NCj4gwqAzIGZpbGVzIGNoYW5n
+ZWQsIDQ1IGluc2VydGlvbnMoKyksIDQ0IGRlbGV0aW9ucygtKQ0KPiANCg0KW3NuaXBdDQoNCg0K
+DQoNCg==
