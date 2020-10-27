@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B65D29ABA5
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 13:17:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C1C129ABBF
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 13:18:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2899739AbgJ0MRu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 08:17:50 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:41120 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2899721AbgJ0MRr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 08:17:47 -0400
-Received: by mail-wr1-f66.google.com with SMTP id s9so1632329wro.8
-        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 05:17:45 -0700 (PDT)
+        id S1750904AbgJ0MST (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 08:18:19 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:54552 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750221AbgJ0MRt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 08:17:49 -0400
+Received: by mail-wm1-f65.google.com with SMTP id w23so1160638wmi.4
+        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 05:17:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Yv5nQ3yDPCTR6Qr42pQX9T0J3MZN9NU/gU5iZJIrkWk=;
-        b=fei0ANa2ElSFo4FKASLBvqdzEpQMc369lxMXy79AWLlLE4ldM0t9l6k8RVF3buSnvA
-         InRbHn9r2hR680pZZ+gYHBH0cxjnXEpWTBjRsyn3pPicTDT7ROS1njEmMsQ0EtyoYRv/
-         vBz+LlGkNh9F45O2WPmNPaWYUC2TRs+1c28W6I2DHNQSUKyUoBTvCUXW/RmCgB8tOU8G
-         g5O/0EGVAt658IQXZb3tOQIDePMiXd3i3GdEI4By620HO0ioGffbTx/3svpvzdtTVEbj
-         pJSbSja7AzYXp5nq6dTEmNRhW6+2gmmrtbUq1fP5SW49DL3CQr9yND4Z3iXAPYqZ02Lj
-         0X6A==
+        bh=DX4Vpt/5rOOp/h8PsP6BCvcutYZPagP/0wvqhEtDkrc=;
+        b=fcBVAav93bPjLTMO/GKGNWbWJSyP9xDWjrQdREKVHUObC2fvcpeMBWbKtOvwqTtDBw
+         TYuM0tjJGe4hFI+bJgCEuy05Jhcj7DoPbEbpzYlue9mGnIAJyPrd5G7jnyVyC0ouqYQE
+         KUcuZgHebd/KjJ7WpMudfra+Ob5jpn/DPH6XMb8lun7OwUCY62x1ZRk3XnvNkzK8JTfI
+         GDSUhxWu1bxiLfQLX/wnkP4DE/r3YkbU7n/g2xdLeTwmRffMBnF1fQyXeAU/KAOUkWXm
+         Qr72qjOlysXmXLLv9c8JP8XDyn+yxZSMDREYLPBPXV2IBO4ogKZ9faYnUv5Hy6pUK1mv
+         KBnw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Yv5nQ3yDPCTR6Qr42pQX9T0J3MZN9NU/gU5iZJIrkWk=;
-        b=YMuI77ZrmCItqCzF2k+URfUk+8s9mzl9/TdY6Nnhsc0hUCgUhoCzVzhH0VidQlRRv2
-         3o06PnbF13SeXHVPJyAjtHx5OFpFtbhTJ4M59wkcpXefDVpjJpEpb0I8RJstfZgDURUG
-         vMz7j8FPayDpgygdC8W1hGrp9qPzRqCYSIUqHlKQtab8QVqtVxh+BPuxStATmcw2ABZq
-         RhJE60isAz35M5BFvl5X2JrvPXL5VaU0apejDVnALBwc1WSAkyxv0BoUHVxj9u2hLGjb
-         gzONsW+8p6X3z34kyK5IWx8zivLVpzYc575d5iiuf9bHAWGANh3a+aYqoUrx5APL8FSV
-         epDQ==
-X-Gm-Message-State: AOAM532heAVnHhxc2NaLLPuowi5jxShvJiNcgeFHwayuhtEKuh0jM1Zp
-        n2fLc4VSBFM1RjULYB+4k5QKlg==
-X-Google-Smtp-Source: ABdhPJwBy/86P9NLjWm4ayzRrNeTPV1ezoUeA/zg5bUjnQJez1TgK6PN9H/ezjMnvntOGwzzJ6JYWg==
-X-Received: by 2002:a05:6000:108:: with SMTP id o8mr2545710wrx.256.1603801064364;
-        Tue, 27 Oct 2020 05:17:44 -0700 (PDT)
+        bh=DX4Vpt/5rOOp/h8PsP6BCvcutYZPagP/0wvqhEtDkrc=;
+        b=TBftYF6LqSCINQfV3DsveB2e3m1zP/GR9A/ondJJfuI31y7pLexvrs5Yq1PdX3450e
+         gk+ix4v6QVIHRTUaMU09tJldFX49Hto+guzl6UsJnECpEHiqrCgScsv6mPracZ9I8c0I
+         5EqNp7UpG4LjNSTgYCH0PrTfv/YVRJZOTsL2L9ZtyZnFrwD5oxYzOno9F4rNy1GQpWPv
+         1PqfZGc86jQHDvDz98cN775Gu8QkkRXlnGGQ+rbG/+hqk5ncu0O+ae6kJQOJ1a8vGsy0
+         W0GNeMq0pIHP+cX0Ce4SgGbyovbsCRBOXK1z/8MkDIN1gQ0FgyR+HXRm3n6XbLIboj0Z
+         aSZw==
+X-Gm-Message-State: AOAM5321lWmZ3YASrrvzRRufqG3Soa+aeaVFIxw89nOlZHd/y2eKfiQf
+        RQwx/JL75DVcnMQZOw4ZmYYB9Q==
+X-Google-Smtp-Source: ABdhPJxpFHC1iDNaVhyqgdX0LXFgCHzNZUEcFDl9D5G1/wCxSZcWoj/5QOXgpccEbzpQpJAT/3s/cw==
+X-Received: by 2002:a7b:cb81:: with SMTP id m1mr2573033wmi.140.1603801066439;
+        Tue, 27 Oct 2020 05:17:46 -0700 (PDT)
 Received: from debian-brgl.home (amarseille-656-1-4-167.w90-8.abo.wanadoo.fr. [90.8.158.167])
-        by smtp.gmail.com with ESMTPSA id a2sm1731908wrs.55.2020.10.27.05.17.42
+        by smtp.gmail.com with ESMTPSA id a2sm1731908wrs.55.2020.10.27.05.17.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Oct 2020 05:17:43 -0700 (PDT)
+        Tue, 27 Oct 2020 05:17:45 -0700 (PDT)
 From:   Bartosz Golaszewski <brgl@bgdev.pl>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sumit Semwal <sumit.semwal@linaro.org>,
@@ -76,9 +76,9 @@ Cc:     linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
         netdev@vger.kernel.org, linux-mm@kvack.org,
         alsa-devel@alsa-project.org,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: [PATCH 4/8] pinctrl: use krealloc_array()
-Date:   Tue, 27 Oct 2020 13:17:21 +0100
-Message-Id: <20201027121725.24660-5-brgl@bgdev.pl>
+Subject: [PATCH 5/8] edac: ghes: use krealloc_array()
+Date:   Tue, 27 Oct 2020 13:17:22 +0100
+Message-Id: <20201027121725.24660-6-brgl@bgdev.pl>
 X-Mailer: git-send-email 2.29.1
 In-Reply-To: <20201027121725.24660-1-brgl@bgdev.pl>
 References: <20201027121725.24660-1-brgl@bgdev.pl>
@@ -95,22 +95,24 @@ calculating the size of the new array.
 
 Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 ---
- drivers/pinctrl/pinctrl-utils.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/edac/ghes_edac.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/pinctrl/pinctrl-utils.c b/drivers/pinctrl/pinctrl-utils.c
-index f2bcbf62c03d..93df0d4c0a24 100644
---- a/drivers/pinctrl/pinctrl-utils.c
-+++ b/drivers/pinctrl/pinctrl-utils.c
-@@ -39,7 +39,7 @@ int pinctrl_utils_reserve_map(struct pinctrl_dev *pctldev,
- 	if (old_num >= new_num)
- 		return 0;
+diff --git a/drivers/edac/ghes_edac.c b/drivers/edac/ghes_edac.c
+index a918ca93e4f7..6d1ddecbf0da 100644
+--- a/drivers/edac/ghes_edac.c
++++ b/drivers/edac/ghes_edac.c
+@@ -207,8 +207,8 @@ static void enumerate_dimms(const struct dmi_header *dh, void *arg)
+ 	if (!hw->num_dimms || !(hw->num_dimms % 16)) {
+ 		struct dimm_info *new;
  
--	new_map = krealloc(*map, sizeof(*new_map) * new_num, GFP_KERNEL);
-+	new_map = krealloc_array(*map, new_num, sizeof(*new_map), GFP_KERNEL);
- 	if (!new_map) {
- 		dev_err(pctldev->dev, "krealloc(map) failed\n");
- 		return -ENOMEM;
+-		new = krealloc(hw->dimms, (hw->num_dimms + 16) * sizeof(struct dimm_info),
+-			        GFP_KERNEL);
++		new = krealloc_array(hw->dimms, hw->num_dimms + 16,
++				     sizeof(struct dimm_info), GFP_KERNEL);
+ 		if (!new) {
+ 			WARN_ON_ONCE(1);
+ 			return;
 -- 
 2.29.1
 
