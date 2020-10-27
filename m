@@ -2,98 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3074529CC0F
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 23:35:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0A4529CC11
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 23:36:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1832510AbgJ0WfY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 18:35:24 -0400
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:37568 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1832504AbgJ0WfX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 18:35:23 -0400
-Received: by mail-qv1-f68.google.com with SMTP id t6so1515405qvz.4;
-        Tue, 27 Oct 2020 15:35:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+6EqPkxS+upEiFHF3tvQSMAgw2qIzQnOXTK/To17+kY=;
-        b=SNyucDBDUkPKJgqOZFbfKItm4OfZnYC8Ul6z6WOHPrLuc9KTawUpbRNm0tU4B6oDJP
-         YD/4nm2tlWRgjcKf6mvXe9TpjG513UdmmOTM35WjSPU+HyE5ZbIGqWsWcEWEkhOWR+aU
-         MxaT90pgMFAbS7frrhOHbRPh3cjupAk1+epWJT9+of8bxRSKtrrih9nHy4IJfQ883Kqt
-         5xt+drTAfZ1vK0DUYZdtD35M7ZvvFLZgfsJNLvqlM7U9fCuO2mu3rQxSjXrJI/otnxss
-         iK0Iv4pc4NeGtTKWXsBsgjdMiASL6Ujcg27qJC/C0NwZnq40dSsS6P5RTH69V7lHk3/a
-         3Nug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+6EqPkxS+upEiFHF3tvQSMAgw2qIzQnOXTK/To17+kY=;
-        b=mcKUpvEmuQxnbxKNBWmoCjs+tBxL4zda810TFBvtZN0puXBOMoItoh8BUiOySL8rNJ
-         aL68zJuOtaztlrlR3Edp89bAyHix8pSINNcZ7AkuIGHST4SotvPDJXWu7VLL3vni2tV9
-         qbB8k5FLZJLjZfJ6Gdmrl1chvpef0NwbdccTVpVth+a0HWiNREBbfJ/0kIKaZGwZT2Zs
-         tz8D2NktG+0a5aBjFstLgIfHpc5W2GdCdWFe3SjPp/CTprYLL/oqorHpw5DbJqBHi+T/
-         gyITW4RO7BEVWBOGpiOzTxwksXU2E6mDoJ0naLQbWy6Q5cNjE+eKuNV6coHY8OirG810
-         4anw==
-X-Gm-Message-State: AOAM530efPGMM21OAn8Yke43NgmSBsMNt0vPeJC3jsTdaKMpUUqRWMxJ
-        vJMwc1CgNHTBlop1t4bbOsgukzhS94hdRg==
-X-Google-Smtp-Source: ABdhPJxIpnV9Q0G2RlTLWA2MHRww8vneSGB6xL09l4Kv3rvTZd5r5rC/C70NU7bILKd9iPEkfQb0Qg==
-X-Received: by 2002:a05:6214:1586:: with SMTP id m6mr5069113qvw.15.1603838121669;
-        Tue, 27 Oct 2020 15:35:21 -0700 (PDT)
-Received: from localhost.localdomain ([177.220.172.74])
-        by smtp.gmail.com with ESMTPSA id 63sm1757415qkn.9.2020.10.27.15.35.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Oct 2020 15:35:20 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id 52303C3155; Tue, 27 Oct 2020 19:35:18 -0300 (-03)
-Date:   Tue, 27 Oct 2020 19:35:18 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     netdev@vger.kernel.org, Xin Long <lucien.xin@gmail.com>,
-        linux-sctp@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [RFC PATCH net-next] net: use a dedicated tracepoint for
- kfree_skb_list()
-Message-ID: <20201027223518.GA11029@localhost.localdomain>
-References: <d4c179f46d00016ec418f6bf58ed01afedacd123.1603486318.git.dcaratti@redhat.com>
+        id S2506482AbgJ0Wgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 18:36:31 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:48480 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2506363AbgJ0Wgb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Oct 2020 18:36:31 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kXXZs-003skn-EY; Tue, 27 Oct 2020 23:36:28 +0100
+Date:   Tue, 27 Oct 2020 23:36:28 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 0/4] net: dsa: link aggregation support
+Message-ID: <20201027223628.GG904240@lunn.ch>
+References: <20201027105117.23052-1-tobias@waldekranz.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d4c179f46d00016ec418f6bf58ed01afedacd123.1603486318.git.dcaratti@redhat.com>
+In-Reply-To: <20201027105117.23052-1-tobias@waldekranz.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 23, 2020 at 10:52:14PM +0200, Davide Caratti wrote:
-> kfree_skb_list() calls kfree_skb(), thus triggering as many dropwatch
-> events as the number of skbs in the list. This can disturb the analysis
-> of packet drops, e.g. with fragmented echo requests generated by ICMP
-> sockets, or with regular SCTP packets: when consume_skb() frees them,
-> the kernel's drop monitor may wrongly account for several packet drops:
-> 
->  consume skb()
->    skb_release_data()
->      kfree_skb_list()
->        kfree_skb() <-- false dropwatch event
+Hi Tobias
 
-Seems the problem lies with skb_release_data() calling
-kfree_skb_list() while it should have been a, say, consume_skb_list(),
-and not generate further kfree_skb calls.
+> All LAG configuration is cached in `struct dsa_lag`s. I realize that
+> the standard M.O. of DSA is to read back information from hardware
+> when required. With LAGs this becomes very tricky though. For example,
+> the change of a link state on one switch will require re-balancing of
+> LAG hash buckets on another one, which in turn depends on the total
+> number of active links in the LAG. Do you agree that this is
+> motivated?
 
-Maybe a bool parameter on skb_release_data to signal that it should
-call consume_skb_list (which doesn't exist) instead?
+As you say, DSA tries to be stateless and not allocate any
+memory. That keeps things simple. If you cannot allocate the needed
+memory, you need to ensure you leave the system untouched. And that
+needs to happen all the way up the stack when you have nested devices
+etc. That is why many APIs have a prepare phase and then a commit
+phase. The prepare phase allocates all the needed memory, can fail,
+but does not otherwise touch the running system. The commit phase
+cannot fail, since it has everything it needs.
 
-> 
-> don't call kfree_skb() when freeing a skb list, use a dedicated
-> tracepoint instead. By printing "cur" and "next", it also becomes
-> possible to reconstruct the skb list from its members.
+If you are dynamically allocating dsa_lag structures, at run time, you
+need to think about this. But the number of LAGs is limited by the
+number of ports. So i would consider just allocating the worst case
+number at probe, and KISS for runtime.
 
-I like the new probe alone. It helps to have more visibility on drops
-such as those from __dev_xmit_skb() and how they happen.
+> At least on mv88e6xxx, the exact source port is not available when
+> packets are received on the CPU. The way I see it, there are two ways
+> around that problem:
 
-But as a solution to the problem stated, seems it can be confusing.
-Say one is debugging a tx drop issue. AFAICT one would have to watch
-both probe points anyway, as the drop could be on a layer below than
-SCTP. So I'm not seeing how it helps much, other than possibly causing
-drop_watch to miss drops (by not listening to the new trace point).
+Does that break team/bonding? Do any of the algorithms send packets on
+specific ports to make sure they are alive? I've not studied how
+team/bonding works, but it must have a way to determine if a link has
+failed and it needs to fallover.
 
-  Marcelo
+> (mv88e6xxx) The cross-chip PVT changes required to allow a LAG to
+> communicate with the other ports do not feel quite right, but I'm
+> unsure about what the proper way of doing it would be. Any ideas?
+
+Vivien implemented all that. I hope he can help you, i've no real idea
+how that all works.
+
+> (mv88e6xxx) Marvell has historically used the idiosyncratic term
+> "trunk" to refer to link aggregates. Somewhere around the Peridot they
+> have switched and are now referring to the same registers/tables using
+> the term "LAG". In this series I've stuck to using LAG for all generic
+> stuff, and only used trunk for driver-internal functions. Do we want
+> to rename everything to use the LAG nomenclature?
+
+Where possible, i would keep to the datasheet terminology. So any 6352
+specific function should use 6352 terminology. Any 6390 specific
+function should use 6390 terminology. For code which supports a range
+of generations, we have used the terminology from the first device
+which had the feature. In practice, this probably means trunk is going
+to be used most of the time, and LAG in just 6390 code. Often, the
+glue code in chip.c uses linux stack terminology.
+
+   Andrew
