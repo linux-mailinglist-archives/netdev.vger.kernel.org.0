@@ -2,83 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F8E529C8A5
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 20:22:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 41C0C29C913
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 20:38:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1829828AbgJ0TWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 15:22:09 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:35838 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1829818AbgJ0TVg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 15:21:36 -0400
-Received: by mail-lf1-f68.google.com with SMTP id f9so2979204lfq.2
-        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 12:21:35 -0700 (PDT)
+        id S1830338AbgJ0TiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 15:38:04 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:43873 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2504319AbgJ0TiD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 15:38:03 -0400
+Received: by mail-lj1-f193.google.com with SMTP id d24so3107693ljg.10
+        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 12:38:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:in-reply-to:references:date:message-id
          :mime-version;
-        bh=WpFKsNvss8IvzEIn5pI/HwxxhiWgR1KW/VquaAm2mVU=;
-        b=q5SPwnEqCNjgFYaei2Wo+fnglvrw97thMeEF9gZIKssoFBcAoPNIolB+zruRdKQOmL
-         W/znB9bMgZZ/JL2WfV2ixbiiylZmcHzFe/SL0s4Hmu1uAM0WN7KX8sCvA4R9u41WxJns
-         5swBEuaylOo90IGL+Qx9VIyIelcbLN2Dp3LYbDeCRkXJRREv3g1CCzZ9+yeDJq03+DLH
-         Oau6EIJehXXNirwZtWhV7HrrFqH6HNKOsXhPEwzMQVKBHOa/pkEqTW3EvVjWTCh/3ojQ
-         1vfolVs1s+OHuSlPtK1v+Sq/7aJfwGAGHlF3P/EHZzrdWkbwPj3lhF/7YJ+V9lmV86/q
-         8XOw==
+        bh=NkVTrLYjwiqx7nHJvLva3j33YB/EaGDASWIlc2ET5KQ=;
+        b=aKcwZ+7vgGewYJ+drGS5yhF0nmWyKbZfDbdTVy5/mk7zCbpGWakFs1KgJ5ypM3v4HL
+         biq5xwsJTT3k7deB7vbY0SwNFv0GXdC6muZOF3McUWlkUvtfKcwp+ReP072D2s+h9UsP
+         XMusjuORlp8bLp3CAzwy+vO8ZSvVzFaytGRhe545q/vVYvJmRsvqtHrEzqdttBJ43E+Q
+         xB/J4WjNjhlLUZ35PJc51tr6x4nYd4G+4H+pOFKElNbPixQVZ7qsRzJITHsVoP6X6GbO
+         BJYpgKBe1B73cHQpm7JyzeH+1y1gzu2+C9VKJ4aP5gsegWQ6zKGHDfsAkiHV5YI9Z7RL
+         mlNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
          :message-id:mime-version;
-        bh=WpFKsNvss8IvzEIn5pI/HwxxhiWgR1KW/VquaAm2mVU=;
-        b=VDBWw4gf3bVuBajJ+tQI/kPPVBhK1FAxseBh2t+pRS3jDuFgwL1NlV7n4NxLeOJn/O
-         8rq161KiHxhlDRFqAh45Gn0HIYzeVgH+IWmdD5VL6LSR8x+0ifGRQir52+sWirsquuFk
-         YrYvYZbICucbbbyeaBOA8Pdif2qa5vm2E/+jRmTKwwoFZAru07d0uY5ZXNPwbK7Tr3Xf
-         MXuhKur9k2hjwCN4PqX4Dx6f9fRmKbkxhR8tuZcU+1CezHIYrV3xiVXlA+LXsve7gpcy
-         vUuTXeGPyEyAcuEtQyLZGNxqinSAyqvC8b152/VokkIvrdEP0R2iTPS1jHnDQKmzYOWQ
-         ScxQ==
-X-Gm-Message-State: AOAM532iRNv9OE/kie6KlPpM6zCR1q5STZTVTNyJdY1DF9kGTW8BslbK
-        FZX5lB+XVMBs+2uvyePa7LMoOrsisM9pkuCm
-X-Google-Smtp-Source: ABdhPJz1Pp4+2acpAIEolOPBf6RjaLmdnn97qeb1+A4gNTmbJduzAXrPFRLMx34cHV/QX+69qorpbg==
-X-Received: by 2002:ac2:5c01:: with SMTP id r1mr1357630lfp.324.1603826494105;
-        Tue, 27 Oct 2020 12:21:34 -0700 (PDT)
+        bh=NkVTrLYjwiqx7nHJvLva3j33YB/EaGDASWIlc2ET5KQ=;
+        b=fzGlSLEwuPP8CUKh6dqD9cQw4zrPpClTFjxxnOrTs0rCrTVJvR2wH5ngv8FiaYBHGm
+         2k2nzNEGlfrjeVSotpods8gc2oYsRMqe8MgRZAd2ZnnG98Do4bD2SC0GblIyKoZG7J9y
+         PEANacDuk3hZ0RK9yRe2XC40U4V1uGOFvZMp/LS6+MqG6zKbcwQXaddsqqEVOt9wtJXe
+         P+QtBtkcv8UV+6vN/I9raF8ir+xy9OWqaZDr6+iEz2fLbD7llgCEIweXMpv8C5yOXlQt
+         kqhM4xWrnmL0OTXDSxVjAFvmc8DtqYzFHlNrZt9Iaw6HdCi7Y0WM3E1zCjf3wiL3CkSE
+         ESaw==
+X-Gm-Message-State: AOAM532X/vcH9knN74PJALaA+bEVgfBRPDo1LJrK6i4IqLywJXfaio1g
+        HjFsldMZxiRea+xmOw530kvd3J0qJ5CFtwsE
+X-Google-Smtp-Source: ABdhPJzbNJ9yduFr7yOxQMf+9HQk93pVrDugSh9Cw1h7wE0B4sNsOT1avCeEbmeL99E4Qf/wawv8aQ==
+X-Received: by 2002:a05:651c:388:: with SMTP id e8mr1664175ljp.404.1603827479698;
+        Tue, 27 Oct 2020 12:37:59 -0700 (PDT)
 Received: from wkz-x280 (h-79-28.A259.priv.bahnhof.se. [79.136.79.28])
-        by smtp.gmail.com with ESMTPSA id i185sm274598lfi.230.2020.10.27.12.21.33
+        by smtp.gmail.com with ESMTPSA id j12sm291463ljg.22.2020.10.27.12.37.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Oct 2020 12:21:33 -0700 (PDT)
+        Tue, 27 Oct 2020 12:37:58 -0700 (PDT)
 From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Marek Behun <marek.behun@nic.cz>
-Cc:     Andrew Lunn <andrew@lunn.ch>, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, netdev@vger.kernel.org
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Marek Behun <marek.behun@nic.cz>,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
 Subject: Re: [RFC PATCH 0/4] net: dsa: link aggregation support
-In-Reply-To: <20201027190444.6cuug4zm6r7z4plm@skbuf>
-References: <20201027105117.23052-1-tobias@waldekranz.com> <20201027160530.11fc42db@nic.cz> <20201027152330.GF878328@lunn.ch> <87k0vbv84z.fsf@waldekranz.com> <20201027193337.50f22df0@nic.cz> <20201027190444.6cuug4zm6r7z4plm@skbuf>
-Date:   Tue, 27 Oct 2020 20:21:32 +0100
-Message-ID: <87h7qfv5j7.fsf@waldekranz.com>
+In-Reply-To: <20201027190034.utk3kkywc54zuxfn@skbuf>
+References: <20201027105117.23052-1-tobias@waldekranz.com> <20201027160530.11fc42db@nic.cz> <20201027152330.GF878328@lunn.ch> <87k0vbv84z.fsf@waldekranz.com> <20201027190034.utk3kkywc54zuxfn@skbuf>
+Date:   Tue, 27 Oct 2020 20:37:58 +0100
+Message-ID: <87blgnv4rt.fsf@waldekranz.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 27, 2020 at 21:04, Vladimir Oltean <olteanv@gmail.com> wrote:
-> On Tue, Oct 27, 2020 at 07:33:37PM +0100, Marek Behun wrote:
->> > In order for this to work on transmit, we need to add forward offloading
->> > to the bridge so that we can, for example, send one FORWARD from the CPU
->> > to send an ARP broadcast to swp1..4 instead of four FROM_CPUs.
->> 
->> Wouldn't this be solved if the CPU master interface was a bonding interface?
+On Tue, Oct 27, 2020 at 21:00, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Tue, Oct 27, 2020 at 07:25:16PM +0100, Tobias Waldekranz wrote:
+>> > 1) trunk user ports, with team/bonding controlling it
+>> > 2) trunk DSA ports, i.e. the ports between switches in a D in DSA setup
+>> > 3) trunk CPU ports.
+> [...]
+>> I think that (2) and (3) are essentially the same problem, i.e. creating
+>> LAGs out of DSA links, be they switch-to-switch or switch-to-cpu
+>> connections. I think you are correct that the CPU port can not be a
+>> LAG/trunk, but I believe that limitation only applies to TO_CPU packets.
 >
-> I don't see how you would do that. Would DSA keep returning -EPROBE_DEFER
-> until user space decides to set up a bond over the master interfaces?
-> How would you even describe that in device tree?
+> Which would still be ok? They are called "slow protocol PDUs" for a reason.
 
-Yeah that would be very hard indeed. Since this is going to be
-completely transparent to the user I think the best way is to just setup
-the hardware to see the two CPU ports as a LAG whenever you find
-e.g. "cpu0" and "cpu1", but have no representation of it as a separate
-netdev.
+Oh yes, completely agree. That was the point I was trying to make :)
 
-DSA will have an rx_handler attached to both ports anyway, so it can
-just run the same handler for both. On Tx it can just load-balance in
-software like team does.
+>> In order for this to work on transmit, we need to add forward offloading
+>> to the bridge so that we can, for example, send one FORWARD from the CPU
+>> to send an ARP broadcast to swp1..4 instead of four FROM_CPUs.
+>
+> That surely sounds like an interesting (and tough to implement)
+> optimization to increase the throughput, but why would it be _needed_
+> for things to work? What's wrong with 4 FROM_CPU packets?
 
+We have internal patches that do this, and I can confirm that it is
+tough :) I really would like to figure out a way to solve this, that
+would also be acceptable upstream. I have some ideas, it is on my TODO.
+
+In a single-chip system I agree that it is not needed, the CPU can do
+the load-balancing in software. But in order to have the hardware do
+load-balancing on a switch-to-switch LAG, you need to send a FORWARD.
+
+FROM_CPUs would just follow whatever is in the device mapping table. You
+essentially have the inverse of the TO_CPU problem, but on Tx FROM_CPU
+would make up 100% of traffic.
+
+Other than that there are some things that, while strictly speaking
+possible to do without FORWARDs, become much easier to deal with:
+
+- Multicast routing. This is one case where performance _really_ suffers
+  from having to skb_clone() to each recipient.
+
+- Bridging between virtual interfaces and DSA ports. Typical example is
+  an L2 VPN tunnel or one end of a veth pair. On FROM_CPUs, the switch
+  can not perform SA learning, which means that once you bridge traffic
+  from the VPN out to a DSA port, the return traffic will be classified
+  as unknown unicast by the switch and be flooded everywhere.
