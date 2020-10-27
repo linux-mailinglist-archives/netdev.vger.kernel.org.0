@@ -2,104 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 553C429CBB5
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 23:03:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AE1029CBB9
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 23:05:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1832148AbgJ0WDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 18:03:45 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:39442 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1832059AbgJ0WDo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 18:03:44 -0400
-Received: by mail-pf1-f195.google.com with SMTP id e15so1717267pfh.6
-        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 15:03:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BIgA23QX48XZ046Ge9ljl2tKSIQwwh1UxXCcpF43RtQ=;
-        b=DQ4QYs8mm70+rmT6lRf4l6/moOr/APcehE0qI2sTetrRpD0rKQcuE06shQpHs4ISpv
-         +xskUF2josJN6OZ7d1A7Szw1vnt+kuUpFQR9AMXT1EDP+t9+TC0zAGPXYCQYI2F+v573
-         ncdjsWm5Lk/qtYVSspLjcRFflT9AVKO93yQwXSpZpqGOZKI8TOiMPnggSNISM68S9udt
-         G/QCm6BtoytS6FFs4Cib7tax4L4ONjrZI1HVW00ZAS1uygE38BcNPpv+dzMtTzFMC0ss
-         +BqJM6oJmL3i3yTBUH/czr/Y7LWL8D5KjZVFlF+xNlOG+YauJn6iVtG0d7sgAr1HwTVy
-         UYZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BIgA23QX48XZ046Ge9ljl2tKSIQwwh1UxXCcpF43RtQ=;
-        b=Ds0YLmnL9Jzom7WEdAoKJaTQsarPeTzEyX+7aH1MKcBT7t96U+SZiBBXPpdjpFMIYI
-         XzGf+ZruUmoB/RayFxrJngo/KOdgZnGaU18HNCpRkPjySzc6zvl48o6/k8Ch6H9Y3989
-         l8s5KOxXRPh2uussWxywylMUMY5kaBkjLiC59zyosGe5dZ5NJP71MNPBDpm8AN532b2i
-         uY8J6ZffJCHM21jTQfIBGi17717ElCY/H0mWfiMe11a/2MeH7R75VE330H16vyhVs67a
-         pMn/EjbuCFbxAu0Yz0AvYOxbhJS1zOySywcycI6PQ7gOlEIrPdjvkL9KLEC9EWTQbxg+
-         +n2Q==
-X-Gm-Message-State: AOAM531Ij0uLKWgOLMBpD6DmkoM5vVu3boulCFiRYigaYurdOl9V6vIe
-        iArsVYG+MwEsPUM/sCJksAtSg1AY5nwg4MwVyod2Ag==
-X-Google-Smtp-Source: ABdhPJx8L1OiCbNFAi5Sliu7v9cXX6Ed/uwWX333oVtC4BVqOz5Cs6zhmcXllfQaAoaMy9QHY2yTF0fhz6TiuhuH5rw=
-X-Received: by 2002:a62:ce41:0:b029:160:c0c:e03d with SMTP id
- y62-20020a62ce410000b02901600c0ce03dmr4426890pfg.15.1603836222920; Tue, 27
- Oct 2020 15:03:42 -0700 (PDT)
+        id S1832202AbgJ0WFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 18:05:03 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:3562 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1832200AbgJ0WFC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 18:05:02 -0400
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09RM2JZU044936;
+        Tue, 27 Oct 2020 18:04:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=MHXRF0AdAD0+gEHNSXKd14rznueMxkSpFzOEMq4G+Ws=;
+ b=QLhBWcbEoyd5cghDuuO/JmgajsNxUiMFHm1jgT/28NerM06kQgu3Zh0G+2N2aaktj9xK
+ t6dtorTM2P1tBIbY11PcFDTwpkI1Tq6Ac5ZvNxiRr0OUUq2xT6fqqFUqK5phqb5sAy3h
+ VAMSGcmgleQo9P4/jl0RR+k0mmfIjqnMq5OKpYr15bUkX6utsQ920cseNw5kO3fha+XL
+ US+OT16hQVkHLvKDYsEPkeZBz+PuWoQbkjTznsiVUo5CvJRDcUWJ7KK2c1mJwcyPWbTj
+ vGMPPXAEqypeFh2YFzEvsI4CTNPX/Kq/ySCCAy0MdaNkGu8Yve/GXBPu2dcy9LrsjNx1 jg== 
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 34endj5xy9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 27 Oct 2020 18:04:59 -0400
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 09RM2TUi031110;
+        Tue, 27 Oct 2020 22:04:59 GMT
+Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
+        by ppma03wdc.us.ibm.com with ESMTP id 34ernq97vq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 27 Oct 2020 22:04:59 +0000
+Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
+        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 09RM4oat524918
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 27 Oct 2020 22:04:50 GMT
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A4A4AC6095;
+        Tue, 27 Oct 2020 22:04:57 +0000 (GMT)
+Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 10F3AC6092;
+        Tue, 27 Oct 2020 22:04:56 +0000 (GMT)
+Received: from pompom.ibm.com (unknown [9.85.186.105])
+        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Tue, 27 Oct 2020 22:04:56 +0000 (GMT)
+From:   Lijun Pan <ljp@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     Lijun Pan <ljp@linux.ibm.com>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net v3] ibmvnic: fix ibmvnic_set_mac
+Date:   Tue, 27 Oct 2020 17:04:56 -0500
+Message-Id: <20201027220456.71450-1-ljp@linux.ibm.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-References: <20201027205723.12514-1-ardb@kernel.org> <CAKwvOdmSaVcgq2eKRjRL+_StdFNG2QnNe3nGCs2PWfH=HceadA@mail.gmail.com>
- <CAMj1kXHb8Fe9fqpj4-90ccEMB+NJ6cbuuog-2Vuo7tr7VjZaTA@mail.gmail.com>
-In-Reply-To: <CAMj1kXHb8Fe9fqpj4-90ccEMB+NJ6cbuuog-2Vuo7tr7VjZaTA@mail.gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 27 Oct 2020 15:03:31 -0700
-Message-ID: <CAKwvOdnfkZXJdZkKO6qT53j6nH4HF=CcpUZcr7XOqdnQLSShmw@mail.gmail.com>
-Subject: Re: [PATCH] bpf: don't rely on GCC __attribute__((optimize)) to
- disable GCSE
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        Arvind Sankar <nivedita@alum.mit.edu>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Kees Cook <keescook@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-10-27_15:2020-10-26,2020-10-27 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ lowpriorityscore=0 phishscore=0 bulkscore=0 mlxlogscore=964 mlxscore=0
+ spamscore=0 priorityscore=1501 malwarescore=0 adultscore=0 suspectscore=1
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2010270125
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 27, 2020 at 2:50 PM Ard Biesheuvel <ardb@kernel.org> wrote:
->
-> On Tue, 27 Oct 2020 at 22:20, Nick Desaulniers <ndesaulniers@google.com> wrote:
-> >
-> > On Tue, Oct 27, 2020 at 1:57 PM Ard Biesheuvel <ardb@kernel.org> wrote:
-> > >
-> > > diff --git a/include/linux/compiler_types.h b/include/linux/compiler_types.h
-> > > index 6e390d58a9f8..ac3fa37a84f9 100644
-> > > --- a/include/linux/compiler_types.h
-> > > +++ b/include/linux/compiler_types.h
-> > > @@ -247,10 +247,6 @@ struct ftrace_likely_data {
-> > >  #define asm_inline asm
-> > >  #endif
-> > >
-> > > -#ifndef __no_fgcse
-> > > -# define __no_fgcse
-> > > -#endif
-> > > -
-> > Finally, this is going to disable GCSE for the whole translation unit,
-> > which may be overkill.   Previously it was isolated to one function
-> > definition.  You could lower the definition of the preprocessor define
-> > into kernel/bpf/core.c to keep its use isolated as far as possible.
-> >
->
-> Which preprocessor define?
+Jakub Kicinski brought up a concern in ibmvnic_set_mac().
+ibmvnic_set_mac() does this:
 
-__no_fgcse
+	ether_addr_copy(adapter->mac_addr, addr->sa_data);
+	if (adapter->state != VNIC_PROBED)
+		rc = __ibmvnic_set_mac(netdev, addr->sa_data);
 
->
-> > I'm fine with either approach, but we should avoid new warnings for
-> > clang.  Thanks for the patch!
+So if state == VNIC_PROBED, the user can assign an invalid address to
+adapter->mac_addr, and ibmvnic_set_mac() will still return 0.
 
+The fix is to validate ethernet address at the beginning of
+ibmvnic_set_mac(), and move the ether_addr_copy to
+the case of "adapter->state != VNIC_PROBED".
+
+Fixes: 62740e97881c ("net/ibmvnic: Update MAC address settings after adapter reset")
+Cc: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
+---
+v2: change the subject from v1's 
+    "ibmvnic: no need to update adapter->mac_addr before it completes"
+    handle adapter->state==VNIC_PROBED case in else statement.
+v3: take Maciej Fijalkowski's advice.
+
+ drivers/net/ethernet/ibm/ibmvnic.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index 4dd3625a4fbc..660761538c55 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -1828,9 +1828,13 @@ static int ibmvnic_set_mac(struct net_device *netdev, void *p)
+ 	int rc;
+ 
+ 	rc = 0;
+-	ether_addr_copy(adapter->mac_addr, addr->sa_data);
+-	if (adapter->state != VNIC_PROBED)
++	if (!is_valid_ether_addr(addr->sa_data))
++		return -EADDRNOTAVAIL;
++
++	if (adapter->state != VNIC_PROBED) {
++		ether_addr_copy(adapter->mac_addr, addr->sa_data);
+ 		rc = __ibmvnic_set_mac(netdev, addr->sa_data);
++	}
+ 
+ 	return rc;
+ }
 -- 
-Thanks,
-~Nick Desaulniers
+2.23.0
+
