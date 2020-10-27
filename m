@@ -2,144 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27E7929AD5C
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 14:32:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48E4829AD92
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 14:41:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1752145AbgJ0Nc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 09:32:56 -0400
-Received: from mx.der-flo.net ([193.160.39.236]:45338 "EHLO mx.der-flo.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752128AbgJ0Ncy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Oct 2020 09:32:54 -0400
-X-Greylist: delayed 380 seconds by postgrey-1.27 at vger.kernel.org; Tue, 27 Oct 2020 09:32:53 EDT
-Received: by mx.der-flo.net (Postfix, from userid 110)
-        id D349F442C1; Tue, 27 Oct 2020 14:26:30 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mx.der-flo.net
-X-Spam-Level: *
-X-Spam-Status: No, score=1.5 required=4.0 tests=ALL_TRUSTED,SORTED_RECIPS
-        autolearn=no autolearn_force=no version=3.4.2
-Received: from localhost (unknown [IPv6:2a02:1203:ecb0:3930:1751:4157:4d75:a5e2])
-        (using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.der-flo.net (Postfix) with ESMTPSA id 35558442C1;
-        Tue, 27 Oct 2020 14:25:53 +0100 (CET)
-Date:   Tue, 27 Oct 2020 14:25:42 +0100
-From:   Florian Lehner <dev@der-flo.net>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
-        dev@der-flo.net, john.fastabend@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH bpf-next v3] bpf: Lift hashtab key_size limit
-Message-ID: <20201027132542.GA2902@der-flo.net>
-References: <20201024080541.51683-1-dev@der-flo.net>
- <CAEf4BzY-bNN7fx2eAvRBq89pDHptEqoftgSSF=0dv_GgeNACvw@mail.gmail.com>
+        id S1752385AbgJ0NlW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 09:41:22 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:6004 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2900799AbgJ0NlV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 09:41:21 -0400
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4CLCXh47XrzhcGc;
+        Tue, 27 Oct 2020 21:41:24 +0800 (CST)
+Received: from huawei.com (10.90.53.225) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.487.0; Tue, 27 Oct 2020
+ 21:41:14 +0800
+From:   Zhang Qilong <zhangqilong3@huawei.com>
+To:     <davem@davemloft.net>, <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>
+Subject: [PATCH -next] net/mac8390: discard unnecessary breaks
+Date:   Tue, 27 Oct 2020 21:51:59 +0800
+Message-ID: <20201027135159.71444-1-zhangqilong3@huawei.com>
+X-Mailer: git-send-email 2.26.0.106.g9fadedd
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzY-bNN7fx2eAvRBq89pDHptEqoftgSSF=0dv_GgeNACvw@mail.gmail.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.90.53.225]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 26, 2020 at 04:07:58PM -0700, Andrii Nakryiko wrote:
-> >
-> > Signed-off-by: Florian Lehner <dev@der-flo.net>
-> > ---
-> 
-> You dropped the ack from John, btw.
+The 'break' is unnecessary because of previous 'return',
+and we could discard it.
 
-I was not sure if it is ok to keep the ACK for an updated patch. So I
-did not include it.
+Signed-off-by: Zhang Qilong <zhangqilong3@huawei.com>
+---
+ drivers/net/ethernet/8390/mac8390.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
-> >  kernel/bpf/hashtab.c                          | 16 +++----
-> >  .../selftests/bpf/prog_tests/hash_large_key.c | 28 ++++++++++++
-> >  .../selftests/bpf/progs/test_hash_large_key.c | 45 +++++++++++++++++++
-> >  tools/testing/selftests/bpf/test_maps.c       |  2 +-
-> >  4 files changed, 79 insertions(+), 12 deletions(-)
-> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/hash_large_key.c
-> >  create mode 100644 tools/testing/selftests/bpf/progs/test_hash_large_key.c
-> >
-> > diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-> > index 1815e97d4c9c..10097d6bcc35 100644
-> > --- a/kernel/bpf/hashtab.c
-> > +++ b/kernel/bpf/hashtab.c
-> > @@ -390,17 +390,11 @@ static int htab_map_alloc_check(union bpf_attr *attr)
-> >             attr->value_size == 0)
-> >                 return -EINVAL;
-> >
-> > -       if (attr->key_size > MAX_BPF_STACK)
-> > -               /* eBPF programs initialize keys on stack, so they cannot be
-> > -                * larger than max stack size
-> > -                */
-> > -               return -E2BIG;
-> > -
-> > -       if (attr->value_size >= KMALLOC_MAX_SIZE -
-> > -           MAX_BPF_STACK - sizeof(struct htab_elem))
-> > -               /* if value_size is bigger, the user space won't be able to
-> > -                * access the elements via bpf syscall. This check also makes
-> > -                * sure that the elem_size doesn't overflow and it's
-> > +       if ((attr->key_size + attr->value_size) >= KMALLOC_MAX_SIZE -
-> 
-> key_size+value_size can overflow, can't it? So probably want to cast
-> to (size_t) or __u64?
-> 
+diff --git a/drivers/net/ethernet/8390/mac8390.c b/drivers/net/ethernet/8390/mac8390.c
+index d60a86aa8aa8..9aac7119d382 100644
+--- a/drivers/net/ethernet/8390/mac8390.c
++++ b/drivers/net/ethernet/8390/mac8390.c
+@@ -175,7 +175,6 @@ static enum mac8390_type mac8390_ident(struct nubus_rsrc *fres)
+ 		default:
+ 			return MAC8390_APPLE;
+ 		}
+-		break;
+ 
+ 	case NUBUS_DRSW_APPLE:
+ 		switch (fres->dr_hw) {
+@@ -186,11 +185,9 @@ static enum mac8390_type mac8390_ident(struct nubus_rsrc *fres)
+ 		default:
+ 			return MAC8390_APPLE;
+ 		}
+-		break;
+ 
+ 	case NUBUS_DRSW_ASANTE:
+ 		return MAC8390_ASANTE;
+-		break;
+ 
+ 	case NUBUS_DRSW_TECHWORKS:
+ 	case NUBUS_DRSW_DAYNA2:
+@@ -199,11 +196,9 @@ static enum mac8390_type mac8390_ident(struct nubus_rsrc *fres)
+ 			return MAC8390_CABLETRON;
+ 		else
+ 			return MAC8390_APPLE;
+-		break;
+ 
+ 	case NUBUS_DRSW_FARALLON:
+ 		return MAC8390_FARALLON;
+-		break;
+ 
+ 	case NUBUS_DRSW_KINETICS:
+ 		switch (fres->dr_hw) {
+@@ -212,7 +207,6 @@ static enum mac8390_type mac8390_ident(struct nubus_rsrc *fres)
+ 		default:
+ 			return MAC8390_KINETICS;
+ 		}
+-		break;
+ 
+ 	case NUBUS_DRSW_DAYNA:
+ 		/*
+@@ -224,7 +218,6 @@ static enum mac8390_type mac8390_ident(struct nubus_rsrc *fres)
+ 			return MAC8390_NONE;
+ 		else
+ 			return MAC8390_DAYNA;
+-		break;
+ 	}
+ 	return MAC8390_NONE;
+ }
+-- 
+2.17.1
 
-I will add this cast to u64.
-
-> > +           sizeof(struct htab_elem))
-> > +               /* if key_size + value_size is bigger, the user space won't be
-> > +                * able to access the elements via bpf syscall. This check
-> > +                * also makes sure that the elem_size doesn't overflow and it's
-> >                  * kmalloc-able later in htab_map_update_elem()
-> >                  */
-> >                 return -E2BIG;
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/hash_large_key.c b/tools/testing/selftests/bpf/prog_tests/hash_large_key.c
-> > new file mode 100644
-> > index 000000000000..962f56060b76
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/prog_tests/hash_large_key.c
-> > @@ -0,0 +1,28 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +// Copyright (c) 2020 Florian Lehner
-> > +
-> > +#include <test_progs.h>
-> > +
-> > +void test_hash_large_key(void)
-> > +{
-> > +       const char *file = "./test_hash_large_key.o";
-> > +       int prog_fd, map_fd[2];
-> > +       struct bpf_object *obj = NULL;
-> > +       int err = 0;
-> > +
-> > +       err = bpf_prog_load(file, BPF_PROG_TYPE_CGROUP_SKB, &obj, &prog_fd);
-> 
-> Please utilize the BPF skeleton in the new tests.
-> 
-
-I will update the test and utilize the BPF skeleton.
-
-> > +       if (CHECK_FAIL(err)) {
-> > +               printf("test_hash_large_key: bpf_prog_load errno %d", errno);
-> > +               goto close_prog;
-> > +       }
-> > +
-> > +       map_fd[0] = bpf_find_map(__func__, obj, "hash_map");
-> > +       if (CHECK_FAIL(map_fd[0] < 0))
-> > +               goto close_prog;
-> > +       map_fd[1] = bpf_find_map(__func__, obj, "key_map");
-> > +       if (CHECK_FAIL(map_fd[1] < 0))
-> > +               goto close_prog;
-> 
-> You are not really checking much here.
-> 
-> Why don't you check that the value was set to 42 here? Consider also
-> using big global variables as your key and value. You can specify them
-> from user-space with BPF skeleton easily to any custom value (not just
-> zeroes).
-> 
-> 
-> > +
-> > +close_prog:
-> > +       bpf_object__close(obj);
-> > +}
-> 
-> [...]
