@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37D9F299E63
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 01:16:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D246299DE2
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 01:10:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439235AbgJ0AK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 20:10:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59328 "EHLO mail.kernel.org"
+        id S2411544AbgJ0AKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 20:10:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59406 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2439220AbgJ0AKZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 20:10:25 -0400
+        id S2439245AbgJ0AK2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 20:10:28 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A539720882;
-        Tue, 27 Oct 2020 00:10:23 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9E28821741;
+        Tue, 27 Oct 2020 00:10:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603757424;
-        bh=/A4Rvmd19B8URv1h/6TnEs9yhcS4+ipaCX3exhWdHPA=;
+        s=default; t=1603757428;
+        bh=EyO/SshQRHbmPmx0YqXRwILlS+U77AA2cW9uBk571XI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L8B2K9a9fBEUSajFEn3aqpERR+nm+hXc5DheNohfxHRM4vttxPxEClp9bGJ77nwo4
-         JspjsvEWkaq1A2M04MqJE23NloUvRSn1zhRpQZiFcS9G578WtvNAw1+L9unIj7OZjc
-         VczumydEuAXNJKM94caP4y37Cm7hlefJOuIsQ4eA=
+        b=Wpn96LWb4EmaTJrVPdq0lU/RwXd29aKgUUoge533uIW9whF2PWQC2i2N/5GtNnsfQ
+         J8AOGGRmvQnUzQuawYqWe+RjnGIGvO98AbbZJ5LoxNaYujoLROiUeZj9gU19Yi5go0
+         CDQ0LmZ38ybSMQKx6MC/ghkqihHGH7bDDd5RUcLY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Chan <michael.chan@broadcom.com>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        Edwin Peer <edwin.peer@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 32/46] bnxt_en: Log unknown link speed appropriately.
-Date:   Mon, 26 Oct 2020 20:09:31 -0400
-Message-Id: <20201027000946.1026923-32-sashal@kernel.org>
+Cc:     Anant Thazhemadam <anant.thazhemadam@gmail.com>,
+        syzbot+75d51fe5bf4ebe988518@syzkaller.appspotmail.com,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Sasha Levin <sashal@kernel.org>,
+        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 35/46] net: 9p: initialize sun_server.sun_path to have addr's value only when addr is valid
+Date:   Mon, 26 Oct 2020 20:09:34 -0400
+Message-Id: <20201027000946.1026923-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201027000946.1026923-1-sashal@kernel.org>
 References: <20201027000946.1026923-1-sashal@kernel.org>
@@ -44,49 +44,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Chan <michael.chan@broadcom.com>
+From: Anant Thazhemadam <anant.thazhemadam@gmail.com>
 
-[ Upstream commit 8eddb3e7ce124dd6375d3664f1aae13873318b0f ]
+[ Upstream commit 7ca1db21ef8e0e6725b4d25deed1ca196f7efb28 ]
 
-If the VF virtual link is set to always enabled, the speed may be
-unknown when the physical link is down.  The driver currently logs
-the link speed as 4294967295 Mbps which is SPEED_UNKNOWN.  Modify
-the link up log message as "speed unknown" which makes more sense.
+In p9_fd_create_unix, checking is performed to see if the addr (passed
+as an argument) is NULL or not.
+However, no check is performed to see if addr is a valid address, i.e.,
+it doesn't entirely consist of only 0's.
+The initialization of sun_server.sun_path to be equal to this faulty
+addr value leads to an uninitialized variable, as detected by KMSAN.
+Checking for this (faulty addr) and returning a negative error number
+appropriately, resolves this issue.
 
-Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Link: https://lore.kernel.org/r/1602493854-29283-7-git-send-email-michael.chan@broadcom.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Link: http://lkml.kernel.org/r/20201012042404.2508-1-anant.thazhemadam@gmail.com
+Reported-by: syzbot+75d51fe5bf4ebe988518@syzkaller.appspotmail.com
+Tested-by: syzbot+75d51fe5bf4ebe988518@syzkaller.appspotmail.com
+Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
+Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ net/9p/trans_fd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index a03239ba1a323..e146f6a1fa80d 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -5780,6 +5780,11 @@ static void bnxt_report_link(struct bnxt *bp)
- 		u16 fec;
+diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
+index 9f020559c1928..1b56b22c5c5d7 100644
+--- a/net/9p/trans_fd.c
++++ b/net/9p/trans_fd.c
+@@ -1029,7 +1029,7 @@ p9_fd_create_unix(struct p9_client *client, const char *addr, char *args)
  
- 		netif_carrier_on(bp->dev);
-+		speed = bnxt_fw_to_ethtool_speed(bp->link_info.link_speed);
-+		if (speed == SPEED_UNKNOWN) {
-+			netdev_info(bp->dev, "NIC Link is Up, speed unknown\n");
-+			return;
-+		}
- 		if (bp->link_info.duplex == BNXT_LINK_DUPLEX_FULL)
- 			duplex = "full";
- 		else
-@@ -5792,7 +5797,6 @@ static void bnxt_report_link(struct bnxt *bp)
- 			flow_ctrl = "ON - receive";
- 		else
- 			flow_ctrl = "none";
--		speed = bnxt_fw_to_ethtool_speed(bp->link_info.link_speed);
- 		netdev_info(bp->dev, "NIC Link is Up, %u Mbps %s duplex, Flow control: %s\n",
- 			    speed, duplex, flow_ctrl);
- 		if (bp->flags & BNXT_FLAG_EEE_CAP)
+ 	csocket = NULL;
+ 
+-	if (addr == NULL)
++	if (!addr || !strlen(addr))
+ 		return -EINVAL;
+ 
+ 	if (strlen(addr) >= UNIX_PATH_MAX) {
 -- 
 2.25.1
 
