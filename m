@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54DBE29A2B0
+	by mail.lfdr.de (Postfix) with ESMTP id C230329A2B1
 	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 03:29:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2409425AbgJ0C3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 22:29:04 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:37265 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729249AbgJ0C3E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 22:29:04 -0400
-Received: by mail-pl1-f193.google.com with SMTP id b12so3330310plr.4
-        for <netdev@vger.kernel.org>; Mon, 26 Oct 2020 19:29:04 -0700 (PDT)
+        id S2409556AbgJ0C3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 22:29:08 -0400
+Received: from mail-pl1-f176.google.com ([209.85.214.176]:45045 "EHLO
+        mail-pl1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729249AbgJ0C3H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 22:29:07 -0400
+Received: by mail-pl1-f176.google.com with SMTP id h2so5673051pll.11
+        for <netdev@vger.kernel.org>; Mon, 26 Oct 2020 19:29:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hxGRlL5LeTHpC2PaGOKhYJ+cD81YRHfTwaT5dBtJdNc=;
-        b=Fvk1+RopT4bt9psNDCRLQkVIPcgAzMnBEsXEUBiWC3WZnTXBrnP0jG+rz4ILPNwOg4
-         mB/d5TSVq5P1D9mkCP8FL0cPm6svfmU8DLMpvQN6WR5tpWG1xdzDzNp3kU6AtI1/B8Pk
-         vQ2OsRngpWhw+gL5aWxFGoLtoNzPh1IerCN4UrqK2Tjo1WmbWpMHxeaxLZ/pUfj2Mwjr
-         bMRLKntQhrSa4k68viEFvfA6xzLdB3YgCGIRkNYYFfl+Rm/IULt8CZZlSua8hnl5elwC
-         KBrGFw7ic70RvVId+IHyerax0S3+K3H64v6WxbDjgGji/zX7jpQTVgOB61JY+aXxPGrs
-         7BQw==
+        bh=9AydZF2IzRQ/33nchTL9Pk5tq1fQReDa2QIz6Q7fwrI=;
+        b=o0BgQmDnXMCo8CEuHInv9HGgC/ESHETRqc+13o4k0Wj3LxaUsC56utwV1QRqFflMEC
+         CvhKzUE2KbPvf/4b2/Sx3a6eApPEGqSBi4/pnK+zOCNUdCUA47yj2pUVzKyEqLRQLzF4
+         KN7h1OGBwkWkc6iV4X16m7tTh0NAuUbacR6pUiu99LtI8WOBKOpe1em62enzHQHRrJfd
+         IQB3Wha/F6pfp9pGx1aIjtaq+46Abn7u24udXPuIDjfKSS/2ZQ6ybHGIgORnjFdtXgMC
+         BSR9OnLfOUw+BmwhIFzW0O0W4ouTvbg/45XF0e95t329atcyUnETLiJRVzggUPohgcer
+         8+SA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hxGRlL5LeTHpC2PaGOKhYJ+cD81YRHfTwaT5dBtJdNc=;
-        b=lTgjs0HfPOHCuvsLBL8xbhlhtFT+jXwXnb4L7EXvAU6S2yg788sbZnAQisiD7IYGi6
-         WLTRBGfZYG0s39RVolgZRc1hQi3D8uIkxkL70Ap4SGeIvanQ9BP3yL+NL9rnByYxw3dF
-         cKyFB8jx1NZHMaGKp2Io1+ID67L5Jl+cfBMsOiA4Mxe2bzD/c86vpy3N0pwMFvdrMNdT
-         JPHBvUgMFwAYoIn2q+MxLkJqi78XqaaoKcBOa6br9w/KaDJCUgVyf0T/urd2n/8ULTzH
-         XSDgiaL7z1PVKDP/azvv/JIYwH+RFk2wY3aam3IknmTsLJWKiwKbgvOuO7q0JSnqPJJV
-         PLHA==
-X-Gm-Message-State: AOAM531SQYEVHf5tqccDowWraELoFFR/Xv9mo7rQ51JmP5uQcFYPpdtc
-        D8+ZD7WevSM1pxv3122oL/CPEvs7nGHXCiZ8
-X-Google-Smtp-Source: ABdhPJyOI/kgscYYGtYpa3ja3ucYcBdnlUfs7RJK50KOpqTYd8kWSxCOlMUmYIVsZLZGMLAi+qRzvg==
-X-Received: by 2002:a17:902:a50a:b029:d4:da2d:c9a1 with SMTP id s10-20020a170902a50ab02900d4da2dc9a1mr212425plq.6.1603765743659;
-        Mon, 26 Oct 2020 19:29:03 -0700 (PDT)
+        bh=9AydZF2IzRQ/33nchTL9Pk5tq1fQReDa2QIz6Q7fwrI=;
+        b=blwRlxT0WwA2LZfIXHiCjK8kgIjR1ps5sKnSOjq5Df2Gzksh2huXUmb678TT2Pkqbv
+         5hC80Gv0JvifuhLKjarnEIFOiacVsFt1kkqmKPQQMjCNh3yzbnAkMxkQoXQb0WvM/6KH
+         3/vb8HOvAlt4uRsTebhE/N26vbAjciS/F1C76Zbv45UcUTGQJLKie/aO6llXZgtA6vyW
+         LTMtnSwDTRmXMd6NDjeXciF5L//u8oD9zAn8kVvSayGPFmIbWnnkw6Kes6EUlV2w5oOf
+         04CT60XsGK1uJOf6HA0xq+6Xq8v38SwETP3IBrEOScVOUwWWfaMY+D64yNJhpzbKCuEU
+         gptw==
+X-Gm-Message-State: AOAM530WZxLdC2oMM4RPW6B/uSluSOKoCZpRXknH9nvLfqo4Uc4opbQr
+        lxznEWiFWaE1oIfzmTn4Ysc2mlOs0Y7AG070
+X-Google-Smtp-Source: ABdhPJzjaE6M2cWYWKDhKTKf0e9eV25xHfchFK74JdpZar0ge+74j2YjwqtwEfEX+J1rali2F3vt1A==
+X-Received: by 2002:a17:90a:7f81:: with SMTP id m1mr239149pjl.197.1603765747073;
+        Mon, 26 Oct 2020 19:29:07 -0700 (PDT)
 Received: from localhost.localdomain.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id o10sm5066131pgp.16.2020.10.26.19.29.00
+        by smtp.gmail.com with ESMTPSA id o10sm5066131pgp.16.2020.10.26.19.29.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2020 19:29:03 -0700 (PDT)
+        Mon, 26 Oct 2020 19:29:06 -0700 (PDT)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
@@ -54,9 +54,9 @@ Cc:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
         Eric Dumazet <eric.dumazet@gmail.com>,
         Georg Kohmann <geokohma@cisco.com>,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv5 net 1/2] ICMPv6: Add ICMPv6 Parameter Problem, code 3 definition
-Date:   Tue, 27 Oct 2020 10:28:32 +0800
-Message-Id: <20201027022833.3697522-2-liuhangbin@gmail.com>
+Subject: [PATCHv5 net 2/2] IPv6: reply ICMP error if the first fragment don't include all headers
+Date:   Tue, 27 Oct 2020 10:28:33 +0800
+Message-Id: <20201027022833.3697522-3-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.25.4
 In-Reply-To: <20201027022833.3697522-1-liuhangbin@gmail.com>
 References: <20201026072926.3663480-1-liuhangbin@gmail.com>
@@ -67,32 +67,123 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Based on RFC7112, Section 6:
+Based on RFC 8200, Section 4.5 Fragment Header:
 
-   IANA has added the following "Type 4 - Parameter Problem" message to
-   the "Internet Control Message Protocol version 6 (ICMPv6) Parameters"
-   registry:
+  -  If the first fragment does not include all headers through an
+     Upper-Layer header, then that fragment should be discarded and
+     an ICMP Parameter Problem, Code 3, message should be sent to
+     the source of the fragment, with the Pointer field set to zero.
 
-      CODE     NAME/DESCRIPTION
-       3       IPv6 First Fragment has incomplete IPv6 Header Chain
+As the packet may be any kind of L4 protocol, I only checked some common
+protocols' header length and handle others by (offset + 1) > skb->len.
+Checking each packet header in IPv6 fast path will have performance impact,
+so I put the checking in ipv6_frag_rcv().
+
+When send ICMP error message, if the 1st truncated fragment is ICMP message,
+icmp6_send() will break as is_ineligible() return true. So I added a check
+in is_ineligible() to let fragment packet with nexthdr ICMP but no ICMP header
+return false.
 
 Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- include/uapi/linux/icmpv6.h | 1 +
- 1 file changed, 1 insertion(+)
+v5:
+Only check nexthdr if ipv6_skip_exthdr() does not return -1. For
+IPPROTO_NONE/NEXTHDR_NONE, later code will handle and ignore it.
 
-diff --git a/include/uapi/linux/icmpv6.h b/include/uapi/linux/icmpv6.h
-index c1661febc2dc..0564fd7ccde4 100644
---- a/include/uapi/linux/icmpv6.h
-+++ b/include/uapi/linux/icmpv6.h
-@@ -138,6 +138,7 @@ struct icmp6hdr {
- #define ICMPV6_HDR_FIELD		0
- #define ICMPV6_UNK_NEXTHDR		1
- #define ICMPV6_UNK_OPTION		2
-+#define ICMPV6_HDR_INCOMP		3
+v4:
+remove unused variable
+
+v3:
+a) use frag_off to check if this is a fragment packet
+b) check some common protocols' header length
+
+v2:
+a) Move header check to ipv6_frag_rcv(). Also check the ipv6_skip_exthdr()
+   return value
+b) Fix ipv6_find_hdr() parameter type miss match in is_ineligible()
+
+---
+ net/ipv6/icmp.c       |  8 +++++++-
+ net/ipv6/reassembly.c | 33 ++++++++++++++++++++++++++++++++-
+ 2 files changed, 39 insertions(+), 2 deletions(-)
+
+diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
+index ec448b71bf9a..8956144ea65e 100644
+--- a/net/ipv6/icmp.c
++++ b/net/ipv6/icmp.c
+@@ -158,7 +158,13 @@ static bool is_ineligible(const struct sk_buff *skb)
+ 		tp = skb_header_pointer(skb,
+ 			ptr+offsetof(struct icmp6hdr, icmp6_type),
+ 			sizeof(_type), &_type);
+-		if (!tp || !(*tp & ICMPV6_INFOMSG_MASK))
++
++		/* Based on RFC 8200, Section 4.5 Fragment Header, return
++		 * false if this is a fragment packet with no icmp header info.
++		 */
++		if (!tp && frag_off != 0)
++			return false;
++		else if (!tp || !(*tp & ICMPV6_INFOMSG_MASK))
+ 			return true;
+ 	}
+ 	return false;
+diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
+index 1f5d4d196dcc..effe1d086e5d 100644
+--- a/net/ipv6/reassembly.c
++++ b/net/ipv6/reassembly.c
+@@ -42,6 +42,8 @@
+ #include <linux/skbuff.h>
+ #include <linux/slab.h>
+ #include <linux/export.h>
++#include <linux/tcp.h>
++#include <linux/udp.h>
  
- /*
-  *	constants for (set|get)sockopt
+ #include <net/sock.h>
+ #include <net/snmp.h>
+@@ -322,7 +324,9 @@ static int ipv6_frag_rcv(struct sk_buff *skb)
+ 	struct frag_queue *fq;
+ 	const struct ipv6hdr *hdr = ipv6_hdr(skb);
+ 	struct net *net = dev_net(skb_dst(skb)->dev);
+-	int iif;
++	__be16 frag_off;
++	int iif, offset;
++	u8 nexthdr;
+ 
+ 	if (IP6CB(skb)->flags & IP6SKB_FRAGMENTED)
+ 		goto fail_hdr;
+@@ -351,6 +355,33 @@ static int ipv6_frag_rcv(struct sk_buff *skb)
+ 		return 1;
+ 	}
+ 
++	/* RFC 8200, Section 4.5 Fragment Header:
++	 * If the first fragment does not include all headers through an
++	 * Upper-Layer header, then that fragment should be discarded and
++	 * an ICMP Parameter Problem, Code 3, message should be sent to
++	 * the source of the fragment, with the Pointer field set to zero.
++	 */
++	nexthdr = hdr->nexthdr;
++	offset = ipv6_skip_exthdr(skb, skb_transport_offset(skb), &nexthdr, &frag_off);
++	if (offset >= 0) {
++		/* Check some common protocols' header */
++		if (nexthdr == IPPROTO_TCP)
++			offset += sizeof(struct tcphdr);
++		else if (nexthdr == IPPROTO_UDP)
++			offset += sizeof(struct udphdr);
++		else if (nexthdr == IPPROTO_ICMPV6)
++			offset += sizeof(struct icmp6hdr);
++		else
++			offset += 1;
++
++		if (frag_off == htons(IP6_MF) && offset > skb->len) {
++			__IP6_INC_STATS(net, __in6_dev_get_safely(skb->dev),
++					IPSTATS_MIB_INHDRERRORS);
++			icmpv6_param_prob(skb, ICMPV6_HDR_INCOMP, 0);
++			return -1;
++		}
++	}
++
+ 	iif = skb->dev ? skb->dev->ifindex : 0;
+ 	fq = fq_find(net, fhdr->identification, hdr, iif);
+ 	if (fq) {
 -- 
 2.25.4
 
