@@ -2,48 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 961AA29C06E
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 18:16:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E70E629C052
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 18:14:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1782280AbgJ0O47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 10:56:59 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:46692 "EHLO inva020.nxp.com"
+        id S1817160AbgJ0RN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 13:13:58 -0400
+Received: from mail.nic.cz ([217.31.204.67]:50822 "EHLO mail.nic.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1782239AbgJ0O44 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Oct 2020 10:56:56 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 6094C1A0175;
-        Tue, 27 Oct 2020 15:56:54 +0100 (CET)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 541171A0165;
-        Tue, 27 Oct 2020 15:56:54 +0100 (CET)
-Received: from fsr-ub1464-019.ea.freescale.net (fsr-ub1464-019.ea.freescale.net [10.171.81.207])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 0E346202AE;
-        Tue, 27 Oct 2020 15:56:54 +0100 (CET)
-From:   Camelia Groza <camelia.groza@nxp.com>
-To:     madalin.bucur@oss.nxp.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Camelia Groza <camelia.groza@nxp.com>
-Subject: [PATCH net 0/2] dpaa_eth: buffer layout fixes
-Date:   Tue, 27 Oct 2020 16:56:28 +0200
-Message-Id: <cover.1603804282.git.camelia.groza@nxp.com>
-X-Mailer: git-send-email 1.9.1
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1784260AbgJ0O7A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Oct 2020 10:59:00 -0400
+Received: from localhost (unknown [IPv6:2a0e:b107:ae1:0:3e97:eff:fe61:c680])
+        by mail.nic.cz (Postfix) with ESMTPSA id DD493140B11;
+        Tue, 27 Oct 2020 15:58:55 +0100 (CET)
+Date:   Tue, 27 Oct 2020 15:58:49 +0100
+From:   Marek Behun <marek.behun@nic.cz>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        olteanv@gmail.com, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH 1/4] net: dsa: mv88e6xxx: use ethertyped dsa for
+ 6390/6390X
+Message-ID: <20201027155849.49c11523@nic.cz>
+In-Reply-To: <20201027155436.6458f79b@nic.cz>
+References: <20201027105117.23052-1-tobias@waldekranz.com>
+        <20201027105117.23052-2-tobias@waldekranz.com>
+        <20201027155213.290b66ea@nic.cz>
+        <20201027155436.6458f79b@nic.cz>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,URIBL_BLOCKED,
+        USER_IN_WELCOMELIST,USER_IN_WHITELIST shortcircuit=ham
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+X-Virus-Scanned: clamav-milter 0.102.2 at mail
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The patches are related to the software workaround for the A050385 erratum.
-The first patch ensures optimal buffer usage for non-erratum scenarios. The
-second patch fixes a currently inconsequential discrepancy between the
-FMan and Ethernet drivers.
+On Tue, 27 Oct 2020 15:54:36 +0100
+Marek Behun <marek.behun@nic.cz> wrote:
 
-Camelia Groza (2):
-  dpaa_eth: update the buffer layout for non-A050385 erratum scenarios
-  dpaa_eth: fix the RX headroom size alignment
+> But again, what is the benefit here?
 
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
-
---
-1.9.1
-
+OK, you need this for the LAG support, somehow those emails went to
+another folder, sorry :)
