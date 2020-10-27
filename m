@@ -2,171 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 47D4E29C933
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 20:48:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 754DE29C943
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 20:52:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1830507AbgJ0TrN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 15:47:13 -0400
-Received: from mailout11.rmx.de ([94.199.88.76]:43422 "EHLO mailout11.rmx.de"
+        id S2503946AbgJ0Tvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 15:51:50 -0400
+Received: from mailout10.rmx.de ([94.199.88.75]:45567 "EHLO mailout10.rmx.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2506943AbgJ0TrM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Oct 2020 15:47:12 -0400
-Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
+        id S2411512AbgJ0Tvu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Oct 2020 15:51:50 -0400
+Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mailout11.rmx.de (Postfix) with ESMTPS id 4CLMff6G64z43sx;
-        Tue, 27 Oct 2020 20:47:06 +0100 (CET)
+        by mailout10.rmx.de (Postfix) with ESMTPS id 4CLMm22dh0z3Bjl;
+        Tue, 27 Oct 2020 20:51:46 +0100 (CET)
 Received: from mta.arri.de (unknown [217.111.95.66])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by kdin02.retarus.com (Postfix) with ESMTPS id 4CLMf80tPcz2TTJr;
-        Tue, 27 Oct 2020 20:46:40 +0100 (CET)
+        by kdin01.retarus.com (Postfix) with ESMTPS id 4CLMln50Sjz2xD9;
+        Tue, 27 Oct 2020 20:51:33 +0100 (CET)
 Received: from N95HX1G2.wgnetz.xx (192.168.54.166) by mta.arri.de
  (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Tue, 27 Oct
- 2020 20:46:39 +0100
+ 2020 20:51:33 +0100
 From:   Christian Eggers <ceggers@arri.de>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Christian Eggers <ceggers@arri.de>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH] net: dsa: microchip: fix race condition
-Date:   Tue, 27 Oct 2020 20:45:34 +0100
-Message-ID: <20201027194534.23600-1-ceggers@arri.de>
+To:     "David S . Miller" <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, Christian Eggers <ceggers@arri.de>,
+        "Willem de Bruijn" <willemb@google.com>,
+        Deepa Dinamani <deepa.kernel@gmail.com>
+Subject: [PATCH] socket: don't clear SOCK_TSTAMP_NEW when SO_TIMESTAMPNS is disabled
+Date:   Tue, 27 Oct 2020 20:51:12 +0100
+Message-ID: <20201027195112.23921-1-ceggers@arri.de>
 X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [192.168.54.166]
-X-RMX-ID: 20201027-204640-4CLMf80tPcz2TTJr-0@kdin02
+X-RMX-ID: 20201027-205133-4CLMln50Sjz2xD9-0@kdin01
 X-RMX-SOURCE: 217.111.95.66
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[ Upstream commit 8098bd69bc4e925070313b1b95d03510f4f24738 ]
+[ Upstream commit 4e3bbb33e6f36e4b05be1b1b9b02e3dd5aaa3e69 ]
 
-Between queuing the delayed work and finishing the setup of the dsa
-ports, the process may sleep in request_module() (via
-phy_device_create()) and the queued work may be executed prior to the
-switch net devices being registered. In ksz_mib_read_work(), a NULL
-dereference will happen within netof_carrier_ok(dp->slave).
+SOCK_TSTAMP_NEW (timespec64 instead of timespec) is also used for
+hardware time stamps (configured via SO_TIMESTAMPING_NEW).
 
-Not queuing the delayed work in ksz_init_mib_timer() makes things even
-worse because the work will now be queued for immediate execution
-(instead of 2000 ms) in ksz_mac_link_down() via
-dsa_port_link_register_of().
+User space (ptp4l) first configures hardware time stamping via
+SO_TIMESTAMPING_NEW which sets SOCK_TSTAMP_NEW. In the next step, ptp4l
+disables SO_TIMESTAMPNS(_NEW) (software time stamps), but this must not
+switch hardware time stamps back to "32 bit mode".
 
-Call tree:
-ksz9477_i2c_probe()
-\--ksz9477_switch_register()
-   \--ksz_switch_register()
-      +--dsa_register_switch()
-      |  \--dsa_switch_probe()
-      |     \--dsa_tree_setup()
-      |        \--dsa_tree_setup_switches()
-      |           +--dsa_switch_setup()
-      |           |  +--ksz9477_setup()
-      |           |  |  \--ksz_init_mib_timer()
-      |           |  |     |--/* Start the timer 2 seconds later. */
-      |           |  |     \--schedule_delayed_work(&dev->mib_read, msecs_to_jiffies(2000));
-      |           |  \--__mdiobus_register()
-      |           |     \--mdiobus_scan()
-      |           |        \--get_phy_device()
-      |           |           +--get_phy_id()
-      |           |           \--phy_device_create()
-      |           |              |--/* sleeping, ksz_mib_read_work() can be called meanwhile */
-      |           |              \--request_module()
-      |           |
-      |           \--dsa_port_setup()
-      |              +--/* Called for non-CPU ports */
-      |              +--dsa_slave_create()
-      |              |  +--/* Too late, ksz_mib_read_work() may be called beforehand */
-      |              |  \--port->slave = ...
-      |             ...
-      |              +--Called for CPU port */
-      |              \--dsa_port_link_register_of()
-      |                 \--ksz_mac_link_down()
-      |                    +--/* mib_read must be initialized here */
-      |                    +--/* work is already scheduled, so it will be executed after 2000 ms */
-      |                    \--schedule_delayed_work(&dev->mib_read, 0);
-      \-- /* here port->slave is setup properly, scheduling the delayed work should be safe */
+This problem happens on 32 bit platforms were the libc has already
+switched to struct timespec64 (from SO_TIMExxx_OLD to SO_TIMExxx_NEW
+socket options). ptp4l complains with "missing timestamp on transmitted
+peer delay request" because the wrong format is received (and
+discarded).
 
-Solution:
-1. Do not queue (only initialize) delayed work in ksz_init_mib_timer().
-2. Only queue delayed work in ksz_mac_link_down() if init is completed.
-3. Queue work once in ksz_switch_register(), after dsa_register_switch()
-has completed.
-
-Fixes: 7c6ff470aa86 ("net: dsa: microchip: add MIB counter reading support")
+Fixes: 887feae36aee ("socket: Add SO_TIMESTAMP[NS]_NEW")
 Signed-off-by: Christian Eggers <ceggers@arri.de>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Acked-by: Willem de Bruijn <willemb@google.com>
+Acked-by: Deepa Dinamani <deepa.kernel@gmail.com>
 ---
 This is a back port for 5.4. The original version has been applied to 5.8/5.9
-a few hours ago.
+a few hours ago. It does the same as the upstream patch, only the affected code
+is at another position here. 
 
-Please decide whether the Reviewed-By: and Singed-off-by: tags shall be kept
-or removed when forwarding this to stable.
+Please decide whether the Acked-by: tags (from the upstream patch) should
+be kept or removed.
+
+This back port is only required for 5.4, older kernels like 4.19 are not
+affected.
 
 regards
 Christian
 
- drivers/net/dsa/microchip/ksz_common.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index 7fabc0e3d807..b1a9d1012fc4 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -107,18 +107,11 @@ void ksz_init_mib_timer(struct ksz_device *dev)
- {
- 	int i;
+ net/core/sock.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/net/core/sock.c b/net/core/sock.c
+index 9a186d2ad36d..1eda7337b881 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -923,7 +923,6 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
+ 		} else {
+ 			sock_reset_flag(sk, SOCK_RCVTSTAMP);
+ 			sock_reset_flag(sk, SOCK_RCVTSTAMPNS);
+-			sock_reset_flag(sk, SOCK_TSTAMP_NEW);
+ 		}
+ 		break;
  
--	/* Read MIB counters every 30 seconds to avoid overflow. */
--	dev->mib_read_interval = msecs_to_jiffies(30000);
--
- 	INIT_WORK(&dev->mib_read, ksz_mib_read_work);
- 	timer_setup(&dev->mib_read_timer, mib_monitor, 0);
- 
- 	for (i = 0; i < dev->mib_port_cnt; i++)
- 		dev->dev_ops->port_init_cnt(dev, i);
--
--	/* Start the timer 2 seconds later. */
--	dev->mib_read_timer.expires = jiffies + msecs_to_jiffies(2000);
--	add_timer(&dev->mib_read_timer);
- }
- EXPORT_SYMBOL_GPL(ksz_init_mib_timer);
- 
-@@ -152,7 +145,9 @@ void ksz_adjust_link(struct dsa_switch *ds, int port,
- 	/* Read all MIB counters when the link is going down. */
- 	if (!phydev->link) {
- 		p->read = true;
--		schedule_work(&dev->mib_read);
-+		/* timer started */
-+		if (dev->mib_read_interval)
-+			schedule_work(&dev->mib_read);
- 	}
- 	mutex_lock(&dev->dev_mutex);
- 	if (!phydev->link)
-@@ -464,6 +459,13 @@ int ksz_switch_register(struct ksz_device *dev,
- 		return ret;
- 	}
- 
-+	/* Read MIB counters every 30 seconds to avoid overflow. */
-+	dev->mib_read_interval = msecs_to_jiffies(30000);
-+
-+	/* Start the MIB timer. */
-+	dev->mib_read_timer.expires = jiffies;
-+	add_timer(&dev->mib_read_timer);
-+
- 	return 0;
- }
- EXPORT_SYMBOL(ksz_switch_register);
 -- 
 Christian Eggers
 Embedded software developer
