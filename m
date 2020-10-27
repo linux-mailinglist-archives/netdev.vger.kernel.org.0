@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A28D6299E71
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 01:16:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A66D3299E54
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 01:14:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2439261AbgJ0ALO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 20:11:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60758 "EHLO mail.kernel.org"
+        id S2439564AbgJ0AOJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 20:14:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33232 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2411692AbgJ0ALM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Oct 2020 20:11:12 -0400
+        id S2411765AbgJ0ALd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Oct 2020 20:11:33 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C8DAD20754;
-        Tue, 27 Oct 2020 00:11:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3DA3621707;
+        Tue, 27 Oct 2020 00:11:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603757471;
-        bh=N793Gw5Gn15NAHgGIFebTIjapowzqTQncYZtkjWLKjw=;
+        s=default; t=1603757493;
+        bh=wHsImZGjp0npO5/iLpAlz/CmDuBqLZQcm/h/wGv8+p0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bf+EcNeUAUG5HsRG51+uAogMs38zXmbcryHCeKNQ7arvr+pwhJHnNT3g+vs2lUpfl
-         L4q1NEIxxZsrKqORN1DnZz0bAALmwSJG1ZykC/Kj0c45COjib6ppyYNEXELd97bSU0
-         CUMtun6Lnu5fKHEjZZrPnCLwWM5yk7YYpaNhv5k8=
+        b=uhFFeur4dYjR2fAvkotcPxgQpYEM/tk206X5ZNTqbK9G64ONKedJFGTY5PYD41SxA
+         WqR+3hSLJwIhmnWm2B1rWeXDKWPZ1WaQHsyv7qXsu0JsktBe26bE6SeoZ0bfqI1w70
+         O2BQWI9EFobm5vCeghKL3zBpkQP7V5MgrWeOTFSg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Anant Thazhemadam <anant.thazhemadam@gmail.com>,
-        syzbot+75d51fe5bf4ebe988518@syzkaller.appspotmail.com,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Sasha Levin <sashal@kernel.org>,
-        v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 23/30] net: 9p: initialize sun_server.sun_path to have addr's value only when addr is valid
-Date:   Mon, 26 Oct 2020 20:10:37 -0400
-Message-Id: <20201027001044.1027349-23-sashal@kernel.org>
+Cc:     Sathishkumar Muruganandam <murugana@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 07/25] ath10k: fix VHT NSS calculation when STBC is enabled
+Date:   Mon, 26 Oct 2020 20:11:05 -0400
+Message-Id: <20201027001123.1027642-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201027001044.1027349-1-sashal@kernel.org>
-References: <20201027001044.1027349-1-sashal@kernel.org>
+In-Reply-To: <20201027001123.1027642-1-sashal@kernel.org>
+References: <20201027001123.1027642-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,42 +43,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Anant Thazhemadam <anant.thazhemadam@gmail.com>
+From: Sathishkumar Muruganandam <murugana@codeaurora.org>
 
-[ Upstream commit 7ca1db21ef8e0e6725b4d25deed1ca196f7efb28 ]
+[ Upstream commit 99f41b8e43b8b4b31262adb8ac3e69088fff1289 ]
 
-In p9_fd_create_unix, checking is performed to see if the addr (passed
-as an argument) is NULL or not.
-However, no check is performed to see if addr is a valid address, i.e.,
-it doesn't entirely consist of only 0's.
-The initialization of sun_server.sun_path to be equal to this faulty
-addr value leads to an uninitialized variable, as detected by KMSAN.
-Checking for this (faulty addr) and returning a negative error number
-appropriately, resolves this issue.
+When STBC is enabled, NSTS_SU value need to be accounted for VHT NSS
+calculation for SU case.
 
-Link: http://lkml.kernel.org/r/20201012042404.2508-1-anant.thazhemadam@gmail.com
-Reported-by: syzbot+75d51fe5bf4ebe988518@syzkaller.appspotmail.com
-Tested-by: syzbot+75d51fe5bf4ebe988518@syzkaller.appspotmail.com
-Signed-off-by: Anant Thazhemadam <anant.thazhemadam@gmail.com>
-Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+Without this fix, 1SS + STBC enabled case was reported wrongly as 2SS
+in radiotap header on monitor mode capture.
+
+Tested-on: QCA9984 10.4-3.10-00047
+
+Signed-off-by: Sathishkumar Muruganandam <murugana@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/1597392971-3897-1-git-send-email-murugana@codeaurora.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/9p/trans_fd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath10k/htt_rx.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/net/9p/trans_fd.c b/net/9p/trans_fd.c
-index bad27b0ec65d6..33b317a25a2d5 100644
---- a/net/9p/trans_fd.c
-+++ b/net/9p/trans_fd.c
-@@ -1013,7 +1013,7 @@ p9_fd_create_unix(struct p9_client *client, const char *addr, char *args)
+diff --git a/drivers/net/wireless/ath/ath10k/htt_rx.c b/drivers/net/wireless/ath/ath10k/htt_rx.c
+index a65b5d7f59f44..47ac9aa986dcd 100644
+--- a/drivers/net/wireless/ath/ath10k/htt_rx.c
++++ b/drivers/net/wireless/ath/ath10k/htt_rx.c
+@@ -657,6 +657,7 @@ static void ath10k_htt_rx_h_rates(struct ath10k *ar,
+ 	u8 preamble = 0;
+ 	u8 group_id;
+ 	u32 info1, info2, info3;
++	u32 stbc, nsts_su;
  
- 	csocket = NULL;
+ 	info1 = __le32_to_cpu(rxd->ppdu_start.info1);
+ 	info2 = __le32_to_cpu(rxd->ppdu_start.info2);
+@@ -700,11 +701,16 @@ static void ath10k_htt_rx_h_rates(struct ath10k *ar,
+ 		   TODO check this */
+ 		bw = info2 & 3;
+ 		sgi = info3 & 1;
++		stbc = (info2 >> 3) & 1;
+ 		group_id = (info2 >> 4) & 0x3F;
  
--	if (addr == NULL)
-+	if (!addr || !strlen(addr))
- 		return -EINVAL;
- 
- 	if (strlen(addr) >= UNIX_PATH_MAX) {
+ 		if (GROUP_ID_IS_SU_MIMO(group_id)) {
+ 			mcs = (info3 >> 4) & 0x0F;
+-			nss = ((info2 >> 10) & 0x07) + 1;
++			nsts_su = ((info2 >> 10) & 0x07);
++			if (stbc)
++				nss = (nsts_su >> 2) + 1;
++			else
++				nss = (nsts_su + 1);
+ 		} else {
+ 			/* Hardware doesn't decode VHT-SIG-B into Rx descriptor
+ 			 * so it's impossible to decode MCS. Also since
 -- 
 2.25.1
 
