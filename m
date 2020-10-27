@@ -2,114 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE50D29A243
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 02:39:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23FFE29A246
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 02:43:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2503965AbgJ0Bjn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Oct 2020 21:39:43 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:39234 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2442707AbgJ0Bjm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 21:39:42 -0400
-Received: by mail-qt1-f196.google.com with SMTP id i7so7561651qti.6;
-        Mon, 26 Oct 2020 18:39:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Ruu54colUF/ilFVC8cdTe3XtbysMvPE0jNSVGMkpx/Q=;
-        b=fnPJD1Lj/6EUJMh/Id06hdWbDezrrk8BEmta6rJGQLIdzIJObUzsARJyDNAZfwz+Qe
-         fEx+4Ni9LhjkBIGB6bLB+IVP3Ga3mT93rlCeR+H4yu+7OeMHsqlxEt+DX9XZ+l9FGata
-         yY6OH6m0sdCso59nopAI8YNSjyRtBtEg6aWBuMoNzY6lJchHC4Z47i+yDmyVD++qNtsQ
-         WDYgacFek6KhrcRFdarV+9D0umR1/ecqUQyfvzPDS0yWFBgFUOVVEJ1xGtezrDCnAGwL
-         arSdp5HbcK+SMyhGkUv4IG8lYDRpq1XBfpC7Fx+LQGJijPVSEiCSHTns/282qRUPDJU1
-         +cxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Ruu54colUF/ilFVC8cdTe3XtbysMvPE0jNSVGMkpx/Q=;
-        b=U4sUJDjhhknKSYzVKk7bCjOavX6OLjBOwvUrgSeLI9womRkA6/6ThO4svM//AwqAuc
-         CVtgA5ucEsdzR3Tfiz30tlwLOViZh0VUZIqiK8ZgftbWmK8kKWWGiX8VnSkUyNtn123+
-         f9/ruBiJ29/H47z+hJVAPVk7Ah+hPhJIAFDdEXQMYC3YMirOhcaDF0xKYTEaC6TH+rtR
-         5tFYTPnuCBPPHPVs12460uUPli7SDZX17JfFU0zwDqvRaNcGoA64UttXdtaLuoO+8MiW
-         KGqaB7QRAV4mKp0doWhlbfTWB28TJzRmFlGYsPtcVmNTPqx0CPxf018jZI8rJGRG7ZXY
-         lrmQ==
-X-Gm-Message-State: AOAM530g4gNbC02GkM3LFgeFXmUCsSPUTkwKebLicGPP65qFkJQ65K6Y
-        YNKrGPE5GBZxdEXCkTEryg8=
-X-Google-Smtp-Source: ABdhPJy2pTUwMgpLfk1Ilj24AuR+qO/m5HSJHaEy8c/0kFjMjIoLta/h9qB9IEr21Mv4fxi24Q4zaw==
-X-Received: by 2002:ac8:5743:: with SMTP id 3mr21468464qtx.259.1603762781296;
-        Mon, 26 Oct 2020 18:39:41 -0700 (PDT)
-Received: from ubuntu-m3-large-x86 ([2604:1380:45d1:2600::3])
-        by smtp.gmail.com with ESMTPSA id o2sm7758031qkk.121.2020.10.26.18.39.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Oct 2020 18:39:40 -0700 (PDT)
-Date:   Mon, 26 Oct 2020 18:39:39 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tzu-En Huang <tehuang@realtek.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Chin-Yen Lee <timlee@realtek.com>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
-Subject: Re: [PATCH\ net] rtw88: fix fw dump support detection
-Message-ID: <20201027013939.GA4042641@ubuntu-m3-large-x86>
-References: <20201026212323.3888550-1-arnd@kernel.org>
+        id S2503988AbgJ0BmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Oct 2020 21:42:12 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:5211 "EHLO
+        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2436613AbgJ0BmL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Oct 2020 21:42:11 -0400
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CKvZs5ZpvzkZy4;
+        Tue, 27 Oct 2020 09:42:13 +0800 (CST)
+Received: from [10.74.191.121] (10.74.191.121) by
+ DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 27 Oct 2020 09:42:02 +0800
+Subject: Re: [PATCH net] net: hns3: Clear the CMDQ registers before unmapping
+ BAR region
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Zenghui Yu <yuzenghui@huawei.com>, <yisen.zhuang@huawei.com>,
+        <salil.mehta@huawei.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <wanghaibin.wang@huawei.com>, <tanhuazhong@huawei.com>
+References: <20201023051550.793-1-yuzenghui@huawei.com>
+ <3c5c98f9-b4a0-69a2-d58d-bfef977c68ad@huawei.com>
+ <e74f0a72-92d1-2ac9-1f4b-191477d673ef@huawei.com>
+ <20201026161325.6f33d9c8@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <bca7fb17-2390-7ff3-d62d-fe279af6a225@huawei.com>
+ <20201026182557.43dcb486@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <416bed1a-ce64-d326-3a7a-a8c8258c0bac@huawei.com>
+Date:   Tue, 27 Oct 2020 09:42:01 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201026212323.3888550-1-arnd@kernel.org>
+In-Reply-To: <20201026182557.43dcb486@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.74.191.121]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 26, 2020 at 10:22:55PM +0100, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On 2020/10/27 9:25, Jakub Kicinski wrote:
+> On Tue, 27 Oct 2020 09:24:10 +0800 Yunsheng Lin wrote:
+>>> Fixes: 862d969a3a4d ("net: hns3: do VF's pci re-initialization while PF doing FLR")  
+>>
+>> The correct Fixes tag should be:
+>>
+>> Fixes: e3338205f0c7 ("net: hns3: uninitialize pci in the hclgevf_uninit")
 > 
-> clang points out a useless check that was recently added:
+> Why is that?
 > 
-> drivers/net/wireless/realtek/rtw88/fw.c:1485:21: warning: address of array 'rtwdev->chip->fw_fifo_addr' will always evaluate to 'true' [-Wpointer-bool-conversion]
->         if (!rtwdev->chip->fw_fifo_addr) {
->             ~~~~~~~~~~~~~~~^~~~~~~~~~~~
-> 
-> Apparently this was meant to check the contents of the array
-> rather than the address, so check it accordingly.
-> 
-> Fixes: 0fbc2f0f34cc ("rtw88: add dump firmware fifo support")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  drivers/net/wireless/realtek/rtw88/fw.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtw88/fw.c b/drivers/net/wireless/realtek/rtw88/fw.c
-> index 042015bc8055..b2fd87834f23 100644
-> --- a/drivers/net/wireless/realtek/rtw88/fw.c
-> +++ b/drivers/net/wireless/realtek/rtw88/fw.c
-> @@ -1482,7 +1482,7 @@ static bool rtw_fw_dump_check_size(struct rtw_dev *rtwdev,
->  int rtw_fw_dump_fifo(struct rtw_dev *rtwdev, u8 fifo_sel, u32 addr, u32 size,
->  		     u32 *buffer)
->  {
-> -	if (!rtwdev->chip->fw_fifo_addr) {
-> +	if (!rtwdev->chip->fw_fifo_addr[0]) {
->  		rtw_dbg(rtwdev, RTW_DBG_FW, "chip not support dump fw fifo\n");
->  		return -ENOTSUPP;
->  	}
-> -- 
-> 2.27.0
-> 
+> Isn't the issue the order of cmd vs pci calls? e3338205f0c7 only takes
+> the pci call from under an if, the order was wrong before.
 
-Tom sent an identical patch earlier that it does not look like Kalle has
-picked up:
+You are right, the e3338205f0c7 only add the missing hclgevf_pci_uninit()
+when HCLGEVF_STATE_IRQ_INITED is not set.
 
-https://lore.kernel.org/linux-wireless/20201011155438.15892-1-trix@redhat.com/
+So I think the tag you provided is correct, thanks.
 
-Not that it particularly matters which one goes in so regardless:
-
-Reviewed-by: Nathan Chancellor <natechancellor@gmail.com>
+> .
+> 
