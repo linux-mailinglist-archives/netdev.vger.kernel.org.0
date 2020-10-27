@@ -2,217 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D7C0829BD9C
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 17:50:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A52B829BE8B
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 17:57:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1811046AbgJ0QnV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 12:43:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:25261 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1811883AbgJ0QnU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 12:43:20 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603816998;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=mj6uaiHROCag3uZJ/gHJroorYDnXKuN4EyYRFIYPu8Y=;
-        b=SbUT6LrPKSG/kjhEPSpbNL37X7EqS95pLWLFJN05U8T6IvmsgoI1621azrkHaUCQe2IU+4
-        A+8ip+R7TFhvfL2PFtA2YPAVSij+jMd+5zp3Ro8XdkS11BXJM1Rlv3U/dAVL3h95weU9IY
-        Ml5NELPo7a9T9EfhM60DKYJDO3/RVn0=
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
- [209.85.210.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-375-dz0XdzI1OWemwvE8E-iKcg-1; Tue, 27 Oct 2020 12:43:14 -0400
-X-MC-Unique: dz0XdzI1OWemwvE8E-iKcg-1
-Received: by mail-ot1-f69.google.com with SMTP id h7so602088otn.10
-        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 09:43:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=mj6uaiHROCag3uZJ/gHJroorYDnXKuN4EyYRFIYPu8Y=;
-        b=gSUc7ZSe+gEG78Is9aVKfx/KeIvN9FIHaR+fwrbCgavQkNRLrY0Ok1HJTZvLCcuTm5
-         mfSmPdmp4ws9OTcSAXRn9XK/qc+/iLsE009Dn9ktMr1UlAxSI6AyztqT87ACpOf/Q7ZO
-         2C+UNawLpf/F8B5pWVPlUP9aDApSCbGHuMkN/zNulsvwLEeBaMZXVxMIAvzk/7VzzOqA
-         RI2VPa3NtMrxWfI1j6BlPYLCBqimlkLEUjKPyrKQFzpGKJzErABCP5eDGOi+AyCmsCgb
-         RUsYs0ddwsiwzEME4/DwtkErF+NBMYit9au6BRwU6KOcicaZ9EcSN8jGikY/+XDSbpc7
-         TVIw==
-X-Gm-Message-State: AOAM531Au1ObruBCfNXALthLkVSAAEOkD3j6+jqNsB3zo/Afgyn+Vk5B
-        hZskSpzemitOKtk56HjpX9/jqofhoSAZAgftMkIGfroKDO3G7OLGHlfPG0blLB1vkeZ3o542orT
-        tTMwWPzxhwqiR2sf2
-X-Received: by 2002:aca:ef03:: with SMTP id n3mr2048460oih.67.1603816993828;
-        Tue, 27 Oct 2020 09:43:13 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw7y1eCX7WfRNi9tkZnfLpiDio1qtG9FKTpwYlLMD9SlPYp6FIE57BquNUx5oTk2cs+UUc+WA==
-X-Received: by 2002:aca:ef03:: with SMTP id n3mr2048435oih.67.1603816993577;
-        Tue, 27 Oct 2020 09:43:13 -0700 (PDT)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id l89sm90968otc.6.2020.10.27.09.43.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Oct 2020 09:43:12 -0700 (PDT)
-From:   trix@redhat.com
-To:     linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com
-Cc:     linux-pm@vger.kernel.org, linux-crypto@vger.kernel.org,
-        qat-linux@intel.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-iio@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-mmc@vger.kernel.org,
-        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-rtc@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-aspeed@lists.ozlabs.org, linux-samsung-soc@vger.kernel.org,
-        linux-btrfs@vger.kernel.org, linux-nfs@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net, alsa-devel@alsa-project.org,
-        linux-rpi-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-        =?UTF-8?q?=EF=BB=BFFrom=20=3A=20Tom=20Rix?= <trix@redhat.com>
-Subject: Subject: [RFC] clang tooling cleanups
-Date:   Tue, 27 Oct 2020 09:42:55 -0700
-Message-Id: <20201027164255.1573301-1-trix@redhat.com>
-X-Mailer: git-send-email 2.18.1
+        id S1813549AbgJ0Quy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 12:50:54 -0400
+Received: from smtprelay0035.hostedemail.com ([216.40.44.35]:33548 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1813523AbgJ0Quu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 12:50:50 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay04.hostedemail.com (Postfix) with ESMTP id 86139180A7FE0;
+        Tue, 27 Oct 2020 16:50:43 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:69:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3870:3872:3874:4321:4605:5007:6742:6743:7576:7903:8603:10004:10400:10848:11026:11232:11473:11658:11914:12043:12296:12297:12438:12555:12740:12760:12895:12986:13069:13311:13357:13439:14096:14097:14181:14659:14721:21080:21451:21627:21990:30012:30054:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:30,LUA_SUMMARY:none
+X-HE-Tag: bag02_2a11e012727d
+X-Filterd-Recvd-Size: 4083
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf19.hostedemail.com (Postfix) with ESMTPA;
+        Tue, 27 Oct 2020 16:50:38 +0000 (UTC)
+Message-ID: <685d850347a1191bba8ba7766fc409b140d18f03.camel@perches.com>
+Subject: Re: [PATCH 3/8] vhost: vringh: use krealloc_array()
+From:   Joe Perches <joe@perches.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Gustavo Padovan <gustavo@padovan.org>,
+        Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Tony Luck <tony.luck@intel.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jason Wang <jasowang@redhat.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        linux-gpio@vger.kernel.org, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-mm@kvack.org, alsa-devel@alsa-project.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Date:   Tue, 27 Oct 2020 09:50:36 -0700
+In-Reply-To: <20201027112607-mutt-send-email-mst@kernel.org>
+References: <20201027121725.24660-1-brgl@bgdev.pl>
+         <20201027121725.24660-4-brgl@bgdev.pl>
+         <20201027112607-mutt-send-email-mst@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.38.1-1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This rfc will describe
-An upcoming treewide cleanup.
-How clang tooling was used to programatically do the clean up.
-Solicit opinions on how to generally use clang tooling.
+On Tue, 2020-10-27 at 11:28 -0400, Michael S. Tsirkin wrote:
+> On Tue, Oct 27, 2020 at 01:17:20PM +0100, Bartosz Golaszewski wrote:
+> > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> > 
+> > Use the helper that checks for overflows internally instead of manually
+> > calculating the size of the new array.
+> > 
+> > Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+> 
+> No problem with the patch, it does introduce some symmetry in the code.
 
-The clang warning -Wextra-semi-stmt produces about 10k warnings.
-Reviewing these, a subset of semicolon after a switch looks safe to
-fix all the time.  An example problem
+Perhaps more symmetry by using kmemdup
+---
+ drivers/vhost/vringh.c | 23 ++++++++++-------------
+ 1 file changed, 10 insertions(+), 13 deletions(-)
 
-void foo(int a) {
-     switch(a) {
-     	       case 1:
-	       ...
-     }; <--- extra semicolon
-}
-
-Treewide, there are about 100 problems in 50 files for x86_64 allyesconfig.
-These fixes will be the upcoming cleanup.
-
-clang already supports fixing this problem. Add to your command line
-
-  clang -c -Wextra-semi-stmt -Xclang -fixit foo.c
-
-  foo.c:8:3: warning: empty expression statement has no effect;
-    remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
-        };
-         ^
-  foo.c:8:3: note: FIX-IT applied suggested code changes
-  1 warning generated.
-
-The big problem is using this treewide is it will fix all 10k problems.
-10k changes to analyze and upstream is not practical.
-
-Another problem is the generic fixer only removes the semicolon.
-So empty lines with some tabs need to be manually cleaned.
-
-What is needed is a more precise fixer.
-
-Enter clang-tidy.
-https://clang.llvm.org/extra/clang-tidy/
-
-Already part of the static checker infrastructure, invoke on the clang
-build with
-  make clang-tidy
-
-It is only a matter of coding up a specific checker for the cleanup.
-Upstream this is review is happening here
-https://reviews.llvm.org/D90180
-
-The development of a checker/fixer is
-Start with a reproducer
-
-void foo (int a) {
-  switch (a) {};
-}
-
-Generate the abstract syntax tree (AST)
-
-  clang -Xclang -ast-dump foo.c
-
-`-FunctionDecl 
-  |-ParmVarDecl 
-  `-CompoundStmt 
-    |-SwitchStmt 
-    | |-ImplicitCastExpr
-    | | `-DeclRefExpr
-    | `-CompoundStmt
-    `-NullStmt
-
-Write a matcher to get you most of the way
-
-void SwitchSemiCheck::registerMatchers(MatchFinder *Finder) {
-  Finder->addMatcher(
-      compoundStmt(has(switchStmt().bind("switch"))).bind("comp"), this);
-}
-
-The 'bind' method is important, it allows a string to be associated
-with a node in the AST.  In this case these are
-
-`-FunctionDecl 
-  |-ParmVarDecl 
-  `-CompoundStmt <-------- comp
-    |-SwitchStmt <-------- switch
-    | |-ImplicitCastExpr
-    | | `-DeclRefExpr
-    | `-CompoundStmt
-    `-NullStmt
-
-When a match is made the 'check' method will be called.
-
-  void SwitchSemiCheck::check(const MatchFinder::MatchResult &Result) {
-    auto *C = Result.Nodes.getNodeAs<CompoundStmt>("comp");
-    auto *S = Result.Nodes.getNodeAs<SwitchStmt>("switch");
-
-This is where the string in the bind calls are changed to nodes
-
-`-FunctionDecl 
-  |-ParmVarDecl 
-  `-CompoundStmt <-------- comp, C
-    |-SwitchStmt <-------- switch, S
-    | |-ImplicitCastExpr
-    | | `-DeclRefExpr
-    | `-CompoundStmt
-    `-NullStmt <---------- looking for N
-
-And then more logic to find the NullStmt
-
-  auto Current = C->body_begin();
-  auto Next = Current;
-  Next++;
-  while (Next != C->body_end()) {
-    if (*Current == S) {
-      if (const auto *N = dyn_cast<NullStmt>(*Next)) {
-
-When it is found, a warning is printed and a FixItHint is proposed.
-
-  auto H = FixItHint::CreateReplacement(
-    SourceRange(S->getBody()->getEndLoc(), N->getSemiLoc()), "}");
-  diag(N->getSemiLoc(), "unneeded semicolon") << H;
-
-This fixit replaces from the end of switch to the semicolon with a
-'}'.  Because the end of the switch is '}' this has the effect of
-removing all the whitespace as well as the semicolon.
-
-Because of the checker's placement in clang-tidy existing linuxkernel
-checkers, all that was needed to fix the tree was to add a '-fix'to the
-build's clang-tidy call.
-
-I am looking for opinions on what we want to do specifically with
-cleanups and generally about other source-to-source programmatic
-changes to the code base.
-
-For cleanups, I think we need a new toplevel target
-
-clang-tidy-fix
-
-And an explicit list of fixers that have a very high (100%?) fix rate.
-
-Ideally a bot should make the changes, but a bot could also nag folks.
-Is there interest in a bot making the changes? Does one already exist?
-
-The general source-to-source is a bit blue sky.  Ex/ could automagicly
-refactor api, outline similar cut-n-pasted functions etc. Anything on
-someone's wishlist you want to try out ?
-
-Signed-off-by: Tom Rix <trix@redhat.com>
+diff --git a/drivers/vhost/vringh.c b/drivers/vhost/vringh.c
+index 8bd8b403f087..99222a3651cd 100644
+--- a/drivers/vhost/vringh.c
++++ b/drivers/vhost/vringh.c
+@@ -191,26 +191,23 @@ static int move_to_indirect(const struct vringh *vrh,
+ static int resize_iovec(struct vringh_kiov *iov, gfp_t gfp)
+ {
+ 	struct kvec *new;
+-	unsigned int flag, new_num = (iov->max_num & ~VRINGH_IOV_ALLOCATED) * 2;
++	size_t new_num = (iov->max_num & ~VRINGH_IOV_ALLOCATED) * 2;
++	size_t size;
+ 
+ 	if (new_num < 8)
+ 		new_num = 8;
+ 
+-	flag = (iov->max_num & VRINGH_IOV_ALLOCATED);
+-	if (flag)
+-		new = krealloc(iov->iov, new_num * sizeof(struct iovec), gfp);
+-	else {
+-		new = kmalloc_array(new_num, sizeof(struct iovec), gfp);
+-		if (new) {
+-			memcpy(new, iov->iov,
+-			       iov->max_num * sizeof(struct iovec));
+-			flag = VRINGH_IOV_ALLOCATED;
+-		}
+-	}
++	if (unlikely(check_mul_overflow(new_num, sizeof(struct iovec), &size)))
++		return -ENOMEM;
++
++	if (iov->max_num & VRINGH_IOV_ALLOCATED)
++		new = krealloc(iov->iov, size, gfp);
++	else
++		new = kmemdup(iov->iov, size, gfp);
+ 	if (!new)
+ 		return -ENOMEM;
+ 	iov->iov = new;
+-	iov->max_num = (new_num | flag);
++	iov->max_num = new_num | VRINGH_IOV_ALLOCATED;
+ 	return 0;
+ }
+ 
+ 
 
