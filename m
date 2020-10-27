@@ -2,90 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45FA929AC20
-	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 13:31:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7970329AC22
+	for <lists+netdev@lfdr.de>; Tue, 27 Oct 2020 13:32:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2899954AbgJ0Mbg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 08:31:36 -0400
-Received: from mail-il1-f195.google.com ([209.85.166.195]:39875 "EHLO
-        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2411811AbgJ0Mbf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 08:31:35 -0400
-Received: by mail-il1-f195.google.com with SMTP id q1so1317460ilt.6
-        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 05:31:34 -0700 (PDT)
+        id S2439319AbgJ0McP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 08:32:15 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:43134 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406396AbgJ0McP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 08:32:15 -0400
+Received: by mail-pg1-f193.google.com with SMTP id r10so695217pgb.10;
+        Tue, 27 Oct 2020 05:32:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=NX3aMd8nOxmdYv1FMvBjyoMjhVdlhBSOsPMwKR/CR38=;
-        b=BNIE5eBYuI7rcpMZ7Fc8fXqliKjnQxcjorZNJL1u/wBpIhZBPNm/oj2C1C6ZdxZGqP
-         uAYGC/mtPEyUM4jNLBnAm4jxr4genpcgGd/TQ/ERBwsmskt1N17w//1kmUAuHUDUnICN
-         NTh72+99x21FAoc2Rb5wYJc0zP7/BuMc6mdP6YIeVMTXUp09DbbKqxyiR0QbSxt9Uh9M
-         PDmkAegg3yxK47MX7sNkSW2kPFFGSzm9nBayI2anXHD4KkqoCRkjPLjI9snUHdRjVihA
-         3vXx/MIX6pic4UTKz+mgxXOAbcTQne8C0eTtk/Ce5Xpl2con9KqsduAuDGrmvbvUEpCw
-         056w==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=1JSrthhCNHix8X49ZrSHsK+j5HmL4LI/jDszyOYaask=;
+        b=BSXX6nuHG34nUYK+EcBssBn66lv3rZ4SuhemXx4UoNRBvtLDWstln/mUaoJB3ivGwJ
+         a5zuOQZarl4rEOoH8hBu8zahUNhlYMEOC5FdNweG9iHqAvhb2zol2Pq79genNGqt6lSj
+         3QmrJz5Hcul6ZvdJOy3YlD3nBJUtUUIAKC679QT7cmVhVQlVuvcPrcIBWTayOjuMGcfZ
+         6p+99Hb40wwY5HMZQEdud7KJ13qczJmUQX+ncMpwo6/h7y2pp+6szN7Fh98DYBfcUYFI
+         unh6UXy4/nHCydDWTlCS6UJ1RyFOx8UbHjTFDycODha+JDHJJDxdkfrWujXYyTQ0edL8
+         ALcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=NX3aMd8nOxmdYv1FMvBjyoMjhVdlhBSOsPMwKR/CR38=;
-        b=DAdIvceuk/OMRNXsO5qYLVDk83aqaxgejU9rKRqQNqFLiaTW04f46YaEPF7EcuOQKP
-         A0JOPA369KSMws2wp4/sgdqGQKG5Ihntmfbb/GWwjC7prMItKT8ZFZVcir/GHtL+N0tA
-         0lyNvma3YpLYNpCtKWu8Uj50mwXR1+ZuzOus1FbVphEfcXUQW9KhiXOXLyRienSFDqyg
-         CZXwwQDPzPsjT71Tz4cQ2mOyJl+fIR2D5/bjhqh7ErFlNUfe6RijiPufvhl1iyr9m/XW
-         dp6a8B4qGVmmcMriKDfXc5QpvOZkb52cYbGnWe6eZF9KuigRcZ0/nzv5kVnpAgZHC/KQ
-         8hyw==
-X-Gm-Message-State: AOAM533U8qjqJt4aKL5rvk3BzwBO0I1EyV24VNtOdHR9DNKUzklgpsUQ
-        mlqi4LzTSvXXHpGmM8mI4hb16HCUtCIRCPSss1RBRA==
-X-Google-Smtp-Source: ABdhPJwb/TNwFu+jrjo/IlYtjsGVcMMEoaPtXivWlxQC5lx3nfvrKZa3AsaqBYz1meb28HW+GVasVy0wuSu9kPRfM0A=
-X-Received: by 2002:a92:6504:: with SMTP id z4mr1446561ilb.282.1603801894156;
- Tue, 27 Oct 2020 05:31:34 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201026150851.528148-1-aleksandrnogikh@gmail.com>
- <20201026150851.528148-3-aleksandrnogikh@gmail.com> <CA+FuTSeR5n4xSpzMxAYX=kyy0aJYz52FVR=EjqK8_-LVqcqpXA@mail.gmail.com>
-In-Reply-To: <CA+FuTSeR5n4xSpzMxAYX=kyy0aJYz52FVR=EjqK8_-LVqcqpXA@mail.gmail.com>
-From:   Aleksandr Nogikh <nogikh@google.com>
-Date:   Tue, 27 Oct 2020 15:31:23 +0300
-Message-ID: <CANp29Y7WOFZ-YWV84BucHvFRg628He+NDsGqCZfdsn_crwVW2A@mail.gmail.com>
-Subject: Re: [PATCH v3 2/3] net: add kcov handle to skb extensions
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Aleksandr Nogikh <aleksandrnogikh@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Marco Elver <elver@google.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=1JSrthhCNHix8X49ZrSHsK+j5HmL4LI/jDszyOYaask=;
+        b=mr57Zydx1Nbt/X88J/9HmAMzOM8NiVJA/uQn3v+z6riqSx0IW9A+i5Ge6Mup3owBSP
+         5LdGpJQE/2N7K0sUROP91vzuvlI583gXp1NWYdiSqj36FwJGHA1+pBDy0iYH6xqdmvM7
+         DWHSBJ8tN/vvU1Pm5I9+Ez+BRLyprWFfhAYEu1xnI5woNAmt8lGv6NblL4W+kVmYp6Yx
+         bXp20rgXXY+5TSKGEOWOtNGjA1sIQlQ8VE1EKyx1HCRYwq632NmS2xw4n4eUwcY8ht3e
+         NN+tpk/rTCIfDnUd2yiJuTczclqzCfKfjmHMV1B+sU+9mFrWT49eisVvhwWqWHfQ94Eq
+         RO4Q==
+X-Gm-Message-State: AOAM531kBAgUO81YTzeCM47+kWnTkeJqe8DbZBEcUZJzb2e7Mgx769dL
+        7KEGq+ZREoD9U8vC3xV8vUI=
+X-Google-Smtp-Source: ABdhPJwE/lNJ9uOh9tirhQNL2OcWZc3WizYfOvrD9D/oTL6oLFOBgOAHKk1Tsh06rVJjlKvb9WaeDA==
+X-Received: by 2002:a63:e34a:: with SMTP id o10mr1694699pgj.129.1603801934528;
+        Tue, 27 Oct 2020 05:32:14 -0700 (PDT)
+Received: from VM.ger.corp.intel.com ([192.55.54.40])
+        by smtp.gmail.com with ESMTPSA id ck21sm1852337pjb.56.2020.10.27.05.32.10
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 27 Oct 2020 05:32:13 -0700 (PDT)
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, jonathan.lemon@gmail.com,
+        maciej.fijalkowski@intel.com, maciejromanfijalkowski@gmail.com
+Subject: [PATCH bpf] xsk: fix possible memory leak at socket close
+Date:   Tue, 27 Oct 2020 13:32:01 +0100
+Message-Id: <1603801921-2712-1-git-send-email-magnus.karlsson@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Oct 26, 2020 at 7:57 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
-[...]
-> If the handle does not need to be set if zero, why then set it if the
-> skb has extensions?
+From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-The point of that condition is to avoid unnecessary allocations of skb exte=
-nsion
-objects. At the same time, one would expect skb_get_kcov_handle to return t=
-he
-latest value that was set via skb_set_kcov_handle. So if a buffer already h=
-as a
-non-zero kcov_handle and skb_set_kcov_handle is called to set it to zero, i=
-t
-should be set to zero.
+Fix a possible memory leak at xsk socket close that is caused by the
+refcounting of the umem object being wrong. The reference count of the
+umem was decremented only after the pool had been freed. Note that if
+the buffer pool is destroyed, it is important that the umem is
+destroyed after the pool, otherwise the umem would disappear while the
+driver is still running. And as the buffer pool needs to be destroyed
+in a work queue, the umem is also (if its refcount reaches zero)
+destroyed after the buffer pool in that same work queue.
 
-> skb_ext_add and skb_ext_find are not defined unless CONFIG_SKB_EXTENSIONS=
-.
->
-> Perhaps CONFIG_KCOV should be made to select that?
+What was missing is that the refcount also needs to be decremented
+when the pool is not freed and when the pool has not even been
+created. The first case happens when the refcount of the pool is
+higher than 1, i.e. it is still being used by some other socket using
+the same device and queue id. In this case, it is safe to decrement
+the refcount of the umem outside of the work queue as the umem will
+never be freed because the refcount of the umem is always greater than
+or equal to the refcount of the buffer pool. The second case is if the
+buffer pool has not been created yet, i.e. the socket was closed
+before it was bound but after the umem was created. In this case, it
+is safe to destroy the umem outside of the work queue, since there is
+no pool that can use it by definition.
 
-Yes, thank you for pointing it out. I=E2=80=99ll fix it in the next version=
-.
+Fixes: 1c1efc2af158 ("xsk: Create and free buffer pool independently from umem")
+Reported-by: syzbot+eb71df123dc2be2c1456@syzkaller.appspotmail.com
+Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+---
+ include/net/xsk_buff_pool.h | 2 +-
+ net/xdp/xsk.c               | 3 ++-
+ net/xdp/xsk_buff_pool.c     | 7 +++++--
+ 3 files changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
+index 0140d08..01755b8 100644
+--- a/include/net/xsk_buff_pool.h
++++ b/include/net/xsk_buff_pool.h
+@@ -86,7 +86,7 @@ int xp_assign_dev_shared(struct xsk_buff_pool *pool, struct xdp_umem *umem,
+ void xp_destroy(struct xsk_buff_pool *pool);
+ void xp_release(struct xdp_buff_xsk *xskb);
+ void xp_get_pool(struct xsk_buff_pool *pool);
+-void xp_put_pool(struct xsk_buff_pool *pool);
++bool xp_put_pool(struct xsk_buff_pool *pool);
+ void xp_clear_dev(struct xsk_buff_pool *pool);
+ void xp_add_xsk(struct xsk_buff_pool *pool, struct xdp_sock *xs);
+ void xp_del_xsk(struct xsk_buff_pool *pool, struct xdp_sock *xs);
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index b71a32e..cfbec39 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -1146,7 +1146,8 @@ static void xsk_destruct(struct sock *sk)
+ 	if (!sock_flag(sk, SOCK_DEAD))
+ 		return;
+
+-	xp_put_pool(xs->pool);
++	if (!xp_put_pool(xs->pool))
++		xdp_put_umem(xs->umem);
+
+ 	sk_refcnt_debug_dec(sk);
+ }
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index 64c9e55..8a3bf4e 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -251,15 +251,18 @@ void xp_get_pool(struct xsk_buff_pool *pool)
+ 	refcount_inc(&pool->users);
+ }
+
+-void xp_put_pool(struct xsk_buff_pool *pool)
++bool xp_put_pool(struct xsk_buff_pool *pool)
+ {
+ 	if (!pool)
+-		return;
++		return false;
+
+ 	if (refcount_dec_and_test(&pool->users)) {
+ 		INIT_WORK(&pool->work, xp_release_deferred);
+ 		schedule_work(&pool->work);
++		return true;
+ 	}
++
++	return false;
+ }
+
+ static struct xsk_dma_map *xp_find_dma_map(struct xsk_buff_pool *pool)
+--
+2.7.4
