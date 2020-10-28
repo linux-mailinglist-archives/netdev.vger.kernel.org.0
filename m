@@ -2,93 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68BE629DC82
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 01:30:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 410EC29DC44
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 01:23:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388007AbgJ1WdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 18:33:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56216 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388348AbgJ1Wcx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:32:53 -0400
-Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C37B7C0613CF;
-        Wed, 28 Oct 2020 15:32:53 -0700 (PDT)
-Received: by mail-vs1-xe42.google.com with SMTP id g21so480750vsp.0;
-        Wed, 28 Oct 2020 15:32:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dzmFu1wXCXtNHysWLv1cdt1YiWFdK19uGwaHHiwDGp0=;
-        b=DYTyzKHbzP1xLIGuWeU4m+XJ/NzTPV4+oICdd9uy3aRlbUYbZ4WUFa3Vlvxum8TUMp
-         /SvJJORfHgcdgvcIQsbtCxPzDVoqgiQnTrA6IjLjMn44yjTz8MuJFzKZLP2cqiEgcI/7
-         Mi6fXEVjFo3TFXOB9McRdx/yHy8T/zdRtlZgAas1VVk6nwBWQTkWdGYo43Mb1J1VGjnH
-         NV6O9j/ZSEc18fNcF9jxnqYoZaer4B21Al6f4gKe/7L+KHZp9nmTM9G4EHsCjxgmVU3M
-         zFkLuKy6zQQERyHVVRfuaVk7IMv3AM2tv3nMiPbF5QGeXqCV+F8hMDE7C2fSatI5CpRq
-         808Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dzmFu1wXCXtNHysWLv1cdt1YiWFdK19uGwaHHiwDGp0=;
-        b=kdSz9dEbLSnlB/eQRry2RCCZCExFNNOrK0tPu1/mzaXGjqO+DvLVm8AwF3BsaTIbMM
-         qAkZ0NAvNNPpALk7OYoefoi7kYj/V4Y9uYLoiegzMaL2bskvi8bo3uNRg0iPO/pVAJRh
-         ALO7z1yNizdMIkKD/qlZRDmeyKQ9egKiT8IXFaNg1iAvFAYr+aOHB1PYOGLnyRfGIIJP
-         x/K6xpEGyauqx7MbH+RXu9SFEWltQ3qE3+/5g//gOYW48LCXYOye1mJns8tZrYNaKAJC
-         H+81PCIl0mMwJVERBgzIcchxcwDcn5F2JQGqSfQ7B5cKJLI/ihbhW5zNF4tc95fN0xgN
-         O+JQ==
-X-Gm-Message-State: AOAM533Grw7iPvXRGecgtNvt3fdcl+/jxY2x6b1HrSJvQ63nFWJZwkSR
-        BBuKltfUQ7n3c77P2z1lR8pFR3gLlMc=
-X-Google-Smtp-Source: ABdhPJw6j6kXCP8WeJLDd7HQFOexljFPUo9l/qsONHi+x2NLKNm10tCzjcEHMj25FV1wPvf32gKcUw==
-X-Received: by 2002:a17:902:ab89:b029:d5:b297:2cc1 with SMTP id f9-20020a170902ab89b02900d5b2972cc1mr648759plr.7.1603910598149;
-        Wed, 28 Oct 2020 11:43:18 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:6d80:dec8:7340:3009])
-        by smtp.gmail.com with ESMTPSA id y27sm309785pfr.122.2020.10.28.11.43.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 11:43:17 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Krzysztof Halasa <khc@pm.waw.pl>
-Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH net-next v3 0/4] net: hdlc_fr: Add support for any Ethertype
-Date:   Wed, 28 Oct 2020 11:43:06 -0700
-Message-Id: <20201028184310.7017-1-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1727434AbgJ2AXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 20:23:23 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:55198 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388505AbgJ1Who (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:37:44 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 09SJWSrQ001891;
+        Wed, 28 Oct 2020 14:32:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1603913548;
+        bh=dql6zUttDWwckfnGqpXVkB3hy8f3bWyvhuFEqK3X54c=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=kUJ/t3DXu6WJKkicGCA80pUu2p0wncptqP0LDy+Vgw9YqOwV1XZtJ645m3dRacGPa
+         7LR40XusRRPDoh/53uB6ickFwYQ7Wlz+RgnUmZbxHhHXblBnzk3EbbXmqS+orc1lDP
+         gz0xFPX6qmfsmFBzlP80gdCsbDeHB343VvLi5214=
+Received: from DFLE112.ent.ti.com (dfle112.ent.ti.com [10.64.6.33])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 09SJWSVf040598
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 28 Oct 2020 14:32:28 -0500
+Received: from DFLE110.ent.ti.com (10.64.6.31) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 28
+ Oct 2020 14:32:28 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE110.ent.ti.com
+ (10.64.6.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Wed, 28 Oct 2020 14:32:28 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 09SJWOuT056574;
+        Wed, 28 Oct 2020 14:32:25 -0500
+Subject: Re: [PATCH] RFC: net: phy: of phys probe/reset issue
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+CC:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Roger Quadros <rogerq@ti.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Rob Herring <robh+dt@kernel.org>
+References: <20201023174750.21356-1-grygorii.strashko@ti.com>
+ <450d262e-242c-77f1-9f06-e25943cc595c@gmail.com>
+ <20201023201046.GB752111@lunn.ch>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <87f264f7-da24-61db-2339-59a88d88e533@ti.com>
+Date:   Wed, 28 Oct 2020 21:32:32 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20201023201046.GB752111@lunn.ch>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The main purpose of this series is the last patch. The previous 3 patches
-are just code clean-ups so that the last patch will not make the code too
-messy. The patches must be applied in sequence.
+hi Andrew,
 
-The receiving code of this driver doesn't support arbitrary Ethertype
-values. It only recognizes a few known Ethertypes when receiving and drops
-skbs with other Ethertypes.
+On 23/10/2020 23:10, Andrew Lunn wrote:
+>> Yes there is: have your Ethernet PHY compatible string be of the form
+>> "ethernetAAAA.BBBB" and then there is no need for such hacking.
+>> of_get_phy_id() will parse that compatible and that will trigger
+>> of_mdiobus_register_phy() to take the phy_device_create() path.
+> 
+> Yep. That does seem like the cleanest way to do this. Let the PHY
+> driver deal with the resources it needs.
 
-However, the standard document RFC 2427 allows Frame Relay to support any
-Ethertype values. This series adds support for this.
+Thanks you for your comments.
 
-Change from v2:
-Small fix to the commit message of the 2nd and 3rd patch
+huh. I gave it try and some thinking. it works as W/A, but what does it mean in the long term?
 
-Change from v1:
-Small fix to the commit message of the 2nd patch
+Neither Linux documentation, neither DT bindings suggest such solution in any way
+(and there is *Zero* users of ""ethernet-phy-id%4x.%4x" in the current LKML).
+And the main reason for this RFC is really bad customer experience while migrating to the new kernels, as
+mdio reset does not support multi-phys and phy resets are not working.
 
-Xie He (4):
-  net: hdlc_fr: Simpify fr_rx by using "goto rx_drop" to drop frames
-  net: hdlc_fr: Change the use of "dev" in fr_rx to make the code
-    cleaner
-  net: hdlc_fr: Improve the initial checks when we receive an skb
-  net: hdlc_fr: Add support for any Ethertype
+Following your comments, my understanding for the long term (to avoid user's confusions) is:
+"for OF case the usage of 'ethernet-phy-id%4x.%4x' compatibly is became mandatory for PHYs
+to avoid PHY resets dependencies from board design and bootloader".
 
- drivers/net/wan/hdlc_fr.c | 119 +++++++++++++++++++++++---------------
- 1 file changed, 73 insertions(+), 46 deletions(-)
+Which in turn means - update all reference boards by adding ""ethernet-phy-id%4x.%4x" and add
+new DT board files for boards which are differ by only PHY version.
+
+:(
 
 -- 
-2.25.1
-
+Best regards,
+grygorii
