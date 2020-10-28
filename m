@@ -2,291 +2,476 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EEE129E2F7
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:45:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CABDC29E301
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:45:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726340AbgJ1Vdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 17:33:49 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:46794 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726287AbgJ1Vdr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:33:47 -0400
-Received: by mail-pf1-f194.google.com with SMTP id y14so510537pfp.13;
-        Wed, 28 Oct 2020 14:33:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=O16ozSgNVeUbZNwvfhn7rD7cA+u7qcU4L0YeQ5QzNhI=;
-        b=jOYQNnY9IfokAO0ZMFdny3vr+8MYjeJt17M9HL/enN+XfZ5GFHdYKdxBOn3lbJnUIv
-         jFQLU3BAla+q4MLprOD6h42sZW0i2YqaYK+FoXD6CV+I+Il4mazbkzfJpIbnI3JFcYge
-         uoFtOgLD6CwiGAnAE8bN32EQkiHaC5Y4d5gD3rFWxTFYUGfDTbqRHNGuKNZot00dTX/6
-         zMpS3roJ7892WDowTxKa16WKk3TUYrCUPeHc/pjE+G5jCI6zCXwRVkujD5O5cis1sfwX
-         bPpn7sn8o+VsbOSDoz7/w22rwF/rR1/AUz1RhQuq24Kgt30cXGst1G4ejvHNgt8RQ16L
-         5/8Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=O16ozSgNVeUbZNwvfhn7rD7cA+u7qcU4L0YeQ5QzNhI=;
-        b=cXqbabA1gleTjpnoXnSgVhMqYOrz5+Sik703VWqTEY0WG5YBn8cBYC3upFpZPNOcSM
-         TNN93yhRZhJ7d8i3GuLPXBfb62Y/lpK6XBs/83Yji5daQRpKE1Elfc0TulGsc2ZTHoqm
-         wD5qcAGFPk8v9iSLdpzlB6FRVNY1uPZ0A9tQQv0OEa8/1hjDwFLIyNh+uaL6jWblGyEG
-         0ldXpei0P1oZusFnUeBe2H4dIEJ7nDMZvEYCl7Eo6NC4n4QJ8s0C+bB4DnWSZN/q/X1C
-         9nuCYPthx4gARLp2Y7uZ9Da9fHfz96sqL/66CwQCKgWmlnoYa0VZ5Y20Hoo1NVHK6WM0
-         UGlQ==
-X-Gm-Message-State: AOAM533ISeN18wJaFdxY6o5bG2bZbWd2qLbrlav4BozYxcgutgRrlwcA
-        5DQD214iBZv/c40tZpn6xHr1fc1GXtnyt9oY
-X-Google-Smtp-Source: ABdhPJyxd0WqzPwiTiazqJqvnqrghz5YeFG+0daHa8O+g7tvBTOBB0Ji13PCAj0J9kgGD6HyIODEYQ==
-X-Received: by 2002:a17:902:bd43:b029:d6:820d:cb85 with SMTP id b3-20020a170902bd43b02900d6820dcb85mr240758plx.37.1603895314671;
-        Wed, 28 Oct 2020 07:28:34 -0700 (PDT)
-Received: from k5-sbwpb.flets-east.jp (i60-35-254-237.s41.a020.ap.plala.or.jp. [60.35.254.237])
-        by smtp.gmail.com with ESMTPSA id g67sm6581754pfb.9.2020.10.28.07.28.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 07:28:34 -0700 (PDT)
-From:   Tsuchiya Yuto <kitakar@gmail.com>
-To:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl,
-        Tsuchiya Yuto <kitakar@gmail.com>
-Subject: [RFC PATCH 2/3] mwifiex: pcie: add reset_d3cold quirk for Surface gen4+ devices
-Date:   Wed, 28 Oct 2020 23:27:52 +0900
-Message-Id: <20201028142753.18855-3-kitakar@gmail.com>
-X-Mailer: git-send-email 2.29.1
-In-Reply-To: <20201028142753.18855-1-kitakar@gmail.com>
-References: <20201028142753.18855-1-kitakar@gmail.com>
+        id S1726731AbgJ2CoQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 22:44:16 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:27914 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726625AbgJ1Veh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:34:37 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09SEoKlw017158;
+        Wed, 28 Oct 2020 07:51:05 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=pfpt0220;
+ bh=CAn5tLAqUzWEtQpbvbuSvF/wRMEQL53y05TYQkl81ig=;
+ b=h2Iy0viJQiFD9K1XRuVCAz5poAIsrToSYIt3/0OmYI8YlM1YYYh7YD1+X7t+EMbMzbCQ
+ uXs6dGNJmgNNtp+t8XHRTBn0pWFTMFCoKEU/hv8GWtRdPjyRgabkC/ogQd33IvXfV0nB
+ EOXVITa2NRPiSIK8B/zpMaQbW1n+fRo8vVrKnf+mjJMGr0nFlrsZVoR7CE86N0Kut4+O
+ S9sfvus+8tHTfyxjw4bCygng/srBx3ExJP95KCWKKafLU/tW4t9pwIGzurnF+kadfBk0
+ YN9vpQCBpuKCKDye5xJ0POFXdGcbm524CbrQua1zulc/dlpD51Hq5h7yE5ES6pRCc7kp ug== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 34chmn883d-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 28 Oct 2020 07:51:05 -0700
+Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 28 Oct
+ 2020 07:51:04 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 28 Oct
+ 2020 07:51:04 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 28 Oct 2020 07:51:04 -0700
+Received: from hyd1schalla-dt.marvell.com (hyd1schalla-dt.marvell.com [10.29.8.39])
+        by maili.marvell.com (Postfix) with ESMTP id 133303F7040;
+        Wed, 28 Oct 2020 07:51:00 -0700 (PDT)
+From:   Srujana Challa <schalla@marvell.com>
+To:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+        <kuba@kernel.org>, <sgoutham@marvell.com>, <gakula@marvell.com>,
+        <sbhatta@marvell.com>, <schandran@marvell.com>,
+        <pathreya@marvell.com>, Srujana Challa <schalla@marvell.com>
+Subject: [PATCH v8,net-next,02/12] octeontx2-af: add mailbox interface for CPT
+Date:   Wed, 28 Oct 2020 20:20:05 +0530
+Message-ID: <20201028145015.19212-3-schalla@marvell.com>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20201028145015.19212-1-schalla@marvell.com>
+References: <20201028145015.19212-1-schalla@marvell.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-10-28_07:2020-10-28,2020-10-28 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-To reset mwifiex on Surface gen4+ (Pro 4 or later gen) devices, it
-seems that putting the wifi device into D3cold is required according
-to errata.inf file on Windows installation (Windows/INF/errata.inf).
+On OcteonTX2 SoC, the admin function (AF) is the only one with all
+priviliges to configure HW and alloc resources, PFs and it's VFs
+have to request AF via mailbox for all their needs. This patch adds
+a mailbox interface for CPT PFs and VFs to allocate resources
+for cryptography.
 
-This patch adds a function that performs power-cycle (put into D3cold
-then D0) and call the function at the end of reset_prepare().
-
-Note: Need to also reset the parent device (bridge) of wifi on SB1;
-it might be because the bridge of wifi always reports it's in D3hot.
-When I tried to reset only the wifi device (not touching parent), it gave
-the following error and the reset failed:
-
-    acpi device:4b: Cannot transition to power state D0 for parent in D3hot
-    mwifiex_pcie 0000:03:00.0: can't change power state from D3cold to D0 (config space inaccessible)
-
-Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
+Signed-off-by: Suheil Chandran <schandran@marvell.com>
+Signed-off-by: Srujana Challa <schalla@marvell.com>
 ---
-Current issue:
-* After reset with this quirk, ASPM settings don't get restored.
+ .../ethernet/marvell/octeontx2/af/Makefile    |   3 +-
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |  33 +++
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |   2 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |   1 +
+ .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 229 ++++++++++++++++++
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |  63 ++++-
+ 6 files changed, 323 insertions(+), 8 deletions(-)
+ create mode 100644 drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
 
-Below is the "sudo lspci -nnvvv" diff before/after fw reset on Surface Book 1:
-
-    #
-    # 03:00.0 Ethernet controller [0200]: Marvell Technology Group Ltd. 88W8897 [AVASTAR] 802.11ac Wireless [11ab:2b38]
-    #
-    @@ -574,9 +574,9 @@
-            Capabilities: [168 v1] L1 PM Substates
-                    L1SubCap: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ ASPM_L1.1+ L1_PM_Substates+
-                              PortCommonModeRestoreTime=70us PortTPowerOnTime=10us
-    -               L1SubCtl1: PCI-PM_L1.2+ PCI-PM_L1.1+ ASPM_L1.2+ ASPM_L1.1+
-    -                          T_CommonMode=0us LTR1.2_Threshold=163840ns
-    -               L1SubCtl2: T_PwrOn=44us
-    +               L1SubCtl1: PCI-PM_L1.2- PCI-PM_L1.1- ASPM_L1.2- ASPM_L1.1-
-    +                          T_CommonMode=0us LTR1.2_Threshold=0ns
-    +               L1SubCtl2: T_PwrOn=10us
-            Kernel driver in use: mwifiex_pcie
-            Kernel modules: mwifiex_pcie
-    
-    #
-    # no changes on root port of wifi regarding ASPM
-    #
-
-As you see, all of the L1 substates are disabled after fw reset. LTR
-value is also changed.
-
- drivers/net/wireless/marvell/mwifiex/pcie.c   |  7 ++
- .../wireless/marvell/mwifiex/pcie_quirks.c    | 73 +++++++++++++++++--
- .../wireless/marvell/mwifiex/pcie_quirks.h    |  3 +-
- 3 files changed, 74 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
-index 362cf10debfa0..c0c4b5a9149ab 100644
---- a/drivers/net/wireless/marvell/mwifiex/pcie.c
-+++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
-@@ -529,6 +529,13 @@ static void mwifiex_pcie_reset_prepare(struct pci_dev *pdev)
- 	mwifiex_shutdown_sw(adapter);
- 	clear_bit(MWIFIEX_IFACE_WORK_DEVICE_DUMP, &card->work_flags);
- 	clear_bit(MWIFIEX_IFACE_WORK_CARD_RESET, &card->work_flags);
-+
-+	/* For Surface gen4+ devices, we need to put wifi into D3cold right
-+	 * before performing FLR
-+	 */
-+	if (card->quirks & QUIRK_FW_RST_D3COLD)
-+		mwifiex_pcie_reset_d3cold_quirk(pdev);
-+
- 	mwifiex_dbg(adapter, INFO, "%s, successful\n", __func__);
- }
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/Makefile b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
+index 2f7a861d0c7b..d258b9a8cefb 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/Makefile
++++ b/drivers/net/ethernet/marvell/octeontx2/af/Makefile
+@@ -9,4 +9,5 @@ obj-$(CONFIG_OCTEONTX2_AF) += octeontx2_af.o
  
-diff --git a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c
-index 929aee2b0a60a..edc739c542fea 100644
---- a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c
-+++ b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.c
-@@ -21,7 +21,7 @@ static const struct dmi_system_id mwifiex_quirk_table[] = {
- 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
- 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Pro 4"),
- 		},
--		.driver_data = 0,
-+		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
- 	},
- 	{
- 		.ident = "Surface Pro 5",
-@@ -30,7 +30,7 @@ static const struct dmi_system_id mwifiex_quirk_table[] = {
- 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
- 			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Pro_1796"),
- 		},
--		.driver_data = 0,
-+		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
- 	},
- 	{
- 		.ident = "Surface Pro 5 (LTE)",
-@@ -39,7 +39,7 @@ static const struct dmi_system_id mwifiex_quirk_table[] = {
- 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
- 			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Pro_1807"),
- 		},
--		.driver_data = 0,
-+		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
- 	},
- 	{
- 		.ident = "Surface Pro 6",
-@@ -47,7 +47,7 @@ static const struct dmi_system_id mwifiex_quirk_table[] = {
- 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
- 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Pro 6"),
- 		},
--		.driver_data = 0,
-+		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
- 	},
- 	{
- 		.ident = "Surface Book 1",
-@@ -55,7 +55,7 @@ static const struct dmi_system_id mwifiex_quirk_table[] = {
- 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
- 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Book"),
- 		},
--		.driver_data = 0,
-+		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
- 	},
- 	{
- 		.ident = "Surface Book 2",
-@@ -63,7 +63,7 @@ static const struct dmi_system_id mwifiex_quirk_table[] = {
- 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
- 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Book 2"),
- 		},
--		.driver_data = 0,
-+		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
- 	},
- 	{
- 		.ident = "Surface Laptop 1",
-@@ -71,7 +71,7 @@ static const struct dmi_system_id mwifiex_quirk_table[] = {
- 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
- 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Laptop"),
- 		},
--		.driver_data = 0,
-+		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
- 	},
- 	{
- 		.ident = "Surface Laptop 2",
-@@ -79,7 +79,7 @@ static const struct dmi_system_id mwifiex_quirk_table[] = {
- 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
- 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Surface Laptop 2"),
- 		},
--		.driver_data = 0,
-+		.driver_data = (void *)QUIRK_FW_RST_D3COLD,
- 	},
- 	{
- 		.ident = "Surface 3",
-@@ -111,4 +111,61 @@ void mwifiex_initialize_quirks(struct pcie_service_card *card)
+ octeontx2_mbox-y := mbox.o rvu_trace.o
+ octeontx2_af-y := cgx.o rvu.o rvu_cgx.o rvu_npa.o rvu_nix.o \
+-		  rvu_reg.o rvu_npc.o rvu_debugfs.o ptp.o
++		  rvu_reg.o rvu_npc.o rvu_debugfs.o ptp.o \
++		  rvu_cpt.o
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+index 263a21129416..56b29fb49037 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
+@@ -158,6 +158,11 @@ M(NPA_HWCTX_DISABLE,	0x403, npa_hwctx_disable, hwctx_disable_req, msg_rsp)\
+ /* SSO/SSOW mbox IDs (range 0x600 - 0x7FF) */				\
+ /* TIM mbox IDs (range 0x800 - 0x9FF) */				\
+ /* CPT mbox IDs (range 0xA00 - 0xBFF) */				\
++M(CPT_LF_ALLOC,		0xA00, cpt_lf_alloc, cpt_lf_alloc_req_msg,	\
++			       msg_rsp)					\
++M(CPT_LF_FREE,		0xA01, cpt_lf_free, msg_req, msg_rsp)		\
++M(CPT_RD_WR_REGISTER,	0xA02, cpt_rd_wr_register,  cpt_rd_wr_reg_msg,	\
++			       cpt_rd_wr_reg_msg)			\
+ /* NPC mbox IDs (range 0x6000 - 0x7FFF) */				\
+ M(NPC_MCAM_ALLOC_ENTRY,	0x6000, npc_mcam_alloc_entry, npc_mcam_alloc_entry_req,\
+ 				npc_mcam_alloc_entry_rsp)		\
+@@ -881,4 +886,32 @@ struct ptp_rsp {
+ 	u64 clk;
+ };
  
- 	if (!card->quirks)
- 		dev_info(&pdev->dev, "no quirks enabled\n");
-+	if (card->quirks & QUIRK_FW_RST_D3COLD)
-+		dev_info(&pdev->dev, "quirk reset_d3cold enabled\n");
-+}
++/* CPT mailbox error codes
++ * Range 901 - 1000.
++ */
++enum cpt_af_status {
++	CPT_AF_ERR_PARAM		= -901,
++	CPT_AF_ERR_GRP_INVALID		= -902,
++	CPT_AF_ERR_LF_INVALID		= -903,
++	CPT_AF_ERR_ACCESS_DENIED	= -904,
++	CPT_AF_ERR_SSO_PF_FUNC_INVALID	= -905,
++	CPT_AF_ERR_NIX_PF_FUNC_INVALID	= -906
++};
 +
-+static void mwifiex_pcie_set_power_d3cold(struct pci_dev *pdev)
++/* CPT mbox message formats */
++struct cpt_rd_wr_reg_msg {
++	struct mbox_msghdr hdr;
++	u64 reg_offset;
++	u64 *ret_val;
++	u64 val;
++	u8 is_write;
++};
++
++struct cpt_lf_alloc_req_msg {
++	struct mbox_msghdr hdr;
++	u16 nix_pf_func;
++	u16 sso_pf_func;
++	u16 eng_grpmsk;
++};
++
+ #endif /* MBOX_H */
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+index e1f918960730..3e24897ed9b5 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
+@@ -1025,7 +1025,7 @@ int rvu_mbox_handler_ready(struct rvu *rvu, struct msg_req *req,
+ /* Get current count of a RVU block's LF/slots
+  * provisioned to a given RVU func.
+  */
+-static u16 rvu_get_rsrc_mapcount(struct rvu_pfvf *pfvf, int blktype)
++u16 rvu_get_rsrc_mapcount(struct rvu_pfvf *pfvf, int blktype)
+ {
+ 	switch (blktype) {
+ 	case BLKTYPE_NPA:
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+index 90eed3160915..c37e106d7006 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
+@@ -429,6 +429,7 @@ int rvu_get_lf(struct rvu *rvu, struct rvu_block *block, u16 pcifunc, u16 slot);
+ int rvu_lf_reset(struct rvu *rvu, struct rvu_block *block, int lf);
+ int rvu_get_blkaddr(struct rvu *rvu, int blktype, u16 pcifunc);
+ int rvu_poll_reg(struct rvu *rvu, u64 block, u64 offset, u64 mask, bool zero);
++u16 rvu_get_rsrc_mapcount(struct rvu_pfvf *pfvf, int blktype);
+ 
+ /* RVU HW reg validation */
+ enum regmap_block {
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
+new file mode 100644
+index 000000000000..e53d0a62f507
+--- /dev/null
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
+@@ -0,0 +1,229 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (C) 2020 Marvell. */
++
++#include <linux/pci.h>
++#include "rvu_struct.h"
++#include "rvu_reg.h"
++#include "mbox.h"
++#include "rvu.h"
++
++/* CPT PF device id */
++#define	PCI_DEVID_OTX2_CPT_PF	0xA0FD
++
++/* Maximum supported microcode groups */
++#define CPT_MAX_ENGINE_GROUPS	8
++
++static int get_cpt_pf_num(struct rvu *rvu)
 +{
-+	dev_info(&pdev->dev, "putting into D3cold...\n");
++	int i, domain_nr, cpt_pf_num = -1;
++	struct pci_dev *pdev;
 +
-+	pci_save_state(pdev);
-+	if (pci_is_enabled(pdev))
-+		pci_disable_device(pdev);
-+	pci_set_power_state(pdev, PCI_D3cold);
-+}
++	domain_nr = pci_domain_nr(rvu->pdev->bus);
++	for (i = 0; i < rvu->hw->total_pfs; i++) {
++		pdev = pci_get_domain_bus_and_slot(domain_nr, i + 1, 0);
++		if (!pdev)
++			continue;
 +
-+static int mwifiex_pcie_set_power_d0(struct pci_dev *pdev)
-+{
-+	int ret;
-+
-+	dev_info(&pdev->dev, "putting into D0...\n");
-+
-+	pci_set_power_state(pdev, PCI_D0);
-+	ret = pci_enable_device(pdev);
-+	if (ret) {
-+		dev_err(&pdev->dev, "pci_enable_device failed\n");
-+		return ret;
++		if (pdev->device == PCI_DEVID_OTX2_CPT_PF) {
++			cpt_pf_num = i;
++			put_device(&pdev->dev);
++			break;
++		}
++		put_device(&pdev->dev);
 +	}
-+	pci_restore_state(pdev);
++	return cpt_pf_num;
++}
++
++static bool is_cpt_pf(struct rvu *rvu, u16 pcifunc)
++{
++	int cpt_pf_num = get_cpt_pf_num(rvu);
++
++	if (rvu_get_pf(pcifunc) != cpt_pf_num)
++		return false;
++	if (pcifunc & RVU_PFVF_FUNC_MASK)
++		return false;
++
++	return true;
++}
++
++static bool is_cpt_vf(struct rvu *rvu, u16 pcifunc)
++{
++	int cpt_pf_num = get_cpt_pf_num(rvu);
++
++	if (rvu_get_pf(pcifunc) != cpt_pf_num)
++		return false;
++	if (!(pcifunc & RVU_PFVF_FUNC_MASK))
++		return false;
++
++	return true;
++}
++
++int rvu_mbox_handler_cpt_lf_alloc(struct rvu *rvu,
++				  struct cpt_lf_alloc_req_msg *req,
++				  struct msg_rsp *rsp)
++{
++	u16 pcifunc = req->hdr.pcifunc;
++	struct rvu_block *block;
++	int cptlf, blkaddr;
++	int num_lfs, slot;
++	u64 val;
++
++	if (req->eng_grpmsk == 0x0)
++		return CPT_AF_ERR_GRP_INVALID;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_CPT, pcifunc);
++	if (blkaddr < 0)
++		return blkaddr;
++
++	block = &rvu->hw->block[blkaddr];
++	num_lfs = rvu_get_rsrc_mapcount(rvu_get_pfvf(rvu, pcifunc),
++					block->type);
++	if (!num_lfs)
++		return CPT_AF_ERR_LF_INVALID;
++
++	/* Check if requested 'CPTLF <=> NIXLF' mapping is valid */
++	if (req->nix_pf_func) {
++		/* If default, use 'this' CPTLF's PFFUNC */
++		if (req->nix_pf_func == RVU_DEFAULT_PF_FUNC)
++			req->nix_pf_func = pcifunc;
++		if (!is_pffunc_map_valid(rvu, req->nix_pf_func, BLKTYPE_NIX))
++			return CPT_AF_ERR_NIX_PF_FUNC_INVALID;
++	}
++
++	/* Check if requested 'CPTLF <=> SSOLF' mapping is valid */
++	if (req->sso_pf_func) {
++		/* If default, use 'this' CPTLF's PFFUNC */
++		if (req->sso_pf_func == RVU_DEFAULT_PF_FUNC)
++			req->sso_pf_func = pcifunc;
++		if (!is_pffunc_map_valid(rvu, req->sso_pf_func, BLKTYPE_SSO))
++			return CPT_AF_ERR_SSO_PF_FUNC_INVALID;
++	}
++
++	for (slot = 0; slot < num_lfs; slot++) {
++		cptlf = rvu_get_lf(rvu, block, pcifunc, slot);
++		if (cptlf < 0)
++			return CPT_AF_ERR_LF_INVALID;
++
++		/* Set CPT LF group and priority */
++		val = (u64)req->eng_grpmsk << 48 | 1;
++		rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf), val);
++
++		/* Set CPT LF NIX_PF_FUNC and SSO_PF_FUNC */
++		val = (u64)req->nix_pf_func << 48 |
++		      (u64)req->sso_pf_func << 32;
++		rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL2(cptlf), val);
++	}
 +
 +	return 0;
 +}
 +
-+int mwifiex_pcie_reset_d3cold_quirk(struct pci_dev *pdev)
++int rvu_mbox_handler_cpt_lf_free(struct rvu *rvu, struct msg_req *req,
++				 struct msg_rsp *rsp)
 +{
-+	struct pci_dev *parent_pdev = pci_upstream_bridge(pdev);
-+	int ret;
++	u16 pcifunc = req->hdr.pcifunc;
++	struct rvu_block *block;
++	int cptlf, blkaddr;
++	int num_lfs, slot;
 +
-+	/* Power-cycle (put into D3cold then D0) */
-+	dev_info(&pdev->dev, "Using reset_d3cold quirk to perform FW reset\n");
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_CPT, pcifunc);
++	if (blkaddr < 0)
++		return blkaddr;
 +
-+	/* We need to perform power-cycle also for bridge of wifi because
-+	 * on some devices (e.g. Surface Book 1), the OS for some reasons
-+	 * can't know the real power state of the bridge.
-+	 * When tried to power-cycle only wifi, the reset failed with the
-+	 * following dmesg log:
-+	 * "Cannot transition to power state D0 for parent in D3hot".
-+	 */
-+	mwifiex_pcie_set_power_d3cold(pdev);
-+	mwifiex_pcie_set_power_d3cold(parent_pdev);
++	block = &rvu->hw->block[blkaddr];
++	num_lfs = rvu_get_rsrc_mapcount(rvu_get_pfvf(rvu, pcifunc),
++					block->type);
++	if (!num_lfs)
++		return CPT_AF_ERR_LF_INVALID;
 +
-+	ret = mwifiex_pcie_set_power_d0(parent_pdev);
-+	if (ret)
-+		return ret;
-+	ret = mwifiex_pcie_set_power_d0(pdev);
-+	if (ret)
-+		return ret;
++	for (slot = 0; slot < num_lfs; slot++) {
++		cptlf = rvu_get_lf(rvu, block, pcifunc, slot);
++		if (cptlf < 0)
++			return CPT_AF_ERR_LF_INVALID;
++
++		/* Reset CPT LF group and priority */
++		rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL(cptlf), 0x0);
++		/* Reset CPT LF NIX_PF_FUNC and SSO_PF_FUNC */
++		rvu_write64(rvu, blkaddr, CPT_AF_LFX_CTL2(cptlf), 0x0);
++	}
 +
 +	return 0;
- }
-diff --git a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h
-index 5326ae7e56713..8b9dcb5070d87 100644
---- a/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h
-+++ b/drivers/net/wireless/marvell/mwifiex/pcie_quirks.h
-@@ -6,6 +6,7 @@
- #include "pcie.h"
++}
++
++int rvu_mbox_handler_cpt_rd_wr_register(struct rvu *rvu,
++					struct cpt_rd_wr_reg_msg *req,
++					struct cpt_rd_wr_reg_msg *rsp)
++{
++	int blkaddr, num_lfs, offs, lf;
++	struct rvu_block *block;
++
++	blkaddr = rvu_get_blkaddr(rvu, BLKTYPE_CPT, 0);
++	if (blkaddr < 0)
++		return blkaddr;
++
++	/* This message is accepted only if sent from CPT PF/VF */
++	if (!is_cpt_pf(rvu, req->hdr.pcifunc) &&
++	    !is_cpt_vf(rvu, req->hdr.pcifunc))
++		return CPT_AF_ERR_ACCESS_DENIED;
++
++	rsp->reg_offset = req->reg_offset;
++	rsp->ret_val = req->ret_val;
++	rsp->is_write = req->is_write;
++
++	/* Registers that can be accessed from PF/VF */
++	if ((req->reg_offset & 0xFF000) ==  CPT_AF_LFX_CTL(0) ||
++	    (req->reg_offset & 0xFF000) ==  CPT_AF_LFX_CTL2(0)) {
++		offs = req->reg_offset & 0xFFF;
++		if (offs % 8)
++			return CPT_AF_ERR_ACCESS_DENIED;
++		lf = offs >> 3;
++		block = &rvu->hw->block[blkaddr];
++		num_lfs = rvu_get_rsrc_mapcount(rvu_get_pfvf(rvu,
++							     req->hdr.pcifunc),
++						block->type);
++		if (lf >= num_lfs)
++			/* Slot is not valid for that PF/VF */
++			return CPT_AF_ERR_ACCESS_DENIED;
++
++		/* Need to translate CPT LF slot to global number because
++		 * VFs use local numbering from 0 to number of LFs - 1
++		 */
++		lf = rvu_get_lf(rvu, &rvu->hw->block[blkaddr],
++				req->hdr.pcifunc, lf);
++		if (lf < 0)
++			return CPT_AF_ERR_ACCESS_DENIED;
++
++		req->reg_offset &= 0xFF000;
++		req->reg_offset += lf << 3;
++		rsp->reg_offset = req->reg_offset;
++	} else if (!(req->hdr.pcifunc & RVU_PFVF_FUNC_MASK)) {
++		/* Registers that can be accessed from PF */
++		switch (req->reg_offset & 0xFF000) {
++		case CPT_AF_PF_FUNC:
++		case CPT_AF_BLK_RST:
++		case CPT_AF_CONSTANTS1:
++			if (req->reg_offset & 0xFFF)
++				return CPT_AF_ERR_ACCESS_DENIED;
++			break;
++
++		case CPT_AF_EXEX_STS(0):
++		case CPT_AF_EXEX_CTL(0):
++		case CPT_AF_EXEX_CTL2(0):
++		case CPT_AF_EXEX_UCODE_BASE(0):
++			offs = req->reg_offset & 0xFFF;
++			if ((offs % 8) || (offs >> 3) > 127)
++				return CPT_AF_ERR_ACCESS_DENIED;
++			break;
++		default:
++			return CPT_AF_ERR_ACCESS_DENIED;
++		}
++	} else {
++		return CPT_AF_ERR_ACCESS_DENIED;
++	}
++
++	if (req->is_write)
++		rvu_write64(rvu, blkaddr, req->reg_offset, req->val);
++	else
++		rsp->val = rvu_read64(rvu, blkaddr, req->reg_offset);
++
++	return 0;
++}
+diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+index 7ca599b973c0..807b1c1a9d85 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
++++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_reg.h
+@@ -429,12 +429,63 @@
+ #define TIM_AF_LF_RST			(0x20)
  
- /* quirks */
--// quirk flags can be added here
-+#define QUIRK_FW_RST_D3COLD	BIT(0)
+ /* CPT */
+-#define CPT_AF_CONSTANTS0		(0x0000)
+-#define CPT_PRIV_LFX_CFG		(0x41000)
+-#define CPT_PRIV_LFX_INT_CFG		(0x43000)
+-#define CPT_AF_RVU_LF_CFG_DEBUG		(0x45000)
+-#define CPT_AF_LF_RST			(0x44000)
+-#define CPT_AF_BLK_RST			(0x46000)
++#define CPT_AF_CONSTANTS0               (0x0000)
++#define CPT_AF_CONSTANTS1               (0x1000)
++#define CPT_AF_DIAG                     (0x3000)
++#define CPT_AF_ECO                      (0x4000)
++#define CPT_AF_FLTX_INT(a)              (0xa000ull | (u64)(a) << 3)
++#define CPT_AF_FLTX_INT_W1S(a)          (0xb000ull | (u64)(a) << 3)
++#define CPT_AF_FLTX_INT_ENA_W1C(a)      (0xc000ull | (u64)(a) << 3)
++#define CPT_AF_FLTX_INT_ENA_W1S(a)      (0xd000ull | (u64)(a) << 3)
++#define CPT_AF_PSNX_EXE(a)              (0xe000ull | (u64)(a) << 3)
++#define CPT_AF_PSNX_EXE_W1S(a)          (0xf000ull | (u64)(a) << 3)
++#define CPT_AF_PSNX_LF(a)               (0x10000ull | (u64)(a) << 3)
++#define CPT_AF_PSNX_LF_W1S(a)           (0x11000ull | (u64)(a) << 3)
++#define CPT_AF_EXEX_CTL2(a)             (0x12000ull | (u64)(a) << 3)
++#define CPT_AF_EXEX_STS(a)              (0x13000ull | (u64)(a) << 3)
++#define CPT_AF_EXE_ERR_INFO             (0x14000)
++#define CPT_AF_EXEX_ACTIVE(a)           (0x16000ull | (u64)(a) << 3)
++#define CPT_AF_INST_REQ_PC              (0x17000)
++#define CPT_AF_INST_LATENCY_PC          (0x18000)
++#define CPT_AF_RD_REQ_PC                (0x19000)
++#define CPT_AF_RD_LATENCY_PC            (0x1a000)
++#define CPT_AF_RD_UC_PC                 (0x1b000)
++#define CPT_AF_ACTIVE_CYCLES_PC         (0x1c000)
++#define CPT_AF_EXE_DBG_CTL              (0x1d000)
++#define CPT_AF_EXE_DBG_DATA             (0x1e000)
++#define CPT_AF_EXE_REQ_TIMER            (0x1f000)
++#define CPT_AF_EXEX_CTL(a)              (0x20000ull | (u64)(a) << 3)
++#define CPT_AF_EXE_PERF_CTL             (0x21000)
++#define CPT_AF_EXE_DBG_CNTX(a)          (0x22000ull | (u64)(a) << 3)
++#define CPT_AF_EXE_PERF_EVENT_CNT       (0x23000)
++#define CPT_AF_EXE_EPCI_INBX_CNT(a)     (0x24000ull | (u64)(a) << 3)
++#define CPT_AF_EXE_EPCI_OUTBX_CNT(a)    (0x25000ull | (u64)(a) << 3)
++#define CPT_AF_EXEX_UCODE_BASE(a)       (0x26000ull | (u64)(a) << 3)
++#define CPT_AF_LFX_CTL(a)               (0x27000ull | (u64)(a) << 3)
++#define CPT_AF_LFX_CTL2(a)              (0x29000ull | (u64)(a) << 3)
++#define CPT_AF_CPTCLK_CNT               (0x2a000)
++#define CPT_AF_PF_FUNC                  (0x2b000)
++#define CPT_AF_LFX_PTR_CTL(a)           (0x2c000ull | (u64)(a) << 3)
++#define CPT_AF_GRPX_THR(a)              (0x2d000ull | (u64)(a) << 3)
++#define CPT_AF_CTL                      (0x2e000ull)
++#define CPT_AF_XEX_THR(a)               (0x2f000ull | (u64)(a) << 3)
++#define CPT_PRIV_LFX_CFG                (0x41000)
++#define CPT_PRIV_AF_INT_CFG             (0x42000)
++#define CPT_PRIV_LFX_INT_CFG            (0x43000)
++#define CPT_AF_LF_RST                   (0x44000)
++#define CPT_AF_RVU_LF_CFG_DEBUG         (0x45000)
++#define CPT_AF_BLK_RST                  (0x46000)
++#define CPT_AF_RVU_INT                  (0x47000)
++#define CPT_AF_RVU_INT_W1S              (0x47008)
++#define CPT_AF_RVU_INT_ENA_W1S          (0x47010)
++#define CPT_AF_RVU_INT_ENA_W1C          (0x47018)
++#define CPT_AF_RAS_INT                  (0x47020)
++#define CPT_AF_RAS_INT_W1S              (0x47028)
++#define CPT_AF_RAS_INT_ENA_W1S          (0x47030)
++#define CPT_AF_RAS_INT_ENA_W1C          (0x47038)
++
++#define CPT_AF_LF_CTL2_SHIFT 3
++#define CPT_AF_LF_SSO_PF_FUNC_SHIFT 32
  
- void mwifiex_initialize_quirks(struct pcie_service_card *card);
-+int mwifiex_pcie_reset_d3cold_quirk(struct pci_dev *pdev);
+ #define NPC_AF_BLK_RST                  (0x00040)
+ 
 -- 
-2.29.1
+2.28.0
 
