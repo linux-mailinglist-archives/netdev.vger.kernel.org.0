@@ -2,144 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9D4629D588
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:04:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2559C29D5EA
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:10:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729961AbgJ1WEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 18:04:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51244 "EHLO
+        id S1730184AbgJ1WIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:08:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729957AbgJ1WEq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:04:46 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE977C0613CF
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:04:44 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id y12so677558wrp.6
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:04:44 -0700 (PDT)
+        with ESMTP id S1730312AbgJ1WHw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:07:52 -0400
+Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 655D8C0613CF
+        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:07:51 -0700 (PDT)
+Received: by mail-qk1-x743.google.com with SMTP id c6so454746qkg.12
+        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:07:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=fAcPad46L4kOhBmr4o0LSEsfVA8k03ItTmQQQyQ5i9M=;
-        b=avpu/FdOSE7jE/OeyOasGcNFelcErjBaQn2uMRBMj7CX/RNtrOQSncgAEjNTP41ITQ
-         XvoxPfqPiWqjm0yVivECw+htOPCeRwRbvQRGiViQE0jFm92+rbzecvE+91S2Z8NpFB3m
-         m6MtJtkekG/kZh+4a88GpWjczuhpnhzPnmL2Pyp19XSFjVsUr4oyAiofL8R8KREf2gms
-         CPW9CVRPu0o3Gu7PMbIoJXO1x8h31u0oA20ZLsz6PUh/W3duFJrpR83MjO/tTJYj6hO9
-         fb13I7+pFDLwCAtGUBxIKWZow0nhXdEkyCC/5JA0jxyt/lc1I4kUmdd0exsSiGeEURbC
-         Z+cA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=18t2/9BUdXVT3FrRrj2981btsIjhV7OAUvBATF+KIB0=;
+        b=k3loYIPiIcMAoy/iHvUGwPZSy6eOYNJ5ySXU0mvomWoI8EVBixJPtTbiWWBENmojE5
+         HVounQUUhJcyiFj7vRWtbUM0vAIfmxfoxhTzD2jeeXblPYr/B+osGTlY4zvfmrD6Dnc2
+         n83Xx/LHBU1ayGXESahM9ZnAAw9Fdj53NGBECTVEmklZqM9Xb2xEs5zD75v/PypwlJB/
+         zQGS3lerJaQ67/a9WmO4MKWNdjWOhBJPu0D2q/jYeP9OkxLfi668ZRRKRh4YoJEL5yoo
+         eB1ImiKGtkzeQrcRULLBMrp8KvKMjDePmGhAVk4lQ03OclTMTS+1OgAhqygAOUp4e6dD
+         wnfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=fAcPad46L4kOhBmr4o0LSEsfVA8k03ItTmQQQyQ5i9M=;
-        b=kWzQdW8fiy8Qj2lpK6NNL5riK2Yl8sp+etsRnuh39GKRMA7XoerrJQFPF0dRHEvGXQ
-         5FvmF5EfrHz5OtBHhx7Qrz3LuTvnDdVWAdHHOR4Frq0aVuYXk8uw6oIpf56GnRzAJv9T
-         okEmITWr65geAmt3i6x+S7TSkVnAEZnDSNhi56wYZi/hV68ZURcTTKwVO/Tc5ab6HZt0
-         jBaNtnS0ioturL3TOkgPlcwsLrhXcwQZCiXcPeAeuMfHIWCtKohm08BQIlnhzJh1E8X/
-         uZJi9VWl4hDcgTWxonjEYrP0t5DiwokzWauyWcwhjq09MNIaxr1XoPjt91idydG1ENa8
-         HbDg==
-X-Gm-Message-State: AOAM5329BbJoHsTgUEwpFThknE6fjZeVutiG/bQeCwpnpEN1JTkM+Er9
-        BbCqD0KjkqLsvPw/5gTXqnahkWQMBDS3gmDS
-X-Google-Smtp-Source: ABdhPJwhWOCw5Uko/bXcagqfkukrIvlEgaoTa/kRm/OWDDI0QLdyRx76ntVAM16mfG8P3Tcw3r1CuQ==
-X-Received: by 2002:ac2:4903:: with SMTP id n3mr1632135lfi.490.1603844836537;
-        Tue, 27 Oct 2020 17:27:16 -0700 (PDT)
-Received: from wkz-x280 (h-79-28.A259.priv.bahnhof.se. [79.136.79.28])
-        by smtp.gmail.com with ESMTPSA id 134sm291962lfn.157.2020.10.27.17.27.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Oct 2020 17:27:15 -0700 (PDT)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Marek Behun <marek.behun@nic.cz>,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 0/4] net: dsa: link aggregation support
-In-Reply-To: <20201027223205.bhwb7sl33cnr5glq@skbuf>
-References: <20201027105117.23052-1-tobias@waldekranz.com> <20201027160530.11fc42db@nic.cz> <20201027152330.GF878328@lunn.ch> <87k0vbv84z.fsf@waldekranz.com> <20201027190034.utk3kkywc54zuxfn@skbuf> <87blgnv4rt.fsf@waldekranz.com> <20201027200220.3ai2lcyrxkvmd2f4@skbuf> <878sbrv19i.fsf@waldekranz.com> <20201027223205.bhwb7sl33cnr5glq@skbuf>
-Date:   Wed, 28 Oct 2020 01:27:14 +0100
-Message-ID: <875z6vurdp.fsf@waldekranz.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=18t2/9BUdXVT3FrRrj2981btsIjhV7OAUvBATF+KIB0=;
+        b=rFa8uodhHqFCmfkcmy9zdx6BlwfogXRZpyFkkav2EalkPoLSZSU0Th7i0afMthR2YO
+         G/4rcX5dGXii63afi3v9Z4znpVNYvPwq49Cc3eD4o30Lkk+F7gVRwh0t0mg9Nb9AqFLd
+         LDBHGpY9rzqBgdV3lkQAd9rAnwO0oidFSNPsvB4YhsN4dba7Wiw5NaOBEi+vQtCDE3+h
+         5oojgE3xrHpYR9GGaWLFwXkdgxVUGG15K9qE6/HCSNbM9Ah8HhV9wIuvbGnU4kXG6Xi9
+         sYbxCthpyCpWClfOvG7eScZt9/A8mxfMn9lWuO685XyuXOOkgRCXyTekofEMwXv3UtU9
+         eATw==
+X-Gm-Message-State: AOAM531OSYlyZ2AUU+GMfnAYyrGovruuYTG8B4MjQxNXWC6oqjq1C+zA
+        dZO5jHI/u0V4Oo+iTWcowsUuMZQG7m6YLkfyUVFkOfl4cjcuEQ==
+X-Google-Smtp-Source: ABdhPJzaNeVHtbW1lh9ufGbWPWDwwPouKVzBfung1oI4AWTnRzs2nfDWv2Ui3GTcr/CHWTwh7/sk06XVd1vyJ5wCV6I=
+X-Received: by 2002:aed:2f67:: with SMTP id l94mr4880669qtd.101.1603844962246;
+ Tue, 27 Oct 2020 17:29:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20201023032944.399861-1-joshdon@google.com> <20201023104853.55ef1c20@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201023104853.55ef1c20@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+From:   Josh Don <joshdon@google.com>
+Date:   Tue, 27 Oct 2020 17:29:11 -0700
+Message-ID: <CABk29NsiTvSqJjyayHSc26gMoQ8fLtjdEY6wY7bK8v6KKjMm5A@mail.gmail.com>
+Subject: Re: [PATCH 1/3] sched: better handling for busy polling loops
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netdev@vger.kernel.org, kvm@vger.kernel.org,
+        Xi Wang <xii@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 00:32, Vladimir Oltean <olteanv@gmail.com> wrote:
-> And this all happens because for FROM_CPU packets, the hardware is
-> configured in mv88e6xxx_devmap_setup to deliver all packets with a
-> non-local switch ID towards the same "routing" port, right?
-
-Precisely.
-
-> Whereas for FORWARD frames, the destination port for non-local switch ID
-> will not be established based on mv88e6xxx_devmap_setup, but based on
-> FDB lookup of {DMAC, VID}. In the second case above, this is the only
-> way for your hardware that the FDB could select the LAG as the
-> destination based on the FDB. Then, the hash code would be determined
-> from the packet, and the appropriate egress port within the LAG would be
-> selected.
-
-That's it!
-
-> What do you mean? skb->offload_fwd_mark? Or are you still talking about
-> its TX-side equivalent here, which is what we've been talking about in
-> these past few mails? If so, I'm confused by you calling it "offload
-> forwarding of packets", I was expecting a description more in the lines
-> of "offload flooding of packets coming from host" or something like
-> that.
-
-I'm still talking about the TX-equivalent. I chose my words carefully
-because it is not _only_ for flooding, although that is the main
-benefit.
-
-If I've understood the basics of macvlan offloading correctly, it uses
-the ndo_dfwd_add/del_station ops to ask the lower device if it can
-offload transmissions on behalf of the macvlan device. If the lower is
-capable, the macvlan code will use dev_queue_xmit_accel to specify that
-the skb is being forwarded from a "subordinate" device. For a bridge,
-that would mean "forward this packet to the relevant ports, given the
-current configuration".
-
-This is just one possible approach though.
-
->> In the case of mv88e6xxx that would kill two birds with one stone -
->> great! In other cases you might have to have the DSA subsystem listen to
->> new neighbors appearing on the bridge and sync those to hardware or
->> something. Hopefully someone working with that kind of hardware can
->> solve that problem.
+On Fri, Oct 23, 2020 at 10:49 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> If by "neighbors" you mean that you bridge a DSA swp0 with an e1000
-> eth0, then that is not going to be enough. The CPU port of swp0 will
-> need to learn not eth0's MAC address, but in fact the MAC address of all
-> stations that might be connected to eth0. There might even be a network
-> switch connected to eth0, not just a directly connected link partner.
-> So there are potentially many MAC addresses to be learnt, and all are
-> unknown off-hand.
-
-Yep, hence the "technically possible, but hard" remark I made earlier :)
-
-> I admit I haven't actually looked at implementing this, but I would
-> expect that what needs to be done is that the local (master) FDB of the
-> bridge (which would get populated on the RX side of the "foreign
-> interface" through software learning) would need to get offloaded in its
-> entirety towards all switchdev ports, via a new switchdev "host FDB"
-> object or something of that kind (where a "host FDB" entry offloaded on
-> a port would mean "see this {DMAC, VID} pair? send it to the CPU").
+> On Thu, 22 Oct 2020 20:29:42 -0700 Josh Don wrote:
+> > Busy polling loops in the kernel such as network socket poll and kvm
+> > halt polling have performance problems related to process scheduler load
+> > accounting.
+> >
+> > Both of the busy polling examples are opportunistic - they relinquish
+> > the cpu if another thread is ready to run.
 >
-> With your FORWARD frames life-hack you can eschew all of that, good for
-> you. I was just speculatively hoping you might be interested in tackling
-> the hard way.
+> That makes it sound like the busy poll code is trying to behave like an
+> idle task. I thought need_resched() meant we leave when we run out of
+> slice, or kernel needs to go through a resched for internal reasons. No?
+>
 
-Being able to set host FDB entries like we can for host MDB is useful
-for other things as well, so I might very well be willing to do it.
+The issue is about the kernel's ability to identify the polling cpu,
+such that it _could_ send a task to that cpu and trigger a resched.
 
-> Anyway, this discussion has started mixing up basic stuff (like
-> resolving your source address learning issue on the CPU port, when
-> bridged with a foreign interface) with advanced / optimization stuff
-> (LAG, offload flooding from host), the only commonality appearing to be
-> a need for FORWARD frames. Can you even believe we are still commenting
-> on a series about something as mundane as link aggregation on DSA user
-> ports? At least I can't. I'll go off and start reviewing your patches,
-> before we manage to lose everybody along the way.
+> > This design, however, doesn't
+> > extend to multiprocessor load balancing very well. The scheduler still
+> > sees the busy polling cpu as 100% busy and will be less likely to put
+> > another thread on that cpu. In other words, if all cores are 100%
+> > utilized and some of them are running real workloads and some others are
+> > running busy polling loops, newly woken up threads will not prefer the
+> > busy polling cpus. System wide throughput and latency may suffer.
+>
+> IDK how well this extends to networking. Busy polling in networking is
+> a conscious trade-off of CPU for latency, if application chooses to
+> busy poll (which isn't the default) we should respect that.
+>
+> Is your use case primarily kvm?
 
-Agreed, we went deep down the rabbit hole! This might not have been the
-most natural place for these discussions, but it was fun nonetheless :)
+Good point, we do make use of the networking portion but this might be
+less applicable to users in general for that reason.  KVM is the
+primary use case.
