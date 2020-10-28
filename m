@@ -2,63 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ADC929D94A
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:50:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CF2029D93F
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:50:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389600AbgJ1Wub (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 18:50:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59144 "EHLO
+        id S2389573AbgJ1WuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:50:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389556AbgJ1Wua (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:50:30 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6AAC0613CF;
-        Wed, 28 Oct 2020 15:50:30 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id h22so788283wmb.0;
-        Wed, 28 Oct 2020 15:50:29 -0700 (PDT)
+        with ESMTP id S2389559AbgJ1WuM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:50:12 -0400
+Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E6C6C0613CF;
+        Wed, 28 Oct 2020 15:50:11 -0700 (PDT)
+Received: by mail-ed1-x544.google.com with SMTP id w1so40790edv.11;
+        Wed, 28 Oct 2020 15:50:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=1CEqaQjMv77SiJCZ+Ml1JB/3M4/OfgLP7wUO6uiGBUs=;
-        b=bR1CCcPMmvIaitAJ/L84I7wG4ssUkX6QgTxmEp/5I9tT9LEQJAPNiwovP4N9tQTfh2
-         Wr8TKpV/V8w+yJzzl2HmH5UmTZpbyF/nkkFvM7fDV5Ir1FKuR+biYo81+yI9z36wzJzy
-         jH2b7uUSYFiQwgrxSq77T/GGugeBJjB03YXIH4tOf/lhiEW1M2rjuHsmE9QA9yUyzCIP
-         5o+h00bEHO5+1ILSbxExqsnbv8HlTFJZnwfuOW9vG422xU3XpjGKA8uebqR6h6ysTGgL
-         6dvfdF5qWz26EzBDfpaxavnTYl13oe4zKP7KFSGv/kH/Y7I2TrgF3SuzxKS/hUIbnIfR
-         ITlw==
+        bh=r8zdq5tnsEjU2mL7IhtYQ9z15emjzzbWyJ8LKOVG7LE=;
+        b=qP+paProEdF2d4saX3R100bJ/TrIY0l8n7dW91ga0p79xT/ZhSInLMrEmTMDZkelqY
+         RnkT/D2btIvexzGFA1jdM5yVobtaxWruyAfhhdHgmQiYXEtd3sfy1clg5UD2ebYGzeX+
+         QHHeUFpmGqKU9U5jnGNI+RBaP0bOoAWYibWR8VDKjxaK7XsGxSgJ7mFx1wP3bIfQZaCf
+         /Ba3Q8qmU4kQOtkPWXdLErd2q5snG888fMjkrystzbr+XDdQ48xD/w0Z+c7ilWsTSqCC
+         lP3ofQve4fWbmpNcCIHx/ykTz4TwtNxbThI3BQABGCdj5hupLK0LydwL+bpTnTl1f87X
+         9HNg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=1CEqaQjMv77SiJCZ+Ml1JB/3M4/OfgLP7wUO6uiGBUs=;
-        b=T7ZMnw65WO8+vKrv2XlcnlwOH9v5J049l+mNorO8f5BoFd7hfsPo1ZDQDxq9gS7Hi4
-         x60TdE+wmzjbHxY3le6qbUdurm00zpbhG718sbXMz/N9AyuBxmrgU9jgvBItHyoE4EVR
-         Rx4q3z1o68Bo/LtPXMwRXbKhCDBayEduaud71il/7GeuWvwNEDAYnFB8z12VijjyLmY/
-         1eRX1L65S2OAxUB7vmQui1Zqrn7sJ6GhkkVi29AQz7yYGuSPaTIpmM704GY/MHz1BwAd
-         0eYiVDKn7NVjXAxCp4I27Nd8nwWHWIJSuVZY+wPTsKoaZDOAms8D/LCYRizIlJnp8yQu
-         OENQ==
-X-Gm-Message-State: AOAM5323xd3v9hddGDpf5y0hEukWxY/1sCjeIjX0LvH7Nbl/x2OdPngX
-        IvwEiItnOWANOMbz7oeGpRNMxwZS3LWlPQ==
-X-Google-Smtp-Source: ABdhPJwgSnehTc5xNqyLCaar1RruRoIGZbX080UjPug3t5nj2z72U/3mB1I9KQxqePWsIqRhpk1atA==
-X-Received: by 2002:a7b:c081:: with SMTP id r1mr425801wmh.158.1603904857092;
-        Wed, 28 Oct 2020 10:07:37 -0700 (PDT)
+        bh=r8zdq5tnsEjU2mL7IhtYQ9z15emjzzbWyJ8LKOVG7LE=;
+        b=VLH5+ZxSiDaEPp0HOobMVY2CmqJ7EmMMGVD4alhuaLJMpl71241zWsaxs3aro8cF/O
+         Kywk0gvvdZ2ZB47WaiQFX/YERglo1MPVFbex6rcm6nC/YdUxG/nZMQTa+X/fx97xnCzG
+         KQC8zS+GzQAP936I4QsN9RK0+ysjRAUqgaO5S2rzWGM37qprQS0RQ7JEDIC7LUAbq0wo
+         NaISEgaBmY02g9p3F09Vm/wD4spceBjm8Cd/JDYJvcw1vQ7aDwZvRxPEYgOOLixVaUIB
+         L5FaixVwmLcoTAAfXAh0CQnjNBIHZpdkWmnfihr81EC0dWk0/zC2Pkon+hPneZ9yQHQr
+         QsXQ==
+X-Gm-Message-State: AOAM530RLh/7B82CoDojSCJ778QetNpXWtZf2Q2EFzR+YpPfXxVHhwLt
+        HbsoJXqDHz2z9+gl6aMR/W7X2eWbbNmHlg==
+X-Google-Smtp-Source: ABdhPJxBA5qMqdLRZUL5Kf6G6HD8gn1XbCDnPnvopPF9XIN7M19KVavJXUT6judWR09BvGo9b0WE4g==
+X-Received: by 2002:a5d:498a:: with SMTP id r10mr729826wrq.106.1603909249969;
+        Wed, 28 Oct 2020 11:20:49 -0700 (PDT)
 Received: from nogikh.c.googlers.com.com (88.140.78.34.bc.googleusercontent.com. [34.78.140.88])
-        by smtp.gmail.com with ESMTPSA id v6sm211757wrp.69.2020.10.28.10.07.36
+        by smtp.gmail.com with ESMTPSA id r28sm531178wrr.81.2020.10.28.11.20.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 10:07:36 -0700 (PDT)
+        Wed, 28 Oct 2020 11:20:49 -0700 (PDT)
 From:   Aleksandr Nogikh <aleksandrnogikh@gmail.com>
-To:     stephen@networkplumber.org, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     andreyknvl@google.com, dvyukov@google.com, elver@google.com,
-        rdunlap@infradead.org, dave.taht@gmail.com, edumazet@google.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Aleksandr Nogikh <nogikh@google.com>,
-        syzbot+ec762a6342ad0d3c0d8f@syzkaller.appspotmail.com
-Subject: [PATCH v2] netem: fix zero division in tabledist
-Date:   Wed, 28 Oct 2020 17:07:31 +0000
-Message-Id: <20201028170731.1383332-1-aleksandrnogikh@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, johannes@sipsolutions.net
+Cc:     edumazet@google.com, andreyknvl@google.com, dvyukov@google.com,
+        elver@google.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        willemdebruijn.kernel@gmail.com,
+        Aleksandr Nogikh <nogikh@google.com>
+Subject: [PATCH v4 0/3] net, mac80211, kernel: enable KCOV remote coverage collection for 802.11 frame handling
+Date:   Wed, 28 Oct 2020 18:20:15 +0000
+Message-Id: <20201028182018.1780842-1-aleksandrnogikh@gmail.com>
 X-Mailer: git-send-email 2.29.0.rc2.309.g374f81d7ae-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -68,71 +66,70 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Aleksandr Nogikh <nogikh@google.com>
 
-Currently it is possible to craft a special netlink RTM_NEWQDISC
-command that can result in jitter being equal to 0x80000000. It is
-enough to set the 32 bit jitter to 0x02000000 (it will later be
-multiplied by 2^6) or just set the 64 bit jitter via
-TCA_NETEM_JITTER64. This causes an overflow during the generation of
-uniformly distributed numbers in tabledist(), which in turn leads to
-division by zero (sigma != 0, but sigma * 2 is 0).
+This patch series enables remote KCOV coverage collection during
+802.11 frames processing. These changes make it possible to perform
+coverage-guided fuzzing in search of remotely triggerable bugs.
 
-The related fragment of code needs 32-bit division - see commit
-9b0ed89 ("netem: remove unnecessary 64 bit modulus"), so switching to
-64 bit is not an option.
+Normally, KCOV collects coverage information for the code that is
+executed inside the system call context. It is easy to identify where
+that coverage should go and whether it should be collected at all by
+looking at the current process. If KCOV was enabled on that process,
+coverage will be stored in a buffer specific to that process.
+Howerever, it is not always enough as handling can happen elsewhere
+(e.g. in separate kernel threads).
 
-Fix the issue by keeping the value of jitter within the range that can
-be adequately handled by tabledist() - [0;INT_MAX]. As negative std
-deviation makes no sense, take the absolute value of the passed value
-and cap it at INT_MAX. Inside tabledist(), switch to unsigned 32 bit
-arithmetic in order to prevent overflows.
+When it is impossible to infer KCOV-related info just by looking at
+the currently running process, one needs to manually pass some
+information to the code that should be instrumented. The information
+takes the form of 64 bit integers (KCOV remote handles). Zero is the
+special value that corresponds to an empty handle. More details on
+KCOV and remote coverage collection can be found in
+Documentation/dev-tools/kcov.rst.
 
-Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
-Reported-by: syzbot+ec762a6342ad0d3c0d8f@syzkaller.appspotmail.com
+The series consists of three commits.
+1. Apply a minor fix to kcov_common_handle() so that it returns a
+valid handle (zero) when called in an interrupt context.
+2. Take the remote handle from KCOV and attach it to newly allocated
+SKBs as an skb extension. If the allocation happens inside a system
+call context, the SKB will be tied to the process that issued the
+syscall (if that process is interested in remote coverage collection).
+3. Annotate the code that processes incoming 802.11 frames with
+kcov_remote_start()/kcov_remote_stop().
 
----
+v4:
+* CONFIG_SKB_EXTENSIONS is now automatically selected by CONFIG_KCOV.
+* Elaborated on a minor optimization in skb_set_kcov_handle().
+
+v3:
+https://lkml.kernel.org/r/20201026150851.528148-1-aleksandrnogikh@gmail.com
+* kcov_handle is now stored in skb extensions instead of sk_buff
+  itself.
+* Updated the cover letter.
+
 v2:
-* Capping the value when receiving it from the userspace instead of
-  checking it each time when a new skb is enqueued.
-v1:
-http://lkml.kernel.org/r/20201016121007.2378114-1-a.nogikh@yandex.ru
----
- net/sched/sch_netem.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+https://lkml.kernel.org/r/20201009170202.103512-1-a.nogikh@gmail.com
+* Moved KCOV annotations from ieee80211_tasklet_handler to
+  ieee80211_rx.
+* Updated kcov_common_handle() to return 0 if it is called in
+  interrupt context.
+* Updated the cover letter.
 
-diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
-index 84f82771cdf5..0c345e43a09a 100644
---- a/net/sched/sch_netem.c
-+++ b/net/sched/sch_netem.c
-@@ -330,7 +330,7 @@ static s64 tabledist(s64 mu, s32 sigma,
- 
- 	/* default uniform distribution */
- 	if (dist == NULL)
--		return ((rnd % (2 * sigma)) + mu) - sigma;
-+		return ((rnd % (2 * (u32)sigma)) + mu) - sigma;
- 
- 	t = dist->table[rnd % dist->size];
- 	x = (sigma % NETEM_DIST_SCALE) * t;
-@@ -812,6 +812,10 @@ static void get_slot(struct netem_sched_data *q, const struct nlattr *attr)
- 		q->slot_config.max_packets = INT_MAX;
- 	if (q->slot_config.max_bytes == 0)
- 		q->slot_config.max_bytes = INT_MAX;
-+
-+	/* capping dist_jitter to the range acceptable by tabledist() */
-+	q->slot_config.dist_jitter = min_t(__s64, INT_MAX, abs(q->slot_config.dist_jitter));
-+
- 	q->slot.packets_left = q->slot_config.max_packets;
- 	q->slot.bytes_left = q->slot_config.max_bytes;
- 	if (q->slot_config.min_delay | q->slot_config.max_delay |
-@@ -1037,6 +1041,9 @@ static int netem_change(struct Qdisc *sch, struct nlattr *opt,
- 	if (tb[TCA_NETEM_SLOT])
- 		get_slot(q, tb[TCA_NETEM_SLOT]);
- 
-+	/* capping jitter to the range acceptable by tabledist() */
-+	q->jitter = min_t(s64, abs(q->jitter), INT_MAX);
-+
- 	return ret;
- 
- get_table_failure:
+v1:
+https://lkml.kernel.org/r/20201007101726.3149375-1-a.nogikh@gmail.com
+
+Aleksandr Nogikh (3):
+  kernel: make kcov_common_handle consider the current context
+  net: add kcov handle to skb extensions
+  mac80211: add KCOV remote annotations to incoming frame processing
+
+ include/linux/skbuff.h | 36 ++++++++++++++++++++++++++++++++++++
+ include/net/mac80211.h |  2 ++
+ kernel/kcov.c          |  2 ++
+ lib/Kconfig.debug      |  1 +
+ net/core/skbuff.c      | 11 +++++++++++
+ net/mac80211/iface.c   |  2 ++
+ 6 files changed, 54 insertions(+)
+
 
 base-commit: 1c86f90a16d413621918ae1403842b43632f0b3d
 -- 
