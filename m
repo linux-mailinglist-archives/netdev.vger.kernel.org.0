@@ -2,144 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BFA429CD3B
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 02:47:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D21129CD25
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 02:47:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726086AbgJ1Bic (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 21:38:32 -0400
-Received: from mail-qv1-f68.google.com ([209.85.219.68]:45354 "EHLO
-        mail-qv1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1833067AbgJ0X6X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Oct 2020 19:58:23 -0400
-Received: by mail-qv1-f68.google.com with SMTP id w5so1581794qvn.12
-        for <netdev@vger.kernel.org>; Tue, 27 Oct 2020 16:58:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=be4icrz0RAthBmHkcsABA0cMrKaZCZOUSHSUverl/k4=;
-        b=eKymfijEAdnFIVb0Cvy9/o6PON2ivrDulc3gRFHoiPKBnxlM9a1I2JQ/GttbZLDQZ3
-         x86v5uOzbm66/vtT8mwN/bie4dkbiGunMkScqZlKJp/MvYBoc6oJE63kavE/92REjhBP
-         ftxqBeeDI/IplysVilpwVsfcU54kTCMb2rr+7oEYEXahA8xupZcfBAkotzhk6PHKCIjk
-         XxpT8cWfxQDo0H3Kyr44xfQDsFkb/DKDneBkUAriyGhjREmbaZs0qZiKW2/+ZnjRUiCZ
-         NZwtu1IwBrt2YX3HKL6xuhCGZHp8O86xKjhHPdgTPGflG/316P5T2LD3z0R/t+78FOGK
-         044A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=be4icrz0RAthBmHkcsABA0cMrKaZCZOUSHSUverl/k4=;
-        b=E7ta/fRyvgidEOYLUao4ccQEIV0dZmsAQG3b6vJmYpBoQPWqXQ0kOKVwnRvazttjOi
-         Y3s3UUYqUeisgTiXagZgZNhXyde/EApKpotRti5IPJLDbnXGNwIDhN1QPeIhUnBDSru9
-         8NXEL/yKSZRk8HpDrWWD1OCh8RTw0+0iBtOqe9hnxDPvTu2D7+89z9okUROcTo4bvhVZ
-         cPu7pQDZg85TRQUWQIerpfnsXYXKdTX2h9/SqRb51pQawHi/tXoRjPPBrTtuXmkIXj9q
-         LaAaNmVgb6AGGU6NJgvQ4ODhNAuHMY/yKluPKwORNdORm58Q6Gemv4c5MXX3aPApWBzH
-         HMig==
-X-Gm-Message-State: AOAM533x9PcEfd2Ts3QA66e4pdyOA6xcUHJU6bHD308OdZX0ZYXvn7gS
-        SZj2aS3CGpdRUlRY7DRhm4+PfuoNbWcw9yptmtBxlQ==
-X-Google-Smtp-Source: ABdhPJxcnBN07/uyrfs5vPqa195E2asvmD4q2KcE10PaE0bEECOQ+GmWWJIQjVXz/CZXIcowM1fD5dpIbDHEzB6LuDY=
-X-Received: by 2002:a0c:ecce:: with SMTP id o14mr5519869qvq.2.1603843100009;
- Tue, 27 Oct 2020 16:58:20 -0700 (PDT)
+        id S1726118AbgJ1Bie (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Oct 2020 21:38:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36356 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1833072AbgJ1AFJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Oct 2020 20:05:09 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1AA0E2223C;
+        Wed, 28 Oct 2020 00:05:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603843508;
+        bh=YpqKaox/vV0oHuKCNaESYtTE/1kegOMdnVOuMXgDRIE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=gMJvpnzAE8V4ZvJVCAHNJ0LQgzK2Mvtegmar101/gMaGMS2e5PM5yjkwuY9SE0p7S
+         Cmgm8AdH5TzLmkpyO1ThhJ6dl6JMApu7c9V97rJcvocrz2tD5JbrbDeVDbz5yWHFYd
+         vlyuE2IGCKQm8GPOBQx37ZZnYmhgfcLnsw2rbdZ8=
+Date:   Tue, 27 Oct 2020 17:05:07 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, secdev@chelsio.com
+Subject: Re: [PATCH net,v2] chelsio/chtls: fix memory leaks
+Message-ID: <20201027170507.2266e96b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201025194935.31754-1-vinay.yadav@chelsio.com>
+References: <20201025194935.31754-1-vinay.yadav@chelsio.com>
 MIME-Version: 1.0
-References: <20201023032944.399861-1-joshdon@google.com> <20201023071905.GL2611@hirez.programming.kicks-ass.net>
-In-Reply-To: <20201023071905.GL2611@hirez.programming.kicks-ass.net>
-From:   Josh Don <joshdon@google.com>
-Date:   Tue, 27 Oct 2020 16:58:08 -0700
-Message-ID: <CABk29Ns8mhLUwSs+ZbREnx3yaX+xKwVeHf61OTe=5zNWxpmyag@mail.gmail.com>
-Subject: Re: [PATCH 1/3] sched: better handling for busy polling loops
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     g@hirez.programming.kicks-ass.net, Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org, kvm@vger.kernel.org,
-        Xi Wang <xii@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Oct 23, 2020 at 12:19 AM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Thu, Oct 22, 2020 at 08:29:42PM -0700, Josh Don wrote:
-> > Busy polling loops in the kernel such as network socket poll and kvm
-> > halt polling have performance problems related to process scheduler load
-> > accounting.
->
-> AFAICT you're not actually fixing the load accounting issue at all.
+On Mon, 26 Oct 2020 01:19:36 +0530 Vinay Kumar Yadav wrote:
+> Correct skb refcount in alloc_ctrl_skb(), causing skb memleak
+> when chtls_send_abort() called with NULL skb.
+> Also race between user context and softirq causing memleak,
+> consider the call sequence scenario
 
-Halt polling is an ephemeral state, and the goal is not to adjust the
-accounting, but rather to allow wake up balance to identify polling
-cpus.
+Sounds like two separate fixes?
 
-> > This change also disables preemption for the duration of the busy
-> > polling loop. This is important, as it ensures that if a polling thread
-> > decides to end its poll to relinquish cpu to another thread, the polling
-> > thread will actually exit the busy loop and potentially block. When it
-> > later becomes runnable, it will have the opportunity to find an idle cpu
-> > via wakeup cpu selection.
->
-> At the cost of inducing a sleep+wake cycle; which is mucho expensive. So
-> this could go either way. No data presented.
+> chtls_setkey()         //user context
+> chtls_peer_close()
+> chtls_abort_req_rss()
+> chtls_setkey()         //user context
+> 
+> work request skb queued in chtls_setkey() won't be freed
+> because resources are already cleaned for this connection,
+> fix it by not queuing work request while socket is closing.
+> 
+> v1->v2:
+> - fix W=1 warning.
+> 
+> Fixes: cc35c88ae4db ("crypto : chtls - CPL handler definition")
+> Signed-off-by: Vinay Kumar Yadav <vinay.yadav@chelsio.com>
+> ---
+>  drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c | 2 +-
+>  drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c | 3 +++
+>  2 files changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+> index 24154816d1d1..63aacc184f68 100644
+> --- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+> +++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+> @@ -212,7 +212,7 @@ static struct sk_buff *alloc_ctrl_skb(struct sk_buff *skb, int len)
+>  {
+>  	if (likely(skb && !skb_shared(skb) && !skb_cloned(skb))) {
+>  		__skb_trim(skb, 0);
+> -		refcount_add(2, &skb->users);
+> +		refcount_inc(&skb->users);
 
-I can take a look at getting some data on that. What I do have is data
-that reflects an overall improvement in machine efficiency. On heavily
-loaded hosts, we were able to recoup ~2% of cycles.
+You just switched from adding two refs to adding one.
+Was this always leaking the skb?
 
-> > +void prepare_to_busy_poll(void)
-> > +{
-> > +     struct rq __maybe_unused *rq = this_rq();
-> > +     unsigned long __maybe_unused flags;
-> > +
-> > +     /* Preemption will be reenabled by end_busy_poll() */
-> > +     preempt_disable();
-> > +
-> > +#ifdef CONFIG_SMP
-> > +     raw_spin_lock_irqsave(&rq->lock, flags);
-> > +     /* preemption disabled; only one thread can poll at a time */
-> > +     WARN_ON_ONCE(rq->busy_polling);
-> > +     rq->busy_polling++;
-> > +     raw_spin_unlock_irqrestore(&rq->lock, flags);
-> > +#endif
->
-> Explain to me the purpose of that rq->lock usage.
+Also skb_get().
 
-This was required in a previous iteration, but failed to drop after a refactor.
+>  	} else {
+>  		skb = alloc_skb(len, GFP_KERNEL | __GFP_NOFAIL);
+>  	}
+> diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c
+> index f1820aca0d33..62c829023da5 100644
+> --- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c
+> +++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c
+> @@ -383,6 +383,9 @@ int chtls_setkey(struct chtls_sock *csk, u32 keylen,
+>  	if (ret)
+>  		goto out_notcb;
+>  
+> +	if (unlikely(csk_flag(sk, CSK_ABORT_SHUTDOWN)))
+> +		goto out_notcb;
+> +
+>  	set_wr_txq(skb, CPL_PRIORITY_DATA, csk->tlshws.txqid);
+>  	csk->wr_credits -= DIV_ROUND_UP(len, 16);
+>  	csk->wr_unacked += DIV_ROUND_UP(len, 16);
 
-> > +int continue_busy_poll(void)
-> > +{
-> > +     if (!single_task_running())
-> > +             return 0;
->
-> Why? If there's more, we'll end up in the below condition anyway.
->
-
-Migrating a task over won't necessarily set need_resched. Though it
-does make sense to allow check_preempt_curr to set it directly in this
-case.
-
-> > diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-> > index 28709f6b0975..45de468d0ffb 100644
-> > --- a/kernel/sched/sched.h
-> > +++ b/kernel/sched/sched.h
-> > @@ -1003,6 +1003,8 @@ struct rq {
-> >
-> >       /* This is used to determine avg_idle's max value */
-> >       u64                     max_idle_balance_cost;
-> > +
-> > +     unsigned int            busy_polling;
->
-> This is a good location, cache-wise, because?
->
-> >  #endif /* CONFIG_SMP */
-> >
-> >  #ifdef CONFIG_IRQ_TIME_ACCOUNTING
-
-Good call out, I didn't consider that.
