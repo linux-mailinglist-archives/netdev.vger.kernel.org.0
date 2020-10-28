@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF7A629D9B0
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 00:00:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C26F629D9A0
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:58:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389943AbgJ1XAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 19:00:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60788 "EHLO
+        id S2389860AbgJ1W4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:56:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387732AbgJ1XAR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 19:00:17 -0400
-Received: from mail-vs1-xe44.google.com (mail-vs1-xe44.google.com [IPv6:2607:f8b0:4864:20::e44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A59FC0613CF;
-        Wed, 28 Oct 2020 16:00:17 -0700 (PDT)
-Received: by mail-vs1-xe44.google.com with SMTP id w25so475554vsk.9;
-        Wed, 28 Oct 2020 16:00:17 -0700 (PDT)
+        with ESMTP id S1732878AbgJ1WxQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:53:16 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FBC3C0613CF;
+        Wed, 28 Oct 2020 15:53:16 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id o3so716566pgr.11;
+        Wed, 28 Oct 2020 15:53:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ctARgd5IeefW/xDEFZzb1NY2kFiOmkaVN6jb4VQWnGY=;
-        b=PLrzjJzwRFNojRi8jy55qv7BTPweCnOMSMk+Ol7VV2YvxManvupJmNNvMgGaujesOZ
-         HRKRAOl+mxj3YnZ1ORrIZ/62yhyrBDRiCG2LY7JDf8SihsNrdcO7MEyYbLjD6QRO7AQq
-         KziySVPDyskFCbXY+X7qwOPqVg3ynAcZ0BVimmg8nNPHdhsLd43olWNA3v6ck4SAoi+z
-         DLby4KSb1LwgcE0o4KQ0uoRMVr6HYDGGlnwu9aCOB+kbpDf+dvw1bhCJ9lwoMmI6cvEf
-         JTCF7m0Myf6inaqlKyjLHDjIB0Yg6MHpB4KzY5NcXF+++ScoO9twHW+C9WziI5d9mSse
-         60Mw==
+        bh=sqsN722ssb+yJiDbsT28nLzbB0jvmz4/+1jmYycos9s=;
+        b=jllmkngjeH0ITVZX0ppk4FLiUJa/QLhGrx4t40SXgyj35xlIxOxxNiiHBnuISZyHPH
+         fZCMuyqiPoConmFas95ZyV2wUNQj62wynryoAnuPpXGR8HFfhz2wGprXh3blfGx8q/Qu
+         U/D7XQ4n4swnfN+0xl4hLAqQ3GTfxnXOtwv9ASV8DCMp5LIs7qmnwtER0DuqYEM+QaQ8
+         b5fda0H4Wr5DcNiBQPK3TGdg9RkBvHA48+vTXmNVTMUkcMq9JZdCInvmTZc7Zd+suyFu
+         Se4ftntO2XKVLFt+bZ2u2voWzflP3ObzvZqFObwAJiZAcQt+filaJaPsLX8oDeKwgODo
+         c1Jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ctARgd5IeefW/xDEFZzb1NY2kFiOmkaVN6jb4VQWnGY=;
-        b=a+VvTThXg2ZUmRRwZhcRin6rCwPINlVHxVJYjWl3P0YxF2FSXSYNYYXRPXZ33clMlh
-         q5xW+irohfhXrf3IcX0x7lQu2hlnOP7p8De8CZSVU/UefkF/JHzLTXmfbzrGOqid1CTY
-         /38+QRBggND2vm1NM2gSlP4KQAgYm94XzE4/xAvBPl7lmAnLH6j277TZuz6zqYWHH6xv
-         K+iD5ONxsVf13tzMf+P+fI8T2CpPxzcf46uUaMLNdLk0Nkzedm4llgbE6xxvrZJw6ZPh
-         GoBijnlv9ezQzEVoO81eKvLmPG9eHHyvYEnuLXNiuI26pNlx7Z9CvZCdrWc12DBQO109
-         7Ixg==
-X-Gm-Message-State: AOAM530dBSVHcEtFOIwOMfuR0nj52mvo+xSYV4T8vxHw9uvvJGh8sBaC
-        foVhFaTsfn2o6VLCRkBq1hhqHi+I/e7tr+i/
-X-Google-Smtp-Source: ABdhPJy4JsZnLSuXFGGfGf5z9wYwEIBbyRNvXY0p7TXn6SDylWXjbgKrQDAWfIugPhofnBPsR2d//A==
-X-Received: by 2002:a62:7a8f:0:b029:163:d0b3:ac18 with SMTP id v137-20020a627a8f0000b0290163d0b3ac18mr7777212pfc.9.1603892115932;
-        Wed, 28 Oct 2020 06:35:15 -0700 (PDT)
+        bh=sqsN722ssb+yJiDbsT28nLzbB0jvmz4/+1jmYycos9s=;
+        b=m3bUb4lShy9Q1cHrjXpdvYJLD1FLg4KlVSVqNwErLK+FtxbBMpDSW5MmqPbHG5usZJ
+         +ZEYTBBJvb1ayfNOhM7plXWUKOuzZdvgVskCMw7j557XDKv9WujFj6cX36um1O7Ayenm
+         wiyZkEYxUzfnU99ww1RbfM0Dk/o+feXbCg8LAhCKiSE52jxmevo8Ch4cFXmlrhI848pA
+         IJ3JbFwfNSyx7KROeljt5xdY+OBoKL+usdR5L4V3i1NPCvNJWFdYEuvr5BPGSwEj7nQ7
+         las1fxGCUV+fHye5cv0r+ahxGertkbh4z45QhFgyJNPsZ8qGUzrJjkHJYaj2V3ks5aTa
+         xaBA==
+X-Gm-Message-State: AOAM530NZYwYJR3mvRODLlrSngHYBekpIhcxXatCzgmcQx8kuKpbLfXu
+        ecJr9U8hRJZHGPwxXoFX509cM/jIL6pgiw2o
+X-Google-Smtp-Source: ABdhPJwu5YC2c6TAcUXj2ofNJUwXTX0HC4+qPGQ5Im0p0vaf/TekcrX1Lm37LtaH9cf6ZJdY6lQIew==
+X-Received: by 2002:a63:4383:: with SMTP id q125mr6591975pga.30.1603892139093;
+        Wed, 28 Oct 2020 06:35:39 -0700 (PDT)
 Received: from btopel-mobl.ger.intel.com ([192.55.55.43])
-        by smtp.gmail.com with ESMTPSA id q14sm5935393pjp.43.2020.10.28.06.35.09
+        by smtp.gmail.com with ESMTPSA id q14sm5935393pjp.43.2020.10.28.06.35.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 06:35:15 -0700 (PDT)
+        Wed, 28 Oct 2020 06:35:38 -0700 (PDT)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
@@ -55,9 +55,9 @@ Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         jesse.brandeburg@intel.com, qi.z.zhang@intel.com, kuba@kernel.org,
         edumazet@google.com, intel-wired-lan@lists.osuosl.org,
         jonathan.lemon@gmail.com
-Subject: [RFC PATCH bpf-next 2/9] net: add SO_BUSY_POLL_BUDGET socket option
-Date:   Wed, 28 Oct 2020 14:34:30 +0100
-Message-Id: <20201028133437.212503-3-bjorn.topel@gmail.com>
+Subject: [RFC PATCH bpf-next 6/9] xsk: propagate napi_id to XDP socket Rx path
+Date:   Wed, 28 Oct 2020 14:34:34 +0100
+Message-Id: <20201028133437.212503-7-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20201028133437.212503-1-bjorn.topel@gmail.com>
 References: <20201028133437.212503-1-bjorn.topel@gmail.com>
@@ -70,232 +70,431 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Björn Töpel <bjorn.topel@intel.com>
 
-This option lets a user set a per socket NAPI budget for
-busy-polling. If the options is not set, it will use the default of 8.
+Add napi_id to the xdp_rxq_info structure, and make sure the XDP
+socket pick up the napi_id in the Rx path. The napi_id is used to find
+the corresponding NAPI structure for socket busy polling.
+
+TODO: Only verified by for the Intel drivers. I'll reach out to the
+      driver authors for a potential non-RFC version.
 
 Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 ---
- arch/alpha/include/uapi/asm/socket.h  |  1 +
- arch/mips/include/uapi/asm/socket.h   |  1 +
- arch/parisc/include/uapi/asm/socket.h |  1 +
- arch/sparc/include/uapi/asm/socket.h  |  1 +
- fs/eventpoll.c                        |  3 ++-
- include/net/busy_poll.h               |  6 ++++--
- include/net/sock.h                    |  1 +
- include/uapi/asm-generic/socket.h     |  1 +
- net/core/dev.c                        | 20 +++++++++-----------
- net/core/sock.c                       | 10 ++++++++++
- 10 files changed, 31 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/amazon/ena/ena_netdev.c  |  2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  2 +-
+ .../ethernet/cavium/thunder/nicvf_queues.c    |  2 +-
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |  2 +-
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c   |  2 +-
+ drivers/net/ethernet/intel/ice/ice_base.c     |  4 ++--
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |  2 +-
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |  2 +-
+ drivers/net/ethernet/marvell/mvneta.c         |  2 +-
+ .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |  4 ++--
+ drivers/net/ethernet/mellanox/mlx4/en_rx.c    |  2 +-
+ .../ethernet/netronome/nfp/nfp_net_common.c   |  2 +-
+ drivers/net/ethernet/qlogic/qede/qede_main.c  |  2 +-
+ drivers/net/ethernet/sfc/rx_common.c          |  2 +-
+ drivers/net/ethernet/socionext/netsec.c       |  2 +-
+ drivers/net/ethernet/ti/cpsw_priv.c           |  2 +-
+ drivers/net/hyperv/netvsc.c                   |  2 +-
+ drivers/net/tun.c                             |  2 +-
+ drivers/net/veth.c                            |  2 +-
+ drivers/net/virtio_net.c                      |  2 +-
+ drivers/net/xen-netfront.c                    |  2 +-
+ include/net/busy_poll.h                       | 19 +++++++++++++++----
+ include/net/xdp.h                             |  3 ++-
+ net/core/dev.c                                |  2 +-
+ net/core/xdp.c                                |  3 ++-
+ net/xdp/xsk.c                                 |  1 +
+ 26 files changed, 44 insertions(+), 30 deletions(-)
 
-diff --git a/arch/alpha/include/uapi/asm/socket.h b/arch/alpha/include/uapi/asm/socket.h
-index 0f776668fb09..4ea972b7b711 100644
---- a/arch/alpha/include/uapi/asm/socket.h
-+++ b/arch/alpha/include/uapi/asm/socket.h
-@@ -125,6 +125,7 @@
- #define SO_DETACH_REUSEPORT_BPF 68
- 
- #define SO_BIAS_BUSY_POLL	69
-+#define SO_BUSY_POLL_BUDGET	70
- 
- #if !defined(__KERNEL__)
- 
-diff --git a/arch/mips/include/uapi/asm/socket.h b/arch/mips/include/uapi/asm/socket.h
-index d23984731504..13eaffbfbe50 100644
---- a/arch/mips/include/uapi/asm/socket.h
-+++ b/arch/mips/include/uapi/asm/socket.h
-@@ -136,6 +136,7 @@
- #define SO_DETACH_REUSEPORT_BPF 68
- 
- #define SO_BIAS_BUSY_POLL	69
-+#define SO_BUSY_POLL_BUDGET	70
- 
- #if !defined(__KERNEL__)
- 
-diff --git a/arch/parisc/include/uapi/asm/socket.h b/arch/parisc/include/uapi/asm/socket.h
-index 49469713ed2a..036e42dac6b3 100644
---- a/arch/parisc/include/uapi/asm/socket.h
-+++ b/arch/parisc/include/uapi/asm/socket.h
-@@ -117,6 +117,7 @@
- #define SO_DETACH_REUSEPORT_BPF 0x4042
- 
- #define SO_BIAS_BUSY_POLL	0x4043
-+#define SO_BUSY_POLL_BUDGET	0x4044
- 
- #if !defined(__KERNEL__)
- 
-diff --git a/arch/sparc/include/uapi/asm/socket.h b/arch/sparc/include/uapi/asm/socket.h
-index 009aba6f7a54..bc482dc93bd4 100644
---- a/arch/sparc/include/uapi/asm/socket.h
-+++ b/arch/sparc/include/uapi/asm/socket.h
-@@ -118,6 +118,7 @@
- #define SO_DETACH_REUSEPORT_BPF  0x0047
- 
- #define SO_BIAS_BUSY_POLL	 0x0048
-+#define SO_BUSY_POLL_BUDGET	 0x0049
- 
- #if !defined(__KERNEL__)
- 
-diff --git a/fs/eventpoll.c b/fs/eventpoll.c
-index 4df61129566d..fa00a0640264 100644
---- a/fs/eventpoll.c
-+++ b/fs/eventpoll.c
-@@ -397,7 +397,8 @@ static void ep_busy_loop(struct eventpoll *ep, int nonblock)
- 	unsigned int napi_id = READ_ONCE(ep->napi_id);
- 
- 	if ((napi_id >= MIN_NAPI_ID) && net_busy_loop_on())
--		napi_busy_loop(napi_id, nonblock ? NULL : ep_busy_loop_end, ep);
-+		napi_busy_loop(napi_id, nonblock ? NULL : ep_busy_loop_end, ep,
-+			       BUSY_POLL_BUDGET);
- }
- 
- static inline void ep_reset_busy_poll_napi_id(struct eventpoll *ep)
-diff --git a/include/net/busy_poll.h b/include/net/busy_poll.h
-index 9738923ed17b..c6c413d3824d 100644
---- a/include/net/busy_poll.h
-+++ b/include/net/busy_poll.h
-@@ -25,6 +25,7 @@
- 
- /* Biased busy-poll watchdog timeout in ms */
- #define BIASED_BUSY_POLL_TIMEOUT 200
-+#define BUSY_POLL_BUDGET 8
- 
- #ifdef CONFIG_NET_RX_BUSY_POLL
- 
-@@ -46,7 +47,7 @@ bool sk_busy_loop_end(void *p, unsigned long start_time);
- 
- void napi_busy_loop(unsigned int napi_id,
- 		    bool (*loop_end)(void *, unsigned long),
--		    void *loop_end_arg);
-+		    void *loop_end_arg, u16 budget);
- 
- #else /* CONFIG_NET_RX_BUSY_POLL */
- static inline unsigned long net_busy_loop_on(void)
-@@ -119,7 +120,8 @@ static inline void sk_busy_loop(struct sock *sk, int nonblock)
- 
- 	if (napi_id >= MIN_NAPI_ID) {
- 		__sk_bias_busy_poll(sk, napi_id);
--		napi_busy_loop(napi_id, nonblock ? NULL : sk_busy_loop_end, sk);
-+		napi_busy_loop(napi_id, nonblock ? NULL : sk_busy_loop_end, sk,
-+			       sk->sk_busy_poll_budget ?: BUSY_POLL_BUDGET);
- 	}
- #endif
- }
-diff --git a/include/net/sock.h b/include/net/sock.h
-index cf71834fb601..3caf53b6bd71 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -481,6 +481,7 @@ struct sock {
- 	kuid_t			sk_uid;
- #ifdef CONFIG_NET_RX_BUSY_POLL
- 	u8			sk_bias_busy_poll;
-+	u16			sk_busy_poll_budget;
- #endif
- 	struct pid		*sk_peer_pid;
- 	const struct cred	*sk_peer_cred;
-diff --git a/include/uapi/asm-generic/socket.h b/include/uapi/asm-generic/socket.h
-index 8a2b37ccd9d5..9dc1f35fe77f 100644
---- a/include/uapi/asm-generic/socket.h
-+++ b/include/uapi/asm-generic/socket.h
-@@ -120,6 +120,7 @@
- #define SO_DETACH_REUSEPORT_BPF 68
- 
- #define SO_BIAS_BUSY_POLL	69
-+#define SO_BUSY_POLL_BUDGET	70
- 
- #if !defined(__KERNEL__)
- 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index a29e4c4a35f6..b34520acaa7f 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -6496,9 +6496,7 @@ static struct napi_struct *napi_by_id(unsigned int napi_id)
- 
- #if defined(CONFIG_NET_RX_BUSY_POLL)
- 
--#define BUSY_POLL_BUDGET 8
--
--static void busy_poll_stop(struct napi_struct *napi, void *have_poll_lock)
-+static void busy_poll_stop(struct napi_struct *napi, void *have_poll_lock, u16 budget)
+diff --git a/drivers/net/ethernet/amazon/ena/ena_netdev.c b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+index e8131dadc22c..6ad59f0068f6 100644
+--- a/drivers/net/ethernet/amazon/ena/ena_netdev.c
++++ b/drivers/net/ethernet/amazon/ena/ena_netdev.c
+@@ -416,7 +416,7 @@ static int ena_xdp_register_rxq_info(struct ena_ring *rx_ring)
  {
  	int rc;
  
-@@ -6530,14 +6528,14 @@ static void busy_poll_stop(struct napi_struct *napi, void *have_poll_lock)
- 	/* All we really want here is to re-enable device interrupts.
- 	 * Ideally, a new ndo_busy_poll_stop() could avoid another round.
- 	 */
--	rc = napi->poll(napi, BUSY_POLL_BUDGET);
-+	rc = napi->poll(napi, budget);
- 	/* We can't gro_normal_list() here, because napi->poll() might have
- 	 * rearmed the napi (napi_complete_done()) in which case it could
- 	 * already be running on another CPU.
- 	 */
--	trace_napi_poll(napi, rc, BUSY_POLL_BUDGET);
-+	trace_napi_poll(napi, rc, budget);
- 	netpoll_poll_unlock(have_poll_lock);
--	if (rc == BUSY_POLL_BUDGET) {
-+	if (rc == budget) {
- 		/* As the whole budget was spent, we still own the napi so can
- 		 * safely handle the rx_list.
- 		 */
-@@ -6549,7 +6547,7 @@ static void busy_poll_stop(struct napi_struct *napi, void *have_poll_lock)
+-	rc = xdp_rxq_info_reg(&rx_ring->xdp_rxq, rx_ring->netdev, rx_ring->qid);
++	rc = xdp_rxq_info_reg(&rx_ring->xdp_rxq, rx_ring->netdev, rx_ring->qid, 0);
  
- void napi_busy_loop(unsigned int napi_id,
- 		    bool (*loop_end)(void *, unsigned long),
--		    void *loop_end_arg)
-+		    void *loop_end_arg, u16 budget)
- {
- 	unsigned long start_time = loop_end ? busy_loop_current_time() : 0;
- 	int (*napi_poll)(struct napi_struct *napi, int budget);
-@@ -6591,8 +6589,8 @@ void napi_busy_loop(unsigned int napi_id,
- 					      HRTIMER_MODE_REL_PINNED);
- 			}
- 		}
--		work = napi_poll(napi, BUSY_POLL_BUDGET);
--		trace_napi_poll(napi, work, BUSY_POLL_BUDGET);
-+		work = napi_poll(napi, budget);
-+		trace_napi_poll(napi, work, budget);
- 		gro_normal_list(napi);
- count:
- 		if (work > 0)
-@@ -6605,7 +6603,7 @@ void napi_busy_loop(unsigned int napi_id,
+ 	if (rc) {
+ 		netif_err(rx_ring->adapter, ifup, rx_ring->netdev,
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index fa147865e33f..5df13387ab74 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -2894,7 +2894,7 @@ static int bnxt_alloc_rx_rings(struct bnxt *bp)
+ 		if (rc)
+ 			return rc;
  
- 		if (unlikely(need_resched())) {
- 			if (napi_poll)
--				busy_poll_stop(napi, have_poll_lock);
-+				busy_poll_stop(napi, have_poll_lock, budget);
- 			preempt_enable();
- 			rcu_read_unlock();
- 			cond_resched();
-@@ -6616,7 +6614,7 @@ void napi_busy_loop(unsigned int napi_id,
- 		cpu_relax();
+-		rc = xdp_rxq_info_reg(&rxr->xdp_rxq, bp->dev, i);
++		rc = xdp_rxq_info_reg(&rxr->xdp_rxq, bp->dev, i, 0);
+ 		if (rc < 0)
+ 			return rc;
+ 
+diff --git a/drivers/net/ethernet/cavium/thunder/nicvf_queues.c b/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
+index 7a141ce32e86..f782e6af45e9 100644
+--- a/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
++++ b/drivers/net/ethernet/cavium/thunder/nicvf_queues.c
+@@ -770,7 +770,7 @@ static void nicvf_rcv_queue_config(struct nicvf *nic, struct queue_set *qs,
+ 	rq->caching = 1;
+ 
+ 	/* Driver have no proper error path for failed XDP RX-queue info reg */
+-	WARN_ON(xdp_rxq_info_reg(&rq->xdp_rxq, nic->netdev, qidx) < 0);
++	WARN_ON(xdp_rxq_info_reg(&rq->xdp_rxq, nic->netdev, qidx, 0) < 0);
+ 
+ 	/* Send a mailbox msg to PF to config RQ */
+ 	mbx.rq.msg = NIC_MBOX_MSG_RQ_CFG;
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index cf9400a9886d..40953980e846 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -3334,7 +3334,7 @@ static int dpaa2_eth_setup_rx_flow(struct dpaa2_eth_priv *priv,
+ 		return 0;
+ 
+ 	err = xdp_rxq_info_reg(&fq->channel->xdp_rxq, priv->net_dev,
+-			       fq->flowid);
++			       fq->flowid, 0);
+ 	if (err) {
+ 		dev_err(dev, "xdp_rxq_info_reg failed\n");
+ 		return err;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+index d43ce13a93c9..a3d5bdaca2f5 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+@@ -1436,7 +1436,7 @@ int i40e_setup_rx_descriptors(struct i40e_ring *rx_ring)
+ 	/* XDP RX-queue info only needed for RX rings exposed to XDP */
+ 	if (rx_ring->vsi->type == I40E_VSI_MAIN) {
+ 		err = xdp_rxq_info_reg(&rx_ring->xdp_rxq, rx_ring->netdev,
+-				       rx_ring->queue_index);
++				       rx_ring->queue_index, rx_ring->q_vector->napi.napi_id);
+ 		if (err < 0)
+ 			return err;
  	}
- 	if (napi_poll)
--		busy_poll_stop(napi, have_poll_lock);
-+		busy_poll_stop(napi, have_poll_lock, budget);
- 	preempt_enable();
- out:
- 	rcu_read_unlock();
-diff --git a/net/core/sock.c b/net/core/sock.c
-index 686eb5549b79..799125de4add 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -1165,6 +1165,16 @@ int sock_setsockopt(struct socket *sock, int level, int optname,
- 		else
- 			sk->sk_bias_busy_poll = valbool;
- 		break;
-+	case SO_BUSY_POLL_BUDGET:
-+		if ((val > sk->sk_busy_poll_budget) && !capable(CAP_NET_ADMIN))
-+			ret = -EPERM;
-+		else {
-+			if (val < 0)
-+				ret = -EINVAL;
-+			else
-+				sk->sk_busy_poll_budget = val;
-+		}
-+		break;
- #endif
+diff --git a/drivers/net/ethernet/intel/ice/ice_base.c b/drivers/net/ethernet/intel/ice/ice_base.c
+index fe4320e2d1f2..3124a3bf519a 100644
+--- a/drivers/net/ethernet/intel/ice/ice_base.c
++++ b/drivers/net/ethernet/intel/ice/ice_base.c
+@@ -306,7 +306,7 @@ int ice_setup_rx_ctx(struct ice_ring *ring)
+ 		if (!xdp_rxq_info_is_reg(&ring->xdp_rxq))
+ 			/* coverity[check_return] */
+ 			xdp_rxq_info_reg(&ring->xdp_rxq, ring->netdev,
+-					 ring->q_index);
++					 ring->q_index, ring->q_vector->napi.napi_id);
  
- 	case SO_MAX_PACING_RATE:
+ 		ring->xsk_pool = ice_xsk_pool(ring);
+ 		if (ring->xsk_pool) {
+@@ -333,7 +333,7 @@ int ice_setup_rx_ctx(struct ice_ring *ring)
+ 				/* coverity[check_return] */
+ 				xdp_rxq_info_reg(&ring->xdp_rxq,
+ 						 ring->netdev,
+-						 ring->q_index);
++						 ring->q_index, ring->q_vector->napi.napi_id);
+ 
+ 			err = xdp_rxq_info_reg_mem_model(&ring->xdp_rxq,
+ 							 MEM_TYPE_PAGE_SHARED,
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
+index eae75260fe20..77d5eae6b4c2 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.c
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
+@@ -483,7 +483,7 @@ int ice_setup_rx_ring(struct ice_ring *rx_ring)
+ 	if (rx_ring->vsi->type == ICE_VSI_PF &&
+ 	    !xdp_rxq_info_is_reg(&rx_ring->xdp_rxq))
+ 		if (xdp_rxq_info_reg(&rx_ring->xdp_rxq, rx_ring->netdev,
+-				     rx_ring->q_index))
++				     rx_ring->q_index, rx_ring->q_vector->napi.napi_id))
+ 			goto err;
+ 	return 0;
+ 
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 45ae33e15303..50e6b8b6ba7b 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -6577,7 +6577,7 @@ int ixgbe_setup_rx_resources(struct ixgbe_adapter *adapter,
+ 
+ 	/* XDP RX-queue info */
+ 	if (xdp_rxq_info_reg(&rx_ring->xdp_rxq, adapter->netdev,
+-			     rx_ring->queue_index) < 0)
++			     rx_ring->queue_index, rx_ring->q_vector->napi.napi_id) < 0)
+ 		goto err;
+ 
+ 	rx_ring->xdp_prog = adapter->xdp_prog;
+diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+index 54b0bf574c05..7d0098f4ef9d 100644
+--- a/drivers/net/ethernet/marvell/mvneta.c
++++ b/drivers/net/ethernet/marvell/mvneta.c
+@@ -3219,7 +3219,7 @@ static int mvneta_create_page_pool(struct mvneta_port *pp,
+ 		return err;
+ 	}
+ 
+-	err = xdp_rxq_info_reg(&rxq->xdp_rxq, pp->dev, rxq->id);
++	err = xdp_rxq_info_reg(&rxq->xdp_rxq, pp->dev, rxq->id, 0);
+ 	if (err < 0)
+ 		goto err_free_pp;
+ 
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index f6616c8933ca..ff8729b6c414 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -2606,11 +2606,11 @@ static int mvpp2_rxq_init(struct mvpp2_port *port,
+ 	mvpp2_rxq_status_update(port, rxq->id, 0, rxq->size);
+ 
+ 	if (priv->percpu_pools) {
+-		err = xdp_rxq_info_reg(&rxq->xdp_rxq_short, port->dev, rxq->id);
++		err = xdp_rxq_info_reg(&rxq->xdp_rxq_short, port->dev, rxq->id, 0);
+ 		if (err < 0)
+ 			goto err_free_dma;
+ 
+-		err = xdp_rxq_info_reg(&rxq->xdp_rxq_long, port->dev, rxq->id);
++		err = xdp_rxq_info_reg(&rxq->xdp_rxq_long, port->dev, rxq->id, 0);
+ 		if (err < 0)
+ 			goto err_unregister_rxq_short;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx4/en_rx.c b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+index 502d1b97855c..f561979e5731 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx4/en_rx.c
+@@ -283,7 +283,7 @@ int mlx4_en_create_rx_ring(struct mlx4_en_priv *priv,
+ 	ring->log_stride = ffs(ring->stride) - 1;
+ 	ring->buf_size = ring->size * ring->stride + TXBB_SIZE;
+ 
+-	if (xdp_rxq_info_reg(&ring->xdp_rxq, priv->dev, queue_index) < 0)
++	if (xdp_rxq_info_reg(&ring->xdp_rxq, priv->dev, queue_index, 0) < 0)
+ 		goto err_ring;
+ 
+ 	tmp = size * roundup_pow_of_two(MLX4_EN_MAX_RX_FRAGS *
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+index b150da43adb2..b4acf2f41e84 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+@@ -2533,7 +2533,7 @@ nfp_net_rx_ring_alloc(struct nfp_net_dp *dp, struct nfp_net_rx_ring *rx_ring)
+ 
+ 	if (dp->netdev) {
+ 		err = xdp_rxq_info_reg(&rx_ring->xdp_rxq, dp->netdev,
+-				       rx_ring->idx);
++				       rx_ring->idx, rx_ring->r_vec->napi.napi_id);
+ 		if (err < 0)
+ 			return err;
+ 	}
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
+index 05e3a3b60269..b73e95329acd 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_main.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
+@@ -1762,7 +1762,7 @@ static void qede_init_fp(struct qede_dev *edev)
+ 
+ 			/* Driver have no error path from here */
+ 			WARN_ON(xdp_rxq_info_reg(&fp->rxq->xdp_rxq, edev->ndev,
+-						 fp->rxq->rxq_id) < 0);
++						 fp->rxq->rxq_id. 0) < 0);
+ 
+ 			if (xdp_rxq_info_reg_mem_model(&fp->rxq->xdp_rxq,
+ 						       MEM_TYPE_PAGE_ORDER0,
+diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/rx_common.c
+index 19cf7cac1e6e..68fc7d317693 100644
+--- a/drivers/net/ethernet/sfc/rx_common.c
++++ b/drivers/net/ethernet/sfc/rx_common.c
+@@ -262,7 +262,7 @@ void efx_init_rx_queue(struct efx_rx_queue *rx_queue)
+ 
+ 	/* Initialise XDP queue information */
+ 	rc = xdp_rxq_info_reg(&rx_queue->xdp_rxq_info, efx->net_dev,
+-			      rx_queue->core_index);
++			      rx_queue->core_index, 0);
+ 
+ 	if (rc) {
+ 		netif_err(efx, rx_err, efx->net_dev,
+diff --git a/drivers/net/ethernet/socionext/netsec.c b/drivers/net/ethernet/socionext/netsec.c
+index 1503cc9ec6e2..80ab24658e87 100644
+--- a/drivers/net/ethernet/socionext/netsec.c
++++ b/drivers/net/ethernet/socionext/netsec.c
+@@ -1304,7 +1304,7 @@ static int netsec_setup_rx_dring(struct netsec_priv *priv)
+ 		goto err_out;
+ 	}
+ 
+-	err = xdp_rxq_info_reg(&dring->xdp_rxq, priv->ndev, 0);
++	err = xdp_rxq_info_reg(&dring->xdp_rxq, priv->ndev, 0, 0);
+ 	if (err)
+ 		goto err_out;
+ 
+diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
+index 51cc29f39038..d8f287c88d77 100644
+--- a/drivers/net/ethernet/ti/cpsw_priv.c
++++ b/drivers/net/ethernet/ti/cpsw_priv.c
+@@ -1189,7 +1189,7 @@ static int cpsw_ndev_create_xdp_rxq(struct cpsw_priv *priv, int ch)
+ 	pool = cpsw->page_pool[ch];
+ 	rxq = &priv->xdp_rxq[ch];
+ 
+-	ret = xdp_rxq_info_reg(rxq, priv->ndev, ch);
++	ret = xdp_rxq_info_reg(rxq, priv->ndev, ch, 0);
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
+index 0c3de94b5178..fa8341f8359a 100644
+--- a/drivers/net/hyperv/netvsc.c
++++ b/drivers/net/hyperv/netvsc.c
+@@ -1499,7 +1499,7 @@ struct netvsc_device *netvsc_device_add(struct hv_device *device,
+ 		u64_stats_init(&nvchan->tx_stats.syncp);
+ 		u64_stats_init(&nvchan->rx_stats.syncp);
+ 
+-		ret = xdp_rxq_info_reg(&nvchan->xdp_rxq, ndev, i);
++		ret = xdp_rxq_info_reg(&nvchan->xdp_rxq, ndev, i, 0);
+ 
+ 		if (ret) {
+ 			netdev_err(ndev, "xdp_rxq_info_reg fail: %d\n", ret);
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index be69d272052f..f2541d645707 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -791,7 +791,7 @@ static int tun_attach(struct tun_struct *tun, struct file *file,
+ 	} else {
+ 		/* Setup XDP RX-queue info, for new tfile getting attached */
+ 		err = xdp_rxq_info_reg(&tfile->xdp_rxq,
+-				       tun->dev, tfile->queue_index);
++				       tun->dev, tfile->queue_index, 0);
+ 		if (err < 0)
+ 			goto out;
+ 		err = xdp_rxq_info_reg_mem_model(&tfile->xdp_rxq,
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index 8c737668008a..04d20e9d8431 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -926,7 +926,7 @@ static int veth_enable_xdp(struct net_device *dev)
+ 		for (i = 0; i < dev->real_num_rx_queues; i++) {
+ 			struct veth_rq *rq = &priv->rq[i];
+ 
+-			err = xdp_rxq_info_reg(&rq->xdp_rxq, dev, i);
++			err = xdp_rxq_info_reg(&rq->xdp_rxq, dev, i, 0);
+ 			if (err < 0)
+ 				goto err_rxq_reg;
+ 
+diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+index 21b71148c532..d71fe41595b7 100644
+--- a/drivers/net/virtio_net.c
++++ b/drivers/net/virtio_net.c
+@@ -1485,7 +1485,7 @@ static int virtnet_open(struct net_device *dev)
+ 			if (!try_fill_recv(vi, &vi->rq[i], GFP_KERNEL))
+ 				schedule_delayed_work(&vi->refill, 0);
+ 
+-		err = xdp_rxq_info_reg(&vi->rq[i].xdp_rxq, dev, i);
++		err = xdp_rxq_info_reg(&vi->rq[i].xdp_rxq, dev, i, 0);
+ 		if (err < 0)
+ 			return err;
+ 
+diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+index 3e9895bec15f..28714a48f5d0 100644
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -2014,7 +2014,7 @@ static int xennet_create_page_pool(struct netfront_queue *queue)
+ 	}
+ 
+ 	err = xdp_rxq_info_reg(&queue->xdp_rxq, queue->info->netdev,
+-			       queue->id);
++			       queue->id, 0);
+ 	if (err) {
+ 		netdev_err(queue->info->netdev, "xdp_rxq_info_reg failed\n");
+ 		goto err_free_pp;
+diff --git a/include/net/busy_poll.h b/include/net/busy_poll.h
+index c6c413d3824d..262f60065355 100644
+--- a/include/net/busy_poll.h
++++ b/include/net/busy_poll.h
+@@ -148,14 +148,25 @@ static inline void sk_mark_napi_id(struct sock *sk, const struct sk_buff *skb)
+ 	sk_rx_queue_set(sk, skb);
+ }
+ 
+-/* variant used for unconnected sockets */
+-static inline void sk_mark_napi_id_once(struct sock *sk,
+-					const struct sk_buff *skb)
++static inline void __sk_mark_napi_id_once_xdp(struct sock *sk, unsigned int napi_id)
+ {
+ #ifdef CONFIG_NET_RX_BUSY_POLL
+ 	if (!READ_ONCE(sk->sk_napi_id))
+-		WRITE_ONCE(sk->sk_napi_id, skb->napi_id);
++		WRITE_ONCE(sk->sk_napi_id, napi_id);
+ #endif
+ }
+ 
++/* variant used for unconnected sockets */
++static inline void sk_mark_napi_id_once(struct sock *sk,
++					const struct sk_buff *skb)
++{
++	__sk_mark_napi_id_once_xdp(sk, skb->napi_id);
++}
++
++static inline void sk_mark_napi_id_once_xdp(struct sock *sk,
++					    const struct xdp_buff *xdp)
++{
++	__sk_mark_napi_id_once_xdp(sk, xdp->rxq->napi_id);
++}
++
+ #endif /* _LINUX_NET_BUSY_POLL_H */
+diff --git a/include/net/xdp.h b/include/net/xdp.h
+index 3814fb631d52..4d4255a94773 100644
+--- a/include/net/xdp.h
++++ b/include/net/xdp.h
+@@ -59,6 +59,7 @@ struct xdp_rxq_info {
+ 	u32 queue_index;
+ 	u32 reg_state;
+ 	struct xdp_mem_info mem;
++	unsigned int napi_id;
+ } ____cacheline_aligned; /* perf critical, avoid false-sharing */
+ 
+ struct xdp_txq_info {
+@@ -211,7 +212,7 @@ static inline void xdp_release_frame(struct xdp_frame *xdpf)
+ }
+ 
+ int xdp_rxq_info_reg(struct xdp_rxq_info *xdp_rxq,
+-		     struct net_device *dev, u32 queue_index);
++		     struct net_device *dev, u32 queue_index, unsigned int napi_id);
+ void xdp_rxq_info_unreg(struct xdp_rxq_info *xdp_rxq);
+ void xdp_rxq_info_unused(struct xdp_rxq_info *xdp_rxq);
+ bool xdp_rxq_info_is_reg(struct xdp_rxq_info *xdp_rxq);
+diff --git a/net/core/dev.c b/net/core/dev.c
+index b34520acaa7f..ad3261be5e21 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9834,7 +9834,7 @@ static int netif_alloc_rx_queues(struct net_device *dev)
+ 		rx[i].dev = dev;
+ 
+ 		/* XDP RX-queue setup */
+-		err = xdp_rxq_info_reg(&rx[i].xdp_rxq, dev, i);
++		err = xdp_rxq_info_reg(&rx[i].xdp_rxq, dev, i, 0);
+ 		if (err < 0)
+ 			goto err_rxq_info;
+ 	}
+diff --git a/net/core/xdp.c b/net/core/xdp.c
+index 48aba933a5a8..7cca7cb5b65f 100644
+--- a/net/core/xdp.c
++++ b/net/core/xdp.c
+@@ -158,7 +158,7 @@ static void xdp_rxq_info_init(struct xdp_rxq_info *xdp_rxq)
+ 
+ /* Returns 0 on success, negative on failure */
+ int xdp_rxq_info_reg(struct xdp_rxq_info *xdp_rxq,
+-		     struct net_device *dev, u32 queue_index)
++		     struct net_device *dev, u32 queue_index, unsigned int napi_id)
+ {
+ 	if (xdp_rxq->reg_state == REG_STATE_UNUSED) {
+ 		WARN(1, "Driver promised not to register this");
+@@ -179,6 +179,7 @@ int xdp_rxq_info_reg(struct xdp_rxq_info *xdp_rxq,
+ 	xdp_rxq_info_init(xdp_rxq);
+ 	xdp_rxq->dev = dev;
+ 	xdp_rxq->queue_index = queue_index;
++	xdp_rxq->napi_id = napi_id;
+ 
+ 	xdp_rxq->reg_state = REG_STATE_REGISTERED;
+ 	return 0;
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index da649b4f377c..0b825612d895 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -233,6 +233,7 @@ static int xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp,
+ 	if (xs->dev != xdp->rxq->dev || xs->queue_id != xdp->rxq->queue_index)
+ 		return -EINVAL;
+ 
++	sk_mark_napi_id_once_xdp(&xs->sk, xdp);
+ 	len = xdp->data_end - xdp->data;
+ 
+ 	return xdp->rxq->mem.type == MEM_TYPE_XSK_BUFF_POOL ?
 -- 
 2.27.0
 
