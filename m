@@ -2,335 +2,766 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C05E429D32B
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 22:41:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFBC729D3B5
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 22:46:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725838AbgJ1Vla (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 17:41:30 -0400
-Received: from wnew2-smtp.messagingengine.com ([64.147.123.27]:59091 "EHLO
-        wnew2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727348AbgJ1Vl0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:41:26 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.west.internal (Postfix) with ESMTP id 9E989A79;
-        Wed, 28 Oct 2020 10:43:44 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 28 Oct 2020 10:43:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=ZdibLo
-        hCegd3tybrIw0X4YfKzRAP6M8XPSI1JcKgs38=; b=Icr/rroro5vKjLuqPf7cb7
-        LbnLrJS2a4u195Y1R1hRodqY2HVINaLoILZobdRXxOvAlHiQTG5t3w4zh4KrwReW
-        h8acfCPErTkAf6cncCPOmjezPvNGXSM0Xh9PicSqdrj/RVRYNDDn9jAD220kkZV7
-        J/LXORcTg4rDzwU+KbMNecv6MEC/0DY5YFOV2PRcU1dAhXiwOmuZkrrlPtpCaxVe
-        LbbH5Uh5h01vea3u5srtRKnlt0PLuYcn2+aLqy+stfmFmZ47/Ic5MtFN4m/uJQLL
-        8bVOrutAI/EXTVusN3I4F4d6pBamI/2gl1LxveO+s4OUlrJfN6749/4JbBC+0htQ
-        ==
-X-ME-Sender: <xms:noOZX_yvCrLn1WQLecNrri3Ua00ugnM1ZK7qUFprKqxsHyKwuG5XjA>
-    <xme:noOZX3Ry73Sd5EMwa-rUHOdDEgezMj0RyuXocr2waZcQnA_UPo-yZOzwNewuzkZmt
-    j1dAn1LMd6Itm4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrledugdeiiecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnhepfeejvddtveeghfetheffkeeiieeihefgffegtdeuhfevvddvheevueefteduueeu
-    necuffhomhgrihhnpehlihhnuhigfhhouhhnuggrthhiohhnrdhorhhgnecukfhppeekge
-    drvddvledrudehfedrleenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgr
-    ihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:noOZX5VLGP1yWhABc4k-CJKcmL1oRo6ZnFwzYDH2t7PVy1nyy70lXg>
-    <xmx:noOZX5h4f78RsbJowDN5DA8b_gAajzR99pOeYF6cOo6Y2H6AJ1KufQ>
-    <xmx:noOZXxCtAkjRkrW8QUGicy03bKpl4mg7MsTGZdcwieh6s6S26s5EiQ>
-    <xmx:oIOZX1vvQ2CVU0Tgdp3Pq7vDeFdQDvWdAwDc5RZLgede6LM7WwMqHRqw1Yo>
-Received: from localhost (igld-84-229-153-9.inter.net.il [84.229.153.9])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 168BC3064682;
-        Wed, 28 Oct 2020 10:43:41 -0400 (EDT)
-Date:   Wed, 28 Oct 2020 16:43:38 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ivan Vecera <ivecera@redhat.com>, vyasevich@gmail.com,
-        netdev <netdev@vger.kernel.org>, UNGLinuxDriver@microchip.com,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>
-Subject: Re: [PATCH RFC net-next 00/13] RX filtering for DSA switches
-Message-ID: <20201028144338.GA487915@shredder>
-References: <20200524140657.GA1281067@splinter>
- <CA+h21hoJwjBt=Uu_tYw3vv2Sze28iRdAAoR3S+LFrKbL6-iuJQ@mail.gmail.com>
- <20200525194808.GA1449199@splinter>
- <CA+h21hq+TULBNRHJRN-_UwR8weBxgzT5v762yNzzkRaM2iGx9A@mail.gmail.com>
- <20200526140159.GA1485802@splinter>
- <CA+h21hqTxbPyQGcfm3qWeD80qAZ_c3xf2FNdSBBdtOu2Hz9FTw@mail.gmail.com>
- <20200528143718.GA1569168@splinter>
- <20200720100037.vsb4kqcgytyacyhz@skbuf>
- <20200727165638.GA1910935@shredder>
- <20201027115249.hghcrzomx7oknmoq@skbuf>
+        id S1727426AbgJ1VqT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 17:46:19 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:20394 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725869AbgJ1VqR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:46:17 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09SEpNgd026671;
+        Wed, 28 Oct 2020 07:51:23 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=pfpt0220;
+ bh=+UdJ9gBLuFDtAYfC7rDoeSo1jsSZfEctJk6n1KmV2+I=;
+ b=RjbB+ECWhPd+HVv8G1FHRxBSjzgmFD5h/e2E3rm3l5wp4mgn/4wwu89RdItvGQz2z3z6
+ PSclSu3OMaw5wdfV7id0M/wGb8StAmvreBMB4MqxW/CxkqdXzXZJk6upIrTYClt0M2us
+ vj7pM27LeMUscn8igY7vPlSr5d+6p/HG2yRXRZ1R8h8bpkaYAhI7jXnlu74lrmCMjPZl
+ m7NJoECx+yYqwCMVTNuHtNPs5uxkSNBCGquhHjaxpKG37qlZMP1NEtEH8wpKKYDZu3zN
+ 4UxlJQ7WwnmtaoKetzjaYq2CYh4c1HYDxaew8ltm9xCRtGrAnwR/VWo0VAdSSaR6jX9g eA== 
+Received: from sc-exch03.marvell.com ([199.233.58.183])
+        by mx0b-0016f401.pphosted.com with ESMTP id 34cksmfq7g-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 28 Oct 2020 07:51:23 -0700
+Received: from SC-EXCH04.marvell.com (10.93.176.84) by SC-EXCH03.marvell.com
+ (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 28 Oct
+ 2020 07:51:15 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 28 Oct
+ 2020 07:51:14 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 28 Oct 2020 07:51:15 -0700
+Received: from hyd1schalla-dt.marvell.com (hyd1schalla-dt.marvell.com [10.29.8.39])
+        by maili.marvell.com (Postfix) with ESMTP id 4A80C3F703F;
+        Wed, 28 Oct 2020 07:51:11 -0700 (PDT)
+From:   Srujana Challa <schalla@marvell.com>
+To:     <herbert@gondor.apana.org.au>, <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+        <kuba@kernel.org>, <sgoutham@marvell.com>, <gakula@marvell.com>,
+        <sbhatta@marvell.com>, <schandran@marvell.com>,
+        <pathreya@marvell.com>, Srujana Challa <schalla@marvell.com>
+Subject: [PATCH v8,net-next,04/12] drivers: crypto: add Marvell OcteonTX2 CPT PF driver
+Date:   Wed, 28 Oct 2020 20:20:07 +0530
+Message-ID: <20201028145015.19212-5-schalla@marvell.com>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20201028145015.19212-1-schalla@marvell.com>
+References: <20201028145015.19212-1-schalla@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201027115249.hghcrzomx7oknmoq@skbuf>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-10-28_07:2020-10-28,2020-10-28 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 27, 2020 at 01:52:49PM +0200, Vladimir Oltean wrote:
-> Hi Ido,
+Adds skeleton for the Marvell OcteonTX2 CPT physical function
+driver which includes probe, PCI specific initialization and
+hardware register defines.
+RVU defines are present in AF driver
+(drivers/net/ethernet/marvell/octeontx2/af), header files from
+AF driver are included here to avoid duplication.
 
-Hello,
+Signed-off-by: Suheil Chandran <schandran@marvell.com>
+Signed-off-by: Srujana Challa <schalla@marvell.com>
+---
+ drivers/crypto/marvell/Kconfig                |  10 +
+ drivers/crypto/marvell/Makefile               |   1 +
+ drivers/crypto/marvell/octeontx2/Makefile     |   6 +
+ .../marvell/octeontx2/otx2_cpt_common.h       |  32 ++
+ .../marvell/octeontx2/otx2_cpt_hw_types.h     | 464 ++++++++++++++++++
+ drivers/crypto/marvell/octeontx2/otx2_cptpf.h |  13 +
+ .../marvell/octeontx2/otx2_cptpf_main.c       | 106 ++++
+ 7 files changed, 632 insertions(+)
+ create mode 100644 drivers/crypto/marvell/octeontx2/Makefile
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cpt_common.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cpt_hw_types.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptpf.h
+ create mode 100644 drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c
 
-> 
-> On Mon, Jul 27, 2020 at 07:56:38PM +0300, Ido Schimmel wrote:
-> > > The whole purpose of my patch series is to remove the CPU port from the
-> > > flood domain of all switchdev net_devices. That means, when an unknown
-> > > unicast packet ingresses, it will be flooded but not to the CPU. 
-> > 
-> > Good. This is what happens in mlxsw today.
-> > 
-> > > For frames that the CPU wants to see, there should be a universal
-> > > mechanism for it to whitelist them, by {DMAC, VID}. Otherwise, things
-> > > don't scale.
-> > > 
-> > > There is one such mechanism already, and that is dev_uc_add(). It used
-> > > to install an address into a device's RX filter using DMAC only, and
-> > > Ivan Khoronzhuk's patches have added a new dev_vid_uc_add() that allow
-> > > additional filtering by VLAN.
-> > 
-> > Yes, but please note that when you are talking about packets the CPU
-> > cares about, then the device is the bridge device. Not its slaves which
-> > are "promiscuous by definition".
-> 
-> This is not completely true. A switchdev port can have a bridge upper or
-> not. You are only concentrating on the traffic that the bridge would be
-> interested in seeing, but I am also thinking of what traffic the CPU
-> should receive from this port in "standalone" mode. All traffic? Not
-> so compelling.
+diff --git a/drivers/crypto/marvell/Kconfig b/drivers/crypto/marvell/Kconfig
+index 13063384f958..1440ec9e1fb4 100644
+--- a/drivers/crypto/marvell/Kconfig
++++ b/drivers/crypto/marvell/Kconfig
+@@ -35,3 +35,13 @@ config CRYPTO_DEV_OCTEONTX_CPT
+ 
+ 		To compile this driver as module, choose M here:
+ 		the modules will be called octeontx-cpt and octeontx-cptvf
++
++config CRYPTO_DEV_OCTEONTX2_CPT
++	tristate "Marvell OcteonTX2 CPT driver"
++	depends on ARM64 || COMPILE_TEST
++	depends on PCI_MSI && 64BIT
++	select OCTEONTX2_MBOX
++	select CRYPTO_DEV_MARVELL
++	help
++		This driver allows you to utilize the Marvell Cryptographic
++		Accelerator Unit(CPT) found in OcteonTX2 series of processors.
+diff --git a/drivers/crypto/marvell/Makefile b/drivers/crypto/marvell/Makefile
+index 6c6a1519b0f1..39db6d9c0aaf 100644
+--- a/drivers/crypto/marvell/Makefile
++++ b/drivers/crypto/marvell/Makefile
+@@ -2,3 +2,4 @@
+ 
+ obj-$(CONFIG_CRYPTO_DEV_MARVELL_CESA) += cesa/
+ obj-$(CONFIG_CRYPTO_DEV_OCTEONTX_CPT) += octeontx/
++obj-$(CONFIG_CRYPTO_DEV_OCTEONTX2_CPT) += octeontx2/
+diff --git a/drivers/crypto/marvell/octeontx2/Makefile b/drivers/crypto/marvell/octeontx2/Makefile
+new file mode 100644
+index 000000000000..db763ad46a91
+--- /dev/null
++++ b/drivers/crypto/marvell/octeontx2/Makefile
+@@ -0,0 +1,6 @@
++# SPDX-License-Identifier: GPL-2.0-only
++obj-$(CONFIG_CRYPTO_DEV_OCTEONTX2_CPT) += octeontx2-cpt.o
++
++octeontx2-cpt-objs := otx2_cptpf_main.o
++
++ccflags-y += -I$(srctree)/drivers/net/ethernet/marvell/octeontx2/af
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cpt_common.h b/drivers/crypto/marvell/octeontx2/otx2_cpt_common.h
+new file mode 100644
+index 000000000000..eff4ffa58dc4
+--- /dev/null
++++ b/drivers/crypto/marvell/octeontx2/otx2_cpt_common.h
+@@ -0,0 +1,32 @@
++/* SPDX-License-Identifier: GPL-2.0-only
++ * Copyright (C) 2020 Marvell.
++ */
++
++#ifndef __OTX2_CPT_COMMON_H
++#define __OTX2_CPT_COMMON_H
++
++#include <linux/pci.h>
++#include <linux/types.h>
++#include <linux/module.h>
++#include <linux/delay.h>
++#include <linux/crypto.h>
++#include "otx2_cpt_hw_types.h"
++#include "rvu.h"
++
++#define OTX2_CPT_RVU_FUNC_ADDR_S(blk, slot, offs) \
++		(((blk) << 20) | ((slot) << 12) | (offs))
++
++static inline void otx2_cpt_write64(void __iomem *reg_base, u64 blk, u64 slot,
++				    u64 offs, u64 val)
++{
++	writeq_relaxed(val, reg_base +
++		       OTX2_CPT_RVU_FUNC_ADDR_S(blk, slot, offs));
++}
++
++static inline u64 otx2_cpt_read64(void __iomem *reg_base, u64 blk, u64 slot,
++				  u64 offs)
++{
++	return readq_relaxed(reg_base +
++			     OTX2_CPT_RVU_FUNC_ADDR_S(blk, slot, offs));
++}
++#endif /* __OTX2_CPT_COMMON_H */
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cpt_hw_types.h b/drivers/crypto/marvell/octeontx2/otx2_cpt_hw_types.h
+new file mode 100644
+index 000000000000..ecafc42f37a2
+--- /dev/null
++++ b/drivers/crypto/marvell/octeontx2/otx2_cpt_hw_types.h
+@@ -0,0 +1,464 @@
++/* SPDX-License-Identifier: GPL-2.0-only
++ * Copyright (C) 2020 Marvell.
++ */
++
++#ifndef __OTX2_CPT_HW_TYPES_H
++#define __OTX2_CPT_HW_TYPES_H
++
++#include <linux/types.h>
++
++/* Device IDs */
++#define OTX2_CPT_PCI_PF_DEVICE_ID 0xA0FD
++#define OTX2_CPT_PCI_VF_DEVICE_ID 0xA0FE
++
++/* Mailbox interrupts offset */
++#define OTX2_CPT_PF_MBOX_INT	6
++#define OTX2_CPT_PF_INT_VEC_E_MBOXX(x, a) ((x) + (a))
++
++/* Maximum supported microcode groups */
++#define OTX2_CPT_MAX_ENGINE_GROUPS 8
++
++/* CPT instruction size in bytes */
++#define OTX2_CPT_INST_SIZE	64
++/*
++ * CPT VF MSIX vectors and their offsets
++ */
++#define OTX2_CPT_VF_MSIX_VECTORS 1
++#define OTX2_CPT_VF_INTR_MBOX_MASK BIT(0)
++
++/* CPT LF MSIX vectors */
++#define OTX2_CPT_LF_MSIX_VECTORS 2
++
++/* OcteonTX2 CPT PF registers */
++#define OTX2_CPT_PF_CONSTANTS           (0x0)
++#define OTX2_CPT_PF_RESET               (0x100)
++#define OTX2_CPT_PF_DIAG                (0x120)
++#define OTX2_CPT_PF_BIST_STATUS         (0x160)
++#define OTX2_CPT_PF_ECC0_CTL            (0x200)
++#define OTX2_CPT_PF_ECC0_FLIP           (0x210)
++#define OTX2_CPT_PF_ECC0_INT            (0x220)
++#define OTX2_CPT_PF_ECC0_INT_W1S        (0x230)
++#define OTX2_CPT_PF_ECC0_ENA_W1S        (0x240)
++#define OTX2_CPT_PF_ECC0_ENA_W1C        (0x250)
++#define OTX2_CPT_PF_MBOX_INTX(b)        (0x400 | (b) << 3)
++#define OTX2_CPT_PF_MBOX_INT_W1SX(b)    (0x420 | (b) << 3)
++#define OTX2_CPT_PF_MBOX_ENA_W1CX(b)    (0x440 | (b) << 3)
++#define OTX2_CPT_PF_MBOX_ENA_W1SX(b)    (0x460 | (b) << 3)
++#define OTX2_CPT_PF_EXEC_INT            (0x500)
++#define OTX2_CPT_PF_EXEC_INT_W1S        (0x520)
++#define OTX2_CPT_PF_EXEC_ENA_W1C        (0x540)
++#define OTX2_CPT_PF_EXEC_ENA_W1S        (0x560)
++#define OTX2_CPT_PF_GX_EN(b)            (0x600 | (b) << 3)
++#define OTX2_CPT_PF_EXEC_INFO           (0x700)
++#define OTX2_CPT_PF_EXEC_BUSY           (0x800)
++#define OTX2_CPT_PF_EXEC_INFO0          (0x900)
++#define OTX2_CPT_PF_EXEC_INFO1          (0x910)
++#define OTX2_CPT_PF_INST_REQ_PC         (0x10000)
++#define OTX2_CPT_PF_INST_LATENCY_PC     (0x10020)
++#define OTX2_CPT_PF_RD_REQ_PC           (0x10040)
++#define OTX2_CPT_PF_RD_LATENCY_PC       (0x10060)
++#define OTX2_CPT_PF_RD_UC_PC            (0x10080)
++#define OTX2_CPT_PF_ACTIVE_CYCLES_PC    (0x10100)
++#define OTX2_CPT_PF_EXE_CTL             (0x4000000)
++#define OTX2_CPT_PF_EXE_STATUS          (0x4000008)
++#define OTX2_CPT_PF_EXE_CLK             (0x4000010)
++#define OTX2_CPT_PF_EXE_DBG_CTL         (0x4000018)
++#define OTX2_CPT_PF_EXE_DBG_DATA        (0x4000020)
++#define OTX2_CPT_PF_EXE_BIST_STATUS     (0x4000028)
++#define OTX2_CPT_PF_EXE_REQ_TIMER       (0x4000030)
++#define OTX2_CPT_PF_EXE_MEM_CTL         (0x4000038)
++#define OTX2_CPT_PF_EXE_PERF_CTL        (0x4001000)
++#define OTX2_CPT_PF_EXE_DBG_CNTX(b)     (0x4001100 | (b) << 3)
++#define OTX2_CPT_PF_EXE_PERF_EVENT_CNT  (0x4001180)
++#define OTX2_CPT_PF_EXE_EPCI_INBX_CNT(b)  (0x4001200 | (b) << 3)
++#define OTX2_CPT_PF_EXE_EPCI_OUTBX_CNT(b) (0x4001240 | (b) << 3)
++#define OTX2_CPT_PF_ENGX_UCODE_BASE(b)  (0x4002000 | (b) << 3)
++#define OTX2_CPT_PF_QX_CTL(b)           (0x8000000 | (b) << 20)
++#define OTX2_CPT_PF_QX_GMCTL(b)         (0x8000020 | (b) << 20)
++#define OTX2_CPT_PF_QX_CTL2(b)          (0x8000100 | (b) << 20)
++#define OTX2_CPT_PF_VFX_MBOXX(b, c)     (0x8001000 | (b) << 20 | \
++					 (c) << 8)
++
++/* OcteonTX2 CPT LF registers */
++#define OTX2_CPT_LF_CTL                 (0x10)
++#define OTX2_CPT_LF_DONE_WAIT           (0x30)
++#define OTX2_CPT_LF_INPROG              (0x40)
++#define OTX2_CPT_LF_DONE                (0x50)
++#define OTX2_CPT_LF_DONE_ACK            (0x60)
++#define OTX2_CPT_LF_DONE_INT_ENA_W1S    (0x90)
++#define OTX2_CPT_LF_DONE_INT_ENA_W1C    (0xa0)
++#define OTX2_CPT_LF_MISC_INT            (0xb0)
++#define OTX2_CPT_LF_MISC_INT_W1S        (0xc0)
++#define OTX2_CPT_LF_MISC_INT_ENA_W1S    (0xd0)
++#define OTX2_CPT_LF_MISC_INT_ENA_W1C    (0xe0)
++#define OTX2_CPT_LF_Q_BASE              (0xf0)
++#define OTX2_CPT_LF_Q_SIZE              (0x100)
++#define OTX2_CPT_LF_Q_INST_PTR          (0x110)
++#define OTX2_CPT_LF_Q_GRP_PTR           (0x120)
++#define OTX2_CPT_LF_NQX(a)              (0x400 | (a) << 3)
++#define OTX2_CPT_RVU_FUNC_BLKADDR_SHIFT 20
++/* LMT LF registers */
++#define OTX2_CPT_LMT_LFBASE             BIT_ULL(OTX2_CPT_RVU_FUNC_BLKADDR_SHIFT)
++#define OTX2_CPT_LMT_LF_LMTLINEX(a)     (OTX2_CPT_LMT_LFBASE | 0x000 | \
++					 (a) << 12)
++/* RVU VF registers */
++#define OTX2_RVU_VF_INT                 (0x20)
++#define OTX2_RVU_VF_INT_W1S             (0x28)
++#define OTX2_RVU_VF_INT_ENA_W1S         (0x30)
++#define OTX2_RVU_VF_INT_ENA_W1C         (0x38)
++
++/*
++ * Enumeration otx2_cpt_ucode_error_code_e
++ *
++ * Enumerates ucode errors
++ */
++enum otx2_cpt_ucode_comp_code_e {
++	OTX2_CPT_UCC_SUCCESS = 0x00,
++	OTX2_CPT_UCC_INVALID_OPCODE = 0x01,
++
++	/* Scatter gather */
++	OTX2_CPT_UCC_SG_WRITE_LENGTH = 0x02,
++	OTX2_CPT_UCC_SG_LIST = 0x03,
++	OTX2_CPT_UCC_SG_NOT_SUPPORTED = 0x04,
++
++};
++
++/*
++ * Enumeration otx2_cpt_comp_e
++ *
++ * OcteonTX2 CPT Completion Enumeration
++ * Enumerates the values of CPT_RES_S[COMPCODE].
++ */
++enum otx2_cpt_comp_e {
++	OTX2_CPT_COMP_E_NOTDONE = 0x00,
++	OTX2_CPT_COMP_E_GOOD = 0x01,
++	OTX2_CPT_COMP_E_FAULT = 0x02,
++	OTX2_CPT_COMP_E_HWERR = 0x04,
++	OTX2_CPT_COMP_E_INSTERR = 0x05,
++	OTX2_CPT_COMP_E_LAST_ENTRY = 0x06
++};
++
++/*
++ * Enumeration otx2_cpt_vf_int_vec_e
++ *
++ * OcteonTX2 CPT VF MSI-X Vector Enumeration
++ * Enumerates the MSI-X interrupt vectors.
++ */
++enum otx2_cpt_vf_int_vec_e {
++	OTX2_CPT_VF_INT_VEC_E_MBOX = 0x00
++};
++
++/*
++ * Enumeration otx2_cpt_lf_int_vec_e
++ *
++ * OcteonTX2 CPT LF MSI-X Vector Enumeration
++ * Enumerates the MSI-X interrupt vectors.
++ */
++enum otx2_cpt_lf_int_vec_e {
++	OTX2_CPT_LF_INT_VEC_E_MISC = 0x00,
++	OTX2_CPT_LF_INT_VEC_E_DONE = 0x01
++};
++
++/*
++ * Structure otx2_cpt_inst_s
++ *
++ * CPT Instruction Structure
++ * This structure specifies the instruction layout. Instructions are
++ * stored in memory as little-endian unless CPT()_PF_Q()_CTL[INST_BE] is set.
++ * cpt_inst_s_s
++ * Word 0
++ * doneint:1 Done interrupt.
++ *	0 = No interrupts related to this instruction.
++ *	1 = When the instruction completes, CPT()_VQ()_DONE[DONE] will be
++ *	incremented,and based on the rules described there an interrupt may
++ *	occur.
++ * Word 1
++ * res_addr [127: 64] Result IOVA.
++ *	If nonzero, specifies where to write CPT_RES_S.
++ *	If zero, no result structure will be written.
++ *	Address must be 16-byte aligned.
++ *	Bits <63:49> are ignored by hardware; software should use a
++ *	sign-extended bit <48> for forward compatibility.
++ * Word 2
++ *  grp:10 [171:162] If [WQ_PTR] is nonzero, the SSO guest-group to use when
++ *	CPT submits work SSO.
++ *	For the SSO to not discard the add-work request, FPA_PF_MAP() must map
++ *	[GRP] and CPT()_PF_Q()_GMCTL[GMID] as valid.
++ *  tt:2 [161:160] If [WQ_PTR] is nonzero, the SSO tag type to use when CPT
++ *	submits work to SSO
++ *  tag:32 [159:128] If [WQ_PTR] is nonzero, the SSO tag to use when CPT
++ *	submits work to SSO.
++ * Word 3
++ *  wq_ptr [255:192] If [WQ_PTR] is nonzero, it is a pointer to a
++ *	work-queue entry that CPT submits work to SSO after all context,
++ *	output data, and result write operations are visible to other
++ *	CNXXXX units and the cores. Bits <2:0> must be zero.
++ *	Bits <63:49> are ignored by hardware; software should
++ *	use a sign-extended bit <48> for forward compatibility.
++ *	Internal:
++ *	Bits <63:49>, <2:0> are ignored by hardware, treated as always 0x0.
++ * Word 4
++ *  ei0; [319:256] Engine instruction word 0. Passed to the AE/SE.
++ * Word 5
++ *  ei1; [383:320] Engine instruction word 1. Passed to the AE/SE.
++ * Word 6
++ *  ei2; [447:384] Engine instruction word 1. Passed to the AE/SE.
++ * Word 7
++ *  ei3; [511:448] Engine instruction word 1. Passed to the AE/SE.
++ *
++ */
++union otx2_cpt_inst_s {
++	u64 u[8];
++
++	struct {
++		/* Word 0 */
++		u64 nixtxl:3;
++		u64 doneint:1;
++		u64 nixtx_addr:60;
++		/* Word 1 */
++		u64 res_addr;
++		/* Word 2 */
++		u64 tag:32;
++		u64 tt:2;
++		u64 grp:10;
++		u64 reserved_172_175:4;
++		u64 rvu_pf_func:16;
++		/* Word 3 */
++		u64 qord:1;
++		u64 reserved_194_193:2;
++		u64 wq_ptr:61;
++		/* Word 4 */
++		u64 ei0;
++		/* Word 5 */
++		u64 ei1;
++		/* Word 6 */
++		u64 ei2;
++		/* Word 7 */
++		u64 ei3;
++	} s;
++};
++
++/*
++ * Structure otx2_cpt_res_s
++ *
++ * CPT Result Structure
++ * The CPT coprocessor writes the result structure after it completes a
++ * CPT_INST_S instruction. The result structure is exactly 16 bytes, and
++ * each instruction completion produces exactly one result structure.
++ *
++ * This structure is stored in memory as little-endian unless
++ * CPT()_PF_Q()_CTL[INST_BE] is set.
++ * cpt_res_s_s
++ * Word 0
++ *  doneint:1 [16:16] Done interrupt. This bit is copied from the
++ *	corresponding instruction's CPT_INST_S[DONEINT].
++ *  compcode:8 [7:0] Indicates completion/error status of the CPT coprocessor
++ *	for the	associated instruction, as enumerated by CPT_COMP_E.
++ *	Core software may write the memory location containing [COMPCODE] to
++ *	0x0 before ringing the doorbell, and then poll for completion by
++ *	checking for a nonzero value.
++ *	Once the core observes a nonzero [COMPCODE] value in this case,the CPT
++ *	coprocessor will have also completed L2/DRAM write operations.
++ * Word 1
++ *  reserved
++ *
++ */
++union otx2_cpt_res_s {
++	u64 u[2];
++
++	struct {
++		u64 compcode:8;
++		u64 uc_compcode:8;
++		u64 doneint:1;
++		u64 reserved_17_63:47;
++		u64 reserved_64_127;
++	} s;
++};
++
++/*
++ * Register (RVU_PF_BAR0) cpt#_af_constants1
++ *
++ * CPT AF Constants Register
++ * This register contains implementation-related parameters of CPT.
++ */
++union otx2_cptx_af_constants1 {
++	u64 u;
++	struct otx2_cptx_af_constants1_s {
++		u64 se:16;
++		u64 ie:16;
++		u64 ae:16;
++		u64 reserved_48_63:16;
++	} s;
++};
++
++/*
++ * RVU_PFVF_BAR2 - cpt_lf_misc_int
++ *
++ * This register contain the per-queue miscellaneous interrupts.
++ *
++ */
++union otx2_cptx_lf_misc_int {
++	u64 u;
++	struct otx2_cptx_lf_misc_int_s {
++		u64 reserved_0:1;
++		u64 nqerr:1;
++		u64 irde:1;
++		u64 nwrp:1;
++		u64 reserved_4:1;
++		u64 hwerr:1;
++		u64 fault:1;
++		u64 reserved_7_63:57;
++	} s;
++};
++
++/*
++ * RVU_PFVF_BAR2 - cpt_lf_misc_int_ena_w1s
++ *
++ * This register sets interrupt enable bits.
++ *
++ */
++union otx2_cptx_lf_misc_int_ena_w1s {
++	u64 u;
++	struct otx2_cptx_lf_misc_int_ena_w1s_s {
++		u64 reserved_0:1;
++		u64 nqerr:1;
++		u64 irde:1;
++		u64 nwrp:1;
++		u64 reserved_4:1;
++		u64 hwerr:1;
++		u64 fault:1;
++		u64 reserved_7_63:57;
++	} s;
++};
++
++/*
++ * RVU_PFVF_BAR2 - cpt_lf_ctl
++ *
++ * This register configures the queue.
++ *
++ * When the queue is not execution-quiescent (see CPT_LF_INPROG[EENA,INFLIGHT]),
++ * software must only write this register with [ENA]=0.
++ */
++union otx2_cptx_lf_ctl {
++	u64 u;
++	struct otx2_cptx_lf_ctl_s {
++		u64 ena:1;
++		u64 fc_ena:1;
++		u64 fc_up_crossing:1;
++		u64 reserved_3:1;
++		u64 fc_hyst_bits:4;
++		u64 reserved_8_63:56;
++	} s;
++};
++
++/*
++ * RVU_PFVF_BAR2 - cpt_lf_done_wait
++ *
++ * This register specifies the per-queue interrupt coalescing settings.
++ */
++union otx2_cptx_lf_done_wait {
++	u64 u;
++	struct otx2_cptx_lf_done_wait_s {
++		u64 num_wait:20;
++		u64 reserved_20_31:12;
++		u64 time_wait:16;
++		u64 reserved_48_63:16;
++	} s;
++};
++
++/*
++ * RVU_PFVF_BAR2 - cpt_lf_done
++ *
++ * This register contain the per-queue instruction done count.
++ */
++union otx2_cptx_lf_done {
++	u64 u;
++	struct otx2_cptx_lf_done_s {
++		u64 done:20;
++		u64 reserved_20_63:44;
++	} s;
++};
++
++/*
++ * RVU_PFVF_BAR2 - cpt_lf_inprog
++ *
++ * These registers contain the per-queue instruction in flight registers.
++ *
++ */
++union otx2_cptx_lf_inprog {
++	u64 u;
++	struct otx2_cptx_lf_inprog_s {
++		u64 inflight:9;
++		u64 reserved_9_15:7;
++		u64 eena:1;
++		u64 grp_drp:1;
++		u64 reserved_18_30:13;
++		u64 grb_partial:1;
++		u64 grb_cnt:8;
++		u64 gwb_cnt:8;
++		u64 reserved_48_63:16;
++	} s;
++};
++
++/*
++ * RVU_PFVF_BAR2 - cpt_lf_q_base
++ *
++ * CPT initializes these CSR fields to these values on any CPT_LF_Q_BASE write:
++ * _ CPT_LF_Q_INST_PTR[XQ_XOR]=0.
++ * _ CPT_LF_Q_INST_PTR[NQ_PTR]=2.
++ * _ CPT_LF_Q_INST_PTR[DQ_PTR]=2.
++ * _ CPT_LF_Q_GRP_PTR[XQ_XOR]=0.
++ * _ CPT_LF_Q_GRP_PTR[NQ_PTR]=1.
++ * _ CPT_LF_Q_GRP_PTR[DQ_PTR]=1.
++ */
++union otx2_cptx_lf_q_base {
++	u64 u;
++	struct otx2_cptx_lf_q_base_s {
++		u64 fault:1;
++		u64 reserved_1_6:6;
++		u64 addr:46;
++		u64 reserved_53_63:11;
++	} s;
++};
++
++/*
++ * RVU_PFVF_BAR2 - cpt_lf_q_size
++ *
++ * CPT initializes these CSR fields to these values on any CPT_LF_Q_SIZE write:
++ * _ CPT_LF_Q_INST_PTR[XQ_XOR]=0.
++ * _ CPT_LF_Q_INST_PTR[NQ_PTR]=2.
++ * _ CPT_LF_Q_INST_PTR[DQ_PTR]=2.
++ * _ CPT_LF_Q_GRP_PTR[XQ_XOR]=0.
++ * _ CPT_LF_Q_GRP_PTR[NQ_PTR]=1.
++ * _ CPT_LF_Q_GRP_PTR[DQ_PTR]=1.
++ */
++union otx2_cptx_lf_q_size {
++	u64 u;
++	struct otx2_cptx_lf_q_size_s {
++		u64 size_div40:15;
++		u64 reserved_15_63:49;
++	} s;
++};
++
++/*
++ * RVU_PF_BAR0 - cpt_af_lf_ctl
++ *
++ * This register configures queues. This register should be written only
++ * when the queue is execution-quiescent (see CPT_LF_INPROG[INFLIGHT]).
++ */
++union otx2_cptx_af_lf_ctrl {
++	u64 u;
++	struct otx2_cptx_af_lf_ctrl_s {
++		u64 pri:1;
++		u64 reserved_1_8:8;
++		u64 pf_func_inst:1;
++		u64 cont_err:1;
++		u64 reserved_11_15:5;
++		u64 nixtx_en:1;
++		u64 reserved_17_47:31;
++		u64 grp:8;
++		u64 reserved_56_63:8;
++	} s;
++};
++
++#endif /* __OTX2_CPT_HW_TYPES_H */
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptpf.h b/drivers/crypto/marvell/octeontx2/otx2_cptpf.h
+new file mode 100644
+index 000000000000..84cdc8cc2c15
+--- /dev/null
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf.h
+@@ -0,0 +1,13 @@
++/* SPDX-License-Identifier: GPL-2.0-only
++ * Copyright (C) 2020 Marvell.
++ */
++
++#ifndef __OTX2_CPTPF_H
++#define __OTX2_CPTPF_H
++
++struct otx2_cptpf_dev {
++	void __iomem *reg_base;		/* CPT PF registers start address */
++	struct pci_dev *pdev;		/* PCI device handle */
++};
++
++#endif /* __OTX2_CPTPF_H */
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c b/drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c
+new file mode 100644
+index 000000000000..25ac8d5ff7ee
+--- /dev/null
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c
+@@ -0,0 +1,106 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Copyright (C) 2020 Marvell. */
++
++#include <linux/firmware.h>
++#include "otx2_cpt_hw_types.h"
++#include "otx2_cpt_common.h"
++#include "otx2_cptpf.h"
++#include "rvu_reg.h"
++
++#define OTX2_CPT_DRV_NAME    "octeontx2-cpt"
++#define OTX2_CPT_DRV_STRING  "Marvell OcteonTX2 CPT Physical Function Driver"
++
++static int cpt_is_pf_usable(struct otx2_cptpf_dev *cptpf)
++{
++	u64 rev;
++
++	rev = otx2_cpt_read64(cptpf->reg_base, BLKADDR_RVUM, 0,
++			      RVU_PF_BLOCK_ADDRX_DISC(BLKADDR_RVUM));
++	rev = (rev >> 12) & 0xFF;
++	/*
++	 * Check if AF has setup revision for RVUM block, otherwise
++	 * driver probe should be deferred until AF driver comes up
++	 */
++	if (!rev) {
++		dev_warn(&cptpf->pdev->dev,
++			 "AF is not initialized, deferring probe\n");
++		return -EPROBE_DEFER;
++	}
++	return 0;
++}
++
++static int otx2_cptpf_probe(struct pci_dev *pdev,
++			    const struct pci_device_id *ent)
++{
++	struct device *dev = &pdev->dev;
++	struct otx2_cptpf_dev *cptpf;
++	int err;
++
++	cptpf = devm_kzalloc(dev, sizeof(*cptpf), GFP_KERNEL);
++	if (!cptpf)
++		return -ENOMEM;
++
++	err = pcim_enable_device(pdev);
++	if (err) {
++		dev_err(dev, "Failed to enable PCI device\n");
++		goto clear_drvdata;
++	}
++
++	err = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(48));
++	if (err) {
++		dev_err(dev, "Unable to get usable DMA configuration\n");
++		goto clear_drvdata;
++	}
++	/* Map PF's configuration registers */
++	err = pcim_iomap_regions_request_all(pdev, 1 << PCI_PF_REG_BAR_NUM,
++					     OTX2_CPT_DRV_NAME);
++	if (err) {
++		dev_err(dev, "Couldn't get PCI resources 0x%x\n", err);
++		goto clear_drvdata;
++	}
++	pci_set_master(pdev);
++	pci_set_drvdata(pdev, cptpf);
++	cptpf->pdev = pdev;
++
++	cptpf->reg_base = pcim_iomap_table(pdev)[PCI_PF_REG_BAR_NUM];
++
++	/* Check if AF driver is up, otherwise defer probe */
++	err = cpt_is_pf_usable(cptpf);
++	if (err)
++		goto clear_drvdata;
++
++	return 0;
++clear_drvdata:
++	pci_set_drvdata(pdev, NULL);
++	return err;
++}
++
++static void otx2_cptpf_remove(struct pci_dev *pdev)
++{
++	struct otx2_cptpf_dev *cptpf = pci_get_drvdata(pdev);
++
++	if (!cptpf)
++		return;
++
++	pci_set_drvdata(pdev, NULL);
++}
++
++/* Supported devices */
++static const struct pci_device_id otx2_cpt_id_table[] = {
++	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, OTX2_CPT_PCI_PF_DEVICE_ID) },
++	{ 0, }  /* end of table */
++};
++
++static struct pci_driver otx2_cpt_pci_driver = {
++	.name = OTX2_CPT_DRV_NAME,
++	.id_table = otx2_cpt_id_table,
++	.probe = otx2_cptpf_probe,
++	.remove = otx2_cptpf_remove,
++};
++
++module_pci_driver(otx2_cpt_pci_driver);
++
++MODULE_AUTHOR("Marvell");
++MODULE_DESCRIPTION(OTX2_CPT_DRV_STRING);
++MODULE_LICENSE("GPL v2");
++MODULE_DEVICE_TABLE(pci, otx2_cpt_id_table);
+-- 
+2.28.0
 
-In "standalone" mode your netdev is like any other netdev and if it does
-not support Rx filtering, then pass everything to the CPU and let it
-filter what it does not want to see. I don't see the problem.  This is
-exactly what mlxsw did before L3 forwarding was introduced. As soon as
-you removed a netdev from a bridge we created an internal bridge between
-the port and the CPU port and flooded everything to the CPU.
-
-> 
-> > > This is fundamentally because the destination MAC address is parsed by
-> > > a network card for _termination_ purposes. And because a switch
-> > > doesn't do _termination_, there is no reason to filter by destination
-> > > MAC (ignore ACL and such). But a Linux switchdev is capable of
-> > > termination. In the case of switchdev, termination means sending to
-> > > the CPU.
-> > 
-> > You keep saying "CPU", but it's because you are most likely only
-> > concerned with switches that are not capable of L3 forwarding. In mlxsw
-> > we never send packets from the FDB to the CPU, but to the "router port".
-> > There the packets (whether unicast or multicast) are routed and either
-> > forwarded to a different port or locally received.
-> 
-> I don't know nearly enough about IP forwarding offload to make a
-> relevant comment here.
-> 
-> > > 
-> > > My interpretation of the meaning of dev_uc_add() for switchdev (and
-> > > therefore, of its opposite - promiscuous mode) is at odds with previous
-> > > work done for non-switchdev. Take Vlad Yasevich's work "[Bridge] [PATCH
-> > > net-next 0/8] Non-promisc bidge ports support" for example:
-> > > 
-> > > https://lists.linuxfoundation.org/pipermail/bridge/2014-May/008940.html
-> > > 
-> > > He is arguing that a bridge port without flood&learn doesn't need
-> > > promiscuous mode, because all addresses can be statically known, and
-> > > therefore, he added code to the bridge that does the following:
-> > > 
-> > > - syncs the bridge MAC address to all non-promisc bridge slaves, via
-> > >   dev_uc_add()
-> > > - syncs the MAC addresses of all static FDB entries on all ingress
-> > >   non-promisc bridge slave ports, via dev_uc_add()
-> > > 
-> > > with the obvious goal that "the bridge slave shouldn't drop these
-> > > packets".
-> > 
-> > Lets say all the ports are not automatic (using Vlad's terminology),
-> > then packets can only be forwarded based on FDB entries. Any packets
-> > with a destination MAC not in the FDB will be dropped by the bridge.
-> > Agree?
-> > 
-> > Now, if this is the case, then you know in advance which MACs will not
-> > be dropped by the bridge. Therefore, you can program only these MACs to
-> > the Rx filters of the bridge slaves (simple NICs). That way, instead of
-> > having the bridge (the CPU) waste cycles on dropping packets you can
-> > drop them in hardware using the NIC's Rx filters.
-> 
-> _if_ there is a bridge.
-
-But he is talking about a bridge... I don't follow. You even wrote "He
-is arguing that a bridge port". So how come there is no bridge?
-
-> 
-> > > 
-> > > In my interpretation of dev_uc_add(), I would have expected that:
-> > > - the bridge MAC address, as well as any other secondary unicast
-> > >   addresses that the bridge has, by means of its uppers (like macvlan,
-> > >   802.1q, etc) calling dev_uc_add() on it, would be synced to the bridge
-> > >   slaves anyway, regardless of whether they're promisc or not
-> > 
-> > Is this supposed to be related to previous paragraph about Vald's work?
-> > I don't really follow.
-> 
-> Yes, of course.
-> 
-> > Anyway, he specifically wrote that "There are some other cases when
-> > promiscuous mode has to be turned back on. One is when the bridge
-> > itself if placed in promiscuous mode".
-> > 
-> > When you start adding bridge uppers with different MACs then the bridge
-> > will enter promiscuous mode and all unknown unicast packets will be
-> > flooded to it. In this case packets without a matching FDB will no
-> > longer be dropped by the bridge and therefore the NIC can't drop them in
-> > hardware using its Rx filters anymore.
-> 
-> All would be fine if the bridge would declare IFF_UNICAST_FLT and
-> propagate its address lists to its slave ports somehow, either through
-> dev_uc_add/dev_mc_add or through SWITCHDEV_OBJ_ID_HOST_MDB [ and a new
-> SWITCHDEV_OBJ_ID_HOST_FDB, I can only assume ].
-> 
-> But if we are to introduce a new SWITCHDEV_OBJ_ID_HOST_FDB, then we
-> would be working around the problem, and the non-bridged switchdev
-> interfaces would still have no proper way of doing RX filtering.
-
-What prevents you from implementing ndo_set_rx_mode() in your driver?
-
-Let me re-iterate my point again. Rx filtering determines which packets
-can be received by the port. In "standalone" mode where you do not
-support L3 forwarding I agree that the Rx filter determines which
-packets the CPU should see.
-
-However, in the "non-standalone" mode where your netdevs are enslaved to
-a bridge that you offload, then the bridge's FDB determines which
-packets the CPU should see. The ports themselves are in promiscuous mode
-because the bridge (either SW one or HW one) wants to see all the
-received packets.
-
-See more below.
-
-> 
-> > > - the static FDB entries are synced to the bridge ports only in the
-> > >   non-switchdev case. This is because for switchdev, I am treating a
-> > >   dev_uc_add() as a FDB entry towards the CPU, and therefore this would
-> > >   overwrite the FDB entry towards the external port.
-> > 
-> > OK, so this interpretation of "treating a dev_uc_add() as a FDB entry
-> > towards the CPU" is wrong.
-> > 
-> > You already wrote that "For a switchdev, promisc vs non-promisc doesn't
-> > mean a thing" and that "[dev_uc_add() is] used to install an address
-> > into a device's RX filter".
-> > 
-> > You can't tell me that switches do not perform Rx filtering and then
-> > decide to re-purpose a mechanism that is used for Rx filtering...
-> 
-> No, that's exactly what I'm trying to tell you...
-> 
-> > > 
-> > > In my interpretation, things would have worked neatly for the most part,
-> > > not only for unicast but also for multicast. For example, an application
-> > > wants to see a multicast stream, so it calls setsockopt(SOL_SOCKET,
-> > > PACKET_ADD_MEMBERSHIP, PACKET_MR_MULTICAST) with the multicast address
-> > > it wants to see. This is translated by the kernel into a dev_mc_add()
-> > > and sent to the network device. For a non-switchdev, this would have
-> > > been enough. For a switchdev, if I also installed the address in the
-> > > CPU's filter, it would have also been enough. Things 'just work' and
-> > > everybody's happy.
-> > > 
-> > > > When you look at it from hardware offload perspective, not every packet
-> > > > received by the bridge interface should reach the CPU. Actually, most
-> > > > should not reach it. Otherwise it would mean that every routed packet
-> > > > would need to go to the CPU, which is not feasible. If you can't perform
-> > > > routing in hardware, then yes, you need to send such packets to the CPU.
-> > > > 
-> > > > In mlxsw we can't perform MAC filtering in the router like in the
-> > > > software data path, so in order not to route packets we should not, we
-> > > > only send to the router packets with destination MACs that correspond to
-> > > > that of the bridge or one of its uppers. We don't flood all unknown
-> > > > unicast packets there.
-> > > > 
-> > > > In the case of hardware offload it's relatively easy to do this sort of
-> > > > tracking because only a limited set of upper devices topologies are
-> > > > actually supported. I'm not sure how feasible it is with every
-> > > > combination of upper devices supported by the kernel. It seems easiest
-> > > > to just put the bridge interface in promiscuous mode and let upper
-> > > > layers perform the filtering. Like it is today.
-> > > > 
-> > > 
-> > > Are you suggesting that tracking the uppers is the only way to do what I
-> > > want?
-> > 
-> > I don't see a different way. Your goal is to prevent flooding of unknown
-> > unicast packets to the CPU. If the bridge is not in promiscuous mode,
-> > then unknown unicast packets are not flooded to it. Only FDB entries
-> > pointing to the bridge device should go to the CPU.
-> >
-> > The problem starts when the bridge enters promiscuous mode. When does it
-> > happen? When you start adding uppers that do not inherit the bridge's
-> > MAC. Why? Because the bridge does not support unicast filtering. It is
-> > not an easy thing to do when you have multiple levels of stacked
-> > devices.
-> 
-> No, the problem doesn't start there, or end there. I just think that the
-> proposed solution would be incomplete if it just relied on tracking
-> uppers.
-> 
-> Take the case of IEEE 1588 packets. They should be trapped to the CPU
-> and not forwarded. But the destination address at which PTP packets are
-> sent is not set in stone, it is something that the profile decides.
-> 
-> How to ensure these packets are trapped to the CPU?
-> You're probably going to say "devlink trap", but:
-
-I would say that it is up to the driver to configure this among all the
-rest of the PTP configuration that it needs to do. mlxsw registers the
-PTP trap during init because it is easy, but I assume we could also do
-it when PTP is enabled.
-
-> - I don't want the PTP packets to be unconditionally trapped. I see it
->   as a perfectly valid use case for a switch to be PTP-unaware and just
->   let somebody else terminate those packets. But "devlink trap" only
->   gives you an option to see what the traps are, not to turn them off.
-> - The hardware I'm working with doesn't even trap PTP to the CPU by
->   default. I would need to hardcode trapping rules in the driver, to
->   some multicast addresses I can just guess, then I would report them as
->   non-disableable devlink traps.
-> 
-> Applications do call setsockopt with IP_ADD_MEMBERSHIP, IPV6_ADD_MEMBERSHIP
-> or PACKET_ADD_MEMBERSHIP. However I don't see how that is turning into a
-> notification that the driver can use, except through dev_mc_add.
-> 
-> Therefore, it simply looks easier to me to stub out the extraneous calls
-> to dev_uc_add and dev_mc_add, rather than add parallel plumbing into
-> net/ipv4/igmp.c, for ports that are "promiscuous by default".
-> 
-> What do you think about this example? Isn't it something that should be
-> supported by design?
-
-I believe it's already supported. Lets look at the "standalone" and
-"non-standalone" cases:
-
-1. Standalone: Your ndo_set_rx_mode() will be called and if you support
-Rx filtering, you can program your filters accordingly. If not, then you
-need to send everything to the CPU
-
-2. Non-standalone and bridge is multicast aware: An IGMP membership
-report is supposed to be sent via the bridge device (I assume you are
-calling IP_ADD_MEMBERSHIP on the bridge device). This will cause the
-bridge to create an MDB entry indicating that packets to this multicast
-IP should be locally received. Drivers get it via the switchdev
-operation Andrew added.
-
-3. Non-standalone and bridge is not multicast aware: Incoming packet to
-this multicast group are considered as broadcast and should be locally
-received via the bridge device (CPU port in your case)
