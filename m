@@ -2,215 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A681629D66A
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:15:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B2C2929D685
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:15:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731037AbgJ1WOq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 18:14:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58244 "EHLO mail.kernel.org"
+        id S1731360AbgJ1WPs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:15:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58902 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731222AbgJ1WOl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Oct 2020 18:14:41 -0400
-Received: from dellmb.labs.office.nic.cz (nat-1.nic.cz [217.31.205.1])
+        id S1731289AbgJ1WPR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Oct 2020 18:15:17 -0400
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F34D424754;
-        Wed, 28 Oct 2020 22:14:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6B52E2473C;
+        Wed, 28 Oct 2020 22:15:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603923280;
-        bh=6VF/lnLwH+/bEXWRfT1dm3LJfdZF7pZqfllV2YFD/1o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BhQAR6fUyPTYWVbinUDJi2ynsaF3LZ3lHsaW/M9PP3myjmBZwcpY/U3V6XI2eC9uF
-         dr6G/BDwD2PdeKfDfM1L88KqlyfiqkTGSqmPcV4TVtDSZhOdcNmnHS3X4K2RQ36TGP
-         /Aa68xVIF42jC8KO8hZShuTeymCuvSMmZBaRQRdc=
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Subject: [PATCH net-next 5/5] net: sfp: add support for multigig RollBall transceivers
-Date:   Wed, 28 Oct 2020 23:14:27 +0100
-Message-Id: <20201028221427.22968-6-kabel@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201028221427.22968-1-kabel@kernel.org>
-References: <20201028221427.22968-1-kabel@kernel.org>
+        s=default; t=1603923316;
+        bh=vvm+dDR1TBLimZsVuME5YCze/EoMOBpVD9l1Wkt4Ktg=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=ignJE81aH1LW8cteo0/3vLElB+WT1ecGITOWDy8huwVa8co4XSC8g5DTdJ/i09Mkk
+         qsd30lbvvs2WEmnQj2ek/wy6PAdMed7LzTkMI576vUTDyaE3u6cMTbRqijI5krztfg
+         Hw7Rfd2DSIEFz2COdGJlDGTGlZ0mpOeksxyJQ+vg=
+Received: by mail-oi1-f181.google.com with SMTP id f7so1216819oib.4;
+        Wed, 28 Oct 2020 15:15:16 -0700 (PDT)
+X-Gm-Message-State: AOAM530+NUu7TO9DDzQm31DIZVTKKDhZMsFtwXl49+UWneqyNWM0qijX
+        rCYAaeAEJdOJcsQ+64n3pGf/R/jbp83AwrFePRs=
+X-Google-Smtp-Source: ABdhPJwp/eocLDe/IVsGjl8wIP+xANWWIacnhJnnO2+RP/wb0BMBYD3r+o5Hzof6CK43TUVUe9ysmxHybgIpuRxOldg=
+X-Received: by 2002:aca:5c82:: with SMTP id q124mr832187oib.33.1603923315629;
+ Wed, 28 Oct 2020 15:15:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20201028171506.15682-1-ardb@kernel.org> <20201028171506.15682-2-ardb@kernel.org>
+ <20201028213903.fvdjydadqt6tx765@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20201028213903.fvdjydadqt6tx765@ast-mbp.dhcp.thefacebook.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Wed, 28 Oct 2020 23:15:04 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXFHcM-Jb+MwsLtB4NMUmMyAGGLeNGNLC9vTATot3NJLrA@mail.gmail.com>
+Message-ID: <CAMj1kXFHcM-Jb+MwsLtB4NMUmMyAGGLeNGNLC9vTATot3NJLrA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] bpf: don't rely on GCC __attribute__((optimize))
+ to disable GCSE
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <netdev@vger.kernel.org>,
+        "open list:BPF JIT for MIPS (32-BIT AND 64-BIT)" 
+        <bpf@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Arvind Sankar <nivedita@alum.mit.edu>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Kees Cook <keescook@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds support for multigig copper SFP modules from RollBall/Hilink.
-These modules have a specific way to access clause 45 registers of the
-internal PHY.
+On Wed, 28 Oct 2020 at 22:39, Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Wed, Oct 28, 2020 at 06:15:05PM +0100, Ard Biesheuvel wrote:
+> > Commit 3193c0836 ("bpf: Disable GCC -fgcse optimization for
+> > ___bpf_prog_run()") introduced a __no_fgcse macro that expands to a
+> > function scope __attribute__((optimize("-fno-gcse"))), to disable a
+> > GCC specific optimization that was causing trouble on x86 builds, and
+> > was not expected to have any positive effect in the first place.
+> >
+> > However, as the GCC manual documents, __attribute__((optimize))
+> > is not for production use, and results in all other optimization
+> > options to be forgotten for the function in question. This can
+> > cause all kinds of trouble, but in one particular reported case,
+> > it causes -fno-asynchronous-unwind-tables to be disregarded,
+> > resulting in .eh_frame info to be emitted for the function.
+> >
+> > This reverts commit 3193c0836, and instead, it disables the -fgcse
+> > optimization for the entire source file, but only when building for
+> > X86 using GCC with CONFIG_BPF_JIT_ALWAYS_ON disabled. Note that the
+> > original commit states that CONFIG_RETPOLINE=n triggers the issue,
+> > whereas CONFIG_RETPOLINE=y performs better without the optimization,
+> > so it is kept disabled in both cases.
+> >
+> > Fixes: 3193c0836 ("bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()")
+> > Link: https://lore.kernel.org/lkml/CAMuHMdUg0WJHEcq6to0-eODpXPOywLot6UD2=GFHpzoj_hCoBQ@mail.gmail.com/
+> > Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+> > ---
+> >  include/linux/compiler-gcc.h   | 2 --
+> >  include/linux/compiler_types.h | 4 ----
+> >  kernel/bpf/Makefile            | 6 +++++-
+> >  kernel/bpf/core.c              | 2 +-
+> >  4 files changed, 6 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/include/linux/compiler-gcc.h b/include/linux/compiler-gcc.h
+> > index d1e3c6896b71..5deb37024574 100644
+> > --- a/include/linux/compiler-gcc.h
+> > +++ b/include/linux/compiler-gcc.h
+> > @@ -175,5 +175,3 @@
+> >  #else
+> >  #define __diag_GCC_8(s)
+> >  #endif
+> > -
+> > -#define __no_fgcse __attribute__((optimize("-fno-gcse")))
+>
+> See my reply in the other thread.
+> I prefer
+> -#define __no_fgcse __attribute__((optimize("-fno-gcse")))
+> +#define __no_fgcse __attribute__((optimize("-fno-gcse,-fno-omit-frame-pointer")))
+>
+> Potentially with -fno-asynchronous-unwind-tables.
+>
 
-We also need to wait at least 25 seconds after deasserting TX disable
-before accessing the PHY. The code waits for 30 seconds just to be sure.
+So how would that work? arm64 has the following:
 
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/phy/sfp.c | 72 ++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 65 insertions(+), 7 deletions(-)
+KBUILD_CFLAGS += -fno-asynchronous-unwind-tables -fno-unwind-tables
 
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index a392d5fc6ab4..379358f194ee 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -165,6 +165,7 @@ static const enum gpiod_flags gpio_flags[] = {
-  * on board (for a copper SFP) time to initialise.
-  */
- #define T_WAIT			msecs_to_jiffies(50)
-+#define T_WAIT_LONG_PHY		msecs_to_jiffies(30000)
- #define T_START_UP		msecs_to_jiffies(300)
- #define T_START_UP_BAD_GPON	msecs_to_jiffies(60000)
- 
-@@ -204,8 +205,11 @@ static const enum gpiod_flags gpio_flags[] = {
- 
- /* SFP modules appear to always have their PHY configured for bus address
-  * 0x56 (which with mdio-i2c, translates to a PHY address of 22).
-+ * RollBall SFPs access phy via SFP Enhanced Digital Diagnostic Interface
-+ * via address 0x51 (mdio-i2c will use RollBall protocol on this address).
-  */
--#define SFP_PHY_ADDR	22
-+#define SFP_PHY_ADDR		22
-+#define SFP_PHY_ADDR_ROLLBALL	17
- 
- struct sff_data {
- 	unsigned int gpios;
-@@ -220,6 +224,7 @@ struct sfp {
- 	struct phy_device *mod_phy;
- 	const struct sff_data *type;
- 	u32 max_power_mW;
-+	int phy_addr;
- 
- 	unsigned int (*get_state)(struct sfp *);
- 	void (*set_state)(struct sfp *, unsigned int);
-@@ -248,6 +253,7 @@ struct sfp {
- 	struct sfp_eeprom_id id;
- 	unsigned int module_power_mW;
- 	unsigned int module_t_start_up;
-+	unsigned int module_t_wait;
- 
- #if IS_ENABLED(CONFIG_HWMON)
- 	struct sfp_diag diag;
-@@ -1442,7 +1448,7 @@ static int sfp_sm_probe_phy(struct sfp *sfp, bool is_c45)
- 	struct phy_device *phy;
- 	int err;
- 
--	phy = get_phy_device(sfp->i2c_mii, SFP_PHY_ADDR, is_c45);
-+	phy = get_phy_device(sfp->i2c_mii, sfp->phy_addr, is_c45);
- 	if (phy == ERR_PTR(-ENODEV))
- 		return PTR_ERR(phy);
- 	if (IS_ERR(phy)) {
-@@ -1675,12 +1681,40 @@ static int sfp_cotsworks_fixup_check(struct sfp *sfp, struct sfp_eeprom_id *id)
- 	return 0;
- }
- 
-+static int sfp_rollball_init_mdio(struct sfp *sfp)
-+{
-+	u8 page, password[4];
-+	int err;
-+
-+	page = 3;
-+
-+	err = sfp_write(sfp, true, SFP_PAGE, &page, 1);
-+	if (err != 1) {
-+		dev_err(sfp->dev, "Failed to set SFP page for RollBall MDIO access: %d\n", err);
-+		return err;
-+	}
-+
-+	password[0] = 0xff;
-+	password[1] = 0xff;
-+	password[2] = 0xff;
-+	password[3] = 0xff;
-+
-+	err = sfp_write(sfp, true, 0x7b, password, 4);
-+	if (err != 4) {
-+		dev_err(sfp->dev, "Failed to write password for RollBall MDIO access: %d\n", err);
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
- static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- {
- 	/* SFP module inserted - read I2C data */
- 	struct sfp_eeprom_id id;
- 	bool cotsworks_sfbg;
- 	bool cotsworks;
-+	bool rollball;
- 	u8 check;
- 	int ret;
- 
-@@ -1755,6 +1789,24 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- 		 (int)sizeof(id.ext.vendor_sn), id.ext.vendor_sn,
- 		 (int)sizeof(id.ext.datecode), id.ext.datecode);
- 
-+	sfp->phy_addr = SFP_PHY_ADDR;
-+
-+	rollball = ((!memcmp(id.base.vendor_name, "OEM             ", 16) ||
-+		     !memcmp(id.base.vendor_name, "Turris          ", 16)) &&
-+		    (!memcmp(id.base.vendor_pn, "SFP-10G-T       ", 16) ||
-+		     !memcmp(id.base.vendor_pn, "RTSFP-10", 8)));
-+	if (rollball) {
-+		sfp->phy_addr = SFP_PHY_ADDR_ROLLBALL;
-+		ret = sfp_rollball_init_mdio(sfp);
-+		if (ret < 0)
-+			return ret;
-+
-+		/* RollBall SFPs may have wrong (zero) extended compliacne code burned in EEPROM.
-+		 * For PHY probing we need the correct one.
-+		 */
-+		id.base.extended_cc = SFF8024_ECC_10GBASE_T_SFI;
-+	}
-+
- 	/* Check whether we support this module */
- 	if (!sfp->type->module_supported(&id)) {
- 		dev_err(sfp->dev,
-@@ -1779,8 +1831,13 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- 	else
- 		sfp->module_t_start_up = T_START_UP;
- 
-+	if (rollball)
-+		sfp->module_t_wait = T_WAIT_LONG_PHY;
-+	else
-+		sfp->module_t_wait = T_WAIT;
-+
- 	/* Configure mdiobus */
--	ret = sfp_i2c_mdiobus_configure(sfp, MDIO_I2C_DEFAULT);
-+	ret = sfp_i2c_mdiobus_configure(sfp, rollball ? MDIO_I2C_ROLLBALL : MDIO_I2C_DEFAULT);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -1979,9 +2036,10 @@ static void sfp_sm_main(struct sfp *sfp, unsigned int event)
- 
- 		/* We need to check the TX_FAULT state, which is not defined
- 		 * while TX_DISABLE is asserted. The earliest we want to do
--		 * anything (such as probe for a PHY) is 50ms.
-+		 * anything (such as probe for a PHY) is 50ms (or more on
-+		 * specific modules).
- 		 */
--		sfp_sm_next(sfp, SFP_S_WAIT, T_WAIT);
-+		sfp_sm_next(sfp, SFP_S_WAIT, sfp->module_t_wait);
- 		break;
- 
- 	case SFP_S_WAIT:
-@@ -1995,8 +2053,8 @@ static void sfp_sm_main(struct sfp *sfp, unsigned int event)
- 			 * deasserting.
- 			 */
- 			timeout = sfp->module_t_start_up;
--			if (timeout > T_WAIT)
--				timeout -= T_WAIT;
-+			if (timeout > sfp->module_t_wait)
-+				timeout -= sfp->module_t_wait;
- 			else
- 				timeout = 1;
- 
--- 
-2.26.2
+ifeq ($(CONFIG_SHADOW_CALL_STACK), y)
+KBUILD_CFLAGS += -ffixed-x18
+endif
 
+and it adds -fpatchable-function-entry=2 for compilers that support
+it, but only when CONFIG_FTRACE is enabled.
+
+Also, as Nick pointed out, -fno-gcse does not work on Clang.
+
+Every architecture will have a different set of requirements here. And
+there is no way of knowing which -f options are disregarded when you
+use the function attribute.
+
+So how on earth are you going to #define __no-fgcse correctly for
+every configuration imaginable?
+
+> __attribute__((optimize("")) is not as broken as you're claiming to be.
+> It has quirky gcc internal logic, but it's still widely used
+> in many software projects.
+
+So it's fine because it is only a little bit broken? I'm sorry, but
+that makes no sense whatsoever.
+
+If you insist on sticking with this broken construct, can you please
+make it GCC/x86-only at least?
