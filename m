@@ -2,87 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FC4129DB54
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 00:52:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7E4A29DB46
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 00:48:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389292AbgJ1XwA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 19:52:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40976 "EHLO
+        id S2389417AbgJ1WsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:48:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387762AbgJ1Xvs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 19:51:48 -0400
-Received: from mail-lf1-x141.google.com (mail-lf1-x141.google.com [IPv6:2a00:1450:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D795C0613CF
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 16:51:48 -0700 (PDT)
-Received: by mail-lf1-x141.google.com with SMTP id r127so975735lff.12
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 16:51:48 -0700 (PDT)
+        with ESMTP id S1731686AbgJ1Wrs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:47:48 -0400
+Received: from mail-yb1-xb44.google.com (mail-yb1-xb44.google.com [IPv6:2607:f8b0:4864:20::b44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6179C0613CF;
+        Wed, 28 Oct 2020 15:47:47 -0700 (PDT)
+Received: by mail-yb1-xb44.google.com with SMTP id 67so550914ybt.6;
+        Wed, 28 Oct 2020 15:47:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=nzLz4C8/7x6rzuhgwBujVtBwU24k/ip+cGwa/LEOhsg=;
-        b=v4M1qF5mDiC5N28sULoJTYGg1WgaQQ/emZkfbpqBiOCzkX+SSPW5W1uM0NbvfAh6YO
-         9E9NFQnet8PJcyRMTHhYtgpYE7bVrUSfAQVf3wXDtig0GDDzclpTy6RCpO/CDkSwzFSw
-         1IjiOdkAOxxHfDbnNC4X71Ioj0EI2UIuG/QuQyhFg+gO9e1vtVjLNnMKoPxMtar9kcu4
-         Y7/Mos6ATXV6NyOub+XMEgoIiLmTrlSZF1qa9xGdnBAtX4ze+iq63skPQoPnYCEQ+QDJ
-         DG4aO1r32cPLM7r5DjYDFQtGKkXmijlPbjhfYhJ0O+jXMH3CNTs00phfFjMeNylPtiEr
-         LRNA==
+        bh=vwgoW2TPGpunI0aTLkl3qoIbx10c+NJTmbd9MrFLM2s=;
+        b=BTS8ESXBVadVHh9DO6P1aepyoWRkgvynflePGKFZrpygvM78c+SRChm5u5kVUWLt0C
+         Ok2tgz6O0L43blytuad6d8HF3tyNs4jtsSQgJ+Xng1YmxtMqBB+1Gr2JhK7QLEfPI+qQ
+         ywCNDX4CR6AMGTWbW6yq96Bf2CM4xv/KV+tqeHIX+bht6SOEZU+7R3DYZzqBZ7Y5lnp9
+         3u4AeXWUm6aTdH/L8gByTlZcLNQAe5/qwwcP2Kx9N12Ymm5KmeKObBTYBpppVmrwHIaf
+         oP5Cl3SgLOmdLHVpP7YsXt3TdNNOfjxLHg79J10Z0nZMyzL/ax+IRa4R8w/cgmUiTZJz
+         mp1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=nzLz4C8/7x6rzuhgwBujVtBwU24k/ip+cGwa/LEOhsg=;
-        b=hf4enJVArxsKR80KZ5z/zauTjqd+fln4ngPqhgSk0dx2p7i63F0281UYZcovxe7plL
-         dU2HXhObus6rNX2eqOEW0h6/FIggSmYssiDNI/HUr9LhLadGmYgH8Azi3k9AZwz1Jk47
-         HNJw3SdakjM46r0LAbll+e64JZ9lvrxEQecXx/eLFjIXxBjZKm8RDnqXuDGa3lvOOyf4
-         6RHX99FNuYe+QWrakpx3zLSNyALXdPMYGd/W3r1lqJTu/8vASzOdG/bjxx9RYSDX1Jld
-         kugZM92j+NbjxFZASKrUcy7nQuMe+qOoq9yDtDMqaJOJJiqn8UErBPMIyhP2GGaybLP6
-         g84A==
-X-Gm-Message-State: AOAM532XhA5vy9bHlQ6vro8KiMr5mlGAlVQDROWFUGRWbmr+bRavykJC
-        sjim8Q/GFRykp+ZCxyBux3gh4l+Rr8a3QNSWGfZOASErGA==
-X-Google-Smtp-Source: ABdhPJyR411+6APaMeMHKRFz3XusXo7hZQPgNstyy+j9Bir1XmDNqruBwrAK8ySh4BzJWo1Qsqgz2KolL3IjMPV55EU=
-X-Received: by 2002:a17:906:c1d4:: with SMTP id bw20mr5195940ejb.91.1603851000899;
- Tue, 27 Oct 2020 19:10:00 -0700 (PDT)
+        bh=vwgoW2TPGpunI0aTLkl3qoIbx10c+NJTmbd9MrFLM2s=;
+        b=XgRsCCafQyN3rne3OERXJKQt1kMI2+UuikGfoR/USzDA2v6xM1ou8OeuUf3HEyq656
+         L2QwhbybUXcWEnAAQi5C1SirEQT7EPIj9r63eDAdBlNSdijdVWo3siCRahr3iogoamuq
+         RKyXs4PSLvJmgxb/lRbeG6fOTb6pjWx6goKzGuDo7wkURd6cnrcqDIOLm/xiy2/MCb6P
+         qNy0gfObfVWVejrmGMRAcnM/9hn4vBnNV37lVZltPO+Unc5en7Iz15Aexfr6GqWcpqjc
+         DGpNMP1VWyCw8ZXTzdAAXyd+HFVibW8K9CIWkUmQKxMCRVOxaCG7fK9/2s7jTVDXa5T/
+         kUhA==
+X-Gm-Message-State: AOAM530QcSMLr/KQlF3JGLf+/IWG/CMkN5Hghi7I5wasYTE4QcUFzkHa
+        f79NSW8ucyGbsURlQsjXBLvpEz3gXOSX8xAcA6KixRoLQ3IDQK8W
+X-Google-Smtp-Source: ABdhPJxy/Ur2hDT/68wIG/Irz6OXDxV8Fmp4IUEF6IrTWOr+be7a0paoRJwfUOS9N26GzD7nzDbiiTy5tZijSDy+m8A=
+X-Received: by 2002:a25:c7c6:: with SMTP id w189mr7830598ybe.403.1603856490277;
+ Tue, 27 Oct 2020 20:41:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <160141647786.7997.5490924406329369782.stgit@sifl>
- <alpine.LRH.2.21.2009300909150.6592@namei.org> <CAHC9VhTM_a+L8nY8QLVdA1FcL8hjdV1ZNLJcr6G_Q27qPD_5EQ@mail.gmail.com>
-In-Reply-To: <CAHC9VhTM_a+L8nY8QLVdA1FcL8hjdV1ZNLJcr6G_Q27qPD_5EQ@mail.gmail.com>
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Tue, 27 Oct 2020 22:09:49 -0400
-Message-ID: <CAHC9VhSq6stUdMSS5MXKDas5RHnrJiKSDU60CbKYe04x2DvymQ@mail.gmail.com>
-Subject: Re: [RFC PATCH] lsm,selinux: pass the family information along with
- xfrm flow
-To:     linux-security-module@vger.kernel.org
-Cc:     selinux@vger.kernel.org, Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, James Morris <jmorris@namei.org>
+References: <20201027233646.3434896-1-irogers@google.com> <20201027233646.3434896-2-irogers@google.com>
+In-Reply-To: <20201027233646.3434896-2-irogers@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 27 Oct 2020 20:41:19 -0700
+Message-ID: <CAEf4BzbeJqCq_OHrBQWHoXtALPSHZ7hY2OHL59BuvCcfF1nrpQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] tools, bpftool: Remove two unused variables.
+To:     Ian Rogers <irogers@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Michal Rostecki <mrostecki@opensuse.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Sep 30, 2020 at 9:44 AM Paul Moore <paul@paul-moore.com> wrote:
-> On Tue, Sep 29, 2020 at 7:09 PM James Morris <jmorris@namei.org> wrote:
-> > I'm not keen on adding a parameter which nobody is using. Perhaps a note
-> > in the header instead?
+On Tue, Oct 27, 2020 at 4:37 PM Ian Rogers <irogers@google.com> wrote:
 >
-> On Wed, Sep 30, 2020 at 6:14 AM Herbert Xu <herbert@gondor.apana.org.au> wrote:
-> > Please at least change to the struct flowi to flowi_common if we're
-> > not adding a family field.
+> Avoid an unused variable warning.
 >
-> It did feel a bit weird adding a (currently) unused parameter, so I
-> can understand the concern, I just worry that a comment in the code
-> will be easily overlooked.  I also thought about passing a pointer to
-> the nested flowi_common struct, but it doesn't appear that this is
-> done anywhere else in the stack so it felt wrong to do it here.
+> Signed-off-by: Ian Rogers <irogers@google.com>
+> ---
 
-With the merge window behind us, where do stand on this?  I see the
-ACK from Casey and some grumbling about adding an unused parameter
-(which is a valid argument, I just feel the alternative is worse), but
-I haven't seen any serious NACKs.
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
-Any objections or other strong feelings to me merging this via the
-selinux/next branch?
-
--- 
-paul moore
-www.paul-moore.com
+>  tools/bpf/bpftool/skeleton/profiler.bpf.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/tools/bpf/bpftool/skeleton/profiler.bpf.c b/tools/bpf/bpftool/skeleton/profiler.bpf.c
+> index 4e3512f700c0..ce5b65e07ab1 100644
+> --- a/tools/bpf/bpftool/skeleton/profiler.bpf.c
+> +++ b/tools/bpf/bpftool/skeleton/profiler.bpf.c
+> @@ -70,7 +70,7 @@ int BPF_PROG(fentry_XXX)
+>  static inline void
+>  fexit_update_maps(u32 id, struct bpf_perf_event_value *after)
+>  {
+> -       struct bpf_perf_event_value *before, diff, *accum;
+> +       struct bpf_perf_event_value *before, diff;
+>
+>         before = bpf_map_lookup_elem(&fentry_readings, &id);
+>         /* only account samples with a valid fentry_reading */
+> @@ -95,7 +95,7 @@ int BPF_PROG(fexit_XXX)
+>  {
+>         struct bpf_perf_event_value readings[MAX_NUM_MATRICS];
+>         u32 cpu = bpf_get_smp_processor_id();
+> -       u32 i, one = 1, zero = 0;
+> +       u32 i, zero = 0;
+>         int err;
+>         u64 *count;
+>
+> --
+> 2.29.0.rc2.309.g374f81d7ae-goog
+>
