@@ -2,96 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B2B329E035
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 02:11:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDC9D29E154
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:00:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730110AbgJ2BLu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 21:11:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51324 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729861AbgJ1WFL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:05:11 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05ED6C0613CF
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:05:11 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id 23so894740ljv.7
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:05:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6RgMxKcrxfWcCrPGpUNDV3hziCJkG59Qu7/5cCUuIBQ=;
-        b=IyTD+Hke82m6aRlezzLOka0h4MepZinimVyEYyRZqSWlegMfn0lYc8H/2OUV8yMtSq
-         tMzhUkYkKnHUX8dcuDZIbjXEUAObRpf/BEeMw+pgRYZiIMJ96queOmywsDyVJ5OxWOxr
-         HEl8PS8ayrpRyfa9dqdJZlbekwaI2p8yDlWxM=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6RgMxKcrxfWcCrPGpUNDV3hziCJkG59Qu7/5cCUuIBQ=;
-        b=BnKB6du06gbGoZ0bKkMw27vwFaAN2EEp1dw2aODgbpUpsx5ku77/+nx88rYe+0IqvD
-         BVoQ3/GfVL8KxFoHsVxDJJy43mf7ctzjC4ffKh031eL1yEoQQm4jtl03GgxCzVR6LMPw
-         qlfO4VqrLBYoEda+ocWaWFA3+TvIZbwJDlvfApdAUjWcnIkS8APrngMWThWrAxd7o7Ye
-         dB9IpDNJrpEfZ9QAIXd3rjADe8Xk4BcERZaFl6vcGKkVPqrItJ38jl8oJfqGKpkRTVR0
-         Mb6FC73BhKu+tDYxZL/ZOxQktXWU/GBBkdr2q9/sMcX9kP/A2lt9qNHV7r3HEDyRgS9Q
-         0xbg==
-X-Gm-Message-State: AOAM532UL08FKEXxP0+dsVkqe/ssQDhAwFbp5qP6CyqCBR4LeQC1Rd1E
-        yEQN9NFH8szIXfi5dFn8qgqQ06kh8d5otg==
-X-Google-Smtp-Source: ABdhPJyjivtTeadSmcyE8s59P1u37MYwEFhVpgsgiGMMKPFvSWLeZ2R2PzbtbHKSSACuuY+0hbsuJg==
-X-Received: by 2002:a2e:9dd1:: with SMTP id x17mr463312ljj.219.1603922708907;
-        Wed, 28 Oct 2020 15:05:08 -0700 (PDT)
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com. [209.85.167.53])
-        by smtp.gmail.com with ESMTPSA id 27sm81038lfy.109.2020.10.28.15.05.07
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 28 Oct 2020 15:05:07 -0700 (PDT)
-Received: by mail-lf1-f53.google.com with SMTP id i6so788222lfd.1
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:05:07 -0700 (PDT)
-X-Received: by 2002:ac2:4d03:: with SMTP id r3mr450997lfi.89.1603922707215;
- Wed, 28 Oct 2020 15:05:07 -0700 (PDT)
-MIME-Version: 1.0
-References: <20201028142433.18501-1-kitakar@gmail.com> <20201028142433.18501-3-kitakar@gmail.com>
-In-Reply-To: <20201028142433.18501-3-kitakar@gmail.com>
-From:   Brian Norris <briannorris@chromium.org>
-Date:   Wed, 28 Oct 2020 15:04:55 -0700
-X-Gmail-Original-Message-ID: <CA+ASDXMXoyOr9oHBjtXZ1w9XxDggv+=XS4nwn0qKWCHQ3kybdw@mail.gmail.com>
-Message-ID: <CA+ASDXMXoyOr9oHBjtXZ1w9XxDggv+=XS4nwn0qKWCHQ3kybdw@mail.gmail.com>
-Subject: Re: [PATCH 2/3] mwifiex: add allow_ps_mode module parameter
-To:     Tsuchiya Yuto <kitakar@gmail.com>
-Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1728874AbgJ2CAR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 22:00:17 -0400
+Received: from wnew4-smtp.messagingengine.com ([64.147.123.18]:33483 "EHLO
+        wnew4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728214AbgJ1Vvt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:51:49 -0400
+X-Greylist: delayed 621 seconds by postgrey-1.27 at vger.kernel.org; Wed, 28 Oct 2020 17:51:49 EDT
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.west.internal (Postfix) with ESMTP id 57550FE5;
+        Tue, 27 Oct 2020 22:46:08 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Tue, 27 Oct 2020 22:46:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        subject:to:cc:references:from:message-id:date:mime-version
+        :in-reply-to:content-type:content-transfer-encoding; s=fm1; bh=9
+        kAvLz/bxHGG/V595tWQ2rZ+1UuS5eb7cM1uxdeI31U=; b=nGX+Z5ieR4ZfXzii5
+        nUG4GRmGqByBamJCWnFh3FDMq98d0MXPEhmZvhjZU8TPrPZDpZu7OmMV99vEILiX
+        BP9GaVs0DOpbTRs4YsSmH+l+47ChCtkxIPufWg3bFrBOR6+WUn3XQA6HdyHaRTiY
+        DR6PnfRJOW389vKPuYnWDIVlzA0tkrfOewawsptbQkERMjhy6bdG5VL1+KFOkxBT
+        q3n2Zyo2H5yYI0eA9irzS6LrlBCtFJnfiK+nz3qXFXLGtQ8pS6D0yPAvDHijDfHj
+        CiJbHWO4O7w9OjPisPnEUYDbU0LL1eqhklH2UsvxPmdtoHA7Sthl5cbf/335Poi/
+        +IrQw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; bh=9kAvLz/bxHGG/V595tWQ2rZ+1UuS5eb7cM1uxdeI3
+        1U=; b=PeW8/sc6fMqRLRgUsQIcXg430dokhLWsq7mjExjWy+6bIehTCGL41p9y4
+        tFwSnhA0Ws5VM5B+//fYweLJkTgCt3CfDb/GSUMBa9rIrJ/EQnIeAwqxfaGVffzA
+        kK6E8EqGAGAX2/el8a3jBnUVPIAiB5j9ifiIDtGWhn9YS8iDZbQwom0CKTXiT6Uy
+        oTKPzoodBxLHIFuBTUHs3rCYGkxrvNq9KFdFR45xk2PaxT2mOqP3ngphPgp3V5KD
+        8+HPJ4eTZtG5keSwMjc5DhQJg9ZoMT/jJ15dfMW+KgztICHvEKIeD2vVvbWZNS88
+        vcnz3b2QzGJAEaqgZ91V4VN3sRWHg==
+X-ME-Sender: <xms:btuYX8XW83qC46a6RIYoHz18NhcrRWtNz4-IdaNn3gFooGXIAPcpBw>
+    <xme:btuYXwmMWYhZSLYVxuE8djZ49abKVxkSx48PpLbKHwENhyFjgTEPq7-x8Ydah7GZI
+    X2L9PKX3ZrMnBWxHA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrledtgdehtdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefuvfhfhffkffgfgggjtgfgsehtjeertddtfeejnecuhfhrohhmpefurghmuhgv
+    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
+    frrghtthgvrhhnpefgveffteelheffjeeukedvkedviedtheevgeefkeehueeiieeuteeu
+    gfettdeggeenucfkphepjedtrddufeehrddugeekrdduhedunecuvehluhhsthgvrhfuih
+    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhlrghn
+    ugdrohhrgh
+X-ME-Proxy: <xmx:btuYXwYOnV8bH050x_9BLK8kdgMUtz21twVv9YmTiCZE1i7Ski2jxA>
+    <xmx:btuYX7XI4zYYY8lSM_geqhOmPqwYBOZlcizhogEcDQsFnQ1UjeI9Qg>
+    <xmx:btuYX2nXbj6tFXFrb4CZJ81WrrfJW86N1xNUWm4gls3TuW7bX8VYNQ>
+    <xmx:b9uYX7iAgKbpdH_LPd23xCE4XFE6Cjk77p9w_E7T0DoBr39vijSeNlHh77Y>
+Received: from [192.168.50.169] (70-135-148-151.lightspeed.stlsmo.sbcglobal.net [70.135.148.151])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 883293280063;
+        Tue, 27 Oct 2020 22:46:05 -0400 (EDT)
+Subject: Re: [linux-sunxi] Re: [PATCH] net: phy: realtek: omit setting
+ PHY-side delay when "rgmii" specified
+To:     Icenowy Zheng <icenowy@aosc.io>
+Cc:     andrew@lunn.ch, Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl
-Content-Type: text/plain; charset="UTF-8"
+        Willy Liu <willy.liu@realtek.com>,
+        Jernej Skrabec <jernej.skrabec@siol.net>,
+        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-sunxi@googlegroups.com
+References: <20201025085556.2861021-1-icenowy@aosc.io>
+ <20201025141825.GB792004@lunn.ch>
+ <77AAA8B8-2918-4646-BE47-910DDDE38371@aosc.io>
+ <20201025143608.GD792004@lunn.ch>
+ <F5D81295-B4CD-4B80-846A-39503B70E765@aosc.io>
+ <20201025172848.GI792004@lunn.ch>
+ <C3279C11-EE7F-49FA-9BB3-ACA797B7B690@aosc.io>
+ <20201026121257.GB836546@lunn.ch>
+From:   Samuel Holland <samuel@sholland.org>
+Message-ID: <6f75be3f-90d7-982e-0f43-e742f04bb26e@sholland.org>
+Date:   Tue, 27 Oct 2020 21:46:04 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
+MIME-Version: 1.0
+In-Reply-To: <20201026121257.GB836546@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 2:56 PM Tsuchiya Yuto <kitakar@gmail.com> wrote:
->
-> To make the ps_mode (power_save) control easier, this commit adds a new
-> module parameter allow_ps_mode and set it false (disallowed) by default.
+Icenowy,
 
-This sounds like a bad idea, as it breaks all the existing users who
-expect this feature to be allowed. Seems like you should flip the
-defaults. Without some better justification, NACK.
+On 10/26/20 7:12 AM, Andrew Lunn wrote:
+>> By referring to linux/phy.h, NA means not applicable. This surely
+>> do not apply when RGMII is really in use.
+> 
+> It means the PHY driver should not touch the mode, something else has
+> set it up. That could be strapping, the bootloader, ACPI firmware,
+> whatever.
+> 
+>> I think no document declares RGMII must have all internal delays
+>> of the PHY explicitly disabled. It just says RGMII.
+> 
+> Please take a look at all the other PHY drivers. They should all
+> disable delays when passed PHY_INTERFACE_MODE_RGMII.
 
-Also, I can't find the other 2 patches in this alleged series. Maybe
-they're still making it through the mailing lists and archives.
+Documentation/networking/phy.rst also makes this clear:
 
-Brian
+PHY_INTERFACE_MODE_RGMII: the PHY is not responsible for inserting any internal
+delay by itself, it assumes that either the Ethernet MAC (if capable or the PCB
+traces) insert the correct 1.5-2ns delay
 
-> When this parameter is set to false, changing the power_save mode will
-> be disallowed like the following:
->
->     $ sudo iw dev mlan0 set power_save on
->     command failed: Operation not permitted (-1)
->
-> Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
+Regards,
+Samuel
