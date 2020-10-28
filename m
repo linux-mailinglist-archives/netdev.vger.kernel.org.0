@@ -2,210 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C38C29D8C5
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:36:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F36C29D977
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:55:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388347AbgJ1WgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 18:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56758 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387836AbgJ1WgN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:36:13 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4259C0613D1;
-        Wed, 28 Oct 2020 15:36:12 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id f21so343978plr.5;
-        Wed, 28 Oct 2020 15:36:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wUafzXmN1fiYZSw7cbOBZF12NArhlfVl1gsXYHPJ9hM=;
-        b=UYBUdFIvxBj29SgLEr+PGFX5gVUE8FB3CJJRd/bfzpIQQ5KYJtggQpbY18+Pv5Cp9U
-         GETiiq9f9VgN6/0CGEKAuvp5kSsWipRguLnJ8NAhl0vX8PWSPjbxjcbxJBoCoHvFafwf
-         W23JBMb9GkgESvHW/T5YT+zmhkBYllOpcFPAMyYGUWadanyIQZ3LpPrVWAW+fIzBF9lo
-         0kj8lQoCHvovgnZmqayUr/fUgssea4HlPXT4VbSIgJwyvU5Fj6YscXekqqCglCv5NoiE
-         JzavnYIycuqqz9tI8hlAoIZdaUKxNEH9tmqgEBH1OefZ3RvsPIECbr+xvUzf5vWy/UOP
-         zyuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wUafzXmN1fiYZSw7cbOBZF12NArhlfVl1gsXYHPJ9hM=;
-        b=pOGP/IATimki/PXuv+nIzwUKt0EeSalHEGzZCEo1+drjQzRZOi5yRji9ba+LCt28zJ
-         ++glzABmosFkajXnd9aBUqPYQE7SeXfNEs6w2McAOwiTyQo1EKBM/AL1kXMmX6besh29
-         y6ErutnKF6mlCI0pvgk4GKrWAMXJKdFC4U7RZmqu5cfOIIp9S41Xh5/xYWKgQrS8mNCh
-         WWaK9Cg+TFY4G6zntBtO8zGg1qXH20L/ARG5DCbziOg96sWIG9aAB3rsOYN3+zQDSnci
-         Q0eUb5YKMf7/aNkvax9d420T9IVoOu8nAV3Il/jJ/F9IYYrqqVIRwOtUBhLRXjTnoMRF
-         QpAA==
-X-Gm-Message-State: AOAM533TpTFNAmh+rpnBCqPsw0nsgT9UfrzNknQVPFzyBhHk4IOi2wGq
-        8+N9ThxhkoY9WLbIO3mIf6jQLng9/yz0YIw7
-X-Google-Smtp-Source: ABdhPJzErfbq9Axb2rnwLp5dHWjy9HVcmEllOuyy9jBLW7mTYF4ZduBV2MEQaTfs1jwmX5emGT7rtA==
-X-Received: by 2002:aa7:9d03:0:b029:164:2981:2331 with SMTP id k3-20020aa79d030000b029016429812331mr7939350pfp.0.1603892150737;
-        Wed, 28 Oct 2020 06:35:50 -0700 (PDT)
-Received: from btopel-mobl.ger.intel.com ([192.55.55.43])
-        by smtp.gmail.com with ESMTPSA id q14sm5935393pjp.43.2020.10.28.06.35.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 06:35:50 -0700 (PDT)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, ast@kernel.org, daniel@iogearbox.net,
-        maciej.fijalkowski@intel.com, sridhar.samudrala@intel.com,
-        jesse.brandeburg@intel.com, qi.z.zhang@intel.com, kuba@kernel.org,
-        edumazet@google.com, intel-wired-lan@lists.osuosl.org,
-        jonathan.lemon@gmail.com
-Subject: [RFC PATCH bpf-next 8/9] samples/bpf: add busy-poll support to xdpsock
-Date:   Wed, 28 Oct 2020 14:34:36 +0100
-Message-Id: <20201028133437.212503-9-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20201028133437.212503-1-bjorn.topel@gmail.com>
-References: <20201028133437.212503-1-bjorn.topel@gmail.com>
+        id S2389723AbgJ1Wyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:54:50 -0400
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:16474 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389713AbgJ1Wyq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:54:46 -0400
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5f997e1e0000>; Wed, 28 Oct 2020 07:20:14 -0700
+Received: from mtl-vdi-166.wap.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 28 Oct
+ 2020 14:20:08 +0000
+Date:   Wed, 28 Oct 2020 16:20:04 +0200
+From:   Eli Cohen <elic@nvidia.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        <virtualization@lists.linux-foundation.org>,
+        netdev <netdev@vger.kernel.org>, <lingshan.zhu@intel.com>
+Subject: [PATCH] vhost: Use mutex to protect vq_irq setup
+Message-ID: <20201028142004.GA100353@mtl-vdi-166.wap.labs.mlnx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1603894814; bh=1UqLxryNwpAoBkVqxCn+8MfW4GniDM/9EYbPYP3IOJ4=;
+        h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:
+         Content-Disposition:User-Agent:X-Originating-IP:X-ClientProxiedBy;
+        b=W+0RGDwY1l7fHb5lOSqguXXvdEXnvYtJar85ZogO08r/irrRUt7xlLMvY/ekW+Jj9
+         Uh3++n3undl/blZoAXxiStMcr9ldMIWltaJNHDGMqAUkNtx8LfYI4svP7ZYVVdtAMP
+         aMPmR/FNkc0qnjDrrJpp8pdGe4w7oSwvdc6Y5guNj6MzMSOLRMcwxyCVDbUD9T/OTL
+         wTyLWnXIb0uvVVV2vFcNNzH3k9Iy1FFs+lcbku82wxluLK/Kj4UnReDiU6fvsuBasf
+         GnwgoYLcb3RA77XVz4kquZngFe+0qIcl2snFH7yGxG8dalOonJcBV9eCRI1j+eo0LP
+         z8vuI10EN9qVQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+Both irq_bypass_register_producer() and irq_bypass_unregister_producer()
+require process context to run. Change the call context lock from
+spinlock to mutex to protect the setup process to avoid deadlocks.
 
-Add a new option to xdpsock, 'B', for busy-polling. This option will
-also set the batching size, 'b' option, to the busy-poll budget.
-
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+Fixes: 265a0ad8731d ("vhost: introduce vhost_vring_call")
+Signed-off-by: Eli Cohen <elic@nvidia.com>
 ---
- samples/bpf/xdpsock_user.c | 40 +++++++++++++++++++++++++++++++-------
- 1 file changed, 33 insertions(+), 7 deletions(-)
+ drivers/vhost/vdpa.c  | 10 +++++-----
+ drivers/vhost/vhost.c |  6 +++---
+ drivers/vhost/vhost.h |  3 ++-
+ 3 files changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-index 96d0b6482ac4..7ef2c01a1094 100644
---- a/samples/bpf/xdpsock_user.c
-+++ b/samples/bpf/xdpsock_user.c
-@@ -95,6 +95,7 @@ static int opt_timeout = 1000;
- static bool opt_need_wakeup = true;
- static u32 opt_num_xsks = 1;
- static u32 prog_id;
-+static bool opt_busy_poll;
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index be783592fe58..0a744f2b6e76 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -98,26 +98,26 @@ static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, u16 qid)
+ 		return;
  
- struct xsk_ring_stats {
- 	unsigned long rx_npkts;
-@@ -911,6 +912,7 @@ static struct option long_options[] = {
- 	{"quiet", no_argument, 0, 'Q'},
- 	{"app-stats", no_argument, 0, 'a'},
- 	{"irq-string", no_argument, 0, 'I'},
-+	{"busy-poll", no_argument, 0, 'B'},
- 	{0, 0, 0, 0}
- };
- 
-@@ -949,6 +951,7 @@ static void usage(const char *prog)
- 		"  -Q, --quiet          Do not display any stats.\n"
- 		"  -a, --app-stats	Display application (syscall) statistics.\n"
- 		"  -I, --irq-string	Display driver interrupt statistics for interface associated with irq-string.\n"
-+		"  -B, --busy-poll      Busy poll.\n"
- 		"\n";
- 	fprintf(stderr, str, prog, XSK_UMEM__DEFAULT_FRAME_SIZE,
- 		opt_batch_size, MIN_PKT_SIZE, MIN_PKT_SIZE,
-@@ -964,7 +967,7 @@ static void parse_command_line(int argc, char **argv)
- 	opterr = 0;
- 
- 	for (;;) {
--		c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:xQaI:",
-+		c = getopt_long(argc, argv, "Frtli:q:pSNn:czf:muMd:b:C:s:P:xQaI:B",
- 				long_options, &option_index);
- 		if (c == -1)
- 			break;
-@@ -1062,7 +1065,9 @@ static void parse_command_line(int argc, char **argv)
- 				fprintf(stderr, "ERROR: Failed to get irqs for %s\n", opt_irq_str);
- 				usage(basename(argv[0]));
- 			}
--
-+			break;
-+		case 'B':
-+			opt_busy_poll = 1;
- 			break;
- 		default:
- 			usage(basename(argv[0]));
-@@ -1132,7 +1137,7 @@ static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk,
- 		while (ret != rcvd) {
- 			if (ret < 0)
- 				exit_with_error(-ret);
--			if (xsk_ring_prod__needs_wakeup(&umem->fq)) {
-+			if (opt_busy_poll || xsk_ring_prod__needs_wakeup(&umem->fq)) {
- 				xsk->app_stats.fill_fail_polls++;
- 				ret = poll(fds, num_socks, opt_timeout);
- 			}
-@@ -1180,7 +1185,7 @@ static void rx_drop(struct xsk_socket_info *xsk)
- 
- 	rcvd = xsk_ring_cons__peek(&xsk->rx, opt_batch_size, &idx_rx);
- 	if (!rcvd) {
--		if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq)) {
-+		if (opt_busy_poll || xsk_ring_prod__needs_wakeup(&xsk->umem->fq)) {
- 			xsk->app_stats.rx_empty_polls++;
- 			recvfrom(xsk_socket__fd(xsk->xsk), NULL, 0, MSG_DONTWAIT, NULL, NULL);
- 		}
-@@ -1191,7 +1196,7 @@ static void rx_drop(struct xsk_socket_info *xsk)
- 	while (ret != rcvd) {
- 		if (ret < 0)
- 			exit_with_error(-ret);
--		if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq)) {
-+		if (opt_busy_poll || xsk_ring_prod__needs_wakeup(&xsk->umem->fq)) {
- 			xsk->app_stats.fill_fail_polls++;
- 			recvfrom(xsk_socket__fd(xsk->xsk), NULL, 0, MSG_DONTWAIT, NULL, NULL);
- 		}
-@@ -1342,7 +1347,7 @@ static void l2fwd(struct xsk_socket_info *xsk, struct pollfd *fds)
- 
- 	rcvd = xsk_ring_cons__peek(&xsk->rx, opt_batch_size, &idx_rx);
- 	if (!rcvd) {
--		if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq)) {
-+		if (opt_busy_poll || xsk_ring_prod__needs_wakeup(&xsk->umem->fq)) {
- 			xsk->app_stats.rx_empty_polls++;
- 			ret = poll(fds, num_socks, opt_timeout);
- 		}
-@@ -1354,7 +1359,7 @@ static void l2fwd(struct xsk_socket_info *xsk, struct pollfd *fds)
- 		if (ret < 0)
- 			exit_with_error(-ret);
- 		complete_tx_l2fwd(xsk, fds);
--		if (xsk_ring_prod__needs_wakeup(&xsk->tx)) {
-+		if (opt_busy_poll || xsk_ring_prod__needs_wakeup(&xsk->tx)) {
- 			xsk->app_stats.tx_wakeup_sendtos++;
- 			kick_tx(xsk);
- 		}
-@@ -1461,6 +1466,24 @@ static void enter_xsks_into_map(struct bpf_object *obj)
+ 	irq = ops->get_vq_irq(vdpa, qid);
+-	spin_lock(&vq->call_ctx.ctx_lock);
++	mutex_lock(&vq->call_ctx.ctx_lock);
+ 	irq_bypass_unregister_producer(&vq->call_ctx.producer);
+ 	if (!vq->call_ctx.ctx || irq < 0) {
+-		spin_unlock(&vq->call_ctx.ctx_lock);
++		mutex_unlock(&vq->call_ctx.ctx_lock);
+ 		return;
  	}
+ 
+ 	vq->call_ctx.producer.token = vq->call_ctx.ctx;
+ 	vq->call_ctx.producer.irq = irq;
+ 	ret = irq_bypass_register_producer(&vq->call_ctx.producer);
+-	spin_unlock(&vq->call_ctx.ctx_lock);
++	mutex_unlock(&vq->call_ctx.ctx_lock);
  }
  
-+static void apply_setsockopt(struct xsk_socket_info *xsk)
-+{
-+	int sock_opt;
-+
-+	if (!opt_busy_poll)
-+		return;
-+
-+	sock_opt = 1;
-+	if (setsockopt(xsk_socket__fd(xsk->xsk), SOL_SOCKET, SO_BIAS_BUSY_POLL,
-+		       (void *)&sock_opt, sizeof(sock_opt)) < 0)
-+		exit_with_error(errno);
-+
-+	sock_opt = 20; // randomly picked :-P
-+	if (setsockopt(xsk_socket__fd(xsk->xsk), SOL_SOCKET, SO_BUSY_POLL,
-+		       (void *)&sock_opt, sizeof(sock_opt)) < 0)
-+		exit_with_error(errno);
-+}
-+
- int main(int argc, char **argv)
+ static void vhost_vdpa_unsetup_vq_irq(struct vhost_vdpa *v, u16 qid)
  {
- 	struct rlimit r = {RLIM_INFINITY, RLIM_INFINITY};
-@@ -1502,6 +1525,9 @@ int main(int argc, char **argv)
- 	for (i = 0; i < opt_num_xsks; i++)
- 		xsks[num_socks++] = xsk_configure_socket(umem, rx, tx);
+ 	struct vhost_virtqueue *vq = &v->vqs[qid];
  
-+	for (i = 0; i < opt_num_xsks; i++)
-+		apply_setsockopt(xsks[i]);
-+
- 	if (opt_bench == BENCH_TXONLY) {
- 		gen_eth_hdr_data();
+-	spin_lock(&vq->call_ctx.ctx_lock);
++	mutex_lock(&vq->call_ctx.ctx_lock);
+ 	irq_bypass_unregister_producer(&vq->call_ctx.producer);
+-	spin_unlock(&vq->call_ctx.ctx_lock);
++	mutex_unlock(&vq->call_ctx.ctx_lock);
+ }
  
+ static void vhost_vdpa_reset(struct vhost_vdpa *v)
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index 9ad45e1d27f0..938239e11455 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -302,7 +302,7 @@ static void vhost_vring_call_reset(struct vhost_vring_call *call_ctx)
+ {
+ 	call_ctx->ctx = NULL;
+ 	memset(&call_ctx->producer, 0x0, sizeof(struct irq_bypass_producer));
+-	spin_lock_init(&call_ctx->ctx_lock);
++	mutex_init(&call_ctx->ctx_lock);
+ }
+ 
+ static void vhost_vq_reset(struct vhost_dev *dev,
+@@ -1650,9 +1650,9 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
+ 			break;
+ 		}
+ 
+-		spin_lock(&vq->call_ctx.ctx_lock);
++		mutex_lock(&vq->call_ctx.ctx_lock);
+ 		swap(ctx, vq->call_ctx.ctx);
+-		spin_unlock(&vq->call_ctx.ctx_lock);
++		mutex_unlock(&vq->call_ctx.ctx_lock);
+ 		break;
+ 	case VHOST_SET_VRING_ERR:
+ 		if (copy_from_user(&f, argp, sizeof f)) {
+diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
+index 9032d3c2a9f4..e8855ea04205 100644
+--- a/drivers/vhost/vhost.h
++++ b/drivers/vhost/vhost.h
+@@ -64,7 +64,8 @@ enum vhost_uaddr_type {
+ struct vhost_vring_call {
+ 	struct eventfd_ctx *ctx;
+ 	struct irq_bypass_producer producer;
+-	spinlock_t ctx_lock;
++	/* protect vq irq setup */
++	struct mutex ctx_lock;
+ };
+ 
+ /* The virtqueue structure describes a queue attached to a device. */
 -- 
 2.27.0
 
