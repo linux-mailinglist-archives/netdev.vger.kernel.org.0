@@ -2,95 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8DB829DFCC
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 02:04:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8195F29DFC6
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 02:04:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404201AbgJ2BEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 21:04:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51516 "EHLO
+        id S2404144AbgJ2BEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 21:04:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730047AbgJ1WGK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:06:10 -0400
-Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16346C0613CF
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:06:10 -0700 (PDT)
-Received: by mail-io1-xd43.google.com with SMTP id u62so1142158iod.8
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:06:10 -0700 (PDT)
+        with ESMTP id S1730048AbgJ1WGN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:06:13 -0400
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFAECC0613CF
+        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:06:12 -0700 (PDT)
+Received: by mail-qk1-x730.google.com with SMTP id a23so447821qkg.13
+        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:06:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=CaMeZWP6qzxq2+1qSUMa2h3pJmFR05HnJ0hcGdrwgY4=;
-        b=bMsuz/hCOh51wQ5U2qp0O4kDC0rrCywK3j94rKux8pSj4EIXX1yqJRfFb1CNR6A0HA
-         VFnA5BUcjgpQk1hEo60ArrNHpOfocU9hlPXpfhM92IuYmbw/kp6V9FMY1Bc2LJCKvexB
-         hby3ZjjWDPxGKuVDadZKpLlifIRV+p03cHpxsNcKuubDqGzsMneFkrPDj1MVKKTI5l2P
-         sKbhuYRm6dmj3Donk4FOe34w4yMvhuwmCVuNulBVG5a42Oaa83dJyAnI2WjH2gsdkvaH
-         cVViBHc8b/UKjNk2NRYbnUxgY4jLefpQexGBeLGNb3alcZBWc7FeXcdNEyNXEHwQyxvM
-         mMew==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=em1UkxWJ9idsvmwiA6+mB4JFVSjEKYk7JDBS5sWZCBI=;
+        b=X0ExGhJdCJotNFfTMfAn07bnEVeDDjmYhvZvqC7ZMTm9OidOnhMm7F51BGUpR5P9i3
+         PgP2W2VFBktjosddDfYnLUte4AS8BWPSj2Bxpc3E+B0gpOfnIwD+TJU5jQLJB4mNV76y
+         c1J8UvajRCCqloS0+Fm3e5UFofYCOekCHa0aXCtbR+1GYrblD6wcsOln7XqGjaY2Yg7R
+         zDszvL5Cev9TyT8aCqCWJQLy3VTdaEyyy/0pZHGzKmW+UE9+/12DsvxCZMUGyXB8DW/M
+         cdBJfW3n/w/07LD8Y4WO06TYu0gghaksfK2rNoXX6GQhVrj3nVuhtKMzvTIFjTrEfRTX
+         b4RQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=CaMeZWP6qzxq2+1qSUMa2h3pJmFR05HnJ0hcGdrwgY4=;
-        b=RbVw2Ga27DRysVEzXivHOx0a+X10D4o38G+EoR2kkoe0GrZar0QGSq8wxtGCPtgRV+
-         HChdDe02E5461E+PW1zF/JpoPt/cOvqTo5lwcWK68oqsp/Y3O6LD4PyCRAOaH9X4gHmR
-         wpuQaX00BrbBYWXcV5Xk9f52uUvmPteudNzXBWpiUjzio+jrurxBBX//NZh5cA6ClQZ1
-         hiNLdifxAm0g4GkO5XPt3Nz85wm3C1Go0pMBYeXWpZqOG+pjWJdsErCHBidpSgkGCiz9
-         MhdGka7s0MDUhM5H9hxhuEuBEkycIZyTNQ85A183c+A9/slJtuJhFVv1vDkazguo75jq
-         5QFA==
-X-Gm-Message-State: AOAM533rXS3KE3r9akAWNAguK6XAzUvPfmEnkEsMFhWhMW5kO0XUZj0s
-        6tYUCG1usqtJbR3gwPFAkWAhki06+HotxbcE
-X-Google-Smtp-Source: ABdhPJz2btr46T/LIivXmMrQgP37FQwug9BPjp4bPXh9chcE/sE7TuJhkpxDWW7CjrSgq72wcpBHvg==
-X-Received: by 2002:a63:f74c:: with SMTP id f12mr570874pgk.434.1603909212958;
-        Wed, 28 Oct 2020 11:20:12 -0700 (PDT)
-Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id ca5sm99959pjb.27.2020.10.28.11.20.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 11:20:12 -0700 (PDT)
-Date:   Wed, 28 Oct 2020 11:19:59 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Aleksandr Nogikh <aleksandrnogikh@gmail.com>
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, kuba@kernel.org, andreyknvl@google.com,
-        dvyukov@google.com, elver@google.com, rdunlap@infradead.org,
-        dave.taht@gmail.com, edumazet@google.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Aleksandr Nogikh <nogikh@google.com>,
-        syzbot+ec762a6342ad0d3c0d8f@syzkaller.appspotmail.com
-Subject: Re: [PATCH v2] netem: fix zero division in tabledist
-Message-ID: <20201028111959.6ed6d2c2@hermes.local>
-In-Reply-To: <20201028170731.1383332-1-aleksandrnogikh@gmail.com>
-References: <20201028170731.1383332-1-aleksandrnogikh@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=em1UkxWJ9idsvmwiA6+mB4JFVSjEKYk7JDBS5sWZCBI=;
+        b=Z1KQJINM20kFRqEWTzpkUq4ZeT6lm4ZXxAloPArQRpcvzJuDhSzb/MZZvNAs5QpG+J
+         V3yIiDypuNaMc3vCcYYZr/dXE6qNKMr1cGyLhQuVJZpAsB+bypBRsQu8xkECUFX/4p6j
+         4ohd2WecH/KT90mbcnStgQhFSRMIotp8hvmep7iDIjXHPF1eDakp4Iyu2o5z6BkyOFVv
+         ooUk6cqRXOZjTD2YlV5G+8/hoSJ3Uj/U/BM8N56NEpFYVtdhYPigBWYO9VGGvW7nh2V6
+         atbL7kfTcbBmEmVqaDgTRqbedSn5SGCc6e/IUIXZqXu/cqJy9CXlhB06LPqUgqCzrb7S
+         EQqw==
+X-Gm-Message-State: AOAM532actzCXpjn+aAbrToTkp08gpFgEHcurF2JvqQmprugSy/zXLIv
+        khcit955FUcJzYWnKBM2hkjCd8nqTeWwiCIZcfT+5jB3TwthJQ==
+X-Google-Smtp-Source: ABdhPJxclALkeRBt+T6BJUCrQY+qoH56hU/EZig4e4UJcUDUjJFd4iXaycdnaORTw7pePK/4nY/hXNY8w3ybxcyNyag=
+X-Received: by 2002:a02:a518:: with SMTP id e24mr636917jam.131.1603913352276;
+ Wed, 28 Oct 2020 12:29:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201027032403.1823-1-tung.q.nguyen@dektech.com.au>
+ <CAM_iQpWsUyxSni9+4Khuu28jvski+vfphjJSVgXJH+xS_NWsUQ@mail.gmail.com> <DB7PR05MB431592FDCD6EEB96C8DB0EE688170@DB7PR05MB4315.eurprd05.prod.outlook.com>
+In-Reply-To: <DB7PR05MB431592FDCD6EEB96C8DB0EE688170@DB7PR05MB4315.eurprd05.prod.outlook.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 28 Oct 2020 12:29:01 -0700
+Message-ID: <CAM_iQpXquceLTrbVER1mQGBWk3WFjDTAawNBVSj1a2R6OTp-9w@mail.gmail.com>
+Subject: Re: [tipc-discussion] [net v3 1/1] tipc: fix memory leak caused by tipc_buf_append()
+To:     Tung Quang Nguyen <tung.q.nguyen@dektech.com.au>
+Cc:     "tipc-discussion@lists.sourceforge.net" 
+        <tipc-discussion@lists.sourceforge.net>,
+        Xin Long <lucien.xin@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Oct 2020 17:07:31 +0000
-Aleksandr Nogikh <aleksandrnogikh@gmail.com> wrote:
+On Tue, Oct 27, 2020 at 10:23 PM Tung Quang Nguyen
+<tung.q.nguyen@dektech.com.au> wrote:
+>
+> Hi Cong,
+>
+> No, I have never ignored any comment from reviewers. I sent v2 on Oct 26 after discussing with Xin Long, and v3 on Oct 27 after receiving comment from Jakub.
+> I received your 3 emails nearly at the same time on Oct 28. It's weird. Your emails did not appear in this email archive either: https://sourceforge.net/p/tipc/mailman/tipc-discussion/
+>
+> Anyway, I answer your questions:
 
-> From: Aleksandr Nogikh <nogikh@google.com>
-> 
-> Currently it is possible to craft a special netlink RTM_NEWQDISC
-> command that can result in jitter being equal to 0x80000000. It is
-> enough to set the 32 bit jitter to 0x02000000 (it will later be
-> multiplied by 2^6) or just set the 64 bit jitter via
-> TCA_NETEM_JITTER64. This causes an overflow during the generation of
-> uniformly distributed numbers in tabledist(), which in turn leads to
-> division by zero (sigma != 0, but sigma * 2 is 0).
-> 
-> The related fragment of code needs 32-bit division - see commit
-> 9b0ed89 ("netem: remove unnecessary 64 bit modulus"), so switching to
-> 64 bit is not an option.
-> 
-> Fix the issue by keeping the value of jitter within the range that can
-> be adequately handled by tabledist() - [0;INT_MAX]. As negative std
-> deviation makes no sense, take the absolute value of the passed value
-> and cap it at INT_MAX. Inside tabledist(), switch to unsigned 32 bit
-> arithmetic in order to prevent overflows.
-> 
-> Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
-> Reported-by: syzbot+ec762a6342ad0d3c0d8f@syzkaller.appspotmail.com
+Oh, I just realized you meant shinfo->dataref, not skb->users...
+Then it makes sense now.
 
-Acked-by: Stephen Hemminger <stephen@networkplumber.org>
+Thanks.
