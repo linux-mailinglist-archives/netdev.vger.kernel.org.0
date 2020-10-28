@@ -2,158 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B655029E079
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 02:22:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8AF829E065
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 02:22:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729610AbgJ1WEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 18:04:53 -0400
-Received: from mail-vi1eur05on2113.outbound.protection.outlook.com ([40.107.21.113]:47168
-        "EHLO EUR05-VI1-obe.outbound.protection.outlook.com"
+        id S1729642AbgJ1WE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:04:56 -0400
+Received: from mail-am6eur05on2070.outbound.protection.outlook.com ([40.107.22.70]:56993
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729474AbgJ1WBH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Oct 2020 18:01:07 -0400
+        id S1728749AbgJ1WB4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Oct 2020 18:01:56 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T1iV107LhiBY1XW5kvWWXHyIznpKFykEsKMadVbzyq+7Mpb14bHQBwmfUce5YBlPVo93ihVosNKvY38yOGfQMJEhl9oDsOQKGWUzGzdYiM1GV5QcWzucGHlBNPVGdAX/BQOq4MBTA93Vt7znxHlQhElcKs1+c7kYZgEyHQ7N5bM49U6j9w8RYvlcgY8pt7fKrP4GfU4lyLSg0TuCG17wcP3nlqWSk5NPvsOBSK0vaRteQrSoSn8WBzDZKlLbu9qtgcb1rWpbo1rf8ymw0NnNof13Ct8F9P/lDBSgysuQSVu+nMB4tbEPd88mnFGPagZlol4mYuMuUOt1XcZIOjaijA==
+ b=oM00jVuHuUimqVP7tlaN0rjzrb5rtc+N3rWoOyGw9bPAtHCyiToVQaI71jlm3Uh1zXkRhSLKUb+TLgi2h79lwqT8P6MyRWtEHrVgi1l97NFqULFx6FjqSKdZKOwL6P2ebpXM1hwvPSB8zoMh1Z7Se28Qnk8hr3oEygguMe1rmcUfTSrzc1DKlC88Y6dD/olUldWYV/16Og//36Z9AT0oQW4aLAZrrPVnSNhmmKmVoyZaqewj0XV2UhBLZj8GiM3pK1xdzGRhhpKT4k189VewwO8XLPvhbr3Zg+oUt5UuCd01D9Z4opUGa5CBiVEvvy86411bqcttRGOAK8vgQauTog==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EeexZfz4IIIXjM7qQCd0CQZb2lCAE2McbRf+Agmzy4w=;
- b=OlcvpKsRYxHwt75xT8RbLDmHUuKiJSNpEzngWQ9PbvZRHBDM6umyMKL5AAVMgHkBiSL3Wda/2LM7+wh+Woaevt15wLa81NCAmNuPe03N0fNIt2e0MMnxW5aX/c54ctfGf4s6GCbRwJToepw0ksbNVsYHn836fJIdjLzETgEYC0CKaXqWVNOTv29Xl8KPDbeUwofMTemCkhXi1E672KxgKOGUdYhOpyA8rjT0+jYzfShJTPZgaScW7b1twTSM9OO0VMvEBr5BaUIlwCgd32PsVXS5hGnhzm44sbSq5YfZkb5jgwSd2ibaCkjmksyrgwy/ixWKUn3clBgLiRgPtseZ8Q==
+ bh=PVIjx02oZASJc0uSOHzeUXG0uWjRH/nmqhPghT1CbY0=;
+ b=SYIHpu5cFGTvirXcQnbdLuBbq9blW4guVhlEvnzvCqSUTHkTjGbWxINYyXL1+EipxOcje6qfcludeezW5qITne1DFHGqlew2PpZRYvjfy+yoA01zgiixZfRCCfQr4olU9GL+riqD9QJydeSUR7ZiSFN8nxAu7rqTKdzQLzomUS1czkfW+vdfsfKsnl2s3dT9r7kTIQl769gfVCZ0lidilKU9W+cNH4oYDlYz0gTkWA8Ys1pS7gqLcmjTS+16+kzCQOJUvxgnLdGWQirXlp/Sf5F3HyuChaoQJ/2LvodP9ldAIk7LVcZxAJeSdYM8tlCyPTVqc3070s/80R7F6x1mdg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
- s=selector2;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=EeexZfz4IIIXjM7qQCd0CQZb2lCAE2McbRf+Agmzy4w=;
- b=h67loJ4D+LtS/qXFSQhzi8RbPiafKRQvn9aETiiNHTh+JT5uae9gjV4C2SMgcqfKmqYKnv4weFaHtgAP6grZPdfvQ4JDGHXyFs8/oeP2v0rwPbRs+igfB1Im2W2+466MeBqAbO6V42bay5bqVrDeeBhHIeBNCjJtCZRJhDaQTsc=
-Received: from DB7PR05MB4315.eurprd05.prod.outlook.com (2603:10a6:5:1f::18) by
- DB7PR05MB4473.eurprd05.prod.outlook.com (2603:10a6:5:1b::26) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3477.27; Wed, 28 Oct 2020 05:23:23 +0000
-Received: from DB7PR05MB4315.eurprd05.prod.outlook.com
- ([fe80::c04f:dae3:9fa4:ff56]) by DB7PR05MB4315.eurprd05.prod.outlook.com
- ([fe80::c04f:dae3:9fa4:ff56%4]) with mapi id 15.20.3477.028; Wed, 28 Oct 2020
- 05:23:23 +0000
-From:   Tung Quang Nguyen <tung.q.nguyen@dektech.com.au>
-To:     Cong Wang <xiyou.wangcong@gmail.com>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        Xin Long <lucien.xin@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Subject: RE: [tipc-discussion] [net v3 1/1] tipc: fix memory leak caused by
- tipc_buf_append()
-Thread-Topic: [tipc-discussion] [net v3 1/1] tipc: fix memory leak caused by
- tipc_buf_append()
-Thread-Index: AQHWrBCm58JZTVLJmkGUoOeheDCtC6mr7XKAgABhSqA=
-Date:   Wed, 28 Oct 2020 05:23:23 +0000
-Message-ID: <DB7PR05MB431592FDCD6EEB96C8DB0EE688170@DB7PR05MB4315.eurprd05.prod.outlook.com>
-References: <20201027032403.1823-1-tung.q.nguyen@dektech.com.au>
- <CAM_iQpWsUyxSni9+4Khuu28jvski+vfphjJSVgXJH+xS_NWsUQ@mail.gmail.com>
-In-Reply-To: <CAM_iQpWsUyxSni9+4Khuu28jvski+vfphjJSVgXJH+xS_NWsUQ@mail.gmail.com>
-Accept-Language: en-US
+ bh=PVIjx02oZASJc0uSOHzeUXG0uWjRH/nmqhPghT1CbY0=;
+ b=U9j+7so9QJjtbM+T7mxTt+hAay8w0cKvDtoBfDzwnWJlrHqffzi1uuffGjKvqm+IVlxbXsrsy8KrV8WZVfj5ZyWyr0FD0VpwOnVUxTzviXFLmxCBiMq+xERM4w+GQhCJ43VxOySIm3OWnXODm2A7Eb3Sk0rqTxIsw2d2VPw23uU=
+Received: from AM8PR04MB7315.eurprd04.prod.outlook.com (2603:10a6:20b:1d4::7)
+ by AM4PR0401MB2228.eurprd04.prod.outlook.com (2603:10a6:200:4f::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.24; Wed, 28 Oct
+ 2020 05:28:23 +0000
+Received: from AM8PR04MB7315.eurprd04.prod.outlook.com
+ ([fe80::11e6:d413:2d3d:d271]) by AM8PR04MB7315.eurprd04.prod.outlook.com
+ ([fe80::11e6:d413:2d3d:d271%6]) with mapi id 15.20.3477.028; Wed, 28 Oct 2020
+ 05:28:23 +0000
+From:   Andy Duan <fugang.duan@nxp.com>
+To:     Greg Ungerer <gerg@linux-m68k.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "cphealy@gmail.com" <cphealy@gmail.com>,
+        "dkarr@vyex.com" <dkarr@vyex.com>,
+        "clemens.gruber@pqgruber.com" <clemens.gruber@pqgruber.com>
+Subject: RE: [EXT] [PATCH v2] net: fec: fix MDIO probing for some FEC hardware
+ blocks
+Thread-Topic: [EXT] [PATCH v2] net: fec: fix MDIO probing for some FEC
+ hardware blocks
+Thread-Index: AQHWrOpeCCq9w3UZDUi2T1Oo+DZi56msfECg
+Date:   Wed, 28 Oct 2020 05:28:23 +0000
+Message-ID: <AM8PR04MB7315D4E076D0A74EF3026C26FF170@AM8PR04MB7315.eurprd04.prod.outlook.com>
+References: <20201028052232.1315167-1-gerg@linux-m68k.org>
+In-Reply-To: <20201028052232.1315167-1-gerg@linux-m68k.org>
+Accept-Language: zh-CN, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=dektech.com.au;
-x-originating-ip: [14.161.14.188]
+authentication-results: linux-m68k.org; dkim=none (message not signed)
+ header.d=none;linux-m68k.org; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.67]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 20aa00a1-0318-4fa3-fa33-08d87b01974f
-x-ms-traffictypediagnostic: DB7PR05MB4473:
-x-microsoft-antispam-prvs: <DB7PR05MB44737F63F6DA8362EF255D5E88170@DB7PR05MB4473.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: e30fd114-bb9c-405c-0d8b-08d87b0249d8
+x-ms-traffictypediagnostic: AM4PR0401MB2228:
+x-microsoft-antispam-prvs: <AM4PR0401MB22286BC0AEAF3E97F9768FBFFF170@AM4PR0401MB2228.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: pAkJR/aU5ggEPlj/Cqhmh7iE/gTp+1cz+0nqUQLavrx2KI5ywNYacxqouzIHEhNjp6q7guzLbFdr7MAm7nCOzp+4ChWxOZUH0O2g2ddy04qnt0yVmr0P5EGTySQykfMYYicer1YcHrJeysZrq8pe43Rc9EmmI/ZI3j0uO5tCSUeQgiq0YVZmN93zn+3tqA2HgV6pYkw3FP+fyyZVl4nGf96aTdxe/rnEIJf3FnfY5LI6WFQ3plRgrO/N/5YcHnbsu1oJS3hgWxOaRP4FA89GcExrLpJIKzMFZ+zMJFCamMV6UmtSWc2sVsuu0ZHZCsMViOrOcV8h9dexqq/6qptbQXNUYNEz2qUWWXoY8l8HJRE89yfD5+csx+D+RkG+rZNKIRdUyYGwD2CatE8SMeS+vA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR05MB4315.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(136003)(39840400004)(346002)(366004)(396003)(316002)(110136005)(52536014)(66476007)(66946007)(5660300002)(66446008)(76116006)(66556008)(64756008)(53546011)(71200400001)(26005)(186003)(6506007)(7696005)(8936002)(8676002)(2906002)(9686003)(33656002)(86362001)(55016002)(966005)(478600001)(83380400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: fmRwQNelbRTIjs/mXI6UWRaZuwZZ0b+PzpA7qNIxx5DNUE/SR1haw7eg6Lfiw1Wte6HXNAAFJ1A154g3aE3ctXwI28dwdEUKaY9vQvUQJaK+vKO8V8XauWypbaSmAjMYWRLrgqTx2lKVW/EC5yGwbCyzcD6YSJTA8tLn3ANIEwygRpBByTSPeKv8xSsu2IlwfzW0RXcR5OYrA0eBx/9z5hsaYW3e4d+Sbd7EcTAVyO8PgM2U59k6xMsLV8d462XC0dqVdb1EqpcM8oV9nsAohr4OEUf3NA3SIGm/HnFYdgRoIc2Y1yNqWphf00XeNwBfb7GC6u/Guldij/q/FmnAHES0am6SmldVzaU+aoaocGQWTvRcjBDdDSdmYjgN2icYUsobQEDY0JGxfMuULrkXutbPEmVOLsmzHhcASJqr2HRd0aLz9SB1AJbIy59agleHfjP4fmW41OX04Xg6xED1rdZ48Fnz84St1h1nkAvbJzmSIzWq9qwNMizfN1369cYDGOiJy7mwhIUc0cdCRSeoP8y5WL8gNw+8AdA1zLjQtUoMKU86juk46E94E8dLNvQw0PJekEmwzH46Uzs/Gk9X6tbJXLOwmmYwFWLmS/A4c+CWkjmX4mxrFhwD3wfDnTp+mDx7COgipTKJNhXL/soJcA==
+x-microsoft-antispam-message-info: qFiECNpEtoffhTaIBQlSLHTRySOAWcIXk9mjeb+C8KRDTtHlhBdhkx4guFy6wYrsMbNxVAbExwgjO2L7+o8utX1lSgOFkxRxXRtrtRzPtgSpflk9QQ/i8zLsbRiLGa0mhmzxpanRLWmC5VKT6F+QUdrbRfv/Ztt6SNaP6nmtoTy/MrPXpoBImOiyR6t9Vg3HF3vPi10Eit6TirYNy78U+vuEDKLQf5S4h26mPiq0NH8oIEDarFRjqbgQC3cgbkd5FEOom8LE9sH3TftkQdbT/5z0huYaQ5TeAy37P18SG5h3+tTSeW7O/qKZmXoYTkHtubNEt2dDUM75RQYTgmR2Og==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR04MB7315.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(396003)(39860400002)(376002)(346002)(9686003)(26005)(83380400001)(4326008)(8936002)(316002)(52536014)(8676002)(186003)(6506007)(66556008)(7696005)(5660300002)(76116006)(64756008)(110136005)(478600001)(66476007)(66446008)(66946007)(33656002)(55016002)(86362001)(71200400001)(54906003)(2906002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: IWTxafNbEmn07w3YyiPfAV9CWfa2WZdwNeInc/4IHn9mOgsbJ3HikWe756Z36VOAt6xBo85QC2Vkx+gpdNsuj5Tz+ZgLsBcfYKuVwZV6fsRuPTvJkLZwWmR3zwfwpaw1y65/nvCIQVOMPecNPX+a5bp+35srhyutt44UqRPsnnSbRKeu1oI8tC7bdLUtIfnSVgb3NlnNMWm8fyZxnhkY9WEBAj3ElpVcbLfHukiv8G5nru4VimyJpfnviCgfp+jHmDg7UbQDSCYd/G1YIjJtbUva8r2VgLbcyBVG2CKhedao4TCCFl2wIKm3xgtRhdpTL53yNhY8Fhp6LM+iJdonCSbsOJxBabvo6I3Pq7afnSQfc++cmWzJyvP+uX+KiBEt5N5A8LhIIQZjM9SAI9I3j73ySbDfkNiYdyDUf8ekdvSgHOkrY7V8KtFR5t/B9yLWfkuXhJ+0DoyLjOzxhuy0hhUZw62NdseJnBD8qL63eiRmv66RexQEZJ6buivmfYlq9JUQ4dfVG9BsWkFtHDmcUMMCEEYFynb1KjRtD5w8ff50/QgydoeoLIdiGrS50Qe8C9shca9I2vUDBP0/kB4nbiRRqn3cjPnLPO1XkA7iMnzlXeB8ETsNUQJfIg/dTekANY3+BOoFFKUNTsf9FUvpKQ==
 x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: dektech.com.au
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR05MB4315.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 20aa00a1-0318-4fa3-fa33-08d87b01974f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Oct 2020 05:23:23.3681
+X-MS-Exchange-CrossTenant-AuthSource: AM8PR04MB7315.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e30fd114-bb9c-405c-0d8b-08d87b0249d8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Oct 2020 05:28:23.1255
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 1957ea50-0dd8-4360-8db0-c9530df996b2
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: M/EHy6OsM8G8H/ZCMjmHk4PvluePGm4XqiSjECeDvJAPqcHRnn0DJ0EUHJiqJ5RwHADw6uip3p5RWhI5Dnt8JITQ1k7vmVQAOseiP/zWrsM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR05MB4473
+X-MS-Exchange-CrossTenant-userprincipalname: QUAjWFnJ1zdu4Pe6VrOfQ6OrL7udwfPiQWIDUe3hkPIuGwhu/rR3VDzS6Ix0AeqhTOzUAfbu25POmdyEXhizrg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0401MB2228
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgQ29uZywNCg0KTm8sIEkgaGF2ZSBuZXZlciBpZ25vcmVkIGFueSBjb21tZW50IGZyb20gcmV2
-aWV3ZXJzLiBJIHNlbnQgdjIgb24gT2N0IDI2IGFmdGVyIGRpc2N1c3Npbmcgd2l0aCBYaW4gTG9u
-ZywgYW5kIHYzIG9uIE9jdCAyNyBhZnRlciByZWNlaXZpbmcgY29tbWVudCBmcm9tIEpha3ViLg0K
-SSByZWNlaXZlZCB5b3VyIDMgZW1haWxzIG5lYXJseSBhdCB0aGUgc2FtZSB0aW1lIG9uIE9jdCAy
-OC4gSXQncyB3ZWlyZC4gWW91ciBlbWFpbHMgZGlkIG5vdCBhcHBlYXIgaW4gdGhpcyBlbWFpbCBh
-cmNoaXZlIGVpdGhlcjogaHR0cHM6Ly9zb3VyY2Vmb3JnZS5uZXQvcC90aXBjL21haWxtYW4vdGlw
-Yy1kaXNjdXNzaW9uLw0KDQpBbnl3YXksIEkgYW5zd2VyIHlvdXIgcXVlc3Rpb25zOg0KMS8gV2h5
-IGl0IGlzIG5vdCBjb3JyZWN0IGlmIG5vdCBkZWNyZWFzaW5nIHRoZSBkYXRhIHJlZmVyZW5jZSBj
-b3VudGVyIGluIHRpcGNfYnVmX2FwcGVuZCgpDQpJbiBteSBjaGFuZ2Vsb2csIEkganVzdCBwaW5w
-b2ludGVkIHRoZSBwbGFjZSB3aGVyZSB0aGUgbGVhayB3b3VsZCBoYXBwZW4uIEkgc2hvdyB5b3Ug
-dGhlIGRldGFpbHMgaGVyZToNCnRpcGNfbXNnX3JlYXNzZW1ibGUobGlzdCwtKQ0Kew0KIC4uLg0K
-IGZyYWcgPSBza2JfY2xvbmUoc2tiLCBHRlBfQVRPTUlDKTsgLy8gZWFjaCBkYXRhIHJlZmVyZW5j
-ZSBjb3VudGVyIG9mIHRoZSBvcmlnaW5hbCBza2IgaGFzIHRoZSB2YWx1ZSBvZiAyLg0KIC4uLg0K
-IElmICh0aXBjX2J1Zl9hcHBlbmQoJmhlYWQsICZmcmFnKSkgLy8gZWFjaCBkYXRhIHJlZmVyZW5j
-ZSBjb3VudGVyIG9mIHRoZSBvcmlnaW5hbCBza2IgU1RJTEwgaGFzIHRoZSB2YWx1ZSBvZiAyIGJl
-Y2F1c2UgdGhlIHVzYWdlIG9mIHNrYl9jb3B5KCkgaW5zdGVhZCBvZiBza2JfdW5zaGFyZSgpDQog
-Li4uDQp9DQpUaGUgb3JpZ2luYWwgc2tiIGxpc3QgdGhlbiBpcyBwYXNzZWQgdG8gdGlwY19iY2Fz
-dF94bWl0KCkgd2hpY2ggaW4gdHVybiBjYWxscyB0aXBjX2xpbmtfeG1pdCgpOg0KdGlwY19saW5r
-X3htaXQoLSwgbGlzdCwgLSkNCnsNCiAuLi4NCiBfc2tiID0gc2tiX2Nsb25lKHNrYiwgR0ZQX0FU
-T01JQyk7IC8vIGVhY2ggZGF0YSByZWZlcmVuY2UgY291bnRlciBvZiB0aGUgb3JpZ2luYWwgc2ti
-IGhhcyB0aGUgdmFsdWUgb2YgMy4NCi4uLg0KfQ0KDQpXaGVuIGVhY2ggY2xvbmVkIHNrYiBpcyBz
-ZW50IG91dCBieSB0aGUgZHJpdmVyLCBpdCBpcyBmcmVlZCBieSB0aGUgZHJpdmVyLiBUaGF0IGxl
-YWRzIHRvIGVhY2ggZGF0YSByZWZlcmVuY2UgY291bnRlciBvZiB0aGUgb3JpZ2luYWwgc2tiIGhh
-cyB0aGUgdmFsdWUgb2YgMi4NCkFmdGVyIHJlY2VpdmluZyBBQ0sgZnJvbSBhbm90aGVyIHBlZXIs
-IHRoZSBvcmlnaW5hbCBza2IgbmVlZHMgdG8gYmUgZnJlZWQ6DQp0aXBjX2xpbmtfYWR2YW5jZV90
-cmFuc21xKCkNCnsNCiAuLi4NCiBrZnJlZV9za2Ioc2tiKTsgIC8vIG1lbW9yeSBleGlzdHMgYWZ0
-ZXIgYmVpbmcgZnJlZWQgYmVjYXVzZSB0aGUgZGF0YSByZWZlcmVuY2UgY291bnRlciBzdGlsbCBo
-YXMgdGhlIHZhbHVlIG9mIDIuDQp9DQoNClRoaXMgaW5kZWVkIGNhdXNlcyBtZW1vcnkgbGVhay4N
-Cg0KMi8gV2h5IHByZXZpb3VzbHktdXNlZCBza2JfdW5jbG9uZSgpIHdvcmtzLg0KVGhlIHB1cnBv
-c2Ugb2Ygc2tiX3VuY2xvbmUoKSBpcyB0byB1bmNsb25lIHRoZSBjbG9uZWQgc2tiLiBTbywgaXQg
-ZG9lcyBub3QgbWFrZSBhbnkgc2Vuc2UgdG8gc2F5IHRoYXQgIiBza2JfdW5jbG9uZSgpIGV4cGVj
-dHMgcmVmY250ID09IDEiIGFzIEkgdW5kZXJzdGFuZA0KeW91IGltcGxpZWQgdGhlIGRhdGEgcmVm
-ZXJlbmNlIGNvdW50ZXIuDQpwc2tiX2V4cGFuZF9oZWFkKCkgaW5zaWRlIHNrYl91bmNsb25lKCkg
-cmVxdWlyZXMgdGhhdCB0aGUgdXNlciByZWZlcmVuY2UgY291bnRlciBoYXMgdGhlIHZhbHVlIG9m
-IDEgYXMgaW1wbGVtZW50ZWQ6DQpwc2tiX2V4cGFuZF9oZWFkKCkNCnsNCiAuLi4NCiBCVUdfT04o
-c2tiX3NoYXJlZChza2IpKTsgLy8gVXNlciByZWZlcmVuY2UgY291bnRlciBtdXN0IGJlIDENCi4u
-Lg0KYXRvbWljX3NldCgmc2tiX3NoaW5mbyhza2IpLT5kYXRhcmVmLCAxKTsgLy8gVGhlIGRhdGEg
-cmVmZXJlbmNlIGNvdW50ZXIgb2YgdGhlIG9yaWdpbmFsIHNrYiBoYXMgdGhlIHZhbHVlIG9mIDEN
-Ci4uLg0KfQ0KVGhhdCBleHBsYWlucyB3aHkgYWZ0ZXIgYmVpbmcgcGFzc2VkIHRvIHRpcGNfbGlu
-a194bWl0KCksIGVhY2ggZGF0YSByZWZlcmVuY2UgY291bnRlciBvZiBlYWNoIG9yaWdpbmFsIHNr
-YiBoYXMgdGhlIHZhbHVlIG9mIDIgYW5kIGNhbiBiZSBmcmVlZCBpbiB0aXBjX2xpbmtfYWR2YW5j
-ZV90cmFuc21xKCkuDQoNCkJlc3QgcmVnYXJkcywNClR1bmcgTmd1eWVuDQoNCi0tLS0tT3JpZ2lu
-YWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBDb25nIFdhbmcgPHhpeW91Lndhbmdjb25nQGdtYWlsLmNv
-bT4gDQpTZW50OiBXZWRuZXNkYXksIE9jdG9iZXIgMjgsIDIwMjAgMzo1MCBBTQ0KVG86IFR1bmcg
-UXVhbmcgTmd1eWVuIDx0dW5nLnEubmd1eWVuQGRla3RlY2guY29tLmF1Pg0KQ2M6IERhdmlkIE1p
-bGxlciA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47IExpbnV4IEtlcm5lbCBOZXR3b3JrIERldmVsb3Bl
-cnMgPG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc+OyB0aXBjLWRpc2N1c3Npb25AbGlzdHMuc291cmNl
-Zm9yZ2UubmV0DQpTdWJqZWN0OiBSZTogW3RpcGMtZGlzY3Vzc2lvbl0gW25ldCB2MyAxLzFdIHRp
-cGM6IGZpeCBtZW1vcnkgbGVhayBjYXVzZWQgYnkgdGlwY19idWZfYXBwZW5kKCkNCg0KT24gVHVl
-LCBPY3QgMjcsIDIwMjAgYXQgMTowOSBQTSBUdW5nIE5ndXllbg0KPHR1bmcucS5uZ3V5ZW5AZGVr
-dGVjaC5jb20uYXU+IHdyb3RlOg0KPg0KPiBDb21taXQgZWQ0Mjk4OWVhYjU3ICgidGlwYzogZml4
-IHRoZSBza2JfdW5zaGFyZSgpIGluIHRpcGNfYnVmX2FwcGVuZCgpIikNCj4gcmVwbGFjZWQgc2ti
-X3Vuc2hhcmUoKSB3aXRoIHNrYl9jb3B5KCkgdG8gbm90IHJlZHVjZSB0aGUgZGF0YSByZWZlcmVu
-Y2UNCj4gY291bnRlciBvZiB0aGUgb3JpZ2luYWwgc2tiIGludGVudGlvbmFsbHkuIFRoaXMgaXMg
-bm90IHRoZSBjb3JyZWN0DQo+IHdheSB0byBoYW5kbGUgdGhlIGNsb25lZCBza2IgYmVjYXVzZSBp
-dCBjYXVzZXMgbWVtb3J5IGxlYWsgaW4gMg0KPiBmb2xsb3dpbmcgY2FzZXM6DQo+ICAxLyBTZW5k
-aW5nIG11bHRpY2FzdCBtZXNzYWdlcyB2aWEgYnJvYWRjYXN0IGxpbmsNCj4gICBUaGUgb3JpZ2lu
-YWwgc2tiIGxpc3QgaXMgY2xvbmVkIHRvIHRoZSBsb2NhbCBza2IgbGlzdCBmb3IgbG9jYWwNCj4g
-ICBkZXN0aW5hdGlvbi4gQWZ0ZXIgdGhhdCwgdGhlIGRhdGEgcmVmZXJlbmNlIGNvdW50ZXIgb2Yg
-ZWFjaCBza2INCj4gICBpbiB0aGUgb3JpZ2luYWwgbGlzdCBoYXMgdGhlIHZhbHVlIG9mIDIuIFRo
-aXMgY2F1c2VzIGVhY2ggc2tiIG5vdA0KPiAgIHRvIGJlIGZyZWVkIGFmdGVyIHJlY2VpdmluZyBB
-Q0s6DQoNClRoaXMgZG9lcyBub3QgbWFrZSBzZW5zZSBhdCBhbGwuDQoNCnNrYl91bmNsb25lKCkg
-ZXhwZWN0cyByZWZjbnQgPT0gMSwgYXMgc3RhdGVkIGluIHRoZSBjb21tZW50cw0KYWJvdmUgcHNr
-Yl9leHBhbmRfaGVhZCgpLiBza2JfdW5jbG9uZSgpIHdhcyB1c2VkIHByaW9yIHRvDQpYaW4gTG9u
-ZydzIGNvbW1pdC4NCg0KU28gZWl0aGVyIHRoZSBhYm92ZSBpcyB3cm9uZywgb3Igc29tZXRoaW5n
-IGltcG9ydGFudCBpcyBzdGlsbCBtaXNzaW5nDQppbiB5b3VyIGNoYW5nZWxvZy4gTm9uZSBvZiB0
-aGVtIGlzIGFkZHJlc3NlZCBpbiB5b3VyIFYzLg0KDQpJIGFsc28gYXNrZWQgeW91IHR3byBxdWVz
-dGlvbnMgYmVmb3JlIHlvdSBzZW50IFYzLCB5b3Ugc2VlbSB0bw0KaW50ZW50aW9uYWxseSBpZ25v
-cmUgdGhlbS4gVGhpcyBpcyBub3QgaG93IHdlIGNvbGxhYm9yYXRlLg0KDQpUaGFua3MuDQo=
+From: Greg Ungerer <gerg@linux-m68k.org> Sent: Wednesday, October 28, 2020 =
+1:23 PM
+> Some (apparently older) versions of the FEC hardware block do not like th=
+e
+> MMFR register being cleared to avoid generation of MII events at initiali=
+zation
+> time. The action of clearing this register results in no future MII event=
+s being
+> generated at all on the problem block. This means the probing of the MDIO=
+ bus
+> will find no PHYs.
+>=20
+> Create a quirk that can be checked at the FECs MII init time so that the =
+right
+> thing is done. The quirk is set as appropriate for the FEC hardware block=
+s that
+> are known to need this.
+>=20
+> Fixes: f166f890c8f0 ("net: ethernet: fec: Replace interrupt driven MDIO w=
+ith
+> polled IO")
+> Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
+Thanks!
+
+Acked-by: Fugang Duan <fugand.duan@nxp.com>
+> ---
+>  drivers/net/ethernet/freescale/fec.h      |  6 +++++
+>  drivers/net/ethernet/freescale/fec_main.c | 29 +++++++++++++----------
+>  2 files changed, 22 insertions(+), 13 deletions(-)
+>=20
+> v2: use quirk for imx28 as well
+>=20
+> Resending for consideration based on Andy's last comment that this fix is=
+ enough
+> on its own for all hardware types.
+>=20
+> diff --git a/drivers/net/ethernet/freescale/fec.h
+> b/drivers/net/ethernet/freescale/fec.h
+> index 832a2175636d..c527f4ee1d3a 100644
+> --- a/drivers/net/ethernet/freescale/fec.h
+> +++ b/drivers/net/ethernet/freescale/fec.h
+> @@ -456,6 +456,12 @@ struct bufdesc_ex {
+>   */
+>  #define FEC_QUIRK_HAS_FRREG            (1 << 16)
+>=20
+> +/* Some FEC hardware blocks need the MMFR cleared at setup time to
+> +avoid
+> + * the generation of an MII event. This must be avoided in the older
+> + * FEC blocks where it will stop MII events being generated.
+> + */
+> +#define FEC_QUIRK_CLEAR_SETUP_MII      (1 << 17)
+> +
+>  struct bufdesc_prop {
+>         int qid;
+>         /* Address of Rx and Tx buffers */ diff --git
+> a/drivers/net/ethernet/freescale/fec_main.c
+> b/drivers/net/ethernet/freescale/fec_main.c
+> index fb37816a74db..65784d3e54a5 100644
+> --- a/drivers/net/ethernet/freescale/fec_main.c
+> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> @@ -100,14 +100,14 @@ static const struct fec_devinfo fec_imx27_info =3D
+> {  static const struct fec_devinfo fec_imx28_info =3D {
+>         .quirks =3D FEC_QUIRK_ENET_MAC | FEC_QUIRK_SWAP_FRAME |
+>                   FEC_QUIRK_SINGLE_MDIO | FEC_QUIRK_HAS_RACC |
+> -                 FEC_QUIRK_HAS_FRREG,
+> +                 FEC_QUIRK_HAS_FRREG |
+> FEC_QUIRK_CLEAR_SETUP_MII,
+>  };
+>=20
+>  static const struct fec_devinfo fec_imx6q_info =3D {
+>         .quirks =3D FEC_QUIRK_ENET_MAC | FEC_QUIRK_HAS_GBIT |
+>                   FEC_QUIRK_HAS_BUFDESC_EX | FEC_QUIRK_HAS_CSUM
+> |
+>                   FEC_QUIRK_HAS_VLAN | FEC_QUIRK_ERR006358 |
+> -                 FEC_QUIRK_HAS_RACC,
+> +                 FEC_QUIRK_HAS_RACC | FEC_QUIRK_CLEAR_SETUP_MII,
+>  };
+>=20
+>  static const struct fec_devinfo fec_mvf600_info =3D { @@ -119,7 +119,8 @=
+@
+> static const struct fec_devinfo fec_imx6x_info =3D {
+>                   FEC_QUIRK_HAS_BUFDESC_EX | FEC_QUIRK_HAS_CSUM
+> |
+>                   FEC_QUIRK_HAS_VLAN | FEC_QUIRK_HAS_AVB |
+>                   FEC_QUIRK_ERR007885 | FEC_QUIRK_BUG_CAPTURE |
+> -                 FEC_QUIRK_HAS_RACC | FEC_QUIRK_HAS_COALESCE,
+> +                 FEC_QUIRK_HAS_RACC | FEC_QUIRK_HAS_COALESCE |
+> +                 FEC_QUIRK_CLEAR_SETUP_MII,
+>  };
+>=20
+>  static const struct fec_devinfo fec_imx6ul_info =3D { @@ -127,7 +128,7 @=
+@
+> static const struct fec_devinfo fec_imx6ul_info =3D {
+>                   FEC_QUIRK_HAS_BUFDESC_EX | FEC_QUIRK_HAS_CSUM
+> |
+>                   FEC_QUIRK_HAS_VLAN | FEC_QUIRK_ERR007885 |
+>                   FEC_QUIRK_BUG_CAPTURE | FEC_QUIRK_HAS_RACC |
+> -                 FEC_QUIRK_HAS_COALESCE,
+> +                 FEC_QUIRK_HAS_COALESCE |
+> FEC_QUIRK_CLEAR_SETUP_MII,
+>  };
+>=20
+>  static struct platform_device_id fec_devtype[] =3D { @@ -2114,15 +2115,1=
+7 @@
+> static int fec_enet_mii_init(struct platform_device *pdev)
+>         if (suppress_preamble)
+>                 fep->phy_speed |=3D BIT(7);
+>=20
+> -       /* Clear MMFR to avoid to generate MII event by writing MSCR.
+> -        * MII event generation condition:
+> -        * - writing MSCR:
+> -        *      - mmfr[31:0]_not_zero & mscr[7:0]_is_zero &
+> -        *        mscr_reg_data_in[7:0] !=3D 0
+> -        * - writing MMFR:
+> -        *      - mscr[7:0]_not_zero
+> -        */
+> -       writel(0, fep->hwp + FEC_MII_DATA);
+> +       if (fep->quirks & FEC_QUIRK_CLEAR_SETUP_MII) {
+> +               /* Clear MMFR to avoid to generate MII event by writing
+> MSCR.
+> +                * MII event generation condition:
+> +                * - writing MSCR:
+> +                *      - mmfr[31:0]_not_zero & mscr[7:0]_is_zero &
+> +                *        mscr_reg_data_in[7:0] !=3D 0
+> +                * - writing MMFR:
+> +                *      - mscr[7:0]_not_zero
+> +                */
+> +               writel(0, fep->hwp + FEC_MII_DATA);
+> +       }
+>=20
+>         writel(fep->phy_speed, fep->hwp + FEC_MII_SPEED);
+>=20
+> --
+> 2.25.1
+
