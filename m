@@ -2,103 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39B6729D9BB
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 00:02:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C944F29DA86
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 00:24:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389971AbgJ1XCP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 19:02:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32844 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389972AbgJ1XCA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 19:02:00 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1ECBC0613CF
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 16:02:00 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id n16so730013pgv.13
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 16:02:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TUlnabYwJbmwCsAq+3MDXPWMYoadiAajc+ALYtRJQ48=;
-        b=Qhhd7c8anPZmWdBLktiMl/rUykryd9F84GkzD6KfPs7wLCdJjgvK3o7TQqTpC8iROa
-         r9tWuwxfsvYzGiv7GERO94arW92pAJ0YUwTBDNq5JDMw+7anpT0GAu0D5x/7/cVRfUwL
-         raBlz+yqt568jfsAUyCp5OizILWIub/fGK+s/kz2jPiKi33vvBkfWRB9aQ9vDxXg23aX
-         m/0py+MiNoCMiLo97wrrANneovtp+tC49aGRYYdXL+KDILJXituSgZY3p76MUsERqA2D
-         bDV8nlD5veRiNGIR5FG0QrbfyYSv+q7O2pF5RY9Kuu9tnMxPTpJhO9l82TcXGYqn/XME
-         mt3A==
+        id S2389114AbgJ1XKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 19:10:43 -0400
+Received: from mail-pg1-f198.google.com ([209.85.215.198]:36263 "EHLO
+        mail-pg1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731130AbgJ1XJD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 19:09:03 -0400
+Received: by mail-pg1-f198.google.com with SMTP id c16so631900pgn.3
+        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 16:09:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TUlnabYwJbmwCsAq+3MDXPWMYoadiAajc+ALYtRJQ48=;
-        b=Kqkv6WNtPo6PMu3TCa2+PzQETzafSf7XhxcwUIACr9dk6qpdjgx9DBFYuOn6lR4SNx
-         n/uXhGgVYRwRXWOFzJtp0EtlFad7XNDIRJWmb+4cxIvSswHCIA2K10iBwKF+rhY8tw2R
-         B2YW53xlFdE2ZtjYV+Gsig0/NHb0SfRtc/wFikDjeahL2RLmosPyeGOVKJ3S4fZ+9afP
-         4FTdedS0ra3UOFyaSSKEgzIKxU6/vfm0LW1jzgw2PuTPj7TVYU6cNij+4qX9Ttvdv4sE
-         KubiEQJqa9npkdwBCzPbPbGWz6BnAFSmtKHBH3iOcD5g3UUpFdW5nPqzHDFPBLPPoAkG
-         q/+A==
-X-Gm-Message-State: AOAM532dH4J4Z9FBIkPdslXD22A4Acsk2OLOOoAAMAu1tOOBOADDSn0S
-        NhBRM0XtrXSiiK40eZ4zlplXnm9e/Qg=
-X-Google-Smtp-Source: ABdhPJxZfezvwGzUluoOtJVRv0UarYbk/SG/dOBiAprj4uONRAx2Tq7+ZjUFnQ2P9q6n/xYJGbrcOA==
-X-Received: by 2002:a05:6e02:112:: with SMTP id t18mr6091468ilm.299.1603898570219;
-        Wed, 28 Oct 2020 08:22:50 -0700 (PDT)
-Received: from Davids-MacBook-Pro.local ([2601:282:803:7700:e1b0:db06:9a2d:91c5])
-        by smtp.googlemail.com with ESMTPSA id m13sm2765612ioo.9.2020.10.28.08.22.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 28 Oct 2020 08:22:49 -0700 (PDT)
-Subject: Re: [PATCH net-next v2] net: core: enable SO_BINDTODEVICE for
- non-root users
-To:     Vincent Bernat <vincent@bernat.ch>
-Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        Laurent Fasnacht <fasnacht@protonmail.ch>
-References: <20200331132009.1306283-1-vincent@bernat.ch>
- <20200402.174735.1088204254915987225.davem@davemloft.net>
- <m37drhs1jn.fsf@bernat.ch> <ac5341e0-2ed7-2cfb-ec96-5e063fca9598@gmail.com>
- <87tuugkui2.fsf@bernat.ch>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <feef6da5-efbe-6ab9-0a2e-761cd7340cf7@gmail.com>
-Date:   Wed, 28 Oct 2020 09:22:48 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
- Gecko/20100101 Thunderbird/68.12.1
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=MqjoSdva1wfK+hQdS37oMwtOGGifvUM6vcpSTQxQdrQ=;
+        b=HQ9Bue713yqLef1A00u8OHbGJ1GyaosCiUoQxSF+9sWutI7MOjy9gVVEzWBr4T0Nd4
+         R0WMyMWk27s1KXIAaXdlybYkJDykSGkWBGSAMFFz0Nntn1uGE2dH7fvubPGfPXeBWpaf
+         uEAdzUED6XqiTmGrckl5ktMhE/bSFfU+qC7Dpez4QwhsGMo3adS/Nqt6z3erh/OcTjAm
+         fHEx5qSz0yyYuWcM+Xxt2k8+ZoPmluWJAXb9KXPkqMgcSqdanxscg+u5VlFtWaKgeuTw
+         lAMEEyOthgBbFmNll9WNtDtPQJ5N8O6M2AbDmS58CHDIStJt/sMTL+z8G+DEjaKnVGPo
+         B2OA==
+X-Gm-Message-State: AOAM532y7TiavMQW+6/PkYGiLAq7Wf2ALirBzhMvVe43CstJqzrtl/h8
+        hLfHgpNX0MQYz+/xV48kknYyLngrHMGnesYpZ7mPSjxj9bbs
+X-Google-Smtp-Source: ABdhPJx2SIcqpONqSHWatP8dAS6iVcIj+SrI5NXPfmppkaaJMp/6HoiWQcW951WoP33zEbBBiRzemuMy6VQGpaQx5te6qm3H04OY
 MIME-Version: 1.0
-In-Reply-To: <87tuugkui2.fsf@bernat.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a92:d709:: with SMTP id m9mr6503546iln.226.1603899197532;
+ Wed, 28 Oct 2020 08:33:17 -0700 (PDT)
+Date:   Wed, 28 Oct 2020 08:33:17 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ecb1de05b2bce118@google.com>
+Subject: WARNING in ovs_dp_cmd_new
+From:   syzbot <syzbot+d35e01f2daf3cee35470@syzkaller.appspotmail.com>
+To:     amit.kucheria@linaro.org, daniel.lezcano@linaro.org,
+        davem@davemloft.net, dev@openvswitch.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pshelar@ovn.org, rui.zhang@intel.com,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/27/20 1:17 AM, Vincent Bernat wrote:
->  ❦ 23 octobre 2020 08:40 -06, David Ahern:
-> 
->>> I am wondering if we should revert the patch for 5.10 while we can,
->>> waiting for a better solution (and breaking people relying on the new
->>> behavior in 5.9).
->>>
->>> Then, I can propose a patch with a sysctl to avoid breaking existing
->>> setups.
->>>
->>
->> I have not walked the details, but it seems like a security policy can
->> be installed to get the previous behavior.
-> 
-> libtorrent is using SO_BINDTODEVICE for some reason (code is quite old,
-> so not git history). Previously, the call was unsuccesful and the error
-> was logged and ignored. Now, it succeeds and circumvent the routing
-> policy. Using Netfiler does not help as libtorrent won't act on dropped
-> packets as the socket is already configured on the wrong interface.
-> kprobe is unable to modify a syscall and seccomp cannot be applied
-> globally. LSM are usually distro specific. What kind of security policy
-> do you have in mind?
-> 
+Hello,
 
-nothing specific; I was hand waving.
+syzbot found the following issue on:
 
-There are bpf hooks to set and unset socket options, but those seem
-inconvenient here.
+HEAD commit:    3cb12d27 Merge tag 'net-5.10-rc1' of git://git.kernel.org/..
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=155125b0500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=46c6fea3eb827ae1
+dashboard link: https://syzkaller.appspot.com/bug?extid=d35e01f2daf3cee35470
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=144916df900000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=14eee964500000
 
-I guess a sysctl is the only practical solution. If you do that we
-should have granularity - any device, l3mdev devices only, ...
+The issue was bisected to:
+
+commit 1ce50e7d408ef2bdc8ca021363fd46d1b8bfad00
+Author: Daniel Lezcano <daniel.lezcano@linaro.org>
+Date:   Mon Jul 6 10:55:37 2020 +0000
+
+    thermal: core: genetlink support for events/cmd/sampling
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14d64554500000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=16d64554500000
+console output: https://syzkaller.appspot.com/x/log.txt?x=12d64554500000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+d35e01f2daf3cee35470@syzkaller.appspotmail.com
+Fixes: 1ce50e7d408e ("thermal: core: genetlink support for events/cmd/sampling")
+
+netlink: 44 bytes leftover after parsing attributes in process `syz-executor235'.
+------------[ cut here ]------------
+Dropping previously announced user features
+WARNING: CPU: 1 PID: 8534 at net/openvswitch/datapath.c:1587 ovs_dp_reset_user_features net/openvswitch/datapath.c:1587 [inline]
+WARNING: CPU: 1 PID: 8534 at net/openvswitch/datapath.c:1587 ovs_dp_cmd_new+0xca7/0xec0 net/openvswitch/datapath.c:1725
+Modules linked in:
+CPU: 1 PID: 8534 Comm: syz-executor235 Not tainted 5.9.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:ovs_dp_reset_user_features net/openvswitch/datapath.c:1587 [inline]
+RIP: 0010:ovs_dp_cmd_new+0xca7/0xec0 net/openvswitch/datapath.c:1725
+Code: 2a 0f b6 04 02 84 c0 74 04 3c 03 7e 21 c7 43 68 00 00 00 00 e9 17 fe ff ff e8 05 86 d6 f8 48 c7 c7 a0 fa 6a 8a e8 89 f2 11 00 <0f> 0b eb be 4c 89 e7 e8 4d fb 17 f9 eb d5 e8 e6 fa 17 f9 e9 3f ff
+RSP: 0018:ffffc9000162f510 EFLAGS: 00010286
+RAX: 0000000000000000 RBX: ffff888025989300 RCX: 0000000000000000
+RDX: ffff88801fcb1a40 RSI: ffffffff8158ce35 RDI: fffff520002c5e94
+RBP: ffff88801cd87100 R08: 0000000000000001 R09: ffff8880b9f2005b
+R10: 0000000000000000 R11: 0000000000000000 R12: ffff888025989368
+R13: 0000000000000006 R14: ffff8880188d9ff8 R15: ffff888027e1b3c0
+FS:  0000000001138880(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000055600d8b5628 CR3: 0000000020260000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
+ genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
+ genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
+ netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:651 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:671
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2353
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2440
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x4419b9
+Code: e8 fc ab 02 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 1b 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffe494aefa8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00000000004419b9
+RDX: 0000000000000000 RSI: 0000000020000500 RDI: 0000000000000003
+RBP: 0000000000015d76 R08: 00000000004002c8 R09: 00000000004002c8
+R10: 00000000004002c8 R11: 0000000000000246 R12: 0000000000402760
+R13: 00000000004027f0 R14: 0000000000000000 R15: 0000000000000000
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
