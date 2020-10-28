@@ -2,65 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3032429E285
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:18:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7419C29E2DE
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:44:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404429AbgJ2CSt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 22:18:49 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:6705 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725843AbgJ2CSY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 22:18:24 -0400
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CM8Hh6yMNzkb6j;
-        Thu, 29 Oct 2020 10:18:24 +0800 (CST)
-Received: from linux-lmwb.huawei.com (10.175.103.112) by
- DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
- 14.3.487.0; Thu, 29 Oct 2020 10:18:15 +0800
-From:   Zou Wei <zou_wei@huawei.com>
-To:     <rain.1986.08.12@gmail.com>, <zyjzyj2000@gmail.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Zou Wei <zou_wei@huawei.com>
-Subject: [PATCH -next] net: nvidia: forcedeth: remove useless if/else
-Date:   Thu, 29 Oct 2020 10:30:14 +0800
-Message-ID: <1603938614-53589-1-git-send-email-zou_wei@huawei.com>
-X-Mailer: git-send-email 2.6.2
+        id S1726707AbgJ1VfK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 17:35:10 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:34437 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726694AbgJ1VfF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:35:05 -0400
+Received: by mail-ot1-f66.google.com with SMTP id k3so539594otp.1;
+        Wed, 28 Oct 2020 14:35:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dm29FGJ3HmM/IlgprUU1WrHRYzNgHTCNIAv/rcKqb3E=;
+        b=B2LxXgI1ogF0WFOJCxCq3Hxyf3TKRVpH2mAubeklbKWFSVuJmDy5g18jCdArVR+DcZ
+         HvWKI44eYHvr/R83MgiBPBhAiBpRN2+2Jq3dwum5+byv/xQP83TZMtuh1DIzXl6Ic6fv
+         PJ3fW2ZY5Yf5Mp/2/wW0893vbUlqdZdMlHT43MEX2zVbTjIBeANH6Nr26cBPaRZDfFjA
+         su+Bs6iFBRew8SjCYILlq6ACQYpkhMT1yeTQ6dwR7INEsreZRgvURvVr67OqOHCIawJE
+         9glllvegRQ8LWrso1soCrJj7ufoBpoalnn8EZ7yEUueX2GoevgiAKT5YS343LLJQmmMt
+         LA2A==
+X-Gm-Message-State: AOAM532Bwv0AUEijQC+ckAShqVz59wxAd/xiaU5FTjbSgqT3RCU0ZYXp
+        WZmCINeXDjxXSL8keBaI61psi+c4IfONjdxQ1XBZQ8iAPtowqQ==
+X-Google-Smtp-Source: ABdhPJyiFo5ZuvsGBWsEWNiTUNzawsjQjWkumJ/qvE8apdgG5pLkLHcLQeoXYV3O5WRNlHx+5G1aglKsES1yvUIXIU4=
+X-Received: by 2002:a9d:5e14:: with SMTP id d20mr4090804oti.107.1603873848080;
+ Wed, 28 Oct 2020 01:30:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.103.112]
-X-CFilter-Loop: Reflected
+References: <20201027205723.12514-1-ardb@kernel.org>
+In-Reply-To: <20201027205723.12514-1-ardb@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 28 Oct 2020 09:30:37 +0100
+Message-ID: <CAMuHMdVmOCmRsJVixPA2U9jB5AKL7NQdCzxx8f5FoXpyOpDwGA@mail.gmail.com>
+Subject: Re: [PATCH] bpf: don't rely on GCC __attribute__((optimize)) to
+ disable GCSE
+To:     Ard Biesheuvel <ardb@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Arvind Sankar <nivedita@alum.mit.edu>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Kees Cook <keescook@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following coccinelle report:
+Hi Ard,
 
-./drivers/net/ethernet/nvidia/forcedeth.c:3479:8-10:
-WARNING: possible condition with no effect (if == else)
+On Tue, Oct 27, 2020 at 9:57 PM Ard Biesheuvel <ardb@kernel.org> wrote:
+> Commit 3193c0836f203 ("bpf: Disable GCC -fgcse optimization for
+> ___bpf_prog_run()") introduced a __no_fgcse macro that expands to a
+> function scope __attribute__((optimize("-fno-gcse"))), to disable a
+> GCC specific optimization that was causing trouble on x86 builds, and
+> was not expected to have any positive effect in the first place.
+>
+> However, as the GCC manual documents, __attribute__((optimize))
+> is not for production use, and results in all other optimization
+> options to be forgotten for the function in question. This can
+> cause all kinds of trouble, but in one particular reported case,
+> it causes -fno-asynchronous-unwind-tables to be disregarded,
+> resulting in .eh_frame info to be emitted for the function
+> inadvertently.
+>
+> This reverts commit 3193c0836f203, and instead, it disables the -fgcse
+> optimization for the entire source file, but only when building for
+> X86.
+>
+> Cc: Nick Desaulniers <ndesaulniers@google.com>
+> Cc: Arvind Sankar <nivedita@alum.mit.edu>
+> Cc: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Josh Poimboeuf <jpoimboe@redhat.com>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
+> Cc: Geert Uytterhoeven <geert@linux-m68k.org>
+> Cc: Kees Cook <keescook@chromium.org>
+> Fixes: 3193c0836f203 ("bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()")
+> Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
 
-Both branches are the same, so remove the else if/else altogether.
+Thanks, this gets rid of the following warning, which you may
+want to quote in the patch description:
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zou Wei <zou_wei@huawei.com>
----
- drivers/net/ethernet/nvidia/forcedeth.c | 3 ---
- 1 file changed, 3 deletions(-)
+    aarch64-linux-gnu-ld: warning: orphan section `.eh_frame' from
+`kernel/bpf/core.o' being placed in section `.eh_frame'
 
-diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/ethernet/nvidia/forcedeth.c
-index 2fc10a3..87ed7e1 100644
---- a/drivers/net/ethernet/nvidia/forcedeth.c
-+++ b/drivers/net/ethernet/nvidia/forcedeth.c
-@@ -3476,9 +3476,6 @@ static int nv_update_linkspeed(struct net_device *dev)
- 	} else if (adv_lpa & LPA_10FULL) {
- 		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
- 		newdup = 1;
--	} else if (adv_lpa & LPA_10HALF) {
--		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
--		newdup = 0;
- 	} else {
- 		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
- 		newdup = 0;
+Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.6.2
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
