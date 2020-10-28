@@ -2,98 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BDD929DC20
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 01:21:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7160129DC51
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 01:24:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388965AbgJ1Wim (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 18:38:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57144 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388951AbgJ1Wib (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:38:31 -0400
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F609C0613CF;
-        Wed, 28 Oct 2020 15:38:31 -0700 (PDT)
-Received: by mail-oi1-x243.google.com with SMTP id x203so1236078oia.10;
-        Wed, 28 Oct 2020 15:38:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=oRd9D9KAGEvSUVDHFx51Z3pe4W3JS4rlMi+zj5tnu1o=;
-        b=E8ql5xGfRHpoTKr5i0U4XM9uzxC6u2e9Cg3/yWktFZDdSuRO6Udnjb7bA3rCe9EnUG
-         8cIQMmKu7BUC4a0CJ8oFGmBVSKHR0QRNlTOVJQG4a4IhAJW2NHV1grRhMQUmzccVLcC9
-         onsJs2Ihyxv3p5mJNwmpmmsx9jMdvIbYUgH1mvLb2cogBg8iLX58dBUz+r82kCKHVvnb
-         XumzNtq+C05tnupu1y3h8jPs/EIisyHYrMzfPJ+h0052DweivHzgByZDQi8JNFRKysny
-         FHHfLpjyjztIKOBRKGcDOuk6qtN2e+9lTmDCOG764V61f0M6J7B3i0hqr0ttd07PAhbv
-         8LMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=oRd9D9KAGEvSUVDHFx51Z3pe4W3JS4rlMi+zj5tnu1o=;
-        b=qVh3tAo0s2weUv26rBSWrKJXKFS0KIK9QXJgu1sEQfRg1Bza+gJ84GIh/kbsx9oJfS
-         KUCxWJ3YanUEC9HYtMVe8AV6pYcnOQAz3FrmJJB6Hf8hCp/K/QWbHOVGdr867XFuap7y
-         kZFGBvgkcOztNEinfs8yNY0eS6yHuHcGKt4nLGfh61z8cqb2y1K+KNKe/Zq5k8xHzuGR
-         D8bRk/5yu7xLBwveJoYl4wQ8WRqtQU4XMng7bdSon/H0mGu0DJmZax3OgU8WQhFUptI/
-         fH/UJNS263LLUWdJI5Ao59mRAaxsWkh56YFtyd6gM7DXu3NV4g6zghFzfzzm4RqwU/qz
-         i2Iw==
-X-Gm-Message-State: AOAM532XU2g56jSzPmCWHxYCKFfObNFTVl2No6024+DUU8jfLpj1GPjb
-        Z2g+nDf2afvUXgo/5QNUAjIRvVhyeNlFYbj8
-X-Google-Smtp-Source: ABdhPJw08anLcn91mXmmfsPzN+W5dpD39hXzuhPgRbUE4/T21wkwPxdeaE55dA/3l8zuJN2Sj8xr2A==
-X-Received: by 2002:a17:90b:23c2:: with SMTP id md2mr2718827pjb.205.1603892156901;
-        Wed, 28 Oct 2020 06:35:56 -0700 (PDT)
-Received: from btopel-mobl.ger.intel.com ([192.55.55.43])
-        by smtp.gmail.com with ESMTPSA id q14sm5935393pjp.43.2020.10.28.06.35.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 06:35:56 -0700 (PDT)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, ast@kernel.org, daniel@iogearbox.net,
-        maciej.fijalkowski@intel.com, sridhar.samudrala@intel.com,
-        jesse.brandeburg@intel.com, qi.z.zhang@intel.com, kuba@kernel.org,
-        edumazet@google.com, intel-wired-lan@lists.osuosl.org,
-        jonathan.lemon@gmail.com
-Subject: [RFC PATCH bpf-next 9/9] samples/bpf: add option to set the busy-poll budget
-Date:   Wed, 28 Oct 2020 14:34:37 +0100
-Message-Id: <20201028133437.212503-10-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20201028133437.212503-1-bjorn.topel@gmail.com>
-References: <20201028133437.212503-1-bjorn.topel@gmail.com>
+        id S2388493AbgJ2AYF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 20:24:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49588 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388430AbgJ1WhX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Oct 2020 18:37:23 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A423C247E7;
+        Wed, 28 Oct 2020 16:40:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603903240;
+        bh=RG/Dac088H5GVmB7A3wzm+xNBIFvyWXhedgYOBuwUuA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mp0mi5V8yuRZfhOasGBS8qD3xtNqW+453ws5nwNnegndxP833WyBMnr5XW7bNcW3D
+         Qu5goUOs2xTMMCynd2KTpZzxHBdPm3/izAVJrGVEKEndCOGCjJwD0AypGBM2QNaWqT
+         7KKfpi26hxuJ7sW4Qmx+gd3mScUPM4+0zS6o+4I0=
+Date:   Wed, 28 Oct 2020 09:40:38 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Moritz Fischer <mdf@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lucyyan@google.com, moritzf@google.com,
+        James.Bottomley@hansenpartnership.com
+Subject: Re: [PATCH/RFC net-next v3] net: dec: tulip: de2104x: Add shutdown
+ handler to stop NIC
+Message-ID: <20201028094038.5bd6eccb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201028015909.GA52884@epycbox.lan>
+References: <20201023202834.660091-1-mdf@kernel.org>
+        <20201027161606.477a445e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20201028015909.GA52884@epycbox.lan>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+On Tue, 27 Oct 2020 18:59:09 -0700 Moritz Fischer wrote:
+> Hi Jakub,
+> 
+> On Tue, Oct 27, 2020 at 04:16:06PM -0700, Jakub Kicinski wrote:
+> > On Fri, 23 Oct 2020 13:28:34 -0700 Moritz Fischer wrote:  
+> > > diff --git a/drivers/net/ethernet/dec/tulip/de2104x.c b/drivers/net/ethernet/dec/tulip/de2104x.c
+> > > index d9f6c19940ef..ea7442cc8e75 100644
+> > > --- a/drivers/net/ethernet/dec/tulip/de2104x.c
+> > > +++ b/drivers/net/ethernet/dec/tulip/de2104x.c
+> > > @@ -2175,11 +2175,19 @@ static int __maybe_unused de_resume(struct device *dev_d)
+> > >  
+> > >  static SIMPLE_DEV_PM_OPS(de_pm_ops, de_suspend, de_resume);
+> > >  
+> > > +static void de_shutdown(struct pci_dev *pdev)
+> > > +{
+> > > +	struct net_device *dev = pci_get_drvdata(pdev);
+> > > +
+> > > +	de_close(dev);  
+> > 
+> > Apparently I get all the best ideas when I'm about to apply something..  
+> 
+> Better now than after =)
+> 
+> > I don't think you can just call de_close() like that, because 
+> > (a) it may expect rtnl_lock() to be held, and (b) it may not be open.  
+> 
+> how about:
+> 
+> rtnl_lock();
+> if (netif_running(dev))
+> 	dev_close(dev);
+> rtnl_unlock();
 
-Support for the SO_BUSY_POLL_BUDGET setsockopt, via the batching
-option ('b').
-
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
----
- samples/bpf/xdpsock_user.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-index 7ef2c01a1094..948faada96d5 100644
---- a/samples/bpf/xdpsock_user.c
-+++ b/samples/bpf/xdpsock_user.c
-@@ -1482,6 +1482,11 @@ static void apply_setsockopt(struct xsk_socket_info *xsk)
- 	if (setsockopt(xsk_socket__fd(xsk->xsk), SOL_SOCKET, SO_BUSY_POLL,
- 		       (void *)&sock_opt, sizeof(sock_opt)) < 0)
- 		exit_with_error(errno);
-+
-+	sock_opt = opt_batch_size;
-+	if (setsockopt(xsk_socket__fd(xsk->xsk), SOL_SOCKET, SO_BUSY_POLL_BUDGET,
-+		       (void *)&sock_opt, sizeof(sock_opt)) < 0)
-+		exit_with_error(errno);
- }
- 
- int main(int argc, char **argv)
--- 
-2.27.0
-
+That's fine as well, although dev_close() checks if the device is UP
+AFAICT.
