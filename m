@@ -2,139 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF73E29D848
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:31:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7671329D8AF
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:36:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387837AbgJ1WbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 18:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55882 "EHLO
+        id S2388243AbgJ1Wfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:35:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387828AbgJ1WbC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:31:02 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF400C0613CF
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:31:01 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id p5so1190535ejj.2
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:31:01 -0700 (PDT)
+        with ESMTP id S2387530AbgJ1Wej (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:34:39 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D0DC0613CF;
+        Wed, 28 Oct 2020 15:34:39 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id h21so1217372iob.10;
+        Wed, 28 Oct 2020 15:34:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=V6a/rtqxIR9X8Q6gTlhMr+Y2aYdl46L9JH2H0LGEUgY=;
-        b=lSYtL+odhC9maUHpHBC9gPcKNdzcMZyFIB/C4/F6wegCXt1iFnCpsR01nxzOtyPCvP
-         qYSU4gXZTpkVlYioATdRcu85Pv4otiR21UJS9h1ZxhMAmguyFwPVBWvgnQ654oq8r2Ue
-         2onXE2s04IathPCQUz7K1Qd1nM2NX4ZCdYs7I68O8WSapzGSx3e+tdBqAf53GUUXinQ0
-         8lbcqkKywgh+UVEfqht9h7PfPG3tClaV9EbzEhbaQgDd/BYZJMXsDPv0XIk5FfSt32HS
-         Xzy3623P6W+uCGW1TK82mEHK1nZYmA3TlNaQC/dq1QyhgKE5xhMjm68VdgHLFNRdDO9f
-         8NRQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9mzi0JBUWMjjpbb/aO3F5Bvz2ioWTlLDQ0MTMYGD0gk=;
+        b=A1/dBuGTNsdbhqUwe1pmvgkSyAMym/wvYPt6+WyE1l8CC5VtgLIT4qzDJpclvl9wB7
+         w2KzQkFH7YNGpJR9kUbnHJUEgSTCOB8sJ7d6P9Yg2zwtPGmFYLKsRFb1Uf5hT4C0PKLR
+         P2YeNqZLufSHfwwzc+s5esdbIVWyA85zED2VXBniTwX7KM/rdQuhRWy7yjzKwvLfxPow
+         pdZ8diRBT109Ye7tyY8znxlEUmyAPPdpG8zmjwOFmwU/sTLnf5NyWI3Ig2icuI+ZqZpw
+         n/7Y7ZNW/z80L2IXNp0krtsDj82SxmQleD18iRj8Ghy2STXc7JwqUC73qw3TPNP7KUph
+         jvsg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=V6a/rtqxIR9X8Q6gTlhMr+Y2aYdl46L9JH2H0LGEUgY=;
-        b=tu+IEPPdt/rypNE9CkY5dOyoL/5d4/Q/CxVLUxP135kwKrjxYkiLuefCJB0TlwbTg0
-         E/WihYPVq0OpTAzObWkk6N2iVS90IHzQcVUYeATTIitnGH0vZAqXB2sEYdpAs9512k86
-         NimkdfgqHL6Al+hkAI+Mh/6vPAjBOiJLTIBMHJKUPCRpBOyrLc8GT8LPDX5n8fQDDqrU
-         clUwyFFL1yYoHbpTdVSEcZxakezNCQ8K2av9qTrHrQeApscStQ9A887SLzfZPAryVaeV
-         9SGMHn8Taw7Hs3Dje6myGsbCQnkMTdCHP1RNny4HWTTPHyxGk7qbcCjyrAbsWZWfVyvV
-         zPpQ==
-X-Gm-Message-State: AOAM5315FMjTFnATVZoscseMQekL9lzsAj30o3IXiGHOYx5xo4VojtMd
-        l0auo2RDDmgsrmVzlvjJoFVdKv+bKqY=
-X-Google-Smtp-Source: ABdhPJxQF0AafqpIJYngZXtq7u/ZD4dXaX76U4AzXyKqKqN/wZUCYQmyQg3Fe9FQk7zYPIa/N0a3Jw==
-X-Received: by 2002:aa7:cacb:: with SMTP id l11mr7145688edt.332.1603886716973;
-        Wed, 28 Oct 2020 05:05:16 -0700 (PDT)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id i20sm2745836edv.96.2020.10.28.05.05.15
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9mzi0JBUWMjjpbb/aO3F5Bvz2ioWTlLDQ0MTMYGD0gk=;
+        b=STZMYFVqwYMXr2z8+8lg5kKicCAsshulaMpDM9kMlOPQ6WEoqRwkMZ4/qkor1SCtTS
+         u29Msi+D7CNoSvPvfN57gUSFD9A8qDV8XNA+6LbMiNOOxQQEkmajSGdydA7oYn4HUXFB
+         TcuJjHB2itvgWp0ZZoIX5XI8PzMueZuokEWZ6t7Gh9Q7PPnk+GXhuJfGTnGwqqhHtYXx
+         uOwmnc4oWjx/E9+/NtevSypJMKljhn+3zMQFPKkLLQz/MXL+LWGHvghnz3kM7mvfIDVR
+         5lIBGFHJkEdTU6rDn4GYBLXkUCDT7LuY+3MgmJokJzWo8Z2CdTDA5at+YZy0Lhz+bRAK
+         BT4A==
+X-Gm-Message-State: AOAM530Xqz5ATKIMRxG5Ac51iI7Vd+gvFDZyoLKXAQGYASVnjYWOBx3l
+        Kfe/qLT7FkTA7m2uK9uQ8Tj4s77WGr8=
+X-Google-Smtp-Source: ABdhPJynfIJJQrGHTggTvKAqZJZ0Y3W3B63/F4iYZ6dbXOSsQ23wwBiQwNbG3ngRM7xzu44FjZXGPw==
+X-Received: by 2002:a63:6243:: with SMTP id w64mr6307831pgb.228.1603891188228;
+        Wed, 28 Oct 2020 06:19:48 -0700 (PDT)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:6d80:dec8:7340:3009])
+        by smtp.gmail.com with ESMTPSA id r8sm7058032pgn.30.2020.10.28.06.19.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 05:05:16 -0700 (PDT)
-Date:   Wed, 28 Oct 2020 14:05:15 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 4/4] net: dsa: tag_edsa: support reception of packets
- from lag devices
-Message-ID: <20201028120515.gf4yco64qlcwoou2@skbuf>
-References: <20201027105117.23052-1-tobias@waldekranz.com>
- <20201027105117.23052-5-tobias@waldekranz.com>
+        Wed, 28 Oct 2020 06:19:47 -0700 (PDT)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Krzysztof Halasa <khc@pm.waw.pl>
+Cc:     Xie He <xie.he.0141@gmail.com>
+Subject: [PATCH net-next v2 2/4] net: hdlc_fr: Change the use of "dev" in fr_rx to make the code cleaner
+Date:   Wed, 28 Oct 2020 06:18:05 -0700
+Message-Id: <20201028131807.3371-3-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20201028131807.3371-1-xie.he.0141@gmail.com>
+References: <20201028131807.3371-1-xie.he.0141@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201027105117.23052-5-tobias@waldekranz.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 27, 2020 at 11:51:17AM +0100, Tobias Waldekranz wrote:
-> Packets ingressing on a LAG that egress on the CPU port, which are not
-> classified as management, will have a FORWARD tag that does not
-> contain the normal source device/port tuple. Instead the trunk bit
-> will be set, and the port field holds the LAG id.
-> 
-> Since the exact source port information is not available in the tag,
-> frames are injected directly on the LAG interface and thus do never
-> pass through any DSA port interface on ingress.
-> 
-> Management frames (TO_CPU) are not affected and will pass through the
-> DSA port interface as usual.
-> 
-> Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-> ---
->  net/dsa/dsa.c      | 23 +++++++++++++----------
->  net/dsa/tag_edsa.c | 12 +++++++++++-
->  2 files changed, 24 insertions(+), 11 deletions(-)
-> 
-> diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-> index 2131bf2b3a67..b84e5f0be049 100644
-> --- a/net/dsa/dsa.c
-> +++ b/net/dsa/dsa.c
-> @@ -220,7 +220,6 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
->  	}
->  
->  	skb = nskb;
-> -	p = netdev_priv(skb->dev);
->  	skb_push(skb, ETH_HLEN);
->  	skb->pkt_type = PACKET_HOST;
->  	skb->protocol = eth_type_trans(skb, skb->dev);
-> @@ -234,17 +233,21 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
->  		skb = nskb;
->  	}
->  
-> -	s = this_cpu_ptr(p->stats64);
-> -	u64_stats_update_begin(&s->syncp);
-> -	s->rx_packets++;
-> -	s->rx_bytes += skb->len;
-> -	u64_stats_update_end(&s->syncp);
-> +	if (dsa_slave_dev_check(skb->dev)) {
-> +		p = netdev_priv(skb->dev);
-> +		s = this_cpu_ptr(p->stats64);
-> +		u64_stats_update_begin(&s->syncp);
-> +		s->rx_packets++;
-> +		s->rx_bytes += skb->len;
-> +		u64_stats_update_end(&s->syncp);
->  
-> -	if (dsa_skb_defer_rx_timestamp(p, skb))
-> -		return 0;
-> -
-> -	gro_cells_receive(&p->gcells, skb);
-> +		if (dsa_skb_defer_rx_timestamp(p, skb))
-> +			return 0;
->  
-> +		gro_cells_receive(&p->gcells, skb);
-> +	} else {
-> +		netif_rx(skb);
-> +	}
->  	return 0;
->  }
->  
+The eth_type_trans function is called when we receive frames carrying
+Ethernet frames. This function expects a non-NULL pointer as a argument,
+and assigns it directly to skb->dev.
 
-On one hand, I feel pretty yucky about this change.
-On the other hand, I wonder if it might be useful under some conditions
-for drivers with DSA_TAG_PROTO_NONE? For example, once the user bridges
-all slave interfaces, then that bridge will start being able to send and
-receive traffic, despite none of the individual switch ports being able
-to do that. Then, you could even go off and bridge a "foreign" interface,
-and that would again work properly. That use case is not supported today,
-but is very useful.
+However, the code handling other types of frames first assigns a pointer
+to "dev", and then at the end checks whether the value is NULL, and if it
+is not NULL, assigns it to skb->dev.
 
-Thoughts?
+The two flows are different. Mixing them in this function makes the code
+messy. It's better that we convert the second flow to align with how
+eth_type_trans does things.
+
+So this patch changes the code to: first make sure the pointer is not
+NULL, then assign it directly to skb->dev. "dev" is no longer needed until
+the end where we use it to update stats.
+
+Cc: Krzysztof Halasa <khc@pm.waw.pl>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
+---
+ drivers/net/wan/hdlc_fr.c | 37 ++++++++++++++++++++-----------------
+ 1 file changed, 20 insertions(+), 17 deletions(-)
+
+diff --git a/drivers/net/wan/hdlc_fr.c b/drivers/net/wan/hdlc_fr.c
+index c774eff44534..ac65f5c435ef 100644
+--- a/drivers/net/wan/hdlc_fr.c
++++ b/drivers/net/wan/hdlc_fr.c
+@@ -880,7 +880,7 @@ static int fr_rx(struct sk_buff *skb)
+ 	u8 *data = skb->data;
+ 	u16 dlci;
+ 	struct pvc_device *pvc;
+-	struct net_device *dev = NULL;
++	struct net_device *dev;
+ 
+ 	if (skb->len <= 4 || fh->ea1 || data[2] != FR_UI)
+ 		goto rx_error;
+@@ -930,13 +930,17 @@ static int fr_rx(struct sk_buff *skb)
+ 	}
+ 
+ 	if (data[3] == NLPID_IP) {
++		if (!pvc->main)
++			goto rx_drop;
+ 		skb_pull(skb, 4); /* Remove 4-byte header (hdr, UI, NLPID) */
+-		dev = pvc->main;
++		skb->dev = pvc->main;
+ 		skb->protocol = htons(ETH_P_IP);
+ 
+ 	} else if (data[3] == NLPID_IPV6) {
++		if (!pvc->main)
++			goto rx_drop;
+ 		skb_pull(skb, 4); /* Remove 4-byte header (hdr, UI, NLPID) */
+-		dev = pvc->main;
++		skb->dev = pvc->main;
+ 		skb->protocol = htons(ETH_P_IPV6);
+ 
+ 	} else if (skb->len > 10 && data[3] == FR_PAD &&
+@@ -950,13 +954,16 @@ static int fr_rx(struct sk_buff *skb)
+ 		case ETH_P_IPX:
+ 		case ETH_P_IP:	/* a long variant */
+ 		case ETH_P_IPV6:
+-			dev = pvc->main;
++			if (!pvc->main)
++				goto rx_drop;
++			skb->dev = pvc->main;
+ 			skb->protocol = htons(pid);
+ 			break;
+ 
+ 		case 0x80C20007: /* bridged Ethernet frame */
+-			if ((dev = pvc->ether) != NULL)
+-				skb->protocol = eth_type_trans(skb, dev);
++			if (!pvc->ether)
++				goto rx_drop;
++			skb->protocol = eth_type_trans(skb, pvc->ether);
+ 			break;
+ 
+ 		default:
+@@ -970,17 +977,13 @@ static int fr_rx(struct sk_buff *skb)
+ 		goto rx_drop;
+ 	}
+ 
+-	if (dev) {
+-		dev->stats.rx_packets++; /* PVC traffic */
+-		dev->stats.rx_bytes += skb->len;
+-		if (pvc->state.becn)
+-			dev->stats.rx_compressed++;
+-		skb->dev = dev;
+-		netif_rx(skb);
+-		return NET_RX_SUCCESS;
+-	} else {
+-		goto rx_drop;
+-	}
++	dev = skb->dev;
++	dev->stats.rx_packets++; /* PVC traffic */
++	dev->stats.rx_bytes += skb->len;
++	if (pvc->state.becn)
++		dev->stats.rx_compressed++;
++	netif_rx(skb);
++	return NET_RX_SUCCESS;
+ 
+ rx_error:
+ 	frad->stats.rx_errors++; /* Mark error */
+-- 
+2.25.1
+
