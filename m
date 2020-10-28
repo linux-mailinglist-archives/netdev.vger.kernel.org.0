@@ -2,98 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C87229E1CA
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:03:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E25DD29E253
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:13:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729005AbgJ2CDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 22:03:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48328 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726394AbgJ1VsC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:48:02 -0400
-Received: from mail-il1-x141.google.com (mail-il1-x141.google.com [IPv6:2607:f8b0:4864:20::141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4731C0613CF;
-        Wed, 28 Oct 2020 14:48:02 -0700 (PDT)
-Received: by mail-il1-x141.google.com with SMTP id f16so1035472ilr.0;
-        Wed, 28 Oct 2020 14:48:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wjoE+tzypCEtS7yiBCk3OWZo4ySiRdknqbsS3rd6Koo=;
-        b=UA74odV1u8y9zCYz8HDLWk1kqif5HPQIVEIyAElhXPzDJj9YaPWe4yr54HQr9E6Fv0
-         J3c0cYVoGqVIJQ2R3Vxq/kN5+/VreCwqrOqFohd3rJmmCoOB9cP/f+m2yybD7Flz9JBT
-         xIElODi0UXPVftikztKD4fWKvoYbOcM7v87wa0hKc6dLfjZErPRogYrzJBf6LaPVr3L5
-         PF3zHCe7JLLdHImOH7wrMxQFripMSw3h5auobKKdB3FmQoddNeKBE7kyEi4i463AYlLy
-         lgllkUyQePNsGRkQrKicWTWP+tJLU6J6YE93Ueji/PTnjFN8u/PxH5QvE1iu6jpZRQRh
-         QU6g==
+        id S2388367AbgJ2CMn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 22:12:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:40322 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726801AbgJ1VgS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:36:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603920977;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8EYetLILv2iSD20uuLUEdI//vDe/mi6qJv8kliXEZ7E=;
+        b=FBvn5jEgX8mNGnAPEE6s6SUJf3MWqd5D3+Las6KP+x+n4qWxxzXNAviU8f2YMXGdhuwzT8
+        ZjyEKVlbGPuyXhWOWIj7wnSSLaKDdKu9IxkxNAc5VUaD8qBN2Osrt47jypKTPdyxATjxeW
+        rEw//7+xCFkKFU9HNhkPZVqHrPSolV8=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-390-Yb3ItP4OPXiTJ7byhzSvfQ-1; Wed, 28 Oct 2020 14:34:21 -0400
+X-MC-Unique: Yb3ItP4OPXiTJ7byhzSvfQ-1
+Received: by mail-wr1-f72.google.com with SMTP id i1so164476wrb.18
+        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 11:34:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wjoE+tzypCEtS7yiBCk3OWZo4ySiRdknqbsS3rd6Koo=;
-        b=XbV0grSU3y14vWqJdIE1A7aXnBz3FBP03C1JNugsnKd8vZoRZwZtxMjR1rFisO0QWv
-         DG5Q+TdV1svW6oDWTZbteoguesh3zsoQkrfBpf/deAedEcVqZJfDip1+WEbHulkNeQK2
-         GVIVIcbnh+l+EtTBNjOJG81jipyvTaz5J4pbmaW+36n99UiG8ElcFOBQ4tMIQRuriKcz
-         uBB1Mra+rHs/puvIMcF2YQoVUs7TATZs4rAbKm1GastlW7c8IXAqe6jsyVCi4wzxT2Fh
-         k0UFNhATijk6lUCp+DAtqG/m0eq96BT1+fgqf3FjBmG9rKytk3PuNCpJ05zNrPAuHrAA
-         +UjA==
-X-Gm-Message-State: AOAM533hOYKcKnyE0qM737dz0n6F4KSIpPG4qGcIUHo7cXbc5/TAfZK1
-        sXgQlGkc/3tSxqNb7NMnKgUbKLzl/tvx1HKrRzCtIR2X5rk=
-X-Google-Smtp-Source: ABdhPJx89Xd2UyzBIE/BtAh/GE0S0/apcl6iinS8R0TCmPHKH3LmYPResJ+6KSqnAAInNXLPnW7Op7VYju4zPQ1NZtc=
-X-Received: by 2002:a05:6e02:ea8:: with SMTP id u8mr132042ilj.305.1603907261705;
- Wed, 28 Oct 2020 10:47:41 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8EYetLILv2iSD20uuLUEdI//vDe/mi6qJv8kliXEZ7E=;
+        b=fuBJF1K/bj1ZWTyqoWH7NFGU2pqY52w+djyBruXWe+zfNIzaeYApaFEtAtAQ3hPJT2
+         qQB2d1KISpxgih3oXWQUAp1zDTMrDkBw59EzrJPFNY2XgRZo7gurZJ7i3vWxyFWxKI/Y
+         86gKZK9NxavtgoNvN1VAKO+HYdINIZjq9Dl57GNDkjVjuLgcWeJht/TyhOSdDFy0T5Bu
+         J2fCONYqXzxU8tyaYz/QHGMFH8UkeFuUy5FKGgKmr8Pm6TpcML4ZRtBx6REd2aie5xrg
+         XtvuEzTbUB87N84vcXdvZdp71ij58NE3MM4LwObKAHF5OWE2tF9LKpM457bqmWCd42PH
+         3j2g==
+X-Gm-Message-State: AOAM5319wJiHG/TohljF0ulpNcCriYW3SyA5Gdoel5p6+aCbUr9LNgLO
+        PBHIgYT2K7se1ZU2KzfxZKUVYbn7uYSOe4tcu+0VaDBc117GpvoQT8as8vKiJaYWd++l3GCm/nC
+        2kHhA8cCXG0r9l1YB
+X-Received: by 2002:adf:fb0d:: with SMTP id c13mr746186wrr.19.1603910059744;
+        Wed, 28 Oct 2020 11:34:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz8+7WqRo7IhbpTNfyJjQr0HKiUwZFj8C89z44CuYBYyetLqPMJT9hd9falZf3XmyKWhCmqvg==
+X-Received: by 2002:adf:fb0d:: with SMTP id c13mr746170wrr.19.1603910059613;
+        Wed, 28 Oct 2020 11:34:19 -0700 (PDT)
+Received: from pc-2.home (2a01cb058d4f8400c9f0d639f7c74c26.ipv6.abo.wanadoo.fr. [2a01:cb05:8d4f:8400:c9f0:d639:f7c7:4c26])
+        by smtp.gmail.com with ESMTPSA id p13sm528056wrt.73.2020.10.28.11.34.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Oct 2020 11:34:18 -0700 (PDT)
+Date:   Wed, 28 Oct 2020 19:34:16 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Martin Varghese <martin.varghese@nokia.com>
+Subject: Re: [PATCH net] selftests: add test script for bareudp tunnels
+Message-ID: <20201028183416.GA26626@pc-2.home>
+References: <72671f94d25e91903f68fa8f00678eb678855b35.1603907878.git.gnault@redhat.com>
 MIME-Version: 1.0
-References: <1599562954-87257-1-git-send-email-linyunsheng@huawei.com>
- <CAM_iQpX0_mz+McZdzZ7HFTjBihOKz5E6i4qJQSoFbZ=SZkVh=Q@mail.gmail.com>
- <830f85b5-ef29-c68e-c982-de20ac880bd9@huawei.com> <CAM_iQpU_tbRNO=Lznz_d6YjXmenYhowEfBoOiJgEmo9x8bEevw@mail.gmail.com>
- <CAP12E-+3DY-dgzVercKc-NYGPExWO1NjTOr1Gf3tPLKvp6O6+g@mail.gmail.com> <AE096F70-4419-4A67-937A-7741FBDA6668@akamai.com>
-In-Reply-To: <AE096F70-4419-4A67-937A-7741FBDA6668@akamai.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 28 Oct 2020 10:47:30 -0700
-Message-ID: <CAM_iQpX0XzNDCzc2U5=g6aU-HGYs3oryHx=rmM3ue9sH=Jd4Gw@mail.gmail.com>
-Subject: Re: [PATCH v2 net] net: sch_generic: aviod concurrent reset and
- enqueue op for lockless qdisc
-To:     "Pai, Vishwanath" <vpai@akamai.com>
-Cc:     Yunsheng Lin <linyunsheng@huawei.com>,
-        "Hunt, Joshua" <johunt@akamai.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "linuxarm@huawei.com" <linuxarm@huawei.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <72671f94d25e91903f68fa8f00678eb678855b35.1603907878.git.gnault@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 8:37 AM Pai, Vishwanath <vpai@akamai.com> wrote:
-> Hi,
->
-> We noticed some problems when testing the latest 5.4 LTS kernel and traced it
-> back to this commit using git bisect. When running our tests the machine stops
-> responding to all traffic and the only way to recover is a reboot. I do not see
-> a stack trace on the console.
+On Wed, Oct 28, 2020 at 07:05:19PM +0100, Guillaume Nault wrote:
+> Test different encapsulation modes of the bareudp module:
 
-Do you mean the machine is still running fine just the network is down?
+BTW, I was assuming that kselftests were like documentation updates,
+and therefore always suitable for the net tree. If not, the patch
+applies cleanly to net-next (and I can also repost of course).
 
-If so, can you dump your tc config with stats when the problem is happening?
-(You can use `tc -s -d qd show ...`.)
-
->
-> This can be reproduced using the packetdrill test below, it should be run a
-> few times or in a loop. You should hit this issue within a few tries but
-> sometimes might take up to 15-20 tries.
-...
-> I can reproduce the issue easily on v5.4.68, and after reverting this commit it
-> does not happen anymore.
-
-This is odd. The patch in this thread touches netdev reset path, if packetdrill
-is the only thing you use to trigger the bug (that is netdev is always active),
-I can not connect them.
-
-Thanks.
