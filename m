@@ -2,48 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD21B29E265
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:14:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D8A3129E1CD
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:03:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404326AbgJ2CN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 22:13:57 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:35677 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726786AbgJ1Vfz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:35:55 -0400
-Received: by mail-oi1-f195.google.com with SMTP id w191so1129475oif.2;
-        Wed, 28 Oct 2020 14:35:54 -0700 (PDT)
+        id S1727853AbgJ2CDp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 22:03:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48334 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726865AbgJ1VsD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:48:03 -0400
+Received: from mail-oi1-x241.google.com (mail-oi1-x241.google.com [IPv6:2607:f8b0:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF23C0613D1;
+        Wed, 28 Oct 2020 14:48:03 -0700 (PDT)
+Received: by mail-oi1-x241.google.com with SMTP id x1so1090952oic.13;
+        Wed, 28 Oct 2020 14:48:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GJjCYBDQRA1Y87dVSmn/FJuMApnZK8DW4dsai1PK8Pw=;
-        b=IlSe4xAjzrFl2CN4AabUTHi5rc5PhVzOfz3NYnnC+R/frrrtauN3sUXKxqgUZCjjyD
-         D4NInYinEh6UKEJpIsN+HPQ59yuvb1VDrfq/IWdVvgeZ4zf4IV4YJ8GFQnOHpyy/9xb8
-         cjkcIHrSyhYuzjMS4Yi6XN8P4qG/aC/qsvlGBW6f0kjyVi4iyvkhx3JGVibHFZcrrIKL
-         XD9ZUz/VjWJ+Z2ie0b90YKtYB4lXL5lgPtOORA+bNLR/EKNSypsxJAdRonowhxfqsvz7
-         1/KQRuvV0j4PwmtRgqdAk4jT7qAuN56Aj0168nNkky53Lab0T0DIiO/EpCof06pbnHAM
-         VOmg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=3zaGVF/vRB8F3ZfUMCb7b4cb/WN/x096ZDL+SPEx+Nc=;
+        b=PgW57MjBfkv/pDJis6/z8OJ5FjZvPRloQO8Q8OaNappYffXSAsSfkcDzRsKG+GbBTv
+         ITudr4QvE9TXbsG2R9Dyja7yX4JRx6RIdXGED3Xf7DHv/y+o3CtpwDlNgxnRLibWgTnl
+         x/Qqhog2QHiU4BHKhuO0fjTSJDHPbz4JWsGR8MVcOzityq3d63V9dZhHtx1g4UZbFB1t
+         yqPcJvJ83EEABZohcwrrSJO3DdAzlXHS76U344l1XT0RgDeRa8GNVZ4po7UiG3+3qecD
+         fzR0ApV2PmWz3PVQueHSCMMBpv6LcAeDjqExX4zkJNIa/ou7auEea+splwDD8DeQK6d7
+         GFpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=GJjCYBDQRA1Y87dVSmn/FJuMApnZK8DW4dsai1PK8Pw=;
-        b=G9y8V0gMCcpgLDh0Cs5VuKNFAGjsa8d3pJXJ+8epMyhoxFDzD0FLTdsHx6F4az2t5o
-         luTmymwgR6IEt5Wh7Ljqx4MyilwBbfVtsGZxVJF3oPX88eiKzm8wiizzsk3v8aqtt0tl
-         xpMenuK75fXFhltRBvE0TRV1TW3hEHu8Z5ZATT9QD85VF8l6z3vQR35f7T24CmVWQcvY
-         BRN1Uc33tYEBEE/8/vgC8/p2xiSPCNKniYYBpa4LdJv5JGGfhx9dskb2qla78S37YaE2
-         feW6EElzgx+yasd1WkQ0tsKrk6eYedflDcfPoNHQjpikC9B37JZLrlWLlw++CqI8enMZ
-         4LyA==
-X-Gm-Message-State: AOAM530oLWoFzX2g5GoOdWA6oGPn/kW8Fo0GlG2gA8HSu+BQpKizWrGA
-        Xx0jZ+kRt3cfxX6B/ubu1CguAa4sPS6zuREP
-X-Google-Smtp-Source: ABdhPJxQqTAY26QBlFaEBLgr/WnvE5SDv4jz4MmJ6wZ7NKMd/7P6bvsKyn0mHBpXVIFQt7GPv6+J+A==
-X-Received: by 2002:a17:90a:7784:: with SMTP id v4mr7178120pjk.60.1603895121529;
-        Wed, 28 Oct 2020 07:25:21 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=3zaGVF/vRB8F3ZfUMCb7b4cb/WN/x096ZDL+SPEx+Nc=;
+        b=gvaD/qOFg2/Ln3dq1K4jSJLzbdix5R3z3YKhkCu4jXE4BLBQLPHrXtLjE8zrUEfUKQ
+         Tc2EJ/6gHsVQf2UdQQBTqMbxKrYMh2eSNyzOPk1+ZeQgjBRUqxkiTVxNSJyxuLCjKuYs
+         1p8GJGCNnS7EjxEUoZHOgRnHRcM9gwGlWSq/DAC7jsouMU85MZb2/rx2xoUc8WE3SFdL
+         gyqDmpQ02eOX9ojWtz7FGDNAF89ckegQ1h7x1AaWF3uRCKHL+zxYSdYeCHdPwDrnu/6Z
+         RwmADQgtOpVaEawipsAxjEe1FiHuIe0AkPDyZb9kg/NAnVVmnVX+q+AbGWmmOWpXVEhx
+         yjaA==
+X-Gm-Message-State: AOAM533W/IEV3KQQE7+vhyvX4LybrtdJM6Kz6rGpuIZjZYtTVKhn/G5A
+        ezzuEf4R6KhFlyHOrBgkIBMdsOqJETdRuyK6
+X-Google-Smtp-Source: ABdhPJy4xaFFSb67eIdsE6yHQCjXYR1ulDiZ6JWAFabC/3uwCf7CfY4vHIFnetkjx6OwdcANGFeH+w==
+X-Received: by 2002:a17:90a:e604:: with SMTP id j4mr6796905pjy.204.1603895135618;
+        Wed, 28 Oct 2020 07:25:35 -0700 (PDT)
 Received: from k5-sbwpb.flets-east.jp (i60-35-254-237.s41.a020.ap.plala.or.jp. [60.35.254.237])
-        by smtp.gmail.com with ESMTPSA id 194sm6227192pfz.182.2020.10.28.07.25.18
+        by smtp.gmail.com with ESMTPSA id 194sm6227192pfz.182.2020.10.28.07.25.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 07:25:20 -0700 (PDT)
+        Wed, 28 Oct 2020 07:25:35 -0700 (PDT)
 From:   Tsuchiya Yuto <kitakar@gmail.com>
 To:     Amitkumar Karwar <amitkarwar@gmail.com>,
         Ganapathi Bhat <ganapathi.bhat@nxp.com>,
@@ -56,53 +59,58 @@ Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         Maximilian Luz <luzmaximilian@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl,
         Tsuchiya Yuto <kitakar@gmail.com>
-Subject: [PATCH 0/3] mwifiex: disable ps_mode by default for stability
-Date:   Wed, 28 Oct 2020 23:24:30 +0900
-Message-Id: <20201028142433.18501-1-kitakar@gmail.com>
+Subject: [PATCH 1/3] mwifiex: disable ps_mode explicitly by default instead
+Date:   Wed, 28 Oct 2020 23:24:31 +0900
+Message-Id: <20201028142433.18501-2-kitakar@gmail.com>
 X-Mailer: git-send-email 2.29.1
+In-Reply-To: <20201028142433.18501-1-kitakar@gmail.com>
+References: <20201028142433.18501-1-kitakar@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello all,
+On Microsoft Surface devices (PCIe-88W8897), the ps_mode causes
+connection unstable, especially with 5GHz APs. Then, it eventually causes
+fw crash.
 
-On Microsoft Surface devices (PCIe-88W8897), we are observing stability
-issues when ps_mode (IEEE power_save) is enabled, then eventually causes
-firmware crash. Especially on 5GHz APs, the connection is completely
-unstable and almost unusable.
+This commit disables ps_mode by default instead of enabling it.
 
-I think the most desirable change is to fix the ps_mode itself. But is
-seems to be hard work [1], I'm afraid we have to go this way.
+Required code is extracted from mwifiex_drv_set_power().
 
-Therefore, the first patch of this series disables the ps_mode by default
-instead of enabling it on driver init. I'm not sure if explicitly
-disabling it is really required or not. I don't have access to the details
-of this chip. Let me know if it's enough to just remove the code that
-enables ps_mode.
+Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
+---
+ drivers/net/wireless/marvell/mwifiex/sta_cmd.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-The Second patch adds a new module parameter named "allow_ps_mode". Since
-other wifi drivers just disable power_save by default by module parameter
-like this, I also added this.
-
-The third patch adds a message when ps_mode will be changed. Useful when
-diagnosing connection issues.
-
-Thanks,
-Tsuchiya Yuto
-
-[1] https://bugzilla.kernel.org/show_bug.cgi?id=109681
-
-Tsuchiya Yuto (3):
-  mwifiex: disable ps_mode explicitly by default instead
-  mwifiex: add allow_ps_mode module parameter
-  mwifiex: print message when changing ps_mode
-
- .../net/wireless/marvell/mwifiex/cfg80211.c   | 23 +++++++++++++++++++
- .../net/wireless/marvell/mwifiex/sta_cmd.c    | 11 ++++++---
- 2 files changed, 31 insertions(+), 3 deletions(-)
-
+diff --git a/drivers/net/wireless/marvell/mwifiex/sta_cmd.c b/drivers/net/wireless/marvell/mwifiex/sta_cmd.c
+index d3a968ef21ef9..9b7b52fbc9c45 100644
+--- a/drivers/net/wireless/marvell/mwifiex/sta_cmd.c
++++ b/drivers/net/wireless/marvell/mwifiex/sta_cmd.c
+@@ -2333,14 +2333,19 @@ int mwifiex_sta_init_cmd(struct mwifiex_private *priv, u8 first_sta, bool init)
+ 			return -1;
+ 
+ 		if (priv->bss_type != MWIFIEX_BSS_TYPE_UAP) {
+-			/* Enable IEEE PS by default */
+-			priv->adapter->ps_mode = MWIFIEX_802_11_POWER_MODE_PSP;
++			/* Disable IEEE PS by default */
++			priv->adapter->ps_mode = MWIFIEX_802_11_POWER_MODE_CAM;
+ 			ret = mwifiex_send_cmd(priv,
+ 					       HostCmd_CMD_802_11_PS_MODE_ENH,
+-					       EN_AUTO_PS, BITMAP_STA_PS, NULL,
++					       DIS_AUTO_PS, BITMAP_STA_PS, NULL,
+ 					       true);
+ 			if (ret)
+ 				return -1;
++			ret = mwifiex_send_cmd(priv,
++					       HostCmd_CMD_802_11_PS_MODE_ENH,
++					       GET_PS, 0, NULL, false);
++			if (ret)
++				return -1;
+ 		}
+ 
+ 		if (drcs) {
 -- 
 2.29.1
 
