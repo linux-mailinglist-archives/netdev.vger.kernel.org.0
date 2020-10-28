@@ -2,110 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D45B529DAC5
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 00:31:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C725329D9C8
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 00:02:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390497AbgJ1XbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 19:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33992 "EHLO
+        id S2390006AbgJ1XCe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 19:02:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726286AbgJ1XJC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 19:09:02 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508FDC0613D1
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 16:09:02 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id m16so1050859ljo.6
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 16:09:02 -0700 (PDT)
+        with ESMTP id S1731974AbgJ1XBi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 19:01:38 -0400
+Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07EBEC0613D1;
+        Wed, 28 Oct 2020 16:01:38 -0700 (PDT)
+Received: by mail-oi1-x243.google.com with SMTP id s21so1355516oij.0;
+        Wed, 28 Oct 2020 16:01:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=P7F7xIRgu/l8g7HgtzAM8qKS93wbDPv7v/8BlOLWeDI=;
-        b=UYu7ljF9nHw7Ms+9PKei/Lvrwh3t1D2Ed4IuVRcFscCKtEfaugYdDjog3RJHvxOytO
-         L0OkcSDIEqL4IuNbCI3GZjeMJ7e3Y32AFqNWPZhneVoQYPc3dOlA378J9QhaDW3lqmr2
-         QEURm3S8NRYzz5k5+M8L3e5WxfuHXXSLUrWbiZ5mgMr0g59KyMKn9HIXv6Oo2pz7eMtl
-         4eiiPRKNbXx5fkOV1i2MXSroOBihpcs6LwUZ80OTac0yvPoyuUWHqwSj6VKma1t8woXZ
-         PzADOq33hnCYt0zqmVXpqknXzvobeDQcn8ds8Vp4LbM+9yk67viy9PQJO4ZLq/zxBwwb
-         wGBg==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=c2/gqc31dmi9zA2aGWplgme+HPGKlgH66xNk9nHvWto=;
+        b=bWYaHqkYPc2iXRaUYFoKv/DT1zz6MURWRCPi1TvR3qcDkoPbIekEzmPv9fA0tiUUHV
+         qLFaTfhYLwHIj4DXvnVBM9C9ZBrKzo9LkCpod1qq6woIR35hdnu1t+ycFMMKMOAj/Ouh
+         Q9AFojKT/trJllLTlX57BeemiX4Z1mRdSwoct7hXd8Vp7B1FgQsbEKOFHWUALeuneMxD
+         +RmzbZcrmxneBDs0XbGHQVgyB7Gh6cHVgphxBLSAspUH3QSEjFRkshzy5HcGkHRJf9+U
+         1cssz7sw1CpiMz1/fstMDGMBE2Jx5Wwgp5KyeFceoBBZV7jPIDSN+/Jvrpnb8p6qcPI8
+         9TFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=P7F7xIRgu/l8g7HgtzAM8qKS93wbDPv7v/8BlOLWeDI=;
-        b=OcS1Xtzre7q6uYRS2E8Y+YDXs6msd2veuf7jDeE8ZQoEGDhMMH3/vHkNDrdWLOBk2W
-         8MH2CEIKIdlmPY9edREgC+HlEQ14pGvr9jmnzvtSsocl6/X9ekg/He6WfH6tde5HfR9d
-         OETJuvyM2AH/ahWryLd7e66BzzwnLtu6n6NZtMRhPI8IC2nnV1Hv5VzDNMA3YoQgFh2n
-         0CDX4L4lUzOvdvZFuyBaXsMhNtqbEuY1xbFIxvN/EOkPFbNZzxMyOBne8JmOzGEeVqra
-         wA2YXterLvLYuq68xGuWRTqgSrrmNrUkK4veSkv+43yhUhh+MSYEvaQx88ajzmY0FKyT
-         Qbjg==
-X-Gm-Message-State: AOAM5321zBiQI4Tde4jNjWB4Z7MxmDc9S3otGaUWT7yPwSWqB+tGadgA
-        g9iizAQ0B2OciCbksEDrjibx3Y4UZQI=
-X-Google-Smtp-Source: ABdhPJyVwHnIyB7PeVQFgX5pIaT1wyo9txQHTqUX0u5bUZkd5enFmhs0qS2tK66IMJF+trBnasqRUg==
-X-Received: by 2002:a5d:63cb:: with SMTP id c11mr6313329wrw.243.1603893873097;
-        Wed, 28 Oct 2020 07:04:33 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f23:2800:7833:37d2:8d24:4d07? (p200300ea8f232800783337d28d244d07.dip0.t-ipconnect.de. [2003:ea:8f23:2800:7833:37d2:8d24:4d07])
-        by smtp.googlemail.com with ESMTPSA id a3sm6428950wmb.46.2020.10.28.07.04.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 28 Oct 2020 07:04:32 -0700 (PDT)
-Subject: Re: [PATCH net] r8169: fix operation under forced interrupt threading
-To:     Serge Belyshev <belyshev@depni.sinp.msu.ru>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <4d3ef84a-c812-5072-918a-22a6f6468310@gmail.com>
- <877drabmoq.fsf@depni.sinp.msu.ru>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <c9cbe7ae-ca05-1462-3c6b-6582586f3857@gmail.com>
-Date:   Wed, 28 Oct 2020 15:04:25 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        bh=c2/gqc31dmi9zA2aGWplgme+HPGKlgH66xNk9nHvWto=;
+        b=ZXIpwFAWqyOev8e2wEk5q2uqdZN0pMMnhGZRx1rab+VtWzjUm39BJNnP2QIZuvQUO7
+         J3AXgyx2mmZ11o7NN1Xn6Kf+rwf21bl9X2P6dVKZoSRL/IGDOsfvHFMo0LSLtQuoDCU7
+         hmGu7JryFsLhP3dJgzyAPGk1okLGWesPpVS+NNFuzNuqcF+/ossP3ReFmrIH4Fd4F3NH
+         WRk2pvTP47sLNDDqOnaL1l5W7OCGMw96X/9py5d1GEDyGcwW44Ho6DfloxcoJ6tsekr9
+         bLIzcCxTGQITAUEnroFGgeCuQ5VSpDSjO6SqxeMuLaS/udiqCZ+hNlN0iMvFzkYb7FWe
+         VQog==
+X-Gm-Message-State: AOAM530+TypIMzU2COnLGc30l7gCm4IwUZ66cj+UneybQvHSJntJmaJ0
+        X04JplqoOYIeB+aWYFzRGLmc+LfYuFg3LFIa
+X-Google-Smtp-Source: ABdhPJxovUxraliBkm/Bf6MK9y9XXJoeXrAW+xnL9AzhQOMP3GGXkLU/zxjXzieF+ZVTF8XwxspNyw==
+X-Received: by 2002:a17:90a:5885:: with SMTP id j5mr7498189pji.117.1603895264368;
+        Wed, 28 Oct 2020 07:27:44 -0700 (PDT)
+Received: from k5-sbwpb.flets-east.jp (i60-35-254-237.s41.a020.ap.plala.or.jp. [60.35.254.237])
+        by smtp.gmail.com with ESMTPSA id n25sm5977673pgd.67.2020.10.28.07.27.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Oct 2020 07:27:43 -0700 (PDT)
+From:   Tsuchiya Yuto <kitakar@gmail.com>
+To:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl,
+        Tsuchiya Yuto <kitakar@gmail.com>
+Subject: [RFC PATCH] mwifiex: pcie: use shutdown_sw()/reinit_sw() on suspend/resume
+Date:   Wed, 28 Oct 2020 23:27:19 +0900
+Message-Id: <20201028142719.18765-1-kitakar@gmail.com>
+X-Mailer: git-send-email 2.29.1
 MIME-Version: 1.0
-In-Reply-To: <877drabmoq.fsf@depni.sinp.msu.ru>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 28.10.2020 12:43, Serge Belyshev wrote:
-> 
->> For several network drivers it was reported that using
->> __napi_schedule_irqoff() is unsafe with forced threading. One way to
->> fix this is switching back to __napi_schedule, but then we lose the
->> benefit of the irqoff version in general. As stated by Eric it doesn't
->> make sense to make the minimal hard irq handlers in drivers using NAPI
->> a thread. Therefore ensure that the hard irq handler is never
->> thread-ified.
->>
->> Fixes: 9a899a35b0d6 ("r8169: switch to napi_schedule_irqoff")
->> Link: https://lkml.org/lkml/2020/10/18/19
->> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
->> ---
->>  drivers/net/ethernet/realtek/r8169_main.c | 8 ++++----
->>  1 file changed, 4 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
->> index 7d366b036..3b6ddc706 100644
->> --- a/drivers/net/ethernet/realtek/r8169_main.c
->> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> ...
-> 
-> Hi!  This patch actually breaks r8169 with threadirqs on an old box
-> where it was working before:
-> 
-> [    0.000000] DMI: Gigabyte Technology Co., Ltd. GA-MA790FX-DQ6/GA-MA790FX-DQ6, BIOS F7g 07/19/2010
-> ...
-> [    1.072676] r8169 0000:02:00.0 eth0: RTL8168b/8111b, 00:1a:4d:5d:6b:c3, XID 380, IRQ 18
-> ...
-> [    8.850099] genirq: Flags mismatch irq 18. 00010080 (eth0) vs. 00002080 (ahci[0000:05:00.0])
-> 
-> (error is reported to userspace, interface failed to bring up).
-> Reverting the patch fixes the problem.
-> 
-Please provide the following info in addition:
-- dmesg
-- lspci -v
-- cat /proc/interrupts
+On Microsoft Surface devices (PCIe-88W8897), there are issues with S0ix
+achievement and AP scanning after suspend with the current Host Sleep
+method.
+
+When using the Host Sleep method, it prevents the platform to reach S0ix
+during suspend. Also, sometimes AP scanning won't work, resulting in
+non-working wifi after suspend.
+
+To fix such issues, perform shutdown_sw()/reinit_sw() instead of Host
+Sleep on suspend/resume.
+
+Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
+---
+As a side effect, this patch disables wakeups (means that Wake-On-WLAN
+can't be used anymore, if it was working before), and might also reset
+some internal states.
+
+Of course it's the best to rather fix Host Sleep itself. But if it's
+difficult, I'm afraid we have to go this way.
+
+I reused the contents of suspend()/resume() functions as much as possible,
+and removed only the parts that are incompatible or redundant with
+shutdown_sw()/reinit_sw().
+
+- Removed wait_for_completion() as redundant
+  mwifiex_shutdown_sw() does this.
+- Removed flush_workqueue() as incompatible
+  Causes kernel crashing.
+- Removed mwifiex_enable_wake()/mwifiex_disable_wake()
+  as incompatible and redundant because the driver will be shut down
+  instead of entering Host Sleep.
+
+I'm worried about why flush_workqueue() causes kernel crash with this
+suspend method. Is it OK to just drop it? At least We Microsoft Surface
+devices users used this method for about one month and haven't observed
+any issues.
+
+Note that suspend() no longer checks if it's already suspended.
+With the previous Host Sleep method, the check was done by looking at
+adapter->hs_activated in mwifiex_enable_hs() [sta_ioctl.c], but not
+MWIFIEX_IS_SUSPENDED. So, what the previous method checked was instead
+Host Sleep state, not suspend itself.
+
+Therefore, there is no need to check the suspend state now.
+Also removed comment for suspend state check at top of suspend()
+accordingly.
+
+ drivers/net/wireless/marvell/mwifiex/pcie.c | 29 +++++++--------------
+ 1 file changed, 10 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/net/wireless/marvell/mwifiex/pcie.c b/drivers/net/wireless/marvell/mwifiex/pcie.c
+index 6a10ff0377a24..3b5c614def2f5 100644
+--- a/drivers/net/wireless/marvell/mwifiex/pcie.c
++++ b/drivers/net/wireless/marvell/mwifiex/pcie.c
+@@ -293,8 +293,7 @@ static bool mwifiex_pcie_ok_to_access_hw(struct mwifiex_adapter *adapter)
+  * registered functions must have drivers with suspend and resume
+  * methods. Failing that the kernel simply removes the whole card.
+  *
+- * If already not suspended, this function allocates and sends a host
+- * sleep activate request to the firmware and turns off the traffic.
++ * This function shuts down the adapter.
+  */
+ static int mwifiex_pcie_suspend(struct device *dev)
+ {
+@@ -302,31 +301,21 @@ static int mwifiex_pcie_suspend(struct device *dev)
+ 	struct pcie_service_card *card = dev_get_drvdata(dev);
+ 
+ 
+-	/* Might still be loading firmware */
+-	wait_for_completion(&card->fw_done);
+-
+ 	adapter = card->adapter;
+ 	if (!adapter) {
+ 		dev_err(dev, "adapter is not valid\n");
+ 		return 0;
+ 	}
+ 
+-	mwifiex_enable_wake(adapter);
+-
+-	/* Enable the Host Sleep */
+-	if (!mwifiex_enable_hs(adapter)) {
++	/* Shut down SW */
++	if (mwifiex_shutdown_sw(adapter)) {
+ 		mwifiex_dbg(adapter, ERROR,
+ 			    "cmd: failed to suspend\n");
+-		clear_bit(MWIFIEX_IS_HS_ENABLING, &adapter->work_flags);
+-		mwifiex_disable_wake(adapter);
+ 		return -EFAULT;
+ 	}
+ 
+-	flush_workqueue(adapter->workqueue);
+-
+ 	/* Indicate device suspended */
+ 	set_bit(MWIFIEX_IS_SUSPENDED, &adapter->work_flags);
+-	clear_bit(MWIFIEX_IS_HS_ENABLING, &adapter->work_flags);
+ 
+ 	return 0;
+ }
+@@ -336,13 +325,13 @@ static int mwifiex_pcie_suspend(struct device *dev)
+  * registered functions must have drivers with suspend and resume
+  * methods. Failing that the kernel simply removes the whole card.
+  *
+- * If already not resumed, this function turns on the traffic and
+- * sends a host sleep cancel request to the firmware.
++ * If already not resumed, this function reinits the adapter.
+  */
+ static int mwifiex_pcie_resume(struct device *dev)
+ {
+ 	struct mwifiex_adapter *adapter;
+ 	struct pcie_service_card *card = dev_get_drvdata(dev);
++	int ret;
+ 
+ 
+ 	if (!card->adapter) {
+@@ -360,9 +349,11 @@ static int mwifiex_pcie_resume(struct device *dev)
+ 
+ 	clear_bit(MWIFIEX_IS_SUSPENDED, &adapter->work_flags);
+ 
+-	mwifiex_cancel_hs(mwifiex_get_priv(adapter, MWIFIEX_BSS_ROLE_STA),
+-			  MWIFIEX_ASYNC_CMD);
+-	mwifiex_disable_wake(adapter);
++	ret = mwifiex_reinit_sw(adapter);
++	if (ret)
++		dev_err(dev, "reinit failed: %d\n", ret);
++	else
++		mwifiex_dbg(adapter, INFO, "%s, successful\n", __func__);
+ 
+ 	return 0;
+ }
+-- 
+2.29.1
+
