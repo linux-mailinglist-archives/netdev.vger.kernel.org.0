@@ -2,173 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED3A229E06C
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 02:22:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C24F829DFCE
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 02:04:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729667AbgJ1WE5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 18:04:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:32433 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729495AbgJ1WCG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:02:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603922525;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=o9/CLvMtl/VDe8FAQKlYw2/08Jd6hZteFLUw3bqy7TU=;
-        b=db12ESVBae3v4+CsABMTMO7X5KyT2VlO8gDHQAzB1e7G5DHjXiYCs5UMtIDQTjlC3xvG4R
-        FiHhEMOm1QfoSLF4UF/MTSRwZuGC1boZ58EWWtQlhFE/WSWvfN+wo2e1SZX0Yi1AfDysl4
-        MWfs9fEWRNMElmZSCY7Cgwst35X7Rmk=
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
- [209.85.167.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-302-luHBKeE_OQWRXFHdePA9eA-1; Wed, 28 Oct 2020 09:59:06 -0400
-X-MC-Unique: luHBKeE_OQWRXFHdePA9eA-1
-Received: by mail-oi1-f198.google.com with SMTP id e3so2250968oig.17
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 06:59:06 -0700 (PDT)
+        id S2404209AbgJ2BEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 21:04:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51510 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728543AbgJ1WGJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:06:09 -0400
+Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D13C0613CF;
+        Wed, 28 Oct 2020 15:06:08 -0700 (PDT)
+Received: by mail-io1-xd41.google.com with SMTP id p7so1151611ioo.6;
+        Wed, 28 Oct 2020 15:06:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=AMavcgab6f/G1LUhaSL/VnJNMSO60VRuV52F7ID9Z1w=;
+        b=EEBx/en4jUjbpcytmaGqmQqZoK88eThP+DK9XrxHaN1SQ97f4DrSYomDP9X0SkW/q0
+         0Ber+eFxG+cd5uPhS9kdMvcxwOsNyvUepSmCzF0TsiaP4hVWzXTUgLvgS/dMFSOxyzGk
+         16u+I0XQc8qsTHSPvYyz4rHV/3lQF3ThUC3tsDsCPS7dA5Ch0eGbrwSUZZ0hL3TNeOZG
+         CN+mzBK34uZp1FOpOIHpgudSrBlFlgzn5ZeXE3KM3F4rVihVfxpyLVG39v8DBIYrtkyE
+         jP4hkiJ1Zb4zzHVZo4l6i5dRHdIorBBpHSNi4Xnn8MEx3bY91Z+6rCAstCz6GCl+fxKY
+         ymrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=o9/CLvMtl/VDe8FAQKlYw2/08Jd6hZteFLUw3bqy7TU=;
-        b=cOhaMDy7+5LOCqKr6UwsoXUmJyJ+Zpg+36TFyh50ruvt3yP6teu2oWtaB+E8Rq7L8u
-         FyDEl/0NH1uD5mO+FUV5uEw0PvQIwVElf7PLgWNNafsXbULr1IKnOnCf+iMwCgY2wp26
-         ZTG5yIuOluMeafRs2MxU4159Cm0G3VDFMezFfcMpAkO1vtqLJ7UWXd30fB6fDfDRM7D8
-         fSEdrO1bZPa4+xyN0voSCShI9H/uYECXUAi0BQLfTQaXcj7OdnHPks2CxhTnGrc7PVcq
-         YUKDF3AxTH5bVHrLkty87bhAXVP8BQ/1lY4ECDRXyS7kGrspA4trsXaZSGXCg/+lUvtY
-         wiLA==
-X-Gm-Message-State: AOAM533DFrfCZ4/F3VmbV5FFYwyQB/x9um7k1+9c/icLjkOBPqwGCf8b
-        p81uKQiQ2XEiZ0uDBuvhA3R8XhsfqrBiNZHWpl70590L2mkArKZ7E53bfoCWKpGOIzkefw2ys8q
-        5uKZ7rapGGUDfz/m0
-X-Received: by 2002:a05:6830:1009:: with SMTP id a9mr3705431otp.312.1603893546066;
-        Wed, 28 Oct 2020 06:59:06 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzeg7tSjhUnhor6fkPxapZ8CezKup/neyZauptgkF/vARmTGWA1Kn0lF3+D4cF2Xma1oQSK6Q==
-X-Received: by 2002:a05:6830:1009:: with SMTP id a9mr3705422otp.312.1603893545799;
-        Wed, 28 Oct 2020 06:59:05 -0700 (PDT)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id c20sm2031463otm.49.2020.10.28.06.59.03
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 28 Oct 2020 06:59:05 -0700 (PDT)
-Subject: Re: [PATCH] net: cls_api: remove unneeded local variable in
- tc_dump_chain()
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        clang-built-linux@googlegroups.com, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-safety@lists.elisa.tech
-References: <20201028113533.26160-1-lukas.bulwahn@gmail.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <d956a5a5-c064-3fd4-5e78-809638ba14ef@redhat.com>
-Date:   Wed, 28 Oct 2020 06:59:03 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=AMavcgab6f/G1LUhaSL/VnJNMSO60VRuV52F7ID9Z1w=;
+        b=CKpYiUzKGjXL4CxtU6+GaP15fd6Xsqjtz/dqg2P6v2vodl49iA5RdZr4bSTV2cy3iq
+         dDGX8FUFw7YMQtmDKOSZqmTLmMMc6SbFohuC0uRg8/dPmhHvjf1BcQSlHvjsyQnGjGFm
+         PO/UnaQuUbBrWTzN9BLdxsAKQNQzZ3w7gG3ikuLPaNCy6GuHmgyFhVRSb2Lfmr8qHkKG
+         vyPvBQwGayPlrdRRB4rwyd8/xg4a7ir6gcrv9BOCwY1HddWTFv4js6LL8QMRdQRndrjJ
+         WDjJCvVJohq3qmvoiFy9Qu615C/JZqc39FQ/l8nKsda9eP/sli9WSfkSz2sDPW81acKZ
+         2C9Q==
+X-Gm-Message-State: AOAM530SG7VqaJa7OiXisKna++lsnFpXsOKaIaweltNijmCeZU1ZQYhU
+        nQtB9MEYCrhWfa5sFo05UoYfxYh0LodR5Nde
+X-Google-Smtp-Source: ABdhPJxizRPARCHdEsCXjgrcYCTJx2PzRg4bj6IZWfYbOoEie0tP3vFgu3sgYYebDUS52otqnjvptw==
+X-Received: by 2002:a65:62ca:: with SMTP id m10mr6618468pgv.407.1603894962096;
+        Wed, 28 Oct 2020 07:22:42 -0700 (PDT)
+Received: from k5-sbwpb.flets-east.jp (i60-35-254-237.s41.a020.ap.plala.or.jp. [60.35.254.237])
+        by smtp.gmail.com with ESMTPSA id c12sm6293543pgi.14.2020.10.28.07.22.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Oct 2020 07:22:41 -0700 (PDT)
+From:   Tsuchiya Yuto <kitakar@gmail.com>
+To:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl,
+        Tsuchiya Yuto <kitakar@gmail.com>
+Subject: [PATCH 1/2] mwifiex: fix mwifiex_shutdown_sw() causing sw reset failure
+Date:   Wed, 28 Oct 2020 23:21:09 +0900
+Message-Id: <20201028142110.18144-2-kitakar@gmail.com>
+X-Mailer: git-send-email 2.29.1
+In-Reply-To: <20201028142110.18144-1-kitakar@gmail.com>
+References: <20201028142110.18144-1-kitakar@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20201028113533.26160-1-lukas.bulwahn@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When FLR is performed but without fw reset for some reasons (e.g. on
+Surface devices, fw reset requires another quirk), it fails to reset
+properly. You can trigger the issue on such devices via debugfs entry
+for reset:
 
-On 10/28/20 4:35 AM, Lukas Bulwahn wrote:
-> make clang-analyzer on x86_64 defconfig caught my attention with:
->
-> net/sched/cls_api.c:2964:3: warning: Value stored to 'parent' is never read
->   [clang-analyzer-deadcode.DeadStores]
->                 parent = 0;
->                 ^
->
-> net/sched/cls_api.c:2977:4: warning: Value stored to 'parent' is never read
->   [clang-analyzer-deadcode.DeadStores]
->                         parent = q->handle;
->                         ^
->
-> Commit 32a4f5ecd738 ("net: sched: introduce chain object to uapi")
-> introduced tc_dump_chain() and this initial implementation already
-> contained these unneeded dead stores.
->
-> Simplify the code to make clang-analyzer happy.
->
-> As compilers will detect these unneeded assignments and optimize this
-> anyway, the resulting binary is identical before and after this change.
->
-> No functional change. No change in object code.
->
-> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> ---
-> applies cleanly on current master and next-20201028
->
-> Jamal, Cong, Jiri, please ack.
-> David, Jakub, please pick this minor non-urgent clean-up patch.
->
->  net/sched/cls_api.c | 16 +++-------------
->  1 file changed, 3 insertions(+), 13 deletions(-)
->
-> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-> index faeabff283a2..8ce830ca5f92 100644
-> --- a/net/sched/cls_api.c
-> +++ b/net/sched/cls_api.c
-> @@ -2940,7 +2940,6 @@ static int tc_dump_chain(struct sk_buff *skb, struct netlink_callback *cb)
->  	struct tcf_chain *chain;
->  	long index_start;
->  	long index;
-> -	u32 parent;
->  	int err;
->  
->  	if (nlmsg_len(cb->nlh) < sizeof(*tcm))
-> @@ -2955,13 +2954,6 @@ static int tc_dump_chain(struct sk_buff *skb, struct netlink_callback *cb)
->  		block = tcf_block_refcnt_get(net, tcm->tcm_block_index);
->  		if (!block)
->  			goto out;
-> -		/* If we work with block index, q is NULL and parent value
-> -		 * will never be used in the following code. The check
-> -		 * in tcf_fill_node prevents it. However, compiler does not
-> -		 * see that far, so set parent to zero to silence the warning
-> -		 * about parent being uninitialized.
-> -		 */
-> -		parent = 0;
->  	} else {
->  		const struct Qdisc_class_ops *cops;
->  		struct net_device *dev;
-> @@ -2971,13 +2963,11 @@ static int tc_dump_chain(struct sk_buff *skb, struct netlink_callback *cb)
->  		if (!dev)
->  			return skb->len;
->  
-> -		parent = tcm->tcm_parent;
-> -		if (!parent) {
-> +		if (!tcm->tcm_parent)
->  			q = dev->qdisc;
-> -			parent = q->handle;
+    $ echo 1 | sudo tee /sys/kernel/debug/mwifiex/mlan0/reset
 
-This looks like a an unused error handler.
+and the resulting dmesg log:
 
-and the later call to
+    [   45.740508] mwifiex_pcie 0000:03:00.0: Resetting per request
+    [   45.742937] mwifiex_pcie 0000:03:00.0: info: successfully disconnected from [BSSID]: reason code 3
+    [   45.744666] mwifiex_pcie 0000:03:00.0: info: shutdown mwifiex...
+    [   45.751530] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+    [   45.751539] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+    [   45.771691] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+    [   45.771695] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+    [   45.771697] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+    [   45.771698] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+    [   45.771699] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+    [   45.771701] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+    [   45.771702] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+    [   45.771703] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+    [   45.771704] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+    [   45.771705] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+    [   45.771707] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
+    [   45.771708] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+    [   53.099343] mwifiex_pcie 0000:03:00.0: info: trying to associate to '[SSID]' bssid [BSSID]
+    [   53.241870] mwifiex_pcie 0000:03:00.0: info: associated to bssid [BSSID] successfully
+    [   75.377942] mwifiex_pcie 0000:03:00.0: cmd_wait_q terminated: -110
+    [   85.385491] mwifiex_pcie 0000:03:00.0: info: successfully disconnected from [BSSID]: reason code 15
+    [   87.539408] mwifiex_pcie 0000:03:00.0: cmd_wait_q terminated: -110
+    [   87.539412] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+    [   99.699917] mwifiex_pcie 0000:03:00.0: cmd_wait_q terminated: -110
+    [   99.699925] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+    [  111.859802] mwifiex_pcie 0000:03:00.0: cmd_wait_q terminated: -110
+    [  111.859808] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
+    [...]
 
-if (TC_H_MIN(tcm->tcm_parent)
+When comparing mwifiex_shutdown_sw() with mwifiex_pcie_remove(), it
+lacks mwifiex_init_shutdown_fw().
 
-maybe should be
+This commit fixes mwifiex_shutdown_sw() by adding the missing
+mwifiex_init_shutdown_fw().
 
-if (TC_H_MIN(parent))
+Fixes: 4c5dae59d2e9 ("mwifiex: add PCIe function level reset support")
+Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
+---
+ drivers/net/wireless/marvell/mwifiex/main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-so I am skeptical that this change is ok because the code around it looks buggy.
-
-Tom
-
-> -		} else {
-> +		else
->  			q = qdisc_lookup(dev, TC_H_MAJ(tcm->tcm_parent));
-> -		}
-> +
->  		if (!q)
->  			goto out;
->  		cops = q->ops->cl_ops;
+diff --git a/drivers/net/wireless/marvell/mwifiex/main.c b/drivers/net/wireless/marvell/mwifiex/main.c
+index 9ba8a8f64976b..6283df5aaaf8b 100644
+--- a/drivers/net/wireless/marvell/mwifiex/main.c
++++ b/drivers/net/wireless/marvell/mwifiex/main.c
+@@ -1471,6 +1471,8 @@ int mwifiex_shutdown_sw(struct mwifiex_adapter *adapter)
+ 	priv = mwifiex_get_priv(adapter, MWIFIEX_BSS_ROLE_ANY);
+ 	mwifiex_deauthenticate(priv, NULL);
+ 
++	mwifiex_init_shutdown_fw(priv, MWIFIEX_FUNC_SHUTDOWN);
++
+ 	mwifiex_uninit_sw(adapter);
+ 	adapter->is_up = false;
+ 
+-- 
+2.29.1
 
