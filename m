@@ -2,77 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8195F29DFC6
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 02:04:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D351A29E06E
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 02:22:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404144AbgJ2BEa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 21:04:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51524 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730048AbgJ1WGN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:06:13 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFAECC0613CF
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:06:12 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id a23so447821qkg.13
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:06:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=em1UkxWJ9idsvmwiA6+mB4JFVSjEKYk7JDBS5sWZCBI=;
-        b=X0ExGhJdCJotNFfTMfAn07bnEVeDDjmYhvZvqC7ZMTm9OidOnhMm7F51BGUpR5P9i3
-         PgP2W2VFBktjosddDfYnLUte4AS8BWPSj2Bxpc3E+B0gpOfnIwD+TJU5jQLJB4mNV76y
-         c1J8UvajRCCqloS0+Fm3e5UFofYCOekCHa0aXCtbR+1GYrblD6wcsOln7XqGjaY2Yg7R
-         zDszvL5Cev9TyT8aCqCWJQLy3VTdaEyyy/0pZHGzKmW+UE9+/12DsvxCZMUGyXB8DW/M
-         cdBJfW3n/w/07LD8Y4WO06TYu0gghaksfK2rNoXX6GQhVrj3nVuhtKMzvTIFjTrEfRTX
-         b4RQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=em1UkxWJ9idsvmwiA6+mB4JFVSjEKYk7JDBS5sWZCBI=;
-        b=Z1KQJINM20kFRqEWTzpkUq4ZeT6lm4ZXxAloPArQRpcvzJuDhSzb/MZZvNAs5QpG+J
-         V3yIiDypuNaMc3vCcYYZr/dXE6qNKMr1cGyLhQuVJZpAsB+bypBRsQu8xkECUFX/4p6j
-         4ohd2WecH/KT90mbcnStgQhFSRMIotp8hvmep7iDIjXHPF1eDakp4Iyu2o5z6BkyOFVv
-         ooUk6cqRXOZjTD2YlV5G+8/hoSJ3Uj/U/BM8N56NEpFYVtdhYPigBWYO9VGGvW7nh2V6
-         atbL7kfTcbBmEmVqaDgTRqbedSn5SGCc6e/IUIXZqXu/cqJy9CXlhB06LPqUgqCzrb7S
-         EQqw==
-X-Gm-Message-State: AOAM532actzCXpjn+aAbrToTkp08gpFgEHcurF2JvqQmprugSy/zXLIv
-        khcit955FUcJzYWnKBM2hkjCd8nqTeWwiCIZcfT+5jB3TwthJQ==
-X-Google-Smtp-Source: ABdhPJxclALkeRBt+T6BJUCrQY+qoH56hU/EZig4e4UJcUDUjJFd4iXaycdnaORTw7pePK/4nY/hXNY8w3ybxcyNyag=
-X-Received: by 2002:a02:a518:: with SMTP id e24mr636917jam.131.1603913352276;
- Wed, 28 Oct 2020 12:29:12 -0700 (PDT)
+        id S1729632AbgJ1WEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:04:55 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:56960 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728268AbgJ1WBI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:01:08 -0400
+Received: from dispatch1-us1.ppe-hosted.com (localhost.localdomain [127.0.0.1])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 156EC65E57
+        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 20:41:31 +0000 (UTC)
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.144])
+        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 9981A2010B;
+        Wed, 28 Oct 2020 20:41:30 +0000 (UTC)
+Received: from us4-mdac16-35.at1.mdlocal (unknown [10.110.49.219])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 96E0D800A4;
+        Wed, 28 Oct 2020 20:41:30 +0000 (UTC)
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.103])
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 0158B40084;
+        Wed, 28 Oct 2020 20:41:30 +0000 (UTC)
+Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id A949F980078;
+        Wed, 28 Oct 2020 20:41:29 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
+ (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 28 Oct
+ 2020 20:41:24 +0000
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH net-next 0/4] sfc: EF100 TSO enhancements
+To:     <linux-net-drivers@solarflare.com>, <kuba@kernel.org>
+CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+Message-ID: <6e1ea05f-faeb-18df-91ef-572445691d89@solarflare.com>
+Date:   Wed, 28 Oct 2020 20:41:21 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-References: <20201027032403.1823-1-tung.q.nguyen@dektech.com.au>
- <CAM_iQpWsUyxSni9+4Khuu28jvski+vfphjJSVgXJH+xS_NWsUQ@mail.gmail.com> <DB7PR05MB431592FDCD6EEB96C8DB0EE688170@DB7PR05MB4315.eurprd05.prod.outlook.com>
-In-Reply-To: <DB7PR05MB431592FDCD6EEB96C8DB0EE688170@DB7PR05MB4315.eurprd05.prod.outlook.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 28 Oct 2020 12:29:01 -0700
-Message-ID: <CAM_iQpXquceLTrbVER1mQGBWk3WFjDTAawNBVSj1a2R6OTp-9w@mail.gmail.com>
-Subject: Re: [tipc-discussion] [net v3 1/1] tipc: fix memory leak caused by tipc_buf_append()
-To:     Tung Quang Nguyen <tung.q.nguyen@dektech.com.au>
-Cc:     "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        Xin Long <lucien.xin@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
+ ukex01.SolarFlarecom.com (10.17.10.4)
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25752.003
+X-TM-AS-Result: No-1.309700-8.000000-10
+X-TMASE-MatchedRID: ShzUERdoFATKGuE12Tco0FJbv6sGZHYqxXRDKEyu2zFOsq/n2Kz29FW5
+        UN79kMsqpzvlVPpnzu5Tijz/Q8m+/ZJL/r/YvPShqjZ865FPtpqm7EUWk2jS0cNAewdCCM5EKQb
+        +OoiREpqEgl0njLljkhKUgCVJnOKAm0BF8EU4/qFPecEIo68AS58CClrNVSL7Yy6fApvL8BcKHk
+        UYQmViAZ7wVhuRk/CXKqt2FG1/DdBNfs8n85Te8oMbH85DUZXy3QfwsVk0UbvqwGfCk7KUszEbq
+        Yfrz81A3i0LILPWzuNS/uQb1oWUabM4csmuG36ZlZ9UpGUG80FH68Owitja+K7oRSi1uBkmSVmT
+        46lodUAiU+hr3l6L3VrMCKBXF1d6I2VNggMWJCP4LggrmsRgvTwNB+BE7PnlftwZ3X11IV0=
+X-TM-AS-User-Approved-Sender: Yes
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--1.309700-8.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25752.003
+X-MDID: 1603917690-xpq4jr6WgYz9
+X-PPE-DISP: 1603917690;xpq4jr6WgYz9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 27, 2020 at 10:23 PM Tung Quang Nguyen
-<tung.q.nguyen@dektech.com.au> wrote:
->
-> Hi Cong,
->
-> No, I have never ignored any comment from reviewers. I sent v2 on Oct 26 after discussing with Xin Long, and v3 on Oct 27 after receiving comment from Jakub.
-> I received your 3 emails nearly at the same time on Oct 28. It's weird. Your emails did not appear in this email archive either: https://sourceforge.net/p/tipc/mailman/tipc-discussion/
->
-> Anyway, I answer your questions:
+Support TSO over encapsulation (with GSO_PARTIAL), and over VLANs
+ (which the code already handled but we didn't advertise).  Also
+ correct our handling of IPID mangling.
 
-Oh, I just realized you meant shinfo->dataref, not skb->users...
-Then it makes sense now.
+I couldn't find documentation of exactly what shaped SKBs we can
+ get given, so patch #2 is slightly guesswork, but when I tested
+ TSO over both underlay and (VxLAN) overlay, the checksums came
+ out correctly, so at least in those cases the edits we're making
+ must be the right ones.
+Similarly, I'm not 100% sure I've correctly understood how FIXEDID
+ and MANGLEID are supposed to work in patch #3.
 
-Thanks.
+Edward Cree (4):
+  sfc: extend bitfield macros to 17 fields
+  sfc: implement encap TSO on EF100
+  sfc: only use fixed-id if the skb asks for it
+  sfc: advertise our vlan features
+
+ drivers/net/ethernet/sfc/bitfield.h  | 42 +++++++++++++++++---
+ drivers/net/ethernet/sfc/ef100_nic.c | 17 ++++++--
+ drivers/net/ethernet/sfc/ef100_tx.c  | 58 ++++++++++++++++------------
+ 3 files changed, 84 insertions(+), 33 deletions(-)
+
