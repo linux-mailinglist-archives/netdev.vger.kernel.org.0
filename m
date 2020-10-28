@@ -2,95 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 981BB29D8B8
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:36:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B208329D8D1
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:37:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388293AbgJ1WgB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 18:36:01 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:45296 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387678AbgJ1WeB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:34:01 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09SAYjhV164632;
-        Wed, 28 Oct 2020 10:35:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=ozdXlFYXaQsb4RcCSPg5tS7ML5aca7VnqAE1SSL3wjA=;
- b=P1GfKVVuy2PBBO0yBlQ5B+bLVaz7tvTTRCvaaknjaUQEA7DlW4ozyJz5VqACPiBu6lZU
- a3606LFOJZq6rlaI8QQCLWynTslU3zc6nJbl+Bi3yWSr/rVWtJhCj4xFBe9QeV6kNfcn
- arlcsL69M7tNHqpEVGU/QVRsYXhqUvV1Rmb+sAL2CsNq7Bq+rLcKkKX2CB8nOnan32rh
- sI+FCxbK8iSZRgY32flh4lhxmpGhDn930X3FSRgC3GaIHlxgyamYN4bbu3QMOv+2+3t5
- /wCxd0+1Xm2JnqzrwQXVh2jnKo7pZrYYovphfQ2nVOJFTO/4LOERRxeWWm8PqcMEysoL Fg== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2120.oracle.com with ESMTP id 34dgm44698-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 28 Oct 2020 10:35:12 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 09SAQ5vv072316;
-        Wed, 28 Oct 2020 10:35:11 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3020.oracle.com with ESMTP id 34cx5y6073-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 28 Oct 2020 10:35:11 +0000
-Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 09SAZ5PP007506;
-        Wed, 28 Oct 2020 10:35:05 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 28 Oct 2020 03:35:03 -0700
-Date:   Wed, 28 Oct 2020 13:34:56 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        devel@driverdev.osuosl.org, Arnd Bergmann <arnd@arndb.de>,
-        linux-doc@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>,
-        Johannes Berg <johannes@sipsolutions.net>
-Subject: Re: [RFC] wimax: move out to staging
-Message-ID: <20201028103456.GB1042@kadam>
-References: <20201027212448.454129-1-arnd@kernel.org>
+        id S2388371AbgJ1WgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:36:20 -0400
+Received: from a.mx.secunet.com ([62.96.220.36]:39476 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388434AbgJ1Wdt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Oct 2020 18:33:49 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id B6360205A9;
+        Wed, 28 Oct 2020 11:45:14 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id obkiekkmCsOh; Wed, 28 Oct 2020 11:45:10 +0100 (CET)
+Received: from mail-essen-02.secunet.de (unknown [10.53.40.205])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 90A3620512;
+        Wed, 28 Oct 2020 11:45:10 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ mail-essen-02.secunet.de (10.53.40.205) with Microsoft SMTP Server (TLS) id
+ 14.3.487.0; Wed, 28 Oct 2020 11:45:10 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Wed, 28 Oct
+ 2020 11:45:10 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id EA627318136E;
+ Wed, 28 Oct 2020 11:45:09 +0100 (CET)
+Date:   Wed, 28 Oct 2020 11:45:09 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     syzbot <syzbot+a7e701c8385bd8543074@syzkaller.appspotmail.com>,
+        "Dmitry Safonov" <dima@arista.com>
+CC:     <davem@davemloft.net>, <herbert@gondor.apana.org.au>,
+        <kuba@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <syzkaller-bugs@googlegroups.com>
+Subject: Re: WARNING in xfrm_alloc_compat
+Message-ID: <20201028104509.GB8805@gauss3.secunet.de>
+References: <00000000000021315205b29353aa@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <20201027212448.454129-1-arnd@kernel.org>
+In-Reply-To: <00000000000021315205b29353aa@google.com>
 User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9787 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxscore=0 mlxlogscore=999
- suspectscore=0 bulkscore=0 malwarescore=0 spamscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2010280070
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9787 signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 impostorscore=0
- adultscore=0 bulkscore=0 spamscore=0 phishscore=0 mlxlogscore=999
- suspectscore=0 clxscore=1011 mlxscore=0 malwarescore=0 priorityscore=1501
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2010280071
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 27, 2020 at 10:20:13PM +0100, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+Same here, Dmitry please look into it.
+
+I guess we can just remove the WARN_ON() that
+triggeres here.
+
+On Mon, Oct 26, 2020 at 06:58:28AM -0700, syzbot wrote:
+> Hello,
 > 
-> There are no known users of this driver as of October 2020, and it will
-> be removed unless someone turns out to still need it in future releases.
+> syzbot found the following issue on:
 > 
-> According to https://en.wikipedia.org/wiki/List_of_WiMAX_networks, there
-> have been many public wimax networks, but it appears that these entries
-> are all stale, after everyone has migrated to LTE or discontinued their
-> service altogether.
-
-Wimax is still pretty common in Africa.  But you have to buy an outdoor
-antenae with all the software on it and an ethernet cable into your
-house.  I don't know what software the antennaes are using.  Probably
-Linux but with an out of tree kernel module is my guess.
-
-regards,
-dan carpenter
-
+> HEAD commit:    f11901ed Merge tag 'xfs-5.10-merge-7' of git://git.kernel...
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=17b35564500000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=fb79b5c2dc1e69e3
+> dashboard link: https://syzkaller.appspot.com/bug?extid=a7e701c8385bd8543074
+> compiler:       gcc (GCC) 10.1.0-syz 20200507
+> 
+> Unfortunately, I don't have any reproducer for this issue yet.
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+a7e701c8385bd8543074@syzkaller.appspotmail.com
+> 
+> netlink: 404 bytes leftover after parsing attributes in process `syz-executor.4'.
+> ------------[ cut here ]------------
+> unsupported nla_type 0
+> WARNING: CPU: 0 PID: 9953 at net/xfrm/xfrm_compat.c:279 xfrm_xlate64_attr net/xfrm/xfrm_compat.c:279 [inline]
+> WARNING: CPU: 0 PID: 9953 at net/xfrm/xfrm_compat.c:279 xfrm_xlate64 net/xfrm/xfrm_compat.c:300 [inline]
+> WARNING: CPU: 0 PID: 9953 at net/xfrm/xfrm_compat.c:279 xfrm_alloc_compat+0xf39/0x10d0 net/xfrm/xfrm_compat.c:327
+> Modules linked in:
+> CPU: 0 PID: 9953 Comm: syz-executor.4 Not tainted 5.9.0-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> RIP: 0010:xfrm_xlate64_attr net/xfrm/xfrm_compat.c:279 [inline]
+> RIP: 0010:xfrm_xlate64 net/xfrm/xfrm_compat.c:300 [inline]
+> RIP: 0010:xfrm_alloc_compat+0xf39/0x10d0 net/xfrm/xfrm_compat.c:327
+> Code: de e8 4b 68 d3 f9 84 db 0f 85 b0 f8 ff ff e8 2e 70 d3 f9 8b 74 24 08 48 c7 c7 40 b9 51 8a c6 05 f7 0d 3c 05 01 e8 b7 db 0e 01 <0f> 0b e9 8d f8 ff ff e8 0b 70 d3 f9 8b 14 24 48 c7 c7 00 b9 51 8a
+> RSP: 0018:ffffc9000bb4f4b8 EFLAGS: 00010282
+> RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+> RDX: 0000000000040000 RSI: ffffffff8158cf25 RDI: fffff52001769e89
+> RBP: 00000000000001a0 R08: 0000000000000001 R09: ffff8880b9e2005b
+> R10: 0000000000000000 R11: 0000000000000000 R12: 00000000ffffffa1
+> R13: ffff88802ed1d8f8 R14: ffff888014403c80 R15: ffff88801514fc80
+> FS:  00007f188bbe6700(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 000000000074b698 CR3: 000000001aabe000 CR4: 00000000001506e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  xfrm_alloc_userspi+0x66a/0xa30 net/xfrm/xfrm_user.c:1388
+>  xfrm_user_rcv_msg+0x42f/0x8b0 net/xfrm/xfrm_user.c:2752
+>  netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+>  xfrm_netlink_rcv+0x6b/0x90 net/xfrm/xfrm_user.c:2764
+>  netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+>  netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
+>  netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
+>  sock_sendmsg_nosec net/socket.c:651 [inline]
+>  sock_sendmsg+0xcf/0x120 net/socket.c:671
+>  ____sys_sendmsg+0x6e8/0x810 net/socket.c:2353
+>  ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
+>  __sys_sendmsg+0xe5/0x1b0 net/socket.c:2440
+>  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+>  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> RIP: 0033:0x45de59
+> Code: 0d b4 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 db b3 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+> RSP: 002b:00007f188bbe5c78 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> RAX: ffffffffffffffda RBX: 000000000002e640 RCX: 000000000045de59
+> RDX: 0000000000000000 RSI: 0000000020000100 RDI: 0000000000000003
+> RBP: 000000000118bf60 R08: 0000000000000000 R09: 0000000000000000
+> R10: 0000000000000000 R11: 0000000000000246 R12: 000000000118bf2c
+> R13: 000000000169fb7f R14: 00007f188bbe69c0 R15: 000000000118bf2c
+> 
+> 
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
