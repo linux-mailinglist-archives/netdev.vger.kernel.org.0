@@ -2,193 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB73F29D698
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:16:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6404229D74A
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:23:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731420AbgJ1WQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 18:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53358 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731409AbgJ1WQe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:16:34 -0400
-Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA3F0C0613CF;
-        Wed, 28 Oct 2020 15:16:33 -0700 (PDT)
-Received: by mail-vk1-xa36.google.com with SMTP id k125so268039vka.11;
-        Wed, 28 Oct 2020 15:16:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=54O1P5r41ZqmIzJz6Cd1KDy/NA/5HzTXzjDHY93KBEk=;
-        b=N8I4ct81omE1XtvRZHjctZAkol6O9k13TNi4ukv2kfCe3GkrWMDRu4nuV/oXSDY6L9
-         Gk0kT1QBCTpYowC5p1vkhoSpgu2lWLhDr0J/JYMEu1umas6BnnQhbs0+prRmiy5ApMRW
-         3L5mDkMivj5G1WWMZWG1uZFfbFN8Trr4JoIJRZPgIOwu//nqC/6KZLios4JAH1JKL7SG
-         2nnkW7NFC5SCL+WxnKIOkjnMmXC4ourZTYpfuTNScdwUz93UZBwJyvpGnzV8ROUkDQYY
-         D6aD4ZLaWqddB9c8dAmzS3v3ncbPQPJ22Q0Mas5SuRD1VhddowHfLKVzBvPpdo+z1GsG
-         U1Iw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=54O1P5r41ZqmIzJz6Cd1KDy/NA/5HzTXzjDHY93KBEk=;
-        b=DAbFBblQWohDnfB0IOl6POm0jxaxozB9TQBoYXokxPp7JWDjSbcHka2BQ3CTf4umzv
-         8LQogv75c/+enftCE5Zo6vjLvpBJN5YU85bjNtBRIWP+vKCxcHHK3S6u2LyCwq8S9JBL
-         tm9B3XgDbwh0AcyOZLRVnE7SMFQUtb5bBIxJYkUyM/bpK3sj89VmeG+baa/++9yPrsQM
-         a6x7Iyr54ja2UTbTqQdbNMQ7G4T2RotcP8xD8RIDi1Z0niQomUYHQylLM8nVs3whDcmu
-         s6qoS2sOYqYnZ7X0aAaPiinal1SbmWIAlGGjYnGxHpyJKc4ReOjzOBEK+n1qopquQSSA
-         FyfQ==
-X-Gm-Message-State: AOAM533JnGTQdOyIjmDcEd4vrPenL88vJVyIL18IB//W1vA1C1dVLhVA
-        MZJDMon/xbCjvRNJkgCysPAkNmgb3T4=
-X-Google-Smtp-Source: ABdhPJy6nbU25F3kPXbCO+raQW+HdqwjR+pRwlQ/qztyo1tdyaT7BxFbdKO3SuH8xC+6oYKxf8tleA==
-X-Received: by 2002:aa7:80c9:0:b029:164:4ca1:fff with SMTP id a9-20020aa780c90000b02901644ca10fffmr5383299pfn.11.1603882688819;
-        Wed, 28 Oct 2020 03:58:08 -0700 (PDT)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:a46c:8b86:395a:7a3d])
-        by smtp.gmail.com with ESMTPSA id 65sm557863pge.37.2020.10.28.03.58.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 03:58:08 -0700 (PDT)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Krzysztof Halasa <khc@pm.waw.pl>
-Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH net-next 4/4] net: hdlc_fr: Add support for any Ethertype
-Date:   Wed, 28 Oct 2020 03:57:05 -0700
-Message-Id: <20201028105705.460551-5-xie.he.0141@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20201028105705.460551-1-xie.he.0141@gmail.com>
-References: <20201028105705.460551-1-xie.he.0141@gmail.com>
+        id S1732683AbgJ1WWe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:22:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36826 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732591AbgJ1WWZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Oct 2020 18:22:25 -0400
+Received: from localhost (unknown [151.66.125.178])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 52073246C9;
+        Wed, 28 Oct 2020 11:43:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603885387;
+        bh=nKhGK3Y1PvrhhiSe3Be8yClivksH9012Cv34ky/cpVA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=wdmDG2GBTHwcpjOYYPQlmtSoRWfd50tBPDiYqSTyEG8ZBZFUEwBRMTQ3rTFGzIVw7
+         TrxDpE9d39D0+CpnsZbXlVM7jloJDthzgV0Paj8J7WAQh5QVzuthtgTf4ZRC72bP0h
+         yw4v9U6pp8Nj9gx75pBwszf0d72yVKUsi0K5jG8Q=
+Date:   Wed, 28 Oct 2020 12:43:01 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH net-next 1/4] net: xdp: introduce bulking for xdp tx
+ return path
+Message-ID: <20201028114301.GC5386@lore-desk>
+References: <cover.1603824486.git.lorenzo@kernel.org>
+ <7495b5ac96b0fd2bf5ab79b12e01bf0ee0fff803.1603824486.git.lorenzo@kernel.org>
+ <20201028123419.27e1ac54@carbon>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="f0KYrhQ4vYSV2aJu"
+Content-Disposition: inline
+In-Reply-To: <20201028123419.27e1ac54@carbon>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Change the fr_rx function to make this driver support any Ethertype
-when receiving skbs on normal (non-Ethernet-emulating) PVC devices.
-(This driver is already able to handle any Ethertype when sending.)
 
-Originally in the fr_rx function, the code that parses the long (10-byte)
-header only recognizes a few Ethertype values and drops frames with other
-Ethertype values. This patch replaces this code to make fr_rx support
-any Ethertype. This patch also creates a new function fr_snap_parse as
-part of the new code.
+--f0KYrhQ4vYSV2aJu
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Also add skb_reset_mac_header before we pass an skb (received on normal
-PVC devices) to upper layers. Because we don't use header_ops for normal
-PVC devices, we should hide the header from upper layer code in this case.
+> On Tue, 27 Oct 2020 20:04:07 +0100
+> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>=20
+> > Introduce bulking capability in xdp tx return path (XDP_REDIRECT).
+> > xdp_return_frame is usually run inside the driver NAPI tx completion
+> > loop so it is possible batch it.
+> > Current implementation considers only page_pool memory model.
+> > Convert mvneta driver to xdp_return_frame_bulk APIs.
+> >=20
+> > Suggested-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-Cc: Krzysztof Halasa <khc@pm.waw.pl>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
----
- drivers/net/wan/hdlc_fr.c | 76 ++++++++++++++++++++++++++-------------
- 1 file changed, 51 insertions(+), 25 deletions(-)
+Hi Jesper,
 
-diff --git a/drivers/net/wan/hdlc_fr.c b/drivers/net/wan/hdlc_fr.c
-index 3639c2bfb141..e95efc14bc97 100644
---- a/drivers/net/wan/hdlc_fr.c
-+++ b/drivers/net/wan/hdlc_fr.c
-@@ -871,6 +871,45 @@ static int fr_lmi_recv(struct net_device *dev, struct sk_buff *skb)
- 	return 0;
- }
- 
-+static int fr_snap_parse(struct sk_buff *skb, struct pvc_device *pvc)
-+{
-+	/* OUI 00-00-00 indicates an Ethertype follows */
-+	if (skb->data[0] == 0x00 &&
-+	    skb->data[1] == 0x00 &&
-+	    skb->data[2] == 0x00) {
-+		if (!pvc->main)
-+			return -1;
-+		skb->dev = pvc->main;
-+		skb->protocol = *(__be16 *)(skb->data + 3); /* Ethertype */
-+		skb_pull(skb, 5);
-+		skb_reset_mac_header(skb);
-+		return 0;
-+
-+	/* OUI 00-80-C2 stands for the 802.1 organization */
-+	} else if (skb->data[0] == 0x00 &&
-+		   skb->data[1] == 0x80 &&
-+		   skb->data[2] == 0xC2) {
-+		/* PID 00-07 stands for Ethernet frames without FCS */
-+		if (skb->data[3] == 0x00 &&
-+		    skb->data[4] == 0x07) {
-+			if (!pvc->ether)
-+				return -1;
-+			skb_pull(skb, 5);
-+			if (skb->len < ETH_HLEN)
-+				return -1;
-+			skb->protocol = eth_type_trans(skb, pvc->ether);
-+			return 0;
-+
-+		/* PID unsupported */
-+		} else {
-+			return -1;
-+		}
-+
-+	/* OUI unsupported */
-+	} else {
-+		return -1;
-+	}
-+}
- 
- static int fr_rx(struct sk_buff *skb)
- {
-@@ -935,6 +974,7 @@ static int fr_rx(struct sk_buff *skb)
- 		skb_pull(skb, 4); /* Remove 4-byte header (hdr, UI, NLPID) */
- 		skb->dev = pvc->main;
- 		skb->protocol = htons(ETH_P_IP);
-+		skb_reset_mac_header(skb);
- 
- 	} else if (data[3] == NLPID_IPV6) {
- 		if (!pvc->main)
-@@ -942,35 +982,21 @@ static int fr_rx(struct sk_buff *skb)
- 		skb_pull(skb, 4); /* Remove 4-byte header (hdr, UI, NLPID) */
- 		skb->dev = pvc->main;
- 		skb->protocol = htons(ETH_P_IPV6);
-+		skb_reset_mac_header(skb);
- 
--	} else if (skb->len > 10 && data[3] == FR_PAD &&
--		   data[4] == NLPID_SNAP && data[5] == FR_PAD) {
--		u16 oui = ntohs(*(__be16*)(data + 6));
--		u16 pid = ntohs(*(__be16*)(data + 8));
--		skb_pull(skb, 10);
--
--		switch ((((u32)oui) << 16) | pid) {
--		case ETH_P_ARP: /* routed frame with SNAP */
--		case ETH_P_IPX:
--		case ETH_P_IP:	/* a long variant */
--		case ETH_P_IPV6:
--			if (!pvc->main)
--				goto rx_drop;
--			skb->dev = pvc->main;
--			skb->protocol = htons(pid);
--			break;
--
--		case 0x80C20007: /* bridged Ethernet frame */
--			if (!pvc->ether)
-+	} else if (data[3] == FR_PAD) {
-+		if (skb->len < 5)
-+			goto rx_error;
-+		if (data[4] == NLPID_SNAP) { /* A SNAP header follows */
-+			skb_pull(skb, 5);
-+			if (skb->len < 5) /* Incomplete SNAP header */
-+				goto rx_error;
-+			if (fr_snap_parse(skb, pvc))
- 				goto rx_drop;
--			skb->protocol = eth_type_trans(skb, pvc->ether);
--			break;
--
--		default:
--			netdev_info(frad, "Unsupported protocol, OUI=%x PID=%x\n",
--				    oui, pid);
-+		} else {
- 			goto rx_drop;
- 		}
-+
- 	} else {
- 		netdev_info(frad, "Unsupported protocol, NLPID=%x length=%i\n",
- 			    data[3], skb->len);
--- 
-2.25.1
+thx for the review.
 
+>=20
+> I think you/we have to explain better in this commit message, what the
+> idea/concept behind this bulk return is.  Or even explain this as a
+> comment above "xdp_return_frame_bulk".
+>=20
+> Maybe add/append text to commit below:
+>=20
+> The bulk API introduced is a defer and flush API, that will defer
+> the return if the xdp_mem_allocator object is the same, identified
+> via the mem.id field (xdp_mem_info).  Thus, the flush operation will
+> operate on the same xdp_mem_allocator object.
+>=20
+> The bulk queue size of 16 is no coincident.  This is connected to how
+> XDP redirect will bulk xmit (upto 16) frames. Thus, the idea is for the
+> API to find these boundaries (via mem.id match), which is optimal for
+> both the I-cache and D-cache for the memory allocator code and object.
+>=20
+> The data structure (xdp_frame_bulk) used for deferred elements is
+> stored/allocated on the function call-stack, which allows lockfree
+> access.
+
+ack, I will add it in v2
+
+>=20
+>=20
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> [...]
+> > diff --git a/include/net/xdp.h b/include/net/xdp.h
+> > index 3814fb631d52..9567110845ef 100644
+> > --- a/include/net/xdp.h
+> > +++ b/include/net/xdp.h
+> > @@ -104,6 +104,12 @@ struct xdp_frame {
+> >  	struct net_device *dev_rx; /* used by cpumap */
+> >  };
+> > =20
+> > +#define XDP_BULK_QUEUE_SIZE	16
+>=20
+> Maybe "#define DEV_MAP_BULK_SIZE 16" should be def to
+> XDP_BULK_QUEUE_SIZE, to express the described connection.
+
+ack, I guess we can fix it in a following patch
+
+>=20
+> > +struct xdp_frame_bulk {
+> > +	void *q[XDP_BULK_QUEUE_SIZE];
+> > +	int count;
+> > +	void *xa;
+>=20
+> Just a hunch (not benchmarked), but I think it will be more optimal to
+> place 'count' and '*xa' above the '*q' array.  (It might not matter at
+> all, as we cannot control the start alignment, when this is on the
+> stack.)
+
+ack. I will fix in v2.
+
+>=20
+> > +};
+> [...]
+>=20
+> > diff --git a/net/core/xdp.c b/net/core/xdp.c
+> > index 48aba933a5a8..93eabd789246 100644
+> > --- a/net/core/xdp.c
+> > +++ b/net/core/xdp.c
+> > @@ -380,6 +380,57 @@ void xdp_return_frame_rx_napi(struct xdp_frame *xd=
+pf)
+> >  }
+> >  EXPORT_SYMBOL_GPL(xdp_return_frame_rx_napi);
+> > =20
+> > +void xdp_flush_frame_bulk(struct xdp_frame_bulk *bq)
+> > +{
+> > +	struct xdp_mem_allocator *xa =3D bq->xa;
+> > +	int i;
+> > +
+> > +	if (unlikely(!xa))
+> > +		return;
+> > +
+> > +	for (i =3D 0; i < bq->count; i++) {
+> > +		struct page *page =3D virt_to_head_page(bq->q[i]);
+> > +
+> > +		page_pool_put_full_page(xa->page_pool, page, false);
+> > +	}
+> > +	bq->count =3D 0;
+> > +}
+> > +EXPORT_SYMBOL_GPL(xdp_flush_frame_bulk);
+> > +
+>=20
+> Wondering if we should have a comment that explains the intent and idea
+> behind this function?
+>=20
+> /* Defers return when frame belongs to same mem.id as previous frame */
+>=20
+
+ack.
+
+Regards,
+Lorenzo
+
+> > +void xdp_return_frame_bulk(struct xdp_frame *xdpf,
+> > +			   struct xdp_frame_bulk *bq)
+> > +{
+> > +	struct xdp_mem_info *mem =3D &xdpf->mem;
+> > +	struct xdp_mem_allocator *xa, *nxa;
+> > +
+> > +	if (mem->type !=3D MEM_TYPE_PAGE_POOL) {
+> > +		__xdp_return(xdpf->data, &xdpf->mem, false);
+> > +		return;
+> > +	}
+> > +
+> > +	rcu_read_lock();
+> > +
+> > +	xa =3D bq->xa;
+> > +	if (unlikely(!xa || mem->id !=3D xa->mem.id)) {
+> > +		nxa =3D rhashtable_lookup(mem_id_ht, &mem->id, mem_id_rht_params);
+> > +		if (unlikely(!xa)) {
+> > +			bq->count =3D 0;
+> > +			bq->xa =3D nxa;
+> > +			xa =3D nxa;
+> > +		}
+> > +	}
+> > +
+> > +	if (mem->id !=3D xa->mem.id || bq->count =3D=3D XDP_BULK_QUEUE_SIZE)
+> > +		xdp_flush_frame_bulk(bq);
+> > +
+> > +	bq->q[bq->count++] =3D xdpf->data;
+> > +	if (mem->id !=3D xa->mem.id)
+> > +		bq->xa =3D nxa;
+> > +
+> > +	rcu_read_unlock();
+> > +}
+> > +EXPORT_SYMBOL_GPL(xdp_return_frame_bulk);
+>=20
+>=20
+> --=20
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+>=20
+
+--f0KYrhQ4vYSV2aJu
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX5lZQwAKCRA6cBh0uS2t
+rGghAQCsjyWtmmXoycnxIZMORxYbKSaJyXko6AQRy3qh9aoQrQD+JsCSh0fl0EwU
+WBK8b10ukrS2m2shhuMKdnt5EeEM4wc=
+=yZRU
+-----END PGP SIGNATURE-----
+
+--f0KYrhQ4vYSV2aJu--
