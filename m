@@ -2,170 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 094F629D7A2
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:28:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 177B429D583
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:04:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732878AbgJ1WZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 18:25:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46875 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732870AbgJ1WZW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:25:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603923919;
+        id S1729936AbgJ1WEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:04:36 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:57432 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729925AbgJ1WE1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:04:27 -0400
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1603891466;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=OKpJLQNcbdtXqKfUCsznLvCGwnNpeeIO7SiSWz007aM=;
-        b=UA4ALD1+4D9M4ujknev8POdcic6sKcc1P4vj0Uc8K3D0xVzKMacqwLq48cgiy7OTxioQcM
-        qNiV9xX8LJZzTV3kcy471vLuybux8abR96eMXTdAEqp1lPU1IxZ61jTq59UyvutzmtgFag
-        W1NTVvgm6aqeuaH9rRc0GWCeGTyetUM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-83-wL0uJA1XO6WuRrcFsFJMEQ-1; Wed, 28 Oct 2020 09:23:01 -0400
-X-MC-Unique: wL0uJA1XO6WuRrcFsFJMEQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 80F518A8A7C;
-        Wed, 28 Oct 2020 13:19:14 +0000 (UTC)
-Received: from f31.redhat.com (ovpn-112-215.rdu2.redhat.com [10.10.112.215])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id CF88E60C04;
-        Wed, 28 Oct 2020 13:19:12 +0000 (UTC)
-From:   jmaloy@redhat.com
-To:     netdev@vger.kernel.org, davem@davemloft.net
-Cc:     tipc-discussion@lists.sourceforge.net,
-        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
-        tuong.t.lien@dektech.com.au, jmaloy@redhat.com, maloy@donjonn.com,
-        xinl@redhat.com, ying.xue@windriver.com,
-        parthasarathy.bhuvaragan@gmail.com
-Subject: [net] tipc: add stricter control of reserved service types
-Date:   Wed, 28 Oct 2020 09:19:12 -0400
-Message-Id: <20201028131912.3773561-1-jmaloy@redhat.com>
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eOuQuQdhsm+Y0qxN6wedgBFzwEY5p3W5bJ8c9ZupmOQ=;
+        b=e8L47Fj9+8+VRb+cPKNJL06Tm2F/pM2xsnfuOXouWdxWrcdXSUeE/uyuUFO6dm288upWVp
+        bH5WwbFlIWR1i3MRCXXgAEZuyi6otBjjUy/ioiYptWXQKAhSK0dewld8fYI8g3Btib0Ek4
+        3MtmVGaEmUGjeXba8clzasFq/VEKUolPVAiN9jMoMZvHZ04EG0nsFjJzmEqpBqKiUYIHzs
+        dGLH36kyvQog2PYvRZPcNWc42gqtO1sRyoHjFbfRrsRlpmuH6Qfx9J3Dh894ZBmX36RxFl
+        ihHc7uph6RialeOipIiP8gTn7rnhFKjJTA3IJ1Q/SQU+9uepnpRuCWz1TqPC6w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1603891466;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eOuQuQdhsm+Y0qxN6wedgBFzwEY5p3W5bJ8c9ZupmOQ=;
+        b=VADqFajD8odskZEaAgVk/RylunmkPGT7/MVp65KX+PI+fXkn4s58tHsmJSUACMGx1mIy8A
+        n0FTiX55p4cdfgAA==
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Serge Belyshev <belyshev@depni.sinp.msu.ru>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Subject: Re: [PATCH net] r8169: fix operation under forced interrupt threading
+In-Reply-To: <f0d713d2-6dc4-5246-daca-54811825e064@gmail.com>
+References: <4d3ef84a-c812-5072-918a-22a6f6468310@gmail.com> <877drabmoq.fsf@depni.sinp.msu.ru> <f0d713d2-6dc4-5246-daca-54811825e064@gmail.com>
+Date:   Wed, 28 Oct 2020 14:24:26 +0100
+Message-ID: <87mu06fppx.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jon Maloy <jmaloy@redhat.com>
+On Wed, Oct 28 2020 at 13:17, Heiner Kallweit wrote:
+> On 28.10.2020 12:43, Serge Belyshev wrote:
+>>> For several network drivers it was reported that using
+>>> __napi_schedule_irqoff() is unsafe with forced threading. One way to
+>>> fix this is switching back to __napi_schedule, but then we lose the
+>>> benefit of the irqoff version in general. As stated by Eric it doesn't
+>>> make sense to make the minimal hard irq handlers in drivers using NAPI
+>>> a thread. Therefore ensure that the hard irq handler is never
+>>> thread-ified.
+>> Hi!  This patch actually breaks r8169 with threadirqs on an old box
+>> where it was working before:
+>> 
+>> [    0.000000] DMI: Gigabyte Technology Co., Ltd. GA-MA790FX-DQ6/GA-MA790FX-DQ6, BIOS F7g 07/19/2010
+>> ...
+>> [    1.072676] r8169 0000:02:00.0 eth0: RTL8168b/8111b, 00:1a:4d:5d:6b:c3, XID 380, IRQ 18
+>> ...
+>> [    8.850099] genirq: Flags mismatch irq 18. 00010080 (eth0) vs. 00002080 (ahci[0000:05:00.0])
+>> 
+>> (error is reported to userspace, interface failed to bring up).
+>> Reverting the patch fixes the problem.
+>> 
+> Thanks for the report. On this old chip version MSI is unreliable,
+> therefore r8169 falls back to a PCI legacy interrupt. On your system
+> this PCI legacy interrupt seems to be shared between network and
+> disk. Then the IRQ core tries to threadify the disk interrupt
+> (setting IRQF_ONESHOT), whilst the network interrupt doesn't have
+> this flag set. This results in the flag mismatch error.
+>
+> Maybe, if one source of a shared interrupt doesn't allow forced
+> threading, this should be applied to the other sources too.
+> But this would require a change in the IRQ core, therefore
+> +Thomas to get his opinion on the issue.
 
-TIPC reserves 64 service types for current and future internal use.
-Therefore, the bind() function is meant to block regular user sockets
-from being bound to these values, while it should let through such
-bindings from internal users.
+It's pretty simple. There is no way to fix that at the core
+level. Shared interrupts suck and to make them work halfways correct the
+sharing devices must have matching and non-competing flags.
 
-However, since we at the design moment saw no way to distinguish
-between regular and internal users the filter function ended up
-with allowing all bindings of the reserved types which were really
-in use ([0,1]), and block all the rest ([2,63]).
+Especially for threaded vs. non threaded case. Shared interrupts are
+level triggered. So you have a conflict of interests:
 
-This is risky, since a regular user may bind to the service type
-representing the topology server (TIPC_TOP_SRV == 1) or the one used
-for indicating neighboring node status (TIPC_CFG_SRV == 0), and wreak
-havoc for users of those services, i.e., most users.
+The threaded handler requires that the interrupt line is masked until
+the thread has completed otherwise the system will suffer an interrupt
+storm. The non-threaded want's it to be unmasked after it finished.
 
-The reality is however that TIPC_CFG_SRV never is bound through the
-bind() function, since it doesn't represent a regular socket, and
-TIPC_TOP_SRV can also be made to bypass the checks in tipc_bind()
-by introducing a different entry function, tipc_sk_bind().
+Thanks,
 
-It should be noted that although this is a change of the API semantics,
-there is no risk we will break any currently working applications by
-doing this. Any application trying to bind to the values in question
-would be badly broken from the outset, so there is no chance we would
-find any such applications in real-world production systems.
+        tglx
 
-Acked-by: Yung Xue <ying.xue@windriver.com>
-Signed-off-by: Jon Maloy <jmaloy@redhat.com>
----
- net/tipc/socket.c | 24 +++++++++++++++---------
- net/tipc/socket.h |  2 +-
- net/tipc/topsrv.c |  4 ++--
- 3 files changed, 18 insertions(+), 12 deletions(-)
-
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index e795a8a2955b..222fd53da2d0 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -658,8 +658,8 @@ static int tipc_release(struct socket *sock)
-  * NOTE: This routine doesn't need to take the socket lock since it doesn't
-  *       access any non-constant socket information.
-  */
--static int tipc_bind(struct socket *sock, struct sockaddr *uaddr,
--		     int uaddr_len)
-+
-+int tipc_sk_bind(struct socket *sock, struct sockaddr *uaddr, int uaddr_len)
- {
- 	struct sock *sk = sock->sk;
- 	struct sockaddr_tipc *addr = (struct sockaddr_tipc *)uaddr;
-@@ -691,13 +691,6 @@ static int tipc_bind(struct socket *sock, struct sockaddr *uaddr,
- 		goto exit;
- 	}
- 
--	if ((addr->addr.nameseq.type < TIPC_RESERVED_TYPES) &&
--	    (addr->addr.nameseq.type != TIPC_TOP_SRV) &&
--	    (addr->addr.nameseq.type != TIPC_CFG_SRV)) {
--		res = -EACCES;
--		goto exit;
--	}
--
- 	res = (addr->scope >= 0) ?
- 		tipc_sk_publish(tsk, addr->scope, &addr->addr.nameseq) :
- 		tipc_sk_withdraw(tsk, -addr->scope, &addr->addr.nameseq);
-@@ -706,6 +699,19 @@ static int tipc_bind(struct socket *sock, struct sockaddr *uaddr,
- 	return res;
- }
- 
-+static int tipc_bind(struct socket *sock, struct sockaddr *skaddr, int alen)
-+{
-+	struct sockaddr_tipc *addr = (struct sockaddr_tipc *)skaddr;
-+
-+	if (alen) {
-+		if (alen < sizeof(struct sockaddr_tipc))
-+			return -EINVAL;
-+		if (addr->addr.nameseq.type < TIPC_RESERVED_TYPES)
-+			return -EACCES;
-+	}
-+	return tipc_sk_bind(sock, skaddr, alen);
-+}
-+
- /**
-  * tipc_getname - get port ID of socket or peer socket
-  * @sock: socket structure
-diff --git a/net/tipc/socket.h b/net/tipc/socket.h
-index b11575afc66f..02cdf166807d 100644
---- a/net/tipc/socket.h
-+++ b/net/tipc/socket.h
-@@ -74,7 +74,7 @@ int tipc_dump_done(struct netlink_callback *cb);
- u32 tipc_sock_get_portid(struct sock *sk);
- bool tipc_sk_overlimit1(struct sock *sk, struct sk_buff *skb);
- bool tipc_sk_overlimit2(struct sock *sk, struct sk_buff *skb);
--
-+int tipc_sk_bind(struct socket *sock, struct sockaddr *skaddr, int alen);
- int tsk_set_importance(struct sock *sk, int imp);
- 
- #endif
-diff --git a/net/tipc/topsrv.c b/net/tipc/topsrv.c
-index 5f6f86051c83..cec029349662 100644
---- a/net/tipc/topsrv.c
-+++ b/net/tipc/topsrv.c
-@@ -520,12 +520,12 @@ static int tipc_topsrv_create_listener(struct tipc_topsrv *srv)
- 
- 	saddr.family	                = AF_TIPC;
- 	saddr.addrtype		        = TIPC_ADDR_NAMESEQ;
--	saddr.addr.nameseq.type	        = TIPC_TOP_SRV;
-+	saddr.addr.nameseq.type         = TIPC_TOP_SRV;
- 	saddr.addr.nameseq.lower	= TIPC_TOP_SRV;
- 	saddr.addr.nameseq.upper	= TIPC_TOP_SRV;
- 	saddr.scope			= TIPC_NODE_SCOPE;
- 
--	rc = kernel_bind(lsock, (struct sockaddr *)&saddr, sizeof(saddr));
-+	rc = tipc_sk_bind(lsock, (struct sockaddr *)&saddr, sizeof(saddr));
- 	if (rc < 0)
- 		goto err;
- 	rc = kernel_listen(lsock, 0);
--- 
-2.25.4
-
+   
