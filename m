@@ -2,97 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96FE929D8F9
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:41:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ADC929D94A
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:50:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389114AbgJ1WlP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 18:41:15 -0400
-Received: from inva020.nxp.com ([92.121.34.13]:49874 "EHLO inva020.nxp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388989AbgJ1Wjb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Oct 2020 18:39:31 -0400
-Received: from inva020.nxp.com (localhost [127.0.0.1])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 86F301A0207;
-        Wed, 28 Oct 2020 17:41:12 +0100 (CET)
-Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
-        by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 7A31E1A0160;
-        Wed, 28 Oct 2020 17:41:12 +0100 (CET)
-Received: from fsr-ub1464-019.ea.freescale.net (fsr-ub1464-019.ea.freescale.net [10.171.81.207])
-        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 29F0D2030E;
-        Wed, 28 Oct 2020 17:41:12 +0100 (CET)
-From:   Camelia Groza <camelia.groza@nxp.com>
-To:     willemdebruijn.kernel@gmail.com, madalin.bucur@oss.nxp.com,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Camelia Groza <camelia.groza@nxp.com>
-Subject: [PATCH net v2 2/2] dpaa_eth: fix the RX headroom size alignment
-Date:   Wed, 28 Oct 2020 18:41:00 +0200
-Message-Id: <5b077d5853123db0c8794af1ed061850b94eae37.1603899392.git.camelia.groza@nxp.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <cover.1603899392.git.camelia.groza@nxp.com>
-References: <cover.1603899392.git.camelia.groza@nxp.com>
-In-Reply-To: <cover.1603899392.git.camelia.groza@nxp.com>
-References: <cover.1603899392.git.camelia.groza@nxp.com>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S2389600AbgJ1Wub (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59144 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389556AbgJ1Wua (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:50:30 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6AAC0613CF;
+        Wed, 28 Oct 2020 15:50:30 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id h22so788283wmb.0;
+        Wed, 28 Oct 2020 15:50:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1CEqaQjMv77SiJCZ+Ml1JB/3M4/OfgLP7wUO6uiGBUs=;
+        b=bR1CCcPMmvIaitAJ/L84I7wG4ssUkX6QgTxmEp/5I9tT9LEQJAPNiwovP4N9tQTfh2
+         Wr8TKpV/V8w+yJzzl2HmH5UmTZpbyF/nkkFvM7fDV5Ir1FKuR+biYo81+yI9z36wzJzy
+         jH2b7uUSYFiQwgrxSq77T/GGugeBJjB03YXIH4tOf/lhiEW1M2rjuHsmE9QA9yUyzCIP
+         5o+h00bEHO5+1ILSbxExqsnbv8HlTFJZnwfuOW9vG422xU3XpjGKA8uebqR6h6ysTGgL
+         6dvfdF5qWz26EzBDfpaxavnTYl13oe4zKP7KFSGv/kH/Y7I2TrgF3SuzxKS/hUIbnIfR
+         ITlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=1CEqaQjMv77SiJCZ+Ml1JB/3M4/OfgLP7wUO6uiGBUs=;
+        b=T7ZMnw65WO8+vKrv2XlcnlwOH9v5J049l+mNorO8f5BoFd7hfsPo1ZDQDxq9gS7Hi4
+         x60TdE+wmzjbHxY3le6qbUdurm00zpbhG718sbXMz/N9AyuBxmrgU9jgvBItHyoE4EVR
+         Rx4q3z1o68Bo/LtPXMwRXbKhCDBayEduaud71il/7GeuWvwNEDAYnFB8z12VijjyLmY/
+         1eRX1L65S2OAxUB7vmQui1Zqrn7sJ6GhkkVi29AQz7yYGuSPaTIpmM704GY/MHz1BwAd
+         0eYiVDKn7NVjXAxCp4I27Nd8nwWHWIJSuVZY+wPTsKoaZDOAms8D/LCYRizIlJnp8yQu
+         OENQ==
+X-Gm-Message-State: AOAM5323xd3v9hddGDpf5y0hEukWxY/1sCjeIjX0LvH7Nbl/x2OdPngX
+        IvwEiItnOWANOMbz7oeGpRNMxwZS3LWlPQ==
+X-Google-Smtp-Source: ABdhPJwgSnehTc5xNqyLCaar1RruRoIGZbX080UjPug3t5nj2z72U/3mB1I9KQxqePWsIqRhpk1atA==
+X-Received: by 2002:a7b:c081:: with SMTP id r1mr425801wmh.158.1603904857092;
+        Wed, 28 Oct 2020 10:07:37 -0700 (PDT)
+Received: from nogikh.c.googlers.com.com (88.140.78.34.bc.googleusercontent.com. [34.78.140.88])
+        by smtp.gmail.com with ESMTPSA id v6sm211757wrp.69.2020.10.28.10.07.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Oct 2020 10:07:36 -0700 (PDT)
+From:   Aleksandr Nogikh <aleksandrnogikh@gmail.com>
+To:     stephen@networkplumber.org, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     andreyknvl@google.com, dvyukov@google.com, elver@google.com,
+        rdunlap@infradead.org, dave.taht@gmail.com, edumazet@google.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Aleksandr Nogikh <nogikh@google.com>,
+        syzbot+ec762a6342ad0d3c0d8f@syzkaller.appspotmail.com
+Subject: [PATCH v2] netem: fix zero division in tabledist
+Date:   Wed, 28 Oct 2020 17:07:31 +0000
+Message-Id: <20201028170731.1383332-1-aleksandrnogikh@gmail.com>
+X-Mailer: git-send-email 2.29.0.rc2.309.g374f81d7ae-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The headroom reserved for received frames needs to be aligned to an
-RX specific value. There is currently a discrepancy between the values
-used in the Ethernet driver and the values passed to the FMan.
-Coincidentally, the resulting aligned values are identical.
+From: Aleksandr Nogikh <nogikh@google.com>
 
-Fixes: 3c68b8fffb48 ("dpaa_eth: FMan erratum A050385 workaround")
-Signed-off-by: Camelia Groza <camelia.groza@nxp.com>
+Currently it is possible to craft a special netlink RTM_NEWQDISC
+command that can result in jitter being equal to 0x80000000. It is
+enough to set the 32 bit jitter to 0x02000000 (it will later be
+multiplied by 2^6) or just set the 64 bit jitter via
+TCA_NETEM_JITTER64. This causes an overflow during the generation of
+uniformly distributed numbers in tabledist(), which in turn leads to
+division by zero (sigma != 0, but sigma * 2 is 0).
+
+The related fragment of code needs 32-bit division - see commit
+9b0ed89 ("netem: remove unnecessary 64 bit modulus"), so switching to
+64 bit is not an option.
+
+Fix the issue by keeping the value of jitter within the range that can
+be adequately handled by tabledist() - [0;INT_MAX]. As negative std
+deviation makes no sense, take the absolute value of the passed value
+and cap it at INT_MAX. Inside tabledist(), switch to unsigned 32 bit
+arithmetic in order to prevent overflows.
+
+Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
+Reported-by: syzbot+ec762a6342ad0d3c0d8f@syzkaller.appspotmail.com
+
 ---
-Changes in v2:
-- make the returned value for TX ports explicit
-- simplify the buf_layout reference
+v2:
+* Capping the value when receiving it from the userspace instead of
+  checking it each time when a new skb is enqueued.
+v1:
+http://lkml.kernel.org/r/20201016121007.2378114-1-a.nogikh@yandex.ru
+---
+ net/sched/sch_netem.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
- drivers/net/ethernet/freescale/dpaa/dpaa_eth.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+diff --git a/net/sched/sch_netem.c b/net/sched/sch_netem.c
+index 84f82771cdf5..0c345e43a09a 100644
+--- a/net/sched/sch_netem.c
++++ b/net/sched/sch_netem.c
+@@ -330,7 +330,7 @@ static s64 tabledist(s64 mu, s32 sigma,
+ 
+ 	/* default uniform distribution */
+ 	if (dist == NULL)
+-		return ((rnd % (2 * sigma)) + mu) - sigma;
++		return ((rnd % (2 * (u32)sigma)) + mu) - sigma;
+ 
+ 	t = dist->table[rnd % dist->size];
+ 	x = (sigma % NETEM_DIST_SCALE) * t;
+@@ -812,6 +812,10 @@ static void get_slot(struct netem_sched_data *q, const struct nlattr *attr)
+ 		q->slot_config.max_packets = INT_MAX;
+ 	if (q->slot_config.max_bytes == 0)
+ 		q->slot_config.max_bytes = INT_MAX;
++
++	/* capping dist_jitter to the range acceptable by tabledist() */
++	q->slot_config.dist_jitter = min_t(__s64, INT_MAX, abs(q->slot_config.dist_jitter));
++
+ 	q->slot.packets_left = q->slot_config.max_packets;
+ 	q->slot.bytes_left = q->slot_config.max_bytes;
+ 	if (q->slot_config.min_delay | q->slot_config.max_delay |
+@@ -1037,6 +1041,9 @@ static int netem_change(struct Qdisc *sch, struct nlattr *opt,
+ 	if (tb[TCA_NETEM_SLOT])
+ 		get_slot(q, tb[TCA_NETEM_SLOT]);
+ 
++	/* capping jitter to the range acceptable by tabledist() */
++	q->jitter = min_t(s64, abs(q->jitter), INT_MAX);
++
+ 	return ret;
+ 
+ get_table_failure:
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index 1aac0b6..278a684 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -2842,7 +2842,8 @@ static int dpaa_ingress_cgr_init(struct dpaa_priv *priv)
- 	return err;
- }
-
--static inline u16 dpaa_get_headroom(struct dpaa_buffer_layout *bl)
-+static inline u16 dpaa_get_headroom(struct dpaa_buffer_layout *bl,
-+				    enum port_type port)
- {
- 	u16 headroom;
-
-@@ -2856,10 +2857,13 @@ static inline u16 dpaa_get_headroom(struct dpaa_buffer_layout *bl)
- 	 *
- 	 * Also make sure the headroom is a multiple of data_align bytes
- 	 */
--	headroom = (u16)(bl->priv_data_size + DPAA_PARSE_RESULTS_SIZE +
-+	headroom = (u16)(bl[port].priv_data_size + DPAA_PARSE_RESULTS_SIZE +
- 		DPAA_TIME_STAMP_SIZE + DPAA_HASH_RESULTS_SIZE);
-
--	return ALIGN(headroom, DPAA_FD_DATA_ALIGNMENT);
-+	if (port == RX)
-+		return ALIGN(headroom, DPAA_FD_RX_DATA_ALIGNMENT);
-+	else
-+		return ALIGN(headroom, DPAA_FD_DATA_ALIGNMENT);
- }
-
- static int dpaa_eth_probe(struct platform_device *pdev)
-@@ -3027,8 +3031,8 @@ static int dpaa_eth_probe(struct platform_device *pdev)
- 			goto free_dpaa_fqs;
- 	}
-
--	priv->tx_headroom = dpaa_get_headroom(&priv->buf_layout[TX]);
--	priv->rx_headroom = dpaa_get_headroom(&priv->buf_layout[RX]);
-+	priv->tx_headroom = dpaa_get_headroom(priv->buf_layout, TX);
-+	priv->rx_headroom = dpaa_get_headroom(priv->buf_layout, RX);
-
- 	/* All real interfaces need their ports initialized */
- 	err = dpaa_eth_init_ports(mac_dev, dpaa_bp, &port_fqs,
---
-1.9.1
+base-commit: 1c86f90a16d413621918ae1403842b43632f0b3d
+-- 
+2.29.0.rc2.309.g374f81d7ae-goog
 
