@@ -2,98 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A70BB29D3D1
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 22:47:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E130729D44E
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 22:51:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725949AbgJ1VnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 17:43:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47502 "EHLO
+        id S1728148AbgJ1VvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 17:51:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725793AbgJ1VnW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:43:22 -0400
-Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C231C0613CF;
-        Wed, 28 Oct 2020 14:43:22 -0700 (PDT)
-Received: by mail-il1-x143.google.com with SMTP id x7so991876ili.5;
-        Wed, 28 Oct 2020 14:43:22 -0700 (PDT)
+        with ESMTP id S1728146AbgJ1VvJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:51:09 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 104D7C0613CF
+        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 14:51:09 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id h21so1083303iob.10
+        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 14:51:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ozYCZRgZqvrBNZwSGWpcjHZ/UebLYVQ2msLNU5VY5Mo=;
-        b=uoRMTe+GToyjDoY9/GaktCa1BeSuPzVAR3/boLPppUGl2qn34CK74mw2rIzAvM3ugD
-         SQ2p3aZO5PqkKhiOBdyBW8DBlPIF/Tcc6+83P3KSglxaTdhTl9wHL0mu6LpQJ/aNPYGk
-         /aDeRn5tXPMYv6ZrqEqshKEqAMefYDA42I2NAyiczmdob/fE6/C17lTpYjIm3i2nHFub
-         K7djTFNomWxGyjgJgYaExtWgiUrXfPoe1d3WFjoYg76WLdF5US+sBtUNs/orjJRmkjIT
-         oyE1avb6xQqwp/xtMx5iZ1T0D8ckNdMumCO27aucVma7HiOGSBhpTihnODBRV/SORZ9K
-         jh4w==
+        d=arista.com; s=googlenew;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Gwnayf2MecvT+5s8JJfNOkhG8pZYF6/aAm6DfyGpa0A=;
+        b=WRdCdJCaebH5bgPaIQhOnD53UOJdg70cdtkXZGfIXymymGkUFWXOhcyMvlrv8gk3QH
+         XJPrkmgU2fG6GpqJb3EL9lEvK3pJl/M7BaZQspMZ5DvCKKT1FEpn0ypiz4vfCIWHlrMc
+         4qXIchkWd86YiODOrIRH4OuRDyb2ZVF3rqW18Gnmishi4EBEHKGqhIVozpl7EUuEGrey
+         DPlRlB9bPRlulrnKtTJbb4qTQ9aj9pU1KFYVlYpSuQSjA20bk8jmI6tVCiRIn1hg5ohm
+         kIsQmUsQ5lLucng7Hw46mPqaYkDLpMUnX7+rDp4DLgFySQI8sJUHXO8lvMumk0DGCp7G
+         c4yA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ozYCZRgZqvrBNZwSGWpcjHZ/UebLYVQ2msLNU5VY5Mo=;
-        b=JxiQeAP6dvKB85JUPFPrcNEDA2w0x8x3+OoV1zVhk3OFgiN+igbqgPCM6VO5rMJ2pY
-         5cMiamFbi0oxjAGWfd75bfGxVHPREYxK1XYZQzosiuyvZa4bRDFhqtfKsuABTuGXEXKq
-         9WaVFjP3YYPHPKG16GALTn1NYr8sM4zlPSaYsnVTQKmKjNl31gPnhyEZa/8QrwGqiYUm
-         kdnx7dxsdr50YWGgHza0XfWAnEYkog/8st5SyxXdUh3TRTPZwx1Ri+Gydlu7fKHQ6H9/
-         7brvmOtfGEJi7kTWB/I2rBN6iJleGg4nKNLf5Pwo1AhMbg56Jt885BeFkZtRy6IzI9e5
-         mK3g==
-X-Gm-Message-State: AOAM531odQqRjfVAq2JbSpUTAK7bU3Q1aoJobGsLdWzcg/X1lX1jM2kb
-        w14L/WrETjLK8IZ65tH/ONhVCS8SVAbm7hIW6cwfcVK0zUwiFA==
-X-Google-Smtp-Source: ABdhPJwBVHlD8D4vAAXos2Nzvs1/eRlOYVtS1b+L4Ik0PIOGENFpsUsLpxj2nAxw9y6dHLnM6j3+R7WB5l0ZfZPRLMc=
-X-Received: by 2002:a92:c04c:: with SMTP id o12mr171588ilf.22.1603906736261;
- Wed, 28 Oct 2020 10:38:56 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Gwnayf2MecvT+5s8JJfNOkhG8pZYF6/aAm6DfyGpa0A=;
+        b=X22NsyB0V1HhJzO69ktjYjkkYqEBRuOSVQ4ChFadQSX2McLuTQ0Ys13+kJsh5W4kIf
+         wBL2EQZrUIEIkontXu/LgApWzl1sAG0KbM/Ls6uYiPwaTseZ8oJJNfGzJnNPG43MM7sf
+         YUQwGTTb5qJ8/R21PHd7zl7wo7aQzVaNqbzUtfWy2dRm2J6lFt+QfA+k2U1YcOHQ6Sg6
+         Rx3Cki3QQ4DQ8Ub2QoMyxHNpaxfiQQyfAMJ/1qK3qc7aB4oIZZw/bQVLOGbT1AYWJOF5
+         ytOSVRZ1jEa4wjC77da03igZghoJOdA/vuAKJoQLeFYVyTxlypuIHMOF9YIK08wJvIO/
+         U2nA==
+X-Gm-Message-State: AOAM531WaLgEsuTVvBMt+lXV9+LbNvviFQ6aUszFQbugj/oTyzFrsuQC
+        dtvTCS9uRz672w6zqpaTtKaoj64NsHC3bfQn
+X-Google-Smtp-Source: ABdhPJx7+AEZUMe/EsIWyfYB5EYL402/n/2TUFC/pw6DyMAI8l7Fu1l1s7kGjxT1nPAj+GaH11JRIg==
+X-Received: by 2002:a63:7408:: with SMTP id p8mr414749pgc.273.1603906958000;
+        Wed, 28 Oct 2020 10:42:38 -0700 (PDT)
+Received: from ?IPv6:2a02:8084:e84:2480:228:f8ff:fe6f:83a8? ([2a02:8084:e84:2480:228:f8ff:fe6f:83a8])
+        by smtp.gmail.com with ESMTPSA id ng7sm47242pjb.14.2020.10.28.10.42.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 28 Oct 2020 10:42:37 -0700 (PDT)
+Subject: Re: WARNING in xfrm_alloc_compat
+To:     Steffen Klassert <steffen.klassert@secunet.com>,
+        syzbot <syzbot+a7e701c8385bd8543074@syzkaller.appspotmail.com>
+Cc:     davem@davemloft.net, herbert@gondor.apana.org.au, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+References: <00000000000021315205b29353aa@google.com>
+ <20201028104509.GB8805@gauss3.secunet.de>
+From:   Dmitry Safonov <dima@arista.com>
+Message-ID: <86a1f30b-388f-6760-b59b-349d2d8b0d8c@arista.com>
+Date:   Wed, 28 Oct 2020 17:42:31 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-References: <20201028113533.26160-1-lukas.bulwahn@gmail.com> <d956a5a5-c064-3fd4-5e78-809638ba14ef@redhat.com>
-In-Reply-To: <d956a5a5-c064-3fd4-5e78-809638ba14ef@redhat.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 28 Oct 2020 10:38:45 -0700
-Message-ID: <CAM_iQpUfE2f3QBFY6r0_D2mzFK_SsmFXdA-1p3h7yquM8912fg@mail.gmail.com>
-Subject: Re: [PATCH] net: cls_api: remove unneeded local variable in tc_dump_chain()
-To:     Tom Rix <trix@redhat.com>
-Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        clang-built-linux@googlegroups.com,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org, linux-safety@lists.elisa.tech
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20201028104509.GB8805@gauss3.secunet.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 6:59 AM Tom Rix <trix@redhat.com> wrote:
->
->
-> On 10/28/20 4:35 AM, Lukas Bulwahn wrote:
-> > @@ -2971,13 +2963,11 @@ static int tc_dump_chain(struct sk_buff *skb, struct netlink_callback *cb)
-> >               if (!dev)
-> >                       return skb->len;
-> >
-> > -             parent = tcm->tcm_parent;
-> > -             if (!parent) {
-> > +             if (!tcm->tcm_parent)
-> >                       q = dev->qdisc;
-> > -                     parent = q->handle;
->
-> This looks like a an unused error handler.
->
-> and the later call to
->
-> if (TC_H_MIN(tcm->tcm_parent)
->
-> maybe should be
->
-> if (TC_H_MIN(parent))
+On 10/28/20 10:45 AM, Steffen Klassert wrote:
+> Same here, Dmitry please look into it.
 
-When tcm->tcm_parent is 0, TC_H_MIN(tcm->tcm_parent) is also 0,
-so we will not hit that if branch.
+Looking on both, thanks!
 
-So, I think Lukas' patch is correct.
-
-Thanks.
+> I guess we can just remove the WARN_ON() that
+> triggeres here.
+Thanks,
+          Dmitry
