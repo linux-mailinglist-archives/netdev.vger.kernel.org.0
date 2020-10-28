@@ -2,51 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3144029E1B8
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:03:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD21B29E265
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:14:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391206AbgJ2CC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 22:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48468 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727956AbgJ1Vss (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:48:48 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5CDEC0613CF;
-        Wed, 28 Oct 2020 14:48:47 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id 15so590422pgd.12;
-        Wed, 28 Oct 2020 14:48:47 -0700 (PDT)
+        id S2404326AbgJ2CN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 22:13:57 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:35677 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726786AbgJ1Vfz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:35:55 -0400
+Received: by mail-oi1-f195.google.com with SMTP id w191so1129475oif.2;
+        Wed, 28 Oct 2020 14:35:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=mDFQmbb9Oor+vBAFpLMgolt6lpEwXqSbTwfhoYcmKJ4=;
-        b=ExPEUdPF3Xm+2uS0b9noomj3pH3P6KT7BgV0VGm0Frhpr6pJRfgFDRWQRcAT7WkiDg
-         5l+BiTAKPyG2xu97GJuZlzrA2fMjcJBhlMkD9A2UaXfI37ULPCmNrwjqYDS6DZI8ZHux
-         7RuBfNTPKn1y36urOyfwLuDFAVakUd/1sjbth4Bl81AXFh5EJlrUAtG52H1sX8f4OgAQ
-         A0qspxGC/3lR3zofyDoarZrTg0eRLQxHrzYn46JR6DNcSmBcPj3ZzYaNSS2azefKQGeI
-         u/wIK1+8I+1ShHYo2zvInZ3vhSkww9/6s8VB+vuo8WewXMVAHWkhx78uoNAsw1n2sX5+
-         ksZg==
+        bh=GJjCYBDQRA1Y87dVSmn/FJuMApnZK8DW4dsai1PK8Pw=;
+        b=IlSe4xAjzrFl2CN4AabUTHi5rc5PhVzOfz3NYnnC+R/frrrtauN3sUXKxqgUZCjjyD
+         D4NInYinEh6UKEJpIsN+HPQ59yuvb1VDrfq/IWdVvgeZ4zf4IV4YJ8GFQnOHpyy/9xb8
+         cjkcIHrSyhYuzjMS4Yi6XN8P4qG/aC/qsvlGBW6f0kjyVi4iyvkhx3JGVibHFZcrrIKL
+         XD9ZUz/VjWJ+Z2ie0b90YKtYB4lXL5lgPtOORA+bNLR/EKNSypsxJAdRonowhxfqsvz7
+         1/KQRuvV0j4PwmtRgqdAk4jT7qAuN56Aj0168nNkky53Lab0T0DIiO/EpCof06pbnHAM
+         VOmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=mDFQmbb9Oor+vBAFpLMgolt6lpEwXqSbTwfhoYcmKJ4=;
-        b=JUW+aCt6OOOyovtYhVkoEmNO6+0HBdfSm5RAvuKK208BOSOa6Ax+M+FQcu+sehkAin
-         lWSOeIHSZmt7Vz2Mzo8eEEKwkBe1a1SappLO4igA/yWN2ChL3bXNE3f8ohenA9eWj/KC
-         h+2QTuiPgUh6RCyD6DBQ+cdHYfI71OGKbl4EqIBpAVSHebdDwSmHUayr7udqBAeAihr6
-         AEPLalqmfrDhgl2KPWqLBD/nU18mNz4fG79zlXNS4TZFszwhKE1TyNyTuTK2gECxAWOC
-         ZJzR9PCK6y9NFh6BaQup5/E8CZwqzzRbrQn57spypsK98sq/Shy3YAAAdvPgPp1eWVJ4
-         pzIQ==
-X-Gm-Message-State: AOAM531BY6jXPkQZJUfOHNALuBM4QPWqxXov6OpSQ+94S9a1QpUAG75w
-        OE0eU+wW8Ye1HmcyaJCMI9++33HYGM2v4DFF
-X-Google-Smtp-Source: ABdhPJwHgNGzQP+mlfd2dLKOX6i2lZzzISYlYkmDUe4jJyeRFLirQgDbRCiMi/SI8aTLnf4kKdpTUA==
-X-Received: by 2002:a65:6093:: with SMTP id t19mr6615108pgu.234.1603894954787;
-        Wed, 28 Oct 2020 07:22:34 -0700 (PDT)
+        bh=GJjCYBDQRA1Y87dVSmn/FJuMApnZK8DW4dsai1PK8Pw=;
+        b=G9y8V0gMCcpgLDh0Cs5VuKNFAGjsa8d3pJXJ+8epMyhoxFDzD0FLTdsHx6F4az2t5o
+         luTmymwgR6IEt5Wh7Ljqx4MyilwBbfVtsGZxVJF3oPX88eiKzm8wiizzsk3v8aqtt0tl
+         xpMenuK75fXFhltRBvE0TRV1TW3hEHu8Z5ZATT9QD85VF8l6z3vQR35f7T24CmVWQcvY
+         BRN1Uc33tYEBEE/8/vgC8/p2xiSPCNKniYYBpa4LdJv5JGGfhx9dskb2qla78S37YaE2
+         feW6EElzgx+yasd1WkQ0tsKrk6eYedflDcfPoNHQjpikC9B37JZLrlWLlw++CqI8enMZ
+         4LyA==
+X-Gm-Message-State: AOAM530oLWoFzX2g5GoOdWA6oGPn/kW8Fo0GlG2gA8HSu+BQpKizWrGA
+        Xx0jZ+kRt3cfxX6B/ubu1CguAa4sPS6zuREP
+X-Google-Smtp-Source: ABdhPJxQqTAY26QBlFaEBLgr/WnvE5SDv4jz4MmJ6wZ7NKMd/7P6bvsKyn0mHBpXVIFQt7GPv6+J+A==
+X-Received: by 2002:a17:90a:7784:: with SMTP id v4mr7178120pjk.60.1603895121529;
+        Wed, 28 Oct 2020 07:25:21 -0700 (PDT)
 Received: from k5-sbwpb.flets-east.jp (i60-35-254-237.s41.a020.ap.plala.or.jp. [60.35.254.237])
-        by smtp.gmail.com with ESMTPSA id c12sm6293543pgi.14.2020.10.28.07.22.31
+        by smtp.gmail.com with ESMTPSA id 194sm6227192pfz.182.2020.10.28.07.25.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 07:22:34 -0700 (PDT)
+        Wed, 28 Oct 2020 07:25:20 -0700 (PDT)
 From:   Tsuchiya Yuto <kitakar@gmail.com>
 To:     Amitkumar Karwar <amitkarwar@gmail.com>,
         Ganapathi Bhat <ganapathi.bhat@nxp.com>,
@@ -59,9 +56,9 @@ Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         Maximilian Luz <luzmaximilian@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl,
         Tsuchiya Yuto <kitakar@gmail.com>
-Subject: [PATCH 0/2] mwifiex: fixes for shutdown_sw() and reinit_sw()
-Date:   Wed, 28 Oct 2020 23:21:08 +0900
-Message-Id: <20201028142110.18144-1-kitakar@gmail.com>
+Subject: [PATCH 0/3] mwifiex: disable ps_mode by default for stability
+Date:   Wed, 28 Oct 2020 23:24:30 +0900
+Message-Id: <20201028142433.18501-1-kitakar@gmail.com>
 X-Mailer: git-send-email 2.29.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -71,25 +68,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello all,
 
-This series fixes a software level reset feature. We, Microsoft Surface
-devices users observed this issue, where firmware reset requires another
-quirk. The other device users might not notice this issue because if
-the reset is performed for the firmware level, this issue can't be
-observed easily.
+On Microsoft Surface devices (PCIe-88W8897), we are observing stability
+issues when ps_mode (IEEE power_save) is enabled, then eventually causes
+firmware crash. Especially on 5GHz APs, the connection is completely
+unstable and almost unusable.
 
-While here, update description of shutdown_sw() and reinit_sw() functions
-to reflect current state.
+I think the most desirable change is to fix the ps_mode itself. But is
+seems to be hard work [1], I'm afraid we have to go this way.
+
+Therefore, the first patch of this series disables the ps_mode by default
+instead of enabling it on driver init. I'm not sure if explicitly
+disabling it is really required or not. I don't have access to the details
+of this chip. Let me know if it's enough to just remove the code that
+enables ps_mode.
+
+The Second patch adds a new module parameter named "allow_ps_mode". Since
+other wifi drivers just disable power_save by default by module parameter
+like this, I also added this.
+
+The third patch adds a message when ps_mode will be changed. Useful when
+diagnosing connection issues.
 
 Thanks,
 Tsuchiya Yuto
 
-Tsuchiya Yuto (2):
-  mwifiex: fix mwifiex_shutdown_sw() causing sw reset failure
-  mwifiex: update comment for shutdown_sw()/reinit_sw() to reflect
-    current state
+[1] https://bugzilla.kernel.org/show_bug.cgi?id=109681
 
- drivers/net/wireless/marvell/mwifiex/main.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+Tsuchiya Yuto (3):
+  mwifiex: disable ps_mode explicitly by default instead
+  mwifiex: add allow_ps_mode module parameter
+  mwifiex: print message when changing ps_mode
+
+ .../net/wireless/marvell/mwifiex/cfg80211.c   | 23 +++++++++++++++++++
+ .../net/wireless/marvell/mwifiex/sta_cmd.c    | 11 ++++++---
+ 2 files changed, 31 insertions(+), 3 deletions(-)
 
 -- 
 2.29.1
