@@ -2,105 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7765E29DAF8
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 00:42:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCD7029DB2F
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 00:44:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726938AbgJ1XmW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 19:42:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39272 "EHLO
+        id S2389640AbgJ1WvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:51:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbgJ1XlW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 19:41:22 -0400
-Received: from mail-ed1-x542.google.com (mail-ed1-x542.google.com [IPv6:2a00:1450:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2547C0613CF;
-        Wed, 28 Oct 2020 16:41:21 -0700 (PDT)
-Received: by mail-ed1-x542.google.com with SMTP id l24so1259511edj.8;
-        Wed, 28 Oct 2020 16:41:21 -0700 (PDT)
+        with ESMTP id S2388114AbgJ1Wsg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:48:36 -0400
+Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F799C0613CF;
+        Wed, 28 Oct 2020 15:48:34 -0700 (PDT)
+Received: by mail-ej1-x644.google.com with SMTP id s15so1185961ejf.8;
+        Wed, 28 Oct 2020 15:48:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=YhwU+8BLpV9225RTD4hONYgLMtesha5JLBAdjHXbCcQ=;
-        b=rHSCGXVCD6q+JxkS3NIuiDdRrHZIawiuivzjtGWeRf2wRCnkPLS/QAecdOZQELnFt6
-         mKfK6KXmmCVTJ5RRJCS5az9bBLUZhojSm6Ng+0+tDwkojvYdJh5iDI39OEa8ProOQPeQ
-         zKHGAWltHJv0EGKdUzsnwifTUmPXefXZ+UkymX1qAsLH6pfNFSrUSKw26YmKxO1ZRLLg
-         DjuD1QRl/4SkKsoBpkPzw7upiYgL3tOdPjOM8ifniM2LXFdlMvxoRHCFtxBEsTKPpCdC
-         P6dw9XD6F7nJTcY2Plff3wuBdwWTIhB9zYqBcVo7UPaUwN6CygFsRwP2QVH939b/3M/Q
-         ABCw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Pp16dBQBBlf/9dVYs6G5ARUBtflMbvFTVbY3ulB6k00=;
+        b=rvcbKJXQ0/tONTT3At9ENuKpCDUyxM5lpxPa/cva3ibRsVxeogublke5/zAumnaOrE
+         pEeTeYtFc9/OTTYELvHmPGucguBQhQwVhMnNWPNNObZK/9DjBMKlsuHgJzmvTglWKhJc
+         gSzwnBfWCVFvf+rn2lb6HUm849hiJUdrltQOQslhxZ1Yaq9LMJS9MzRM+PUtofm3jg1o
+         3IZlz6hDT/cK5Ufx50x1fvKPiKQ71yAkOsdwLXKjqNaufYOOEOJ7kA09BkNCD34MUGKl
+         mpcH710+arytSNNCmYrFPmBq9P0sp8MD8eL0WBPKHoYB1ctSKLI5GcNemuAndFITck4N
+         dkhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=YhwU+8BLpV9225RTD4hONYgLMtesha5JLBAdjHXbCcQ=;
-        b=OwFejrKpGtpxDIZXkr4xemy/9Xa4/uFhT8A8fM7BS9UqoGoCO5XYAGPrf5Bj/8Qcnc
-         CcqEM8OXuCcTRkNHX5GdQQxOTmvr1bhUW6a/L3CBRiC8n1Hpvy4m3oWC0slTpNSEAv83
-         TEMt+CPpHv/MLF+cSvunwVERAzLgHcU0xePO8jtojhXDbEY+h9KKMt8oOgbaTy6wNoOi
-         w91KqFdge8D0yO4NcR7mYBI5Z7Xg10GjnqgzUiSuF5OkcUCCQ3myf3OxgmXoys4gIGW6
-         OveCWNukCr07PrVoCpStnW3pqEPpk9s69TgpIyyJA+4vlq6wU9AJ6KvsLbViITBGuP0f
-         VRhw==
-X-Gm-Message-State: AOAM5303mNqy0qgSBvuXI1EaF+oZdV/lABbVoxdU6OcgmQUXxdvqGNt8
-        jt4dRSPizgWis5LEBInEVtyBmlFrh/WD9nc0
-X-Google-Smtp-Source: ABdhPJye0EMNguEkh0PcXJ7btOefLszJrY8XMh/7mC4zZNhsgK3FseLzVzx5vrNWW2xWJIeprYpd4w==
-X-Received: by 2002:a5d:5548:: with SMTP id g8mr8460210wrw.364.1603886037722;
-        Wed, 28 Oct 2020 04:53:57 -0700 (PDT)
-Received: from felia.fritz.box ([2001:16b8:2d7a:200:a915:6596:e9b0:4f60])
-        by smtp.gmail.com with ESMTPSA id v123sm6029066wme.7.2020.10.28.04.53.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 04:53:56 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Al Viro <viro@zeniv.linux.org.uk>, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-safety@lists.elisa.tech,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] ipv6: mcast: make annotations for ip6_mc_msfget() consistent
-Date:   Wed, 28 Oct 2020 12:53:49 +0100
-Message-Id: <20201028115349.6855-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Pp16dBQBBlf/9dVYs6G5ARUBtflMbvFTVbY3ulB6k00=;
+        b=TmE5xrD5lXXbvj6zDQ+Lm12O/aZsjsJQwx7amtdQ+BGgC7RF30fM9PEtY26yc1131p
+         c1E21Z65qnFgQxGTQxQ/miXX9wX9NQ+0Z7TLNVGNu01bXrZZTC08DDkHz/J4z86pXTMn
+         4ok2I4W5bbY535JXTJ4PCoR/xRC6GAqb/Z2fQ8e2vSoXYDntxzc8EclqQcyi/MiXfHO5
+         uZqJOESgKRsKSenPIv89QN9XVoY77Xu6xWfeXwy8tpYZ4NrSa2NbGsyZjQiOd/vkjR7R
+         KlXv3j007+C+etSJLU2lf8al3Ts4/vK4/gLouFlWjAxgrR2AZy8qJjWLw0zE7QJYN9gU
+         8Nyg==
+X-Gm-Message-State: AOAM530esiS4lSsDQgYUmSYQG5cChJqJzyeM8MIueX5bMWTZhvGj5V2B
+        yWRI4uN5QCLX0BZl5OV59s431HHW4UipwNbnBeceoWxk
+X-Google-Smtp-Source: ABdhPJziVtOva/fk3jdTC0vhOQGvoWANvhh0VmXgD3L4sOioAyLX6I24KCwxJDmgS1GKzHU8+sIyYLCqGATg1/p89ik=
+X-Received: by 2002:a17:906:a250:: with SMTP id bi16mr7046239ejb.265.1603892579255;
+ Wed, 28 Oct 2020 06:42:59 -0700 (PDT)
+MIME-Version: 1.0
+References: <20201027161120.5575-1-elder@linaro.org> <20201027161120.5575-6-elder@linaro.org>
+ <CA+FuTSdGCBG0tZXfPTJqTnV7zRNv2VmuThOydwj080NWw4PU9Q@mail.gmail.com> <95d20d91-d187-2638-6978-8c0ff752b49f@linaro.org>
+In-Reply-To: <95d20d91-d187-2638-6978-8c0ff752b49f@linaro.org>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 28 Oct 2020 09:42:23 -0400
+Message-ID: <CAF=yD-LjW5OpKcT+CNPmSkFfDgSGoa2hsFqS9wkMzdNDG1_eRQ@mail.gmail.com>
+Subject: Re: [PATCH net 5/5] net: ipa: avoid going past end of resource group array
+To:     Alex Elder <elder@linaro.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, evgreen@chromium.org,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 931ca7ab7fe8 ("ip*_mc_gsfget(): lift copyout of struct group_filter
-into callers") adjusted the type annotations for ip6_mc_msfget() at its
-declaration, but missed the type annotations at its definition.
+> >> +       /* We program at most 6 source or destination resource group limits */
+> >> +       BUILD_BUG_ON(IPA_RESOURCE_GROUP_SRC_MAX > 6);
+> >> +
+> >>         group_count = ipa_resource_group_src_count(ipa->version);
+> >> -       if (!group_count)
+> >> +       if (!group_count || group_count >= IPA_RESOURCE_GROUP_SRC_MAX)
+> >>                 return false;
+> >
+> > Perhaps more a comment to the previous patch, but _MAX usually denotes
+> > the end of an inclusive range, here 5. The previous name COUNT better
+> > reflects the number of elements in range [0, 5], which is 6.
+>
+> I agree with your point, but the max here represents something different
+> from what you're expecting.
+>
+> For a given resource type (source or destination) there is some fixed
+> number (count) of resources available based on the version of SoC.
+> The *driver* can handle any number of them up to the maximum number
+> (max) for any SoC it supports.  In that respect, it *does* represent
+> the largest value in an inclusive range.
+>
+> I could change the suffix to something like SRC_COUNT_MAX, but in
+> general the symbol names are longer than I like in this driver and
+> I'm trying to shorten them where possible.
 
-Hence, sparse complains on ./net/ipv6/mcast.c:
-
-  mcast.c:550:5: error: symbol 'ip6_mc_msfget' redeclared with different type \
-  (incompatible argument 3 (different address spaces))
-
-Make ip6_mc_msfget() annotations consistent, which also resolves this
-warning from sparse:
-
-  mcast.c:607:34: warning: incorrect type in argument 1 (different address spaces)
-  mcast.c:607:34:    expected void [noderef] __user *to
-  mcast.c:607:34:    got struct __kernel_sockaddr_storage *p
-
-No functional change. No change in object code.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
-applies cleanly on current master and next-20201028
-
-David, Jakub, please pick this minor non-urgent clean-up patch.
-
- net/ipv6/mcast.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/ipv6/mcast.c b/net/ipv6/mcast.c
-index 8cd2782a31e4..6c8604390266 100644
---- a/net/ipv6/mcast.c
-+++ b/net/ipv6/mcast.c
-@@ -548,7 +548,7 @@ int ip6_mc_msfilter(struct sock *sk, struct group_filter *gsf,
- }
- 
- int ip6_mc_msfget(struct sock *sk, struct group_filter *gsf,
--	struct sockaddr_storage *p)
-+		  struct sockaddr_storage __user *p)
- {
- 	int err, i, count, copycount;
- 	const struct in6_addr *group;
--- 
-2.17.1
-
+Makes sense. Can you then call this out more explicitly in the commit
+message? That MAX here means max count, not max element id.
