@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AB9F429D952
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:51:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B025D29D966
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:55:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389529AbgJ1WuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 18:50:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58942 "EHLO
+        id S2389744AbgJ1Wyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:54:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389459AbgJ1WtQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:49:16 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66FABC0613CF;
-        Wed, 28 Oct 2020 15:49:16 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id h6so734269pgk.4;
-        Wed, 28 Oct 2020 15:49:16 -0700 (PDT)
+        with ESMTP id S2388439AbgJ1Wyf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:54:35 -0400
+Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A76B6C0613CF;
+        Wed, 28 Oct 2020 15:54:34 -0700 (PDT)
+Received: by mail-oi1-x244.google.com with SMTP id z23so1326835oic.1;
+        Wed, 28 Oct 2020 15:54:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=xlNmuHQ+BurcadNmXEhYfuLEuxMLXCWKJpkTUb50b+g=;
-        b=PKxE3xP/JzhxCXC9xc9VcOMaEeH41Fp1vAVLYXvbr/UcZa6AvEhiC5PrvPmfb4oSPu
-         YFq64YKVHoZewsVowHUwvsLgYA9ILCEmkB/iN5uKHtzrO2YUjkH7RzyiZPxxc0mxhePV
-         jv1dpbV+8fujEh5BKZPbed279Rx1IRsLNZdSqk5h1YiL0oYeMfT5CL/aronCy8OllAAD
-         VttxFU4i+Mh+wKMUK6VOr8UR7Ias1+dyWicGygRqurCePrCLIvcTHXraF22KEju5t6W0
-         fIAsXJ9l9oKdJ+yhWhfhjK9Tg07iNeAGj3NW9hNnMdSsWSO/R7OQnhxaCymC5yfoaagl
-         41Lg==
+        bh=UEQBkEXiJOfBE5LzS0jxlJBj5IlPjaXUmPkuEF50Xpo=;
+        b=E3cy/fT07MNJXvIqKs8Ay+Od40l7u8VQgFHMmrPTYIcEtp91rFYrJRtfCN5Yi9pQ7q
+         lAtrmR6EKuawCWn84aNM9AKjn6apJcLp0iEJIM7Ttjj0sIKdbVi3u/xn7qAKb8C1A7h6
+         OawNqGyneFTjh/XxH5iIR4Awd/W4HCEU3L9LlLOO9WyUYerQqlLriqDn7MCj9HAKayXV
+         t8vYy8CPHfeNYDW5NcHH/3nC0Sg+eruF5qO6R8trzqeXzskpbgMgtLl2yvYS2Nv7h761
+         zVD1IIOTWUzxW9t/NEkuM8rT2KYmppvgFxJxwH2Lmm6S3KrAsnLcltyt50eGFLYjcEn1
+         mXyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=xlNmuHQ+BurcadNmXEhYfuLEuxMLXCWKJpkTUb50b+g=;
-        b=XmE+6htB6VkfTPTdMCPzQWk8PkTu10LWKrk7LXW+IMemuOEIdpHpUqatswV62UAu1+
-         nBXPMqWEDbhXxYpGfPnxgmr3yN0qokF709n8MQrjLP2wz7O5EMdnjxaILQL/NYDIFw1I
-         Y7Qb7np+p1C2yPAdDN5TWjg0/DSt6WBias6nJkzg3qUUILf3PGl2pXRpjTLNEsIQN3vd
-         5JiBhK4W/cpV71MpEBp0NsOWakMqAa6XUBXck7187zB1zdrSDGfzXoL0Fjq93t+5cqsG
-         vcQ0Kg5CmkjA2cAU7ifL5iqya273OvkmSg2B1v4+S+hNuoKGqj0psQA/nDYn5Vw/R8L+
-         FbOA==
-X-Gm-Message-State: AOAM531KPPJqmexK9+HkIt/jk2W8ehytFrBOjBFpHFRtZwBWKZJDp50z
-        0hCF7m2HOfZlULT/nDBSXI2ny3e5QUM=
-X-Google-Smtp-Source: ABdhPJzR/50Cvki4QOdiAEIFpTQPSl3W+0IduE+iI0wuY7/YptCUkm0sFcZnU/njVHopJ6z9v/eAgw==
-X-Received: by 2002:a17:902:9695:b029:d3:8b4f:558c with SMTP id n21-20020a1709029695b02900d38b4f558cmr6797176plp.27.1603882670711;
-        Wed, 28 Oct 2020 03:57:50 -0700 (PDT)
+        bh=UEQBkEXiJOfBE5LzS0jxlJBj5IlPjaXUmPkuEF50Xpo=;
+        b=U49ryd3OBmaQLmnxsU8yuNdjsBhL25hh0hhmkW1LjeWRETdOEjlIY+nCq3IBIP0Al3
+         lA1d89dkncvx5/KncjcEFqYEqs+246yJdLvacCi1YLm3YUFba5gZm+OsynhwsAatQBzx
+         7N0SeMR/gFvUAHVpY6V3mgXIqNPyjxC3aWokYR2DlHWKS+G8Q/VQQqBh3pebWb/Sk1J2
+         1wx+74OGnHZNfElEmO3PBFQUqBrURhynydGzWFeMgt9zxzVpI3JxKa6kZwZfnJw2Wvyp
+         WVmSwwQne8yoUohdADBXnyt5zV8wfK6ZXKZT45THpiGmM6evLE6I8DW1jii/p1WEVxOi
+         b+6g==
+X-Gm-Message-State: AOAM531L4Js5CzTHy08H9sXQVUSMIkaZWcYKjGW2o4QFL3M3WvW+OV48
+        GBDEfxO1p9+AhANyaf2SN7B7C8JpHsU=
+X-Google-Smtp-Source: ABdhPJwZHZX2/Z3qoeSvLZlJdb/IZ4Y4uUPQVCXbUpXEyHQTg3krOYoj3p5ikKw2CzqOuXw9wKn67Q==
+X-Received: by 2002:a17:90b:17c4:: with SMTP id me4mr6438096pjb.120.1603882676309;
+        Wed, 28 Oct 2020 03:57:56 -0700 (PDT)
 Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:a46c:8b86:395a:7a3d])
-        by smtp.gmail.com with ESMTPSA id 65sm557863pge.37.2020.10.28.03.57.49
+        by smtp.gmail.com with ESMTPSA id 65sm557863pge.37.2020.10.28.03.57.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 03:57:50 -0700 (PDT)
+        Wed, 28 Oct 2020 03:57:55 -0700 (PDT)
 From:   Xie He <xie.he.0141@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Krzysztof Halasa <khc@pm.waw.pl>
 Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH net-next 1/4] net: hdlc_fr: Simpify fr_rx by using "goto rx_drop" to drop frames
-Date:   Wed, 28 Oct 2020 03:57:02 -0700
-Message-Id: <20201028105705.460551-2-xie.he.0141@gmail.com>
+Subject: [PATCH net-next 2/4] net: hdlc_fr: Change the use of "dev" in fr_fx to make the code cleaner
+Date:   Wed, 28 Oct 2020 03:57:03 -0700
+Message-Id: <20201028105705.460551-3-xie.he.0141@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20201028105705.460551-1-xie.he.0141@gmail.com>
 References: <20201028105705.460551-1-xie.he.0141@gmail.com>
@@ -64,71 +64,106 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the fr_rx function drops a received frame (because the protocol type
-is not supported, or because the PVC virtual device that corresponds to
-the DLCI number and the protocol type doesn't exist), the function frees
-the skb and returns.
+The eth_type_trans function is called when we receive frames carrying
+Ethernet frames. This function expects a non-NULL pointer as a argument,
+and assigns it directly to skb->dev.
 
-The code for freeing the skb and returning is repeated several times, this
-patch uses "goto rx_drop" to replace them so that the code looks cleaner.
+However, the code handling other types of frames first assigns a pointer
+to "dev", and then at the end checks whether the value is NULL, and if it
+is not NULL, assigns it to skb->dev.
 
-Also add code to increase the stats.rx_dropped count whenever we drop a
-frame.
+The two flows are different. Letting them co-exist in this function makes
+the code messy. It's better that we convert the second flow to align with
+how eth_type_trans does things.
+
+So this patch changes the code to: first make sure the pointer is not
+NULL, then assign it directly to skb->dev. "dev" is no longer needed until
+the end where we use it to update stats.
 
 Cc: Krzysztof Halasa <khc@pm.waw.pl>
 Signed-off-by: Xie He <xie.he.0141@gmail.com>
 ---
- drivers/net/wan/hdlc_fr.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ drivers/net/wan/hdlc_fr.c | 37 ++++++++++++++++++++-----------------
+ 1 file changed, 20 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/net/wan/hdlc_fr.c b/drivers/net/wan/hdlc_fr.c
-index 409e5a7ad8e2..c774eff44534 100644
+index c774eff44534..ac65f5c435ef 100644
 --- a/drivers/net/wan/hdlc_fr.c
 +++ b/drivers/net/wan/hdlc_fr.c
-@@ -904,8 +904,7 @@ static int fr_rx(struct sk_buff *skb)
- 		netdev_info(frad, "No PVC for received frame's DLCI %d\n",
- 			    dlci);
- #endif
--		dev_kfree_skb_any(skb);
--		return NET_RX_DROP;
-+		goto rx_drop;
+@@ -880,7 +880,7 @@ static int fr_rx(struct sk_buff *skb)
+ 	u8 *data = skb->data;
+ 	u16 dlci;
+ 	struct pvc_device *pvc;
+-	struct net_device *dev = NULL;
++	struct net_device *dev;
+ 
+ 	if (skb->len <= 4 || fh->ea1 || data[2] != FR_UI)
+ 		goto rx_error;
+@@ -930,13 +930,17 @@ static int fr_rx(struct sk_buff *skb)
  	}
  
- 	if (pvc->state.fecn != fh->fecn) {
-@@ -963,14 +962,12 @@ static int fr_rx(struct sk_buff *skb)
- 		default:
- 			netdev_info(frad, "Unsupported protocol, OUI=%x PID=%x\n",
- 				    oui, pid);
--			dev_kfree_skb_any(skb);
--			return NET_RX_DROP;
+ 	if (data[3] == NLPID_IP) {
++		if (!pvc->main)
 +			goto rx_drop;
- 		}
- 	} else {
- 		netdev_info(frad, "Unsupported protocol, NLPID=%x length=%i\n",
- 			    data[3], skb->len);
--		dev_kfree_skb_any(skb);
--		return NET_RX_DROP;
-+		goto rx_drop;
+ 		skb_pull(skb, 4); /* Remove 4-byte header (hdr, UI, NLPID) */
+-		dev = pvc->main;
++		skb->dev = pvc->main;
+ 		skb->protocol = htons(ETH_P_IP);
+ 
+ 	} else if (data[3] == NLPID_IPV6) {
++		if (!pvc->main)
++			goto rx_drop;
+ 		skb_pull(skb, 4); /* Remove 4-byte header (hdr, UI, NLPID) */
+-		dev = pvc->main;
++		skb->dev = pvc->main;
+ 		skb->protocol = htons(ETH_P_IPV6);
+ 
+ 	} else if (skb->len > 10 && data[3] == FR_PAD &&
+@@ -950,13 +954,16 @@ static int fr_rx(struct sk_buff *skb)
+ 		case ETH_P_IPX:
+ 		case ETH_P_IP:	/* a long variant */
+ 		case ETH_P_IPV6:
+-			dev = pvc->main;
++			if (!pvc->main)
++				goto rx_drop;
++			skb->dev = pvc->main;
+ 			skb->protocol = htons(pid);
+ 			break;
+ 
+ 		case 0x80C20007: /* bridged Ethernet frame */
+-			if ((dev = pvc->ether) != NULL)
+-				skb->protocol = eth_type_trans(skb, dev);
++			if (!pvc->ether)
++				goto rx_drop;
++			skb->protocol = eth_type_trans(skb, pvc->ether);
+ 			break;
+ 
+ 		default:
+@@ -970,17 +977,13 @@ static int fr_rx(struct sk_buff *skb)
+ 		goto rx_drop;
  	}
  
- 	if (dev) {
-@@ -982,12 +979,13 @@ static int fr_rx(struct sk_buff *skb)
- 		netif_rx(skb);
- 		return NET_RX_SUCCESS;
- 	} else {
--		dev_kfree_skb_any(skb);
--		return NET_RX_DROP;
-+		goto rx_drop;
- 	}
+-	if (dev) {
+-		dev->stats.rx_packets++; /* PVC traffic */
+-		dev->stats.rx_bytes += skb->len;
+-		if (pvc->state.becn)
+-			dev->stats.rx_compressed++;
+-		skb->dev = dev;
+-		netif_rx(skb);
+-		return NET_RX_SUCCESS;
+-	} else {
+-		goto rx_drop;
+-	}
++	dev = skb->dev;
++	dev->stats.rx_packets++; /* PVC traffic */
++	dev->stats.rx_bytes += skb->len;
++	if (pvc->state.becn)
++		dev->stats.rx_compressed++;
++	netif_rx(skb);
++	return NET_RX_SUCCESS;
  
-- rx_error:
-+rx_error:
+ rx_error:
  	frad->stats.rx_errors++; /* Mark error */
-+rx_drop:
-+	frad->stats.rx_dropped++;
- 	dev_kfree_skb_any(skb);
- 	return NET_RX_DROP;
- }
 -- 
 2.25.1
 
