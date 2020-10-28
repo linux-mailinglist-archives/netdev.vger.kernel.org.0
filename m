@@ -2,90 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 117A929E25E
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:13:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D38529E1A3
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:03:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404304AbgJ2CNe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 22:13:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46220 "EHLO
+        id S1727128AbgJ1Vsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 17:48:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726791AbgJ1VgE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:36:04 -0400
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 211D9C0613D1;
-        Wed, 28 Oct 2020 14:36:04 -0700 (PDT)
-Received: by mail-lf1-x144.google.com with SMTP id a9so661855lfc.7;
-        Wed, 28 Oct 2020 14:36:04 -0700 (PDT)
+        with ESMTP id S1727323AbgJ1VlO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:41:14 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF698C0613D1;
+        Wed, 28 Oct 2020 14:41:13 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id a9so594229wrg.12;
+        Wed, 28 Oct 2020 14:41:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=jZnHZxbemTK8Et5phPSlcBe8HI+ttdbLi+0KG+29+DI=;
-        b=kELTI7roGcPazb/IHGW7WPvulAMIem/r2+jPs42DCacHKCvXLYg4uskBt1wR8Xwg01
-         LYAgxVceCU1l8yNID0PBGyRhnVrJ9buuPoJUSsN7U1p3QLFIrti8ptrVb8d6AV5V9REQ
-         CcZ7tC3c3IoIrzUijO4+CaQ6U5Ot4DRKf2jHp1wBXzYcfuE+ChSPUHW2PAvO1enQp7Gn
-         ZSxO24VN0BjDrgoxXBN7ROo1hbF/DMB7rMxm/1RGMVO6qQWx3u53qEZ8Q1lvzpdc/p3S
-         0y8kFXHRtS8E0dhwbvb2acEcvfR5E+N+uThKIJIggE4nyQuodC023kt5QENIBrU9Bb/t
-         VgzQ==
+        bh=150B9TY9v6fV7KS+jxlyPSKb4srW4lcCjnHLKa1uLvo=;
+        b=bWRA9CAagWShk3n4pjpvMARXxKNk02ECjHV3X5ODSIEVnLIJENmuVQauDRDgevRrQY
+         /3ALFRSJKLiuexGDHPUR/4FYGRcNPOCdzy4Xism2WqbGxc01datBkC9LtVyGVxR1SaEA
+         u+5IegqMUyK9QnIYQopdu67LBTQe9EAKisfqX/XYLJivmZccUHdSEcl6EdXaq65snVQ/
+         yVXIdZvozvdpusCT3n+X7A1JuCq5GzTW7YV7gwlUlyges0H4WMo4b4G82thEp37RYUPR
+         iWNYW+pZznfC5am8DQmPS+I5ko+iZk18BsQ+vJUScnPVJ/aTzJdou40Lbc1Aez/Phb6Q
+         cxdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=jZnHZxbemTK8Et5phPSlcBe8HI+ttdbLi+0KG+29+DI=;
-        b=r2VuuK07mAYEg3bwVXtHa6d5ZmgQE1ew4s6btD7lTkVmXYnO3wU5U+XuQ0ZC844k92
-         dkOWSqFuUZ5YDaOiLgn/tJyjw1FSGecOfmQ7g1FVrK1k2XPEnIug2ft+VJ/Tkvdw7Dmg
-         8p8Ky73Bc5odowL+CC3QzJHjvJVg7yo/r+CaTGsADJSoA1iTUYmsh5vUlOqFNLzG7lQg
-         b11AplfbaakS+s6ve0//ZXJMFWId+CqBXcTHLBpvHzfFpNKLLqoE63LaTII1f8FRy+/h
-         oElpUMXnQ11MhZyJQgQ3SphipEMQjh0to07Y2eQGLOyfxMrDrbzI+/lsvK3pfb1kDN0h
-         lnHg==
-X-Gm-Message-State: AOAM531UsINuWmCErpM8pqqzpKfEo0agMOgA4/PYslocBBEkSOvst/+7
-        bbb/kQcChltpcPVuxDi1aw2IN+PN4UAAfpFo0UQuEUxM
-X-Google-Smtp-Source: ABdhPJxCpPHrWHa/WqMXcxs4Lhtvg/33XhPAQiJ9AZnCNZmXAg08su2yr35YALMK70LBHTk2R8bPERS5NAODnOaxnYw=
-X-Received: by 2002:a17:906:a250:: with SMTP id bi16mr804442ejb.265.1603917497258;
- Wed, 28 Oct 2020 13:38:17 -0700 (PDT)
+        bh=150B9TY9v6fV7KS+jxlyPSKb4srW4lcCjnHLKa1uLvo=;
+        b=dP3sJ5Yf2bxDibT6EoYyBsjlyyJ3T63Rdzsx9c/wxspLRNIGyjwPzb8hWgc28gKnwK
+         jfmaa40al9ImU8yFWNjgpLKtczzCcyAm6gMuwL7xk4WCcMHj2pDRskvtCnKUL4YbDUaL
+         IrBB4uehewjYGWiOSokZPWMaNp9x/13LecZx9O7OX960UzaJWw3l8dR3ZUJDC5w2Ol3q
+         BlpUBBEvNPLB2diP14pHqJqWpu4yyq/OdxlMkEfIn5QK+JpxXjOhyCbkaQb5MkdymqLD
+         Rf9H0dL1nC3eSn/MuxrpN02m4ycQXWYZRQECeB7DyDK7IisbEHt8jMhDx1Nhch8zeQmi
+         /TiA==
+X-Gm-Message-State: AOAM530OCZDzTYuBXxwGisKRf6+S8PcDNBp9XQ6My8jExQY+JJs3nTxA
+        QgK6eZ62SOfk/nANO+WuhKClG9uh7qLW4l/l2bKv+aeq
+X-Google-Smtp-Source: ABdhPJyXaf251l2zxK1mU6Ob1m4WfUi/fpjxTE2AHRPuKN9tn4RClWrnnxgQVywhnWfx1KxAIoh7JVkx5mhPW3rWFcg=
+X-Received: by 2002:a17:906:8385:: with SMTP id p5mr872467ejx.538.1603917801870;
+ Wed, 28 Oct 2020 13:43:21 -0700 (PDT)
 MIME-Version: 1.0
-References: <20201028194148.6659-1-elder@linaro.org> <20201028194148.6659-6-elder@linaro.org>
-In-Reply-To: <20201028194148.6659-6-elder@linaro.org>
+References: <20201028182018.1780842-1-aleksandrnogikh@gmail.com> <20201028182018.1780842-3-aleksandrnogikh@gmail.com>
+In-Reply-To: <20201028182018.1780842-3-aleksandrnogikh@gmail.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 28 Oct 2020 16:37:41 -0400
-Message-ID: <CAF=yD-J+qDcGnVkODTReK64Cr+RTVuT3uT8VfAHs-hm0+4arug@mail.gmail.com>
-Subject: Re: [PATCH v2 net 5/5] net: ipa: avoid going past end of resource
- group array
-To:     Alex Elder <elder@linaro.org>
+Date:   Wed, 28 Oct 2020 16:42:45 -0400
+Message-ID: <CAF=yD-J7tJ0+UaMHUQbdChkcE9NQCTn9t7VY9ZJtddeDwoi=rA@mail.gmail.com>
+Subject: Re: [PATCH v4 2/3] net: add kcov handle to skb extensions
+To:     Aleksandr Nogikh <aleksandrnogikh@gmail.com>
 Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, evgreen@chromium.org,
-        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
-        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
-        sujitka@chromium.org, Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Marco Elver <elver@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Aleksandr Nogikh <nogikh@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 3:42 PM Alex Elder <elder@linaro.org> wrote:
+On Wed, Oct 28, 2020 at 2:21 PM Aleksandr Nogikh
+<aleksandrnogikh@gmail.com> wrote:
 >
-> The minimum and maximum limits for resources assigned to a given
-> resource group are programmed in pairs, with the limits for two
-> groups set in a single register.
+> From: Aleksandr Nogikh <nogikh@google.com>
 >
-> If the number of supported resource groups is odd, only half of the
-> register that defines these limits is valid for the last group; that
-> group has no second group in the pair.
+> Remote KCOV coverage collection enables coverage-guided fuzzing of the
+> code that is not reachable during normal system call execution. It is
+> especially helpful for fuzzing networking subsystems, where it is
+> common to perform packet handling in separate work queues even for the
+> packets that originated directly from the user space.
 >
-> Currently we ignore this constraint, and it turns out to be harmless,
-> but it is not guaranteed to be.  This patch addresses that, and adds
-> support for programming the 5th resource group's limits.
+> Enable coverage-guided frame injection by adding kcov remote handle to
+> skb extensions. Default initialization in __alloc_skb and
+> __build_skb_around ensures that no socket buffer that was generated
+> during a system call will be missed.
 >
-> Rework how the resource group limit registers are programmed by
-> having a single function program all group pairs rather than having
-> one function program each pair.  Add the programming of the 4-5
-> resource group pair limits to this function.  If a resource group is
-> not supported, pass a null pointer to ipa_resource_config_common()
-> for that group and have that function write zeroes in that case.
+> Code that is of interest and that performs packet processing should be
+> annotated with kcov_remote_start()/kcov_remote_stop().
 >
-> Fixes: cdf2e9419dd91 ("soc: qcom: ipa: main code")
-> Tested-by: Sujit Kautkar <sujitka@chromium.org>
-> Signed-off-by: Alex Elder <elder@linaro.org>
+> An alternative approach is to determine kcov_handle solely on the
+> basis of the device/interface that received the specific socket
+> buffer. However, in this case it would be impossible to distinguish
+> between packets that originated during normal background network
+> processes or were intentionally injected from the user space.
+>
+> Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
 
 Acked-by: Willem de Bruijn <willemb@google.com>
