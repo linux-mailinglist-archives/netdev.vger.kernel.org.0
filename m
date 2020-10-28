@@ -2,153 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 54B1429DBBF
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 01:13:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBBD829DC05
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 01:19:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390796AbgJ2AN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 20:13:27 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50746 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725940AbgJ2AN0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Oct 2020 20:13:26 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kXkS3-003yGL-RM; Wed, 28 Oct 2020 13:21:15 +0100
-Date:   Wed, 28 Oct 2020 13:21:15 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Pavana Sharma <pavana.sharma@digi.com>
-Cc:     f.fainelli@gmail.com, davem@davemloft.net,
-        gregkh@linuxfoundation.org, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        vivien.didelot@gmail.com
-Subject: Re: [PATCH v5 3/3] net: dsa: mv88e6xxx: Add support for mv88e6393x
- family of Marvell
-Message-ID: <20201028122115.GC933237@lunn.ch>
-References: <cover.1603837678.git.pavana.sharma@digi.com>
- <e5fdcddeda21884a21162e441d1e8a04994f2825.1603837679.git.pavana.sharma@digi.com>
+        id S2390878AbgJ2ATB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 20:19:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58268 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731428AbgJ1WpN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:45:13 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17171C0613CF
+        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:45:13 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id 15so701865pgd.12
+        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:45:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Hvfu2O4x70zfOMPRKar/p0Ao3IuBnxAMAZDvJC8rl68=;
+        b=zoof0+raMu/he+76Q9IaQ8w/GqD3T0dWynKY3ZLIejbNzYdWEPv+hT4wf64OGRdHrz
+         eX6HseZHjxRB9kzvRbRKAfYDP3Bu5FYM2bDW+JDzsCJ4Bly0VbtiSxaA7KF4X/6EatYU
+         TadbOvoVZBNcDYRzcNNvJTGAjaE8GnrjybD4QvfaQpgsSECkHDNJkIrW+FeTpZuE2CnK
+         hnV6jBVqsIaCXlVTWrfORfZoQI7k/1fTfoA7csEqTA9eFUteZscv4KGPdip2v0yQjgeP
+         RhG0A4RycKaGcmzey0lGPfF5nmF90L50aRJdED3hV5s3YW57vtS4fj3Z9qTqnCdijLky
+         Qkkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Hvfu2O4x70zfOMPRKar/p0Ao3IuBnxAMAZDvJC8rl68=;
+        b=P5v4qDfXZucWjP5l1+TxrlFS+U8WD8izavwOMstq3b0awImg05CcAowaYl/DKa5h+q
+         NsDxTfGdBqcuJji6Fd3WbzQdWdN7QeaiuXvCWHUaARYC8x31ALq3LFcPKF0bmJ1UV3ax
+         N5VBhRdEOdd8qL4F5Nm7Cjfb0f2B8F8CTR7XYY4D3D3/ayABu8qD/V6djrtqgvXBEbxc
+         vzAfkGS+0mp8xo71M0gR74Pe3ieW4BiFVaXDAXAs68WhZwDqTkZbwCXn1AZNvFceueGr
+         MCPv+eJYTbtU+HuewGBtMaY4fdCrT2X+3m9X200MQnmMQe5W7/XjJ784jGej2FZKRBIU
+         AJZQ==
+X-Gm-Message-State: AOAM531Ms5XzixwIlW5HMfICU2EwoJShsMyOq62rpT/P8tRR7f8glpmA
+        dQBaYH9xGzI4+d5uA8aUcgUR0O2BiE3FtkgC
+X-Google-Smtp-Source: ABdhPJw5nHKnt9TZvp0aBVHgiiUiftX46fk75iMXXqiiQv4OKF3yjXJiExJgv4ZU17o39DPteg5CsQ==
+X-Received: by 2002:a92:ddd1:: with SMTP id d17mr5514566ilr.275.1603891847202;
+        Wed, 28 Oct 2020 06:30:47 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id n15sm2747094ilt.58.2020.10.28.06.30.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 28 Oct 2020 06:30:45 -0700 (PDT)
+Subject: Re: [PATCH net 5/5] net: ipa: avoid going past end of resource group
+ array
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, evgreen@chromium.org,
+        Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>,
+        cpratapa@codeaurora.org, bjorn.andersson@linaro.org,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20201027161120.5575-1-elder@linaro.org>
+ <20201027161120.5575-6-elder@linaro.org>
+ <CA+FuTSdGCBG0tZXfPTJqTnV7zRNv2VmuThOydwj080NWw4PU9Q@mail.gmail.com>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <d8611e9f-acef-d354-c776-f06b27365945@linaro.org>
+Date:   Wed, 28 Oct 2020 08:30:44 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e5fdcddeda21884a21162e441d1e8a04994f2825.1603837679.git.pavana.sharma@digi.com>
+In-Reply-To: <CA+FuTSdGCBG0tZXfPTJqTnV7zRNv2VmuThOydwj080NWw4PU9Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 10:09:50AM +1000, Pavana Sharma wrote:
-> The Marvell 88E6393X device is a single-chip integration of a 11-port
-> Ethernet switch with eight integrated Gigabit Ethernet (GbE) transceivers
-> and three 10-Gigabit interfaces.
+On 10/27/20 7:14 PM, Willem de Bruijn wrote:
+> On Tue, Oct 27, 2020 at 12:38 PM Alex Elder <elder@linaro.org> wrote:
+>>
+>> The minimum and maximum limits for resources assigned to a given
+>> resource group are programmed in pairs, with the limits for two
+>> groups set in a single register.
+>>
+>> If the number of supported resource groups is odd, only half of the
+>> register that defines these limits is valid for the last group; that
+>> group has no second group in the pair.
+>>
+>> Currently we ignore this constraint, and it turns out to be harmless,
 > 
-> This patch adds functionalities specific to mv88e6393x family (88E6393X,
-> 88E6193X and 88E6191X)
+> If nothing currently calls it with an odd number of registers, is this
+> a bugfix or a new feature (anticipating future expansion, I guess)?
 
-Please break this patch up a bit into preparation patches, and the
-last patch actually adding support for the new family.
+. . .
 
-e.g. serdes_get_lane() returning -ENODEV should be a patch of its
-own. That should hopefully answer the question which
+Sorry, I missed this comment.  Yes, I'm working on support for
+an upcoming IPA hardware version that has 5 resources of each
+type.  And it is a bug fix, though the bug doesn't bite us
+(because the maximum number of resources supported is even),
+so "it turns out to be harmless."
 
-ommit 5122d4ec9e8053a5944bf77db6bd6c89143531d7
-Author: Vivien Didelot <vivien.didelot@gmail.com>
-Date:   Sat Aug 31 16:18:30 2019 -0400
-
-    net: dsa: mv88e6xxx: simplify .serdes_get_lane
-    
-    Because the mapping between a SERDES interface and its lane is static,
-    we don't need to stick with negative error codes actually and we can
-    simply return 0 if there is no lane, just like the IRQ mapping.
-    
-    This way we can keep a simple and intuitive API using unsigned lane
-    numbers while simplifying the implementations with single return
-    statements
-
-raises.
-
-> +static const struct mv88e6xxx_ops mv88e6193x_ops = {
-> +	/* MV88E6XXX_FAMILY_6393 */
-> +	.setup_errata = mv88e6393x_setup_errata,
-> +	.irl_init_all = mv88e6390_g2_irl_init_all,
-> +	.get_eeprom = mv88e6xxx_g2_get_eeprom8,
-> +	.set_eeprom = mv88e6xxx_g2_set_eeprom8,
-> +	.set_switch_mac = mv88e6xxx_g2_set_switch_mac,
-> +	.phy_read = mv88e6xxx_g2_smi_phy_read,
-> +	.phy_write = mv88e6xxx_g2_smi_phy_write,
-> +	.port_set_link = mv88e6xxx_port_set_link,
-> +	.port_set_speed_duplex = mv88e6393x_port_set_speed_duplex,
-> +	.port_set_rgmii_delay = mv88e6390_port_set_rgmii_delay,
-> +	.port_tag_remap = mv88e6390_port_tag_remap,
-> +	.port_set_frame_mode = mv88e6351_port_set_frame_mode,
-> +	.port_set_egress_floods = mv88e6352_port_set_egress_floods,
-> +	.port_set_ether_type = mv88e6393x_port_set_ether_type,
-> +	.port_set_jumbo_size = mv88e6165_port_set_jumbo_size,
-> +	.port_egress_rate_limiting = mv88e6097_port_egress_rate_limiting,
-> +	.port_pause_limit = mv88e6390_port_pause_limit,
-> +	.port_set_cmode = mv88e6393x_port_set_cmode,
-> +	.port_disable_learn_limit = mv88e6xxx_port_disable_learn_limit,
-> +	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
-> +	.port_get_cmode = mv88e6352_port_get_cmode,
-> +	.stats_snapshot = mv88e6390_g1_stats_snapshot,
-> +	.stats_set_histogram = mv88e6390_g1_stats_set_histogram,
-> +	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
-> +	.stats_get_strings = mv88e6320_stats_get_strings,
-> +	.stats_get_stats = mv88e6390_stats_get_stats,
-> +	.set_cpu_port = mv88e6393x_port_set_cpu_dest,
-> +	.set_egress_port = mv88e6393x_set_egress_port,
-> +	.watchdog_ops = &mv88e6390_watchdog_ops,
-> +	.mgmt_rsvd2cpu = mv88e6393x_port_mgmt_rsvd2cpu,
-> +	.pot_clear = mv88e6xxx_g2_pot_clear,
-> +	.reset = mv88e6352_g1_reset,
-> +	.rmu_disable = mv88e6390_g1_rmu_disable,
-> +	.vtu_getnext = mv88e6390_g1_vtu_getnext,
-> +	.vtu_loadpurge = mv88e6390_g1_vtu_loadpurge,
-> +	.serdes_power = mv88e6393x_serdes_power,
-> +	.serdes_get_lane = mv88e6393x_serdes_get_lane,
-> +	/* Check status register pause & lpa register */
-> +	.serdes_pcs_get_state = mv88e6390_serdes_pcs_get_state,
-> +	.serdes_irq_mapping = mv88e6390_serdes_irq_mapping,
-> +	.serdes_irq_enable = mv88e6393x_serdes_irq_enable,
-> +	.serdes_irq_status = mv88e6393x_serdes_irq_status,
-> +	.gpio_ops = &mv88e6352_gpio_ops,
-> +	.avb_ops = &mv88e6390_avb_ops,
-> +	.ptp_ops = &mv88e6352_ptp_ops,
-> +	.phylink_validate = mv88e6393x_phylink_validate,
-> +};
-
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-> index 823ae89e5fca..03c0466ab4ae 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.h
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.h
-> @@ -63,6 +63,8 @@ enum mv88e6xxx_model {
->  	MV88E6190,
->  	MV88E6190X,
->  	MV88E6191,
-> +	MV88E6191X,
-
-Is the 6191X part of the 6193 family? Not the 6390, like the 6191 is?
-Or do we have the 6191 in the wrong family?
-
-> +	MV88E6193X,
-
-You don't add any _ops structure for the 6193x. How is it different?
-Can you make your best guess at the ops structure. Also, what about
-the 6191X?
-
->  	MV88E6220,
->  	MV88E6240,
->  	MV88E6250,
-> @@ -75,6 +77,7 @@ enum mv88e6xxx_model {
->  	MV88E6352,
->  	MV88E6390,
->  	MV88E6390X,
-> +	MV88E6393X,
->  };
->  
->  enum mv88e6xxx_family {
-> @@ -90,6 +93,7 @@ enum mv88e6xxx_family {
->  	MV88E6XXX_FAMILY_6351,	/* 6171 6175 6350 6351 */
->  	MV88E6XXX_FAMILY_6352,	/* 6172 6176 6240 6352 */
->  	MV88E6XXX_FAMILY_6390,  /* 6190 6190X 6191 6290 6390 6390X */
-> +	MV88E6XXX_FAMILY_6393,	/* 6191X 6193X 6393X */
->  };
-
-   Andrew
+					-Alex
