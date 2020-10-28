@@ -2,132 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26A4A29D450
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 22:51:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D33C629D505
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 22:56:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728160AbgJ1VvQ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 28 Oct 2020 17:51:16 -0400
-Received: from fortimail.saucontech.com ([72.2.176.80]:58656 "EHLO
-        fortimail.saucontech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728135AbgJ1VvH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:51:07 -0400
-X-Greylist: delayed 903 seconds by postgrey-1.27 at vger.kernel.org; Wed, 28 Oct 2020 17:51:06 EDT
-Received: from email.saucontech.com ([10.20.20.47])
-        by fortimail.saucontech.com  with ESMTP id 09SEJUtX011774-09SEJUtZ011774
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Wed, 28 Oct 2020 10:19:30 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by email.saucontech.com (Postfix) with ESMTP id 0EB8B4089F7;
-        Wed, 28 Oct 2020 10:19:30 -0400 (EDT)
-Received: from email.saucontech.com ([127.0.0.1])
-        by localhost (email.saucontech.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id C2qoSfv7sv21; Wed, 28 Oct 2020 10:19:29 -0400 (EDT)
-Received: from localhost (localhost [127.0.0.1])
-        by email.saucontech.com (Postfix) with ESMTP id 74965408BA4;
-        Wed, 28 Oct 2020 10:19:29 -0400 (EDT)
-X-Virus-Scanned: amavisd-new at email.saucontech.com
-Received: from email.saucontech.com ([127.0.0.1])
-        by localhost (email.saucontech.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id jDHbpCUuqV-V; Wed, 28 Oct 2020 10:19:29 -0400 (EDT)
-Received: from mdeneen.saucon.int (unknown [10.5.1.150])
-        by email.saucontech.com (Postfix) with ESMTPSA id 493AE4089F7;
-        Wed, 28 Oct 2020 10:19:29 -0400 (EDT)
-From:   Mark Deneen <mdeneen@saucontech.com>
-To:     netdev@vger.kernel.org
-Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
-        Mark Deneen <mdeneen@saucontech.com>, Klaus Doth <krnl@doth.eu>
-Subject: [PATCH net] cadence: force nonlinear buffers to be cloned
-Date:   Wed, 28 Oct 2020 14:17:36 +0000
-Message-Id: <20201028141734.552611-1-mdeneen@saucontech.com>
-X-Mailer: git-send-email 2.28.0
+        id S1728600AbgJ1V4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 17:56:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49754 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728579AbgJ1V4M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:56:12 -0400
+Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D59C0613CF;
+        Wed, 28 Oct 2020 14:56:12 -0700 (PDT)
+Received: by mail-oi1-x244.google.com with SMTP id j7so1120239oie.12;
+        Wed, 28 Oct 2020 14:56:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=zHdXxs/T9mZg7pnTabmXNYI1gYHQQJ61N4sTHUvcPUk=;
+        b=AmUwQcAt1VAGU+7CByHjC1Oes4GGfSweQWXlDbr/CgxxRlilrbYYTenjwbPYHyWEgz
+         LHKkymEHL2DocTPL4lE4s+GQ7MnwLW2fbZ8VVqpdXOb7lw036dXA7nGpYVbCDuH1Drc8
+         mjDgmgjwN2ET48i7VDJG6QiYUGQHvkY1SH2nnqru/vudIvjqa93+hzscx+Nvsh2a9CrY
+         13a7Xjp8UBlCNG7rx9Cjx3h9wI5LXEOHlShiduPrll7YHkterXWu9qvJ04eUO2hO0u1j
+         WpgOuzLuGL0Elokp1fJyngH94yqobI2Te7x3nMzibwjr9jD5Kj2aRA3flo0MUczTmrDn
+         Y11Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=zHdXxs/T9mZg7pnTabmXNYI1gYHQQJ61N4sTHUvcPUk=;
+        b=KTvV7+WpGvbXzWL9absHP6KSMhSNGXtW6DCLg1fGi+7QG5+RN7YCVQr2wN4L1N40xI
+         psj+vHeeJayz6NwfRF9O7laKVtxJg/f+z002BH2WBRLRyscuIRvQyJ8XlZjUBQC7Oo4h
+         i/x4wdG5GY7lHd7eNsRtsXKdJhPTmK6yRFESSuD8iOjXiWVC7DZtv6C7lZdXHVLAAtwR
+         EMRm3/Uowu2mlBoPVh9zxcEVD5uHlvMUbYPwGGNPqqgu9c4PPumrmknfD5gdfMgMtUqX
+         D0MnEAJuNBJzglaTKDdzzriL+XrWSoua0qq6bmdltILYEtAGd3Zj2u3rk37eixsdGc2N
+         q9dw==
+X-Gm-Message-State: AOAM531RV6PY+mE4hT/JWY2WFDyRbM2P3XGsHAJJnkonp4mCJVbqiY8P
+        bEGB6AHtjT7rXhtDa6ddRgoI02VUKCWh5dYb
+X-Google-Smtp-Source: ABdhPJxMerd/WVMTl6OAD0Q/nuNJbG+xVQtf6jhUUfBHNGjpniJCbD9kmKMHF4xtAw9wKqE6f/hbuQ==
+X-Received: by 2002:a17:90a:5303:: with SMTP id x3mr2781024pjh.188.1603895158254;
+        Wed, 28 Oct 2020 07:25:58 -0700 (PDT)
+Received: from k5-sbwpb.flets-east.jp (i60-35-254-237.s41.a020.ap.plala.or.jp. [60.35.254.237])
+        by smtp.gmail.com with ESMTPSA id 194sm6227192pfz.182.2020.10.28.07.25.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Oct 2020 07:25:57 -0700 (PDT)
+From:   Tsuchiya Yuto <kitakar@gmail.com>
+To:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl,
+        Tsuchiya Yuto <kitakar@gmail.com>
+Subject: [PATCH 2/3] mwifiex: add allow_ps_mode module parameter
+Date:   Wed, 28 Oct 2020 23:24:32 +0900
+Message-Id: <20201028142433.18501-3-kitakar@gmail.com>
+X-Mailer: git-send-email 2.29.1
+In-Reply-To: <20201028142433.18501-1-kitakar@gmail.com>
+References: <20201028142433.18501-1-kitakar@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In my test setup, I had a SAMA5D27 device configured with ip forwarding, and
-second device with usb ethernet (r8152) sending ICMP packets.  If the packet
-was larger than about 220 bytes, the SAMA5 device would "oops" with the
-following trace:
+To make the ps_mode (power_save) control easier, this commit adds a new
+module parameter allow_ps_mode and set it false (disallowed) by default.
 
-kernel BUG at net/core/skbuff.c:1863!
-Internal error: Oops - BUG: 0 [#1] ARM
-Modules linked in: xt_MASQUERADE ppp_async ppp_generic slhc iptable_nat xt_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 can_raw can bridge stp llc ipt_REJECT nf_reject_ipv4 sd_mod cdc_ether usbnet usb_storage r8152 scsi_mod mii o
-ption usb_wwan usbserial micrel macb at91_sama5d2_adc phylink gpio_sama5d2_piobu m_can_platform m_can industrialio_triggered_buffer kfifo_buf of_mdio can_dev fixed_phy sdhci_of_at91 sdhci_pltfm libphy sdhci mmc_core ohci_at91 ehci_atmel o
-hci_hcd iio_rescale industrialio sch_fq_codel spidev prox2_hal(O)
-CPU: 0 PID: 0 Comm: swapper Tainted: G           O      5.9.1-prox2+ #1
-Hardware name: Atmel SAMA5
-PC is at skb_put+0x3c/0x50
-LR is at macb_start_xmit+0x134/0xad0 [macb]
-pc : [<c05258cc>]    lr : [<bf0ea5b8>]    psr: 20070113
-sp : c0d01a60  ip : c07232c0  fp : c4250000
-r10: c0d03cc8  r9 : 00000000  r8 : c0d038c0
-r7 : 00000000  r6 : 00000008  r5 : c59b66c0  r4 : 0000002a
-r3 : 8f659eff  r2 : c59e9eea  r1 : 00000001  r0 : c59b66c0
-Flags: nzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
-Control: 10c53c7d  Table: 2640c059  DAC: 00000051
-Process swapper (pid: 0, stack limit = 0x75002d81)
+When this parameter is set to false, changing the power_save mode will
+be disallowed like the following:
 
-<snipped stack>
+    $ sudo iw dev mlan0 set power_save on
+    command failed: Operation not permitted (-1)
 
-[<c05258cc>] (skb_put) from [<bf0ea5b8>] (macb_start_xmit+0x134/0xad0 [macb])
-[<bf0ea5b8>] (macb_start_xmit [macb]) from [<c053e504>] (dev_hard_start_xmit+0x90/0x11c)
-[<c053e504>] (dev_hard_start_xmit) from [<c0571180>] (sch_direct_xmit+0x124/0x260)
-[<c0571180>] (sch_direct_xmit) from [<c053eae4>] (__dev_queue_xmit+0x4b0/0x6d0)
-[<c053eae4>] (__dev_queue_xmit) from [<c05a5650>] (ip_finish_output2+0x350/0x580)
-[<c05a5650>] (ip_finish_output2) from [<c05a7e24>] (ip_output+0xb4/0x13c)
-[<c05a7e24>] (ip_output) from [<c05a39d0>] (ip_forward+0x474/0x500)
-[<c05a39d0>] (ip_forward) from [<c05a13d8>] (ip_sublist_rcv_finish+0x3c/0x50)
-[<c05a13d8>] (ip_sublist_rcv_finish) from [<c05a19b8>] (ip_sublist_rcv+0x11c/0x188)
-[<c05a19b8>] (ip_sublist_rcv) from [<c05a2494>] (ip_list_rcv+0xf8/0x124)
-[<c05a2494>] (ip_list_rcv) from [<c05403c4>] (__netif_receive_skb_list_core+0x1a0/0x20c)
-[<c05403c4>] (__netif_receive_skb_list_core) from [<c05405c4>] (netif_receive_skb_list_internal+0x194/0x230)
-[<c05405c4>] (netif_receive_skb_list_internal) from [<c0540684>] (gro_normal_list.part.0+0x14/0x28)
-[<c0540684>] (gro_normal_list.part.0) from [<c0541280>] (napi_complete_done+0x16c/0x210)
-[<c0541280>] (napi_complete_done) from [<bf14c1c0>] (r8152_poll+0x684/0x708 [r8152])
-[<bf14c1c0>] (r8152_poll [r8152]) from [<c0541424>] (net_rx_action+0x100/0x328)
-[<c0541424>] (net_rx_action) from [<c01012ec>] (__do_softirq+0xec/0x274)
-[<c01012ec>] (__do_softirq) from [<c012d6d4>] (irq_exit+0xcc/0xd0)
-[<c012d6d4>] (irq_exit) from [<c0160960>] (__handle_domain_irq+0x58/0xa4)
-[<c0160960>] (__handle_domain_irq) from [<c0100b0c>] (__irq_svc+0x6c/0x90)
-Exception stack(0xc0d01ef0 to 0xc0d01f38)
-1ee0:                                     00000000 0000003d 0c31f383 c0d0fa00
-1f00: c0d2eb80 00000000 c0d2e630 4dad8c49 4da967b0 0000003d 0000003d 00000000
-1f20: fffffff5 c0d01f40 c04e0f88 c04e0f8c 30070013 ffffffff
-[<c0100b0c>] (__irq_svc) from [<c04e0f8c>] (cpuidle_enter_state+0x7c/0x378)
-[<c04e0f8c>] (cpuidle_enter_state) from [<c04e12c4>] (cpuidle_enter+0x28/0x38)
-[<c04e12c4>] (cpuidle_enter) from [<c014f710>] (do_idle+0x194/0x214)
-[<c014f710>] (do_idle) from [<c014fa50>] (cpu_startup_entry+0xc/0x14)
-[<c014fa50>] (cpu_startup_entry) from [<c0a00dc8>] (start_kernel+0x46c/0x4a0)
-Code: e580c054 8a000002 e1a00002 e8bd8070 (e7f001f2)
----[ end trace 146c8a334115490c ]---
-
-The solution was to force nonlinear buffers to be cloned.  This was previously
-reported by Klaus Doth (https://www.spinics.net/lists/netdev/msg556937.html)
-but never formally submitted as a patch.
-
-Suggested-by: Klaus Doth <krnl@doth.eu>
-Signed-off-by: Mark Deneen <mdeneen@saucontech.com>
+Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
 ---
- drivers/net/ethernet/cadence/macb_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/wireless/marvell/mwifiex/cfg80211.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 883e47c5b..845d9d8dd 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -1929,7 +1929,8 @@ static inline int macb_clear_csum(struct sk_buff *skb)
-
- static int macb_pad_and_fcs(struct sk_buff **skb, struct net_device *ndev)
- {
--	bool cloned = skb_cloned(*skb) || skb_header_cloned(*skb);
-+	bool cloned = skb_cloned(*skb) || skb_header_cloned(*skb) ||
-+	              skb_is_nonlinear(*skb);
- 	int padlen = ETH_ZLEN - (*skb)->len;
- 	int headroom = skb_headroom(*skb);
- 	int tailroom = skb_tailroom(*skb);
---
-2.28.0
+diff --git a/drivers/net/wireless/marvell/mwifiex/cfg80211.c b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
+index a6b9dc6700b14..943bc1e8ceaee 100644
+--- a/drivers/net/wireless/marvell/mwifiex/cfg80211.c
++++ b/drivers/net/wireless/marvell/mwifiex/cfg80211.c
+@@ -25,6 +25,11 @@
+ static char *reg_alpha2;
+ module_param(reg_alpha2, charp, 0);
+ 
++static bool allow_ps_mode;
++module_param(allow_ps_mode, bool, 0644);
++MODULE_PARM_DESC(allow_ps_mode,
++		 "allow WiFi power management to be enabled. (default: disallowed)");
++
+ static const struct ieee80211_iface_limit mwifiex_ap_sta_limits[] = {
+ 	{
+ 		.max = MWIFIEX_MAX_BSS_NUM,
+@@ -435,6 +440,17 @@ mwifiex_cfg80211_set_power_mgmt(struct wiphy *wiphy,
+ 
+ 	ps_mode = enabled;
+ 
++	/* Allow ps_mode to be enabled only when allow_ps_mode is true */
++	if (ps_mode && !allow_ps_mode) {
++		mwifiex_dbg(priv->adapter, MSG,
++			    "Enabling ps_mode disallowed by modparam\n");
++
++		/* Return -EPERM to inform userspace tools that setting
++		 * power_save to be enabled is not permitted.
++		 */
++		return -EPERM;
++	}
++
+ 	return mwifiex_drv_set_power(priv, &ps_mode);
+ }
+ 
+-- 
+2.29.1
 
