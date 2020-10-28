@@ -2,138 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C24F829DFCE
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 02:04:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12E2229E06A
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 02:22:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404209AbgJ2BEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 21:04:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51510 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728543AbgJ1WGJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:06:09 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D13C0613CF;
-        Wed, 28 Oct 2020 15:06:08 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id p7so1151611ioo.6;
-        Wed, 28 Oct 2020 15:06:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=AMavcgab6f/G1LUhaSL/VnJNMSO60VRuV52F7ID9Z1w=;
-        b=EEBx/en4jUjbpcytmaGqmQqZoK88eThP+DK9XrxHaN1SQ97f4DrSYomDP9X0SkW/q0
-         0Ber+eFxG+cd5uPhS9kdMvcxwOsNyvUepSmCzF0TsiaP4hVWzXTUgLvgS/dMFSOxyzGk
-         16u+I0XQc8qsTHSPvYyz4rHV/3lQF3ThUC3tsDsCPS7dA5Ch0eGbrwSUZZ0hL3TNeOZG
-         CN+mzBK34uZp1FOpOIHpgudSrBlFlgzn5ZeXE3KM3F4rVihVfxpyLVG39v8DBIYrtkyE
-         jP4hkiJ1Zb4zzHVZo4l6i5dRHdIorBBpHSNi4Xnn8MEx3bY91Z+6rCAstCz6GCl+fxKY
-         ymrg==
+        id S1728148AbgJ1WE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:04:56 -0400
+Received: from mail-pl1-f199.google.com ([209.85.214.199]:51491 "EHLO
+        mail-pl1-f199.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728132AbgJ1WBP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:01:15 -0400
+Received: by mail-pl1-f199.google.com with SMTP id y9so504471pll.18
+        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:01:15 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=AMavcgab6f/G1LUhaSL/VnJNMSO60VRuV52F7ID9Z1w=;
-        b=CKpYiUzKGjXL4CxtU6+GaP15fd6Xsqjtz/dqg2P6v2vodl49iA5RdZr4bSTV2cy3iq
-         dDGX8FUFw7YMQtmDKOSZqmTLmMMc6SbFohuC0uRg8/dPmhHvjf1BcQSlHvjsyQnGjGFm
-         PO/UnaQuUbBrWTzN9BLdxsAKQNQzZ3w7gG3ikuLPaNCy6GuHmgyFhVRSb2Lfmr8qHkKG
-         vyPvBQwGayPlrdRRB4rwyd8/xg4a7ir6gcrv9BOCwY1HddWTFv4js6LL8QMRdQRndrjJ
-         WDjJCvVJohq3qmvoiFy9Qu615C/JZqc39FQ/l8nKsda9eP/sli9WSfkSz2sDPW81acKZ
-         2C9Q==
-X-Gm-Message-State: AOAM530SG7VqaJa7OiXisKna++lsnFpXsOKaIaweltNijmCeZU1ZQYhU
-        nQtB9MEYCrhWfa5sFo05UoYfxYh0LodR5Nde
-X-Google-Smtp-Source: ABdhPJxizRPARCHdEsCXjgrcYCTJx2PzRg4bj6IZWfYbOoEie0tP3vFgu3sgYYebDUS52otqnjvptw==
-X-Received: by 2002:a65:62ca:: with SMTP id m10mr6618468pgv.407.1603894962096;
-        Wed, 28 Oct 2020 07:22:42 -0700 (PDT)
-Received: from k5-sbwpb.flets-east.jp (i60-35-254-237.s41.a020.ap.plala.or.jp. [60.35.254.237])
-        by smtp.gmail.com with ESMTPSA id c12sm6293543pgi.14.2020.10.28.07.22.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 07:22:41 -0700 (PDT)
-From:   Tsuchiya Yuto <kitakar@gmail.com>
-To:     Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl,
-        Tsuchiya Yuto <kitakar@gmail.com>
-Subject: [PATCH 1/2] mwifiex: fix mwifiex_shutdown_sw() causing sw reset failure
-Date:   Wed, 28 Oct 2020 23:21:09 +0900
-Message-Id: <20201028142110.18144-2-kitakar@gmail.com>
-X-Mailer: git-send-email 2.29.1
-In-Reply-To: <20201028142110.18144-1-kitakar@gmail.com>
-References: <20201028142110.18144-1-kitakar@gmail.com>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=I6Tv0mZbA3G3bm/uFU3fYpeMhFGdLavDRFYielkX/qA=;
+        b=krJjLixw8lFCu/yZzyNAk2ONJFLlHZGw6GFMrrVyy1dn6wJG05MzfUcLwvrUwnruvW
+         vtGw3sC/4HRMSW/4dwFc5zxejHPnM3HTh28wM5rKeFdE0QKJYVwM+ycheiIQuPOa7zl+
+         7Jhx2UcMZTL+BZBuEYVeflKglpK2r54xyBy4h4nBxtB0tSiE/fpsFzqtA4DveUp7oGAu
+         YnMMvUtYL6sw7Uztn7LHp1IUiDnkQZYS9apTErP4rR64Bw0S9AxDTAUdd3iMqXg9/9Wy
+         qo26RUaf4t5hNk1L+1HVZPSXA5Wj6bv98LvOCIX43KS1cNd3xvSBH8qatC8pQpEfXwag
+         dNXg==
+X-Gm-Message-State: AOAM532bwOjDOwupEZLRrT6WOxh+2ftMfWLHHLWwAAqjE8/4zLgFMoiy
+        EUBgI1H+86Q8Bb8GcN2HNljVBB6+NNHOH/SWNL1OqnK83xLo
+X-Google-Smtp-Source: ABdhPJyvkYDWO+MkW+GPCkfakucDqW9Hg44YfadMBs6jV2DHt/jCKIE8L/gnqUoHI6yNY3G7ACZNkuRZvv0g+FRnZh3ag17bqYv1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a92:8746:: with SMTP id d6mr6602712ilm.255.1603899197781;
+ Wed, 28 Oct 2020 08:33:17 -0700 (PDT)
+Date:   Wed, 28 Oct 2020 08:33:17 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f07eb205b2bce11b@google.com>
+Subject: WARNING: suspicious RCU usage in ovs_flow_tbl_masks_cache_resize
+From:   syzbot <syzbot+9a8f8bfcc56e8578016c@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dev@openvswitch.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pshelar@ovn.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When FLR is performed but without fw reset for some reasons (e.g. on
-Surface devices, fw reset requires another quirk), it fails to reset
-properly. You can trigger the issue on such devices via debugfs entry
-for reset:
+Hello,
 
-    $ echo 1 | sudo tee /sys/kernel/debug/mwifiex/mlan0/reset
+syzbot found the following issue on:
 
-and the resulting dmesg log:
+HEAD commit:    6daa1da4 chelsio/chtls: fix memory leaks in CPL handlers
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=10defae4500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=46c6fea3eb827ae1
+dashboard link: https://syzkaller.appspot.com/bug?extid=9a8f8bfcc56e8578016c
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=15fed5bc500000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12afff40500000
 
-    [   45.740508] mwifiex_pcie 0000:03:00.0: Resetting per request
-    [   45.742937] mwifiex_pcie 0000:03:00.0: info: successfully disconnected from [BSSID]: reason code 3
-    [   45.744666] mwifiex_pcie 0000:03:00.0: info: shutdown mwifiex...
-    [   45.751530] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
-    [   45.751539] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
-    [   45.771691] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
-    [   45.771695] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
-    [   45.771697] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
-    [   45.771698] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
-    [   45.771699] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
-    [   45.771701] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
-    [   45.771702] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
-    [   45.771703] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
-    [   45.771704] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
-    [   45.771705] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
-    [   45.771707] mwifiex_pcie 0000:03:00.0: PREP_CMD: card is removed
-    [   45.771708] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
-    [   53.099343] mwifiex_pcie 0000:03:00.0: info: trying to associate to '[SSID]' bssid [BSSID]
-    [   53.241870] mwifiex_pcie 0000:03:00.0: info: associated to bssid [BSSID] successfully
-    [   75.377942] mwifiex_pcie 0000:03:00.0: cmd_wait_q terminated: -110
-    [   85.385491] mwifiex_pcie 0000:03:00.0: info: successfully disconnected from [BSSID]: reason code 15
-    [   87.539408] mwifiex_pcie 0000:03:00.0: cmd_wait_q terminated: -110
-    [   87.539412] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
-    [   99.699917] mwifiex_pcie 0000:03:00.0: cmd_wait_q terminated: -110
-    [   99.699925] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
-    [  111.859802] mwifiex_pcie 0000:03:00.0: cmd_wait_q terminated: -110
-    [  111.859808] mwifiex_pcie 0000:03:00.0: deleting the crypto keys
-    [...]
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+9a8f8bfcc56e8578016c@syzkaller.appspotmail.com
 
-When comparing mwifiex_shutdown_sw() with mwifiex_pcie_remove(), it
-lacks mwifiex_init_shutdown_fw().
+netlink: 44 bytes leftover after parsing attributes in process `syz-executor522'.
+=============================
+WARNING: suspicious RCU usage
+5.9.0-syzkaller #0 Not tainted
+-----------------------------
+net/openvswitch/flow_table.c:393 suspicious rcu_dereference_check() usage!
 
-This commit fixes mwifiex_shutdown_sw() by adding the missing
-mwifiex_init_shutdown_fw().
+other info that might help us debug this:
 
-Fixes: 4c5dae59d2e9 ("mwifiex: add PCIe function level reset support")
-Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
+
+rcu_scheduler_active = 2, debug_locks = 1
+1 lock held by syz-executor522/8493:
+ #0: ffffffff8c9af210 (cb_lock){++++}-{3:3}, at: genl_rcv+0x15/0x40 net/netlink/genetlink.c:810
+
+stack backtrace:
+CPU: 1 PID: 8493 Comm: syz-executor522 Not tainted 5.9.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:118
+ ovs_flow_tbl_masks_cache_resize+0x1bf/0x200 net/openvswitch/flow_table.c:393
+ ovs_dp_change+0x231/0x2b0 net/openvswitch/datapath.c:1616
+ ovs_dp_cmd_new+0x4c1/0xec0 net/openvswitch/datapath.c:1706
+ genl_family_rcv_msg_doit+0x228/0x320 net/netlink/genetlink.c:739
+ genl_family_rcv_msg net/netlink/genetlink.c:783 [inline]
+ genl_rcv_msg+0x328/0x580 net/netlink/genetlink.c:800
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+ genl_rcv+0x24/0x40 net/netlink/genetlink.c:811
+ netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:651 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:671
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2353
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2407
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2440
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x440ad9
+Code: 18 89 d0 c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 7b 13 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffff6e416d8 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+RAX: ffffffffffffffda RBX: 00000000004002c8 RCX: 0000000000440ad9
+RDX: 0000000000000000 RSI: 0000000020000500 RDI: 0000000000000003
+RBP: 00000000006cb018 R08: 0000000000000000 R09: 00000000004002c8
+R10: 0000000000000000 R11: 0000000000000246 R12: 00000000004022e0
+
+
 ---
- drivers/net/wireless/marvell/mwifiex/main.c | 2 ++
- 1 file changed, 2 insertions(+)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/main.c b/drivers/net/wireless/marvell/mwifiex/main.c
-index 9ba8a8f64976b..6283df5aaaf8b 100644
---- a/drivers/net/wireless/marvell/mwifiex/main.c
-+++ b/drivers/net/wireless/marvell/mwifiex/main.c
-@@ -1471,6 +1471,8 @@ int mwifiex_shutdown_sw(struct mwifiex_adapter *adapter)
- 	priv = mwifiex_get_priv(adapter, MWIFIEX_BSS_ROLE_ANY);
- 	mwifiex_deauthenticate(priv, NULL);
- 
-+	mwifiex_init_shutdown_fw(priv, MWIFIEX_FUNC_SHUTDOWN);
-+
- 	mwifiex_uninit_sw(adapter);
- 	adapter->is_up = false;
- 
--- 
-2.29.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
