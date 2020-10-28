@@ -2,267 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5507129D2C2
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 22:34:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26A4A29D450
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 22:51:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726641AbgJ1Vem (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 17:34:42 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:42927 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726628AbgJ1Vei (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:34:38 -0400
-Received: by mail-pg1-f194.google.com with SMTP id s22so571852pga.9
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 14:34:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=smW0Uu5AYT0CbDiMXTsNP0m2Ye5AeJ3ok8/XC5RGM+Y=;
-        b=Lei/xwIULrLyJ4qK1cvb3RKgISU958FgpCNryrAPHyJ48fBNRXFrVy/VN8BRnyBTQV
-         LQPSP3lIBSfFZsan+T3i8Cbiyy1/vGBJLAzO5358TGkFggRQ/GuU6s3FqjhnlXHsRGR3
-         aJAmx3w+i7zcVKNLEjYbb5GD8aej8hzmYXLWwbBvrmzf2WjZ8yCPHa7UTOFd++lR8fJt
-         XuK1OktkYuYbadBKPTjNMXvJJYr0TO83b8lQ09unT3ih0UClReu6MNvwFyv55UiniaLv
-         LiUbFEvYvjRLySHhNxH0+9ic+5wgBmP1nZzEtcr3rW8dvDCA3I0EyS6nrHkVvNWm8ozO
-         UWqQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=smW0Uu5AYT0CbDiMXTsNP0m2Ye5AeJ3ok8/XC5RGM+Y=;
-        b=bGTRVhddRG2IkkiL0s4crTcxOvkQfLy7eNfuaMIQ/aGbWm7AqNmPG0F5DAEJiYxQTp
-         1MwxmZ8BlVfhEBpaINmuzmG2XnaS8wJ3dhKdkyVawQvjzdj52dHpCUJzqJ2vsK8lmRaw
-         cdTl2ly+mgNZ0qoKar+jm2L/PfjkdOsJUT59fGSRsbZ0re0dk1nd5pxwnKmnjocwaj3L
-         mJKRCW/q9JLKH9v3C3ERWx3sG4Ndfrz3COCd70BE3t16k1xlJNmM4NlwBH9RPzu/zy8M
-         vM6UOHrMc/7bwI40HFRHbWsu+msL9kCGT9mh183cDm5iNXVrcnSEhi0tFNJwVXrvmzbW
-         Tcjw==
-X-Gm-Message-State: AOAM532Wm0AW/21QnB1Fmi+fki7e+LtIWhwiTITlWaLnD6BHYyqOhdSi
-        q9mUPA6jo+ZMFYmgIHFLiOI8zdq3EdFYktvOHcYag0jSdOo7mA==
-X-Google-Smtp-Source: ABdhPJzJO0N2+hIbIX+FF7H3RMPaSMzS1HRK/UtcpDxwLJHdhBI5zyOxHDIUXPzDykjjitziGQR4phJvJbOviEInlNE=
-X-Received: by 2002:a05:6e02:14c9:: with SMTP id o9mr6031068ilk.137.1603894395447;
- Wed, 28 Oct 2020 07:13:15 -0700 (PDT)
+        id S1728160AbgJ1VvQ convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 28 Oct 2020 17:51:16 -0400
+Received: from fortimail.saucontech.com ([72.2.176.80]:58656 "EHLO
+        fortimail.saucontech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728135AbgJ1VvH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:51:07 -0400
+X-Greylist: delayed 903 seconds by postgrey-1.27 at vger.kernel.org; Wed, 28 Oct 2020 17:51:06 EDT
+Received: from email.saucontech.com ([10.20.20.47])
+        by fortimail.saucontech.com  with ESMTP id 09SEJUtX011774-09SEJUtZ011774
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Wed, 28 Oct 2020 10:19:30 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by email.saucontech.com (Postfix) with ESMTP id 0EB8B4089F7;
+        Wed, 28 Oct 2020 10:19:30 -0400 (EDT)
+Received: from email.saucontech.com ([127.0.0.1])
+        by localhost (email.saucontech.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id C2qoSfv7sv21; Wed, 28 Oct 2020 10:19:29 -0400 (EDT)
+Received: from localhost (localhost [127.0.0.1])
+        by email.saucontech.com (Postfix) with ESMTP id 74965408BA4;
+        Wed, 28 Oct 2020 10:19:29 -0400 (EDT)
+X-Virus-Scanned: amavisd-new at email.saucontech.com
+Received: from email.saucontech.com ([127.0.0.1])
+        by localhost (email.saucontech.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id jDHbpCUuqV-V; Wed, 28 Oct 2020 10:19:29 -0400 (EDT)
+Received: from mdeneen.saucon.int (unknown [10.5.1.150])
+        by email.saucontech.com (Postfix) with ESMTPSA id 493AE4089F7;
+        Wed, 28 Oct 2020 10:19:29 -0400 (EDT)
+From:   Mark Deneen <mdeneen@saucontech.com>
+To:     netdev@vger.kernel.org
+Cc:     nicolas.ferre@microchip.com, claudiu.beznea@microchip.com,
+        Mark Deneen <mdeneen@saucontech.com>, Klaus Doth <krnl@doth.eu>
+Subject: [PATCH net] cadence: force nonlinear buffers to be cloned
+Date:   Wed, 28 Oct 2020 14:17:36 +0000
+Message-Id: <20201028141734.552611-1-mdeneen@saucontech.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-References: <20201028133437.212503-1-bjorn.topel@gmail.com>
-In-Reply-To: <20201028133437.212503-1-bjorn.topel@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 28 Oct 2020 15:13:04 +0100
-Message-ID: <CANn89iLpwne8P+E4p+wD92xB0LP4WridLUhPQTx1CeDF-D+LdA@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 0/9] Introduce biased busy-polling
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        maciej.fijalkowski@intel.com,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        qi.z.zhang@intel.com, Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 2:35 PM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.co=
-m> wrote:
->
-> Jakub suggested in [1] a "strict busy-polling mode with out
-> interrupts". This is a first stab at that.
->
-> This series adds a new NAPI mode, called biased busy-polling, which is
-> an extension to the existing busy-polling mode. The new mode is
-> enabled on the socket layer, where a socket setting this option
-> "promisies" to busy-poll the NAPI context via a system call. When this
-> mode is enabled, the NAPI context will operate in a mode with
-> interrupts disabled. The kernel monitors that the busy-polling promise
-> is fulfilled by an internal watchdog. If the socket fail/stop
-> performing the busy-polling, the mode will be disabled.
->
-> Biased busy-polling follows the same mechanism as the existing
-> busy-poll; The napi_id is reported to the socket via the skbuff. Later
-> commits will extend napi_id reporting to XDP, in order to work
-> correctly with XDP sockets.
->
-> Let us walk through a flow of execution:
->
-> 1. A socket sets the new SO_BIAS_BUSY_POLL socket option to true. The
->    socket now shows an intent of doing busy-polling. No data has been
->    received to the socket, so the napi_id of the socket is still 0
->    (non-valid). As usual for busy-polling, the SO_BUSY_POLL option
->    also has to be non-zero for biased busy-polling.
->
-> 2. Data is received on the socket changing the napi_id to non-zero.
->
-> 3. The socket does a system call that has the busy-polling logic wired
->    up, e.g. recvfrom() for UDP sockets. The NAPI context is now marked
->    as biased busy-poll. The kernel watchdog is armed. If the NAPI
->    context is already running, it will try to finish as soon as
->    possible and move to busy-polling. If the NAPI context is not
->    running, it will execute the NAPI poll function for the
->    corresponding napi_id.
->
-> 4. Goto 3, or wait until the watchdog timeout.
->
-> The series is outlined as following:
->   Patch 1-2: Biased busy-polling, and option to set busy-poll budget.
->   Patch 3-6: Busy-poll plumbing for XDP sockets
->   Patch 7-9: Add busy-polling support to the xdpsock sample
->
-> Performance UDP sockets:
->
-> I hacked netperf to use non-blocking sockets, and looping over
-> recvfrom(). The following command-line was used:
->   $ netperf -H 192.168.1.1 -l 30 -t UDP_RR -v 2 -- \
->       -o min_latency,mean_latency,max_latency,stddev_latency,transaction_=
-rate
->
-> Non-blocking:
->   16,18.45,195,0.94,54070.369
-> Non-blocking with biased busy-polling:
->   15,16.59,38,0.70,60086.313
->
+In my test setup, I had a SAMA5D27 device configured with ip forwarding, and
+second device with usb ethernet (r8152) sending ICMP packets.  If the packet
+was larger than about 220 bytes, the SAMA5 device would "oops" with the
+following trace:
 
-But a fair comparison should be done using current busy-polling mode,
-which does not require netperf to use non-blocking mode in the first place =
-?
+kernel BUG at net/core/skbuff.c:1863!
+Internal error: Oops - BUG: 0 [#1] ARM
+Modules linked in: xt_MASQUERADE ppp_async ppp_generic slhc iptable_nat xt_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 can_raw can bridge stp llc ipt_REJECT nf_reject_ipv4 sd_mod cdc_ether usbnet usb_storage r8152 scsi_mod mii o
+ption usb_wwan usbserial micrel macb at91_sama5d2_adc phylink gpio_sama5d2_piobu m_can_platform m_can industrialio_triggered_buffer kfifo_buf of_mdio can_dev fixed_phy sdhci_of_at91 sdhci_pltfm libphy sdhci mmc_core ohci_at91 ehci_atmel o
+hci_hcd iio_rescale industrialio sch_fq_codel spidev prox2_hal(O)
+CPU: 0 PID: 0 Comm: swapper Tainted: G           O      5.9.1-prox2+ #1
+Hardware name: Atmel SAMA5
+PC is at skb_put+0x3c/0x50
+LR is at macb_start_xmit+0x134/0xad0 [macb]
+pc : [<c05258cc>]    lr : [<bf0ea5b8>]    psr: 20070113
+sp : c0d01a60  ip : c07232c0  fp : c4250000
+r10: c0d03cc8  r9 : 00000000  r8 : c0d038c0
+r7 : 00000000  r6 : 00000008  r5 : c59b66c0  r4 : 0000002a
+r3 : 8f659eff  r2 : c59e9eea  r1 : 00000001  r0 : c59b66c0
+Flags: nzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
+Control: 10c53c7d  Table: 2640c059  DAC: 00000051
+Process swapper (pid: 0, stack limit = 0x75002d81)
 
-Would disabling/rearming interrupts about 60,000 times per second
-bring any benefit ?
+<snipped stack>
 
+[<c05258cc>] (skb_put) from [<bf0ea5b8>] (macb_start_xmit+0x134/0xad0 [macb])
+[<bf0ea5b8>] (macb_start_xmit [macb]) from [<c053e504>] (dev_hard_start_xmit+0x90/0x11c)
+[<c053e504>] (dev_hard_start_xmit) from [<c0571180>] (sch_direct_xmit+0x124/0x260)
+[<c0571180>] (sch_direct_xmit) from [<c053eae4>] (__dev_queue_xmit+0x4b0/0x6d0)
+[<c053eae4>] (__dev_queue_xmit) from [<c05a5650>] (ip_finish_output2+0x350/0x580)
+[<c05a5650>] (ip_finish_output2) from [<c05a7e24>] (ip_output+0xb4/0x13c)
+[<c05a7e24>] (ip_output) from [<c05a39d0>] (ip_forward+0x474/0x500)
+[<c05a39d0>] (ip_forward) from [<c05a13d8>] (ip_sublist_rcv_finish+0x3c/0x50)
+[<c05a13d8>] (ip_sublist_rcv_finish) from [<c05a19b8>] (ip_sublist_rcv+0x11c/0x188)
+[<c05a19b8>] (ip_sublist_rcv) from [<c05a2494>] (ip_list_rcv+0xf8/0x124)
+[<c05a2494>] (ip_list_rcv) from [<c05403c4>] (__netif_receive_skb_list_core+0x1a0/0x20c)
+[<c05403c4>] (__netif_receive_skb_list_core) from [<c05405c4>] (netif_receive_skb_list_internal+0x194/0x230)
+[<c05405c4>] (netif_receive_skb_list_internal) from [<c0540684>] (gro_normal_list.part.0+0x14/0x28)
+[<c0540684>] (gro_normal_list.part.0) from [<c0541280>] (napi_complete_done+0x16c/0x210)
+[<c0541280>] (napi_complete_done) from [<bf14c1c0>] (r8152_poll+0x684/0x708 [r8152])
+[<bf14c1c0>] (r8152_poll [r8152]) from [<c0541424>] (net_rx_action+0x100/0x328)
+[<c0541424>] (net_rx_action) from [<c01012ec>] (__do_softirq+0xec/0x274)
+[<c01012ec>] (__do_softirq) from [<c012d6d4>] (irq_exit+0xcc/0xd0)
+[<c012d6d4>] (irq_exit) from [<c0160960>] (__handle_domain_irq+0x58/0xa4)
+[<c0160960>] (__handle_domain_irq) from [<c0100b0c>] (__irq_svc+0x6c/0x90)
+Exception stack(0xc0d01ef0 to 0xc0d01f38)
+1ee0:                                     00000000 0000003d 0c31f383 c0d0fa00
+1f00: c0d2eb80 00000000 c0d2e630 4dad8c49 4da967b0 0000003d 0000003d 00000000
+1f20: fffffff5 c0d01f40 c04e0f88 c04e0f8c 30070013 ffffffff
+[<c0100b0c>] (__irq_svc) from [<c04e0f8c>] (cpuidle_enter_state+0x7c/0x378)
+[<c04e0f8c>] (cpuidle_enter_state) from [<c04e12c4>] (cpuidle_enter+0x28/0x38)
+[<c04e12c4>] (cpuidle_enter) from [<c014f710>] (do_idle+0x194/0x214)
+[<c014f710>] (do_idle) from [<c014fa50>] (cpu_startup_entry+0xc/0x14)
+[<c014fa50>] (cpu_startup_entry) from [<c0a00dc8>] (start_kernel+0x46c/0x4a0)
+Code: e580c054 8a000002 e1a00002 e8bd8070 (e7f001f2)
+---[ end trace 146c8a334115490c ]---
 
-Additional questions :
+The solution was to force nonlinear buffers to be cloned.  This was previously
+reported by Klaus Doth (https://www.spinics.net/lists/netdev/msg556937.html)
+but never formally submitted as a patch.
 
-- What happens to the gro_flush_timeout and accumulated TCP segments
-in GRO engine
-while the biased busy-polling is in use ?
+Suggested-by: Klaus Doth <krnl@doth.eu>
+Signed-off-by: Mark Deneen <mdeneen@saucontech.com>
+---
+ drivers/net/ethernet/cadence/macb_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-- What mechanism would avoid a potential 200 ms latency when the
-application wants to exit cleanly ?
-  Presumably when/if SO_BIAS_BUSY_POLL is used to clear
-sk->sk_bias_busy_poll we need
- to make sure device interrupts are re-enabled.
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 883e47c5b..845d9d8dd 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -1929,7 +1929,8 @@ static inline int macb_clear_csum(struct sk_buff *skb)
 
+ static int macb_pad_and_fcs(struct sk_buff **skb, struct net_device *ndev)
+ {
+-	bool cloned = skb_cloned(*skb) || skb_header_cloned(*skb);
++	bool cloned = skb_cloned(*skb) || skb_header_cloned(*skb) ||
++	              skb_is_nonlinear(*skb);
+ 	int padlen = ETH_ZLEN - (*skb)->len;
+ 	int headroom = skb_headroom(*skb);
+ 	int tailroom = skb_tailroom(*skb);
+--
+2.28.0
 
-> Performance XDP sockets:
->
-> Today, running XDP sockets sample on the same core as the softirq
-> handling, performance tanks mainly because we do not yield to
-> user-space when the XDP socket Rx queue is full.
->   # taskset -c 5 ./xdpsock -i ens785f1 -q 5 -n 1 -r
->   Rx: 64Kpps
->
->   # # biased busy-polling, budget 8
->   # taskset -c 5 ./xdpsock -i ens785f1 -q 5 -n 1 -r -B -b 8
->   Rx 9.9Mpps
->   # # biased busy-polling, budget 64
->   # taskset -c 5 ./xdpsock -i ens785f1 -q 5 -n 1 -r -B -b 64
->   Rx: 19.3Mpps
->   # # biased busy-polling, budget 256
->   # taskset -c 5 ./xdpsock -i ens785f1 -q 5 -n 1 -r -B -b 256
->   Rx: 21.4Mpps
->   # # biased busy-polling, budget 512
->   # taskset -c 5 ./xdpsock -i ens785f1 -q 5 -n 1 -r -B -b 512
->   Rx: 21.4Mpps
->
-> Compared to the two-core case:
->   # taskset -c 4 ./xdpsock -i ens785f1 -q 20 -n 1 -r
->   Rx: 20.7Mpps
->
-> We're getting better single-core performance than two, for this na=C3=AFv=
-e
-> drop scenario.
->
-> The above tests was done for the 'ice' driver.
->
-> Some outstanding questions:
->
-> * Does biased busy-polling make sense for non-XDP sockets? For a
->   dedicated queue, biased busy-polling has a strong case. When the
->   NAPI is shared with other sockets, it can affect the latencies of
->   sockets that were not explicity busy-poll enabled. Note that this
->   true for regular busy-polling as well, but the biased version is
->   stricter.
->
-> * Currently busy-polling for UDP/TCP is only wired up in the recvmsg()
->   path. Does it make sense to extend that to sendmsg() as well?
->
-> * Biased busy-polling only makes sense for non-blocking sockets. Reject
->   enabling of biased busy-polling unless the socket is non-blocking?
->
-> * The watchdog is 200 ms. Should it be configurable?
->
-> * Extending xdp_rxq_info_reg() with napi_id touches a lot of drivers,
->   and I've only verified the Intel ones. Some drivers initialize NAPI
->   (generating the napi_id) after the xdp_rxq_info_reg() call, which
->   maybe would open up for another API? I did not send this RFC to all
->   the driver authors. I'll do that for a patch proper series.
->
-> * Today, enabling busy-polling require CAP_NET_ADMIN. For a NAPI
->   context that services multiple socket, this makes sense because one
->   socket can affect performance of other sockets. Now, for a
->   *dedicated* queue for say XDP socket, would it be OK to drop
->   CAP_NET_ADMIN, because it cannot affect other sockets/users?
->
-> @Jakub Thanks for the early comments. I left the check in
-> napi_schedule_prep(), because I hit that for the Intel i40e driver;
-> forcing busy-polling on a core outside the interrupt affinity mask.
->
-> [1] https://lore.kernel.org/netdev/20200925120652.10b8d7c5@kicinski-fedor=
-a-pc1c0hjn.dhcp.thefacebook.com/
->
-> Bj=C3=B6rn T=C3=B6pel (9):
->   net: introduce biased busy-polling
->   net: add SO_BUSY_POLL_BUDGET socket option
->   xsk: add support for recvmsg()
->   xsk: check need wakeup flag in sendmsg()
->   xsk: add busy-poll support for {recv,send}msg()
->   xsk: propagate napi_id to XDP socket Rx path
->   samples/bpf: use recvfrom() in xdpsock
->   samples/bpf: add busy-poll support to xdpsock
->   samples/bpf: add option to set the busy-poll budget
->
->  arch/alpha/include/uapi/asm/socket.h          |   3 +
->  arch/mips/include/uapi/asm/socket.h           |   3 +
->  arch/parisc/include/uapi/asm/socket.h         |   3 +
->  arch/sparc/include/uapi/asm/socket.h          |   3 +
->  drivers/net/ethernet/amazon/ena/ena_netdev.c  |   2 +-
->  drivers/net/ethernet/broadcom/bnxt/bnxt.c     |   2 +-
->  .../ethernet/cavium/thunder/nicvf_queues.c    |   2 +-
->  .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  |   2 +-
->  drivers/net/ethernet/intel/i40e/i40e_txrx.c   |   2 +-
->  drivers/net/ethernet/intel/ice/ice_base.c     |   4 +-
->  drivers/net/ethernet/intel/ice/ice_txrx.c     |   2 +-
->  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c |   2 +-
->  drivers/net/ethernet/marvell/mvneta.c         |   2 +-
->  .../net/ethernet/marvell/mvpp2/mvpp2_main.c   |   4 +-
->  drivers/net/ethernet/mellanox/mlx4/en_rx.c    |   2 +-
->  .../ethernet/netronome/nfp/nfp_net_common.c   |   2 +-
->  drivers/net/ethernet/qlogic/qede/qede_main.c  |   2 +-
->  drivers/net/ethernet/sfc/rx_common.c          |   2 +-
->  drivers/net/ethernet/socionext/netsec.c       |   2 +-
->  drivers/net/ethernet/ti/cpsw_priv.c           |   2 +-
->  drivers/net/hyperv/netvsc.c                   |   2 +-
->  drivers/net/tun.c                             |   2 +-
->  drivers/net/veth.c                            |   2 +-
->  drivers/net/virtio_net.c                      |   2 +-
->  drivers/net/xen-netfront.c                    |   2 +-
->  fs/eventpoll.c                                |   3 +-
->  include/linux/netdevice.h                     |  33 +++---
->  include/net/busy_poll.h                       |  42 +++++--
->  include/net/sock.h                            |   4 +
->  include/net/xdp.h                             |   3 +-
->  include/uapi/asm-generic/socket.h             |   3 +
->  net/core/dev.c                                | 111 +++++++++++++++---
->  net/core/sock.c                               |  19 +++
->  net/core/xdp.c                                |   3 +-
->  net/xdp/xsk.c                                 |  36 +++++-
->  net/xdp/xsk_buff_pool.c                       |  13 +-
->  samples/bpf/xdpsock_user.c                    |  53 +++++++--
->  37 files changed, 296 insertions(+), 85 deletions(-)
->
->
-> base-commit: 3cb12d27ff655e57e8efe3486dca2a22f4e30578
-> --
-> 2.27.0
->
