@@ -2,143 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2074629D3C0
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 22:46:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EE1A29D3E2
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 22:47:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726441AbgJ1Vqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 17:46:39 -0400
-Received: from mail-eopbgr140041.outbound.protection.outlook.com ([40.107.14.41]:34217
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        id S1727690AbgJ1Vrc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 17:47:32 -0400
+Received: from mail-eopbgr660056.outbound.protection.outlook.com ([40.107.66.56]:48700
+        "EHLO CAN01-QB1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726495AbgJ1Vqg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Oct 2020 17:46:36 -0400
+        id S1727715AbgJ1Vra (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Oct 2020 17:47:30 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i8kY0as2PmXgJYSoBeHYrLSbFZaT2tTLB5iNE0KZMXp/DgMhEAOVjgFw0hSff9fU/OZIASy48C84dXx5SfY6FjKw7CsOagdFzT6uq0/g1AnCDQV86EtkT79TG2FX7cxKP5BcGjaAoMad+hIja+pHz+ck2EJkgFfuaIqyS5HO8ZGUVeEXTLVvdk/xLunDwT3EeyuFqDYLigoLRtAeZYb+xp8SBMxxyp5I0vw6m3OScQ6VQ/0qvvqoINMP08Ch6nN798pseKnRv2mCLh3bELFhwp+X4U3SzJnnJJ/qv/ZOchFg3t4GHmtd4Z4XY83vaOTH/R6yE1RORClXWbfIQ3klqw==
+ b=AEybP6vus8T14gQPgWQe2Awt1G+nttDYS/ohYhH1hYQqtB3naMzrH5cljeUqWcwz7NfGHSdSeQIxOs1d5wfhu/BAD03Kq+jBhDLf/ZSAKj7YHTl9OrC67qkjyqKjb8Q7hTvpTvh/rl5ZwsmwSM8sutD7dpTqwJ2xLrlK5W3HlLqcF+rPa8/7/5Vt4IdulrGZzshWO4sIV9Ra7I3kbB9MLO8mxcR7Ei4PbqT2G0Sp64RgFqInHvDzo9A5MY4UKAkKHc+F3vMHPUfw4dkOmSV1tvlzfPDSZXQWc9GQqv9ffr3lvEj7yVRUmEkE01E8oR2uWzcFaZt8g88kO15o2j4mRQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CtiszIqYYS2JyDAMiHyC8koeCoAtxWRlFjvtWJInNuM=;
- b=m43x6K1/OsomO4ofMrBBHkKcNngjhNMoa4mNbgpEKSzhna++a3wcFTOPJDTVDoQvdkIZfbkWMCxPFY/aUV3gwkdVn2qdgWLe4KEg5WBtJc+IiUBxzdsKM4JIqpeh10XFD6d23tZ4lf84d4QF1iCjEHtrNdRIn6Sd+c6A8xqxPN3Adp0UQFrLj/Nnjvv+WbwYsKgev8G+uYN76OZR7G/goc7isH6NpNnQJGIs2TvdACW/HHikwpV8AwlxlX1h8y/A0WI/qcNSg2JFGOpuXN/44+ri1msqfzifmozQbNo19CzBn+srck1t+TNlTLzsSJ7kt+uuBijGvNf0jm4B7bgoFA==
+ bh=apZC3R9x24oMJ50OEi0ZA8n6MBBJ4L1Fg5Uau3de4VI=;
+ b=hnn9FPf9BdS7tZsbRdSY9nM7O2WlzGDcdeSXc0MnnGOwhwu1MT8r8Zi4s2SefZZvGO24TKGo66+9Lg0l4gChF+x6UzAWezUlYdphtssoU44Y9XCANdEeqq6R1GkUjlxsOW2skPEMTeDzpfDqP/ejdeS0JNsuDpq1kqLWbC59AIGnY1iCEqUgMsz1X1/KU+wPzCV6UdgkdcUSmNK/OJ16b1HLOYYbAp8V6/q5nDo+Bcn08qjAhpMD/Lyc/dXQN134MKw2PL8CJsLn8LS/mSbIwKWbbxsSBfiENrikyoDBvnOU0WJooRrznj9Daam09gQiBXh3Rk8NU2AypMVgy+4dGg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
+ dkim=pass header.d=calian.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CtiszIqYYS2JyDAMiHyC8koeCoAtxWRlFjvtWJInNuM=;
- b=DIDSyWmAZSvIfny0NfHYVLR1WPOiwCBR++90iIIr4WYcXcca20nmnZGbf9ZyCVK71ojHHg+66zqKeQmts/QOo3M/WU/ov3dI+DMFGf4UMnt9NgtKR6xlv0Fb9F2kVMunuJVf4EjjZ7t2eD6nkkUi/ksqMmKSdp96fp5rWmZ0cH4=
-Received: from VI1PR04MB5807.eurprd04.prod.outlook.com (2603:10a6:803:ec::21)
- by VI1PR0401MB2656.eurprd04.prod.outlook.com (2603:10a6:800:56::16) with
+ bh=apZC3R9x24oMJ50OEi0ZA8n6MBBJ4L1Fg5Uau3de4VI=;
+ b=IvnThX/kSj0TXC2BlPNkTbWyUm8sv2/uXSRQY7Y5PET8XCHAxs+U45oyWTba44fWZzlfXUUKISxDoX2rxl/1xBGW9sVTQAB+FN1MWaZ+NXjkNvRFFLnQY3LLP6fDokMn3PMHZA8hiXBk4eLV32uthqqq+NaAAQFhsSQ8Af8Vrz0=
+Authentication-Results: xilinx.com; dkim=none (message not signed)
+ header.d=none;xilinx.com; dmarc=none action=none header.from=calian.com;
+Received: from YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:f::20)
+ by YTXPR0101MB0958.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b00:d::27) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.22; Wed, 28 Oct
- 2020 15:57:55 +0000
-Received: from VI1PR04MB5807.eurprd04.prod.outlook.com
- ([fe80::41c8:65df:efe8:1f51]) by VI1PR04MB5807.eurprd04.prod.outlook.com
- ([fe80::41c8:65df:efe8:1f51%6]) with mapi id 15.20.3499.018; Wed, 28 Oct 2020
- 15:57:55 +0000
-From:   Camelia Alexandra Groza <camelia.groza@nxp.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-CC:     "Madalin Bucur (OSS)" <madalin.bucur@oss.nxp.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Subject: RE: [PATCH net 2/2] dpaa_eth: fix the RX headroom size alignment
-Thread-Topic: [PATCH net 2/2] dpaa_eth: fix the RX headroom size alignment
-Thread-Index: AQHWrHFymDxVYcEE1E67vvzgB52IZamr+B8AgAEtxaA=
-Date:   Wed, 28 Oct 2020 15:57:55 +0000
-Message-ID: <VI1PR04MB5807A1501D629B4AD0F7B3B7F2170@VI1PR04MB5807.eurprd04.prod.outlook.com>
-References: <cover.1603804282.git.camelia.groza@nxp.com>
- <434895b93ba0039abc94d5fdfcd91a27f2d867cb.1603804282.git.camelia.groza@nxp.com>
- <CA+FuTSftPvRLjkU-efkDkqhUdS0hSCtSEwufzbAPKnSSjTNcKg@mail.gmail.com>
-In-Reply-To: <CA+FuTSftPvRLjkU-efkDkqhUdS0hSCtSEwufzbAPKnSSjTNcKg@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [82.78.148.61]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: e246ff7f-b25e-4e84-129b-08d87b5a3bda
-x-ms-traffictypediagnostic: VI1PR0401MB2656:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR0401MB2656AE2F8E69017F4D8830A0F2170@VI1PR0401MB2656.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Hokxe26Micbk7Hy1p99hBreorGmQkkudVkYb74pP5RgX9VyCZDkw/InY5trI06npjS1FAIWhxYYLT1iZjzra2+dTtlmQR931WDBBKG9DdL7UoU58nyhdxurKqd5+yBCrEdTSomKWRsMLjM+HOrse9FvcbJbwO0qoULp3maZgg6Jg6/pNnrPVYiO8IUftAf5gwVoaO9JwOqug6WW29mxOE0BA8lVPlCwvcMaXzHN2qe4namePq1ijY98Xtc1pDOlsvuSbD61J12G7B6JQY32JEOyAu7QTmZ0AYikQS2ifUYyHuEOKIHN15YFGMOR6WNy/dhVNmv8A013Q4WxbU80T8g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5807.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(39850400004)(136003)(396003)(346002)(7696005)(54906003)(478600001)(53546011)(64756008)(66446008)(5660300002)(6506007)(316002)(6916009)(83380400001)(66556008)(8676002)(66476007)(186003)(8936002)(2906002)(33656002)(4326008)(86362001)(26005)(55016002)(52536014)(71200400001)(76116006)(66946007)(9686003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: YdMOm3ZGx6CQmArVB3yRAl5yxxKsVmUHUBi2wVZpeh22SLE5sl6Rg2kFZwQh+LJ/NXvH5yHx1MJ8Rlx5F1rd32zwy07m1OxzJkQptB0ZEcG7DzoSX6XIUe7DuJenpySDOOiWAZvx3R5WLCg68kGYKzmyPQFZU4YYVbMhiyPKrn08n//EBjWGue7vjSpp2VMQG8DZ6qjU7cM6aYZjr7kjLwOjX+pYTRMuqiU3XUl5xNkFzlCHBJ+Wwn2QuGtij922mf79e2wPltgS0Zv70MG1Tps5pd9Izt/yH3KgYKXIU76qQcy0zTy77779hf+zFTQ/LHhTuonUKPAGzVDlSwqAt9yNs3uYiIqI4uPP69QKTxgg45qbHjlqQHQAGmaRYsl1yrkp9Oka4uTrWGIP/BYIxQ3xBPDkRTOcZCF93Ant2ZHxd/q7bhAF3+O3lukXK11+3/D0AU+n+ICdB838HKkLyChwVr0k1Dgw3w7UBnIHPIMUSk3UCiRoyDRBIoRBKr1iym/fUNvHUguhkTLSAt8fFF6GkfhgJh/TvKeWpSKfO/L07S/4Y6bMHmzzziEz+BkEXkpj6jOHCbn2IwIOeEe1PL/pnzTZgcC8ZfKp00vk0mcMzv326suekC4vIqhAPbAK21VdKjTmCDX0xY0ZxUbVag==
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Wed, 28 Oct
+ 2020 17:14:50 +0000
+Received: from YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::5c60:6462:fef4:793]) by YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::5c60:6462:fef4:793%3]) with mapi id 15.20.3477.028; Wed, 28 Oct 2020
+ 17:14:50 +0000
+From:   Robert Hancock <robert.hancock@calian.com>
+To:     radhey.shyam.pandey@xilinx.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     michal.simek@xilinx.com, linux@armlinux.org.uk, andrew@lunn.ch,
+        netdev@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>
+Subject: [PATCH net-next v3] net: axienet: Properly handle PCS/PMA PHY for 1000BaseX mode
+Date:   Wed, 28 Oct 2020 11:14:29 -0600
+Message-Id: <20201028171429.1699922-1-robert.hancock@calian.com>
+X-Mailer: git-send-email 2.18.4
+Content-Type: text/plain
+X-Originating-IP: [204.83.154.189]
+X-ClientProxiedBy: YTOPR0101CA0062.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b00:14::39) To YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:f::20)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost.localdomain (204.83.154.189) by YTOPR0101CA0062.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b00:14::39) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Wed, 28 Oct 2020 17:14:49 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f811b332-03de-4b45-f271-08d87b64fa41
+X-MS-TrafficTypeDiagnostic: YTXPR0101MB0958:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <YTXPR0101MB0958B6CF787033869F96B8C8EC170@YTXPR0101MB0958.CANPRD01.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2657;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: X66do0TRG42VM/0CAtXv3XPdYVoDrNZ1qglfDlWY74VXZbjrw7wV4yhDPd3kgaKo3qmohEES/HiQuxiEJAGcFzUO5C67yYlOCt4cIPniFEpfwrn0v0aWJcaVuvedoUncigNyG7v2D1WzOfGhyERtAHyfmQFzqyGag6NqwK2phT0QadfWnCtvKH48kD5z7gIoni2bBf0Am4q2fG3qyUqe0ZVoh3eKqWe1zQZT8CkMaI1TFXZmtUM59dr4uYvgXnA/9bZi8Q6+TMkt6iDmPNJ7fWcktNCt0dymPLlFQcee4hmQ+3oCEGo5IT5IkIWgyQCxNskmSJdIT3IurfkTPiMaux+ytSFEXjIf+mfE7YnxqJzaCnpbLj8TQ7NxZnJ3fAFI
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(396003)(376002)(136003)(346002)(366004)(39850400004)(44832011)(1076003)(83380400001)(5660300002)(6506007)(66556008)(6666004)(2906002)(956004)(2616005)(69590400008)(26005)(36756003)(6512007)(6486002)(66476007)(8936002)(86362001)(16526019)(107886003)(8676002)(66946007)(52116002)(316002)(4326008)(478600001)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 1ItqaZ9cacbbNVfRN1ahYpYbT6n1IR+yF5p68Mlj8pwTAymPzW/qvSRwBVQZUER0rq5ILT+MrRGzh4fsvEM0rgluPJM2BHyEB+cjqTH6wGalDa/rtOBBJSYhWOh0CEDrYbJJd83Cg2xDPKdgqDUHM4KblIAq8wNBsrw4cFAgyG0Ubsc0td1Ma7R2aIjqpvESHPP9S8xl5K6Xu7VofEhnuURIrgccjGGxgQE5OKEhnmL8wJR9aNUguzbFeMRjxl9aDfm2rn+zysCjUepGy59jLn69jhbGqmT+Iu2wjHFjVb86063pygb67nHSHoNdGGGgKwXUlG2VFrwxhSVTUSzrgw5/HFKA1zoD3YFRJU9D7nVDrQ9KmJVm2uOQdOIdprA8R0hN1l1dcShIrvnChzIekUXYgLiV8vpUYhLFn0K5Z1nTqgcSykyaHOAVEKWyIyO3dUyO5TAw562vf3iG9dw2CmgBHBwtktttEZKlgh2Aqx8UlvESijerQJxjMuAYGl9iujj0mEqMepnt8oC7x5a9EisBVquyVNdl7w4UgIlKLdxuCmk74JCmUCaEvg1ZRlCLA5OGezG/KDzAklfN3EHeAtkvUwMI+8torOF9w6J3N40Q3s4Id6/+nq22xVwSRr4zmu4kMgNrx1SWKJp14Qxvdg==
+X-OriginatorOrg: calian.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f811b332-03de-4b45-f271-08d87b64fa41
+X-MS-Exchange-CrossTenant-AuthSource: YT1PR01MB3546.CANPRD01.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5807.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e246ff7f-b25e-4e84-129b-08d87b5a3bda
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Oct 2020 15:57:55.3506
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Oct 2020 17:14:50.0026
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 2W2EkrFUdENLAPaUObWElkNbjgu2Gw9MzB7W0kRJeDYLyyEFDR4oSCHRiutGPj6tPFpYzwmBbyBIBa2pffRxVg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2656
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: HRmhMMmdoVaV39HNK6FWNu6fffafaxdhJSXUAuSxiE9LMsirAnW52Aehu05QuIk309qL83S1Zhb1glhYcem5dckKc+oVi7S0HeI4xNxeZY4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: YTXPR0101MB0958
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBXaWxsZW0gZGUgQnJ1aWpuIDx3
-aWxsZW1kZWJydWlqbi5rZXJuZWxAZ21haWwuY29tPg0KPiBTZW50OiBUdWVzZGF5LCBPY3RvYmVy
-IDI3LCAyMDIwIDIzOjMxDQo+IFRvOiBDYW1lbGlhIEFsZXhhbmRyYSBHcm96YSA8Y2FtZWxpYS5n
-cm96YUBueHAuY29tPg0KPiBDYzogTWFkYWxpbiBCdWN1ciAoT1NTKSA8bWFkYWxpbi5idWN1ckBv
-c3MubnhwLmNvbT47IERhdmlkIE1pbGxlcg0KPiA8ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldD47IEpha3Vi
-IEtpY2luc2tpIDxrdWJhQGtlcm5lbC5vcmc+OyBOZXR3b3JrDQo+IERldmVsb3BtZW50IDxuZXRk
-ZXZAdmdlci5rZXJuZWwub3JnPg0KPiBTdWJqZWN0OiBSZTogW1BBVENIIG5ldCAyLzJdIGRwYWFf
-ZXRoOiBmaXggdGhlIFJYIGhlYWRyb29tIHNpemUgYWxpZ25tZW50DQo+IA0KPiBPbiBUdWUsIE9j
-dCAyNywgMjAyMCBhdCAxMTowNCBBTSBDYW1lbGlhIEdyb3phIDxjYW1lbGlhLmdyb3phQG54cC5j
-b20+DQo+IHdyb3RlOg0KPiA+DQo+ID4gVGhlIGhlYWRyb29tIHJlc2VydmVkIGZvciByZWNlaXZl
-ZCBmcmFtZXMgbmVlZHMgdG8gYmUgYWxpZ25lZCB0byBhbg0KPiA+IFJYIHNwZWNpZmljIHZhbHVl
-LiBUaGVyZSBpcyBjdXJyZW50bHkgYSBkaXNjcmVwYW5jeSBiZXR3ZWVuIHRoZSB2YWx1ZXMNCj4g
-PiB1c2VkIGluIHRoZSBFdGhlcm5ldCBkcml2ZXIgYW5kIHRoZSB2YWx1ZXMgcGFzc2VkIHRvIHRo
-ZSBGTWFuLg0KPiA+IENvaW5jaWRlbnRhbGx5LCB0aGUgcmVzdWx0aW5nIGFsaWduZWQgdmFsdWVz
-IGFyZSBpZGVudGljYWwuDQo+ID4NCj4gPiBGaXhlczogM2M2OGI4ZmZmYjQ4ICgiZHBhYV9ldGg6
-IEZNYW4gZXJyYXR1bSBBMDUwMzg1IHdvcmthcm91bmQiKQ0KPiA+IFNpZ25lZC1vZmYtYnk6IENh
-bWVsaWEgR3JvemEgPGNhbWVsaWEuZ3JvemFAbnhwLmNvbT4NCj4gPiAtLS0NCj4gPiAgZHJpdmVy
-cy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2RwYWEvZHBhYV9ldGguYyB8IDEyICsrKysrKysrLS0t
-LQ0KPiA+ICAxIGZpbGUgY2hhbmdlZCwgOCBpbnNlcnRpb25zKCspLCA0IGRlbGV0aW9ucygtKQ0K
-PiA+DQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2FsZS9kcGFh
-L2RwYWFfZXRoLmMNCj4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZHBhYS9kcGFh
-X2V0aC5jDQo+ID4gaW5kZXggMWFhYzBiNi4uNjdhZTU2MSAxMDA2NDQNCj4gPiAtLS0gYS9kcml2
-ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZHBhYS9kcGFhX2V0aC5jDQo+ID4gKysrIGIvZHJp
-dmVycy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2RwYWEvZHBhYV9ldGguYw0KPiA+IEBAIC0yODQy
-LDcgKzI4NDIsOCBAQCBzdGF0aWMgaW50IGRwYWFfaW5ncmVzc19jZ3JfaW5pdChzdHJ1Y3QgZHBh
-YV9wcml2DQo+ICpwcml2KQ0KPiA+ICAgICAgICAgcmV0dXJuIGVycjsNCj4gPiAgfQ0KPiA+DQo+
-ID4gLXN0YXRpYyBpbmxpbmUgdTE2IGRwYWFfZ2V0X2hlYWRyb29tKHN0cnVjdCBkcGFhX2J1ZmZl
-cl9sYXlvdXQgKmJsKQ0KPiA+ICtzdGF0aWMgaW5saW5lIHUxNiBkcGFhX2dldF9oZWFkcm9vbShz
-dHJ1Y3QgZHBhYV9idWZmZXJfbGF5b3V0ICpibCwNCj4gPiArICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICBlbnVtIHBvcnRfdHlwZSBwb3J0KQ0KPiA+ICB7DQo+ID4gICAgICAgICB1
-MTYgaGVhZHJvb207DQo+ID4NCj4gPiBAQCAtMjg1Niw5ICsyODU3LDEyIEBAIHN0YXRpYyBpbmxp
-bmUgdTE2IGRwYWFfZ2V0X2hlYWRyb29tKHN0cnVjdA0KPiBkcGFhX2J1ZmZlcl9sYXlvdXQgKmJs
-KQ0KPiA+ICAgICAgICAgICoNCj4gPiAgICAgICAgICAqIEFsc28gbWFrZSBzdXJlIHRoZSBoZWFk
-cm9vbSBpcyBhIG11bHRpcGxlIG9mIGRhdGFfYWxpZ24gYnl0ZXMNCj4gPiAgICAgICAgICAqLw0K
-PiA+IC0gICAgICAgaGVhZHJvb20gPSAodTE2KShibC0+cHJpdl9kYXRhX3NpemUgKyBEUEFBX1BB
-UlNFX1JFU1VMVFNfU0laRSArDQo+ID4gKyAgICAgICBoZWFkcm9vbSA9ICh1MTYpKGJsW3BvcnRd
-LnByaXZfZGF0YV9zaXplICsNCj4gRFBBQV9QQVJTRV9SRVNVTFRTX1NJWkUgKw0KPiA+ICAgICAg
-ICAgICAgICAgICBEUEFBX1RJTUVfU1RBTVBfU0laRSArIERQQUFfSEFTSF9SRVNVTFRTX1NJWkUp
-Ow0KPiA+DQo+ID4gKyAgICAgICBpZiAocG9ydCA9PSBSWCkNCj4gPiArICAgICAgICAgICAgICAg
-cmV0dXJuIEFMSUdOKGhlYWRyb29tLCBEUEFBX0ZEX1JYX0RBVEFfQUxJR05NRU5UKTsNCj4gPiAr
-DQo+IGVsc2U/DQoNCkl0IGZhbGxzIHRocm91Z2guIEknbGwgbWFrZSBpdCBleHBsaWNpdC4NCg0K
-PiA+ICAgICAgICAgcmV0dXJuIEFMSUdOKGhlYWRyb29tLCBEUEFBX0ZEX0RBVEFfQUxJR05NRU5U
-KTsNCj4gPiAgfQ0KPiA+DQo+ID4gQEAgLTMwMjcsOCArMzAzMSw4IEBAIHN0YXRpYyBpbnQgZHBh
-YV9ldGhfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZQ0KPiAqcGRldikNCj4gPiAgICAgICAg
-ICAgICAgICAgICAgICAgICBnb3RvIGZyZWVfZHBhYV9mcXM7DQo+ID4gICAgICAgICB9DQo+ID4N
-Cj4gPiAtICAgICAgIHByaXYtPnR4X2hlYWRyb29tID0gZHBhYV9nZXRfaGVhZHJvb20oJnByaXYt
-PmJ1Zl9sYXlvdXRbVFhdKTsNCj4gPiAtICAgICAgIHByaXYtPnJ4X2hlYWRyb29tID0gZHBhYV9n
-ZXRfaGVhZHJvb20oJnByaXYtPmJ1Zl9sYXlvdXRbUlhdKTsNCj4gPiArICAgICAgIHByaXYtPnR4
-X2hlYWRyb29tID0gZHBhYV9nZXRfaGVhZHJvb20oJnByaXYtPmJ1Zl9sYXlvdXRbMF0sIFRYKTsN
-Cj4gPiArICAgICAgIHByaXYtPnJ4X2hlYWRyb29tID0gZHBhYV9nZXRfaGVhZHJvb20oJnByaXYt
-PmJ1Zl9sYXlvdXRbMF0sDQo+IFJYKTsNCj4gDQo+IFRoaXMgY2FuIGJlIGp1c3QgcHJpdi0+YnVm
-X2xheW91dA0KDQpJJ2xsIGNoYW5nZSBpdC4gVGhhbmtzLg0KDQo+ID4gICAgICAgICAvKiBBbGwg
-cmVhbCBpbnRlcmZhY2VzIG5lZWQgdGhlaXIgcG9ydHMgaW5pdGlhbGl6ZWQgKi8NCj4gPiAgICAg
-ICAgIGVyciA9IGRwYWFfZXRoX2luaXRfcG9ydHMobWFjX2RldiwgZHBhYV9icCwgJnBvcnRfZnFz
-LA0KPiA+IC0tDQo+ID4gMS45LjENCj4gPg0K
+Update the axienet driver to properly support the Xilinx PCS/PMA PHY
+component which is used for 1000BaseX and SGMII modes, including
+properly configuring the auto-negotiation mode of the PHY and reading
+the negotiated state from the PHY.
+
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+---
+
+Changed since v2: Removed some duplicate code in axienet_validate using
+fallthrough.
+
+ drivers/net/ethernet/xilinx/xilinx_axienet.h  |  3 +
+ .../net/ethernet/xilinx/xilinx_axienet_main.c | 94 ++++++++++++++-----
+ 2 files changed, 71 insertions(+), 26 deletions(-)
+
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet.h b/drivers/net/ethernet/xilinx/xilinx_axienet.h
+index f34c7903ff52..7326ad4d5e1c 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet.h
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet.h
+@@ -419,6 +419,9 @@ struct axienet_local {
+ 	struct phylink *phylink;
+ 	struct phylink_config phylink_config;
+ 
++	/* Reference to PCS/PMA PHY if used */
++	struct mdio_device *pcs_phy;
++
+ 	/* Clock for AXI bus */
+ 	struct clk *clk;
+ 
+diff --git a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+index 9aafd3ecdaa4..529c167cd5a6 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -1517,10 +1517,27 @@ static void axienet_validate(struct phylink_config *config,
+ 
+ 	phylink_set(mask, Asym_Pause);
+ 	phylink_set(mask, Pause);
+-	phylink_set(mask, 1000baseX_Full);
+-	phylink_set(mask, 10baseT_Full);
+-	phylink_set(mask, 100baseT_Full);
+-	phylink_set(mask, 1000baseT_Full);
++
++	switch (state->interface) {
++	case PHY_INTERFACE_MODE_NA:
++	case PHY_INTERFACE_MODE_1000BASEX:
++	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_GMII:
++	case PHY_INTERFACE_MODE_RGMII:
++	case PHY_INTERFACE_MODE_RGMII_ID:
++	case PHY_INTERFACE_MODE_RGMII_RXID:
++	case PHY_INTERFACE_MODE_RGMII_TXID:
++		phylink_set(mask, 1000baseX_Full);
++		phylink_set(mask, 1000baseT_Full);
++		if (state->interface == PHY_INTERFACE_MODE_1000BASEX)
++			break;
++		fallthrough;
++	case PHY_INTERFACE_MODE_MII:
++		phylink_set(mask, 100baseT_Full);
++		phylink_set(mask, 10baseT_Full);
++	default:
++		break;
++	}
+ 
+ 	bitmap_and(supported, supported, mask,
+ 		   __ETHTOOL_LINK_MODE_MASK_NBITS);
+@@ -1533,38 +1550,46 @@ static void axienet_mac_pcs_get_state(struct phylink_config *config,
+ {
+ 	struct net_device *ndev = to_net_dev(config->dev);
+ 	struct axienet_local *lp = netdev_priv(ndev);
+-	u32 emmc_reg, fcc_reg;
+-
+-	state->interface = lp->phy_mode;
+-
+-	emmc_reg = axienet_ior(lp, XAE_EMMC_OFFSET);
+-	if (emmc_reg & XAE_EMMC_LINKSPD_1000)
+-		state->speed = SPEED_1000;
+-	else if (emmc_reg & XAE_EMMC_LINKSPD_100)
+-		state->speed = SPEED_100;
+-	else
+-		state->speed = SPEED_10;
+-
+-	state->pause = 0;
+-	fcc_reg = axienet_ior(lp, XAE_FCC_OFFSET);
+-	if (fcc_reg & XAE_FCC_FCTX_MASK)
+-		state->pause |= MLO_PAUSE_TX;
+-	if (fcc_reg & XAE_FCC_FCRX_MASK)
+-		state->pause |= MLO_PAUSE_RX;
+ 
+-	state->an_complete = 0;
+-	state->duplex = 1;
++	switch (state->interface) {
++	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_1000BASEX:
++		phylink_mii_c22_pcs_get_state(lp->pcs_phy, state);
++		break;
++	default:
++		break;
++	}
+ }
+ 
+ static void axienet_mac_an_restart(struct phylink_config *config)
+ {
+-	/* Unsupported, do nothing */
++	struct net_device *ndev = to_net_dev(config->dev);
++	struct axienet_local *lp = netdev_priv(ndev);
++
++	phylink_mii_c22_pcs_an_restart(lp->pcs_phy);
+ }
+ 
+ static void axienet_mac_config(struct phylink_config *config, unsigned int mode,
+ 			       const struct phylink_link_state *state)
+ {
+-	/* nothing meaningful to do */
++	struct net_device *ndev = to_net_dev(config->dev);
++	struct axienet_local *lp = netdev_priv(ndev);
++	int ret;
++
++	switch (state->interface) {
++	case PHY_INTERFACE_MODE_SGMII:
++	case PHY_INTERFACE_MODE_1000BASEX:
++		ret = phylink_mii_c22_pcs_config(lp->pcs_phy, mode,
++						 state->interface,
++						 state->advertising);
++		if (ret < 0)
++			netdev_warn(ndev, "Failed to configure PCS: %d\n",
++				    ret);
++		break;
++
++	default:
++		break;
++	}
+ }
+ 
+ static void axienet_mac_link_down(struct phylink_config *config,
+@@ -1999,6 +2024,20 @@ static int axienet_probe(struct platform_device *pdev)
+ 			dev_warn(&pdev->dev,
+ 				 "error registering MDIO bus: %d\n", ret);
+ 	}
++	if (lp->phy_mode == PHY_INTERFACE_MODE_SGMII ||
++	    lp->phy_mode == PHY_INTERFACE_MODE_1000BASEX) {
++		if (!lp->phy_node) {
++			dev_err(&pdev->dev, "phy-handle required for 1000BaseX/SGMII\n");
++			ret = -EINVAL;
++			goto free_netdev;
++		}
++		lp->pcs_phy = of_mdio_find_device(lp->phy_node);
++		if (!lp->pcs_phy) {
++			ret = -EPROBE_DEFER;
++			goto free_netdev;
++		}
++		lp->phylink_config.pcs_poll = true;
++	}
+ 
+ 	lp->phylink_config.dev = &ndev->dev;
+ 	lp->phylink_config.type = PHYLINK_NETDEV;
+@@ -2036,6 +2075,9 @@ static int axienet_remove(struct platform_device *pdev)
+ 	if (lp->phylink)
+ 		phylink_destroy(lp->phylink);
+ 
++	if (lp->pcs_phy)
++		put_device(&lp->pcs_phy->dev);
++
+ 	axienet_mdio_teardown(lp);
+ 
+ 	clk_disable_unprepare(lp->clk);
+-- 
+2.18.4
+
