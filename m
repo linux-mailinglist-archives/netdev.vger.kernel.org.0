@@ -2,271 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A7E229DBFC
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 01:18:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68BE629DC82
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 01:30:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390943AbgJ2ASq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 20:18:46 -0400
-Received: from mx0a-00190b01.pphosted.com ([67.231.149.131]:29390 "EHLO
-        mx0a-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731729AbgJ1WqA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:46:00 -0400
-Received: from pps.filterd (m0122332.ppops.net [127.0.0.1])
-        by mx0a-00190b01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09SIXhii018398;
-        Wed, 28 Oct 2020 18:35:58 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding;
- s=jan2016.eng; bh=QHRCVLp4CAAwVNTHi/ogi2zDhO/Ww8e02Wo9o2T4ZXU=;
- b=Shv1VdaHl3wv1eMhc+9blvSS58jcluZjyrOq6/40JBTfNH24N7Szo4+FaOdxDTmaTSxu
- L8v5lq81AEyYkP2gR6wFr5nPaZ34w1wl5XN/MAncei72TvVRPtl2tdQ3ZlgmDyTD/FuF
- SDi8L7FPjEGwmsZ0yA370uoRU9h8LBefWd46K1duxE5LfbHI3HTM95ffrjvj5Z7dqb3T
- XLhUemzcgoeNJtZimjdKQ11IrcLAL2szH6a+UU2F76nuTl2aMXrWHzd8PRR/OD39Eclf
- 1NKkRiR6/shGBeZ2N0mx08RD3DN/PswFRSE/12CLocn9dBXlfVKUfcMNYSSvm7lwJgo4 kw== 
-Received: from prod-mail-ppoint1 (prod-mail-ppoint1.akamai.com [184.51.33.18] (may be forged))
-        by mx0a-00190b01.pphosted.com with ESMTP id 34ccbhn25w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 28 Oct 2020 18:35:57 +0000
-Received: from pps.filterd (prod-mail-ppoint1.akamai.com [127.0.0.1])
-        by prod-mail-ppoint1.akamai.com (8.16.0.42/8.16.0.42) with SMTP id 09SIZ2vW031609;
-        Wed, 28 Oct 2020 14:35:56 -0400
-Received: from prod-mail-relay10.akamai.com ([172.27.118.251])
-        by prod-mail-ppoint1.akamai.com with ESMTP id 34f29jh4pc-1;
-        Wed, 28 Oct 2020 14:35:56 -0400
-Received: from bos-mpr1x.145bw.corp.akamai.com (bos-mpr1x.bos01.corp.akamai.com [172.19.34.200])
-        by prod-mail-relay10.akamai.com (Postfix) with ESMTP id 86E553D8DE;
-        Wed, 28 Oct 2020 18:35:56 +0000 (GMT)
-From:   Puneet Sharma <pusharma@akamai.com>
-To:     stephen@networkplumber.org, dsahern@kernel.org
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH iproute2] tc: add print options to fix json output
-Date:   Wed, 28 Oct 2020 14:35:54 -0400
-Message-Id: <20201028183554.18078-1-pusharma@akamai.com>
-X-Mailer: git-send-email 2.24.1 (Apple Git-126)
+        id S2388007AbgJ1WdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:33:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56216 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388348AbgJ1Wcx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:32:53 -0400
+Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C37B7C0613CF;
+        Wed, 28 Oct 2020 15:32:53 -0700 (PDT)
+Received: by mail-vs1-xe42.google.com with SMTP id g21so480750vsp.0;
+        Wed, 28 Oct 2020 15:32:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dzmFu1wXCXtNHysWLv1cdt1YiWFdK19uGwaHHiwDGp0=;
+        b=DYTyzKHbzP1xLIGuWeU4m+XJ/NzTPV4+oICdd9uy3aRlbUYbZ4WUFa3Vlvxum8TUMp
+         /SvJJORfHgcdgvcIQsbtCxPzDVoqgiQnTrA6IjLjMn44yjTz8MuJFzKZLP2cqiEgcI/7
+         Mi6fXEVjFo3TFXOB9McRdx/yHy8T/zdRtlZgAas1VVk6nwBWQTkWdGYo43Mb1J1VGjnH
+         NV6O9j/ZSEc18fNcF9jxnqYoZaer4B21Al6f4gKe/7L+KHZp9nmTM9G4EHsCjxgmVU3M
+         zFkLuKy6zQQERyHVVRfuaVk7IMv3AM2tv3nMiPbF5QGeXqCV+F8hMDE7C2fSatI5CpRq
+         808Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dzmFu1wXCXtNHysWLv1cdt1YiWFdK19uGwaHHiwDGp0=;
+        b=kdSz9dEbLSnlB/eQRry2RCCZCExFNNOrK0tPu1/mzaXGjqO+DvLVm8AwF3BsaTIbMM
+         qAkZ0NAvNNPpALk7OYoefoi7kYj/V4Y9uYLoiegzMaL2bskvi8bo3uNRg0iPO/pVAJRh
+         ALO7z1yNizdMIkKD/qlZRDmeyKQ9egKiT8IXFaNg1iAvFAYr+aOHB1PYOGLnyRfGIIJP
+         x/K6xpEGyauqx7MbH+RXu9SFEWltQ3qE3+/5g//gOYW48LCXYOye1mJns8tZrYNaKAJC
+         H+81PCIl0mMwJVERBgzIcchxcwDcn5F2JQGqSfQ7B5cKJLI/ihbhW5zNF4tc95fN0xgN
+         O+JQ==
+X-Gm-Message-State: AOAM533Grw7iPvXRGecgtNvt3fdcl+/jxY2x6b1HrSJvQ63nFWJZwkSR
+        BBuKltfUQ7n3c77P2z1lR8pFR3gLlMc=
+X-Google-Smtp-Source: ABdhPJw6j6kXCP8WeJLDd7HQFOexljFPUo9l/qsONHi+x2NLKNm10tCzjcEHMj25FV1wPvf32gKcUw==
+X-Received: by 2002:a17:902:ab89:b029:d5:b297:2cc1 with SMTP id f9-20020a170902ab89b02900d5b2972cc1mr648759plr.7.1603910598149;
+        Wed, 28 Oct 2020 11:43:18 -0700 (PDT)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:6d80:dec8:7340:3009])
+        by smtp.gmail.com with ESMTPSA id y27sm309785pfr.122.2020.10.28.11.43.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Oct 2020 11:43:17 -0700 (PDT)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Krzysztof Halasa <khc@pm.waw.pl>
+Cc:     Xie He <xie.he.0141@gmail.com>
+Subject: [PATCH net-next v3 0/4] net: hdlc_fr: Add support for any Ethertype
+Date:   Wed, 28 Oct 2020 11:43:06 -0700
+Message-Id: <20201028184310.7017-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-10-28_08:2020-10-28,2020-10-28 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 suspectscore=0 mlxscore=0
- adultscore=0 phishscore=0 malwarescore=0 bulkscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2010280119
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-10-28_08:2020-10-28,2020-10-28 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 lowpriorityscore=0 suspectscore=0
- clxscore=1031 mlxlogscore=999 spamscore=0 adultscore=0 phishscore=0
- malwarescore=0 priorityscore=1501 bulkscore=0 mlxscore=0 impostorscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2010280119
-X-Agari-Authentication-Results: mx.akamai.com; spf=${SPFResult} (sender IP is 184.51.33.18)
- smtp.mailfrom=pusharma@akamai.com smtp.helo=prod-mail-ppoint1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, json for basic rules output does not produce correct json
-syntax. The following fixes were done to correct it for extended
-matches for use with "basic" filters.
+The main purpose of this series is the last patch. The previous 3 patches
+are just code clean-ups so that the last patch will not make the code too
+messy. The patches must be applied in sequence.
 
-tc/f_basic.c: replace fprintf with print_uint to support json output.
-fixing this prints "handle" tag correctly in json output.
+The receiving code of this driver doesn't support arbitrary Ethertype
+values. It only recognizes a few known Ethertypes when receiving and drops
+skbs with other Ethertypes.
 
-tc/m_ematch.c: replace various fprintf with correct print.
-add new "ematch" tag for json output which represents
-"tc filter add ... basic match '()'" string. Added print_raw_string
-to print raw string instead of key value for json.
+However, the standard document RFC 2427 allows Frame Relay to support any
+Ethertype values. This series adds support for this.
 
-lib/json_writer.c: add jsonw_raw_string to print raw text in json.
+Change from v2:
+Small fix to the commit message of the 2nd and 3rd patch
 
-lib/json_print.c: add print_color_raw_string to print string
-depending on context.
+Change from v1:
+Small fix to the commit message of the 2nd patch
 
-example:
-$ tc -s -d -j filter show dev <eth_name> ingress
-Before:
-...
-"options": {handle 0x2
-  (
-    cmp(u8 at 9 layer 1 eq 6)
-    OR cmp(u8 at 9 layer 1 eq 17)
-  ) AND ipset(test-ipv4 src)
+Xie He (4):
+  net: hdlc_fr: Simpify fr_rx by using "goto rx_drop" to drop frames
+  net: hdlc_fr: Change the use of "dev" in fr_rx to make the code
+    cleaner
+  net: hdlc_fr: Improve the initial checks when we receive an skb
+  net: hdlc_fr: Add support for any Ethertype
 
-            "actions": [{
-...
+ drivers/net/wan/hdlc_fr.c | 119 +++++++++++++++++++++++---------------
+ 1 file changed, 73 insertions(+), 46 deletions(-)
 
-After:
-[{
-...
-"options": {
-    "handle": 1,
-    "ematch": "(cmp(u8 at 9 layer 1 eq 6)OR cmp(u8 at 9 layer 1 eq 17)) AND ipset(test-ipv4 src)",
-...
-]
-
-Signed-off-by: Puneet Sharma <pusharma@akamai.com>
----
- include/json_print.h  |  1 +
- include/json_writer.h |  1 +
- lib/json_print.c      | 17 +++++++++++++++++
- lib/json_writer.c     |  5 +++++
- tc/f_basic.c          |  2 +-
- tc/m_ematch.c         | 26 ++++++++++++++++----------
- 6 files changed, 41 insertions(+), 11 deletions(-)
-
-diff --git a/include/json_print.h b/include/json_print.h
-index 50e71de4..91af7295 100644
---- a/include/json_print.h
-+++ b/include/json_print.h
-@@ -67,6 +67,7 @@ _PRINT_FUNC(s64, int64_t)
- _PRINT_FUNC(bool, bool)
- _PRINT_FUNC(null, const char*)
- _PRINT_FUNC(string, const char*)
-+_PRINT_FUNC(raw_string, const char*)
- _PRINT_FUNC(uint, unsigned int)
- _PRINT_FUNC(u64, uint64_t)
- _PRINT_FUNC(hhu, unsigned char)
-diff --git a/include/json_writer.h b/include/json_writer.h
-index b52dc2d0..afb561a6 100644
---- a/include/json_writer.h
-+++ b/include/json_writer.h
-@@ -31,6 +31,7 @@ void jsonw_name(json_writer_t *self, const char *name);
- /* Add value  */
- __attribute__((format(printf, 2, 3)))
- void jsonw_printf(json_writer_t *self, const char *fmt, ...);
-+void jsonw_raw_string(json_writer_t *self, const char *value);
- void jsonw_string(json_writer_t *self, const char *value);
- void jsonw_bool(json_writer_t *self, bool value);
- void jsonw_float(json_writer_t *self, double number);
-diff --git a/lib/json_print.c b/lib/json_print.c
-index fe0705bf..ff76afba 100644
---- a/lib/json_print.c
-+++ b/lib/json_print.c
-@@ -186,6 +186,23 @@ int print_color_string(enum output_type type,
- 	return ret;
- }
- 
-+int print_color_raw_string(enum output_type type,
-+			enum color_attr color,
-+			const char *key,
-+			const char *fmt,
-+			const char *value)
-+{
-+	int ret = 0;
-+
-+	if (_IS_JSON_CONTEXT(type))
-+		jsonw_raw_string(_jw, fmt);
-+	else if (_IS_FP_CONTEXT(type)) {
-+		ret = color_fprintf(stdout, color, fmt, value);
-+ 	}
-+
-+	return ret;
-+}
-+
- /*
-  * value's type is bool. When using this function in FP context you can't pass
-  * a value to it, you will need to use "is_json_context()" to have different
-diff --git a/lib/json_writer.c b/lib/json_writer.c
-index 88c5eb88..80ab0a20 100644
---- a/lib/json_writer.c
-+++ b/lib/json_writer.c
-@@ -51,6 +51,11 @@ static void jsonw_eor(json_writer_t *self)
- 	self->sep = ',';
- }
- 
-+void jsonw_raw_string(json_writer_t *self, const char *str)
-+{
-+	for (; *str; ++str)
-+		putc(*str, self->out);
-+}
- 
- /* Output JSON encoded string */
- /* Handles C escapes, does not do Unicode */
-diff --git a/tc/f_basic.c b/tc/f_basic.c
-index 7b19cea6..444d4297 100644
---- a/tc/f_basic.c
-+++ b/tc/f_basic.c
-@@ -119,7 +119,7 @@ static int basic_print_opt(struct filter_util *qu, FILE *f,
- 	parse_rtattr_nested(tb, TCA_BASIC_MAX, opt);
- 
- 	if (handle)
--		fprintf(f, "handle 0x%x ", handle);
-+		print_uint(PRINT_ANY, "handle", "handle 0x%x ", handle);
- 
- 	if (tb[TCA_BASIC_CLASSID]) {
- 		SPRINT_BUF(b1);
-diff --git a/tc/m_ematch.c b/tc/m_ematch.c
-index 8840a0dc..eee3819f 100644
---- a/tc/m_ematch.c
-+++ b/tc/m_ematch.c
-@@ -408,7 +408,7 @@ static int print_ematch_seq(FILE *fd, struct rtattr **tb, int start,
- 		hdr = RTA_DATA(tb[i]);
- 
- 		if (hdr->flags & TCF_EM_INVERT)
--			fprintf(fd, "NOT ");
-+			print_raw_string(PRINT_ANY, NULL, "NOT ", NULL);
- 
- 		if (hdr->kind == 0) {
- 			__u32 ref;
-@@ -417,14 +417,15 @@ static int print_ematch_seq(FILE *fd, struct rtattr **tb, int start,
- 				return -1;
- 
- 			ref = *(__u32 *) data;
--			fprintf(fd, "(\n");
-+			print_raw_string(PRINT_ANY, NULL, "(", NULL);
-+			print_string(PRINT_FP, NULL, "\n", NULL);
- 			for (n = 0; n <= prefix; n++)
--				fprintf(fd, "  ");
-+				print_string(PRINT_FP, NULL, "  ", NULL);
- 			if (print_ematch_seq(fd, tb, ref + 1, prefix + 1) < 0)
- 				return -1;
- 			for (n = 0; n < prefix; n++)
--				fprintf(fd, "  ");
--			fprintf(fd, ") ");
-+				print_string(PRINT_FP, NULL, "  ", NULL);
-+			print_raw_string(PRINT_ANY, NULL, ") ", NULL);
- 
- 		} else {
- 			struct ematch_util *e;
-@@ -437,20 +438,21 @@ static int print_ematch_seq(FILE *fd, struct rtattr **tb, int start,
- 				fprintf(fd, "%s(", e->kind);
- 				if (e->print_eopt(fd, hdr, data, dlen) < 0)
- 					return -1;
--				fprintf(fd, ")\n");
-+				print_raw_string(PRINT_ANY, NULL, ")", NULL);
-+				print_string(PRINT_FP, NULL, "\n", NULL);
- 			}
- 			if (hdr->flags & TCF_EM_REL_MASK)
- 				for (n = 0; n < prefix; n++)
--					fprintf(fd, "  ");
-+					print_string(PRINT_FP, NULL, "  ", NULL);
- 		}
- 
- 		switch (hdr->flags & TCF_EM_REL_MASK) {
- 			case TCF_EM_REL_AND:
--				fprintf(fd, "AND ");
-+				print_raw_string(PRINT_ANY, NULL, "AND ", NULL);
- 				break;
- 
- 			case TCF_EM_REL_OR:
--				fprintf(fd, "OR ");
-+				print_raw_string(PRINT_ANY, NULL, "OR ", NULL);
- 				break;
- 
- 			default:
-@@ -477,9 +479,13 @@ static int print_ematch_list(FILE *fd, struct tcf_ematch_tree_hdr *hdr,
- 		if (parse_rtattr_nested(tb, hdr->nmatches, rta) < 0)
- 			goto errout;
- 
--		fprintf(fd, "\n  ");
-+		print_string(PRINT_FP, NULL, "\n  ", NULL);
-+		print_string(PRINT_JSON, "ematch", NULL, NULL);
-+		print_raw_string(PRINT_JSON, NULL, "\"", NULL);
- 		if (print_ematch_seq(fd, tb, 1, 1) < 0)
- 			goto errout;
-+
-+		print_raw_string(PRINT_JSON, NULL, "\",", NULL);
- 	}
- 
- 	err = 0;
 -- 
-2.24.1 (Apple Git-126)
+2.25.1
 
