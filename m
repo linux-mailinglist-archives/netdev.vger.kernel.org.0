@@ -2,129 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16BAF29DEFE
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 01:58:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 060EA29DE67
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 01:54:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403954AbgJ2A61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 20:58:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60512 "EHLO mail.kernel.org"
+        id S1732307AbgJ1WTJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:19:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60526 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731578AbgJ1WRc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Oct 2020 18:17:32 -0400
-Received: from localhost (unknown [151.66.125.178])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1731661AbgJ1WRk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Oct 2020 18:17:40 -0400
+Received: from mail-lj1-f169.google.com (mail-lj1-f169.google.com [209.85.208.169])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DE59D246C1;
-        Wed, 28 Oct 2020 11:28:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 03F3B24746;
+        Wed, 28 Oct 2020 13:20:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603884523;
-        bh=rRhHb1cGnsed2BR+Y4InE6K8DeepWbAjIelkEdsaKiw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=h4DSxb199kwPN8SHw6J26PRr26zZqLSJVPEWTKtP3JlLCzcUCLWBeAyfY3i0buu1p
-         J9R5KqiJgW17tATUIWoEjqiXyxT/OsWH6VdXw9wtcUPSWQ5JYNByCWZhl8dtciggKg
-         4L3us3QIeT6jENAp/T6vtJiguPx8bqSiaXmj66a8=
-Date:   Wed, 28 Oct 2020 12:28:38 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        brouer@redhat.com
-Subject: Re: [PATCH net-next 1/4] net: xdp: introduce bulking for xdp tx
- return path
-Message-ID: <20201028112838.GB5386@lore-desk>
-References: <cover.1603824486.git.lorenzo@kernel.org>
- <7495b5ac96b0fd2bf5ab79b12e01bf0ee0fff803.1603824486.git.lorenzo@kernel.org>
- <20201028092734.GA51291@apalos.home>
- <20201028102304.GA5386@lore-desk>
- <20201028105951.GA52697@apalos.home>
+        s=default; t=1603891239;
+        bh=+zcA/6pTJEiqhEIB6b9u13iGz/vyrIiNkbw5+OfR3RU=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=G8BbRQyz/59LYY1N42cxCAJhwL18YtebLWmX5CIxnlOO5I2ajUNwDm2lyKa9cslSa
+         vQY7OdvwsOhagPj5BoHEV4HJ3tuxYWcLqCNhIwoKiuqVpk4NL3i1jX9p2cUUbEdOPy
+         KA+YZ6F+a9vywgLP/ys9YSb7KiyrzgLubZq7l5gU=
+Received: by mail-lj1-f169.google.com with SMTP id y16so6313501ljk.1;
+        Wed, 28 Oct 2020 06:20:38 -0700 (PDT)
+X-Gm-Message-State: AOAM531qtEGQyjQZNPEI+7miht5Sk4MoSM67qEH1C1l57DZrXm/xXlS7
+        oOomT8wRdnYUKjE+uVX/fyMQpQB09iU1+rS5Wkg=
+X-Google-Smtp-Source: ABdhPJwPj+jJVO+NGNXNwzAOQ7QC4CMa7GE7JJfMww785BE/4plVH+2GBu818TRJNl+lheV7rkZknd5yyXXDquGphqE=
+X-Received: by 2002:a2e:b8c8:: with SMTP id s8mr3141184ljp.189.1603891237138;
+ Wed, 28 Oct 2020 06:20:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="nVMJ2NtxeReIH9PS"
-Content-Disposition: inline
-In-Reply-To: <20201028105951.GA52697@apalos.home>
+References: <20201027212448.454129-1-arnd@kernel.org> <20201028103456.GB1042@kadam>
+In-Reply-To: <20201028103456.GB1042@kadam>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Wed, 28 Oct 2020 14:20:20 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a03Oi-hKh9Db95K_ou_Lk5svWAo5HV8ZgxuktJi2RWS2A@mail.gmail.com>
+Message-ID: <CAK8P3a03Oi-hKh9Db95K_ou_Lk5svWAo5HV8ZgxuktJi2RWS2A@mail.gmail.com>
+Subject: Re: [RFC] wimax: move out to staging
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        driverdevel <devel@driverdev.osuosl.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>,
+        Johannes Berg <johannes@sipsolutions.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Oct 28, 2020 at 11:34 AM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+> On Tue, Oct 27, 2020 at 10:20:13PM +0100, Arnd Bergmann wrote:
+> > From: Arnd Bergmann <arnd@arndb.de>
+> >
+> > There are no known users of this driver as of October 2020, and it will
+> > be removed unless someone turns out to still need it in future releases.
+> >
+> > According to https://en.wikipedia.org/wiki/List_of_WiMAX_networks, there
+> > have been many public wimax networks, but it appears that these entries
+> > are all stale, after everyone has migrated to LTE or discontinued their
+> > service altogether.
+>
+> Wimax is still pretty common in Africa.  But you have to buy an outdoor
+> antenae with all the software on it and an ethernet cable into your
+> house.
 
---nVMJ2NtxeReIH9PS
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Ah, good to know, thanks for the information. I'll include that when
+I resend the patch, which I have to do anyway to avoid a small
+regression. I did a look at a couple of African ISPs that seemed to
+all have discontinued service, but I suppose I should have looked
+more carefully.
 
-> On Wed, Oct 28, 2020 at 11:23:04AM +0100, Lorenzo Bianconi wrote:
-> > > Hi Lorenzo,
-> >=20
-> > Hi Ilias,
-> >=20
-> > thx for the review.
-> >=20
-> > >=20
-> > > On Tue, Oct 27, 2020 at 08:04:07PM +0100, Lorenzo Bianconi wrote:
-> >=20
-> > [...]
-> >=20
-> > > > +void xdp_return_frame_bulk(struct xdp_frame *xdpf,
-> > > > +			   struct xdp_frame_bulk *bq)
-> > > > +{
-> > > > +	struct xdp_mem_info *mem =3D &xdpf->mem;
-> > > > +	struct xdp_mem_allocator *xa, *nxa;
-> > > > +
-> > > > +	if (mem->type !=3D MEM_TYPE_PAGE_POOL) {
-> > > > +		__xdp_return(xdpf->data, &xdpf->mem, false);
-> > > > +		return;
-> > > > +	}
-> > > > +
-> > > > +	rcu_read_lock();
-> > > > +
-> > > > +	xa =3D bq->xa;
-> > > > +	if (unlikely(!xa || mem->id !=3D xa->mem.id)) {
-> > >=20
-> > > Why is this marked as unlikely? The driver passes it as NULL. Should =
-unlikely be
-> > > checked on both xa and the comparison?
-> >=20
-> > xa is NULL only for the first xdp_frame in the burst while it is set for
-> > subsequent ones. Do you think it is better to remove it?
->=20
-> Ah correct, missed the general context of the driver this runs in.
->=20
-> >=20
-> > >=20
-> > > > +		nxa =3D rhashtable_lookup(mem_id_ht, &mem->id, mem_id_rht_params=
-);
-> > >=20
-> > > Is there a chance nxa can be NULL?
-> >=20
-> > I do not think so since the page_pool is not destroyed while there are
-> > in-flight pages, right?
->=20
-> I think so but I am not 100% sure. I'll apply the patch and have a closer=
- look
+>  I don't know what software the antennaes are using.  Probably
+> Linux but with an out of tree kernel module is my guess.
 
-ack, thx. I converted socionext driver to bulking APIs but I have not poste=
-d the
-patch since I have not been able to test it. The code is available here:
+Right, it seems very unlikely that they would be using the old
+Intel drivers, and it's also unlikely that they are updating those
+boxes to new kernels. I found a firmware image for Huawei
+BM623m, which runs a proprietary kernel module for the wimax
+stack on an MT7108 (arm926) phone chip running a
+linux-2.6.26.8-rt16 kernel.
 
-https://github.com/LorenzoBianconi/net-next/commit/88c2995bca051fa38860acf7=
-b915c90768460d37
-
-Regards,
-Lorenzo
-
->=20
-> Cheers
-> /Ilias
-
---nVMJ2NtxeReIH9PS
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX5lV5AAKCRA6cBh0uS2t
-rAqLAQDMdRNYycb1gb2fvqRSOVrq1x9V3c1MGdLTunRdtBBHwQEA8z0tzWLToD/C
-CL0Tl3lSgtQf2jqDs4TO4T+rfrPsBAg=
-=Z1r6
------END PGP SIGNATURE-----
-
---nVMJ2NtxeReIH9PS--
+       Arnd
