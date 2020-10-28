@@ -2,136 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F36C29D977
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:55:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8491E29D97A
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:55:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389723AbgJ1Wyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 18:54:50 -0400
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:16474 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389713AbgJ1Wyq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:54:46 -0400
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5f997e1e0000>; Wed, 28 Oct 2020 07:20:14 -0700
-Received: from mtl-vdi-166.wap.labs.mlnx (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 28 Oct
- 2020 14:20:08 +0000
-Date:   Wed, 28 Oct 2020 16:20:04 +0200
-From:   Eli Cohen <elic@nvidia.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>, <lingshan.zhu@intel.com>
-Subject: [PATCH] vhost: Use mutex to protect vq_irq setup
-Message-ID: <20201028142004.GA100353@mtl-vdi-166.wap.labs.mlnx>
+        id S2389790AbgJ1Wz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59754 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731840AbgJ1WyC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:54:02 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F4117C0613CF;
+        Wed, 28 Oct 2020 15:54:01 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id z24so745632pgk.3;
+        Wed, 28 Oct 2020 15:54:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=qmvrLB7IH1tGEinPOUC68sap5ydLolJODJfXOc7ByPA=;
+        b=RvRQWDXRKqXfWV1Qf7Fg/btqgFdO6+cXld3893h/BP0HWY/1WVErVSqo7pbWRTd9uW
+         BcCM2LMn4SMYPMMhw0Mf8/X6yjlG2KT47LD9Me3eDW5ggVIq0SUvGrO1VDADfSDh9DTc
+         QWFOWQNxO86T5rgzitA0pLdEDzIXGXc8eBuVmk1/n5KIIyeClJC5o2YT3zobf8H/+zKZ
+         13v8qIJNPdAz/R36oUoJG4mRgCiilam6iyzbkZI8v4v2OYpSu2CQy/zPcXs57oYa4Akt
+         cDZizE+XsfoG0y2skqlWJADlevw+dYlVxZOk3JsZmCQRCGQ30DQUkESKAA3E6K5r2ZkU
+         5Lag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=qmvrLB7IH1tGEinPOUC68sap5ydLolJODJfXOc7ByPA=;
+        b=OH5M+ac17Lh7CHQS+0gY18nPTqU0HdbHGnUxx4ndsQCQ3nAFd+UK1kGMGLYubqpOgW
+         eCFsVeifjkmRzcVSJqiZjQhLBJZo0t4L7p+psW4KtwvDG3Tkg3E8ee990f6XyHSj0phs
+         ThoAJtskITyS/ydI2jlcu3WsP8QzC7nI2qO3P0uwZbwwgdjDtlN0GPwTIYxWtRhM5RJ2
+         K6rEetVAzqoDKi5ZoP0OVpWzf4qzEUVFkQlOKPKlDxHMABHd/6C/FT0LwR7vyJehANXx
+         SRoCG9NKc4ikIOMZ8XKK94TyV3f7zXjG591JTnPmOLxFEn58RlGcNIPZw1fIl14AAPnn
+         1fMw==
+X-Gm-Message-State: AOAM531WE3VAvDmTvbW7mbIhaL0lF0x6D4nY8GtgbK13ka1Rk1IlbGQJ
+        D72U+DGtuyuLqi6Y1PQyC9hkDuwCIJq5lFr/
+X-Google-Smtp-Source: ABdhPJzTvSsMLNIAWrdEQ/goV55Jb501WYhs5rz8KEKsREYW9U+fmj5apKNge3gsIDMfJRlUVEgtpQ==
+X-Received: by 2002:a17:902:c086:b029:d3:deab:e812 with SMTP id j6-20020a170902c086b02900d3deabe812mr7546840pld.51.1603894968621;
+        Wed, 28 Oct 2020 07:22:48 -0700 (PDT)
+Received: from k5-sbwpb.flets-east.jp (i60-35-254-237.s41.a020.ap.plala.or.jp. [60.35.254.237])
+        by smtp.gmail.com with ESMTPSA id c12sm6293543pgi.14.2020.10.28.07.22.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Oct 2020 07:22:48 -0700 (PDT)
+From:   Tsuchiya Yuto <kitakar@gmail.com>
+To:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl,
+        Tsuchiya Yuto <kitakar@gmail.com>
+Subject: [PATCH 2/2] mwifiex: update comment for shutdown_sw()/reinit_sw() to reflect current state
+Date:   Wed, 28 Oct 2020 23:21:10 +0900
+Message-Id: <20201028142110.18144-3-kitakar@gmail.com>
+X-Mailer: git-send-email 2.29.1
+In-Reply-To: <20201028142110.18144-1-kitakar@gmail.com>
+References: <20201028142110.18144-1-kitakar@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1603894814; bh=1UqLxryNwpAoBkVqxCn+8MfW4GniDM/9EYbPYP3IOJ4=;
-        h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:
-         Content-Disposition:User-Agent:X-Originating-IP:X-ClientProxiedBy;
-        b=W+0RGDwY1l7fHb5lOSqguXXvdEXnvYtJar85ZogO08r/irrRUt7xlLMvY/ekW+Jj9
-         Uh3++n3undl/blZoAXxiStMcr9ldMIWltaJNHDGMqAUkNtx8LfYI4svP7ZYVVdtAMP
-         aMPmR/FNkc0qnjDrrJpp8pdGe4w7oSwvdc6Y5guNj6MzMSOLRMcwxyCVDbUD9T/OTL
-         wTyLWnXIb0uvVVV2vFcNNzH3k9Iy1FFs+lcbku82wxluLK/Kj4UnReDiU6fvsuBasf
-         GnwgoYLcb3RA77XVz4kquZngFe+0qIcl2snFH7yGxG8dalOonJcBV9eCRI1j+eo0LP
-         z8vuI10EN9qVQ==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Both irq_bypass_register_producer() and irq_bypass_unregister_producer()
-require process context to run. Change the call context lock from
-spinlock to mutex to protect the setup process to avoid deadlocks.
+The functions mwifiex_shutdown_sw() and mwifiex_reinit_sw() can be used
+for more general purposes than the PCIe function level reset. Also, these
+are even not PCIe-specific.
 
-Fixes: 265a0ad8731d ("vhost: introduce vhost_vring_call")
-Signed-off-by: Eli Cohen <elic@nvidia.com>
+So, let's update the comments at the top of each function accordingly.
+
+Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
 ---
- drivers/vhost/vdpa.c  | 10 +++++-----
- drivers/vhost/vhost.c |  6 +++---
- drivers/vhost/vhost.h |  3 ++-
- 3 files changed, 10 insertions(+), 9 deletions(-)
+ drivers/net/wireless/marvell/mwifiex/main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index be783592fe58..0a744f2b6e76 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -98,26 +98,26 @@ static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, u16 qid)
- 		return;
- 
- 	irq = ops->get_vq_irq(vdpa, qid);
--	spin_lock(&vq->call_ctx.ctx_lock);
-+	mutex_lock(&vq->call_ctx.ctx_lock);
- 	irq_bypass_unregister_producer(&vq->call_ctx.producer);
- 	if (!vq->call_ctx.ctx || irq < 0) {
--		spin_unlock(&vq->call_ctx.ctx_lock);
-+		mutex_unlock(&vq->call_ctx.ctx_lock);
- 		return;
- 	}
- 
- 	vq->call_ctx.producer.token = vq->call_ctx.ctx;
- 	vq->call_ctx.producer.irq = irq;
- 	ret = irq_bypass_register_producer(&vq->call_ctx.producer);
--	spin_unlock(&vq->call_ctx.ctx_lock);
-+	mutex_unlock(&vq->call_ctx.ctx_lock);
+diff --git a/drivers/net/wireless/marvell/mwifiex/main.c b/drivers/net/wireless/marvell/mwifiex/main.c
+index 6283df5aaaf8b..ee52fb839ef77 100644
+--- a/drivers/net/wireless/marvell/mwifiex/main.c
++++ b/drivers/net/wireless/marvell/mwifiex/main.c
+@@ -1455,7 +1455,7 @@ static void mwifiex_uninit_sw(struct mwifiex_adapter *adapter)
  }
  
- static void vhost_vdpa_unsetup_vq_irq(struct vhost_vdpa *v, u16 qid)
+ /*
+- * This function gets called during PCIe function level reset.
++ * This function can be used for shutting down the adapter SW.
+  */
+ int mwifiex_shutdown_sw(struct mwifiex_adapter *adapter)
  {
- 	struct vhost_virtqueue *vq = &v->vqs[qid];
- 
--	spin_lock(&vq->call_ctx.ctx_lock);
-+	mutex_lock(&vq->call_ctx.ctx_lock);
- 	irq_bypass_unregister_producer(&vq->call_ctx.producer);
--	spin_unlock(&vq->call_ctx.ctx_lock);
-+	mutex_unlock(&vq->call_ctx.ctx_lock);
+@@ -1483,7 +1483,7 @@ int mwifiex_shutdown_sw(struct mwifiex_adapter *adapter)
  }
+ EXPORT_SYMBOL_GPL(mwifiex_shutdown_sw);
  
- static void vhost_vdpa_reset(struct vhost_vdpa *v)
-diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-index 9ad45e1d27f0..938239e11455 100644
---- a/drivers/vhost/vhost.c
-+++ b/drivers/vhost/vhost.c
-@@ -302,7 +302,7 @@ static void vhost_vring_call_reset(struct vhost_vring_call *call_ctx)
- {
- 	call_ctx->ctx = NULL;
- 	memset(&call_ctx->producer, 0x0, sizeof(struct irq_bypass_producer));
--	spin_lock_init(&call_ctx->ctx_lock);
-+	mutex_init(&call_ctx->ctx_lock);
- }
- 
- static void vhost_vq_reset(struct vhost_dev *dev,
-@@ -1650,9 +1650,9 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
- 			break;
- 		}
- 
--		spin_lock(&vq->call_ctx.ctx_lock);
-+		mutex_lock(&vq->call_ctx.ctx_lock);
- 		swap(ctx, vq->call_ctx.ctx);
--		spin_unlock(&vq->call_ctx.ctx_lock);
-+		mutex_unlock(&vq->call_ctx.ctx_lock);
- 		break;
- 	case VHOST_SET_VRING_ERR:
- 		if (copy_from_user(&f, argp, sizeof f)) {
-diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-index 9032d3c2a9f4..e8855ea04205 100644
---- a/drivers/vhost/vhost.h
-+++ b/drivers/vhost/vhost.h
-@@ -64,7 +64,8 @@ enum vhost_uaddr_type {
- struct vhost_vring_call {
- 	struct eventfd_ctx *ctx;
- 	struct irq_bypass_producer producer;
--	spinlock_t ctx_lock;
-+	/* protect vq irq setup */
-+	struct mutex ctx_lock;
- };
- 
- /* The virtqueue structure describes a queue attached to a device. */
+-/* This function gets called during PCIe function level reset. Required
++/* This function can be used for reinitting the adapter SW. Required
+  * code is extracted from mwifiex_add_card()
+  */
+ int
 -- 
-2.27.0
+2.29.1
 
