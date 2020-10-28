@@ -2,80 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B259829CD0E
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 02:39:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9182D29D3B1
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 22:46:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726302AbgJ1BjC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Oct 2020 21:39:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37002 "EHLO mail.kernel.org"
+        id S1727418AbgJ1VqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 17:46:09 -0400
+Received: from mx2.suse.de ([195.135.220.15]:37316 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1833087AbgJ1AQW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Oct 2020 20:16:22 -0400
-Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.7])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 49E762223C;
-        Wed, 28 Oct 2020 00:16:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603844181;
-        bh=Dl+mj1slgc0isDj7rpRd4dRtbRYsNG/Rbix4uZLptjM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZRL4/5G+YNajasrAV3EwWJZg8NDm9kYY1bbgpaAAjDnDx9pz6zPHFVUd8vHiLU0KK
-         m/lX2Ug/7DSPawiu0/3UeN5Fa0gX/uiyIBuKqHBjNM24BTWkittOYbsl7t1VUURp+A
-         b/KmWtoNJmd/rXxJ6n3IwsPxNtLN6CPi0jcyEGbs=
-Date:   Tue, 27 Oct 2020 17:16:20 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Gabbasov <andrew_gabbasov@mentor.com>
-Cc:     <linux-renesas-soc@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, <geert+renesas@glider.be>,
-        Julia Lawall <julia.lawall@inria.fr>,
-        Dirk Behme <dirk.behme@de.bosch.com>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>
-Subject: Re: [PATCH net v2] ravb: Fix bit fields checking in
- ravb_hwtstamp_get()
-Message-ID: <20201027171620.2b5eef40@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20201026102130.29368-1-andrew_gabbasov@mentor.com>
-References: <20201026102130.29368-1-andrew_gabbasov@mentor.com>
+        id S1726341AbgJ1Vnn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Oct 2020 17:43:43 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 84628AD45;
+        Wed, 28 Oct 2020 00:53:40 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id EEB9560736; Wed, 28 Oct 2020 01:53:39 +0100 (CET)
+Date:   Wed, 28 Oct 2020 01:53:39 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
+        davem@davemloft.net, f.fainelli@gmail.com, andrew@lunn.ch,
+        David.Laight@aculab.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [RFC PATCH net-next v3] ethtool: Improve compatibility between
+ netlink and ioctl interfaces
+Message-ID: <20201028005339.45daonidsidbzawn@lion.mk-sys.cz>
+References: <20201027145114.226918-1-idosch@idosch.org>
+ <20201027145305.48ca1123@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201027145305.48ca1123@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 26 Oct 2020 05:21:30 -0500 Andrew Gabbasov wrote:
-> In the function ravb_hwtstamp_get() in ravb_main.c with the existing
-> values for RAVB_RXTSTAMP_TYPE_V2_L2_EVENT (0x2) and RAVB_RXTSTAMP_TYPE_ALL
-> (0x6)
+On Tue, Oct 27, 2020 at 02:53:05PM -0700, Jakub Kicinski wrote:
+> On Tue, 27 Oct 2020 16:51:14 +0200 Ido Schimmel wrote:
+> > From: Ido Schimmel <idosch@nvidia.com>
+> > 
+> > With the ioctl interface, when autoneg is enabled, but without
+> > specifying speed, duplex or link modes, the advertised link modes are
+> > set to the supported link modes by the ethtool user space utility.
 > 
-> if (priv->tstamp_rx_ctrl & RAVB_RXTSTAMP_TYPE_V2_L2_EVENT)
-> 	config.rx_filter = HWTSTAMP_FILTER_PTP_V2_L2_EVENT;
-> else if (priv->tstamp_rx_ctrl & RAVB_RXTSTAMP_TYPE_ALL)
-> 	config.rx_filter = HWTSTAMP_FILTER_ALL;
+> > With the netlink interface, the same thing is done by the kernel, but
+> > only if speed or duplex are specified. In which case, the advertised
+> > link modes are set by traversing the supported link modes and picking
+> > the ones matching the specified speed or duplex.
 > 
-> if the test on RAVB_RXTSTAMP_TYPE_ALL should be true,
-> it will never be reached.
+> > Fix this incompatibility problem by introducing a new flag in the
+> > ethtool netlink request header: 'ETHTOOL_FLAG_LEGACY'. The purpose of
+> > the flag is to indicate to the kernel that it needs to be compatible
+> > with the legacy ioctl interface. A patch to the ethtool user space
+> > utility will make sure the flag is set, when supported by the kernel.
 > 
-> This issue can be verified with 'hwtstamp_config' testing program
-> (tools/testing/selftests/net/hwtstamp_config.c). Setting filter type
-> to ALL and subsequent retrieving it gives incorrect value:
+> I did not look at the legacy code but I'm confused by what you wrote.
 > 
-> $ hwtstamp_config eth0 OFF ALL
-> flags = 0
-> tx_type = OFF
-> rx_filter = ALL
-> $ hwtstamp_config eth0
-> flags = 0
-> tx_type = OFF
-> rx_filter = PTP_V2_L2_EVENT
-> 
-> Correct this by converting if-else's to switch.
-> 
-> Fixes: c156633f1353 ("Renesas Ethernet AVB driver proper")
-> Reported-by: Julia Lawall <julia.lawall@inria.fr>
-> Signed-off-by: Andrew Gabbasov <andrew_gabbasov@mentor.com>
-> Reviewed-by: Sergei Shtylyov <sergei.shtylyov@gmail.com>
+> IIUC for ioctl it's the user space that sets the advertised.
+> For netlink it's the kernel.
+> So how does the legacy flag make the kernel behave like it used to?
 
-Applied, thank you!
+The idea why I suggested "legacy" as the name was that it allowed
+ethtool to preserve the old behaviour (without having to query for
+supported modes first). But from this point of view it's indeed a bit
+confusing.
+
+> If anything LEGACY should mean - don't populate advertised at all,
+> user space will do it.
+
+I would prefer not inverting the flag so that at least for the netlink
+API, the default semantics would be that ETHTOOL_A_LINKMODES_AUTONEG=1
+without other attributes means "enable autonegotiation" as expected
+(without touching other settings).
+
+> Also the semantics of a "LEGACY" flag are a little loose for my taste,
+> IMHO a new flag attr would be cleaner. ETHTOOL_A_LINKMODES_AUTO_POPULATE?
+> But no strong feelings.
+
+Actually, when I suggested using a flag, I had a request specific flag
+in mind, not a global one. As for the name, how about
+ETHTOOL_A_LINKMODES_ADVERTISE_ALL? It should be probably forbidden to
+combine it with ETHTOOL_A_LINKMODES_OURS then.
+
+Michal
