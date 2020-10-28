@@ -2,83 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 48E2C29DAC7
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 00:31:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8686429DA01
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 00:10:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390492AbgJ1XbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 19:31:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728648AbgJ1XJC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 19:09:02 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B93AC0613CF
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 16:09:01 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id p9so1280737eji.4
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 16:09:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=v9x1AtXCKY8Ud73Ha9gZtFYT61mTg3zoDlCCO1o0Irc=;
-        b=PDOPHi/qRQrzU25oEZYw1DYqZv8AjqM25M1yauTnI/k79txow4No0xgbsHggbDCVw0
-         /cKF8ghvWl7F35g9AvN7BqDgCf6lINPTNvgTG1tFojAT209UNgdsPdX6R30mRfZRsWf/
-         8VMEkFwBO+e6QOSjikiOpywVZcC/j+JzsBGD01eZPWO9i0fUqzdofu07mJBeiKgUGCsV
-         vW0fKQPcEoWAH2Dcs1z/e6EaupTVrqigvZUIHu797aCpdBaRfyhMlkr0uEpTJFLk11FG
-         OKroy4OECGQyG4dvKRi2O3pNoZdIIAh9ax5ZENBvCYRGt5bY5p3PIMXHmS0FM920QBim
-         JPNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=v9x1AtXCKY8Ud73Ha9gZtFYT61mTg3zoDlCCO1o0Irc=;
-        b=BMwVbN89q0C+ybc8t6ZvvjXZ+ZllByaEVZGS0OnoST7jn2j+3z1hIU+u0vrE59NfI5
-         mH5rulKX9hKM6m/quDa9Czskm9z/QhUsxLTLNsl735XRIPT0mJJ5MbXL55WwoGeXNDB9
-         2So5nj5qGQMUvvgD7GvJXVC4ev0pw6gtwwlQKuK2SjDFqpCcZ3INtJeMEVPDZ4gCDrIA
-         2H7mjHMveAXOS9jUmYfJ2C3/GcL/mnEru20POrVQTMaLR+NKHKRK4L4ttSt5jTHJ0yOq
-         wYg/OQ6RMJfu6ZqSlwyGWkTXtjuY6BKU/kx8QJEga/BTeerHyLEhyW5IjE1+vmTsx3aK
-         VmFA==
-X-Gm-Message-State: AOAM530eDjit00NdxqUY/kQnEYmp0ULlpQoKA1CZNRVrjXJgqY+aRAiT
-        OFUMfcY2OaGdXPZjZSS8czE=
-X-Google-Smtp-Source: ABdhPJzE8OhhGWVTIlOqJBBuqp0EsUh+1S5Jz/0YaEe/5r89FHI+WsR1shA0ZO4p6DF4tUMuPiQpGw==
-X-Received: by 2002:a17:906:11d5:: with SMTP id o21mr1373643eja.401.1603926539949;
-        Wed, 28 Oct 2020 16:08:59 -0700 (PDT)
-Received: from skbuf ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id gb6sm462291ejc.21.2020.10.28.16.08.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 16:08:59 -0700 (PDT)
-Date:   Thu, 29 Oct 2020 01:08:58 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        netdev@vger.kernel.org, Ido Schimmel <idosch@idosch.org>
-Subject: Re: [RFC PATCH 4/4] net: dsa: tag_edsa: support reception of packets
- from lag devices
-Message-ID: <20201028230858.5rgzbgdnxo2boqnd@skbuf>
-References: <20201028181824.3dccguch7d5iij2r@skbuf>
- <C6OVPVXHQ5OA.21IJYAHUW1SW4@wkz-x280>
+        id S1726503AbgJ1XKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 19:10:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44242 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727197AbgJ1XKJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Oct 2020 19:10:09 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4E39E20790;
+        Wed, 28 Oct 2020 23:10:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603926608;
+        bh=r9Zy2d7qonECfYn+ukG4XqOXK6cjfQvsTZGTxsOyDY8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=o7lTD/lW88bXfc5c5Hg5/vzYWVNlGk+4AfMZ0JyF25ERnV6bthVoeqIu+fFXQ9tZx
+         pIjJXFW3o1s5Jbq5wpgHzatK9YOwkfS2J97YAJuwJMhNeFG7QVtdpVk0UeTLU0Of7k
+         4jKflrPtlcGR3IkF/Po1y7tVVykV3E8yT9JfCyKw=
+Date:   Wed, 28 Oct 2020 16:10:06 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Badel, Laurent" <LaurentBadel@eaton.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "m.felsch@pengutronix.de" <m.felsch@pengutronix.de>,
+        "fugang.duan@nxp.com" <fugang.duan@nxp.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "richard.leitner@skidata.com" <richard.leitner@skidata.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "Quette, Arnaud" <ArnaudQuette@Eaton.com>
+Subject: Re: [PATCH net 0/4] Restore and fix PHY reset for SMSC LAN8720
+Message-ID: <20201028161006.2dcd2a62@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CY4PR1701MB1878B85B9E1C5B4FDCBA2860DF160@CY4PR1701MB1878.namprd17.prod.outlook.com>
+References: <CY4PR1701MB1878B85B9E1C5B4FDCBA2860DF160@CY4PR1701MB1878.namprd17.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <C6OVPVXHQ5OA.21IJYAHUW1SW4@wkz-x280>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 11:31:58PM +0100, Tobias Waldekranz wrote:
-> The thing is, unlike L2 where the hardware will add new neighbors to
-> its FDB autonomously, every entry in the hardware FIB is under the
-> strict control of the CPU. So I think you can avoid much of this
-> headache simply by determining if a given L3 nexthop/neighbor is
-> "foreign" to the switch or not, and then just skip offloading for
-> those entries.
-> 
-> You miss out on the hardware acceleration of replacing the L2 header
-> of course. But my guess would be that once you have payed the tax of
-> receiving the buffer via the NIC driver, allocated an skb, and called
-> netif_rx() etc. the routing operation will be a rounding error. At
-> least on smaller devices where the FIB is typically quite small.
+On Tue, 27 Oct 2020 23:25:01 +0000 Badel, Laurent wrote:
+> =EF=BB=BFSubject: [PATCH net 0/4] Restore and fix PHY reset for SMSC LAN8=
+720
+>=20
+> Description:
+> A recent patchset [1] added support in the SMSC PHY driver for managing
+> the ref clock and therefore removed the PHY_RST_AFTER_CLK_EN flag for the
+> LAN8720 chip. The ref clock is passed to the SMSC driver through a new
+> property "clocks" in the device tree.
+>=20
+> There appears to be two potential caveats:
+> (i) Building kernel 5.9 without updating the DT with the "clocks"
+> property for SMSC PHY, would break systems previously relying on the PHY
+> reset workaround (SMSC driver cannot grab the ref clock, so it is still
+> managed by FEC, but the PHY is not reset because PHY_RST_AFTER_CLK_EN is
+> not set). This may lead to occasional loss of ethernet connectivity in
+> these systems, that is difficult to debug.
+>=20
+> (ii) This defeats the purpose of a previous commit [2] that disabled the
+> ref clock for power saving reasons. If a ref clock for the PHY is
+> specified in DT, the SMSC driver will keep it always on (confirmed with=20
+> scope). While this removes the need for additional PHY resets (only a=20
+> single reset is needed after power up), this prevents the FEC from saving
+> power by disabling the refclk. Since there may be use cases where one is
+> interested in saving power, keep this option available when no ref clock
+> is specified for the PHY, by fixing issues with the PHY reset.
+>=20
+> Main changes proposed to address this:
+> (a) Restore PHY_RST_AFTER_CLK_EN for LAN8720, but explicitly clear it if
+> the SMSC driver succeeds in retrieving the ref clock.
+> (b) Fix phy_reset_after_clk_enable() to work in interrupt mode, by
+> re-configuring the PHY registers after reset.
+>=20
+> Tests: against net tree 5.9, including allyes/no/modconfig. 10 pieces of
+> an iMX28-EVK-based board were tested, 3 of which were found to exhibit
+> issues when the "clocks" property was left unset. Issues were fixed by
+> the present patchset.
+>=20
+> References:
+> [1] commit d65af21842f8 ("net: phy: smsc: LAN8710/20: remove
+>     PHY_RST_AFTER_CLK_EN flag")
+>     commit bedd8d78aba3 ("net: phy: smsc: LAN8710/20: add phy refclk in
+>     support")
+> [2] commit e8fcfcd5684a ("net: fec: optimize the clock management to save
+>     power")
 
-Right, but in that case, there is less of an argument to have something
-like DSA injecting directly into an upper device's RX path, if only
-mv88e6xxx with bonding is ever going to use that.
+Please resend with git send-email, if you can.
+
+All the patches have a "Subject: [PATCH" line in the message body,
+and Fixes tags are line-wrapped (they should be one line even if they
+are long).
+
+> Laurent Badel (5):
+>   net:phy:smsc: enable PHY_RST_AFTER_CLK_EN if ref clock is not set
+>   net:phy:smsc: expand documentation of clocks property
+>   net:phy: add phy_device_reset_status() support
+>   net:phy: fix phy_reset_after_clk_enable()
+>   net:phy: add SMSC PHY reset on PM restore
+
+There are only 4 patches in the series.
+
