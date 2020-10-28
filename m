@@ -2,106 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 42B3329D44B
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 22:51:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A70BB29D3D1
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 22:47:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728130AbgJ1VvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 17:51:05 -0400
-Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:38725 "EHLO
-        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728100AbgJ1Vuy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:50:54 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 18DA9CCF;
-        Wed, 28 Oct 2020 13:34:43 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 28 Oct 2020 13:34:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=zwyiSY
-        YSrvu1PAtB2VcRk8Q+WrFotOSE2VIulZuQkPk=; b=UOBUODOoLcRAih1rduuIVE
-        tHtb96MZoMNy5FHhcdANBOmNb5jdq3mDj99Dg5bWjFTd2OUp1sv+bDaY+MHRp1oa
-        7cm+lVqBkMtp/hA5AC17IY3lKzBuXaItRforH0ObfkHWFXYf8GE1dZF4hSIh3ttB
-        8SdYqcZOu2vA31urXvLi6Qt6W+rFz+Ls/4/ZMIanzgH58diKQfBiBtP63DyeyjKH
-        BI7ReajJdx73nB/KkOrW0L4GdoXjf15LeYY7wSMVMYU3M9mKBeiJmT1NSbV+37UZ
-        AJhkdvmVKysKN9BVolfG8SHpkVQeuj4PaYbRt+pYTNocia8TPHRJvYC3jmXXkdiQ
-        ==
-X-ME-Sender: <xms:sKuZX6LmikOrvEultMldYR0NglxDk8Up_8TpVUR5L1AB9ofnjs0tuQ>
-    <xme:sKuZXyLbp-7lYJHxiAllk6OO6ysbu6G54eMZ60ky7hpnBCohUaS2MSGiBfCwEtYwg
-    NpOSp5oGgCfd_Y>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrledugddutddtucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucfkphepkeegrddvvdelrdduheefrdelnecuvehluhhsthgvrhfuihiivgeptdenuc
-    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:sKuZX6sxEeObqrXwRguWRt5KAZYQI6jWoUvX3CxgpyQdrkwTW0hDBQ>
-    <xmx:sKuZX_YzeXkobJg6fGV83ulhSWXtIXsNyXtG9Qkxr1qetSAQl5zQrA>
-    <xmx:sKuZXxboVRSJBN4DhdQdVDKij7ya-0yqtKgLoAM8XgjcDX1z0xsp-g>
-    <xmx:squZX0xD0uH0-PF3UrHD9IPaByptmM-ZBV2RLbPRxftWptI0VdPTow>
-Received: from localhost (igld-84-229-153-9.inter.net.il [84.229.153.9])
-        by mail.messagingengine.com (Postfix) with ESMTPA id CF5F63280059;
-        Wed, 28 Oct 2020 13:34:39 -0400 (EDT)
-Date:   Wed, 28 Oct 2020 19:34:36 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        davem@davemloft.net, f.fainelli@gmail.com, andrew@lunn.ch,
-        David.Laight@aculab.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [RFC PATCH net-next v3] ethtool: Improve compatibility between
- netlink and ioctl interfaces
-Message-ID: <20201028173436.GA504959@shredder>
-References: <20201027145114.226918-1-idosch@idosch.org>
- <20201027145305.48ca1123@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20201028005339.45daonidsidbzawn@lion.mk-sys.cz>
+        id S1725949AbgJ1VnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 17:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47502 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725793AbgJ1VnW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 17:43:22 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C231C0613CF;
+        Wed, 28 Oct 2020 14:43:22 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id x7so991876ili.5;
+        Wed, 28 Oct 2020 14:43:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ozYCZRgZqvrBNZwSGWpcjHZ/UebLYVQ2msLNU5VY5Mo=;
+        b=uoRMTe+GToyjDoY9/GaktCa1BeSuPzVAR3/boLPppUGl2qn34CK74mw2rIzAvM3ugD
+         SQ2p3aZO5PqkKhiOBdyBW8DBlPIF/Tcc6+83P3KSglxaTdhTl9wHL0mu6LpQJ/aNPYGk
+         /aDeRn5tXPMYv6ZrqEqshKEqAMefYDA42I2NAyiczmdob/fE6/C17lTpYjIm3i2nHFub
+         K7djTFNomWxGyjgJgYaExtWgiUrXfPoe1d3WFjoYg76WLdF5US+sBtUNs/orjJRmkjIT
+         oyE1avb6xQqwp/xtMx5iZ1T0D8ckNdMumCO27aucVma7HiOGSBhpTihnODBRV/SORZ9K
+         jh4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ozYCZRgZqvrBNZwSGWpcjHZ/UebLYVQ2msLNU5VY5Mo=;
+        b=JxiQeAP6dvKB85JUPFPrcNEDA2w0x8x3+OoV1zVhk3OFgiN+igbqgPCM6VO5rMJ2pY
+         5cMiamFbi0oxjAGWfd75bfGxVHPREYxK1XYZQzosiuyvZa4bRDFhqtfKsuABTuGXEXKq
+         9WaVFjP3YYPHPKG16GALTn1NYr8sM4zlPSaYsnVTQKmKjNl31gPnhyEZa/8QrwGqiYUm
+         kdnx7dxsdr50YWGgHza0XfWAnEYkog/8st5SyxXdUh3TRTPZwx1Ri+Gydlu7fKHQ6H9/
+         7brvmOtfGEJi7kTWB/I2rBN6iJleGg4nKNLf5Pwo1AhMbg56Jt885BeFkZtRy6IzI9e5
+         mK3g==
+X-Gm-Message-State: AOAM531odQqRjfVAq2JbSpUTAK7bU3Q1aoJobGsLdWzcg/X1lX1jM2kb
+        w14L/WrETjLK8IZ65tH/ONhVCS8SVAbm7hIW6cwfcVK0zUwiFA==
+X-Google-Smtp-Source: ABdhPJwBVHlD8D4vAAXos2Nzvs1/eRlOYVtS1b+L4Ik0PIOGENFpsUsLpxj2nAxw9y6dHLnM6j3+R7WB5l0ZfZPRLMc=
+X-Received: by 2002:a92:c04c:: with SMTP id o12mr171588ilf.22.1603906736261;
+ Wed, 28 Oct 2020 10:38:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201028005339.45daonidsidbzawn@lion.mk-sys.cz>
+References: <20201028113533.26160-1-lukas.bulwahn@gmail.com> <d956a5a5-c064-3fd4-5e78-809638ba14ef@redhat.com>
+In-Reply-To: <d956a5a5-c064-3fd4-5e78-809638ba14ef@redhat.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 28 Oct 2020 10:38:45 -0700
+Message-ID: <CAM_iQpUfE2f3QBFY6r0_D2mzFK_SsmFXdA-1p3h7yquM8912fg@mail.gmail.com>
+Subject: Re: [PATCH] net: cls_api: remove unneeded local variable in tc_dump_chain()
+To:     Tom Rix <trix@redhat.com>
+Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        clang-built-linux@googlegroups.com,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org, linux-safety@lists.elisa.tech
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 01:53:39AM +0100, Michal Kubecek wrote:
-> On Tue, Oct 27, 2020 at 02:53:05PM -0700, Jakub Kicinski wrote:
-> > On Tue, 27 Oct 2020 16:51:14 +0200 Ido Schimmel wrote:
-> > > From: Ido Schimmel <idosch@nvidia.com>
-> > > 
-> > > With the ioctl interface, when autoneg is enabled, but without
-> > > specifying speed, duplex or link modes, the advertised link modes are
-> > > set to the supported link modes by the ethtool user space utility.
-> > 
-> > > With the netlink interface, the same thing is done by the kernel, but
-> > > only if speed or duplex are specified. In which case, the advertised
-> > > link modes are set by traversing the supported link modes and picking
-> > > the ones matching the specified speed or duplex.
-> > 
-> > > Fix this incompatibility problem by introducing a new flag in the
-> > > ethtool netlink request header: 'ETHTOOL_FLAG_LEGACY'. The purpose of
-> > > the flag is to indicate to the kernel that it needs to be compatible
-> > > with the legacy ioctl interface. A patch to the ethtool user space
-> > > utility will make sure the flag is set, when supported by the kernel.
-> > 
-> > I did not look at the legacy code but I'm confused by what you wrote.
-> > 
-> > IIUC for ioctl it's the user space that sets the advertised.
-> > For netlink it's the kernel.
-> > So how does the legacy flag make the kernel behave like it used to?
-> 
-> The idea why I suggested "legacy" as the name was that it allowed
-> ethtool to preserve the old behaviour (without having to query for
-> supported modes first). But from this point of view it's indeed a bit
-> confusing.
+On Wed, Oct 28, 2020 at 6:59 AM Tom Rix <trix@redhat.com> wrote:
+>
+>
+> On 10/28/20 4:35 AM, Lukas Bulwahn wrote:
+> > @@ -2971,13 +2963,11 @@ static int tc_dump_chain(struct sk_buff *skb, struct netlink_callback *cb)
+> >               if (!dev)
+> >                       return skb->len;
+> >
+> > -             parent = tcm->tcm_parent;
+> > -             if (!parent) {
+> > +             if (!tcm->tcm_parent)
+> >                       q = dev->qdisc;
+> > -                     parent = q->handle;
+>
+> This looks like a an unused error handler.
+>
+> and the later call to
+>
+> if (TC_H_MIN(tcm->tcm_parent)
+>
+> maybe should be
+>
+> if (TC_H_MIN(parent))
 
-I think it would be best to solve this by having user space query the
-kernel for supported link modes if autoneg is being enabled without
-additional parameters. Then user space will issue a set request with
-ETHTOOL_A_LINKMODES_OURS being set to all supported link modes.
+When tcm->tcm_parent is 0, TC_H_MIN(tcm->tcm_parent) is also 0,
+so we will not hit that if branch.
 
-It does not require kernel changes and would be easier on users that
-currently need to resort to old ethtool despite having a kernel that
-supports netlink-based ethtool.
+So, I think Lukas' patch is correct.
+
+Thanks.
