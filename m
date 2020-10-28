@@ -2,111 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D213429D2D2
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 22:35:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81FCD29D387
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 22:44:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726737AbgJ1VfS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 17:35:18 -0400
-Received: from nat-hk.nvidia.com ([203.18.50.4]:28258 "EHLO nat-hk.nvidia.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726700AbgJ1VfK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 28 Oct 2020 17:35:10 -0400
-Received: from HKMAIL101.nvidia.com (Not Verified[10.18.92.100]) by nat-hk.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5f9960b90000>; Wed, 28 Oct 2020 20:14:49 +0800
-Received: from HKMAIL103.nvidia.com (10.18.16.12) by HKMAIL101.nvidia.com
- (10.18.16.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 28 Oct
- 2020 12:14:43 +0000
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.171)
- by HKMAIL103.nvidia.com (10.18.16.12) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Wed, 28 Oct 2020 12:14:43 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OCSDZgL05dyDiIyyctUaDs9bPa/AMR7fcRlj8gDV4gonXgS3mVisqdbR1RonXkd/J8/SXu1ED2TtELTt2rVeHwyforKVvtElXsIDJ2oNIzVVsmeaEvjDlmErIQh8Amt2rDKLxR3CzcoLlRucbUo/04zjSNGey5dBLI6fU+MUJUlxa2lQI56q4ccQfqG6wAX91EpgijO1MopwnxxZPRM6UI59kG1pAo4esvmYcT01ldn/doMQdLU+dBglpjebvqos/jdE459rqUmWGVgG6xSTfGrbtsZQzyP8Qnn+/pokqVmYnpuPMRJb+7suQfBIRF6AJ/RD3V0dhVsIXy5QrIHXEA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GDsk0pGeWll3uhXmO7tKPci2CWy4O4fCJM6xIer31Ao=;
- b=cE2azgy6OKXmje4H1nnHi/maQfbOzS/R02IW8EEemRbE62+ZPZyvcGDhdlRKxT7dRp2b6p1f2r4rwC2Tj+8mJqix+xgVe706hhDzMOZCYH+QMUPWYN5I8PoUtTgwrqntP69YyKJZy+d/ZoayFUygxJsbw71p/QS1d4hGmRkjzFeu0mNuDONyV1w2IUdwQ5lKlRzcHXx30xtdIDqR2hbkn6YoRBGl8YTVp7F19Im4NUzIJItJpHRP9DdkeaAaW7Lo5Rmh2Q9DOMLRU3C03M9VGh5SCFSEz0gGa0t4Vi26O7/OP/YIZi9FZpTwJgPs7hp6L1ZwdFpRAczSlXg17KSlgQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from CH2PR12MB3831.namprd12.prod.outlook.com (2603:10b6:610:29::13)
- by CH2PR12MB4021.namprd12.prod.outlook.com (2603:10b6:610:2b::29) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3477.25; Wed, 28 Oct
- 2020 12:14:40 +0000
-Received: from CH2PR12MB3831.namprd12.prod.outlook.com
- ([fe80::304d:bd84:52d9:7f74]) by CH2PR12MB3831.namprd12.prod.outlook.com
- ([fe80::304d:bd84:52d9:7f74%6]) with mapi id 15.20.3477.028; Wed, 28 Oct 2020
- 12:14:40 +0000
-Date:   Wed, 28 Oct 2020 09:14:37 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Maor Gottlieb <maorg@nvidia.com>
-CC:     <linux-rdma@vger.kernel.org>,
-        Guoqing Jiang <guoqing.jiang@cloud.ionos.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Jack Wang <jinpu.wang@cloud.ionos.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Chao Leng <lengchao@huawei.com>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Keith Busch <kbusch@kernel.org>,
-        <linux-nvme@lists.infradead.org>,
-        "Max Gurtovoy" <mgurtovoy@nvidia.com>, <netdev@vger.kernel.org>,
-        <rds-devel@oss.oracle.com>, Sagi Grimberg <sagi@grimberg.me>
-Subject: Re: [PATCH rdma v2] RDMA: Add rdma_connect_locked()
-Message-ID: <20201028121437.GU1523783@nvidia.com>
-References: <0-v2-53c22d5c1405+33-rdma_connect_locking_jgg@nvidia.com>
- <4401b7b1-5d05-a715-4701-957fd09f34c9@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <4401b7b1-5d05-a715-4701-957fd09f34c9@nvidia.com>
-X-ClientProxiedBy: MN2PR08CA0008.namprd08.prod.outlook.com
- (2603:10b6:208:239::13) To CH2PR12MB3831.namprd12.prod.outlook.com
- (2603:10b6:610:29::13)
+        id S1726989AbgJ1Voq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 17:44:46 -0400
+Received: from mta-02.yadro.com ([89.207.88.252]:57974 "EHLO mta-01.yadro.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726243AbgJ1Vof (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Oct 2020 17:44:35 -0400
+Received: from localhost (unknown [127.0.0.1])
+        by mta-01.yadro.com (Postfix) with ESMTP id 5C39F4127F;
+        Wed, 28 Oct 2020 12:19:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
+        content-transfer-encoding:mime-version:user-agent:content-type
+        :content-type:organization:references:in-reply-to:date:date:from
+        :from:subject:subject:message-id:received:received:received; s=
+        mta-01; t=1603887560; x=1605701961; bh=QaIukaOm1O2BfyvMfr5ntcCJE
+        QIdpZYe1CWCdr1kJJ4=; b=BY3DHkmq+w/+n5FlU/G9S+dRTWj+2hIJetYGFxKAI
+        egWa2uMEfx4e8aQBqNHBDEHvncqgjkP74NciUYmV57/Lsc0m/iVHR5uGVwcANIQf
+        y2WZC9ALzS3aPVYMMnhHtJCmPA/Q+H8mgu4hacc2xrrTsoXDHCNDKidxjLaIJ4jX
+        bc=
+X-Virus-Scanned: amavisd-new at yadro.com
+Received: from mta-01.yadro.com ([127.0.0.1])
+        by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 8olSMjuAHbLX; Wed, 28 Oct 2020 15:19:20 +0300 (MSK)
+Received: from T-EXCH-04.corp.yadro.com (t-exch-04.corp.yadro.com [172.17.100.104])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mta-01.yadro.com (Postfix) with ESMTPS id 66AF841370;
+        Wed, 28 Oct 2020 15:19:14 +0300 (MSK)
+Received: from localhost.localdomain (10.199.0.230) by
+ T-EXCH-04.corp.yadro.com (172.17.100.104) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
+ 15.1.669.32; Wed, 28 Oct 2020 15:19:13 +0300
+Message-ID: <6248c6b3557d679a64c01e6d23fd4cb18a3d1da4.camel@yadro.com>
+Subject: Re: [PATCH v2 2/2] net: ftgmac100: add handling of mdio/phy nodes
+ for ast2400/2500
+From:   Ivan Mikhaylov <i.mikhaylov@yadro.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Po-Yu Chuang <ratbert@faraday-tech.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <openbmc@lists.ozlabs.org>
+Date:   Wed, 28 Oct 2020 15:23:38 +0300
+In-Reply-To: <20201027182354.GE904240@lunn.ch>
+References: <20201027144924.22183-1-i.mikhaylov@yadro.com>
+         <20201027144924.22183-3-i.mikhaylov@yadro.com>
+         <20201027182354.GE904240@lunn.ch>
+Organization: YADRO
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (156.34.48.30) by MN2PR08CA0008.namprd08.prod.outlook.com (2603:10b6:208:239::13) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18 via Frontend Transport; Wed, 28 Oct 2020 12:14:40 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1kXkLd-009vvx-Mn; Wed, 28 Oct 2020 09:14:37 -0300
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1603887289; bh=GDsk0pGeWll3uhXmO7tKPci2CWy4O4fCJM6xIer31Ao=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType;
-        b=aS+R9tss6LVVb5Qv8AxvF/SbcIZwtLAToMUBdozqBpZyM0nbXaAnYELa8HsvV+2nn
-         JfH07a9NeE6PAjWd+KdiGzKdWm3Qw2MPTKZaYG5yZptJ4l1rW9at+lE6BQpjxtrIjp
-         P3CWHAGi1+B6IbQl2FENZOjXX/yzOTEt0W7BS+jsGtnDUAccNgaqlvBb0c45Sl3xw5
-         uV/xxyFWQWJa4GZ4aH/f7XjQn5WXmYWISnue1aG5SaYaXNAftDSAEzOQvm9wY4an4Z
-         DCPFV3BZHPIi2AiXbNr80XgZP92UEX7KjzCs2intun9fljaj7glWNN1qtRdAwfeeCJ
-         v4oikr2yYOAqA==
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.199.0.230]
+X-ClientProxiedBy: T-EXCH-01.corp.yadro.com (172.17.10.101) To
+ T-EXCH-04.corp.yadro.com (172.17.100.104)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 11:19:14AM +0200, Maor Gottlieb wrote:
-> > +			struct rdma_conn_param *conn_param)
-> >   {
-> >   	struct rdma_id_private *id_priv =
-> >   		container_of(id, struct rdma_id_private, id);
-> >   	int ret;
-> > -	mutex_lock(&id_priv->handler_mutex);
+On Tue, 2020-10-27 at 19:23 +0100, Andrew Lunn wrote:
+> On Tue, Oct 27, 2020 at 05:49:24PM +0300, Ivan Mikhaylov wrote:
+> > phy-handle can't be handled well for ast2400/2500 which has an embedded
+> > MDIO controller. Add ftgmac100_mdio_setup for ast2400/2500 and initialize
+> > PHYs from mdio child node with of_mdiobus_register.
+> > 
+> > Signed-off-by: Ivan Mikhaylov <i.mikhaylov@yadro.com>
 > 
-> You need to delete the mutex_unlock in success path too.
+> Please also update the binding documentation to indicate an MDIO node
+> can be used.
+> 
+>     Andrew
 
-Gaaaaah. Just goes to prove I shouldn't write patches with a child on
-my lap :\
+Sure, I'll check.
 
-diff --git a/drivers/infiniband/core/cma.c b/drivers/infiniband/core/cma.c
-index f58d19881524dc..a77750b8954db0 100644
---- a/drivers/infiniband/core/cma.c
-+++ b/drivers/infiniband/core/cma.c
-@@ -4072,7 +4072,6 @@ int rdma_connect_locked(struct rdma_cm_id *id,
- 		ret = -ENOSYS;
- 	if (ret)
- 		goto err_state;
--	mutex_unlock(&id_priv->handler_mutex);
- 	return 0;
- err_state:
- 	cma_comp_exch(id_priv, RDMA_CM_CONNECT, RDMA_CM_ROUTE_RESOLVED);
+Thanks.
 
-Thanks,
-Jason
