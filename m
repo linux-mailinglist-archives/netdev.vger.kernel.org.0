@@ -2,155 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB63129E077
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 02:22:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B2B329E035
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 02:11:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729575AbgJ1WEw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 18:04:52 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:54146 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729446AbgJ1WA7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:00:59 -0400
-Received: from dispatch1-us1.ppe-hosted.com (localhost.localdomain [127.0.0.1])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id EA2E867945
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 20:43:22 +0000 (UTC)
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.50.150])
-        by dispatch1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 85B1D20098;
-        Wed, 28 Oct 2020 20:43:22 +0000 (UTC)
-Received: from us4-mdac16-30.at1.mdlocal (unknown [10.110.49.214])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTP id 823F8800A3;
-        Wed, 28 Oct 2020 20:43:22 +0000 (UTC)
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from mx1-us1.ppe-hosted.com (unknown [10.110.49.103])
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 19C9F100084;
-        Wed, 28 Oct 2020 20:43:22 +0000 (UTC)
-Received: from webmail.solarflare.com (uk.solarflare.com [193.34.186.16])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id D67EE980053;
-        Wed, 28 Oct 2020 20:43:21 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ukex01.SolarFlarecom.com
- (10.17.10.4) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 28 Oct
- 2020 20:43:10 +0000
-From:   Edward Cree <ecree@solarflare.com>
-Subject: [PATCH net-next 1/4] sfc: extend bitfield macros to 17 fields
-To:     <linux-net-drivers@solarflare.com>, <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-References: <6e1ea05f-faeb-18df-91ef-572445691d89@solarflare.com>
-Message-ID: <de47abe4-0c18-ee1e-d416-4eb43420ecfd@solarflare.com>
-Date:   Wed, 28 Oct 2020 20:43:07 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+        id S1730110AbgJ2BLu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 21:11:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51324 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729861AbgJ1WFL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:05:11 -0400
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05ED6C0613CF
+        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:05:11 -0700 (PDT)
+Received: by mail-lj1-x241.google.com with SMTP id 23so894740ljv.7
+        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:05:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6RgMxKcrxfWcCrPGpUNDV3hziCJkG59Qu7/5cCUuIBQ=;
+        b=IyTD+Hke82m6aRlezzLOka0h4MepZinimVyEYyRZqSWlegMfn0lYc8H/2OUV8yMtSq
+         tMzhUkYkKnHUX8dcuDZIbjXEUAObRpf/BEeMw+pgRYZiIMJ96queOmywsDyVJ5OxWOxr
+         HEl8PS8ayrpRyfa9dqdJZlbekwaI2p8yDlWxM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6RgMxKcrxfWcCrPGpUNDV3hziCJkG59Qu7/5cCUuIBQ=;
+        b=BnKB6du06gbGoZ0bKkMw27vwFaAN2EEp1dw2aODgbpUpsx5ku77/+nx88rYe+0IqvD
+         BVoQ3/GfVL8KxFoHsVxDJJy43mf7ctzjC4ffKh031eL1yEoQQm4jtl03GgxCzVR6LMPw
+         qlfO4VqrLBYoEda+ocWaWFA3+TvIZbwJDlvfApdAUjWcnIkS8APrngMWThWrAxd7o7Ye
+         dB9IpDNJrpEfZ9QAIXd3rjADe8Xk4BcERZaFl6vcGKkVPqrItJ38jl8oJfqGKpkRTVR0
+         Mb6FC73BhKu+tDYxZL/ZOxQktXWU/GBBkdr2q9/sMcX9kP/A2lt9qNHV7r3HEDyRgS9Q
+         0xbg==
+X-Gm-Message-State: AOAM532UL08FKEXxP0+dsVkqe/ssQDhAwFbp5qP6CyqCBR4LeQC1Rd1E
+        yEQN9NFH8szIXfi5dFn8qgqQ06kh8d5otg==
+X-Google-Smtp-Source: ABdhPJyjivtTeadSmcyE8s59P1u37MYwEFhVpgsgiGMMKPFvSWLeZ2R2PzbtbHKSSACuuY+0hbsuJg==
+X-Received: by 2002:a2e:9dd1:: with SMTP id x17mr463312ljj.219.1603922708907;
+        Wed, 28 Oct 2020 15:05:08 -0700 (PDT)
+Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com. [209.85.167.53])
+        by smtp.gmail.com with ESMTPSA id 27sm81038lfy.109.2020.10.28.15.05.07
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 28 Oct 2020 15:05:07 -0700 (PDT)
+Received: by mail-lf1-f53.google.com with SMTP id i6so788222lfd.1
+        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 15:05:07 -0700 (PDT)
+X-Received: by 2002:ac2:4d03:: with SMTP id r3mr450997lfi.89.1603922707215;
+ Wed, 28 Oct 2020 15:05:07 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <6e1ea05f-faeb-18df-91ef-572445691d89@solarflare.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.17.20.203]
-X-ClientProxiedBy: ocex03.SolarFlarecom.com (10.20.40.36) To
- ukex01.SolarFlarecom.com (10.17.10.4)
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.6.1012-25752.003
-X-TM-AS-Result: No-0.200600-8.000000-10
-X-TMASE-MatchedRID: IaDj/CwBGkih9oPbMj7PPPCoOvLLtsMhS1zwNuiBtITfUZT83lbkEAid
-        INLNE1czYsi/CGTOU7oH4jvnDtS/yk1+zyfzlN7ygxsfzkNRlfLdB/CxWTRRuwihQpoXbuXF9gJ
-        RKKmdMvAKVknUlWL0b0DhGWK9XcHC2ytBDd4+Mds5wZbPUYZ/6Sn8JiSKXvOO+V2K1rcdQhwKFU
-        Y3f4qbH8TU638kzZn/WswIoFcXV3ojZU2CAxYkI/guCCuaxGC9PA0H4ETs+eX6svlVb6h9lw==
-X-TM-AS-User-Approved-Sender: Yes
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10-0.200600-8.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.6.1012-25752.003
-X-MDID: 1603917802-ginNgY3Uev56
-X-PPE-DISP: 1603917802;ginNgY3Uev56
+References: <20201028142433.18501-1-kitakar@gmail.com> <20201028142433.18501-3-kitakar@gmail.com>
+In-Reply-To: <20201028142433.18501-3-kitakar@gmail.com>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Wed, 28 Oct 2020 15:04:55 -0700
+X-Gmail-Original-Message-ID: <CA+ASDXMXoyOr9oHBjtXZ1w9XxDggv+=XS4nwn0qKWCHQ3kybdw@mail.gmail.com>
+Message-ID: <CA+ASDXMXoyOr9oHBjtXZ1w9XxDggv+=XS4nwn0qKWCHQ3kybdw@mail.gmail.com>
+Subject: Re: [PATCH 2/3] mwifiex: add allow_ps_mode module parameter
+To:     Tsuchiya Yuto <kitakar@gmail.com>
+Cc:     Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We need EFX_POPULATE_OWORD_17 for an encap TSO descriptor on EF100.
+On Wed, Oct 28, 2020 at 2:56 PM Tsuchiya Yuto <kitakar@gmail.com> wrote:
+>
+> To make the ps_mode (power_save) control easier, this commit adds a new
+> module parameter allow_ps_mode and set it false (disallowed) by default.
 
-Signed-off-by: Edward Cree <ecree@solarflare.com>
----
- drivers/net/ethernet/sfc/bitfield.h | 42 +++++++++++++++++++++++++----
- 1 file changed, 37 insertions(+), 5 deletions(-)
+This sounds like a bad idea, as it breaks all the existing users who
+expect this feature to be allowed. Seems like you should flip the
+defaults. Without some better justification, NACK.
 
-diff --git a/drivers/net/ethernet/sfc/bitfield.h b/drivers/net/ethernet/sfc/bitfield.h
-index 2590cab53e54..64731eb5dd56 100644
---- a/drivers/net/ethernet/sfc/bitfield.h
-+++ b/drivers/net/ethernet/sfc/bitfield.h
-@@ -285,7 +285,11 @@ typedef union efx_oword {
- 				 field10, value10,			\
- 				 field11, value11,			\
- 				 field12, value12,			\
--				 field13, value13)			\
-+				 field13, value13,			\
-+				 field14, value14,			\
-+				 field15, value15,			\
-+				 field16, value16,			\
-+				 field17, value17)			\
- 	(EFX_INSERT_FIELD_NATIVE((min), (max), field1, (value1)) |	\
- 	 EFX_INSERT_FIELD_NATIVE((min), (max), field2, (value2)) |	\
- 	 EFX_INSERT_FIELD_NATIVE((min), (max), field3, (value3)) |	\
-@@ -298,7 +302,11 @@ typedef union efx_oword {
- 	 EFX_INSERT_FIELD_NATIVE((min), (max), field10, (value10)) |	\
- 	 EFX_INSERT_FIELD_NATIVE((min), (max), field11, (value11)) |	\
- 	 EFX_INSERT_FIELD_NATIVE((min), (max), field12, (value12)) |	\
--	 EFX_INSERT_FIELD_NATIVE((min), (max), field13, (value13)))
-+	 EFX_INSERT_FIELD_NATIVE((min), (max), field13, (value13)) |	\
-+	 EFX_INSERT_FIELD_NATIVE((min), (max), field14, (value14)) |	\
-+	 EFX_INSERT_FIELD_NATIVE((min), (max), field15, (value15)) |	\
-+	 EFX_INSERT_FIELD_NATIVE((min), (max), field16, (value16)) |	\
-+	 EFX_INSERT_FIELD_NATIVE((min), (max), field17, (value17)))
- 
- #define EFX_INSERT_FIELDS64(...)				\
- 	cpu_to_le64(EFX_INSERT_FIELDS_NATIVE(__VA_ARGS__))
-@@ -340,7 +348,15 @@ typedef union efx_oword {
- #endif
- 
- /* Populate an octword field with various numbers of arguments */
--#define EFX_POPULATE_OWORD_13 EFX_POPULATE_OWORD
-+#define EFX_POPULATE_OWORD_17 EFX_POPULATE_OWORD
-+#define EFX_POPULATE_OWORD_16(oword, ...) \
-+	EFX_POPULATE_OWORD_17(oword, EFX_DUMMY_FIELD, 0, __VA_ARGS__)
-+#define EFX_POPULATE_OWORD_15(oword, ...) \
-+	EFX_POPULATE_OWORD_16(oword, EFX_DUMMY_FIELD, 0, __VA_ARGS__)
-+#define EFX_POPULATE_OWORD_14(oword, ...) \
-+	EFX_POPULATE_OWORD_15(oword, EFX_DUMMY_FIELD, 0, __VA_ARGS__)
-+#define EFX_POPULATE_OWORD_13(oword, ...) \
-+	EFX_POPULATE_OWORD_14(oword, EFX_DUMMY_FIELD, 0, __VA_ARGS__)
- #define EFX_POPULATE_OWORD_12(oword, ...) \
- 	EFX_POPULATE_OWORD_13(oword, EFX_DUMMY_FIELD, 0, __VA_ARGS__)
- #define EFX_POPULATE_OWORD_11(oword, ...) \
-@@ -375,7 +391,15 @@ typedef union efx_oword {
- 			     EFX_DWORD_3, 0xffffffff)
- 
- /* Populate a quadword field with various numbers of arguments */
--#define EFX_POPULATE_QWORD_13 EFX_POPULATE_QWORD
-+#define EFX_POPULATE_QWORD_17 EFX_POPULATE_QWORD
-+#define EFX_POPULATE_QWORD_16(qword, ...) \
-+	EFX_POPULATE_QWORD_17(qword, EFX_DUMMY_FIELD, 0, __VA_ARGS__)
-+#define EFX_POPULATE_QWORD_15(qword, ...) \
-+	EFX_POPULATE_QWORD_16(qword, EFX_DUMMY_FIELD, 0, __VA_ARGS__)
-+#define EFX_POPULATE_QWORD_14(qword, ...) \
-+	EFX_POPULATE_QWORD_15(qword, EFX_DUMMY_FIELD, 0, __VA_ARGS__)
-+#define EFX_POPULATE_QWORD_13(qword, ...) \
-+	EFX_POPULATE_QWORD_14(qword, EFX_DUMMY_FIELD, 0, __VA_ARGS__)
- #define EFX_POPULATE_QWORD_12(qword, ...) \
- 	EFX_POPULATE_QWORD_13(qword, EFX_DUMMY_FIELD, 0, __VA_ARGS__)
- #define EFX_POPULATE_QWORD_11(qword, ...) \
-@@ -408,7 +432,15 @@ typedef union efx_oword {
- 			     EFX_DWORD_1, 0xffffffff)
- 
- /* Populate a dword field with various numbers of arguments */
--#define EFX_POPULATE_DWORD_13 EFX_POPULATE_DWORD
-+#define EFX_POPULATE_DWORD_17 EFX_POPULATE_DWORD
-+#define EFX_POPULATE_DWORD_16(dword, ...) \
-+	EFX_POPULATE_DWORD_17(dword, EFX_DUMMY_FIELD, 0, __VA_ARGS__)
-+#define EFX_POPULATE_DWORD_15(dword, ...) \
-+	EFX_POPULATE_DWORD_16(dword, EFX_DUMMY_FIELD, 0, __VA_ARGS__)
-+#define EFX_POPULATE_DWORD_14(dword, ...) \
-+	EFX_POPULATE_DWORD_15(dword, EFX_DUMMY_FIELD, 0, __VA_ARGS__)
-+#define EFX_POPULATE_DWORD_13(dword, ...) \
-+	EFX_POPULATE_DWORD_14(dword, EFX_DUMMY_FIELD, 0, __VA_ARGS__)
- #define EFX_POPULATE_DWORD_12(dword, ...) \
- 	EFX_POPULATE_DWORD_13(dword, EFX_DUMMY_FIELD, 0, __VA_ARGS__)
- #define EFX_POPULATE_DWORD_11(dword, ...) \
+Also, I can't find the other 2 patches in this alleged series. Maybe
+they're still making it through the mailing lists and archives.
 
+Brian
+
+> When this parameter is set to false, changing the power_save mode will
+> be disallowed like the following:
+>
+>     $ sudo iw dev mlan0 set power_save on
+>     command failed: Operation not permitted (-1)
+>
+> Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
