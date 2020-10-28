@@ -2,109 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6703B29D629
-	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:12:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F277B29D6F3
+	for <lists+netdev@lfdr.de>; Wed, 28 Oct 2020 23:19:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730803AbgJ1WMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 18:12:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52568 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730790AbgJ1WMM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 18:12:12 -0400
-Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C85BC0613CF;
-        Wed, 28 Oct 2020 15:12:11 -0700 (PDT)
-Received: by mail-ot1-x342.google.com with SMTP id n15so578222otl.8;
-        Wed, 28 Oct 2020 15:12:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ziWzHtHDKEUCQdSi3YfjA8tMbkauNIh8Kw71IC6e0PI=;
-        b=WH5XdK6Wqo1HCo4aaY86BUZaEL7tM3sr2gD6MykRYYHobBzsJlsUGM/EmJFizQ2Bql
-         vqO0DRg2E28K+0rjgZsNSvk0rYw39XyVbQ2Cw6nLTCYr15qMqlZ2zmO1Kl/5/UkeD/Pq
-         xrT/1hfltkeXQK24NIxIORFDP3O5b0GP4cH8olAZMFcRIpVzrUfKDcKhNgX8wwucX8IL
-         BVJSoZqw+Ijdm8BN98Hr5xvT+eZavCuQUsVwCN+iftSVPHIPsxVXWUehGtSBHO3JIp8G
-         9DlJQvwxVqovibhsfFGsdJpXgV/pxu9vb4a/AOyS8kL62M0W/L8wdbiPPCQ55Jv2wQGY
-         CwTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ziWzHtHDKEUCQdSi3YfjA8tMbkauNIh8Kw71IC6e0PI=;
-        b=tktL8x96Omq+thF85itGXVUm7yFPad9XT56EYtKEbWE+MCg0oMkOgFtJZdSvTMDRTW
-         13ojagYpZdXi6DfMDjPIUhxYiGBXWsR8pZ4vYtaOC3mjewggBjCOHoAdY33tkNMXTREI
-         GcuXqphh3ArdIaJqme3dGvwWwgyhXlxESZeFzMFnNCobavcaxKPPwr7W8MaRfpzjoQDi
-         4yC49PYy9kBbvrhKwgP57HpNJp3FDwwgthoDB4SU1DgKDufrki/GMT71Zklhpy7LRRtl
-         KWk+SzbGteTkwdq/vQ427ahyVjOvKl4axhxfawPDiRYQWseC5AzJ0vFDCC6D91L0DJTy
-         UVcw==
-X-Gm-Message-State: AOAM532Uv8zxDX/NaGRflGK5ho6kr16/sLMPCJO1AUrldYkjAdWg+Zhz
-        g5EuyBxf1OmEnIrxAMiVr5r8p/Bqw/esiQLUg/bCQ1eOAgISNg==
-X-Google-Smtp-Source: ABdhPJw1U7gofXrY1jn3ur63ecWI7ajwv2Ydl4fSaB6M/40eNqnmI16qo0SSlVhpKFIIe9jugUdtincmL9nj5mT2JRA=
-X-Received: by 2002:a25:bdc7:: with SMTP id g7mr8137389ybk.260.1603856432876;
- Tue, 27 Oct 2020 20:40:32 -0700 (PDT)
+        id S1731710AbgJ1WTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 18:19:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60504 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731720AbgJ1WRm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 28 Oct 2020 18:17:42 -0400
+Received: from goober.digi.com (unknown [103.48.210.53])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AC0AD20757;
+        Wed, 28 Oct 2020 05:22:39 +0000 (UTC)
+From:   Greg Ungerer <gerg@linux-m68k.org>
+To:     netdev@vger.kernel.org
+Cc:     andrew@lunn.ch, fugang.duan@nxp.com, cphealy@gmail.com,
+        dkarr@vyex.com, clemens.gruber@pqgruber.com,
+        Greg Ungerer <gerg@linux-m68k.org>
+Subject: [PATCH v2] net: fec: fix MDIO probing for some FEC hardware blocks
+Date:   Wed, 28 Oct 2020 15:22:32 +1000
+Message-Id: <20201028052232.1315167-1-gerg@linux-m68k.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20201027233646.3434896-1-irogers@google.com>
-In-Reply-To: <20201027233646.3434896-1-irogers@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 27 Oct 2020 20:40:21 -0700
-Message-ID: <CAEf4BzZm+-pHwnkaaP4+kPJPmsG=0vTKFU4M+At890JsivfZeA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] tools, bpftool: Avoid array index warnings.
-To:     Ian Rogers <irogers@google.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Michal Rostecki <mrostecki@opensuse.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        open list <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Oct 27, 2020 at 4:37 PM Ian Rogers <irogers@google.com> wrote:
->
-> The bpf_caps array is shorter without CAP_BPF, avoid out of bounds reads
-> if this isn't defined. Working around this avoids -Wno-array-bounds with
-> clang.
->
-> Signed-off-by: Ian Rogers <irogers@google.com>
-> ---
+Some (apparently older) versions of the FEC hardware block do not like
+the MMFR register being cleared to avoid generation of MII events at
+initialization time. The action of clearing this register results in no
+future MII events being generated at all on the problem block. This means
+the probing of the MDIO bus will find no PHYs.
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Create a quirk that can be checked at the FECs MII init time so that
+the right thing is done. The quirk is set as appropriate for the FEC
+hardware blocks that are known to need this.
 
->  tools/bpf/bpftool/feature.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
-> index a43a6f10b564..359960a8f1de 100644
-> --- a/tools/bpf/bpftool/feature.c
-> +++ b/tools/bpf/bpftool/feature.c
-> @@ -843,9 +843,14 @@ static int handle_perms(void)
->                 else
->                         p_err("missing %s%s%s%s%s%s%s%srequired for full feature probing; run as root or use 'unprivileged'",
->                               capability_msg(bpf_caps, 0),
-> +#ifdef CAP_BPF
->                               capability_msg(bpf_caps, 1),
->                               capability_msg(bpf_caps, 2),
-> -                             capability_msg(bpf_caps, 3));
-> +                             capability_msg(bpf_caps, 3)
-> +#else
-> +                               "", "", "", "", "", ""
-> +#endif /* CAP_BPF */
-> +                               );
->                 goto exit_free;
->         }
->
-> --
-> 2.29.0.rc2.309.g374f81d7ae-goog
->
+Fixes: f166f890c8f0 ("net: ethernet: fec: Replace interrupt driven MDIO with polled IO")
+Signed-off-by: Greg Ungerer <gerg@linux-m68k.org>
+---
+ drivers/net/ethernet/freescale/fec.h      |  6 +++++
+ drivers/net/ethernet/freescale/fec_main.c | 29 +++++++++++++----------
+ 2 files changed, 22 insertions(+), 13 deletions(-)
+
+v2: use quirk for imx28 as well
+
+Resending for consideration based on Andy's last comment that this fix
+is enough on its own for all hardware types.
+
+diff --git a/drivers/net/ethernet/freescale/fec.h b/drivers/net/ethernet/freescale/fec.h
+index 832a2175636d..c527f4ee1d3a 100644
+--- a/drivers/net/ethernet/freescale/fec.h
++++ b/drivers/net/ethernet/freescale/fec.h
+@@ -456,6 +456,12 @@ struct bufdesc_ex {
+  */
+ #define FEC_QUIRK_HAS_FRREG		(1 << 16)
+ 
++/* Some FEC hardware blocks need the MMFR cleared at setup time to avoid
++ * the generation of an MII event. This must be avoided in the older
++ * FEC blocks where it will stop MII events being generated.
++ */
++#define FEC_QUIRK_CLEAR_SETUP_MII	(1 << 17)
++
+ struct bufdesc_prop {
+ 	int qid;
+ 	/* Address of Rx and Tx buffers */
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index fb37816a74db..65784d3e54a5 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -100,14 +100,14 @@ static const struct fec_devinfo fec_imx27_info = {
+ static const struct fec_devinfo fec_imx28_info = {
+ 	.quirks = FEC_QUIRK_ENET_MAC | FEC_QUIRK_SWAP_FRAME |
+ 		  FEC_QUIRK_SINGLE_MDIO | FEC_QUIRK_HAS_RACC |
+-		  FEC_QUIRK_HAS_FRREG,
++		  FEC_QUIRK_HAS_FRREG | FEC_QUIRK_CLEAR_SETUP_MII,
+ };
+ 
+ static const struct fec_devinfo fec_imx6q_info = {
+ 	.quirks = FEC_QUIRK_ENET_MAC | FEC_QUIRK_HAS_GBIT |
+ 		  FEC_QUIRK_HAS_BUFDESC_EX | FEC_QUIRK_HAS_CSUM |
+ 		  FEC_QUIRK_HAS_VLAN | FEC_QUIRK_ERR006358 |
+-		  FEC_QUIRK_HAS_RACC,
++		  FEC_QUIRK_HAS_RACC | FEC_QUIRK_CLEAR_SETUP_MII,
+ };
+ 
+ static const struct fec_devinfo fec_mvf600_info = {
+@@ -119,7 +119,8 @@ static const struct fec_devinfo fec_imx6x_info = {
+ 		  FEC_QUIRK_HAS_BUFDESC_EX | FEC_QUIRK_HAS_CSUM |
+ 		  FEC_QUIRK_HAS_VLAN | FEC_QUIRK_HAS_AVB |
+ 		  FEC_QUIRK_ERR007885 | FEC_QUIRK_BUG_CAPTURE |
+-		  FEC_QUIRK_HAS_RACC | FEC_QUIRK_HAS_COALESCE,
++		  FEC_QUIRK_HAS_RACC | FEC_QUIRK_HAS_COALESCE |
++		  FEC_QUIRK_CLEAR_SETUP_MII,
+ };
+ 
+ static const struct fec_devinfo fec_imx6ul_info = {
+@@ -127,7 +128,7 @@ static const struct fec_devinfo fec_imx6ul_info = {
+ 		  FEC_QUIRK_HAS_BUFDESC_EX | FEC_QUIRK_HAS_CSUM |
+ 		  FEC_QUIRK_HAS_VLAN | FEC_QUIRK_ERR007885 |
+ 		  FEC_QUIRK_BUG_CAPTURE | FEC_QUIRK_HAS_RACC |
+-		  FEC_QUIRK_HAS_COALESCE,
++		  FEC_QUIRK_HAS_COALESCE | FEC_QUIRK_CLEAR_SETUP_MII,
+ };
+ 
+ static struct platform_device_id fec_devtype[] = {
+@@ -2114,15 +2115,17 @@ static int fec_enet_mii_init(struct platform_device *pdev)
+ 	if (suppress_preamble)
+ 		fep->phy_speed |= BIT(7);
+ 
+-	/* Clear MMFR to avoid to generate MII event by writing MSCR.
+-	 * MII event generation condition:
+-	 * - writing MSCR:
+-	 *	- mmfr[31:0]_not_zero & mscr[7:0]_is_zero &
+-	 *	  mscr_reg_data_in[7:0] != 0
+-	 * - writing MMFR:
+-	 *	- mscr[7:0]_not_zero
+-	 */
+-	writel(0, fep->hwp + FEC_MII_DATA);
++	if (fep->quirks & FEC_QUIRK_CLEAR_SETUP_MII) {
++		/* Clear MMFR to avoid to generate MII event by writing MSCR.
++		 * MII event generation condition:
++		 * - writing MSCR:
++		 *	- mmfr[31:0]_not_zero & mscr[7:0]_is_zero &
++		 *	  mscr_reg_data_in[7:0] != 0
++		 * - writing MMFR:
++		 *	- mscr[7:0]_not_zero
++		 */
++		writel(0, fep->hwp + FEC_MII_DATA);
++	}
+ 
+ 	writel(fep->phy_speed, fep->hwp + FEC_MII_SPEED);
+ 
+-- 
+2.25.1
+
