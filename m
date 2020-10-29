@@ -2,142 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 242FC29F8BE
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 23:58:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 49C5E29F8C5
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 23:59:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725950AbgJ2W6D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 18:58:03 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:3098 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725379AbgJ2W6C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 18:58:02 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09TMraTJ031147;
-        Thu, 29 Oct 2020 15:57:45 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=N1QMs2Z+6gUU+hn6xK3so9SFJxytUgzDK0FQqZYvxjw=;
- b=k+uOfaZU/Wz6W112/4eC4DECCpyAkzwygM70/DgqbI/KLzmVnLMTw+LNJhW7kcrojfnU
- LBAdHdl2oz4/600gS42bxIWT2eW/4mSDAOabauVu/eZdICFcTkZdJrR3sRfGx6PlttX8
- WwaUqcIZF0iqc96DWFiPjZhJDmE0hosN4wA= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 34f7pjjebh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 29 Oct 2020 15:57:44 -0700
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 29 Oct 2020 15:57:43 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=j2uxp9kmis8RWZlqbMOSVMr14DzvHAEWQ+14AssUYEEv+hekdMYKUQtMYs/Jm+plVSfdgJK/ygCXHWpw09gx7QE3GSsph8gTXl97Tq2O5jkX312TeYW0l9hnmdZF8buKQqPaQ/zrALqxuwP+6SHb8rAySjMA0APG6WCUiPg5wxH1Jf9ffJ+vsfjUzb+j6Zu5Yha50JmjniT+VBe6tNLfrCRIaeSJj1HLgH7b2eU0UO6y6uTzI4rYrdmCgXMJi8TJ5p0Y0QozoRhs6Vu8BvJQdxFehcCNyCfD/jsTwxJ6N2TZq2qgt7/+1zViewSTszO2zUHkeHnrvhJC13/UILt0Gw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N1QMs2Z+6gUU+hn6xK3so9SFJxytUgzDK0FQqZYvxjw=;
- b=RILkg0MpELaGlRhiaaGC3LVFRIKa+jVBqrzy7+0DwetGPs1pXBjk+D0h7HyIPd/cNiqbvLK84F/QzI6w1+n1nxuMlpQ5zS6M8paY0PVaSW9xtBN6VUNyxFBuWoU9cRIuWVNkwk6trtFM0G+iCjnYCIMlVLajZlcDE5kq9UKhrWxfjTs1USyfNgCatx4UzHwvdp/88Y4xL+2BbyeVYiFlwx2Vza5WJPTaJVVVgKXIt8jT+59ds7MaHd5Skqj3ToZu+xccdt3BhV7FrWTJ6xlvDQlOMnxBEJ0/tc6/zH87vyLJObQZPyrBgXJGcbCsxW4HCmfITeDa8gFoIgLsVpfMWA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N1QMs2Z+6gUU+hn6xK3so9SFJxytUgzDK0FQqZYvxjw=;
- b=kf39UsIG2SZxfxTG/tE1WsMQULckIgkTs+StqK/CsJ8/LzxwEWrvYp+D09733DzelarZtvKaTgGWapU1lfZA3hTxLHb02uCnC+mfO0n89JzUWHfwFw70MZ7CDhe8w3y0AAsiN+fI/oHWyObf6igYzAQ3xsaC75jwphSp1gU2tWg=
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com (2603:10b6:a03:fa::12)
- by BYAPR15MB3254.namprd15.prod.outlook.com (2603:10b6:a03:110::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.27; Thu, 29 Oct
- 2020 22:57:42 +0000
-Received: from BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::7d77:205b:bbc4:4c70]) by BYAPR15MB2999.namprd15.prod.outlook.com
- ([fe80::7d77:205b:bbc4:4c70%6]) with mapi id 15.20.3499.027; Thu, 29 Oct 2020
- 22:57:42 +0000
-From:   Song Liu <songliubraving@fb.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     Ian Rogers <irogers@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, "Yonghong Song" <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] libbpf hashmap: Fix undefined behavior in hash_bits
-Thread-Topic: [PATCH v2] libbpf hashmap: Fix undefined behavior in hash_bits
-Thread-Index: AQHWrkQcbGvCsMR2DkaqEAjiMgI9kamvLAUAgAAFQYA=
-Date:   Thu, 29 Oct 2020 22:57:42 +0000
-Message-ID: <8A7F0E86-9A11-4ED9-AE8A-881A5A260DB7@fb.com>
-References: <20201029223707.494059-1-irogers@google.com>
- <CAEf4BzaX4KT5tOn9gSR24OtrX8MT3yW2yfTq244ewnRouWDJdA@mail.gmail.com>
-In-Reply-To: <CAEf4BzaX4KT5tOn9gSR24OtrX8MT3yW2yfTq244ewnRouWDJdA@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.120.23.2.4)
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=fb.com;
-x-originating-ip: [2620:10d:c090:400::5:c2a2]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 978ceea4-109c-4e05-3d17-08d87c5e0ae1
-x-ms-traffictypediagnostic: BYAPR15MB3254:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB32549BDAE88850F58EBABF6BB3140@BYAPR15MB3254.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 4vALZQ+Aeyg/sPxzbkgHSd/FHLeHwGBE+zYeaKkzf625/ZRDGSnjZXCFJ5nZT2F4yCuUvpIXQMFUiBTxmNJcKKNjIoRD+HsSMBZkA/LOdyGCWYgNL9ZNVFH5ciVQimieEIOtXvwBDq1M1rhtC+MOUswyKcFosqVLsqiTe0cTpD1ygVIlayFTmupEcqaewSMcqr1Ntm6Znj/2bovcks/3OhWig3qkQTdXZ4/S8naeOFxtx77/KA+QwroRpbKDMkTAa4KjIurxYb8FzPPDgFhpp1jNktOmJ6J9TLQV+S7P0C6Ftg62OhG4FC6WM9QfjNwE
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB2999.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(136003)(376002)(346002)(39860400002)(366004)(478600001)(6512007)(86362001)(6486002)(186003)(316002)(4326008)(6916009)(54906003)(8936002)(8676002)(36756003)(71200400001)(6506007)(53546011)(2616005)(2906002)(66946007)(66476007)(66556008)(64756008)(66446008)(76116006)(91956017)(5660300002)(33656002)(4744005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: QiwUnjFyg5SUPO5MpI3TI2PLRAa0jDWhSA8qMGsIpaAkLBQLn3I0r7mBQ0XITK0/yeCy9qjFrHAB0eTdRqj6uxNZl3hLJMANdy4fptGSPPupLqgxVzMXBxc/eG+iY2nnKx8tsBPbdaoEx+RJmqnKxv92s9qGM7vTcPM2bSlpWFKzBvP621GwM2prtLdHGvGB11AUWWJaO2QR/zUfteOIpp3ZRsgyIv1rbBd4QripCWaiLQ2yWoCmuBxVFI32MDhN3OmXqAosEX6I/pexI5PkcsXQ6UqTPWWo0CrnnKA3Wbl1GLE69X7uuylZvxaE1G5SDyBtBx8dzz1Tkm17flcnpVHgLTXRrTy/vjp8UskWp1NFE5rCZGyqvMCWeWjL5vVy+HNYnRNWRuUPgvUXB8GzAbffqcLP/ZkSdQeoPro53OCUY3MmuE+kC6avz1cganQtcK8Oc8w8+PdvlJuF2L472zTzGPycNWBykHxsWsgJRlO/KKiEubJ/IH/D9Pw8cOEZzyc4EG8glfG5Jr/3i/ER2+IHhKL9TFWDofmLy5tb7wYeiWt3NrZxHeIw16DxvI0vvOZrtFgTYsrOyUIkN6I2q4TvQvgosfpECc+MkpmTD9mI58XPZTUt8sIBERAzN+ylSB1e94VtEBVI8AK28hnVJIitXJwe4puHHwiY+H6zZQQ97Zr5kMqz67qgbPguTkA6
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <1214202F9591934F803C75400C4E3847@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1725782AbgJ2W7k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 18:59:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725763AbgJ2W7k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 18:59:40 -0400
+Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C19C0613CF
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 15:59:40 -0700 (PDT)
+Received: by mail-qt1-x834.google.com with SMTP id c5so2974239qtw.3
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 15:59:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=egQBVXCQHGSXGz3JZv1ILGvRL8HDR1+qO6KpVDRF5W4=;
+        b=UF86bgEoQUtPlzptmY978uJCYcLbJ9X3P/0qfEHkFMw/34HPw8Q6fKI/i34CmAg7pY
+         wtxn1kiXaVkaBWm1rHY2nxGP8YwqTAR//4RJB/t9XccFq8aO0Z2eDkZ6KPHR/an6UQYW
+         ET/bVaFCgPB/jWJ0be9F8399XZgGZ8OyQYeUze5enHG+xGwnO9HAIisZ8Zo7DKFMQ681
+         QeWgL9jdtqHtV9AKapHp0gVTyoQY7IpKsM9Tns1QVIGdp1tMDwLaDaZxxIYs/FI/eLCU
+         RKBtTp0x4WI0WUnSL44+MTvQ9qDvPkdNlikRz1kAR1Au9oOB+fNl/miLj7pCDNO8gm2z
+         /jWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=egQBVXCQHGSXGz3JZv1ILGvRL8HDR1+qO6KpVDRF5W4=;
+        b=f24citOnsE8I1sb2CJd4rylrrSO7+hQUGd+tIrHT6sgQpRlxAgb978DTYDcjmM9tEG
+         1H6aq8M8DiKXOMl2T9ciwGHfpk9zyyl7czkRGwkTk9UZsb3TxHnsCiodPztHyjqZvV71
+         iPLT+Xin8x/NNpokarIMSKF+p+n8gwKSfW//w3sjWcrzM0vgW5heZvF7f2TlJoEhzdR/
+         BRCl6o2bH4b1ERogs77kwImFA8LcQuLtCdawijnzLeVTdCepiVbeebcu7JT1Nkk4TJcd
+         qDphUNeJ+3LoCZroXKKXKSw3VVWETmRNKrurCFGvihrkLJeyMpFsC2fiwEAmBh4O905S
+         faBg==
+X-Gm-Message-State: AOAM532FLzRfoI3C+83f1YDdDRLieP2xDJNXGHa9mq6t0BD5jcYOUP8H
+        zBpIhhhr95/12hnXWV3jd7I=
+X-Google-Smtp-Source: ABdhPJwNCwuFZfiwC5C0j+psh7PewpLXB006k+UiYFliaeEwp3bClVoE7T1MYQ5TvSNufSAPanccmg==
+X-Received: by 2002:ac8:76d9:: with SMTP id q25mr6049491qtr.125.1604012379098;
+        Thu, 29 Oct 2020 15:59:39 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f016:3996:7c32:c023:7030:e73a])
+        by smtp.gmail.com with ESMTPSA id j5sm1807844qtv.91.2020.10.29.15.59.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Oct 2020 15:59:38 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 1FD3EC0DAB; Thu, 29 Oct 2020 19:59:36 -0300 (-03)
+Date:   Thu, 29 Oct 2020 19:59:36 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     wenxu <wenxu@ucloud.cn>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Paul Blakey <paulb@mellanox.com>,
+        Oz Shlomo <ozsh@mellanox.com>,
+        Davide Caratti <dcaratti@redhat.com>
+Subject: Re: [resend] Solution for the problem conntrack in tc subsystem
+Message-ID: <20201029225936.GM3837@localhost.localdomain>
+References: <7821f3ae-0e71-0d8b-5ef9-81da69ac29dc@ucloud.cn>
+ <435e4756-f36a-f0f5-0ac5-45bd5cacaff2@ucloud.cn>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB2999.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 978ceea4-109c-4e05-3d17-08d87c5e0ae1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Oct 2020 22:57:42.3129
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Oe/4pG8GJpFcRZhTYTFGCqmeVyzAu5geCZ8Q8AQIIqBosT+oNWwYEsm9EE5Urjo6lYQNDBiHHimQmuYaZszFQg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3254
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-10-29_12:2020-10-29,2020-10-29 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1015
- adultscore=0 impostorscore=0 phishscore=0 priorityscore=1501
- suspectscore=0 spamscore=0 malwarescore=0 mlxlogscore=969 mlxscore=0
- bulkscore=0 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2009150000 definitions=main-2010290158
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <435e4756-f36a-f0f5-0ac5-45bd5cacaff2@ucloud.cn>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Cc'ing Cong, Paul, Oz and Davide.
 
+On Thu, Oct 29, 2020 at 10:22:04AM +0800, wenxu wrote:
+> Only do gso for the reassembly big packet is also can't fix all the
+> case such for icmp packet.
 
-> On Oct 29, 2020, at 3:38 PM, Andrii Nakryiko <andrii.nakryiko@gmail.com> =
-wrote:
->=20
-> On Thu, Oct 29, 2020 at 3:38 PM Ian Rogers <irogers@google.com> wrote:
->>=20
->> If bits is 0, the case when the map is empty, then the >> is the size of
->> the register which is undefined behavior - on x86 it is the same as a
->> shift by 0. Fix by handling the 0 case explicitly and guarding calls to
->> hash_bits for empty maps in hashmap__for_each_key_entry and
->> hashmap__for_each_entry_safe.
->>=20
->> Suggested-by: Andrii Nakryiko <andriin@fb.com>,
->> Signed-off-by: Ian Rogers <irogers@google.com>
->> ---
->=20
-> Looks good. Thanks and sorry for unnecessary iterations.
->=20
-> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Good point. And as we can't know that a fragment was for an icmp
+packet before defraging it, this is quite impactful.
 
-Acked-by: Song Liu <songliubraving@fb.com>=
+> 
+> So there are some proper solution for this problem. In the Internet
+> we can't avoid the fragment packets.
+
+I agree. One other idea is to add support for some hook to mirred,
+that gets executed before xmiting the packet. Then, when act_ct (or
+another specific act module, say act_frag, as act_ct might not be the
+only one interested in defragging in the future) gets loaded, it
+configs that hook.
+
+So that mirred would something like:
+if (xmit_hook)
+	xmit_hook(skb, dev_queue_xmit);
+else
+	dev_queue_xmit(skb);
+Even protect it with a static branch key.
+
+This leaves mirred almost untouched, 0 performance penalty for those
+that don't use act_ct, can even have a Kconfig knob, is not CT or
+ipfrag specific code on mirred so it's reusable later on and solves
+our problem here. Thoughts?
+
+  Marcelo
