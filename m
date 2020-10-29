@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 16DFA29E58A
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:59:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 389F529E561
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:56:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732695AbgJ2H5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 03:57:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55364 "EHLO
+        id S1726691AbgJ2HYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 03:24:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726913AbgJ2HYj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:24:39 -0400
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95A78C08EA76;
-        Thu, 29 Oct 2020 00:06:57 -0700 (PDT)
-Received: by mail-pg1-x52b.google.com with SMTP id f38so1596336pgm.2;
-        Thu, 29 Oct 2020 00:06:57 -0700 (PDT)
+        with ESMTP id S1726740AbgJ2HYf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:24:35 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFDC9C08EA77;
+        Thu, 29 Oct 2020 00:07:00 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id t6so844824plq.11;
+        Thu, 29 Oct 2020 00:07:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=x6lAVern+X5xe+q+jqABjgJ0kf11vtaWmT1ufEQ9BJk=;
-        b=Z8/QfyOoVL8m2yuTqr6CQKcpTX9Hl62pvbdNzLwKyyqU7v5N19wY/BbMZpQEakLh+L
-         JwY7f/y7qc0KQuoImlPNk4wGb0QwTHYShT6h0m5I11SvVgPhWPjw9IXt7AxX4nSS5cvO
-         RWU1IJKeGIXnxrwulxAJye8vJHOx1Tc5ab5hwqAZRQIZT7pUOSvs+Zh35D3KjxbqQWv+
-         XyLUVk1h3/Wpn+Sjz3wO5+N1zupLGgry8ulG3/yDts85/o2WSHSGGnXTc94ZFhmdB8TA
-         79YyrM0kTdWC14VFSD9/fS4lO1pBXHaMtERQkV2vZknHoBSvVQKaURrlGujfVCwl5NxU
-         g22g==
+        bh=zpcgNpTt1Eopd9QaDKGy8sWqns6Rwfi4+2UKE6Sn+wQ=;
+        b=Q7+giLlNKoF160T/yzSVjfsWohl/xR3ljN0+h3zMKnLx7RFxPmbEf/Js5stKpNEazL
+         I1rLmTugUiaq/DgxVX0aXjnE5IYw7RidPAtLjt7yp7AyhlxJLQxiv3etIssygiMCrb9w
+         j+voa5udkhf0MWawBxZ9VB0PRj9GN30UZiP7yjj0QVeizRCWmTT1rI/PBL6LIETsnSAg
+         6AuqN7XKA+9LIRbaTrC+RgLNZwVc2Z0oUVME0k1DsOAAgNo8sQ/SK0clICqnk6inj9XZ
+         C+6vCOb+KwM4QRG3wN7igRZLfTtJvPEuSRtkNI0ih+e4ZrfKS0P56W23FoToJlSxtoXx
+         JMQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=x6lAVern+X5xe+q+jqABjgJ0kf11vtaWmT1ufEQ9BJk=;
-        b=YsxH9ZHINFvoWtV/ZUnmvvuJ54iXZ0oa31kaskwxxOoPaQqZXa53fVRdXdxfX7JRjl
-         sizJJYXGFzNtoSROn8CtHJMKTJ6LxRzQnJFunKWuQvT4fEj30hevvlSNsyK/KSl2KPAY
-         SrL1Zpl7w5Os9pG/rfNOpEVCLv7cqvszBOfMDocjOVvdWaThKIckUCWu3xLoGRousL2f
-         g4xKhfSNH4ImgqwtThtQsY7VWcy25KzyTqw606CS5QCy42HVEyHZWye/8iowl3OgmC7P
-         eM3yIbfOd4a5NfbnEOxG7BjFmacn0qFKOYfBmsC2mKi0vZB5k8u8O01LBDbn1UALRTAu
-         RJVw==
-X-Gm-Message-State: AOAM532kzFBTeMtTmUuWzinrZLTO7c68auX2RFbDjjGzOAOidNqVqmmD
-        7cdn9RjNVPzBWUQlQqVd3U0eiWETM/k=
-X-Google-Smtp-Source: ABdhPJzy7sV4Y65tfscSsukLCKcinT2ET3HuNsSbItfm0Wv1PGHRNsBql2HRSRe/C9Oq9jHvl2grxQ==
-X-Received: by 2002:a17:90a:6b0d:: with SMTP id v13mr2925152pjj.206.1603955216770;
-        Thu, 29 Oct 2020 00:06:56 -0700 (PDT)
+        bh=zpcgNpTt1Eopd9QaDKGy8sWqns6Rwfi4+2UKE6Sn+wQ=;
+        b=mtvqZXWYCWa5DLPpwDdW6RfjI87+hiypZXr+tMSGP2At/N+L43oySkRugd2qhL1I80
+         NIf5D1UB2/3kAk0R6a0sy41Tz7wh3W2PNlB4Ms1kcVwLJEBC3n4QrHuLj519aC0X59W9
+         SBz+SzxsuX0nirJYYeHb6vaclr8XRjKe0GlOo0J50St//78xrE2+5ZvXkdY7jgF8w0kW
+         FJkEVggAalqjr2ahQHLG+mZTBQSRBU39HF1cMcEnxdHtZzPmC0IJ9JeEWOfDcfRCnent
+         yiIJvKyPs8WYjFxCuF8Ip+zHmqJcPK6tW6EZ3d+7tJGl+78BiduP4oVi0kBT9ZDL7gM8
+         178g==
+X-Gm-Message-State: AOAM530C6zbTChAiEhGQW8jDLzTjAbp6IY9WU4bMk8gt5iHqgING/eMh
+        FyuB9KTpO8fIb6Dw9MFPtu8lxHj5/hg=
+X-Google-Smtp-Source: ABdhPJxXMihVeP+9OnWl7WNFYm2QTskUkiIS7VzmJiRSC+9NTeJcIHKuxK9METWpJ8+3EbbYiPeTig==
+X-Received: by 2002:a17:902:ee53:b029:d6:ff1:d569 with SMTP id 19-20020a170902ee53b02900d60ff1d569mr2711512plo.23.1603955220240;
+        Thu, 29 Oct 2020 00:07:00 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id v12sm1412491pgr.4.2020.10.29.00.06.55
+        by smtp.gmail.com with ESMTPSA id u4sm1635835pjy.19.2020.10.29.00.06.58
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 29 Oct 2020 00:06:56 -0700 (PDT)
+        Thu, 29 Oct 2020 00:06:59 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
@@ -54,11 +54,11 @@ Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Michael Tuexen <tuexen@fh-muenster.de>, davem@davemloft.net,
         Jakub Kicinski <kuba@kernel.org>, gnault@redhat.com,
         pabeni@redhat.com, willemdebruijn.kernel@gmail.com
-Subject: [PATCHv5 net-next 12/16] sctp: support for sending packet over udp4 sock
-Date:   Thu, 29 Oct 2020 15:05:06 +0800
-Message-Id: <88a89930e9ab2d1b2300ca81d7023feaaa818727.1603955041.git.lucien.xin@gmail.com>
+Subject: [PATCHv5 net-next 13/16] sctp: support for sending packet over udp6 sock
+Date:   Thu, 29 Oct 2020 15:05:07 +0800
+Message-Id: <dcea42706709242930ae2d019355f27e7ca745d3.1603955041.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <e23bd6fddaea6641348e2115877afec5a4e2cf19.1603955041.git.lucien.xin@gmail.com>
+In-Reply-To: <88a89930e9ab2d1b2300ca81d7023feaaa818727.1603955041.git.lucien.xin@gmail.com>
 References: <cover.1603955040.git.lucien.xin@gmail.com>
  <48053c3bf48a46899bc0130dc43adca1e6925581.1603955040.git.lucien.xin@gmail.com>
  <4f439ed717442a649ba78dc0efc6f121208a9995.1603955040.git.lucien.xin@gmail.com>
@@ -71,165 +71,107 @@ References: <cover.1603955040.git.lucien.xin@gmail.com>
  <2b2703eb6a2cc84b7762ee7484a9a57408db162b.1603955040.git.lucien.xin@gmail.com>
  <1032fd094f807a870ca965e8355daf0be068008d.1603955041.git.lucien.xin@gmail.com>
  <e23bd6fddaea6641348e2115877afec5a4e2cf19.1603955041.git.lucien.xin@gmail.com>
+ <88a89930e9ab2d1b2300ca81d7023feaaa818727.1603955041.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1603955040.git.lucien.xin@gmail.com>
 References: <cover.1603955040.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch does what the rfc6951#section-5.3 says for ipv4:
+This one basically does the similar things in sctp_v6_xmit as does for
+udp4 sock in the last patch, just note that:
 
-  "Within the UDP header, the source port MUST be the local UDP
-   encapsulation port number of the SCTP stack, and the destination port
-   MUST be the remote UDP encapsulation port number maintained for the
-   association and the destination address to which the packet is sent
-   (see Section 5.1).
+  1. label needs to be calculated, as it's the param of
+     udp_tunnel6_xmit_skb().
 
-   Because the SCTP packet is the UDP payload, the length of the UDP
-   packet MUST be the length of the SCTP packet plus the size of the UDP
-   header.
-
-   The SCTP checksum MUST be computed for IPv4 and IPv6, and the UDP
-   checksum SHOULD be computed for IPv4 and IPv6."
-
-Some places need to be adjusted in sctp_packet_transmit():
-
-  1. For non-gso packets, when transport's encap_port is set, sctp
-     checksum has to be done in sctp_packet_pack(), as the outer
-     udp will use ip_summed = CHECKSUM_PARTIAL to do the offload
-     setting for checksum.
-
-  2. Delay calling dst_clone() and skb_dst_set() for non-udp packets
-     until sctp_v4_xmit(), as for udp packets, skb_dst_set() is not
-     needed before calling udp_tunnel_xmit_skb().
-
-then in sctp_v4_xmit():
-
-  1. Go to udp_tunnel_xmit_skb() only when transport->encap_port and
-     net->sctp.udp_port both are set, as these are one for dst port
-     and another for src port.
-
-  2. For gso packet, SKB_GSO_UDP_TUNNEL_CSUM is set for gso_type, and
-     with this udp checksum can be done in __skb_udp_tunnel_segment()
-     for each segments after the sctp gso.
-
-  3. inner_mac_header and inner_transport_header are set, as these
-     will be needed in __skb_udp_tunnel_segment() to find the right
-     headers.
-
-  4. df and ttl are calculated, as these are the required params by
-     udp_tunnel_xmit_skb().
-
-  5. nocheck param has to be false, as "the UDP checksum SHOULD be
-     computed for IPv4 and IPv6", says in rfc6951#section-5.3.
+  2. The 'nocheck' param of udp_tunnel6_xmit_skb() is false, as
+     required by RFC.
 
 v1->v2:
-  - Use sp->udp_port instead in sctp_v4_xmit(), which is more safe.
+  - Use sp->udp_port instead in sctp_v6_xmit(), which is more safe.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- net/sctp/output.c   |  9 +++------
- net/sctp/protocol.c | 41 ++++++++++++++++++++++++++++++-----------
- 2 files changed, 33 insertions(+), 17 deletions(-)
+ net/sctp/ipv6.c | 43 ++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 32 insertions(+), 11 deletions(-)
 
-diff --git a/net/sctp/output.c b/net/sctp/output.c
-index fb16500..6614c9f 100644
---- a/net/sctp/output.c
-+++ b/net/sctp/output.c
-@@ -514,8 +514,8 @@ static int sctp_packet_pack(struct sctp_packet *packet,
- 	if (sctp_checksum_disable)
- 		return 1;
+diff --git a/net/sctp/ipv6.c b/net/sctp/ipv6.c
+index a064bf2..814754d 100644
+--- a/net/sctp/ipv6.c
++++ b/net/sctp/ipv6.c
+@@ -55,6 +55,7 @@
+ #include <net/inet_common.h>
+ #include <net/inet_ecn.h>
+ #include <net/sctp/sctp.h>
++#include <net/udp_tunnel.h>
  
--	if (!(skb_dst(head)->dev->features & NETIF_F_SCTP_CRC) ||
--	    dst_xfrm(skb_dst(head)) || packet->ipfragok) {
-+	if (!(tp->dst->dev->features & NETIF_F_SCTP_CRC) ||
-+	    dst_xfrm(tp->dst) || packet->ipfragok || tp->encap_port) {
- 		struct sctphdr *sh =
- 			(struct sctphdr *)skb_transport_header(head);
+ #include <linux/uaccess.h>
  
-@@ -542,7 +542,6 @@ int sctp_packet_transmit(struct sctp_packet *packet, gfp_t gfp)
- 	struct sctp_association *asoc = tp->asoc;
- 	struct sctp_chunk *chunk, *tmp;
- 	int pkt_count, gso = 0;
--	struct dst_entry *dst;
- 	struct sk_buff *head;
- 	struct sctphdr *sh;
- 	struct sock *sk;
-@@ -579,13 +578,11 @@ int sctp_packet_transmit(struct sctp_packet *packet, gfp_t gfp)
- 	sh->checksum = 0;
- 
- 	/* drop packet if no dst */
--	dst = dst_clone(tp->dst);
--	if (!dst) {
-+	if (!tp->dst) {
- 		IP_INC_STATS(sock_net(sk), IPSTATS_MIB_OUTNOROUTES);
- 		kfree_skb(head);
- 		goto out;
- 	}
--	skb_dst_set(head, dst);
- 
- 	rcu_read_lock();
- 	if (__sk_dst_get(sk) != tp->dst) {
-diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
-index f3de8c0..41f287a 100644
---- a/net/sctp/protocol.c
-+++ b/net/sctp/protocol.c
-@@ -1059,25 +1059,44 @@ static int sctp_inet_supported_addrs(const struct sctp_sock *opt,
+@@ -191,33 +192,53 @@ static int sctp_v6_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
+ 	return ret;
  }
  
- /* Wrapper routine that calls the ip transmit routine. */
--static inline int sctp_v4_xmit(struct sk_buff *skb,
--			       struct sctp_transport *transport)
-+static inline int sctp_v4_xmit(struct sk_buff *skb, struct sctp_transport *t)
+-static int sctp_v6_xmit(struct sk_buff *skb, struct sctp_transport *transport)
++static int sctp_v6_xmit(struct sk_buff *skb, struct sctp_transport *t)
  {
--	struct inet_sock *inet = inet_sk(skb->sk);
 +	struct dst_entry *dst = dst_clone(t->dst);
-+	struct flowi4 *fl4 = &t->fl.u.ip4;
-+	struct sock *sk = skb->sk;
-+	struct inet_sock *inet = inet_sk(sk);
- 	__u8 dscp = inet->tos;
-+	__be16 df = 0;
++	struct flowi6 *fl6 = &t->fl.u.ip6;
+ 	struct sock *sk = skb->sk;
+ 	struct ipv6_pinfo *np = inet6_sk(sk);
+-	struct flowi6 *fl6 = &transport->fl.u.ip6;
+ 	__u8 tclass = np->tclass;
+-	int res;
++	__be32 label;
  
- 	pr_debug("%s: skb:%p, len:%d, src:%pI4, dst:%pI4\n", __func__, skb,
--		 skb->len, &transport->fl.u.ip4.saddr,
--		 &transport->fl.u.ip4.daddr);
-+		 skb->len, &fl4->saddr, &fl4->daddr);
-+
-+	if (t->dscp & SCTP_DSCP_SET_MASK)
-+		dscp = t->dscp & SCTP_DSCP_VAL_MASK;
+ 	pr_debug("%s: skb:%p, len:%d, src:%pI6 dst:%pI6\n", __func__, skb,
+ 		 skb->len, &fl6->saddr, &fl6->daddr);
  
 -	if (transport->dscp & SCTP_DSCP_SET_MASK)
--		dscp = transport->dscp & SCTP_DSCP_VAL_MASK;
-+	inet->pmtudisc = t->param_flags & SPP_PMTUD_ENABLE ? IP_PMTUDISC_DO
-+							   : IP_PMTUDISC_DONT;
-+	SCTP_INC_STATS(sock_net(sk), SCTP_MIB_OUTSCTPPACKS);
+-		tclass = transport->dscp & SCTP_DSCP_VAL_MASK;
++	if (t->dscp & SCTP_DSCP_SET_MASK)
++		tclass = t->dscp & SCTP_DSCP_VAL_MASK;
  
--	inet->pmtudisc = transport->param_flags & SPP_PMTUD_ENABLE ?
--			 IP_PMTUDISC_DO : IP_PMTUDISC_DONT;
+ 	if (INET_ECN_is_capable(tclass))
+ 		IP6_ECN_flow_xmit(sk, fl6->flowlabel);
+ 
+-	if (!(transport->param_flags & SPP_PMTUD_ENABLE))
++	if (!(t->param_flags & SPP_PMTUD_ENABLE))
+ 		skb->ignore_df = 1;
+ 
+ 	SCTP_INC_STATS(sock_net(sk), SCTP_MIB_OUTSCTPPACKS);
+ 
+-	rcu_read_lock();
+-	res = ip6_xmit(sk, skb, fl6, sk->sk_mark, rcu_dereference(np->opt),
+-		       tclass, sk->sk_priority);
+-	rcu_read_unlock();
+-	return res;
 +	if (!t->encap_port || !sctp_sk(sk)->udp_port) {
++		int res;
++
 +		skb_dst_set(skb, dst);
-+		return __ip_queue_xmit(sk, skb, &t->fl, dscp);
++		rcu_read_lock();
++		res = ip6_xmit(sk, skb, fl6, sk->sk_mark,
++			       rcu_dereference(np->opt),
++			       tclass, sk->sk_priority);
++		rcu_read_unlock();
++		return res;
 +	}
 +
 +	if (skb_is_gso(skb))
 +		skb_shinfo(skb)->gso_type |= SKB_GSO_UDP_TUNNEL_CSUM;
- 
--	SCTP_INC_STATS(sock_net(&inet->sk), SCTP_MIB_OUTSCTPPACKS);
-+	if (ip_dont_fragment(sk, dst) && !skb->ignore_df)
-+		df = htons(IP_DF);
- 
--	return __ip_queue_xmit(&inet->sk, skb, &transport->fl, dscp);
++
 +	skb->encapsulation = 1;
 +	skb_reset_inner_mac_header(skb);
 +	skb_reset_inner_transport_header(skb);
 +	skb_set_inner_ipproto(skb, IPPROTO_SCTP);
-+	udp_tunnel_xmit_skb((struct rtable *)dst, sk, skb, fl4->saddr,
-+			    fl4->daddr, dscp, ip4_dst_hoplimit(dst), df,
-+			    sctp_sk(sk)->udp_port, t->encap_port, false, false);
-+	return 0;
++	label = ip6_make_flowlabel(sock_net(sk), skb, fl6->flowlabel, true, fl6);
++
++	return udp_tunnel6_xmit_skb(dst, sk, skb, NULL, &fl6->saddr,
++				    &fl6->daddr, tclass, ip6_dst_hoplimit(dst),
++				    label, sctp_sk(sk)->udp_port, t->encap_port, false);
  }
  
- static struct sctp_af sctp_af_inet;
+ /* Returns the dst cache entry for the given source and destination ip
 -- 
 2.1.0
 
