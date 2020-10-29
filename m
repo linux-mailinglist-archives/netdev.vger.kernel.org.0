@@ -2,89 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D293029EED4
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 15:54:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 080D429EED2
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 15:53:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727864AbgJ2OyD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 10:54:03 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:31226 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725782AbgJ2OyC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 10:54:02 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-305-1ZHTd6FQOZmcpLkExSygcQ-1; Thu, 29 Oct 2020 14:52:53 +0000
-X-MC-Unique: 1ZHTd6FQOZmcpLkExSygcQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Thu, 29 Oct 2020 14:52:52 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Thu, 29 Oct 2020 14:52:52 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Andrew Lunn' <andrew@lunn.ch>
-CC:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
-        "Thomas Petazzoni" <thomas.petazzoni@bootlin.com>,
-        Ralf Baechle <ralf@linux-mips.org>
-Subject: RE: [PATCH net-next 2/2] net: rose: Escape trigraph to fix warning
- with W=1
-Thread-Topic: [PATCH net-next 2/2] net: rose: Escape trigraph to fix warning
- with W=1
-Thread-Index: AQHWrYhh0XmwM4Ib50eEMfDvUoESGqmuoTkggAAEDYCAAASXkA==
-Date:   Thu, 29 Oct 2020 14:52:52 +0000
-Message-ID: <2c3145a577f84e96b2ec7be15db90331@AcuMS.aculab.com>
-References: <20201028002235.928999-1-andrew@lunn.ch>
- <20201028002235.928999-3-andrew@lunn.ch>
- <294bfee65035493fac1e2643a5e360d5@AcuMS.aculab.com>
- <20201029143121.GN878328@lunn.ch>
-In-Reply-To: <20201029143121.GN878328@lunn.ch>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1727850AbgJ2Oxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 10:53:34 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:59933 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725782AbgJ2Oxe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 10:53:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603983213;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=WuSaw54N2WNnWs+yiS2iuACMZJVkFJJ9zkoidtfL5A0=;
+        b=F4C95iZ2AtVJnfN2Mv1PseSqYLkWWgyRLh4bwAWUI7WHTBKwucX1KnFqu4Gok1l5VBHlM6
+        MBxdoAJZm5V/VxHGIyU4vyyg8JATjOwBNCIdwTqmVdC8+KJKpOZXuo+lBLu/fa4vilXsrd
+        Dk/8wna3nNv6Rg5OgHhHTiyOswM1Wp8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-543-SMNuPuw6OKaAqFD8S8cXEA-1; Thu, 29 Oct 2020 10:53:28 -0400
+X-MC-Unique: SMNuPuw6OKaAqFD8S8cXEA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5B839939C1A;
+        Thu, 29 Oct 2020 14:53:27 +0000 (UTC)
+Received: from ebuild.redhat.com (ovpn-114-253.ams2.redhat.com [10.36.114.253])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 526855B4A4;
+        Thu, 29 Oct 2020 14:53:26 +0000 (UTC)
+From:   Eelco Chaudron <echaudro@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, dev@openvswitch.org, kuba@kernel.org
+Subject: [PATCH net] net: openvswitch: silence suspicious RCU usage warning
+Date:   Thu, 29 Oct 2020 15:53:21 +0100
+Message-Id: <160398318667.8898.856205445259063348.stgit@ebuild>
+User-Agent: StGit/0.21
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogQW5kcmV3IEx1bm4NCj4gU2VudDogMjkgT2N0b2JlciAyMDIwIDE0OjMxDQo+IE9uIFRo
-dSwgT2N0IDI5LCAyMDIwIGF0IDAyOjE5OjI3UE0gKzAwMDAsIERhdmlkIExhaWdodCB3cm90ZToN
-Cj4gPiBGcm9tOiBBbmRyZXcgTHVubg0KPiA+ID4gU2VudDogMjggT2N0b2JlciAyMDIwIDAwOjIz
-DQo+ID4gPg0KPiA+ID4gbmV0L3Jvc2UvYWZfcm9zZS5jOiBJbiBmdW5jdGlvbiDigJhyb3NlX2lu
-Zm9fc2hvd+KAmToNCj4gPiA+IG5ldC9yb3NlL2FmX3Jvc2UuYzoxNDEzOjIwOiB3YXJuaW5nOiB0
-cmlncmFwaCA/Py0gaWdub3JlZCwgdXNlIC10cmlncmFwaHMgdG8gZW5hYmxlIFstV3RyaWdyYXBo
-c10NCj4gPiA+ICAxNDEzIHwgICAgY2FsbHNpZ24gPSAiPz8/Pz8/LT8iOw0KPiA+ID4NCj4gPiA+
-ID8/LSBpcyBhIHRyaWdyYXBoLCBhbmQgc2hvdWxkIGJlIHJlcGxhY2VkIGJ5IGEgy5wgYnkgdGhl
-DQo+ID4gPiBjb21waWxlci4gSG93ZXZlciwgdHJpZ3JhcGhzIGFyZSBiZWluZyBpZ25vcmVkIGlu
-IHRoZSBidWlsZC4gRml4IHRoZQ0KPiA+ID4gd2FybmluZyBieSBlc2NhcGluZyB0aGUgPz8gcHJl
-Zml4IG9mIGEgdHJpZ3JhcGguDQo+ID4gPg0KPiA+ID4gU2lnbmVkLW9mZi1ieTogQW5kcmV3IEx1
-bm4gPGFuZHJld0BsdW5uLmNoPg0KPiA+ID4gLS0tDQo+ID4gPiAgbmV0L3Jvc2UvYWZfcm9zZS5j
-IHwgMiArLQ0KPiA+ID4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlv
-bigtKQ0KPiA+ID4NCj4gPiA+IGRpZmYgLS1naXQgYS9uZXQvcm9zZS9hZl9yb3NlLmMgYi9uZXQv
-cm9zZS9hZl9yb3NlLmMNCj4gPiA+IGluZGV4IGNmN2Q5NzRlMGY2MS4uMmMyOTc4MzRkMjY4IDEw
-MDY0NA0KPiA+ID4gLS0tIGEvbmV0L3Jvc2UvYWZfcm9zZS5jDQo+ID4gPiArKysgYi9uZXQvcm9z
-ZS9hZl9yb3NlLmMNCj4gPiA+IEBAIC0xNDEwLDcgKzE0MTAsNyBAQCBzdGF0aWMgaW50IHJvc2Vf
-aW5mb19zaG93KHN0cnVjdCBzZXFfZmlsZSAqc2VxLCB2b2lkICp2KQ0KPiA+ID4gIAkJCSAgIGF4
-MmFzYyhidWYsICZyb3NlLT5kZXN0X2NhbGwpKTsNCj4gPiA+DQo+ID4gPiAgCQlpZiAoYXgyNWNt
-cCgmcm9zZS0+c291cmNlX2NhbGwsICZudWxsX2F4MjVfYWRkcmVzcykgPT0gMCkNCj4gPiA+IC0J
-CQljYWxsc2lnbiA9ICI/Pz8/Pz8tPyI7DQo+ID4gPiArCQkJY2FsbHNpZ24gPSAiPz8/P1w/XD8t
-PyI7DQo+ID4NCj4gPiBJIHRoaW5rIEknZCBqdXN0IHNwbGl0IHRoZSBzdHJpbmcsIGVnOiAiPz8/
-Pz8iICItPyIuDQo+IA0KPiBIdW1tLiBJIHRoaW5rIHdlIG5lZWQgYSBsYW5ndWFnZSBsYXd5ZXIu
-DQo+IA0KPiBEb2VzIGl0IGNvbmNhdGVuYXRlIHRoZSBzdHJpbmdzIGFuZCB0aGVuIGV2YWx1YXRl
-IGZvciB0cmlncmFwaHM/IE9yDQo+IGRvZXMgaXQgZXZhbHVhdGUgZm9yIHRyaWdyYXBocywgYW5k
-IHRoZW4gY29uY2F0ZW5hdGUgdGhlIHN0cmluZ3M/DQoNCkknbSA5OS45OTk5JSBzdXJlIHRyaWdy
-YXBocyBhcmUgZXZhbHVhdGVkIGJlZm9yZSBzdHJpbmcgY29uY2F0ZW5hdGlvbi4NCg0KQWx0aG91
-Z2ggdHJpZ3JhcGhzIGFyZSBzdWNoIGEgc3R1cGlkIGlkZWEgSSdkIGJlIHRlbXB0ZWQgdG8ganVz
-dA0KdHVybiB0aGUgd2FybmluZyBvZmYuDQpUaGVyZSBpcyBnb29kIHJlYXNvbiB3aHkgdGhleSBh
-cmUgaWdub3JlZCBieSBkZWZhdWx0Lg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNz
-IExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAx
-UFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
+Silence suspicious RCU usage warning in ovs_flow_tbl_masks_cache_resize()
+by replacing rcu_dereference() with rcu_dereference_ovsl().
+
+In addition, when creating a new datapath, make sure it's configured under
+the ovs_lock.
+
+Fixes: 9bf24f594c6a ("net: openvswitch: make masks cache size configurable")
+Reported-by: syzbot+9a8f8bfcc56e8578016c@syzkaller.appspotmail.com
+Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+---
+ net/openvswitch/datapath.c   |    8 ++++----
+ net/openvswitch/flow_table.c |    2 +-
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+index 832f898edb6a..020f8539fede 100644
+--- a/net/openvswitch/datapath.c
++++ b/net/openvswitch/datapath.c
+@@ -1695,6 +1695,9 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 	if (err)
+ 		goto err_destroy_ports;
+ 
++	/* So far only local changes have been made, now need the lock. */
++	ovs_lock();
++
+ 	/* Set up our datapath device. */
+ 	parms.name = nla_data(a[OVS_DP_ATTR_NAME]);
+ 	parms.type = OVS_VPORT_TYPE_INTERNAL;
+@@ -1707,9 +1710,6 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 	if (err)
+ 		goto err_destroy_meters;
+ 
+-	/* So far only local changes have been made, now need the lock. */
+-	ovs_lock();
+-
+ 	vport = new_vport(&parms);
+ 	if (IS_ERR(vport)) {
+ 		err = PTR_ERR(vport);
+@@ -1725,7 +1725,6 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 				ovs_dp_reset_user_features(skb, info);
+ 		}
+ 
+-		ovs_unlock();
+ 		goto err_destroy_meters;
+ 	}
+ 
+@@ -1742,6 +1741,7 @@ static int ovs_dp_cmd_new(struct sk_buff *skb, struct genl_info *info)
+ 	return 0;
+ 
+ err_destroy_meters:
++	ovs_unlock();
+ 	ovs_meters_exit(dp);
+ err_destroy_ports:
+ 	kfree(dp->ports);
+diff --git a/net/openvswitch/flow_table.c b/net/openvswitch/flow_table.c
+index f3486a37361a..c89c8da99f1a 100644
+--- a/net/openvswitch/flow_table.c
++++ b/net/openvswitch/flow_table.c
+@@ -390,7 +390,7 @@ static struct mask_cache *tbl_mask_cache_alloc(u32 size)
+ }
+ int ovs_flow_tbl_masks_cache_resize(struct flow_table *table, u32 size)
+ {
+-	struct mask_cache *mc = rcu_dereference(table->mask_cache);
++	struct mask_cache *mc = rcu_dereference_ovsl(table->mask_cache);
+ 	struct mask_cache *new;
+ 
+ 	if (size == mc->cache_size)
 
