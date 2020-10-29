@@ -2,92 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD3A629EF69
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 16:13:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 298C129EF80
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 16:16:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727972AbgJ2PNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 11:13:12 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:52460 "EHLO vps0.lunn.ch"
+        id S1728063AbgJ2PQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 11:16:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41722 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727026AbgJ2PNM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Oct 2020 11:13:12 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kY9bv-004BLg-Hn; Thu, 29 Oct 2020 16:13:07 +0100
-Date:   Thu, 29 Oct 2020 16:13:07 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Laight <David.Laight@ACULAB.COM>,
-        Arnd Bergmann <arnd@arndb.de>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Ralf Baechle <ralf@linux-mips.org>
-Subject: Re: [PATCH net-next 2/2] net: rose: Escape trigraph to fix warning
- with W=1
-Message-ID: <20201029151307.GP878328@lunn.ch>
-References: <20201028002235.928999-1-andrew@lunn.ch>
- <20201028002235.928999-3-andrew@lunn.ch>
- <294bfee65035493fac1e2643a5e360d5@AcuMS.aculab.com>
- <20201029143121.GN878328@lunn.ch>
- <2c3145a577f84e96b2ec7be15db90331@AcuMS.aculab.com>
+        id S1726604AbgJ2PQe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 11:16:34 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 85ABD2076E;
+        Thu, 29 Oct 2020 15:16:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603984594;
+        bh=hSnuwO9i8vYH0fM2M1kE2SHiaxuaeLezHgMHWhG8V9I=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XbVyagwuUvo3mgBgegI8R2C6DUf8z+nfLWVxD8eCFBM8CKf/XAJh7MJcATdjT2WEC
+         WJqYC6Gfu/LYbKNzMLEMayZAHlJsZjMbqslsM2tquD7sMQRWA6DIWRKCYkUDWM7DXJ
+         Hv4wqriHP/QKnMLKwGln2G/beNWq7paPv2DM5bJg=
+Date:   Thu, 29 Oct 2020 08:16:32 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shuah Khan <shuah@kernel.org>, linux-doc@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Marcelo Tosatti <mtosatti@redhat.com>
+Subject: Re: [PATCH net-next 2/3] net/core: introduce default_rps_mask netns
+ attribute
+Message-ID: <20201029081632.2516a39b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <9e86568c264696dbe0fd44b2a8662bd233e2c3e8.1603906564.git.pabeni@redhat.com>
+References: <cover.1603906564.git.pabeni@redhat.com>
+        <9e86568c264696dbe0fd44b2a8662bd233e2c3e8.1603906564.git.pabeni@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <2c3145a577f84e96b2ec7be15db90331@AcuMS.aculab.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 29, 2020 at 02:52:52PM +0000, David Laight wrote:
-> From: Andrew Lunn
-> > Sent: 29 October 2020 14:31
-> > On Thu, Oct 29, 2020 at 02:19:27PM +0000, David Laight wrote:
-> > > From: Andrew Lunn
-> > > > Sent: 28 October 2020 00:23
-> > > >
-> > > > net/rose/af_rose.c: In function ‘rose_info_show’:
-> > > > net/rose/af_rose.c:1413:20: warning: trigraph ??- ignored, use -trigraphs to enable [-Wtrigraphs]
-> > > >  1413 |    callsign = "??????-?";
-> > > >
-> > > > ??- is a trigraph, and should be replaced by a ˜ by the
-> > > > compiler. However, trigraphs are being ignored in the build. Fix the
-> > > > warning by escaping the ?? prefix of a trigraph.
-> > > >
-> > > > Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> > > > ---
-> > > >  net/rose/af_rose.c | 2 +-
-> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > >
-> > > > diff --git a/net/rose/af_rose.c b/net/rose/af_rose.c
-> > > > index cf7d974e0f61..2c297834d268 100644
-> > > > --- a/net/rose/af_rose.c
-> > > > +++ b/net/rose/af_rose.c
-> > > > @@ -1410,7 +1410,7 @@ static int rose_info_show(struct seq_file *seq, void *v)
-> > > >  			   ax2asc(buf, &rose->dest_call));
-> > > >
-> > > >  		if (ax25cmp(&rose->source_call, &null_ax25_address) == 0)
-> > > > -			callsign = "??????-?";
-> > > > +			callsign = "????\?\?-?";
-> > >
-> > > I think I'd just split the string, eg: "?????" "-?".
-> > 
-> > Humm. I think we need a language lawyer.
-> > 
-> > Does it concatenate the strings and then evaluate for trigraphs? Or
-> > does it evaluate for trigraphs, and then concatenate the strings?
-> 
-> I'm 99.9999% sure trigraphs are evaluated before string concatenation.
-> 
-> Although trigraphs are such a stupid idea I'd be tempted to just
-> turn the warning off.
-> There is good reason why they are ignored by default.
+On Wed, 28 Oct 2020 18:46:02 +0100 Paolo Abeni wrote:
+> @@ -46,6 +47,54 @@ int sysctl_devconf_inherit_init_net __read_mostly;
+>  EXPORT_SYMBOL(sysctl_devconf_inherit_init_net);
+>  
+>  #ifdef CONFIG_RPS
+> +struct cpumask rps_default_mask;
 
-Hi Arnd
-
-I think this trigraph issues popped up because of one of the changes
-you have in your playground, adding more warnings.
-
-What do you think of disabling the trigraph warning as well as
-disabling trigraphs themselves?
-
-	   Andrew
+net/core/sysctl_net_core.c:50:16: warning: symbol 'rps_default_mask' was not declared. Should it be static?
