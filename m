@@ -2,144 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 32B1F29F576
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 20:37:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B5FB29F580
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 20:43:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725948AbgJ2The (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 15:37:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57082 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725863AbgJ2The (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 15:37:34 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7EBCC0613D3
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 12:37:33 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id k18so915819wmj.5
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 12:37:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ycvfKMJ76qGv5R2aegMpcihPW70X6nt59v8Mw9I2ugw=;
-        b=izTyanEop1UPDUUQ5udPdWIFWKImCXKqGh4jRR9NHkUR7PJacQNPUnl107nqevZDDf
-         2ls5/MMnk0Cs59BTsoHhZgvmrt+5lvXOEh+0Z05+kpxfOO2IlaY+ZcjHt0JUr3S7Tb7C
-         ZY/iiHgbbpAHv1LHoDTG1m/cM4A9ebvnpfS9xQ8Mm8NyQqJG9F8u2WZwjpKR5YmzSIz2
-         z0HaHtRxECijdT8h4xCRvj02t+j3uDLKnAp0uORBAw9n96mXNst5yyc+KqNcx1YCPXNc
-         S751K42TeaDjXArM7ON+oRlPltHjzv6KuSJPaaEfpTQ/UomfhENUe5VSR5dgOUJBCOcJ
-         CtIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ycvfKMJ76qGv5R2aegMpcihPW70X6nt59v8Mw9I2ugw=;
-        b=h+TLVhOuHEz6m/o+ayEAh1pS2tzOGbzJFWpZP8Eb72P26R5LA7Qw5yetu7LwvFIBII
-         K961scCqRhOzslU98xu5SuYoItZKMh7KFS7aFyJDZfOQGCutlsK7tua14xtiiBHkq8eF
-         1hv+ZFcUhkMVI4/swMJfYOoj8Y0oBSe8IMcFOHvQh1T0rt2xOdacR2vQWtsRhGcsGOYu
-         Y2OAWW7dEQCJUA+KKya4BtQynjXz/QUptbymKYbR+JLucO2tU+UQaUyjqfjTyNeGoy9v
-         rtmH3yUPx8nTuosEw7u3zUbDYF4xU+2Pya06igqTpBPjli+8zx+kLEajXhTgy9gu44Ee
-         0l4Q==
-X-Gm-Message-State: AOAM532yqCd3eAIUr7mkx6zZcgKNF57Mc8ynRQQKFLYtgw4midjLGWak
-        iQSqeXmN5Hu6HN0lSkyw7Ojm4UIE1AbYKM34K8wf9w==
-X-Google-Smtp-Source: ABdhPJyVpzE7KT8MnoBChtMjsxPysFTIYugPdHKYIVgeLeT9jDcYSt4tL4SZalOlRCDg4zanRghQrvAprEqP4asPtzE=
-X-Received: by 2002:a1c:9cd8:: with SMTP id f207mr816563wme.76.1604000252387;
- Thu, 29 Oct 2020 12:37:32 -0700 (PDT)
+        id S1726156AbgJ2Tnj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 15:43:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56380 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725948AbgJ2Tnj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 15:43:39 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4D46F20782;
+        Thu, 29 Oct 2020 19:43:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604000617;
+        bh=h3MleAy+1i2eMRVMC5aKx7VQAHzPoDk2AMn0XlSZBZY=;
+        h=Date:From:To:Cc:Subject:From;
+        b=vjfObC9WXk9Tesv8y8OWMIHzvLU10Mbvqe+c+mQtsYn1yQ2tVAm8yQiFTmvDbQFF2
+         uF1QLvpKsrX+KXWZm+qJ6akObbqG2+J6UmkgVI0uSEFEW+r79r8mNjuhkTVA2zIUxk
+         FzCTMrhyTIyJ18jhq9G+2hkhZKkJa12viWmMzQuw=
+Date:   Thu, 29 Oct 2020 12:43:35 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Networking
+Message-ID: <20201029124335.2886a2bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <20201029160938.154084-1-irogers@google.com> <497F86C5-BD00-4C38-BD87-C6EFB92D1088@fb.com>
-In-Reply-To: <497F86C5-BD00-4C38-BD87-C6EFB92D1088@fb.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Thu, 29 Oct 2020 12:37:20 -0700
-Message-ID: <CAP-5=fUVSSWEYWWswi19nQHY-b5Vn8-oi7uvtXWnmo1usLOzNw@mail.gmail.com>
-Subject: Re: [PATCH] libbpf hashmap: Fix undefined behavior in hash_bits
-To:     Song Liu <songliubraving@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 29, 2020 at 10:45 AM Song Liu <songliubraving@fb.com> wrote:
->
-> > On Oct 29, 2020, at 9:09 AM, Ian Rogers <irogers@google.com> wrote:
-> >
-> > If bits is 0, the case when the map is empty, then the >> is the size of
-> > the register which is undefined behavior - on x86 it is the same as a
-> > shift by 0. Fix by handling the 0 case explicitly when running with
-> > address sanitizer.
-> >
-> > A variant of this patch was posted previously as:
-> > https://lore.kernel.org/lkml/20200508063954.256593-1-irogers@google.com/
-> >
-> > Signed-off-by: Ian Rogers <irogers@google.com>
-> > ---
-> > tools/lib/bpf/hashmap.h | 14 ++++++++++++++
-> > 1 file changed, 14 insertions(+)
-> >
-> > diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
-> > index d9b385fe808c..27d0556527d3 100644
-> > --- a/tools/lib/bpf/hashmap.h
-> > +++ b/tools/lib/bpf/hashmap.h
-> > @@ -12,9 +12,23 @@
-> > #include <stddef.h>
-> > #include <limits.h>
-> >
-> > +#ifdef __has_feature
-> > +#define HAVE_FEATURE(f) __has_feature(f)
-> > +#else
-> > +#define HAVE_FEATURE(f) 0
-> > +#endif
-> > +
-> > static inline size_t hash_bits(size_t h, int bits)
-> > {
-> >       /* shuffle bits and return requested number of upper bits */
-> > +#if defined(ADDRESS_SANITIZER) || HAVE_FEATURE(address_sanitizer)
->
-> I am not very familiar with these features. Is address sanitizer same
-> as undefined behavior sanitizer (mentioned in previous version)?
+The following changes since commit 3cb12d27ff655e57e8efe3486dca2a22f4e30578:
 
-My preference would be to special case bits == 0 without the feature
-guards as per the original change, this is the most correct. There is
-some feature support for detecting ubsan:
-https://github.com/google/sanitizers/issues/765
-In my case I see this with address sanitizer and older versions of
-clang don't expose ubsan as a feature.
+  Merge tag 'net-5.10-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2020-10-23 12:05:49 -0700)
 
-> > +     /*
-> > +      * If the requested bits == 0 avoid undefined behavior from a
-> > +      * greater-than bit width shift right (aka invalid-shift-exponent).
-> > +      */
-> > +     if (bits == 0)
-> > +             return -1;
->
-> Shall we return 0 or -1 (0xffffffff) here?
+are available in the Git repository at:
 
-The value isn't used and so doesn't matter. -1 seemed less likely to
-silently succeed.
+  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.10-rc2
 
-> Also, we have HASHMAP_MIN_CAP_BITS == 2. Shall we just make sure we
-> never feed bits == 0 into hash_bits()?
+for you to fetch changes up to 2734a24e6e5d18522fbf599135c59b82ec9b2c9e:
 
-I think that'd be a different change. I'd be happy to see it.
+  r8169: fix issue with forced threading in combination with shared interrupts (2020-10-29 11:49:04 -0700)
 
-Thanks,
-Ian
+----------------------------------------------------------------
+Networking fixes for 5.10-rc2.
 
-> Thanks,
-> Song
->
->
-> > +#endif
-> > #if (__SIZEOF_SIZE_T__ == __SIZEOF_LONG_LONG__)
-> >       /* LP64 case */
-> >       return (h * 11400714819323198485llu) >> (__SIZEOF_LONG_LONG__ * 8 - bits);
-> > --
-> > 2.29.1.341.ge80a0c044ae-goog
-> >
->
+Current release regressions:
+
+ - r8169: fix forced threading conflicting with other shared
+   interrupts; we tried to fix the use of raise_softirq_irqoff
+   from an IRQ handler on RT by forcing hard irqs, but this
+   driver shares legacy PCI IRQs so drop the _irqoff() instead
+
+ - tipc: fix memory leak caused by a recent syzbot report fix
+   to tipc_buf_append()
+
+Current release - bugs in new features:
+
+ - devlink: Unlock on error in dumpit() and fix some error codes
+
+ - net/smc: fix null pointer dereference in smc_listen_decline()
+
+Previous release - regressions:
+
+ - tcp: Prevent low rmem stalls with SO_RCVLOWAT.
+
+ - net: protect tcf_block_unbind with block lock
+
+ - ibmveth: Fix use of ibmveth in a bridge; the self-imposed filtering
+   to only send legal frames to the hypervisor was too strict
+
+ - net: hns3: Clear the CMDQ registers before unmapping BAR region;
+   incorrect cleanup order was leading to a crash
+
+ - bnxt_en - handful of fixes to fixes:
+    - Send HWRM_FUNC_RESET fw command unconditionally, even
+      if there are PCIe errors being reported
+    - Check abort error state in bnxt_open_nic().
+    - Invoke cancel_delayed_work_sync() for PFs also.
+    - Fix regression in workqueue cleanup logic in bnxt_remove_one().
+
+ - mlxsw: Only advertise link modes supported by both driver
+   and device, after removal of 56G support from the driver
+   56G was not cleared from advertised modes
+
+ - net/smc: fix suppressed return code
+
+Previous release - always broken:
+
+ - netem: fix zero division in tabledist, caused by integer overflow
+
+ - bnxt_en: Re-write PCI BARs after PCI fatal error.
+
+ - cxgb4: set up filter action after rewrites
+
+ - net: ipa: command payloads already mapped
+
+Misc:
+
+ - s390/ism: fix incorrect system EID, it's okay to change since
+   it was added in current release
+
+ - vsock: use ns_capable_noaudit() on socket create to suppress
+   false positive audit messages
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+----------------------------------------------------------------
+Aleksandr Nogikh (1):
+      netem: fix zero division in tabledist
+
+Alex Elder (1):
+      net: ipa: command payloads already mapped
+
+Amit Cohen (2):
+      mlxsw: Only advertise link modes supported by both driver and device
+      mlxsw: core: Fix use-after-free in mlxsw_emad_trans_finish()
+
+Andrew Gabbasov (1):
+      ravb: Fix bit fields checking in ravb_hwtstamp_get()
+
+Arjun Roy (1):
+      tcp: Prevent low rmem stalls with SO_RCVLOWAT.
+
+Dan Carpenter (3):
+      net: hns3: clean up a return in hclge_tm_bp_setup()
+      devlink: Fix some error codes
+      devlink: Unlock on error in dumpit()
+
+Guillaume Nault (1):
+      net/sched: act_mpls: Add softdep on mpls_gso.ko
+
+Heiner Kallweit (1):
+      r8169: fix issue with forced threading in combination with shared interrupts
+
+Ido Schimmel (1):
+      mlxsw: core: Fix memory leak on module removal
+
+Jakub Kicinski (4):
+      Merge branch 'ionic-memory-usage-fixes'
+      Merge branch 'net-smc-fixes-2020-10-23'
+      Merge branch 'mlxsw-various-fixes'
+      Merge branch 'bnxt_en-bug-fixes'
+
+Jeff Vander Stoep (1):
+      vsock: use ns_capable_noaudit() on socket create
+
+Karsten Graul (3):
+      net/smc: fix null pointer dereference in smc_listen_decline()
+      net/smc: fix suppressed return code
+      s390/ism: fix incorrect system EID
+
+Leon Romanovsky (1):
+      net: protect tcf_block_unbind with block lock
+
+Lijun Pan (1):
+      ibmvnic: fix ibmvnic_set_mac
+
+Masahiro Fujiwara (1):
+      gtp: fix an use-before-init in gtp_newlink()
+
+Michael Chan (1):
+      bnxt_en: Check abort error state in bnxt_open_nic().
+
+Michael Ellerman (1):
+      net: ucc_geth: Drop extraneous parentheses in comparison
+
+Paolo Abeni (1):
+      mptcp: add missing memory scheduling in the rx path
+
+Raju Rangoju (1):
+      cxgb4: set up filter action after rewrites
+
+Shannon Nelson (3):
+      ionic: clean up sparse complaints
+      ionic: no rx flush in deinit
+      ionic: fix mem leak in rx_empty
+
+Thomas Bogendoerfer (1):
+      ibmveth: Fix use of ibmveth in a bridge.
+
+Tung Nguyen (1):
+      tipc: fix memory leak caused by tipc_buf_append()
+
+Vasundhara Volam (4):
+      bnxt_en: Fix regression in workqueue cleanup logic in bnxt_remove_one().
+      bnxt_en: Invoke cancel_delayed_work_sync() for PFs also.
+      bnxt_en: Re-write PCI BARs after PCI fatal error.
+      bnxt_en: Send HWRM_FUNC_RESET fw command unconditionally.
+
+Vinay Kumar Yadav (3):
+      chelsio/chtls: fix tls record info to user
+      chelsio/chtls: fix deadlock issue
+      chelsio/chtls: fix memory leaks in CPL handlers
+
+Zenghui Yu (1):
+      net: hns3: Clear the CMDQ registers before unmapping BAR region
+
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c          | 49 ++++++++++++-------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h          |  1 +
+ drivers/net/ethernet/chelsio/cxgb4/cxgb4_filter.c  | 56 +++++++++++-----------
+ drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h        |  4 ++
+ .../chelsio/inline_crypto/chtls/chtls_cm.c         | 29 +++++------
+ .../chelsio/inline_crypto/chtls/chtls_io.c         |  7 ++-
+ drivers/net/ethernet/freescale/ucc_geth.c          |  2 +-
+ .../net/ethernet/hisilicon/hns3/hns3pf/hclge_tm.c  |  2 +-
+ .../ethernet/hisilicon/hns3/hns3vf/hclgevf_main.c  |  2 +-
+ drivers/net/ethernet/ibm/ibmveth.c                 |  6 ---
+ drivers/net/ethernet/ibm/ibmvnic.c                 |  8 +++-
+ drivers/net/ethernet/mellanox/mlxsw/core.c         |  5 ++
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.c     |  9 +++-
+ drivers/net/ethernet/mellanox/mlxsw/spectrum.h     |  1 +
+ .../net/ethernet/mellanox/mlxsw/spectrum_ethtool.c | 30 ++++++++++++
+ drivers/net/ethernet/pensando/ionic/ionic_dev.c    |  4 +-
+ drivers/net/ethernet/pensando/ionic/ionic_dev.h    |  2 +
+ drivers/net/ethernet/pensando/ionic/ionic_fw.c     |  6 +--
+ drivers/net/ethernet/pensando/ionic/ionic_lif.c    | 29 ++++++-----
+ drivers/net/ethernet/pensando/ionic/ionic_main.c   |  4 +-
+ drivers/net/ethernet/pensando/ionic/ionic_stats.h  |  2 +-
+ drivers/net/ethernet/pensando/ionic/ionic_txrx.c   | 47 +++++++-----------
+ drivers/net/ethernet/pensando/ionic/ionic_txrx.h   |  1 -
+ drivers/net/ethernet/realtek/r8169_main.c          |  4 +-
+ drivers/net/ethernet/renesas/ravb_main.c           | 10 ++--
+ drivers/net/gtp.c                                  | 16 +++----
+ drivers/net/ipa/gsi_trans.c                        | 21 +++++---
+ drivers/s390/net/ism_drv.c                         |  2 +-
+ net/core/devlink.c                                 | 30 +++++++-----
+ net/ipv4/tcp.c                                     |  2 +
+ net/ipv4/tcp_input.c                               |  3 +-
+ net/mptcp/protocol.c                               | 10 ++++
+ net/sched/act_mpls.c                               |  1 +
+ net/sched/cls_api.c                                |  4 +-
+ net/sched/sch_netem.c                              |  9 +++-
+ net/smc/af_smc.c                                   |  7 +--
+ net/smc/smc_core.c                                 |  7 ++-
+ net/tipc/msg.c                                     |  5 +-
+ net/vmw_vsock/af_vsock.c                           |  2 +-
+ 39 files changed, 261 insertions(+), 178 deletions(-)
