@@ -2,156 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 35E6429E3C5
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:21:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCB0529E3C4
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:21:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726303AbgJ2HVf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 03:21:35 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:24775 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726001AbgJ2HVG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:21:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603956064;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=bX6rZZ2WckVwic3cL/Iugqri2t7pKFvVduk03jGqeLQ=;
-        b=PuUh3Z0e66tVfdSQGlcS6+cl5ULpXWMOcgYK7SkMx/r1LElElbSmTgbzxvUGPdAeBw2c5Z
-        nf7Vde1i7utKiVH16yyt4inI1krqrXBxkxCm/zg65fy3JDiB8OOnS/3uZFCQejyeyxoGzF
-        ixgHKmHCI5peQ+mr7pGpnCCjh8nnA6M=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-92-c7LfDfIDN--qCBrqNxdIBA-1; Thu, 29 Oct 2020 03:04:01 -0400
-X-MC-Unique: c7LfDfIDN--qCBrqNxdIBA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 65DA6804B73;
-        Thu, 29 Oct 2020 07:04:00 +0000 (UTC)
-Received: from [10.72.12.209] (ovpn-12-209.pek2.redhat.com [10.72.12.209])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0915F1974D;
-        Thu, 29 Oct 2020 07:03:43 +0000 (UTC)
-Subject: Re: [PATCH] vhost: Use mutex to protect vq_irq setup
-To:     Eli Cohen <elic@nvidia.com>, "Michael S. Tsirkin" <mst@redhat.com>,
-        virtualization@lists.linux-foundation.org,
-        netdev <netdev@vger.kernel.org>, lingshan.zhu@intel.com
-References: <20201028142004.GA100353@mtl-vdi-166.wap.labs.mlnx>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <60e24a0e-0d72-51b3-216a-b3cf62fb1a58@redhat.com>
-Date:   Thu, 29 Oct 2020 15:03:24 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <20201028142004.GA100353@mtl-vdi-166.wap.labs.mlnx>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+        id S1726223AbgJ2HV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 03:21:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54764 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725980AbgJ2HVB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:21:01 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65C24C08E89B;
+        Thu, 29 Oct 2020 00:05:20 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id x13so1575114pgp.7;
+        Thu, 29 Oct 2020 00:05:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=XhPZ+7DUQwlRDaSu5lv7OXg3Gcfc+hMYdwSPQo1kNA4=;
+        b=GCSJeAwBt1IDwsGpWUUH/GLbcfmUUQAAGeKn7lvd5Kxdmd2KKI+UzNmf7Z9s1oO3rP
+         sQ7t9hFtBDdcEdm5RPwu3vUDgqTJj9fu5fa0Fo01g8ISG+qCbvTAvI6GbX3KiZfZZvjQ
+         W58CMfw9sQUblhvn+gVfcP8sDrAIG8ASS7quSQ3b7IAxMCDd7f/qNACACJJ+ZQXugEMI
+         McM9ymrv8+FWLAEtvUIj4QUiEg0V24keQmoo0p6SpqMltgOeyVdSOUZnQSnDTO9/7IIW
+         kVOKkS5MCWXigtrxJjzPIQz3xinzYxy4n2HFXy0ig1//7WOdf/qP6xXOyuDcKMsUwERY
+         KYSQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=XhPZ+7DUQwlRDaSu5lv7OXg3Gcfc+hMYdwSPQo1kNA4=;
+        b=kQA83pMx6TiwD2R0s9ywCiHHZ3sk/J5cj7ZYAIoa/HIGycguywAt62YuruslP2m0KY
+         9kUpXGkYEcOdxDfrX8SPTFPjnY1uXzNXetIEWE9ZuYqzOnU8N7ymhzdpkw3NHZgmmUDc
+         UwpjSOGDrV5s5Q8meOLOXVVjiWGd9Azi9afiqyT4uBlBViXUy9iaJ4HEVYvZUT5f7LTk
+         C+s9PymZCOZqSTM8RXsuyH98T/CE7vbNWqpiifyuBeYYXs0BK02W4LPHF3wZz+H0Dp2C
+         Ip3d6UPIXLMHT/hYf9RWP/01lIaTis1beR25Mc4JtLEXjfwnD0uFmokyZ6RGEfPvWe82
+         sVsQ==
+X-Gm-Message-State: AOAM531tV7eJqRjX9MLI9rVzH8ItparBaTEsIRPAwWwp6QP6K+BXfxTG
+        UkZqskSwJxnSv5B7nAZLy8l4f+kgMJg=
+X-Google-Smtp-Source: ABdhPJz/5TEGhQUu2sGpjVz71NQISEfuWzK5n4l6V8Ug2pcvFnR7RHYPqOZlTCLSkDue16cExMXE8Q==
+X-Received: by 2002:a17:90a:2ec1:: with SMTP id h1mr2959377pjs.51.1603955119142;
+        Thu, 29 Oct 2020 00:05:19 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id v66sm1664558pfb.139.2020.10.29.00.05.17
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 29 Oct 2020 00:05:18 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        Michael Tuexen <tuexen@fh-muenster.de>, davem@davemloft.net,
+        Jakub Kicinski <kuba@kernel.org>, gnault@redhat.com,
+        pabeni@redhat.com, willemdebruijn.kernel@gmail.com
+Subject: [PATCHv5 net-next 00/16] sctp: Implement RFC6951: UDP Encapsulation of SCTP
+Date:   Thu, 29 Oct 2020 15:04:54 +0800
+Message-Id: <cover.1603955040.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Description From the RFC:
 
-On 2020/10/28 下午10:20, Eli Cohen wrote:
-> Both irq_bypass_register_producer() and irq_bypass_unregister_producer()
-> require process context to run. Change the call context lock from
-> spinlock to mutex to protect the setup process to avoid deadlocks.
->
-> Fixes: 265a0ad8731d ("vhost: introduce vhost_vring_call")
-> Signed-off-by: Eli Cohen <elic@nvidia.com>
+   The Main Reasons:
 
+   o  To allow SCTP traffic to pass through legacy NATs, which do not
+      provide native SCTP support as specified in [BEHAVE] and
+      [NATSUPP].
 
-Hi Eli:
+   o  To allow SCTP to be implemented on hosts that do not provide
+      direct access to the IP layer.  In particular, applications can
+      use their own SCTP implementation if the operating system does not
+      provide one.
 
-During review we spot that the spinlock is not necessary. And it was 
-already protected by vq mutex. So it was removed in this commit:
+   Implementation Notes:
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=86e182fe12ee5869022614457037097c70fe2ed1
+   UDP-encapsulated SCTP is normally communicated between SCTP stacks
+   using the IANA-assigned UDP port number 9899 (sctp-tunneling) on both
+   ends.  There are circumstances where other ports may be used on
+   either end, and it might be required to use ports other than the
+   registered port.
 
-Thanks
+   Each SCTP stack uses a single local UDP encapsulation port number as
+   the destination port for all its incoming SCTP packets, this greatly
+   simplifies implementation design.
 
+   An SCTP implementation supporting UDP encapsulation MUST maintain a
+   remote UDP encapsulation port number per destination address for each
+   SCTP association.  Again, because the remote stack may be using ports
+   other than the well-known port, each port may be different from each
+   stack.  However, because of remapping of ports by NATs, the remote
+   ports associated with different remote IP addresses may not be
+   identical, even if they are associated with the same stack.
 
-> ---
->   drivers/vhost/vdpa.c  | 10 +++++-----
->   drivers/vhost/vhost.c |  6 +++---
->   drivers/vhost/vhost.h |  3 ++-
->   3 files changed, 10 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index be783592fe58..0a744f2b6e76 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -98,26 +98,26 @@ static void vhost_vdpa_setup_vq_irq(struct vhost_vdpa *v, u16 qid)
->   		return;
->   
->   	irq = ops->get_vq_irq(vdpa, qid);
-> -	spin_lock(&vq->call_ctx.ctx_lock);
-> +	mutex_lock(&vq->call_ctx.ctx_lock);
->   	irq_bypass_unregister_producer(&vq->call_ctx.producer);
->   	if (!vq->call_ctx.ctx || irq < 0) {
-> -		spin_unlock(&vq->call_ctx.ctx_lock);
-> +		mutex_unlock(&vq->call_ctx.ctx_lock);
->   		return;
->   	}
->   
->   	vq->call_ctx.producer.token = vq->call_ctx.ctx;
->   	vq->call_ctx.producer.irq = irq;
->   	ret = irq_bypass_register_producer(&vq->call_ctx.producer);
-> -	spin_unlock(&vq->call_ctx.ctx_lock);
-> +	mutex_unlock(&vq->call_ctx.ctx_lock);
->   }
->   
->   static void vhost_vdpa_unsetup_vq_irq(struct vhost_vdpa *v, u16 qid)
->   {
->   	struct vhost_virtqueue *vq = &v->vqs[qid];
->   
-> -	spin_lock(&vq->call_ctx.ctx_lock);
-> +	mutex_lock(&vq->call_ctx.ctx_lock);
->   	irq_bypass_unregister_producer(&vq->call_ctx.producer);
-> -	spin_unlock(&vq->call_ctx.ctx_lock);
-> +	mutex_unlock(&vq->call_ctx.ctx_lock);
->   }
->   
->   static void vhost_vdpa_reset(struct vhost_vdpa *v)
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index 9ad45e1d27f0..938239e11455 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -302,7 +302,7 @@ static void vhost_vring_call_reset(struct vhost_vring_call *call_ctx)
->   {
->   	call_ctx->ctx = NULL;
->   	memset(&call_ctx->producer, 0x0, sizeof(struct irq_bypass_producer));
-> -	spin_lock_init(&call_ctx->ctx_lock);
-> +	mutex_init(&call_ctx->ctx_lock);
->   }
->   
->   static void vhost_vq_reset(struct vhost_dev *dev,
-> @@ -1650,9 +1650,9 @@ long vhost_vring_ioctl(struct vhost_dev *d, unsigned int ioctl, void __user *arg
->   			break;
->   		}
->   
-> -		spin_lock(&vq->call_ctx.ctx_lock);
-> +		mutex_lock(&vq->call_ctx.ctx_lock);
->   		swap(ctx, vq->call_ctx.ctx);
-> -		spin_unlock(&vq->call_ctx.ctx_lock);
-> +		mutex_unlock(&vq->call_ctx.ctx_lock);
->   		break;
->   	case VHOST_SET_VRING_ERR:
->   		if (copy_from_user(&f, argp, sizeof f)) {
-> diff --git a/drivers/vhost/vhost.h b/drivers/vhost/vhost.h
-> index 9032d3c2a9f4..e8855ea04205 100644
-> --- a/drivers/vhost/vhost.h
-> +++ b/drivers/vhost/vhost.h
-> @@ -64,7 +64,8 @@ enum vhost_uaddr_type {
->   struct vhost_vring_call {
->   	struct eventfd_ctx *ctx;
->   	struct irq_bypass_producer producer;
-> -	spinlock_t ctx_lock;
-> +	/* protect vq irq setup */
-> +	struct mutex ctx_lock;
->   };
->   
->   /* The virtqueue structure describes a queue attached to a device. */
+   Because the well-known port might not be used, implementations need
+   to allow other port numbers to be specified as a local or remote UDP
+   encapsulation port number through APIs.
+
+Patches:
+
+   This patchset is using the udp4/6 tunnel APIs to implement the UDP
+   Encapsulation of SCTP with not much change in SCTP protocol stack
+   and with all current SCTP features keeped in Linux Kernel.
+
+   1 - 4: Fix some UDP issues that may be triggered by SCTP over UDP.
+   5 - 7: Process incoming UDP encapsulated packets and ICMP packets.
+   8 -10: Remote encap port's update by sysctl, sockopt and packets.
+   11-14: Process outgoing pakects with UDP encapsulated and its GSO.
+   15-16: Add the part from draft-tuexen-tsvwg-sctp-udp-encaps-cons-03.
+      17: Enable this feature.
+
+Tests:
+
+  - lksctp-tools/src/func_tests with UDP Encapsulation enabled/disabled:
+
+      Both make v4test and v6test passed.
+
+  - sctp-tests with UDP Encapsulation enabled/disabled:
+
+      repeatability/procdumps/sctpdiag/gsomtuchange/extoverflow/
+      sctphashtable passed. Others failed as expected due to those
+      "iptables -p sctp" rules.
+
+  - netperf on lo/netns/virtio_net, with gso enabled/disabled and
+    with ip_checksum enabled/disabled, with UDP Encapsulation
+    enabled/disabled:
+
+      No clear performance dropped.
+
+v1->v2:
+  - Fix some incorrect code in the patches 5,6,8,10,11,13,14,17, suggested
+    by Marcelo.
+  - Append two patches 15-16 to add the Additional Considerations for UDP
+    Encapsulation of SCTP from draft-tuexen-tsvwg-sctp-udp-encaps-cons-03.
+v2->v3:
+  - remove the cleanup code in patch 2, suggested by Willem.
+  - remove the patch 3 and fix the checksum in the new patch 3 after
+    talking with Paolo, Marcelo and Guillaume.
+  - add 'select NET_UDP_TUNNEL' in patch 4 to solve a compiling error.
+  - fix __be16 type cast warning in patch 8.
+  - fix the wrong endian orders when setting values in 14,16.
+v3->v4:
+  - add entries in ip-sysctl.rst in patch 7,16, as Marcelo Suggested.
+  - not create udp socks when udp_port is set to 0 in patch 16, as
+    Marcelo noticed.
+v4->v5:
+  - improve the description for udp_port and encap_port entries in patch
+    7, 16.
+  - use 0 as the default udp_port.
+
+Xin Long (16):
+  udp: check udp sock encap_type in __udp_lib_err
+  udp6: move the mss check after udp gso tunnel processing
+  udp: support sctp over udp in skb_udp_tunnel_segment
+  sctp: create udp4 sock and add its encap_rcv
+  sctp: create udp6 sock and set its encap_rcv
+  sctp: add encap_err_lookup for udp encap socks
+  sctp: add encap_port for netns sock asoc and transport
+  sctp: add SCTP_REMOTE_UDP_ENCAPS_PORT sockopt
+  sctp: allow changing transport encap_port by peer packets
+  sctp: add udphdr to overhead when udp_port is set
+  sctp: call sk_setup_caps in sctp_packet_transmit instead
+  sctp: support for sending packet over udp4 sock
+  sctp: support for sending packet over udp6 sock
+  sctp: add the error cause for new encapsulation port restart
+  sctp: handle the init chunk matching an existing asoc
+  sctp: enable udp tunneling socks
+
+ Documentation/networking/ip-sysctl.rst |  31 +++++++
+ include/linux/sctp.h                   |  20 +++++
+ include/net/netns/sctp.h               |   8 ++
+ include/net/sctp/constants.h           |   2 +
+ include/net/sctp/sctp.h                |   9 ++-
+ include/net/sctp/sm.h                  |   4 +
+ include/net/sctp/structs.h             |  14 ++--
+ include/uapi/linux/sctp.h              |   7 ++
+ net/ipv4/udp.c                         |   2 +-
+ net/ipv4/udp_offload.c                 |   3 +
+ net/ipv6/udp.c                         |   2 +-
+ net/ipv6/udp_offload.c                 |   8 +-
+ net/sctp/Kconfig                       |   1 +
+ net/sctp/associola.c                   |   4 +
+ net/sctp/ipv6.c                        |  44 +++++++---
+ net/sctp/offload.c                     |   6 +-
+ net/sctp/output.c                      |  22 +++--
+ net/sctp/protocol.c                    | 143 ++++++++++++++++++++++++++++++---
+ net/sctp/sm_make_chunk.c               |  21 +++++
+ net/sctp/sm_statefuns.c                |  52 ++++++++++++
+ net/sctp/socket.c                      | 116 ++++++++++++++++++++++++++
+ net/sctp/sysctl.c                      |  62 ++++++++++++++
+ 22 files changed, 531 insertions(+), 50 deletions(-)
+
+-- 
+2.1.0
 
