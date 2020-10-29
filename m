@@ -2,118 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D33C29ED1C
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 14:40:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B7BF29ED83
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 14:49:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727226AbgJ2NkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 09:40:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57496 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725601AbgJ2NkW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 09:40:22 -0400
-Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9703EC0613D2
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 06:40:21 -0700 (PDT)
-Received: by mail-oi1-x244.google.com with SMTP id f7so3215194oib.4
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 06:40:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=eYqdLtfS+KCW7y8GcdPSOq70vc91X3xtwLRcejbVT/A=;
-        b=AZ+eNPwQ3yqgRBOPyOZZXnsc3kwP5mkW9+oTFT7nKBNIHQQ6elUQNp/Ux+IG5ZGpua
-         ACJWDtQNpbEaeKJWEKlcdk0U2xW3Bs3tyPGmvLfM/FZyhrz1x8GKG+M/SAij/1TSiwSX
-         0iLPegzeZ7RebPnIvpFynA4Mogpe6d0gjMyDN3WfKyJt+0uI0NlTY0hK2NvyNPpnFXSL
-         JR8INEu2YywDRvUDF5Ix6qBTgg3G8lTYfhdoZkqiPDbNDLTuE+oTQTyc00Hd5YiQYOA8
-         kIWPiVceeg2dN1dObRaEyFyieGDCYJTFRPv7q0wufWNXZhp5wMptNvu/tmmdn2Fy85rF
-         6FMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eYqdLtfS+KCW7y8GcdPSOq70vc91X3xtwLRcejbVT/A=;
-        b=YtDsJI5myEZg2+SEqkfg1QXGavyLekcJ0Td4Qny+U6c3efWblP6olvsjlabK/EOaPq
-         HGp1d1Le2Pmoe8xIlxO9POESezR1u3bsSJtXFTtLLoRzm4+ATNSJaksMLv147Cy2eIMu
-         HpuJXHZArS7XSCrXtgTlSVw1Wg+Ee31IpE/QRkiTFaUGe930w5gFb6iUD/SQH+5Zbvzq
-         RejdZVa8pp/N6HlMyCe+34BvM4ENa4VzM5qSa4toh5eME0IyxowmjWp0PqZOXLhSU5+H
-         vLAiJYSyu3B2CvSg1ayQEWU+DSif9N1AjS3TjVROK5dHxMJGd+Z5lndMd0H7l1awwCch
-         iraw==
-X-Gm-Message-State: AOAM5309CvqW5TSH89uJul/H6vSIv/CYQFWQTsR2c9C/O2ks9QrWiREW
-        n00KrScN/8VWP6Y5i56mxP4YpIl9GN5MNA==
-X-Google-Smtp-Source: ABdhPJyad9qvBRhmR6ZGz1FrYyJxJFCnctUcizozb/fVUxBWO1/eSZM2+nxszq5TEb9kaDCIzM/pqg==
-X-Received: by 2002:a05:6808:254:: with SMTP id m20mr3043991oie.139.1603978820880;
-        Thu, 29 Oct 2020 06:40:20 -0700 (PDT)
-Received: from yoga (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id 33sm590834otr.25.2020.10.29.06.40.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Oct 2020 06:40:20 -0700 (PDT)
-Date:   Thu, 29 Oct 2020 08:40:17 -0500
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Amit Pundir <amit.pundir@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        David S Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Konrad Dybcio <konradybcio@gmail.com>,
-        ath10k@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ath10k: Introduce a devicetree quirk to skip host cap
- QMI requests
-Message-ID: <20201029134017.GA807@yoga>
-References: <1601058581-19461-1-git-send-email-amit.pundir@linaro.org>
- <20200929190817.GA968845@bogus>
+        id S1727685AbgJ2NtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 09:49:07 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:53385 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727398AbgJ2NtG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 09:49:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1603979344;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=F0rlmArJvbVvJEBWOLEuSR50AsEijn3gNILSqB++8/M=;
+        b=RetVhy3fTw7yPk/j8qeEc+FyD8Yn7v20IF5SyNOHAwDlj6KolmrursoI/eQnYEgqb3slWX
+        VLZAyY1tzuLdCxJIt50I5nDI2WD6YL7DOXe2Ue9NBrdljR8l30t4CxLVe41LAlVmCzAm0G
+        aRvv3z6tJdONKC9Qt0SIlRDmo76S6Uk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-591-fCtIipZoNvmxH8-hFQHRSw-1; Thu, 29 Oct 2020 09:40:49 -0400
+X-MC-Unique: fCtIipZoNvmxH8-hFQHRSw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 53DEB10200D3;
+        Thu, 29 Oct 2020 13:40:48 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.58])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E9C31100238E;
+        Thu, 29 Oct 2020 13:40:39 +0000 (UTC)
+Date:   Thu, 29 Oct 2020 14:40:38 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ilias.apalodimas@linaro.org, brouer@redhat.com
+Subject: Re: [PATCH net-next 2/4] net: page_pool: add bulk support for
+ ptr_ring
+Message-ID: <20201029144038.74ecf3c2@carbon>
+In-Reply-To: <20201029103148.GA15697@lore-desk>
+References: <cover.1603824486.git.lorenzo@kernel.org>
+        <cd58ca966fbe11cabbd6160decea6ce748ebce9f.1603824486.git.lorenzo@kernel.org>
+        <20201029111329.79b86c00@carbon>
+        <20201029103148.GA15697@lore-desk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200929190817.GA968845@bogus>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue 29 Sep 14:08 CDT 2020, Rob Herring wrote:
+On Thu, 29 Oct 2020 11:31:48 +0100
+Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
 
-> On Fri, Sep 25, 2020 at 11:59:41PM +0530, Amit Pundir wrote:
-> > There are firmware versions which do not support host capability
-> > QMI request. We suspect either the host cap is not implemented or
-> > there may be firmware specific issues, but apparently there seem
-> > to be a generation of firmware that has this particular behavior.
+> > On Tue, 27 Oct 2020 20:04:08 +0100
+> > Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> >   
+> > > +void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+> > > +			     int count)
+> > > +{
+> > > +	struct page *page_ring[XDP_BULK_QUEUE_SIZE];  
 > > 
-> > For example, firmware build on Xiaomi Poco F1 (sdm845) phone:
-> > "QC_IMAGE_VERSION_STRING=WLAN.HL.2.0.c3-00257-QCAHLSWMTPLZ-1"
+> > Maybe we could reuse the 'data' array instead of creating a new array
+> > (2 cache-lines long) for the array of pages?  
+> 
+> I agree, I will try to reuse the data array for that
+> 
+> >   
+> > > +	int i, len = 0;
+> > > +
+> > > +	for (i = 0; i < count; i++) {
+> > > +		struct page *page = virt_to_head_page(data[i]);
+> > > +
+> > > +		if (unlikely(page_ref_count(page) != 1 ||
+> > > +			     !pool_page_reusable(pool, page))) {
+> > > +			page_pool_release_page(pool, page);
+> > > +			put_page(page);
+> > > +			continue;
+> > > +		}
+> > > +
+> > > +		if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
+> > > +			page_pool_dma_sync_for_device(pool, page, -1);  
 > > 
-> > If we do not skip the host cap QMI request on Poco F1, then we
-> > get a QMI_ERR_MALFORMED_MSG_V01 error message in the
-> > ath10k_qmi_host_cap_send_sync(). But this error message is not
-> > fatal to the firmware nor to the ath10k driver and we can still
-> > bring up the WiFi services successfully if we just ignore it.
-> > 
-> > Hence introducing this DeviceTree quirk to skip host capability
-> > QMI request for the firmware versions which do not support this
-> > feature.
+> > Here we sync the entire DMA area (-1), which have a *huge* cost for
+> > mvneta (especially on EspressoBin HW).  For this xdp_frame->len is
+> > unfortunately not enough.  We will need the *maximum* length touch by
+> > (1) CPU and (2) remote device DMA engine.  DMA-TX completion knows the
+> > length for (2).  The CPU length (1) is max of original xdp_buff size
+> > and xdp_frame->len, because BPF-helpers could have shrinked the size.
+> > (tricky part is that xdp_frame->len isn't correct in-case of header
+> > adjustments, thus like mvneta_run_xdp we to calc dma_sync size, and
+> > store this in xdp_frame, maybe via param to xdp_do_redirect). Well, not
+> > sure if it is too much work to transfer this info, for this use-case.  
 > 
-> So if you change the WiFi firmware, you may force a DT change too. Those 
-> are pretty independent things otherwise.
-> 
+> I was thinking about that but I guess point (1) is tricky since "cpu length"
+> can be changed even in the middle by devmaps or cpumaps (not just in the driver
+> rx napi loop). I guess we can try to address this point in a subsequent series.
+> Agree?
 
-Yes and that's not good. But I looked at somehow derive this from
-firmware version numbers etc and it's not working out, so I'm out of
-ideas for alternatives.
+I agree, that this change request goes beyond this series.  But it
+becomes harder and harder to add later when this API is getting used in
+more and more drivers.  Looking at 1/4 is can be extended later, as you
+just pass down xdpf in API driver use (and then queue xdpf->data).
 
-> Why can't you just always ignore this error? If you can't deal with this 
-> entirely in the driver, then it should be part of the WiFi firmware so 
-> it's always in sync.
-> 
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
-Unfortunately the firmware versions I've hit this problem on has gone
-belly up when receiving this request, that's why I asked Amit to add a
-flag to skip it.
-
-That said, in the devices I've hit this I've managed to get newer
-firmware working, which doesn't have either problem.
-
-Regards,
-Bjorn
