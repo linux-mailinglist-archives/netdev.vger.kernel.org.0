@@ -2,115 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B7BF29ED83
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 14:49:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6149E29ED9B
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 14:51:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727685AbgJ2NtH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 09:49:07 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:53385 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727398AbgJ2NtG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 09:49:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603979344;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=F0rlmArJvbVvJEBWOLEuSR50AsEijn3gNILSqB++8/M=;
-        b=RetVhy3fTw7yPk/j8qeEc+FyD8Yn7v20IF5SyNOHAwDlj6KolmrursoI/eQnYEgqb3slWX
-        VLZAyY1tzuLdCxJIt50I5nDI2WD6YL7DOXe2Ue9NBrdljR8l30t4CxLVe41LAlVmCzAm0G
-        aRvv3z6tJdONKC9Qt0SIlRDmo76S6Uk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-591-fCtIipZoNvmxH8-hFQHRSw-1; Thu, 29 Oct 2020 09:40:49 -0400
-X-MC-Unique: fCtIipZoNvmxH8-hFQHRSw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 53DEB10200D3;
-        Thu, 29 Oct 2020 13:40:48 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.58])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E9C31100238E;
-        Thu, 29 Oct 2020 13:40:39 +0000 (UTC)
-Date:   Thu, 29 Oct 2020 14:40:38 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        ilias.apalodimas@linaro.org, brouer@redhat.com
-Subject: Re: [PATCH net-next 2/4] net: page_pool: add bulk support for
- ptr_ring
-Message-ID: <20201029144038.74ecf3c2@carbon>
-In-Reply-To: <20201029103148.GA15697@lore-desk>
-References: <cover.1603824486.git.lorenzo@kernel.org>
-        <cd58ca966fbe11cabbd6160decea6ce748ebce9f.1603824486.git.lorenzo@kernel.org>
-        <20201029111329.79b86c00@carbon>
-        <20201029103148.GA15697@lore-desk>
+        id S1727474AbgJ2NvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 09:51:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59182 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726729AbgJ2Nu7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 09:50:59 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43591C0613D2
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 06:41:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Yv4GXKVusnu2Goi4iB2n9mjUqposZ4aJb9C49FDRvE0=; b=JdqKnoXXmLmw3DDIJjPQ6o8YY
+        L9Qrc9k+Jx3kvvlVKbQyOxfUflf/gs4OpNhscdwE5rMmrfdL6H2hivyf4lsPoxJopTDZUzwjuBFhD
+        Kj3Ub/JmH2/PvntvRVFobaEansaby2q0oXWPjAU0M1WAFYQvBhDRHQHZ7VTN90UfMXpZz+iKEZQ6E
+        CYkqKBelnO6BYqfozETtxzSPM+vNHTNHhMSssO3SIbltkSdiYZwp7OlWpZEhDNHHjyxkuRfsZluO3
+        GIVNAG6i/T+nVWfBiBTfoWXgC/XqeNksnrqHltLssNo+E8rjMT6LGMGLgn9iNFw+hPPIIC7dt50tj
+        jn/wd92VQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52478)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kY8Au-0004QT-2F; Thu, 29 Oct 2020 13:41:08 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kY8At-0006AB-QY; Thu, 29 Oct 2020 13:41:07 +0000
+Date:   Thu, 29 Oct 2020 13:41:07 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, davem@davemloft.net
+Subject: Re: [PATCH net-next 1/5] net: phy: mdio-i2c: support I2C MDIO
+ protocol for RollBall SFP modules
+Message-ID: <20201029134107.GV1551@shell.armlinux.org.uk>
+References: <20201028221427.22968-1-kabel@kernel.org>
+ <20201028221427.22968-2-kabel@kernel.org>
+ <20201029124141.GR1551@shell.armlinux.org.uk>
+ <20201029125439.GK933237@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201029125439.GK933237@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 29 Oct 2020 11:31:48 +0100
-Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
+On Thu, Oct 29, 2020 at 01:54:39PM +0100, Andrew Lunn wrote:
+> > It would be good to pass this through checkpatch - I notice some lines
+> > seem to be over the 80 character limit now.
+> 
+> Hi Russell
+> 
+> The limit got raised to something higher. I personally prefer 80, and
+> if a file is using 80, new code would be inconsistent with old code if
+> it did not use 80. So your request is reasonable anyway.
 
-> > On Tue, 27 Oct 2020 20:04:08 +0100
-> > Lorenzo Bianconi <lorenzo@kernel.org> wrote:
-> >   
-> > > +void page_pool_put_page_bulk(struct page_pool *pool, void **data,
-> > > +			     int count)
-> > > +{
-> > > +	struct page *page_ring[XDP_BULK_QUEUE_SIZE];  
-> > 
-> > Maybe we could reuse the 'data' array instead of creating a new array
-> > (2 cache-lines long) for the array of pages?  
-> 
-> I agree, I will try to reuse the data array for that
-> 
-> >   
-> > > +	int i, len = 0;
-> > > +
-> > > +	for (i = 0; i < count; i++) {
-> > > +		struct page *page = virt_to_head_page(data[i]);
-> > > +
-> > > +		if (unlikely(page_ref_count(page) != 1 ||
-> > > +			     !pool_page_reusable(pool, page))) {
-> > > +			page_pool_release_page(pool, page);
-> > > +			put_page(page);
-> > > +			continue;
-> > > +		}
-> > > +
-> > > +		if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
-> > > +			page_pool_dma_sync_for_device(pool, page, -1);  
-> > 
-> > Here we sync the entire DMA area (-1), which have a *huge* cost for
-> > mvneta (especially on EspressoBin HW).  For this xdp_frame->len is
-> > unfortunately not enough.  We will need the *maximum* length touch by
-> > (1) CPU and (2) remote device DMA engine.  DMA-TX completion knows the
-> > length for (2).  The CPU length (1) is max of original xdp_buff size
-> > and xdp_frame->len, because BPF-helpers could have shrinked the size.
-> > (tricky part is that xdp_frame->len isn't correct in-case of header
-> > adjustments, thus like mvneta_run_xdp we to calc dma_sync size, and
-> > store this in xdp_frame, maybe via param to xdp_do_redirect). Well, not
-> > sure if it is too much work to transfer this info, for this use-case.  
-> 
-> I was thinking about that but I guess point (1) is tricky since "cpu length"
-> can be changed even in the middle by devmaps or cpumaps (not just in the driver
-> rx napi loop). I guess we can try to address this point in a subsequent series.
-> Agree?
+Hi Andrew,
 
-I agree, that this change request goes beyond this series.  But it
-becomes harder and harder to add later when this API is getting used in
-more and more drivers.  Looking at 1/4 is can be extended later, as you
-just pass down xdpf in API driver use (and then queue xdpf->data).
+I do most of my kernel hacking on the Linux console, so 80x25 is the
+limit of what I see - and depending on the editor I'm using, lines
+longer than 80 characters are chopped to 80 characters unless I scroll
+to the right (which then makes moving up and down problematical.) So,
+the files I'm responsible for are likely to stay requiring an 80
+character width.
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
