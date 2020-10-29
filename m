@@ -2,192 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C62D29E431
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:36:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97DA229E50F
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 08:51:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729312AbgJ2Hfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 03:35:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55398 "EHLO
+        id S1731043AbgJ2HvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 03:51:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728096AbgJ2HY5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:24:57 -0400
-X-Greylist: delayed 2584 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 28 Oct 2020 22:34:57 PDT
-Received: from mx0a-00190b01.pphosted.com (mx0a-00190b01.pphosted.com [IPv6:2620:100:9001:583::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5A34C0610D3;
-        Wed, 28 Oct 2020 22:34:57 -0700 (PDT)
-Received: from pps.filterd (m0050093.ppops.net [127.0.0.1])
-        by m0050093.ppops.net-00190b01. (8.16.0.42/8.16.0.42) with SMTP id 09T4hmWN001609;
-        Thu, 29 Oct 2020 04:50:38 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=jan2016.eng;
- bh=vNOU0G1+nDkC24wwPCUFpoG8J+CFgVtGuanshuUsUsk=;
- b=Caj176iLpfJNs4A7qlOyJTvV5aQLOgImqIxpN1UY4Ag5UH7Irz2CLYZv5v0EZwF7as87
- 4AzpQwQ+K3k0Phqhf/zeiaOf4J0cwqya4bhIOKNR2wpTAcACbl+VmseK7p4vyU7Ms2ra
- fC9wK48wwX03Dx6gOg4Yo8mgbSBv4cmTowfTW6TfUr1p1HEKV6acF3j18t4JRIczf4pb
- VPR77BK+klvaRZVTDoWrHLHmPIWxAhDeIUGx95D2JtsmsgaW0MappnojYBtvfl6yPlZ3
- RiYd2/D+T4XOm7FNR6mAyJilgzqhGt22xfjRcVQ+eCXRsN5fNuIIgfkJWWgNOaG9RG4N QQ== 
-Received: from prod-mail-ppoint3 (a72-247-45-31.deploy.static.akamaitechnologies.com [72.247.45.31] (may be forged))
-        by m0050093.ppops.net-00190b01. with ESMTP id 34cce8c15w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 29 Oct 2020 04:50:38 +0000
-Received: from pps.filterd (prod-mail-ppoint3.akamai.com [127.0.0.1])
-        by prod-mail-ppoint3.akamai.com (8.16.0.42/8.16.0.42) with SMTP id 09T4nOLo029340;
-        Thu, 29 Oct 2020 00:50:37 -0400
-Received: from prod-mail-relay19.dfw02.corp.akamai.com ([172.27.165.173])
-        by prod-mail-ppoint3.akamai.com with ESMTP id 34f29rssdy-1;
-        Thu, 29 Oct 2020 00:50:37 -0400
-Received: from [0.0.0.0] (prod-ssh-gw01.bos01.corp.akamai.com [172.27.119.138])
-        by prod-mail-relay19.dfw02.corp.akamai.com (Postfix) with ESMTP id 685426055F;
-        Thu, 29 Oct 2020 04:50:36 +0000 (GMT)
-Subject: Re: [PATCH v2 net] net: sch_generic: aviod concurrent reset and
- enqueue op for lockless qdisc
-To:     Yunsheng Lin <linyunsheng@huawei.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     "Hunt, Joshua" <johunt@akamai.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "linuxarm@huawei.com" <linuxarm@huawei.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-References: <1599562954-87257-1-git-send-email-linyunsheng@huawei.com>
- <CAM_iQpX0_mz+McZdzZ7HFTjBihOKz5E6i4qJQSoFbZ=SZkVh=Q@mail.gmail.com>
- <830f85b5-ef29-c68e-c982-de20ac880bd9@huawei.com>
- <CAM_iQpU_tbRNO=Lznz_d6YjXmenYhowEfBoOiJgEmo9x8bEevw@mail.gmail.com>
- <CAP12E-+3DY-dgzVercKc-NYGPExWO1NjTOr1Gf3tPLKvp6O6+g@mail.gmail.com>
- <AE096F70-4419-4A67-937A-7741FBDA6668@akamai.com>
- <CAM_iQpX0XzNDCzc2U5=g6aU-HGYs3oryHx=rmM3ue9sH=Jd4Gw@mail.gmail.com>
- <19f888c2-8bc1-ea56-6e19-4cb4841c4da0@akamai.com>
- <93ab7f0f-7b5a-74c3-398d-a572274a4790@huawei.com>
-From:   Vishwanath Pai <vpai@akamai.com>
-Message-ID: <248e5a32-a102-0ced-1462-aa2bc5244252@akamai.com>
-Date:   Thu, 29 Oct 2020 00:50:36 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
-MIME-Version: 1.0
-In-Reply-To: <93ab7f0f-7b5a-74c3-398d-a572274a4790@huawei.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-10-29_01:2020-10-28,2020-10-29 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 malwarescore=0 bulkscore=0
- spamscore=0 phishscore=0 suspectscore=0 mlxlogscore=999 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2010290034
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-10-29_01:2020-10-28,2020-10-29 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 suspectscore=0
- mlxlogscore=999 mlxscore=0 impostorscore=0 spamscore=0 phishscore=0
- malwarescore=0 bulkscore=0 lowpriorityscore=0 priorityscore=1501
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010290034
-X-Agari-Authentication-Results: mx.akamai.com; spf=${SPFResult} (sender IP is 72.247.45.31)
- smtp.mailfrom=vpai@akamai.com smtp.helo=prod-mail-ppoint3
+        with ESMTP id S1727278AbgJ2HYr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 03:24:47 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D85C0613B7
+        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 22:16:06 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id w21so1373747pfc.7
+        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 22:16:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=g10a5OajNED9wd0MQhu5bDOa9p3onZ6ZxUk5xH+bIE4=;
+        b=bGR2O2cEHaU/KKxP84Bfc4DxQUrLF1GvPa+HFB6QS8Zk+mATrBIRczf1M+4w0qgXct
+         9YC6ACeo2CwrBc8Ay7mGrQWHbmaz8yipDgefoRORaDPnteIOT1+RLo2TvVojbqvWBuTC
+         rWZIwwdJGy5s9V354+EfvkgfkoyXn0AIJkWkB9HrHZy/Rsjbaa94L/WoppIorF+MGMb2
+         YpL848QRlNYaznnKNvPiXQzMRjW37/j1jjQ6CdHXy69mvWhV5hVRX17VhuTQgbZ6Y7xk
+         ifNkxWElkDUVqS6H/LCsXOV7EmX/K8rb/Xznz4a9vvxzASJvDKaE9WNLgN3UbU8USmrp
+         Hs+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=g10a5OajNED9wd0MQhu5bDOa9p3onZ6ZxUk5xH+bIE4=;
+        b=PsvZU2ojIH9BtotWu4ZSlw0nN+G4vIso4/FL5WBUFdWps4/F5WgelFDS8xMU/hVJdH
+         ht8kCv4qd3Qj3iolDDcduTmRLoL/PJalL+eCk1x8KirCsOboJ5e88K8HFoiAjSFzXehe
+         9qLwSTf9TZrYdgpJcM8Mr5jRyAbfCFVVnPlNfrSCgep/MJ92QNTJF9YgWwrbMSTGiAsQ
+         xqiKP665drBJF7F+nmlrZfqLM4N0IuU9Px7eQJD3ej1eCJ6F/2da4O3od0Lv6gsF7xAD
+         7BRcS9K6UfSD6EckEkoSz9kUZzn6QltILRjUS8yQCdmCSEgj9gvyMwY8ozFioMF35JG3
+         wnNg==
+X-Gm-Message-State: AOAM530L4gyySXZOv+t3hPWYA5U5MDEvTqqayO3qtZePJsm7rUX1fRat
+        REZJcwoY2+iJk68v8vzgh7WvfQ6igQhtew==
+X-Google-Smtp-Source: ABdhPJy42n9YKbWqFSqfETlfF3cewRH9mmsV0aZXpnULOtUs+JiHIvz06cuarU8hj4m70nVIWDamnw==
+X-Received: by 2002:a63:4825:: with SMTP id v37mr2531977pga.256.1603948564668;
+        Wed, 28 Oct 2020 22:16:04 -0700 (PDT)
+Received: from hyd1358.caveonetworks.com ([1.6.215.26])
+        by smtp.googlemail.com with ESMTPSA id k7sm1292242pfa.184.2020.10.28.22.16.02
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 28 Oct 2020 22:16:03 -0700 (PDT)
+From:   sundeep.lkml@gmail.com
+To:     davem@davemloft.net, kuba@kernel.org, sgoutham@marvell.com,
+        netdev@vger.kernel.org
+Cc:     Subbaraya Sundeep <sbhatta@marvell.com>
+Subject: [v2 net-next PATCH 00/10] Support for OcteonTx2 98xx silcion
+Date:   Thu, 29 Oct 2020 10:45:39 +0530
+Message-Id: <1603948549-781-1-git-send-email-sundeep.lkml@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/28/20 10:37 PM, Yunsheng Lin wrote:
- > On 2020/10/29 4:04, Vishwanath Pai wrote:
- >> On 10/28/20 1:47 PM, Cong Wang wrote:
- >>> On Wed, Oct 28, 2020 at 8:37 AM Pai, Vishwanath <vpai@akamai.com> 
-wrote:
- >>>> Hi,
- >>>>
- >>>> We noticed some problems when testing the latest 5.4 LTS kernel 
-and traced it
- >>>> back to this commit using git bisect. When running our tests the 
-machine stops
- >>>> responding to all traffic and the only way to recover is a reboot. 
-I do not see
- >>>> a stack trace on the console.
- >>>
- >>> Do you mean the machine is still running fine just the network is down?
- >>>
- >>> If so, can you dump your tc config with stats when the problem is 
-happening?
- >>> (You can use `tc -s -d qd show ...`.)
- >>>
- >>>>
- >>>> This can be reproduced using the packetdrill test below, it should 
-be run a
- >>>> few times or in a loop. You should hit this issue within a few 
-tries but
- >>>> sometimes might take up to 15-20 tries.
- >>> ...
- >>>> I can reproduce the issue easily on v5.4.68, and after reverting 
-this commit it
- >>>> does not happen anymore.
- >>>
- >>> This is odd. The patch in this thread touches netdev reset path, if 
-packetdrill
- >>> is the only thing you use to trigger the bug (that is netdev is 
-always active),
- >>> I can not connect them.
- >>>
- >>> Thanks.
- >>
- >> Hi Cong,
- >>
- >>> Do you mean the machine is still running fine just the network is down?
- >>
- >> I was able to access the machine via serial console, it looks like it is
- >> up and running, just that networking is down.
- >>
- >>> If so, can you dump your tc config with stats when the problem is 
-happening?
- >>> (You can use `tc -s -d qd show ...`.)
- >>
- >> If I try running tc when the machine is in this state the command never
- >> returns. It doesn't print anything but doesn't exit either.
- >>
- >>> This is odd. The patch in this thread touches netdev reset path, if 
-packetdrill
- >>> is the only thing you use to trigger the bug (that is netdev is 
-always active),
- >>> I can not connect them.
- >>
- >> I think packetdrill creates a tun0 interface when it starts the
- >> test and tears it down at the end, so it might be hitting this code path
- >> during teardown.
- >
- > Hi, Is there any preparation setup before running the above 
-packetdrill test
- > case, I run the above test case in 5.9-rc4 with this patch applied 
-without any
- > preparation setup, did not reproduce it.
- >
- > By the way, I am newbie to packetdrill:), it would be good to provide the
- > detail setup to reproduce it,thanks.
- >
- >>
- >> P.S: My mail server is having connectivity issues with vger.kernel.org
- >> so messages aren't getting delivered to netdev. It'll hopefully get
- >> resolved soon.
- >>
- >> Thanks,
- >> Vishwanath
- >>
- >>
- >> .
- >>
+From: Subbaraya Sundeep <sbhatta@marvell.com>
 
-I can't reproduce it on v5.9-rc4 either, it is probably an issue only on
-5.4 then (and maybe older LTS versions). Can you give it a try on
-5.4.68?
+OcteonTx2 series of silicons have multiple variants, the
+98xx variant has two network interface controllers (NIX blocks)
+each of which supports upto 100Gbps. Similarly 98xx supports
+two crypto blocks (CPT) to double the crypto performance.
+The current RVU drivers support a single NIX and
+CPT blocks, this patchset adds support for multiple
+blocks of same type to be active at the same time.
 
-For running packetdrill, download the latest version from their github
-repo, then run it in a loop without any special arguments. This is what
-I do to reproduce it:
+Also the number of serdes controllers (CGX) have increased
+from three to five on 98xx. Each of the CGX block supports
+upto 4 physical interfaces depending on the serdes mode ie
+upto 20 physical interfaces. At a time each CGX block can
+be mapped to a single NIX. The HW configuration to map CGX
+and NIX blocks is done by firmware.
 
-while true; do ./packetdrill <test-file>; done
+NPC has two new interfaces added NIX1_RX and NIX1_TX
+similar to NIX0 interfaces. Also MCAM entries is increased
+from 4k to 16k. To support the 16k entries extended set
+is added in hardware which are at completely different
+register offsets. Fortunately new constant registers
+can be read to figure out the extended set is present
+or not.
 
-I don't think any other setup is necessary.
 
--Vishwanath
+This patch set modifies existing AF and PF drivers
+in below order to support 98xx:
+- Prepare for supporting multiple blocks of same type.
+  Functions which operate with block type to get or set
+  resources count are modified to operate with block address
+- Manage allocating and freeing LFs from new NIX1 and CPT1 RVU blocks.
+- NIX block specific initialization and teardown for NIX1
+- Based on the mapping set by Firmware, assign the NIX block
+  LFs to a PF/VF.
+- Multicast entries context is setup for NIX1 along with NIX0
+- NPC changes to support extended set of MCAM entries, counters
+  and NIX1 interfaces to NPC.
+- All the mailbox changes required for the new blocks in 98xx.
+- Since there are more CGX links in 98xx the hardcoded LBK
+  link value needed by netdev drivers is not sufficient any
+  more. Hence AF consumers need to get the number of all links
+  and calculate the LBK link.
+- Debugfs changes to display NIX1 contexts similar to NIX0
+- Debugfs change to display mapping between CGX, NIX and PF.
+
+v2:
+  Resending since net-next is open now
+
+
+Rakesh Babu (4):
+  octeontx2-af: Manage new blocks in 98xx
+  octeontx2-af: Initialize NIX1 block
+  octeontx2-af: Display NIX1 also in debugfs
+  octeontx2-af: Display CGX, NIX and PF map in debugfs.
+
+Subbaraya Sundeep (6):
+  octeontx2-af: Update get/set resource count functions
+  octeontx2-af: Map NIX block from CGX connection
+  octeontx2-af: Setup MCE context for assigned NIX
+  octeontx2-af: Add NIX1 interfaces to NPC
+  octeontx2-af: Mbox changes for 98xx
+  octeontx2-pf: Calculate LBK link instead of hardcoding
+
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.c    |  13 +-
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |   5 +
+ drivers/net/ethernet/marvell/octeontx2/af/common.h |  10 +-
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |  19 +-
+ .../ethernet/marvell/octeontx2/af/npc_profile.h    |   2 +-
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.c    | 361 ++++++++++++++++-----
+ drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |  26 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    |  15 +
+ .../ethernet/marvell/octeontx2/af/rvu_debugfs.c    | 223 ++++++++++---
+ .../net/ethernet/marvell/octeontx2/af/rvu_nix.c    | 199 +++++++++---
+ .../net/ethernet/marvell/octeontx2/af/rvu_npc.c    | 328 ++++++++++++++-----
+ .../net/ethernet/marvell/octeontx2/af/rvu_reg.c    |   2 +-
+ .../net/ethernet/marvell/octeontx2/af/rvu_reg.h    |  87 ++++-
+ .../net/ethernet/marvell/octeontx2/af/rvu_struct.h |   6 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_common.c   |   8 +-
+ .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   2 +
+ 16 files changed, 1008 insertions(+), 298 deletions(-)
+
+-- 
+2.7.4
 
