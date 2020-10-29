@@ -2,154 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEA7E29F769
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 23:09:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40E8329F7C4
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 23:22:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725828AbgJ2WJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 18:09:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52414 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725372AbgJ2WJ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 18:09:26 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BF9AC0613D2
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 15:09:26 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id q8so4197145ybk.18
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 15:09:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=1cM6j3pKkngnTbCX3y8IdmZDWyWruLHgBjGmPp/ecPk=;
-        b=iJd8+tQgBnYM/lmhDcjsMUy7GHqZGButn+ucz/xowxFTnUuOEFw53/5q+BjNufNaVv
-         1y4KdC8+NqbEo7u3HDm3pLM0bHbAGdJJBp7JfFxT4uGu6T0vWcvBbnKE6soQsZ20WDkr
-         bNjGGQD+0C0uXWgBLSdFl81nyuaa+f1NEJTxeA2HDU+3UdHi9jQM65PfDfq8dLHbnJeN
-         qMb58Xb9Dcp/I3iL2MiwE85Oo1RvqJZgJyQ8v0BK//cj8eBy3IKpwhFYSUj6fxndEkv9
-         Dhwb2BzJ64b4aModvvGFO36XVjlteRRX/AD3/qq/020Uanc8QQGD1S6IEYXm7mTlGwgh
-         rs/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=1cM6j3pKkngnTbCX3y8IdmZDWyWruLHgBjGmPp/ecPk=;
-        b=ISuR5OhSiBGUDqNOd+jWWpYs8+1FUFEODuACnY6dkxvCGNtB2nW+K+irJx20/QiUNe
-         vlc4gMeeCcKovL8ExRAMChA54xqenvKWpmNFt91oVFZtvbkLBuH1rr5QIAk8JeNO8mMz
-         XfXr0LogODqnQyJhVCxmT8/gLwup39QBECIPTkzOIjhB0QfQUH1Iwry5i873U0K8JsMD
-         Kawtp2u8o+3XaOKzV39RLYWMrpu9BCnsyC6ZbOeVrQ2Y+FkXep8oWf4T8+rKLXw52eOq
-         q1MxMIs4ZwgKggONXAFnw1+27W94wBmaQnLPxbWJ6AeUZ5gPGtPInCDeGt634sNFAb5z
-         I26w==
-X-Gm-Message-State: AOAM531OMfB4PG0HeyQLXRekvODm7OoC92ihKwtRyeTViaqu8wS0y9Wc
-        G0KoEGCu8QCSsWD40SU7dxzVBBSxu6e2
-X-Google-Smtp-Source: ABdhPJzADNuhOKyKxFcG37Lep6XsfQ5pKWZYgCHXVwIYTS/EuifKeuinSSnF1r4Zxn+2uk6ZrWXjHkN0gL7/
-Sender: "irogers via sendgmr" <irogers@irogers.svl.corp.google.com>
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:2:f693:9fff:fef4:4583])
- (user=irogers job=sendgmr) by 2002:a25:d8a:: with SMTP id 132mr9311332ybn.7.1604009365495;
- Thu, 29 Oct 2020 15:09:25 -0700 (PDT)
-Date:   Thu, 29 Oct 2020 15:09:19 -0700
-Message-Id: <20201029220919.481279-1-irogers@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.29.1.341.ge80a0c044ae-goog
-Subject: [PATCH] libbpf hashmap: Avoid undefined behavior in hash_bits
-From:   Ian Rogers <irogers@google.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1725780AbgJ2WWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 18:22:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43018 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725372AbgJ2WWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 18:22:09 -0400
+Received: from kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net (c-67-180-217-166.hsd1.ca.comcast.net [67.180.217.166])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 299002075E;
+        Thu, 29 Oct 2020 22:11:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604009471;
+        bh=ls7VqWJzgUgR+UhG3V4b/WnmCQ9UBDegbAbXV8a5odI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=B47WIO7qVw3bRN90S89hfKr8IeZcZz6p1n6NDNnqWSgoo5SoeOH+uQRHB00t5zirb
+         Zkyktfrx6pvFj7byU/VchZeLxVXRbrK4oUkPtOOrk/Rn9fBhGOjYrGO3lsE0ATCFMZ
+         UYgBxhHNFeK3XpPR8mEpRDLYCf4klD/3WgI44bFU=
+Date:   Thu, 29 Oct 2020 15:11:10 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     jmaloy@redhat.com
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        tipc-discussion@lists.sourceforge.net,
+        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
+        tuong.t.lien@dektech.com.au, maloy@donjonn.com, xinl@redhat.com,
+        ying.xue@windriver.com, parthasarathy.bhuvaragan@gmail.com
+Subject: Re: [net] tipc: add stricter control of reserved service types
+Message-ID: <20201029151110.41fae663@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20201028131912.3773561-1-jmaloy@redhat.com>
+References: <20201028131912.3773561-1-jmaloy@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If bits is 0, the case when the map is empty, then the >> is the size of
-the register which is undefined behavior - on x86 it is the same as a
-shift by 0.
-Avoid calling hash_bits with bits == 0 by adding additional empty
-hashmap tests.
+On Wed, 28 Oct 2020 09:19:12 -0400 jmaloy@redhat.com wrote:
+> From: Jon Maloy <jmaloy@redhat.com>
+> 
+> TIPC reserves 64 service types for current and future internal use.
+> Therefore, the bind() function is meant to block regular user sockets
+> from being bound to these values, while it should let through such
+> bindings from internal users.
+> 
+> However, since we at the design moment saw no way to distinguish
+> between regular and internal users the filter function ended up
+> with allowing all bindings of the reserved types which were really
+> in use ([0,1]), and block all the rest ([2,63]).
+> 
+> This is risky, since a regular user may bind to the service type
+> representing the topology server (TIPC_TOP_SRV == 1) or the one used
+> for indicating neighboring node status (TIPC_CFG_SRV == 0), and wreak
+> havoc for users of those services, i.e., most users.
+> 
+> The reality is however that TIPC_CFG_SRV never is bound through the
+> bind() function, since it doesn't represent a regular socket, and
+> TIPC_TOP_SRV can also be made to bypass the checks in tipc_bind()
+> by introducing a different entry function, tipc_sk_bind().
+> 
+> It should be noted that although this is a change of the API semantics,
+> there is no risk we will break any currently working applications by
+> doing this. Any application trying to bind to the values in question
+> would be badly broken from the outset, so there is no chance we would
+> find any such applications in real-world production systems.
 
-Suggested-by: Andrii Nakryiko <andriin@fb.com>,
-Suggested-by: Song Liu <songliubraving@fb.com>
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/lib/bpf/hashmap.c | 12 ++++++++++--
- tools/lib/bpf/hashmap.h | 12 ++++++------
- 2 files changed, 16 insertions(+), 8 deletions(-)
+You say above that it would wreak havoc for most users, not all :)
 
-diff --git a/tools/lib/bpf/hashmap.c b/tools/lib/bpf/hashmap.c
-index 3c20b126d60d..41e6f636101e 100644
---- a/tools/lib/bpf/hashmap.c
-+++ b/tools/lib/bpf/hashmap.c
-@@ -156,7 +156,7 @@ int hashmap__insert(struct hashmap *map, const void *key, void *value,
- 		    const void **old_key, void **old_value)
- {
- 	struct hashmap_entry *entry;
--	size_t h;
-+	size_t h = 0;
- 	int err;
- 
- 	if (old_key)
-@@ -164,7 +164,9 @@ int hashmap__insert(struct hashmap *map, const void *key, void *value,
- 	if (old_value)
- 		*old_value = NULL;
- 
--	h = hash_bits(map->hash_fn(key, map->ctx), map->cap_bits);
-+	if (map->buckets)
-+		h = hash_bits(map->hash_fn(key, map->ctx), map->cap_bits);
-+
- 	if (strategy != HASHMAP_APPEND &&
- 	    hashmap_find_entry(map, key, h, NULL, &entry)) {
- 		if (old_key)
-@@ -208,6 +210,9 @@ bool hashmap__find(const struct hashmap *map, const void *key, void **value)
- 	struct hashmap_entry *entry;
- 	size_t h;
- 
-+	if (!map->buckets)
-+		return false;
-+
- 	h = hash_bits(map->hash_fn(key, map->ctx), map->cap_bits);
- 	if (!hashmap_find_entry(map, key, h, NULL, &entry))
- 		return false;
-@@ -223,6 +228,9 @@ bool hashmap__delete(struct hashmap *map, const void *key,
- 	struct hashmap_entry **pprev, *entry;
- 	size_t h;
- 
-+	if (!map->buckets)
-+		return false;
-+
- 	h = hash_bits(map->hash_fn(key, map->ctx), map->cap_bits);
- 	if (!hashmap_find_entry(map, key, h, &pprev, &entry))
- 		return false;
-diff --git a/tools/lib/bpf/hashmap.h b/tools/lib/bpf/hashmap.h
-index d9b385fe808c..61236437876e 100644
---- a/tools/lib/bpf/hashmap.h
-+++ b/tools/lib/bpf/hashmap.h
-@@ -174,17 +174,17 @@ bool hashmap__find(const struct hashmap *map, const void *key, void **value);
-  * @key: key to iterate entries for
-  */
- #define hashmap__for_each_key_entry(map, cur, _key)			    \
--	for (cur = ({ size_t bkt = hash_bits(map->hash_fn((_key), map->ctx),\
--					     map->cap_bits);		    \
--		     map->buckets ? map->buckets[bkt] : NULL; });	    \
-+	for (cur = map->buckets						    \
-+		     ? map->buckets[hash_bits(map->hash_fn((_key), map->ctx), map->cap_bits)] \
-+		     : NULL;						    \
- 	     cur;							    \
- 	     cur = cur->next)						    \
- 		if (map->equal_fn(cur->key, (_key), map->ctx))
- 
- #define hashmap__for_each_key_entry_safe(map, cur, tmp, _key)		    \
--	for (cur = ({ size_t bkt = hash_bits(map->hash_fn((_key), map->ctx),\
--					     map->cap_bits);		    \
--		     cur = map->buckets ? map->buckets[bkt] : NULL; });	    \
-+	for (cur = map->buckets						    \
-+		     ? map->buckets[hash_bits(map->hash_fn((_key), map->ctx), map->cap_bits)] \
-+		     : NULL;						    \
- 	     cur && ({ tmp = cur->next; true; });			    \
- 	     cur = tmp)							    \
- 		if (map->equal_fn(cur->key, (_key), map->ctx))
--- 
-2.29.1.341.ge80a0c044ae-goog
+I'd be more comfortable applying this to net-next, does that work for
+you? 
 
+Also perhaps we could add a pr_warn_once() if an application tried
+using the reserved values, to help identify this change right away.
+
+> Acked-by: Yung Xue <ying.xue@windriver.com>
+> Signed-off-by: Jon Maloy <jmaloy@redhat.com>
