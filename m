@@ -2,212 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26B9429F5BC
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 21:01:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56E7029F5DB
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 21:07:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726404AbgJ2UBD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 16:01:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60676 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725914AbgJ2UBB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 16:01:01 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8914C0613CF;
-        Thu, 29 Oct 2020 12:51:52 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id h21so4898206iob.10;
-        Thu, 29 Oct 2020 12:51:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yGPWeMIi84aR1I4lps3FxOHp7MUBa0SbmybRkXicge8=;
-        b=C8LcbvSXxLLX57cIkg2bN4jLT2ORvRz8ODQ4vvupZQXKLiiuILOvW50A22RZ+TKBkv
-         RHvLLpvXMJbeFihIhz71sGJkwbao80F9jBtTFYq8/nsBalrLS5Lbat1Nps0G09bXI76m
-         ZpQk04bw3+1OPLDEjccBA+G7kTgg/60JyKF99m1gcyxr8M9U5pcEg1AbMN5GamEwb7H9
-         /YdffSm4spaB5yMQ/d0jdf5Ct+KeJHIijlFZKL2R9zEaOGPW/8LN7Oj4Spbcv1HnExIt
-         6t3lPZDzWuUAyujhdBehNsHBZTxnhKNiWDsCRr3gPECdivHZ3gjjxNGbbowsqj/AX+fA
-         PaTA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yGPWeMIi84aR1I4lps3FxOHp7MUBa0SbmybRkXicge8=;
-        b=HWpitXQmb7iZ5roR3U9OKrzmh5UHrqhec+j54fqKiMaYuGsDkxC7/WJQpOzawVM9I+
-         5fgnFF7Saao6QZSaWMeLEef0jzS026jZZYn2IXChPD8Rytnpgh8/WBQuayDwcpA+/vJs
-         Bcznv5zM9Fj+EoStF5RUblA0CTBAWO2DqIW0JVIGi0l0gWLPyfvGLNhhbgGf6VpCorcO
-         tO6AR8HP8nCt0vjLTELsYlHFx1Yf42PEQmf/3u7KwdmWxO0N6ky1lXiPaZugKVuJycJG
-         2YaBPjNtgCaaHxKX83X2ciOYdrLkvSJctmlbfJzpnbdtDCAarg0bWx0L64+bPfeUI9sv
-         PnFw==
-X-Gm-Message-State: AOAM530F8BClnI4o5wXTCG0TsD3B1EvfLTD7dId0BVonRwlgQfjBSOAe
-        WWXqwsnIzD9QHXXiECbqRmBKWx3X6RnnED1sIKQ=
-X-Google-Smtp-Source: ABdhPJzBH7FxSXk+z8mo7AmimRNJKTBp1oW9R8ih0X9YoJdtq3/e2F9QbFPqh5QfqUHQPfpvvPU2kOFmthE/rFbIZwI=
-X-Received: by 2002:a02:c648:: with SMTP id k8mr4999752jan.96.1604001111938;
- Thu, 29 Oct 2020 12:51:51 -0700 (PDT)
+        id S1726439AbgJ2UHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 16:07:22 -0400
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:36161 "EHLO
+        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725780AbgJ2UHV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 16:07:21 -0400
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20201029200709euoutp014fdc5f215d799a6a598eb5850daa5344~Cj1jyXyMa2772627726euoutp01f;
+        Thu, 29 Oct 2020 20:07:09 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20201029200709euoutp014fdc5f215d799a6a598eb5850daa5344~Cj1jyXyMa2772627726euoutp01f
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1604002029;
+        bh=YuwLhAIFw/2V3cH63KEC8GpC0kRBCETejdjnWHvaNbg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GqoXbywluP7mPxNkcFqMYNzvflMgD1SdEjrxq76mkcmtKZPon1mR+TLVktYO5V63c
+         lK/zj8ySjxRjrxctG2Abca1qRDdVtkC4ppRaktuFuo19e3idux8fLWWFJVVbSWmLpQ
+         2A5igdNQ/8UqN6gdK2fnZVmQFoPWPbdHui8GvWgw=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20201029200708eucas1p216c9faabaac5ca74c134b948f6ac974c~Cj1jBw_mj0694306943eucas1p26;
+        Thu, 29 Oct 2020 20:07:08 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+        eusmges3new.samsung.com (EUCPMTA) with SMTP id AF.B5.06318.CE02B9F5; Thu, 29
+        Oct 2020 20:07:08 +0000 (GMT)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+        20201029200708eucas1p1f00cdaf2c217056427dcd08f9d0d8bc9~Cj1irTHzI1525415254eucas1p1K;
+        Thu, 29 Oct 2020 20:07:08 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20201029200708eusmtrp23d745a85010d803ecc9e1bf98848da9c~Cj1iqgaMV1271312713eusmtrp2n;
+        Thu, 29 Oct 2020 20:07:08 +0000 (GMT)
+X-AuditID: cbfec7f5-371ff700000018ae-d1-5f9b20ece31b
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms1.samsung.com (EUCPMTA) with SMTP id F7.11.06314.CE02B9F5; Thu, 29
+        Oct 2020 20:07:08 +0000 (GMT)
+Received: from localhost (unknown [106.120.51.46]) by eusmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20201029200708eusmtip16a3a16dbc2e04b09113e25742b1325e5~Cj1ihDX9F0198001980eusmtip1Q;
+        Thu, 29 Oct 2020 20:07:08 +0000 (GMT)
+From:   Lukasz Stelmach <l.stelmach@samsung.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, jim.cromie@gmail.com,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Kukjin Kim <kgene@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        =?utf-8?Q?Bart=C5=82omiej?= =?utf-8?Q?_=C5=BBolnierkiewicz?= 
+        <b.zolnierkie@samsung.com>
+Subject: Re: [PATCH v4 2/5] dt-bindings: net: Add bindings for AX88796C SPI
+ Ethernet Adapter
+Date:   Thu, 29 Oct 2020 21:06:57 +0100
+In-Reply-To: <41ffa67f-54af-4a21-fedc-d9008be00e89@pengutronix.de> (Marc
+        Kleine-Budde's message of "Thu, 29 Oct 2020 18:06:42 +0100")
+Message-ID: <dleftjpn50vlsu.fsf%l.stelmach@samsung.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-References: <160384954046.698509.132709669068189999.stgit@localhost.localdomain>
- <160384963313.698509.13129692731727238158.stgit@localhost.localdomain>
- <20201029015115.jotej3wgi3p6yn6u@kafai-mbp> <CAKgT0UcpqQaHOdjcOGybF0pWuZS_ZqYOArQ8kLfvheGFE-ur-w@mail.gmail.com>
- <20201029181258.ezff3vfpar7fxbam@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20201029181258.ezff3vfpar7fxbam@kafai-mbp.dhcp.thefacebook.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 29 Oct 2020 12:51:40 -0700
-Message-ID: <CAKgT0Ufx14H--p3PO7wunHNJ6vXyhmzB4ZgTw-h0wuVKrRT32A@mail.gmail.com>
-Subject: Re: [bpf-next PATCH 2/4] selftests/bpf: Drop python client/server in
- favor of threads
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     bpf@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Kernel Team <kernel-team@fb.com>,
-        Netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>, brakmo@fb.com,
-        alexanderduyck@fb.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="=-=-="; micalg="pgp-sha256";
+        protocol="application/pgp-signature"
+X-Brightmail-Tracker: H4sIAAAAAAAAA01Sa0hTYRjm2zln57iaHJfly4qypYKKlzLq62YmQod+9asiKp15MMlN2dSy
+        fliZWmJqdtGmoWmUGrqcY2roiCWuXDovIIsaYUaZaZpWaBdr80zo3/Nenud9no+PIWQFYjmT
+        os7gNWplqkIsIU09C/awSf/K+Mj53CBsd1oI3FKhp3CV/TKJq7v7KVw7XUHhkak3FC4Z+0xg
+        u/0xjQdMxRQ2jI1QePhJlRhX2M0ibLnVhXBTt5PG+tqbJO6pWYPzurrpGB9ueGSQ4IwNr0Rc
+        h85Jc4bGq2Ku9X4O19E+J+JK/kRyxcZGxM0Z1h/0OirZncSnpmTxmojoBMmpRkMDlV658uxs
+        +Sx5AfVICpEXA+xWsF1vExciCSNj6xE4ul+QQvENwZBtjBKKOQSzr4bEy5Rfiy1IGDxEsJB7
+        08P/iGC6V0cUIoYRs+HQ1HTETfBlQ+D117YlMsF+IyGvIcGNV7EnYG50nHZjkg2E3z/aabeO
+        F1uAoPVLL+EeSNnt4HhtXSKvZneAcfwtLfR94MWd96QgqoI79sklR8C2M9A31okEq3EwM2ET
+        CXgVTFiNtIDXwd+OapHbKLA5cKNsm8AtQmCqmieFnV3wpv+nJ/I+GC/I8+x7g2PKR7jrDWWm
+        ckJoS+FKvkzYDoDmkk6PihyuTdR73HAwq9d5XvSWK2PdPboU+ev+i6P7L47OJUuwwaB/EiG0
+        Q+HBvc+EgPdAc/M0WYOoRuTHZ2pVybw2Ss2fCdcqVdpMdXL4yTSVAbm+pG3R+r0dmX8nWhDL
+        IMVKacyGyngZpczSZqssKMCl9O7xowEkJ9Vpal7hK43ts52QSZOU2ed4TVq8JjOV11rQWoZU
+        +Emjaj8dl7HJygz+NM+n85rlqYjxkl9AoYMHfu25DFW5zBY5U5sXWHB9zdOyQ0XGheQ/85fK
+        o0OOOoqj91uDXrYVxe4t+j6scppLP1rL6s7n9FfWHQ7221sa4Lw4Exd4dRTbPujDKNvBwylZ
+        225nPH+maM1fseuvg44mj203UWeDgnck+i7Wvzcnju+8K8rSZVY33O3K37hJQWpPKTeHEBqt
+        8h8VP5aAmgMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrLIsWRmVeSWpSXmKPExsVy+t/xu7pvFGbHG7TP4Lc4f/cQs8XGGetZ
+        Leacb2GxmH/kHKvFovczWC2uvb3DatH/+DWzxfnzG9gtLmzrY7XY9Pgaq8XlXXPYLGac38dk
+        cWjqXkaLtUfuslusXzSFxeLYAjGL1r1H2B0EPS5fu8jssWXlTSaPnbPusntsWtXJ5rF5Sb3H
+        zh2fmTz6/xp49G1ZxejxeZNcAGeUnk1RfmlJqkJGfnGJrVK0oYWRnqGlhZ6RiaWeobF5rJWR
+        qZK+nU1Kak5mWWqRvl2CXsaqTStZC2bzVHya/omlgfEYVxcjJ4eEgInE738bGbsYuTiEBJYy
+        Sly7OYeti5EDKCElsXJuOkSNsMSfa11sILaQwFNGiRMLlUBK2AT0JNaujQAJiwhoSdz+uJ0N
+        ZAyzwHcWiQsnL7GAJIQFYiTuzF/NClIvJOAo0TudHyTMIqAq8efbDnaQek6BdkaJze9OMYMk
+        eAXMJW7cPg62S1TAUmLLi/vsEHFBiZMzn4DNZBbIlvi6+jnzBEaBWUhSs5CkZgGtYxbQlFi/
+        Sx8irC2xbOFrZgjbVmLduvcsCxhZVzGKpJYW56bnFhvqFSfmFpfmpesl5+duYgRG97ZjPzfv
+        YLy0MfgQowAHoxIPr4P87Hgh1sSy4srcQ4wqQGMebVh9gVGKJS8/L1VJhNfp7Ok4Id6UxMqq
+        1KL8+KLSnNTiQ4ymQI9OZJYSTc4HJqS8knhDU0NzC0tDc2NzYzMLJXHeDoGDMUIC6Yklqdmp
+        qQWpRTB9TBycUg2MCcw5rBMf37dm2r0ypfqWKJ+K7Z6Wx/apXHcdS9o0DrYvc3sVXX48P3Sy
+        3KuzW7boL+zQZEswdXjgyZnlqfzd7+kr3SvLTp2+pMcuq7dnm4i42ZNOtYnOLar3Hl1gvthx
+        JEe2YDfn2l7/eRF+U7mr9yy5zHex1uia5t13rS3rS/i8MpyY1LYosRRnJBpqMRcVJwIA79tf
+        qRADAAA=
+X-CMS-MailID: 20201029200708eucas1p1f00cdaf2c217056427dcd08f9d0d8bc9
+X-Msg-Generator: CA
+X-RootMTR: 20201029200708eucas1p1f00cdaf2c217056427dcd08f9d0d8bc9
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20201029200708eucas1p1f00cdaf2c217056427dcd08f9d0d8bc9
+References: <41ffa67f-54af-4a21-fedc-d9008be00e89@pengutronix.de>
+        <CGME20201029200708eucas1p1f00cdaf2c217056427dcd08f9d0d8bc9@eucas1p1.samsung.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 29, 2020 at 11:13 AM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Thu, Oct 29, 2020 at 09:58:15AM -0700, Alexander Duyck wrote:
-> [ ... ]
->
+--=-=-=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+It was <2020-10-29 czw 18:06>, when Marc Kleine-Budde wrote:
+> On 10/28/20 10:40 PM, =C5=81ukasz Stelmach wrote:
+>> Add bindings for AX88796C SPI Ethernet Adapter.
+>>=20
+>> Signed-off-by: =C5=81ukasz Stelmach <l.stelmach@samsung.com>
+>> ---
+>>  .../bindings/net/asix,ax88796c.yaml           | 69 +++++++++++++++++++
+>>  1 file changed, 69 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/net/asix,ax88796c.=
+yaml
+>>=20
+>> diff --git
+>> a/Documentation/devicetree/bindings/net/asix,ax88796c.yaml
+>> b/Documentation/devicetree/bindings/net/asix,ax88796c.yaml
+>> new file mode 100644
+>> index 000000000000..05093c1ec509
 
 [...]
 
-> >
-> > > Also, when looking closer at BPF_SOCK_OPS_STATE_CB in test_tcpbpf_kern.c,
-> > > it seems the map value "gp" is slapped together across multiple
-> > > TCP_CLOSE events which may be not easy to understand.
-> > >
-> > > How about it checks different states: TCP_CLOSE, TCP_LAST_ACK,
-> > > and BPF_TCP_FIN_WAIT2.  Each of this state will update its own
-> > > values under "gp".  Something like this (only compiler tested on
-> > > top of patch 4):
-> > >
-> > > diff --git i/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c w/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-> > > index 7e92c37976ac..65b247b03dfc 100644
-> > > --- i/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-> > > +++ w/tools/testing/selftests/bpf/prog_tests/tcpbpf_user.c
-> > > @@ -90,15 +90,14 @@ static void verify_result(int map_fd, int sock_map_fd)
-> > >               result.event_map, expected_events);
-> > >
-> > >         ASSERT_EQ(result.bytes_received, 501, "bytes_received");
-> > > -       ASSERT_EQ(result.bytes_acked, 1002, "bytes_acked");
-> > > +       ASSERT_EQ(result.bytes_acked, 1001, "bytes_acked");
-> > >         ASSERT_EQ(result.data_segs_in, 1, "data_segs_in");
-> > >         ASSERT_EQ(result.data_segs_out, 1, "data_segs_out");
-> > >         ASSERT_EQ(result.bad_cb_test_rv, 0x80, "bad_cb_test_rv");
-> > >         ASSERT_EQ(result.good_cb_test_rv, 0, "good_cb_test_rv");
-> > > -       ASSERT_EQ(result.num_listen, 1, "num_listen");
-> > > -
-> > > -       /* 3 comes from one listening socket + both ends of the connection */
-> > > -       ASSERT_EQ(result.num_close_events, 3, "num_close_events");
-> > > +       ASSERT_EQ(result.num_listen_close, 1, "num_listen");
-> > > +       ASSERT_EQ(result.num_last_ack, 1, "num_last_ack");
-> > > +       ASSERT_EQ(result.num_fin_wait2, 1, "num_fin_wait2");
-> > >
-> > >         /* check setsockopt for SAVE_SYN */
-> > >         key = 0;
-> > > diff --git i/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c w/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-> > > index 3e6912e4df3d..2c5ffb50d6e0 100644
-> > > --- i/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-> > > +++ w/tools/testing/selftests/bpf/progs/test_tcpbpf_kern.c
-> > > @@ -55,9 +55,11 @@ int bpf_testcb(struct bpf_sock_ops *skops)
-> > >  {
-> > >         char header[sizeof(struct ipv6hdr) + sizeof(struct tcphdr)];
-> > >         struct bpf_sock_ops *reuse = skops;
-> > > +       struct tcpbpf_globals *gp;
-> > >         struct tcphdr *thdr;
-> > >         int good_call_rv = 0;
-> > >         int bad_call_rv = 0;
-> > > +       __u32 key_zero = 0;
-> > >         int save_syn = 1;
-> > >         int rv = -1;
-> > >         int v = 0;
-> > > @@ -155,26 +157,21 @@ int bpf_testcb(struct bpf_sock_ops *skops)
-> > >         case BPF_SOCK_OPS_RETRANS_CB:
-> > >                 break;
-> > >         case BPF_SOCK_OPS_STATE_CB:
-> > > -               if (skops->args[1] == BPF_TCP_CLOSE) {
-> > > -                       __u32 key = 0;
-> > > -                       struct tcpbpf_globals g, *gp;
-> > > -
-> > > -                       gp = bpf_map_lookup_elem(&global_map, &key);
-> > > -                       if (!gp)
-> > > -                               break;
-> > > -                       g = *gp;
-> > > -                       if (skops->args[0] == BPF_TCP_LISTEN) {
-> > > -                               g.num_listen++;
-> > > -                       } else {
-> > > -                               g.total_retrans = skops->total_retrans;
-> > > -                               g.data_segs_in = skops->data_segs_in;
-> > > -                               g.data_segs_out = skops->data_segs_out;
-> > > -                               g.bytes_received = skops->bytes_received;
-> > > -                               g.bytes_acked = skops->bytes_acked;
-> > > -                       }
-> > > -                       g.num_close_events++;
-> > > -                       bpf_map_update_elem(&global_map, &key, &g,
-> > > -                                           BPF_ANY);
-> > > +               gp = bpf_map_lookup_elem(&global_map, &key_zero);
-> > > +               if (!gp)
-> > > +                       break;
-> > > +               if (skops->args[1] == BPF_TCP_CLOSE &&
-> > > +                   skops->args[0] == BPF_TCP_LISTEN) {
-> > > +                       gp->num_listen_close++;
-> > > +               } else if (skops->args[1] == BPF_TCP_LAST_ACK) {
-> > > +                       gp->total_retrans = skops->total_retrans;
-> > > +                       gp->data_segs_in = skops->data_segs_in;
-> > > +                       gp->data_segs_out = skops->data_segs_out;
-> > > +                       gp->bytes_received = skops->bytes_received;
-> > > +                       gp->bytes_acked = skops->bytes_acked;
-> > > +                       gp->num_last_ack++;
-> > > +               } else if (skops->args[1] == BPF_TCP_FIN_WAIT2) {
-> > > +                       gp->num_fin_wait2++;
-> I meant with the above change in "case BPF_SOCK_OPS_STATE_CB".
-> The retry-and-wait in tcpbpf_user.c can be avoided.
+>> +  - interrupts
+>> +  - interrupt-parrent
+>                    ^^
 >
-> What may still be needed in tcpbpf_user.c is to use shutdown and
-> read-zero to ensure the sk has gone through those states before
-> calling verify_result().  Something like this [ uncompiled code again :) ]:
->
->         /* Always send FIN from accept_fd first to
->          * ensure it will go through FIN_WAIT_2.
->          */
->         shutdown(accept_fd, SHUT_WR);
->         /* Ensure client_fd gets the FIN */
->         err = read(client_fd, buf, sizeof(buf));
->         if (CHECK(err != 0, "read-after-shutdown(client_fd):",
->                   "err:%d errno:%d\n", err, errno))
->                 goto close_accept_fd;
->
->         /* FIN sends from client_fd and it must be in LAST_ACK now */
->         shutdown(client_fd, SHUT_WR);
->         /* Ensure accept_fd gets the FIN-ACK.
->          * accept_fd must have passed the FIN_WAIT2.
->          */
->         err = read(accept_fd, buf, sizeof(buf));
->         if (CHECK(err != 0, "read-after-shutdown(accept_fd):",
->                   "err:%d errno:%d\n", err, errno))
->                 goto close_accept_fd;
->
->         close(server_fd);
->         close(accept_fd);
->         close(client_fd);
->
->         /* All sk has gone through the states being tested.
->          * check the results now.
->          */
->         verify_result(map_fd, sock_map_fd);
+> typo?
 
-Okay. I think I see how that works then. Basically shutdown the write
-on one end and read on the other expecting to hold until it forces us
-out with a read of length 0 on the other end. Although I might just
-use recv since that was the call being used to pull data from the
-socket rather than read. I just need to make sure I perform it
-starting with the shutdown on the accept end first so that it will
-close first to avoid causing the received/acked to be swapped.
+Indeed, removing this but thanks anyway.
 
-Thanks.
+=2D-=20
+=C5=81ukasz Stelmach
+Samsung R&D Institute Poland
+Samsung Electronics
 
-- Alex
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEXpuyqjq9kGEVr9UQsK4enJilgBAFAl+bIOEACgkQsK4enJil
+gBBYNgf/R/+BlHWdeKNjGdUGq9u9ScuX49zOkp4bP9gI70YuAry4sNcAPqnuFzx7
+/oiUp7xecHvU7z+KWfuU15oi5y0waMBjEmpYMTpuN070bv5s5EpEMH/zpp3Bo5zF
+6UjZZFbCfsxGclkstiRrHw42e5Kw5i+Z3fp/i67cMit1pgr0bplQ+HQi+uuC5lCE
+SCBMqYF7oJTb9ZM9382+vgJ5b+DwWm3DIiahPHg0JhI3U1UOwRlh/q/f/WoZ5MQA
+zavEyLZSgGnexzp6zTIC4J4bLOArWs+Ckzy9lneEG2f509bbgrTRyWuXcVc0Xpc2
+Wyp/HMbG1PRoVAfUQNrv28E6GMae7w==
+=egla
+-----END PGP SIGNATURE-----
+--=-=-=--
