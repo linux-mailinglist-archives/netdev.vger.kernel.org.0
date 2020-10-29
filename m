@@ -2,63 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D245F29E892
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 11:10:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87BD529E87F
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 11:10:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726992AbgJ2KJ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 06:09:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52994 "EHLO
+        id S1726841AbgJ2KJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 06:09:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726784AbgJ2KI5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 06:08:57 -0400
+        with ESMTP id S1726814AbgJ2KI7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 06:08:59 -0400
 Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90B3FC0613D2;
-        Thu, 29 Oct 2020 03:08:56 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id x1so2471902eds.1;
-        Thu, 29 Oct 2020 03:08:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9EE3C0613CF;
+        Thu, 29 Oct 2020 03:08:57 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id v19so2412764edx.9;
+        Thu, 29 Oct 2020 03:08:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=N1F0d+Vte2844wCvhpbDnNWu3V6cWBfYCvkDlG3zIig=;
-        b=Pp7WINJJs1plhzhdkA+UShb4ibmhsysbtGqiZSaUjA9ZdCwkVoy3oRVkslZjA9Y0jA
-         ji1o/OKadyjbByQ0DDiMgTBauYaEvjQbua1zwrKUNHw2FxkW11orGV1U7Xh3Ee5BRGx8
-         2OWMH3Zk0vE2+F3ey0ToTzCnZaboMQKDty+cI1z51JwzslT4CRxST5DAJpQEUnjqK1pI
-         cNOCzen0XpzZAcBO/Y5c88kSJGc5CXVxaU17hDfP7JjDPJr1/z8aUhfqX/jlbtsDW6QR
-         Ewvud09y9dpEkoYsZzRahfDobWAH0zZJIGugnpBaPVhv6NSeom2a+3QNexyLrGestNOM
-         XI7w==
+        bh=iSqdzsR05m30MrTKYfN0RdpfKEkLx7WjEE7llyjtWDc=;
+        b=hpfvENbl5rzDeLS7kdA8/eWwoUvtcjvC12sLtkJHAEsxBKZGyUM9KNEuTvK0opZ95r
+         HwHFCy+ZLlYkY1+ub8N7i5hr2Z43yfLoT1yNbugZIlTWgBexD7qjehPmWWt/RstU/qsw
+         yd/fft/WS3p3zPMLtNlUWBjAgE7MEDQVcUK1A9mkiPWSDxeluPJOs4qDCMGgYYmnfVdN
+         Ov4V9rB//vwtVDpIKbkLDd197sLyl2v89HU/rvVySrpP8HegKnctuC6gysSFv7u+ITDH
+         B24HTzlBPbiPwy3JQLMxMWpkMP6C2U+a6rkxtBB+iDnsEt+cfEcTMq5D7jiVIk8Ut+Lu
+         Q11g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=N1F0d+Vte2844wCvhpbDnNWu3V6cWBfYCvkDlG3zIig=;
-        b=I2CGVI1VGWB6uw0j010FXetNnSOkWZeQcn7XZCX7FG241t9JuXCsFfLx4YtzCDajmN
-         mAQErsdAbE0d8/QlKFbu+YkcyM7eahK4dTHy5x+0ps6UcSKdqVLkW7PfXOItk1uejxsS
-         rAuuFfGh6GiwQvQFtM90TQcQ08yOitYNNuqEma6eYbRN5PAiBpgeTJpfKroISRjd9bHY
-         QfzW9w21jcHPtbwN/xYjv4lEPSO+Qdtm42S/AARXaR6vq9vm/qYfVksCEjb7AUduU/72
-         d6Tr0AJMnHOhnvBC9TKdj30AKrzCDTicz55JjL9a1xpA2uTvUF0Ix2DY6yC05MSKwUnq
-         IMwA==
-X-Gm-Message-State: AOAM530+ILMjksoMnRiunkguT9KTIvxxh2tW+YhIqkcgBo8nSloE3EI0
-        PrLqHCp9HfvoC7WRKdT9Gr0=
-X-Google-Smtp-Source: ABdhPJwedpNc72+6bl3J5cR0r48TRKoRsWwHKHw7iUasa3AhcfYN3tSBjGLfOPA3LiuWLAqlbxvSqA==
-X-Received: by 2002:aa7:d0c3:: with SMTP id u3mr3163756edo.76.1603966135262;
-        Thu, 29 Oct 2020 03:08:55 -0700 (PDT)
+        bh=iSqdzsR05m30MrTKYfN0RdpfKEkLx7WjEE7llyjtWDc=;
+        b=iJpNCORxVS1gXxvN1yfw32KwlVWGJE44f3HL3TJxZf7m0SKZXZkVu/QwCYKB4t+LHB
+         Fs3vCioNVe0qhWa1t7d3a6wYGLs59tmZp2F7u3CesP8vLlQt/ndsG98Zg5Orq8VEWUYw
+         nnz6WwoXSJ0nuQrtsKFJPXxlnSdR/WZAQ6zhFpNygfbNVwfOtDEjZ6PwX+Nmovx+5haF
+         pmAkxqe32+JRdMyZKoi2TjT2pL7qoGHG6hBtPKuGuSdOjm2CJBNsC5Drh4fxmdbw3JAj
+         cJx8awp14jROdOFAvbfjZF2W1IyUK+DGMXjSmWXJUxh7FSmbBXP8U9SeGhlhQN72AkIu
+         VJYQ==
+X-Gm-Message-State: AOAM531EUoddCJnW7wQJzWtbCHRw/fslGb4QGTKSg03chB6OQKL49Rd6
+        ydmzGMwdgQdMjpItjjjn7iE=
+X-Google-Smtp-Source: ABdhPJzqlCnMkO6bSHbM11jgWkdh8i36hMUnmFiepHJok7UOpA7tvNkmoC7OC5jYlTmv+Sn/55Tqgg==
+X-Received: by 2002:aa7:d394:: with SMTP id x20mr3173915edq.14.1603966136692;
+        Thu, 29 Oct 2020 03:08:56 -0700 (PDT)
 Received: from yoga-910.localhost ([188.25.2.177])
-        by smtp.gmail.com with ESMTPSA id m1sm1198650ejj.117.2020.10.29.03.08.54
+        by smtp.gmail.com with ESMTPSA id m1sm1198650ejj.117.2020.10.29.03.08.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Oct 2020 03:08:54 -0700 (PDT)
+        Thu, 29 Oct 2020 03:08:56 -0700 (PDT)
 From:   Ioana Ciornei <ciorneiioana@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Michael Walle <michael@walle.cc>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: [PATCH net-next 12/19] net: phy: broadcom: remove use of ack_interrupt()
-Date:   Thu, 29 Oct 2020 12:07:34 +0200
-Message-Id: <20201029100741.462818-13-ciorneiioana@gmail.com>
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH net-next 13/19] net: phy: cicada: implement the generic .handle_interrupt() callback
+Date:   Thu, 29 Oct 2020 12:07:35 +0200
+Message-Id: <20201029100741.462818-14-ciorneiioana@gmail.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201029100741.462818-1-ciorneiioana@gmail.com>
 References: <20201029100741.462818-1-ciorneiioana@gmail.com>
@@ -70,413 +68,64 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ioana Ciornei <ioana.ciornei@nxp.com>
 
-In preparation of removing the .ack_interrupt() callback, we must replace
-its occurrences (aka phy_clear_interrupt), from the 2 places where it is
-called from (phy_enable_interrupts and phy_disable_interrupts), with
-equivalent functionality.
+In an attempt to actually support shared IRQs in phylib, we now move the
+responsibility of triggering the phylib state machine or just returning
+IRQ_NONE, based on the IRQ status register, to the PHY driver. Having
+3 different IRQ handling callbacks (.handle_interrupt(),
+.did_interrupt() and .ack_interrupt() ) is confusing so let the PHY
+driver implement directly an IRQ handler like any other device driver.
+Make this driver follow the new convention.
 
-This means that clearing interrupts now becomes something that the PHY
-driver is responsible of doing, before enabling interrupts and after
-clearing them. Make this driver follow the new contract.
-
-Cc: Michael Walle <michael@walle.cc>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Ioana Ciornei <ioana.ciornei@nxp.com>
 ---
- drivers/net/phy/bcm-cygnus.c  |  1 -
- drivers/net/phy/bcm-phy-lib.c | 18 ++++++++++++++----
- drivers/net/phy/bcm54140.c    | 20 +++++++++++++++-----
- drivers/net/phy/bcm63xx.c     | 18 +++++++++++++-----
- drivers/net/phy/bcm87xx.c     | 34 +++++++++++++---------------------
- drivers/net/phy/broadcom.c    | 34 +++++++++++++---------------------
- 6 files changed, 68 insertions(+), 57 deletions(-)
+ drivers/net/phy/cicada.c | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
 
-diff --git a/drivers/net/phy/bcm-cygnus.c b/drivers/net/phy/bcm-cygnus.c
-index a236e0b8d04d..da8f7cb41b44 100644
---- a/drivers/net/phy/bcm-cygnus.c
-+++ b/drivers/net/phy/bcm-cygnus.c
-@@ -256,7 +256,6 @@ static struct phy_driver bcm_cygnus_phy_driver[] = {
- 	.name          = "Broadcom Cygnus PHY",
- 	/* PHY_GBIT_FEATURES */
- 	.config_init   = bcm_cygnus_config_init,
--	.ack_interrupt = bcm_phy_ack_intr,
- 	.config_intr   = bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- 	.suspend       = genphy_suspend,
-diff --git a/drivers/net/phy/bcm-phy-lib.c b/drivers/net/phy/bcm-phy-lib.c
-index a32da9ee98ab..8739faf78560 100644
---- a/drivers/net/phy/bcm-phy-lib.c
-+++ b/drivers/net/phy/bcm-phy-lib.c
-@@ -181,18 +181,28 @@ EXPORT_SYMBOL_GPL(bcm_phy_ack_intr);
+diff --git a/drivers/net/phy/cicada.c b/drivers/net/phy/cicada.c
+index 9d1612a4d7e6..03b957483023 100644
+--- a/drivers/net/phy/cicada.c
++++ b/drivers/net/phy/cicada.c
+@@ -96,6 +96,24 @@ static int cis820x_config_intr(struct phy_device *phydev)
+ 	return err;
+ }
  
- int bcm_phy_config_intr(struct phy_device *phydev)
++static irqreturn_t cis820x_handle_interrupt(struct phy_device *phydev)
++{
++	int irq_status;
++
++	irq_status = phy_read(phydev, MII_CIS8201_ISTAT);
++	if (irq_status < 0) {
++		phy_error(phydev);
++		return IRQ_NONE;
++	}
++
++	if (irq_status == 0)
++		return IRQ_NONE;
++
++	phy_trigger_machine(phydev);
++
++	return IRQ_HANDLED;
++}
++
+ /* Cicada 8201, a.k.a Vitesse VSC8201 */
+ static struct phy_driver cis820x_driver[] = {
  {
--	int reg;
-+	int reg, err;
- 
- 	reg = phy_read(phydev, MII_BCM54XX_ECR);
- 	if (reg < 0)
- 		return reg;
- 
--	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-+	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
-+		err = bcm_phy_ack_intr(phydev);
-+		if (err)
-+			return err;
-+
- 		reg &= ~MII_BCM54XX_ECR_IM;
--	else
-+		err = phy_write(phydev, MII_BCM54XX_ECR, reg);
-+	} else {
- 		reg |= MII_BCM54XX_ECR_IM;
-+		err = phy_write(phydev, MII_BCM54XX_ECR, reg);
-+		if (err)
-+			return err;
- 
--	return phy_write(phydev, MII_BCM54XX_ECR, reg);
-+		err = bcm_phy_ack_intr(phydev);
-+	}
-+	return err;
- }
- EXPORT_SYMBOL_GPL(bcm_phy_config_intr);
- 
-diff --git a/drivers/net/phy/bcm54140.c b/drivers/net/phy/bcm54140.c
-index f388cacd992a..e71af3aa4878 100644
---- a/drivers/net/phy/bcm54140.c
-+++ b/drivers/net/phy/bcm54140.c
-@@ -674,7 +674,7 @@ static int bcm54140_config_intr(struct phy_device *phydev)
- 		BCM54140_RDB_TOP_IMR_PORT0, BCM54140_RDB_TOP_IMR_PORT1,
- 		BCM54140_RDB_TOP_IMR_PORT2, BCM54140_RDB_TOP_IMR_PORT3,
- 	};
--	int reg;
-+	int reg, err;
- 
- 	if (priv->port >= ARRAY_SIZE(port_to_imr_bit))
- 		return -EINVAL;
-@@ -683,12 +683,23 @@ static int bcm54140_config_intr(struct phy_device *phydev)
- 	if (reg < 0)
- 		return reg;
- 
--	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-+	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
-+		err = bcm54140_ack_intr(phydev);
-+		if (err)
-+			return err;
-+
- 		reg &= ~port_to_imr_bit[priv->port];
--	else
-+		err = bcm54140_base_write_rdb(phydev, BCM54140_RDB_TOP_IMR, reg);
-+	} else {
- 		reg |= port_to_imr_bit[priv->port];
-+		err = bcm54140_base_write_rdb(phydev, BCM54140_RDB_TOP_IMR, reg);
-+		if (err)
-+			return err;
-+
-+		err = bcm54140_ack_intr(phydev);
-+	}
- 
--	return bcm54140_base_write_rdb(phydev, BCM54140_RDB_TOP_IMR, reg);
-+	return err;
- }
- 
- static int bcm54140_get_downshift(struct phy_device *phydev, u8 *data)
-@@ -843,7 +854,6 @@ static struct phy_driver bcm54140_drivers[] = {
- 		.flags		= PHY_POLL_CABLE_TEST,
- 		.features       = PHY_GBIT_FEATURES,
- 		.config_init    = bcm54140_config_init,
--		.ack_interrupt  = bcm54140_ack_intr,
- 		.handle_interrupt = bcm54140_handle_interrupt,
- 		.config_intr    = bcm54140_config_intr,
- 		.probe		= bcm54140_probe,
-diff --git a/drivers/net/phy/bcm63xx.c b/drivers/net/phy/bcm63xx.c
-index 818c853b6638..0eb33be824f1 100644
---- a/drivers/net/phy/bcm63xx.c
-+++ b/drivers/net/phy/bcm63xx.c
-@@ -25,12 +25,22 @@ static int bcm63xx_config_intr(struct phy_device *phydev)
- 	if (reg < 0)
- 		return reg;
- 
--	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-+	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
-+		err = bcm_phy_ack_intr(phydev);
-+		if (err)
-+			return err;
-+
- 		reg &= ~MII_BCM63XX_IR_GMASK;
--	else
-+		err = phy_write(phydev, MII_BCM63XX_IR, reg);
-+	} else {
- 		reg |= MII_BCM63XX_IR_GMASK;
-+		err = phy_write(phydev, MII_BCM63XX_IR, reg);
-+		if (err)
-+			return err;
-+
-+		err = bcm_phy_ack_intr(phydev);
-+	}
- 
--	err = phy_write(phydev, MII_BCM63XX_IR, reg);
- 	return err;
- }
- 
-@@ -67,7 +77,6 @@ static struct phy_driver bcm63xx_driver[] = {
- 	/* PHY_BASIC_FEATURES */
- 	.flags		= PHY_IS_INTERNAL,
- 	.config_init	= bcm63xx_config_init,
--	.ack_interrupt	= bcm_phy_ack_intr,
- 	.config_intr	= bcm63xx_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
+@@ -106,6 +124,7 @@ static struct phy_driver cis820x_driver[] = {
+ 	.config_init	= &cis820x_config_init,
+ 	.ack_interrupt	= &cis820x_ack_interrupt,
+ 	.config_intr	= &cis820x_config_intr,
++	.handle_interrupt = &cis820x_handle_interrupt,
  }, {
-@@ -78,7 +87,6 @@ static struct phy_driver bcm63xx_driver[] = {
- 	/* PHY_BASIC_FEATURES */
- 	.flags		= PHY_IS_INTERNAL,
- 	.config_init	= bcm63xx_config_init,
--	.ack_interrupt	= bcm_phy_ack_intr,
- 	.config_intr	= bcm63xx_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
+ 	.phy_id		= 0x000fc440,
+ 	.name		= "Cicada Cis8204",
+@@ -114,6 +133,7 @@ static struct phy_driver cis820x_driver[] = {
+ 	.config_init	= &cis820x_config_init,
+ 	.ack_interrupt	= &cis820x_ack_interrupt,
+ 	.config_intr	= &cis820x_config_intr,
++	.handle_interrupt = &cis820x_handle_interrupt,
  } };
-diff --git a/drivers/net/phy/bcm87xx.c b/drivers/net/phy/bcm87xx.c
-index f20cfb05ef04..4ac8fd190e9d 100644
---- a/drivers/net/phy/bcm87xx.c
-+++ b/drivers/net/phy/bcm87xx.c
-@@ -144,12 +144,22 @@ static int bcm87xx_config_intr(struct phy_device *phydev)
- 	if (reg < 0)
- 		return reg;
  
--	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-+	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
-+		err = phy_read(phydev, BCM87XX_LASI_STATUS);
-+		if (err)
-+			return err;
-+
- 		reg |= 1;
--	else
-+		err = phy_write(phydev, BCM87XX_LASI_CONTROL, reg);
-+	} else {
- 		reg &= ~1;
-+		err = phy_write(phydev, BCM87XX_LASI_CONTROL, reg);
-+		if (err)
-+			return err;
-+
-+		err = phy_read(phydev, BCM87XX_LASI_STATUS);
-+	}
- 
--	err = phy_write(phydev, BCM87XX_LASI_CONTROL, reg);
- 	return err;
- }
- 
-@@ -171,22 +181,6 @@ static irqreturn_t bcm87xx_handle_interrupt(struct phy_device *phydev)
- 	return IRQ_HANDLED;
- }
- 
--static int bcm87xx_ack_interrupt(struct phy_device *phydev)
--{
--	int reg;
--
--	/* Reading the LASI status clears it. */
--	reg = phy_read(phydev, BCM87XX_LASI_STATUS);
--
--	if (reg < 0) {
--		phydev_err(phydev,
--			   "Error: Read of BCM87XX_LASI_STATUS failed: %d\n",
--			   reg);
--		return 0;
--	}
--	return (reg & 1) != 0;
--}
--
- static int bcm8706_match_phy_device(struct phy_device *phydev)
- {
- 	return phydev->c45_ids.device_ids[4] == PHY_ID_BCM8706;
-@@ -206,7 +200,6 @@ static struct phy_driver bcm87xx_driver[] = {
- 	.config_init	= bcm87xx_config_init,
- 	.config_aneg	= bcm87xx_config_aneg,
- 	.read_status	= bcm87xx_read_status,
--	.ack_interrupt	= bcm87xx_ack_interrupt,
- 	.config_intr	= bcm87xx_config_intr,
- 	.handle_interrupt = bcm87xx_handle_interrupt,
- 	.match_phy_device = bcm8706_match_phy_device,
-@@ -218,7 +211,6 @@ static struct phy_driver bcm87xx_driver[] = {
- 	.config_init	= bcm87xx_config_init,
- 	.config_aneg	= bcm87xx_config_aneg,
- 	.read_status	= bcm87xx_read_status,
--	.ack_interrupt	= bcm87xx_ack_interrupt,
- 	.config_intr	= bcm87xx_config_intr,
- 	.handle_interrupt = bcm87xx_handle_interrupt,
- 	.match_phy_device = bcm8727_match_phy_device,
-diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-index 8bcdb94ef2fc..8a4ec3222168 100644
---- a/drivers/net/phy/broadcom.c
-+++ b/drivers/net/phy/broadcom.c
-@@ -634,12 +634,22 @@ static int brcm_fet_config_intr(struct phy_device *phydev)
- 	if (reg < 0)
- 		return reg;
- 
--	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-+	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
-+		err = brcm_fet_ack_interrupt(phydev);
-+		if (err)
-+			return err;
-+
- 		reg &= ~MII_BRCM_FET_IR_MASK;
--	else
-+		err = phy_write(phydev, MII_BRCM_FET_INTREG, reg);
-+	} else {
- 		reg |= MII_BRCM_FET_IR_MASK;
-+		err = phy_write(phydev, MII_BRCM_FET_INTREG, reg);
-+		if (err)
-+			return err;
-+
-+		err = brcm_fet_ack_interrupt(phydev);
-+	}
- 
--	err = phy_write(phydev, MII_BRCM_FET_INTREG, reg);
- 	return err;
- }
- 
-@@ -699,7 +709,6 @@ static struct phy_driver broadcom_drivers[] = {
- 	.name		= "Broadcom BCM5411",
- 	/* PHY_GBIT_FEATURES */
- 	.config_init	= bcm54xx_config_init,
--	.ack_interrupt	= bcm_phy_ack_intr,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- }, {
-@@ -708,7 +717,6 @@ static struct phy_driver broadcom_drivers[] = {
- 	.name		= "Broadcom BCM5421",
- 	/* PHY_GBIT_FEATURES */
- 	.config_init	= bcm54xx_config_init,
--	.ack_interrupt	= bcm_phy_ack_intr,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- }, {
-@@ -717,7 +725,6 @@ static struct phy_driver broadcom_drivers[] = {
- 	.name		= "Broadcom BCM54210E",
- 	/* PHY_GBIT_FEATURES */
- 	.config_init	= bcm54xx_config_init,
--	.ack_interrupt	= bcm_phy_ack_intr,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- }, {
-@@ -726,7 +733,6 @@ static struct phy_driver broadcom_drivers[] = {
- 	.name		= "Broadcom BCM5461",
- 	/* PHY_GBIT_FEATURES */
- 	.config_init	= bcm54xx_config_init,
--	.ack_interrupt	= bcm_phy_ack_intr,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- }, {
-@@ -735,7 +741,6 @@ static struct phy_driver broadcom_drivers[] = {
- 	.name		= "Broadcom BCM54612E",
- 	/* PHY_GBIT_FEATURES */
- 	.config_init	= bcm54xx_config_init,
--	.ack_interrupt	= bcm_phy_ack_intr,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- }, {
-@@ -745,7 +750,6 @@ static struct phy_driver broadcom_drivers[] = {
- 	/* PHY_GBIT_FEATURES */
- 	.config_init	= bcm54xx_config_init,
- 	.config_aneg	= bcm54616s_config_aneg,
--	.ack_interrupt	= bcm_phy_ack_intr,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- 	.read_status	= bcm54616s_read_status,
-@@ -756,7 +760,6 @@ static struct phy_driver broadcom_drivers[] = {
- 	.name		= "Broadcom BCM5464",
- 	/* PHY_GBIT_FEATURES */
- 	.config_init	= bcm54xx_config_init,
--	.ack_interrupt	= bcm_phy_ack_intr,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- 	.suspend	= genphy_suspend,
-@@ -768,7 +771,6 @@ static struct phy_driver broadcom_drivers[] = {
- 	/* PHY_GBIT_FEATURES */
- 	.config_init	= bcm54xx_config_init,
- 	.config_aneg	= bcm5481_config_aneg,
--	.ack_interrupt	= bcm_phy_ack_intr,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- }, {
-@@ -778,7 +780,6 @@ static struct phy_driver broadcom_drivers[] = {
- 	/* PHY_GBIT_FEATURES */
- 	.config_init    = bcm54xx_config_init,
- 	.config_aneg    = bcm5481_config_aneg,
--	.ack_interrupt  = bcm_phy_ack_intr,
- 	.config_intr    = bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- 	.suspend	= genphy_suspend,
-@@ -790,7 +791,6 @@ static struct phy_driver broadcom_drivers[] = {
- 	/* PHY_GBIT_FEATURES */
- 	.config_init    = bcm54811_config_init,
- 	.config_aneg    = bcm5481_config_aneg,
--	.ack_interrupt  = bcm_phy_ack_intr,
- 	.config_intr    = bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- 	.suspend	= genphy_suspend,
-@@ -802,7 +802,6 @@ static struct phy_driver broadcom_drivers[] = {
- 	/* PHY_GBIT_FEATURES */
- 	.config_init	= bcm5482_config_init,
- 	.read_status	= bcm5482_read_status,
--	.ack_interrupt	= bcm_phy_ack_intr,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- }, {
-@@ -811,7 +810,6 @@ static struct phy_driver broadcom_drivers[] = {
- 	.name		= "Broadcom BCM50610",
- 	/* PHY_GBIT_FEATURES */
- 	.config_init	= bcm54xx_config_init,
--	.ack_interrupt	= bcm_phy_ack_intr,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- }, {
-@@ -820,7 +818,6 @@ static struct phy_driver broadcom_drivers[] = {
- 	.name		= "Broadcom BCM50610M",
- 	/* PHY_GBIT_FEATURES */
- 	.config_init	= bcm54xx_config_init,
--	.ack_interrupt	= bcm_phy_ack_intr,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- }, {
-@@ -829,7 +826,6 @@ static struct phy_driver broadcom_drivers[] = {
- 	.name		= "Broadcom BCM57780",
- 	/* PHY_GBIT_FEATURES */
- 	.config_init	= bcm54xx_config_init,
--	.ack_interrupt	= bcm_phy_ack_intr,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- }, {
-@@ -838,7 +834,6 @@ static struct phy_driver broadcom_drivers[] = {
- 	.name		= "Broadcom BCMAC131",
- 	/* PHY_BASIC_FEATURES */
- 	.config_init	= brcm_fet_config_init,
--	.ack_interrupt	= brcm_fet_ack_interrupt,
- 	.config_intr	= brcm_fet_config_intr,
- 	.handle_interrupt = brcm_fet_handle_interrupt,
- }, {
-@@ -847,7 +842,6 @@ static struct phy_driver broadcom_drivers[] = {
- 	.name		= "Broadcom BCM5241",
- 	/* PHY_BASIC_FEATURES */
- 	.config_init	= brcm_fet_config_init,
--	.ack_interrupt	= brcm_fet_ack_interrupt,
- 	.config_intr	= brcm_fet_config_intr,
- 	.handle_interrupt = brcm_fet_handle_interrupt,
- }, {
-@@ -871,7 +865,6 @@ static struct phy_driver broadcom_drivers[] = {
- 	.get_stats	= bcm53xx_phy_get_stats,
- 	.probe		= bcm53xx_phy_probe,
- 	.config_init	= bcm54xx_config_init,
--	.ack_interrupt	= bcm_phy_ack_intr,
- 	.config_intr	= bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- }, {
-@@ -880,7 +873,6 @@ static struct phy_driver broadcom_drivers[] = {
- 	.name           = "Broadcom BCM89610",
- 	/* PHY_GBIT_FEATURES */
- 	.config_init    = bcm54xx_config_init,
--	.ack_interrupt  = bcm_phy_ack_intr,
- 	.config_intr    = bcm_phy_config_intr,
- 	.handle_interrupt = bcm_phy_handle_interrupt,
- } };
+ module_phy_driver(cis820x_driver);
 -- 
 2.28.0
 
