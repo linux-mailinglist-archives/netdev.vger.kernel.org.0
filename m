@@ -2,127 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98DC829E2C3
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:38:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 346E329E2C7
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 03:38:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727282AbgJ2CgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Oct 2020 22:36:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38498 "EHLO
+        id S2391233AbgJ2CiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Oct 2020 22:38:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726045AbgJ2Cem (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 22:34:42 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4E21C0613CF
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 19:34:42 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id n16so1099935pgv.13
-        for <netdev@vger.kernel.org>; Wed, 28 Oct 2020 19:34:42 -0700 (PDT)
+        with ESMTP id S1729588AbgJ2Cgi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Oct 2020 22:36:38 -0400
+Received: from mail-yb1-xb43.google.com (mail-yb1-xb43.google.com [IPv6:2607:f8b0:4864:20::b43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21470C0613CF;
+        Wed, 28 Oct 2020 19:36:38 -0700 (PDT)
+Received: by mail-yb1-xb43.google.com with SMTP id o70so955518ybc.1;
+        Wed, 28 Oct 2020 19:36:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Lgp5E2CBFegdQFbndqfbV77VhNdz0J+UuczY3mSKBZw=;
-        b=esLg1vG/os3sInhirw59iWuJxIkaFMgO/UtjqVMskru6qP7rcOZ2BNDk2NeyoR4JCP
-         pz6X1L6+P7E9+S09B0ZXki1K5jazTLUCJxJSlOVsnlxfXnqmtD6zXaRTpIN9RrcMBzQg
-         jpldOl2X9wJfjvf/CqkDXw0YvEfHKuhj6NzhpRKBmCXAo5Z2bj9AXcfrWzXgIPYC/IRQ
-         8tyakq+DwH7i6LmQAcuQpH2IwLHJCFzaHx2LpoJF7jVLgEfMrFy79TRDGriwZeWYxjAu
-         MfEmdr34E5Xw8SjnrIh+v23y29MkrYlUGUBTatIxUg203u8sEm15Z5ZR15TGkeAX01I5
-         PLvw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TXhexRQYTJZaX12a+CEFo2ey4jNoNUVcsefrRM8fqb0=;
+        b=morPS1rKmVmwcJZK82tUO/cgv+bWnRoUD5LCKu12VeiyBhwMyYiT/k2BdwrrcmjGhz
+         +U/8lLskiF+AixIQCvnaIJwagnQfnsYSksvdg+sIBAqZibtRcx5sG3f8+qS5vURHY51j
+         aQqoTCAtfVLBjuT4TFVf7uXd2TSEzMkNFCXFqaOza7rUkpK0eAJhIDCLLQE6+MjhOf7V
+         qI4a/tjFFMZqcXlisvTW4ezQ2bPW0GHFDWuubqcYHZjG/NWcBrT1ysyFxjdo2SxVNA4J
+         xvB+LG+6ZVnQztxOkr7CpWdPhI6eamK6eBMiFrDICMyHAGH+V4al5u3LjmSJ8Xopoa3R
+         h0/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Lgp5E2CBFegdQFbndqfbV77VhNdz0J+UuczY3mSKBZw=;
-        b=GZ3gG+suON8pUWwmtW5MMSGYZvHNYtBZZw5AJZstQf99vPGAuGD7VnRO9BNzIYJLOi
-         /4Ive/NGPAAQq57wRjR5rbyvuBpgdxywA6UeKl5im4MQHSi/KOke7cpeFe53eItCypoa
-         krIWWhLzo0SLNxoYDob9sLt7LA2HsOuBAFmDwBX7Z6Z4FifxolhpsLftfda0SY4I4HAl
-         G3OQz5p81L90tok0iP+VPJeMShJbaCc8RV1ZEA+lOdcVQC+calH+wI9lJVFIX3i39hGa
-         Pdn4q5yxfL2QLywdVo/Ntz+C/tw4Ctdb0a79iRRicBXYqjmOPlFimJcZ7XGW6BFKEDUj
-         x2yQ==
-X-Gm-Message-State: AOAM530Zih0Yf+71Pwb4JI9IEhAe3g1n0B9pMwi6FK4cAY5xtoYBzigT
-        YhE8KYQruYw+c8KmCdlYzhI73Q==
-X-Google-Smtp-Source: ABdhPJwTGI6fl8sa55HBLrVTQ9r3KRRl90VlkndcgHFTXwFK2dbzHSnaob2FPj3WNGrEyt+Ybzgcjw==
-X-Received: by 2002:a17:90b:20a:: with SMTP id fy10mr1921179pjb.20.1603938882375;
-        Wed, 28 Oct 2020 19:34:42 -0700 (PDT)
-Received: from hermes.local (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id 32sm679997pgz.11.2020.10.28.19.34.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 19:34:42 -0700 (PDT)
-Date:   Wed, 28 Oct 2020 19:34:38 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Hangbin Liu <haliu@redhat.com>, David Ahern <dsahern@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Jiri Benc <jbenc@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>
-Subject: Re: [PATCHv2 iproute2-next 0/5] iproute2: add libbpf support
-Message-ID: <20201028193438.21f1c9b0@hermes.local>
-In-Reply-To: <CAEf4BzZR4MqQJCD4kzFsbhpfmp4RB7SHcP5AbAiqzqK7to2u+g@mail.gmail.com>
-References: <20201023033855.3894509-1-haliu@redhat.com>
-        <20201028132529.3763875-1-haliu@redhat.com>
-        <7babcccb-2b31-f9bf-16ea-6312e449b928@gmail.com>
-        <20201029020637.GM2408@dhcp-12-153.nay.redhat.com>
-        <CAEf4BzZR4MqQJCD4kzFsbhpfmp4RB7SHcP5AbAiqzqK7to2u+g@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TXhexRQYTJZaX12a+CEFo2ey4jNoNUVcsefrRM8fqb0=;
+        b=Gks9vYFqW9J4soza1oF2BTmk1fv36SCDLNDKZdVZDRXe3MaJa2Alzw3LAa92J1AojC
+         fOrTe4z92m3/M8y1lWuwrvWn1TNJlupf20wVa0/j3hnC88TtjTLNzOf+OqE8u8I4vUIy
+         jeh74DcJeUfDB4mx0EOECYmwqHkOsUxPRBAUpdsMWrTvexwEtafqVZUjUBFoLACBAoez
+         ZJB108GHeuzfmRXm1WSid4nBqRrDx9V/s6c+G3NOviyxQ6AC376sewqvZO6ifxrHBZBl
+         RX/wnXtVI0MPRUotpiAYcOIhhJNHEEPjV+65mdFmKuhDOtMV3dIRmqaB+fVPq+GzA0PY
+         SDnA==
+X-Gm-Message-State: AOAM5333VdCOPLAtylg8exLxV+zUSVweBvYacvmaw7US0hpo8vOZKiee
+        3fypZebWN2Yr5KBYUiZq3cYphc72dTIbSUmk8hM=
+X-Google-Smtp-Source: ABdhPJwtHZSw9Q6Sx8ODeo4QZeyM/3Jcz311so7MhMZni52xhelWxjqGEyNMkL1bEjcuiEGd92sshWoquuR8cYhkvvw=
+X-Received: by 2002:a25:bdc7:: with SMTP id g7mr3207159ybk.260.1603938997408;
+ Wed, 28 Oct 2020 19:36:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201028200952.7869-1-dev@der-flo.net>
+In-Reply-To: <20201028200952.7869-1-dev@der-flo.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 28 Oct 2020 19:36:26 -0700
+Message-ID: <CAEf4BzZbtdgK-6y1cX6U2_sV9T6QHO=fAj2j0L_CtuqW0DZ1Rw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4] bpf: Lift hashtab key_size limit
+To:     Florian Lehner <dev@der-flo.net>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        john fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 28 Oct 2020 19:27:20 -0700
-Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+On Wed, Oct 28, 2020 at 3:21 PM Florian Lehner <dev@der-flo.net> wrote:
+>
+> Currently key_size of hashtab is limited to MAX_BPF_STACK.
+> As the key of hashtab can also be a value from a per cpu map it can be
+> larger than MAX_BPF_STACK.
+>
+> The use-case for this patch originates to implement allow/disallow
+> lists for files and file paths. The maximum length of file paths is
+> defined by PATH_MAX with 4096 chars including nul.
+> This limit exceeds MAX_BPF_STACK.
+>
+> Changelog:
+>
+> v4:
+>  - Utilize BPF skeleton in tests
+>  - Rebase
+>
+> v3:
+>  - Rebase
+>
+> v2:
+>  - Add a test for bpf side
+>
+> Signed-off-by: Florian Lehner <dev@der-flo.net>
+> Acked-by: John Fastabend <john.fastabend@gmail.com>
+> ---
+>  kernel/bpf/hashtab.c                          | 16 ++-----
+>  .../selftests/bpf/prog_tests/hash_large_key.c | 43 +++++++++++++++++
+>  .../selftests/bpf/progs/test_hash_large_key.c | 46 +++++++++++++++++++
+>  tools/testing/selftests/bpf/test_maps.c       |  3 +-
+>  4 files changed, 96 insertions(+), 12 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/hash_large_key.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/test_hash_large_key.c
+>
+> diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+> index 1815e97d4c9c..fff7cd05b9e3 100644
+> --- a/kernel/bpf/hashtab.c
+> +++ b/kernel/bpf/hashtab.c
+> @@ -390,17 +390,11 @@ static int htab_map_alloc_check(union bpf_attr *attr)
+>             attr->value_size == 0)
+>                 return -EINVAL;
+>
+> -       if (attr->key_size > MAX_BPF_STACK)
+> -               /* eBPF programs initialize keys on stack, so they cannot be
+> -                * larger than max stack size
+> -                */
+> -               return -E2BIG;
+> -
+> -       if (attr->value_size >= KMALLOC_MAX_SIZE -
+> -           MAX_BPF_STACK - sizeof(struct htab_elem))
+> -               /* if value_size is bigger, the user space won't be able to
+> -                * access the elements via bpf syscall. This check also makes
+> -                * sure that the elem_size doesn't overflow and it's
+> +       if ((u64)(attr->key_size + attr->value_size) >= KMALLOC_MAX_SIZE -
 
-> On Wed, Oct 28, 2020 at 7:06 PM Hangbin Liu <haliu@redhat.com> wrote:
-> >
-> > On Wed, Oct 28, 2020 at 05:02:34PM -0600, David Ahern wrote:  
-> > > fails to compile on Ubuntu 20.10:
-> > >
-> > > root@u2010-sfo3:~/iproute2.git# ./configure
-> > > TC schedulers
-> > >  ATM  yes
-> > >  IPT  using xtables
-> > >  IPSET  yes
-> > >
-> > > iptables modules directory: /usr/lib/x86_64-linux-gnu/xtables
-> > > libc has setns: yes
-> > > SELinux support: yes
-> > > libbpf support: yes
-> > > ELF support: yes
-> > > libmnl support: yes
-> > > Berkeley DB: no
-> > > need for strlcpy: yes
-> > > libcap support: yes
-> > >
-> > > root@u2010-sfo3:~/iproute2.git# make clean
-> > >
-> > > root@u2010-sfo3:~/iproute2.git# make -j 4
-> > > ...
-> > > /usr/bin/ld: ../lib/libutil.a(bpf_libbpf.o): in function `load_bpf_object':
-> > > bpf_libbpf.c:(.text+0x3cb): undefined reference to
-> > > `bpf_program__section_name'
-> > > /usr/bin/ld: bpf_libbpf.c:(.text+0x438): undefined reference to
-> > > `bpf_program__section_name'
-> > > /usr/bin/ld: bpf_libbpf.c:(.text+0x716): undefined reference to
-> > > `bpf_program__section_name'
-> > > collect2: error: ld returned 1 exit status
-> > > make[1]: *** [Makefile:27: ip] Error 1
-> > > make[1]: *** Waiting for unfinished jobs....
-> > > make: *** [Makefile:64: all] Error 2  
-> >
-> > You need to update libbpf to latest version.  
-> 
-> Why not using libbpf from submodule?
+this will add both as u32, then will cast overflown result to u64.
+Instead just do:
 
-Because it makes it harder for people downloading tarballs and distributions.
-Iproute2 has worked well by being standalone.
+if ((u64)attr->key_size + attr->value_size >= ....)
 
-Want to merge libbpf into iproute2?? 
- 
+> +          sizeof(struct htab_elem))
+> +               /* if key_size + value_size is bigger, the user space won't be
+> +                * able to access the elements via bpf syscall. This check
+> +                * also makes sure that the elem_size doesn't overflow and it's
+>                  * kmalloc-able later in htab_map_update_elem()
+>                  */
+>                 return -E2BIG;
 
+[...]
+
+> +
+> +SEC("raw_tracepoint/sys_enter")
+> +int bpf_hash_large_key_test(void *ctx)
+> +{
+> +       int zero = 0, err = 1, value = 42;
+> +       struct bigelement *key;
+> +
+> +       key = bpf_map_lookup_elem(&key_map, &zero);
+> +       if (!key)
+> +               goto err;
+> +
+> +       key->c = 1;
+> +       if (bpf_map_update_elem(&hash_map, key, &value, BPF_ANY))
+> +               goto err;
+> +
+> +       err = 0;
+> +err:
+> +       return err;
+
+return value from raw_tracepoint doesn't really communicate error, you
+might as well just return 0 always
+
+> +}
+> +
+> diff --git a/tools/testing/selftests/bpf/test_maps.c b/tools/testing/selftests/bpf/test_maps.c
+> index 0d92ebcb335d..0ad3e6305ff0 100644
+> --- a/tools/testing/selftests/bpf/test_maps.c
+> +++ b/tools/testing/selftests/bpf/test_maps.c
+> @@ -1223,9 +1223,10 @@ static void test_map_in_map(void)
+>
+>  static void test_map_large(void)
+>  {
+> +
+>         struct bigkey {
+>                 int a;
+> -               char b[116];
+> +               char b[4096];
+>                 long long c;
+>         } key;
+>         int fd, i, value;
+> --
+> 2.26.2
+>
