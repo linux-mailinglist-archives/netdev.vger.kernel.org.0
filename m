@@ -2,84 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F69B29EB61
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 13:13:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4539C29EBC7
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 13:24:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725789AbgJ2MNg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 08:13:36 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:49168 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725379AbgJ2MNf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 08:13:35 -0400
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 09TCDHPm8021429, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexmb04.realtek.com.tw[172.21.6.97])
-        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 09TCDHPm8021429
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 29 Oct 2020 20:13:17 +0800
-Received: from localhost.localdomain (172.21.179.130) by
- RTEXMB04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2044.4; Thu, 29 Oct 2020 20:13:17 +0800
-From:   Willy Liu <willy.liu@realtek.com>
-To:     <andrew@lunn.ch>
-CC:     <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
-        <davem@davemloft.net>, <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <ryankao@realtek.com>,
-        Willy Liu <willy.liu@realtek.com>
-Subject: [PATCH net-next 2/2] net: phy: realtek: Add support for RTL8221B-VB-CG/RTL8221B-VM-CG
-Date:   Thu, 29 Oct 2020 20:13:03 +0800
-Message-ID: <1603973583-1926-1-git-send-email-willy.liu@realtek.com>
-X-Mailer: git-send-email 1.9.1
+        id S1726238AbgJ2MYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 08:24:35 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:51958 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725355AbgJ2MYf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 08:24:35 -0400
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1kY6ya-0049Sx-4A; Thu, 29 Oct 2020 13:24:20 +0100
+Date:   Thu, 29 Oct 2020 13:24:20 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Zou Wei <zou_wei@huawei.com>
+Cc:     rain.1986.08.12@gmail.com, zyjzyj2000@gmail.com,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH -next] net: nvidia: forcedeth: remove useless if/else
+Message-ID: <20201029122420.GG933237@lunn.ch>
+References: <1603938614-53589-1-git-send-email-zou_wei@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.21.179.130]
-X-ClientProxiedBy: RTEXMB01.realtek.com.tw (172.21.6.94) To
- RTEXMB04.realtek.com.tw (172.21.6.97)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1603938614-53589-1-git-send-email-zou_wei@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RTL8221B-VB-CG is the third generation 2.5Gbps single port PHY from Realtek,
-and RTL8221B-VM-CG is 2.5Gbps single port PHY with MACsec feature.
-This patch adds the minimal driver to manage these two transceivers.
+On Thu, Oct 29, 2020 at 10:30:14AM +0800, Zou Wei wrote:
+> Fix the following coccinelle report:
+> 
+> ./drivers/net/ethernet/nvidia/forcedeth.c:3479:8-10:
+> WARNING: possible condition with no effect (if == else)
+> 
+> Both branches are the same, so remove the else if/else altogether.
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Zou Wei <zou_wei@huawei.com>
+> ---
+>  drivers/net/ethernet/nvidia/forcedeth.c | 3 ---
+>  1 file changed, 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/ethernet/nvidia/forcedeth.c
+> index 2fc10a3..87ed7e1 100644
+> --- a/drivers/net/ethernet/nvidia/forcedeth.c
+> +++ b/drivers/net/ethernet/nvidia/forcedeth.c
+> @@ -3476,9 +3476,6 @@ static int nv_update_linkspeed(struct net_device *dev)
+>  	} else if (adv_lpa & LPA_10FULL) {
+>  		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
+>  		newdup = 1;
+> -	} else if (adv_lpa & LPA_10HALF) {
+> -		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
+> -		newdup = 0;
+>  	} else {
+>  		newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
+>  		newdup = 0;
 
-Signed-off-by: Willy Liu <willy.liu@realtek.com>
----
- drivers/net/phy/realtek.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+I think the original code is more readable. The idea is, you look at
+what each end of the link can do, and work your way from fastest to
+slowest finding one in common. That is what the four if () do. If
+there is no speed in common, the link is probably not going to work,
+but default to 10Half, because all devices should in theory support
+that. That is the last else. The change makes it a lot less clear
+about this last past.
 
-diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index 988f075..51d9ef8 100755
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@ -670,6 +670,26 @@ static int rtlgen_resume(struct phy_device *phydev)
- 		.read_mmd	= rtl822x_read_mmd,
- 		.write_mmd	= rtl822x_write_mmd,
- 	}, {
-+		PHY_ID_MATCH_EXACT(0x001cc849),
-+		.name           = "RTL8221B-VB-CG 2.5Gbps PHY",
-+		.get_features   = rtl822x_get_features,
-+		.config_aneg    = rtl822x_config_aneg,
-+		.read_status    = rtl822x_read_status,
-+		.suspend        = genphy_suspend,
-+		.resume         = rtlgen_resume,
-+		.read_page      = rtl821x_read_page,
-+		.write_page     = rtl821x_write_page,
-+	}, {
-+		PHY_ID_MATCH_EXACT(0x001cc84a),
-+		.name           = "RTL8221B-VM-CG 2.5Gbps PHY",
-+		.get_features   = rtl822x_get_features,
-+		.config_aneg    = rtl822x_config_aneg,
-+		.read_status    = rtl822x_read_status,
-+		.suspend        = genphy_suspend,
-+		.resume         = rtlgen_resume,
-+		.read_page      = rtl821x_read_page,
-+		.write_page     = rtl821x_write_page,
-+	}, {
- 		PHY_ID_MATCH_EXACT(0x001cc961),
- 		.name		= "RTL8366RB Gigabit Ethernet",
- 		.config_init	= &rtl8366rb_config_init,
--- 
-1.9.1
+How about this instead. It keeps the idea of, we have nothing else
+better, do 10Half.
 
+This is not even compile tested.
+
+    Andrew
+
+
+diff --git a/drivers/net/ethernet/nvidia/forcedeth.c b/drivers/net/ethernet/nvidia/forcedeth.c
+index 2fc10a36afa4..f626bd6c0dfc 100644
+--- a/drivers/net/ethernet/nvidia/forcedeth.c
++++ b/drivers/net/ethernet/nvidia/forcedeth.c
+@@ -3467,6 +3467,8 @@ static int nv_update_linkspeed(struct net_device *dev)
+ 
+        /* FIXME: handle parallel detection properly */
+        adv_lpa = lpa & adv;
++       newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
++       newdup = 0;
+        if (adv_lpa & LPA_100FULL) {
+                newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_100;
+                newdup = 1;
+@@ -3479,9 +3481,6 @@ static int nv_update_linkspeed(struct net_device *dev)
+        } else if (adv_lpa & LPA_10HALF) {
+                newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
+                newdup = 0;
+-       } else {
+-               newls = NVREG_LINKSPEED_FORCE|NVREG_LINKSPEED_10;
+-               newdup = 0;
+        }
+ 
+ set_speed:
