@@ -2,205 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F5FF29F487
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 20:09:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B627429F490
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 20:10:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726009AbgJ2TJn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 15:09:43 -0400
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:58706 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725379AbgJ2TJk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 15:09:40 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 09TJ9ZB9086779;
-        Thu, 29 Oct 2020 14:09:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1603998575;
-        bh=NOSjNuGami/oNoiyTzxoJCS2MLOOHYQqfkMj2PBSpAY=;
-        h=From:To:CC:Subject:Date;
-        b=NYtE7QATyaZlTmQRJbL3JZNw0HOPY5j5ma7dTIRKbBYQXAuHHYisFtOMa7hION8Uy
-         kuoQr2MKgG2dLJL1bWeKpNHJ+5oJm5lt4myjIcElvwGR7Ih0oviuQsvYcn9AwaPE20
-         M1DGRi9uP+jcLPqUHeFf47ZMFuK5URZIMrIC4Lac=
-Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 09TJ9Zto118571
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 29 Oct 2020 14:09:35 -0500
-Received: from DLEE114.ent.ti.com (157.170.170.25) by DLEE113.ent.ti.com
- (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 29
- Oct 2020 14:09:35 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 29 Oct 2020 14:09:35 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 09TJ9YiD118117;
-        Thu, 29 Oct 2020 14:09:34 -0500
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, Shuah Khan <shuah@kernel.org>
-CC:     Sekhar Nori <nsekhar@ti.com>, <linux-kernel@vger.kernel.org>,
-        <linux-omap@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>
-Subject: [PATCH net-next] selftests/net: timestamping: add ptp v2 support
-Date:   Thu, 29 Oct 2020 21:09:31 +0200
-Message-ID: <20201029190931.30883-1-grygorii.strashko@ti.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726127AbgJ2TKq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 15:10:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725780AbgJ2TKq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 15:10:46 -0400
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA0CCC0613D4
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 12:10:45 -0700 (PDT)
+Received: by mail-il1-x135.google.com with SMTP id q1so4157001ilt.6
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 12:10:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/plCwIYTT4styzRPc67wMisz3tStYJJ6vRoHap8BJ0Y=;
+        b=hzNQJbNZu2j8IGu5VLcLa4foUKAzc2fV/j1FxDcQGlhRGFRkalAKyVXRo9/1WWdjFU
+         l/UaKidDjG7EoFK/P4BHY9DcRGErZY1WSjR1gbxhGwAH5FE3atRh87hX9VMcwv0Xz3xs
+         /BD9Fuj5pVS1JgMQzZarlwX20sfsEMy5FJVsmhsUg4Py3Qz8Zw+MeF0212EZQeBndYeh
+         +leQ/6UGTdlXUwYhPJS9LnEGCLclep6pfQymwUu54hSOwmqVbiIReLTsHlKlsezc/pKc
+         WtLKm/ss4bNaL9uVBoYJR8XsCWRtFaEl18wy+7S5394k4yAP66P82dGYj8XXaF4Ao2Mv
+         IfZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/plCwIYTT4styzRPc67wMisz3tStYJJ6vRoHap8BJ0Y=;
+        b=DO25t9ytJ5OjBy5VHui7WTwbMj9HjkeoKGsJAMYYhpjsm+CTEwlTVJIHX9+byU4b5w
+         Lzr9niw4GlpvzlyWG9XPyHUT+KZ0vTdT7Nk3IyMLnXKJI5A58VHTD/UIl1ff70Hc7Py4
+         BISy+xJPjHRzUYKsr604vzi7sD0YSIjA5EpsWSFjBodftngLhDAAYMouYBIVfzdhREKH
+         so2aCzXSK/a9ds/a7v7ZPORj1yGdFDN5h/2rVQcKxNaSKK9NCSPZbXdIXQeSXOiGvHFr
+         u7ZkAH9gJ02gyAMjylk3avNmP0BkIVXEjPriNW7NB9KopDBpsENwZrrPYzJ41AUuoovx
+         UAnQ==
+X-Gm-Message-State: AOAM532CIy3pGJ2Dtf+VDt7HH9tyGgH7AFm8GMrzHIku5ZmXVhzAT8pc
+        xbkAAfXBYw6lppEm0Z1rgdKcMSsLCA4wf5zJ/J0=
+X-Google-Smtp-Source: ABdhPJwqbQ4WgbD1sUtDxAn5U83PixMqJ0u58jbIg6t9a10K+lMYoIxG1jtShjzr2oePS4bUR0LHEpFySjKI8B6/Sjk=
+X-Received: by 2002:a92:28d:: with SMTP id 135mr4607456ilc.238.1603998645177;
+ Thu, 29 Oct 2020 12:10:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <9bede0ef7e66729034988f2d01681ca88a5c52d6.camel@infinera.com>
+ <e09b367a58a0499f3bb0394596a9f87cc20eb5de.camel@infinera.com>
+ <777947a9-1a05-c51b-81fc-4338aca3af26@gmail.com> <97730e024e7279d67f3eca7e0ef24395e9e08bff.camel@infinera.com>
+In-Reply-To: <97730e024e7279d67f3eca7e0ef24395e9e08bff.camel@infinera.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Thu, 29 Oct 2020 12:10:33 -0700
+Message-ID: <CAM_iQpX8=wege1toTsWpKHFMVAzM90HLQ51nzsn0LrDW=CEhiA@mail.gmail.com>
+Subject: Re: arping stuck with ENOBUFS in 4.19.150
+To:     Joakim Tjernlund <Joakim.Tjernlund@infinera.com>
+Cc:     "dsahern@gmail.com" <dsahern@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The timestamping tool is supporting now only PTPv1 (IEEE-1588 2002) while
-modern HW often supports also/only PTPv2.
+On Thu, Oct 29, 2020 at 7:11 AM Joakim Tjernlund
+<Joakim.Tjernlund@infinera.com> wrote:
+>
+> OK, bisecting (was a bit of a bother since we merge upstream releases into our tree, is there a way to just bisect that?)
+>
+> Result was commit "net: sch_generic: aviod concurrent reset and enqueue op for lockless qdisc"  (749cc0b0c7f3dcdfe5842f998c0274e54987384f)
+>
+> Reverting that commit on top of our tree made it work again. How to fix?
 
-Hence timestamping tool is still useful for sanity testing of PTP drivers
-HW timestamping capabilities it's reasonable to upstate it to support
-PTPv2. This patch adds corresponding support which can be enabled by using
-new parameter "PTPV2".
+This is odd. The above commit touches the netdev reset path, did
+your netdev get reset when you ran arping? You said your eth1 is UP,
+is it always UP or flapping?
 
-Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
----
- tools/testing/selftests/net/timestamping.c | 47 ++++++++++++++++------
- 1 file changed, 34 insertions(+), 13 deletions(-)
+In the other thread, a bisect also points to the same commit on 5.4.
+I guess there might be something missing in the backport.
 
-diff --git a/tools/testing/selftests/net/timestamping.c b/tools/testing/selftests/net/timestamping.c
-index f4bb4fef0f39..21091be70688 100644
---- a/tools/testing/selftests/net/timestamping.c
-+++ b/tools/testing/selftests/net/timestamping.c
-@@ -59,7 +59,8 @@ static void usage(const char *error)
- 	       "  SOF_TIMESTAMPING_SOFTWARE - request reporting of software time stamps\n"
- 	       "  SOF_TIMESTAMPING_RAW_HARDWARE - request reporting of raw HW time stamps\n"
- 	       "  SIOCGSTAMP - check last socket time stamp\n"
--	       "  SIOCGSTAMPNS - more accurate socket time stamp\n");
-+	       "  SIOCGSTAMPNS - more accurate socket time stamp\n"
-+	       "  PTPV2 - use PTPv2 messages\n");
- 	exit(1);
- }
- 
-@@ -115,13 +116,28 @@ static const unsigned char sync[] = {
- 	0x00, 0x00, 0x00, 0x00
- };
- 
--static void sendpacket(int sock, struct sockaddr *addr, socklen_t addr_len)
-+static const unsigned char sync_v2[] = {
-+	0x00, 0x02, 0x00, 0x2C,
-+	0x00, 0x00, 0x02, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0xFF,
-+	0xFE, 0x00, 0x00, 0x00,
-+	0x00, 0x01, 0x00, 0x01,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+	0x00, 0x00, 0x00, 0x00,
-+};
-+
-+static void sendpacket(int sock, struct sockaddr *addr, socklen_t addr_len, int ptpv2)
- {
-+	size_t sync_len = ptpv2 ? sizeof(sync_v2) : sizeof(sync);
-+	const void *sync_p = ptpv2 ? sync_v2 : sync;
- 	struct timeval now;
- 	int res;
- 
--	res = sendto(sock, sync, sizeof(sync), 0,
--		addr, addr_len);
-+	res = sendto(sock, sync_p, sync_len, 0, addr, addr_len);
- 	gettimeofday(&now, 0);
- 	if (res < 0)
- 		printf("%s: %s\n", "send", strerror(errno));
-@@ -134,9 +150,11 @@ static void sendpacket(int sock, struct sockaddr *addr, socklen_t addr_len)
- static void printpacket(struct msghdr *msg, int res,
- 			char *data,
- 			int sock, int recvmsg_flags,
--			int siocgstamp, int siocgstampns)
-+			int siocgstamp, int siocgstampns, int ptpv2)
- {
- 	struct sockaddr_in *from_addr = (struct sockaddr_in *)msg->msg_name;
-+	size_t sync_len = ptpv2 ? sizeof(sync_v2) : sizeof(sync);
-+	const void *sync_p = ptpv2 ? sync_v2 : sync;
- 	struct cmsghdr *cmsg;
- 	struct timeval tv;
- 	struct timespec ts;
-@@ -210,10 +228,9 @@ static void printpacket(struct msghdr *msg, int res,
- 					"probably SO_EE_ORIGIN_TIMESTAMPING"
- #endif
- 					);
--				if (res < sizeof(sync))
-+				if (res < sync_len)
- 					printf(" => truncated data?!");
--				else if (!memcmp(sync, data + res - sizeof(sync),
--							sizeof(sync)))
-+				else if (!memcmp(sync_p, data + res - sync_len, sync_len))
- 					printf(" => GOT OUR DATA BACK (HURRAY!)");
- 				break;
- 			}
-@@ -257,7 +274,7 @@ static void printpacket(struct msghdr *msg, int res,
- }
- 
- static void recvpacket(int sock, int recvmsg_flags,
--		       int siocgstamp, int siocgstampns)
-+		       int siocgstamp, int siocgstampns, int ptpv2)
- {
- 	char data[256];
- 	struct msghdr msg;
-@@ -288,7 +305,7 @@ static void recvpacket(int sock, int recvmsg_flags,
- 	} else {
- 		printpacket(&msg, res, data,
- 			    sock, recvmsg_flags,
--			    siocgstamp, siocgstampns);
-+			    siocgstamp, siocgstampns, ptpv2);
- 	}
- }
- 
-@@ -300,6 +317,7 @@ int main(int argc, char **argv)
- 	int siocgstamp = 0;
- 	int siocgstampns = 0;
- 	int ip_multicast_loop = 0;
-+	int ptpv2 = 0;
- 	char *interface;
- 	int i;
- 	int enabled = 1;
-@@ -335,6 +353,8 @@ int main(int argc, char **argv)
- 			siocgstampns = 1;
- 		else if (!strcasecmp(argv[i], "IP_MULTICAST_LOOP"))
- 			ip_multicast_loop = 1;
-+		else if (!strcasecmp(argv[i], "PTPV2"))
-+			ptpv2 = 1;
- 		else if (!strcasecmp(argv[i], "SOF_TIMESTAMPING_TX_HARDWARE"))
- 			so_timestamping_flags |= SOF_TIMESTAMPING_TX_HARDWARE;
- 		else if (!strcasecmp(argv[i], "SOF_TIMESTAMPING_TX_SOFTWARE"))
-@@ -369,6 +389,7 @@ int main(int argc, char **argv)
- 		HWTSTAMP_TX_ON : HWTSTAMP_TX_OFF;
- 	hwconfig.rx_filter =
- 		(so_timestamping_flags & SOF_TIMESTAMPING_RX_HARDWARE) ?
-+		ptpv2 ? HWTSTAMP_FILTER_PTP_V2_L4_SYNC :
- 		HWTSTAMP_FILTER_PTP_V1_L4_SYNC : HWTSTAMP_FILTER_NONE;
- 	hwconfig_requested = hwconfig;
- 	if (ioctl(sock, SIOCSHWTSTAMP, &hwtstamp) < 0) {
-@@ -496,16 +517,16 @@ int main(int argc, char **argv)
- 					printf("has error\n");
- 				recvpacket(sock, 0,
- 					   siocgstamp,
--					   siocgstampns);
-+					   siocgstampns, ptpv2);
- 				recvpacket(sock, MSG_ERRQUEUE,
- 					   siocgstamp,
--					   siocgstampns);
-+					   siocgstampns, ptpv2);
- 			}
- 		} else {
- 			/* write one packet */
- 			sendpacket(sock,
- 				   (struct sockaddr *)&addr,
--				   sizeof(addr));
-+				   sizeof(addr), ptpv2);
- 			next.tv_sec += 5;
- 			continue;
- 		}
--- 
-2.17.1
-
+Thanks.
