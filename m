@@ -2,53 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 59CEE29F69B
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 22:06:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EE2429F6B0
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 22:10:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726595AbgJ2VGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 17:06:44 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:53228 "EHLO vps0.lunn.ch"
+        id S1726805AbgJ2VKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 17:10:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53700 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726200AbgJ2VGo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 29 Oct 2020 17:06:44 -0400
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kYF7w-004EXZ-0x; Thu, 29 Oct 2020 22:06:32 +0100
-Date:   Thu, 29 Oct 2020 22:06:32 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Lukasz Stelmach <l.stelmach@samsung.com>
-Cc:     jim.cromie@gmail.com, Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Kukjin Kim <kgene@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org,
-        =?utf-8?Q?Bart=C5=82omiej_=C5=BBolnierkiewicz?= 
-        <b.zolnierkie@samsung.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH v4 3/5] net: ax88796c: ASIX AX88796C SPI Ethernet Adapter
- Driver
-Message-ID: <20201029210632.GT878328@lunn.ch>
-References: <20201029003131.GF933237@lunn.ch>
- <CGME20201029203142eucas1p138b7a69cf72e5ad0b1ecd8134adcbccf@eucas1p1.samsung.com>
- <dleftjimasvknv.fsf%l.stelmach@samsung.com>
+        id S1726433AbgJ2VKh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 17:10:37 -0400
+Content-Type: text/plain; charset="utf-8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604005836;
+        bh=B9S0PYHC82HjIc6eRghx3UXS5MiORPfewagDkRGT7Fc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=rPbd4efRdfwMEMhu55BceSkg/Ir8HrkvE2X3mn7k8VdFkuqQVzP/O+NZgt16X46et
+         dEDgBtimaNtHJwYP3OuWobFR8AZSLJZHkepAfIosC5ExP6wJcIYTDBAKlMJAmQ8Aq5
+         oD+mRpXzN0bMHY5qMi7Lfszn3cAEfpVduU1RNj7A=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <dleftjimasvknv.fsf%l.stelmach@samsung.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [GIT PULL] Networking
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <160400583677.23156.17057572329137636713.git-patchwork-notify@kernel.org>
+Date:   Thu, 29 Oct 2020 21:10:36 +0000
+References: <20201029124335.2886a2bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201029124335.2886a2bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >> +static irqreturn_t ax88796c_interrupt(int irq, void *dev_instance)
-> >> +{
-> >> +	struct net_device *ndev = dev_instance;
-> >> +	struct ax88796c_device *ax_local = to_ax88796c_device(ndev);
+Hello:
 
-Do the assignment later.
+This pull request was applied to netdev/net.git (refs/heads/master):
 
-   Andrew
+On Thu, 29 Oct 2020 12:43:35 -0700 you wrote:
+> The following changes since commit 3cb12d27ff655e57e8efe3486dca2a22f4e30578:
+> 
+>   Merge tag 'net-5.10-rc1' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2020-10-23 12:05:49 -0700)
+> 
+> are available in the Git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.10-rc2
+> 
+> [...]
+
+Here is the summary with links:
+  - [GIT,PULL] Networking
+    https://git.kernel.org/netdev/net/c/934291ffb638
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
