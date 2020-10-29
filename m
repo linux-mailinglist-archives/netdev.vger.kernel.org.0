@@ -2,171 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3855929E8EE
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 11:27:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF8CD29E907
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 11:32:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726235AbgJ2K1N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 06:27:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:39089 "EHLO
+        id S1726765AbgJ2Kcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 06:32:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:38819 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725773AbgJ2K1N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 06:27:13 -0400
+        by vger.kernel.org with ESMTP id S1726112AbgJ2Kcm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 06:32:42 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1603967231;
+        s=mimecast20190719; t=1603967516;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=CawZHAHsADnYGtPdnNVTledh1fXyNWfHH1USQ/nhD8M=;
-        b=KCZuPz9CjbwU28jh2tmqrK26owQuUx7R6pef0K8HhjQGQj6QnOuopbVFS2gKkEeicV+OTG
-        6dqwzBqR9JG6kUfTP6mlD93IbjnorGUoHxouap3qSJKDFo25gimAGCZ/Ivc+pRoVTbPVE7
-        iQ41m9PuPKCEWe3oi7hkbSFpDSHR9JA=
-Received: from mail-pg1-f200.google.com (mail-pg1-f200.google.com
- [209.85.215.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-147-MEzePyQzNoitj70PYOfSlg-1; Thu, 29 Oct 2020 06:27:10 -0400
-X-MC-Unique: MEzePyQzNoitj70PYOfSlg-1
-Received: by mail-pg1-f200.google.com with SMTP id j10so1761382pgc.6
-        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 03:27:09 -0700 (PDT)
+        bh=i23ClnnyN49Bs0oQkdNz5ufbZvaJbHZARzUfXComFHM=;
+        b=bAAZFTuI4y4yVN681Rx+eMPh7i3Sz2y6Rm03ep6dhVjHQiP7dqaCdIKy4ucZben06mckSC
+        W64ClfuM4F1A5Qls86kkJUCpOyVFnYW51k9FBDRPh0IhEY3YRfux9VNKryu7kahjTXXBtk
+        wE0dENKfhIoBiE8eDXY5ny4x3ldWyrw=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-421-4nHatndSO8CUzmTSHRNk-w-1; Thu, 29 Oct 2020 06:31:54 -0400
+X-MC-Unique: 4nHatndSO8CUzmTSHRNk-w-1
+Received: by mail-wm1-f70.google.com with SMTP id 13so951984wmf.0
+        for <netdev@vger.kernel.org>; Thu, 29 Oct 2020 03:31:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=CawZHAHsADnYGtPdnNVTledh1fXyNWfHH1USQ/nhD8M=;
-        b=uQ/6mCte7xBMdbYhrlTNr/c+RqFQucnO3cjCdTatLVSrJEEZz2HBHKzuok0UK+N2ot
-         3xjj6kcHHDNFT5eHO73RCE2n43hTADT8JA1S6+9SdXg9FbDSiGSSAIgIJHJ4pptD7c6n
-         A2q+ngm/p9+M4Nyrj4GZTh+gciNg2jRbtCvFFU8phqfPfd8/e6dmX2lGey4OxRBzT4qJ
-         OssYzsgGr/pFSK3IKVQVUpM5Tsx3Iiklp3prqtIrX9hukcVR1iahiVP2lgpWtHkAZ++W
-         /G7bwz3XuFdYUFhDDHkUC4FRmuqw8K6Iz0aI2Hr35DKD6qhtSRIEoZzCSTQ/0HfBKGZ+
-         pAeg==
-X-Gm-Message-State: AOAM53199wm3ij8HScnjAV73kOMPbgJQY5UWetNEOt7s+OOFVQLkWB9r
-        vvpkJhv8hbWQRhRoXFgR34RGss9qqSoqe60qHNCPYMkEptcL/JAmtt9nMWiNz6yqGz0iBjaFMsI
-        v/MLL7J+jNcQMlm8=
-X-Received: by 2002:a62:6dc2:0:b029:152:637c:4cf5 with SMTP id i185-20020a626dc20000b0290152637c4cf5mr3662207pfc.15.1603967228916;
-        Thu, 29 Oct 2020 03:27:08 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzL5q1JJnLRnQTy+dkmTfd1Epzd58F2F8pDh8JBEdWz+QGU7Nz54Ud3XYChJCl4bRsQsiBIkg==
-X-Received: by 2002:a62:6dc2:0:b029:152:637c:4cf5 with SMTP id i185-20020a626dc20000b0290152637c4cf5mr3662178pfc.15.1603967228668;
-        Thu, 29 Oct 2020 03:27:08 -0700 (PDT)
-Received: from dhcp-12-153.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id x123sm2465927pfb.212.2020.10.29.03.27.04
+        bh=i23ClnnyN49Bs0oQkdNz5ufbZvaJbHZARzUfXComFHM=;
+        b=QqI3+ahtsgXAMj2i2HXU4DutyZ61tIRvVdPriE8Cn6h8HIHu9wOSLYzc9JeeYKzgMd
+         UHVr8RoLm0tPiFSRZX2ro4FYW21MfocrfcK80i+1dk69KOKhTKt2C9l+imyc/tHRS9tu
+         DkWPQBi8lmohm6CxHm4n3nO+5GANmtklMMkf/SOTgWRXiO1wb88rfeIbADX+JH1qdLYb
+         N6FnE4Zj4WWY8FfImOYszmyRpz/jAwseYFyG+rOgObY3pNAtmx6MckEBDR2EtNbViL7I
+         uArqQCD1J6KyT1WkmtvF/ngXB4UpG5sBgtvKSorkAlHAFos8ASdEVI85CfhevlbfRXLz
+         5kqw==
+X-Gm-Message-State: AOAM530v4kDzr7lHc6niKpHAKiKfL04Fmgqz+tzstzZLI+O+8REUDBOt
+        ybyHjzzsvpOEux4HHqFQGthBH7LzqX0/9r9VM6tzTBPAmOw8bSWNMmWJgZcL7e9jRXdTi86sJju
+        CSxS/ot8l1p4vdVlj
+X-Received: by 2002:a5d:48c2:: with SMTP id p2mr4624781wrs.366.1603967512653;
+        Thu, 29 Oct 2020 03:31:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy6oeHJAySSImb1xyc8uQK3sXMWtfk43cxoaHH1j1eERXIPshAEEX5yo3EzVkpnZbA6eAIHEA==
+X-Received: by 2002:a5d:48c2:: with SMTP id p2mr4624755wrs.366.1603967512446;
+        Thu, 29 Oct 2020 03:31:52 -0700 (PDT)
+Received: from localhost ([151.66.29.159])
+        by smtp.gmail.com with ESMTPSA id x1sm4190106wrl.41.2020.10.29.03.31.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Oct 2020 03:27:08 -0700 (PDT)
-Date:   Thu, 29 Oct 2020 18:26:56 +0800
-From:   Hangbin Liu <haliu@redhat.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Subject: Re: [PATCHv2 iproute2-next 0/5] iproute2: add libbpf support
-Message-ID: <20201029102656.GU2408@dhcp-12-153.nay.redhat.com>
-References: <20201023033855.3894509-1-haliu@redhat.com>
- <20201028132529.3763875-1-haliu@redhat.com>
- <7babcccb-2b31-f9bf-16ea-6312e449b928@gmail.com>
- <20201029020637.GM2408@dhcp-12-153.nay.redhat.com>
- <7a412e24-0846-bffe-d533-3407d06d83c4@gmail.com>
- <20201029024506.GN2408@dhcp-12-153.nay.redhat.com>
- <99d68384-c638-1d65-5945-2814ccd2e09e@gmail.com>
+        Thu, 29 Oct 2020 03:31:51 -0700 (PDT)
+Date:   Thu, 29 Oct 2020 11:31:48 +0100
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ilias.apalodimas@linaro.org
+Subject: Re: [PATCH net-next 2/4] net: page_pool: add bulk support for
+ ptr_ring
+Message-ID: <20201029103148.GA15697@lore-desk>
+References: <cover.1603824486.git.lorenzo@kernel.org>
+ <cd58ca966fbe11cabbd6160decea6ce748ebce9f.1603824486.git.lorenzo@kernel.org>
+ <20201029111329.79b86c00@carbon>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="UugvWAfsgieZRqgk"
 Content-Disposition: inline
-In-Reply-To: <99d68384-c638-1d65-5945-2814ccd2e09e@gmail.com>
+In-Reply-To: <20201029111329.79b86c00@carbon>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 09:00:41PM -0600, David Ahern wrote:
-> >> nope. you need to be able to handle this. Ubuntu 20.10 was just
-> >> released, and it has a version of libbpf. If you are going to integrate
-> >> libbpf into other packages like iproute2, it needs to just work with
-> >> that version.
-> > 
-> > OK, I can replace bpf_program__section_name by bpf_program__title().
-> 
-> I believe this one can be handled through a compatability check. Looks
-> the rename / deprecation is fairly recent (78cdb58bdf15f from Sept 2020).
 
-Hi David,
+--UugvWAfsgieZRqgk
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I just come up with another way. In configure, build a temp program and update
-the function checking every time is not graceful. How about just check the
-libbpf version, since libbpf has exported all functions in src/libbpf.map.
+> On Tue, 27 Oct 2020 20:04:08 +0100
+> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>=20
+> > +void page_pool_put_page_bulk(struct page_pool *pool, void **data,
+> > +			     int count)
+> > +{
+> > +	struct page *page_ring[XDP_BULK_QUEUE_SIZE];
+>=20
+> Maybe we could reuse the 'data' array instead of creating a new array
+> (2 cache-lines long) for the array of pages?
 
-Currently, only bpf_program__section_name() is added in 0.2.0, all other
-needed functions are supported in 0.1.0.
+I agree, I will try to reuse the data array for that
 
-So in configure, the new check would like:
+>=20
+> > +	int i, len =3D 0;
+> > +
+> > +	for (i =3D 0; i < count; i++) {
+> > +		struct page *page =3D virt_to_head_page(data[i]);
+> > +
+> > +		if (unlikely(page_ref_count(page) !=3D 1 ||
+> > +			     !pool_page_reusable(pool, page))) {
+> > +			page_pool_release_page(pool, page);
+> > +			put_page(page);
+> > +			continue;
+> > +		}
+> > +
+> > +		if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
+> > +			page_pool_dma_sync_for_device(pool, page, -1);
+>=20
+> Here we sync the entire DMA area (-1), which have a *huge* cost for
+> mvneta (especially on EspressoBin HW).  For this xdp_frame->len is
+> unfortunately not enough.  We will need the *maximum* length touch by
+> (1) CPU and (2) remote device DMA engine.  DMA-TX completion knows the
+> length for (2).  The CPU length (1) is max of original xdp_buff size
+> and xdp_frame->len, because BPF-helpers could have shrinked the size.
+> (tricky part is that xdp_frame->len isn't correct in-case of header
+> adjustments, thus like mvneta_run_xdp we to calc dma_sync size, and
+> store this in xdp_frame, maybe via param to xdp_do_redirect). Well, not
+> sure if it is too much work to transfer this info, for this use-case.
 
-check_force_libbpf()
-{
-    # if set FORCE_LIBBPF but no libbpf support, just exist the config
-    # process to make sure we don't build without libbpf.
-    if [ -n "$FORCE_LIBBPF" ]; then
-        echo "FORCE_LIBBPF set, but couldn't find a usable libbpf"
-        exit 1
-    fi
-}
+I was thinking about that but I guess point (1) is tricky since "cpu length"
+can be changed even in the middle by devmaps or cpumaps (not just in the dr=
+iver
+rx napi loop). I guess we can try to address this point in a subsequent ser=
+ies.
+Agree?
 
-check_libbpf()
-{
-    if ! ${PKG_CONFIG} libbpf --exists && [ -z "$LIBBPF_DIR" ] ; then
-        echo "no"
-        check_force_libbpf
-        return
-    fi
+Regards,
+Lorenzo
 
-    if [ $(uname -m) == x86_64 ]; then
-        local LIBSUBDIR=lib64
-    else
-        local LIBSUBDIR=lib
-    fi
+>=20
+> > +
+> > +		page_ring[len++] =3D page;
+>=20
+> > +	}
+> > +
+> > +	page_pool_ring_lock(pool);
+> > +	for (i =3D 0; i < len; i++) {
+> > +		if (__ptr_ring_produce(&pool->ring, page_ring[i]))
+> > +			page_pool_return_page(pool, page_ring[i]);
+> > +	}
+> > +	page_pool_ring_unlock(pool);
+> > +}
+> > +EXPORT_SYMBOL(page_pool_put_page_bulk);
+>=20
+>=20
+>=20
+> --=20
+> Best regards,
+>   Jesper Dangaard Brouer
+>   MSc.CS, Principal Kernel Engineer at Red Hat
+>   LinkedIn: http://www.linkedin.com/in/brouer
+>=20
 
-    if [ -n "$LIBBPF_DIR" ]; then
-        LIBBPF_CFLAGS="-I${LIBBPF_DIR}/include -L${LIBBPF_DIR}/${LIBSUBDIR}"
-        LIBBPF_LDLIBS="${LIBBPF_DIR}/${LIBSUBDIR}/libbpf.a -lz -lelf"
-    else
-        LIBBPF_CFLAGS=$(${PKG_CONFIG} libbpf --cflags)
-        LIBBPF_LDLIBS=$(${PKG_CONFIG} libbpf --libs)
-    fi
+--UugvWAfsgieZRqgk
+Content-Type: application/pgp-signature; name="signature.asc"
 
-    if ${PKG_CONFIG} libbpf --atleast-version 0.1.0 || \
-        PKG_CONFIG_LIBDIR=${LIBBPF_DIR}/${LIBSUBDIR}/pkgconfig \
-	${PKG_CONFIG} libbpf --atleast-version 0.1.0; then
-        echo "HAVE_LIBBPF:=y" >>$CONFIG
-        echo 'CFLAGS += -DHAVE_LIBBPF ' $LIBBPF_CFLAGS >> $CONFIG
-        echo 'LDLIBS += ' $LIBBPF_LDLIBS >>$CONFIG
-        echo "yes"
-    else
-        echo "no"
-        check_force_libbpf
-	return
-    fi
+-----BEGIN PGP SIGNATURE-----
 
-    # bpf_program__title() is deprecated since libbpf 0.2.0, use
-    # bpf_program__section_name() instead if we support
-    if ${PKG_CONFIG} libbpf --atleast-version 0.2.0 || \
-        PKG_CONFIG_LIBDIR=${LIBBPF_DIR}/${LIBSUBDIR}/pkgconfig \
-	${PKG_CONFIG} libbpf --atleast-version 0.2.0; then
-        echo 'CFLAGS += -DHAVE_LIBBPF_SECTION_NAME ' $LIBBPF_CFLAGS >> $CONFIG
-    fi
-}
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX5qaEQAKCRA6cBh0uS2t
+rMB1APsHlY9DgZ6UUlRWPu0CuQqAE2a2+cAVKEjopWKiSVMc4gEAitWZ+HVdtm2x
+8oU/bTR7UYzMb0UTwdiLEn982BdxWAI=
+=Pl//
+-----END PGP SIGNATURE-----
 
-And in lib/bpf_libbpf.c, we add a new helper like:
-
-static const char *get_bpf_program__section_name(const struct bpf_program *prog)
-{
-#ifdef HAVE_LIBBPF_SECTION_NAME
-	return bpf_program__section_name(prog);
-#else
-	return bpf_program__title(prog, false);
-#endif
-}
-
-Thanks
-Hangbin
+--UugvWAfsgieZRqgk--
 
