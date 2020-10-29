@@ -2,89 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08C5F29F42D
-	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 19:37:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 295E629F43E
+	for <lists+netdev@lfdr.de>; Thu, 29 Oct 2020 19:47:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726067AbgJ2ShG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 29 Oct 2020 14:37:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47648 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725805AbgJ2ShF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 29 Oct 2020 14:37:05 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 824E4C0613CF;
-        Thu, 29 Oct 2020 11:37:05 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id i26so3062739pgl.5;
-        Thu, 29 Oct 2020 11:37:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0+QUp5estCwSbEP+dyAOoylqJ98ytC6E0wr9TdO3E1o=;
-        b=f0XBik8NWXMc9mmMNlwYBCxAJ8dK2XqMOHQG2y6XoFvEG9SvZj12+VSS/0wZt1Zcqf
-         bMPsHPN5HtWBI252MEquWcaVTXJMq4wLmglpFaguXhKvPdKpqVshs4jWrH2XMQ5i5fDx
-         RGHnfONL6LszCuJhc4ec2Ipzz9Ll3UOAINSkVvphJ2TbqNKvt9tL2Yb0mtSGFT7lUTkG
-         s5RfodRbGK0/wFTb5lCD/HC+uy6V1J8vQHG4MkmAUq6G9nq/w0qrxwyKnEqxp8RuvSsc
-         /VvkMd1CHCbIqANed6nsayZ3kiGpAXaA9LxKOHaJCJLVvm4TJ/2SLOI6m8kWy7IrkqU4
-         vKhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0+QUp5estCwSbEP+dyAOoylqJ98ytC6E0wr9TdO3E1o=;
-        b=GY7ZUgoh76Tqon1IYqLJXyp6zeXfRoC0/YTftmm4QxPyGhIjkup4ZgvogYi3LaP3HV
-         z7FUgV8biNKAb1E8nNAtWrbHowQ4Xrr4JV6i9P6HZw7RKTYCEiqE8qywXnyjiIP7G0LD
-         i7YSkTJloxNo1P6F6XRGxmIcnTxSQgGRi2IGU6mD8ji3RaeUUOg0ZE2nJhN9L4dYeJyK
-         h0+DwZIjP30ikou5Nq8uWbE2qEjKrJTycTq6ZOBAKEdUFLZf4Oep9G0+2JKje5P07JrV
-         39ZmxzC3Lg6L8qek6zaEbTnNh/7TF1l9T39pr66qGL1L1/E0nLLMJlpOdoskbyJUFUtp
-         fZsg==
-X-Gm-Message-State: AOAM533nXxnHNJ+anRdYbY6bZvO0b2+Zh9dmoVHocJkEbyXsHaUPLOOP
-        J/6pgOWXE3FQFW47UmPnGT9ZDkLCDT98aiIaOtk=
-X-Google-Smtp-Source: ABdhPJwaXuakqX62nMfSb/ByNLV62IST4kysb7WDh0gadhnvXIukwLVo9FZy3TV8THBK2Ve7clXVkQ24yrw5c5WHLKY=
-X-Received: by 2002:a17:90b:305:: with SMTP id ay5mr466697pjb.129.1603996625112;
- Thu, 29 Oct 2020 11:37:05 -0700 (PDT)
+        id S1725902AbgJ2Sqw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 29 Oct 2020 14:46:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38050 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725774AbgJ2Sqv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 29 Oct 2020 14:46:51 -0400
+Received: from kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com (unknown [163.114.132.6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id E8880206B6;
+        Thu, 29 Oct 2020 18:46:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1603997210;
+        bh=/yM64ReMgF87Hwyv/ZYL+osCJxbb1ouFPVdxOacUs5A=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NjVz5QtEvoYzNe3DiTqkGO8NAvrd5AGW1Bl+IXfrfDmnBPDOdiESCssj6Opt3GFeu
+         yWV0Ps/MLE4h+uk14TF5Qjd3QpqotRQ3PInjI+7imCVpg5Yo174nAwW6ihgo4RjzRo
+         mLVfkfFx35j41UMu3yPKTrxE7S47xBxwnTQc+lTo=
+Date:   Thu, 29 Oct 2020 11:46:48 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     Aleksandr Nogikh <aleksandrnogikh@gmail.com>, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
+        andreyknvl@google.com, dvyukov@google.com, elver@google.com,
+        rdunlap@infradead.org, dave.taht@gmail.com, edumazet@google.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Aleksandr Nogikh <nogikh@google.com>,
+        syzbot+ec762a6342ad0d3c0d8f@syzkaller.appspotmail.com
+Subject: Re: [PATCH v2] netem: fix zero division in tabledist
+Message-ID: <20201029114648.64e00e22@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201028111959.6ed6d2c2@hermes.local>
+References: <20201028170731.1383332-1-aleksandrnogikh@gmail.com>
+        <20201028111959.6ed6d2c2@hermes.local>
 MIME-Version: 1.0
-References: <20201028142433.18501-1-kitakar@gmail.com> <20201028142433.18501-2-kitakar@gmail.com>
- <CA+ASDXMfuqy=kCECktP_mYm9cAapXukeLhe=1i3uPbTu9wS2Qw@mail.gmail.com>
-In-Reply-To: <CA+ASDXMfuqy=kCECktP_mYm9cAapXukeLhe=1i3uPbTu9wS2Qw@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 29 Oct 2020 20:36:48 +0200
-Message-ID: <CAHp75VfUv6cD8BKxircd7dU-5p7Q6JL1dVz5X=0SC-Y4pqYhjA@mail.gmail.com>
-Subject: Re: [PATCH 1/3] mwifiex: disable ps_mode explicitly by default instead
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Tsuchiya Yuto <kitakar@gmail.com>,
-        Amitkumar Karwar <amitkarwar@gmail.com>,
-        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
-        Xinming Hu <huxinming820@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Maximilian Luz <luzmaximilian@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>, verdre@v0yd.nl
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Oct 29, 2020 at 8:29 PM Brian Norris <briannorris@chromium.org> wrote:
-> On Wed, Oct 28, 2020 at 7:04 PM Tsuchiya Yuto <kitakar@gmail.com> wrote:
+On Wed, 28 Oct 2020 11:19:59 -0700 Stephen Hemminger wrote:
+> On Wed, 28 Oct 2020 17:07:31 +0000
+> Aleksandr Nogikh <aleksandrnogikh@gmail.com> wrote:
+> 
+> > From: Aleksandr Nogikh <nogikh@google.com>
+> > 
+> > Currently it is possible to craft a special netlink RTM_NEWQDISC
+> > command that can result in jitter being equal to 0x80000000. It is
+> > enough to set the 32 bit jitter to 0x02000000 (it will later be
+> > multiplied by 2^6) or just set the 64 bit jitter via
+> > TCA_NETEM_JITTER64. This causes an overflow during the generation of
+> > uniformly distributed numbers in tabledist(), which in turn leads to
+> > division by zero (sigma != 0, but sigma * 2 is 0).
+> > 
+> > The related fragment of code needs 32-bit division - see commit
+> > 9b0ed89 ("netem: remove unnecessary 64 bit modulus"), so switching to
+> > 64 bit is not an option.
+> > 
+> > Fix the issue by keeping the value of jitter within the range that can
+> > be adequately handled by tabledist() - [0;INT_MAX]. As negative std
+> > deviation makes no sense, take the absolute value of the passed value
+> > and cap it at INT_MAX. Inside tabledist(), switch to unsigned 32 bit
+> > arithmetic in order to prevent overflows.
+> > 
+> > Signed-off-by: Aleksandr Nogikh <nogikh@google.com>
+> > Reported-by: syzbot+ec762a6342ad0d3c0d8f@syzkaller.appspotmail.com  
+> 
+> Acked-by: Stephen Hemminger <stephen@networkplumber.org>
 
-...
-
-> For the record, Chrome OS supports plenty of mwifiex systems with 8897
-> (SDIO only) and 8997 (PCIe), with PS enabled, and you're hurting
-> those. Your problem sounds to be exclusively a problem with the PCIe
-> 8897 firmware.
-
-And this feeling (that it's a FW issue) what I have. But the problem
-here, that Marvell didn't fix and probably won't fix their FW...
-
-Just wondering if Google (and MS in their turn) use different
-firmwares to what we have available in Linux.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Applied, thanks!
